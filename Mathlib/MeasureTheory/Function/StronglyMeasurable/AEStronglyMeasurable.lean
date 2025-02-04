@@ -429,10 +429,14 @@ protected theorem nnnorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (fun x => ‖f x‖₊) μ :=
   continuous_nnnorm.comp_aestronglyMeasurable hf
 
-@[measurability]
+-- Unlike `AEStrongMeasurable.norm` and `AEStronglyMeasurable.nnnorm`, this lemma proves
+-- a.e. measurability, **not** a.e. strong measurability. This is an intentional decision:
+-- for functions taking values in ℝ≥0∞, a.e. measurability is much more useful than
+-- a.e. strong measurability.
+@[fun_prop, measurability]
 protected theorem enorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
     (hf : AEStronglyMeasurable f μ) : AEMeasurable (‖f ·‖ₑ) μ :=
-  (ENNReal.continuous_coe.comp_aestronglyMeasurable hf.nnnorm).aemeasurable
+  (continuous_enorm.comp_aestronglyMeasurable hf).aemeasurable
 
 @[deprecated (since := "2025-01-20")] alias ennnorm := AEStronglyMeasurable.enorm
 
