@@ -22,7 +22,7 @@ lemma orderSucc_castSucc {n : ℕ} (i : Fin n) :
   rw [if_pos (i.castSucc_lt_last)]
   aesop
 
-lemma Order.succ_iterate_coe {n : ℕ} (i : Fin n) (k : ℕ) (hik : i + k < n) :
+lemma orderSucc_iterate {n : ℕ} (i : Fin n) (k : ℕ) (hik : i + k < n) :
     Order.succ^[k] i = ⟨i + k, hik⟩ := by
   induction k generalizing i with
   | zero => simp
@@ -42,6 +42,6 @@ instance (n : ℕ) : IsSuccArchimedean (Fin n) where
   exists_succ_iterate_of_le := by
     rintro ⟨a, _⟩ ⟨b, hb⟩ (h : a ≤ b)
     obtain ⟨k, rfl⟩ := Nat.le.dest h
-    exact ⟨k, Order.succ_iterate_coe _ _ hb⟩
+    exact ⟨k, orderSucc_iterate _ _ hb⟩
 
 end Fin
