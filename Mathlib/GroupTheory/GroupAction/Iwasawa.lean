@@ -52,20 +52,6 @@ structure IwasawaStructure where
 /-- The subgroups generate the group -/
   is_generator : iSup T = ⊤
 
-/- Variante de la structure d'Iwasawa :
-* M action primitive sur α
-* a : α
-* A := T a, sous-groupe commutatif de G
-* g • a = a → mul_aut.conj g A = A
-* stabilizer M a ≤ normalizer A
-* subgroup.normal_closure A = ⊤
-
-Ou encore : (?)
-* A : subgroup M, commutative
-* normalizer A maximal
-* subgroup.normal_closure A = ⊤
-
--/
 variable {M α}
 
 namespace IwasawaStructure
@@ -73,11 +59,10 @@ namespace IwasawaStructure
 /-- The Iwasawa criterion : If a quasiprimitive action of a group G on X
   has an Iwasawa structure, then any normal subgroup that acts nontrivially
   contains the group of commutators. -/
-theorem commutator_le
-    (is_qprim : IsQuasipreprimitive M α) (IwaS : IwasawaStructure M α)
-    {N : Subgroup M} (nN : N.Normal) (hNX : MulAction.fixedPoints N α ≠ ⊤) :
+theorem commutator_le (IwaS : IwasawaStructure M α) [IsQuasiPreprimitive M α]
+    (N : Subgroup M) [nN : N.Normal] (hNX : MulAction.fixedPoints N α ≠ .univ) :
     commutator M ≤ N := by
-  have is_transN := is_qprim.isPretransitive_of_normal hNX
+  have is_transN := IsQuasiPreprimitive.isPretransitive_of_normal hNX
   have ntα : Nontrivial α := nontrivial_of_fixedPoints_ne_univ hNX
   obtain a : α := Nontrivial.to_nonempty.some
   apply nN.commutator_le_of_self_sup_commutative_eq_top ?_ (IwaS.is_comm a)
@@ -92,13 +77,12 @@ theorem commutator_le
   exact (N ⊔ IwaS.T a).mul_mem ((N ⊔ IwaS.T a).mul_mem hg' hk') ((N ⊔ IwaS.T a).inv_mem hg')
 
 /-- The Iwasawa criterion for simplicity -/
-theorem isSimpleGroup
-    (is_nontrivial : Nontrivial M) (is_perfect : commutator M = ⊤)
-    (is_qprim : IsQuasipreprimitive M α) (is_faithful : FaithfulSMul M α)
-    (IwaS : IwasawaStructure M α) : IsSimpleGroup M := by
+theorem isSimpleGroup [Nontrivial M] (is_perfect : commutator M = ⊤)
+    [IsQuasiPreprimitive M α] (IwaS : IwasawaStructure M α) (is_faithful : FaithfulSMul M α) :
+    IsSimpleGroup M := by
   apply IsSimpleGroup.mk
   intro N nN
-  cases or_iff_not_imp_left.mpr (IwaS.commutator_le is_qprim nN) with
+  cases or_iff_not_imp_left.mpr (IwaS.commutator_le N) with
   | inl h =>
     refine Or.inl (N.eq_bot_iff_forall.mpr fun n hn => ?_)
     apply is_faithful.eq_of_smul_eq_smul
