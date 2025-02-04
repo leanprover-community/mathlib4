@@ -850,7 +850,6 @@ theorem Equiv.le {x y : PGame} (h : x ≈ y) : x ≤ y :=
 theorem Equiv.ge {x y : PGame} (h : x ≈ y) : y ≤ x :=
   h.2
 
-@[refl, simp]
 theorem equiv_rfl {x : PGame} : x ≈ x :=
   refl x
 
