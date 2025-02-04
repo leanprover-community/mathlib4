@@ -17,7 +17,7 @@ relation and that isomorphic algebras are Morita equivalent.
 
 # Main definitions
 
-- `MoritaEquivalence R A B`: a structure containing a `R`-linear equivalence of categories between
+- `MoritaEquivalence R A B`: a structure containing an `R`-linear equivalence of categories between
   the module categories of `A` and `B`.
 - `IsMoritaEquivalent R A B`: a predicate asserting that `R`-algebras `A` and `B` are Morita
   equivalent.
