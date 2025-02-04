@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Meiburg
 -/
 import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Algebra.Operad.Clone
+import Mathlib.Algebra.Clone.Basic
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 
 /-! This file provides several important examples of `Clone`s, enough to build all of Post's
@@ -51,8 +51,8 @@ theorem disjunctive_max [Max α] [Max β] {f : α → β} (a b : α) (h : f.Disj
 def Function.CommutesWithEndo {α t : Type*} (φ : t → t) (f : (α → t) → t) : Prop :=
   ∀ ts, φ (f ts) = f (fun i ↦ φ (ts i))
 
-/-- The standard notion of superposition in a clone, for functions. Usually stated for `Fin n`
- and `Fin m` indexed lists of arguments, here we generalize to arbitrary index types α and β.-/
+/-- The standard notion of superposition in a clone, for functions. Clones use `Fin n` and `Fin m`
+  indexed lists of arguments, here we generalize to arbitrary index types α and β.-/
 @[reducible]
 def function_superpose (a : (α → γ) → γ) (b : α → (β → γ) → γ) : (β → γ) → γ :=
   fun ts ↦ a (b · ts)

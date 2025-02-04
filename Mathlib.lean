@@ -193,6 +193,9 @@ import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.CharZero.Quotient
+import Mathlib.Algebra.Clone.Basic
+import Mathlib.Algebra.Clone.Instances
+import Mathlib.Algebra.Clone.Notation
 import Mathlib.Algebra.Colimit.DirectLimit
 import Mathlib.Algebra.Colimit.Finiteness
 import Mathlib.Algebra.Colimit.Module
@@ -663,11 +666,6 @@ import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 import Mathlib.Algebra.NoZeroSMulDivisors.Pi
 import Mathlib.Algebra.NoZeroSMulDivisors.Prod
 import Mathlib.Algebra.Notation
-import Mathlib.Algebra.Operad.Basic
-import Mathlib.Algebra.Operad.Clone
-import Mathlib.Algebra.Operad.Instances
-import Mathlib.Algebra.Operad.Operad
-import Mathlib.Algebra.Operad.Perm
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.AbsoluteValue.Basic
 import Mathlib.Algebra.Order.AbsoluteValue.Equivalence

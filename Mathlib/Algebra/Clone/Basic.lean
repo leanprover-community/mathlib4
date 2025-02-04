@@ -3,8 +3,11 @@ Copyright (c) 2024 Alex Meiburg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Meiburg
 -/
-import Mathlib.Algebra.Operad.Operad
+import Mathlib.Algebra.Clone.Notation
 import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Fin.Basic
+
+open Superposable
 
 /-! This file defines `Clone`s, which represent functions (or generally, some sort of composable
   objects) of different arities that can be "superposed": if the type is indiced as `A : ℕ → Type*`,
@@ -14,11 +17,15 @@ import Mathlib.Algebra.Order.Ring.Nat
   A clone must have a `1` element (an arity-1 identity), projection functions of all arities and
   indices, and superposition must be associative.
 
-  The main result in this file is that Clones also admit a `SymmOperad` structure, as given in the
-  `clone_toSymmOperad` instance. This is defined in terms of the two-function `cloneCompose`
-  operation, which plugs one object into the other and projectors at all other indices.
+  The main proofs in this file are how Clones behave with single-argument composition.
+  The "usual" operation `Superposable.superpose` takes `n` elements of arity `m` to compose
+  into an arity `m` parent, but since Clones also have identities (projections), we can also
+  have a way to insert just one argument of arity `k`, resulting in arity `m+k-1`. We define
+  this in `Clone.cloneCompose` and prove that it behaves correctl. This is the operation which
+  turns Clones into operads (which themselves are absent from Mathlib as of Jan 2025), which is
+  why it deserves some interest.
 
-  Interesting examples of Clones are given in `Mathlib.Algebra.Operad.Instances`.
+  Interesting examples of Clones are given in `Mathlib.Algebra.Clone.Instances`.
 -/
 
 /-- An abstract clone is a set of operations that have composition and all projections.
@@ -41,10 +48,25 @@ namespace Clone
 
 variable {A : ℕ → Type*} [Clone A]
 
+@[simp]
+theorem clone_proj_left {m n : ℕ} (l : Fin n) (cs : Fin n → A m) :
+    proj n l ∘⚟ cs = cs l :=
+  proj_left l cs
+
+@[simp]
+theorem clone_proj_right {n : ℕ} (c : A n) : c ∘⚟ (proj n ·) = c :=
+  proj_right c
+
+@[simp]
+theorem clone_id_left {n : ℕ} (a : Fin 1 → A n) : 1 ∘⚟ a = a 0 := by
+  rw [one_proj]
+  exact clone_proj_left 0 a
+
 /-- Pad a m-arity element of a clone to a larger arity, by adding projections that ignore
- the left- and right-most elements. -/
+ the left- and right-most elements. This replaces the `k`th element out of `n` with the `m`
+ many arguments of `p`. -/
 def clonePadTo {m : ℕ} (p : A m) (n : ℕ) (k : Fin n) : A (n+m-1) :=
-  p ∘⚟ fun i ↦ proj (n+m-1) ⟨k + i, Nat.lt_sub_of_add_lt (by omega)⟩
+  p ∘⚟ fun i ↦ proj (n+m-1) ⟨k + i, by omega⟩
 
 @[simp]
 theorem clonePadTo_zero {m} (p : A m) (k : Fin 1) :
@@ -62,26 +84,10 @@ def cloneCompose {n m : ℕ} (a : A n) (p : Fin n) (b : A m) : A (n + m - 1) :=
     fun k ↦ if hkp1 : k = p.1 then
         clonePadTo b n k
       else if hkp : k < p.1 then
-        proj (n+m-1) ⟨k.val, Nat.lt_sub_of_add_lt (by omega)⟩
+        proj (n+m-1) ⟨k.val, by omega⟩
       else
-        proj (n+m-1) ⟨k.val+m-1, tsub_lt_tsub_right_of_le
-          (by omega)
-          (Nat.add_lt_add_right k.isLt m)⟩
+        proj (n+m-1) ⟨k.val+m-1, by omega⟩
       )
-
-@[simp]
-theorem clone_proj_left {m n : ℕ} (l : Fin n) (cs : Fin n → A m) :
-    proj n l ∘⚟ cs = cs l :=
-  proj_left l cs
-
-@[simp]
-theorem clone_proj_right {n : ℕ} (c : A n) : c ∘⚟ (proj n ·) = c :=
-  proj_right c
-
-@[simp]
-theorem clone_id_left {n : ℕ} (a : Fin 1 → A n) : 1 ∘⚟ a = a 0 := by
-  rw [one_proj]
-  exact clone_proj_left 0 a
 
 @[simp]
 theorem cloneCompose_id {n : ℕ} (a : A n) (b : Fin n) : cloneCompose a b (1 : A 1) = a := by
@@ -109,9 +115,8 @@ theorem cloneCompose_assoc (a b c : Sigma A) (p1 : Fin a.fst) (p2 : Fin b.fst) :
       next hkp2 =>
         subst hkp2
         simp only [dite_true, superpose_assoc, clone_proj_left, clonePadTo]
-        congr! 4
+        congr! 4 with a b rfl
         rw [add_assoc]
-        congr!
       next hkp2 =>
         simp only [Fin.mk.injEq, add_right_inj, Fin.mk_lt_mk, add_lt_add_iff_left,
           Fin.val_fin_lt, Fin.val_inj, if_neg hkp2]
@@ -160,11 +165,11 @@ theorem cloneCompse_comm (a b c : Sigma A) (p1 p2 : Fin a.fst) (hp: p1 < p2)
   next hkp1 =>
     subst k
     have hp1p2 : p1 ≠ p2 := hp.ne
-    simp only [dif_neg hp1p2, dif_pos hp, clonePadTo, superpose_assoc]
-    simp only [clone_proj_left, lt_self_iff_false, dite_false, dite_true]
+    simp only [hp1p2, hp, clonePadTo, superpose_assoc]
+    simp only [clone_proj_left, lt_self_iff_false, ↓reduceDIte]
     congr! with ⟨k2, hk2⟩ ⟨k3, hk3⟩ hk2k3
     have h₁ : p1 + k2 < p2 + b.fst - 1 := by omega
-    simp only [h₁, h₁.ne, dite_true, dite_false]
+    simp only [h₁, h₁.ne, ↓reduceDIte]
     congr!
     rwa [Fin.mk.injEq] at hk2k3
   next =>
@@ -208,90 +213,5 @@ theorem cloneCompse_comm (a b c : Sigma A) (p1 p2 : Fin a.fst) (hp: p1 < p2)
           rw [dif_neg hkcp1.ne.symm, dif_neg (Nat.lt_asymm hkcp1)]
           congr! 2
           omega
-
-/-- Every abstract clone naturally induces a (symmetric) operad. Currently this only shows the
- (nonsymmetric) `Operad` instance; extending it to `SymmOperad` requires some annoying lemmas with
-  permutations. -/
-instance clone_toSymmOperad [Clone A] : SymmOperad A where
-
-  compose := cloneCompose
-
-  id_right a p := by
-    dsimp [composeAt]
-    congr!
-    exact cloneCompose_id a.snd p
-
-  id_left a := by
-    dsimp [composeAt, cloneCompose]
-    congr!
-    · exact add_tsub_cancel_left 1 a.fst
-    · simp
-
-  assoc a b c p1 p2 := by
-    dsimp [composeAt]
-    congr 1
-    · have := p2.2; omega
-    · exact cloneCompose_assoc a b c p1 p2
-
-  comm {a} b c p1 p2 hp := by
-    dsimp [composeAt]
-    congr 1
-    · omega
-    · exact cloneCompse_comm a b c p1 p2 hp _ _ rfl rfl
-
-  act_at := fun i ↦ {
-    smul s x := x ∘⚟ fun k ↦ proj i (s k),
-    one_smul := proj_right,
-    mul_smul _ _ _ := by
-      simp_rw [HSMul.hSMul, superpose_assoc, proj_left]
-      rfl
-    }
-
-  perm_left {n m} s k hn x y := by
-    dsimp [MultiComposable.compose, cloneCompose, HSMul.hSMul]
-    rw [superpose_assoc, superpose_assoc]
-    congr! 2 with z
-    rw [proj_left]
-    split
-    · rename_i h₁
-      have h₂ : z.val = s.symm k := by
-        rw [← Fin.ext_iff] at h₁ ⊢
-        exact (Equiv.apply_eq_iff_eq_symm_apply s).mp h₁
-      simp_rw [dif_pos h₂]
-      rename_i h₂
-      simp_rw [clonePadTo, superpose_assoc, h₁, proj_left]
-      congr! with w
-      simp_rw [h₂, PermFinPadAt_eq_position, Equiv.apply_symm_apply]
-    · have h₂ : z.val ≠ s.symm k := by
-        rename_i h₁
-        contrapose! h₁
-        rw [← Fin.ext_iff] at h₁ ⊢
-        exact (Equiv.apply_eq_iff_eq_symm_apply s).mpr h₁
-      simp_rw [dif_neg h₂]
-      split <;> split <;> rw [proj_left] <;> congr! 2 <;> symm
-      focus apply PermFinPadAt_lt_lt_position
-      rotate_right; focus apply PermFinPadAt_gt_gt_position
-      rotate_right; focus apply PermFinPadAt_lt_gt_position
-      rotate_right; focus apply PermFinPadAt_gt_lt_position
-      all_goals try rw [Equiv.apply_symm_apply]
-      all_goals omega
-
-  perm_right {n m} s k x y := by
-    dsimp [MultiComposable.compose, cloneCompose, HSMul.hSMul]
-    rw [superpose_assoc]
-    congr! with z
-    split
-    · rename_i h₁
-      rw [← Fin.ext_iff] at h₁
-      subst z
-      simp_rw [clonePadTo, superpose_assoc, proj_left]
-      congr! with z
-      symm
-      apply PermFinPadTo_eq_position
-    · split <;> rw [proj_left] <;> congr! 2 <;> symm
-      · apply PermFinPadTo_lt_position
-        assumption
-      · apply PermFinPadTo_gt_position
-        omega
 
 end Clone
