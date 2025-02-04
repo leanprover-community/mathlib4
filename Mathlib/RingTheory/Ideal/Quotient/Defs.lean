@@ -133,6 +133,9 @@ theorem lift_mk (I : Ideal R) (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 
     lift I f H (mk I a) = f a :=
   rfl
 
+lemma lift_comp_mk (I : Ideal R) (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 0) :
+    (lift I f H).comp (mk I) = f := rfl
+
 theorem lift_surjective_of_surjective (I : Ideal R) {f : R →+* S} (H : ∀ a : R, a ∈ I → f a = 0)
     (hf : Function.Surjective f) : Function.Surjective (Ideal.Quotient.lift I f H) := by
   intro y
