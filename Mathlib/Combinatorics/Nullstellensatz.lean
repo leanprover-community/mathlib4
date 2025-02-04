@@ -58,6 +58,7 @@ open Finsupp
 
 variable {R : Type*} [CommRing R]
 
+/-- A polynomial that vanishes at more points than its degree is the zero polynomial. -/
 theorem _root_.Polynomial.eq_zero_of_eval_zero [IsDomain R] (P : Polynomial R) (S : Set R)
     (Hdeg : Polynomial.natDegree P < S.ncard) (Heval : ∀ x ∈ S, P.eval x = 0) :
     P = 0 := by
@@ -77,6 +78,7 @@ namespace MvPolynomial
 
 open Finsupp
 
+/-- A multivariate polynomial that vanishes at a large product set is the zero polynomial. -/
 theorem eq_zero_of_eval_zero_at_prod_nat {n : ℕ} [IsDomain R]
     (P : MvPolynomial (Fin n) R) (S : Fin n → Set R)
     (Hdeg : ∀ i, P.degreeOf i < (S i).ncard)
@@ -139,13 +141,7 @@ theorem eq_zero_of_eval_zero_at_prod_nat {n : ℕ} [IsDomain R]
       rw [Polynomial.ext_iff] at Heval'
       simpa only [Polynomial.coeff_map, Polynomial.coeff_zero] using Heval' m
 
-theorem weightedTotalDegree_rename_of_injective {σ τ : Type*} [DecidableEq τ] {e : σ → τ}
-    {w : τ → ℕ} {P : MvPolynomial σ R} (he : Function.Injective e) :
-    weightedTotalDegree w ((rename e) P) = weightedTotalDegree (w ∘ e) P := by
-  unfold weightedTotalDegree
-  rw [support_rename_of_injective he, Finset.sup_image]
-  congr; ext; unfold weight; simp
-
+/-- A multivariate polynomial that vanishes at a large product set is the zero polynomial. -/
 theorem eq_zero_of_eval_zero_at_prod {σ : Type*} [Finite σ] [IsDomain R]
     (P : MvPolynomial σ R) (S : σ → Set R)
     (Hdeg : ∀ i, P.degreeOf i < (S i).ncard)
@@ -231,6 +227,9 @@ variable [Fintype σ]
 
 open scoped BigOperators
 
+/-- The Combinatorial Nullstellensatz : existence of a linear combination
+
+[Alon_1999], theorem 1. -/
 theorem combinatorial_nullstellensatz_exists_linearCombination
     [IsDomain R] (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty)
     (f : MvPolynomial σ R) (Heval : ∀ (x : σ → R), (∀ i, x i ∈ S i) → eval x f = 0) :
@@ -268,6 +267,9 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
     apply Finset.prod_eq_zero (hx i)
     simp only [map_sub, eval_X, eval_C, sub_self]
 
+/-- The Combinatorial Nullstellensatz : existence of a nonzero evaluation
+
+[Alon_1999], theorem 2 -/
 theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
     (f : MvPolynomial σ R)
     (t : σ →₀ ℕ) (ht : f.coeff t ≠ 0) (ht' : f.totalDegree = t.degree)
