@@ -1,11 +1,10 @@
 /-
-Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
+Copyright (c) 2025 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen
 -/
 import Mathlib.Topology.Compactification.OnePointEquiv
 import Mathlib.Topology.Compactification.OnePointRealLemmas
-import Mathlib.Geometry.Manifold.Instances.Sphere
 import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
@@ -400,22 +399,19 @@ lemma nonzero_of_dist_one {n : ℕ} (p : {v : Fin n → ℝ // dist v 0 = 1}) :
       exact dist_self 0
 
 /-- List from unit circle to projectivization. -/
-def lift_unit_circle {n:ℕ} (v : {v : Fin n → ℝ // dist v 0 = 1}) : ℙ ℝ (Fin n → ℝ) :=
+def liftUnitCircle {n:ℕ} (v : {v : Fin n → ℝ // dist v 0 = 1}) : ℙ ℝ (Fin n → ℝ) :=
     mk' ℝ ⟨v.1, nonzero_of_dist_one _⟩
 
-def liftUnitCircle {n:ℕ} (v : Metric.sphere (0: Fin n → ℝ) (1:ℝ)) :
-    ℙ ℝ (Fin n → ℝ) :=
-    mk' ℝ ⟨v.1, nonzero_of_dist_one _⟩
 
 
 /-- List from unit circle to projectivization is surjective. -/
-lemma surjective_lift_unit_circle {n:ℕ} :
-    Function.Surjective (@lift_unit_circle n) :=
+lemma surjective_liftUnitCircle {n:ℕ} :
+    Function.Surjective (@liftUnitCircle n) :=
   Quotient.ind (fun x ↦ by
     have := x.2
     have : ‖x.1‖ ≠ 0 := by simp_all
     use ⟨‖x.1‖⁻¹ • x.1, by simp only [ne_eq, dist_zero_right]; rw [norm_smul]; field_simp⟩
-    unfold lift_unit_circle; simp only [ne_eq, mk'_eq_mk]
+    unfold liftUnitCircle; simp only [ne_eq, mk'_eq_mk]
     show mk ℝ (‖x.1‖⁻¹ • x.1) _ = mk ℝ x.1 _
     rw [mk_eq_mk_iff]
     use Units.mk ‖x.1‖⁻¹ ‖x.1‖ (by field_simp) (by field_simp)
@@ -427,12 +423,12 @@ instance {n : ℕ}: Setoid {v : Fin n → ℝ // v ≠ 0} :=
 
 
 /-- Lift from (part of) unit circle to projectivization is injective. -/
-lemma injective_lift_unit_circle {n : ℕ} : Function.Injective
+lemma injective_liftUnitCircle {n : ℕ} : Function.Injective
     (fun p :{ w : { v : Fin n.succ → ℝ // dist v 0 = 1 } // w.1 0 > 0}
-        => @lift_unit_circle n.succ p.1) := by
+        => @liftUnitCircle n.succ p.1) := by
   unfold Function.Injective
   intro p q h
-  unfold lift_unit_circle at h
+  unfold liftUnitCircle at h
   simp at h
   have hQ := @Quotient.eq {v : Fin n.succ → ℝ // v ≠ 0}
     (@projectivizationSetoid ℝ (Fin n.succ → ℝ) _ _ _)
@@ -492,8 +488,8 @@ lemma injective_lift_unit_circle {n : ℕ} : Function.Injective
 
 
 /-- List from unit circle to projectivization is continuous. -/
-lemma continuous_lift_unit_circle {n:ℕ} : Continuous (@lift_unit_circle n) := by
-  unfold lift_unit_circle
+lemma continuous_liftUnitCircle {n:ℕ} : Continuous (@liftUnitCircle n) := by
+  unfold liftUnitCircle
   refine Continuous.comp' ?hg ?hf;
   · exact { isOpen_preimage := fun s a ↦ a }
   exact Isometry.continuous fun x1 ↦ congrFun rfl
@@ -507,9 +503,9 @@ instance {n:ℕ} : T2Space {v : Fin n → ℝ // dist v 0 = 1} := inferInstance
 
 /-- Projectivization is compact. -/
 instance {n:ℕ} : CompactSpace (ℙ ℝ (Fin n → ℝ)) := by
-  let Q := IsCompact.image CompactSpace.isCompact_univ (@continuous_lift_unit_circle n)
-  have : lift_unit_circle '' Set.univ = Set.univ :=
-    Set.image_univ_of_surjective (@surjective_lift_unit_circle n)
+  let Q := IsCompact.image CompactSpace.isCompact_univ (@continuous_liftUnitCircle n)
+  have : liftUnitCircle '' Set.univ = Set.univ :=
+    Set.image_univ_of_surjective (@surjective_liftUnitCircle n)
   exact {
       isCompact_univ := by rw [← this];exact Q
   }
