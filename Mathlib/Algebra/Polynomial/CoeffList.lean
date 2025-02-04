@@ -64,7 +64,6 @@ theorem coeffList_eq_nil_iff (P : α[X]) : P.coeffList = [] ↔ P = 0 := by
 
 @[simp]
 theorem coeffList_C {x : α} (h : x ≠ 0) : (C x).coeffList = [x] := by
-  have : C x ≠ 0 := by exact C_ne_zero.mpr h
   simp [coeffList, h, List.range_succ, degree_eq_natDegree (C_ne_zero.mpr h)]
 
 /-- coeffList always starts with leadingCoeff -/
