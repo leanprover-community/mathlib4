@@ -450,6 +450,9 @@ theorem symm_apply_apply (x : P) : e.symm (e x) = x :=
 @[simp]
 theorem symm_symm : e.symm.symm = e := rfl
 
+theorem symm_bijective : Bijective (OrderRingIso.symm : P₂ ≃ᵃⁱ[𝕜] P → _) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 @[simp]
 theorem toAffineEquiv_symm : e.toAffineEquiv.symm = e.symm.toAffineEquiv :=
   rfl

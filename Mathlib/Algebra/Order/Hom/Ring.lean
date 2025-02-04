@@ -391,6 +391,9 @@ def Simps.symm_apply (e : α ≃+*o β) : β → α :=
 @[simp]
 theorem symm_symm (e : α ≃+*o β) : e.symm.symm = e := rfl
 
+theorem symm_bijective : Bijective (OrderRingIso.symm : (α ≃+*o β) → β ≃+*o α) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 /-- Composition of `OrderRingIso`s as an `OrderRingIso`. -/
 @[trans]
 protected def trans (f : α ≃+*o β) (g : β ≃+*o γ) : α ≃+*o γ :=
@@ -420,9 +423,6 @@ theorem self_trans_symm (e : α ≃+*o β) : e.trans e.symm = OrderRingIso.refl 
 @[simp]
 theorem symm_trans_self (e : α ≃+*o β) : e.symm.trans e = OrderRingIso.refl β :=
   ext e.right_inv
-
-theorem symm_bijective : Bijective (OrderRingIso.symm : (α ≃+*o β) → β ≃+*o α) :=
-  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 end LE
 

@@ -632,6 +632,10 @@ theorem equivLike_inv_eq_symm (f : M ≃ₜ* N) : EquivLike.inv f = f.symm := rf
 @[to_additive (attr := simp)]
 theorem symm_symm (f : M ≃ₜ* N) : f.symm.symm = f := rfl
 
+@[to_additive]
+theorem symm_bijective : Function.Bijective (symm : M ≃ₜ* N → _) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 /-- `e.symm` is a right inverse of `e`, written as `e (e.symm y) = y`. -/
 @[to_additive (attr := simp) "`e.symm` is a right inverse of `e`, written as `e (e.symm y) = y`."]
 theorem apply_symm_apply (e : M ≃ₜ* N) (y : N) : e (e.symm y) = y :=
