@@ -179,7 +179,7 @@ lemma awayMap_awayToSection  :
   obtain ⟨⟨n, a, ⟨b, hb'⟩, i, rfl : _ = b⟩, rfl⟩ := mk_surjective a
   simp only [homOfLE_leOfHom, CommRingCat.hom_comp, RingHom.coe_comp, Function.comp_apply]
   erw [ProjectiveSpectrum.Proj.awayToSection_apply]
-  rw [val_awayMap_mk, Localization.mk_eq_mk', IsLocalization.map_mk',
+  rw [CommRingCat.hom_ofHom, val_awayMap_mk, Localization.mk_eq_mk', IsLocalization.map_mk',
     ← Localization.mk_eq_mk']
   refine Localization.mk_eq_mk_iff.mpr ?_
   rw [Localization.r_iff_exists]
@@ -250,7 +250,7 @@ lemma pullbackAwayιIso_inv_snd :
   rw [← pullbackAwayιIso_hom_SpecMap_awayMap_right, Iso.inv_hom_id_assoc]
 
 open TopologicalSpace.Opens in
-/-- Given a family of homogeneous elements `f` of positive degree that spans the irrelavent ideal,
+/-- Given a family of homogeneous elements `f` of positive degree that spans the irrelevant ideal,
 `Spec (A_f)₀ ⟶ Proj A` forms an affine open cover of `Proj A`. -/
 noncomputable
 def openCoverOfISupEqTop {ι : Type*} (f : ι → A) {m : ι → ℕ}

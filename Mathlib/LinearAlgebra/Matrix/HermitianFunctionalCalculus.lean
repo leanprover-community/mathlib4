@@ -8,8 +8,6 @@ import Mathlib.LinearAlgebra.Matrix.Spectrum
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 import Mathlib.Topology.ContinuousMap.Units
-import Mathlib.Analysis.Matrix
-import Mathlib.Topology.UniformSpace.Matrix
 
 /-!
 # Continuous Functional Calculus for Hermitian Matrices
@@ -41,7 +39,7 @@ variable {n 𝕜 : Type*} [RCLike 𝕜] [Fintype n] [DecidableEq n] {A : Matrix 
 
 lemma finite_real_spectrum : (spectrum ℝ A).Finite := by
   rw [← spectrum.preimage_algebraMap 𝕜]
-  exact A.finite_spectrum.preimage (NoZeroSMulDivisors.algebraMap_injective ℝ 𝕜).injOn
+  exact A.finite_spectrum.preimage (FaithfulSMul.algebraMap_injective ℝ 𝕜).injOn
 
 instance : Finite (spectrum ℝ A) := A.finite_real_spectrum
 
@@ -148,12 +146,6 @@ instance instContinuousFunctionalCalculus :
       exact False.elim <| Matrix.of.symm.injective.ne hxy <| Subsingleton.elim _ _
     · exact eigenvalues_eq_spectrum_real ha ▸ Set.range_nonempty _
   predicate_zero := .zero _
-
-instance instUniqueContinuousFunctionalCalculus :
-    UniqueContinuousFunctionalCalculus ℝ (Matrix n n 𝕜) :=
-  let _ : NormedRing (Matrix n n 𝕜) := Matrix.linftyOpNormedRing
-  let _ : NormedAlgebra ℝ (Matrix n n 𝕜) := Matrix.linftyOpNormedAlgebra
-  inferInstance
 
 /-- The continuous functional calculus of a Hermitian matrix as a triple product using the
 spectral theorem. Note that this actually operates on bare functions since every function is

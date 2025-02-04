@@ -481,8 +481,8 @@ theorem continuousWithinAt_update_of_ne [T1Space X] [DecidableEq X] [Topological
     ContinuousWithinAt (Function.update f x y) s x' ↔ ContinuousWithinAt f s x' :=
   EventuallyEq.congr_continuousWithinAt
     (mem_nhdsWithin_of_mem_nhds <| mem_of_superset (isOpen_ne.mem_nhds hne) fun _y' hy' =>
-      Function.update_noteq hy' _ _)
-    (Function.update_noteq hne _ _)
+      Function.update_of_ne hy' _ _)
+    (Function.update_of_ne hne ..)
 
 theorem continuousAt_update_of_ne [T1Space X] [DecidableEq X] [TopologicalSpace Y]
     {f : X → Y} {x x' : X} {y : Y} (hne : x' ≠ x) :
@@ -976,12 +976,12 @@ theorem IsCompact.finite_compact_cover {s : Set X} (hs : IsCompact s) {ι : Type
   refine ⟨update K x K₁, ?_, ?_, ?_⟩
   · intro i
     rcases eq_or_ne i x with rfl | hi
-    · simp only [update_same, h1K₁]
-    · simp only [update_noteq hi, h1K]
+    · simp only [update_self, h1K₁]
+    · simp only [update_of_ne hi, h1K]
   · intro i
     rcases eq_or_ne i x with rfl | hi
-    · simp only [update_same, h2K₁]
-    · simp only [update_noteq hi, h2K]
+    · simp only [update_self, h2K₁]
+    · simp only [update_of_ne hi, h2K]
   · simp only [Finset.set_biUnion_insert_update _ hx, hK, h3K]
 
 theorem R1Space.of_continuous_specializes_imp [TopologicalSpace Y] {f : Y → X} (hc : Continuous f)
