@@ -130,12 +130,12 @@ theorem finSuccEquiv_symm_some (m : Fin n) : (finSuccEquiv n).symm (some m) = m.
   congr_fun Fin.succAbove_zero m
 
 @[simp]
-theorem finSuccEquiv_eq_some {n : ℕ} {a : Fin (n + 1)} {b : Fin n} :
-    finSuccEquiv n a = b ↔ a = b.succ :=
+theorem finSuccEquiv_eq_some {i : Fin (n + 1)} {j : Fin n} :
+    finSuccEquiv n i = j ↔ i = j.succ :=
   (finSuccEquiv n).apply_eq_iff_eq_symm_apply
 
 @[simp]
-theorem finSuccEquiv_eq_none {n : ℕ} {a : Fin (n + 1)} : finSuccEquiv n a = none ↔ a = 0 :=
+theorem finSuccEquiv_eq_none {i : Fin (n + 1)} : finSuccEquiv n i = none ↔ i = 0 :=
   (finSuccEquiv n).apply_eq_iff_eq_symm_apply
 
 /-- The equiv version of `Fin.predAbove_zero`. -/
