@@ -61,7 +61,7 @@ except for implementing `Order.Frame` via `Order.Frame.ofMinimalAxioms`.
 This structure omits the `himp`, `compl` fields, which can be recovered using
 `Order.Frame.ofMinimalAxioms`. -/
 class Order.Frame.MinimalAxioms (α : Type u) extends CompleteLattice α where
-  protected inf_sSup_le_iSup_inf (a : α) (s : Set α) : a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b
+  inf_sSup_le_iSup_inf (a : α) (s : Set α) : a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b
 
 /-- Structure containing the minimal axioms required to check that an order is a coframe. Do NOT
 use, except for implementing `Order.Coframe` via `Order.Coframe.ofMinimalAxioms`.
@@ -69,7 +69,7 @@ use, except for implementing `Order.Coframe` via `Order.Coframe.ofMinimalAxioms`
 This structure omits the `sdiff`, `hnot` fields, which can be recovered using
 `Order.Coframe.ofMinimalAxioms`. -/
 class Order.Coframe.MinimalAxioms (α : Type u) extends CompleteLattice α where
-  protected iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s
+  iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s
 
 /-- A frame, aka complete Heyting algebra, is a complete lattice whose `⊓` distributes over `⨆`. -/
 class Order.Frame (α : Type*) extends CompleteLattice α, HeytingAlgebra α where
@@ -106,9 +106,6 @@ attribute [nolint docBlame] CompleteDistribLattice.MinimalAxioms.toMinimalAxioms
 /-- A complete distributive lattice is a complete lattice whose `⊔` and `⊓` respectively
 distribute over `⨅` and `⨆`. -/
 class CompleteDistribLattice (α : Type*) extends Frame α, Coframe α, BiheytingAlgebra α
-
-/-- In a complete distributive lattice, `⊔` distributes over `⨅`. -/
-add_decl_doc inf_sSup_eq
 
 /-- Structure containing the minimal axioms required to check that an order is a completely
 distributive. Do NOT use, except for implementing `CompletelyDistribLattice` via
@@ -217,8 +214,8 @@ variable (minAx : MinimalAxioms α)
 -/
 def of [CompleteDistribLattice α] : MinimalAxioms α where
   __ := ‹CompleteDistribLattice α›
-  inf_sSup_le_iSup_inf a s:= _root_.inf_sSup_eq.le
-  iInf_sup_le_sup_sInf a s:= _root_.sup_sInf_eq.ge
+  inf_sSup_le_iSup_inf a s:= inf_sSup_eq.le
+  iInf_sup_le_sup_sInf a s:= sup_sInf_eq.ge
 
 /-- Turn minimal axioms for `CompleteDistribLattice` into minimal axioms for `Order.Frame`. -/
 abbrev toFrame : Frame.MinimalAxioms α := minAx.toMinimalAxioms
@@ -574,22 +571,22 @@ instance Prod.instCompleteBooleanAlgebra [CompleteBooleanAlgebra α] [CompleteBo
     CompleteBooleanAlgebra (α × β) where
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
-  inf_sSup_le_iSup_inf _ _ := _root_.inf_sSup_eq.le
-  iInf_sup_le_sup_sInf _ _ := _root_.sup_sInf_eq.ge
+  inf_sSup_le_iSup_inf _ _ := inf_sSup_eq.le
+  iInf_sup_le_sup_sInf _ _ := sup_sInf_eq.ge
 
 instance Pi.instCompleteBooleanAlgebra {ι : Type*} {π : ι → Type*}
     [∀ i, CompleteBooleanAlgebra (π i)] : CompleteBooleanAlgebra (∀ i, π i) where
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
-  inf_sSup_le_iSup_inf _ _ := _root_.inf_sSup_eq.le
-  iInf_sup_le_sup_sInf _ _ := _root_.sup_sInf_eq.ge
+  inf_sSup_le_iSup_inf _ _ := inf_sSup_eq.le
+  iInf_sup_le_sup_sInf _ _ := sup_sInf_eq.ge
 
 instance OrderDual.instCompleteBooleanAlgebra [CompleteBooleanAlgebra α] :
     CompleteBooleanAlgebra αᵒᵈ where
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
-  inf_sSup_le_iSup_inf _ _ := _root_.inf_sSup_eq.le
-  iInf_sup_le_sup_sInf _ _ := _root_.sup_sInf_eq.ge
+  inf_sSup_le_iSup_inf _ _ := inf_sSup_eq.le
+  iInf_sup_le_sup_sInf _ _ := sup_sInf_eq.ge
 
 section CompleteBooleanAlgebra
 
@@ -655,8 +652,8 @@ instance (priority := 100) CompleteAtomicBooleanAlgebra.toCompleteBooleanAlgebra
     [CompleteAtomicBooleanAlgebra α] : CompleteBooleanAlgebra α where
   __ := CompletelyDistribLattice.toCompleteDistribLattice
   __ := ‹CompleteAtomicBooleanAlgebra α›
-  inf_sSup_le_iSup_inf _ _ := _root_.inf_sSup_eq.le
-  iInf_sup_le_sup_sInf _ _ := _root_.sup_sInf_eq.ge
+  inf_sSup_le_iSup_inf _ _ := inf_sSup_eq.le
+  iInf_sup_le_sup_sInf _ _ := sup_sInf_eq.ge
 
 instance Prod.instCompleteAtomicBooleanAlgebra [CompleteAtomicBooleanAlgebra α]
     [CompleteAtomicBooleanAlgebra β] : CompleteAtomicBooleanAlgebra (α × β) where
