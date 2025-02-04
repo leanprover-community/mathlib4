@@ -4337,6 +4337,7 @@ import Mathlib.Order.Restriction
 import Mathlib.Order.ScottContinuity
 import Mathlib.Order.SemiconjSup
 import Mathlib.Order.SetNotation
+import Mathlib.Order.Shrink
 import Mathlib.Order.Sublattice
 import Mathlib.Order.SuccPred.Archimedean
 import Mathlib.Order.SuccPred.Basic
