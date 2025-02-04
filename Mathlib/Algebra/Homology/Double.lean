@@ -50,12 +50,8 @@ noncomputable def double : HomologicalComplex C c where
       · subst hj
         nth_rw 2 [dif_neg (by tauto)]
         rw [comp_zero]
-      · rw [dif_neg, zero_comp]
-        rintro ⟨_, h, _⟩
-        exact hj h
-    · rw [dif_neg, zero_comp]
-      rintro ⟨h, _, _⟩
-      exact hi h
+      · rw [dif_neg (by tauto), zero_comp]
+    · rw [dif_neg (by tauto), zero_comp]
   shape i j hij := dif_neg (by
     rintro ⟨rfl, rfl, _⟩
     exact hij hi₀₁)
