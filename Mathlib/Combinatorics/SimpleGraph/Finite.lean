@@ -431,7 +431,7 @@ theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
 
 /--If V is finite and `P G` holds then there exists a maximal supergraph H of G
 for which `P H` holds. -/
-lemma exists_maximal_supergraph (P : SimpleGraph V → Prop) (hG : P G) :
+lemma exists_le_maximal (P : SimpleGraph V → Prop) (hG : P G) :
     ∃ H, G ≤ H ∧ Maximal P H := by
   simp_rw [maximal_iff_forall_gt]
   classical
