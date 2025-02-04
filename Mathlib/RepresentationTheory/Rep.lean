@@ -11,7 +11,6 @@ import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.CategoryTheory.Elementwise
 import Mathlib.CategoryTheory.Action.Monoidal
-import Mathlib.CategoryTheory.Monoidal.Types.Symmetric
 import Mathlib.RepresentationTheory.Basic
 
 /-!
@@ -441,74 +440,68 @@ end Finsupp
 end
 section Group
 
-open Finsupp Action
+open Finsupp MonoidalCategory ModuleCat.MonoidalCategory
 open Representation (IsTrivial)
-open MonoidalCategory
 
-variable [Group G]
-variable (k G n)
+variable [Group G] {n : ℕ}
 
+variable (k G n) in
 /-- An isomorphism of `k`-linear representations of `G` from `k[Gⁿ⁺¹]` to `k[G] ⊗ₖ k[Gⁿ]` (on
 which `G` acts by `ρ(g₁)(g₂ ⊗ x) = (g₁ * g₂) ⊗ x`) sending `(g₀, ..., gₙ)` to
 `g₀ ⊗ (g₀⁻¹g₁, g₁⁻¹g₂, ..., gₙ₋₁⁻¹gₙ)`. The inverse sends `g₀ ⊗ (g₁, ..., gₙ)` to
 `(g₀, g₀g₁, ..., g₀g₁...gₙ)`. -/
-def diagonalSucc (n : ℕ) :
+def diagonalSuccIsoTensorTrivial :
     diagonal k G (n + 1) ≅ leftRegular k G ⊗ trivial k G ((Fin n → G) →₀ k) :=
-  (linearization k G).mapIso (diagonalSuccIsoTensorTrivial G n) ≪≫
+  (linearization k G).mapIso (Action.diagonalSuccIsoTensorTrivial G n) ≪≫
     (Functor.Monoidal.μIso (linearization k G) _ _).symm ≪≫
       tensorIso (Iso.refl _) (linearizationTrivialIso k G (Fin n → G))
 
-variable {k G n}
-
-open ModuleCat.MonoidalCategory in
-theorem diagonalSucc_hom_hom_single (f : Fin (n + 1) → G) (a : k) :
-    (diagonalSucc k G n).hom.hom (single f a) =
+theorem diagonalSuccIsoTensorTrivial_hom_hom_single (f : Fin (n + 1) → G) (a : k) :
+    (diagonalSuccIsoTensorTrivial k G n).hom.hom (single f a) =
       single (f 0) 1 ⊗ₜ single (fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) a := by
-  simp [diagonalSucc, instMonoidalCategoryStruct_whiskerLeft, tensorObj_def,
+  simp [diagonalSuccIsoTensorTrivial, instMonoidalCategoryStruct_whiskerLeft, tensorObj_def,
     ModuleCat.MonoidalCategory.whiskerLeft, instMonoidalCategoryStruct_tensorObj,
     ModuleCat.MonoidalCategory.tensorObj, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul,
     ModuleCat.hom_id (M := ((linearization k G).obj _).V)]
 
-open ModuleCat.MonoidalCategory in
-theorem diagonalSucc_inv_single_single (g : G) (f : Fin n → G) (a b : k) :
-    (diagonalSucc k G n).inv.hom (Finsupp.single g a ⊗ₜ Finsupp.single f b) =
+theorem diagonalSuccIsoTensorTrivial_inv_hom_single_single (g : G) (f : Fin n → G) (a b : k) :
+    (diagonalSuccIsoTensorTrivial k G n).inv.hom (single g a ⊗ₜ single f b) =
       single (g • Fin.partialProd f) (a * b) := by
-  have := diagonalSuccIsoTensorTrivial_inv_hom (G := G) (n := n)
-  simp_all [diagonalSucc, instMonoidalCategoryStruct_tensorHom,
+  have := Action.diagonalSuccIsoTensorTrivial_inv_hom (G := G) (n := n)
+  simp_all [diagonalSuccIsoTensorTrivial, instMonoidalCategoryStruct_tensorHom,
     instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj, tensorObj_def,
     ModuleCat.hom_id (M := ((linearization k G).obj _).V)]
 
-theorem diagonalSucc_inv_single_left (g : G) (f : (Fin n → G) →₀ k) (r : k) :
-    (diagonalSucc k G n).inv.hom (Finsupp.single g r ⊗ₜ f) =
+theorem diagonalSuccIsoTensorTrivial_inv_hom_single_left (g : G) (f : (Fin n → G) →₀ k) (r : k) :
+    (diagonalSuccIsoTensorTrivial k G n).inv.hom (single g r ⊗ₜ f) =
       Finsupp.lift ((Fin (n + 1) → G) →₀ k) k (Fin n → G)
       (fun f => single (g • Fin.partialProd f) r) f := by
   refine f.induction ?_ ?_
   · simp only [TensorProduct.tmul_zero, map_zero]
   · intro a b x _ _ hx
-    simp only [lift_apply, smul_single', mul_one, TensorProduct.tmul_add, map_add,
-      diagonalSucc_inv_single_single, hx, Finsupp.sum_single_index, mul_comm b,
-      zero_mul, single_zero]
+    simp only [lift_apply, smul_single', mul_one, TensorProduct.tmul_add, map_add, mul_comm b, hx,
+      diagonalSuccIsoTensorTrivial_inv_hom_single_single, sum_single_index, zero_mul, single_zero]
 
-theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Fin n → G) (r : k) :
-    (diagonalSucc k G n).inv.hom (g ⊗ₜ Finsupp.single f r) =
+theorem diagonalSuccIsoTensorTrivial_inv_hom_single_right (g : G →₀ k) (f : Fin n → G) (r : k) :
+    (diagonalSuccIsoTensorTrivial k G n).inv.hom (g ⊗ₜ single f r) =
       Finsupp.lift _ k G (fun a => single (a • Fin.partialProd f) r) g := by
   refine g.induction ?_ ?_
   · simp only [TensorProduct.zero_tmul, map_zero]
   · intro a b x _ _ hx
-    simp only [lift_apply, smul_single', map_add, hx, diagonalSucc_inv_single_single,
-      TensorProduct.add_tmul, Finsupp.sum_single_index, zero_mul, single_zero]
+    simp only [lift_apply, smul_single', map_add, hx, TensorProduct.add_tmul, single_zero,
+      diagonalSuccIsoTensorTrivial_inv_hom_single_single, sum_single_index, zero_mul]
 
 variable (k G n) in
 /-- Representation isomorphism `k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])`, where the righthand representation is
 defined pointwise by the left regular representation on `k[G]`. The map sends
 `single (g₀, ..., gₙ) a ↦ single (g₀⁻¹g₁, ..., gₙ₋₁⁻¹gₙ) (single g₀ a)`. -/
 def diagonalSuccIsoFree : diagonal k G (n + 1) ≅ free k G (Fin n → G) :=
-  diagonalSucc k G n ≪≫ leftRegularTensorTrivialIsoFree k G (Fin n → G)
+  diagonalSuccIsoTensorTrivial k G n ≪≫ leftRegularTensorTrivialIsoFree k G (Fin n → G)
 
 theorem diagonalSuccIsoFree_hom_hom_single (f : Fin (n + 1) → G) (a : k) :
     (diagonalSuccIsoFree k G n).hom.hom (single f a) =
       single (fun i => (f i.castSucc)⁻¹ * f i.succ) (single (f 0) a) := by
-  have := diagonalSucc_hom_hom_single f a
+  have := diagonalSuccIsoTensorTrivial_hom_hom_single f a
   have := leftRegularTensorTrivialIsoFree_hom_hom_single_tmul_single
     (k := k) (G := G) (α := Fin n → G)
   simp_all [diagonalSuccIsoFree]
@@ -517,7 +510,7 @@ theorem diagonalSuccIsoFree_inv_hom_single_single (g : G) (f : Fin n → G) (a :
     (diagonalSuccIsoFree k G n).inv.hom (single f (single g a)) =
       single (g • Fin.partialProd f) a := by
   have := leftRegularTensorTrivialIsoFree_inv_hom_single_single (k := k) (G := G) (α := Fin n → G)
-  have := diagonalSucc_inv_single_single g f a 1
+  have := diagonalSuccIsoTensorTrivial_inv_hom_single_single g f a 1
   simp_all [diagonalSuccIsoFree]
 
 theorem diagonalSuccIsoFree_inv_hom_single (g : G →₀ k) (f : Fin n → G) :
