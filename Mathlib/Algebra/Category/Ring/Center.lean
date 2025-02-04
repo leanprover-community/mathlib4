@@ -39,21 +39,18 @@ of the identity functor on the category of `R`-modules.
 Note: this is an auxilary construction, please use `Subring.centerEquivEndIdFunctor` instead.
 -/
 @[simps]
-noncomputable def Subring.centerEquivEndIdFunctorAux [Small.{v} R] :
-    center (Shrink.{v} R) ≃+* End (𝟭 (ModuleCat.{v} (Shrink.{v} R))) where
-  toFun r :=
-    { app M := r • 𝟙 M }
+noncomputable def Subring.centerEquivEndIdFunctorAux :
+    center R ≃+* End (𝟭 (ModuleCat.{u} R)) where
+  toFun r := { app M := r • 𝟙 M }
   invFun f := centerToMulOpposite.symm <| centerCongr
-    ((ModuleCat.of _ (Shrink.{v} R)).endRingEquiv.trans
-      ((Module.moduleEndSelf (Shrink.{v} R))).symm)
-    ⟨f.app _, mem_center_iff.mpr fun g ↦ (f.naturality _).symm⟩
-  left_inv r := Subtype.ext <| show r.1 • (1 : Shrink R) = r.1 by simp
+    ((ModuleCat.of R R).endRingEquiv.trans ((Module.moduleEndSelf R)).symm)
+    ⟨f.app (.of R R), mem_center_iff.mpr fun g ↦ (f.naturality _).symm⟩
+  left_inv r := Subtype.ext <| show r.1 • (1 : R) = r.1 by simp
   right_inv f := by
     apply NatTrans.ext
     ext M (m : M)
-    simpa using
-      congr($(f.naturality (X := .of _ (Shrink.{v} R)) (Y := .of _ M) <|
-        ModuleCat.ofHom <| LinearMap.toSpanSingleton _ M m).hom (1 : Shrink.{v} R)).symm
+    simpa [Subring.smul_def, ModuleCat.endRingEquiv] using
+      congr($(f.naturality (ModuleCat.ofHom <| LinearMap.toSpanSingleton R M m)) (1 : R)).symm
   map_mul' x y := by
     apply NatTrans.ext
     ext M (m : M)
