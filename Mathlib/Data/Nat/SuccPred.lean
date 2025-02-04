@@ -91,7 +91,7 @@ theorem Fin.coe_covBy_iff {n : ℕ} {a b : Fin n} : (a : ℕ) ⋖ b ↔ a ⋖ b 
 alias ⟨_, CovBy.coe_fin⟩ := Fin.coe_covBy_iff
 
 @[simp]
-theorem WithBot_succ_zero : WithBot.succ 0 = 1 := rfl
+theorem withBotSucc_zero : WithBot.succ 0 = 1 := rfl
 
 @[simp]
-theorem WithBot_succ_one : WithBot.succ 1 = 2 := rfl
+theorem withBotSucc_one : WithBot.succ 1 = 2 := rfl
