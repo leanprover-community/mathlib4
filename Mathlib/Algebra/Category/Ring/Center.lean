@@ -35,17 +35,12 @@ of the identity functor on the category of `R`-modules.
 @[simps]
 noncomputable def Subring.centerEquivEndIdFunctor [Small.{v} R] :
     center R ≃+* End (𝟭 (ModuleCat.{v} R)) where
-  toFun x :=
-  { app M := ModuleCat.ofHom
-      { toFun := (x.1 • ·)
-        map_add' := by aesop
-        map_smul' r := by simp [← mul_smul, mem_center_iff.1 x.2 r] } }
+  toFun r := { app M := r • 𝟙 M }
   invFun f := centerToMulOpposite.symm <| centerCongr
     ((ModuleCat.of R (Shrink.{v} R)).endRingEquiv.trans
       ((Module.moduleEndSelf R).trans (linearEquivShrink R R).conjRingEquiv).symm)
     ⟨f.app _, mem_center_iff.mpr fun g ↦ (f.naturality _).symm⟩
-  left_inv r := Subtype.ext <| show (linearEquivShrink ..).symm (r.1 • _) = _ by
-    rw [map_smul, LinearEquiv.coe_toLinearMap, LinearEquiv.symm_apply_apply, smul_eq_mul, mul_one]
+  left_inv r := Subtype.ext <| show (linearEquivShrink ..).symm (r.1 • _) = _ by simp
   right_inv f := by
     apply NatTrans.ext
     ext M (m : M)
@@ -56,11 +51,11 @@ noncomputable def Subring.centerEquivEndIdFunctor [Small.{v} R] :
   map_mul' x y := by
     apply NatTrans.ext
     ext M (m : M)
-    exact mul_smul x.1 y.1 m
+    simpa using mul_smul x.1 y.1 m
   map_add' x y := by
     apply NatTrans.ext
     ext M (m : M)
-    exact add_smul x.1 y.1 m
+    simpa using add_smul x.1 y.1 m
 
 /--
 For any two commutative rings `R` and `S`, if the categories of `R`-modules and `S`-modules are
