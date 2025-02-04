@@ -66,7 +66,8 @@ of the identity functor on the category of `R`-modules.
 -/
 noncomputable def Subring.centerEquivEndIdFunctor [Small.{v} R] :
     center R ≃+* End (𝟭 (ModuleCat.{v} R)) :=
-  (centerCongr (Shrink.ringEquiv R).symm).trans <| Subring.centerEquivEndIdFunctorAux R |>.trans
+  (centerCongr (Shrink.ringEquiv R).symm).trans <|
+    Subring.centerEquivEndIdFunctorAux (Shrink R) |>.trans
     (Equivalence.endRingEquiv
       (e := ModuleCat.restrictScalarsEquivalenceOfRingEquiv (Shrink.ringEquiv R))
       (e' := ModuleCat.restrictScalarsEquivalenceOfRingEquiv (Shrink.ringEquiv R)) (by rfl)).symm
