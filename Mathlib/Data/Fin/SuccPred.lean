@@ -43,6 +43,18 @@ theorem succ_eq {n : ℕ} : SuccOrder.succ = fun a => if a < Fin.last n then a +
 theorem succ_apply {n : ℕ} (a) : SuccOrder.succ a = if a < Fin.last n then a + 1 else a :=
   rfl
 
+@[simp]
+lemma orderSucc_last (n : ℕ)  :
+    Order.succ (Fin.last n) = Fin.last n :=
+  if_neg (by simp)
+
+@[simp]
+lemma orderSucc_castSucc {n : ℕ} (i : Fin n) :
+    Order.succ i.castSucc = i.succ := by
+  dsimp [Order.succ]
+  rw [if_pos (i.castSucc_lt_last)]
+  aesop
+
 instance : ∀ {n : ℕ}, PredOrder (Fin n)
   | 0 => by constructor <;> first | intro a; exact elim0 a
   | n + 1 =>
@@ -67,5 +79,17 @@ theorem pred_eq {n} : PredOrder.pred = fun a : Fin (n + 1) => if a = 0 then 0 el
 @[simp]
 theorem pred_apply {n : ℕ} (a : Fin (n + 1)) : PredOrder.pred a = if a = 0 then 0 else a - 1 :=
   rfl
+
+@[simp]
+lemma orderPred_zero (n : ℕ) :
+    Order.pred (0 : Fin (n + 1)) = 0 :=
+  rfl
+
+@[simp]
+lemma orderPred_succ {n : ℕ} (i : Fin n) :
+    Order.pred i.succ = i.castSucc := by
+  dsimp [Order.pred]
+  rw [if_neg i.succ_ne_zero, ← add_left_inj 1,
+    sub_add_cancel, coeSucc_eq_succ]
 
 end Fin
