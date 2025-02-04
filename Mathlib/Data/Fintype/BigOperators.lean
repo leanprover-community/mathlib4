@@ -128,6 +128,20 @@ as the indexing type doesn't matter in practice. The more general forward direct
 lemma card_pi_const (α : Type*) [Fintype α] (n : ℕ) : card (Fin n → α) = card α ^ n :=
   card_piFinset_const _ _
 
+/-- Product over a sigma type equals the repeated product. -/
+@[to_additive "Sum over a sigma type equals the repeated sum."]
+theorem prod_sigma {ι} {α : ι → Type*} {M : Type*} [Fintype ι] [∀ i, Fintype (α i)] [CommMonoid M]
+    (f : Sigma α → M) : ∏ x, f x = ∏ x, ∏ y, f ⟨x, y⟩ :=
+  Finset.prod_sigma ..
+
+/-- Product over a sigma type equals the repeated product, curried version.
+This version is useful to rewrite from right to left. -/
+@[to_additive "Sum over a sigma type equals the repeated sum, curried version.
+This version is useful to rewrite from right to left."]
+theorem prod_sigma' {ι} {α : ι → Type*} {M : Type*} [Fintype ι] [∀ i, Fintype (α i)] [CommMonoid M]
+    (f : (i : ι) → α i → M) : ∏ x : (i : ι) × α i, f x.1 x.2 = ∏ x, ∏ y, f x y :=
+  prod_sigma ..
+
 @[simp] nonrec lemma card_sigma {ι} {α : ι → Type*} [Fintype ι] [∀ i, Fintype (α i)] :
     card (Sigma α) = ∑ i, card (α i) := card_sigma _ _
 
