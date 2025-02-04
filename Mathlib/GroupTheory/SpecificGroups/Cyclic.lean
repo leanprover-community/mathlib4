@@ -54,15 +54,12 @@ theorem isCyclic_iff_exists_zpowers_eq_top [Group α] : IsCyclic α ↔ ∃ g : 
   exact ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
 @[to_additive]
-theorem Subgroup.isCyclic_iff_exists_zpowers_eq_top [Group α] (H : Subgroup α) :
+protected theorem Subgroup.isCyclic_iff_exists_zpowers_eq_top [Group α] (H : Subgroup α) :
     IsCyclic H ↔ ∃ g : α, Subgroup.zpowers g = H := by
   rw [_root_.isCyclic_iff_exists_zpowers_eq_top]
-  refine ⟨fun ⟨⟨k, k_mem⟩, hk⟩ ↦ ⟨k, ?_⟩, fun ⟨k, hk⟩ ↦ ⟨⟨k, zpowers_le.mp <| le_of_eq hk⟩, ?_⟩⟩
-  · simp [← range_subtype H, ← Subgroup.map_eq_range_iff.mpr, hk,
-      ← (coeSubtype H ▸ (H.subtype).map_zpowers ⟨k, k_mem⟩)]
-  · apply_fun Subgroup.map H.subtype using Subgroup.map_injective <| subtype_injective H
-    simp [(H.subtype).map_zpowers ⟨k, _⟩, coeSubtype, hk, Subgroup.map_eq_range_iff.mpr,
-      range_subtype]
+  simp_rw [← (map_injective H.subtype_injective).eq_iff, ← MonoidHom.range_eq_map,
+    H.range_subtype, MonoidHom.map_zpowers, Subtype.exists, coeSubtype, exists_prop]
+  exact exists_congr fun g ↦ and_iff_right_of_imp fun h ↦ h ▸ mem_zpowers g
 
 @[to_additive]
 instance (priority := 100) isCyclic_of_subsingleton [Group α] [Subsingleton α] : IsCyclic α :=
@@ -122,7 +119,7 @@ theorem MonoidHom.map_cyclic [h : IsCyclic G] (σ : G →* G) :
 @[to_additive]
 lemma isCyclic_iff_exists_orderOf_eq_natCard [Finite α] :
     IsCyclic α ↔ ∃ g : α, orderOf g = Nat.card α := by
-  simp_rw [_root_.isCyclic_iff_exists_zpowers_eq_top, ← card_eq_iff_eq_top, Nat.card_zpowers]
+  simp_rw [isCyclic_iff_exists_zpowers_eq_top, ← card_eq_iff_eq_top, Nat.card_zpowers]
 
 @[to_additive]
 lemma isCyclic_iff_exists_natCard_le_orderOf [Finite α] :
