@@ -21,7 +21,6 @@ Note: `NonemptyFinLinOrd` is *not* a subcategory of `FinBddDistLat` because its 
 preserve `⊥` and `⊤`.
 -/
 
-
 universe u v
 
 open CategoryTheory CategoryTheory.Limits
