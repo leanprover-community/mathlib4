@@ -398,6 +398,14 @@ theorem LinearIndependent.group_smul {G : Type*} [hG : Group G] [DistribMulActio
   · simp_rw [hgs i hi]
   · simpa only [smul_assoc, smul_comm] using hsum
 
+@[simp]
+theorem LinearIndependent.group_smul_iff {G : Type*} [hG : Group G] [DistribMulAction G R]
+    [DistribMulAction G M] [IsScalarTower G R M] [SMulCommClass G R M] (v : ι → M) (w : ι → G) :
+    LinearIndependent R (w • v) ↔ LinearIndependent R v := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.group_smul w⟩
+  convert h.group_smul (fun i ↦ (w i)⁻¹)
+  simp [funext_iff]
+
 -- This lemma cannot be proved with `LinearIndependent.group_smul` since the action of
 -- `Rˣ` on `R` is not commutative.
 theorem LinearIndependent.units_smul {v : ι → M} (hv : LinearIndependent R v) (w : ι → Rˣ) :
@@ -408,6 +416,13 @@ theorem LinearIndependent.units_smul {v : ι → M} (hv : LinearIndependent R v)
   refine hv s (fun i ↦ g₁ i • w i) (fun i ↦ g₂ i • w i) (fun i hi ↦ ?_) ?_ i
   · simp_rw [hgs i hi]
   · simpa only [smul_eq_mul, mul_smul, Pi.smul_apply'] using hsum
+
+@[simp]
+theorem LinearIndependent.units_smul_iff (v : ι → M) (w : ι → Rˣ) :
+    LinearIndependent R (w • v) ↔ LinearIndependent R v := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.units_smul w⟩
+  convert h.units_smul (fun i ↦ (w i)⁻¹)
+  simp [funext_iff]
 
 theorem linearIndependent_image {ι} {s : Set ι} {f : ι → M} (hf : Set.InjOn f s) :
     (LinearIndependent R fun x : s ↦ f x) ↔ LinearIndependent R fun x : f '' s => (x : M) :=
