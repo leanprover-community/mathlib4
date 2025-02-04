@@ -476,7 +476,7 @@ instance : Linear S (ModuleCat.{v} S) := ModuleCat.Algebra.instLinear
 variable {X Y X' Y' : ModuleCat.{v} S}
 
 theorem Iso.homCongr_eq_arrowCongr (i : X ≅ X') (j : Y ≅ Y') (f : X ⟶ Y) :
-    Iso.homCongr i j f = ⟨LinearEquiv.arrowCongr (R := S) i.toLinearEquiv j.toLinearEquiv f.hom⟩ :=
+    Iso.homCongr i j f = ⟨LinearEquiv.arrowCongr i.toLinearEquiv j.toLinearEquiv f.hom⟩ :=
   rfl
 
 theorem Iso.conj_eq_conj (i : X ≅ X') (f : End X) :
