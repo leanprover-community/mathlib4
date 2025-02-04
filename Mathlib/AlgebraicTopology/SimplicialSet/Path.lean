@@ -94,7 +94,6 @@ def interval (f : Path X m) (j l : ℕ) (h : j + l ≤ m := by omega) : Path X l
 variable {X Y : SSet.Truncated.{u} (n + 1)} {m : ℕ}
 
 /-- Maps of `n + 1`-truncated simplicial sets induce maps of paths. -/
-@[simps]
 def map (f : Path X m) (σ : X ⟶ Y) : Path Y m where
   vertex i := σ.app (op ⟨.mk 0, by trunc⟩) (f.vertex i)
   arrow i := σ.app (op ⟨.mk 1, by trunc⟩) (f.arrow i)
@@ -104,6 +103,19 @@ def map (f : Path X m) (σ : X ⟶ Y) : Path Y m where
   arrow_tgt i := by
     simp only [← f.arrow_tgt i]
     exact congr (σ.naturality (tr (δ 0)).op) rfl |>.symm
+
+/- We write this lemma manually to ensure it refers to `Path.vertex`. -/
+@[simp]
+lemma map_vertex (f : Path X m) (σ : X ⟶ Y) (i : Fin (m + 1)) :
+    (f.map σ).vertex i = σ.app (op ⟨.mk 0, by trunc⟩) (f.vertex i) :=
+  rfl
+
+/- We write this lemma manually to ensure it refers to `Path.arrow`. -/
+@[simp]
+lemma map_arrow (f : Path X m) (σ : X ⟶ Y) (i : Fin m) :
+    (f.map σ).arrow i = σ.app (op ⟨.mk 1, by trunc⟩) (f.arrow i) :=
+  rfl
+
 
 lemma map_interval (f : Path X m) (σ : X ⟶ Y) (j l : ℕ) (h : j + l ≤ m) :
     (f.map σ).interval j l h = (f.interval j l h).map σ :=
