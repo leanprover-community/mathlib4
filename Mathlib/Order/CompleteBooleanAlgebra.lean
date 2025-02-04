@@ -661,8 +661,8 @@ instance (priority := 100) CompleteAtomicBooleanAlgebra.toCompleteBooleanAlgebra
     [CompleteAtomicBooleanAlgebra α] : CompleteBooleanAlgebra α where
   __ := CompletelyDistribLattice.toCompleteDistribLattice
   __ := ‹CompleteAtomicBooleanAlgebra α›
-  iInf_sup_le_sup_sInf := _root_.iInf_sup_le_sup_sInf
-  inf_sSup_le_iSup_inf := _root_.inf_sSup_le_iSup_inf
+  iInf_sup_le_sup_sInf := iInf_sup_le_sup_sInf
+  inf_sSup_le_iSup_inf := inf_sSup_le_iSup_inf
 
 instance Prod.instCompleteAtomicBooleanAlgebra [CompleteAtomicBooleanAlgebra α]
     [CompleteAtomicBooleanAlgebra β] : CompleteAtomicBooleanAlgebra (α × β) where
