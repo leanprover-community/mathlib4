@@ -390,6 +390,9 @@ theorem eLpNorm'_congr_enorm_ae {f g : α → ε} (hfg : ∀ᵐ x ∂μ, ‖f x�
 @[deprecated (since := "2025-02-02")] alias eLpNorm'_congr_nnnorm_ae := eLpNorm'_congr_enorm_ae
 
 -- TODO: does this exist already? Is there a better proof? Better name!
+-- make an iff!
+-- name. enorm_eq_enorm_iff_norm ?
+-- enorm_eq_iff_norm_eq
 theorem foo {F : Type*} {G : Type*} [NormedAddCommGroup F] [NormedAddCommGroup G]
     {x : F} {y : G} (h : ‖x‖ = ‖y‖) : ‖x‖ₑ = ‖y‖ₑ := by
   -- I can prove this first (this should also exist, if it doesn't already!)
@@ -413,12 +416,16 @@ theorem foo_leq {F : Type*} {G : Type*} [NormedAddCommGroup F] [NormedAddCommGro
 theorem foo_le {F : Type*} {G : Type*} [NormedAddCommGroup F] [NormedAddCommGroup G]
     {x : F} {y : G} (h : ‖x‖ < ‖y‖) : ‖x‖ₑ < ‖y‖ₑ := by
   -- I can prove this first (this should also exist, if it doesn't already!)
-  have : ‖x‖₊ < ‖y‖₊ := by
-    simp only [← coe_nnnorm] at h
-    sorry -- apply NNReal.coe_mono
-    -- exact h
-  simp only [enorm_eq_nnnorm]
-  gcongr
+  simp only [← ofReal_norm]
+  refine (ENNReal.ofReal_lt_ofReal_iff_of_nonneg ?_).mpr h
+  apply norm_nonneg _
+  -- -- enorm = ENNReal.ofReal norm is a new mathlib lemma, in NormedGr
+  -- have : ‖x‖₊ < ‖y‖₊ := by
+  --   simp only [← coe_nnnorm] at h
+  --   sorry -- apply NNReal.coe_mono
+  --   -- exact h
+  -- simp only [enorm_eq_nnnorm]
+  -- gcongr
 
 theorem eLpNorm'_congr_norm_ae {f g : α → F} (hfg : ∀ᵐ x ∂μ, ‖f x‖ = ‖g x‖) :
     eLpNorm' f q μ = eLpNorm' g q μ :=
@@ -456,7 +463,11 @@ theorem eLpNorm_mono_ae {f : α → ε} {g : α → ε'} (h : ∀ᵐ x ∂μ, �
 theorem eLpNorm_mono_ae' {f : α → F} {g : α → G} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) :
     eLpNorm f p μ ≤ eLpNorm g p μ := by
   apply eLpNorm_mono_enorm_ae --(foo h)
-  sorry -- TODO: want to use foo under a binder, with the same set; how to do that *nicely*?
+  convert h -- nicer. SIMP_RW!
+  constructor
+  · intro h
+    sorry -- other direction
+  apply fun h ↦ foo_leq h
 
 theorem eLpNorm_mono_ae_real {f : α → F} {g : α → ℝ} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ g x) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
@@ -502,22 +513,24 @@ theorem eLpNormEssSup_lt_top_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ 
     eLpNormEssSup f μ < ∞ :=
   (eLpNormEssSup_le_of_ae_bound hfC).trans_lt ENNReal.ofReal_lt_top
 
-theorem eLpNorm_le_of_ae_enorm_bound {f : α → ε} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) :
+theorem eLpNorm_le_of_ae_enorm_bound {f : α → ε} {C : ℝ≥0∞} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) :
     eLpNorm f p μ ≤ C • μ Set.univ ^ p.toReal⁻¹ := by
   rcases eq_zero_or_neZero μ with rfl | hμ
   · simp
   by_cases hp : p = 0
   · simp [hp]
-  have : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖(C : ℝ)‖ₑ := hfC.mono fun x hx => hx.trans_eq C.enorm_eq.symm
+  have : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖C‖ₑ := hfC -- XXX inline, uses eborn_eq_self
   refine (eLpNorm_mono_ae this).trans_eq ?_
-  rw [eLpNorm_const _ hp (NeZero.ne μ), C.enorm_eq, one_div, ENNReal.smul_def, smul_eq_mul]
+  rw [eLpNorm_const _ hp (NeZero.ne μ), one_div, enorm_eq_self, smul_eq_mul]
 
 @[deprecated (since := "2025-02-22")]
 alias eLpNorm_le_of_ae_nnnorm_bound := eLpNorm_le_of_ae_enorm_bound
 
+-- perhaps keep old versions as well!
+
 -- FIXME: perhaps the statement makes no sense now: happy to change it
-theorem eLpNorm_le_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C.toNNReal) :
-    eLpNorm f p μ ≤ μ Set.univ ^ p.toReal⁻¹ * ENNReal.ofReal C := by
+theorem eLpNorm_le_of_ae_bound {f : α → F} {C : ℝ≥0∞} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) :
+    eLpNorm f p μ ≤ μ Set.univ ^ p.toReal⁻¹ * C := by
   rw [← mul_comm]
   exact eLpNorm_le_of_ae_enorm_bound (hfC.mono fun x hx => hx)
 
