@@ -119,7 +119,7 @@ variable {G α β : Type*} [Group G] [MulAction G α] [MulAction G β]
 @[to_additive "If a subgroup acts nontrivially, then the type is nontrivial."]
 theorem nontrivial_of_fixedPoints_ne_univ (h : fixedPoints G α ≠ .univ) :
     Nontrivial α :=
-  Or.resolve_left (subsingleton_or_nontrivial α) (fun _ ↦ h fixedPoints_of_subsingleton)
+  (subsingleton_or_nontrivial α).resolve_left fun _ ↦ h fixedPoints_of_subsingleton
 
 section Orbit
 
