@@ -348,21 +348,22 @@ theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι �
 
 /-- Embedding of the complete graph on ι into completeMultipartite graph on ι nonempty parts-/
 noncomputable def CompleteMultipartiteGraph.topEmbedding {ι : Type*} (V : ι → Type*)
-    [∀ i, Nonempty (V i)] : (⊤ : SimpleGraph ι) ↪g (completeMultipartiteGraph V)
-    where
+    [∀ i, Nonempty (V i)] : (⊤ : SimpleGraph ι) ↪g (completeMultipartiteGraph V) where
   toFun := fun i ↦ ⟨i, Classical.arbitrary (V i)⟩
   inj' := fun i j h ↦ (Sigma.mk.inj_iff.1 h).1
   map_rel_iff' := by simp
 
 theorem notCliqueFree_le_card_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι → Type*)
-    [∀ i, Nonempty (V i)] (hc : n ≤ card ι ) : ¬ (completeMultipartiteGraph V).CliqueFree n :=
+    [∀ i, Nonempty (V i)] (hc : n ≤ Fintype.card ι ) :
+    ¬ (completeMultipartiteGraph V).CliqueFree n :=
   fun hf ↦ (cliqueFree_iff.1 <| hf.mono hc).elim' <| (CompleteMultipartiteGraph.topEmbedding V).comp
     (Iso.completeGraph (Fintype.equivFin ι).symm).toEmbedding
 
 theorem notCliqueFree_completeMultipartiteGraph_infinite {ι : Type*} [Infinite ι] (V : ι → Type*)
     [∀ i, Nonempty (V i)] : ¬ (completeMultipartiteGraph V).CliqueFree n :=
   fun hf ↦ not_cliqueFree_of_top_embedding ((CompleteMultipartiteGraph.topEmbedding V).comp
-            <| Embedding.completeGraph <| (Fin.valEmbedding.trans (Infinite.natEmbedding ι))) hf
+            <| Embedding.completeGraph <| Fin.valEmbedding.trans <| Infinite.natEmbedding ι) hf
+
 
 /-- Clique-freeness is preserved by `replaceVertex`. -/
 protected theorem CliqueFree.replaceVertex [DecidableEq α] (h : G.CliqueFree n) (s t : α) :
