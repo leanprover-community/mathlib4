@@ -32,7 +32,6 @@ written as `leadingCoeff P :: List.replicate k 0 ++ coeffList P.eraseLead`. That
 of coefficients starts with the leading coefficient, followed by some number of zeros, and then the
 coefficients of `P.eraseLead`.
 -/
-open Polynomial
 
 namespace Polynomial
 
@@ -59,7 +58,7 @@ theorem coeffList_zero : (0 : α[X]).coeffList = [] := by
 
 /-- Only the zero polynomial gives nil coeffList -/
 @[simp]
-theorem coeffList_eq_nil_iff (P : α[X]) : P.coeffList = [] ↔ P = 0 := by
+theorem coeffList_eq_nil (P : α[X]) : P.coeffList = [] ↔ P = 0 := by
   simp [coeffList]
 
 @[simp]
@@ -78,7 +77,7 @@ theorem head?_coeffList (h : P ≠ 0) :
 
 /-- `List.head` of coeffList is leadingCoeff -/
 theorem head_coeffList (h : P ≠ 0) :
-    P.coeffList.head ((coeffList_eq_nil_iff P).not.mpr h) = P.leadingCoeff :=
+    P.coeffList.head ((coeffList_eq_nil P).not.mpr h) = P.leadingCoeff :=
   (coeffList_eq_cons_leadingCoeff h).casesOn fun _ _ ↦
     Option.some.injEq _ _ ▸ List.head?_eq_head _ ▸ head?_coeffList h
 
@@ -112,14 +111,12 @@ theorem coeffList_monomial {x : α} (hx : x ≠ 0) (n : ℕ) :
 
 /- Coefficients of P are always the leading coefficient, some number of zeros, and then
   `coeffList P.eraseLead`. -/
-theorem coeffList_eraseLead (h : P ≠ 0) : ∃ n, P.coeffList =
-    P.leadingCoeff :: (.replicate n 0 ++ P.eraseLead.coeffList) := by
+theorem coeffList_eraseLead (h : P ≠ 0) : P.coeffList =
+    P.leadingCoeff :: (.replicate (P.natDegree - P.eraseLead.degree.succ) 0
+     ++ P.eraseLead.coeffList) := by
   by_cases hdp : P.natDegree = 0
-  · use 0
-    rw [eq_C_of_natDegree_eq_zero hdp] at h ⊢
+  · rw [eq_C_of_natDegree_eq_zero hdp] at h ⊢
     simp [coeffList_C (C_ne_zero.mp h)]
-  obtain ⟨n, hn⟩ : ∃ d, P.natDegree = P.eraseLead.natDegree + 1 + d :=
-    exists_add_of_le (have := eraseLead_natDegree_le P; by omega)
   by_cases hep : P.eraseLead = 0
   · have h₂ : .monomial P.natDegree P.leadingCoeff = P := by
       simpa [hep] using P.eraseLead_add_monomial_natDegree_leadingCoeff
@@ -127,7 +124,12 @@ theorem coeffList_eraseLead (h : P ≠ 0) : ∃ n, P.coeffList =
     simp [coeffList_monomial (Polynomial.leadingCoeff_ne_zero.mpr h), hep]
   have h₁ := withBotSucc_degree_eq_natDegree_add_one h
   have h₂ := withBotSucc_degree_eq_natDegree_add_one hep
-  use n
+  obtain ⟨n, hn, hn2⟩ : ∃ d, P.natDegree = P.eraseLead.natDegree + 1 + d ∧
+      d = P.natDegree - P.eraseLead.degree.succ := by
+    use P.natDegree - P.eraseLead.natDegree -  1
+    have := eraseLead_natDegree_le P
+    omega
+  rw [← hn2]; clear hn2
   apply List.ext_getElem?
   rintro (_|k)
   · obtain ⟨w,h⟩ := (coeffList_eq_cons_leadingCoeff h)

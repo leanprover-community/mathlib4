@@ -44,7 +44,7 @@ section LinearOrder
 variable {α : Type*} [Nontrivial α] [LinearOrder α] [OrderBot α] [SuccOrder α]
 
 @[simp]
-theorem succ_zero_iff (a : WithBot α) : WithBot.succ a = ⊥ ↔ a = ⊥ := by
+theorem succ_eq_bot (a : WithBot α) : WithBot.succ a = ⊥ ↔ a = ⊥ := by
   cases a
   · simp
   · simp only [WithBot.succ_coe, WithBot.coe_ne_bot, iff_false]
@@ -89,7 +89,7 @@ section LinearOrder
 variable {α : Type*} [Nontrivial α] [LinearOrder α] [OrderTop α] [PredOrder α]
 
 @[simp]
-theorem succ_zero_iff (a : WithTop α) : WithTop.pred a = ⊤ ↔ a = ⊤ := by
+theorem pred_eq_top (a : WithTop α) : WithTop.pred a = ⊤ ↔ a = ⊤ := by
   cases a
   · simp
   · simp only [WithTop.pred_coe, WithTop.coe_ne_top, iff_false]
