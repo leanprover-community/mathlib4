@@ -119,14 +119,19 @@ protected theorem NodupKeys.nodup {l : List (Sigma β)} : NodupKeys l → Nodup 
 theorem perm_nodupKeys {l₁ l₂ : List (Sigma β)} (h : l₁ ~ l₂) : NodupKeys l₁ ↔ NodupKeys l₂ :=
   (h.map _).nodup_iff
 
-theorem nodupKeys_join {L : List (List (Sigma β))} :
-    NodupKeys (join L) ↔ (∀ l ∈ L, NodupKeys l) ∧ Pairwise Disjoint (L.map keys) := by
-  rw [nodupKeys_iff_pairwise, pairwise_join, pairwise_map]
+theorem nodupKeys_flatten {L : List (List (Sigma β))} :
+    NodupKeys (flatten L) ↔ (∀ l ∈ L, NodupKeys l) ∧ Pairwise Disjoint (L.map keys) := by
+  rw [nodupKeys_iff_pairwise, pairwise_flatten, pairwise_map]
   refine and_congr (forall₂_congr fun l _ => by simp [nodupKeys_iff_pairwise]) ?_
   apply iff_of_eq; congr with (l₁ l₂)
   simp [keys, disjoint_iff_ne, Sigma.forall]
 
-theorem nodup_enum_map_fst (l : List α) : (l.enum.map Prod.fst).Nodup := by simp [List.nodup_range]
+@[deprecated (since := "2024-10-15")] alias nodupKeys_join := nodupKeys_flatten
+
+theorem nodup_zipIdx_map_snd (l : List α) : (l.zipIdx.map Prod.snd).Nodup := by
+  simp [List.nodup_range']
+
+@[deprecated (since := "2025-01-28")] alias nodup_enum_map_fst := nodup_zipIdx_map_snd
 
 theorem mem_ext {l₀ l₁ : List (Sigma β)} (nd₀ : l₀.Nodup) (nd₁ : l₁.Nodup)
     (h : ∀ x, x ∈ l₀ ↔ x ∈ l₁) : l₀ ~ l₁ :=
@@ -346,7 +351,7 @@ theorem keys_kreplace (a : α) (b : β a) : ∀ l : List (Sigma β), (kreplace a
   lookmap_map_eq _ _ <| by
     rintro ⟨a₁, b₂⟩ ⟨a₂, b₂⟩
     dsimp
-    split_ifs with h <;> simp (config := { contextual := true }) [h]
+    split_ifs with h <;> simp +contextual [h]
 
 theorem kreplace_nodupKeys (a : α) (b : β a) {l : List (Sigma β)} :
     (kreplace a b l).NodupKeys ↔ l.NodupKeys := by simp [NodupKeys, keys_kreplace]
@@ -421,10 +426,7 @@ theorem mem_keys_kerase_of_ne {a₁ a₂} {l : List (Sigma β)} (h : a₁ ≠ a�
 
 theorem keys_kerase {a} {l : List (Sigma β)} : (kerase a l).keys = l.keys.erase a := by
   rw [keys, kerase, erase_eq_eraseP, eraseP_map, Function.comp_def]
-  simp only [beq_eq_decide]
   congr
-  funext
-  simp
 
 theorem kerase_kerase {a a'} {l : List (Sigma β)} :
     (kerase a' l).kerase a = (kerase a l).kerase a' := by

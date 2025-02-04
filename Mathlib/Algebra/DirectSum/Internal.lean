@@ -28,7 +28,7 @@ to represent this case, `(h : DirectSum.IsInternal A) [SetLike.GradedMonoid A]` 
 needed. In the future there will likely be a data-carrying, constructive, typeclass version of
 `DirectSum.IsInternal` for providing an explicit decomposition function.
 
-When `CompleteLattice.Independent (Set.range A)` (a weaker condition than
+When `iSupIndep (Set.range A)` (a weaker condition than
 `DirectSum.IsInternal A`), these provide a grading of `⨆ i, A i`, and the
 mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as
 `DirectSum.toAddMonoid (fun i ↦ AddSubmonoid.inclusion <| le_iSup A i)`.
@@ -68,9 +68,6 @@ theorem SetLike.natCast_mem_graded [Zero ι] [AddMonoidWithOne R] [SetLike σ R]
     rw [Nat.cast_succ]
     exact add_mem n_ih (SetLike.one_mem_graded _)
 
-@[deprecated (since := "2024-04-17")]
-alias SetLike.nat_cast_mem_graded := SetLike.natCast_mem_graded
-
 theorem SetLike.intCast_mem_graded [Zero ι] [AddGroupWithOne R] [SetLike σ R]
     [AddSubgroupClass σ R] (A : ι → σ) [SetLike.GradedOne A] (z : ℤ) : (z : R) ∈ A 0 := by
   induction z
@@ -78,9 +75,6 @@ theorem SetLike.intCast_mem_graded [Zero ι] [AddGroupWithOne R] [SetLike σ R]
     exact SetLike.natCast_mem_graded _ _
   · rw [Int.cast_negSucc]
     exact neg_mem (SetLike.natCast_mem_graded _ _)
-
-@[deprecated (since := "2024-04-17")]
-alias SetLike.int_cast_mem_graded := SetLike.intCast_mem_graded
 
 section DirectSum
 
@@ -213,7 +207,7 @@ end coe
 section CanonicallyOrderedAddCommMonoid
 
 variable [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
-variable [CanonicallyOrderedAddCommMonoid ι] [SetLike.GradedMonoid A]
+variable [AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι] [SetLike.GradedMonoid A]
 
 theorem coe_of_mul_apply_of_not_le {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι) (h : ¬i ≤ n) :
     ((of (fun i => A i) i r * r') n : R) = 0 := by
@@ -240,7 +234,7 @@ theorem coe_mul_of_apply_of_not_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι)
 variable [Sub ι] [OrderedSub ι] [AddLeftReflectLE ι]
 
 /- The following two lemmas only require the same hypotheses as `eq_tsub_iff_add_eq_of_le`, but we
-  state them for `CanonicallyOrderedAddCommMonoid` + the above three typeclasses for convenience. -/
+  state them for the above typeclasses for convenience. -/
 theorem coe_mul_of_apply_of_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι) (h : i ≤ n) :
     ((r * of (fun i => A i) i r') n : R) = r (n - i) * r' :=
   coe_mul_of_apply_aux _ _ _ fun _x => (eq_tsub_iff_add_eq_of_le h).symm
@@ -334,14 +328,10 @@ def subsemiring : Subsemiring R where
 /-- The semiring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
 instance instSemiring : Semiring (A 0) := (subsemiring A).toSemiring
 
-/- The linter message "error: SetLike.GradeZero.coe_natCast.{u_4, u_2, u_1} Left-hand side
-  does not simplify, when using the simp lemma on itself." is wrong. The LHS does simplify. -/
-@[nolint simpNF, simp, norm_cast] theorem coe_natCast (n : ℕ) : (n : A 0) = (n : R) := rfl
+@[simp, norm_cast] theorem coe_natCast (n : ℕ) : (n : A 0) = (n : R) := rfl
 
-/- The linter message "error: SetLike.GradeZero.coe_ofNat.{u_4, u_2, u_1} Left-hand side does
-  not simplify, when using the simp lemma on itself." is wrong. The LHS does simplify. -/
-@[nolint simpNF, simp, norm_cast] theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : A 0) = (OfNat.ofNat n : R) := rfl
+@[simp, norm_cast] theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+    (ofNat(n) : A 0) = (ofNat(n) : R) := rfl
 
 end Semiring
 
@@ -397,9 +387,7 @@ def subalgebra : Subalgebra S R where
 /-- The `S`-algebra `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
 instance instAlgebra : Algebra S (A 0) := inferInstanceAs <| Algebra S (subalgebra A)
 
-/- The linter message "error: SetLike.GradeZero.coe_algebraMap.{u_4, u_3, u_1} Left-hand side
-  does not simplify, when using the simp lemma on itself." is wrong. The LHS does simplify. -/
-@[nolint simpNF, simp, norm_cast] theorem coe_algebraMap (s : S) :
+@[simp, norm_cast] theorem coe_algebraMap (s : S) :
     ↑(algebraMap _ (A 0) s) = algebraMap _ R s := rfl
 
 end Algebra

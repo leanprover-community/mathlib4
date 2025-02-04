@@ -61,17 +61,17 @@ instance unbundledHom : UnbundledHom @Measurable :=
 
 deriving instance LargeCategory for MeasCat
 
--- Porting note: `deriving instance ConcreteCategory for MeasCat` didn't work. Define it manually.
+-- Porting note: `deriving instance HasForget for MeasCat` didn't work. Define it manually.
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : ConcreteCategory MeasCat := by
+instance : HasForget MeasCat := by
   unfold MeasCat
   infer_instance
 
 instance : Inhabited MeasCat :=
   ⟨MeasCat.of Empty⟩
 
--- This was a global instance prior to #13170. We may experiment with removing it.
-attribute [local instance] ConcreteCategory.instFunLike
+-- This was a global instance prior to https://github.com/leanprover-community/mathlib4/pull/13170. We may experiment with removing it.
+attribute [local instance] HasForget.instFunLike
 
 /-- `Measure X` is the measurable space of measures over the measurable space `X`. It is the
 weakest measurable space, s.t. `fun μ ↦ μ s` is measurable for all measurable sets `s` in `X`. An
@@ -114,8 +114,9 @@ def Integral : Giry.Algebra where
 
 end MeasCat
 
-instance TopCat.hasForgetToMeasCat : HasForget₂ TopCat.{u} MeasCat.{u} :=
-  BundledHom.mkHasForget₂ borel (fun f => ⟨f.1, f.2.borel_measurable⟩) (fun _ => rfl)
+instance TopCat.hasForgetToMeasCat : HasForget₂ TopCat.{u} MeasCat.{u} where
+  forget₂.obj X := @MeasCat.of _ (borel X)
+  forget₂.map f := ⟨f.1, f.hom.2.borel_measurable⟩
 
 /-- The Borel functor, the canonical embedding of topological spaces into measurable spaces. -/
 abbrev Borel : TopCat.{u} ⥤ MeasCat.{u} :=

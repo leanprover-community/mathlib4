@@ -28,8 +28,9 @@ variable [Lattice α]
 section Group
 variable [Group α] {a b : α}
 
-/-- `mabs a` is the absolute value of `a`. -/
-@[to_additive "`abs a` is the absolute value of `a`"] def mabs (a : α) : α := a ⊔ a⁻¹
+/-- `mabs a`, denoted `|a|ₘ`, is the absolute value of `a`. -/
+@[to_additive "`abs a`, denoted `|a|`, is the absolute value of `a`"]
+def mabs (a : α) : α := a ⊔ a⁻¹
 
 @[inherit_doc mabs]
 macro:max atomic("|" noWs) a:term noWs "|ₘ" : term => `(mabs $a)
@@ -38,7 +39,7 @@ macro:max atomic("|" noWs) a:term noWs "|ₘ" : term => `(mabs $a)
 macro:max atomic("|" noWs) a:term noWs "|" : term => `(abs $a)
 
 /-- Unexpander for the notation `|a|ₘ` for `mabs a`.
-Tries to add discretionary parentheses in unparseable cases. -/
+Tries to add discretionary parentheses in unparsable cases. -/
 @[app_unexpander abs]
 def mabs.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $a) =>
@@ -48,7 +49,7 @@ def mabs.unexpander : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 /-- Unexpander for the notation `|a|` for `abs a`.
-Tries to add discretionary parentheses in unparseable cases. -/
+Tries to add discretionary parentheses in unparsable cases. -/
 @[app_unexpander abs]
 def abs.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $a) =>
@@ -284,6 +285,3 @@ variable {ι : Type*} {α : ι → Type*} [∀ i, AddGroup (α i)] [∀ i, Latti
 lemma abs_def (f : ∀ i, α i) : |f| = fun i ↦ |f i| := rfl
 
 end Pi
-
-@[deprecated (since := "2024-01-13")] alias neg_le_abs_self := neg_le_abs
-@[deprecated (since := "2024-01-13")] alias neg_abs_le_self := neg_abs_le

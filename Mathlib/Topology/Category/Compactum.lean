@@ -53,7 +53,7 @@ topological space which satisfies `CompactSpace` and `T2Space`.
 We also add wrappers around structures which already exist. Here are the main ones, all in the
 `Compactum` namespace:
 
-- `forget : Compactum ⥤ Type*` is the forgetful functor, which induces a `ConcreteCategory`
+- `forget : Compactum ⥤ Type*` is the forgetful functor, which induces a `HasForget`
   instance for `Compactum`.
 - `free : Type* ⥤ Compactum` is the left adjoint to `forget`, and the adjunction is in `adj`.
 - `str : Ultrafilter X → X` is the structure map for `X : Compactum`.
@@ -102,7 +102,7 @@ def adj : free ⊣ forget :=
   Monad.adj _
 
 -- Basic instances
-instance : ConcreteCategory Compactum where forget := forget
+instance : HasForget Compactum where forget := forget
 
 -- Porting note: changed from forget to X.A
 instance : CoeSort Compactum Type* :=
@@ -407,8 +407,8 @@ end Compactum
 
 /-- The functor functor from Compactum to CompHaus. -/
 def compactumToCompHaus : Compactum ⥤ CompHaus where
-  obj X := { toTop := { α := X }, prop := trivial }
-  map := fun f =>
+  obj X := { toTop := TopCat.of X, prop := trivial }
+  map := fun f => CompHausLike.ofHom _
     { toFun := f
       continuous_toFun := Compactum.continuous_of_hom _ }
 
@@ -416,27 +416,27 @@ namespace compactumToCompHaus
 
 /-- The functor `compactumToCompHaus` is full. -/
 instance full : compactumToCompHaus.{u}.Full where
-  map_surjective f := ⟨Compactum.homOfContinuous f.1 f.2, rfl⟩
+  map_surjective f := ⟨Compactum.homOfContinuous f.1 f.hom.2, rfl⟩
 
 /-- The functor `compactumToCompHaus` is faithful. -/
 instance faithful : compactumToCompHaus.Faithful where
   -- Porting note: this used to be obviously (though it consumed a bit of memory)
   map_injective := by
     intro _ _ _ _ h
-    -- Porting note (#11041): `ext` gets confused by coercion using forget.
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` gets confused by coercion using forget.
     apply Monad.Algebra.Hom.ext
-    apply congrArg (fun f => f.toFun) h
+    apply congrArg (fun f => f.hom.toFun) h
 
 /-- This definition is used to prove essential surjectivity of `compactumToCompHaus`. -/
 def isoOfTopologicalSpace {D : CompHaus} :
     compactumToCompHaus.obj (Compactum.ofTopologicalSpace D) ≅ D where
-  hom :=
+  hom := CompHausLike.ofHom _
     { toFun := id
       continuous_toFun :=
         continuous_def.2 fun _ h => by
           rw [isOpen_iff_ultrafilter'] at h
           exact h }
-  inv :=
+  inv := CompHausLike.ofHom _
     { toFun := id
       continuous_toFun :=
         continuous_def.2 fun _ h1 => by

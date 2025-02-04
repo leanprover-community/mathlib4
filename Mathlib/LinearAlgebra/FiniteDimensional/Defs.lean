@@ -104,10 +104,6 @@ instance finiteDimensional_pi' {ι : Type*} [Finite ι] (M : ι → Type*) [∀ 
     [∀ i, Module K (M i)] [∀ i, FiniteDimensional K (M i)] : FiniteDimensional K (∀ i, M i) :=
   Finite.pi
 
-/-- A finite dimensional vector space over a finite field is finite -/
-noncomputable def fintypeOfFintype [Fintype K] [FiniteDimensional K V] : Fintype V :=
-  Module.fintypeOfFintype (@finsetBasis K V _ _ _ (iff_fg.2 inferInstance))
-
 variable {K V}
 
 /-- If a vector space has a finite basis, then it is finite-dimensional. -/
@@ -325,20 +321,11 @@ theorem FiniteDimensional.of_rank_eq_nat {n : ℕ} (h : Module.rank K V = n) :
     FiniteDimensional K V :=
   Module.finite_of_rank_eq_nat h
 
-@[deprecated (since := "2024-02-02")]
-alias finiteDimensional_of_rank_eq_nat := FiniteDimensional.of_rank_eq_nat
-
 theorem FiniteDimensional.of_rank_eq_zero (h : Module.rank K V = 0) : FiniteDimensional K V :=
   Module.finite_of_rank_eq_zero h
 
-@[deprecated (since := "2024-02-02")]
-alias finiteDimensional_of_rank_eq_zero := FiniteDimensional.of_rank_eq_zero
-
 theorem FiniteDimensional.of_rank_eq_one (h : Module.rank K V = 1) : FiniteDimensional K V :=
   Module.finite_of_rank_eq_one h
-
-@[deprecated (since := "2024-02-02")]
-alias finiteDimensional_of_rank_eq_one := FiniteDimensional.of_rank_eq_one
 
 variable (K V)
 
@@ -527,8 +514,8 @@ theorem mul_eq_one_of_mul_eq_one [FiniteDimensional K V] {f g : V →ₗ[K] V} (
     g * f = 1 := by
   have ginj : Injective g :=
     HasLeftInverse.injective ⟨f, fun x => show (f * g) x = (1 : V →ₗ[K] V) x by rw [hfg]⟩
-  let ⟨i, hi⟩ :=
-    g.exists_rightInverse_of_surjective (range_eq_top.2 (injective_iff_surjective.1 ginj))
+  let ⟨i, hi⟩ := g.exists_rightInverse_of_surjective
+    (range_eq_top.2 (injective_iff_surjective.1 ginj))
   have : f * (g * i) = f * 1 := congr_arg _ hi
   rw [← mul_assoc, hfg, one_mul, mul_one] at this; rwa [← this]
 
@@ -563,8 +550,7 @@ theorem ker_noncommProd_eq_of_supIndep_ker [FiniteDimensional K V] {ι : Type*} 
     ker (s.noncommProd f comm) = ⨆ i ∈ s, ker (f i) := by
   classical
   induction' s using Finset.induction_on with i s hi ih
-  · set_option tactic.skipAssignedInstances false in
-    simpa using LinearMap.ker_id
+  · simp [one_eq_id]
   replace ih : ker (Finset.noncommProd s f <| Set.Pairwise.mono (s.subset_insert i) comm) =
       ⨆ x ∈ s, ker (f x) := ih _ (h.subset (s.subset_insert i))
   rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, mul_eq_comp,
@@ -761,17 +747,6 @@ open Module
 
 variable {F E : Type*} [Field F] [Ring E] [Algebra F E]
 
-/-
-porting note:
-Some of the lemmas in this section can be made faster by adding these short-cut instances
-```lean4
-instance (S : Subalgebra F E) : AddCommMonoid { x // x ∈ S } := inferInstance
-instance (S : Subalgebra F E) : AddCommGroup { x // x ∈ S } := inferInstance
-```
-However, this approach doesn't scale very well, so we should consider holding off on adding
-them until we have no choice.
--/
-
 /-- A `Subalgebra` is `FiniteDimensional` iff it is `FiniteDimensional` as a submodule. -/
 theorem Subalgebra.finiteDimensional_toSubmodule {S : Subalgebra F E} :
     FiniteDimensional F (Subalgebra.toSubmodule S) ↔ FiniteDimensional F S :=
@@ -783,10 +758,6 @@ alias ⟨FiniteDimensional.of_subalgebra_toSubmodule, FiniteDimensional.subalgeb
 instance FiniteDimensional.finiteDimensional_subalgebra [FiniteDimensional F E]
     (S : Subalgebra F E) : FiniteDimensional F S :=
   FiniteDimensional.of_subalgebra_toSubmodule inferInstance
-
-@[deprecated Subalgebra.finite_bot (since := "2024-04-11")]
-theorem Subalgebra.finiteDimensional_bot : FiniteDimensional F (⊥ : Subalgebra F E) :=
-  Subalgebra.finite_bot
 
 end SubalgebraRank
 

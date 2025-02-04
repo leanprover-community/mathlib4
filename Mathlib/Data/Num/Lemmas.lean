@@ -308,7 +308,6 @@ theorem of_to_nat' : ∀ n : Num, Num.ofNat' (n : ℕ) = n
   | 0 => ofNat'_zero
   | pos p => p.of_to_nat'
 
-set_option linter.deprecated false in
 lemma toNat_injective : Injective (castNum : Num → ℕ) := LeftInverse.injective of_to_nat'
 
 @[norm_cast]
@@ -418,9 +417,6 @@ theorem to_of_nat : ∀ n : ℕ, ((n : Num) : ℕ) = n
 @[simp, norm_cast]
 theorem of_natCast {α} [AddMonoidWithOne α] (n : ℕ) : ((n : Num) : α) = n := by
   rw [← cast_to_nat, to_of_nat]
-
-@[deprecated (since := "2024-04-17")]
-alias of_nat_cast := of_natCast
 
 @[norm_cast]
 theorem of_nat_inj {m n : ℕ} : (m : Num) = n ↔ m = n :=
@@ -862,7 +858,7 @@ theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
   | pos m =>
     rw [cast_pos]
     induction' n with n IH generalizing m <;> cases' m with m m
-        <;> dsimp only [PosNum.testBit]
+        <;> simp only [PosNum.testBit]
     · rfl
     · rw [PosNum.cast_bit1, ← two_mul, ← congr_fun Nat.bit_true, Nat.testBit_bit_zero]
     · rw [PosNum.cast_bit0, ← two_mul, ← congr_fun Nat.bit_false, Nat.testBit_bit_zero]
@@ -1183,7 +1179,7 @@ theorem cmp_to_int : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℤ) < n) (m = n
     cases PosNum.cmp a b <;> dsimp <;> [simp; exact congr_arg pos; simp [GT.gt]]
   | neg a, neg b => by
     have := PosNum.cmp_to_nat b a; revert this; dsimp [cmp]
-    cases PosNum.cmp b a <;> dsimp <;> [simp; simp (config := { contextual := true }); simp [GT.gt]]
+    cases PosNum.cmp b a <;> dsimp <;> [simp; simp +contextual; simp [GT.gt]]
   | pos _, 0 => PosNum.cast_pos _
   | pos _, neg _ => lt_trans (neg_lt_zero.2 <| PosNum.cast_pos _) (PosNum.cast_pos _)
   | 0, neg _ => neg_lt_zero.2 <| PosNum.cast_pos _
@@ -1356,15 +1352,9 @@ theorem of_nat_toZNumNeg (n : ℕ) : Num.toZNumNeg n = -n := by rw [← of_nat_t
 theorem of_intCast [AddGroupWithOne α] (n : ℤ) : ((n : ZNum) : α) = n := by
   rw [← cast_to_int, to_of_int]
 
-@[deprecated (since := "2024-04-17")]
-alias of_int_cast := of_intCast
-
 @[simp, norm_cast]
 theorem of_natCast [AddGroupWithOne α] (n : ℕ) : ((n : ZNum) : α) = n := by
   rw [← Int.cast_natCast, of_intCast, Int.cast_natCast]
-
-@[deprecated (since := "2024-04-17")]
-alias of_nat_cast := of_natCast
 
 @[simp, norm_cast]
 theorem dvd_to_int (m n : ZNum) : (m : ℤ) ∣ n ↔ m ∣ n :=

@@ -98,14 +98,7 @@ noncomputable def projectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) := by
   refine Seminorm.ofSMulLE (fun x ↦ iInf (fun (p : lifts x) ↦ projectiveSeminormAux p.1)) ?_ ?_ ?_
   · refine le_antisymm ?_ ?_
     · refine ciInf_le_of_le (bddBelow_projectiveSemiNormAux (0 : ⨂[𝕜] i, E i)) ⟨0, lifts_zero⟩ ?_
-      simp only [projectiveSeminormAux, Function.comp_apply]
-      rw [List.sum_eq_zero]
-      intro _
-      simp only [List.mem_map, Prod.exists, forall_exists_index, and_imp]
-      intro _ _ hxm
-      rw [← FreeAddMonoid.ofList_nil] at hxm
-      exfalso
-      exact List.not_mem_nil _ hxm
+      rfl
     · letI : Nonempty (lifts 0) := ⟨0, lifts_zero (R := 𝕜) (s := E)⟩
       exact le_ciInf (fun p ↦ projectiveSeminormAux_nonneg p.1)
   · intro x y

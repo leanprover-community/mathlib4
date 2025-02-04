@@ -3,6 +3,7 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Sophie Morel
 -/
+import Mathlib.Data.Fintype.Quotient
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.Multilinear.Basic
 
@@ -95,14 +96,15 @@ def dfinsuppFamily
         push_neg at h
         refine ⟨fun i _ => p i, fun i => (s i).prop _ |>.resolve_right ?_, rfl⟩
         exact mt ((f p).map_coord_zero (m := fun i => x i _) i) h⟩}
-  map_add' {dec} m i x y := DFinsupp.ext fun p => by
+  map_update_add' {dec} m i x y := DFinsupp.ext fun p => by
     cases Subsingleton.elim dec (by infer_instance)
     dsimp
-    simp_rw [Function.apply_update (fun i m => m (p i)) m, DFinsupp.add_apply, (f p).map_add]
-  map_smul' {dec} m i c x := DFinsupp.ext fun p => by
+    simp_rw [Function.apply_update (fun i m => m (p i)) m, DFinsupp.add_apply, (f p).map_update_add]
+  map_update_smul' {dec} m i c x := DFinsupp.ext fun p => by
     cases Subsingleton.elim dec (by infer_instance)
     dsimp
-    simp_rw [Function.apply_update (fun i m => m (p i)) m, DFinsupp.smul_apply, (f p).map_smul]
+    simp_rw [Function.apply_update (fun i m => m (p i)) m, DFinsupp.smul_apply,
+      (f p).map_update_smul]
 
 theorem support_dfinsuppFamily_subset
     [∀ i, DecidableEq (κ i)]
@@ -132,6 +134,23 @@ theorem dfinsuppFamily_single [∀ i, DecidableEq (κ i)]
     obtain ⟨i, hpqi⟩ := hpq
     apply (f q).map_coord_zero i
     simp_rw [DFinsupp.single_eq_of_ne hpqi]
+
+/-- When only one member of the family of multilinear maps is nonzero, the result consists only of
+the component from that member. -/
+@[simp]
+theorem dfinsuppFamily_single_left_apply [∀ i, DecidableEq (κ i)]
+    (p : Π i, κ i) (f : MultilinearMap R (fun i ↦ M i (p i)) (N p)) (x : Π i, Π₀ j, M i j) :
+    dfinsuppFamily (Pi.single p f) x = DFinsupp.single p (f fun i => x _ (p i)) := by
+  ext p'
+  obtain rfl | hp := eq_or_ne p p'
+  · simp
+  · simp [hp]
+
+theorem dfinsuppFamily_single_left [∀ i, DecidableEq (κ i)]
+    (p : Π i, κ i) (f : MultilinearMap R (fun i ↦ M i (p i)) (N p)) :
+    dfinsuppFamily (Pi.single p f) =
+      (DFinsupp.lsingle p).compMultilinearMap (f.compLinearMap fun i => DFinsupp.lapply (p i)) :=
+  ext <| dfinsuppFamily_single_left_apply _ _
 
 @[simp]
 theorem dfinsuppFamily_compLinearMap_lsingle [∀ i, DecidableEq (κ i)]

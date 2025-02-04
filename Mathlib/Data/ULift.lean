@@ -46,9 +46,7 @@ theorem up_surjective : Surjective (@up α) :=
 theorem up_bijective : Bijective (@up α) :=
   Equiv.plift.symm.bijective
 
-@[simp]
-theorem up_inj {x y : α} : up x = up y ↔ x = y :=
-  up_injective.eq_iff
+theorem up_inj {x y : α} : up x = up y ↔ x = y := by simp
 
 theorem down_surjective : Surjective (@down α) :=
   Equiv.plift.surjective
@@ -103,9 +101,7 @@ theorem up_surjective : Surjective (@up α) :=
 theorem up_bijective : Bijective (@up α) :=
   Equiv.ulift.symm.bijective
 
-@[simp]
-theorem up_inj {x y : α} : up x = up y ↔ x = y :=
-  up_injective.eq_iff
+theorem up_inj {x y : α} : up x = up y ↔ x = y := by simp
 
 theorem down_surjective : Surjective (@down α) :=
   Equiv.ulift.surjective

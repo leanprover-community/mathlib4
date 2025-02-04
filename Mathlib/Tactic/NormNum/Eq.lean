@@ -11,14 +11,6 @@ import Mathlib.Tactic.NormNum.Inv
 
 variable {α : Type*}
 
-#adaptation_note
-/--
-Since https://github.com/leanprover/lean4/pull/5338,
-the unused variable linter can not see usages of variables in
-`haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives.
--/
-set_option linter.unusedVariables false
-
 open Lean Meta Qq
 
 namespace Mathlib.Meta.NormNum
@@ -42,6 +34,7 @@ theorem isRat_eq_false [Ring α] [CharZero α] : {a b : α} → {na nb : ℤ} �
   | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
     rw [Rat.invOf_denom_swap]; exact mod_cast of_decide_eq_false h
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a = b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ = _] def evalEq : NormNumExt where eval {v β} e := do

@@ -143,6 +143,22 @@ section Preorder
 
 variable [Preorder α]
 
+@[to_additive]
+lemma mul_left_mono [MulLeftMono α] {a : α} : Monotone (a * ·) :=
+  fun _ _ h ↦ mul_le_mul_left' h _
+
+@[to_additive]
+lemma mul_right_mono [MulRightMono α] {a : α} : Monotone (· * a) :=
+  fun _ _ h ↦ mul_le_mul_right' h _
+
+@[to_additive]
+lemma mul_left_strictMono [MulLeftStrictMono α] {a : α} : StrictMono (a * ·) :=
+  fun _ _ h ↦ mul_lt_mul_left' h _
+
+@[to_additive]
+lemma mul_right_strictMono [MulRightStrictMono α] {a : α} : StrictMono (· * a) :=
+  fun _ _ h ↦ mul_lt_mul_right' h _
+
 @[to_additive (attr := gcongr)]
 theorem mul_lt_mul_of_lt_of_lt [MulLeftStrictMono α]
     [MulRightStrictMono α]
@@ -275,10 +291,44 @@ theorem mul_right_cancel'' [MulRightReflectLE α] {a b c : α}
   haveI := mulRightMono_of_mulRightStrictMono α
   rw [le_antisymm_iff, eq_true (mul_le_mul' hac hbd), true_and, mul_le_mul_iff_of_ge hac hbd]
 
+@[to_additive]
+lemma mul_left_inj_of_comparable [MulRightStrictMono α] {a b c : α} (h : b ≤ c ∨ c ≤ b) :
+    c * a = b * a ↔ c = b := by
+  refine ⟨fun h' => ?_, (· ▸ rfl)⟩
+  contrapose h'
+  obtain h | h := h
+  · exact mul_lt_mul_right' (h.lt_of_ne' h') a |>.ne'
+  · exact mul_lt_mul_right' (h.lt_of_ne h') a |>.ne
+
+@[to_additive]
+lemma mul_right_inj_of_comparable [MulLeftStrictMono α] {a b c : α} (h : b ≤ c ∨ c ≤ b) :
+    a * c = a * b ↔ c = b := by
+  refine ⟨fun h' => ?_, (· ▸ rfl)⟩
+  contrapose h'
+  obtain h | h := h
+  · exact mul_lt_mul_left' (h.lt_of_ne' h') a |>.ne'
+  · exact mul_lt_mul_left' (h.lt_of_ne h') a |>.ne
+
 end PartialOrder
 
 section LinearOrder
 variable [LinearOrder α] {a b c d : α}
+
+@[to_additive]
+lemma mul_max [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
+    a * max b c = max (a * b) (a * c) := mul_left_mono.map_max
+
+@[to_additive]
+lemma max_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
+    max a b * c = max (a * c) (b * c) := mul_right_mono.map_max
+
+@[to_additive]
+lemma mul_min [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
+    a * min b c = min (a * b) (a * c) := mul_left_mono.map_min
+
+@[to_additive]
+lemma min_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
+    min a b * c = min (a * c) (b * c) := mul_right_mono.map_min
 
 @[to_additive] lemma min_lt_max_of_mul_lt_mul
     [MulLeftMono α] [MulRightMono α]
@@ -300,6 +350,16 @@ variable [LinearOrder α] {a b c d : α}
     (h : a * b ≤ c * d) : min a b ≤ max c d :=
   haveI := mulRightMono_of_mulRightStrictMono α
   Left.min_le_max_of_mul_le_mul h
+
+/-- Not an instance, to avoid loops with `IsLeftCancelMul.mulLeftStrictMono_of_mulLeftMono`. -/
+@[to_additive]
+theorem MulLeftStrictMono.toIsLeftCancelMul [MulLeftStrictMono α] : IsLeftCancelMul α where
+  mul_left_cancel _ _ _ h := mul_left_strictMono.injective h
+
+/-- Not an instance, to avoid loops with `IsRightCancelMul.mulRightStrictMono_of_mulRightMono`. -/
+@[to_additive]
+theorem MulRightStrictMono.toIsRightCancelMul [MulRightStrictMono α] : IsRightCancelMul α where
+  mul_right_cancel _ _ _ h := mul_right_strictMono.injective h
 
 end LinearOrder
 
@@ -965,9 +1025,6 @@ theorem mul_eq_one_iff_of_one_le [MulLeftMono α]
       And.intro ‹a = 1› ‹b = 1›)
     (by rintro ⟨rfl, rfl⟩; rw [mul_one])
 
-@[deprecated (since := "2024-07-24")] alias mul_eq_one_iff' := mul_eq_one_iff_of_one_le
-@[deprecated (since := "2024-07-24")] alias add_eq_zero_iff' := add_eq_zero_iff_of_nonneg
-
 section Left
 
 variable [MulLeftMono α] {a b : α}
@@ -1055,38 +1112,36 @@ section Mono
 variable [Mul α] [Preorder α] [Preorder β] {f g : β → α} {s : Set β}
 
 @[to_additive const_add]
-theorem Monotone.const_mul' [MulLeftMono α] (hf : Monotone f) (a : α) :
-    Monotone fun x => a * f x := fun _ _ h => mul_le_mul_left' (hf h) a
+theorem Monotone.const_mul' [MulLeftMono α] (hf : Monotone f) (a : α) : Monotone fun x ↦ a * f x :=
+  mul_left_mono.comp hf
 
 @[to_additive const_add]
 theorem MonotoneOn.const_mul' [MulLeftMono α] (hf : MonotoneOn f s) (a : α) :
-    MonotoneOn (fun x => a * f x) s := fun _ hx _ hy h => mul_le_mul_left' (hf hx hy h) a
+    MonotoneOn (fun x => a * f x) s := mul_left_mono.comp_monotoneOn hf
 
 @[to_additive const_add]
-theorem Antitone.const_mul' [MulLeftMono α] (hf : Antitone f) (a : α) :
-    Antitone fun x => a * f x := fun _ _ h => mul_le_mul_left' (hf h) a
+theorem Antitone.const_mul' [MulLeftMono α] (hf : Antitone f) (a : α) : Antitone fun x ↦ a * f x :=
+  mul_left_mono.comp_antitone hf
 
 @[to_additive const_add]
 theorem AntitoneOn.const_mul' [MulLeftMono α] (hf : AntitoneOn f s) (a : α) :
-    AntitoneOn (fun x => a * f x) s := fun _ hx _ hy h => mul_le_mul_left' (hf hx hy h) a
+    AntitoneOn (fun x => a * f x) s := mul_left_mono.comp_antitoneOn hf
 
 @[to_additive add_const]
 theorem Monotone.mul_const' [MulRightMono α] (hf : Monotone f) (a : α) :
-    Monotone fun x => f x * a := fun _ _ h => mul_le_mul_right' (hf h) a
+    Monotone fun x => f x * a := mul_right_mono.comp hf
 
 @[to_additive add_const]
-theorem MonotoneOn.mul_const' [MulRightMono α] (hf : MonotoneOn f s)
-    (a : α) :
-    MonotoneOn (fun x => f x * a) s := fun _ hx _ hy h => mul_le_mul_right' (hf hx hy h) a
+theorem MonotoneOn.mul_const' [MulRightMono α] (hf : MonotoneOn f s) (a : α) :
+    MonotoneOn (fun x => f x * a) s := mul_right_mono.comp_monotoneOn hf
 
 @[to_additive add_const]
-theorem Antitone.mul_const' [MulRightMono α] (hf : Antitone f) (a : α) :
-    Antitone fun x => f x * a := fun _ _ h => mul_le_mul_right' (hf h) a
+theorem Antitone.mul_const' [MulRightMono α] (hf : Antitone f) (a : α) : Antitone fun x ↦ f x * a :=
+  mul_right_mono.comp_antitone hf
 
 @[to_additive add_const]
-theorem AntitoneOn.mul_const' [MulRightMono α] (hf : AntitoneOn f s)
-    (a : α) :
-    AntitoneOn (fun x => f x * a) s := fun _ hx _ hy h => mul_le_mul_right' (hf hx hy h) a
+theorem AntitoneOn.mul_const' [MulRightMono α] (hf : AntitoneOn f s) (a : α) :
+    AntitoneOn (fun x => f x * a) s := mul_right_mono.comp_antitoneOn hf
 
 /-- The product of two monotone functions is monotone. -/
 @[to_additive add "The sum of two monotone functions is monotone."]

@@ -3,7 +3,6 @@ Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Data.Nat.Defs
 import Mathlib.Logic.IsEmpty
 import Mathlib.Order.Basic
 import Mathlib.Tactic.MkIffOfInductiveProp
@@ -12,13 +11,11 @@ import Batteries.WF
 /-!
 # Unbundled relation classes
 
-In this file we prove some properties of `Is*` classes defined in `Order.Defs`. The main
+In this file we prove some properties of `Is*` classes defined in `Mathlib.Order.Defs`. The main
 difference between these classes and the usual order classes (`Preorder` etc) is that usual classes
 extend `LE` and/or `LT` while these classes take a relation as an explicit argument.
 
 -/
-
-set_option linter.deprecated false
 
 universe u v
 
@@ -89,10 +86,6 @@ theorem IsStrictOrder.swap (r) [IsStrictOrder α r] : IsStrictOrder α (swap r) 
 theorem IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap r) :=
   { @IsPreorder.swap α r _, @IsAntisymm.swap α r _ with }
 
-@[deprecated (since := "2024-07-30")]
-theorem IsLinearOrder.swap (r) [IsLinearOrder α r] : IsLinearOrder α (swap r) :=
-  { @IsPartialOrder.swap α r _, @IsTotal.swap α r _ with }
-
 protected theorem IsAsymm.isAntisymm (r) [IsAsymm α r] : IsAntisymm α r :=
   ⟨fun _ _ h₁ h₂ => (_root_.asymm h₁ h₂).elim⟩
 
@@ -128,19 +121,27 @@ theorem eq_empty_relation (r) [IsIrrefl α r] [Subsingleton α] : r = EmptyRelat
 instance : IsIrrefl α EmptyRelation :=
   ⟨fun _ => id⟩
 
-theorem trans_trichotomous_left [IsTrans α r] [IsTrichotomous α r] {a b c : α} :
-    ¬r b a → r b c → r a c := by
-  intro h₁ h₂
+theorem trans_trichotomous_left [IsTrans α r] [IsTrichotomous α r] {a b c : α}
+    (h₁ : ¬r b a) (h₂ : r b c) : r a c := by
   rcases trichotomous_of r a b with (h₃ | rfl | h₃)
   exacts [_root_.trans h₃ h₂, h₂, absurd h₃ h₁]
 
-theorem trans_trichotomous_right [IsTrans α r] [IsTrichotomous α r] {a b c : α} :
-    r a b → ¬r c b → r a c := by
-  intro h₁ h₂
+theorem trans_trichotomous_right [IsTrans α r] [IsTrichotomous α r] {a b c : α}
+    (h₁ : r a b) (h₂ : ¬r c b) : r a c := by
   rcases trichotomous_of r b c with (h₃ | rfl | h₃)
   exacts [_root_.trans h₁ h₃, h₁, absurd h₃ h₂]
 
 theorem transitive_of_trans (r : α → α → Prop) [IsTrans α r] : Transitive r := IsTrans.trans
+
+theorem rel_congr_left [IsSymm α r] [IsTrans α r] {a b c : α} (h : r a b) : r a c ↔ r b c :=
+  ⟨trans_of r (symm_of r h), trans_of r h⟩
+
+theorem rel_congr_right [IsSymm α r] [IsTrans α r] {a b c : α} (h : r b c) : r a b ↔ r a c :=
+  ⟨(trans_of r · h), (trans_of r · (symm_of r h))⟩
+
+theorem rel_congr [IsSymm α r] [IsTrans α r] {a b c d : α} (h₁ : r a b) (h₂ : r c d) :
+    r a c ↔ r b d := by
+  rw [rel_congr_left h₁, rel_congr_right h₂]
 
 /-- In a trichotomous irreflexive order, every element is determined by the set of predecessors. -/
 theorem extensional_of_trichotomous_of_irrefl (r : α → α → Prop) [IsTrichotomous α r] [IsIrrefl α r]
@@ -172,11 +173,10 @@ abbrev partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
 /-- Construct a linear order from an `IsStrictTotalOrder` relation.
 
 See note [reducible non-instances]. -/
-abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [∀ x y, Decidable ¬r x y] : LinearOrder α :=
-  let hD : DecidableRel (fun x y => x = y ∨ r x y) := fun x y =>
-      decidable_of_iff (¬r y x)
-        ⟨fun h => ((trichotomous_of r y x).resolve_left h).imp Eq.symm id, fun h =>
-          h.elim (fun h => h ▸ irrefl_of _ _) (asymm_of r)⟩
+abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [DecidableRel r] : LinearOrder α :=
+  let hD : DecidableRel (fun x y => x = y ∨ r x y) := fun x y => decidable_of_iff (¬r y x)
+    ⟨fun h => ((trichotomous_of r y x).resolve_left h).imp Eq.symm id, fun h =>
+      h.elim (fun h => h ▸ irrefl_of _ _) (asymm_of r)⟩
   { __ := partialOrderOfSO r
     le_total := fun x y =>
       match y, trichotomous_of r x y with
@@ -217,12 +217,6 @@ instance (priority := 100) isStrictOrderConnected_of_isStrictTotalOrder [IsStric
   ⟨fun _ _ _ h ↦ (trichotomous _ _).imp_right
     fun o ↦ o.elim (fun e ↦ e ▸ h) fun h' ↦ _root_.trans h' h⟩
 
--- see Note [lower instance priority]
-@[deprecated (since := "2024-07-30")]
-instance (priority := 100) isStrictTotalOrder_of_isStrictTotalOrder [IsStrictTotalOrder α r] :
-    IsStrictWeakOrder α r :=
-  { isStrictWeakOrder_of_isOrderConnected with }
-
 /-! ### Well-order -/
 
 
@@ -238,6 +232,11 @@ instance WellFoundedRelation.isWellFounded [h : WellFoundedRelation α] :
 theorem WellFoundedRelation.asymmetric {α : Sort*} [WellFoundedRelation α] {a b : α} :
     WellFoundedRelation.rel a b → ¬ WellFoundedRelation.rel b a :=
   fun hab hba => WellFoundedRelation.asymmetric hba hab
+termination_by a
+
+theorem WellFoundedRelation.asymmetric₃ {α : Sort*} [WellFoundedRelation α] {a b c : α} :
+    WellFoundedRelation.rel a b → WellFoundedRelation.rel b c → ¬ WellFoundedRelation.rel c a :=
+  fun hab hbc hca => WellFoundedRelation.asymmetric₃ hca hab hbc
 termination_by a
 
 lemma WellFounded.prod_lex {ra : α → α → Prop} {rb : β → β → Prop} (ha : WellFounded ra)
@@ -263,10 +262,6 @@ theorem WellFounded.psigma_skipLeft (α : Type u) {β : Type v} {s : β → β �
     (hb : WellFounded s) : WellFounded (SkipLeft α s) :=
   psigma_revLex emptyWf.wf hb
 
-@[deprecated (since := "2024-07-24")] alias PSigma.lex_wf := WellFounded.psigma_lex
-@[deprecated (since := "2024-07-24")] alias PSigma.revLex_wf := WellFounded.psigma_revLex
-@[deprecated (since := "2024-07-24")] alias PSigma.skipLeft_wf := WellFounded.psigma_skipLeft
-
 end PSigma
 
 namespace IsWellFounded
@@ -274,8 +269,8 @@ namespace IsWellFounded
 variable (r) [IsWellFounded α r]
 
 /-- Induction on a well-founded relation. -/
-theorem induction {C : α → Prop} : ∀ a, (∀ x, (∀ y, r y x → C y) → C x) → C a :=
-  wf.induction
+theorem induction {C : α → Prop} (a : α) (ind : ∀ x, (∀ y, r y x → C y) → C x) : C a :=
+  wf.induction _ ind
 
 /-- All values are accessible under the well-founded relation. -/
 theorem apply : ∀ a, Acc r a :=
@@ -300,6 +295,10 @@ end IsWellFounded
 theorem WellFounded.asymmetric {α : Sort*} {r : α → α → Prop} (h : WellFounded r) (a b) :
     r a b → ¬r b a :=
   @WellFoundedRelation.asymmetric _ ⟨_, h⟩ _ _
+
+theorem WellFounded.asymmetric₃ {α : Sort*} {r : α → α → Prop} (h : WellFounded r) (a b c) :
+    r a b → r b c → ¬r c a :=
+  @WellFoundedRelation.asymmetric₃ _ ⟨_, h⟩ _ _ _
 
 -- see Note [lower instance priority]
 instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsAsymm α r :=
@@ -366,8 +365,8 @@ namespace WellFoundedLT
 variable [LT α] [WellFoundedLT α]
 
 /-- Inducts on a well-founded `<` relation. -/
-theorem induction {C : α → Prop} : ∀ a, (∀ x, (∀ y, y < x → C y) → C x) → C a :=
-  IsWellFounded.induction _
+theorem induction {C : α → Prop} (a : α) (ind : ∀ x, (∀ y, y < x → C y) → C x) : C a :=
+  IsWellFounded.induction _ _ ind
 
 /-- All values are accessible under the well-founded `<`. -/
 theorem apply : ∀ a : α, Acc (· < ·) a :=
@@ -394,8 +393,8 @@ namespace WellFoundedGT
 variable [LT α] [WellFoundedGT α]
 
 /-- Inducts on a well-founded `>` relation. -/
-theorem induction {C : α → Prop} : ∀ a, (∀ x, (∀ y, x < y → C y) → C x) → C a :=
-  IsWellFounded.induction _
+theorem induction {C : α → Prop} (a : α) (ind : ∀ x, (∀ y, x < y → C y) → C x) : C a :=
+  IsWellFounded.induction _ _ ind
 
 /-- All values are accessible under the well-founded `>`. -/
 theorem apply : ∀ a : α, Acc (· > ·) a :=
@@ -417,9 +416,9 @@ def toWellFoundedRelation : WellFoundedRelation α :=
 
 end WellFoundedGT
 
+open Classical in
 /-- Construct a decidable linear order from a well-founded linear order. -/
 noncomputable def IsWellOrder.linearOrder (r : α → α → Prop) [IsWellOrder α r] : LinearOrder α :=
-  letI := fun x y => Classical.dec ¬r x y
   linearOrderOfSTO r
 
 /-- Derive a `WellFoundedRelation` instance from an `IsWellOrder` instance. -/
@@ -443,7 +442,8 @@ instance (priority := 100) [IsEmpty α] (r : α → α → Prop) : IsWellOrder �
   trans := isEmptyElim
   wf := wellFounded_of_isEmpty r
 
-instance [IsWellFounded α r] [IsWellFounded β s] : IsWellFounded (α × β) (Prod.Lex r s) :=
+instance Prod.Lex.instIsWellFounded [IsWellFounded α r] [IsWellFounded β s] :
+    IsWellFounded (α × β) (Prod.Lex r s) :=
   ⟨IsWellFounded.wf.prod_lex IsWellFounded.wf⟩
 
 instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Lex r s) where
@@ -471,23 +471,17 @@ theorem Subrelation.isWellFounded (r : α → α → Prop) [IsWellFounded α r] 
     (h : Subrelation s r) : IsWellFounded α s :=
   ⟨h.wf IsWellFounded.wf⟩
 
-instance Prod.wellFoundedLT [PartialOrder α] [WellFoundedLT α] [Preorder β] [WellFoundedLT β] :
-    WellFoundedLT (α × β) where
-  wf := by
-    refine @Subrelation.wf (α × β) (Prod.Lex (· < ·) (· < ·)) (· < ·) ?_ IsWellFounded.wf
-    rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ w
-    simp only [Prod.mk_lt_mk] at w
-    rcases eq_or_ne a₁ a₂ with rfl | ha
-    · right
-      simpa using w
-    · left
-      rcases w with ⟨a_lt, _⟩ | ⟨a_le, _⟩
-      · assumption
-      · exact Ne.lt_of_le ha a_le
+/-- See `Prod.wellFoundedLT` for a version that only requires `Preorder α`. -/
+theorem Prod.wellFoundedLT' [PartialOrder α] [WellFoundedLT α] [Preorder β] [WellFoundedLT β] :
+    WellFoundedLT (α × β) :=
+  Subrelation.isWellFounded (Prod.Lex (· < ·) (· < ·))
+    fun {x y} h ↦ (Prod.lt_iff.mp h).elim (fun h ↦ .left _ _ h.1)
+    fun h ↦ h.1.lt_or_eq.elim (.left _ _) <| by cases x; cases y; rintro rfl; exact .right _ h.2
 
-instance Prod.wellFoundedGT [PartialOrder α] [WellFoundedGT α] [Preorder β] [WellFoundedGT β] :
+/-- See `Prod.wellFoundedGT` for a version that only requires `Preorder α`. -/
+theorem Prod.wellFoundedGT' [PartialOrder α] [WellFoundedGT α] [Preorder β] [WellFoundedGT β] :
     WellFoundedGT (α × β) :=
-  @Prod.wellFoundedLT αᵒᵈ βᵒᵈ _ _ _ _
+  @Prod.wellFoundedLT' αᵒᵈ βᵒᵈ _ _ _ _
 
 namespace Set
 
@@ -792,9 +786,6 @@ instance [LinearOrder α] : IsStrictTotalOrder α (· < ·) where
 
 instance [LinearOrder α] : IsOrderConnected α (· < ·) := by infer_instance
 
-@[deprecated (since := "2024-07-30")]
-instance [LinearOrder α] : IsStrictWeakOrder α (· < ·) := by infer_instance
-
 theorem transitive_le [Preorder α] : Transitive (@LE.le α _) :=
   transitive_of_trans _
 
@@ -813,8 +804,8 @@ instance OrderDual.isTotal_le [LE α] [h : IsTotal α (· ≤ ·)] : IsTotal α�
 instance : WellFoundedLT ℕ :=
   ⟨Nat.lt_wfRel.wf⟩
 
-instance Nat.lt.isWellOrder : IsWellOrder ℕ (· < ·) where
+instance (priority := 100) isWellOrder_lt [LinearOrder α] [WellFoundedLT α] :
+    IsWellOrder α (· < ·) where
 
-instance [LinearOrder α] [h : IsWellOrder α (· < ·)] : IsWellOrder αᵒᵈ (· > ·) := h
-
-instance [LinearOrder α] [h : IsWellOrder α (· > ·)] : IsWellOrder αᵒᵈ (· < ·) := h
+instance (priority := 100) isWellOrder_gt [LinearOrder α] [WellFoundedGT α] :
+    IsWellOrder α (· > ·) where
