@@ -487,46 +487,19 @@ theorem bot_mul (S : AddSubmonoid R) : ⊥ * S = ⊥ :=
   eq_bot_iff.2 <| mul_le.2 fun m hm n _ => by
     rw [AddSubmonoid.mem_bot] at hm ⊢; rw [hm, zero_mul]
 
-variable {M N P Q : AddSubmonoid R}
-
 @[mono]
-theorem mul_le_mul (hmp : M ≤ P) (hnq : N ≤ Q) : M * N ≤ P * Q :=
+theorem mul_le_mul {M N P Q : AddSubmonoid R} (hmp : M ≤ P) (hnq : N ≤ Q) : M * N ≤ P * Q :=
   mul_le.2 fun _m hm _n hn => mul_mem_mul (hmp hm) (hnq hn)
 
-theorem mul_le_mul_left (h : M ≤ N) : M * P ≤ N * P :=
+theorem mul_le_mul_left {M N P : AddSubmonoid R} (h : M ≤ N) : M * P ≤ N * P :=
   mul_le_mul h (le_refl P)
 
-theorem mul_le_mul_right (h : N ≤ P) : M * N ≤ M * P :=
+theorem mul_le_mul_right {M N P : AddSubmonoid R} (h : N ≤ P) : M * N ≤ M * P :=
   mul_le_mul (le_refl M) h
 
-theorem mul_subset_mul : (↑M : Set R) * (↑N : Set R) ⊆ (↑(M * N) : Set R) :=
+theorem mul_subset_mul {M N : AddSubmonoid R} :
+    (↑M : Set R) * (↑N : Set R) ⊆ (↑(M * N) : Set R) :=
   mul_subset_iff.2 fun _i hi _j hj ↦ mul_mem_mul hi hj
-
-theorem mul_sup : M * (N ⊔ P) = M * N ⊔ M * P :=
-  le_antisymm (mul_le.mpr fun m hm np hnp ↦ by
-    obtain ⟨n, hn, p, hp, rfl⟩ := mem_sup.mp hnp
-    rw [left_distrib]; exact add_mem_sup (mul_mem_mul hm hn) <| mul_mem_mul hm hp)
-    (sup_le (mul_le_mul_right le_sup_left) <| mul_le_mul_right le_sup_right)
-
-theorem sup_mul : (M ⊔ N) * P = M * P ⊔ N * P :=
-  le_antisymm (mul_le.mpr fun mn hmn p hp ↦ by
-    obtain ⟨m, hm, n, hn, rfl⟩ := mem_sup.mp hmn
-    rw [right_distrib]; exact add_mem_sup (mul_mem_mul hm hp) <| mul_mem_mul hn hp)
-    (sup_le (mul_le_mul_left le_sup_left) <| mul_le_mul_left le_sup_right)
-
-variable {ι : Sort*}
-
-theorem iSup_mul (S : ι → AddSubmonoid R) (T : AddSubmonoid R) : (⨆ i, S i) * T = ⨆ i, S i * T :=
-  le_antisymm (mul_le.mpr fun s hs t ht ↦ iSup_induction _ (C := (· * t ∈ _)) hs
-      (fun i s hs ↦ mem_iSup_of_mem i <| mul_mem_mul hs ht) (by simp_rw [zero_mul]; apply zero_mem)
-      fun _ _ ↦ by simp_rw [right_distrib]; apply add_mem) <|
-    iSup_le fun i ↦ mul_le_mul_left (le_iSup _ i)
-
-theorem mul_iSup (T : AddSubmonoid R) (S : ι → AddSubmonoid R) : (T * ⨆ i, S i) = ⨆ i, T * S i :=
-  le_antisymm (mul_le.mpr fun t ht s hs ↦ iSup_induction _ (C := (t * · ∈ _)) hs
-      (fun i s hs ↦ mem_iSup_of_mem i <| mul_mem_mul ht hs) (by simp_rw [mul_zero]; apply zero_mem)
-      fun _ _ ↦ by simp_rw [left_distrib]; apply add_mem) <|
-    iSup_le fun i ↦ mul_le_mul_right (le_iSup _ i)
 
 end NonUnitalNonAssocSemiring
 
@@ -614,33 +587,6 @@ theorem pow_subset_pow {s : AddSubmonoid R} {n : ℕ} : (↑s : Set R) ^ n ⊆ �
   (pow_eq_closure_pow_set s n).symm ▸ subset_closure
 
 end Semiring
-
-section SMul
-
-variable [AddMonoid R] [DistribSMul R A]
-
-instance : SMul (AddSubmonoid R) (AddSubmonoid A) where
-  smul M N := ⨆ s : M, N.map (DistribSMul.toAddMonoidHom A s.1)
-
-variable {M M' : AddSubmonoid R} {N P : AddSubmonoid A} {m : R} {n : A}
-
-theorem smul_mem_smul (hm : m ∈ M) (hn : n ∈ N) : m • n ∈ M • N :=
-  (le_iSup _ ⟨m, hm⟩ : _ ≤ M • N) ⟨n, hn, by rfl⟩
-
-theorem smul_le : M • N ≤ P ↔ ∀ m ∈ M, ∀ n ∈ N, m • n ∈ P :=
-  ⟨fun H _m hm _n hn => H <| smul_mem_smul hm hn, fun H =>
-    iSup_le fun ⟨m, hm⟩ => map_le_iff_le_comap.2 fun n hn => H m hm n hn⟩
-
-@[elab_as_elim]
-protected theorem smul_induction_on {C : A → Prop} {a : A} (ha : a ∈ M • N)
-    (hm : ∀ m ∈ M, ∀ n ∈ N, C (m • n)) (hadd : ∀ x y, C x → C y → C (x + y)) : C a :=
-  (@smul_le _ _ _ _ _ _ _ ⟨⟨setOf C, hadd _ _⟩, by
-    simpa only [smul_zero] using hm _ (zero_mem _) _ (zero_mem _)⟩).2 hm ha
-
-theorem smul_le_smul (h : M ≤ M') (hnp : N ≤ P) : M • N ≤ M' • P :=
-  smul_le.2 fun _m hm _n hn => smul_mem_smul (h hm) (hnp hn)
-
-end SMul
 
 end AddSubmonoid
 
