@@ -217,6 +217,9 @@ namespace Matroid
 
 variable {α : Type*} {M : Matroid α}
 
+instance (M : Matroid α) : Nonempty {B // M.Base B} :=
+  nonempty_subtype.2 M.exists_base
+
 /-- Typeclass for a matroid having finite ground set. Just a wrapper for `M.E.Finite`-/
 @[mk_iff] protected class Finite (M : Matroid α) : Prop where
   /-- The ground set is finite -/
@@ -262,6 +265,12 @@ instance finiteRk_of_finite (M : Matroid α) [M.Finite] : FiniteRk M :=
 @[mk_iff] class RkPos (M : Matroid α) : Prop where
   /-- The empty set isn't a base -/
   empty_not_base : ¬M.Base ∅
+
+instance rkPos_nonempty {M : Matroid α} [M.RkPos] : M.Nonempty := by
+  obtain ⟨B, hB⟩ := M.exists_base
+  obtain rfl | ⟨e, heB⟩ := B.eq_empty_or_nonempty
+  · exact False.elim <| RkPos.empty_not_base hB
+  exact ⟨e, M.subset_ground B hB heB ⟩
 
 @[deprecated (since := "2025-01-20")] alias rkPos_iff_empty_not_base := rkPos_iff
 
@@ -700,7 +709,7 @@ theorem Base.exists_insert_of_ssubset (hB : M.Base B) (hIB : I ⊂ B) (hB' : M.B
 
 theorem ext_iff_indep {M₁ M₂ : Matroid α} :
     M₁ = M₂ ↔ (M₁.E = M₂.E) ∧ ∀ ⦃I⦄, I ⊆ M₁.E → (M₁.Indep I ↔ M₂.Indep I) :=
-⟨fun h ↦ by (subst h; simp), fun h ↦ ext_indep h.1 h.2⟩
+  ⟨fun h ↦ by (subst h; simp), fun h ↦ ext_indep h.1 h.2⟩
 
 @[deprecated (since := "2024-12-25")] alias eq_iff_indep_iff_indep_forall := ext_iff_indep
 
