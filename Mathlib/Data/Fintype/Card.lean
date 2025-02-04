@@ -351,8 +351,8 @@ theorem Fintype.card_lex (α : Type*) [Fintype α] : Fintype.card (Lex α) = Fin
   Finset.card_map _
 
 @[simp]
-theorem Fintype.card_univ [Fintype α] {h : Fintype (Set.univ : Set α)} :
-    @Fintype.card (Set.univ : Set α) h = Fintype.card α := by
+theorem Fintype.card_setUniv [Fintype α] {_ : Fintype (Set.univ : Set α)} :
+    Fintype.card (Set.univ : Set α) = Fintype.card α := by
   apply Fintype.card_of_finset'
   simp
 

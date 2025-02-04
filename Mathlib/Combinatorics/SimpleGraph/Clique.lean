@@ -630,7 +630,7 @@ theorem cliqueFinset_eq_empty_iff : G.cliqueFinset n = ∅ ↔ G.CliqueFree n :=
 protected alias ⟨_, CliqueFree.cliqueFinset⟩ := cliqueFinset_eq_empty_iff
 
 theorem card_cliqueFinset_le : #(G.cliqueFinset n) ≤ (card α).choose n := by
-  rw [← Finset.card_univ, ← card_powersetCard]
+  rw [← card_univ, ← card_powersetCard]
   refine card_mono fun s => ?_
   simpa [mem_powersetCard_univ] using IsNClique.card_eq
 
