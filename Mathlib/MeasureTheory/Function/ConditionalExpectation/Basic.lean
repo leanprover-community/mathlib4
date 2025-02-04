@@ -69,7 +69,7 @@ conditional expectation, conditional expected value
 -/
 
 open TopologicalSpace MeasureTheory.Lp Filter
-open scoped Classical ENNReal Topology MeasureTheory
+open scoped ENNReal Topology MeasureTheory
 
 namespace MeasureTheory
   -- 𝕜 for ℝ or ℂ
@@ -80,6 +80,7 @@ variable {α β E 𝕜 : Type*} [RCLike 𝕜] {m m₀ : MeasurableSpace α} {μ 
 section NormedAddCommGroup
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
+open scoped Classical in
 variable (m) in
 /-- Conditional expectation of a function. It is defined as 0 if any one of the following conditions
 is true:
@@ -97,7 +98,7 @@ noncomputable irreducible_def condExp (μ : Measure[m₀] α) (f : α → E) : �
 @[deprecated (since := "2025-01-21")] alias condexp := condExp
 
 -- We define notation `μ[f|m]` for the conditional expectation of `f` with respect to `m`.
-scoped notation μ "[" f "|" m "]" => MeasureTheory.condExp m μ f
+@[inherit_doc] scoped notation μ "[" f "|" m "]" => MeasureTheory.condExp m μ f
 
 theorem condExp_of_not_le (hm_not : ¬m ≤ m₀) : μ[f|m] = 0 := by rw [condExp, dif_neg hm_not]
 
@@ -108,6 +109,7 @@ theorem condExp_of_not_sigmaFinite (hm : m ≤ m₀) (hμm_not : ¬SigmaFinite (
 
 @[deprecated (since := "2025-01-21")] alias condexp_of_not_sigmaFinite := condExp_of_not_sigmaFinite
 
+open scoped Classical in
 theorem condExp_of_sigmaFinite (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] :
     μ[f|m] =
       if Integrable f μ then
@@ -229,8 +231,6 @@ theorem setIntegral_condExp (hm : m ≤ m₀) [SigmaFinite (μ.trim hm)] (hf : I
 
 @[deprecated (since := "2025-01-21")] alias setIntegral_condexp := setIntegral_condExp
 
-@[deprecated (since := "2024-04-17")] alias set_integral_condexp := setIntegral_condExp
-
 theorem integral_condExp (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] :
     ∫ x, (μ[f|m]) x ∂μ = ∫ x, f x ∂μ := by
   by_cases hf : Integrable f μ
@@ -264,12 +264,6 @@ theorem ae_eq_condExp_of_forall_setIntegral_eq (hm : m ≤ m₀) [SigmaFinite (�
 
 @[deprecated (since := "2025-01-21")]
 alias ae_eq_condexp_of_forall_setIntegral_eq := ae_eq_condExp_of_forall_setIntegral_eq
-
-@[deprecated (since := "2024-04-17")]
-alias ae_eq_condExp_of_forall_set_integral_eq := ae_eq_condExp_of_forall_setIntegral_eq
-
-@[deprecated (since := "2025-01-21")]
-alias ae_eq_condexp_of_forall_set_integral_eq := ae_eq_condExp_of_forall_set_integral_eq
 
 theorem condExp_bot' [hμ : NeZero μ] (f : α → E) :
     μ[f|⊥] = fun _ => (μ Set.univ).toReal⁻¹ • ∫ x, f x ∂μ := by
@@ -320,6 +314,7 @@ theorem condExp_add (hf : Integrable f μ) (hg : Integrable g μ) (m : Measurabl
 theorem condExp_finset_sum {ι : Type*} {s : Finset ι} {f : ι → α → E}
     (hf : ∀ i ∈ s, Integrable (f i) μ) (m : MeasurableSpace α) :
     μ[∑ i ∈ s, f i|m] =ᵐ[μ] ∑ i ∈ s, μ[f i|m] := by
+  classical
   induction' s using Finset.induction_on with i s his heq hf
   · rw [Finset.sum_empty, Finset.sum_empty, condExp_zero]
   · rw [Finset.sum_insert his, Finset.sum_insert his]

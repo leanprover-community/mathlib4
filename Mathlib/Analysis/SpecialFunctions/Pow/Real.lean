@@ -53,14 +53,8 @@ theorem rpow_intCast (x : ℝ) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
   simp only [rpow_def, ← Complex.ofReal_zpow, Complex.cpow_intCast, Complex.ofReal_intCast,
     Complex.ofReal_re]
 
-@[deprecated (since := "2024-04-17")]
-alias rpow_int_cast := rpow_intCast
-
 @[simp, norm_cast]
 theorem rpow_natCast (x : ℝ) (n : ℕ) : x ^ (n : ℝ) = x ^ n := by simpa using rpow_intCast x n
-
-@[deprecated (since := "2024-04-17")]
-alias rpow_nat_cast := rpow_natCast
 
 @[simp]
 theorem exp_one_rpow (x : ℝ) : exp 1 ^ x = exp x := by rw [← exp_mul, one_mul]
@@ -1102,14 +1096,6 @@ theorem isRat_rpow_neg {a b : ℝ} {nb : ℕ}
     (pb : IsInt b (Int.negOfNat nb)) (pe' : IsRat (a ^ (Int.negOfNat nb)) num den) :
     IsRat (a ^ b) num den := by
   rwa [pb.out, Real.rpow_intCast]
-
-#adaptation_note
-/--
-Since https://github.com/leanprover/lean4/pull/5338,
-the unused variable linter can not see usages of variables in
-`haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives.
--/
-set_option linter.unusedVariables false
 
 /-- Evaluates expressions of the form `a ^ b` when `a` and `b` are both reals. -/
 @[norm_num (_ : ℝ) ^ (_ : ℝ)]
