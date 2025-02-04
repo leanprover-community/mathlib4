@@ -53,16 +53,21 @@ noncomputable def Subring.centerEquivEndIdFunctorAux :
   map_mul' x y := by
     apply NatTrans.ext
     ext M (m : M)
-    simp
+    simp only [Functor.id_obj, ModuleCat.hom_smul, ModuleCat.hom_id, LinearMap.smul_apply,
+      LinearMap.id_coe, id_eq]
     erw [End.mul_def] -- why is this simp lemma not firing?
-    simp
+    simp only [NatTrans.comp_app, Functor.id_obj, ModuleCat.hom_comp, ModuleCat.hom_smul,
+      ModuleCat.hom_id, LinearMap.coe_comp, Function.comp_apply, LinearMap.smul_apply,
+      LinearMap.id_coe, id_eq, LinearMap.map_smul_of_tower]
     exact mul_smul x y m
   map_add' x y := by
     apply NatTrans.ext
     ext M (m : M)
-    simp
+    simp only [Functor.id_obj, ModuleCat.hom_smul, ModuleCat.hom_id, LinearMap.smul_apply,
+      LinearMap.id_coe, id_eq]
     rw [NatTrans.app_add] -- why is this simp lemma not firing?
-    simp
+    simp only [Functor.id_obj, ModuleCat.hom_add, ModuleCat.hom_smul, ModuleCat.hom_id,
+      LinearMap.add_apply, LinearMap.smul_apply, LinearMap.id_coe, id_eq]
     exact add_smul x y m
 
 /--
