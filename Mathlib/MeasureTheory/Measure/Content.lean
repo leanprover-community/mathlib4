@@ -78,11 +78,10 @@ instance : Inhabited (Content G) :=
       sup_disjoint' := by simp
       sup_le' := by simp }⟩
 
-/-- Although the `toFun` field of a content takes values in `ℝ≥0`, we register a coercion to
-functions taking values in `ℝ≥0∞` as most constructions below rely on taking iSups and iInfs, which
-is more convenient in a complete lattice, and aim at constructing a measure. -/
-instance : CoeFun (Content G) fun _ => Compacts G → ℝ≥0∞ :=
-  ⟨fun μ s => μ.toFun s⟩
+instance : FunLike (Content G) (Compacts G) ℝ≥0∞ where
+  coe μ s := μ.toFun s
+  coe_injective' := by
+    rintro ⟨μ, _, _⟩ ⟨v, _, _⟩ h; congr!; ext s : 1; exact ENNReal.coe_injective <| congr_fun h s
 
 namespace Content
 
