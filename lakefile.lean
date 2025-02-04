@@ -13,7 +13,7 @@ require "leanprover-community" / "aesop" @ git "master"
 require "leanprover-community" / "proofwidgets" @ git "v0.0.52-pre" -- ProofWidgets should always be pinned to a specific version
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
-require "leanprover-community" / "plausible" @ git "nightly-testing"
+require "leanprover-community" / "plausible" @ git "main"
 
 /-!
 ## Options for building mathlib
