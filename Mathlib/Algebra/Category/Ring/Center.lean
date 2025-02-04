@@ -23,7 +23,7 @@ structure of a commutative ring is completely determined by its module category.
 
 -/
 
-universe u v v'
+universe u u' v v'
 
 variable (R : Type u) [Ring R]
 
@@ -90,7 +90,7 @@ noncomputable def Subring.centerEquivOfModuleCatEquiv {R S : Type*} [CommRing R]
 For any two commutative rings `R` and `S`, if the categories of `R`-modules and `S`-modules are
 equivalent, then `R` and `S` are isomorphic as rings.
 -/
-noncomputable def RingEquiv.ofModuleCatEquiv {R S : Type*} [CommRing R] [CommRing S]
+noncomputable def RingEquiv.ofModuleCatEquiv {R : Type u} {S : Type u'} [CommRing R] [CommRing S]
     [Small.{v} R] [Small.{v'} S]
     (e : ModuleCat.{v} R ≌ ModuleCat.{v'} S) : R ≃+* S :=
   letI : e.functor.Additive := Functor.additive_of_preserves_binary_products e.functor
