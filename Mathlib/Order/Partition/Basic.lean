@@ -23,10 +23,9 @@ where `s` is the set of all `x` for which `r x x`.
   nontrivial elements whose supremum is `s`.
 
 -/
-
-namespace Set
-
 variable {α : Type*} {s x y z : α}
+
+open Set
 
 /-- A `Partition` of an element `s` of a `CompleteLattice` is a collection of
 independent nonempty parts whose supremum is `s`.  -/
@@ -105,5 +104,3 @@ lemma parts_nonempty (P : Partition s) (hs : s ≠ ⊥) : (P : Set α).Nonempty 
 end Basic
 
 end Partition
-
-end Set

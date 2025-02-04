@@ -3034,7 +3034,6 @@ import Mathlib.Data.Set.Operations
 import Mathlib.Data.Set.Opposite
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.Set.Pairwise.Lattice
-import Mathlib.Data.Set.Partition
 import Mathlib.Data.Set.Pointwise.Iterate
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Set.Pointwise.Support
@@ -4321,6 +4320,7 @@ import Mathlib.Order.OrderIsoNat
 import Mathlib.Order.PFilter
 import Mathlib.Order.Part
 import Mathlib.Order.PartialSups
+import Mathlib.Order.Partition.Basic
 import Mathlib.Order.Partition.Equipartition
 import Mathlib.Order.Partition.Finpartition
 import Mathlib.Order.PiLex
