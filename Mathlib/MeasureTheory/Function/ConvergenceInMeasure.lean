@@ -63,30 +63,25 @@ theorem tendstoInMeasure_iff_norm [SeminormedAddCommGroup E] {l : Filter ι} {f 
   simp_rw [TendstoInMeasure, dist_eq_norm]
 
 theorem tendstoInMeasure_iff_tendsto_toNNReal [Dist E] {_ : MeasurableSpace α} {μ : Measure α}
-    [hfin: MeasureTheory.IsFiniteMeasure μ] {f : ι → α → E} {l : Filter ι} {g : α → E} :
-    TendstoInMeasure μ f l g ↔ ∀ ε, 0 < ε → Tendsto (fun i =>
-    (μ { x | ε ≤ dist (f i x) (g x) }).toNNReal) l (𝓝 0) := by
+    [IsFiniteMeasure μ] {f : ι → α → E} {l : Filter ι} {g : α → E} :
+    TendstoInMeasure μ f l g ↔
+    ∀ ε, 0 < ε → Tendsto (fun i => (μ { x | ε ≤ dist (f i x) (g x) }).toNNReal) l (𝓝 0) := by
   have hfin ε i : μ { x | ε ≤ dist (f i x) (g x) } ≠ ⊤ :=
-    (measure_ne_top μ {x | ε ≤ dist (f i x) (g x)})
+    measure_ne_top μ {x | ε ≤ dist (f i x) (g x)}
   refine ⟨fun h ε hε ↦ ?_, fun h ε hε ↦ ?_⟩
-  · have hf : (fun i =>
-    (μ { x | ε ≤ dist (f i x) (g x) }).toNNReal) = ENNReal.toNNReal ∘ (fun i =>
-    (μ { x | ε ≤ dist (f i x) (g x) })) := rfl
+  · have hf : (fun i => (μ { x | ε ≤ dist (f i x) (g x) }).toNNReal) =
+        ENNReal.toNNReal ∘ (fun i => (μ { x | ε ≤ dist (f i x) (g x) })) := rfl
     rw [hf, ← ENNReal.tendsto_toNNReal_iff' (hfin ε)]
     exact h ε hε
   · rw [ENNReal.tendsto_toNNReal_iff ENNReal.zero_ne_top (hfin ε)]
     exact h ε hε
 
--- Convergence in measure is stable under taking subsequences.
+/-- Convergence in measure is stable under taking subsequences. -/
 lemma TendstoInMeasure.mono [Dist E] {f : ι → α → E} {g : α → E} {u v : Filter ι} (huv : v ≤ u)
     (hg : TendstoInMeasure μ f u g) : TendstoInMeasure μ f v g :=
   fun ε hε => (hg ε hε).mono_left huv
 
-lemma TendstoInMeasure.subseq [Dist E] {f : ℕ → α → E} {g : α → E} {ns : ℕ → ℕ}
-    (hns : StrictMono ns) (hg : TendstoInMeasure μ f atTop g) :
-    TendstoInMeasure μ (f ∘ ns) atTop g := fun ε hε ↦ (hg ε hε).comp hns.tendsto_atTop
-
-lemma TendstoInMeasure.subseq' [Dist E] {f : ι → α → E} {g : α → E} {u : Filter ι}
+lemma TendstoInMeasure.subseq [Dist E] {f : ι → α → E} {g : α → E} {u : Filter ι}
     {v : Filter κ} {ns : κ → ι} (hns : Tendsto ns v u) (hg : TendstoInMeasure μ f u g) :
     TendstoInMeasure μ (f ∘ ns) v g := fun ε hε ↦ (hg ε hε).comp hns
 
@@ -263,17 +258,17 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae' {u : Filter ι} [NeBot u] [IsCou
   obtain ⟨ns, hns1, hns2⟩ := hms2.exists_seq_tendsto_ae
   exact ⟨ms ∘ ns, hms1.comp hns1.tendsto_atTop, hns2⟩
 
-/-- TendstoInMeasure is equivalent to  every subsequence has another subsequence
+/-- TendstoInMeasure is equivalent to  every subsequence having another subsequence
 ￼which converges almost surely. -/
 theorem exists_seq_tendstoInMeasure_atTop_iff (hfin : MeasureTheory.IsFiniteMeasure μ)
     {f : ℕ → α → E} (hf : ∀ (n : ℕ), AEStronglyMeasurable (f n) μ) {g : α → E} :
     (TendstoInMeasure μ f atTop g) ↔
       ∀ ns : ℕ → ℕ, StrictMono ns → ∃ ns' : ℕ → ℕ, StrictMono ns' ∧
         ∀ᵐ (ω : α) ∂μ, Tendsto (fun i ↦ f (ns (ns' i)) ω) atTop (𝓝 (g ω)) := by
-  refine ⟨fun hfg _ hns ↦ (hfg.subseq hns).exists_seq_tendsto_ae, not_imp_not.mp (fun h1 ↦ ?_)⟩
+  refine ⟨fun hfg _ hns ↦ (hfg.subseq hns.tendsto_atTop).exists_seq_tendsto_ae,
+    not_imp_not.mp (fun h1 ↦ ?_)⟩
   rw [tendstoInMeasure_iff_tendsto_toNNReal] at h1
-  simp only [not_forall, Classical.not_imp, not_exists, not_and,
-    not_eventually] at *
+  push_neg at *
   obtain ⟨ε, hε, h2⟩ := h1
   obtain ⟨δ, ns, hδ, hns, h3⟩ : ∃ (δ : ℝ≥0) (ns : ℕ → ℕ), 0 < δ ∧ StrictMono ns ∧
       ∀ n, δ ≤ (μ {x | ε ≤ dist (f (ns n) x) (g x)}).toNNReal := by
@@ -283,22 +278,9 @@ theorem exists_seq_tendstoInMeasure_atTop_iff (hfin : MeasureTheory.IsFiniteMeas
     exact ⟨δ, ns, hδ, hns, fun n ↦ Set.not_mem_Iio.1 (Set.not_mem_subset h5 (h6 n))⟩
   refine ⟨ns, hns, fun ns' _ ↦ ?_⟩
   by_contra h6
-  simp only [not_frequently, not_not] at h6
   obtain h7 := tendstoInMeasure_iff_tendsto_toNNReal.mp <|
-    MeasureTheory.tendstoInMeasure_of_tendsto_ae (f := f ∘ ns ∘ ns') (fun n ↦
-    (hf ((ns ∘ ns') n))) h6
-  have h (f : ℕ → ℝ≥0) (hf1 : Tendsto f atTop (𝓝 0)) : ¬(∀ (n : ℕ), δ ≤ f n) := by
-    simp only [imp_false, not_forall, not_le]
-    obtain ⟨x, h2⟩ : ∃ a, ∀ (b : ℕ), a ≤ b → dist (f b) 0 < ↑δ := by
-      simp_rw [← Metric.mem_ball, ← Set.mem_preimage, ← mem_atTop_sets, ← mem_map]
-      exact hf1 (Metric.ball_mem_nhds 0 hδ)
-    use x
-    obtain h3 := h2 x (by rfl)
-    simp only [dist, NNReal.val_eq_coe, NNReal.coe_zero, sub_zero, NNReal.abs_eq,
-      NNReal.coe_lt_coe] at h3
-    exact h3
-  exact h (fun n => (μ {x | ε ≤ dist (f (ns (ns' n)) x) (g x)}).toNNReal)
-      (h7 ε hε) <| fun m ↦ h3 (ns' m)
+    tendstoInMeasure_of_tendsto_ae (fun n ↦ hf _) h6
+  exact lt_irrefl _ (lt_of_le_of_lt (ge_of_tendsto' (h7 ε hε) (fun n ↦ h3 _)) hδ)
 
 end ExistsSeqTendstoAe
 
@@ -307,18 +289,14 @@ section TendstoInMeasureUnique
 variable [MetricSpace E]
 variable {f : ℕ → α → E} {g h : α → E}
 
-/-- The TendstoInMeasure is ae unique -/
-theorem ae_unique_of_tendstoInMeasure {g h : α → E} {f : ι → α → E} {u : Filter ι} [NeBot u]
+/-- The limit in measure is ae unique -/
+theorem tendstoInMeasure_ae_unique {g h : α → E} {f : ι → α → E} {u : Filter ι} [NeBot u]
     [IsCountablyGenerated u] (hg : TendstoInMeasure μ f u g) (hh : TendstoInMeasure μ f u h) :
     g =ᵐ[μ] h := by
   obtain ⟨ns, h1, h1'⟩ := hg.exists_seq_tendsto_ae'
-  obtain ⟨ns', h2, h2'⟩ :=
-    (TendstoInMeasure.subseq' h1 hh).exists_seq_tendsto_ae'
-  obtain h4 : ∀ᵐ (x : α) ∂μ, Tendsto (fun i ↦ (f ∘ ns) (ns' i) x) atTop (𝓝 (g x)) := by
-    filter_upwards [h1'] with ω h'
-    apply h'.comp h2
-  filter_upwards [h4, h2'] with ω hg1 hh1
-  exact tendsto_nhds_unique hg1 hh1
+  obtain ⟨ns', h2, h2'⟩ := (TendstoInMeasure.subseq h1 hh).exists_seq_tendsto_ae'
+  filter_upwards [h1', h2'] with ω hg1 hh1
+  exact tendsto_nhds_unique (hg1.comp h2) hh1
 
 end TendstoInMeasureUnique
 

@@ -50,10 +50,10 @@ theorem coe_range_mem_nhds : range ((↑) : ℝ≥0 → ℝ≥0∞) ∈ 𝓝 (r 
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ≥0∞) :=
   isEmbedding_coe.continuous
 
-lemma tendsto_coe_toNNReal {a : ℝ≥0∞} (ha : a ≠ ⊤) : Tendsto (fun (x : ℝ≥0) => (x : ℝ≥0∞))
-    (nhds a.toNNReal) (nhds a) := by
+lemma tendsto_coe_toNNReal {a : ℝ≥0∞} (ha : a ≠ ⊤) : Tendsto (↑)
+    (𝓝 a.toNNReal) (𝓝 a) := by
   nth_rewrite 2 [← coe_toNNReal ha]
-  exact ContinuousAt.tendsto (Continuous.continuousAt continuous_coe)
+  exact continuous_coe.tendsto _
 
 theorem continuous_coe_iff {α} [TopologicalSpace α] {f : α → ℝ≥0} :
     (Continuous fun a => (f a : ℝ≥0∞)) ↔ Continuous f :=
