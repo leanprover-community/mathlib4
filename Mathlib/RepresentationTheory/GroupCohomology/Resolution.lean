@@ -106,9 +106,11 @@ open ModuleCat.MonoidalCategory in
 theorem diagonalSucc_hom_single (f : Gⁿ⁺¹) (a : k) :
     (diagonalSucc k G n).hom.hom (single f a) =
       single (f 0) 1 ⊗ₜ single (fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) a := by
-  simp [diagonalSucc, instMonoidalCategoryStruct_whiskerLeft, instMonoidalCategoryStruct_tensorObj,
-    ModuleCat.MonoidalCategory.whiskerLeft, ModuleCat.MonoidalCategory.tensorObj,
-    tensorObj_def, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
+  simp [diagonalSucc, instMonoidalCategoryStruct_whiskerLeft,
+    instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.whiskerLeft,
+    ModuleCat.MonoidalCategory.tensorObj, tensorObj_def,
+    finsuppTensorFinsupp'_symm_single_eq_single_one_tmul,
+    ModuleCat.hom_id (M := ((linearization k G).obj _).V)]
 
 theorem diagonalSucc_inv_single_single (g : G) (f : Gⁿ) (a b : k) :
     (diagonalSucc k G n).inv.hom (Finsupp.single g a ⊗ₜ Finsupp.single f b) =
