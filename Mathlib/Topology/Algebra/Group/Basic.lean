@@ -834,8 +834,7 @@ lemma TopologicalGroup.isOpenMap_iff_nhds_one
       (Homeomorph.smul ((toUnits x).map (MonoidHomClass.toMonoidHom f))).map_nhds_eq (1 : H)
   rw [← map_mul_left_nhds_one x, Filter.map_map, Function.comp_def, ← this]
   refine (Filter.map_mono h).trans ?_
-  simp only [map_mul]
-  rfl
+  simp [Function.comp_def]
 
 -- TODO: unify with `QuotientGroup.isOpenQuotientMap_mk`
 /-- Let `A` and `B` be topological groups, and let `φ : A → B` be a continuous surjective group
