@@ -156,6 +156,14 @@ def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : pushout (f ≫ g) ≅
 instance pushoutIsLeftAdjoint {X Y : C} (f : X ⟶ Y) : (pushout f).IsLeftAdjoint  :=
   ⟨_, ⟨mapPushoutAdj f⟩⟩
 
+/-- If `X : C` is initial, then the under category of `X` is equivalent to `C`. -/
+def equivalenceOfIsInitial {C : Type*} [Category C] {X : C} (hX : IsInitial X) :
+    Under X ≌ C where
+  functor := Under.forget X
+  inverse := { obj Y := Under.mk (hX.to Y), map f := Under.homMk f }
+  unitIso := NatIso.ofComponents (fun Y ↦ Under.isoMk (Iso.refl _) (hX.hom_ext _ _))
+  counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
+
 end Under
 
 end CategoryTheory
