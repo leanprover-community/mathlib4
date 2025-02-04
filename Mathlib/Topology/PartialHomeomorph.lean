@@ -1371,6 +1371,7 @@ noncomputable def lift_openEmbedding (e : PartialHomeomorph X Z) (hf : IsOpenEmb
 lemma lift_openEmbedding_toFun (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
     (e.lift_openEmbedding hf) = extend f e (fun _ ↦ (Classical.arbitrary Z)) := rfl
 
+@[simp]
 lemma lift_openEmbedding_apply (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) {x : X} :
     (lift_openEmbedding e hf) (f x) = e x := by
   simp_rw [e.lift_openEmbedding_toFun]
@@ -1397,6 +1398,7 @@ lemma lift_openEmbedding_symm_target (e : PartialHomeomorph X Z) (hf : IsOpenEmb
     (e.lift_openEmbedding hf).symm.target = f '' e.source := by
   rw [PartialHomeomorph.symm_target, e.lift_openEmbedding_source]
 
+@[simp]
 lemma lift_openEmbedding_trans_apply
     (e e' : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) (z : Z) :
     (e.lift_openEmbedding hf).symm.trans (e'.lift_openEmbedding hf) z = (e.symm.trans e') z := by

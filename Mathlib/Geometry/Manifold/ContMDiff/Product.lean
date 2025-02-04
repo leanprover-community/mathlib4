@@ -347,3 +347,141 @@ theorem contMDiff_pi_space :
 @[deprecated (since := "2024-11-20")] alias smooth_pi_space := contMDiff_pi_space
 
 end PiSpace
+
+section disjointUnion
+
+variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ∞} [Nonempty H]
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  {J : Type*} {J : ModelWithCorners 𝕜 E' H'}
+  {N N' : Type*} [TopologicalSpace N] [TopologicalSpace N'] [ChartedSpace H' N] [ChartedSpace H' N']
+
+open Topology
+
+lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
+  intro x
+  rw [contMDiffAt_iff]
+  refine ⟨continuous_inl.continuousAt, ?_⟩
+  -- In extended charts, .inl equals the identity (on the chart sources).
+  apply contDiffWithinAt_id.congr_of_eventuallyEq; swap
+  · simp [ChartedSpace.sum_chartAt_inl]
+    congr
+    apply Sum.inl_injective.extend_apply (chartAt _ x)
+  set C := chartAt H x
+  have aux : ∀ x ∈ I.symm ⁻¹' C.target ∩ range I,
+      (((C.lift_openEmbedding (IsOpenEmbedding.inl (Y := M'))).extend I)
+        ∘ Sum.inl ∘ (C.extend I).symm) x = x := by
+    intro x ⟨hx1, hx2⟩
+    simp [Sum.inl_injective.extend_apply C, C.right_inv hx1, I.right_inv hx2]
+  apply Filter.mem_of_superset ?_ aux
+  rw [← I.image_eq (chartAt H x).target]
+  exact (chartAt H x).extend_image_target_mem_nhds (mem_chart_source _ x)
+
+lemma ContMDiff.inr : ContMDiff I I n (@Sum.inr M M') := by
+  intro x
+  rw [contMDiffAt_iff]
+  refine ⟨continuous_inr.continuousAt, ?_⟩
+  -- In extended charts, .inl equals the identity (on the chart sources).
+  apply contDiffWithinAt_id.congr_of_eventuallyEq; swap
+  · simp [ChartedSpace.sum_chartAt_inr]
+    congr
+    apply Sum.inr_injective.extend_apply (chartAt _ x)
+  set C := chartAt H x
+  have aux : ∀ e ∈ I.symm ⁻¹' (chartAt H x).target ∩ range I,
+      (((C.lift_openEmbedding (IsOpenEmbedding.inr (X := M))).extend I)
+        ∘ Sum.inr ∘ (C.extend I).symm) e = e := by
+    intro x ⟨hx1, hx2⟩
+    simp [Sum.inr_injective.extend_apply C, C.right_inv hx1, I.right_inv hx2]
+  apply Filter.mem_of_superset ?_ aux
+  rw [← I.image_eq (chartAt H x).target]
+  exact (chartAt H x).extend_image_target_mem_nhds (mem_chart_source _ x)
+
+@[simp]
+lemma extChartAt_inl_apply {x : M} :
+    ((extChartAt I (.inl x : M ⊕ M')) (Sum.inl x)) = (extChartAt I x) x := by
+  simp [sum_chartAt_inl_apply]
+
+@[simp]
+lemma extChartAt_inr_apply {x : M'} :
+    ((extChartAt I (.inr x : M ⊕ M')) (Sum.inr x)) = (extChartAt I x) x := by
+  simp [sum_chartAt_inr_apply]
+
+lemma ContMDiff.sum_elim {f : M → N} {g : M' → N}
+    (hf : ContMDiff I J n f) (hg : ContMDiff I J n g) : ContMDiff I J n (Sum.elim f g) := by
+  intro p
+  rw [contMDiffAt_iff]
+  refine ⟨(Continuous.sum_elim hf.continuous hg.continuous).continuousAt, ?_⟩
+  cases p with
+  | inl x =>
+    -- In charts around x : M, the map f ⊔ g looks like f.
+    -- This is how they both look like in extended charts.
+    have : ContDiffWithinAt 𝕜 n ((extChartAt J (f x)) ∘ f ∘ (extChartAt I x).symm)
+        (range I) ((extChartAt I (.inl x : M ⊕ M')) (Sum.inl x)) := by
+      let hf' := hf x
+      rw [contMDiffAt_iff] at hf'
+      simpa only [extChartAt_inl_apply] using hf'.2
+    apply this.congr_of_eventuallyEq
+    · simp only [extChartAt, Sum.elim_inl, ChartedSpace.sum_chartAt_inl,
+        Sum.inl_injective.extend_apply]
+      filter_upwards with a
+      congr
+    · -- They agree at the image of x.
+      simp only [extChartAt, ChartedSpace.sum_chartAt_inl, Sum.elim_inl]
+      congr
+  | inr x =>
+    -- In charts around x : M, the map f ⊔ g looks like g.
+    -- This is how they both look like in extended charts.
+    have : ContDiffWithinAt 𝕜 n ((extChartAt J (g x)) ∘ g ∘ (extChartAt I x).symm)
+        (range I) ((extChartAt I (.inr x : M ⊕ M')) (Sum.inr x)) := by
+      let hg' := hg x
+      rw [contMDiffAt_iff] at hg'
+      simpa only [extChartAt_inr_apply] using hg'.2
+    apply this.congr_of_eventuallyEq
+    · simp only [extChartAt, Sum.elim_inl, ChartedSpace.sum_chartAt_inl,
+        Sum.inl_injective.extend_apply]
+      filter_upwards with a
+      congr
+    · -- They agree at the image of x.
+      simp only [extChartAt, ChartedSpace.sum_chartAt_inl, Sum.elim_inl]
+      congr
+
+variable [Nonempty H']
+
+lemma ContMDiff.sum_map {f : M → N} {g : M' → N'}
+    (hf : ContMDiff I J n f) (hg : ContMDiff I J n g) : ContMDiff I J n (Sum.map f g) :=
+  ContMDiff.sum_elim (ContMDiff.inl.comp hf) (ContMDiff.inr.comp hg)
+
+omit [Nonempty H] in
+lemma contMDiff_of_contMDiff_inl [Nonempty N] {f : M → N}
+    (h : ContMDiff I J n ((@Sum.inl N N') ∘ f)) : ContMDiff I J n f := by
+  inhabit N
+  let aux : N ⊕ N' → N := Sum.elim (@id N) (fun _ ↦ inhabited_h.default)
+  have : aux ∘ (@Sum.inl N N') ∘ f = f := by simp only [aux, Function.comp_apply]; rfl
+  rw [← this]
+  rw [← contMDiffOn_univ] at h ⊢
+  apply (contMDiff_id.sum_elim contMDiff_const).contMDiffOn (s := @Sum.inl N N' '' univ).comp h
+  intro x _hx
+  rw [mem_preimage, Function.comp_apply]
+  use f x, trivial
+
+omit [Nonempty H] in
+lemma contMDiff_of_contMDiff_inr [Nonempty N'] {g : M' → N'}
+    (h : ContMDiff I J n ((@Sum.inr N N') ∘ g)) : ContMDiff I J n g := by
+  inhabit N'
+  let aux : N ⊕ N' → N' := Sum.elim (fun _ ↦ inhabited_h.default) (@id N')
+  have : aux ∘ (@Sum.inr N N') ∘ g = g := by simp only [aux, Function.comp_apply]; rfl
+  rw [← this]
+  rw [← contMDiffOn_univ] at h ⊢
+  apply ((contMDiff_const.sum_elim contMDiff_id).contMDiffOn (s := Sum.inr '' univ)).comp h
+  intro x _hx
+  rw [mem_preimage, Function.comp_apply]
+  use g x, trivial
+
+lemma contMDiff_sum_map [Nonempty N] [Nonempty N'] {f : M → N} {g : M' → N'} :
+    ContMDiff I J n (Sum.map f g) ↔ ContMDiff I J n f ∧ ContMDiff I J n g :=
+  ⟨fun h ↦ ⟨contMDiff_of_contMDiff_inl (h.comp ContMDiff.inl),
+    contMDiff_of_contMDiff_inr (h.comp ContMDiff.inr)⟩,
+   fun h ↦ ContMDiff.sum_map h.1 h.2⟩
+
+lemma ContMDiff.swap : ContMDiff I I n (@Sum.swap M M') := ContMDiff.sum_elim inr inl
+
+end disjointUnion
