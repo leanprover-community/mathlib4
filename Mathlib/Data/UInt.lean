@@ -117,12 +117,6 @@ def isASCIIDigit (c : UInt8) : Bool :=
 def isASCIIAlphanum (c : UInt8) : Bool :=
   c.isASCIIAlpha || c.isASCIIDigit
 
-@[deprecated (since := "2024-06-06")] alias isUpper := isASCIIUpper
-@[deprecated (since := "2024-06-06")] alias isLower := isASCIILower
-@[deprecated (since := "2024-06-06")] alias isAlpha := isASCIIAlpha
-@[deprecated (since := "2024-06-06")] alias isDigit := isASCIIDigit
-@[deprecated (since := "2024-06-06")] alias isAlphanum := isASCIIAlphanum
-
 /-- The numbers from 0 to 256 are all valid UTF-8 characters, so we can embed one in the other. -/
 def toChar (n : UInt8) : Char := ⟨n.toUInt32, .inl (Nat.lt_trans n.toBitVec.isLt (by decide))⟩
 

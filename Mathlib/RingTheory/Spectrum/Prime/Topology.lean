@@ -14,7 +14,9 @@ import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Spectrum.Maximal.Localization
 import Mathlib.Tactic.StacksAttribute
+import Mathlib.Topology.Constructible
 import Mathlib.Topology.KrullDimension
+import Mathlib.Topology.QuasiSeparated
 import Mathlib.Topology.Sober
 
 /-!
@@ -589,6 +591,16 @@ lemma range_comap_algebraMap_localization_compl_eq_range_comap_quotientMk
   rw [range_comap_of_surjective _ _ surj, localization_away_comap_range _ (C c)]
   simp [Polynomial.ker_mapRingHom, Ideal.map_span]
 
+instance : QuasiSeparatedSpace (PrimeSpectrum R) :=
+  .of_isTopologicalBasis isTopologicalBasis_basic_opens fun i j ↦ by
+    simpa [← TopologicalSpace.Opens.coe_inf, ← basicOpen_mul, -basicOpen_eq_zeroLocus_compl]
+      using isCompact_basicOpen _
+
+-- TODO: Abstract out this lemma to spectral spaces
+lemma isRetrocompact_iff {U : Set (PrimeSpectrum R)} (hU : IsOpen U) :
+    IsRetrocompact U ↔ IsCompact U :=
+  isTopologicalBasis_basic_opens.isRetrocompact_iff_isCompact isCompact_basicOpen hU
+
 end BasicOpen
 
 section DiscreteTopology
@@ -976,11 +988,9 @@ section CommSemiring
 variable [CommSemiring R]
 
 open PrimeSpectrum in
-/--
-[Stacks: Lemma 00ES (3)](https://stacks.math.columbia.edu/tag/00ES)
-Zero loci of minimal prime ideals of `R` are irreducible components in `Spec R` and any
-irreducible component is a zero locus of some minimal prime ideal.
--/
+/-- Zero loci of minimal prime ideals of `R` are irreducible components in `Spec R` and any
+irreducible component is a zero locus of some minimal prime ideal. -/
+@[stacks 00ES]
 protected def minimalPrimes.equivIrreducibleComponents :
     minimalPrimes R ≃o (irreducibleComponents <| PrimeSpectrum R)ᵒᵈ := by
   let e : {p : Ideal R | p.IsPrime ∧ ⊥ ≤ p} ≃o PrimeSpectrum R :=
