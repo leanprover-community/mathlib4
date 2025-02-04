@@ -33,30 +33,20 @@ universe u
 open CategoryTheory OrderDual Opposite
 
 /-- The category of finite boolean algebras with bounded lattice morphisms. -/
-structure FinBoolAlg where
-  toBoolAlg : BoolAlg
+structure FinBoolAlg extends BoolAlg where
   [isFintype : Fintype toBoolAlg]
+
+attribute [instance] FinBoolAlg.isFintype
 
 namespace FinBoolAlg
 
 instance : CoeSort FinBoolAlg Type* :=
-  ⟨fun X => X.toBoolAlg⟩
-
-instance (X : FinBoolAlg) : BooleanAlgebra X :=
-  X.toBoolAlg.str
-
-attribute [instance] FinBoolAlg.isFintype
-
--- Porting note: linter says this is a syntactic tautology now
--- @[simp]
--- theorem coe_toBoolAlg (X : FinBoolAlg) : ↥X.toBoolAlg = ↥X :=
---   rfl
+  ⟨fun X => X.carrier⟩
 
 /-- Construct a bundled `FinBoolAlg` from `BooleanAlgebra` + `Fintype`. -/
-def of (α : Type*) [BooleanAlgebra α] [Fintype α] : FinBoolAlg :=
-  ⟨{α := α}⟩
+abbrev of (α : Type*) [BooleanAlgebra α] [Fintype α] : FinBoolAlg where
+  carrier := α
 
-@[simp]
 theorem coe_of (α : Type*) [BooleanAlgebra α] [Fintype α] : ↥(of α) = α :=
   rfl
 
@@ -66,26 +56,15 @@ instance : Inhabited FinBoolAlg :=
 instance largeCategory : LargeCategory FinBoolAlg :=
   InducedCategory.category FinBoolAlg.toBoolAlg
 
-instance hasForget : HasForget FinBoolAlg :=
-  InducedCategory.hasForget FinBoolAlg.toBoolAlg
-
-instance instFunLike {X Y : FinBoolAlg} : FunLike (X ⟶ Y) X Y :=
-  BoundedLatticeHom.instFunLike
-
--- Porting note: added
--- TODO: in all of the earlier bundled order categories,
--- we should be constructing instances analogous to this,
--- rather than directly coercions to functions.
-instance instBoundedLatticeHomClass {X Y : FinBoolAlg} : BoundedLatticeHomClass (X ⟶ Y) X Y :=
-  BoundedLatticeHom.instBoundedLatticeHomClass
+instance concreteCategory : ConcreteCategory FinBoolAlg (BoundedLatticeHom · ·) :=
+  InducedCategory.concreteCategory FinBoolAlg.toBoolAlg
 
 instance hasForgetToBoolAlg : HasForget₂ FinBoolAlg BoolAlg :=
   InducedCategory.hasForget₂ FinBoolAlg.toBoolAlg
 
 instance hasForgetToFinBddDistLat : HasForget₂ FinBoolAlg FinBddDistLat where
   forget₂.obj X := FinBddDistLat.of X
-  forget₂.map f := f
-  forget_comp := rfl
+  forget₂.map f := FinBddDistLat.ofHom f.hom
 
 instance forgetToBoolAlg_full : (forget₂ FinBoolAlg BoolAlg).Full :=
   InducedCategory.full _
@@ -96,7 +75,7 @@ instance forgetToBoolAlgFaithful : (forget₂ FinBoolAlg BoolAlg).Faithful :=
 @[simps]
 instance hasForgetToFinPartOrd : HasForget₂ FinBoolAlg FinPartOrd where
   forget₂.obj X := FinPartOrd.of X
-  forget₂.map {X Y} f := PartOrd.ofHom f
+  forget₂.map {X Y} f := PartOrd.ofHom f.hom
 
 instance forgetToFinPartOrdFaithful : (forget₂ FinBoolAlg FinPartOrd).Faithful :=
   ⟨fun h => by
@@ -107,16 +86,16 @@ instance forgetToFinPartOrdFaithful : (forget₂ FinBoolAlg FinPartOrd).Faithful
 them. -/
 @[simps]
 def Iso.mk {α β : FinBoolAlg.{u}} (e : α ≃o β) : α ≅ β where
-  hom := (e : BoundedLatticeHom α β)
-  inv := (e.symm : BoundedLatticeHom β α)
+  hom := BoolAlg.ofHom e
+  inv := BoolAlg.ofHom e.symm
   hom_inv_id := by ext; exact e.symm_apply_apply _
   inv_hom_id := by ext; exact e.apply_symm_apply _
 
 /-- `OrderDual` as a functor. -/
-@[simps]
+@[simps map]
 def dual : FinBoolAlg ⥤ FinBoolAlg where
   obj X := of Xᵒᵈ
-  map {_ _} := BoundedLatticeHom.dual
+  map f := BoolAlg.ofHom f.hom.dual
 
 /-- The equivalence between `FinBoolAlg` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
@@ -138,4 +117,4 @@ theorem finBoolAlg_dual_comp_forget_to_finBddDistLat :
 def fintypeToFinBoolAlgOp : FintypeCat ⥤ FinBoolAlgᵒᵖ where
   obj X := op <| FinBoolAlg.of (Set X)
   map {X Y} f :=
-    Quiver.Hom.op <| (CompleteLatticeHom.setPreimage f : BoundedLatticeHom (Set Y) (Set X))
+    Quiver.Hom.op <| BoolAlg.ofHom <| CompleteLatticeHom.setPreimage f

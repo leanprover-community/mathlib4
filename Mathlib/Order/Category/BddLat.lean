@@ -43,36 +43,79 @@ abbrev of (α : Type*) [Lattice α] [BoundedOrder α] : BddLat where
 theorem coe_of (α : Type*) [Lattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 
+/-- The type of morphisms in `BddLat`. -/
+@[ext]
+structure Hom (X Y : BddLat.{u}) where
+  private mk ::
+  /-- The underlying `BoundedLatticeHom`. -/
+  hom' : BoundedLatticeHom X Y
+
 instance : Inhabited BddLat :=
   ⟨of PUnit⟩
 
 instance : LargeCategory.{u} BddLat where
-  Hom X Y := BoundedLatticeHom X Y
-  id X := BoundedLatticeHom.id X
-  comp f g := g.comp f
-  id_comp := BoundedLatticeHom.comp_id
-  comp_id := BoundedLatticeHom.id_comp
-  assoc _ _ _ := BoundedLatticeHom.comp_assoc _ _ _
+  Hom := Hom
+  id X := ⟨BoundedLatticeHom.id X⟩
+  comp f g := ⟨g.hom'.comp f.hom'⟩
 
 instance : ConcreteCategory BddLat (BoundedLatticeHom · ·) where
-  hom f := f
-  ofHom f := f
+  hom := Hom.hom'
+  ofHom := Hom.mk
+
+/-- Turn a morphism in `BddLat` back into a `BoundedLatticeHom`. -/
+abbrev Hom.hom {X Y : BddLat.{u}} (f : Hom X Y) :=
+  ConcreteCategory.hom (C := BddLat) f
+
+/-- Typecheck a `BoundedLatticeHom` as a morphism in `BddLat`. -/
+abbrev ofHom {X Y : Type u} [Lattice X] [BoundedOrder X] [Lattice Y] [BoundedOrder Y]
+    (f : BoundedLatticeHom X Y) : of X ⟶ of Y :=
+  ConcreteCategory.ofHom (C := BddLat) f
+
+variable {R} in
+/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
+def Hom.Simps.hom (X Y : BddLat.{u}) (f : Hom X Y) :=
+  f.hom
+
+initialize_simps_projections Hom (hom' → hom)
+
+@[simp]
+lemma hom_id {X : Lat} : (𝟙 X : X ⟶ X).hom = LatticeHom.id _ := rfl
+
+/- Provided for rewriting. -/
+lemma id_apply (X : Lat) (x : X) :
+    (𝟙 X : X ⟶ X) x = x := by simp
+
+@[simp]
+lemma hom_comp {X Y Z : Lat} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).hom = g.hom.comp f.hom := rfl
+
+/- Provided for rewriting. -/
+lemma comp_apply {X Y Z : Lat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+    (f ≫ g) x = g (f x) := by simp
+
+@[ext]
+lemma ext {X Y : BddLat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
+  ConcreteCategory.hom_ext _ _ w
+
+@[ext]
+lemma hom_ext {X Y : BddLat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
+  Hom.ext hf
 
 instance hasForgetToBddOrd : HasForget₂ BddLat BddOrd where
   forget₂.obj X := BddOrd.of X
-  forget₂.map f := BddOrd.ofHom f.toBoundedOrderHom
+  forget₂.map f := BddOrd.ofHom f.hom.toBoundedOrderHom
 
 instance hasForgetToLat : HasForget₂ BddLat Lat where
   forget₂.obj X := Lat.of X
-  forget₂.map f := Lat.ofHom f.toLatticeHom
+  forget₂.map f := Lat.ofHom f.hom.toLatticeHom
 
 instance hasForgetToSemilatSup : HasForget₂ BddLat SemilatSupCat where
   forget₂.obj X := SemilatSupCat.of X
-  forget₂.map := BoundedLatticeHom.toSupBotHom
+  forget₂.map f := f.hom.toSupBotHom
 
 instance hasForgetToSemilatInf : HasForget₂ BddLat SemilatInfCat where
   forget₂.obj X := SemilatInfCat.of X
-  forget₂.map := BoundedLatticeHom.toInfTopHom
+  forget₂.map f := f.hom.toInfTopHom
 
 @[simp]
 theorem coe_forget_to_bddOrd (X : BddLat) : ↥((forget₂ BddLat BddOrd).obj X) = ↥X :=
@@ -111,8 +154,8 @@ theorem forget_semilatInf_partOrd_eq_forget_bddOrd_partOrd :
 between them. -/
 @[simps]
 def Iso.mk {α β : BddLat.{u}} (e : α ≃o β) : α ≅ β where
-  hom := (e : BoundedLatticeHom _ _)
-  inv := (e.symm : BoundedLatticeHom _ _)
+  hom := ofHom e
+  inv := ofHom e.symm
   hom_inv_id := by ext; exact e.symm_apply_apply _
   inv_hom_id := by ext; exact e.apply_symm_apply _
 
@@ -120,7 +163,7 @@ def Iso.mk {α β : BddLat.{u}} (e : α ≃o β) : α ≅ β where
 @[simps]
 def dual : BddLat ⥤ BddLat where
   obj X := of Xᵒᵈ
-  map {_ _} := BoundedLatticeHom.dual
+  map f := ofHom f.hom.dual
 
 /-- The equivalence between `BddLat` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
@@ -154,9 +197,7 @@ theorem bddLat_dual_comp_forget_to_semilatInfCat :
 /-- The functor that adds a bottom and a top element to a lattice. This is the free functor. -/
 def latToBddLat : Lat.{u} ⥤ BddLat where
   obj X := BddLat.of <| WithTop <| WithBot X
-  map f := LatticeHom.withTopWithBot f.hom
-  map_id _ := LatticeHom.withTopWithBot_id
-  map_comp _ _ := LatticeHom.withTopWithBot_comp _ _
+  map f := BddLat.ofHom <| LatticeHom.withTopWithBot f.hom
 
 /-- `latToBddLat` is left adjoint to the forgetful functor, meaning it is the free
 functor from `Lat` to `BddLat`. -/
@@ -165,18 +206,18 @@ def latToBddLatForgetAdjunction : latToBddLat.{u} ⊣ forget₂ BddLat Lat :=
     { homEquiv X _ :=
         { toFun f := Lat.ofHom
             { toFun := f ∘ some ∘ some
-              map_sup' := fun a b => (congr_arg f <| by rfl).trans (f.map_sup' _ _)
-              map_inf' := fun a b => (congr_arg f <| by rfl).trans (f.map_inf' _ _) }
-          invFun f := LatticeHom.withTopWithBot' f.hom
+              map_sup' := fun a b => (congr_arg f <| by rfl).trans (f.hom.map_sup' _ _)
+              map_inf' := fun a b => (congr_arg f <| by rfl).trans (f.hom.map_inf' _ _) }
+          invFun f := BddLat.ofHom <| LatticeHom.withTopWithBot' f.hom
           left_inv := fun f =>
-            BoundedLatticeHom.ext fun a =>
+            BddLat.ext fun a =>
               match a with
-              | none => f.map_top'.symm
-              | some none => f.map_bot'.symm
+              | none => f.hom.map_top'.symm
+              | some none => f.hom.map_bot'.symm
               | some (some _) => rfl
           right_inv := fun _ => Lat.ext fun _ => rfl }
       homEquiv_naturality_left_symm := fun _ _ =>
-        BoundedLatticeHom.ext fun a =>
+        BddLat.ext fun a =>
           match a with
           | none => rfl
           | some none => rfl
