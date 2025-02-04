@@ -150,12 +150,14 @@ lemma trunc_spine (k m : ℕ) (h : m ≤ k + 1) (hₙ : k ≤ n) :
 
 variable (m : ℕ) (hₘ : m ≤ n + 1)
 
+/- We write this lemma manually to ensure it refers to `Path.vertex`. -/
 @[simp]
 lemma spine_vertex (Δ : X.obj (op ⟨.mk m, hₘ⟩)) (i : Fin (m + 1)) :
     (X.spine m hₘ Δ).vertex i =
       X.map (tr (SimplexCategory.const [0] [m] i)).op Δ :=
   rfl
 
+/- We write this lemma manually to ensure it refers to `Path.arrow`. -/
 @[simp]
 lemma spine_arrow (Δ : X.obj (op ⟨.mk m, hₘ⟩)) (i : Fin m) :
     (X.spine m hₘ Δ).arrow i = X.map (tr (mkOfSucc i)).op Δ :=
