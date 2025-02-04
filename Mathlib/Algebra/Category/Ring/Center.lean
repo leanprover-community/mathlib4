@@ -23,9 +23,9 @@ structure of a commutative ring is completely determined by its module category.
 
 -/
 
-universe v v'
+universe u v v'
 
-variable (R : Type*) [Ring R]
+variable (R : Type u) [Ring R]
 
 open CategoryTheory
 
