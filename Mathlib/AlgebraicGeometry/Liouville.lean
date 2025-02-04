@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.Proper
 
-/-
+/-!
 # Liouville's theorem
 
 In this file, we show that the global sections of a variety (integral scheme universally-closed
