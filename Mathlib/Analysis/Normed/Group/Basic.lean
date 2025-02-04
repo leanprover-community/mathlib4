@@ -943,6 +943,34 @@ lemma continuous_enorm' {E : Type*} [TopologicalSpace E] [ENormedAddMonoid E] :
     Continuous fun a : E ↦ ‖a‖ₑ := by
   exact ContinuousENorm.continuous_enorm
 
+-- FIXME: use @[to_additive] once all sorries are proven
+instance {E : Type*} [NormedAddGroup E] : ENormedAddMonoid E where
+  toAddMonoid := by infer_instance
+  continuous_enorm := by
+    -- XXX: do I have a diamond here?
+    -- convert continuous_enorm' yields the goal "NNNorm.toENorm = ContinuousENorm.toENorm"
+    sorry
+  enorm_eq_zero := sorry -- proven below as enorm_eq_zero; TODO re-structure this file!
+  enorm_add_le := sorry -- prove below as enorm_add_le
+
+instance {E : Type*} [NormedGroup E] : ENormedMonoid E where
+  toMonoid := by infer_instance
+  continuous_enorm := by
+    -- XXX: do I have a diamond here?
+    -- convert continuous_enorm' yields the goal "NNNorm.toENorm = ContinuousENorm.toENorm"
+    sorry
+  enorm_eq_zero := sorry -- proven below as enorm_eq_zero'; TODO re-structure this file!
+  enorm_mul_le := sorry -- prove below as enorm_mul_le'
+
+-- FIXME: use @[to_additive] once the above is unified
+instance {E : Type*} [NormedAddCommGroup E] : ENormedAddCommMonoid E where
+  toENormedAddMonoid := by infer_instance
+  add_comm a b := AddCommGroup.add_comm a b
+
+instance {E : Type*} [NormedCommGroup E] : ENormedCommMonoid E where
+  toENormedMonoid := by infer_instance
+  mul_comm a b := CommGroup.mul_comm a b
+
 set_option linter.docPrime false in
 @[to_additive Inseparable.norm_eq_norm]
 theorem Inseparable.norm_eq_norm' {u v : E} (h : Inseparable u v) : ‖u‖ = ‖v‖ :=
@@ -976,7 +1004,7 @@ theorem Filter.Tendsto.nnnorm' (h : Tendsto f l (𝓝 a)) : Tendsto (fun x => �
 @[to_additive Filter.Tendsto.enorm]
 lemma Filter.Tendsto.enorm' (h : Tendsto f l (𝓝 a)) : Tendsto (‖f ·‖ₑ) l (𝓝 ‖a‖ₑ) :=
   sorry -- TODO: missing instance SeminormedGroup -> ENormedMonoid
-  -- was: .comp continuous_enorm'.continuousAt h
+  -- was: .comp continuous_enorm' (E := E).continuousAt h
 
 end
 
