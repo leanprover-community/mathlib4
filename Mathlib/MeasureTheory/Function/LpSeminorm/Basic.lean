@@ -492,6 +492,7 @@ theorem eLpNormEssSup_lt_top_of_ae_enorm_bound {f : α → ε} {C : ℝ≥0} (hf
     eLpNormEssSup f μ < ∞ :=
   (eLpNormEssSup_le_of_ae_enorm_bound hfC).trans_lt ENNReal.coe_lt_top
 
+-- This lemma is used exactly once, in eLpNormEssSup_lt_top_iff_isBoundedUnder.
 @[deprecated eLpNormEssSup_lt_top_of_ae_enorm_bound (since := "2025-02-04")]
 theorem eLpNormEssSup_lt_top_of_ae_nnnorm_bound {f : α → F} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) :
     eLpNormEssSup f μ < ∞ :=
@@ -989,6 +990,9 @@ theorem eLpNorm_eq_zero_of_ae_zero {f : α → E} (hf : f =ᵐ[μ] 0) : eLpNorm 
 theorem ae_le_eLpNormEssSup {f : α → ε} : ∀ᵐ y ∂μ, ‖f y‖ₑ ≤ eLpNormEssSup f μ :=
   ae_le_essSup
 
+-- more interesting lemma: changing the statement makes it false (as the enorm could be ∞)
+-- direction => still holds; <= fails without additional hypotheses
+set_option linter.deprecated false in
 lemma eLpNormEssSup_lt_top_iff_isBoundedUnder :
     eLpNormEssSup f μ < ⊤ ↔ IsBoundedUnder (· ≤ ·) (ae μ) fun x ↦ ‖f x‖₊ where
   mp h := ⟨(eLpNormEssSup f μ).toNNReal, by
