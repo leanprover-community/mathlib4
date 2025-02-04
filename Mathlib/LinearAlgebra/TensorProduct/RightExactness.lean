@@ -430,8 +430,8 @@ noncomputable def quotTensorEquivQuotSMul (I : Ideal R) :
   (rTensor.equiv M (exact_subtype_mkQ I) I.mkQ_surjective).symm.trans <|
     Submodule.Quotient.equiv _ _ (TensorProduct.lid R M) <|
       Eq.trans (LinearMap.range_comp _ _).symm <|
-        Eq.trans ((Submodule.topEquiv.lTensor I).range_comp _).symm <| Eq.symm <|
-          (Submodule.smul_eq_map₂.trans <| map₂_eq_range_lift_comp_mapIncl _ _ _).trans <|
+        Eq.trans ((Submodule.topEquiv.lTensor I).range_comp _).symm <|
+          Eq.symm <| Eq.trans (map₂_eq_range_lift_comp_mapIncl _ _ _) <|
             congrArg _ (TensorProduct.ext' (fun _ _ => rfl))
 
 /-- Right tensoring a module with a quotient of the ring is the same as
