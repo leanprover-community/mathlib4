@@ -102,16 +102,25 @@ class ContinuousENorm (E : Type*) [TopologicalSpace E] extends ENorm E where
   continuous_enorm : Continuous enorm
   -- the topology is somehow defined by the enorm.
 
--- Future: if necessary, generalize to `ENormedMonoid` and use `to_additive`.
 /-- An enormed monoid is an additive monoid endowed with a continuous enorm. -/
 class ENormedAddMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, AddMonoid E where
   enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 0
   enorm_add_le : ∀ x y : E, ‖x + y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
 
+/-- An enormed monoid is a monoid endowed with a continuous enorm. -/
+@[to_additive]
+class ENormedMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, Monoid E where
+  enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 1
+  enorm_mul_le : ∀ x y : E, ‖x * y‖ₑ ≤ ‖x‖ₑ * ‖y‖ₑ
+
 /-- An enormed commutative monoid is an additive commutative monoid
 endowed with a continuous enorm. -/
 class ENormedAddCommMonoid (E : Type*) [TopologicalSpace E]
   extends ENormedAddMonoid E, AddCommMonoid E where
+
+/-- An enormed commutative monoid is a commutative monoid endowed with a continuous enorm. -/
+@[to_additive]
+class ENormedCommMonoid (E : Type*) [TopologicalSpace E] extends ENormedMonoid E, CommMonoid E where
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
@@ -930,8 +939,9 @@ theorem continuous_nnnorm' : Continuous fun a : E => ‖a‖₊ :=
   continuous_norm'.subtype_mk _
 
 @[to_additive (attr := continuity) continuous_enorm]
-lemma continuous_enorm' : Continuous fun a : E ↦ ‖a‖ₑ :=
-  ENNReal.isOpenEmbedding_coe.continuous.comp continuous_nnnorm'
+lemma continuous_enorm' {E : Type*} [TopologicalSpace E] [ENormedAddMonoid E] :
+    Continuous fun a : E ↦ ‖a‖ₑ := by
+  exact ContinuousENorm.continuous_enorm
 
 set_option linter.docPrime false in
 @[to_additive Inseparable.norm_eq_norm]
