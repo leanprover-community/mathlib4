@@ -575,7 +575,8 @@ private def fastJacobiSym (a : ℤ) (b : ℕ) : ℤ :=
     refine Nat.le_of_dvd (Int.gcd_pos_iff.mpr (mod_cast .inr hb0)) ?_
     refine Nat.dvd_gcd (Int.ofNat_dvd_left.mp (Int.dvd_of_emod_eq_zero ha2)) ?_
     exact Int.ofNat_dvd_left.mp (Int.dvd_of_emod_eq_zero (mod_cast hb2))
-  · rw [← IH (b / 2) (b.div_lt_self (Nat.pos_of_ne_zero hb0) one_lt_two)]
+  · dsimp only
+    rw [← IH (b / 2) (b.div_lt_self (Nat.pos_of_ne_zero hb0) one_lt_two)]
     obtain ⟨b, rfl⟩ := Nat.dvd_of_mod_eq_zero hb2
     rw [mul_right' a (by decide) fun h ↦ hb0 (mul_eq_zero_of_right 2 h),
       b.mul_div_cancel_left (by decide), mod_left a 2, Nat.cast_ofNat,

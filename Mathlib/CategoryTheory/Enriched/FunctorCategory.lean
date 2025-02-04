@@ -292,7 +292,7 @@ this is the enriched hom functor from `F₁` to `F₂` in `J ⥤ V`. -/
 @[simps!]
 noncomputable def functorEnrichedHom : J ⥤ V where
   obj j := enrichedHom V (Under.forget j ⋙ F₁) (Under.forget j ⋙ F₂)
-  map f := precompEnrichedHom' (V := V) (G := Under.map f) (Iso.refl _) (Iso.refl _)
+  map f := precompEnrichedHom' V (Under.map f) (Iso.refl _) (Iso.refl _)
   map_id X := by
     dsimp
     ext j

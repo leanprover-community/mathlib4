@@ -89,8 +89,8 @@ variable [Ring R] [IsDomain R] [Fintype R]
 `Mathlib.RingTheory.LittleWedderburn`. -/
 def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableEq R] [Fintype R] :
     DivisionRing R where
+  __ := (‹Ring R›:) -- this also works without the `( :)`, but it's slightly slow
   __ := Fintype.groupWithZeroOfCancel R
-  __ := ‹Ring R›
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl
   qsmul := _
