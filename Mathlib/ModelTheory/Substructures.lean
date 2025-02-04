@@ -836,7 +836,7 @@ end Hom
 namespace Substructure
 
 theorem map_comap (S : L.Substructure N) (f : M →[L] N) :
-    ((S.comap) f).map f = S ⊓ f.range := by
+    (S.comap f).map f = S ⊓ f.range := by
   rw [le_antisymm_iff]
   constructor
   · exact le_inf map_comap_le Hom.map_le_range
