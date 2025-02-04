@@ -205,10 +205,6 @@ variable [LinearOrderedField α] [LinearOrderedField β] [FloorRing α] [FloorRi
 variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
 
 theorem map_round (f : F) (hf : StrictMono f) (a : α) : round (f a) = round a := by
-  have H : f 2 = 2 := map_natCast f 2
-  simp_rw [round_eq, ← map_floor _ hf, map_add, one_div, map_inv₀, H]
-  -- Porting note: was
-  -- simp_rw [round_eq, ← map_floor _ hf, map_add, one_div, map_inv₀, map_bit0, map_one]
-  -- Would have thought that `map_natCast` would replace `map_bit0, map_one` but seems not
+  simp_rw [round_eq, ← map_floor _ hf, map_add, one_div, map_inv₀, map_ofNat]
 
 end Int

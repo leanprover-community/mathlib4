@@ -308,11 +308,9 @@ variable {R : Type*} [CommSemiring R]
 
 theorem Ideal.minimalPrimes_top : (⊤ : Ideal R).minimalPrimes = ∅ := by
   ext p
-  constructor
-  · intro h
-    exact False.elim (h.1.1.ne_top (top_le_iff.mp h.1.2))
-  · intro h
-    exact False.elim (Set.not_mem_empty p h)
+  simp only [Set.not_mem_empty, iff_false]
+  intro h
+  exact h.1.1.ne_top (top_le_iff.mp h.1.2)
 
 theorem Ideal.minimalPrimes_eq_empty_iff (I : Ideal R) :
     I.minimalPrimes = ∅ ↔ I = ⊤ := by
@@ -321,9 +319,9 @@ theorem Ideal.minimalPrimes_eq_empty_iff (I : Ideal R) :
     by_contra h
     have ⟨M, hM, hM'⟩ := Ideal.exists_le_maximal I h
     have ⟨p, hp⟩ := Ideal.exists_minimalPrimes_le hM'
-    show p ∈ (∅ : Set (Ideal R))
-    rw [← e]; exact hp.1
-  · intro h; rw [h]
+    rw [e] at hp
+    apply Set.not_mem_empty _ hp.1
+  · rintro rfl
     exact Ideal.minimalPrimes_top
 
 end
