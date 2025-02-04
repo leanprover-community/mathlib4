@@ -851,18 +851,21 @@ theorem exists_enc_dec [Inhabited Γ] [Finite Γ] :
   let enc := H.setValue default (Vector.replicate n false)
   exact ⟨_, enc, Function.invFun enc, H.setValue_eq _ _, Function.leftInverse_invFun enc.2⟩
 
-variable {Λ σ : Type*}
+variable (Γ)
+variable (Λ σ : Type*)
 
 /-- The configuration state of the TM. -/
 inductive Λ'
   | normal : Λ → Λ'
   | write : Γ → Stmt Γ Λ σ → Λ'
 
-instance [Inhabited Λ] : Inhabited (@Λ' Γ Λ σ) :=
+variable {Γ Λ σ}
+
+instance [Inhabited Λ] : Inhabited (Λ' Γ Λ σ) :=
   ⟨Λ'.normal default⟩
 
 /-- Read a vector of length `n` from the tape. -/
-def readAux : ∀ n, (List.Vector Bool n → Stmt Bool (@Λ' Γ Λ σ) σ) → Stmt Bool (@Λ' Γ Λ σ) σ
+def readAux : ∀ n, (List.Vector Bool n → Stmt Bool (Λ' Γ Λ σ) σ) → Stmt Bool (Λ' Γ Λ σ) σ
   | 0, f => f Vector.nil
   | i + 1, f =>
     Stmt.branch (fun a _ ↦ a) (Stmt.move Dir.right <| readAux i fun v ↦ f (true ::ᵥ v))
@@ -871,24 +874,24 @@ def readAux : ∀ n, (List.Vector Bool n → Stmt Bool (@Λ' Γ Λ σ) σ) → S
 variable (n : ℕ) (enc : Γ → List.Vector Bool n) (dec : List.Vector Bool n → Γ)
 
 /-- A move left or right corresponds to `n` moves across the super-cell. -/
-def move (d : Dir) (q : Stmt Bool (@Λ' Γ Λ σ) σ) : Stmt Bool (@Λ' Γ Λ σ) σ :=
+def move (d : Dir) (q : Stmt Bool (Λ' Γ Λ σ) σ) : Stmt Bool (Λ' Γ Λ σ) σ :=
   (Stmt.move d)^[n] q
 
 variable {n}
 
 /-- To read a symbol from the tape, we use `readAux` to traverse the symbol,
 then return to the original position with `n` moves to the left. -/
-def read (f : Γ → Stmt Bool (@Λ' Γ Λ σ) σ) : Stmt Bool (@Λ' Γ Λ σ) σ :=
+def read (f : Γ → Stmt Bool (Λ' Γ Λ σ) σ) : Stmt Bool (Λ' Γ Λ σ) σ :=
   readAux n fun v ↦ move n Dir.left <| f (dec v)
 
 /-- Write a list of bools on the tape. -/
-def write : List Bool → Stmt Bool (@Λ' Γ Λ σ) σ → Stmt Bool (@Λ' Γ Λ σ) σ
+def write : List Bool → Stmt Bool (Λ' Γ Λ σ) σ → Stmt Bool (Λ' Γ Λ σ) σ
   | [], q => q
   | a :: l, q => (Stmt.write fun _ _ ↦ a) <| Stmt.move Dir.right <| write l q
 
 /-- Translate a normal instruction. For the `write` command, we use a `goto` indirection so that
 we can access the current value of the tape. -/
-def trNormal : Stmt Γ Λ σ → Stmt Bool (@Λ' Γ Λ σ) σ
+def trNormal : Stmt Γ Λ σ → Stmt Bool (Λ' Γ Λ σ) σ
   | Stmt.move d q => move n d <| trNormal q
   | Stmt.write f q => read dec fun a ↦ Stmt.goto fun _ s ↦ Λ'.write (f a s) q
   | Stmt.load f q => read dec fun a ↦ (Stmt.load fun _ s ↦ f a s) <| trNormal q
@@ -897,7 +900,7 @@ def trNormal : Stmt Γ Λ σ → Stmt Bool (@Λ' Γ Λ σ) σ
   | Stmt.goto l => read dec fun a ↦ Stmt.goto fun _ s ↦ Λ'.normal (l a s)
   | Stmt.halt => Stmt.halt
 
-theorem stepAux_move (d : Dir) (q : Stmt Bool (@Λ' Γ Λ σ) σ) (v : σ) (T : Tape Bool) :
+theorem stepAux_move (d : Dir) (q : Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (T : Tape Bool) :
     stepAux (move n d q) v T = stepAux q v ((Tape.move d)^[n] T) := by
   suffices ∀ i, stepAux ((Stmt.move d)^[i] q) v T = stepAux q v ((Tape.move d)^[i] T) from this n
   intro i; induction' i with i IH generalizing T; · rfl
@@ -905,20 +908,20 @@ theorem stepAux_move (d : Dir) (q : Stmt Bool (@Λ' Γ Λ σ) σ) (v : σ) (T : 
   simp only [stepAux, Function.comp_apply]
   rw [IH]
 
-theorem supportsStmt_move {S : Finset (@Λ' Γ Λ σ)} {d : Dir} {q : Stmt Bool (@Λ' Γ Λ σ) σ} :
+theorem supportsStmt_move {S : Finset (Λ' Γ Λ σ)} {d : Dir} {q : Stmt Bool (Λ' Γ Λ σ) σ} :
     SupportsStmt S (move n d q) = SupportsStmt S q := by
   suffices ∀ {i}, SupportsStmt S ((Stmt.move d)^[i] q) = _ from this
   intro i; induction i generalizing q <;> simp only [*, iterate]; rfl
 
-theorem supportsStmt_write {S : Finset (@Λ' Γ Λ σ)} {l : List Bool} {q : Stmt Bool (@Λ' Γ Λ σ) σ} :
+theorem supportsStmt_write {S : Finset (Λ' Γ Λ σ)} {l : List Bool} {q : Stmt Bool (Λ' Γ Λ σ) σ} :
     SupportsStmt S (write l q) = SupportsStmt S q := by
   induction' l with _ l IH <;> simp only [write, SupportsStmt, *]
 
-theorem supportsStmt_read {S : Finset (@Λ' Γ Λ σ)} :
-    ∀ {f : Γ → Stmt Bool (@Λ' Γ Λ σ) σ}, (∀ a, SupportsStmt S (f a)) →
+theorem supportsStmt_read {S : Finset (Λ' Γ Λ σ)} :
+    ∀ {f : Γ → Stmt Bool (Λ' Γ Λ σ) σ}, (∀ a, SupportsStmt S (f a)) →
       SupportsStmt S (read dec f) :=
   suffices
-    ∀ (i) (f : List.Vector Bool i → Stmt Bool (@Λ' Γ Λ σ) σ),
+    ∀ (i) (f : List.Vector Bool i → Stmt Bool (Λ' Γ Λ σ) σ),
       (∀ v, SupportsStmt S (f v)) → SupportsStmt S (readAux i f)
     from fun hf ↦ this n _ (by intro; simp only [supportsStmt_move, hf])
   fun i f hf ↦ by
@@ -950,12 +953,12 @@ theorem trTape_mk' (L R : ListBlank Γ) : trTape enc0 (Tape.mk' L R) = trTape' e
 end
 
 /-- The top level program. -/
-def tr : @Λ' Γ Λ σ → Stmt Bool (@Λ' Γ Λ σ) σ
+def tr : Λ' Γ Λ σ → Stmt Bool (Λ' Γ Λ σ) σ
   | Λ'.normal l => trNormal dec (M l)
   | Λ'.write a q => write (enc a).toList <| move n Dir.left <| trNormal dec q
 
 /-- The machine configuration translation. -/
-def trCfg : Cfg Γ Λ σ → Cfg Bool (@Λ' Γ Λ σ) σ
+def trCfg : Cfg Γ Λ σ → Cfg Bool (Λ' Γ Λ σ) σ
   | ⟨l, v, T⟩ => ⟨l.map Λ'.normal, v, trTape enc0 T⟩
 
 variable {enc}
@@ -988,7 +991,7 @@ theorem trTape'_move_right (L R : ListBlank Γ) :
   · rfl
   rw [iterate_succ_apply, iterate_succ_apply', Tape.move_left_right, IH]
 
-theorem stepAux_write (q : Stmt Bool (@Λ' Γ Λ σ) σ) (v : σ) (a b : Γ) (L R : ListBlank Γ) :
+theorem stepAux_write (q : Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (a b : Γ) (L R : ListBlank Γ) :
     stepAux (write (enc a).toList q) v (trTape' enc0 L (ListBlank.cons b R)) =
       stepAux q v (trTape' enc0 (ListBlank.cons a L) R) := by
   simp only [trTape', ListBlank.cons_flatMap]
@@ -1009,7 +1012,7 @@ theorem stepAux_write (q : Stmt Bool (@Λ' Γ Λ σ) σ) (v : σ) (a b : Γ) (L 
 variable (encdec : ∀ a, dec (enc a) = a)
 include encdec
 
-theorem stepAux_read (f : Γ → Stmt Bool (@Λ' Γ Λ σ) σ) (v : σ) (L R : ListBlank Γ) :
+theorem stepAux_read (f : Γ → Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (L R : ListBlank Γ) :
     stepAux (read dec f) v (trTape' enc0 L R) = stepAux (f R.head) v (trTape' enc0 L R) := by
   suffices ∀ f, stepAux (readAux n f) v (trTape' enc0 L R) =
       stepAux (f (enc R.head)) v (trTape' enc0 (L.cons R.head) R.tail) by
@@ -1087,7 +1090,7 @@ variable [Fintype Γ]
 
 open scoped Classical in
 /-- The set of accessible `Λ'.write` machine states. -/
-noncomputable def writes : Stmt Γ Λ σ → Finset (@Λ' Γ Λ σ)
+noncomputable def writes : Stmt Γ Λ σ → Finset (Λ' Γ Λ σ)
   | Stmt.move _ q => writes q
   | Stmt.write _ q => (Finset.univ.image fun a ↦ Λ'.write a q) ∪ writes q
   | Stmt.load _ q => writes q
@@ -1098,7 +1101,7 @@ noncomputable def writes : Stmt Γ Λ σ → Finset (@Λ' Γ Λ σ)
 open scoped Classical in
 /-- The set of accessible machine states, assuming that the input machine is supported on `S`,
 are the normal states embedded from `S`, plus all write states accessible from these states. -/
-noncomputable def trSupp (S : Finset Λ) : Finset (@Λ' Γ Λ σ) :=
+noncomputable def trSupp (S : Finset Λ) : Finset (Λ' Γ Λ σ) :=
   S.biUnion fun l ↦ insert (Λ'.normal l) (writes (M l))
 
 open scoped Classical in
@@ -1165,8 +1168,8 @@ unreachable branch).
 
 namespace TM0to1
 
-variable {Γ : Type*} [Inhabited Γ]
-variable {Λ : Type*} [Inhabited Λ]
+variable (Γ : Type*) [Inhabited Γ]
+variable (Λ : Type*) [Inhabited Λ]
 
 /-- The machine states for a TM1 emulating a TM0 machine. States of the TM0 machine are embedded
 as `normal q` states, but the actual operation is split into two parts, a jump to `act s q`
@@ -1175,7 +1178,9 @@ inductive Λ'
   | normal : Λ → Λ'
   | act : TM0.Stmt Γ → Λ → Λ'
 
-instance : Inhabited (@Λ' Γ Λ) :=
+variable {Γ Λ}
+
+instance : Inhabited (Λ' Γ Λ) :=
   ⟨Λ'.normal default⟩
 
 variable (M : TM0.Machine Γ Λ)
@@ -1183,7 +1188,7 @@ variable (M : TM0.Machine Γ Λ)
 open TM1.Stmt
 
 /-- The program. -/
-def tr : @Λ' Γ Λ → TM1.Stmt Γ (@Λ' Γ Λ) Unit
+def tr : Λ' Γ Λ → TM1.Stmt Γ (Λ' Γ Λ) Unit
   | Λ'.normal q =>
     branch (fun a _ ↦ (M q a).isNone) halt <|
       goto fun a _ ↦ match M q a with
@@ -1193,7 +1198,7 @@ def tr : @Λ' Γ Λ → TM1.Stmt Γ (@Λ' Γ Λ) Unit
   | Λ'.act (TM0.Stmt.write a) q => (write fun _ _ ↦ a) <| goto fun _ _ ↦ Λ'.normal q
 
 /-- The configuration translation. -/
-def trCfg : TM0.Cfg Γ Λ → TM1.Cfg Γ (@Λ' Γ Λ) Unit
+def trCfg : TM0.Cfg Γ Λ → TM1.Cfg Γ (Λ' Γ Λ) Unit
   | ⟨q, T⟩ => ⟨cond (M q T.1).isSome (some (Λ'.normal q)) none, (), T⟩
 
 theorem tr_respects : Respects (TM0.step M) (TM1.step (tr M)) fun a b ↦ trCfg M a = b :=
@@ -1485,8 +1490,8 @@ theorem stk_nth_val {K : Type*} {Γ : K → Type*} {L : ListBlank (∀ k, Option
     List.getI_eq_iget_getElem?, List.getElem?_map]
   cases S.reverse[n]? <;> rfl
 
-variable {K : Type*}
-variable {Γ : K → Type*}
+variable (K : Type*)
+variable (Γ : K → Type*)
 variable {Λ σ : Type*}
 
 /-- The alphabet of the TM2 simulator on TM1 is a marker for the stack bottom,
@@ -1494,15 +1499,17 @@ plus a vector of stack elements for each stack, or none if the stack does not ex
 def Γ' :=
   Bool × ∀ k, Option (Γ k)
 
-instance Γ'.inhabited : Inhabited (@Γ' K Γ) :=
+variable {K Γ}
+
+instance Γ'.inhabited : Inhabited (Γ' K Γ) :=
   ⟨⟨false, fun _ ↦ none⟩⟩
 
-instance Γ'.fintype [DecidableEq K] [Fintype K] [∀ k, Fintype (Γ k)] : Fintype (@Γ' K Γ) :=
+instance Γ'.fintype [DecidableEq K] [Fintype K] [∀ k, Fintype (Γ k)] : Fintype (Γ' K Γ) :=
   instFintypeProd _ _
 
 /-- The bottom marker is fixed throughout the calculation, so we use the `addBottom` function
 to express the program state in terms of a tape with only the stacks themselves. -/
-def addBottom (L : ListBlank (∀ k, Option (Γ k))) : ListBlank (@Γ' K Γ) :=
+def addBottom (L : ListBlank (∀ k, Option (Γ k))) : ListBlank (Γ' K Γ) :=
   ListBlank.cons (true, L.head) (L.tail.map ⟨Prod.mk false, rfl⟩)
 
 theorem addBottom_map (L : ListBlank (∀ k, Option (Γ k))) :
@@ -1530,6 +1537,7 @@ theorem addBottom_nth_succ_fst (L : ListBlank (∀ k, Option (Γ k))) (n : ℕ) 
 theorem addBottom_head_fst (L : ListBlank (∀ k, Option (Γ k))) : (addBottom L).head.1 = true := by
   rw [addBottom, ListBlank.head_cons]
 
+variable (K Γ σ) in
 /-- A stack action is a command that interacts with the top of a stack. Our default position
 is at the bottom of all the stacks, so we have to hold on to this action while going to the end
 to modify the stack. -/
@@ -1538,7 +1546,7 @@ inductive StAct (k : K)
   | peek : (σ → Option (Γ k) → σ) → StAct k
   | pop : (σ → Option (Γ k) → σ) → StAct k
 
-instance StAct.inhabited {k : K} : Inhabited (@StAct K Γ σ k) :=
+instance StAct.inhabited {k : K} : Inhabited (StAct K Γ σ k) :=
   ⟨StAct.peek fun s _ ↦ s⟩
 
 section
@@ -1546,19 +1554,19 @@ section
 open StAct
 
 /-- The TM2 statement corresponding to a stack action. -/
-def stRun {k : K} : @StAct K Γ σ k → TM2.Stmt Γ Λ σ → TM2.Stmt Γ Λ σ
+def stRun {k : K} : StAct K Γ σ k → TM2.Stmt Γ Λ σ → TM2.Stmt Γ Λ σ
   | push f => TM2.Stmt.push k f
   | peek f => TM2.Stmt.peek k f
   | pop f => TM2.Stmt.pop k f
 
 /-- The effect of a stack action on the local variables, given the value of the stack. -/
-def stVar {k : K} (v : σ) (l : List (Γ k)) : @StAct K Γ σ k → σ
+def stVar {k : K} (v : σ) (l : List (Γ k)) : StAct K Γ σ k → σ
   | push _ => v
   | peek f => f v l.head?
   | pop f => f v l.head?
 
 /-- The effect of a stack action on the stack. -/
-def stWrite {k : K} (v : σ) (l : List (Γ k)) : @StAct K Γ σ k → List (Γ k)
+def stWrite {k : K} (v : σ) (l : List (Γ k)) : StAct K Γ σ k → List (Γ k)
   | push f => f v :: l
   | peek _ => l
   | pop _ => l.tail
@@ -1567,7 +1575,7 @@ def stWrite {k : K} (v : σ) (l : List (Γ k)) : @StAct K Γ σ k → List (Γ k
 of the stack, and all other actions, which do not. This is a modified recursor which lumps the
 stack actions into one. -/
 @[elab_as_elim]
-def stmtStRec.{l} {C : TM2.Stmt Γ Λ σ → Sort l} (H₁ : ∀ (k) (s : @StAct K Γ σ k) (q)
+def stmtStRec.{l} {C : TM2.Stmt Γ Λ σ → Sort l} (H₁ : ∀ (k) (s : StAct K Γ σ k) (q)
     (_ : C q), C (stRun s q))
     (H₂ : ∀ (a q) (_ : C q), C (TM2.Stmt.load a q))
     (H₃ : ∀ (p q₁ q₂) (_ : C q₁) (_ : C q₂), C (TM2.Stmt.branch p q₁ q₂))
@@ -1580,23 +1588,27 @@ def stmtStRec.{l} {C : TM2.Stmt Γ Λ σ → Sort l} (H₁ : ∀ (k) (s : @StAct
   | TM2.Stmt.goto _ => H₄ _
   | TM2.Stmt.halt => H₅
 
-theorem supports_run (S : Finset Λ) {k : K} (s : @StAct K Γ σ k) (q : TM2.Stmt Γ Λ σ) :
+theorem supports_run (S : Finset Λ) {k : K} (s : StAct K Γ σ k) (q : TM2.Stmt Γ Λ σ) :
     TM2.SupportsStmt S (stRun s q) ↔ TM2.SupportsStmt S q := by
   cases s <;> rfl
 
 end
+
+variable (K Γ Λ σ)
 
 /-- The machine states of the TM2 emulator. We can either be in a normal state when waiting for the
 next TM2 action, or we can be in the "go" and "return" states to go to the top of the stack and
 return to the bottom, respectively. -/
 inductive Λ'
   | normal : Λ → Λ'
-  | go (k : K) : @StAct K Γ σ k → TM2.Stmt Γ Λ σ → Λ'
+  | go (k : K) : StAct K Γ σ k → TM2.Stmt Γ Λ σ → Λ'
   | ret : TM2.Stmt Γ Λ σ → Λ'
+
+variable {K Γ Λ σ}
 
 open Λ'
 
-instance Λ'.inhabited [Inhabited Λ] : Inhabited (@Λ' K Γ Λ σ) :=
+instance Λ'.inhabited [Inhabited Λ] : Inhabited (Λ' K Γ Λ σ) :=
   ⟨normal default⟩
 
 open TM1.Stmt
@@ -1606,8 +1618,8 @@ variable [DecidableEq K]
 
 /-- The program corresponding to state transitions at the end of a stack. Here we start out just
 after the top of the stack, and should end just after the new top of the stack. -/
-def trStAct {k : K} (q : TM1.Stmt (@Γ' K Γ) (@Λ' K Γ Λ σ) σ) :
-    @StAct K Γ σ k → TM1.Stmt (@Γ' K Γ) (@Λ' K Γ Λ σ) σ
+def trStAct {k : K} (q : TM1.Stmt (Γ' K Γ) (Λ' K Γ Λ σ) σ) :
+    StAct K Γ σ k → TM1.Stmt (Γ' K Γ) (Λ' K Γ Λ σ) σ
   | StAct.push f => (write fun a s ↦ (a.1, update a.2 k <| some <| f s)) <| move Dir.right q
   | StAct.peek f => move Dir.left <| (load fun a s ↦ f s (a.2 k)) <| move Dir.right q
   | StAct.pop f =>
@@ -1617,11 +1629,11 @@ def trStAct {k : K} (q : TM1.Stmt (@Γ' K Γ) (@Λ' K Γ Λ σ) σ) :
 
 /-- The initial state for the TM2 emulator, given an initial TM2 state. All stacks start out empty
 except for the input stack, and the stack bottom mark is set at the head. -/
-def trInit (k : K) (L : List (Γ k)) : List (@Γ' K Γ) :=
-  let L' : List (@Γ' K Γ) := L.reverse.map fun a ↦ (false, update (fun _ ↦ none) k (some a))
+def trInit (k : K) (L : List (Γ k)) : List (Γ' K Γ) :=
+  let L' : List (Γ' K Γ) := L.reverse.map fun a ↦ (false, update (fun _ ↦ none) k (some a))
   (true, L'.headI.2) :: L'.tail
 
-theorem step_run {k : K} (q : TM2.Stmt Γ Λ σ) (v : σ) (S : ∀ k, List (Γ k)) : ∀ s : @StAct K Γ σ k,
+theorem step_run {k : K} (q : TM2.Stmt Γ Λ σ) (v : σ) (S : ∀ k, List (Γ k)) : ∀ s : StAct K Γ σ k,
     TM2.stepAux (stRun s q) v S = TM2.stepAux q (stVar v (S k) s) (update S k (stWrite v (S k) s))
   | StAct.push _ => rfl
   | StAct.peek f => by unfold stWrite; rw [Function.update_eq_self]; rfl
@@ -1632,7 +1644,7 @@ end
 /-- The translation of TM2 statements to TM1 statements. regular actions have direct equivalents,
 but stack actions are deferred by going to the corresponding `go` state, so that we can find the
 appropriate stack top. -/
-def trNormal : TM2.Stmt Γ Λ σ → TM1.Stmt (@Γ' K Γ) (@Λ' K Γ Λ σ) σ
+def trNormal : TM2.Stmt Γ Λ σ → TM1.Stmt (Γ' K Γ) (Λ' K Γ Λ σ) σ
   | TM2.Stmt.push k f q => goto fun _ _ ↦ go k (StAct.push f) q
   | TM2.Stmt.peek k f q => goto fun _ _ ↦ go k (StAct.peek f) q
   | TM2.Stmt.pop k f q => goto fun _ _ ↦ go k (StAct.pop f) q
@@ -1641,7 +1653,7 @@ def trNormal : TM2.Stmt Γ Λ σ → TM1.Stmt (@Γ' K Γ) (@Λ' K Γ Λ σ) σ
   | TM2.Stmt.goto l => goto fun _ s ↦ normal (l s)
   | TM2.Stmt.halt => halt
 
-theorem trNormal_run {k : K} (s : @StAct K Γ σ k) (q : TM2.Stmt Γ Λ σ) :
+theorem trNormal_run {k : K} (s : StAct K Γ σ k) (q : TM2.Stmt Γ Λ σ) :
     trNormal (stRun s q) = goto fun _ _ ↦ go k s q := by
   cases s <;> rfl
 
@@ -1649,7 +1661,7 @@ section
 
 open scoped Classical in
 /-- The set of machine states accessible from an initial TM2 statement. -/
-noncomputable def trStmts₁ : TM2.Stmt Γ Λ σ → Finset (@Λ' K Γ Λ σ)
+noncomputable def trStmts₁ : TM2.Stmt Γ Λ σ → Finset (Λ' K Γ Λ σ)
   | TM2.Stmt.push k f q => {go k (StAct.push f) q, ret q} ∪ trStmts₁ q
   | TM2.Stmt.peek k f q => {go k (StAct.peek f) q, ret q} ∪ trStmts₁ q
   | TM2.Stmt.pop k f q => {go k (StAct.pop f) q, ret q} ∪ trStmts₁ q
@@ -1657,14 +1669,14 @@ noncomputable def trStmts₁ : TM2.Stmt Γ Λ σ → Finset (@Λ' K Γ Λ σ)
   | TM2.Stmt.branch _ q₁ q₂ => trStmts₁ q₁ ∪ trStmts₁ q₂
   | _ => ∅
 
-theorem trStmts₁_run {k : K} {s : @StAct K Γ σ k} {q : TM2.Stmt Γ Λ σ} :
+theorem trStmts₁_run {k : K} {s : StAct K Γ σ k} {q : TM2.Stmt Γ Λ σ} :
 open scoped Classical in
     trStmts₁ (stRun s q) = {go k s q, ret q} ∪ trStmts₁ q := by
   cases s <;> simp only [trStmts₁, stRun]
 
-theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : TM1.Stmt (@Γ' K Γ) (@Λ' K Γ Λ σ) σ} {v : σ}
+theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : TM1.Stmt (Γ' K Γ) (Λ' K Γ Λ σ) σ} {v : σ}
     {S : ∀ k, List (Γ k)} {L : ListBlank (∀ k, Option (Γ k))}
-    (hL : ∀ k, L.map (proj k) = ListBlank.mk ((S k).map some).reverse) (o : @StAct K Γ σ k) :
+    (hL : ∀ k, L.map (proj k) = ListBlank.mk ((S k).map some).reverse) (o : StAct K Γ σ k) :
     let v' := stVar v (S k) o
     let Sk' := stWrite v (S k) o
     let S' := update S k Sk'
@@ -1675,7 +1687,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : TM1.Stmt (@Γ' K Γ) (@�
           TM1.stepAux q v' ((Tape.move Dir.right)^[(S' k).length] (Tape.mk' ∅ (addBottom L'))) := by
   simp only [Function.update_self]; cases o with simp only [stWrite, stVar, trStAct, TM1.stepAux]
   | push f =>
-    have := Tape.write_move_right_n fun a : Γ' ↦ (a.1, update a.2 k (some (f v)))
+    have := Tape.write_move_right_n fun a : Γ' K Γ ↦ (a.1, update a.2 k (some (f v)))
     refine
       ⟨_, fun k' ↦ ?_, by
         -- Porting note: `rw [...]` to `erw [...]; rfl`.
@@ -1722,7 +1734,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : TM1.Stmt (@Γ' K Γ) (@�
         ⟨_, fun k' ↦ ?_, by
           erw [List.length_cons, Tape.move_right_n_head, Tape.mk'_nth_nat, addBottom_nth_succ_fst,
             cond_false, iterate_succ', Function.comp, Tape.move_right_left, Tape.move_right_n_head,
-            Tape.mk'_nth_nat, Tape.write_move_right_n fun a : Γ' ↦ (a.1, update a.2 k none),
+            Tape.mk'_nth_nat, Tape.write_move_right_n fun a : Γ' K Γ ↦ (a.1, update a.2 k none),
             addBottom_modifyNth fun a ↦ update a k none, addBottom_nth_snd,
             stk_nth_val _ (hL k), e,
             show (List.cons hd tl).reverse[tl.length]? = some hd by
@@ -1754,7 +1766,7 @@ variable (M : Λ → TM2.Stmt Γ Λ σ)
 
 /-- The TM2 emulator machine states written as a TM1 program.
 This handles the `go` and `ret` states, which shuttle to and from a stack top. -/
-def tr : @Λ' K Γ Λ σ → TM1.Stmt (@Γ' K Γ) (@Λ' K Γ Λ σ) σ
+def tr : Λ' K Γ Λ σ → TM1.Stmt (Γ' K Γ) (Λ' K Γ Λ σ) σ
   | normal q => trNormal (M q)
   | go k s q =>
     branch (fun a _ ↦ (a.2 k).isNone) (trStAct (goto fun _ _ ↦ ret q) s)
@@ -1762,7 +1774,7 @@ def tr : @Λ' K Γ Λ σ → TM1.Stmt (@Γ' K Γ) (@Λ' K Γ Λ σ) σ
   | ret q => branch (fun a _ ↦ a.1) (trNormal q) (move Dir.left <| goto fun _ _ ↦ ret q)
 
 /-- The relation between TM2 configurations and TM1 configurations of the TM2 emulator. -/
-inductive TrCfg : TM2.Cfg Γ Λ σ → TM1.Cfg (@Γ' K Γ) (@Λ' K Γ Λ σ) σ → Prop
+inductive TrCfg : TM2.Cfg Γ Λ σ → TM1.Cfg (Γ' K Γ) (Λ' K Γ Λ σ) σ → Prop
   | mk {q : Option Λ} {v : σ} {S : ∀ k, List (Γ k)} (L : ListBlank (∀ k, Option (Γ k))) :
     (∀ k, L.map (proj k) = ListBlank.mk ((S k).map some).reverse) →
       TrCfg ⟨q, v, S⟩ ⟨q.map normal, v, Tape.mk' ∅ (addBottom L)⟩
@@ -1792,7 +1804,7 @@ theorem tr_respects_aux₃ {q v} {L : ListBlank (∀ k, Option (Γ k))} (n) : Re
 
 theorem tr_respects_aux {q v T k} {S : ∀ k, List (Γ k)}
     (hT : ∀ k, ListBlank.map (proj k) T = ListBlank.mk ((S k).map some).reverse)
-    (o : @StAct K Γ σ k)
+    (o : StAct K Γ σ k)
     (IH : ∀ {v : σ} {S : ∀ k : K, List (Γ k)} {T : ListBlank (∀ k, Option (Γ k))},
       (∀ k, ListBlank.map (proj k) T = ListBlank.mk ((S k).map some).reverse) →
       ∃ b, TrCfg (TM2.stepAux q v S) b ∧
@@ -1837,7 +1849,7 @@ section
 variable [Inhabited Λ] [Inhabited σ]
 
 theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L)
-    (TM1.init (trInit k L) : TM1.Cfg (@Γ' K Γ) (@Λ' K Γ Λ σ) σ) := by
+    (TM1.init (trInit k L) : TM1.Cfg (Γ' K Γ) (Λ' K Γ Λ σ) σ) := by
   rw [(_ : TM1.init _ = _)]
   · refine ⟨ListBlank.mk (L.reverse.map fun a ↦ update default k (some a)), fun k' ↦ ?_⟩
     refine ListBlank.ext fun i ↦ ?_
@@ -1881,7 +1893,7 @@ variable [Inhabited Λ]
 
 open scoped Classical in
 /-- The support of a set of TM2 states in the TM2 emulator. -/
-noncomputable def trSupp (S : Finset Λ) : Finset (@Λ' K Γ Λ σ) :=
+noncomputable def trSupp (S : Finset Λ) : Finset (Λ' K Γ Λ σ) :=
   S.biUnion fun l ↦ insert (normal l) (trStmts₁ (M l))
 
 open scoped Classical in
