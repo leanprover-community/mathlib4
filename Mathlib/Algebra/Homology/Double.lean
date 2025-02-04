@@ -79,11 +79,11 @@ lemma double_d (h : i₀ ≠ i₁) :
 
 lemma double_d_eq_zero₀ (a b : ι) (ha : a ≠ i₀) :
     (double f hi₀₁).d a b = 0 :=
-  dif_neg (by rintro ⟨h, _, _⟩; exact ha h)
+  dif_neg (by tauto)
 
 lemma double_d_eq_zero₁ (a b : ι) (hb : b ≠ i₁) :
     (double f hi₀₁).d a b = 0 :=
-  dif_neg (by rintro ⟨_, h, _⟩; exact hb h)
+  dif_neg (by tauto)
 
 variable {f hi₀₁} in
 @[ext]
