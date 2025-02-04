@@ -219,12 +219,10 @@ variable {X Y : SSet.{u}} {n : ℕ}
 abbrev map (f : Path X n) (σ : X ⟶ Y) : Path Y n :=
   Truncated.Path.map f ((truncation 1).map σ)
 
-@[simp]
 lemma map_vertex (f : Path X n) (σ : X ⟶ Y) (i : Fin (n + 1)) :
     (f.map σ).vertex i = σ.app (op [0]) (f.vertex i) :=
   rfl
 
-@[simp]
 lemma map_arrow (f : Path X n) (σ : X ⟶ Y) (i : Fin n) :
     (f.map σ).arrow i = σ.app (op [1]) (f.arrow i) :=
   rfl
@@ -245,12 +243,10 @@ by traversing in order through the vertices of `X _[n]ₙ₊₁`. -/
 abbrev spine : X _[n] → Path X n :=
   truncation (n + 1) |>.obj X |>.spine n
 
-@[simp]
 lemma spine_vertex (Δ : X _[n]) (i : Fin (n + 1)) :
     (X.spine n Δ).vertex i = X.map (SimplexCategory.const [0] [n] i).op Δ :=
   rfl
 
-@[simp]
 lemma spine_arrow (Δ : X _[n]) (i : Fin n) :
     (X.spine n Δ).arrow i = X.map (mkOfSucc i).op Δ :=
   rfl
