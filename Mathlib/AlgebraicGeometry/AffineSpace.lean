@@ -386,7 +386,6 @@ def functor : (Type v)ᵒᵖ ⥤ Scheme.{max u v} ⥤ Scheme.{max u v} where
   map_comp f g := by ext: 2; dsimp; exact reindex_comp _ _ _
 
 end functorial
-
 section instances
 
 instance : IsAffineHom (𝔸(n; S) ↘ S) := MorphismProperty.pullback_fst _ _ inferInstance
