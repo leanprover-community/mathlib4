@@ -4213,7 +4213,7 @@ import Mathlib.Order.Filter.AtTopBot.ModEq
 import Mathlib.Order.Filter.AtTopBot.Monoid
 import Mathlib.Order.Filter.AtTopBot.Ring
 import Mathlib.Order.Filter.Bases
-import Mathlib.Order.Filter.Basic
+import Mathlib.Order.Filter.Map
 import Mathlib.Order.Filter.CardinalInter
 import Mathlib.Order.Filter.Cocardinal
 import Mathlib.Order.Filter.Cofinite
