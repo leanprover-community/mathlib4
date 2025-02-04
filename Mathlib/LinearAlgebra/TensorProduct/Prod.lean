@@ -39,11 +39,11 @@ attribute [ext] TensorProduct.ext
 def prodRight : M₁ ⊗[R] (M₂ × M₃) ≃ₗ[S] ((M₁ ⊗[R] M₂) × (M₁ ⊗[R] M₃)) :=
   LinearEquiv.ofLinear
     (TensorProduct.AlgebraTensorModule.lift <|
-      LinearMap.prodMapLinear R M₂ M₃ (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₃) S
-        ∘ₗ LinearMap.prod (AlgebraTensorModule.mk R S M₁ M₂) (AlgebraTensorModule.mk R S M₁ M₃))
+      LinearMap.prodMapLinear R M₂ M₃ (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₃) S ∘ₗ
+        LinearMap.prod (AlgebraTensorModule.mk R S M₁ M₂) (AlgebraTensorModule.mk R S M₁ M₃))
     (LinearMap.coprod
-     (AlgebraTensorModule.lTensor _ _ <| LinearMap.inl _ _ _)
-     (AlgebraTensorModule.lTensor _ _ <| LinearMap.inr _ _ _))
+      (AlgebraTensorModule.lTensor _ _ <| LinearMap.inl _ _ _)
+      (AlgebraTensorModule.lTensor _ _ <| LinearMap.inr _ _ _))
     (by ext <;> simp)
     (by ext <;> simp)
 
