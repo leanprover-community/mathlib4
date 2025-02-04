@@ -26,7 +26,7 @@ We may denote a game as $\{L | R\}$, where $L$ and $R$ stand for the collections
 moves. This notation is not currently used in Mathlib.
 
 Combinatorial games themselves, as a quotient of pregames, are constructed in
-`SetTheory.Game.Basic`.
+`Mathlib.SetTheory.Game.Basic`.
 
 ## Conway induction
 
