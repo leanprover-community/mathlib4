@@ -1046,7 +1046,7 @@ theorem uniformContinuous_coe [_i : Fact (1 ≤ p)] :
   have : ‖f i - g i‖ ≤ ‖f - g‖ := norm_apply_le_norm hp (f - g) i
   exact this.trans_lt hfg
 
-theorem uniformContinuous_single [_i : Fact (1 ≤ p)] [DecidableEq α] (i : α) :
+theorem uniformContinuous_single [Fact (1 ≤ p)] [DecidableEq α] (i : α) :
     UniformContinuous (lp.single (E := E) p i) := by
   have hp : 0 < p := zero_lt_one.trans_le Fact.out
   rw [NormedAddCommGroup.uniformity_basis_dist.uniformContinuous_iff
@@ -1057,19 +1057,25 @@ theorem uniformContinuous_single [_i : Fact (1 ≤ p)] [DecidableEq α] (i : α)
   simp_rw [← lp.single_sub, lp.norm_single (p := p) (hp := hp)]
   exact hxy
 
-
 variable (p E) in
-def singleContinuousAddMonoidHom [_i : Fact (1 ≤ p)] [DecidableEq α] (i : α) :
+/-- `lp.single` as a continuous morphism of additive monoids. -/
+def singleContinuousAddMonoidHom [Fact (1 ≤ p)] [DecidableEq α] (i : α) :
     ContinuousAddMonoidHom (E i) (lp E p) where
   __ := singleAddHom p i
   continuous_toFun := uniformContinuous_single i |>.continuous
 
-/-- Two continuous additive maps from-/
-theorem ext_addHom [DecidableEq α]
-    [Fact (1 ≤ p)] (hp : p ≠ ⊤) {F} [AddCommMonoid F] [TopologicalSpace F] [T2Space F]
-    ⦃f g : ContinuousAddMonoidHom (lp E p) F⦄
-    (h : ∀ i, f.comp (singleContinuousAddMonoidHom E p i) =
-      g.comp (singleContinuousAddMonoidHom E p i)) :
+@[simp]
+theorem singleContinuousAddMonoidHom_apply [Fact (1 ≤ p)] [DecidableEq α] (i : α) (x : E i) :
+    singleContinuousAddMonoidHom E p i x = lp.single p i x :=
+  rfl
+
+/-- Two continuous additive maps from `lp E p` agree if they agree on `lp.single`.
+
+See note [partially-applied ext lemmas]. -/
+theorem ext_addHom [DecidableEq α] {F} [AddCommMonoid F] [TopologicalSpace F] [T2Space F]
+    [Fact (1 ≤ p)] (hp : p ≠ ⊤) ⦃f g : ContinuousAddMonoidHom (lp E p) F⦄
+    (h : ∀ i,
+      f.comp (singleContinuousAddMonoidHom E p i) = g.comp (singleContinuousAddMonoidHom E p i)) :
     f = g := by
   ext x
   classical
