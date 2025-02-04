@@ -79,10 +79,6 @@ theorem inf_sSup_eq {α : Type*} [Order.Frame α] {s : Set α} {a : α} :
     a ⊓ sSup s = ⨆ b ∈ s, a ⊓ b :=
   gc_inf_himp.l_sSup
 
-theorem inf_sSup_le_iSup_inf {α : Type*} [Order.Frame α] (a : α) (s : Set α):
-    a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b :=
-  inf_sSup_eq.le
-
 /-- A coframe, aka complete Brouwer algebra or complete co-Heyting algebra, is a complete lattice
 whose `⊔` distributes over `⨅`. -/
 class Order.Coframe (α : Type*) extends CompleteLattice α, CoheytingAlgebra α where
@@ -91,10 +87,6 @@ class Order.Coframe (α : Type*) extends CompleteLattice α, CoheytingAlgebra α
 theorem sup_sInf_eq {α : Type*} [Order.Coframe α] {s : Set α} {a : α} :
     a ⊔ sInf s  = ⨅ b ∈ s, a ⊔ b:=
   gc_sdiff_sup.u_sInf
-
-theorem iInf_sup_le_sup_sInf {α : Type*} [Order.Coframe α] (a : α) (s : Set α) :
-    ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s :=
-  sup_sInf_eq.ge
 
 open Order
 
@@ -116,7 +108,7 @@ distribute over `⨅` and `⨆`. -/
 class CompleteDistribLattice (α : Type*) extends Frame α, Coframe α, BiheytingAlgebra α
 
 /-- In a complete distributive lattice, `⊔` distributes over `⨅`. -/
-add_decl_doc iInf_sup_le_sup_sInf
+add_decl_doc inf_sSup_eq
 
 /-- Structure containing the minimal axioms required to check that an order is a completely
 distributive. Do NOT use, except for implementing `CompletelyDistribLattice` via
@@ -163,7 +155,7 @@ lemma inf_iSup₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊓ ⨆ i, ⨆ j, f 
 /-- The `Order.Frame.MinimalAxioms` element corresponding to a frame. -/
 def of [Frame α] : MinimalAxioms α where
   __ :=  ‹Frame α›
-  inf_sSup_le_iSup_inf := inf_sSup_le_iSup_inf
+  inf_sSup_le_iSup_inf a s := _root_.inf_sSup_eq.le
 
 end MinimalAxioms
 
@@ -201,7 +193,7 @@ lemma sup_iInf₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊔ ⨅ i, ⨅ j, f 
 /-- The `Order.Coframe.MinimalAxioms` element corresponding to a frame. -/
 def of [Coframe α] : MinimalAxioms α where
   __ := ‹Coframe α›
-  iInf_sup_le_sup_sInf := iInf_sup_le_sup_sInf
+  iInf_sup_le_sup_sInf a s := _root_.sup_sInf_eq.ge
 
 end MinimalAxioms
 
@@ -225,8 +217,8 @@ variable (minAx : MinimalAxioms α)
 -/
 def of [CompleteDistribLattice α] : MinimalAxioms α where
   __ := ‹CompleteDistribLattice α›
-  inf_sSup_le_iSup_inf := inf_sSup_le_iSup_inf
-  iInf_sup_le_sup_sInf := iInf_sup_le_sup_sInf
+  inf_sSup_le_iSup_inf a s:= _root_.inf_sSup_eq.le
+  iInf_sup_le_sup_sInf a s:= _root_.sup_sInf_eq.ge
 
 /-- Turn minimal axioms for `CompleteDistribLattice` into minimal axioms for `Order.Frame`. -/
 abbrev toFrame : Frame.MinimalAxioms α := minAx.toMinimalAxioms
@@ -582,22 +574,22 @@ instance Prod.instCompleteBooleanAlgebra [CompleteBooleanAlgebra α] [CompleteBo
     CompleteBooleanAlgebra (α × β) where
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
-  inf_sSup_le_iSup_inf := inf_sSup_le_iSup_inf
-  iInf_sup_le_sup_sInf := iInf_sup_le_sup_sInf
+  inf_sSup_le_iSup_inf _ _ := _root_.inf_sSup_eq.le
+  iInf_sup_le_sup_sInf _ _ := _root_.sup_sInf_eq.ge
 
 instance Pi.instCompleteBooleanAlgebra {ι : Type*} {π : ι → Type*}
     [∀ i, CompleteBooleanAlgebra (π i)] : CompleteBooleanAlgebra (∀ i, π i) where
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
-  inf_sSup_le_iSup_inf := inf_sSup_le_iSup_inf
-  iInf_sup_le_sup_sInf := iInf_sup_le_sup_sInf
+  inf_sSup_le_iSup_inf _ _ := _root_.inf_sSup_eq.le
+  iInf_sup_le_sup_sInf _ _ := _root_.sup_sInf_eq.ge
 
 instance OrderDual.instCompleteBooleanAlgebra [CompleteBooleanAlgebra α] :
     CompleteBooleanAlgebra αᵒᵈ where
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
-  inf_sSup_le_iSup_inf := inf_sSup_le_iSup_inf
-  iInf_sup_le_sup_sInf := iInf_sup_le_sup_sInf
+  inf_sSup_le_iSup_inf _ _ := _root_.inf_sSup_eq.le
+  iInf_sup_le_sup_sInf _ _ := _root_.sup_sInf_eq.ge
 
 section CompleteBooleanAlgebra
 
@@ -663,8 +655,8 @@ instance (priority := 100) CompleteAtomicBooleanAlgebra.toCompleteBooleanAlgebra
     [CompleteAtomicBooleanAlgebra α] : CompleteBooleanAlgebra α where
   __ := CompletelyDistribLattice.toCompleteDistribLattice
   __ := ‹CompleteAtomicBooleanAlgebra α›
-  iInf_sup_le_sup_sInf := iInf_sup_le_sup_sInf
-  inf_sSup_le_iSup_inf := inf_sSup_le_iSup_inf
+  inf_sSup_le_iSup_inf _ _ := _root_.inf_sSup_eq.le
+  iInf_sup_le_sup_sInf _ _ := _root_.sup_sInf_eq.ge
 
 instance Prod.instCompleteAtomicBooleanAlgebra [CompleteAtomicBooleanAlgebra α]
     [CompleteAtomicBooleanAlgebra β] : CompleteAtomicBooleanAlgebra (α × β) where
