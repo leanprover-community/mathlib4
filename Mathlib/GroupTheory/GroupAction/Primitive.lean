@@ -25,9 +25,9 @@ import Mathlib.GroupTheory.GroupAction.Transitive
   In fact, it may be irrelevant if the action is degenerate,
   when “trivial blocks” might not be blocks.
   Moreover, the classical notion is *primitive*,
-  which assumes moreover that `X` is not empty.
+  which further assumes that `X` is not empty.
 
-- `MulAction.IsQuasipreprimitive G X`
+- `MulAction.IsQuasiPreprimitive G X`
   A structure that says that the action of the group `G` on the type `X` is *quasipreprimitive*,
   namely, normal subgroups of `G` which act nontrivially act pretransitively.
 
@@ -78,18 +78,18 @@ open IsPreprimitive
 
 /-- An additive action of an additive group is quasipreprimitive if any normal subgroup
 that has no fixed point acts pretransitively -/
-class _root_.AddAction.IsQuasipreprimitive
+class _root_.AddAction.IsQuasiPreprimitive
     [AddGroup G] [AddAction G X] extends AddAction.IsPretransitive G X : Prop where
   isPretransitive_of_normal :
-    ∀ {N : AddSubgroup G} (_ : N.Normal), AddAction.fixedPoints N X ≠ ⊤ →
+    ∀ {N : AddSubgroup G} [N.Normal], AddAction.fixedPoints N X ≠ .univ →
       AddAction.IsPretransitive N X
 
-/-- A `MulAction` of a group is quasipreprimitive if any normal subgroup
+/-- An  action of a group is quasipreprimitive if any normal subgroup
 that has no fixed point acts pretransitively -/
 @[to_additive]
-class IsQuasipreprimitive [Group G] [MulAction G X] extends IsPretransitive G X : Prop where
+class IsQuasiPreprimitive [Group G] [MulAction G X] extends IsPretransitive G X : Prop where
   isPretransitive_of_normal :
-    ∀ {N : Subgroup G} [N.Normal], fixedPoints N X ≠ ⊤ → IsPretransitive N X
+    ∀ {N : Subgroup G} [N.Normal], fixedPoints N X ≠ .univ → IsPretransitive N X
 
 variable {G X}
 
@@ -123,11 +123,9 @@ theorem isPreprimitive_of_isTrivialBlock_base [IsPretransitive G X] (a : X)
     (H : ∀ {B : Set X} (_ : a ∈ B) (_ : IsBlock G B), IsTrivialBlock B) :
     IsPreprimitive G X where
   isTrivialBlock_of_isBlock {B} hB := by
-    cases Set.eq_empty_or_nonempty B with
-    | inl h => apply Or.intro_left; simp [h, Set.subsingleton_empty]
-    | inr h =>
-      obtain ⟨b, hb⟩ := h
-      obtain ⟨g, hg⟩ := exists_smul_eq G b a
+    obtain rfl | ⟨b, hb⟩ := B.eq_empty_or_nonempty
+    · simp [IsTrivialBlock]
+    · obtain ⟨g, hg⟩ := exists_smul_eq G b a
       rw [← IsTrivialBlock.smul_iff g]
       apply H _ (hB.translate g)
       rw [← hg]
@@ -139,7 +137,7 @@ theorem isPreprimitive_of_isTrivialBlock_base [IsPretransitive G X] (a : X)
   "If the action is not trivial, then the trivial blocks condition implies preprimitivity
   (pretransitivity is automatic) (based condition)"]
 theorem isPreprimitive_of_isTrivialBlock_of_not_mem_fixedPoints {a : X} (ha : a ∉ fixedPoints G X)
-    (H : ∀ {B : Set X} (_ : a ∈ B) (_ : IsBlock G B), IsTrivialBlock B) :
+    (H : ∀ ⦃B : Set X⦄, a ∈ B → IsBlock G B → IsTrivialBlock B) :
     IsPreprimitive G X :=
   have : IsPretransitive G X := by
     rw [isPretransitive_iff_base a]
@@ -152,11 +150,9 @@ theorem isPreprimitive_of_isTrivialBlock_of_not_mem_fixedPoints {a : X} (ha : a 
       exact mem_orbit a g
     · intro x; rw [← MulAction.mem_orbit_iff, H]; exact Set.mem_univ x
   { isTrivialBlock_of_isBlock {B} hB := by
-      cases Set.eq_empty_or_nonempty B with
-      | inl h => left; rw [h]; exact Set.subsingleton_empty
-      | inr h =>
-        obtain ⟨b, hb⟩ := h
-        obtain ⟨g, hg⟩ := exists_smul_eq G b a
+      obtain rfl | ⟨b, hb⟩ := B.eq_empty_or_nonempty
+      · simp [IsTrivialBlock]
+      · obtain ⟨g, hg⟩ := exists_smul_eq G b a
         rw [← IsTrivialBlock.smul_iff g]
         exact H ⟨b, hb, hg⟩ (hB.translate g) }
 
@@ -261,10 +257,11 @@ variable {M : Type*} [Group M] {α : Type*} [MulAction M α]
 (Wielandt, th. 7.1)-/
 @[to_additive "In a preprimitive additive action,
   any normal subgroup that acts nontrivially is pretransitive (Wielandt, th. 7.1)"]
-theorem IsPreprimitive.isQuasipreprimitive [IsPreprimitive M α] :
-    IsQuasipreprimitive M α where
+-- See note [lower instance priority]
+instance (priority := 100) IsPreprimitive.isQuasiPreprimitive [IsPreprimitive M α] :
+    IsQuasiPreprimitive M α where
   isPretransitive_of_normal {N} _ hNX := by
-    rw [Set.top_eq_univ, Set.ne_univ_iff_exists_not_mem] at hNX
+    rw [Set.ne_univ_iff_exists_not_mem] at hNX
     obtain ⟨a, ha⟩ := hNX
     rw [isPretransitive_iff_orbit_eq_top a]
     apply Or.resolve_left (isTrivialBlock_of_isBlock (IsBlock.orbit_of_normal a))
