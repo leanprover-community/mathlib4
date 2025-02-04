@@ -6,10 +6,12 @@ Authors: Markus Himmel
 import Mathlib.CategoryTheory.Functor.Flat
 import Mathlib.CategoryTheory.Limits.Constructions.Filtered
 import Mathlib.CategoryTheory.Limits.FullSubcategory
+import Mathlib.CategoryTheory.Limits.ExactFunctor
 import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
 import Mathlib.CategoryTheory.Limits.Indization.ParallelPair
 import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
 import Mathlib.CategoryTheory.Limits.Indization.Products
+import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
 
 /-!
 # The category of Ind-objects
@@ -249,5 +251,31 @@ theorem Ind.exists_nonempty_arrow_mk_iso_ind_lim {A B : Ind C} {f : A ⟶ B} :
   · exact P.parallelPairIsoParallelPairCompIndYoneda.app WalkingParallelPair.one
   · simpa using
       (P.parallelPairIsoParallelPairCompIndYoneda.hom.naturality WalkingParallelPairHom.left).symm
+
+section Small
+
+variable (C : Type u) [Category.{u} C] [HasFiniteColimits C]
+
+noncomputable def Ind.toLeftExactFunctor : Ind C ⥤ LeftExactFunctor Cᵒᵖ (Type u) :=
+  FullSubcategory.lift _ (Ind.inclusion C) fun X => by
+    rw [← isFiltered_costructuredArrow_yoneda_iff_nonempty_preservesFiniteLimits]
+    apply IsIndObject.isFiltered (isIndObject_inclusion_obj X)
+
+instance : (Ind.toLeftExactFunctor C).Full :=
+  inferInstanceAs <| (FullSubcategory.lift _ _ _).Full
+
+instance : (Ind.toLeftExactFunctor C).Faithful :=
+  inferInstanceAs <| (FullSubcategory.lift _ _ _).Faithful
+
+instance : (Ind.toLeftExactFunctor C).IsEquivalence where
+  essSurj := Functor.essSurj_of_surj <| fun G => by
+    refine ⟨⟨G.obj, ?_⟩, rfl⟩
+    have := G.property
+    have : FinallySmall (CostructuredArrow yoneda G.obj) := by
+      sorry
+    have := isFiltered_costructuredArrow_yoneda_of_preservesFiniteLimits G.obj
+    apply isIndObject_of_isFiltered_of_finallySmall
+
+end Small
 
 end CategoryTheory
