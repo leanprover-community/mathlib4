@@ -86,19 +86,23 @@ lemma le_of_mem (P : Partition s) (hx : x ∈ P) : x ≤ s :=
 lemma parts_nonempty (P : Partition s) (hs : s ≠ ⊥) : (P : Set α).Nonempty :=
   nonempty_iff_ne_empty.2 fun hP ↦ by simp [← P.sSup_eq, hP, sSup_empty] at hs
 
-@[simps] protected def copy {t : α} (P : Partition s) (hst : s = t) : Partition t where
+@[simps]
+protected def copy {t : α} (P : Partition s) (hst : s = t) : Partition t where
   parts := P.parts
   indep := P.indep
   bot_not_mem := P.bot_not_mem
   sSup_eq' := hst ▸ P.sSup_eq'
 
-@[simp] lemma coe_copy_eq {t : α} {P : Partition s} (hst : s = t) :
+@[simp]
+lemma coe_copy_eq {t : α} {P : Partition s} (hst : s = t) :
     (P.copy hst : Set α) = P := rfl
 
-@[simp] lemma mem_copy_iff {t x : α} {P : Partition s} (hst : s = t) :
+@[simp]
+lemma mem_copy_iff {t x : α} {P : Partition s} (hst : s = t) :
     x ∈ P.copy hst ↔ x ∈ P := Iff.rfl
 
-@[simps!] def partscopyEquiv {t : α} (P : Partition s) (hst : s = t) :
+@[simps!]
+def partscopyEquiv {t : α} (P : Partition s) (hst : s = t) :
     (P : Set α) ≃ (P.copy hst : Set α) := Equiv.Set.ofEq rfl
 
 end Basic
