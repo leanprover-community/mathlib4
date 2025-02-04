@@ -403,6 +403,7 @@ import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.Idempotent
 import Mathlib.Algebra.GroupWithZero.Indicator
 import Mathlib.Algebra.GroupWithZero.InjSurj
+import Mathlib.Algebra.GroupWithZero.Int
 import Mathlib.Algebra.GroupWithZero.Invertible
 import Mathlib.Algebra.GroupWithZero.Nat
 import Mathlib.Algebra.GroupWithZero.NeZero
@@ -3342,6 +3343,7 @@ import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.GroupTheory.GroupAction.IterateAct
 import Mathlib.GroupTheory.GroupAction.Period
 import Mathlib.GroupTheory.GroupAction.Pointwise
+import Mathlib.GroupTheory.GroupAction.Primitive
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.GroupTheory.GroupAction.SubMulAction
