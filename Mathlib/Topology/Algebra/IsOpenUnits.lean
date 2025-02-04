@@ -14,7 +14,7 @@ import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
 We say that a topological monoid `M` has open units (`IsOpenUnits`) if `Mˣ` is open in `M` and
 has the subspace topology (i.e. inverse is continuous).
 
-Typical example include monoids with discrete topology, topological groups (or fields),
+Typical examples include monoids with discrete topology, topological groups (or fields),
 and rings `R` equipped with the `I`-adic topology where `I ≤ J(R)` (`IsOpenUnits.of_isAdic`).
 
 This condition is needed so that for an affine scheme `X` over `R` and `U ⊆ X` an affine subscheme,
