@@ -25,7 +25,7 @@ positive semi-definite on weight space and positive-definite on the span of root
  * `RootPairing.zero_lt_pairingIn_iff`: sign relations between `RootPairing.pairingIn` and a
    root-positive form.
  * `RootPairing.pairing_zero_iff`: symmetric vanishing condition for `RootPairing.pairing`
- * `RootPairing.coxeterWeight_non_neg`: All pairs of roots have non-negative Coxeter weight.
+ * `RootPairing.coxeterWeight_nonneg`: All pairs of roots have non-negative Coxeter weight.
  * `RootPairing.coxeterWeight_zero_iff_isOrthogonal` : A Coxeter weight vanishes iff the roots are
    orthogonal.
 
@@ -145,7 +145,7 @@ lemma zero_lt_pairingIn_iff :
   rw [← B.zero_lt_apply_root_root_iff, ← B.isSymm_posForm.eq, RingHom.id_apply,
     B.zero_lt_apply_root_root_iff]
 
-lemma coxeterWeight_non_neg : 0 ≤ P.coxeterWeightIn S i j := by
+lemma coxeterWeight_nonneg : 0 ≤ P.coxeterWeightIn S i j := by
   dsimp [coxeterWeightIn]
   rcases lt_or_le 0 (P.pairingIn S i j) with h | h
   · exact le_of_lt <| mul_pos h ((zero_lt_pairingIn_iff B i j).mp h)

@@ -301,7 +301,7 @@ lemma coxeterWeightIn_mem_set_of_isCrystallographic :
   have : Fintype ι := Fintype.ofFinite ι
   obtain ⟨n, hcn⟩ : ∃ n : ℕ, P.coxeterWeightIn ℤ i j = n := by
     have : 0 ≤ P.coxeterWeightIn ℤ i j := by
-      simpa only [P.algebraMap_coxeterWeightIn] using P.coxeterWeight_non_neg (P.posRootForm ℤ) i j
+      simpa only [P.algebraMap_coxeterWeightIn] using P.coxeterWeight_nonneg (P.posRootForm ℤ) i j
     obtain ⟨n, hn⟩ := Int.eq_ofNat_of_zero_le this
     exact ⟨n, by simp [← P.algebraMap_coxeterWeightIn ℤ, hn]⟩
   have : P.coxeterWeightIn ℤ i j ≤ 4 := P.coxeterWeightIn_le_four ℤ i j
