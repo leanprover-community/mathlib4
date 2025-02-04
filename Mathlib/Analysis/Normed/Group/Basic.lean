@@ -97,6 +97,31 @@ lemma enorm_eq_nnnorm (x : E) : ‖x‖ₑ = ‖x‖₊ := rfl
 
 end ENorm
 
+/-- A type `E` equipped with a continuous map `‖·‖ₑ : E → ℝ≥0∞`. -/
+class ContinuousENorm (E : Type*) [TopologicalSpace E] extends ENorm E where
+  continuous_enorm : Continuous enorm
+  -- the topology is somehow defined by the enorm.
+
+/-- An enormed monoid is an additive monoid endowed with a continuous enorm. -/
+class ENormedAddMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, AddMonoid E where
+  enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 0
+  enorm_add_le : ∀ x y : E, ‖x + y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
+
+/-- An enormed monoid is a monoid endowed with a continuous enorm. -/
+@[to_additive]
+class ENormedMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, Monoid E where
+  enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 1
+  enorm_mul_le : ∀ x y : E, ‖x * y‖ₑ ≤ ‖x‖ₑ * ‖y‖ₑ
+
+/-- An enormed commutative monoid is an additive commutative monoid
+endowed with a continuous enorm. -/
+class ENormedAddCommMonoid (E : Type*) [TopologicalSpace E]
+  extends ENormedAddMonoid E, AddCommMonoid E where
+
+/-- An enormed commutative monoid is a commutative monoid endowed with a continuous enorm. -/
+@[to_additive]
+class ENormedCommMonoid (E : Type*) [TopologicalSpace E] extends ENormedMonoid E, CommMonoid E where
+
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
 class SeminormedAddGroup (E : Type*) extends Norm E, AddGroup E, PseudoMetricSpace E where
