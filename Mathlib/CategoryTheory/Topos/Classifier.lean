@@ -56,6 +56,8 @@ open CategoryTheory Category Limits Functor
 
 variable (C : Type u) [Category.{v} C] [HasTerminal C]
 
+namespace CategoryTheory
+
 /-- A morphism `t : ⊤_ C ⟶ Ω` from the terminal object of a category `C`
 is a subobject classifier if, for every monomorphism `m : U ⟶ X` in `C`,
 there is a unique map `χ : X ⟶ Ω` such that the following square is a pullback square:
@@ -87,7 +89,7 @@ class HasClassifier : Prop where
   /-- There is some classifier. -/
   exists_classifier : Nonempty (Classifier C)
 
-namespace CategoryTheory.HasClassifier
+namespace HasClassifier
 
 variable [HasClassifier C]
 
