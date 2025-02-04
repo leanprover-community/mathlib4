@@ -96,7 +96,8 @@ of the righthand side. -/
 def ofMulActionBasisAux :
     MonoidAlgebra k G ⊗[k] ((Fin n → G) →₀ k) ≃ₗ[MonoidAlgebra k G]
       (ofMulAction k G (Fin (n + 1) → G)).asModule :=
-  { (Rep.equivalenceModuleMonoidAlgebra.1.mapIso (Rep.diagonalSucc k G n).symm).toLinearEquiv with
+  { (Rep.equivalenceModuleMonoidAlgebra.1.mapIso
+      (Rep.diagonalSuccIsoTensorTrivial k G n).symm).toLinearEquiv with
     map_smul' := fun r x => by
       rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul]
       congr 1
@@ -143,7 +144,8 @@ open groupCohomology.resolution
 noncomputable def diagonalHomEquiv :
     (Rep.diagonal k G (n + 1) ⟶ A) ≃ₗ[k] (Fin n → G) → A :=
   Linear.homCongr k
-        ((diagonalSucc k G n).trans ((Representation.ofMulAction k G G).repOfTprodIso 1))
+        ((diagonalSuccIsoTensorTrivial k G n).trans
+          ((Representation.ofMulAction k G G).repOfTprodIso 1))
         (Iso.refl _) ≪≫ₗ
       (Rep.MonoidalClosed.linearHomEquivComm _ _ _ ≪≫ₗ Rep.leftRegularHomEquiv _) ≪≫ₗ
     (Finsupp.llift A k k (Fin n → G)).symm
@@ -163,8 +165,9 @@ theorem diagonalHomEquiv_apply (f : Rep.diagonal k G (n + 1) ⟶ A) (x : Fin n �
     Linear.homCongr_apply, Iso.refl_hom, Iso.trans_inv, Action.comp_hom, ModuleCat.comp_def,
     LinearMap.comp_apply, Representation.repOfTprodIso_inv_apply,
     diagonalSucc_inv_single_single (1 : G) x, one_smul, one_mul] -/
-  change f.hom ((diagonalSucc k G n).inv.hom (Finsupp.single 1 1 ⊗ₜ[k] Finsupp.single x 1)) = _
-  rw [diagonalSucc_inv_single_single, one_smul, one_mul]
+  change f.hom ((diagonalSuccIsoTensorTrivial k G n).inv.hom
+    (Finsupp.single 1 1 ⊗ₜ[k] Finsupp.single x 1)) = _
+  rw [diagonalSuccIsoTensorTrivial_inv_hom_single_single, one_smul, one_mul]
 
 /-- Given a `k`-linear `G`-representation `A`, `diagonalHomEquiv` is a `k`-linear isomorphism of
 the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. This lemma says that the
@@ -187,7 +190,7 @@ theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) �
     leftRegularHomEquiv_symm_apply, Linear.homCongr_symm_apply, Iso.trans_hom, Iso.refl_inv,
     Category.comp_id, Action.comp_hom, MonoidalClosed.linearHomEquivComm_symm_hom,
     ModuleCat.hom_comp, LinearMap.comp_apply]
-  rw [Rep.diagonalSucc_hom_hom_single]
+  rw [diagonalSuccIsoTensorTrivial_hom_hom_single]
   -- The prototype linter that checks if `erw` could be replaced with `rw` would time out
   -- if it replaces the next `erw`s with `rw`s. So we focus down on the relevant part.
   conv_lhs =>
