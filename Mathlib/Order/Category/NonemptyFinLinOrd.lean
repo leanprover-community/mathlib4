@@ -112,7 +112,7 @@ def Iso.mk {α β : NonemptyFinLinOrd.{u}} (e : α ≃o β) : α ≅ β where
   inv := ofHom e.symm
 
 /-- `OrderDual` as a functor. -/
-@[simps]
+@[simps map]
 def dual : NonemptyFinLinOrd ⥤ NonemptyFinLinOrd where
   obj X := of Xᵒᵈ
   map f := ofHom f.hom.dual

@@ -65,7 +65,7 @@ def Iso.mk {α β : CompleteLat.{u}} (e : α ≃o β) : α ≅ β where
   inv_hom_id := by ext; exact e.apply_symm_apply _
 
 /-- `OrderDual` as a functor. -/
-@[simps]
+@[simps map]
 def dual : CompleteLat ⥤ CompleteLat where
   obj X := of Xᵒᵈ
   map {_ _} := CompleteLatticeHom.dual

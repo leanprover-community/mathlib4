@@ -181,7 +181,7 @@ def Iso.mk {α β : BddDistLat.{u}} (e : α ≃o β) : α ≅ β where
   inv := BddDistLat.ofHom e.symm
 
 /-- `OrderDual` as a functor. -/
-@[simps]
+@[simps map]
 def dual : BddDistLat ⥤ BddDistLat where
   obj X := of Xᵒᵈ
   map f := BddDistLat.ofHom f.hom.dual

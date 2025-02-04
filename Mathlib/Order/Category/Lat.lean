@@ -156,7 +156,7 @@ def Iso.mk {α β : Lat.{u}} (e : α ≃o β) : α ≅ β where
   inv := ofHom e.symm
 
 /-- `OrderDual` as a functor. -/
-@[simps]
+@[simps map]
 def dual : Lat ⥤ Lat where
   obj X := of Xᵒᵈ
   map f := ofHom f.hom.dual

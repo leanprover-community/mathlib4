@@ -172,7 +172,7 @@ def Iso.mk {α β : FinBddDistLat.{u}} (e : α.carrier ≃o β.carrier) : α ≅
   inv_hom_id := by ext; exact e.apply_symm_apply _
 
 /-- `OrderDual` as a functor. -/
-@[simps obj map]
+@[simps map]
 def dual : FinBddDistLat ⥤ FinBddDistLat where
   obj X := of Xᵒᵈ
   map f := ofHom f.hom.dual

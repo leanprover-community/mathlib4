@@ -158,7 +158,7 @@ instance hasForgetToBipointed : HasForget₂ BddOrd Bipointed where
   forget_comp := rfl
 
 /-- `OrderDual` as a functor. -/
-@[simps]
+@[simps map]
 def dual : BddOrd ⥤ BddOrd where
   obj X := of Xᵒᵈ
   map f := ofHom f.hom.dual
