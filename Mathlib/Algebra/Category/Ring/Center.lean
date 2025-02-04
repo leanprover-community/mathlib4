@@ -29,15 +29,14 @@ variable (R : Type*) [Ring R]
 
 open CategoryTheory
 
-noncomputable abbrev test [Small.{v} R] : ModuleCat.{v} R ≌ ModuleCat.{v} (Shrink.{v} R) :=
-  ModuleCat.restrictScalarsEquivalenceOfRingEquiv (Shrink.ringEquiv R)
-
 variable (M : ModuleCat R)
 
 set_option synthInstance.maxHeartbeats 100000 in
 /--
 For any ring `R`, the center of `R` is isomorphic to `End (𝟭 (ModuleCat R))`, the endomorphism ring
 of the identity functor on the category of `R`-modules.
+
+Note: this is an auxilary construction, please use `Subring.centerEquivEndIdFunctor` instead.
 -/
 @[simps]
 noncomputable def Subring.centerEquivEndIdFunctorAux [Small.{v} R] :
@@ -76,6 +75,18 @@ noncomputable def Subring.centerEquivEndIdFunctor [Small.{v} R] :
       (e' := ModuleCat.restrictScalarsEquivalenceOfRingEquiv (Shrink.ringEquiv R)) (by rfl)).symm
 
 /--
+For any two rings `R` and `S`, if the categories of `R`-modules and `S`-modules are equivalent, then
+the center of `R` and the center of `S` agree as well.
+-/
+noncomputable def Subring.centerEquivOfModuleCatEquiv {R S : Type*} [CommRing R] [CommRing S]
+    [Small.{v} R] [Small.{v'} S]
+    (e : ModuleCat.{v} R ≌ ModuleCat.{v'} S) : center R ≃+* center S :=
+  letI : e.functor.Additive := Functor.additive_of_preserves_binary_products e.functor
+  (Subring.centerEquivEndIdFunctor R).trans <|
+    (Equivalence.endRingEquiv (e := e) (e' := e) (by rfl)).trans
+    (Subring.centerEquivEndIdFunctor S).symm
+
+/--
 For any two commutative rings `R` and `S`, if the categories of `R`-modules and `S`-modules are
 equivalent, then `R` and `S` are isomorphic as rings.
 -/
@@ -85,9 +96,6 @@ noncomputable def RingEquiv.ofModuleCatEquiv {R S : Type*} [CommRing R] [CommRin
   letI : e.functor.Additive := Functor.additive_of_preserves_binary_products e.functor
   let i₁ : R ≃+* (⊤ : Subring R) := Subring.topEquiv.symm
   let i₂ : (⊤ : Subring R) ≃+* Subring.center R := Subring.center_eq_top R ▸ .refl _
-  let i₃ : End (𝟭 (ModuleCat.{v} R)) ≃+* End (𝟭 (ModuleCat.{v'} S)) :=
-    Equivalence.endRingEquiv (e := e) (e' := e) (by rfl)
-  let i₄ : Subring.center S ≃+* (⊤ : Subring S) := Subring.center_eq_top S ▸ .refl _
-  let i₅ : (⊤ : Subring S) ≃+* S := Subring.topEquiv
-  i₁.trans <| i₂.trans <| (Subring.centerEquivEndIdFunctor R).trans <|
-    i₃.trans <| (Subring.centerEquivEndIdFunctor S).symm.trans <| i₄.trans i₅
+  let i₃ : Subring.center S ≃+* (⊤ : Subring S) := Subring.center_eq_top S ▸ .refl _
+  let i₄ : (⊤ : Subring S) ≃+* S := Subring.topEquiv
+  i₁.trans <| i₂.trans <| Subring.centerEquivOfModuleCatEquiv e |>.trans <| i₃.trans i₄
