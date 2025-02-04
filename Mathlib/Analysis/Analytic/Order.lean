@@ -1,41 +1,53 @@
 /-
 Copyright (c) 2022 Vincent Beffara. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Vincent Beffara
+Authors: Vincent Beffara, Stefan Kebekus
 -/
 import Mathlib.Analysis.Analytic.IsolatedZeros
 
 /-!
+# Vanishing Order of Analytic Functions
+
+This file defines the order of vanishing of an analytic function `f` at a point `z₀`, as an element
+of `ℕ∞`. The order is defined to be `∞` if `f` is identically 0 on a neighbourhood of `z₀`.
 -/
 
-open Filter Function Nat FormalMultilinearSeries EMetric Set
-
+open Filter  Set
 open scoped Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {s : E} {p q : FormalMultilinearSeries 𝕜 𝕜 E} {f g : 𝕜 → E} {n : ℕ} {z z₀ : 𝕜}
+  [NormedSpace 𝕜 E] {f g : 𝕜 → E} {n : ℕ} {z₀ : 𝕜}
 
+/-!
+## Vanishing Order at a Point: Definition and Characterization
+
+This file defines the order of vanishing of an analytic function `f` at a point `z₀`, as an element
+of `ℕ∞`. The order is defined to be `∞` if `f` is identically 0 on a neighbourhood of `z₀`.
+-/
 
 namespace AnalyticAt
 
-
-
 open scoped Classical in
+
 /-- The order of vanishing of `f` at `z₀`, as an element of `ℕ∞`.
 
 This is defined to be `∞` if `f` is identically 0 on a neighbourhood of `z₀`, and otherwise the
-unique `n` such that `f z = (z - z₀) ^ n • g z` with `g` analytic and non-vanishing at `z₀`. See
-`AnalyticAt.order_eq_top_iff` and `AnalyticAt.order_eq_nat_iff` for these equivalences. -/
+unique `n` such that `f` can locally be written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic
+and does not vanish at `z₀`. See `AnalyticAt.order_eq_top_iff` and `AnalyticAt.order_eq_nat_iff` for
+these equivalences. -/
 noncomputable def order (hf : AnalyticAt 𝕜 f z₀) : ENat :=
   if h : ∀ᶠ z in 𝓝 z₀, f z = 0 then ⊤
   else ↑(hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose
 
+/-- The order of `f` at a `z₀` is infinity iff `f` vanished locally around `z₀`. -/
 lemma order_eq_top_iff (hf : AnalyticAt 𝕜 f z₀) : hf.order = ⊤ ↔ ∀ᶠ z in 𝓝 z₀, f z = 0 := by
   unfold order
   split_ifs with h
   · rwa [eq_self, true_iff]
   · simpa only [ne_eq, ENat.coe_ne_top, false_iff] using h
 
+/-- The order of an analytic function `f` at `z₀` equals a natural number `n` iff `f` can locally
+be written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic and does not vanish at `z₀`. -/
 lemma order_eq_nat_iff (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) : hf.order = ↑n ↔
     ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z := by
   unfold order
@@ -48,15 +60,14 @@ lemma order_eq_nat_iff (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) : hf.order = ↑n
     refine ⟨fun hn ↦ (WithTop.coe_inj.mp hn : h.choose = n) ▸ h.choose_spec, fun h' ↦ ?_⟩
     rw [unique_eventuallyEq_pow_smul_nonzero h.choose_spec h']
 
-/- An analytic function `f` has finite order at a point `z₀` iff it locally looks
-  like `(z - z₀) ^ order • g`, where `g` is analytic and does not vanish at
-  `z₀`. -/
+/- The order of an analytic function `f` at `z₀` is finite iff `f` can locally be written as
+`f z = (z - z₀) ^ order • g z`, where `g` is analytic and does not vanish at `z₀`. -/
 lemma order_neq_top_iff (hf : AnalyticAt 𝕜 f z₀) :
     hf.order ≠ ⊤ ↔ ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0
       ∧ f =ᶠ[𝓝 z₀] fun z ↦ (z - z₀) ^ (hf.order.toNat) • g z := by
   simp only [← ENat.coe_toNat_eq_self, Eq.comm, EventuallyEq, ← hf.order_eq_nat_iff]
 
-/- An analytic function has order zero at a point iff it does not vanish there. -/
+/- The order of an analytic function `f` at `z₀` is zero iff `f` does not vanish at `z₀`. -/
 lemma order_eq_zero_iff (hf : AnalyticAt 𝕜 f z₀) :
     hf.order = 0 ↔ f z₀ ≠ 0 := by
   rw [← ENat.coe_zero, order_eq_nat_iff hf 0]
@@ -70,6 +81,12 @@ lemma apply_eq_zero_of_order_toNat_ne_zero (hf : AnalyticAt 𝕜 f z₀) :
     hf.order.toNat ≠ 0 → f z₀ = 0 := by
   simp [hf.order_eq_zero_iff]
   tauto
+
+/-!
+## Vanishing Order at a Point: Behaviour under Ring Operations
+
+TODO: Behaviour under Addition/Subtraction
+-/
 
 /- Helper lemma for `AnalyticAt.order_mul` -/
 lemma order_mul_of_order_eq_top {f g : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀)
@@ -110,6 +127,10 @@ theorem order_pow {f : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
     simp [add_mul, pow_add, (hf.pow n).order_mul hf, hn]
 
 end AnalyticAt
+
+/-!
+## Level Sets of the Order Function
+-/
 
 namespace AnalyticOnNhd
 
