@@ -389,47 +389,48 @@ theorem eLpNorm'_congr_enorm_ae {f g : α → ε} (hfg : ∀ᵐ x ∂μ, ‖f x�
 
 @[deprecated (since := "2025-02-02")] alias eLpNorm'_congr_nnnorm_ae := eLpNorm'_congr_enorm_ae
 
+-- nnnorm versions of this also hold; I'm omitting them since ‖‖ₑ seems to be more useful
+
 -- TODO: does this exist already? Is there a better proof? Better name!
 -- make an iff!
--- name. enorm_eq_enorm_iff_norm ?
--- enorm_eq_iff_norm_eq
-theorem foo {F : Type*} {G : Type*} [NormedAddCommGroup F] [NormedAddCommGroup G]
-    {x : F} {y : G} (h : ‖x‖ = ‖y‖) : ‖x‖ₑ = ‖y‖ₑ := by
-  -- I can prove this first (this should also exist, if it doesn't already!)
-  have : ‖x‖₊ = ‖y‖₊ := by
-    simp only [← coe_nnnorm] at h
-    apply NNReal.coe_injective
-    exact h
-  simp only [enorm_eq_nnnorm]
-  congr
+-- Is `enorm_eq_enorm_iff_norm` a better name?
+theorem enorm_eq_iff_norm_eq {F : Type*} {G : Type*} [NormedAddCommGroup F] [NormedAddCommGroup G]
+    {x : F} {y : G} :
 
-theorem foo_leq {F : Type*} {G : Type*} [NormedAddCommGroup F] [NormedAddCommGroup G]
-    {x : F} {y : G} (h : ‖x‖ ≤ ‖y‖) : ‖x‖ₑ ≤ ‖y‖ₑ := by
-  -- I can prove this first (this should also exist, if it doesn't already!)
-  have : ‖x‖₊ ≤ ‖y‖₊ := by
-    simp only [← coe_nnnorm] at h
-    apply NNReal.coe_mono
-    exact h
-  simp only [enorm_eq_nnnorm]
-  gcongr
 
-theorem foo_le {F : Type*} {G : Type*} [NormedAddCommGroup F] [NormedAddCommGroup G]
-    {x : F} {y : G} (h : ‖x‖ < ‖y‖) : ‖x‖ₑ < ‖y‖ₑ := by
-  -- I can prove this first (this should also exist, if it doesn't already!)
+
+    ‖x‖ = ‖y‖ ↔ ‖x‖ₑ = ‖y‖ₑ := by
   simp only [← ofReal_norm]
-  refine (ENNReal.ofReal_lt_ofReal_iff_of_nonneg ?_).mpr h
-  apply norm_nonneg _
-  -- -- enorm = ENNReal.ofReal norm is a new mathlib lemma, in NormedGr
-  -- have : ‖x‖₊ < ‖y‖₊ := by
+  constructor
+  · intro h
+    congr
+  · intro h
+    refine (Real.toNNReal_eq_toNNReal_iff (by positivity) (by positivity)).mp (ENNReal.coe_inj.mp h)
+
+    exact ENNReal.coe_inj.mp h
+  -- -- I can prove this first (this should also exist, if it doesn't already!)
+  -- have : ‖x‖₊ = ‖y‖₊ := by
   --   simp only [← coe_nnnorm] at h
-  --   sorry -- apply NNReal.coe_mono
-  --   -- exact h
+  --   apply NNReal.coe_injective
+  --   exact h
   -- simp only [enorm_eq_nnnorm]
-  -- gcongr
+  -- congr
+
+theorem enorm_leq_iff_norm_leq {F : Type*} {G : Type*} [NormedAddCommGroup F] [NormedAddCommGroup G]
+    {x : F} {y : G} (h : ‖x‖ ≤ ‖y‖) : ‖x‖ₑ ≤ ‖y‖ₑ := by
+  simp only [← ofReal_norm]
+  exact ENNReal.ofReal_le_ofReal h
+
+theorem enorm_le_iff_norm_le {F : Type*} {G : Type*} [NormedAddCommGroup F] [NormedAddCommGroup G]
+    {x : F} {y : G} (h : ‖x‖ < ‖y‖) : ‖x‖ₑ < ‖y‖ₑ := by
+  simp only [← ofReal_norm]
+  exact (ENNReal.ofReal_lt_ofReal_iff_of_nonneg (norm_nonneg _)).mpr h
+
+#exit
 
 theorem eLpNorm'_congr_norm_ae {f g : α → F} (hfg : ∀ᵐ x ∂μ, ‖f x‖ = ‖g x‖) :
     eLpNorm' f q μ = eLpNorm' g q μ :=
-  eLpNorm'_congr_enorm_ae <| hfg.mono fun _x hx ↦ foo hx
+  eLpNorm'_congr_enorm_ae <| hfg.mono fun _x hx ↦ enorm_eq_iff_norm_eq hx
 
 theorem eLpNorm'_congr_ae {f g : α → ε} (hfg : f =ᵐ[μ] g) : eLpNorm' f q μ = eLpNorm' g q μ :=
   eLpNorm'_congr_enorm_ae (hfg.fun_comp _)
@@ -462,16 +463,17 @@ theorem eLpNorm_mono_ae {f : α → ε} {g : α → ε'} (h : ∀ᵐ x ∂μ, �
 
 theorem eLpNorm_mono_ae' {f : α → F} {g : α → G} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) :
     eLpNorm f p μ ≤ eLpNorm g p μ := by
-  apply eLpNorm_mono_enorm_ae --(foo h)
+  apply eLpNorm_mono_enorm_ae --(enorm_eq_iff_norm_eq_leq h)
+  --simp_rw [enorm_leq_iff_norm_leq] at h
   convert h -- nicer. SIMP_RW!
   constructor
   · intro h
     sorry -- other direction
-  apply fun h ↦ foo_leq h
+  apply fun h ↦ enorm_leq_iff_norm_leq h
 
 theorem eLpNorm_mono_ae_real {f : α → F} {g : α → ℝ} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ g x) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
-  eLpNorm_mono_ae <| h.mono fun _x hx ↦ foo_leq ((Real.norm_eq_abs _) ▸ hx.trans (le_abs_self _))
+  eLpNorm_mono_ae <| h.mono fun _x hx ↦ enorm_leq_iff_norm_leq ((Real.norm_eq_abs _) ▸ hx.trans (le_abs_self _))
 
 theorem eLpNorm_mono {f : α → ε} {g : α → ε'} (h : ∀ x, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
@@ -544,7 +546,7 @@ alias eLpNorm_congr_nnnorm_ae := eLpNorm_congr_enorm_ae
 
 theorem eLpNorm_congr_norm_ae {f : α → F} {g : α → G} (hfg : ∀ᵐ x ∂μ, ‖f x‖ = ‖g x‖) :
     eLpNorm f p μ = eLpNorm g p μ :=
-  eLpNorm_congr_enorm_ae <| hfg.mono fun _x hx ↦ foo hx
+  eLpNorm_congr_enorm_ae <| hfg.mono fun _x hx ↦ enorm_eq_iff_norm_eq hx
 
 -- XXXMR: need a zero element in ε
 open scoped symmDiff in
@@ -642,7 +644,7 @@ theorem Memℒp.mono' [TopologicalSpace ε] {f : α → ε} {g : α → ℝ≥0}
 
 theorem Memℒp.mono'' {f : α → E} {g : α → ℝ} (hg : Memℒp g p μ) (hf : AEStronglyMeasurable f μ)
     (h : ∀ᵐ a ∂μ, ‖f a‖ ≤ g a) : Memℒp f p μ :=
-  hg.mono hf <| h.mono fun _x hx ↦ foo_leq (hx.trans (le_abs_self _))
+  hg.mono hf <| h.mono fun _x hx ↦ enorm_leq_iff_norm_leq (hx.trans (le_abs_self _))
 
 theorem Memℒp.congr_norm [TopologicalSpace ε] [TopologicalSpace ε'] {f : α → ε} {g : α → ε'}
     (hf : Memℒp f p μ) (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ a ∂μ, ‖f a‖ₑ = ‖g a‖ₑ) :
