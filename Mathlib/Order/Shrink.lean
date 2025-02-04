@@ -85,11 +85,11 @@ noncomputable instance [OrderTop α] :
     simp only [← (orderIsoShrink.{u} α).symm.le_iff_le,
       orderIsoShrink_symm_apply, equivShrink_symm_top, le_top]
 
-noncomputable instance [SuccOrder α] [Small.{u} α] :
+noncomputable instance [SuccOrder α] :
     SuccOrder (Shrink.{u} α) :=
   SuccOrder.ofOrderIso (orderIsoShrink.{u} α)
 
-noncomputable instance [PredOrder α] [Small.{u} α] :
+noncomputable instance [PredOrder α] :
     PredOrder (Shrink.{u} α) :=
   PredOrder.ofOrderIso (orderIsoShrink.{u} α)
 
