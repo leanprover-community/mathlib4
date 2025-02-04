@@ -10,6 +10,7 @@ import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.Algebra.Group.Pi.Units
+import Mathlib.RingTheory.Nilpotent.Lemmas
 
 /-!
 # Localizing a product of commutative rings
@@ -76,31 +77,33 @@ theorem bijective_lift_piRingHom_algebraMap_comp_piEvalRingHom [IsLocalization M
   (ringEquivOfRingEquiv (M := M) (T := M) _ _ (.refl _) <|
     Submonoid.map_equiv_eq_comap_symm _ _).bijective
 
-end IsLocalization
-
-
 /-- Let `M` be a submonoid of a direct product of commutative rings `R' i`, and let `M' i` denote
 the projection of `M` onto each factor. If each `R' i` has maximal nilradical then the direct
 product `∏ R' i` surjects onto the localization of `∏ R' i` at `M`.
 -/
-noncomputable def SurjectiveOfNilradicalIsMaximal (h : ∀ i, (M' i) = M.map (Pi.evalRingHom R' i))
-    (h' : ∀ i, (nilradical (R' i)).IsMaximal) : Function.Surjective (algebraMap (∀i, R' i) S) := by
-  set R := (∀ i, R' i)
-  set P := (∀ i, S' i)
-  set f := sloc.lift (isUnit_of_product_of_localizations R' S' h)
-  set f' : ∀i, (∀i, R' i) →+* S' i :=
-    fun i ↦ RingHom.comp (algebraMap (R' i) (S' i)) (Pi.evalRingHom R' i)
-  set f'' :  R →+* P := Pi.ringHom f'
-  intro s
-  have : ∃ r : R, f'' r = f s := by
-    have h₁ (i : ι): (∃ x : R' i, f s i = algebraMap (R' i) (S' i) x) := by
-      obtain ⟨x, hx⟩ := surjective_of_algebraMap (M' i) (h' i) (f s i)
-      exact ⟨x, hx.symm⟩
-    use fun i ↦ (h₁ i).choose
-    refine funext fun i ↦ ?_
-    have (x) : (algebraMap (R' i) (S' i)) (x i)  = f'' x i := rfl
-    rw [← this fun i ↦ (h₁ i).choose]
-    exact ((h₁ i).choose_spec).symm
-  obtain ⟨r, hr⟩ := this
-  rw [← sloc.lift_eq (isUnit_of_product_of_localizations R' S' h) r] at hr
-  exact ⟨r, RingEquiv.injective (EquivOfProductOfLocalizations S R' S' h h') hr⟩
+noncomputable def SurjectiveOfNilradicalIsMaximal (h' : ∀ i, (nilradical (R i)).IsMaximal) :
+    Function.Surjective (algebraMap (∀i, R i) (∀ i, S i)) := by
+
+  -- set R' := (∀ i, R i)
+  -- set P := (∀ i, S i)
+  -- set f := sloc.lift (isUnit_of_product_of_localizations R S h)
+  -- set f' : ∀i, (∀i, R' i) →+* S' i :=
+  --   fun i ↦ RingHom.comp (algebraMap (R' i) (S' i)) (Pi.evalRingHom R' i)
+  -- set f'' :  R →+* P := Pi.ringHom f'
+  -- intro s
+
+  sorry
+  -- have : ∃ r : R, f'' r = f s := by
+  --   have h₁ (i : ι): (∃ x : R' i, f s i = algebraMap (R' i) (S' i) x) := by
+  --     obtain ⟨x, hx⟩ := surjective_of_algebraMap (M' i) (h' i) (f s i)
+  --     exact ⟨x, hx.symm⟩
+  --   use fun i ↦ (h₁ i).choose
+  --   refine funext fun i ↦ ?_
+  --   have (x) : (algebraMap (R' i) (S' i)) (x i)  = f'' x i := rfl
+  --   rw [← this fun i ↦ (h₁ i).choose]
+  --   exact ((h₁ i).choose_spec).symm
+  -- obtain ⟨r, hr⟩ := this
+  -- rw [← sloc.lift_eq (isUnit_of_product_of_localizations R' S' h) r] at hr
+  -- exact ⟨r, RingEquiv.injective (EquivOfProductOfLocalizations S R' S' h h') hr⟩
+
+end IsLocalization
