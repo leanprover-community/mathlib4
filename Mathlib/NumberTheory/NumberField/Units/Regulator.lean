@@ -113,7 +113,7 @@ theorem regulator_eq_det (w' : InfinitePlace K) (e : {w // w ≠ w'} ≃ Fin (ra
   simp_rw [regulator_eq_det' K e', logEmbedding, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
   exact abs_det_eq_abs_det K (fun i ↦ fundSystem K i) e' e
 
-open Module in
+open Module Classical in
 theorem finrank_mul_regulator_eq_det (w' : InfinitePlace K) (e : {w // w ≠ w'} ≃ Fin (rank K)) :
     finrank ℚ K * regulator K =
       |(Matrix.of (fun i w : InfinitePlace K ↦

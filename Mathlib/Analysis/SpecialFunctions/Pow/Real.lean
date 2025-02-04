@@ -395,6 +395,9 @@ theorem rpow_mul {x : ℝ} (hx : 0 ≤ x) (y z : ℝ) : x ^ (y * z) = (x ^ y) ^ 
     simp only [(Complex.ofReal_mul _ _).symm, (Complex.ofReal_log hx).symm, Complex.ofReal_im,
       neg_lt_zero, pi_pos, le_of_lt pi_pos]
 
+lemma rpow_comm {x : ℝ} (hx : 0 ≤ x) (y z : ℝ) : (x ^ y) ^ z = (x ^ z) ^ y := by
+  rw [← rpow_mul hx, ← rpow_mul hx, mul_comm]
+
 lemma rpow_pow_comm {x : ℝ} (hx : 0 ≤ x) (y : ℝ) (n : ℕ) : (x ^ y) ^ n = (x ^ n) ^ y := by
   simp_rw [← rpow_natCast, ← rpow_mul hx, mul_comm y]
 
