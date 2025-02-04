@@ -374,11 +374,13 @@ theorem enorm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ≥0}
   · by_cases hp : p.toReal⁻¹ = 0
     · simp [hp, hμ, nnnorm_def]
     · simp [hμ, nnnorm_def, Real.zero_rpow hp]
-  sorry /- proof was:
-  rw [← ENNReal.coe_le_coe, nnnorm_def, ENNReal.coe_toNNReal (eLpNorm_ne_top _)]
-  refine (eLpNorm_le_of_ae_enorm_bound hfC).trans_eq ?_
-  rw [← coe_measureUnivNNReal μ, ← ENNReal.coe_rpow_of_ne_zero (measureUnivNNReal_pos hμ).ne',
-    ENNReal.coe_mul, mul_comm, ENNReal.smul_def, smul_eq_mul] -/
+  have : eLpNorm (↑↑f) p μ ≤ ↑(measureUnivNNReal μ ^ p.toReal⁻¹ * C) := by
+    refine (eLpNorm_le_of_ae_enorm_bound hfC).trans_eq ?_
+    rw [← coe_measureUnivNNReal μ, ← ENNReal.coe_rpow_of_ne_zero (measureUnivNNReal_pos hμ).ne',
+      ENNReal.coe_mul, mul_comm, smul_eq_mul]
+  rw [ENNReal.coe_mul, ENNReal.coe_rpow_of_ne_zero (measureUnivNNReal_pos hμ).ne'] at this
+  rw [enorm_def]
+  exact this
 
 @[deprecated enorm_le_of_ae_bound (since := "2025-02-04")]
 theorem nnnorm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ≥0}
