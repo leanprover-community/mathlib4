@@ -29,8 +29,7 @@ open CategoryTheory Simplicial SimplexCategory
 namespace SSet
 namespace Truncated
 
-open SimplexCategory.Truncated Truncated.Hom SimplicialObject.Truncated
-open Opposite
+open Opposite SimplexCategory.Truncated.Hom
 
 variable {n : ℕ} (X : SSet.Truncated.{u} (n + 1))
 
@@ -358,7 +357,7 @@ lemma spine_δ_arrow_eq (h : j = i.succ.castSucc) :
 end StrictSegal
 end SSet
 
-open SSet Truncated
+open SSet
 
 /-- Simplices in the nerve of categories are uniquely determined by their spine. Indeed, this
 property describes the essential image of the nerve functor.-/
