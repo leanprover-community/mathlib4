@@ -24,7 +24,7 @@ universe u
 
 namespace AlgebraicGeometry
 
-variable {X Y : Scheme.{u}} (f : X ⟶ Y)
+variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 /-- A morphism is proper if it is separated, universally closed and locally of finite type. -/
 @[mk_iff]
@@ -50,6 +50,8 @@ instance : MorphismProperty.IsMultiplicative @IsProper := by
   rw [isProper_eq]
   infer_instance
 
+instance [IsProper f] [IsProper g] : IsProper (f ≫ g) where
+
 instance (priority := 900) [IsFinite f] : IsProper f where
 
 instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsProper := by
@@ -69,9 +71,27 @@ lemma IsFinite.eq_isProper_inf_isAffineHom :
   rw [inf_comm, isProper_eq, inf_assoc, ← inf_assoc, this, eq_inf,
     IsIntegralHom.eq_universallyClosed_inf_isAffineHom, inf_assoc, inf_left_comm]
 
+variable {f} in
 lemma IsFinite.iff_isProper_and_isAffineHom :
     IsFinite f ↔ IsProper f ∧ IsAffineHom f := by
   rw [eq_isProper_inf_isAffineHom]
   rfl
+
+instance (priority := 100) [IsFinite f] : IsProper f :=
+  (IsFinite.iff_isProper_and_isAffineHom.mp ‹_›).1
+
+@[stacks 01W6 "(1)"]
+lemma UniversallyClosed.of_comp_of_isSeparated [UniversallyClosed (f ≫ g)] [IsSeparated g] :
+    UniversallyClosed f := by
+  rw [← Limits.pullback.lift_snd (𝟙 _) f (Category.id_comp (f ≫ g))]
+  have := MorphismProperty.pullback_snd (P := @UniversallyClosed) (f ≫ g) g inferInstance
+  infer_instance
+
+@[stacks 01W6 "(2)"]
+lemma IsProper.of_comp_of_isSeparated [IsProper (f ≫ g)] [IsSeparated g] :
+    IsProper f := by
+  rw [← Limits.pullback.lift_snd (𝟙 _) f (Category.id_comp (f ≫ g))]
+  have := MorphismProperty.pullback_snd (P := @IsProper) (f ≫ g) g inferInstance
+  infer_instance
 
 end AlgebraicGeometry
