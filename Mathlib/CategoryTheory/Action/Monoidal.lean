@@ -222,7 +222,9 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
       comm := fun (g : G) => by
         funext ⟨(x₁ : G), (x₂ : X.V)⟩
         refine Prod.ext rfl ?_
-        simp [leftRegular] }
+        show X.ρ (g * x₁) _ = _
+        rw [map_mul]
+        rfl }
   hom_inv_id := by
     apply Hom.ext
     funext x
