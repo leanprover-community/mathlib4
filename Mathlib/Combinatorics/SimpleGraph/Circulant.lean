@@ -137,15 +137,15 @@ private def cycleGraph_EulerianCircuit_cons (n : ℕ) :
     ∀ m : Fin (n + 3), (cycleGraph (n + 3)).Walk m 0
   | ⟨0, h⟩ => Walk.nil
   | ⟨m + 1, h⟩ =>
-    have hAdj : (cycleGraph (n + 3)).Adj ⟨m + 1, h⟩ ⟨m, Nat.lt_of_succ_lt h⟩ := by
+    have hadj : (cycleGraph (n + 3)).Adj ⟨m + 1, h⟩ ⟨m, Nat.lt_of_succ_lt h⟩ := by
       simp [cycleGraph_adj, Fin.ext_iff, Fin.sub_val_of_le]
-    Walk.cons hAdj (cycleGraph_EulerianCircuit_cons n ⟨m, Nat.lt_of_succ_lt h⟩)
+    Walk.cons hadj (cycleGraph_EulerianCircuit_cons n ⟨m, Nat.lt_of_succ_lt h⟩)
 
 /-- Eulerian trail of `cycleGraph (n + 3)` -/
 def cycleGraph_EulerianCircuit (n : ℕ) : (cycleGraph (n + 3)).Walk 0 0 :=
-  have hAdj : (cycleGraph (n + 3)).Adj 0 (Fin.last (n + 2)) := by
+  have hadj : (cycleGraph (n + 3)).Adj 0 (Fin.last (n + 2)) := by
     simp [cycleGraph_adj]
-  Walk.cons hAdj (cycleGraph_EulerianCircuit_cons n (Fin.last (n + 2)))
+  Walk.cons hadj (cycleGraph_EulerianCircuit_cons n (Fin.last (n + 2)))
 
 private theorem cycleGraph_EulerianCircuit_cons_length (n : ℕ) : ∀ m : Fin (n + 3),
     (cycleGraph_EulerianCircuit_cons n m).length = m.val
