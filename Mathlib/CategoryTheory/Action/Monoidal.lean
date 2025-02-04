@@ -278,6 +278,7 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom {n : ℕ} (g : G) (f : Fin n → G)
     <;> simp_all [tensorObj_def, mul_assoc, Fin.partialProd_succ']
 
 end
+
 end Action
 
 namespace CategoryTheory.Functor

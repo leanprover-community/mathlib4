@@ -148,7 +148,6 @@ lemma coe_res_obj_ρ (g : G) :
       (Rep.ρ ((Action.res _ f).obj A)) g = A.ρ (f g) := rfl
 
 end Res
-
 section Linearization
 
 variable (k G)
@@ -539,8 +538,7 @@ protected def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
   map_id := fun _ => by ext; rfl
   map_comp := fun _ _ => by ext; rfl
 
-@[simp]
-theorem ihom_obj_ρ_apply {A B : Rep k G} (g : G) (x : A →ₗ[k] B) :
+@[simp] theorem ihom_obj_ρ_apply {A B : Rep k G} (g : G) (x : A →ₗ[k] B) :
     ((Rep.ihom A).obj B).ρ g x = B.ρ g ∘ₗ x ∘ₗ A.ρ g⁻¹ :=
   rfl
 
@@ -786,41 +784,27 @@ instance : EnoughProjectives (Rep k G) :=
   equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2 ModuleCat.moduleCat_enoughProjectives.{u}
 
 instance free_projective {G α : Type u} [Group G] :
-    Projective (Rep.free k G α) :=
-  Rep.equivalenceModuleMonoidAlgebra.toAdjunction.projective_of_map_projective _ <|
+    Projective (free k G α) :=
+  equivalenceModuleMonoidAlgebra.toAdjunction.projective_of_map_projective _ <|
     @ModuleCat.projective_of_free.{u} _ _
       (ModuleCat.of (MonoidAlgebra k G) (Representation.free k G α).asModule)
       _ (Representation.freeAsModuleBasis k G α)
 
-end Rep
-
 section
-open Rep
 
-variable (k G : Type u) [CommRing k] [Group G] (n : ℕ)
+variable {G : Type u} [Group G] {n : ℕ}
 
-/-- `Gⁿ` defines a `k[G]`-basis of `k[Gⁿ⁺¹]` sending `(g₁, ..., gₙ)` to
-`single (1, g₁, g₁g₂, ..., g₁...gₙ).` -/
-def Representation.diagonalAsModuleBasis :
-    Basis (Fin n → G) (MonoidAlgebra k G) (diagonal k G (n + 1)).asModule where
-  repr := (equivalenceModuleMonoidAlgebra.functor.mapIso
-    (diagonalSuccIsoFree k G n)).toLinearEquiv ≪≫ₗ (finsuppLEquivFreeAsModule k G (Fin n → G)).symm
-
-theorem Representation.diagonal_asModule_free :
-    Module.Free (MonoidAlgebra k G) (diagonal k G (n + 1)).asModule :=
-  Module.Free.of_basis (diagonalAsModuleBasis k G n)
-
-instance Rep.diagonal_succ_projective :
+instance diagonal_succ_projective :
     Projective (diagonal k G (n + 1)) :=
   Projective.of_iso (diagonalSuccIsoFree k G n).symm inferInstance
 
-instance Rep.leftRegular_projective :
-    Projective (Rep.leftRegular k G) :=
+instance leftRegular_projective :
+    Projective (leftRegular k G) :=
   Projective.of_iso (diagonalOneIsoLeftRegular k G) inferInstance
 
-instance Rep.trivial_projective_of_subsingleton [Subsingleton G] :
-    Projective (Rep.trivial k G k) :=
-  Projective.of_iso (ofMulActionSubsingletonIsoTrivial _ _ (Fin 1 → G)) <|
-    diagonal_succ_projective _ _ _
+instance trivial_projective_of_subsingleton [Subsingleton G] :
+    Projective (trivial k G k) :=
+  Projective.of_iso (ofMulActionSubsingletonIsoTrivial _ _ (Fin 1 → G)) diagonal_succ_projective
 
 end
+end Rep

@@ -20,12 +20,11 @@ $$+ \sum_{i = 0}^{n - 1} (-1)^{i + 1}\cdot f(g_0, \dots, g_ig_{i + 1}, \dots, g_
 $$+ (-1)^{n + 1}\cdot f(g_0, \dots, g_{n - 1})$$ (where `ρ` is the representation attached to `A`).
 
 We have a `k`-linear isomorphism
-$\mathrm{Fun}(G^n, A) \cong \mathrm{Hom}(\mathrm{FinSupp}(G^n, k[G]), A)$, where
-the righthand side is morphisms in `Rep k G`, and the representation on
-$\mathrm{FinSupp}(G^n, k[G])$ is defined pointwise by the left regular representation on $k[G].$ If
-we conjugate the $n$th differential in $\mathrm{Hom}(P, A)$ by this isomorphism, where `P` is the
-bar resolution of `k` as a trivial `k`-linear `G`-representation, then the resulting map agrees
-with the differential $d^n$ defined above, a fact we prove.
+$\mathrm{Fun}(G^n, A) \cong \mathrm{Hom}(\bigoplus_{G^n} k[G], A)$, where
+the righthand side is morphisms in `Rep k G`, and $k[G]$ is equipped with the left regular
+representation. If we conjugate the $n$th differential in $\mathrm{Hom}(P, A)$ by this isomorphism,
+where `P` is the bar resolution of `k` as a trivial `k`-linear `G`-representation, then the
+resulting map agrees with the differential $d^n$ defined above, a fact we prove.
 
 This gives us for free a proof that our $d^n$ squares to zero. It also gives us an isomorphism
 $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A),$ where $\mathrm{Ext}$ is taken in the category
@@ -177,7 +176,7 @@ def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
   isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousCochainsIso A)).hom n ≪≫
     (Rep.barResolution.extIso k G A n).symm
 
-lemma isZero_groupCohomology_of_subsingleton
+lemma isZero_groupCohomology_succ_of_subsingleton
     [Group G] [Subsingleton G] (A : Rep k G) (n : ℕ) :
     Limits.IsZero (groupCohomology A (n + 1)) :=
   (isZero_Ext_succ_of_projective (Rep.trivial k G k) A n).of_iso <| groupCohomologyIsoExt _ _
