@@ -61,7 +61,7 @@ except for implementing `Order.Frame` via `Order.Frame.ofMinimalAxioms`.
 This structure omits the `himp`, `compl` fields, which can be recovered using
 `Order.Frame.ofMinimalAxioms`. -/
 class Order.Frame.MinimalAxioms (α : Type u) extends CompleteLattice α where
-  inf_sSup_le_iSup_inf (a : α) (s : Set α) : a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b
+  protected inf_sSup_le_iSup_inf (a : α) (s : Set α) : a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b
 
 /-- Structure containing the minimal axioms required to check that an order is a coframe. Do NOT
 use, except for implementing `Order.Coframe` via `Order.Coframe.ofMinimalAxioms`.
@@ -69,17 +69,15 @@ use, except for implementing `Order.Coframe` via `Order.Coframe.ofMinimalAxioms`
 This structure omits the `sdiff`, `hnot` fields, which can be recovered using
 `Order.Coframe.ofMinimalAxioms`. -/
 class Order.Coframe.MinimalAxioms (α : Type u) extends CompleteLattice α where
-  iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s
+  protected iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s
 
 /-- A frame, aka complete Heyting algebra, is a complete lattice whose `⊓` distributes over `⨆`. -/
 class Order.Frame (α : Type*) extends CompleteLattice α, HeytingAlgebra α where
 
 /-- `⊓` distributes over `⨆`. -/
 theorem inf_sSup_le_iSup_inf {α : Type*} [Order.Frame α] (a : α) (s : Set α) :
-    a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b := by
-  have h (b : α) : GaloisConnection (b ⊓ ·) (b ⇨ ·) := by
-    simp [GaloisConnection, inf_comm]
-  exact le_of_eq (GaloisConnection.l_sSup (h a))
+    a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b :=
+  gc_inf_himp.l_sSup.le
 
 /-- A coframe, aka complete Brouwer algebra or complete co-Heyting algebra, is a complete lattice
 whose `⊔` distributes over `⨅`. -/
@@ -87,10 +85,8 @@ class Order.Coframe (α : Type*) extends CompleteLattice α, CoheytingAlgebra α
 
 /-- `⊔` distributes over `⨅`. -/
 theorem iInf_sup_le_sup_sInf {α : Type*} [Order.Coframe α] (a : α) (s : Set α) :
-    ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s := by
-  have h (b : α) : GaloisConnection (· \ b) (b ⊔ ·) := by
-    simp [GaloisConnection, sup_comm]
-  apply le_of_eq (Eq.symm (GaloisConnection.u_sInf (h a)))
+    ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s :=
+  gc_sdiff_sup.u_sInf.ge
 
 open Order
 
@@ -157,8 +153,9 @@ lemma inf_iSup₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊓ ⨆ i, ⨆ j, f 
   simp only [inf_iSup_eq]
 
 /-- The `Order.Frame.MinimalAxioms` element corresponding to a frame. -/
-def of [Frame α] : MinimalAxioms α := { ‹Frame α› with
-  inf_sSup_le_iSup_inf := _root_.inf_sSup_le_iSup_inf}
+def of [Frame α] : MinimalAxioms α where
+  __ :=  ‹Frame α›
+  inf_sSup_le_iSup_inf := inf_sSup_le_iSup_inf
 
 end MinimalAxioms
 
@@ -194,8 +191,9 @@ lemma sup_iInf₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊔ ⨅ i, ⨅ j, f 
   simp only [sup_iInf_eq]
 
 /-- The `Order.Coframe.MinimalAxioms` element corresponding to a frame. -/
-def of [Coframe α] : MinimalAxioms α := { ‹Coframe α› with
-  iInf_sup_le_sup_sInf := _root_.iInf_sup_le_sup_sInf}
+def of [Coframe α] : MinimalAxioms α where
+  __ := ‹Coframe α›
+  iInf_sup_le_sup_sInf := iInf_sup_le_sup_sInf
 
 end MinimalAxioms
 
@@ -217,9 +215,10 @@ variable (minAx : MinimalAxioms α)
 
 /-- The `CompleteDistribLattice.MinimalAxioms` element corresponding to a complete distrib lattice.
 -/
-def of [CompleteDistribLattice α] : MinimalAxioms α := { ‹CompleteDistribLattice α› with
-  inf_sSup_le_iSup_inf := _root_.inf_sSup_le_iSup_inf,
-  iInf_sup_le_sup_sInf := _root_.iInf_sup_le_sup_sInf}
+def of [CompleteDistribLattice α] : MinimalAxioms α where
+  __ := ‹CompleteDistribLattice α›
+  inf_sSup_le_iSup_inf := inf_sSup_le_iSup_inf
+  iInf_sup_le_sup_sInf := iInf_sup_le_sup_sInf
 
 /-- Turn minimal axioms for `CompleteDistribLattice` into minimal axioms for `Order.Frame`. -/
 abbrev toFrame : Frame.MinimalAxioms α := minAx.toMinimalAxioms
@@ -581,22 +580,22 @@ instance Prod.instCompleteBooleanAlgebra [CompleteBooleanAlgebra α] [CompleteBo
     CompleteBooleanAlgebra (α × β) where
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
-  inf_sSup_le_iSup_inf := _root_.inf_sSup_le_iSup_inf
-  iInf_sup_le_sup_sInf := _root_.iInf_sup_le_sup_sInf
+  inf_sSup_le_iSup_inf := inf_sSup_le_iSup_inf
+  iInf_sup_le_sup_sInf := iInf_sup_le_sup_sInf
 
 instance Pi.instCompleteBooleanAlgebra {ι : Type*} {π : ι → Type*}
     [∀ i, CompleteBooleanAlgebra (π i)] : CompleteBooleanAlgebra (∀ i, π i) where
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
-  inf_sSup_le_iSup_inf := _root_.inf_sSup_le_iSup_inf
-  iInf_sup_le_sup_sInf := _root_.iInf_sup_le_sup_sInf
+  inf_sSup_le_iSup_inf := inf_sSup_le_iSup_inf
+  iInf_sup_le_sup_sInf := iInf_sup_le_sup_sInf
 
 instance OrderDual.instCompleteBooleanAlgebra [CompleteBooleanAlgebra α] :
     CompleteBooleanAlgebra αᵒᵈ where
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
-  inf_sSup_le_iSup_inf := _root_.inf_sSup_le_iSup_inf
-  iInf_sup_le_sup_sInf := _root_.iInf_sup_le_sup_sInf
+  inf_sSup_le_iSup_inf := inf_sSup_le_iSup_inf
+  iInf_sup_le_sup_sInf := iInf_sup_le_sup_sInf
 
 section CompleteBooleanAlgebra
 
