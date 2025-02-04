@@ -543,19 +543,4 @@ theorem le_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) {S T : AddSubgroup A} :
 
 end GroupWithZero
 
-section Mul
-
-variable {R : Type*} [NonUnitalNonAssocRing R]
-
-/-- For additive subgroups `S` and `T` of a ring, the product of `S` and `T` as submonoids
-is automatically a subgroup, which we define as the product of `S` and `T` as subgroups. -/
-protected def mul : Mul (AddSubgroup R) where
-  mul M N :=
-  { __ := M.toAddSubmonoid * N.toAddSubmonoid
-    neg_mem' := fun h ↦ AddSubmonoid.mul_induction_on h
-      (fun m hm n hn ↦ by rw [← neg_mul]; exact AddSubmonoid.mul_mem_mul (M.neg_mem hm) hn)
-      fun r₁ r₂ h₁ h₂ ↦ by rw [neg_add]; exact (M.1 * N.1).add_mem h₁ h₂ }
-
-end Mul
-
 end AddSubgroup
