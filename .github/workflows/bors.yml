@@ -367,6 +367,7 @@ jobs:
             curl --request DELETE \
               --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.PR.outputs.number }}/labels/${label}" \
               --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
+          done
 
       - if: contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI')
         name: If `auto-merge-after-CI` is present, add a `bors merge` comment.
