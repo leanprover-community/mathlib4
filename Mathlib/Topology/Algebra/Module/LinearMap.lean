@@ -5,6 +5,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
   Heather Macbeth
 -/
 import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.Topology.Algebra.UniformGroup.Defs
 
@@ -116,6 +117,15 @@ theorem coe_inj {f g : M₁ →SL[σ₁₂] M₂} : (f : M₁ →ₛₗ[σ₁₂
 
 theorem coeFn_injective : @Function.Injective (M₁ →SL[σ₁₂] M₂) (M₁ → M₂) (↑) :=
   DFunLike.coe_injective
+
+theorem toContinuousAddMonoidHom_injective :
+    Function.Injective ((↑) : (M₁ →SL[σ₁₂] M₂) → ContinuousAddMonoidHom M₁ M₂) :=
+  (DFunLike.coe_injective.of_comp_iff _).1 DFunLike.coe_injective
+
+@[simp, norm_cast]
+theorem toContinuousAddMonoidHom_inj {f g : M₁ →SL[σ₁₂] M₂} :
+    (f : ContinuousAddMonoidHom M₁ M₂) = g ↔ f = g :=
+  toContinuousAddMonoidHom_injective.eq_iff
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
