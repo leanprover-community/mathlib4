@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Jeremy Avigad
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Control.Basic
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Filter.Defs
 

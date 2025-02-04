@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
 import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Basic
 
 /-!
 # Results filters related to finiteness.
