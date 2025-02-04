@@ -366,6 +366,21 @@ end Const
 
 variable {f : α → F}
 
+-- TODO: move!
+theorem enorm_eq_iff_norm_eq {E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F]
+    {x : E} {y : F} : ‖x‖ = ‖y‖ ↔ ‖x‖ₑ = ‖y‖ₑ := by
+  simp only [← ofReal_norm]
+  refine ⟨fun h ↦ by congr, fun h ↦ ?_⟩
+  exact (Real.toNNReal_eq_toNNReal_iff (by positivity) (by positivity)).mp (ENNReal.coe_inj.mp h)
+
+-- TODO: move!
+theorem enorm_leq_iff_norm_leq {E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F]
+    {x : E} {y : F} : ‖x‖ ≤ ‖y‖ ↔ ‖x‖ₑ ≤ ‖y‖ₑ := by
+  simp only [← ofReal_norm]
+  refine ⟨fun h ↦ by gcongr, fun h ↦ ?_⟩
+  rw [ENNReal.ofReal_le_ofReal_iff (norm_nonneg _)] at h
+  exact h
+
 lemma eLpNorm'_mono_enorm_ae {f : α → F} {g : α → G} (hq : 0 ≤ q) (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
     eLpNorm' f q μ ≤ eLpNorm' g q μ := by
   simp only [eLpNorm'_eq_lintegral_enorm]
@@ -384,7 +399,7 @@ lemma eLpNorm'_mono_nnnorm_ae {f : α → F} {g : α → G} (hq : 0 ≤ q) (h : 
 
 theorem eLpNorm'_mono_ae {f : α → F} {g : α → G} (hq : 0 ≤ q) (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) :
     eLpNorm' f q μ ≤ eLpNorm' g q μ :=
-  eLpNorm'_mono_nnnorm_ae hq h
+  eLpNorm'_mono_enorm_ae hq (by simpa only [enorm_leq_iff_norm_leq] using h)
 
 theorem eLpNorm'_congr_enorm_ae {f g : α → F} (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ = ‖g x‖ₑ) :
     eLpNorm' f q μ = eLpNorm' g q μ := by
@@ -396,21 +411,6 @@ theorem eLpNorm'_congr_nnnorm_ae {f g : α → F} (hfg : ∀ᵐ x ∂μ, ‖f x�
     eLpNorm' f q μ = eLpNorm' g q μ := by
   have : (‖f ·‖ₑ ^ q) =ᵐ[μ] (‖g ·‖ₑ ^ q) := hfg.mono fun x hx ↦ by simp [enorm, hx]
   simp only [eLpNorm'_eq_lintegral_enorm, lintegral_congr_ae this]
-
--- TODO: move!
-theorem enorm_eq_iff_norm_eq {E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F]
-    {x : E} {y : F} : ‖x‖ = ‖y‖ ↔ ‖x‖ₑ = ‖y‖ₑ := by
-  simp only [← ofReal_norm]
-  refine ⟨fun h ↦ by congr, fun h ↦ ?_⟩
-  exact (Real.toNNReal_eq_toNNReal_iff (by positivity) (by positivity)).mp (ENNReal.coe_inj.mp h)
-
--- TODO: move!
-theorem enorm_leq_iff_norm_leq {E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F]
-    {x : E} {y : F} : ‖x‖ ≤ ‖y‖ ↔ ‖x‖ₑ ≤ ‖y‖ₑ := by
-  simp only [← ofReal_norm]
-  refine ⟨fun h ↦ by gcongr, fun h ↦ ?_⟩
-  rw [ENNReal.ofReal_le_ofReal_iff (norm_nonneg _)] at h
-  exact h
 
 theorem eLpNorm'_congr_norm_ae {f g : α → F} (hfg : ∀ᵐ x ∂μ, ‖f x‖ = ‖g x‖) :
     eLpNorm' f q μ = eLpNorm' g q μ :=
@@ -451,7 +451,7 @@ theorem eLpNorm_mono_nnnorm_ae {f : α → F} {g : α → G} (h : ∀ᵐ x ∂μ
 
 theorem eLpNorm_mono_ae {f : α → F} {g : α → G} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
-  eLpNorm_mono_nnnorm_ae h
+  eLpNorm_mono_enorm_ae (by simpa only [enorm_leq_iff_norm_leq] using h)
 
 theorem eLpNorm_mono_ae_real {f : α → F} {g : α → ℝ} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ g x) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=

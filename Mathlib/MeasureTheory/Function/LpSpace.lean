@@ -368,6 +368,19 @@ theorem mem_Lp_of_ae_bound [IsFiniteMeasure μ] {f : α →ₘ[μ] E} (C : ℝ) 
     f ∈ Lp E p μ :=
   mem_Lp_iff_memℒp.2 <| Memℒp.of_bound f.aestronglyMeasurable _ hfC
 
+theorem enorm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ≥0}
+    (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) : ‖f‖ₑ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ * C := by
+  by_cases hμ : μ = 0
+  · by_cases hp : p.toReal⁻¹ = 0
+    · simp [hp, hμ, nnnorm_def]
+    · simp [hμ, nnnorm_def, Real.zero_rpow hp]
+  sorry /- proof was:
+  rw [← ENNReal.coe_le_coe, nnnorm_def, ENNReal.coe_toNNReal (eLpNorm_ne_top _)]
+  refine (eLpNorm_le_of_ae_enorm_bound hfC).trans_eq ?_
+  rw [← coe_measureUnivNNReal μ, ← ENNReal.coe_rpow_of_ne_zero (measureUnivNNReal_pos hμ).ne',
+    ENNReal.coe_mul, mul_comm, ENNReal.smul_def, smul_eq_mul] -/
+
+@[deprecated enorm_le_of_ae_bound (since := "2025-02-04")]
 theorem nnnorm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ≥0}
     (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) : ‖f‖₊ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ * C := by
   by_cases hμ : μ = 0
@@ -1509,6 +1522,18 @@ theorem mem_Lp (f : α →ᵇ E) : f.toContinuousMap.toAEEqFun μ ∈ Lp E p μ 
 
 /-- The `Lp`-norm of a bounded continuous function is at most a constant (depending on the measure
 of the whole space) times its sup-norm. -/
+theorem Lp_enorm_le (f : α →ᵇ E) :
+    ‖(⟨f.toContinuousMap.toAEEqFun μ, mem_Lp f⟩ : Lp E p μ)‖₊ ≤
+      measureUnivNNReal μ ^ p.toReal⁻¹ * ‖f‖ₑ := by
+  apply Lp.enorm_le_of_ae_bound
+  refine (f.toContinuousMap.coeFn_toAEEqFun μ).mono ?_
+  intro x hx
+  sorry /- proof was: rw [← NNReal.coe_le_coe, coe_nnnorm, coe_nnnorm]
+  convert f.norm_coe_le_norm x using 2 -/
+
+/-- The `Lp`-norm of a bounded continuous function is at most a constant (depending on the measure
+of the whole space) times its sup-norm. -/
+@[deprecated Lp_enorm_le (since := "2025-02-04")]
 theorem Lp_nnnorm_le (f : α →ᵇ E) :
     ‖(⟨f.toContinuousMap.toAEEqFun μ, mem_Lp f⟩ : Lp E p μ)‖₊ ≤
       measureUnivNNReal μ ^ p.toReal⁻¹ * ‖f‖₊ := by
