@@ -406,6 +406,26 @@ lemma Scheme.Hom.preimageIso_inv_ι {X Y : Scheme.{u}} (f : X.Hom Y) [IsIso (C :
 
 @[deprecated (since := "2024-10-20")] alias Scheme.restrictMapIso := Scheme.Hom.preimageIso
 
+/-- If `U ≤ V` are opens of `X`, the restriction of `U` to `V` is isomorphic to `U`. -/
+noncomputable def Scheme.Opens.isoOfLE {X : Scheme.{u}} {U V : X.Opens}
+    (hUV : U ≤ V) : (V.ι ⁻¹ᵁ U).toScheme ≅ U :=
+  IsOpenImmersion.isoOfRangeEq ((V.ι ⁻¹ᵁ U).ι ≫ V.ι) U.ι <| by
+    have : V.ι ''ᵁ (V.ι ⁻¹ᵁ U) = U := by simpa [Scheme.Hom.image_preimage_eq_opensRange_inter]
+    rw [Scheme.comp_coeBase, TopCat.coe_comp, Scheme.Opens.range_ι, Set.range_comp, ← this]
+    simp
+
+@[reassoc (attr := simp)]
+lemma Scheme.Opens.isoOfLE_hom_ι {X : Scheme.{u}} {U V : X.Opens}
+    (hUV : U ≤ V) :
+    (Scheme.Opens.isoOfLE hUV).hom ≫ U.ι = (V.ι ⁻¹ᵁ U).ι ≫ V.ι := by
+  simp [isoOfLE]
+
+@[reassoc (attr := simp)]
+lemma Scheme.Opens.isoOfLE_inv_ι {X : Scheme.{u}} {U V : X.Opens}
+    (hUV : U ≤ V) :
+    (Scheme.Opens.isoOfLE hUV).inv ≫ (V.ι ⁻¹ᵁ U).ι ≫ V.ι = U.ι := by
+  simp [isoOfLE]
+
 section MorphismRestrict
 
 /-- Given a morphism `f : X ⟶ Y` and an open set `U ⊆ Y`, we have `X ×[Y] U ≅ X |_{f ⁻¹ U}` -/
