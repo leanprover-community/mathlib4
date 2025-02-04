@@ -302,29 +302,24 @@ theorem apply_none {α ι} (l : Line α ι) (x : α) (i : ι) (h : l.idxFun i = 
 
 lemma apply_some (h : l.idxFun i = some a) : l x i = a := by simp [l.apply_def, h]
 
-@[simp]
 theorem map_apply {α α' ι} (f : α → α') (l : Line α ι) (x : α) : l.map f (f x) = f ∘ l x := by
   simp only [Line.apply_def, Line.map, Option.getD_map, comp_def]
 
-@[simp]
 theorem vertical_apply {α ι ι'} (v : ι → α) (l : Line α ι') (x : α) :
     l.vertical v x = Sum.elim v (l x) := by
   funext i
   cases i <;> rfl
 
-@[simp]
 theorem horizontal_apply {α ι ι'} (l : Line α ι) (v : ι' → α) (x : α) :
     l.horizontal v x = Sum.elim (l x) v := by
   funext i
   cases i <;> rfl
 
-@[simp]
 theorem prod_apply {α ι ι'} (l : Line α ι) (l' : Line α ι') (x : α) :
     l.prod l' x = Sum.elim (l x) (l' x) := by
   funext i
   cases i <;> rfl
 
-@[simp]
 theorem diagonal_apply {α ι} [Nonempty ι] (x : α) : Line.diagonal α ι x = fun _ => x := by
   simp_rw [Line.diagonal, Option.getD_none]
 

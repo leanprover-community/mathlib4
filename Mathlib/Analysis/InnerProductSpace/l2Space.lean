@@ -509,7 +509,6 @@ theorem _root_.Orthonormal.linearIsometryEquiv_symm_apply_single_one [DecidableE
   rw [IsHilbertSum.linearIsometryEquiv_symm_apply_single, LinearIsometry.toSpanSingleton_apply,
     one_smul]
 
-@[simp]
 protected theorem coe_mk (hsp : ⊤ ≤ (span 𝕜 (Set.range v)).topologicalClosure) :
     ⇑(HilbertBasis.mk hv hsp) = v := by
   classical
@@ -521,7 +520,6 @@ protected def mkOfOrthogonalEqBot (hsp : (span 𝕜 (Set.range v))ᗮ = ⊥) : H
   HilbertBasis.mk hv
     (by rw [← orthogonal_orthogonal_eq_closure, ← eq_top_iff, orthogonal_eq_top_iff, hsp])
 
-@[simp]
 protected theorem coe_mkOfOrthogonalEqBot (hsp : (span 𝕜 (Set.range v))ᗮ = ⊥) :
     ⇑(HilbertBasis.mkOfOrthogonalEqBot hv hsp) = v :=
   HilbertBasis.coe_mk hv _
@@ -537,7 +535,6 @@ protected def _root_.OrthonormalBasis.toHilbertBasis [Fintype ι] (b : Orthonorm
 
 end
 
-@[simp]
 theorem _root_.OrthonormalBasis.coe_toHilbertBasis [Fintype ι] (b : OrthonormalBasis ι 𝕜 E) :
     (b.toHilbertBasis : ι → E) = b :=
   HilbertBasis.coe_mk _ _
