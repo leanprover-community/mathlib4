@@ -48,6 +48,9 @@ namespace Over
 
 variable {X : T}
 
+/-- The structure map of a object of `Over X`. -/
+abbrev hom {X : T} (Y : Over X) : Y.left ⟶ X := Comma.hom Y
+
 @[ext]
 theorem OverMorphism.ext {X : T} {U V : Over X} {f g : U ⟶ V} (h : f.left = g.left) : f = g := by
   let ⟨_,b,_⟩ := f
@@ -362,7 +365,7 @@ instance [F.Faithful] : (Over.post (X := X) F).Faithful where
 instance [F.Faithful] [F.Full] : (Over.post (X := X) F).Full where
   map_surjective {A B} f := by
     obtain ⟨a, ha⟩ := F.map_surjective f.left
-    have w : a ≫ B.hom = A.hom := F.map_injective <| by simpa [ha] using Over.w _
+    have w : a ≫ B.hom = A.hom := F.map_injective <| by simpa [ha] using Over.w f
     exact ⟨Over.homMk a, by ext; simpa⟩
 
 instance [F.Full] [F.EssSurj] : (Over.post (X := X) F).EssSurj where
