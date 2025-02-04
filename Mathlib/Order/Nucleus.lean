@@ -111,6 +111,4 @@ instance : BoundedOrder (Nucleus X) where
   bot_le _ _ := le_apply
   le_top _ _ := by simp
 
-variable {s : Set (Nucleus X)}
-
 end Nucleus
