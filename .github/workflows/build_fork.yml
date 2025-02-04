@@ -368,7 +368,7 @@ jobs:
         # (and send an annoying email) if the labels don't exist
         run: |
           curl --request DELETE \
-            --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.PR.outputs.number }}/labels/awaiting-CI \
+            --url https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.PR.outputs.number }}/labels/awaiting-CI \
             --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
 
       - if: contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI')
