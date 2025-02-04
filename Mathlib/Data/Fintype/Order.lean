@@ -126,6 +126,7 @@ noncomputable abbrev toCompleteBooleanAlgebra [BooleanAlgebra α] : CompleteBool
   __ := ‹BooleanAlgebra α›
   __ := Fintype.toCompleteDistribLattice α
   inf_sSup_le_iSup_inf := inf_sSup_le_iSup_inf
+  iInf_sup_le_sup_sInf := iInf_sup_le_sup_sInf
 
 -- See note [reducible non-instances]
 /-- A finite boolean algebra is complete and atomic. -/
