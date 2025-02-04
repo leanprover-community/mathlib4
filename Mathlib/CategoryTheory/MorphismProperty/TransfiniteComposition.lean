@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.TransfiniteCompositionOfShape
 import Mathlib.Order.Shrink
+import Mathlib.Logic.UnivLE
 
 /-!
 # Classes of morphisms that are stable under transfinite composition
