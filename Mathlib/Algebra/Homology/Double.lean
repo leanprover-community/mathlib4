@@ -38,8 +38,7 @@ noncomputable def double : HomologicalComplex C c where
       eqToHom (if_pos hk.1) ≫ f ≫ eqToHom (by
         dsimp
         rw [if_neg, if_pos hk.2.1]
-        rintro rfl
-        exact hk.2.2 hk.2.1)
+        aesop)
     else 0
   d_comp_d' := by
     rintro i j k hij hjk
@@ -52,9 +51,7 @@ noncomputable def double : HomologicalComplex C c where
         rw [comp_zero]
       · rw [dif_neg (by tauto), zero_comp]
     · rw [dif_neg (by tauto), zero_comp]
-  shape i j hij := dif_neg (by
-    rintro ⟨rfl, rfl, _⟩
-    exact hij hi₀₁)
+  shape i j hij := dif_neg (by aesop)
 
 lemma isZero_double_X (k : ι) (h₀ : k ≠ i₀) (h₁ : k ≠ i₁) :
     IsZero ((double f hi₀₁).X k) := by
