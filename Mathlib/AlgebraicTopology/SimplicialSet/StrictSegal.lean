@@ -20,6 +20,7 @@ the nerve of its homotopy category.
 
 `StrictSegal` simplicial sets have an important property of being 2-coskeletal which is proven
 in `Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal`.
+
 -/
 
 universe v u
@@ -126,7 +127,6 @@ theorem spineToSimplex_edge (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
 
 end spineToSimplex
 
-open Opposite in
 /-- For any `σ : X ⟶ Y` between `n + 1`-truncated `StrictSegal` simplicial sets,
 `spineToSimplex` commutes with `Path.map`. -/
 lemma spineToSimplex_map {X Y : SSet.Truncated.{u} (n + 1)} (sx : StrictSegal X)

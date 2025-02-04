@@ -256,7 +256,8 @@ def truncation (n : ℕ) : SimplicialObject C ⥤ SimplicialObject.Truncated C n
 
 /-- For all `m ≤ n`, `truncation m` factors through `Truncated n`. -/
 lemma truncation_comp_trunc {n m : ℕ} (h : m ≤ n) :
-    truncation n ⋙ Truncated.trunc C n m = truncation m := rfl
+    truncation n ⋙ Truncated.trunc C n m = truncation m :=
+  rfl
 
 end Truncation
 
@@ -695,7 +696,8 @@ def truncation (n : ℕ) : CosimplicialObject C ⥤ CosimplicialObject.Truncated
 
 /-- For all `m ≤ n`, `truncation m` factors through `Truncated n`. -/
 lemma truncation_comp_trunc {n m : ℕ} (h : m ≤ n) :
-    truncation n ⋙ Truncated.trunc C n m = truncation m := rfl
+    truncation n ⋙ Truncated.trunc C n m = truncation m :=
+  rfl
 
 end Truncation
 
