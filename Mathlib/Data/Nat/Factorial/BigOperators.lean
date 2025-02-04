@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Pim Otte
 -/
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Tactic.Zify
 
 /-!
 # Factorial with big operators
@@ -41,14 +41,6 @@ theorem ascFactorial_eq_prod_range (n : ℕ) : ∀ k, n.ascFactorial k = ∏ i �
 theorem descFactorial_eq_prod_range (n : ℕ) : ∀ k, n.descFactorial k = ∏ i ∈ range k, (n - i)
   | 0 => rfl
   | k + 1 => by rw [descFactorial, prod_range_succ, mul_comm, descFactorial_eq_prod_range n k]
-
-/-- `k!` divides the product of any `k` successive non-negative integers. -/
-private lemma factorial_coe_dvd_prod_of_nonneg (k : ℕ) (n : ℤ) (hn : 0 ≤ n) :
-    (k ! : ℤ) ∣ ∏ i ∈ range k, (n + i) := by
-  obtain ⟨x, hx⟩ := Int.eq_ofNat_of_zero_le hn
-  have hdivk := x.factorial_dvd_ascFactorial k
-  zify [x.ascFactorial_eq_prod_range k] at hdivk
-  rwa [hx]
 
 /-- `k!` divides the product of any `k` successive integers. -/
 lemma factorial_coe_dvd_prod (k : ℕ) (n : ℤ) : (k ! : ℤ) ∣ ∏ i ∈ range k, (n + i) := by
