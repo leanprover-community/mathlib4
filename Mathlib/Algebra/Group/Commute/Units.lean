@@ -110,7 +110,7 @@ lemma IsUnit.of_pow_eq_one (ha : a ^ n = 1) (hn : n ≠ 0) : IsUnit a :=
   (Units.ofPowEqOne _ n ha hn).isUnit
 
 @[deprecated (since := "2025-02-03")] alias isUnit_ofPowEqOne := IsUnit.of_pow_eq_one
-@[deprecated (since := "2025-02-03")] alias isAddUnit_ofNSMulEqZero := isAddUnit_of_nsmul_eq_zero
+@[deprecated (since := "2025-02-03")] alias isAddUnit_ofNSMulEqZero := IsAddUnit.of_nsmul_eq_zero
 
 end Monoid
 
