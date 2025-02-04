@@ -152,10 +152,18 @@ namespace Path
 
 variable {X : SSet.{u}} {n : ℕ}
 
+/-- A path includes the data of `n + 1` 0-simplices in `X`. -/
+def vertex (f : Path X n) (i : Fin (n + 1)) : X.obj (op [0]) :=
+  Truncated.Path₁.vertex f i
+
+/-- A path includes the data of `n` 1-simplices in `X`. -/
+def arrow (f : Path X n) (i : Fin n) : X.obj (op [1]) :=
+  Truncated.Path₁.arrow f i
+
 @[ext]
 lemma ext {f g : Path X n} (hᵥ : f.vertex = g.vertex) (hₐ : f.arrow = g.arrow) :
     f = g :=
-  Truncated.Path.ext hᵥ hₐ
+  Truncated.Path₁.ext hᵥ hₐ
 
 /-- To show two paths equal it suffices to show that they have the same edges. -/
 @[ext]
@@ -238,11 +246,11 @@ lemma stdSimplex.spineId_vertex (n : ℕ) (i : Fin (n + 1)) :
 
 @[simp]
 lemma stdSimplex.spineId_arrow_apply_zero (n : ℕ) (i : Fin n) :
-    @id (Δ[n].obj (op [1])) ((stdSimplex.spineId n).arrow i) 0 = i.castSucc := rfl
+    (stdSimplex.spineId n).arrow i 0 = i.castSucc := rfl
 
 @[simp]
 lemma stdSimplex.spineId_arrow_apply_one (n : ℕ) (i : Fin n) :
-    @id (Δ[n].obj (op [1])) ((stdSimplex.spineId n).arrow i) 1 = i.succ := rfl
+    (stdSimplex.spineId n).arrow i 1 = i.succ := rfl
 
 /-- A path of a simplicial set can be lifted to a subcomplex if the vertices
 and arrows belong to this subcomplex. -/
@@ -253,12 +261,8 @@ def Subcomplex.liftPath {X : SSet.{u}} (A : X.Subcomplex) {n : ℕ} (p : Path X 
     Path A n where
   vertex j := ⟨p.vertex j, hp₀ _⟩
   arrow j := ⟨p.arrow j, hp₁ _⟩
-  arrow_src j := by
-    rw [Subtype.ext_iff]
-    exact p.arrow_src j
-  arrow_tgt j := by
-    rw [Subtype.ext_iff]
-    exact p.arrow_tgt j
+  arrow_src j := Subtype.ext <| p.arrow_src j
+  arrow_tgt j := Subtype.ext <| p.arrow_tgt j
 
 @[simp]
 lemma Subcomplex.map_ι_liftPath {X : SSet.{u}} (A : X.Subcomplex) {n : ℕ} (p : Path X n)
@@ -272,13 +276,10 @@ in `Δ[n]`.-/
 def subcomplexHorn.spineId {n : ℕ} (i : Fin (n + 3))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :
     Path (Λ[n + 2, i] : SSet.{u}) (n + 2) :=
-  Λ[n + 2, i].liftPath (stdSimplex.spineId (n + 2))
-    (by simp [Truncated.inclusion, Truncated.incl])
-    (fun j ↦ by
-      convert (horn.primitiveEdge.{u} h₀ hₙ j).2
-      change @id (Δ[n + 2].obj (op [1])) ((stdSimplex.spineId _).arrow j) = _
-      ext a
-      fin_cases a <;> rfl)
+  Λ[n + 2, i].liftPath (stdSimplex.spineId (n + 2)) (by simp) (fun j ↦ by
+    convert (horn.primitiveEdge.{u} h₀ hₙ j).2
+    ext a
+    fin_cases a <;> rfl)
 
 @[simp]
 lemma subcomplexHorn.spineId_map_hornInclusion {n : ℕ} (i : Fin (n + 3))

@@ -72,7 +72,6 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
         rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
         apply congr_arg
         apply Subtype.ext
-        change (@id ((Subpresheaf.toPresheaf Λ[n + 3, i]).obj (Opposite.op [1])) _).val = _
         ext a : 1
         fin_cases a <;> fin_cases m <;> rfl
       rw [← spine_arrow, spine_δ_arrow_eq sx _ heq, hi]
