@@ -382,23 +382,24 @@ theorem enorm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ≥0}
   rw [enorm_def]
   exact this
 
-@[deprecated enorm_le_of_ae_bound (since := "2025-02-04")]
-theorem nnnorm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ≥0}
-    (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) : ‖f‖₊ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ * C := by
-  by_cases hμ : μ = 0
-  · by_cases hp : p.toReal⁻¹ = 0
-    · simp [hp, hμ, nnnorm_def]
-    · simp [hμ, nnnorm_def, Real.zero_rpow hp]
-  rw [← ENNReal.coe_le_coe, nnnorm_def, ENNReal.coe_toNNReal (eLpNorm_ne_top _)]
-  refine (eLpNorm_le_of_ae_nnnorm_bound hfC).trans_eq ?_
-  rw [← coe_measureUnivNNReal μ, ← ENNReal.coe_rpow_of_ne_zero (measureUnivNNReal_pos hμ).ne',
-    ENNReal.coe_mul, mul_comm, ENNReal.smul_def, smul_eq_mul]
+-- @[deprecated enorm_le_of_ae_bound (since := "2025-02-04")]
+-- theorem nnnorm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ≥0}
+--     (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) : ‖f‖₊ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ * C := by
+--   by_cases hμ : μ = 0
+--   · by_cases hp : p.toReal⁻¹ = 0
+--     · simp [hp, hμ, nnnorm_def]
+--     · simp [hμ, nnnorm_def, Real.zero_rpow hp]
+--   rw [← ENNReal.coe_le_coe, nnnorm_def, ENNReal.coe_toNNReal (eLpNorm_ne_top _)]
+--   refine (eLpNorm_le_of_ae_nnnorm_bound hfC).trans_eq ?_
+--   rw [← coe_measureUnivNNReal μ, ← ENNReal.coe_rpow_of_ne_zero (measureUnivNNReal_pos hμ).ne',
+--     ENNReal.coe_mul, mul_comm, ENNReal.smul_def, smul_eq_mul]
 
-theorem norm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ} (hC : 0 ≤ C)
-    (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : ‖f‖ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ * C := by
-  lift C to ℝ≥0 using hC
-  have := nnnorm_le_of_ae_bound hfC
-  rwa [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_rpow] at this
+-- @[deprecated enorm_le_of_ae_bound (since := "2025-02-04")]
+-- theorem norm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ} (hC : 0 ≤ C)
+--     (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : ‖f‖ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ * C := by
+--   lift C to ℝ≥0 using hC
+--   have := nnnorm_le_of_ae_bound hfC
+--   rwa [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_rpow] at this
 
 instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E p μ) :=
   { AddGroupNorm.toNormedAddCommGroup
@@ -1533,24 +1534,24 @@ theorem Lp_enorm_le (f : α →ᵇ E) :
   sorry /- proof was: rw [← NNReal.coe_le_coe, coe_nnnorm, coe_nnnorm]
   convert f.norm_coe_le_norm x using 2 -/
 
-/-- The `Lp`-norm of a bounded continuous function is at most a constant (depending on the measure
-of the whole space) times its sup-norm. -/
-@[deprecated Lp_enorm_le (since := "2025-02-04")]
-theorem Lp_nnnorm_le (f : α →ᵇ E) :
-    ‖(⟨f.toContinuousMap.toAEEqFun μ, mem_Lp f⟩ : Lp E p μ)‖₊ ≤
-      measureUnivNNReal μ ^ p.toReal⁻¹ * ‖f‖₊ := by
-  apply Lp.nnnorm_le_of_ae_bound
-  refine (f.toContinuousMap.coeFn_toAEEqFun μ).mono ?_
-  intro x hx
-  rw [← NNReal.coe_le_coe, coe_nnnorm, coe_nnnorm]
-  convert f.norm_coe_le_norm x using 2
+--/-- The `Lp`-norm of a bounded continuous function is at most a constant (depending on the measure
+-- of the whole space) times its sup-norm. -/
+-- @[deprecated Lp_enorm_le (since := "2025-02-04")]
+-- theorem Lp_nnnorm_le (f : α →ᵇ E) :
+--     ‖(⟨f.toContinuousMap.toAEEqFun μ, mem_Lp f⟩ : Lp E p μ)‖₊ ≤
+--       measureUnivNNReal μ ^ p.toReal⁻¹ * ‖f‖₊ := by
+--   apply Lp.nnnorm_le_of_ae_bound
+--   refine (f.toContinuousMap.coeFn_toAEEqFun μ).mono ?_
+--   intro x hx
+--   rw [← NNReal.coe_le_coe, coe_nnnorm, coe_nnnorm]
+--   convert f.norm_coe_le_norm x using 2
 
 /-- The `Lp`-norm of a bounded continuous function is at most a constant (depending on the measure
 of the whole space) times its sup-norm. -/
 theorem Lp_norm_le (f : α →ᵇ E) :
     ‖(⟨f.toContinuousMap.toAEEqFun μ, mem_Lp f⟩ : Lp E p μ)‖ ≤
       measureUnivNNReal μ ^ p.toReal⁻¹ * ‖f‖ :=
-  Lp_nnnorm_le f
+  sorry -- TODO fix proof, was: Lp_nnnorm_le f
 
 variable (p μ)
 
