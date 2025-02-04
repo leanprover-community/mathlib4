@@ -100,7 +100,8 @@ variable (m : ℕ) (h : m ≤ n + 1)
 
 @[simp]
 theorem spineToSimplex_vertex (i : Fin (m + 1)) (f : Path X m) :
-    X.map (tr (const [0] [m] i)).op (sx.spineToSimplex m h f) = f.vertex i := by
+    X.map (tr (SimplexCategory.const [0] [m] i)).op (sx.spineToSimplex m h f) =
+      f.vertex i := by
   rw [← spine_vertex (h := h), spine_spineToSimplex_apply]
 
 @[simp]
@@ -151,7 +152,7 @@ lemma spine_δ_vertex_lt (hij : i.castSucc < j) :
     (X.spine m _ (X.map (tr (δ j)).op
       (sx.spineToSimplex (m + 1) _ f))).vertex i = f.vertex i.castSucc := by
   rw [spine_vertex X m, ← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
-    const_comp, spineToSimplex_vertex]
+    SimplexCategory.const_comp, spineToSimplex_vertex]
   dsimp only [δ, len_mk, mkHom, Hom.toOrderHom_mk, Fin.succAboveOrderEmb_apply,
     OrderEmbedding.toOrderHom_coe]
   rw [Fin.succAbove_of_castSucc_lt j i hij]
@@ -163,7 +164,7 @@ lemma spine_δ_vertex_ge (hij : j ≤ i.castSucc) :
     (X.spine m _ (X.map (tr (δ j)).op
       (sx.spineToSimplex (m + 1) _ f))).vertex i = f.vertex i.succ := by
   rw [spine_vertex X m, ← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
-    const_comp, spineToSimplex_vertex]
+    SimplexCategory.const_comp, spineToSimplex_vertex]
   dsimp only [δ, len_mk, mkHom, Hom.toOrderHom_mk, Fin.succAboveOrderEmb_apply,
     OrderEmbedding.toOrderHom_coe]
   rw [Fin.succAbove_of_le_castSucc j i hij]
@@ -252,7 +253,8 @@ lemma isStrictSegal (sx : StrictSegal X) : IsStrictSegal X where
 
 @[simp]
 theorem spineToSimplex_vertex (i : Fin (n + 1)) (f : Path X n) :
-    X.map (const [0] [n] i).op (sx.spineToSimplex f) = f.vertex i := by
+    X.map (SimplexCategory.const [0] [n] i).op (sx.spineToSimplex f) =
+      f.vertex i := by
   rw [← spine_vertex, spine_spineToSimplex_apply]
 
 @[simp]
@@ -308,7 +310,8 @@ lemma spine_δ_vertex_lt (h : i.castSucc < j) :
     (X.spine n (X.δ j (sx.spineToSimplex f))).vertex i =
       f.vertex i.castSucc := by
   simp only [SimplicialObject.δ, spine_vertex]
-  rw [← FunctorToTypes.map_comp_apply, ← op_comp, const_comp, spineToSimplex_vertex]
+  rw [← FunctorToTypes.map_comp_apply, ← op_comp, SimplexCategory.const_comp,
+    spineToSimplex_vertex]
   simp only [SimplexCategory.δ, Hom.toOrderHom, len_mk, mkHom, Hom.mk,
     OrderEmbedding.toOrderHom_coe, Fin.succAboveOrderEmb_apply]
   rw [Fin.succAbove_of_castSucc_lt j i h]
@@ -319,7 +322,8 @@ path. -/
 lemma spine_δ_vertex_ge (h : j ≤ i.castSucc) :
     (X.spine n (X.δ j (sx.spineToSimplex f))).vertex i = f.vertex i.succ := by
   simp only [SimplicialObject.δ, spine_vertex]
-  rw [← FunctorToTypes.map_comp_apply, ← op_comp, const_comp, spineToSimplex_vertex]
+  rw [← FunctorToTypes.map_comp_apply, ← op_comp, SimplexCategory.const_comp,
+    spineToSimplex_vertex]
   simp only [SimplexCategory.δ, Hom.toOrderHom, len_mk, mkHom, Hom.mk,
     OrderEmbedding.toOrderHom_coe, Fin.succAboveOrderEmb_apply]
   rw [Fin.succAbove_of_le_castSucc j i h]
