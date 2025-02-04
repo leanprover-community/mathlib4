@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
 import Mathlib.Data.Nat.SuccPred
+import Mathlib.Data.Fin.SuccPred
 import Mathlib.Order.Interval.Set.InitialSeg
 import Mathlib.Order.SuccPred.InitialSeg
 import Mathlib.Order.SuccPred.Limit
@@ -17,16 +18,6 @@ Let `F : J ⥤ C` be functor from a well ordered type `J`.
 We introduce the typeclass `F.IsWellOrderContinuous`
 to say that if `m` is a limit element, then `F.obj m`
 is the colimit of the `F.obj j` for `j < m`.
-
-## TODO
-* use the API for initial segments in order to generalize some
-definitions in this file
-* given a morphism `f` in `C`, introduce a structure
-`TransfiniteCompositionOfShape J f` which contains the data
-of a continuous functor `F : J ⥤ C` and an identification
-of `f` to the map from `F.obj ⊥` to the colimit of `F`
-* redefine `MorphismProperty.transfiniteCompositionsOfShape`
-in terms of this structure `TransfiniteCompositionOfShape`
 
 -/
 
@@ -62,6 +53,29 @@ noncomputable def isColimitOfIsWellOrderContinuous' (F : J ⥤ C) [F.IsWellOrder
 
 instance (F : ℕ ⥤ C) : F.IsWellOrderContinuous where
   nonempty_isColimit m hm := by simp at hm
+
+-- to be moved...
+lemma _root_.Preorder.arrowMkMapEq {α : Type*} [Preorder α] {x y x' y' : α}
+    (f : x ⟶ y) (f' : x' ⟶ y') (F : α ⥤ C) (hx : x = x') (hy : y = y') :
+    Arrow.mk (F.map f) = Arrow.mk (F.map f') :=  by
+  subst hx hy
+  obtain rfl := Subsingleton.elim f f'
+  rfl
+
+@[simp]
+lemma _root_.Fin.orderSucc_castSucc {n : ℕ} (i : Fin n) :
+    Order.succ i.castSucc = i.succ := sorry
+
+instance (n : ℕ) : IsSuccArchimedean (Fin n) := sorry
+
+lemma _root_.Fin.arrow_mk_map_homOfLE_le_succ_eq
+    {n : ℕ} (F : Fin (n + 1) ⥤ C) (i : Fin n) :
+    Arrow.mk (F.map (homOfLE (Order.le_succ i.castSucc))) =
+      Arrow.mk (F.map (homOfLE i.castSucc_le_succ)) :=
+  _root_.Preorder.arrowMkMapEq _ _ _ rfl (by simp)
+
+instance {n : ℕ} (F : Fin n ⥤ C) : F.IsWellOrderContinuous where
+  nonempty_isColimit _ hj := (Order.not_isSuccLimit hj).elim
 
 lemma isWellOrderContinuous_of_iso {F G : J ⥤ C} (e : F ≅ G) [F.IsWellOrderContinuous] :
     G.IsWellOrderContinuous where

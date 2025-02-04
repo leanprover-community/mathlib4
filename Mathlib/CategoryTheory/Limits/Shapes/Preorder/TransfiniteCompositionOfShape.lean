@@ -3,7 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.ComposableArrows
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.Data.Fin.SuccPred
 
 /-!
 # A structure to describe transfinite compositions
@@ -29,8 +32,7 @@ namespace CategoryTheory
 
 open Limits
 
-variable {C : Type u} [Category.{v} C]
-  (J : Type w) [LinearOrder J] [OrderBot J]
+variable {C : Type u} [Category.{v} C] (J : Type w) [LinearOrder J] [OrderBot J]
   {X Y : C} (f : X ⟶ Y)
 
 /-- Given a well-ordered type `J`, a morphism `f : X ⟶ Y` in a category `C`
@@ -66,6 +68,36 @@ def ofArrowIso {X' Y' : C} {f' : X' ⟶ Y'} (e : Arrow.mk f ≅ Arrow.mk f') :
   incl := c.incl ≫ (Functor.const J).map e.hom.right
   isColimit := IsColimit.ofIsoColimit c.isColimit
     (Cocones.ext (Arrow.rightFunc.mapIso e))
+
+-- to be moved
+instance (n : ℕ) (i : Fin (n + 1)) : Unique (i ⟶ Fin.last n) where
+  default := homOfLE i.le_last
+  uniq _ := rfl
+
+def Fin.lastIsTerminal (n : ℕ) : IsTerminal (Fin.last n) :=
+  IsTerminal.ofUnique (Fin.last n)
+
+/-- If `G : ComposableArrows C n`, then `G.hom : G.left ⟶ G.right` is a
+transfinite composition of shape `Fin (n + 1)`. -/
+@[simps]
+def ofComposableArrows {n : ℕ} (G : ComposableArrows C n) :
+    TransfiniteCompositionOfShape (Fin (n + 1)) G.hom where
+  F := G
+  isoBot := Iso.refl _
+  isColimit := colimitOfDiagramTerminal (Fin.lastIsTerminal n) G
+  fac := Category.id_comp _
+
+/-- If `f` is a transfinite composition of shape `J`, then it is
+also a transfinite composition of shape `J'` if `J' ≃o J`. -/
+@[simps]
+def ofOrderIso {J' : Type w'} [LinearOrder J'] [OrderBot J']
+    [SuccOrder J'] [WellFoundedLT J']
+    (e : J' ≃o J) :
+    TransfiniteCompositionOfShape J' f where
+  F := e.equivalence.functor ⋙ c.F
+  isoBot := c.F.mapIso (eqToIso sorry) ≪≫ c.isoBot
+  incl := whiskerLeft e.equivalence.functor c.incl
+  isColimit := IsColimit.whiskerEquivalence (c.isColimit) e.equivalence
 
 end TransfiniteCompositionOfShape
 
