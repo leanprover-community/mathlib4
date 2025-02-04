@@ -27,7 +27,7 @@ section
 variable {X₀ X₁ : C} (f : X₀ ⟶ X₁) {ι : Type*} {c : ComplexShape ι}
   {i₀ i₁ : ι} (hi₀₁ : c.Rel i₀ i₁)
 
-open Classical
+open Classical in
 /-- Given a complex shape `c`, two indices `i₀` and `i₁` such that `c.Rel i₀ i₁`,
 and `f : X₀ ⟶ X₁`, this is the homological complex which, if `i₀ ≠ i₁`, only
 consists of the map `f` in degrees `i₀` and `i₁`, and zero everywhere else. -/
