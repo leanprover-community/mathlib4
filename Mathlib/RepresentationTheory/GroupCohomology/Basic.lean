@@ -101,9 +101,8 @@ theorem d_eq :
         ((barComplex k G).linearYonedaObj k A).d n (n + 1) ≫
           (freeLiftLEquiv (Fin (n + 1) → G) A).toModuleIso.hom := by
   ext f g
-  show _ = Finsupp.linearCombination _ _ _
   have h := barComplex.d_single (k := k) _ g
-  simp_all [coe_V, d_apply]
+  simp_all [d_apply]
 
 end inhomogeneousCochains
 
@@ -141,7 +140,7 @@ def inhomogeneousCochainsIso :
     (fun i => (Rep.freeLiftLEquiv (Fin i → G) A).toModuleIso.symm) ?_
   rintro i j (h : i + 1 = j)
   subst h
-  simp [d_eq]
+  simp [d_eq, -LinearEquiv.toModuleIso_hom, -LinearEquiv.toModuleIso_inv]
 
 /-- The `n`-cocycles `Zⁿ(G, A)` of a `k`-linear `G`-representation `A`, i.e. the kernel of the
 `n`th differential in the complex of inhomogeneous cochains. -/
