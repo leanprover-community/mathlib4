@@ -437,14 +437,14 @@ lemma exists_maximal_supergraph (P : SimpleGraph V → Prop) (hG : P G) :
   classical
   revert hG
   apply WellFounded.recursion (measure fun H  => Hᶜ.edgeFinset.card).wf G
-  intro c hc _
-  by_cases hm: ∀ d, c < d → ¬P d
-  · use c
+  intro H hH _
+  by_cases hm : ∀ J, H < J → ¬P J
+  · use H
   · push_neg at hm
-    obtain ⟨d,hd1,hd2⟩:=hm
-    obtain ⟨e,hle,he⟩:= hc d ((fun h => Finset.card_lt_card <| edgeFinset_ssubset_edgeFinset.2
-        <| compl_lt_compl_iff_lt.2 h) hd1) hd2
-    use e, hd1.le.trans hle
+    obtain ⟨J,hJ1,hJ2⟩ := hm
+    obtain ⟨K,hle,hK⟩ := hH J ((fun h => Finset.card_lt_card <| edgeFinset_ssubset_edgeFinset.2
+        <| compl_lt_compl_iff_lt.2 h) hJ1) hJ2
+    use K, hJ1.le.trans hle
 
 end Finite
 
