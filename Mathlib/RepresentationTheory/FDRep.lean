@@ -48,23 +48,20 @@ open CategoryTheory.Limits
 abbrev FDRep (k G : Type u) [Field k] [Monoid G] :=
   Action (FGModuleCat.{u} k) (MonCat.of G)
 
-@[deprecated (since := "2024-07-05")]
-alias FdRep := FDRep
-
 namespace FDRep
 
 variable {k G : Type u} [Field k] [Monoid G]
 
 -- Porting note: `@[derive]` didn't work for `FDRep`. Add the 4 instances here.
 instance : LargeCategory (FDRep k G) := inferInstance
-instance : ConcreteCategory (FDRep k G) := inferInstance
+instance : HasForget (FDRep k G) := inferInstance
 instance : Preadditive (FDRep k G) := inferInstance
 instance : HasFiniteLimits (FDRep k G) := inferInstance
 
 instance : Linear k (FDRep k G) := by infer_instance
 
 instance : CoeSort (FDRep k G) (Type u) :=
-  ConcreteCategory.hasCoeToSort _
+  HasForget.hasCoeToSort _
 
 instance (V : FDRep k G) : AddCommGroup V := by
   change AddCommGroup ((forget₂ (FDRep k G) (FGModuleCat k)).obj V).obj; infer_instance
@@ -82,15 +79,17 @@ instance (V W : FDRep k G) : FiniteDimensional k (V ⟶ W) :=
 
 /-- The monoid homomorphism corresponding to the action of `G` onto `V : FDRep k G`. -/
 def ρ (V : FDRep k G) : G →* V →ₗ[k] V :=
-  (ModuleCat.endMulEquiv _).toMonoidHom.comp (Action.ρ V)
+  (ModuleCat.endRingEquiv _).toMonoidHom.comp (Action.ρ V).hom
 
 @[simp]
-lemma endMulEquiv_symm_comp_ρ (V : FDRep k G) :
-    (MonoidHomClass.toMonoidHom (ModuleCat.endMulEquiv V.V.obj).symm).comp (ρ V) = Action.ρ V := rfl
+lemma endRingEquiv_symm_comp_ρ (V : FDRep k G) :
+    (MonoidHomClass.toMonoidHom (ModuleCat.endRingEquiv V.V.obj).symm).comp (ρ V) =
+      (Action.ρ V).hom :=
+  rfl
 
 @[simp]
-lemma endMulEquiv_comp_ρ (V : FDRep k G) :
-    (MonoidHomClass.toMonoidHom (ModuleCat.endMulEquiv V.V.obj)).comp (Action.ρ V) = ρ V := rfl
+lemma endRingEquiv_comp_ρ (V : FDRep k G) :
+    (MonoidHomClass.toMonoidHom (ModuleCat.endRingEquiv V.V.obj)).comp (Action.ρ V).hom = ρ V := rfl
 
 @[simp]
 lemma hom_action_ρ (V : FDRep k G) (g : G) : (Action.ρ V g).hom = ρ V g := rfl
@@ -111,7 +110,8 @@ theorem Iso.conj_ρ {V W : FDRep k G} (i : V ≅ W) (g : G) :
 @[simps ρ]
 def of {V : Type u} [AddCommGroup V] [Module k V] [FiniteDimensional k V]
     (ρ : Representation k G V) : FDRep k G :=
-  ⟨FGModuleCat.of k V, ρ ≫ MonCat.ofHom (ModuleCat.endMulEquiv _).symm.toMonoidHom⟩
+  ⟨FGModuleCat.of k V, MonCat.ofHom ρ ≫ MonCat.ofHom
+    (ModuleCat.endRingEquiv (ModuleCat.of k V)).symm.toMonoidHom⟩
 
 instance : HasForget₂ (FDRep k G) (Rep k G) where
   forget₂ := (forget₂ (FGModuleCat k) (ModuleCat k)).mapAction (MonCat.of G)
@@ -128,12 +128,11 @@ example : MonoidalLinear k (FDRep k G) := by infer_instance
 
 open Module
 
-open scoped Classical
-
 -- We need to provide this instance explicitly as otherwise `finrank_hom_simple_simple` gives a
 -- deterministic timeout.
 instance : HasKernels (FDRep k G) := by infer_instance
 
+open scoped Classical in
 /-- Schur's Lemma: the dimension of the `Hom`-space between two irreducible representation is `0` if
 they are not isomorphic, and `1` if they are. -/
 theorem finrank_hom_simple_simple [IsAlgClosed k] (V W : FDRep k G) [Simple V] [Simple W] :

@@ -127,8 +127,7 @@ theorem deriv.log (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0) :
 `f x  ≠ 0`. -/
 lemma Real.deriv_log_comp_eq_logDeriv {f : ℝ → ℝ} {x : ℝ} (h₁ : DifferentiableAt ℝ f x)
     (h₂ : f x ≠ 0) : deriv (log ∘ f) x = logDeriv f x := by
-  simp only [ne_eq, logDeriv, Pi.div_apply, ← deriv.log h₁ h₂]
-  rfl
+  simp only [ne_eq, logDeriv, Pi.div_apply, ← deriv.log h₁ h₂, Function.comp_def]
 
 end deriv
 
@@ -204,7 +203,7 @@ theorem tendsto_mul_log_one_plus_div_atTop (t : ℝ) :
     simpa [hasDerivAt_iff_tendsto_slope, slope_fun_def] using
       (((hasDerivAt_id (0 : ℝ)).const_mul t).const_add 1).log (by simp)
   have h₂ : Tendsto (fun x : ℝ => x⁻¹) atTop (𝓝[≠] 0) :=
-    tendsto_inv_atTop_zero'.mono_right (nhdsWithin_mono _ fun x hx => (Set.mem_Ioi.mp hx).ne')
+    tendsto_inv_atTop_nhdsGT_zero.mono_right (nhdsGT_le_nhdsNE _)
   simpa only [Function.comp_def, inv_inv] using h₁.comp h₂
 
 /-- A crude lemma estimating the difference between `log (1-x)` and its Taylor series at `0`,

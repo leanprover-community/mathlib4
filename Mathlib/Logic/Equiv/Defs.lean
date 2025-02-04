@@ -7,8 +7,9 @@ import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Quot
 import Mathlib.Data.Bool.Basic
 import Mathlib.Logic.Unique
-import Mathlib.Tactic.Substs
 import Mathlib.Tactic.Conv
+import Mathlib.Tactic.Simps.Basic
+import Mathlib.Tactic.Substs
 
 /-!
 # Equivalence between types
@@ -42,7 +43,7 @@ Then we define
   - `Equiv.decidableEq` takes `e : α ≃ β` and `[DecidableEq β]` and returns `DecidableEq α`.
 
   More definitions of this kind can be found in other files.
-  E.g., `Mathlib.Logic.Equiv.TransferInstance` does it for many algebraic type classes like
+  E.g., `Mathlib.Algebra.Equiv.TransferInstance` does it for many algebraic type classes like
   `Group`, `Module`, etc.
 
 Many more such isomorphisms and operations are defined in `Mathlib.Logic.Equiv.Basic`.
@@ -163,8 +164,6 @@ protected def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
 instance : Trans Equiv Equiv Equiv where
   trans := Equiv.trans
 
--- Porting note: this is not a syntactic tautology any more because
--- the coercion from `e` to a function is now `DFunLike.coe` not `e.toFun`
 @[simp, mfld_simps] theorem toFun_as_coe (e : α ≃ β) : e.toFun = e := rfl
 
 @[simp, mfld_simps] theorem invFun_as_coe (e : α ≃ β) : e.invFun = e.symm := rfl
@@ -223,14 +222,10 @@ protected def cast {α β : Sort _} (h : α = β) : α ≃ β :=
 theorem Perm.coe_subsingleton {α : Type*} [Subsingleton α] (e : Perm α) : (e : α → α) = id := by
   rw [Perm.subsingleton_eq_refl e, coe_refl]
 
--- Porting note: marking this as `@[simp]` because `simp` doesn't fire on `coe_refl`
--- in an expression such as `Equiv.refl a x`
 @[simp] theorem refl_apply (x : α) : Equiv.refl α x = x := rfl
 
 @[simp] theorem coe_trans (f : α ≃ β) (g : β ≃ γ) : (f.trans g : α → γ) = g ∘ f := rfl
 
--- Porting note: marking this as `@[simp]` because `simp` doesn't fire on `coe_trans`
--- in an expression such as `Equiv.trans f g x`
 @[simp] theorem trans_apply (f : α ≃ β) (g : β ≃ γ) (a : α) : (f.trans g) a = g (f a) := rfl
 
 @[simp] theorem apply_symm_apply (e : α ≃ β) (x : β) : e (e.symm x) = x := e.right_inv x
@@ -397,14 +392,16 @@ def equivEmptyEquiv (α : Sort u) : α ≃ Empty ≃ IsEmpty α :=
 def propEquivPEmpty {p : Prop} (h : ¬p) : p ≃ PEmpty := @equivPEmpty p <| IsEmpty.prop_iff.2 h
 
 /-- If both `α` and `β` have a unique element, then `α ≃ β`. -/
-def equivOfUnique (α β : Sort _) [Unique.{u} α] [Unique.{v} β] : α ≃ β where
+def ofUnique (α β : Sort _) [Unique.{u} α] [Unique.{v} β] : α ≃ β where
   toFun := default
   invFun := default
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 
+@[deprecated (since := "2024-12-26")] alias equivOfUnique := ofUnique
+
 /-- If `α` has a unique element, then it is equivalent to any `PUnit`. -/
-def equivPUnit (α : Sort u) [Unique α] : α ≃ PUnit.{v} := equivOfUnique α _
+def equivPUnit (α : Sort u) [Unique α] : α ≃ PUnit.{v} := ofUnique α _
 
 /-- The `Sort` of proofs of a true proposition is equivalent to `PUnit`. -/
 def propEquivPUnit {p : Prop} (h : p) : p ≃ PUnit.{0} := @equivPUnit p <| uniqueProp h
@@ -718,8 +715,6 @@ protected lemma forall_congr_right : (∀ a, q (e a)) ↔ ∀ b, q b :=
 protected lemma forall_congr_left : (∀ a, p a) ↔ ∀ b, p (e.symm b) :=
   e.symm.forall_congr_right.symm
 
-@[deprecated (since := "2024-06-11")] alias forall_congr_left' := Equiv.forall_congr_left
-
 protected lemma forall_congr (h : ∀ a, p a ↔ q (e a)) : (∀ a, p a) ↔ ∀ b, q b :=
   e.forall_congr_left.trans (by simp [h])
 
@@ -744,16 +739,8 @@ protected lemma existsUnique_congr_right : (∃! a, q (e a)) ↔ ∃! b, q b :=
 protected lemma existsUnique_congr_left : (∃! a, p a) ↔ ∃! b, p (e.symm b) :=
   e.symm.existsUnique_congr_right.symm
 
-@[deprecated (since := "2024-06-11")]
-alias exists_unique_congr_left := Equiv.existsUnique_congr_right
-
-@[deprecated (since := "2024-06-11")]
-alias exists_unique_congr_left' := Equiv.existsUnique_congr_left
-
 protected lemma existsUnique_congr (h : ∀ a, p a ↔ q (e a)) : (∃! a, p a) ↔ ∃! b, q b :=
   e.existsUnique_congr_left.trans <| by simp [h]
-
-@[deprecated (since := "2024-06-11")] alias exists_unique_congr := Equiv.existsUnique_congr
 
 protected lemma existsUnique_congr' (h : ∀ b, p (e.symm b) ↔ q b) : (∃! a, p a) ↔ ∃! b, q b :=
   e.existsUnique_congr_left.trans <| by simp [h]

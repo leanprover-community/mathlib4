@@ -73,6 +73,25 @@ lemma compProd_apply_prod [SFinite μ] [IsSFiniteKernel κ]
   rw [indicator_apply]
   split_ifs with ha <;> simp [ha]
 
+lemma _root_.ProbabilityTheory.Kernel.compProd_apply_eq_compProd_sectR {γ : Type*}
+    {mγ : MeasurableSpace γ} (κ : Kernel α β) (η : Kernel (α × β) γ)
+    [IsSFiniteKernel κ] [IsSFiniteKernel η] (a : α) :
+    (κ ⊗ₖ η) a = (κ a) ⊗ₘ (Kernel.sectR η a) := by
+  ext s hs
+  simp_rw [Kernel.compProd_apply hs, compProd_apply hs, Kernel.sectR_apply]
+  rfl
+
+lemma compProd_id [SFinite μ] : μ ⊗ₘ Kernel.id = μ.map (fun x ↦ (x, x)) := by
+  ext s hs
+  rw [compProd_apply hs, map_apply (measurable_id.prod measurable_id) hs]
+  have h_meas a : MeasurableSet (Prod.mk a ⁻¹' s) := measurable_prod_mk_left hs
+  simp_rw [Kernel.id_apply, dirac_apply' _ (h_meas _)]
+  calc ∫⁻ a, (Prod.mk a ⁻¹' s).indicator 1 a ∂μ
+  _ = ∫⁻ a, ((fun x ↦ (x, x)) ⁻¹' s).indicator 1 a ∂μ := rfl
+  _ = μ ((fun x ↦ (x, x)) ⁻¹' s) := by
+    rw [lintegral_indicator_one]
+    exact (measurable_id.prod measurable_id) hs
+
 lemma compProd_congr [IsSFiniteKernel κ] [IsSFiniteKernel η]
     (h : κ =ᵐ[μ] η) : μ ⊗ₘ κ = μ ⊗ₘ η := by
   by_cases hμ : SFinite μ
@@ -144,9 +163,6 @@ lemma setLIntegral_compProd [SFinite μ] [IsSFiniteKernel κ]
   rw [compProd, Kernel.setLIntegral_compProd _ _ _ hf hs ht]
   simp
 
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_compProd := setLIntegral_compProd
-
 lemma integrable_compProd_iff [SFinite μ] [IsSFiniteKernel κ] {E : Type*} [NormedAddCommGroup E]
     {f : α × β → E} (hf : AEStronglyMeasurable f (μ ⊗ₘ κ)) :
     Integrable f (μ ⊗ₘ κ) ↔
@@ -169,9 +185,6 @@ lemma setIntegral_compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
     ∫ x in s ×ˢ t, f x ∂(μ ⊗ₘ κ) = ∫ a in s, ∫ b in t, f (a, b) ∂(κ a) ∂μ := by
   rw [compProd, ProbabilityTheory.setIntegral_compProd hs ht hf]
   simp
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_compProd := setIntegral_compProd
 
 end Integral
 
@@ -198,6 +211,17 @@ instance [IsFiniteMeasure μ] [IsFiniteKernel κ] : IsFiniteMeasure (μ ⊗ₘ �
 
 instance [IsProbabilityMeasure μ] [IsMarkovKernel κ] : IsProbabilityMeasure (μ ⊗ₘ κ) := by
   rw [compProd]; infer_instance
+
+instance [IsZeroOrProbabilityMeasure μ] [IsZeroOrMarkovKernel κ] :
+    IsZeroOrProbabilityMeasure (μ ⊗ₘ κ) := by
+  rw [compProd]
+  rcases eq_zero_or_isProbabilityMeasure μ with rfl | h
+  · simp only [Kernel.const_zero, Kernel.compProd_zero_left, Kernel.zero_apply]
+    infer_instance
+  rcases eq_zero_or_isMarkovKernel κ with rfl | hκ
+  · simp only [Kernel.prodMkLeft_zero, Kernel.compProd_zero_right, Kernel.zero_apply]
+    infer_instance
+  · infer_instance
 
 section AbsolutelyContinuous
 

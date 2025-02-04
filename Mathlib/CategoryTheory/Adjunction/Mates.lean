@@ -96,13 +96,10 @@ def mateEquiv : (G ⋙ L₂ ⟶ L₁ ⋙ H) ≃ (R₁ ⋙ G ⟶ H ⋙ R₂) wher
     rw [← assoc, ← Functor.comp_map, assoc, ← β.naturality, ← assoc, Functor.comp_map,
       ← G.map_comp, right_triangle_components, map_id, id_comp]
 
-@[deprecated (since := "2024-07-09")] alias transferNatTrans := mateEquiv
-
 /-- A component of a transposed version of the mates correspondence. -/
 theorem mateEquiv_counit (α : G ⋙ L₂ ⟶ L₁ ⋙ H) (d : D) :
     L₂.map ((mateEquiv adj₁ adj₂ α).app _) ≫ adj₂.counit.app _ =
-      α.app _ ≫ H.map (adj₁.counit.app d) := by
-  erw [Functor.map_comp]; simp
+      α.app _ ≫ H.map (adj₁.counit.app d) := by simp
 
 /-- A component of a transposed version of the inverse mates correspondence. -/
 theorem mateEquiv_counit_symm (α : R₁ ⋙ G ⟶ H ⋙ R₂) (d : D) :
@@ -208,9 +205,8 @@ theorem mateEquiv_hcomp
       rightAdjointSquare.hcomp (mateEquiv adj₁ adj₂ α) (mateEquiv adj₃ adj₄ β) := by
   unfold leftAdjointSquare.hcomp rightAdjointSquare.hcomp mateEquiv Adjunction.comp
   ext c
-  simp only [comp_obj, mk'_unit, whiskerLeft_comp, whiskerLeft_twice, mk'_counit, whiskerRight_comp,
-    assoc, Equiv.coe_fn_mk, comp_app, whiskerLeft_app, whiskerRight_app, id_obj, associator_inv_app,
-    Functor.comp_map, associator_hom_app, map_id, id_comp, whiskerRight_twice]
+  dsimp
+  simp only [comp_id, map_comp, id_comp, assoc]
   slice_rhs 2 4 =>
     rw [← R₂.map_comp, ← R₂.map_comp, ← assoc, ← unit_naturality (adj₄)]
   rw [R₂.map_comp, L₄.map_comp, R₄.map_comp, R₂.map_comp]
@@ -336,8 +332,6 @@ def conjugateEquiv : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
     (L₂ ⟶ L₁) ≃ _ := (Iso.homCongr L₂.leftUnitor L₁.rightUnitor).symm
     _ ≃ _ := mateEquiv adj₁ adj₂
     _ ≃ (R₁ ⟶ R₂) := R₁.rightUnitor.homCongr R₂.leftUnitor
-
-@[deprecated (since := "2024-07-09")] alias transferNatTransSelf := conjugateEquiv
 
 /-- A component of a transposed form of the conjugation definition. -/
 theorem conjugateEquiv_counit (α : L₂ ⟶ L₁) (d : D) :

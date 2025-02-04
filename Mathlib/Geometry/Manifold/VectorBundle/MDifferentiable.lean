@@ -33,7 +33,7 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜
 
 variable [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
 
-/-- Characterization of differentiable functions into a smooth vector bundle. -/
+/-- Characterization of differentiable functions into a vector bundle. -/
 theorem mdifferentiableWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x₀ : M} :
     MDifferentiableWithinAt IM (IB.prod 𝓘(𝕜, F)) f s x₀ ↔
       MDifferentiableWithinAt IM IB (fun x => (f x).proj) s x₀ ∧
@@ -85,14 +85,14 @@ variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B�
   {b₁ : M → B₁} {b₂ : M → B₂} {m₀ : M}
   {ϕ : Π (m : M), E₁ (b₁ m) →L[𝕜] E₂ (b₂ m)} {v : Π (m : M), E₁ (b₁ m)} {s : Set M}
 
-/-- Consider a smooth map `v : M → E₁` to a vector bundle, over a basemap `b₁ : M → B₁`, and
-another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending smoothly
-on `m`, one can apply `ϕ m` to `g m`, and the resulting map is smooth.
+/-- Consider a differentiable map `v : M → E₁` to a vector bundle, over a basemap `b₁ : M → B₁`, and
+another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending
+differentiably on `m`, one can apply `ϕ m` to `g m`, and the resulting map is differentiable.
 
-Note that the smoothness of `ϕ` can not be always be stated as smoothness of a map into a manifold,
-as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` only make sense when `b₁` and `b₂` are globally
-smooth, but we want to apply this lemma with only local information. Therefore, we formulate it
-using smoothness of `ϕ` read in coordinates.
+Note that the differentiability of `ϕ` can not be always be stated as differentiability of a map
+into a manifold, as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` only make sense when `b₁`
+and `b₂` are globally smooth, but we want to apply this lemma with only local information.
+Therefore, we formulate it using differentiability of `ϕ` read in coordinates.
 
 Version for `MDifferentiableWithinAt`. We also give a version for `MDifferentiableAt`, but no
 version for `MDifferentiableOn` or `MDifferentiable` as our assumption, written in coordinates,
@@ -123,14 +123,14 @@ lemma MDifferentiableWithinAt.clm_apply_of_inCoordinates
   congr
   rw [Trivialization.symm_apply_apply_mk (trivializationAt F₁ E₁ (b₁ m₀)) hm (v m)]
 
-/-- Consider a smooth map `v : M → E₁` to a vector bundle, over a basemap `b₁ : M → B₁`, and
-another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending smoothly
-on `m`, one can apply `ϕ m` to `g m`, and the resulting map is smooth.
+/-- Consider a differentiable map `v : M → E₁` to a vector bundle, over a basemap `b₁ : M → B₁`, and
+another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending
+differentiably on `m`, one can apply `ϕ m` to `g m`, and the resulting map is differentiable.
 
-Note that the smoothness of `ϕ` can not be always be stated as smoothness of a map into a manifold,
-as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` only make sense when `b₁` and `b₂` are globally
-smooth, but we want to apply this lemma with only local information. Therefore, we formulate it
-using smoothness of `ϕ` read in coordinates.
+Note that the differentiability of `ϕ` can not be always be stated as differentiability of a map
+into a manifold, as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` only make sense when `b₁`
+and `b₂` are globally smooth, but we want to apply this lemma with only local information.
+Therefore, we formulate it using differentiability of `ϕ` read in coordinates.
 
 Version for `MDifferentiableAt`. We also give a version for `MDifferentiableWithinAt`,
 but no version for `MDifferentiableOn` or `MDifferentiable` as our assumption, written

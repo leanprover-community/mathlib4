@@ -31,6 +31,8 @@ We follow the signs conventions appearing in the introduction of
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Category Limits Preadditive
 
 universe v u
@@ -529,8 +531,7 @@ lemma δ_ofHom {p : ℤ} (φ : F ⟶ G) : δ 0 p (Cochain.ofHom φ) = 0 := by
     ext
     simp
   · rw [δ_shape]
-    intro
-    exact h (by omega)
+    omega
 
 @[simp]
 lemma δ_ofHomotopy {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ₁ φ₂) :
@@ -562,18 +563,12 @@ open HomComplex
 
 /-- The cochain complex of homomorphisms between two cochain complexes `F` and `G`.
 In degree `n : ℤ`, it consists of the abelian group `HomComplex.Cochain F G n`. -/
--- We also constructed the `d_apply` lemma using `@[simps]`
--- until we made `AddCommGrp.coe_of` a simp lemma,
--- after which the simp normal form linter complains.
--- It was not used a simp lemma in Mathlib.
--- Possible solution: higher priority function coercions that remove the `of`?
--- @[simp]
-@[simps! X]
+@[simps! X d_hom_apply]
 def HomComplex : CochainComplex AddCommGrp ℤ where
   X i := AddCommGrp.of (Cochain F G i)
   d i j := AddCommGrp.ofHom (δ_hom ℤ F G i j)
-  shape _ _ hij := by ext; apply δ_shape _ _ hij
-  d_comp_d' _ _ _ _ _  := by ext; apply δ_δ
+  shape _ _ hij := by ext; simp [δ_shape _ _ hij]
+  d_comp_d' _ _ _ _ _  := by ext; simp [δ_δ]
 
 namespace HomComplex
 

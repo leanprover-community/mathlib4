@@ -267,6 +267,10 @@ theorem cyclotomic.eval_apply {R S : Type*} (q : R) (n : ℕ) [Ring R] [Ring S] 
     eval (f q) (cyclotomic n S) = f (eval q (cyclotomic n R)) := by
   rw [← map_cyclotomic n f, eval_map, eval₂_at_apply]
 
+@[simp] theorem cyclotomic.eval_apply_ofReal (q : ℝ) (n : ℕ) :
+    eval (q : ℂ) (cyclotomic n ℂ) = (eval q (cyclotomic n ℝ)) :=
+  cyclotomic.eval_apply q n (algebraMap ℝ ℂ)
+
 /-- The zeroth cyclotomic polyomial is `1`. -/
 @[simp]
 theorem cyclotomic_zero (R : Type*) [Ring R] : cyclotomic 0 R = 1 := by
@@ -612,17 +616,17 @@ where `μ` varies over the `n`-th roots of unity. -/
 theorem _root_.IsPrimitiveRoot.pow_sub_pow_eq_prod_sub_mul (hpos : 0 < n)
     (h : IsPrimitiveRoot ζ n) : x ^ n - y ^ n = ∏ ζ ∈ nthRootsFinset n R, (x - ζ * y) := by
   let K := FractionRing R
-  apply NoZeroSMulDivisors.algebraMap_injective R K
+  apply FaithfulSMul.algebraMap_injective R K
   rw [map_sub, map_pow, map_pow, map_prod]
   simp_rw [map_sub, map_mul]
   have h' : IsPrimitiveRoot (algebraMap R K ζ) n :=
-    h.map_of_injective <| NoZeroSMulDivisors.algebraMap_injective R K
+    h.map_of_injective <| FaithfulSMul.algebraMap_injective R K
   rw [h'.pow_sub_pow_eq_prod_sub_mul_field _ _ hpos]
   refine (prod_nbij (algebraMap R K) (fun a ha ↦ map_mem_nthRootsFinset ha _) (fun a _ b _ H ↦
-    NoZeroSMulDivisors.algebraMap_injective R K H) (fun a ha ↦ ?_) (fun _ _ ↦ rfl)).symm
+    FaithfulSMul.algebraMap_injective R K H) (fun a ha ↦ ?_) (fun _ _ ↦ rfl)).symm
   have := Set.surj_on_of_inj_on_of_ncard_le (s := nthRootsFinset n R)
     (t := nthRootsFinset n K) _ (fun _ hr ↦ map_mem_nthRootsFinset hr _)
-    (fun a _ b _ H ↦ NoZeroSMulDivisors.algebraMap_injective R K H)
+    (fun a _ b _ H ↦ FaithfulSMul.algebraMap_injective R K H)
     (by simp [h.card_nthRootsFinset, h'.card_nthRootsFinset])
   obtain ⟨x, hx, hx1⟩ := this _ ha
   exact ⟨x, hx, hx1.symm⟩
