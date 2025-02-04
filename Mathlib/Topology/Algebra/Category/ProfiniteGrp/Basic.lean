@@ -347,6 +347,7 @@ instance : Limits.HasLimit F where
     { cone := limitCone F
       isLimit := limitConeIsLimit F }
 
+--TODO : Change the definition into `ProfiniteGrp.of (limitConePtAux F)` and add simp lemmas.
 /-- The abbreviation for the limit of `ProfiniteGrp`s. -/
 abbrev limit : ProfiniteGrp := (ProfiniteGrp.limitCone F).pt
 
