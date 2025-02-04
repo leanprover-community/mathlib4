@@ -365,11 +365,11 @@ instance : CompactSpace (limitConePtAux F) :=
 abbrev limit : ProfiniteGrp := ProfiniteGrp.of (ProfiniteGrp.limitConePtAux F)
 
 @[ext]
-lemma _root_.ProfiniteGrp.limit_ext (x y : limit F) (hxy : ∀ j, x.val j = y.val j) : x = y :=
+lemma limit_ext (x y : limit F) (hxy : ∀ j, x.val j = y.val j) : x = y :=
   Subtype.ext (funext hxy)
 
 @[simp]
-lemma _root_.ProfiniteGrp.limit_one_val (j : J) : (1 : limit F).val j = 1 :=
+lemma limit_one_val (j : J) : (1 : limit F).val j = 1 :=
   rfl
 
 @[simp]
