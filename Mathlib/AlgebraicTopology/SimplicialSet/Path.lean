@@ -33,9 +33,9 @@ of `n` edges. -/
 @[ext]
 structure Path₁ (X : SSet.Truncated.{u} 1) (n : ℕ) where
   /-- A path includes the data of `n + 1` 0-simplices in `X`.-/
-  vertex : Fin (n + 1) → X _[0]₁
+  vertex : Fin (n + 1) → X.obj (op ⟨.mk 0, by decide⟩)
   /-- A path includes the data of `n` 1-simplices in `X`.-/
-  arrow : Fin n → X _[1]₁
+  arrow : Fin n → X.obj (op ⟨.mk 1, by decide⟩)
   /-- The source of a 1-simplex in a path is identified with the source vertex. -/
   arrow_src (i : Fin n) : X.map (tr (δ 1)).op (arrow i) = vertex i.castSucc
   /-- The target of a 1-simplex in a path is identified with the target vertex. -/
@@ -78,8 +78,8 @@ variable {X Y : SSet.Truncated.{u} (n + 1)} {m : ℕ}
 /-- Maps of `n + 1`-truncated simplicial sets induce maps of paths. -/
 @[simps]
 def map (f : Path X m) (σ : X ⟶ Y) : Path Y m where
-  vertex i := σ.app (op [0]ₙ₊₁) (f.vertex i)
-  arrow i := σ.app (op [1]ₙ₊₁) (f.arrow i)
+  vertex i := σ.app (op ⟨.mk 0, by trunc⟩) (f.vertex i)
+  arrow i := σ.app (op ⟨.mk 1, by trunc⟩) (f.arrow i)
   arrow_src i := by
     simp only [← f.arrow_src i]
     exact congr (σ.naturality (tr (δ 1)).op) rfl |>.symm
@@ -98,7 +98,8 @@ variable {n : ℕ} (X : SSet.Truncated.{u} (n + 1))
 /-- The spine of an `m`-simplex in `X` is the path of edges of length `m`
 formed by traversing in order through its vertices. -/
 @[simps]
-def spine (m : ℕ) (h : m ≤ n + 1 := by omega) (Δ : X _[m]ₙ₊₁) : Path X m where
+def spine (m : ℕ) (h : m ≤ n + 1 := by omega) (Δ : X.obj (op ⟨.mk m, h⟩)) :
+    Path X m where
   vertex i := X.map (tr (const [0] [m] i)).op Δ
   arrow i := X.map (tr (mkOfSucc i)).op Δ
   arrow_src i := by
@@ -120,14 +121,16 @@ lemma trunc_spine (k m : ℕ) (h : m ≤ k + 1) (hₙ : k ≤ n) :
 
 variable (m : ℕ) (hₘ : m ≤ n + 1)
 
-lemma spine_map_vertex (Δ : X _[m]ₙ₊₁) (a : ℕ) (hₐ : a ≤ n + 1)
-    (φ : [a]ₙ₊₁ ⟶ [m]ₙ₊₁) (i : Fin (a + 1)) :
+lemma spine_map_vertex (Δ : X.obj (op ⟨.mk m, hₘ⟩)) (a : ℕ) (hₐ : a ≤ n + 1)
+    (φ : (⟨.mk a, hₐ⟩ : SimplexCategory.Truncated (n + 1)) ⟶ ⟨.mk m, hₘ⟩)
+    (i : Fin (a + 1)) :
     (X.spine a hₐ (X.map φ.op Δ)).vertex i =
       (X.spine m hₘ Δ).vertex (φ.toOrderHom i) := by
   dsimp only [spine_vertex]
   rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp, const_comp]
 
-lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ m) (Δ : X _[m]ₙ₊₁) :
+lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ m)
+    (Δ : X.obj (op ⟨.mk m, hₘ⟩)) :
     X.spine l (by omega) (X.map (tr (subinterval j l h)).op Δ) =
       (X.spine m hₘ Δ).interval j l h := by
   ext i
@@ -211,7 +214,8 @@ lemma truncation_spine (m : ℕ) (h : m ≤ n + 1) :
     ((truncation (n + 1)).obj X).spine m = X.spine m :=
   rfl
 
-lemma spine_map_vertex (Δ : X _[n]) {m : ℕ} (φ : [m] ⟶ [n]) (i : Fin (m + 1)) :
+lemma spine_map_vertex (Δ : X _[n]) {m : ℕ} (φ : ([m] : SimplexCategory) ⟶ [n])
+    (i : Fin (m + 1)) :
     (X.spine m (X.map φ.op Δ)).vertex i =
       (X.spine n Δ).vertex (φ.toOrderHom i) :=
   truncation (max m n + 1) |>.obj X
