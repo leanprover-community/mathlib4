@@ -10,7 +10,7 @@ import Mathlib.Data.Fin.SuccPred
 import Mathlib.Order.Interval.Set.InitialSeg
 import Mathlib.Order.SuccPred.InitialSeg
 import Mathlib.Order.SuccPred.Limit
-import Mathlib.Order.Fin.SuccOrder
+import Mathlib.Order.SuccPred.LinearLocallyFinite
 
 /-!
 # Continuity of functors from well ordered types
