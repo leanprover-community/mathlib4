@@ -94,7 +94,7 @@ class IsQuasiPreprimitive [Group G] [MulAction G X] extends IsPretransitive G X 
 variable {G X}
 
 @[to_additive]
-theorem IsPreprimitive.subsingleton_or_eq_univ_of_isBlock
+theorem IsBlock.subsingleton_or_eq_univ
     [SMul G X] [IsPreprimitive G X] {B : Set X} (hB : IsBlock G B) :
     B.Subsingleton ∨ B = .univ :=
   isTrivialBlock_of_isBlock hB
