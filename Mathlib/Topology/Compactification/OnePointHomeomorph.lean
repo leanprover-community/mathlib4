@@ -6,6 +6,7 @@ Authors: Bjørn Kjos-Hanssen
 import Mathlib.Topology.Compactification.OnePointEquiv
 import Mathlib.Topology.Compactification.OnePointRealLemmas
 import Mathlib.Geometry.Manifold.Instances.Sphere
+import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
 # Homeomorphism between one-point compactification and projective space
@@ -592,8 +593,9 @@ lemma horizontalContinuous : Continuous (fun r ↦ (⟦⟨![r, 1], by simp⟩⟧
       · exact continuous_const
 
 /-- Horizontal map is inducing. -/
-theorem horizontal_isInducing : IsInducing fun r ↦ (⟦⟨![r, 1], by simp⟩⟧ : ℙ ℝ (Fin 2 → ℝ)) :=
-    isInducing_iff_nhds.mpr <| fun x => by
+theorem horizontal_isInducing :
+    Topology.IsInducing fun r ↦ (⟦⟨![r, 1], by simp⟩⟧ : ℙ ℝ (Fin 2 → ℝ)) :=
+    Topology.isInducing_iff_nhds.mpr <| fun x => by
     ext s
     simp only [ne_eq, Filter.mem_comap]
     rw [mem_nhds_iff_exists_Ioo_subset ]

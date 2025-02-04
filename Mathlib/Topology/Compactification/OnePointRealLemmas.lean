@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen
 -/
 import Mathlib.Data.Real.Sqrt
-import Mathlib.Topology.Instances.Real
+-- import Mathlib.Topology.Instances.Real
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Algebra.EuclideanDomain.Field
