@@ -685,7 +685,7 @@ instance [DecidableEq α] [DecidableRel G.Adj] {s : Finset α} : Decidable (G.Is
 /-- If `s` is an independent set, its complement meets every edge of `G`. -/
 lemma IsIndepSet.nonempty_mem_compl_mem_edge
     [Fintype α] [DecidableEq α] {s : Finset α} (indA : G.IsIndepSet s) {e} (he : e ∈ G.edgeSet) :
-  { b ∈ sᶜ | b ∈ e }.Nonempty := by
+    { b ∈ sᶜ | b ∈ e }.Nonempty := by
   obtain ⟨v , w⟩ := e
   by_contra c
   rw [IsIndepSet] at indA
@@ -800,7 +800,7 @@ noncomputable def indepNum (G : SimpleGraph α) : ℕ := sSup {n | ∃ s, G.IsNI
 
 theorem IsIndepSet.card_le_indepNum
     [Fintype α] {t : Finset α} (tc : G.IsIndepSet t) : #t ≤ G.indepNum := by
-  rw[← isClique_compl] at tc
+  rw [← isClique_compl] at tc
   simp_rw [indepNum, ← isNClique_compl]
   exact tc.card_le_cliqueNum
 
