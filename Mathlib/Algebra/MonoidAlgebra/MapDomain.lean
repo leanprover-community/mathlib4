@@ -8,7 +8,7 @@ import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Finsupp.SMul
 import Mathlib.LinearAlgebra.Finsupp.LSum
 import Mathlib.Algebra.Module.Submodule.Basic
-import Mathlib.Algebra.MonoidAlgebra.MapDomain
+import Mathlib.Algebra.MonoidAlgebra.Defs
 
 /-!
 # MonoidAlgebra.mapDomain
