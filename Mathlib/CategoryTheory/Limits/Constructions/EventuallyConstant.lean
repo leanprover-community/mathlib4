@@ -25,8 +25,6 @@ namespace CategoryTheory
 
 open Category Limits
 
-section
-
 variable {J C : Type*} [Category J] [Category C] (F : J ⥤ C)
 
 namespace Functor
@@ -315,7 +313,5 @@ noncomputable def constConeIsColimit [IsCofiltered J] :
   simp [← h₁, h₂])
 
 end Limits
-
-end
 
 end CategoryTheory
