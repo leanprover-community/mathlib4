@@ -716,7 +716,8 @@ instance instFiniteDimensionalOfIsReflexive (K V : Type*)
     rw [lift_id']
   exact lt_trans h₁ h₂
 
-instance [IsDomain R] : NoZeroSMulDivisors R M := by
+-- see Note [lower instance priority]
+instance (priority := 100) [IsDomain R] : NoZeroSMulDivisors R M := by
   refine (noZeroSMulDivisors_iff R M).mpr ?_
   intro r m hrm
   rw [or_iff_not_imp_left]
@@ -1712,9 +1713,7 @@ theorem finiteDimensional_quot_dualCoannihilator_iff {W : Submodule K (Dual K V)
     FiniteDimensional K (V ⧸ W.dualCoannihilator) ↔ FiniteDimensional K W :=
   ⟨fun _ ↦ FiniteDimensional.of_injective _ W.flip_quotDualCoannihilatorToDual_injective,
     fun _ ↦ by
-      #adaptation_note
-      /--
-      After https://github.com/leanprover/lean4/pull/4119
+      #adaptation_note /-- https://github.com/leanprover/lean4/pull/4119
       the `Free K W` instance isn't found unless we use `set_option maxSynthPendingDepth 2`, or add
       explicit instances:
       ```
@@ -1896,4 +1895,4 @@ noncomputable def dualDistribEquiv : Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (
 
 end TensorProduct
 
-set_option linter.style.longFile 2100
+set_option linter.style.longFile 2000

@@ -527,15 +527,21 @@ theorem isSeparator_coprod_of_isSeparator_right (G H : C) [HasBinaryCoproduct G 
     (hH : IsSeparator H) : IsSeparator (G ⨿ H) :=
   (isSeparator_coprod _ _).2 <| IsSeparating.mono hH <| by simp
 
+lemma isSeparator_of_isColimit_cofan {β : Type w} {f : β → C}
+    (hf : IsSeparating (Set.range f)) {c : Cofan f} (hc : IsColimit c) : IsSeparator c.pt := by
+  refine (isSeparator_def _).2 fun X Y u v huv => hf _ _ fun Z hZ g => ?_
+  obtain ⟨b, rfl⟩ := Set.mem_range.1 hZ
+  classical simpa using c.ι.app ⟨b⟩ ≫= huv (hc.desc (Cofan.mk _ (Pi.single b g)))
+
 theorem isSeparator_sigma {β : Type w} (f : β → C) [HasCoproduct f] :
     IsSeparator (∐ f) ↔ IsSeparating (Set.range f) := by
-  refine
-    ⟨fun h X Y u v huv => ?_, fun h =>
-      (isSeparator_def _).2 fun X Y u v huv => h _ _ fun Z hZ g => ?_⟩
-  · refine h.def _ _ fun g => colimit.hom_ext fun b => ?_
-    simpa using huv (f b.as) (by simp) (colimit.ι (Discrete.functor f) _ ≫ g)
-  · obtain ⟨b, rfl⟩ := Set.mem_range.1 hZ
-    classical simpa using Sigma.ι f b ≫= huv (Sigma.desc (Pi.single b g))
+  refine ⟨fun h X Y u v huv => ?_, fun h => isSeparator_of_isColimit_cofan h (colimit.isColimit _)⟩
+  refine h.def _ _ fun g => colimit.hom_ext fun b => ?_
+  simpa using huv (f b.as) (by simp) (colimit.ι (Discrete.functor f) _ ≫ g)
+
+theorem IsSeparating.isSeparator_coproduct {β : Type w} {f : β → C} [HasCoproduct f]
+    (hS : IsSeparating (Set.range f)) : IsSeparator (∐ f) :=
+  (isSeparator_sigma _).2 hS
 
 theorem isSeparator_sigma_of_isSeparator {β : Type w} (f : β → C) [HasCoproduct f] (b : β)
     (hb : IsSeparator (f b)) : IsSeparator (∐ f) :=

@@ -70,15 +70,17 @@ def UniqueDiffOn (s : Set E) : Prop :=
 
 end TangentCone
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
-variable {𝕜} {x y : E} {s t : Set E}
+variable {𝕜}
+variable {E F G : Type*}
 
 section TangentCone
 
 -- This section is devoted to the properties of the tangent cone.
+
 open NormedField
+section TVS
+variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable {x y : E} {s t : Set E}
 
 theorem mem_tangentConeAt_of_pow_smul {r : 𝕜} (hr₀ : r ≠ 0) (hr : ‖r‖ < 1)
     (hs : ∀ᶠ n : ℕ in atTop, x + r ^ n • y ∈ s) : y ∈ tangentConeAt 𝕜 s x := by
@@ -95,6 +97,14 @@ theorem tangentCone_univ : tangentConeAt 𝕜 univ x = univ :=
 theorem tangentCone_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
   rintro y ⟨c, d, ds, ctop, clim⟩
   exact ⟨c, d, mem_of_superset ds fun n hn => h hn, ctop, clim⟩
+
+end TVS
+
+section Normed
+variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [NormedAddCommGroup G] [NormedSpace ℝ G]
+variable {x y : E} {s t : Set E}
 
 /-- Auxiliary lemma ensuring that, under the assumptions defining the tangent cone,
 the sequence `d` tends to 0 at infinity. -/
@@ -337,6 +347,8 @@ theorem tangentCone_eq_univ {s : Set 𝕜} {x : 𝕜} (hx : (𝓝[s \ {x}] x).Ne
   · convert tendsto_const_nhds (α := ℕ) (x := y) with n
     simp [mul_assoc, inv_mul_cancel₀ (d_ne n)]
 
+end Normed
+
 end TangentCone
 
 section UniqueDiff
@@ -346,6 +358,9 @@ section UniqueDiff
 
 This section is devoted to properties of the predicates `UniqueDiffWithinAt` and `UniqueDiffOn`. -/
 
+section TVS
+variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable {x y : E} {s t : Set E}
 
 theorem UniqueDiffOn.uniqueDiffWithinAt {s : Set E} {x} (hs : UniqueDiffOn 𝕜 s) (h : x ∈ s) :
     UniqueDiffWithinAt 𝕜 s x :=
@@ -363,6 +378,13 @@ theorem uniqueDiffOn_empty : UniqueDiffOn 𝕜 (∅ : Set E) :=
 
 theorem UniqueDiffWithinAt.congr_pt (h : UniqueDiffWithinAt 𝕜 s x) (hy : x = y) :
     UniqueDiffWithinAt 𝕜 s y := hy ▸ h
+
+end TVS
+
+section Normed
+variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {x y : E} {s t : Set E}
 
 theorem UniqueDiffWithinAt.mono_nhds (h : UniqueDiffWithinAt 𝕜 s x) (st : 𝓝[s] x ≤ 𝓝[t] x) :
     UniqueDiffWithinAt 𝕜 t x := by
@@ -457,6 +479,11 @@ theorem UniqueDiffOn.univ_pi (ι : Type*) [Finite ι] (E : ι → Type*)
     (h : ∀ i, UniqueDiffOn 𝕜 (s i)) : UniqueDiffOn 𝕜 (Set.pi univ s) :=
   UniqueDiffOn.pi _ _ _ _ fun i _ => h i
 
+end Normed
+
+section RealNormed
+variable [NormedAddCommGroup G] [NormedSpace ℝ G]
+
 /-- In a real vector space, a convex set with nonempty interior is a set of unique
 differentiability at every point of its closure. -/
 theorem uniqueDiffWithinAt_convex {s : Set G} (conv : Convex ℝ s) (hs : (interior s).Nonempty)
@@ -478,6 +505,10 @@ differentiability. -/
 theorem uniqueDiffOn_convex {s : Set G} (conv : Convex ℝ s) (hs : (interior s).Nonempty) :
     UniqueDiffOn ℝ s :=
   fun _ xs => uniqueDiffWithinAt_convex conv hs (subset_closure xs)
+
+end RealNormed
+
+section Real
 
 theorem uniqueDiffOn_Ici (a : ℝ) : UniqueDiffOn ℝ (Ici a) :=
   uniqueDiffOn_convex (convex_Ici a) <| by simp only [interior_Ici, nonempty_Ioi]
@@ -531,5 +562,7 @@ theorem uniqueDiffWithinAt_or_nhdsWithin_eq_bot (s : Set 𝕜) (x : 𝕜) :
   · simp only [mem_closure_iff_nhdsWithin_neBot]
     apply neBot_of_le (hf := h)
     exact nhdsWithin_mono _ diff_subset
+
+end Real
 
 end UniqueDiff

@@ -117,11 +117,8 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
   have gc_mem : Memℒp (fun x => g x • c) p μ := by
     refine Memℒp.smul_of_top_left (memℒp_top_const _) ?_
     refine ⟨g.continuous.aestronglyMeasurable, ?_⟩
-    have : eLpNorm (v.indicator fun _x => (1 : ℝ)) p μ < ⊤ := by
-      refine (eLpNorm_indicator_const_le _ _).trans_lt ?_
-      simp only [lt_top_iff_ne_top, hμv.ne, nnnorm_one, ENNReal.coe_one, one_div, one_mul, Ne,
-        ENNReal.rpow_eq_top_iff, inv_lt_zero, false_and, or_false, not_and, not_lt,
-        ENNReal.toReal_nonneg, imp_true_iff]
+    have : eLpNorm (v.indicator fun _x => (1 : ℝ)) p μ < ⊤ :=
+      (eLpNorm_indicator_const_le _ _).trans_lt <| by simp [lt_top_iff_ne_top, hμv.ne]
     refine (eLpNorm_mono fun x => ?_).trans_lt this
     by_cases hx : x ∈ v
     · simp only [hx, abs_of_nonneg (hg_range x).1, (hg_range x).2, Real.norm_eq_abs,
@@ -131,9 +128,6 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
     ⟨fun x => g x • c, g.continuous.smul continuous_const, (eLpNorm_mono gc_bd).trans ?_, gc_bd0,
       gc_support.trans inter_subset_left, gc_mem⟩
   exact hη _ ((measure_mono (diff_subset_diff inter_subset_right Subset.rfl)).trans hV.le)
-
-@[deprecated (since := "2024-07-27")]
-alias exists_continuous_snorm_sub_le_of_closed := exists_continuous_eLpNorm_sub_le_of_closed
 
 /-- In a locally compact space, any function in `ℒp` can be approximated by compactly supported
 continuous functions when `p < ∞`, version in terms of `eLpNorm`. -/
@@ -189,9 +183,6 @@ theorem Memℒp.exists_hasCompactSupport_eLpNorm_sub_le
   contrapose! hx
   exact interior_subset (f_support hx)
 
-@[deprecated (since := "2024-07-27")]
-alias Memℒp.exists_hasCompactSupport_snorm_sub_le := Memℒp.exists_hasCompactSupport_eLpNorm_sub_le
-
 /-- In a locally compact space, any function in `ℒp` can be approximated by compactly supported
 continuous functions when `0 < p < ∞`, version in terms of `∫`. -/
 theorem Memℒp.exists_hasCompactSupport_integral_rpow_sub_le
@@ -219,8 +210,8 @@ theorem Integrable.exists_hasCompactSupport_lintegral_sub_le
     [R1Space α] [WeaklyLocallyCompactSpace α] [μ.Regular]
     {f : α → E} (hf : Integrable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ g : α → E,
-      HasCompactSupport g ∧ (∫⁻ x, ‖f x - g x‖₊ ∂μ) ≤ ε ∧ Continuous g ∧ Integrable g μ := by
-  simp only [← memℒp_one_iff_integrable, ← eLpNorm_one_eq_lintegral_nnnorm] at hf ⊢
+      HasCompactSupport g ∧ ∫⁻ x, ‖f x - g x‖ₑ ∂μ ≤ ε ∧ Continuous g ∧ Integrable g μ := by
+  simp only [← memℒp_one_iff_integrable, ← eLpNorm_one_eq_lintegral_enorm] at hf ⊢
   exact hf.exists_hasCompactSupport_eLpNorm_sub_le ENNReal.one_ne_top hε
 
 /-- In a locally compact space, any integrable function can be approximated by compactly supported
@@ -230,7 +221,7 @@ theorem Integrable.exists_hasCompactSupport_integral_sub_le
     {f : α → E} (hf : Integrable f μ) {ε : ℝ} (hε : 0 < ε) :
     ∃ g : α → E, HasCompactSupport g ∧ (∫ x, ‖f x - g x‖ ∂μ) ≤ ε ∧
       Continuous g ∧ Integrable g μ := by
-  simp only [← memℒp_one_iff_integrable, ← eLpNorm_one_eq_lintegral_nnnorm, ← ENNReal.ofReal_one]
+  simp only [← memℒp_one_iff_integrable, ← eLpNorm_one_eq_lintegral_enorm, ← ENNReal.ofReal_one]
     at hf ⊢
   simpa using hf.exists_hasCompactSupport_integral_rpow_sub_le zero_lt_one hε
 
@@ -285,9 +276,6 @@ theorem Memℒp.exists_boundedContinuous_eLpNorm_sub_le [μ.WeaklyRegular] (hp :
   refine ⟨f, I3, f_cont, f_mem, ?_⟩
   exact (BoundedContinuousFunction.ofNormedAddCommGroup f f_cont _ f_bound).isBounded_range
 
-@[deprecated (since := "2024-07-27")]
-alias Memℒp.exists_boundedContinuous_snorm_sub_le := Memℒp.exists_boundedContinuous_eLpNorm_sub_le
-
 /-- Any function in `ℒp` can be approximated by bounded continuous functions when `0 < p < ∞`,
 version in terms of `∫`. -/
 theorem Memℒp.exists_boundedContinuous_integral_rpow_sub_le [μ.WeaklyRegular] {p : ℝ} (hp : 0 < p)
@@ -309,8 +297,8 @@ theorem Memℒp.exists_boundedContinuous_integral_rpow_sub_le [μ.WeaklyRegular]
 version in terms of `∫⁻`. -/
 theorem Integrable.exists_boundedContinuous_lintegral_sub_le [μ.WeaklyRegular] {f : α → E}
     (hf : Integrable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
-    ∃ g : α →ᵇ E, (∫⁻ x, ‖f x - g x‖₊ ∂μ) ≤ ε ∧ Integrable g μ := by
-  simp only [← memℒp_one_iff_integrable, ← eLpNorm_one_eq_lintegral_nnnorm] at hf ⊢
+    ∃ g : α →ᵇ E, ∫⁻ x, ‖f x - g x‖ₑ ∂μ ≤ ε ∧ Integrable g μ := by
+  simp only [← memℒp_one_iff_integrable, ← eLpNorm_one_eq_lintegral_enorm] at hf ⊢
   exact hf.exists_boundedContinuous_eLpNorm_sub_le ENNReal.one_ne_top hε
 
 /-- Any integrable function can be approximated by bounded continuous functions,
@@ -318,7 +306,7 @@ version in terms of `∫`. -/
 theorem Integrable.exists_boundedContinuous_integral_sub_le [μ.WeaklyRegular] {f : α → E}
     (hf : Integrable f μ) {ε : ℝ} (hε : 0 < ε) :
     ∃ g : α →ᵇ E, (∫ x, ‖f x - g x‖ ∂μ) ≤ ε ∧ Integrable g μ := by
-  simp only [← memℒp_one_iff_integrable, ← eLpNorm_one_eq_lintegral_nnnorm, ← ENNReal.ofReal_one]
+  simp only [← memℒp_one_iff_integrable, ← eLpNorm_one_eq_lintegral_enorm, ← ENNReal.ofReal_one]
     at hf ⊢
   simpa using hf.exists_boundedContinuous_integral_rpow_sub_le zero_lt_one hε
 
