@@ -12,7 +12,47 @@ import Mathlib.RingTheory.MvPolynomial.Groebner
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 
-/-! # Alon's Combinatorial Nullstellensatz -/
+/-! # Alon's Combinatorial Nullstellensatz
+
+This is a formalization of Noga Alon's Combinatorial Nullstellensatz. It follows [Alon_1999].
+
+We consider a family `S : σ → Finset R` of finite subsets of a domain `R`
+and a multivariate polynomial `f` in `MvPolynomial σ R`.
+The combinatorial Nullstellensatz gives combinatorial constraints for
+the vanishing of `f` at any `x : σ → R` such that `x s ∈ S s` for all `s`.
+
+- `MvPolynomial.eq_zero_of_eval_zero_at_prod` :
+  if `f` vanishes at any such point and `f.degreeOf s < (S s).ncard` for all `s`,
+  then `f = 0`.
+
+- `Polynomial.eq_zero_of_eval_zero` :
+  a polynomial (in one indeterminate) which vanishes at more points than its degree
+  is the zero polynomial.
+
+- `combinatorial_nullstellensatz_exists_linearCombination`
+  If `f` vanishes at every such point, then it can be written as a linear combination
+  `f = linearCombination (MvPolynomial σ R) (fun i ↦ (∏ r ∈ S i, (X i - C r))) h`,
+  for some `h : σ →₀ MvPolynomial σ R` such that
+  `((∏ r ∈ S s, (X i - C r)) * h i).totalDegree ≤ f.totalDegree` for all `s`.
+
+- `combinatorial_nullstellensatz_exists_eval_nonzero`
+  a multi-index `t : σ →₀ ℕ` such that `t s < (S s).card` for all `s`,
+  `f.totalDegree = t.degree` and `f.coeff t ≠ 0`,
+  there exists a point `x : σ → R` such that `x s ∈ S s` for all `s` and `f.eval s ≠ 0`.
+
+## TODO
+
+- Applications
+- relation with Schwartz–Zippel lemma, as in [Rote_2023]
+
+## References
+
+- [Alon, *Combinatorial Nullstellensatz*][Alon_1999]
+
+- [Rote, *The Generalized Combinatorial Lason-Alon-Zippel-Schwartz
+  Nullstellensatz Lemma*][Rote_2023]
+
+-/
 
 open Finsupp
 
@@ -131,57 +171,16 @@ theorem eq_zero_of_eval_zero_at_prod {σ : Type*} [Finite σ] [IsDomain R]
 
 open MonomialOrder
 
-lemma _root_.MonomialOrder.degree_binomial [Nontrivial R]
-    {ι : Type*} (m : MonomialOrder ι) (i : ι) (r : R) :
-    m.degree (X i - C r) = single i 1 := by
-  rw [degree_sub_of_lt, degree_X]
-  simp only [degree_C, map_zero, degree_X]
-  rw [← bot_eq_zero, bot_lt_iff_ne_bot, bot_eq_zero, ← map_zero m.toSyn]
-  simp
-
-lemma _root_.MonomialOrder.leadingCoeff_binomial {ι : Type*} (m : MonomialOrder ι) (i : ι) (r : R) :
-    m.leadingCoeff (X i - C r) = 1 := by
-  classical
-  by_cases H : Nontrivial R
-  · simp only [leadingCoeff, m.degree_binomial i r]
-    simp only [coeff_sub, coeff_single_X, true_and, if_true, coeff_C, sub_eq_self]
-    rw [if_neg]
-    intro h
-    apply zero_ne_one (α := ℕ)
-    simp only [Finsupp.ext_iff, coe_zero, Pi.zero_apply] at h
-    rw [h i, single_eq_same]
-  · by_contra H'
-    exact H (nontrivial_of_ne _ _ H')
-
-theorem _root_.MonomialOrder.prod_degree [Nontrivial R]
-    {ι : Type*} (m : MonomialOrder ι) (i : ι) (s : Finset R) :
-    m.degree (s.prod (fun r ↦ X i - C r)) = single i s.card := by
-  classical
-  have H : ∀ r ∈ s, m.degree (X i - C r) = single i 1 := by
-    intro r _
-    rw [degree_sub_of_lt, degree_X]
-    simp only [degree_C, map_zero, degree_X]
-    rw [← bot_eq_zero, bot_lt_iff_ne_bot, bot_eq_zero, ← map_zero m.toSyn]
-    simp
-  rw [MonomialOrder.degree_prod_of_regular]
-  · rw [Finset.sum_congr rfl H]
-    simp only [Finset.sum_const, smul_single, smul_eq_mul, mul_one]
-  · intro r hr
-    convert isRegular_one
-    simp only [leadingCoeff, H r hr]
-    simp only [coeff_sub, coeff_single_X, true_and, if_true, coeff_C, sub_eq_self]
-    rw [if_neg]
-    intro h
-    apply zero_ne_one (α := ℕ)
-    simp only [Finsupp.ext_iff, coe_zero, Pi.zero_apply] at h
-    rw [h i, single_eq_same]
+/- Here starts the actual proof of the combinatorial Nullstellensatz -/
 
 variable {σ : Type*}
 
 /-- The polynomial in `X i` that vanishes at all elements of `S`. -/
 private noncomputable def Alon.P (S : Finset R) (i : σ) : MvPolynomial σ R :=
-  S.prod (fun r ↦ X i - C r)
+  ∏ r ∈ S, (X i - C r)
 
+/-- The degree of `Alon.P S i` with respect to `X i` is the cardinality of `S`,
+  and `0` otherwise. -/
 private theorem Alon.degP [Nontrivial R] (m : MonomialOrder σ) (S : Finset R) (i : σ) :
     m.degree (Alon.P S i) = single i S.card := by
   simp only [P]
@@ -190,6 +189,7 @@ private theorem Alon.degP [Nontrivial R] (m : MonomialOrder σ) (S : Finset R) (
   · intro r _
     simp only [leadingCoeff_binomial, isRegular_one]
 
+/-- The leading coefficient of `Alon.P S i` is `1`. -/
 private theorem Alon.leadingCoeffP [Nontrivial R] (m : MonomialOrder σ) (S : Finset R) (i : σ) :
     m.leadingCoeff (P S i) = 1 := by
   simp only [P]
@@ -201,18 +201,20 @@ private theorem Alon.leadingCoeffP [Nontrivial R] (m : MonomialOrder σ) (S : Fi
     convert isRegular_one
     apply leadingCoeff_binomial
 
-private lemma prod_support_le {ι : Type*} (i : ι) (s : Finset R) (m : ι →₀ ℕ)
-    (hm : m ∈ (Alon.P s i).support) :
-    ∃ e ≤ s.card, m = single i e := by
+/-- The support of `Alon.P S i` is the set of exponents of the form `single i e`,
+  for `e ≤ S.card`. -/
+private lemma prod_support_le {ι : Type*} (i : ι) (S : Finset R) (m : ι →₀ ℕ)
+    (hm : m ∈ (Alon.P S i).support) :
+    ∃ e ≤ S.card, m = single i e := by
   classical
-  have hP : Alon.P s i = MvPolynomial.rename (fun (_ : Unit) ↦ i) (Alon.P s ()) := by
+  have hP : Alon.P S i = MvPolynomial.rename (fun (_ : Unit) ↦ i) (Alon.P S ()) := by
     simp [Alon.P, map_prod]
   rw [hP, support_rename_of_injective (Function.injective_of_subsingleton _)] at hm
   simp only [Finset.mem_image, mem_support_iff, ne_eq] at hm
   obtain ⟨e, he, hm⟩ := hm
   haveI : Nontrivial R := nontrivial_of_ne _ _ he
   refine ⟨e (), ?_, ?_⟩
-  · suffices e ≼[lex] single () s.card by
+  · suffices e ≼[lex] single () S.card by
       simpa [MonomialOrder.lex_le_iff_of_unique] using this
     rw [← Alon.degP]
     apply MonomialOrder.le_degree
@@ -227,11 +229,14 @@ private lemma prod_support_le {ι : Type*} (i : ι) (s : Finset R) (m : ι →�
 
 variable [Fintype σ]
 
-theorem Alon1 [IsDomain R] (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty)
+open scoped BigOperators
+
+theorem combinatorial_nullstellensatz_exists_linearCombination
+    [IsDomain R] (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty)
     (f : MvPolynomial σ R) (Heval : ∀ (x : σ → R), (∀ i, x i ∈ S i) → eval x f = 0) :
     ∃ (h : σ →₀ MvPolynomial σ R)
-      (_ : ∀ i, ((S i).prod (fun s ↦ X i - C s) * (h i)).totalDegree ≤ f.totalDegree),
-    f = linearCombination (MvPolynomial σ R) (fun i ↦ (S i).prod (fun r ↦ X i - C r)) h := by
+      (_ : ∀ i, ((∏ s ∈ S i, (X i - C s)) * h i).totalDegree ≤ f.totalDegree),
+    f = linearCombination (MvPolynomial σ R) (fun i ↦ (∏ r ∈ S i, (X i - C r))) h := by
   letI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   obtain ⟨h, r, hf, hh, hr⟩ := degLex.div (b := fun i ↦ Alon.P (S i) i)
       (fun i ↦ by simp only [Alon.leadingCoeffP, isUnit_one]) f
@@ -263,7 +268,7 @@ theorem Alon1 [IsDomain R] (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty)
     apply Finset.prod_eq_zero (hx i)
     simp only [map_sub, eval_X, eval_C, sub_self]
 
-theorem Alon2 [IsDomain R]
+theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
     (f : MvPolynomial σ R)
     (t : σ →₀ ℕ) (ht : f.coeff t ≠ 0) (ht' : f.totalDegree = t.degree)
     (S : σ → Finset R) (htS : ∀ i, t i < (S i).card) :
@@ -273,7 +278,7 @@ theorem Alon2 [IsDomain R]
   by_contra Heval
   apply ht
   push_neg at Heval
-  obtain ⟨h, hh, hf⟩ := Alon1 S
+  obtain ⟨h, hh, hf⟩ := combinatorial_nullstellensatz_exists_linearCombination S
     (fun i ↦ by rw [← Finset.card_pos]; exact lt_of_le_of_lt (zero_le _) (htS i))
     f Heval
   change f = linearCombination (MvPolynomial σ R) (fun i ↦ Alon.P (S i) i) h at hf
