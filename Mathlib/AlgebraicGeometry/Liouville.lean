@@ -9,7 +9,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.Proper
 # Liouville's theorem
 
 In this file, we show that the global sections of a variety (integral scheme universally-closed
-and of finite type over `Spec K`) forms a finite field extension of the base field.
+and of finite type over `Spec K`) form a finite field extension of the base field.
 
 -/
 
