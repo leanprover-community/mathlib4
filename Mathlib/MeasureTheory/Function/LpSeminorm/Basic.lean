@@ -559,12 +559,21 @@ theorem eLpNorm_indicator_sub_indicator (s t : Set α) (f : α → E) :
     simp only [Pi.sub_apply, Set.apply_indicator_symmDiff norm_neg]
 
 @[simp]
-theorem eLpNorm'_norm {f : α → F} :
-    eLpNorm' (fun a => ‖f a‖) q μ = eLpNorm' f q μ := by simp [eLpNorm'_eq_lintegral_enorm]
+theorem eLpNorm'_norm {f : α → F} : eLpNorm' (fun a => ‖f a‖) q μ = eLpNorm' f q μ := by
+  simp [eLpNorm'_eq_lintegral_enorm]
+
+@[simp]
+theorem eLpNorm'_enorm {f : α → ε} : eLpNorm' (fun a => ‖f a‖ₑ) q μ = eLpNorm' f q μ := by
+  simp [eLpNorm'_eq_lintegral_enorm]
 
 @[simp]
 theorem eLpNorm_norm (f : α → F) : eLpNorm (fun x => ‖f x‖) p μ = eLpNorm f p μ :=
-  eLpNorm_congr_norm_ae <| Eventually.of_forall fun _ => norm_norm _
+  eLpNorm_congr_norm_ae <| Eventually.of_forall fun _ => enorm_norm _
+
+@[simp]
+theorem eLpNorm_enorm (f : α → F) : eLpNorm (fun x => ‖f x‖ₑ) p μ = eLpNorm f p μ :=
+  eLpNorm_congr_norm_ae <| Eventually.of_forall fun _ => rfl
+  -- TODO: add lemma enorm_enorm and use here, instead of `rfl`
 
 theorem eLpNorm'_norm_rpow (f : α → F) (p q : ℝ) (hq_pos : 0 < q) :
     eLpNorm' (fun x => ‖f x‖ ^ q) p μ = eLpNorm' f (p * q) μ ^ q := by
