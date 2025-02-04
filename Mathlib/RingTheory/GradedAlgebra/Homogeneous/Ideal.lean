@@ -57,7 +57,7 @@ variable (I : Ideal A)
 
 /-- An `I : Ideal A` is homogeneous if for every `r ∈ I`, all homogeneous components
   of `r` are in `I`. -/
-def Ideal.IsHomogeneous : Prop := Submodule.IsHomogeneous I 𝒜
+abbrev Ideal.IsHomogeneous : Prop := Submodule.IsHomogeneous I 𝒜
 
 theorem Ideal.IsHomogeneous.mem_iff {I} (hI : Ideal.IsHomogeneous 𝒜 I) {x} :
     x ∈ I ↔ ∀ i, (decompose 𝒜 x i : A) ∈ I :=
