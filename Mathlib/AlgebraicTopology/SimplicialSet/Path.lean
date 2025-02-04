@@ -50,6 +50,24 @@ namespace Path
 
 variable {n : ℕ} {X : SSet.Truncated.{u} (n + 1)} {m : ℕ}
 
+/-- A path includes the data of `n + 1` 0-simplices in `X`. -/
+abbrev vertex (f : Path X m) (i : Fin (m + 1)) : X.obj (op ⟨.mk 0, by simp⟩) :=
+  Path₁.vertex f i
+
+/-- A path includes the data of `n` 1-simplices in `X`. -/
+abbrev arrow (f : Path X m) (i : Fin m) : X.obj (op ⟨.mk 1, by simp⟩) :=
+  Path₁.arrow f i
+
+/-- The source of a 1-simplex in a path is identified with the source vertex. -/
+lemma arrow_src (f : Path X m) (i : Fin m) :
+    X.map (tr (δ 1)).op (f.arrow i) = f.vertex i.castSucc :=
+  Path₁.arrow_src f i
+
+/-- The target of a 1-simplex in a path is identified with the target vertex. -/
+lemma arrow_tgt (f : Path X m) (i : Fin m) :
+    X.map (tr (δ 0)).op (f.arrow i) = f.vertex i.succ :=
+  Path₁.arrow_tgt f i
+
 @[ext]
 lemma ext {f g : Path X m} (hᵥ : f.vertex = g.vertex) (hₐ : f.arrow = g.arrow) :
     f = g :=
@@ -97,7 +115,6 @@ variable {n : ℕ} (X : SSet.Truncated.{u} (n + 1))
 
 /-- The spine of an `m`-simplex in `X` is the path of edges of length `m`
 formed by traversing in order through its vertices. -/
-@[simps]
 def spine (m : ℕ) (h : m ≤ n + 1 := by omega) (Δ : X.obj (op ⟨.mk m, h⟩)) :
     Path X m where
   vertex i := X.map (tr (SimplexCategory.const [0] [m] i)).op Δ
@@ -120,6 +137,17 @@ lemma trunc_spine (k m : ℕ) (h : m ≤ k + 1) (hₙ : k ≤ n) :
   rfl
 
 variable (m : ℕ) (hₘ : m ≤ n + 1)
+
+@[simp]
+lemma spine_vertex (Δ : X.obj (op ⟨.mk m, hₘ⟩)) (i : Fin (m + 1)) :
+    (X.spine m hₘ Δ).vertex i =
+      X.map (tr (SimplexCategory.const [0] [m] i)).op Δ :=
+  rfl
+
+@[simp]
+lemma spine_arrow (Δ : X.obj (op ⟨.mk m, hₘ⟩)) (i : Fin m) :
+    (X.spine m hₘ Δ).arrow i = X.map (tr (mkOfSucc i)).op Δ :=
+  rfl
 
 lemma spine_map_vertex (Δ : X.obj (op ⟨.mk m, hₘ⟩)) (a : ℕ) (hₐ : a ≤ n + 1)
     (φ : (⟨.mk a, hₐ⟩ : SimplexCategory.Truncated (n + 1)) ⟶ ⟨.mk m, hₘ⟩)
@@ -146,24 +174,34 @@ end Truncated
 
 /-- A path of length `n` in a simplicial set `X` is defined as a 1-truncated
 path on the 1-truncation of `X`. -/
-def Path (X : SSet.{u}) (n : ℕ) := truncation 1 |>.obj X |>.Path n
+abbrev Path (X : SSet.{u}) (n : ℕ) := truncation 1 |>.obj X |>.Path n
 
 namespace Path
 
 variable {X : SSet.{u}} {n : ℕ}
 
 /-- A path includes the data of `n + 1` 0-simplices in `X`. -/
-def vertex (f : Path X n) (i : Fin (n + 1)) : X.obj (op [0]) :=
-  Truncated.Path₁.vertex f i
+abbrev vertex (f : Path X n) (i : Fin (n + 1)) : X.obj (op [0]) :=
+  Truncated.Path.vertex f i
 
 /-- A path includes the data of `n` 1-simplices in `X`. -/
-def arrow (f : Path X n) (i : Fin n) : X.obj (op [1]) :=
-  Truncated.Path₁.arrow f i
+abbrev arrow (f : Path X n) (i : Fin n) : X.obj (op [1]) :=
+  Truncated.Path.arrow f i
+
+/-- The source of a 1-simplex in a path is identified with the source vertex. -/
+lemma arrow_src (f : Path X n) (i : Fin n) :
+    X.map (δ 1).op (f.arrow i) = f.vertex i.castSucc :=
+  Truncated.Path.arrow_src f i
+
+/-- The target of a 1-simplex in a path is identified with the target vertex. -/
+lemma arrow_tgt (f : Path X n) (i : Fin n) :
+    X.map (δ 0).op (f.arrow i) = f.vertex i.succ :=
+  Truncated.Path.arrow_tgt f i
 
 @[ext]
 lemma ext {f g : Path X n} (hᵥ : f.vertex = g.vertex) (hₐ : f.arrow = g.arrow) :
     f = g :=
-  Truncated.Path₁.ext hᵥ hₐ
+  Truncated.Path.ext hᵥ hₐ
 
 /-- To show two paths equal it suffices to show that they have the same edges. -/
 @[ext]
@@ -172,13 +210,13 @@ lemma ext' {f g : Path X (n + 1)} (h : ∀ i, f.arrow i = g.arrow i) : f = g :=
 
 /-- For `j + l ≤ n`, a path of length `n` restricts to a path of length `l`, namely
 the subpath spanned by the vertices `j ≤ i ≤ j + l` and edges `j ≤ i < j + l`. -/
-def interval (f : Path X n) (j l : ℕ) (h : j + l ≤ n := by omega) : Path X l :=
+abbrev interval (f : Path X n) (j l : ℕ) (h : j + l ≤ n := by omega) : Path X l :=
   Truncated.Path.interval f j l h
 
 variable {X Y : SSet.{u}} {n : ℕ}
 
 /-- Maps of simplicial sets induce maps of paths in a simplicial set. -/
-def map (f : Path X n) (σ : X ⟶ Y) : Path Y n :=
+abbrev map (f : Path X n) (σ : X ⟶ Y) : Path Y n :=
   Truncated.Path.map f ((truncation 1).map σ)
 
 @[simp]
@@ -204,7 +242,7 @@ variable (X : SSet.{u}) (n : ℕ)
 
 /-- The spine of an `n`-simplex in `X` is the path of edges of length `n` formed
 by traversing in order through the vertices of `X _[n]ₙ₊₁`. -/
-def spine : X _[n] → Path X n :=
+abbrev spine : X _[n] → Path X n :=
   truncation (n + 1) |>.obj X |>.spine n
 
 @[simp]
