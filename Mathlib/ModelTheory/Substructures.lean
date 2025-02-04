@@ -1007,7 +1007,7 @@ theorem subtype_comp_EquivOfEq {S T : L.Substructure M} (h : S = T) :
   rfl
 
 @[simp]
-theorem substructureEquivMap_refl (S : L.Substructure M):
+theorem substructureEquivMap_refl (S : L.Substructure M) :
     (Embedding.refl L M).substructureEquivMap S = equivOfEq (map_id S).symm := by
   ext ⟨⟩
   simp only [Embedding.refl_toHom, SetLike.coe_eq_coe, equivOfEq_apply]
