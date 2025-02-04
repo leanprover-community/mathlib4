@@ -23,6 +23,6 @@ theorem ofAdd_neg_one_pow_comm (a : ℤ) (n : ℕ) :
     ((↑(ofAdd (-1 : ℤ)) : ℤₘ₀) ^ (-a)) ^ n = ofAdd (n : ℤ) ^ a := by
   rw [ofAdd_zpow (-1)]
   simp only [zpow_neg, zpow_one, inv_zpow', inv_inv, coe_zpow]
-  rw [← zpow_natCast, ofAdd_zpow_zpow_comm, ← ofAdd_zpow]
+  rw [← zpow_natCast, zpow_comm, ← ofAdd_zpow]
 
 end WithZero

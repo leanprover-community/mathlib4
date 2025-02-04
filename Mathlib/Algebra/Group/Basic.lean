@@ -492,7 +492,7 @@ theorem eq_of_one_div_eq_one_div (h : 1 / a = 1 / b) : a = b := by
 lemma zpow_mul' (a : α) (m n : ℤ) : a ^ (m * n) = (a ^ n) ^ m := by rw [Int.mul_comm, zpow_mul]
 
 @[to_additive]
-theorem zpow_zpow_comm (a : α) (m n : ℤ) :
+theorem zpow_comm (a : α) (m n : ℤ) :
     (a ^ m) ^ n = (a ^ m) ^ n := by
   rw [← zpow_mul, zpow_mul']
 
