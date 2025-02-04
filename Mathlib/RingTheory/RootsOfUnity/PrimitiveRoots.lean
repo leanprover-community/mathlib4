@@ -525,7 +525,7 @@ theorem eq_pow_of_pow_eq_one {k : ℕ} [NeZero k] {ζ ξ : R} (h : IsPrimitiveRo
     (hξ : ξ ^ k = 1) :
     ∃ i < k, ζ ^ i = ξ := by
   lift ζ to Rˣ using h.isUnit <| NeZero.pos k
-  lift ξ to Rˣ using isUnit_of_pow_eq_one hξ <| NeZero.ne k
+  lift ξ to Rˣ using .of_pow_eq_one hξ <| NeZero.ne k
   simp only [← Units.val_pow_eq_pow_val, ← Units.ext_iff]
   rw [coe_units_iff] at h
   exact h.eq_pow_of_mem_rootsOfUnity <| (mem_rootsOfUnity' k ξ).mpr hξ

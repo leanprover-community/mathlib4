@@ -188,7 +188,7 @@ theorem isUnitTrinomial_iff' :
   · have key : ∀ k ∈ p.support, p.coeff k ^ 2 = 1 := fun k hk =>
       Int.sq_eq_one_of_sq_le_three
         ((single_le_sum (fun k _ => sq_nonneg (p.coeff k)) hk).trans hp.le) (mem_support_iff.mp hk)
-    refine isUnitTrinomial_iff.mpr ⟨?_, fun k hk => isUnit_of_pow_eq_one (key k hk) two_ne_zero⟩
+    refine isUnitTrinomial_iff.mpr ⟨?_, fun k hk => .of_pow_eq_one (key k hk) two_ne_zero⟩
     rw [sum_def, sum_congr rfl key, sum_const, Nat.smul_one_eq_cast] at hp
     exact Nat.cast_injective hp
 
