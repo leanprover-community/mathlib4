@@ -48,9 +48,6 @@ open CategoryTheory.Limits
 abbrev FDRep (k G : Type u) [Field k] [Monoid G] :=
   Action (FGModuleCat k) G
 
-@[deprecated (since := "2024-07-05")]
-alias FdRep := FDRep
-
 namespace FDRep
 
 variable {k G : Type u} [Field k] [Monoid G]
@@ -82,15 +79,17 @@ instance (V W : FDRep k G) : FiniteDimensional k (V ⟶ W) :=
 
 /-- The monoid homomorphism corresponding to the action of `G` onto `V : FDRep k G`. -/
 def ρ (V : FDRep k G) : G →* V →ₗ[k] V :=
-  (ModuleCat.endMulEquiv _).toMonoidHom.comp (Action.ρ V)
+  (ModuleCat.endRingEquiv _).toMonoidHom.comp (Action.ρ V)
 
 @[simp]
-lemma endMulEquiv_symm_comp_ρ (V : FDRep k G) :
-    (MonoidHomClass.toMonoidHom (ModuleCat.endMulEquiv V.V.obj).symm).comp (ρ V) = Action.ρ V := rfl
+lemma endRingEquiv_symm_comp_ρ (V : FDRep k G) :
+    (MonoidHomClass.toMonoidHom (ModuleCat.endRingEquiv V.V.obj).symm).comp (ρ V) =
+      (Action.ρ V) :=
+  rfl
 
 @[simp]
-lemma endMulEquiv_comp_ρ (V : FDRep k G) :
-    (MonoidHomClass.toMonoidHom (ModuleCat.endMulEquiv V.V.obj)).comp (Action.ρ V) = ρ V := rfl
+lemma endRingEquiv_comp_ρ (V : FDRep k G) :
+    (MonoidHomClass.toMonoidHom (ModuleCat.endRingEquiv V.V.obj)).comp (Action.ρ V) = ρ V := rfl
 
 @[simp]
 lemma hom_action_ρ (V : FDRep k G) (g : G) : (Action.ρ V g).hom = ρ V g := rfl
