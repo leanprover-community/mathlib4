@@ -144,7 +144,6 @@ lemma coproducts_rlp : (coproducts.{w} T).rlp = T.rlp := by
   · rw [← le_llp_iff_le_rlp]
     exact T.coproducts_le_rlp_llp
 
-
 lemma retracts_le_rlp_llp : T.retracts ≤ T.rlp.llp :=
   le_trans (monotone_retracts T.le_rlp_llp) T.rlp.llp.retracts_le
 
