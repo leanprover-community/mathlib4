@@ -3,7 +3,7 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johannes Hölzl, Andrew Yang
 -/
-import Mathlib.Algebra.Category.Ring.Constructions
+import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.CategoryTheory.Adjunction.Over
 
@@ -12,8 +12,7 @@ import Mathlib.CategoryTheory.Adjunction.Over
 
 ## Main results
 - `CommRingCat.adj`: `σ ↦ ℤ[σ]` is left adjoint to the forgetful functor `CommRingCat ⥤ Type`.
-- `CommRingCat.coyonedaAdjunction`: `Fun(-, R)` is left adjoint to `Hom_{CRing}(R, -)`.
-- `CommRingCat.coyonedaAdjunction`: `Fun(-, R)` is left adjoint to `Hom_{CRing}(R, -)`.
+- `CommRingCat.coyonedaAdj`: `Fun(-, R)` is left adjoint to `Hom_{CRing}(R, -)`.
 - `CommRingCat.monoidAlgebraAdj`: `G ↦ R[G]` as `CommGrp ⥤ R-Alg` is left adjoint to `S ↦ Sˣ`.
 - `CommRingCat.unitsAdj`: `G ↦ ℤ[G]` is left adjoint to `S ↦ Sˣ`.
 
@@ -115,7 +114,7 @@ def monoidAlgebraAdj (R : CommRingCat.{u}) :
 /-- The adjunction `G ↦ ℤ[G]` and `R ↦ Rˣ` between `CommGrp` and `CommRing`. -/
 def unitsAdj {R : CommRingCat.{u}} (hR : Limits.IsInitial R) :
     monoidAlgebra R ⋙ Under.forget R ⊣ units :=
-  (monoidAlgebraAdjunction R).comp (Under.equivalenceOfIsInitial hR).toAdjunction
+  (monoidAlgebraAdj R).comp (Under.equivalenceOfIsInitial hR).toAdjunction
 
 instance (R : CommRingCat) : (monoidAlgebra.{u, u} R).IsLeftAdjoint :=
   ⟨_, ⟨CommRingCat.monoidAlgebraAdj R⟩⟩
