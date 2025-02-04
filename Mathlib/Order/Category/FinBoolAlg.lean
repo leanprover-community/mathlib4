@@ -99,7 +99,7 @@ instance hasForgetToFinPartOrd : HasForget₂ FinBoolAlg FinPartOrd where
   forget₂.map {X Y} f := PartOrd.ofHom f
 
 instance forgetToFinPartOrdFaithful : (forget₂ FinBoolAlg FinPartOrd).Faithful :=
-  ⟨fun {X Y} f g h => by
+  ⟨fun h => by
     ext x
     exact CategoryTheory.congr_fun h x ⟩
 
