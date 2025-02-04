@@ -431,8 +431,8 @@ protected theorem nnnorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β
 
 @[measurability]
 protected theorem enorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
-    (hf : AEStronglyMeasurable f μ) : AEMeasurable (‖f ·‖ₑ) μ :=
-  (ENNReal.continuous_coe.comp_aestronglyMeasurable hf.nnnorm).aemeasurable
+    (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (‖f ·‖ₑ) μ :=
+  continuous_enorm.comp_aestronglyMeasurable hf
 
 @[deprecated (since := "2025-01-20")] alias ennnorm := AEStronglyMeasurable.enorm
 
