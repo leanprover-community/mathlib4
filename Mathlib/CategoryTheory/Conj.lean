@@ -125,7 +125,7 @@ C ===== f =====> D
 ||             ||
 C' ==== g ====> D'
 ```
-commutes where `e` and `e'` are equivalence of categories.
+commutes up to natural isomorphism where `e` and `e'` are equivalence of categories.
 
 Then we have an isomorphism of endomorphism monoids `End f ≃* End g'` and
 -/
