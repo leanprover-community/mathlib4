@@ -76,16 +76,21 @@ class Order.Frame (α : Type*) extends CompleteLattice α, HeytingAlgebra α whe
 
 /-- `⊓` distributes over `⨆`. -/
 theorem inf_sSup_le_iSup_inf {α : Type*} [Order.Frame α] (a : α) (s : Set α) :
-  a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b := by
-    have h (b : α) : GaloisConnection (b ⊓ ·) (b ⇨ ·) := by
-      simp [GaloisConnection, inf_comm]
-    exact le_of_eq (GaloisConnection.l_sSup (h a))
+    a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b := by
+  have h (b : α) : GaloisConnection (b ⊓ ·) (b ⇨ ·) := by
+    simp [GaloisConnection, inf_comm]
+  exact le_of_eq (GaloisConnection.l_sSup (h a))
 
 /-- A coframe, aka complete Brouwer algebra or complete co-Heyting algebra, is a complete lattice
 whose `⊔` distributes over `⨅`. -/
 class Order.Coframe (α : Type*) extends CompleteLattice α, CoheytingAlgebra α where
-  /-- `⊔` distributes over `⨅`. -/
-  iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s
+
+/-- `⊔` distributes over `⨅`. -/
+theorem iInf_sup_le_sup_sInf {α : Type*} [Order.Coframe α] (a : α) (s : Set α) :
+    ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s := by
+  have h (b : α) : GaloisConnection (· \ b) (b ⊔ ·) := by
+    simp [GaloisConnection, sup_comm]
+  apply le_of_eq (Eq.symm (GaloisConnection.u_sInf (h a)))
 
 open Order
 
@@ -107,7 +112,7 @@ distribute over `⨅` and `⨆`. -/
 class CompleteDistribLattice (α : Type*) extends Frame α, Coframe α, BiheytingAlgebra α
 
 /-- In a complete distributive lattice, `⊔` distributes over `⨅`. -/
-add_decl_doc CompleteDistribLattice.iInf_sup_le_sup_sInf
+add_decl_doc iInf_sup_le_sup_sInf
 
 /-- Structure containing the minimal axioms required to check that an order is a completely
 distributive. Do NOT use, except for implementing `CompletelyDistribLattice` via
@@ -189,7 +194,8 @@ lemma sup_iInf₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊔ ⨅ i, ⨅ j, f 
   simp only [sup_iInf_eq]
 
 /-- The `Order.Coframe.MinimalAxioms` element corresponding to a frame. -/
-def of [Coframe α] : MinimalAxioms α := { ‹Coframe α› with }
+def of [Coframe α] : MinimalAxioms α := { ‹Coframe α› with
+  iInf_sup_le_sup_sInf := _root_.iInf_sup_le_sup_sInf}
 
 end MinimalAxioms
 
@@ -212,7 +218,8 @@ variable (minAx : MinimalAxioms α)
 /-- The `CompleteDistribLattice.MinimalAxioms` element corresponding to a complete distrib lattice.
 -/
 def of [CompleteDistribLattice α] : MinimalAxioms α := { ‹CompleteDistribLattice α› with
-  inf_sSup_le_iSup_inf := _root_.inf_sSup_le_iSup_inf}
+  inf_sSup_le_iSup_inf := _root_.inf_sSup_le_iSup_inf,
+  iInf_sup_le_sup_sInf := _root_.iInf_sup_le_sup_sInf}
 
 /-- Turn minimal axioms for `CompleteDistribLattice` into minimal axioms for `Order.Frame`. -/
 abbrev toFrame : Frame.MinimalAxioms α := minAx.toMinimalAxioms
@@ -319,7 +326,6 @@ theorem iSup_iInf_eq [CompletelyDistribLattice α] {f : ∀ a, κ a → α} :
 instance (priority := 100) CompletelyDistribLattice.toCompleteDistribLattice
     [CompletelyDistribLattice α] : CompleteDistribLattice α where
   __ := ‹CompletelyDistribLattice α›
-  __ := CompleteDistribLattice.ofMinimalAxioms MinimalAxioms.of.toCompleteDistribLattice
 
 -- See note [lower instance priority]
 instance (priority := 100) CompleteLinearOrder.toCompletelyDistribLattice [CompleteLinearOrder α] :
@@ -357,7 +363,6 @@ variable [Frame α] {s t : Set α} {a b : α}
 instance OrderDual.instCoframe : Coframe αᵒᵈ where
   __ := instCompleteLattice
   __ := instCoheytingAlgebra
-  iInf_sup_le_sup_sInf := @inf_sSup_le_iSup_inf α _
 
 theorem inf_sSup_eq : a ⊓ sSup s = ⨆ b ∈ s, a ⊓ b :=
   (inf_sSup_le_iSup_inf _ _).antisymm iSup_inf_le_inf_sSup
@@ -504,14 +509,10 @@ instance (priority := 100) Coframe.toDistribLattice : DistribLattice α where
 instance Prod.instCoframe [Coframe β] : Coframe (α × β) where
   __ := instCompleteLattice
   __ := instCoheytingAlgebra
-  iInf_sup_le_sup_sInf a s := by
-    simp [Prod.le_def, sInf_eq_iInf, fst_iSup, snd_iSup, fst_iInf, snd_iInf, sup_iInf_eq]
 
 instance Pi.instCoframe {ι : Type*} {π : ι → Type*} [∀ i, Coframe (π i)] : Coframe (∀ i, π i) where
   __ := instCompleteLattice
   __ := instCoheytingAlgebra
-  iInf_sup_le_sup_sInf a s i := by
-    simp only [sInf_apply, iInf_apply, sup_apply, sup_iInf_eq, ← iInf_subtype'']; rfl
 
 end Coframe
 
@@ -581,18 +582,21 @@ instance Prod.instCompleteBooleanAlgebra [CompleteBooleanAlgebra α] [CompleteBo
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
   inf_sSup_le_iSup_inf := _root_.inf_sSup_le_iSup_inf
+  iInf_sup_le_sup_sInf := _root_.iInf_sup_le_sup_sInf
 
 instance Pi.instCompleteBooleanAlgebra {ι : Type*} {π : ι → Type*}
     [∀ i, CompleteBooleanAlgebra (π i)] : CompleteBooleanAlgebra (∀ i, π i) where
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
   inf_sSup_le_iSup_inf := _root_.inf_sSup_le_iSup_inf
+  iInf_sup_le_sup_sInf := _root_.iInf_sup_le_sup_sInf
 
 instance OrderDual.instCompleteBooleanAlgebra [CompleteBooleanAlgebra α] :
     CompleteBooleanAlgebra αᵒᵈ where
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
   inf_sSup_le_iSup_inf := _root_.inf_sSup_le_iSup_inf
+  iInf_sup_le_sup_sInf := _root_.iInf_sup_le_sup_sInf
 
 section CompleteBooleanAlgebra
 
@@ -656,8 +660,9 @@ instance (priority := 100) CompleteAtomicBooleanAlgebra.toCompletelyDistribLatti
 -- See note [lower instance priority]
 instance (priority := 100) CompleteAtomicBooleanAlgebra.toCompleteBooleanAlgebra
     [CompleteAtomicBooleanAlgebra α] : CompleteBooleanAlgebra α where
-  __ := ‹CompleteAtomicBooleanAlgebra α›
   __ := CompletelyDistribLattice.toCompleteDistribLattice
+  __ := ‹CompleteAtomicBooleanAlgebra α›
+  iInf_sup_le_sup_sInf := _root_.iInf_sup_le_sup_sInf
   inf_sSup_le_iSup_inf := _root_.inf_sSup_le_iSup_inf
 
 instance Prod.instCompleteAtomicBooleanAlgebra [CompleteAtomicBooleanAlgebra α]
