@@ -10,7 +10,7 @@ import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Data.Set.Pairwise.Basic
-import Mathlib.Algebra.Ring.Idempotents
+import Mathlib.Algebra.Ring.Idempotent
 
 /-!
 # Pointwise action on sets
