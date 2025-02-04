@@ -697,9 +697,9 @@ theorem unifIntegrable_of (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → β
     · rw [Set.indicator_of_not_mem hfx, Set.indicator_of_not_mem]
       rwa [Set.mem_setOf, hx] at hfx
   refine ⟨max C 1, lt_max_of_lt_right one_pos, fun i => le_trans (eLpNorm_mono fun x => ?_) (hCg i)⟩
-  rw [norm_indicator_eq_indicator_norm, norm_indicator_eq_indicator_norm]
+  simp only [enorm_indicator_eq_indicator_enorm]
   exact Set.indicator_le_indicator_of_subset
-    (fun x hx => Set.mem_setOf_eq ▸ le_trans (le_max_left _ _) hx) (fun _ => norm_nonneg _) _
+    (fun x hx => Set.mem_setOf_eq ▸ le_trans (le_max_left _ _) hx) (fun _ => zero_le _) _
 
 end UnifIntegrable
 
