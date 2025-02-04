@@ -77,8 +77,7 @@ theorem choose_modEq_choose_mul_prod_range_choose (a : ℕ) :
     rw [prod_range_succ, cast_mul, ← mul_assoc, mul_right_comm]
     gcongr
     apply choose_modEq_choose_mod_mul_choose_div.trans
-    simp_rw [pow_succ, Nat.div_div_eq_div_mul, mul_comm]
-    rfl
+    simp_rw [pow_succ, Nat.div_div_eq_div_mul, mul_comm, Int.ModEq.refl]
 
 /-- **Lucas's Theorem**: For primes `p`, `choose n k` is congruent to the product of
 `choose (⌊n / p ^ i⌋ % p) (⌊k / p ^ i⌋ % p)` over `i` modulo `p`. -/

@@ -716,7 +716,8 @@ instance instFiniteDimensionalOfIsReflexive (K V : Type*)
     rw [lift_id']
   exact lt_trans h₁ h₂
 
-instance [IsDomain R] : NoZeroSMulDivisors R M := by
+-- see Note [lower instance priority]
+instance (priority := 100) [IsDomain R] : NoZeroSMulDivisors R M := by
   refine (noZeroSMulDivisors_iff R M).mpr ?_
   intro r m hrm
   rw [or_iff_not_imp_left]

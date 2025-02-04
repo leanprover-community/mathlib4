@@ -85,6 +85,8 @@ instance NNNorm.toENorm : ENorm E where enorm := (‖·‖₊ : E → ℝ≥0∞
 
 lemma enorm_eq_nnnorm (x : E) : ‖x‖ₑ = ‖x‖₊ := rfl
 
+@[simp] lemma toNNReal_enorm (x : E) : ‖x‖ₑ.toNNReal = ‖x‖₊ := rfl
+
 @[simp, norm_cast] lemma coe_le_enorm : r ≤ ‖x‖ₑ ↔ r ≤ ‖x‖₊ := by simp [enorm]
 @[simp, norm_cast] lemma enorm_le_coe : ‖x‖ₑ ≤ r ↔ ‖x‖₊ ≤ r := by simp [enorm]
 @[simp, norm_cast] lemma coe_lt_enorm : r < ‖x‖ₑ ↔ r < ‖x‖₊ := by simp [enorm]
@@ -385,9 +387,11 @@ theorem dist_one_right (a : E) : dist a 1 = ‖a‖ := by rw [dist_eq_norm_div, 
 theorem inseparable_one_iff_norm {a : E} : Inseparable a 1 ↔ ‖a‖ = 0 := by
   rw [Metric.inseparable_iff, dist_one_right]
 
+@[to_additive]
+lemma dist_one_left (a : E) : dist 1 a = ‖a‖ := by rw [dist_comm, dist_one_right]
+
 @[to_additive (attr := simp)]
-theorem dist_one_left : dist (1 : E) = norm :=
-  funext fun a => by rw [dist_comm, dist_one_right]
+lemma dist_one : dist (1 : E) = norm := funext dist_one_left
 
 @[to_additive]
 theorem norm_div_rev (a b : E) : ‖a / b‖ = ‖b / a‖ := by
@@ -665,14 +669,14 @@ theorem coe_nnnorm' (a : E) : (‖a‖₊ : ℝ) = ‖a‖ := rfl
 theorem coe_comp_nnnorm' : (toReal : ℝ≥0 → ℝ) ∘ (nnnorm : E → ℝ≥0) = norm :=
   rfl
 
-@[to_additive norm_toNNReal]
+@[to_additive (attr := simp) norm_toNNReal]
 theorem norm_toNNReal' : ‖a‖.toNNReal = ‖a‖₊ :=
   @Real.toNNReal_coe ‖a‖₊
 
-@[to_additive toReal_enorm]
+@[to_additive (attr := simp) toReal_enorm]
 lemma toReal_enorm' (x : E) : ‖x‖ₑ.toReal = ‖x‖ := by simp [enorm]
 
-@[to_additive ofReal_norm]
+@[to_additive (attr := simp) ofReal_norm]
 lemma ofReal_norm' (x : E) : .ofReal ‖x‖ = ‖x‖ₑ := by
   simp [enorm, ENNReal.ofReal, Real.toNNReal, nnnorm]
 
@@ -1297,9 +1301,6 @@ theorem le_norm_self (r : ℝ) : r ≤ ‖r‖ :=
 @[simp 1100] lemma norm_natCast (n : ℕ) : ‖(n : ℝ)‖ = n := abs_of_nonneg n.cast_nonneg
 @[simp 1100] lemma nnnorm_natCast (n : ℕ) : ‖(n : ℝ)‖₊ = n := NNReal.eq <| norm_natCast _
 @[simp 1100] lemma enorm_natCast (n : ℕ) : ‖(n : ℝ)‖ₑ = n := by simp [enorm]
-
-@[deprecated (since := "2024-04-05")] alias norm_coe_nat := norm_natCast
-@[deprecated (since := "2024-04-05")] alias nnnorm_coe_nat := nnnorm_natCast
 
 @[simp 1100] lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
     ‖(ofNat(n) : ℝ)‖ = ofNat(n) := norm_natCast n
