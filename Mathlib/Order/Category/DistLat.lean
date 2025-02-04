@@ -23,7 +23,7 @@ open CategoryTheory
 /-- The category of distributive lattices. -/
 structure DistLat where
   /-- The underlying distributive lattice. -/
-  (carrier : Type*)
+  carrier : Type*
   [str : DistribLattice carrier]
 
 attribute [instance] DistLat.str
@@ -32,7 +32,7 @@ initialize_simps_projections DistLat (carrier → coe, -str)
 
 namespace DistLat
 
-instance : CoeSort DistLat (Type _) :=
+instance : CoeSort DistLat.{u} (Type u) :=
   ⟨DistLat.carrier⟩
 
 attribute [coe] DistLat.carrier
