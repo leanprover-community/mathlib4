@@ -82,7 +82,7 @@ theorem UniqueMDiffOn.uniqueMDiffOn_preimage (hs : UniqueMDiffOn I s) {e : Parti
     (he : e.MDifferentiable I I') : UniqueMDiffOn I' (e.target ∩ e.symm ⁻¹' s) := fun _x hx ↦
   e.right_inv hx.1 ▸ (hs _ hx.2).preimage_partialHomeomorph he (e.map_target hx.1)
 
-variable [IsManifold I 1 M]  in
+variable [IsManifold I 1 M] in
 /-- If a set in a manifold has the unique derivative property, then its pullback by any extended
 chart, in the vector space, also has the unique derivative property. -/
 theorem UniqueMDiffOn.uniqueMDiffOn_target_inter (hs : UniqueMDiffOn I s) (x : M) :

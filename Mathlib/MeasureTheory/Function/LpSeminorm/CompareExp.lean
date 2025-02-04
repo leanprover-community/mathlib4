@@ -30,25 +30,22 @@ theorem eLpNorm'_le_eLpNorm'_mul_rpow_measure_univ {p q : ℝ} (hp0_lt : 0 < p) 
   · rw [hpq_eq, sub_self, ENNReal.rpow_zero, mul_one]
   have hpq : p < q := lt_of_le_of_ne hpq hpq_eq
   let g := fun _ : α => (1 : ℝ≥0∞)
-  have h_rw : (∫⁻ a, (‖f a‖₊ : ℝ≥0∞) ^ p ∂μ) = ∫⁻ a, ((‖f a‖₊ : ℝ≥0∞) * g a) ^ p ∂μ :=
+  have h_rw : (∫⁻ a, ‖f a‖ₑ ^ p ∂μ) = ∫⁻ a, (‖f a‖ₑ * g a) ^ p ∂μ :=
     lintegral_congr fun a => by simp [g]
-  repeat' rw [eLpNorm'_eq_lintegral_nnnorm]
+  repeat' rw [eLpNorm'_eq_lintegral_enorm]
   rw [h_rw]
   let r := p * q / (q - p)
   have hpqr : 1 / p = 1 / q + 1 / r := by field_simp [r, hp0_lt.ne', hq0_lt.ne']
   calc
     (∫⁻ a : α, (↑‖f a‖₊ * g a) ^ p ∂μ) ^ (1 / p) ≤
         (∫⁻ a : α, ↑‖f a‖₊ ^ q ∂μ) ^ (1 / q) * (∫⁻ a : α, g a ^ r ∂μ) ^ (1 / r) :=
-      ENNReal.lintegral_Lp_mul_le_Lq_mul_Lr hp0_lt hpq hpqr μ hf.ennnorm aemeasurable_const
+      ENNReal.lintegral_Lp_mul_le_Lq_mul_Lr hp0_lt hpq hpqr μ hf.enorm aemeasurable_const
     _ = (∫⁻ a : α, ↑‖f a‖₊ ^ q ∂μ) ^ (1 / q) * μ Set.univ ^ (1 / p - 1 / q) := by
       rw [hpqr]; simp [r, g]
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_le_snorm'_mul_rpow_measure_univ := eLpNorm'_le_eLpNorm'_mul_rpow_measure_univ
-
 theorem eLpNorm'_le_eLpNormEssSup_mul_rpow_measure_univ {q : ℝ} (hq_pos : 0 < q) :
     eLpNorm' f q μ ≤ eLpNormEssSup f μ * μ Set.univ ^ (1 / q) := by
-  have h_le : (∫⁻ a : α, (‖f a‖₊ : ℝ≥0∞) ^ q ∂μ) ≤ ∫⁻ _ : α, eLpNormEssSup f μ ^ q ∂μ := by
+  have h_le : (∫⁻ a : α, ‖f a‖ₑ ^ q ∂μ) ≤ ∫⁻ _ : α, eLpNormEssSup f μ ^ q ∂μ := by
     refine lintegral_mono_ae ?_
     have h_nnnorm_le_eLpNorm_ess_sup := coe_nnnorm_ae_le_eLpNormEssSup f μ
     exact h_nnnorm_le_eLpNorm_ess_sup.mono fun x hx => by gcongr
@@ -57,9 +54,6 @@ theorem eLpNorm'_le_eLpNormEssSup_mul_rpow_measure_univ {q : ℝ} (hq_pos : 0 < 
   rw [ENNReal.rpow_mul, one_div, ← ENNReal.mul_rpow_of_nonneg _ _ (by simp [hq_pos.le] : 0 ≤ q⁻¹)]
   gcongr
   rwa [lintegral_const] at h_le
-
-@[deprecated (since := "2024-07-27")]
-alias snorm'_le_snormEssSup_mul_rpow_measure_univ := eLpNorm'_le_eLpNormEssSup_mul_rpow_measure_univ
 
 theorem eLpNorm_le_eLpNorm_mul_rpow_measure_univ {p q : ℝ≥0∞} (hpq : p ≤ q)
     (hf : AEStronglyMeasurable f μ) :
@@ -87,31 +81,19 @@ theorem eLpNorm_le_eLpNorm_mul_rpow_measure_univ {p q : ℝ≥0∞} (hpq : p ≤
   have hpq_real : p.toReal ≤ q.toReal := ENNReal.toReal_mono hq_top hpq
   exact eLpNorm'_le_eLpNorm'_mul_rpow_measure_univ hp_pos hpq_real hf
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_le_snorm_mul_rpow_measure_univ := eLpNorm_le_eLpNorm_mul_rpow_measure_univ
-
 theorem eLpNorm'_le_eLpNorm'_of_exponent_le {p q : ℝ} (hp0_lt : 0 < p)
     (hpq : p ≤ q) (μ : Measure α) [IsProbabilityMeasure μ] (hf : AEStronglyMeasurable f μ) :
     eLpNorm' f p μ ≤ eLpNorm' f q μ := by
   have h_le_μ := eLpNorm'_le_eLpNorm'_mul_rpow_measure_univ hp0_lt hpq hf
   rwa [measure_univ, ENNReal.one_rpow, mul_one] at h_le_μ
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_le_snorm'_of_exponent_le := eLpNorm'_le_eLpNorm'_of_exponent_le
-
 theorem eLpNorm'_le_eLpNormEssSup {q : ℝ} (hq_pos : 0 < q) [IsProbabilityMeasure μ] :
     eLpNorm' f q μ ≤ eLpNormEssSup f μ :=
   (eLpNorm'_le_eLpNormEssSup_mul_rpow_measure_univ hq_pos).trans_eq (by simp [measure_univ])
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_le_snormEssSup := eLpNorm'_le_eLpNormEssSup
-
 theorem eLpNorm_le_eLpNorm_of_exponent_le {p q : ℝ≥0∞} (hpq : p ≤ q) [IsProbabilityMeasure μ]
     (hf : AEStronglyMeasurable f μ) : eLpNorm f p μ ≤ eLpNorm f q μ :=
   (eLpNorm_le_eLpNorm_mul_rpow_measure_univ hpq hf).trans (le_of_eq (by simp [measure_univ]))
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_le_snorm_of_exponent_le := eLpNorm_le_eLpNorm_of_exponent_le
 
 theorem eLpNorm'_lt_top_of_eLpNorm'_lt_top_of_exponent_le {p q : ℝ} [IsFiniteMeasure μ]
     (hf : AEStronglyMeasurable f μ) (hfq_lt_top : eLpNorm' f q μ < ∞) (hp_nonneg : 0 ≤ p)
@@ -127,10 +109,6 @@ theorem eLpNorm'_lt_top_of_eLpNorm'_lt_top_of_exponent_le {p q : ℝ} [IsFiniteM
       rw [ENNReal.mul_lt_top_iff]
       refine Or.inl ⟨hfq_lt_top, ENNReal.rpow_lt_top_of_nonneg ?_ (measure_ne_top μ Set.univ)⟩
       rwa [le_sub_comm, sub_zero, one_div, one_div, inv_le_inv₀ hq_pos hp_pos]
-
-@[deprecated (since := "2024-07-27")]
-alias snorm'_lt_top_of_snorm'_lt_top_of_exponent_le :=
-  eLpNorm'_lt_top_of_eLpNorm'_lt_top_of_exponent_le
 
 theorem Memℒp.mono_exponent {p q : ℝ≥0∞} [IsFiniteMeasure μ] {f : α → E} (hfq : Memℒp f q μ)
     (hpq : p ≤ q) : Memℒp f p μ := by
@@ -198,7 +176,7 @@ theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm (p : ℝ≥0∞) (f : α → E) {g : 
     exact ha
   by_cases hp_zero : p = 0
   · simp only [hp_zero, eLpNorm_exponent_zero, mul_zero, le_zero_iff]
-  simp_rw [eLpNorm_eq_lintegral_rpow_nnnorm hp_zero hp_top, eLpNorm_exponent_top, eLpNormEssSup]
+  simp_rw [eLpNorm_eq_lintegral_rpow_enorm hp_zero hp_top, eLpNorm_exponent_top, eLpNormEssSup]
   calc
     (∫⁻ x, (‖b (f x) (g x)‖₊ : ℝ≥0∞) ^ p.toReal ∂μ) ^ (1 / p.toReal) ≤
         (∫⁻ x, (‖f x‖₊ : ℝ≥0∞) ^ p.toReal * (‖g x‖₊ : ℝ≥0∞) ^ p.toReal ∂μ) ^ (1 / p.toReal) := by
@@ -227,9 +205,6 @@ theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm (p : ℝ≥0∞) (f : α → E) {g : 
       rw [Ne, ENNReal.toReal_eq_zero_iff, not_or]
       exact ⟨hp_zero, hp_top⟩
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_le_snorm_top_mul_snorm := eLpNorm_le_eLpNorm_top_mul_eLpNorm
-
 theorem eLpNorm_le_eLpNorm_mul_eLpNorm_top (p : ℝ≥0∞) {f : α → E} (hf : AEStronglyMeasurable f μ)
     (g : α → F) (b : E → F → G) (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖₊ ≤ ‖f x‖₊ * ‖g x‖₊) :
     eLpNorm (fun x => b (f x) (g x)) p μ ≤ eLpNorm f p μ * eLpNorm g ∞ μ :=
@@ -237,9 +212,6 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_top (p : ℝ≥0∞) {f : α → E} (hf :
     eLpNorm (fun x ↦ b (f x) (g x)) p μ ≤ eLpNorm g ∞ μ * eLpNorm f p μ :=
       eLpNorm_le_eLpNorm_top_mul_eLpNorm p g hf (flip b) <| by simpa only [mul_comm] using h
     _ = eLpNorm f p μ * eLpNorm g ∞ μ := mul_comm _ _
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_le_snorm_mul_snorm_top := eLpNorm_le_eLpNorm_mul_eLpNorm_top
 
 theorem eLpNorm'_le_eLpNorm'_mul_eLpNorm' {p q r : ℝ} (hf : AEStronglyMeasurable f μ)
     (hg : AEStronglyMeasurable g μ) (b : E → F → G)
@@ -255,10 +227,7 @@ theorem eLpNorm'_le_eLpNorm'_mul_eLpNorm' {p q r : ℝ} (hf : AEStronglyMeasurab
           h.mono fun a ha => (ENNReal.rpow_le_rpow_iff hp0_lt).mpr <| ENNReal.coe_le_coe.mpr <| ha
     _ ≤ _ := ?_
   simp_rw [eLpNorm', ENNReal.coe_mul]
-  exact ENNReal.lintegral_Lp_mul_le_Lq_mul_Lr hp0_lt hpq hpqr μ hf.ennnorm hg.ennnorm
-
-@[deprecated (since := "2024-07-27")]
-alias snorm'_le_snorm'_mul_snorm' := eLpNorm'_le_eLpNorm'_mul_eLpNorm'
+  exact ENNReal.lintegral_Lp_mul_le_Lq_mul_Lr hp0_lt hpq hpqr μ hf.enorm hg.enorm
 
 /-- Hölder's inequality, as an inequality on the `ℒp` seminorm of an elementwise operation
 `fun x => b (f x) (g x)`. -/
@@ -300,9 +269,6 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm {p q r : ℝ≥0∞}
   · simp only [hq_ne_zero, one_div, Ne, ENNReal.inv_eq_top, not_false_iff]
   · simp only [hr_ne_zero, one_div, Ne, ENNReal.inv_eq_top, not_false_iff]
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_le_snorm_mul_snorm_of_nnnorm := eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm
-
 /-- Hölder's inequality, as an inequality on the `ℒp` seminorm of an elementwise operation
 `fun x => b (f x) (g x)`. -/
 theorem eLpNorm_le_eLpNorm_mul_eLpNorm'_of_norm {p q r : ℝ≥0∞} (hf : AEStronglyMeasurable f μ)
@@ -310,9 +276,6 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm'_of_norm {p q r : ℝ≥0∞} (hf : AEStr
     (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖ ≤ ‖f x‖ * ‖g x‖) (hpqr : 1 / p = 1 / q + 1 / r) :
     eLpNorm (fun x => b (f x) (g x)) p μ ≤ eLpNorm f q μ * eLpNorm g r μ :=
   eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hf hg b h hpqr
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_le_snorm_mul_snorm'_of_norm := eLpNorm_le_eLpNorm_mul_eLpNorm'_of_norm
 
 end Bilinear
 
@@ -327,25 +290,16 @@ theorem eLpNorm_smul_le_eLpNorm_top_mul_eLpNorm (p : ℝ≥0∞) (hf : AEStrongl
   (eLpNorm_le_eLpNorm_top_mul_eLpNorm p φ hf (· • ·)
     (Eventually.of_forall fun _ => nnnorm_smul_le _ _) :)
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_smul_le_snorm_top_mul_snorm := eLpNorm_smul_le_eLpNorm_top_mul_eLpNorm
-
 theorem eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top (p : ℝ≥0∞) (f : α → E) {φ : α → 𝕜}
     (hφ : AEStronglyMeasurable φ μ) : eLpNorm (φ • f) p μ ≤ eLpNorm φ p μ * eLpNorm f ∞ μ :=
   (eLpNorm_le_eLpNorm_mul_eLpNorm_top p hφ f (· • ·)
     (Eventually.of_forall fun _ => nnnorm_smul_le _ _) :)
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_smul_le_snorm_mul_snorm_top := eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top
 
 theorem eLpNorm'_smul_le_mul_eLpNorm' {p q r : ℝ} {f : α → E} (hf : AEStronglyMeasurable f μ)
     {φ : α → 𝕜} (hφ : AEStronglyMeasurable φ μ) (hp0_lt : 0 < p) (hpq : p < q)
     (hpqr : 1 / p = 1 / q + 1 / r) : eLpNorm' (φ • f) p μ ≤ eLpNorm' φ q μ * eLpNorm' f r μ :=
   eLpNorm'_le_eLpNorm'_mul_eLpNorm' hφ hf (· • ·) (Eventually.of_forall fun _ => nnnorm_smul_le _ _)
     hp0_lt hpq hpqr
-
-@[deprecated (since := "2024-07-27")]
-alias snorm'_smul_le_mul_snorm' := eLpNorm'_smul_le_mul_eLpNorm'
 
 /-- Hölder's inequality, as an inequality on the `ℒp` seminorm of a scalar product `φ • f`. -/
 theorem eLpNorm_smul_le_mul_eLpNorm {p q r : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeasurable f μ)
@@ -354,9 +308,6 @@ theorem eLpNorm_smul_le_mul_eLpNorm {p q r : ℝ≥0∞} {f : α → E} (hf : AE
   (eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hφ hf (· • ·)
       (Eventually.of_forall fun _ => nnnorm_smul_le _ _) hpqr :
     _)
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_smul_le_mul_snorm := eLpNorm_smul_le_mul_eLpNorm
 
 theorem Memℒp.smul {p q r : ℝ≥0∞} {f : α → E} {φ : α → 𝕜} (hf : Memℒp f r μ) (hφ : Memℒp φ q μ)
     (hpqr : 1 / p = 1 / q + 1 / r) : Memℒp (φ • f) p μ :=
@@ -378,7 +329,7 @@ end BoundedSMul
 
 section Mul
 
-variable {α : Type*} [MeasurableSpace α] {𝕜 : Type*} [NormedRing 𝕜] {μ : Measure α}
+variable {α : Type*} {_ : MeasurableSpace α} {𝕜 : Type*} [NormedRing 𝕜] {μ : Measure α}
   {p q r : ℝ≥0∞} {f : α → 𝕜} {φ : α → 𝕜}
 
 theorem Memℒp.mul (hf : Memℒp f r μ) (hφ : Memℒp φ q μ) (hpqr : 1 / p = 1 / q + 1 / r) :

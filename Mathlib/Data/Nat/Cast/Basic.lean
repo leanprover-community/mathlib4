@@ -194,9 +194,6 @@ theorem natCast_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
 theorem natCast_def (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
   rfl
 
-@[deprecated (since := "2024-04-05")] alias nat_apply := natCast_apply
-@[deprecated (since := "2024-04-05")] alias coe_nat := natCast_def
-
 @[simp]
 theorem ofNat_apply (n : ℕ) [n.AtLeastTwo] (a : α) : (OfNat.ofNat n : ∀ a, π a) a = n := rfl
 

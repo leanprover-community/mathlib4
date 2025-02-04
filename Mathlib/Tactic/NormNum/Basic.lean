@@ -25,14 +25,6 @@ See other files in this directory for many more plugins.
 
 universe u
 
-#adaptation_note
-/--
-Since https://github.com/leanprover/lean4/pull/5338,
-the unused variable linter can not see usages of variables in
-`haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives.
--/
-set_option linter.unusedVariables false
-
 namespace Mathlib
 open Lean
 open Meta
@@ -112,9 +104,6 @@ theorem isNat_natAbs_neg : {n : ℤ} → {a : ℕ} → IsInt n (.negOfNat a) →
 theorem isNat_natCast {R} [AddMonoidWithOne R] (n m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
 
-@[deprecated (since := "2024-04-17")]
-alias isNat_cast := isNat_natCast
-
 /-- The `norm_num` extension which identifies an expression `Nat.cast n`, returning `n`. -/
 @[norm_num Nat.cast _, NatCast.natCast _] def evalNatCast : NormNumExt where eval {u α} e := do
   let sα ← inferAddMonoidWithOne α
@@ -127,14 +116,8 @@ alias isNat_cast := isNat_natCast
 theorem isNat_intCast {R} [Ring R] (n : ℤ) (m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-@[deprecated (since := "2024-04-17")]
-alias isNat_int_cast := isNat_intCast
-
 theorem isintCast {R} [Ring R] (n m : ℤ) :
     IsInt n m → IsInt (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
-
-@[deprecated (since := "2024-04-17")]
-alias isInt_cast := isintCast
 
 /-- The `norm_num` extension which identifies an expression `Int.cast n`, returning `n`. -/
 @[norm_num Int.cast _, IntCast.intCast _] def evalIntCast : NormNumExt where eval {u α} e := do
