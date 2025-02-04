@@ -75,18 +75,26 @@ class Order.Coframe.MinimalAxioms (α : Type u) extends CompleteLattice α where
 class Order.Frame (α : Type*) extends CompleteLattice α, HeytingAlgebra α where
 
 /-- `⊓` distributes over `⨆`. -/
-theorem inf_sSup_le_iSup_inf {α : Type*} [Order.Frame α] (a : α) (s : Set α) :
+theorem inf_sSup_eq {α : Type*} [Order.Frame α] {s : Set α} {a : α} :
+    a ⊓ sSup s = ⨆ b ∈ s, a ⊓ b :=
+  gc_inf_himp.l_sSup
+
+theorem inf_sSup_le_iSup_inf {α : Type*} [Order.Frame α] (a : α) (s : Set α):
     a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b :=
-  gc_inf_himp.l_sSup.le
+  inf_sSup_eq.le
 
 /-- A coframe, aka complete Brouwer algebra or complete co-Heyting algebra, is a complete lattice
 whose `⊔` distributes over `⨅`. -/
 class Order.Coframe (α : Type*) extends CompleteLattice α, CoheytingAlgebra α where
 
 /-- `⊔` distributes over `⨅`. -/
+theorem sup_sInf_eq {α : Type*} [Order.Coframe α] {s : Set α} {a : α} :
+    a ⊔ sInf s  = ⨅ b ∈ s, a ⊔ b:=
+  gc_sdiff_sup.u_sInf
+
 theorem iInf_sup_le_sup_sInf {α : Type*} [Order.Coframe α] (a : α) (s : Set α) :
     ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s :=
-  gc_sdiff_sup.u_sInf.ge
+  sup_sInf_eq.ge
 
 open Order
 
@@ -363,9 +371,6 @@ instance OrderDual.instCoframe : Coframe αᵒᵈ where
   __ := instCompleteLattice
   __ := instCoheytingAlgebra
 
-theorem inf_sSup_eq : a ⊓ sSup s = ⨆ b ∈ s, a ⊓ b :=
-  (inf_sSup_le_iSup_inf _ _).antisymm iSup_inf_le_inf_sSup
-
 theorem sSup_inf_eq : sSup s ⊓ b = ⨆ a ∈ s, a ⊓ b := by
   simpa only [inf_comm] using @inf_sSup_eq α _ s b
 
@@ -455,9 +460,6 @@ variable [Coframe α] {s t : Set α} {a b : α}
 instance OrderDual.instFrame : Frame αᵒᵈ where
   __ := instCompleteLattice
   __ := instHeytingAlgebra
-
-theorem sup_sInf_eq : a ⊔ sInf s = ⨅ b ∈ s, a ⊔ b :=
-  @inf_sSup_eq αᵒᵈ _ _ _
 
 theorem sInf_sup_eq : sInf s ⊔ b = ⨅ a ∈ s, a ⊔ b :=
   @sSup_inf_eq αᵒᵈ _ _ _
