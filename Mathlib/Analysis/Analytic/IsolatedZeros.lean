@@ -218,15 +218,18 @@ lemma order_eq_nat_iff (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) : hf.order = ↑n
     refine ⟨fun hn ↦ (WithTop.coe_inj.mp hn : h.choose = n) ▸ h.choose_spec, fun h' ↦ ?_⟩
     rw [unique_eventuallyEq_pow_smul_nonzero h.choose_spec h']
 
-/- An analytic function `f` has finite order at a point `z₀` iff it locally looks
+/-- An analytic function `f` has finite order at a point `z₀` iff it locally looks
   like `(z - z₀) ^ order • g`, where `g` is analytic and does not vanish at
   `z₀`. -/
-lemma order_neq_top_iff (hf : AnalyticAt 𝕜 f z₀) :
+lemma order_ne_top_iff (hf : AnalyticAt 𝕜 f z₀) :
     hf.order ≠ ⊤ ↔ ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0
       ∧ f =ᶠ[𝓝 z₀] fun z ↦ (z - z₀) ^ (hf.order.toNat) • g z := by
   simp only [← ENat.coe_toNat_eq_self, Eq.comm, EventuallyEq, ← hf.order_eq_nat_iff]
 
-/- An analytic function has order zero at a point iff it does not vanish there. -/
+@[deprecated (since := "2025-02-03")]
+alias order_neq_top_iff := order_ne_top_iff
+
+/-- An analytic function has order zero at a point iff it does not vanish there. -/
 lemma order_eq_zero_iff (hf : AnalyticAt 𝕜 f z₀) :
     hf.order = 0 ↔ f z₀ ≠ 0 := by
   rw [← ENat.coe_zero, order_eq_nat_iff hf 0]
@@ -235,7 +238,7 @@ lemma order_eq_zero_iff (hf : AnalyticAt 𝕜 f z₀) :
     simpa [hg.self_of_nhds]
   · exact fun hz ↦ ⟨f, hf, hz, by simp⟩
 
-/- An analytic function vanishes at a point if its order is nonzero when converted to ℕ. -/
+/-- An analytic function vanishes at a point if its order is nonzero when converted to ℕ. -/
 lemma apply_eq_zero_of_order_toNat_ne_zero (hf : AnalyticAt 𝕜 f z₀) :
     hf.order.toNat ≠ 0 → f z₀ = 0 := by
   simp [hf.order_eq_zero_iff]
@@ -258,8 +261,8 @@ theorem order_mul {f g : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (hg : Anal
   by_cases h₂g : hg.order = ⊤
   · simp [mul_comm f g, hg.order_mul_of_order_eq_top hf h₂g, h₂g]
   -- Non-trivial case: both functions do not vanish around z₀
-  obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := hf.order_neq_top_iff.1 h₂f
-  obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := hg.order_neq_top_iff.1 h₂g
+  obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := hf.order_ne_top_iff.1 h₂f
+  obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := hg.order_ne_top_iff.1 h₂g
   rw [← ENat.coe_toNat h₂f, ← ENat.coe_toNat h₂g, ← ENat.coe_add, (hf.mul hg).order_eq_nat_iff]
   use g₁ * g₂, by exact h₁g₁.mul h₁g₂
   constructor
