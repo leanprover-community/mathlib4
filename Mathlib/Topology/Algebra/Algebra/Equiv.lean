@@ -256,8 +256,7 @@ theorem self_comp_symm (e : A ≃A[R] B) : (e : A → B) ∘ e.symm = id :=
 @[simp]
 theorem symm_symm (e : A ≃A[R] B) : e.symm.symm = e := rfl
 
-@[to_additive]
-theorem symm_bijective : Function.Bijective (symm : A ≃A[R] B → _) :=
+theorem symm_bijective : Function.Bijective (symm : (A ≃A[R] B) → _) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
