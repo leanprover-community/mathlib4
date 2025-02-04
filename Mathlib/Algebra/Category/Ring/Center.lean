@@ -54,11 +54,17 @@ noncomputable def Subring.centerEquivEndIdFunctorAux :
   map_mul' x y := by
     apply NatTrans.ext
     ext M (m : M)
-    simpa using mul_smul x.1 y.1 m
+    simp
+    erw [End.mul_def] -- why is this simp lemma not firing?
+    simp
+    exact mul_smul x y m
   map_add' x y := by
     apply NatTrans.ext
     ext M (m : M)
-    simpa using add_smul x.1 y.1 m
+    simp
+    erw [NatTrans.app_add] -- why is this simp lemma not firing?
+    simp
+    exact add_smul x y m
 
 /--
 For any ring `R`, the center of `R` is isomorphic to `End (𝟭 (ModuleCat R))`, the endomorphism ring
