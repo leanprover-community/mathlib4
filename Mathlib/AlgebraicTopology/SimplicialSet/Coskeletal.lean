@@ -193,8 +193,8 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
       let α : strArrowMk₂ f ⟶ strArrowMk₂ ([0].const [n] (f.toOrderHom k)) :=
         StructuredArrow.homMk (([0].const _ (by exact k)).op) (by simp; rfl)
       exact congr_fun (s.w α).symm x
-    · dsimp only [spineEquiv, Equiv.coe_fn_mk]
-      rw [spine_arrow, ← FunctorToTypes.map_comp_apply]
+    · dsimp only [spineEquiv, Equiv.coe_fn_mk, spine_arrow]
+      rw [← FunctorToTypes.map_comp_apply]
       let α : strArrowMk₂ f ⟶ strArrowMk₂ (mkOfSucc k ≫ f) :=
         StructuredArrow.homMk (mkOfSucc k).op (by simp; rfl)
       exact (isPointwiseRightKanExtensionAt.fac_aux₃ _ _ _ _).trans (congr_fun (s.w α).symm x)

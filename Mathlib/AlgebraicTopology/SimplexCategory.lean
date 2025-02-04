@@ -750,12 +750,14 @@ macro "trunc" : tactic =>
 /-- Make a morphism in `Truncated n` from a morphism in `SimplexCategory`. -/
 abbrev Hom.tr {n : ℕ} {a b : SimplexCategory} (f : a ⟶ b)
     (ha : a.len ≤ n := by trunc) (hb : b.len ≤ n := by trunc) :
-    (⟨a, ha⟩ : Truncated n) ⟶ ⟨b, hb⟩ := f
+    (⟨a, ha⟩ : Truncated n) ⟶ ⟨b, hb⟩ :=
+  f
 
 lemma Hom.tr_comp {n : ℕ} {a b c : SimplexCategory} (f : a ⟶ b) (g : b ⟶ c)
     (ha : a.len ≤ n := by trunc) (hb : b.len ≤ n := by trunc)
     (hc : c.len ≤ n := by trunc) :
-    tr (f ≫ g) = tr f ≫ tr g := rfl
+    tr (f ≫ g) = tr f ≫ tr g :=
+  rfl
 
 /-- The inclusion of `Truncated n` into `Truncated m` when `n ≤ m`. -/
 def incl (n m : ℕ) (h : n ≤ m := by omega) : Truncated n ⥤ Truncated m where
@@ -764,7 +766,8 @@ def incl (n m : ℕ) (h : n ≤ m := by omega) : Truncated n ⥤ Truncated m whe
 
 /-- For all `n ≤ m`, `inclusion n` factors through `Truncated m`. -/
 lemma incl_comp_inclusion {n m : ℕ} (h : n ≤ m) :
-    incl n m ⋙ inclusion m = inclusion n := rfl
+    incl n m ⋙ inclusion m = inclusion n :=
+  rfl
 
 end Truncated
 

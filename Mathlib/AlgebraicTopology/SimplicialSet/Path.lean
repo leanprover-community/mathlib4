@@ -32,9 +32,9 @@ open SimplexCategory.Truncated Hom SimplicialObject.Truncated
 of `n` edges. -/
 @[ext]
 structure Path₁ (X : SSet.Truncated.{u} 1) (n : ℕ) where
-  /-- A path includes the data of `n + 1` 0-simplices in `X`.-/
+  /-- A path includes the data of `n + 1` 0-simplices in `X`. -/
   vertex : Fin (n + 1) → X.obj (op ⟨.mk 0, by decide⟩)
-  /-- A path includes the data of `n` 1-simplices in `X`.-/
+  /-- A path includes the data of `n` 1-simplices in `X`. -/
   arrow : Fin n → X.obj (op ⟨.mk 1, by decide⟩)
   /-- The source of a 1-simplex in a path is identified with the source vertex. -/
   arrow_src (i : Fin n) : X.map (tr (δ 1)).op (arrow i) = vertex i.castSucc
@@ -144,7 +144,7 @@ lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ m)
 end Truncated
 
 /-- A path of length `n` in a simplicial set `X` is defined as a 1-truncated
-path of length `n` on the 1-truncation of `X`. -/
+path on the 1-truncation of `X`. -/
 def Path (X : SSet.{u}) (n : ℕ) := truncation 1 |>.obj X |>.Path n
 
 namespace Path
@@ -214,8 +214,8 @@ lemma truncation_spine (m : ℕ) (h : m ≤ n + 1) :
     ((truncation (n + 1)).obj X).spine m = X.spine m :=
   rfl
 
-lemma spine_map_vertex (Δ : X _[n]) {m : ℕ} (φ : ([m] : SimplexCategory) ⟶ [n])
-    (i : Fin (m + 1)) :
+lemma spine_map_vertex (Δ : X _[n]) {m : ℕ}
+    (φ : ([m] : SimplexCategory) ⟶ [n]) (i : Fin (m + 1)) :
     (X.spine m (X.map φ.op Δ)).vertex i =
       (X.spine n Δ).vertex (φ.toOrderHom i) :=
   truncation (max m n + 1) |>.obj X
@@ -228,16 +228,16 @@ lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ n) (Δ : X _[n]) :
 end spine
 
 /-- The spine of the unique non-degenerate `n`-simplex in `Δ[n]`. -/
-def stdSimplex.spineId (n : ℕ) : Path Δ[n] n := spine Δ[n] n (id n)
+def stdSimplex.spineId (n : ℕ) : Path Δ[n] n := spine Δ[n] n (stdSimplex.id n)
 
 /-- Any inner horn contains `stdSimplex.spineId`. -/
 @[simps]
 def horn.spineId {n : ℕ} (i : Fin (n + 3))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :
     Path Λ[n + 2, i] (n + 2) where
-  vertex j := ⟨stdSimplex.spineId _ |>.vertex j, horn.const n i j _ |>.2⟩
+  vertex j := ⟨stdSimplex.spineId _ |>.vertex j, (horn.const n i j _).property⟩
   arrow j := ⟨stdSimplex.spineId _ |>.arrow j, by
-    let edge := primitiveEdge h₀ hₙ j
+    let edge := horn.primitiveEdge h₀ hₙ j
     suffices (stdSimplex.spineId _).arrow j = edge.1 from this ▸ edge.2
     dsimp only [truncation, SimplicialObject.truncation, whiskeringLeft_obj_obj,
       stdSimplex.spineId, spine_arrow, Functor.comp_map, stdSimplex.map_apply]
