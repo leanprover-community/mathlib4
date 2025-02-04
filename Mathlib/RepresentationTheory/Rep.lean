@@ -391,7 +391,7 @@ def finsuppTensorLeft [DecidableEq α] :
       ext
       simp only [Action.instMonoidalCategory_tensorObj_V, Action.tensor_ρ']
       simp [TensorProduct.finsuppLeft_apply_tmul, instMonoidalCategoryStruct_tensorObj,
-        instMonoidalCategoryStruct_tensorHom_hom, ModuleCat.MonoidalCategory.tensorObj]
+        instMonoidalCategoryStruct_tensorHom, ModuleCat.MonoidalCategory.tensorObj]
 
 /-- Given representations `A, B` and a type `α`, this is the natural representation isomorphism
 `A ⊗ (α →₀ B) ≅ (A ⊗ B) →₀ α` sending `a ⊗ₜ single x b ↦ single x (a ⊗ₜ b)`. -/
@@ -401,7 +401,7 @@ def finsuppTensorRight [DecidableEq α] :
   Action.mkIso (TensorProduct.finsuppRight k A B α).toModuleIso fun _ => ModuleCat.hom_ext <|
     TensorProduct.ext <| LinearMap.ext fun _ => lhom_ext fun _ _ => by
       simp only [Action.instMonoidalCategory_tensorObj_V, Action.tensor_ρ']
-      simp [TensorProduct.finsuppRight_apply_tmul, instMonoidalCategoryStruct_tensorHom_hom,
+      simp [TensorProduct.finsuppRight_apply_tmul, instMonoidalCategoryStruct_tensorHom,
         instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj]
 
 variable (k G) in
@@ -414,7 +414,7 @@ def leftRegularTensorTrivialIsoFree (α : Type u) :
       ModuleCat.hom_ext <| TensorProduct.ext <| lhom_ext fun _ _ => lhom_ext fun _ _ => by
         simp only [Action.instMonoidalCategory_tensorObj_V, Action.tensor_ρ']
         simp [instMonoidalCategoryStruct_tensorObj,
-          instMonoidalCategoryStruct_tensorHom_hom, ModuleCat.MonoidalCategory.tensorObj]
+          instMonoidalCategoryStruct_tensorHom, ModuleCat.MonoidalCategory.tensorObj]
 
 variable {α : Type u} (i : α)
 
