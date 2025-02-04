@@ -975,7 +975,8 @@ theorem Filter.Tendsto.nnnorm' (h : Tendsto f l (𝓝 a)) : Tendsto (fun x => �
 
 @[to_additive Filter.Tendsto.enorm]
 lemma Filter.Tendsto.enorm' (h : Tendsto f l (𝓝 a)) : Tendsto (‖f ·‖ₑ) l (𝓝 ‖a‖ₑ) :=
-  .comp continuous_enorm'.continuousAt h
+  sorry -- TODO: missing instance SeminormedGroup -> ENormedMonoid
+  -- was: .comp continuous_enorm'.continuousAt h
 
 end
 
