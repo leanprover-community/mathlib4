@@ -974,7 +974,7 @@ lemma subtype_comp_inclusion {S T : L.Substructure M} (h : S ≤ T) :
     T.subtype.comp (inclusion h) = S.subtype := rfl
 
 /-- Equivalence between equal substructures. -/
-def equivOfEq {S T : L.Substructure M} (h : S = T) : S ≃[L] T := by
+def Equiv.ofEq {S T : L.Substructure M} (h : S = T) : S ≃[L] T := by
   cases h
   exact Equiv.refl _ _
 
