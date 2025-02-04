@@ -130,7 +130,7 @@ Ring Theory:
     product of rings: 'Pi.ring'
   Ideals and Quotients:
     ideal of a commutative ring: 'Ideal'
-    quotient rings: 'Ideal.Quotient.ring'
+    quotient rings: 'Ideal.instHasQuotient'
     prime ideals: 'Ideal.IsPrime'
     maximal ideals: 'Ideal.IsMaximal'
     Chinese remainder theorem: 'Ideal.quotientInfRingEquivPiQuotient'
