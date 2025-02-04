@@ -6,7 +6,7 @@ Authors: Jujian Zhang, Junyan Xu
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-import Mathlib.Algebra.Small.Module
+import Mathlib.Algebra.Small.Ring
 
 /-!
 # A categorical description of the center of a ring
