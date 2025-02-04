@@ -404,6 +404,14 @@ theorem enorm_eq_iff_norm_eq {E F : Type*} [NormedAddCommGroup E] [NormedAddComm
   refine ⟨fun h ↦ by congr, fun h ↦ ?_⟩
   exact (Real.toNNReal_eq_toNNReal_iff (by positivity) (by positivity)).mp (ENNReal.coe_inj.mp h)
 
+-- TODO: move!
+theorem enorm_leq_iff_norm_leq {E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F]
+    {x : E} {y : F} : ‖x‖ ≤ ‖y‖ ↔ ‖x‖ₑ ≤ ‖y‖ₑ := by
+  simp only [← ofReal_norm]
+  refine ⟨fun h ↦ by gcongr, fun h ↦ ?_⟩
+  rw [ENNReal.ofReal_le_ofReal_iff (norm_nonneg _)] at h
+  exact h
+
 theorem eLpNorm'_congr_norm_ae {f g : α → F} (hfg : ∀ᵐ x ∂μ, ‖f x‖ = ‖g x‖) :
     eLpNorm' f q μ = eLpNorm' g q μ :=
   eLpNorm'_congr_enorm_ae <| hfg.mono fun _x hx => enorm_eq_iff_norm_eq.mp hx
