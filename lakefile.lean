@@ -10,10 +10,10 @@ open Lake DSL
 require "leanprover-community" / "batteries" @ git "nightly-testing"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "main"
+require "leanprover-community" / "proofwidgets" @ git "v0.0.51"
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
-require "leanprover-community" / "plausible" @ git "main"
+require "leanprover-community" / "plausible" @ git "nightly-testing"
 
 /-!
 ## Options for building mathlib
