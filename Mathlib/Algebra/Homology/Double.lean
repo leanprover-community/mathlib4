@@ -36,7 +36,7 @@ noncomputable def double : HomologicalComplex C c where
   d k k' :=
     if hk : k = i₀ ∧ k' = i₁ ∧ i₀ ≠ i₁ then
       eqToHom (if_pos hk.1) ≫ f ≫ eqToHom (by
-        dsimp [X]
+        dsimp
         rw [if_neg, if_pos hk.2.1]
         rintro rfl
         exact hk.2.2 hk.2.1)
