@@ -9,7 +9,9 @@ import Mathlib.Analysis.Analytic.IsolatedZeros
 # Vanishing Order of Analytic Functions
 
 This file defines the order of vanishing of an analytic function `f` at a point `z₀`, as an element
-of `ℕ∞`. The order is defined to be `∞` if `f` is identically 0 on a neighbourhood of `z₀`.
+of `ℕ∞`.
+
+TODO: Uniformize API between analytic and meromorphic functions
 -/
 
 open Filter  Set
@@ -20,9 +22,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 
 /-!
 ## Vanishing Order at a Point: Definition and Characterization
-
-This file defines the order of vanishing of an analytic function `f` at a point `z₀`, as an element
-of `ℕ∞`. The order is defined to be `∞` if `f` is identically 0 on a neighbourhood of `z₀`.
 -/
 
 namespace AnalyticAt
@@ -31,7 +30,7 @@ open scoped Classical in
 
 /-- The order of vanishing of `f` at `z₀`, as an element of `ℕ∞`.
 
-This is defined to be `∞` if `f` is identically 0 on a neighbourhood of `z₀`, and otherwise the
+The order is defined to be `∞` if `f` is identically 0 on a neighbourhood of `z₀`, and otherwise the
 unique `n` such that `f` can locally be written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic
 and does not vanish at `z₀`. See `AnalyticAt.order_eq_top_iff` and `AnalyticAt.order_eq_nat_iff` for
 these equivalences. -/
@@ -39,7 +38,8 @@ noncomputable def order (hf : AnalyticAt 𝕜 f z₀) : ENat :=
   if h : ∀ᶠ z in 𝓝 z₀, f z = 0 then ⊤
   else ↑(hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose
 
-/-- The order of `f` at a `z₀` is infinity iff `f` vanished locally around `z₀`. -/
+/-- The order of an analytic function `f` at a `z₀` is infinity iff `f` vanishes locally around
+`z₀`. -/
 lemma order_eq_top_iff (hf : AnalyticAt 𝕜 f z₀) : hf.order = ⊤ ↔ ∀ᶠ z in 𝓝 z₀, f z = 0 := by
   unfold order
   split_ifs with h
@@ -84,6 +84,9 @@ lemma apply_eq_zero_of_order_toNat_ne_zero (hf : AnalyticAt 𝕜 f z₀) :
 
 /-!
 ## Vanishing Order at a Point: Behaviour under Ring Operations
+
+The theorem `AnalyticAt.order_mul` and `AnalyticAt.order_pow` establish additivity of the order
+under multiplication and taking powers.
 
 TODO: Behaviour under Addition/Subtraction
 -/
@@ -130,6 +133,13 @@ end AnalyticAt
 
 /-!
 ## Level Sets of the Order Function
+
+TODO:
+
+- Draw conclusions about behaviour of the oder function on connected domains of analyticity.
+
+- Prove that the set where an analytic function has order in [1,∞) is discrete within its domain of
+  analyticity.
 -/
 
 namespace AnalyticOnNhd
@@ -162,11 +172,11 @@ theorem isClopen_setOf_order_eq_top (h₁f : AnalyticOnNhd 𝕜 f U) :
     conv =>
       arg 1; intro; left; right; arg 1; intro
       rw [AnalyticAt.order_eq_top_iff, eventually_nhds_iff]
-    simp only [Set.mem_setOf_eq] at hz
+    simp only [mem_setOf_eq] at hz
     rw [AnalyticAt.order_eq_top_iff, eventually_nhds_iff] at hz
     obtain ⟨t', h₁t', h₂t', h₃t'⟩ := hz
     use Subtype.val ⁻¹' t'
-    simp only [Set.mem_compl_iff, Set.mem_singleton_iff, isOpen_induced h₂t', Set.mem_preimage,
+    simp only [mem_compl_iff, mem_singleton_iff, isOpen_induced h₂t', mem_preimage,
       h₃t', and_self, and_true]
     intro w hw
     simp only [mem_setOf_eq]
@@ -176,7 +186,7 @@ theorem isClopen_setOf_order_eq_top (h₁f : AnalyticOnNhd 𝕜 f U) :
       tauto
     -- Nontrivial case: w ≠ z
     use t' \ {z.1}, fun y h₁y ↦ h₁t' y h₁y.1, h₂t'.sdiff isClosed_singleton
-    apply (Set.mem_diff w).1
-    exact ⟨hw, Set.mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
+    apply (mem_diff w).1
+    exact ⟨hw, mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
 
 end AnalyticOnNhd
