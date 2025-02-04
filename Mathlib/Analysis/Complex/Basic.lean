@@ -166,7 +166,7 @@ theorem comap_abs_nhds_zero : comap abs (𝓝 0) = 𝓝 0 :=
 @[deprecated (since := "2024-08-25")] alias nnnorm_int := nnnorm_intCast
 
 @[simp 1100, norm_cast]
-lemma norm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖ = q := abs_of_nonneg q.cast_nonneg
+lemma norm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖ = q := Complex.abs_of_nonneg q.cast_nonneg
 
 @[simp 1100, norm_cast]
 lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖₊ = q := by simp [nnnorm, -norm_eq_abs]

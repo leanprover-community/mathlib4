@@ -29,8 +29,8 @@ theorem isCauSeq_abs_exp (z : ℂ) :
   have hn0 : (0 : ℝ) < n := lt_of_le_of_lt (abs.nonneg _) hn
   IsCauSeq.series_ratio_test n (abs z / n) (div_nonneg (abs.nonneg _) (le_of_lt hn0))
     (by rwa [div_lt_iff₀ hn0, one_mul]) fun m hm => by
-      rw [abs_abs, abs_abs, Nat.factorial_succ, pow_succ', mul_comm m.succ, Nat.cast_mul, ← div_div,
-        mul_div_assoc, mul_div_right_comm, map_mul, map_div₀, abs_natCast]
+      rw [Complex.abs_abs, Complex.abs_abs, Nat.factorial_succ, pow_succ', mul_comm m.succ,
+        Nat.cast_mul, ← div_div, mul_div_assoc, mul_div_right_comm, map_mul, map_div₀, abs_natCast]
       gcongr
       exact le_trans hm (Nat.le_succ _)
 
@@ -682,6 +682,6 @@ namespace Complex
 @[simp]
 theorem abs_exp_ofReal (x : ℝ) : abs (exp x) = Real.exp x := by
   rw [← ofReal_exp]
-  exact abs_of_nonneg (le_of_lt (Real.exp_pos _))
+  exact Complex.abs_of_nonneg (le_of_lt (Real.exp_pos _))
 
 end Complex

@@ -80,7 +80,7 @@ theorem range_exp_mul_I : (Set.range fun x : ℝ => exp (x * I)) = Metric.sphere
 
 theorem arg_mul_cos_add_sin_mul_I {r : ℝ} (hr : 0 < r) {θ : ℝ} (hθ : θ ∈ Set.Ioc (-π) π) :
     arg (r * (cos θ + sin θ * I)) = θ := by
-  simp only [arg, map_mul, abs_cos_add_sin_mul_I, abs_of_nonneg hr.le, mul_one]
+  simp only [arg, map_mul, abs_cos_add_sin_mul_I, Complex.abs_of_nonneg hr.le, mul_one]
   simp only [re_ofReal_mul, im_ofReal_mul, neg_im, ← ofReal_cos, ← ofReal_sin, ←
     mk_eq_add_mul_I, neg_div, mul_div_cancel_left₀ _ hr.ne', mul_nonneg_iff_right_nonneg_of_pos hr]
   by_cases h₁ : θ ∈ Set.Icc (-(π / 2)) (π / 2)
@@ -171,7 +171,7 @@ theorem arg_mul_real {r : ℝ} (hr : 0 < r) (x : ℂ) : arg (x * r) = arg x :=
 
 theorem arg_eq_arg_iff {x y : ℂ} (hx : x ≠ 0) (hy : y ≠ 0) :
     arg x = arg y ↔ (abs y / abs x : ℂ) * x = y := by
-  simp only [ext_abs_arg_iff, map_mul, map_div₀, abs_ofReal, abs_abs,
+  simp only [ext_abs_arg_iff, map_mul, map_div₀, abs_ofReal, Complex.abs_abs,
     div_mul_cancel₀ _ (abs.ne_zero hx), eq_self_iff_true, true_and]
   rw [← ofReal_div, arg_real_mul]
   exact div_pos (abs.pos hy) (abs.pos hx)
