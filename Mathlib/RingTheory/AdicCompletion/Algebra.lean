@@ -182,7 +182,7 @@ theorem evalₐ_mkₐ (n : ℕ) (x : AdicCauchySequence I R) :
 theorem Ideal.mk_eq_mk {m n : ℕ} (hmn : m ≤ n) (r : AdicCauchySequence I R) :
     Ideal.Quotient.mk (I ^ m) (r.val n) = Ideal.Quotient.mk (I ^ m) (r.val m) := by
   have h : I ^ m = I ^ m • ⊤ := by simp
-  rw [← Ideal.Quotient.mk_eq_mk, ← Ideal.Quotient.mk_eq_mk, h]
+  rw [h, ← Ideal.Quotient.mk_eq_mk, ← Ideal.Quotient.mk_eq_mk]
   exact (r.property hmn).symm
 
 theorem smul_mk {m n : ℕ} (hmn : m ≤ n) (r : AdicCauchySequence I R)
