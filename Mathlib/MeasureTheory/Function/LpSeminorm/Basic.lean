@@ -440,6 +440,7 @@ theorem eLpNorm_mono_enorm_ae {f : α → ε} {g : α → ε'} (h : ∀ᵐ x ∂
   · exact essSup_mono_ae h
   · exact eLpNorm'_mono_enorm_ae ENNReal.toReal_nonneg h
 
+set_option linter.deprecated false in
 @[deprecated eLpNorm_mono_enorm_ae (since := "2025-02-04")]
 theorem eLpNorm_mono_nnnorm_ae {f : α → F} {g : α → G} (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ ‖g x‖₊) :
     eLpNorm f p μ ≤ eLpNorm g p μ := by
@@ -462,6 +463,7 @@ theorem eLpNorm_mono_enorm {f : α → ε} {g : α → ε'} (h : ∀ x, ‖f x�
     eLpNorm f p μ ≤ eLpNorm g p μ :=
   eLpNorm_mono_enorm_ae (Eventually.of_forall fun x => h x)
 
+set_option linter.deprecated false in
 @[deprecated eLpNorm_mono_enorm (since := "2025-02-04")]
 theorem eLpNorm_mono_nnnorm {f : α → F} {g : α → G} (h : ∀ x, ‖f x‖₊ ≤ ‖g x‖₊) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
@@ -493,6 +495,7 @@ theorem eLpNormEssSup_lt_top_of_ae_enorm_bound {f : α → ε} {C : ℝ≥0} (hf
   (eLpNormEssSup_le_of_ae_enorm_bound hfC).trans_lt ENNReal.coe_lt_top
 
 -- This lemma is used exactly once, in eLpNormEssSup_lt_top_iff_isBoundedUnder.
+set_option linter.deprecated false in
 @[deprecated eLpNormEssSup_lt_top_of_ae_enorm_bound (since := "2025-02-04")]
 theorem eLpNormEssSup_lt_top_of_ae_nnnorm_bound {f : α → F} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) :
     eLpNormEssSup f μ < ∞ :=
@@ -537,6 +540,7 @@ theorem eLpNorm_congr_enorm_ae {f : α → ε} {g : α → ε'} (hfg : ∀ᵐ x 
   le_antisymm (eLpNorm_mono_enorm_ae <| EventuallyEq.le hfg)
     (eLpNorm_mono_enorm_ae <| (EventuallyEq.symm hfg).le)
 
+set_option linter.deprecated false in
 @[deprecated eLpNorm_congr_enorm_ae (since := "2025-02-04")]
 theorem eLpNorm_congr_nnnorm_ae {f : α → F} {g : α → G} (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ = ‖g x‖₊) :
     eLpNorm f p μ = eLpNorm g p μ :=
