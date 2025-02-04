@@ -125,8 +125,8 @@ noncomputable abbrev toCompleteLinearOrder
 noncomputable abbrev toCompleteBooleanAlgebra [BooleanAlgebra α] : CompleteBooleanAlgebra α where
   __ := ‹BooleanAlgebra α›
   __ := Fintype.toCompleteDistribLattice α
-  inf_sSup_le_iSup_inf := inf_sSup_le_iSup_inf
-  iInf_sup_le_sup_sInf := iInf_sup_le_sup_sInf
+  inf_sSup_le_iSup_inf _ _ := _root_.inf_sSup_eq.le
+  iInf_sup_le_sup_sInf _ _ := _root_.sup_sInf_eq.ge
 
 -- See note [reducible non-instances]
 /-- A finite boolean algebra is complete and atomic. -/
