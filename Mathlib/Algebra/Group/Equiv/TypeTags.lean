@@ -183,3 +183,22 @@ def AddEquiv.prodAdditive [Mul G] [Mul H] :
   map_add' _ _ := rfl
 
 end
+
+section End
+
+variable {M : Type*}
+
+/-- `Monoid.End M` is equivalent to `AddMonoid.End (Additive M)`. -/
+@[simps! apply]
+def MulEquiv.Monoid.End [Monoid M] : Monoid.End M ≃* AddMonoid.End (Additive M) where
+  __ := MonoidHom.toAdditive
+  map_mul' := fun _ _ ↦ rfl
+
+/-- `AddMonoid.End M` is equivalent to `Monoid.End (Multiplicative M)`. -/
+@[simps! apply]
+def MulEquiv.AddMonoid.End [AddMonoid M] :
+    AddMonoid.End M ≃* _root_.Monoid.End (Multiplicative M) where
+  __ := AddMonoidHom.toMultiplicative
+  map_mul' := fun _ _ ↦ rfl
+
+end End
