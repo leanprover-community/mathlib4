@@ -4251,6 +4251,7 @@ import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 import Mathlib.Order.Fin.Basic
 import Mathlib.Order.Fin.Finset
 import Mathlib.Order.Fin.SuccAboveOrderIso
+import Mathlib.Order.Fin.SuccOrder
 import Mathlib.Order.Fin.Tuple
 import Mathlib.Order.FixedPoints
 import Mathlib.Order.GaloisConnection.Basic
@@ -4338,6 +4339,7 @@ import Mathlib.Order.Restriction
 import Mathlib.Order.ScottContinuity
 import Mathlib.Order.SemiconjSup
 import Mathlib.Order.SetNotation
+import Mathlib.Order.Shrink
 import Mathlib.Order.Sublattice
 import Mathlib.Order.SuccPred.Archimedean
 import Mathlib.Order.SuccPred.Basic

@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.TransfiniteCompositionOfShape
+import Mathlib.Order.Shrink
 
 /-!
 # Classes of morphisms that are stable under transfinite composition
@@ -71,11 +72,20 @@ def ofLE {W' : MorphismProperty C} (hW : W ≤ W') :
   __ := h.toTransfiniteCompositionOfShape
   map_mem j hj := hW _ (h.map_mem j hj)
 
+/-- If `f` is a transfinite composition of shape `J` of morphisms in `W`,
+then it is also a transfinite composition of shape `J'` of morphisms in `W` if `J' ≃o J`. -/
 def ofOrderIso {J' : Type w'} [LinearOrder J'] [OrderBot J']
     [SuccOrder J'] [WellFoundedLT J'] (e : J' ≃o J) :
     W.TransfiniteCompositionOfShape J' f where
   __ := h.toTransfiniteCompositionOfShape.ofOrderIso e
-  map_mem j hj := sorry
+  map_mem j hj := by
+    have := h.map_mem (e j) (by simpa only [e.isMax_apply])
+    rw [← W.arrow_mk_mem_toSet_iff] at this ⊢
+    have eq : Arrow.mk (homOfLE (e.monotone (Order.le_succ j))) =
+      Arrow.mk (homOfLE (Order.le_succ (e j))) :=
+        Arrow.ext rfl (e.map_succ j) rfl
+    replace eq := congr_arg h.F.mapArrow.obj eq
+    convert this using 1
 
 end
 
@@ -91,8 +101,11 @@ def ofComposableArrows {n : ℕ} (F : ComposableArrows C n)
     obtain ⟨j, rfl⟩ | rfl := j.eq_castSucc_or_eq_last
     · replace hF := hF j
       rw [← W.arrow_mk_mem_toSet_iff] at hF ⊢
-      rw [Fin.arrow_mk_map_homOfLE_le_succ_eq]
-      exact hF
+      have eq : Arrow.mk (homOfLE (Order.le_succ j.castSucc)) =
+        Arrow.mk (homOfLE j.castSucc_le_succ) :=
+          Arrow.ext rfl j.orderSucc_castSucc rfl
+      replace eq := congr_arg F.mapArrow.obj eq
+      convert hF using 1
     · rw [isMax_iff_eq_top] at hj
       exact (hj rfl).elim
 
@@ -182,13 +195,8 @@ variable [IsStableUnderTransfiniteComposition.{w'} W]
 lemma shrink [UnivLE.{w, w'}] :
     IsStableUnderTransfiniteComposition.{w} W where
   isStableUnderTransfiniteCompositionOfShape J _ _ _ _ := by
-    let J' : Type w' := Shrink J
-    have : LinearOrder J' := sorry
-    have : SuccOrder J' := sorry
-    have : OrderBot J' := sorry
-    have : WellFoundedLT J' := sorry
-    have e : J ≃o J' := sorry
-    rw [isStableUnderTransfiniteCompositionOfShape_iff_of_orderIso W e]
+    rw [isStableUnderTransfiniteCompositionOfShape_iff_of_orderIso W
+      (orderIsoShrink.{w'} J)]
     infer_instance
 
 lemma shrink₀ : IsStableUnderTransfiniteComposition.{0} W := shrink.{0, w'} W

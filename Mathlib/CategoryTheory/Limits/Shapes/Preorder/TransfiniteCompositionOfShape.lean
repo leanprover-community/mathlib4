@@ -95,7 +95,7 @@ def ofOrderIso {J' : Type w'} [LinearOrder J'] [OrderBot J']
     (e : J' ≃o J) :
     TransfiniteCompositionOfShape J' f where
   F := e.equivalence.functor ⋙ c.F
-  isoBot := c.F.mapIso (eqToIso sorry) ≪≫ c.isoBot
+  isoBot := c.F.mapIso (eqToIso e.map_bot) ≪≫ c.isoBot
   incl := whiskerLeft e.equivalence.functor c.incl
   isColimit := IsColimit.whiskerEquivalence (c.isColimit) e.equivalence
 
