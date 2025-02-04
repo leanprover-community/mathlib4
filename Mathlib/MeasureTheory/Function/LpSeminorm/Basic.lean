@@ -175,7 +175,7 @@ theorem lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top {f : α → ε} (hp_ne_zer
 alias lintegral_rpow_nnnorm_lt_top_of_eLpNorm_lt_top :=
   lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top
 
-theorem eLpNorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top {f : α → ε} (hp_ne_zero : p ≠ 0)
+theorem eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top {f : α → ε} (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) : eLpNorm f p μ < ∞ ↔ ∫⁻ a, (‖f a‖ₑ) ^ p.toReal ∂μ < ∞ :=
   ⟨lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp_ne_zero hp_ne_top, by
     intro h
@@ -183,6 +183,9 @@ theorem eLpNorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top {f : α → ε} (hp_ne_z
     have : 0 < 1 / p.toReal := div_pos zero_lt_one hp'
     simpa [eLpNorm_eq_lintegral_rpow_enorm hp_ne_zero hp_ne_top] using
       ENNReal.rpow_lt_top_of_nonneg (le_of_lt this) (ne_of_lt h)⟩
+
+@[deprecated (since := "2025-02-04")] alias
+eLpNorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top := eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top
 
 end Top
 
