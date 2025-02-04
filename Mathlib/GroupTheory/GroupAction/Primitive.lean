@@ -84,7 +84,7 @@ class _root_.AddAction.IsQuasiPreprimitive
     ∀ {N : AddSubgroup G} [N.Normal], AddAction.fixedPoints N X ≠ .univ →
       AddAction.IsPretransitive N X
 
-/-- An  action of a group is quasipreprimitive if any normal subgroup
+/-- An action of a group is quasipreprimitive if any normal subgroup
 that has no fixed point acts pretransitively -/
 @[to_additive]
 class IsQuasiPreprimitive [Group G] [MulAction G X] extends IsPretransitive G X : Prop where
@@ -176,15 +176,15 @@ variable {φ : M →* N} {f : α →ₑ[φ] β}
 
 @[to_additive]
 theorem IsPreprimitive.of_surjective [IsPreprimitive M α] (hf : Function.Surjective f) :
-    IsPreprimitive N β :=
-  have : IsPretransitive N β := toIsPretransitive.of_surjective_map hf
-  { isTrivialBlock_of_isBlock {B} hB := by
-      rw [← Set.image_preimage_eq B hf]
-      apply IsTrivialBlock.image hf
-      exact isTrivialBlock_of_isBlock (IsBlock.preimage f hB) }
+    IsPreprimitive N β where
+  toIsPretransitive := toIsPretransitive.of_surjective_map hf
+  isTrivialBlock_of_isBlock {B} hB := by
+    rw [← Set.image_preimage_eq B hf]
+    apply IsTrivialBlock.image hf
+    exact isTrivialBlock_of_isBlock (IsBlock.preimage f hB)
 
 @[to_additive]
-theorem IsPreprimitive.congr (hφ : Function.Surjective φ) (hf : Function.Bijective f) :
+theorem isPreprimitive_congr (hφ : Function.Surjective φ) (hf : Function.Bijective f) :
     IsPreprimitive M α ↔ IsPreprimitive N β := by
   constructor
   · intro _
@@ -210,7 +210,7 @@ the set of blocks containing a given element is a simple order -/
 @[to_additive (attr := simp)
   "A pretransitive action on a nontrivial type is preprimitive iff
   the set of blocks containing a given element is a simple order"]
-theorem isSimpleOrderBlockMem_iff_isPreprimitive [IsPretransitive G X] [Nontrivial X] (a : X) :
+theorem isSimpleOrder_blockMem_iff_isPreprimitive [IsPretransitive G X] [Nontrivial X] (a : X) :
     IsSimpleOrder (BlockMem G a) ↔ IsPreprimitive G X := by
   constructor
   · intro h; let h_bot_or_top := h.eq_bot_or_eq_top
@@ -236,7 +236,7 @@ iff the stabilizer of any point is a maximal subgroup (Wielandt, th. 7.5) -/
   iff the stabilizer of any point is a maximal subgroup (Wielandt, th. 7.5)"]
 theorem isCoatom_stabilizer_iff_preprimitive [IsPretransitive G X] [Nontrivial X] (a : X) :
     IsCoatom (stabilizer G a) ↔ IsPreprimitive G X := by
-  rw [← isSimpleOrderBlockMem_iff_isPreprimitive G a, ← Set.isSimpleOrder_Ici_iff_isCoatom]
+  rw [← isSimpleOrder_blockMem_iff_isPreprimitive G a, ← Set.isSimpleOrder_Ici_iff_isCoatom]
   simp only [isSimpleOrder_iff_isCoatom_bot]
   rw [← OrderIso.isCoatom_iff (block_stabilizerOrderIso G a), OrderIso.map_bot]
 
@@ -263,7 +263,7 @@ instance (priority := 100) IsPreprimitive.isQuasiPreprimitive [IsPreprimitive M 
   isPretransitive_of_normal {N} _ hNX := by
     rw [Set.ne_univ_iff_exists_not_mem] at hNX
     obtain ⟨a, ha⟩ := hNX
-    rw [isPretransitive_iff_orbit_eq_top a]
+    rw [isPretransitive_iff_orbit_eq_univ a]
     apply Or.resolve_left (isTrivialBlock_of_isBlock (IsBlock.orbit_of_normal a))
     intro h
     apply ha
