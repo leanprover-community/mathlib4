@@ -37,13 +37,17 @@ lemma Functor.IsFinitelyAccessible_iff_preservesFilteredColimitsOfSize {F : C �
     simp only [isCardinalFiltered_aleph0_iff] at * <;>
     exact H
 
-lemma Functor.IsFinitelyAccessible_iff_preservesFilteredColimits {F : C ⥤ D} :
+lemma Functor.isFinitelyAccessible_iff_preservesFilteredColimits {F : C ⥤ D} :
     IsFinitelyAccessible.{v'} F ↔ PreservesFilteredColimits F :=
   IsFinitelyAccessible_iff_preservesFilteredColimitsOfSize
 
 /-- An object `X` is finitely presentable if `Hom(X, -)` preserves all filtered colimits. -/
 abbrev IsFinitelyPresentable (X : C) : Prop :=
-  Functor.IsFinitelyAccessible.{v} (coyoneda.obj (op X))
+  IsCardinalPresentable.{v} X ℵ₀
+
+lemma isFinitelyPresentable_iff_preservesFilteredColimits {X : C} :
+    IsFinitelyPresentable X ↔ PreservesFilteredColimits (coyoneda.obj (op X)) :=
+  Functor.IsFinitelyAccessible_iff_preservesFilteredColimitsOfSize
 
 lemma HasCardinalFilteredColimits_iff_hasFilteredColimitsOfSize :
     HasCardinalFilteredColimits.{w} C ℵ₀ ↔ HasFilteredColimitsOfSize.{w, w} C := by

@@ -167,5 +167,5 @@ lemma preservesFilteredColimits_coyoneda (S : Under R) (hS : S.hom.hom.FinitePre
 /-- If `S` is a finitely presented `R`-algebra, `S : Under R` is finitely presentable. -/
 lemma isFinitelyPresentable (S : Under R) (hS : S.hom.hom.FinitePresentation) :
     IsFinitelyPresentable S := by
-  rw [IsFinitelyPresentable, Functor.IsFinitelyAccessible_iff_preservesFilteredColimits]
+  rw [isFinitelyPresentable_iff_preservesFilteredColimits]
   exact preservesFilteredColimits_coyoneda R S hS
