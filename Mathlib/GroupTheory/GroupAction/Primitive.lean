@@ -100,7 +100,7 @@ theorem IsPreprimitive.subsingleton_or_eq_univ_of_isBlock
   isTrivialBlock_of_isBlock hB
 
 @[to_additive (attr := nontriviality)]
-theorem isPreprimitive_of_subsingleton [SMul G X] [Nonempty G] [Subsingleton X] :
+theorem IsPreprimitive.of_subsingleton [SMul G X] [Nonempty G] [Subsingleton X] :
     IsPreprimitive G X where
   exists_smul_eq (x y) := by
     use Classical.arbitrary G
@@ -119,7 +119,7 @@ open scoped BigOperators Pointwise
 @[to_additive
 "If the action is pretransitive, then the trivial blocks condition implies preprimitivity
 (based condition)"]
-theorem isPreprimitive_of_isTrivialBlock_base [IsPretransitive G X] (a : X)
+theorem IsPreprimitive.of_isTrivialBlock_base [IsPretransitive G X] (a : X)
     (H : ∀ {B : Set X} (_ : a ∈ B) (_ : IsBlock G B), IsTrivialBlock B) :
     IsPreprimitive G X where
   isTrivialBlock_of_isBlock {B} hB := by
@@ -136,7 +136,7 @@ theorem isPreprimitive_of_isTrivialBlock_base [IsPretransitive G X] (a : X)
 @[to_additive
   "If the action is not trivial, then the trivial blocks condition implies preprimitivity
   (pretransitivity is automatic) (based condition)"]
-theorem isPreprimitive_of_isTrivialBlock_of_not_mem_fixedPoints {a : X} (ha : a ∉ fixedPoints G X)
+theorem IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints {a : X} (ha : a ∉ fixedPoints G X)
     (H : ∀ ⦃B : Set X⦄, a ∈ B → IsBlock G B → IsTrivialBlock B) :
     IsPreprimitive G X :=
   have : IsPretransitive G X := by
@@ -166,7 +166,7 @@ theorem mk' (Hnt : fixedPoints G X ≠ ⊤)
     IsPreprimitive G X := by
   simp only [Set.top_eq_univ, Set.ne_univ_iff_exists_not_mem] at Hnt
   obtain ⟨_, ha⟩ := Hnt
-  exact isPreprimitive_of_isTrivialBlock_of_not_mem_fixedPoints ha fun {B} _ ↦ H
+  exact .of_isTrivialBlock_of_not_mem_fixedPoints ha fun {B} _ ↦ H
 
 section EquivariantMap
 
@@ -175,7 +175,7 @@ variable {N β : Type*} [Group N] [MulAction N β]
 variable {φ : M →* N} {f : α →ₑ[φ] β}
 
 @[to_additive]
-theorem isPreprimitive_of_surjective [IsPreprimitive M α] (hf : Function.Surjective f) :
+theorem IsPreprimitive.of_surjective [IsPreprimitive M α] (hf : Function.Surjective f) :
     IsPreprimitive N β :=
   have : IsPretransitive N β := toIsPretransitive.of_surjective_map hf
   { isTrivialBlock_of_isBlock {B} hB := by
@@ -184,11 +184,11 @@ theorem isPreprimitive_of_surjective [IsPreprimitive M α] (hf : Function.Surjec
       exact isTrivialBlock_of_isBlock (IsBlock.preimage f hB) }
 
 @[to_additive]
-theorem isPreprimitive_congr (hφ : Function.Surjective φ) (hf : Function.Bijective f) :
+theorem IsPreprimitive.congr (hφ : Function.Surjective φ) (hf : Function.Bijective f) :
     IsPreprimitive M α ↔ IsPreprimitive N β := by
   constructor
   · intro _
-    apply isPreprimitive_of_surjective hf.surjective
+    apply IsPreprimitive.of_surjective hf.surjective
   · intro _
     haveI := (isPretransitive_congr hφ hf).mpr toIsPretransitive
     exact {
@@ -214,7 +214,7 @@ theorem isSimpleOrderBlockMem_iff_isPreprimitive [IsPretransitive G X] [Nontrivi
     IsSimpleOrder (BlockMem G a) ↔ IsPreprimitive G X := by
   constructor
   · intro h; let h_bot_or_top := h.eq_bot_or_eq_top
-    apply isPreprimitive_of_isTrivialBlock_base a
+    apply IsPreprimitive.of_isTrivialBlock_base a
     intro B haB hB
     cases' h_bot_or_top ⟨B, haB, hB⟩ with hB' hB' <;>
       simp only [← Subtype.coe_inj, Subtype.coe_mk] at hB'
