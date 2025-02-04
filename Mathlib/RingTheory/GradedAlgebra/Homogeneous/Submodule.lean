@@ -69,6 +69,21 @@ variable [DecidableEq ιA] [AddMonoid ιA] [SetLike σA A] [AddSubmonoidClass σ
 variable [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM M] [Decomposition ℳ]
 variable [VAdd ιA ιM] [GradedSMul 𝒜 ℳ]
 
+instance : SetLike (HomogeneousSubmodule 𝒜 ℳ) M where
+  coe X := X.toSubmodule
+  coe_injective' := by
+    rintro ⟨p, hp⟩ ⟨q, hq⟩ (h : (p : Set M) = q)
+    simpa using h
+
+instance : AddSubmonoidClass (HomogeneousSubmodule 𝒜 ℳ) M where
+  zero_mem p := p.toSubmodule.zero_mem
+  add_mem hx hy := Submodule.add_mem _ hx hy
+
+instance : SMulMemClass (HomogeneousSubmodule 𝒜 ℳ) A M where
+  smul_mem := by
+    intro x r m hm
+    exact Submodule.smul_mem x.toSubmodule r hm
+
 variable {𝒜 ℳ} in
 theorem HomogeneousSubmodule.isHomogeneous (p : HomogeneousSubmodule 𝒜 ℳ) :
     p.toSubmodule.IsHomogeneous ℳ :=
