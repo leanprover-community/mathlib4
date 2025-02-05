@@ -190,57 +190,6 @@ theorem exists_eventuallyEq_pow_smul_nonzero_iff (hf : AnalyticAt 𝕜 f z₀) :
       hp.iterate_dslope_fslope_ne_zero (hf_ne.imp hp.locally_zero_iff.mpr),
       hp.eq_pow_order_mul_iterate_dslope⟩
 
-open scoped Classical in
-/-- The order of vanishing of `f` at `z₀`, as an element of `ℕ∞`.
-
-This is defined to be `∞` if `f` is identically 0 on a neighbourhood of `z₀`, and otherwise the
-unique `n` such that `f z = (z - z₀) ^ n • g z` with `g` analytic and non-vanishing at `z₀`. See
-`AnalyticAt.order_eq_top_iff` and `AnalyticAt.order_eq_nat_iff` for these equivalences. -/
-noncomputable def order (hf : AnalyticAt 𝕜 f z₀) : ENat :=
-  if h : ∀ᶠ z in 𝓝 z₀, f z = 0 then ⊤
-  else ↑(hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose
-
-lemma order_eq_top_iff (hf : AnalyticAt 𝕜 f z₀) : hf.order = ⊤ ↔ ∀ᶠ z in 𝓝 z₀, f z = 0 := by
-  unfold order
-  split_ifs with h
-  · rwa [eq_self, true_iff]
-  · simpa only [ne_eq, ENat.coe_ne_top, false_iff] using h
-
-lemma order_eq_nat_iff (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) : hf.order = ↑n ↔
-    ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z := by
-  unfold order
-  split_ifs with h
-  · simp only [ENat.top_ne_coe, false_iff]
-    contrapose! h
-    rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff]
-    exact ⟨n, h⟩
-  · rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff] at h
-    refine ⟨fun hn ↦ (WithTop.coe_inj.mp hn : h.choose = n) ▸ h.choose_spec, fun h' ↦ ?_⟩
-    rw [unique_eventuallyEq_pow_smul_nonzero h.choose_spec h']
-
-/- An analytic function `f` has finite order at a point `z₀` iff it locally looks
-  like `(z - z₀) ^ order • g`, where `g` is analytic and does not vanish at
-  `z₀`. -/
-lemma order_neq_top_iff (hf : AnalyticAt 𝕜 f z₀) :
-    hf.order ≠ ⊤ ↔ ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0
-      ∧ f =ᶠ[𝓝 z₀] fun z ↦ (z - z₀) ^ (hf.order.toNat) • g z := by
-  simp only [← ENat.coe_toNat_eq_self, Eq.comm, EventuallyEq, ← hf.order_eq_nat_iff]
-
-/- An analytic function has order zero at a point iff it does not vanish there. -/
-lemma order_eq_zero_iff (hf : AnalyticAt 𝕜 f z₀) :
-    hf.order = 0 ↔ f z₀ ≠ 0 := by
-  rw [← ENat.coe_zero, order_eq_nat_iff hf 0]
-  constructor
-  · intro ⟨g, _, _, hg⟩
-    simpa [hg.self_of_nhds]
-  · exact fun hz ↦ ⟨f, hf, hz, by simp⟩
-
-/- An analytic function vanishes at a point if its order is nonzero when converted to ℕ. -/
-lemma apply_eq_zero_of_order_toNat_ne_zero (hf : AnalyticAt 𝕜 f z₀) :
-    hf.order.toNat ≠ 0 → f z₀ = 0 := by
-  simp [hf.order_eq_zero_iff]
-  tauto
-
 end AnalyticAt
 
 namespace AnalyticOnNhd
