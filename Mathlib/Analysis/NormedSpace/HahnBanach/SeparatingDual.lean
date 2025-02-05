@@ -75,7 +75,7 @@ end Ring
 section Field
 
 variable {R V : Type*} [Field R] [AddCommGroup V] [TopologicalSpace R] [TopologicalSpace V]
-  [TopologicalRing R] [Module R V]
+  [IsTopologicalRing R] [Module R V]
 
 -- TODO (@alreadydone): this could generalize to CommRing R if we were to add a section
 theorem _root_.separatingDual_iff_injective : SeparatingDual R V ↔

@@ -196,7 +196,7 @@ continuous functional calculus over the larger scalar ring descends to the small
 @[simps!]
 def nonUnitalStarAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
     [StarRing R] [TopologicalSpace R] [TopologicalSemiring R] [ContinuousStar R] [Field S]
-    [StarRing S] [TopologicalSpace S] [TopologicalRing S] [ContinuousStar S] [NonUnitalRing A]
+    [StarRing S] [TopologicalSpace S] [IsTopologicalRing S] [ContinuousStar S] [NonUnitalRing A]
     [StarRing A] [Algebra R S] [Module R A] [Module S A] [IsScalarTower S A A] [SMulCommClass S A A]
     [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S] {a : A}
     (φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A) {f : C(S, R)} (h : QuasispectrumRestricts a f) :
@@ -209,7 +209,7 @@ def nonUnitalStarAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
 
 variable {R S A : Type*} {p q : A → Prop}
 variable [Semifield R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
-variable [Field S] [StarRing S] [MetricSpace S] [TopologicalRing S] [ContinuousStar S]
+variable [Field S] [StarRing S] [MetricSpace S] [IsTopologicalRing S] [ContinuousStar S]
 variable [NonUnitalRing A] [StarRing A] [Module S A] [IsScalarTower S A A]
 variable [SMulCommClass S A A]
 variable [Algebra R S] [Module R A] [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S]

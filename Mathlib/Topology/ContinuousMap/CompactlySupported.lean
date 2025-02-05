@@ -325,16 +325,16 @@ instance [NonUnitalCommSemiring β] [TopologicalSemiring β] :
     NonUnitalCommSemiring C_c(α, β) :=
   DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
 
-instance [NonUnitalNonAssocRing β] [TopologicalRing β] :
+instance [NonUnitalNonAssocRing β] [IsTopologicalRing β] :
     NonUnitalNonAssocRing C_c(α, β) :=
   DFunLike.coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => rfl) fun _ _ => rfl
 
-instance [NonUnitalRing β] [TopologicalRing β] : NonUnitalRing C_c(α, β) :=
+instance [NonUnitalRing β] [IsTopologicalRing β] : NonUnitalRing C_c(α, β) :=
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub (fun _ _ => rfl)
     fun _ _ => rfl
 
-instance [NonUnitalCommRing β] [TopologicalRing β] :
+instance [NonUnitalCommRing β] [IsTopologicalRing β] :
     NonUnitalCommRing C_c(α, β) :=
   DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => rfl) fun _ _ => rfl

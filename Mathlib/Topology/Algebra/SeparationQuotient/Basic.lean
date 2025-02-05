@@ -281,15 +281,15 @@ instance instNonAssocSemiring [NonAssocSemiring R] [TopologicalSemiring R] :
     NonAssocSemiring (SeparationQuotient R) :=
   surjective_mk.nonAssocSemiring mk mk_zero mk_one mk_add mk_mul mk_smul mk_natCast
 
-instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing R] [TopologicalRing R] :
+instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing R] [IsTopologicalRing R] :
     NonUnitalNonAssocRing (SeparationQuotient R) :=
   surjective_mk.nonUnitalNonAssocRing mk mk_zero mk_add mk_mul mk_neg mk_sub mk_smul mk_smul
 
-instance instNonUnitalRing [NonUnitalRing R] [TopologicalRing R] :
+instance instNonUnitalRing [NonUnitalRing R] [IsTopologicalRing R] :
     NonUnitalRing (SeparationQuotient R) :=
   surjective_mk.nonUnitalRing mk mk_zero mk_add mk_mul mk_neg mk_sub mk_smul mk_smul
 
-instance instNonAssocRing [NonAssocRing R] [TopologicalRing R] :
+instance instNonAssocRing [NonAssocRing R] [IsTopologicalRing R] :
     NonAssocRing (SeparationQuotient R) :=
   surjective_mk.nonAssocRing mk mk_zero mk_one mk_add mk_mul mk_neg mk_sub mk_smul mk_smul
     mk_natCast mk_intCast
@@ -298,7 +298,7 @@ instance instSemiring [Semiring R] [TopologicalSemiring R] :
     Semiring (SeparationQuotient R) :=
   surjective_mk.semiring mk mk_zero mk_one mk_add mk_mul mk_smul mk_pow mk_natCast
 
-instance instRing [Ring R] [TopologicalRing R] :
+instance instRing [Ring R] [IsTopologicalRing R] :
     Ring (SeparationQuotient R) :=
   surjective_mk.ring mk mk_zero mk_one mk_add mk_mul mk_neg mk_sub mk_smul mk_smul mk_pow
     mk_natCast mk_intCast
@@ -320,15 +320,15 @@ instance instHasDistribNeg [Mul R] [HasDistribNeg R] [ContinuousMul R] [Continuo
     HasDistribNeg (SeparationQuotient R) :=
   surjective_mk.hasDistribNeg mk mk_neg mk_mul
 
-instance instNonUnitalNonAssocCommRing [NonUnitalNonAssocCommRing R] [TopologicalRing R] :
+instance instNonUnitalNonAssocCommRing [NonUnitalNonAssocCommRing R] [IsTopologicalRing R] :
     NonUnitalNonAssocCommRing (SeparationQuotient R) :=
   surjective_mk.nonUnitalNonAssocCommRing mk mk_zero mk_add mk_mul mk_neg mk_sub mk_smul mk_smul
 
-instance instNonUnitalCommRing [NonUnitalCommRing R] [TopologicalRing R] :
+instance instNonUnitalCommRing [NonUnitalCommRing R] [IsTopologicalRing R] :
     NonUnitalCommRing (SeparationQuotient R) :=
   surjective_mk.nonUnitalCommRing mk mk_zero mk_add mk_mul mk_neg mk_sub mk_smul mk_smul
 
-instance instCommRing [CommRing R] [TopologicalRing R] :
+instance instCommRing [CommRing R] [IsTopologicalRing R] :
     CommRing (SeparationQuotient R) :=
   surjective_mk.commRing mk mk_zero mk_one mk_add mk_mul mk_neg mk_sub mk_smul mk_smul mk_pow
     mk_natCast mk_intCast

@@ -137,7 +137,7 @@ theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 
   intro y y_in
   exact Valuation.map_eq_of_sub_lt _ y_in
 
-instance (priority := 100) : TopologicalRing R :=
+instance (priority := 100) : IsTopologicalRing R :=
   (toUniformSpace_eq R Γ₀).symm ▸ v.subgroups_basis.toRingFilterBasis.isTopologicalRing
 
 theorem cauchy_iff {F : Filter R} : Cauchy F ↔

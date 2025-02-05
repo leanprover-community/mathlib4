@@ -42,7 +42,7 @@ class NonarchimedeanGroup (G : Type*) [Group G] [TopologicalSpace G] extends Top
 
 /-- A topological ring is nonarchimedean if its underlying topological additive
   group is nonarchimedean. -/
-class NonarchimedeanRing (R : Type*) [Ring R] [TopologicalSpace R] extends TopologicalRing R :
+class NonarchimedeanRing (R : Type*) [Ring R] [TopologicalSpace R] extends IsTopologicalRing R :
   Prop where
   is_nonarchimedean : ∀ U ∈ 𝓝 (0 : R), ∃ V : OpenAddSubgroup R, (V : Set R) ⊆ U
 

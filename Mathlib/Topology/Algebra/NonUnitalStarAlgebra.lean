@@ -64,10 +64,10 @@ end Semiring
 section Ring
 
 variable {R A : Type*} [CommRing R] [TopologicalSpace A]
-variable [NonUnitalRing A] [Module R A] [Star A] [TopologicalRing A] [ContinuousStar A]
+variable [NonUnitalRing A] [Module R A] [Star A] [IsTopologicalRing A] [ContinuousStar A]
 variable [ContinuousConstSMul R A]
 
-instance instTopologicalRing (s : NonUnitalStarSubalgebra R A) : TopologicalRing s :=
+instance instTopologicalRing (s : NonUnitalStarSubalgebra R A) : IsTopologicalRing s :=
   s.toNonUnitalSubring.instTopologicalRing
 
 /-- If a non-unital star subalgebra of a non-unital topological star algebra is commutative, then
@@ -130,7 +130,7 @@ instance [T2Space A] {x : A} [IsStarNormal x] : NonUnitalCommSemiring (elemental
 
 instance {R A : Type*} [CommRing R] [StarRing R] [NonUnitalRing A] [StarRing A]
     [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]
-    [TopologicalSpace A] [TopologicalRing A] [ContinuousConstSMul R A] [ContinuousStar A]
+    [TopologicalSpace A] [IsTopologicalRing A] [ContinuousConstSMul R A] [ContinuousStar A]
     [T2Space A] {x : A} [IsStarNormal x] : NonUnitalCommRing (elemental R x) where
   mul_comm := mul_comm
 

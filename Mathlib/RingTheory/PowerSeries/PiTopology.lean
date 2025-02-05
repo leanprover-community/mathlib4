@@ -102,8 +102,8 @@ theorem instTopologicalSemiring [Semiring R] [TopologicalSemiring R] :
 
 /-- The ring topology on `PowerSeries` of a topological ring -/
 @[scoped instance]
-theorem instTopologicalRing [Ring R] [TopologicalRing R] :
-    TopologicalRing (PowerSeries R) :=
+theorem instTopologicalRing [Ring R] [IsTopologicalRing R] :
+    IsTopologicalRing (PowerSeries R) :=
   MvPowerSeries.WithPiTopology.instTopologicalRing Unit R
 
 end WithPiTopology

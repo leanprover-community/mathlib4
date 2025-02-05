@@ -17,7 +17,7 @@ compact space, this type has nice properties.
 ## TODO
 
 * Create more instances of algebraic structures (e.g., `NonUnitalSemiring`) once the necessary
-  type classes (e.g., `TopologicalRing`) are sufficiently generalized.
+  type classes (e.g., `IsTopologicalRing`) are sufficiently generalized.
 * Relate the unitization of `C₀(α, β)` to the Alexandroff compactification.
 -/
 
@@ -293,16 +293,16 @@ instance instNonUnitalCommSemiring [NonUnitalCommSemiring β] [TopologicalSemiri
     NonUnitalCommSemiring C₀(α, β) :=
   DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
 
-instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing β] [TopologicalRing β] :
+instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing β] [IsTopologicalRing β] :
     NonUnitalNonAssocRing C₀(α, β) :=
   DFunLike.coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => rfl) fun _ _ => rfl
 
-instance instNonUnitalRing [NonUnitalRing β] [TopologicalRing β] : NonUnitalRing C₀(α, β) :=
+instance instNonUnitalRing [NonUnitalRing β] [IsTopologicalRing β] : NonUnitalRing C₀(α, β) :=
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub (fun _ _ => rfl)
     fun _ _ => rfl
 
-instance instNonUnitalCommRing [NonUnitalCommRing β] [TopologicalRing β] :
+instance instNonUnitalCommRing [NonUnitalCommRing β] [IsTopologicalRing β] :
     NonUnitalCommRing C₀(α, β) :=
   DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => rfl) fun _ _ => rfl

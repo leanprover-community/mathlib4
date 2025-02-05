@@ -523,7 +523,7 @@ end Main
 section Neg
 
 variable {R A : Type*} {p : A → Prop} [CommRing R] [Nontrivial R] [StarRing R] [MetricSpace R]
-variable [TopologicalRing R] [ContinuousStar R] [TopologicalSpace A] [NonUnitalRing A] [StarRing A]
+variable [IsTopologicalRing R] [ContinuousStar R] [TopologicalSpace A] [NonUnitalRing A] [StarRing A]
 variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
 variable [NonUnitalContinuousFunctionalCalculus R p]
 variable (f g : R → R) (a : A)
@@ -634,7 +634,7 @@ end Semiring
 section Ring
 
 variable {R A : Type*} {p : A → Prop} [OrderedCommRing R] [Nontrivial R]
-variable [StarRing R] [MetricSpace R] [TopologicalRing R] [ContinuousStar R]
+variable [StarRing R] [MetricSpace R] [IsTopologicalRing R] [ContinuousStar R]
 variable [∀ (α) [Zero α] [TopologicalSpace α], StarOrderedRing C(α, R)₀]
 variable [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
 variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]

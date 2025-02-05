@@ -17,7 +17,7 @@ namespace ContinuousMap
 variable {α : Type*} [TopologicalSpace α]
 
 lemma starOrderedRing_of_sqrt {R : Type*} [PartialOrder R] [NonUnitalRing R] [StarRing R]
-    [StarOrderedRing R] [TopologicalSpace R] [ContinuousStar R] [TopologicalRing R]
+    [StarOrderedRing R] [TopologicalSpace R] [ContinuousStar R] [IsTopologicalRing R]
     (sqrt : R → R) (h_continuousOn : ContinuousOn sqrt {x : R | 0 ≤ x})
     (h_sqrt : ∀ x, 0 ≤ x → star (sqrt x) * sqrt x = x) : StarOrderedRing C(α, R) :=
   StarOrderedRing.of_nonneg_iff' add_le_add_left fun f ↦ by

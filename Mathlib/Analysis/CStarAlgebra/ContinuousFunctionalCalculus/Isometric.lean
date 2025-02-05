@@ -355,7 +355,7 @@ open NonUnitalIsometricContinuousFunctionalCalculus
 
 variable {R S A : Type*} {p q : A → Prop}
 variable [Semifield R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
-variable [Field S] [StarRing S] [MetricSpace S] [TopologicalRing S] [ContinuousStar S]
+variable [Field S] [StarRing S] [MetricSpace S] [IsTopologicalRing S] [ContinuousStar S]
 variable [NonUnitalRing A] [StarRing A] [Module S A] [IsScalarTower S A A]
 variable [SMulCommClass S A A]
 variable [Algebra R S] [Module R A] [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S]

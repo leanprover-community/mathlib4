@@ -834,7 +834,7 @@ end Inv
 section Neg
 
 variable {R A : Type*} {p : A → Prop} [CommRing R] [StarRing R] [MetricSpace R]
-variable [TopologicalRing R] [ContinuousStar R] [TopologicalSpace A]
+variable [IsTopologicalRing R] [ContinuousStar R] [TopologicalSpace A]
 variable [Ring A] [StarRing A] [Algebra R A] [ContinuousFunctionalCalculus R p]
 variable (f g : R → R) (a : A) (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
 variable (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac)
@@ -978,7 +978,7 @@ end NNReal
 section Ring
 
 variable {R A : Type*} {p : A → Prop} [OrderedCommRing R] [StarRing R]
-variable [MetricSpace R] [TopologicalRing R] [ContinuousStar R]
+variable [MetricSpace R] [IsTopologicalRing R] [ContinuousStar R]
 variable [∀ (α) [TopologicalSpace α], StarOrderedRing C(α, R)]
 variable [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
 variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R p]

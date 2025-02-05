@@ -60,10 +60,10 @@ end Semiring
 section Ring
 
 variable {R A : Type*} [CommRing R] [TopologicalSpace A]
-variable [NonUnitalRing A] [Module R A] [TopologicalRing A]
+variable [NonUnitalRing A] [Module R A] [IsTopologicalRing A]
 variable [ContinuousConstSMul R A]
 
-instance instTopologicalRing (s : NonUnitalSubalgebra R A) : TopologicalRing s :=
+instance instTopologicalRing (s : NonUnitalSubalgebra R A) : IsTopologicalRing s :=
   s.toNonUnitalSubring.instTopologicalRing
 
 /-- If a non-unital subalgebra of a non-unital topological algebra is commutative, then so is its
@@ -119,7 +119,7 @@ instance [T2Space A] {x : A} : NonUnitalCommSemiring (elemental R x) :=
 
 instance {R A : Type*} [CommRing R] [NonUnitalRing A]
     [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
-    [TopologicalSpace A] [TopologicalRing A] [ContinuousConstSMul R A]
+    [TopologicalSpace A] [IsTopologicalRing A] [ContinuousConstSMul R A]
     [T2Space A] {x : A} : NonUnitalCommRing (elemental R x) where
   mul_comm := mul_comm
 

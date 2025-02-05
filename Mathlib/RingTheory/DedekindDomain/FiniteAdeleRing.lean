@@ -54,11 +54,11 @@ instance : CommRing (FiniteIntegralAdeles R K) :=
 instance : TopologicalSpace (FiniteIntegralAdeles R K) :=
   inferInstanceAs (TopologicalSpace (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K))
 
-instance (v : HeightOneSpectrum R) : TopologicalRing (v.adicCompletionIntegers K) :=
+instance (v : HeightOneSpectrum R) : IsTopologicalRing (v.adicCompletionIntegers K) :=
   Subring.instTopologicalRing ..
 
-instance : TopologicalRing (FiniteIntegralAdeles R K) :=
-  inferInstanceAs (TopologicalRing (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K))
+instance : IsTopologicalRing (FiniteIntegralAdeles R K) :=
+  inferInstanceAs (IsTopologicalRing (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K))
 
 instance : Inhabited (FiniteIntegralAdeles R K) :=
   inferInstanceAs (Inhabited (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K))
@@ -70,7 +70,7 @@ local notation "R_hat" => FiniteIntegralAdeles
 /-- The product of all `adicCompletion`, where `v` runs over the maximal ideals of `R`. -/
 def ProdAdicCompletions :=
   ∀ v : HeightOneSpectrum R, v.adicCompletion K
--- deriving NonUnitalNonAssocRing, TopologicalSpace, TopologicalRing, CommRing, Inhabited
+-- deriving NonUnitalNonAssocRing, TopologicalSpace, IsTopologicalRing, CommRing, Inhabited
 
 section DerivedInstances
 
@@ -80,8 +80,8 @@ instance : NonUnitalNonAssocRing (ProdAdicCompletions R K) :=
 instance : TopologicalSpace (ProdAdicCompletions R K) :=
   inferInstanceAs (TopologicalSpace (∀ v : HeightOneSpectrum R, v.adicCompletion K))
 
-instance : TopologicalRing (ProdAdicCompletions R K) :=
-  inferInstanceAs (TopologicalRing (∀ v : HeightOneSpectrum R, v.adicCompletion K))
+instance : IsTopologicalRing (ProdAdicCompletions R K) :=
+  inferInstanceAs (IsTopologicalRing (∀ v : HeightOneSpectrum R, v.adicCompletion K))
 
 instance : CommRing (ProdAdicCompletions R K) :=
   inferInstanceAs (CommRing (∀ v : HeightOneSpectrum R, v.adicCompletion K))
@@ -453,7 +453,7 @@ instance : TopologicalSpace (FiniteAdeleRing R K) :=
   SubmodulesRingBasis.topology (submodulesRingBasis R K)
 
 -- the point of `submodulesRingBasis` above: this now works
-example : TopologicalRing (FiniteAdeleRing R K) := inferInstance
+example : IsTopologicalRing (FiniteAdeleRing R K) := inferInstance
 
 end Topology
 

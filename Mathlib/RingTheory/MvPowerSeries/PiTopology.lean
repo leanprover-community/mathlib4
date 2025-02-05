@@ -109,8 +109,8 @@ theorem instTopologicalSemiring [Semiring R] [TopologicalSemiring R] :
 
 /-- The ring topology on `MvPowerSeries` of a topological ring -/
 @[scoped instance]
-theorem instTopologicalRing [Ring R] [TopologicalRing R] :
-    TopologicalRing (MvPowerSeries σ R) :=
+theorem instTopologicalRing [Ring R] [IsTopologicalRing R] :
+    IsTopologicalRing (MvPowerSeries σ R) :=
   { instTopologicalSemiring σ R with
     continuous_neg := continuous_pi fun d ↦ Continuous.comp continuous_neg
       (continuous_coeff R d) }

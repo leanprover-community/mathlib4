@@ -74,7 +74,7 @@ namespace ContinuousMap
 
 open TopologicalSpace
 
-section TopologicalRing
+section IsTopologicalRing
 
 variable {X R : Type*} [TopologicalSpace X] [Semiring R]
 variable [TopologicalSpace R] [TopologicalSemiring R]
@@ -153,7 +153,7 @@ theorem ideal_gc : GaloisConnection (setOfIdeal : Ideal C(X, R) → Set X) (idea
     by_contra hx'
     exact not_mem_idealOfSet.mpr ⟨x, hx', hfx⟩ (h hf)
 
-end TopologicalRing
+end IsTopologicalRing
 
 section RCLike
 
@@ -380,7 +380,7 @@ variable (X 𝕜 : Type*) [TopologicalSpace X]
 
 section ContinuousMapEval
 
-variable [CommRing 𝕜] [TopologicalSpace 𝕜] [TopologicalRing 𝕜]
+variable [CommRing 𝕜] [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
 variable [Nontrivial 𝕜] [NoZeroDivisors 𝕜]
 
 /-- The natural continuous map from a locally compact topological space `X` to the

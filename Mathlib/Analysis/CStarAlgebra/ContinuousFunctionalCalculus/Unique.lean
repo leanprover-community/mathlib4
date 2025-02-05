@@ -103,9 +103,9 @@ variable {A : Type*} [Ring A] [StarRing A] [Algebra ℝ A]
 
 namespace StarAlgHom
 
-section TopologicalRing
+section IsTopologicalRing
 
-variable [TopologicalSpace A] [TopologicalRing A]
+variable [TopologicalSpace A] [IsTopologicalRing A]
 
 /-- Given a star `ℝ≥0`-algebra homomorphism `φ` from `C(X, ℝ≥0)` into an `ℝ`-algebra `A`, this is
 the unique extension of `φ` from `C(X, ℝ)` to `A` as a star `ℝ`-algebra homomorphism. -/
@@ -146,7 +146,7 @@ lemma continuous_realContinuousMapOfNNReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥0
   simp [realContinuousMapOfNNReal]
   fun_prop
 
-end TopologicalRing
+end IsTopologicalRing
 
 @[simp high]
 lemma realContinuousMapOfNNReal_apply_comp_toReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥0] A)
@@ -168,7 +168,7 @@ lemma realContinuousMapOfNNReal_injective :
 
 end StarAlgHom
 
-variable [TopologicalSpace A] [TopologicalRing A]
+variable [TopologicalSpace A] [IsTopologicalRing A]
 
 instance NNReal.instContinuousMap.UniqueHom [T2Space A] :
     ContinuousMap.UniqueHom ℝ≥0 A where
@@ -287,9 +287,9 @@ namespace NonUnitalStarAlgHom
 
 open ContinuousMapZero
 
-section TopologicalRing
+section IsTopologicalRing
 
-variable [TopologicalSpace A] [TopologicalRing A]
+variable [TopologicalSpace A] [IsTopologicalRing A]
 
 /-- Given a non-unital star `ℝ≥0`-algebra homomorphism `φ` from `C(X, ℝ≥0)₀` into a non-unital
 `ℝ`-algebra `A`, this is the unique extension of `φ` from `C(X, ℝ)₀` to `A` as a non-unital
@@ -332,7 +332,7 @@ lemma continuous_realContinuousMapZeroOfNNReal (φ : C(X, ℝ≥0)₀ →⋆ₙ�
   simp [realContinuousMapZeroOfNNReal]
   fun_prop
 
-end TopologicalRing
+end IsTopologicalRing
 
 @[simp high]
 lemma realContinuousMapZeroOfNNReal_apply_comp_toReal (φ : C(X, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] A)
@@ -358,7 +358,7 @@ end NonUnitalStarAlgHom
 open ContinuousMapZero
 
 instance NNReal.instContinuousMapZero.UniqueHom
-    [TopologicalSpace A] [TopologicalRing A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
+    [TopologicalSpace A] [IsTopologicalRing A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
     [T2Space A] :
     ContinuousMapZero.UniqueHom ℝ≥0 A where
   eq_of_continuous_of_map_id s hs _inst h0 φ ψ hφ hψ h := by

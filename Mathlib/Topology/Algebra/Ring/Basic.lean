@@ -38,7 +38,7 @@ We allow for non-unital and non-associative semirings as well.
 
 The `TopologicalSemiring` class should *only* be instantiated in the presence of a
 `NonUnitalNonAssocSemiring` instance; if there is an instance of `NonUnitalNonAssocRing`,
-then `TopologicalRing` should be used. Note: in the presence of `NonAssocRing`, these classes are
+then `IsTopologicalRing` should be used. Note: in the presence of `NonAssocRing`, these classes are
 mathematically equivalent (see `TopologicalSemiring.continuousNeg_of_mul` or
 `TopologicalSemiring.toTopologicalRing`). -/
 class TopologicalSemiring [TopologicalSpace α] [NonUnitalNonAssocSemiring α] extends
@@ -50,7 +50,7 @@ If `R` is a (unital) ring, then continuity of negation can be derived from conti
 multiplication as it is multiplication with `-1`. (See
 `TopologicalSemiring.continuousNeg_of_mul` and
 `topological_semiring.to_topological_add_group`) -/
-class TopologicalRing [TopologicalSpace α] [NonUnitalNonAssocRing α] extends TopologicalSemiring α,
+class IsTopologicalRing [TopologicalSpace α] [NonUnitalNonAssocRing α] extends TopologicalSemiring α,
   ContinuousNeg α : Prop
 
 variable {α}
@@ -66,18 +66,18 @@ theorem TopologicalSemiring.continuousNeg_of_mul [TopologicalSpace α] [NonAssoc
 ring. This exists so that one can place a topological ring structure on `R` without explicitly
 proving `continuous_neg`. -/
 theorem TopologicalSemiring.toTopologicalRing [TopologicalSpace α] [NonAssocRing α]
-    (_ : TopologicalSemiring α) : TopologicalRing α where
+    (_ : TopologicalSemiring α) : IsTopologicalRing α where
   toContinuousNeg := TopologicalSemiring.continuousNeg_of_mul
 
 -- See note [lower instance priority]
-instance (priority := 100) TopologicalRing.to_topologicalAddGroup [NonUnitalNonAssocRing α]
-    [TopologicalSpace α] [TopologicalRing α] : TopologicalAddGroup α := ⟨⟩
+instance (priority := 100) IsTopologicalRing.to_topologicalAddGroup [NonUnitalNonAssocRing α]
+    [TopologicalSpace α] [IsTopologicalRing α] : TopologicalAddGroup α := ⟨⟩
 
 instance (priority := 50) DiscreteTopology.topologicalSemiring [TopologicalSpace α]
     [NonUnitalNonAssocSemiring α] [DiscreteTopology α] : TopologicalSemiring α := ⟨⟩
 
 instance (priority := 50) DiscreteTopology.topologicalRing [TopologicalSpace α]
-    [NonUnitalNonAssocRing α] [DiscreteTopology α] : TopologicalRing α := ⟨⟩
+    [NonUnitalNonAssocRing α] [DiscreteTopology α] : IsTopologicalRing α := ⟨⟩
 
 section
 
@@ -178,8 +178,8 @@ instance [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] [Topologi
 
 /-- The product topology on the cartesian product of two topological rings
   makes the product into a topological ring. -/
-instance [NonUnitalNonAssocRing α] [NonUnitalNonAssocRing β] [TopologicalRing α]
-    [TopologicalRing β] : TopologicalRing (α × β) where
+instance [NonUnitalNonAssocRing α] [NonUnitalNonAssocRing β] [IsTopologicalRing α]
+    [IsTopologicalRing β] : IsTopologicalRing (α × β) where
 
 end
 
@@ -195,8 +195,8 @@ instance Pi.instTopologicalSemiring {β : Type*} {C : β → Type*} [∀ b, Topo
     TopologicalSemiring (∀ b, C b) where
 
 instance Pi.instTopologicalRing {β : Type*} {C : β → Type*} [∀ b, TopologicalSpace (C b)]
-    [∀ b, NonUnitalNonAssocRing (C b)] [∀ b, TopologicalRing (C b)] :
-    TopologicalRing (∀ b, C b) := ⟨⟩
+    [∀ b, NonUnitalNonAssocRing (C b)] [∀ b, IsTopologicalRing (C b)] :
+    IsTopologicalRing (∀ b, C b) := ⟨⟩
 
 section MulOpposite
 
@@ -212,8 +212,8 @@ instance [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [TopologicalSemiri
 instance [NonUnitalNonAssocRing α] [TopologicalSpace α] [ContinuousNeg α] : ContinuousNeg αᵐᵒᵖ :=
   opHomeomorph.symm.isInducing.continuousNeg fun _ => rfl
 
-instance [NonUnitalNonAssocRing α] [TopologicalSpace α] [TopologicalRing α] :
-    TopologicalRing αᵐᵒᵖ := ⟨⟩
+instance [NonUnitalNonAssocRing α] [TopologicalSpace α] [IsTopologicalRing α] :
+    IsTopologicalRing αᵐᵒᵖ := ⟨⟩
 
 end MulOpposite
 
@@ -228,8 +228,8 @@ instance [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [ContinuousMul α]
 instance [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [TopologicalSemiring α] :
     TopologicalSemiring αᵃᵒᵖ := ⟨⟩
 
-instance [NonUnitalNonAssocRing α] [TopologicalSpace α] [TopologicalRing α] :
-    TopologicalRing αᵃᵒᵖ := ⟨⟩
+instance [NonUnitalNonAssocRing α] [TopologicalSpace α] [IsTopologicalRing α] :
+    IsTopologicalRing αᵃᵒᵖ := ⟨⟩
 
 end AddOpposite
 
@@ -237,23 +237,23 @@ section
 
 variable {R : Type*} [NonUnitalNonAssocRing R] [TopologicalSpace R]
 
-theorem TopologicalRing.of_addGroup_of_nhds_zero [TopologicalAddGroup R]
+theorem IsTopologicalRing.of_addGroup_of_nhds_zero [TopologicalAddGroup R]
     (hmul : Tendsto (uncurry ((· * ·) : R → R → R)) (𝓝 0 ×ˢ 𝓝 0) <| 𝓝 0)
     (hmul_left : ∀ x₀ : R, Tendsto (fun x : R => x₀ * x) (𝓝 0) <| 𝓝 0)
-    (hmul_right : ∀ x₀ : R, Tendsto (fun x : R => x * x₀) (𝓝 0) <| 𝓝 0) : TopologicalRing R where
+    (hmul_right : ∀ x₀ : R, Tendsto (fun x : R => x * x₀) (𝓝 0) <| 𝓝 0) : IsTopologicalRing R where
   continuous_mul := by
     refine continuous_of_continuousAt_zero₂ (AddMonoidHom.mul (R := R)) ?_ ?_ ?_ <;>
       simpa only [ContinuousAt, mul_zero, zero_mul, nhds_prod_eq, AddMonoidHom.mul_apply]
 
-theorem TopologicalRing.of_nhds_zero
+theorem IsTopologicalRing.of_nhds_zero
     (hadd : Tendsto (uncurry ((· + ·) : R → R → R)) (𝓝 0 ×ˢ 𝓝 0) <| 𝓝 0)
     (hneg : Tendsto (fun x => -x : R → R) (𝓝 0) (𝓝 0))
     (hmul : Tendsto (uncurry ((· * ·) : R → R → R)) (𝓝 0 ×ˢ 𝓝 0) <| 𝓝 0)
     (hmul_left : ∀ x₀ : R, Tendsto (fun x : R => x₀ * x) (𝓝 0) <| 𝓝 0)
     (hmul_right : ∀ x₀ : R, Tendsto (fun x : R => x * x₀) (𝓝 0) <| 𝓝 0)
-    (hleft : ∀ x₀ : R, 𝓝 x₀ = map (fun x => x₀ + x) (𝓝 0)) : TopologicalRing R :=
+    (hleft : ∀ x₀ : R, 𝓝 x₀ = map (fun x => x₀ + x) (𝓝 0)) : IsTopologicalRing R :=
   have := TopologicalAddGroup.of_comm_of_nhds_zero hadd hneg hleft
-  TopologicalRing.of_addGroup_of_nhds_zero hmul hmul_left hmul_right
+  IsTopologicalRing.of_addGroup_of_nhds_zero hmul hmul_left hmul_right
 
 end
 
@@ -261,9 +261,9 @@ variable [TopologicalSpace α]
 
 section
 
-variable [NonUnitalNonAssocRing α] [TopologicalRing α]
+variable [NonUnitalNonAssocRing α] [IsTopologicalRing α]
 
-instance : TopologicalRing (ULift α) where
+instance : IsTopologicalRing (ULift α) where
 
 /-- In a topological semiring, the left-multiplication `AddMonoidHom` is continuous. -/
 theorem mulLeft_continuous (x : α) : Continuous (AddMonoidHom.mulLeft x) :=
@@ -277,9 +277,9 @@ end
 
 namespace NonUnitalSubring
 
-variable [NonUnitalRing α] [TopologicalRing α]
+variable [NonUnitalRing α] [IsTopologicalRing α]
 
-instance instTopologicalRing (S : NonUnitalSubring α) : TopologicalRing S :=
+instance instTopologicalRing (S : NonUnitalSubring α) : IsTopologicalRing S :=
   { S.toSubsemigroup.continuousMul, inferInstanceAs (TopologicalAddGroup S.toAddSubgroup) with }
 
 /-- The (topological) closure of a non-unital subring of a non-unital topological ring is
@@ -308,9 +308,9 @@ abbrev nonUnitalCommRingTopologicalClosure [T2Space α] (s : NonUnitalSubring α
 
 end NonUnitalSubring
 
-variable [Ring α] [TopologicalRing α]
+variable [Ring α] [IsTopologicalRing α]
 
-instance Subring.instTopologicalRing (S : Subring α) : TopologicalRing S :=
+instance Subring.instTopologicalRing (S : Subring α) : IsTopologicalRing S :=
   { S.toSubmonoid.continuousMul, inferInstanceAs (TopologicalAddGroup S.toAddSubgroup) with }
 
 instance Subring.continuousSMul (s : Subring α) (X) [TopologicalSpace X] [MulAction α X]
@@ -357,7 +357,7 @@ universe u v
 
 /-- A ring topology on a ring `α` is a topology for which addition, negation and multiplication
 are continuous. -/
-structure RingTopology (α : Type u) [Ring α] extends TopologicalSpace α, TopologicalRing α : Type u
+structure RingTopology (α : Type u) [Ring α] extends TopologicalSpace α, IsTopologicalRing α : Type u
 
 namespace RingTopology
 
@@ -420,7 +420,7 @@ theorem coinduced_continuous {α β : Type*} [t : TopologicalSpace α] [Ring β]
 def toAddGroupTopology (t : RingTopology α) : AddGroupTopology α where
   toTopologicalSpace := t.toTopologicalSpace
   toTopologicalAddGroup :=
-    @TopologicalRing.to_topologicalAddGroup _ _ t.toTopologicalSpace t.toTopologicalRing
+    @IsTopologicalRing.to_topologicalAddGroup _ _ t.toTopologicalSpace t.toTopologicalRing
 
 /-- The order embedding from ring topologies on `a` to additive group topologies on `a`. -/
 def toAddGroupTopology.orderEmbedding : OrderEmbedding (RingTopology α) (AddGroupTopology α) :=

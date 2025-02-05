@@ -573,7 +573,7 @@ an algebra homomorphism, and a separate homeomorphism,
 along with a witness that as functions they are the same.
 -/
 theorem Subalgebra.topologicalClosure_comap_homeomorph (s : Subalgebra R A) {B : Type*}
-    [TopologicalSpace B] [Ring B] [TopologicalRing B] [Algebra R B] (f : B →ₐ[R] A) (f' : B ≃ₜ A)
+    [TopologicalSpace B] [Ring B] [IsTopologicalRing B] [Algebra R B] (f : B →ₐ[R] A) (f' : B ≃ₜ A)
     (w : (f : B → A) = f') : s.topologicalClosure.comap f = (s.comap f).topologicalClosure := by
   apply SetLike.ext'
   simp only [Subalgebra.topologicalClosure_coe]
@@ -640,7 +640,7 @@ section Ring
 variable {R : Type*} [CommRing R]
 variable {A : Type u} [TopologicalSpace A]
 variable [Ring A]
-variable [Algebra R A] [TopologicalRing A]
+variable [Algebra R A] [IsTopologicalRing A]
 
 /-- If a subalgebra of a topological algebra is commutative, then so is its topological closure.
 See note [reducible non-instances]. -/

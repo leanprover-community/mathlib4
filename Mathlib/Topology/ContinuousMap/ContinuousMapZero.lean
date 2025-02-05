@@ -253,7 +253,7 @@ end Semiring
 section Ring
 
 variable {X R : Type*} [Zero X] [TopologicalSpace X]
-variable [CommRing R] [TopologicalSpace R] [TopologicalRing R]
+variable [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
 
 instance instSub : Sub C(X, R)₀ where
   sub f g := ⟨f - g, by simp⟩

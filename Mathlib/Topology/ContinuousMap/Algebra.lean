@@ -399,7 +399,7 @@ def continuousSubsemiring (α : Type*) (R : Type*) [TopologicalSpace α] [Topolo
 
 /-- The subring of continuous maps `α → β`. -/
 def continuousSubring (α : Type*) (R : Type*) [TopologicalSpace α] [TopologicalSpace R] [Ring R]
-    [TopologicalRing R] : Subring (α → R) :=
+    [IsTopologicalRing R] : Subring (α → R) :=
   { continuousAddSubgroup α R, continuousSubsemiring α R with }
 
 end Subtype
@@ -427,20 +427,20 @@ instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [
   coe_injective.semiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_pow coe_natCast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
-    [NonUnitalNonAssocRing β] [TopologicalRing β] : NonUnitalNonAssocRing C(α, β) :=
+    [NonUnitalNonAssocRing β] [IsTopologicalRing β] : NonUnitalNonAssocRing C(α, β) :=
   coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalRing β]
-    [TopologicalRing β] : NonUnitalRing C(α, β) :=
+    [IsTopologicalRing β] : NonUnitalRing C(α, β) :=
   coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonAssocRing β]
-    [TopologicalRing β] : NonAssocRing C(α, β) :=
+    [IsTopologicalRing β] : NonAssocRing C(α, β) :=
   coe_injective.nonAssocRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
     coe_natCast coe_intCast
 
 instance instRing {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Ring β]
-    [TopologicalRing β] : Ring C(α, β) :=
+    [IsTopologicalRing β] : Ring C(α, β) :=
   coe_injective.ring _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul coe_pow
     coe_natCast coe_intCast
 
@@ -453,11 +453,11 @@ instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [
   coe_injective.commSemiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_pow coe_natCast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalCommRing β]
-    [TopologicalRing β] : NonUnitalCommRing C(α, β) :=
+    [IsTopologicalRing β] : NonUnitalCommRing C(α, β) :=
   coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CommRing β]
-    [TopologicalRing β] : CommRing C(α, β) :=
+    [IsTopologicalRing β] : CommRing C(α, β) :=
   coe_injective.commRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
     coe_pow coe_natCast coe_intCast
 
@@ -465,7 +465,7 @@ instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [
     [NonUnitalSemiring β] [TopologicalSemiring β] : TopologicalSemiring C(α, β) where
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [LocallyCompactSpace α]
-    [NonUnitalRing β] [TopologicalRing β] : TopologicalRing C(α, β) where
+    [NonUnitalRing β] [IsTopologicalRing β] : IsTopologicalRing C(α, β) where
 
 /-- Composition on the left by a (continuous) homomorphism of topological semirings, as a
 `RingHom`.  Similar to `RingHom.compLeft`. -/
@@ -735,7 +735,7 @@ where the functions would be continuous functions vanishing at infinity.)
 def Set.SeparatesPointsStrongly (s : Set C(α, 𝕜)) : Prop :=
   ∀ (v : α → 𝕜) (x y : α), ∃ f ∈ s, (f x : 𝕜) = v x ∧ f y = v y
 
-variable [Field 𝕜] [TopologicalRing 𝕜]
+variable [Field 𝕜] [IsTopologicalRing 𝕜]
 
 /-- Working in continuous functions into a topological field,
 a subalgebra of functions that separates points also separates points strongly.

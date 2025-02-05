@@ -77,7 +77,7 @@ open Valued
     [BouAC, VI.5.1 middle of Proposition 1] -/
 instance (priority := 100) Valued.topologicalDivisionRing [Valued K Γ₀] :
     TopologicalDivisionRing K :=
-  { (by infer_instance : TopologicalRing K) with
+  { (by infer_instance : IsTopologicalRing K) with
     continuousAt_inv₀ := by
       intro x x_ne s s_in
       cases' Valued.mem_nhds.mp s_in with γ hs; clear s_in

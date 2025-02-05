@@ -143,7 +143,7 @@ def IsAdic [H : TopologicalSpace R] (J : Ideal R) : Prop :=
 
 /-- A topological ring is `J`-adic if and only if it admits the powers of `J` as a basis of
 open neighborhoods of zero. -/
-theorem isAdic_iff [top : TopologicalSpace R] [TopologicalRing R] {J : Ideal R} :
+theorem isAdic_iff [top : TopologicalSpace R] [IsTopologicalRing R] {J : Ideal R} :
     IsAdic J ↔
       (∀ n : ℕ, IsOpen ((J ^ n : Ideal R) : Set R)) ∧
         ∀ s ∈ 𝓝 (0 : R), ∃ n : ℕ, ((J ^ n : Ideal R) : Set R) ⊆ s := by
@@ -159,7 +159,7 @@ theorem isAdic_iff [top : TopologicalSpace R] [TopologicalRing R] {J : Ideal R} 
       simpa using J.hasBasis_nhds_zero_adic.mem_iff.mp hs
   · rintro ⟨H₁, H₂⟩
     apply TopologicalAddGroup.ext
-    · apply @TopologicalRing.to_topologicalAddGroup
+    · apply @IsTopologicalRing.to_topologicalAddGroup
     · apply (RingSubgroupsBasis.toRingFilterBasis _).toAddGroupFilterBasis.isTopologicalAddGroup
     · ext s
       letI := Ideal.adic_basis J
@@ -171,7 +171,7 @@ theorem isAdic_iff [top : TopologicalSpace R] [TopologicalRing R] {J : Ideal R} 
         rw [mem_nhds_iff]
         exact ⟨_, hn, H₁ n, (J ^ n).zero_mem⟩
 
-variable [TopologicalSpace R] [TopologicalRing R]
+variable [TopologicalSpace R] [IsTopologicalRing R]
 
 theorem is_ideal_adic_pow {J : Ideal R} (h : IsAdic J) {n : ℕ} (hn : 0 < n) : IsAdic (J ^ n) := by
   rw [isAdic_iff] at h ⊢
@@ -190,7 +190,7 @@ theorem is_ideal_adic_pow {J : Ideal R} (h : IsAdic J) {n : ℕ} (hn : 0 < n) : 
     apply Ideal.pow_le_pow_right
     apply Nat.le_add_left
 
-theorem is_bot_adic_iff {A : Type*} [CommRing A] [TopologicalSpace A] [TopologicalRing A] :
+theorem is_bot_adic_iff {A : Type*} [CommRing A] [TopologicalSpace A] [IsTopologicalRing A] :
     IsAdic (⊥ : Ideal A) ↔ DiscreteTopology A := by
   rw [isAdic_iff]
   constructor
@@ -238,7 +238,7 @@ chaining.
 -/
 example : NonarchimedeanRing R := by infer_instance
 
-example : TopologicalRing (UniformSpace.Completion R) := by infer_instance
+example : IsTopologicalRing (UniformSpace.Completion R) := by infer_instance
 
 example (M : Type*) [AddCommGroup M] [Module R M] :
     @TopologicalAddGroup M (WithIdeal.topologicalSpaceModule R M) _ := by infer_instance

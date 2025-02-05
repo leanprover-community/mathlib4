@@ -358,7 +358,7 @@ end Submodule
 namespace Ideal
 
 variable {R : Type*} [CommRing R]
-variable [TopologicalSpace R] [TopologicalRing R]
+variable [TopologicalSpace R] [IsTopologicalRing R]
 
 theorem isOpen_of_isOpen_subideal {U I : Ideal R} (h : U ≤ I) (hU : IsOpen (U : Set R)) :
     IsOpen (I : Set R) :=
