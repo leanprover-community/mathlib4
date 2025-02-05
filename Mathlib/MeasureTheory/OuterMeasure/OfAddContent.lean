@@ -47,7 +47,7 @@ variable {α : Type*} {C : Set (Set α)} {s : Set α}
 /-- For `m : AddContent C` sigma-sub-aditive, finite on `C`, the `OuterMeasure` given by `m`
 coincides with `m` on `C`. -/
 theorem ofFunction_eq (hC : IsSetSemiring C) (m : AddContent C)
-    (m_sigma_subadd : m.isSigmaSubadditive) (m_top : ∀ s ∉ C, m s = ∞) (hs : s ∈ C) :
+    (m_sigma_subadd : m.IsSigmaSubadditive) (m_top : ∀ s ∉ C, m s = ∞) (hs : s ∈ C) :
     OuterMeasure.ofFunction m addContent_empty s = m s := by
   refine le_antisymm (OuterMeasure.ofFunction_le s) ?_
   rw [OuterMeasure.ofFunction_eq_iInf_mem _ _ m_top]
@@ -64,7 +64,7 @@ theorem ofFunction_eq (hC : IsSetSemiring C) (m : AddContent C)
 /-- For `m : AddContent C` sigma-sub-additive, finite on `C`, the `inducedOuterMeasure` given by `m`
 coincides with `m` on `C`. -/
 theorem inducedOuterMeasure_eq (hC : IsSetSemiring C) (m : AddContent C)
-    (m_sigma_subadd : m.isSigmaSubadditive) (hs : s ∈ C) :
+    (m_sigma_subadd : m.IsSigmaSubadditive) (hs : s ∈ C) :
     inducedOuterMeasure (fun x _ ↦ m x) hC.empty_mem addContent_empty s = m s := by
   suffices inducedOuterMeasure (fun x _ ↦ m x) hC.empty_mem addContent_empty s = m.extend hC s by
     rwa [m.extend_eq hC hs] at this
@@ -128,7 +128,7 @@ theorem isCaratheodory_inducedOuterMeasure (hC : IsSetSemiring C) (m : AddConten
 /-- Construct a measure from a sigma-subadditive function on a semiring. This
 measure is defined on the associated Carathéodory sigma-algebra. -/
 noncomputable def measureCaratheodory (m : AddContent C) (hC : IsSetSemiring C)
-    (m_sigma_subadd : m.isSigmaSubadditive) :
+    (m_sigma_subadd : m.IsSigmaSubadditive) :
     @Measure α (inducedOuterMeasure (fun x _ ↦ m x) hC.empty_mem addContent_empty).caratheodory :=
   letI : MeasurableSpace α :=
     (inducedOuterMeasure (fun x _ ↦ m x) hC.empty_mem addContent_empty).caratheodory
@@ -145,25 +145,25 @@ noncomputable def measureCaratheodory (m : AddContent C) (hC : IsSetSemiring C)
 /-- The measure `MeasureTheory.AddContent.measureCaratheodory` generated from an
 `m : AddContent C` on a `IsSetSemiring C` coincides with the `MeasureTheory.inducedOuterMeasure`. -/
 theorem measureCaratheodory_eq_inducedOuterMeasure (hC : IsSetSemiring C) (m : AddContent C)
-    (m_sigma_subadd : m.isSigmaSubadditive) :
+    (m_sigma_subadd : m.IsSigmaSubadditive) :
     m.measureCaratheodory hC m_sigma_subadd s
       = inducedOuterMeasure (fun x _ ↦ m x) hC.empty_mem addContent_empty s := rfl
 
 theorem measureCaratheodory_eq (m : AddContent C) (hC : IsSetSemiring C)
-    (m_sigma_subadd : m.isSigmaSubadditive) (hs : s ∈ C) :
+    (m_sigma_subadd : m.IsSigmaSubadditive) (hs : s ∈ C) :
     m.measureCaratheodory hC m_sigma_subadd s = m s :=
   m.inducedOuterMeasure_eq hC m_sigma_subadd hs
 
 /-- Construct a measure from a sigma-subadditive content on a semiring, assuming the semiring
 generates a given measurable structure. The measure is defined on this measurable structure. -/
 noncomputable def measure [mα : MeasurableSpace α] (m : AddContent C) (hC : IsSetSemiring C)
-    (hC_gen : MeasurableSpace.generateFrom C = mα) (m_sigma_subadd : m.isSigmaSubadditive) :
+    (hC_gen : MeasurableSpace.generateFrom C = mα) (m_sigma_subadd : m.IsSigmaSubadditive) :
     Measure α :=
   (m.measureCaratheodory hC m_sigma_subadd).trim
     (by rw [← hC_gen]; exact isCaratheodory_inducedOuterMeasure hC m)
 
 theorem measure_eq [mα : MeasurableSpace α] (m : AddContent C) (hC : IsSetSemiring C)
-    (hC_gen : MeasurableSpace.generateFrom C = mα) (m_sigma_subadd : m.isSigmaSubadditive)
+    (hC_gen : MeasurableSpace.generateFrom C = mα) (m_sigma_subadd : m.IsSigmaSubadditive)
     (hs : s ∈ C) :
     m.measure hC hC_gen m_sigma_subadd s = m s := by
   rw [measure, trim_measurableSet_eq]
