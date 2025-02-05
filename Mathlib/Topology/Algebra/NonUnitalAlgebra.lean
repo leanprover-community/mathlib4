@@ -28,8 +28,8 @@ variable {R A : Type*} [CommSemiring R] [TopologicalSpace A]
 variable [NonUnitalSemiring A] [Module R A] [IsTopologicalSemiring A]
 variable [ContinuousConstSMul R A]
 
-instance instTopologicalSemiring (s : NonUnitalSubalgebra R A) : IsTopologicalSemiring s :=
-  s.toNonUnitalSubsemiring.instTopologicalSemiring
+instance instIsTopologicalSemiring (s : NonUnitalSubalgebra R A) : IsTopologicalSemiring s :=
+  s.toNonUnitalSubsemiring.instIsTopologicalSemiring
 
 /-- The (topological) closure of a non-unital subalgebra of a non-unital topological algebra is
 itself a non-unital subalgebra. -/
@@ -63,8 +63,8 @@ variable {R A : Type*} [CommRing R] [TopologicalSpace A]
 variable [NonUnitalRing A] [Module R A] [IsTopologicalRing A]
 variable [ContinuousConstSMul R A]
 
-instance instTopologicalRing (s : NonUnitalSubalgebra R A) : IsTopologicalRing s :=
-  s.toNonUnitalSubring.instTopologicalRing
+instance instIsTopologicalRing (s : NonUnitalSubalgebra R A) : IsTopologicalRing s :=
+  s.toNonUnitalSubring.instIsTopologicalRing
 
 /-- If a non-unital subalgebra of a non-unital topological algebra is commutative, then so is its
 topological closure.

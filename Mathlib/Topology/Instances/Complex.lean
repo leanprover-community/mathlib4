@@ -50,7 +50,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
     (hc : UniformContinuous ψ) : ψ.toFun = K.subtype ∨ ψ.toFun = conj ∘ K.subtype := by
   letI : TopologicalDivisionRing ℂ := TopologicalDivisionRing.mk
   letI : IsTopologicalRing K.topologicalClosure :=
-    Subring.instTopologicalRing K.topologicalClosure.toSubring
+    Subring.instIsTopologicalRing K.topologicalClosure.toSubring
   set ι : K → K.topologicalClosure := ⇑(Subfield.inclusion K.le_topologicalClosure)
   have ui : IsUniformInducing ι :=
     ⟨by

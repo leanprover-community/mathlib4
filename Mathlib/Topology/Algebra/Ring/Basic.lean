@@ -85,7 +85,7 @@ namespace NonUnitalSubsemiring
 
 variable [TopologicalSpace α] [NonUnitalSemiring α] [IsTopologicalSemiring α]
 
-instance instTopologicalSemiring (S : NonUnitalSubsemiring α) : IsTopologicalSemiring S :=
+instance instIsTopologicalSemiring (S : NonUnitalSubsemiring α) : IsTopologicalSemiring S :=
   { S.toSubsemigroup.continuousMul, S.toAddSubmonoid.continuousAdd with }
 
 /-- The (topological) closure of a non-unital subsemiring of a non-unital topological semiring is
@@ -184,17 +184,17 @@ instance [NonUnitalNonAssocRing α] [NonUnitalNonAssocRing β] [IsTopologicalRin
 end
 
 #adaptation_note /-- nightly-2024-04-08
-needed to help `Pi.instTopologicalSemiring` -/
+needed to help `Pi.instIsTopologicalSemiring` -/
 instance {β : Type*} {C : β → Type*} [∀ b, TopologicalSpace (C b)]
     [∀ b, NonUnitalNonAssocSemiring (C b)] [∀ b, IsTopologicalSemiring (C b)] :
     ContinuousAdd ((b : β) → C b) :=
   inferInstance
 
-instance Pi.instTopologicalSemiring {β : Type*} {C : β → Type*} [∀ b, TopologicalSpace (C b)]
+instance Pi.instIsTopologicalSemiring {β : Type*} {C : β → Type*} [∀ b, TopologicalSpace (C b)]
     [∀ b, NonUnitalNonAssocSemiring (C b)] [∀ b, IsTopologicalSemiring (C b)] :
     IsTopologicalSemiring (∀ b, C b) where
 
-instance Pi.instTopologicalRing {β : Type*} {C : β → Type*} [∀ b, TopologicalSpace (C b)]
+instance Pi.instIsTopologicalRing {β : Type*} {C : β → Type*} [∀ b, TopologicalSpace (C b)]
     [∀ b, NonUnitalNonAssocRing (C b)] [∀ b, IsTopologicalRing (C b)] :
     IsTopologicalRing (∀ b, C b) := ⟨⟩
 
@@ -279,7 +279,7 @@ namespace NonUnitalSubring
 
 variable [NonUnitalRing α] [IsTopologicalRing α]
 
-instance instTopologicalRing (S : NonUnitalSubring α) : IsTopologicalRing S :=
+instance instIsTopologicalRing (S : NonUnitalSubring α) : IsTopologicalRing S :=
   { S.toSubsemigroup.continuousMul, inferInstanceAs (TopologicalAddGroup S.toAddSubgroup) with }
 
 /-- The (topological) closure of a non-unital subring of a non-unital topological ring is
@@ -310,7 +310,7 @@ end NonUnitalSubring
 
 variable [Ring α] [IsTopologicalRing α]
 
-instance Subring.instTopologicalRing (S : Subring α) : IsTopologicalRing S :=
+instance Subring.instIsTopologicalRing (S : Subring α) : IsTopologicalRing S :=
   { S.toSubmonoid.continuousMul, inferInstanceAs (TopologicalAddGroup S.toAddSubgroup) with }
 
 instance Subring.continuousSMul (s : Subring α) (X) [TopologicalSpace X] [MulAction α X]

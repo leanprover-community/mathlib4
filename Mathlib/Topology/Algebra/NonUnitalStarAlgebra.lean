@@ -30,8 +30,8 @@ variable {R A : Type*} [CommSemiring R] [TopologicalSpace A] [Star A]
 variable [NonUnitalSemiring A] [Module R A] [IsTopologicalSemiring A] [ContinuousStar A]
 variable [ContinuousConstSMul R A]
 
-instance instTopologicalSemiring (s : NonUnitalStarSubalgebra R A) : IsTopologicalSemiring s :=
-  s.toNonUnitalSubalgebra.instTopologicalSemiring
+instance instIsTopologicalSemiring (s : NonUnitalStarSubalgebra R A) : IsTopologicalSemiring s :=
+  s.toNonUnitalSubalgebra.instIsTopologicalSemiring
 
 /-- The (topological) closure of a non-unital star subalgebra of a non-unital topological star
 algebra is itself a non-unital star subalgebra. -/
@@ -67,8 +67,8 @@ variable {R A : Type*} [CommRing R] [TopologicalSpace A]
 variable [NonUnitalRing A] [Module R A] [Star A] [IsTopologicalRing A] [ContinuousStar A]
 variable [ContinuousConstSMul R A]
 
-instance instTopologicalRing (s : NonUnitalStarSubalgebra R A) : IsTopologicalRing s :=
-  s.toNonUnitalSubring.instTopologicalRing
+instance instIsTopologicalRing (s : NonUnitalStarSubalgebra R A) : IsTopologicalRing s :=
+  s.toNonUnitalSubring.instIsTopologicalRing
 
 /-- If a non-unital star subalgebra of a non-unital topological star algebra is commutative, then
 so is its topological closure.

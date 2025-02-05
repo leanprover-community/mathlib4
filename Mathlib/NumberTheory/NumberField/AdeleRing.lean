@@ -62,7 +62,7 @@ instance [NumberField K] : Nontrivial (InfiniteAdeleRing K) :=
 
 instance : TopologicalSpace (InfiniteAdeleRing K) := Pi.topologicalSpace
 
-instance : IsTopologicalRing (InfiniteAdeleRing K) := Pi.instTopologicalRing
+instance : IsTopologicalRing (InfiniteAdeleRing K) := Pi.instIsTopologicalRing
 
 instance : Algebra K (InfiniteAdeleRing K) := Pi.algebra _ _
 

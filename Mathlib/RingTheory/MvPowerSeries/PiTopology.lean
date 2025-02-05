@@ -99,7 +99,7 @@ variable (σ R)
 
 /-- The semiring topology on `MvPowerSeries` of a topological semiring -/
 @[scoped instance]
-theorem instTopologicalSemiring [Semiring R] [IsTopologicalSemiring R] :
+theorem instIsTopologicalSemiring [Semiring R] [IsTopologicalSemiring R] :
     IsTopologicalSemiring (MvPowerSeries σ R) where
     continuous_add := continuous_pi fun d => continuous_add.comp
       (((continuous_coeff R d).fst').prod_mk (continuous_coeff R d).snd')
@@ -109,9 +109,9 @@ theorem instTopologicalSemiring [Semiring R] [IsTopologicalSemiring R] :
 
 /-- The ring topology on `MvPowerSeries` of a topological ring -/
 @[scoped instance]
-theorem instTopologicalRing [Ring R] [IsTopologicalRing R] :
+theorem instIsTopologicalRing [Ring R] [IsTopologicalRing R] :
     IsTopologicalRing (MvPowerSeries σ R) :=
-  { instTopologicalSemiring σ R with
+  { instIsTopologicalSemiring σ R with
     continuous_neg := continuous_pi fun d ↦ Continuous.comp continuous_neg
       (continuous_coeff R d) }
 

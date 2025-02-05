@@ -55,7 +55,7 @@ instance : TopologicalSpace (FiniteIntegralAdeles R K) :=
   inferInstanceAs (TopologicalSpace (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K))
 
 instance (v : HeightOneSpectrum R) : IsTopologicalRing (v.adicCompletionIntegers K) :=
-  Subring.instTopologicalRing ..
+  Subring.instIsTopologicalRing ..
 
 instance : IsTopologicalRing (FiniteIntegralAdeles R K) :=
   inferInstanceAs (IsTopologicalRing (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K))
