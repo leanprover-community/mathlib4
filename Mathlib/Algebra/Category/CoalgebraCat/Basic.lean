@@ -75,6 +75,7 @@ instance concreteCategory : ConcreteCategory (CoalgebraCat.{v} R) (· →ₗc[R]
   hom f := f.toCoalgHom'
   ofHom f := ⟨f⟩
 
+/-- Turn a morphism in `CoalgebraCat` back into a `CoalgHom`. -/
 abbrev Hom.toCoalgHom {X Y : CoalgebraCat.{v} R} (f : Hom X Y) : X →ₗc[R] Y :=
   ConcreteCategory.hom (C := CoalgebraCat.{v} R) f
 
