@@ -386,7 +386,7 @@ noncomputable def CategoryTheory.Nerve.strictSegal
     · refine ComposableArrows.ext₁ ?_ ?_ ?_
       · exact Functor.congr_obj (F.arrow_src i).symm 0
       · exact Functor.congr_obj (F.arrow_tgt i).symm 0
-      · dsimp [truncation, SimplicialObject.truncation]
+      · dsimp
         apply ComposableArrows.mkOfObjOfMapSucc_map_succ
   spineToSimplex_spine n := by
     ext F

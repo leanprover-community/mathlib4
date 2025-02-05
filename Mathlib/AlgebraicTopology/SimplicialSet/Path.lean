@@ -224,19 +224,21 @@ lemma ext' {f g : Path X (n + 1)} (h : ∀ i, f.arrow i = g.arrow i) : f = g :=
 
 /-- For `j + l ≤ n`, a path of length `n` restricts to a path of length `l`, namely
 the subpath spanned by the vertices `j ≤ i ≤ j + l` and edges `j ≤ i < j + l`. -/
-abbrev interval (f : Path X n) (j l : ℕ) (h : j + l ≤ n := by omega) : Path X l :=
+def interval (f : Path X n) (j l : ℕ) (h : j + l ≤ n := by omega) : Path X l :=
   Truncated.Path.interval f j l h
 
 variable {X Y : SSet.{u}} {n : ℕ}
 
 /-- Maps of simplicial sets induce maps of paths in a simplicial set. -/
-abbrev map (f : Path X n) (σ : X ⟶ Y) : Path Y n :=
+def map (f : Path X n) (σ : X ⟶ Y) : Path Y n :=
   Truncated.Path.map f ((truncation 1).map σ)
 
+@[simp]
 lemma map_vertex (f : Path X n) (σ : X ⟶ Y) (i : Fin (n + 1)) :
     (f.map σ).vertex i = σ.app (op [0]) (f.vertex i) :=
   rfl
 
+@[simp]
 lemma map_arrow (f : Path X n) (σ : X ⟶ Y) (i : Fin n) :
     (f.map σ).arrow i = σ.app (op [1]) (f.arrow i) :=
   rfl
@@ -254,13 +256,15 @@ variable (X : SSet.{u}) (n : ℕ)
 
 /-- The spine of an `n`-simplex in `X` is the path of edges of length `n` formed
 by traversing in order through the vertices of `X _[n]ₙ₊₁`. -/
-abbrev spine : X _[n] → Path X n :=
+def spine : X _[n] → Path X n :=
   truncation (n + 1) |>.obj X |>.spine n
 
+@[simp]
 lemma spine_vertex (Δ : X _[n]) (i : Fin (n + 1)) :
     (X.spine n Δ).vertex i = X.map (SimplexCategory.const [0] [n] i).op Δ :=
   rfl
 
+@[simp]
 lemma spine_arrow (Δ : X _[n]) (i : Fin n) :
     (X.spine n Δ).arrow i = X.map (mkOfSucc i).op Δ :=
   rfl
