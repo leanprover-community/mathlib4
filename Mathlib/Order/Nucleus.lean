@@ -113,25 +113,28 @@ instance : BoundedOrder (Nucleus X) where
 
 variable {s : Set (Nucleus X)}
 
-def sInf_fun_idempotent : ∀ (x : X), sInf {x_1 | ∃ j ∈ s, j (sInf {x_2 | ∃ j ∈ s, j x = x_2}) = x_1}
-    ≤ sInf {x_1 | ∃ j ∈ s, j x = x_1} := by
+def sInf_fun (s : Set (Nucleus X)) (x : X) := sInf {j x | j ∈ s}
+
+def sInf_fun_increasing : ∀ (x : X), x ≤ sInf_fun s x := by
+  simp [sInf_fun, le_apply]
+
+def sInf_fun_idempotent : ∀ (x : X), sInf_fun s (sInf_fun s x) ≤ sInf_fun s x := by
   intro x
-  simp only [le_sInf_iff, Set.mem_setOf_eq, sInf_le_iff, lowerBounds, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂]
+  simp only [sInf_fun, le_sInf_iff, Set.mem_setOf_eq, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂, sInf_le_iff, lowerBounds]
   intro a ha b h
   rw [← idempotent]
   apply le_trans (h a ha)
   refine OrderHomClass.GCongr.mono a ?_
   simp_all [sInf_le_iff, lowerBounds]
 
-def sInf_preserves_inf :  ∀ (a b : X), sInf {x | ∃ j ∈ s, j a ⊓ j b = x} =
-    sInf {x | ∃ j ∈ s, j a = x} ⊓ sInf {x | ∃ j ∈ s, j b = x} := by
+def sInf_preserves_inf : ∀ (x y : X), sInf_fun s (x ⊓ y) = sInf_fun s x ⊓ sInf_fun s y := by
+  simp only [sInf_fun, InfHomClass.map_inf]
   intro x y
   apply le_antisymm
   · simp_all only [le_inf_iff, le_sInf_iff, Set.mem_setOf_eq, sInf_le_iff, lowerBounds,
     forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, implies_true, and_self]
-  · simp only [le_sInf_iff, Set.mem_setOf_eq, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂, le_inf_iff]
+  · simp [le_sInf_iff]
     intro a ha
     apply And.intro
     · apply inf_le_of_left_le
@@ -140,11 +143,6 @@ def sInf_preserves_inf :  ∀ (a b : X), sInf {x | ∃ j ∈ s, j a ⊓ j b = x}
       simp_all [sInf_le_iff, lowerBounds]
 
 instance : InfSet (Nucleus X) where
-  sInf s := {
-    toFun x := sInf {j x | j ∈ s}
-    le_apply' x := (by simp [le_apply])
-    idempotent' := sInf_fun_idempotent
-    map_inf'  := (by simp; exact sInf_preserves_inf)
-  }
+  sInf s := ⟨⟨sInf_fun s, sInf_preserves_inf⟩, sInf_fun_idempotent, sInf_fun_increasing⟩
 
 end Nucleus
