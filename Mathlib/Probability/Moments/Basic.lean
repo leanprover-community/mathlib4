@@ -201,6 +201,9 @@ lemma mgf_id_map (hX : AEMeasurable X μ) : mgf id (μ.map X) = mgf X μ := by
   · rfl
   · exact (measurable_const_mul _).exp.aestronglyMeasurable
 
+lemma mgf_congr {Y : Ω → ℝ} (h : X =ᵐ[μ] Y) : mgf X μ t = mgf Y μ t :=
+  integral_congr_ae <| by filter_upwards [h] with ω hω using by rw [hω]
+
 lemma mgf_congr_identDistrib {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ' : Measure Ω'}
     {Y : Ω' → ℝ} (h : IdentDistrib X Y μ μ') :
     mgf X μ = mgf Y μ' := by
