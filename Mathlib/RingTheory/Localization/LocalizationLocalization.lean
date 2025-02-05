@@ -174,6 +174,20 @@ theorem localization_isScalarTower_of_submonoid_le (M N : Submonoid R) (h : M �
   letI := localizationAlgebraOfSubmonoidLe S T M N h
   IsScalarTower.of_algebraMap_eq' (IsLocalization.lift_comp _).symm
 
+theorem localization_localization_isScalarTower (Rₚ Sₚ K L : Type*) [CommRing Rₚ]
+    [Algebra R Rₚ] [CommRing Sₚ] [Algebra S Sₚ] [Algebra R Sₚ] [Algebra Rₚ Sₚ]
+    [IsScalarTower R Rₚ Sₚ] [IsScalarTower R S Sₚ] [CommRing K] [Algebra R K] [CommRing L]
+    [Algebra S L] [Algebra Rₚ K] [Algebra Sₚ L] [Algebra K L] [IsScalarTower S Sₚ L] [Algebra Rₚ L]
+    [IsScalarTower Rₚ K L] [IsScalarTower R Rₚ K] [Algebra R L] [IsScalarTower R K L]
+    [IsScalarTower R S L] (M : Submonoid R) [IsLocalization M Rₚ] :
+    IsScalarTower Rₚ Sₚ L := by
+  apply IsScalarTower.of_algebraMap_eq'
+  apply IsLocalization.ringHom_ext M
+  rw [RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq R Rₚ Sₚ, IsScalarTower.algebraMap_eq R S Sₚ,
+    ← RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq S Sₚ L, IsScalarTower.algebraMap_eq Rₚ K L,
+    RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq,
+    ← IsScalarTower.algebraMap_eq]
+
 noncomputable instance (x : Ideal R) [H : x.IsPrime] [IsDomain R] :
     Algebra (Localization.AtPrime x) (Localization (nonZeroDivisors R)) :=
   localizationAlgebraOfSubmonoidLe _ _ x.primeCompl (nonZeroDivisors R)
