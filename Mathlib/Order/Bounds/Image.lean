@@ -467,12 +467,6 @@ theorem isGLB_prod {s : Set (α × β)} (p : α × β) :
 
 variable {γ : Type*} [Preorder γ]
 
-omit [Preorder α] [Preorder β] in
-lemma Prod.upperBounds1 {f : α × β → γ} {d : Set (α × β)} :
-    upperBounds (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) ⊆ upperBounds (f '' d) :=
-  upperBounds_mono_set (image_mono (subset_fst_image_times_snd_image d))
-
-
 lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
     {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
     upperBounds (f '' d) = upperBounds (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := by
@@ -480,14 +474,11 @@ lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
   · intro u hu c hc
     simp at hc
     obtain ⟨a₁, ⟨b₁,⟨⟨⟨b₂,hb₂⟩,⟨a₂,ha₂⟩⟩, right⟩⟩⟩ := hc
-    --have e1: hd _ hb₂ _ ha₂
     obtain ⟨⟨a₃,b₃⟩,hm⟩ := hd _ hb₂ _ ha₂
     have e1 : (a₁,b₁) ≤ (a₃,b₃) := by simp_all [mk_le_mk]
     rw [← right]
-    apply le_trans (hf e1) (hu _)
-    use (a₃, b₃)
-    exact And.imp_right (fun _ ↦ rfl) hm
-  · exact Prod.upperBounds1
+    exact le_trans (hf e1) (hu ⟨(a₃, b₃), And.imp_right (fun _ ↦ rfl) hm⟩)
+  · exact upperBounds_mono_set (image_mono (subset_fst_image_times_snd_image d))
 
 -- c.f. isLUB_prod
 -- theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
