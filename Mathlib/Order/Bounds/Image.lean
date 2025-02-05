@@ -474,6 +474,18 @@ lemma upperBounds_eq_ofSubset {s₁ s₂ : Set α} (hs₁ : s₁ ⊆ s₂) (hs�
     exact le_trans he₂ (hc he₁))
   (upperBounds_mono_set hs₁)
 
+lemma Monotone.upperBounds_image_eq_ofSubset {f : α → β} (hf : Monotone f) {s₁ s₂ : Set α}
+    (hs₁ : s₁ ⊆ s₂) (hs₂ : ∀ a ∈ s₂, ∃ b ∈ s₁, a ≤ b) :
+    upperBounds (f '' s₁) = upperBounds (f '' s₂) := by
+  apply upperBounds_eq_ofSubset (image_mono hs₁)
+  intro a ha
+  obtain ⟨c,hc⟩ := ha
+  obtain ⟨d,hd⟩ := hs₂ c hc.1
+  use f d
+  constructor
+  · exact (mem_image _ _ _).mpr ⟨d,⟨hd.1,rfl⟩⟩
+  · exact le_of_eq_of_le hc.2.symm (hf hd.2)
+
 lemma directed_product {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
     ∀ p ∈ (Prod.fst '' d) ×ˢ (Prod.snd '' d), ∃ q ∈ d, p ≤ q := by
   intro ⟨p₁, p₂⟩ hp
@@ -484,12 +496,8 @@ lemma directed_product {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
 
 lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
     {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
-    upperBounds (f '' d) = upperBounds (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := by
-  apply upperBounds_eq_ofSubset (image_mono (subset_fst_image_times_snd_image d))
-  intro c ⟨x,⟨hx1, hx2⟩⟩
-  obtain ⟨q,hq⟩ := directed_product hd x hx1
-  exact ⟨(f q), ⟨⟨q,And.symm (And.imp_left (fun a ↦ rfl) (id (And.symm hq)))⟩,
-    le_of_eq_of_le hx2.symm (hf hq.2)⟩⟩
+    upperBounds (f '' d) = upperBounds (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) :=
+  hf.upperBounds_image_eq_ofSubset (subset_fst_image_times_snd_image d) (directed_product hd)
 
 lemma Prod.IsLub {f : α × β → γ} (hf : Monotone f)
     {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) (u : γ) :
