@@ -45,6 +45,7 @@ theorem isMaximal_iff {I : Ideal R} : I.IsMaximal ↔ I = maximalIdeal R where
 
 theorem maximal_ideal_unique : ∃! I : Ideal R, I.IsMaximal := by
   simp [isMaximal_iff]
+
 variable {R}
 
 theorem eq_maximalIdeal {I : Ideal R} (hI : I.IsMaximal) : I = maximalIdeal R :=
