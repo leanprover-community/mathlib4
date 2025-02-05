@@ -475,9 +475,8 @@ lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
     simp at hc
     obtain ⟨a₁, ⟨b₁,⟨⟨⟨b₂,hb₂⟩,⟨a₂,ha₂⟩⟩, right⟩⟩⟩ := hc
     obtain ⟨⟨a₃,b₃⟩,hm⟩ := hd _ hb₂ _ ha₂
-    have e1 : (a₁,b₁) ≤ (a₃,b₃) := by simp_all [mk_le_mk]
     rw [← right]
-    exact le_trans (hf e1) (hu ⟨(a₃, b₃), And.imp_right (fun _ ↦ rfl) hm⟩)
+    exact le_trans (hf ⟨hm.2.1.1,hm.2.2.2⟩) (hu ⟨(a₃, b₃), And.imp_right (fun _ ↦ rfl) hm⟩)
   · exact upperBounds_mono_set (image_mono (subset_fst_image_times_snd_image d))
 
 -- c.f. isLUB_prod
