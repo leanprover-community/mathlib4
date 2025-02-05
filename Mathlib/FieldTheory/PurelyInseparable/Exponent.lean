@@ -21,7 +21,6 @@ some related results.
 - `IsPurelyInseparable.exponent`: the exponent of a purely inseparable field extension.
 - `IsPurelyInseparable.elemExponent`: the exponent of an element of a purely inseparable
   field extension, that is the smallest natural number `e` such that `a ^ ringExpChar K ^ e ∈ K`.
-  Note: the result is currently meaningful only when `ringExpChar ≠ 1`.
 
 ## Tags
 
@@ -40,24 +39,25 @@ variable [CommRing K] [Ring L] [Algebra K L]
 /-- A predicate class on a ring extension saying that there is a natural number `e`
 such that `a ^ ringExpChar K ^ e ∈ K` for all `a ∈ L`. -/
 class HasExponent : Prop where
-  has_exponent' : ∃ e, ∀ a, a ^ ringExpChar K ^ e ∈ (algebraMap K L).range
+  has_exponent : ∃ e, ∀ a, a ^ ringExpChar K ^ e ∈ (algebraMap K L).range
 
-theorem HasExponent.hasExponent (p : ℕ) [ExpChar K p] [HasExponent K L] :
+/-- Version of `HasExponent.has_exponent` using `[ExpChar K p]`. -/
+theorem HasExponent.has_exponent' (p : ℕ) [ExpChar K p] [HasExponent K L] :
     ∃ e, ∀ a, a ^ p ^ e ∈ (algebraMap K L).range :=
-  ringExpChar.eq K p ▸ has_exponent'
+  ringExpChar.eq K p ▸ has_exponent
 
 open scoped Classical in
 /-- The *exponent* of a purely inseparable extension is the smallest
 natural number `e` such that `a ^ ringExpChar K ^ e ∈ K` for all `a ∈ L`. -/
 noncomputable def exponent [HasExponent K L] : ℕ :=
-  Nat.find ‹HasExponent K L›.has_exponent'
+  Nat.find ‹HasExponent K L›.has_exponent
 
 variable {L}
 
 open Classical in
 theorem exponent_def [HasExponent K L] (a : L) :
     a ^ ringExpChar K ^ exponent K L ∈ (algebraMap K L).range :=
-  Nat.find_spec ‹HasExponent K L›.has_exponent' a
+  Nat.find_spec ‹HasExponent K L›.has_exponent a
 
 /-- Version with `[ExpChar K p]`. -/
 theorem exponent_def' [HasExponent K L] (p : ℕ) [ExpChar K p] (a : L) :
@@ -69,7 +69,7 @@ variable {K}
 open Classical in
 theorem exponent_min [HasExponent K L] {e : ℕ} (h : e < exponent K L) :
     ∃ a, a ^ ringExpChar K ^ e ∉ (algebraMap K L).range :=
-  not_forall.mp <| Nat.find_min ‹HasExponent K L›.has_exponent' h
+  not_forall.mp <| Nat.find_min ‹HasExponent K L›.has_exponent h
 
 /-- Version with `[ExpChar K p]`. -/
 theorem exponent_min' [HasExponent K L] (p : ℕ) [ExpChar K p] {e : ℕ} (h : e < exponent K L) :
@@ -83,7 +83,7 @@ section IsDomain
 variable [Field K] [Ring L] [IsDomain L] [Algebra K L]
 
 instance [HasExponent K L] : IsPurelyInseparable K L :=
-  let ⟨n, h⟩ := ‹HasExponent K L›.has_exponent'
+  let ⟨n, h⟩ := ‹HasExponent K L›.has_exponent
   (isPurelyInseparable_iff_pow_mem K (ringExpChar K)).mpr fun x ↦ ⟨n, h x⟩
 
 end IsDomain
@@ -103,7 +103,7 @@ noncomputable def elemExponent (a : L) : ℕ :=
 
 open Classical in
 variable {K} in
-theorem elemExponent_zero_of_mem_range {a : L} (h : a ∈ (algebraMap K L).range) :
+theorem elemExponent_eq_zero_of_mem_range {a : L} (h : a ∈ (algebraMap K L).range) :
     elemExponent K a = 0 := by
   apply (Nat.find_eq_zero _).mpr
   simp
@@ -111,9 +111,9 @@ theorem elemExponent_zero_of_mem_range {a : L} (h : a ∈ (algebraMap K L).range
   exact ⟨y, hy ▸ minpoly.eq_X_sub_C L y⟩
 
 open Classical in
-theorem elemExponent_zero_of_charZero (a : L) [CharZero K] :
+theorem elemExponent_eq_zero_of_charZero (a : L) [CharZero K] :
     elemExponent K a = 0 :=
-  elemExponent_zero_of_mem_range <|
+  elemExponent_eq_zero_of_mem_range <|
     IsPurelyInseparable.surjective_algebraMap_of_isSeparable K L a
 
 open Classical in
@@ -156,7 +156,7 @@ theorem algebraMap_elemReduct_eq' (p : ℕ) [ExpChar K p] (a : L) :
   ringExpChar.eq K p ▸ algebraMap_elemReduct_eq K a
 
 variable {K} in
-instance exponent_exists_of_finiteDimensional [IsPurelyInseparable K L] [FiniteDimensional K L] :
+instance hasExponent_of_finiteDimensional [IsPurelyInseparable K L] [FiniteDimensional K L] :
     HasExponent K L := by
   let ⟨p, _⟩ := ExpChar.exists K
   rcases ‹ExpChar K p› with _ | ⟨hp⟩
@@ -173,25 +173,20 @@ instance exponent_exists_of_finiteDimensional [IsPurelyInseparable K L] [FiniteD
 
 /-- An exponent of an element is less or equal than exponent of the extension
 in non-zero characteristic. -/
-theorem elemExponent_le_exponent' [HasExponent K L] (hp : (ringExpChar K).Prime) (a : L) :
-    elemExponent K a ≤ exponent K L := by
-  obtain ⟨y, hy⟩ := RingHom.mem_range.mp <| exponent_def K a
-  let f := X ^ ringExpChar K ^ exponent K L - C y
-  have hf₁ : aeval a f = 0 := by rwa [map_sub, aeval_C, aeval_X_pow, sub_eq_zero, eq_comm]
-  have hf₂ : f.Monic := monic_X_pow_sub_C y <| Nat.pos_iff_ne_zero.mp <| expChar_pow_pos K _ _
-  have hf₃ : f.natDegree = ringExpChar K ^ exponent K L := by
-    rw [natDegree_sub_C, natDegree_pow, natDegree_X, mul_one]
-  exact (Nat.pow_le_pow_iff_right <| Nat.Prime.one_lt hp).mp <|
-    hf₃ ▸ minpoly_natDegree_eq K a ▸ natDegree_le_natDegree (minpoly.min K a hf₂ hf₁)
-
-/-- An exponent of an element is less or equal than exponent of the extension
-in non-zero characteristic. -/
 theorem elemExponent_le_exponent [HasExponent K L] (a : L) :
     elemExponent K a ≤ exponent K L := by
   let ⟨p, _⟩ := ExpChar.exists K
   rcases ‹ExpChar K p› with _ | ⟨hp⟩
-  · exact elemExponent_zero_of_charZero K a ▸ Nat.zero_le _
-  · exact elemExponent_le_exponent' K (ringExpChar.eq K p ▸ hp) a
+  · exact elemExponent_eq_zero_of_charZero K a ▸ Nat.zero_le _
+  · obtain ⟨y, hy⟩ := RingHom.mem_range.mp <| exponent_def K a
+    let f := X ^ ringExpChar K ^ exponent K L - C y
+    have hf₁ : aeval a f = 0 := by rwa [map_sub, aeval_C, aeval_X_pow, sub_eq_zero, eq_comm]
+    have hf₂ : f.Monic := monic_X_pow_sub_C y <| Nat.pos_iff_ne_zero.mp <| expChar_pow_pos K _ _
+    have hf₃ : f.natDegree = ringExpChar K ^ exponent K L := by
+      rw [natDegree_sub_C, natDegree_pow, natDegree_X, mul_one]
+    exact (Nat.pow_le_pow_iff_right <| Nat.Prime.one_lt hp).mp <|
+      ringExpChar.eq K p ▸ hf₃ ▸ minpoly_natDegree_eq K a ▸
+      natDegree_le_natDegree (minpoly.min K a hf₂ hf₁)
 
 end Field
 
