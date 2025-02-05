@@ -161,7 +161,6 @@ noncomputable def measure [mα : MeasurableSpace α] (m : AddContent C) (hC : Is
     Measure α := (m.measureCaratheodory hC m_sigma_subadd).trim <|
       fun s a ↦ isCaratheodory_inducedOuterMeasure hC m s (hC_gen s a)
 
-
 theorem measure_eq [mα : MeasurableSpace α] (m : AddContent C) (hC : IsSetSemiring C)
     (hC_gen : mα = MeasurableSpace.generateFrom C) (m_sigma_subadd : m.IsSigmaSubadditive)
     (hs : s ∈ C) :
