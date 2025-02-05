@@ -23,8 +23,9 @@ universe u
 open CategoryTheory
 
 
-/-- A (bundled) uniform space. -/
+/-- An object in the category of uniform spaces. -/
 structure UniformSpaceCat : Type (u + 1) where
+  /-- The underlying uniform space. -/
   carrier : Type u
   [str : UniformSpace carrier]
 
@@ -39,8 +40,10 @@ instance : CoeSort UniformSpaceCat Type* :=
 abbrev of (α : Type u) [UniformSpace α] : UniformSpaceCat where
   carrier := α
 
+/-- A bundled uniform continuous map. -/
 @[ext]
 structure Hom (X Y : UniformSpaceCat) where
+  /-- The underlying `UniformContinuous` function. -/
   hom' : { f : X → Y // UniformContinuous f }
 
 instance : LargeCategory.{u} UniformSpaceCat.{u} where
@@ -60,9 +63,11 @@ instance : ConcreteCategory UniformSpaceCat ({ f : · → · // UniformContinuou
   hom f := f.hom'
   ofHom f := ⟨f⟩
 
+/-- Turn a morphism in `UniformSpaceCat` back into a function which is `UniformContinuous`. -/
 abbrev Hom.hom {X Y : UniformSpaceCat} (f : Hom X Y) :=
   ConcreteCategory.hom (C := UniformSpaceCat) f
 
+/-- Typecheck a function which is `UniformContinuous` as a morphism in `UniformSpaceCat`. -/
 abbrev ofHom {X Y : Type u} [UniformSpace X] [UniformSpace Y]
     (f : { f : X → Y // UniformContinuous f }) : of X ⟶ of Y :=
   ConcreteCategory.ofHom f

@@ -19,6 +19,7 @@ open CategoryTheory
 
 /-- The category of bornologies. -/
 structure Born where
+  /-- The underlying bornology. -/
   carrier : Type*
   [str : Bornology carrier]
 
