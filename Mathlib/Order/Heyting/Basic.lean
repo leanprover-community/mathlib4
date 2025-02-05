@@ -132,7 +132,7 @@ class GeneralizedHeytingAlgebra (α : Type*) extends Lattice α, OrderTop α, HI
   le_himp_iff (a b c : α) : a ≤ b ⇨ c ↔ a ⊓ b ≤ c
 
 /-- A generalized co-Heyting algebra is a lattice with an additional binary
-difference operation `\` such that `(· \ a)` is right adjoint to `(· ⊔ a)`.
+difference operation `\` such that `(· \ a)` is left adjoint to `(· ⊔ a)`.
 
 This generalizes `CoheytingAlgebra` by not requiring a top element. -/
 class GeneralizedCoheytingAlgebra (α : Type*) extends Lattice α, OrderBot α, SDiff α where
@@ -146,7 +146,7 @@ class HeytingAlgebra (α : Type*) extends GeneralizedHeytingAlgebra α, OrderBot
   himp_bot (a : α) : a ⇨ ⊥ = aᶜ
 
 /-- A co-Heyting algebra is a bounded lattice with an additional binary difference operation `\`
-such that `(· \ a)` is right adjoint to `(· ⊔ a)`. -/
+such that `(· \ a)` is left adjoint to `(· ⊔ a)`. -/
 class CoheytingAlgebra (α : Type*) extends GeneralizedCoheytingAlgebra α, OrderTop α, HNot α where
   /-- `⊤ \ a` is `￢a` -/
   top_sdiff (a : α) : ⊤ \ a = ￢a
