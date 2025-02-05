@@ -800,12 +800,6 @@ lemma stableUnderSpecialization_singleton {x : PrimeSpectrum R} :
     @forall_comm _ (_ = _), forall_eq]
   exact ⟨fun H a h ↦ (H a h).le, fun H a h ↦ le_antisymm (H h) h⟩
 
-lemma isMin_iff {x : PrimeSpectrum R} :
-    IsMin x ↔ x.asIdeal ∈ minimalPrimes R := by
-  show IsMin _ ↔ Minimal (fun q : Ideal R ↦ q.IsPrime ∧ ⊥ ≤ q) _
-  simp only [IsMin, Minimal, x.2, bot_le, and_self, and_true, true_and]
-  exact ⟨fun H y hy e ↦ @H ⟨y, hy⟩ e, fun H y e ↦ H y.2 e⟩
-
 lemma stableUnderGeneralization_singleton {x : PrimeSpectrum R} :
     StableUnderGeneralization {x} ↔ x.asIdeal ∈ minimalPrimes R := by
   simp_rw [← isMin_iff, StableUnderGeneralization, ← le_iff_specializes, Set.mem_singleton_iff,
