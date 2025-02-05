@@ -7,6 +7,7 @@ Authors: Chris Hughes, Yaël Dillies
 import Mathlib.Data.List.Iterate
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.GroupTheory.NoncommPiCoprod
+import Mathlib.Tactic.Group
 
 /-!
 # Cycle factors of a permutation
@@ -737,7 +738,7 @@ theorem mem_cycleFactorsFinset_conj (g k c : Perm α) :
   suffices imp_lemma : ∀ {g k c : Perm α},
       c ∈ g.cycleFactorsFinset → k * c * k⁻¹ ∈ (k * g * k⁻¹).cycleFactorsFinset by
     refine ⟨fun h ↦ ?_, imp_lemma⟩
-    have aux (h : Perm α) : h = k⁻¹ * (k * h * k⁻¹) * k := by simp [mul_assoc]
+    have aux : ∀ h : Perm α, h = k⁻¹ * (k * h * k⁻¹) * k := fun _ ↦ by group
     rw [aux g, aux c]
     exact imp_lemma h
   intro g k c

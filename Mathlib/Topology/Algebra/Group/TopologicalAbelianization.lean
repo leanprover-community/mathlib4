@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.GroupTheory.Abelianization
+import Mathlib.Tactic.Group
 import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
@@ -43,7 +44,8 @@ instance commGroup : CommGroup (G_ab G) where
     Quotient.inductionOn₂' x y fun a b =>
       Quotient.sound' <|
         QuotientGroup.leftRel_apply.mpr <| by
-          rw [show (a * b)⁻¹ * (b * a) = ⁅b⁻¹, a⁻¹⁆ by simp [commutatorElement_def, mul_assoc]]
+          have h : (a * b)⁻¹ * (b * a) = ⁅b⁻¹, a⁻¹⁆ := by group
+          rw [h]
           exact Subgroup.le_topologicalClosure _ (Subgroup.commutator_mem_commutator
             (Subgroup.mem_top b⁻¹) (Subgroup.mem_top a⁻¹))
   __ : Group (G_ab G) := inferInstance

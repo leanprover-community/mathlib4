@@ -5,6 +5,7 @@ Authors: Mitchell Lee, Óscar Álvarez
 -/
 import Mathlib.GroupTheory.Coxeter.Length
 import Mathlib.Data.List.GetD
+import Mathlib.Tactic.Group
 
 /-!
 # Reflections, inversions, and inversion sequences
@@ -105,7 +106,7 @@ theorem length_mul_right_ne (w : W) : ℓ (t * w) ≠ ℓ w := by
 theorem conj (w : W) : cs.IsReflection (w * t * w⁻¹) := by
   obtain ⟨u, i, rfl⟩ := ht
   use w * u, i
-  simp [mul_assoc]
+  group
 
 end IsReflection
 
@@ -215,7 +216,7 @@ theorem rightInvSeq_concat (ω : List B) (i : B) :
     rw [ih]
     simp only [concat_eq_append, wordProd_append, wordProd_cons, wordProd_nil, mul_one, mul_inv_rev,
       inv_simple, cons_append, cons.injEq, and_true]
-    simp [mul_assoc]
+    group
 
 private theorem leftInvSeq_eq_reverse_rightInvSeq_reverse (ω : List B) :
     lis ω = (ris ω.reverse).reverse := by
@@ -327,7 +328,7 @@ theorem isReflection_of_mem_rightInvSeq (ω : List B) {t : W} (ht : t ∈ ris ω
   · dsimp [rightInvSeq] at ht
     rcases ht with _ | ⟨_, mem⟩
     · use (π ω)⁻¹, i
-      simp [mul_assoc]
+      group
     · exact ih mem
 
 theorem isReflection_of_mem_leftInvSeq (ω : List B) {t : W} (ht : t ∈ lis ω) :
@@ -429,7 +430,7 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
     rw [h₁, h₃, dup]
     exact cs.getD_rightInvSeq_mul_self _ _
   have h₅ := calc
-    π ω   = π ω * t * t'                              := by simp [h₄, mul_assoc]
+    π ω   = π ω * t * t'                              := by rw [mul_assoc, h₄]; group
     _     = (π (ω.eraseIdx j)) * t'                   :=
         congrArg (· * t') (cs.wordProd_mul_getD_rightInvSeq _ _)
     _     = π ((ω.eraseIdx j).eraseIdx (j' - 1))      :=
@@ -485,6 +486,6 @@ theorem getElem_leftInvSeq_alternatingWord
       MulAut.conj_apply, inv_simple, alternatingWord_succ' j i, even_two, Even.mul_right,
       ↓reduceIte, wordProd_cons]
     rw [(by ring: 2 * (k + 1) = 2 * k + 1 + 1), alternatingWord_succ j i, wordProd_concat]
-    simp [mul_assoc]
+    group
 
 end CoxeterSystem
