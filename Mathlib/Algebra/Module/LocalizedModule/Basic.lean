@@ -671,6 +671,11 @@ theorem lift_mk
     LocalizedModule.lift S g h (LocalizedModule.mk m s) = (h s).unit⁻¹.val (g m) :=
   rfl
 
+@[simp]
+lemma lift_mk_one (h : ∀ (x : S), IsUnit ((algebraMap R (Module.End R M'')) x)) (m : M) :
+    (LocalizedModule.lift S g h) (LocalizedModule.mk m 1) = g m := by
+  simp [lift_mk]
+
 /--
 If `g` is a linear map `M → M''` such that all scalar multiplication by `s : S` is invertible, then
 there is a linear map `lift g ∘ mkLinearMap = g`.
@@ -831,7 +836,6 @@ theorem fromLocalizedModule.bij : Function.Bijective <| fromLocalizedModule S f 
 If `(M', f : M ⟶ M')` satisfies universal property of localized module, then `M'` is isomorphic to
 `LocalizedModule S M` as an `R`-module.
 -/
-@[simps!]
 noncomputable def iso : LocalizedModule S M ≃ₗ[R] M' :=
   { fromLocalizedModule S f,
     Equiv.ofBijective (fromLocalizedModule S f) <| fromLocalizedModule.bij _ _ with }
@@ -840,6 +844,10 @@ theorem iso_apply_mk (m : M) (s : S) :
     iso S f (LocalizedModule.mk m s) = (IsLocalizedModule.map_units f s).unit⁻¹.val (f m) :=
   rfl
 
+@[simp]
+lemma iso_mk_one (x : M) : (iso S f) (LocalizedModule.mk x 1) = f x := by
+  simp [iso_apply_mk]
+
 theorem iso_symm_apply_aux (m : M') :
     (iso S f).symm m =
       LocalizedModule.mk (IsLocalizedModule.surj S f m).choose.1
@@ -847,9 +855,8 @@ theorem iso_symm_apply_aux (m : M') :
   -- Porting note: We remove `generalize_proofs _ h2`.
   apply_fun iso S f using LinearEquiv.injective (iso S f)
   rw [LinearEquiv.apply_symm_apply]
-  simp only [iso_apply, LinearMap.toFun_eq_coe, fromLocalizedModule_mk]
-  rw [fromLocalizedModule'_mk, Module.End_algebraMap_isUnit_inv_apply_eq_iff', ← Submonoid.smul_def,
-    (surj' _).choose_spec]
+  simp [iso, fromLocalizedModule, Module.End_algebraMap_isUnit_inv_apply_eq_iff',
+    ← Submonoid.smul_def, (surj' _).choose_spec]
 
 theorem iso_symm_apply' (m : M') (a : M) (b : S) (eq1 : b • m = f a) :
     (iso S f).symm m = LocalizedModule.mk a b :=
@@ -865,6 +872,10 @@ theorem iso_symm_comp : (iso S f).symm.toLinearMap.comp f = LocalizedModule.mkLi
   rw [LinearMap.comp_apply, LocalizedModule.mkLinearMap_apply, LinearEquiv.coe_coe, iso_symm_apply']
   exact one_smul _ _
 
+@[simp]
+lemma iso_symm_apply (x) : (iso S f).symm (f x) = LocalizedModule.mk x 1 :=
+  DFunLike.congr_fun (iso_symm_comp S f) x
+
 /--
 If `M'` is a localized module and `g` is a linear map `M → M''` such that all scalar multiplication
 by `s : S` is invertible, then there is a linear map `M' → M''`.
@@ -879,6 +890,17 @@ theorem lift_comp (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R (M
   rw [LinearMap.comp_assoc, iso_symm_comp, LocalizedModule.lift_comp S g h]
 
 @[simp]
+lemma lift_iso (h : ∀ (x : S), IsUnit ((algebraMap R (Module.End R M'')) x))
+    (x : LocalizedModule S M) :
+    IsLocalizedModule.lift S f g h ((iso S f) x) = LocalizedModule.lift S g h x := by
+  simp [lift]
+
+@[simp]
+lemma lift_comp_iso (h : ∀ (x : S), IsUnit ((algebraMap R (Module.End R M'')) x)) :
+    IsLocalizedModule.lift S f g h ∘ₗ iso S f = LocalizedModule.lift S g h :=
+  LinearMap.ext fun x ↦ lift_iso S f g h x
+
+@[simp]
 theorem lift_apply (g : M →ₗ[R] M'') (h) (x) :
     lift S f g h (f x) = g x := LinearMap.congr_fun (lift_comp S f g h) x
 
@@ -891,9 +913,7 @@ theorem lift_unique (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R 
   rw [LinearMap.comp_assoc, ← hl]
   congr 1
   ext x
-  rw [LinearMap.comp_apply, LocalizedModule.mkLinearMap_apply, LinearEquiv.coe_coe, iso_apply,
-    fromLocalizedModule'_mk, Module.End_algebraMap_isUnit_inv_apply_eq_iff, OneMemClass.coe_one,
-    one_smul]
+  simp
 
 /-- Universal property from localized module:
 If `(M', f : M ⟶ M')` is a localized module then it satisfies the following universal property:
@@ -932,6 +952,16 @@ are isomorphic as `R`-module
 -/
 noncomputable def linearEquiv [IsLocalizedModule S g] : M' ≃ₗ[R] M'' :=
   (iso S f).symm.trans (iso S g)
+
+@[simp]
+lemma linearEquiv_apply [IsLocalizedModule S g] (x : M) :
+    (linearEquiv S f g) (f x) = g x := by
+  simp [linearEquiv]
+
+@[simp]
+lemma linearEquiv_symm_apply [IsLocalizedModule S g] (x : M) :
+    (linearEquiv S f g).symm (g x) = f x := by
+  simp [linearEquiv]
 
 variable {S}
 
@@ -1245,36 +1275,41 @@ theorem mkOfAlgebra {R S S' : Type*} [CommRing R] [CommRing S] [CommRing S'] [Al
 
 end Algebra
 
-end IsLocalizedModule
-
-end IsLocalizedModule
-
 section Subsingleton
 
-variable {R M : Type*} [CommRing R] [AddCommMonoid M] [Module R M]
-
-lemma LocalizedModule.mem_ker_mkLinearMap_iff {S : Submonoid R} {m} :
-    m ∈ LinearMap.ker (LocalizedModule.mkLinearMap S M) ↔ ∃ r ∈ S, r • m = 0 := by
+lemma mem_ker_iff (S : Submonoid R) {g : M →ₗ[R] M'}
+    [IsLocalizedModule S g] {m : M} :
+    m ∈ LinearMap.ker g ↔ ∃ r ∈ S, r • m = 0 := by
   constructor
   · intro H
-    obtain ⟨r, hr⟩ := (@LocalizedModule.mk_eq _ _ S M _ _ m 0 1 1).mp (by simpa using H)
+    obtain ⟨r, hr⟩ := (IsLocalizedModule.eq_zero_iff S g).mp H
     exact ⟨r, r.2, by simpa using hr⟩
   · rintro ⟨r, hr, e⟩
     apply ((Module.End_isUnit_iff _).mp
-      (IsLocalizedModule.map_units (LocalizedModule.mkLinearMap S M) ⟨r, hr⟩)).injective
-    simp [← IsLocalizedModule.mk_eq_mk', LocalizedModule.smul'_mk, e]
+      (IsLocalizedModule.map_units g ⟨r, hr⟩)).injective
+    simp [← map_smul, e]
 
-lemma LocalizedModule.subsingleton_iff_ker_eq_top {S : Submonoid R} :
-    Subsingleton (LocalizedModule S M) ↔
-      LinearMap.ker (LocalizedModule.mkLinearMap S M) = ⊤ := by
+lemma subsingleton_iff_ker_eq_top (S : Submonoid R) (g : M →ₗ[R] M')
+    [IsLocalizedModule S g] :
+    Subsingleton M' ↔ LinearMap.ker g = ⊤ := by
   rw [← top_le_iff]
   refine ⟨fun H m _ ↦ Subsingleton.elim _ _, fun H ↦ (subsingleton_iff_forall_eq 0).mpr fun x ↦ ?_⟩
-  obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S (LocalizedModule.mkLinearMap S M) x
+  obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S g x
   simpa using @H x Submodule.mem_top
 
-lemma LocalizedModule.subsingleton_iff {S : Submonoid R} :
-    Subsingleton (LocalizedModule S M) ↔ ∀ m : M, ∃ r ∈ S, r • m = 0 := by
-  simp_rw [subsingleton_iff_ker_eq_top, ← top_le_iff, SetLike.le_def,
-    mem_ker_mkLinearMap_iff, Submodule.mem_top, true_implies]
+lemma subsingleton_iff (S : Submonoid R) (g : M →ₗ[R] M')
+    [IsLocalizedModule S g] :
+    Subsingleton M' ↔ ∀ m : M, ∃ r ∈ S, r • m = 0 := by
+  simp_rw [subsingleton_iff_ker_eq_top S g, ← top_le_iff, SetLike.le_def,
+    mem_ker_iff S, Submodule.mem_top, true_implies]
+
+instance [Subsingleton M] (S : Submonoid R) : Subsingleton (LocalizedModule S M) := by
+  rw [IsLocalizedModule.subsingleton_iff S (LocalizedModule.mkLinearMap S M)]
+  intro
+  use 1, S.one_mem, Subsingleton.elim _ _
 
 end Subsingleton
+
+end IsLocalizedModule
+
+end IsLocalizedModule
