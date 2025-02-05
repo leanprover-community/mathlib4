@@ -243,9 +243,7 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
           K.toSubmodule_inj]
       exact Submodule.Quotient.nontrivial_of_lt_top _ hK₂.lt_top
     have : LieModule.IsNilpotent K (L' ⧸ K.toLieSubmodule) := by
-      -- Porting note: was refine' hK₁ _ fun x => _
-      apply hK₁
-      intro x
+      refine hK₁ _ fun x => ?_
       have hx := LieAlgebra.isNilpotent_ad_of_isNilpotent (h x)
       apply Module.End.IsNilpotent.mapQ ?_ hx
       -- Porting note: mathlib3 solved this on its own with `submodule.mapq_linear._proof_5`

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Pim Otte
 -/
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Tactic.Zify
 
 /-!
 # Factorial with big operators
@@ -42,35 +42,14 @@ theorem descFactorial_eq_prod_range (n : ℕ) : ∀ k, n.descFactorial k = ∏ i
   | 0 => rfl
   | k + 1 => by rw [descFactorial, prod_range_succ, mul_comm, descFactorial_eq_prod_range n k]
 
-/-- `k!` divides the product of any `k` successive non-negative integers. -/
-private lemma factorial_coe_dvd_prod_of_nonneg (k : ℕ) (n : ℤ) (hn : 0 ≤ n) :
-    (k ! : ℤ) ∣ ∏ i ∈ range k, (n + i) := by
+/-- `k!` divides the product of any `k` consecutive integers. -/
+lemma factorial_coe_dvd_prod (k : ℕ) (n : ℤ) : (k ! : ℤ) ∣ ∏ i ∈ range k, (n + i) := by
+  rw [Int.dvd_iff_emod_eq_zero, Finset.prod_int_mod]
+  simp_rw [← Int.emod_add_emod n]
+  have hn : 0 ≤ n % k ! := Int.emod_nonneg n <| Int.natCast_ne_zero.mpr k.factorial_ne_zero
   obtain ⟨x, hx⟩ := Int.eq_ofNat_of_zero_le hn
   have hdivk := x.factorial_dvd_ascFactorial k
   zify [x.ascFactorial_eq_prod_range k] at hdivk
-  rwa [hx]
-
-/-- `k!` divides the product of any `k` successive integers. -/
-lemma factorial_coe_dvd_prod (k : ℕ) (n : ℤ) : (k ! : ℤ) ∣ ∏ i ∈ range k, (n + i) := by
-  by_cases hn : n < 0
-  · by_cases hnk : 0 < n + k
-    · have : ∏ i ∈ range k, (n + ↑i) = 0 := prod_eq_zero_iff.mpr <| by
-        use n.natAbs
-        simp [abs_of_nonpos, hn.le, ← Int.ofNat_lt, hnk, neg_lt_iff_pos_add, add_comm]
-      rw [this]
-      exact (k ! : ℤ).dvd_zero
-    · have prod_eq : ∏ x ∈ range k, |n + ↑x| = ∏ x ∈ range k, -(n + ↑x) := by
-        refine prod_congr rfl fun _ hx ↦ ?_
-        rw [mem_range] at hx
-        rw [abs_of_neg]
-        linarith
-      rw [← dvd_abs, abs_prod, prod_eq, ← prod_range_reflect]
-      simp_rw [neg_add_rev, add_comm]
-      rw [show ∏ j ∈ range k, (-n + -↑(k - 1 - j)) = ∏ j ∈ range k, (-n + -↑(k - 1) + j) from ?_]
-      · exact factorial_coe_dvd_prod_of_nonneg k (-n + -↑(k - 1)) (by omega)
-      · refine prod_congr rfl fun _ ↦ ?_
-        rw [mem_range]
-        omega
-  · exact factorial_coe_dvd_prod_of_nonneg k n <| not_lt.mp hn
+  rwa [← Finset.prod_int_mod, ← Int.dvd_iff_emod_eq_zero, hx]
 
 end Nat
