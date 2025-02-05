@@ -19,7 +19,7 @@ is an Azumaya algebra where `R` is a commutative ring.
 -/
 open scoped TensorProduct
 
-variable (R n : Type*) [CommRing R] [Fintype n] [DecidableEq n]
+variable (R n : Type*) [CommSemiring R] [Fintype n] [DecidableEq n]
 
 noncomputable section
 
@@ -67,7 +67,7 @@ instance (ι : Type*) [Nonempty ι] [DecidableEq ι] [Nontrivial R]: FaithfulSMu
     simp only [Finsupp.coe_mk, Function.update_self, smul_eq_mul, mul_one] at this
     exact this
 
-instance (M : Type*) [AddCommGroup M] [Module R M] [Module.Free R M] [Nontrivial M]:
+instance (M : Type*) [AddCommMonoid M] [Module R M] [Module.Free R M] [Nontrivial M]:
     FaithfulSMul R M := FaithfulSMul.ofInjective
       ⟨(Module.Free.repr R M).symm, map_smul _⟩ (Module.Free.repr R M).symm.injective
 

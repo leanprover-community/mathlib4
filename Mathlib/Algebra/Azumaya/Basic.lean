@@ -31,7 +31,7 @@ open MulOpposite
 
 namespace IsAzumaya
 
-variable (R A B : Type*) [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
+variable (R A B : Type*) [CommSemiring R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
 
 
 lemma AlgHom.mulLeftRight_bij (h : IsAzumaya R A) :
@@ -46,7 +46,7 @@ noncomputable abbrev tensorEquivEnd : R ⊗[R] Rᵐᵒᵖ ≃ₐ[R] Module.End R
 lemma coe_tensorEquivEnd: tensorEquivEnd R = AlgHom.mulLeftRight R R := by
   ext; simp
 
-instance self : IsAzumaya R R where
+instance id : IsAzumaya R R where
   bij := by rw [← coe_tensorEquivEnd]; exact tensorEquivEnd R |>.bijective
 
 /--
@@ -75,7 +75,8 @@ lemma mulLeftRight_comp_congr (e : A ≃ₐ[R] B):
   | add _ _ _ _ => simp_all [map_add]
 
 lemma _root_.FaithfulSMul.ofInjective {R M N : Type*} [SMul R M] [SMul R N]
-    [Nonempty M] [FaithfulSMul R M] (f : @MulActionHom R R id M _ N _) (hf : Function.Injective f):
+    [Nonempty M] [FaithfulSMul R M] (f : @MulActionHom R R _root_.id M _ N _)
+    (hf : Function.Injective f):
     FaithfulSMul R N where
   eq_of_smul_eq_smul {r1 r2} h12 := by
     have : ∀ m : M, r1 • f m = r2 • f m := fun m ↦ h12 (f m)
