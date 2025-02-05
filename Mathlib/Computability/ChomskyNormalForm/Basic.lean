@@ -218,7 +218,7 @@ lemma Derives.append_right {u v p : List (Symbol T g.NT)} (huv : g.Derives u v) 
     g.Derives (u ++ p) (v ++ p) := by
   induction huv with
   | refl => rfl
-  | tail _ last ih => exact ih.trans_produces <| last.append_right
+  | tail _ last ih => exact ih.trans_produces last.append_right
 
 theorem Derives.head_induction_on {v : List (Symbol T g.NT)} {P : ∀ u, g.Derives u v → Prop}
     {u : List (Symbol T g.NT)} (huv : g.Derives u v)
