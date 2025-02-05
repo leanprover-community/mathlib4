@@ -242,14 +242,14 @@ lemma map_comp_ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) (f : M �
     (map n f) ∘ (ιMulti_family R n v) = ιMulti_family R n (f ∘ v) := by
   ext ⟨s, hs⟩
   simp only [ιMulti_family, Function.comp_apply, map_apply_ιMulti]
-  rfl
+  rfl -- TODO review rfl
 
 @[simp]
 lemma map_apply_ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) (f : M →ₗ[R] N)
     (s : {s : Finset I // s.card = n}) :
     (map n f) (ιMulti_family R n v s) = ιMulti_family R n (f ∘ v) s := by
   simp only [ιMulti_family, map, alternatingMapLinearEquiv_apply_ιMulti]
-  rfl
+  rfl -- TODO review rfl
 
 @[simp]
 theorem map_id :
