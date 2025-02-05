@@ -475,7 +475,7 @@ variable {R : Type*} [CommRing R]
 
 open Finsupp MvPolynomial
 
-lemma degree_binomial [Nontrivial R]
+lemma degree_X_sub_C [Nontrivial R]
     {ι : Type*} (m : MonomialOrder ι) (i : ι) (r : R) :
     m.degree (X i - C r) = single i 1 := by
   rw [degree_sub_of_lt, degree_X]
@@ -487,7 +487,7 @@ lemma leadingCoeff_binomial {ι : Type*} (m : MonomialOrder ι) (i : ι) (r : R)
     m.leadingCoeff (X i - C r) = 1 := by
   classical
   by_cases H : Nontrivial R
-  · simp only [leadingCoeff, m.degree_binomial i r]
+  · simp only [leadingCoeff, m.degree_X_sub_C i r]
     simp only [coeff_sub, coeff_single_X, true_and, if_true, coeff_C, sub_eq_self]
     rw [if_neg]
     intro h
@@ -496,30 +496,6 @@ lemma leadingCoeff_binomial {ι : Type*} (m : MonomialOrder ι) (i : ι) (r : R)
     rw [h i, single_eq_same]
   · by_contra H'
     exact H (nontrivial_of_ne _ _ H')
-
-/- theorem prod_binomial_degree [Nontrivial R]
-    {ι : Type*} (m : MonomialOrder ι) (i : ι) (s : Finset R) :
-    m.degree (∏ r ∈ s, (X i - C r)) = single i s.card := by
-  classical
-  have H : ∀ r ∈ s, m.degree (X i - C r) = single i 1 := by
-    intro r _
-    rw [degree_sub_of_lt, degree_X]
-    simp only [degree_C, map_zero, degree_X]
-    rw [← bot_eq_zero, bot_lt_iff_ne_bot, bot_eq_zero, ← map_zero m.toSyn]
-    simp
-  rw [MonomialOrder.degree_prod_of_regular]
-  · rw [Finset.sum_congr rfl H]
-    simp only [Finset.sum_const, smul_single, smul_eq_mul, mul_one]
-  · intro r hr
-    convert isRegular_one
-    simp only [leadingCoeff, H r hr]
-    simp only [coeff_sub, coeff_single_X, true_and, if_true, coeff_C, sub_eq_self]
-    rw [if_neg]
-    intro h
-    apply zero_ne_one (α := ℕ)
-    simp only [Finsupp.ext_iff, coe_zero, Pi.zero_apply] at h
-    rw [h i, single_eq_same]
--/
 
 end Binomial
 

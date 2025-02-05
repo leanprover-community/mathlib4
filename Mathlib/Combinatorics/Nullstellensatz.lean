@@ -78,7 +78,7 @@ namespace MvPolynomial
 
 open Finsupp
 
-/-- A multivariate polynomial that vanishes at a large product set is the zero polynomial. -/
+/-- A multivariate polynomial that vanishes on a large product set is the zero polynomial. -/
 theorem eq_zero_of_eval_zero_at_prod_nat {n : ℕ} [IsDomain R]
     (P : MvPolynomial (Fin n) R) (S : Fin n → Set R)
     (Hdeg : ∀ i, P.degreeOf i < (S i).ncard)
@@ -141,7 +141,7 @@ theorem eq_zero_of_eval_zero_at_prod_nat {n : ℕ} [IsDomain R]
       rw [Polynomial.ext_iff] at Heval'
       simpa only [Polynomial.coeff_map, Polynomial.coeff_zero] using Heval' m
 
-/-- A multivariate polynomial that vanishes at a large product set is the zero polynomial. -/
+/-- A multivariate polynomial that vanishes on a large product set is the zero polynomial. -/
 theorem eq_zero_of_eval_zero_at_prod {σ : Type*} [Finite σ] [IsDomain R]
     (P : MvPolynomial σ R) (S : σ → Set R)
     (Hdeg : ∀ i, P.degreeOf i < (S i).ncard)
@@ -177,16 +177,16 @@ private noncomputable def Alon.P (S : Finset R) (i : σ) : MvPolynomial σ R :=
 
 /-- The degree of `Alon.P S i` with respect to `X i` is the cardinality of `S`,
   and `0` otherwise. -/
-private theorem Alon.degP [Nontrivial R] (m : MonomialOrder σ) (S : Finset R) (i : σ) :
+private theorem Alon.degree_P [Nontrivial R] (m : MonomialOrder σ) (S : Finset R) (i : σ) :
     m.degree (Alon.P S i) = single i S.card := by
   simp only [P]
   rw [degree_prod_of_regular]
-  · simp [Finset.sum_congr rfl (fun r _ ↦ m.degree_binomial i r)]
+  · simp [Finset.sum_congr rfl (fun r _ ↦ m.degree_X_sub_C i r)]
   · intro r _
     simp only [leadingCoeff_binomial, isRegular_one]
 
 /-- The leading coefficient of `Alon.P S i` is `1`. -/
-private theorem Alon.leadingCoeffP [Nontrivial R] (m : MonomialOrder σ) (S : Finset R) (i : σ) :
+private theorem Alon.leadingCoeff_P [Nontrivial R] (m : MonomialOrder σ) (S : Finset R) (i : σ) :
     m.leadingCoeff (P S i) = 1 := by
   simp only [P]
   rw [leadingCoeff_prod_of_regular ?_]
@@ -199,7 +199,7 @@ private theorem Alon.leadingCoeffP [Nontrivial R] (m : MonomialOrder σ) (S : Fi
 
 /-- The support of `Alon.P S i` is the set of exponents of the form `single i e`,
   for `e ≤ S.card`. -/
-private lemma prod_support_le {ι : Type*} (i : ι) (S : Finset R) (m : ι →₀ ℕ)
+private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι →₀ ℕ)
     (hm : m ∈ (Alon.P S i).support) :
     ∃ e ≤ S.card, m = single i e := by
   classical
@@ -212,7 +212,7 @@ private lemma prod_support_le {ι : Type*} (i : ι) (S : Finset R) (m : ι →�
   refine ⟨e (), ?_, ?_⟩
   · suffices e ≼[lex] single () S.card by
       simpa [MonomialOrder.lex_le_iff_of_unique] using this
-    rw [← Alon.degP]
+    rw [← Alon.degree_P]
     apply MonomialOrder.le_degree
     rw [mem_support_iff]
     convert he
@@ -227,7 +227,7 @@ variable [Fintype σ]
 
 open scoped BigOperators
 
-/-- The Combinatorial Nullstellensatz : existence of a linear combination
+/-- The **Combinatorial Nullstellensatz** : existence of a linear combination
 
 [Alon_1999], theorem 1. -/
 theorem combinatorial_nullstellensatz_exists_linearCombination
@@ -238,7 +238,7 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
     f = linearCombination (MvPolynomial σ R) (fun i ↦ (∏ r ∈ S i, (X i - C r))) h := by
   letI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   obtain ⟨h, r, hf, hh, hr⟩ := degLex.div (b := fun i ↦ Alon.P (S i) i)
-      (fun i ↦ by simp only [Alon.leadingCoeffP, isUnit_one]) f
+      (fun i ↦ by simp only [Alon.leadingCoeff_P, isUnit_one]) f
   use h
   suffices r = 0 by
     rw [this, add_zero] at hf
@@ -251,23 +251,23 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
     intro h'
     apply hr c hc i
     intro j
-    rw [Alon.degP, single_apply]
+    rw [Alon.degree_P, single_apply]
     split_ifs with hj
     · rw [← hj]
       exact h'
     · exact zero_le _
   · intro x hx
     rw [Iff.symm sub_eq_iff_eq_add'] at hf
-    rw [← hf, map_sub, Heval x hx, zero_sub, neg_eq_zero]
-    rw [linearCombination_apply, map_finsupp_sum, Finsupp.sum, Finset.sum_eq_zero]
+    rw [← hf, map_sub, Heval x hx, zero_sub, neg_eq_zero,
+      linearCombination_apply, map_finsupp_sum, Finsupp.sum, Finset.sum_eq_zero]
     intro i _
     rw [smul_eq_mul, map_mul]
     convert mul_zero _
     rw [Alon.P, map_prod]
     apply Finset.prod_eq_zero (hx i)
-    simp only [map_sub, eval_X, eval_C, sub_self]
+    simp
 
-/-- The Combinatorial Nullstellensatz : existence of a nonzero evaluation
+/-- The **Combinatorial Nullstellensatz** : existence of a nonzero evaluation
 
 [Alon_1999], theorem 2 -/
 theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
@@ -296,24 +296,20 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
     simp only [hg, mul_comm, hh i]
   -- one could simplify this by proving `totalDegree_mul_eq` (at least in a domain)
   rw [hg, ← degree_degLexDegree,
-    degree_mul_of_isRegular_right hi (by simp only [Alon.leadingCoeffP, isRegular_one]),
-    Alon.degP, degree_add, degree_degLexDegree, degree_single, ht'] at this
+    degree_mul_of_isRegular_right hi (by simp only [Alon.leadingCoeff_P, isRegular_one]),
+    Alon.degree_P, degree_add, degree_degLexDegree, degree_single, ht'] at this
   rw [smul_eq_mul, coeff_mul, Finset.sum_eq_zero]
   rintro ⟨p, q⟩ hpq
   simp only [Finset.mem_antidiagonal] at hpq
   simp only [mul_eq_zero, Classical.or_iff_not_imp_right]
   rw [← ne_eq, ← mem_support_iff]
   intro hq
-  obtain ⟨e, _, hq⟩ := prod_support_le _ _ _ hq
+  obtain ⟨e, hq', hq⟩ := Alon.of_mem_P_support _ _ _ hq
   apply coeff_eq_zero_of_totalDegree_lt
   change (h i).totalDegree < p.degree
-  apply lt_of_add_lt_add_right (a := (S i).card)
-  apply lt_of_le_of_lt this
+  apply lt_of_add_lt_add_right (lt_of_le_of_lt this _)
   rw [← hpq, degree_add, add_lt_add_iff_left, hq, degree_single]
-  rw [← not_le]
-  intro hq'
-  apply not_le.mpr (htS i)
-  apply le_trans hq'
-  simp only [← hpq, hq, coe_add, Pi.add_apply, single_eq_same, le_add_iff_nonneg_left, zero_le]
+  apply lt_of_le_of_lt _ (htS i)
+  simp [← hpq, hq]
 
 end MvPolynomial
