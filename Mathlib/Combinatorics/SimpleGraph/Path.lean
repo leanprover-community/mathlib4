@@ -578,6 +578,19 @@ end Walk
 namespace Walk
 
 variable {G} [DecidableEq V]
+
+lemma IsCircuit.exists_cycle_darts_subset {u : V} {p : G.Walk u u} (hs : IsCircuit p) :
+    ∃ (c : G.Walk u u), c.IsCycle ∧ c.darts ⊆ p.darts := by
+  cases p with
+  | nil => exact absurd rfl hs.2
+  | cons h p =>
+    use cons h p.bypass
+    constructor
+    · apply cons_isCycle_iff _ _ |>.2 ⟨p.bypass_isPath,
+        fun hf ↦ cons_isTrail_iff _ _ |>.1 hs.toIsTrail|>.2 <| edges_bypass_subset _ hf⟩
+    · simp_rw [darts_cons]
+      apply List.cons_subset_cons _ <| darts_bypass_subset _
+
 @[simp]
 def shortcircuit {u : V} : G.Walk u u → G.Walk u u
   | nil => nil
@@ -594,7 +607,6 @@ lemma IsCircuit.shortcircuit_isCycle {u : V} {p : G.Walk u u} (hs : IsCircuit p)
   | cons h p =>
     shortcircuit_cons_isCycle _ _ <|
       fun hf ↦ cons_isTrail_iff h p|>.1 hs.toIsTrail|>.2 <| edges_bypass_subset _ hf
-
 lemma support_shortcircuit_subset {u : V} (p : G.Walk u u) : p.shortcircuit.support ⊆ p.support:= by
   cases p with
   | nil => simp
