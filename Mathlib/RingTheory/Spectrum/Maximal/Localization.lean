@@ -267,4 +267,3 @@ theorem finite_of_toPiLocalization_surjective
   exact finite_of_toPiLocalization_pi_surjective surj.of_comp
 
 end PrimeSpectrum
-#min_imports
