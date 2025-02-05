@@ -244,6 +244,110 @@ theorem comap_reindex (f : α' → α) (g : σ ≃ σ') :
 
 end Maps
 
+section Closure
+
+section Complement
+
+/-- DFAs are closed under complement:
+Given a DFA `M`, `Mᶜ` is also a DFA such that `L(Mᶜ) = {x ∣ x ∉ L(M)}`.
+-/
+instance : HasCompl (DFA α σ) where
+  compl M := DFA.mk M.step M.start M.acceptᶜ
+
+lemma complement.SpecFrom (s : σ) (M : DFA α σ) :
+   Mᶜ.acceptsFrom s = (M.acceptsFrom s)ᶜ := by
+   apply Set.ext
+   intros xs
+   simp [acceptsFrom, evalFrom, compl]
+
+theorem complement.Spec (M : DFA α σ) :
+  Mᶜ.accepts = M.acceptsᶜ := by
+    dsimp [accepts]
+    rw [complement.SpecFrom]
+    dsimp [compl, start]
+
+end Complement
+
+section Union
+
+variable {σ1 : Type v} {σ2 : Type v}
+
+private instance Language.instUnion : Union (Language α) := by
+  apply Set.instUnion
+
+/-- DFAs are closed under union. -/
+def union (M1 : DFA α σ1) (M2 : DFA α σ2) : DFA α (σ1 × σ2) :=
+  { start : σ1 × σ2 := (M1.start, M2.start)
+    step (s : σ1 × σ2) (a : α) : σ1 × σ2 :=
+      (M1.step s.fst a, M2.step s.snd a)
+    accept : Set (σ1 × σ2) :=
+      {s : σ1 × σ2 | s.fst ∈ M1.accept ∨ s.snd ∈ M2.accept} }
+
+lemma union.SpecFrom
+  (s : σ1 × σ2) (M1 : DFA α σ1) (M2 : DFA α σ2) :
+    acceptsFrom (union M1 M2) s = M1.acceptsFrom s.fst ∪ M2.acceptsFrom s.snd := by
+    apply Set.ext
+    intros xs
+    dsimp [acceptsFrom, evalFrom, union, accept]
+    rw [Set.mem_union, Set.mem_setOf, Set.mem_setOf]
+    revert s
+    induction xs
+    case nil =>
+      simp
+    case cons x xs ih =>
+      intro s
+      rw [List.foldl_cons, List.foldl_cons, List.foldl_cons, ih]
+
+theorem union.Spec
+  (M1 : DFA α σ1) (M2 : DFA α σ2) :
+  accepts (union M1 M2) = M1.accepts ∪ M2.accepts := by
+  dsimp [accepts]
+  rw [union.SpecFrom]
+  dsimp [union, start]
+
+end Union
+
+section Intersection
+
+variable {σ1 : Type v} {σ2 : Type v}
+
+private instance Language.instInter : Inter (Language α) := by
+  apply Set.instInter
+
+/-- DFAs are closed under intersection. -/
+def intersect (M1 : DFA α σ1) (M2 : DFA α σ2) : DFA α (σ1 × σ2) :=
+  { start : σ1 × σ2 := (M1.start, M2.start)
+    step (s : σ1 × σ2) (a : α) : σ1 × σ2 :=
+      (M1.step s.fst a, M2.step s.snd a)
+    accept : Set (σ1 × σ2) :=
+      {s : σ1 × σ2 | s.fst ∈ M1.accept ∧ s.snd ∈ M2.accept} }
+
+lemma intersect.SpecFrom
+  (s : σ1 × σ2) (M1 : DFA α σ1) (M2 : DFA α σ2) :
+    acceptsFrom (intersect M1 M2) s = M1.acceptsFrom s.fst ∩ M2.acceptsFrom s.snd := by
+    apply Set.ext
+    intros xs
+    dsimp [acceptsFrom, evalFrom, intersect, accept]
+    rw [Set.mem_inter_iff, Set.mem_setOf, Set.mem_setOf]
+    revert s
+    induction xs
+    case nil =>
+      simp
+    case cons x xs ih =>
+      intro s
+      rw [List.foldl_cons, List.foldl_cons, List.foldl_cons, ih]
+
+theorem intersect.Spec
+  (M1 : DFA α σ1) (M2 : DFA α σ2) :
+  accepts (intersect M1 M2) = M1.accepts ∩ M2.accepts := by
+  dsimp [accepts]
+  rw [intersect.SpecFrom]
+  dsimp [intersect, start]
+
+end Intersection
+
+end Closure
+
 end DFA
 
 /-- A regular language is a language that is defined by a DFA with finite states. -/
