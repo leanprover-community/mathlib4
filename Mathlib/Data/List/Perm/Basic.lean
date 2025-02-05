@@ -27,15 +27,14 @@ open Nat
 namespace List
 variable {α β : Type*} {l : List α}
 
-instance : Trans (@List.Perm α) (@List.Perm α) List.Perm where
-  trans := @List.Perm.trans α
-
 open Perm (swap)
 
 lemma perm_rfl : l ~ l := Perm.refl _
 
 attribute [symm] Perm.symm
 attribute [trans] Perm.trans
+
+instance : IsSymm (List α) Perm := ⟨fun _ _ ↦ .symm⟩
 
 theorem Perm.subset_congr_left {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l₁ ⊆ l₃ ↔ l₂ ⊆ l₃ :=
   ⟨h.symm.subset.trans, h.subset.trans⟩
@@ -53,6 +52,36 @@ theorem set_perm_cons_eraseIdx {n : ℕ} (h : n < l.length) (a : α) :
 theorem getElem_cons_eraseIdx_perm {n : ℕ} (h : n < l.length) :
     l[n] :: l.eraseIdx n ~ l := by
   simpa [h] using (set_perm_cons_eraseIdx h l[n]).symm
+
+theorem perm_insertIdx_iff_of_le {l₁ l₂ : List α} {m n : ℕ} (hm : m ≤ l₁.length)
+    (hn : n ≤ l₂.length) (a : α) : insertIdx m a l₁ ~ insertIdx n a l₂ ↔ l₁ ~ l₂ := by
+  rw [rel_congr_left (perm_insertIdx _ _ hm), rel_congr_right (perm_insertIdx _ _ hn), perm_cons]
+
+alias ⟨_, Perm.insertIdx_of_le⟩ := perm_insertIdx_iff_of_le
+
+@[simp]
+theorem perm_insertIdx_iff {l₁ l₂ : List α} {n : ℕ} {a : α} :
+    insertIdx n a l₁ ~ insertIdx n a l₂ ↔ l₁ ~ l₂ := by
+  wlog hle : length l₁ ≤ length l₂ generalizing l₁ l₂
+  · rw [perm_comm, this (le_of_not_le hle), perm_comm]
+  cases Nat.lt_or_ge (length l₁) n with
+  | inl hn₁ =>
+    rw [insertIdx_of_length_lt _ _ _ hn₁]
+    cases Nat.lt_or_ge (length l₂) n with
+    | inl hn₂ => rw [insertIdx_of_length_lt _ _ _ hn₂]
+    | inr hn₂ =>
+      apply iff_of_false
+      · intro h
+        rw [h.length_eq] at hn₁
+        exact (hn₁.trans_le hn₂).not_le (length_le_length_insertIdx ..)
+      · exact fun h ↦ (hn₁.trans_le hn₂).not_le h.length_eq.ge
+  | inr hn₁ =>
+    exact perm_insertIdx_iff_of_le hn₁ (le_trans hn₁ hle) _
+
+@[gcongr]
+protected theorem Perm.insertIdx {l₁ l₂ : List α} (h : l₁ ~ l₂) (n : ℕ) (a : α) :
+    insertIdx n a l₁ ~ insertIdx n a l₂ :=
+  perm_insertIdx_iff.mpr h
 
 section Rel
 
