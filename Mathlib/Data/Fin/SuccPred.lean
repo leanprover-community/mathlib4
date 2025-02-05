@@ -22,63 +22,40 @@ namespace Fin
 instance : ∀ {n : ℕ}, SuccOrder (Fin n)
   | 0 => by constructor <;> intro a <;> exact elim0 a
   | n + 1 =>
-    SuccOrder.ofCore (fun i => if i < Fin.last n then i + 1 else i)
-      (by
-        intro a ha b
-        rw [isMax_iff_eq_top, eq_top_iff, not_le, top_eq_last] at ha
+    SuccOrder.ofCore
+      (fun i ↦ if hi : i = Fin.last n
+        then Fin.last n else i.succ.castPred (by simpa [← Fin.succ_last]))
+      (fun {i} hi j ↦ by
         dsimp
-        rw [if_pos ha, lt_iff_val_lt_val, le_iff_val_le_val, val_add_one_of_lt ha]
-        exact Nat.lt_iff_add_one_le)
-      (by
-        intro a ha
-        rw [isMax_iff_eq_top, top_eq_last] at ha
-        dsimp
-        rw [if_neg ha.not_lt])
-
-@[simp]
-theorem succ_eq {n : ℕ} : SuccOrder.succ = fun a => if a < Fin.last n then a + 1 else a :=
-  rfl
-
-@[simp]
-theorem succ_apply {n : ℕ} (a) : SuccOrder.succ a = if a < Fin.last n then a + 1 else a :=
-  rfl
+        rw [dif_neg (by simpa using hi)]
+        rfl)
+      (fun i hi ↦ by
+        obtain rfl : i = Fin.last _ := by simpa using hi
+        simp)
 
 @[simp]
 lemma orderSucc_last (n : ℕ)  :
     Order.succ (Fin.last n) = Fin.last n :=
-  if_neg (by simp)
+  dif_pos rfl
 
 @[simp]
 lemma orderSucc_castSucc {n : ℕ} (i : Fin n) :
-    Order.succ i.castSucc = i.succ := by
-  dsimp [Order.succ]
-  rw [if_pos (i.castSucc_lt_last)]
-  aesop
+    Order.succ i.castSucc = i.succ :=
+  dif_neg (fun h ↦ by
+    simp only [Fin.ext_iff, coe_castSucc, val_last] at h
+    omega)
 
 instance : ∀ {n : ℕ}, PredOrder (Fin n)
   | 0 => by constructor <;> first | intro a; exact elim0 a
   | n + 1 =>
-    PredOrder.ofCore (fun x => if x = 0 then 0 else x - 1)
-      (by
-        intro a ha b
-        rw [isMin_iff_eq_bot, eq_bot_iff, not_le, bot_eq_zero] at ha
+    PredOrder.ofCore
+      (fun i ↦ if hi : i = 0 then 0 else (i.pred hi).castSucc)
+      (fun {i} hi j ↦ by
         dsimp
-        rw [if_neg ha.ne', lt_iff_val_lt_val, le_iff_val_le_val, coe_sub_one, if_neg ha.ne',
-          Nat.lt_iff_add_one_le, Nat.le_sub_iff_add_le]
-        exact ha)
-      (by
-        intro a ha
-        rw [isMin_iff_eq_bot, bot_eq_zero] at ha
-        dsimp
-        rwa [if_pos ha, eq_comm])
-
-@[simp]
-theorem pred_eq {n} : PredOrder.pred = fun a : Fin (n + 1) => if a = 0 then 0 else a - 1 :=
-  rfl
-
-@[simp]
-theorem pred_apply {n : ℕ} (a : Fin (n + 1)) : PredOrder.pred a = if a = 0 then 0 else a - 1 :=
-  rfl
+        rw [dif_neg (by simpa using hi), Fin.le_castSucc_pred_iff])
+      (fun i hi ↦ by
+        obtain rfl : i = 0 := by simpa using hi
+        simp)
 
 @[simp]
 lemma orderPred_zero (n : ℕ) :
@@ -87,9 +64,7 @@ lemma orderPred_zero (n : ℕ) :
 
 @[simp]
 lemma orderPred_succ {n : ℕ} (i : Fin n) :
-    Order.pred i.succ = i.castSucc := by
-  dsimp [Order.pred]
-  rw [if_neg i.succ_ne_zero, ← add_left_inj 1,
-    sub_add_cancel, coeSucc_eq_succ]
+    Order.pred i.succ = i.castSucc :=
+  rfl
 
 end Fin
