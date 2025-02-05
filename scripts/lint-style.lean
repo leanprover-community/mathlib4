@@ -14,8 +14,10 @@ import Cli.Basic
 
 This file defines the `lint-style` executable which runs all text-based style linters.
 The linters themselves are defined in `Mathlib.Tactic.Linter.TextBased`.
+This script can be run run in Mathlib (and is used in its CI), but also in projects depending
+on it: to do the latter, pass it the libraries to lint.
 
-In addition, this checks that
+When linting mathlib, this script additionally checks that
 - `Mathlib.Init` is (transitively) imported in all of mathlib, and
 - every file in `scripts` is documented in its top-level README.
 -/
