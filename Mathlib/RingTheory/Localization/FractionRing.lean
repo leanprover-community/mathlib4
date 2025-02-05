@@ -530,7 +530,7 @@ noncomputable def algEquiv (K : Type*) [CommRing K] [Algebra A K] [IsFractionRin
     FractionRing A ≃ₐ[A] K :=
   Localization.algEquiv (nonZeroDivisors A) K
 
-theorem algEquiv_comp_algebraMap {K B L : Type*} [CommRing K] [Algebra A K] [IsFractionRing A K]
+theorem algEquiv_comp_algebraMap (K B L : Type*) [CommRing K] [Algebra A K] [IsFractionRing A K]
     [CommRing B] [IsDomain B] [CommRing L] [Algebra B L] [IsFractionRing A K]
     [IsFractionRing B L] [Algebra A B] [Algebra (FractionRing A) (FractionRing B)] [Algebra K L]
     [Algebra A L] [IsScalarTower A K L] [IsScalarTower A (FractionRing A) (FractionRing B)]
