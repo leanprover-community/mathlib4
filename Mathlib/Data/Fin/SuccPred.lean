@@ -45,6 +45,17 @@ lemma orderSucc_castSucc {n : ℕ} (i : Fin n) :
     simp only [Fin.ext_iff, coe_castSucc, val_last] at h
     omega)
 
+theorem succ_eq {n : ℕ} :
+    Order.succ = fun a : Fin (n + 1) => if a < Fin.last n then a + 1 else a := by
+  ext a : 1
+  obtain ⟨a, rfl⟩ | rfl := a.eq_castSucc_or_eq_last
+  · simp [if_pos a.castSucc_lt_last]
+  · simp
+
+theorem succ_apply {n : ℕ} (a : Fin (n + 1)) :
+    Order.succ a = if a < Fin.last n then a + 1 else a := by
+  rw [succ_eq]
+
 instance : ∀ {n : ℕ}, PredOrder (Fin n)
   | 0 => by constructor <;> first | intro a; exact elim0 a
   | n + 1 =>
@@ -66,5 +77,21 @@ lemma orderPred_zero (n : ℕ) :
 lemma orderPred_succ {n : ℕ} (i : Fin n) :
     Order.pred i.succ = i.castSucc :=
   rfl
+
+theorem pred_eq {n} : Order.pred = fun a : Fin (n + 1) => if a = 0 then 0 else a - 1 := by
+  ext a : 1
+  obtain rfl | ⟨a, rfl⟩ := a.eq_zero_or_eq_succ
+  · rfl
+  · rw [orderPred_succ, if_neg a.succ_ne_zero, ← add_left_inj 1,
+      coeSucc_eq_succ, sub_add_cancel]
+
+theorem pred_apply {n : ℕ} (a : Fin (n + 1)) : Order.pred a = if a = 0 then 0 else a - 1 := by
+  rw [pred_eq]
+
+attribute [deprecated "Use orderSucc_castSucc or orderSucc_last" (since := "2025-02-05")]
+  succ_eq succ_apply
+
+attribute [deprecated "Use orderPred_zero or orderPred_succ" (since := "2025-02-05")]
+  pred_eq pred_apply
 
 end Fin
