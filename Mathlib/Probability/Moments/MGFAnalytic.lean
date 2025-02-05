@@ -33,18 +33,18 @@ namespace ProbabilityTheory
 variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω} {t u v : ℝ}
 
 /-- For `t : ℝ` with `t ∈ interior (integrableExpSet X μ)`, the derivative of the function
-`x ↦ μ[X ^ n * rexp (x * X)]` at `t` is `μ[X ^ (n + 1) * rexp (t * X)]`. -/
+`x ↦ μ[X ^ n * exp (x * X)]` at `t` is `μ[X ^ (n + 1) * exp (t * X)]`. -/
 lemma hasDerivAt_integral_pow_mul_exp_real (ht : t ∈ interior (integrableExpSet X μ)) (n : ℕ) :
-    HasDerivAt (fun t ↦ μ[fun ω ↦ X ω ^ n * rexp (t * X ω)])
-      μ[fun ω ↦ X ω ^ (n + 1) * rexp (t * X ω)] t := by
+    HasDerivAt (fun t ↦ μ[fun ω ↦ X ω ^ n * exp (t * X ω)])
+      μ[fun ω ↦ X ω ^ (n + 1) * exp (t * X ω)] t := by
   have h_re_of_mem n t (ht' : t ∈ interior (integrableExpSet X μ)) :
-      (∫ ω, X ω ^ n * Complex.exp (t * X ω) ∂μ).re = ∫ ω, X ω ^ n * rexp (t * X ω) ∂μ := by
+      (∫ ω, X ω ^ n * Complex.exp (t * X ω) ∂μ).re = ∫ ω, X ω ^ n * exp (t * X ω) ∂μ := by
     rw [← RCLike.re_eq_complex_re, ← integral_re]
     · norm_cast
     · refine integrable_pow_mul_cexp_of_re_mem_interior_integrableExpSet ?_ n
       simpa using ht'
   have h_re n : ∀ᶠ t' : ℝ in 𝓝 t, (∫ ω, X ω ^ n * Complex.exp (t' * X ω) ∂μ).re
-      = ∫ ω, X ω ^ n * rexp (t' * X ω) ∂μ := by
+      = ∫ ω, X ω ^ n * exp (t' * X ω) ∂μ := by
     filter_upwards [isOpen_interior.eventually_mem ht] with t ht' using h_re_of_mem n t ht'
   rw [← EventuallyEq.hasDerivAt_iff (h_re _), ← h_re_of_mem _ t ht]
   exact (hasDerivAt_integral_pow_mul_exp (by simp [ht]) n).real_of_complex
@@ -174,7 +174,7 @@ lemma deriv_cgf (h : v ∈ interior (integrableExpSet X μ)) :
   calc deriv (fun x ↦ log (mgf X μ x)) v
   _ = deriv (mgf X μ) v / mgf X μ v := by
     rw [deriv.log (differentiableAt_mgf h) ((mgf_pos' hμ hv).ne')]
-  _ = μ[fun ω ↦ X ω * rexp (v * X ω)] / mgf X μ v := by rw [deriv_mgf h]
+  _ = μ[fun ω ↦ X ω * exp (v * X ω)] / mgf X μ v := by rw [deriv_mgf h]
 
 lemma deriv_cgf_zero (h : 0 ∈ interior (integrableExpSet X μ)) :
     deriv (cgf X μ) 0 = μ[X] / (μ Set.univ).toReal := by simp [deriv_cgf h]
@@ -193,25 +193,25 @@ lemma iteratedDeriv_two_cgf (h : v ∈ interior (integrableExpSet X μ)) :
   have h_d_mgf : deriv (mgf X μ) =ᶠ[𝓝 v] fun u ↦ μ[fun ω ↦ X ω * exp (u * X ω)] := by
     filter_upwards [h_mem] with u hu using deriv_mgf hu
   rw [h_d_cgf.deriv_eq]
-  calc deriv (fun u ↦ (∫ ω, X ω * rexp (u * X ω) ∂μ) / mgf X μ u) v
-  _ = (deriv (fun u ↦ ∫ ω, X ω * rexp (u * X ω) ∂μ) v * mgf X μ v -
-      (∫ ω, X ω * rexp (v * X ω) ∂μ) * deriv (mgf X μ) v) / mgf X μ v ^ 2 := by
+  calc deriv (fun u ↦ (∫ ω, X ω * exp (u * X ω) ∂μ) / mgf X μ u) v
+  _ = (deriv (fun u ↦ ∫ ω, X ω * exp (u * X ω) ∂μ) v * mgf X μ v -
+      (∫ ω, X ω * exp (v * X ω) ∂μ) * deriv (mgf X μ) v) / mgf X μ v ^ 2 := by
     rw [deriv_div]
     · rw [h_d_mgf.symm.differentiableAt_iff, ← iteratedDeriv_one]
       exact differentiableAt_iteratedDeriv_mgf h 1
     · exact differentiableAt_mgf h
     · exact (mgf_pos' hμ (interior_subset (s := integrableExpSet X μ) h)).ne'
-  _ = (deriv (fun u ↦ ∫ ω, X ω * rexp (u * X ω) ∂μ) v * mgf X μ v -
-      (∫ ω, X ω * rexp (v * X ω) ∂μ) * ∫ ω, X ω * rexp (v * X ω) ∂μ) / mgf X μ v ^ 2 := by
+  _ = (deriv (fun u ↦ ∫ ω, X ω * exp (u * X ω) ∂μ) v * mgf X μ v -
+      (∫ ω, X ω * exp (v * X ω) ∂μ) * ∫ ω, X ω * exp (v * X ω) ∂μ) / mgf X μ v ^ 2 := by
     rw [deriv_mgf h]
-  _ = deriv (fun u ↦ ∫ ω, X ω * rexp (u * X ω) ∂μ) v / mgf X μ v - deriv (cgf X μ) v ^ 2 := by
+  _ = deriv (fun u ↦ ∫ ω, X ω * exp (u * X ω) ∂μ) v / mgf X μ v - deriv (cgf X μ) v ^ 2 := by
     rw [sub_div]
     congr 1
     · rw [pow_two, div_mul_eq_div_div, mul_div_assoc, div_self, mul_one]
       exact (mgf_pos' hμ (interior_subset (s := integrableExpSet X μ) h)).ne'
     · rw [deriv_cgf h]
       ring
-  _ = (∫ ω, (X ω) ^ 2 * rexp (v * X ω) ∂μ) / mgf X μ v - deriv (cgf X μ) v ^ 2 := by
+  _ = (∫ ω, (X ω) ^ 2 * exp (v * X ω) ∂μ) / mgf X μ v - deriv (cgf X μ) v ^ 2 := by
     congr
     convert (hasDerivAt_integral_pow_mul_exp_real h 1).deriv using 1
     simp
@@ -223,19 +223,19 @@ lemma iteratedDeriv_two_cgf_eq_integral (h : v ∈ interior (integrableExpSet X 
   · have : deriv (0 : ℝ → ℝ) = 0 := by ext; exact deriv_const _ 0
     simp [hμ, this, iteratedDeriv_succ]
   rw [iteratedDeriv_two_cgf h]
-  calc (∫ ω, (X ω) ^ 2 * rexp (v * X ω) ∂μ) / mgf X μ v - deriv (cgf X μ) v ^ 2
-  _ = (∫ ω, (X ω) ^ 2 * rexp (v * X ω) ∂μ - 2 * (∫ ω, X ω * rexp (v * X ω) ∂μ) * deriv (cgf X μ) v
+  calc (∫ ω, (X ω) ^ 2 * exp (v * X ω) ∂μ) / mgf X μ v - deriv (cgf X μ) v ^ 2
+  _ = (∫ ω, (X ω) ^ 2 * exp (v * X ω) ∂μ - 2 * (∫ ω, X ω * exp (v * X ω) ∂μ) * deriv (cgf X μ) v
       + deriv (cgf X μ) v ^ 2 * mgf X μ v) / mgf X μ v := by
     rw [add_div, sub_div, sub_add]
     congr 1
     rw [mul_div_cancel_right₀, deriv_cgf h]
     · ring
     · exact (mgf_pos' hμ (interior_subset (s := integrableExpSet X μ) h)).ne'
-  _ = (∫ ω, ((X ω) ^ 2 - 2 * X ω * deriv (cgf X μ) v + deriv (cgf X μ) v ^ 2) * rexp (v * X ω) ∂μ)
+  _ = (∫ ω, ((X ω) ^ 2 - 2 * X ω * deriv (cgf X μ) v + deriv (cgf X μ) v ^ 2) * exp (v * X ω) ∂μ)
       / mgf X μ v := by
     congr 1
     simp_rw [add_mul, sub_mul]
-    have h_int : Integrable (fun ω ↦ 2 * X ω * deriv (cgf X μ) v * rexp (v * X ω)) μ := by
+    have h_int : Integrable (fun ω ↦ 2 * X ω * deriv (cgf X μ) v * exp (v * X ω)) μ := by
       simp_rw [mul_assoc, mul_comm (deriv (cgf X μ) v)]
       refine Integrable.const_mul ?_ _
       simp_rw [← mul_assoc]
@@ -252,7 +252,7 @@ lemma iteratedDeriv_two_cgf_eq_integral (h : v ∈ interior (integrableExpSet X 
       congr with ω
       ring
     · rw [integral_mul_left, mgf]
-  _ = (∫ ω, (X ω - deriv (cgf X μ) v) ^ 2 * rexp (v * X ω) ∂μ) / mgf X μ v := by
+  _ = (∫ ω, (X ω - deriv (cgf X μ) v) ^ 2 * exp (v * X ω) ∂μ) / mgf X μ v := by
     congr with ω
     ring
 
