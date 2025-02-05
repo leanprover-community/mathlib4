@@ -83,6 +83,21 @@ protected theorem Perm.insertIdx {l₁ l₂ : List α} (h : l₁ ~ l₂) (n : �
     insertIdx n a l₁ ~ insertIdx n a l₂ :=
   perm_insertIdx_iff.mpr h
 
+theorem perm_eraseIdx_of_getElem?_eq {l₁ l₂ : List α} {m n : ℕ} (h : l₁[m]? = l₂[n]?) :
+    eraseIdx l₁ m ~ eraseIdx l₂ n ↔ l₁ ~ l₂ := by
+  cases Nat.lt_or_ge m l₁.length with
+  | inl hm =>
+    rw [getElem?_eq_getElem hm, eq_comm, getElem?_eq_some_iff] at h
+    cases h with
+    | intro hn hnm =>
+      rw [← perm_cons l₁[m], rel_congr_left (getElem_cons_eraseIdx_perm ..), ← hnm,
+        rel_congr_right (getElem_cons_eraseIdx_perm ..)]
+  | inr hm =>
+    rw [getElem?_eq_none hm, eq_comm, getElem?_eq_none_iff] at h
+    rw [eraseIdx_of_length_le h, eraseIdx_of_length_le hm]
+
+alias ⟨_, Perm.eraseIdx_of_getElem?_eq⟩ := perm_eraseIdx_of_getElem?_eq
+
 section Rel
 
 open Relator
