@@ -16,8 +16,7 @@ some related results.
 
 - `IsPurelyInseparable.HasExponent`: typeclass to assert a purely inseparable field extension
   `L / K` has an exponent, that is a smallest natural number `e` such that
-  `a ^ ringExpChar K ^ e ∈ K`
-  for all `a ∈ L`.
+  `a ^ ringExpChar K ^ e ∈ K` for all `a ∈ L`.
 - `IsPurelyInseparable.exponent`: the exponent of a purely inseparable field extension.
 - `IsPurelyInseparable.elemExponent`: the exponent of an element of a purely inseparable
   field extension, that is the smallest natural number `e` such that `a ^ ringExpChar K ^ e ∈ K`.
@@ -106,7 +105,7 @@ variable {K} in
 theorem elemExponent_eq_zero_of_mem_range {a : L} (h : a ∈ (algebraMap K L).range) :
     elemExponent K a = 0 := by
   apply (Nat.find_eq_zero _).mpr
-  simp
+  rw [pow_zero, pow_one]
   obtain ⟨y, hy⟩ := h
   exact ⟨y, hy ▸ minpoly.eq_X_sub_C L y⟩
 
@@ -166,9 +165,7 @@ instance hasExponent_of_finiteDimensional [IsPurelyInseparable K L] [FiniteDimen
     have h_elemexp_bound (a : L) : elemExponent K a ≤ e :=
       Nat.le_log_of_pow_le (Nat.Prime.one_lt <| ringExpChar.eq K p ▸ hp)
         (minpoly_natDegree_eq K a ▸ minpoly.natDegree_le a)
-    rw [RingHom.map_pow,
-      algebraMap_elemReduct_eq,
-      ← pow_mul, ← pow_add,
+    rw [RingHom.map_pow, algebraMap_elemReduct_eq, ← pow_mul, ← pow_add,
       Nat.add_sub_cancel' (h_elemexp_bound a)]
 
 /-- An exponent of an element is less or equal than exponent of the extension
