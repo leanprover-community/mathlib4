@@ -183,7 +183,7 @@ instance : (invariantsFunctor k G).Additive where
 
 /-- The adjunction between the functor equipping a module with the trivial representation, and
 the functor sending a representation to its submodule of invariants. -/
-noncomputable abbrev invariantsAdjunction : trivialFunctor ⊣ invariantsFunctor k G :=
+noncomputable abbrev invariantsAdjunction : trivialFunctor G ⊣ invariantsFunctor k G :=
   Adjunction.mkOfHomEquiv {
     homEquiv := fun _ _ => {
       toFun := fun f => ModuleCat.ofHom <|
