@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.MeasureTheory.Measure.GiryMonad
-import Mathlib.CategoryTheory.ConcreteCategory.UnbundledHom
 import Mathlib.CategoryTheory.Monad.Algebra
 import Mathlib.Topology.Category.TopCat.Basic
 
