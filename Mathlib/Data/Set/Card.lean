@@ -149,6 +149,8 @@ section Lattice
 theorem encard_le_encard (h : s ⊆ t) : s.encard ≤ t.encard := by
   rw [← union_diff_cancel h, encard_union_eq disjoint_sdiff_right]; exact le_self_add
 
+@[deprecated (since := "2025-01-05")] alias encard_le_card := encard_le_encard
+
 theorem encard_mono {α : Type*} : Monotone (encard : Set α → ℕ∞) :=
   fun _ _ ↦ encard_le_encard
 
