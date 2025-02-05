@@ -74,19 +74,17 @@ lemma mulLeftRight_comp_congr (e : A ≃ₐ[R] B):
     ext; simp [AlgHom.mulLeftRight_apply, LinearEquiv.algConj, LinearEquiv.conj]
   | add _ _ _ _ => simp_all [map_add]
 
-variable {R A B} in
-lemma _root_.FaithfulSMul.ofAlgEquiv [FaithfulSMul R A] (e : A ≃ₐ[R] B) :
-    FaithfulSMul R B where
+lemma _root_.FaithfulSMul.ofInjective {R M N : Type*} [SMul R M] [SMul R N]
+    [Nonempty M] [FaithfulSMul R M] (f : @MulActionHom R R id M _ N _) (hf : Function.Injective f):
+    FaithfulSMul R N where
   eq_of_smul_eq_smul {r1 r2} h12 := by
-    specialize h12 1
-    rw [← e.apply_symm_apply 1, ← map_smul, map_one e.symm, ← map_smul] at h12
-    have : ∀ (a : A), r1 • a = r2 • a := fun a ↦ by
-      rw [← one_mul a, ← smul_mul_assoc, e.injective h12, smul_mul_assoc]
-    exact eq_of_smul_eq_smul this
+    have : ∀ m : M, r1 • f m = r2 • f m := fun m ↦ h12 (f m)
+    simp_rw [← map_smul] at this
+    exact eq_of_smul_eq_smul <| fun m ↦ hf (this m)
 
 theorem of_AlgEquiv (e : A ≃ₐ[R] B) [IsAzumaya R A] : IsAzumaya R B :=
   let _ : Module.Projective R B := .of_equiv e.toLinearEquiv
-  let _ : FaithfulSMul R B := .ofAlgEquiv e
+  let _ : FaithfulSMul R B := .ofInjective ⟨e, map_smul e⟩ e.injective
   let _ : Module.Finite R B := .equiv e.toLinearEquiv
   ⟨Function.Bijective.of_comp_iff (AlgHom.mulLeftRight R B)
     (Algebra.TensorProduct.congr e e.op).bijective |>.1 <| by
