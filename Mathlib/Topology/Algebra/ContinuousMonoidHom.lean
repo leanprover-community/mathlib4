@@ -293,7 +293,6 @@ instance : CommGroup (ContinuousMonoidHom A E) where
   div f g := .comp ⟨divMonoidHom, continuous_div'⟩ (f.prod g)
   div_eq_mul_inv f g := ext fun x => div_eq_mul_inv (f x) (g x)
 
-
 end CommGroup
 
 end ContinuousMonoidHom
