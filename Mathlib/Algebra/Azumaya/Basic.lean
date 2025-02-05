@@ -33,8 +33,7 @@ namespace IsAzumaya
 
 variable (R A B : Type*) [CommSemiring R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
 
-
-lemma AlgHom.mulLeftRight_bij (h : IsAzumaya R A) :
+lemma AlgHom.mulLeftRight_bij [h : IsAzumaya R A] :
     Function.Bijective (AlgHom.mulLeftRight R A) := h.bij
 
 /-- The "canonical" isomorphism between `R ⊗ Rᵒᵖ` and `End R R` which is equal
