@@ -25,8 +25,8 @@ open Matrix
 
 namespace InnerProductGeometry
 
-/- The norm of the cross product of two real vectors equals the product of their individual norms
-  times the sine of the angle between them. -/
+/-- The L2 norm of the cross product of two real vectors (of type `EuclideanSpace ℝ (Fin 3)`)
+equals the product of their individual norms times the sine of the angle between them. -/
 theorem norm_withLpEquiv_crossProduct (a b : EuclideanSpace ℝ (Fin 3)) :
     ‖(WithLp.equiv 2 (Fin 3 → ℝ)).symm (WithLp.equiv _ _ a ×₃ WithLp.equiv _ _ b)‖ =
     ‖a‖ * ‖b‖ * sin (angle a b) := by
@@ -39,7 +39,8 @@ theorem norm_withLpEquiv_crossProduct (a b : EuclideanSpace ℝ (Fin 3)) :
   · linear_combination (‖a‖ * ‖b‖) ^ 2 * (sin_sq_add_cos_sq (angle a b)).symm +
       congrArg (· ^ 2) (cos_angle_mul_norm_mul_norm a b)
 
-/- Same theorem as above but taking in vectors of type `Fin 3 → ℝ`. -/
+/-- The L2 norm of the cross product of two real vectors (of type `Fin 3 → R`)
+equals the product of their individual L2 norms times the sine of the angle between them. -/
 theorem norm_withLpEquiv_symm_crossProduct (a b : Fin 3 → ℝ) :
     ‖(WithLp.equiv 2 (Fin 3 → ℝ)).symm (a ×₃ b)‖ =
     ‖(WithLp.equiv 2 (Fin 3 → ℝ)).symm a‖ * ‖(WithLp.equiv 2 (Fin 3 → ℝ)).symm b‖ *
