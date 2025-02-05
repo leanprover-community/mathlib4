@@ -66,7 +66,7 @@ lemma order_eq_top_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) :
     filter_upwards [h] with z hfz
     rw [hfz, smul_zero]
 
-/-- The order of a mermorphic function `f` at `z₀` equals an integer `n` iff `f` can locally be
+/-- The order of a meromorphic function `f` at `z₀` equals an integer `n` iff `f` can locally be
 written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic and does not vanish at `z₀`. -/
 lemma order_eq_int_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℤ) : hf.order = n ↔
     ∃ g : 𝕜 → E, AnalyticAt 𝕜 g x ∧ g x ≠ 0 ∧ ∀ᶠ z in 𝓝[≠] x, f z = (z - x) ^ n • g z := by
