@@ -55,7 +55,7 @@ equivalence between the categories of `A`-modules and `B`-modules.
 structure MoritaEquivalence
     (A : Type u₁) [Ring A] [Algebra R A]
     (B : Type u₂) [Ring B] [Algebra R B] where
-  /--the underlying equivalence of categories-/
+  /-- The underlying equivalence of categories -/
   eqv : ModuleCat.{max u₁ u₂} A ≌ ModuleCat.{max u₁ u₂} B
   linear : eqv.functor.Linear R := by infer_instance
 
