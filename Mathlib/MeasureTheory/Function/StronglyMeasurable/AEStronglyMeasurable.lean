@@ -443,10 +443,11 @@ protected theorem enorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
 @[deprecated (since := "2025-01-20")] alias ennnorm := AEStronglyMeasurable.enorm
 
 /-- Given strongly strongly measurable functions `f` and `g`, the distance `edist f g` is measurable.
+
 Note that this lemma proves a.e. measurability, **not** a.e. strong measurability.
 This is an intentional decision: for functions taking values in ℝ≥0∞,
 a.e. measurability is much more useful than a.e. strong measurability. -/
-@[aesop safe 20 apply (rule_sets := [Measurable])]
+@[aesop safe 20 apply (rule_sets := [Measurable]), fun_prop]
 protected theorem edist {β : Type*} [SeminormedAddCommGroup β] {f g : α → β}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     AEMeasurable (fun a => edist (f a) (g a)) μ :=
