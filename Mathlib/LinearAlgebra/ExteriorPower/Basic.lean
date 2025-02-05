@@ -246,8 +246,7 @@ lemma map_comp_ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) (f : M �
 lemma map_apply_ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) (f : M →ₗ[R] N)
   (s : {s : Finset I // s.card = n}) :
     (map n f) (ιMulti_family R n v s) = ιMulti_family R n (f ∘ v) s := by
-  unfold ιMulti_family
-  simp only [map, alternatingMapLinearEquiv_apply_ιMulti]
+  simp only [ιMulti_family, map, alternatingMapLinearEquiv_apply_ιMulti]
   rfl
 
 @[simp]
