@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Geoffrey Irving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Loeffler, Geoffrey Irving
+Authors: David Loeffler, Geoffrey Irving, Stefan Kebekus
 -/
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Linear
@@ -695,7 +695,7 @@ lemma AnalyticOnNhd.mul {f g : E → A} {s : Set E}
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
 lemma AnalyticWithinAt.pow {f : E → A} {z : E} {s : Set E} (hf : AnalyticWithinAt 𝕜 f s z) (n : ℕ) :
-    AnalyticWithinAt 𝕜 (fun x ↦ f x ^ n) s z := by
+    AnalyticWithinAt 𝕜 (f ^ n) s z := by
   induction n with
   | zero =>
     simp only [pow_zero]
@@ -705,14 +705,29 @@ lemma AnalyticWithinAt.pow {f : E → A} {z : E} {s : Set E} (hf : AnalyticWithi
     exact hm.mul hf
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
+lemma AnalyticWithinAt.pow' {f : E → A} {z : E} {s : Set E} (hf : AnalyticWithinAt 𝕜 f s z)
+    (n : ℕ) :
+    AnalyticWithinAt 𝕜 (fun x ↦ f x ^ n) s z := AnalyticWithinAt.pow hf n
+
+/-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
 @[fun_prop]
 lemma AnalyticAt.pow {f : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (n : ℕ) :
-    AnalyticAt 𝕜 (fun x ↦ f x ^ n) z := by
+    AnalyticAt 𝕜 (f ^ n) z := by
   rw [← analyticWithinAt_univ] at hf ⊢
   exact hf.pow n
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
+@[fun_prop]
+lemma AnalyticAt.pow' {f : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (n : ℕ) :
+    AnalyticAt 𝕜 (fun x ↦ f x ^ n) z := AnalyticAt.pow hf n
+
+/-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
 lemma AnalyticOn.pow {f : E → A} {s : Set E} (hf : AnalyticOn 𝕜 f s) (n : ℕ) :
+    AnalyticOn 𝕜 (f ^ n) s :=
+  fun _ m ↦ (hf _ m).pow n
+
+/-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
+lemma AnalyticOn.pow' {f : E → A} {s : Set E} (hf : AnalyticOn 𝕜 f s) (n : ℕ) :
     AnalyticOn 𝕜 (fun x ↦ f x ^ n) s :=
   fun _ m ↦ (hf _ m).pow n
 
@@ -721,8 +736,12 @@ alias AnalyticWithinOn.pow := AnalyticOn.pow
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
 lemma AnalyticOnNhd.pow {f : E → A} {s : Set E} (hf : AnalyticOnNhd 𝕜 f s) (n : ℕ) :
-    AnalyticOnNhd 𝕜 (fun x ↦ f x ^ n) s :=
+    AnalyticOnNhd 𝕜 (f ^ n) s :=
   fun _ m ↦ (hf _ m).pow n
+
+/-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
+lemma AnalyticOnNhd.pow' {f : E → A} {s : Set E} (hf : AnalyticOnNhd 𝕜 f s) (n : ℕ) :
+    AnalyticOnNhd 𝕜 (fun x ↦ f x ^ n) s := AnalyticOnNhd.pow hf n
 
 
 /-!
