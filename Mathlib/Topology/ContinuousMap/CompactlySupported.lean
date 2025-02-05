@@ -643,7 +643,6 @@ protected lemma exists_add_of_le {f₁ f₂ : C_c(α, ℝ≥0)} (h : f₁ ≤ f�
   · ext x
     simpa [← NNReal.coe_add] using add_tsub_cancel_of_le (h x)
 
-
 /-- The nonnegative part of a bounded continuous `ℝ`-valued function as a bounded
 continuous `ℝ≥0`-valued function. -/
 noncomputable def nnrealPart (f : C_c(α, ℝ)) : C_c(α, ℝ≥0) where

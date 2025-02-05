@@ -1072,7 +1072,6 @@ theorem lintegral_coe_eq_integral (f : α → ℝ≥0) (hfi : Integrable (fun x 
   rw [ENNReal.ofReal_toReal]
   rw [← lt_top_iff_ne_top]
   convert hfi.hasFiniteIntegral
-  -- Porting note: `convert` no longer unfolds `HasFiniteIntegral`
   simp_rw [hasFiniteIntegral_iff_enorm, NNReal.enorm_eq]
 
 theorem ofReal_integral_eq_lintegral_ofReal {f : α → ℝ} (hfi : Integrable f μ) (f_nn : 0 ≤ᵐ[μ] f) :
