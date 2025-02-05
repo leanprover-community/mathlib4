@@ -41,7 +41,6 @@ The constructions of the ring homomorphisms go through an auxiliary constructor
 
 noncomputable section
 
-open scoped Classical
 open Nat IsLocalRing Padic
 
 namespace PadicInt
@@ -289,10 +288,11 @@ theorem ker_toZMod : RingHom.ker (toZMod : ℤ_[p] →+* ZMod p) = maximalIdeal 
     · apply sub_zmodRepr_mem
 
 /-- The equivalence between the residue field of the `p`-adic integers and `ℤ/pℤ` -/
-def residueField : IsLocalRing.ResidueField ℤ_[p] ≃+* ZMod p := by
-  exact_mod_cast (@PadicInt.ker_toZMod p _) ▸ RingHom.quotientKerEquivOfSurjective
-    (ZMod.ringHom_surjective PadicInt.toZMod)
+def residueField : IsLocalRing.ResidueField ℤ_[p] ≃+* ZMod p :=
+  (Ideal.quotEquivOfEq PadicInt.ker_toZMod.symm).trans <|
+    RingHom.quotientKerEquivOfSurjective (ZMod.ringHom_surjective PadicInt.toZMod)
 
+open scoped Classical in
 /-- `appr n x` gives a value `v : ℕ` such that `x` and `↑v : ℤ_p` are congruent mod `p^n`.
 See `appr_spec`. -/
 -- Porting note: removing irreducible solves a lot of problems
@@ -303,7 +303,7 @@ noncomputable def appr : ℤ_[p] → ℕ → ℕ
     if hy : y = 0 then appr x n
     else
       let u := (unitCoeff hy : ℤ_[p])
-      appr x n + p ^ n * (toZMod ((u * (p : ℤ_[p]) ^ (y.valuation - n).natAbs) : ℤ_[p])).val
+      appr x n + p ^ n * (toZMod ((u * (p : ℤ_[p]) ^ (y.valuation - n : ℤ).natAbs) : ℤ_[p])).val
 
 theorem appr_lt (x : ℤ_[p]) (n : ℕ) : x.appr n < p ^ n := by
   induction' n with n ih generalizing x
@@ -364,21 +364,18 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
     congr
     simp only [hc]
   rw [show (x - (appr x n : ℤ_[p])).valuation = ((p : ℤ_[p]) ^ n * c).valuation by rw [hc]]
-  rw [valuation_p_pow_mul _ _ hc', add_sub_cancel_left, _root_.pow_succ, ← mul_sub]
+  rw [valuation_p_pow_mul _ _ hc', Nat.cast_add, add_sub_cancel_left, _root_.pow_succ, ← mul_sub]
   apply mul_dvd_mul_left
-  obtain hc0 | hc0 := eq_or_ne c.valuation.natAbs 0
-  · simp only [hc0, mul_one, _root_.pow_zero]
+  obtain hc0 | hc0 := eq_or_ne c.valuation 0
+  · simp only [hc0, mul_one, _root_.pow_zero, Nat.cast_zero, Int.natAbs_zero]
     rw [mul_comm, unitCoeff_spec h] at hc
     suffices c = unitCoeff h by
       rw [← this, ← Ideal.mem_span_singleton, ← maximalIdeal_eq_span_p]
       apply toZMod_spec
-    obtain ⟨c, rfl⟩ : IsUnit c := by
-      -- TODO: write a `CanLift` instance for units
-      rw [Int.natAbs_eq_zero] at hc0
-      rw [isUnit_iff, norm_eq_pow_val hc', hc0, neg_zero, zpow_zero]
+    lift c to ℤ_[p]ˣ using by simp [isUnit_iff, norm_eq_zpow_neg_valuation hc', hc0]
     rw [IsDiscreteValuationRing.unit_mul_pow_congr_unit _ _ _ _ _ hc]
     exact irreducible_p
-  · simp only [zero_pow hc0, sub_zero, ZMod.cast_zero, mul_zero]
+  · simp only [Int.natAbs_ofNat, zero_pow hc0, sub_zero, ZMod.cast_zero, mul_zero]
     rw [unitCoeff_spec hc']
     exact (dvd_pow_self (p : ℤ_[p]) hc0).mul_left _
 
@@ -448,9 +445,6 @@ theorem denseRange_natCast : DenseRange (Nat.cast : ℕ → ℤ_[p]) := by
   rw [norm_le_pow_iff_mem_span_pow]
   apply appr_spec
 
-@[deprecated (since := "2024-04-17")]
-alias denseRange_nat_cast := denseRange_natCast
-
 theorem denseRange_intCast : DenseRange (Int.cast : ℤ → ℤ_[p]) := by
   intro x
   refine DenseRange.induction_on denseRange_natCast x ?_ ?_
@@ -458,9 +452,6 @@ theorem denseRange_intCast : DenseRange (Int.cast : ℤ → ℤ_[p]) := by
   · intro a
     apply subset_closure
     exact Set.mem_range_self _
-
-@[deprecated (since := "2024-04-17")]
-alias denseRange_int_cast := denseRange_intCast
 
 end RingHoms
 

@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.Kaehler.Polynomial
-import Mathlib.RingTheory.Generators
+import Mathlib.Algebra.Module.FinitePresentation
+import Mathlib.RingTheory.Presentation
 
 /-!
 
@@ -206,10 +207,7 @@ def Hom.sub (f g : Hom P P') : P.CotangentSpace →ₗ[S] P'.Cotangent := by
     map_one_eq_zero' := ?_
     leibniz' := ?_ }
   · ext
-    simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply,
-      Cotangent.val_mk, Cotangent.val_zero, Ideal.toCotangent_eq_zero]
-    erw [LinearMap.codRestrict_apply]
-    simp only [LinearMap.sub_apply, AlgHom.toLinearMap_apply, map_one, sub_self, Submodule.zero_mem]
+    simp [Ideal.toCotangent_eq_zero]
   · intro x y
     ext
     simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply,
@@ -353,6 +351,23 @@ lemma H1Cotangent.map_comp
     map (g.comp f) = (map g).restrictScalars S ∘ₗ map f := by
   ext; simp [Cotangent.map_comp]
 
+/-- Maps `P₁ → P₂` and `P₂ → P₁` between extensions
+induce an isomorphism between `H¹(L_P₁)` and `H¹(L_P₂)`. -/
+@[simps! apply]
+noncomputable
+def H1Cotangent.equiv {P₁ P₂ : Extension R S} (f₁ : P₁.Hom P₂) (f₂ : P₂.Hom P₁) :
+    P₁.H1Cotangent ≃ₗ[S] P₂.H1Cotangent where
+  __ := map f₁
+  invFun := map f₂
+  left_inv x :=
+    show (map f₂ ∘ₗ map f₁) x = LinearMap.id x by
+    rw [← Extension.H1Cotangent.map_id, eq_comm, map_eq _ (f₂.comp f₁),
+      Extension.H1Cotangent.map_comp]; rfl
+  right_inv x :=
+    show (map f₁ ∘ₗ map f₂) x = LinearMap.id x by
+    rw [← Extension.H1Cotangent.map_id, eq_comm, map_eq _ (f₁.comp f₂),
+      Extension.H1Cotangent.map_comp]; rfl
+
 end Extension
 
 namespace Generators
@@ -377,8 +392,11 @@ lemma cotangentSpaceBasis_repr_one_tmul (x i) :
   simp
 
 lemma cotangentSpaceBasis_apply (i) :
-    P.cotangentSpaceBasis i = 1 ⊗ₜ .D _ _ (.X i) := by
+    P.cotangentSpaceBasis i = ((1 : S) ⊗ₜ[P.Ring] D R P.Ring (.X i) :) := by
   simp [cotangentSpaceBasis, toExtension]
+
+instance (P : Generators R S) : Module.Free S P.toExtension.CotangentSpace :=
+  .of_basis P.cotangentSpaceBasis
 
 universe w' u' v'
 
@@ -411,7 +429,23 @@ lemma repr_CotangentSpaceMap (f : Hom P P') (i j) :
   rw [CotangentSpace.map_tmul, map_one]
   erw [cotangentSpaceBasis_repr_one_tmul, Hom.toAlgHom_X]
 
+@[simp]
+lemma toKaehler_cotangentSpaceBasis (i) :
+    P.toExtension.toKaehler (P.cotangentSpaceBasis i) = D R S (P.val i) := by
+  rw [cotangentSpaceBasis_apply]
+  exact (KaehlerDifferential.mapBaseChange_tmul ..).trans (by simp)
+
 end Generators
+
+-- TODO: generalize to essentially of finite presentation algebras
+open KaehlerDifferential in
+attribute [local instance] Module.finitePresentation_of_projective in
+instance [Algebra.FinitePresentation R S] : Module.FinitePresentation S (Ω[S⁄R]) := by
+  let P := Algebra.Presentation.ofFinitePresentation R S
+  have : Algebra.FiniteType R P.toExtension.Ring := .mvPolynomial _ _
+  refine Module.finitePresentation_of_surjective _ P.toExtension.toKaehler_surjective ?_
+  rw [LinearMap.exact_iff.mp P.toExtension.exact_cotangentComplex_toKaehler, ← Submodule.map_top]
+  exact (Extension.Cotangent.finite P.ideal_fg_of_isFinite).1.map P.toExtension.cotangentComplex
 
 variable {P : Generators R S}
 
@@ -420,19 +454,9 @@ open Extension.H1Cotangent in
 @[simps! apply]
 noncomputable
 def Generators.H1Cotangent.equiv (P : Generators R S) (P' : Generators R S) :
-    P.toExtension.H1Cotangent ≃ₗ[S] P'.toExtension.H1Cotangent where
-  __ := map (Generators.defaultHom P P').toExtensionHom
-  invFun := map (Generators.defaultHom P' P).toExtensionHom
-  left_inv x :=
-    show ((map (defaultHom P' P).toExtensionHom) ∘ₗ
-      (map (defaultHom P P').toExtensionHom)) x = LinearMap.id x by
-    rw [← Extension.H1Cotangent.map_id, eq_comm, map_eq _ ((defaultHom P' P).toExtensionHom.comp
-      (defaultHom P P').toExtensionHom), Extension.H1Cotangent.map_comp]; rfl
-  right_inv x :=
-    show ((map (defaultHom P P').toExtensionHom) ∘ₗ
-      (map (defaultHom P' P).toExtensionHom)) x = LinearMap.id x by
-    rw [← Extension.H1Cotangent.map_id, eq_comm, map_eq _ ((defaultHom P P').toExtensionHom.comp
-      (defaultHom P' P).toExtensionHom), Extension.H1Cotangent.map_comp]; rfl
+    P.toExtension.H1Cotangent ≃ₗ[S] P'.toExtension.H1Cotangent :=
+  Extension.H1Cotangent.equiv
+    (Generators.defaultHom P P').toExtensionHom (Generators.defaultHom P' P).toExtensionHom
 
 variable {S' : Type*} [CommRing S'] [Algebra R S']
 variable {T : Type w} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
@@ -448,6 +472,28 @@ noncomputable
 def H1Cotangent.map : H1Cotangent R S' →ₗ[S'] H1Cotangent S T :=
   Extension.H1Cotangent.map (Generators.defaultHom _ _).toExtensionHom
 
+/-- Isomorphic algebras induce isomorphic `H¹(L_{S/R})`. -/
+noncomputable
+def H1Cotangent.mapEquiv (e : S ≃ₐ[R] S') :
+    H1Cotangent R S ≃ₗ[R] H1Cotangent R S' :=
+  -- we are constructing data, so we do not use `algebraize`
+  letI := e.toRingHom.toAlgebra
+  letI := e.symm.toRingHom.toAlgebra
+  have : IsScalarTower R S S' := .of_algebraMap_eq' e.toAlgHom.comp_algebraMap.symm
+  have : IsScalarTower R S' S := .of_algebraMap_eq' e.symm.toAlgHom.comp_algebraMap.symm
+  have : IsScalarTower S S' S := .of_algebraMap_eq fun _ ↦ (e.symm_apply_apply _).symm
+  have : IsScalarTower S' S S' := .of_algebraMap_eq fun _ ↦ (e.apply_symm_apply _).symm
+  { __ := map R R S S'
+    invFun := map R R S' S
+    left_inv x := by
+      show ((map R R S' S).restrictScalars S ∘ₗ map R R S S') x = x
+      rw [map, map, ← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq,
+        Extension.H1Cotangent.map_id, LinearMap.id_apply]
+    right_inv x := by
+      show ((map R R S S').restrictScalars S' ∘ₗ map R R S' S) x = x
+      rw [map, map, ← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq,
+        Extension.H1Cotangent.map_id, LinearMap.id_apply] }
+
 variable {R S S' T}
 
 /-- `H¹(L_{S/R})` is independent of the presentation chosen. -/
@@ -455,5 +501,22 @@ noncomputable
 abbrev Generators.equivH1Cotangent (P : Generators.{w} R S) :
     P.toExtension.H1Cotangent ≃ₗ[S] H1Cotangent R S :=
   Generators.H1Cotangent.equiv _ _
+
+attribute [local instance] Module.finitePresentation_of_projective in
+instance [FinitePresentation R S] [Module.Projective S (Ω[S⁄R])] :
+    Module.Finite S (H1Cotangent R S) := by
+  let P := Algebra.Presentation.ofFinitePresentation R S
+  have : Algebra.FiniteType R P.toExtension.Ring := FiniteType.mvPolynomial R P.vars
+  suffices Module.Finite S P.toExtension.H1Cotangent from
+    .of_surjective P.equivH1Cotangent.toLinearMap P.equivH1Cotangent.surjective
+  rw [Module.finite_def, Submodule.fg_top, ← LinearMap.ker_rangeRestrict]
+  have := Extension.Cotangent.finite P.ideal_fg_of_isFinite
+  have : Module.FinitePresentation S (LinearMap.range P.toExtension.cotangentComplex) := by
+    rw [← LinearMap.exact_iff.mp P.toExtension.exact_cotangentComplex_toKaehler]
+    exact Module.finitePresentation_of_projective_of_exact
+      _ _ (Subtype.val_injective) P.toExtension.toKaehler_surjective
+      (LinearMap.exact_subtype_ker_map _)
+  exact Module.FinitePresentation.fg_ker (N := LinearMap.range P.toExtension.cotangentComplex)
+    _ P.toExtension.cotangentComplex.surjective_rangeRestrict
 
 end Algebra

@@ -8,6 +8,7 @@ import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.RingTheory.Multiplicity
+import Mathlib.Data.Nat.Lattice
 
 /-!
 # Division of univariate polynomials
@@ -110,12 +111,12 @@ noncomputable def divModByMonicAux : ∀ (_p : R[X]) {q : R[X]}, Monic q → R[X
     else ⟨0, p⟩
   termination_by p => p
 
-/-- `divByMonic` gives the quotient of `p` by a monic polynomial `q`. -/
+/-- `divByMonic`, denoted as `p /ₘ q`, gives the quotient of `p` by a monic polynomial `q`. -/
 def divByMonic (p q : R[X]) : R[X] :=
   letI := Classical.decEq R
   if hq : Monic q then (divModByMonicAux p hq).1 else 0
 
-/-- `modByMonic` gives the remainder of `p` by a monic polynomial `q`. -/
+/-- `modByMonic`, denoted as `p  %ₘ q`, gives the remainder of `p` by a monic polynomial `q`. -/
 def modByMonic (p q : R[X]) : R[X] :=
   letI := Classical.decEq R
   if hq : Monic q then (divModByMonicAux p hq).2 else p
@@ -214,9 +215,20 @@ theorem degree_modByMonic_le (p : R[X]) {q : R[X]} (hq : Monic q) : degree (p %�
   nontriviality R
   exact (degree_modByMonic_lt _ hq).le
 
+theorem degree_modByMonic_le_left : degree (p %ₘ q) ≤ degree p := by
+  nontriviality R
+  by_cases hq : q.Monic
+  · cases lt_or_ge (degree p) (degree q)
+    · rw [(modByMonic_eq_self_iff hq).mpr ‹_›]
+    · exact (degree_modByMonic_le p hq).trans ‹_›
+  · rw [modByMonic_eq_of_not_monic p hq]
+
 theorem natDegree_modByMonic_le (p : Polynomial R) {g : Polynomial R} (hg : g.Monic) :
     natDegree (p %ₘ g) ≤ g.natDegree :=
   natDegree_le_natDegree (degree_modByMonic_le p hg)
+
+theorem natDegree_modByMonic_le_left : natDegree (p %ₘ q) ≤ natDegree p :=
+  natDegree_le_natDegree degree_modByMonic_le_left
 
 theorem X_dvd_sub_C : X ∣ p - C (p.coeff 0) := by
   simp [X_dvd_iff, coeff_C]
@@ -384,9 +396,8 @@ theorem modByMonic_eq_zero_iff_dvd (hq : Monic q) : p %ₘ q = 0 ↔ q ∣ p :=
       degree_eq_natDegree (mt leadingCoeff_eq_zero.2 hrpq0)] at this
     exact not_lt_of_ge (Nat.le_add_right _ _) (WithBot.coe_lt_coe.1 this)⟩
 
-@[deprecated (since := "2024-03-23")] alias dvd_iff_modByMonic_eq_zero := modByMonic_eq_zero_iff_dvd
 
-/-- See `Polynomial.mul_left_modByMonic` for the other multiplication order. That version, unlike
+/-- See `Polynomial.mul_self_modByMonic` for the other multiplication order. That version, unlike
 this one, requires commutativity. -/
 @[simp]
 lemma self_mul_modByMonic (hq : q.Monic) : (q * p) %ₘ q = 0 := by
@@ -422,9 +433,6 @@ theorem mul_divByMonic_cancel_left (p : R[X]) {q : R[X]} (hmo : q.Monic) :
   refine (div_modByMonic_unique _ 0 hmo ⟨by rw [zero_add], ?_⟩).1
   rw [degree_zero]
   exact Ne.bot_lt fun h => hmo.ne_zero (degree_eq_bot.1 h)
-
-@[deprecated (since := "2024-06-30")]
-alias mul_div_mod_by_monic_cancel_left := mul_divByMonic_cancel_left
 
 lemma coeff_divByMonic_X_sub_C_rec (p : R[X]) (a : R) (n : ℕ) :
     (p /ₘ (X - C a)).coeff n = coeff p (n + 1) + a * (p /ₘ (X - C a)).coeff (n + 1) := by
@@ -468,7 +476,7 @@ section multiplicity
 
 /-- An algorithm for deciding polynomial divisibility.
 The algorithm is "compute `p %ₘ q` and compare to `0`".
-See `polynomial.modByMonic` for the algorithm that computes `%ₘ`.
+See `Polynomial.modByMonic` for the algorithm that computes `%ₘ`.
 -/
 def decidableDvdMonic [DecidableEq R] (p : R[X]) (hq : Monic q) : Decidable (q ∣ p) :=
   decidable_of_iff (p %ₘ q = 0) (modByMonic_eq_zero_iff_dvd hq)
@@ -644,7 +652,7 @@ theorem eval_divByMonic_pow_rootMultiplicity_ne_zero {p : R[X]} (a : R) (hp : p 
       (monic_X_sub_C _) hp).not_pow_dvd_of_multiplicity_lt
       (Nat.lt_succ_self _) (dvd_of_mul_right_eq _ this)
 
-/-- See `Polynomial.mul_right_modByMonic` for the other multiplication order. This version, unlike
+/-- See `Polynomial.self_mul_modByMonic` for the other multiplication order. This version, unlike
 that one, requires commutativity. -/
 @[simp]
 lemma mul_self_modByMonic (hq : q.Monic) : (p * q) %ₘ q = 0 := by

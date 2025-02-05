@@ -85,7 +85,6 @@ instance : Inhabited GHSpace :=
   ⟨Quot.mk _ ⟨⟨{0}, isCompact_singleton⟩, singleton_nonempty _⟩⟩
 
 /-- A metric space representative of any abstract point in `GHSpace` -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not yet ported; removed @[nolint has_nonempty_instance]; why?
 def GHSpace.Rep (p : GHSpace) : Type :=
   (Quotient.out p : NonemptyCompacts ℓ_infty_ℝ)
 
@@ -312,7 +311,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
     let Fb := candidatesBOfCandidates F Fgood
     have : hausdorffDist (range (optimalGHInjl X Y)) (range (optimalGHInjr X Y)) ≤ HD Fb :=
       hausdorffDist_optimal_le_HD _ _ (candidatesBOfCandidates_mem F Fgood)
-    refine le_trans this (le_of_forall_le_of_dense fun r hr => ?_)
+    refine le_trans this (le_of_forall_gt_imp_ge_of_dense fun r hr => ?_)
     have I1 : ∀ x : X, (⨅ y, Fb (inl x, inr y)) ≤ r := by
       intro x
       have : f (inl x) ∈ (p : Set _) := Φrange ▸ (mem_range_self _)
@@ -426,8 +425,7 @@ instance : MetricSpace GHSpace where
         In this coupling, the two spaces are at zero Hausdorff distance,
         i.e., they coincide. Therefore, the original spaces are isometric. -/
     rcases ghDist_eq_hausdorffDist x.Rep y.Rep with ⟨Φ, Ψ, Φisom, Ψisom, DΦΨ⟩
-    rw [← dist_ghDist] at DΦΨ
-    simp_rw [hxy] at DΦΨ -- Porting note: I have no idea why this needed `simp_rw` versus `rw`
+    rw [← dist_ghDist, hxy] at DΦΨ
     have : range Φ = range Ψ := by
       have hΦ : IsCompact (range Φ) := isCompact_range Φisom.continuous
       have hΨ : IsCompact (range Ψ) := isCompact_range Ψisom.continuous

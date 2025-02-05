@@ -181,9 +181,10 @@ private lemma bojanic_mahler_step2 {f : C(ℤ_[p], E)} {s t : ℕ}
     refine mul_le_mul_of_nonneg_right ?_ (by simp only [zero_le])
     -- remains to show norm of binomial coeff is `≤ p⁻¹`
     have : 0 < (p ^ t).choose (i + 1) := Nat.choose_pos (by omega)
-    rw [← zpow_neg_one, ← coe_le_coe, coe_nnnorm, Padic.norm_eq_pow_val (mod_cast this.ne'),
-      coe_zpow, NNReal.coe_natCast, (zpow_right_strictMono₀ (mod_cast hp.out.one_lt)).le_iff_le,
-      neg_le_neg_iff, Padic.valuation_natCast, Nat.one_le_cast]
+    rw [← zpow_neg_one, ← coe_le_coe, coe_nnnorm, Padic.norm_eq_zpow_neg_valuation
+      (mod_cast this.ne'), coe_zpow, NNReal.coe_natCast,
+      zpow_le_zpow_iff_right₀ (mod_cast hp.out.one_lt), neg_le_neg_iff, Padic.valuation_natCast,
+      Nat.one_le_cast]
     exact one_le_padicValNat_of_dvd this <| hp.out.dvd_choose_pow (by omega) (by omega)
   · -- Bounding the sum over `range (n + 1)`: every term is small by the choice of `t`
     refine norm_sum_le_of_forall_le_of_nonempty nonempty_range_succ (fun i _ ↦ ?_)
@@ -283,7 +284,7 @@ The value of a Mahler series at a natural number `n` is given by the finite sum 
 terms, for any `n ≤ m`.
 -/
 lemma mahlerSeries_apply_nat (ha : Tendsto a atTop (𝓝 0)) {m n : ℕ} (hmn : m ≤ n) :
-    mahlerSeries a (m : ℤ_[p]) = ∑ i in range (n + 1), m.choose i • a i := by
+    mahlerSeries a (m : ℤ_[p]) = ∑ i ∈ range (n + 1), m.choose i • a i := by
   have h_van (i) : m.choose (i + (n + 1)) = 0 := Nat.choose_eq_zero_of_lt (by omega)
   have aux : Summable fun i ↦ m.choose (i + (n + 1)) • a (i + (n + 1)) := by
     simpa only [h_van, zero_smul] using summable_zero
@@ -325,7 +326,7 @@ variable {p : ℕ} [hp : Fact p.Prime] {E : Type*}
 
 /--
 **Mahler's theorem**: for any continuous function `f` from `ℤ_[p]` to a `p`-adic Banach space, the
-Mahler series with coeffients `n ↦ Δ_[1]^[n] f 0` converges to the original function `f`.
+Mahler series with coefficients `n ↦ Δ_[1]^[n] f 0` converges to the original function `f`.
 -/
 lemma hasSum_mahler (f : C(ℤ_[p], E)) : HasSum (fun n ↦ mahlerTerm (Δ_[1]^[n] f 0) n) f := by
   -- First show `∑' n, mahler_term f n` converges to *something*.
