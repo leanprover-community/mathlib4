@@ -315,6 +315,7 @@ promoted to a measure. It will be later shown that
 `∫ (x : X), f x ∂(rieszMeasure Λ hΛ) = Λ f` for all `f : C_c(X, ℝ≥0)`. -/
 def rieszMeasure := (rieszContent Λ).measure
 
+-- not needed anymore?
 lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : ∀ x, f x ≤ 1)
     {K : Set X} (hK : IsCompact K) (h : tsupport f ⊆ K) : .ofNNReal (Λ f) ≤ rieszMeasure Λ K := by
   rw [← TopologicalSpace.Compacts.coe_mk K hK]
