@@ -224,25 +224,25 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂ {s T 
   have h {t : ℝ} (ht : 0 < t) : t ^ (-s) = t * t ^ (-s - 1) := by
     rw [Real.rpow_sub ht, Real.rpow_one, mul_div_cancel₀ _ ht.ne']
   calc
-    _ ≤ (s - 1) * ∫ (t : ℝ) in Set.Ioi T, ε * t ^ (-s) := ?_
-    _ ≤ ε * ((s - 1) * ∫ (t : ℝ) in Set.Ioi 1, t ^ (-s)) := ?_
-    _ = ε := ?_
-  · refine mul_le_mul_of_nonneg_left (setIntegral_mono_on ?_ ?_ measurableSet_Ioi fun t ht ↦ ?_) ?_
-    · exact (lemma₂ hs hS hT).mono_set <| Set.Ioi_subset_Ici_iff.mpr hT₁
-    · exact (integrableOn_Ioi_rpow_of_lt (neg_lt_neg_iff.mpr hs) hT₀).const_mul  _
-    · have ht' : 0 < t := hT₀.trans ht
-      rw [h ht', ← mul_assoc]
-      exact mul_le_mul_of_nonneg_right (hT t ht.le) (Real.rpow_nonneg ht'.le _)
-    · exact (sub_pos_of_lt hs).le
-  · rw [integral_mul_left, ← mul_assoc, ← mul_assoc, mul_comm ε]
-    refine mul_le_mul_of_nonneg_left (setIntegral_mono_set ?_ ?_
-      (Set.Ioi_subset_Ioi hT₁).eventuallyLE) (mul_nonneg (sub_pos_of_lt hs).le hε.le)
-    · exact integrableOn_Ioi_rpow_of_lt (neg_lt_neg_iff.mpr hs) zero_lt_one
-    · exact (ae_restrict_iff' measurableSet_Ioi).mpr <| univ_mem' fun t ht ↦
+    _ ≤ (s - 1) * ∫ (t : ℝ) in Set.Ioi T, ε * t ^ (-s) := by
+      refine mul_le_mul_of_nonneg_left (setIntegral_mono_on ?_ ?_ measurableSet_Ioi fun t ht ↦ ?_)
+        (sub_pos_of_lt hs).le
+      · exact (lemma₂ hs hS hT).mono_set <| Set.Ioi_subset_Ici_iff.mpr hT₁
+      · exact (integrableOn_Ioi_rpow_of_lt (neg_lt_neg_iff.mpr hs) hT₀).const_mul  _
+      · have ht' : 0 < t := hT₀.trans ht
+        rw [h ht', ← mul_assoc]
+        exact mul_le_mul_of_nonneg_right (hT t ht.le) (Real.rpow_nonneg ht'.le _)
+    _ ≤ ε * ((s - 1) * ∫ (t : ℝ) in Set.Ioi 1, t ^ (-s)) := by
+      rw [integral_mul_left, ← mul_assoc, ← mul_assoc, mul_comm ε]
+      refine mul_le_mul_of_nonneg_left (setIntegral_mono_set ?_ ?_
+        (Set.Ioi_subset_Ioi hT₁).eventuallyLE) (mul_nonneg (sub_pos_of_lt hs).le hε.le)
+      · exact integrableOn_Ioi_rpow_of_lt (neg_lt_neg_iff.mpr hs) zero_lt_one
+      · exact (ae_restrict_iff' measurableSet_Ioi).mpr <| univ_mem' fun t ht ↦
         Real.rpow_nonneg (zero_le_one.trans ht.le) _
-  · rw [integral_Ioi_rpow_of_lt (by rwa [neg_lt_neg_iff]) zero_lt_one, Real.one_rpow]
-    field_simp [show -s + 1 ≠ 0 by linarith, hε.ne']
-    ring
+    _ = ε := by
+      rw [integral_Ioi_rpow_of_lt (by rwa [neg_lt_neg_iff]) zero_lt_one, Real.one_rpow]
+      field_simp [show -s + 1 ≠ 0 by linarith, hε.ne']
+      ring
 
 private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
     (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈ Icc 1 n, f k) / n) atTop (𝓝 l))
