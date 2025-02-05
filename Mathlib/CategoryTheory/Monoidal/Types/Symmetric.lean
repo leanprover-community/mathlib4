@@ -22,10 +22,6 @@ open MonoidalCategory
 instance typesSymmetric : SymmetricCategory.{u} (Type u) :=
   symmetricOfChosenFiniteProducts Types.terminalLimitCone Types.binaryProductLimitCone
 
-theorem braiding_hom_def {X Y : Type u} : (β_ X Y).hom = _root_.Prod.swap := rfl
-
-theorem braiding_inv_def {X Y : Type u} : (β_ X Y).inv = _root_.Prod.swap := rfl
-
 @[simp]
 theorem braiding_hom_apply {X Y : Type u} {x : X} {y : Y} :
     ((β_ X Y).hom : X ⊗ Y → Y ⊗ X) (x, y) = (y, x) :=

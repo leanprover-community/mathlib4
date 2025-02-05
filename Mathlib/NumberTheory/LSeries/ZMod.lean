@@ -55,7 +55,7 @@ Results for completed L-functions:
   the functional equation relating `completedLFunction Φ (1 - s)` to `completedLFunction (𝓕 Φ) s`.
 -/
 
-open HurwitzZeta Complex ZMod Finset Classical Topology Filter Set
+open HurwitzZeta Complex ZMod Finset Topology Filter Set
 
 open scoped Real
 

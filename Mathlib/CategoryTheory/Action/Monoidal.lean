@@ -47,7 +47,8 @@ theorem tensorUnit_ρ' {g : G} :
   rfl
 
 @[simp]
-theorem tensorUnit_ρ {g : G} : (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
+theorem tensorUnit_ρ {g : G} :
+    (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
   rfl
 
 /- Adding this solves `simpNF` linter report at `tensor_ρ` -/
@@ -57,7 +58,8 @@ theorem tensor_ρ' {X Y : Action V G} {g : G} :
   rfl
 
 @[simp]
-theorem tensor_ρ {X Y : Action V G} {g : G} : (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
+theorem tensor_ρ {X Y : Action V G} {g : G} :
+    (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
   rfl
 
 /-- Given an object `X` isomorphic to the tensor unit of `V`, `X` equipped with the trivial action
@@ -220,8 +222,8 @@ multiplication on the first factor and by `X.ρ` on the second) is isomorphic as
 `G × X` (with `G` acting as left multiplication on the first factor and trivially on the second).
 The isomorphism is given by `(g, x) ↦ (g, g⁻¹ • x)`. -/
 noncomputable abbrev leftRegularTensorIso (X : Action (Type u) G) :
-    leftRegular G ⊗ X ≅ leftRegular G ⊗ Action.trivial G X.V :=
-  Action.mkIso (Equiv.toIso {
+    leftRegular G ⊗ X ≅ leftRegular G ⊗ trivial G X.V :=
+  mkIso (Equiv.toIso {
     toFun := fun g => ⟨g.1, (X.ρ (g.1⁻¹ : G) g.2 : X.V)⟩
     invFun := fun g => ⟨g.1, X.ρ g.1 g.2⟩
     left_inv := fun _ => Prod.ext rfl <| by simp
@@ -235,7 +237,7 @@ noncomputable abbrev leftRegularTensorIso (X : Action (Type u) G) :
 `G` but trivially on `Gⁿ`. The map sends `(g₀, ..., gₙ) ↦ (g₀, (g₀⁻¹g₁, g₁⁻¹g₂, ..., gₙ₋₁⁻¹gₙ))`,
 and the inverse is `(g₀, (g₁, ..., gₙ)) ↦ (g₀, g₀g₁, g₀g₁g₂, ..., g₀g₁...gₙ).` -/
 noncomputable def diagonalSuccIsoTensorTrivial :
-    ∀ n : ℕ, diagonal G (n + 1) ≅ leftRegular G ⊗ Action.trivial G (Fin n → G)
+    ∀ n : ℕ, diagonal G (n + 1) ≅ leftRegular G ⊗ trivial G (Fin n → G)
   | 0 =>
     diagonalOneIsoLeftRegular G ≪≫
       (ρ_ _).symm ≪≫ tensorIso (Iso.refl _) (tensorUnitIso (Equiv.ofUnique PUnit _).toIso)
@@ -276,6 +278,7 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom {n : ℕ} (g : G) (f : Fin n → G)
     <;> simp_all [tensorObj_def, mul_assoc, Fin.partialProd_succ']
 
 end
+
 end Action
 
 namespace CategoryTheory.Functor

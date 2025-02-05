@@ -176,9 +176,6 @@ def Scheme.openCoverOfISupEqTop {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
     have : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : X.Opens) by trivial
     exact (Opens.mem_iSup.mp this).choose_spec
 
-@[deprecated (since := "2024-07-24")]
-noncomputable alias Scheme.openCoverOfSuprEqTop := Scheme.openCoverOfISupEqTop
-
 /-- The open sets of an open subscheme corresponds to the open sets containing in the subset. -/
 @[simps!]
 def opensRestrict :
@@ -246,7 +243,7 @@ theorem Scheme.homOfLE_apply {U V : X.Opens} (e : U ≤ V) (x : U) :
 theorem Scheme.ι_image_homOfLE_le_ι_image {U V : X.Opens} (e : U ≤ V) (W : Opens V) :
     U.ι ''ᵁ (X.homOfLE e ⁻¹ᵁ W) ≤ V.ι ''ᵁ W := by
   simp only [← SetLike.coe_subset_coe, IsOpenMap.coe_functor_obj, Set.image_subset_iff,
-    Scheme.homOfLE_base, Opens.map_coe, Opens.inclusion'_apply]
+    Scheme.homOfLE_base, Opens.map_coe, Opens.inclusion'_hom_apply]
   rintro _ h
   exact ⟨_, h, rfl⟩
 

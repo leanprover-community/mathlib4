@@ -172,9 +172,8 @@ lemma iCondIndepSets_iff (π : ι → Set (Set Ω)) (hπ : ∀ i s (_hs : s ∈ 
     filter_upwards [h_eq s f hf, h_inter_eq s f hf, h'] with ω h_eq h_inter_eq h'
     rw [← h_inter_eq, h', ENNReal.toReal_prod, Finset.prod_apply]
     exact Finset.prod_congr rfl h_eq
-  · refine (ae_eq_trim_iff hm' ?_ ?_).mpr ?_
-    · refine stronglyMeasurable_condExpKernel ?_
-      exact MeasurableSet.biInter (Finset.countable_toSet _) (fun i hi ↦ hπ i _ (hf i hi))
+  · refine ((stronglyMeasurable_condExpKernel ?_).ae_eq_trim_iff hm' ?_).mpr ?_
+    · exact .biInter (Finset.countable_toSet _) (fun i hi ↦ hπ i _ (hf i hi))
     · refine Measurable.stronglyMeasurable ?_
       exact Finset.measurable_prod s (fun i hi ↦ measurable_condExpKernel (hπ i _ (hf i hi)))
     filter_upwards [h_eq s f hf, h_inter_eq s f hf, h] with ω h_eq h_inter_eq h
@@ -203,11 +202,9 @@ lemma condIndepSets_iff (s1 s2 : Set (Set Ω)) (hs1 : ∀ s ∈ s1, MeasurableSe
   · have h' := ae_eq_of_ae_eq_trim h
     filter_upwards [hs1_eq s hs, hs2_eq t ht, hs12_eq s hs t ht, h'] with ω hs_eq ht_eq hst_eq h'
     rw [← hst_eq, Pi.mul_apply, ← hs_eq, ← ht_eq, h', ENNReal.toReal_mul]
-  · refine (ae_eq_trim_iff hm' ?_ ?_).mpr ?_
-    · exact stronglyMeasurable_condExpKernel ((hs1 s hs).inter ((hs2 t ht)))
-    · refine Measurable.stronglyMeasurable (Measurable.mul ?_ ?_)
-      · exact measurable_condExpKernel (hs1 s hs)
-      · exact measurable_condExpKernel (hs2 t ht)
+  · refine ((stronglyMeasurable_condExpKernel ((hs1 s hs).inter (hs2 t ht))).ae_eq_trim_iff hm'
+      ((measurable_condExpKernel (hs1 s hs)).mul
+        (measurable_condExpKernel (hs2 t ht))).stronglyMeasurable).mpr ?_
     filter_upwards [hs1_eq s hs, hs2_eq t ht, hs12_eq s hs t ht, h] with ω hs_eq ht_eq hst_eq h
     have h_ne_top : condExpKernel μ m' ω (s ∩ t) ≠ ∞ := measure_ne_top (condExpKernel μ m' ω) _
     rw [← ENNReal.ofReal_toReal h_ne_top, hst_eq, h, Pi.mul_apply, ← hs_eq, ← ht_eq,
