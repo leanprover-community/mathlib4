@@ -990,7 +990,7 @@ theorem symm_ofEq {S T : L.Substructure M} (h : S = T) :
   rfl
 
 @[simp]
-theorem ofEq_comp {S T U : L.Substructure M} (h : S = T) (h' : T = U) :
+theorem ofEq_comp_ofEq {S T U : L.Substructure M} (h : S = T) (h' : T = U) :
     (ofEq h').comp (ofEq h) = ofEq (h.trans h') := by
   cases h
   cases h'
