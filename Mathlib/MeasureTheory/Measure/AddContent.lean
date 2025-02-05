@@ -19,6 +19,8 @@ A `Content` is in particular an `AddContent` on the set of compact sets.
 ## Main definitions
 
 * `MeasureTheory.AddContent C`: additive contents over the set of sets `C`.
+* `MeasureTheory.AddContent.isSigmaSubadditive`: an `AddContent` is σ-subadditive if
+  `m (⋃ i, f i) ≤ ∑' i, m (f i)` for any sequence of sets `f` in `C` such that `⋃ i, f i ∈ C`.
 
 ## Main statements
 
@@ -111,6 +113,11 @@ lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C) (h_d
     refine fun hs_eq_t => hs_empty ?_
     rw [← hs_eq_t] at h_dis
     exact Disjoint.eq_bot_of_self h_dis
+
+/-- An additive content is said to be sigma-sub-additive if for any sequence of sets `f` in `C` such
+that `⋃ i, f i ∈ C`, we have `m (⋃ i, f i) ≤ ∑' i, m (f i)`. -/
+def AddContent.isSigmaSubadditive (m : AddContent C) : Prop :=
+  ∀ ⦃f : ℕ → Set α⦄ (_hf : ∀ i, f i ∈ C) (_hf_Union : (⋃ i, f i) ∈ C), m (⋃ i, f i) ≤ ∑' i, m (f i)
 
 section IsSetSemiring
 
@@ -215,6 +222,7 @@ lemma addContent_le_sum_of_subset_sUnion {m : AddContent C} (hC : IsSetSemiring 
 /-- If an `AddContent` is σ-subadditive on a semi-ring of sets, then it is σ-additive. -/
 theorem addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le {m : AddContent C}
     (hC : IsSetSemiring C)
+    -- `m_subadd` is weaker than `m.isSigmaSubadditive`: it only holds for pairwise disjoint `f`.
     (m_subadd : ∀ (f : ℕ → Set α) (_ : ∀ i, f i ∈ C) (_ : ⋃ i, f i ∈ C)
       (_hf_disj : Pairwise (Disjoint on f)), m (⋃ i, f i) ≤ ∑' i, m (f i))
     (f : ℕ → Set α) (hf : ∀ i, f i ∈ C) (hf_Union : (⋃ i, f i) ∈ C)
@@ -238,6 +246,15 @@ theorem addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le {m : AddCo
     exact hf_disj hij
   · simp only [Finset.mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     exact fun i _ ↦ subset_iUnion _ i
+
+/-- If an `AddContent` is σ-subadditive on a semi-ring of sets, then it is σ-additive. -/
+theorem addContent_iUnion_eq_tsum_of_disjoint_of_isSigmaSubadditive {m : AddContent C}
+    (hC : IsSetSemiring C) (m_subadd : m.isSigmaSubadditive)
+    (f : ℕ → Set α) (hf : ∀ i, f i ∈ C) (hf_Union : (⋃ i, f i) ∈ C)
+    (hf_disj : Pairwise (Disjoint on f)) :
+    m (⋃ i, f i) = ∑' i, m (f i) :=
+  addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le hC
+    (fun _ hf hf_Union _ ↦ m_subadd hf hf_Union) f hf hf_Union hf_disj
 
 end IsSetSemiring
 
