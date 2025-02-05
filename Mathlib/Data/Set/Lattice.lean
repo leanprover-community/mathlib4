@@ -1125,9 +1125,13 @@ theorem iUnion_subset_iUnion_const {s : Set α} (h : ι → ι₂) : ⋃ _ : ι,
   iSup_const_mono (α := Set α) h
 
 @[simp]
-theorem iUnion_singleton_eq_range {α β : Type*} (f : α → β) : ⋃ x : α, {f x} = range f := by
+theorem iUnion_singleton_eq_range (f : α → β) : ⋃ x : α, {f x} = range f := by
   ext x
   simp [@eq_comm _ x]
+
+theorem iUnion_insert_eq_range_union_iUnion {ι : Type*} (x : ι → β) (t : ι → Set β) :
+    ⋃ i, insert (x i) (t i) = range x ∪ ⋃ i, t i := by
+  simp_rw [← union_singleton, iUnion_union_distrib, union_comm, iUnion_singleton_eq_range]
 
 theorem iUnion_of_singleton (α : Type*) : (⋃ x, {x} : Set α) = univ := by simp [Set.ext_iff]
 
@@ -1806,9 +1810,6 @@ theorem directedOn_iUnion {r} {f : ι → Set α} (hd : Directed (· ⊆ ·) f)
     let ⟨z, zb₁, zb₂⟩ := hd b₁ b₂
     let ⟨x, xf, xa₁, xa₂⟩ := h z a₁ (zb₁ fb₁) a₂ (zb₂ fb₂)
     ⟨x, ⟨z, xf⟩, xa₁, xa₂⟩
-
-@[deprecated (since := "2024-05-05")]
-alias directed_on_iUnion := directedOn_iUnion
 
 theorem directedOn_sUnion {r} {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S)
     (h : ∀ x ∈ S, DirectedOn r x) : DirectedOn r (⋃₀ S) := by

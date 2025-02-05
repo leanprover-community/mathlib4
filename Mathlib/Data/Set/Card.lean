@@ -918,22 +918,6 @@ lemma exists_subsuperset_card_eq {n : ℕ} (hst : s ⊆ t) (hsn : s.ncard ≤ n)
 lemma exists_subset_card_eq {n : ℕ} (hns : n ≤ s.ncard) : ∃ t ⊆ s, t.ncard = n := by
   simpa using exists_subsuperset_card_eq s.empty_subset (by simp) hns
 
-/-- Given a set `t` and a set `s` inside it, we can shrink `t` to any appropriate size, and keep `s`
-    inside it. -/
-@[deprecated exists_subsuperset_card_eq (since := "2024-06-24")]
-theorem exists_intermediate_Set (i : ℕ) (h₁ : i + s.ncard ≤ t.ncard) (h₂ : s ⊆ t) :
-    ∃ r : Set α, s ⊆ r ∧ r ⊆ t ∧ r.ncard = i + s.ncard :=
-  exists_subsuperset_card_eq h₂ (Nat.le_add_left ..) h₁
-
-@[deprecated exists_subsuperset_card_eq (since := "2024-06-24")]
-theorem exists_intermediate_set' {m : ℕ} (hs : s.ncard ≤ m) (ht : m ≤ t.ncard) (h : s ⊆ t) :
-    ∃ r : Set α, s ⊆ r ∧ r ⊆ t ∧ r.ncard = m := exists_subsuperset_card_eq h hs ht
-
-/-- We can shrink `s` to any smaller size. -/
-@[deprecated exists_subset_card_eq (since := "2024-06-23")]
-theorem exists_smaller_set (s : Set α) (i : ℕ) (h₁ : i ≤ s.ncard) :
-    ∃ t : Set α, t ⊆ s ∧ t.ncard = i := exists_subset_card_eq h₁
-
 theorem Infinite.exists_subset_ncard_eq {s : Set α} (hs : s.Infinite) (k : ℕ) :
     ∃ t, t ⊆ s ∧ t.Finite ∧ t.ncard = k := by
   have := hs.to_subtype

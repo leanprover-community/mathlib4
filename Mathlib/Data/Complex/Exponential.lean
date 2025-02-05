@@ -656,10 +656,10 @@ theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t 
     _ = rexp (-t) := by rw [← Real.exp_nat_mul, mul_neg, mul_comm, div_mul_cancel₀]; positivity
 
 lemma le_inv_mul_exp (x : ℝ) {c : ℝ} (hc : 0 < c) : x ≤ c⁻¹ * exp (c * x) := by
-    rw [le_inv_mul_iff₀ hc]
-    calc c * x
-    _ ≤ c * x + 1 := le_add_of_nonneg_right zero_le_one
-    _ ≤ _ := Real.add_one_le_exp (c * x)
+  rw [le_inv_mul_iff₀ hc]
+  calc c * x
+  _ ≤ c * x + 1 := le_add_of_nonneg_right zero_le_one
+  _ ≤ _ := Real.add_one_le_exp (c * x)
 
 end Real
 

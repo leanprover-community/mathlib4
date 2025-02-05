@@ -30,8 +30,6 @@ namespace Int
 
 theorem natCast_strictMono : StrictMono (· : ℕ → ℤ) := fun _ _ ↦ Int.ofNat_lt.2
 
-@[deprecated (since := "2024-05-25")] alias coe_nat_strictMono := natCast_strictMono
-
 /-! ### Miscellaneous lemmas -/
 
 theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a

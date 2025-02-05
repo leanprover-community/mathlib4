@@ -21,8 +21,7 @@ variable {ι : Type u} {π : ι → Type v} [∀ i, Zero (π i)]
 section Small
 
 instance DFinsupp.small [Small.{w} ι] [∀ (i : ι), Small.{w} (π i)] :
-    Small.{w} (DFinsupp π) := small_of_injective (f := fun x j ↦ x j) (fun f f' eq ↦ by
-      ext j
-      exact congr_fun eq j)
+    Small.{w} (DFinsupp π) :=
+  small_of_injective (f := fun x j ↦ x j) (fun f f' eq ↦ by ext j; exact congr_fun eq j)
 
 end Small

@@ -105,7 +105,7 @@ theorem alternatingGroup.index_eq_two [Nontrivial α] :
   simp_rw [mem_top, Nat.card_eq_fintype_card]; rfl
 
 @[nontriviality]
-theorem index_eq_one [Subsingleton α] : (alternatingGroup α).index = 1 := by
+theorem alternatingGroup.index_eq_one [Subsingleton α] : (alternatingGroup α).index = 1 := by
   rw [Subgroup.index_eq_one]; apply Subsingleton.elim
 
 theorem two_mul_card_alternatingGroup [Nontrivial α] :
@@ -368,7 +368,7 @@ namespace Equiv.Perm
 
 open Subgroup Group
 
-/-- The alternating group is the only subgroup of index 2 of the permutation group -/
+/-- The alternating group is the only subgroup of index 2 of the permutation group. -/
 theorem eq_alternatingGroup_of_index_eq_two {G : Subgroup (Equiv.Perm α)} (hG : G.index = 2) :
     G = alternatingGroup α := by
   nontriviality α
@@ -384,7 +384,7 @@ theorem eq_alternatingGroup_of_index_eq_two {G : Subgroup (Equiv.Perm α)} (hG :
   rw [← (isConj_iff.mp <| isConj_swap hxy hab).choose_spec]
   exact (normal_of_index_eq_two hG).conj_mem _ habG _
 
-/-- A subgroup of the permutation group of index ≤ 2 contains the alternating group -/
+/-- A subgroup of the permutation group of index ≤ 2 contains the alternating group. -/
 theorem alternatingGroup_le_of_index_le_two
     {G : Subgroup (Equiv.Perm α)} (hG : G.index ≤ 2) :
     alternatingGroup α ≤ G := by
@@ -396,7 +396,7 @@ theorem alternatingGroup_le_of_index_le_two
 
 end Equiv.Perm
 
-/-- The alternating group is a characteristic subgroup of the permutation group -/
+/-- The alternating group is a characteristic subgroup of the permutation group. -/
 instance : (alternatingGroup α).Characteristic where
   fixed φ := by
     nontriviality α
