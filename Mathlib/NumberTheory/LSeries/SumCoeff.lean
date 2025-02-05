@@ -205,16 +205,14 @@ end lemmas
 section proof
 
 private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₁
-  (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈ Icc 1 n, f k) / n) atTop (𝓝 l)) {ε : ℝ} (hε : ε > 0) :
+  (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈ Icc 1 n, f k) / n) atTop (𝓝 l)) {ε : ℝ} (hε : 0 < ε) :
     ∀ᶠ t : ℝ in atTop, ‖(∑ k ∈ Icc 1 ⌊t⌋₊, f k) - l * t‖ < ε * t := by
   have h_lim' : Tendsto (fun t : ℝ ↦ (∑ k ∈ Icc 1 ⌊t⌋₊, f k : ℂ) / t) atTop (𝓝 l) := by
     refine (mul_one l ▸ ofReal_one ▸ ((hlim.comp tendsto_nat_floor_atTop).mul <|
       tendsto_ofReal_iff.mpr <| tendsto_nat_floor_div_atTop)).congr' ?_
     filter_upwards [eventually_ge_atTop 1] with t ht
-    rw [Function.comp_def, ofReal_div, ofReal_natCast, div_mul_div_cancel₀ (by
-      rwa [Nat.cast_ne_zero, ne_eq, Nat.floor_eq_zero, not_lt])]
-  rw [Metric.tendsto_nhds] at h_lim'
-  filter_upwards [eventually_gt_atTop 0, h_lim' ε hε] with t ht₁ ht₂
+    simp [div_mul_div_cancel₀ (show (⌊t⌋₊ : ℂ) ≠ 0 by simpa)]
+  filter_upwards [eventually_gt_atTop 0, Metric.tendsto_nhds.mp h_lim' ε hε] with t ht₁ ht₂
   rwa [dist_eq_norm, div_sub' _ _ _ (ne_zero_of_re_pos ht₁), norm_div, norm_real,
     Real.norm_of_nonneg ht₁.le, mul_comm, div_lt_iff₀ ht₁] at ht₂
 
@@ -242,9 +240,10 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂ {s T 
     · exact integrableOn_Ioi_rpow_of_lt (neg_lt_neg_iff.mpr hs) zero_lt_one
     · exact (ae_restrict_iff' measurableSet_Ioi).mpr <| univ_mem' fun t ht ↦
         Real.rpow_nonneg (zero_le_one.trans ht.le) _
-  · rw [integral_Ioi_rpow_of_lt (by rwa [neg_lt_neg_iff]) zero_lt_one, Real.one_rpow, neg_div,
-      ← one_div_neg_eq_neg_one_div, neg_add', neg_neg, mul_one_div,
-      div_self (sub_ne_zero.mpr hs.ne'), mul_one]
+  · rw [integral_Ioi_rpow_of_lt (by rwa [neg_lt_neg_iff]) zero_lt_one, Real.one_rpow]
+    field_simp [show -s + 1 ≠ 0 by linarith, hε.ne']
+    ring
+
 
 private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
     (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈ Icc 1 n, f k) / n) atTop (𝓝 l))
@@ -313,7 +312,7 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
     replace ht : 0 ≤ t := zero_le_one.trans ht.le
     rw [norm_mul, show (-(s : ℂ) - 1) = (-s - 1 : ℝ) by simp, ← ofReal_cpow ht, norm_real,
       Real.norm_of_nonneg (Real.rpow_nonneg ht _)]
-  · rw [← Set.Ioc_union_Ioi_eq_Ioi hT₁, setIntegral_union (Set.Ioc_disjoint_Ioi le_rfl)
+  · rw [← Set.Ioc_union_Ioi_eq_Ioi hT₁, setIntegral_union Set.Ioc_disjoint_Ioi_same
       measurableSet_Ioi]
     · exact h₁.mono_set <| Set.Ioc_subset_Ioi_self.trans Set.Ioi_subset_Ici_self
     · exact h₁.mono_set <| Set.Ioi_subset_Ici_self.trans <| Set.Ici_subset_Ici.mpr hT₁
@@ -344,8 +343,8 @@ theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div
   obtain ⟨δ₂, _, hδ₂⟩ := lim2 _ hε3
   refine ⟨min 1 (min δ₁ δ₂), by positivity, fun s hs₁ hs₂ ↦ ?_⟩
   specialize hC₂ s hs₁
-  specialize hδ₁ hs₁ <| hs₂.trans_le <| (min_le_right _ _).trans (min_le_left _ _)
-  specialize hδ₂ hs₁ <| hs₂.trans_le <| (min_le_right _ _).trans (min_le_right _ _)
+  specialize hδ₁ hs₁ (by simp at hs₂; tauto)
+  specialize hδ₂ hs₁ (by simp at hs₂; tauto)
   rw [dist_eq_norm] at hδ₁ hδ₂ hs₂ ⊢
   rw [sub_zero, Real.norm_of_nonneg (mul_nonneg
     (mul_nonneg (sub_nonneg.mpr hs₁.le) (zero_lt_one.trans hs₁).le) hC₁)] at hδ₁
