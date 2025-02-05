@@ -62,19 +62,20 @@ local notation3 "y" => (1 : Fin 3)
 
 local notation3 "z" => (2 : Fin 3)
 
-universe r s u v w
-
-/-! ## Weierstrass curves -/
-
-namespace WeierstrassCurve.Jacobian
-
 open MvPolynomial
 
 local macro "map_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_C, map_X, map_neg, map_add, map_sub, map_mul, map_pow,
     map_div₀, WeierstrassCurve.map, Function.comp_apply])
 
-variable {R : Type u} [CommRing R] {W' : Jacobian R} {F : Type v} [Field F] {W : Jacobian F}
+universe r s u v
+
+/-! ## Weierstrass curves -/
+
+namespace WeierstrassCurve.Jacobian
+
+variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v} [CommRing R] [CommRing S]
+  [CommRing A] [CommRing B] [Field F] [Field K] {W' : Jacobian R} {W : Jacobian F}
 
 section Negation
 
@@ -694,132 +695,120 @@ end Addition
 
 section Map
 
-/-! ### Maps across ring homomorphisms -/
+/-! ### Maps and base changes -/
 
-variable {S : Type v} [CommRing S] (f : R →+* S)
+variable (f : R →+* S) (P Q : Fin 3 → R)
 
 @[simp]
-lemma map_negY (P : Fin 3 → R) : (W'.map f).toJacobian.negY (f ∘ P) = f (W'.negY P) := by
+lemma map_negY : (W'.map f).toJacobian.negY (f ∘ P) = f (W'.negY P) := by
   simp only [negY]
   map_simp
 
 @[simp]
-lemma map_dblU (P : Fin 3 → R) : (W'.map f).toJacobian.dblU (f ∘ P) = f (W'.dblU P) := by
+lemma map_dblU : (W'.map f).toJacobian.dblU (f ∘ P) = f (W'.dblU P) := by
   simp only [dblU_eq]
   map_simp
 
 @[simp]
-lemma map_dblZ (P : Fin 3 → R) : (W'.map f).toJacobian.dblZ (f ∘ P) = f (W'.dblZ P) := by
+lemma map_dblZ : (W'.map f).toJacobian.dblZ (f ∘ P) = f (W'.dblZ P) := by
   simp only [dblZ, negY]
   map_simp
 
 @[simp]
-lemma map_dblX (P : Fin 3 → R) : (W'.map f).toJacobian.dblX (f ∘ P) = f (W'.dblX P) := by
+lemma map_dblX : (W'.map f).toJacobian.dblX (f ∘ P) = f (W'.dblX P) := by
   simp only [dblX, map_dblU, map_negY]
   map_simp
 
 @[simp]
-lemma map_negDblY (P : Fin 3 → R) : (W'.map f).toJacobian.negDblY (f ∘ P) = f (W'.negDblY P) := by
+lemma map_negDblY : (W'.map f).toJacobian.negDblY (f ∘ P) = f (W'.negDblY P) := by
   simp only [negDblY, map_dblU, map_dblX, map_negY]
   map_simp
 
 @[simp]
-lemma map_dblY (P : Fin 3 → R) : (W'.map f).toJacobian.dblY (f ∘ P) = f (W'.dblY P) := by
+lemma map_dblY : (W'.map f).toJacobian.dblY (f ∘ P) = f (W'.dblY P) := by
   simp only [dblY, negY_eq, map_negDblY, map_dblX, map_dblZ]
   map_simp
 
 @[simp]
-lemma map_dblXYZ (P : Fin 3 → R) : (W'.map f).toJacobian.dblXYZ (f ∘ P) = f ∘ dblXYZ W' P := by
+lemma map_dblXYZ : (W'.map f).toJacobian.dblXYZ (f ∘ P) = f ∘ dblXYZ W' P := by
   simp only [dblXYZ, map_dblX, map_dblY, map_dblZ, comp_fin3]
 
 @[simp]
-lemma map_addU {K : Type v} [Field K] (f : F →+* K) (P Q : Fin 3 → F) :
-    addU (f ∘ P) (f ∘ Q) = f (addU P Q) := by
+lemma map_addU (f : F →+* K) (P Q : Fin 3 → F) : addU (f ∘ P) (f ∘ Q) = f (addU P Q) := by
   simp only [addU]
   map_simp
 
 @[simp]
-lemma map_addZ (P Q : Fin 3 → R) : addZ (f ∘ P) (f ∘ Q) = f (addZ P Q) := by
+lemma map_addZ : addZ (f ∘ P) (f ∘ Q) = f (addZ P Q) := by
   simp only [addZ]
   map_simp
 
 @[simp]
-lemma map_addX (P Q : Fin 3 → R) :
-    (W'.map f).toJacobian.addX (f ∘ P) (f ∘ Q) = f (W'.addX P Q) := by
+lemma map_addX : (W'.map f).toJacobian.addX (f ∘ P) (f ∘ Q) = f (W'.addX P Q) := by
   simp only [addX]
   map_simp
 
 @[simp]
-lemma map_negAddY (P Q : Fin 3 → R) :
-    (W'.map f).toJacobian.negAddY (f ∘ P) (f ∘ Q) = f (W'.negAddY P Q) := by
+lemma map_negAddY : (W'.map f).toJacobian.negAddY (f ∘ P) (f ∘ Q) = f (W'.negAddY P Q) := by
   simp only [negAddY]
   map_simp
 
 @[simp]
-lemma map_addY (P Q : Fin 3 → R) :
-    (W'.map f).toJacobian.addY (f ∘ P) (f ∘ Q) = f (W'.addY P Q) := by
+lemma map_addY : (W'.map f).toJacobian.addY (f ∘ P) (f ∘ Q) = f (W'.addY P Q) := by
   simp only [addY, negY_eq, map_negAddY, map_addX, map_addZ]
   map_simp
 
 @[simp]
-lemma map_addXYZ (P Q : Fin 3 → R) :
-    (W'.map f).toJacobian.addXYZ (f ∘ P) (f ∘ Q) = f ∘ addXYZ W' P Q := by
+lemma map_addXYZ : (W'.map f).toJacobian.addXYZ (f ∘ P) (f ∘ Q) = f ∘ addXYZ W' P Q := by
   simp only [addXYZ, map_addX, map_addY, map_addZ, comp_fin3]
 
-end Map
+variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B] [Algebra S B]
+  [IsScalarTower R S B] (f : A →ₐ[S] B) (P Q : Fin 3 → A)
 
-section BaseChange
-
-/-! ### Base changes across algebra homomorphisms -/
-
-variable {R : Type r} [CommRing R] (W' : Jacobian R) {S : Type s} [CommRing S] [Algebra R S]
-  {A : Type u} [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-  {B : Type v} [CommRing B] [Algebra R B] [Algebra S B] [IsScalarTower R S B] (f : A →ₐ[S] B)
-
-lemma baseChange_negY (P : Fin 3 → A) :
+lemma baseChange_negY :
     (W'.baseChange B).toJacobian.negY (f ∘ P) = f ((W'.baseChange A).toJacobian.negY P) := by
   rw [← RingHom.coe_coe, ← map_negY, map_baseChange]
 
-lemma baseChange_dblU (P : Fin 3 → A) : (W'.baseChange B).toJacobian.dblU (f ∘ P) =
-    f ((W'.baseChange A).toJacobian.dblU P) := by
+lemma baseChange_dblU :
+    (W'.baseChange B).toJacobian.dblU (f ∘ P) = f ((W'.baseChange A).toJacobian.dblU P) := by
   rw [← RingHom.coe_coe, ← map_dblU, map_baseChange]
 
-lemma baseChange_dblZ (P : Fin 3 → A) : (W'.baseChange B).toJacobian.dblZ (f ∘ P) =
-    f ((W'.baseChange A).toJacobian.dblZ P) := by
+lemma baseChange_dblZ :
+    (W'.baseChange B).toJacobian.dblZ (f ∘ P) = f ((W'.baseChange A).toJacobian.dblZ P) := by
   rw [← RingHom.coe_coe, ← map_dblZ, map_baseChange]
 
-lemma baseChange_dblX (P : Fin 3 → A) : (W'.baseChange B).toJacobian.dblX (f ∘ P) =
-    f ((W'.baseChange A).toJacobian.dblX P) := by
+lemma baseChange_dblX :
+    (W'.baseChange B).toJacobian.dblX (f ∘ P) = f ((W'.baseChange A).toJacobian.dblX P) := by
   rw [← RingHom.coe_coe, ← map_dblX, map_baseChange]
 
-lemma baseChange_negDblY (P : Fin 3 → A) : (W'.baseChange B).toJacobian.negDblY (f ∘ P) =
-    f ((W'.baseChange A).toJacobian.negDblY P) := by
+lemma baseChange_negDblY :
+    (W'.baseChange B).toJacobian.negDblY (f ∘ P) = f ((W'.baseChange A).toJacobian.negDblY P) := by
   rw [← RingHom.coe_coe, ← map_negDblY, map_baseChange]
 
-lemma baseChange_dblY (P : Fin 3 → A) : (W'.baseChange B).toJacobian.dblY (f ∘ P) =
-    f ((W'.baseChange A).toJacobian.dblY P) := by
+lemma baseChange_dblY :
+    (W'.baseChange B).toJacobian.dblY (f ∘ P) = f ((W'.baseChange A).toJacobian.dblY P) := by
   rw [← RingHom.coe_coe, ← map_dblY, map_baseChange]
 
-lemma baseChange_dblXYZ (P : Fin 3 → A) : (W'.baseChange B).toJacobian.dblXYZ (f ∘ P) =
-    f ∘ (W'.baseChange A).toJacobian.dblXYZ P := by
+lemma baseChange_dblXYZ :
+    (W'.baseChange B).toJacobian.dblXYZ (f ∘ P) = f ∘ (W'.baseChange A).toJacobian.dblXYZ P := by
   rw [← RingHom.coe_coe, ← map_dblXYZ, map_baseChange]
 
-lemma baseChange_addX (P Q : Fin 3 → A) : (W'.baseChange B).toJacobian.addX (f ∘ P) (f ∘ Q) =
+lemma baseChange_addX : (W'.baseChange B).toJacobian.addX (f ∘ P) (f ∘ Q) =
     f ((W'.baseChange A).toJacobian.addX P Q) := by
   rw [← RingHom.coe_coe, ← map_addX, map_baseChange]
 
-lemma baseChange_negAddY (P Q : Fin 3 → A) : (W'.baseChange B).toJacobian.negAddY (f ∘ P) (f ∘ Q) =
+lemma baseChange_negAddY : (W'.baseChange B).toJacobian.negAddY (f ∘ P) (f ∘ Q) =
     f ((W'.baseChange A).toJacobian.negAddY P Q) := by
   rw [← RingHom.coe_coe, ← map_negAddY, map_baseChange]
 
-lemma baseChange_addY (P Q : Fin 3 → A) : (W'.baseChange B).toJacobian.addY (f ∘ P) (f ∘ Q) =
+lemma baseChange_addY : (W'.baseChange B).toJacobian.addY (f ∘ P) (f ∘ Q) =
     f ((W'.baseChange A).toJacobian.addY P Q) := by
   rw [← RingHom.coe_coe, ← map_addY, map_baseChange]
 
-lemma baseChange_addXYZ (P Q : Fin 3 → A) : (W'.baseChange B).toJacobian.addXYZ (f ∘ P) (f ∘ Q) =
+lemma baseChange_addXYZ : (W'.baseChange B).toJacobian.addXYZ (f ∘ P) (f ∘ Q) =
     f ∘ (W'.baseChange A).toJacobian.addXYZ P Q := by
   rw [← RingHom.coe_coe, ← map_addXYZ, map_baseChange]
 
-end BaseChange
+end Map
 
 end WeierstrassCurve.Jacobian

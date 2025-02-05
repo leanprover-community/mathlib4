@@ -69,19 +69,20 @@ local notation3 "y" => (1 : Fin 3)
 
 local notation3 "z" => (2 : Fin 3)
 
-universe r s u v w
-
-/-! ## Weierstrass curves -/
-
-namespace WeierstrassCurve.Jacobian
-
 open MvPolynomial
 
 local macro "map_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_C, map_X, map_neg, map_add, map_sub, map_mul, map_pow,
     map_div₀, WeierstrassCurve.map, Function.comp_apply])
 
-variable {R : Type u} [CommRing R] {W' : Jacobian R} {F : Type v} [Field F] {W : Jacobian F}
+universe r s u v
+
+/-! ## Weierstrass curves -/
+
+namespace WeierstrassCurve.Jacobian
+
+variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v} [CommRing R] [CommRing S]
+  [CommRing A] [CommRing B] [Field F] [Field K] {W' : Jacobian R} {W : Jacobian F}
 
 section Negation
 
@@ -602,51 +603,39 @@ end Affine
 
 section Map
 
-/-! ### Maps across ring homomorphisms -/
-
-variable {S : Type v} [CommRing S] (f : R →+* S)
+/-! ### Maps and base changes -/
 
 @[simp]
-protected lemma map_neg (P : Fin 3 → R) : (W'.map f).toJacobian.neg (f ∘ P) = f ∘ W'.neg P := by
+protected lemma map_neg (f : R →+* S) (P : Fin 3 → R) :
+    (W'.map f).toJacobian.neg (f ∘ P) = f ∘ W'.neg P := by
   simp only [neg, map_negY, comp_fin3]
   map_simp
 
 @[simp]
-protected lemma map_add {K : Type v} [Field K] (f : F →+* K) {P Q : Fin 3 → F}
-    (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) :
-    (W.map f).toJacobian.add (f ∘ P) (f ∘ Q) = f ∘ W.add P Q := by
+protected lemma map_add (f : F →+* K) {P Q : Fin 3 → F} (hP : W.Nonsingular P)
+    (hQ : W.Nonsingular Q) : (W.map f).toJacobian.add (f ∘ P) (f ∘ Q) = f ∘ W.add P Q := by
   by_cases h : P ≈ Q
   · rw [add_of_equiv <| (comp_equiv_comp f hP hQ).mpr h, add_of_equiv h, map_dblXYZ]
   · rw [add_of_not_equiv <| h.comp (comp_equiv_comp f hP hQ).mp, add_of_not_equiv h, map_addXYZ]
 
-end Map
-
-section BaseChange
-
-/-! ### Base changes across algebra homomorphisms -/
-
-variable {R : Type r} [CommRing R] (W' : Jacobian R) {S : Type s} [CommRing S] [Algebra R S]
-  {A : Type u} [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-  {B : Type v} [CommRing B] [Algebra R B] [Algebra S B] [IsScalarTower R S B] (f : A →ₐ[S] B)
-
-lemma baseChange_neg (P : Fin 3 → A) :
+lemma baseChange_neg [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B]
+    [Algebra S B] [IsScalarTower R S B] (f : A →ₐ[S] B) (P : Fin 3 → A) :
     (W'.baseChange B).toJacobian.neg (f ∘ P) = f ∘ (W'.baseChange A).toJacobian.neg P := by
   rw [← RingHom.coe_coe, ← WeierstrassCurve.Jacobian.map_neg, map_baseChange]
 
-variable [Algebra R F] [Algebra S F] [IsScalarTower R S F] {K : Type v} [Field K] [Algebra R K]
-  [Algebra S K] [IsScalarTower R S K] (f : F →ₐ[S] K)
-
-lemma baseChange_add {P Q : Fin 3 → F} (hP : (W'.baseChange F).toJacobian.Nonsingular P)
+lemma baseChange_add [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebra R K]
+    [Algebra S K] [IsScalarTower R S K] (f : F →ₐ[S] K) {P Q : Fin 3 → F}
+    (hP : (W'.baseChange F).toJacobian.Nonsingular P)
     (hQ : (W'.baseChange F).toJacobian.Nonsingular Q) :
     (W'.baseChange K).toJacobian.add (f ∘ P) (f ∘ Q) =
       f ∘ (W'.baseChange F).toJacobian.add P Q := by
-  rw [← RingHom.coe_coe, ← WeierstrassCurve.Jacobian.map_add f hP hQ (K := K), map_baseChange]
+  rw [← RingHom.coe_coe, ← WeierstrassCurve.Jacobian.map_add _ hP hQ, map_baseChange]
 
-end BaseChange
+end Map
 
 end WeierstrassCurve.Jacobian
 
 /-- An abbreviation for `WeierstrassCurve.Jacobian.Point.fromAffine` for dot notation. -/
-abbrev WeierstrassCurve.Affine.Point.toJacobian {R : Type u} [CommRing R] [Nontrivial R]
+abbrev WeierstrassCurve.Affine.Point.toJacobian {R : Type r} [CommRing R] [Nontrivial R]
     {W : Affine R} (P : W.Point) : W.toJacobian.Point :=
   Jacobian.Point.fromAffine P

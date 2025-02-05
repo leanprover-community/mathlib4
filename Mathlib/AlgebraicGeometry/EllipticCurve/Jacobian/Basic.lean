@@ -72,24 +72,6 @@ local notation3 "y" => (1 : Fin 3)
 
 local notation3 "z" => (2 : Fin 3)
 
-local macro "matrix_simp" : tactic =>
-  `(tactic| simp only [Matrix.head_cons, Matrix.tail_cons, Matrix.smul_empty, Matrix.smul_cons,
-    Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_two])
-
-universe r s u v w
-
-/-! ## Weierstrass curves -/
-
-/-- An abbreviation for a Weierstrass curve in Jacobian coordinates. -/
-abbrev WeierstrassCurve.Jacobian (R : Type u) : Type u :=
-  WeierstrassCurve R
-
-/-- The coercion to a Weierstrass curve in Jacobian coordinates. -/
-abbrev WeierstrassCurve.toJacobian {R : Type u} (W : WeierstrassCurve R) : Jacobian R :=
-  W
-
-namespace WeierstrassCurve.Jacobian
-
 open MvPolynomial
 
 local macro "eval_simp" : tactic =>
@@ -99,17 +81,34 @@ local macro "map_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_C, map_X, map_neg, map_add, map_sub, map_mul, map_pow,
     map_div₀, WeierstrassCurve.map, Function.comp_apply])
 
+local macro "matrix_simp" : tactic =>
+  `(tactic| simp only [Matrix.head_cons, Matrix.tail_cons, Matrix.smul_empty, Matrix.smul_cons,
+    Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_two])
+
 local macro "pderiv_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, pderiv_mul, pderiv_pow,
     pderiv_C, pderiv_X_self, pderiv_X_of_ne one_ne_zero, pderiv_X_of_ne one_ne_zero.symm,
     pderiv_X_of_ne (by decide : z ≠ x), pderiv_X_of_ne (by decide : x ≠ z),
     pderiv_X_of_ne (by decide : z ≠ y), pderiv_X_of_ne (by decide : y ≠ z)])
 
-variable {R : Type u} {W' : Jacobian R} {F : Type v} [Field F] {W : Jacobian F}
+universe r s u v
 
-section Jacobian
+/-! ## Weierstrass curves -/
 
-/-! ### Jacobian coordinates -/
+namespace WeierstrassCurve
+
+variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v}
+
+variable (R) in
+/-- An abbreviation for a Weierstrass curve in Jacobian coordinates. -/
+abbrev Jacobian : Type r :=
+  WeierstrassCurve R
+
+/-- The coercion to a Weierstrass curve in Jacobian coordinates. -/
+abbrev toJacobian (W : WeierstrassCurve R) : Jacobian R :=
+  W
+
+namespace Jacobian
 
 lemma fin3_def (P : Fin 3 → R) : ![P x, P y, P z] = P := by
   ext n; fin_cases n <;> rfl
@@ -117,10 +116,15 @@ lemma fin3_def (P : Fin 3 → R) : ![P x, P y, P z] = P := by
 lemma fin3_def_ext (X Y Z : R) : ![X, Y, Z] x = X ∧ ![X, Y, Z] y = Y ∧ ![X, Y, Z] z = Z :=
   ⟨rfl, rfl, rfl⟩
 
-lemma comp_fin3 {S : Type v} (f : R → S) (X Y Z : R) : f ∘ ![X, Y, Z] = ![f X, f Y, f Z] :=
+lemma comp_fin3 (f : R → S) (X Y Z : R) : f ∘ ![X, Y, Z] = ![f X, f Y, f Z] :=
   (FinVec.map_eq ..).symm
 
-variable [CommRing R]
+variable [CommRing R] [CommRing S] [CommRing A] [CommRing B] [Field F] [Field K] {W' : Jacobian R}
+  {W : Jacobian F}
+
+section Jacobian
+
+/-! ### Jacobian coordinates -/
 
 /-- The scalar multiplication on a point representative. -/
 scoped instance : SMul R <| Fin 3 → R :=
@@ -133,9 +137,10 @@ lemma smul_fin3_ext (P : Fin 3 → R) (u : R) :
     (u • P) x = u ^ 2 * P x ∧ (u • P) y = u ^ 3 * P y ∧ (u • P) z = u * P z :=
   ⟨rfl, rfl, rfl⟩
 
-lemma comp_smul {S : Type v} [CommRing S] (f : R →+* S) (P : Fin 3 → R) (u : R) :
-    f ∘ (u • P) = f u • f ∘ P := by
+lemma comp_smul (f : R →+* S) (P : Fin 3 → R) (u : R) : f ∘ (u • P) = f u • f ∘ P := by
   ext n; fin_cases n <;> simp only [smul_fin3, comp_fin3] <;> map_simp
+
+@[deprecated (since := "2025-01-30")] alias map_smul := comp_smul
 
 /-- The multiplicative action on a point representative. -/
 scoped instance : MulAction R <| Fin 3 → R where
@@ -148,7 +153,7 @@ scoped instance : Setoid <| Fin 3 → R :=
 
 variable (R) in
 /-- The equivalence class of a point representative. -/
-abbrev PointClass : Type u :=
+abbrev PointClass : Type r :=
   MulAction.orbitRel.Quotient Rˣ <| Fin 3 → R
 
 lemma smul_equiv (P : Fin 3 → R) {u : R} (hu : IsUnit u) : u • P ≈ P :=
@@ -227,8 +232,6 @@ lemma Y_eq_iff {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
   (div_eq_div_iff (pow_ne_zero 3 hPz) (pow_ne_zero 3 hQz)).symm
 
 end Jacobian
-
-variable [CommRing R]
 
 section Equation
 
@@ -465,7 +468,7 @@ lemma equiv_zero_of_Z_eq_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P 
     P ≈ ![1, 1, 0] :=
   equiv_of_Z_eq_zero hP nonsingular_zero hPz rfl
 
-lemma comp_equiv_comp {K : Type v} [Field K] (f : F →+* K) {P Q : Fin 3 → F} (hP : W.Nonsingular P)
+lemma comp_equiv_comp (f : F →+* K) {P Q : Fin 3 → F} (hP : W.Nonsingular P)
     (hQ : W.Nonsingular Q) : f ∘ P ≈ f ∘ Q ↔ P ≈ Q := by
   refine ⟨fun h => ?_, fun h => ?_⟩
   · by_cases hz : f (P z) = 0
@@ -498,23 +501,22 @@ end Nonsingular
 
 section Map
 
-/-! ### Maps across ring homomorphisms -/
+/-! ### Maps and base changes -/
 
-variable {S : Type v} [CommRing S] (f : R →+* S)
+variable (f : R →+* S) (P : Fin 3 → R)
 
 @[simp]
 lemma map_polynomial : (W'.map f).toJacobian.polynomial = MvPolynomial.map f W'.polynomial := by
   simp only [polynomial]
   map_simp
 
-lemma Equation.map {P : Fin 3 → R} (h : W'.Equation P) :
-    (W'.map f).toJacobian.Equation (f ∘ P) := by
-  rw [Equation, map_polynomial, eval_map, ← eval₂_comp, ← map_zero f]
-  exact congr_arg f h
+variable {P} in
+lemma Equation.map (h : W'.Equation P) : (W'.map f).toJacobian.Equation (f ∘ P) := by
+  rw [Equation, map_polynomial, eval_map, ← eval₂_comp, h, map_zero]
 
 variable {f} in
 @[simp]
-lemma map_equation (hf : Function.Injective f) (P : Fin 3 → R) :
+lemma map_equation (hf : Function.Injective f) :
     (W'.map f).toJacobian.Equation (f ∘ P) ↔ W'.Equation P := by
   simp only [Equation, map_polynomial, eval_map, ← eval₂_comp, map_eq_zero_iff f hf]
 
@@ -532,31 +534,28 @@ lemma map_polynomialZ : (W'.map f).toJacobian.polynomialZ = MvPolynomial.map f W
 
 variable {f} in
 @[simp]
-lemma map_nonsingular (hf : Function.Injective f) (P : Fin 3 → R) :
+lemma map_nonsingular (hf : Function.Injective f) :
     (W'.map f).toJacobian.Nonsingular (f ∘ P) ↔ W'.Nonsingular P := by
-  simp only [Nonsingular, map_equation hf, map_polynomialX, map_polynomialY, map_polynomialZ,
+  simp only [Nonsingular, map_equation P hf, map_polynomialX, map_polynomialY, map_polynomialZ,
     eval_map, ← eval₂_comp, map_ne_zero_iff f hf]
 
-end Map
-
-@[deprecated (since := "2025-01-30")] alias map_smul := comp_smul
-
-section BaseChange
-
-/-! ### Base changes across algebra homomorphisms -/
-
-variable {R : Type r} [CommRing R] (W' : Jacobian R) {S : Type s} [CommRing S] [Algebra R S]
-  {A : Type u} [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-  {B : Type v} [CommRing B] [Algebra R B] [Algebra S B] [IsScalarTower R S B] (f : A →ₐ[S] B)
+variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B] [Algebra S B]
+  [IsScalarTower R S B] (f : A →ₐ[S] B) (P : Fin 3 → A)
 
 lemma baseChange_polynomial : (W'.baseChange B).toJacobian.polynomial =
     MvPolynomial.map f (W'.baseChange A).toJacobian.polynomial := by
   rw [← map_polynomial, map_baseChange]
 
+variable {P} in
+lemma Equation.baseChange (h : (W'.baseChange A).toJacobian.Equation P) :
+    (W'.baseChange B).toJacobian.Equation (f ∘ P) := by
+  convert Equation.map f.toRingHom h using 1
+  rw [AlgHom.toRingHom_eq_coe, map_baseChange]
+
 variable {f} in
-lemma baseChange_equation (hf : Function.Injective f) (P : Fin 3 → A) :
+lemma baseChange_equation (hf : Function.Injective f) :
     (W'.baseChange B).toJacobian.Equation (f ∘ P) ↔ (W'.baseChange A).toJacobian.Equation P := by
-  rw [← RingHom.coe_coe, ← map_equation hf, AlgHom.toRingHom_eq_coe, map_baseChange]
+  rw [← RingHom.coe_coe, ← map_equation P hf, AlgHom.toRingHom_eq_coe, map_baseChange]
 
 lemma baseChange_polynomialX : (W'.baseChange B).toJacobian.polynomialX =
     MvPolynomial.map f (W'.baseChange A).toJacobian.polynomialX := by
@@ -571,11 +570,13 @@ lemma baseChange_polynomialZ : (W'.baseChange B).toJacobian.polynomialZ =
   rw [← map_polynomialZ, map_baseChange]
 
 variable {f} in
-lemma baseChange_nonsingular (hf : Function.Injective f) (P : Fin 3 → A) :
+lemma baseChange_nonsingular (hf : Function.Injective f) :
     (W'.baseChange B).toJacobian.Nonsingular (f ∘ P) ↔
       (W'.baseChange A).toJacobian.Nonsingular P := by
-  rw [← RingHom.coe_coe, ← map_nonsingular hf, AlgHom.toRingHom_eq_coe, map_baseChange]
+  rw [← RingHom.coe_coe, ← map_nonsingular P hf, AlgHom.toRingHom_eq_coe, map_baseChange]
 
-end BaseChange
+end Map
 
-end WeierstrassCurve.Jacobian
+end Jacobian
+
+end WeierstrassCurve
