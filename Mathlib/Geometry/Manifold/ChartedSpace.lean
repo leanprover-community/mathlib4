@@ -855,7 +855,7 @@ variable [TopologicalSpace H] [TopologicalSpace M] [TopologicalSpace M']
 
 /-- The disjoint union of two charted spaces modelled on a non-empty space `H`
 is a charted space over `H`. -/
-instance ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
+def ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
   atlas := ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inl) '' cm.atlas) ∪
     ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inr) '' cm'.atlas)
   -- At `x : M`, the chart is the chart in `M`; at `x' ∈ M'`, it is the chart in `M'`.
@@ -882,47 +882,60 @@ instance ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') w
       right
       use ChartedSpace.chartAt x, cm'.chart_mem_atlas x
 
-lemma ChartedSpace.sum_chartAt_inl [Nonempty H] (x : M) :
-    chartAt H (Sum.inl x) = (chartAt H x).lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inl :=
-  rfl
-
-lemma ChartedSpace.sum_chartAt_inr [Nonempty H] (x' : M') :
-    chartAt H (Sum.inr x') = (chartAt H x').lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inr :=
-  rfl
-
-lemma sum_chartAt_inl_apply [Nonempty H] {x : M} :
-    (chartAt H (.inl x : M ⊕ M')) (Sum.inl x) = (chartAt H x) x := by
-  rw [ChartedSpace.sum_chartAt_inl]
-  exact PartialHomeomorph.lift_openEmbedding_apply _ _
-
-lemma sum_chartAt_inr_apply [Nonempty H] {x : M'} :
-    (chartAt H (.inr x : M ⊕ M')) (Sum.inr x) = (chartAt H x) x := by
-  rw [ChartedSpace.sum_chartAt_inr]
-  exact PartialHomeomorph.lift_openEmbedding_apply _ _
-
-lemma ChartedSpace.mem_atlas_sum [Nonempty H]
-    {e : PartialHomeomorph (M ⊕ M') H} (he : e ∈ atlas H (M ⊕ M')) :
-    (∃ f : PartialHomeomorph M H, f ∈ (atlas H M) ∧ e = (f.lift_openEmbedding IsOpenEmbedding.inl))
-    ∨ (∃ f' : PartialHomeomorph M' H, f' ∈ (atlas H M') ∧
-      e = (f'.lift_openEmbedding IsOpenEmbedding.inr)) := by
-  obtain (⟨x, hx, hxe⟩ | ⟨x, hx, hxe⟩) := he
-  · rw [← hxe]; left; use x
-  · rw [← hxe]; right; use x
-
 variable (H) in
 lemma isEmpty_of_chartedSpace [IsEmpty H] : IsEmpty M := by
   rcases isEmpty_or_nonempty M with hM | ⟨⟨x⟩⟩
   · exact hM
   · exact (IsEmpty.false (chartAt H x x)).elim
 
+lemma nonempty_of_chartedSpace (x : M) : Nonempty H :=
+  ⟨chartAt H x x⟩
+
 open scoped Classical in
-/-- The disjoint union of two charted spaces on `H` is a charted space over `H`. -/
 instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') :=
   if h : Nonempty H then ChartedSpace.sum_of_nonempty else by
   simp only [not_nonempty_iff] at h
   have : IsEmpty M := isEmpty_of_chartedSpace H
   have : IsEmpty M' := isEmpty_of_chartedSpace H
   exact empty H (M ⊕ M')
+
+lemma ChartedSpace.sum_chartAt_inl (x : M) :
+    haveI : Nonempty H := nonempty_of_chartedSpace x
+    chartAt H (Sum.inl x)
+      = (chartAt H x).lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inl := by
+  have h : Nonempty H := nonempty_of_chartedSpace x
+  simp only [chartAt, sum, h, ↓reduceDIte]
+  rfl
+
+lemma ChartedSpace.sum_chartAt_inr (x' : M') :
+    haveI : Nonempty H := nonempty_of_chartedSpace x'
+    chartAt H (Sum.inr x')
+      = (chartAt H x').lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inr := by
+  have h : Nonempty H := nonempty_of_chartedSpace x'
+  simp only [chartAt, sum, h, ↓reduceDIte]
+  rfl
+
+lemma sum_chartAt_inl_apply {x : M} :
+    (chartAt H (.inl x : M ⊕ M')) (Sum.inl x) = (chartAt H x) x := by
+  have : Nonempty H := nonempty_of_chartedSpace x
+  rw [ChartedSpace.sum_chartAt_inl]
+  exact PartialHomeomorph.lift_openEmbedding_apply _ _
+
+lemma sum_chartAt_inr_apply {x : M'} :
+    (chartAt H (.inr x : M ⊕ M')) (Sum.inr x) = (chartAt H x) x := by
+  have : Nonempty H := nonempty_of_chartedSpace x
+  rw [ChartedSpace.sum_chartAt_inr]
+  exact PartialHomeomorph.lift_openEmbedding_apply _ _
+
+lemma ChartedSpace.mem_atlas_sum [h : Nonempty H]
+    {e : PartialHomeomorph (M ⊕ M') H} (he : e ∈ atlas H (M ⊕ M')) :
+    (∃ f : PartialHomeomorph M H, f ∈ (atlas H M) ∧ e = (f.lift_openEmbedding IsOpenEmbedding.inl))
+    ∨ (∃ f' : PartialHomeomorph M' H, f' ∈ (atlas H M') ∧
+      e = (f'.lift_openEmbedding IsOpenEmbedding.inr)) := by
+  simp only [atlas, sum, h, ↓reduceDIte] at he
+  obtain (⟨x, hx, hxe⟩ | ⟨x, hx, hxe⟩) := he
+  · rw [← hxe]; left; use x
+  · rw [← hxe]; right; use x
 
 end sum
 
