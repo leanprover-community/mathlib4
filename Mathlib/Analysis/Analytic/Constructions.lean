@@ -970,36 +970,46 @@ lemma analyticOn_inv : AnalyticOn 𝕜 (fun z ↦ z⁻¹) {z : 𝕝 | z ≠ 0} :
   analyticOnNhd_inv.analyticOn
 
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
-theorem AnalyticWithinAt.inv {f : E → 𝕝} {x : E} {s : Set E}
-    (fa : AnalyticWithinAt 𝕜 f s x) (f0 : f x ≠ 0) :
-    AnalyticWithinAt 𝕜 (fun x ↦ (f x)⁻¹) s x :=
+theorem AnalyticWithinAt.inv {f : E → 𝕝} {x : E} {s : Set E} (fa : AnalyticWithinAt 𝕜 f s x)
+    (f0 : f x ≠ 0) :
+    AnalyticWithinAt 𝕜 f⁻¹ s x :=
   (analyticAt_inv f0).comp_analyticWithinAt fa
+
+/-- `(f x)⁻¹` is analytic away from `f x = 0` -/
+theorem AnalyticWithinAt.inv' {f : E → 𝕝} {x : E} {s : Set E} (fa : AnalyticWithinAt 𝕜 f s x)
+    (f0 : f x ≠ 0) :
+    AnalyticWithinAt 𝕜 (fun x ↦ (f x)⁻¹) s x := inv fa f0
 
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
 @[fun_prop]
 theorem AnalyticAt.inv {f : E → 𝕝} {x : E} (fa : AnalyticAt 𝕜 f x) (f0 : f x ≠ 0) :
-    AnalyticAt 𝕜 f⁻¹ x :=
-  (analyticAt_inv f0).comp fa
-
-@[fun_prop]
-theorem AnalyticAt.inv' {f : E → 𝕝} {x : E} (fa : AnalyticAt 𝕜 f x) (f0 : f x ≠ 0) :
-    AnalyticAt 𝕜 (fun x ↦ (f x)⁻¹) x :=
-  fa.inv f0
+    AnalyticAt 𝕜 f⁻¹ x := (analyticAt_inv f0).comp fa
 
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
-theorem AnalyticOn.inv {f : E → 𝕝} {s : Set E}
-    (fa : AnalyticOn 𝕜 f s) (f0 : ∀ x ∈ s, f x ≠ 0) :
-    AnalyticOn 𝕜 (fun x ↦ (f x)⁻¹) s :=
-  fun x m ↦ (fa x m).inv (f0 x m)
+@[fun_prop]
+theorem AnalyticAt.inv' {f : E → 𝕝} {x : E} (fa : AnalyticAt 𝕜 f x) (f0 : f x ≠ 0) :
+    AnalyticAt 𝕜 (fun x ↦ (f x)⁻¹) x := fa.inv f0
+
+/-- `(f x)⁻¹` is analytic away from `f x = 0` -/
+theorem AnalyticOn.inv {f : E → 𝕝} {s : Set E} (fa : AnalyticOn 𝕜 f s) (f0 : ∀ x ∈ s, f x ≠ 0) :
+    AnalyticOn 𝕜 f⁻¹ s := fun x m ↦ (fa x m).inv (f0 x m)
+
+/-- `(f x)⁻¹` is analytic away from `f x = 0` -/
+theorem AnalyticOn.inv' {f : E → 𝕝} {s : Set E} (fa : AnalyticOn 𝕜 f s) (f0 : ∀ x ∈ s, f x ≠ 0) :
+    AnalyticOn 𝕜 (fun x ↦ (f x)⁻¹) s := inv fa f0
 
 @[deprecated (since := "2024-09-26")]
 alias AnalyticWithinOn.inv := AnalyticOn.inv
 
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
-theorem AnalyticOnNhd.inv {f : E → 𝕝} {s : Set E}
-    (fa : AnalyticOnNhd 𝕜 f s) (f0 : ∀ x ∈ s, f x ≠ 0) :
-    AnalyticOnNhd 𝕜 (fun x ↦ (f x)⁻¹) s :=
-  fun x m ↦ (fa x m).inv (f0 x m)
+theorem AnalyticOnNhd.inv {f : E → 𝕝} {s : Set E} (fa : AnalyticOnNhd 𝕜 f s)
+    (f0 : ∀ x ∈ s, f x ≠ 0) :
+    AnalyticOnNhd 𝕜 f⁻¹ s := fun x m ↦ (fa x m).inv (f0 x m)
+
+/-- `(f x)⁻¹` is analytic away from `f x = 0` -/
+theorem AnalyticOnNhd.inv' {f : E → 𝕝} {s : Set E} (fa : AnalyticOnNhd 𝕜 f s)
+    (f0 : ∀ x ∈ s, f x ≠ 0) :
+    AnalyticOnNhd 𝕜 (fun x ↦ (f x)⁻¹) s := inv fa f0
 
 /-- `f x / g x` is analytic away from `g x = 0` -/
 theorem AnalyticWithinAt.div {f g : E → 𝕝} {s : Set E} {x : E}
