@@ -171,6 +171,10 @@ attribute [to_additive existing] ContinuousMonoidHom.mk'
 def comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) : ContinuousMonoidHom A C :=
   ⟨g.toMonoidHom.comp f.toMonoidHom, (map_continuous g).comp (map_continuous f)⟩
 
+@[to_additive (attr := simp)]
+lemma coe_comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) :
+    ⇑(g.comp f) = ⇑g ∘ ⇑f := rfl
+
 /-- Product of two continuous homomorphisms on the same space. -/
 @[to_additive (attr := simps!) prod "Product of two continuous homomorphisms on the same space."]
 def prod (f : ContinuousMonoidHom A B) (g : ContinuousMonoidHom A C) :
@@ -206,6 +210,10 @@ instance : Inhabited (ContinuousMonoidHom A B) :=
 @[to_additive (attr := simps!) "The identity continuous homomorphism."]
 def id : ContinuousMonoidHom A A :=
   ⟨.id A, continuous_id⟩
+
+@[to_additive (attr := simp)]
+lemma coe_id : ⇑(ContinuousMonoidHom.id A) = _root_.id :=
+  rfl
 
 /-- The continuous homomorphism given by projection onto the first factor. -/
 @[to_additive (attr := simps!)

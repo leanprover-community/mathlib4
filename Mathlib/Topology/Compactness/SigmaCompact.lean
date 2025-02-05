@@ -121,8 +121,8 @@ lemma Topology.IsInducing.isSigmaCompact_iff {f : X → Y} {s : Set X}
 @[deprecated (since := "2024-10-28")]
 alias Inducing.isSigmaCompact_iff := IsInducing.isSigmaCompact_iff
 
-/-- If `f : X → Y` is an `Embedding`, the image `f '' s` of a set `s` is σ-compact
-  if and only `s` is σ-compact. -/
+/-- If `f : X → Y` is an embedding, the image `f '' s` of a set `s` is σ-compact
+if and only `s` is σ-compact. -/
 lemma Topology.IsEmbedding.isSigmaCompact_iff {f : X → Y} {s : Set X}
     (hf : IsEmbedding f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) :=
   hf.isInducing.isSigmaCompact_iff
