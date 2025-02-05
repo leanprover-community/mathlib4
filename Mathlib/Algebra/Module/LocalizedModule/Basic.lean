@@ -1280,14 +1280,7 @@ section Subsingleton
 lemma mem_ker_iff (S : Submonoid R) {g : M →ₗ[R] M'}
     [IsLocalizedModule S g] {m : M} :
     m ∈ LinearMap.ker g ↔ ∃ r ∈ S, r • m = 0 := by
-  constructor
-  · intro H
-    obtain ⟨r, hr⟩ := (IsLocalizedModule.eq_zero_iff S g).mp H
-    exact ⟨r, r.2, by simpa using hr⟩
-  · rintro ⟨r, hr, e⟩
-    apply ((Module.End_isUnit_iff _).mp
-      (IsLocalizedModule.map_units g ⟨r, hr⟩)).injective
-    simp [← map_smul, e]
+  simpa using IsLocalizedModule.eq_zero_iff S g
 
 lemma subsingleton_iff_ker_eq_top (S : Submonoid R) (g : M →ₗ[R] M')
     [IsLocalizedModule S g] :
@@ -1303,13 +1296,32 @@ lemma subsingleton_iff (S : Submonoid R) (g : M →ₗ[R] M')
   simp_rw [subsingleton_iff_ker_eq_top S g, ← top_le_iff, SetLike.le_def,
     mem_ker_iff S, Submodule.mem_top, true_implies]
 
-instance [Subsingleton M] (S : Submonoid R) : Subsingleton (LocalizedModule S M) := by
-  rw [IsLocalizedModule.subsingleton_iff S (LocalizedModule.mkLinearMap S M)]
-  intro
-  use 1, S.one_mem, Subsingleton.elim _ _
-
 end Subsingleton
 
 end IsLocalizedModule
 
 end IsLocalizedModule
+
+namespace LocalizedModule
+
+variable {R M : Type*} [CommRing R] [AddCommMonoid M] [Module R M]
+
+lemma mem_ker_mkLinearMap_iff {S : Submonoid R} {m : M} :
+    m ∈ LinearMap.ker (mkLinearMap S M) ↔ ∃ r ∈ S, r • m = 0 :=
+  IsLocalizedModule.mem_ker_iff S
+
+lemma subsingleton_iff_ker_eq_top {S : Submonoid R} :
+    Subsingleton (LocalizedModule S M) ↔
+      LinearMap.ker (LocalizedModule.mkLinearMap S M) = ⊤ :=
+  IsLocalizedModule.subsingleton_iff_ker_eq_top S _
+
+lemma subsingleton_iff {S : Submonoid R} :
+    Subsingleton (LocalizedModule S M) ↔ ∀ m : M, ∃ r ∈ S, r • m = 0 :=
+  IsLocalizedModule.subsingleton_iff S (LocalizedModule.mkLinearMap S M)
+
+instance [Subsingleton M] (S : Submonoid R) : Subsingleton (LocalizedModule S M) := by
+  rw [IsLocalizedModule.subsingleton_iff S (LocalizedModule.mkLinearMap S M)]
+  intro
+  use 1, S.one_mem, Subsingleton.elim _ _
+
+end LocalizedModule
