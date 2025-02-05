@@ -94,7 +94,7 @@ under multiplication and taking powers.
 TODO: Behaviour under Addition/Subtraction
 -/
 
-/- Helper lemma for `AnalyticAt.order_mul` -/
+/-- Helper lemma for `AnalyticAt.order_mul` -/
 lemma order_mul_of_order_eq_top {f g : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀)
     (hg : AnalyticAt 𝕜 g z₀) (h'f : hf.order = ⊤) :
     (hf.mul hg).order = ⊤ := by
