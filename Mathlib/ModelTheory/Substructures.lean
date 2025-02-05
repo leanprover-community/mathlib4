@@ -979,44 +979,44 @@ def Equiv.ofEq {S T : L.Substructure M} (h : S = T) : S ≃[L] T := by
   exact Equiv.refl _ _
 
 @[simp]
-theorem equivOfEq_refl (S : L.Substructure M) : (equivOfEq (Eq.refl S)) = Equiv.refl L S := rfl
+theorem Equiv.ofEq_refl (S : L.Substructure M) : (Equiv.ofEq (Eq.refl S)) = Equiv.refl L S := rfl
 
 @[simp]
-theorem equivOfEq_symm {S T : L.Substructure M} (h : S = T) :
-    (equivOfEq h).symm = equivOfEq h.symm := by
+theorem Equiv.ofEq_symm {S T : L.Substructure M} (h : S = T) :
+    (Equiv.ofEq h).symm = Equiv.ofEq h.symm := by
   cases h
   rfl
 
 @[simp]
-theorem equivOfEq_comp {S T U : L.Substructure M} (h : S = T) (h' : T = U) :
-    (equivOfEq h').comp (equivOfEq h) = equivOfEq (h.trans h') := by
+theorem Equiv.ofEq_comp {S T U : L.Substructure M} (h : S = T) (h' : T = U) :
+    (Equiv.ofEq h').comp (Equiv.ofEq h) = Equiv.ofEq (h.trans h') := by
   cases h
   cases h'
   rfl
 
 @[simp]
-theorem equivOfEq_apply {S T : L.Substructure M} (h : S = T) {m : M} (hm : m ∈ S) :
-    equivOfEq h ⟨m, hm⟩ = ⟨m, h ▸ hm⟩ := by
+theorem Equiv.ofEq_apply {S T : L.Substructure M} (h : S = T) {m : M} (hm : m ∈ S) :
+    Equiv.ofEq h ⟨m, hm⟩ = ⟨m, h ▸ hm⟩ := by
   cases h
   rfl
 
 @[simp]
 theorem subtype_comp_EquivOfEq {S T : L.Substructure M} (h : S = T) :
-    T.subtype.comp (equivOfEq h).toEmbedding = S.subtype := by
+    T.subtype.comp (Equiv.ofEq h).toEmbedding = S.subtype := by
   cases h
   rfl
 
 @[simp]
 theorem substructureEquivMap_refl (S : L.Substructure M) :
-    (Embedding.refl L M).substructureEquivMap S = equivOfEq (map_id S).symm := by
+    (Embedding.refl L M).substructureEquivMap S = Equiv.ofEq (map_id S).symm := by
   ext ⟨⟩
-  simp only [Embedding.refl_toHom, SetLike.coe_eq_coe, equivOfEq_apply]
+  simp only [Embedding.refl_toHom, SetLike.coe_eq_coe, Equiv.ofEq_apply]
   rfl
 
 @[simp]
 theorem substructureEquivMap_comp_substructureEquivMap (f : M ↪[L] N) (g : N ↪[L] P)
     (S : L.Substructure M) : (g.substructureEquivMap (S.map f.toHom)).comp
-    (f.substructureEquivMap S) = (equivOfEq (S.map_map ..).symm).comp
+    (f.substructureEquivMap S) = (Equiv.ofEq (S.map_map ..).symm).comp
     ((g.comp f).substructureEquivMap S) := by
   apply Equiv.injective_toEmbedding
   apply (subtype _).comp_injective
