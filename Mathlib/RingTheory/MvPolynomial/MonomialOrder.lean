@@ -483,7 +483,7 @@ lemma degree_X_sub_C [Nontrivial R]
   rw [← bot_eq_zero, bot_lt_iff_ne_bot, bot_eq_zero, ← map_zero m.toSyn]
   simp
 
-lemma leadingCoeff_binomial {ι : Type*} (m : MonomialOrder ι) (i : ι) (r : R) :
+lemma leadingCoeff_X_sub_C {ι : Type*} (m : MonomialOrder ι) (i : ι) (r : R) :
     m.leadingCoeff (X i - C r) = 1 := by
   classical
   by_cases H : Nontrivial R

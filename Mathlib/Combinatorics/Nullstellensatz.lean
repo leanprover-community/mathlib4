@@ -59,7 +59,8 @@ open Finsupp
 variable {R : Type*} [CommRing R]
 
 /-- A polynomial that vanishes at more points than its degree is the zero polynomial. -/
-theorem _root_.Polynomial.eq_zero_of_eval_zero [IsDomain R] (P : Polynomial R) (S : Set R)
+theorem _root_.Polynomial.eq_zero_of_natDegree_lt_ncard_of_eval_eq_zero
+    [IsDomain R] (P : Polynomial R) (S : Set R)
     (Hdeg : Polynomial.natDegree P < S.ncard) (Heval : ∀ x ∈ S, P.eval x = 0) :
     P = 0 := by
   classical
@@ -72,7 +73,7 @@ theorem _root_.Polynomial.eq_zero_of_eval_zero [IsDomain R] (P : Polynomial R) (
   intro s hs
   simp only [Finset.mem_coe, Multiset.mem_toFinset, Polynomial.mem_roots', ne_eq,
     Polynomial.IsRoot.def]
-  refine ⟨hP, Heval s hs⟩
+  exact ⟨hP, Heval s hs⟩
 
 namespace MvPolynomial
 
@@ -183,7 +184,7 @@ private theorem Alon.degree_P [Nontrivial R] (m : MonomialOrder σ) (S : Finset 
   rw [degree_prod_of_regular]
   · simp [Finset.sum_congr rfl (fun r _ ↦ m.degree_X_sub_C i r)]
   · intro r _
-    simp only [leadingCoeff_binomial, isRegular_one]
+    simp only [leadingCoeff_X_sub_C, isRegular_one]
 
 /-- The leading coefficient of `Alon.P S i` is `1`. -/
 private theorem Alon.leadingCoeff_P [Nontrivial R] (m : MonomialOrder σ) (S : Finset R) (i : σ) :
@@ -192,10 +193,10 @@ private theorem Alon.leadingCoeff_P [Nontrivial R] (m : MonomialOrder σ) (S : F
   rw [leadingCoeff_prod_of_regular ?_]
   · apply Finset.prod_eq_one
     intro r _
-    apply m.leadingCoeff_binomial
+    apply m.leadingCoeff_X_sub_C
   · intro r _
     convert isRegular_one
-    apply leadingCoeff_binomial
+    apply leadingCoeff_X_sub_C
 
 /-- The support of `Alon.P S i` is the set of exponents of the form `single i e`,
   for `e ≤ S.card`. -/
@@ -227,7 +228,13 @@ variable [Fintype σ]
 
 open scoped BigOperators
 
-/-- The **Combinatorial Nullstellensatz** : existence of a linear combination
+/-- The **Combinatorial Nullstellensatz**.
+
+If `f` vanishes at every point `x : σ → R` such that `x s ∈ S s` for all `s`,
+then it can be written as a linear combination
+`f = linearCombination (MvPolynomial σ R) (fun i ↦ (∏ r ∈ S i, (X i - C r))) h`,
+for some `h : σ →₀ MvPolynomial σ R` such that
+`((∏ r ∈ S s, (X i - C r)) * h i).totalDegree ≤ f.totalDegree` for all `s`.
 
 [Alon_1999], theorem 1. -/
 theorem combinatorial_nullstellensatz_exists_linearCombination
@@ -267,7 +274,11 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
     apply Finset.prod_eq_zero (hx i)
     simp
 
-/-- The **Combinatorial Nullstellensatz** : existence of a nonzero evaluation
+/-- The **Combinatorial Nullstellensatz**.
+
+Given a multi-index `t : σ →₀ ℕ` such that `t s < (S s).card` for all `s`,
+`f.totalDegree = t.degree` and `f.coeff t ≠ 0`,
+there exists a point `x : σ → R` such that `x s ∈ S s` for all `s` and `f.eval s ≠ 0`.
 
 [Alon_1999], theorem 2 -/
 theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
@@ -275,13 +286,13 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
     (t : σ →₀ ℕ) (ht : f.coeff t ≠ 0) (ht' : f.totalDegree = t.degree)
     (S : σ → Finset R) (htS : ∀ i, t i < (S i).card) :
     ∃ (s : σ → R) (_ : ∀ i, s i ∈ S i), eval s f ≠ 0 := by
-  letI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
+  let _ : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   classical
   by_contra Heval
   apply ht
   push_neg at Heval
   obtain ⟨h, hh, hf⟩ := combinatorial_nullstellensatz_exists_linearCombination S
-    (fun i ↦ by rw [← Finset.card_pos]; exact lt_of_le_of_lt (zero_le _) (htS i))
+    (fun i ↦ by rw [← Finset.card_pos]; exact (htS i).pos)
     f Heval
   change f = linearCombination (MvPolynomial σ R) (fun i ↦ Alon.P (S i) i) h at hf
   change ∀ i, (Alon.P (S i) i * h i).totalDegree ≤ _ at hh
