@@ -14,9 +14,10 @@ import Mathlib.Data.NNReal.Basic
 In this file we prove elementary properties of algebraic operations on `ℝ≥0∞`, including addition,
 multiplication, natural powers and truncated subtraction, as well as how these interact with the
 order structure on `ℝ≥0∞`. Notably excluded from this list are inversion and division, the
-definitions and properties of which can be found in `Data.ENNReal.Inv`.
+definitions and properties of which can be found in `Mathlib.Data.ENNReal.Inv`.
 
-Note: the definitions of the operations included in this file can be found in `Data.ENNReal.Basic`.
+Note: the definitions of the operations included in this file can be found in
+`Mathlib.Data.ENNReal.Basic`.
 -/
 
 open Set NNReal ENNReal
@@ -324,9 +325,6 @@ theorem sub_ne_top (ha : a ≠ ∞) : a - b ≠ ∞ := mt sub_eq_top_iff.mp <| m
 @[simp, norm_cast]
 theorem natCast_sub (m n : ℕ) : ↑(m - n) = (m - n : ℝ≥0∞) := by
   rw [← coe_natCast, Nat.cast_tsub, coe_sub, coe_natCast, coe_natCast]
-
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_sub := natCast_sub
 
 /-- See `ENNReal.sub_eq_of_eq_add'` for a version assuming that `a = c + b` itself is finite rather
 than `b`. -/

@@ -110,13 +110,11 @@ theorem toSubalgebra_iSup_of_directed (dir : Directed (· ≤ ·) t) :
 instance finiteDimensional_iSup_of_finite [h : Finite ι] [∀ i, FiniteDimensional K (t i)] :
     FiniteDimensional K (⨆ i, t i : IntermediateField K L) := by
   rw [← iSup_univ]
-  refine Set.Finite.induction_on
-    (motive := fun s _ => FiniteDimensional K (⨆ i ∈ s, t i : IntermediateField K L))
-    _ Set.finite_univ ?_ ?_
-  all_goals dsimp
-  · rw [iSup_emptyset]
+  induction Set.univ, Set.finite_univ (α := ι) using Set.Finite.induction_on with
+  | empty =>
+    rw [iSup_emptyset]
     exact (botEquiv K L).symm.toLinearEquiv.finiteDimensional
-  · intro _ s _ _ hs
+  | insert s hs =>
     rw [iSup_insert]
     exact IntermediateField.finiteDimensional_sup _ _
 
