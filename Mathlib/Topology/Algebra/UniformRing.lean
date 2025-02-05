@@ -270,8 +270,8 @@ end UniformSpace
 section UniformExtension
 
 variable {α : Type*} [UniformSpace α] [Semiring α]
-variable {β : Type*} [UniformSpace β] [Semiring β] [TopologicalSemiring β]
-variable {γ : Type*} [UniformSpace γ] [Semiring γ] [TopologicalSemiring γ]
+variable {β : Type*} [UniformSpace β] [Semiring β] [IsTopologicalSemiring β]
+variable {γ : Type*} [UniformSpace γ] [Semiring γ] [IsTopologicalSemiring γ]
 variable [T2Space γ] [CompleteSpace γ]
 
 /-- The dense inducing extension as a ring homomorphism. -/

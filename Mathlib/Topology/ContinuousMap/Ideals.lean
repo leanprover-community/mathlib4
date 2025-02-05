@@ -77,7 +77,7 @@ open TopologicalSpace
 section IsTopologicalRing
 
 variable {X R : Type*} [TopologicalSpace X] [Semiring R]
-variable [TopologicalSpace R] [TopologicalSemiring R]
+variable [TopologicalSpace R] [IsTopologicalSemiring R]
 variable (R)
 
 /-- Given a topological ring `R` and `s : Set X`, construct the ideal in `C(X, R)` of functions

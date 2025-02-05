@@ -99,8 +99,8 @@ variable (σ R)
 
 /-- The semiring topology on `MvPowerSeries` of a topological semiring -/
 @[scoped instance]
-theorem instTopologicalSemiring [Semiring R] [TopologicalSemiring R] :
-    TopologicalSemiring (MvPowerSeries σ R) where
+theorem instTopologicalSemiring [Semiring R] [IsTopologicalSemiring R] :
+    IsTopologicalSemiring (MvPowerSeries σ R) where
     continuous_add := continuous_pi fun d => continuous_add.comp
       (((continuous_coeff R d).fst').prod_mk (continuous_coeff R d).snd')
     continuous_mul := continuous_pi fun _ =>

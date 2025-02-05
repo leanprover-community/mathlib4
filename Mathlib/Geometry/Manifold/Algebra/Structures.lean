@@ -64,7 +64,7 @@ variable {𝕜 R E H : Type*} [TopologicalSpace R] [TopologicalSpace H] [Nontriv
 /-- A `C^n` (semi)ring is a topological (semi)ring. This is not an instance for technical reasons,
 see note [Design choices about smooth algebraic structures]. -/
 theorem topologicalSemiring_of_contMDiffRing  [Semiring R] [ContMDiffRing I n R] :
-    TopologicalSemiring R :=
+    IsTopologicalSemiring R :=
   { continuousMul_of_contMDiffMul I n, continuousAdd_of_contMDiffAdd I n with }
 
 @[deprecated (since := "2025-01-09")]

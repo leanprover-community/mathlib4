@@ -34,4 +34,4 @@ instance : TopologicalSpace (Localization M) :=
   Localization.ringTopology.toTopologicalSpace
 
 instance : IsTopologicalRing (Localization M) :=
-  Localization.ringTopology.toTopologicalRing
+  Localization.ringTopology.toIsTopologicalRing

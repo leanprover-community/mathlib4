@@ -394,7 +394,7 @@ section Subtype
 
 /-- The subsemiring of continuous maps `α → β`. -/
 def continuousSubsemiring (α : Type*) (R : Type*) [TopologicalSpace α] [TopologicalSpace R]
-    [NonAssocSemiring R] [TopologicalSemiring R] : Subsemiring (α → R) :=
+    [NonAssocSemiring R] [IsTopologicalSemiring R] : Subsemiring (α → R) :=
   { continuousAddSubmonoid α R, continuousSubmonoid α R with }
 
 /-- The subring of continuous maps `α → β`. -/
@@ -407,11 +407,11 @@ end Subtype
 namespace ContinuousMap
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
-    [NonUnitalNonAssocSemiring β] [TopologicalSemiring β] : NonUnitalNonAssocSemiring C(α, β) :=
+    [NonUnitalNonAssocSemiring β] [IsTopologicalSemiring β] : NonUnitalNonAssocSemiring C(α, β) :=
   coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul coe_nsmul
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalSemiring β]
-    [TopologicalSemiring β] : NonUnitalSemiring C(α, β) :=
+    [IsTopologicalSemiring β] : NonUnitalSemiring C(α, β) :=
   coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul coe_nsmul
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [AddMonoidWithOne β]
@@ -419,11 +419,11 @@ instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [
   coe_injective.addMonoidWithOne _ coe_zero coe_one coe_add coe_nsmul coe_natCast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonAssocSemiring β]
-    [TopologicalSemiring β] : NonAssocSemiring C(α, β) :=
+    [IsTopologicalSemiring β] : NonAssocSemiring C(α, β) :=
   coe_injective.nonAssocSemiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_natCast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Semiring β]
-    [TopologicalSemiring β] : Semiring C(α, β) :=
+    [IsTopologicalSemiring β] : Semiring C(α, β) :=
   coe_injective.semiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_pow coe_natCast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
@@ -445,11 +445,11 @@ instance instRing {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSp
     coe_natCast coe_intCast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
-    [NonUnitalCommSemiring β] [TopologicalSemiring β] : NonUnitalCommSemiring C(α, β) :=
+    [NonUnitalCommSemiring β] [IsTopologicalSemiring β] : NonUnitalCommSemiring C(α, β) :=
   coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul coe_nsmul
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CommSemiring β]
-    [TopologicalSemiring β] : CommSemiring C(α, β) :=
+    [IsTopologicalSemiring β] : CommSemiring C(α, β) :=
   coe_injective.commSemiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_pow coe_natCast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalCommRing β]
@@ -462,7 +462,7 @@ instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [
     coe_pow coe_natCast coe_intCast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [LocallyCompactSpace α]
-    [NonUnitalSemiring β] [TopologicalSemiring β] : TopologicalSemiring C(α, β) where
+    [NonUnitalSemiring β] [IsTopologicalSemiring β] : IsTopologicalSemiring C(α, β) where
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [LocallyCompactSpace α]
     [NonUnitalRing β] [IsTopologicalRing β] : IsTopologicalRing C(α, β) where
@@ -472,14 +472,14 @@ instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [
 @[simps!]
 protected def _root_.RingHom.compLeftContinuous (α : Type*) {β : Type*} {γ : Type*}
     [TopologicalSpace α]
-    [TopologicalSpace β] [Semiring β] [TopologicalSemiring β] [TopologicalSpace γ] [Semiring γ]
-    [TopologicalSemiring γ] (g : β →+* γ) (hg : Continuous g) : C(α, β) →+* C(α, γ) :=
+    [TopologicalSpace β] [Semiring β] [IsTopologicalSemiring β] [TopologicalSpace γ] [Semiring γ]
+    [IsTopologicalSemiring γ] (g : β →+* γ) (hg : Continuous g) : C(α, β) →+* C(α, γ) :=
   { g.toMonoidHom.compLeftContinuous α hg, g.toAddMonoidHom.compLeftContinuous α hg with }
 
 /-- Coercion to a function as a `RingHom`. -/
 @[simps!]
 def coeFnRingHom {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Semiring β]
-    [TopologicalSemiring β] : C(α, β) →+* α → β :=
+    [IsTopologicalSemiring β] : C(α, β) →+* α → β :=
   { (coeFnMonoidHom : C(α, β) →* _),
     (coeFnAddMonoidHom : C(α, β) →+ _) with }
 
@@ -623,13 +623,13 @@ section AlgebraStructure
 
 In this section we show that continuous functions valued in a topological algebra `A` over a ring
 `R` inherit the structure of an algebra. Note that the hypothesis that `A` is a topological algebra
-is obtained by requiring that `A` be both a `ContinuousSMul` and a `TopologicalSemiring`. -/
+is obtained by requiring that `A` be both a `ContinuousSMul` and a `IsTopologicalSemiring`. -/
 
 
 section Subtype
 
 variable {α : Type*} [TopologicalSpace α] {R : Type*} [CommSemiring R] {A : Type*}
-  [TopologicalSpace A] [Semiring A] [Algebra R A] [TopologicalSemiring A]
+  [TopologicalSpace A] [Semiring A] [Algebra R A] [IsTopologicalSemiring A]
 
 /-- The `R`-subalgebra of continuous maps `α → A`. -/
 def continuousSubalgebra : Subalgebra R (α → A) :=
@@ -642,8 +642,8 @@ end Subtype
 section ContinuousMap
 
 variable {α : Type*} [TopologicalSpace α] {R : Type*} [CommSemiring R] {A : Type*}
-  [TopologicalSpace A] [Semiring A] [Algebra R A] [TopologicalSemiring A] {A₂ : Type*}
-  [TopologicalSpace A₂] [Semiring A₂] [Algebra R A₂] [TopologicalSemiring A₂]
+  [TopologicalSpace A] [Semiring A] [Algebra R A] [IsTopologicalSemiring A] {A₂ : Type*}
+  [TopologicalSpace A₂] [Semiring A₂] [Algebra R A₂] [IsTopologicalSemiring A₂]
 
 /-- Continuous constant functions as a `RingHom`. -/
 def ContinuousMap.C : R →+* C(α, A) where
@@ -761,7 +761,7 @@ theorem Subalgebra.SeparatesPoints.strongly {s : Subalgebra 𝕜 C(α, 𝕜)} (h
 end ContinuousMap
 
 instance ContinuousMap.subsingleton_subalgebra (α : Type*) [TopologicalSpace α] (R : Type*)
-    [CommSemiring R] [TopologicalSpace R] [TopologicalSemiring R] [Subsingleton α] :
+    [CommSemiring R] [TopologicalSpace R] [IsTopologicalSemiring R] [Subsingleton α] :
     Subsingleton (Subalgebra R C(α, R)) :=
   ⟨fun s₁ s₂ => by
     cases isEmpty_or_nonempty α
@@ -810,7 +810,7 @@ lemma smul_apply' (f : C(α, R)) (g : C(α, M)) (x : α) :
     (f • g) x = f x • g x :=
   rfl
 
-instance module' [TopologicalSemiring R] [ContinuousAdd M] :
+instance module' [IsTopologicalSemiring R] [ContinuousAdd M] :
     Module C(α, R) C(α, M) where
   smul := (· • ·)
   smul_add c f g := by ext x; exact smul_add (c x) (f x) (g x)
@@ -827,7 +827,7 @@ end ModuleOverContinuousFunctions
 /-! ### Evaluation as a bundled map -/
 
 variable {X : Type*} (S R : Type*) [TopologicalSpace X] [CommSemiring S] [CommSemiring R]
-variable [Algebra S R] [TopologicalSpace R] [TopologicalSemiring R]
+variable [Algebra S R] [TopologicalSpace R] [IsTopologicalSemiring R]
 
 /-- Evaluation of continuous maps at a point, bundled as an algebra homomorphism. -/
 @[simps]

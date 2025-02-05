@@ -160,7 +160,7 @@ instance instSMul {M : Type*} [Zero R] [SMulZeroClass M R] [ContinuousConstSMul 
 
 section Semiring
 
-variable [CommSemiring R] [TopologicalSemiring R]
+variable [CommSemiring R] [IsTopologicalSemiring R]
 
 instance instNonUnitalCommSemiring : NonUnitalCommSemiring C(X, R)₀ :=
   toContinuousMap_injective.nonUnitalCommSemiring
@@ -326,8 +326,8 @@ section CompHoms
 
 variable {X Y M R S : Type*} [Zero X] [Zero Y] [CommSemiring M]
   [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace R] [TopologicalSpace S]
-  [CommSemiring R] [StarRing R] [TopologicalSemiring R] [ContinuousStar R]
-  [CommSemiring S] [StarRing S] [TopologicalSemiring S] [ContinuousStar S]
+  [CommSemiring R] [StarRing R] [IsTopologicalSemiring R] [ContinuousStar R]
+  [CommSemiring S] [StarRing S] [IsTopologicalSemiring S] [ContinuousStar S]
   [Module M R] [Module M S] [ContinuousConstSMul M R] [ContinuousConstSMul M S]
 
 variable (R) in

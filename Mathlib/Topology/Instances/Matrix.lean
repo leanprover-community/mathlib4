@@ -125,8 +125,8 @@ instance [Fintype n] [Mul R] [AddCommMonoid R] [ContinuousAdd R] [ContinuousMul 
     ContinuousMul (Matrix n n R) :=
   ⟨continuous_fst.matrix_mul continuous_snd⟩
 
-instance [Fintype n] [NonUnitalNonAssocSemiring R] [TopologicalSemiring R] :
-    TopologicalSemiring (Matrix n n R) where
+instance [Fintype n] [NonUnitalNonAssocSemiring R] [IsTopologicalSemiring R] :
+    IsTopologicalSemiring (Matrix n n R) where
 
 instance Matrix.topologicalRing [Fintype n] [NonUnitalNonAssocRing R] [IsTopologicalRing R] :
     IsTopologicalRing (Matrix n n R) where

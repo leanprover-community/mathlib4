@@ -253,10 +253,10 @@ instance instRightDistribClass [Mul R] [Add R] [RightDistribClass R]
   surjective_mk.rightDistribClass mk mk_add mk_mul
 
 instance instNonUnitalnonAssocSemiring [NonUnitalNonAssocSemiring R]
-    [TopologicalSemiring R] : NonUnitalNonAssocSemiring (SeparationQuotient R) :=
+    [IsTopologicalSemiring R] : NonUnitalNonAssocSemiring (SeparationQuotient R) :=
   surjective_mk.nonUnitalNonAssocSemiring mk mk_zero mk_add mk_mul mk_smul
 
-instance instNonUnitalSemiring [NonUnitalSemiring R] [TopologicalSemiring R] :
+instance instNonUnitalSemiring [NonUnitalSemiring R] [IsTopologicalSemiring R] :
     NonUnitalSemiring (SeparationQuotient R) :=
   surjective_mk.nonUnitalSemiring mk mk_zero mk_add mk_mul mk_smul
 
@@ -277,7 +277,7 @@ instance instIntCast [IntCast R] : IntCast (SeparationQuotient R) where
 @[simp, norm_cast]
 theorem mk_intCast [IntCast R] (n : ℤ) : mk (n : R) = n := rfl
 
-instance instNonAssocSemiring [NonAssocSemiring R] [TopologicalSemiring R] :
+instance instNonAssocSemiring [NonAssocSemiring R] [IsTopologicalSemiring R] :
     NonAssocSemiring (SeparationQuotient R) :=
   surjective_mk.nonAssocSemiring mk mk_zero mk_one mk_add mk_mul mk_smul mk_natCast
 
@@ -294,7 +294,7 @@ instance instNonAssocRing [NonAssocRing R] [IsTopologicalRing R] :
   surjective_mk.nonAssocRing mk mk_zero mk_one mk_add mk_mul mk_neg mk_sub mk_smul mk_smul
     mk_natCast mk_intCast
 
-instance instSemiring [Semiring R] [TopologicalSemiring R] :
+instance instSemiring [Semiring R] [IsTopologicalSemiring R] :
     Semiring (SeparationQuotient R) :=
   surjective_mk.semiring mk mk_zero mk_one mk_add mk_mul mk_smul mk_pow mk_natCast
 
@@ -304,15 +304,15 @@ instance instRing [Ring R] [IsTopologicalRing R] :
     mk_natCast mk_intCast
 
 instance instNonUnitalNonAssocCommSemiring [NonUnitalNonAssocCommSemiring R]
-    [TopologicalSemiring R] :
+    [IsTopologicalSemiring R] :
     NonUnitalNonAssocCommSemiring (SeparationQuotient R) :=
   surjective_mk.nonUnitalNonAssocCommSemiring mk mk_zero mk_add mk_mul mk_smul
 
-instance instNonUnitalCommSemiring [NonUnitalCommSemiring R] [TopologicalSemiring R] :
+instance instNonUnitalCommSemiring [NonUnitalCommSemiring R] [IsTopologicalSemiring R] :
     NonUnitalCommSemiring (SeparationQuotient R) :=
   surjective_mk.nonUnitalCommSemiring mk mk_zero mk_add mk_mul mk_smul
 
-instance instCommSemiring [CommSemiring R] [TopologicalSemiring R] :
+instance instCommSemiring [CommSemiring R] [IsTopologicalSemiring R] :
     CommSemiring (SeparationQuotient R) :=
   surjective_mk.commSemiring mk mk_zero mk_one mk_add mk_mul mk_smul mk_pow mk_natCast
 
@@ -335,7 +335,7 @@ instance instCommRing [CommRing R] [IsTopologicalRing R] :
 
 /-- `SeparationQuotient.mk` as a `RingHom`. -/
 @[simps]
-def mkRingHom [NonAssocSemiring R] [TopologicalSemiring R] : R →+* SeparationQuotient R where
+def mkRingHom [NonAssocSemiring R] [IsTopologicalSemiring R] : R →+* SeparationQuotient R where
   toFun := mk
   map_one' := mk_one; map_zero' := mk_zero; map_add' := mk_add; map_mul' := mk_mul
 
@@ -383,7 +383,7 @@ end Module
 
 section Algebra
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-    [TopologicalSpace A] [TopologicalSemiring A] [ContinuousConstSMul R A]
+    [TopologicalSpace A] [IsTopologicalSemiring A] [ContinuousConstSMul R A]
 
 instance instAlgebra : Algebra R (SeparationQuotient A) where
   algebraMap := mkRingHom.comp (algebraMap R A)
