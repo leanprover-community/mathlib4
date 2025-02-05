@@ -530,6 +530,19 @@ noncomputable def algEquiv (K : Type*) [CommRing K] [Algebra A K] [IsFractionRin
     FractionRing A ≃ₐ[A] K :=
   Localization.algEquiv (nonZeroDivisors A) K
 
+theorem algEquiv_comp_algebraMap {K B L : Type*} [CommRing K] [Algebra A K] [IsFractionRing A K]
+    [CommRing B] [IsDomain B] [CommRing L] [Algebra B L] [IsFractionRing A K]
+    [IsFractionRing B L] [Algebra A B] [Algebra (FractionRing A) (FractionRing B)] [Algebra K L]
+    [Algebra A L] [IsScalarTower A K L] [IsScalarTower A (FractionRing A) (FractionRing B)]
+    [IsScalarTower A B (FractionRing B)] [IsScalarTower A B L] :
+    (algEquiv B L : _ →+* L).comp (algebraMap (FractionRing A) (FractionRing B)) =
+    (algebraMap K L).comp (algEquiv A K) := by
+  let _ : Field L := IsFractionRing.toField B
+  refine IsFractionRing.ringHom_ext (A := A) (fun x ↦ ?_)
+  simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, AlgEquiv.commutes]
+  rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
+    ← AlgEquiv.restrictScalars_apply A, AlgEquiv.commutes]
+
 instance [Algebra R A] [FaithfulSMul R A] : FaithfulSMul R (FractionRing A) := by
   rw [faithfulSMul_iff_algebraMap_injective, IsScalarTower.algebraMap_eq R A]
   exact (FaithfulSMul.algebraMap_injective A (FractionRing A)).comp
