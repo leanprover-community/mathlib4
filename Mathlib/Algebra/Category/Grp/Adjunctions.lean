@@ -31,7 +31,6 @@ category of abelian groups.
   abelian groups to groups.
 -/
 
-
 noncomputable section
 
 universe u
@@ -169,35 +168,35 @@ end Abelianization
 end Grp
 
 /-- The functor taking a monoid to its subgroup of units. -/
-@[simps]
+@[simps!]
 def MonCat.units : MonCat.{u} ⥤ Grp.{u} where
   obj R := Grp.of Rˣ
-  map f := Grp.ofHom <| Units.map f
+  map f := Grp.ofHom <| Units.map f.hom
   map_id _ := Grp.ext fun _ => Units.ext rfl
   map_comp _ _ := Grp.ext fun _ => Units.ext rfl
 
 /-- The forgetful-units adjunction between `Grp` and `MonCat`. -/
 def Grp.forget₂MonAdj : forget₂ Grp MonCat ⊣ MonCat.units.{u} := Adjunction.mk' {
-  homEquiv := fun _ Y ↦
-    { toFun := fun f => ofHom (MonoidHom.toHomUnits f)
-      invFun := fun f => (Units.coeHom Y).comp f.hom
-      left_inv := fun _ => MonoidHom.ext fun _ => rfl
-      right_inv := fun _ => Grp.ext fun _ => Units.ext rfl }
+  homEquiv _ Y :=
+    { toFun f := ofHom (MonoidHom.toHomUnits f.hom)
+      invFun f := MonCat.ofHom ((Units.coeHom Y).comp f.hom)
+      left_inv _ := MonCat.ext fun _ => rfl
+      right_inv _ := Grp.ext fun _ => Units.ext rfl }
   unit :=
-    { app := fun X => ofHom { (@toUnits X _).toMonoidHom with }
-      naturality := fun _ _ _ => Grp.ext fun _ => Units.ext rfl }
+    { app X := ofHom (@toUnits X _)
+      naturality _ _ _ := Grp.ext fun _ => Units.ext rfl }
   counit :=
-    { app := fun X => Units.coeHom X
-      naturality := by intros; exact MonoidHom.ext fun x => rfl } }
+    { app X := MonCat.ofHom (Units.coeHom X)
+      naturality _ _ _ := MonCat.ext fun _ => rfl } }
 
 instance : MonCat.units.{u}.IsRightAdjoint :=
   ⟨_, ⟨Grp.forget₂MonAdj⟩⟩
 
 /-- The functor taking a monoid to its subgroup of units. -/
-@[simps]
+@[simps!]
 def CommMonCat.units : CommMonCat.{u} ⥤ CommGrp.{u} where
   obj R := CommGrp.of Rˣ
-  map f := CommGrp.ofHom <| Units.map f
+  map f := CommGrp.ofHom <| Units.map f.hom
   map_id _ := CommGrp.ext fun _ => Units.ext rfl
   map_comp _ _ := CommGrp.ext fun _ => Units.ext rfl
 
@@ -205,12 +204,20 @@ def CommMonCat.units : CommMonCat.{u} ⥤ CommGrp.{u} where
 def CommGrp.forget₂CommMonAdj : forget₂ CommGrp CommMonCat ⊣ CommMonCat.units.{u} :=
   Adjunction.mk' {
     homEquiv := fun _ Y ↦
-      { toFun := fun f => ofHom (MonoidHom.toHomUnits f)
-        invFun := fun f => (Units.coeHom Y).comp f.hom
-        left_inv := fun _ => MonoidHom.ext fun _ => rfl
-        right_inv := fun _ => CommGrp.ext fun _ => Units.ext rfl }
-    unit := { app := fun X => ofHom { (@toUnits X _).toMonoidHom with } }
-    counit := { app := fun X => Units.coeHom X } }
+      { toFun f := ofHom (MonoidHom.toHomUnits f.hom)
+        invFun f := CommMonCat.ofHom ((Units.coeHom Y).comp f.hom)
+        left_inv _ := CommMonCat.ext fun _ => rfl
+        right_inv _ := CommGrp.ext fun _ => Units.ext rfl }
+    unit.app X := ofHom toUnits.toMonoidHom
+    -- `aesop` can find the following proof but it takes `0.5`s.
+    unit.naturality _ _ _ := CommGrp.ext fun _ => Units.ext rfl
+    counit.app X := CommMonCat.ofHom (Units.coeHom X)
+    -- `aesop` can find the following proof but it takes `0.5`s.
+    counit.naturality _ _ _ := CommMonCat.ext fun _ => rfl
+    -- `aesop` can find the following proof but it takes `0.2`s.
+    homEquiv_unit := by intros; rfl
+    -- `aesop` can find the following proof but it takes `0.2`s.
+    homEquiv_counit := by intros; rfl }
 
 instance : CommMonCat.units.{u}.IsRightAdjoint :=
   ⟨_, ⟨CommGrp.forget₂CommMonAdj⟩⟩

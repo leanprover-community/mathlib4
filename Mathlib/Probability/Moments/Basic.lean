@@ -91,8 +91,8 @@ theorem centralMoment_one [IsZeroOrProbabilityMeasure μ] : centralMoment X 1 μ
       fun_prop
     rw [integral_undef this]
 
-theorem centralMoment_two_eq_variance [IsFiniteMeasure μ] (hX : Memℒp X 2 μ) :
-    centralMoment X 2 μ = variance X μ := by rw [hX.variance_eq]; rfl
+lemma centralMoment_two_eq_variance (hX : AEMeasurable X μ) : centralMoment X 2 μ = variance X μ :=
+  (variance_eq_integral hX).symm
 
 section MomentGeneratingFunction
 

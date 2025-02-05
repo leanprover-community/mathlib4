@@ -78,7 +78,7 @@ theorem hom_ext {X Y : UniformSpaceCat} {f g : X ⟶ Y} : (f : X → Y) = g → 
 instance hasForgetToTop : HasForget₂ UniformSpaceCat.{u} TopCat.{u} where
   forget₂ :=
     { obj := fun X => TopCat.of X
-      map := fun f =>
+      map := fun f => TopCat.ofHom
         { toFun := f
           continuous_toFun := f.property.continuous } }
 
