@@ -133,8 +133,10 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   -- This script is re-run each time, hence is immune to such issues.
   let nolints ← IO.FS.lines ("scripts" / "nolints-style.txt")
   let mut numberErrors ← lintModules nolints allModuleNames style fix
-  if ← checkInitImports then numberErrors := numberErrors + 1
-  if !(← allScriptsDocumented) then numberErrors := numberErrors + 1
+  -- If we are linting mathlib, also check the init imports and for undocumented scripts.
+  if libraries.contains "Mathlib" then
+    if ← checkInitImports then numberErrors := numberErrors + 1
+    if !(← allScriptsDocumented) then numberErrors := numberErrors + 1
   -- If run with the `--fix` argument, return a zero exit code.
   -- Otherwise, make sure to return an exit code of at most 125,
   -- so this return value can be used further in shell scripts.
