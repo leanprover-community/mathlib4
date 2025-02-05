@@ -14,8 +14,23 @@ This file contains results about the separability field of fraction of localizat
 
 ## Main results
 
- * `map_mul Ideal.relNorm`: multiplicativity of the relative ideal norm
+ * `IsFractionRing.isSeparable_of_isLocalization`: let `S` be an `R`-algebra such that the
+  extension of the residue fields is separable and let `M ≤ R⁰` a submoinoid. Let `Rₘ` and `Sₘ` be
+  the localizations of `R` and `S` at `M` and `Kₘ` and `Lₘ` be the fraction fields of `Rₘ` and `Sₘ`.
+  Then the extension `Lₘ/Kₘ` is separable.
 -/
+
+section
+
+open scoped nonZeroDivisors
+
+variable {A B : Type*} [CommSemiring A] [CommSemiring B] [Algebra A B]
+
+theorem map_le_nonZeroDivisors_of_faithfulSMul [NoZeroDivisors B]
+    [FaithfulSMul A B] {S : Submonoid A} (hS : S ≤ A⁰) : Algebra.algebraMapSubmonoid B S ≤ B⁰ :=
+  map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective A B) hS
+
+end
 
 attribute [local instance] FractionRing.liftAlgebra
 
@@ -35,8 +50,7 @@ theorem FractionRing.isSeparable_of_isLocalization (hM : M ≤ R⁰) :
   let K := FractionRing R
   let L := FractionRing S
   let M' := Algebra.algebraMapSubmonoid S M
-  have hM' : Algebra.algebraMapSubmonoid S M ≤ S⁰ :=
-    map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective _ _) hM
+  have hM' : Algebra.algebraMapSubmonoid S M ≤ S⁰ := map_le_nonZeroDivisors_of_faithfulSMul hM
   let f₁ : Rₘ →+* K := IsLocalization.map _ (T := R⁰) (RingHom.id R) hM
   let f₂ : Sₘ →+* L := IsLocalization.map _ (T := S⁰) (RingHom.id S) hM'
   algebraize [f₁, f₂]
@@ -59,16 +73,18 @@ theorem FractionRing.isSeparable_of_isLocalization (hM : M ≤ R⁰) :
       ← IsScalarTower.algebraMap_apply]
 
 include R S in
+/-- Let `S` be an `R`-algebra such that the extension of the residue fields is separable and let
+`M ≤ R⁰` a submoinoid. Let `Rₘ` and `Sₘ` be the localizations of `R` and `S` at `M` and `Kₘ` and
+`Lₘ` be the fraction fields of `Rₘ` and `Sₘ`. Then the extension `Lₘ/Kₘ` is separable. -/
 theorem IsFractionRing.isSeparable_of_isLocalization {Kₘ Lₘ : Type*} [Field Kₘ] [Field Lₘ]
     [Algebra Rₘ Kₘ] [Algebra Sₘ Lₘ] [IsFractionRing Rₘ Kₘ] [IsFractionRing Sₘ Lₘ] [Algebra Kₘ Lₘ]
     [Algebra Rₘ Lₘ] [IsScalarTower Rₘ Kₘ Lₘ] [IsScalarTower Rₘ Sₘ Lₘ]
     (hM : M ≤ R⁰) : Algebra.IsSeparable Kₘ Lₘ := by
-  have hM' : Algebra.algebraMapSubmonoid S M ≤ S⁰ :=
-    map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective _ _) hM
   let f₁ : FractionRing Rₘ ≃+* Kₘ := FractionRing.algEquiv Rₘ Kₘ
   let f₂ : FractionRing Sₘ ≃+* Lₘ := FractionRing.algEquiv Sₘ Lₘ
   have : IsDomain Rₘ := IsLocalization.isDomain_of_le_nonZeroDivisors _ hM
-  have : IsDomain Sₘ := IsLocalization.isDomain_of_le_nonZeroDivisors _ hM'
+  have : IsDomain Sₘ := IsLocalization.isDomain_of_le_nonZeroDivisors S
+    (map_le_nonZeroDivisors_of_faithfulSMul hM)
   have : Algebra.IsSeparable (FractionRing Rₘ) (FractionRing Sₘ) :=
     FractionRing.isSeparable_of_isLocalization S Rₘ Sₘ hM
   apply Algebra.IsSeparable.of_equiv_equiv f₁ f₂
