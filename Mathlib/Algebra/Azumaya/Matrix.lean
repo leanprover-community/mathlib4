@@ -1,6 +1,22 @@
+/-
+Copyright (c) 2025 Yunzhou Xie. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yunzhou Xie, Jujian Zhang
+-/
 import Mathlib.Algebra.Azumaya.Defs
-import Mathlib.LinearAlgebra.Contraction
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
+/-!
+# Matrix algebra is an Azumaya algebra over R
+
+In this file we prove that finite dimesional matrix algebra `Matrix n n R` over `R`
+is an Azumaya algebra where `R` is a commutative ring.
+
+## Main Results
+
+- `IsAzumaya.Matrix`: Finite dimensional matrix algebra over `R` is Azumaya.
+
+-/
 open scoped TensorProduct
 
 variable (R n : Type*) [CommRing R] [Fintype n] [DecidableEq n]
@@ -59,5 +75,3 @@ theorem Matrix [Inhabited n]: IsAzumaya R (Matrix n n R) where
 end IsAzumaya
 
 end
-
-#min_imports

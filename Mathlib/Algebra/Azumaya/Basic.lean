@@ -1,7 +1,29 @@
+/-
+Copyright (c) 2025 Yunzhou Xie. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yunzhou Xie, Jujian Zhang
+-/
 import Mathlib.Algebra.Azumaya.Defs
-import Mathlib.LinearAlgebra.Contraction
-import Mathlib.LinearAlgebra.TensorProduct.Opposite
-import Mathlib
+import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.RingTheory.Finiteness.Basic
+
+/-!
+# Basic properties of Azumaya algebras
+
+In this file we prove basic facts about Azumaya algebras such as `R` is an Azumaya algebra
+over itself where `R` is a commutative ring.
+
+## Main Results
+
+- `IsAzumaya.Self`: `R` is an Azumaya algebra over itself.
+
+- `IsAzumaya.ofAlgEquiv`: If `A` is an Azumaya algebra over `R` and `A` is isomorphic to `B`
+  as an `R`-algebra, then `B` is an Azumaya algebra over `R`.
+
+## Tags
+Noncommutative algebra, Azumaya algebra, Brauer Group
+
+-/
 
 open scoped TensorProduct
 
