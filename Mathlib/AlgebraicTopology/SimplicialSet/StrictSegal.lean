@@ -223,15 +223,22 @@ class IsStrictSegal : Prop where
 
 namespace StrictSegal
 
-variable {X} (sx : StrictSegal X) {n : ℕ}
+variable {X} (sx : StrictSegal X)
+
+/-- A `StrictSegal` structure on a simplicial set `X` restricts to a
+`Truncated.StrictSegal` structure on the `n + 1`-truncation of `X`. -/
+def truncation (n : ℕ) : truncation (n + 1) |>.obj X |>.StrictSegal where
+  spineToSimplex _ _ := sx.spineToSimplex
+  spine_spineToSimplex m _ := sx.spine_spineToSimplex m
+  spineToSimplex_spine m _ := sx.spineToSimplex_spine m
 
 @[simp]
-lemma spine_spineToSimplex_apply (f : Path X n) :
+lemma spine_spineToSimplex_apply {n : ℕ} (f : Path X n) :
     X.spine n (sx.spineToSimplex f) = f :=
   congr_fun (sx.spine_spineToSimplex n) f
 
 @[simp]
-lemma spineToSimplex_spine_apply (Δ : X _[n]) :
+lemma spineToSimplex_spine_apply {n : ℕ} (Δ : X _[n]) :
     sx.spineToSimplex (X.spine n Δ) = Δ :=
   congr_fun (sx.spineToSimplex_spine n) Δ
 
@@ -242,6 +249,8 @@ def spineEquiv (n : ℕ) : X _[n] ≃ Path X n where
   invFun := sx.spineToSimplex
   left_inv := sx.spineToSimplex_spine_apply
   right_inv := sx.spine_spineToSimplex_apply
+
+variable {n : ℕ}
 
 theorem spineInjective : Function.Injective (sx.spineEquiv n) :=
   Equiv.injective _
