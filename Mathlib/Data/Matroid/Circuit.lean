@@ -375,9 +375,10 @@ section Elimination
 variable {ι : Type*} {J C₀ C₁ C₂ : Set α}
 
 /-- A version of `Matroid.Circuit.strong_multi_elimination` that is phrased using insertion. -/
-lemma strong_multi_elimination_insert (x : ι → α) (I : ι → Set α) (z : α) (hxI : ∀ i, x i ∉ I i)
-    (hC : ∀ i, M.Circuit (insert (x i) (I i))) (hJx : M.Circuit (J ∪ range x)) (hzJ : z ∈ J)
-    (hzI : ∀ i, z ∉ I i) : ∃ C' ⊆ J ∪ ⋃ i, I i, M.Circuit C' ∧ z ∈ C' := by
+lemma Circuit.strong_multi_elimination_insert (x : ι → α) (I : ι → Set α) (z : α)
+    (hxI : ∀ i, x i ∉ I i) (hC : ∀ i, M.Circuit (insert (x i) (I i)))
+    (hJx : M.Circuit (J ∪ range x)) (hzJ : z ∈ J) (hzI : ∀ i, z ∉ I i) :
+    ∃ C' ⊆ J ∪ ⋃ i, I i, M.Circuit C' ∧ z ∈ C' := by
   -- we may assume that `ι` is nonempty, and it suffices to show that
   -- `z` is spanned by the union of the `I` and `J \ {z}`.
   obtain hι | hι := isEmpty_or_nonempty ι
@@ -387,11 +388,11 @@ lemma strong_multi_elimination_insert (x : ι → α) (I : ι → Set α) (z : �
     obtain ⟨C', hC'ss, hC', hzC'⟩ := hcl
     refine ⟨C', ?_, hC', hzC'⟩
     rwa [union_comm, ← insert_union, insert_diff_singleton, insert_eq_of_mem hzJ] at hC'ss
-  have hC' (i) : M.closure (I i) = M.closure ({x i} ∪ I i) := by
+  have hC' (i) : M.closure (I i) = M.closure (insert (x i) (I i)) := by
     simpa [diff_singleton_eq_self (hxI _)] using (hC i).closure_diff_singleton_eq (x i)
   -- This is true because each `I i` spans `x i` and `(range x) ∪ (J \ {z})` spans `z`.
-  rw [closure_union_congr_left <| closure_iUnion_congr _ _ hC', iUnion_union_distrib,
-    iUnion_singleton_eq_range, union_right_comm]
+  rw [closure_union_congr_left <| closure_iUnion_congr _ _ hC',
+    iUnion_insert_eq_range_union_iUnion, union_right_comm]
   refine mem_of_mem_of_subset (hJx.mem_closure_diff_singleton_of_mem (.inl hzJ))
     (M.closure_subset_closure (subset_trans ?_ subset_union_left))
   rw [union_diff_distrib, union_comm]
@@ -411,7 +412,7 @@ lemma Circuit.strong_multi_elimination (hC₀ : M.Circuit C₀) (x : ι → α) 
     (hC : ∀ i, M.Circuit (C i)) (h_mem_C₀ : ∀ i, x i ∈ C₀) (h_mem : ∀ i, x i ∈ C i)
     (h_unique : ∀ ⦃i i'⦄, x i ∈ C i' → i = i') (hzC₀ : z ∈ C₀) (hzC : ∀ i, z ∉ C i) :
     ∃ C' ⊆ (C₀ ∪ ⋃ i, C i) \ range x, M.Circuit C' ∧ z ∈ C' := by
-  have hwin := M.strong_multi_elimination_insert x (fun i ↦ (C i \ {x i}))
+  have hwin := Circuit.strong_multi_elimination_insert (M := M) x (fun i ↦ (C i \ {x i}))
     (J := C₀ \ range x) (z := z) (by simp) (fun i ↦ ?_) ?_ ⟨hzC₀, ?_⟩ ?_
   · obtain ⟨C', hC'ss, hC', hzC'⟩ := hwin
     refine ⟨C', hC'ss.trans ?_, hC', hzC'⟩
