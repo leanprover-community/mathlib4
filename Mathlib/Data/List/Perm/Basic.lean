@@ -7,6 +7,7 @@ import Batteries.Data.List.Perm
 import Mathlib.Logic.Relation
 import Mathlib.Order.RelClasses
 import Mathlib.Data.List.Forall2
+import Mathlib.Data.List.InsertIdx
 
 /-!
 # List Permutations
@@ -41,6 +42,17 @@ theorem Perm.subset_congr_left {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l�
 
 theorem Perm.subset_congr_right {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l₃ ⊆ l₁ ↔ l₃ ⊆ l₂ :=
   ⟨fun h' => h'.trans h.subset, fun h' => h'.trans h.symm.subset⟩
+
+theorem set_perm_cons_eraseIdx {n : ℕ} (h : n < l.length) (a : α) :
+    l.set n a ~ a :: l.eraseIdx n := by
+  rw [← insertIdx_eraseIdx h.ne]
+  apply perm_insertIdx
+  rw [length_eraseIdx_of_lt h]
+  exact Nat.le_sub_one_of_lt h
+
+theorem getElem_cons_eraseIdx_perm {n : ℕ} (h : n < l.length) :
+    l[n] :: l.eraseIdx n ~ l := by
+  simpa [h] using (set_perm_cons_eraseIdx h l[n]).symm
 
 section Rel
 
