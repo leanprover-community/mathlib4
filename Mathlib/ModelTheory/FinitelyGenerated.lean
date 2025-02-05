@@ -250,7 +250,7 @@ theorem FG.finite [L.IsRelational] (h : FG L M) : Finite M :=
 theorem fg_iff_finite [L.IsRelational] : FG L M ↔ Finite M :=
   ⟨FG.finite, fun _ => FG.of_finite⟩
 
-instance FG.instCountable_Hom_to_countable (N : Type*) [L.Structure N] [Countable N] [h : FG L M] :
+instance FG.instCountable_hom_to_countable (N : Type*) [L.Structure N] [Countable N] [h : FG L M] :
     Countable (M →[L] N) := by
   let ⟨S, finite_S, closure_S⟩ := fg_iff.1 h
   let g : (M →[L] N) → (S → N) :=
@@ -263,11 +263,11 @@ instance FG.instCountable_Hom_to_countable (N : Type*) [L.Structure N] [Countabl
   have : Finite ↑S := (S.finite_coe_iff).2 finite_S
   exact Function.Embedding.countable ⟨g, g_inj⟩
 
-instance FG.instCountable_Embedding_to_countable (N : Type*) [L.Structure N]
+instance FG.instCountable_embedding_to_countable (N : Type*) [L.Structure N]
     [Countable N] [h : FG L M] : Countable (M ↪[L] N) :=
  Function.Embedding.countable ⟨Embedding.toHom, Embedding.toHom_injective⟩
 
-instance FG.instCountable_Equiv_to_countable (N : Type*) [L.Structure N] [Countable N] [FG L M] :
+instance FG.instCountable_equiv_to_countable (N : Type*) [L.Structure N] [Countable N] [FG L M] :
     Countable (M ≃[L] N) :=
   Function.Embedding.countable ⟨Equiv.toHom, Equiv.injective_toHom⟩
 
