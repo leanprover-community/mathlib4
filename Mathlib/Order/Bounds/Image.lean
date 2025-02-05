@@ -478,16 +478,9 @@ lemma directed_product {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
     ∀ p ∈ (Prod.fst '' d) ×ˢ (Prod.snd '' d), ∃ q ∈ d, p ≤ q := by
   intro ⟨p₁, p₂⟩ hp
   simp at hp
-  obtain ⟨r₁, hr₁⟩ := hp.1
-  obtain ⟨r₂, hr₂⟩ := hp.2
-  obtain ⟨⟨q1,q2⟩, ⟨hq1,⟨⟨hq21,hq22⟩,⟨hq31,hq32⟩⟩⟩ ⟩ := hd (p₁,r₁) hr₁ (r₂,p₂) hr₂
-  use (q1,q2)
-  constructor
-  · exact hq1
-  · rw [Prod.mk_le_mk]
-    constructor
-    · exact hq21
-    · exact hq32
+  obtain ⟨⟨r₁, hr₁⟩, ⟨r₂, hr₂⟩⟩ := hp
+  obtain ⟨q, ⟨hq1,⟨⟨hq21,hq22⟩,⟨hq31,hq32⟩⟩⟩ ⟩ := hd (p₁,r₁) hr₁ (r₂,p₂) hr₂
+  exact ⟨q, ⟨hq1, ⟨hq21, hq32⟩⟩⟩
 
 lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
     {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
