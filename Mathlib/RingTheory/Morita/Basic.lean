@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Adjunction.Limits
 /-!
 # Morita equivalence
 
-For two `R`-algebras `A` and `B` are Morita equivalent if the categories of modules over `A` and
+Two `R`-algebras `A` and `B` are Morita equivalent if the categories of modules over `A` and
 `B` are `R`-linearly equivalent. In this file, we prove that Morita equivalence is an equivalence
 relation and that isomorphic algebras are Morita equivalent.
 
