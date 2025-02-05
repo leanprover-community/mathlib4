@@ -62,8 +62,8 @@ theorem tendstoInMeasure_iff_norm [SeminormedAddCommGroup E] {l : Filter ι} {f 
       ∀ ε, 0 < ε → Tendsto (fun i => μ { x | ε ≤ ‖f i x - g x‖ }) l (𝓝 0) := by
   simp_rw [TendstoInMeasure, dist_eq_norm]
 
-theorem tendstoInMeasure_iff_tendsto_toNNReal [Dist E] {_ : MeasurableSpace α} {μ : Measure α}
-    [IsFiniteMeasure μ] {f : ι → α → E} {l : Filter ι} {g : α → E} :
+theorem tendstoInMeasure_iff_tendsto_toNNReal [Dist E] [IsFiniteMeasure μ]
+    {f : ι → α → E} {l : Filter ι} {g : α → E} :
     TendstoInMeasure μ f l g ↔
     ∀ ε, 0 < ε → Tendsto (fun i => (μ { x | ε ≤ dist (f i x) (g x) }).toNNReal) l (𝓝 0) := by
   have hfin ε i : μ { x | ε ≤ dist (f i x) (g x) } ≠ ⊤ :=
@@ -258,7 +258,7 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae' {u : Filter ι} [NeBot u] [IsCou
   obtain ⟨ns, hns1, hns2⟩ := hms2.exists_seq_tendsto_ae
   exact ⟨ms ∘ ns, hms1.comp hns1.tendsto_atTop, hns2⟩
 
-/-- TendstoInMeasure is equivalent to  every subsequence having another subsequence
+/-- TendstoInMeasure is equivalent to every subsequence having another subsequence
 ￼which converges almost surely. -/
 theorem exists_seq_tendstoInMeasure_atTop_iff (hfin : MeasureTheory.IsFiniteMeasure μ)
     {f : ℕ → α → E} (hf : ∀ (n : ℕ), AEStronglyMeasurable (f n) μ) {g : α → E} :

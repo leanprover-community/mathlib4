@@ -88,7 +88,7 @@ theorem tendsto_toNNReal_iff {ι : Type*} {f : ι → ℝ≥0∞} {u : Filter ι
     Tendsto (ENNReal.toNNReal ∘ f) u (𝓝 (a.toNNReal)) := by
   refine ⟨fun h =>  Filter.Tendsto.comp (ENNReal.tendsto_toNNReal ha) h, fun h => ?_ ⟩
   rw [← coe_comp_toNNReal_comp hf]
-  exact Filter.Tendsto.comp (tendsto_coe_toNNReal ha) h
+  exact (tendsto_coe_toNNReal ha).comp h
 
 theorem tendsto_toNNReal_iff' {ι : Type*} {f : ι → ℝ≥0∞} {u : Filter ι} {a : ℝ≥0}
     (hf : ∀ x, f x ≠ ∞) : Tendsto f u (𝓝 a) ↔ Tendsto (ENNReal.toNNReal ∘ f) u (𝓝 a) := by
