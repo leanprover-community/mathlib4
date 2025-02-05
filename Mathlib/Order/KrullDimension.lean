@@ -782,6 +782,7 @@ end krullDim
 
 section typeclass
 
+/-- Typeclass for orders with krull dimension at most `n`. -/
 @[mk_iff]
 class KrullDimLE (n : ℕ) (α : Type*) [Preorder α] : Prop where
   krullDim_le : krullDim α ≤ n
