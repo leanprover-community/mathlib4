@@ -24,7 +24,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 /-!
 ## Order at a Point: Definition and Characterization
 
-This file defines the order of a mermorphic analytic function `f` at a point `z₀`, as an element of
+This file defines the order of a meromorphic analytic function `f` at a point `z₀`, as an element of
 `ℤ ∪ {∞}`.
 
 TODO: Uniformize API between analytic and meromorphic functions
