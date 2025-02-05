@@ -472,10 +472,11 @@ lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
     upperBounds (f '' d) = upperBounds (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := by
   apply le_antisymm
   · intro u hu c hc
-    simp at hc
-    obtain ⟨a₁, ⟨b₁,⟨⟨⟨b₂,hb₂⟩,⟨a₂,ha₂⟩⟩, right⟩⟩⟩ := hc
+    obtain ⟨⟨a₁,b₁⟩,⟨hx,fabc⟩⟩ := hc
+    simp at hx
+    obtain ⟨⟨b₂,hb₂⟩,⟨a₂,ha₂⟩⟩ := hx
     obtain ⟨⟨a₃,b₃⟩,hm⟩ := hd _ hb₂ _ ha₂
-    rw [← right]
+    rw [← fabc]
     exact le_trans (hf ⟨hm.2.1.1,hm.2.2.2⟩) (hu ⟨(a₃, b₃), And.imp_right (fun _ ↦ rfl) hm⟩)
   · exact upperBounds_mono_set (image_mono (subset_fst_image_times_snd_image d))
 
