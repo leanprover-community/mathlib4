@@ -14,13 +14,9 @@ This file proves `InnerProductGeometry.norm_withLpEquiv_crossProduct`, relating 
 cross-product of two real vectors with their individual norms.
 -/
 
-
-assert_not_exists HasFDerivAt ConformalAt
-
 noncomputable section
 
 open Real
-
 open Matrix
 
 namespace InnerProductGeometry
