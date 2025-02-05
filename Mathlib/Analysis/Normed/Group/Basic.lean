@@ -850,6 +850,9 @@ attribute [simp] enorm_eq_zero
 
 @[to_additive (attr := simp) enorm_zero] lemma enorm_one' : ‖(1 : E)‖ₑ = 0 := by simp [enorm]
 
+@[to_additive (attr := simp) enorm_neg]
+lemma enorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [enorm]
+
 @[to_additive ofReal_norm_eq_enorm]
 lemma ofReal_norm_eq_enorm' (a : E) : .ofReal ‖a‖ = ‖a‖ₑ := ENNReal.ofReal_eq_coe_nnreal _
 
@@ -965,6 +968,42 @@ theorem mem_closure_one_iff_norm {x : E} : x ∈ closure ({1} : Set E) ↔ ‖x�
 theorem closure_one_eq : closure ({1} : Set E) = { x | ‖x‖ = 0 } :=
   Set.ext fun _x => mem_closure_one_iff_norm
 
+section Instances
+
+instance [SeminormedAddGroup E] : ContinuousENorm E where
+/- XXX: continuous_nnnorm errors with
+application type mismatch
+  Continuous.comp ENNReal.continuous_coe continuous_nnnorm
+argument
+  continuous_nnnorm
+has type
+  @Continuous E ℝ≥0
+    (@UniformSpace.toTopologicalSpace E (@PseudoMetricSpace.toUniformSpace E SeminormedAddGroup.toPseudoMetricSpace))
+    NNReal.instTopologicalSpace fun a ↦ ‖a‖₊ : Prop
+but is expected to have type
+  @Continuous E ℝ≥0
+    (@UniformSpace.toTopologicalSpace E (@PseudoMetricSpace.toUniformSpace E SeminormedGroup.toPseudoMetricSpace))
+-/
+  continuous_enorm := by
+    refine ENNReal.continuous_coe.comp ?_; sorry--(continuous_nnnorm (E := E))
+
+instance [NormedAddGroup E] : ENormedAddMonoid E where
+  enorm_eq_zero := by
+    sorry -- simp [enorm_eq_nnnorm]
+    -- enorm_eq_nnnorm is defined higher above... not sure why this fails!
+  -- enorm_neg := by
+  --   simp (config := {contextual := true}) [← eq_neg_iff_add_eq_zero, enorm_eq_nnnorm]
+  enorm_add_le := by simp [enorm_eq_nnnorm, ← ENNReal.coe_add, nnnorm_add_le]
+
+instance [NormedAddCommGroup E] : ENormedAddCommMonoid E where
+  add_comm := by simp [add_comm]
+
+instance [NormedAddCommGroup E] [NormedSpace ℝ E] : ENormedSpace E where
+  enorm_smul := by simp_rw [enorm_eq_nnnorm, ENNReal.smul_def, NNReal.smul_def, nnnorm_smul]; simp
+
+end Instances
+
+#exit
 section
 
 variable {l : Filter α} {f : α → E}
