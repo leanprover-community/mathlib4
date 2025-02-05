@@ -973,50 +973,52 @@ theorem range_subtype (S : L.Substructure M) : S.subtype.toHom.range = S := by
 lemma subtype_comp_inclusion {S T : L.Substructure M} (h : S ≤ T) :
     T.subtype.comp (inclusion h) = S.subtype := rfl
 
+namespace Equiv
+
 /-- Equivalence between equal substructures. -/
-def Equiv.ofEq {S T : L.Substructure M} (h : S = T) : S ≃[L] T := by
+def ofEq {S T : L.Substructure M} (h : S = T) : S ≃[L] T := by
   cases h
   exact Equiv.refl _ _
 
 @[simp]
-theorem Equiv.ofEq_refl (S : L.Substructure M) : (Equiv.ofEq (Eq.refl S)) = Equiv.refl L S := rfl
+theorem ofEq_refl (S : L.Substructure M) : (ofEq (Eq.refl S)) = Equiv.refl L S := rfl
 
 @[simp]
-theorem Equiv.ofEq_symm {S T : L.Substructure M} (h : S = T) :
-    (Equiv.ofEq h).symm = Equiv.ofEq h.symm := by
+theorem symm_ofEq {S T : L.Substructure M} (h : S = T) :
+    (ofEq h).symm = ofEq h.symm := by
   cases h
   rfl
 
 @[simp]
-theorem Equiv.ofEq_comp {S T U : L.Substructure M} (h : S = T) (h' : T = U) :
-    (Equiv.ofEq h').comp (Equiv.ofEq h) = Equiv.ofEq (h.trans h') := by
+theorem ofEq_comp {S T U : L.Substructure M} (h : S = T) (h' : T = U) :
+    (ofEq h').comp (ofEq h) = ofEq (h.trans h') := by
   cases h
   cases h'
   rfl
 
 @[simp]
-theorem Equiv.ofEq_apply {S T : L.Substructure M} (h : S = T) {m : M} (hm : m ∈ S) :
-    Equiv.ofEq h ⟨m, hm⟩ = ⟨m, h ▸ hm⟩ := by
+theorem ofEq_apply {S T : L.Substructure M} (h : S = T) {m : M} (hm : m ∈ S) :
+    ofEq h ⟨m, hm⟩ = ⟨m, h ▸ hm⟩ := by
   cases h
   rfl
 
 @[simp]
 theorem subtype_comp_EquivOfEq {S T : L.Substructure M} (h : S = T) :
-    T.subtype.comp (Equiv.ofEq h).toEmbedding = S.subtype := by
+    T.subtype.comp (ofEq h).toEmbedding = S.subtype := by
   cases h
   rfl
 
 @[simp]
 theorem substructureEquivMap_refl (S : L.Substructure M) :
-    (Embedding.refl L M).substructureEquivMap S = Equiv.ofEq (map_id S).symm := by
+    (Embedding.refl L M).substructureEquivMap S = ofEq (map_id S).symm := by
   ext ⟨⟩
-  simp only [Embedding.refl_toHom, SetLike.coe_eq_coe, Equiv.ofEq_apply]
+  simp only [Embedding.refl_toHom, SetLike.coe_eq_coe, ofEq_apply]
   rfl
 
 @[simp]
 theorem substructureEquivMap_comp_substructureEquivMap (f : M ↪[L] N) (g : N ↪[L] P)
     (S : L.Substructure M) : (g.substructureEquivMap (S.map f.toHom)).comp
-    (f.substructureEquivMap S) = (Equiv.ofEq (S.map_map ..).symm).comp
+    (f.substructureEquivMap S) = (ofEq (S.map_map ..).symm).comp
     ((g.comp f).substructureEquivMap S) := by
   apply Equiv.injective_toEmbedding
   apply (subtype _).comp_injective
@@ -1024,6 +1026,8 @@ theorem substructureEquivMap_comp_substructureEquivMap (f : M ↪[L] N) (g : N �
     subtype_comp_EquivOfEq]
   ext
   rfl
+
+end Equiv
 
 end Substructure
 
