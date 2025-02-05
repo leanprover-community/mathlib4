@@ -244,11 +244,11 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂ {s T 
     field_simp [show -s + 1 ≠ 0 by linarith, hε.ne']
     ring
 
-
 private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
     (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈ Icc 1 n, f k) / n) atTop (𝓝 l))
     (hfS : ∀ s : ℝ, 1 < s → LSeriesSummable f s) {ε : ℝ} (hε : ε > 0) :
-    ∃ C ≥ 0, ∀ s : ℝ, 1 < s → ‖(s - 1) * LSeries f s - l * s‖ ≤ (s - 1) * s * C + s * ε := by
+    ∃ C ≥ 0, (fun s : ℝ ↦ ‖(s - 1) * LSeries f s - l * s‖) ≤ᶠ[𝓝[>] 1]
+      fun s ↦ (s - 1) * s * C + s * ε := by
   obtain ⟨T, hT₁, hT⟩ := (eventually_forall_ge_atTop.mpr
     (LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₁
       hlim hε)).frequently.forall_exists_of_atTop 1
@@ -257,7 +257,9 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
   have hC : 0 ≤ C := by
     refine setIntegral_nonneg_ae measurableSet_Ioc (univ_mem' fun t ht ↦ ?_)
     exact mul_nonneg (norm_nonneg _) <| Real.rpow_nonneg (zero_le_one.trans ht.1.le) _
-  refine ⟨C, hC, fun s hs ↦ ?_⟩
+  refine ⟨C, hC, ?_⟩
+  filter_upwards [eventually_mem_nhdsWithin] with s hs
+  rw [Set.mem_Ioi] at hs
   have hs' : 0 ≤ (s - 1) * s := mul_nonneg (sub_nonneg.mpr hs.le) (zero_le_one.trans hs.le)
   have h₀ : LocallyIntegrableOn (fun t ↦ S t - l * t) (Set.Ici 1) := by
     refine .sub ?_ <| ContinuousOn.locallyIntegrableOn (by fun_prop) measurableSet_Ici
@@ -326,39 +328,27 @@ theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div
     (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈ Icc 1 n, f k) / n) atTop (𝓝 l))
     (hfS : ∀ s : ℝ, 1 < s → LSeriesSummable f s) :
     Tendsto (fun s : ℝ ↦ (s - 1) * LSeries f s) (𝓝[>] 1) (𝓝 l) := by
-  refine Metric.tendsto_nhdsWithin_nhds.mpr fun ε hε ↦ ?_
-  have hε6 : 0 < ε / 6 := by positivity
-  have hε3 : 0 < ε / 3 := by positivity
-  obtain ⟨C, hC₁, hC₂⟩ := LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃ hlim hfS hε6
-  have lim1 : Tendsto (fun s ↦ (s - 1) * s * C) (𝓝[>] 1) (𝓝 0) := by
-    have : ContinuousAt (fun s ↦ (s - 1) * s * C) 1 := by fun_prop
-    convert tendsto_nhdsWithin_of_tendsto_nhds this.tendsto
-    rw [sub_self, zero_mul, zero_mul]
-  have lim2 : Tendsto (fun s : ℝ ↦ s * l) (𝓝[>] 1) (𝓝 l) := by
-    have : ContinuousAt (fun s : ℝ ↦ s * l) 1 := by fun_prop
-    convert tendsto_nhdsWithin_of_tendsto_nhds this.tendsto
-    rw [Complex.ofReal_one, one_mul]
-  rw [Metric.tendsto_nhdsWithin_nhds] at lim1 lim2
-  obtain ⟨δ₁, _, hδ₁⟩ := lim1 _ hε3
-  obtain ⟨δ₂, _, hδ₂⟩ := lim2 _ hε3
-  refine ⟨min 1 (min δ₁ δ₂), by positivity, fun s hs₁ hs₂ ↦ ?_⟩
-  specialize hC₂ s hs₁
-  specialize hδ₁ hs₁ (by simp at hs₂; tauto)
-  specialize hδ₂ hs₁ (by simp at hs₂; tauto)
-  rw [dist_eq_norm] at hδ₁ hδ₂ hs₂ ⊢
-  rw [sub_zero, Real.norm_of_nonneg (mul_nonneg
-    (mul_nonneg (sub_nonneg.mpr hs₁.le) (zero_lt_one.trans hs₁).le) hC₁)] at hδ₁
-  have sle2 : s < 2 := by
-    have := (abs_lt.mp <| Real.norm_eq_abs _ ▸ (hs₂.trans_le (min_le_left _ _))).2
-    rwa [sub_lt_iff_lt_add', one_add_one_eq_two] at this
-  calc
-    _ ≤ ‖(s - 1) * LSeries f s - l * s‖ + ‖l * s - l‖ := norm_sub_le_norm_sub_add_norm_sub _ _ _
-    _ < (s - 1) * s * C + s * (ε / 6) + (ε / 3) := add_lt_add_of_le_of_lt hC₂ (by rwa [mul_comm])
-    _ ≤ (ε / 3) + s * (ε / 6) + (ε / 3) := by gcongr
-    _ < (ε / 3) + (ε / 3) + (ε / 3) := ?_
-    _ = ε := add_thirds ε
-  refine add_lt_add_right (add_lt_add_left ?_ (ε / 3)) (ε / 3)
-  exact lt_of_lt_of_eq ((mul_lt_mul_right hε6).mpr sle2) (by ring)
+  have h₁ {C ε : ℝ} : Tendsto (fun s ↦ (s - 1) * s * C + s * ε) (𝓝[>] 1) (𝓝 ε) := by
+    rw [show 𝓝 ε = 𝓝 ((1 - 1) * 1 * C + 1 * ε) by congr; ring]
+    exact tendsto_nhdsWithin_of_tendsto_nhds (ContinuousAt.tendsto (by fun_prop))
+  have h₂ : IsBoundedUnder
+      (fun x1 x2 ↦ x1 ≤ x2) (𝓝[>] 1) fun s : ℝ ↦ ‖(s - 1) * LSeries f s - l * s‖ := by
+    obtain ⟨C, _, hC₂⟩ :=
+      LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃ hlim hfS zero_lt_one
+    exact h₁.isBoundedUnder_le.mono_le hC₂
+  suffices Tendsto (fun s : ℝ ↦ (s - 1) * LSeries f s - l * s) (𝓝[>] 1) (𝓝 0) by
+    rw [show 𝓝 l = 𝓝 (0 + 1 * l) by congr; ring]
+    have h₃ : Tendsto (fun s : ℝ ↦ s * l) (𝓝[>] 1) (𝓝 (1 * l)) :=
+      tendsto_nhdsWithin_of_tendsto_nhds (ContinuousAt.tendsto (by fun_prop))
+    exact (this.add h₃).congr fun _ ↦ by ring
+  refine tendsto_zero_iff_norm_tendsto_zero.mpr <| tendsto_of_le_liminf_of_limsup_le ?_ ?_ h₂ ?_
+  · exact le_liminf_of_le h₂.isCoboundedUnder_ge (univ_mem' (fun _ ↦ norm_nonneg _))
+  · refine le_of_forall_pos_le_add fun ε hε ↦ ?_
+    rw [zero_add]
+    obtain ⟨C, hC₁, hC₂⟩ := LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃ hlim hfS hε
+    refine le_of_le_of_eq (limsup_le_limsup hC₂ ?_ h₁.isBoundedUnder_le) h₁.limsup_eq
+    exact isCoboundedUnder_le_of_eventually_le _ (univ_mem' fun _ ↦ norm_nonneg _)
+  · exact isBoundedUnder_of_eventually_ge (univ_mem' fun _ ↦ norm_nonneg _)
 
 theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_and_nonneg (f : ℕ → ℝ) {l : ℝ}
     (hf : Tendsto (fun n ↦ (∑ k ∈ Icc 1 n, f k) / (n : ℝ)) atTop (𝓝 l))
