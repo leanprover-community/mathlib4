@@ -181,7 +181,7 @@ lemma exists_basis_basis_of_span_eq_top_of_mem_algebraMap
     replace hv₃ := hv₃.restrict_scalars (R := K) <| by
       simp_rw [← Algebra.algebraMap_eq_smul_one]
       exact FaithfulSMul.algebraMap_injective K L
-    rw [show ((↑) : v → M) = M'.subtype ∘ v' from rfl] at hv₃
+    rw [show ((↑) : v → M) = M'.subtype ∘ v' by ext; simp [v']] at hv₃
     exact hv₃.of_comp
   suffices span K (Set.range v') = ⊤ by
     let e := (Module.Finite.finite_basis b).equivFin

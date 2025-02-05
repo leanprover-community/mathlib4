@@ -189,7 +189,7 @@ theorem imageBasicOpen_image_preimage :
     (g.base : X.carrier.1 ⟶ Y.carrier.1)
   · ext
     simp_rw [types_comp_apply, ← TopCat.comp_app, ← PresheafedSpace.comp_base]
-    congr 2
+    congr 3
     exact coequalizer.condition f.toShHom g.toShHom
   · apply isColimitCoforkMapOfIsColimit (forget TopCat)
     apply isColimitCoforkMapOfIsColimit (SheafedSpace.forget _)
