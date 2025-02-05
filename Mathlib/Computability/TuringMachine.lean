@@ -372,9 +372,12 @@ instance Cfg.inhabited : Inhabited Cfg₀ := ⟨⟨default, default⟩⟩
 
 /-- Execution semantics of the Turing machine. -/
 def step (M : Machine₀) : Cfg₀ → Option Cfg₀ :=
-  fun ⟨q, T⟩ ↦ (M q T.1).map fun ⟨q', a⟩ ↦ ⟨q', match a with
+  fun ⟨q, T⟩ ↦ (M q T.1).map fun ⟨q', stmt⟩ ↦ ⟨q', match stmt with
     | Stmt.move d => T.move d
     | Stmt.write a => T.write a⟩
+
+/-- Chainable step function -/
+def step_chain (M : Machine₀) (cfg : Option Cfg₀) : Option Cfg₀ := cfg.bind (step M)
 
 /-- The statement `Reaches M s₁ s₂` means that `s₂` is obtained
   starting from `s₁` after a finite number of steps from `s₂`. -/
@@ -467,6 +470,107 @@ theorem Machine.map_respects (g₁ : PointedMap Λ Λ') (g₂ : Λ' → Λ) {S} 
 end
 
 end TM0
+
+namespace TMQ
+
+variable (Γ : Type*) [Inhabited Γ]
+
+variable (Λ : Type*) [Inhabited Λ]
+
+/-- A Turing machine under the quintet definition (TMQ), which coincides with TM0 except that
+a symbol is written and the tape head moves each step.-/
+@[nolint unusedArguments]
+def MachineQ [Inhabited Λ] [Inhabited Γ] := Λ → Γ → Option (Λ × Γ × Dir)
+
+local notation "MachineQ" => MachineQ Γ Λ
+
+local notation "Cfg₀" => TM0.Cfg Γ Λ
+
+variable {Γ Λ}
+
+/-- For TMQ, a symbol is written and the tape head moves with every step -/
+def step (M : MachineQ) : Cfg₀ → Option Cfg₀ :=
+  fun ⟨q, T⟩ ↦ (M q T.1).map fun ⟨q', a , m⟩ ↦ ⟨q', (T.write a).move m⟩
+
+/-- Evaluate a Turing machine on initial input to a final state, if it terminates. -/
+def eval (M : MachineQ) (l : List Γ) : Part (ListBlank Γ) :=
+  (Turing.eval (step M) (TM0.init l)).map fun c ↦ c.Tape.right₀
+
+/-- Chainable step function -/
+def step_chain (M : MachineQ) (cfg : Option Cfg₀) : Option Cfg₀ := cfg.bind (step M)
+
+end TMQ
+
+/-!
+## TMQ emulator in TM0
+
+To prove that TMQ computable functions are TM0 computable, we need to reduce each TMQ program to a
+TM0 program. For a TMQ program with alphabet `Γ` and states `Λ`, we create a TM0 program with the
+same alphabet, and with states `Λ × {Dir+stay}`. Each TMQ transition, which both writes and moves
+the tape head, will be split into two TM0 statements which (i) writes and moves to a state
+`Λ × Dir` and then (ii) in state `Λ × Dir`, moves `Dir` and transitions to normal state `Λ × stay`.
+-/
+
+namespace TMQto0
+
+section
+
+variable {Γ : Type*} [Inhabited Γ]
+
+variable {Λ : Type*} [Inhabited Λ]
+
+/-- TMQ machine to be emulated  -/
+def M := Λ → Γ → Option (Λ × Γ × Dir)
+
+variable (MQ : TMQ.MachineQ Γ Λ)
+
+/-- The TM0 emulator state may encode a move following a write -/
+inductive Dir'
+  | left
+  | right
+  | stay
+  deriving DecidableEq, Inhabited
+
+/-- Coerce from Dir to Dir' -/
+def toDir' : Dir → Dir'
+  | Dir.left => Dir'.left
+  | Dir.right => Dir'.right
+
+instance : Coe Dir Dir' where
+  coe x := toDir' x
+
+open TM0.Stmt
+
+/-- The translated TM0 machine (given the TMQ machine input). -/
+def tr : TM0.Machine Γ (Λ × Dir')
+  | (q, Dir'.left), _ => some ((q, Dir'.stay), move Dir.left)
+  | (q, Dir'.right), _ => some ((q, Dir'.stay), move Dir.left)
+  | (q, Dir'.stay), s => (MQ q s).map fun ⟨q', a , m⟩ ↦ ⟨(q', m), write a⟩
+
+local notation "Cfg₀" => TM0.Cfg Γ (Λ × Dir')
+
+local notation "CfgQ" => TM0.Cfg Γ Λ
+
+/-- Translate configurations from TMQ to TM0 -/
+def trCfg : CfgQ → Cfg₀
+  | ⟨q, T⟩ => ⟨(q, Dir'.stay), T⟩
+
+/-
+theorem tr_respects : Respects (TMQ.step MQ) (TM0.step (tr MQ))
+  fun a b ↦ trCfg a = b :=
+  fun_respects.2 fun ⟨q, T⟩ ↦ by
+  cases' e : MQ q T.1 with val
+  simp only [trCfg, TMQ.step,e,FRespects,Option.map]
+  simp [TM0.step,tr]
+  exact e
+  cases' val with q' s
+  simp only [trCfg,TMQ.step,e,Option.map,FRespects]
+  cases' s with gamma dir
+  simp
+end
+-/
+
+end TMQto0
 
 /-!
 ## The TM1 model
@@ -568,6 +672,9 @@ def stepAux [Inhabited Γ] : Stmt₁ → σ → Tape Γ → Cfg₁
 def step [Inhabited Γ] (M : Λ → Stmt₁) : Cfg₁ → Option Cfg₁
   | ⟨none, _, _⟩ => none
   | ⟨some l, v, T⟩ => some (stepAux (M l) v T)
+
+/-- Chainable step function -/
+def step_chain (M : Λ → Stmt₁) (cfg : Option Cfg₁) : Option Cfg₁ := cfg.bind (step M)
 
 /-- A set `S` of labels supports the statement `q` if all the `goto`
   statements in `q` refer only to other functions in `S`. -/
@@ -1361,6 +1468,9 @@ def step (M : Λ → Stmt₂) : Cfg₂ → Option Cfg₂
 
 attribute [simp] stepAux.eq_1 stepAux.eq_2 stepAux.eq_3
   stepAux.eq_4 stepAux.eq_5 stepAux.eq_6 stepAux.eq_7 step.eq_1 step.eq_2
+
+/-- Chainable step function -/
+def step_chain (M : Λ → Stmt₂) (cfg : Option Cfg₂) : Option Cfg₂ := cfg.bind (step M)
 
 /-- The (reflexive) reachability relation for the TM2 model. -/
 def Reaches (M : Λ → Stmt₂) : Cfg₂ → Cfg₂ → Prop :=
