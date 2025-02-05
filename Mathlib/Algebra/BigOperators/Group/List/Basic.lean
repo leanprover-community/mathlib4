@@ -473,8 +473,6 @@ namespace MonoidHom
 protected theorem map_list_prod (f : M →* N) (l : List M) : f l.prod = (l.map f).prod :=
   map_list_prod f l
 
-attribute [deprecated map_list_sum (since := "2024-05-02")] AddMonoidHom.map_list_sum
-
 end MonoidHom
 
 end MonoidHom

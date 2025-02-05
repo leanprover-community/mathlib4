@@ -358,7 +358,7 @@ variable {R : Type*}
 
 section
 
-/-- The binomial coefficient `choose r n` generalizes the natural number `choose` function,
+/-- The binomial coefficient `choose r n` generalizes the natural number `Nat.choose` function,
   interpreted in terms of choosing without replacement. -/
 def choose [AddCommGroupWithOne R] [Pow R ℕ] [BinomialRing R] (r : R) (n : ℕ) : R :=
   multichoose (r - n + 1) n
@@ -378,9 +378,6 @@ theorem choose_natCast [NatPowAssoc R] (n k : ℕ) : choose (n : R) k = Nat.choo
   rw [← nsmul_right_inj (Nat.factorial_ne_zero k),
     ← descPochhammer_eq_factorial_smul_choose, nsmul_eq_mul, ← Nat.cast_mul,
     ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_smeval_eq_descFactorial]
-
-@[deprecated (since := "2024-04-17")]
-alias choose_nat_cast := choose_natCast
 
 @[simp]
 theorem choose_zero_right' (r : R) : choose r 0 = (r + 1) ^ 0 := by
