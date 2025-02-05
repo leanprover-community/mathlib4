@@ -95,25 +95,38 @@ open Polynomial
 variable [Field K] [Field L] [Algebra K L] [IsPurelyInseparable K L]
 variable {L}
 
-/-- 'Encoding' of an element `a : L` as the pair `⟨n, y⟩ : ℕ × K` with
-`minpoly K a = X ^ ringExpChar K ^ n - y`. -/
-noncomputable def elemEncode (a : L) : ℕ × K :=
-  Classical.choose <| Prod.exists'.mpr (minpoly_eq_X_pow_sub_C K (ringExpChar K) a)
-
+open Classical in
 /-- The exponent of an element `a ∈ L` of a purely inseparable field extension `L / K`
-is the smallest natural number `e` such that `a ^ ringExpChar K ^ e ∈ K`.
-The result is currently meaningful only when `ringExpChar ≠ 1`.
-TODO: extend the definition for `ringExpChar = 1`, when the exponent is `0`. -/
-noncomputable def elemExponent (a : L) : ℕ := (elemEncode K a).1
+is the smallest natural number `e` such that `a ^ ringExpChar K ^ e ∈ K`. -/
+noncomputable def elemExponent (a : L) : ℕ :=
+  Nat.find <| minpoly_eq_X_pow_sub_C K (ringExpChar K) a
 
+open Classical in
+variable {K} in
+theorem elemExponent_zero_of_mem_range {a : L} (h : a ∈ (algebraMap K L).range) :
+    elemExponent K a = 0 := by
+  apply (Nat.find_eq_zero _).mpr
+  simp
+  obtain ⟨y, hy⟩ := h
+  exact ⟨y, hy ▸ minpoly.eq_X_sub_C L y⟩
+
+open Classical in
+theorem elemExponent_zero_of_charZero (a : L) [CharZero K] :
+    elemExponent K a = 0 :=
+  elemExponent_zero_of_mem_range <|
+    IsPurelyInseparable.surjective_algebraMap_of_isSeparable K L a
+
+open Classical in
 /-- The element `y` of the base field `K` such that
 `a ^ ringExpChar K ^ elemExponent K a = algebraMap K L y`.
 See `IsPurelyInseparable.algebraMap_elemReduct_eq`. -/
-noncomputable def elemReduct (a : L) : K := (elemEncode K a).2
+noncomputable def elemReduct (a : L) : K :=
+  Classical.choose <| Nat.find_spec <| minpoly_eq_X_pow_sub_C K (ringExpChar K) a
 
+open Classical in
 theorem minpoly_eq (a : L) :
     minpoly K a = X ^ ringExpChar K ^ elemExponent K a - C (elemReduct K a) :=
-  Classical.choose_spec <| Prod.exists'.mpr (minpoly_eq_X_pow_sub_C K (ringExpChar K) a)
+  Classical.choose_spec <| Nat.find_spec <| minpoly_eq_X_pow_sub_C K (ringExpChar K) a
 
 /-- Version with `[ExpChar K p]`. -/
 theorem minpoly_eq' (p : ℕ) [ExpChar K p] (a : L) :
@@ -159,9 +172,7 @@ instance exponent_exists_of_finiteDimensional [IsPurelyInseparable K L] [FiniteD
       Nat.add_sub_cancel' (h_elemexp_bound a)]
 
 /-- An exponent of an element is less or equal than exponent of the extension
-in non-zero characteristic.
-The assumption that `ringExpChar K` is prime is necessary here as currently it cannot
-be proven that element exponent is `0` when `ringExpChar K` is 1. -/
+in non-zero characteristic. -/
 theorem elemExponent_le_exponent' [HasExponent K L] (hp : (ringExpChar K).Prime) (a : L) :
     elemExponent K a ≤ exponent K L := by
   obtain ⟨y, hy⟩ := RingHom.mem_range.mp <| exponent_def K a
@@ -172,6 +183,15 @@ theorem elemExponent_le_exponent' [HasExponent K L] (hp : (ringExpChar K).Prime)
     rw [natDegree_sub_C, natDegree_pow, natDegree_X, mul_one]
   exact (Nat.pow_le_pow_iff_right <| Nat.Prime.one_lt hp).mp <|
     hf₃ ▸ minpoly_natDegree_eq K a ▸ natDegree_le_natDegree (minpoly.min K a hf₂ hf₁)
+
+/-- An exponent of an element is less or equal than exponent of the extension
+in non-zero characteristic. -/
+theorem elemExponent_le_exponent [HasExponent K L] (a : L) :
+    elemExponent K a ≤ exponent K L := by
+  let ⟨p, _⟩ := ExpChar.exists K
+  rcases ‹ExpChar K p› with _ | ⟨hp⟩
+  · exact elemExponent_zero_of_charZero K a ▸ Nat.zero_le _
+  · exact elemExponent_le_exponent' K (ringExpChar.eq K p ▸ hp) a
 
 end Field
 
