@@ -75,6 +75,7 @@ instance largeCategory : LargeCategory Bipointed where
   id := Hom.id
   comp := @Hom.comp
 
+/-- The subtype of functions corresponding to the morphisms in `Bipointed`. -/
 abbrev HomSubtype (X Y : Bipointed) :=
   { f : X → Y // f X.toProd.1 = Y.toProd.1 ∧ f X.toProd.2 = Y.toProd.2 }
 
