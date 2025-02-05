@@ -439,9 +439,6 @@ protected theorem map_sub : D (a - b) = D a - D b :=
 theorem map_intCast (n : ℤ) : D (n : A) = 0 := by
   rw [← zsmul_one, D.map_smul_of_tower n, map_one_eq_zero, smul_zero]
 
-@[deprecated (since := "2024-04-05")] alias map_coe_nat := map_natCast
-@[deprecated (since := "2024-04-05")] alias map_coe_int := map_intCast
-
 theorem leibniz_of_mul_eq_one {a b : A} (h : a * b = 1) : D a = -a ^ 2 • D b := by
   rw [neg_smul]
   refine eq_neg_of_add_eq_zero_left ?_

@@ -418,8 +418,6 @@ theorem toOpen_Γgerm_apply (x : PrimeSpectrum.Top R) (f : R) :
     (structureSheaf R).presheaf.Γgerm x (toOpen R ⊤ f) = toStalk R x f :=
   rfl
 
-@[deprecated (since := "2024-07-30")] alias germ_to_top := toOpen_Γgerm_apply
-
 theorem isUnit_to_basicOpen_self (f : R) : IsUnit (toOpen R (PrimeSpectrum.basicOpen f) f) :=
   isUnit_of_mul_eq_one _ (const R 1 f (PrimeSpectrum.basicOpen f) fun _ => id) <| by
     rw [toOpen_eq_const, const_mul_rev]
@@ -498,8 +496,6 @@ theorem stalkToFiberRingHom_germ (U : Opens (PrimeSpectrum.Top R))
     (x : PrimeSpectrum.Top R) (hx : x ∈ U) (s : (structureSheaf R).1.obj (op U)) :
     stalkToFiberRingHom R x ((structureSheaf R).presheaf.germ U x hx s) = s.1 ⟨x, hx⟩ :=
   RingHom.ext_iff.mp (CommRingCat.hom_ext_iff.mp (germ_comp_stalkToFiberRingHom R U x hx)) s
-
-@[deprecated (since := "2024-07-30")] alias stalkToFiberRingHom_germ' := stalkToFiberRingHom_germ
 
 @[simp]
 theorem toStalk_comp_stalkToFiberRingHom (x : PrimeSpectrum.Top R) :
@@ -947,9 +943,8 @@ theorem localizationToStalk_stalkSpecializes {R : Type*} [CommRing R] {x y : Pri
         StructureSheaf.localizationToStalk R x := by
   ext : 1
   apply IsLocalization.ringHom_ext (S := Localization.AtPrime y.asIdeal) y.asIdeal.primeCompl
-  erw [RingHom.comp_assoc]
-  conv_rhs => erw [RingHom.comp_assoc]
-  dsimp [CommRingCat.ofHom, localizationToStalk, PrimeSpectrum.localizationMapOfSpecializes]
+  rw [CommRingCat.hom_comp, RingHom.comp_assoc, CommRingCat.hom_comp, RingHom.comp_assoc]
+  dsimp [localizationToStalk, PrimeSpectrum.localizationMapOfSpecializes]
   rw [IsLocalization.lift_comp, IsLocalization.lift_comp, IsLocalization.lift_comp]
   exact CommRingCat.hom_ext_iff.mp (toStalk_stalkSpecializes h)
 

@@ -1120,15 +1120,10 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
       exact ⟨d, List.Mem.tail _ hd, hcd⟩
     · exact ⟨⟨(x, y), a⟩, List.Mem.head _, uS, h⟩
 
-@[simp] lemma getVert_copy  {u v w x : V} (p : G.Walk u v) (i : ℕ) (h : u = w) (h' : v = x) :
+@[simp] lemma getVert_copy {u v w x : V} (p : G.Walk u v) (i : ℕ) (h : u = w) (h' : v = x) :
     (p.copy h h').getVert i = p.getVert i := by
   subst_vars
-  match p, i with
-  | .nil, _ =>
-    rw [getVert_of_length_le _ (by simp only [length_nil, Nat.zero_le] : nil.length ≤ _)]
-    rw [getVert_of_length_le _ (by simp only [length_copy, length_nil, Nat.zero_le])]
-  | .cons hadj q, 0 => simp only [copy_rfl_rfl, getVert_zero]
-  | .cons hadj q, (n + 1) => simp only [copy_cons, getVert_cons_succ]; rfl
+  rfl
 
 @[simp] lemma getVert_tail {u v n} (p : G.Walk u v) :
     p.tail.getVert n = p.getVert (n + 1) := by
@@ -1154,25 +1149,23 @@ theorem mem_support_iff_exists_getVert {u v w : V} {p : G.Walk v w} :
       Nat.le_add_right, and_self]
   · rintro ⟨n, hn⟩
     rw [SimpleGraph.Walk.mem_support_iff]
-    by_cases h0 : n = 0
-    · rw [h0, getVert_zero] at hn
+    cases n with
+    | zero =>
+      rw [getVert_zero] at hn
       left
       exact hn.1.symm
-    · right
+    | succ n =>
+      right
       have hnp : ¬ p.Nil := by
         rw [nil_iff_length_eq]
         omega
-      rw [← support_tail_of_not_nil _ hnp]
-      rw [mem_support_iff_exists_getVert]
-      use n - 1
-      simp only [Nat.sub_le_iff_le_add]
-      rw [getVert_tail, length_tail_add_one hnp]
-      have : (n - 1 + 1) = n := by omega
-      rwa [this]
+      rw [← support_tail_of_not_nil _ hnp, mem_support_iff_exists_getVert]
+      use n
+      rwa [getVert_tail, ← Nat.add_one_le_add_one_iff, length_tail_add_one hnp]
 termination_by p.length
 decreasing_by
 · simp_wf
-  rw [@Nat.lt_iff_add_one_le]
+  rw [Nat.lt_iff_add_one_le]
   rw [length_tail_add_one hnp]
 
 end Walk

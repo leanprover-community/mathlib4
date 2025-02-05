@@ -84,8 +84,9 @@ topological spaces, which sends a locale `L` to the topological space `PT L` of 
 from `L` to `Prop` and a locale homomorphism `f` to a continuous function between the spaces
 of points. -/
 def pt : Locale ⥤ TopCat where
-  obj L := ⟨PT L.unop, inferInstance⟩
-  map f := ⟨fun p ↦ p.comp f.unop, continuous_def.2 <| by rintro s ⟨u, rfl⟩; use f.unop u; rfl⟩
+  obj L := TopCat.of (PT L.unop)
+  map f := TopCat.ofHom ⟨fun p ↦ p.comp f.unop,
+    continuous_def.2 <| by rintro s ⟨u, rfl⟩; use f.unop u; rfl⟩
 end pt_definition
 
 section locale_top_adjunction
@@ -110,7 +111,7 @@ def counitAppCont : FrameHom L (Opens <| PT L) where
 
 /-- The forgetful functor `topToLocale` is left adjoint to the functor `pt`. -/
 def adjunctionTopToLocalePT : topToLocale ⊣ pt where
-  unit := { app := fun X ↦ ⟨localePointOfSpacePoint X, continuous_def.2 <|
+  unit := { app := fun X ↦ TopCat.ofHom ⟨localePointOfSpacePoint X, continuous_def.2 <|
         by rintro _ ⟨u, rfl⟩; simpa using u.2⟩ }
   counit := { app := fun L ↦ ⟨counitAppCont L⟩ }
 

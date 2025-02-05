@@ -41,7 +41,6 @@ The constructions of the ring homomorphisms go through an auxiliary constructor
 
 noncomputable section
 
-open scoped Classical
 open Nat IsLocalRing Padic
 
 namespace PadicInt
@@ -293,6 +292,7 @@ def residueField : IsLocalRing.ResidueField ℤ_[p] ≃+* ZMod p := by
   exact_mod_cast (@PadicInt.ker_toZMod p _) ▸ RingHom.quotientKerEquivOfSurjective
     (ZMod.ringHom_surjective PadicInt.toZMod)
 
+open scoped Classical in
 /-- `appr n x` gives a value `v : ℕ` such that `x` and `↑v : ℤ_p` are congruent mod `p^n`.
 See `appr_spec`. -/
 -- Porting note: removing irreducible solves a lot of problems
@@ -445,9 +445,6 @@ theorem denseRange_natCast : DenseRange (Nat.cast : ℕ → ℤ_[p]) := by
   rw [norm_le_pow_iff_mem_span_pow]
   apply appr_spec
 
-@[deprecated (since := "2024-04-17")]
-alias denseRange_nat_cast := denseRange_natCast
-
 theorem denseRange_intCast : DenseRange (Int.cast : ℤ → ℤ_[p]) := by
   intro x
   refine DenseRange.induction_on denseRange_natCast x ?_ ?_
@@ -455,9 +452,6 @@ theorem denseRange_intCast : DenseRange (Int.cast : ℤ → ℤ_[p]) := by
   · intro a
     apply subset_closure
     exact Set.mem_range_self _
-
-@[deprecated (since := "2024-04-17")]
-alias denseRange_int_cast := denseRange_intCast
 
 end RingHoms
 

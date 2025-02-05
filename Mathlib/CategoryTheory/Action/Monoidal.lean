@@ -46,7 +46,8 @@ theorem tensorUnit_ρ' {g : G} :
   rfl
 
 @[simp]
-theorem tensorUnit_ρ {g : G} : (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
+theorem tensorUnit_ρ {g : G} :
+    (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
   rfl
 
 /- Adding this solves `simpNF` linter report at `tensor_ρ` -/
@@ -56,7 +57,8 @@ theorem tensor_ρ' {X Y : Action V G} {g : G} :
   rfl
 
 @[simp]
-theorem tensor_ρ {X Y : Action V G} {g : G} : (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
+theorem tensor_ρ {X Y : Action V G} {g : G} :
+    (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
   rfl
 
 /-- Given an object `X` isomorphic to the tensor unit of `V`, `X` equipped with the trivial action
@@ -90,6 +92,12 @@ variable [BraidedCategory V]
 instance : BraidedCategory (Action V G) :=
   braidedCategoryOfFaithful (Action.forget V G) (fun X Y => mkIso (β_ _ _)
     (fun g => by simp [FunctorCategoryEquivalence.inverse])) (by simp)
+
+@[simp]
+theorem β_hom {X Y : Action V G} : (β_ X Y).hom.hom = (β_ X.V Y.V).hom := rfl
+
+@[simp]
+theorem β_inv {X Y : Action V G} : (β_ X Y).inv.hom = (β_ X.V Y.V).inv := rfl
 
 /-- When `V` is braided the forgetful functor `Action V G` to `V` is braided. -/
 instance : (Action.forget V G).Braided where
@@ -214,10 +222,7 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
       comm := fun (g : G) => by
         funext ⟨(x₁ : G), (x₂ : X.V)⟩
         refine Prod.ext rfl ?_
-        rw [tensor_ρ, tensor_ρ]
-        dsimp
-        -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-        erw [leftRegular_ρ_apply]
+        show X.ρ (g * x₁) _ = _
         rw [map_mul]
         rfl }
   hom_inv_id := by
