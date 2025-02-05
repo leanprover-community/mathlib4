@@ -222,7 +222,7 @@ lemma addContent_le_sum_of_subset_sUnion {m : AddContent C} (hC : IsSetSemiring 
 /-- If an `AddContent` is σ-subadditive on a semi-ring of sets, then it is σ-additive. -/
 theorem addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le {m : AddContent C}
     (hC : IsSetSemiring C)
-    -- `m_subadd` is weaker than `m.IsSigmaSubadditive`: it only holds for pairwise disjoint `f`.
+    -- TODO: `m_subadd` is in fact equivalent to `m.IsSigmaSubadditive`.
     (m_subadd : ∀ (f : ℕ → Set α) (_ : ∀ i, f i ∈ C) (_ : ⋃ i, f i ∈ C)
       (_hf_disj : Pairwise (Disjoint on f)), m (⋃ i, f i) ≤ ∑' i, m (f i))
     (f : ℕ → Set α) (hf : ∀ i, f i ∈ C) (hf_Union : (⋃ i, f i) ∈ C)

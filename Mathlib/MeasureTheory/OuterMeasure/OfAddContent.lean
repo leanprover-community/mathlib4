@@ -157,17 +157,19 @@ theorem measureCaratheodory_eq (m : AddContent C) (hC : IsSetSemiring C)
 /-- Construct a measure from a sigma-subadditive content on a semiring, assuming the semiring
 generates a given measurable structure. The measure is defined on this measurable structure. -/
 noncomputable def measure [mα : MeasurableSpace α] (m : AddContent C) (hC : IsSetSemiring C)
-    (hC_gen : MeasurableSpace.generateFrom C = mα) (m_sigma_subadd : m.IsSigmaSubadditive) :
-    Measure α :=
-  (m.measureCaratheodory hC m_sigma_subadd).trim
-    (by rw [← hC_gen]; exact isCaratheodory_inducedOuterMeasure hC m)
+    (hC_gen : mα ≤ MeasurableSpace.generateFrom C) (m_sigma_subadd : m.IsSigmaSubadditive) :
+    Measure α := (m.measureCaratheodory hC m_sigma_subadd).trim <|
+      fun s a ↦ isCaratheodory_inducedOuterMeasure hC m s (hC_gen s a)
+
 
 theorem measure_eq [mα : MeasurableSpace α] (m : AddContent C) (hC : IsSetSemiring C)
-    (hC_gen : MeasurableSpace.generateFrom C = mα) (m_sigma_subadd : m.IsSigmaSubadditive)
+    (hC_gen : mα = MeasurableSpace.generateFrom C) (m_sigma_subadd : m.IsSigmaSubadditive)
     (hs : s ∈ C) :
-    m.measure hC hC_gen m_sigma_subadd s = m s := by
+    m.measure hC hC_gen.le m_sigma_subadd s = m s := by
   rw [measure, trim_measurableSet_eq]
   · exact m.measureCaratheodory_eq hC m_sigma_subadd hs
-  · rw [← hC_gen]; exact MeasurableSpace.measurableSet_generateFrom hs
+  · rw [hC_gen]
+    apply MeasurableSpace.measurableSet_generateFrom hs
+
 
 end MeasureTheory.AddContent
