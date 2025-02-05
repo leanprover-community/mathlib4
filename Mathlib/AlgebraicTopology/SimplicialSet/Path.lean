@@ -11,8 +11,8 @@ import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 A path in a simplicial set `X` of length `n` is a directed path comprised of
 `n + 1` 0-simplices and `n` 1-simplices, together with identifications between
 0-simplices and the sources and targets of the 1-simplices. We define this
-construction first for 1-truncated simplicial sets in `SSet.Truncated.Path₁`.
-A path in a simplicial set `X` is then defined as a 1-truncated path in the
+construction first for truncated simplicial sets in `SSet.Truncated.Path`. A
+path in a simplicial set `X` is then defined as a 1-truncated path in the
 1-truncation of `X`.
 
 An `n`-simplex has a maximal path, the `spine` of the simplex, which is a path
@@ -187,7 +187,7 @@ lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ m)
 end Truncated
 
 /-- A path of length `n` in a simplicial set `X` is defined as a 1-truncated
-path on the 1-truncation of `X`. -/
+path in the 1-truncation of `X`. -/
 abbrev Path (X : SSet.{u}) (n : ℕ) := truncation 1 |>.obj X |>.Path n
 
 namespace Path
