@@ -42,7 +42,7 @@ noncomputable abbrev tensorEquivEnd : R ⊗[R] Rᵐᵒᵖ ≃ₐ[R] Module.End R
 lemma tensorEquivEnd_eq_mulLeftRight: tensorEquivEnd R = AlgHom.mulLeftRight R R := by
   ext; simp
 
-theorem Self: IsAzumaya R R where
+instance self : IsAzumaya R R where
   bij := by rw [← tensorEquivEnd_eq_mulLeftRight]; exact tensorEquivEnd R |>.bijective
 
 /--
