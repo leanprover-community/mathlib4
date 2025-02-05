@@ -467,20 +467,39 @@ theorem isGLB_prod {s : Set (α × β)} (p : α × β) :
 
 variable {γ : Type*} [Preorder γ]
 
+lemma upperBounds_eq_ofSubset {s₁ s₂ : Set α} (hs₁ : s₁ ⊆ s₂) (hs₂ : ∀ a ∈ s₂, ∃ b ∈ s₁, a ≤ b) :
+    upperBounds s₁ = upperBounds s₂ := le_antisymm
+  (fun c hc d hd => by
+    obtain ⟨e,⟨he₁, he₂⟩⟩ := hs₂ _ hd
+    exact le_trans he₂ (hc he₁))
+  (upperBounds_mono_set hs₁)
+
+lemma directed_product {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
+    ∀ p ∈ (Prod.fst '' d) ×ˢ (Prod.snd '' d), ∃ q ∈ d, p ≤ q := by
+  intro ⟨p₁, p₂⟩ hp
+  simp at hp
+  obtain ⟨r₁, hr₁⟩ := hp.1
+  obtain ⟨r₂, hr₂⟩ := hp.2
+  obtain ⟨⟨q1,q2⟩, ⟨hq1,⟨⟨hq21,hq22⟩,⟨hq31,hq32⟩⟩⟩ ⟩ := hd (p₁,r₁) hr₁ (r₂,p₂) hr₂
+  use (q1,q2)
+  constructor
+  · exact hq1
+  · rw [Prod.mk_le_mk]
+    constructor
+    · exact hq21
+    · exact hq32
+
 lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
     {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
-    upperBounds (f '' d) = upperBounds (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := le_antisymm
-  (fun _ hu _ hc =>  by
-    simp at hc
-    obtain ⟨_, ⟨_, ⟨⟨⟨_, hb₂⟩, ⟨_, ha₂⟩⟩, fabc⟩⟩⟩ := hc
-    obtain ⟨⟨a₃, b₃⟩, hm⟩ := hd _ hb₂ _ ha₂
-    rw [← fabc]
-    exact le_trans (hf ⟨hm.2.1.1, hm.2.2.2⟩) (hu ⟨(a₃, b₃), And.imp_right (fun _ ↦ rfl) hm⟩))
-  (upperBounds_mono_set (image_mono (subset_fst_image_times_snd_image d)))
-
--- c.f. isLUB_prod
--- theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
---    IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
+    upperBounds (f '' d) = upperBounds (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := by
+  apply upperBounds_eq_ofSubset (image_mono (subset_fst_image_times_snd_image d))
+  intro c ⟨x,⟨hx1, hx2⟩⟩
+  obtain ⟨q,hq⟩ := directed_product hd x hx1
+  use (f q)
+  constructor
+  · exact ⟨q,And.symm (And.imp_left (fun a ↦ rfl) (id (And.symm hq)))⟩
+  · rw [← hx2]
+    exact hf hq.2
 
 lemma Prod.IsLub {f : α × β → γ} (hf : Monotone f)
     {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) (u : γ) :
@@ -488,7 +507,6 @@ lemma Prod.IsLub {f : α × β → γ} (hf : Monotone f)
   rw [IsLUB, Prod.upperBounds hf hd, ← IsLUB]
 
 end Prod
-
 
 section Pi
 
