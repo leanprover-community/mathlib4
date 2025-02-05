@@ -196,7 +196,7 @@ theorem kroneckerTMulAlgEquiv_stdBasisMatrix_tmul_stdBasisMatrix
   (kroneckerTMulAlgEquiv R A B m n).apply_eq_iff_eq_symm_apply.2 <|
     kroneckerTMulAlgEquiv_symm_stdBasisMatrix_tmul _ _ _ _ _ _ _ |>.symm
 
-attribute [local ext] ext_stdBasisMatrix in
+attribute [local ext] ext_linearMap in
 @[simp]
 theorem kroneckerTMulAlgEquiv_tmul (a : Matrix m m A) (b : Matrix n n B) :
     kroneckerTMulAlgEquiv R A B m n (a ⊗ₜ b) = a ⊗ₖₜ b := by
