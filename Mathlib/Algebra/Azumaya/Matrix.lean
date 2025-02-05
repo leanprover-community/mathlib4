@@ -73,8 +73,8 @@ instance (M : Type*) [AddCommMonoid M] [Module R M] [Module.Free R M] [Nontrivia
 
 namespace IsAzumaya
 
-/-- Matrix ring over `R` is an azumaya algebra over `R`. -/
-theorem Matrix [Nonempty n] [Nontrivial R]: IsAzumaya R (Matrix n n R) where
+/-- A nontrivial matrix ring over `R` is an Azumaya algebra over `R`. -/
+theorem matrix [Nonempty n] [Nontrivial R] : IsAzumaya R (Matrix n n R) where
   bij := ⟨Function.HasLeftInverse.injective ⟨AlgHom.mulLeftRightMatrix_inv R n,
     DFunLike.congr_fun (AlgHom.mulLeftRightMatrix.inv_comp R n)⟩,
     Function.HasRightInverse.surjective ⟨AlgHom.mulLeftRightMatrix_inv R n,
