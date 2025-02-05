@@ -35,7 +35,7 @@ variable (R A B : Type*) [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R
 
 /-- The "canonical" isomorphism between `R ⊗ Rᵒᵖ` and `End R R` which is equal
   to `AlgHom.mulLeftRight R R`. -/
-noncomputable abbrev tensorEquivEnd: R ⊗[R] Rᵐᵒᵖ ≃ₐ[R] Module.End R R :=
+noncomputable abbrev tensorEquivEnd : R ⊗[R] Rᵐᵒᵖ ≃ₐ[R] Module.End R R :=
   Algebra.TensorProduct.lid R Rᵐᵒᵖ|>.trans <|
   AlgEquiv.ofRingEquiv (f := Module.moduleEndSelf R) fun r ↦ by ext; simp
 
