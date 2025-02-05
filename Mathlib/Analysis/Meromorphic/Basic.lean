@@ -1,10 +1,9 @@
 /-
 Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Loeffler
+Authors: David Loeffler, Stefan Kebekus
 -/
 import Mathlib.Analysis.Analytic.IsolatedZeros
-import Mathlib.Algebra.Order.AddGroupWithTop
 
 /-!
 # Meromorphic functions
@@ -14,7 +13,6 @@ Main statements:
 * `MeromorphicAt`: definition of meromorphy at a point
 * `MeromorphicAt.iff_eventuallyEq_zpow_smul_analyticAt`: `f` is meromorphic at `z₀` iff we have
   `f z = (z - z₀) ^ n • g z` on a punctured nhd of `z₀`, for some `n : ℤ` and `g` analytic at z₀.
-* `MeromorphicAt.order`: order of vanishing at `z₀`, as an element of `ℤ ∪ {∞}`
 -/
 
 open Filter
@@ -34,6 +32,23 @@ def MeromorphicAt (f : 𝕜 → E) (x : 𝕜) :=
 lemma AnalyticAt.meromorphicAt {f : 𝕜 → E} {x : 𝕜} (hf : AnalyticAt 𝕜 f x) :
     MeromorphicAt f x :=
   ⟨0, by simpa only [pow_zero, one_smul]⟩
+
+/- Analogue of the principle of isolated zeros for an analytic function: if a function is
+meromorphic at `z₀`, then either it is identically zero in a punctured neighborhood of `z₀`, or it
+does not vanish there at all. -/
+theorem MeromorphicAt.eventually_eq_zero_or_eventually_ne_zero {f : 𝕜 → E} {z₀ : 𝕜}
+    (hf : MeromorphicAt f z₀) :
+    (∀ᶠ z in 𝓝[≠] z₀, f z = 0) ∨ (∀ᶠ z in 𝓝[≠] z₀, f z ≠ 0) := by
+  obtain ⟨n, h⟩ := hf
+  rcases h.eventually_eq_zero_or_eventually_ne_zero with h₁ | h₂
+  · left
+    filter_upwards [nhdsWithin_le_nhds h₁, self_mem_nhdsWithin] with y h₁y h₂y
+    rcases (smul_eq_zero.1 h₁y) with h₃ | h₄
+    · exact False.elim (h₂y (sub_eq_zero.1 (pow_eq_zero_iff'.1 h₃).1))
+    · assumption
+  · right
+    filter_upwards [h₂, self_mem_nhdsWithin] with y h₁y h₂y
+    exact (smul_ne_zero_iff.1 h₁y).2
 
 namespace MeromorphicAt
 
@@ -213,94 +228,6 @@ theorem eventually_analyticAt [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜}
     apply (this.smul hf).congr ∘ (eventually_ne_nhds hy).mono
     intro z hz
     simp [smul_smul, hz, sub_eq_zero]
-
-/-- The order of vanishing of a meromorphic function, as an element of `ℤ ∪ ∞` (to include the
-case of functions identically 0 near `x`). -/
-noncomputable def order {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) : WithTop ℤ :=
-  (hf.choose_spec.order.map (↑· : ℕ → ℤ)) - hf.choose
-
-open WithTop.LinearOrderedAddCommGroup
-
-lemma order_eq_top_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) :
-    hf.order = ⊤ ↔ ∀ᶠ z in 𝓝[≠] x, f z = 0 := by
-  unfold order
-  by_cases h : hf.choose_spec.order = ⊤
-  · rw [h, ENat.map_top, ← WithTop.coe_natCast,
-      top_sub, eq_self, true_iff, eventually_nhdsWithin_iff]
-    rw [AnalyticAt.order_eq_top_iff] at h
-    filter_upwards [h] with z hf hz
-    rwa [smul_eq_zero_iff_right <| pow_ne_zero _ (sub_ne_zero.mpr hz)] at hf
-  · obtain ⟨m, hm⟩ := ENat.ne_top_iff_exists.mp h
-    simp only [← hm, ENat.map_coe, WithTop.coe_natCast, sub_eq_top_iff, WithTop.natCast_ne_top,
-      or_self, false_iff]
-    contrapose! h
-    rw [AnalyticAt.order_eq_top_iff]
-    rw [← hf.choose_spec.frequently_eq_iff_eventually_eq analyticAt_const]
-    apply Eventually.frequently
-    filter_upwards [h] with z hfz
-    rw [hfz, smul_zero]
-
-lemma order_eq_int_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℤ) : hf.order = n ↔
-    ∃ g : 𝕜 → E, AnalyticAt 𝕜 g x ∧ g x ≠ 0 ∧ ∀ᶠ z in 𝓝[≠] x, f z = (z - x) ^ n • g z := by
-  unfold order
-  by_cases h : hf.choose_spec.order = ⊤
-  · rw [h, ENat.map_top, ← WithTop.coe_natCast, top_sub,
-      eq_false_intro WithTop.top_ne_coe, false_iff]
-    rw [AnalyticAt.order_eq_top_iff] at h
-    refine fun ⟨g, hg_an, hg_ne, hg_eq⟩ ↦ hg_ne ?_
-    apply EventuallyEq.eq_of_nhds
-    rw [EventuallyEq, ← AnalyticAt.frequently_eq_iff_eventually_eq hg_an analyticAt_const]
-    apply Eventually.frequently
-    rw [eventually_nhdsWithin_iff] at hg_eq ⊢
-    filter_upwards [h, hg_eq] with z hfz hfz_eq hz
-    rwa [hfz_eq hz, ← mul_smul, smul_eq_zero_iff_right] at hfz
-    exact mul_ne_zero (pow_ne_zero _ (sub_ne_zero.mpr hz)) (zpow_ne_zero _ (sub_ne_zero.mpr hz))
-  · obtain ⟨m, h⟩ := ENat.ne_top_iff_exists.mp h
-    rw [← h, ENat.map_coe, ← WithTop.coe_natCast, ← coe_sub, WithTop.coe_inj]
-    obtain ⟨g, hg_an, hg_ne, hg_eq⟩ := (AnalyticAt.order_eq_nat_iff _ _).mp h.symm
-    replace hg_eq : ∀ᶠ (z : 𝕜) in 𝓝[≠] x, f z = (z - x) ^ (↑m - ↑hf.choose : ℤ) • g z := by
-      rw [eventually_nhdsWithin_iff]
-      filter_upwards [hg_eq] with z hg_eq hz
-      rwa [← smul_right_inj <| zpow_ne_zero _ (sub_ne_zero.mpr hz), ← mul_smul,
-        ← zpow_add₀ (sub_ne_zero.mpr hz), ← add_sub_assoc, add_sub_cancel_left, zpow_natCast,
-        zpow_natCast]
-    exact ⟨fun h ↦ ⟨g, hg_an, hg_ne, h ▸ hg_eq⟩,
-      AnalyticAt.unique_eventuallyEq_zpow_smul_nonzero ⟨g, hg_an, hg_ne, hg_eq⟩⟩
-
-/-- Compatibility of notions of `order` for analytic and meromorphic functions. -/
-lemma _root_.AnalyticAt.meromorphicAt_order {f : 𝕜 → E} {x : 𝕜} (hf : AnalyticAt 𝕜 f x) :
-    hf.meromorphicAt.order = hf.order.map (↑) := by
-  rcases eq_or_ne hf.order ⊤ with ho | ho
-  · rw [ho, ENat.map_top, order_eq_top_iff]
-    exact (hf.order_eq_top_iff.mp ho).filter_mono nhdsWithin_le_nhds
-  · obtain ⟨n, hn⟩ := ENat.ne_top_iff_exists.mp ho
-    simp_rw [← hn, ENat.map_coe, order_eq_int_iff, zpow_natCast]
-    rcases (hf.order_eq_nat_iff _).mp hn.symm with ⟨g, h1, h2, h3⟩
-    exact ⟨g, h1, h2, h3.filter_mono nhdsWithin_le_nhds⟩
-
-/-- The order is additive when multiplying scalar-valued and vector-valued meromorphic functions. -/
-theorem order_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} {x : 𝕜}
-    (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
-    (hf.smul hg).order = hf.order + hg.order := by
-  -- Trivial cases: one of the functions vanishes around z₀
-  cases' h₂f : hf.order with m h₂f
-  · simp only [top_add, order_eq_top_iff] at h₂f ⊢
-    filter_upwards [h₂f] with z hz using by simp [hz]
-  cases' h₂g : hg.order with n h₂f
-  · simp only [add_top, order_eq_top_iff] at h₂g ⊢
-    filter_upwards [h₂g] with z hz using by simp [hz]
-  -- Non-trivial case: both functions do not vanish around z₀
-  rw [← WithTop.coe_add, order_eq_int_iff]
-  obtain ⟨F, h₁F, h₂F, h₃F⟩ := (hf.order_eq_int_iff _).1 h₂f
-  obtain ⟨G, h₁G, h₂G, h₃G⟩ := (hg.order_eq_int_iff _).1 h₂g
-  use F • G, h₁F.smul h₁G, by simp [h₂F, h₂G]
-  filter_upwards [self_mem_nhdsWithin, h₃F, h₃G] with a ha hfa hga
-  simp [hfa, hga, smul_comm (F a), zpow_add₀ (sub_ne_zero.mpr ha), mul_smul]
-
-/-- The order is additive when multiplying meromorphic functions. -/
-theorem order_mul {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
-    (hf.mul hg).order = hf.order + hg.order :=
-  hf.order_smul hg
 
 lemma iff_eventuallyEq_zpow_smul_analyticAt {f : 𝕜 → E} {x : 𝕜} : MeromorphicAt f x ↔
     ∃ (n : ℤ) (g : 𝕜 → E), AnalyticAt 𝕜 g x ∧ ∀ᶠ z in 𝓝[≠] x, f z = (z - x) ^ n • g z := by
