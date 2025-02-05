@@ -629,8 +629,6 @@ end
 
 end Functor.Monoidal
 
--- open CategoryTheory.Functor
-
 namespace NatTrans
 
 variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
