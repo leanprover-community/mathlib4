@@ -145,4 +145,8 @@ def sInf_preserves_inf : ∀ (x y : X), sInf_fun s (x ⊓ y) = sInf_fun s x ⊓ 
 instance : InfSet (Nucleus X) where
   sInf s := ⟨⟨sInf_fun s, sInf_preserves_inf⟩, sInf_fun_idempotent, sInf_fun_increasing⟩
 
+instance : CompleteSemilatticeInf (Nucleus X) where
+  sInf_le := (by simp_all [sInf, LE.le, sInf_fun, sInf_le_iff,lowerBounds])
+  le_sInf := (by simp_all [sInf, sInf_fun, LE.le])
+
 end Nucleus
