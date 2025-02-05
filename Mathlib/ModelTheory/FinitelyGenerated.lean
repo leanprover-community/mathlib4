@@ -250,7 +250,7 @@ theorem FG.finite [L.IsRelational] (h : FG L M) : Finite M :=
 theorem fg_iff_finite [L.IsRelational] : FG L M ↔ Finite M :=
   ⟨FG.finite, fun _ => FG.of_finite⟩
 
-theorem FG.countable_Hom_to_countable (N : Type*) [L.Structure N] [Countable N] (h : FG L M) :
+theorem FG.countable_hom_to_countable (N : Type*) [L.Structure N] [Countable N] (h : FG L M) :
     Countable (M →[L] N) := by
   let ⟨S, finite_S, closure_S⟩ := fg_iff.1 h
   let g : (M →[L] N) → (S → N) :=
