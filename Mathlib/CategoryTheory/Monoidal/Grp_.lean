@@ -5,6 +5,7 @@ Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+import Mathlib.CategoryTheory.Limits.ExactFunctor
 
 /-!
 # The category of groups in a cartesian monoidal category
@@ -36,6 +37,7 @@ attribute [reassoc (attr := simp)] Grp_.right_inv
 namespace Grp_
 
 /-- The trivial group object. -/
+@[simps!]
 def trivial : Grp_ C :=
   { Mon_.trivial C with inv := 𝟙 _ }
 
@@ -223,5 +225,12 @@ noncomputable def mapGrp : Grp_ C ⥤ Grp_ D where
         simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc,
           Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp] }
   map f := F.mapMon.map f
+
+attribute [local instance] NatTrans.monoidal_of_preservesFiniteLimits in
+/-- `mapGrp` is functorial in the left-exact functor. -/
+@[simps]
+noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp_ C ⥤ Grp_ D where
+  obj F := F.1.mapGrp
+  map {F G} α := { app := fun A => { hom := α.app A.X } }
 
 end CategoryTheory.Functor

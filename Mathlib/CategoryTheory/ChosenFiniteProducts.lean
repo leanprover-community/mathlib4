@@ -626,6 +626,26 @@ lemma lift_μ {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
 
 end
 
+
 end Functor.Monoidal
+
+-- open CategoryTheory.Functor
+
+namespace NatTrans
+
+variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
+  {D : Type u₁} [Category.{v₁} D] [ChosenFiniteProducts D] (F G : C ⥤ D)
+  [Limits.PreservesFiniteLimits F] [Limits.PreservesFiniteLimits G]
+
+attribute [local instance] Functor.monoidalOfChosenFiniteProducts in
+theorem monoidal_of_preservesFiniteLimits (α : F ⟶ G) :
+    NatTrans.IsMonoidal α where
+  unit := (cancel_mono (Functor.Monoidal.εIso _).inv).1 (toUnit_unique _ _)
+  tensor {X Y} := by
+    rw [← cancel_mono (Functor.Monoidal.μIso _ _ _).inv]
+    rw [← cancel_epi (Functor.Monoidal.μIso _ _ _).inv]
+    apply ChosenFiniteProducts.hom_ext <;> simp
+
+end NatTrans
 
 end CategoryTheory
