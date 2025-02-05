@@ -26,15 +26,6 @@ open CategoryTheory Limits MonoidalCategory
 
 variable {V : Type (u + 1)} [LargeCategory V] {G : Type u} [Monoid G]
 
-open MonoidalCategory in
-theorem CategoryTheory.types_tensorObj {X Y : Type u} : X ⊗ Y = (X × Y) := rfl
-
-@[simp]
-theorem CategoryTheory.types_β_hom {X Y : Type u} : (β_ X Y).hom = _root_.Prod.swap := rfl
-
-@[simp]
-theorem CategoryTheory.types_β_inv {X Y : Type u} : (β_ X Y).inv = _root_.Prod.swap := rfl
-
 namespace Action
 
 section Monoidal
@@ -231,8 +222,8 @@ multiplication on the first factor and by `X.ρ` on the second) is isomorphic as
 `G × X` (with `G` acting as left multiplication on the first factor and trivially on the second).
 The isomorphism is given by `(g, x) ↦ (g, g⁻¹ • x)`. -/
 noncomputable abbrev leftRegularTensorIso (X : Action (Type u) G) :
-    leftRegular G ⊗ X ≅ leftRegular G ⊗ Action.trivial G X.V :=
-  Action.mkIso (Equiv.toIso {
+    leftRegular G ⊗ X ≅ leftRegular G ⊗ trivial G X.V :=
+  mkIso (Equiv.toIso {
     toFun := fun g => ⟨g.1, (X.ρ (g.1⁻¹ : G) g.2 : X.V)⟩
     invFun := fun g => ⟨g.1, X.ρ g.1 g.2⟩
     left_inv := fun _ => Prod.ext rfl <| by simp
@@ -246,7 +237,7 @@ noncomputable abbrev leftRegularTensorIso (X : Action (Type u) G) :
 `G` but trivially on `Gⁿ`. The map sends `(g₀, ..., gₙ) ↦ (g₀, (g₀⁻¹g₁, g₁⁻¹g₂, ..., gₙ₋₁⁻¹gₙ))`,
 and the inverse is `(g₀, (g₁, ..., gₙ)) ↦ (g₀, g₀g₁, g₀g₁g₂, ..., g₀g₁...gₙ).` -/
 noncomputable def diagonalSuccIsoTensorTrivial :
-    ∀ n : ℕ, diagonal G (n + 1) ≅ leftRegular G ⊗ Action.trivial G (Fin n → G)
+    ∀ n : ℕ, diagonal G (n + 1) ≅ leftRegular G ⊗ trivial G (Fin n → G)
   | 0 =>
     diagonalOneIsoLeftRegular G ≪≫
       (ρ_ _).symm ≪≫ tensorIso (Iso.refl _) (tensorUnitIso (Equiv.ofUnique PUnit _).toIso)
@@ -271,7 +262,7 @@ theorem diagonalSuccIsoTensorTrivial_hom_hom {n : ℕ} (f : Fin (n + 1) → G) :
         Iso.trans_hom, tensorIso_hom, Iso.refl_hom, id_tensorHom, comp_hom,
         instMonoidalCategory_whiskerLeft_hom, mkIso_hom_hom, tensor_ρ', tensor_apply,
         ofMulAction_apply, types_comp_apply, whiskerLeft_apply]
-    <;> simp [types_tensorObj, Fin.tail, Fin.castSucc_fin_succ]
+    <;> simp [tensorObj_def, Fin.tail, Fin.castSucc_fin_succ]
 
 @[simp]
 theorem diagonalSuccIsoTensorTrivial_inv_hom {n : ℕ} (g : G) (f : Fin n → G) :
@@ -284,9 +275,10 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom {n : ℕ} (g : G) (f : Fin n → G)
     induction' x using Fin.cases
     <;> simp_all only [diagonalSuccIsoTensorTrivial, instMonoidalCategory_tensorObj_V,
         Iso.trans_inv, comp_hom, mkIso_inv_hom, tensor_ρ', tensor_apply, ofMulAction_apply]
-    <;> simp_all [types_tensorObj, mul_assoc, Fin.partialProd_succ']
+    <;> simp_all [tensorObj_def, mul_assoc, Fin.partialProd_succ']
 
 end
+
 end Action
 
 namespace CategoryTheory.Functor

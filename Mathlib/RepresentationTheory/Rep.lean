@@ -67,7 +67,7 @@ def ρ (V : Rep k G) : Representation k G V :=
 
 /-- Lift an unbundled representation to `Rep`. -/
 def of {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) : Rep k G :=
-  ⟨ModuleCat.of k V, ((ModuleCat.endRingEquiv _).symm.toMonoidHom.comp ρ) ⟩
+  ⟨ModuleCat.of k V, (ModuleCat.endRingEquiv _).symm.toMonoidHom.comp ρ⟩
 
 @[simp]
 theorem coe_of {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) :
@@ -437,15 +437,14 @@ def leftRegularTensorTrivialIsoFree (α : Type u) :
 
 variable {α : Type u} (i : α)
 
-lemma leftRegularTensorTrivialIsoFree_hom_hom_single_tmul_single
-    {α : Type u} (i : α) (g : G) (r s : k) :
+lemma leftRegularTensorTrivialIsoFree_hom_hom_single_tmul_single (i : α) (g : G) (r s : k) :
     (leftRegularTensorTrivialIsoFree k G α).hom.hom (single g r ⊗ₜ single i s) =
       single i (single g (r * s)) := by
   simp only [Action.instMonoidalCategory_tensorObj_V, Action.tensor_ρ']
   simp [leftRegularTensorTrivialIsoFree, instMonoidalCategoryStruct_tensorObj,
     ModuleCat.MonoidalCategory.tensorObj]
 
-lemma leftRegularTensorTrivialIsoFree_inv_hom_single_single {α : Type u} (i : α) (g : G) (r : k) :
+lemma leftRegularTensorTrivialIsoFree_inv_hom_single_single (i : α) (g : G) (r : k) :
     (leftRegularTensorTrivialIsoFree k G α).inv.hom (single i (single g r)) =
       single g r ⊗ₜ[k] single i 1 := by
   simp only [Action.instMonoidalCategory_tensorObj_V, Action.tensor_ρ']
@@ -456,43 +455,86 @@ end
 end Finsupp
 
 end
-
 section Group
 
-open Finsupp Action
+open Finsupp MonoidalCategory ModuleCat.MonoidalCategory
 open Representation (IsTrivial)
 
-variable [Group G]
-variable (k G n)
+variable [Group G] {n : ℕ}
 
+variable (k G n) in
+/-- An isomorphism of `k`-linear representations of `G` from `k[Gⁿ⁺¹]` to `k[G] ⊗ₖ k[Gⁿ]` (on
+which `G` acts by `ρ(g₁)(g₂ ⊗ x) = (g₁ * g₂) ⊗ x`) sending `(g₀, ..., gₙ)` to
+`g₀ ⊗ (g₀⁻¹g₁, g₁⁻¹g₂, ..., gₙ₋₁⁻¹gₙ)`. The inverse sends `g₀ ⊗ (g₁, ..., gₙ)` to
+`(g₀, g₀g₁, ..., g₀g₁...gₙ)`. -/
+def diagonalSuccIsoTensorTrivial :
+    diagonal k G (n + 1) ≅ leftRegular k G ⊗ trivial k G ((Fin n → G) →₀ k) :=
+  (linearization k G).mapIso (Action.diagonalSuccIsoTensorTrivial G n) ≪≫
+    (Functor.Monoidal.μIso (linearization k G) _ _).symm ≪≫
+      tensorIso (Iso.refl _) (linearizationTrivialIso k G (Fin n → G))
+
+theorem diagonalSuccIsoTensorTrivial_hom_hom_single (f : Fin (n + 1) → G) (a : k) :
+    (diagonalSuccIsoTensorTrivial k G n).hom.hom (single f a) =
+      single (f 0) 1 ⊗ₜ single (fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) a := by
+  simp [diagonalSuccIsoTensorTrivial, instMonoidalCategoryStruct_whiskerLeft, tensorObj_def,
+    ModuleCat.MonoidalCategory.whiskerLeft, instMonoidalCategoryStruct_tensorObj,
+    ModuleCat.MonoidalCategory.tensorObj, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul,
+    ModuleCat.hom_id (M := ((linearization k G).obj _).V)]
+
+theorem diagonalSuccIsoTensorTrivial_inv_hom_single_single (g : G) (f : Fin n → G) (a b : k) :
+    (diagonalSuccIsoTensorTrivial k G n).inv.hom (single g a ⊗ₜ single f b) =
+      single (g • Fin.partialProd f) (a * b) := by
+  have := Action.diagonalSuccIsoTensorTrivial_inv_hom (G := G) (n := n)
+  simp_all [diagonalSuccIsoTensorTrivial, instMonoidalCategoryStruct_tensorHom,
+    instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj, tensorObj_def,
+    ModuleCat.hom_id (M := ((linearization k G).obj _).V)]
+
+theorem diagonalSuccIsoTensorTrivial_inv_hom_single_left (g : G) (f : (Fin n → G) →₀ k) (r : k) :
+    (diagonalSuccIsoTensorTrivial k G n).inv.hom (single g r ⊗ₜ f) =
+      Finsupp.lift ((Fin (n + 1) → G) →₀ k) k (Fin n → G)
+      (fun f => single (g • Fin.partialProd f) r) f := by
+  refine f.induction ?_ ?_
+  · simp only [TensorProduct.tmul_zero, map_zero]
+  · intro a b x _ _ hx
+    simp only [lift_apply, smul_single', mul_one, TensorProduct.tmul_add, map_add, mul_comm b, hx,
+      diagonalSuccIsoTensorTrivial_inv_hom_single_single, sum_single_index, zero_mul, single_zero]
+
+theorem diagonalSuccIsoTensorTrivial_inv_hom_single_right (g : G →₀ k) (f : Fin n → G) (r : k) :
+    (diagonalSuccIsoTensorTrivial k G n).inv.hom (g ⊗ₜ single f r) =
+      Finsupp.lift _ k G (fun a => single (a • Fin.partialProd f) r) g := by
+  refine g.induction ?_ ?_
+  · simp only [TensorProduct.zero_tmul, map_zero]
+  · intro a b x _ _ hx
+    simp only [lift_apply, smul_single', map_add, hx, TensorProduct.add_tmul, single_zero,
+      diagonalSuccIsoTensorTrivial_inv_hom_single_single, sum_single_index, zero_mul]
+
+variable (k G n) in
 /-- Representation isomorphism `k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])`, where the righthand representation is
 defined pointwise by the left regular representation on `k[G]`. The map sends
 `single (g₀, ..., gₙ) a ↦ single (g₀⁻¹g₁, ..., gₙ₋₁⁻¹gₙ) (single g₀ a)`. -/
 def diagonalSuccIsoFree : diagonal k G (n + 1) ≅ free k G (Fin n → G) :=
-  (linearization k G).mapIso (diagonalSuccIsoTensorTrivial G n ≪≫ β_ _ _) ≪≫
-    Action.mkIso (finsuppProdLEquiv k).toModuleIso
-    fun _ => ModuleCat.hom_ext <| lhom_ext fun _ _ => by
-      simp only [ModuleCat.hom_comp, ρ_hom, linearization_obj_ρ, Action.tensor_ρ, Action.trivial_ρ,
-        Action.trivial_V, MonoidHom.one_apply]
-      simp [types_end, types_tensorObj]
+  diagonalSuccIsoTensorTrivial k G n ≪≫ leftRegularTensorTrivialIsoFree k G (Fin n → G)
 
-variable {k G n}
-
-theorem diagonalSuccIsoFree_hom_hom_hom_single (f : Fin (n + 1) → G) (a : k) :
-    (diagonalSuccIsoFree k G n).hom.hom.hom (single f a) =
+theorem diagonalSuccIsoFree_hom_hom_single (f : Fin (n + 1) → G) (a : k) :
+    (diagonalSuccIsoFree k G n).hom.hom (single f a) =
       single (fun i => (f i.castSucc)⁻¹ * f i.succ) (single (f 0) a) := by
-  simp [diagonalSuccIsoFree, types_tensorObj]
+  have := diagonalSuccIsoTensorTrivial_hom_hom_single f a
+  have := leftRegularTensorTrivialIsoFree_hom_hom_single_tmul_single
+    (k := k) (G := G) (α := Fin n → G)
+  simp_all [diagonalSuccIsoFree]
 
-theorem diagonalSuccIsoFree_inv_hom_hom_single_single (g : G) (f : Fin n → G) (a : k) :
-    (diagonalSuccIsoFree k G n).inv.hom.hom (single f (single g a)) =
+theorem diagonalSuccIsoFree_inv_hom_single_single (g : G) (f : Fin n → G) (a : k) :
+    (diagonalSuccIsoFree k G n).inv.hom (single f (single g a)) =
       single (g • Fin.partialProd f) a := by
-  simp [diagonalSuccIsoFree, types_tensorObj, diagonalSuccIsoTensorTrivial_inv_hom g f]
+  have := leftRegularTensorTrivialIsoFree_inv_hom_single_single (k := k) (G := G) (α := Fin n → G)
+  have := diagonalSuccIsoTensorTrivial_inv_hom_single_single g f a 1
+  simp_all [diagonalSuccIsoFree]
 
-theorem diagonalSuccIsoFree_inv_hom_hom_single (g : G →₀ k) (f : Fin n → G) :
-    (diagonalSuccIsoFree k G n).inv.hom.hom (single f g) =
+theorem diagonalSuccIsoFree_inv_hom_single (g : G →₀ k) (f : Fin n → G) :
+    (diagonalSuccIsoFree k G n).inv.hom (single f g) =
       lift _ k G (fun a => single (a • Fin.partialProd f) 1) g :=
   g.induction (by simp) fun _ _ _ _ _ _ => by
-    simp only [single_add, map_add, diagonalSuccIsoFree_inv_hom_hom_single_single]
+    simp only [single_add, map_add, diagonalSuccIsoFree_inv_hom_single_single]
     simp_all
 
 section MonoidalClosed
@@ -514,8 +556,7 @@ protected def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
   map_id := fun _ => by ext; rfl
   map_comp := fun _ _ => by ext; rfl
 
-@[simp]
-theorem ihom_obj_ρ_apply {A B : Rep k G} (g : G) (x : A →ₗ[k] B) :
+@[simp] theorem ihom_obj_ρ_apply {A B : Rep k G} (g : G) (x : A →ₗ[k] B) :
     ((Rep.ihom A).obj B).ρ g x = B.ρ g ∘ₗ x ∘ₗ A.ρ g⁻¹ :=
   rfl
 
@@ -618,6 +659,7 @@ theorem MonoidalClosed.linearHomEquivComm_symm_hom (f : A ⟶ B ⟶[Rep k G] C) 
 
 end MonoidalClosed
 end Group
+
 end Rep
 
 namespace Representation
@@ -759,22 +801,28 @@ end
 instance : EnoughProjectives (Rep k G) :=
   equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2 ModuleCat.moduleCat_enoughProjectives.{u}
 
+instance free_projective {G α : Type u} [Group G] :
+    Projective (free k G α) :=
+  equivalenceModuleMonoidAlgebra.toAdjunction.projective_of_map_projective _ <|
+    @ModuleCat.projective_of_free.{u} _ _
+      (ModuleCat.of (MonoidAlgebra k G) (Representation.free k G α).asModule)
+      _ (Representation.freeAsModuleBasis k G α)
+
+section
+
+variable {G : Type u} [Group G] {n : ℕ}
+
+instance diagonal_succ_projective :
+    Projective (diagonal k G (n + 1)) :=
+  Projective.of_iso (diagonalSuccIsoFree k G n).symm inferInstance
+
+instance leftRegular_projective :
+    Projective (leftRegular k G) :=
+  Projective.of_iso (diagonalOneIsoLeftRegular k G) inferInstance
+
+instance trivial_projective_of_subsingleton [Subsingleton G] :
+    Projective (trivial k G k) :=
+  Projective.of_iso (ofMulActionSubsingletonIsoTrivial _ _ (Fin 1 → G)) diagonal_succ_projective
+
+end
 end Rep
-
-namespace Representation
-open Rep
-
-variable (k G : Type u) [CommRing k] [Group G] (n : ℕ)
-
-/-- `Gⁿ` defines a `k[G]`-basis of `k[Gⁿ⁺¹]` sending `(g₁, ..., gₙ)` to
-`single (1, g₁, g₁g₂, ..., g₁...gₙ).` -/
-def ofMulActionAsModuleBasis :
-    Basis (Fin n → G) (MonoidAlgebra k G) (ofMulAction k G (Fin (n + 1) → G)).asModule where
-  repr := (equivalenceModuleMonoidAlgebra.functor.mapIso
-    (diagonalSuccIsoFree k G n)).toLinearEquiv ≪≫ₗ (finsuppLEquivFreeAsModule k G (Fin n → G)).symm
-
-theorem ofMulAction_asModule_free :
-    Module.Free (MonoidAlgebra k G) (ofMulAction k G (Fin (n + 1) → G)).asModule :=
-  Module.Free.of_basis (ofMulActionAsModuleBasis k G n)
-
-end Representation
