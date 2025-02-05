@@ -77,7 +77,7 @@ theorem inducedOuterMeasure_eq (hC : IsSetSemiring C) (m : AddContent C)
     rw [m.extend_eq hC (hf i)]
   · exact fun _ ↦ m.extend_eq_top _
 
-theorem caratheodory_semiring_extension' (hC : IsSetSemiring C) (m : AddContent C)
+theorem isCaratheodory_ofFunction_of_mem (hC : IsSetSemiring C) (m : AddContent C)
     (m_top : ∀ s ∉ C, m s = ∞) (hs : s ∈ C) :
     (OuterMeasure.ofFunction m addContent_empty).IsCaratheodory s := by
   rw [OuterMeasure.isCaratheodory_iff_le']
@@ -114,7 +114,7 @@ with respect to the `inducedOuterMeasure` from `m.extend`. The latter is `∞` o
 theorem isCaratheodory_inducedOuterMeasure_of_mem (hC : IsSetSemiring C) (m : AddContent C)
     {s : Set α} (hs : s ∈ C) :
     (inducedOuterMeasure (fun x _ ↦ m x) hC.empty_mem addContent_empty).IsCaratheodory s :=
-  caratheodory_semiring_extension' hC (m.extend hC) (fun _ ↦ m.extend_eq_top hC) hs
+  isCaratheodory_ofFunction_of_mem hC (m.extend hC) (fun _ ↦ m.extend_eq_top hC) hs
 
 theorem isCaratheodory_inducedOuterMeasure (hC : IsSetSemiring C) (m : AddContent C)
     (s : Set α) (hs : MeasurableSet[MeasurableSpace.generateFrom C] s) :
