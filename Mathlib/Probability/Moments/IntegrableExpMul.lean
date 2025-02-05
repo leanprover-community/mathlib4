@@ -3,7 +3,7 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.L1Space
+import Mathlib.MeasureTheory.Function.L1Space.Integrable
 import Mathlib.MeasureTheory.Order.Group.Lattice
 
 /-!
@@ -137,7 +137,7 @@ lemma aemeasurable_of_integrable_exp_mul (huv : u ≠ v)
     (hv_int : Integrable (fun ω ↦ exp (v * X ω)) μ) :
     AEMeasurable X μ := by
   by_cases hu : u = 0
-  · have hv : v ≠ 0 := fun h_eq ↦ huv (h_eq ▸ hu)
+  · have hv : v ≠ 0 := ne_of_ne_of_eq huv.symm hu
     exact aemeasurable_of_aemeasurable_exp_mul hv hv_int.aemeasurable
   · exact aemeasurable_of_aemeasurable_exp_mul hu hu_int.aemeasurable
 

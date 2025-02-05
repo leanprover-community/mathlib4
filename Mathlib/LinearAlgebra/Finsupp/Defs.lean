@@ -5,7 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Algebra.Module.Pi
-import Mathlib.Data.Finsupp.Basic
+import Mathlib.Data.Finsupp.SMul
 
 /-!
 # Properties of the module `α →₀ M`
