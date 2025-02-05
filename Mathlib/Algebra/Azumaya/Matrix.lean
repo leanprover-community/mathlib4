@@ -59,3 +59,5 @@ theorem Matrix [Inhabited n]: IsAzumaya R (Matrix n n R) where
 end IsAzumaya
 
 end
+
+#min_imports
