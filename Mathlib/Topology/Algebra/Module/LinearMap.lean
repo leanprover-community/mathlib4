@@ -287,6 +287,10 @@ and this is the most important property we care about. -/
 theorem coe_zero' : ⇑(0 : M₁ →SL[σ₁₂] M₂) = 0 :=
   rfl
 
+@[simp, norm_cast]
+theorem toContinuousAddMonoidHom_zero :
+    ((0 : M₁ →SL[σ₁₂] M₂) : ContinuousAddMonoidHom M₁ M₂) = 0 := rfl
+
 instance uniqueOfLeft [Subsingleton M₁] : Unique (M₁ →SL[σ₁₂] M₂) :=
   coe_injective.unique
 
@@ -325,6 +329,10 @@ theorem coe_id' : ⇑(id R₁ M₁) = _root_.id :=
   rfl
 
 @[simp, norm_cast]
+theorem toContinuousAddMonoidHom_id :
+    (id R₁ M₁ : ContinuousAddMonoidHom M₁ M₁) = .id _ := rfl
+
+@[simp, norm_cast]
 theorem coe_eq_id {f : M₁ →L[R₁] M₁} : (f : M₁ →ₗ[R₁] M₁) = LinearMap.id ↔ f = id _ _ := by
   rw [← coe_id, coe_inj]
 
@@ -354,6 +362,10 @@ theorem coe_add (f g : M₁ →SL[σ₁₂] M₂) : (↑(f + g) : M₁ →ₛₗ
 @[norm_cast]
 theorem coe_add' (f g : M₁ →SL[σ₁₂] M₂) : ⇑(f + g) = f + g :=
   rfl
+
+@[simp, norm_cast]
+theorem toContinuousAddMonoidHom_add (f g : M₁ →SL[σ₁₂] M₂) :
+    ↑(f + g) = (f + g : ContinuousAddMonoidHom M₁ M₂) := rfl
 
 instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
   zero_add := by
@@ -413,6 +425,10 @@ theorem coe_comp (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂)
 @[simp, norm_cast]
 theorem coe_comp' (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) : ⇑(h.comp f) = h ∘ f :=
   rfl
+
+@[simp, norm_cast]
+theorem toContinuousAddMonoidHom_comp (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) :
+    (↑(h.comp f) : ContinuousAddMonoidHom M₁ M₃) = (h : ContinuousAddMonoidHom M₂ M₃).comp f := rfl
 
 theorem comp_apply (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) (x : M₁) : (g.comp f) x = g (f x) :=
   rfl
@@ -738,6 +754,10 @@ theorem coe_neg (f : M →SL[σ₁₂] M₂) : (↑(-f) : M →ₛₗ[σ₁₂] 
 theorem coe_neg' (f : M →SL[σ₁₂] M₂) : ⇑(-f) = -f :=
   rfl
 
+@[simp, norm_cast]
+theorem toContinuousAddMonoidHom_neg (f : M →SL[σ₁₂] M₂) :
+    ↑(-f) = -(f : ContinuousAddMonoidHom M M₂) := rfl
+
 instance sub : Sub (M →SL[σ₁₂] M₂) :=
   ⟨fun f g => ⟨f - g, f.2.sub g.2⟩⟩
 
@@ -763,6 +783,10 @@ theorem coe_sub (f g : M →SL[σ₁₂] M₂) : (↑(f - g) : M →ₛₗ[σ₁
 @[simp, norm_cast]
 theorem coe_sub' (f g : M →SL[σ₁₂] M₂) : ⇑(f - g) = f - g :=
   rfl
+
+@[simp, norm_cast]
+theorem toContinuousAddMonoidHom_sub (f g : M →SL[σ₁₂] M₂) :
+    ↑(f - g) = (f - g : ContinuousAddMonoidHom M M₂) := rfl
 
 end
 
