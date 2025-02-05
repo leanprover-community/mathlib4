@@ -239,8 +239,7 @@ theorem map_apply_ιMulti (f : M →ₗ[R] N) (m : Fin n → M) :
 lemma map_comp_ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) (f : M →ₗ[R] N) :
     (map n f) ∘ (ιMulti_family R n v) = ιMulti_family R n (f ∘ v) := by
   ext ⟨s, hs⟩
-  unfold ιMulti_family
-  simp only [Function.comp_apply, map_apply_ιMulti]
+  simp only [ιMulti_family, Function.comp_apply, map_apply_ιMulti]
   rfl
 
 @[simp]
