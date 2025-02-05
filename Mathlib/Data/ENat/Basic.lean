@@ -299,20 +299,17 @@ lemma add_lt_add_iff_right {k : ℕ∞} (h : k ≠ ⊤) : n + k < m + k ↔ n < 
 lemma add_lt_add_iff_left {k : ℕ∞} (h : k ≠ ⊤) : k + n < k + m ↔ n < m :=
   WithTop.add_lt_add_iff_left h
 
-protected lemma exists_nat_gt {n : ℕ∞} (hn : n ≠ ⊤) : ∃ m : ℕ, n < m := by
-  lift n to ℕ using hn
-  obtain ⟨m, hm⟩ := exists_gt n
-  exact ⟨m, Nat.cast_lt.2 hm⟩
+lemma ne_top_iff_exists : n ≠ ⊤ ↔ ∃ m : ℕ, ↑m = n := WithTop.ne_top_iff_exists
 
-lemma ne_top_iff_exists {x : ℕ∞} : x ≠ ⊤ ↔ ∃ a : ℕ, ↑a = x := WithTop.ne_top_iff_exists
+lemma eq_top_iff_forall_ne : (∀ m : ℕ, ↑m ≠ n) ↔ n = ⊤ := WithTop.forall_ne_iff_eq_top
 
-lemma eq_top_iff_forall_ne : n = ⊤ ↔ ∀ m : ℕ, ↑m ≠ n :=
-  WithTop.forall_ne_iff_eq_top.symm
+lemma eq_top_iff_forall_lt : (∀ m : ℕ, m < n) ↔ n = ⊤ := WithTop.forall_gt_iff_eq_top
 
-lemma eq_top_iff_forall_lt : n = ⊤ ↔ ∀ m : ℕ, m < n := by
-  refine eq_top_iff_forall_ne.trans ⟨fun h m ↦ ?_, fun a m ↦ (a m).ne⟩
-  contrapose! h
-  exact WithTop.eq_coe_of_ne_top fun a ↦ coe_ne_top _ <| top_le_iff.mp (a ▸ h)
+lemma eq_top_iff_forall_le : (∀ m : ℕ, m ≤ n) ↔ n = ⊤ := WithTop.forall_ge_iff_eq_top
+
+protected lemma exists_nat_gt (hn : n ≠ ⊤) : ∃ m : ℕ, n < m := by
+  simp_rw [lt_iff_not_ge n]
+  exact not_forall.mp <| eq_top_iff_forall_le.mp.mt hn
 
 @[simp] lemma sub_eq_top_iff : a - b = ⊤ ↔ a = ⊤ ∧ b ≠ ⊤ := WithTop.sub_eq_top_iff
 lemma sub_ne_top_iff : a - b ≠ ⊤ ↔ a ≠ ⊤ ∨ b = ⊤ := WithTop.sub_ne_top_iff
