@@ -144,7 +144,7 @@ end MeromorphicAt
 ## Level Sets of the Order Function
 
 TODO: Prove that the set where an analytic function has order in [1,∞) is discrete within its domain
-of mermorphy.
+of meromorphy.
 -/
 
 namespace MeromorphicOn
