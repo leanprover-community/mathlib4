@@ -475,7 +475,7 @@ theorem ncard_def (s : Set α) : s.ncard = ENat.toNat s.encard := rfl
 theorem Finite.cast_ncard_eq (hs : s.Finite) : s.ncard = s.encard := by
   rwa [ncard, ENat.coe_toNat_eq_self, ne_eq, encard_eq_top_iff, Set.Infinite, not_not]
 
-lemma ncard_le_encard (s : Set α) : Set.ncard s ≤ Set.encard s := ENat.coe_toNat_le_self _
+lemma ncard_le_encard (s : Set α) : s.ncard ≤ s.encard := ENat.coe_toNat_le_self _
 
 theorem Nat.card_coe_set_eq (s : Set α) : Nat.card s = s.ncard := by
   obtain (h | h) := s.finite_or_infinite
