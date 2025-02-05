@@ -43,7 +43,7 @@ lemma tensorEquivEnd_eq_mulLeftRight: tensorEquivEnd R = AlgHom.mulLeftRight R R
   ext; simp
 
 theorem Self: IsAzumaya R R where
-  bij := by rw [← tensorEquivEnd_eq_mulLeftRight]; exact tensorEquivEnd R|>.bijective
+  bij := by rw [← tensorEquivEnd_eq_mulLeftRight]; exact tensorEquivEnd R |>.bijective
 
 /--
 The following diagram commutes:
