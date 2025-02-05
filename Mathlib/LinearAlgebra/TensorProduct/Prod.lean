@@ -57,7 +57,7 @@ def prodRight : M₁ ⊗[R] (M₂ × M₃) ≃ₗ[S] ((M₁ ⊗[R] M₂) × (M�
 variable [Module S M₂] [IsScalarTower R S M₂]
 
 /-- Tensor products distribute over a product on the left . -/
-def prodLeft : (M₁ × M₂) ⊗[R] M₃ ≃ₗ[S] ((M₁ ⊗[R] M₃) × (M₂ ⊗[R] M₃)) :=
+def prodLeft : (M₁ × M₂) ⊗[R] M₃ ≃ₗ[S] (M₁ ⊗[R] M₃) × (M₂ ⊗[R] M₃) :=
   AddEquiv.toLinearEquiv (TensorProduct.comm _ _ _ ≪≫ₗ
       TensorProduct.prodRight R R _ _ _ ≪≫ₗ
       (TensorProduct.comm R _ _).prod (TensorProduct.comm R _ _)).toAddEquiv <| fun c x ↦ by
