@@ -249,6 +249,9 @@ lemma lift_rightUnitor_hom {X Y : C} (f : X ⟶ Y) (g : X ⟶ 𝟙_ C) :
   rw [← Iso.eq_comp_inv]
   aesop_cat
 
+theorem braiding_fst {X Y : C} : (β_ X Y).hom ≫ fst _ _ = snd _ _ := by
+  simp [BraidedCategory.braiding, fst]
+
 /--
 Construct an instance of `ChosenFiniteProducts C` given an instance of `HasFiniteProducts C`.
 -/
@@ -580,6 +583,18 @@ instance (A B : C) : IsIso (δ F A B) :=
 that preserves finite products, then it is a monoidal functor. -/
 noncomputable def monoidalOfChosenFiniteProducts : F.Monoidal :=
   Functor.Monoidal.ofOplaxMonoidal F
+
+noncomputable def braidedOfChosenFiniteProducts : F.Braided :=
+  { monoidalOfChosenFiniteProducts F with
+    braided X Y := by
+      let _ := monoidalOfChosenFiniteProducts F
+      rw [← cancel_mono (Monoidal.μIso _ _ _).inv]
+      simp
+      apply ChosenFiniteProducts.hom_ext
+      simp
+
+
+     }
 
 end Functor
 
