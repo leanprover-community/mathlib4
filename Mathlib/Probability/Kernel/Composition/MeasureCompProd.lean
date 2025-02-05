@@ -163,9 +163,6 @@ lemma setLIntegral_compProd [SFinite μ] [IsSFiniteKernel κ]
   rw [compProd, Kernel.setLIntegral_compProd _ _ _ hf hs ht]
   simp
 
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_compProd := setLIntegral_compProd
-
 lemma integrable_compProd_iff [SFinite μ] [IsSFiniteKernel κ] {E : Type*} [NormedAddCommGroup E]
     {f : α × β → E} (hf : AEStronglyMeasurable f (μ ⊗ₘ κ)) :
     Integrable f (μ ⊗ₘ κ) ↔
@@ -188,9 +185,6 @@ lemma setIntegral_compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
     ∫ x in s ×ˢ t, f x ∂(μ ⊗ₘ κ) = ∫ a in s, ∫ b in t, f (a, b) ∂(κ a) ∂μ := by
   rw [compProd, ProbabilityTheory.setIntegral_compProd hs ht hf]
   simp
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_compProd := setIntegral_compProd
 
 end Integral
 
