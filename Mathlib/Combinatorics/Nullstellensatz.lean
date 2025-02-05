@@ -25,7 +25,7 @@ the vanishing of `f` at any `x : σ → R` such that `x s ∈ S s` for all `s`.
   if `f` vanishes at any such point and `f.degreeOf s < (S s).ncard` for all `s`,
   then `f = 0`.
 
-- `Polynomial.eq_zero_of_eval_zero` :
+- `Polynomial.eq_zero_of_natDegree_lt_ncard_of_eval_eq_zero` :
   a polynomial (in one indeterminate) which vanishes at more points than its degree
   is the zero polynomial.
 
@@ -103,7 +103,7 @@ theorem eq_zero_of_eval_zero_at_prod_nat {n : ℕ} [IsDomain R]
       rw [← AlgEquiv.symm_apply_apply (finSuccEquiv R n) P, this, map_zero]
     have Heval' : ∀ (x : Fin n → R) (_ : ∀ i, x i ∈ S i.succ),
       Polynomial.map (eval x) Q = 0 := fun x hx ↦ by
-      apply Polynomial.eq_zero_of_eval_zero _ (S 0)
+      apply Polynomial.eq_zero_of_natDegree_lt_ncard_of_eval_eq_zero _ (S 0)
       · apply lt_of_le_of_lt _ (Hdeg 0)
         rw [Polynomial.natDegree_le_iff_coeff_eq_zero]
         intro d hd
@@ -292,10 +292,7 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
   apply ht
   push_neg at Heval
   obtain ⟨h, hh, hf⟩ := combinatorial_nullstellensatz_exists_linearCombination S
-    (fun i ↦ by rw [← Finset.card_pos]; exact (htS i).pos)
-    f Heval
-  change f = linearCombination (MvPolynomial σ R) (fun i ↦ Alon.P (S i) i) h at hf
-  change ∀ i, (Alon.P (S i) i * h i).totalDegree ≤ _ at hh
+    (fun i ↦ by rw [← Finset.card_pos]; exact Nat.zero_lt_of_lt (htS i)) f Heval
   rw [hf]
   rw [linearCombination_apply, Finsupp.sum, coeff_sum]
   apply Finset.sum_eq_zero
@@ -304,7 +301,8 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
   by_cases hi : h i = 0
   · simp [hi]
   have : g.totalDegree ≤ f.totalDegree := by
-    simp only [hg, mul_comm, hh i]
+    rw [hg, mul_comm]
+    exact hh i
   -- one could simplify this by proving `totalDegree_mul_eq` (at least in a domain)
   rw [hg, ← degree_degLexDegree,
     degree_mul_of_isRegular_right hi (by simp only [Alon.leadingCoeff_P, isRegular_one]),
