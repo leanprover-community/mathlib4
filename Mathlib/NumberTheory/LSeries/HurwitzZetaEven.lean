@@ -679,7 +679,7 @@ lemma hasSum_nat_hurwitzZetaEven_of_mem_Icc {a : ℝ} (ha : a ∈ Icc 0 1) {s : 
     (hurwitzZetaEven a s) := by
   refine (hasSum_nat_hurwitzZetaEven a hs).congr_fun fun n ↦ ?_
   congr 2 <;>
-  rw [_root_.abs_of_nonneg (by linarith [ha.1, ha.2])] <;>
+  rw [abs_of_nonneg (by linarith [ha.1, ha.2])] <;>
   simp
 
 /-!

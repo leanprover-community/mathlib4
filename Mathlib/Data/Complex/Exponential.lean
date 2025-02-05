@@ -276,7 +276,7 @@ theorem abs_exp (x : ℝ) : |exp x| = exp x :=
   abs_of_pos (exp_pos _)
 
 lemma exp_abs_le (x : ℝ) : exp |x| ≤ exp x + exp (-x) := by
-  cases le_total x 0 <;> simp [abs_of_nonpos, _root_.abs_of_nonneg, exp_nonneg, *]
+  cases le_total x 0 <;> simp [abs_of_nonpos, abs_of_nonneg, exp_nonneg, *]
 
 @[mono]
 theorem exp_strictMono : StrictMono exp := fun x y h => by
@@ -538,7 +538,7 @@ theorem abs_exp_sub_one_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1| ≤ 2 * |x| 
   exact this
 
 theorem abs_exp_sub_one_sub_id_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1 - x| ≤ x ^ 2 := by
-  rw [← _root_.sq_abs]
+  rw [← sq_abs]
   -- Porting note: was
   -- exact_mod_cast Complex.abs_exp_sub_one_sub_id_le this
   have : Complex.abs x ≤ 1 := mod_cast hx
