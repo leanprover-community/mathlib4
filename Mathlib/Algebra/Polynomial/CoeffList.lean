@@ -58,7 +58,7 @@ theorem coeffList_zero : (0 : α[X]).coeffList = [] := by
 
 /-- Only the zero polynomial gives nil coeffList -/
 @[simp]
-theorem coeffList_eq_nil (P : α[X]) : P.coeffList = [] ↔ P = 0 := by
+theorem coeffList_eq_nil {P : α[X]} : P.coeffList = [] ↔ P = 0 := by
   simp [coeffList]
 
 @[simp]
@@ -77,7 +77,7 @@ theorem head?_coeffList (h : P ≠ 0) :
 
 /-- `List.head` of coeffList is leadingCoeff -/
 theorem head_coeffList (h : P ≠ 0) :
-    P.coeffList.head ((coeffList_eq_nil P).not.mpr h) = P.leadingCoeff :=
+    P.coeffList.head (coeffList_eq_nil.not.mpr h) = P.leadingCoeff :=
   (coeffList_eq_cons_leadingCoeff h).casesOn fun _ _ ↦
     Option.some.injEq _ _ ▸ List.head?_eq_head _ ▸ head?_coeffList h
 
