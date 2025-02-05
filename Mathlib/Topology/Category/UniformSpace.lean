@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Patrick Massot, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Adjunction.Reflective
-import Mathlib.CategoryTheory.ConcreteCategory.UnbundledHom
 import Mathlib.CategoryTheory.Monad.Limits
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.UniformSpace.Completion
