@@ -135,8 +135,6 @@ end TypeValued
 
 section
 
-attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike
-
 variable [HasLimits C] [(forget C).ReflectsIsomorphisms] [PreservesLimits (forget C)]
 variable {X : TopCat.{v}} (F : Presheaf C X)
 

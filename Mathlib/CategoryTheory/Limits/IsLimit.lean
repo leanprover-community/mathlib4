@@ -351,14 +351,19 @@ def conePointsIsoOfEquivalence {F : J ⥤ C} {s : Cone F} {G : K ⥤ C} {t : Con
 
 end Equivalence
 
+/-- The universal property of a limit cone: a wap `W ⟶ t.pt` is the same as
+  a cone on `F` with cone point `W`. -/
+@[simps apply]
+def homEquiv (h : IsLimit t) {W : C} : (W ⟶ t.pt) ≃ ((Functor.const J).obj W ⟶ F) where
+  toFun f := (t.extend f).π
+  invFun π := h.lift (Cone.mk _ π)
+  left_inv f := h.hom_ext (by simp)
+  right_inv π := by aesop_cat
+
 /-- The universal property of a limit cone: a map `W ⟶ X` is the same as
   a cone on `F` with cone point `W`. -/
-def homIso (h : IsLimit t) (W : C) : ULift.{u₁} (W ⟶ t.pt : Type v₃) ≅ (const J).obj W ⟶ F where
-  hom f := (t.extend f.down).π
-  inv π := ⟨h.lift { pt := W, π }⟩
-  hom_inv_id := by
-    funext f; apply ULift.ext
-    apply h.hom_ext; intro j; simp
+def homIso (h : IsLimit t) (W : C) : ULift.{u₁} (W ⟶ t.pt : Type v₃) ≅ (const J).obj W ⟶ F :=
+  Equiv.toIso (Equiv.ulift.trans h.homEquiv)
 
 @[simp]
 theorem homIso_hom (h : IsLimit t) {W : C} (f : ULift.{u₁} (W ⟶ t.pt)) :

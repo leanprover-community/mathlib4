@@ -395,9 +395,8 @@ theorem NoZeroSMulDivisors.trans_faithfulSMul (R A M : Type*) [CommRing R] [Ring
     [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M where
   eq_zero_or_eq_zero_of_smul_eq_zero hx := by
     rw [← algebraMap_smul (A := A)] at hx
-    obtain (hc|hx) := eq_zero_or_eq_zero_of_smul_eq_zero hx
-    · exact Or.inl <| (map_eq_zero_iff _ <| FaithfulSMul.algebraMap_injective R A).mp hc
-    · exact Or.inr hx
+    simpa only [map_eq_zero_iff _ <| FaithfulSMul.algebraMap_injective R A] using
+      eq_zero_or_eq_zero_of_smul_eq_zero hx
 
 @[deprecated (since := "2025-01-31")]
 alias NoZeroSMulDivisors.of_algebraMap_injective' := NoZeroSMulDivisors.trans_faithfulSMul
