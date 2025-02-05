@@ -523,8 +523,8 @@ end Main
 section Neg
 
 variable {R A : Type*} {p : A → Prop} [CommRing R] [Nontrivial R] [StarRing R] [MetricSpace R]
-variable [IsTopologicalRing R] [ContinuousStar R] [TopologicalSpace A] [NonUnitalRing A] [StarRing A]
-variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
+variable [IsTopologicalRing R] [ContinuousStar R] [TopologicalSpace A] [NonUnitalRing A]
+variable [StarRing A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
 variable [NonUnitalContinuousFunctionalCalculus R p]
 variable (f g : R → R) (a : A)
 variable (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)

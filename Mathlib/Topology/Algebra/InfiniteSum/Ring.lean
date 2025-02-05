@@ -63,7 +63,8 @@ end NonUnitalNonAssocSemiring
 
 section DivisionSemiring
 
-variable [DivisionSemiring α] [TopologicalSpace α] [IsTopologicalSemiring α] {f : ι → α} {a a₁ a₂ : α}
+variable [DivisionSemiring α] [TopologicalSpace α] [IsTopologicalSemiring α]
+    {f : ι → α} {a a₁ a₂ : α}
 
 theorem HasSum.div_const (h : HasSum f a) (b : α) : HasSum (fun i ↦ f i / b) (a / b) := by
   simp only [div_eq_mul_inv, h.mul_right b⁻¹]

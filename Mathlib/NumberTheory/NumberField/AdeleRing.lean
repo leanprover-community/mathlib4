@@ -138,7 +138,7 @@ instance : Inhabited (AdeleRing R K) := ⟨0⟩
 
 instance : TopologicalSpace (AdeleRing R K) := instTopologicalSpaceProd
 
-instance : IsTopologicalRing (AdeleRing R K) := instTopologicalRingProd
+instance : IsTopologicalRing (AdeleRing R K) := instIsTopologicalRingProd
 
 instance : Algebra K (AdeleRing R K) := Prod.algebra _ _ _
 

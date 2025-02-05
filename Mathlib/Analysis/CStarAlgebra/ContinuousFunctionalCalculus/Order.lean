@@ -59,9 +59,9 @@ theorem cfc_tsub {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [Sta
       ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
 
 theorem cfcₙ_tsub {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialOrder A] [StarRing A]
-    [StarOrderedRing A] [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [IsTopologicalRing A]
-    [T2Space A] [NonUnitalContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
-    [NonnegSpectrumClass ℝ A] (f g : ℝ≥0 → ℝ≥0)
+    [StarOrderedRing A] [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
+    [IsTopologicalRing A] [T2Space A] [NonUnitalContinuousFunctionalCalculus ℝ
+    (IsSelfAdjoint : A → Prop)] [NonnegSpectrumClass ℝ A] (f g : ℝ≥0 → ℝ≥0)
     (a : A) (hfg : ∀ x ∈ σₙ ℝ≥0 a, g x ≤ f x) (ha : 0 ≤ a := by cfc_tac)
     (hf : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
     (hg : ContinuousOn g (σₙ ℝ≥0 a) := by cfc_cont_tac) (hg0 : g 0 = 0 := by cfc_zero_tac) :
