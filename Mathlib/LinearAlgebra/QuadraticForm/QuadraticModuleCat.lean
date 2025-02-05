@@ -35,7 +35,6 @@ instance : CoeSort (QuadraticModuleCat.{v} R) (Type v) :=
   rfl
 
 /-- The object in the category of quadratic R-modules associated to a quadratic R-module. -/
-@[simps form]
 abbrev of {X : Type v} [AddCommGroup X] [Module R X] (Q : QuadraticForm R X) :
     QuadraticModuleCat R :=
   { ModuleCat.of R X with
