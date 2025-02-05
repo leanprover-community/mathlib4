@@ -438,6 +438,15 @@ This is `Equiv.piCongrLeft` as a `LinearEquiv` -/
 def piCongrLeft (e : ι' ≃ ι) : ((i' : ι') → φ (e i')) ≃ₗ[R] (i : ι) → φ i :=
   (piCongrLeft' R φ e.symm).symm
 
+@[simp]
+lemma piCongrLeft_symm_apply (e : ι' ≃ ι) (a : Π i, φ i) (i : ι') :
+    (piCongrLeft R φ e).symm a i = a (e i) :=
+  rfl
+
+lemma piCongrLeft_apply (e : ι' ≃ ι) (a : Π i, φ (e i)) :
+    piCongrLeft R φ e a = Equiv.piCongrLeft φ e a :=
+  rfl
+
 /-- `Equiv.piCurry` as a `LinearEquiv`. -/
 def piCurry {ι : Type*} {κ : ι → Type*} (α : ∀ i, κ i → Type*)
     [∀ i k, AddCommMonoid (α i k)] [∀ i k, Module R (α i k)] :
