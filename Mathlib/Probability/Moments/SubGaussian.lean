@@ -312,74 +312,27 @@ section Conditional
 
 variable [StandardBorelSpace Ω] [IsFiniteMeasure μ]
 
-def IsCondSubGaussianWith (X : Ω → ℝ) (c : ℝ≥0)
-    (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] : Prop :=
-  Kernel.IsSubGaussianWith X c (condExpKernel μ m) (μ.trim hm)
+structure IsCondSubGaussianWith (X : Ω → ℝ) (c : ℝ≥0)
+    (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] : Prop where
+  integrable_exp_mul : ∀ t : ℝ, Integrable (fun ω ↦ exp (t * X ω)) μ
+  mgf_le : ∀ᵐ ω' ∂(μ.trim hm), ∀ t : ℝ, (μ[fun ω ↦ exp (t * X ω) | m]) ω' ≤ exp (c * t ^ 2 / 2)
+  --Kernel.IsSubGaussianWith X c (condExpKernel μ m) (μ.trim hm)
 
 def IsCondSubGaussian (X : Ω → ℝ) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] : Prop :=
   ∃ c : ℝ≥0, IsCondSubGaussianWith m hm X c μ
 
 @[simp]
-lemma zero : IsCondSubGaussianWith m hm (fun _ ↦ 0) 0 μ := Kernel.IsSubGaussianWith.zero
+lemma zero (hm : m ≤ mΩ) : IsCondSubGaussianWith m hm (fun _ ↦ 0) 0 μ :=
+  sorry -- Kernel.IsSubGaussianWith.zero
 
 @[simp]
-lemma zero' : IsCondSubGaussianWith m hm 0 0 μ := Kernel.IsSubGaussianWith.zero'
-
-section Martingale
-
-lemma todo_add {Y : Ω → ℝ} {cY : ℝ≥0} (hm12 : m1 ≤ m2) (hm2 : m2 ≤ mΩ)
-    (hXm : Measurable[m2] X) (hYm : Measurable[mΩ] Y)
-    (hX : IsCondSubGaussianWith m1 (hm12.trans hm2) X c μ)
-    (hY : IsCondSubGaussianWith m2 hm2 Y cY μ) :
-    IsCondSubGaussianWith m2 hm2 (X + Y) (c + cY) μ := by
-  refine .of_rat ?_ ?_ ?_
-  · exact ⟨X + Y, (hXm.mono hm2 le_rfl).stronglyMeasurable.add hYm.stronglyMeasurable, by simp⟩
-  · intro n
-    suffices ∀ᵐ ω' ∂μ.trim hm2, Integrable (fun ω ↦ exp (n * (X + Y) ω)) (condExpKernel μ m2 ω') by
-      filter_upwards [this] with ω' hω' using hω'.2
-    have : μ.trim (hm12.trans hm2) = (μ.trim hm2).trim hm12 := trim_trim.symm
-    have hX_int' := hX.integrable_exp_mul
-    rw [this] at hX_int'
-    have hX_int := ae_of_ae_trim hm12 hX_int'
-    have hY_int := hY.integrable_exp_mul
-    filter_upwards [hX_int, hY_int] with ω hX_int hY_int
-    simp only [Pi.add_apply, NNReal.coe_add, mul_add, exp_add]
-    sorry
-  · intro t
-    have : μ.trim (hm12.trans hm2) = (μ.trim hm2).trim hm12 := trim_trim.symm
-    have hX_int' := hX.integrable_exp_mul
-    have hX_mgf' := hX.mgf_le
-    rw [this] at hX_mgf' hX_int'
-    have hX_mgf := ae_of_ae_trim hm12 hX_mgf'
-    have hY_mgf := hY.mgf_le
-    have hX_int := ae_of_ae_trim hm12 hX_int'
-    have hY_int := hY.integrable_exp_mul
-    simp_rw [mgf]
-    have h := condExp_ae_eq_integral_condExpKernel hm2 (f := fun ω ↦ exp (t * (X + Y) ω)) (μ := μ)
-    filter_upwards [hX_mgf, hY_mgf, hX_int, hY_int] with ω hX hY hX_int hY_int
-    simp only [Pi.add_apply, NNReal.coe_add, mul_add, exp_add]
-    sorry
-
-variable {Y : ℕ → Ω → ℝ} {cY : ℕ → ℝ≥0} {ℱ : Filtration ℕ mΩ} [IsFiniteMeasure μ]
-
--- In particular, `∑ i, Y i` is a martingale.
-lemma todo (h_adapted : Adapted ℱ Y)
-    (h_subG : ∀ i, IsCondSubGaussianWith (ℱ i) (ℱ.le i) (Y i) (cY i) μ) (n : ℕ) :
-    IsCondSubGaussianWith (ℱ 0) (ℱ.le 0) (∑ i ∈ Finset.range n, Y i)
-      (∑ i ∈ Finset.range n, cY i) μ := by
-  induction n with
-  | zero => simp
-  | succ n hn =>
-    rw [Finset.sum_range_succ, Finset.sum_range_succ]
-    sorry
-
-end Martingale
+lemma zero' : IsCondSubGaussianWith m hm 0 0 μ := sorry -- Kernel.IsSubGaussianWith.zero'
 
 end Conditional
 
 structure IsSubGaussianWith (X : Ω → ℝ) (c : ℝ≥0) (μ : Measure Ω := by volume_tac) : Prop where
   integrable_exp_mul : ∀ t : ℝ, Integrable (fun ω ↦ exp (t * X ω)) μ
-  mgf_le_exp : ∀ t : ℝ, mgf X μ t ≤ exp (c * t ^ 2 / 2)
+  mgf_le : ∀ t : ℝ, mgf X μ t ≤ exp (c * t ^ 2 / 2)
 
 def IsSubGaussian (X : Ω → ℝ) (μ : Measure Ω := by volume_tac) : Prop :=
   ∃ c : ℝ≥0, IsSubGaussianWith X c μ
@@ -433,5 +386,66 @@ lemma add_of_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : IsSubGaussianWith
   simpa using hX.add_of_indepFun hY hindep
 
 end IsSubGaussianWith
+
+section Martingale
+
+lemma todo_add [IsFiniteMeasure μ] {Y : Ω → ℝ} {cY : ℝ≥0} (hm : m ≤ mΩ)
+    (hXm : Measurable[m] X) (hYm : Measurable[mΩ] Y)
+    (hX : IsSubGaussianWith X c μ) (hY : IsCondSubGaussianWith m hm Y cY μ) :
+    IsSubGaussianWith (X + Y) (c + cY) μ where
+  integrable_exp_mul t := by
+    sorry
+  mgf_le := by
+    intro t
+    have hX_int := hX.integrable_exp_mul
+    have hY_int := hY.integrable_exp_mul
+    have hX_mgf := hX.mgf_le
+    have hY_mgf := all_ae_of hY.mgf_le t
+    calc mgf (X + Y) μ t
+    _ = ∫ ω, exp (t * X ω) * exp (t * Y ω) ∂μ := by
+      simp only [mgf, Pi.add_apply, mul_add, exp_add]
+    _ = ∫ ω, (μ[fun ω ↦ exp (t * X ω) * exp (t * Y ω) | m]) ω ∂μ := by rw [integral_condExp hm]
+    _ = ∫ ω, exp (t * X ω) * (μ[fun ω ↦ exp (t * Y ω) | m]) ω ∂μ := by
+      refine integral_congr_ae ?_
+      refine condExp_mul_of_aestronglyMeasurable_left ?_ ?_ (hY_int t)
+      · exact Measurable.aestronglyMeasurable <| by fun_prop
+      · change Integrable (fun ω ↦ exp (t * X ω) * exp (t * Y ω)) μ
+        simp_rw [← exp_add, ← mul_add, ← Pi.add_apply]
+        sorry
+    _ ≤ ∫ ω, exp (t * X ω) * exp (cY * t^2 / 2) ∂μ := by
+      refine integral_mono_of_nonneg ?_ ((hX_int t).mul_const _) ?_
+      · have h := condExp_mono (f := 0) (g := fun ω ↦ exp (t * Y ω)) (μ := μ) (m := m)
+          (integrable_const 0) (hY_int t) (ae_of_all _ fun ω ↦ by positivity)
+        simp only [condExp_zero] at h
+        filter_upwards [h] with ω hω
+        refine mul_nonneg (by positivity) hω
+      · filter_upwards [ae_of_ae_trim hm hY_mgf] with ω hω
+        gcongr
+    _ = mgf X μ t * exp (cY * t^2 / 2) := by rw [integral_mul_right, mgf]
+    _ ≤ exp (c * t^2 / 2) * exp (cY * t^2 / 2) := by
+      gcongr
+      exact hX_mgf t
+    _ = exp ((c + cY) * t ^ 2 / 2) := by
+      rw [← exp_add]
+      congr
+      ring
+
+variable {Y : ℕ → Ω → ℝ} {cY : ℕ → ℝ≥0} {ℱ : Filtration ℕ mΩ} [IsFiniteMeasure μ]
+
+-- In particular, `∑ i, Y i` is a martingale.
+lemma todo (h_adapted : Adapted ℱ Y)
+    (h0 : IsSubGaussianWith (Y 0) (cY 0) μ)
+    (h_subG : ∀ i, IsCondSubGaussianWith (ℱ i) (ℱ.le i) (Y i) (cY i) μ) (n : ℕ) :
+    IsSubGaussianWith (fun ω ↦ ∑ i ∈ Finset.range n, Y i ω) (∑ i ∈ Finset.range n, cY i) μ := by
+  induction n with
+  | zero => sorry -- simp
+  | succ n hn =>
+    simp_rw [Finset.sum_range_succ]
+    refine todo_add (ℱ n) (ℱ.le n) ?_ ?_ hn (h_subG n)
+    · exact Finset.measurable_sum (Finset.range n) fun m hm ↦
+        ((h_adapted m).mono (ℱ.mono (Finset.mem_range_le hm))).measurable
+    · exact ((h_adapted n).mono (ℱ.le n)).measurable
+
+end Martingale
 
 end ProbabilityTheory
