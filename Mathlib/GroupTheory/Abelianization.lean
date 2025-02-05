@@ -90,7 +90,7 @@ instance commGroup : CommGroup (Abelianization G) where
   __ := QuotientGroup.Quotient.group _
   mul_comm x y := Quotient.inductionOn₂ x y fun a b ↦ Quotient.sound' <|
     QuotientGroup.leftRel_apply.mpr <| Subgroup.subset_closure
-      -- We avoid `group ` here to minimize imports while low in the hierarchy;
+      -- We avoid `group` here to minimize imports while low in the hierarchy;
       -- typically it would be better to invoke the tactic.
       ⟨b⁻¹, Subgroup.mem_top _, a⁻¹, Subgroup.mem_top _, by simp [commutatorElement_def, mul_assoc]⟩
 

@@ -92,7 +92,7 @@ theorem commutator_commutator_eq_bot_of_rotate (h1 : ⁅⁅H₂, H₃⁆, H₁�
     mem_centralizer_iff_commutator_eq_one, ← commutatorElement_def] at h1 h2 ⊢
   intro x hx y hy z hz
   trans x * z * ⁅y, ⁅z⁻¹, x⁻¹⁆⁆⁻¹ * z⁻¹ * y * ⁅x⁻¹, ⁅y⁻¹, z⁆⁆⁻¹ * y⁻¹ * x⁻¹
-  -- We avoid `group ` here to minimize imports while low in the hierarchy;
+  -- We avoid `group` here to minimize imports while low in the hierarchy;
   -- typically it would be better to invoke the tactic.
   · simp [commutatorElement_def, mul_assoc]
   · rw [h1 _ (H₂.inv_mem hy) _ hz _ (H₁.inv_mem hx), h2 _ (H₃.inv_mem hz) _ (H₁.inv_mem hx) _ hy]

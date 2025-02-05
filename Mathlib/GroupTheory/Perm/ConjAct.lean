@@ -42,7 +42,7 @@ theorem cycleFactorsFinset_conj (g k : Perm α) :
   ext c
   rw [ConjAct.smul_def, ConjAct.ofConjAct_toConjAct, Finset.mem_map_equiv,
     ← mem_cycleFactorsFinset_conj g k]
-  -- We avoid `group ` here to minimize imports while low in the hierarchy;
+  -- We avoid `group` here to minimize imports while low in the hierarchy;
   -- typically it would be better to invoke the tactic.
   simp [mul_assoc]
 
