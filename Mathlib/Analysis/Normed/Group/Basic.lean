@@ -970,40 +970,14 @@ theorem closure_one_eq : closure ({1} : Set E) = { x | ‖x‖ = 0 } :=
 
 section Instances
 
+instance [SeminormedGroup E] : ContinuousENorm E where
+  continuous_enorm := continuous_enorm'--ENNReal.continuous_coe.comp continuous_nnnorm'
+
 instance [SeminormedAddGroup E] : ContinuousENorm E where
-/- XXX: continuous_nnnorm errors with
-application type mismatch
-  Continuous.comp ENNReal.continuous_coe continuous_nnnorm
-argument
-  continuous_nnnorm
-has type
-  @Continuous E ℝ≥0
-    (@UniformSpace.toTopologicalSpace E (@PseudoMetricSpace.toUniformSpace E SeminormedAddGroup.toPseudoMetricSpace))
-    NNReal.instTopologicalSpace fun a ↦ ‖a‖₊ : Prop
-but is expected to have type
-  @Continuous E ℝ≥0
-    (@UniformSpace.toTopologicalSpace E (@PseudoMetricSpace.toUniformSpace E SeminormedGroup.toPseudoMetricSpace))
--/
-  continuous_enorm := by
-    refine ENNReal.continuous_coe.comp ?_; sorry--(continuous_nnnorm (E := E))
-
-instance [NormedAddGroup E] : ENormedAddMonoid E where
-  enorm_eq_zero := by
-    sorry -- simp [enorm_eq_nnnorm]
-    -- enorm_eq_nnnorm is defined higher above... not sure why this fails!
-  -- enorm_neg := by
-  --   simp (config := {contextual := true}) [← eq_neg_iff_add_eq_zero, enorm_eq_nnnorm]
-  enorm_add_le := by simp [enorm_eq_nnnorm, ← ENNReal.coe_add, nnnorm_add_le]
-
-instance [NormedAddCommGroup E] : ENormedAddCommMonoid E where
-  add_comm := by simp [add_comm]
-
-instance [NormedAddCommGroup E] [NormedSpace ℝ E] : ENormedSpace E where
-  enorm_smul := by simp_rw [enorm_eq_nnnorm, ENNReal.smul_def, NNReal.smul_def, nnnorm_smul]; simp
+  continuous_enorm := ENNReal.continuous_coe.comp continuous_nnnorm'
 
 end Instances
 
-#exit
 section
 
 variable {l : Filter α} {f : α → E}
