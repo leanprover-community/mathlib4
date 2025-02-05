@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.ModelTheory.ElementarySubstructures
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
 /-!
 # Bundled First-Order Structures
@@ -53,6 +54,19 @@ end Equiv
 namespace FirstOrder
 
 namespace Language
+
+open CategoryTheory
+
+variable {M N : Bundled.{w} L.Structure}
+
+instance : Category (Bundled.{w} L.Structure) where
+  Hom := (· ↪[L] ·)
+  id _ := Embedding.refl _ _
+  comp f g := g.comp f
+
+instance instConcreteCategory : ConcreteCategory (Bundled.{w} L.Structure) (· ↪[L] ·) where
+  hom f := f
+  ofHom f := f
 
 /-- The equivalence relation on bundled `L.Structure`s indicating that they are isomorphic. -/
 instance equivSetoid : Setoid (CategoryTheory.Bundled L.Structure) where
@@ -201,23 +215,16 @@ variable {M N P : CategoryTheory.Bundled.{w} L.Structure}
 
 namespace Embedding
 
-/-- Embedding between equal structures. -/
-def ofEq (h : M = N) : M ↪[L] N := by
-  cases h
-  exact refl L M
+@[simp]
+theorem eqToHom_refl : eqToHom (Eq.refl M) = refl L M := rfl
 
 @[simp]
-theorem ofEq_refl : ofEq (Eq.refl M) = refl L M := rfl
+theorem eqToHom_comp (h : M = N) (h' : N = P) :
+    (eqToHom h').comp (eqToHom h) = eqToHom (h.trans h') := eqToHom_trans h h'
 
 @[simp]
-theorem ofEq_comp (h : M = N) (h' : N = P) :
-    (ofEq h').comp (ofEq h) = ofEq (h.trans h') := by
-  cases h
-  rfl
-
-@[simp]
-theorem ofEq_comp_apply (h : M = N) (h' : N = P) (m : M) :
-    ofEq h' (ofEq h m) = ofEq (h.trans h') m := by
+theorem eqToHom_comp_apply (h : M = N) (h' : N = P) (m : M) :
+    eqToHom h' (eqToHom h m) = eqToHom (h.trans h') m := by
   cases h
   rfl
 
@@ -247,7 +254,7 @@ theorem ofEq_comp_apply (h : M = N) (h' : N = P) (m : M) :
 
 @[simp]
 theorem ofEq_toEmbedding (h : M = N) :
-    (ofEq h).toEmbedding = .ofEq h := by
+    (ofEq h).toEmbedding = eqToHom h := by
   cases h
   rfl
 
