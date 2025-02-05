@@ -67,25 +67,21 @@ lemma eventually_nhdsWithin_sign_eq_of_deriv_pos (hf : deriv f x₀ > 0) (hx : f
 /-- Predict the sign of f when it crosses the x-axis from above. -/
 lemma eventually_nhdsWithin_sign_eq_of_deriv_neg (hf : deriv f x₀ < 0) (hx : f x₀ = 0) :
     ∀ᶠ x in 𝓝 x₀, sign (f x) = sign (x₀ - x) := by
-    have h₀ : deriv (-f) x₀ = - deriv f x₀ := by
-        have := @deriv_comp ℝ _ x₀ ℝ _ _ f Neg.neg
-            differentiable_neg.differentiableAt
-            (differentiableAt_of_deriv_ne_zero (ne_of_gt hf).symm)
-        simp only [deriv_neg'', neg_mul, one_mul] at this
-        rw [← this]
-        congr
-    have h₁ := @eventually_nhdsWithin_sign_eq_of_deriv_pos (-f) x₀ (by
-        rw [h₀]
-        simp only [Left.neg_pos_iff]
-        exact hf)
-        (by simp_all)
-    have h₂ (x : ℝ) : sign (-f x) = - sign (f x) := Right.sign_neg (f x)
-    have h₂ (x : ℝ) : - sign (-f x) = sign (f x) := neg_eq_iff_eq_neg.mpr (h₂ x)
-    simp_rw [← h₂]
-    simp_rw [fun x => (neg_sub x x₀).symm]
-    simp_rw [fun x => Right.sign_neg (x - x₀)]
-    simp only [neg_inj]
-    exact h₁
+  have h₀ : deriv (-f) x₀ = - deriv f x₀ := by
+    have := @deriv_comp ℝ _ x₀ ℝ _ _ f Neg.neg
+        differentiable_neg.differentiableAt
+        (differentiableAt_of_deriv_ne_zero (ne_of_gt hf).symm)
+    simp only [deriv_neg'', neg_mul, one_mul] at this
+    rw [← this]
+    congr
+  have h₂ (x : ℝ) : - sign (-f x) = sign (f x) := neg_eq_iff_eq_neg.mpr <| Right.sign_neg (f x)
+  simp_rw [← h₂, fun x => (neg_sub x x₀).symm, fun x => Right.sign_neg (x - x₀)]
+  simp only [neg_inj]
+  exact eventually_nhdsWithin_sign_eq_of_deriv_pos (by
+    show deriv (-f) x₀ > 0
+    rw [h₀]
+    simp only [Left.neg_pos_iff]
+    exact hf) (by show (-f) x₀ = 0; simp_all)
 
 /-- The Second-Derivative Test from calculus, minimum version.
 Applies to functions like `x^2 + 1[x ≥ 0]` as well as twice differentiable
@@ -93,23 +89,21 @@ functions.
  -/
 theorem isLocalMin_of_deriv_deriv_pos (hf : deriv (deriv f) x₀ > 0) (hd : deriv f x₀ = 0)
     (hc : ContinuousAt f x₀) : IsLocalMin f x₀ := by
-  have hpll : ∀ᶠ (b : ℝ) in 𝓝[<] x₀, deriv f b < 0 := by
-    have := eventually_nhdsWithin_sign_eq_of_deriv_pos hf hd
-    exact (eventually_nhdsWithin_of_eventually_nhds this).mp <|
+  have h₀ := eventually_nhdsWithin_sign_eq_of_deriv_pos hf hd
+  have hpll : ∀ᶠ (b : ℝ) in 𝓝[<] x₀, deriv f b < 0 :=
+    (eventually_nhdsWithin_of_eventually_nhds h₀).mp <|
       eventually_nhdsWithin_of_forall <| fun x hx₀ hx₁ => by
         rw [sign_neg <| sub_neg.mpr hx₀] at hx₁
         simp only [sign, OrderHom.coe_mk] at hx₁
         split at hx₁
-        · simp at hx₁
+        · simp only [self_eq_neg_iff, one_ne_zero] at hx₁
         · split at hx₁ <;> tauto
-  have hpgg : ∀ᶠ (b : ℝ) in 𝓝[>] x₀, deriv f b > 0 := by
-    have := eventually_nhdsWithin_sign_eq_of_deriv_pos hf hd
-    exact (eventually_nhdsWithin_of_eventually_nhds this).mp <|
+  have hpgg : ∀ᶠ (b : ℝ) in 𝓝[>] x₀, deriv f b > 0 :=
+    (eventually_nhdsWithin_of_eventually_nhds h₀).mp <|
       eventually_nhdsWithin_of_forall <| fun x hx₀ hx₁ => by
         rw [sign_pos <| sub_pos.mpr hx₀] at hx₁
-        simp [sign] at hx₁
-        split_ifs at hx₁ with g₀ <;>
-        (simp only [imp_false, not_le] at hx₁; exact hx₁)
+        simp only [sign, OrderHom.coe_mk, ite_eq_left_iff, not_lt] at hx₁
+        split_ifs at hx₁ with g₀ <;> (simp only [imp_false, not_le] at hx₁; exact hx₁)
   have hf₀ : ∀ᶠ (x : ℝ) in (𝓝[<] x₀ ⊔ 𝓝[>] x₀), deriv f x ≠ 0 :=
     eventually_sup.mpr ⟨hpll.mono fun x hx => (ne_of_gt hx).symm,
                         hpgg.mono fun x hx => (ne_of_lt hx).symm⟩
@@ -124,8 +118,7 @@ theorem isLocalMax_of_deriv_deriv_neg (hf : deriv (deriv f) x₀ < 0) (hd : deri
     have := eventually_nhdsWithin_sign_eq_of_deriv_neg hf hd
     exact (eventually_nhdsWithin_of_eventually_nhds this).mp <|
       eventually_nhdsWithin_of_forall <| fun x hx₀ hx₁ => by
-        have : sign (x₀ - x) = 1 := sign_pos <| sub_pos.mpr hx₀
-        rw [this] at hx₁
+        rw [sign_pos <| sub_pos.mpr hx₀] at hx₁
         simp only [sign, OrderHom.coe_mk] at hx₁
         split at hx₁
         tauto
@@ -134,17 +127,16 @@ theorem isLocalMax_of_deriv_deriv_neg (hf : deriv (deriv f) x₀ < 0) (hd : deri
     have := eventually_nhdsWithin_sign_eq_of_deriv_neg hf hd
     exact (eventually_nhdsWithin_of_eventually_nhds this).mp <|
       eventually_nhdsWithin_of_forall <| fun x hx₀ hx₁ => by
-        have : sign (x₀ - x) = -1 := sign_neg <| sub_neg.mpr hx₀
-        rw [this] at hx₁
+        rw [sign_neg <| sub_neg.mpr hx₀] at hx₁
         simp only [sign, OrderHom.coe_mk] at hx₁
         split at hx₁
-        tauto
-        split at hx₁ <;> tauto
+        · tauto
+        · split at hx₁ <;> tauto
   have hf₀ : ∀ᶠ (x : ℝ) in (𝓝[<] x₀ ⊔ 𝓝[>] x₀), deriv f x ≠ 0 :=
     eventually_sup.mpr ⟨hnlg.mono fun x hx => (ne_of_lt hx).symm,
                         hngl.mono fun x hx => (ne_of_gt hx).symm⟩
   have hf : ∀ᶠ (x : ℝ) in 𝓝[≠] x₀, deriv f x ≠ 0 := (nhdsLT_sup_nhdsGT x₀) ▸ hf₀
-  exact isLocalMax_of_deriv hc (hf.mono fun x a ↦ differentiableAt_of_deriv_ne_zero a)
+  exact isLocalMax_of_deriv hc (hf.mono fun _ => differentiableAt_of_deriv_ne_zero)
     (hnlg.mono fun _ => le_of_lt) (hngl.mono fun _ => le_of_lt)
 
 end SecondDeriv
