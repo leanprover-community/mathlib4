@@ -469,15 +469,15 @@ variable {γ : Type*} [Preorder γ]
 
 lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
     {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
-    upperBounds (f '' d) = upperBounds (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := by
-  apply le_antisymm
-  · intro u hu c hc
+    upperBounds (f '' d) = upperBounds (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := le_antisymm
+  (by
+    intro u hu c hc
     simp at hc
-    obtain ⟨a₁, ⟨b₁,⟨⟨⟨b₂,hb₂⟩,⟨a₂,ha₂⟩⟩, right⟩⟩⟩ := hc
+    obtain ⟨a₁, ⟨b₁,⟨⟨⟨b₂,hb₂⟩,⟨a₂,ha₂⟩⟩, fabc⟩⟩⟩ := hc
     obtain ⟨⟨a₃,b₃⟩,hm⟩ := hd _ hb₂ _ ha₂
-    rw [← right]
-    exact le_trans (hf ⟨hm.2.1.1,hm.2.2.2⟩) (hu ⟨(a₃, b₃), And.imp_right (fun _ ↦ rfl) hm⟩)
-  · exact upperBounds_mono_set (image_mono (subset_fst_image_times_snd_image d))
+    rw [← fabc]
+    exact le_trans (hf ⟨hm.2.1.1,hm.2.2.2⟩) (hu ⟨(a₃, b₃), And.imp_right (fun _ ↦ rfl) hm⟩))
+  (upperBounds_mono_set (image_mono (subset_fst_image_times_snd_image d)))
 
 -- c.f. isLUB_prod
 -- theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
