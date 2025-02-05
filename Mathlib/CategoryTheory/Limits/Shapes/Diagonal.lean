@@ -281,6 +281,7 @@ theorem pullback.diagonal_comp (f : X ⟶ Y) (g : Y ⟶ Z) :
     diagonal (f ≫ g) = diagonal f ≫ (pullbackDiagonalMapIdIso f f g).inv ≫ pullback.snd _ _ := by
   ext <;> simp
 
+@[reassoc]
 lemma pullback.comp_diagonal (f : X ⟶ Y) (g : Y ⟶ Z) :
     f ≫ pullback.diagonal g = pullback.diagonal (f ≫ g) ≫
       pullback.map (f ≫ g) (f ≫ g) g g f f (𝟙 Z) (by simp) (by simp) := by
