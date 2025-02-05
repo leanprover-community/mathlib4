@@ -75,7 +75,7 @@ lemma mulLeftRight_comp_congr (e : A ≃ₐ[R] B):
 
 lemma _root_.FaithfulSMul.ofInjective {R M N : Type*} [SMul R M] [SMul R N]
     [Nonempty M] [FaithfulSMul R M] (f : @MulActionHom R R _root_.id M _ N _)
-    (hf : Function.Injective f):
+    (hf : Function.Injective f) :
     FaithfulSMul R N where
   eq_of_smul_eq_smul {r1 r2} h12 := by
     have : ∀ m : M, r1 • f m = r2 • f m := fun m ↦ h12 (f m)
