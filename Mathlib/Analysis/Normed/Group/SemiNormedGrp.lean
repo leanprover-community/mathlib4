@@ -324,8 +324,8 @@ lemma mkHom_id {M : Type u} [SeminormedAddCommGroup M] :
 @[simp]
 lemma mkHom_comp {M N O : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
     [SeminormedAddCommGroup O] (f : NormedAddGroupHom M N) (g : NormedAddGroupHom N O)
-    (hf : f.NormNoninc) (hg : g.NormNoninc) :
-    mkHom (g.comp f) (hg.comp hf) = mkHom f hf ≫ mkHom g hg :=
+    (hf : f.NormNoninc) (hg : g.NormNoninc) (hgf : (g.comp f).NormNoninc) :
+    mkHom (g.comp f) hgf = mkHom f hf ≫ mkHom g hg :=
   rfl
 
 @[simp]
