@@ -306,6 +306,14 @@ protected lemma exists_nat_gt {n : ℕ∞} (hn : n ≠ ⊤) : ∃ m : ℕ, n < m
 
 lemma ne_top_iff_exists {x : ℕ∞} : x ≠ ⊤ ↔ ∃ a : ℕ, ↑a = x := WithTop.ne_top_iff_exists
 
+lemma eq_top_iff_forall_ne : n = ⊤ ↔ ∀ m : ℕ, ↑m ≠ n :=
+  WithTop.forall_ne_iff_eq_top.symm
+
+lemma eq_top_iff_forall_lt : n = ⊤ ↔ ∀ m : ℕ, m < n := by
+  refine eq_top_iff_forall_ne.trans ⟨fun h m ↦ ?_, fun a m ↦ (a m).ne⟩
+  contrapose! h
+  exact WithTop.eq_coe_of_ne_top fun a ↦ coe_ne_top _ <| top_le_iff.mp (a ▸ h)
+
 @[simp] lemma sub_eq_top_iff : a - b = ⊤ ↔ a = ⊤ ∧ b ≠ ⊤ := WithTop.sub_eq_top_iff
 lemma sub_ne_top_iff : a - b ≠ ⊤ ↔ a ≠ ⊤ ∨ b = ⊤ := WithTop.sub_ne_top_iff
 
