@@ -57,9 +57,9 @@ def ιMulti : M [⋀^Fin n]→ₗ[R] (⋀[R]^n M) :=
 /-- Given a linearly ordered family `v` of vectors of `M` and a natural number `n`, produce the
 family of `n`fold exterior products of elements of `v`, seen as members of the
 `n`th exterior power. -/
-noncomputable def ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) :
-    {s : Finset I // Finset.card s = n} → ⋀[R]^n M :=
-  fun ⟨s, hs⟩ => ιMulti R n (fun i => v (Finset.orderIsoOfFin s hs i))
+noncomputable def ιMulti_family {I : Type*} [LinearOrder I] (v : I → M)
+    (s : {s : Finset I // Finset.card s = n}) : ⋀[R]^n M :=
+  ιMulti R n fun i ↦ v <| Finset.orderIsoOfFin s.val s.property i
 
 @[simp] lemma ιMulti_family_apply_coe {I : Type*} [LinearOrder I] (v : I → M)
   (s : {s : Finset I // Finset.card s = n}) :
