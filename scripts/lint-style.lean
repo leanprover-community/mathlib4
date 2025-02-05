@@ -111,10 +111,16 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
     | true => ErrorFormat.github
     | false => ErrorFormat.humanReadable
   let fix := args.hasFlag "fix"
+  if (args.variableArgsAs? String).isNone then
+    IO.println "error: invalid input, library arguments must be strings"
+    return 1
+  let libraries := match args.variableArgsAs! String with
+  | #[] => #["Archive", "Counterexamples", "Mathlib"]
+  | lib => lib
   -- Read all module names to lint.
   let mut allModuleNames := #[]
-  for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
-    allModuleNames := allModuleNames.append (← findImports s)
+  for s in libraries do
+    allModuleNames := allModuleNames.append (← findImports s!"{s}.lean")
   -- Note: since "Batteries" and "Std" are added explicitly to "Mathlib.lean", we remove them here
   -- manually.
   allModuleNames := eraseExplicitImports allModuleNames
@@ -140,13 +146,19 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
 -- so far, no help options or so: perhaps that is fine?
 def lintStyle : Cmd := `[Cli|
   «lint-style» VIA lintStyleCli; ["0.0.1"]
-  "Run text-based style linters on every Lean file in Mathlib/, Archive/ and Counterexamples/.
+  "Run text-based style linters on every Lean file in a given set of libraries.
+  If no library is specified, this script assumes it runs in mathlib, and looks for
+  Mathlib/, Archive/ and Counterexamples/.
   Print errors about any unexpected style errors to standard output."
 
   FLAGS:
     github;     "Print errors in a format suitable for github problem matchers\n\
                  otherwise, produce human-readable output"
     fix;        "Automatically fix the style error, if possible"
+
+  ARGS:
+    ...libraries: String; "Run linters precisely in these libraries\
+      By default, these are Mathlib, Archive and Counterexamples"
 ]
 
 /-- The entry point to the `lake exe lint-style` command. -/
