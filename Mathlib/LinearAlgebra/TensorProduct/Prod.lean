@@ -22,14 +22,13 @@ See `Mathlib.LinearAlgebra.TensorProduct.Pi` for arbitrary products.
 
 -/
 
-universe uR uS uM₁ uM₂ uM₃
-variable (R : Type uR) (S : Type uS) (M₁ : Type uM₁) (M₂ : Type uM₂) (M₃ : Type uM₃)
+variable (R S M₁ M₂ M₃ : Type*)
 
 suppress_compilation
 
 namespace TensorProduct
 
-variable [CommSemiring R] [CommSemiring S] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [CommSemiring R] [Semiring S] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
 variable [Algebra R S]
 variable [Module R M₁] [Module S M₁] [IsScalarTower R S M₁] [Module R M₂] [Module R M₃]
 
