@@ -26,8 +26,6 @@ then the map on global sections is integral. -/
 theorem isIntegral_appTop_of_universallyClosed (f : X ⟶ Y) [UniversallyClosed f] [IsAffine Y] :
     f.appTop.hom.IsIntegral := by
   have : CompactSpace X := (quasiCompact_over_affine_iff f).mp inferInstance
-  have : f = X.toSpecΓ ≫ Spec.map f.appTop ≫ Y.isoSpec.inv := by
-    rw [← Scheme.toSpecΓ_naturality_assoc, Scheme.toSpecΓ_isoSpec_inv, Category.comp_id]
   have : UniversallyClosed (X.toSpecΓ ≫ Spec.map f.appTop) := by
     rwa [← Scheme.toSpecΓ_naturality,
       MorphismProperty.cancel_right_of_respectsIso (P := @UniversallyClosed)]
