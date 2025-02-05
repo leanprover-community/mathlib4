@@ -402,6 +402,7 @@ lemma jacobiTheta₂_add_left' (z τ : ℂ) :
   ring_nf
 
 /-- The two-variable Jacobi theta function is even in `z`. -/
+@[simp]
 lemma jacobiTheta₂_neg_left (z τ : ℂ) : jacobiTheta₂ (-z) τ = jacobiTheta₂ z τ := by
   conv_lhs => rw [jacobiTheta₂, ← Equiv.tsum_eq (Equiv.neg ℤ)]
   refine tsum_congr (fun n ↦ ?_)

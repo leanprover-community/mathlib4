@@ -6,6 +6,7 @@ Authors: Jeremy Avigad
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Size
+import Batteries.Data.Int
 
 /-!
 # Bitwise operations on integers
@@ -33,11 +34,6 @@ def bodd : ℤ → Bool
   its integer input. -/
 def bit (b : Bool) : ℤ → ℤ :=
   cond b (2 * · + 1) (2 * ·)
-
-/-- `testBit m n` returns whether the `(n+1)ˢᵗ` least significant bit is `1` or `0`-/
-def testBit : ℤ → ℕ → Bool
-  | (m : ℕ), n => Nat.testBit m n
-  | -[m +1], n => !(Nat.testBit m n)
 
 /-- `Int.natBitwise` is an auxiliary definition for `Int.bitwise`. -/
 def natBitwise (f : Bool → Bool → Bool) (m n : ℕ) : ℤ :=

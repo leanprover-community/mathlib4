@@ -255,6 +255,10 @@ theorem of_isLocalization [IsLocalization M Rₘ] : FormallyUnramified R Rₘ :=
   ext
   simp
 
+instance [FormallyUnramified R S] (M : Submonoid S) : FormallyUnramified R (Localization M) :=
+  have := of_isLocalization (Rₘ := Localization M) M
+  .comp _ S _
+
 /-- This actually does not need the localization instance, and is stated here again for
 consistency. See `Algebra.FormallyUnramified.of_comp` instead.
 
@@ -282,12 +286,9 @@ section
 variable (R : Type*) [CommRing R]
 variable (A : Type*) [CommRing A] [Algebra R A]
 
-/-- An `R`-algebra `A` is unramified if it is formally unramified and of finite type.
-
-Note that the Stacks project has a different definition of unramified, and tag
-<https://stacks.math.columbia.edu/tag/00UU> shows that their definition is the
-same as this one.
--/
+/-- An `R`-algebra `A` is unramified if it is formally unramified and of finite type. -/
+@[stacks 00UT "Note that the Stacks project has a different definition of unramified, and tag
+<https://stacks.math.columbia.edu/tag/00UU> shows that their definition is the same as this one."]
 class Unramified : Prop where
   formallyUnramified : FormallyUnramified R A := by infer_instance
   finiteType : FiniteType R A := by infer_instance

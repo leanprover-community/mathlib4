@@ -226,7 +226,8 @@ theorem rel_flatten : (Forall₂ (Forall₂ R) ⇒ Forall₂ R) flatten flatten
 
 @[deprecated (since := "2025-10-15")] alias rel_join := rel_flatten
 
-theorem rel_flatMap : (Forall₂ R ⇒ (R ⇒ Forall₂ P) ⇒ Forall₂ P) List.flatMap List.flatMap :=
+theorem rel_flatMap : (Forall₂ R ⇒ (R ⇒ Forall₂ P) ⇒ Forall₂ P)
+    (Function.swap List.flatMap) (Function.swap List.flatMap) :=
   fun _ _ h₁ _ _ h₂ => rel_flatten (rel_map (@h₂) h₁)
 
 @[deprecated (since := "2025-10-16")] alias rel_bind := rel_flatMap
