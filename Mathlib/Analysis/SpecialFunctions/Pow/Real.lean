@@ -962,44 +962,6 @@ lemma norm_log_natCast_le_rpow_div (n : ℕ) {ε : ℝ} (hε : 0 < ε) : ‖log 
 
 end Complex
 
-namespace  Asymptotics
-
-open Filter
-
-open Topology in
-theorem isBigO_atTop_natCast_rpow_of_tendsto_div_rpow {𝕜 : Type*} [RCLike 𝕜] {g : ℕ → 𝕜}
-    {a : 𝕜} {r : ℝ} (hlim : Tendsto (fun n ↦ g n / (n ^ r : ℝ)) atTop (𝓝 a)) :
-    g =O[atTop] fun n ↦ (n : ℝ) ^ r := by
-  refine isBigO_norm_left.mp <| isBigO_of_div_tendsto_nhds ?_ ‖a‖ ?_
-  · filter_upwards [eventually_ne_atTop 0] with _ h
-    simp [Real.rpow_eq_zero_iff_of_nonneg, h]
-  · have := Function.comp_def _ _ ▸ tendsto_norm.comp hlim
-    simpa [norm_div, _root_.abs_of_nonneg (Real.rpow_nonneg (Nat.cast_nonneg _) _)] using this
-
-variable {E : Type*} [SeminormedRing E] (a b c : ℝ)
-
-theorem IsBigO.mul_atTop_rpow_of_isBigO_rpow {f g : ℝ → E}
-    (hf : f =O[atTop] fun t ↦ (t : ℝ) ^ a) (hg : g =O[atTop] fun t ↦ (t : ℝ) ^ b)
-    (h : a + b ≤ c) :
-    (f * g) =O[atTop] fun t ↦ (t : ℝ) ^ c := by
-  refine (hf.mul hg).trans (Eventually.isBigO ?_)
-  filter_upwards [eventually_ge_atTop 1] with t ht
-  rw [← Real.rpow_add (zero_lt_one.trans_le ht), Real.norm_of_nonneg (Real.rpow_nonneg
-    (zero_le_one.trans ht) (a + b))]
-  exact Real.rpow_le_rpow_of_exponent_le ht h
-
-theorem IsBigO.mul_atTop_rpow_natCast_of_isBigO_rpow {f g : ℕ → E}
-    (hf : f =O[atTop] fun n ↦ (n : ℝ) ^ a) (hg : g =O[atTop] fun n ↦ (n : ℝ) ^ b)
-    (h : a + b ≤ c) :
-    (f * g) =O[atTop] fun n ↦ (n : ℝ) ^ c := by
-  refine (hf.mul hg).trans (Eventually.isBigO ?_)
-  filter_upwards [eventually_ge_atTop 1] with t ht
-  replace ht : 1 ≤ (t : ℝ) := Nat.one_le_cast.mpr ht
-  rw [← Real.rpow_add (zero_lt_one.trans_le ht), Real.norm_of_nonneg (Real.rpow_nonneg
-    (zero_le_one.trans ht) (a + b))]
-  exact Real.rpow_le_rpow_of_exponent_le ht h
-
-end Asymptotics
 
 /-!
 ## Square roots of reals
