@@ -3,12 +3,9 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fangming Li, Jujian Zhang
 -/
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Order.KrullDimension
 import Mathlib.RingTheory.Ideal.Quotient.Defs
 import Mathlib.RingTheory.Spectrum.Prime.Basic
-import Mathlib.Order.KrullDimension
-import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 
 /-!
 # Krull dimensions of (commutative) rings
@@ -54,6 +51,10 @@ theorem ringKrullDim_quotient_le {R : Type*} [CommRing R] (I : Ideal R) :
     ringKrullDim (R ⧸ I) ≤ ringKrullDim R :=
   ringKrullDim_le_of_surjective _ Ideal.Quotient.mk_surjective
 
+instance {R : Type*} [CommRing R] (I : Ideal R) (n : ℕ)
+    [Ring.KrullDimLE n R] : Ring.KrullDimLE n (R ⧸ I) :=
+  ⟨(ringKrullDim_quotient_le I).trans KrullDimLE.krullDim_le⟩
+
 /-- If `R` and `S` are isomorphic, then `ringKrullDim R = ringKrullDim S`. -/
 theorem ringKrullDim_eq_of_ringEquiv (e : R ≃+* S) :
     ringKrullDim R = ringKrullDim S :=
@@ -61,13 +62,6 @@ theorem ringKrullDim_eq_of_ringEquiv (e : R ≃+* S) :
     (ringKrullDim_le_of_surjective e e.surjective)
 
 alias RingEquiv.ringKrullDim := ringKrullDim_eq_of_ringEquiv
-
-proof_wanted Polynomial.ringKrullDim_le :
-    ringKrullDim (Polynomial R) ≤ 2 * (ringKrullDim R) + 1
-
-proof_wanted MvPolynomial.fin_ringKrullDim_eq_add_of_isNoetherianRing
-    [IsNoetherianRing R] (n : ℕ) :
-    ringKrullDim (MvPolynomial (Fin n) R) = ringKrullDim R + n
 
 section Zero
 
@@ -95,6 +89,10 @@ lemma Ring.krullDimLE_one_iff : Ring.KrullDimLE 1 R ↔
     Subtype.forall, PrimeSpectrum.isMax_iff, PrimeSpectrum.isMin_iff]
   rfl
 
+lemma Ideal.mem_minimalPrimes_or_isMaximal [Ring.KrullDimLE 1 R] (I : Ideal R) [I.IsPrime] :
+    I ∈ minimalPrimes R ∨ I.IsMaximal :=
+  Ring.krullDimLE_one_iff.mp ‹_› I ‹_›
+
 lemma Ring.KrullDimLE.mk₁ (H : ∀ I : Ideal R, I.IsPrime → I ∈ minimalPrimes R ∨ I.IsMaximal) :
     Ring.KrullDimLE 1 R := by
   rwa [Ring.krullDimLE_one_iff]
@@ -120,5 +118,38 @@ lemma Ring.KrullDimLE.mk₁' (H : ∀ I : Ideal R, I ≠ ⊥ → I.IsPrime → I
   · rwa [Ring.krullDimLE_one_iff_of_isPrime_bot]
   suffices Ring.KrullDimLE 0 R from .mono zero_le_one _
   exact .mk₀ fun I hI ↦ H I (fun e ↦ hR (e ▸ hI)) hI
+
+lemma Ideal.IsPrime.isMaximal_of_ne_bot [IsDomain R] [Ring.KrullDimLE 1 R]
+    {I : Ideal R} (hI : I.IsPrime) (hI' : I ≠ ⊥) : I.IsMaximal :=
+  Ring.krullDimLE_one_iff_of_isDomain.mp ‹_› I hI' hI
+
+lemma Ideal.isMaximal_of_isPrime_of_ne_bot [IsDomain R] [Ring.KrullDimLE 1 R]
+    (I : Ideal R) [I.IsPrime] (hI' : I ≠ ⊥) : I.IsMaximal :=
+  Ideal.IsPrime.isMaximal_of_ne_bot ‹_› hI'
+
+theorem Ring.KrullDimLE.not_lt_lt [Ring.KrullDimLE 1 R] (p₀ p₁ p₂ : Ideal R)
+    [p₀.IsPrime] [p₁.IsPrime] [p₂.IsPrime] : ¬(p₀ < p₁ ∧ p₁ < p₂) := by
+  rintro ⟨H₁, H₂⟩
+  cases' p₁.mem_minimalPrimes_or_isMaximal with h h
+  · exact (h.2 ⟨‹p₀.IsPrime›, bot_le⟩ H₁.le).not_lt H₁
+  · exact ‹p₂.IsPrime›.ne_top (h.1.2 _ H₂)
+
+@[deprecated (since := "2025-02-05")] alias DimensionLEOne.not_lt_lt := Ring.KrullDimLE.not_lt_lt
+
+attribute [local instance] Ideal.bot_prime in
+theorem Ring.KrullDimLE.eq_bot_of_lt [Ring.KrullDimLE 1 R] [IsDomain R] (p P : Ideal R) [p.IsPrime]
+    [P.IsPrime] (hpP : p < P) : p = ⊥ :=
+  by_contra fun hp0 => not_lt_lt ⊥ p P ⟨Ne.bot_lt hp0, hpP⟩
+
+@[deprecated (since := "2025-02-05")]
+alias DimensionLEOne.eq_bot_of_lt := Ring.KrullDimLE.eq_bot_of_lt
+
+theorem Ring.KrullDimLE.le_iff_eq [Ring.KrullDimLE 1 R] [IsDomain R] {p P : Ideal R} [p.IsPrime]
+    [P.IsPrime] (hp0 : p ≠ ⊥) : p ≤ P ↔ p = P := by
+  rw [le_iff_eq_or_lt, or_iff_left]
+  exact fun h ↦ hp0 (eq_bot_of_lt _ _ h)
+
+@[deprecated (since := "2025-02-05")]
+alias Ring.DimensionLEOne.prime_le_prime_iff_eq := Ring.KrullDimLE.le_iff_eq
 
 end One

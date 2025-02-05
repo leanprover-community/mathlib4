@@ -3,6 +3,7 @@ Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
+import Mathlib.Algebra.Algebra.Pi
 import Mathlib.RingTheory.Localization.AsSubring
 import Mathlib.RingTheory.Spectrum.Maximal.Basic
 import Mathlib.RingTheory.Spectrum.Prime.Basic
@@ -266,3 +267,4 @@ theorem finite_of_toPiLocalization_surjective
   exact finite_of_toPiLocalization_pi_surjective surj.of_comp
 
 end PrimeSpectrum
+#min_imports

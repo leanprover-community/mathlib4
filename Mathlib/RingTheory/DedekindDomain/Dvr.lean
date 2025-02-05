@@ -5,6 +5,7 @@ Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio, Yongle Hu
 -/
 import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 import Mathlib.RingTheory.LocalProperties.IntegrallyClosed
+import Mathlib.RingTheory.KrullDimension.Localization
 
 /-!
 # Dedekind domains
@@ -56,26 +57,6 @@ class IsDedekindDomainDvr extends IsNoetherian A A : Prop where
   is_dvr_at_nonzero_prime : ∀ P ≠ (⊥ : Ideal A), ∀ _ : P.IsPrime,
     IsDiscreteValuationRing (Localization.AtPrime P)
 
-/-- Localizing a domain of Krull dimension `≤ 1` gives another ring of Krull dimension `≤ 1`.
-
-Note that the same proof can/should be generalized to preserving any Krull dimension,
-once we have a suitable definition.
--/
-theorem Ring.DimensionLEOne.localization {R : Type*} (Rₘ : Type*) [CommRing R] [IsDomain R]
-    [CommRing Rₘ] [Algebra R Rₘ] {M : Submonoid R} [IsLocalization M Rₘ] (hM : M ≤ R⁰)
-    [h : Ring.DimensionLEOne R] : Ring.DimensionLEOne Rₘ := ⟨by
-  intro p hp0 hpp
-  refine Ideal.isMaximal_def.mpr ⟨hpp.ne_top, Ideal.maximal_of_no_maximal fun P hpP hPm => ?_⟩
-  have hpP' : (⟨p, hpp⟩ : { p : Ideal Rₘ // p.IsPrime }) < ⟨P, hPm.isPrime⟩ := hpP
-  rw [← (IsLocalization.orderIsoOfPrime M Rₘ).lt_iff_lt] at hpP'
-  haveI : Ideal.IsPrime (Ideal.comap (algebraMap R Rₘ) p) :=
-    ((IsLocalization.orderIsoOfPrime M Rₘ) ⟨p, hpp⟩).2.1
-  haveI : Ideal.IsPrime (Ideal.comap (algebraMap R Rₘ) P) :=
-    ((IsLocalization.orderIsoOfPrime M Rₘ) ⟨P, hPm.isPrime⟩).2.1
-  have hlt : Ideal.comap (algebraMap R Rₘ) p < Ideal.comap (algebraMap R Rₘ) P := hpP'
-  refine h.not_lt_lt ⊥ (Ideal.comap _ _) (Ideal.comap _ _) ⟨?_, hlt⟩
-  exact IsLocalization.bot_lt_comap_prime _ _ hM _ hp0⟩
-
 /-- The localization of a Dedekind domain is a Dedekind domain. -/
 theorem IsLocalization.isDedekindDomain [IsDedekindDomain A] {M : Submonoid A} (hM : M ≤ A⁰)
     (Aₘ : Type*) [CommRing Aₘ] [IsDomain Aₘ] [Algebra A Aₘ] [IsLocalization M Aₘ] :
@@ -91,7 +72,7 @@ theorem IsLocalization.isDedekindDomain [IsDedekindDomain A] {M : Submonoid A} (
   refine (isDedekindDomain_iff _ (FractionRing A)).mpr ⟨?_, ?_, ?_, ?_⟩
   · infer_instance
   · exact IsLocalization.isNoetherianRing M _ inferInstance
-  · exact Ring.DimensionLEOne.localization Aₘ hM
+  · exact .of_isLocalization M _
   · intro x hx
     obtain ⟨⟨y, y_mem⟩, hy⟩ := hx.exists_multiple_integral_of_isLocalization M _
     obtain ⟨z, hz⟩ := (isIntegrallyClosed_iff _).mp IsDedekindRing.toIsIntegralClosure hy
@@ -144,8 +125,8 @@ instance IsDedekindDomain.isDedekindDomainDvr [IsDedekindDomain A] : IsDedekindD
     IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain A hP _
 
 instance IsDedekindDomainDvr.ring_dimensionLEOne [h : IsDedekindDomainDvr A] :
-    Ring.DimensionLEOne A where
-  maximalOfPrime := by
+    Ring.KrullDimLE 1 A := by
+    refine .mk₁' ?_
     intro p hp hpp
     rcases p.exists_le_maximal (Ideal.IsPrime.ne_top hpp) with ⟨q, hq, hpq⟩
     let f := (IsLocalization.orderIsoOfPrime q.primeCompl (Localization.AtPrime q)).symm

@@ -7,6 +7,7 @@ import Mathlib.Algebra.EuclideanDomain.Field
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Nonunits
+import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
 
 /-!
@@ -224,13 +225,11 @@ namespace IsPrime
 
 open Submodule.IsPrincipal Ideal
 
--- TODO -- for a non-ID one could perhaps prove that if p < q are prime then q maximal;
--- 0 isn't prime in a non-ID PIR but the Krull dimension is still <= 1.
--- The below result follows from this, but we could also use the below result to
--- prove this (quotient out by p).
-theorem to_maximal_ideal [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] {S : Ideal R}
-    [hpi : IsPrime S] (hS : S ≠ ⊥) : IsMaximal S :=
-  isMaximal_iff.2
+-- This is true for general commutative rings.
+-- See `RingTheory/PID/Quotient.lean`.
+instance (priority := 900) [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] :
+    Ring.KrullDimLE 1 R :=
+  .mk₁' fun S hS hpi ↦ isMaximal_iff.2
     ⟨(ne_top_iff_one S).1 hpi.1, by
       intro T x hST hxS hxT
       cases' (mem_iff_generator_dvd _).1 (hST <| generator_mem S) with z hz
@@ -244,6 +243,9 @@ theorem to_maximal_ideal [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] {S :
         have : generator S ≠ 0 := mt (eq_bot_iff_generator_eq_zero _).2 hS
         rw [← mul_one (generator S), hy, mul_left_comm, mul_right_inj' this] at hz
         exact hz.symm ▸ T.mul_mem_right _ (generator_mem T)⟩
+
+@[deprecated (since := "2025-02-05")]
+alias to_maximal_ideal := isMaximal_of_isPrime_of_ne_bot
 
 end IsPrime
 

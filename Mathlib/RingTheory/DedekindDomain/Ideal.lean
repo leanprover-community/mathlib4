@@ -295,10 +295,10 @@ theorem integrallyClosed : IsIntegrallyClosed A := by
 
 open Ring
 
-theorem dimensionLEOne : DimensionLEOne A := ⟨by
+theorem krullDimLE_one : Ring.KrullDimLE 1 A := by
   -- We're going to show that `P` is maximal because any (maximal) ideal `M`
   -- that is strictly larger would be `⊤`.
-  rintro P P_ne hP
+  refine .mk₁' fun P P_ne hP ↦ ?_
   refine Ideal.isMaximal_def.mpr ⟨hP.ne_top, fun M hM => ?_⟩
   -- We may assume `P` and `M` (as fractional ideals) are nonzero.
   have P'_ne : (P : FractionalIdeal A⁰ (FractionRing A)) ≠ 0 := coeIdeal_ne_zero.mpr P_ne
@@ -328,12 +328,12 @@ theorem dimensionLEOne : DimensionLEOne A := ⟨by
   obtain ⟨zy, hzy, zy_eq⟩ := (mem_coeIdeal A⁰).mp zy_mem
   rw [IsFractionRing.injective A (FractionRing A) zy_eq] at hzy
   -- But `P` is a prime ideal, so `z ∉ P` implies `y ∈ P`, as desired.
-  exact mem_coeIdeal_of_mem A⁰ (Or.resolve_left (hP.mem_or_mem hzy) hzp)⟩
+  exact mem_coeIdeal_of_mem A⁰ (Or.resolve_left (hP.mem_or_mem hzy) hzp)
 
 /-- Showing one side of the equivalence between the definitions
 `IsDedekindDomainInv` and `IsDedekindDomain` of Dedekind domains. -/
 theorem isDedekindDomain : IsDedekindDomain A :=
-  { h.isNoetherianRing, h.dimensionLEOne, h.integrallyClosed with }
+  { h.isNoetherianRing, h.krullDimLE_one, h.integrallyClosed with }
 
 end IsDedekindDomainInv
 
@@ -376,7 +376,7 @@ theorem exists_multiset_prod_cons_le_and_prod_not_le [IsDedekindDomain A] (hNF :
       rwa [Ne, ← Multiset.cons_erase hPZ', Multiset.prod_cons, Ideal.mul_eq_bot, not_or, ←
         this] at hprodZ
     -- By maximality of `P` and `M`, we have that `P ≤ M` implies `P = M`.
-    have hPM' := (P.isPrime.isMaximal hP0).eq_of_le hM.ne_top hPM
+    have hPM' := (P.isPrime.isMaximal_of_ne_bot hP0).eq_of_le hM.ne_top hPM
     subst hPM'
     -- By minimality of `Z`, erasing `P` from `Z` is exactly what we need.
     refine ⟨Z.erase P, ?_, ?_⟩
@@ -929,7 +929,8 @@ theorem Ideal.eq_prime_pow_mul_coprime [DecidableEq (Ideal T)] {I : Ideal T} (hI
   constructor
   · refine P.sup_multiset_prod_eq_top (fun p hpi ↦ ?_)
     have hp : Prime p := prime_of_normalized_factor p (filter_subset _ (normalizedFactors I) hpi)
-    exact hpm.coprime_of_ne ((isPrime_of_prime hp).isMaximal hp.ne_zero) (of_mem_filter hpi)
+    exact hpm.coprime_of_ne
+      ((isPrime_of_prime hp).isMaximal_of_ne_bot hp.ne_zero) (of_mem_filter hpi)
   · nth_rw 1 [← prod_normalizedFactors_eq_self hI, ← filter_add_not (P = ·) (normalizedFactors I)]
     rw [prod_add, pow_count]
 
@@ -962,7 +963,7 @@ variable (v : HeightOneSpectrum R) {R}
 
 namespace HeightOneSpectrum
 
-instance isMaximal : v.asIdeal.IsMaximal := v.isPrime.isMaximal v.ne_bot
+instance isMaximal : v.asIdeal.IsMaximal := v.isPrime.isMaximal_of_ne_bot v.ne_bot
 
 theorem prime : Prime v.asIdeal := Ideal.prime_of_isPrime v.ne_bot v.isPrime
 
@@ -974,7 +975,7 @@ theorem associates_irreducible : Irreducible <| Associates.mk v.asIdeal :=
 
 /-- An equivalence between the height one and maximal spectra for rings of Krull dimension 1. -/
 def equivMaximalSpectrum (hR : ¬IsField R) : HeightOneSpectrum R ≃ MaximalSpectrum R where
-  toFun v := ⟨v.asIdeal, v.isPrime.isMaximal v.ne_bot⟩
+  toFun v := ⟨v.asIdeal, v.isPrime.isMaximal_of_ne_bot v.ne_bot⟩
   invFun v :=
     ⟨v.asIdeal, v.isMaximal.isPrime, Ring.ne_bot_of_isMaximal_of_not_isField v.isMaximal hR⟩
   left_inv := fun ⟨_, _, _⟩ => rfl
@@ -997,7 +998,7 @@ theorem iInf_localization_eq_bot [Algebra R K] [hK : IsFractionRing R K] :
     exact fun _ => Algebra.mem_bot.mpr ⟨algebra_map_inv x, algebra_map_right_inv x⟩
   all_goals rw [← MaximalSpectrum.iInf_localization_eq_bot, Algebra.mem_iInf]
   · exact fun hx ⟨v, hv⟩ => hx ((equivMaximalSpectrum hR).symm ⟨v, hv⟩)
-  · exact fun hx ⟨v, hv, hbot⟩ => hx ⟨v, hv.isMaximal hbot⟩
+  · exact fun hx ⟨v, hv, hbot⟩ => hx ⟨v, hv.isMaximal_of_ne_bot hbot⟩
 
 end HeightOneSpectrum
 
@@ -1140,10 +1141,6 @@ open Ideal UniqueFactorizationMonoid
 
 variable {R}
 
-theorem Ring.DimensionLeOne.prime_le_prime_iff_eq [Ring.DimensionLEOne R] {P Q : Ideal R}
-    [hP : P.IsPrime] [hQ : Q.IsPrime] (hP0 : P ≠ ⊥) : P ≤ Q ↔ P = Q :=
-  ⟨(hP.isMaximal hP0).eq_of_le hQ.ne_top, Eq.le⟩
-
 theorem Ideal.coprime_of_no_prime_ge {I J : Ideal R} (h : ∀ P, I ≤ P → J ≤ P → ¬IsPrime P) :
     IsCoprime I J := by
   rw [isCoprime_iff_sup_eq]
@@ -1230,8 +1227,8 @@ theorem IsDedekindDomain.inf_prime_pow_eq_prod {ι : Type*} (s : Finset ι) (f :
   haveI := Ideal.isPrime_of_prime (prime b (Finset.mem_insert_of_mem hb))
   refine coprime a (Finset.mem_insert_self a s) b (Finset.mem_insert_of_mem hb) ?_ ?_
   · exact (ne_of_mem_of_not_mem hb ha).symm
-  · refine ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp (hPp.le_of_pow_le hPa)).trans
-      ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp (hPp.le_of_pow_le hPb)).symm
+  · refine ((Ring.KrullDimLE.le_iff_eq ?_).mp (hPp.le_of_pow_le hPa)).trans
+      ((Ring.KrullDimLE.le_iff_eq ?_).mp (hPp.le_of_pow_le hPb)).symm
     · exact (prime a (Finset.mem_insert_self a s)).ne_zero
     · exact (prime b (Finset.mem_insert_of_mem hb)).ne_zero
 
@@ -1250,9 +1247,9 @@ noncomputable def IsDedekindDomain.quotientEquivPiOfProdEq {ι : Type*} [Fintype
       intro P hPi hPj hPp
       haveI := Ideal.isPrime_of_prime (prime i)
       haveI := Ideal.isPrime_of_prime (prime j)
-      exact coprime hij <| ((Ring.DimensionLeOne.prime_le_prime_iff_eq (prime i).ne_zero).mp
+      exact coprime hij <| ((Ring.KrullDimLE.le_iff_eq (prime i).ne_zero).mp
         (hPp.le_of_pow_le hPi)).trans <| Eq.symm <|
-          (Ring.DimensionLeOne.prime_le_prime_iff_eq (prime j).ne_zero).mp (hPp.le_of_pow_le hPj)
+          (Ring.KrullDimLE.le_iff_eq (prime j).ne_zero).mp (hPp.le_of_pow_le hPj)
 
 open scoped Classical in
 /-- **Chinese remainder theorem** for a Dedekind domain: `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`,
