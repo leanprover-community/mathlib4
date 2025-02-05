@@ -548,7 +548,8 @@ theorem quotient_mk_comp_C_isIntegral_of_isJacobsonRing :
     refine fun p hp =>
       polynomial_mem_ideal_of_coeff_mem_ideal P p fun n => Quotient.eq_zero_iff_mem.mp ?_
     simpa only [f, coeff_map, coe_mapRingHom] using (Polynomial.ext_iff.mp hp) n
-  refine RingHom.IsIntegral.tower_bot _ _ (injective_quotient_le_comap_map P) ?_
+  refine RingHom.IsIntegral.tower_bot
+    (T := (R ⧸ comap C P)[X] ⧸ _) _ _ (injective_quotient_le_comap_map P) ?_
   rw [← quotient_mk_maps_eq]
   refine ((Ideal.Quotient.mk P').isIntegral_of_surjective Quotient.mk_surjective).trans _ _ ?_
   have : IsMaximal (Ideal.map (mapRingHom (Ideal.Quotient.mk (comap C P))) P) :=
@@ -702,11 +703,8 @@ lemma finite_of_finite_type_of_isJacobsonRing (R S : Type*) [CommRing R] [Field 
   obtain ⟨ι, hι, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial'.mp ‹_›
   have : (algebraMap R S).IsIntegral := by
     rw [← f.comp_algebraMap]
-    #adaptation_note
-    /--
-    After https://github.com/leanprover/lean4/pull/6024
-    we needed to write `f.toRingHom` instead of just `f`, to avoid unification issues.
-    -/
+    #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+    we needed to write `f.toRingHom` instead of just `f`, to avoid unification issues. -/
     exact MvPolynomial.comp_C_integral_of_surjective_of_isJacobsonRing f.toRingHom hf
   have : Algebra.IsIntegral R S := Algebra.isIntegral_def.mpr this
   exact Algebra.IsIntegral.finite

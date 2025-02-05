@@ -309,8 +309,8 @@ theorem continuousNeg (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpac
 variable (R) in
 theorem topologicalAddGroup (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
     [IsModuleTopology R C] : TopologicalAddGroup C where
-      continuous_add := (IsModuleTopology.toContinuousAdd R C).1
-      continuous_neg := continuous_neg R C
+  continuous_add := (IsModuleTopology.toContinuousAdd R C).1
+  continuous_neg := continuous_neg R C
 
 @[fun_prop, continuity]
 theorem continuous_of_ringHom {R A B} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B]
@@ -448,7 +448,7 @@ instance instProd : IsModuleTopology R (M × N) := by
   let i₂ : N →ₗ[R] P := LinearMap.inr R M N
   rw [show (i : M × N → P) =
        (fun abcd ↦ abcd.1 + abcd.2 : P × P → P) ∘
-       (fun ab ↦ (i₁ ab.1,i₂ ab.2)) by
+       (fun ab ↦ (i₁ ab.1, i₂ ab.2)) by
        ext ⟨a, b⟩ <;> aesop]
   -- and these maps are all continuous, hence `i` is too
   fun_prop
