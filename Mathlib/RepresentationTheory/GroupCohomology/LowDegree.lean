@@ -106,7 +106,7 @@ lemma dZero_eq_zero_iff (x : A) : dZero A x = 0 ↔ x ∈ A.ρ.invariants :=
 
 @[simp] theorem dZero_eq_zero [A.ρ.IsTrivial] : dZero A = 0 := by
   ext
-  simp
+  simp only [dZero_apply, A.ρ.isTrivial_apply, sub_self, LinearMap.zero_apply, Pi.zero_apply]
 
 /-- The 1st differential in the complex of inhomogeneous cochains of `A : Rep k G`, as a
 `k`-linear map `Fun(G, A) → Fun(G × G, A)`. It sends
@@ -126,10 +126,10 @@ def dTwo : (G × G → A) →ₗ[k] G × G × G → A where
     A.ρ g.1 (f (g.2.1, g.2.2)) - f (g.1 * g.2.1, g.2.2) + f (g.1, g.2.1 * g.2.2) - f (g.1, g.2.1)
   map_add' x y :=
     funext fun g => by
-      dsimp only [Pi.add_apply]
+      dsimp
       rw [map_add, add_sub_add_comm (A.ρ _ _), add_sub_assoc, add_sub_add_comm, add_add_add_comm,
         add_sub_assoc, add_sub_assoc]
-  map_smul' r x := funext fun g => by simp [smul_add, smul_sub]
+  map_smul' r x := funext fun g => by dsimp; simp only [map_smul, smul_add, smul_sub]
 
 /-- Let `C(G, A)` denote the complex of inhomogeneous cochains of `A : Rep k G`. This lemma
 says `dZero` gives a simpler expression for the 0th differential: that is, the following
@@ -149,14 +149,6 @@ theorem dZero_comp_eq : (zeroCochainsLequiv A).toModuleIso.hom ≫ ModuleCat.ofH
   ext x y
   simp [inhomogeneousCochains.d_def, zeroCochainsLequiv, oneCochainsLequiv,
     inhomogeneousCochains.d_apply, Unique.eq_default (α := Fin 0 → G), sub_eq_add_neg]
-
-lemma _root_.Fin.cons_zero_eq_uniqueElim {α : Type*} (f : Fin 0 → α) (x : α) :
-    Fin.cons x f = uniqueElim (ι := Fin 1) (α := fun _ => α) x :=
-  List.ofFn_inj.1 rfl
-
-lemma _root_.Fin.uniqueElim_eq {α : Type*} (f : Fin 1 → α) :
-    uniqueElim (ι := Fin 1) (α := fun _ => α) (f 0) = f :=
-  List.ofFn_inj.1 rfl
 
 /-- Let `C(G, A)` denote the complex of inhomogeneous cochains of `A : Rep k G`. This lemma
 says `dOne` gives a simpler expression for the 1st differential: that is, the following
@@ -213,9 +205,7 @@ theorem dOne_comp_dZero : dOne A ∘ₗ dZero A = 0 := by
 theorem dTwo_comp_dOne : dTwo A ∘ₗ dOne A = 0 := by
   apply_fun ModuleCat.ofHom using (fun _ _ h => ModuleCat.hom_ext_iff.1 h)
   simp [(Iso.eq_inv_comp _).2 (dTwo_comp_eq A), (Iso.eq_inv_comp _).2 (dOne_comp_eq A),
-    ModuleCat.ofHom_hom, ModuleCat.hom_ofHom, Category.assoc, Iso.hom_inv_id_assoc,
-    HomologicalComplex.d_comp_d_assoc, zero_comp, comp_zero, ModuleCat.hom_zero,
-    ModuleCat.hom_ext_iff]
+    ModuleCat.hom_ext_iff, -LinearEquiv.toModuleIso_hom, -LinearEquiv.toModuleIso_inv]
 
 end Differentials
 
@@ -845,7 +835,8 @@ theorem H1LequivOfIsTrivial_comp_H1π [A.ρ.IsTrivial] :
 
 @[simp] theorem H1LequivOfIsTrivial_H1π_apply_apply
     [A.ρ.IsTrivial] (f : oneCocycles A) (x : Additive G) :
-    H1LequivOfIsTrivial A (H1π A f) x = f.1 (Additive.toMul x) := rfl
+    H1LequivOfIsTrivial A (Submodule.Quotient.mk f) x = f.1 (Additive.toMul x) := by
+  rfl
 
 @[simp] theorem H1LequivOfIsTrivial_symm_apply [A.ρ.IsTrivial] (f : Additive G →+ A) :
     (H1LequivOfIsTrivial A).symm f = H1π A ((oneCocyclesLequivOfIsTrivial A).symm f) :=
