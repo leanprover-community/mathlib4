@@ -28,7 +28,7 @@ variable {α : Type*} {s x y z : α}
 open Set
 
 /-- A `Partition` of an element `s` of a `CompleteLattice` is a collection of
-independent nonempty parts whose supremum is `s`.  -/
+independent nontrivial elements whose supremum is `s`.  -/
 structure Partition [CompleteLattice α] (s : α) where
   /-- The collection of parts-/
   parts : Set α
@@ -86,6 +86,7 @@ lemma le_of_mem (P : Partition s) (hx : x ∈ P) : x ≤ s :=
 lemma parts_nonempty (P : Partition s) (hs : s ≠ ⊥) : (P : Set α).Nonempty :=
   nonempty_iff_ne_empty.2 fun hP ↦ by simp [← P.sSup_eq, hP, sSup_empty] at hs
 
+/-- Convert a `Partition s` into a `Partition t` via an equality `s = t`. -/
 @[simps]
 protected def copy {t : α} (P : Partition s) (hst : s = t) : Partition t where
   parts := P.parts
