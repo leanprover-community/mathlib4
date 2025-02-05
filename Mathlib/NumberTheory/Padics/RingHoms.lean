@@ -288,9 +288,9 @@ theorem ker_toZMod : RingHom.ker (toZMod : ℤ_[p] →+* ZMod p) = maximalIdeal 
     · apply sub_zmodRepr_mem
 
 /-- The equivalence between the residue field of the `p`-adic integers and `ℤ/pℤ` -/
-def residueField : IsLocalRing.ResidueField ℤ_[p] ≃+* ZMod p := by
-  exact_mod_cast (@PadicInt.ker_toZMod p _) ▸ RingHom.quotientKerEquivOfSurjective
-    (ZMod.ringHom_surjective PadicInt.toZMod)
+def residueField : IsLocalRing.ResidueField ℤ_[p] ≃+* ZMod p :=
+  (Ideal.quotEquivOfEq PadicInt.ker_toZMod.symm).trans <|
+    RingHom.quotientKerEquivOfSurjective (ZMod.ringHom_surjective PadicInt.toZMod)
 
 open scoped Classical in
 /-- `appr n x` gives a value `v : ℕ` such that `x` and `↑v : ℤ_p` are congruent mod `p^n`.
@@ -445,9 +445,6 @@ theorem denseRange_natCast : DenseRange (Nat.cast : ℕ → ℤ_[p]) := by
   rw [norm_le_pow_iff_mem_span_pow]
   apply appr_spec
 
-@[deprecated (since := "2024-04-17")]
-alias denseRange_nat_cast := denseRange_natCast
-
 theorem denseRange_intCast : DenseRange (Int.cast : ℤ → ℤ_[p]) := by
   intro x
   refine DenseRange.induction_on denseRange_natCast x ?_ ?_
@@ -455,9 +452,6 @@ theorem denseRange_intCast : DenseRange (Int.cast : ℤ → ℤ_[p]) := by
   · intro a
     apply subset_closure
     exact Set.mem_range_self _
-
-@[deprecated (since := "2024-04-17")]
-alias denseRange_int_cast := denseRange_intCast
 
 end RingHoms
 

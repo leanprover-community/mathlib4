@@ -173,10 +173,6 @@ theorem _root_.Measurable.setLIntegral_kernel_prod_right {f : α → β → ℝ�
     Measurable fun a => ∫⁻ b in s, f a b ∂κ a := by
   simp_rw [← lintegral_restrict κ hs]; exact hf.lintegral_kernel_prod_right
 
-@[deprecated (since := "2024-06-29")]
-alias _root_.Measurable.set_lintegral_kernel_prod_right :=
-  _root_.Measurable.setLIntegral_kernel_prod_right
-
 theorem _root_.Measurable.lintegral_kernel_prod_left' {f : β × α → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun y => ∫⁻ x, f (x, y) ∂κ y :=
   (measurable_swap_iff.mpr hf).lintegral_kernel_prod_right'
@@ -190,10 +186,6 @@ theorem _root_.Measurable.setLIntegral_kernel_prod_left {f : β → α → ℝ�
     Measurable fun b => ∫⁻ a in s, f a b ∂κ b := by
   simp_rw [← lintegral_restrict κ hs]; exact hf.lintegral_kernel_prod_left
 
-@[deprecated (since := "2024-06-29")]
-alias _root_.Measurable.set_lintegral_kernel_prod_left :=
-  _root_.Measurable.setLIntegral_kernel_prod_left
-
 theorem _root_.Measurable.lintegral_kernel {f : β → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun a => ∫⁻ b, f b ∂κ a :=
   Measurable.lintegral_kernel_prod_right (hf.comp measurable_snd)
@@ -203,9 +195,6 @@ theorem _root_.Measurable.setLIntegral_kernel {f : β → ℝ≥0∞} (hf : Meas
   -- Porting note: was term mode proof (`Function.comp` reducibility)
   refine Measurable.setLIntegral_kernel_prod_right ?_ hs
   convert hf.comp measurable_snd
-
-@[deprecated (since := "2024-06-29")]
-alias _root_.Measurable.set_lintegral_kernel := _root_.Measurable.setLIntegral_kernel
 
 end Lintegral
 

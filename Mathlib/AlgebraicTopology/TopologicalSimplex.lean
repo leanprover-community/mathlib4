@@ -66,18 +66,18 @@ theorem continuous_toTopMap {x y : SimplexCategory} (f : x ⟶ y) : Continuous (
 @[simps obj map]
 def toTop : SimplexCategory ⥤ TopCat where
   obj x := TopCat.of x.toTopObj
-  map f := ⟨toTopMap f, by continuity⟩
+  map f := TopCat.ofHom ⟨toTopMap f, by continuity⟩
   map_id := by
     classical
     intro Δ
-    ext f
+    ext f : 1
     apply toTopObj.ext
     funext i
     change (Finset.univ.filter (· = i)).sum _ = _
     simp [Finset.sum_filter, CategoryTheory.id_apply]
   map_comp := fun f g => by
     classical
-    ext h
+    ext h : 1
     apply toTopObj.ext
     funext i
     dsimp

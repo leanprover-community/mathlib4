@@ -8,6 +8,7 @@ import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Composition
 import Mathlib.Data.Matrix.DMatrix
 import Mathlib.RingTheory.MatrixAlgebra
+import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 # Algebra isomorphism between matrices of polynomials and polynomials of matrices
@@ -315,3 +316,21 @@ lemma evalRingHom_mapMatrix_comp_compRingEquiv {m} [Fintype m] [DecidableEq m] :
     (evalRingHom 0).mapMatrix.comp (compRingEquiv m n R[X]) =
       (compRingEquiv m n R).toRingHom.comp (evalRingHom 0).mapMatrix.mapMatrix := by
   ext; simp
+
+/-- If `S` is an `R`-algebra, then `S[X]` is an `R[X]` algebra.
+This gives a diamond for `Algebra R[X] R[X][X]`, so this is not a global instance. -/
+@[reducible] def Polynomial.algebra [Algebra R S] :
+    Algebra R[X] S[X] := (mapRingHom (algebraMap R S)).toAlgebra
+
+attribute [local instance] Polynomial.algebra
+
+instance [Algebra R S] : IsScalarTower R R[X] S[X] := .of_algebraMap_eq' (mapRingHom_comp_C _).symm
+
+instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] :
+    Algebra.IsPushout R S R[X] S[X] := by
+  constructor
+  let e : S[X] ≃ₐ[S] TensorProduct R S R[X] := { __ := polyEquivTensor R S, commutes' := by simp }
+  convert (TensorProduct.isBaseChange R R[X] S).comp (.ofEquiv e.symm.toLinearEquiv) using 1
+  ext : 2
+  refine Eq.trans ?_ (polyEquivTensor_symm_apply_tmul R S _ _).symm
+  simp [RingHom.algebraMap_toAlgebra]
