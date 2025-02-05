@@ -533,7 +533,7 @@ protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] :
 theorem map_dvd (f : R →+* S) {x y : R[X]} : x ∣ y → x.map f ∣ y.map f :=
   (mapRingHom f).map_dvd
 
-lemma mapRingHom_comp_C {R S} [CommRing R] [CommRing S] (f : R →+* S) :
+lemma mapRingHom_comp_C {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S) :
     (mapRingHom f).comp C = C.comp f := by ext; simp
 
 theorem eval₂_eq_eval_map {x : S} : p.eval₂ f x = (p.map f).eval x := by

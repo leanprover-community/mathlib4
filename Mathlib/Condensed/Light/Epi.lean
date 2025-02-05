@@ -88,7 +88,7 @@ lemma epi_π_app_zero_of_epi : Epi (c.π.app ⟨0⟩) := by
   change Epi (((forget R).mapCone c).π.app ⟨0⟩)
   apply coherentTopology.epi_π_app_zero_of_epi
   · simp only [LightProfinite.effectiveEpi_iff_surjective]
-    exact fun _ h ↦ Concrete.surjective_π_app_zero_of_surjective_map (limit.isLimit _) h
+    exact fun x h ↦ Concrete.surjective_π_app_zero_of_surjective_map (limit.isLimit x) h
   · have := (freeForgetAdjunction R).isRightAdjoint
     exact isLimitOfPreserves _ hc
   · exact fun _ ↦ (forget R).map_epi _

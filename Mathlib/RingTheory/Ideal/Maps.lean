@@ -102,6 +102,9 @@ theorem map_le_comap_of_inverse [RingHomClass G S R] (g : G) (I : Ideal R)
 
 variable [RingHomClass F R S]
 
+instance (priority := low) [K.IsTwoSided] : (comap f K).IsTwoSided :=
+  ⟨fun b ha ↦ by rw [mem_comap, map_mul]; exact mul_mem_right _ _ ha⟩
+
 /-- The `Ideal` version of `Set.preimage_subset_image_of_inverse`. -/
 theorem comap_le_map_of_inverse (g : G) (I : Ideal S) (h : Function.LeftInverse g f) :
     I.comap f ≤ I.map g :=
@@ -320,6 +323,15 @@ theorem map_comap_eq_self_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass
 theorem map_eq_submodule_map (f : R →+* S) [h : RingHomSurjective f] (I : Ideal R) :
     I.map f = Submodule.map f.toSemilinearMap I :=
   Submodule.ext fun _ => mem_map_iff_of_surjective f h.1
+
+instance (priority := low) (f : R →+* S) [RingHomSurjective f] (I : Ideal R) [I.IsTwoSided] :
+    (I.map f).IsTwoSided where
+  mul_mem_of_left b ha := by
+    rw [map_eq_submodule_map] at ha ⊢
+    obtain ⟨a, ha, rfl⟩ := ha
+    obtain ⟨b, rfl⟩ := f.surjective b
+    rw [RingHom.coe_toSemilinearMap, ← map_mul]
+    exact ⟨_, I.mul_mem_right _ ha, rfl⟩
 
 open Function in
 theorem IsMaximal.comap_piEvalRingHom {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R i)]
@@ -602,6 +614,8 @@ variable (f : F) (g : G)
 def ker : Ideal R :=
   Ideal.comap f ⊥
 
+instance (priority := low) : (ker f).IsTwoSided := inferInstanceAs (Ideal.comap f ⊥).IsTwoSided
+
 variable {f} in
 /-- An element is in the kernel if and only if it maps to zero. -/
 @[simp] theorem mem_ker {r} : r ∈ ker f ↔ f r = 0 := by rw [ker, Ideal.mem_comap, Submodule.mem_bot]
@@ -706,6 +720,9 @@ def Module.annihilator : Ideal R := RingHom.ker (Module.toAddMonoidEnd R M)
 
 theorem Module.mem_annihilator {r} : r ∈ Module.annihilator R M ↔ ∀ m : M, r • m = 0 :=
   ⟨fun h ↦ (congr($h ·)), (AddMonoidHom.ext ·)⟩
+
+instance (priority := low) : (Module.annihilator R M).IsTwoSided :=
+  inferInstanceAs (RingHom.ker _).IsTwoSided
 
 theorem LinearMap.annihilator_le_of_injective (f : M →ₗ[R] M') (hf : Function.Injective f) :
     Module.annihilator R M' ≤ Module.annihilator R M := fun x h ↦ by

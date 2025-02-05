@@ -31,7 +31,7 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 
 universe u
 
-variable (K A L : Type u) [Field K] [Field L] [CommRing A] [Algebra K A] [Algebra K L]
+variable (K A L : Type*) [Field K] [Field L] [CommRing A] [Algebra K A] [Algebra K L]
 
 open Algebra Polynomial
 
