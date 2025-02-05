@@ -158,7 +158,6 @@ noncomputable abbrev inhomogeneousChains [DecidableEq G] :
 
 open inhomogeneousChains
 
-@[simp]
 theorem inhomogeneousChains.d_def [DecidableEq G] (n : ℕ) :
     (inhomogeneousChains A).d (n + 1) n = ModuleCat.ofHom (d A n) := by
   simp [inhomogeneousChains]
