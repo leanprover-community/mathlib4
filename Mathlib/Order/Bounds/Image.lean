@@ -488,11 +488,8 @@ lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
   apply upperBounds_eq_ofSubset (image_mono (subset_fst_image_times_snd_image d))
   intro c ⟨x,⟨hx1, hx2⟩⟩
   obtain ⟨q,hq⟩ := directed_product hd x hx1
-  use (f q)
-  constructor
-  · exact ⟨q,And.symm (And.imp_left (fun a ↦ rfl) (id (And.symm hq)))⟩
-  · rw [← hx2]
-    exact hf hq.2
+  exact ⟨(f q), ⟨⟨q,And.symm (And.imp_left (fun a ↦ rfl) (id (And.symm hq)))⟩,
+    le_of_eq_of_le hx2.symm (hf hq.2)⟩⟩
 
 lemma Prod.IsLub {f : α × β → γ} (hf : Monotone f)
     {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) (u : γ) :
