@@ -181,12 +181,12 @@ theorem existsUnique_gluing' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover
   obtain ⟨gl, gl_spec, gl_uniq⟩ := F.existsUnique_gluing U sf h
   refine ⟨F.1.map (eqToHom V_eq_supr_U).op gl, ?_, ?_⟩
   · intro i
-    rw [← comp_apply, ← F.1.map_comp]
+    rw [← CategoryTheory.comp_apply, ← F.1.map_comp]
     exact gl_spec i
   · intro gl' gl'_spec
     convert congr_arg _ (gl_uniq (F.1.map (eqToHom V_eq_supr_U.symm).op gl') fun i => _) <;>
-      rw [← comp_apply, ← F.1.map_comp]
-    · rw [eqToHom_op, eqToHom_op, eqToHom_trans, eqToHom_refl, F.1.map_id, id_apply]
+      rw [← CategoryTheory.comp_apply, ← F.1.map_comp]
+    · rw [eqToHom_op, eqToHom_op, eqToHom_trans, eqToHom_refl, F.1.map_id, CategoryTheory.id_apply]
     · convert gl'_spec i
 
 @[ext]
@@ -195,7 +195,7 @@ theorem eq_of_locally_eq (s t : F.1.obj (op (iSup U)))
   let sf : ∀ i : ι, F.1.obj (op (U i)) := fun i => F.1.map (Opens.leSupr U i).op s
   have sf_compatible : IsCompatible _ U sf := by
     intro i j
-    simp_rw [sf, ← comp_apply, ← F.1.map_comp]
+    simp_rw [sf, ← CategoryTheory.comp_apply, ← F.1.map_comp]
     rfl
   obtain ⟨gl, -, gl_uniq⟩ := F.existsUnique_gluing U sf sf_compatible
   trans gl
@@ -215,11 +215,11 @@ theorem eq_of_locally_eq' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover : 
   have V_eq_supr_U : V = iSup U := le_antisymm hcover (iSup_le fun i => (iUV i).le)
   suffices F.1.map (eqToHom V_eq_supr_U.symm).op s = F.1.map (eqToHom V_eq_supr_U.symm).op t by
     convert congr_arg (F.1.map (eqToHom V_eq_supr_U).op) this <;>
-    rw [← comp_apply, ← F.1.map_comp, eqToHom_op, eqToHom_op, eqToHom_trans, eqToHom_refl,
-      F.1.map_id, id_apply]
+    rw [← CategoryTheory.comp_apply, ← F.1.map_comp, eqToHom_op, eqToHom_op, eqToHom_trans,
+      eqToHom_refl, F.1.map_id, CategoryTheory.id_apply]
   apply eq_of_locally_eq
   intro i
-  rw [← comp_apply, ← comp_apply, ← F.1.map_comp]
+  rw [← CategoryTheory.comp_apply, ← CategoryTheory.comp_apply, ← F.1.map_comp]
   convert h i
 
 theorem eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : U₂ ⟶ V) (hcover : V ≤ U₁ ⊔ U₂)
