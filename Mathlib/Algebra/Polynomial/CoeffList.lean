@@ -61,7 +61,7 @@ theorem coeffList_eq_nil {P : R[X]} : P.coeffList = [] ↔ P = 0 := by
 theorem coeffList_C {x : R} (h : x ≠ 0) : (C x).coeffList = [x] := by
   simp [coeffList, h, List.range_succ, degree_eq_natDegree (C_ne_zero.mpr h)]
 
-/-- coeffList always starts with leadingCoeff -/
+/-- coeffList starts with leadingCoeff -/
 theorem coeffList_eq_cons_leadingCoeff (h : P ≠ 0) :
     ∃ ls, P.coeffList = P.leadingCoeff :: ls := by
   simp [coeffList, List.range_succ, withBotSucc_degree_eq_natDegree_add_one h]
@@ -87,7 +87,6 @@ theorem length_coeffList_ite [DecidableEq R] (P : R[X]) :
     P.coeffList.length = if P = 0 then 0 else P.natDegree + 1 := by
   by_cases h : P = 0 <;> simp [h, coeffList, withBotSucc_degree_eq_natDegree_add_one]
 
-/-- If the `P.nextCoeff ≠ 0`, then the tail of `P.coeffList` is `coeffList P.eraseLead`.-/
 theorem leadingCoeff_cons_eraseLead (h : P.nextCoeff ≠ 0) :
     P.leadingCoeff :: P.eraseLead.coeffList = P.coeffList := by
   have h₂ := ne_zero_of_natDegree_gt (natDegree_pos_of_nextCoeff_ne_zero h)
