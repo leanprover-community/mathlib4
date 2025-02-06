@@ -7,4 +7,4 @@ info: 'MathlibTest.TransImports' has at most 1000 transitive imports
 [Lean.Elab.InfoTree, Lean.Elab.InfoTree.InlayHints, Lean.Elab.InfoTree.Main, Lean.Elab.InfoTree.Types]
 -/
 #guard_msgs in
-#trans_imports "Lean.Elab.I" at_most 1000
+#trans_imports "Mathlib.Tactic.Linter.H" at_most 1000
