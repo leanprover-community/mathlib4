@@ -72,7 +72,7 @@ section AddCommMonoid
 variable [AddCommMonoid M]
 
 lemma translate_sum_right (a : G) (f : ι → G → M) (s : Finset ι) :
-    τ a (∑ i in s, f i) = ∑ i in s, τ a (f i) := by ext; simp
+    τ a (∑ i ∈ s, f i) = ∑ i ∈ s, τ a (f i) := by ext; simp
 
 lemma sum_translate [Fintype G] (a : G) (f : G → M) : ∑ b, τ a f b = ∑ b, f b :=
   Fintype.sum_equiv (Equiv.subRight _) _ _ fun _ ↦ rfl
@@ -90,4 +90,4 @@ end AddCommGroup
 variable [CommMonoid M]
 
 lemma translate_prod_right (a : G) (f : ι → G → M) (s : Finset ι) :
-    τ a (∏ i in s, f i) = ∏ i in s, τ a (f i) := by ext; simp
+    τ a (∏ i ∈ s, f i) = ∏ i ∈ s, τ a (f i) := by ext; simp
