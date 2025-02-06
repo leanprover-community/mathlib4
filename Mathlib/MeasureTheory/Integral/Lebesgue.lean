@@ -1524,8 +1524,8 @@ theorem lintegral_count [MeasurableSingletonClass α] (f : α → ℝ≥0∞) :
   exact funext fun a => lintegral_dirac a f
 
 @[deprecated ENNReal.tsum_const (since := "2025-02-06")]
-theorem _root_.ENNReal.tsum_const_eq [MeasurableSingletonClass α] (c : ℝ≥0∞) :
-    ∑' _ : α, c = c * Measure.count (univ : Set α) := by simp [mul_comm]
+lemma _root_.ENNReal.tsum_const_eq (c : ℝ≥0∞) : ∑' _ : α, c = c * count (univ : Set α) := by
+  simp [mul_comm]
 
 /-- Markov's inequality for the counting measure with hypothesis using `tsum` in `ℝ≥0∞`. -/
 theorem _root_.ENNReal.count_const_le_le_of_tsum_le [MeasurableSingletonClass α] {a : α → ℝ≥0∞}
