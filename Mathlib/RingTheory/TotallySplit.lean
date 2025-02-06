@@ -81,6 +81,24 @@ instance IsLocalizedModule.prodMap {R M N M' N' : Type*} [CommSemiring R] (S : S
   rw [this]
   infer_instance
 
+instance IsLocalizedModule.pi {R ι : Type*} [Finite ι] [CommSemiring R] (S : Submonoid R)
+    {M M' : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, AddCommMonoid (M' i)]
+    [∀ i, Module R (M i)] [∀ i, Module R (M' i)]
+    (f : ∀ i, M i →ₗ[R] M' i) [∀ i, IsLocalizedModule S (f i)] :
+    IsLocalizedModule S (LinearMap.pi fun i ↦ f i ∘ₗ LinearMap.proj i) := by
+  classical
+  cases nonempty_fintype ι
+  let e₃ : Localization S ⊗[R] (Π i, M i) ≃ₗ[R] Π i, M' i :=
+    TensorProduct.piRight R R _ M ≪≫ₗ LinearEquiv.piCongrRight
+      (fun i ↦ (isBaseChange S (Localization S)
+        (LocalizedModule.mkLinearMap S _)).equiv.restrictScalars R ≪≫ₗ iso S (f i))
+  have : ((LinearMap.pi fun i ↦ f i ∘ₗ LinearMap.proj i)) =
+      e₃ ∘ₗ (TensorProduct.mk R (Localization S) (Π i, M i) 1) := by
+    ext x
+    simp [e₃, IsBaseChange.equiv_tmul]
+  rw [this]
+  infer_instance
+
 @[simps!]
 def LinearEquiv.extendScalarsOfIsLocalization
     {R : Type*} [CommSemiring R] (S : Submonoid R) (A : Type*)
@@ -134,6 +152,9 @@ lemma AlgEquiv.default_apply {R S T : Type*} [CommSemiring R] [Semiring S] [Semi
     (default : S ≃ₐ[R] T) x = 0 :=
   rfl
 
+instance (R : Type u) [CommRing R] : Algebra.Etale R R :=
+    Algebra.instEtaleOfIsStandardSmoothOfRelativeDimensionOfNatNat.{u, 0, 0}
+
 instance (R : Type u) [CommRing R] (n : Type) [Finite n] :
     Algebra.Etale R (n → R) where
   formallyEtale :=
@@ -155,18 +176,34 @@ instance (R S : Type u) [CommRing R] [CommRing S] [Algebra R S] [Algebra.Smooth 
 
 instance (R S : Type u) [CommRing R] [CommRing S] :
     letI : Algebra (R × S) S := (RingHom.snd R S).toAlgebra
-    Algebra.Etale (R × S) S :=
-  sorry
+    Algebra.Etale (R × S) S := by
+  algebraize [RingHom.snd R S]
+  exact Algebra.Etale.of_isLocalization_Away (0, 1)
 
 instance (R S : Type u) [CommRing R] [CommRing S] :
     letI : Algebra (R × S) R := (RingHom.fst R S).toAlgebra
-    Algebra.Etale (R × S) R :=
-  sorry
+    Algebra.Etale (R × S) R := by
+  algebraize [RingHom.fst R S]
+  exact Algebra.Etale.of_isLocalization_Away (1, 0)
 
-lemma exists_split_of_formallyUnramified (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]
-    [Algebra.EssFiniteType R S] [Algebra.FormallyUnramified R S] :
-    ∃ (T : Type u) (_ : CommRing T) (_ : Algebra S T), Nonempty (S ⊗[R] S ≃ₐ[S] S × T) :=
-  sorry
+lemma RingHom.prod_bijective_of_isIdempotentElem {R : Type*} [CommRing R]
+    {e f : R} (he : IsIdempotentElem e) (hf : IsIdempotentElem f) (hef₁ : (1 - e) * (1 - f) = 0)
+    (hef₂ : e * f = 0) :
+    Function.Bijective ((Ideal.Quotient.mk <| Ideal.span {e}).prod
+      (Ideal.Quotient.mk <| Ideal.span {f})) := by
+  let o (i : Fin 2) : R := match i with
+    | 0 => e
+    | 1 => f
+  show Function.Bijective
+    (piFinTwoEquiv _ ∘ Pi.ringHom (fun i : Fin 2 ↦ Ideal.Quotient.mk (Ideal.span {o i})))
+  rw [(Equiv.bijective _).of_comp_iff']
+  simp only [o]
+  apply bijective_pi_of_isIdempotentElem
+  · intro i
+    fin_cases i <;> simpa [o]
+  · intro i j hij
+    fin_cases i <;> fin_cases j <;> simp at hij ⊢ <;> simpa [mul_comm]
+  · simpa
 
 -- in PR
 def TensorProduct.AlgebraTensorModule.prodRight (R S M N P : Type*)
@@ -222,21 +259,21 @@ def AlgEquiv.funUnique (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
   AlgEquiv.ofAlgHom (Pi.evalAlgHom R (fun _ ↦ S) default) (Pi.constAlgHom R ι S)
     (by ext; simp) (by ext f i; simp [Unique.default_eq i])
 
---def AlgEquiv.prodPiEquiv' (R α β : Type*) [CommRing R]
---    (A : α → Type u) (B : β → Type u) [∀ a, CommRing (A a)] [∀ a, Algebra R (A a)]
---    [∀ b, CommRing (B b)] [∀ b, Algebra R (B b)] :
---    (Π a, A a × Π b, B b) ≃ₐ[R] (Π x : α ⊕ β, Sum.elim A B x) :=
---  sorry
-
 def Algebra.prodPiEquiv (R A α β : Type*) [CommRing R] [CommRing A] [Algebra R A] :
     (α ⊕ β → A) ≃ₐ[R] (α → A) × (β → A) :=
   AlgEquiv.ofLinearEquiv (LinearEquiv.sumArrowLequivProdArrow α β R A) rfl <| fun x y ↦ by
     ext <;> simp
 
-def AlgEquiv.piCongrLeft {ι ι' R : Type*} (S : ι → Type*) (e : ι' ≃ ι)
+def AlgEquiv.piCongrLeft' {ι ι' : Type*} (R : Type*) (S : ι → Type*) (e : ι ≃ ι')
+    [CommSemiring R] [∀ i, Semiring (S i)] [∀ i, Algebra R (S i)] :
+    (Π i, S i) ≃ₐ[R] Π i, S (e.symm i) :=
+  AlgEquiv.ofLinearEquiv (LinearEquiv.piCongrLeft' R S e)
+    (by ext; simp) (by intro x y; ext; simp)
+
+def AlgEquiv.piCongrLeft {ι ι' : Type*} (R : Type*) (S : ι → Type*) (e : ι' ≃ ι)
     [CommSemiring R] [∀ i, Semiring (S i)] [∀ i, Algebra R (S i)] :
     (Π i, S (e i)) ≃ₐ[R] Π i, S i :=
-  AlgEquiv.ofLinearEquiv (LinearEquiv.piCongrLeft R S e) (by ext; simp) _
+  (AlgEquiv.piCongrLeft' R S e.symm).symm
 
 noncomputable
 def Algebra.TensorProduct.cancelBaseChange (R S T A B : Type*)
@@ -249,6 +286,30 @@ def Algebra.TensorProduct.cancelBaseChange (R S T A B : Type*)
     (TensorProduct.AlgebraTensorModule.cancelBaseChange R S T A B).symm
     (by simp [Algebra.TensorProduct.one_def]) <|
       map_mul_of_map_mul_tmul (fun _ _ _ _ ↦ by simp)
+
+noncomputable
+def AlgEquiv.prodQuotientOfIsIdempotentElem {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    {e f : S} (he : IsIdempotentElem e) (hf : IsIdempotentElem f) (hef₁ : (1 - e) * (1 - f) = 0)
+    (hef₂ : e * f = 0) :
+    S ≃ₐ[R] (S ⧸ Ideal.span {e}) × (S ⧸ Ideal.span {f}) :=
+  AlgEquiv.ofBijective ((Ideal.Quotient.mkₐ _ _).prod (Ideal.Quotient.mkₐ _ _)) <|
+    RingHom.prod_bijective_of_isIdempotentElem he hf hef₁ hef₂
+
+lemma exists_split_of_formallyUnramified (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]
+    [Algebra.EssFiniteType R S] [Algebra.FormallyUnramified R S] :
+    ∃ (T : Type u) (_ : CommRing T) (_ : Algebra S T), Nonempty (S ⊗[R] S ≃ₐ[S] S × T) := by
+  have : Subsingleton (Ω[S⁄R]) := inferInstance
+  apply (Ideal.cotangent_subsingleton_iff _).mp at this
+  apply (Ideal.isIdempotentElem_iff_of_fg _ (KaehlerDifferential.ideal_fg R S)).mp at this
+  obtain ⟨e, he, hsp⟩ := this
+  let eq := AlgEquiv.prodQuotientOfIsIdempotentElem (R := S) he he.one_sub
+    (by simp [he]) (by simp [he])
+  let eq2 : (S ⊗[R] S ⧸ Ideal.span {e}) ≃ₐ[S] S :=
+    ((Ideal.span {e}).quotientEquivAlgOfEq S hsp.symm).trans
+      (Ideal.quotientKerAlgEquivOfSurjective <|
+      fun x ↦ by use x ⊗ₜ 1; simp [Algebra.TensorProduct.lmul''])
+  refine ⟨(S ⊗[R] S) ⧸ Ideal.span {1 - e}, inferInstance, inferInstance, ⟨?_⟩⟩
+  exact eq.trans (AlgEquiv.prodCongr eq2 AlgEquiv.refl)
 
 end
 
@@ -283,7 +344,6 @@ lemma Module.rankAtStalk_pi {ι : Type*} [Finite ι] (M : ι → Type*)
   let f : (Π i, M i) →ₗ[R] Π i, LocalizedModule p.asIdeal.primeCompl (M i) :=
     LinearMap.pi
       (fun i ↦ LocalizedModule.mkLinearMap p.asIdeal.primeCompl (M i) ∘ₗ LinearMap.proj i)
-  have : IsLocalizedModule p.asIdeal.primeCompl f := sorry
   let e : LocalizedModule p.asIdeal.primeCompl (Π i, M i) ≃ₗ[Localization.AtPrime p.asIdeal]
       (Π i, LocalizedModule p.asIdeal.primeCompl (M i)) :=
     (IsLocalizedModule.linearEquiv p.asIdeal.primeCompl
@@ -441,8 +501,8 @@ lemma iff_subsingleton_of_isEmpty (hn : n = 0) :
 lemma of_card_eq {ι : Type*} [Finite ι] (h : Nat.card ι = n) (e : S ≃ₐ[R] ι → R) :
     IsSplitOfRank n R S := by
   cases nonempty_fintype ι
-  let f : (ι → R) ≃ₐ[R] (Fin n → R) := AlgEquiv.piCongrLeft _
-    (Fintype.equivOfCardEq (by simpa using h.symm))
+  let f : (ι → R) ≃ₐ[R] (Fin n → R) := AlgEquiv.piCongrLeft' _ _
+    (Fintype.equivOfCardEq (by simpa using h))
   refine ⟨⟨e.trans f⟩⟩
 
 lemma of_subsingleton [Subsingleton R] : IsSplitOfRank n R S := by
@@ -495,8 +555,6 @@ lemma exists_isSplitOfRank_tensorProduct [Etale R S] [Module.Finite R S] {n : �
       have (p : PrimeSpectrum S) : Module.rankAtStalk (R := S) (S × U) p = n + 1 := by
         rw [Module.rankAtStalk_eq_of_equiv e.symm.toLinearEquiv]
         simp [Module.rankAtStalk_tensorProduct, hn]
-      -- why does instance search not find this instance?
-      have h : Module.Flat S S := inferInstance
       simp_rw [Module.rankAtStalk_prod , Module.rankAtStalk_self, Pi.one_apply] at this
       have : Module.rankAtStalk (R := S) U = n := by
         ext p
@@ -516,7 +574,7 @@ lemma exists_isSplitOfRank_tensorProduct [Etale R S] [Module.Finite R S] {n : �
         AlgEquiv.prodCongr (TensorProduct.rid S V V) f
       let e₅ : (V × (Fin n → V)) ≃ₐ[V] (Unit ⊕ Fin n) → V :=
         AlgEquiv.trans (AlgEquiv.prodCongr (AlgEquiv.funUnique _ _ _).symm AlgEquiv.refl)
-          (Algebra.prodPiEquiv V V Unit (Fin n))
+          (Algebra.prodPiEquiv V V Unit (Fin n)).symm
       let e := e₁.trans <| e₂.trans <| e₃.trans <| e₄.trans e₅
       refine ⟨V, inferInstance, inferInstance, ?_⟩
       exact IsSplitOfRank.of_card_eq (ι := Unit ⊕ Fin n) (by simp [add_comm]) e
