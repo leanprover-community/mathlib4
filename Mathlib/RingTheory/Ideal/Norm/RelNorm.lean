@@ -188,17 +188,10 @@ theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanN
     exact or_iff_not_imp_right.mpr fun hI ↦ (hP.eq_of_le hI bot_le).symm
   let P' := Algebra.algebraMapSubmonoid S P.primeCompl
   let Rₚ := Localization.AtPrime P
-  let Sₚ := Localization P'
-  have h : P' ≤ S⁰ :=
-    map_le_nonZeroDivisors_of_faithfulSMul P.primeCompl_le_nonZeroDivisors
-  have : IsDomain Sₚ := IsLocalization.isDomain_localization h
-  have : IsDedekindDomain Sₚ := IsLocalization.isDedekindDomain S h _
-  have : IsPrincipalIdealRing Sₚ :=
+  have : IsPrincipalIdealRing (Localization P') :=
     IsDedekindDomain.isPrincipalIdealRing_localization_over_prime S P hP0
-  have : Algebra.IsSeparable (FractionRing Rₚ) (FractionRing Sₚ) :=
-    FractionRing.isSeparable_of_isLocalization S Rₚ Sₚ P.primeCompl_le_nonZeroDivisors
-  simp only [Ideal.map_mul, ← spanIntNorm_localization (R := R) (Sₘ := Localization P') _ _
-    P.primeCompl_le_nonZeroDivisors]
+  simp only [Ideal.map_mul, ← spanIntNorm_localization R _ _ P.primeCompl_le_nonZeroDivisors
+    (Localization P')]
   rw [← (I.map _).span_singleton_generator, ← (J.map _).span_singleton_generator,
     span_singleton_mul_span_singleton, spanNorm_singleton, spanNorm_singleton,
       spanNorm_singleton, span_singleton_mul_span_singleton, _root_.map_mul]
@@ -255,17 +248,10 @@ theorem spanNorm_map_algebraMap (I : Ideal R) :
       I ^ (Module.finrank (FractionRing R) (FractionRing S)) := by
   nontriviality R; nontriviality S
   refine eq_of_localization_maximal (fun P hP ↦ ?_)
-  let P' := Algebra.algebraMapSubmonoid S P.primeCompl
   let Rₚ := Localization.AtPrime P
-  let Sₚ := Localization P'
-  have h : P' ≤ S⁰ := map_le_nonZeroDivisors_of_faithfulSMul P.primeCompl_le_nonZeroDivisors
-  have : IsDomain Sₚ := IsLocalization.isDomain_localization h
-  have : IsDedekindDomain Sₚ := IsLocalization.isDedekindDomain S h _
-  have : Algebra.IsSeparable (FractionRing Rₚ) (FractionRing Sₚ) :=
-    FractionRing.isSeparable_of_isLocalization S Rₚ Sₚ P.primeCompl_le_nonZeroDivisors
-  simp only [Ideal.map_mul, ← spanIntNorm_localization (R := R) (Sₘ := Localization P') _ _
-    P.primeCompl_le_nonZeroDivisors]
-  rw [Ideal.map_pow, I.map_map, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq R Rₚ Sₚ,
+  simp only [Ideal.map_mul, ← spanIntNorm_localization (R := R) (Sₘ := Localization
+    (Algebra.algebraMapSubmonoid S P.primeCompl)) _ _ P.primeCompl_le_nonZeroDivisors]
+  rw [Ideal.map_pow, I.map_map, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq R Rₚ,
     ← I.map_map, ← (I.map _).span_singleton_generator, Ideal.map_span, Set.image_singleton,
     spanNorm_singleton, Ideal.span_singleton_pow]
   congr
