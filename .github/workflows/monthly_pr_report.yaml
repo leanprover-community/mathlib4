@@ -28,6 +28,7 @@ jobs:
       - name: Get Pull Request Number
         id: pr_number
         run: |
+          branch="${GITHUB_REF}"
           branch="${branch/#refs\/heads\//}"
           echo "branch: '${branch}'"
           git checkout "${branch}"
