@@ -433,13 +433,12 @@ theorem minimum_of_length_pos_le_getElem {i : ℕ} (w : i < l.length) (h := (Nat
     l.minimum_of_length_pos h ≤ l[i] :=
   getElem_le_maximum_of_length_pos (α := αᵒᵈ) w
 
-lemma getD_max?_eq_unbot'_maximum (l : List α) (d : α) :
-    l.max?.getD d = l.maximum.unbot' d := by
+lemma getD_max?_eq_unbotD_maximum (l : List α) (d : α) : l.max?.getD d = l.maximum.unbotD d := by
   cases hy : l.maximum with
   | bot => simp [List.maximum_eq_bot.mp hy]
   | coe y =>
     rw [List.maximum_eq_coe_iff] at hy
-    simp only [WithBot.unbot'_coe]
+    simp only [WithBot.unbotD_coe]
     cases hz : l.max? with
     | none => simp [List.max?_eq_none_iff.mp hz] at hy
     | some z =>
@@ -449,15 +448,20 @@ lemma getD_max?_eq_unbot'_maximum (l : List α) (d : α) :
         exact _root_.le_antisymm (hy.right _ hz.left) (hz.right _ hy.left)
       all_goals simp [le_total]
 
-@[deprecated (since := "2024-09-29")]
-alias getD_maximum?_eq_unbot'_maximum := getD_max?_eq_unbot'_maximum
-
-lemma getD_min?_eq_untop'_minimum (l : List α) (d : α) :
-    l.min?.getD d = l.minimum.untop' d :=
-  getD_max?_eq_unbot'_maximum (α := αᵒᵈ) _ _
+@[deprecated (since := "2025-02-06")]
+alias getD_max?_eq_unbot'_maximum := getD_max?_eq_unbotD_maximum
 
 @[deprecated (since := "2024-09-29")]
-alias getD_minimum?_eq_untop'_minimum := getD_min?_eq_untop'_minimum
+alias getD_maximum?_eq_unbot'_maximum := getD_max?_eq_unbotD_maximum
+
+lemma getD_min?_eq_untopD_minimum (l : List α) (d : α) : l.min?.getD d = l.minimum.untopD d :=
+  getD_max?_eq_unbotD_maximum (α := αᵒᵈ) _ _
+
+@[deprecated (since := "2025-02-06")]
+alias getD_min?_eq_untop'_minimum := getD_min?_eq_untopD_minimum
+
+@[deprecated (since := "2024-09-29")]
+alias getD_minimum?_eq_untop'_minimum := getD_min?_eq_untopD_minimum
 
 end LinearOrder
 

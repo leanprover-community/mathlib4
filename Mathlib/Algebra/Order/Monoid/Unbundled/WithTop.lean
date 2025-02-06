@@ -450,8 +450,14 @@ theorem unbot_one : (1 : WithBot α).unbot coe_ne_bot = 1 :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem unbot_one' (d : α) : (1 : WithBot α).unbot' d = 1 :=
+theorem unbotD_one (d : α) : (1 : WithBot α).unbotD d = 1 :=
   rfl
+
+@[deprecated (since := "2025-02-06")]
+alias unbot_zero' := unbotD_zero
+
+@[to_additive existing, deprecated (since := "2025-02-06")]
+alias unbot_one' := unbotD_one
 
 @[to_additive (attr := simp, norm_cast) coe_nonneg]
 theorem one_le_coe [LE α] : 1 ≤ (a : WithBot α) ↔ 1 ≤ a := coe_le_coe

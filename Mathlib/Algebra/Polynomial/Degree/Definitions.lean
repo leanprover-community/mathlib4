@@ -48,7 +48,7 @@ def degree (p : R[X]) : WithBot ℕ :=
 
 /-- `natDegree p` forces `degree p` to ℕ, by defining `natDegree 0 = 0`. -/
 def natDegree (p : R[X]) : ℕ :=
-  (degree p).unbot' 0
+  (degree p).unbotD 0
 
 /-- `leadingCoeff p` gives the coefficient of the highest power of `X` in `p`-/
 def leadingCoeff (p : R[X]) : R :=
