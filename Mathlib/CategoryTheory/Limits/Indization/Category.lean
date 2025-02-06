@@ -4,9 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.Constructions.Filtered
+import Mathlib.CategoryTheory.Limits.FullSubcategory
+import Mathlib.CategoryTheory.Limits.ExactFunctor
 import Mathlib.CategoryTheory.Limits.Indization.Equalizers
 import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
 import Mathlib.CategoryTheory.Limits.Indization.Products
+import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
 
 /-!
 # The category of Ind-objects
@@ -285,5 +288,16 @@ theorem Ind.exists_nonempty_arrow_mk_iso_ind_lim {A B : Ind C} {f : A ⟶ B} :
   · exact P.parallelPairIsoParallelPairCompIndYoneda.app WalkingParallelPair.one
   · simpa using
       (P.parallelPairIsoParallelPairCompIndYoneda.hom.naturality WalkingParallelPairHom.left).symm
+
+section Small
+
+variable (C : Type u) [SmallCategory C] [HasFiniteColimits C]
+
+/-- For small finitely cocomplete categories `C : Type u`, the category of Ind-objects `Ind C` is
+equivalent to the category of left-exact functors `Cᵒᵖ ⥤ Type u`  -/
+noncomputable def Ind.leftExactFunctorEquivalence : Ind C ≌ LeftExactFunctor Cᵒᵖ (Type u) :=
+  (Ind.equivalence _).trans <| Equivalence.ofFullSubcategory isIndObject_iff_preservesFiniteLimits
+
+end Small
 
 end CategoryTheory
