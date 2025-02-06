@@ -178,10 +178,10 @@ private theorem lemma₁ (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈ Icc 1 n, f 
   have h₂ : (fun t : ℝ ↦ ∑ k ∈ Icc 1 ⌊t⌋₊, f k) =O[atTop] fun t ↦ t ^ (1 : ℝ) := by
     simp_rw [Real.rpow_one]
     refine IsBigO.trans_isEquivalent ?_ isEquivalent_nat_floor
-    suffices Tendsto (fun n ↦ (∑ k ∈ Icc 1 n, f k) / ((n : ℝ) ^ (1 : ℝ) : ℝ)) atTop (𝓝 l) by
-      simpa using (isBigO_atTop_natCast_rpow_of_tendsto_div_rpow this).comp_tendsto
+    have : Tendsto (fun n ↦ (∑ k ∈ Icc 1 n, f k) / ((n : ℝ) ^ (1 : ℝ) : ℝ)) atTop (𝓝 l) := by
+      simpa using hlim
+    simpa using (isBigO_atTop_natCast_rpow_of_tendsto_div_rpow this).comp_tendsto
         tendsto_nat_floor_atTop
-    simpa using hlim
   refine h₁.integrableOn_of_isBigO_atTop (g := fun t ↦ t ^(-s)) ?_ ?_
   · refine IsBigO.mul_atTop_rpow_of_isBigO_rpow 1 (-s - 1) _ h₂ ?_ (by linarith)
     exact (norm_ofReal_cpow_eventually_eq_atTop _).isBigO.of_norm_left
@@ -203,6 +203,7 @@ private theorem lemma₂ {s T ε : ℝ} {S : ℝ → ℂ} (hs : 1 < s)
 end lemmas
 
 section proof
+-- See `LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃` for the strategy of the proof
 
 private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₁
   (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈ Icc 1 n, f k) / n) atTop (𝓝 l)) {ε : ℝ} (hε : 0 < ε) :
@@ -247,12 +248,18 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂ {s T 
 private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
     (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈ Icc 1 n, f k) / n) atTop (𝓝 l))
     (hfS : ∀ s : ℝ, 1 < s → LSeriesSummable f s) {ε : ℝ} (hε : ε > 0) :
-    ∃ C ≥ 0, (fun s : ℝ ↦ ‖(s - 1) * LSeries f s - l * s‖) ≤ᶠ[𝓝[>] 1]
+    ∃ C ≥ 0, (fun s : ℝ ↦ ‖(s - 1) * LSeries f s - s * l‖) ≤ᶠ[𝓝[>] 1]
       fun s ↦ (s - 1) * s * C + s * ε := by
   obtain ⟨T, hT₁, hT⟩ := (eventually_forall_ge_atTop.mpr
     (LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₁
       hlim hε)).frequently.forall_exists_of_atTop 1
   let S : ℝ → ℂ := fun t ↦ ∑ k ∈ Icc 1 ⌊t⌋₊, f k
+  -- This result is the main ingredient of the proof. The idea is to cut the integral representation
+  -- of the L-series into two parts split at the value `T` given by
+  -- `LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₁` since `‖S t - l t‖ ≤ ε * t`
+  -- for all `t ≥ T`. We define `C` so that we get an upper bound of the first part and the second
+  -- part is bounded using the above inequality and
+  -- `LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂`.
   let C := ∫ t in Set.Ioc 1 T, ‖S t - l * t‖ * t ^ (-1 - 1 : ℝ)
   have hC : 0 ≤ C := by
     refine setIntegral_nonneg_ae measurableSet_Ioc (univ_mem' fun t ht ↦ ?_)
@@ -284,45 +291,43 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
       exact ht.1.le
   calc
     _ = ‖((s - 1) * s * ∫ t in Set.Ioi 1, S t * ↑t ^ (-(s : ℂ) - 1)) -
-          l * s * ((s - 1) * ∫ (t : ℝ) in Set.Ioi 1, ↑t ^ (-(s : ℂ)))‖ := ?_
-    _ = ‖(s - 1) * s *
-          ∫ (t : ℝ) in Set.Ioi 1, (S t * (t : ℂ) ^ (-s - 1 : ℂ) - l * t ^ (-s : ℂ))‖ := ?_
-    _ = ‖(s - 1) * s * ∫ (t : ℝ) in Set.Ioi 1, (S t - l * t) * (t : ℂ) ^ (-s - 1 : ℂ)‖ := ?_
-    _ ≤ (s - 1) * s * ∫ (t : ℝ) in Set.Ioi 1, ‖(S t - l * ↑t) * ↑t ^ (-s - 1 : ℂ)‖ := ?_
-    _ = (s - 1) * s * ∫ (t : ℝ) in Set.Ioi 1, ‖S t - l * t‖ * t ^ (-s - 1) := ?_
-    _ = (s - 1) * s * (Cs + ∫ (t : ℝ) in Set.Ioi T, ‖S t - l * t‖ * t ^ (-s - 1)) := ?_
-    _ ≤ (s - 1) * s * C +
-          s * ((s - 1) * ∫ (t : ℝ) in Set.Ioi T, ‖S t - l * t‖ * t ^ (-s - 1)) := ?_
-    _ ≤ (s - 1) * s * C + s * ε := ?_
-  · rw [h₃, mul_one, mul_comm l, LSeries_eq_mul_integral _ zero_le_one (by rwa [ofReal_re])
-      (hfS _ hs), neg_add', mul_assoc]
-    exact isBigO_atTop_natCast_rpow_of_tendsto_div_rpow (a := l) (by simpa using hlim)
-  · rw [integral_sub, integral_mul_left]
-    · congr; ring
-    · exact (lemma₁ hlim hs).mono_set Set.Ioi_subset_Ici_self
-    · exact (integrableOn_Ioi_cpow_of_lt
-        (by rwa [neg_re, ofReal_re, neg_lt_neg_iff]) zero_lt_one).const_mul  _
-  · congr 2
-    refine setIntegral_congr_fun measurableSet_Ioi fun t ht ↦ ?_
-    replace ht : (t : ℂ) ≠ 0 := ne_zero_of_one_lt_re ht
-    rw [sub_mul, cpow_sub _ _ ht, cpow_one, mul_assoc, mul_div_cancel₀ _ ht]
-  · rw [norm_mul, show ((s : ℂ) - 1) * s = ((s - 1) * s : ℝ) by simp, norm_real,
-      Real.norm_of_nonneg hs']
-    exact mul_le_mul_of_nonneg_left (norm_integral_le_integral_norm _) hs'
-  · congr 1
-    refine setIntegral_congr_fun measurableSet_Ioi fun t ht ↦ ?_
-    replace ht : 0 ≤ t := zero_le_one.trans ht.le
-    rw [norm_mul, show (-(s : ℂ) - 1) = (-s - 1 : ℝ) by simp, ← ofReal_cpow ht, norm_real,
-      Real.norm_of_nonneg (Real.rpow_nonneg ht _)]
-  · rw [← Set.Ioc_union_Ioi_eq_Ioi hT₁, setIntegral_union Set.Ioc_disjoint_Ioi_same
-      measurableSet_Ioi]
-    · exact h₁.mono_set <| Set.Ioc_subset_Ioi_self.trans Set.Ioi_subset_Ici_self
-    · exact h₁.mono_set <| Set.Ioi_subset_Ici_self.trans <| Set.Ici_subset_Ici.mpr hT₁
-  · rw [mul_add, ← mul_assoc, mul_comm s]
-    exact add_le_add_right (mul_le_mul_of_nonneg_left h₄ hs') _
-  · gcongr
-    exact LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂ h₀ hε hs hT₁
-      fun t ht ↦ (hT t ht.le).le
+          l * s * ((s - 1) * ∫ (t : ℝ) in Set.Ioi 1, ↑t ^ (-(s : ℂ)))‖ := by
+      rw [h₃, mul_one, mul_comm l, LSeries_eq_mul_integral _ zero_le_one (by rwa [ofReal_re])
+        (hfS _ hs), neg_add', mul_assoc]
+      exact isBigO_atTop_natCast_rpow_of_tendsto_div_rpow (a := l) (by simpa using hlim)
+    _ = ‖(s - 1) * s * ∫ t in Set.Ioi 1, (S t * (t : ℂ) ^ (-s - 1 : ℂ) - l * t ^ (-s : ℂ))‖ := by
+      rw [integral_sub, integral_mul_left]
+      · congr; ring
+      · exact (lemma₁ hlim hs).mono_set Set.Ioi_subset_Ici_self
+      · exact (integrableOn_Ioi_cpow_of_lt
+          (by rwa [neg_re, ofReal_re, neg_lt_neg_iff]) zero_lt_one).const_mul  _
+    _ = ‖(s - 1) * s * ∫ t in Set.Ioi 1, (S t - l * t) * (t : ℂ) ^ (-s - 1 : ℂ)‖ := by
+      congr 2
+      refine setIntegral_congr_fun measurableSet_Ioi fun t ht ↦ ?_
+      replace ht : (t : ℂ) ≠ 0 := ne_zero_of_one_lt_re ht
+      rw [sub_mul, cpow_sub _ _ ht, cpow_one, mul_assoc, mul_div_cancel₀ _ ht]
+    _ ≤ (s - 1) * s * ∫ t in Set.Ioi 1, ‖(S t - l * ↑t) * ↑t ^ (-s - 1 : ℂ)‖ := by
+      rw [norm_mul, show ((s : ℂ) - 1) * s = ((s - 1) * s : ℝ) by simp, norm_real,
+        Real.norm_of_nonneg hs']
+      exact mul_le_mul_of_nonneg_left (norm_integral_le_integral_norm _) hs'
+    _ = (s - 1) * s * ∫ t in Set.Ioi 1, ‖S t - l * t‖ * t ^ (-s - 1) := by
+      congr 1
+      refine setIntegral_congr_fun measurableSet_Ioi fun t ht ↦ ?_
+      replace ht : 0 ≤ t := zero_le_one.trans ht.le
+      rw [norm_mul, show (-(s : ℂ) - 1) = (-s - 1 : ℝ) by simp, ← ofReal_cpow ht, norm_real,
+        Real.norm_of_nonneg (Real.rpow_nonneg ht _)]
+    _ = (s - 1) * s * (Cs + ∫ t in Set.Ioi T, ‖S t - l * t‖ * t ^ (-s - 1)) := by
+      rw [← Set.Ioc_union_Ioi_eq_Ioi hT₁, setIntegral_union Set.Ioc_disjoint_Ioi_same
+        measurableSet_Ioi]
+      · exact h₁.mono_set <| Set.Ioc_subset_Ioi_self.trans Set.Ioi_subset_Ici_self
+      · exact h₁.mono_set <| Set.Ioi_subset_Ici_self.trans <| Set.Ici_subset_Ici.mpr hT₁
+    _ ≤ (s - 1) * s * C + s * ((s - 1) * ∫ t in Set.Ioi T, ‖S t - l * t‖ * t ^ (-s - 1)) := by
+      rw [mul_add, ← mul_assoc, mul_comm s]
+      exact add_le_add_right (mul_le_mul_of_nonneg_left h₄ hs') _
+    _ ≤ (s - 1) * s * C + s * ε := by
+      gcongr
+      exact LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂ h₀ hε hs hT₁
+        fun t ht ↦ (hT t ht.le).le
 
 theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div
     (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈ Icc 1 n, f k) / n) atTop (𝓝 l))
@@ -332,11 +337,11 @@ theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div
     rw [show 𝓝 ε = 𝓝 ((1 - 1) * 1 * C + 1 * ε) by congr; ring]
     exact tendsto_nhdsWithin_of_tendsto_nhds (ContinuousAt.tendsto (by fun_prop))
   have h₂ : IsBoundedUnder
-      (fun x1 x2 ↦ x1 ≤ x2) (𝓝[>] 1) fun s : ℝ ↦ ‖(s - 1) * LSeries f s - l * s‖ := by
+      (fun x1 x2 ↦ x1 ≤ x2) (𝓝[>] 1) fun s : ℝ ↦ ‖(s - 1) * LSeries f s - s * l‖ := by
     obtain ⟨C, _, hC₂⟩ :=
       LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃ hlim hfS zero_lt_one
     exact h₁.isBoundedUnder_le.mono_le hC₂
-  suffices Tendsto (fun s : ℝ ↦ (s - 1) * LSeries f s - l * s) (𝓝[>] 1) (𝓝 0) by
+  suffices Tendsto (fun s : ℝ ↦ (s - 1) * LSeries f s - s * l) (𝓝[>] 1) (𝓝 0) by
     rw [show 𝓝 l = 𝓝 (0 + 1 * l) by congr; ring]
     have h₃ : Tendsto (fun s : ℝ ↦ s * l) (𝓝[>] 1) (𝓝 (1 * l)) :=
       tendsto_nhdsWithin_of_tendsto_nhds (ContinuousAt.tendsto (by fun_prop))
