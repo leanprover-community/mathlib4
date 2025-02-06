@@ -288,61 +288,25 @@ lemma krullTopology_mem_nhds_one_of_isGalois [IsGalois k K] (A : Set (K ≃ₐ[k
   use mk (normalClosure k L K)
   exact le_trans (L.fixingSubgroup_anti L.le_normalClosure) hL
 
+lemma isOpen_mulEquivToLimit_image_fixingSubgroup [IsGalois k K]
+    (L : FiniteGaloisIntermediateField k K) : IsOpen (mulEquivToLimit k K '' L.fixingSubgroup) := by
+  let fix1 : Set (Π L, (profinGaloisGroupFunctor k K).obj L) := {f | f (op L) = 1}
+  suffices mulEquivToLimit k K '' L.1.fixingSubgroup = Set.preimage Subtype.val fix1 by
+    rw [this]
+    exact (isOpen_induced <| (continuous_apply (op L)).isOpen_preimage {1} trivial)
+  ext x
+  obtain ⟨σ, rfl⟩ := (mulEquivToLimit k K).surjective x
+  simpa using FiniteGaloisIntermediateField.mem_fixingSubgroup_iff _ _
+
 lemma mulEquivToLimit_symm_continuous [IsGalois k K] : Continuous (mulEquivToLimit k K).symm := by
   apply continuous_of_continuousAt_one _ (continuousAt_def.mpr _ )
-  simp only [map_one, krullTopology_mem_nhds_one_of_isGalois]
-  intro H ⟨L', hL'⟩
-  have le : (mulEquivToLimit k K).symm ⁻¹' L'.1.fixingSubgroup ⊆
-    (mulEquivToLimit k K).symm ⁻¹' H := fun _ b ↦ hL' b
-  apply mem_nhds_iff.mpr
-  use (mulEquivToLimit k K).symm ⁻¹' L'.1.fixingSubgroup
-  simp only [le, true_and]
-  constructor
-  · have : (mulEquivToLimit k K).symm ⁻¹' L'.1.fixingSubgroup =
-        mulEquivToLimit k K '' (L'.1.fixingSubgroup : Set (K ≃ₐ[k] K)) := by
-      ext σ
-      constructor
-      · intro h
-        use (mulEquivToLimit k K).symm σ
-        simp only [h.out , MulEquiv.apply_symm_apply, and_self]
-      · rintro ⟨_, h1, h2⟩
-        simp only [← h2, Set.mem_preimage, MulEquiv.symm_apply_apply, h1]
-    rw [this]
-    let fix1 : Set ((L : (FiniteGaloisIntermediateField k K)ᵒᵖ) →
-      (profinGaloisGroupFunctor k K).obj L) := {x : ((L : (FiniteGaloisIntermediateField k K)ᵒᵖ) →
-      (profinGaloisGroupFunctor k K).obj L) | x (op L') = 1}
-    have C : Continuous (fun (x : (L : (FiniteGaloisIntermediateField k K)ᵒᵖ) →
-      (profinGaloisGroupFunctor k K).obj L) ↦ x (op L')) :=
-      continuous_apply (op L')
-    have : mulEquivToLimit k K '' L'.1.fixingSubgroup = Set.preimage Subtype.val fix1 := by
-      ext x
-      constructor
-      · rintro ⟨α, hα1, hα2⟩
-        simp only [Set.mem_preimage,← hα2, fix1, Set.mem_setOf_eq, mulEquivToLimit, algEquivToLimit,
-          MonoidHom.coe_mk, OneHom.coe_mk, MulEquiv.coe_mk, Equiv.coe_fn_mk]
-        apply AlgEquiv.ext
-        intro x
-        apply Subtype.val_injective
-        rw [AlgEquiv.restrictNormalHom_apply L'.1 α x, AlgEquiv.one_apply]
-        exact hα1 x
-      · intro h
-        simp only [Set.mem_preimage] at h
-        use (mulEquivToLimit _ _).symm x
-        simp only [SetLike.mem_coe, MulEquiv.apply_symm_apply, and_true]
-        apply (mem_fixingSubgroup_iff (K ≃ₐ[k] K)).mpr
-        intro y hy
-        simp only [AlgEquiv.smul_def]
-        have fix := h.out
-        set Aut := (mulEquivToLimit _ _).symm x
-        have : mulEquivToLimit _ _ Aut = x := by simp only [Aut, MulEquiv.apply_symm_apply]
-        simp only [← this, mulEquivToLimit, algEquivToLimit, MonoidHom.coe_mk, OneHom.coe_mk,
-          MulEquiv.coe_mk, Equiv.coe_fn_mk] at fix
-        have fix_y : AlgEquiv.restrictNormalHom L' Aut ⟨y, hy⟩ = ⟨y, hy⟩ := by
-          simp only [fix, AlgEquiv.one_apply]
-        rw [← AlgEquiv.restrictNormalHom_apply L'.1 Aut ⟨y,hy⟩, fix_y]
-    have op : IsOpen fix1 := C.isOpen_preimage {1} trivial
-    exact this ▸ (isOpen_induced op)
-  · simp only [Set.mem_preimage, map_one, SetLike.mem_coe, one_mem]
+  simp only [map_one, krullTopology_mem_nhds_one_of_isGalois, ← MulEquiv.coe_toEquiv_symm,
+    ← MulEquiv.toEquiv_eq_coe, ← (mulEquivToLimit k K).image_eq_preimage]
+  intro H ⟨L, le⟩
+  rw [mem_nhds_iff]
+  use mulEquivToLimit k K '' L.1.fixingSubgroup
+  simp [le, isOpen_mulEquivToLimit_image_fixingSubgroup, one_mem,
+    (mulEquivToLimit k K).injective.preimage_image]
 
 variable (k K)
 
