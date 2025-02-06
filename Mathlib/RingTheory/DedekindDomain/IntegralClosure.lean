@@ -249,12 +249,11 @@ instance integralClosure.isDedekindDomain_fractionRing [IsDedekindDomain A] :
     IsDedekindDomain (integralClosure A L) :=
   integralClosure.isDedekindDomain A (FractionRing A) L
 
-attribute [local instance] FractionRing.liftAlgebra in
+attribute [local instance] FractionRing.liftAlgebra
+
 instance [NoZeroSMulDivisors A C] [Module.Finite A C] [IsIntegrallyClosed C] :
     IsLocalization (Algebra.algebraMapSubmonoid C A⁰) (FractionRing C) :=
   IsIntegralClosure.isLocalization _ (FractionRing A) _ _
-
-attribute [local instance] FractionRing.liftAlgebra
 
 instance [Module.Finite A C] [IsIntegrallyClosed C] [NoZeroSMulDivisors A C] :
     FiniteDimensional (FractionRing A) (FractionRing C) :=
@@ -276,5 +275,20 @@ instance : IsFractionRing (Localization (Algebra.algebraMapSubmonoid C P.primeCo
     (FractionRing C) :=
   IsFractionRing.isFractionRing_of_isDomain_of_isLocalization
     (Algebra.algebraMapSubmonoid C P.primeCompl) _ _
+
+noncomputable instance : Algebra (Localization.AtPrime P) (FractionRing C) :=
+  RingHom.toAlgebra ((algebraMap (FractionRing A) (FractionRing C)).comp
+    (IsLocalization.map _ (T := A⁰) (RingHom.id A) P.primeCompl_le_nonZeroDivisors))
+
+instance : IsScalarTower (Localization.AtPrime P) (FractionRing A) (FractionRing C) :=
+  IsScalarTower.of_algebraMap_eq' (IsLocalization.ringHom_ext P.primeCompl
+    (RingHom.ext fun x ↦ by simp [RingHom.algebraMap_toAlgebra]))
+
+instance : IsScalarTower A (Localization.AtPrime P) (FractionRing A) :=
+  IsScalarTower.of_algebraMap_eq' (RingHom.ext fun x ↦ by simp [RingHom.algebraMap_toAlgebra])
+
+instance : IsScalarTower (Localization.AtPrime P)
+  (Localization (Algebra.algebraMapSubmonoid C P.primeCompl)) (FractionRing C) :=
+    IsLocalization.localization_localization_isScalarTower C _ _ (FractionRing A) _ P.primeCompl
 
 end IsIntegralClosure
