@@ -54,6 +54,13 @@ lemma mem_augmentationSubmodule_of_eq (g : G) (x : V) (a : V) (h : ρ g x - x = 
 
 variable (ρ)
 
+@[simp]
+theorem augmentationSubmodule_eq_bot_of_isTrivial [ρ.IsTrivial] :
+    augmentationSubmodule ρ = ⊥ := by
+  rw [Submodule.span_eq_bot]
+  rintro x ⟨⟨g, y⟩, rfl⟩
+  simp
+
 /-- The coinvariants of a representation, `V ⧸ ⟨{ρ g x - x | g ∈ G, x ∈ V}⟩`. -/
 abbrev coinvariants := V ⧸ augmentationSubmodule ρ
 

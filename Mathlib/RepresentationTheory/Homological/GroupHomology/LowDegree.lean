@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
+import Mathlib.RepresentationTheory.Invariants
 
 /-!
 # The low-degree homology of a `k`-linear `G`-representation
@@ -262,11 +263,6 @@ def twoCycles : Submodule k (G × G →₀ A) := LinearMap.ker (dOne A)
 
 variable {A}
 
-lemma _root_.Representation.ρ_apply_bijective {k G V : Type*} [CommSemiring k] [Group G]
-    [AddCommMonoid V] [Module k V] (ρ : Representation k G V) (g : G) :
-    Function.Bijective (ρ g) :=
-  Equiv.bijective ⟨ρ g, ρ g⁻¹, ρ_inv_self_apply ρ g, ρ_self_inv_apply ρ g⟩
-
 theorem mem_oneCycles_iff (x : G →₀ A) :
     x ∈ oneCycles A ↔ x.sum (fun g a => A.ρ g⁻¹ a) = x.sum (fun _ a => a) := by
   show x.sum (fun g a => A.ρ g⁻¹ a - a) = 0 ↔ _
@@ -285,13 +281,13 @@ theorem dOne_apply_mem_oneCycles [DecidableEq G] (x : G × G →₀ A) :
   congr($(dZero_comp_dOne A) x)
 
 variable (A) in
-theorem oneCycles_eq_top_of_isTrivial [A.ρ.IsTrivial] : oneCycles A = ⊤ := by
+theorem oneCycles_eq_top_of_isTrivial [A.IsTrivial] : oneCycles A = ⊤ := by
   rw [oneCycles, dZero_eq_zero_of_isTrivial, LinearMap.ker_zero]
 
 variable (A) in
 /-- The natural inclusion `Z₁(G, A) →ₗ[k] C₁(G, A)` is an isomorphism when the representation
 on `A` is trivial. -/
-abbrev oneCyclesLEquivOfIsTrivial [A.ρ.IsTrivial] :
+abbrev oneCyclesLequivOfIsTrivial [A.IsTrivial] :
     oneCycles A ≃ₗ[k] (G →₀ A) :=
   LinearEquiv.ofTop _ (oneCycles_eq_top_of_isTrivial A)
 
@@ -308,7 +304,7 @@ theorem single_mem_twoCycles_iff_inv (g : G × G) (a : A) :
 theorem single_mem_twoCycles_iff (g : G × G) (a : A) :
     single g a ∈ twoCycles A ↔
       single (g.1 * g.2) (A.ρ g.1 a) = single g.2 a + single g.1 (A.ρ g.1 a) := by
-  rw [← (Finsupp.mapRange_injective (α := G) _ (map_zero _) (A.ρ.ρ_apply_bijective g.1⁻¹).1).eq_iff]
+  rw [← (mapRange_injective (α := G) _ (map_zero _) (A.ρ.ρ_apply_bijective g.1⁻¹).1).eq_iff]
   simp [mem_twoCycles_iff, mapRange_add, eq_comm]
 
 theorem dTwo_apply_mem_twoCycles [DecidableEq G] (x : G × G × G →₀ A) :
@@ -373,12 +369,6 @@ theorem single_inv_ρ_self_add_single_mem_oneBoundaries (g : G) (a : A) :
   rw [← dOne_single_inv_mul_ρ_add_single g 1]
   exact Set.mem_range_self _
 
--- move??? sol seppy
-@[simp]
-theorem augmentationSubmodule_eq_bot_of_isTrivial (A : Rep k G) [A.ρ.IsTrivial] :
-    augmentationSubmodule A.ρ = ⊥ := by
-  simp_rw [← range_dZero_eq_augmentationSubmodule, dZero_eq_zero_of_isTrivial]
-  exact LinearMap.range_eq_bot.2 rfl
 
 section
 
