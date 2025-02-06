@@ -495,11 +495,6 @@ lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
     upperBounds (f '' d) = upperBounds (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) :=
   hf.upperBounds_image_eq_ofSubset (subset_fst_image_times_snd_image d) (directed_product hd)
 
-lemma Prod.IsLub {f : α × β → γ} (hf : Monotone f)
-    {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) (u : γ) :
-    IsLUB (f '' d) u ↔ IsLUB (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) u := by
-  rw [IsLUB, Prod.upperBounds hf hd, ← IsLUB]
-
 end Prod
 
 section Pi
