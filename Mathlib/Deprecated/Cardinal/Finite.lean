@@ -116,6 +116,4 @@ theorem card_eq_coe_natCard (α : Type*) [Finite α] : card α = Nat.card α := 
   exact Finite.cast_card_eq_mk
 
 
-@[deprecated (since := "2024-05-25")] alias card_eq_coe_nat_card := card_eq_coe_natCard
-
 end PartENat

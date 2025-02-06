@@ -3,6 +3,7 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.CategoryTheory.Filtered.Connected
 import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
@@ -141,6 +142,12 @@ instance [RepresentablyCoflat F] : RepresentablyFlat F.op :=
 instance RepresentablyCoflat.comp (G : D ⥤ E) [RepresentablyCoflat F] [RepresentablyCoflat G] :
     RepresentablyCoflat (F ⋙ G) :=
   (representablyFlat_op_iff _).1 <| inferInstanceAs <| RepresentablyFlat (F.op ⋙ G.op)
+
+lemma final_of_representablyFlat [h : RepresentablyFlat F] : F.Final where
+  out _ := IsCofiltered.isConnected _
+
+lemma initial_of_representablyCoflat [h : RepresentablyCoflat F] : F.Initial where
+  out _ := IsFiltered.isConnected _
 
 end RepresentablyFlat
 
@@ -307,7 +314,7 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
         ι_colimMap, whiskerLeft_app]
       rfl)
 
-variable [ConcreteCategory.{u₁} E] [HasLimits E] [HasColimits E]
+variable [HasForget.{u₁} E] [HasLimits E] [HasColimits E]
 variable [ReflectsLimits (forget E)] [PreservesFilteredColimits (forget E)]
 variable [PreservesLimits (forget E)]
 

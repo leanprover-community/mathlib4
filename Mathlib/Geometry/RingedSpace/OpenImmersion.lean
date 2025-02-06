@@ -308,15 +308,10 @@ def pullbackConeOfLeftFst :
                     constructor
                     · change _ ∈ U.unop at h₁
                       convert h₁
-                      erw [TopCat.pullbackIsoProdSubtype_inv_fst_apply]
-                    · erw [TopCat.pullbackIsoProdSubtype_inv_snd_apply]
+                      rw [TopCat.pullbackIsoProdSubtype_inv_fst_apply]
+                    · rw [TopCat.pullbackIsoProdSubtype_inv_snd_apply]
                   · rintro _ ⟨x, h₁, rfl⟩
-                    -- next line used to be
-                    --  `exact ⟨_, h₁, ConcreteCategory.congr_hom pullback.condition x⟩))`
-                    -- before https://github.com/leanprover-community/mathlib4/pull/13170
-                    refine ⟨_, h₁, ?_⟩
-                    change (_ ≫ f.base) _ = (_ ≫ g.base) _
-                    rw [pullback.condition]))
+                    exact ⟨_, h₁, CategoryTheory.congr_fun pullback.condition x⟩))
       naturality := by
         intro U V i
         induction U using Opposite.rec'
@@ -718,7 +713,7 @@ end Pullback
 
 section OfStalkIso
 
-variable [HasLimits C] [HasColimits C] [ConcreteCategory C]
+variable [HasLimits C] [HasColimits C] [HasForget C]
 variable [(CategoryTheory.forget C).ReflectsIsomorphisms]
   [PreservesLimits (CategoryTheory.forget C)]
 
@@ -855,7 +850,7 @@ theorem sigma_ι_isOpenEmbedding : IsOpenEmbedding (colimit.ι F i).base := by
   -- Porting note: `simp_rw` can't use `TopCat.isOpenEmbedding_iff_comp_isIso` and
   -- `TopCat.isOpenEmbedding_iff_isIso_comp`.
   -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  erw [TopCat.isOpenEmbedding_iff_comp_isIso, TopCat.isOpenEmbedding_iff_comp_isIso,
+  rw [TopCat.isOpenEmbedding_iff_comp_isIso, TopCat.isOpenEmbedding_iff_comp_isIso,
     TopCat.isOpenEmbedding_iff_comp_isIso, TopCat.isOpenEmbedding_iff_isIso_comp]
   exact .sigmaMk
 
@@ -1126,10 +1121,9 @@ theorem lift_range (H' : Set.range g.base ⊆ Set.range f.base) :
   have : _ = (pullback.fst f g).base :=
     PreservesPullback.iso_hom_fst
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _) f g
-  rw [LocallyRingedSpace.comp_base, ← this, ← Category.assoc, coe_comp, Set.range_comp,
+  rw [LocallyRingedSpace.comp_base, ← this, ← Category.assoc, TopCat.coe_comp, Set.range_comp,
       Set.range_eq_univ.mpr, Set.image_univ]
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw` on this lemma
-  · erw [TopCat.pullback_fst_range]
+  · rw [TopCat.pullback_fst_range]
     ext
     constructor
     · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩

@@ -234,7 +234,7 @@ theorem den_le_and_le_num_le_of_sub_lt_one_div_den_sq {ξ q : ℚ}
   · rcases eq_or_ne ξ q with (rfl | H)
     · exact le_rfl
     · have hξ₀ : (0 : ℚ) < ξ.den := Nat.cast_pos.mpr ξ.pos
-      rw [← Rat.num_div_den ξ, div_mul_eq_mul_div, div_sub' _ _ _ hξ₀.ne', abs_div, abs_of_pos hξ₀,
+      rw [← Rat.num_div_den ξ, div_mul_eq_mul_div, div_sub' hξ₀.ne', abs_div, abs_of_pos hξ₀,
         div_lt_iff₀ hξ₀, div_mul_comm, mul_one] at h
       refine Nat.cast_le.mp ((one_lt_div hq₀).mp <| lt_of_le_of_lt ?_ h).le
       norm_cast
@@ -550,7 +550,7 @@ This version uses `Real.convergent`. -/
 theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ) ^ 2)) :
     ∃ n, q = ξ.convergent n := by
   refine q.num_div_den ▸ exists_rat_eq_convergent' ⟨?_, fun hd => ?_, ?_⟩
-  · exact coprime_iff_nat_coprime.mpr (natAbs_ofNat q.den ▸ q.reduced)
+  · exact isCoprime_iff_nat_coprime.mpr (natAbs_ofNat q.den ▸ q.reduced)
   · rw [← q.den_eq_one_iff.mp (Nat.cast_eq_one.mp hd)] at h
     simpa only [Rat.den_intCast, Nat.cast_one, one_pow, mul_one] using (abs_lt.mp h).1
   · obtain ⟨hq₀, hq₁⟩ := aux₀ (Nat.cast_pos.mpr q.pos)

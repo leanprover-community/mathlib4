@@ -160,7 +160,7 @@ theorem quadraticChar_eq_neg_one_iff_not_one {a : F} (ha : a ≠ 0) :
 /-- For `a : F`, `quadraticChar F a = -1 ↔ ¬ IsSquare a`. -/
 theorem quadraticChar_neg_one_iff_not_isSquare {a : F} : quadraticChar F a = -1 ↔ ¬IsSquare a := by
   by_cases ha : a = 0
-  · simp only [ha, MulChar.map_zero, zero_eq_neg, one_ne_zero, isSquare_zero, not_true]
+  · simp only [ha, MulChar.map_zero, zero_eq_neg, one_ne_zero, IsSquare.zero, not_true]
   · rw [quadraticChar_eq_neg_one_iff_not_one ha, quadraticChar_one_iff_isSquare ha]
 
 /-- If `F` has odd characteristic, then `quadraticChar F` takes the value `-1`. -/
@@ -213,11 +213,6 @@ theorem quadraticChar_ne_one (hF : ringChar F ≠ 2) : quadraticChar F ≠ 1 := 
   rcases quadraticChar_exists_neg_one' hF with ⟨a, ha⟩
   intro hχ
   simp only [hχ, one_apply a.isUnit, one_ne_zero, reduceCtorEq] at ha
-
-set_option linter.deprecated false in
-@[deprecated quadraticChar_ne_one (since := "2024-06-16")]
-theorem quadraticChar_isNontrivial (hF : ringChar F ≠ 2) : (quadraticChar F).IsNontrivial :=
-  (isNontrivial_iff _).mpr <| quadraticChar_ne_one hF
 
 open Finset in
 /-- The number of solutions to `x^2 = a` is determined by the quadratic character. -/

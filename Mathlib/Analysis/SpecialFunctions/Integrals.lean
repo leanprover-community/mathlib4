@@ -251,7 +251,7 @@ theorem intervalIntegrable_log' : IntervalIntegrable log volume a b := by
       simpa using (hasDerivAt_id s).sub (hasDerivAt_mul_log hs.ne.symm)
     · intro s ⟨hs₁, hs₂⟩
       norm_num at *
-      exact (log_nonpos_iff hs₁).mpr hs₂.le
+      exact (log_nonpos_iff hs₁.le).mpr hs₂.le
   · -- Show integrability on [1…t] by continuity
     apply ContinuousOn.intervalIntegrable
     apply Real.continuousOn_log.mono
@@ -353,7 +353,7 @@ theorem integral_cpow {r : ℂ} (h : -1 < r.re ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[
   by_cases hab : (0 : ℝ) ∉ [[a, b]]
   · apply integral_eq_sub_of_hasDerivAt (fun x hx => ?_)
       (intervalIntegrable_cpow (r := r) <| Or.inr hab)
-    refine hasDerivAt_ofReal_cpow (ne_of_mem_of_not_mem hx hab) ?_
+    refine hasDerivAt_ofReal_cpow_const' (ne_of_mem_of_not_mem hx hab) ?_
     contrapose! hr; rwa [add_eq_zero_iff_eq_neg]
   replace h : -1 < r.re := by tauto
   suffices ∀ c : ℝ, (∫ x : ℝ in (0)..c, (x : ℂ) ^ r) =
@@ -365,7 +365,7 @@ theorem integral_cpow {r : ℂ} (h : -1 < r.re ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[
   apply integral_eq_sub_of_hasDeriv_right
   · refine ((Complex.continuous_ofReal_cpow_const ?_).div_const _).continuousOn
     rwa [Complex.add_re, Complex.one_re, ← neg_lt_iff_pos_add]
-  · refine fun x hx => (hasDerivAt_ofReal_cpow ?_ ?_).hasDerivWithinAt
+  · refine fun x hx => (hasDerivAt_ofReal_cpow_const' ?_ ?_).hasDerivWithinAt
     · rcases le_total c 0 with (hc | hc)
       · rw [max_eq_left hc] at hx; exact hx.2.ne
       · rw [min_eq_left hc] at hx; exact hx.1.ne'
@@ -498,14 +498,14 @@ lemma integral_log_from_zero_of_pos (ht : 0 < b) : ∫ s in (0)..b, log s = b * 
 
 /-- Helper lemma for `integral_log`: case where `a = 0`. -/
 lemma integral_log_from_zero {b : ℝ} : ∫ s in (0)..b, log s = b * log b - b := by
-    rcases lt_trichotomy b 0 with h | h | h
-    · -- If t is negative, use that log is an even function to reduce to the positive case.
-      conv => arg 1; arg 1; intro t; rw [← log_neg_eq_log]
-      rw [intervalIntegral.integral_comp_neg, intervalIntegral.integral_symm, neg_zero,
-        integral_log_from_zero_of_pos (Left.neg_pos_iff.mpr h), log_neg_eq_log]
-      ring
-    · simp [h]
-    · exact integral_log_from_zero_of_pos h
+  rcases lt_trichotomy b 0 with h | h | h
+  · -- If t is negative, use that log is an even function to reduce to the positive case.
+    conv => arg 1; arg 1; intro t; rw [← log_neg_eq_log]
+    rw [intervalIntegral.integral_comp_neg, intervalIntegral.integral_symm, neg_zero,
+      integral_log_from_zero_of_pos (Left.neg_pos_iff.mpr h), log_neg_eq_log]
+    ring
+  · simp [h]
+  · exact integral_log_from_zero_of_pos h
 
 @[simp]
 theorem integral_log : ∫ s in a..b, log s = b * log b - a * log a - b + a := by

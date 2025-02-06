@@ -32,26 +32,6 @@ open Denumerable Encodable Function
 
 namespace Nat
 
--- Porting note: elim is no longer required because lean 4 is better
--- at inferring motive types (I think this is the reason)
--- and worst case, we can always explicitly write (motive := fun _ => C)
--- without having to then add all the other underscores
-
--- /-- The non-dependent recursor on naturals. -/
--- def elim {C : Sort*} : C → (ℕ → C → C) → ℕ → C :=
---   @Nat.rec fun _ => C
--- example {C : Sort*} (base : C) (succ : ℕ → C → C) (a : ℕ) :
---   a.elim base succ = a.rec base succ := rfl
-
--- Porting note: cases is no longer required because lean 4 is better
--- at inferring motive types (I think this is the reason)
-
--- /-- Cases on whether the input is 0 or a successor. -/
--- def cases {C : Sort*} (a : C) (f : ℕ → C) : ℕ → C :=
---   Nat.elim a fun n _ => f n
--- example {C : Sort*} (a : C) (f : ℕ → C) (n : ℕ) :
---   n.cases a f = n.casesOn a f := rfl
-
 /-- Calls the given function on a pair of entries `n`, encoded via the pairing function. -/
 @[simp, reducible]
 def unpaired {α} (f : ℕ → ℕ → α) (n : ℕ) : α :=
@@ -353,7 +333,7 @@ theorem const (x : σ) : Primrec₂ fun (_ : α) (_ : β) => x :=
   Primrec.const _
 
 protected theorem pair : Primrec₂ (@Prod.mk α β) :=
-  .pair .fst .snd
+  Primrec.pair .fst .snd
 
 theorem left : Primrec₂ fun (a : α) (_ : β) => a :=
   .fst
@@ -611,10 +591,6 @@ theorem _root_.PrimrecPred.or {p q : α → Prop} [DecidablePred p] [DecidablePr
     (hp : PrimrecPred p) (hq : PrimrecPred q) : PrimrecPred fun a => p a ∨ q a :=
   (Primrec.or.comp hp hq).of_eq fun n => by simp
 
--- Porting note: It is unclear whether we want to boolean versions
--- of these lemmas, just the prop versions, or both
--- The boolean versions are often actually easier to use
--- but did not exist in Lean 3
 protected theorem beq [DecidableEq α] : Primrec₂ (@BEq.beq α _) :=
   have : PrimrecRel fun a b : ℕ => a = b :=
     (PrimrecPred.and nat_le nat_le.swap).of_eq fun a => by simp [le_antisymm_iff]
@@ -643,15 +619,17 @@ theorem list_findIdx₁ {p : α → β → Bool} (hp : Primrec₂ p) :
 | a :: l => (cond (hp.comp .id (const a)) (const 0) (succ.comp (list_findIdx₁ hp l))).of_eq fun n =>
   by simp [List.findIdx_cons]
 
-theorem list_indexOf₁ [DecidableEq α] (l : List α) : Primrec fun a => l.indexOf a :=
+theorem list_idxOf₁ [DecidableEq α] (l : List α) : Primrec fun a => l.idxOf a :=
   list_findIdx₁ (.swap .beq) l
+
+@[deprecated (since := "2025-01-30")] alias list_indexOf₁ := list_idxOf₁
 
 theorem dom_fintype [Finite α] (f : α → σ) : Primrec f :=
   let ⟨l, _, m⟩ := Finite.exists_univ_list α
   option_some_iff.1 <| by
     haveI := decidableEqOfEncodable α
-    refine ((list_get?₁ (l.map f)).comp (list_indexOf₁ l)).of_eq fun a => ?_
-    rw [List.get?_eq_getElem?, List.getElem?_map, List.getElem?_indexOf (m a), Option.map_some']
+    refine ((list_get?₁ (l.map f)).comp (list_idxOf₁ l)).of_eq fun a => ?_
+    rw [List.get?_eq_getElem?, List.getElem?_map, List.getElem?_idxOf (m a), Option.map_some']
 
 -- Porting note: These are new lemmas
 -- I added it because it actually simplified the proofs
@@ -976,8 +954,10 @@ theorem list_findIdx {f : α → List β} {p : α → β → Bool}
         to₂ <| cond (hp.comp fst <| fst.comp snd) (const 0) (succ.comp <| snd.comp snd)).of_eq
     fun a => by dsimp; induction f a <;> simp [List.findIdx_cons, *]
 
-theorem list_indexOf [DecidableEq α] : Primrec₂ (@List.indexOf α _) :=
+theorem list_idxOf [DecidableEq α] : Primrec₂ (@List.idxOf α _) :=
   to₂ <| list_findIdx snd <| Primrec.beq.comp₂ snd.to₂ (fst.comp fst).to₂
+
+@[deprecated (since := "2025-01-30")] alias list_indexOf := list_idxOf
 
 theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ} (hg : Primrec₂ g)
     (H : ∀ a n, g a ((List.range n).map (f a)) = some (f a n)) : Primrec₂ f :=
@@ -1107,9 +1087,6 @@ instance vector {n} : Primcodable (List.Vector α n) :=
 instance finArrow {n} : Primcodable (Fin n → α) :=
   ofEquiv _ (Equiv.vectorEquivFin _ _).symm
 
--- Porting note: Equiv.arrayEquivFin is not ported yet
--- instance array {n} : Primcodable (Array' n α) :=
---   ofEquiv _ (Equiv.arrayEquivFin _ _)
 
 section ULower
 
