@@ -861,7 +861,8 @@ def H1LequivOfIsTrivial :
 
 @[simp]
 lemma H1LequivOfIsTrivial_single (g : G) (a : A) :
-    H1LequivOfIsTrivial A (H1π A <| (oneCyclesLequivOfIsTrivial A).symm <| single g a) =
+    H1LequivOfIsTrivial A (Submodule.Quotient.mk <|
+      (oneCyclesLequivOfIsTrivial A).symm <| single g a) =
       Additive.ofMul (Abelianization.of g) ⊗ₜ[ℤ] a := by
   rw [H1LequivOfIsTrivial_apply]
   show QuotientAddGroup.lift _ _ _
