@@ -1107,6 +1107,10 @@ theorem rotate_edges {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
     (c.rotate h).edges ~r c.edges :=
   (rotate_darts c h).map _
 
+theorem length_rotate {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
+    (c.rotate h).length = c.length :=by
+  rw [rotate, length_append,add_comm, ← length_append, take_spec]
+
 end WalkDecomp
 
 /-- Given a set `S` and a walk `w` from `u` to `v` such that `u ∈ S` but `v ∉ S`,
