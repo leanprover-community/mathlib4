@@ -12,6 +12,10 @@ import Mathlib.FieldTheory.PurelyInseparable.Basic
 This file defines the exponent of a purely inseparable extension (if one exists) and
 some related results.
 
+Most results are stated using `ringExpChar K` rather than using `[ExpChar K p]` parameter because
+it gives cleaner API. To use the results in a context with `[ExpChar K p]`, consider using
+`ringExpChar.eq K p` for substitution.
+
 ## Main definitions
 
 - `IsPurelyInseparable.HasExponent`: typeclass to assert a purely inseparable field extension
