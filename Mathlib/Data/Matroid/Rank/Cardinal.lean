@@ -259,7 +259,7 @@ theorem Basis.cardinalMk_eq_cRk (hIX : M.Basis I X) : #I = M.cRk X :=
 theorem cRk_closure_congr (hXY : M.closure X = M.closure Y) : M.cRk X = M.cRk Y := by
   rw [← cRk_closure, hXY, cRk_closure]
 
-theorem Spanning.cRank_le (h : M.Spanning X) : M.cRank ≤ #X :=
+theorem Spanning.cRank_le_cardinalMk (h : M.Spanning X) : M.cRank ≤ #X :=
   have ⟨_B, hB, hBX⟩ := h.exists_base_subset
   (hB.cardinalMk_eq_cRank).symm.trans_le (mk_le_mk_of_subset hBX)
 
@@ -382,8 +382,8 @@ theorem Indep.base_of_cRank_le_of_finite (ind : M.Indep I)
 theorem Spanning.base_of_le_cRank_of_finite (h : M.Spanning X)
     (le : #X ≤ M.cRank) (fin : X.Finite) : M.Base X :=
   have ⟨B, hB, hBX⟩ := h.exists_base_subset
-  have : M.FiniteRk := ⟨B, hB, lt_aleph0_iff_finite.mp <| (mk_le_mk_of_subset hBX).trans_lt <|
-    lt_aleph0_iff_finite.mpr fin⟩
+  have : M.FiniteRk := ⟨B, hB, lt_aleph0_iff_finite.mp <|
+    (mk_le_mk_of_subset hBX).trans_lt <| lt_aleph0_iff_finite.mpr fin⟩
   h.base_of_le_cRank le
 
 end Matroid
