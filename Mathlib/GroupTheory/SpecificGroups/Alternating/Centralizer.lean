@@ -277,10 +277,7 @@ theorem count_le_one_of_centralizer_le_alternating
         sum_cycleType _
       rw [this', Multiset.sum_replicate, smul_eq_mul] at this''
       rw [← mul_left_inj' (c := 2) (by norm_num), this'']
-      simp only [hk, toCentralizer, MonoidHom.coe_mk, OneHom.coe_mk]
-      -- rw [card_ofPermHom_support]
-
-      -- have := mem_range_toPermHom_iff'.mpr hτ --
+      simp only [hk, toCentralizer, MonoidHom.coe_mk, OneHom.coe_mk, card_ofPermHom_support]
       have H : (⟨c, hc⟩ : g.cycleFactorsFinset) ≠ ⟨d, hd⟩ := Subtype.coe_ne_coe.mp hm'
       simp only [τ, support_swap H]
       rw [Finset.sum_insert (by simp only [mem_singleton, H, not_false_eq_true]),

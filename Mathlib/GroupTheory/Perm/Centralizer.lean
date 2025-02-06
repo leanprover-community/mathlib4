@@ -76,10 +76,10 @@ This is shown by constructing a right inverse
 This allows to give a description of the kernel of
 `Equiv.Perm.OnCycleFactors.toPermHom g` as the product of a
 symmetric group and of a product of cyclic groups.  This analysis
-starts with the morphism `Equiv.Perm.OnCycleFactors.θ`, its
-injectivity `Equiv.Perm.OnCycleFactors.θ_injective`, its range
-`Equiv.Perm.OnCycleFactors.θ_range_eq`, and its cardinality
-`Equiv.Perm.OnCycleFactors.θ_range_card`.
+starts with the morphism `Equiv.Perm.OnCycleFactors.kerParam`, its
+injectivity `Equiv.Perm.OnCycleFactors.kerParam_injective`, its range
+`Equiv.Perm.OnCycleFactors.kerParam_range_eq`, and its cardinality
+`Equiv.Perm.OnCycleFactors.kerParam_range_card`.
 
 * `Equiv.Perm.nat_card_centralizer g` computes the cardinality
   of the centralizer of `g`.
@@ -357,20 +357,22 @@ noncomputable def ofPermHom : range_toPermHom' g →* Perm α where
   map_one' := ext fun x ↦ ofPermHomFun_one a x
   map_mul' := fun σ τ ↦ ext fun x ↦ by simp [mul_apply, ofPermHomFun_mul a σ τ x]
 
+theorem ofPermHom_apply (τ) (x) : a.ofPermHom τ x = a.ofPermHomFun τ x := rfl
+
 theorem ofPermHom_support :
     (ofPermHom a τ).support = Finset.biUnion (τ : Perm g.cycleFactorsFinset).support
         (fun c ↦ (c : Perm α).support) := by
   ext x
   simp only [mem_support, Finset.mem_biUnion]
-  change newK a τ x ≠ x ↔ _
+  rw [ofPermHom_apply]
   rcases mem_fixedPoints_or_exists_zpow_eq a x with (hx | ⟨c, hc, m, hm⟩)
-  · simp only [newK_apply_of_mem_fixedPoints a τ hx, ne_eq, not_true_eq_false, false_iff]
+  · simp only [ofPermHomFun_apply_of_mem_fixedPoints a τ hx, ne_eq, not_true_eq_false, false_iff]
     rw [Function.mem_fixedPoints_iff] at hx
     simp only [← mem_support]
     intro h
     obtain ⟨c, _, h'⟩ := h
     exact mem_support.mp ((mem_cycleFactorsFinset_support_le c.prop) h') hx
-  · rw [newK_apply_of_cycleOf_mem a τ hc hm]
+  · rw [ofPermHomFun_apply_of_cycleOf_mem a τ hc hm]
     nth_rewrite 1 [← hm]
     simp only [ne_eq, EmbeddingLike.apply_eq_iff_eq, (a.injective).eq_iff]
     rw [not_iff_comm]
