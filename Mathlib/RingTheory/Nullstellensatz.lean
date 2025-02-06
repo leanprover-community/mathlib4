@@ -168,7 +168,7 @@ theorem isMaximal_iff_eq_vanishingIdeal_singleton (I : Ideal (MvPolynomial σ k)
   simpa only [map_sum ϕ, ϕ.map_mul, map_prod ϕ, ϕ.map_pow, ϕ.map_zero, hx] using congr_arg ϕ hp
 
 /-- Main statement of the Nullstellensatz -/
-@[simp]
+-- Can't be `simp` due to simpNF timeout on LHS (failed to synthesize `I.IsPrime`)
 theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal (MvPolynomial σ k)) :
     vanishingIdeal (zeroLocus I) = I.radical := by
   rw [I.radical_eq_jacobson]
