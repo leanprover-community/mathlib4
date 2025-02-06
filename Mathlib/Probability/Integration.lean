@@ -139,7 +139,6 @@ theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun (h_meas_f : Measura
     h_indep_fun
 
 theorem Kernel.lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'
-    -- todo: h_meas_f could be `AEMeasurable f (ν ⊗ₘ κ)`
     (h_meas_f : ∃ f', Measurable f' ∧ ∀ᵐ ω' ∂ν, f =ᵐ[κ ω'] f')
     (h_meas_g : ∃ g', Measurable g' ∧ ∀ᵐ ω' ∂ν, g =ᵐ[κ ω'] g')
     (h_indep_fun : IndepFun f g κ ν) :
