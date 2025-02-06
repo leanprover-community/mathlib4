@@ -111,42 +111,34 @@ instance : BoundedOrder (Nucleus X) where
   bot_le _ _ := le_apply
   le_top _ _ := by simp
 
-
-/-- The function of the Nucleus corresponding to the infimum of `s` -/
-def sInf_fun (s : Set (Nucleus X)) (x : X) := sInf {j x | j ∈ s}
-
-variable {s : Set (Nucleus X)}
-
-lemma sInf_fun_idempotent (x : X) : sInf_fun s (sInf_fun s x) ≤ sInf_fun s x := by
-  simp only [sInf_fun, le_sInf_iff, Set.mem_setOf_eq, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂, sInf_le_iff, lowerBounds]
-  intro a ha b h
-  rw [← idempotent]
-  apply le_trans (h a ha)
-  gcongr
-  simp_all [sInf_le_iff, lowerBounds]
-
-lemma sInf_fun_map_inf (x y : X): sInf_fun s (x ⊓ y) = sInf_fun s x ⊓ sInf_fun s y := by
-  simp only [sInf_fun, InfHomClass.map_inf]
-  apply le_antisymm
-  · -- squeezed because of performance
-    simp_all only [le_inf_iff, le_sInf_iff, Set.mem_setOf_eq, sInf_le_iff, lowerBounds,
-    forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, implies_true, and_self]
-  · simp only [le_sInf_iff, Set.mem_setOf_eq, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂, le_inf_iff]
-    intro a ha
-    constructor
-    · apply inf_le_of_left_le
-      simp_all [sInf_le_iff, lowerBounds]
-    · apply inf_le_of_right_le
-      simp_all [sInf_le_iff, lowerBounds]
-
 instance : InfSet (Nucleus X) where
-  sInf s := ⟨⟨sInf_fun s, sInf_fun_map_inf⟩, sInf_fun_idempotent, (by simp[sInf_fun,le_apply])⟩
+  sInf s :=
+  { toFun x := ⨅ j ∈ s, j x,
+    map_inf' x y:= (by
+      simp only [InfHomClass.map_inf]
+      apply le_antisymm
+      · simp_all only [le_inf_iff, le_iInf_iff, iInf_le_iff, implies_true, and_self]
+      · simp only [le_iInf_iff, le_inf_iff]
+        intro a ha
+        constructor
+        · apply inf_le_of_left_le
+          simp_all [iInf_le_iff, lowerBounds]
+        · apply inf_le_of_right_le
+          simp_all [iInf_le_iff, lowerBounds])
+    idempotent' x := (by
+      simp only [le_iInf_iff, iInf_le_iff]
+      intro a ha b h
+      rw [← idempotent]
+      apply le_trans (h a ha)
+      gcongr
+      simp_all [iInf_le_iff])
+    le_apply' x := (by simp [le_apply])}
+
+theorem sInf_apply (s : Set (Nucleus X)) (x : X) : sInf s x = ⨅ j ∈ s, j x := rfl
 
 instance : CompleteSemilatticeInf (Nucleus X) where
-  sInf_le := (by simp_all [sInf, LE.le, sInf_fun, sInf_le_iff,lowerBounds])
-  le_sInf := (by simp_all [sInf, sInf_fun, LE.le])
+  sInf_le := (by simp_all [LE.le, sInf_apply, iInf_le_iff])
+  le_sInf := (by simp_all [LE.le, sInf_apply])
 
 instance : CompleteLattice (Nucleus X) := completeLatticeOfCompleteSemilatticeInf (Nucleus X)
 
