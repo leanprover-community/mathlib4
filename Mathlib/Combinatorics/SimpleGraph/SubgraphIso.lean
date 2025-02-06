@@ -122,7 +122,7 @@ end SubgraphIso
 
 section IsIsoSubgraph
 
-/-- The relation that a simple graph contains a copy of a simple graph. -/
+/-- The relation `IsIsoSubgraph A B` says that a simple graph `B` contains a copy of a simple graph `A`. -/
 abbrev IsIsoSubgraph (A : SimpleGraph α) (B : SimpleGraph β) := Nonempty (A ≲g B)
 
 /-- A simple graph contains itself. -/
