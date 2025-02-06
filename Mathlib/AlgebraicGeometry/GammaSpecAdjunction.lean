@@ -302,7 +302,7 @@ theorem right_triangle (R : CommRingCat) :
   · ext (p : PrimeSpectrum R)
     dsimp
     refine PrimeSpectrum.ext (Ideal.ext fun x => ?_)
-    erw [← IsLocalization.AtPrime.to_map_mem_maximal_iff ((structureSheaf R).presheaf.stalk p)
+    rw [← IsLocalization.AtPrime.to_map_mem_maximal_iff ((structureSheaf R).presheaf.stalk p)
         p.asIdeal x]
     rfl
   · intro r; apply toOpen_res
