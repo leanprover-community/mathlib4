@@ -272,4 +272,9 @@ instance : IsScalarTower C (Localization (Algebra.algebraMapSubmonoid C P.primeC
     IsLocalization.localization_isScalarTower_of_submonoid_le _ _ _ _
     (map_le_nonZeroDivisors_of_faithfulSMul P.primeCompl_le_nonZeroDivisors)
 
+instance : IsFractionRing (Localization (Algebra.algebraMapSubmonoid C P.primeCompl))
+    (FractionRing C) :=
+  IsFractionRing.isFractionRing_of_isDomain_of_isLocalization
+    (Algebra.algebraMapSubmonoid C P.primeCompl) _ _
+
 end IsIntegralClosure
