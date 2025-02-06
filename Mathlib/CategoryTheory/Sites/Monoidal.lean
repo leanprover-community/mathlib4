@@ -40,9 +40,8 @@ noncomputable def functorEnrichedHomCoyonedaObjEquiv (M : A) (F G : Cᵒᵖ ⥤ 
     (functorEnrichedHom A F G ⋙ coyoneda.obj (op M)).obj (op X) ≃
     (presheafHom (F ⊗ (Functor.const _).obj M) G).obj (op X) where
   toFun f :=
-    { app := fun j ↦
-        MonoidalClosed.uncurry (f ≫ enrichedHomπ A _ _ (Under.mk j.unop.hom.op))
-      naturality := fun j j' φ ↦ by
+    { app j := MonoidalClosed.uncurry (f ≫ enrichedHomπ A _ _ (Under.mk j.unop.hom.op))
+      naturality j j' φ := by
         dsimp
         rw [tensorHom_id, ← uncurry_natural_right, ← uncurry_pre_app, Category.assoc,
           Category.assoc, ← enrichedOrdinaryCategorySelf_eHomWhiskerRight,
@@ -140,13 +139,13 @@ variable (J A)
 /-- The monoidal category structure on `Sheaf J A` that is obtained
 by localization of the monoidal category structure on the category
 of presheaves. -/
-noncomputable def monoidal [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J A] :
+noncomputable def monoidalCategory [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J A] :
     MonoidalCategory (Sheaf J A) :=
   inferInstanceAs (MonoidalCategory
     (LocalizedMonoidal (L := presheafToSheaf J A) (W := J.W) (Iso.refl _)))
 
 noncomputable instance [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J A] :
-    letI := monoidal J A
+    letI := monoidalCategory J A
     (presheafToSheaf J A).Monoidal :=
   inferInstanceAs (Localization.Monoidal.toMonoidalCategory
     (L := presheafToSheaf J A) (W := J.W) (Iso.refl _)).Monoidal
@@ -156,7 +155,7 @@ noncomputable example
     [∀ (F₁ F₂ : Cᵒᵖ ⥤ A), HasFunctorEnrichedHom A F₁ F₂]
     [∀ (F₁ F₂ : Cᵒᵖ ⥤ A), HasEnrichedHom A F₁ F₂] :
     MonoidalCategory (Sheaf J A) :=
-  monoidal J A
+  monoidalCategory J A
 
 end Sheaf
 
