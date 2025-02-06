@@ -74,6 +74,33 @@ import Mathlib.Data.Nat.Notation
 #min_imports in
 lemma hi (n : ℕ) : n = n := by extract_goal; rfl
 
+section Variables
+
+/-- info: import Mathlib.Data.Nat.Notation -/
+#guard_msgs in
+#min_imports in
+def confusableName : (1 : ℕ) = 1 := rfl
+
+variable {R : Type*} [Semiring R]
+
+-- Don't get confused by unused variables.
+variable {K : Type*} [Field K]
+
+namespace Namespace
+
+-- The dependency on `Semiring` is only found in the `variable` declaration.
+-- We find it by looking up the declaration by name and checking the term,
+-- which used to get confused if running in a namespace.
+
+/-- info: import Mathlib.Algebra.Ring.Defs -/
+#guard_msgs in
+#min_imports in
+protected def confusableName : (1 : R) = 1 := rfl
+
+end Namespace
+
+end Variables
+
 section Linter.MinImports
 
 set_option linter.minImports.increases false
