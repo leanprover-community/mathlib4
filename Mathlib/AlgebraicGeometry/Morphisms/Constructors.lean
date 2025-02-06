@@ -229,9 +229,9 @@ lemma topologically_isLocalAtTarget
   apply IsLocalAtTarget.mk'
   · intro X Y f U hf
     simp_rw [topologically, morphismRestrict_base]
-    exact hP₂ f.base U.carrier f.base.2 U.2 hf
+    exact hP₂ f.base U.carrier f.base.hom.2 U.2 hf
   · intro X Y f ι U hU hf
-    apply hP₃ f.base U hU f.base.continuous fun i ↦ ?_
+    apply hP₃ f.base U hU f.base.hom.continuous fun i ↦ ?_
     rw [← morphismRestrict_base]
     exact hf i
 
@@ -329,19 +329,5 @@ lemma isStableUnderBaseChange_of_isStableUnderBaseChangeOnAffine_of_isLocalAtTar
   HasAffineProperty.isStableUnderBaseChange hP₂
 
 end AffineTargetMorphismProperty
-
-@[deprecated (since := "2024-06-22")]
-alias diagonalTargetAffineLocallyOfOpenCover := HasAffineProperty.diagonal_of_openCover
-
-@[deprecated (since := "2024-06-22")]
-alias AffineTargetMorphismProperty.diagonalOfTargetAffineLocally :=
-  HasAffineProperty.diagonal_of_diagonal_of_isPullback
-
-@[deprecated (since := "2024-06-22")]
-alias universallyIsLocalAtTarget := universally_isLocalAtTarget
-
-@[deprecated (since := "2024-06-22")]
-alias universallyIsLocalAtTargetOfMorphismRestrict :=
-  universally_isLocalAtTarget
 
 end AlgebraicGeometry

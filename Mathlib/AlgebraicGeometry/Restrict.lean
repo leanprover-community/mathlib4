@@ -176,9 +176,6 @@ def Scheme.openCoverOfISupEqTop {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
     have : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : X.Opens) by trivial
     exact (Opens.mem_iSup.mp this).choose_spec
 
-@[deprecated (since := "2024-07-24")]
-noncomputable alias Scheme.openCoverOfSuprEqTop := Scheme.openCoverOfISupEqTop
-
 /-- The open sets of an open subscheme corresponds to the open sets containing in the subset. -/
 @[simps!]
 def opensRestrict :
@@ -246,7 +243,7 @@ theorem Scheme.homOfLE_apply {U V : X.Opens} (e : U ≤ V) (x : U) :
 theorem Scheme.ι_image_homOfLE_le_ι_image {U V : X.Opens} (e : U ≤ V) (W : Opens V) :
     U.ι ''ᵁ (X.homOfLE e ⁻¹ᵁ W) ≤ V.ι ''ᵁ W := by
   simp only [← SetLike.coe_subset_coe, IsOpenMap.coe_functor_obj, Set.image_subset_iff,
-    Scheme.homOfLE_base, Opens.map_coe, Opens.inclusion'_apply]
+    Scheme.homOfLE_base, Opens.map_coe, Opens.inclusion'_hom_apply]
   rintro _ h
   exact ⟨_, h, rfl⟩
 
@@ -408,6 +405,26 @@ lemma Scheme.Hom.preimageIso_inv_ι {X Y : Scheme.{u}} (f : X.Hom Y) [IsIso (C :
   IsOpenImmersion.isoOfRangeEq_inv_fac _ _ _
 
 @[deprecated (since := "2024-10-20")] alias Scheme.restrictMapIso := Scheme.Hom.preimageIso
+
+/-- If `U ≤ V` are opens of `X`, the restriction of `U` to `V` is isomorphic to `U`. -/
+noncomputable def Scheme.Opens.isoOfLE {X : Scheme.{u}} {U V : X.Opens}
+    (hUV : U ≤ V) : (V.ι ⁻¹ᵁ U).toScheme ≅ U :=
+  IsOpenImmersion.isoOfRangeEq ((V.ι ⁻¹ᵁ U).ι ≫ V.ι) U.ι <| by
+    have : V.ι ''ᵁ (V.ι ⁻¹ᵁ U) = U := by simpa [Scheme.Hom.image_preimage_eq_opensRange_inter]
+    rw [Scheme.comp_coeBase, TopCat.coe_comp, Scheme.Opens.range_ι, Set.range_comp, ← this]
+    simp
+
+@[reassoc (attr := simp)]
+lemma Scheme.Opens.isoOfLE_hom_ι {X : Scheme.{u}} {U V : X.Opens}
+    (hUV : U ≤ V) :
+    (Scheme.Opens.isoOfLE hUV).hom ≫ U.ι = (V.ι ⁻¹ᵁ U).ι ≫ V.ι := by
+  simp [isoOfLE]
+
+@[reassoc (attr := simp)]
+lemma Scheme.Opens.isoOfLE_inv_ι {X : Scheme.{u}} {U V : X.Opens}
+    (hUV : U ≤ V) :
+    (Scheme.Opens.isoOfLE hUV).inv ≫ (V.ι ⁻¹ᵁ U).ι ≫ V.ι = U.ι := by
+  simp [isoOfLE]
 
 section MorphismRestrict
 
