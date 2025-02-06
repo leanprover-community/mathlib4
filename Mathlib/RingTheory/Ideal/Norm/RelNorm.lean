@@ -129,9 +129,9 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
   have := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization
     (Algebra.algebraMapSubmonoid S M) Sₘ L
   rw [map_spanIntNorm]
-  refine span_eq_span (Set.image_subset_iff.mpr ?_) (Set.image_subset_iff.mpr ?_)
-  · intro a' ha'
-    simp only [Set.mem_preimage, submodule_span_eq, ← map_spanIntNorm, SetLike.mem_coe,
+  refine span_eq_span (Set.image_subset_iff.mpr (fun a' ha' ↦ ?_))
+    (Set.image_subset_iff.mpr (fun a ha ↦ ?_))
+  · simp only [Set.mem_preimage, submodule_span_eq, ← map_spanIntNorm, SetLike.mem_coe,
       IsLocalization.mem_map_algebraMap_iff (Algebra.algebraMapSubmonoid S M) Sₘ,
       IsLocalization.mem_map_algebraMap_iff M Rₘ, Prod.exists] at ha' ⊢
     obtain ⟨⟨a, ha⟩, ⟨_, ⟨s, hs, rfl⟩⟩, has⟩ := ha'
@@ -142,16 +142,13 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
     apply_fun Algebra.norm K at has
     simp only [_root_.map_mul, IsScalarTower.algebraMap_apply R Rₘ Sₘ] at has
     rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
-      ← IsScalarTower.algebraMap_apply,
-      IsScalarTower.algebraMap_apply R K L,
+      ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R K L,
       Algebra.norm_algebraMap] at has
     apply IsFractionRing.injective Rₘ K
     simp only [_root_.map_mul, map_pow]
     rwa [Algebra.algebraMap_intNorm (L := L), ← IsScalarTower.algebraMap_apply,
       ← IsScalarTower.algebraMap_apply, Algebra.algebraMap_intNorm (L := L)]
-  · intro a ha
-    rw [Set.mem_preimage, Function.comp_apply, Algebra.intNorm_eq_of_isLocalization
-      (A := R) (B := S) M (Aₘ := Rₘ) (Bₘ := Sₘ)]
+  · rw [Set.mem_preimage, Function.comp_apply, Algebra.intNorm_eq_of_isLocalization M (Bₘ := Sₘ)]
     exact subset_span (Set.mem_image_of_mem _ (mem_map_of_mem _ ha))
 
 theorem spanNorm_mul_spanNorm_le (I J : Ideal S) :
@@ -198,8 +195,6 @@ theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanN
   have : IsDedekindDomain Sₚ := IsLocalization.isDedekindDomain S h _
   have : IsPrincipalIdealRing Sₚ :=
     IsDedekindDomain.isPrincipalIdealRing_localization_over_prime S P hP0
-  let g : Sₚ →+* FractionRing S := IsLocalization.map _ (T := S⁰) (RingHom.id S) h
-  algebraize [g]
   have : Algebra.IsSeparable (FractionRing Rₚ) (FractionRing Sₚ) :=
     FractionRing.isSeparable_of_isLocalization S Rₚ Sₚ P.primeCompl_le_nonZeroDivisors
   simp only [Ideal.map_mul, ← spanIntNorm_localization (R := R) (Sₘ := Localization P') _ _
@@ -263,19 +258,9 @@ theorem spanNorm_map_algebraMap (I : Ideal R) :
   let P' := Algebra.algebraMapSubmonoid S P.primeCompl
   let Rₚ := Localization.AtPrime P
   let Sₚ := Localization P'
-  let K := FractionRing R
-  let f : Rₚ →+* K := IsLocalization.map _ (T := R⁰) (RingHom.id R) P.primeCompl_le_nonZeroDivisors
   have h : P' ≤ S⁰ := map_le_nonZeroDivisors_of_faithfulSMul P.primeCompl_le_nonZeroDivisors
   have : IsDomain Sₚ := IsLocalization.isDomain_localization h
   have : IsDedekindDomain Sₚ := IsLocalization.isDedekindDomain S h _
-  let L := FractionRing S
-  let g : Sₚ →+* L := IsLocalization.map _ (T := S⁰) (RingHom.id S) h
-  algebraize [g, (algebraMap K L).comp f]
-  have : IsScalarTower S Sₚ L :=
-    IsLocalization.localization_isScalarTower_of_submonoid_le Sₚ L _ _ h
-  have := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization P' Sₚ L
-  have : IsScalarTower Rₚ Sₚ L :=
-    IsLocalization.localization_localization_isScalarTower S Rₚ Sₚ K L P.primeCompl
   have : Algebra.IsSeparable (FractionRing Rₚ) (FractionRing Sₚ) :=
     FractionRing.isSeparable_of_isLocalization S Rₚ Sₚ P.primeCompl_le_nonZeroDivisors
   simp only [Ideal.map_mul, ← spanIntNorm_localization (R := R) (Sₘ := Localization P') _ _
@@ -284,9 +269,9 @@ theorem spanNorm_map_algebraMap (I : Ideal R) :
     ← I.map_map, ← (I.map _).span_singleton_generator, Ideal.map_span, Set.image_singleton,
     spanNorm_singleton, Ideal.span_singleton_pow]
   congr
-  apply IsFractionRing.injective Rₚ K
-  rw [Algebra.algebraMap_intNorm (L := L), ← IsScalarTower.algebraMap_apply,
-    IsScalarTower.algebraMap_apply Rₚ K L, Algebra.norm_algebraMap, map_pow]
+  apply IsFractionRing.injective Rₚ (FractionRing R)
+  rw [Algebra.algebraMap_intNorm (L := FractionRing S), ← IsScalarTower.algebraMap_apply,
+    IsScalarTower.algebraMap_apply Rₚ (FractionRing R), Algebra.norm_algebraMap, map_pow]
 
 end Ideal
 
