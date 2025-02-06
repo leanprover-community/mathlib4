@@ -5,7 +5,6 @@ Authors: Jireh Loreaux
 -/
 
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
-import Mathlib.Analysis.InnerProductSpace.Continuous
 import Mathlib.Topology.ContinuousMap.StarOrdered
 import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
