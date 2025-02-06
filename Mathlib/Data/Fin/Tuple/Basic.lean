@@ -1013,13 +1013,6 @@ not a definitional equality. -/
 @[simp] lemma insertNthEquiv_last (n : ℕ) (α : Type*) :
     insertNthEquiv (fun _ ↦ α) (last n) = snocEquiv (fun _ ↦ α) := by ext; simp
 
-/-- Separates an `n+1`-tuple, returning a selected index and then the rest of the tuple.
-Functional form of `Equiv.piFinSuccAbove`. -/
-@[deprecated removeNth (since := "2024-06-19")]
-def extractNth {α : Fin (n + 1) → Type*} (i : Fin (n + 1)) (f : (∀ j, α j)) :
-    α i × ∀ j, α (i.succAbove j) :=
-  (f i, removeNth i f)
-
 end InsertNth
 
 section Find
@@ -1158,6 +1151,15 @@ theorem contractNth_apply_of_ne (j : Fin (n + 1)) (op : α → α → α) (g : F
   · exact False.elim (hjk h.symm)
   · rwa [j.succAbove_of_le_castSucc, contractNth_apply_of_gt]
     · exact Fin.le_iff_val_le_val.2 (le_of_lt h)
+
+lemma comp_contractNth {β : Sort*} (opα : α → α → α) (opβ : β → β → β) {f : α → β}
+    (hf : ∀ x y, f (opα x y) = opβ (f x) (f y)) (j : Fin (n + 1)) (g : Fin (n + 1) → α) :
+    f ∘ contractNth j opα g = contractNth j opβ (f ∘ g) := by
+  ext x
+  rcases lt_trichotomy (x : ℕ) j with (h|h|h)
+  · simp only [Function.comp_apply, contractNth_apply_of_lt, h]
+  · simp only [Function.comp_apply, contractNth_apply_of_eq, h, hf]
+  · simp only [Function.comp_apply, contractNth_apply_of_gt, h]
 
 end ContractNth
 
