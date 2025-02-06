@@ -753,6 +753,12 @@ lemma Module.annihilator_eq_bot {R M} [Ring R] [AddCommGroup M] [Module R M] :
       (by simp only [sub_smul, H', sub_self, implies_true]))
   · exact @H a 0 (by simp [Module.mem_annihilator.mp ha])
 
+theorem Module.annihilator_eq_top_iff : annihilator R M = ⊤ ↔ Subsingleton M :=
+  ⟨fun h ↦ ⟨fun m m' ↦ by
+      rw [← one_smul R m, ← one_smul R m']
+      simp_rw [mem_annihilator.mp (h ▸ Submodule.mem_top)]⟩,
+    fun _ ↦ top_le_iff.mp fun _ _ ↦ mem_annihilator.mpr fun _ ↦ Subsingleton.elim _ _⟩
+
 namespace Submodule
 
 /-- `N.annihilator` is the ideal of all elements `r : R` such that `r • N = 0`. -/
@@ -770,11 +776,8 @@ theorem mem_annihilator {r} : r ∈ N.annihilator ↔ ∀ n ∈ N, r • n = (0 
 theorem annihilator_bot : (⊥ : Submodule R M).annihilator = ⊤ :=
   top_le_iff.mp fun _ _ ↦ mem_annihilator.mpr fun _ ↦ by rintro rfl; rw [smul_zero]
 
-theorem annihilator_eq_top_iff : N.annihilator = ⊤ ↔ N = ⊥ :=
-  ⟨fun H ↦
-    eq_bot_iff.2 fun (n : M) hn =>
-      (mem_bot R).2 <| one_smul R n ▸ mem_annihilator.1 ((Ideal.eq_top_iff_one _).1 H) n hn,
-    fun H ↦ H.symm ▸ annihilator_bot⟩
+theorem annihilator_eq_top_iff : N.annihilator = ⊤ ↔ N = ⊥ := by
+  rw [annihilator, Module.annihilator_eq_top_iff, Submodule.subsingleton_iff_eq_bot]
 
 theorem annihilator_mono (h : N ≤ P) : P.annihilator ≤ N.annihilator := fun _ hrp =>
   mem_annihilator.2 fun n hn => mem_annihilator.1 hrp n <| h hn
@@ -785,6 +788,9 @@ theorem annihilator_iSup (ι : Sort w) (f : ι → Submodule R M) :
     mem_annihilator.2 fun n hn ↦ iSup_induction f (C := (r • · = 0)) hn
       (fun i ↦ mem_annihilator.1 <| (mem_iInf _).mp H i) (smul_zero _)
       fun m₁ m₂ h₁ h₂ ↦ by simp_rw [smul_add, h₁, h₂, add_zero]
+
+theorem le_annihilator_iff {N : Submodule R M} {I : Ideal R} : I ≤ annihilator N ↔ I • N = ⊥ := by
+  simp_rw [← le_bot_iff, smul_le, SetLike.le_def, mem_annihilator]; rfl
 
 @[simp]
 theorem annihilator_smul (N : Submodule R M) : annihilator N • N = ⊥ :=

@@ -9,6 +9,7 @@ import Mathlib.GroupTheory.Torsion
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.RingTheory.Ideal.Quotient.Defs
+import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Torsion submodules
@@ -540,6 +541,12 @@ def IsTorsionBySet.semilinearMap [I.IsTwoSided] (hM : IsTorsionBySet R M I) :
   { toFun := id
     map_add' := fun _ _ ↦ rfl
     map_smul' := fun _ _ ↦ rfl }
+
+theorem IsTorsionBySet.isSemisimpleModule_iff [I.IsTwoSided]
+    (hM : Module.IsTorsionBySet R M I) : let _ := hM.module
+    IsSemisimpleModule (R ⧸ I) M ↔ IsSemisimpleModule R M :=
+  let _ := hM.module
+  (hM.semilinearMap.isSemisimpleModule_iff_of_bijective Function.bijective_id).symm
 
 /-- An `(R ⧸ Ideal.span {r})`-module is an `R`-module for which `IsTorsionBy R M r`. -/
 abbrev IsTorsionBy.module [h : (Ideal.span {r}).IsTwoSided] (hM : IsTorsionBy R M r) :

@@ -31,7 +31,7 @@ lemma _root_.minimalPrimes.finite_of_isNoetherianRing : (minimalPrimes R).Finite
     |>.mpr NoetherianSpace.finite_irreducibleComponents
 
 lemma finite_setOf_isMin :
-    {x : PrimeSpectrum R | IsMin x }.Finite := by
+    {x : PrimeSpectrum R | IsMin x}.Finite := by
   have : Function.Injective (asIdeal (R := R)) := @PrimeSpectrum.ext _ _
   refine Set.Finite.of_finite_image (f := asIdeal) ?_ this.injOn
   simp_rw [isMin_iff]
@@ -43,9 +43,10 @@ section IsArtinianRing
 
 variable (R : Type u) [CommRing R] [IsArtinianRing R]
 
+instance : Ring.KrullDimLE 0 R := .mk₀ fun _ _ ↦ inferInstance
+
 instance : DiscreteTopology (PrimeSpectrum R) :=
-  discreteTopology_iff_finite_and_isPrime_imp_isMaximal.mpr
-    ⟨inferInstance, fun _ _ ↦ inferInstance⟩
+  discreteTopology_iff_finite_and_krullDimLE_zero.mpr ⟨inferInstance, inferInstance⟩
 
 end IsArtinianRing
 

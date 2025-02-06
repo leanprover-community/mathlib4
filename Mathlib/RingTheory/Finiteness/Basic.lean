@@ -188,6 +188,9 @@ open Submodule Set
 
 variable {R M N}
 
+instance [Module.Finite R M] : IsCoatomic (Submodule R M) :=
+  CompleteLattice.coatomic_of_top_compact <| by rwa [← fg_iff_compact, ← finite_def]
+
 -- See note [lower instance priority]
 instance (priority := 100) of_finite [Finite M] : Module.Finite R M := by
   cases nonempty_fintype M

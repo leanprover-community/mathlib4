@@ -322,6 +322,7 @@
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
   "Mathlib.Tactic.Algebraize": ["Mathlib.Algebra.Algebra.Tower"],
+  "Mathlib.RingTheory.SimpleModule.Basic": ["Mathlib.Data.Matrix.Mul"],
   "Mathlib.RingTheory.PowerSeries.Basic":
   ["Mathlib.Algebra.CharP.Defs", "Mathlib.Tactic.MoveAdd"],
   "Mathlib.RingTheory.PolynomialAlgebra": ["Mathlib.Data.Matrix.DMatrix"],

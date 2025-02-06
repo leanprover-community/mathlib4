@@ -4579,6 +4579,7 @@ import Mathlib.RingTheory.HahnSeries.Summable
 import Mathlib.RingTheory.HahnSeries.Valuation
 import Mathlib.RingTheory.Henselian
 import Mathlib.RingTheory.HopfAlgebra
+import Mathlib.RingTheory.HopkinsLevitzki
 import Mathlib.RingTheory.Ideal.AssociatedPrime
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.Basis
@@ -4628,7 +4629,9 @@ import Mathlib.RingTheory.IsPrimary
 import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.RingTheory.Jacobson.Ideal
 import Mathlib.RingTheory.Jacobson.Polynomial
+import Mathlib.RingTheory.Jacobson.Radical
 import Mathlib.RingTheory.Jacobson.Ring
+import Mathlib.RingTheory.Jacobson.Semiprimary
 import Mathlib.RingTheory.Kaehler.Basic
 import Mathlib.RingTheory.Kaehler.CotangentComplex
 import Mathlib.RingTheory.Kaehler.JacobiZariski
@@ -4800,7 +4803,8 @@ import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
 import Mathlib.RingTheory.RootsOfUnity.Lemmas
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-import Mathlib.RingTheory.SimpleModule
+import Mathlib.RingTheory.SimpleModule.Basic
+import Mathlib.RingTheory.SimpleModule.Rank
 import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.RingTheory.SimpleRing.Defs
 import Mathlib.RingTheory.SimpleRing.Field
