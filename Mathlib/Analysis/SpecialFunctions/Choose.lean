@@ -11,7 +11,7 @@ import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 
 This file proves asymptotic theorems for binomial coefficents and factorial variants.
 
-## Main definitions
+## Main statements
 
 * `isEquivalent_descFactorial` is the proof that `n.descFactorial k ~ n^k` as `n → ∞`.
 
