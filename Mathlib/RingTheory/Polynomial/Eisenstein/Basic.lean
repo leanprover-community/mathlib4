@@ -173,7 +173,7 @@ theorem dvd_pow_natDegree_of_eval₂_eq_zero {f : R →+* A} (hf : Function.Inje
 theorem dvd_pow_natDegree_of_aeval_eq_zero [Algebra R A] [Nontrivial A] [NoZeroSMulDivisors R A]
     {p : R[X]} (hp : p.Monic) (x y : R) (z : A) (h : Polynomial.aeval z p = 0)
     (hz : z * algebraMap R A x = algebraMap R A y) : x ∣ y ^ p.natDegree :=
-  dvd_pow_natDegree_of_eval₂_eq_zero (NoZeroSMulDivisors.algebraMap_injective R A) hp x y z h
+  dvd_pow_natDegree_of_eval₂_eq_zero (FaithfulSMul.algebraMap_injective R A) hp x y z h
     ((mul_comm _ _).trans hz)
 
 end ScaleRoots
