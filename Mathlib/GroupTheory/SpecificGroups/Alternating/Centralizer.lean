@@ -100,8 +100,12 @@ theorem cycleType_kerParam
   · simp only [univ_eq_attach]
   · exact fun c _ d _ h ↦ by
       -- pairdisjoint₂ h (v c) (v d) (v c).prop (v d).prop
-      dsimp
-      sorry
+      obtain ⟨m, hm⟩ := (v c).prop
+      obtain ⟨n, hn⟩ := (v d).prop
+      simp only [← hm, ← hn]
+      apply Disjoint.zpow_disjoint_zpow
+      apply cycleFactorsFinset_pairwise_disjoint g c.prop d.prop
+      exact Subtype.coe_ne_coe.mpr h
 
 variable {g} in
 theorem odd_of_centralizer_le_alternatingGroup
@@ -228,6 +232,9 @@ theorem card_le_of_centralizer_le_alternating
   rw [sum_cycleType]
   exact Finset.card_le_univ _
 
+/-
+
+-/
 theorem count_le_one_of_centralizer_le_alternating
     (h : Subgroup.centralizer {g} ≤ alternatingGroup α) :
     ∀ i, g.cycleType.count i ≤ 1 := by
@@ -271,7 +278,9 @@ theorem count_le_one_of_centralizer_le_alternating
       rw [this', Multiset.sum_replicate, smul_eq_mul] at this''
       rw [← mul_left_inj' (c := 2) (by norm_num), this'']
       simp only [hk, toCentralizer, MonoidHom.coe_mk, OneHom.coe_mk]
-      -- have := mem_range_toPermHom_iff'.mpr hτ -- card_ofPermHom_support]
+      -- rw [card_ofPermHom_support]
+
+      -- have := mem_range_toPermHom_iff'.mpr hτ --
       have H : (⟨c, hc⟩ : g.cycleFactorsFinset) ≠ ⟨d, hd⟩ := Subtype.coe_ne_coe.mp hm'
       simp only [τ, support_swap H]
       rw [Finset.sum_insert (by simp only [mem_singleton, H, not_false_eq_true]),

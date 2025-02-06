@@ -364,6 +364,39 @@ theorem ofPermHom_mem_centralizer :
   simp only [mul_apply]
   exact ofPermHomFun_commute_zpow_apply a τ x 1
 
+/- support ?
+  c ^ n (a c) -> (tau c) ^ n (a (tau c))
+  point fixe : c = tau c
+  et alors, autant que la longueur de c
+
+-/
+
+variable {τ} in
+theorem mem_ofPermHom_support_iff {x : α} : x ∈ (a.ofPermHom τ).support ↔
+    ∃ (hx : g.cycleOf x ∈ g.cycleFactorsFinset), ⟨g.cycleOf x, hx⟩ ∈ τ.val.support := by
+  rcases a.mem_fixedPoints_or_exists_zpow_eq x with hx | ⟨c, hc, ⟨m, hm⟩⟩
+  · have hx' := hx
+    rw [Function.mem_fixedPoints_iff, ← not_mem_support,
+      ← cycleOf_mem_cycleFactorsFinset_iff] at hx
+    simp only [mem_support, ne_eq, hx, IsEmpty.exists_iff, iff_false, Decidable.not_not]
+    exact a.ofPermHomFun_apply_of_mem_fixedPoints _ hx'
+  · have : g.cycleOf x ∈ g.cycleFactorsFinset := by
+      rw [← (eq_cycleOf_of_mem_cycleFactorsFinset_iff g c.val c.prop x).mpr hc]
+      exact c.prop
+    simp only [mem_support, ne_eq, this, exists_true_left, not_iff_not]
+    change a.ofPermHomFun τ _ = _ ↔ _
+    rw [a.ofPermHomFun_apply_of_cycleOf_mem τ hc hm]
+    conv_lhs => rw [← hm, EmbeddingLike.apply_eq_iff_eq, (Basis.injective a).eq_iff]
+    suffices ⟨g.cycleOf x, this⟩ = c by
+      rw [this]
+    rw [← Subtype.coe_inj]
+    simp only [← hm, cycleOf_self_apply_zpow, a.cycleOf_eq c]
+
+example :
+    (a.ofPermHom τ).support.card =
+      ∑ c ∈ (τ : Perm g.cycleFactorsFinset).support, c.val.support.card := by
+  sorry
+
 /-- Given `a : Equiv.Perm.Basis g`,
 we define a right inverse of `Equiv.Perm.OnCycleFactors.toPermHom`,
 on `range_toPermHom' g` -/
