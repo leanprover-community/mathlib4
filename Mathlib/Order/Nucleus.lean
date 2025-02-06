@@ -119,12 +119,8 @@ instance : InfSet (Nucleus X) where
       apply le_antisymm
       · simp_all only [le_inf_iff, le_iInf_iff, iInf_le_iff, implies_true, and_self]
       · simp only [le_iInf_iff, le_inf_iff]
-        intro a ha
-        constructor
-        · apply inf_le_of_left_le
-          simp_all [iInf_le_iff, lowerBounds]
-        · apply inf_le_of_right_le
-          simp_all [iInf_le_iff, lowerBounds])
+        refine fun _ _ ↦ ⟨inf_le_of_left_le ?_, inf_le_of_right_le ?_⟩
+        all_goals simp_all [iInf_le_iff])
     idempotent' x := (by
       simp only [le_iInf_iff, iInf_le_iff]
       intro a ha b h
