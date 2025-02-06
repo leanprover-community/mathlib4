@@ -7,7 +7,9 @@ import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Constructions.Equalizers
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Limits.Preserves.Creates.Finite
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
+import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sigma
 
@@ -123,19 +125,15 @@ instance limitSubobjectProduct_mono [HasLimitsOfSize.{w, w} C] (F : J ⥤ C) :
     Mono (limitSubobjectProduct F) :=
   mono_comp _ _
 
-/-- Any category with products and equalizers has all limits.
-
-See <https://stacks.math.columbia.edu/tag/002N>.
--/
+/-- Any category with products and equalizers has all limits. -/
+@[stacks 002N]
 theorem has_limits_of_hasEqualizers_and_products [HasProducts.{w} C] [HasEqualizers C] :
     HasLimitsOfSize.{w, w} C :=
   { has_limits_of_shape :=
     fun _ _ => { has_limit := fun F => hasLimit_of_equalizer_and_product F } }
 
-/-- Any category with finite products and equalizers has all finite limits.
-
-See <https://stacks.math.columbia.edu/tag/002O>.
--/
+/-- Any category with finite products and equalizers has all finite limits. -/
+@[stacks 002O]
 theorem hasFiniteLimits_of_hasEqualizers_and_finite_products [HasFiniteProducts C]
     [HasEqualizers C] : HasFiniteLimits C where
   out _ := { has_limit := fun F => hasLimit_of_equalizer_and_product F }
@@ -221,6 +219,60 @@ lemma preservesLimits_of_preservesEqualizers_and_products [HasEqualizers C]
     [∀ J, PreservesLimitsOfShape (Discrete.{w} J) G] : PreservesLimitsOfSize.{w, w} G where
   preservesLimitsOfShape := preservesLimit_of_preservesEqualizers_and_product G
 
+section
+
+variable [HasLimitsOfShape (Discrete J) D] [HasLimitsOfShape (Discrete (Σp : J × J, p.1 ⟶ p.2)) D]
+  [HasEqualizers D]
+
+variable (G : C ⥤ D) [G.ReflectsIsomorphisms] [CreatesLimitsOfShape WalkingParallelPair G]
+  [CreatesLimitsOfShape (Discrete.{w} J) G]
+  [CreatesLimitsOfShape (Discrete.{w} (Σp : J × J, p.1 ⟶ p.2)) G]
+
+attribute [local instance] preservesLimit_of_preservesEqualizers_and_product in
+/-- If a functor creates equalizers and the appropriate products, it creates limits.
+
+We additionally require the rather strong condition that the functor reflects isomorphisms. It is
+unclear whether the statement remains true without this condition. There are various definitions of
+"creating limits" in the literature, and whether or not the condition can be dropped seems to depend
+on the specific definition that is used. -/
+noncomputable def createsLimitsOfShapeOfCreatesEqualizersAndProducts :
+    CreatesLimitsOfShape J G where
+  CreatesLimit {K} :=
+    have : HasLimitsOfShape (Discrete J) C :=
+      hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape G
+    have : HasLimitsOfShape (Discrete (Σp : J × J, p.1 ⟶ p.2)) C :=
+      hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape G
+    have : HasEqualizers C :=
+      hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape G
+    have : HasLimit K := hasLimit_of_equalizer_and_product K
+    createsLimitOfReflectsIsomorphismsOfPreserves
+
+end
+
+/-- If a functor creates equalizers and finite products, it creates finite limits.
+
+We additionally require the rather strong condition that the functor reflects isomorphisms. It is
+unclear whether the statement remains true without this condition. There are various definitions of
+"creating limits" in the literature, and whether or not the condition can be dropped seems to depend
+on the specific definition that is used. -/
+noncomputable def createsFiniteLimitsOfCreatesEqualizersAndFiniteProducts [HasEqualizers D]
+    [HasFiniteProducts D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
+    [CreatesLimitsOfShape WalkingParallelPair G]
+    [CreatesFiniteProducts G] : CreatesFiniteLimits G where
+  createsFiniteLimits _ _ _ := createsLimitsOfShapeOfCreatesEqualizersAndProducts G
+
+/-- If a functor creates equalizers and products, it creates limits.
+
+We additionally require the rather strong condition that the functor reflects isomorphisms. It is
+unclear whether the statement remains true without this condition. There are various definitions of
+"creating limits" in the literature, and whether or not the condition can be dropped seems to depend
+on the specific definition that is used. -/
+noncomputable def createsLimitsOfSizeOfCreatesEqualizersAndProducts [HasEqualizers D]
+    [HasProducts.{w} D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
+    [CreatesLimitsOfShape WalkingParallelPair G] [∀ J, CreatesLimitsOfShape (Discrete.{w} J) G] :
+    CreatesLimitsOfSize.{w, w} G where
+  CreatesLimitsOfShape := createsLimitsOfShapeOfCreatesEqualizersAndProducts G
+
 theorem hasFiniteLimits_of_hasTerminal_and_pullbacks [HasTerminal C] [HasPullbacks C] :
     HasFiniteLimits C :=
   @hasFiniteLimits_of_hasEqualizers_and_finite_products C _
@@ -242,6 +294,24 @@ lemma preservesFiniteLimits_of_preservesTerminal_and_pullbacks [HasTerminal C]
     @preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts _ _ _ _ _ _ G _ ?_
   apply PreservesFiniteProducts.mk
   apply preservesFiniteProducts_of_preserves_binary_and_terminal G
+
+attribute [local instance] preservesFiniteLimits_of_preservesTerminal_and_pullbacks in
+/-- If a functor creates terminal objects and pullbacks, it creates finite limits.
+
+We additionally require the rather strong condition that the functor reflects isomorphisms. It is
+unclear whether the statement remains true without this condition. There are various definitions of
+"creating limits" in the literature, and whether or not the condition can be dropped seems to depend
+on the specific definition that is used. -/
+noncomputable def createsFiniteLimitsOfCreatesTerminalAndPullbacks [HasTerminal D]
+    [HasPullbacks D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
+    [CreatesLimitsOfShape (Discrete.{0} PEmpty) G] [CreatesLimitsOfShape WalkingCospan G] :
+    CreatesFiniteLimits G where
+  createsFiniteLimits _ _ _ :=
+    { CreatesLimit :=
+        have : HasTerminal C := hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape G
+        have : HasPullbacks C := hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape G
+        have : HasFiniteLimits C := hasFiniteLimits_of_hasTerminal_and_pullbacks
+        createsLimitOfReflectsIsomorphismsOfPreserves }
 
 /-!
 We now dualize the above constructions, resorting to copy-paste.
@@ -343,19 +413,15 @@ instance colimitQuotientCoproduct_epi [HasColimitsOfSize.{w, w} C] (F : J ⥤ C)
     Epi (colimitQuotientCoproduct F) :=
   epi_comp _ _
 
-/-- Any category with coproducts and coequalizers has all colimits.
-
-See <https://stacks.math.columbia.edu/tag/002P>.
--/
+/-- Any category with coproducts and coequalizers has all colimits. -/
+@[stacks 002P]
 theorem has_colimits_of_hasCoequalizers_and_coproducts [HasCoproducts.{w} C] [HasCoequalizers C] :
     HasColimitsOfSize.{w, w} C where
   has_colimits_of_shape := fun _ _ =>
       { has_colimit := fun F => hasColimit_of_coequalizer_and_coproduct F }
 
-/-- Any category with finite coproducts and coequalizers has all finite colimits.
-
-See <https://stacks.math.columbia.edu/tag/002Q>.
--/
+/-- Any category with finite coproducts and coequalizers has all finite colimits. -/
+@[stacks 002Q]
 theorem hasFiniteColimits_of_hasCoequalizers_and_finite_coproducts [HasFiniteCoproducts C]
     [HasCoequalizers C] : HasFiniteColimits C where
   out _ := { has_colimit := fun F => hasColimit_of_coequalizer_and_coproduct F }
@@ -441,6 +507,60 @@ lemma preservesColimits_of_preservesCoequalizers_and_coproducts [HasCoequalizers
     [∀ J, PreservesColimitsOfShape (Discrete.{w} J) G] : PreservesColimitsOfSize.{w, w} G where
   preservesColimitsOfShape := preservesColimit_of_preservesCoequalizers_and_coproduct G
 
+section
+
+variable [HasColimitsOfShape (Discrete J) D]
+  [HasColimitsOfShape (Discrete (Σp : J × J, p.1 ⟶ p.2)) D] [HasCoequalizers D]
+
+variable (G : C ⥤ D) [G.ReflectsIsomorphisms] [CreatesColimitsOfShape WalkingParallelPair G]
+  [CreatesColimitsOfShape (Discrete.{w} J) G]
+  [CreatesColimitsOfShape (Discrete.{w} (Σp : J × J, p.1 ⟶ p.2)) G]
+
+attribute [local instance] preservesColimit_of_preservesCoequalizers_and_coproduct in
+/-- If a functor creates coequalizers and the appropriate coproducts, it creates colimits.
+
+We additionally require the rather strong condition that the functor reflects isomorphisms. It is
+unclear whether the statement remains true without this condition. There are various definitions of
+"creating colimits" in the literature, and whether or not the condition can be dropped seems to
+depend on the specific definition that is used. -/
+noncomputable def createsColimitsOfShapeOfCreatesCoequalizersAndCoproducts :
+    CreatesColimitsOfShape J G where
+  CreatesColimit {K} :=
+    have : HasColimitsOfShape (Discrete J) C :=
+      hasColimitsOfShape_of_hasColimitsOfShape_createsColimitsOfShape G
+    have : HasColimitsOfShape (Discrete (Σp : J × J, p.1 ⟶ p.2)) C :=
+      hasColimitsOfShape_of_hasColimitsOfShape_createsColimitsOfShape G
+    have : HasCoequalizers C :=
+      hasColimitsOfShape_of_hasColimitsOfShape_createsColimitsOfShape G
+    have : HasColimit K := hasColimit_of_coequalizer_and_coproduct K
+    createsColimitOfReflectsIsomorphismsOfPreserves
+
+end
+
+/-- If a functor creates coequalizers and finite coproducts, it creates finite colimits.
+
+We additionally require the rather strong condition that the functor reflects isomorphisms. It is
+unclear whether the statement remains true without this condition. There are various definitions of
+"creating colimits" in the literature, and whether or not the condition can be dropped seems to
+depend on the specific definition that is used. -/
+noncomputable def createsFiniteColimitsOfCreatesCoequalizersAndFiniteCoproducts [HasCoequalizers D]
+    [HasFiniteCoproducts D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
+    [CreatesColimitsOfShape WalkingParallelPair G]
+    [CreatesFiniteCoproducts G] : CreatesFiniteColimits G where
+  createsFiniteColimits _ _ _ := createsColimitsOfShapeOfCreatesCoequalizersAndCoproducts G
+
+/-- If a functor creates coequalizers and coproducts, it creates colimits.
+
+We additionally require the rather strong condition that the functor reflects isomorphisms. It is
+unclear whether the statement remains true without this condition. There are various definitions of
+"creating colimits" in the literature, and whether or not the condition can be dropped seems to
+depend on the specific definition that is used. -/
+noncomputable def createsColimitsOfSizeOfCreatesCoequalizersAndCoproducts [HasCoequalizers D]
+    [HasCoproducts.{w} D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
+    [CreatesColimitsOfShape WalkingParallelPair G]
+    [∀ J, CreatesColimitsOfShape (Discrete.{w} J) G] : CreatesColimitsOfSize.{w, w} G where
+  CreatesColimitsOfShape := createsColimitsOfShapeOfCreatesCoequalizersAndCoproducts G
+
 theorem hasFiniteColimits_of_hasInitial_and_pushouts [HasInitial C] [HasPushouts C] :
     HasFiniteColimits C :=
   @hasFiniteColimits_of_hasCoequalizers_and_finite_coproducts C _
@@ -462,5 +582,23 @@ lemma preservesFiniteColimits_of_preservesInitial_and_pushouts [HasInitial C]
     @preservesFiniteColimits_of_preservesCoequalizers_and_finiteCoproducts _ _ _ _ _ _ G _ ?_
   apply PreservesFiniteCoproducts.mk
   apply preservesFiniteCoproductsOfPreservesBinaryAndInitial G
+
+attribute [local instance] preservesFiniteColimits_of_preservesInitial_and_pushouts in
+/-- If a functor creates initial objects and pushouts, it creates finite colimits.
+
+We additionally require the rather strong condition that the functor reflects isomorphisms. It is
+unclear whether the statement remains true without this condition. There are various definitions of
+"creating colimits" in the literature, and whether or not the condition can be dropped seems to
+depend on the specific definition that is used. -/
+noncomputable def createsFiniteColimitsOfCreatesInitialAndPushouts [HasInitial D]
+    [HasPushouts D] (G : C ⥤ D) [G.ReflectsIsomorphisms]
+    [CreatesColimitsOfShape (Discrete.{0} PEmpty) G] [CreatesColimitsOfShape WalkingSpan G] :
+    CreatesFiniteColimits G where
+  createsFiniteColimits _ _ _ :=
+    { CreatesColimit :=
+        have : HasInitial C := hasColimitsOfShape_of_hasColimitsOfShape_createsColimitsOfShape G
+        have : HasPushouts C := hasColimitsOfShape_of_hasColimitsOfShape_createsColimitsOfShape G
+        have : HasFiniteColimits C := hasFiniteColimits_of_hasInitial_and_pushouts
+        createsColimitOfReflectsIsomorphismsOfPreserves }
 
 end CategoryTheory.Limits

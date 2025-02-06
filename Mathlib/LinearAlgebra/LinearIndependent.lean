@@ -1300,7 +1300,7 @@ lemma linearIndependent_algHom_toLinearMap' (K M L) [CommRing K]
     LinearIndependent K (AlgHom.toLinearMap : (M →ₐ[K] L) → M →ₗ[K] L) := by
   apply (linearIndependent_algHom_toLinearMap K M L).restrict_scalars
   simp_rw [Algebra.smul_def, mul_one]
-  exact NoZeroSMulDivisors.algebraMap_injective K L
+  exact FaithfulSMul.algebraMap_injective K L
 
 end Module
 
