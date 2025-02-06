@@ -479,36 +479,6 @@ theorem isGLB_prod {s : Set (α × β)} (p : α × β) :
     IsGLB s p ↔ IsGLB (Prod.fst '' s) p.1 ∧ IsGLB (Prod.snd '' s) p.2 :=
   @isLUB_prod αᵒᵈ βᵒᵈ _ _ _ _
 
-variable {γ : Type*} [Preorder γ]
-
-lemma upperBounds_eq_ofSubset {s₁ s₂ : Set α} (hs₁ : s₁ ⊆ s₂) (hs₂ : ∀ a ∈ s₂, ∃ b ∈ s₁, a ≤ b) :
-    upperBounds s₁ = upperBounds s₂ := le_antisymm
-  (fun c hc d hd => by
-    obtain ⟨e,⟨he₁, he₂⟩⟩ := hs₂ _ hd
-    exact le_trans he₂ (hc he₁))
-  (upperBounds_mono_set hs₁)
-
-lemma Monotone.upperBounds_image_eq_ofSubset {f : α → β} (hf : Monotone f) {s₁ s₂ : Set α}
-    (hs₁ : s₁ ⊆ s₂) (hs₂ : ∀ a ∈ s₂, ∃ b ∈ s₁, a ≤ b) :
-    upperBounds (f '' s₁) = upperBounds (f '' s₂) := by
-  apply upperBounds_eq_ofSubset (image_mono hs₁)
-  intro a ⟨c, hc⟩
-  obtain ⟨d,hd⟩ := hs₂ c hc.1
-  exact ⟨f d, ⟨(mem_image _ _ _).mpr ⟨d,⟨hd.1,rfl⟩⟩, le_of_eq_of_le hc.2.symm (hf hd.2)⟩⟩
-
-lemma directed_product {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
-    ∀ p ∈ (Prod.fst '' d) ×ˢ (Prod.snd '' d), ∃ q ∈ d, p ≤ q := by
-  intro ⟨p₁, p₂⟩ hp
-  simp at hp
-  obtain ⟨⟨r₁, hr₁⟩, ⟨r₂, hr₂⟩⟩ := hp
-  obtain ⟨q, ⟨hq1,⟨⟨hq21,hq22⟩,⟨hq31,hq32⟩⟩⟩ ⟩ := hd (p₁,r₁) hr₁ (r₂,p₂) hr₂
-  exact ⟨q, ⟨hq1, ⟨hq21, hq32⟩⟩⟩
-
-lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
-    {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
-    upperBounds (f '' d) = upperBounds (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) :=
-  hf.upperBounds_image_eq_ofSubset (subset_fst_image_times_snd_image d) (directed_product hd)
-
 end Prod
 
 section Pi
