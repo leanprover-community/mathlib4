@@ -256,25 +256,21 @@ section Small
 
 variable (C : Type u) [Category.{u} C] [HasFiniteColimits C]
 
-noncomputable def Ind.toLeftExactFunctor : Ind C ⥤ LeftExactFunctor Cᵒᵖ (Type u) :=
-  FullSubcategory.lift _ (Ind.inclusion C) fun X => by
-    rw [← isFiltered_costructuredArrow_yoneda_iff_nonempty_preservesFiniteLimits]
-    apply IsIndObject.isFiltered (isIndObject_inclusion_obj X)
+variable {C} in
+/-- Objects in a small category `C : Type u` are Ind-objects if and only if they are left-exacts. -/
+lemma isIndObject_iff (F : Cᵒᵖ ⥤ Type u) : IsIndObject F ↔ PreservesFiniteLimits F := by
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · have := h.isFiltered
+    apply preservesFiniteLimits_of_isFiltered_costructuredArrow_yoneda
+  · have := isFiltered_costructuredArrow_yoneda_of_preservesFiniteLimits F
+    have := essentiallySmall_of_small_of_locallySmall
+    have := finallySmall_of_essentiallySmall (CostructuredArrow yoneda F)
+    apply isIndObject_of_isFiltered_of_finallySmall F
 
-instance : (Ind.toLeftExactFunctor C).Full :=
-  inferInstanceAs <| (FullSubcategory.lift _ _ _).Full
-
-instance : (Ind.toLeftExactFunctor C).Faithful :=
-  inferInstanceAs <| (FullSubcategory.lift _ _ _).Faithful
-
-instance : (Ind.toLeftExactFunctor C).IsEquivalence where
-  essSurj := Functor.essSurj_of_surj <| fun G => by
-    refine ⟨⟨G.obj, ?_⟩, rfl⟩
-    have := G.property
-    have : FinallySmall (CostructuredArrow yoneda G.obj) := by
-      sorry
-    have := isFiltered_costructuredArrow_yoneda_of_preservesFiniteLimits G.obj
-    apply isIndObject_of_isFiltered_of_finallySmall
+/-- For small categories `C : Type u`, the category of Ind-objects `Ind C` is equivalent to the
+category of left-exact functors `Cᵒᵖ ⥤ Type u`  -/
+noncomputable def Ind.LeftExactfunctorEquivalence : Ind C ≌ LeftExactFunctor Cᵒᵖ (Type u) :=
+  (ShrinkHoms.equivalence _).symm.trans <| Equivalence.ofFullSubcategory isIndObject_iff
 
 end Small
 
