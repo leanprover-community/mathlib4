@@ -265,7 +265,9 @@ theorem card_eq_coe_fintype_card [Fintype α] : card α = Fintype.card α := by
 
 @[simp]
 theorem card_eq_top_of_infinite [Infinite α] : card α = ⊤ := by
-  simp [card]
+  simp only [card, toENat_eq_top, aleph0_le_mk]
+
+@[simp] theorem card_lt_top_of_finite [Finite α] : card α < ⊤ := by simp [card]
 
 @[simp]
 theorem card_sum (α β : Type*) :
