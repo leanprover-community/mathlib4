@@ -45,6 +45,8 @@ class HasQuotient (A : outParam <| Type u) (B : Type v) where
   /-- auxiliary quotient function, the one used will have `A` explicit -/
   quotient' : B → Type max u v
 
+attribute [reducible, inline] HasQuotient.quotient'
+
 -- Will be provided by e.g. `Ideal.Quotient.inhabited`
 /-- `HasQuotient.Quotient A b` (denoted as `A ⧸ b`) is the quotient
  of the type `A` by `b`.
