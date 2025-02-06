@@ -357,20 +357,46 @@ noncomputable def ofPermHom : range_toPermHom' g →* Perm α where
   map_one' := ext fun x ↦ ofPermHomFun_one a x
   map_mul' := fun σ τ ↦ ext fun x ↦ by simp [mul_apply, ofPermHomFun_mul a σ τ x]
 
-theorem ofPermHom_mem_centralizer :
-    a.ofPermHom τ ∈ centralizer {g} := by
-  rw [mem_centralizer_singleton_iff]
+theorem ofPermHom_support :
+    (ofPermHom a τ).support = Finset.biUnion (τ : Perm g.cycleFactorsFinset).support
+        (fun c ↦ (c : Perm α).support) := by
   ext x
-  simp only [mul_apply]
-  exact ofPermHomFun_commute_zpow_apply a τ x 1
+  simp only [mem_support, Finset.mem_biUnion]
+  change newK a τ x ≠ x ↔ _
+  rcases mem_fixedPoints_or_exists_zpow_eq a x with (hx | ⟨c, hc, m, hm⟩)
+  · simp only [newK_apply_of_mem_fixedPoints a τ hx, ne_eq, not_true_eq_false, false_iff]
+    rw [Function.mem_fixedPoints_iff] at hx
+    simp only [← mem_support]
+    intro h
+    obtain ⟨c, _, h'⟩ := h
+    exact mem_support.mp ((mem_cycleFactorsFinset_support_le c.prop) h') hx
+  · rw [newK_apply_of_cycleOf_mem a τ hc hm]
+    nth_rewrite 1 [← hm]
+    simp only [ne_eq, EmbeddingLike.apply_eq_iff_eq, (a.injective).eq_iff]
+    rw [not_iff_comm]
+    by_cases H : (τ : Perm g.cycleFactorsFinset) c = c
+    · simp only [H, iff_true]
+      push_neg
+      intro d hd
+      rw [← not_mem_support]
+      have := g.cycleFactorsFinset_pairwise_disjoint c.prop d.prop
+      rw [disjoint_iff_disjoint_support, Finset.disjoint_left] at this
+      refine this ?_ hc
+      intro h
+      rw [Subtype.coe_inj] at h
+      exact hd (h ▸ H)
+    · simp only [H, iff_false, not_not]
+      exact ⟨c, H, mem_support.mp hc⟩
 
-/- support ?
-  c ^ n (a c) -> (tau c) ^ n (a (tau c))
-  point fixe : c = tau c
-  et alors, autant que la longueur de c
+theorem card_ofPermHom_support :
+    (ofPermHom a τ).support.card =  (τ : Perm g.cycleFactorsFinset).support.sum
+        (fun c ↦ (c : Perm α).support.card) := by
+  rw [ofPermHom_support, Finset.card_biUnion]
+  intro c _ d _ h
+  apply Equiv.Perm.Disjoint.disjoint_support
+  apply g.cycleFactorsFinset_pairwise_disjoint c.prop d.prop (Subtype.coe_ne_coe.mpr h)
 
--/
-
+/-
 variable {τ} in
 theorem mem_ofPermHom_support_iff {x : α} : x ∈ (a.ofPermHom τ).support ↔
     ∃ (hx : g.cycleOf x ∈ g.cycleFactorsFinset), ⟨g.cycleOf x, hx⟩ ∈ τ.val.support := by
@@ -396,6 +422,14 @@ example :
     (a.ofPermHom τ).support.card =
       ∑ c ∈ (τ : Perm g.cycleFactorsFinset).support, c.val.support.card := by
   sorry
+-/
+
+theorem ofPermHom_mem_centralizer :
+    a.ofPermHom τ ∈ centralizer {g} := by
+  rw [mem_centralizer_singleton_iff]
+  ext x
+  simp only [mul_apply]
+  exact ofPermHomFun_commute_zpow_apply a τ x 1
 
 /-- Given `a : Equiv.Perm.Basis g`,
 we define a right inverse of `Equiv.Perm.OnCycleFactors.toPermHom`,
