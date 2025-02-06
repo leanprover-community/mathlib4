@@ -518,6 +518,12 @@ noncomputable def inv (F : C ⥤ D) [F.IsEquivalence] : D ⥤ C where
   map_id X := by apply F.map_injective; simp
   map_comp {X Y Z} f g := by apply F.map_injective; simp
 
+lemma inv_obj (F : C ⥤ D) [F.IsEquivalence] (X : D) : (F.inv.obj X) = F.objPreimage X := by rfl
+
+lemma inv_map (F : C ⥤ D) [F.IsEquivalence] {X Y : D} (f : X ⟶ Y) :
+    F.inv.map f = F.preimage ((F.objObjPreimageIso X).hom ≫ f ≫ (F.objObjPreimageIso Y).inv) := by
+  rfl
+
 /-- Interpret a functor that is an equivalence as an equivalence. -/
 @[simps functor, stacks 02C3]
 noncomputable def asEquivalence (F : C ⥤ D) [F.IsEquivalence] : C ≌ D where
@@ -527,6 +533,9 @@ noncomputable def asEquivalence (F : C ⥤ D) [F.IsEquivalence] : C ≌ D where
     (fun X => (F.preimageIso <| F.objObjPreimageIso <| F.obj X).symm)
       (fun f => F.map_injective (by simp [inv]))
   counitIso := NatIso.ofComponents F.objObjPreimageIso (by simp [inv])
+
+lemma asEquivalence_inverse (F : C ⥤ D) [IsEquivalence F] : (asEquivalence F).inverse = F.inv := by
+  rfl
 
 instance isEquivalence_refl : IsEquivalence (𝟭 C) :=
   Equivalence.refl.isEquivalence_functor
@@ -548,7 +557,6 @@ instance (F : C ⥤ D) [IsEquivalence F] : IsEquivalence ((whiskeringRight E C D
 end Functor
 
 namespace Functor
-
 
 @[simp]
 theorem fun_inv_map (F : C ⥤ D) [IsEquivalence F] (X Y : D) (f : X ⟶ Y) :
@@ -583,6 +591,34 @@ lemma isEquivalence_of_comp_left {E : Type*} [Category E] (F : C ⥤ D) (G : D �
   exact (F.asEquivalence.symm.trans (F ⋙ G).asEquivalence).isEquivalence_functor
 
 end Functor
+
+/-- The inverse associated to `asEquivalence e.functor` of an equivalence `e` is naturally
+isomorphism to the original `e.inverse`. -/
+noncomputable def Equivalence.asEquivalenceInverse (e : C ≌ D) :
+    (e.functor).asEquivalence.inverse ≅ e.inverse := by
+  set F := e.functor
+  set G := e.inverse
+  refine NatIso.ofComponents ?_ ?_
+  · intro X
+    dsimp [Functor.asEquivalence]
+    exact (e.unitIso.app <| F.inv.obj X) ≪≫ (asIso <| G.map <| F.objObjPreimageIso X |>.hom)
+  · intros Y Y' g
+    dsimp
+    simp [asEquivalence_inverse, Functor.inv_map]
+    have :  G.map (F.objObjPreimageIso Y).hom ≫ G.map g =
+      G.map (F.map (e.functor.asEquivalence.inverse.map g)) ≫ G.map (F.objObjPreimageIso Y').hom :=
+    by
+      simp [asEquivalence_inverse, Functor.inv_map, ← map_comp]
+      congr 1
+      rw [map_preimage F]
+      aesop_cat
+    rw [this]
+    let t := e.unit.naturality
+    dsimp at t
+    rw [← assoc]
+    rw [t]
+    simp_all [asEquivalence_inverse, Functor.inv_obj, Functor.inv_map]
+    aesop
 
 namespace Equivalence
 
