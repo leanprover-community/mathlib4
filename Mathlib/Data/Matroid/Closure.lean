@@ -847,6 +847,20 @@ lemma ext_spanning {M M' : Matroid α} (h : M.E = M'.E)
   intro I hIE
   rw [← coindep_def, ← coindep_def, coindep_iff_compl_spanning, coindep_iff_compl_spanning, hsp', h]
 
+lemma Base.eq_of_superset_spanning (hB : M.Base B) (hX : M.Spanning X) (hXB : X ⊆ B) : B = X :=
+  have ⟨B', hB', hB'X⟩ := hX.exists_base_subset
+  subset_antisymm (by rwa [← hB'.eq_of_subset_base hB (hB'X.trans hXB)]) hXB
+
+theorem base_iff_minimal_spanning : M.Base B ↔ Minimal M.Spanning B := by
+  rw [minimal_subset_iff]
+  refine ⟨fun h ↦ ⟨h.spanning, fun _ ↦ h.eq_of_superset_spanning⟩, fun ⟨h, h'⟩ ↦ ?_⟩
+  obtain ⟨B', hB', hBB'⟩ := h.exists_base_subset
+  rwa [h' hB'.spanning hBB']
+
+theorem Spanning.base_of_minimal (hX : M.Spanning X) (h : ∀ ⦃Y⦄, M.Spanning Y → Y ⊆ X → X = Y) :
+    M.Base X := by
+  rwa [base_iff_minimal_spanning, minimal_subset_iff, and_iff_right hX]
+
 end Spanning
 
 section Constructions

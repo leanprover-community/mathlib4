@@ -69,14 +69,24 @@ section Rank
 variable {κ : Cardinal}
 
 /-- The rank (supremum of the cardinalities of bases) of a matroid `M` as a `Cardinal`. -/
-noncomputable def cRank (M : Matroid α) := ⨆ (B : {B // M.Base B}), #B
+noncomputable def cRank (M : Matroid α) := ⨆ B : {B // M.Base B}, #B
 
 /-- The rank (supremum of the cardinalities of bases) of a set `X` in a matroid `M`,
 as a `Cardinal`. -/
 noncomputable def cRk (M : Matroid α) (X : Set α) := (M ↾ X).cRank
 
 theorem Base.cardinalMk_le_cRank (hB : M.Base B) : #B ≤ M.cRank :=
-  le_ciSup (f := fun (B : {B // M.Base B}) ↦ #(B.1)) (bddAbove_range _) ⟨B, hB⟩
+  le_ciSup (f := fun B : {B // M.Base B} ↦ #B.1) (bddAbove_range _) ⟨B, hB⟩
+
+theorem Indep.cardinalMk_le_cRank (ind : M.Indep I) : #I ≤ M.cRank :=
+  have ⟨B, base, hIB⟩ := ind.exists_base_superset
+  le_ciSup_of_le (bddAbove_range _) ⟨B, base⟩ (mk_le_mk_of_subset hIB)
+
+theorem cRank_eq_iSup_cardinalMk_indep : M.cRank = ⨆ I : {I // M.Indep I}, #I :=
+  (ciSup_le' fun B ↦ le_ciSup_of_le (bddAbove_range _) ⟨B, B.2.indep⟩ <| by rfl).antisymm <|
+    ciSup_le' fun I ↦
+      have ⟨B, base, hIB⟩ := I.2.exists_base_superset
+      le_ciSup_of_le (bddAbove_range _) ⟨B, base⟩ (mk_le_mk_of_subset hIB)
 
 theorem Basis'.cardinalMk_le_cRk (hIX : M.Basis' I X) : #I ≤ M.cRk X :=
   (base_restrict_iff'.2 hIX).cardinalMk_le_cRank
@@ -249,6 +259,10 @@ theorem Basis.cardinalMk_eq_cRk (hIX : M.Basis I X) : #I = M.cRk X :=
 theorem cRk_closure_congr (hXY : M.closure X = M.closure Y) : M.cRk X = M.cRk Y := by
   rw [← cRk_closure, hXY, cRk_closure]
 
+theorem Spanning.cRank_le (h : M.Spanning X) : M.cRank ≤ #X :=
+  have ⟨_B, hB, hBX⟩ := h.exists_base_subset
+  (hB.cardinalMk_eq_cRank).symm.trans_le (mk_le_mk_of_subset hBX)
+
 variable (M : Matroid α) [InvariantCardinalRank M] (e : α) (X Y : Set α)
 
 @[simp] theorem cRk_union_closure_right_eq : M.cRk (X ∪ M.closure Y) = M.cRk (X ∪ Y) :=
@@ -341,5 +355,35 @@ instance invariantCardinalRank_comap (M : Matroid β) [InvariantCardinalRank M] 
   exact disjoint_sdiff_left.mono_right (diff_subset.trans inter_subset_left)
 
 end Instances
+
+theorem finiteRk_iff_cRank_lt_aleph0 : M.FiniteRk ↔ M.cRank < ℵ₀ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ⟨?_⟩⟩
+  · have ⟨B, hB, fin⟩ := h
+    exact hB.cardinalMk_eq_cRank ▸ lt_aleph0_iff_finite.mpr fin
+  have ⟨B, hB⟩ := M.exists_base
+  simp_rw [← finite_coe_iff, ← lt_aleph0_iff_finite]
+  exact ⟨B, hB, (le_ciSup_of_le (bddAbove_range _) ⟨B, hB⟩ le_rfl).trans_lt h⟩
+
+theorem Indep.base_of_cRank_le [M.FiniteRk] (ind : M.Indep I) (le : M.cRank ≤ #I) : M.Base I :=
+  ind.base_of_maximal fun _J ind_J hIJ ↦ ind.finite.eq_of_subset_of_encard_le' hIJ <|
+    toENat.monotone' <| ind_J.cardinalMk_le_cRank.trans le
+
+theorem Spanning.base_of_le_cRank [M.FiniteRk] (h : M.Spanning X) (le : #X ≤ M.cRank) :
+    M.Base X := by
+  have ⟨B, hB, hBX⟩ := h.exists_base_subset
+  rwa [← hB.finite.eq_of_subset_of_encard_le' hBX
+    (toENat.monotone' <| le.trans (hB.cardinalMk_eq_cRank).ge)]
+
+theorem Indep.base_of_cRank_le_of_finite (ind : M.Indep I)
+    (le : M.cRank ≤ #I) (fin : I.Finite) : M.Base I :=
+  have := finiteRk_iff_cRank_lt_aleph0.mpr (le.trans_lt <| lt_aleph0_iff_finite.mpr fin)
+  ind.base_of_cRank_le le
+
+theorem Spanning.base_of_le_cRank_of_finite (h : M.Spanning X)
+    (le : #X ≤ M.cRank) (fin : X.Finite) : M.Base X :=
+  have ⟨B, hB, hBX⟩ := h.exists_base_subset
+  have : M.FiniteRk := ⟨B, hB, lt_aleph0_iff_finite.mp <| (mk_le_mk_of_subset hBX).trans_lt <|
+    lt_aleph0_iff_finite.mpr fin⟩
+  h.base_of_le_cRank le
 
 end Matroid
