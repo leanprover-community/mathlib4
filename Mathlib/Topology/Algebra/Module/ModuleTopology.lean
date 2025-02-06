@@ -448,7 +448,7 @@ instance instProd : IsModuleTopology R (M × N) := by
   let i₂ : N →ₗ[R] P := LinearMap.inr R M N
   rw [show (i : M × N → P) =
        (fun abcd ↦ abcd.1 + abcd.2 : P × P → P) ∘
-       (fun ab ↦ (i₁ ab.1,i₂ ab.2)) by
+       (fun ab ↦ (i₁ ab.1, i₂ ab.2)) by
        ext ⟨a, b⟩ <;> aesop]
   -- and these maps are all continuous, hence `i` is too
   fun_prop
