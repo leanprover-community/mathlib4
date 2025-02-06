@@ -372,7 +372,7 @@ theorem Spanning.base_of_le_cRank [M.FiniteRk] (h : M.Spanning X) (le : #X ≤ M
     M.Base X := by
   have ⟨B, hB, hBX⟩ := h.exists_base_subset
   rwa [← hB.finite.eq_of_subset_of_encard_le' hBX
-    (toENat.monotone' <| le.trans (hB.cardinalMk_eq_cRank).ge)]
+    (toENat.monotone' <| le.trans hB.cardinalMk_eq_cRank.ge)]
 
 theorem Indep.base_of_cRank_le_of_finite (ind : M.Indep I)
     (le : M.cRank ≤ #I) (fin : I.Finite) : M.Base I :=
