@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+import Mathlib.GroupTheory.Abelianization
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 import Mathlib.RepresentationTheory.Invariants
 
@@ -17,10 +18,27 @@ In `RepresentationTheory.Homological.GroupHomology.Basic`, we define the `n`th g
 this is unnecessarily unwieldy in low degree. Moreover, homology of a complex is defined as an
 abstract cokernel, whereas the definitions here will be explicit quotients of cycles by boundaries.
 
+We show that when the representation on `A` is trivial, `H₁(G, A) ≃+ Gᵃᵇ ⊗[ℤ] A`.
+
 Given an additive abelian group `A` with an appropriate scalar action of `G`, we provide support
 for turning a finsupp `f : G →₀ A` satisfying the 1-cycle identity into an element of the
 `oneCycles` of the representation on `A` corresponding to the scalar action. We also do this for
 0-boundaries, 1-boundaries, 2-cycles and 2-boundaries.
+
+The file also contains an identification between the definitions in
+`RepresentationTheory.Homological.GroupHomology.Basic`, `groupHomology.cycles A n` and
+`groupHomology A n`, and the `nCycles` and `Hn A` in this file, for `n = 0, 1, 2`.
+
+## Main definitions
+
+* `groupHomology.H0 A`: the coinvariants `A_G` of the `G`-representation on `A`.
+* `groupHomology.H1 A`: 1-cycles (i.e. `Z₁(G, A) := Ker(d₀ : (G →₀ A) → A`) modulo
+1-boundaries (i.e. `B₁(G, A) := Im(d₁ : (G² →₀ A) → (G →₀ A))`).
+* `groupHomology.H2 A`: 2-cycles (i.e. `Z₁(G, A) := Ker(d₁ : (G² →₀ A) → (G →₀ A)`) modulo
+2-boundaries (i.e. `B₁(G, A) := Im(d₂ : (G³ →₀ A) → (G² →₀ A))`).
+* `groupHomology.isoHn` for `n = 0, 1, 2`: an isomorphism `groupHomology A n ≅ groupHomology.Hn A`.
+* `groupHomology.H1LequivOfIsTrivial`: an isomorphism `H₁(G, A) ≃+ Gᵃᵇ ⊗[ℤ] A` when the
+representation on `A` is trivial.
 
 -/
 
@@ -791,7 +809,7 @@ lemma groupHomologyπ_comp_isoH1_hom  :
 
 section Trivial
 
-variable [A.ρ.IsTrivial]
+variable [A.IsTrivial]
 
 open TensorProduct
 
@@ -826,7 +844,7 @@ def H1LequivOfIsTrivial :
         (oneCycles A).toAddSubgroup.subtype)
       fun ⟨y, hy⟩ ⟨z, hz⟩ => AddMonoidHom.mem_ker.2 <| by
         simp [← hz, LinearMap.codRestrict, AddSubgroup.subtype, dOne, sum_sum_index, sum_add_index,
-        tmul_add, sum_sub_index, tmul_sub]).toIntLinearMap
+          tmul_add, sum_sub_index, tmul_sub, shortComplexH1, moduleCatToCycles]).toIntLinearMap
     (lift <| mkH1OfIsTrivial A)
     (ext <| LinearMap.toAddMonoidHom_injective <|
       AddMonoidHom.toMultiplicative'.bijective.1 <| Abelianization.hom_ext _ _ <| MonoidHom.ext
