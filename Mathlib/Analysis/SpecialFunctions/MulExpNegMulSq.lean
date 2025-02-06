@@ -163,5 +163,3 @@ theorem abs_mulExpNegMulSq_comp_le_norm {E : Type*} [TopologicalSpace E] {x : E}
   exact mul_nonneg hε (mul_self_nonneg (g x))
 
 end Real
-
-#min_imports
