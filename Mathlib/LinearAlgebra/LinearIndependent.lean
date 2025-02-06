@@ -147,6 +147,12 @@ theorem LinearIndependent.ne_zero [Nontrivial R] (i : ι) (hv : LinearIndependen
   have := @hv (Finsupp.single i 1 : ι →₀ R) 0 (by simpa using h)
   simp at this
 
+theorem LinearIndependent.zero_not_mem_image {R M ι : Type*} [Semiring R] [Nontrivial R]
+    [AddCommGroup M] [Module R M] {s : Set ι} {f : ι → M}
+    (hs : LinearIndependent R (s.restrict f)) : 0 ∉ f '' s := by
+  simp only [mem_image, not_exists, not_and]
+  exact fun i hi ↦ by simpa using hs.ne_zero ⟨i,hi⟩
+
 theorem linearIndependent_empty_type [IsEmpty ι] : LinearIndependent R v :=
   injective_of_subsingleton _
 
@@ -494,6 +500,14 @@ theorem LinearIndependent.restrict_of_comp_subtype {s : Set ι}
 theorem LinearIndependent.mono {t s : Set M} (h : t ⊆ s)
     (hs : LinearIndependent R (fun x ↦ x : s → M)) : LinearIndependent R (fun x ↦ x : t → M) :=
   hs.comp _ (Set.inclusion_injective h)
+
+theorem LinearIndependent.mono_restrict {f : ι → M} {s t : Set ι}
+    (h : LinearIndependent R (t.restrict f)) (hst : s ⊆ t) :
+    LinearIndependent R (s.restrict f) := by
+  obtain hR | hR := subsingleton_or_nontrivial R
+  · exact linearIndependent_of_subsingleton
+  exact (linearIndependent_image ((injOn_iff_injective.2 h.injective).mono hst )).2 <|
+    h.image.mono (image_subset _ hst)
 
 theorem linearIndependent_of_finite (s : Set M)
     (H : ∀ t ⊆ s, Set.Finite t → LinearIndependent R (fun x ↦ x : t → M)) :
@@ -1106,6 +1120,28 @@ theorem LinearIndependent.union {s t : Set M} (hs : LinearIndependent R (fun x =
     LinearIndependent R (fun x => x : ↥(s ∪ t) → M) :=
   (hs.sum_type ht <| by simpa).to_subtype_range' <| by simp
 
+theorem LinearIndependent.restrict_union {s t : Set ι} {f : ι → M}
+    (hs : LinearIndependent R (s.restrict f)) (ht : LinearIndependent R (t.restrict f))
+    (hdj : Disjoint (span R (f '' s)) (span R (f '' t))) :
+    LinearIndependent R ((s ∪ t).restrict f) := by
+  obtain hR | hR := subsingleton_or_nontrivial R
+  · apply linearIndependent_of_subsingleton
+  refine (linearIndependent_image ?_).2 <|
+   (hs.image.union ht.image hdj).comp (Equiv.Set.ofEq (image_union ..)) <| Equiv.injective _
+  have hst := Submodule.disjoint_of_disjoint_span₀ hdj hs.zero_not_mem_image
+  rw [injOn_union hst.of_image, injOn_iff_injective, injOn_iff_injective]
+  exact ⟨hs.injective, ht.injective,
+    fun x hxs y hyt ↦ hst.ne_of_mem (mem_image_of_mem f hxs) (mem_image_of_mem f hyt)⟩
+
+theorem linearIndependent_restrict_union_iff {s t : Set ι} {f : ι → M} (hdj : Disjoint s t) :
+    LinearIndependent R ((s ∪ t).restrict f) ↔
+    (LinearIndependent R (s.restrict f)) ∧ (LinearIndependent R (t.restrict f))
+    ∧ Disjoint (span R (f '' s)) (span R (f '' t)) := by
+  refine ⟨fun h ↦ ⟨h.mono_restrict subset_union_left, h.mono_restrict subset_union_right, ?_⟩,
+    fun h ↦ LinearIndependent.restrict_union h.1 h.2.1 h.2.2⟩
+  convert h.disjoint_span_image (s := (↑) ⁻¹' s) (t := (↑) ⁻¹' t) (hdj.preimage _) <;>
+  aesop
+
 theorem linearIndependent_iUnion_finite_subtype {ι : Type*} {f : ι → Set M}
     (hl : ∀ i, LinearIndependent R (fun x => x : f i → M))
     (hd : ∀ i, ∀ t : Set ι, t.Finite → i ∉ t → Disjoint (span R (f i)) (⨆ i ∈ t, span R (f i))) :
@@ -1416,6 +1452,11 @@ theorem linearIndependent_insert' {ι} {s : Set ι} {a : ι} {f : ι → V} (has
   erw [range_comp f ((↑) : s → ι)]
   simp
 
+theorem linearIndependent_insert_restrict {ι} {s : Set ι} {a : ι} {f : ι → V} (has : a ∉ s) :
+    (LinearIndependent K ((insert a s).restrict f)) ↔
+      LinearIndependent K (s.restrict f) ∧ f a ∉ Submodule.span K (f '' s) :=
+  linearIndependent_insert' has
+
 theorem linearIndependent_insert (hxs : x ∉ s) :
     (LinearIndependent K fun b : ↥(insert x s) => (b : V)) ↔
       (LinearIndependent K fun b : s => (b : V)) ∧ x ∉ Submodule.span K s :=
@@ -1440,6 +1481,12 @@ theorem LinearIndependent.pair_iff' {x y : V} (hx : x ≠ 0) :
     apply_fun (t⁻¹ • ·) at hst
     simp only [smul_add, smul_smul, inv_mul_cancel₀ ht] at hst
     cases H (-(t⁻¹ * s)) <| by linear_combination (norm := match_scalars <;> noncomm_ring) -hst
+
+theorem linearIndependent_restrict_pair_iff {i j : ι} (f : ι → V) (hij : i ≠ j) (hi : f i ≠ 0):
+    LinearIndependent K (({i,j} : Set ι).restrict f) ↔ ∀ (c : K), c • f i ≠ f j := by
+  rw [pair_comm]
+  convert linearIndependent_insert' (s := {i}) (a := j) hij.symm
+  simp [hi, mem_span_singleton, linearIndependent_unique_iff]
 
 theorem linearIndependent_fin_cons {n} {v : Fin n → V} :
     LinearIndependent K (Fin.cons x v : Fin (n + 1) → V) ↔

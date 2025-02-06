@@ -79,6 +79,17 @@ theorem span_preimage_le (f : F) (s : Set M₂) :
 
 alias _root_.LinearMap.span_preimage_le := Submodule.span_preimage_le
 
+theorem disjoint_of_disjoint_span (hst : Disjoint (span R s) (span R t)) :
+    Disjoint (s \ {0}) t := by
+  rw [disjoint_iff_forall_ne]
+  rintro v ⟨hvs, hv0 : v ≠ 0⟩ _ hvt rfl
+  exact hv0 <| (disjoint_def.1 hst) v (subset_span hvs) (subset_span hvt)
+
+theorem disjoint_of_disjoint_span₀ (hst : Disjoint (span R s) (span R t)) (h0s : 0 ∉ s) :
+    Disjoint s t := by
+  convert disjoint_of_disjoint_span hst
+  simp [h0s]
+
 section
 
 variable {N : Type*} [AddCommMonoid N] [Module R N]
