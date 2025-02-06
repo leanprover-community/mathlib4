@@ -29,10 +29,10 @@ instance commGroup : CommGroup PUnit where
   mul_comm := by intros; rfl
 
 -- shortcut instances
-@[to_additive] instance : One PUnit where one := ()
-@[to_additive] instance : Mul PUnit where mul _ _ := ()
-@[to_additive] instance : Div PUnit where div _ _ := ()
-@[to_additive] instance : Inv PUnit where inv _ := ()
+@[to_additive] instance : One PUnit where one := unit
+@[to_additive] instance : Mul PUnit where mul _ _ := unit
+@[to_additive] instance : Div PUnit where div _ _ := unit
+@[to_additive] instance : Inv PUnit where inv _ := unit
 
 -- dsimp loops when applying this lemma to its LHS,
 -- probably https://github.com/leanprover/lean4/pull/2867

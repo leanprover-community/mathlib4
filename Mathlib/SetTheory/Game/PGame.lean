@@ -26,7 +26,7 @@ We may denote a game as $\{L | R\}$, where $L$ and $R$ stand for the collections
 moves. This notation is not currently used in Mathlib.
 
 Combinatorial games themselves, as a quotient of pregames, are constructed in
-`SetTheory.Game.Basic`.
+`Mathlib.SetTheory.Game.Basic`.
 
 ## Conway induction
 
@@ -850,7 +850,6 @@ theorem Equiv.le {x y : PGame} (h : x ≈ y) : x ≤ y :=
 theorem Equiv.ge {x y : PGame} (h : x ≈ y) : y ≤ x :=
   h.2
 
-@[refl, simp]
 theorem equiv_rfl {x : PGame} : x ≈ x :=
   refl x
 
