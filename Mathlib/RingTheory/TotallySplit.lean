@@ -205,23 +205,6 @@ lemma RingHom.prod_bijective_of_isIdempotentElem {R : Type*} [CommRing R]
     fin_cases i <;> fin_cases j <;> simp at hij ⊢ <;> simpa [mul_comm]
   · simpa
 
--- in PR
-def TensorProduct.AlgebraTensorModule.prodRight (R S M N P : Type*)
-    [CommSemiring R] [CommSemiring S] [Algebra R S]
-    [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-    [Module R M] [Module S M] [IsScalarTower R S M] [Module R N] [Module R P] :
-    M ⊗[R] (N × P) ≃ₗ[S] M ⊗[R] N × M ⊗[R] P :=
-  sorry
-
--- in PR
-@[simp]
-lemma TensorProduct.AlgebraTensorModule.prodRight_tmul (R S M N P : Type*)
-    [CommSemiring R] [CommSemiring S] [Algebra R S]
-    [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-    [Module R M] [Module S M] [IsScalarTower R S M] [Module R N] [Module R P] (m) (x) :
-    prodRight R S M N P (m ⊗ₜ x) = (m ⊗ₜ x.1, m ⊗ₜ x.2) :=
-  sorry
-
 lemma Algebra.TensorProduct.map_mul_of_map_mul_tmul {R S A B C : Type*} [CommRing R]
     [CommRing S] [CommRing A] [CommRing B] [CommRing C]
     [Algebra R S] [Algebra R A] [Algebra R B]
@@ -239,11 +222,12 @@ lemma Algebra.TensorProduct.map_mul_of_map_mul_tmul {R S A B C : Type*} [CommRin
       | add c d hc hd => simp [hc, hd, mul_add]
       | tmul => apply hf
 
-def Algebra.TensorProduct.prodRight (R S T A B : Type*) [CommRing R] [CommRing A] [CommRing B]
-    [CommRing S] [CommRing T] [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-    [Algebra R A] [Algebra R B] :
+noncomputable
+nonrec def Algebra.TensorProduct.prodRight (R S T A B : Type*) [CommRing R] [CommRing A]
+    [CommRing B] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T] [Algebra S T]
+    [IsScalarTower R S T] [Algebra R A] [Algebra R B] :
     T ⊗[R] (A × B) ≃ₐ[S] T ⊗[R] A × T ⊗[R] B :=
-  AlgEquiv.ofLinearEquiv (TensorProduct.AlgebraTensorModule.prodRight R S T A B)
+  AlgEquiv.ofLinearEquiv (TensorProduct.prodRight R S T A B)
     (by simp [Algebra.TensorProduct.one_def])
     (map_mul_of_map_mul_tmul (fun _ _ _ _ ↦ by simp))
 
