@@ -7,7 +7,7 @@ import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani
 import Mathlib.MeasureTheory.Integral.SetIntegral
 
 /-!
-#  Riesz–Markov–Kakutani representation theorem for `Real`
+#  Riesz–Markov–Kakutani representation theorem for real-linear functionals
 
 This file will prove the Riesz-Markov-Kakutani representation theorem on a locally compact
 T2 space `X` for `Real`-linear functionals `Λ`.
