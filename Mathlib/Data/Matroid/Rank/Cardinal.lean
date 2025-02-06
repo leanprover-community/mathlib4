@@ -362,7 +362,7 @@ theorem finiteRk_iff_cRank_lt_aleph0 : M.FiniteRk ↔ M.cRank < ℵ₀ := by
     exact hB.cardinalMk_eq_cRank ▸ lt_aleph0_iff_finite.mpr fin
   have ⟨B, hB⟩ := M.exists_base
   simp_rw [← finite_coe_iff, ← lt_aleph0_iff_finite]
-  exact ⟨B, hB, (le_ciSup_of_le (bddAbove_range _) ⟨B, hB⟩ le_rfl).trans_lt h⟩
+  exact ⟨B, hB, hB.cardinalMk_le_cRank.trans_lt h⟩ 
 
 theorem Indep.base_of_cRank_le [M.FiniteRk] (ind : M.Indep I) (le : M.cRank ≤ #I) : M.Base I :=
   ind.base_of_maximal fun _J ind_J hIJ ↦ ind.finite.eq_of_subset_of_encard_le' hIJ <|
