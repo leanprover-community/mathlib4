@@ -1070,7 +1070,7 @@ lemma AnalyticOnNhd.zpow' {f : E → 𝕝} {s : Set E} {n : ℤ} (h₁f : Analyt
 
 /- A function is analytic at a point iff it is analytic after scalar
   multiplication with a non-vanishing analytic function. -/
-theorem analyticAt_of_smul_analytic [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝} {g : E → F}
+theorem analyticAt_iff_analytic_smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝} {g : E → F}
     {z : E} (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
     AnalyticAt 𝕜 g z ↔ AnalyticAt 𝕜 (f • g) z := by
   constructor
@@ -1086,23 +1086,24 @@ theorem analyticAt_of_smul_analytic [NormedSpace 𝕝 F] [IsScalarTower 𝕜 �
 
 /- A function is analytic at a point iff it is analytic after scalar
   multiplication with a non-vanishing analytic function. -/
-theorem analyticAt_of_smul_analytic' [NormedSpace 𝕝 E] [IsScalarTower 𝕜 𝕝 E] {f : 𝕜 → 𝕝}
-    (h₁f : AnalyticAt 𝕜 f z₀) (h₂f : f z₀ ≠ 0) :
-    AnalyticAt 𝕜 g z₀ ↔ AnalyticAt 𝕜 (fun z ↦ f z • g z) z₀ :=
-  analyticAt_of_smul_analytic h₁f h₂f
+theorem analyticAt_iff_analytic_smul' [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝}
+    {g : E → F} {z : E} (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
+    AnalyticAt 𝕜 g z ↔ AnalyticAt 𝕜 (fun z ↦ f z • g z) z :=
+  analyticAt_iff_analytic_smul h₁f h₂f
 
 /- A function is analytic at a point iff it is analytic after multiplication
   with a non-vanishing analytic function. -/
-theorem analyticAt_of_mul_analytic {f g : 𝕜 → 𝕝} (h₁f : AnalyticAt 𝕜 f z₀) (h₂f : f z₀ ≠ 0) :
-    AnalyticAt 𝕜 g z₀ ↔ AnalyticAt 𝕜 (f * g) z₀ := by
+theorem analyticAt_iff_analytic_mul {f g : E → 𝕝} {z : E} (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
+    AnalyticAt 𝕜 g z ↔ AnalyticAt 𝕜 (f * g) z := by
   rw [← smul_eq_mul]
-  exact analyticAt_of_smul_analytic h₁f h₂f
+  exact analyticAt_iff_analytic_smul h₁f h₂f
 
 /- A function is analytic at a point iff it is analytic after multiplication
   with a non-vanishing analytic function. -/
-theorem analyticAt_of_mul_analytic' {f g : 𝕜 → 𝕝} (h₁f : AnalyticAt 𝕜 f z₀) (h₂f : f z₀ ≠ 0) :
-    AnalyticAt 𝕜 g z₀ ↔ AnalyticAt 𝕜 (fun z ↦ f z * g z) z₀ := by
-  exact analyticAt_of_mul_analytic h₁f h₂f
+theorem analyticAt_iff_analytic_mul' {f g : E → 𝕝} {z : E} (h₁f : AnalyticAt 𝕜 f z)
+    (h₂f : f z ≠ 0) :
+    AnalyticAt 𝕜 g z ↔ AnalyticAt 𝕜 (fun z ↦ f z * g z) z := by
+  exact analyticAt_iff_analytic_mul h₁f h₂f
 
 /-- `f x / g x` is analytic away from `g x = 0` -/
 theorem AnalyticWithinAt.div {f g : E → 𝕝} {s : Set E} {x : E}
