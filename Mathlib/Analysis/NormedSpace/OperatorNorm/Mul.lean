@@ -141,6 +141,14 @@ theorem coe_mulₗᵢ : ⇑(mulₗᵢ 𝕜 𝕜') = mul 𝕜 𝕜' :=
 
 end NonUnital
 
+section NonUnitalSeminormedCommRing
+variable {R : Type*} [NonUnitalSeminormedCommRing R] [NormedSpace 𝕜 R] [IsScalarTower 𝕜 R R]
+  [SMulCommClass 𝕜 R R]
+
+@[simp] lemma flip_mul : (ContinuousLinearMap.mul 𝕜 R).flip = .mul 𝕜 R := by ext; simp [mul_comm]
+
+end NonUnitalSeminormedCommRing
+
 section RingEquiv
 
 variable (𝕜 E)
