@@ -24,8 +24,6 @@ universe u
 
 open CategoryTheory Limits CompHausLike
 
-attribute [local instance] HasForget.instFunLike
-
 namespace Stonean
 
 open List in

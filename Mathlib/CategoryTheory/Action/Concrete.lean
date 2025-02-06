@@ -19,12 +19,6 @@ universe u v
 
 open CategoryTheory Limits
 
-theorem CategoryTheory.types_end {X : Type*} : End X = Function.End X := rfl
-
-@[simp]
-theorem MulAction.toEndHom_apply {G A : Type*} [Monoid G] [MulAction G A] (g : G) (a : A) :
-    MulAction.toEndHom g a = g • a := rfl
-
 namespace Action
 
 section
@@ -193,12 +187,11 @@ instance instMulAction {G : Type u} [Monoid G] (X : Action V G) :
   smul g x := ((CategoryTheory.forget _).map (X.ρ g)) x
   one_smul x := by
     show ((CategoryTheory.forget _).map (X.ρ 1)) x = x
-    simp only [Action.ρ_one, FunctorToTypes.map_id_apply]
+    simp
   mul_smul g h x := by
     show (CategoryTheory.forget V).map (X.ρ (g * h)) x =
       ((CategoryTheory.forget V).map (X.ρ h) ≫ (CategoryTheory.forget V).map (X.ρ g)) x
-    rw [← Functor.map_comp, map_mul]
-    rfl
+    simp
 
 /- Specialize `instMulAction` to assist typeclass inference. -/
 instance {G : Type u} [Monoid G] (X : Action FintypeCat G) : MulAction G X.V :=
