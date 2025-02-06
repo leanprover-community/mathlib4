@@ -6,6 +6,7 @@ Authors: Yunzhou Xie, Jujian Zhang
 import Mathlib.Algebra.Azumaya.Defs
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
 # Basic properties of Azumaya algebras
@@ -72,15 +73,6 @@ lemma mulLeftRight_comp_congr (e : A ≃ₐ[R] B):
   | tmul a a' =>
     ext; simp [AlgHom.mulLeftRight_apply, LinearEquiv.algConj, LinearEquiv.conj]
   | add _ _ _ _ => simp_all [map_add]
-
-lemma _root_.FaithfulSMul.ofInjective {F R M N : Type*} [FunLike F M N] [SMul R M] [SMul R N]
-    [FaithfulSMul R M] [MulActionHomClass F R M N] (f : F)
-    (hf : Function.Injective f) :
-    FaithfulSMul R N where
-  eq_of_smul_eq_smul {r1 r2} h12 := by
-    have : ∀ m : M, r1 • f m = r2 • f m := fun m ↦ h12 (f m)
-    simp_rw [← map_smul] at this
-    exact eq_of_smul_eq_smul <| fun m ↦ hf (this m)
 
 theorem of_AlgEquiv (e : A ≃ₐ[R] B) [IsAzumaya R A] : IsAzumaya R B :=
   let _ : Module.Projective R B := .of_equiv e.toLinearEquiv
