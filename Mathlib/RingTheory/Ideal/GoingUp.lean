@@ -324,5 +324,3 @@ lemma primesOver_bot [Nontrivial A] [IsDomain B] : primesOver (⊥ : Ideal A) B 
 end IsIntegral
 
 end Ideal
-
-#min_imports
