@@ -90,6 +90,9 @@ theorem vsub_mem_vectorSpan {s : Set P} {p1 p2 : P} (hp1 : p1 ∈ s) (hp2 : p2 �
     p1 -ᵥ p2 ∈ vectorSpan k s :=
   vsub_set_subset_vectorSpan k s (vsub_mem_vsub hp1 hp2)
 
+@[simp] lemma vectorSpan_vadd (s : Set P) (v : V) : vectorSpan k (v +ᵥ s) = vectorSpan k s := by
+  simp [vectorSpan]
+
 /-- The points in the affine span of a (possibly empty) set of points. Use `affineSpan` instead to
 get an `AffineSubspace k P`. -/
 def spanPoints (s : Set P) : Set P :=
@@ -258,7 +261,8 @@ theorem coe_direction_eq_vsub_set_right {s : AffineSubspace k P} {p : P} (hp : p
   rw [coe_direction_eq_vsub_set ⟨p, hp⟩]
   refine le_antisymm ?_ ?_
   · rintro v ⟨p1, hp1, p2, hp2, rfl⟩
-    exact ⟨p1 -ᵥ p2 +ᵥ p, vadd_mem_of_mem_direction (vsub_mem_direction hp1 hp2) hp, vadd_vsub _ _⟩
+    exact ⟨(p1 -ᵥ p2) +ᵥ p,
+      vadd_mem_of_mem_direction (vsub_mem_direction hp1 hp2) hp, vadd_vsub _ _⟩
   · rintro v ⟨p2, hp2, rfl⟩
     exact ⟨p2, hp2, p, hp, rfl⟩
 
@@ -686,7 +690,7 @@ theorem direction_top : (⊤ : AffineSubspace k P).direction = ⊤ := by
   cases' S.nonempty with p
   ext v
   refine ⟨imp_intro Submodule.mem_top, fun _hv => ?_⟩
-  have hpv : (v +ᵥ p -ᵥ p : V) ∈ (⊤ : AffineSubspace k P).direction :=
+  have hpv : ((v +ᵥ p) -ᵥ p : V) ∈ (⊤ : AffineSubspace k P).direction :=
     vsub_mem_direction (mem_top k V _) (mem_top k V _)
   rwa [vadd_vsub] at hpv
 
@@ -747,7 +751,7 @@ This is the affine version of `Submodule.topEquiv`. -/
 def topEquiv : (⊤ : AffineSubspace k P) ≃ᵃ[k] P where
   toEquiv := Equiv.Set.univ P
   linear := .ofEq _ _ (direction_top _ _ _) ≪≫ₗ Submodule.topEquiv
-  map_vadd' _p _v := rfl
+  map_vadd' _ _ := rfl
 
 variable {P}
 
@@ -1249,7 +1253,7 @@ theorem affineSpan_pair_le_of_right_mem {p₁ p₂ p₃ : P} (h : p₁ ∈ line[
 variable (k)
 
 /-- `affineSpan` is monotone. -/
-@[mono]
+@[gcongr, mono]
 theorem affineSpan_mono {s₁ s₂ : Set P} (h : s₁ ⊆ s₂) : affineSpan k s₁ ≤ affineSpan k s₂ :=
   spanPoints_subset_coe_of_subset_coe (Set.Subset.trans h (subset_affineSpan k _))
 
@@ -1279,7 +1283,7 @@ span. -/
 lemma affineSpan_le_toAffineSubspace_span {s : Set V} :
     affineSpan k s ≤ (Submodule.span k s).toAffineSubspace := by
   intro x hx
-  show x ∈ Submodule.span k s
+  simp only [SetLike.mem_coe, Submodule.mem_toAffineSubspace]
   induction hx using affineSpan_induction' with
   | mem x hx => exact Submodule.subset_span hx
   | smul_vsub_vadd c u _ v _ w _ hu hv hw =>
@@ -1470,7 +1474,7 @@ This is the affine version of `Submodule.inclusion`. -/
 def inclusion (h : S₁ ≤ S₂) : S₁ →ᵃ[k] S₂ where
   toFun := Set.inclusion h
   linear := Submodule.inclusion <| AffineSubspace.direction_le h
-  map_vadd' _ _ := rfl
+  map_vadd' := fun ⟨_,_⟩ ⟨_,_⟩ => rfl
 
 @[simp]
 theorem coe_inclusion_apply (h : S₁ ≤ S₂) (x : S₁) : (inclusion h x : P₁) = x :=
@@ -1510,14 +1514,15 @@ This is the affine version of `LinearEquiv.ofEq`. -/
 def ofEq (h : S₁ = S₂) : S₁ ≃ᵃ[k] S₂ where
   toEquiv := Equiv.Set.ofEq <| congr_arg _ h
   linear := .ofEq _ _ <| congr_arg _ h
-  map_vadd' _ _ := rfl
+  map_vadd' := fun ⟨_,_⟩ ⟨_,_⟩ => rfl
 
 @[simp]
 theorem coe_ofEq_apply (h : S₁ = S₂) (x : S₁) : (ofEq S₁ S₂ h x : P₁) = x :=
   rfl
 
 @[simp]
-theorem ofEq_symm (h : S₁ = S₂) : (ofEq S₁ S₂ h).symm = ofEq S₂ S₁ h.symm :=
+theorem ofEq_symm (h : S₁ = S₂) : (ofEq S₁ S₂ h).symm = ofEq S₂ S₁ h.symm := by
+  ext
   rfl
 
 @[simp]

@@ -20,6 +20,8 @@ and that it is triangulated.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 namespace CategoryTheory
 
 open Category Limits Pretriangulated Localization
@@ -134,7 +136,7 @@ lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
     (Iso.refl _) e.inv.w.symm (by simp) ?_
   dsimp
   simp only [assoc, id_comp, ← Functor.map_comp, ← Arrow.comp_left, e.hom_inv_id, Arrow.id_left,
-    Functor.mapArrow_obj_left, Functor.map_id, comp_id]
+    Functor.mapArrow_obj, Arrow.mk_left, Functor.map_id, comp_id]
 
 section
 variable [W.IsCompatibleWithTriangulation]

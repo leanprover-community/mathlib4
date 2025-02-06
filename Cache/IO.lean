@@ -44,17 +44,20 @@ def IRDIR : FilePath :=
 
 /-- Target directory for caching -/
 initialize CACHEDIR : FilePath ← do
-  match ← IO.getEnv "XDG_CACHE_HOME" with
-  | some path => return path / "mathlib"
+  match ← IO.getEnv "MATHLIB_CACHE_DIR" with
+  | some path => return path
   | none =>
-    let home ← if System.Platform.isWindows then
-      let drive ← IO.getEnv "HOMEDRIVE"
-      let path ← IO.getEnv "HOMEPATH"
-      pure <| return (← drive) ++ (← path)
-    else IO.getEnv "HOME"
-    match home with
-    | some path => return path / ".cache" / "mathlib"
-    | none => pure ⟨".cache"⟩
+    match ← IO.getEnv "XDG_CACHE_HOME" with
+    | some path => return path / "mathlib"
+    | none =>
+      let home ← if System.Platform.isWindows then
+        let drive ← IO.getEnv "HOMEDRIVE"
+        let path ← IO.getEnv "HOMEPATH"
+        pure <| return (← drive) ++ (← path)
+      else IO.getEnv "HOME"
+      match home with
+      | some path => return path / ".cache" / "mathlib"
+      | none => pure ⟨".cache"⟩
 
 /-- Target file path for `curl` configurations -/
 def CURLCFG :=
@@ -70,7 +73,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.13"
+  "0.1.14"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
 
@@ -92,6 +95,7 @@ abbrev PackageDirs := Lean.RBMap String FilePath compare
 structure CacheM.Context where
   mathlibDepPath : FilePath
   packageDirs : PackageDirs
+  proofWidgetsBuildDir : FilePath
 
 abbrev CacheM := ReaderT CacheM.Context IO
 
@@ -132,14 +136,16 @@ private def CacheM.getContext : IO CacheM.Context := do
     ("Mathlib", root),
     ("Archive", root),
     ("Counterexamples", root),
+    ("MathlibTest", root),
     ("Aesop", LAKEPACKAGESDIR / "aesop"),
     ("Batteries", LAKEPACKAGESDIR / "batteries"),
     ("Cli", LAKEPACKAGESDIR / "Cli"),
     ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
     ("Qq", LAKEPACKAGESDIR / "Qq"),
     ("ImportGraph", LAKEPACKAGESDIR / "importGraph"),
-    ("LeanSearchClient", LAKEPACKAGESDIR / "LeanSearchClient")
-  ]⟩
+    ("LeanSearchClient", LAKEPACKAGESDIR / "LeanSearchClient"),
+    ("Plausible", LAKEPACKAGESDIR / "plausible")
+  ], LAKEPACKAGESDIR / "proofwidgets" / ".lake" / "build"⟩
 
 def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
 

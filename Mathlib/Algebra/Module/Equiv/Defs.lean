@@ -33,8 +33,7 @@ The group structure on automorphisms, `LinearEquiv.automorphismGroup`, is provid
 linear equiv, linear equivalences, linear isomorphism, linear isomorphic
 -/
 
-assert_not_exists Field
-assert_not_exists Pi.module
+assert_not_exists Field Pi.module
 
 open Function
 
@@ -45,7 +44,7 @@ variable {N₁ : Type*} {N₂ : Type*}
 section
 
 /-- A linear equivalence is an invertible linear map. -/
--- Porting note (#11215): TODO @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO @[nolint has_nonempty_instance]
 structure LinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
   {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) (M₂ : Type*)
   [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends LinearMap σ M M₂, M ≃+ M₂
@@ -67,11 +66,11 @@ add_decl_doc LinearEquiv.right_inv
 /-- `LinearEquiv.invFun` is a left inverse to the linear equivalence's underlying function. -/
 add_decl_doc LinearEquiv.left_inv
 
-/-- The notation `M ≃ₛₗ[σ] M₂` denotes the type of linear equivalences between `M` and `M₂` over a
+/-- `M ≃ₛₗ[σ] M₂` denotes the type of linear equivalences between `M` and `M₂` over a
 ring homomorphism `σ`. -/
 notation:50 M " ≃ₛₗ[" σ "] " M₂ => LinearEquiv σ M M₂
 
-/-- The notation `M ≃ₗ [R] M₂` denotes the type of linear equivalences between `M` and `M₂` over
+/-- `M ≃ₗ [R] M₂` denotes the type of linear equivalences between `M` and `M₂` over
 a plain linear map `M →ₗ M₂`. -/
 notation:50 M " ≃ₗ[" R "] " M₂ => LinearEquiv (RingHom.id R) M M₂
 
@@ -169,8 +168,8 @@ instance : EquivLike (M ≃ₛₗ[σ] M₂) M M₂ where
   right_inv := LinearEquiv.right_inv
 
 instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
-  map_add := (·.map_add') --map_add' Porting note (#11215): TODO why did I need to change this?
-  map_smulₛₗ := (·.map_smul') --map_smul' Porting note (#11215): TODO why did I need to change this?
+  map_add := (·.map_add') --map_add' Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO why did I need to change this?
+  map_smulₛₗ := (·.map_smul') --map_smul' Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO why did I need to change this?
 
 -- Porting note: moved to a lower line since there is no shortcut `CoeFun` instance any more
 @[simp]
@@ -298,7 +297,7 @@ def trans
     (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃) : M₁ ≃ₛₗ[σ₁₃] M₃ :=
   { e₂₃.toLinearMap.comp e₁₂.toLinearMap, e₁₂.toEquiv.trans e₂₃.toEquiv with }
 
-/-- The notation `e₁ ≪≫ₗ e₂` denotes the composition of the linear equivalences `e₁` and `e₂`. -/
+/-- `e₁ ≪≫ₗ e₂` denotes the composition of the linear equivalences `e₁` and `e₂`. -/
 notation3:80 (name := transNotation) e₁:80 " ≪≫ₗ " e₂:81 =>
   @LinearEquiv.trans _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (RingHom.id _) (RingHom.id _) (RingHom.id _)
     (RingHom.id _) (RingHom.id _) (RingHom.id _) RingHomCompTriple.ids RingHomCompTriple.ids
@@ -311,8 +310,15 @@ variable {e₁₂} {e₂₃}
 theorem coe_toAddEquiv : e.toAddEquiv = e :=
   rfl
 
+@[simp]
+lemma coe_addEquiv_apply (x : M) : (e : M ≃+ M₂) x = e x := by
+  rfl
+
 /-- The two paths coercion can take to an `AddMonoidHom` are equivalent -/
 theorem toAddMonoidHom_commutes : e.toLinearMap.toAddMonoidHom = e.toAddEquiv.toAddMonoidHom :=
+  rfl
+
+lemma coe_toAddEquiv_symm : (e₁₂.symm : M₂ ≃+ M₁) = (e₁₂ : M₁ ≃+ M₂).symm := by
   rfl
 
 @[simp]
@@ -390,6 +396,18 @@ theorem toLinearMap_symm_comp_eq (f : M₃ →ₛₗ[σ₃₁] M₁) (g : M₃ �
   constructor <;> intro H <;> ext
   · simp [← H, ← e₁₂.toEquiv.symm_comp_eq f g]
   · simp [H, e₁₂.toEquiv.symm_comp_eq f g]
+
+@[simp]
+theorem comp_toLinearMap_eq_iff (f g : M₃ →ₛₗ[σ₃₁] M₁) :
+    e₁₂.toLinearMap.comp f = e₁₂.toLinearMap.comp g ↔ f = g := by
+  refine ⟨fun h => ?_, congrArg e₁₂.comp⟩
+  rw [← (toLinearMap_symm_comp_eq g (e₁₂.toLinearMap.comp f)).mpr h, eq_toLinearMap_symm_comp]
+
+@[simp]
+theorem eq_comp_toLinearMap_iff (f g : M₂ →ₛₗ[σ₂₃] M₃) :
+    f.comp e₁₂.toLinearMap = g.comp e₁₂.toLinearMap ↔ f = g := by
+  refine ⟨fun h => ?_, fun a ↦ congrFun (congrArg LinearMap.comp a) e₁₂.toLinearMap⟩
+  rw [(eq_comp_toLinearMap_symm g (f.comp e₁₂.toLinearMap)).mpr h.symm, eq_comp_toLinearMap_symm]
 
 @[simp]
 theorem refl_symm [Module R M] : (refl R M).symm = LinearEquiv.refl R M :=

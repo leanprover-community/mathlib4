@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde, Daniel Weber
 -/
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.List
-import Mathlib.Algebra.BigOperators.Group.Multiset
+import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
 
 /-!
 # Big operators on a multiset in ordered groups with zeros

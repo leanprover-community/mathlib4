@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Data.Finite.Card
+import Mathlib.Data.Set.Finite.Range
 
 /-!
 # Subgroups
@@ -15,6 +16,8 @@ This file provides some result on multiplicative and additive subgroups in the f
 ## Tags
 subgroup, subgroups
 -/
+
+assert_not_exists Field
 
 variable {G : Type*} [Group G]
 variable {A : Type*} [AddGroup A]
@@ -93,9 +96,8 @@ instance fintypeBot : Fintype (⊥ : Subgroup G) :=
     rintro ⟨x, ⟨hx⟩⟩
     exact Finset.mem_singleton_self _⟩
 
-@[to_additive] -- Porting note: removed `simp` because `simpNF` says it can prove it.
-theorem card_bot : Nat.card (⊥ : Subgroup G) = 1 :=
-  Nat.card_unique
+@[to_additive]
+theorem card_bot : Nat.card (⊥ : Subgroup G) = 1 := by simp
 
 @[to_additive]
 theorem card_top : Nat.card (⊤ : Subgroup G) = Nat.card G :=
@@ -149,6 +151,18 @@ theorem card_le_card_group [Finite G] : Nat.card H ≤ Nat.card G :=
 theorem card_le_of_le {H K : Subgroup G} [Finite K] (h : H ≤ K) : Nat.card H ≤ Nat.card K :=
   Nat.card_le_card_of_injective _ (Subgroup.inclusion_injective h)
 
+@[to_additive]
+theorem card_map_of_injective {H : Type*} [Group H] {K : Subgroup G} {f : G →* H}
+    (hf : Function.Injective f) :
+    Nat.card (map f K) = Nat.card K := by
+  -- simp only [← SetLike.coe_sort_coe]
+  apply Nat.card_image_of_injective hf
+
+@[to_additive]
+theorem card_subtype (K : Subgroup G) (L : Subgroup K) :
+    Nat.card (map K.subtype L) = Nat.card L :=
+  card_map_of_injective K.subtype_injective
+
 end Subgroup
 
 namespace Subgroup
@@ -191,7 +205,7 @@ theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgro
         have : j ≠ i := by
           rintro rfl
           contradiction
-        simp only [ne_eq, this, not_false_eq_true, Function.update_noteq]
+        simp only [ne_eq, this, not_false_eq_true, Function.update_of_ne]
         exact h2 _ (Finset.mem_insert_of_mem hj)
     · apply h2
       simp
@@ -272,5 +286,15 @@ Note: this instance can form a diamond with `Subtype.fintype` or `Subgroup.finty
  presence of `Fintype N`."]
 instance fintypeRange [Fintype G] [DecidableEq N] (f : G →* N) : Fintype (range f) :=
   Set.fintypeRange f
+
+lemma _root_.Fintype.card_coeSort_mrange {M N : Type*} [Monoid M] [Monoid N] [Fintype M]
+    [DecidableEq N] {f : M →* N} (hf : Function.Injective f) :
+    Fintype.card (mrange f) = Fintype.card M :=
+  Set.card_range_of_injective hf
+
+lemma _root_.Fintype.card_coeSort_range [Fintype G] [DecidableEq N] {f : G →* N}
+    (hf : Function.Injective f) :
+    Fintype.card (range f) = Fintype.card G :=
+  Set.card_range_of_injective hf
 
 end MonoidHom

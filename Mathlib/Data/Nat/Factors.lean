@@ -5,9 +5,10 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.List.Prime
 import Mathlib.Data.List.Sort
+import Mathlib.Data.List.Perm.Subperm
 
 /-!
 # Prime numbers
@@ -29,8 +30,6 @@ open Nat
 
 namespace Nat
 
-attribute [instance 0] instBEqNat
-
 /-- `primeFactorsList n` is the prime factorization of `n`, listed in increasing order. -/
 def primeFactorsList : ℕ → List ℕ
   | 0 => []
@@ -38,9 +37,7 @@ def primeFactorsList : ℕ → List ℕ
   | k + 2 =>
     let m := minFac (k + 2)
     m :: primeFactorsList ((k + 2) / m)
-decreasing_by show (k + 2) / m < (k + 2); exact factors_lemma
-
-@[deprecated (since := "2024-06-14")] alias factors := primeFactorsList
+decreasing_by exact factors_lemma
 
 @[simp]
 theorem primeFactorsList_zero : primeFactorsList 0 = [] := by rw [primeFactorsList]

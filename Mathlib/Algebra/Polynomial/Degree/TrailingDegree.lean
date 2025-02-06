@@ -3,9 +3,8 @@ Copyright (c) 2020 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Polynomial.Degree.Definitions
+import Mathlib.Algebra.Polynomial.Degree.Support
 import Mathlib.Data.ENat.Basic
-import Mathlib.Data.ENat.Lattice
 
 /-!
 # Trailing degree of univariate polynomials
@@ -200,9 +199,6 @@ theorem natTrailingDegree_one : natTrailingDegree (1 : R[X]) = 0 :=
 theorem natTrailingDegree_natCast (n : ℕ) : natTrailingDegree (n : R[X]) = 0 := by
   simp only [← C_eq_natCast, natTrailingDegree_C]
 
-@[deprecated (since := "2024-04-17")]
-alias natTrailingDegree_nat_cast := natTrailingDegree_natCast
-
 @[simp]
 theorem trailingDegree_C_mul_X_pow (n : ℕ) (ha : a ≠ 0) : trailingDegree (C a * X ^ n) = n := by
   rw [C_mul_X_pow_eq_monomial, trailingDegree_monomial ha]
@@ -228,7 +224,7 @@ theorem coeff_eq_zero_of_lt_natTrailingDegree {p : R[X]} {n : ℕ} (h : n < p.na
 theorem coeff_natTrailingDegree_pred_eq_zero {p : R[X]} {hp : (0 : ℕ∞) < natTrailingDegree p} :
     p.coeff (p.natTrailingDegree - 1) = 0 :=
   coeff_eq_zero_of_lt_natTrailingDegree <|
-    Nat.sub_lt ((WithTop.zero_lt_coe (natTrailingDegree p)).mp hp) Nat.one_pos
+    Nat.sub_lt (WithTop.coe_pos.mp hp) Nat.one_pos
 
 theorem le_trailingDegree_X_pow (n : ℕ) : (n : ℕ∞) ≤ trailingDegree (X ^ n : R[X]) := by
   simpa only [C_1, one_mul] using le_trailingDegree_C_mul_X_pow n (1 : R)
@@ -396,9 +392,6 @@ theorem natTrailingDegree_neg (p : R[X]) : natTrailingDegree (-p) = natTrailingD
 theorem natTrailingDegree_intCast (n : ℤ) : natTrailingDegree (n : R[X]) = 0 := by
   simp only [← C_eq_intCast, natTrailingDegree_C]
 
-@[deprecated (since := "2024-04-17")]
-alias natTrailingDegree_int_cast := natTrailingDegree_intCast
-
 end Ring
 
 section Semiring
@@ -456,9 +449,6 @@ lemma eq_X_pow_iff_natDegree_le_natTrailingDegree (h₁ : p.Monic) :
 lemma eq_X_pow_iff_natTrailingDegree_eq_natDegree (h₁ : p.Monic) :
     p = X ^ p.natDegree ↔ p.natTrailingDegree = p.natDegree :=
   h₁.eq_X_pow_iff_natDegree_le_natTrailingDegree.trans (natTrailingDegree_le_natDegree p).ge_iff_eq
-
-@[deprecated (since := "2024-04-26")]
-alias ⟨_, eq_X_pow_of_natTrailingDegree_eq_natDegree⟩ := eq_X_pow_iff_natTrailingDegree_eq_natDegree
 
 end Monic
 

@@ -26,7 +26,7 @@ there exists `t : ℕ^β` with `p (v, t) = 0`.
 * `Dioph`: a predicate stating that a set is Diophantine, i.e. a set `S ⊆ ℕ^α` is
   Diophantine if there exists a polynomial on `α ⊕ β` such that `v ∈ S` iff there
   exists `t : ℕ^β` with `p (v, t) = 0`.
-* `dioph_fn`: a predicate on a function stating that it is Diophantine in the sense that its graph
+* `DiophFn`: a predicate on a function stating that it is Diophantine in the sense that its graph
   is Diophantine as a set.
 
 ## Main statements
@@ -67,7 +67,7 @@ Note that this duplicates `MvPolynomial`.
 
 section Polynomials
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 /-- A predicate asserting that a function is a multivariate integer polynomial.
   (We are being a bit lazy here by allowing many representations for multiplication,
@@ -432,7 +432,7 @@ end
 
 section
 
-variable {α β : Type} {n : ℕ}
+variable {α : Type} {n : ℕ}
 
 open Vector3
 

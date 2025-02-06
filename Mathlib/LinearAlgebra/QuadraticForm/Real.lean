@@ -7,7 +7,6 @@ import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 import Mathlib.Data.Sign
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Data.Complex.Abs
 
 /-!
 # Real quadratic forms
@@ -17,7 +16,7 @@ A real quadratic form is equivalent to a weighted
 sum of squares with the weights being ±1 or 0.
 
 When the real quadratic form is nondegenerate we can take the weights to be ±1,
-as in `equivalent_one_zero_neg_one_weighted_sum_squared`.
+as in `QuadraticForm.equivalent_one_zero_neg_one_weighted_sum_squared`.
 
 -/
 
