@@ -281,7 +281,7 @@ noncomputable def mulEquivToLimit [IsGalois k K] :
     simp_rw [this]
     exact proj_lift_adjoin_simple _ _ _ _ x.2
 
-lemma limitToAlgEquiv_continuous [IsGalois k K] : Continuous (mulEquivToLimit k K).symm := by
+lemma mulEquivToLimit_symm_continuous [IsGalois k K] : Continuous (mulEquivToLimit k K).symm := by
   apply continuous_of_continuousAt_one _ (continuousAt_def.mpr _ )
   simp only [map_one, krullTopology_mem_nhds_one]
   intro H ⟨L, _, hO2⟩
@@ -354,7 +354,7 @@ noncomputable def continuousMulEquivToLimit [IsGalois k K] :
     ContinuousMulEquiv (K ≃ₐ[k] K) (limit (profinGaloisGroupFunctor k K)) where
   toMulEquiv := mulEquivToLimit k K
   continuous_toFun := algEquivToLimit_continuous
-  continuous_invFun := limitToAlgEquiv_continuous
+  continuous_invFun := mulEquivToLimit_symm_continuous
 
 instance [IsGalois k K] : CompactSpace (K ≃ₐ[k] K) :=
   (continuousMulEquivToLimit k K).symm.compactSpace
