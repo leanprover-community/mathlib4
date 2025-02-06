@@ -59,7 +59,7 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
               ofHom (underlyingIso (ofHom N.subtype)).symm.toLinearEquiv.toLinearMap := by
               ext x
               rfl
-          rw [this, hom_comp, LinearEquiv.range_comp]
+          rw [this, hom_comp, hom_ofHom, LinearEquiv.range_comp]
         · exact (Submodule.range_subtype _).symm
       map_rel_iff' := fun {S T} => by
         refine ⟨fun h => ?_, fun h => mk_le_mk_of_comm (↟(Submodule.inclusion h)) rfl⟩

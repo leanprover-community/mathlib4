@@ -4,16 +4,19 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.RingTheory.Finiteness.Ideal
-import Mathlib.RingTheory.Ideal.MinimalPrime
+import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.RingTheory.Localization.Algebra
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Spectrum.Maximal.Localization
 import Mathlib.Tactic.StacksAttribute
+import Mathlib.Topology.Constructible
 import Mathlib.Topology.KrullDimension
+import Mathlib.Topology.QuasiSeparated
 import Mathlib.Topology.Sober
 
 /-!
@@ -41,7 +44,7 @@ variable (R : Type u) (S : Type v)
 
 namespace PrimeSpectrum
 
-section CommSemiRing
+section CommSemiring
 
 variable [CommSemiring R] [CommSemiring S]
 variable {R S}
@@ -258,6 +261,10 @@ def comap (f : R →+* S) : C(PrimeSpectrum S, PrimeSpectrum R) where
     rintro _ ⟨s, rfl⟩
     exact ⟨_, preimage_specComap_zeroLocus_aux f s⟩
 
+lemma coe_comap (f : R →+* S) : comap f = f.specComap := rfl
+
+lemma comap_apply (f : R →+* S) (x) : comap f x = f.specComap x := rfl
+
 variable (f : R →+* S)
 
 @[simp]
@@ -354,9 +361,8 @@ theorem comap_isInducing_of_surjective (hf : Surjective f) : IsInducing (comap f
 @[deprecated (since := "2024-10-28")]
 alias comap_inducing_of_surjective := comap_isInducing_of_surjective
 
-
 end Comap
-end CommSemiRing
+end CommSemiring
 
 section SpecOfSurjective
 
@@ -432,7 +438,7 @@ def primeSpectrumProdHomeo :
 
 end SpecProd
 
-section CommSemiRing
+section CommSemiring
 
 variable [CommSemiring R] [CommSemiring S]
 variable {R S}
@@ -570,6 +576,30 @@ theorem isLocalization_away_iff_atPrime_of_basicOpen_eq_singleton [Algebra R S]
     rw [← this]
     exact not_not.mpr (q.span_singleton_le_iff_mem.mp le)
   IsLocalization.isLocalization_iff_of_isLocalization _ _ (Localization.Away f)
+
+open Localization Polynomial Set in
+lemma range_comap_algebraMap_localization_compl_eq_range_comap_quotientMk
+    {R : Type*} [CommRing R] (c : R) :
+    letI := (mapRingHom (algebraMap R (Away c))).toAlgebra
+    (range (comap (algebraMap R[X] (Away c)[X])))ᶜ
+      = range (comap (mapRingHom (Ideal.Quotient.mk (.span {c})))) := by
+  letI := (mapRingHom (algebraMap R (Away c))).toAlgebra
+  have := Polynomial.isLocalization (.powers c) (Away c)
+  rw [Submonoid.map_powers] at this
+  have surj : Function.Surjective (mapRingHom (Ideal.Quotient.mk (.span {c}))) :=
+    Polynomial.map_surjective _ Ideal.Quotient.mk_surjective
+  rw [range_comap_of_surjective _ _ surj, localization_away_comap_range _ (C c)]
+  simp [Polynomial.ker_mapRingHom, Ideal.map_span]
+
+instance : QuasiSeparatedSpace (PrimeSpectrum R) :=
+  .of_isTopologicalBasis isTopologicalBasis_basic_opens fun i j ↦ by
+    simpa [← TopologicalSpace.Opens.coe_inf, ← basicOpen_mul, -basicOpen_eq_zeroLocus_compl]
+      using isCompact_basicOpen _
+
+-- TODO: Abstract out this lemma to spectral spaces
+lemma isRetrocompact_iff {U : Set (PrimeSpectrum R)} (hU : IsOpen U) :
+    IsRetrocompact U ↔ IsCompact U :=
+  isTopologicalBasis_basic_opens.isRetrocompact_iff_isCompact isCompact_basicOpen hU
 
 end BasicOpen
 
@@ -764,25 +794,11 @@ protected def pointsEquivIrreducibleCloseds :
   map_rel_iff' {p q} :=
     (RelIso.symm irreducibleSetEquivPoints).map_rel_iff.trans (le_iff_specializes p q).symm
 
-/-- Also see `PrimeSpectrum.isClosed_singleton_iff_isMaximal` -/
-lemma isMax_iff {x : PrimeSpectrum R} :
-    IsMax x ↔ x.asIdeal.IsMaximal := by
-  refine ⟨fun hx ↦ ⟨⟨x.2.ne_top, fun I hI ↦ ?_⟩⟩, fun hx y e ↦ (hx.eq_of_le y.2.ne_top e).ge⟩
-  by_contra e
-  obtain ⟨m, hm, hm'⟩ := Ideal.exists_le_maximal I e
-  exact hx.not_lt (show x < ⟨m, hm.isPrime⟩ from hI.trans_le hm')
-
 lemma stableUnderSpecialization_singleton {x : PrimeSpectrum R} :
     StableUnderSpecialization {x} ↔ x.asIdeal.IsMaximal := by
   simp_rw [← isMax_iff, StableUnderSpecialization, ← le_iff_specializes, Set.mem_singleton_iff,
     @forall_comm _ (_ = _), forall_eq]
   exact ⟨fun H a h ↦ (H a h).le, fun H a h ↦ le_antisymm (H h) h⟩
-
-lemma isMin_iff {x : PrimeSpectrum R} :
-    IsMin x ↔ x.asIdeal ∈ minimalPrimes R := by
-  show IsMin _ ↔ Minimal (fun q : Ideal R ↦ q.IsPrime ∧ ⊥ ≤ q) _
-  simp only [IsMin, Minimal, x.2, bot_le, and_self, and_true, true_and]
-  exact ⟨fun H y hy e ↦ @H ⟨y, hy⟩ e, fun H y e ↦ H y.2 e⟩
 
 lemma stableUnderGeneralization_singleton {x : PrimeSpectrum R} :
     StableUnderGeneralization {x} ↔ x.asIdeal ∈ minimalPrimes R := by
@@ -950,7 +966,7 @@ def primeSpectrum_unique_of_localization_at_minimal (h : I ∈ minimalPrimes R) 
 
 end LocalizationAtMinimal
 
-end CommSemiRing
+end CommSemiring
 
 end PrimeSpectrum
 
@@ -958,11 +974,9 @@ section CommSemiring
 variable [CommSemiring R]
 
 open PrimeSpectrum in
-/--
-[Stacks: Lemma 00ES (3)](https://stacks.math.columbia.edu/tag/00ES)
-Zero loci of minimal prime ideals of `R` are irreducible components in `Spec R` and any
-irreducible component is a zero locus of some minimal prime ideal.
--/
+/-- Zero loci of minimal prime ideals of `R` are irreducible components in `Spec R` and any
+irreducible component is a zero locus of some minimal prime ideal. -/
+@[stacks 00ES]
 protected def minimalPrimes.equivIrreducibleComponents :
     minimalPrimes R ≃o (irreducibleComponents <| PrimeSpectrum R)ᵒᵈ := by
   let e : {p : Ideal R | p.IsPrime ∧ ⊥ ≤ p} ≃o PrimeSpectrum R :=

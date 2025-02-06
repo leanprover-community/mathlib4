@@ -77,7 +77,12 @@ lemma hi (n : ℕ) : n = n := by extract_goal; rfl
 section Linter.MinImports
 
 set_option linter.minImports.increases false
-set_option linter.minImports true
+
+set_option linter.minImports false
+/-- info: Counting imports from here. -/
+#guard_msgs in
+#import_bumps
+
 /--
 warning: Imports increased to
 [Init.Guard, Mathlib.Data.Int.Notation]
@@ -147,6 +152,10 @@ note: this linter can be disabled with `set_option linter.upstreamableDecl false
 #guard_msgs in
 theorem propose_to_move_this_theorem : (0 : ℕ) = 0 := rfl
 
+-- By default, the linter does not warn on definitions.
+def dont_propose_to_move_this_def : ℕ := 0
+
+set_option linter.upstreamableDecl.defs true in
 /--
 warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
 note: this linter can be disabled with `set_option linter.upstreamableDecl false`
@@ -160,12 +169,48 @@ theorem theorem_with_local_def : propose_to_move_this_def = 0 := rfl
 
 -- This definition depends on definitions in two different files, so should not be moved.
 #guard_msgs in
-def def_with_multiple_dependencies :=
+theorem theorem_with_multiple_dependencies : True :=
   let _ := Mathlib.Meta.FunProp.funPropAttr
   let _ := Mathlib.Meta.NormNum.evalNatDvd
-  false
+  trivial
 
-/-! Structures and inductives should be treated just like definitions. -/
+-- Private declarations shouldn't get a warning by default.
+private theorem private_theorem : (0 : ℕ) = 0 := rfl
+
+-- But we can enable the option.
+set_option linter.upstreamableDecl.private true in
+/--
+warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
+note: this linter can be disabled with `set_option linter.upstreamableDecl false`
+-/
+#guard_msgs in
+private theorem propose_to_move_this_private_theorem : (0 : ℕ) = 0 := rfl
+
+-- Private declarations shouldn't get a warning by default, even if definitions get a warning.
+set_option linter.upstreamableDecl.defs true in
+private def private_def : ℕ := 0
+
+-- But if we enable both options, they should.
+set_option linter.upstreamableDecl.defs true in
+set_option linter.upstreamableDecl.private true in
+/--
+warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
+note: this linter can be disabled with `set_option linter.upstreamableDecl false`
+-/
+#guard_msgs in
+private def propose_to_move_this_private_def : ℕ := 0
+
+/-! Structures and inductives should be treated just like definitions:
+no warnings by default, unless we enable the option. -/
+
+structure DontProposeToMoveThisStructure where
+  foo : ℕ
+
+inductive DontProposeToMoveThisInductive where
+| foo : ℕ → DontProposeToMoveThisInductive
+| bar : ℕ → DontProposeToMoveThisInductive → DontProposeToMoveThisInductive
+
+set_option linter.upstreamableDecl.defs true
 
 /--
 

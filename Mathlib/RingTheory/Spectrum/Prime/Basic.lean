@@ -3,6 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
+import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Spectrum.Prime.Defs
 
@@ -69,6 +70,11 @@ def equivSubtype : PrimeSpectrum R ≃ {I : Ideal R // I.IsPrime} where
   invFun I := ⟨I, I.2⟩
   left_inv _ := rfl
   right_inv _ := rfl
+
+theorem range_asIdeal : Set.range PrimeSpectrum.asIdeal = {J : Ideal R | J.IsPrime} :=
+  Set.ext fun J ↦
+    ⟨fun hJ ↦ let ⟨j, hj⟩ := Set.mem_range.mp hJ; Set.mem_setOf.mpr <| hj ▸ j.isPrime,
+      fun hJ ↦ Set.mem_range.mpr ⟨⟨J, Set.mem_setOf.mp hJ⟩, rfl⟩⟩
 
 /-- The map from the direct sum of prime spectra to the prime spectrum of a direct product. -/
 @[simp]
@@ -194,6 +200,9 @@ theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal R) :
   Ideal.ext fun f => by
     rw [mem_vanishingIdeal, Ideal.radical_eq_sInf, Submodule.mem_sInf]
     exact ⟨fun h x hx => h ⟨x, hx.2⟩ hx.1, fun h x hx => h x.1 ⟨hx, x.2⟩⟩
+
+theorem nilradical_eq_iInf : nilradical R = iInf asIdeal := by
+  apply range_asIdeal R ▸ nilradical_eq_sInf R
 
 @[simp]
 theorem zeroLocus_radical (I : Ideal R) : zeroLocus (I.radical : Set R) = zeroLocus I :=
@@ -392,6 +401,20 @@ instance [IsDomain R] : OrderBot (PrimeSpectrum R) where
 instance {R : Type*} [Field R] : Unique (PrimeSpectrum R) where
   default := ⊥
   uniq x := PrimeSpectrum.ext ((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right x.2.ne_top)
+
+/-- Also see `PrimeSpectrum.isClosed_singleton_iff_isMaximal` -/
+lemma isMax_iff {x : PrimeSpectrum R} :
+    IsMax x ↔ x.asIdeal.IsMaximal := by
+  refine ⟨fun hx ↦ ⟨⟨x.2.ne_top, fun I hI ↦ ?_⟩⟩, fun hx y e ↦ (hx.eq_of_le y.2.ne_top e).ge⟩
+  by_contra e
+  obtain ⟨m, hm, hm'⟩ := Ideal.exists_le_maximal I e
+  exact hx.not_lt (show x < ⟨m, hm.isPrime⟩ from hI.trans_le hm')
+
+lemma isMin_iff {x : PrimeSpectrum R} :
+    IsMin x ↔ x.asIdeal ∈ minimalPrimes R := by
+  show IsMin _ ↔ Minimal (fun q : Ideal R ↦ q.IsPrime ∧ ⊥ ≤ q) _
+  simp only [IsMin, Minimal, x.2, bot_le, and_self, and_true, true_and]
+  exact ⟨fun H y hy e ↦ @H ⟨y, hy⟩ e, fun H y e ↦ H y.2 e⟩
 
 end Order
 
