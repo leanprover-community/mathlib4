@@ -291,14 +291,12 @@ theorem Ind.exists_nonempty_arrow_mk_iso_ind_lim {A B : Ind C} {f : A ⟶ B} :
 
 section Small
 
-variable (C : Type u) [Category.{u} C] [HasFiniteColimits C]
+variable (C : Type u) [SmallCategory C] [HasFiniteColimits C]
 
-
-/-- For small categories `C : Type u`, the category of Ind-objects `Ind C` is equivalent to the
-category of left-exact functors `Cᵒᵖ ⥤ Type u`  -/
-noncomputable def Ind.leftExactfunctorEquivalence : Ind C ≌ LeftExactFunctor Cᵒᵖ (Type u) :=
-  (ShrinkHoms.equivalence _).symm.trans <|
-    Equivalence.ofFullSubcategory isIndObject_iff_preservesFiniteLimits
+/-- For small finitely cocomplete categories `C : Type u`, the category of Ind-objects `Ind C` is
+equivalent to the category of left-exact functors `Cᵒᵖ ⥤ Type u`  -/
+noncomputable def Ind.leftExactFunctorEquivalence : Ind C ≌ LeftExactFunctor Cᵒᵖ (Type u) :=
+  (Ind.equivalence _).trans <| Equivalence.ofFullSubcategory isIndObject_iff_preservesFiniteLimits
 
 end Small
 

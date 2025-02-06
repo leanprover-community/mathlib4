@@ -193,9 +193,10 @@ end NonSmall
 
 section Small
 
-variable {C : Type u} [Category.{u} C]
+variable {C : Type u} [SmallCategory C]
 
-/-- Objects in a small category `C : Type u` are Ind-objects if and only if they are left-exact. -/
+/-- Presheaves over a small finitely cocomplete category `C : Type u` are Ind-objects if and only if
+they are left-exact. -/
 lemma isIndObject_iff_preservesFiniteLimits [HasFiniteColimits C] (A : Cᵒᵖ ⥤ Type u) :
     IsIndObject A ↔ PreservesFiniteLimits A :=
   (isIndObject_iff A).trans <| by
