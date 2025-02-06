@@ -281,18 +281,19 @@ noncomputable def mulEquivToLimit [IsGalois k K] :
     simp_rw [this]
     exact proj_lift_adjoin_simple _ _ _ _ x.2
 
+lemma krullTopology_mem_nhds_one_of_isGalois [IsGalois k K] (A : Set (K ≃ₐ[k] K)) :
+    A ∈ nhds 1 ↔ ∃ (L : FiniteGaloisIntermediateField k K), (L.fixingSubgroup : Set _) ⊆ A := by
+  rw [krullTopology_mem_nhds_one]
+  refine ⟨fun ⟨L, _, hL⟩ ↦ ?_, fun ⟨L, hL⟩ ↦ ⟨L, inferInstance, hL⟩⟩
+  use mk (normalClosure k L K)
+  exact le_trans (L.fixingSubgroup_anti L.le_normalClosure) hL
+
 lemma mulEquivToLimit_symm_continuous [IsGalois k K] : Continuous (mulEquivToLimit k K).symm := by
   apply continuous_of_continuousAt_one _ (continuousAt_def.mpr _ )
-  simp only [map_one, krullTopology_mem_nhds_one]
-  intro H ⟨L, _, hO2⟩
-  set L' : FiniteGaloisIntermediateField k K := mk <| normalClosure k L K
-  have lecl := IntermediateField.le_normalClosure L
-  have : L'.1.fixingSubgroup ≤ L.fixingSubgroup := fun σ h ↦ (mem_fixingSubgroup_iff
-    (K ≃ₐ[k] K)).mpr (fun y hy ↦ ((mem_fixingSubgroup_iff (K ≃ₐ[k] K)).mp h) y (lecl hy))
-  have le1 : (mulEquivToLimit k K).symm ⁻¹' L.fixingSubgroup ⊆ (mulEquivToLimit k K).symm ⁻¹' H :=
-    fun ⦃a⦄ ↦ fun b ↦ hO2 b
+  simp only [map_one, krullTopology_mem_nhds_one_of_isGalois]
+  intro H ⟨L', hL'⟩
   have le : (mulEquivToLimit k K).symm ⁻¹' L'.1.fixingSubgroup ⊆
-    (mulEquivToLimit k K).symm ⁻¹' H := fun ⦃a⦄ b ↦ le1 (this b)
+    (mulEquivToLimit k K).symm ⁻¹' H := fun _ b ↦ hL' b
   apply mem_nhds_iff.mpr
   use (mulEquivToLimit k K).symm ⁻¹' L'.1.fixingSubgroup
   simp only [le, true_and]
@@ -342,8 +343,6 @@ lemma mulEquivToLimit_symm_continuous [IsGalois k K] : Continuous (mulEquivToLim
     have op : IsOpen fix1 := C.isOpen_preimage {1} trivial
     exact this ▸ (isOpen_induced op)
   · simp only [Set.mem_preimage, map_one, SetLike.mem_coe, one_mem]
-
-instance [IsGalois k K] : T2Space (K ≃ₐ[k] K) := krullTopology_t2
 
 variable (k K)
 
