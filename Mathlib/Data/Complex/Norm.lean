@@ -45,7 +45,7 @@ lemma norm_I : ‖I‖ = 1 := abs_I
     ‖(ofNat(n) : ℂ)‖ = OfNat.ofNat n := norm_natCast n
 
 @[simp 1100, norm_cast] lemma norm_nnratCast (q : ℚ≥0) :
-    ‖(q : ℂ)‖ = q := abs_of_nonneg q.cast_nonneg
+    ‖(q : ℂ)‖ = q := Complex.abs_of_nonneg q.cast_nonneg
 
 @[deprecated (since := "2024-08-25")] alias norm_nat := norm_natCast
 @[deprecated (since := "2024-08-25")] alias norm_int := norm_intCast
