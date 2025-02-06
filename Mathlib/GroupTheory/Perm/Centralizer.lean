@@ -20,7 +20,7 @@ import Mathlib.GroupTheory.Perm.Finite
 Let `α : Type` with `Fintype α` (and `DecidableEq α`).
 The main goal of this file is to compute the cardinality of
 conjugacy classes in `Equiv.Perm α`.
-Every `g : Equiv.Perm α` has a `cycleType α : Multiset ℕ`.
+Every `g : Equiv.Perm α` has a `g.cycleType : Multiset ℕ`.
 By `Equiv.Perm.isConj_iff_cycleType_eq`,
 two permutations are conjugate in `Equiv.Perm α` iff
 their cycle types are equal.
@@ -36,16 +36,14 @@ orbit-stabilizer theorem
 the computation to the computation of the centralizer of `g`, the
 subgroup of `Equiv.Perm α` consisting of all permutations which
 commute with `g`. It is accessed here as `MulAction.stabilizer
-(ConjAct (Equiv.Perm α)) g` and
-`Equiv.Perm.centralizer_eq_comap_stabilizer`.
+(ConjAct (Equiv.Perm α)) g` and `Subgroup.centralizer_eq_comap_stabilizer`.
 
 We compute this subgroup as follows.
 
 * If `h : Subgroup.centralizer {g}`, then the action of `ConjAct.toConjAct h`
   by conjugation on `Equiv.Perm α` stabilizes `g.cycleFactorsFinset`.
   That induces an action of `Subgroup.centralizer {g}` on
-  `g.cycleFactorsFinset` which is defined via
-  `Equiv.Perm.OnCycleFactors.subMulActionOnCycleFactors`
+  `g.cycleFactorsFinset` which is defined as an instance.
 
 * This action defines a group morphism `Equiv.Perm.OnCycleFactors.toPermHom g`
   from `Subgroup.centralizer {g}` to `Equiv.Perm g.cycleFactorsFinset`.
@@ -54,9 +52,10 @@ We compute this subgroup as follows.
   `Equiv.Perm g.cycleFactorsFinset` consisting of permutations that
   preserve the cardinality of the support.
 
-* `Equiv.Perm.OnCycleFactors.range_toPermHom_eq_range_toPermHom'  shows that
+* `Equiv.Perm.OnCycleFactors.range_toPermHom_eq_range_toPermHom'` shows that
   the range of `Equiv.Perm.OnCycleFactors.toPermHom g`
-  is the subgroup `toPermHom_range' g` of `Equiv.Perm g.cycleFactorsFinset`.
+  is the subgroup `Equiv.Perm.OnCycleFactors.toPermHom_range' g`
+  of `Equiv.Perm g.cycleFactorsFinset`.
 
 This is shown by constructing a right inverse
 `Equiv.Perm.Basis.toCentralizer`, as established by
