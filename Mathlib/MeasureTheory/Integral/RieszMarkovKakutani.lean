@@ -44,6 +44,18 @@ lemma CompactlySupportedContinuousMap.monotone_of_nnreal : Monotone Λ := by
   rw [← hg]
   simp
 
+lemma CompactlySupportedContinuousMap.monotone_of_nonneg (Λ : C_c(X, ℝ) →ₗ[ℝ] ℝ)
+    (hΛ : ∀ f, 0 ≤ f → 0 ≤ Λ f) : Monotone Λ := by
+  intro f₁ f₂ h
+  have : 0 ≤ Λ (f₂ - f₁) := by
+    apply hΛ
+    intro x
+    simp only [coe_zero, Pi.zero_apply, coe_sub, Pi.sub_apply, sub_nonneg]
+    exact h x
+  calc Λ f₁ ≤ Λ f₁ + Λ (f₂ - f₁) := by exact (le_add_iff_nonneg_right (Λ f₁)).mpr this
+  _ =  Λ (f₁ + (f₂ - f₁)) := by exact Eq.symm (LinearMap.map_add Λ f₁ (f₂ - f₁))
+  _ = Λ f₂ := by congr; exact add_sub_cancel f₁ f₂
+
 end Monotone
 
 /-- Given a positive linear functional `Λ` on continuous compactly supported functions on `X`

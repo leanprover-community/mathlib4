@@ -31,13 +31,14 @@ open Set Function TopologicalSpace CompactlySupported CompactlySupportedContinuo
 variable {X : Type*} [TopologicalSpace X]
 variable (Λ : C_c(X, ℝ) →ₗ[ℝ] ℝ) (hΛ : ∀ f, 0 ≤ f → 0 ≤ Λ f)
 
-namespace LinearRMK
+namespace RealRMK
 
 section PositiveLinear
 
 include hΛ
 
-lemma mono (f₁ f₂ : C_c(X, ℝ)) (h : f₁ ≤ f₂) : Λ f₁ ≤ Λ f₂ := by
+lemma monotone_of_nonneg : Monotone Λ := by
+  intro f₁ f₂ h
   have : 0 ≤ Λ (f₂ - f₁) := by
     apply hΛ
     intro x
@@ -49,34 +50,36 @@ lemma mono (f₁ f₂ : C_c(X, ℝ)) (h : f₁ ≤ f₂) : Λ f₁ ≤ Λ f₂ :
 
 end PositiveLinear
 
-section LinearRMK
+section RealRMK
 
 variable [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X] [BorelSpace X]
 
 /-- The measure induced for `Real`-linear positive functional `Λ`, defined through `toNNRealLinear`
-and the `NNReal`-version of `rieszContent`. -/
+and the `NNReal`-version of `rieszContent`. This is under the namespace `RealRMK`, while
+`rieszMeasure` without namespace is for `NNReal`-linear `Λ`. -/
 def rieszMeasure := (rieszContent (toNNRealLinear Λ hΛ)).measure
 
 /-- If `f` assumes values between `0` and `1` and the support is contained in `K`, then
 `Λ f ≤ rieszMeasure K`. -/
-lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤ f x ∧ f x ≤ 1)
-    {K : Set X} (hK : IsCompact K) (h : tsupport f ⊆ K) : ENNReal.ofReal (Λ f) ≤ rieszMeasure Λ hΛ K := by
+lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ)}
+    (hf : ∀ (x : X), 0 ≤ f x ∧ f x ≤ 1) {K : Set X} (hK : IsCompact K) (h : tsupport f ⊆ K) :
+    ENNReal.ofReal (Λ f) ≤ rieszMeasure Λ hΛ K := by
   have Lfnonneg : 0 ≤ Λ f := by
     apply hΛ
     intro x
     simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.zero_apply, coe_toContinuousMap]
     exact (hf x).1
-  simp only [rieszMeasure, MeasureTheory.Content.measure_eq_content_of_regular
-    (rieszContent (toNNRealLinear Λ hΛ)) (contentRegular_rieszContent (toNNRealLinear Λ hΛ))]
-  rw [rieszContent]
+  rw [rieszMeasure, ← Compacts.coe_mk K hK, MeasureTheory.Content.measure_eq_content_of_regular
+    (rieszContent (toNNRealLinear Λ hΛ)) (contentRegular_rieszContent (toNNRealLinear Λ hΛ))
+    ⟨K, hK⟩, rieszContent]
   simp only [ENNReal.ofReal_eq_coe_nnreal Lfnonneg, ENNReal.coe_le_coe]
   apply le_iff_forall_pos_le_add.mpr
   intro ε hε
-  obtain ⟨g, hg⟩ := exists_lt_rieszContentAux_add_pos (toNNRealLinear Λ hΛ) K
+  obtain ⟨g, hg⟩ := exists_lt_rieszContentAux_add_pos (toNNRealLinear Λ hΛ) ⟨K, hK⟩
     (Real.toNNReal_pos.mpr hε)
   simp only [NNReal.val_eq_coe, Real.toNNReal_coe] at hg
   apply le_of_lt (lt_of_le_of_lt _ hg.2)
-  apply mono Λ hΛ f
+  apply monotone_of_nonneg Λ hΛ
   intro x
   simp only [ContinuousMap.toFun_eq_coe, CompactlySupportedContinuousMap.coe_toContinuousMap]
   by_cases hx : x ∈ tsupport f
@@ -87,13 +90,14 @@ lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (
 
 /-- If `f` assumes values between `0` and `1` and the support is contained in `V`, then
 `Λ f ≤ rieszMeasure V`. -/
-lemma le_rieszMeasure_of_isOpen_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤ f x ∧ f x ≤ 1) {V : Set X}
-    (hV : IsOpen V)
-    (h : tsupport f ⊆ V) : ENNReal.ofReal (Λ f) ≤ (rieszMeasure Λ hΛ) V := by
+lemma le_rieszMeasure_of_isOpen_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤ f x ∧ f x ≤ 1)
+    {V : Set X} (h : tsupport f ⊆ V) :
+    ENNReal.ofReal (Λ f) ≤ (rieszMeasure Λ hΛ) V := by
   apply le_trans _ (MeasureTheory.measure_mono h)
   rw [← TopologicalSpace.Compacts.coe_mk (tsupport f) f.2]
-  apply leRieszMeasure_of_Compacts Λ hΛ hf
-  simp only [Compacts.coe_mk]
+  apply le_rieszMeasure_of_isCompact_tsupport_subset Λ hΛ hf
+  · simp only [Compacts.coe_mk]
+    exact f.hasCompactSupport
   exact subset_rfl
 
 /-- The **Riesz-Markov-Kakutani theorem** for a positive linear functional `Λ`. -/
@@ -502,7 +506,7 @@ theorem integral_rieszMeasure [Nonempty X] : ∀ (f : C_c(X, ℝ)),
     have hΛgf : ∀ (n : Fin (⌈N⌉₊ + 1)), n ∈ Finset.univ →  Λ (g n • f)
         ≤ Λ ((y (n + 1) + ε') • (⟨g n, hg.2.2.2 n⟩ : C_c(X, ℝ))) := by
       intro n _
-      exact mono Λ hΛ _ _ (hgf n)
+      exact monotone_of_nonneg Λ hΛ (hgf n)
     -- start rewriting `f`, by decomposing it by the partition of unity `g` and compare
     -- on each `Erest n`.
     nth_rw 1 [hf]
@@ -548,7 +552,7 @@ theorem integral_rieszMeasure [Nonempty X] : ∀ (f : C_c(X, ℝ)),
     have hΛgnlerieszMeasureVn : ∀ (n : Fin (⌈N⌉₊ + 1)),
         ENNReal.ofReal (Λ (⟨g n, hg.2.2.2 n⟩)) ≤ (rieszMeasure Λ hΛ) (V n) := by
       intro n
-      apply leRieszMeasure_of_Opens
+      apply le_rieszMeasure_of_isOpen_tsupport_subset
       · simp only [CompactlySupportedContinuousMap.coe_mk]
         intro x
         exact hg.2.2.1 n x
@@ -704,6 +708,6 @@ theorem integral_rieszMeasure [Nonempty X] : ∀ (f : C_c(X, ℝ)),
   -- prove the inequality for `f`
   · exact RMK_le f
 
-end LinearRMK
+end RealRMK
 
-end LinearRMK
+end RealRMK
