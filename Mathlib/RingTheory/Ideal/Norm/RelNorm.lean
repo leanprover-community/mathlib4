@@ -185,10 +185,7 @@ variable [IsDedekindDomain R] [IsDedekindDomain S]
 
 /-- Multiplicativity of `Ideal.spanNorm`. simp-normal form is `map_mul (Ideal.relNorm R)`. -/
 theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanNorm R J := by
-  nontriviality R
-  cases subsingleton_or_nontrivial S
-  · have : ∀ I : Ideal S, I = ⊤ := fun I ↦ Subsingleton.elim I ⊤
-    simp [this I, this J, this (I * J)]
+  nontriviality R; nontriviality S
   refine eq_of_localization_maximal (fun P hP ↦ ?_)
   by_cases hP0 : P = ⊥
   · subst hP0
@@ -199,40 +196,20 @@ theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanN
   let Rₚ := Localization.AtPrime P
   let Sₚ := Localization P'
   let _ : Algebra Rₚ Sₚ := localizationAlgebra P.primeCompl S
-  have : IsScalarTower R Rₚ Sₚ :=
-    IsScalarTower.of_algebraMap_eq (fun x =>
-      (IsLocalization.map_eq (T := P') (Q := Localization P') P.primeCompl.le_comap_map x).symm)
   have h : P' ≤ S⁰ :=
-    map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective _ _)
-      P.primeCompl_le_nonZeroDivisors
+    map_le_nonZeroDivisors_of_faithfulSMul P.primeCompl_le_nonZeroDivisors
   have : IsDomain Sₚ := IsLocalization.isDomain_localization h
   have : IsDedekindDomain Sₚ := IsLocalization.isDedekindDomain S h _
   have : IsPrincipalIdealRing Sₚ :=
     IsDedekindDomain.isPrincipalIdealRing_localization_over_prime S P hP0
   have := NoZeroSMulDivisors_of_isLocalization R S Rₚ Sₚ P.primeCompl_le_nonZeroDivisors
   have := Module.Finite_of_isLocalization R S Rₚ Sₚ P.primeCompl
-  let L := FractionRing S
-  let g : Sₚ →+* L := IsLocalization.map _ (M := P') (T := S⁰) (RingHom.id S) h
+  let g : Sₚ →+* FractionRing S := IsLocalization.map _ (T := S⁰) (RingHom.id S) h
   algebraize [g]
-  have : IsScalarTower S Sₚ (FractionRing S) := IsScalarTower.of_algebraMap_eq'
-    (by rw [RingHom.algebraMap_toAlgebra, IsLocalization.map_comp, RingHom.comp_id])
-  have := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization P' Sₚ (FractionRing S)
-  have : Algebra.IsSeparable (FractionRing Rₚ) (FractionRing Sₚ) := by
-    apply Algebra.IsSeparable.of_equiv_equiv
-      (FractionRing.algEquiv Rₚ (FractionRing R)).symm.toRingEquiv
-      (FractionRing.algEquiv Sₚ (FractionRing S)).symm.toRingEquiv
-    apply IsLocalization.ringHom_ext R⁰
-    ext
-    simp only [AlgEquiv.toRingEquiv_eq_coe, RingHom.coe_comp,
-      RingHom.coe_coe, Function.comp_apply, ← IsScalarTower.algebraMap_apply]
-    rw [IsScalarTower.algebraMap_apply R Rₚ (FractionRing R), AlgEquiv.coe_ringEquiv,
-      AlgEquiv.commutes, IsScalarTower.algebraMap_apply R S L,
-      IsScalarTower.algebraMap_apply S Sₚ L, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes]
-    simp only [← IsScalarTower.algebraMap_apply]
-    rw [IsScalarTower.algebraMap_apply R Rₚ (FractionRing Rₚ),
-      ← IsScalarTower.algebraMap_apply Rₚ, ← IsScalarTower.algebraMap_apply]
-  simp only [Ideal.map_mul, ← spanIntNorm_localization (R := R) (S := S)
-    (Rₘ := Localization.AtPrime P) (Sₘ := Localization P') _ _ P.primeCompl_le_nonZeroDivisors]
+  have : Algebra.IsSeparable (FractionRing Rₚ) (FractionRing Sₚ) :=
+    FractionRing.isSeparable_of_isLocalization S Rₚ Sₚ P.primeCompl_le_nonZeroDivisors
+  simp only [Ideal.map_mul, ← spanIntNorm_localization (R := R) (Sₘ := Localization P') _ _
+    P.primeCompl_le_nonZeroDivisors]
   rw [← (I.map _).span_singleton_generator, ← (J.map _).span_singleton_generator,
     span_singleton_mul_span_singleton, spanNorm_singleton, spanNorm_singleton,
       spanNorm_singleton, span_singleton_mul_span_singleton, _root_.map_mul]
@@ -284,42 +261,31 @@ theorem map_relNorm (I : Ideal S) {T : Type*} [CommRing T] (f : R →+* T) :
 theorem relNorm_mono {I J : Ideal S} (h : I ≤ J) : relNorm R I ≤ relNorm R J :=
   spanNorm_mono R h
 
-theorem spanNorm_map (I : Ideal R) :
+theorem spanNorm_map_algebraMap (I : Ideal R) :
     spanNorm R (I.map (algebraMap R S)) =
       I ^ (Module.finrank (FractionRing R) (FractionRing S)) := by
-  nontriviality R
-  nontriviality S
+  nontriviality R; nontriviality S
   refine eq_of_localization_maximal (fun P hP ↦ ?_)
   let P' := Algebra.algebraMapSubmonoid S P.primeCompl
   let Rₚ := Localization.AtPrime P
   let Sₚ := Localization P'
+  let K := FractionRing R
+  let f : Rₚ →+* K := IsLocalization.map _ (T := R⁰) (RingHom.id R) P.primeCompl_le_nonZeroDivisors
   let _ : Algebra Rₚ Sₚ := localizationAlgebra P.primeCompl S
-  have : IsScalarTower R Rₚ Sₚ :=
-    IsScalarTower.of_algebraMap_eq (fun x ↦
-      (IsLocalization.map_eq (T := P') P.primeCompl.le_comap_map x).symm)
-  have h : P' ≤ S⁰ :=
-    map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective _ _)
-      P.primeCompl_le_nonZeroDivisors
+  have h : P' ≤ S⁰ := map_le_nonZeroDivisors_of_faithfulSMul P.primeCompl_le_nonZeroDivisors
   have : IsDomain Sₚ := IsLocalization.isDomain_localization h
   have : IsDedekindDomain Sₚ := IsLocalization.isDedekindDomain S h _
   have := NoZeroSMulDivisors_of_isLocalization R S Rₚ Sₚ P.primeCompl_le_nonZeroDivisors
   have := Module.Finite_of_isLocalization R S Rₚ Sₚ P.primeCompl
-  let K := FractionRing R
-  let f : Rₚ →+* K := IsLocalization.map _ (T := R⁰) (RingHom.id R) P.primeCompl_le_nonZeroDivisors
   let L := FractionRing S
   have : FiniteDimensional K L := Module.Finite_of_isLocalization R S _ _ R⁰
   let g : Sₚ →+* L := IsLocalization.map _ (T := S⁰) (RingHom.id S) h
   algebraize [g, (algebraMap K L).comp f]
-  have : IsScalarTower S Sₚ L := IsScalarTower.of_algebraMap_eq'
-    (by rw [RingHom.algebraMap_toAlgebra, IsLocalization.map_comp, RingHom.comp_id])
+  have : IsScalarTower S Sₚ L :=
+    IsLocalization.localization_isScalarTower_of_submonoid_le Sₚ L _ _ h
   have := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization P' Sₚ L
-  have : IsScalarTower Rₚ Sₚ L := by
-    apply IsScalarTower.of_algebraMap_eq'
-    apply IsLocalization.ringHom_ext P.primeCompl
-    rw [RingHom.algebraMap_toAlgebra, RingHom.algebraMap_toAlgebra (R := Sₚ), RingHom.comp_assoc,
-      RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq R S Sₚ,
-      IsLocalization.map_comp, RingHom.comp_id, ← RingHom.comp_assoc, IsLocalization.map_comp,
-      RingHom.comp_id, ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
+  have : IsScalarTower Rₚ Sₚ L :=
+    IsLocalization.localization_localization_isScalarTower S Rₚ Sₚ K L P.primeCompl
   have : Algebra.IsSeparable (FractionRing Rₚ) (FractionRing Sₚ) :=
     FractionRing.isSeparable_of_isLocalization S Rₚ Sₚ P.primeCompl_le_nonZeroDivisors
   simp only [Ideal.map_mul, ← spanIntNorm_localization (R := R) (Sₘ := Localization P') _ _
@@ -327,7 +293,7 @@ theorem spanNorm_map (I : Ideal R) :
   rw [Ideal.map_pow, I.map_map, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq R Rₚ Sₚ,
     ← I.map_map, ← (I.map _).span_singleton_generator, Ideal.map_span, Set.image_singleton,
     spanNorm_singleton, Ideal.span_singleton_pow]
-  congr 2
+  congr
   apply IsFractionRing.injective Rₚ K
   rw [Algebra.algebraMap_intNorm (L := L), ← IsScalarTower.algebraMap_apply,
     IsScalarTower.algebraMap_apply Rₚ K L, Algebra.norm_algebraMap, map_pow]
