@@ -85,7 +85,9 @@ namespace AddGroupExtension
 
 variable [AddGroup N] [AddGroup E] [AddGroup G] (S : AddGroupExtension N E G)
 
-/-- `AddGroupExtension`s are equivalent iff there is an isomorphism making a commuting diagram. -/
+/-- `AddGroupExtension`s are equivalent iff there is an isomorphism making a commuting diagram.
+  Use `AddGroupExtension.Equiv.ofMonoidHom` in `Mathlib/GroupTheory/GroupExtension/Basic.lean` to
+  construct an equivalence without providing the inverse map. -/
 structure Equiv {E' : Type*} [AddGroup E'] (S' : AddGroupExtension N E' G) extends E ≃+ E' where
   /-- The left-hand side of the diagram commutes. -/
   inl_comm : toAddEquiv ∘ S.inl = S'.inl
@@ -143,7 +145,9 @@ theorem inl_conjAct_comm {e : E} {n : N} : S.inl (S.conjAct e n) = e * S.inl n *
   simp only [conjAct, MonoidHom.coe_mk, OneHom.coe_mk, MulEquiv.trans_apply,
     MonoidHom.apply_ofInjective_symm, MulAut.conjNormal_apply, MonoidHom.ofInjective_apply]
 
-/-- `GroupExtension`s are equivalent iff there is an isomorphism making a commuting diagram. -/
+/-- `GroupExtension`s are equivalent iff there is an isomorphism making a commuting diagram.
+  Use `GroupExtension.Equiv.ofMonoidHom` in `Mathlib/GroupTheory/GroupExtension/Basic.lean` to
+  construct an equivalence without providing the inverse map. -/
 @[to_additive]
 structure Equiv {E' : Type*} [Group E'] (S' : GroupExtension N E' G) extends E ≃* E' where
   /-- The left-hand side of the diagram commutes. -/
