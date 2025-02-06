@@ -808,7 +808,7 @@ def Central.leftTensorIso {X Y X' Y' : C} (f : X ≅ Y) [Central f.hom] (g : X' 
   inv_hom_id := by simp [tensorHom_def, left_exchange_assoc]
 
 theorem Central.leftTensorIso_def {X Y X' Y' : C}
-  (f : X ≅ Y) [Central f.hom] (g : X' ≅ Y') [Central g.hom]
+  (f : X ≅ Y) [Central f.hom] (g : X' ≅ Y')
   : Central.leftTensorIso f g = PremonoidalCategory.tensorIso f g
   := Iso.ext rfl
 
@@ -960,6 +960,11 @@ theorem central_helper  [MonoidalCategoryStruct C]
   right_exchange g := by simp [ltimes, rtimes,
     whisker_exchange_helper tensorHom_def whiskerLeft_id id_whiskerRight tensor_comp]
 
+
+/--
+A constructor for monoidal categories that requires `tensor_comp` instead of `whiskerLeft_comp`,
+`comp_whiskerRight`, and `whisker_exchange`.
+-/
 abbrev ofTensorComp [MonoidalCategoryStruct C]
   (tensorHom_def : ∀ {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂),
     f ⊗ g = (f ▷ X₂) ≫ (Y₁ ◁ g) := by aesop_cat)
