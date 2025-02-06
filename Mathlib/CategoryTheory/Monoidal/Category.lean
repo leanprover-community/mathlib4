@@ -798,19 +798,33 @@ theorem Central.rtimes  {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ 
 instance Central.tensorHom {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂)
   [hf : Central f] [hg : Central g] : Central (f ⊗ g) := by rw [tensorHom_def]; infer_instance
 
-/-- The tensor product of two central isomorphisms is a central isomorphism. -/
+/-- Alternate definition for the tensor product of isomorphisms if the left morphism is central -/
 @[simps]
-def Central.tensorIso {X Y X' Y' : C} (f : X ≅ Y) [Central f.hom] (g : X' ≅ Y') [Central g.hom]
+def Central.leftTensorIso {X Y X' Y' : C} (f : X ≅ Y) [Central f.hom] (g : X' ≅ Y')
   : X ⊗ X' ≅ Y ⊗ Y' where
   hom := f.hom ⊗ g.hom
   inv := f.inv ⊗ g.inv
   hom_inv_id := by simp [tensorHom_def, left_exchange_assoc]
   inv_hom_id := by simp [tensorHom_def, left_exchange_assoc]
 
-theorem Central.tensorIso_def {X Y X' Y' : C}
+theorem Central.leftTensorIso_def {X Y X' Y' : C}
   (f : X ≅ Y) [Central f.hom] (g : X' ≅ Y') [Central g.hom]
-  : Central.tensorIso f g = tensorIso f g
-  := by simp
+  : Central.leftTensorIso f g = PremonoidalCategory.tensorIso f g
+  := Iso.ext rfl
+
+/-- Alternate definition for the tensor product of isomorphisms if the right morphism is central -/
+@[simps]
+def Central.rightTensorIso {X Y X' Y' : C} (f : X ≅ Y) (g : X' ≅ Y') [Central g.hom]
+  : X ⊗ X' ≅ Y ⊗ Y' where
+  hom := f.hom ⊗ g.hom
+  inv := f.inv ⊗ g.inv
+  hom_inv_id := by simp [tensorHom_def, right_exchange_assoc]
+  inv_hom_id := by simp [tensorHom_def, right_exchange_assoc]
+
+theorem Central.rightTensorIso_def {X Y X' Y' : C}
+  (f : X ≅ Y) (g : X' ≅ Y') [Central g.hom]
+  : Central.rightTensorIso f g = PremonoidalCategory.tensorIso f g
+  := Iso.ext rfl
 
 end PremonoidalCategory
 

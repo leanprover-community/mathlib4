@@ -57,7 +57,9 @@ theorem eval_monoidalComp
     η ≫ α.hom ≫ θ = ηαθ := by
   simp [e_η, e_θ, e_αθ, e_ηαθ]
 
-variable [MonoidalCategory C]
+section PremonoidalCategory
+
+variable [PremonoidalCategory C]
 
 @[nolint synTaut]
 theorem evalWhiskerLeft_nil (f : C) {g h : C} (α : g ≅ h) :
@@ -207,6 +209,12 @@ theorem evalHorizontalComp_nil_cons {f f' g g' h i : C}
     α.hom ⊗ (β.hom ≫ η ≫ ηs) = η₃ := by
   simp_all [MonoidalCategory.tensorHom_def]
 
+end PremonoidalCategory
+
+section MonoidalCategory
+
+variable [MonoidalCategory C]
+
 theorem evalHorizontalComp_cons_nil {f f' g g' h i : C}
     {α : f ≅ g} {η : g ⟶ h} {ηs : h ⟶ i} {β : f' ≅ g'}
     {η₁ : g ⊗ g' ⟶ h ⊗ g'} {ηs₁ : h ⊗ g' ⟶ i ⊗ g'} {η₂ : g ⊗ g' ⟶ i ⊗ g'} {η₃ : f ⊗ f' ⟶ i ⊗ g'}
@@ -224,6 +232,8 @@ theorem evalHorizontalComp_cons_cons {f f' g g' h h' i i' : C}
     (e_ηθ₁ : ηθ ≫ ηθs = ηθ₁) (e_ηθ₂ : (α ⊗ β).hom ≫ ηθ₁ = ηθ₂) :
     (α.hom ≫ η ≫ ηs) ⊗ (β.hom ≫ θ ≫ θs) = ηθ₂ := by
   simp [← e_ηθ , ← e_ηθs , ← e_ηθ₁, ← e_ηθ₂]
+
+end MonoidalCategory
 
 end
 

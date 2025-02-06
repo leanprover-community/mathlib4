@@ -139,7 +139,7 @@ info: [string_diagram] Penrose substance:
 [string_diagram] Penrose substance:
 -/
 #guard_msgs (whitespace := lax) in
-#string_diagram MonoidalCategory.pentagon
+#string_diagram MonoidalCategory.pentagon (C := C)
 
 /--
 info: [string_diagram] Penrose substance:
@@ -147,7 +147,7 @@ info: [string_diagram] Penrose substance:
 [string_diagram] Penrose substance:
 -/
 #guard_msgs (whitespace := lax) in
-#string_diagram MonoidalCategory.whiskerLeft_id
+#string_diagram MonoidalCategory.whiskerLeft_id (C := C)
 
 /--
 info: [string_diagram] Penrose substance:

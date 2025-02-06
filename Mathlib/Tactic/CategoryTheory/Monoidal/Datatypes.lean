@@ -113,7 +113,7 @@ theorem StructuralOfExpr_monoidalComp {f g h i : C} [MonoidalCoherence g h]
     (η' ≪⊗≫ θ').hom = η ⊗≫ θ := by
   simp [ih_η, ih_θ, monoidalIsoComp, monoidalComp, MonoidalCoherence.iso]
 
-variable [MonoidalCategory C]
+variable [PremonoidalCategory C]
 
 theorem structuralIsoOfExpr_whiskerLeft (f : C) {g h : C}
     (η : g ⟶ h) (η' : g ≅ h) (ih_η : η'.hom = η)  :
