@@ -27,7 +27,7 @@ namespace ConnectedComponent
 
 /-- A set of vertices represents a set of components if it contains exactly one vertex from
 each component. -/
-def Represents (s : Set V) (C : Set G.ConnectedComponent) :=
+def Represents (s : Set V) (C : Set G.ConnectedComponent) : Prop :=
     Set.BijOn G.connectedComponentMk s C
 
 lemma out_image_represents {G : SimpleGraph V} (C : Set G.ConnectedComponent) :
