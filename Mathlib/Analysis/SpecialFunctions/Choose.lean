@@ -30,11 +30,9 @@ lemma isEquivalent_descFactorial (k : ℕ) :
   | zero => simpa using IsEquivalent.refl
   | succ k h =>
     simp_rw [descFactorial_succ, cast_mul, _root_.pow_succ']
-    apply IsEquivalent.mul _ h
-    have hz : ∀ᶠ (x : ℕ) in atTop, (x : ℝ) ≠ 0 := by
-      rw [eventually_atTop]
-      use 1; intro n hn
-      exact ne_of_gt (mod_cast hn)
+    refine IsEquivalent.mul ?_ h
+    have hz : ∀ᶠ (x : ℕ) in atTop, (x : ℝ) ≠ 0 :=
+      eventually_atTop.mpr ⟨1, fun n hn ↦ ne_of_gt (mod_cast hn)⟩
     rw [isEquivalent_iff_tendsto_one hz, ← tendsto_add_atTop_iff_nat k]
     simpa using tendsto_natCast_div_add_atTop (k : ℝ)
 
@@ -51,8 +49,5 @@ theorem isEquivalent_choose (k : ℕ) :
 theorem isTheta_choose (k : ℕ) :
     (fun (n : ℕ) ↦ (n.choose k : ℝ)) =Θ[atTop] (fun (n : ℕ) ↦ (n^k : ℝ)) := by
   apply (isEquivalent_choose k).trans_isTheta
-  conv_lhs =>
-    intro n
-    rw [div_eq_mul_inv, mul_comm]
-  apply IsTheta.const_mul_left _ isTheta_rfl
-  exact inv_ne_zero (mod_cast k.factorial_ne_zero)
+  simp_rw [div_eq_mul_inv, mul_comm _ (_⁻¹)]
+  exact isTheta_rfl.const_mul_left <| inv_ne_zero (mod_cast k.factorial_ne_zero)
