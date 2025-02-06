@@ -3,9 +3,9 @@ Copyright (c) 2025 Benoît Guillemet. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benoît Guillemet
 -/
-import Mathlib.Topology.Algebra.MvPolynomial
-import Mathlib.Topology.ContinuousMap.Star
+import Mathlib.ALgebra.MvPolynomial.Basic
 import Mathlib.Algebra.Star.Subalgebra
+import Mathlib.Topology.ContinuousMap.Star
 
 /-!
 # Constructions relating multivariate polynomial functions and continuous functions.
