@@ -24,8 +24,10 @@ variable {α : Type u} {f g : Filter α} {s t : Set α}
 
 @[simp]
 theorem biInter_mem {β : Type v} {s : β → Set α} {is : Set β} (hf : is.Finite) :
-    (⋂ i ∈ is, s i) ∈ f ↔ ∀ i ∈ is, s i ∈ f :=
-  Finite.induction_on _ hf (by simp) fun _ _ hs => by simp [hs]
+    (⋂ i ∈ is, s i) ∈ f ↔ ∀ i ∈ is, s i ∈ f := by
+  induction is, hf using Set.Finite.induction_on with
+  | empty => simp
+  | insert _ _ hs => simp [hs]
 
 @[simp]
 theorem biInter_finset_mem {β : Type v} {s : β → Set α} (is : Finset β) :
