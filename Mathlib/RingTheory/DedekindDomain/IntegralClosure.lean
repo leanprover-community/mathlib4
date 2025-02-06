@@ -10,6 +10,7 @@ import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.RingTheory.Trace.Basic
 import Mathlib.RingTheory.RingHom.Finite
+import Mathlib.RingTheory.Localization.Separable
 
 /-!
 # Integral closure of Dedekind domains
@@ -258,5 +259,17 @@ attribute [local instance] FractionRing.liftAlgebra
 instance [Module.Finite A C] [IsIntegrallyClosed C] [NoZeroSMulDivisors A C] :
     FiniteDimensional (FractionRing A) (FractionRing C) :=
   Module.Finite_of_isLocalization A C _ _ (nonZeroDivisors A)
+
+variable {P : Ideal A} [P.IsPrime] [FaithfulSMul A C]
+
+noncomputable instance : Algebra (Localization (Algebra.algebraMapSubmonoid C P.primeCompl))
+    (FractionRing C) :=
+  RingHom.toAlgebra <| IsLocalization.map _ (T := C⁰) (RingHom.id C)
+    (map_le_nonZeroDivisors_of_faithfulSMul P.primeCompl_le_nonZeroDivisors)
+
+instance : IsScalarTower C (Localization (Algebra.algebraMapSubmonoid C P.primeCompl))
+  (FractionRing C) :=
+    IsLocalization.localization_isScalarTower_of_submonoid_le _ _ _ _
+    (map_le_nonZeroDivisors_of_faithfulSMul P.primeCompl_le_nonZeroDivisors)
 
 end IsIntegralClosure
