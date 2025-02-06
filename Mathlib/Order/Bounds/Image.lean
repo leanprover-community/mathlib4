@@ -149,6 +149,14 @@ lemma upperBounds_image_eq_ofSubset {s₁ s₂ : Set α}
 theorem image_lowerBounds_subset_lowerBounds_image : f '' lowerBounds s ⊆ lowerBounds (f '' s) :=
   Hf.dual.image_upperBounds_subset_upperBounds_image
 
+lemma lowerBounds_image_eq_ofSubset {s₁ s₂ : Set α}
+    (hs₁ : s₁ ⊆ s₂) (hs₂ : ∀ a ∈ s₂, ∃ b ∈ s₁, b ≤ a) :
+    lowerBounds (f '' s₁) = lowerBounds (f '' s₂) := by
+  apply lowerBounds_eq_ofSubset (image_mono hs₁)
+  intro a ⟨c, hc⟩
+  obtain ⟨d,hd⟩ := hs₂ c hc.1
+  exact ⟨f d, ⟨(mem_image _ _ _).mpr ⟨d,⟨hd.1,rfl⟩⟩, le_of_le_of_eq (Hf hd.2) hc.2⟩⟩
+
 /-- The image under a monotone function of a set which is bounded above is bounded above. See also
 `BddAbove.image2`. -/
 theorem map_bddAbove : BddAbove s → BddAbove (f '' s)
