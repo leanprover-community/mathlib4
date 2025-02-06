@@ -58,6 +58,9 @@ variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
 
 open MonoidalCategory
 
+theorem braiding_eq_braiding (X Y : C) :
+  (β_ X Y) = Limits.BinaryFan.braiding (product X Y).isLimit (product Y X).isLimit := rfl
+
 /--
 The unique map to the terminal object.
 -/
@@ -249,8 +252,13 @@ lemma lift_rightUnitor_hom {X Y : C} (f : X ⟶ Y) (g : X ⟶ 𝟙_ C) :
   rw [← Iso.eq_comp_inv]
   aesop_cat
 
-theorem braiding_fst {X Y : C} : (β_ X Y).hom ≫ fst _ _ = snd _ _ := by
-  simp [BraidedCategory.braiding, fst]
+@[reassoc (attr := simp)]
+theorem braiding_hom_fst {X Y : C} : (β_ X Y).hom ≫ fst _ _ = snd _ _ := by
+  simp [braiding_eq_braiding, fst, snd]
+
+@[reassoc (attr := simp)]
+theorem braiding_hom_snd {X Y : C} : (β_ X Y).hom ≫ snd _ _ = fst _ _ := by
+  simp [braiding_eq_braiding, fst, snd]
 
 /--
 Construct an instance of `ChosenFiniteProducts C` given an instance of `HasFiniteProducts C`.
@@ -584,18 +592,6 @@ that preserves finite products, then it is a monoidal functor. -/
 noncomputable def monoidalOfChosenFiniteProducts : F.Monoidal :=
   Functor.Monoidal.ofOplaxMonoidal F
 
-noncomputable def braidedOfChosenFiniteProducts : F.Braided :=
-  { monoidalOfChosenFiniteProducts F with
-    braided X Y := by
-      let _ := monoidalOfChosenFiniteProducts F
-      rw [← cancel_mono (Monoidal.μIso _ _ _).inv]
-      simp
-      apply ChosenFiniteProducts.hom_ext
-      simp
-
-
-     }
-
 end Functor
 
 namespace Functor.Monoidal
@@ -639,12 +635,35 @@ lemma lift_μ {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
     lift (F.map f) (F.map g) ≫ LaxMonoidal.μ F _ _ = F.map (lift f g) :=
   (cancel_mono (μIso _ _ _).inv).1 (by simp)
 
-end
+@[reassoc (attr := simp)]
+lemma μ_fst {X Y : C} : LaxMonoidal.μ F X Y ≫ F.map (fst X Y) = fst (F.obj X) (F.obj Y) :=
+  (cancel_epi (μIso _ _ _).inv).1 (by simp)
 
+@[reassoc (attr := simp)]
+lemma μ_snd {X Y : C} : LaxMonoidal.μ F X Y ≫ F.map (snd X Y) = snd (F.obj X) (F.obj Y) :=
+  (cancel_epi (μIso _ _ _).inv).1 (by simp)
+
+
+end
 
 end Functor.Monoidal
 
--- open CategoryTheory.Functor
+namespace Functor
+
+variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
+  {D : Type u₁} [Category.{v₁} D] [ChosenFiniteProducts D] (F : C ⥤ D)
+
+attribute [local instance] monoidalOfChosenFiniteProducts
+
+/-- A finite-product-preserving functor between categories with chosen finite products is
+braided. -/
+noncomputable def braidedOfChosenFiniteProducts [Limits.PreservesFiniteProducts F] : F.Braided :=
+  { monoidalOfChosenFiniteProducts F with
+    braided X Y := by
+      rw [← cancel_mono (Monoidal.μIso _ _ _).inv]
+      apply ChosenFiniteProducts.hom_ext <;> simp [← Functor.map_comp] }
+
+end Functor
 
 namespace NatTrans
 

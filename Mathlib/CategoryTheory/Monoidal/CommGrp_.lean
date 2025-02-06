@@ -137,26 +137,24 @@ namespace CategoryTheory.Functor
 variable {D : Type u₂} [Category.{v₂} D] [ChosenFiniteProducts.{v₂} D] (F : C ⥤ D)
 variable [PreservesFiniteProducts F]
 
-attribute [local instance] monoidalOfChosenFiniteProducts
+attribute [local instance] braidedOfChosenFiniteProducts
 
-/-- A finite-product-preserving functor takes commutative group objects to commutative group objects. -/
+/-- A finite-product-preserving functor takes commutative group objects to commutative group
+    objects. -/
 @[simps!]
 noncomputable def mapCommGrp : CommGrp_ C ⥤ CommGrp_ D where
   obj A :=
     { F.mapGrp.obj A.toGrp_ with
       mul_comm := by
         dsimp
-        rw [← Functor.LaxBraided.braided_assoc (F := F) A.X A.X, ← Functor.map_comp]
-          }
+        rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, A.mul_comm] }
   map f := F.mapMon.map f
-  map_id := sorry
-  map_comp := sorry
 
 attribute [local instance] NatTrans.monoidal_of_preservesFiniteLimits in
 /-- `mapGrp` is functorial in the left-exact functor. -/
 @[simps]
-noncomputable def mapCommGrpFunctor : (C ⥤ₗ D) ⥤ Grp_ C ⥤ Grp_ D where
-  obj F := F.1.mapGrp
+noncomputable def mapCommGrpFunctor : (C ⥤ₗ D) ⥤ CommGrp_ C ⥤ CommGrp_ D where
+  obj F := F.1.mapCommGrp
   map {F G} α := { app := fun A => { hom := α.app A.X } }
 
 end CategoryTheory.Functor
