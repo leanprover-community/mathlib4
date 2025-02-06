@@ -116,7 +116,7 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
   algebraize [f, g, (algebraMap K L).comp f]
   have : IsScalarTower R Rₘ K := IsScalarTower.of_algebraMap_eq'
     (by rw [RingHom.algebraMap_toAlgebra, IsLocalization.map_comp, RingHomCompTriple.comp_eq])
-  let _ := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization M Rₘ K
+  have := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization M Rₘ K
   have : IsScalarTower S Sₘ L := IsScalarTower.of_algebraMap_eq'
     (by rw [RingHom.algebraMap_toAlgebra, IsLocalization.map_comp, RingHomCompTriple.comp_eq])
   have : IsScalarTower Rₘ Sₘ L := by
@@ -126,10 +126,8 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
       RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq R S Sₘ,
       IsLocalization.map_comp, RingHom.comp_id, ← RingHom.comp_assoc, IsLocalization.map_comp,
       RingHom.comp_id, ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
-  let _ := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization
+  have := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization
     (Algebra.algebraMapSubmonoid S M) Sₘ L
-  have : IsIntegralClosure Sₘ Rₘ L :=
-    IsIntegralClosure.of_isIntegrallyClosed _ _ _
   rw [map_spanIntNorm]
   refine span_eq_span (Set.image_subset_iff.mpr ?_) (Set.image_subset_iff.mpr ?_)
   · intro a' ha'
@@ -149,7 +147,6 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
       Algebra.norm_algebraMap] at has
     apply IsFractionRing.injective Rₘ K
     simp only [_root_.map_mul, map_pow]
-    have : FiniteDimensional K L := Module.Finite_of_isLocalization R S _ _ R⁰
     rwa [Algebra.algebraMap_intNorm (L := L), ← IsScalarTower.algebraMap_apply,
       ← IsScalarTower.algebraMap_apply, Algebra.algebraMap_intNorm (L := L)]
   · intro a ha
@@ -272,7 +269,6 @@ theorem spanNorm_map_algebraMap (I : Ideal R) :
   have : IsDomain Sₚ := IsLocalization.isDomain_localization h
   have : IsDedekindDomain Sₚ := IsLocalization.isDedekindDomain S h _
   let L := FractionRing S
-  have : FiniteDimensional K L := Module.Finite_of_isLocalization R S _ _ R⁰
   let g : Sₚ →+* L := IsLocalization.map _ (T := S⁰) (RingHom.id S) h
   algebraize [g, (algebraMap K L).comp f]
   have : IsScalarTower S Sₚ L :=
