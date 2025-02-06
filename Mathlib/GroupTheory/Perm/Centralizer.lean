@@ -457,7 +457,6 @@ def kerParam : (Perm (Function.fixedPoints g)) ×
   MonoidHom.noncommCoprod ofSubtype (Subgroup.noncommPiCoprod g.pairwise_commute_of_mem_zpowers)
     g.commute_ofSubtype_noncommPiCoprod
 
-
 theorem kerParam_apply {u : Perm (Function.fixedPoints g)}
     {v : (c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α)} {x : α} :
     kerParam g (u,v) x =
@@ -541,6 +540,11 @@ theorem kerParam_range_eq :
       rwa [mem_support, cycleOf_apply_self, ne_eq]
     · rw [cycleOf_mem_cycleFactorsFinset_iff, not_mem_support] at hx
       rwa [ofSubtype_apply_of_mem, subtypePerm_apply]
+
+theorem kerParam_range_le_centralizer :
+    (kerParam g).range ≤ Subgroup.centralizer {g} := by
+  rw [kerParam_range_eq]
+  exact map_subtype_le (toPermHom g).ker
 
 theorem kerParam_range_card (g : Equiv.Perm α) :
     Fintype.card (kerParam g).range = (Fintype.card α - g.cycleType.sum)! * g.cycleType.prod := by
