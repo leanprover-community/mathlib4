@@ -27,7 +27,9 @@ jobs:
 
       - name: Get Pull Request Number
         id: pr_number
-        run: echo "pull_request_number=$(gh pr view --json number -q .number || echo "")" >> $GITHUB_OUTPUT
+        run: |
+          gh pr view --json number -q .number || echo ""
+          printf 'pull_request_number=%s' "$(gh pr view --json number -q .number || echo "")" >> $GITHUB_OUTPUT
 
       - name: blog report
         run: |
