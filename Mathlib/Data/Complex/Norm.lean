@@ -20,10 +20,18 @@ instance : Norm ℂ :=
   ⟨fun z ↦ Real.sqrt (normSq z)⟩
 
 @[simp]
-theorem norm_eq_abs (z : ℂ) : ‖z‖ = Complex.abs z :=
-  rfl
+theorem norm_eq_abs (z : ℂ) : ‖z‖ = Complex.abs z := rfl
+
+instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
+  AddGroupNorm.toNormedAddCommGroup
+    { abs with
+      map_zero' := map_zero abs
+      neg' := abs.map_neg
+      eq_zero_of_map_eq_zero' := fun _ => abs.eq_zero.1 }
 
 lemma norm_I : ‖I‖ = 1 := abs_I
+
+@[simp] lemma nnnorm_I : ‖I‖₊ = 1 := by simp [nnnorm]
 
 @[simp 1100, norm_cast] lemma norm_real (r : ℝ) : ‖(r : ℂ)‖ = ‖r‖ := abs_ofReal _
 
@@ -36,12 +44,26 @@ lemma norm_I : ‖I‖ = 1 := abs_I
 @[simp 1100] lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
     ‖(ofNat(n) : ℂ)‖ = OfNat.ofNat n := norm_natCast n
 
+@[simp 1100, norm_cast] lemma norm_nnratCast (q : ℚ≥0) :
+    ‖(q : ℂ)‖ = q := abs_of_nonneg q.cast_nonneg
+
 @[deprecated (since := "2024-08-25")] alias norm_nat := norm_natCast
 @[deprecated (since := "2024-08-25")] alias norm_int := norm_intCast
 @[deprecated (since := "2024-08-25")] alias norm_rat := norm_ratCast
 
-@[simp 1100, norm_cast]
-lemma norm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖ = q := abs_of_nonneg q.cast_nonneg
+@[simp, norm_cast] lemma nnnorm_real (r : ℝ) : ‖(r : ℂ)‖₊ = ‖r‖₊ := by ext; exact norm_real _
+
+@[simp 1100, norm_cast] lemma nnnorm_natCast (n : ℕ) : ‖(n : ℂ)‖₊ = n := Subtype.ext <| by simp
+
+@[simp 1100, norm_cast] lemma nnnorm_ratCast (q : ℚ) : ‖(q : ℂ)‖₊ = ‖(q : ℝ)‖₊ := nnnorm_real q
+
+@[simp 1100] lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ‖(ofNat(n) : ℂ)‖₊ = OfNat.ofNat n := nnnorm_natCast n
+
+@[deprecated (since := "2024-08-25")] alias nnnorm_nat := nnnorm_natCast
+
+@[simp 1100, norm_cast] lemma nnnorm_nnratCast (q : ℚ≥0) :
+    ‖(q : ℂ)‖₊ = q := by simp [nnnorm, -norm_eq_abs]
 
 theorem norm_int_of_nonneg {n : ℤ} (hn : 0 ≤ n) : ‖(n : ℂ)‖ = n := by
   rw [norm_intCast, ← Int.cast_abs, _root_.abs_of_nonneg hn]
@@ -49,15 +71,7 @@ theorem norm_int_of_nonneg {n : ℤ} (hn : 0 ≤ n) : ‖(n : ℂ)‖ = n := by
 lemma normSq_eq_norm_sq (z : ℂ) : normSq z = ‖z‖ ^ 2 := by
   rw [normSq_eq_abs, norm_eq_abs]
 
-instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
-  AddGroupNorm.toNormedAddCommGroup
-    { abs with
-      map_zero' := map_zero abs
-      neg' := abs.map_neg
-      eq_zero_of_map_eq_zero' := fun _ => abs.eq_zero.1 }
-
-theorem dist_eq (z w : ℂ) : dist z w = abs (z - w) :=
-  rfl
+theorem dist_eq (z w : ℂ) : dist z w = abs (z - w) := rfl
 
 theorem dist_eq_re_im (z w : ℂ) : dist z w = √((z.re - w.re) ^ 2 + (z.im - w.im) ^ 2) := by
   rw [sq, sq]
@@ -70,8 +84,6 @@ theorem dist_mk (x₁ y₁ x₂ y₂ : ℝ) :
 
 theorem dist_of_re_eq {z w : ℂ} (h : z.re = w.re) : dist z w = dist z.im w.im := by
   rw [dist_eq_re_im, h, sub_self, zero_pow two_ne_zero, zero_add, Real.sqrt_sq_eq_abs, Real.dist_eq]
-
-@[simp] lemma nnnorm_I : ‖I‖₊ = 1 := by simp [nnnorm]
 
 theorem nndist_of_re_eq {z w : ℂ} (h : z.re = w.re) : nndist z w = nndist z.im w.im :=
   NNReal.eq <| dist_of_re_eq h
@@ -103,20 +115,6 @@ theorem nndist_self_conj (z : ℂ) : nndist z (conj z) = 2 * Real.nnabs z.im := 
 @[simp 1100]
 theorem comap_abs_nhds_zero : comap abs (𝓝 0) = 𝓝 0 :=
   comap_norm_nhds_zero
-
-@[simp, norm_cast] lemma nnnorm_real (r : ℝ) : ‖(r : ℂ)‖₊ = ‖r‖₊ := by ext; exact norm_real _
-
-@[simp 1100, norm_cast] lemma nnnorm_natCast (n : ℕ) : ‖(n : ℂ)‖₊ = n := Subtype.ext <| by simp
-
-@[simp 1100, norm_cast] lemma nnnorm_ratCast (q : ℚ) : ‖(q : ℂ)‖₊ = ‖(q : ℝ)‖₊ := nnnorm_real q
-
-@[simp 1100] lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ‖(ofNat(n) : ℂ)‖₊ = OfNat.ofNat n := nnnorm_natCast n
-
-@[deprecated (since := "2024-08-25")] alias nnnorm_nat := nnnorm_natCast
-
-@[simp 1100, norm_cast]
-lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖₊ = q := by simp [nnnorm, -norm_eq_abs]
 
 @[continuity, fun_prop]
 theorem continuous_abs : Continuous abs :=
