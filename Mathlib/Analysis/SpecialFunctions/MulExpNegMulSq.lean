@@ -3,7 +3,8 @@ Copyright (c) 2024 Jakob Stiefel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Stiefel
 -/
-import Mathlib.Data.Complex.ExponentialBounds
+import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Topology.ContinuousMap.Bounded.Basic
 
 /-!
@@ -162,3 +163,5 @@ theorem abs_mulExpNegMulSq_comp_le_norm {E : Type*} [TopologicalSpace E] {x : E}
   exact mul_nonneg hε (mul_self_nonneg (g x))
 
 end Real
+
+#min_imports
