@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Monoidal.CommGrp_
 import Mathlib.CategoryTheory.Preadditive.Biproducts
 
 /-!
-# Internal commutative group objects in additive categories.
+# Commutative group objects in additive categories.
 
 We construct an inverse of the forgetful functor `CommGrp_ C ⥤ C` if `C` is an additive category.
 
