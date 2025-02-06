@@ -255,12 +255,12 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
       hlim hε)).frequently.forall_exists_of_atTop 1
   let S : ℝ → ℂ := fun t ↦ ∑ k ∈ Icc 1 ⌊t⌋₊, f k
   -- This result is the main ingredient of the proof. First, we replace `s * l` by `(s - 1) * s`
-  -- times the integral `l * t ^ (-s)` (using `h₃` below). Replacing the `LSeries` by its integral
-  -- representation, we get the integral of `(S t - l * t) * t ^ (-s - 1)` (with the notation
-  -- of the proof). Then we cut this integral obtained into two parts split at the value `T` given
-  -- by `LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₁`. Then `C` is defined so that we
-  -- get an upper bound of the first part and the second part is bounded using
-  -- `LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂` since `‖S t - l t‖ ≤ ε * t`
+  -- times the integral of `l * t ^ (-s)` (using `h₃` below). Then, replacing the `LSeries` by its
+  -- integral representation, we need to bound the integral of `(S t - l * t) * t ^ (-s - 1)`
+  -- (with the same notation as in the proof). For that, we cut this integral into two parts split
+  -- at the value `T` given by `LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₁` and then
+  -- defined `C` so that that it gives an upper bound of the first part. The second part is bounded
+  -- using `LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂` since `‖S t - l t‖ ≤ ε * t`
   -- for all `t ≥ T`.
   let C := ∫ t in Set.Ioc 1 T, ‖S t - l * t‖ * t ^ (-1 - 1 : ℝ)
   have hC : 0 ≤ C := by
