@@ -359,7 +359,6 @@ open Topology
 
 lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
   intro x
-  have : Nonempty H := nonempty_of_chartedSpace x
   rw [contMDiffAt_iff]
   refine ⟨continuous_inl.continuousAt, ?_⟩
   -- In extended charts, .inl equals the identity (on the chart sources).
@@ -377,7 +376,6 @@ lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
 
 lemma ContMDiff.inr : ContMDiff I I n (@Sum.inr M M') := by
   intro x
-  have : Nonempty H := nonempty_of_chartedSpace x
   rw [contMDiffAt_iff]
   refine ⟨continuous_inr.continuousAt, ?_⟩
   -- In extended charts, .inl equals the identity (on the chart sources).
@@ -470,7 +468,7 @@ lemma contMDiff_of_contMDiff_inr {g : M' → N'}
   rw [mem_preimage, Function.comp_apply]
   use g x, trivial
 
-lemma contMDiff_sum_map [Nonempty N] [Nonempty N'] {f : M → N} {g : M' → N'} :
+lemma contMDiff_sum_map {f : M → N} {g : M' → N'} :
     ContMDiff I J n (Sum.map f g) ↔ ContMDiff I J n f ∧ ContMDiff I J n g :=
   ⟨fun h ↦ ⟨contMDiff_of_contMDiff_inl (h.comp ContMDiff.inl),
     contMDiff_of_contMDiff_inr (h.comp ContMDiff.inr)⟩,
