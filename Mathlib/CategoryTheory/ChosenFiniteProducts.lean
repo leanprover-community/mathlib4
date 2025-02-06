@@ -626,11 +626,11 @@ variable [PreservesFiniteProducts F]
 
 attribute [local instance] monoidalOfChosenFiniteProducts
 
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma toUnit_ε {X : C} : toUnit (F.obj X) ≫ LaxMonoidal.ε F = F.map (toUnit X) :=
   (cancel_mono (εIso _).inv).1 (toUnit_unique _ _)
 
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma lift_μ {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
     lift (F.map f) (F.map g) ≫ LaxMonoidal.μ F _ _ = F.map (lift f g) :=
   (cancel_mono (μIso _ _ _).inv).1 (by simp)
