@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
 
-import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.InnerProductSpace.Continuous
 
 /-!
 # Linear maps on inner product spaces
