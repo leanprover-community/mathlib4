@@ -58,6 +58,8 @@ theorem IsSemiprimaryRing.isNoetherian_iff_isArtinian [IsSemiprimaryRing R] :
 
 variable (R M)
 
+@[stacks 00JB "A ring is Artinian if and only if it has finite length as a module over itself.
+Any such ring is both Artinian and Noetherian."]
 theorem IsArtinianRing.tfae [IsArtinianRing R] :
     List.TFAE [Module.Finite R M, IsNoetherian R M, IsArtinian R M, IsFiniteLength R M] := by
   tfae_have 2 ↔ 3 := IsSemiprimaryRing.isNoetherian_iff_isArtinian
@@ -103,6 +105,6 @@ theorem IsNoetherianRing.isArtinianRing_of_krullDimLE_zero {R} [CommRing R]
   have : IsSemiprimaryRing R := ⟨this, eq ▸ IsNoetherianRing.isNilpotent_nilradical R⟩
   IsSemiprimaryRing.isNoetherian_iff_isArtinian.mp ‹_›
 
-theorem isArtinianRing_iff_isNoetherianRing_krullDimLE_zero {R} [CommRing R] :
+@[stacks 00KH] theorem isArtinianRing_iff_isNoetherianRing_krullDimLE_zero {R} [CommRing R] :
     IsArtinianRing R ↔ IsNoetherianRing R ∧ Ring.KrullDimLE 0 R :=
   ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨h, _⟩ ↦ h.isArtinianRing_of_krullDimLE_zero⟩
