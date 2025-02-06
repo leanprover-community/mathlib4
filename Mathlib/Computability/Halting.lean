@@ -139,8 +139,9 @@ def ComputablePred {α} [Primcodable α] (p : α → Prop) :=
 def REPred {α} [Primcodable α] (p : α → Prop) :=
   Partrec fun a => Part.assert (p a) fun _ => Part.some ()
 
-@[deprecated (since := "2025-01-31")]
-alias RePred := REPred
+@[deprecated (since := "2025-02-06")] alias RePred := REPred
+
+@[deprecated (since := "2025-02-06")] alias RePred.of_eq := RePred
 
 theorem REPred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : REPred p) (H : ∀ a, p a ↔ q a) :
     REPred q :=
