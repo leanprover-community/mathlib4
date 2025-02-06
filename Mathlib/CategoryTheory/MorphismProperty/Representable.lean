@@ -416,8 +416,7 @@ end
 
 section
 
--- NOTE(Calle): Once the notion of dense functor has been defined, this lemma could probably
--- be generalized to this setting (having the advantage that it applies to coyoneda as well!)
+-- TODO(Calle): This could be generalized to functors whose image forms a separating family.
 /-- Morphisms satisfying `(monomorphism C).presheaf` are in particular monomorphisms. -/
 lemma presheaf_monomorphisms_le_monomorphisms :
     (monomorphisms C).presheaf ≤ monomorphisms _ := fun F G f hf ↦ by
@@ -461,14 +460,17 @@ namespace Functor.relativelyRepresentable
 section Pullbacks₃
 /-
 In this section we develop some basic API that help deal with certain triple pullbacks obtained
-from morphism `f₁ : A₁ ⟶ X` which is relatively representable with respect to some functor
+from morphism `f₁ : F.obj A₁ ⟶ X` which is relatively representable with respect to some functor
 `F : C ⥤ D`.
 
 More precisely, given two objects `A₂` and `A₃` in `C`, and two morphisms `f₂ : A₂ ⟶ X` and
-`f₃ : A₃ ⟶ X`, we can consider the pullbacks `(A₁ ×_X A₂)` and `(A₁ ×_X A₃)` as objects in `C`.
-We can then consider the pullback, in `C`!, of these two pullbacks. This is the object
+`f₃ : A₃ ⟶ X`, we can consider the pullbacks (in `D`) `(A₁ ×_X A₂)` and `(A₁ ×_X A₃)`
+(which makes sense as objects in `C` due to `F` being relatively representable).
+
+We can then consider the pullback, in `C`, of these two pullbacks. This is the object
 `(A₁ ×_X A₂) ×_{A₁} (A₁ ×_X A₃)`. In this section we develop some basic API for dealing with this
-pullback.
+pullback. This is used in `Mathlib/AlgebraicGeometry/Sites/Representability.lean` to show that
+representability is Zariski-local.
 -/
 variable {F : C ⥤ D} [Full F] {A₁ A₂ A₃ : C} {X : D}
   {f₁ : F.obj A₁ ⟶ X} (hf₁ : F.relativelyRepresentable f₁)
