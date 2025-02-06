@@ -85,7 +85,7 @@ theorem LSeriesSummable_of_sum_norm_bigO_and_nonneg
     {f : ℕ → ℝ} (hO : (fun n ↦ ∑ k ∈ Icc 1 n, f k) =O[atTop] fun n ↦ (n : ℝ) ^ r)
     (hf : ∀ n, 0 ≤ f n) (hr : 0 ≤ r) (hs : r < s.re) :
     LSeriesSummable (fun n ↦ f n) s :=
-  LSeriesSummable_of_sum_norm_bigO (by simpa [_root_.abs_of_nonneg (hf _)]) hr hs
+  LSeriesSummable_of_sum_norm_bigO (by simpa [abs_of_nonneg (hf _)]) hr hs
 
 end summable
 
@@ -155,7 +155,7 @@ theorem LSeries_eq_mul_integral_of_nonneg (f : ℕ → ℝ) {r : ℝ} (hr : 0 �
     (hO : (fun n ↦ ∑ k ∈ Icc 1 n, f k) =O[atTop] fun n ↦ (n : ℝ) ^ r) (hf : ∀ n, 0 ≤ f n) :
     LSeries (fun n ↦ f n) s =
       s * ∫ t in Set.Ioi (1 : ℝ), (∑ k ∈ Icc 1 ⌊t⌋₊, (f k : ℂ)) * t ^ (-(s + 1)) :=
-  LSeries_eq_mul_integral' _ hr hs <| hO.congr_left fun _ ↦ by simp [_root_.abs_of_nonneg (hf _)]
+  LSeries_eq_mul_integral' _ hr hs <| hO.congr_left fun _ ↦ by simp [abs_of_nonneg (hf _)]
 
 end integralrepresentation
 

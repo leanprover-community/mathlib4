@@ -415,7 +415,7 @@ theorem pullback_snd_image_fst_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set X) 
     refine ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq⟩, ?_, ?_⟩
     · simp only [coe_of, Set.mem_preimage]
       convert hy
-      erw [pullbackIsoProdSubtype_inv_fst_apply]
+      rw [pullbackIsoProdSubtype_inv_fst_apply]
     · rw [pullbackIsoProdSubtype_inv_snd_apply]
 
 theorem pullback_fst_image_snd_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set Y) :
