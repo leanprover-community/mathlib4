@@ -148,9 +148,11 @@ open MonoidalCategory
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategoryStruct C]
 
+/-- Left tensor product `f ⋉ g = f ▷ _ ≫ _ ◁ g` -/
 abbrev ltimes {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') : X ⊗ X' ⟶ Y ⊗ Y' :=
   f ▷ X' ≫ Y ◁ g
 
+/-- Right tensor product `f ⋊ g = g ▷ _ ≫ _ ◁ f` -/
 abbrev rtimes {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') : X ⊗ X' ⟶ Y ⊗ Y' :=
   X ◁ g ≫ f ▷ Y'
 
@@ -445,7 +447,6 @@ instance ltimes_isIso {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') [IsIso f] [I
     IsIso (f ⋉ g) :=
   (ltimesIso (asIso f) (asIso g)).isIso_hom
 
-@[simp]
 theorem inv_ltimes {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') [IsIso f] [IsIso g] :
     inv (f ⋉ g) = inv f ⋊ inv g := by simp
 
@@ -469,7 +470,6 @@ instance rtimes_isIso {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') [IsIso f] [I
     IsIso (f ⋊ g) :=
   (rtimesIso (asIso f) (asIso g)).isIso_hom
 
-@[simp]
 theorem inv_rtimes {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') [IsIso f] [IsIso g] :
     inv (f ⋊ g) = inv f ⋉ inv g := by simp
 
