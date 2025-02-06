@@ -196,7 +196,7 @@ private theorem lemma₂ {s T ε : ℝ} {S : ℝ → ℂ} (hs : 1 < s)
       <| Or.inl (zero_lt_one.trans_le ht).ne').continuousWithinAt
   refine h.integrableOn_of_isBigO_atTop (g := fun t ↦ t ^(-s)) (isBigO_iff.mpr ⟨ε, ?_⟩) ?_
   · filter_upwards [eventually_ge_atTop T, eventually_gt_atTop 0] with t ht ht'
-    simpa [_root_.abs_of_nonneg, Real.rpow_nonneg, ht'.le, Real.rpow_sub ht', mul_assoc, ht'.ne',
+    simpa [abs_of_nonneg, Real.rpow_nonneg, ht'.le, Real.rpow_sub ht', mul_assoc, ht'.ne',
       mul_div_cancel₀] using mul_le_mul_of_nonneg_right (hS₂ t ht) (norm_nonneg <| t ^ (-s - 1))
   · exact integrableAtFilter_rpow_atTop_iff.mpr <| neg_lt_neg_iff.mpr hs
 
@@ -272,8 +272,7 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
   have hs' : 0 ≤ (s - 1) * s := mul_nonneg (sub_nonneg.mpr hs.le) (zero_le_one.trans hs.le)
   have h₀ : LocallyIntegrableOn (fun t ↦ S t - l * t) (Set.Ici 1) := by
     refine .sub ?_ <| ContinuousOn.locallyIntegrableOn (by fun_prop) measurableSet_Ici
-    convert locallyIntegrableOn_mul_sum_Icc f zero_le_one (locallyIntegrableOn_const 1)
-    rw [one_mul]
+    simpa using locallyIntegrableOn_mul_sum_Icc f zero_le_one (locallyIntegrableOn_const 1)
   have h₁ : IntegrableOn (fun t ↦ ‖S t - l * t‖ * t ^ (-s - 1)) (Set.Ici 1) :=
     lemma₂ hs h₀ fun t ht ↦ (hT t ht).le
   have h₂ : IntegrableOn (fun t : ℝ ↦ ‖S t - l * t‖ * (t ^ ((-1 : ℝ) - 1))) (Set.Ioc 1 T) := by
