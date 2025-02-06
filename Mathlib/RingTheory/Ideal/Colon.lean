@@ -23,7 +23,7 @@ variable {R M M' F G : Type*}
 section Semiring
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
-variable {N P : Submodule R M}
+variable {N N₁ N₂ P P₁ P₂ : Submodule R M}
 
 /-- `N.colon P` is the ideal of all elements `r : R` such that `r • P ⊆ N`. -/
 def colon (N P : Submodule R M) : Ideal R where
@@ -38,18 +38,13 @@ def colon (N P : Submodule R M) : Ideal R where
 
 theorem mem_colon {r} : r ∈ N.colon P ↔ ∀ p ∈ P, r • p ∈ N := Set.smul_set_subset_iff
 
-end Semiring
-
-section CommSemiring
-
-variable [CommSemiring R] [AddCommMonoid M] [Module R M]
-variable {N N₁ N₂ P P₁ P₂ : Submodule R M}
-
-theorem mem_colon' {r} : r ∈ N.colon P ↔ P ≤ comap (r • (LinearMap.id : M →ₗ[R] M)) N :=
-  mem_colon
+instance (priority := low) : (N.colon P).IsTwoSided where
+  mul_mem_of_left {r} s hr p hp := by
+    obtain ⟨p, hp, rfl⟩ := hp
+    exact hr ⟨_, P.smul_mem _ hp, (mul_smul ..).symm⟩
 
 @[simp]
-theorem colon_top {I : Ideal R} : I.colon ⊤ = I := by
+theorem colon_top {I : Ideal R} [I.IsTwoSided] : I.colon ⊤ = I := by
   simp_rw [SetLike.ext_iff, mem_colon, smul_eq_mul]
   exact fun x ↦ ⟨fun h ↦ mul_one x ▸ h 1 trivial, fun h _ _ ↦ I.mul_mem_right _ h⟩
 
@@ -59,6 +54,18 @@ theorem colon_bot : colon ⊥ N = N.annihilator := by
 
 theorem colon_mono (hn : N₁ ≤ N₂) (hp : P₁ ≤ P₂) : N₁.colon P₂ ≤ N₂.colon P₁ := fun _ hrnp =>
   mem_colon.2 fun p₁ hp₁ => hn <| mem_colon.1 hrnp p₁ <| hp hp₁
+
+end Semiring
+
+section CommSemiring
+
+variable [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {N N₁ N₂ P P₁ P₂ : Submodule R M}
+
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {N P : Submodule R M}
+
+theorem mem_colon' {r} : r ∈ N.colon P ↔ P ≤ comap (r • (LinearMap.id : M →ₗ[R] M)) N :=
+  mem_colon
 
 theorem iInf_colon_iSup (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ : Sort*)
     (g : ι₂ → Submodule R M) : (⨅ i, f i).colon (⨆ j, g j) = ⨅ (i) (j), (f i).colon (g j) :=
@@ -88,9 +95,9 @@ theorem _root_.Ideal.mem_colon_singleton {I : Ideal R} {x r : R} :
 
 end CommSemiring
 
-section CommRing
+section Ring
 
-variable [CommRing R] [AddCommGroup M] [Module R M]
+variable [Ring R] [AddCommGroup M] [Module R M]
 variable {N N₁ N₂ P P₁ P₂ : Submodule R M}
 
 @[simp]
@@ -102,13 +109,14 @@ lemma annihilator_map_mkQ_eq_colon : annihilator (P.map N.mkQ) = N.colon P := by
 
 theorem annihilator_quotient {N : Submodule R M} :
     Module.annihilator R (M ⧸ N) = N.colon ⊤ := by
-  simp_rw [SetLike.ext_iff, Module.mem_annihilator, ←annihilator_map_mkQ_eq_colon, mem_annihilator,
-      map_top, LinearMap.range_eq_top.mpr (mkQ_surjective N), mem_top, forall_true_left,
-      forall_const]
+  simp_rw [SetLike.ext_iff, Module.mem_annihilator, ← annihilator_map_mkQ_eq_colon, mem_annihilator,
+    map_top, LinearMap.range_eq_top.mpr (mkQ_surjective N), mem_top, forall_true_left,
+    forall_const]
 
-theorem _root_.Ideal.annihilator_quotient {I : Ideal R} : Module.annihilator R (R ⧸ I) = I := by
+theorem _root_.Ideal.annihilator_quotient {I : Ideal R} [I.IsTwoSided] :
+    Module.annihilator R (R ⧸ I) = I := by
   rw [Submodule.annihilator_quotient, colon_top]
 
-end CommRing
+end Ring
 
 end Submodule

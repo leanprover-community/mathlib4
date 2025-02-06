@@ -166,13 +166,13 @@ theorem comap_abs_nhds_zero : comap abs (𝓝 0) = 𝓝 0 :=
 @[deprecated (since := "2024-08-25")] alias nnnorm_int := nnnorm_intCast
 
 @[simp 1100, norm_cast]
-lemma norm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖ = q := abs_of_nonneg q.cast_nonneg
+lemma norm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖ = q := Complex.abs_of_nonneg q.cast_nonneg
 
 @[simp 1100, norm_cast]
 lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖₊ = q := by simp [nnnorm, -norm_eq_abs]
 
 theorem norm_int_of_nonneg {n : ℤ} (hn : 0 ≤ n) : ‖(n : ℂ)‖ = n := by
-  rw [norm_intCast, ← Int.cast_abs, _root_.abs_of_nonneg hn]
+  rw [norm_intCast, ← Int.cast_abs, abs_of_nonneg hn]
 
 lemma normSq_eq_norm_sq (z : ℂ) : normSq z = ‖z‖ ^ 2 := by
   rw [normSq_eq_abs, norm_eq_abs]
@@ -475,7 +475,7 @@ open ComplexOrder
 
 theorem eq_coe_norm_of_nonneg {z : ℂ} (hz : 0 ≤ z) : z = ↑‖z‖ := by
   lift z to ℝ using hz.2.symm
-  rw [norm_eq_abs, abs_ofReal, _root_.abs_of_nonneg (id hz.1 : 0 ≤ z)]
+  rw [norm_eq_abs, abs_ofReal, abs_of_nonneg (id hz.1 : 0 ≤ z)]
 
 /-- We show that the partial order and the topology on `ℂ` are compatible.
 We turn this into an instance scoped to `ComplexOrder`. -/
@@ -688,9 +688,6 @@ lemma zero_not_mem_slitPlane : 0 ∉ slitPlane := mt ofReal_mem_slitPlane.1 (lt_
 @[simp]
 lemma natCast_mem_slitPlane {n : ℕ} : ↑n ∈ slitPlane ↔ n ≠ 0 := by
   simpa [pos_iff_ne_zero] using @ofReal_mem_slitPlane n
-
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_mem_slitPlane := natCast_mem_slitPlane
 
 @[simp]
 lemma ofNat_mem_slitPlane (n : ℕ) [n.AtLeastTwo] : ofNat(n) ∈ slitPlane :=

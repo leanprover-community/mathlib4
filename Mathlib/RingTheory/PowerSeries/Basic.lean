@@ -465,6 +465,11 @@ theorem map_X : map f X = X := by
 
 end Map
 
+@[simp]
+theorem map_eq_zero {R S : Type*} [DivisionSemiring R] [Semiring S] [Nontrivial S] (φ : R⟦X⟧)
+    (f : R →+* S) : φ.map f = 0 ↔ φ = 0 :=
+  MvPowerSeries.map_eq_zero _ _
+
 theorem X_pow_dvd_iff {n : ℕ} {φ : R⟦X⟧} :
     (X : R⟦X⟧) ^ n ∣ φ ↔ ∀ m, m < n → coeff R m φ = 0 := by
   convert@MvPowerSeries.X_pow_dvd_iff Unit R _ () n φ

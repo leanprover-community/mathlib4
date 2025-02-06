@@ -120,17 +120,21 @@ theorem not_nodup_of_get_eq_of_ne (xs : List α) (n m : Fin xs.length)
   rw [nodup_iff_injective_get]
   exact fun hinj => hne (hinj h)
 
-theorem indexOf_getElem [DecidableEq α] {l : List α} (H : Nodup l) (i : Nat) (h : i < l.length) :
-    indexOf l[i] l = i :=
-  suffices (⟨indexOf l[i] l, indexOf_lt_length_iff.2 (getElem_mem _)⟩ : Fin l.length) = ⟨i, h⟩
+theorem idxOf_getElem [DecidableEq α] {l : List α} (H : Nodup l) (i : Nat) (h : i < l.length) :
+    idxOf l[i] l = i :=
+  suffices (⟨idxOf l[i] l, idxOf_lt_length_iff.2 (getElem_mem _)⟩ : Fin l.length) = ⟨i, h⟩
     from Fin.val_eq_of_eq this
   nodup_iff_injective_get.1 H (by simp)
 
--- This is incorrectly named and should be `indexOf_get`;
+@[deprecated (since := "2025-01-30")] alias indexOf_getElem := idxOf_getElem
+
+-- This is incorrectly named and should be `idxOf_get`;
 -- this already exists, so will require a deprecation dance.
-theorem get_indexOf [DecidableEq α] {l : List α} (H : Nodup l) (i : Fin l.length) :
-    indexOf (get l i) l = i := by
-  simp [indexOf_getElem, H]
+theorem get_idxOf [DecidableEq α] {l : List α} (H : Nodup l) (i : Fin l.length) :
+    idxOf (get l i) l = i := by
+  simp [idxOf_getElem, H]
+
+@[deprecated (since := "2025-01-30")] alias get_indexOf := get_idxOf
 
 theorem nodup_iff_count_le_one [DecidableEq α] {l : List α} : Nodup l ↔ ∀ a, count a l ≤ 1 :=
   nodup_iff_sublist.trans <|
@@ -343,7 +347,7 @@ protected theorem Nodup.set :
 
 theorem Nodup.map_update [DecidableEq α] {l : List α} (hl : l.Nodup) (f : α → β) (x : α) (y : β) :
     l.map (Function.update f x y) =
-      if x ∈ l then (l.map f).set (l.indexOf x) y else l.map f := by
+      if x ∈ l then (l.map f).set (l.idxOf x) y else l.map f := by
   induction' l with hd tl ihl; · simp
   rw [nodup_cons] at hl
   simp only [mem_cons, map, ihl hl.2]
