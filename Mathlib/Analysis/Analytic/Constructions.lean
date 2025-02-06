@@ -1068,6 +1068,42 @@ lemma AnalyticOnNhd.zpow' {f : E → 𝕝} {s : Set E} {n : ℤ} (h₁f : Analyt
     (h₂f : ∀ z ∈ s, f z ≠ 0) :
     AnalyticOnNhd 𝕜 (fun x ↦ f x ^ n) s := zpow h₁f h₂f
 
+/- A function is analytic at a point iff it is analytic after scalar
+  multiplication with a non-vanishing analytic function. -/
+theorem analyticAt_of_smul_analytic [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝} {g : E → F}
+    {z : E} (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
+    AnalyticAt 𝕜 g z ↔ AnalyticAt 𝕜 (f • g) z := by
+  constructor
+  · exact fun a ↦ h₁f.smul a
+  · intro hprod
+    rw [analyticAt_congr (g := (f⁻¹ • f) • g), smul_assoc]
+    · have := h₁f.inv h₂f
+      fun_prop
+    · filter_upwards [h₁f.continuousAt.preimage_mem_nhds (compl_singleton_mem_nhds_iff.2 h₂f)]
+      intro y hy
+      rw [Set.preimage_compl, Set.mem_compl_iff, Set.mem_preimage, Set.mem_singleton_iff] at hy
+      simp [hy]
+
+/- A function is analytic at a point iff it is analytic after scalar
+  multiplication with a non-vanishing analytic function. -/
+theorem analyticAt_of_smul_analytic' [NormedSpace 𝕝 E] [IsScalarTower 𝕜 𝕝 E] {f : 𝕜 → 𝕝}
+    (h₁f : AnalyticAt 𝕜 f z₀) (h₂f : f z₀ ≠ 0) :
+    AnalyticAt 𝕜 g z₀ ↔ AnalyticAt 𝕜 (fun z ↦ f z • g z) z₀ :=
+  analyticAt_of_smul_analytic h₁f h₂f
+
+/- A function is analytic at a point iff it is analytic after multiplication
+  with a non-vanishing analytic function. -/
+theorem analyticAt_of_mul_analytic {f g : 𝕜 → 𝕝} (h₁f : AnalyticAt 𝕜 f z₀) (h₂f : f z₀ ≠ 0) :
+    AnalyticAt 𝕜 g z₀ ↔ AnalyticAt 𝕜 (f * g) z₀ := by
+  rw [← smul_eq_mul]
+  exact analyticAt_of_smul_analytic h₁f h₂f
+
+/- A function is analytic at a point iff it is analytic after multiplication
+  with a non-vanishing analytic function. -/
+theorem analyticAt_of_mul_analytic' {f g : 𝕜 → 𝕝} (h₁f : AnalyticAt 𝕜 f z₀) (h₂f : f z₀ ≠ 0) :
+    AnalyticAt 𝕜 g z₀ ↔ AnalyticAt 𝕜 (fun z ↦ f z * g z) z₀ := by
+  exact analyticAt_of_mul_analytic h₁f h₂f
+
 /-- `f x / g x` is analytic away from `g x = 0` -/
 theorem AnalyticWithinAt.div {f g : E → 𝕝} {s : Set E} {x : E}
     (fa : AnalyticWithinAt 𝕜 f s x) (ga : AnalyticWithinAt 𝕜 g s x) (g0 : g x ≠ 0) :
