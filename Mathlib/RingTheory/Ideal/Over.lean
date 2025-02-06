@@ -15,16 +15,10 @@ This file concerns ideals lying over other ideals.
 Let `f : R →+* S` be a ring homomorphism (typically a ring extension), `I` an ideal of `R` and
 `J` an ideal of `S`. We say `J` lies over `I` (and `I` under `J`) if `I` is the `f`-preimage of `J`.
 This is expressed here by writing `I = J.comap f`.
-
-## Implementation notes
-
-The proofs of the `comap_ne_bot` and `comap_lt_comap` families use an approach
-specific for their situation: we construct an element in `I.comap f` from the
-coefficients of a minimal polynomial.
-Once mathlib has more material on the localization at a prime ideal, the results
-can be proven using more general going-up/going-down theory.
 -/
 
+-- for going-up results about integral extensions, see `Mathlib.RingTheory.Ideal.GoingUp`
+assert_not_exists Algebra.IsIntegral
 
 variable {R : Type*} [CommRing R]
 

@@ -11,6 +11,14 @@ import Mathlib.RingTheory.Localization.AtPrime
 # Ideals over/under ideals in integral extensions
 
 This file proves some going-up results for integral algebras.
+
+## Implementation notes
+
+The proofs of the `comap_ne_bot` and `comap_lt_comap` families use an approach
+specific for their situation: we construct an element in `I.comap f` from the
+coefficients of a minimal polynomial.
+Once mathlib has more material on the localization at a prime ideal, the results
+can be proven using more general going-up/going-down theory.
 -/
 
 open Polynomial Submodule
