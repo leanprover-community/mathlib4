@@ -81,8 +81,8 @@ lemma TendstoInMeasure.mono [Dist E] {f : ι → α → E} {g : α → E} {u v :
     (hg : TendstoInMeasure μ f u g) : TendstoInMeasure μ f v g :=
   fun ε hε => (hg ε hε).mono_left huv
 
-lemma TendstoInMeasure.subseq [Dist E] {f : ι → α → E} {g : α → E} {u : Filter ι}
-    {v : Filter κ} {ns : κ → ι} (hns : Tendsto ns v u) (hg : TendstoInMeasure μ f u g) :
+lemma TendstoInMeasure.comp [Dist E] {f : ι → α → E} {g : α → E} {u : Filter ι}
+    {v : Filter κ} {ns : κ → ι} (hg : TendstoInMeasure μ f u g) (hns : Tendsto ns v u) :
     TendstoInMeasure μ (f ∘ ns) v g := fun ε hε ↦ (hg ε hε).comp hns
 
 namespace TendstoInMeasure
@@ -258,14 +258,14 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae' {u : Filter ι} [NeBot u] [IsCou
   obtain ⟨ns, hns1, hns2⟩ := hms2.exists_seq_tendsto_ae
   exact ⟨ms ∘ ns, hms1.comp hns1.tendsto_atTop, hns2⟩
 
-/-- TendstoInMeasure is equivalent to every subsequence having another subsequence
+/-- `TendstoInMeasure` is equivalent to every subsequence having another subsequence
 ￼which converges almost surely. -/
 theorem exists_seq_tendstoInMeasure_atTop_iff (hfin : MeasureTheory.IsFiniteMeasure μ)
     {f : ℕ → α → E} (hf : ∀ (n : ℕ), AEStronglyMeasurable (f n) μ) {g : α → E} :
     (TendstoInMeasure μ f atTop g) ↔
       ∀ ns : ℕ → ℕ, StrictMono ns → ∃ ns' : ℕ → ℕ, StrictMono ns' ∧
         ∀ᵐ (ω : α) ∂μ, Tendsto (fun i ↦ f (ns (ns' i)) ω) atTop (𝓝 (g ω)) := by
-  refine ⟨fun hfg _ hns ↦ (hfg.subseq hns.tendsto_atTop).exists_seq_tendsto_ae,
+  refine ⟨fun hfg _ hns ↦ (hfg.comp hns.tendsto_atTop).exists_seq_tendsto_ae,
     not_imp_not.mp (fun h1 ↦ ?_)⟩
   rw [tendstoInMeasure_iff_tendsto_toNNReal] at h1
   push_neg at *
@@ -289,12 +289,12 @@ section TendstoInMeasureUnique
 variable [MetricSpace E]
 variable {f : ℕ → α → E} {g h : α → E}
 
-/-- The limit in measure is ae unique -/
+/-- The limit in measure is ae unique. -/
 theorem tendstoInMeasure_ae_unique {g h : α → E} {f : ι → α → E} {u : Filter ι} [NeBot u]
     [IsCountablyGenerated u] (hg : TendstoInMeasure μ f u g) (hh : TendstoInMeasure μ f u h) :
     g =ᵐ[μ] h := by
   obtain ⟨ns, h1, h1'⟩ := hg.exists_seq_tendsto_ae'
-  obtain ⟨ns', h2, h2'⟩ := (TendstoInMeasure.subseq h1 hh).exists_seq_tendsto_ae'
+  obtain ⟨ns', h2, h2'⟩ := (TendstoInMeasure.comp h1 hh).exists_seq_tendsto_ae'
   filter_upwards [h1', h2'] with ω hg1 hh1
   exact tendsto_nhds_unique (hg1.comp h2) hh1
 
