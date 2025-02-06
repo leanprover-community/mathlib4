@@ -5387,8 +5387,9 @@ import Mathlib.Topology.Category.UniformSpace
 import Mathlib.Topology.Clopen
 import Mathlib.Topology.ClopenBox
 import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Compactification.OnePoint
-import Mathlib.Topology.Compactification.OnePointEquiv
+import Mathlib.Topology.Compactification.OnePoint.Basic
+import Mathlib.Topology.Compactification.OnePoint.OnePointEquiv
+import Mathlib.Topology.Compactification.OnePoint.Sphere
 import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
 import Mathlib.Topology.Compactness.DeltaGeneratedSpace
