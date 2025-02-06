@@ -8,11 +8,11 @@ import Mathlib.Combinatorics.SimpleGraph.Path
 import Mathlib.Data.Set.Card
 
 /-!
-# Represtation of components by a set of vertices
+# Representation of components by a set of vertices
 
 ## Main definition
 
-* `Set.Represents` says that a set of vertices represents a set of components if it contains exactly
+* `SimpleGraph.ConnectedComponent.Represents` says that a set of vertices represents a set of components if it contains exactly
   one vertex from each component.
 -/
 
@@ -41,13 +41,13 @@ namespace Represents
 
 variable {C : Set G.ConnectedComponent} {s : Set V} {c : G.ConnectedComponent}
 
-lemma unique_rep (hrep : Represents s C) (h : c ∈ C) : ∃! x, x ∈ s ∩ c.supp := by
+lemma existsUnique_rep (hrep : Represents s C) (h : c ∈ C) : ∃! x, x ∈ s ∩ c.supp := by
   obtain ⟨x, ⟨hx, rfl⟩⟩ := hrep.2.2 h
   use x
   simp only [Set.mem_inter_iff, hx, SetLike.mem_coe, mem_supp_iff, and_self, and_imp, true_and]
   exact fun y hy hyx ↦ hrep.2.1 hy hx hyx
 
-lemma exact (hrep : Represents s C) (h : c ∉ C) : Disjoint s c.supp := by
+lemma disjoint_supp_of_not_mem (hrep : Represents s C) (h : c ∉ C) : Disjoint s c.supp := by
   rw [Set.disjoint_left]
   intro a ha hc
   simp only [mem_supp_iff] at hc
