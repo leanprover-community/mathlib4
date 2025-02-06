@@ -106,8 +106,7 @@ theorem dZero_eq_zero_of_isTrivial [A.IsTrivial] : dZero A = 0 := by
   simp
 
 /-- The 1st differential in the complex of inhomogeneous chains of `A : Rep k G`, as a
-`k`-linear map `(G² →₀ A) → (G →₀ A)`. It sends
-`single (g₁, g₂) a ↦ single g₂ ρ_A(g₁⁻¹)(a) - single g₁g₂ a + single g₁ a`. -/
+`k`-linear map `(G² →₀ A) → (G →₀ A)`. It sends `a·(g₁, g₂) ↦ ρ_A(g₁⁻¹)(a)·g₂ - a·g₁g₂ + a·g₁`. -/
 def dOne : (G × G →₀ A) →ₗ[k] G →₀ A :=
   lsum k fun g => lsingle g.2 ∘ₗ A.ρ g.1⁻¹ - lsingle (g.1 * g.2) + lsingle g.1
 
@@ -153,8 +152,7 @@ lemma dOne_single_inv_mul_ρ_add_single (g h : G) (a : A) :
 variable (A) in
 /-- The 2nd differential in the complex of inhomogeneous chains of `A : Rep k G`, as a
 `k`-linear map `(G³ →₀ A) → (G² →₀ A)`. It sends
-`single (g₁, g₂, g₃) a ↦ single (g₂, g₃) ρ_A(g₁⁻¹)(a) - single (g₁g₂, g₃) a +`
-`single (g₁, g₂g₃) a - single (g₁, g₂) a`. -/
+`a·(g₁, g₂, g₃) ↦ ρ_A(g₁⁻¹)(a)·(g₂, g₃) - a·(g₁g₂, g₃) + a·(g₁, g₂g₃) - a·(g₁, g₂)`. -/
 def dTwo : (G × G × G →₀ A) →ₗ[k] G × G →₀ A :=
   lsum k fun g => lsingle (g.2.1, g.2.2) ∘ₗ A.ρ g.1⁻¹ - lsingle (g.1 * g.2.1, g.2.2) +
     lsingle (g.1, g.2.1 * g.2.2) - lsingle (g.1, g.2.1)
@@ -262,8 +260,7 @@ section Cycles
 def oneCycles : Submodule k (G →₀ A) := LinearMap.ker (dZero A)
 
 /-- The 2-cycles `Z₂(G, A)` of `A : Rep k G`, defined as the kernel of the map
-`(G² →₀ A) → (G →₀ A)` sending
-`single (g₁, g₂) a ↦ single g₂ ρ_A(g₁⁻¹)(a) - single g₁g₂ a + single g₁ a`.` -/
+`(G² →₀ A) → (G →₀ A)` sending `a·(g₁, g₂) ↦ ρ_A(g₁⁻¹)(a)·g₂ - a·g₁g₂ + a·g₁`. -/
 def twoCycles : Submodule k (G × G →₀ A) := LinearMap.ker (dOne A)
 
 variable {A}
@@ -321,15 +318,13 @@ end Cycles
 section Boundaries
 
 /-- The 1-boundaries `B₁(G, A)` of `A : Rep k G`, defined as the image of the map
-`(G² →₀ A) → (G →₀ A)` sending
-`single (g₁, g₂) a ↦ single g₂ ρ_A(g₁⁻¹)(a) - single g₁g₂ a + single g₁ a`. -/
+`(G² →₀ A) → (G →₀ A)` sending `a·(g₁, g₂) ↦ ρ_A(g₁⁻¹)(a)·g₂ - a·g₁g₂ + a·g₁`. -/
 def oneBoundaries : Submodule k (G →₀ A) :=
   LinearMap.range (dOne A)
 
 /-- The 2-boundaries `B₂(G, A)` of `A : Rep k G`, defined as the image of the map
 `(G³ →₀ A) → (G² →₀ A)` sending
-`single (g₁, g₂, g₃) a ↦ single (g₂, g₃) ρ_A(g₁⁻¹)(a) - single (g₁g₂, g₃) a +`
-`single (g₁, g₂g₃) a - single (g₁, g₂) a`. -/
+`a·(g₁, g₂, g₃) ↦ ρ_A(g₁⁻¹)(a)·(g₂, g₃) - a·(g₁g₂, g₃) + a·(g₁, g₂g₃) - a·(g₁, g₂)`. -/
 def twoBoundaries : Submodule k (G × G →₀ A) :=
   LinearMap.range (dTwo A)
 
