@@ -483,7 +483,7 @@ instance : Category (CosimplicialObject C) := by
 
 namespace CosimplicialObject
 
-/-- `X _[n]` denotes the `n`th-term of the cosimplicial object X -/
+/-- `X ^[n]` denotes the `n`th-term of the cosimplicial object X -/
 scoped[Simplicial]
   notation3:1000 X " ^[" n "]" =>
     (X : CategoryTheory.CosimplicialObject _).obj (SimplexCategory.mk n)
