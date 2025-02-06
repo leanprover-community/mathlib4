@@ -49,8 +49,6 @@ instance {α : Type*} [CompleteLattice α] {s : α} : SetLike (Partition s) α w
   coe := Partition.parts
   coe_injective' p p' h := by cases p; cases p'; simpa using h
 
-@[simp] lemma mem_parts {x : α} : x ∈ P.parts ↔ x ∈ (P : Set α) := Iff.rfl
-
 @[simp] lemma coe_parts : (P.parts : Set α) = P := rfl
 
 @[ext] lemma ext {P Q : Partition s} (hP : ∀ x, x ∈ P ↔ x ∈ Q) : P = Q :=
@@ -114,10 +112,6 @@ def removeBot (P : Set α) (indep : sSupIndep P) (sSup_eq : sSup P = s) : Partit
 @[simp]
 lemma coe_removeBot_eq (P : Set α) (indep) (sSup_eq : sSup P = s) :
     (removeBot P indep sSup_eq : Set α) = P \ {⊥} := rfl
-
-@[simp]
-lemma mem_removeBot_iff (P : Set α) (indep) (sSup_eq : sSup P = s) :
-    x ∈ (removeBot P indep sSup_eq : Set α) ↔ x ∈ P ∧ x ≠ ⊥ := Iff.rfl
 
 end Basic
 
