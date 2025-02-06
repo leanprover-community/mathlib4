@@ -6,6 +6,12 @@ Authors: Anne Baanen, Yongle Hu
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Localization.Integral
 
+/-!
+# Ideals over/under ideals in integral extensions
+
+This file proves some going-up results for integral algebras.
+-/
+
 open Polynomial Submodule
 
 open scoped Pointwise
