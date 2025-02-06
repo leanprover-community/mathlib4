@@ -113,14 +113,13 @@ instance : BoundedOrder (Nucleus X) where
 
 instance : InfSet (Nucleus X) where
   sInf s :=
-  { toFun x := ⨅ j ∈ s, j x,
+  { toFun x := ⨅ f ∈ s, f x,
     map_inf' x y := by
-      simp only [InfHomClass.map_inf]
-      apply le_antisymm
-      · simp_all only [le_inf_iff, le_iInf_iff, iInf_le_iff, implies_true, and_self]
-      · simp only [le_iInf_iff, le_inf_iff]
-        refine fun _ _ ↦ ⟨inf_le_of_left_le ?_, inf_le_of_right_le ?_⟩
-        all_goals simp_all [iInf_le_iff]
+      simp only [InfHomClass.map_inf, le_antisymm_iff, le_inf_iff, le_iInf_iff]
+      refine ⟨⟨?_, ?_⟩, ?_⟩ <;> rintro f hf
+      · exact iInf₂_le_of_le f hf inf_le_left
+      · exact iInf₂_le_of_le f hf inf_le_right
+      · exact ⟨inf_le_of_left_le <| iInf₂_le f hf, inf_le_of_right_le <| iInf₂_le f hf⟩
     idempotent' x := by
       simp only [le_iInf_iff, iInf_le_iff]
       intro a ha b h
