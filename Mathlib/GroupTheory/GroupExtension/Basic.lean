@@ -88,17 +88,17 @@ theorem exists_mul_eq_mul_mul_inl : ∃ n : N, σ (g₁ * g₂) = σ g₁ * σ g
   use n⁻¹
   rw [map_inv, eq_mul_inv_iff_mul_eq, ← eq_inv_mul_iff_mul_eq, ← mul_assoc, hn]
 
+initialize_simps_projections AddGroupExtension.Section (toFun → apply)
+initialize_simps_projections Section (toFun → apply)
+
 /-- The composition of an isomorphism between equivalent group extensions and a section -/
-@[to_additive
+@[to_additive (attr := simps!)
       "The composition of an isomorphism between equivalent additive group extensions and a
       section"]
 def equivComp : S'.Section where
   toFun := equiv ∘ σ
   rightInverse_rightHom g := by
     rw [Function.comp_apply, equiv.rightHom_map, rightHom_section]
-
-@[to_additive]
-theorem equivComp_apply (g : G) : σ.equivComp equiv g = equiv (σ g) := rfl
 
 end Section
 
