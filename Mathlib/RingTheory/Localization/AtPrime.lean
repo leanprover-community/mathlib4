@@ -55,6 +55,19 @@ lemma disjoint_map_primeCompl_iff_comap_le {S : Type*} [Semiring S] {f : R →+*
   rw [disjoint_comm]
   simp [Set.disjoint_iff, Set.ext_iff, Ideal.primeCompl, not_imp_not, SetLike.le_def]
 
+/-- For a prime ideal `p` of `R`, `p` extended to `S` and
+restricted back to `R` is `p` if and only if `p` is the restriction of a prime in `S`. -/
+lemma comap_map_eq_self_iff_of_isPrime {S : Type*} [CommRing S] {f : R →+* S}
+    (p : Ideal R) [p.IsPrime] :
+    (p.map f).comap f = p ↔ (∃ (q : Ideal S), q.IsPrime ∧ q.comap f = p) := by
+  refine ⟨fun hp ↦ ?_, ?_⟩
+  · obtain ⟨q, hq₁, hq₂, hq₃⟩ := Ideal.exists_le_prime_disjoint _ _
+      (disjoint_map_primeCompl_iff_comap_le.mpr hp.le)
+    exact ⟨q, hq₁, le_antisymm (disjoint_map_primeCompl_iff_comap_le.mp hq₃)
+      (map_le_iff_le_comap.mp hq₂)⟩
+  · rintro ⟨q, hq, rfl⟩
+    simp
+
 end Ideal
 
 /-- Given a prime ideal `P`, the typeclass `IsLocalization.AtPrime S P` states that `S` is
