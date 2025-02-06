@@ -28,13 +28,13 @@ jobs:
       - name: Get Pull Request Number
         id: pr_number
         run: |
-          echo "BRANCH_NAME: '${BRANCH_NAME}'"
-          branch="${GITHUB_REF}"
           branch="${branch/#refs\/heads\//}"
           echo "branch: '${branch}'"
           git checkout "${branch}"
-          gh pr view --json number -q .number || echo ""
-          printf 'pull_request_number=%s' "$(gh pr view --json number -q .number || echo "")" >> "$GITHUB_OUTPUT"
+          PR_NUMBER="$(gh pr view --json number -q .number || echo "")"
+          printf 'PR_NUMBER=%s' "${PR_NUMBER}"
+          printf 'branch=%s' "${branch}" >> "$GITHUB_OUTPUT"
+          printf 'pull_request_number=%s' "${PR_NUMBER}" >> "$GITHUB_OUTPUT"
           git switch master
 
       - name: blog report
@@ -45,7 +45,7 @@ jobs:
           title="### ${mth} in Mathlib summary"
           printf 'Title: %s\nPR: "%s"\n' "${title}" "${PR}"
 
-          printf $'Repository: %s\nBranch: %s\n' "${{ github.repository }}" "${BRANCH_NAME}"
+          printf $'Repository: %s\nBranch: %s\n' "${{ github.repository }}" "${{ steps.pr_number.outputs.branch }}"
           git checkout origin/adomani/yd_find_label scripts/find_labels.sh
           message="$(printf '%s\n\n%s\n' "${title}" "$(./scripts/find_labels.sh "${{ github.repository }}" "${yrMth}")")"
           echo "${message}"
