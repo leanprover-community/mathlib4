@@ -82,8 +82,7 @@ theorem head?_coeffList (h : P ≠ 0) :
   (coeffList_eq_cons_leadingCoeff h).casesOn fun _ _ ↦
     Option.some.injEq _ _ ▸ List.head?_eq_head _ ▸ head?_coeffList h
 
-theorem length_coeffList_withBotSucc [DecidableEq R] (P : R[X]) :
-    P.coeffList.length = P.degree.succ := by
+theorem length_coeffList_withBotSucc (P : R[X]) : P.coeffList.length = P.degree.succ := by
   simp [coeffList]
 
 /-- The length of the coefficient list is the degree plus one, or zero if P is zero. -/
