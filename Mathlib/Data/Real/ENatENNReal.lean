@@ -67,6 +67,9 @@ theorem toENNReal_le : (m : ℝ≥0∞) ≤ n ↔ m ≤ n :=
 theorem toENNReal_lt : (m : ℝ≥0∞) < n ↔ m < n :=
   toENNRealOrderEmbedding.lt_iff_lt
 
+@[simp, norm_cast]
+lemma toENNReal_lt_top : (n : ℝ≥0∞) < ∞ ↔ n < ⊤ := by simpa using toENNReal_lt (n := ⊤)
+
 @[mono]
 theorem toENNReal_mono : Monotone ((↑) : ℕ∞ → ℝ≥0∞) :=
   toENNRealOrderEmbedding.monotone
