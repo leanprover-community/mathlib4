@@ -100,8 +100,7 @@ theorem elemExponent_eq_zero_of_mem_range {a : L} (h : a ∈ (algebraMap K L).ra
 
 theorem elemExponent_eq_zero_of_charZero (a : L) [CharZero K] :
     elemExponent K a = 0 :=
-  elemExponent_eq_zero_of_mem_range <|
-    IsPurelyInseparable.surjective_algebraMap_of_isSeparable K L a
+  elemExponent_eq_zero_of_mem_range <| surjective_algebraMap_of_isSeparable K L a
 
 open Classical in
 /-- The element `y` of the base field `K` such that
