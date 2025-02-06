@@ -21,38 +21,35 @@ This file proves asymptotic theorems for binomial coefficents and factorial vari
 -/
 
 
-open Asymptotics Topology
+open Asymptotics Filter Nat Topology
 
 /-- `n.descFactorial k` is asymptotically equivalent to `n^k`. -/
 lemma isEquivalent_descFactorial (k : ℕ) :
-    (fun (n : ℕ) ↦ (n.descFactorial k : ℝ))
-      ~[Filter.atTop] (fun (n : ℕ) ↦ (n^k : ℝ)) := by
+    (fun (n : ℕ) ↦ (n.descFactorial k : ℝ)) ~[atTop] (fun (n : ℕ) ↦ (n^k : ℝ)) := by
   induction k with
   | zero => simpa using IsEquivalent.refl
   | succ k h =>
-    simp_rw [Nat.descFactorial_succ, Nat.cast_mul, pow_succ']
+    simp_rw [descFactorial_succ, cast_mul, _root_.pow_succ']
     apply IsEquivalent.mul _ h
-    have hz : ∀ᶠ (x : ℕ) in Filter.atTop, (x : ℝ) ≠ 0 := by
-      rw [Filter.eventually_atTop]
+    have hz : ∀ᶠ (x : ℕ) in atTop, (x : ℝ) ≠ 0 := by
+      rw [eventually_atTop]
       use 1; intro n hn
       exact ne_of_gt (mod_cast hn)
-    rw [isEquivalent_iff_tendsto_one hz, ← Filter.tendsto_add_atTop_iff_nat k]
+    rw [isEquivalent_iff_tendsto_one hz, ← tendsto_add_atTop_iff_nat k]
     simpa using tendsto_natCast_div_add_atTop (k : ℝ)
 
 /-- `n.choose k` is asymptotically equivalent to `n^k / k!`. -/
 theorem isEquivalent_choose (k : ℕ) :
-    (fun (n : ℕ) ↦ (n.choose k : ℝ))
-      ~[Filter.atTop] (fun (n : ℕ) ↦ (n^k / k.factorial : ℝ)) := by
+    (fun (n : ℕ) ↦ (n.choose k : ℝ)) ~[atTop] (fun (n : ℕ) ↦ (n^k / k.factorial : ℝ)) := by
   conv_lhs =>
     intro n
-    rw [Nat.choose_eq_descFactorial_div_factorial,
-      Nat.cast_div (n.factorial_dvd_descFactorial k) (mod_cast k.factorial_ne_zero)]
+    rw [choose_eq_descFactorial_div_factorial,
+      cast_div (n.factorial_dvd_descFactorial k) (mod_cast k.factorial_ne_zero)]
   exact (isEquivalent_descFactorial k).div IsEquivalent.refl
 
 /-- `n.choose k` is big-theta `n^k`. -/
 theorem isTheta_choose (k : ℕ) :
-    (fun (n : ℕ) ↦ (n.choose k : ℝ))
-      =Θ[Filter.atTop] (fun (n : ℕ) ↦ (n^k : ℝ)) := by
+    (fun (n : ℕ) ↦ (n.choose k : ℝ)) =Θ[atTop] (fun (n : ℕ) ↦ (n^k : ℝ)) := by
   apply (isEquivalent_choose k).trans_isTheta
   conv_lhs =>
     intro n
