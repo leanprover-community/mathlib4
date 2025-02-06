@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Kenny Lau
 -/
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.Set.Pairwise.Basic
-import Mathlib.Data.List.TakeDrop
 
 /-!
 # Lists with no duplicates
@@ -242,7 +241,7 @@ lemma nodup_tail_reverse (l : List α) (h : l[0]? = l.getLast?) :
         show l.length ≠ 0 by aesop, ↓reduceDIte, getLast?_eq_getElem?] at h
       rw [h,
         show l.Nodup = (l.dropLast ++ [l.getLast hl]).Nodup by
-          simp [List.dropLast_eq_take, ← List.drop_length_sub_one],
+          simp [List.dropLast_eq_take],
         List.nodup_append_comm]
       simp [List.getLast_eq_getElem]
 
