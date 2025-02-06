@@ -95,7 +95,7 @@ private def restrictScalarsAux
     (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap S R).range) :
     M' →ₗ[S] N' →ₗ[S] S :=
  LinearMap.restrictScalarsRange i j (Algebra.linearMap S R)
-    (NoZeroSMulDivisors.algebraMap_injective S R) p.toLin hp
+    (FaithfulSMul.algebraMap_injective S R) p.toLin hp
 
 private lemma restrictScalarsAux_injective
     (hi : Injective i)
@@ -103,7 +103,7 @@ private lemma restrictScalarsAux_injective
     (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap S R).range) :
     Injective (p.restrictScalarsAux i j hp) := by
   let f := LinearMap.restrictScalarsRange i j (Algebra.linearMap S R)
-      (NoZeroSMulDivisors.algebraMap_injective S R) p.toLin hp
+      (FaithfulSMul.algebraMap_injective S R) p.toLin hp
   rw [← LinearMap.ker_eq_bot]
   refine (Submodule.eq_bot_iff _).mpr fun x (hx : f x = 0) ↦ ?_
   replace hx (n : N) : p (i x) n = 0 := by
@@ -128,7 +128,7 @@ private lemma restrictScalarsAux_surjective
   obtain ⟨m, hm⟩ := h g
   refine ⟨m, ?_⟩
   ext n
-  apply NoZeroSMulDivisors.algebraMap_injective S R
+  apply FaithfulSMul.algebraMap_injective S R
   change Algebra.linearMap S R _ = _
   simpa [restrictScalarsAux] using LinearMap.congr_fun hm n
 
@@ -180,7 +180,7 @@ lemma exists_basis_basis_of_span_eq_top_of_mem_algebraMap
   have hv' : LinearIndependent K v' := by
     replace hv₃ := hv₃.restrict_scalars (R := K) <| by
       simp_rw [← Algebra.algebraMap_eq_smul_one]
-      exact NoZeroSMulDivisors.algebraMap_injective K L
+      exact FaithfulSMul.algebraMap_injective K L
     rw [show ((↑) : v → M) = M'.subtype ∘ v' from rfl] at hv₃
     exact hv₃.of_comp
   suffices span K (Set.range v') = ⊤ by
@@ -259,7 +259,7 @@ def restrictScalarsField
     (x : M') (y : N') :
     algebraMap K L (p.restrictScalarsField i j hi hj hij hp x y) = p (i x) (j y) :=
   LinearMap.restrictScalarsRange_apply i j (Algebra.linearMap K L)
-    (NoZeroSMulDivisors.algebraMap_injective K L) p.toLin hp x y
+    (FaithfulSMul.algebraMap_injective K L) p.toLin hp x y
 
 end Field
 

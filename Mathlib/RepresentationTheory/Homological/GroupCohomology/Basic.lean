@@ -20,12 +20,11 @@ $$+ \sum_{i = 0}^{n - 1} (-1)^{i + 1}\cdot f(g_0, \dots, g_ig_{i + 1}, \dots, g_
 $$+ (-1)^{n + 1}\cdot f(g_0, \dots, g_{n - 1})$$ (where `ρ` is the representation attached to `A`).
 
 We have a `k`-linear isomorphism
-$\mathrm{Fun}(G^n, A) \cong \mathrm{Hom}(\mathrm{FinSupp}(G^n, k[G]), A)$, where
-the righthand side is morphisms in `Rep k G`, and the representation on
-$\mathrm{FinSupp}(G^n, k[G])$ is defined pointwise by the left regular representation on $k[G].$ If
-we conjugate the $n$th differential in $\mathrm{Hom}(P, A)$ by this isomorphism, where `P` is the
-bar resolution of `k` as a trivial `k`-linear `G`-representation, then the resulting map agrees
-with the differential $d^n$ defined above, a fact we prove.
+$\mathrm{Fun}(G^n, A) \cong \mathrm{Hom}(\bigoplus_{G^n} k[G], A)$, where
+the righthand side is morphisms in `Rep k G`, and $k[G]$ is equipped with the left regular
+representation. If we conjugate the $n$th differential in $\mathrm{Hom}(P, A)$ by this isomorphism,
+where `P` is the bar resolution of `k` as a trivial `k`-linear `G`-representation, then the
+resulting map agrees with the differential $d^n$ defined above, a fact we prove.
 
 This gives us for free a proof that our $d^n$ squares to zero. It also gives us an isomorphism
 $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A),$ where $\mathrm{Ext}$ is taken in the category
@@ -97,13 +96,12 @@ variable [Group G] (A : Rep k G) (n : ℕ)
 
 theorem d_eq :
     ModuleCat.ofHom (d A n) =
-      (freeLiftEquiv (Fin n → G) A).toModuleIso.inv ≫
+      (freeLiftLEquiv (Fin n → G) A).toModuleIso.inv ≫
         ((barComplex k G).linearYonedaObj k A).d n (n + 1) ≫
-          (freeLiftEquiv (Fin (n + 1) → G) A).toModuleIso.hom := by
+          (freeLiftLEquiv (Fin (n + 1) → G) A).toModuleIso.hom := by
   ext f g
-  show _ = Finsupp.linearCombination _ _ _
   have h := barComplex.d_single (k := k) _ g
-  simp_all [coe_V, d_apply]
+  simp_all [d_apply]
 
 end inhomogeneousCochains
 
@@ -138,10 +136,10 @@ to `Hom(P, A)`, where `P` is the bar resolution of `k` as a trivial `G`-represen
 def inhomogeneousCochainsIso :
     inhomogeneousCochains A ≅ (barComplex k G).linearYonedaObj k A := by
   refine HomologicalComplex.Hom.isoOfComponents
-    (fun i => (Rep.freeLiftEquiv (Fin i → G) A).toModuleIso.symm) ?_
+    (fun i => (Rep.freeLiftLEquiv (Fin i → G) A).toModuleIso.symm) ?_
   rintro i j (h : i + 1 = j)
   subst h
-  simp [d_eq]
+  simp [d_eq, -LinearEquiv.toModuleIso_hom, -LinearEquiv.toModuleIso_inv]
 
 /-- The `n`-cocycles `Zⁿ(G, A)` of a `k`-linear `G`-representation `A`, i.e. the kernel of the
 `n`th differential in the complex of inhomogeneous cochains. -/
@@ -177,3 +175,8 @@ def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
     groupCohomology A n ≅ ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj A :=
   isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousCochainsIso A)).hom n ≪≫
     (Rep.barResolution.extIso k G A n).symm
+
+lemma isZero_groupCohomology_succ_of_subsingleton
+    [Group G] [Subsingleton G] (A : Rep k G) (n : ℕ) :
+    Limits.IsZero (groupCohomology A (n + 1)) :=
+  (isZero_Ext_succ_of_projective (Rep.trivial k G k) A n).of_iso <| groupCohomologyIsoExt _ _
