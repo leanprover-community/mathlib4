@@ -25,12 +25,17 @@ jobs:
           fetch-depth: 0
           ref: master
 
+      - name: Get Pull Request Number
+        id: pr_number
+        run: echo "pull_request_number=$(gh pr view --json number -q .number || echo "")" >> $GITHUB_OUTPUT
+
       - name: blog report
         run: |
           yrMth=2025-01
           mth="$(date -d "${yrMth}-01" '+%B')"
-          PR="${{ github.event.pull_request.number }}"
+          PR="${{ steps.pr_number.outputs.pull_request_number }}"
           title="### ${mth} in Mathlib summary"
+          printf 'Title: %s\nPR: "%s"\n' "${title}" "${PR}"
 
           printf $'Repository: %s\nBranch: %s\n' "${{ github.repository }}" "${BRANCH_NAME}"
           git checkout origin/adomani/yd_find_label scripts/find_labels.sh
