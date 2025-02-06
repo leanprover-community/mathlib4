@@ -44,13 +44,14 @@ def toContinuousMap (p : MvPolynomial σ R) : C(σ → R, R) :=
 lemma toContinuousMap_X_eq_eval (n : σ) : (X n).toContinuousMap = .eval (X := fun _ => R) n := by
   ext; simp
 
+/--
+A multivariate polynomial as a continuous function, with domain restricted to some subset of
+`σ → R`.
+-/
 @[simps]
 def toContinuousMapOn (p : MvPolynomial σ R) (X : Set (σ → R)) : C(X, R) :=
   ⟨fun x => p.toContinuousMap x, by fun_prop⟩
 
-/-- A multivariate polynomial as a continuous function,
-with domain restricted to some subset of `σ → R`.
--/
 lemma toContinuousMapOn_X_eq_restrict_eval (s : Set (σ → R)) (n : σ) : (X n).toContinuousMapOn s
     = ContinuousMap.restrict s (.eval (X := (fun _ => R)) n) := by
   ext; simp

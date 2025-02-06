@@ -44,7 +44,7 @@ theorem hasStrictFDerivAt_monomial {u : ι →₀ ℕ} (x : ι → 𝕜) :
   exact HasStrictFDerivAt.comp x (hasStrictDerivAt_pow (u i) (x i)).hasStrictFDerivAt
     (hasStrictFDerivAt_apply i x)
 
-lemma prod_sub_single_eq_prod_erase_mul {u : ι →₀ ℕ} {i : ι} (hi : i ∈ u.support) (x : ι → 𝕜) :
+lemma prod_pow_sub_single_eq_prod_erase_mul {u : ι →₀ ℕ} {i : ι} (hi : i ∈ u.support) (x : ι → 𝕜) :
     ∏ j : ι, x j ^ (u j - Finsupp.single i 1 j)
     = (∏ j ∈ u.support.erase i, x j ^ u j) * x i ^ (u i - 1) := by
   rw [← Finset.prod_subset u.support.subset_univ (fun j _ hj => ?_),
@@ -60,9 +60,8 @@ theorem hasStrictFDerivAt_monomial' {u : ι →₀ ℕ} (x : ι → 𝕜) :
   rw [← u.sum_fintype (fun _ k => k • _) (fun _ => zero_smul _ _)]
   show HasStrictFDerivAt _ (∑ i ∈ u.support, _ • _) _
   rw [u.support.sum_congr rfl (fun i hi =>
-    by rw [prod_sub_single_eq_prod_erase_mul hi, smul_comm, mul_smul, ← smul_comm (u i)])]
+    by rw [prod_pow_sub_single_eq_prod_erase_mul hi, smul_comm, mul_smul, ← smul_comm (u i)])]
   exact hasStrictFDerivAt_monomial x
-
 
 /-- The derivative (in the analysis sense) of a multivariate polynomial `p` is given by `pderiv`. -/
 protected theorem hasStrictFDerivAt (x : ι → 𝕜) :
