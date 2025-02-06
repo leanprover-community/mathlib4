@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fangming Li, Jujian Zhang
 -/
 import Mathlib.Order.KrullDimension
-import Mathlib.RingTheory.Ideal.Quotient.Defs
 import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
@@ -45,15 +44,6 @@ theorem ringKrullDim_le_of_surjective (f : R →+* S) (hf : Function.Surjective 
     (Monotone.strictMono_of_injective (fun _ _ hab ↦ Ideal.comap_mono hab)
       (fun _ _ h => PrimeSpectrum.ext_iff.mpr <| Ideal.comap_injective_of_surjective f hf <| by
         simpa using h))
-
-/-- If `I` is an ideal of `R`, then `ringKrullDim (R ⧸ I) ≤ ringKrullDim R`. -/
-theorem ringKrullDim_quotient_le {R : Type*} [CommRing R] (I : Ideal R) :
-    ringKrullDim (R ⧸ I) ≤ ringKrullDim R :=
-  ringKrullDim_le_of_surjective _ Ideal.Quotient.mk_surjective
-
-instance {R : Type*} [CommRing R] (I : Ideal R) (n : ℕ)
-    [Ring.KrullDimLE n R] : Ring.KrullDimLE n (R ⧸ I) :=
-  ⟨(ringKrullDim_quotient_le I).trans KrullDimLE.krullDim_le⟩
 
 /-- If `R` and `S` are isomorphic, then `ringKrullDim R = ringKrullDim S`. -/
 theorem ringKrullDim_eq_of_ringEquiv (e : R ≃+* S) :
