@@ -97,6 +97,12 @@ theorem IsPrime.pow_mem_iff_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : �
     r ^ n ∈ I ↔ r ∈ I :=
   ⟨hI.mem_of_pow_mem n, fun hr => I.pow_mem_of_mem hr n hn⟩
 
+/-- The complement of a prime ideal `P ⊆ R` is a submonoid of `R`. -/
+def primeCompl (P : Ideal α) [hp : P.IsPrime] : Submonoid α where
+  carrier := (Pᶜ : Set α)
+  one_mem' := by convert P.ne_top_iff_one.1 hp.1
+  mul_mem' {_ _} hnx hny hxy := Or.casesOn (hp.mem_or_mem hxy) hnx hny
+
 end Ideal
 
 end CommSemiring

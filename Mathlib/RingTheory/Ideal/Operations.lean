@@ -1203,6 +1203,10 @@ theorem Ideal.span_singleton_nonZeroDivisors {R : Type*} [CommSemiring R] [NoZer
   · rw [mem_nonZeroDivisors_iff_ne_zero, mem_nonZeroDivisors_iff_ne_zero, ne_eq, zero_eq_bot,
       span_singleton_eq_bot]
 
+theorem Ideal.primeCompl_le_nonZeroDivisors {R : Type*} [CommSemiring R] [NoZeroDivisors R]
+    (P : Ideal R) [P.IsPrime] : P.primeCompl ≤ nonZeroDivisors R :=
+  le_nonZeroDivisors_of_noZeroDivisors <| not_not_intro P.zero_mem
+
 namespace Submodule
 
 variable {R : Type u} {M : Type v}
