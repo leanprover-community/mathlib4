@@ -5,6 +5,17 @@ Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Spectrum.Prime.Basic
+/-!
+# Functoriality of the prime spectrum
+
+In this file we define the induced map on prime spectra induced by a ring homomorphism.
+
+## Main definitions
+
+* `RingHom.specComap`: The induced map on prime spectra by a ring homomorphism. The bundled
+continuous version is `PrimeSpectrum.comap` in `Mathlib.RingTheory.Spectrum.Prime.Topology`.
+
+-/
 
 universe u v
 
