@@ -26,7 +26,7 @@ theorem of_injective [IsLocalRing S] {f : R →+* S} (hf : Function.Injective f)
   haveI : Nontrivial R := f.domain_nontrivial
   refine .of_is_unit_or_is_unit_of_add_one fun {a b} hab ↦
     (IsLocalRing.isUnit_or_isUnit_of_add_one (map_add f .. ▸ map_one f ▸ congrArg f hab)).imp ?_ ?_
-  <;> exact h _ ∘ mem_nonZeroDivisor_of_injective hf ∘ IsUnit.mem_nonZeroDivisors
+  <;> exact h _ ∘ mem_nonZeroDivisors_of_injective hf ∘ IsUnit.mem_nonZeroDivisors
 
 /-- If in a sub(semi)ring `R` of a local (semi)ring `S` every element is either
 invertible or a zero divisor, then `R` is local. -/
