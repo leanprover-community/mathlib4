@@ -458,8 +458,8 @@ noncomputable def localizationAlgebra : Algebra Rₘ Sₘ :=
       Rₘ →+* Sₘ).toAlgebra
 
 instance :
-      let Sₘ := Localization (Algebra.algebraMapSubmonoid S M)
-      let _ : Algebra (Localization M) Sₘ := localizationAlgebra M S
+      letI Sₘ := Localization (Algebra.algebraMapSubmonoid S M)
+      letI _ : Algebra (Localization M) Sₘ := localizationAlgebra M S
     IsScalarTower R (Localization M) Sₘ :=
   let Sₘ := Localization (Algebra.algebraMapSubmonoid S M)
   let _ : Algebra (Localization M) Sₘ := localizationAlgebra M S
