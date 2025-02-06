@@ -280,8 +280,11 @@ instance : IsFractionRing (Localization (Algebra.algebraMapSubmonoid C P.primeCo
     (Algebra.algebraMapSubmonoid C P.primeCompl) _ _
 
 noncomputable instance : Algebra (Localization.AtPrime P) (FractionRing C) :=
-  RingHom.toAlgebra ((algebraMap (FractionRing A) (FractionRing C)).comp
-    (IsLocalization.map _ (T := A⁰) (RingHom.id A) P.primeCompl_le_nonZeroDivisors))
+  (IsLocalization.lift (M := P.primeCompl) (g := algebraMap A (FractionRing C))
+    (fun ⟨x, hx⟩ ↦ by
+      simp only [isUnit_iff_ne_zero, ne_eq, FaithfulSMul.algebraMap_eq_zero_iff]
+      intro h
+      exact hx (by simp [h]))).toAlgebra
 
 instance : IsScalarTower (Localization.AtPrime P) (FractionRing A) (FractionRing C) :=
   IsScalarTower.of_algebraMap_eq' (IsLocalization.ringHom_ext P.primeCompl
