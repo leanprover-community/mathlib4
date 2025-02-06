@@ -29,8 +29,10 @@ jobs:
         id: pr_number
         run: |
           echo "BRANCH_NAME: '${BRANCH_NAME}'"
-          echo "GITHUB_REF: '${GITHUB_REF}'"
-          git checkout "${BRANCH_NAME}"
+          branch="${GITHUB_REF}"
+          branch="${branch/#refs\/heads\//}"
+          echo "branch: '${branch}'"
+          git checkout "${branch}"
           gh pr view --json number -q .number || echo ""
           printf 'pull_request_number=%s' "$(gh pr view --json number -q .number || echo "")" >> "$GITHUB_OUTPUT"
           git switch master
