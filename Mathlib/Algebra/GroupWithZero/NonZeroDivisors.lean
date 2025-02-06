@@ -211,13 +211,19 @@ theorem nonZeroDivisors_le_comap_nonZeroDivisors_of_injective [NoZeroDivisors M'
 
 /-- If an element maps to a non-zero-divisor via injective homomorphism,
 then it is non-zero-divisor. -/
-theorem mem_nonZeroDivisor_of_injective [MonoidWithZeroHomClass F M M'] {f : F}
+theorem mem_nonZeroDivisors_of_injective [MonoidWithZeroHomClass F M M'] {f : F}
     (hf : Function.Injective f) {a : M} (ha : f a ∈ M'⁰) : a ∈ M⁰ :=
   fun x hx ↦ hf <| map_zero f ▸ ha (f x) (map_mul f x a ▸ map_zero f ▸ congrArg f hx)
 
-theorem comap_nonZeroDivisor_le_of_injective [MonoidWithZeroHomClass F M M'] {f : F}
+@[deprecated (since := "2025-02-03")]
+alias mem_nonZeroDivisor_of_injective := mem_nonZeroDivisors_of_injective
+
+theorem comap_nonZeroDivisors_le_of_injective [MonoidWithZeroHomClass F M M'] {f : F}
     (hf : Function.Injective f) : M'⁰.comap f ≤ M⁰ :=
-  fun _ ha ↦ mem_nonZeroDivisor_of_injective hf (Submonoid.mem_comap.mp ha)
+  fun _ ha ↦ mem_nonZeroDivisors_of_injective hf (Submonoid.mem_comap.mp ha)
+
+@[deprecated (since := "2025-02-03")]
+alias comap_nonZeroDivisor_le_of_injective := comap_nonZeroDivisors_le_of_injective
 
 end MonoidWithZero
 
