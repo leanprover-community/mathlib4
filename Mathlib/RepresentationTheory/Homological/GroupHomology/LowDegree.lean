@@ -255,8 +255,7 @@ section Cycles
 def oneCycles : Submodule k (G →₀ A) := LinearMap.ker (dZero A)
 
 /-- The 2-cycles `Z₂(G, A)` of `A : Rep k G`, defined as the kernel of the map
-`(G² →₀ A) → (G →₀ A)` sending
-`single (g₁, g₂) a ↦ single g₂ ρ_A(g₁⁻¹)(a) - single g₁g₂ a + single g₁ a`.` -/
+`(G² →₀ A) → (G →₀ A)` sending `a·(g₁, g₂) ↦ ρ_A(g₁⁻¹)(a)·g₂ - a·g₁g₂ + a·g₁`. -/
 def twoCycles : Submodule k (G × G →₀ A) := LinearMap.ker (dOne A)
 
 variable {A}
@@ -314,15 +313,13 @@ end Cycles
 section Boundaries
 
 /-- The 1-boundaries `B₁(G, A)` of `A : Rep k G`, defined as the image of the map
-`(G² →₀ A) → (G →₀ A)` sending
-`single (g₁, g₂) a ↦ single g₂ ρ_A(g₁⁻¹)(a) - single g₁g₂ a + single g₁ a`. -/
+`(G² →₀ A) → (G →₀ A)` sending `a·(g₁, g₂) ↦ ρ_A(g₁⁻¹)(a)·g₂ - a·g₁g₂ + a·g₁`. -/
 def oneBoundaries : Submodule k (G →₀ A) :=
   LinearMap.range (dOne A)
 
 /-- The 2-boundaries `B₂(G, A)` of `A : Rep k G`, defined as the image of the map
 `(G³ →₀ A) → (G² →₀ A)` sending
-`single (g₁, g₂, g₃) a ↦ single (g₂, g₃) ρ_A(g₁⁻¹)(a) - single (g₁g₂, g₃) a +`
-`single (g₁, g₂g₃) a - single (g₁, g₂) a`. -/
+`a·(g₁, g₂, g₃) ↦ ρ_A(g₁⁻¹)(a)·(g₂, g₃) - a·(g₁g₂, g₃) + a·(g₁, g₂g₃) - a·(g₁, g₂)`. -/
 def twoBoundaries : Submodule k (G × G →₀ A) :=
   LinearMap.range (dTwo A)
 
