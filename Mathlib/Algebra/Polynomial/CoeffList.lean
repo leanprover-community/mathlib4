@@ -35,34 +35,34 @@ coefficients of `P.eraseLead`.
 
 namespace Polynomial
 
-variable {α : Type*}
+variable {R : Type*}
 
 section Semiring
 
-variable [Semiring α]
+variable [Semiring R]
 
 /-- The list of coefficients starting from the leading term down to the constant term.
 
 Defining this with `P.support` keeps it computable, even if the base ring doesn't have
 `DecidableEq`.
 -/
-def coeffList (P : α[X]) : List α :=
+def coeffList (P : R[X]) : List R :=
   (List.range P.degree.succ).reverse.map P.coeff
 
-variable {P : α[X]}
+variable {P : R[X]}
 
-variable (α) in
+variable (R) in
 @[simp]
-theorem coeffList_zero : (0 : α[X]).coeffList = [] := by
+theorem coeffList_zero : (0 : R[X]).coeffList = [] := by
   simp [coeffList]
 
 /-- Only the zero polynomial gives nil coeffList -/
 @[simp]
-theorem coeffList_eq_nil {P : α[X]} : P.coeffList = [] ↔ P = 0 := by
+theorem coeffList_eq_nil {P : R[X]} : P.coeffList = [] ↔ P = 0 := by
   simp [coeffList]
 
 @[simp]
-theorem coeffList_C {x : α} (h : x ≠ 0) : (C x).coeffList = [x] := by
+theorem coeffList_C {x : R} (h : x ≠ 0) : (C x).coeffList = [x] := by
   simp [coeffList, h, List.range_succ, degree_eq_natDegree (C_ne_zero.mpr h)]
 
 /-- coeffList always starts with leadingCoeff -/
@@ -76,14 +76,19 @@ theorem head?_coeffList (h : P ≠ 0) :
   (coeffList_eq_cons_leadingCoeff h).casesOn fun _ ↦ (Eq.symm · ▸ rfl)
 
 /-- `List.head` of coeffList is leadingCoeff -/
-theorem head_coeffList (h : P ≠ 0) :
-    P.coeffList.head (coeffList_eq_nil.not.mpr h) = P.leadingCoeff :=
+@[simp] theorem head_coeffList (P : R[X]) (hP) :
+    P.coeffList.head hP = P.leadingCoeff :=
+  let h := coeffList_eq_nil.not.mp hP
   (coeffList_eq_cons_leadingCoeff h).casesOn fun _ _ ↦
     Option.some.injEq _ _ ▸ List.head?_eq_head _ ▸ head?_coeffList h
 
+theorem length_coeffList_withBotSucc [DecidableEq R] (P : R[X]) :
+    P.coeffList.length = P.degree.succ := by
+  simp [coeffList]
+
 /-- The length of the coefficient list is the degree plus one, or zero if P is zero. -/
 @[simp]
-theorem length_coeffList [DecidableEq α] (P : α[X]) :
+theorem length_coeffList_ite [DecidableEq R] (P : R[X]) :
     P.coeffList.length = if P = 0 then 0 else P.natDegree + 1 := by
   by_cases h : P = 0 <;> simp [h, coeffList, withBotSucc_degree_eq_natDegree_add_one]
 
@@ -97,7 +102,7 @@ theorem leadingCoeff_cons_eraseLead (h : P.nextCoeff ≠ 0) :
     (Polynomial.eraseLead_coeff_of_ne · ·.ne)
 
 @[simp]
-theorem coeffList_monomial {x : α} (hx : x ≠ 0) (n : ℕ) :
+theorem coeffList_monomial {x : R} (hx : x ≠ 0) (n : ℕ) :
     (monomial n x).coeffList = x :: List.replicate n 0 := by
   have h := mt (Polynomial.monomial_eq_zero_iff x n).mp hx
   apply List.ext_get (by classical simp [hx])
@@ -158,9 +163,9 @@ theorem coeffList_eraseLead (h : P ≠ 0) : P.coeffList =
 
 end Semiring
 section Ring
-variable [Ring α] (P : α[X])
+variable [Ring R] (P : R[X])
 
-/-- The coefficient list is negated if the polynomial is negated. --/
+/-- The coefficient list is negated if the polynomial is negated. -/
 @[simp]
 theorem coeffList_neg : (-P).coeffList = P.coeffList.map (-·) := by
   by_cases hp : P = 0
@@ -170,11 +175,11 @@ theorem coeffList_neg : (-P).coeffList = P.coeffList.map (-·) := by
 end Ring
 section DivisionSemiring
 
-variable [DivisionSemiring α] (P : α[X])
+variable [DivisionSemiring R] (P : R[X])
 
 /-- Over a division semiring, multiplying a polynomial by a nonzero constant multiplies
 the coefficient list. -/
-theorem coeffList_C_mul {x : α} (hx : x ≠ 0) : (C x * P).coeffList = P.coeffList.map (x * ·) := by
+theorem coeffList_C_mul {x : R} (hx : x ≠ 0) : (C x * P).coeffList = P.coeffList.map (x * ·) := by
   by_cases hp : P = 0
   · simp [hp]
   · simp [coeffList, Polynomial.degree_C hx]
