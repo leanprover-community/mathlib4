@@ -249,6 +249,10 @@ instance integralClosure.isDedekindDomain_fractionRing [IsDedekindDomain A] :
     IsDedekindDomain (integralClosure A L) :=
   integralClosure.isDedekindDomain A (FractionRing A) L
 
+section
+
+variable {P : Ideal A} [P.IsPrime] [FaithfulSMul A C]
+
 attribute [local instance] FractionRing.liftAlgebra
 
 instance [NoZeroSMulDivisors A C] [Module.Finite A C] [IsIntegrallyClosed C] :
@@ -258,8 +262,6 @@ instance [NoZeroSMulDivisors A C] [Module.Finite A C] [IsIntegrallyClosed C] :
 instance [Module.Finite A C] [IsIntegrallyClosed C] [NoZeroSMulDivisors A C] :
     FiniteDimensional (FractionRing A) (FractionRing C) :=
   Module.Finite_of_isLocalization A C _ _ (nonZeroDivisors A)
-
-variable {P : Ideal A} [P.IsPrime] [FaithfulSMul A C]
 
 noncomputable instance : Algebra (Localization (Algebra.algebraMapSubmonoid C P.primeCompl))
     (FractionRing C) :=
@@ -296,5 +298,16 @@ instance : IsScalarTower A (Localization.AtPrime P) (FractionRing A) :=
 instance : IsScalarTower (Localization.AtPrime P)
   (Localization (Algebra.algebraMapSubmonoid C P.primeCompl)) (FractionRing C) :=
     IsLocalization.localization_localization_isScalarTower C _ _ (FractionRing A) _ P.primeCompl
+
+instance : IsDomain (Localization (algebraMapSubmonoid C P.primeCompl)) :=
+  IsLocalization.isDomain_localization <| map_le_nonZeroDivisors_of_faithfulSMul
+    P.primeCompl_le_nonZeroDivisors
+
+instance [Algebra.IsSeparable (FractionRing A) (FractionRing C)] :
+  Algebra.IsSeparable (FractionRing (Localization.AtPrime P))
+    (FractionRing (Localization (Algebra.algebraMapSubmonoid C P.primeCompl))) :=
+  FractionRing.isSeparable_of_isLocalization C _ _ P.primeCompl_le_nonZeroDivisors
+
+end
 
 end IsIntegralClosure
