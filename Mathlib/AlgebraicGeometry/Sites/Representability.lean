@@ -17,6 +17,16 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 In this file we prove that a sheaf of types `F` on `Sch` is representable if it is
 locally representable.
 
+## Main result
+- `AlgebraicGeometry.Scheme.LocalRepresentability.isRepresentable`:
+  Suppose
+  * F is `Type u`-valued a sheaf on `Sch` with respect to the Zariski topology
+  * X : ι → Sch is a family of schemes
+  * f : Π i, yoneda.obj (X i) ⟶ F is a family relatively representable open immersions
+  * f is jointly surjective
+
+  Then `F` is representable.
+
 ## References
 * https://stacks.math.columbia.edu/tag/01JJ
 
@@ -43,7 +53,7 @@ variable (F : Sheaf (Scheme.zariskiTopology.{u}) (Type u))
   {ι : Type u} {X : ι → Scheme.{u}}
   (f : (i : ι) → yoneda.obj (X i) ⟶ F.1) (hf : ∀ i, IsOpenImmersion.presheaf (f i))
 
-namespace Representability
+namespace LocalRepresentability
 
 variable {F f}
 variable (i j k : ι)
@@ -73,9 +83,13 @@ noncomputable def glueData : GlueData where
 noncomputable def toGlued (i : ι) : X i ⟶ (glueData hf).glued :=
   (glueData hf).ι i
 
+instance : IsOpenImmersion (toGlued hf i) := by
+  unfold toGlued
+  infer_instance
+
 /-- The map from the glued scheme `(glueData hf).glued`, treated as a sheaf, to `F`. -/
 noncomputable def yonedaGluedToSheaf :
-    subcanonical_zariskiTopology.yoneda.obj (glueData hf).glued ⟶ F :=
+    zariskiTopology.yoneda.obj (glueData hf).glued ⟶ F :=
   -- The map is obtained by finding an object of `F((glueData hf).glued)`.
   Sheaf.homEquiv.symm (yonedaEquiv.symm
   -- This section is obtained from gluing the section corresponding to `f i : X i ⟶ F`.
@@ -88,8 +102,8 @@ noncomputable def yonedaGluedToSheaf :
         Equiv.symm_apply_apply, ← Functor.map_comp_assoc,
         Functor.relativelyRepresentable.symmetry_fst, ((hf i).rep.isPullback' (f j)).w])))
 
-@[simp]
-lemma fac (i : ι) :
+@[reassoc (attr := simp)]
+lemma yoneda_toGlued_yonedaGluedToSheaf (i : ι) :
     yoneda.map (toGlued hf i) ≫ (yonedaGluedToSheaf hf).val = f i := by
   dsimp [yonedaGluedToSheaf, Sheaf.homEquiv, Functor.FullyFaithful.homEquiv]
   apply yonedaEquiv.injective
@@ -100,11 +114,17 @@ lemma fac (i : ι) :
 
 /-- Rephasing of `fac` as equalities of sections of the target sheaf `F` over
 any scheme `V` equipped with a morphism `V ⟶ X i`. -/
-lemma fac' {i : ι} {V : Scheme.{u}} (a : V ⟶ X i) :
-    (yonedaGluedToSheaf hf).val.app _ (a ≫ toGlued hf i) =
-      yonedaEquiv (yoneda.map a ≫ f i) := by
-  rw [← fac hf i]
+@[simp]
+lemma yonedaGluedToSheaf_app_toGlued {i : ι}  :
+    (yonedaGluedToSheaf hf).val.app _ (toGlued hf i) = yonedaEquiv (f i) := by
+  rw [← yoneda_toGlued_yonedaGluedToSheaf hf i]
   rfl
+
+@[simp]
+lemma yonedaGluedToSheaf_comp (V U) (γ) (α) :
+  (yonedaGluedToSheaf hf).val.app (op V) (γ ≫ α) =
+    F.val.map γ.op ((yonedaGluedToSheaf hf).val.app (op U) α) :=
+  congr_fun ((yonedaGluedToSheaf hf).val.naturality γ.op) α
 
 instance [Presheaf.IsLocallySurjective Scheme.zariskiTopology (Sigma.desc f)] :
     Sheaf.IsLocallySurjective (yonedaGluedToSheaf hf) :=
@@ -112,7 +132,7 @@ instance [Presheaf.IsLocallySurjective Scheme.zariskiTopology (Sigma.desc f)] :
     (show Sigma.desc (fun i ↦ yoneda.map (toGlued hf i)) ≫
       (yonedaGluedToSheaf hf).val = Sigma.desc f by aesop_cat)
 
-lemma injective {U : Scheme} {i j : ι} (a : U ⟶ X i) (b : U ⟶ X j)
+lemma comp_toGlued_eq {U : Scheme} {i j : ι} (a : U ⟶ X i) (b : U ⟶ X j)
     (h : yoneda.map a ≫ f i = yoneda.map b ≫ f j) :
     a ≫ toGlued hf i = b ≫ toGlued hf j := by
   rw [← (hf i).rep.lift'_fst a b h, assoc]
@@ -120,29 +140,24 @@ lemma injective {U : Scheme} {i j : ι} (a : U ⟶ X i) (b : U ⟶ X j)
   congr 1
   exact ((glueData hf).glue_condition i j).symm.trans (by simp; rfl)
 
+@[simp]
+lemma glueData_openCover_map : (glueData hf).openCover.map j = toGlued hf j := rfl
+
 instance : Sheaf.IsLocallyInjective (yonedaGluedToSheaf hf) where
   equalizerSieve_mem := by
     rintro ⟨U⟩ (α β : U ⟶ _) h
-    dsimp at h
-    have mem := zariskiTopology_openCover (glueData hf).openCover
+    replace h : (yonedaGluedToSheaf hf).val.app _ α = (yonedaGluedToSheaf hf).val.app _ β := h
+    have mem := grothendieckTopology_cover (glueData hf).openCover
     refine GrothendieckTopology.superset_covering _ ?_
       (zariskiTopology.intersection_covering (zariskiTopology.pullback_stable α mem)
         (zariskiTopology.pullback_stable β mem))
     rintro V (γ : _ ⟶ U) ⟨⟨W₁, a, _, ⟨i⟩, fac₁⟩, ⟨W₂, b, _, ⟨j⟩, fac₂⟩⟩
     change γ ≫ α = γ ≫ β
-    rw [← fac₁, ← fac₂]
-    apply injective
-    replace h := congr_arg (F.1.map γ.op) h
-    apply yonedaEquiv.injective
-    simp at h
-    have eq₁ := congr_fun ((yonedaGluedToSheaf hf).val.naturality γ.op) α
-    have eq₂ := congr_fun ((yonedaGluedToSheaf hf).val.naturality γ.op) β
-    dsimp at eq₁ eq₂
-    convert h using 1
-    · erw [← eq₁, ← fac₁, ← fac' hf]
-      rfl
-    · erw [← eq₂, ← fac₂, ← fac' hf]
-      rfl
+    replace h : (yonedaGluedToSheaf hf).val.app _ (γ ≫ α) =
+        (yonedaGluedToSheaf hf).val.app _ (γ ≫ β) := by simp [h]
+    rw [← fac₁, ← fac₂] at h ⊢
+    apply comp_toGlued_eq
+    simpa [Scheme.GlueData.openCover_obj, yonedaEquiv_naturality] using h
 
 variable [Presheaf.IsLocallySurjective Scheme.zariskiTopology (Sigma.desc f)]
 
@@ -154,16 +169,38 @@ instance : IsIso (yonedaGluedToSheaf hf) := by
 
 This implies that `F` is representable. -/
 noncomputable def yonedaIsoSheaf :
-    subcanonical_zariskiTopology.yoneda.obj (glueData hf).glued ≅ F :=
+    zariskiTopology.yoneda.obj (glueData hf).glued ≅ F :=
   asIso (yonedaGluedToSheaf hf)
 
-end Representability
+/--
+Suppose
+* F is `Type u`-valued a sheaf on `Sch` with respect to the Zariski topology
+* X : ι → Sch is a family of schemes
+* f : Π i, yoneda.obj (X i) ⟶ F is a family relatively representable open immersions
+* f is jointly surjective
+
+Then `F` is representable, and the representing object is glued from the `X i`s
+-/
+noncomputable
+def representableBy : F.1.RepresentableBy (glueData hf).glued :=
+  Functor.representableByEquiv.symm ((sheafToPresheaf _ _).mapIso (yonedaIsoSheaf hf))
+
 
 include hf in
-open Representability in
-theorem representability [Presheaf.IsLocallySurjective Scheme.zariskiTopology (Sigma.desc f)] :
-    F.1.IsRepresentable :=
-  Functor.IsRepresentable.mk' ((sheafToPresheaf _ _).mapIso (yonedaIsoSheaf hf))
+/--
+Suppose
+* F is `Type u`-valued a sheaf on `Sch` with respect to the Zariski topology
+* X : ι → Sch is a family of schemes
+* f : Π i, yoneda.obj (X i) ⟶ F is a family relatively representable open immersions
+* f is jointly surjective
+
+Then `F` is representable.
+-/
+@[stacks 01JJ]
+theorem isRepresentable : F.1.IsRepresentable :=
+  ⟨_, ⟨representableBy hf⟩⟩
+
+end LocalRepresentability
 
 end Scheme
 
