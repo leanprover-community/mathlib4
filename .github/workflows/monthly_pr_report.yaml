@@ -28,8 +28,11 @@ jobs:
       - name: Get Pull Request Number
         id: pr_number
         run: |
+          echo "${BRANCH_NAME}"
+          git checkout "${BRANCH_NAME}"
           gh pr view --json number -q .number || echo ""
           printf 'pull_request_number=%s' "$(gh pr view --json number -q .number || echo "")" >> "$GITHUB_OUTPUT"
+          git switch master
 
       - name: blog report
         run: |
