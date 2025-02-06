@@ -211,7 +211,7 @@ open Functor MonoidalCategory ChosenFiniteProducts mapPullbackAdj Sigma Reindex
 variable [HasPullbacks C] {X : C}
 
 /-- The binary fan provided by `μ_` and `π_` is a binary product in `Over X`. -/
-def isBinaryProductMapPulbackObj (Y Z : Over X) :
+def isBinaryProductSigmaReindex (Y Z : Over X) :
     IsLimit <| BinaryFan.mk (P:= Σ_ Y (Δ_ Y Z)) (π_ Y Z) (μ_ Y Z) := by
   refine IsLimit.mk (?lift) ?fac ?uniq
   · intro s
@@ -233,25 +233,25 @@ attribute [local instance] ChosenFiniteProducts.ofFiniteProducts
 /-- The object `(Σ_ Y) (Δ_ Y Z)` is isomorphic to the binary product `Y × Z`
 in `Over I`. -/
 @[simps!]
-def mapPulbackObjIsoProd (Y Z : Over X) :
+def sigmaReindexIsoProd (Y Z : Over X) :
     (Σ_ Y) (Δ_ Y Z) ≅ Limits.prod Y Z := by
-  apply IsLimit.conePointUniqueUpToIso (isBinaryProductMapPulbackObj Y Z) (prodIsProd Y Z)
+  apply IsLimit.conePointUniqueUpToIso (isBinaryProductSigmaReindex Y Z) (prodIsProd Y Z)
 
 /-- Given a morphism `f : X' ⟶ X` and an object `Y` over `X`, the `(map f).obj ((pullback f).obj Y)`
 is isomorphic to the binary product of `(Over.mk f)` and `Y`. -/
-def mapPulbackObjIsoProdMk {X' : C} (f : X' ⟶ X) (Y : Over X) :
+def sigmaReindexIsoProdMk {X' : C} (f : X' ⟶ X) (Y : Over X) :
     (map f).obj ((pullback f).obj Y) ≅ Limits.prod (Over.mk f) Y :=
-  mapPulbackObjIsoProd (Over.mk f) _
+  sigmaReindexIsoProd (Over.mk f) _
 
-lemma mapPulbackObjIsoProd_hom_comp_fst {Y Z : Over X} :
-    (mapPulbackObjIsoProd Y Z).hom ≫ (fst Y Z) = (π_ Y Z) :=
+lemma sigmaReindexIsoProd_hom_comp_fst {Y Z : Over X} :
+    (sigmaReindexIsoProd Y Z).hom ≫ (fst Y Z) = (π_ Y Z) :=
   IsLimit.conePointUniqueUpToIso_hom_comp
-    (isBinaryProductMapPulbackObj Y Z) (Limits.prodIsProd Y Z) ⟨.left⟩
+    (isBinaryProductSigmaReindex Y Z) (Limits.prodIsProd Y Z) ⟨.left⟩
 
-lemma mapPulbackObjIsoProd_hom_comp_snd {Y Z : Over X} :
-    (mapPulbackObjIsoProd Y Z).hom ≫ (snd Y Z) = (μ_ Y Z) :=
+lemma sigmaReindexIsoProd_hom_comp_snd {Y Z : Over X} :
+    (sigmaReindexIsoProd Y Z).hom ≫ (snd Y Z) = (μ_ Y Z) :=
   IsLimit.conePointUniqueUpToIso_hom_comp
-    (isBinaryProductMapPulbackObj Y Z) (Limits.prodIsProd Y Z) ⟨.right⟩
+    (isBinaryProductSigmaReindex Y Z) (Limits.prodIsProd Y Z) ⟨.right⟩
 
 end BinaryProduct
 
@@ -268,26 +268,27 @@ variable [HasPullbacks C] {X : C}
 
 /-- The pull-push composition `(Over.pullback Y.hom) ⋙ (Over.map Y.hom)` is naturally isomorphic
 to the left tensor product functor `Y × _` in `Over X`-/
-def Over.mapPulbackNatIsoTensorLeft [HasFiniteWidePullbacks C] (Y : Over X) :
+def Over.sigmaReindexNatIsoTensorLeft [HasFiniteWidePullbacks C] (Y : Over X) :
     (pullback Y.hom) ⋙ (map Y.hom) ≅ tensorLeft Y := by
   fapply NatIso.ofComponents
   · intro Z
     simp only [const_obj_obj, Functor.id_obj, comp_obj, tensorLeft_obj, tensorObj, Over.pullback]
-    exact mapPulbackObjIsoProd Y Z
+    exact sigmaReindexIsoProd Y Z
   · intro Z Z' f
     simp
     ext1 <;> simp_rw [assoc]
     · simp_rw [whiskerLeft_fst]
-      iterate rw [mapPulbackObjIsoProd_hom_comp_fst]
+      iterate rw [sigmaReindexIsoProd_hom_comp_fst]
       ext
       simp
     · simp_rw [whiskerLeft_snd]
-      iterate rw [mapPulbackObjIsoProd_hom_comp_snd, ← assoc, mapPulbackObjIsoProd_hom_comp_snd]
+      iterate rw [sigmaReindexIsoProd_hom_comp_snd, ← assoc, sigmaReindexIsoProd_hom_comp_snd]
       ext
       simp [Reindex.sndProj]
 
-lemma Over.mapPulbackNatIsoTensorLeft_hom_app [HasFiniteWidePullbacks C] {Y : Over X} (Z : Over X) :
-    (Over.mapPulbackNatIsoTensorLeft Y).hom.app Z = (mapPulbackObjIsoProd Y Z).hom := by
+lemma Over.sigmaReindexNatIsoTensorLeft_hom_app [HasFiniteWidePullbacks C]
+    {Y : Over X} (Z : Over X) :
+    (Over.sigmaReindexNatIsoTensorLeft Y).hom.app Z = (sigmaReindexIsoProd Y Z).hom := by
   aesop
 
 end TensorLeft

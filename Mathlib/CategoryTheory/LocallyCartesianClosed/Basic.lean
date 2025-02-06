@@ -121,7 +121,7 @@ instance exponentiableOverMk [HasFiniteWidePullbacks C] {X I : C} (f : X ⟶ I)
     apply ofNatIsoLeft _ _
     · exact Over.pullback f ⋙ Over.map f
     · exact Adjunction.comp ExponentiableMorphism.adj (Over.mapPullbackAdj _)
-    · exact mapPulbackNatIsoTensorLeft (Over.mk f)
+    · exact sigmaReindexNatIsoTensorLeft (Over.mk f)
 
 end ExponentiableMorphism
 
@@ -152,7 +152,7 @@ instance cartesianClosedOver
     rightAdj := (Over.pullback X.hom ⋙ (HasPushforwards.exponentiable X.hom).pushforward)
     adj := ofNatIsoLeft (F := (Over.pullback X.hom ⋙ Over.map X.hom))
       (((HasPushforwards.exponentiable X.hom).adj).comp (Over.mapPullbackAdj X.hom))
-      (Over.mapPulbackNatIsoTensorLeft _)
+      (Over.sigmaReindexNatIsoTensorLeft _)
   }
 
 section Notation
@@ -224,7 +224,7 @@ variable {f}
 in `Over J`. See `pushforwardCurry`. -/
 def pushforwardCurryAux {X : Over I} {A : Over J} (u : (Over.pullback f).obj A ⟶ X) :
     A ⟶ (Over.mk f ⟹ (Over.map f).obj X) :=
-  CartesianClosed.curry ((mapPulbackObjIsoProd _ _).inv ≫ (Over.map f).map u)
+  CartesianClosed.curry ((sigmaReindexIsoProd _ _).inv ≫ (Over.map f).map u)
 
 /-- The currying of `(Over.pullback f).obj A ⟶ X` in `Over I` to a morphism
 `A ⟶ (pushforward f).obj X` in `Over J`. -/
@@ -234,13 +234,13 @@ def pushforwardCurry {X : Over I} {A : Over J} (u : (Over.pullback f).obj A ⟶ 
     ((uncurry_injective (A := Over.mk f)) _)
   rw [uncurry_natural_left, curryId, pushforwardCurryAux]
   simp [uncurry_curry, expMapFstProj, uncurry_natural_right]
-  have mapPulbackObjIsoProd_inv_comp_pi :
-      (mapPulbackObjIsoProd (Over.mk f) A).inv ≫ (π_ (Over.mk f) A) = fst (Over.mk f) A := by
+  have sigmaReindexIsoProd_inv_comp_pi :
+      (sigmaReindexIsoProd (Over.mk f) A).inv ≫ (π_ (Over.mk f) A) = fst (Over.mk f) A := by
     rw [Iso.inv_comp_eq]
-    simp [mapPulbackObjIsoProd_hom_comp_fst]
+    simp [sigmaReindexIsoProd_hom_comp_fst]
   have : ((Over.map f).map u ≫ (homMk X.hom rfl : (Over.map f).obj X ⟶ Over.mk f)) =
       π_ (Over.mk f) A  := OverMorphism.ext (by aesop_cat)
-  simp_rw [this, mapPulbackObjIsoProd_inv_comp_pi]
+  simp_rw [this, sigmaReindexIsoProd_inv_comp_pi]
 
 /-- The uncurrying of `A ⟶ (pushforward f).obj X` in `Over J` to a morphism
 `(Over.pullback f).obj A ⟶ X` in `Over I`. -/
@@ -256,11 +256,11 @@ def pushforwardUncurry {X : Over I} {A : Over J} (v : A ⟶ (pushforwardFunctor 
   have w' := homEquiv_naturality_right_square (F := MonoidalCategory.tensorLeft (Over.mk f))
     (adj := exp.adjunction (Over.mk f)) _ _ _ _ w
   simp [CartesianClosed.curry] at w'
-  refine Sigma.overHomMk ((mapPulbackObjIsoProd _ _).hom ≫ (CartesianClosed.uncurry v₂)) ?_
+  refine Sigma.overHomMk ((sigmaReindexIsoProd _ _).hom ≫ (CartesianClosed.uncurry v₂)) ?_
   · dsimp [CartesianClosed.uncurry] at *
     simp [Over.Sigma.fst, Over.Sigma]
     rw [← w']
-    simp [mapPulbackObjIsoProd_hom_comp_fst]
+    simp [sigmaReindexIsoProd_hom_comp_fst]
 
 @[simp]
 theorem pushforward_curry_uncurry {X : Over I} {A : Over J} (v : A ⟶ (pushforwardFunctor f).obj X) :
@@ -276,7 +276,7 @@ theorem pushforward_curry_uncurry {X : Over I} {A : Over J} (v : A ⟶ (pushforw
     ext
     simp [Sigma.overHomMk]
     rw [← assoc]
-    have inv_hom_id := (mapPulbackObjIsoProd (Over.mk f) A).inv_hom_id
+    have inv_hom_id := (sigmaReindexIsoProd (Over.mk f) A).inv_hom_id
     apply_fun (Over.forget _).map at inv_hom_id
     rw [(Over.forget _).map_id, (Over.forget _).map_comp] at inv_hom_id
     simp at inv_hom_id
@@ -308,8 +308,8 @@ instance CartesianClosedOver.hasPushforwards [HasFiniteWidePullbacks C]
         intro A' A X g v
         unfold pushforwardUncurry
         dsimp
-        have natiso := (Over.mapPulbackNatIsoTensorLeft (Over.mk f)).hom.naturality g
-        simp only [Over.mapPulbackNatIsoTensorLeft_hom_app, tensorLeft_map] at natiso
+        have natiso := (Over.sigmaReindexNatIsoTensorLeft (Over.mk f)).hom.naturality g
+        simp only [Over.sigmaReindexNatIsoTensorLeft_hom_app, tensorLeft_map] at natiso
         simp_rw [CartesianClosed.uncurry_natural_left, MonoidalCategory.whiskerLeft_comp]
         simp_rw [← assoc, ← natiso]
         simp [Sigma.overHomMk]
