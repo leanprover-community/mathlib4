@@ -1593,6 +1593,49 @@ theorem sum_toFinset_count_eq_length [DecidableEq α] (l : List α) :
     ∑ a ∈ l.toFinset, l.count a = l.length := by
   simpa [List.map_const'] using (Finset.sum_list_map_count l fun _ => (1 : ℕ)).symm
 
+/-- The sum of the `zipWith` operation on two lists equals the sum of applying the operation
+    to corresponding elements of the two lists, indexed over the minimum of their lengths. -/
+lemma sum_zipWith_eq_finset_sum [Inhabited α] [Inhabited β] [AddCommMonoid γ]
+  {op : α → β → γ}
+  (l : List α) (m : List β) :
+  (List.zipWith op l m).sum =
+  ∑ x ∈ (Finset.range (Nat.min l.length m.length)), op (l[x]!) (m[x]!) := by
+  induction m generalizing l with
+  | nil =>
+      simp
+  | cons mhead mtail ih =>
+      cases l with
+      | nil =>
+          simp
+      | cons lhead ltail =>
+          simp only [List.zipWith, List.sum_cons]
+          rw [ih]
+          have h_min :
+            Nat.min (ltail.length + 1) (mtail.length + 1)
+            = Nat.succ (Nat.min ltail.length mtail.length) := Nat.succ_min_succ _ _
+          simp only [List.length_cons, h_min, Nat.succ_eq_add_one]
+          have h_zero : op lhead mhead = op (lhead :: ltail)[0]! (mhead :: mtail)[0]!:= by simp
+          have h_rest :
+            ∑ x ∈ Finset.range (ltail.length.min mtail.length),
+            op (lhead :: ltail)[x + 1]! (mhead :: mtail)[x + 1]! =
+            ∑ x ∈ Finset.range (ltail.length.min mtail.length),
+            op ltail[x]! mtail[x]! := by
+              apply Finset.sum_congr rfl
+              intros x hx
+              cases mtail.get? x with
+              | none => simp [List.length, Nat.lt_succ_iff] at hx; simp
+              | some qx =>
+                cases ltail.get? x with
+                | none => simp [List.length, Nat.lt_succ_iff] at hx; simp
+                | some fx => simp [Option.get!]
+          rw [h_zero, ←h_rest]
+          let n := ltail.length.min mtail.length
+          rw [Finset.sum_range_succ' (fun x => op (lhead :: ltail)[x]! (mhead :: mtail)[x]!) n]
+          exact
+            AddCommMagma.add_comm (op (lhead :: ltail)[0]! (mhead :: mtail)[0]!)
+              (∑ x ∈ Finset.range (ltail.length.min mtail.length),
+                op (lhead :: ltail)[x + 1]! (mhead :: mtail)[x + 1]!)
+
 end List
 
 namespace Multiset
