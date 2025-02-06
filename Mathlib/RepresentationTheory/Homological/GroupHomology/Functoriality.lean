@@ -33,8 +33,8 @@ variable {k G H : Type u} [CommRing k] [Group G] [Group H]
   [DecidableEq G] [DecidableEq H]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
-this is the chain map sending `∑ aᵢ · gᵢ : Gⁿ →₀ A)` to
-`∑ φ(aᵢ) · (f ∘ gᵢ)) : Hⁿ →₀ B`. -/
+this is the chain map sending `∑ aᵢ · gᵢ : Gⁿ →₀ A` to
+`∑ φ(aᵢ) · (f ∘ gᵢ) : Hⁿ →₀ B`. -/
 @[simps! (config := .lemmasOnly) f f_hom]
 noncomputable def chainsMap :
     inhomogeneousChains A ⟶ inhomogeneousChains B where
@@ -99,14 +99,14 @@ lemma chainsMap_f_map_epi (hf : Function.Surjective f) [Epi φ] (i : ℕ) :
     Epi ((chainsMap f φ).f i) := by
   simpa [ModuleCat.epi_iff_surjective] using
     (mapRange_surjective φ.hom (map_zero _) ((Rep.epi_iff_surjective φ).1 inferInstance)).comp
-    (mapDomain_surjective _ hf.comp_left)
+    (mapDomain_surjective hf.comp_left)
 
 instance chainsMap_id_f_map_epi {A B : Rep k G} (φ : A ⟶ B) [Epi φ] (i : ℕ) :
     Epi ((chainsMap (MonoidHom.id G) φ).f i) :=
   chainsMap_f_map_epi _ _ (fun x => ⟨x, rfl⟩) _
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
-this is the induced map `Zₙ(G, A) ⟶ Zₙ(H, B)` sending `∑ aᵢ · gᵢ : Gⁿ →₀ A)` to
+this is the induced map `Zₙ(G, A) ⟶ Zₙ(H, B)` sending `∑ aᵢ · gᵢ : Gⁿ →₀ A` to
 `∑ φ(aᵢ) · (f ∘ gᵢ) : Hⁿ →₀ B`. -/
 noncomputable abbrev cyclesMap (n : ℕ) :
     groupHomology.cycles A n ⟶ groupHomology.cycles B n :=
@@ -118,11 +118,11 @@ theorem cyclesMap_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : �
   simp [cyclesMap, chainsMap_id_comp, HomologicalComplex.cyclesMap_comp]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
-this is the induced map `Hₙ(G, A) ⟶ Hₙ(H, B)` sending `∑ aᵢ · gᵢ : Gⁿ →₀ A)` to
+this is the induced map `Hₙ(G, A) ⟶ Hₙ(H, B)` sending `∑ aᵢ · gᵢ : Gⁿ →₀ A` to
 `∑ φ(aᵢ) · (f ∘ gᵢ) : Hⁿ →₀ B`. -/
 noncomputable abbrev map (n : ℕ) :
-  groupHomology A n ⟶ groupHomology B n :=
-HomologicalComplex.homologyMap (chainsMap f φ) n
+    groupHomology A n ⟶ groupHomology B n :=
+  HomologicalComplex.homologyMap (chainsMap f φ) n
 
 theorem map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
     map (MonoidHom.id G) (φ ≫ ψ) n =
