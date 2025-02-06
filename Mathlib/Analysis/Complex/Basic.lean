@@ -78,11 +78,6 @@ instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [Semin
     [NormedAlgebra ℂ A] : NormedAlgebra ℝ A :=
   NormedAlgebra.restrictScalars ℝ ℂ A
 
-@[simp 1100, norm_cast] lemma nnnorm_intCast (n : ℤ) : ‖(n : ℂ)‖₊ = ‖n‖₊ := by
-  ext; exact norm_intCast n
-
-@[deprecated (since := "2024-08-25")] alias nnnorm_int := nnnorm_intCast
-
 theorem nnnorm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖₊ = 1 :=
   (pow_left_inj₀ zero_le' zero_le' hn).1 <| by rw [← nnnorm_pow, h, nnnorm_one, one_pow]
 
@@ -372,7 +367,7 @@ open ComplexOrder
 
 theorem eq_coe_norm_of_nonneg {z : ℂ} (hz : 0 ≤ z) : z = ↑‖z‖ := by
   lift z to ℝ using hz.2.symm
-  rw [norm_eq_abs, abs_ofReal, _root_.abs_of_nonneg (id hz.1 : 0 ≤ z)]
+  rw [norm_eq_abs, abs_ofReal, abs_of_nonneg (id hz.1 : 0 ≤ z)]
 
 /-- We show that the partial order and the topology on `ℂ` are compatible.
 We turn this into an instance scoped to `ComplexOrder`. -/
