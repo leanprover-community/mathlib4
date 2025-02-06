@@ -102,9 +102,6 @@ theorem mem_posTangentConeAt_of_segment_subset (h : [x -[ℝ] x + y] ⊆ s) :
   rw [segment_eq_image', add_sub_cancel_left]
   exact mem_image_of_mem _ ⟨le_of_lt ht₀, ht₁⟩
 
-@[deprecated (since := "2024-07-13")] -- cleanup docstrings when we drop this alias
-alias mem_posTangentConeAt_of_segment_subset' := mem_posTangentConeAt_of_segment_subset
-
 theorem sub_mem_posTangentConeAt_of_segment_subset (h : segment ℝ x y ⊆ s) :
     y - x ∈ posTangentConeAt s x :=
   mem_posTangentConeAt_of_segment_subset <| by rwa [add_sub_cancel]

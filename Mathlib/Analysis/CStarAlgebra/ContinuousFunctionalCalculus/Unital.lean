@@ -485,7 +485,7 @@ lemma cfc_add_const (r : R) (f : R → R) (a : A)
 open Finset in
 lemma cfc_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
     (hf : ∀ i ∈ s, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
-    cfc (∑ i in s, f i)  a = ∑ i in s, cfc (f i) a := by
+    cfc (∑ i ∈ s, f i)  a = ∑ i ∈ s, cfc (f i) a := by
   by_cases ha : p a
   · have hsum : s.sum f = fun z => ∑ i ∈ s, f i z := by ext; simp
     have hf' : ContinuousOn (∑ i : s, f i) (spectrum R a) := by
