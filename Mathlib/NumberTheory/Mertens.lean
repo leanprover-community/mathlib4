@@ -11,6 +11,7 @@ open MeasureTheory
 
 set_option linter.style.longLine false
 
+attribute [bound] tsum_nonneg ArithmeticFunction.vonMangoldt_nonneg sum_nonneg
 section fun_prop
 
 @[fun_prop]
@@ -236,31 +237,48 @@ theorem log_fac_sub_id_mul_log_isBigO_id :
 -- https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/fea8d484879ed4697fcbb22cae90d9a127c93fb5/PrimeNumberTheoremAnd/Mathlib/NumberTheory/ArithmeticFunction.lean#L17
 
 
-theorem log_factorial (n : ℕ) :
-  Real.log (n)! = ∑ d ∈ Finset.range (n+1), ↑(n / d) * Λ d := by
+theorem Real.log_factorial (n : ℕ) :
+  Real.log (n)! = ∑ k ∈ Finset.range (n+1), Real.log k := by
   induction n with
   | zero => simp
-  | succ n h_ind =>
-    rw [Nat.factorial_succ]
-    push_cast
-    rw [mul_comm, Real.log_mul (by positivity) (by norm_cast)]
-    simp_rw [Nat.succ_div, cast_add, add_mul, Finset.sum_add_distrib, h_ind]
-    congr 1
-    · apply Finset.sum_subset
-      · intro d hd
-        simp at hd ⊢
-        linarith
-      intro d hd hdnin
-      obtain rfl : d = n+1 := by
-        simp_all
-        linarith
-      simp only [_root_.mul_eq_zero, cast_eq_zero, Nat.div_eq_zero_iff,
-        AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, lt_add_iff_pos_right, zero_lt_one,
-        or_true, true_or]
-    · push_cast
-      simp_rw [boole_mul, ← Finset.sum_filter]
-      rw [Nat.filter_dvd_eq_divisors (add_one_ne_zero n)]
-      exact_mod_cast ArithmeticFunction.vonMangoldt_sum.symm
+  | succ n ih =>
+    rw [Nat.factorial_succ, Nat.cast_mul, Real.log_mul (by norm_cast) (mod_cast Nat.factorial_ne_zero n), sum_range_succ, add_comm, ih]
+  -- stop
+  -- rw [← Finset.prod_Ico_id_eq_factorial, Nat.cast_prod, Real.log_prod]
+  -- · apply Finset.sum_subset
+  --   · intro x
+  --     simp
+  --   · simp only [mem_range, mem_Ico, not_and, not_lt, log_eq_zero, cast_eq_zero, cast_eq_one]
+  --     omega
+  -- simp only [mem_Ico, ne_eq, cast_eq_zero, and_imp]
+  -- omega
+
+theorem log_factorial (n : ℕ) :
+  Real.log (n)! = ∑ d ∈ Finset.range (n+1), ↑(n / d) * Λ d := by
+  simp_rw [Real.log_factorial, ← ArithmeticFunction.log_apply, ← ArithmeticFunction.vonMangoldt_mul_zeta, ArithmeticFunction.sum_range_mul_zeta, nsmul_eq_mul]
+  -- induction n with
+  -- | zero => simp
+  -- | succ n h_ind =>
+  --   rw [Nat.factorial_succ]
+  --   push_cast
+  --   rw [mul_comm, Real.log_mul (by positivity) (by norm_cast)]
+  --   simp_rw [Nat.succ_div, cast_add, add_mul, Finset.sum_add_distrib, h_ind]
+  --   congr 1
+  --   · apply Finset.sum_subset
+  --     · intro d hd
+  --       simp at hd ⊢
+  --       omega
+  --     intro d hd hdnin
+  --     obtain rfl : d = n+1 := by
+  --       simp_all
+  --       omega
+  --     simp only [_root_.mul_eq_zero, cast_eq_zero, Nat.div_eq_zero_iff,
+  --       AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, lt_add_iff_pos_right, zero_lt_one,
+  --       or_true, true_or]
+  --   · push_cast
+  --     simp_rw [boole_mul, ← Finset.sum_filter]
+  --     rw [Nat.filter_dvd_eq_divisors (add_one_ne_zero n)]
+  --     exact_mod_cast ArithmeticFunction.vonMangoldt_sum.symm
 
 
 
@@ -455,14 +473,16 @@ theorem sum_properPower_vonMangoldt_div_id_isBigO_one :
   filter_upwards with a
   rw [abs_of_nonneg ?pos]
   case pos =>
-    apply Finset.sum_nonneg
-    intro k __
-    have := ArithmeticFunction.vonMangoldt_nonneg (n:=k)
-    positivity
+    bound
+    -- apply Finset.sum_nonneg
+    -- intro k __
+    -- have := ArithmeticFunction.vonMangoldt_nonneg (n:=k)
+    -- positivity
   apply sum_le_tsum (Finset.range (a+1)) _ (sum_strictPow_convergent)
-  intro k _
-  have := ArithmeticFunction.vonMangoldt_nonneg (n:=k)
-  positivity
+  bound
+  -- intro k _
+  -- have := ArithmeticFunction.vonMangoldt_nonneg (n:=k)
+  -- positivity
 
 theorem tmp_eventually {f g : ℕ → ℝ} (hfg : f =O[atTop] g) (l : Filter ℕ) (h : ∀ᶠ n in l, g n = 0 → f n = 0) :
     f =O[l] g := by
@@ -542,23 +562,30 @@ theorem antitoneOn_id_div_sub : AntitoneOn (fun x : ℝ ↦ x / (x-1)) (Set.Ioi 
       rw [_root_.add_div, div_self (by linarith)]
       ring
 
+@[bound]
+theorem floor_pos_of {α : Type* } [inst : LinearOrderedSemiring α] [inst_1 : FloorSemiring α] {a : α} (h : 1 ≤ a) :  0 < ⌊a⌋₊ := by
+  apply Nat.floor_pos.mpr h
+
+attribute [bound] Nat.floor_le
 -- ouchie
 /- There should be some general theorem: given f : ℕ → ℝ and g h : ℝ → ℝ, got from f n - g n =O h n
  to f ⌊x⌋₊ - g x =O h x under certain "smoothnes"/monotonicity assumptions on g -/
 theorem E₁_isBigO_one {t : ℝ} (ht : 1 < t) : E₁ =O[𝓟 <| Set.Ici t] (fun _ ↦ (1:ℝ)) := by
   have h₀ : (fun t ↦ Real.log t - Real.log (⌊t⌋₊)) =O[𝓟 <| Set.Ici t] (fun t ↦ Real.log t - Real.log (t-1)) := by
     have h1 (t : ℝ) (ht : 1 < t) : Real.log (t-1) ≤ Real.log (⌊t⌋₊) := by
-      gcongr
-      · linarith only [ht]
-      · linarith only [Nat.lt_floor_add_one t]
+      bound [Nat.lt_floor_add_one t]
+      -- gcongr
+      -- · linarith only [ht]
+      -- · linarith only [Nat.lt_floor_add_one t]
     have h2 (t : ℝ) (ht : 1 ≤ t) : Real.log (⌊t⌋₊) ≤ Real.log t := by
-      gcongr
-      · exact_mod_cast Nat.floor_pos.mpr ht
-      · apply Nat.floor_le (zero_le_one.trans ht)
+      bound
+      -- gcongr
+      -- · exact_mod_cast Nat.floor_pos.mpr ht
+      -- · apply Nat.floor_le (zero_le_one.trans ht)
     apply Eventually.isBigO
     simp only [norm_eq_abs, eventually_principal, Set.mem_Ici]
     intro t ht
-    rw [abs_of_nonneg (by linarith only [h2 t (by linarith)])]
+    rw [abs_of_nonneg (by bound)] --; linarith only [h2 t (by linarith)])]
     gcongr
     · linarith
     · linarith only [Nat.lt_floor_add_one t]
@@ -575,8 +602,9 @@ theorem E₁_isBigO_one {t : ℝ} (ht : 1 < t) : E₁ =O[𝓟 <| Set.Ici t] (fun
     · apply (Real.log_le_self _).trans
       · apply antitoneOn_id_div_sub _ _ hx <;> simp only [Set.mem_Ioi, ht]
         linarith
-      apply div_nonneg (by linarith)
-      linarith
+      bound
+      -- apply div_nonneg (by linarith)
+      -- linarith
     · linarith
     · exact sub_ne_zero_of_ne (by linarith)
   simp_rw [E₁_eq]
@@ -612,6 +640,7 @@ theorem extracted_1 (a b : ℝ) (ha : 1 < a):
     |>.integrableOn_compact isCompact_Icc
   intro x
   simp only [Set.mem_Icc, ne_eq, not_or, and_imp]
+  -- bound
   intro hx _
   apply (Real.log_pos (by linarith)).ne.symm
 
@@ -635,11 +664,12 @@ theorem integrable_inv_mul_log_inv_sq (x : ℝ) (hx : 1 < x) :
     ring
 
   apply MeasureTheory.integrableOn_Ioi_deriv_of_nonneg _ this (l := 0)
-  · simp only [Set.mem_Ioi, inv_pow]
-    intro t hxt
-    have : 0 < t := by linarith
-    have := Real.log_pos (hx.trans hxt)
-    positivity
+  · simp only [Set.mem_Ioi]
+    bound
+    -- intro t hxt
+    -- have : 0 < t := by linarith
+    -- have := Real.log_pos (hx.trans hxt)
+    -- positivity
   · rw [← neg_zero]
     apply (tendsto_inv_atTop_zero.comp tendsto_log_atTop).neg
   · refine ((continuousAt_log (by linarith)).continuousWithinAt).inv₀ (Real.log_pos hx).ne.symm |>.neg
@@ -719,10 +749,12 @@ theorem integral_mul_E₁_tail_isBigO (a : ℝ) (ha : 1 < a) :
       simp only [Set.mem_Ioi] at ht
       simp_rw [abs_mul, abs_pow]
       rw [abs_of_nonneg, abs_of_nonneg]
-      · rw [inv_nonneg]
-        apply Real.log_nonneg (by linarith)
-      · rw [inv_nonneg]
-        linarith
+      · bound
+        -- rw [inv_nonneg]
+        -- apply Real.log_nonneg (by linarith)
+      · bound
+        -- rw [inv_nonneg]
+        -- linarith
     _ ≤ C * ∫ t in Set.Ioi x, t⁻¹ * (Real.log t)⁻¹ ^ 2 := by
       simp_rw [← smul_eq_mul, ← integral_smul, smul_eq_mul]
       apply setIntegral_mono_on
@@ -745,14 +777,16 @@ theorem integral_mul_E₁_tail_isBigO (a : ℝ) (ha : 1 < a) :
       simp only [Set.mem_Ioi] at ht
       rw [mul_comm C]
       gcongr
-      · have : 0 ≤ t := by linarith
-        have : 0 ≤ Real.log t := (Real.log_nonneg (by linarith))
-        positivity
+      · bound
+      -- · have : 0 ≤ t := by linarith
+      --   have : 0 ≤ Real.log t := (Real.log_nonneg (by linarith))
+      --   positivity
       · apply hC _ (hx.trans ht).le
     _ = _ := by
       rw [abs_of_nonneg, setIntegral_Ioi_inv_mul_inv_log_sq ]
       · exact ha.trans hx
-      · apply Real.log_nonneg (by linarith)
+      · bound
+        -- apply Real.log_nonneg (by linarith)
 
 -- This was a pain point: I want uniform bounds to show integrability of E₁, since E₁ is definitely not continuous
 -- Perhaps one could argue, E₁ is a step function plus a
@@ -1019,9 +1053,10 @@ theorem summable_thing :
   filter_upwards [eventually_gt_atTop 1] with p hp
   rw [norm_eq_abs, abs_of_nonneg]
   · exact tsum_inv_pow_div_id_le p hp
-  · apply tsum_nonneg
-    intro n
-    positivity
+  · bound
+    -- apply tsum_nonneg
+    -- intro n
+    -- positivity
 
 
 theorem summable_thing' :
@@ -1101,21 +1136,23 @@ private theorem tailSum_isBigO_inv_nat : (fun k ↦ ∑' p : ℕ, if (p + k + 1)
       rw [norm_eq_abs, abs_of_nonneg ?nonneg]
       case nonneg =>
         -- all because positivity doesn't support tsum_nonneg / intros. This seems like an easy extension to write. See Mathlib/Tactic/Positivity/Finset.lean
-        -- ditto with `ite`.
-        apply tsum_nonneg
-        intros
-        split_ifs
-        · apply tsum_nonneg
-          intros
-          positivity
-        · rfl
+        -- Ah, but `bound` works too!
+        bound
+        -- apply tsum_nonneg
+        -- intros
+        -- split_ifs
+        -- · apply tsum_nonneg
+        --   intros
+        --   positivity
+        -- · rfl
       apply tsum_le_tsum
-      · intro p
-        split_ifs
-        · exact tsum_inv_pow_div_id_le (p+k+1) (by omega)
-        · push_cast
-          ring_nf
-          positivity
+      · bound [tsum_inv_pow_div_id_le]
+      -- · intro p
+      --   split_ifs
+      --   · exact tsum_inv_pow_div_id_le (p+k+1) (by omega)
+      --   · push_cast
+      --     ring_nf
+      --     positivity
       · apply (summable_nat_add_iff (k+1)).mpr summable_thing'
       · apply (summable_nat_add_iff (k+1)).mpr summable_aux
     _ =ᶠ[atTop] _ := by
@@ -1141,16 +1178,18 @@ theorem le_two_mul_floor (x : ℝ) : x / ↑⌊x⌋₊ ≤ 2 := by
   by_cases hx' : x < 1
   · rw [Nat.floor_eq_zero.mpr hx']
     · simp
-  rw [div_le_iff₀ (by rw_mod_cast [Nat.floor_pos]; linarith)]
+  rw [div_le_iff₀ (by bound)] -- rw_mod_cast [Nat.floor_pos]; linarith)]
   by_cases h : 2 ≤ x
-  · have := Nat.lt_floor_add_one x
-    have := Nat.floor_le (show 0 ≤ x by linarith)
-    linarith
+  · bound [Nat.lt_floor_add_one x]
+    -- have := Nat.lt_floor_add_one x
+    -- have := Nat.floor_le (show 0 ≤ x by linarith)
+    -- linarith
   · have : ⌊x⌋₊ = 1 := by
       rw [Nat.floor_eq_iff]
+      -- bound
       · constructor <;> norm_num <;> linarith
-      linarith
-    simp [this]
+      · linarith
+    simp only [this, cast_one, mul_one, ge_iff_le]
     linarith
 
 theorem floor_inv_isBigO_inv : (fun x : ℝ ↦ (⌊x⌋₊ : ℝ)⁻¹) =O[⊤] (fun x : ℝ ↦ x⁻¹) := by
@@ -1232,6 +1271,14 @@ theorem mertens_third_log_isLittleO_one :
   apply Filter.mem_of_superset this
   simpa [this]
 
+@[bound]
+theorem test (x : ℝ) (n : ℕ) (hx : exp^[n+1] 1 < x):
+    exp^[n] 1 < Real.log x := by
+  sorry
+
+-- theorem test (a b : ℝ) (ha : 0 < a)  (hb : a < b) : (fun x ↦ exp x - 1) =O[𝓟 <| Set.Ioo a b] fun x ↦ x := by
+--   sorry
+--   -- bound
 
 -- Asymptotics.isEquivalent_iff_tendsto_one
 
@@ -1256,8 +1303,10 @@ theorem mertens_third :
     · rw [add_comm, exp_add, exp_neg (Real.log _), exp_log]
       apply Real.log_pos hx
   · filter_upwards [eventually_gt_atTop 100] with x hx
-    have : 0 < Real.log x := Real.log_pos (by linarith)
-    positivity
+    apply _root_.ne_of_gt
+    bound
+    -- have : 0 < Real.log x := by bound
+    -- positivity
 
 
 #print axioms mertens_third
