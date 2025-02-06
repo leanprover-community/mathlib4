@@ -389,7 +389,7 @@ protected def ofFinite {E : Set α} (hE : E.Finite) (Indep : Set α → Prop)
         (hE.subset (subset_ground hI)).cast_ncard_eq] )
     (indep_bdd := ⟨E.ncard, fun I hI ↦ by
       rw [hE.cast_ncard_eq]
-      exact encard_le_card <| subset_ground hI ⟩)
+      exact encard_le_encard <| subset_ground hI ⟩)
     (subset_ground := subset_ground)
 
 @[simp] theorem ofFinite_E {E : Set α} hE Indep indep_empty indep_subset indep_aug subset_ground :
