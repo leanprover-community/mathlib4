@@ -106,6 +106,8 @@ variable [MonoidalClosed A]
 
 namespace W
 
+attribute [local instance] MonoidalClosed.FunctorCategory.monoidalClosed
+
 lemma whiskerLeft {G₁ G₂ : Cᵒᵖ ⥤ A} {g : G₁ ⟶ G₂} (hg : J.W g) (F : Cᵒᵖ ⥤ A) :
     J.W (F ◁ g) := fun H h ↦ by
   have := hg _ (Presheaf.isSheaf_functorEnrichedHom F H h)

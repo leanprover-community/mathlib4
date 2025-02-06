@@ -72,7 +72,7 @@ instance : LargeCategory (FGModuleCat R) := by
   dsimp [FGModuleCat]
   infer_instance
 
-instance : HasForget (FGModuleCat R) := by
+instance : ConcreteCategory (FGModuleCat R) (· →ₗ[R] ·) := by
   dsimp [FGModuleCat]
   infer_instance
 
