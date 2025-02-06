@@ -4244,6 +4244,7 @@ import Mathlib.Order.Filter.Interval
 import Mathlib.Order.Filter.Ker
 import Mathlib.Order.Filter.Lift
 import Mathlib.Order.Filter.ListTraverse
+import Mathlib.Order.Filter.Map
 import Mathlib.Order.Filter.NAry
 import Mathlib.Order.Filter.Partial
 import Mathlib.Order.Filter.Pi
