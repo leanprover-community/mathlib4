@@ -149,8 +149,7 @@ theorem elemExponent_min (a : L) {n : ℕ} (h : n < elemExponent K a) :
     a ^ ringExpChar K ^ n ∉ (algebraMap K L).range :=
   fun hn ↦ (Nat.not_lt_of_le <| elemExponent_le_of_pow_mem hn) h
 
-/-- An exponent of an element is less or equal than exponent of the extension
-in non-zero characteristic. -/
+/-- An exponent of an element is less or equal than exponent of the extension. -/
 theorem elemExponent_le_exponent [HasExponent K L] (a : L) :
     elemExponent K a ≤ exponent K L :=
   elemExponent_le_of_pow_mem <| exponent_def K a
