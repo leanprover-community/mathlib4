@@ -147,8 +147,7 @@ theorem LinearIndependent.ne_zero [Nontrivial R] (i : ι) (hv : LinearIndependen
   have := @hv (Finsupp.single i 1 : ι →₀ R) 0 (by simpa using h)
   simp at this
 
-theorem LinearIndependent.zero_not_mem_image {R M ι : Type*} [Semiring R] [Nontrivial R]
-    [AddCommGroup M] [Module R M] {s : Set ι} {f : ι → M}
+theorem LinearIndependent.zero_not_mem_image [Nontrivial R] {s : Set ι} {f : ι → M}
     (hs : LinearIndependent R (s.restrict f)) : 0 ∉ f '' s := by
   simp only [mem_image, not_exists, not_and]
   exact fun i hi ↦ by simpa using hs.ne_zero ⟨i,hi⟩
@@ -506,7 +505,7 @@ theorem LinearIndependent.mono_restrict {f : ι → M} {s t : Set ι}
     LinearIndependent R (s.restrict f) := by
   obtain hR | hR := subsingleton_or_nontrivial R
   · exact linearIndependent_of_subsingleton
-  exact (linearIndependent_image ((injOn_iff_injective.2 h.injective).mono hst )).2 <|
+  exact (linearIndependent_image ((injOn_iff_injective.2 h.injective).mono hst)).2 <|
     h.image.mono (image_subset _ hst)
 
 theorem linearIndependent_of_finite (s : Set M)
