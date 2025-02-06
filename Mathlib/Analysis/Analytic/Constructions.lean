@@ -759,7 +759,7 @@ lemma AnalyticWithinAt.zpow_nonneg' {f : E → 𝕝} {z : E} {s : Set E} {n : �
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
 nonnegative. -/
-lemma AnalyticAt.zpow_nonneg {f : E → 𝕝} {z : E} (hf : AnalyticAt 𝕜 f z) {n : ℤ} (hn : 0 ≤ n) :
+lemma AnalyticAt.zpow_nonneg {f : E → 𝕝} {z : E} {n : ℤ} (hf : AnalyticAt 𝕜 f z) (hn : 0 ≤ n) :
     AnalyticAt 𝕜 (f ^ n) z := by
   simp_rw [(Eq.symm (Int.toNat_of_nonneg hn) : n = OfNat.ofNat n.toNat), zpow_ofNat]
   apply pow hf
@@ -1010,6 +1010,63 @@ theorem AnalyticOnNhd.inv {f : E → 𝕝} {s : Set E} (fa : AnalyticOnNhd 𝕜 
 theorem AnalyticOnNhd.inv' {f : E → 𝕝} {s : Set E} (fa : AnalyticOnNhd 𝕜 f s)
     (f0 : ∀ x ∈ s, f x ≠ 0) :
     AnalyticOnNhd 𝕜 (fun x ↦ (f x)⁻¹) s := inv fa f0
+
+/-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
+-/
+lemma AnalyticWithinAt.zpow {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ} (h₁f : AnalyticWithinAt 𝕜 f s z)
+    (h₂f : f z ≠ 0) :
+    AnalyticWithinAt 𝕜 (f ^ n) s z := by
+  by_cases hn : 0 ≤ n
+  · exact zpow_nonneg h₁f hn
+  · rw [(Int.eq_neg_comm.mp rfl : n = - (- n))]
+    conv => arg 2; intro x; rw [zpow_neg]
+    exact (h₁f.zpow_nonneg (by linarith)).inv (zpow_ne_zero (-n) h₂f)
+
+/-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
+-/
+lemma AnalyticWithinAt.zpow' {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ} (
+    h₁f : AnalyticWithinAt 𝕜 f s z)
+    (h₂f : f z ≠ 0) :
+    AnalyticWithinAt 𝕜 (fun x ↦ f x ^ n) s z := zpow h₁f h₂f
+
+/-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
+-/
+lemma AnalyticAt.zpow {f : E → 𝕝} {z : E} {n : ℤ} (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
+    AnalyticAt 𝕜 (f ^ n) z := by
+  by_cases hn : 0 ≤ n
+  · exact zpow_nonneg h₁f hn
+  · rw [(Int.eq_neg_comm.mp rfl : n = - (- n))]
+    conv => arg 2; intro x; rw [zpow_neg]
+    exact (h₁f.zpow_nonneg (by linarith)).inv (zpow_ne_zero (-n) h₂f)
+
+/-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
+-/
+lemma AnalyticAt.zpow' {f : E → 𝕝} {z : E} {n : ℤ}  (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
+    AnalyticAt 𝕜 (fun x ↦ f x ^ n) z := zpow h₁f h₂f
+
+/-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
+-/
+lemma AnalyticOn.zpow {f : E → 𝕝} {s : Set E} {n : ℤ}  (h₁f : AnalyticOn 𝕜 f s)
+    (h₂f : ∀ z ∈ s, f z ≠ 0) :
+    AnalyticOn 𝕜 (f ^ n) s := by exact fun z hz ↦ (h₁f z hz).zpow (h₂f z hz)
+
+/-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
+-/
+lemma AnalyticOn.zpow' {f : E → 𝕝} {s : Set E} {n : ℤ} (h₁f : AnalyticOn 𝕜 f s)
+    (h₂f : ∀ z ∈ s, f z ≠ 0) :
+    AnalyticOn 𝕜 (fun x ↦ f x ^ n) s := zpow h₁f h₂f
+
+/-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
+-/
+lemma AnalyticOnNhd.zpow {f : E → 𝕝} {s : Set E} {n : ℤ} (h₁f : AnalyticOnNhd 𝕜 f s)
+    (h₂f : ∀ z ∈ s, f z ≠ 0) :
+    AnalyticOnNhd 𝕜 (f ^ n) s := by exact fun z hz ↦ (h₁f z hz).zpow (h₂f z hz)
+
+/-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
+-/
+lemma AnalyticOnNhd.zpow' {f : E → 𝕝} {s : Set E} {n : ℤ} (h₁f : AnalyticOnNhd 𝕜 f s)
+    (h₂f : ∀ z ∈ s, f z ≠ 0) :
+    AnalyticOnNhd 𝕜 (fun x ↦ f x ^ n) s := zpow h₁f h₂f
 
 /-- `f x / g x` is analytic away from `g x = 0` -/
 theorem AnalyticWithinAt.div {f g : E → 𝕝} {s : Set E} {x : E}
