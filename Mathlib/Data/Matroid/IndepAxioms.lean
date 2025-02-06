@@ -96,16 +96,27 @@ section IndepMatroid
 /-- A matroid as defined by a ground set and an independence predicate.
 This definition is an implementation detail whose purpose is to organize the multiple
 different versions of the independence axioms;
-as a rule, the type `IndepMatroid` should never appear in type signatures outside this file.
+usually, terms of type `IndepMatroid` should either be directly piped into `IndepMatroid.matroid`,
+or should be constructed as a private definition
+which is then converted into a matroid via `IndepMatroid.matroid`.
 
-The intended pattern for defining a `Matroid α` from a known independence predicate
-`MyIndep : Set α → Prop` and ground set `E : Set α` is to write
+To define a `Matroid α` from a known independence predicate
+`MyIndep : Set α → Prop` and ground set `E : Set α`, one can either write
 
 ```
-def myMatroid : Matroid α := IndepMatroid.matroid <| IndepMatroid.ofFoo E MyIndep _ _ … _
+def myMatroid (…) : Matroid α :=
+  IndepMatroid.matroid <| IndepMatroid.ofFoo E MyIndep _ _ … _
 ```
 
-where `IndepMatroid.ofFoo` is either `IndepMatroid.mk`,
+or, slightly more indirectly,
+
+```
+private def myIndepMatroid (…) : IndepMatroid α := IndepMatroid.ofFoo E MyIndep _ _ … _
+
+def myMatroid (…) : Matroid α := (myIndepMatroid …).matroid
+```
+
+In both cases, `IndepMatroid.ofFoo` is either `IndepMatroid.mk`,
 or one of the several other available constructors for `IndepMatroid`,
 and the `_` represent the proofs that this constructor requires.
 
