@@ -131,8 +131,12 @@ instance : InfSet (Nucleus X) where
 
 theorem sInf_apply (s : Set (Nucleus X)) (x : X) : sInf s x = ⨅ j ∈ s, j x := rfl
 
-theorem iInf_apply {ι : Type*} (s : ι → (Nucleus X)) (x : X) :
-    iInf s x = ⨅ j ∈ Set.range s, j x := by simp [iInf, sInf_apply]
+theorem iInf_apply {ι : Type*} (f : ι → (Nucleus X)) (x : X) :
+    iInf f x = ⨅ j, f j x := by
+  simp only [iInf, sInf_apply]
+  apply le_antisymm
+  all_goals simp_all [sInf_le_iff, lowerBounds]
+  exact fun a b a_1 a_2 a_3 ↦ le_of_le_of_eq (a_1 a_2) (congrFun (congrArg DFunLike.coe a_3) x)
 
 instance : CompleteSemilatticeInf (Nucleus X) where
   sInf_le := (by simp_all [LE.le, sInf_apply, iInf_le_iff])
