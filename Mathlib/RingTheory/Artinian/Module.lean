@@ -485,7 +485,10 @@ lemma isField_of_isDomain [IsDomain R] : IsField R := by
 
 /- Does not hold in a commutative semiring:
 consider {0, 0.5, 1} with ⊔ as + and ⊓ as *, then both {0} and {0, 0.5} are prime ideals. -/
-instance isMaximal_of_isPrime (p : Ideal R) [p.IsPrime] : p.IsMaximal :=
+-- Note: type class synthesis should try to synthesize `p.IsPrime` before `IsArtinianRing R`,
+-- hence the argument order.
+instance isMaximal_of_isPrime {R : Type*} [CommRing R] (p : Ideal R) [p.IsPrime]
+    [IsArtinianRing R] : p.IsMaximal :=
   Ideal.Quotient.maximal_of_isField _ (isField_of_isDomain _)
 
 lemma isPrime_iff_isMaximal (p : Ideal R) : p.IsPrime ↔ p.IsMaximal :=

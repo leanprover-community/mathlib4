@@ -506,6 +506,11 @@ noncomputable def restrictScalarsRange :
   simp [restrictScalarsRange]
 
 @[simp]
+lemma eq_restrictScalarsRange_iff (m : M') (n : N') (p : P') :
+    p = restrictScalarsRange i j k hk B hB m n ↔ k p = B (i m) (j n) := by
+  rw [← restrictScalarsRange_apply i j k hk B hB m n, hk.eq_iff]
+
+@[simp]
 lemma restrictScalarsRange_apply_eq_zero_iff (m : M') (n : N') :
     restrictScalarsRange i j k hk B hB m n = 0 ↔ B (i m) (j n) = 0 := by
   rw [← hk.eq_iff, restrictScalarsRange_apply, map_zero]

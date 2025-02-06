@@ -161,7 +161,7 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact (
       rw [pow_one] at hζ hcycl
       have : natDegree (minpoly K ζ) = 1 := by
         rw [hζ.eq_neg_one_of_two_right, show (-1 : L) = algebraMap K L (-1) by simp,
-          minpoly.eq_X_sub_C_of_algebraMap_inj _ (NoZeroSMulDivisors.algebraMap_injective K L)]
+          minpoly.eq_X_sub_C_of_algebraMap_inj _ (FaithfulSMul.algebraMap_injective K L)]
         exact natDegree_X_sub_C (-1)
       rcases Fin.equiv_iff_eq.2 this with ⟨e⟩
       rw [← Algebra.discr_reindex K (hζ.powerBasis K).basis e, coe_basis, powerBasis_gen]; norm_num

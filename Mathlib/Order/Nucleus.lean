@@ -55,6 +55,7 @@ instance : FunLike (Nucleus X) X X where
 
 lemma toFun_eq_coe (n : Nucleus X) : n.toFun = n := rfl
 @[simp] lemma coe_toInfHom (n : Nucleus X) : ⇑n.toInfHom = n := rfl
+@[simp] lemma coe_mk (f : InfHom X X) (h1 h2) : ⇑(mk f h1 h2) = f := rfl
 
 instance : NucleusClass (Nucleus X) X where
   idempotent _ _ := idempotent' ..
