@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Raphael Douglas Giles. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Raphael Douglas Giles
+Authors: Raphael Douglas Giles, Zhixuan Dai, Zhenyan Fu, Yiming Fu, Wang Jingting
 -/
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 import Mathlib.Algebra.MvPolynomial.Basic
@@ -15,7 +15,6 @@ import Mathlib.LinearAlgebra.Dimension.Finrank
 import Mathlib.LinearAlgebra.Dimension.Free
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Aesop
 
 /-!
 # Symmetric Algebras
