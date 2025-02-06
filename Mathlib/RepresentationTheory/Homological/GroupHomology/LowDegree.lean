@@ -5,6 +5,7 @@ Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
+import Mathlib.RepresentationTheory.Invariants
 
 /-!
 # The low-degree homology of a `k`-linear `G`-representation
@@ -289,7 +290,7 @@ theorem oneCycles_eq_top_of_isTrivial [A.IsTrivial] : oneCycles A = ⊤ := by
 variable (A) in
 /-- The natural inclusion `Z₁(G, A) →ₗ[k] C₁(G, A)` is an isomorphism when the representation
 on `A` is trivial. -/
-abbrev oneCyclesLequivOfIsTrivial [A.ρ.IsTrivial] :
+abbrev oneCyclesLequivOfIsTrivial [A.IsTrivial] :
     oneCycles A ≃ₗ[k] (G →₀ A) :=
   LinearEquiv.ofTop _ (oneCycles_eq_top_of_isTrivial A)
 
@@ -611,13 +612,14 @@ section groupHomologyIso
 open ShortComplex
 
 section H0
+
 section
+
 variable [DecidableEq G]
 
 /-- The 0-cycles of the complex of inhomogeneous chains of `A` are isomorphic to `A`. -/
 def isoZeroCycles : cycles A 0 ≅ ModuleCat.of k A :=
-  (inhomogeneousChains A).iCyclesIso _ 0 (by aesop) (by aesop)
-    ≪≫ (zeroChainsLequiv A).toModuleIso
+  (inhomogeneousChains A).iCyclesIso _ 0 (by aesop) (by aesop) ≪≫ (zeroChainsLequiv A).toModuleIso
 
 @[reassoc, elementwise]
 lemma isoZeroCycles_inv_comp_iCycles :
@@ -662,20 +664,20 @@ variable [DecidableEq G]
 /-- The arrow `(G →₀ A) --dZero--> A` is isomorphic to the differential
 `(inhomogeneousChains A).d 1 0` of the complex of inhomogeneous chains of `A`. -/
 @[simps! hom_left hom_right inv_left inv_right]
-def dZeroArrowIso : Arrow.mk ((inhomogeneousChains A).d 1 0) ≅
-    Arrow.mk (ModuleCat.ofHom (dZero A)) :=
+def dZeroArrowIso :
+    Arrow.mk ((inhomogeneousChains A).d 1 0) ≅ Arrow.mk (ModuleCat.ofHom (dZero A)) :=
   Arrow.isoMk (oneChainsLequiv A).toModuleIso (zeroChainsLequiv A).toModuleIso (dZero_comp_eq A)
 
 /-- The 0-cycles of the complex of inhomogeneous chains of `A` are isomorphic to
 `A.ρ.coinvariants`, which is a simpler type. -/
-def isoZeroOpcycles : opcycles A 0 ≅ ModuleCat.of k A.ρ.coinvariants :=
+def isoZeroOpcycles : (inhomogeneousChains A).opcycles 0 ≅ ModuleCat.of k A.ρ.coinvariants :=
   CokernelCofork.mapIsoOfIsColimit
     ((inhomogeneousChains A).opcyclesIsCokernel 1 0 (by simp)) (shortComplexH0_exact A).gIsCokernel
       (dZeroArrowIso A)
 
 @[reassoc (attr := simp)]
 lemma pOpcycles_comp_opcyclesIso_hom :
-    pOpcycles A 0 ≫ (isoZeroOpcycles A).hom =
+    (inhomogeneousChains A).pOpcycles 0 ≫ (isoZeroOpcycles A).hom =
       (zeroChainsLequiv A).toModuleIso.hom ≫ H0π A := by
   dsimp [isoZeroOpcycles]
   exact CokernelCofork.π_mapOfIsColimit (φ := (dZeroArrowIso A).hom) _ _
@@ -683,21 +685,21 @@ lemma pOpcycles_comp_opcyclesIso_hom :
 /-- The 0th group homology of `A`, defined as the 0th homology of the complex of inhomogeneous
 chains, is isomorphic to the coinvariants of the representation on `A`. -/
 def isoH0 : groupHomology A 0 ≅ ModuleCat.of k (H0 A) :=
-  (ChainComplex.isoHomologyι₀ _) ≪≫ (isoZeroOpcycles A)
+  ChainComplex.isoHomologyι₀ _ ≪≫ isoZeroOpcycles A
 
 @[reassoc (attr := simp)]
-lemma π_comp_isoH0_hom :
+lemma groupHomologyπ_comp_isoH0_hom :
     groupHomologyπ A 0 ≫ (isoH0 A).hom = (isoZeroCycles A).hom ≫ H0π A := by
   simp [isoZeroCycles, isoH0]
 
 end
 section Trivial
 
-variable [A.ρ.IsTrivial]
+variable [A.IsTrivial]
 
 /-- When the representation on `A` is trivial, then `H₀(G, A)` is all of `A.` -/
 def H0LequivOfIsTrivial :
-    H0 A ≃ₗ[k] A := Submodule.quotEquivOfEqBot _ (augmentationSubmodule_eq_bot_of_isTrivial A)
+    H0 A ≃ₗ[k] A := Submodule.quotEquivOfEqBot _ A.ρ.augmentationSubmodule_eq_bot_of_isTrivial
 
 @[simp]
 theorem H0LequivOfIsTrivial_symm_eq_π :
@@ -799,7 +801,7 @@ def shortComplexH2 : ShortComplex (ModuleCat k) :=
 
 /-- We define the 2nd group homology of a `k`-linear `G`-representation `A`, `H₂(G, A)`, to be
 2-cycles (i.e. `Z₂(G, A) := Ker(d₁ : (G² →₀ A) → (G →₀ A)`) modulo 2-boundaries
-(i.e. `B²(G, A) := Im(d₂ : (G³ →₀ A) → (G² →₀ A))`). -/
+(i.e. `B₂(G, A) := Im(d₂ : (G³ →₀ A) → (G² →₀ A))`). -/
 abbrev H2 := moduleCatHomology <| shortComplexH2 A
 
 /-- The quotient map `Z₂(G, A) → H₂(G, A).` -/
