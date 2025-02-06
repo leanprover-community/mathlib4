@@ -102,20 +102,16 @@ which is then converted into a matroid via `IndepMatroid.matroid`.
 
 To define a `Matroid α` from a known independence predicate
 `MyIndep : Set α → Prop` and ground set `E : Set α`, one can either write
-
 ```
 def myMatroid (…) : Matroid α :=
   IndepMatroid.matroid <| IndepMatroid.ofFoo E MyIndep _ _ … _
 ```
-
 or, slightly more indirectly,
-
 ```
 private def myIndepMatroid (…) : IndepMatroid α := IndepMatroid.ofFoo E MyIndep _ _ … _
 
 def myMatroid (…) : Matroid α := (myIndepMatroid …).matroid
 ```
-
 In both cases, `IndepMatroid.ofFoo` is either `IndepMatroid.mk`,
 or one of the several other available constructors for `IndepMatroid`,
 and the `_` represent the proofs that this constructor requires.
