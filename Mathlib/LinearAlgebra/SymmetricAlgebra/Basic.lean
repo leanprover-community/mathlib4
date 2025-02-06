@@ -5,16 +5,12 @@ Authors: Raphael Douglas Giles, Zhixuan Dai, Zhenyan Fu, Yiming Fu, Wang Jingtin
 -/
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 import Mathlib.Algebra.MvPolynomial.Basic
-import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.RingTheory.Finiteness.Defs
 import Mathlib.Algebra.Algebra.Hom
 import Mathlib.Algebra.Lie.Basic
 import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.LinearAlgebra.Dimension.Finrank
-import Mathlib.LinearAlgebra.Dimension.Free
-import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.GroupTheory.MonoidLocalization.Basic
 
 /-!
 # Symmetric Algebras
