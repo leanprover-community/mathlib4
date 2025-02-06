@@ -581,22 +581,24 @@ variable
   [∀ X₂, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).flip.obj X₂)]
   [∀ (X₁ X₂ X₃ X₄ : GradedObject I C), HasTensor₄ObjExt X₁ X₂ X₃ X₄]
 
-noncomputable instance monoidalCategory : MonoidalCategory (GradedObject I C) where
-  tensorObj X Y := Monoidal.tensorObj X Y
-  tensorHom f g := Monoidal.tensorHom f g
-  tensorHom_def f g := Monoidal.tensorHom_def f g
-  whiskerLeft X _ _ φ := Monoidal.whiskerLeft X φ
-  whiskerRight {_ _ φ Y} := Monoidal.whiskerRight φ Y
-  tensorUnit := Monoidal.tensorUnit
-  associator X₁ X₂ X₃ := Monoidal.associator X₁ X₂ X₃
-  associator_naturality f₁ f₂ f₃ := Monoidal.associator_naturality f₁ f₂ f₃
-  leftUnitor X := Monoidal.leftUnitor X
-  leftUnitor_naturality := Monoidal.leftUnitor_naturality
-  rightUnitor X := Monoidal.rightUnitor X
-  rightUnitor_naturality := Monoidal.rightUnitor_naturality
-  tensor_comp f₁ f₂ g₁ g₂ := Monoidal.tensor_comp f₁ g₁ f₂ g₂
-  pentagon X₁ X₂ X₃ X₄ := Monoidal.pentagon X₁ X₂ X₃ X₄
-  triangle X₁ X₂ := Monoidal.triangle X₁ X₂
+noncomputable instance monoidalCategory : MonoidalCategory (GradedObject I C) :=
+  letI _ : MonoidalCategoryStruct (GradedObject I C) := {
+    tensorObj X Y := Monoidal.tensorObj X Y
+    tensorHom f g := Monoidal.tensorHom f g
+    whiskerLeft X _ _ φ := Monoidal.whiskerLeft X φ
+    whiskerRight {_ _ φ Y} := Monoidal.whiskerRight φ Y
+    tensorUnit := Monoidal.tensorUnit
+    associator X₁ X₂ X₃ := Monoidal.associator X₁ X₂ X₃
+    leftUnitor X := Monoidal.leftUnitor X
+    rightUnitor X := Monoidal.rightUnitor X
+  };
+  ofTensorComp
+    (tensorHom_def := fun f g => Monoidal.tensorHom_def f g)
+    (associator_naturality := fun f₁ f₂ f₃ => Monoidal.associator_naturality f₁ f₂ f₃)
+    (leftUnitor_naturality := Monoidal.leftUnitor_naturality)
+    (rightUnitor_naturality := Monoidal.rightUnitor_naturality)
+    (pentagon := fun X₁ X₂ X₃ X₄ => Monoidal.pentagon X₁ X₂ X₃ X₄)
+    (triangle := fun X₁ X₂ => Monoidal.triangle X₁ X₂)
 
 end
 
