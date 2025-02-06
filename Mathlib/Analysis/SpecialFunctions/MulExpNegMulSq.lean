@@ -84,11 +84,6 @@ theorem deriv_mulExpNegMulSq (y : ℝ) : deriv (mulExpNegMulSq ε) y =
     exp (- (ε * y * y)) + y * (exp (- (ε * y * y)) * (-2 * ε * y)) :=
   HasDerivAt.deriv (hasDerivAt_mulExpNegMulSq y)
 
-theorem two_mul_le_exp (y : ℝ) (hy : 0 ≤ y) : 2 * y ≤ exp y := by
-  have two_le_exp_one : 2 ≤ exp 1 := by
-    apply le_of_lt (lt_trans (by norm_num) exp_one_gt_d9)
-  exact le_trans (mul_le_mul_of_nonneg_right two_le_exp_one hy) exp_one_mul_le_exp
-
 theorem norm_deriv_mulExpNegMulSq_le_one (hε : 0 < ε) (x : ℝ) :
     ‖deriv (mulExpNegMulSq ε) x‖ ≤ 1 := by
   rw [norm_eq_abs, deriv_mulExpNegMulSq]
@@ -101,14 +96,8 @@ theorem norm_deriv_mulExpNegMulSq_le_one (hε : 0 < ε) (x : ℝ) :
     exact mul_nonneg hε.le (mul_self_nonneg x)
   apply mul_le_of_le_inv_mul₀ (zero_le_one' ℝ) (exp_nonneg _)
   simp only [← exp_neg (-y), neg_neg, mul_one, abs_le, neg_le_sub_iff_le_add, tsub_le_iff_right]
-  constructor
-  · have two_le_exp_one : 2 ≤ exp 1 := by
-        apply le_of_lt (lt_trans (by norm_num) exp_one_gt_d9)
-    have two_mul_le_exp : 2 * y ≤ exp y :=
-      le_trans (mul_le_mul_of_nonneg_right two_le_exp_one hynonneg) exp_one_mul_le_exp
-    exact le_trans two_mul_le_exp ((le_add_iff_nonneg_left (exp y)).mpr zero_le_one)
-  · apply le_trans (one_le_exp hynonneg) (le_add_of_nonneg_right _)
-    simp [hynonneg]
+  refine ⟨le_trans two_mul_le_exp ((le_add_iff_nonneg_left (exp y)).mpr zero_le_one), ?_⟩
+  exact le_trans (one_le_exp hynonneg) (le_add_of_nonneg_right (by simp [hynonneg]))
 
 theorem nnnorm_deriv_mulExpNegMulSq_le_one (hε : 0 < ε) (x : ℝ) :
     ‖deriv (mulExpNegMulSq ε) x‖₊ ≤ 1 := by
