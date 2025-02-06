@@ -111,9 +111,11 @@ instance : BoundedOrder (Nucleus X) where
   bot_le _ _ := le_apply
   le_top _ _ := by simp
 
-variable {s : Set (Nucleus X)}
 
+/-- The function of the Nucleus corresponding to the infimum of `s` -/
 def sInf_fun (s : Set (Nucleus X)) (x : X) := sInf {j x | j ∈ s}
+
+variable {s : Set (Nucleus X)}
 
 lemma sInf_fun_idempotent (x : X) : sInf_fun s (sInf_fun s x) ≤ sInf_fun s x := by
   simp only [sInf_fun, le_sInf_iff, Set.mem_setOf_eq, forall_exists_index, and_imp,
