@@ -97,7 +97,7 @@ lemma le_rieszMeasure_of_isOpen_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x :
   exact subset_rfl
 
 /-- The **Riesz-Markov-Kakutani theorem** for a positive linear functional `Λ`. -/
-theorem integral_rieszMeasure_eq [Nonempty X] : ∀ (f : C_c(X, ℝ)),
+theorem integral_rieszMeasure [Nonempty X] : ∀ (f : C_c(X, ℝ)),
     ∫ (x : X), f x ∂(rieszMeasure Λ hΛ) = Λ f := by
   -- first we show `Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure Λ hΛ)`. It will be applied to `f` and `-f`.
   have RMK_le : ∀ (f : C_c(X, ℝ)), Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure Λ hΛ) := by
