@@ -87,7 +87,8 @@ lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (
 
 /-- If `f` assumes values between `0` and `1` and the support is contained in `V`, then
 `Λ f ≤ rieszMeasure V`. -/
-lemma leRieszMeasure_of_Opens {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤ f x ∧ f x ≤ 1) {V : Opens X}
+lemma le_rieszMeasure_of_isOpen_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤ f x ∧ f x ≤ 1) {V : Set X}
+    (hV : IsOpen V)
     (h : tsupport f ⊆ V) : ENNReal.ofReal (Λ f) ≤ (rieszMeasure Λ hΛ) V := by
   apply le_trans _ (MeasureTheory.measure_mono h)
   rw [← TopologicalSpace.Compacts.coe_mk (tsupport f) f.2]
