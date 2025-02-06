@@ -203,7 +203,7 @@ private theorem lemma₂ {s T ε : ℝ} {S : ℝ → ℂ} (hs : 1 < s)
 end lemmas
 
 section proof
--- See `LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃` for the strategy of the proof
+-- See `LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃` for the strategy of proof
 
 private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₁
   (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈ Icc 1 n, f k) / n) atTop (𝓝 l)) {ε : ℝ} (hε : 0 < ε) :
@@ -254,12 +254,14 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
     (LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₁
       hlim hε)).frequently.forall_exists_of_atTop 1
   let S : ℝ → ℂ := fun t ↦ ∑ k ∈ Icc 1 ⌊t⌋₊, f k
-  -- This result is the main ingredient of the proof. The idea is to cut the integral representation
-  -- of the L-series into two parts split at the value `T` given by
-  -- `LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₁` since `‖S t - l t‖ ≤ ε * t`
-  -- for all `t ≥ T`. We define `C` so that we get an upper bound of the first part and the second
-  -- part is bounded using the above inequality and
-  -- `LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂`.
+  -- This result is the main ingredient of the proof. First, we replace `s * l` by `(s - 1) * s`
+  -- times the integral `l * t ^ (-s)` (using `h₃` below). Replacing the `LSeries` by its integral
+  -- representation, we get the integral of `(S t - l * t) * t ^ (-s - 1)` (with the notation
+  -- of the proof). Then we cut this integral obtained into two parts split at the value `T` given
+  -- by `LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₁`. Then `C` is defined so that we
+  -- get an upper bound of the first part and the second part is bounded using
+  -- `LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂` since `‖S t - l t‖ ≤ ε * t`
+  -- for all `t ≥ T`.
   let C := ∫ t in Set.Ioc 1 T, ‖S t - l * t‖ * t ^ (-1 - 1 : ℝ)
   have hC : 0 ≤ C := by
     refine setIntegral_nonneg_ae measurableSet_Ioc (univ_mem' fun t ht ↦ ?_)
@@ -283,6 +285,7 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
     rw [integral_Ioi_cpow_of_lt (by rwa [neg_re, neg_lt_neg_iff]) zero_lt_one, ofReal_one,
       one_cpow, show -(s : ℂ) + 1 = -(s - 1) by ring, neg_div_neg_eq, mul_div_cancel₀]
     exact (sub_ne_zero.trans ofReal_ne_one).mpr hs.ne'
+  -- The value `Cs` correspond to the first part of the integral. It is always `≤ C`.
   let Cs := ∫ t in Set.Ioc 1 T, ‖S t - l * t‖ * t ^ (-s - 1)
   have h₄ : Cs ≤ C := by
     refine setIntegral_mono_on ?_ h₂ measurableSet_Ioc fun t ht ↦ ?_
