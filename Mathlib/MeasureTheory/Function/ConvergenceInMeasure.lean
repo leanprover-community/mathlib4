@@ -294,7 +294,7 @@ theorem tendstoInMeasure_ae_unique {g h : α → E} {f : ι → α → E} {u : F
     [IsCountablyGenerated u] (hg : TendstoInMeasure μ f u g) (hh : TendstoInMeasure μ f u h) :
     g =ᵐ[μ] h := by
   obtain ⟨ns, h1, h1'⟩ := hg.exists_seq_tendsto_ae'
-  obtain ⟨ns', h2, h2'⟩ := (TendstoInMeasure.comp h1 hh).exists_seq_tendsto_ae'
+  obtain ⟨ns', h2, h2'⟩ := (hh.comp h1).exists_seq_tendsto_ae'
   filter_upwards [h1', h2'] with ω hg1 hh1
   exact tendsto_nhds_unique (hg1.comp h2) hh1
 
