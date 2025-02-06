@@ -124,9 +124,8 @@ lemma sInf_fun_idempotent (x : X) : sInf_fun s (sInf_fun s x) ≤ sInf_fun s x :
   gcongr
   simp_all [sInf_le_iff, lowerBounds]
 
-lemma sInf_fun_map_inf : ∀ (x y : X), sInf_fun s (x ⊓ y) = sInf_fun s x ⊓ sInf_fun s y := by
+lemma sInf_fun_map_inf (x y : X): sInf_fun s (x ⊓ y) = sInf_fun s x ⊓ sInf_fun s y := by
   simp only [sInf_fun, InfHomClass.map_inf]
-  intro x y
   apply le_antisymm
   · -- squeezed because of performance
     simp_all only [le_inf_iff, le_sInf_iff, Set.mem_setOf_eq, sInf_le_iff, lowerBounds,
