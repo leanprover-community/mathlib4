@@ -11,6 +11,7 @@ import Mathlib.RingTheory.Localization.Module
 import Mathlib.RingTheory.Trace.Basic
 import Mathlib.RingTheory.RingHom.Finite
 import Mathlib.RingTheory.Localization.Separable
+import Mathlib.RingTheory.DedekindDomain.Dvr
 
 /-!
 # Integral closure of Dedekind domains
@@ -302,6 +303,11 @@ instance : IsScalarTower (Localization.AtPrime P)
 instance : IsDomain (Localization (algebraMapSubmonoid C P.primeCompl)) :=
   IsLocalization.isDomain_localization <| map_le_nonZeroDivisors_of_faithfulSMul
     P.primeCompl_le_nonZeroDivisors
+
+instance [IsDedekindDomain A] [IsDedekindDomain C] :
+    IsDedekindDomain (Localization (Algebra.algebraMapSubmonoid C P.primeCompl)) :=
+  IsLocalization.isDedekindDomain C
+    (map_le_nonZeroDivisors_of_faithfulSMul P.primeCompl_le_nonZeroDivisors) _
 
 instance [Algebra.IsSeparable (FractionRing A) (FractionRing C)] :
   Algebra.IsSeparable (FractionRing (Localization.AtPrime P))
