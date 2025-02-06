@@ -250,11 +250,9 @@ end prod
 section disjointUnion
 
 variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ∞}
-  [hM : IsManifold I n M] [hM' : IsManifold I n M']
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {J : Type*} {J : ModelWithCorners 𝕜 E' H'}
   {N N' : Type*} [TopologicalSpace N] [TopologicalSpace N'] [ChartedSpace H' N] [ChartedSpace H' N']
-  [IsManifold J n N] [IsManifold J n N']
 
 open Topology
 
@@ -270,21 +268,25 @@ lemma interiorPoint_inl (x : M) (hx : I.IsInteriorPoint x) :
 lemma boundaryPoint_inl (x : M) (hx : I.IsBoundaryPoint x) :
     I.IsBoundaryPoint (.inl x: M ⊕ M') := by
   rw [I.isBoundaryPoint_iff, extChartAt, ChartedSpace.sum_chartAt_inl]
-  dsimp
+  dsimp only [PartialHomeomorph.extend.eq_1, PartialEquiv.coe_trans, toPartialEquiv_coe,
+    PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.lift_openEmbedding_toFun, Function.comp_apply]
   rw [Sum.inl_injective.extend_apply (chartAt H x)]
   simpa [I.isBoundaryPoint_iff, extChartAt] using hx
 
 lemma interiorPoint_inr (x : M') (hx : I.IsInteriorPoint x) :
     I.IsInteriorPoint (.inr x : M ⊕ M') := by
   rw [I.isInteriorPoint_iff, extChartAt, ChartedSpace.sum_chartAt_inr]
-  dsimp
+  dsimp only [PartialHomeomorph.extend.eq_1, PartialEquiv.trans_target, toPartialEquiv_coe_symm,
+    PartialHomeomorph.lift_openEmbedding_target, PartialEquiv.coe_trans, toPartialEquiv_coe,
+    PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.lift_openEmbedding_toFun, Function.comp_apply]
   rw [Sum.inr_injective.extend_apply (chartAt H x)]
   simpa [I.isInteriorPoint_iff, extChartAt] using hx
 
 lemma boundaryPoint_inr (x : M') (hx : I.IsBoundaryPoint x) :
     I.IsBoundaryPoint (.inr x : M ⊕ M') := by
   rw [I.isBoundaryPoint_iff, extChartAt, ChartedSpace.sum_chartAt_inr]
-  dsimp
+  dsimp only [PartialHomeomorph.extend.eq_1, PartialEquiv.coe_trans, toPartialEquiv_coe,
+    PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.lift_openEmbedding_toFun, Function.comp_apply]
   rw [Sum.inr_injective.extend_apply (chartAt H x)]
   simpa [I.isBoundaryPoint_iff, extChartAt] using hx
 
