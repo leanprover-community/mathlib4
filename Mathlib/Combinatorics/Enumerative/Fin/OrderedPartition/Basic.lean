@@ -10,18 +10,22 @@ import Mathlib.Tactic.ApplyFun
 
 open Set Function List
 
-@[simp]
-theorem finSuccEquiv_eq_some {n : ℕ} {a : Fin (n + 1)} {b : Fin n} :
-    finSuccEquiv n a = b ↔ a = b.succ :=
-  (finSuccEquiv n).apply_eq_iff_eq_symm_apply
-
-@[simp]
-theorem finSuccEquiv_eq_none {n : ℕ} {a : Fin (n + 1)} : finSuccEquiv n a = none ↔ a = 0 :=
-  (finSuccEquiv n).apply_eq_iff_eq_symm_apply
-
 namespace List
 
 variable {α β : Type*}
+
+theorem perm_map_iff {f : α → β} (hf : f.Injective) {l₁ l₂ : List α} :
+    l₁.map f ~ l₂.map f ↔ l₁ ~ l₂ := by
+  refine ⟨fun hl ↦ ?_, .map f⟩
+  induction l₁ generalizing l₂ with
+  | nil => simp_all
+  | cons a l₁ ihl₁ =>
+    obtain ⟨i, hi, rfl⟩ : ∃ (i : ℕ) (hi : i < l₂.length), l₂[i] = a := by
+      rw [← mem_iff_getElem, ← mem_map_of_injective hf, ← hl.mem_iff]
+      simp
+    refine .trans (.cons _ <| ihl₁ ?_) (getElem_cons_eraseIdx_perm hi)
+    rw [← perm_cons, ← map_cons f l₂[i] (l₂.eraseIdx i)]
+    exact hl.trans <| .map _ <| (getElem_cons_eraseIdx_perm hi).symm
 
 @[simp] -- TODO: generalize to `finSuccEquiv'`
 theorem filterMap_finSuccEquiv_finRange (n : ℕ) :
@@ -43,65 +47,29 @@ theorem pmap_cons' {P : α → Prop} (f : ∀ a, P a → β) (a : α) (l : List 
     (a :: l).pmap f (by simpa [ha]) = f a ha :: l.pmap f hl :=
   pmap_cons ..
 
-@[simp]
-theorem sublist_insertIdx (l : List α) (n : ℕ) (a : α) : l <+ (l.insertIdx n a) := by
-  simpa only [eraseIdx_insertIdx] using eraseIdx_sublist (l.insertIdx n a) n
-
-@[simp]
-theorem subset_insertIdx (l : List α) (n : ℕ) (a : α) : l ⊆ l.insertIdx n a :=
-  (sublist_insertIdx ..).subset
+theorem modify_eq_set_getElem {l : List α} {n : ℕ} (h : n < l.length) (f : α → α) :
+    l.modify f n = l.set n (f l[n]) :=
+  modify_eq_set_get _ _
 
 theorem modify_eq_insertIdx_eraseIdx {l : List α} {n : ℕ} (h : n < l.length) (f : α → α) :
     l.modify f n = insertIdx n (f l[n]) (l.eraseIdx n) := by
-  induction n generalizing l with
-  | zero =>
-    cases l with
-    | nil => simp at h
-    | cons _ _ => simp
-  | succ n ihn =>
-    cases l with
-    | nil => simp at h
-    | cons hd tl => simp [ihn (by simpa using h)]
-
-@[simp]
-theorem insertIdx_eraseIdx {l : List α} {n : ℕ} (h : n < l.length) :
-    insertIdx n l[n] (l.eraseIdx n) = l := by
-  simpa using (modify_eq_insertIdx_eraseIdx h id).symm
+  rw [insertIdx_eraseIdx h.ne, modify_eq_set_getElem h]
 
 theorem modify_perm_cons_eraseIdx {l : List α} {n : ℕ} (h : n < l.length) (f : α → α) :
     l.modify f n ~ f l[n] :: l.eraseIdx n := by
-  rw [modify_eq_insertIdx_eraseIdx h]
-  apply perm_insertIdx
-  rw [length_eraseIdx_of_lt h]
-  exact Nat.le_sub_one_of_lt h
+  rw [modify_eq_set_getElem h]
+  exact set_perm_cons_eraseIdx h _
 
-theorem getElem_cons_eraseIdx_perm {l : List α} {n : ℕ} (h : n < l.length) :
-    l[n] :: l.eraseIdx n ~ l := by
-  simpa using (modify_perm_cons_eraseIdx h id).symm
+theorem Pairwise.rel_head_tail {l : List α} {R : α → α → Prop} (h₁ : l.Pairwise R) {a : α}
+    (ha : a ∈ l.tail) : R (l.head fun hl ↦ by simp [hl] at ha) a := by
+  generalize_proofs hl
+  rw [← head_cons_tail l hl, pairwise_cons] at h₁
+  exact h₁.1 a ha
 
-theorem pmap_insertIdx {p : α → Prop} (f : ∀ a, p a → β) {l : List α} {a : α} {n : ℕ}
-    (h : ∀ x ∈ insertIdx n a l, p x) (hn : n ≤ l.length) :
-    (insertIdx n a l).pmap f h =
-      (l.pmap f fun x hx ↦ h x (subset_insertIdx _ _ _ hx)).insertIdx n
-        (f a <| h a <| (mem_insertIdx hn).mpr <| .inl rfl) := by
-  match l, a, n, h, hn with
-  | _, _, 0, _, _ => simp
-  | [], _, _ + 1, _, _ => simp
-  | hd :: tl, a, n + 1, h, hn =>
-    have : n ≤ tl.length := by simpa using hn
-    simp [pmap_insertIdx f _ this]
-
-theorem eraseIdx_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (hl : ∀ a ∈ l, p a) (n : ℕ) :
-    (pmap f l hl).eraseIdx n = (l.eraseIdx n).pmap f fun a ha ↦ hl a (eraseIdx_subset _ _ ha) :=
-  match l, hl, n with
-  | [], _, _ => rfl
-  | a :: _, _, 0 => rfl
-  | a :: as, h, n + 1 => by rw [forall_mem_cons] at h; simp [eraseIdx_pmap f h.2 n]
-
-/-- Erasing an index commutes with `List.map`. -/
-theorem eraseIdx_map (f : α → β) (l : List α) (n : ℕ) :
-    (map f l).eraseIdx n = (l.eraseIdx n).map f := by
-  simpa only [pmap_eq_map] using eraseIdx_pmap (fun a _ ↦ f a) (fun _ _ ↦ trivial) n
+theorem Pairwise.rel_head {R : α → α → Prop} [IsRefl α R] {l : List α} (h₁ : l.Pairwise R)
+    {a : α} (ha : a ∈ l) : R (l.head <| ne_nil_of_mem ha) a := by
+  rw [← head_cons_tail l (ne_nil_of_mem ha), mem_cons] at ha
+  exact ha.elim (fun h ↦ h ▸ refl_of ..) h₁.rel_head_tail
 
 end List
 
@@ -211,8 +179,19 @@ lemma index_eq_iff_mem_getElem (c : OrderedPartition n) {i j} :
   simp [Fin.val_inj]
 
 @[simp]
-lemma mem_getElem_index (c : OrderedPartition n) (i : Fin n) : i ∈ c.parts[c.index i] :=
+lemma mem_getElem_index (c : OrderedPartition n) (i : Fin n) : i ∈ c.parts[(c.index i).1] :=
   c.index_eq_iff_mem_getElem.mp rfl
+
+@[simp]
+lemma head_getElem_index_zero [NeZero n] (c : OrderedPartition n) :
+    c.parts[(c.index 0).1].head (by simp) = 0 := by
+  refine le_antisymm ?_ (Fin.zero_le' _)
+  exact (c.sorted_le_of_mem_parts <| getElem_mem _).rel_head (c.mem_getElem_index 0)
+
+@[simp]
+lemma zero_cons_tail_getElem_index_zero [NeZero n] (c : OrderedPartition n) :
+    0 :: c.parts[(c.index 0).1].tail = c.parts[c.index 0] := by
+  simpa only [c.head_getElem_index_zero] using head_cons_tail c.parts[(c.index 0).1] (by simp)
 
 @[simp]
 theorem sum_length_parts (c : OrderedPartition n) : (c.parts.map length).sum = n := by
@@ -239,15 +218,16 @@ def zeroCons (c : OrderedPartition n) : OrderedPartition (n + 1) where
   perm_finRange := by
     rw [List.flatten_cons, List.singleton_append, finRange_succ, ← List.map_flatten]
     exact .cons _ <| .map _ c.perm_finRange
-    
-@[simp]
-theorem zeroCons_inj {c₁ c₂ : OrderedPartition n} : c₁.zeroCons = c₂.zeroCons ↔ c₁ = c₂ := by
-  simp [zeroCons, OrderedPartition.ext_iff, (succ_injective n).list_map.list_map.eq_iff]
 
 @[simp]
 theorem index_zero_zeroCons (c : OrderedPartition n) : c.zeroCons.index 0 = 0 := by
   rw [index_eq_iff_mem_getElem]
   apply mem_singleton_self
+
+@[simp]
+theorem length_parts_zeroCons (c : OrderedPartition n) :
+    c.zeroCons.parts.length = c.parts.length + 1 := by
+  simp [zeroCons]
 
 def atomic (n : ℕ) : OrderedPartition n where
   parts := (finRange n).map ([·])
@@ -260,6 +240,60 @@ def atomic (n : ℕ) : OrderedPartition n where
 theorem zeroCons_atomic (n : ℕ) : (atomic n).zeroCons = atomic (n + 1) := by
   ext1
   simp [atomic, zeroCons, finRange_succ]
+
+theorem singleton_zero_mem_parts [NeZero n] (c : OrderedPartition n) :
+    [0] ∈ c.parts ↔ c.parts.head (by simp [NeZero.ne]) = [0] := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ head_mem _⟩
+  rcases mem_iff_getElem.mp h with ⟨i, hi, hci⟩
+  rcases i.eq_zero_or_pos with rfl | hi₀
+  · rw [head_eq_getElem, ← hci]
+  · have := pairwise_iff_getElem.mp c.sorted_getLast_lt 0 i (by simp [length_pos, NeZero.ne])
+      (by simpa) hi₀
+    simp [hci, (Fin.zero_le' _).not_lt] at this
+
+/-- An ordered partition is `zeroCons c` for some `c` iff `[0]` is one of the parts. -/
+theorem range_zeroCons : Set.range (@zeroCons n) = {c | [0] ∈ c.parts} := by
+  refine (range_subset_iff.mpr fun c ↦ mem_cons_self _ _).antisymm fun c hc ↦ ?_
+  obtain ⟨L, hL⟩ : ∃ L : List (List (Fin n)), c.parts = [0] :: L.map (·.map Fin.succ) := by
+    rw [mem_setOf_eq, singleton_zero_mem_parts] at hc
+    have : ∀ l ∈ c.parts.tail, ∀ x ∈ l, x ≠ 0 := by
+      rintro l hl _ hl₀ rfl
+      refine c.pairwise_disjoint_parts.rel_head_tail hl ?_ hl₀
+      simp [hc]
+    use c.parts.tail.pmap (fun l hl ↦ l.pmap Fin.pred hl) this
+    simp [map_pmap, ← hc]
+  use! L
+  · simpa [hL, Sorted, pairwise_map] using c.sorted_le_of_mem_parts
+  · simpa [hL] using c.not_nil_mem_parts
+  · simpa [hL, Sorted, pmap_map, pairwise_pmap] using c.sorted_getLast_le
+  · rw [← perm_map_iff (succ_injective _), ← perm_cons, ← finRange_succ,
+      map_flatten, ← singleton_append, ← flatten_cons, ← hL]
+    exact c.perm_finRange
+  · ext1
+    exact hL.symm
+
+/-- Auxiliary definition for `extendPart`. We move it to a separate definition
+so that we can prove some `Iff` lemmas about it before we give the definition. -/
+def extendPart.parts (L : List (List (Fin n))) (i : Fin L.length) : List (List (Fin (n + 1))) :=
+  (L.map (·.map Fin.succ)).modify (List.cons 0) i
+
+theorem extendPart.parts_sorted_le_iff {L : List (List (Fin n))} {i : Fin L.length} :
+    (∀ l ∈ parts L i, l.Sorted (· ≤ ·)) ↔ ∀ l ∈ L, l.Sorted (· ≤ ·) := by
+  simp [parts, mem_iff_getElem, @forall_swap (List _), getElem_modify, Sorted,
+    apply_ite (Pairwise _), pairwise_map]
+
+theorem extendPart.parts_sorted_getLast_le_iff {L : List (List (Fin n))} {i : Fin L.length}
+    (h₁ : ∀ l ∈ parts L i, l ≠ []) (h₂ : ∀ l ∈ L, l ≠ []) :
+    ((parts L i).pmap getLast h₁).Sorted (· ≤ ·) ↔ (L.pmap getLast h₂).Sorted (· ≤ ·) := by
+  simp? [Sorted, parts, ← pmap_cons' getLast, pmap_map, modify_eq_take_cons_drop, ← map_take, ←
+      map_drop, pmap_congr_prop fun _ ↦ map_eq_nil_iff.not, h₂] says
+    simp only [Sorted, ne_eq, parts, length_map, is_lt, modify_eq_take_cons_drop, ← map_take,
+      getElem_map, ← map_drop, pmap_append, pmap_map, getLast_map,
+      pmap_congr_prop fun _ ↦ map_eq_nil_iff.not, pmap_cons, map_eq_nil_iff, getElem_mem, h₂,
+      not_false_eq_true, getLast_cons]
+  simp only [← map_pmap succ, ← map_cons succ, ← map_append, pairwise_map, succ_le_succ_iff,
+    ← pmap_cons' getLast, ← pmap_append']
+  simp
 
 def extendPart (c : OrderedPartition n) (i : Fin c.parts.length) : OrderedPartition (n + 1) where
   parts := (c.parts.map (·.map Fin.succ)).modify (List.cons 0) i
@@ -313,37 +347,14 @@ theorem index_zero_extendPart (c : OrderedPartition n) (i : Fin c.parts.length) 
     (c.extendPart i).index 0 = i.cast (c.length_parts_extendPart i).symm := by
   simp [index_eq_iff_mem_getElem]
 
-@[simp]
-theorem zeroCons_ne_extendPart (c₁ c₂ : OrderedPartition n) (i) :
-    c₁.zeroCons ≠ c₂.extendPart i := by
-  intro heq
-  have hi : i.val = 0 := by
-    symm
-    simpa using congr((index $heq 0).val)
-  have := calc
-    [(0 : Fin (n + 1))] = c₁.zeroCons.parts[0]'(by simp [zeroCons]) := rfl
-    _ = (c₂.extendPart i).parts[i] := by
-      simp only [heq, hi, getElem_fin]
-  simp at this
+theorem val_index_zero_extendPart (c : OrderedPartition n) (i : Fin c.parts.length) :
+    ((c.extendPart i).index 0 : ℕ) = i := by
+  simp
 
-theorem zero_mem_parts [NeZero n] (c : OrderedPartition n) :
-    [0] ∈ c.parts ↔ c.parts.head (by simp [NeZero.ne]) = [0] := by
-  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ head_mem _⟩
-  rcases mem_iff_getElem.mp h with ⟨i, hi, hci⟩
-  rcases i.eq_zero_or_pos with rfl | hi₀
-  · rw [head_eq_getElem, ← hci]
-  · have := pairwise_iff_getElem.mp c.sorted_getLast_lt 0 i (by simp [length_pos, NeZero.ne])
-      (by simpa) hi₀
-    simp [hci, (Fin.zero_le' _).not_lt] at this
-
-theorem eq_concat_succ_of_ne_zero (c : OrderedPartition (n + 1)) {l : List (Fin (n + 1))}
-    (h₁ : l ∈ c.parts) (h₂ : l ≠ [0]) : ∃ l' a, l = l' ++ [succ a] := by
-  rcases l.eq_nil_or_concat'.resolve_left (c.ne_nil_of_mem_parts h₁) with ⟨l', b, rfl⟩
-  cases b using Fin.cases with
-  | zero =>
-    have := c.sorted_lt_of_mem_parts h₁
-    simp_all [Sorted, pairwise_append, ← eq_nil_iff_forall_not_mem]
-  | succ a => exact ⟨_, _, rfl⟩
+theorem extendPart_injective (c : OrderedPartition n) : c.extendPart.Injective := by
+  intro i j h
+  ext
+  rw [← c.val_index_zero_extendPart, ← c.val_index_zero_extendPart, h]
 
 def extend (c : OrderedPartition n) : Fin (c.parts.length + 1) → OrderedPartition (n + 1) :=
   Matrix.vecCons c.zeroCons c.extendPart
@@ -361,6 +372,74 @@ theorem parts_eq_of_extend (c : OrderedPartition n) (i : Fin (c.parts.length + 1
   symm
   cases i using Fin.cases <;>
     simp +contextual [zeroCons, extendPart, modify_eq_set_get, comp_def, c.ne_nil_of_mem_parts]
+
+theorem extend_injective (c : OrderedPartition n) : c.extend.Injective := by
+  intro i j h
+  cases i using Fin.cases with
+  | zero =>
+    cases j using Fin.cases with
+    | zero => rfl
+    | succ _ => exact absurd congr($h |>.parts.length) (by simp)
+  | succ =>
+    cases j using Fin.cases with
+    | zero => exact absurd congr($h |>.parts.length) (by simp)
+    | succ _ => simpa [Fin.val_inj] using congr($h |>.index 0 |>.val)
+
+theorem extend_injective₂ :
+    Injective fun ci : (c : OrderedPartition n) × Fin (c.parts.length + 1) ↦ ci.1.extend ci.2 := by
+  rintro ⟨c₁, i₁⟩ ⟨c₂, i₂⟩ h
+  dsimp only at h
+  obtain rfl : c₁ = c₂ := by
+    ext1
+    rw [parts_eq_of_extend c₁ i₁, parts_eq_of_extend c₂ i₂, h]
+  simp [c₁.extend_injective h]
+
+theorem extend_surjective : 
+    Surjective fun ci : (c : OrderedPartition n) × Fin (c.parts.length + 1) ↦ ci.1.extend ci.2 := by
+  intro c
+  have : CanLift (Fin (n + 1)) (Fin n) Fin.succ (· ≠ 0) := ⟨fun _ ↦ exists_succ_eq_of_ne_zero⟩
+  by_cases hc : [0] ∈ c.parts
+  · obtain ⟨L, hL⟩ : ∃ L : List (List (Fin (n + 1))), c.parts = [0] :: L := by
+      rw [← head_cons_tail c.parts, c.singleton_zero_mem_parts.mp hc]
+      use c.parts.tail
+    have hLf : L.flatten ~ (finRange n).map succ := by
+      rw [← perm_cons, ← finRange_succ, ← rel_congr_right c.perm_finRange]
+      simp [hL]
+    lift L to List (List (Fin n)) using by
+      suffices 0 ∉ L.flatten by simpa [@imp_not_comm _ (_ = _)] using this
+      rw [hLf.mem_iff]
+      simp
+    rw [← map_flatten, perm_map_iff (succ_injective _)] at hLf
+    use! L
+    · intro l hl
+      
+      
+    
+
+/-
+  obtain ⟨L, i, hi, hcL⟩ :
+      ∃ L : List (List (Fin (n + 1))), ∃ i < L.length, c.parts = L.modify (0 :: ·) i :=
+    ⟨c.parts.modify .tail (c.index 0), c.index 0, by simp, by simp [modify_eq_set_getElem]⟩
+  have hLf : L.flatten ~ (finRange n).map succ := by
+    rw [← perm_cons, ← finRange_succ, ← rel_congr_right c.perm_finRange, hcL,
+      modify_eq_set_getElem hi, rel_congr_right (set_perm_cons_eraseIdx hi _).flatten,
+      flatten_cons, cons_append, ← flatten_cons]
+    exact .cons _ (getElem_cons_eraseIdx_perm ..).flatten.symm
+  lift L to List (List (Fin n)) using by
+    suffices 0 ∉ L.flatten by simpa [@imp_not_comm _ (_ = _)] using this
+    rw [hLf.mem_iff]
+    simp
+  rw [← map_flatten, perm_map_iff (succ_injective _)] at hLf
+-/
+
+theorem eq_concat_succ_of_ne_zero (c : OrderedPartition (n + 1)) {l : List (Fin (n + 1))}
+    (h₁ : l ∈ c.parts) (h₂ : l ≠ [0]) : ∃ l' a, l = l' ++ [succ a] := by
+  rcases l.eq_nil_or_concat'.resolve_left (c.ne_nil_of_mem_parts h₁) with ⟨l', b, rfl⟩
+  cases b using Fin.cases with
+  | zero =>
+    have := c.sorted_lt_of_mem_parts h₁
+    simp_all [Sorted, pairwise_append, ← eq_nil_iff_forall_not_mem]
+  | succ a => exact ⟨_, _, rfl⟩
 
 def mapPred (c : OrderedPartition (n + 1)) : OrderedPartition n where
   parts := (c.parts.map (·.filterMap (finSuccEquiv n))).filter (!·.isEmpty)
@@ -385,6 +464,22 @@ def mapPred (c : OrderedPartition (n + 1)) : OrderedPartition n where
       ← filterMap_finSuccEquiv_finRange]
     exact .filterMap _ c.perm_finRange
 
+theorem zero_nmem_of_mem_tail (c : OrderedPartition (n + 1)) (h : [0] ∈ c.parts) {l}
+    (hl : l ∈ c.parts.tail) : 0 ∉ l :=
+  c.pairwise_disjoint_parts.rel_head_tail hl <| by simp_all [singleton_zero_mem_parts]
+
+theorem zeroCons_mapPred (c : OrderedPartition (n + 1)) (h : [0] ∈ c.parts) :
+    c.mapPred.zeroCons = c := by
+  ext1
+  obtain ⟨L, hL⟩ : ∃ L, c.parts = [0]
+
+theorem mapPred_parts_of_singleton_zero_mem (c : OrderedPartition (n + 1)) (h : [0] ∈ c.parts) :
+    c.mapPred.parts =
+      c.parts.tail.pmap
+        (fun l (hl : 0 ∉ l) ↦ l.pmap pred fun a ha ↦ ne_of_mem_of_not_mem ha hl)
+        (fun _ ↦ c.zero_nmem_of_mem_tail h) := by
+  simp [mapPred]
+
 @[simp]
 lemma mapPred_zeroCons (c : OrderedPartition n) : c.zeroCons.mapPred = c := by
   ext1
@@ -404,7 +499,6 @@ lemma mapPred_extend (c : OrderedPartition n) (i : Fin (c.parts.length + 1)) :
 def extendInv (c : OrderedPartition (n + 1)) :
     (c : OrderedPartition n) × Fin (c.parts.length + 1) := by
   refine ⟨c.mapPred, if h₀ : [0] ∈ c.parts.head? then 0 else .succ <| (c.index 0).cast ?_⟩
-  
   
 
 -- namespace OrderedPartition
