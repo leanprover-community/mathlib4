@@ -37,12 +37,11 @@ section PositiveLinear
 
 include hΛ
 
-lemma mono (f₁ f₂ : C_c(X, ℝ)) (h : f₁.1 ≤ f₂.1) : Λ f₁ ≤ Λ f₂ := by
+lemma mono (f₁ f₂ : C_c(X, ℝ)) (h : f₁ ≤ f₂) : Λ f₁ ≤ Λ f₂ := by
   have : 0 ≤ Λ (f₂ - f₁) := by
     apply hΛ
     intro x
-    simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.zero_apply, coe_toContinuousMap, coe_sub,
-      Pi.sub_apply, sub_nonneg]
+    simp only [coe_zero, Pi.zero_apply, coe_sub, Pi.sub_apply, sub_nonneg]
     exact h x
   calc Λ f₁ ≤ Λ f₁ + Λ (f₂ - f₁) := by exact (le_add_iff_nonneg_right (Λ f₁)).mpr this
   _ =  Λ (f₁ + (f₂ - f₁)) := by exact Eq.symm (LinearMap.map_add Λ f₁ (f₂ - f₁))
