@@ -61,17 +61,14 @@ theorem coeffList_eq_nil {P : R[X]} : P.coeffList = [] ↔ P = 0 := by
 theorem coeffList_C {x : R} (h : x ≠ 0) : (C x).coeffList = [x] := by
   simp [coeffList, h, List.range_succ, degree_eq_natDegree (C_ne_zero.mpr h)]
 
-/-- coeffList starts with leadingCoeff -/
 theorem coeffList_eq_cons_leadingCoeff (h : P ≠ 0) :
     ∃ ls, P.coeffList = P.leadingCoeff :: ls := by
   simp [coeffList, List.range_succ, withBotSucc_degree_eq_natDegree_add_one h]
 
-/-- `List.head?` of coeffList is leadingCoeff -/
 theorem head?_coeffList (h : P ≠ 0) :
     P.coeffList.head? = P.leadingCoeff :=
   (coeffList_eq_cons_leadingCoeff h).casesOn fun _ ↦ (Eq.symm · ▸ rfl)
 
-/-- `List.head` of coeffList is leadingCoeff -/
 @[simp] theorem head_coeffList (P : R[X]) (hP) :
     P.coeffList.head hP = P.leadingCoeff :=
   let h := coeffList_eq_nil.not.mp hP
@@ -81,7 +78,6 @@ theorem head?_coeffList (h : P ≠ 0) :
 theorem length_coeffList_withBotSucc (P : R[X]) : P.coeffList.length = P.degree.succ := by
   simp [coeffList]
 
-/-- The length of the coefficient list is the degree plus one, or zero if P is zero. -/
 @[simp]
 theorem length_coeffList_ite [DecidableEq R] (P : R[X]) :
     P.coeffList.length = if P = 0 then 0 else P.natDegree + 1 := by
@@ -159,7 +155,6 @@ end Semiring
 section Ring
 variable [Ring R] (P : R[X])
 
-/-- The coefficient list is negated if the polynomial is negated. -/
 @[simp]
 theorem coeffList_neg : (-P).coeffList = P.coeffList.map (-·) := by
   by_cases hp : P = 0
@@ -171,8 +166,6 @@ section DivisionSemiring
 
 variable [DivisionSemiring R] (P : R[X])
 
-/-- Over a division semiring, multiplying a polynomial by a nonzero constant multiplies
-the coefficient list. -/
 theorem coeffList_C_mul {x : R} (hx : x ≠ 0) : (C x * P).coeffList = P.coeffList.map (x * ·) := by
   by_cases hp : P = 0
   · simp [hp]
