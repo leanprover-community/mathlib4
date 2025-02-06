@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Hom.Lattice
+import Mathlib.Order.Hom.WithTop
+import Mathlib.Order.Hom.Dual
+import Mathlib.Order.Hom.BooleanAlgebra
 
 /-!
 # Heyting algebra morphisms

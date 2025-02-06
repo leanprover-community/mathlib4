@@ -6,7 +6,9 @@ Authors: Bryan Gin-ge Chen, Yaël Dillies
 import Mathlib.Algebra.PUnitInstances.Algebra
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Ring
-import Mathlib.Order.Hom.Lattice
+import Mathlib.Order.Hom.WithTop
+import Mathlib.Order.Hom.Dual
+import Mathlib.Order.Hom.BooleanAlgebra
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Group.Idempotent
 

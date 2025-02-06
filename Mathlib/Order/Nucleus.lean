@@ -5,7 +5,9 @@ Authors: Chriara Cimino, Christian Krause
 -/
 import Mathlib.Order.Closure
 import Mathlib.Order.CompleteLattice
-import Mathlib.Order.Hom.Lattice
+import Mathlib.Order.Hom.WithTop
+import Mathlib.Order.Hom.Dual
+import Mathlib.Order.Hom.BooleanAlgebra
 
 /-!
 # Nucleus

@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Sum.Order
-import Mathlib.Order.Hom.Lattice
+import Mathlib.Order.Hom.WithTop
+import Mathlib.Order.Hom.Dual
+import Mathlib.Order.Hom.BooleanAlgebra
 
 /-!
 # Lexicographic sum of lattices

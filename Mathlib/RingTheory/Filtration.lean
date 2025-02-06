@@ -6,7 +6,9 @@ Authors: Andrew Yang
 import Mathlib.Algebra.Polynomial.Module.Basic
 import Mathlib.Algebra.Ring.Idempotent
 import Mathlib.Order.Basic
-import Mathlib.Order.Hom.Lattice
+import Mathlib.Order.Hom.WithTop
+import Mathlib.Order.Hom.Dual
+import Mathlib.Order.Hom.BooleanAlgebra
 import Mathlib.RingTheory.Finiteness.Nakayama
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.Noetherian.Orzech
