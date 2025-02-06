@@ -3866,12 +3866,12 @@ import Mathlib.MeasureTheory.Integral.PeakFunction
 import Mathlib.MeasureTheory.Integral.Periodic
 import Mathlib.MeasureTheory.Integral.Pi
 import Mathlib.MeasureTheory.Integral.Prod
+import Mathlib.MeasureTheory.Integral.RealRMK
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Integral.SetToL1
 import Mathlib.MeasureTheory.Integral.TorusIntegral
 import Mathlib.MeasureTheory.Integral.VitaliCaratheodory
-import Mathlib.MeasureTheory.Integral.linearRMK
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
 import Mathlib.MeasureTheory.MeasurableSpace.Card
 import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
