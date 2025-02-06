@@ -222,19 +222,12 @@ theorem card_le_of_centralizer_le_alternating
   suffices 1 < Fintype.card (Function.fixedPoints g) by
     obtain ⟨a, b, hab⟩ := Fintype.exists_pair_of_one_lt_card this
     suffices sign (kerParam g ⟨swap a b, 1⟩) ≠ 1 by
-      apply this (h _)
-      apply Subgroup.map_subtype_le (toPermHom g).ker
-      rw [← kerParam_range_eq]
-      apply Set.mem_range_self
-      -- exact this (h (kerParam_range_le_centralizer (Set.mem_range_self _)))
+      exact this (h (kerParam_range_le_centralizer (Set.mem_range_self _)))
     simp [sign_kerParam, hab]
   rwa [card_fixedPoints g, Nat.lt_iff_add_one_le, Nat.le_sub_iff_add_le]
   rw [sum_cycleType]
   exact Finset.card_le_univ _
 
-/-
-
--/
 theorem count_le_one_of_centralizer_le_alternating
     (h : Subgroup.centralizer {g} ≤ alternatingGroup α) :
     ∀ i, g.cycleType.count i ≤ 1 := by
