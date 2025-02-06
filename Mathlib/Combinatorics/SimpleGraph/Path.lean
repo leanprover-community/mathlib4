@@ -170,6 +170,10 @@ theorem IsTrail.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
   rw [isTrail_def, edges_append, List.nodup_append] at h
   exact ⟨h.2.1⟩
 
+theorem append_isTrail_iff {u v w : V} {p : G.Walk u v} {q : G.Walk v w} :
+     (p.append q).IsTrail ↔ p.IsTrail ∧ q.IsTrail ∧ p.edges.Disjoint q.edges := by
+  simp [isTrail_def, List.nodup_append]
+
 theorem IsTrail.count_edges_le_one [DecidableEq V] {u v : V} {p : G.Walk u v} (h : p.IsTrail)
     (e : Sym2 V) : p.edges.count e ≤ 1 :=
   List.nodup_iff_count_le_one.mp h.edges_nodup e
@@ -226,6 +230,15 @@ theorem IsPath.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
   rw [← isPath_reverse_iff] at h ⊢
   rw [reverse_append] at h
   apply h.of_append_left
+
+theorem append_isPath_iff {u v w : V} {p : G.Walk u v} {q : G.Walk v w} :
+     (p.append q).IsPath ↔ p.IsPath ∧ q.IsPath ∧ p.support.Disjoint q.support.tail := by
+  constructor <;> intro h
+  · exact ⟨h.of_append_left, h.of_append_right,
+            (List.nodup_append.1 <| support_append .. ▸ h.2).2.2⟩
+  · apply IsPath.mk'
+    rw [support_append, List.nodup_append]
+    exact ⟨h.1.2, h.2.1.2.sublist <| List.tail_sublist _, h.2.2⟩
 
 @[simp]
 theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle := fun h => h.ne_nil rfl
