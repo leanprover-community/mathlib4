@@ -59,8 +59,8 @@ def rieszMeasure := (rieszContent (toNNRealLinear Λ hΛ)).measure
 
 /-- If `f` assumes values between `0` and `1` and the support is contained in `K`, then
 `Λ f ≤ rieszMeasure K`. -/
-lemma leRieszMeasure_of_Compacts {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤ f x ∧ f x ≤ 1)
-    {K : Compacts X} (h : tsupport f ⊆ K) : ENNReal.ofReal (Λ f) ≤ (rieszMeasure Λ hΛ) K := by
+lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤ f x ∧ f x ≤ 1)
+    {K : Set X} (hK : IsCompact K) (h : tsupport f ⊆ K) : ENNReal.ofReal (Λ f) ≤ rieszMeasure Λ hΛ K := by
   have Lfnonneg : 0 ≤ Λ f := by
     apply hΛ
     intro x
