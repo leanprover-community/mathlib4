@@ -137,34 +137,6 @@ noncomputable def ofMonoidHom (f : E →* E') (comp_inl : f.comp S.inl = S'.inl)
   inl_comm := congrArg DFunLike.coe comp_inl
   rightHom_comm := congrArg DFunLike.coe rightHom_comp
 
-variable (equiv : S.Equiv S')
-
-/-- A group extension is equivalent to itself. -/
-@[to_additive "An additive group extension is equivalent to itself."]
-def refl (S : GroupExtension N E G) : S.Equiv S where
-  __ := MulEquiv.refl E
-  inl_comm := rfl
-  rightHom_comm := rfl
-
-/-- The inverse of an equivalence of group extensions is an equivalence. -/
-@[to_additive "The inverse of an equivalence of additive group extensions is an equivalence."]
-def symm : S'.Equiv S where
-  __ := equiv.toMulEquiv.symm
-  inl_comm := by rw [MulEquiv.symm_comp_eq, ← equiv.inl_comm]
-  rightHom_comm := by rw [MulEquiv.comp_symm_eq, ← equiv.rightHom_comm]
-
-/-- The composition of monoid isomorphisms associated to equivalences of group extensions gives
-    another equivalence. -/
-@[to_additive
-      "The composition of monoid isomorphisms associated to equivalences of additive group
-      extensions gives another equivalence."]
-def trans {E'' : Type*} [Group E''] {S'' : GroupExtension N E'' G} (equiv' : S'.Equiv S'') :
-    S.Equiv S'' where
-  __ := equiv.toMulEquiv.trans equiv'.toMulEquiv
-  inl_comm := by rw [MulEquiv.coe_trans, Function.comp_assoc, equiv.inl_comm, equiv'.inl_comm]
-  rightHom_comm := by
-    rw [MulEquiv.coe_trans, ← Function.comp_assoc, equiv'.rightHom_comm, equiv.rightHom_comm]
-
 end Equiv
 
 namespace Splitting
