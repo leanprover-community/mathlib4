@@ -7,6 +7,7 @@ Authors: Chris Hughes, Yaël Dillies
 import Mathlib.Data.List.Iterate
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.GroupTheory.NoncommPiCoprod
+import Mathlib.Tactic.Group
 
 /-!
 # Cycle factors of a permutation

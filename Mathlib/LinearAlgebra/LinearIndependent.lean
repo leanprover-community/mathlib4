@@ -150,6 +150,11 @@ theorem LinearIndependent.ne_zero [Nontrivial R] (i : ι) (hv : LinearIndependen
 theorem linearIndependent_empty_type [IsEmpty ι] : LinearIndependent R v :=
   injective_of_subsingleton _
 
+@[simp]
+theorem linearIndependent_zero_iff [Nontrivial R] : LinearIndependent R (0 : ι → M) ↔ IsEmpty ι :=
+  ⟨fun h ↦ not_nonempty_iff.1 fun ⟨i⟩ ↦ (h.ne_zero i rfl).elim,
+    fun _ ↦ linearIndependent_empty_type⟩
+
 variable (R M) in
 theorem linearIndependent_empty : LinearIndependent R (fun x => x : (∅ : Set M) → M) :=
   linearIndependent_empty_type
@@ -1337,6 +1342,22 @@ alias ⟨_, linearIndependent_unique⟩ := linearIndependent_unique_iff
 theorem linearIndependent_singleton {x : M} (hx : x ≠ 0) :
     LinearIndependent R (fun x => x : ({x} : Set M) → M) :=
   linearIndependent_unique ((↑) : ({x} : Set M) → M) hx
+
+@[simp]
+theorem linearIndependent_subsingleton_index_iff [Subsingleton ι] (f : ι → M) :
+    LinearIndependent R f ↔ ∀ i, f i ≠ 0 := by
+  obtain (he | he) := isEmpty_or_nonempty ι
+  · simp [linearIndependent_empty_type]
+  obtain ⟨_⟩ := (unique_iff_subsingleton_and_nonempty (α := ι)).2 ⟨by assumption, he⟩
+  rw [linearIndependent_unique_iff]
+  exact ⟨fun h i ↦ by rwa [Unique.eq_default i], fun h ↦ h _⟩
+
+@[simp]
+theorem linearIndependent_subsingleton_iff [Subsingleton M] (f : ι → M) :
+    LinearIndependent R f ↔ IsEmpty ι := by
+  obtain h | i := isEmpty_or_nonempty ι
+  · simpa
+  exact iff_of_false (fun hli ↦ hli.ne_zero i.some (Subsingleton.eq_zero (f i.some))) (by simp)
 
 end Nontrivial
 

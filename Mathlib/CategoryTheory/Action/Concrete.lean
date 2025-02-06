@@ -15,6 +15,8 @@ import Mathlib.CategoryTheory.Action.Basic
 We construct `Action (Type u) G` from a `[MulAction G X]` instance and give some applications.
 -/
 
+assert_not_exists Field
+
 universe u v
 
 open CategoryTheory Limits
@@ -101,10 +103,9 @@ def toEndHom [N.Normal] : G →* End (G ⧸ₐ N) where
   toFun v := {
     hom := Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) <| fun a b h ↦ Quotient.sound <| by
       apply (QuotientGroup.leftRel_apply).mpr
-      simp only [mul_inv_rev, inv_inv]
-      convert_to v * (a⁻¹ * b) * v⁻¹ ∈ N
-      · group
-      · exact Subgroup.Normal.conj_mem ‹_› _ (QuotientGroup.leftRel_apply.mp h) _
+      -- We avoid `group` here to minimize imports while low in the hierarchy;
+      -- typically it would be better to invoke the tactic.
+      simpa [mul_assoc] using Subgroup.Normal.conj_mem ‹_› _ (QuotientGroup.leftRel_apply.mp h) _
     comm := fun (g : G) ↦ by
       ext (x : G ⧸ N)
       induction' x using Quotient.inductionOn with x

@@ -56,7 +56,7 @@ theorem norm_cderiv_le (hr : 0 < r) (hf : ∀ w ∈ sphere z r, ‖f w‖ ≤ M)
   have h2 := circleIntegral.norm_integral_le_of_norm_le_const hr.le h1
   simp only [cderiv, norm_smul]
   refine (mul_le_mul le_rfl h2 (norm_nonneg _) (norm_nonneg _)).trans (le_of_eq ?_)
-  field_simp [_root_.abs_of_nonneg Real.pi_pos.le]
+  field_simp [abs_of_nonneg Real.pi_pos.le]
   ring
 
 theorem cderiv_sub (hr : 0 < r) (hf : ContinuousOn f (sphere z r))
