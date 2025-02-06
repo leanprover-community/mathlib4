@@ -29,7 +29,7 @@ open Set Function TopologicalSpace CompactlySupported CompactlySupportedContinuo
   MeasureTheory
 
 variable {X : Type*} [TopologicalSpace X]
-variable (Λ : C_c(X, ℝ) →ₗ[ℝ] ℝ) (hΛ : ∀ f, 0 ≤ f.1 → 0 ≤ Λ f)
+variable (Λ : C_c(X, ℝ) →ₗ[ℝ] ℝ) (hΛ : ∀ f, 0 ≤ f → 0 ≤ Λ f)
 
 namespace LinearRMK
 
