@@ -5,6 +5,7 @@ Authors: Anne Baanen, Yongle Hu
 -/
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Localization.Integral
+import Mathlib.RingTheory.Localization.AtPrime
 
 /-!
 # Ideals over/under ideals in integral extensions
