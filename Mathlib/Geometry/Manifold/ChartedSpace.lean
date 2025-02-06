@@ -575,6 +575,16 @@ lemma chart_mem_atlas (H : Type*) {M : Type*} [TopologicalSpace H] [TopologicalS
     [ChartedSpace H M] (x : M) : chartAt H x ∈ atlas H M :=
   ChartedSpace.chart_mem_atlas x
 
+lemma nonempty_of_chartedSpace {H : Type*} {M : Type*} [TopologicalSpace H] [TopologicalSpace M]
+    [ChartedSpace H M] (x : M) : Nonempty H :=
+  ⟨chartAt H x x⟩
+
+lemma isEmpty_of_chartedSpace (H : Type*) {M : Type*} [TopologicalSpace H] [TopologicalSpace M]
+    [ChartedSpace H M] [h : IsEmpty H] : IsEmpty M := by
+  rcases isEmpty_or_nonempty M with hM | ⟨⟨x⟩⟩
+  · exact hM
+  · exact (IsEmpty.false (chartAt H x x)).elim
+
 section ChartedSpace
 
 /-- An empty type is a charted space over any topological space. -/
@@ -881,15 +891,6 @@ def ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
       rw [Sum.elim_inr]
       right
       use ChartedSpace.chartAt x, cm'.chart_mem_atlas x
-
-lemma nonempty_of_chartedSpace (x : M) : Nonempty H :=
-  ⟨chartAt H x x⟩
-
-variable (H) in
-lemma isEmpty_of_chartedSpace [h : IsEmpty H] : IsEmpty M := by
-  rcases isEmpty_or_nonempty M with hM | ⟨⟨x⟩⟩
-  · exact hM
-  · exact (IsEmpty.false (chartAt H x x)).elim
 
 open scoped Classical in
 instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') :=
