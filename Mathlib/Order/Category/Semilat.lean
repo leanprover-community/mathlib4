@@ -66,7 +66,7 @@ instance : ConcreteCategory SemilatSupCat (SupBotHom · ·) where
   ofHom f := f
 
 instance hasForgetToPartOrd : HasForget₂ SemilatSupCat PartOrd where
-  forget₂.obj X := PartOrd.of X
+  forget₂.obj X := .of X
   forget₂.map f := PartOrd.ofHom ⟨f.toSupHom, OrderHomClass.mono f.toSupHom⟩
 
 @[simp]
@@ -106,7 +106,7 @@ instance : ConcreteCategory SemilatInfCat (InfTopHom · ·) where
   ofHom f := f
 
 instance hasForgetToPartOrd : HasForget₂ SemilatInfCat PartOrd where
-  forget₂.obj X := PartOrd.of X
+  forget₂.obj X := .of X
   forget₂.map f := PartOrd.ofHom ⟨f.toInfHom, OrderHomClass.mono f.toInfHom⟩
 
 @[simp]
@@ -131,7 +131,7 @@ def Iso.mk {α β : SemilatSupCat.{u}} (e : α ≃o β) : α ≅ β where
 /-- `OrderDual` as a functor. -/
 @[simps map]
 def dual : SemilatSupCat ⥤ SemilatInfCat where
-  obj X := SemilatInfCat.of Xᵒᵈ
+  obj X := .of Xᵒᵈ
   map {_ _} := SupBotHom.dual
 
 end SemilatSupCat
@@ -149,7 +149,7 @@ def Iso.mk {α β : SemilatInfCat.{u}} (e : α ≃o β) : α ≅ β where
 /-- `OrderDual` as a functor. -/
 @[simps]
 def dual : SemilatInfCat ⥤ SemilatSupCat where
-  obj X := SemilatSupCat.of Xᵒᵈ
+  obj X := .of Xᵒᵈ
   map {_ _} := InfTopHom.dual
 
 end SemilatInfCat

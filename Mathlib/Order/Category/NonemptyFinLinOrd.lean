@@ -100,7 +100,7 @@ instance hasForgetToLinOrd : HasForget₂ NonemptyFinLinOrd LinOrd :=
   InducedCategory.hasForget₂ _
 
 instance hasForgetToFinPartOrd : HasForget₂ NonemptyFinLinOrd FinPartOrd where
-  forget₂.obj X := FinPartOrd.of X
+  forget₂.obj X := .of X
   forget₂.map f := FinPartOrd.ofHom f.hom
 
 /-- Constructs an equivalence between nonempty finite linear orders from an order isomorphism
@@ -129,7 +129,7 @@ theorem mono_iff_injective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
   refine ⟨?_, ConcreteCategory.mono_of_injective f⟩
   intro
   intro a₁ a₂ h
-  let X := NonemptyFinLinOrd.of (ULift (Fin 1))
+  let X := of (ULift (Fin 1))
   let g₁ : X ⟶ A := ofHom ⟨fun _ => a₁, fun _ _ _ => by rfl⟩
   let g₂ : X ⟶ A := ofHom ⟨fun _ => a₂, fun _ _ _ => by rfl⟩
   change g₁ (ULift.up (0 : Fin 1)) = g₂ (ULift.up (0 : Fin 1))
@@ -146,7 +146,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
     dsimp only [Function.Surjective]
     by_contra! hf'
     rcases hf' with ⟨m, hm⟩
-    let Y := NonemptyFinLinOrd.of (ULift (Fin 2))
+    let Y := of (ULift (Fin 2))
     let p₁ : B ⟶ Y := ofHom
       ⟨fun b => if b < m then ULift.up 0 else ULift.up 1, fun x₁ x₂ h => by
         simp only
@@ -205,7 +205,7 @@ instance : SplitEpiCategory NonemptyFinLinOrd.{u} :=
 
 instance : HasStrongEpiMonoFactorisations NonemptyFinLinOrd.{u} :=
   ⟨fun {X Y} f => by
-    let I := NonemptyFinLinOrd.of (Set.image f ⊤)
+    let I := of (Set.image f ⊤)
     let e : X ⟶ I := ofHom ⟨fun x => ⟨f x, ⟨x, by tauto⟩⟩, fun x₁ x₂ h => f.hom.monotone h⟩
     let m : I ⟶ Y := ofHom ⟨fun y => y.1, by tauto⟩
     haveI : Epi e := by

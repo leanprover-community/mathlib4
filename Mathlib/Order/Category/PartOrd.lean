@@ -139,7 +139,7 @@ lemma hom_inv_apply {X Y : PartOrd} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s 
   simp
 
 instance hasForgetToPreord : HasForget₂ PartOrd Preord where
-  forget₂.obj X := Preord.of X
+  forget₂.obj X := .of X
   forget₂.map f := Preord.ofHom f.hom
 
 /-- Constructs an equivalence between partial orders from an order isomorphism between them. -/
@@ -171,7 +171,7 @@ theorem partOrd_dual_comp_forget_to_preord :
 
 /-- `Antisymmetrization` as a functor. It is the free functor. -/
 def preordToPartOrd : Preord.{u} ⥤ PartOrd where
-  obj X := PartOrd.of (Antisymmetrization X (· ≤ ·))
+  obj X := .of (Antisymmetrization X (· ≤ ·))
   map f := PartOrd.ofHom f.hom.antisymmetrization
   map_id X := by
     ext x

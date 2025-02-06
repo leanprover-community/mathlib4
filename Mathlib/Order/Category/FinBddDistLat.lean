@@ -155,11 +155,11 @@ instance : Inhabited FinBddDistLat :=
   ⟨of PUnit⟩
 
 instance hasForgetToBddDistLat : HasForget₂ FinBddDistLat BddDistLat where
-  forget₂.obj X := BddDistLat.of X
+  forget₂.obj X := .of X
   forget₂.map f := BddDistLat.ofHom f.hom
 
 instance hasForgetToFinPartOrd : HasForget₂ FinBddDistLat FinPartOrd where
-  forget₂.obj X := FinPartOrd.of X
+  forget₂.obj X := .of X
   forget₂.map f := PartOrd.ofHom (OrderHomClass.toOrderHom f.hom)
 
 /-- Constructs an equivalence between finite distributive lattices from an order isomorphism

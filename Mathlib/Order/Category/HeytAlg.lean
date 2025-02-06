@@ -145,7 +145,7 @@ instance : Inhabited HeytAlg :=
 
 @[simps]
 instance hasForgetToLat : HasForget₂ HeytAlg BddDistLat where
-  forget₂.obj X := BddDistLat.of X
+  forget₂.obj X := .of X
   forget₂.map f := BddDistLat.ofHom f.hom
 
 /-- Constructs an isomorphism of Heyting algebras from an order isomorphism between them. -/

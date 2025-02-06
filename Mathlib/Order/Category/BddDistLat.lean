@@ -154,18 +154,18 @@ instance : Inhabited BddDistLat :=
 
 /-- Turn a `BddDistLat` into a `BddLat` by forgetting it is distributive. -/
 def toBddLat (X : BddDistLat) : BddLat :=
-  BddLat.of X
+  .of X
 
 @[simp]
 theorem coe_toBddLat (X : BddDistLat) : ↥X.toBddLat = ↥X :=
   rfl
 
 instance hasForgetToDistLat : HasForget₂ BddDistLat DistLat where
-  forget₂.obj X := DistLat.of X
+  forget₂.obj X := .of X
   forget₂.map f := DistLat.ofHom f.hom.toLatticeHom
 
 instance hasForgetToBddLat : HasForget₂ BddDistLat BddLat where
-  forget₂.obj X := BddLat.of X
+  forget₂.obj X := .of X
   forget₂.map f := BddLat.ofHom f.hom
 
 theorem forget_bddLat_lat_eq_forget_distLat_lat :

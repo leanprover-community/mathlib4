@@ -107,12 +107,12 @@ instance {R : Type u} [BooleanRing R] :
 
 @[simps]
 instance BoolRing.hasForgetToBoolAlg : HasForget₂ BoolRing BoolAlg where
-  forget₂.obj X := BoolAlg.of (AsBoolAlg X)
+  forget₂.obj X := .of (AsBoolAlg X)
   forget₂.map f := BoolAlg.ofHom f.hom.asBoolAlg
 
 @[simps]
 instance BoolAlg.hasForgetToBoolRing : HasForget₂ BoolAlg BoolRing where
-  forget₂.obj X := BoolRing.of (AsBoolRing X)
+  forget₂.obj X := .of (AsBoolRing X)
   forget₂.map f := BoolRing.ofHom <| BoundedLatticeHom.asBoolRing f.hom
 
 /-- The equivalence between Boolean rings and Boolean algebras. This is actually an isomorphism. -/

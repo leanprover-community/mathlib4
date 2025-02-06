@@ -102,19 +102,19 @@ lemma hom_ext {X Y : BddLat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 instance hasForgetToBddOrd : HasForget₂ BddLat BddOrd where
-  forget₂.obj X := BddOrd.of X
+  forget₂.obj X := .of X
   forget₂.map f := BddOrd.ofHom f.hom.toBoundedOrderHom
 
 instance hasForgetToLat : HasForget₂ BddLat Lat where
-  forget₂.obj X := Lat.of X
+  forget₂.obj X := .of X
   forget₂.map f := Lat.ofHom f.hom.toLatticeHom
 
 instance hasForgetToSemilatSup : HasForget₂ BddLat SemilatSupCat where
-  forget₂.obj X := SemilatSupCat.of X
+  forget₂.obj X := .of X
   forget₂.map f := f.hom.toSupBotHom
 
 instance hasForgetToSemilatInf : HasForget₂ BddLat SemilatInfCat where
-  forget₂.obj X := SemilatInfCat.of X
+  forget₂.obj X := .of X
   forget₂.map f := f.hom.toInfTopHom
 
 @[simp]
@@ -196,7 +196,7 @@ theorem bddLat_dual_comp_forget_to_semilatInfCat :
 
 /-- The functor that adds a bottom and a top element to a lattice. This is the free functor. -/
 def latToBddLat : Lat.{u} ⥤ BddLat where
-  obj X := BddLat.of <| WithTop <| WithBot X
+  obj X := .of <| WithTop <| WithBot X
   map f := BddLat.ofHom <| LatticeHom.withTopWithBot f.hom
 
 /-- `latToBddLat` is left adjoint to the forgetful functor, meaning it is the free

@@ -146,7 +146,7 @@ lemma hom_inv_apply {X Y : Lat} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := b
   simp
 
 instance hasForgetToPartOrd : HasForget₂ Lat PartOrd where
-  forget₂.obj X := PartOrd.of X
+  forget₂.obj X := .of X
   forget₂.map f := PartOrd.ofHom f.hom
 
 /-- Constructs an isomorphism of lattices from an order isomorphism between them. -/

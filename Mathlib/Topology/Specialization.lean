@@ -86,5 +86,5 @@ def homeoWithUpperSetTopologyorderIso (α : Type*) [TopologicalSpace α] [Alexan
 /-- Sends a topological space to its specialisation order. -/
 @[simps]
 def topToPreord : TopCat ⥤ Preord where
-  obj X := Preord.of <| Specialization X
+  obj X := .of <| Specialization X
   map f := Preord.ofHom <| Specialization.map f.hom

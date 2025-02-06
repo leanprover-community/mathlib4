@@ -141,7 +141,7 @@ instance : Inhabited LinOrd :=
   ⟨of PUnit⟩
 
 instance hasForgetToLat : HasForget₂ LinOrd Lat where
-  forget₂.obj X := Lat.of X
+  forget₂.obj X := .of X
   forget₂.map f := Lat.ofHom (OrderHomClass.toLatticeHom _ _ f.hom)
 
 /-- Constructs an equivalence between linear orders from an order isomorphism between them. -/

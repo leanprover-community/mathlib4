@@ -144,7 +144,7 @@ lemma hom_inv_apply {X Y : DistLat} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s 
   simp
 
 instance hasForgetToLat : HasForget₂ DistLat Lat where
-  forget₂.obj X := Lat.of X
+  forget₂.obj X := .of X
   forget₂.map f := Lat.ofHom f.hom
 
 /-- Constructs an equivalence between distributive lattices from an order isomorphism between them.

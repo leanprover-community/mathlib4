@@ -81,7 +81,7 @@ topological spaces, which sends a locale `L` to the topological space `PT L` of 
 from `L` to `Prop` and a locale homomorphism `f` to a continuous function between the spaces
 of points. -/
 def pt : Locale ⥤ TopCat where
-  obj L := TopCat.of (PT L.unop)
+  obj L := .of (PT L.unop)
   map f := TopCat.ofHom ⟨fun p ↦ p.comp f.unop.hom,
     continuous_def.2 <| by rintro s ⟨u, rfl⟩; use f.unop u; rfl⟩
 

@@ -56,7 +56,7 @@ instance hasForgetToPartOrd : HasForget₂ FinPartOrd PartOrd :=
   InducedCategory.hasForget₂ FinPartOrd.toPartOrd
 
 instance hasForgetToFintype : HasForget₂ FinPartOrd FintypeCat where
-  forget₂.obj X := FintypeCat.of X
+  forget₂.obj X := .of X
   forget₂.map f := f.hom
 
 /-- Typecheck a `OrderHom` as a morphism in `FinPartOrd`. -/

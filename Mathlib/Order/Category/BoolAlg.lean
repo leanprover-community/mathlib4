@@ -147,14 +147,14 @@ instance : Inhabited BoolAlg :=
 
 /-- Turn a `BoolAlg` into a `BddDistLat` by forgetting its complement operation. -/
 def toBddDistLat (X : BoolAlg) : BddDistLat :=
-  BddDistLat.of X
+  .of X
 
 @[simp]
 theorem coe_toBddDistLat (X : BoolAlg) : ↥X.toBddDistLat = ↥X :=
   rfl
 
 instance hasForgetToBddDistLat : HasForget₂ BoolAlg BddDistLat where
-  forget₂.obj X := BddDistLat.of X
+  forget₂.obj X := .of X
   forget₂.map f := BddDistLat.ofHom f.hom
 
 section
@@ -163,7 +163,7 @@ attribute [local instance] BoundedLatticeHomClass.toBiheytingHomClass
 
 @[simps]
 instance hasForgetToHeytAlg : HasForget₂ BoolAlg HeytAlg where
-  forget₂.obj X := HeytAlg.of X
+  forget₂.obj X := .of X
   forget₂.map {X Y} f := HeytAlg.ofHom f.hom
 
 end
@@ -198,5 +198,5 @@ theorem boolAlg_dual_comp_forget_to_bddDistLat :
 /-- The powerset functor. `Set` as a contravariant functor. -/
 @[simps]
 def typeToBoolAlgOp : Type u ⥤ BoolAlgᵒᵖ where
-  obj X := op <| BoolAlg.of (Set X)
+  obj X := op <| .of (Set X)
   map {X Y} f := Quiver.Hom.op (BoolAlg.ofHom (CompleteLatticeHom.setPreimage f))

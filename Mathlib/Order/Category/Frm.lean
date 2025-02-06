@@ -147,7 +147,7 @@ instance : Inhabited Frm :=
   ⟨of PUnit⟩
 
 instance hasForgetToLat : HasForget₂ Frm Lat where
-  forget₂.obj X := Lat.of X
+  forget₂.obj X := .of X
   forget₂.map f := Lat.ofHom f.hom
 
 /-- Constructs an isomorphism of frames from an order isomorphism between them. -/

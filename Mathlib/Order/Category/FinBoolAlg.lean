@@ -63,7 +63,7 @@ instance hasForgetToBoolAlg : HasForget₂ FinBoolAlg BoolAlg :=
   InducedCategory.hasForget₂ FinBoolAlg.toBoolAlg
 
 instance hasForgetToFinBddDistLat : HasForget₂ FinBoolAlg FinBddDistLat where
-  forget₂.obj X := FinBddDistLat.of X
+  forget₂.obj X := .of X
   forget₂.map f := FinBddDistLat.ofHom f.hom
 
 instance forgetToBoolAlg_full : (forget₂ FinBoolAlg BoolAlg).Full :=
@@ -74,13 +74,13 @@ instance forgetToBoolAlgFaithful : (forget₂ FinBoolAlg BoolAlg).Faithful :=
 
 @[simps]
 instance hasForgetToFinPartOrd : HasForget₂ FinBoolAlg FinPartOrd where
-  forget₂.obj X := FinPartOrd.of X
+  forget₂.obj X := .of X
   forget₂.map {X Y} f := PartOrd.ofHom f.hom
 
-instance forgetToFinPartOrdFaithful : (forget₂ FinBoolAlg FinPartOrd).Faithful :=
-  ⟨fun h => by
+instance forgetToFinPartOrdFaithful : (forget₂ FinBoolAlg FinPartOrd).Faithful where
+  map_injective h := by
     ext x
-    exact CategoryTheory.congr_fun h x ⟩
+    exact CategoryTheory.congr_fun h x
 
 /-- Constructs an equivalence between finite Boolean algebras from an order isomorphism between
 them. -/
@@ -115,6 +115,6 @@ theorem finBoolAlg_dual_comp_forget_to_finBddDistLat :
 /-- The powerset functor. `Set` as a functor. -/
 @[simps]
 def fintypeToFinBoolAlgOp : FintypeCat ⥤ FinBoolAlgᵒᵖ where
-  obj X := op <| FinBoolAlg.of (Set X)
+  obj X := op <| .of (Set X)
   map {X Y} f :=
     Quiver.Hom.op <| BoolAlg.ofHom <| CompleteLatticeHom.setPreimage f

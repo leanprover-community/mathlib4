@@ -117,7 +117,7 @@ lemma hom_ofHom {X Y : Type u} [PartialOrder X] [BoundedOrder X] [PartialOrder Y
 
 @[simp]
 lemma ofHom_hom {X Y : BddOrd} (f : X ⟶ Y) :
-    ofHom (Hom.hom f) = f := rfl
+    ofHom f.hom = f := rfl
 
 @[simp]
 lemma ofHom_id {X : Type u} [PartialOrder X] [BoundedOrder X] :
@@ -132,7 +132,7 @@ lemma ofHom_comp {X Y Z : Type u} [PartialOrder X] [BoundedOrder X] [PartialOrde
 
 lemma ofHom_apply {X Y : Type u} [PartialOrder X] [BoundedOrder X] [PartialOrder Y] [BoundedOrder Y]
     (f : BoundedOrderHom X Y) (x : X) :
-    (ofHom f) x = f x := rfl
+    ofHom f x = f x := rfl
 
 @[simp]
 lemma inv_hom_apply {X Y : BddOrd} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by

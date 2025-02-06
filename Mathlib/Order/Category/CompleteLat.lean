@@ -53,7 +53,7 @@ instance : HasForget CompleteLat := by
   dsimp [CompleteLat]; infer_instance
 
 instance hasForgetToBddLat : HasForget₂ CompleteLat BddLat where
-  forget₂.obj X := BddLat.of X
+  forget₂.obj X := .of X
   forget₂.map f := BddLat.ofHom (CompleteLatticeHom.toBoundedLatticeHom f)
 
 /-- Constructs an isomorphism of complete lattices from an order isomorphism between them. -/

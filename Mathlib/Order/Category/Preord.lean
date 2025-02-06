@@ -170,7 +170,7 @@ end Preord
 -/
 @[simps]
 def preordToCat : Preord.{u} ⥤ Cat where
-  obj X := Cat.of X.1
+  obj X := .of X.1
   map f := f.hom.monotone.functor
 
 instance : preordToCat.{u}.Faithful where
