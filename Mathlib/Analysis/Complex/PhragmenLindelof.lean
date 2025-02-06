@@ -382,7 +382,7 @@ nonrec theorem quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
       simp only [EventuallyLE, eventually_inf_principal, eventually_comap, comp_apply, one_mul,
         Real.norm_of_nonneg (Real.exp_pos _).le, abs_exp, ← Real.exp_mul, Real.exp_le_exp]
       filter_upwards [eventually_ge_atTop 0] with x hx z hz _
-      rw [hz, _root_.abs_of_nonneg hx, mul_comm _ c]
+      rw [hz, abs_of_nonneg hx, mul_comm _ c]
       gcongr; apply le_max_left
   · -- If `ζ.im = 0`, then `Complex.exp ζ` is a positive real number
     intro ζ hζ; lift ζ to ℝ using hζ
