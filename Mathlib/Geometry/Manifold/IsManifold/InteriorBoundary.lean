@@ -250,11 +250,11 @@ end prod
 section disjointUnion
 
 variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ∞}
-  [hM : IsManifold I n M] [hM' : IsManifold I n M'] [Nonempty H]
+  [hM : IsManifold I n M] [hM' : IsManifold I n M']
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {J : Type*} {J : ModelWithCorners 𝕜 E' H'}
   {N N' : Type*} [TopologicalSpace N] [TopologicalSpace N'] [ChartedSpace H' N] [ChartedSpace H' N']
-  [IsManifold J n N] [IsManifold J n N'] [Nonempty H']
+  [IsManifold J n N] [IsManifold J n N']
 
 open Topology
 
@@ -350,7 +350,7 @@ lemma boundary_disjointUnion : ModelWithCorners.boundary (I := I) (M ⊕ M') =
 
 /-- If `M` and `M'` are boundaryless, so is their disjoint union `M ⊔ M'`. -/
 instance boundaryless_disjointUnion
-    [hM: BoundarylessManifold I M] [hM': BoundarylessManifold I M'] :
+    [hM : BoundarylessManifold I M] [hM' : BoundarylessManifold I M'] :
     BoundarylessManifold I (M ⊕ M') := by
   rw [← Boundaryless.iff_boundary_eq_empty] at hM hM' ⊢
   simp [boundary_disjointUnion, hM, hM']
