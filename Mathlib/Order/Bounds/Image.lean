@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov, Paul Lezeau
 -/
 import Mathlib.Data.Set.NAry
 import Mathlib.Order.Bounds.Defs
+import Mathlib.Order.Bounds.Basic
 
 /-!
 
@@ -136,6 +137,14 @@ theorem image_upperBounds_subset_upperBounds_image :
     f '' upperBounds s ⊆ upperBounds (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩
   exact Hf.mem_upperBounds_image ha
+
+lemma upperBounds_image_eq_ofSubset {s₁ s₂ : Set α}
+    (hs₁ : s₁ ⊆ s₂) (hs₂ : ∀ a ∈ s₂, ∃ b ∈ s₁, a ≤ b) :
+    upperBounds (f '' s₁) = upperBounds (f '' s₂) := by
+  apply upperBounds_eq_ofSubset (image_mono hs₁)
+  intro a ⟨c, hc⟩
+  obtain ⟨d,hd⟩ := hs₂ c hc.1
+  exact ⟨f d, ⟨(mem_image _ _ _).mpr ⟨d,⟨hd.1,rfl⟩⟩, le_of_eq_of_le hc.2.symm (Hf hd.2)⟩⟩
 
 theorem image_lowerBounds_subset_lowerBounds_image : f '' lowerBounds s ⊆ lowerBounds (f '' s) :=
   Hf.dual.image_upperBounds_subset_upperBounds_image
