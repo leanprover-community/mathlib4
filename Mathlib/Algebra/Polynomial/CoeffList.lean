@@ -41,11 +41,7 @@ section Semiring
 
 variable [Semiring R]
 
-/-- The list of coefficients starting from the leading term down to the constant term.
-
-Defining this with `P.support` keeps it computable, even if the base ring doesn't have
-`DecidableEq`.
--/
+/-- The list of coefficients starting from the leading term down to the constant term. -/
 def coeffList (P : R[X]) : List R :=
   (List.range P.degree.succ).reverse.map P.coeff
 
@@ -56,7 +52,7 @@ variable (R) in
 theorem coeffList_zero : (0 : R[X]).coeffList = [] := by
   simp [coeffList]
 
-/-- Only the zero polynomial gives nil coeffList -/
+/-- Only the zero polynomial has no coefficients. -/
 @[simp]
 theorem coeffList_eq_nil {P : R[X]} : P.coeffList = [] ↔ P = 0 := by
   simp [coeffList]
