@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
 import Mathlib.RingTheory.Spectrum.Prime.Basic
-import Mathlib.RingTheory.Localization.AtPrime
 
 /-!
 # Functoriality of the prime spectrum
