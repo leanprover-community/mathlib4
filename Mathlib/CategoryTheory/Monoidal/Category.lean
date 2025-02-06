@@ -450,12 +450,7 @@ instance ltimes_isIso {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') [IsIso f] [I
 theorem inv_ltimes {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') [IsIso f] [IsIso g] :
     inv (f ⋉ g) = inv f ⋊ inv g := by simp
 
-instance tensor_isIso {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] : IsIso (f ⊗ g) :=
-  by convert ltimes_isIso f g using 1; rw [tensor_eq_ltimes]
-
-theorem inv_tensor_eq_rtimes {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] :
-    inv (f ⊗ g) = inv f ⋊ inv g := by simp [tensor_eq_ltimes]
-
+/-- The right tensor product of two isomorphisms is an isomorphism. -/
 def rtimesIso {X Y X' Y' : C} (f : X ≅ Y)
     (g : X' ≅ Y') : X ⊗ X' ≅ Y ⊗ Y' where
   hom := f.hom ⋊ g.hom
@@ -472,6 +467,27 @@ instance rtimes_isIso {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') [IsIso f] [I
 
 theorem inv_rtimes {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') [IsIso f] [IsIso g] :
     inv (f ⋊ g) = inv f ⋉ inv g := by simp
+
+/-- The tensor product of two isomorphisms is an isomorphism. -/
+@[simps]
+def tensorIso {X Y X' Y' : C} (f : X ≅ Y)
+    (g : X' ≅ Y') : X ⊗ X' ≅ Y ⊗ Y' where
+  hom := f.hom ⊗ g.hom
+  inv := f.inv ⋊ g.inv
+  hom_inv_id := by simp [tensorHom_def]
+  inv_hom_id := by simp [tensorHom_def]
+
+instance tensor_isIso {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] : IsIso (f ⊗ g) :=
+  (tensorIso (asIso f) (asIso g)).isIso_hom
+
+theorem inv_tensor_eq_rtimes {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] :
+    inv (f ⊗ g) = inv f ⋊ inv g := by simp [tensor_eq_ltimes]
+
+theorem tensorIso_def {X Y X' Y' : C} (f : X ≅ Y) (g : X' ≅ Y') :
+    tensorIso f g = whiskerRightIso f X' ≪≫ whiskerLeftIso Y g :=
+  Iso.ext (tensorHom_def f.hom g.hom)
+
+-- TODO: central tensor iso
 
 variable {W X Y Z : C}
 
@@ -782,6 +798,20 @@ theorem Central.rtimes  {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ 
 instance Central.tensorHom {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂)
   [hf : Central f] [hg : Central g] : Central (f ⊗ g) := by rw [tensorHom_def]; infer_instance
 
+/-- The tensor product of two central isomorphisms is a central isomorphism. -/
+@[simps]
+def Central.tensorIso {X Y X' Y' : C} (f : X ≅ Y) [Central f.hom] (g : X' ≅ Y') [Central g.hom]
+  : X ⊗ X' ≅ Y ⊗ Y' where
+  hom := f.hom ⊗ g.hom
+  inv := f.inv ⊗ g.inv
+  hom_inv_id := by simp [tensorHom_def, left_exchange_assoc]
+  inv_hom_id := by simp [tensorHom_def, left_exchange_assoc]
+
+theorem Central.tensorIso_def {X Y X' Y' : C}
+  (f : X ≅ Y) [Central f.hom] (g : X' ≅ Y') [Central g.hom]
+  : Central.tensorIso f g = tensorIso f g
+  := by simp
+
 end PremonoidalCategory
 
 /--
@@ -835,6 +865,7 @@ export PremonoidalCategory (
   whiskerRightIso whiskerRightIso_hom whiskerRight_isIso
   inv_whiskerRight
   whiskerRightIso_refl whiskerRightIso_trans whiskerRightIso_symm
+  tensorIso tensorIso_hom tensor_isIso tensorIso_def
   whiskerLeft_dite dite_whiskerRight tensor_dite dite_tensor
   whiskerLeft_eqToHom eqToHom_whiskerRight
   associator_naturality_left associator_naturality_left_assoc
@@ -969,21 +1000,8 @@ theorem tensorHom_def' {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ �
     f ⊗ g = X₁ ◁ g ≫ f ▷ Y₂ :=
   whisker_exchange f g ▸ tensorHom_def f g
 
-/-- The tensor product of two isomorphisms is an isomorphism. -/
-@[simps]
-def tensorIso {X Y X' Y' : C} (f : X ≅ Y)
-    (g : X' ≅ Y') : X ⊗ X' ≅ Y ⊗ Y' where
-  hom := f.hom ⊗ g.hom
-  inv := f.inv ⊗ g.inv
-  hom_inv_id := by rw [← tensor_comp, Iso.hom_inv_id, Iso.hom_inv_id, ← tensor_id]
-  inv_hom_id := by rw [← tensor_comp, Iso.inv_hom_id, Iso.inv_hom_id, ← tensor_id]
-
 /-- Notation for `tensorIso`, the tensor product of isomorphisms -/
 scoped infixr:70 " ⊗ " => tensorIso
-
-theorem tensorIso_def {X Y X' Y' : C} (f : X ≅ Y) (g : X' ≅ Y') :
-    f ⊗ g = whiskerRightIso f X' ≪≫ whiskerLeftIso Y g :=
-  Iso.ext (tensorHom_def f.hom g.hom)
 
 theorem tensorIso_def' {X Y X' Y' : C} (f : X ≅ Y) (g : X' ≅ Y') :
     f ⊗ g = whiskerLeftIso X g ≪≫ whiskerRightIso f Y' :=
