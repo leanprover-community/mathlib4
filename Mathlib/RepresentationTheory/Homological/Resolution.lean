@@ -30,13 +30,12 @@ standard projective resolution of `k` as a trivial `k`-linear `G`-representation
 
 We then construct the bar resolution. The `n`th object in this complex is the representation on
 `Gⁿ →₀ k[G]` defined pointwise by the left regular representation on `k[G]`. The differentials are
-defined by sending `single (g₀, ..., gₙ) (single 1 1)` to
-`single (g₁, ..., gₙ) (single g₀ 1) + ∑ single (g₀, ..., gⱼgⱼ₊₁, ..., gₙ) (single 1 (-1)ʲ⁺¹)`
-` + single (g₀, ..., gₙ₋₁) (single 1 (-1)ⁿ⁺¹)` for `j = 0, ... , n - 1`.
+defined by sending `(g₀, ..., gₙ)` to
+`g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
+`j = 0, ... , n - 1`.
 
 In `RepresentationTheory.Rep` we define an isomorphism `Rep.diagonalSuccIsoFree` between
-`k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])` sending
-`(g₀, ..., gₙ) ↦ single (g₀, ..., gₙ) a ↦ single (g₀⁻¹g₁, ..., gₙ₋₁⁻¹gₙ) (single g₀ a)`.
+`k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])` sending `(g₀, ..., gₙ) ↦ g₀·(g₀⁻¹g₁, ..., gₙ₋₁⁻¹gₙ)`.
 We show that this isomorphism defines a commutative square with the bar resolution differential and
 the standard resolution differential, and thus conclude that the bar resolution differential
 squares to zero and that `Rep.diagonalSuccIsoFree` defines an isomorphism between the two
@@ -319,7 +318,7 @@ variable (n)
 
 /-- The differential from `Gⁿ⁺¹ →₀ k[G]` to `Gⁿ →₀ k[G]` in the bar resolution of `k` as a trivial
 `k`-linear `G`-representation. It sends `(g₀, ..., gₙ)` to
-`g₀ • (g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹ • (g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹ • (g₀, ..., gₙ₋₁)` for
+`g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
 `j = 0, ... , n - 1`. -/
 def d : free k G Gⁿ⁺¹ ⟶ free k G Gⁿ :=
   freeLift _ fun g => single (fun i => g i.succ) (single (g 0) 1) +
@@ -351,7 +350,7 @@ open barComplex
 
 /-- The projective resolution of `k` as a trivial `k`-linear `G`-representation with `n`th
 differential `(Gⁿ⁺¹ →₀ k[G]) → (Gⁿ →₀ k[G])` sending `(g₀, ..., gₙ)` to
-`g₀ • (g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹ • (g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹ • (g₀, ..., gₙ₋₁)` for
+`g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
 `j = 0, ... , n - 1`. -/
 noncomputable abbrev barComplex : ChainComplex (Rep k G) ℕ :=
   ChainComplex.of (fun n => free k G (Fin n → G)) (fun n => d k G n) fun _ => by
