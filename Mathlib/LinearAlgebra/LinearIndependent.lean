@@ -1136,10 +1136,10 @@ theorem linearIndependent_restrict_union_iff {s t : Set ι} {f : ι → M} (hdj 
     LinearIndependent R ((s ∪ t).restrict f) ↔
     (LinearIndependent R (s.restrict f)) ∧ (LinearIndependent R (t.restrict f))
     ∧ Disjoint (span R (f '' s)) (span R (f '' t)) := by
-  refine ⟨fun h ↦ ⟨h.mono_restrict subset_union_left, h.mono_restrict subset_union_right, ?_⟩,
-    fun h ↦ LinearIndependent.restrict_union h.1 h.2.1 h.2.2⟩
-  convert h.disjoint_span_image (s := (↑) ⁻¹' s) (t := (↑) ⁻¹' t) (hdj.preimage _) <;>
-  aesop
+  classical
+  rw [← linearIndependent_equiv (Equiv.Set.union hdj).symm, linearIndependent_sum, image_eq_range,
+    image_eq_range]
+  rfl
 
 theorem linearIndependent_iUnion_finite_subtype {ι : Type*} {f : ι → Set M}
     (hl : ∀ i, LinearIndependent R (fun x => x : f i → M))
