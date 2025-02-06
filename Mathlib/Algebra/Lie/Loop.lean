@@ -61,6 +61,7 @@ instance instLieRing : LieRing (LoopAlgebra R L) :=
 instance instLieAlgebra : LieAlgebra R (LoopAlgebra R L) :=
   LieAlgebra.RestrictScalars.lieAlgebra R (LaurentPolynomial R) (LaurentPolynomial R ⊗[R] L)
 
+/-- The linear map taking `x` to `T ^ n ⊗ x`. -/
 def monomial (n : ℤ) : L →ₗ[R] LoopAlgebra R L where
   toFun x := (RestrictScalars.addEquiv R (LaurentPolynomial R) (LaurentPolynomial R ⊗[R] L)).symm
     (LaurentPolynomial.T n ⊗ₜ x)
