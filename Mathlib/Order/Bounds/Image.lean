@@ -478,13 +478,9 @@ lemma Monotone.upperBounds_image_eq_ofSubset {f : α → β} (hf : Monotone f) {
     (hs₁ : s₁ ⊆ s₂) (hs₂ : ∀ a ∈ s₂, ∃ b ∈ s₁, a ≤ b) :
     upperBounds (f '' s₁) = upperBounds (f '' s₂) := by
   apply upperBounds_eq_ofSubset (image_mono hs₁)
-  intro a ha
-  obtain ⟨c,hc⟩ := ha
+  intro a ⟨c, hc⟩
   obtain ⟨d,hd⟩ := hs₂ c hc.1
-  use f d
-  constructor
-  · exact (mem_image _ _ _).mpr ⟨d,⟨hd.1,rfl⟩⟩
-  · exact le_of_eq_of_le hc.2.symm (hf hd.2)
+  exact ⟨f d, ⟨(mem_image _ _ _).mpr ⟨d,⟨hd.1,rfl⟩⟩, le_of_eq_of_le hc.2.symm (hf hd.2)⟩⟩
 
 lemma directed_product {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
     ∀ p ∈ (Prod.fst '' d) ×ˢ (Prod.snd '' d), ∃ q ∈ d, p ≤ q := by
