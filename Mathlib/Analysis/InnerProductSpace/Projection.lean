@@ -119,7 +119,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
           _ =
               absR (2 : ℝ) * ‖u - half • (wq + wp)‖ * (absR (2 : ℝ) * ‖u - half • (wq + wp)‖) +
                 ‖wp - wq‖ * ‖wp - wq‖ := by
-            rw [_root_.abs_of_nonneg]
+            rw [abs_of_nonneg]
             exact zero_le_two
           _ =
               ‖(2 : ℝ) • (u - half • (wq + wp))‖ * ‖(2 : ℝ) • (u - half • (wq + wp))‖ +

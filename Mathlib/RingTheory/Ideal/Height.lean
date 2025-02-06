@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Jingting Wang, Andrew Yang
 -/
 import Mathlib.Order.KrullDimension
-import Mathlib.RingTheory.Ideal.MinimalPrime
+import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 import Mathlib.RingTheory.Spectrum.Prime.Basic
 /-!
 # The Height of an Ideal

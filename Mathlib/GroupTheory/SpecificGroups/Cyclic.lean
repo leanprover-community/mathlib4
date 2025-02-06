@@ -8,6 +8,7 @@ import Mathlib.Data.ZMod.Aut
 import Mathlib.Data.ZMod.QuotientGroup
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.GroupTheory.Subgroup.Simple
+import Mathlib.Tactic.Group
 
 /-!
 # Cyclic groups
