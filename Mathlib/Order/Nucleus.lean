@@ -146,4 +146,6 @@ instance : CompleteSemilatticeInf (Nucleus X) where
   sInf_le := (by simp_all [sInf, LE.le, sInf_fun, sInf_le_iff,lowerBounds])
   le_sInf := (by simp_all [sInf, sInf_fun, LE.le])
 
+instance : CompleteLattice (Nucleus X) := completeLatticeOfCompleteSemilatticeInf (Nucleus X)
+
 end Nucleus
