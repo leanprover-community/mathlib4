@@ -98,7 +98,7 @@ class SetLike (A : Type*) (B : outParam Type*) where
   /-- The coercion from a term of a `SetLike` to its corresponding `Set` is injective. -/
   protected coe_injective' : Function.Injective coe
 
-attribute [coe] SetLike.coe
+attribute [coe, reducible, inline] SetLike.coe
 namespace SetLike
 
 variable {A : Type*} {B : Type*} [i : SetLike A B]
