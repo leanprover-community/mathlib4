@@ -167,6 +167,13 @@ theorem map_isLeast (Ha : IsLeast s a) : IsLeast (f '' s) (f a) :=
 theorem map_isGreatest (Ha : IsGreatest s a) : IsGreatest (f '' s) (f a) :=
   ⟨mem_image_of_mem _ Ha.1, Hf.mem_upperBounds_image Ha.2⟩
 
+omit Hf
+
+lemma upperBounds_image_of_directedOn_prod {γ : Type*} [Preorder γ] {g : α × β → γ}
+    (Hg : Monotone g) {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
+    upperBounds (g '' d) = upperBounds (g '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) :=
+  Hg.upperBounds_image_eq_ofSubset (subset_fst_image_times_snd_image d) (hd.prod_all_dominated)
+
 end Monotone
 
 namespace Antitone
