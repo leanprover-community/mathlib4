@@ -1,5 +1,5 @@
 on:
-  issue_comment
+  push
 
 name: Blog report
 
