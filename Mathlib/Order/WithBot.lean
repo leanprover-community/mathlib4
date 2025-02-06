@@ -188,10 +188,12 @@ lemma not_coe_le_bot (a : α) : ¬(a : WithBot α) ≤ ⊥ := by simp [le_def]
 
 instance orderBot : OrderBot (WithBot α) where bot_le := by simp [le_def]
 
+-- TODO: This deprecated lemma is still used (through simp)
 @[simp, deprecated coe_le_coe "Don't mix Option and WithBot" (since := "2024-05-27")]
 theorem some_le_some : @LE.le (WithBot α) _ (Option.some a) (Option.some b) ↔ a ≤ b :=
   coe_le_coe
 
+-- TODO: This deprecated lemma is still used (through simp)
 @[simp, deprecated bot_le "Don't mix Option and WithBot" (since := "2024-05-27")]
 theorem none_le {a : WithBot α} : @LE.le (WithBot α) _ none a := bot_le
 
@@ -234,12 +236,15 @@ lemma lt_def : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b
 @[simp] lemma bot_lt_coe (a : α) : ⊥ < (a : WithBot α) := by simp [lt_def]
 @[simp] protected lemma not_lt_bot (a : WithBot α) : ¬a < ⊥ := by simp [lt_def]
 
+-- TODO: This deprecated lemma is still used (through simp)
 @[simp, deprecated coe_lt_coe "Don't mix Option and WithBot" (since := "2024-05-27")]
 theorem some_lt_some : @LT.lt (WithBot α) _ (Option.some a) (Option.some b) ↔ a < b := coe_lt_coe
 
+-- TODO: This deprecated lemma is still used (through simp)
 @[simp, deprecated bot_lt_coe "Don't mix Option and WithBot" (since := "2024-05-27")]
 theorem none_lt_some (a : α) : @LT.lt (WithBot α) _ none (some a) := bot_lt_coe _
 
+-- TODO: This deprecated lemma is still used (through simp)
 @[simp, deprecated not_lt_bot "Don't mix Option and WithBot" (since := "2024-05-27")]
 theorem not_lt_none (a : WithBot α) : ¬@LT.lt (WithBot α) _ a none := WithBot.not_lt_bot _
 
@@ -657,12 +662,14 @@ lemma le_def : x ≤ y ↔ ∀ b : α, y = ↑b → ∃ a : α, x = ↑a ∧ a �
 
 lemma not_top_le_coe (a : α) : ¬ ⊤ ≤ (a : WithTop α) := by simp [le_def]
 
+-- TODO: This deprecated lemma is still used (through simp)
 @[simp, deprecated coe_le_coe "Don't mix Option and WithTop" (since := "2024-05-27")]
 theorem some_le_some : @LE.le (WithTop α) _ (Option.some a) (Option.some b) ↔ a ≤ b :=
   coe_le_coe
 
 instance orderTop : OrderTop (WithTop α) where le_top := by simp [le_def]
 
+-- TODO: This deprecated lemma is still used (through simp)
 @[simp, deprecated le_top "Don't mix Option and WithTop" (since := "2024-05-27")]
 theorem le_none {a : WithTop α} : @LE.le (WithTop α) _ a none := le_top
 
@@ -705,12 +712,15 @@ lemma lt_def : x < y ↔ ∃ a : α, x = ↑a ∧ ∀ b : α, y = ↑b → a < b
 @[simp] lemma coe_lt_top (a : α) : (a : WithTop α) < ⊤ := by simp [lt_def]
 @[simp] protected lemma not_top_lt (a : WithTop α) : ¬⊤ < a := by simp [lt_def]
 
+-- TODO: This deprecated lemma is still used (through simp)
 @[simp, deprecated coe_lt_coe "Don't mix Option and WithTop" (since := "2024-05-27")]
 theorem some_lt_some : @LT.lt (WithTop α) _ (Option.some a) (Option.some b) ↔ a < b := coe_lt_coe
 
+-- TODO: This deprecated lemma is still used (through simp)
 @[simp, deprecated coe_lt_top "Don't mix Option and WithTop" (since := "2024-05-27")]
 theorem some_lt_none (a : α) : @LT.lt (WithTop α) _ (Option.some a) none := coe_lt_top a
 
+-- TODO: This deprecated lemma is still used (through simp)
 @[simp, deprecated not_top_lt "Don't mix Option and WithTop" (since := "2024-05-27")]
 theorem not_none_lt (a : WithTop α) : ¬@LT.lt (WithTop α) _ none a := WithTop.not_top_lt _
 

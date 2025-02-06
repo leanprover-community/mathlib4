@@ -36,7 +36,6 @@ theorem range_list_map_coe (s : Set α) : range (map ((↑) : s → α)) = { l |
 theorem range_list_get : range l.get = { x | x ∈ l } := by
   ext x
   rw [mem_setOf_eq, mem_iff_get, mem_range]
-@[deprecated (since := "2024-04-22")] alias range_list_nthLe := range_list_get
 
 theorem range_list_get? : range l.get? = insert none (some '' { x | x ∈ l }) := by
   rw [← range_list_get, ← range_comp]
