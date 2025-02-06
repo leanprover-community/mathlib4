@@ -31,9 +31,7 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C] [MonoidalClose
   {J : Type u₂} [Category.{v₂} J]
   [∀ (F₁ F₂ : J ⥤ C), HasFunctorEnrichedHom C F₁ F₂]
 
-attribute [local simp] enrichedCategorySelf_hom enrichedCategorySelf_id
-  enrichedCategorySelf_comp enrichedOrdinaryCategorySelf_eHomWhiskerLeft
-  enrichedOrdinaryCategorySelf_eHomWhiskerRight
+attribute [local simp] enrichedCategorySelf_hom
 
 section
 
@@ -75,25 +73,22 @@ noncomputable def homEquiv : (F₁ ⊗ F₂ ⟶ F₃) ≃ (F₂ ⟶ functorEnric
     ext j
     dsimp
     ext k
-    rw [end_.lift_π, curry_uncurry, NatTrans.naturality_assoc]
-    dsimp
-    rw [end_.lift_π, enrichedOrdinaryCategorySelf_eHomWhiskerRight,
-      enrichedOrdinaryCategorySelf_eHomWhiskerLeft]
-    dsimp
-    rw [pre_id, NatTrans.id_app, Functor.map_id, Category.comp_id, Category.comp_id]
+    -- this following list was obtained by
+    -- `simp? [enrichedOrdinaryCategorySelf_eHomWhiskerLeft, Under.map, Comma.mapLeft]`
+    simp only [diagram_obj_obj, Functor.comp_obj, Under.forget_obj, enrichedCategorySelf_hom,
+      curry_uncurry, NatTrans.naturality_assoc, functorEnrichedHom_obj, functorEnrichedHom_map,
+      Under.map, Comma.mapLeft, Functor.const_obj_obj, Functor.id_obj, Discrete.natTrans_app,
+      StructuredArrow.left_eq_id, end_.lift_π, Under.mk_right, Under.mk_hom, Iso.refl_inv,
+      NatTrans.id_app, enrichedOrdinaryCategorySelf_eHomWhiskerRight, pre_id, Iso.refl_hom,
+      enrichedOrdinaryCategorySelf_eHomWhiskerLeft, Functor.map_id, Category.comp_id]
     congr
-    dsimp [Under.map, Comma.mapLeft]
-    simp only [Category.comp_id]
-    rfl
+    simp
 
 lemma homEquiv_naturality_two_symm (f₂ : F₂ ⟶ F₂') (g : F₂' ⟶ functorEnrichedHom C F₁ F₃) :
     homEquiv.symm (f₂ ≫ g) = F₁ ◁ f₂ ≫ homEquiv.symm g := by
   dsimp [homEquiv]
   ext j
-  dsimp
-  rw [← uncurry_natural_left]
-  congr 1
-  simp only [Category.assoc]
+  simp [← uncurry_natural_left]
 
 lemma homEquiv_naturality_three [∀ (F₁ F₂ : J ⥤ C), HasEnrichedHom C F₁ F₂]
     (f : F₁ ⊗ F₂ ⟶ F₃) (f₃ : F₃ ⟶ F₃') :
