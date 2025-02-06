@@ -160,8 +160,6 @@ theorem floor_natCast (n : ℕ) : ⌊(n : α)⌋₊ = n :=
     rw [le_floor_iff, Nat.cast_le]
     exact n.cast_nonneg
 
-@[deprecated (since := "2024-06-08")] alias floor_coe := floor_natCast
-
 @[simp]
 theorem floor_zero : ⌊(0 : α)⌋₊ = 0 := by rw [← Nat.cast_zero, floor_natCast]
 
@@ -602,7 +600,7 @@ def floor : α → ℤ :=
 def ceil : α → ℤ :=
   FloorRing.ceil
 
-/-- `Int.fract a`, the fractional part of `a`, is `a` minus its floor. -/
+/-- `Int.fract a` the fractional part of `a`, is `a` minus its floor. -/
 def fract (a : α) : α :=
   a - floor a
 
@@ -1011,8 +1009,7 @@ theorem sub_floor_div_mul_nonneg (a : k) (hb : 0 < b) : 0 ≤ a - ⌊a / b⌋ * 
 
 theorem sub_floor_div_mul_lt (a : k) (hb : 0 < b) : a - ⌊a / b⌋ * b < b :=
   sub_lt_iff_lt_add.2 <| by
-    -- Porting note: `← one_add_mul` worked in mathlib3 without the argument
-    rw [← one_add_mul _ b, ← div_lt_iff₀ hb, add_comm]
+    rw [← one_add_mul, ← div_lt_iff₀ hb, add_comm]
     exact lt_floor_add_one _
 
 theorem fract_div_natCast_eq_div_natCast_mod {m n : ℕ} : fract ((m : k) / n) = ↑(m % n) / n := by
@@ -1057,7 +1054,7 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     -- Porting note: the `simp` was `push_cast`
     simp [m₁]
   · congr 2
-    change (q * ↑n - (↑m₀ : ℤ)) % ↑n = _
+    simp only [m₁]
     rw [sub_eq_add_neg, add_comm (q * ↑n), add_mul_emod_self]
 
 end LinearOrderedField

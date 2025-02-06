@@ -9,6 +9,10 @@ import Mathlib.CategoryTheory.Enriched.FunctorCategory
 /-!
 # Functor categories are monoidal closed
 
+Let `C` be a monoidal closed category. Let `J` be a category. In this file,
+we obtain that the category `J ⥤ C` is monoidal closed if `C` has suitable
+limits.
+
 -/
 
 universe v₁ v₂ u₁ u₂
@@ -39,52 +43,44 @@ variable {F₁ F₂ F₂' F₃ F₃' : J ⥤ C}
 and `F₃` are functors `J ⥤ C`, and `C` is monoidal closed. -/
 noncomputable def homEquiv : (F₁ ⊗ F₂ ⟶ F₃) ≃ (F₂ ⟶ functorEnrichedHom C F₁ F₃) where
   toFun f :=
-    { app := fun j ↦ end_.lift (fun k ↦ F₂.map k.hom ≫ curry (f.app k.right)) (fun k₁ k₂ φ ↦ by
-        dsimp
-        simp only [enrichedOrdinaryCategorySelf_eHomWhiskerLeft, Category.assoc,
-          enrichedOrdinaryCategorySelf_eHomWhiskerRight]
-        rw [← curry_natural_left_assoc, ← curry_natural_left_assoc,
-          ← curry_natural_right, curry_pre_app, Category.assoc,
-          ← f.naturality φ.right, Monoidal.tensorObj_map, tensorHom_def_assoc,
-          ← Under.w φ, Functor.map_comp, MonoidalCategory.whiskerLeft_comp_assoc,
-          whisker_exchange_assoc])
-      naturality := fun j j' φ ↦ by
-        dsimp
-        ext k
-        dsimp
-        rw [Category.assoc, Category.assoc, end_.lift_π]
-        erw [end_.lift_π]
-        rw [end_.lift_π]
-        dsimp
-        rw [Functor.map_comp, Category.assoc] }
+    { app j := end_.lift (fun k ↦ F₂.map k.hom ≫ curry (f.app k.right))
+        (fun k₁ k₂ φ ↦ by
+          dsimp
+          simp only [enrichedOrdinaryCategorySelf_eHomWhiskerLeft, Category.assoc,
+            enrichedOrdinaryCategorySelf_eHomWhiskerRight]
+          rw [← curry_natural_left_assoc, ← curry_natural_left_assoc,
+            ← curry_natural_right, curry_pre_app, Category.assoc,
+            ← f.naturality φ.right, Monoidal.tensorObj_map, tensorHom_def_assoc,
+            ← Under.w φ, Functor.map_comp, MonoidalCategory.whiskerLeft_comp_assoc,
+            whisker_exchange_assoc]) }
   invFun g :=
-    { app := fun j ↦ uncurry (g.app j ≫ enrichedHomπ C _ _ (Under.mk (𝟙 j)) )
-      naturality := fun j j' φ ↦ by
+    { app j := uncurry (g.app j ≫ enrichedHomπ C _ _ (Under.mk (𝟙 j)) )
+      naturality j j' φ := by
         dsimp
         rw [← uncurry_natural_right, tensorHom_def'_assoc, ← uncurry_pre_app,
           ← uncurry_natural_left, Category.assoc, Category.assoc,
-          NatTrans.naturality_assoc, functorEnrichedHom_map]
-        erw [end_.lift_π_assoc]
+          NatTrans.naturality_assoc, functorEnrichedHom_map,
+          end_.lift_π_assoc, enrichedOrdinaryCategorySelf_eHomWhiskerRight]
+        dsimp
+        rw [pre_id, NatTrans.id_app, enrichedOrdinaryCategorySelf_eHomWhiskerLeft,
+          Functor.map_id, Category.comp_id, Category.comp_id]
         congr 2
         dsimp
         rw [← enrichedOrdinaryCategorySelf_eHomWhiskerRight,
           ← enrichedOrdinaryCategorySelf_eHomWhiskerLeft]
         let α : Under.mk (𝟙 j) ⟶ (Under.map φ).obj (Under.mk (𝟙 j')) := Under.homMk φ
         exact (enrichedHom_condition C (Under.forget j ⋙ F₁) (Under.forget j ⋙ F₃) α).symm }
-  left_inv f := by
-    dsimp
-    ext j
-    dsimp
-    rw [end_.lift_π]
-    dsimp
-    rw [Functor.map_id, Category.id_comp, uncurry_curry]
+  left_inv f := by aesop_cat
   right_inv g := by
     ext j
     dsimp
     ext k
     rw [end_.lift_π, curry_uncurry, NatTrans.naturality_assoc]
     dsimp
-    erw [end_.lift_π]
+    rw [end_.lift_π, enrichedOrdinaryCategorySelf_eHomWhiskerRight,
+      enrichedOrdinaryCategorySelf_eHomWhiskerLeft]
+    dsimp
+    rw [pre_id, NatTrans.id_app, Functor.map_id, Category.comp_id, Category.comp_id]
     congr
     dsimp [Under.map, Comma.mapLeft]
     simp only [Category.comp_id]
@@ -108,11 +104,14 @@ lemma homEquiv_naturality_three [∀ (F₁ F₂ : J ⥤ C), HasEnrichedHom C F�
   dsimp
   ext k
   rw [Category.assoc, Category.assoc, Category.assoc, end_.lift_π, enrichedComp_π,
-    tensorHom_def, Category.assoc, whisker_exchange_assoc,
-    MonoidalCategory.whiskerRight_id_assoc, Iso.inv_hom_id_assoc, end_.lift_π_assoc,
-    Category.assoc]
+    tensorHom_def, Category.assoc, whisker_exchange_assoc, whiskerRight_id_assoc,
+    Iso.inv_hom_id_assoc, end_.lift_π_assoc, Category.assoc,
+    ← MonoidalCategory.whiskerLeft_comp_assoc, Category.assoc, end_.lift_π,
+    enrichedOrdinaryCategorySelf_eHomWhiskerRight,
+    enrichedOrdinaryCategorySelf_eHomWhiskerLeft]
   dsimp
-  rw [← MonoidalCategory.whiskerLeft_comp_assoc, functorHomEquiv_app_π, curry_natural_right]
+  rw [pre_id, NatTrans.id_app, Functor.map_id, Category.comp_id,
+    Category.comp_id, homEquiv_apply_π, curry_natural_right]
   congr 2
   symm
   apply enrichedOrdinaryCategorySelf_eHomWhiskerLeft
@@ -122,8 +121,8 @@ end
 variable [∀ (F₁ F₂ : J ⥤ C), HasEnrichedHom C F₁ F₂]
 attribute [local instance] Enriched.FunctorCategory.functorEnrichedOrdinaryCategory
 
-/-- When `F : J ⥤ C`, `C` is monoidal closed and has suitable limits,
-then `tensorLeft F` has a right adjoint. -/
+/-- When `C` is monoidal closed and has suitable limits,
+then for any `F : J ⥤ C`, `tensorLeft F` has a right adjoint. -/
 noncomputable def adj (F : J ⥤ C) :
     MonoidalCategory.tensorLeft F ⊣ (eHomFunctor _ _).obj ⟨F⟩ :=
   Adjunction.mkOfHomEquiv
@@ -131,13 +130,15 @@ noncomputable def adj (F : J ⥤ C) :
       homEquiv_naturality_left_symm := homEquiv_naturality_two_symm
       homEquiv_naturality_right := homEquiv_naturality_three }
 
-/-- When `F : J ⥤ C`, `C` is monoidal closed and has suitable limits,
-then `tensorLeft F` has a right adjoint. -/
+/-- When `C` is monoidal closed and has suitable limits,
+then for any `F : J ⥤ C`, `tensorLeft F` has a right adjoint. -/
 noncomputable def closed (F : J ⥤ C) : Closed F where
   rightAdj := (eHomFunctor _ _).obj ⟨F⟩
   adj := adj F
 
-noncomputable instance monoidalClosed : MonoidalClosed (J ⥤ C) where
+/-- If `C` is monoidal closed and has suitable limits, the functor
+category `J ⥤ C` is monoidal closed. -/
+noncomputable scoped instance monoidalClosed : MonoidalClosed (J ⥤ C) where
   closed := closed
 
 end FunctorCategory
