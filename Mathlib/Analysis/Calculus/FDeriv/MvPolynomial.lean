@@ -26,7 +26,7 @@ variable {x : ι → 𝕜} {s : Set (ι → 𝕜)}
 
 namespace MvPolynomial
 
-/-! ### Derivative of a polynomial -/
+/-! ### Derivative of a multivariate polynomial -/
 
 variable {R : Type} [CommSemiring R] [Algebra R 𝕜]
 variable (p : MvPolynomial ι 𝕜) (q : MvPolynomial ι R)
