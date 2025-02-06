@@ -712,15 +712,12 @@ lemma lt_def : x < y ↔ ∃ a : α, x = ↑a ∧ ∀ b : α, y = ↑b → a < b
 @[simp] lemma coe_lt_top (a : α) : (a : WithTop α) < ⊤ := by simp [lt_def]
 @[simp] protected lemma not_top_lt (a : WithTop α) : ¬⊤ < a := by simp [lt_def]
 
--- TODO: This deprecated lemma is still used (through simp)
 @[simp, deprecated coe_lt_coe "Don't mix Option and WithTop" (since := "2024-05-27")]
 theorem some_lt_some : @LT.lt (WithTop α) _ (Option.some a) (Option.some b) ↔ a < b := coe_lt_coe
 
--- TODO: This deprecated lemma is still used (through simp)
 @[simp, deprecated coe_lt_top "Don't mix Option and WithTop" (since := "2024-05-27")]
 theorem some_lt_none (a : α) : @LT.lt (WithTop α) _ (Option.some a) none := coe_lt_top a
 
--- TODO: This deprecated lemma is still used (through simp)
 @[simp, deprecated not_top_lt "Don't mix Option and WithTop" (since := "2024-05-27")]
 theorem not_none_lt (a : WithTop α) : ¬@LT.lt (WithTop α) _ none a := WithTop.not_top_lt _
 
@@ -795,10 +792,8 @@ theorem coe_top_lt [OrderTop α] : (⊤ : α) < x ↔ x = ⊤ := by cases x <;> 
 lemma forall_gt_iff_eq_top : (∀ a : α, a < y) ↔ y = ⊤ := by
   cases y <;> simp; simpa using ⟨_, lt_irrefl _⟩
 
-lemma forall_ge_iff_eq_top [NoMaxOrder α] : (∀ a : α, a ≤ y) ↔ y = ⊤ := by
-  refine ⟨fun h ↦ forall_gt_iff_eq_top.1 fun y ↦ ?_, by simp +contextual⟩
-  obtain ⟨w, hw⟩ := exists_gt y
-  exact (h w).trans_lt' (coe_lt_coe.2 hw)
+lemma forall_ge_iff_eq_top [NoMaxOrder α] : (∀ a : α, a ≤ y) ↔ y = ⊤ :=
+  WithBot.forall_le_iff_eq_bot (α := αᵒᵈ)
 
 end Preorder
 
@@ -867,24 +862,13 @@ lemma ge_of_forall_gt_iff_ge : (∀ a : α, a < x → a ≤ y) ↔ x ≤ y := by
 
 end LinearOrder
 
-instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithTop α) where
-  wf :=
-  have acc_some (a : α) : Acc ((· < ·) : WithTop α → WithTop α → Prop) a :=
-    (wellFounded_lt.1 a).rec fun _ _ ih =>
-      .intro _ fun
-        | (b : α), hlt => ih _ (coe_lt_coe.1 hlt)
-  .intro fun
-    | (a : α) => acc_some a
-    | ⊤ => .intro _ fun | (b : α), _ => acc_some b
+instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithTop α) :=
+  inferInstanceAs <| WellFoundedLT (WithBot αᵒᵈ)ᵒᵈ
 
 open OrderDual
 
-instance instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithTop α) where
-  wf := .intro fun
-  | ⊤ => ⟨_, by simp⟩
-  | (a : α) => (wellFounded_gt.1 a).rec fun _ _ ih ↦ .intro _ fun
-    | ⊤, _ => ⟨_, by simp⟩
-    | (b : α), hlt => ih _ (coe_lt_coe.1 hlt)
+instance instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithTop α) :=
+  inferInstanceAs <| WellFoundedGT (WithBot αᵒᵈ)ᵒᵈ
 
 instance trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
     IsTrichotomous (WithTop α) (· < ·) where
@@ -913,14 +897,8 @@ instance _root_.WithBot.isWellOrder.gt [Preorder α] [h : IsWellOrder α (· > �
     IsWellOrder (WithBot α) (· > ·) where
   trichotomous x y := by cases x <;> cases y <;> simp; simpa using trichotomous_of (· > ·) ..
 
-instance [LT α] [DenselyOrdered α] [NoMaxOrder α] : DenselyOrdered (WithTop α) where
-  dense := fun
-    | (a : α), ⊤, _ =>
-      let ⟨b, hb⟩ := exists_gt a
-      ⟨b, by simpa⟩
-    | (a : α), (b : α), hab =>
-      let ⟨c, hac, hcb⟩ := exists_between (coe_lt_coe.1 hab)
-      ⟨c, coe_lt_coe.2 hac, coe_lt_coe.2 hcb⟩
+instance [LT α] [DenselyOrdered α] [NoMaxOrder α] : DenselyOrdered (WithTop α) :=
+  OrderDual.denselyOrdered (WithBot αᵒᵈ)
 
 theorem lt_iff_exists_coe_btwn [Preorder α] [DenselyOrdered α] [NoMaxOrder α] {a b : WithTop α} :
     a < b ↔ ∃ x : α, a < ↑x ∧ ↑x < b :=
