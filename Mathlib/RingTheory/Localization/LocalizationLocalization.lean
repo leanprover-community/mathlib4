@@ -299,7 +299,7 @@ theorem isFractionRing_of_isDomain_of_isLocalization [IsDomain R] (S T : Type*) 
   rw [← (algebraMap R S).map_one, ← @mk'_one R _ M, @comm _ Eq, mk'_eq_zero_iff]
   exact ⟨⟨x, hx⟩, by simp [hx']⟩
 
-instance {R : Type*} [CommRing R] [IsDomain R] (p : Ideal R) [p.IsPrime] :
+instance [IsDomain R] (p : Ideal R) [p.IsPrime] :
     IsFractionRing (Localization.AtPrime p) (FractionRing R) :=
   IsFractionRing.isFractionRing_of_isDomain_of_isLocalization p.primeCompl
     (Localization.AtPrime p) (FractionRing R)
