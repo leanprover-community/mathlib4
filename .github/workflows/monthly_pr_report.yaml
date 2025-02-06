@@ -1,0 +1,51 @@
+on:
+  issue_comment
+
+name: Blog report
+
+jobs:
+
+  Monthly_PRs:
+    if: github.repository == 'leanprover-community/mathlib4' && github.event.pull_request.draft == false
+    name: Blog draft
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      BRANCH_NAME: ${{ github.head_ref }}
+
+    steps:
+      - name: cleanup
+        run: |
+          find . -name . -o -prune -exec rm -rf -- {} +
+
+      - uses: actions/checkout@v4
+        with:
+          repository: leanprover-community/mathlib4
+          fetch-depth: 0
+          ref: master
+
+      - name: blog report
+        run: |
+          yrMth=2024-07
+          mth="$(date -d "${yrMth}-01" '+%B')"
+          PR="${{ github.event.pull_request.number }}"
+          title="### ${mth} in Mathlib summary"
+
+          printf $'Repository: %s\nBranch: %s\n' "${{ github.repository }}" "${BRANCH_NAME}"
+          git checkout origin/adomani/yd_find_label scripts/find_labels.sh
+          message="$(printf '%s\n\n%s\n' "${title}" "$(./scripts/find_labels.sh "${{ github.repository }}" "${yrMth}")")"
+          echo "${message}"
+          message="$(echo "${message}" |
+            sed '
+              / [0-9]* PRs$/{
+                s=^=</details><details><summary>\n=
+                s=$=\n</summary>\n=
+              }
+              s=^PR \(#[0-9]* [^:]*\): .*=* \1 =' |
+            sed -z '
+              s=</details><details><summary>=<details><summary>=
+              s=\n---\nReports\n\n=\n</details>\n\n---\n\n<details><summary>Reports</summary>\n\n=
+              s=\n---[\n]*$=\n\n</details>\n&=
+            ')"
+          ./scripts/update_PR_comment.sh "${message}" "${title}" "${PR}"
