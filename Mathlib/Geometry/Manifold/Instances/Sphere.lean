@@ -14,7 +14,6 @@ import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
 import Mathlib.Tactic.Module
-import Mathlib.Topology.Compactification.OnePoint.Basic
 import Mathlib.Topology.PartialHomeomorph
 
 /-!
