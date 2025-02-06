@@ -12,8 +12,8 @@ import Mathlib.Data.Set.Card
 
 ## Main definition
 
-* `SimpleGraph.ConnectedComponent.Represents` says that a set of vertices represents a set of components if it contains exactly
-  one vertex from each component.
+* `SimpleGraph.ConnectedComponent.Represents` says that a set of vertices represents a set of
+  components if it contains exactly one vertex from each component.
 -/
 
 universe u
@@ -67,8 +67,4 @@ lemma ncard_sdiff_of_not_mem [Fintype V] (hrep : Represents s C) (h : c ∉ C) :
   simp [← Set.ncard_inter_add_ncard_diff_eq_ncard c.supp s (Set.toFinite _), Set.inter_comm,
     Set.disjoint_iff_inter_eq_empty.mp (hrep.disjoint_supp_of_not_mem h)]
 
-end Represents
-
-end ConnectedComponent
-
-end SimpleGraph
+end SimpleGraph.ConnectedComponent.Represents
