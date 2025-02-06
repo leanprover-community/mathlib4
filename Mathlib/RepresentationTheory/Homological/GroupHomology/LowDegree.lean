@@ -16,6 +16,11 @@ In `RepresentationTheory.Homological.GroupHomology.Basic`, we define the `n`th g
 this is unnecessarily unwieldy in low degree. Moreover, homology of a complex is defined as an
 abstract cokernel, whereas the definitions here will be explicit quotients of cycles by boundaries.
 
+Given an additive abelian group `A` with an appropriate scalar action of `G`, we provide support
+for turning a finsupp `f : G →₀ A` satisfying the 1-cycle identity into an element of the
+`oneCycles` of the representation on `A` corresponding to the scalar action. We also do this for
+0-boundaries, 1-boundaries, 2-cycles and 2-boundaries.
+
 -/
 
 universe v u
@@ -422,11 +427,11 @@ section
 
 variable {G A : Type*} [Mul G] [Inv G] [AddCommGroup A] [SMul G A]
 
-/-- A finsupp `∑ single gᵢ aᵢ : G →₀ A` satisfies the 1-cycle condition if `∑ gᵢ⁻¹ • aᵢ = ∑ aᵢ`. -/
+/-- A finsupp `∑ aᵢ·gᵢ : G →₀ A` satisfies the 1-cycle condition if `∑ gᵢ⁻¹ • aᵢ = ∑ aᵢ`. -/
 def IsOneCycle (x : G →₀ A) : Prop := x.sum (fun g a => g⁻¹ • a) = x.sum (fun _ a => a)
 
-/-- A finsupp `∑ single (gᵢ, hᵢ) aᵢ : G × G →₀ A` satisfies the 2-cycle condition if
-`∑ single hᵢ (gᵢ⁻¹ • aᵢ) + single gᵢ aᵢ = ∑ single gᵢhᵢ aᵢ`. -/
+/-- A finsupp `∑ aᵢ·(gᵢ, hᵢ) : G × G →₀ A` satisfies the 2-cycle condition if
+`∑ (gᵢ⁻¹ • aᵢ)·hᵢ + aᵢ·gᵢ = ∑ aᵢ·gᵢhᵢ`. -/
 def IsTwoCycle (x : G × G →₀ A) : Prop :=
   x.sum (fun g a => single g.2 (g.1⁻¹ • a) + single g.1 a) =
     x.sum (fun g a => single (g.1 * g.2) a)
@@ -443,13 +448,12 @@ theorem single_isOneCycle_iff (g : G) (a : A) :
   rw [← (MulAction.bijective g⁻¹).1.eq_iff]
   simp [IsOneCycle, eq_comm]
 
-theorem single_isOneCycle_of_mem_fixedBy
+theorem single_isOneCycle_of_mem_fixedPoints
     (g : G) (a : A) (ha : a ∈ MulAction.fixedPoints G A) :
     IsOneCycle (single g a) := by
   simp_all [IsOneCycle]
 
-theorem single_isTwoCycle_iff_inv
-    {G : Type*} [Group G] [DistribMulAction G A] (g : G × G) (a : A) :
+theorem single_isTwoCycle_iff_inv (g : G × G) (a : A) :
     IsTwoCycle (single g a) ↔
       single g.2 (g.1⁻¹ • a) + single g.1 a = single (g.1 * g.2) a := by
   simp [IsTwoCycle]
@@ -473,21 +477,19 @@ variable {G A : Type*} [Mul G] [Inv G] [AddCommGroup A] [SMul G A]
 
 variable (G) in
 /-- A term `x : A` satisfies the 0-boundary condition if there exists a finsupp
-`∑ single gᵢ aᵢ : G →₀ A` such that `∑ gᵢ⁻¹ • aᵢ - aᵢ = x`. -/
+`∑ aᵢ·gᵢ : G →₀ A` such that `∑ gᵢ⁻¹ • aᵢ - aᵢ = x`. -/
 def IsZeroBoundary (a : A) : Prop :=
   ∃ (x : G →₀ A), x.sum (fun g a => g⁻¹ • a - a) = a
 
 /-- A finsupp `x : G →₀ A` satisfies the 1-boundary condition if there's a finsupp
-`∑ single (gᵢ, hᵢ) aᵢ : G × G →₀ A` such that
-`∑ single hᵢ (gᵢ⁻¹ • aᵢ) - single gᵢhᵢ aᵢ + single gᵢ aᵢ = x`. -/
+`∑ aᵢ·(gᵢ, hᵢ) : G × G →₀ A` such that `∑ (gᵢ⁻¹ • aᵢ)·hᵢ - aᵢ·gᵢhᵢ + aᵢ·gᵢ = x`. -/
 def IsOneBoundary (x : G →₀ A) : Prop :=
   ∃ y : G × G →₀ A, y.sum
     (fun g a => single g.2 (g.1⁻¹ • a) - single (g.1 * g.2) a + single g.1 a) = x
 
 /-- A finsupp `x : G × G →₀ A` satsfies the 2-boundary condition if there's a finsupp
-`∑ single (gᵢ, hᵢ, jᵢ) aᵢ : G × G × G →₀ A` such that
-`∑ single (hᵢ, jᵢ) (gᵢ⁻¹ • aᵢ) - single (gᵢhᵢ, jᵢ) aᵢ +`
-`single (gᵢ, hᵢjᵢ) aᵢ - single (gᵢ, hᵢ) aᵢ = x.` -/
+`∑ aᵢ·(gᵢ, hᵢ, jᵢ) : G × G × G →₀ A` such that
+`∑ (gᵢ⁻¹ • aᵢ)·(hᵢ, jᵢ) - aᵢ·(gᵢhᵢ, jᵢ) + aᵢ·(gᵢ, hᵢjᵢ) - aᵢ·(gᵢ, hᵢ) = x.` -/
 def IsTwoBoundary (x : G × G →₀ A) : Prop :=
   ∃ y : G × G × G →₀ A, y.sum (fun g a => single (g.2.1, g.2.2) (g.1⁻¹ • a) -
     single (g.1 * g.2.1, g.2.2) a + single (g.1, g.2.1 * g.2.2) a - single (g.1, g.2.1) a) = x
