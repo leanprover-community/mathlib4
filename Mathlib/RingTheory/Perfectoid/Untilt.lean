@@ -4,12 +4,33 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang
 -/
 
-import Mathlib.RingTheory.AdicCompletion.Basic
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
-import Mathlib.RingTheory.Perfection
 import Mathlib.NumberTheory.Basic
-import Mathlib.RingTheory.Ideal.Quotient.Defs
+import Mathlib.RingTheory.AdicCompletion.Basic
+import Mathlib.RingTheory.Perfection
+
+/-!
+# Untilt Function
+
+In this file, we define the untilt function from the pretilt of a
+`p`-adically complete ring to the ring itself. Note that this
+is not the untilt *functor*.
+
+## Main definitions
+* `PreTilt.untilt` : Given a `p`-adically complete ring `O`, this is the
+multiplicative map from `PreTilt O p` to `O` itself. Specifically, it is
+defined as the limit of `p^n`-th powers of arbitrary lifts in `O` of the
+`n`-th component from the perfection of `O/p`.
+
+## Main theorem
+* `PreTilt.mk_untilt_eq_coeff_zero` : The composition of the mod `p` map
+with the untilt function equals taking the zeroth component of the perfection.
+
+## Reference
+* [Berkeley Lectures on \( p \)-adic Geometry][MR4446467]
+
+## Tags
+Perfectoid, Tilting equivalence, Untilt
+-/
 
 open Perfection Ideal
 
@@ -95,7 +116,11 @@ lemma exists_smodEq_untiltAux (x : PreTilt O p) :
   simpa only [span_singleton_pow, smul_eq_mul, mul_top, SModEq.sub_mem,
       mem_span_singleton] using x.pow_dvd_untiltAux_sub_untiltAux h
 
--- p-adically complete is enough
+/--
+Given a `p`-adically complete ring `O`, this is the underlying function of the untilt map.
+It is defined as the limit of `p^n`-th powers of arbitrary lifts in `O` of the
+`n`-th component from the perfection of `O/p`.
+-/
 def untiltFun (x : PreTilt O p) : O :=
   Classical.choose <| x.exists_smodEq_untiltAux
 
@@ -109,6 +134,12 @@ section IsAdicComplete
 
 variable [IsAdicComplete (span {(p : O)}) O]
 
+/--
+Given a `p`-adically complete ring `O`, this is the
+multiplicative map from `PreTilt O p` to `O` itself. Specifically, it is
+defined as the limit of `p^n`-th powers of arbitrary lifts in `O` of the
+`n`-th component from the perfection of `O/p`.
+-/
 def untilt : PreTilt O p →* O where
   toFun := untiltFun
   map_one' := by
@@ -145,3 +176,5 @@ end IsAdicComplete
 end PreTilt
 
 end
+
+#min_imports
