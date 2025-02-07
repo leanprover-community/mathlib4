@@ -766,13 +766,22 @@ instance Central.inv {X Y : C} {f : X ⟶ Y} [IsIso f] [Central f] : Central (in
     rw [ltimes, rtimes, <-cancel_epi (_ ◁ f)]
     simp [<-right_exchange_assoc]
 
-instance Central.iso_hom {X Y : C} {f : X ≅ Y} [hf : Central f.hom] : Central f.inv := by
+instance Central.iso_inv_of_hom {X Y : C} {f : X ≅ Y} [hf : Central f.hom] : Central f.inv := by
   convert Central.inv (f := f.hom)
   simp
 
-theorem Central.hom_iso {X Y : C} {f : X ≅ Y} [hf : Central f.inv] : Central f.hom := by
+theorem Central.iso_hom_of_inv {X Y : C} {f : X ≅ Y} [hf : Central f.inv] : Central f.hom := by
   convert Central.inv (f := f.inv)
   simp
+
+instance Central.iso_refl {X : C} : Central (Iso.refl X).hom := id
+
+instance Central.iso_symm {X Y : C} {f : X ≅ Y} [hf : Central f.hom] : Central f.symm.hom
+  := Central.iso_inv_of_hom
+
+instance Central.iso_comp {X Y Z : C} {f : X ≅ Y} {g : Y ≅ Z}
+  [hf : Central f.hom] [hg : Central g.hom] :
+  Central (f ≪≫ g).hom := Central.comp
 
 instance Central.whiskerRight {X Y Z : C} (f : X ⟶ Y) [hf : Central f] : Central (f ▷ Z) where
   left_exchange g := by
@@ -783,11 +792,17 @@ instance Central.whiskerRight {X Y Z : C} (f : X ⟶ Y) [hf : Central f] : Centr
     rw [associator_inv_naturality_middle_assoc, <-associator_naturality_middle]
     simp only [ <-comp_whiskerRight_assoc, right_exchange]
 
+instance Central.whiskerRightIso {X Y Z : C} (f : X ≅ Y)
+  [hf : Central f.hom] : Central (whiskerRightIso f Z).hom := Central.whiskerRight (f := f.hom)
+
 instance Central.whiskerLeft {X Y Z : C} (f : X ⟶ Y) [hf : Central f] : Central (Z ◁ f) where
   left_exchange g := by simp [ltimes, rtimes, <-whiskerLeft_comp, left_exchange]
   right_exchange g := by
     simp only [ltimes, whiskerRight_tensor, assoc, rtimes]
     rw [associator_inv_naturality_right_assoc, <-associator_naturality_right, right_exchange_assoc]
+
+instance Central.whiskerLeftIso {X Y Z : C} (f : X ≅ Y)
+  [hf : Central f.hom] : Central (whiskerLeftIso Z f).hom := Central.whiskerLeft (f := f.hom)
 
 theorem Central.ltimes  {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂)
   [hf : Central f] [hg : Central g] : Central (f ⋉ g) := inferInstance
@@ -797,6 +812,10 @@ theorem Central.rtimes  {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ 
 
 instance Central.tensorHom {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂)
   [hf : Central f] [hg : Central g] : Central (f ⊗ g) := by rw [tensorHom_def]; infer_instance
+
+instance Central.tensorIso {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ≅ Y₁) (g : X₂ ≅ Y₂)
+  [hf : Central f.hom] [hg : Central g.hom] : Central (tensorIso f g).hom
+  := Central.tensorHom f.hom g.hom
 
 /-- Alternate definition for the tensor product of isomorphisms if the left morphism is central -/
 @[simps]

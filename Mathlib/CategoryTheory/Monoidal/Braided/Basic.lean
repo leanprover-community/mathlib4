@@ -163,6 +163,13 @@ theorem yang_baxter_iso (X Y Z : C) :
       whiskerRightIso (β_ X Z) Y ≪≫ α_ Z X Y ≪≫
       whiskerLeftIso Z (β_ X Y) := Iso.ext (yang_baxter X Y Z)
 
+theorem yang_baxter' (X Y Z : C) :
+    (β_ X Y).hom ▷ Z ⊗≫ Y ◁ (β_ X Z).hom ⊗≫ (β_ Y Z).hom ▷ X =
+      𝟙 _ ⊗≫ (X ◁ (β_ Y Z).hom ⊗≫ (β_ X Z).hom ▷ Y ⊗≫ Z ◁ (β_ X Y).hom) ⊗≫ 𝟙 _ := by
+  rw [← cancel_epi (α_ X Y Z).inv, ← cancel_mono (α_ Z Y X).hom]
+  convert yang_baxter X Y Z using 1
+  all_goals monoidal
+
 theorem hexagon_forward_iso (X Y Z : C) :
     α_ X Y Z ≪≫ β_ X (Y ⊗ Z) ≪≫ α_ Y Z X =
       whiskerRightIso (β_ X Y) Z ≪≫ α_ Y X Z ≪≫ whiskerLeftIso Y (β_ X Z) :=
@@ -201,14 +208,6 @@ theorem braiding_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
 theorem braiding_inv_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
     (f ⊗ g) ≫ (β_ Y' Y).inv = (β_ X' X).inv ≫ (g ⊗ f) :=
   CommSq.w <| .vert_inv <| .mk <| braiding_naturality g f
-
---TODO: port to premonoidal
-theorem yang_baxter' (X Y Z : C) :
-    (β_ X Y).hom ▷ Z ⊗≫ Y ◁ (β_ X Z).hom ⊗≫ (β_ Y Z).hom ▷ X =
-      𝟙 _ ⊗≫ (X ◁ (β_ Y Z).hom ⊗≫ (β_ X Z).hom ▷ Y ⊗≫ Z ◁ (β_ X Y).hom) ⊗≫ 𝟙 _ := by
-  rw [← cancel_epi (α_ X Y Z).inv, ← cancel_mono (α_ Z Y X).hom]
-  convert yang_baxter X Y Z using 1
-  all_goals monoidal
 
 end MonoidalCategory
 

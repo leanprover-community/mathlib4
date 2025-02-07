@@ -20,7 +20,7 @@ open CategoryTheory Category Iso
 
 namespace CategoryTheory.MonoidalCategory
 
-variable {C : Type*} [Category C] [MonoidalCategory C]
+variable {C : Type*} [Category C] [PremonoidalCategory C]
 
 -- See Proposition 2.2.4 of <http://www-math.mit.edu/~etingof/egnobookfinal.pdf>
 @[reassoc]
