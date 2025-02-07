@@ -2926,6 +2926,7 @@ import Mathlib.Data.Nat.SuccPred
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.Nat.Upto
 import Mathlib.Data.Nat.WithBot
+import Mathlib.Data.Norm
 import Mathlib.Data.Num.Basic
 import Mathlib.Data.Num.Bitwise
 import Mathlib.Data.Num.Lemmas
