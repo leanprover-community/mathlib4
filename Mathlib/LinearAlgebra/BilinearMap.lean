@@ -265,21 +265,20 @@ theorem lcomp_apply (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (x : M) : l
 theorem lcomp_apply' (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) : lcomp R Pₗ f g = g ∘ₗ f := rfl
 
 theorem injective_lcomp_of_injective (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (hf : Injective f)
-    (hg : Injective g) : Injective (lcomp _ _ f g) := by
+    (hg : Injective g) : Injective (g ∘ₗ f) := by
   intro m₁ m₂ h
-  simp only [lcomp_apply] at h
   exact hf (hg h)
 
 theorem surjective_lcomp_of_surjective (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (hf : Surjective f)
-    (hg : Surjective g) : Surjective (lcomp _ _ f g) := by
+    (hg : Surjective g) : Surjective (g ∘ₗ f) := by
   intro p
   obtain ⟨n, hn⟩ := hg p
   obtain ⟨m, hm⟩ := hf n
   use m
-  rw [lcomp_apply, hm, hn]
+  rw [← lcomp_apply', lcomp_apply, hm, hn]
 
 theorem bijective_lcomp_of_bijective (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (hf : Bijective f)
-    (hg : Bijective g) : Bijective (lcomp _ _ f g) :=
+    (hg : Bijective g) : Bijective (g ∘ₗ f) :=
   ⟨injective_lcomp_of_injective f g hf.1 hg.1, surjective_lcomp_of_surjective f g hf.2 hg.2⟩
 
 variable (P σ₂₃)
