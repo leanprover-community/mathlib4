@@ -357,10 +357,10 @@ theorem Subgroup.Normal.commutator_le_of_self_sup_commutative_eq_top {N : Subgro
   -- It is enough to prove that Q = G ⧸ N is commutative
   rw [← quotient_commutative_iff_commutator_le]
   -- Q is a quotient of H
-  let φ : H →ₙ * G ⧸ N := MonoidHom.comp (QuotientGroup.mk' N) (Subgroup.subtype H)
+  let φ : H →ₙ* G ⧸ N := MonoidHom.comp (QuotientGroup.mk' N) (Subgroup.subtype H)
   -- It is enough to prove that φ is surjective
-  apply Function.Surjective.comm (φ := φ) _ hH.is_comm
-  simp only [MulHom.coe_coe, ← MonoidHom.range_eq_top]
+  apply Function.Surjective.mul_comm (f := φ) _ hH.is_comm
+  rw [MulHom.coe_coe, ← MonoidHom.range_eq_top]
   -- We have to prove that `MonoidHom.range φ = ⊤`
   simp only [φ, MonoidHom.range_eq_map, ← Subgroup.map_map]
   have : Subgroup.map (QuotientGroup.mk' N) ⊤ = ⊤ := by
