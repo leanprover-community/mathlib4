@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.ComposableArrows
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
-import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Fin
 import Mathlib.Data.Fin.SuccPred
 
 /-!
@@ -68,14 +68,6 @@ def ofArrowIso {X' Y' : C} {f' : X' ⟶ Y'} (e : Arrow.mk f ≅ Arrow.mk f') :
   incl := c.incl ≫ (Functor.const J).map e.hom.right
   isColimit := IsColimit.ofIsoColimit c.isColimit
     (Cocones.ext (Arrow.rightFunc.mapIso e))
-
--- to be moved
-instance (n : ℕ) (i : Fin (n + 1)) : Unique (i ⟶ Fin.last n) where
-  default := homOfLE i.le_last
-  uniq _ := rfl
-
-def Fin.lastIsTerminal (n : ℕ) : IsTerminal (Fin.last n) :=
-  IsTerminal.ofUnique (Fin.last n)
 
 /-- If `G : ComposableArrows C n`, then `G.hom : G.left ⟶ G.right` is a
 transfinite composition of shape `Fin (n + 1)`. -/
