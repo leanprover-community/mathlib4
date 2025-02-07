@@ -91,8 +91,6 @@ lemma δ_apply (x₃ : (forget₂ C Ab).obj (S.X₃.X i))
       ((forget₂ C Ab).map (S.X₃.homologyπ i) (S.X₃.cyclesMk x₃ j (c.next_eq' hij) hx₃)) =
         (forget₂ C Ab).map (S.X₁.homologyπ j) (S.X₁.cyclesMk x₁ k hk
           (δ_apply_aux hS _ _ _ _ hx₁ _)) := by
-        (forget₂ C Ab).map (S.X₁.homologyπ j)
-        (S.X₁.cyclesMk x₁ k hk (δ_apply_aux hS _ _ x₂ x₁ hx₁ _)) := by
   -- Since `C` is only a `HasForget`, not a `ConcreteCategory` (for now),
   -- we need to rewrite everything to `HasForget`.
   have : ∀ {X Y : Ab} (f : X ⟶ Y), (f : X → Y) =
