@@ -306,7 +306,6 @@ theorem Summable.tendsto_atTop_of_pos [LinearOrderedField α] [TopologicalSpace 
     tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hf.tendsto_atTop_zero <|
       Eventually.of_forall fun _ ↦ inv_pos.2 (hf' _)
 
-
 namespace Mathlib.Meta.Positivity
 
 open Qq Lean Meta Finset
@@ -330,11 +329,5 @@ def evalTsum : PositivityExt where eval {u α} zα pα e := do
     assertInstancesCommute
     return .nonnegative q(@tsum_nonneg $ι $α $pα' $instTopSpace $instOrderClosed $f fun i ↦ $pr i)
   | _ => throwError "not Finset.sum"
-
-
-example (α : Type*) [LinearOrderedField α] [TopologicalSpace α] [OrderClosedTopology α]
-  (f : ℕ → α) :
-  0 ≤ ∑' n, (f n)^2 := by
-  positivity
 
 end Mathlib.Meta.Positivity
