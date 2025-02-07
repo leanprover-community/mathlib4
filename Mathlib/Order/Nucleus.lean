@@ -129,9 +129,9 @@ instance : InfSet (Nucleus X) where
       simp_all [iInf_le_iff]
     le_apply' x := by simp [le_apply]}
 
-theorem sInf_apply (s : Set (Nucleus X)) (x : X) : sInf s x = ⨅ j ∈ s, j x := rfl
+@[simp] theorem sInf_apply (s : Set (Nucleus X)) (x : X) : sInf s x = ⨅ j ∈ s, j x := rfl
 
-theorem iInf_apply {ι : Type*} (f : ι → (Nucleus X)) (x : X) :
+@[simp] theorem iInf_apply {ι : Type*} (f : ι → (Nucleus X)) (x : X) :
     iInf f x = ⨅ j, f j x := by
   simp only [iInf, sInf_apply]
   apply le_antisymm
@@ -139,8 +139,8 @@ theorem iInf_apply {ι : Type*} (f : ι → (Nucleus X)) (x : X) :
   exact fun a b a_1 a_2 a_3 ↦ le_of_le_of_eq (a_1 a_2) (congrFun (congrArg DFunLike.coe a_3) x)
 
 instance : CompleteSemilatticeInf (Nucleus X) where
-  sInf_le := (by simp_all [LE.le, sInf_apply, iInf_le_iff])
-  le_sInf := (by simp_all [LE.le, sInf_apply])
+  sInf_le := by simp_all [← coe_le_coe, Pi.le_def, iInf_le_iff]
+  le_sInf := by simp_all [← coe_le_coe, Pi.le_def]
 
 instance : CompleteLattice (Nucleus X) := completeLatticeOfCompleteSemilatticeInf (Nucleus X)
 
