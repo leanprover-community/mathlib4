@@ -67,6 +67,17 @@ lemma partial_result (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
   rw [e1, e1]
   simp_rw [polar_smul_right, polar_smul_left]
 
+lemma partial_result2 (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
+    Sym2.lift ⟨fun i j => l j • l i • polar (⇑Q) (g i) (g j),
+      fun _ _ => by simp_rw [polar_comm]; rw [smul_comm]⟩ =
+      Sym2.lift ⟨fun i j => l j • l i, fun a b => by
+        simp only [smul_eq_mul, mul_comm]⟩ • Sym2.lift ⟨fun i j => polar (⇑Q) (g i) (g j),
+      fun _ _ => by simp_rw [polar_comm]⟩ := by
+  rw [Sym2_smul]
+  ext ⟨i,j⟩
+  simp_all only [Sym2.lift_mk, Pi.smul_apply']
+  rw [← smul_assoc]
+
 variable [DecidableEq ι]
 
 /--
@@ -87,12 +98,10 @@ noncomputable def scalar (l : ι →₀ R) : Sym2 ι →₀ R := Finsupp.onFinse
       · aesop
     )
 
-/-
-#check Finsupp.pointwiseModuleScalar
-
-lemma partial_result2 (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
-    Sym2.lift ⟨fun i j => l j • l i • polar (⇑Q) (g i) (g j),
-      fun _ _ => by simp_rw [polar_comm]; rw [smul_comm]⟩ =
+lemma partial_result3 (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
+  Sym2.lift ⟨fun i j => l j • l i, fun a b => by
+        simp only [smul_eq_mul, mul_comm]⟩ • Sym2.lift ⟨fun i j => polar (⇑Q) (g i) (g j),
+      fun _ _ => by simp_rw [polar_comm]⟩ =
         scalar l * Q.polar_sym2 ∘ Sym2.map g := by
   rw [polar_sym2]
   rw [← Sym2.lift_comp_map]
@@ -100,15 +109,11 @@ lemma partial_result2 (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) 
   simp_all only [Finset.product_eq_sprod]
   simp_rw [Finsupp.pointwiseModuleScalar]
   simp_all only [Finsupp.onFinset_apply]
-  --simp [Sym2_smul]
   ext ⟨i,j⟩
-  simp_all only [Sym2.lift_mk]
-
-  simp_all only [Finsupp.onFinset_apply]
-
-  sorry
--/
-
+  simp_all only [smul_eq_mul, Pi.smul_apply', Sym2.lift_mk]
+  rw [Finsupp.ofSupportFinite]
+  simp_all only [Finsupp.coe_mk, Sym2.lift_mk]
+  rw [mul_comm]
 
 /-
 variable (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R)
