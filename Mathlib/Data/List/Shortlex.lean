@@ -124,7 +124,7 @@ instance isTrichotomous [IsTrichotomous α r] : IsTrichotomous (List α) (Shortl
   trichotomous := fun a b => InvImage.trichotomous (by simp [Function.Injective]) _ _
 
 instance isAsymm [IsAsymm α r] : IsAsymm (List α) (Shortlex r) where
-  asymm := fun a b ab ba => (@InvImage.isAsymm _ (Prod.Lex (fun x1 x2 ↦ x1 < x2) (Lex r)) _
+  asymm := fun a b ab ba => (@InvImage.isAsymm _ _ (Prod.Lex (fun x1 x2 ↦ x1 < x2) (Lex r))
       Prod.IsAsymm (fun a : List α ↦ (a.length, a))).asymm a b ab ba
 
 theorem append_right {s₁ s₂ : List α} (t : List α) : Shortlex r s₁ s₂ →
