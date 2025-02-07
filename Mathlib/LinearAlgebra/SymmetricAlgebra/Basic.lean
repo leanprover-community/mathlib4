@@ -219,7 +219,6 @@ lemma comp_id {M : Type u} [AddCommMonoid M] [Module R M]
     (salg.ex_map iM).unique (comp_spec _ salg salg') (by rfl)
 
 
-@[simp]
 lemma lift_comp {M : Type u} [AddCommMonoid M] [Module R M]
     {RM RM' : Type u}
     [CommRing RM] [Algebra R RM] [CommRing RM'] [Algebra R RM']
@@ -241,10 +240,10 @@ def isomorphismOfSymmetricAlgebraOfSymmetricAlgebra {M : Type u} [AddCommMonoid 
   invFun : RM' →ₐ[R] RM := lift R salg' iM
   left_inv := by
     rw [@Function.leftInverse_iff_comp]
-    simp
+    simp[lift_comp]
   right_inv := by
     rw [@Function.rightInverse_iff_comp]
-    simp
+    simp[lift_comp]
   map_mul' := by simp only [map_mul, implies_true]
   map_add' := by simp only [map_add, implies_true]
   commutes' := by simp only [AlgHom.commutes, implies_true]
