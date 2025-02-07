@@ -265,13 +265,13 @@ theorem lcomp_apply (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (x : M) : l
 theorem lcomp_apply' (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) : lcomp R Pₗ f g = g ∘ₗ f := rfl
 
 /-- A version of `Function.Injective.comp` for composition of two linear maps. -/
-theorem injective_lcomp_of_injective (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (hf : Injective f)
-    (hg : Injective g) : Injective (g ∘ₗ f) := by
+theorem injective_comp_of_injective (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ)
+    (hf : Injective f) (hg : Injective g) : Injective (g ∘ₗ f) := by
   intro m₁ m₂ h
   exact hf (hg h)
 
 /-- A version of `Function.Surjective.comp` for composition of two linear maps. -/
-theorem surjective_lcomp_of_surjective (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (hf : Surjective f)
+theorem surjective_comp_of_surjective (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (hf : Surjective f)
     (hg : Surjective g) : Surjective (g ∘ₗ f) := by
   intro p
   obtain ⟨n, hn⟩ := hg p
@@ -280,9 +280,9 @@ theorem surjective_lcomp_of_surjective (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R
   rw [LinearMap.comp_apply, hm, hn]
 
 /-- A version of `Function.Bijective.comp` for the composition of two linear maps. -/
-theorem bijective_lcomp_of_bijective (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (hf : Bijective f)
+theorem bijective_comp_of_bijective (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (hf : Bijective f)
     (hg : Bijective g) : Bijective (g ∘ₗ f) :=
-  ⟨injective_lcomp_of_injective f g hf.1 hg.1, surjective_lcomp_of_surjective f g hf.2 hg.2⟩
+  ⟨injective_comp_of_injective f g hf.1 hg.1, surjective_comp_of_surjective f g hf.2 hg.2⟩
 
 variable (P σ₂₃)
 
@@ -336,27 +336,6 @@ theorem llcomp_apply (f : Nₗ →ₗ[R] Pₗ) (g : M →ₗ[R] Nₗ) (x : M) :
     llcomp R M Nₗ Pₗ f g x = f (g x) := rfl
 
 theorem llcomp_apply' (f : Nₗ →ₗ[R] Pₗ) (g : M →ₗ[R] Nₗ) : llcomp R M Nₗ Pₗ f g = f ∘ₗ g := rfl
-
-/-- A version of `Function.Injective.comp` for composition of two linear maps. -/
-theorem injective_llcomp_of_injective (f : Nₗ →ₗ[R] Pₗ) (g : M →ₗ[R] Nₗ) (hf : Injective f)
-    (hg : Injective g) : Injective (llcomp _ _ _ _ f g) := by
-  intro m₁ m₂ h
-  simp only [llcomp_apply] at h
-  exact hg (hf h)
-
-/-- A version of `Function.Surjective.comp` for composition of two semilinear maps. -/
-theorem surjective_llcomp_of_surjective (f : Nₗ →ₗ[R] Pₗ) (g : M →ₗ[R] Nₗ) (hf : Surjective f)
-    (hg : Surjective g) : Surjective (llcomp _ _ _ _ f g) := by
-  intro p
-  obtain ⟨n, hn⟩ := hf p
-  obtain ⟨m, hm⟩ := hg n
-  use m
-  rw [llcomp_apply, hm, hn]
-
-/-- A version of `Function.Bijective.comp` for the composition of two semilinear maps. -/
-theorem bijective_llcomp_of_bijective (f : Nₗ →ₗ[R] Pₗ) (g : M →ₗ[R] Nₗ) (hf : Bijective f)
-    (hg : Bijective g) : Bijective (llcomp _ _ _ _ f g) :=
-  ⟨injective_llcomp_of_injective f g hf.1 hg.1, surjective_llcomp_of_surjective f g hf.2 hg.2⟩
 
 end
 
