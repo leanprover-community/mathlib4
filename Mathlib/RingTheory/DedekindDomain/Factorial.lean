@@ -34,6 +34,7 @@ dedekind domain, factorial ideal, factorial, ideal
 
 open BigOperators
 open Finset (range)
+open Ideal (span)
 open Set (mem_univ univ)
 open scoped Nat Polynomial
 
@@ -45,14 +46,11 @@ namespace Polynomial
 
 variable [Semiring R]
 
-def fixedDivisor (𝒻 : R[X]) : Ideal R := Ideal.span <| 𝒻.eval '' S
+def fixedDivisor (𝒻 : R[X]) : Ideal R := span <| 𝒻.eval '' S
 
-lemma fixedDivisor_eq_span (𝒻 : R[X]) : 𝒻.fixedDivisor S = (Ideal.span <| 𝒻.eval '' S) := rfl
+lemma fixedDivisor_eq_span (𝒻 : R[X]) : 𝒻.fixedDivisor S = (span <| 𝒻.eval '' S) := rfl
 
-example (s : R) (hs : s ∈ S) : s ∈ Ideal.span S := (Ideal.mem_span s).mpr fun _ a ↦ a hs
-
-noncomputable abbrev f : ℤ[X] := X ^ 5 + X
-example : f.fixedDivisor univ = Ideal.span {2} := by
+example : (X ^ 5 + X : ℤ[X]).fixedDivisor univ = span {2} := by
   refine eq_of_le_of_le ?_ ?_
   · intro x hx
     apply Ideal.mem_span_singleton.mpr
@@ -64,8 +62,8 @@ example : f.fixedDivisor univ = Ideal.span {2} := by
     intro i _
     have two_div : 2 ∣ i^5 + i := even_iff_two_dvd.mp <| by simp [parity_simps]
     exact two_div.mul_left <| c i
-  · have : 2 ∈ f.fixedDivisor univ := Ideal.mem_span 2 |>.mpr fun _ h ↦ h ⟨1, by norm_num⟩
-    exact Ideal.span_singleton_le_iff_mem (Ideal.span <| f.eval '' univ) |>.mpr this
+  · refine span ((X^5 + X : ℤ[X]).eval '' univ) |>.span_singleton_le_iff_mem.mpr ?_
+    exact Ideal.mem_span 2 |>.mpr fun _ h ↦ h ⟨1, by norm_num⟩
 
 end Polynomial
 
@@ -92,7 +90,6 @@ noncomputable def Set.pOrdering.pSequence {ν : S.pOrdering p} (k : ℕ) :=
 
 
 def pSequence.eq (ν₁ ν₂ : S.pOrdering p) : ν₁.pSequence = ν₂.pSequence := by
-  ext n
   sorry
 
 open Polynomial (X C)
