@@ -345,10 +345,35 @@ structure IsCondSubGaussianWith (X : Ω → ℝ) (c : ℝ≥0)
 def IsCondSubGaussian (X : Ω → ℝ) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] : Prop :=
   ∃ c : ℝ≥0, IsCondSubGaussianWith m hm X c μ
 
+-- todo: fix measurable space arguments in Measure.bind
+lemma condExpKernel_comp_trim : @Measure.bind _ _ m mΩ (μ.trim hm) (condExpKernel μ m) = μ := by
+  sorry
+
 lemma isCondSubGaussianWith_iff_kernel [SFinite (μ.trim hm)] :
   IsCondSubGaussianWith m hm X c μ
     ↔ Kernel.IsSubGaussianWith X c (condExpKernel μ m) (μ.trim hm) := by
-  sorry
+  refine ⟨fun ⟨h1, h2⟩ ↦ ⟨?_, ?_, ?_⟩, fun ⟨h1, h2, h3⟩ ↦ ⟨?_, ?_⟩⟩
+  · have h := (aemeasurable_of_aemeasurable_exp_mul one_ne_zero
+      (h1 1).1.aemeasurable).aestronglyMeasurable
+    have : (μ.trim hm) ⊗ₘ (condExpKernel μ m)
+        = @Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) (fun ω => (id ω, ω)) μ := by
+      sorry
+    rw [← aestronglyMeasurable_comp_snd_map_prod_mk_iff (X := id) (mβ := m)] at h
+    swap; · exact measurable_id'' hm
+    rw [← this] at h
+    sorry
+    -- refine ⟨h.mk _, h.stronglyMeasurable_mk, ?_⟩
+    -- have h' := h.ae_eq_mk
+    -- refine Measure.ae_ae_of_ae_compProd (μ := μ.trim hm) (κ := condExpKernel μ m)
+    --   (p := fun ab ↦ X ab.2 = h.mk X ab.2) ?_
+    -- rw [this]
+    -- simp only [id_eq]
+    -- rw [ae_map_iff]
+    -- sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
 
 @[simp]
 lemma IsCondSubGaussianWith.zero : IsCondSubGaussianWith m hm (fun _ ↦ 0) 0 μ :=
@@ -375,30 +400,28 @@ def IsSubGaussian (X : Ω → ℝ) (μ : Measure Ω := by volume_tac) : Prop :=
 lemma isSubGaussianWith_iff_kernel [SFinite μ] :
   IsSubGaussianWith X c μ
     ↔ Kernel.IsSubGaussianWith X c (Kernel.const Unit μ) (Measure.dirac ()) := by
-  refine ⟨fun ⟨h1, h2⟩ ↦ ?_, fun ⟨h1, h2, h3⟩ ↦ ?_⟩
-  · constructor
-    · simp only [Kernel.const_apply, ae_dirac_eq, Filter.eventually_pure]
-      exact (aemeasurable_of_aemeasurable_exp_mul one_ne_zero
-        (h1 1).1.aemeasurable).aestronglyMeasurable
-    · intro t
-      rw [Measure.integrable_compProd_iff]
-      · simp only [Kernel.const_apply, ae_dirac_eq, Filter.eventually_pure, norm_eq_abs, abs_exp,
-          Integrable.of_finite, and_true]
-        exact h1 t
-      · simp only [Measure.compProd_const]
-        have ⟨expX', hX', hXX'⟩ := (h1 t).1
-        refine ⟨fun p ↦ expX' p.2, hX'.comp_measurable measurable_snd, ?_⟩
-        rw [Filter.EventuallyEq, ae_iff] at hXX' ⊢
-        have : {a : Unit × Ω | ¬rexp (t * X a.2) = expX' a.2}
-            = Set.univ ×ˢ {a | ¬rexp (t * X a) = expX' a} := by ext; simp
-        simpa [this]
-    · simpa
-  · constructor
-    · intro t
-      specialize h2 t
-      rw [Measure.integrable_compProd_iff h2.1] at h2
-      simpa using h2
-    · simpa using h3
+  refine ⟨fun ⟨h1, h2⟩ ↦ ⟨?_, ?_, ?_⟩, fun ⟨h1, h2, h3⟩ ↦ ⟨?_, ?_⟩⟩
+  · simp only [Kernel.const_apply, ae_dirac_eq, Filter.eventually_pure]
+    exact (aemeasurable_of_aemeasurable_exp_mul one_ne_zero
+      (h1 1).1.aemeasurable).aestronglyMeasurable
+  · intro t
+    rw [Measure.integrable_compProd_iff]
+    · simp only [Kernel.const_apply, ae_dirac_eq, Filter.eventually_pure, norm_eq_abs, abs_exp,
+        Integrable.of_finite, and_true]
+      exact h1 t
+    · simp only [Measure.compProd_const]
+      have ⟨expX', hX', hXX'⟩ := (h1 t).1
+      refine ⟨fun p ↦ expX' p.2, hX'.comp_measurable measurable_snd, ?_⟩
+      rw [Filter.EventuallyEq, ae_iff] at hXX' ⊢
+      have : {a : Unit × Ω | ¬rexp (t * X a.2) = expX' a.2}
+          = Set.univ ×ˢ {a | ¬rexp (t * X a) = expX' a} := by ext; simp
+      simpa [this]
+  · simpa
+  · intro t
+    specialize h2 t
+    rw [Measure.integrable_compProd_iff h2.1] at h2
+    simpa using h2
+  · simpa using h3
 
 lemma isSubGaussian_iff_kernel [SFinite μ] :
   IsSubGaussian X μ ↔ Kernel.IsSubGaussian X (Kernel.const Unit μ) (Measure.dirac ()) := by
