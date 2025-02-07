@@ -220,10 +220,7 @@ lemma _root_.FaithfulSMul.ofInjective
     [FaithfulSMul M' X] [MulActionHomClass F M' X Y] (f : F)
     (hf : Function.Injective f) :
     FaithfulSMul M' Y where
-  eq_of_smul_eq_smul {r1 r2} h12 := by
-    have : ∀ m : _, r1 • f m = r2 • f m := fun m ↦ h12 (f m)
-    simp_rw [← map_smul] at this
-    exact eq_of_smul_eq_smul <| fun m ↦ hf (this m)
+  eq_of_smul_eq_smul {_ _} h := eq_of_smul_eq_smul fun m ↦ hf <| by simp_rw [map_smul, h]
 
 variable {ψ χ} (M N)
 
