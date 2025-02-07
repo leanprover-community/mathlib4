@@ -607,11 +607,3 @@ def IsPowMul {R : Type*} [Pow R ℕ] (f : R → ℝ) :=
 def RingHom.IsBoundedWrt {α : Type*} [Ring α] {β : Type*} [Ring β] (nα : α → ℝ) (nβ : β → ℝ)
     (f : α →+* β) : Prop :=
   ∃ C : ℝ, 0 < C ∧ ∀ x : α, nβ (f x) ≤ C * nα x
-
-/-- If `x` is multiplicative with respect to `f`, then so is any `x^n`. -/
-theorem pow_mul_apply_eq_pow_mul {R : Type*} [MonoidWithZero R] (f : R → ℝ) {x : R}
-    (hx : ∀ y : R, f (x * y) = f x * f y) : ∀ (n : ℕ) (y : R), f (x ^ n * y) = f x ^ n * f y := by
-  intro n
-  induction n with
-  | zero => intro y; rw [pow_zero, pow_zero, one_mul, one_mul]
-  | succ n hn => intro y; rw [pow_succ', pow_succ', mul_assoc, mul_assoc, hx, hn]
