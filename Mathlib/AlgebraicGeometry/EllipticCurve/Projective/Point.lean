@@ -3,7 +3,7 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Group
+import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Formula
 
 /-!
@@ -122,7 +122,8 @@ lemma neg_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
 
 private lemma nonsingular_neg_of_Z_ne_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z ≠ 0) :
     W.Nonsingular ![P x / P z, W.toAffine.negY (P x / P z) (P y / P z), 1] :=
-  (nonsingular_some ..).mpr <| Affine.nonsingular_neg <| (nonsingular_of_Z_ne_zero hPz).mp hP
+  (nonsingular_some ..).mpr <| (Affine.nonsingular_neg ..).mpr <|
+    (nonsingular_of_Z_ne_zero hPz).mp hP
 
 lemma nonsingular_neg {P : Fin 3 → F} (hP : W.Nonsingular P) : W.Nonsingular <| W.neg P := by
   by_cases hPz : P z = 0
@@ -178,7 +179,7 @@ section Addition
 
 /-! ### Addition on point representatives -/
 
-open Classical in
+open scoped Classical in
 variable (W') in
 /-- The addition of two point representatives. -/
 noncomputable def add (P Q : Fin 3 → R) : Fin 3 → R :=
@@ -432,7 +433,7 @@ section Affine
 
 namespace Point
 
-open Classical in
+open scoped Classical in
 variable (W) in
 /-- The map from a point representative that is nonsingular on a Weierstrass curve `W` in projective
 coordinates to the corresponding nonsingular rational point on `W` in affine coordinates. -/
