@@ -183,7 +183,8 @@ instance [NonUnitalNonAssocRing α] [NonUnitalNonAssocRing β] [TopologicalRing 
 
 end
 
-#adaptation_note /-- nightly-2024-04-08, needed to help `Pi.instTopologicalSemiring` -/
+#adaptation_note /-- nightly-2024-04-08
+needed to help `Pi.instTopologicalSemiring` -/
 instance {β : Type*} {C : β → Type*} [∀ b, TopologicalSpace (C b)]
     [∀ b, NonUnitalNonAssocSemiring (C b)] [∀ b, TopologicalSemiring (C b)] :
     ContinuousAdd ((b : β) → C b) :=

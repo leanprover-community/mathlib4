@@ -729,21 +729,6 @@ instance _root_.Finite.algEquiv [Finite (A₁ →ₐ[R] A₂)] : Finite (A₁ �
 
 end Semiring
 
-section Ring
-
-variable [CommSemiring R] [Ring A₁] [Ring A₂]
-variable [Algebra R A₁] [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
-
-@[deprecated map_neg (since := "2024-06-20")]
-protected theorem map_neg (x) : e (-x) = -e x :=
-  map_neg e x
-
-@[deprecated map_sub (since := "2024-06-20")]
-protected theorem map_sub (x y) : e (x - y) = e x - e y :=
-  map_sub e x y
-
-end Ring
-
 end AlgEquiv
 
 namespace MulSemiringAction

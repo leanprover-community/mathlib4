@@ -5,7 +5,8 @@ Authors: Joël Riou
 -/
 
 import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.Algebra.Group.Int
+import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # Complex shapes with no loop

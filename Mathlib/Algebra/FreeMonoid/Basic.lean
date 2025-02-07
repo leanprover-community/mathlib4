@@ -372,7 +372,7 @@ theorem map_apply_map_symm_eq {x : FreeMonoid β} (e : α ≃ β) :
 instance uniqueUnits : Unique (FreeMonoid α)ˣ where
   uniq u := Units.ext <| toList.injective <|
     have : toList u.val ++ toList u.inv = [] := DFunLike.congr_arg toList u.val_inv
-    (List.append_eq_nil.mp this).1
+    (List.append_eq_nil_iff.mp this).1
 
 @[to_additive (attr := simp)]
 theorem map_surjective {f : α → β} : Function.Surjective (map f) ↔ Function.Surjective f := by

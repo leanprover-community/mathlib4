@@ -282,7 +282,7 @@ lemma CStarAlgebra.isUnit_of_le {a b : A} (h₀ : IsUnit a) (ha : 0 ≤ a := by 
   nontriviality A
   have hb := (show 0 ≤ a from ha).trans hab
   rw [zero_not_mem_iff, SpectrumRestricts.nnreal_lt_iff (.nnreal_of_nonneg ‹_›),
-    NNReal.coe_zero, ← CFC.exists_pos_algebraMap_le_iff] at h₀ ⊢
+    NNReal.coe_zero, ← CFC.exists_pos_algebraMap_le_iff (.of_nonneg ‹_›)] at h₀ ⊢
   peel h₀ with r hr _
   exact this.trans hab
 
@@ -291,7 +291,8 @@ lemma le_iff_norm_sqrt_mul_rpow {a b : A} (hbu : IsUnit b) (ha : 0 ≤ a) (hb : 
   lift b to Aˣ using hbu
   have hbab : 0 ≤ (b : A) ^ (-(1 / 2) : ℝ) * a * (b : A) ^ (-(1 / 2) : ℝ) :=
     conjugate_nonneg_of_nonneg ha rpow_nonneg
-  #adaptation_note /-- 2024-11-10 added `(R := A)` -/
+  #adaptation_note /-- 2024-11-10
+  added `(R := A)` -/
   conv_rhs =>
     rw [← sq_le_one_iff₀ (norm_nonneg _), sq, ← CStarRing.norm_star_mul_self, star_mul,
       IsSelfAdjoint.of_nonneg (R := A) sqrt_nonneg, IsSelfAdjoint.of_nonneg rpow_nonneg,
@@ -398,14 +399,15 @@ lemma norm_le_norm_of_nonneg_of_le {a b : A} (ha : 0 ≤ a := by cfc_tac) (hab :
     simpa only [ge_iff_le, Unitization.norm_inr] using
       this a b (by simpa) (by rwa [Unitization.inr_le_iff a b])
   intro a b ha hab
-  have hb_nonneg : 0 ≤ b := ha.trans hab
-  have : 0 ≤ a := by cfc_tac
+  have hb : 0 ≤ b := ha.trans hab
+  -- these two `have`s are just for performance
+  have := IsSelfAdjoint.of_nonneg ha; have := IsSelfAdjoint.of_nonneg hb
   have h₂ : cfc (id : ℝ → ℝ) a ≤ cfc (fun _ => ‖b‖) a := by
     calc _ = a := by rw [cfc_id ℝ a]
       _ ≤ cfc id b := (cfc_id ℝ b) ▸ hab
       _ ≤ cfc (fun _ => ‖b‖) b := by
           refine cfc_mono fun x hx => ?_
-          calc x = ‖x‖ := (Real.norm_of_nonneg (spectrum_nonneg_of_nonneg hb_nonneg hx)).symm
+          calc x = ‖x‖ := (Real.norm_of_nonneg (spectrum_nonneg_of_nonneg hb hx)).symm
             _ ≤ ‖b‖ := spectrum.norm_le_norm_of_mem hx
       _ = _ := by rw [cfc_const _ _, cfc_const _ _]
   rw [cfc_le_iff id (fun _ => ‖b‖) a] at h₂

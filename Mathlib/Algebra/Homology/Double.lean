@@ -28,7 +28,7 @@ section
 variable {X₀ X₁ : C} (f : X₀ ⟶ X₁) {ι : Type*} {c : ComplexShape ι}
   {i₀ i₁ : ι} (hi₀₁ : c.Rel i₀ i₁)
 
-open Classical
+open Classical in
 /-- Given a complex shape `c`, two indices `i₀` and `i₁` such that `c.Rel i₀ i₁`,
 and `f : X₀ ⟶ X₁`, this is the homological complex which, if `i₀ ≠ i₁`, only
 consists of the map `f` in degrees `i₀` and `i₁`, and zero everywhere else. -/
@@ -37,10 +37,9 @@ noncomputable def double : HomologicalComplex C c where
   d k k' :=
     if hk : k = i₀ ∧ k' = i₁ ∧ i₀ ≠ i₁ then
       eqToHom (if_pos hk.1) ≫ f ≫ eqToHom (by
-        dsimp [X]
+        dsimp
         rw [if_neg, if_pos hk.2.1]
-        rintro rfl
-        exact hk.2.2 hk.2.1)
+        aesop)
     else 0
   d_comp_d' := by
     rintro i j k hij hjk
@@ -49,19 +48,11 @@ noncomputable def double : HomologicalComplex C c where
     · subst hi
       by_cases hj : j = i₁
       · subst hj
-        nth_rw 2 [dif_neg]
-        · rw [comp_zero]
-        · rintro ⟨rfl, _, h⟩
-          exact h rfl
-      · rw [dif_neg, zero_comp]
-        rintro ⟨_, h, _⟩
-        exact hj h
-    · rw [dif_neg, zero_comp]
-      rintro ⟨h, _, _⟩
-      exact hi h
-  shape i j hij := dif_neg (by
-    rintro ⟨rfl, rfl, _⟩
-    exact hij hi₀₁)
+        nth_rw 2 [dif_neg (by tauto)]
+        rw [comp_zero]
+      · rw [dif_neg (by tauto), zero_comp]
+    · rw [dif_neg (by tauto), zero_comp]
+  shape i j hij := dif_neg (by aesop)
 
 lemma isZero_double_X (k : ι) (h₀ : k ≠ i₀) (h₁ : k ≠ i₁) :
     IsZero ((double f hi₀₁).X k) := by
@@ -86,11 +77,11 @@ lemma double_d (h : i₀ ≠ i₁) :
 
 lemma double_d_eq_zero₀ (a b : ι) (ha : a ≠ i₀) :
     (double f hi₀₁).d a b = 0 :=
-  dif_neg (by rintro ⟨h, _, _⟩; exact ha h)
+  dif_neg (by tauto)
 
 lemma double_d_eq_zero₁ (a b : ι) (hb : b ≠ i₁) :
     (double f hi₀₁).d a b = 0 :=
-  dif_neg (by rintro ⟨_, h, _⟩; exact hb h)
+  dif_neg (by tauto)
 
 variable {f hi₀₁} in
 @[ext]

@@ -14,11 +14,14 @@ import Mathlib.CategoryTheory.Opposites
 # Simplicial objects in a category.
 
 A simplicial object in a category `C` is a `C`-valued presheaf on `SimplexCategory`.
-(Similarly a cosimplicial object is functor `SimplexCategory ⥤ C`.)
+(Similarly, a cosimplicial object is a functor `SimplexCategory ⥤ C`.)
 
-Use the notation `X _[n]` in the `Simplicial` locale to obtain the `n`-th term of a
-(co)simplicial object `X`, where `n` is a natural number.
+## Notation
 
+The following notations can be enabled via `open Simplicial`.
+
+- `X _[n]` denotes the `n`-th term of a simplicial object `X`, where `n : ℕ`.
+- `X ^[n]` denotes the `n`-th term of a cosimplicial object `X`, where `n : ℕ`.
 -/
 
 open Opposite
@@ -480,9 +483,9 @@ instance : Category (CosimplicialObject C) := by
 
 namespace CosimplicialObject
 
-/-- `X _[n]` denotes the `n`th-term of the cosimplicial object X -/
+/-- `X ^[n]` denotes the `n`th-term of the cosimplicial object X -/
 scoped[Simplicial]
-  notation3:1000 X " _[" n "]" =>
+  notation3:1000 X " ^[" n "]" =>
     (X : CategoryTheory.CosimplicialObject _).obj (SimplexCategory.mk n)
 
 instance {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
@@ -514,15 +517,15 @@ variable (X : CosimplicialObject C)
 open Simplicial
 
 /-- Coface maps for a cosimplicial object. -/
-def δ {n} (i : Fin (n + 2)) : X _[n] ⟶ X _[n + 1] :=
+def δ {n} (i : Fin (n + 2)) : X ^[n] ⟶ X ^[n + 1] :=
   X.map (SimplexCategory.δ i)
 
 /-- Codegeneracy maps for a cosimplicial object. -/
-def σ {n} (i : Fin (n + 1)) : X _[n + 1] ⟶ X _[n] :=
+def σ {n} (i : Fin (n + 1)) : X ^[n + 1] ⟶ X ^[n] :=
   X.map (SimplexCategory.σ i)
 
 /-- Isomorphisms from identities in ℕ. -/
-def eqToIso {n m : ℕ} (h : n = m) : X _[n] ≅ X _[m] :=
+def eqToIso {n m : ℕ} (h : n = m) : X ^[n] ≅ X ^[m] :=
   X.mapIso (CategoryTheory.eqToIso (by rw [h]))
 
 @[simp]
@@ -723,7 +726,7 @@ def point : Augmented C ⥤ C :=
 def toArrow : Augmented C ⥤ Arrow C where
   obj X :=
     { left := point.obj X
-      right := drop.obj X _[0]
+      right := (drop.obj X) ^[0]
       hom := X.hom.app _ }
   map η :=
     { left := point.map η
