@@ -71,9 +71,14 @@ theorem δ_apply_aux (x₂ : ((forget₂ C Ab).obj (S.X₂.X i))) (x₁ : ((forg
     ((forget₂ C Ab).map (S.X₁.d j k)) x₁ = 0 := by
   have := hS.mono_f
   apply (Preadditive.mono_iff_injective (S.f.f k)).1 inferInstance
-  rw [← forget₂_comp_apply, ← HomologicalComplex.Hom.comm, forget₂_comp_apply, hx₁,
-    ← forget₂_comp_apply, HomologicalComplex.d_comp_d, Functor.map_zero, map_zero,
-    AddMonoidHom.zero_apply]
+  -- Since `C` is only a `HasForget`, not a `ConcreteCategory` (for now),
+  -- we need to rewrite everything to `HasForget`.
+  have : ∀ {X Y : Ab} (f : X ⟶ Y), (f : X → Y) =
+    @DFunLike.coe _ _ _ (HasForget.toFunLike _ _ _) f := by intros; ext; rfl
+  rw [this, this, ← forget₂_comp_apply, ← HomologicalComplex.Hom.comm, forget₂_comp_apply,
+    ← this, ← this, hx₁, this, this, ← forget₂_comp_apply, HomologicalComplex.d_comp_d,
+    Functor.map_zero, ← this, ← this, map_zero]
+  rfl
 
 lemma δ_apply (x₃ : (forget₂ C Ab).obj (S.X₃.X i))
     (hx₃ : (forget₂ C Ab).map (S.X₃.d i j) x₃ = 0)
@@ -83,17 +88,8 @@ lemma δ_apply (x₃ : (forget₂ C Ab).obj (S.X₃.X i))
     (k : ι) (hk : c.next j = k) :
     (forget₂ C Ab).map (hS.δ i j hij)
       ((forget₂ C Ab).map (S.X₃.homologyπ i) (S.X₃.cyclesMk x₃ j (c.next_eq' hij) hx₃)) =
-        (forget₂ C Ab).map (S.X₁.homologyπ j) (S.X₁.cyclesMk x₁ k hk (by
-          have := hS.mono_f
-          apply (Preadditive.mono_iff_injective (S.f.f k)).1 inferInstance
-          -- Since `C` is only a `HasForget`, not a `ConcreteCategory` (for now),
-          -- we need to rewrite everything to `HasForget`.
-          have : ∀ {X Y : Ab} (f : X ⟶ Y), (f : X → Y) =
-            @DFunLike.coe _ _ _ (HasForget.toFunLike _ _ _) f := by intros; ext; rfl
-          rw [this, this, ← forget₂_comp_apply, ← HomologicalComplex.Hom.comm, forget₂_comp_apply,
-            ← this, ← this, hx₁, this, this,
-            ← forget₂_comp_apply, HomologicalComplex.d_comp_d, Functor.map_zero, ← this, ← this,
-            map_zero]; rfl)) := by
+        (forget₂ C Ab).map (S.X₁.homologyπ j)
+        (S.X₁.cyclesMk x₁ k hk (δ_apply_aux hS _ _ x₂ x₁ hx₁ _)) := by
   -- Since `C` is only a `HasForget`, not a `ConcreteCategory` (for now),
   -- we need to rewrite everything to `HasForget`.
   have : ∀ {X Y : Ab} (f : X ⟶ Y), (f : X → Y) =
