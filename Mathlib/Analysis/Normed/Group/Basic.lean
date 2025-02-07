@@ -3,12 +3,9 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
--- import Mathlib.Algebra.CharP.Defs
--- import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.Analysis.Normed.Group.Seminorm
 import Mathlib.Topology.Instances.ENNReal.Defs
--- import Mathlib.Topology.Metrizable.Uniformity
--- import Mathlib.Topology.Sequences
+
 
 /-!
 # Normed (semi)groups

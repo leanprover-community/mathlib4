@@ -16,11 +16,11 @@ lemmas in this file]."
 -/
 
 
-section new
+section seminormedgroup
 
-open Filter Function Metric Bornology ENNReal Filter NNReal Uniformity Pointwise Topology Finset
+open Filter Uniformity Topology Finset
 
-variable {𝓕 α ι κ E F G : Type*} [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E} {r : ℝ}
+variable {E F : Type*} [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E}
 
 @[to_additive]
 theorem controlled_prod_of_mem_closure {s : Subgroup E} (hg : a ∈ closure (s : Set E)) {b : ℕ → ℝ}
@@ -65,7 +65,7 @@ theorem controlled_prod_of_mem_closure_range {j : E →* F} {b : F}
     ⟨g, by simpa [← hg] using sum_v, by simpa [hg 0] using hv₀,
       fun n hn => by simpa [hg] using hv_pos n hn⟩
 
-end new
+end seminormedgroup
 
 open Filter Finset
 
