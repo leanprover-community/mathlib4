@@ -14,7 +14,8 @@ T2 space `X` for `Real`-linear functionals `Λ`.
 
 The measure is first defined through `rieszContent` for `toNNRealLinear`-version of `Λ`.
 The result is first proved for `Real`-linear `Λ` because in a standard proof one has to prove the
-inequalities by considering `Λ f` and `Λ (-f)` for all functions `f`, yet on `C_c(X, ℝ≥0)` there is no negation.
+inequalities by considering `Λ f` and `Λ (-f)` for all functions `f`, yet on `C_c(X, ℝ≥0)` there is
+no negation.
 
 ## References
 
@@ -126,8 +127,8 @@ theorem integral_rieszMeasure [Nonempty X] : ∀ (f : C_c(X, ℝ)),
     intro ε hε
     -- take `ε'` that appears in a form appearing in the estimate of the integral.
     have hltε : ∃ (ε' : ℝ), 0 < ε' ∧
-        ε' * (2 * ((rieszMeasure Λ hΛ) (tsupport f)).toReal + |a| + b + ε') < ε := by
-      set A := 2 * ((rieszMeasure Λ hΛ) (tsupport f)).toReal + |a| + b with hA
+        ε' * (2 * (rieszMeasure Λ hΛ (tsupport f)).toReal + |a| + b + ε') < ε := by
+      set A := 2 * (rieszMeasure Λ hΛ (tsupport f)).toReal + |a| + b with hA
       use ε / (4 * A + 2 + 2 * ε)
       have hAnonneg : 0 ≤ A := by
         rw [hA, add_assoc]
@@ -352,7 +353,7 @@ theorem integral_rieszMeasure [Nonempty X] : ∀ (f : C_c(X, ℝ)),
       · exact htsupportsubErest
       · exact Set.iUnion_subset hErestsubtsupport
     have hrieszMeasuresuppfeqrieszMeasureErest :
-        (rieszMeasure Λ hΛ) (tsupport f) = ∑ n, (rieszMeasure Λ hΛ) (Erest n) := by
+        rieszMeasure Λ hΛ (tsupport f) = ∑ n, rieszMeasure Λ hΛ (Erest n) := by
       rw [htsupporteqErest]
       rw [← MeasureTheory.measure_biUnion_finset]
       · simp only [Finset.mem_univ, iUnion_true]
@@ -403,7 +404,7 @@ theorem integral_rieszMeasure [Nonempty X] : ∀ (f : C_c(X, ℝ)),
         simp only [Finset.sum_apply, mul_zero]
     -- the measure of `tsupport f` is less than `Λ (∑ g n)`, where the range of `g` is restricted.
     have rieszMeasuretsupportflesumΛgn :
-        (rieszMeasure Λ hΛ (TopologicalSpace.Compacts.mk (tsupport f) f.2)) ≤
+        rieszMeasure Λ hΛ (TopologicalSpace.Compacts.mk (tsupport f) f.2) ≤
         ENNReal.ofReal (Λ (∑ n, ⟨g n, hg.2.2.2 n⟩)) := by
       rw [rieszMeasure]
       rw [MeasureTheory.Content.measure_eq_content_of_regular (rieszContent (toNNRealLinear Λ hΛ))
@@ -550,7 +551,7 @@ theorem integral_rieszMeasure [Nonempty X] : ∀ (f : C_c(X, ℝ)),
         · rw [← add_assoc]
           exact hy1a
     have hΛgnlerieszMeasureVn : ∀ (n : Fin (⌈N⌉₊ + 1)),
-        ENNReal.ofReal (Λ (⟨g n, hg.2.2.2 n⟩)) ≤ (rieszMeasure Λ hΛ) (V n) := by
+        ENNReal.ofReal (Λ (⟨g n, hg.2.2.2 n⟩)) ≤ rieszMeasure Λ hΛ (V n) := by
       intro n
       apply le_rieszMeasure_of_isOpen_tsupport_subset
       · simp only [CompactlySupportedContinuousMap.coe_mk]
@@ -561,8 +562,8 @@ theorem integral_rieszMeasure [Nonempty X] : ∀ (f : C_c(X, ℝ)),
         exact hg.1 n
     -- bounding `rieszMeasure (V n)` by `rieszMeasure (E n)` with error.
     have hrieszMeasureVnlerieszMeasureEnaddε : ∀ (n : Fin (⌈N⌉₊ + 1)),
-        (rieszMeasure Λ hΛ) (V n) ≤
-        (rieszMeasure Λ hΛ) (Erest n) + ENNReal.ofReal (ε' / ((⌈N⌉₊ + 1 : ℕ))) := by
+        rieszMeasure Λ hΛ (V n) ≤
+        rieszMeasure Λ hΛ (Erest n) + ENNReal.ofReal (ε' / ((⌈N⌉₊ + 1 : ℕ))) := by
       intro n
       rw [rieszMeasure]
       rw [← TopologicalSpace.Opens.carrier_eq_coe]
@@ -587,7 +588,7 @@ theorem integral_rieszMeasure [Nonempty X] : ∀ (f : C_c(X, ℝ)),
         rfl
       rw [hENNNR]
       exact SpecUn.2
-    have hrieszMeasureErestlttop : ∀ (n : Fin (⌈N⌉₊ + 1)), (rieszMeasure Λ hΛ) (Erest n) < ⊤ := by
+    have hrieszMeasureErestlttop : ∀ (n : Fin (⌈N⌉₊ + 1)), rieszMeasure Λ hΛ (Erest n) < ⊤ := by
       intro n
       apply lt_of_le_of_lt (MeasureTheory.measure_mono (hErestsubtsupport n))
       have : f = f.toFun := by
@@ -596,15 +597,15 @@ theorem integral_rieszMeasure [Nonempty X] : ∀ (f : C_c(X, ℝ)),
         MeasureTheory.Content.measure_apply _ f.2.measurableSet]
       exact MeasureTheory.Content.outerMeasure_lt_top_of_isCompact _ f.2
     have hrieszMeasuresuppfeqrieszMeasureErest' :
-        ((rieszMeasure Λ hΛ) (tsupport f)).toReal =
-        ∑ n, ((rieszMeasure Λ hΛ) (Erest n)).toReal := by
+        (rieszMeasure Λ hΛ (tsupport f)).toReal =
+        ∑ n, (rieszMeasure Λ hΛ (Erest n)).toReal := by
       rw [← ENNReal.toReal_sum]
       exact congr rfl hrieszMeasuresuppfeqrieszMeasureErest
       intro n _
       rw [← lt_top_iff_ne_top]
       exact hrieszMeasureErestlttop n
     have hΛgnlerieszMeasureVn' : ∀ (n : Fin (⌈N⌉₊ + 1)),
-        Λ (⟨g n, hg.2.2.2 n⟩) ≤ ((rieszMeasure Λ hΛ) (V n)).toReal := by
+        Λ (⟨g n, hg.2.2.2 n⟩) ≤ (rieszMeasure Λ hΛ (V n)).toReal := by
       intro n
       apply (ENNReal.ofReal_le_iff_le_toReal _).mp (hΛgnlerieszMeasureVn n)
       rw [← lt_top_iff_ne_top]
@@ -614,15 +615,15 @@ theorem integral_rieszMeasure [Nonempty X] : ∀ (f : C_c(X, ℝ)),
       · exact hrieszMeasureErestlttop n
       · exact ENNReal.ofReal_lt_top
     have hrieszMeasureVnlerieszMeasureEnaddε' : ∀ (n : Fin (⌈N⌉₊ + 1)),
-        ((rieszMeasure Λ hΛ) (V n)).toReal ≤
-        ((rieszMeasure Λ hΛ) (Erest n)).toReal + (ε' / ((⌈N⌉₊ + 1 : ℕ))) := by
+        (rieszMeasure Λ hΛ (V n)).toReal ≤
+        (rieszMeasure Λ hΛ (Erest n)).toReal + (ε' / ((⌈N⌉₊ + 1 : ℕ))) := by
       intro n
       rw [← ENNReal.toReal_ofReal (div_nonneg (le_of_lt hε'.1) (Nat.cast_nonneg _))]
       apply ENNReal.toReal_le_add (hrieszMeasureVnlerieszMeasureEnaddε n)
       · exact lt_top_iff_ne_top.mp (hrieszMeasureErestlttop n)
       · exact ENNReal.ofReal_ne_top
     have ynsubεmulrieszMeasureEnleintEnf :
-        ∀ (n : Fin (⌈N⌉₊ + 1)), (y (n + 1) - ε') * ((rieszMeasure Λ hΛ) (Erest n)).toReal
+        ∀ (n : Fin (⌈N⌉₊ + 1)), (y (n + 1) - ε') * (rieszMeasure Λ hΛ (Erest n)).toReal
         ≤ ∫ x in (Erest n), f x ∂(rieszMeasure Λ hΛ) := by
       intro n
       apply MeasureTheory.setIntegral_ge_of_const_le (hErestmeasurable n)
@@ -657,7 +658,7 @@ theorem integral_rieszMeasure [Nonempty X] : ∀ (f : C_c(X, ℝ)),
     nth_rw 1 [← sub_add_cancel ε' ε']
     simp_rw [add_assoc _ _ |a|, ← add_assoc _ _ (ε' + |a|), Eq.symm (add_comm_sub _ ε' ε'),
       add_assoc _ ε' _, ← add_assoc ε' ε' |a|, Eq.symm (two_mul ε')]
-    simp_rw [add_mul _ (2 * ε' + |a|) ((rieszMeasure Λ hΛ) _).toReal]
+    simp_rw [add_mul _ (2 * ε' + |a|) (rieszMeasure Λ hΛ _).toReal]
     rw [Finset.sum_add_distrib, ← Finset.mul_sum, ← hrieszMeasuresuppfeqrieszMeasureErest',
       add_mul (2 * ε') |a| _]
     simp only [Compacts.coe_mk]

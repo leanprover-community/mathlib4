@@ -317,6 +317,8 @@ lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
 
 end RieszContentRegular
 
+namespace NNRealRMK
+
 section RieszMeasure
 
 variable [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X] [BorelSpace X]
@@ -352,3 +354,5 @@ lemma le_rieszMeasure_of_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : ∀ x, f x 
   exact subset_rfl
 
 end RieszMeasure
+
+end NNRealRMK
