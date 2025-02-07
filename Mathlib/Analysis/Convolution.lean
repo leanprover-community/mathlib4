@@ -230,6 +230,9 @@ theorem ConvolutionExistsAt.of_norm' {x₀ : G}
   rw [mul_apply', ← mul_assoc]
   apply L.le_opNorm₂
 
+@[deprecated (since := "2025-02-07")]
+alias ConvolutionExistsAt.ofNorm' := ConvolutionExistsAt.of_norm'
+
 end
 
 section Left
@@ -257,6 +260,9 @@ theorem ConvolutionExistsAt.of_norm {x₀ : G}
     ConvolutionExistsAt f g x₀ L μ :=
   h.of_norm' L hmf <|
     hmg.mono_ac (quasiMeasurePreserving_sub_left_of_right_invariant μ x₀).absolutelyContinuous
+
+@[deprecated (since := "2025-02-07")]
+alias ConvolutionExistsAt.ofNorm := ConvolutionExistsAt.of_norm
 
 end Left
 
@@ -324,6 +330,9 @@ theorem _root_.HasCompactSupport.convolutionExists_right (hcg : HasCompactSuppor
   refine fun t => mt fun ht : g (x₀ - t) = 0 => ?_
   simp_rw [ht, (L _).map_zero]
 
+@[deprecated (since := "2025-02-06")]
+alias _root_.HasCompactSupport.convolutionExistsRight := HasCompactSupport.convolutionExists_right
+
 theorem _root_.HasCompactSupport.convolutionExists_left_of_continuous_right
     (hcf : HasCompactSupport f) (hf : LocallyIntegrable f μ) (hg : Continuous g) :
     ConvolutionExists f g L μ := by
@@ -332,6 +341,10 @@ theorem _root_.HasCompactSupport.convolutionExists_left_of_continuous_right
   refine hcf.mono ?_
   refine fun t => mt fun ht : f t = 0 => ?_
   simp_rw [ht, L.map_zero₂]
+
+@[deprecated (since := "2025-02-06")]
+alias _root_.HasCompactSupport.convolutionExistsRightOfContinuousLeft :=
+  HasCompactSupport.convolutionExists_left_of_continuous_right
 
 end Group
 
