@@ -10,6 +10,7 @@ import Mathlib.Data.Complex.BigOperators
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Algebra.CharP.Defs
+import Mathlib.Data.Complex.Norm
 
 /-!
 # Exponential Function
@@ -22,6 +23,8 @@ open CauSeq Finset IsAbsoluteValue
 open scoped ComplexConjugate
 
 namespace Complex
+
+example : ‖(0 : ℂ)‖ = 0 := by simp
 
 theorem isCauSeq_abs_exp (z : ℂ) :
     IsCauSeq _root_.abs fun n => ∑ m ∈ range n, abs (z ^ m / m.factorial) :=
