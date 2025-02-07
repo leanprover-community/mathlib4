@@ -7,6 +7,7 @@ import Batteries.Data.List.Perm
 import Mathlib.Logic.Relation
 import Mathlib.Order.RelClasses
 import Mathlib.Data.List.Forall2
+import Mathlib.Data.List.Lookmap
 
 /-!
 # List Permutations
@@ -189,23 +190,5 @@ theorem Perm.product_left (l : List α) {t₁ t₂ : List β} (p : t₁ ~ t₂) 
 theorem Perm.product {l₁ l₂ : List α} {t₁ t₂ : List β} (p₁ : l₁ ~ l₂) (p₂ : t₁ ~ t₂) :
     product l₁ t₁ ~ product l₂ t₂ :=
   (p₁.product_right t₁).trans (p₂.product_left l₂)
-
-theorem perm_lookmap (f : α → Option α) {l₁ l₂ : List α}
-    (H : Pairwise (fun a b => ∀ c ∈ f a, ∀ d ∈ f b, a = b ∧ c = d) l₁) (p : l₁ ~ l₂) :
-    lookmap f l₁ ~ lookmap f l₂ := by
-  induction' p with a l₁ l₂ p IH a b l l₁ l₂ l₃ p₁ _ IH₁ IH₂; · simp
-  · cases h : f a
-    · simpa [h] using IH (pairwise_cons.1 H).2
-    · simp [lookmap_cons_some _ _ h, p]
-  · cases' h₁ : f a with c <;> cases' h₂ : f b with d
-    · simpa [h₁, h₂] using swap _ _ _
-    · simpa [h₁, lookmap_cons_some _ _ h₂] using swap _ _ _
-    · simpa [lookmap_cons_some _ _ h₁, h₂] using swap _ _ _
-    · rcases (pairwise_cons.1 H).1 _ (mem_cons.2 (Or.inl rfl)) _ h₂ _ h₁ with ⟨rfl, rfl⟩
-      exact Perm.refl _
-  · refine (IH₁ H).trans (IH₂ ((p₁.pairwise_iff ?_).1 H))
-    intro x y h c hc d hd
-    rw [@eq_comm _ y, @eq_comm _ c]
-    apply h d hd c hc
 
 end List

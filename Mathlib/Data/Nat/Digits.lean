@@ -433,7 +433,7 @@ theorem digits_append_digits {b m n : ℕ} (hb : 0 < b) :
   · by_cases h : digits b m = []
     · simp only [h, List.append_nil] at h_append ⊢
       exact getLast_digit_ne_zero b <| digits_ne_nil_iff_ne_zero.mp h_append
-    · exact (List.getLast_append' _ _ h) ▸
+    · exact (List.getLast_append_of_right_ne_nil _ _ h) ▸
           (getLast_digit_ne_zero _ <| digits_ne_nil_iff_ne_zero.mp h)
 
 theorem digits_append_zeroes_append_digits {b k m n : ℕ} (hb : 1 < b) (hm : 0 < m) :

@@ -2741,6 +2741,7 @@ import Mathlib.Data.List.Flatten
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.GetD
 import Mathlib.Data.List.Indexes
+import Mathlib.Data.List.Induction
 import Mathlib.Data.List.Infix
 import Mathlib.Data.List.InsertIdx
 import Mathlib.Data.List.InsertNth
@@ -2749,8 +2750,10 @@ import Mathlib.Data.List.Iterate
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Lemmas
 import Mathlib.Data.List.Lex
+import Mathlib.Data.List.Lookmap
 import Mathlib.Data.List.Map2
 import Mathlib.Data.List.MinMax
+import Mathlib.Data.List.ModifyLast
 import Mathlib.Data.List.Monad
 import Mathlib.Data.List.NatAntidiagonal
 import Mathlib.Data.List.Nodup
@@ -2768,14 +2771,17 @@ import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.ReduceOption
 import Mathlib.Data.List.Rotate
+import Mathlib.Data.List.Scan
 import Mathlib.Data.List.Sections
 import Mathlib.Data.List.Sigma
 import Mathlib.Data.List.Sort
 import Mathlib.Data.List.SplitBy
 import Mathlib.Data.List.SplitLengths
+import Mathlib.Data.List.SplitOn
 import Mathlib.Data.List.Sublists
 import Mathlib.Data.List.Sym
 import Mathlib.Data.List.TFAE
+import Mathlib.Data.List.TakeWhile
 import Mathlib.Data.List.ToFinsupp
 import Mathlib.Data.List.Zip
 import Mathlib.Data.MLList.BestFirst
