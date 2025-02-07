@@ -71,12 +71,11 @@ theorem tendstoInMeasure_iff_tendsto_toNNReal [Dist E] [IsFiniteMeasure μ]
   refine ⟨fun h ε hε ↦ ?_, fun h ε hε ↦ ?_⟩
   · have hf : (fun i => (μ { x | ε ≤ dist (f i x) (g x) }).toNNReal) =
         ENNReal.toNNReal ∘ (fun i => (μ { x | ε ≤ dist (f i x) (g x) })) := rfl
-    rw [hf, ← ENNReal.tendsto_toNNReal_iff' (hfin ε)]
+    rw [hf, ENNReal.tendsto_toNNReal_iff' (hfin ε)]
     exact h ε hε
-  · rw [ENNReal.tendsto_toNNReal_iff ENNReal.zero_ne_top (hfin ε)]
+  · rw [← ENNReal.tendsto_toNNReal_iff ENNReal.zero_ne_top (hfin ε)]
     exact h ε hε
 
-/-- Convergence in measure is stable under taking subsequences. -/
 lemma TendstoInMeasure.mono [Dist E] {f : ι → α → E} {g : α → E} {u v : Filter ι} (huv : v ≤ u)
     (hg : TendstoInMeasure μ f u g) : TendstoInMeasure μ f v g :=
   fun ε hε => (hg ε hε).mono_left huv
@@ -262,7 +261,7 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae' {u : Filter ι} [NeBot u] [IsCou
 ￼which converges almost surely. -/
 theorem exists_seq_tendstoInMeasure_atTop_iff (hfin : MeasureTheory.IsFiniteMeasure μ)
     {f : ℕ → α → E} (hf : ∀ (n : ℕ), AEStronglyMeasurable (f n) μ) {g : α → E} :
-    (TendstoInMeasure μ f atTop g) ↔
+    TendstoInMeasure μ f atTop g ↔
       ∀ ns : ℕ → ℕ, StrictMono ns → ∃ ns' : ℕ → ℕ, StrictMono ns' ∧
         ∀ᵐ (ω : α) ∂μ, Tendsto (fun i ↦ f (ns (ns' i)) ω) atTop (𝓝 (g ω)) := by
   refine ⟨fun hfg _ hns ↦ (hfg.comp hns.tendsto_atTop).exists_seq_tendsto_ae,
@@ -278,7 +277,7 @@ theorem exists_seq_tendstoInMeasure_atTop_iff (hfin : MeasureTheory.IsFiniteMeas
     exact ⟨δ, ns, hδ, hns, fun n ↦ Set.not_mem_Iio.1 (Set.not_mem_subset h5 (h6 n))⟩
   refine ⟨ns, hns, fun ns' _ ↦ ?_⟩
   by_contra h6
-  obtain h7 := tendstoInMeasure_iff_tendsto_toNNReal.mp <|
+  have h7 := tendstoInMeasure_iff_tendsto_toNNReal.mp <|
     tendstoInMeasure_of_tendsto_ae (fun n ↦ hf _) h6
   exact lt_irrefl _ (lt_of_le_of_lt (ge_of_tendsto' (h7 ε hε) (fun n ↦ h3 _)) hδ)
 
@@ -286,13 +285,10 @@ end ExistsSeqTendstoAe
 
 section TendstoInMeasureUnique
 
-variable [MetricSpace E]
-variable {f : ℕ → α → E} {g h : α → E}
-
 /-- The limit in measure is ae unique. -/
-theorem tendstoInMeasure_ae_unique {g h : α → E} {f : ι → α → E} {u : Filter ι} [NeBot u]
-    [IsCountablyGenerated u] (hg : TendstoInMeasure μ f u g) (hh : TendstoInMeasure μ f u h) :
-    g =ᵐ[μ] h := by
+theorem tendstoInMeasure_ae_unique [MetricSpace E] {g h : α → E} {f : ι → α → E} {u : Filter ι}
+    [NeBot u] [IsCountablyGenerated u] (hg : TendstoInMeasure μ f u g)
+    (hh : TendstoInMeasure μ f u h) : g =ᵐ[μ] h := by
   obtain ⟨ns, h1, h1'⟩ := hg.exists_seq_tendsto_ae'
   obtain ⟨ns', h2, h2'⟩ := (hh.comp h1).exists_seq_tendsto_ae'
   filter_upwards [h1', h2'] with ω hg1 hh1
