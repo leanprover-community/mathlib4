@@ -49,6 +49,17 @@ theorem map_finsuppSum' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R
   rw [recover]
   exact Q.map_sum' _ (fun i => g i (f i))
 
+lemma partial_result (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
+    Q.polar_sym2 ∘ Sym2.map (l * g) = Sym2.lift ⟨fun i j => l j • l i • polar (⇑Q) (g i) (g j),
+      fun _ _ => by simp_rw [polar_comm]; rw [smul_comm]⟩ := by
+  rw [polar_sym2, ← Sym2.lift_comp_map]
+  simp_all only [Finset.product_eq_sprod]
+  ext ⟨i,j⟩
+  simp_all only [Sym2.lift_mk]
+  have e1 (k : ι): (l * g) k = (l k) • (g k) := rfl
+  rw [e1, e1]
+  simp_rw [polar_smul_right, polar_smul_left]
+
 variable [DecidableEq ι]
 
 /--
@@ -70,6 +81,7 @@ noncomputable def scalar (l : ι →₀ R) : Sym2 ι →₀ R := Finsupp.onFinse
     )
 
 
+/-
 variable (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R)
 
 #check scalar l
@@ -103,6 +115,7 @@ lemma test :
   rw [← Sym2.lift_comp_map_apply]
   simp_all only [polar_smul_right, polar_smul_left]
   sorry
+-/
 
 /-
 lemma recover2 : Finsupp.linearCombination R (Q.polar_sym2 ∘ Sym2.map g) (scalar l) =
