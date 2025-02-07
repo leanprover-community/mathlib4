@@ -51,11 +51,18 @@ import Mathlib.GroupTheory.GroupAction.Transitive
 - `MulAction.IsPreprimitive.isQuasipreprimitive`
   Preprimitive actions are quasipreprimitive.
 
-## Properties related to finiteness
+## Particular results for actions on finite types
 
-* `MulAction.IsPreprimitive.exists_mem_smul_and_not_mem_smul` : **Theorem of Rudio**.
-For a preprimitive action, a subset which is neither empty nor full has a translate
-which contains a given point and avoids another one.
+- `MulAction.isPreprimitive_of_primeCard` :
+  A pretransitive action on a finite type of prime cardinal is preprimitive.
+
+- `IsPreprimitive.of_card_lt`
+  Given an equivariant map from a preprimitive action,
+  if the image is at least twice the codomain, then the codomain is preprimitive.
+
+- `MulAction.IsPreprimitive.exists_mem_smul_and_not_mem_smul` : **Theorem of Rudio**.
+  For a preprimitive action, a subset which is neither empty nor full has a translate
+  which contains a given point and avoids another one.
 
 -/
 
@@ -365,6 +372,9 @@ theorem of_card_lt [Finite β] [IsPretransitive N β] [IsPreprimitive M α]
       apply le_trans (Set.ncard_le_ncard h) (Set.ncard_image_le B.toFinite)
   simp only [Set.Finite.coe_toFinset, Set.subset_univ]
 
+/- The finiteness assumption is necessary :
+  For G = ℤ acting on itself, no translate of ℕ contains 0 but not 1.
+  (See comment before `IsBlock.of_subset`.) -/
 /-- Theorem of Rudio (Wielandt, 1964, Th. 8.1)
 
 For a preprimitive action, a subset which is neither empty nor full has a translate
