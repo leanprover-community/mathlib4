@@ -254,14 +254,6 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
     (LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₁
       hlim hε)).frequently.forall_exists_of_atTop 1
   let S : ℝ → ℂ := fun t ↦ ∑ k ∈ Icc 1 ⌊t⌋₊, f k
-  -- This result is the main ingredient of the proof. First, we replace `s * l` by `(s - 1) * s`
-  -- times the integral of `l * t ^ (-s)` (using `h₃` below). Then, replacing the `LSeries` by its
-  -- integral representation, we need to bound the integral of `(S t - l * t) * t ^ (-s - 1)`
-  -- (with the same notation as in the proof). For that, we cut this integral into two parts split
-  -- at the value `T` given by `LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₁` and then
-  -- defined `C` so that that it gives an upper bound of the first part. The second part is bounded
-  -- using `LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂` since `‖S t - l t‖ ≤ ε * t`
-  -- for all `t ≥ T`.
   let C := ∫ t in Set.Ioc 1 T, ‖S t - l * t‖ * t ^ (-1 - 1 : ℝ)
   have hC : 0 ≤ C := by
     refine setIntegral_nonneg_ae measurableSet_Ioc (univ_mem' fun t ht ↦ ?_)
@@ -284,7 +276,6 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
     rw [integral_Ioi_cpow_of_lt (by rwa [neg_re, neg_lt_neg_iff]) zero_lt_one, ofReal_one,
       one_cpow, show -(s : ℂ) + 1 = -(s - 1) by ring, neg_div_neg_eq, mul_div_cancel₀]
     exact (sub_ne_zero.trans ofReal_ne_one).mpr hs.ne'
-  -- The value `Cs` correspond to the first part of the integral. It is always `≤ C`.
   let Cs := ∫ t in Set.Ioc 1 T, ‖S t - l * t‖ * t ^ (-s - 1)
   have h₄ : Cs ≤ C := by
     refine setIntegral_mono_on ?_ h₂ measurableSet_Ioc fun t ht ↦ ?_
@@ -292,6 +283,8 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
     · gcongr
       exact ht.1.le
   calc
+    -- First, we replace `s * l` by `(s - 1) * s` times the integral of `l * t ^ (-s)` using `h₃`
+    -- and replace `LSeries f s` by its integral representation.
     _ = ‖((s - 1) * s * ∫ t in Set.Ioi 1, S t * ↑t ^ (-(s : ℂ) - 1)) -
           l * s * ((s - 1) * ∫ (t : ℝ) in Set.Ioi 1, ↑t ^ (-(s : ℂ)))‖ := by
       rw [h₃, mul_one, mul_comm l, LSeries_eq_mul_integral _ zero_le_one (by rwa [ofReal_re])
@@ -312,20 +305,25 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
       rw [norm_mul, show ((s : ℂ) - 1) * s = ((s - 1) * s : ℝ) by simp, norm_real,
         Real.norm_of_nonneg hs']
       exact mul_le_mul_of_nonneg_left (norm_integral_le_integral_norm _) hs'
+    -- Next, step is to bound the integral of `‖S t - l * t‖ * t ^ (-s - 1)`.
     _ = (s - 1) * s * ∫ t in Set.Ioi 1, ‖S t - l * t‖ * t ^ (-s - 1) := by
       congr 1
       refine setIntegral_congr_fun measurableSet_Ioi fun t ht ↦ ?_
       replace ht : 0 ≤ t := zero_le_one.trans ht.le
       rw [norm_mul, show (-(s : ℂ) - 1) = (-s - 1 : ℝ) by simp, ← ofReal_cpow ht, norm_real,
         Real.norm_of_nonneg (Real.rpow_nonneg ht _)]
+    -- For that, we cut the integral in two parts using `T` as the cutting point.
     _ = (s - 1) * s * (Cs + ∫ t in Set.Ioi T, ‖S t - l * t‖ * t ^ (-s - 1)) := by
       rw [← Set.Ioc_union_Ioi_eq_Ioi hT₁, setIntegral_union Set.Ioc_disjoint_Ioi_same
         measurableSet_Ioi]
       · exact h₁.mono_set <| Set.Ioc_subset_Ioi_self.trans Set.Ioi_subset_Ici_self
       · exact h₁.mono_set <| Set.Ioi_subset_Ici_self.trans <| Set.Ici_subset_Ici.mpr hT₁
+    -- The first part can be bounded by `C`  using `h₄`.
     _ ≤ (s - 1) * s * C + s * ((s - 1) * ∫ t in Set.Ioi T, ‖S t - l * t‖ * t ^ (-s - 1)) := by
       rw [mul_add, ← mul_assoc, mul_comm s]
       exact add_le_add_right (mul_le_mul_of_nonneg_left h₄ hs') _
+    -- The second part is bounded using `LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂`
+    -- since `‖S t - l t‖ ≤ ε * t` for all `t ≥ T`.
     _ ≤ (s - 1) * s * C + s * ε := by
       gcongr
       exact LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂ h₀ hε hs hT₁
