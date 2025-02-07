@@ -103,6 +103,9 @@ def forget : CommMon_ C ⥤ C :=
 
 instance : (forget C).Faithful where
 
+@[simp]
+theorem forget₂Mon_comp_forget : forget₂Mon_ C ⋙ Mon_.forget C = forget C := rfl
+
 end
 
 section
