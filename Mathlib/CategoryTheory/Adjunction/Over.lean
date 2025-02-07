@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
 import Mathlib.CategoryTheory.Monad.Products
+import Mathlib.CategoryTheory.Equivalence
 
 /-!
 # Adjunctions related to the over category
@@ -46,13 +47,13 @@ Show `star X` itself has a right adjoint provided `C` is cartesian closed and ha
 
 noncomputable section
 
-universe v u
+universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
 open Category Limits Comonad
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u₁} [Category.{v₁} C]
 
 namespace Over
 
@@ -293,8 +294,6 @@ lemma Over.sigmaReindexNatIsoTensorLeft_hom_app [HasFiniteWidePullbacks C]
 
 end TensorLeft
 
-open Equivalence
-
 variable (C)
 
 /-- The functor from `C` to `Over (⊤_ C)` which sends `X : C` to `terminal.from X`. -/
@@ -369,6 +368,65 @@ theorem homEquiv_symm {I : C} (X : Over I) (A : C) (f : X ⟶ (Over.star I).obj 
 
 end forgetAdjStar
 
+end Over
+
+namespace Functor
+
+open Equivalence CategoryTheory
+
+variable (D : Type u₂) [Category.{v₂} D]
+
+lemma inv_obj (F : C ⥤ D) [F.IsEquivalence] (X : D) : (F.inv.obj X) = F.objPreimage X := by rfl
+
+lemma inv_map (F : C ⥤ D) [F.IsEquivalence] {X Y : D} (f : X ⟶ Y) :
+    F.inv.map f = F.preimage ((F.objObjPreimageIso X).hom ≫ f ≫ (F.objObjPreimageIso Y).inv) := by
+  rfl
+
+lemma asEquivalence_inverse (F : C ⥤ D) [F.IsEquivalence] : (F.asEquivalence).inverse = F.inv := by
+  rfl
+
+end Functor
+
+namespace Equivalence
+
+open CategoryTheory Functor
+
+variable {C} {D : Type u₂} [Category.{v₂} D]
+
+/-- The inverse associated to `asEquivalence e.functor` of an equivalence `e` is naturally
+isomorphism to the original `e.inverse`. We use this to construct the natural isomorphism
+`toOverTerminalStarIso` in below between the functors `star (⊤_ C)` and `Functor.toOverTerminal C`.
+-/
+noncomputable def asEquivalenceInverse (e : C ≌ D) :
+    (e.functor).asEquivalence.inverse ≅ e.inverse := by
+  set F := e.functor
+  set G := e.inverse
+  refine NatIso.ofComponents ?_ ?_
+  · intro X
+    dsimp [Functor.asEquivalence]
+    exact (e.unitIso.app <| F.inv.obj X) ≪≫ (asIso <| G.map <| F.objObjPreimageIso X |>.hom)
+  · intros Y Y' g
+    dsimp
+    simp [asEquivalence_inverse, Functor.inv_map]
+    have :  G.map (F.objObjPreimageIso Y).hom ≫ G.map g =
+      G.map (F.map (e.functor.asEquivalence.inverse.map g)) ≫ G.map (F.objObjPreimageIso Y').hom :=
+    by
+      simp [asEquivalence_inverse, Functor.inv_map, ← Functor.map_comp]
+      congr 1
+      rw [Functor.map_preimage F]
+      aesop_cat
+    rw [this]
+    let t := e.unit.naturality
+    dsimp at t
+    rw [← assoc]
+    rw [t]
+    simp_all [asEquivalence_inverse, Functor.inv_obj, Functor.inv_map]
+    aesop
+
+end Equivalence
+
+namespace Over
+
 /-- `star (⊤_ C) : C ⥤ Over (⊤_ C)` is naturally isomorphic to `Functor.toOverTerminal C`. -/
 def toOverTerminalStarIso [HasTerminal C] [HasBinaryProducts C] :
     star (⊤_ C) ≅ Functor.toOverTerminal C := by
@@ -378,9 +436,8 @@ def toOverTerminalStarIso [HasTerminal C] [HasBinaryProducts C] :
     (Equivalence.asEquivalenceInverse (equivOverTerminal C))
   exact iso
 
-/--
-The isomorphism between the base change functors obtained as the conjugate of the `mapForgetIso`.
-For use elsewhere.-/
+/-- A natural isomorphism between the functors `star X` and `star Y ⋙ pullback f`
+for any morphism `f : X ⟶ Y`. -/
 def mapStarIso [HasBinaryProducts C] [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
     star X ≅ star Y ⋙ pullback f :=
   conjugateIsoEquiv

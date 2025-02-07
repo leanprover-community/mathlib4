@@ -68,6 +68,8 @@ universe v u
 
 variable {C : Type u} [Category.{v} C]
 
+attribute [local instance] ChosenFiniteProducts.ofFiniteProducts
+
 /-- A morphism `f : I ⟶ J` is exponentiable if the pullback functor `Over J ⥤ Over I`
 has a right adjoint. -/
 class ExponentiableMorphism [HasPullbacks C] {I J : C} (f : I ⟶ J) where
@@ -110,8 +112,6 @@ def pushforwardCompIso {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
   (comp f g).pushforward ≅ fexp.pushforward ⋙ gexp.pushforward  :=
   conjugateIsoEquiv (gexp.adj.comp fexp.adj) ((comp f g).adj) (pullbackComp f g)
 
-attribute [local instance] ChosenFiniteProducts.ofFiniteProducts
-
 /-- A morphism with a pushforward is exponentiable in the slice category. -/
 instance exponentiableOverMk [HasFiniteWidePullbacks C] {X I : C} (f : X ⟶ I)
     [ExponentiableMorphism f] :
@@ -140,8 +140,6 @@ variable {C} [HasFiniteWidePullbacks C] [HasPushforwards C]
 def pushforward {I J : C} (f : I ⟶ J) :
     Over I ⥤ Over J :=
   (exponentiable f).pushforward
-
-attribute [scoped instance] ChosenFiniteProducts.ofFiniteProducts
 
 /-- In a category with pushforwards along all morphisms, every slice category `Over I` is
 cartesian closed. -/
@@ -289,8 +287,6 @@ theorem pushforward_uncurry_curry {X : Over I} {A : Over J} (u : (Over.pullback 
   simp [Sigma.overHomMk]
 
 end CartesianClosedOver
-
-attribute [local instance] ChosenFiniteProducts.ofFiniteProducts
 
 /-- A category with cartesian closed slices has pushforwards along all morphisms. -/
 instance CartesianClosedOver.hasPushforwards [HasFiniteWidePullbacks C]
