@@ -30,10 +30,10 @@ open Matrix MulOpposite
   by sending `f` to `f(Eⱼₖ)ᵢₗ • Eᵢⱼ⊗Eₖₗ`. -/
 abbrev AlgHom.mulLeftRightMatrix_inv :
     Module.End R (Matrix n n R) →ₗ[R] Matrix n n R ⊗[R] (Matrix n n R)ᵐᵒᵖ where
-  toFun := fun f ↦ ∑ ⟨⟨i, j⟩, k, l⟩ : (n × n) × n × n,
+  toFun f := ∑ ⟨⟨i, j⟩, k, l⟩ : (n × n) × n × n,
     f (stdBasisMatrix j k 1) i l • (stdBasisMatrix i j 1) ⊗ₜ[R] op (stdBasisMatrix k l 1)
-  map_add' := fun f1 f2 ↦ by simp [add_smul, Finset.sum_add_distrib]
-  map_smul' := fun r f ↦ by simp [MulAction.mul_smul, Finset.smul_sum]
+  map_add' f1 f2 := by simp [add_smul, Finset.sum_add_distrib]
+  map_smul' r f := by simp [MulAction.mul_smul, Finset.smul_sum]
 
 lemma AlgHom.mulLeftRightMatrix.inv_comp:
     (AlgHom.mulLeftRightMatrix_inv R n).comp
