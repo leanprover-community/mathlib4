@@ -19,7 +19,7 @@ defined in the file `CategoryTheory.Limits.Shape.Preorder.TransfiniteComposition
 We use this structure in order to define the class of morphisms
 `W.transfiniteCompositionsOfShape J : MorphismProperty C`, and the type class
 `W.IsStableUnderTransfiniteCompositionOfShape J`.
-In particular, if `J := ℕ`, we obtain `W.IsStableUnderInfiniteComposition`,
+In particular, if `J := ℕ`, we define `W.IsStableUnderInfiniteComposition`,
 
 Finally, we introduce the class `W.IsStableUnderTransfiniteComposition`
 which says that `W.IsStableUnderTransfiniteCompositionOfShape J`
