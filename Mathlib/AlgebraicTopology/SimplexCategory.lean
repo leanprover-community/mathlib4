@@ -752,6 +752,12 @@ instance : HasForget.{0} SimplexCategory where
       map := fun f => f.toOrderHom }
   forget_faithful := ⟨fun h => by ext : 2; exact h⟩
 
+instance (x : SimplexCategory) : Fintype (HasForget.forget.obj x) :=
+  inferInstanceAs (Fintype (Fin _))
+
+instance (x : SimplexCategory) (n : ℕ) : OfNat (HasForget.forget.obj x) n :=
+  inferInstanceAs (OfNat (Fin _) n)
+
 end Concrete
 
 section EpiMono
