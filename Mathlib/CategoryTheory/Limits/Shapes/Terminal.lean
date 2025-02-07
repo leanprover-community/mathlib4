@@ -137,7 +137,7 @@ theorem terminal.comp_from [HasTerminal C] {P Q : C} (f : P ⟶ Q) :
     f ≫ terminal.from Q = terminal.from P := by
   simp [eq_iff_true_of_subsingleton]
 
-@[reassoc (attr := simp)]
+@[simp]
 theorem initial.to_comp [HasInitial C] {P Q : C} (f : P ⟶ Q) : initial.to P ≫ f = initial.to Q := by
   simp [eq_iff_true_of_subsingleton]
 
