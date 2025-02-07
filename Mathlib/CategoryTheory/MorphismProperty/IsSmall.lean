@@ -34,13 +34,10 @@ attribute [instance] IsSmall.small_toSet
 
 instance isSmall_ofHoms {ι : Type t} [Small.{w} ι] {A B : ι → C} (f : ∀ i, A i ⟶ B i) :
     IsSmall.{w} (ofHoms f) := by
-  let φ (i : Shrink.{w} ι) : (ofHoms f).toSet :=
-    ⟨Arrow.mk (f ((equivShrink _).symm i)), ⟨(equivShrink _).symm i⟩⟩
+  let φ (i : ι) : (ofHoms f).toSet := ⟨Arrow.mk (f i), ⟨i⟩⟩
   have hφ : Function.Surjective φ := by
     rintro ⟨⟨_, _, f⟩, ⟨i⟩⟩
-    refine ⟨equivShrink _ i, ?_⟩
-    simp only [Subtype.mk.injEq, φ]
-    fapply Arrow.ext <;> simp
+    exact ⟨i, rfl⟩
   exact ⟨small_of_surjective hφ⟩
 
 lemma isSmall_iff_eq_ofHoms :

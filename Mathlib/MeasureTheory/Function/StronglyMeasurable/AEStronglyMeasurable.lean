@@ -429,14 +429,25 @@ protected theorem nnnorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (fun x => ‖f x‖₊) μ :=
   continuous_nnnorm.comp_aestronglyMeasurable hf
 
-@[measurability]
+/-- The `enorm` of a strongly a.e. measurable function is a.e. measurable.
+
+Note that unlike `AEStrongMeasurable.norm` and `AEStronglyMeasurable.nnnorm`, this lemma proves
+a.e. measurability, **not** a.e. strong measurability. This is an intentional decision:
+for functions taking values in ℝ≥0∞, a.e. measurability is much more useful than
+a.e. strong measurability. -/
+@[fun_prop, measurability]
 protected theorem enorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
     (hf : AEStronglyMeasurable f μ) : AEMeasurable (‖f ·‖ₑ) μ :=
-  (ENNReal.continuous_coe.comp_aestronglyMeasurable hf.nnnorm).aemeasurable
+  (continuous_enorm.comp_aestronglyMeasurable hf).aemeasurable
 
 @[deprecated (since := "2025-01-20")] alias ennnorm := AEStronglyMeasurable.enorm
 
-@[aesop safe 20 apply (rule_sets := [Measurable])]
+/-- Given a.e. strongly measurable functions `f` and `g`, `edist f g` is measurable.
+
+Note that this lemma proves a.e. measurability, **not** a.e. strong measurability.
+This is an intentional decision: for functions taking values in ℝ≥0∞,
+a.e. measurability is much more useful than a.e. strong measurability. -/
+@[aesop safe 20 apply (rule_sets := [Measurable]), fun_prop]
 protected theorem edist {β : Type*} [SeminormedAddCommGroup β] {f g : α → β}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     AEMeasurable (fun a => edist (f a) (g a)) μ :=

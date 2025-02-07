@@ -26,6 +26,7 @@ groups, which can be found in `Algebra/Category/Group/Adjunctions`.
 
 -/
 
+assert_not_exists Field
 
 universe u v w
 
@@ -85,14 +86,13 @@ namespace Abelianization
 
 attribute [local instance] QuotientGroup.leftRel
 
-instance commGroup : CommGroup (Abelianization G) :=
-  { QuotientGroup.Quotient.group _ with
-    mul_comm := fun x y =>
-      Quotient.inductionOn₂' x y fun a b =>
-        Quotient.sound' <|
-          QuotientGroup.leftRel_apply.mpr <|
-            Subgroup.subset_closure
-              ⟨b⁻¹, Subgroup.mem_top b⁻¹, a⁻¹, Subgroup.mem_top a⁻¹, by group⟩ }
+instance commGroup : CommGroup (Abelianization G) where
+  __ := QuotientGroup.Quotient.group _
+  mul_comm x y := Quotient.inductionOn₂ x y fun a b ↦ Quotient.sound' <|
+    QuotientGroup.leftRel_apply.mpr <| Subgroup.subset_closure
+      -- We avoid `group` here to minimize imports while low in the hierarchy;
+      -- typically it would be better to invoke the tactic.
+      ⟨b⁻¹, Subgroup.mem_top _, a⁻¹, Subgroup.mem_top _, by simp [commutatorElement_def, mul_assoc]⟩
 
 instance : Inhabited (Abelianization G) :=
   ⟨1⟩

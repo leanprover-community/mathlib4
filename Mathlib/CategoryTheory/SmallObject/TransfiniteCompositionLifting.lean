@@ -231,9 +231,11 @@ variable (W : MorphismProperty C)
 instance llp_isStableUnderTransfiniteCompositionOfShape :
     W.llp.IsStableUnderTransfiniteCompositionOfShape J := by
   rw [isStableUnderTransfiniteCompositionOfShape_iff]
-  rintro _ _ _ ⟨F, hF, c, hc⟩ X Y p hp
-  exact HasLiftingProperty.transfiniteComposition.hasLiftingProperty_ι_app_bot hc
-    (fun j hj ↦ hF j hj p hp)
+  rintro _ _ _ ⟨t⟩
+  sorry
+  --rintro _ _ _ ⟨F, hF, c, hc⟩ X Y p hp
+  --exact HasLiftingProperty.transfiniteComposition.hasLiftingProperty_ι_app_bot hc
+  --  (fun j hj ↦ hF j hj p hp)
 
 lemma transfiniteCompositionsOfShape_le_rlp_llp :
     W.transfiniteCompositionsOfShape J ≤ W.rlp.llp := by

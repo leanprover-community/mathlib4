@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.RingTheory.Finiteness.Ideal
-import Mathlib.RingTheory.Ideal.MinimalPrime
+import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
@@ -794,25 +794,11 @@ protected def pointsEquivIrreducibleCloseds :
   map_rel_iff' {p q} :=
     (RelIso.symm irreducibleSetEquivPoints).map_rel_iff.trans (le_iff_specializes p q).symm
 
-/-- Also see `PrimeSpectrum.isClosed_singleton_iff_isMaximal` -/
-lemma isMax_iff {x : PrimeSpectrum R} :
-    IsMax x ↔ x.asIdeal.IsMaximal := by
-  refine ⟨fun hx ↦ ⟨⟨x.2.ne_top, fun I hI ↦ ?_⟩⟩, fun hx y e ↦ (hx.eq_of_le y.2.ne_top e).ge⟩
-  by_contra e
-  obtain ⟨m, hm, hm'⟩ := Ideal.exists_le_maximal I e
-  exact hx.not_lt (show x < ⟨m, hm.isPrime⟩ from hI.trans_le hm')
-
 lemma stableUnderSpecialization_singleton {x : PrimeSpectrum R} :
     StableUnderSpecialization {x} ↔ x.asIdeal.IsMaximal := by
   simp_rw [← isMax_iff, StableUnderSpecialization, ← le_iff_specializes, Set.mem_singleton_iff,
     @forall_comm _ (_ = _), forall_eq]
   exact ⟨fun H a h ↦ (H a h).le, fun H a h ↦ le_antisymm (H h) h⟩
-
-lemma isMin_iff {x : PrimeSpectrum R} :
-    IsMin x ↔ x.asIdeal ∈ minimalPrimes R := by
-  show IsMin _ ↔ Minimal (fun q : Ideal R ↦ q.IsPrime ∧ ⊥ ≤ q) _
-  simp only [IsMin, Minimal, x.2, bot_le, and_self, and_true, true_and]
-  exact ⟨fun H y hy e ↦ @H ⟨y, hy⟩ e, fun H y e ↦ H y.2 e⟩
 
 lemma stableUnderGeneralization_singleton {x : PrimeSpectrum R} :
     StableUnderGeneralization {x} ↔ x.asIdeal ∈ minimalPrimes R := by

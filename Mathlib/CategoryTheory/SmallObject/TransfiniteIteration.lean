@@ -136,7 +136,8 @@ lemma transfiniteCompositionOfShape_ιIteration :
     Φ.prop.transfiniteCompositionsOfShape J (Φ.ιIteration J) := by
   simp only [← MorphismProperty.arrow_mk_mem_toSet_iff]
   rw [arrow_mk_ιIteration, MorphismProperty.arrow_mk_mem_toSet_iff]
-  exact ⟨_, Φ.prop_iterationFunctor_map_succ, _, Φ.isColimitIterationCocone J⟩
+  sorry
+  --exact ⟨_, Φ.prop_iterationFunctor_map_succ, _, Φ.isColimitIterationCocone J⟩
 
 variable {J}
 
