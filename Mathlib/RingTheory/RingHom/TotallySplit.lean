@@ -144,18 +144,6 @@ lemma AlgHom.exists_cover_eq_compRight'₂ {R E F : Type*} [CommRing R] (f g : (
       IsLocalization.Away.mapₐ _ _ g (algebraMap _ _ r) = .compRight R (Localization.Away r) τ :=
   sorry
 
-lemma AlgHom.exists_cover_eq_compRight {R S T : Type u} {n m : ℕ} [CommRing R] [CommRing S]
-    [CommRing T] [Algebra R S] [Algebra R T]
-    [Algebra.IsSplitOfRank n R S] [Algebra.IsSplitOfRank m R T] (f : S →ₐ[R] T) :
-    ∃ (s : Set R) (E F : s → Type*) (σ : ∀ s, E s → F s), True :=
-  sorry
-
---lemma foo_locally_trivial {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
---    (p : PrimeSpectrum R) :
---    ∃ f ∉ p.asIdeal,
---      IsLocalization.mapₐ (.powers f) (Localization.Away f) _ _ :=
---  sorry
-
 end
 
 lemma RingHom.FormallyEtale.of_localRingHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S)
@@ -197,20 +185,19 @@ lemma Algebra.Etale.equalizer_fun {R : Type u} {E F : Type} [CommRing R] [Finite
   apply Algebra.etale_of_exists_cover
   intro p hp
   obtain ⟨r, hr, σ, τ, hσ, hτ⟩ := AlgHom.exists_cover_eq_compRight'₂ f g p
-  set a := (IsLocalization.Away.mapₐ (E → Localization.Away r) (F → Localization.Away r) f
+  set A := Localization.Away r
+  set a := (IsLocalization.Away.mapₐ (E → A) (F → A) f
     ((algebraMap R (E → R)) r)).extendScalarsOfIsLocalization (.powers r) (Localization.Away r)
-  set b := (IsLocalization.Away.mapₐ (E → Localization.Away r) (F → Localization.Away r) g
+  set b := (IsLocalization.Away.mapₐ (E → A) (F → A) g
     ((algebraMap R (E → R)) r)).extendScalarsOfIsLocalization (.powers r) (Localization.Away r)
-  set a' := AlgHom.compRight (Localization.Away r) (Localization.Away r) σ
-  set b' := AlgHom.compRight (Localization.Away r) (Localization.Away r) τ
+  set a' := AlgHom.compRight A A σ
+  set b' := AlgHom.compRight A A τ
   use r, hr
-  let e : Localization.Away (algebraMap R (AlgHom.equalizer f g) r) ≃ₐ[Localization.Away r]
-      AlgHom.equalizer a b :=
+  let e : Localization.Away (algebraMap R (AlgHom.equalizer f g) r) ≃ₐ[A] AlgHom.equalizer a b :=
     sorry
-  let cong : AlgHom.equalizer a b ≃ₐ[Localization.Away r] AlgHom.equalizer a' b' :=
+  let cong : AlgHom.equalizer a b ≃ₐ[A] AlgHom.equalizer a' b' :=
     sorry
-  have : Algebra.Etale (Localization.Away r) ↥(AlgHom.equalizer a b) :=
-    Algebra.Etale.of_equiv cong.symm
+  have : Algebra.Etale A ↥(AlgHom.equalizer a b) := Algebra.Etale.of_equiv cong.symm
   apply Algebra.Etale.of_equiv e.symm
 
 lemma Algebra.Etale.equalizer_of_isSplitOfRank {R S T : Type u} {n m : ℕ} [CommRing R]
