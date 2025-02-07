@@ -52,7 +52,7 @@ def Path.interval {n : ℕ} (f : Path X n) (j l : ℕ) (hjl : j + l ≤ n) :
 traversing through its vertices in order.-/
 @[simps]
 def spine (n : ℕ) (Δ : X _[n]) : X.Path n where
-  vertex i := X.map (SimplexCategory.const [0] [n] i).op Δ
+  vertex i := X.map (SimplexCategory.const ⦋0⦌ ⦋n⦌ i).op Δ
   arrow i := X.map (SimplexCategory.mkOfSucc i).op Δ
   arrow_src i := by
     dsimp [SimplicialObject.δ]
@@ -64,7 +64,7 @@ def spine (n : ℕ) (Δ : X _[n]) : X.Path n where
     simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
     rw [SimplexCategory.δ_zero_mkOfSucc]
 
-lemma spine_map_vertex {n : ℕ} (x : X _[n]) {m : ℕ} (φ : ([m] : SimplexCategory) ⟶ [n])
+lemma spine_map_vertex {n : ℕ} (x : X _[n]) {m : ℕ} (φ : (⦋m⦌ : SimplexCategory) ⟶ ⦋n⦌)
     (i : Fin (m + 1)) :
     (spine X m (X.map φ.op x)).vertex i = (spine X n x).vertex (φ.toOrderHom i) := by
   dsimp [spine]
@@ -95,8 +95,8 @@ lemma Path.ext' {n : ℕ} {f g : Path X (n + 1)}
 /-- Maps of simplicial sets induce maps of paths in a simplicial set.-/
 @[simps]
 def Path.map {X Y : SSet.{u}} {n : ℕ} (f : X.Path n) (σ : X ⟶ Y) : Y.Path n where
-  vertex i := σ.app (Opposite.op [0]) (f.vertex i)
-  arrow i := σ.app (Opposite.op [1]) (f.arrow i)
+  vertex i := σ.app (Opposite.op ⦋0⦌) (f.vertex i)
+  arrow i := σ.app (Opposite.op ⦋1⦌) (f.arrow i)
   arrow_src i := by
     simp only [← f.arrow_src i]
     exact congr (σ.naturality (δ 1).op) rfl |>.symm
