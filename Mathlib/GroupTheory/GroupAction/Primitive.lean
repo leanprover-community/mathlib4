@@ -49,21 +49,6 @@ import Mathlib.GroupTheory.GroupAction.Transitive
 - `MulAction.IsPreprimitive.isQuasipreprimitive`
   Preprimitive actions are quasipreprimitive.
 
-## Particular results for actions on finite types
-
-- `isPreprimitive_of_primeCard` :
-a pretransitive action on a finite type of prime cardinal is preprimitive
-- `IsPreprimitive.of_card_lt`
-Given an equivariant map from a preprimitive action,
-if the image is at least twice the codomain, then the codomain is preprimitive
-- `Rudio`
-Theorem of Rudio :
-Given a preprimitive action of a group `G` on `X`, a finite `A : set X`
-and two points, find a translate of `A` that contains one of them
-and not the other one.
-The proof relies on `is_block.of_subset` that itself requires finiteness of `A`,
-but I don't know whether the theorem does…
-
 -/
 
 open Pointwise

@@ -81,15 +81,15 @@ theorem commutator_centralizer_commutator_le_center :
 theorem mem_commutatorSet_of_isConj_sq {g : G} (hg : IsConj g (g ^ 2)) :
     g ∈ commutatorSet G := by
   obtain ⟨h, hg⟩ := hg
-  use ↑h; use g
+  use h, g
   rw [commutatorElement_def, hg]
   simp only [IsUnit.mul_inv_cancel_right, Units.isUnit, mul_inv_eq_iff_eq_mul, pow_two]
 
-theorem Subgroup.map_commutator_eq {H : Type*} [Group H] (f : G →* H) :
+theorem map_commutator_eq {H : Type*} [Group H] (f : G →* H) :
     Subgroup.map f (_root_.commutator G) = ⁅f.range, f.range⁆ := by
   rw [_root_.commutator_def, Subgroup.map_commutator]
   apply congr_arg₂ <;>
-  · rw [map_eq_range_iff]
+  · rw [Subgroup.map_eq_range_iff]
     rw [codisjoint_iff, top_sup_eq]
 
 /-- The abelianization of G is the quotient of G by its commutator subgroup. -/
@@ -327,75 +327,44 @@ end commutatorRepresentatives
 
 variable {G}
 
-/-- If G and H have multiplications *
-and φ : G → H is a surjective multiplicative map,
-and if G is commutative, then H is commutative.
-
-Since I only use it with groups,
-I should probably use function.surjective.comm_semigroup
---/
-theorem Function.Surjective.comm
-    {G H : Type _} [Mul G] [Mul H] {φ : MulHom G H}
-    (is_surj : Function.Surjective φ)
-    (is_comm : Std.Commutative (· * · : G → G → G)) :
-    Std.Commutative (· * · : H → H → H) where
-  comm := fun a b ↦ by
-    obtain ⟨a', ha'⟩ := is_surj a
-    obtain ⟨b', hb'⟩ := is_surj b
-    simp only [← ha', ← hb', ← map_mul]
-    rw [is_comm.comm]
-
-theorem Subgroup.Normal.quotient_commutative_iff_commutator_le
-    {N : Subgroup G} (nN : N.Normal) :
+theorem Subgroup.Normal.quotient_commutative_iff_commutator_le {N : Subgroup G} [N.Normal] :
     Std.Commutative (· * · : G ⧸ N → _ → _) ↔ _root_.commutator G ≤ N := by
   constructor
   · intro hcomm
     rw [commutator_eq_normalClosure]
     rw [← Subgroup.normalClosure_subset_iff]
-    intro x hx
-    obtain ⟨p, q, rfl⟩ := hx
-    simp only [SetLike.mem_coe]
-    rw [← QuotientGroup.eq_one_iff]
-    rw [commutatorElement_def]
-    simp only [QuotientGroup.mk_mul, QuotientGroup.mk_inv]
-    rw [← commutatorElement_def]
-    rw [commutatorElement_eq_one_iff_mul_comm]
+    rintro x ⟨p, q, rfl⟩
+    rw [SetLike.mem_coe, ← QuotientGroup.eq_one_iff, commutatorElement_def]
+    simp only [SetLike.mem_coe, ← QuotientGroup.eq_one_iff, commutatorElement_def,
+      QuotientGroup.mk_mul, QuotientGroup.mk_inv]
+    simp only [← commutatorElement_def, commutatorElement_eq_one_iff_mul_comm]
     apply hcomm.comm
-  · intro hGN;
+  · intro hGN
     apply Std.Commutative.mk
     rintro x'; obtain ⟨x, rfl⟩ := QuotientGroup.mk'_surjective N x'
     intro y'; obtain ⟨y, rfl⟩ := QuotientGroup.mk'_surjective N y'
-    rw [← commutatorElement_eq_one_iff_mul_comm, ← map_commutatorElement]
-    simp only [QuotientGroup.mk'_apply]
-    rw [QuotientGroup.eq_one_iff]
+    rw [← commutatorElement_eq_one_iff_mul_comm, ← map_commutatorElement,
+      QuotientGroup.mk'_apply, QuotientGroup.eq_one_iff]
     apply hGN
     rw [commutator_eq_closure]
-    apply Subgroup.subset_closure
-    exact commutator_mem_commutatorSet x y
+    exact Subgroup.subset_closure (commutator_mem_commutatorSet x y)
 
-/-- If N is a normal subgroup, H a commutative subgroup such that H ⊔ N = ⊤,
-  then N contains `commutator G`. -/
-theorem Subgroup.Normal.commutator_le_of_self_sup_commutative_eq_top
-    {N : Subgroup G} (nN : N.Normal)
-    {H : Subgroup G} (hHN : N ⊔ H = ⊤)
-    (hH : Subgroup.IsCommutative H) :
+/-- If `N` is a normal subgroup of `G` and `H` a commutative subgroup such that `H ⊔ N = ⊤`,
+  then `N` contains `commutator G`. -/
+theorem Subgroup.Normal.commutator_le_of_self_sup_commutative_eq_top {N : Subgroup G} [N.Normal]
+    {H : Subgroup G} (hHN : N ⊔ H = ⊤) (hH : Subgroup.IsCommutative H) :
     _root_.commutator G ≤ N := by
   -- It is enough to prove that Q = G ⧸ N is commutative
-  rw [← nN.quotient_commutative_iff_commutator_le]
+  rw [← quotient_commutative_iff_commutator_le]
   -- Q is a quotient of H
-  let φ : H →* G ⧸ N := MonoidHom.comp (QuotientGroup.mk' N) (Subgroup.subtype H)
+  let φ : H →n * G ⧸ N := MonoidHom.comp (QuotientGroup.mk' N) (Subgroup.subtype H)
   -- It is enough to prove that φ is surjective
   apply Function.Surjective.comm (φ := φ) _ hH.is_comm
-  simp only [MulHom.coe_coe]
-  rw [← MonoidHom.range_eq_top]
+  simp only [MulHom.coe_coe, ← MonoidHom.range_eq_top]
   -- We have to prove that `MonoidHom.range φ = ⊤`
   simp only [φ, MonoidHom.range_eq_map, ← Subgroup.map_map]
   have : Subgroup.map (QuotientGroup.mk' N) ⊤ = ⊤ := by
     rw [← MonoidHom.range_eq_map, MonoidHom.range_eq_top]
     exact QuotientGroup.mk'_surjective N
-  rw [← this, Subgroup.map_eq_map_iff]
-  simp only [QuotientGroup.ker_mk', sup_comm, ← hHN]
-  rw [← sup_assoc]
-  congr
-  · rw [left_eq_sup]
-  · rw [← MonoidHom.range_eq_map, range_subtype]
+  simp only [← this, Subgroup.map_eq_map_iff, QuotientGroup.ker_mk', sup_comm, ← hHN]
+  simp [← MonoidHom.range_eq_map]
