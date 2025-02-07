@@ -51,6 +51,12 @@ import Mathlib.GroupTheory.GroupAction.Transitive
 - `MulAction.IsPreprimitive.isQuasipreprimitive`
   Preprimitive actions are quasipreprimitive.
 
+## Properties related to finiteness
+
+* `MulAction.IsPreprimitive.exists_mem_smul_and_not_mem_smul` : **Theorem of Rudio**.
+For a preprimitive action, a subset which is neither empty nor full has a translate
+which contains a given point and avoids another one.
+
 -/
 
 open Pointwise
@@ -309,8 +315,7 @@ variable {φ : M → N} {f : α →ₑ[φ] β}
 
 /-- The target of an equivariant map of large image is preprimitive if the source is -/
 @[to_additive "The target of an equivariant map of large image is preprimitive if the source is"]
-theorem of_card_lt
-    [Finite β] [htβ : IsPretransitive N β] (hM : IsPreprimitive M α)
+theorem of_card_lt [Finite β] [IsPretransitive N β] [IsPreprimitive M α]
     (hf' : Nat.card β < 2 * (Set.range f).ncard) :
     IsPreprimitive N β :=  by
   classical
@@ -335,7 +340,7 @@ theorem of_card_lt
   rw [finsum_eq_finset_sum_of_support_subset]
   · apply le_trans (Finset.sum_le_card_nsmul _ _ 1 _)
     · simp only [smul_eq_mul, mul_one]
-      conv_rhs => rw [Set.ncard_coe]
+      conv_rhs => rw [← Set.ncard_coe]
       apply le_of_eq
       rw [← Set.ncard_eq_toFinset_card]
     · rintro ⟨x, ⟨g, hg⟩⟩ _
@@ -348,7 +353,7 @@ theorem of_card_lt
       apply Set.Subsingleton.image
     -- Since the action of M on α is primitive, it suffices to prove that
     -- the preimage is a block which is not ⊤
-      apply Or.resolve_right (hM.isTrivialBlock_of_isBlock ((hB.translate g).preimage f))
+      apply Or.resolve_right (isTrivialBlock_of_isBlock ((hB.translate g).preimage f))
       intro h
       simp only [Set.top_eq_univ, Set.preimage_eq_univ_iff] at h
     -- We will prove that B is large, which will contradict the assumption that it is not ⊤
@@ -360,11 +365,16 @@ theorem of_card_lt
       apply le_trans (Set.ncard_le_ncard h) (Set.ncard_image_le B.toFinite)
   simp only [Set.Finite.coe_toFinset, Set.subset_univ]
 
-/-- Theorem of Rudio (Wielandt, 1964, Th. 8.1) -/
-@[to_additive "Theorem of Rudio (Wielandt, 1964, Th. 8.1)"]
-theorem rudio (hpGX : IsPreprimitive M α)
-    {A : Set α} (hfA : A.Finite) (hA : A.Nonempty) (hA' : A ≠ ⊤)
-    {a b : α} (h : a ≠ b) :
+/-- Theorem of Rudio (Wielandt, 1964, Th. 8.1)
+
+For a preprimitive action, a subset which is neither empty nor full has a translate
+which contains a given point and avoids another one. -/
+@[to_additive "Theorem of Rudio (Wielandt, 1964, Th. 8.1)
+
+For a preprimitive additive action, a subset which is neither empty nor full has a translate
+which contains a given point and avoids another one."]
+theorem exists_mem_smul_and_not_mem_smul [hpGX : IsPreprimitive M α]
+    {A : Set α} (hfA : A.Finite) (hA : A.Nonempty) (hA' : A ≠ .univ) {a b : α} (h : a ≠ b) :
     ∃ g : M, a ∈ g • A ∧ b ∉ g • A := by
   let B := ⋂ (g : M) (_ : a ∈ g • A), g • A
   suffices b ∉ B by
@@ -387,7 +397,7 @@ theorem rudio (hpGX : IsPreprimitive M α)
     -- ∃ (g : M), a ∈ g • A
     obtain ⟨x, hx⟩ := hA
     obtain ⟨g, hg⟩ := MulAction.exists_smul_eq M x a
-    use g; use x
+    use g, x
 
 end IsPreprimitive
 
