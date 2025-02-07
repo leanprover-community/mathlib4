@@ -33,11 +33,6 @@ open CategoryTheory.Abelian CategoryTheory CategoryTheory.Limits ModuleCat Linea
 
 namespace Counterexample
 
-/-
-Porting note: this file was rewritten to use categorical notation
-such as `𝟙 _` instead of `ofHom id`. This way, `simp` found it easier to prove things.
--/
-
 noncomputable section
 
 open CategoryTheory.Abelian.Pseudoelement
