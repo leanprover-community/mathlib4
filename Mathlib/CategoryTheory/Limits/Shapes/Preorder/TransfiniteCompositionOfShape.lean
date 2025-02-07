@@ -83,8 +83,7 @@ def ofComposableArrows {n : ℕ} (G : ComposableArrows C n) :
 also a transfinite composition of shape `J'` if `J' ≃o J`. -/
 @[simps]
 def ofOrderIso {J' : Type w'} [LinearOrder J'] [OrderBot J']
-    [SuccOrder J'] [WellFoundedLT J']
-    (e : J' ≃o J) :
+    [SuccOrder J'] [WellFoundedLT J'] (e : J' ≃o J) :
     TransfiniteCompositionOfShape J' f where
   F := e.equivalence.functor ⋙ c.F
   isoBot := c.F.mapIso (eqToIso e.map_bot) ≪≫ c.isoBot
