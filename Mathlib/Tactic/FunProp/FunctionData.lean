@@ -3,7 +3,6 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Lean
 import Qq
 
 import Mathlib.Tactic.FunProp.Mor
@@ -88,7 +87,7 @@ def getFunctionData (f : Expr) : MetaM FunctionData := do
         args := p.getAppArgs.map (fun a => {expr:=a}) ++ args
 
       let mainArgs := args
-        |>.mapIdx (fun i ⟨arg,_⟩ => if arg.containsFVar xId then some i.1 else none)
+        |>.mapIdx (fun i ⟨arg,_⟩ => if arg.containsFVar xId then some i else none)
         |>.filterMap id
 
       return {
@@ -118,8 +117,9 @@ def MaybeFunctionData.get (fData : MaybeFunctionData) : MetaM Expr :=
 
 /-- Get `FunctionData` for `f`. -/
 def getFunctionData? (f : Expr)
-    (unfoldPred : Name → Bool := fun _ => false) (cfg : WhnfCoreConfig := {}) :
+    (unfoldPred : Name → Bool := fun _ => false) :
     MetaM MaybeFunctionData := do
+  withConfig (fun cfg => { cfg with zeta := false, zetaDelta := false }) do
 
   let unfold := fun e : Expr => do
     if let .some n := e.getAppFn'.constName? then
@@ -131,7 +131,7 @@ def getFunctionData? (f : Expr)
     | throwError m!"fun_prop bug: function expected, got `{f} : {← inferType f}, \
                     type ctor {(← inferType f).ctorName}"
   withLocalDeclD xName xType fun x => do
-    let fx' := (← Mor.whnfPred (f.beta #[x]).eta unfold cfg) |> headBetaThroughLet
+    let fx' := (← Mor.whnfPred (f.beta #[x]).eta unfold) |> headBetaThroughLet
     let f' ← mkLambdaFVars #[x] fx'
     match fx' with
     | .letE .. => return .letE f'
@@ -164,7 +164,7 @@ def FunctionData.isMorApplication (f : FunctionData) : MetaM MorApplication := d
   if let .some name := f.fn.constName? then
     if ← Mor.isCoeFunName name then
       let info ← getConstInfo name
-      let arity := info.type.forallArity
+      let arity := info.type.getNumHeadForalls
       match compare arity f.args.size with
       | .eq => return .exact
       | .lt => return .overApplied

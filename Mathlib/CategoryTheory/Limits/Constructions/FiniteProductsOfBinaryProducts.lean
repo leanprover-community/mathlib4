@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathlib.Logic.Equiv.Fin
 
 /-!
 # Constructing finite products from binary products and terminal.
@@ -118,17 +117,17 @@ variable [HasFiniteProducts.{v} C]
 /-- If `F` preserves the terminal object and binary products, then it preserves products indexed by
 `Fin n` for any `n`.
 -/
-noncomputable def preservesFinOfPreservesBinaryAndTerminal :
+lemma preservesFinOfPreservesBinaryAndTerminal :
     ∀ (n : ℕ) (f : Fin n → C), PreservesLimit (Discrete.functor f) F
   | 0 => fun f => by
     letI : PreservesLimitsOfShape (Discrete (Fin 0)) F :=
-      preservesLimitsOfShapeOfEquiv.{0, 0} (Discrete.equivalence finZeroEquiv'.symm) _
+      preservesLimitsOfShape_of_equiv.{0, 0} (Discrete.equivalence finZeroEquiv'.symm) _
     infer_instance
   | n + 1 => by
     haveI := preservesFinOfPreservesBinaryAndTerminal n
     intro f
     apply
-      preservesLimitOfPreservesLimitCone
+      preservesLimit_of_preserves_limit_cone
         (extendFanIsLimit f (limit.isLimit _) (limit.isLimit _)) _
     apply (isLimitMapConeFanMkEquiv _ _ _).symm _
     let this :=
@@ -149,20 +148,20 @@ noncomputable def preservesFinOfPreservesBinaryAndTerminal :
 /-- If `F` preserves the terminal object and binary products, then it preserves limits of shape
 `Discrete (Fin n)`.
 -/
-def preservesShapeFinOfPreservesBinaryAndTerminal (n : ℕ) :
+lemma preservesShape_fin_of_preserves_binary_and_terminal (n : ℕ) :
     PreservesLimitsOfShape (Discrete (Fin n)) F where
   preservesLimit {K} := by
     let that : (Discrete.functor fun n => K.obj ⟨n⟩) ≅ K := Discrete.natIso fun ⟨i⟩ => Iso.refl _
     haveI := preservesFinOfPreservesBinaryAndTerminal F n fun n => K.obj ⟨n⟩
-    apply preservesLimitOfIsoDiagram F that
+    apply preservesLimit_of_iso_diagram F that
 
 /-- If `F` preserves the terminal object and binary products then it preserves finite products. -/
-def preservesFiniteProductsOfPreservesBinaryAndTerminal (J : Type*) [Fintype J] :
+lemma preservesFiniteProducts_of_preserves_binary_and_terminal (J : Type*) [Fintype J] :
     PreservesLimitsOfShape (Discrete J) F := by
   classical
     let e := Fintype.equivFin J
-    haveI := preservesShapeFinOfPreservesBinaryAndTerminal F (Fintype.card J)
-    apply preservesLimitsOfShapeOfEquiv (Discrete.equivalence e).symm
+    haveI := preservesShape_fin_of_preserves_binary_and_terminal F (Fintype.card J)
+    apply preservesLimitsOfShape_of_equiv (Discrete.equivalence e).symm
 
 end Preserves
 
@@ -250,17 +249,17 @@ variable [HasFiniteCoproducts.{v} C]
 /-- If `F` preserves the initial object and binary coproducts, then it preserves products indexed by
 `Fin n` for any `n`.
 -/
-noncomputable def preservesFinOfPreservesBinaryAndInitial :
+lemma preserves_fin_of_preserves_binary_and_initial :
     ∀ (n : ℕ) (f : Fin n → C), PreservesColimit (Discrete.functor f) F
   | 0 => fun f => by
     letI : PreservesColimitsOfShape (Discrete (Fin 0)) F :=
-      preservesColimitsOfShapeOfEquiv.{0, 0} (Discrete.equivalence finZeroEquiv'.symm) _
+      preservesColimitsOfShape_of_equiv.{0, 0} (Discrete.equivalence finZeroEquiv'.symm) _
     infer_instance
   | n + 1 => by
-    haveI := preservesFinOfPreservesBinaryAndInitial n
+    haveI := preserves_fin_of_preserves_binary_and_initial n
     intro f
     apply
-      preservesColimitOfPreservesColimitCocone
+      preservesColimit_of_preserves_colimit_cocone
         (extendCofanIsColimit f (colimit.isColimit _) (colimit.isColimit _)) _
     apply (isColimitMapCoconeCofanMkEquiv _ _ _).symm _
     let this :=
@@ -280,20 +279,20 @@ noncomputable def preservesFinOfPreservesBinaryAndInitial :
 /-- If `F` preserves the initial object and binary coproducts, then it preserves colimits of shape
 `Discrete (Fin n)`.
 -/
-def preservesShapeFinOfPreservesBinaryAndInitial (n : ℕ) :
+lemma preservesShape_fin_of_preserves_binary_and_initial (n : ℕ) :
     PreservesColimitsOfShape (Discrete (Fin n)) F where
   preservesColimit {K} := by
     let that : (Discrete.functor fun n => K.obj ⟨n⟩) ≅ K := Discrete.natIso fun ⟨i⟩ => Iso.refl _
-    haveI := preservesFinOfPreservesBinaryAndInitial F n fun n => K.obj ⟨n⟩
-    apply preservesColimitOfIsoDiagram F that
+    haveI := preserves_fin_of_preserves_binary_and_initial F n fun n => K.obj ⟨n⟩
+    apply preservesColimit_of_iso_diagram F that
 
 /-- If `F` preserves the initial object and binary coproducts then it preserves finite products. -/
-def preservesFiniteCoproductsOfPreservesBinaryAndInitial (J : Type*) [Fintype J] :
+lemma preservesFiniteCoproductsOfPreservesBinaryAndInitial (J : Type*) [Fintype J] :
     PreservesColimitsOfShape (Discrete J) F := by
   classical
     let e := Fintype.equivFin J
-    haveI := preservesShapeFinOfPreservesBinaryAndInitial F (Fintype.card J)
-    apply preservesColimitsOfShapeOfEquiv (Discrete.equivalence e).symm
+    haveI := preservesShape_fin_of_preserves_binary_and_initial F (Fintype.card J)
+    apply preservesColimitsOfShape_of_equiv (Discrete.equivalence e).symm
 
 end Preserves
 

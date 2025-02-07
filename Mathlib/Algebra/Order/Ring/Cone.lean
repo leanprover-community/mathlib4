@@ -83,4 +83,4 @@ due to non-customisable fields: `lt`, `decidableLT`, `decidableEq`, `compare`. -
   __ := OrderedRing.mkOfCone C
   __ := OrderedRing.toStrictOrderedRing R
   le_total a b := by simpa using mem_or_neg_mem (b - a)
-  decidableLE a b := dec _
+  decidableLE _ _ := dec _

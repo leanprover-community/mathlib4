@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Siddhartha Gadgil, Jannis Limperg
 -/
 import Mathlib.Init
-import Lean
 
 /-!
 # The `recover` tactic modifier

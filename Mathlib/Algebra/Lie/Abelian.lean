@@ -121,8 +121,8 @@ instance : IsTrivial L (maxTrivSubmodule R L M) where trivial x m := Subtype.ext
 @[simp]
 theorem ideal_oper_maxTrivSubmodule_eq_bot (I : LieIdeal R L) :
     ⁅I, maxTrivSubmodule R L M⁆ = ⊥ := by
-  rw [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.lieIdeal_oper_eq_linear_span,
-    LieSubmodule.bot_coeSubmodule, Submodule.span_eq_bot]
+  rw [← LieSubmodule.toSubmodule_inj, LieSubmodule.lieIdeal_oper_eq_linear_span,
+    LieSubmodule.bot_toSubmodule, Submodule.span_eq_bot]
   rintro m ⟨⟨x, hx⟩, ⟨⟨m, hm⟩, rfl⟩⟩
   exact hm x
 
@@ -167,8 +167,8 @@ def maxTrivEquiv (e : M ≃ₗ⁅R,L⁆ N) : maxTrivSubmodule R L M ≃ₗ⁅R,L
   { maxTrivHom (e : M →ₗ⁅R,L⁆ N) with
     toFun := maxTrivHom (e : M →ₗ⁅R,L⁆ N)
     invFun := maxTrivHom (e.symm : N →ₗ⁅R,L⁆ M)
-    left_inv := fun m => by ext; simp [LieModuleEquiv.coe_to_lieModuleHom]
-    right_inv := fun n => by ext; simp [LieModuleEquiv.coe_to_lieModuleHom] }
+    left_inv := fun m => by ext; simp [LieModuleEquiv.coe_toLieModuleHom]
+    right_inv := fun n => by ext; simp [LieModuleEquiv.coe_toLieModuleHom] }
 
 @[norm_cast, simp]
 theorem coe_maxTrivEquiv_apply (e : M ≃ₗ⁅R,L⁆ N) (m : maxTrivSubmodule R L M) :
@@ -209,14 +209,22 @@ theorem coe_maxTrivLinearMapEquivLieModuleHom_symm (f : M →ₗ⁅R,L⁆ N) :
   rfl
 
 @[simp]
-theorem coe_linearMap_maxTrivLinearMapEquivLieModuleHom (f : maxTrivSubmodule R L (M →ₗ[R] N)) :
+theorem toLinearMap_maxTrivLinearMapEquivLieModuleHom (f : maxTrivSubmodule R L (M →ₗ[R] N)) :
     (maxTrivLinearMapEquivLieModuleHom (M := M) (N := N) f : M →ₗ[R] N) = (f : M →ₗ[R] N) := by
   ext; rfl
 
+@[deprecated (since := "2024-12-30")]
+alias coe_linearMap_maxTrivLinearMapEquivLieModuleHom :=
+  toLinearMap_maxTrivLinearMapEquivLieModuleHom
+
 @[simp]
-theorem coe_linearMap_maxTrivLinearMapEquivLieModuleHom_symm (f : M →ₗ⁅R,L⁆ N) :
+theorem toLinearMap_maxTrivLinearMapEquivLieModuleHom_symm (f : M →ₗ⁅R,L⁆ N) :
     (maxTrivLinearMapEquivLieModuleHom (M := M) (N := N) |>.symm f : M →ₗ[R] N) = (f : M →ₗ[R] N) :=
   rfl
+
+@[deprecated (since := "2024-12-30")]
+alias coe_linearMap_maxTrivLinearMapEquivLieModuleHom_symm :=
+  toLinearMap_maxTrivLinearMapEquivLieModuleHom_symm
 
 end LieModule
 

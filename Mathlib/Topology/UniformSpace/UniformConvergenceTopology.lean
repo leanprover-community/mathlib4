@@ -133,8 +133,8 @@ uniform convergence
 
 noncomputable section
 
-open scoped Topology Uniformity
-open Set Filter
+open Filter Set Topology
+open scoped Uniformity
 
 section TypeAlias
 
@@ -197,7 +197,7 @@ open UniformConvergence
 namespace UniformFun
 
 variable (α β : Type*) {γ ι : Type*}
-variable {s s' : Set α} {x : α} {p : Filter ι} {g : ι → α}
+variable {p : Filter ι}
 
 /-- Basis sets for the uniformity of uniform convergence: `gen α β V` is the set of pairs `(f, g)`
 of functions `α →ᵤ β` such that `∀ x, (f x, g x) ∈ V`. -/
@@ -382,9 +382,9 @@ More precisely, if `f : γ → β` is a uniform embedding,
 then `(f ∘ ·) : (α →ᵤ γ) → (α →ᵤ β)` is a uniform embedding. -/
 protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
     (hf : IsUniformEmbedding f) :
- IsUniformEmbedding (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) where
+    IsUniformEmbedding (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) where
   toIsUniformInducing := UniformFun.postcomp_isUniformInducing hf.isUniformInducing
-  inj _ _ H := funext fun _ ↦ hf.inj (congrFun H _)
+  injective _ _ H := funext fun _ ↦ hf.injective (congrFun H _)
 
 @[deprecated (since := "2024-10-01")]
 alias postcomp_uniformEmbedding := UniformFun.postcomp_isUniformEmbedding
@@ -555,7 +555,7 @@ end UniformFun
 namespace UniformOnFun
 
 variable {α β : Type*} {γ ι : Type*}
-variable {s s' : Set α} {x : α} {p : Filter ι} {g : ι → α}
+variable {s : Set α} {p : Filter ι}
 
 local notation "𝒰(" α ", " β ", " u ")" => @UniformFun.uniformSpace α β u
 
@@ -890,7 +890,7 @@ More precisely, if `f : γ → β` is a uniform embedding, then
 protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
     (hf : IsUniformEmbedding f) : IsUniformEmbedding (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) where
   toIsUniformInducing := UniformOnFun.postcomp_isUniformInducing hf.isUniformInducing
-  inj _ _ H := funext fun _ ↦ hf.inj (congrFun H _)
+  injective _ _ H := funext fun _ ↦ hf.injective (congrFun H _)
 
 @[deprecated (since := "2024-10-01")]
 alias postcomp_uniformEmbedding := UniformOnFun.postcomp_isUniformEmbedding
@@ -1065,16 +1065,6 @@ theorem isClosed_setOf_continuous [TopologicalSpace α] (h : RestrictGenTopology
   refine isClosed_iff_forall_filter.2 fun f u _ hu huf ↦ h.continuous_iff.2 fun s hs ↦ ?_
   rw [← tendsto_id', UniformOnFun.tendsto_iff_tendstoUniformlyOn] at huf
   exact (huf s hs).continuousOn <| hu fun _ ↦ Continuous.continuousOn
-
-/-- Suppose that the topology on `α` is defined by its restrictions to the sets of `𝔖`.
-
-Then the set of continuous functions is closed
-in the topology of uniform convergence on the sets of `𝔖`. -/
-@[deprecated isClosed_setOf_continuous (since := "2024-06-29")]
-theorem isClosed_setOf_continuous_of_le [t : TopologicalSpace α]
-    (h : t ≤ ⨆ s ∈ 𝔖, .coinduced (Subtype.val : s → α) inferInstance) :
-    IsClosed {f : α →ᵤ[𝔖] β | Continuous (toFun 𝔖 f)} :=
-  isClosed_setOf_continuous ⟨fun u hu ↦ h _ <| by simpa only [isOpen_iSup_iff, isOpen_coinduced]⟩
 
 variable (𝔖) in
 theorem uniformSpace_eq_inf_precomp_of_cover {δ₁ δ₂ : Type*} (φ₁ : δ₁ → α) (φ₂ : δ₂ → α)

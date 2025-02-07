@@ -138,20 +138,18 @@ theorem Hσ_eq_zero (q : ℕ) : (Hσ q : K[X] ⟶ K[X]).f 0 = 0 := by
 
 /-- The maps `hσ' q n m hnm` are natural on the simplicial object -/
 theorem hσ'_naturality (q : ℕ) (n m : ℕ) (hnm : c.Rel m n) {X Y : SimplicialObject C} (f : X ⟶ Y) :
-    f.app (op [n]) ≫ hσ' q n m hnm = hσ' q n m hnm ≫ f.app (op [m]) := by
+    f.app (op ⦋n⦌) ≫ hσ' q n m hnm = hσ' q n m hnm ≫ f.app (op ⦋m⦌) := by
   have h : n + 1 = m := hnm
   subst h
   simp only [hσ', eqToHom_refl, comp_id]
   unfold hσ
   split_ifs
   · rw [zero_comp, comp_zero]
-  · simp only [zsmul_comp, comp_zsmul]
-    erw [f.naturality]
-    rfl
+  · simp
 
 /-- For each q, `Hσ q` is a natural transformation. -/
 def natTransHσ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComplex C where
-  app X := Hσ q
+  app _ := Hσ q
   naturality _ _ f := by
     unfold Hσ
     rw [nullHomotopicMap'_comp, comp_nullHomotopicMap']

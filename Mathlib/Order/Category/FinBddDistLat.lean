@@ -56,8 +56,8 @@ instance : Inhabited FinBddDistLat :=
 instance largeCategory : LargeCategory FinBddDistLat :=
   InducedCategory.category toBddDistLat
 
-instance concreteCategory : ConcreteCategory FinBddDistLat :=
-  InducedCategory.concreteCategory toBddDistLat
+instance hasForget : HasForget FinBddDistLat :=
+  InducedCategory.hasForget toBddDistLat
 
 instance hasForgetToBddDistLat : HasForget₂ FinBddDistLat BddDistLat :=
   InducedCategory.hasForget₂ FinBddDistLat.toBddDistLat
@@ -82,7 +82,7 @@ example {X Y : FinBddDistLat} : (X ⟶ Y) = BoundedLatticeHom X Y :=
 @[simps]
 def dual : FinBddDistLat ⥤ FinBddDistLat where
   obj X := of Xᵒᵈ
-  map {X Y} := BoundedLatticeHom.dual
+  map {_ _} := BoundedLatticeHom.dual
 
 /-- The equivalence between `FinBddDistLat` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]

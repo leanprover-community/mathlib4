@@ -16,7 +16,7 @@ jobs:
 
       # The Hoskinson runners may not have jq installed, so do that now.
       - name: 'Setup jq'
-        uses: dcarbone/install-jq-action@v1.0.1
+        uses: dcarbone/install-jq-action@v2.1.0
 
       - name: install elan
         run: |

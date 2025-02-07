@@ -5,6 +5,7 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.DualNumber
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Algebraic properties of dual numbers
@@ -90,7 +91,7 @@ section Field
 
 variable {K : Type*}
 
-instance [DivisionRing K] : LocalRing K[ε] where
+instance [DivisionRing K] : IsLocalRing K[ε] where
   isUnit_or_isUnit_of_add_one {a b} h := by
     rw [add_comm, ← eq_sub_iff_add_eq] at h
     rcases eq_or_ne (fst a) 0 with ha|ha <;>
@@ -134,8 +135,8 @@ lemma isMaximal_span_singleton_eps [DivisionRing K] :
     first | simp at hI | simp
 
 lemma maximalIdeal_eq_span_singleton_eps [Field K] :
-    LocalRing.maximalIdeal K[ε] = Ideal.span {ε} :=
-  (LocalRing.eq_maximalIdeal isMaximal_span_singleton_eps).symm
+    IsLocalRing.maximalIdeal K[ε] = Ideal.span {ε} :=
+  (IsLocalRing.eq_maximalIdeal isMaximal_span_singleton_eps).symm
 
 instance [DivisionRing K] : IsPrincipalIdealRing K[ε] where
   principal I := by

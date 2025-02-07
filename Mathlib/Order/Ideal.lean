@@ -6,6 +6,7 @@ Authors: David Wärn
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Order.Atoms
 import Mathlib.Order.Chain
+import Mathlib.Order.Cofinal
 import Mathlib.Order.UpperLower.Basic
 import Mathlib.Data.Set.Subsingleton
 
@@ -62,7 +63,7 @@ structure Ideal (P) [LE P] extends LowerSet P where
   /-- The ideal is upward directed. -/
   directed' : DirectedOn (· ≤ ·) carrier
 
--- Porting note (#11215): TODO: remove this configuration and use the default configuration.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: remove this configuration and use the default configuration.
 -- We keep this to be consistent with Lean 3.
 initialize_simps_projections Ideal (+toLowerSet, -carrier)
 
@@ -92,7 +93,7 @@ variable [LE P]
 
 section
 
-variable {I J s t : Ideal P} {x y : P}
+variable {I s t : Ideal P} {x : P}
 
 theorem toLowerSet_injective : Injective (toLowerSet : Ideal P → LowerSet P) := fun s t _ ↦ by
   cases s
@@ -134,11 +135,9 @@ theorem mem_compl_of_ge {x y : P} : x ≤ y → x ∈ (I : Set P)ᶜ → y ∈ (
 instance instPartialOrderIdeal : PartialOrder (Ideal P) :=
   PartialOrder.lift SetLike.coe SetLike.coe_injective
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem coe_subset_coe : (s : Set P) ⊆ t ↔ s ≤ t :=
   Iff.rfl
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem coe_ssubset_coe : (s : Set P) ⊂ t ↔ s < t :=
   Iff.rfl
 
@@ -249,7 +248,7 @@ variable [Preorder P]
 
 section
 
-variable {I J : Ideal P} {x y : P}
+variable {I : Ideal P} {x y : P}
 
 /-- The smallest ideal containing a given element. -/
 @[simps]
@@ -318,10 +317,10 @@ end SemilatticeSup
 
 section SemilatticeSupDirected
 
-variable [SemilatticeSup P] [IsDirected P (· ≥ ·)] {x : P} {I J K s t : Ideal P}
+variable [SemilatticeSup P] [IsDirected P (· ≥ ·)] {x : P} {I J s t : Ideal P}
 
 /-- The infimum of two ideals of a co-directed order is their intersection. -/
-instance : Inf (Ideal P) :=
+instance : Min (Ideal P) :=
   ⟨fun I J ↦
     { toLowerSet := I.toLowerSet ⊓ J.toLowerSet
       nonempty' := inter_nonempty I J
@@ -329,7 +328,7 @@ instance : Inf (Ideal P) :=
 
 /-- The supremum of two ideals of a co-directed order is the union of the down sets of the pointwise
 supremum of `I` and `J`. -/
-instance : Sup (Ideal P) :=
+instance : Max (Ideal P) :=
   ⟨fun I J ↦
     { carrier := { x | ∃ i ∈ I, ∃ j ∈ J, x ≤ i ⊔ j }
       nonempty' := by
@@ -345,7 +344,7 @@ instance : Sup (Ideal P) :=
                 y ≤ yi ⊔ yj := ‹_›
                 _ ≤ xi ⊔ yi ⊔ (xj ⊔ yj) := sup_le_sup le_sup_right le_sup_right)⟩,
           le_sup_left, le_sup_right⟩
-      lower' := fun x y h ⟨yi, hi, yj, hj, hxy⟩ ↦ ⟨yi, hi, yj, hj, h.trans hxy⟩ }⟩
+      lower' := fun _ _ h ⟨yi, hi, yj, hj, hxy⟩ ↦ ⟨yi, hi, yj, hj, h.trans hxy⟩ }⟩
 
 instance : Lattice (Ideal P) :=
   { Ideal.instPartialOrderIdeal with
@@ -387,7 +386,7 @@ end SemilatticeSupDirected
 
 section SemilatticeSupOrderBot
 
-variable [SemilatticeSup P] [OrderBot P] {x : P} {I J K : Ideal P}
+variable [SemilatticeSup P] [OrderBot P] {x : P}
 
 instance : InfSet (Ideal P) :=
   ⟨fun S ↦
@@ -465,15 +464,17 @@ structure Cofinal (P) [Preorder P] where
   /-- The carrier of a `Cofinal` is the underlying set. -/
   carrier : Set P
   /-- The `Cofinal` contains arbitrarily large elements. -/
-  mem_gt : ∀ x : P, ∃ y ∈ carrier, x ≤ y
+  isCofinal : IsCofinal carrier
+
+@[deprecated Cofinal.isCofinal (since := "2024-12-02")]
+alias Cofinal.mem_gt := Cofinal.isCofinal
 
 namespace Cofinal
 
 variable [Preorder P]
 
 instance : Inhabited (Cofinal P) :=
-  ⟨{  carrier := univ
-      mem_gt := fun x ↦ ⟨x, trivial, le_rfl⟩ }⟩
+  ⟨_, .univ⟩
 
 instance : Membership P (Cofinal P) :=
   ⟨fun D x ↦ x ∈ D.carrier⟩
@@ -482,13 +483,13 @@ variable (D : Cofinal P) (x : P)
 
 /-- A (noncomputable) element of a cofinal set lying above a given element. -/
 noncomputable def above : P :=
-  Classical.choose <| D.mem_gt x
+  Classical.choose <| D.isCofinal x
 
 theorem above_mem : D.above x ∈ D :=
-  (Classical.choose_spec <| D.mem_gt x).1
+  (Classical.choose_spec <| D.isCofinal x).1
 
 theorem le_above : x ≤ D.above x :=
-  (Classical.choose_spec <| D.mem_gt x).2
+  (Classical.choose_spec <| D.isCofinal x).2
 
 end Cofinal
 

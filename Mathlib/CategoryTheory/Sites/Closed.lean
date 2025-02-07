@@ -269,7 +269,7 @@ def topologyOfClosureOperator (c : ∀ X : C, ClosureOperator (Sieve X))
 The topology given by the closure operator `J.close` on a Grothendieck topology is the same as `J`.
 -/
 theorem topologyOfClosureOperator_self :
-    (topologyOfClosureOperator J₁.closureOperator fun X Y => J₁.pullback_close) = J₁ := by
+    (topologyOfClosureOperator J₁.closureOperator fun _ _ => J₁.pullback_close) = J₁ := by
   ext X S
   apply GrothendieckTopology.close_eq_top_iff_mem
 

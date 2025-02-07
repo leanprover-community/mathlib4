@@ -17,13 +17,15 @@ property of being corner-free.
 * [Wikipedia, *Corners theorem*](https://en.wikipedia.org/wiki/Corners_theorem)
 -/
 
+assert_not_exists Ideal TwoSidedIdeal
+
 open Set
 
 variable {G H : Type*}
 
 section AddCommMonoid
 variable [AddCommMonoid G] [AddCommMonoid H] {A B : Set (G × G)} {s : Set G} {t : Set H} {f : G → H}
-  {a b c x₁ y₁ x₂ y₂ : G}
+  {x₁ y₁ x₂ y₂ : G}
 
 /-- A **corner** of a set `A` in an abelian group is a triple of points of the form
 `(x, y), (x + d, y), (x, y + d)`. It is **nontrivial** if `d ≠ 0`.
@@ -94,8 +96,7 @@ lemma isCornerFree_image (hf : IsAddFreimanIso 2 s t f) (hAs : A ⊆ s ×ˢ s) :
   have : Prod.map f f '' A ⊆ t ×ˢ t :=
     ((hf.bijOn.mapsTo.prodMap hf.bijOn.mapsTo).mono hAs Subset.rfl).image_subset
   rw [isCornerFree_iff hAs, isCornerFree_iff this]
-  simp (config := { contextual := true }) only
-    [hf.bijOn.forall, isCorner_image hf hAs, hf.bijOn.injOn.eq_iff]
+  simp +contextual only [hf.bijOn.forall, isCorner_image hf hAs, hf.bijOn.injOn.eq_iff]
 
 alias ⟨IsCorner.of_image, _⟩ := isCorner_image
 alias ⟨_, IsCornerFree.image⟩ := isCornerFree_image

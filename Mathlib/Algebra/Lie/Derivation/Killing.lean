@@ -61,7 +61,7 @@ variable {R L}
 any `x : L`, `ad (D x)` is also in this orthogonal. -/
 lemma ad_mem_orthogonal_of_mem_orthogonal {D : LieDerivation R L L} (hD : D ∈ 𝕀ᗮ) (x : L) :
     ad R L (D x) ∈ 𝕀ᗮ := by
-  simp only [ad_apply_lieDerivation, LieHom.range_coeSubmodule, neg_mem_iff]
+  simp only [ad_apply_lieDerivation, LieHom.range_toSubmodule, neg_mem_iff]
   exact (rangeAdOrthogonal R L).lie_mem hD
 
 variable [Module.Finite R L]
@@ -94,7 +94,7 @@ lemma killingForm_restrict_range_ad_nondegenerate :
 /-- The range of the adjoint action on a finite-dimensional Killing Lie algebra is full. -/
 @[simp]
 lemma range_ad_eq_top : 𝕀 = ⊤ := by
-  rw [← LieSubalgebra.coe_to_submodule_eq_iff]
+  rw [← LieSubalgebra.toSubmodule_inj]
   apply LinearMap.BilinForm.eq_top_of_restrict_nondegenerate_of_orthogonal_eq_bot
     (LieModule.traceForm_isSymm R 𝔻 𝔻).isRefl (killingForm_restrict_range_ad_nondegenerate R L)
   refine (Submodule.eq_bot_iff _).mpr fun D hD ↦ ext fun x ↦ ?_

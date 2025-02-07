@@ -42,10 +42,7 @@ groups, we use the same structure `RingHom a β`, a.k.a. `α →+* β`, for both
 `RingHom`, `SemiringHom`
 -/
 
-assert_not_exists Function.Injective.mulZeroClass
-assert_not_exists semigroupDvd
-assert_not_exists Units.map
-assert_not_exists Set.range
+assert_not_exists Function.Injective.mulZeroClass semigroupDvd Units.map Set.range
 
 open Function
 
@@ -258,7 +255,7 @@ instance : MonoidWithZero (α →ₙ+* α) where
   mul := comp
   mul_one := comp_id
   one_mul := id_comp
-  mul_assoc f g h := comp_assoc _ _ _
+  mul_assoc _ _ _ := comp_assoc _ _ _
   zero := 0
   mul_zero := comp_zero
   zero_mul := zero_comp
@@ -329,7 +326,7 @@ class RingHomClass (F : Type*) (α β : outParam Type*)
 
 variable [FunLike F α β]
 
--- Porting note: marked `{}` rather than `[]` to prevent dangerous instances
+-- See note [implicit instance arguments].
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} [RingHomClass F α β]
 
 /-- Turn an element of a type `F` satisfying `RingHomClass F α β` into an actual
@@ -542,6 +539,9 @@ def id (α : Type*) [NonAssocSemiring α] : α →+* α where
 instance : Inhabited (α →+* α) :=
   ⟨id α⟩
 
+@[simp, norm_cast]
+theorem coe_id : ⇑(RingHom.id α) = _root_.id := rfl
+
 @[simp]
 theorem id_apply (x : α) : RingHom.id α x = x :=
   rfl
@@ -595,9 +595,9 @@ lemma mul_def (f g : α →+* α) : f * g = f.comp g := rfl
 instance instMonoid : Monoid (α →+* α) where
   mul_one := comp_id
   one_mul := id_comp
-  mul_assoc f g h := comp_assoc _ _ _
+  mul_assoc _ _ _ := comp_assoc _ _ _
   npow n f := (npowRec n f).copy f^[n] <| by induction n <;> simp [npowRec, *]
-  npow_succ n f := DFunLike.coe_injective <| Function.iterate_succ _ _
+  npow_succ _ _ := DFunLike.coe_injective <| Function.iterate_succ _ _
 
 @[simp, norm_cast] lemma coe_pow (f : α →+* α) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
 
@@ -649,8 +649,7 @@ theorem coe_fn_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
     (f.mkRingHomOfMulSelfOfTwoNeZero h h_two h_one : β → α) = f :=
   rfl
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
+@[simp]
 theorem coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
     (f.mkRingHomOfMulSelfOfTwoNeZero h h_two h_one : β →+ α) = f := by
   ext

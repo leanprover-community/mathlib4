@@ -29,15 +29,15 @@ def Angle : Type :=
 
 namespace Angle
 
--- Porting note (#10754): added due to missing instances due to no deriving
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added due to missing instances due to no deriving
 instance : NormedAddCommGroup Angle :=
   inferInstanceAs (NormedAddCommGroup (AddCircle (2 * π)))
 
--- Porting note (#10754): added due to missing instances due to no deriving
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added due to missing instances due to no deriving
 instance : Inhabited Angle :=
   inferInstanceAs (Inhabited (AddCircle (2 * π)))
 
--- Porting note (#10754): added due to missing instances due to no deriving
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added due to missing instances due to no deriving
 -- also, without this, a plain `QuotientAddGroup.mk`
 -- causes coerced terms to be of type `ℝ ⧸ AddSubgroup.zmultiples (2 * π)`
 /-- The canonical map from `ℝ` to the quotient `Angle`. -/
@@ -98,9 +98,6 @@ theorem natCast_mul_eq_nsmul (x : ℝ) (n : ℕ) : ↑((n : ℝ) * x) = n • (�
 theorem intCast_mul_eq_zsmul (x : ℝ) (n : ℤ) : ↑((n : ℝ) * x : ℝ) = n • (↑x : Angle) := by
   simpa only [zsmul_eq_mul] using coeHom.map_zsmul x n
 
-@[deprecated (since := "2024-05-25")] alias coe_nat_mul_eq_nsmul := natCast_mul_eq_nsmul
-@[deprecated (since := "2024-05-25")] alias coe_int_mul_eq_zsmul := intCast_mul_eq_zsmul
-
 theorem angle_eq_iff_two_pi_dvd_sub {ψ θ : ℝ} : (θ : Angle) = ψ ↔ ∃ k : ℤ, θ - ψ = 2 * π * k := by
   simp only [QuotientAddGroup.eq, AddSubgroup.zmultiples_eq_closure,
     AddSubgroup.mem_closure_singleton, zsmul_eq_mul', (sub_eq_neg_add _ _).symm, eq_comm]
@@ -127,11 +124,9 @@ theorem two_nsmul_coe_div_two (θ : ℝ) : (2 : ℕ) • (↑(θ / 2) : Angle) =
 theorem two_zsmul_coe_div_two (θ : ℝ) : (2 : ℤ) • (↑(θ / 2) : Angle) = θ := by
   rw [← coe_zsmul, two_zsmul, add_halves]
 
--- Porting note (#10618): @[simp] can prove it
 theorem two_nsmul_neg_pi_div_two : (2 : ℕ) • (↑(-π / 2) : Angle) = π := by
   rw [two_nsmul_coe_div_two, coe_neg, neg_coe_pi]
 
--- Porting note (#10618): @[simp] can prove it
 theorem two_zsmul_neg_pi_div_two : (2 : ℤ) • (↑(-π / 2) : Angle) = π := by
   rw [two_zsmul, ← two_nsmul, two_nsmul_neg_pi_div_two]
 
@@ -303,7 +298,6 @@ theorem sin_eq_iff_eq_or_add_eq_pi {θ ψ : Angle} : sin θ = sin ψ ↔ θ = ψ
 @[simp]
 theorem sin_zero : sin (0 : Angle) = 0 := by rw [← coe_zero, sin_coe, Real.sin_zero]
 
--- Porting note (#10618): @[simp] can prove it
 theorem sin_coe_pi : sin (π : Angle) = 0 := by rw [sin_coe, Real.sin_pi]
 
 theorem sin_eq_zero_iff {θ : Angle} : sin θ = 0 ↔ θ = 0 ∨ θ = π := by
@@ -335,7 +329,6 @@ theorem sin_sub_pi (θ : Angle) : sin (θ - π) = -sin θ :=
 @[simp]
 theorem cos_zero : cos (0 : Angle) = 1 := by rw [← coe_zero, cos_coe, Real.cos_zero]
 
--- Porting note (#10618): @[simp] can prove it
 theorem cos_coe_pi : cos (π : Angle) = -1 := by rw [cos_coe, Real.cos_pi]
 
 @[simp]
@@ -658,7 +651,6 @@ theorem tan_coe (x : ℝ) : tan (x : Angle) = Real.tan x := by
 @[simp]
 theorem tan_zero : tan (0 : Angle) = 0 := by rw [← coe_zero, tan_coe, Real.tan_zero]
 
--- Porting note (#10618): @[simp] can now prove it
 theorem tan_coe_pi : tan (π : Angle) = 0 := by rw [tan_coe, Real.tan_pi]
 
 theorem tan_periodic : Function.Periodic tan (π : Angle) := by
@@ -877,7 +869,7 @@ theorem continuousAt_sign {θ : Angle} (h0 : θ ≠ 0) (hpi : θ ≠ π) : Conti
 theorem _root_.ContinuousOn.angle_sign_comp {α : Type*} [TopologicalSpace α] {f : α → Angle}
     {s : Set α} (hf : ContinuousOn f s) (hs : ∀ z ∈ s, f z ≠ 0 ∧ f z ≠ π) :
     ContinuousOn (sign ∘ f) s := by
-  refine (ContinuousAt.continuousOn fun θ hθ => ?_).comp hf (Set.mapsTo_image f s)
+  refine (continuousOn_of_forall_continuousAt fun θ hθ => ?_).comp hf (Set.mapsTo_image f s)
   obtain ⟨z, hz, rfl⟩ := hθ
   exact continuousAt_sign (hs _ hz).1 (hs _ hz).2
 

@@ -254,13 +254,7 @@ theorem truncateFun_pow (x : 𝕎 R) (m : ℕ) : truncateFun n (x ^ m) = truncat
 
 theorem truncateFun_natCast (m : ℕ) : truncateFun n (m : 𝕎 R) = m := rfl
 
-@[deprecated (since := "2024-04-17")]
-alias truncateFun_nat_cast := truncateFun_natCast
-
 theorem truncateFun_intCast (m : ℤ) : truncateFun n (m : 𝕎 R) = m := rfl
-
-@[deprecated (since := "2024-04-17")]
-alias truncateFun_int_cast := truncateFun_intCast
 
 end WittVector
 
@@ -382,7 +376,7 @@ end
 section Fintype
 
 instance {R : Type*} [Fintype R] : Fintype (TruncatedWittVector p n R) :=
-  Pi.fintype
+  Pi.instFintype
 
 variable (p n R)
 
@@ -482,7 +476,7 @@ def liftEquiv : { f : ∀ k, S →+* TruncatedWittVector p k R // ∀ (k₁ k₂
       intro _ _ h
       simp only [← RingHom.comp_assoc, truncate_comp_wittVector_truncate]⟩
   left_inv := by rintro ⟨f, hf⟩; simp only [truncate_comp_lift]
-  right_inv g := lift_unique _ _ fun _ => rfl
+  right_inv _ := lift_unique _ _ fun _ => rfl
 
 theorem hom_ext (g₁ g₂ : S →+* 𝕎 R) (h : ∀ k, (truncate k).comp g₁ = (truncate k).comp g₂) :
     g₁ = g₂ :=

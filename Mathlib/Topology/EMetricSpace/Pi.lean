@@ -59,7 +59,7 @@ spaces. -/
 instance pseudoEMetricSpacePi [∀ b, PseudoEMetricSpace (π b)] : PseudoEMetricSpace (∀ b, π b) where
   edist_self f := bot_unique <| Finset.sup_le <| by simp
   edist_comm f g := by simp [edist_pi_def, edist_comm]
-  edist_triangle f g h := edist_pi_le_iff.2 fun b => le_trans (edist_triangle _ (g b) _)
+  edist_triangle _ g _ := edist_pi_le_iff.2 fun b => le_trans (edist_triangle _ (g b) _)
     (add_le_add (edist_le_pi_edist _ _ _) (edist_le_pi_edist _ _ _))
   toUniformSpace := Pi.uniformSpace _
   uniformity_edist := by

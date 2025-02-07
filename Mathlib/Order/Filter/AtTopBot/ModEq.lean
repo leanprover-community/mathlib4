@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Order.Filter.AtTopBot.Monoid
 

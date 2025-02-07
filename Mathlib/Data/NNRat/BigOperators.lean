@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Data.NNRat.Defs
 
 /-! # Casting lemmas for non-negative rational numbers involving sums and products
 -/
 
-variable {ι α : Type*}
+variable {α : Type*}
 
 namespace NNRat
 

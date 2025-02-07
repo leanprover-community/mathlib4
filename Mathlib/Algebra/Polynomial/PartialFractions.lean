@@ -5,6 +5,7 @@ Authors: Kevin Buzzard, Sidharth Hariharan
 -/
 import Mathlib.Algebra.Polynomial.Div
 import Mathlib.Logic.Function.Basic
+import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination

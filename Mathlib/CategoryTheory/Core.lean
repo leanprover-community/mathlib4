@@ -28,9 +28,6 @@ universe v₁ v₂ u₁ u₂
 -- morphism levels before object levels. See note [CategoryTheory universes].
 /-- The core of a category C is the groupoid whose morphisms are all the
 isomorphisms of C. -/
--- Porting note(#5171): linter not yet ported
--- @[nolint has_nonempty_instance]
-
 def Core (C : Type u₁) := C
 
 variable {C : Type u₁} [Category.{v₁} C]
@@ -39,7 +36,7 @@ instance coreCategory : Groupoid.{v₁} (Core C) where
   Hom (X Y : C) := X ≅ Y
   id (X : C) := Iso.refl X
   comp f g := Iso.trans f g
-  inv {X Y} f := Iso.symm f
+  inv {_ _} f := Iso.symm f
 
 namespace Core
 

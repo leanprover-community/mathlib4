@@ -6,6 +6,7 @@ Authors: Alex J. Best, Kyle Miller
 import Lean.Elab.Tactic.Config
 import Lean.Elab.Tactic.Location
 import Mathlib.Lean.Expr.Basic
+import Batteries.Lean.Expr
 
 /-!
 # The `generalize_proofs` tactic
@@ -500,9 +501,9 @@ example : List.nthLe [1, 2] 1 (by simp) = 2 := by
   -- ⊢ [1, 2].nthLe 1 h = 2
 ```
 -/
-elab (name := generalizeProofsElab) "generalize_proofs" config?:(Parser.Tactic.config)?
+elab (name := generalizeProofsElab) "generalize_proofs" config:Parser.Tactic.optConfig
     hs:(ppSpace colGt binderIdent)* loc?:(location)? : tactic => withMainContext do
-  let config ← GeneralizeProofs.elabConfig (mkOptionalNode config?)
+  let config ← GeneralizeProofs.elabConfig config
   let (fvars, target) ←
     match expandOptLocation (Lean.mkOptionalNode loc?) with
     | .wildcard => pure ((← getLCtx).getFVarIds, true)

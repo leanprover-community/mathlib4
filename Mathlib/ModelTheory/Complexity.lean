@@ -34,11 +34,8 @@ namespace FirstOrder
 
 namespace Language
 
-variable {L : Language.{u, v}} {L' : Language}
-variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
-variable {α : Type u'} {β : Type v'} {γ : Type*}
-variable {n l : ℕ} {φ ψ : L.BoundedFormula α l} {θ : L.BoundedFormula α l.succ}
-variable {v : α → M} {xs : Fin l → M}
+variable {L : Language.{u, v}} {M : Type w} [L.Structure M] {α : Type u'} {β : Type v'}
+variable {n l : ℕ} {φ : L.BoundedFormula α l}
 
 open FirstOrder Structure Fin
 
@@ -148,7 +145,6 @@ theorem IsPrenex.liftAt {k m : ℕ} (h : IsPrenex φ) : (φ.liftAt k m).IsPrenex
   IsPrenex.recOn h (fun ih => ih.liftAt.isPrenex) (fun _ ih => ih.castLE.all)
     fun _ ih => ih.castLE.ex
 
--- Porting note: universes in different order
 /-- An auxiliary operation to `FirstOrder.Language.BoundedFormula.toPrenex`.
   If `φ` is quantifier-free and `ψ` is in prenex normal form, then `φ.toPrenexImpRight ψ`
   is a prenex normal form for `φ.imp ψ`. -/
@@ -174,7 +170,6 @@ theorem isPrenex_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ
   | all _ ih1 => exact (ih1 hφ.liftAt).all
   | ex _ ih2 => exact (ih2 hφ.liftAt).ex
 
--- Porting note: universes in different order
 /-- An auxiliary operation to `FirstOrder.Language.BoundedFormula.toPrenex`.
   If `φ` and `ψ` are in prenex normal form, then `φ.toPrenexImp ψ`
   is a prenex normal form for `φ.imp ψ`. -/
@@ -200,7 +195,6 @@ theorem isPrenex_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ)
   | all _ ih1 => exact (ih1 hψ.liftAt).ex
   | ex _ ih2 => exact (ih2 hψ.liftAt).all
 
--- Porting note: universes in different order
 /-- For any bounded formula `φ`, `φ.toPrenex` is a semantically-equivalent formula in prenex normal
   form. -/
 def toPrenex : ∀ {n}, L.BoundedFormula α n → L.BoundedFormula α n

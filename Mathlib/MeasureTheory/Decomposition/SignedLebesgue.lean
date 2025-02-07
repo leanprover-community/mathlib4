@@ -6,7 +6,7 @@ Authors: Kexing Ying
 import Mathlib.MeasureTheory.Decomposition.Lebesgue
 import Mathlib.MeasureTheory.Measure.Complex
 import Mathlib.MeasureTheory.Decomposition.Jordan
-import Mathlib.MeasureTheory.Measure.WithDensityVectorMeasure
+import Mathlib.MeasureTheory.VectorMeasure.WithDensity
 
 /-!
 # Lebesgue decomposition
@@ -42,11 +42,11 @@ Lebesgue decomposition theorem
 
 noncomputable section
 
-open scoped Classical MeasureTheory NNReal ENNReal
+open scoped MeasureTheory NNReal ENNReal
 
 open Set
 
-variable {α β : Type*} {m : MeasurableSpace α} {μ ν : MeasureTheory.Measure α}
+variable {α : Type*} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α}
 
 namespace MeasureTheory
 

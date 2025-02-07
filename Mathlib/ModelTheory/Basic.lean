@@ -81,14 +81,10 @@ protected def sum (L' : Language.{u', v'}) : Language :=
   ⟨fun n => L.Functions n ⊕ L'.Functions n, fun n => L.Relations n ⊕ L'.Relations n⟩
 
 /-- The type of constants in a given language. -/
--- Porting note(#5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 protected abbrev Constants :=
   L.Functions 0
 
 /-- The type of symbols in a given language. -/
--- Porting note(#5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 abbrev Symbols :=
   (Σ l, L.Functions l) ⊕ (Σ l, L.Relations l)
 
@@ -225,11 +221,8 @@ structure Equiv extends M ≃ N where
 @[inherit_doc]
 scoped[FirstOrder] notation:25 A " ≃[" L "] " B => FirstOrder.Language.Equiv L A B
 
--- Porting note: was [L.Structure P] and [L.Structure Q]
--- The former reported an error.
-variable {L M N} {P : Type*} [Structure L P] {Q : Type*} [Structure L Q]
+variable {L M N} {P : Type*} [L.Structure P] {Q : Type*} [L.Structure Q]
 
--- Porting note (#11445): new definition
 /-- Interpretation of a constant symbol -/
 @[coe]
 def constantMap (c : L.Constants) : M := funMap c default
@@ -259,7 +252,6 @@ class StrongHomClass (L : outParam Language) (F : Type*) (M N : outParam Type*)
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)
   map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r (φ ∘ x) ↔ RelMap r x
 
--- Porting note: using implicit brackets for `Structure` arguments
 instance (priority := 100) StrongHomClass.homClass {F : Type*} [L.Structure M]
     [L.Structure N] [FunLike F M N] [StrongHomClass L F M N] : HomClass L F M N where
   map_fun := StrongHomClass.map_fun
@@ -295,9 +287,6 @@ instance homClass : HomClass L (M →[L] N) M N where
 
 instance [L.IsAlgebraic] : StrongHomClass L (M →[L] N) M N :=
   HomClass.strongHomClassOfIsAlgebraic
-
-instance hasCoeToFun : CoeFun (M →[L] N) fun _ => M → N :=
-  DFunLike.hasCoeToFun
 
 @[simp]
 theorem toFun_eq_coe {f : M →[L] N} : f.toFun = (f : M → N) :=
@@ -379,7 +368,7 @@ instance funLike : FunLike (M ↪[L] N) M N where
     cases g
     congr
     ext x
-    exact Function.funext_iff.1 h x
+    exact funext_iff.1 h x
 
 instance embeddingLike : EmbeddingLike (M ↪[L] N) M N where
   injective' f := f.toEmbedding.injective
@@ -416,7 +405,7 @@ theorem coe_injective : @Function.Injective (M ↪[L] N) (M → N) (↑)
     cases g
     congr
     ext x
-    exact Function.funext_iff.1 h x
+    exact funext_iff.1 h x
 
 @[ext]
 theorem ext ⦃f g : M ↪[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
@@ -537,7 +526,7 @@ instance : EquivLike (M ≃[L] N) M N where
     cases g
     simp only [mk.injEq]
     ext x
-    exact Function.funext_iff.1 h₁ x
+    exact funext_iff.1 h₁ x
 
 instance : StrongHomClass L (M ≃[L] N) M N where
   map_fun := map_fun'
@@ -556,9 +545,6 @@ def symm (f : M ≃[L] N) : N ≃[L] M :=
       simp only [Equiv.toFun_as_coe]
       refine (f.map_rel' r (f.toEquiv.symm ∘ x)).symm.trans ?_
       rw [← Function.comp_assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp] }
-
-instance hasCoeToFun : CoeFun (M ≃[L] N) fun _ => M → N :=
-  DFunLike.hasCoeToFun
 
 @[simp]
 theorem symm_symm (f : M ≃[L] N) :
@@ -825,7 +811,6 @@ def inducedStructure (e : M ≃ N) : L.Structure N :=
   ⟨fun f x => e (funMap f (e.symm ∘ x)), fun r x => RelMap r (e.symm ∘ x)⟩
 
 /-- A bijection as a first-order isomorphism with the induced structure on the codomain. -/
---@[simps!] Porting note: commented out and lemmas added manually
 def inducedStructureEquiv (e : M ≃ N) : @Language.Equiv L M N _ (inducedStructure e) := by
   letI : L.Structure N := inducedStructure e
   exact

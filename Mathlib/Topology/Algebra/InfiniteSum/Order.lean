@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Order.MonotoneConvergence
@@ -20,14 +21,22 @@ variable {ι κ α : Type*}
 
 section Preorder
 
-variable [Preorder α] [CommMonoid α] [TopologicalSpace α] [OrderClosedTopology α] [T2Space α]
-  {f : ℕ → α} {c : α}
+variable [Preorder α] [CommMonoid α] [TopologicalSpace α] {a c : α} {f : ι → α}
 
 @[to_additive]
-theorem tprod_le_of_prod_range_le (hf : Multipliable f) (h : ∀ n, ∏ i ∈ range n, f i ≤ c) :
-    ∏' n, f n ≤ c :=
-  let ⟨_l, hl⟩ := hf
-  hl.tprod_eq.symm ▸ le_of_tendsto' hl.tendsto_prod_nat h
+lemma hasProd_le_of_prod_le [ClosedIicTopology α]
+    (hf : HasProd f a) (h : ∀ s, ∏ i ∈ s, f i ≤ c) : a ≤ c :=
+  le_of_tendsto' hf h
+
+@[to_additive]
+theorem le_hasProd_of_le_prod [ClosedIciTopology α]
+    (hf : HasProd f a) (h : ∀ s, c ≤ ∏ i ∈ s, f i) : c ≤ a :=
+  ge_of_tendsto' hf h
+
+@[to_additive]
+theorem tprod_le_of_prod_range_le [ClosedIicTopology α] {f : ℕ → α} (hf : Multipliable f)
+    (h : ∀ n, ∏ i ∈ range n, f i ≤ c) : ∏' n, f n ≤ c :=
+  le_of_tendsto' hf.hasProd.tendsto_prod_nat h
 
 end Preorder
 
@@ -43,14 +52,6 @@ theorem hasProd_le (h : ∀ i, f i ≤ g i) (hf : HasProd f a₁) (hg : HasProd 
 @[to_additive]
 theorem hasProd_mono (hf : HasProd f a₁) (hg : HasProd g a₂) (h : f ≤ g) : a₁ ≤ a₂ :=
   hasProd_le h hf hg
-
-@[to_additive]
-theorem hasProd_le_of_prod_le (hf : HasProd f a) (h : ∀ s, ∏ i ∈ s, f i ≤ a₂) : a ≤ a₂ :=
-  le_of_tendsto' hf h
-
-@[to_additive]
-theorem le_hasProd_of_le_prod (hf : HasProd f a) (h : ∀ s, a₂ ≤ ∏ i ∈ s, f i) : a₂ ≤ a :=
-  ge_of_tendsto' hf h
 
 @[to_additive]
 theorem hasProd_le_inj {g : κ → α} (e : ι → κ) (he : Injective e)
@@ -197,10 +198,10 @@ theorem one_lt_tprod (hsum : Multipliable g) (hg : ∀ i, 1 ≤ g i) (i : ι) (h
 
 end OrderedCommGroup
 
-section CanonicallyOrderedCommMonoid
+section CanonicallyOrderedMul
 
-variable [CanonicallyOrderedCommMonoid α] [TopologicalSpace α] [OrderClosedTopology α]
-  {f : ι → α} {a : α}
+variable [OrderedCommMonoid α] [CanonicallyOrderedMul α] [TopologicalSpace α]
+  [OrderClosedTopology α] {f : ι → α} {a : α}
 
 @[to_additive]
 theorem le_hasProd' (hf : HasProd f a) (i : ι) : f i ≤ a :=
@@ -227,7 +228,7 @@ theorem isLUB_hasProd' (hf : HasProd f a) : IsLUB (Set.range fun s ↦ ∏ i ∈
   classical
   exact isLUB_of_tendsto_atTop (Finset.prod_mono_set' f) hf
 
-end CanonicallyOrderedCommMonoid
+end CanonicallyOrderedMul
 
 section LinearOrder
 
@@ -247,7 +248,7 @@ theorem hasProd_of_isLUB_of_one_le [LinearOrderedCommMonoid α] [TopologicalSpac
   tendsto_atTop_isLUB (Finset.prod_mono_set_of_one_le' h) hf
 
 @[to_additive]
-theorem hasProd_of_isLUB [CanonicallyLinearOrderedCommMonoid α] [TopologicalSpace α]
+theorem hasProd_of_isLUB [LinearOrderedCommMonoid α] [CanonicallyOrderedMul α] [TopologicalSpace α]
     [OrderTopology α] {f : ι → α} (b : α) (hf : IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) b) :
     HasProd f b :=
   tendsto_atTop_isLUB (Finset.prod_mono_set' f) hf
@@ -269,10 +270,10 @@ alias ⟨Summable.of_abs, Summable.abs⟩ := summable_abs_iff
 theorem Finite.of_summable_const [LinearOrderedAddCommGroup α] [TopologicalSpace α] [Archimedean α]
     [OrderClosedTopology α] {b : α} (hb : 0 < b) (hf : Summable fun _ : ι ↦ b) :
     Finite ι := by
-  have H : ∀ s : Finset ι, s.card • b ≤ ∑' _ : ι, b := fun s ↦ by
+  have H : ∀ s : Finset ι, #s • b ≤ ∑' _ : ι, b := fun s ↦ by
     simpa using sum_le_hasSum s (fun a _ ↦ hb.le) hf.hasSum
   obtain ⟨n, hn⟩ := Archimedean.arch (∑' _ : ι, b) hb
-  have : ∀ s : Finset ι, s.card ≤ n := fun s ↦ by
+  have : ∀ s : Finset ι, #s ≤ n := fun s ↦ by
     simpa [nsmul_le_nsmul_iff_left hb] using (H s).trans hn
   have : Fintype ι := fintypeOfFinsetCardLe n this
   infer_instance
@@ -284,8 +285,23 @@ theorem Set.Finite.of_summable_const [LinearOrderedAddCommGroup α] [Topological
 
 end LinearOrder
 
+section LinearOrderedCommRing
+
+variable [LinearOrderedCommRing α] [TopologicalSpace α] [OrderTopology α] {f : ι → α} {x : α}
+
+nonrec theorem HasProd.abs (hfx : HasProd f x) : HasProd (|f ·|) |x| := by
+  simpa only [HasProd, ← abs_prod] using hfx.abs
+
+theorem Multipliable.abs (hf : Multipliable f) : Multipliable (|f ·|) :=
+  let ⟨x, hx⟩ := hf; ⟨|x|, hx.abs⟩
+
+theorem abs_tprod (hf : Multipliable f) : |∏' i, f i| = ∏' i, |f i| :=
+  hf.hasProd.abs.tprod_eq.symm
+
+end LinearOrderedCommRing
+
 theorem Summable.tendsto_atTop_of_pos [LinearOrderedField α] [TopologicalSpace α] [OrderTopology α]
     {f : ℕ → α} (hf : Summable f⁻¹) (hf' : ∀ n, 0 < f n) : Tendsto f atTop atTop :=
-  inv_inv f ▸ Filter.Tendsto.inv_tendsto_zero <|
+  inv_inv f ▸ Filter.Tendsto.inv_tendsto_nhdsGT_zero <|
     tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hf.tendsto_atTop_zero <|
       Eventually.of_forall fun _ ↦ inv_pos.2 (hf' _)

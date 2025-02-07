@@ -3,9 +3,10 @@ Copyright (c) 2021 Ashvni Narayanan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Anne Baanen
 -/
-import Mathlib.Algebra.Ring.Int
-import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Algebra.Ring.Int.Parity
+import Mathlib.Algebra.Ring.Int.Units
+import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 
 /-!
 # Number fields
@@ -33,6 +34,7 @@ number field, ring of integers
 
 /-- A number field is a field which has characteristic zero and is finite
 dimensional over ℚ. -/
+@[stacks 09GA]
 class NumberField (K : Type*) [Field K] : Prop where
   [to_charZero : CharZero K]
   [to_finiteDimensional : FiniteDimensional ℚ K]
@@ -58,6 +60,23 @@ protected theorem isAlgebraic [NumberField K] : Algebra.IsAlgebraic ℚ K :=
 
 instance [NumberField K] [NumberField L] [Algebra K L] : FiniteDimensional K L :=
   Module.Finite.of_restrictScalars_finite ℚ K L
+
+/-- A finite extension of a number field is a number field. -/
+theorem of_module_finite [NumberField K] [Algebra K L] [Module.Finite K L] : NumberField L where
+  to_charZero := charZero_of_injective_algebraMap (algebraMap K L).injective
+  to_finiteDimensional :=
+    letI := charZero_of_injective_algebraMap (algebraMap K L).injective
+    Module.Finite.trans K L
+
+variable {K} {L} in
+instance of_intermediateField [NumberField K] [NumberField L] [Algebra K L]
+    (E : IntermediateField K L) : NumberField E :=
+  of_module_finite K E
+
+theorem of_tower [NumberField K] [NumberField L] [Algebra K L] (E : Type*) [Field E]
+    [Algebra K E] [Algebra E L] [IsScalarTower K E L] : NumberField E :=
+  letI := Module.Finite.left K E L
+  of_module_finite K E
 
 /-- The ring of integers (or number ring) corresponding to a number field
 is the integral closure of ℤ in the number field.
@@ -89,7 +108,7 @@ instance : Nontrivial (𝓞 K) :=
   inferInstanceAs (Nontrivial (integralClosure _ _))
 instance {L : Type*} [Ring L] [Algebra K L] : Algebra (𝓞 K) L :=
   inferInstanceAs (Algebra (integralClosure _ _) L)
-instance {L : Type*} [Ring L] [Algebra K L] :  IsScalarTower (𝓞 K) K L :=
+instance {L : Type*} [Ring L] [Algebra K L] : IsScalarTower (𝓞 K) K L :=
   inferInstanceAs (IsScalarTower (integralClosure _ _) K L)
 
 variable {K}
@@ -158,7 +177,7 @@ end RingOfIntegers
 instance inst_ringOfIntegersAlgebra [Algebra K L] : Algebra (𝓞 K) (𝓞 L) :=
   (RingOfIntegers.mapRingHom (algebraMap K L)).toAlgebra
 
--- diamond at `reducible_and_instances` #10906
+-- diamond at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 example : Algebra.id (𝓞 K) = inst_ringOfIntegersAlgebra K K := rfl
 
 namespace RingOfIntegers
@@ -187,15 +206,15 @@ variable {K}
 
 /-- The canonical map from `𝓞 K` to `K` is injective.
 
-This is a convenient abbreviation for `NoZeroSMulDivisors.algebraMap_injective`.
+This is a convenient abbreviation for `FaithfulSMul.algebraMap_injective`.
 -/
 lemma coe_injective : Function.Injective (algebraMap (𝓞 K) K) :=
-  NoZeroSMulDivisors.algebraMap_injective _ _
+  FaithfulSMul.algebraMap_injective _ _
 
 /-- The canonical map from `𝓞 K` to `K` is injective.
 
 This is a convenient abbreviation for `map_eq_zero_iff` applied to
-`NoZeroSMulDivisors.algebraMap_injective`.
+`FaithfulSMul.algebraMap_injective`.
 -/
 lemma coe_eq_zero_iff {x : 𝓞 K} : algebraMap _ K x = 0 ↔ x = 0 :=
   map_eq_zero_iff _ coe_injective
@@ -203,7 +222,7 @@ lemma coe_eq_zero_iff {x : 𝓞 K} : algebraMap _ K x = 0 ↔ x = 0 :=
 /-- The canonical map from `𝓞 K` to `K` is injective.
 
 This is a convenient abbreviation for `map_ne_zero_iff` applied to
-`NoZeroSMulDivisors.algebraMap_injective`.
+`FaithfulSMul.algebraMap_injective`.
 -/
 lemma coe_ne_zero_iff {x : 𝓞 K} : algebraMap _ K x ≠ 0 ↔ x ≠ 0 :=
   map_ne_zero_iff _ coe_injective
@@ -221,6 +240,9 @@ instance [NumberField K] : IsFractionRing (𝓞 K) K :=
 
 instance : IsIntegralClosure (𝓞 K) ℤ K :=
   integralClosure.isIntegralClosure _ _
+
+instance : Algebra.IsIntegral ℤ (𝓞 K) :=
+  IsIntegralClosure.isIntegral_algebra ℤ K
 
 instance [NumberField K] : IsIntegrallyClosed (𝓞 K) :=
   integralClosure.isIntegrallyClosedOfFiniteExtension ℚ
@@ -283,6 +305,48 @@ def restrict_monoidHom [MulOneClass M] (f : M →* K) (h : ∀ x, IsIntegral ℤ
   map_one' := by simp only [restrict, map_one, mk_one]
   map_mul' x y := by simp only [restrict, map_mul, mk_mul_mk _]
 
+section extension
+
+variable (K L : Type*) [Field K] [Field L] [Algebra K L]
+
+instance : IsScalarTower (𝓞 K) (𝓞 L) L :=
+  IsScalarTower.of_algebraMap_eq' rfl
+
+instance : IsIntegralClosure (𝓞 L) (𝓞 K) L :=
+  IsIntegralClosure.tower_top (R := ℤ)
+
+/-- The ring of integers of `L` is isomorphic to any integral closure of `𝓞 K` in `L` -/
+protected noncomputable def algEquiv (R : Type*) [CommRing R] [Algebra (𝓞 K) R] [Algebra R L]
+    [IsScalarTower (𝓞 K) R L] [IsIntegralClosure R (𝓞 K) L] : 𝓞 L ≃ₐ[𝓞 K] R :=
+  (IsIntegralClosure.equiv (𝓞 K) R L _).symm
+
+/-- Any extension between ring of integers is integral. -/
+instance extension_algebra_isIntegral : Algebra.IsIntegral (𝓞 K) (𝓞 L) :=
+  IsIntegralClosure.isIntegral_algebra (𝓞 K) L
+
+/-- Any extension between ring of integers of number fields is noetherian. -/
+instance extension_isNoetherian [NumberField K] [NumberField L] : IsNoetherian (𝓞 K) (𝓞 L) :=
+  IsIntegralClosure.isNoetherian (𝓞 K) K L (𝓞 L)
+
+/-- The kernel of the algebraMap between ring of integers is `⊥`. -/
+theorem ker_algebraMap_eq_bot : RingHom.ker (algebraMap (𝓞 K) (𝓞 L)) = ⊥ :=
+  (RingHom.ker_eq_bot_iff_eq_zero (algebraMap (𝓞 K) (𝓞 L))).mpr <| fun x hx => by
+  have h : (algebraMap K L) x = (algebraMap (𝓞 K) (𝓞 L)) x := rfl
+  simp only [hx, map_zero, map_eq_zero, RingOfIntegers.coe_eq_zero_iff] at h
+  exact h
+
+/-- The algebraMap between ring of integers is injective. -/
+theorem algebraMap.injective : Function.Injective (algebraMap (𝓞 K) (𝓞 L)) :=
+  (RingHom.injective_iff_ker_eq_bot (algebraMap (𝓞 K) (𝓞 L))).mpr (ker_algebraMap_eq_bot K L)
+
+instance : NoZeroSMulDivisors (𝓞 K) (𝓞 L) :=
+  NoZeroSMulDivisors.iff_algebraMap_injective.mpr <| algebraMap.injective K L
+
+instance : NoZeroSMulDivisors (𝓞 K) L :=
+  NoZeroSMulDivisors.trans_faithfulSMul (𝓞 K) (𝓞 L) L
+
+end extension
+
 end RingOfIntegers
 
 variable [NumberField K]
@@ -328,6 +392,12 @@ instance numberField : NumberField ℚ where
 /-- The ring of integers of `ℚ` as a number field is just `ℤ`. -/
 noncomputable def ringOfIntegersEquiv : 𝓞 ℚ ≃+* ℤ :=
   RingOfIntegers.equiv ℤ
+
+@[simp]
+theorem coe_ringOfIntegersEquiv (z : 𝓞 ℚ) :
+    (Rat.ringOfIntegersEquiv z : ℚ) = algebraMap (𝓞 ℚ) ℚ z := by
+  obtain ⟨z, rfl⟩ := Rat.ringOfIntegersEquiv.symm.surjective z
+  simp
 
 end Rat
 

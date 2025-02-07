@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 import Mathlib.Order.Category.Preord
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Topology.Separation
 import Mathlib.Topology.Order.UpperLowerSetTopology
 
 /-!
@@ -88,4 +87,4 @@ def homeoWithUpperSetTopologyorderIso (α : Type*) [TopologicalSpace α] [Alexan
 @[simps]
 def topToPreord : TopCat ⥤ Preord where
   obj X := Preord.of <| Specialization X
-  map := Specialization.map
+  map {X Y} f := Specialization.map (α := X) (β := Y) f.hom

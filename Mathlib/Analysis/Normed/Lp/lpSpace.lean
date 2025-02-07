@@ -183,7 +183,7 @@ theorem of_exponent_ge {p q : ℝ≥0∞} {f : ∀ i, E i} (hfq : Memℓp f q) (
     have hf' := hfq.summable hq
     refine .of_norm_bounded_eventually _ hf' (@Set.Finite.subset _ { i | 1 ≤ ‖f i‖ } ?_ _ ?_)
     · have H : { x : α | 1 ≤ ‖f x‖ ^ q.toReal }.Finite := by
-        simpa using eventually_lt_of_tendsto_lt (by norm_num) hf'.tendsto_cofinite_zero
+        simpa using hf'.tendsto_cofinite_zero.eventually_lt_const (by norm_num)
       exact H.subset fun i hi => Real.one_le_rpow hi hq.le
     · show ∀ i, ¬|‖f i‖ ^ p.toReal| ≤ ‖f i‖ ^ q.toReal → 1 ≤ ‖f i‖
       intro i hi
@@ -288,7 +288,8 @@ instance : AddCommGroup (PreLp E) := by unfold PreLp; infer_instance
 instance PreLp.unique [IsEmpty α] : Unique (PreLp E) :=
   Pi.uniqueOfIsEmpty E
 
-/-- lp space -/
+/-- lp space
+The `p=∞` case has notation `ℓ^∞(ι, E)` resp. `ℓ^∞(ι)` (for `E = ℝ`) in the `lp` namespace. -/
 def lp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) : AddSubgroup (PreLp E) where
   carrier := { f | Memℓp f p }
   zero_mem' := zero_memℓp
@@ -336,7 +337,6 @@ theorem coeFn_neg (f : lp E p) : ⇑(-f) = -f :=
 theorem coeFn_add (f g : lp E p) : ⇑(f + g) = f + g :=
   rfl
 
--- porting note (#10618): removed `@[simp]` because `simp` can prove this
 theorem coeFn_sum {ι : Type*} (f : ι → lp E p) (s : Finset ι) :
     ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, ⇑(f i) := by
   simp
@@ -429,7 +429,7 @@ theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
 theorem eq_zero_iff_coeFn_eq_zero {f : lp E p} : f = 0 ↔ ⇑f = 0 := by
   rw [lp.ext_iff, coeFn_zero]
 
--- porting note (#11083): this was very slow, so I squeezed the `simp` calls
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11083): this was very slow, so I squeezed the `simp` calls
 @[simp]
 theorem norm_neg ⦃f : lp E p⦄ : ‖-f‖ = ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -471,7 +471,7 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
           intro i
           gcongr
           apply norm_add_le
-      eq_zero_of_map_eq_zero' := fun f => norm_eq_zero_iff.1 }
+      eq_zero_of_map_eq_zero' := fun _ => norm_eq_zero_iff.1 }
 
 -- TODO: define an `ENNReal` version of `IsConjExponent`, and then express this inequality
 -- in a better version which also covers the case `p = 1, q = ∞`.
@@ -737,7 +737,11 @@ instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
             mul_le_mul (lp.norm_apply_le_norm ENNReal.top_ne_zero f i)
               (lp.norm_apply_le_norm ENNReal.top_ne_zero g i) (norm_nonneg _) (norm_nonneg _) }
 
--- we also want a `NonUnitalNormedCommRing` instance, but this has to wait for mathlib3 #13719
+instance nonUnitalNormedCommRing {B : I → Type*} [∀ i, NonUnitalNormedCommRing (B i)] :
+    NonUnitalNormedCommRing (lp B ∞) where
+  mul_comm _ _ := ext <| mul_comm ..
+
+-- we also want a `NonUnitalNormedCommRing` instance, but this has to wait for https://github.com/leanprover-community/mathlib3/pull/13719
 instance infty_isScalarTower {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, BoundedSMul 𝕜 (B i)]
     [∀ i, IsScalarTower 𝕜 (B i) (B i)] : IsScalarTower 𝕜 (lp B ∞) (lp B ∞) :=
   ⟨fun r f g => lp.ext <| smul_assoc (N := ∀ i, B i) (α := ∀ i, B i) r (⇑f) (⇑g)⟩
@@ -798,14 +802,8 @@ theorem _root_.Memℓp.infty_pow {f : ∀ i, B i} (hf : Memℓp f ∞) (n : ℕ)
 theorem _root_.natCast_memℓp_infty (n : ℕ) : Memℓp (n : ∀ i, B i) ∞ :=
   natCast_mem (lpInftySubring B) n
 
-@[deprecated (since := "2024-04-17")]
-alias _root_.nat_cast_memℓp_infty := _root_.natCast_memℓp_infty
-
 theorem _root_.intCast_memℓp_infty (z : ℤ) : Memℓp (z : ∀ i, B i) ∞ :=
   intCast_mem (lpInftySubring B) z
-
-@[deprecated (since := "2024-04-17")]
-alias _root_.int_cast_memℓp_infty := _root_.intCast_memℓp_infty
 
 @[simp]
 theorem infty_coeFn_one : ⇑(1 : lp B ∞) = 1 :=
@@ -819,15 +817,9 @@ theorem infty_coeFn_pow (f : lp B ∞) (n : ℕ) : ⇑(f ^ n) = (⇑f) ^ n :=
 theorem infty_coeFn_natCast (n : ℕ) : ⇑(n : lp B ∞) = n :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias infty_coeFn_nat_cast := infty_coeFn_natCast
-
 @[simp]
 theorem infty_coeFn_intCast (z : ℤ) : ⇑(z : lp B ∞) = z :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias infty_coeFn_int_cast := infty_coeFn_intCast
 
 instance [Nonempty I] : NormOneClass (lp B ∞) where
   norm_one := by simp_rw [lp.norm_eq_ciSup, infty_coeFn_one, Pi.one_apply, norm_one, ciSup_const]
@@ -841,12 +833,8 @@ section NormedCommRing
 
 variable {I : Type*} {B : I → Type*} [∀ i, NormedCommRing (B i)] [∀ i, NormOneClass (B i)]
 
-instance inftyCommRing : CommRing (lp B ∞) :=
-  { lp.inftyRing with
-    mul_comm := fun f g => by ext; simp only [lp.infty_coeFn_mul, Pi.mul_apply, mul_comm] }
-
-instance inftyNormedCommRing : NormedCommRing (lp B ∞) :=
-  { lp.inftyCommRing, lp.inftyNormedRing with }
+instance inftyNormedCommRing : NormedCommRing (lp B ∞) where
+  mul_comm := mul_comm
 
 end NormedCommRing
 

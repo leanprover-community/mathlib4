@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 -- Some proofs and docs came from mathlib3 `src/algebra/commute.lean` (c) Neil Strickland
 
 import Mathlib.Algebra.Group.Semiconj.Defs
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Basic
 
 /-!
 # Semiconjugate elements of a semigroup
@@ -27,8 +27,7 @@ This file provides only basic operations (`mul_left`, `mul_right`, `inv_right` e
 operations (`pow_right`, field inverse etc) are in the files that define corresponding notions.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 open scoped Int
 

@@ -83,7 +83,7 @@ theorem div_left (hac : Commute a c) (hbc : Commute b c) : Commute (a / b) c := 
 end Commute
 
 section GroupWithZero
-variable {G₀ : Type*} [GroupWithZero G₀]
+variable [GroupWithZero G₀]
 
 theorem pow_inv_comm₀ (a : G₀) (m n : ℕ) : a⁻¹ ^ m * a ^ n = a ^ n * a⁻¹ ^ m :=
   (Commute.refl a).inv_left₀.pow_pow m n

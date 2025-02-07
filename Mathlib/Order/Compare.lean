@@ -25,16 +25,16 @@ variable {α β : Type*}
 
 /-- Like `cmp`, but uses a `≤` on the type instead of `<`. Given two elements `x` and `y`, returns a
 three-way comparison result `Ordering`. -/
-def cmpLE {α} [LE α] [@DecidableRel α (· ≤ ·)] (x y : α) : Ordering :=
+def cmpLE {α} [LE α] [DecidableRel (α := α) (· ≤ ·)] (x y : α) : Ordering :=
   if x ≤ y then if y ≤ x then Ordering.eq else Ordering.lt else Ordering.gt
 
-theorem cmpLE_swap {α} [LE α] [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)] (x y : α) :
+theorem cmpLE_swap {α} [LE α] [IsTotal α (· ≤ ·)] [DecidableRel (α := α) (· ≤ ·)] (x y : α) :
     (cmpLE x y).swap = cmpLE y x := by
   by_cases xy : x ≤ y <;> by_cases yx : y ≤ x <;> simp [cmpLE, *, Ordering.swap]
   cases not_or_intro xy yx (total_of _ _ _)
 
-theorem cmpLE_eq_cmp {α} [Preorder α] [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)]
-    [@DecidableRel α (· < ·)] (x y : α) : cmpLE x y = cmp x y := by
+theorem cmpLE_eq_cmp {α} [Preorder α] [IsTotal α (· ≤ ·)] [DecidableRel (α := α) (· ≤ ·)]
+    [DecidableRel (α := α) (· < ·)] (x y : α) : cmpLE x y = cmp x y := by
   by_cases xy : x ≤ y <;> by_cases yx : y ≤ x <;> simp [cmpLE, lt_iff_le_not_le, *, cmp, cmpUsing]
   cases not_or_intro xy yx (total_of _ _ _)
 
@@ -52,18 +52,18 @@ theorem swap_eq_iff_eq_swap {o o' : Ordering} : o.swap = o' ↔ o = o'.swap := b
   rw [← swap_inj, swap_swap]
 
 theorem Compares.eq_lt [Preorder α] : ∀ {o} {a b : α}, Compares o a b → (o = lt ↔ a < b)
-  | lt, a, b, h => ⟨fun _ => h, fun _ => rfl⟩
+  | lt, _, _, h => ⟨fun _ => h, fun _ => rfl⟩
   | eq, a, b, h => ⟨fun h => by injection h, fun h' => (ne_of_lt h' h).elim⟩
   | gt, a, b, h => ⟨fun h => by injection h, fun h' => (lt_asymm h h').elim⟩
 
 theorem Compares.ne_lt [Preorder α] : ∀ {o} {a b : α}, Compares o a b → (o ≠ lt ↔ b ≤ a)
-  | lt, a, b, h => ⟨absurd rfl, fun h' => (not_le_of_lt h h').elim⟩
-  | eq, a, b, h => ⟨fun _ => ge_of_eq h, fun _ h => by injection h⟩
-  | gt, a, b, h => ⟨fun _ => le_of_lt h, fun _ h => by injection h⟩
+  | lt, _, _, h => ⟨absurd rfl, fun h' => (not_le_of_lt h h').elim⟩
+  | eq, _, _, h => ⟨fun _ => ge_of_eq h, fun _ h => by injection h⟩
+  | gt, _, _, h => ⟨fun _ => le_of_lt h, fun _ h => by injection h⟩
 
 theorem Compares.eq_eq [Preorder α] : ∀ {o} {a b : α}, Compares o a b → (o = eq ↔ a = b)
   | lt, a, b, h => ⟨fun h => by injection h, fun h' => (ne_of_lt h h').elim⟩
-  | eq, a, b, h => ⟨fun _ => h, fun _ => rfl⟩
+  | eq, _, _, h => ⟨fun _ => h, fun _ => rfl⟩
   | gt, a, b, h => ⟨fun h => by injection h, fun h' => (ne_of_gt h h').elim⟩
 
 theorem Compares.eq_gt [Preorder α] {o} {a b : α} (h : Compares o a b) : o = gt ↔ b < a :=
@@ -132,30 +132,29 @@ theorem Ordering.Compares.cmp_eq [LinearOrder α] {a b : α} {o : Ordering} (h :
   (cmp_compares a b).inj h
 
 @[simp]
-theorem cmp_swap [Preorder α] [@DecidableRel α (· < ·)] (a b : α) : (cmp a b).swap = cmp b a := by
+theorem cmp_swap [Preorder α] [DecidableRel (α := α) (· < ·)] (a b : α) :
+    (cmp a b).swap = cmp b a := by
   unfold cmp cmpUsing
   by_cases h : a < b <;> by_cases h₂ : b < a <;> simp [h, h₂, Ordering.swap]
   exact lt_asymm h h₂
 
--- Porting note: Not sure why the simpNF linter doesn't like this. @semorrison
-@[simp, nolint simpNF]
-theorem cmpLE_toDual [LE α] [@DecidableRel α (· ≤ ·)] (x y : α) :
+@[simp]
+theorem cmpLE_toDual [LE α] [DecidableRel (α := α) (· ≤ ·)] (x y : α) :
     cmpLE (toDual x) (toDual y) = cmpLE y x :=
   rfl
 
 @[simp]
-theorem cmpLE_ofDual [LE α] [@DecidableRel α (· ≤ ·)] (x y : αᵒᵈ) :
+theorem cmpLE_ofDual [LE α] [DecidableRel (α := α) (· ≤ ·)] (x y : αᵒᵈ) :
     cmpLE (ofDual x) (ofDual y) = cmpLE y x :=
   rfl
 
--- Porting note: Not sure why the simpNF linter doesn't like this. @semorrison
-@[simp, nolint simpNF]
-theorem cmp_toDual [LT α] [@DecidableRel α (· < ·)] (x y : α) :
+@[simp]
+theorem cmp_toDual [LT α] [DecidableRel (α := α) (· < ·)] (x y : α) :
     cmp (toDual x) (toDual y) = cmp y x :=
   rfl
 
 @[simp]
-theorem cmp_ofDual [LT α] [@DecidableRel α (· < ·)] (x y : αᵒᵈ) :
+theorem cmp_ofDual [LT α] [DecidableRel (α := α) (· < ·)] (x y : αᵒᵈ) :
     cmp (ofDual x) (ofDual y) = cmp y x :=
   rfl
 

@@ -91,7 +91,7 @@ end
 
 section Layercake
 
-variable {α : Type*} [MeasurableSpace α] {f : α → ℝ} {g : ℝ → ℝ} {s : Set α}
+variable {α : Type*} [MeasurableSpace α] {f : α → ℝ} {g : ℝ → ℝ}
 
 /-- An auxiliary version of the layer cake formula (Cavalieri's principle, tail probability
 formula), with a measurability assumption that would also essentially follow from the
@@ -122,9 +122,9 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
     congr
     exact intervalIntegral.integral_of_le (f_nn ω)
   rw [lintegral_congr integrand_eq]
-  simp_rw [← lintegral_indicator (fun t => ENNReal.ofReal (g t)) measurableSet_Ioc]
+  simp_rw [← lintegral_indicator measurableSet_Ioc]
   -- Porting note: was part of `simp_rw` on the previous line, but didn't trigger.
-  rw [← lintegral_indicator _ measurableSet_Ioi, lintegral_lintegral_swap]
+  rw [← lintegral_indicator measurableSet_Ioi, lintegral_lintegral_swap]
   · apply congr_arg
     funext s
     have aux₁ :
@@ -458,9 +458,8 @@ end Layercake
 
 section LayercakeLT
 
-variable {α : Type*} [MeasurableSpace α] (μ : Measure α)
-variable {β : Type*} [MeasurableSpace β] [MeasurableSingletonClass β]
-variable {f : α → ℝ} {g : ℝ → ℝ} {s : Set α}
+variable {α : Type*} [MeasurableSpace α]
+variable {f : α → ℝ} {g : ℝ → ℝ}
 
 /-- The layer cake formula / Cavalieri's principle / tail probability formula:
 
