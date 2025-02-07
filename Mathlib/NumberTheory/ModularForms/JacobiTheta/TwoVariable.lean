@@ -171,7 +171,7 @@ lemma norm_jacobiTheta₂_term_fderiv_le (n : ℤ) (z τ : ℂ) :
     · exact_mod_cast Int.le_self_sq |n|
   · simp_rw [hns, norm_mul, one_mul, norm_I, mul_one,
       norm_real, norm_of_nonneg pi_pos.le, ← ofReal_intCast, ← ofReal_pow, norm_real,
-      Real.norm_eq_abs, Int.cast_abs, _root_.abs_pow]
+      Real.norm_eq_abs, Int.cast_abs, abs_pow]
     apply mul_le_of_le_one_right (mul_nonneg pi_pos.le (pow_nonneg (abs_nonneg _) _))
     exact ContinuousLinearMap.norm_snd_le ..
 
@@ -203,7 +203,7 @@ lemma summable_jacobiTheta₂_term_fderiv_iff (z τ : ℂ) :
     apply le_mul_of_one_le_left (norm_nonneg _)
     refine one_le_pi_div_two.trans (mul_le_mul_of_nonneg_left ?_ pi_pos.le)
     refine (by norm_num : 2⁻¹ ≤ (1 : ℝ)).trans ?_
-    rw [one_le_sq_iff_one_le_abs, ← Int.cast_abs, _root_.abs_abs, ← Int.cast_one, Int.cast_le]
+    rw [one_le_sq_iff_one_le_abs, ← Int.cast_abs, abs_abs, ← Int.cast_one, Int.cast_le]
     exact Int.one_le_abs hn
   · intro hτ
     refine ((summable_pow_mul_jacobiTheta₂_term_bound
@@ -402,6 +402,7 @@ lemma jacobiTheta₂_add_left' (z τ : ℂ) :
   ring_nf
 
 /-- The two-variable Jacobi theta function is even in `z`. -/
+@[simp]
 lemma jacobiTheta₂_neg_left (z τ : ℂ) : jacobiTheta₂ (-z) τ = jacobiTheta₂ z τ := by
   conv_lhs => rw [jacobiTheta₂, ← Equiv.tsum_eq (Equiv.neg ℤ)]
   refine tsum_congr (fun n ↦ ?_)
