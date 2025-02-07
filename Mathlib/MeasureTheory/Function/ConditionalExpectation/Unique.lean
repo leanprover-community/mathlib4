@@ -63,10 +63,6 @@ theorem lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero (hm : m ≤ m0) (f : lpM
     rw [integral_congr_ae hfg_restrict.symm]
     exact hf_zero s hs hμs
 
-@[deprecated (since := "2024-04-17")]
-alias lpMeas.ae_eq_zero_of_forall_set_integral_eq_zero :=
-  lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero
-
 variable (𝕜)
 
 include 𝕜 in
@@ -89,10 +85,6 @@ theorem Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' (hm : m ≤ m0) (f : Lp E' 
     rw [integral_congr_ae hfg_restrict.symm]
     exact hf_zero s hs hμs
 
-@[deprecated (since := "2024-04-17")]
-alias Lp.ae_eq_zero_of_forall_set_integral_eq_zero' :=
-  Lp.ae_eq_zero_of_forall_setIntegral_eq_zero'
-
 include 𝕜 in
 /-- **Uniqueness of the conditional expectation** -/
 theorem Lp.ae_eq_of_forall_setIntegral_eq' (hm : m ≤ m0) (f g : Lp E' p μ) (hp_ne_zero : p ≠ 0)
@@ -114,9 +106,6 @@ theorem Lp.ae_eq_of_forall_setIntegral_eq' (hm : m ≤ m0) (f g : Lp E' p μ) (h
     exact (hf_int_finite s hs hμs).sub (hg_int_finite s hs hμs)
   exact Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' 𝕜 hm (f - g) hp_ne_zero hp_ne_top hfg_int hfg'
     <| (hf_meas.sub hg_meas).congr (Lp.coeFn_sub f g).symm
-
-@[deprecated (since := "2024-04-17")]
-alias Lp.ae_eq_of_forall_set_integral_eq' := Lp.ae_eq_of_forall_setIntegral_eq'
 
 variable {𝕜}
 
@@ -161,10 +150,6 @@ theorem ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFin
     exact hfg_eq s hs hμs
   exact ae_eq_of_forall_setIntegral_eq_of_sigmaFinite hf_mk_int_finite hg_mk_int_finite hfg_mk_eq
 
-@[deprecated (since := "2024-04-17")]
-alias ae_eq_of_forall_set_integral_eq_of_sigmaFinite' :=
-  ae_eq_of_forall_setIntegral_eq_of_sigmaFinite'
-
 end UniquenessOfConditionalExpectation
 
 section IntegralNormLE
@@ -204,17 +189,21 @@ theorem integral_norm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g : �
 
 /-- Let `m` be a sub-σ-algebra of `m0`, `f` an `m0`-measurable function and `g` an `m`-measurable
 function, such that their integrals coincide on `m`-measurable sets with finite measure.
-Then `∫⁻ x in s, ‖g x‖₊ ∂μ ≤ ∫⁻ x in s, ‖f x‖₊ ∂μ` on all `m`-measurable sets with finite
+Then `∫⁻ x in s, ‖g x‖ₑ ∂μ ≤ ∫⁻ x in s, ‖f x‖ₑ ∂μ` on all `m`-measurable sets with finite
 measure. -/
-theorem lintegral_nnnorm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g : α → ℝ}
+theorem lintegral_enorm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g : α → ℝ}
     (hf : StronglyMeasurable f) (hfi : IntegrableOn f s μ) (hg : StronglyMeasurable[m] g)
     (hgi : IntegrableOn g s μ)
     (hgf : ∀ t, MeasurableSet[m] t → μ t < ∞ → ∫ x in t, g x ∂μ = ∫ x in t, f x ∂μ)
-    (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) : (∫⁻ x in s, ‖g x‖₊ ∂μ) ≤ ∫⁻ x in s, ‖f x‖₊ ∂μ := by
-  rw [← ofReal_integral_norm_eq_lintegral_nnnorm hfi, ←
-    ofReal_integral_norm_eq_lintegral_nnnorm hgi, ENNReal.ofReal_le_ofReal_iff]
+    (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) : (∫⁻ x in s, ‖g x‖ₑ ∂μ) ≤ ∫⁻ x in s, ‖f x‖ₑ ∂μ := by
+  rw [← ofReal_integral_norm_eq_lintegral_enorm hfi, ←
+    ofReal_integral_norm_eq_lintegral_enorm hgi, ENNReal.ofReal_le_ofReal_iff]
   · exact integral_norm_le_of_forall_fin_meas_integral_eq hm hf hfi hg hgi hgf hs hμs
   · positivity
+
+@[deprecated (since := "2025-01-21")]
+alias lintegral_nnnorm_le_of_forall_fin_meas_integral_eq :=
+  lintegral_enorm_le_of_forall_fin_meas_integral_eq
 
 end IntegralNormLE
 
