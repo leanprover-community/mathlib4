@@ -93,8 +93,7 @@ theorem Ideal.radical_eq_jacobson [H : IsJacobsonRing R] (I : Ideal R) : I.radic
     (H.out (radical_isRadical I) ▸ jacobson_mono le_radical)
 
 instance (priority := 100) [IsArtinianRing R] : IsJacobsonRing R :=
-  isJacobsonRing_iff_prime_eq.mpr fun P _ ↦
-    jacobson_eq_self_of_isMaximal (H := IsArtinianRing.isMaximal_of_isPrime P)
+  isJacobsonRing_iff_prime_eq.mpr fun _ _ ↦ jacobson_eq_self_of_isMaximal
 
 theorem isJacobsonRing_of_surjective [H : IsJacobsonRing R] :
     (∃ f : R →+* S, Function.Surjective ↑f) → IsJacobsonRing S := by
