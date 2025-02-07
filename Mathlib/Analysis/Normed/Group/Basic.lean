@@ -931,9 +931,7 @@ theorem mem_closure_one_iff_norm {x : E} : x ∈ closure ({1} : Set E) ↔ ‖x�
 @[to_additive]
 theorem closure_one_eq : closure ({1} : Set E) = { x | ‖x‖ = 0 } :=
   Set.ext fun _x => mem_closure_one_iff_norm
-
-#min_imports
-
+  
 section
 
 variable {l : Filter α} {f : α → E}
