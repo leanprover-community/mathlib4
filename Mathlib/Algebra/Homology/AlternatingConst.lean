@@ -16,13 +16,6 @@ open CategoryTheory Limits
 
 variable {C : Type*} [Category C] [HasZeroMorphisms C]
 
-@[simp]
-lemma ComplexShape.down_next (i : ℕ) : (ComplexShape.down ℕ).next i = i - 1 := by
-  cases' i with i
-  · simp
-  · apply (ComplexShape.down ℕ).next_eq'
-    simp
-
 namespace ChainComplex
 
 /-- The chain complex `X ←0- X ←𝟙- X ←0- X ←𝟙- X ⋯`.
@@ -49,8 +42,8 @@ open ZeroObject
 noncomputable
 def alternatingConstHomologyDataEvenNEZero (X : C) (n : ℕ) (hn : Even n) (h₀ : n ≠ 0) :
     ((alternatingConst.obj X).sc n).HomologyData :=
-  .ofIsLimitKernelFork _ (by simp [Nat.even_add_one, hn]) _ (Limits.zeroKernelOfCancelZero _ (by
-    simp [hn, tsub_add_cancel_iff_le, Nat.one_le_iff_ne_zero, h₀]))
+  .ofIsLimitKernelFork _ (by simp [Nat.even_add_one, hn]) _
+    (Limits.zeroKernelOfCancelZero _ (by cases n <;> simp_all))
 
 /-- The `n`-th homology of the alternating constant complex is zero for odd `n`. -/
 noncomputable
