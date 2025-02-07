@@ -129,6 +129,7 @@ variable (C)
 
 /-- A category `HasPushforwards` if every morphism is exponentiable. -/
 class HasPushforwards [HasFiniteWidePullbacks C] where
+  /-- A function assigning to every morphism `f : I ⟶ J` an exponentiable structure. -/
   exponentiable {I J : C} (f : I ⟶ J) : ExponentiableMorphism f := by infer_instance
 
 namespace HasPushforwards
@@ -137,6 +138,7 @@ open Over
 
 variable {C} [HasFiniteWidePullbacks C] [HasPushforwards C]
 
+/-- The pushforward functor along a morphism `f : I ⟶ J` in a category `C` with pushforwards. -/
 def pushforward {I J : C} (f : I ⟶ J) :
     Over I ⥤ Over J :=
   (exponentiable f).pushforward
@@ -155,10 +157,13 @@ instance cartesianClosedOver
 
 section Notation
 
+/-- The object part of the pushforward of `Y` along `X`. This function provides the
+notation `Π_ X Y`. -/
 def pushforwardObj {I : C} (X : Over I) (Y : Over (X.left)) : Over I :=
   (pushforward X.hom).obj Y
 
 set_option quotPrecheck false in
+/-- The notation `Π_ X Y` for the object part of the pushforward of `Y` along `X`. -/
 scoped notation " Π_ " => pushforwardObj
 
 end Notation
@@ -325,6 +330,7 @@ instance CartesianClosedOver.hasPushforwards [HasFiniteWidePullbacks C]
 is exponentiable and all the slices are cartesian closed. -/
 class LocallyCartesianClosed [HasFiniteWidePullbacks C] extends
     HasPushforwards C where
+  /-- every slice category `Over I` is cartesian closed. This is filled in by default. -/
   cartesianClosedOver : Π (I : C), CartesianClosed (Over I) := HasPushforwards.cartesianClosedOver
 
 namespace LocallyCartesianClosed
