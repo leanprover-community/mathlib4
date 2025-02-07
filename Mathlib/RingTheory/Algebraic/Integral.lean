@@ -317,7 +317,7 @@ end IsAlgebraic
 
 namespace Algebra
 
-variable (R) [NoZeroDivisors S]
+variable (R S A) [NoZeroDivisors S]
 
 /-- Transitivity of algebraicity for algebras over domains. -/
 theorem IsAlgebraic.trans' [Algebra.IsAlgebraic R S] [alg : Algebra.IsAlgebraic S A] :
@@ -385,7 +385,7 @@ namespace Transcendental
 
 section
 
-variable {a : A} (ha : Transcendental R a)
+variable (S) {a : A} (ha : Transcendental R a)
 include ha
 
 lemma extendScalars_of_isIntegral [NoZeroDivisors S] [Algebra.IsIntegral R S] :
@@ -405,9 +405,9 @@ variable {a : S} (ha : Transcendental R a)
 include ha
 
 protected lemma integralClosure [NoZeroDivisors S] : Transcendental (integralClosure R S) a :=
-  ha.extendScalars_of_isIntegral
+  ha.extendScalars_of_isIntegral _
 
 lemma subalgebraAlgebraicClosure [IsDomain R] [NoZeroDivisors S] :
-    Transcendental (Subalgebra.algebraicClosure R S) a := ha.extendScalars
+    Transcendental (Subalgebra.algebraicClosure R S) a := ha.extendScalars _
 
 end Transcendental

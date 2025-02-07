@@ -51,7 +51,7 @@ theorem extendScalars [alg : Algebra.IsAlgebraic R S]
       (fun z ↦ ((alg.1 z).algHom (IsScalarTower.toAlgHom R S A)).extendScalars fun _ _ eq ↦ by
         exact hx.algebraMap_injective congr($eq.1)) (fun _ _ _ _ ↦ .add) (fun _ _ _ _ ↦ .mul) hy⟩
   show Transcendental St (x i)
-  exact (hx.transcendental_adjoin hi).extendScalars Subtype.val_injective
+  exact (hx.transcendental_adjoin hi).extendScalars _
 
 theorem extendScalars_of_isSimpleRing [Algebra.IsAlgebraic R S] [IsSimpleRing S] :
     AlgebraicIndependent S x :=
