@@ -226,7 +226,7 @@ theorem discreteTopology_iff_finite_and_krullDimLE_zero : DiscreteTopology (Prim
     .of_finite_of_isClosed_singleton fun p ↦ (isClosed_singleton_iff_isMaximal p).mpr inferInstance⟩
 
 @[deprecated discreteTopology_iff_finite_and_krullDimLE_zero (since := "2025-02-05")]
-theorem discreteTopology_iff_finite_and_isPrime_imp_isMaximal:
+theorem discreteTopology_iff_finite_and_isPrime_imp_isMaximal :
     DiscreteTopology (PrimeSpectrum R) ↔
     Finite (PrimeSpectrum R) ∧ ∀ I : Ideal R, I.IsPrime → I.IsMaximal := by
   rw [discreteTopology_iff_finite_and_krullDimLE_zero, Ring.krullDimLE_zero_iff]
