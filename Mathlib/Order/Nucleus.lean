@@ -136,6 +136,9 @@ instance : CompleteSemilatticeInf (Nucleus X) where
 
 instance : CompleteLattice (Nucleus X) := completeLatticeOfCompleteSemilatticeInf (Nucleus X)
 
+@[simp] theorem Min_apply (a b : Nucleus X) (x : X) : (a ⊓ b) x = a x ⊓ b x := by
+  rw [← sInf_pair, sInf_apply, iInf_pair]
+
 instance : HImp (Nucleus X) where
   himp a b :=
   { toFun x :=   ⨅ y ≥ x, a y ⇨ b y
@@ -185,5 +188,19 @@ instance : HImp (Nucleus X) where
     le_apply' := by
       simp only [ge_iff_le, le_iInf_iff, le_himp_iff]
       refine fun _ _ h ↦ inf_le_of_left_le (le_trans h b.le_apply)}
+
+@[simp] theorem himp_apply (a b : Nucleus X) (x : X) : (a ⇨ b) x = ⨅ y ≥ x, a y ⇨ b y := rfl
+
+instance : HeytingAlgebra (Nucleus X) where
+  le_himp_iff a b c := by
+    simp [← coe_le_coe, Pi.le_def]
+    exact ⟨fun h i ↦ h i i le_rfl,
+      fun h1 i j _ ↦ le_trans (inf_le_inf_right (b j) (by gcongr)) (h1 j)⟩
+  compl a := a ⇨ ⊥
+  himp_bot a := rfl
+
+instance : Order.Frame (Nucleus X) where
+   __ := Nucleus.instHeytingAlgebra
+   __ := Nucleus.instCompleteLattice
 
 end Nucleus
