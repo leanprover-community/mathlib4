@@ -6,6 +6,8 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.Pairwise.Lattice
+import Mathlib.Order.CompleteLattice
+import Mathlib.MeasureTheory.MeasurableSpace.Pi
 import Mathlib.MeasureTheory.PiSystem
 import Mathlib.MeasureTheory.MeasurableSpace.Pi
 
@@ -63,6 +65,15 @@ structure IsSetSemiring (C : Set (Set α)) : Prop where
 namespace IsSetSemiring
 
 lemma isPiSystem (hC : IsSetSemiring C) : IsPiSystem C := fun s hs t ht _ ↦ hC.inter_mem s hs t ht
+
+lemma iff (C : Set (Set α)) : IsSetSemiring C ↔
+    (∅ ∈ C ∧ IsPiSystem C ∧ ∀ s ∈ C, ∀ t ∈ C,
+    ∃ I : Finset (Set α), ↑I ⊆ C ∧ PairwiseDisjoint (I : Set (Set α)) id ∧ s \ t = ⋃₀ I) :=
+  ⟨fun hC ↦ ⟨hC.empty_mem, isPiSystem hC, hC.diff_eq_sUnion'⟩,
+    fun ⟨h1, h2, h3⟩ ↦ {
+      empty_mem := h1,
+      inter_mem := (isPiSystem_iff_of_nmem_empty h1).mpr h2,
+      diff_eq_sUnion' := h3} ⟩
 
 lemma iff (C : Set (Set α)) : IsSetSemiring C ↔
     (∅ ∈ C ∧ IsPiSystem C ∧ ∀ s ∈ C, ∀ t ∈ C,
@@ -714,15 +725,15 @@ section piSemiring
 
 variable {ι : Type*} {hι : Fintype ι} [Inhabited ι] {α : ι → Type*} (C : (i : ι) → Set (Set (α i)))
 
-theorem l (hC : ∀ i, IsSetSemiring (C i)) : IsSetSemiring (univ.pi '' univ.pi C) := {
-  empty_mem := by
-    simp only [Set.mem_image, Set.mem_pi, Set.mem_univ, forall_const, univ_pi_eq_empty_iff]
+theorem l (hC : ∀ i, IsSetSemiring (C i)) : IsSetSemiring (univ.pi '' univ.pi C) := by
+  refine (IsSetSemiring.iff _).mpr ⟨?_, ?_, ?_⟩
+  · simp only [Set.mem_image, Set.mem_pi, Set.mem_univ, forall_const, univ_pi_eq_empty_iff]
     use fun _ ↦ ∅
     simp only [exists_const, and_true]
     exact fun _ ↦ (hC _).empty_mem
-  inter_mem := by sorry,
-  diff_eq_sUnion' := by sorry
-}
+  · exact IsPiSystem.pi (fun i ↦ (hC i).isPiSystem)
+  ·
+    sorry
 
 
 end piSemiring
