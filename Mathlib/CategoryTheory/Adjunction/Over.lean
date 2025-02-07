@@ -28,8 +28,8 @@ In a category with binary products, for any object `X` the functor
 
 ## Notation
 
-- `Σ X Y` : is notation for `Sigma` defined by `(Over.map X.hom).obj Y
-- `Δ X Y` : is notation for `Reindex` defined by `(Over.pullback X.hom).obj Y
+- `Σ_ X Y` : is notation for `Sigma` defined by `(Over.map X.hom).obj Y
+- `Δ_ X Y` : is notation for `Reindex` defined by `(Over.pullback X.hom).obj Y
 - `μ X Y` : is notation for `fstProj : (Σ_ Y (Δ_ Y Z)) ⟶ Z`
 - `π X Y` : is notation for `sndProj : (Σ_ Y (Δ_ Y Z)) ⟶ Y`
 
@@ -43,6 +43,11 @@ In a category with binary products, for any object `X` the functor
 
 ## TODO
 Show `star X` itself has a right adjoint provided `C` is cartesian closed and has pullbacks.
+
+## References
+
+The notations `Σ_` and `Δ_` are taken from [GK12].
+
 -/
 
 noncomputable section
@@ -163,6 +168,7 @@ open Sigma
 variable [HasPullbacks C] {X : C}
 
 set_option quotPrecheck false in
+/-- The notation for `Reindex`, the object part of the reindexing functor. -/
 scoped notation " Δ_ " => Reindex
 
 lemma hom {Y : Over X} {Z : Over X} :
