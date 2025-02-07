@@ -290,6 +290,26 @@ def Algebra.TensorProduct.cancelBaseChange (R S T A B : Type*)
     (by simp [Algebra.TensorProduct.one_def]) <|
       map_mul_of_map_mul_tmul (fun _ _ _ _ ↦ by simp)
 
+@[simp]
+lemma Algebra.TensorProduct.cancelBaseChange_tmul (R S T A B : Type*)
+    [CommRing R] [CommRing S] [CommRing T] [CommRing A] [CommRing B]
+    [Algebra R S] [Algebra R T] [Algebra R A] [Algebra R B]
+    [Algebra T A] [IsScalarTower R T A] [Algebra S A]
+    [IsScalarTower R S A] [Algebra S T] [IsScalarTower S T A]
+    (a : A) (s : S) (b : B) :
+    Algebra.TensorProduct.cancelBaseChange R S T A B (a ⊗ₜ (s ⊗ₜ b)) = (s • a) ⊗ₜ b :=
+  TensorProduct.AlgebraTensorModule.cancelBaseChange_tmul R S T a b s
+
+@[simp]
+lemma Algebra.TensorProduct.cancelBaseChange_symm_tmul (R S T A B : Type*)
+    [CommRing R] [CommRing S] [CommRing T] [CommRing A] [CommRing B]
+    [Algebra R S] [Algebra R T] [Algebra R A] [Algebra R B]
+    [Algebra T A] [IsScalarTower R T A] [Algebra S A]
+    [IsScalarTower R S A] [Algebra S T] [IsScalarTower S T A]
+    (a : A) (b : B) :
+    (Algebra.TensorProduct.cancelBaseChange R S T A B).symm (a ⊗ₜ b) = a ⊗ₜ (1 ⊗ₜ b) :=
+  TensorProduct.AlgebraTensorModule.cancelBaseChange_symm_tmul R S T a b
+
 noncomputable
 def AlgEquiv.prodQuotientOfIsIdempotentElem {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     {e f : S} (he : IsIdempotentElem e) (hf : IsIdempotentElem f) (hef₁ : (1 - e) * (1 - f) = 0)
