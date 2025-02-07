@@ -162,9 +162,11 @@ variable {z : A} {z' : S}
 
 namespace IsAlgebraic
 
-theorem exists_integral_multiple (hz : IsAlgebraic R z)
-    (inj : Function.Injective (algebraMap R A)) :
-    ∃ y ≠ (0 : R), IsIntegral R (y • z) := by
+theorem exists_integral_multiple (hz : IsAlgebraic R z) : ∃ y ≠ (0 : R), IsIntegral R (y • z) := by
+  by_cases inj : Function.Injective (algebraMap R A); swap
+  · rw [injective_iff_map_eq_zero] at inj; push_neg at inj
+    have ⟨r, eq, ne⟩ := inj
+    exact ⟨r, ne, by simpa [← algebraMap_smul A, eq, zero_smul] using isIntegral_zero⟩
   have ⟨p, p_ne_zero, px⟩ := hz
   set a := p.leadingCoeff
   have a_ne_zero : a ≠ 0 := mt Polynomial.leadingCoeff_eq_zero.mp p_ne_zero
@@ -176,11 +178,12 @@ theorem exists_integral_multiple (hz : IsAlgebraic R z)
 @[deprecated (since := "2024-11-30")]
 alias _root_.exists_integral_multiple := exists_integral_multiple
 
+variable (R) in
 theorem _root_.Algebra.IsAlgebraic.exists_integral_multiples [NoZeroDivisors R]
-    [alg : Algebra.IsAlgebraic R A] (inj : Function.Injective (algebraMap R A)) (s : Finset A) :
+    [alg : Algebra.IsAlgebraic R A] (s : Finset A) :
     ∃ y ≠ (0 : R), ∀ z ∈ s, IsIntegral R (y • z) := by
   have := Algebra.IsAlgebraic.nontrivial R A
-  choose r hr int using fun x ↦ (alg.1 x).exists_integral_multiple inj
+  choose r hr int using fun x ↦ (alg.1 x).exists_integral_multiple
   refine ⟨∏ x ∈ s, r x, Finset.prod_ne_zero_iff.mpr fun _ _ ↦ hr _, fun _ h ↦ ?_⟩
   classical rw [← Finset.prod_erase_mul _ _ h, mul_smul]
   exact (int _).smul _
@@ -201,15 +204,14 @@ theorem of_smul {y : R} (hy : y ∈ nonZeroDivisors R)
   have ⟨p, hp, eval0⟩ := h
   ⟨_, mt (comp_C_mul_X_eq_zero_iff hy).mp hp, by simpa [aeval_comp, Algebra.smul_def] using eval0⟩
 
-theorem iff_exists_smul_integral [IsReduced R] (inj : Function.Injective (algebraMap R A)) :
+theorem iff_exists_smul_integral [IsReduced R] :
     IsAlgebraic R z ↔ ∃ y ≠ (0 : R), IsIntegral R (y • z) :=
-  ⟨(exists_integral_multiple · inj), fun ⟨_, hy, int⟩ ↦
+  ⟨(exists_integral_multiple ·), fun ⟨_, hy, int⟩ ↦
     of_smul_isIntegral (by rwa [isNilpotent_iff_eq_zero]) int⟩
 
 section trans
 
-variable (R) [NoZeroDivisors S] (inj : Function.Injective (algebraMap S A))
-include inj
+variable (R) [NoZeroDivisors S]
 
 /-!
 The next theorem may fail if only `R` is assumed to be a domain but `S` is not: for example, let
@@ -227,7 +229,7 @@ theorem restrictScalars_of_isIntegral [int : Algebra.IsIntegral R S]
   on_goal 2 => exact (Algebra.isAlgebraic_of_not_injective
     fun h ↦ hRS <| .of_comp (IsScalarTower.algebraMap_eq R S A ▸ h)).1 _
   have := hRS.noZeroDivisors _ (map_zero _) (map_mul _)
-  have ⟨s, hs, int_s⟩ := h.exists_integral_multiple inj
+  have ⟨s, hs, int_s⟩ := h.exists_integral_multiple
   cases subsingleton_or_nontrivial R
   · have := Module.subsingleton R S
     exact (is_transcendental_of_subsingleton _ _ h).elim
@@ -245,7 +247,7 @@ theorem restrictScalars [Algebra.IsAlgebraic R S]
     fun h ↦ hRS <| .of_comp (IsScalarTower.algebraMap_eq R S A ▸ h)).1 _
   have := hRS.noZeroDivisors _ (map_zero _) (map_mul _)
   classical
-  have ⟨r, hr, int⟩ := Algebra.IsAlgebraic.exists_integral_multiples hRS (p.support.image (coeff p))
+  have ⟨r, hr, int⟩ := Algebra.IsAlgebraic.exists_integral_multiples R (p.support.image (coeff p))
   let p := (r • p).toSubring (integralClosure R S).toSubring fun s hs ↦ by
     obtain ⟨n, hn, rfl⟩ := mem_coeffs_iff.mp hs
     exact int _ (Finset.mem_image_of_mem _ <| support_smul _ _ hn)
@@ -257,7 +259,7 @@ theorem restrictScalars [Algebra.IsAlgebraic R S]
     rw [← eval_map_algebraMap, Subalgebra.algebraMap_eq, ← map_map, ← Subalgebra.toSubring_subtype,
       map_toSubring, eval_map_algebraMap, ← AlgHom.restrictScalars_apply R,
       map_smul, AlgHom.restrictScalars_apply, eval0, smul_zero]
-  exact restrictScalars_of_isIntegral _ (by exact inj.comp Subtype.val_injective) this
+  exact restrictScalars_of_isIntegral _ this
 
 theorem _root_.IsIntegral.trans_isAlgebraic [alg : Algebra.IsAlgebraic R S]
     {a : A} (h : IsIntegral S a) : IsAlgebraic R a := by
@@ -265,7 +267,7 @@ theorem _root_.IsIntegral.trans_isAlgebraic [alg : Algebra.IsAlgebraic R S]
   · have := Algebra.IsAlgebraic.nontrivial R S
     exact Subsingleton.elim a 0 ▸ isAlgebraic_zero
   · have := Module.nontrivial S A
-    exact h.isAlgebraic.restrictScalars _ inj
+    exact h.isAlgebraic.restrictScalars _
 
 end trans
 
@@ -290,18 +292,16 @@ protected lemma zsmul (n : ℤ) : IsAlgebraic R (n • a) :=
 include hb nzd
 
 protected lemma mul : IsAlgebraic R (a * b) := by
-  refine (em _).elim (fun h ↦ ?_) fun h ↦ (Algebra.isAlgebraic_of_not_injective h).1 _
-  have ⟨ra, a0, int_a⟩ := ha.exists_integral_multiple h
-  have ⟨rb, b0, int_b⟩ := hb.exists_integral_multiple h
-  refine (IsAlgebraic.iff_exists_smul_integral h).mpr ⟨_, mul_ne_zero a0 b0, ?_⟩
+  have ⟨ra, a0, int_a⟩ := ha.exists_integral_multiple
+  have ⟨rb, b0, int_b⟩ := hb.exists_integral_multiple
+  refine IsAlgebraic.iff_exists_smul_integral.mpr ⟨_, mul_ne_zero a0 b0, ?_⟩
   simp_rw [Algebra.smul_def, map_mul, mul_mul_mul_comm, ← Algebra.smul_def]
   exact int_a.mul int_b
 
 protected lemma add : IsAlgebraic R (a + b) := by
-  refine (em _).elim (fun h ↦ ?_) fun h ↦ (Algebra.isAlgebraic_of_not_injective h).1 _
-  have ⟨ra, a0, int_a⟩ := ha.exists_integral_multiple h
-  have ⟨rb, b0, int_b⟩ := hb.exists_integral_multiple h
-  refine (IsAlgebraic.iff_exists_smul_integral h).mpr ⟨_, mul_ne_zero b0 a0, ?_⟩
+  have ⟨ra, a0, int_a⟩ := ha.exists_integral_multiple
+  have ⟨rb, b0, int_b⟩ := hb.exists_integral_multiple
+  refine IsAlgebraic.iff_exists_smul_integral.mpr ⟨_, mul_ne_zero b0 a0, ?_⟩
   rw [smul_add, mul_smul, mul_comm, mul_smul]
   exact (int_a.smul _).add (int_b.smul _)
 
@@ -317,21 +317,20 @@ end IsAlgebraic
 
 namespace Algebra
 
-variable (R) [NoZeroDivisors S] (inj : Function.Injective (algebraMap S A))
-include inj
+variable (R) [NoZeroDivisors S]
 
 /-- Transitivity of algebraicity for algebras over domains. -/
 theorem IsAlgebraic.trans' [Algebra.IsAlgebraic R S] [alg : Algebra.IsAlgebraic S A] :
     Algebra.IsAlgebraic R A :=
-  ⟨fun _ ↦ (alg.1 _).restrictScalars _ inj⟩
+  ⟨fun _ ↦ (alg.1 _).restrictScalars _⟩
 
 theorem IsIntegral.trans_isAlgebraic [Algebra.IsIntegral R S] [alg : Algebra.IsAlgebraic S A] :
     Algebra.IsAlgebraic R A :=
-  ⟨fun _ ↦ (alg.1 _).restrictScalars_of_isIntegral _ inj⟩
+  ⟨fun _ ↦ (alg.1 _).restrictScalars_of_isIntegral _⟩
 
 theorem IsAlgebraic.trans_isIntegral [Algebra.IsAlgebraic R S] [int : Algebra.IsIntegral S A] :
     Algebra.IsAlgebraic R A :=
-  ⟨fun _ ↦ (int.1 _).trans_isAlgebraic _ inj⟩
+  ⟨fun _ ↦ (int.1 _).trans_isAlgebraic _⟩
 
 end Algebra
 
@@ -389,29 +388,26 @@ section
 variable {a : A} (ha : Transcendental R a)
 include ha
 
-lemma extendScalars_of_isIntegral [NoZeroDivisors S] [Algebra.IsIntegral R S]
-    (inj : Function.Injective (algebraMap S A)) : Transcendental S a := by
+lemma extendScalars_of_isIntegral [NoZeroDivisors S] [Algebra.IsIntegral R S] :
+    Transcendental S a := by
   contrapose ha
   rw [Transcendental, not_not] at ha ⊢
-  exact ha.restrictScalars_of_isIntegral _ inj
+  exact ha.restrictScalars_of_isIntegral _
 
-lemma extendScalars [NoZeroDivisors S] [Algebra.IsAlgebraic R S]
-    (inj : Function.Injective (algebraMap S A)) : Transcendental S a := by
+lemma extendScalars [NoZeroDivisors S] [Algebra.IsAlgebraic R S] : Transcendental S a := by
   contrapose ha
   rw [Transcendental, not_not] at ha ⊢
-  exact ha.restrictScalars _ inj
+  exact ha.restrictScalars _
 
 end
 
 variable {a : S} (ha : Transcendental R a)
 include ha
 
-protected lemma integralClosure [NoZeroDivisors S] :
-    Transcendental (integralClosure R S) a :=
-  ha.extendScalars_of_isIntegral Subtype.val_injective
+protected lemma integralClosure [NoZeroDivisors S] : Transcendental (integralClosure R S) a :=
+  ha.extendScalars_of_isIntegral
 
 lemma subalgebraAlgebraicClosure [IsDomain R] [NoZeroDivisors S] :
-    Transcendental (Subalgebra.algebraicClosure R S) a :=
-  ha.extendScalars Subtype.val_injective
+    Transcendental (Subalgebra.algebraicClosure R S) a := ha.extendScalars
 
 end Transcendental
