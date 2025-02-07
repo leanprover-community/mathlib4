@@ -21,13 +21,9 @@ and a multivariate polynomial `f` in `MvPolynomial σ R`.
 The combinatorial Nullstellensatz gives combinatorial constraints for
 the vanishing of `f` at any `x : σ → R` such that `x s ∈ S s` for all `s`.
 
-- `MvPolynomial.eq_zero_of_eval_zero_at_prod` :
-  if `f` vanishes at any such point and `f.degreeOf s < (S s).ncard` for all `s`,
+- `MvPolynomial.eq_zero_of_eval_zero_at_prod_finset` :
+  if `f` vanishes at any such point and `f.degreeOf s < #(S s)` for all `s`,
   then `f = 0`.
-
-- `Polynomial.eq_zero_of_natDegree_lt_ncard_of_eval_eq_zero` :
-  a polynomial (in one indeterminate) which vanishes at more points than its degree
-  is the zero polynomial.
 
 - `combinatorial_nullstellensatz_exists_linearCombination`
   If `f` vanishes at every such point, then it can be written as a linear combination
@@ -56,33 +52,18 @@ the vanishing of `f` at any `x : σ → R` such that `x s ∈ S s` for all `s`.
 
 open Finsupp
 
-variable {R : Type*} [CommRing R]
+open scoped Finset
 
-/-- A polynomial that vanishes at more points than its degree is the zero polynomial. -/
-theorem _root_.Polynomial.eq_zero_of_natDegree_lt_ncard_of_eval_eq_zero
-    [IsDomain R] (P : Polynomial R) (S : Set R)
-    (Hdeg : Polynomial.natDegree P < S.ncard) (Heval : ∀ x ∈ S, P.eval x = 0) :
-    P = 0 := by
-  classical
-  by_contra hP
-  apply not_le.mpr Hdeg
-  apply le_trans _ (Polynomial.card_roots' P)
-  apply le_trans _ (Multiset.toFinset_card_le _)
-  simp only [← Set.ncard_coe_Finset]
-  apply Set.ncard_le_ncard _ P.roots.toFinset.finite_toSet
-  intro s hs
-  simp only [Finset.mem_coe, Multiset.mem_toFinset, Polynomial.mem_roots', ne_eq,
-    Polynomial.IsRoot.def]
-  exact ⟨hP, Heval s hs⟩
+variable {R : Type*} [CommRing R]
 
 namespace MvPolynomial
 
 open Finsupp
 
-/-- A multivariate polynomial that vanishes on a large product set is the zero polynomial. -/
-theorem eq_zero_of_eval_zero_at_prod_nat {n : ℕ} [IsDomain R]
-    (P : MvPolynomial (Fin n) R) (S : Fin n → Set R)
-    (Hdeg : ∀ i, P.degreeOf i < (S i).ncard)
+/-- A multivariate polynomial that vanishes on a large product finite set is the zero polynomial. -/
+theorem eq_zero_of_eval_zero_at_prod_finset_nat {n : ℕ} [IsDomain R]
+    (P : MvPolynomial (Fin n) R) (S : Fin n → Finset R)
+    (Hdeg : ∀ i, P.degreeOf i < #(S i))
     (Heval : ∀ (x : Fin n → R), (∀ i, x i ∈ S i) → eval x P = 0) :
     P = 0 := by
   induction n generalizing R with
@@ -103,7 +84,15 @@ theorem eq_zero_of_eval_zero_at_prod_nat {n : ℕ} [IsDomain R]
       rw [← AlgEquiv.symm_apply_apply (finSuccEquiv R n) P, this, map_zero]
     have Heval' : ∀ (x : Fin n → R) (_ : ∀ i, x i ∈ S i.succ),
       Polynomial.map (eval x) Q = 0 := fun x hx ↦ by
-      apply Polynomial.eq_zero_of_natDegree_lt_ncard_of_eval_eq_zero _ (S 0)
+      apply Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero' _ (S 0)
+--      apply Polynomial.eq_zero_of_natDegree_lt_ncard_of_eval_eq_zero _ (S 0)
+      · intro y hy
+        rw [← eval_eq_eval_mv_eval']
+        apply Heval
+        intro i
+        induction i using Fin.inductionOn with
+        | zero => simp only [Fin.cons_zero, hy]
+        | succ i _ => simp only [Fin.cons_succ]; apply hx
       · apply lt_of_le_of_lt _ (Hdeg 0)
         rw [Polynomial.natDegree_le_iff_coeff_eq_zero]
         intro d hd
@@ -118,13 +107,6 @@ theorem eq_zero_of_eval_zero_at_prod_nat {n : ℕ} [IsDomain R]
         rw [← ne_eq, ← MvPolynomial.mem_support_iff] at hm
         convert Finset.le_sup hm
         simp only [cons_zero]
-      · intro y hy
-        rw [← eval_eq_eval_mv_eval']
-        apply Heval
-        intro i
-        induction i using Fin.inductionOn with
-        | zero => simp only [Fin.cons_zero, hy]
-        | succ i _ => simp only [Fin.cons_succ]; apply hx
     ext m d
     simp only [Polynomial.coeff_zero, coeff_zero]
     suffices Q.coeff m = 0 by
@@ -142,10 +124,10 @@ theorem eq_zero_of_eval_zero_at_prod_nat {n : ℕ} [IsDomain R]
       rw [Polynomial.ext_iff] at Heval'
       simpa only [Polynomial.coeff_map, Polynomial.coeff_zero] using Heval' m
 
-/-- A multivariate polynomial that vanishes on a large product set is the zero polynomial. -/
-theorem eq_zero_of_eval_zero_at_prod {σ : Type*} [Finite σ] [IsDomain R]
-    (P : MvPolynomial σ R) (S : σ → Set R)
-    (Hdeg : ∀ i, P.degreeOf i < (S i).ncard)
+/-- A multivariate polynomial that vanishes on a large product finset is the zero polynomial. -/
+theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R]
+    (P : MvPolynomial σ R) (S : σ → Finset R)
+    (Hdeg : ∀ i, P.degreeOf i < #(S i))
     (Heval : ∀ (x : σ → R), (∀ i, x i ∈ S i) → eval x P = 0) :
     P = 0 := by
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin σ
@@ -153,7 +135,7 @@ theorem eq_zero_of_eval_zero_at_prod {σ : Type*} [Finite σ] [IsDomain R]
     have that := MvPolynomial.rename_injective (R := R) e (e.injective)
     rw [RingHom.injective_iff_ker_eq_bot] at that
     rwa [← RingHom.mem_ker, that] at this
-  apply eq_zero_of_eval_zero_at_prod_nat _ (fun i ↦ S (e.symm i))
+  apply eq_zero_of_eval_zero_at_prod_finset_nat _ (fun i ↦ S (e.symm i))
   · intro i
     classical
     convert Hdeg (e.symm i)
@@ -179,7 +161,7 @@ private noncomputable def Alon.P (S : Finset R) (i : σ) : MvPolynomial σ R :=
 /-- The degree of `Alon.P S i` with respect to `X i` is the cardinality of `S`,
   and `0` otherwise. -/
 private theorem Alon.degree_P [Nontrivial R] (m : MonomialOrder σ) (S : Finset R) (i : σ) :
-    m.degree (Alon.P S i) = single i S.card := by
+    m.degree (Alon.P S i) = single i #S := by
   simp only [P]
   rw [degree_prod_of_regular]
   · simp [Finset.sum_congr rfl (fun r _ ↦ m.degree_X_sub_C i r)]
@@ -204,14 +186,13 @@ private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι
     (hm : m ∈ (Alon.P S i).support) :
     ∃ e ≤ S.card, m = single i e := by
   classical
-  have hP : Alon.P S i = MvPolynomial.rename (fun (_ : Unit) ↦ i) (Alon.P S ()) := by
-    simp [Alon.P, map_prod]
+  have hP : Alon.P S i = .rename (fun _ ↦ i) (Alon.P S ()) := by simp [Alon.P, map_prod]
   rw [hP, support_rename_of_injective (Function.injective_of_subsingleton _)] at hm
   simp only [Finset.mem_image, mem_support_iff, ne_eq] at hm
   obtain ⟨e, he, hm⟩ := hm
   haveI : Nontrivial R := nontrivial_of_ne _ _ he
   refine ⟨e (), ?_, ?_⟩
-  · suffices e ≼[lex] single () S.card by
+  · suffices e ≼[lex] single () #S by
       simpa [MonomialOrder.lex_le_iff_of_unique] using this
     rw [← Alon.degree_P]
     apply MonomialOrder.le_degree
@@ -250,9 +231,9 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
   suffices r = 0 by
     rw [this, add_zero] at hf
     exact ⟨fun i ↦ degLex_totalDegree_monotone (hh i), hf⟩
-  apply eq_zero_of_eval_zero_at_prod r (fun i ↦ S i)
+  apply eq_zero_of_eval_zero_at_prod_finset r S
   · intro i
-    rw [degreeOf_eq_sup, Set.ncard_coe_Finset, Finset.sup_lt_iff (by simp [Sne i])]
+    rw [degreeOf_eq_sup, Finset.sup_lt_iff (by simp [Sne i])]
     intro c hc
     rw [← not_le]
     intro h'

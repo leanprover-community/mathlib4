@@ -54,7 +54,7 @@ theorem weightedTotalDegree_one (φ : MvPolynomial σ R) :
 
 theorem weightedTotalDegree_rename_of_injective {σ τ : Type*} [DecidableEq τ] {e : σ → τ}
     {w : τ → ℕ} {P : MvPolynomial σ R} (he : Function.Injective e) :
-    weightedTotalDegree w ((rename e) P) = weightedTotalDegree (w ∘ e) P := by
+    weightedTotalDegree w (rename e P) = weightedTotalDegree (w ∘ e) P := by
   unfold weightedTotalDegree
   rw [support_rename_of_injective he, Finset.sup_image]
   congr; ext; unfold weight; simp
