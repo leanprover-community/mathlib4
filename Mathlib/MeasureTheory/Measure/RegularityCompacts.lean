@@ -18,7 +18,8 @@ A finite measure `μ` on a `PseudoEMetricSpace E` and `CompleteSpace E` with
 words, a finite measure on such a space is a tight measure.
 
 Finite measures on Polish spaces are an important special case, which makes the result
-`PolishSpace.innerRegular_isCompact_isClosed_measurableSet` an important result in probability.
+`MeasureTheory.PolishSpace.innerRegular_isCompact_isClosed_measurableSet` an important result in
+probability.
 -/
 
 open Set MeasureTheory
