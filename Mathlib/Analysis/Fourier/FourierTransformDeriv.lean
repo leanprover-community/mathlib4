@@ -326,7 +326,7 @@ lemma norm_fourierPowSMulRight_le (f : V → E) (v : V) (n : ℕ) :
   calc
   ‖fourierPowSMulRight L f v n m‖
     = (2 * π) ^ n * ((∏ x : Fin n, |(L v) (m x)|) * ‖f v‖) := by
-      simp [_root_.abs_of_nonneg pi_nonneg, norm_smul]
+      simp [abs_of_nonneg pi_nonneg, norm_smul]
   _ ≤ (2 * π) ^ n * ((∏ x : Fin n, ‖L‖ * ‖v‖ * ‖m x‖) * ‖f v‖) := by
       gcongr with i _hi
       exact L.le_opNorm₂ v (m i)
@@ -390,7 +390,7 @@ lemma norm_iteratedFDeriv_fourierPowSMulRight
     E).isBoundedBilinearMap.contDiff.comp₂ (A.of_le hk) (hf.of_le hk)).contDiffAt),
     norm_smul (β := V [×k]→L[ℝ] (W [×n]→L[ℝ] E))]
   simp only [norm_pow, norm_neg, norm_mul, RCLike.norm_ofNat, Complex.norm_eq_abs, abs_ofReal,
-    _root_.abs_of_nonneg pi_nonneg, abs_I, mul_one, mul_assoc]
+    abs_of_nonneg pi_nonneg, abs_I, mul_one, mul_assoc]
   gcongr
   -- third step: argue that the scalar multiplication is bilinear to bound the iterated derivatives
   -- of `v ↦ (∏ i, L v (m i)) • f v` in terms of those of `v ↦ (∏ i, L v (m i))` and of `f`.
@@ -647,7 +647,7 @@ lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le [FiniteDimensional ℝ V]
     linarith [one_le_pi_div_two]
   _ = ‖fourierPowSMulRight (-L.flip)
         (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w n (fun _ ↦ v)‖ := by
-    simp [norm_smul, _root_.abs_of_nonneg pi_nonneg]
+    simp [norm_smul, abs_of_nonneg pi_nonneg]
   _ ≤ ‖fourierPowSMulRight (-L.flip)
         (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w n‖ * ∏ _ : Fin n, ‖v‖ :=
     le_opNorm _ _
@@ -736,7 +736,7 @@ lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le
             ∫ (v : V), ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖ ∂volume)) := by
     have := VectorFourier.pow_mul_norm_iteratedFDeriv_fourierIntegral_le (innerSL ℝ) hf h'f hk hn
       w w
-    simp only [innerSL_apply _ w w, real_inner_self_eq_norm_sq w, _root_.abs_pow, abs_norm,
+    simp only [innerSL_apply _ w w, real_inner_self_eq_norm_sq w, abs_pow, abs_norm,
       mul_assoc] at this
     rwa [pow_two, mul_pow, mul_assoc] at this
   rcases eq_or_ne n 0 with rfl | hn
