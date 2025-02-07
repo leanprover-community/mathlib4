@@ -27,7 +27,7 @@ open Matrix MulOpposite
 
 /-- `AlgHom.mulLeftRight` for matrix algebra sends basis Eᵢⱼ⊗Eₖₗ to
   the map `f : Eₛₜ ↦ Eᵢⱼ * Eₛₜ * Eₖₗ = δⱼₛδₜₖEᵢₗ`, therefore we construct the inverse
-  by sending `f` to `f(Eⱼₖ)ᵢₗ • Eᵢⱼ⊗Eₖₗ`. -/
+  by sending `f` to `∑ᵢₗₛₜ f(Eₛₜ)ᵢₗ • Eᵢₛ⊗Eₜₗ`. -/
 abbrev AlgHom.mulLeftRightMatrix_inv :
     Module.End R (Matrix n n R) →ₗ[R] Matrix n n R ⊗[R] (Matrix n n R)ᵐᵒᵖ where
   toFun f := ∑ ⟨⟨i, j⟩, k, l⟩ : (n × n) × n × n,
