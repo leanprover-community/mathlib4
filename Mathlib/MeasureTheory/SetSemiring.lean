@@ -522,4 +522,21 @@ theorem accumulate_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ i, s i 
 
 end IsSetRing
 
+section piSemiring
+
+variable {ι : Type*} {hι : Fintype ι} [Inhabited ι] {α : ι → Type*} (C : (i : ι) → Set (Set (α i)))
+
+theorem l (hC : ∀ i, IsSetSemiring (C i)) : IsSetSemiring (univ.pi '' univ.pi C) := {
+  empty_mem := by
+    simp only [Set.mem_image, Set.mem_pi, Set.mem_univ, forall_const, univ_pi_eq_empty_iff]
+    use fun _ ↦ ∅
+    simp only [exists_const, and_true]
+    exact fun _ ↦ (hC _).empty_mem
+  inter_mem := by sorry,
+  diff_eq_sUnion' := by sorry
+}
+
+
+end piSemiring
+
 end MeasureTheory
