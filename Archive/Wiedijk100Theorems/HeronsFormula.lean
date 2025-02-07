@@ -12,10 +12,6 @@ This file proves Theorem 57 from the [100 Theorems List](https://www.cs.ru.nl/~f
 also known as Heron's formula, which gives the area of a triangle based only on its three sides'
 lengths.
 
-## TODO
-
-Change variable names here: https://leanprover-community.github.io/100.html#57
-
 ## References
 
 * https://en.wikipedia.org/wiki/Herons_formula
