@@ -55,25 +55,11 @@ lemma AlgHom.mulLeftRightMatrix.comp_inv:
   simp [sum_apply, Matrix.mul_apply, Finset.sum_mul, Finset.mul_sum, stdBasisMatrix,
     Fintype.sum_prod_type, ite_and]
 
-instance (ι : Type*) [Nonempty ι] : FaithfulSMul R (ι →₀ R) where
-  eq_of_smul_eq_smul {r1 r2} h := by
-    classical
-    if h' : Subsingleton R then exact Subsingleton.elim _ _
-    else
-    rw [@not_subsingleton_iff_nontrivial] at h'
-    simp_rw [Finsupp.ext_iff, Finsupp.smul_apply] at h
-    have := h ⟨{Classical.ofNonempty}, (Function.update (0 : ι → R) Classical.ofNonempty 1),
-      fun i ↦ ⟨fun hi ↦ by simp only [Finset.mem_singleton] at hi; subst hi; simp [one_ne_zero],
-      fun h ↦ by simp only [Finset.mem_singleton]; simp only [Function.update, eq_rec_constant,
-        Pi.zero_apply, dite_eq_ite, ne_eq, ite_eq_right_iff, one_ne_zero, imp_false,
-        Decidable.not_not] at h; exact h⟩⟩
-      Classical.ofNonempty
-    simp only [Finsupp.coe_mk, Function.update_self, smul_eq_mul, mul_one] at this
-    exact this
+instance (ι : Type*) [Nonempty ι] : FaithfulSMul R (ι →₀ R) :=
+  .ofInjective (Finsupp.lsingle <| Classical.arbitrary _) (Finsupp.single_injective _)
 
-instance (M : Type*) [AddCommMonoid M] [Module R M] [Module.Free R M] [Nontrivial M]:
-    FaithfulSMul R M := FaithfulSMul.ofInjective
-      (Module.Free.repr R M).symm (Module.Free.repr R M).symm.injective
+instance (M : Type*) [AddCommMonoid M] [Module R M] [Module.Free R M] [Nontrivial M] :
+    FaithfulSMul R M := .ofInjective _ (Module.Free.repr R M).symm.injective
 
 namespace IsAzumaya
 
