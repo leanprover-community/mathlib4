@@ -30,7 +30,7 @@ variable (X : SSet.{u})
 /-- An `n`-simplex of a simplicial set `X` is degenerate if it is in the range
 of `X.map f.op` for some morphism `f : [n] ⟶ [m]` with `m < n`. -/
 def degenerate (n : ℕ) : Set (X _[n]) :=
-  setOf (fun x ↦ ∃ (m : ℕ) (_ : m < n) (f : ([n] : SimplexCategory) ⟶ [m]),
+  setOf (fun x ↦ ∃ (m : ℕ) (_ : m < n) (f : ⦋n⦌ ⟶ ⦋m⦌),
     x ∈ Set.range (X.map f.op))
 
 /-- The set of `n`-dimensional non-degenerate simplices in a simplicial
@@ -62,8 +62,7 @@ lemma σ_mem_degenerate (i : Fin (n + 1)) (x : X _[n]) :
   ⟨n, by omega, SimplexCategory.σ i, Set.mem_range_self x⟩
 
 lemma mem_degenerate_iff (x : X _[n]) :
-    x ∈ X.degenerate n ↔ ∃ (m : ℕ) (_ : m < n)
-      (f : ([n] : SimplexCategory) ⟶ [m]) (_ : Epi f),
+    x ∈ X.degenerate n ↔ ∃ (m : ℕ) (_ : m < n) (f : ⦋n⦌ ⟶ ⦋m⦌) (_ : Epi f),
         x ∈ Set.range (X.map f.op) := by
   constructor
   · rintro ⟨m, hm, f, y, hy⟩
@@ -91,7 +90,7 @@ lemma degenerate_eq_iUnion_range_σ :
     apply σ_mem_degenerate
 
 lemma exists_nonDegenerate (x : X _[n]) :
-    ∃ (m : ℕ) (f : ([n] : SimplexCategory) ⟶ [m]) (_ : Epi f)
+    ∃ (m : ℕ) (f : ⦋n⦌ ⟶ ⦋m⦌) (_ : Epi f)
       (y : X.nonDegenerate m), x = X.map f.op y := by
   induction n with
   | zero =>
@@ -106,7 +105,7 @@ lemma exists_nonDegenerate (x : X _[n]) :
         exact ⟨_, SimplexCategory.σ i ≫ f, inferInstance, z, by simp; rfl⟩
 
 lemma isIso_of_nonDegenerate (x : X.nonDegenerate n)
-    {m : SimplexCategory} (f : ([n] : SimplexCategory) ⟶ m) [Epi f]
+    {m : SimplexCategory} (f : ⦋n⦌ ⟶ m) [Epi f]
     (y : X.obj (op m)) (hy : X.map f.op y = x) :
     IsIso f := by
   obtain ⟨x, hx⟩ := x
