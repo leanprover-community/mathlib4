@@ -37,7 +37,9 @@ import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Algebra.Unitization
 import Mathlib.Algebra.Algebra.ZMod
 import Mathlib.Algebra.AlgebraicCard
+import Mathlib.Algebra.Azumaya.Basic
 import Mathlib.Algebra.Azumaya.Defs
+import Mathlib.Algebra.Azumaya.Matrix
 import Mathlib.Algebra.BigOperators.Associated
 import Mathlib.Algebra.BigOperators.Balance
 import Mathlib.Algebra.BigOperators.Expect
@@ -222,6 +224,7 @@ import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.DirectSum.Ring
 import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.Divisibility.Finite
 import Mathlib.Algebra.Divisibility.Hom
 import Mathlib.Algebra.Divisibility.Prod
 import Mathlib.Algebra.Divisibility.Units
@@ -423,6 +426,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Algebra.HierarchyDesign
 import Mathlib.Algebra.Homology.Additive
+import Mathlib.Algebra.Homology.AlternatingConst
 import Mathlib.Algebra.Homology.Augment
 import Mathlib.Algebra.Homology.Bifunctor
 import Mathlib.Algebra.Homology.BifunctorAssociator
@@ -2135,7 +2139,6 @@ import Mathlib.CategoryTheory.Monoidal.Tor
 import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
 import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
-import Mathlib.CategoryTheory.Monoidal.Types.Symmetric
 import Mathlib.CategoryTheory.MorphismProperty.Basic
 import Mathlib.CategoryTheory.MorphismProperty.Comma
 import Mathlib.CategoryTheory.MorphismProperty.Composition
@@ -3063,6 +3066,7 @@ import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.SetLike.Fintype
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Data.Setoid.Partition
+import Mathlib.Data.Setoid.Partition.Card
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Interval
 import Mathlib.Data.Sigma.Lex
@@ -3352,6 +3356,7 @@ import Mathlib.GroupTheory.GroupAction.FixedPoints
 import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.GroupTheory.GroupAction.IterateAct
+import Mathlib.GroupTheory.GroupAction.Iwasawa
 import Mathlib.GroupTheory.GroupAction.Period
 import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.Primitive
@@ -3361,6 +3366,7 @@ import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.Support
 import Mathlib.GroupTheory.GroupAction.Transitive
+import Mathlib.GroupTheory.GroupExtension.Basic
 import Mathlib.GroupTheory.GroupExtension.Defs
 import Mathlib.GroupTheory.HNNExtension
 import Mathlib.GroupTheory.Index
@@ -4354,6 +4360,7 @@ import Mathlib.Order.Restriction
 import Mathlib.Order.ScottContinuity
 import Mathlib.Order.SemiconjSup
 import Mathlib.Order.SetNotation
+import Mathlib.Order.Shrink
 import Mathlib.Order.Sublattice
 import Mathlib.Order.SuccPred.Archimedean
 import Mathlib.Order.SuccPred.Basic
@@ -4596,6 +4603,7 @@ import Mathlib.RingTheory.Ideal.BigOperators
 import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.Ideal.Defs
+import Mathlib.RingTheory.Ideal.GoingUp
 import Mathlib.RingTheory.Ideal.Height
 import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Ideal.IsPrimary
@@ -4810,7 +4818,8 @@ import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
 import Mathlib.RingTheory.RootsOfUnity.Lemmas
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-import Mathlib.RingTheory.SimpleModule
+import Mathlib.RingTheory.SimpleModule.Basic
+import Mathlib.RingTheory.SimpleModule.Rank
 import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.RingTheory.SimpleRing.Defs
 import Mathlib.RingTheory.SimpleRing.Field

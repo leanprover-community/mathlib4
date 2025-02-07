@@ -796,6 +796,10 @@ theorem inj_on_of_surj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
       (by { rwa [← ncard_eq_toFinset_card', ← ncard_eq_toFinset_card'] }) a₁
       (by simpa) a₂ (by simpa) (by simpa)
 
+@[simp] theorem ncard_coe {α : Type*} (s : Set α) :
+    Set.ncard (Set.univ : Set (Set.Elem s)) = s.ncard :=
+  Set.ncard_congr (fun a ha ↦ ↑a) (fun a ha ↦ a.prop) (by simp) (by simp)
+
 @[simp] lemma ncard_graphOn (s : Set α) (f : α → β) : (s.graphOn f).ncard = s.ncard := by
   rw [← ncard_image_of_injOn fst_injOn_graph, image_fst_graphOn]
 
@@ -890,6 +894,10 @@ theorem ncard_lt_ncard_iff_ncard_diff_lt_ncard_diff (hs : s.Finite := by toFinit
 theorem ncard_add_ncard_compl (s : Set α) (hs : s.Finite := by toFinite_tac)
     (hsc : sᶜ.Finite := by toFinite_tac) : s.ncard + sᶜ.ncard = Nat.card α := by
   rw [← ncard_univ, ← ncard_union_eq (@disjoint_compl_right _ _ s) hs hsc, union_compl_self]
+
+theorem eq_univ_iff_ncard [Finite α] (s : Set α) :
+    s = univ ↔ ncard s = Nat.card α := by
+  rw [← compl_empty_iff, ← ncard_eq_zero, ← ncard_add_ncard_compl s, self_eq_add_right]
 
 end Lattice
 
