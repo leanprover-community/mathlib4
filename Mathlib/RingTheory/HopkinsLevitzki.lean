@@ -21,8 +21,8 @@ import Mathlib.RingTheory.Spectrum.Prime.Noetherian
   and `IsFiniteLength` are all equivalent (`IsArtinianRing.tfae`),
   and a (left) Artinian ring is also (left) Noetherian.
 
-* `IsNoetherianRing.isArtinianRing_of_krullDimLE_zero`: a Noetherian ring of Krull
-  dimension 0 is Artinian.
+* `isArtinianRing_iff_isNoetherianRing_krullDimLE_zero`: a commutative ring is Artinian iff
+  it is Noetherian with Krull dimension at most 0.
 
 ## Reference
 
@@ -94,8 +94,8 @@ theorem IsNoetherianRing.isArtinianRing_of_krullDimLE_zero {R} [CommRing R]
     [IsNoetherianRing R] [Ring.KrullDimLE 0 R] : IsArtinianRing R :=
   have eq := Ring.jacobson_eq_nilradical_of_krullDimLE_zero R
   let Spec := {I : Ideal R | I.IsPrime}
-  have : Finite Spec := Set.finite_coe_iff.mp <| (minimalPrimes.finite_of_isNoetherianRing R).subset
-    Ideal.mem_minimalPrimes_of_krullDimLE_zero
+  have : Finite Spec :=
+    (minimalPrimes.finite_of_isNoetherianRing R).subset Ideal.mem_minimalPrimes_of_krullDimLE_zero
   have (I : Spec) : I.1.IsPrime := I.2
   have (I : Spec) : IsSemisimpleRing (R ⧸ I.1) := let _ := Ideal.Quotient.field I.1; inferInstance
   have : IsSemisimpleRing (R ⧸ Ring.jacobson R) := by
