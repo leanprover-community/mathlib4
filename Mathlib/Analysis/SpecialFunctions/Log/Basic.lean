@@ -86,6 +86,10 @@ theorem log_zero : log 0 = 0 :=
 theorem log_one : log 1 = 0 :=
   exp_injective <| by rw [exp_log zero_lt_one, exp_zero]
 
+/-- This holds true for all `x : \` because of the junk values `0 / 0 = 0` and `arg 0 = 0`. -/
+@[simp] lemma log_div_self (x : ℝ) : log (x / x) = 0 := by
+  obtain rfl | hx := eq_or_ne x 0 <;> simp [*]
+
 @[simp]
 theorem log_abs (x : ℝ) : log |x| = log x := by
   by_cases h : x = 0
@@ -193,15 +197,9 @@ theorem log_natCast_nonneg (n : ℕ) : 0 ≤ log n := by
     have : (1 : ℝ) ≤ n := mod_cast Nat.one_le_of_lt <| Nat.pos_of_ne_zero hn
     exact log_nonneg this
 
-@[deprecated (since := "2024-04-17")]
-alias log_nat_cast_nonneg := log_natCast_nonneg
-
 theorem log_neg_natCast_nonneg (n : ℕ) : 0 ≤ log (-n) := by
   rw [← log_neg_eq_log, neg_neg]
   exact log_natCast_nonneg _
-
-@[deprecated (since := "2024-04-17")]
-alias log_neg_nat_cast_nonneg := log_neg_natCast_nonneg
 
 theorem log_intCast_nonneg (n : ℤ) : 0 ≤ log n := by
   cases lt_trichotomy 0 n with
@@ -215,9 +213,6 @@ theorem log_intCast_nonneg (n : ℤ) : 0 ≤ log n := by
           have : (1 : ℝ) ≤ -n := by rw [← neg_zero, ← lt_neg] at hn; exact mod_cast hn
           rw [← log_neg_eq_log]
           exact log_nonneg this
-
-@[deprecated (since := "2024-04-17")]
-alias log_int_cast_nonneg := log_intCast_nonneg
 
 theorem strictMonoOn_log : StrictMonoOn log (Set.Ioi 0) := fun _ hx _ _ hxy => log_lt_log hx hxy
 

@@ -195,10 +195,10 @@ namespace IsLocalAtSource
 attribute [instance] respectsIso
 
 /--
-`P` is local at the target if
+`P` is local at the source if
 1. `P` respects isomorphisms.
-2. If `P` holds for `f : X ⟶ Y`, then `P` holds for `f ∣_ U` for any `U`.
-3. If `P` holds for `f ∣_ U` for an open cover `U` of `Y`, then `P` holds for `f`.
+2. If `P` holds for `f : X ⟶ Y`, then `P` holds for `U.ι ≫ f` for any `U`.
+3. If `P` holds for `U.ι ≫ f` for an open cover `U` of `X`, then `P` holds for `f`.
 -/
 protected lemma mk' {P : MorphismProperty Scheme} [P.RespectsIso]
     (restrict : ∀ {X Y : Scheme} (f : X ⟶ Y) (U : X.Opens), P f → P (U.ι ≫ f))
@@ -337,11 +337,6 @@ theorem cancel_right_of_respectsIso
     {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] [IsAffine Z] [IsAffine Y] :
     P (f ≫ g) ↔ P f := by rw [← P.toProperty_apply, ← P.toProperty_apply,
       P.toProperty.cancel_right_of_respectsIso]
-
-@[deprecated (since := "2024-07-02")] alias affine_cancel_left_isIso :=
-  AffineTargetMorphismProperty.cancel_left_of_respectsIso
-@[deprecated (since := "2024-07-02")] alias affine_cancel_right_isIso :=
-  AffineTargetMorphismProperty.cancel_right_of_respectsIso
 
 theorem arrow_mk_iso_iff
     (P : AffineTargetMorphismProperty) [P.toProperty.RespectsIso]

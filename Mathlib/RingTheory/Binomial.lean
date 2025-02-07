@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.Polynomial.Smeval
+import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.Tactic.FieldSimp
@@ -205,15 +206,15 @@ theorem descPochhammer_smeval_eq_descFactorial (n k : ℕ) :
     · rw [Nat.cast_sub <| not_lt.mp h]
 
 theorem ascPochhammer_smeval_neg_eq_descPochhammer (r : R) (k : ℕ) :
-    (ascPochhammer ℕ k).smeval (-r) = (-1)^k * (descPochhammer ℤ k).smeval r := by
+    (ascPochhammer ℕ k).smeval (-r) = Int.negOnePow k • (descPochhammer ℤ k).smeval r := by
   induction k with
-  | zero => simp only [ascPochhammer_zero, descPochhammer_zero, smeval_one, npow_zero, one_mul]
+  | zero => simp
   | succ k ih =>
     simp only [ascPochhammer_succ_right, smeval_mul, ih, descPochhammer_succ_right, sub_eq_add_neg]
     have h : (X + (k : ℕ[X])).smeval (-r) = - (X + (-k : ℤ[X])).smeval r := by
-      simp only [smeval_add, smeval_X, npow_one, smeval_neg, smeval_natCast, npow_zero, nsmul_one]
-      abel
-    rw [h, ← neg_mul_comm, neg_mul_eq_neg_mul, ← mul_neg_one, ← neg_npow_assoc, npow_add, npow_one]
+      simp [smeval_natCast, add_comm]
+    rw [h, ← neg_mul_comm, Int.natCast_add, Int.natCast_one, Int.negOnePow_succ, Units.neg_smul,
+      Units.smul_def, Units.smul_def, ← smul_mul_assoc, neg_mul]
 
 end Polynomial
 
@@ -234,7 +235,7 @@ instance Nat.instBinomialRing : BinomialRing ℕ where
 def Int.multichoose (n : ℤ) (k : ℕ) : ℤ :=
   match n with
   | ofNat n => (Nat.choose (n + k - 1) k : ℤ)
-  | negSucc n => (-1) ^ k * Nat.choose (n + 1) k
+  | negSucc n => Int.negOnePow k * Nat.choose (n + 1) k
 
 instance Int.instBinomialRing : BinomialRing ℤ where
   nsmul_right_injective hn _ _ hrs := Int.eq_of_mul_eq_mul_left (Int.ofNat_ne_zero.mpr hn) hrs
@@ -251,6 +252,7 @@ instance Int.instBinomialRing : BinomialRing ℤ where
       rw [mul_comm, mul_assoc, ← Nat.cast_mul, mul_comm _ (k.factorial),
         ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_smeval_eq_descFactorial,
         ← Int.neg_ofNat_succ, ascPochhammer_smeval_neg_eq_descPochhammer]
+      norm_cast
 
 noncomputable instance {R : Type*} [AddCommMonoid R] [Module ℚ≥0 R] [Pow R ℕ] : BinomialRing R where
   nsmul_right_injective {n} hn r s hrs := by
@@ -377,9 +379,6 @@ theorem choose_natCast [NatPowAssoc R] (n k : ℕ) : choose (n : R) k = Nat.choo
     ← descPochhammer_eq_factorial_smul_choose, nsmul_eq_mul, ← Nat.cast_mul,
     ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_smeval_eq_descFactorial]
 
-@[deprecated (since := "2024-04-17")]
-alias choose_nat_cast := choose_natCast
-
 @[simp]
 theorem choose_zero_right' (r : R) : choose r 0 = (r + 1) ^ 0 := by
   dsimp only [choose]
@@ -410,6 +409,13 @@ theorem choose_one_right' (r : R) : choose r 1 = r ^ 1 := by
 
 theorem choose_one_right [NatPowAssoc R] (r : R) : choose r 1 = r := by
   rw [choose_one_right', npow_one]
+
+theorem choose_neg [NatPowAssoc R] (r : R) (n : ℕ) :
+    choose (-r) n = Int.negOnePow n • choose (r + n - 1) n := by
+  apply (nsmul_right_inj (Nat.factorial_ne_zero n)).mp
+  rw [← descPochhammer_eq_factorial_smul_choose, smul_comm,
+    ← descPochhammer_eq_factorial_smul_choose, descPochhammer_smeval_eq_ascPochhammer,
+    show (-r - n + 1) = -(r + n - 1) by abel, ascPochhammer_smeval_neg_eq_descPochhammer]
 
 theorem descPochhammer_succ_succ_smeval {R} [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R]
     (r : R) (k : ℕ) : smeval (descPochhammer ℤ (k + 1)) (r + 1) =

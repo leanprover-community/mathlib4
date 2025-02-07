@@ -376,7 +376,8 @@ theorem comp_f {S₁ S₂ S₃ : Split C} (Φ₁₂ : S₁ ⟶ S₂) (Φ₂₃ :
     (Φ₁₂ ≫ Φ₂₃).f n = Φ₁₂.f n ≫ Φ₂₃.f n :=
   rfl
 
-@[reassoc (attr := simp 1100)]
+-- This is not a `@[simp]` lemma as it can later be proved by `simp`.
+@[reassoc]
 theorem cofan_inj_naturality_symm {S₁ S₂ : Split C} (Φ : S₁ ⟶ S₂) {Δ : SimplexCategoryᵒᵖ}
     (A : Splitting.IndexSet Δ) :
     (S₁.s.cofan Δ).inj A ≫ Φ.F.app Δ = Φ.f A.1.unop.len ≫ (S₂.s.cofan Δ).inj A := by

@@ -3,7 +3,8 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Star.Subalgebra
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Star.Pointwise
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Nonunits
 import Mathlib.Tactic.NoncommRing
@@ -272,11 +273,6 @@ theorem subset_subalgebra {S R A : Type*} [CommSemiring R] [Ring A] [Algebra R A
     [SetLike S A] [SubringClass S A] [SMulMemClass S R A] {s : S} (a : s) :
     spectrum R (a : A) ⊆ spectrum R a :=
   Set.compl_subset_compl.mpr fun _ ↦ IsUnit.map (SubalgebraClass.val s)
-
-@[deprecated subset_subalgebra (since := "2024-07-19")]
-theorem subset_starSubalgebra [StarRing R] [StarRing A] [StarModule R A] {S : StarSubalgebra R A}
-    (a : S) : spectrum R (a : A) ⊆ spectrum R a :=
-  subset_subalgebra a
 
 theorem singleton_add_eq (a : A) (r : R) : {r} + σ a = σ (↑ₐ r + a) :=
   ext fun x => by

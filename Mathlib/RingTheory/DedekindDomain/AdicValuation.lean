@@ -99,23 +99,14 @@ theorem intValuation_ne_zero (x : R) (hx : x ≠ 0) : v.intValuationDef x ≠ 0 
   rw [intValuationDef, if_neg hx]
   exact WithZero.coe_ne_zero
 
-@[deprecated (since := "2024-07-09")]
-alias int_valuation_ne_zero := intValuation_ne_zero
-
 /-- Nonzero divisors have nonzero valuation. -/
 theorem intValuation_ne_zero' (x : nonZeroDivisors R) : v.intValuationDef x ≠ 0 :=
   v.intValuation_ne_zero x (nonZeroDivisors.coe_ne_zero x)
-
-@[deprecated (since := "2024-07-09")]
-alias int_valuation_ne_zero' := intValuation_ne_zero'
 
 /-- Nonzero divisors have valuation greater than zero. -/
 theorem intValuation_zero_le (x : nonZeroDivisors R) : 0 < v.intValuationDef x := by
   rw [v.intValuationDef_if_neg (nonZeroDivisors.coe_ne_zero x)]
   exact WithZero.zero_lt_coe _
-
-@[deprecated (since := "2024-07-09")]
-alias int_valuation_zero_le := intValuation_zero_le
 
 /-- The `v`-adic valuation on `R` is bounded above by 1. -/
 theorem intValuation_le_one (x : R) : v.intValuationDef x ≤ 1 := by
@@ -125,9 +116,6 @@ theorem intValuation_le_one (x : R) : v.intValuationDef x ≤ 1 := by
   · rw [if_neg hx, ← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_le_coe, ofAdd_le,
       Right.neg_nonpos_iff]
     exact Int.natCast_nonneg _
-
-@[deprecated (since := "2024-07-09")]
-alias int_valuation_le_one := intValuation_le_one
 
 /-- The `v`-adic valuation of `r ∈ R` is less than 1 if and only if `v` divides the ideal `(r)`. -/
 theorem intValuation_lt_one_iff_dvd (r : R) :
@@ -143,9 +131,6 @@ theorem intValuation_lt_one_iff_dvd (r : R) :
       exact hr
     apply Associates.count_ne_zero_iff_dvd h (by apply v.irreducible)
 
-@[deprecated (since := "2024-07-09")]
-alias int_valuation_lt_one_iff_dvd := intValuation_lt_one_iff_dvd
-
 /-- The `v`-adic valuation of `r ∈ R` is less than `Multiplicative.ofAdd (-n)` if and only if
 `vⁿ` divides the ideal `(r)`. -/
 theorem intValuation_le_pow_iff_dvd (r : R) (n : ℕ) :
@@ -159,15 +144,9 @@ theorem intValuation_le_pow_iff_dvd (r : R) (n : ℕ) :
       Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hr)
         (by apply v.associates_irreducible)]
 
-@[deprecated (since := "2024-07-09")]
-alias int_valuation_le_pow_iff_dvd := intValuation_le_pow_iff_dvd
-
 /-- The `v`-adic valuation of `0 : R` equals 0. -/
 theorem intValuation.map_zero' : v.intValuationDef 0 = 0 :=
   v.intValuationDef_if_pos (Eq.refl 0)
-
-@[deprecated (since := "2024-07-09")]
-alias IntValuation.map_zero' := intValuation.map_zero'
 
 /-- The `v`-adic valuation of `1 : R` equals 1. -/
 theorem intValuation.map_one' : v.intValuationDef 1 = 1 := by
@@ -176,9 +155,6 @@ theorem intValuation.map_one' : v.intValuationDef 1 = 1 := by
     Ideal.one_eq_top, Associates.mk_one, Associates.factors_one,
     Associates.count_zero (by apply v.associates_irreducible), Int.ofNat_zero, neg_zero, ofAdd_zero,
     WithZero.coe_one]
-
-@[deprecated (since := "2024-07-09")]
-alias IntValuation.map_one' := intValuation.map_one'
 
 /-- The `v`-adic valuation of a product equals the product of the valuations. -/
 theorem intValuation.map_mul' (x y : R) :
@@ -195,18 +171,12 @@ theorem intValuation.map_mul' (x y : R) :
           (by apply Associates.mk_ne_zero'.mpr hy) (by apply v.associates_irreducible)]
       rfl
 
-@[deprecated (since := "2024-07-09")]
-alias IntValuation.map_mul' := intValuation.map_mul'
-
 theorem intValuation.le_max_iff_min_le {a b c : ℕ} :
     Multiplicative.ofAdd (-c : ℤ) ≤
       max (Multiplicative.ofAdd (-a : ℤ)) (Multiplicative.ofAdd (-b : ℤ)) ↔
       min a b ≤ c := by
   rw [le_max_iff, ofAdd_le, ofAdd_le, neg_le_neg_iff, neg_le_neg_iff, Int.ofNat_le, Int.ofNat_le, ←
     min_le_iff]
-
-@[deprecated (since := "2024-07-09")]
-alias IntValuation.le_max_iff_min_le := intValuation.le_max_iff_min_le
 
 /-- The `v`-adic valuation of a sum is bounded above by the maximum of the valuations. -/
 theorem intValuation.map_add_le_max' (x y : R) :
@@ -243,9 +213,6 @@ theorem intValuation.map_add_le_max' (x y : R) :
         rw [Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hxy) _] at h_dvd_xy
         · exact h_dvd_xy
         apply v.associates_irreducible
-
-@[deprecated (since := "2024-07-09")]
-alias IntValuation.map_add_le_max' := intValuation.map_add_le_max'
 
 /-- The `v`-adic valuation on `R`. -/
 @[simps]
@@ -284,9 +251,6 @@ theorem intValuation_exists_uniformizer :
   rw [← pow_one (Associates.mk v.asIdeal), Associates.prime_pow_dvd_iff_le hπ hv] at mem
   rw [Associates.mk_pow, Associates.prime_pow_dvd_iff_le hπ hv, not_le] at nmem
   exact Nat.eq_of_le_of_lt_succ mem nmem
-
-@[deprecated (since := "2024-07-09")]
-alias int_valuation_exists_uniformizer := intValuation_exists_uniformizer
 
 /-- The `I`-adic valuation of a generator of `I` equals `(-1 : ℤₘ₀)` -/
 theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.span {r}) :
@@ -402,6 +366,9 @@ def adicCompletion :=
 
 instance : Field (v.adicCompletion K) := inferInstanceAs <|
   Field (@UniformSpace.Completion K v.adicValued.toUniformSpace)
+
+instance : Algebra K (v.adicCompletion K) :=
+  RingHom.toAlgebra (@UniformSpace.Completion.coeRingHom K _ v.adicValued.toUniformSpace _ _)
 
 instance : Inhabited (v.adicCompletion K) :=
   ⟨0⟩

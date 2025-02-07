@@ -662,8 +662,8 @@ theorem coeff_prod [DecidableEq σ]
 is the sum, indexed by `finsuppAntidiag (Finset.range n) d`, of products of coefficients  -/
 theorem coeff_pow [DecidableEq σ] (f : MvPowerSeries σ R) {n : ℕ} (d : σ →₀ ℕ) :
     coeff R d (f ^ n) =
-      ∑ l in finsuppAntidiag (Finset.range n) d,
-        ∏ i in Finset.range n, coeff R (l i) f := by
+      ∑ l ∈ finsuppAntidiag (Finset.range n) d,
+        ∏ i ∈ Finset.range n, coeff R (l i) f := by
   suffices f ^ n = (Finset.range n).prod fun _ ↦ f by
     rw [this, coeff_prod]
   rw [Finset.prod_const, card_range]

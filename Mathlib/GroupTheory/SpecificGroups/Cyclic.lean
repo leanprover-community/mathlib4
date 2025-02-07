@@ -3,15 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.ZMod.Aut
 import Mathlib.Data.ZMod.QuotientGroup
-import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.GroupTheory.Subgroup.Simple
-import Mathlib.Tactic.Group
-import Mathlib.GroupTheory.Exponent
 
 /-!
 # Cyclic groups
@@ -117,6 +113,14 @@ lemma isCyclic_iff_exists_orderOf_eq_natCard [Finite α] :
     IsCyclic α ↔ ∃ g : α, orderOf g = Nat.card α := by
   simp_rw [isCyclic_iff_exists_zpowers_eq_top, ← card_eq_iff_eq_top, Nat.card_zpowers]
 
+@[to_additive]
+lemma isCyclic_iff_exists_natCard_le_orderOf [Finite α] :
+    IsCyclic α ↔ ∃ g : α, Nat.card α ≤ orderOf g := by
+  rw [isCyclic_iff_exists_orderOf_eq_natCard]
+  apply exists_congr
+  intro g
+  exact ⟨Eq.ge, le_antisymm orderOf_le_card⟩
+
 @[deprecated (since := "2024-12-20")]
 alias isCyclic_iff_exists_ofOrder_eq_natCard := isCyclic_iff_exists_orderOf_eq_natCard
 
@@ -135,6 +139,11 @@ alias IsAddCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype :=
 theorem isCyclic_of_orderOf_eq_card [Finite α] (x : α) (hx : orderOf x = Nat.card α) :
     IsCyclic α :=
   isCyclic_iff_exists_orderOf_eq_natCard.mpr ⟨x, hx⟩
+
+@[to_additive]
+theorem isCyclic_of_card_le_orderOf [Finite α] (x : α) (hx : Nat.card α ≤ orderOf x) :
+    IsCyclic α :=
+  isCyclic_iff_exists_natCard_le_orderOf.mpr ⟨x, hx⟩
 
 @[to_additive]
 theorem Subgroup.eq_bot_or_eq_top_of_prime_card
@@ -456,8 +465,8 @@ private theorem card_orderOf_eq_totient_aux₁ {d : ℕ} (hd : d ∣ Fintype.car
   have h2 :
     (∑ m ∈ d.divisors, #{a : α | orderOf a = m}) =
       ∑ m ∈ d.divisors, φ m := by
-    rw [← filter_dvd_eq_divisors hd0, sum_card_orderOf_eq_card_pow_eq_one hd0,
-      filter_dvd_eq_divisors hd0, sum_totient, ← ha, card_pow_eq_one_eq_orderOf_aux hn a]
+    rw [sum_card_orderOf_eq_card_pow_eq_one hd0, sum_totient,
+      ← ha, card_pow_eq_one_eq_orderOf_aux hn a]
   simpa [← cons_self_properDivisors hd0, ← h1] using h2
 
 @[to_additive]
@@ -472,7 +481,7 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
   apply lt_irrefl c
   calc
     c = ∑ m ∈ c.divisors, #{a : α | orderOf a = m} := by
-      simp only [← filter_dvd_eq_divisors hc0.ne', sum_card_orderOf_eq_card_pow_eq_one hc0.ne']
+      simp only [sum_card_orderOf_eq_card_pow_eq_one hc0.ne']
       apply congr_arg card
       simp [c]
     _ = ∑ m ∈ c.divisors.erase d, #{a : α | orderOf a = m} := by

@@ -1031,6 +1031,3 @@ theorem multiplicative_of_isTotal (p : α → Prop) (hswap : ∀ {a b}, p a → 
   exacts [⟨pa, pb⟩, ⟨pb, pc⟩, ⟨pa, pc⟩]
 
 end multiplicative
-
--- The name `add_sub_cancel` was reused
--- @[deprecated (since := "2024-03-20")] alias add_sub_cancel := add_sub_cancel_right

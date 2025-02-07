@@ -439,12 +439,19 @@ theorem inter_iInter [Nonempty ι] (s : Set β) (t : ι → Set β) : (s ∩ ⋂
 theorem iInter_inter [Nonempty ι] (s : Set β) (t : ι → Set β) : (⋂ i, t i) ∩ s = ⋂ i, t i ∩ s :=
   iInf_inf
 
+theorem insert_iUnion [Nonempty ι] (x : β) (t : ι → Set β) :
+    insert x (⋃ i, t i) = ⋃ i, insert x (t i) := by
+  simp_rw [← union_singleton, iUnion_union]
+
 -- classical
 theorem union_iInter (s : Set β) (t : ι → Set β) : (s ∪ ⋂ i, t i) = ⋂ i, s ∪ t i :=
   sup_iInf_eq _ _
 
 theorem iInter_union (s : ι → Set β) (t : Set β) : (⋂ i, s i) ∪ t = ⋂ i, s i ∪ t :=
   iInf_sup_eq _ _
+
+theorem insert_iInter (x : β) (t : ι → Set β) : insert x (⋂ i, t i) = ⋂ i, insert x (t i) := by
+  simp_rw [← union_singleton, iInter_union]
 
 theorem iUnion_diff (s : Set β) (t : ι → Set β) : (⋃ i, t i) \ s = ⋃ i, t i \ s :=
   iUnion_inter _ _
@@ -1799,9 +1806,6 @@ theorem directedOn_iUnion {r} {f : ι → Set α} (hd : Directed (· ⊆ ·) f)
     let ⟨z, zb₁, zb₂⟩ := hd b₁ b₂
     let ⟨x, xf, xa₁, xa₂⟩ := h z a₁ (zb₁ fb₁) a₂ (zb₂ fb₂)
     ⟨x, ⟨z, xf⟩, xa₁, xa₂⟩
-
-@[deprecated (since := "2024-05-05")]
-alias directed_on_iUnion := directedOn_iUnion
 
 theorem directedOn_sUnion {r} {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S)
     (h : ∀ x ∈ S, DirectedOn r x) : DirectedOn r (⋃₀ S) := by

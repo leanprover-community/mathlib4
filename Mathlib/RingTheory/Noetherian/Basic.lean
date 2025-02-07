@@ -3,6 +3,7 @@ Copyright (c) 2018 Mario Carneiro, Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Buzzard
 -/
+import Mathlib.Algebra.Order.PartialSups
 import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.RingTheory.Noetherian.Defs
 import Mathlib.RingTheory.Finiteness.Cardinality
@@ -81,9 +82,6 @@ instance isNoetherian_quotient {A M : Type*} [Ring A] [AddCommGroup M] [SMul R A
     IsNoetherian R (M ⧸ N) :=
   isNoetherian_of_surjective M ((Submodule.mkQ N).restrictScalars R) <|
     LinearMap.range_eq_top.mpr N.mkQ_surjective
-
-@[deprecated (since := "2024-04-27"), nolint defLemma]
-alias Submodule.Quotient.isNoetherian := isNoetherian_quotient
 
 theorem isNoetherian_of_linearEquiv (f : M ≃ₗ[R] P) [IsNoetherian R M] : IsNoetherian R P :=
   isNoetherian_of_surjective _ f.toLinearMap f.range

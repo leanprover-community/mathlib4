@@ -66,6 +66,14 @@ theorem unit_mul_mem_iff_mem {x y : α} (hy : IsUnit y) : y * x ∈ I ↔ x ∈ 
   have := I.mul_mem_left y' h
   rwa [← mul_assoc, hy', one_mul] at this
 
+theorem pow_mem_of_mem (ha : a ∈ I) (n : ℕ) (hn : 0 < n) : a ^ n ∈ I :=
+  Nat.casesOn n (Not.elim (by decide))
+    (fun m _hm => (pow_succ a m).symm ▸ I.mul_mem_left (a ^ m) ha) hn
+
+theorem pow_mem_of_pow_mem {m n : ℕ} (ha : a ^ m ∈ I) (h : m ≤ n) : a ^ n ∈ I := by
+  rw [← Nat.add_sub_of_le h, add_comm, pow_add]
+  exact I.mul_mem_left _ ha
+
 end Ideal
 
 /-- For two elements `m` and `m'` in an `R`-module `M`, the set of elements `r : R` with
@@ -102,14 +110,6 @@ variable {b}
 
 lemma mem_of_dvd (hab : a ∣ b) (ha : a ∈ I) : b ∈ I := by
   obtain ⟨c, rfl⟩ := hab; exact I.mul_mem_right _ ha
-
-theorem pow_mem_of_mem (ha : a ∈ I) (n : ℕ) (hn : 0 < n) : a ^ n ∈ I :=
-  Nat.casesOn n (Not.elim (by decide))
-    (fun m _hm => (pow_succ a m).symm ▸ I.mul_mem_left (a ^ m) ha) hn
-
-theorem pow_mem_of_pow_mem {m n : ℕ} (ha : a ^ m ∈ I) (h : m ≤ n) : a ^ n ∈ I := by
-  rw [← Nat.add_sub_of_le h, pow_add]
-  exact I.mul_mem_right _ ha
 
 end Ideal
 

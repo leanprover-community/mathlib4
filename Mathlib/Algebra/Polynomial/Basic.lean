@@ -7,6 +7,8 @@ import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.MonoidAlgebra.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Data.Finset.Sort
+import Mathlib.Tactic.FastInstance
+import Mathlib.Algebra.Group.Submonoid.Operations
 
 /-!
 # Theory of univariate polynomials
@@ -52,7 +54,8 @@ in general not be used once the basic API for polynomials is constructed.
 
 noncomputable section
 
-/-- `Polynomial R` is the type of univariate polynomials over `R`.
+/-- `Polynomial R` is the type of univariate polynomials over `R`,
+denoted as `R[X]` within the `Polynomial` namespace.
 
 Polynomials should be seen as (semi-)rings with the additional constructor `X`.
 The embedding from `R` is called `C`. -/
@@ -266,37 +269,25 @@ instance inhabited : Inhabited R[X] :=
 instance instNatCast : NatCast R[X] where natCast n := ofFinsupp n
 
 instance semiring : Semiring R[X] :=
-  --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/pull/7432
-  { Function.Injective.semiring toFinsupp toFinsupp_injective toFinsupp_zero toFinsupp_one
-      toFinsupp_add toFinsupp_mul (fun _ _ => toFinsupp_nsmul _ _) toFinsupp_pow fun _ => rfl with
-    toAdd := Polynomial.add'
-    toMul := Polynomial.mul'
-    toZero := Polynomial.zero
-    toOne := Polynomial.one
-    nsmul := (· • ·)
-    npow := fun n x => (x ^ n) }
+  fast_instance% Function.Injective.semiring toFinsupp toFinsupp_injective toFinsupp_zero
+    toFinsupp_one toFinsupp_add toFinsupp_mul (fun _ _ => toFinsupp_nsmul _ _) toFinsupp_pow
+    fun _ => rfl
 
 instance distribSMul {S} [DistribSMul S R] : DistribSMul S R[X] :=
-  --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/pull/7432
-  { Function.Injective.distribSMul ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_injective
-      toFinsupp_smul with
-    toSMulZeroClass := Polynomial.smulZeroClass }
+  fast_instance% Function.Injective.distribSMul ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩
+    toFinsupp_injective toFinsupp_smul
 
 instance distribMulAction {S} [Monoid S] [DistribMulAction S R] : DistribMulAction S R[X] :=
-  --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/pull/7432
-  { Function.Injective.distribMulAction ⟨⟨toFinsupp, toFinsupp_zero (R := R)⟩, toFinsupp_add⟩
-      toFinsupp_injective toFinsupp_smul with
-    toSMul := Polynomial.smulZeroClass.toSMul }
+  fast_instance% Function.Injective.distribMulAction
+    ⟨⟨toFinsupp, toFinsupp_zero (R := R)⟩, toFinsupp_add⟩ toFinsupp_injective toFinsupp_smul
 
 instance faithfulSMul {S} [SMulZeroClass S R] [FaithfulSMul S R] : FaithfulSMul S R[X] where
   eq_of_smul_eq_smul {_s₁ _s₂} h :=
     eq_of_smul_eq_smul fun a : ℕ →₀ R => congr_arg toFinsupp (h ⟨a⟩)
 
 instance module {S} [Semiring S] [Module S R] : Module S R[X] :=
-  --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/pull/7432
-  { Function.Injective.module _ ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_injective
-      toFinsupp_smul with
-    toDistribMulAction := Polynomial.distribMulAction }
+  fast_instance% Function.Injective.module _ ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩
+    toFinsupp_injective toFinsupp_smul
 
 instance smulCommClass {S₁ S₂} [SMulZeroClass S₁ R] [SMulZeroClass S₂ R] [SMulCommClass S₁ S₂ R] :
   SMulCommClass S₁ S₂ R[X] :=
@@ -430,7 +421,7 @@ theorem monomial_pow (n : ℕ) (r : R) (k : ℕ) : monomial n r ^ k = monomial (
 
 theorem smul_monomial {S} [SMulZeroClass S R] (a : S) (n : ℕ) (b : R) :
     a • monomial n b = monomial n (a • b) :=
-  toFinsupp_injective <| by simp; rw [smul_single]
+  toFinsupp_injective <| AddMonoidAlgebra.smul_single _ _ _
 
 theorem monomial_injective (n : ℕ) : Function.Injective (monomial n : R → R[X]) :=
   (toFinsuppIso R).symm.injective.comp (single_injective n)
@@ -483,9 +474,6 @@ theorem C_pow : C (a ^ n) = C a ^ n :=
 
 theorem C_eq_natCast (n : ℕ) : C (n : R) = (n : R[X]) :=
   map_natCast C n
-
-@[deprecated (since := "2024-04-17")]
-alias C_eq_nat_cast := C_eq_natCast
 
 @[simp]
 theorem C_mul_monomial : C a * monomial n b = monomial n (a * b) := by
@@ -663,9 +651,6 @@ lemma coeff_C_succ {r : R} {n : ℕ} : coeff (C r) (n + 1) = 0 := by simp [coeff
 @[simp]
 theorem coeff_natCast_ite : (Nat.cast m : R[X]).coeff n = ite (n = 0) m 0 := by
   simp only [← C_eq_natCast, coeff_C, Nat.cast_ite, Nat.cast_zero]
-
-@[deprecated (since := "2024-04-17")]
-alias coeff_nat_cast_ite := coeff_natCast_ite
 
 @[simp]
 theorem coeff_ofNat_zero (a : ℕ) [a.AtLeastTwo] :
@@ -845,9 +830,6 @@ theorem binomial_eq_binomial {k l m n : ℕ} {u v : R} (hu : u ≠ 0) (hv : v �
 
 theorem natCast_mul (n : ℕ) (p : R[X]) : (n : R[X]) * p = n • p :=
   (nsmul_eq_mul _ _).symm
-
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_mul := natCast_mul
 
 /-- Summing the values of a function applied to the coefficients of a polynomial -/
 def sum {S : Type*} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S) : S :=
@@ -1051,7 +1033,7 @@ section CommSemiring
 variable [CommSemiring R]
 
 instance commSemiring : CommSemiring R[X] :=
-  { Function.Injective.commSemigroup toFinsupp toFinsupp_injective toFinsupp_mul with
+  fast_instance% { Function.Injective.commSemigroup toFinsupp toFinsupp_injective toFinsupp_mul with
     toSemiring := Polynomial.semiring }
 
 end CommSemiring
@@ -1076,15 +1058,10 @@ theorem toFinsupp_zsmul (a : ℤ) (b : R[X]) :
 instance instIntCast : IntCast R[X] where intCast n := ofFinsupp n
 
 instance ring : Ring R[X] :=
-  --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/pull/7432
-  { Function.Injective.ring toFinsupp toFinsupp_injective (toFinsupp_zero (R := R))
+  fast_instance% Function.Injective.ring toFinsupp toFinsupp_injective (toFinsupp_zero (R := R))
       toFinsupp_one toFinsupp_add
       toFinsupp_mul toFinsupp_neg toFinsupp_sub (fun _ _ => toFinsupp_nsmul _ _)
-      (fun _ _ => toFinsupp_zsmul _ _) toFinsupp_pow (fun _ => rfl) fun _ => rfl with
-    toSemiring := Polynomial.semiring,
-    toNeg := Polynomial.neg'
-    toSub := Polynomial.sub
-    zsmul := ((· • ·) : ℤ → R[X] → R[X]) }
+      (fun _ _ => toFinsupp_zsmul _ _) toFinsupp_pow (fun _ => rfl) fun _ => rfl
 
 @[simp]
 theorem coeff_neg (p : R[X]) (n : ℕ) : coeff (-p) n = -coeff p n := by
@@ -1110,9 +1087,6 @@ theorem support_neg {p : R[X]} : (-p).support = p.support := by
   rw [← ofFinsupp_neg, support, support, Finsupp.support_neg]
 
 theorem C_eq_intCast (n : ℤ) : C (n : R) = n := by simp
-
-@[deprecated (since := "2024-04-17")]
-alias C_eq_int_cast := C_eq_intCast
 
 theorem C_neg : C (-a) = -C a :=
   RingHom.map_neg C a
