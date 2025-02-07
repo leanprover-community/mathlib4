@@ -19,6 +19,9 @@ intersection of all maximal submodules of `M`.
 `Ring.jacobson R`: the Jacobson radical of a ring `R` is the Jacobson radical of `R` as
 an `R`-module, which is equal to the intersection of all maximal left ideals of `R`. It turns out
 it is in fact a two-sided ideal, and equals the intersection of all maximal right ideals of `R`.
+
+## Reference
+* [F. Lorenz, *Algebra: Volume II: Fields with Structure, Algebras and Advanced Topics*][Lorenz2008]
 -/
 
 namespace Module
