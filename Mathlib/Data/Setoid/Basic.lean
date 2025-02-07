@@ -30,7 +30,7 @@ reason about them using the existing `Setoid` and its infrastructure.
 setoid, equivalence, iseqv, relation, equivalence relation
 -/
 
-attribute [refl] Setoid.refl
+attribute [refl, simp] Setoid.refl
 attribute [symm] Setoid.symm
 attribute [trans] Setoid.trans
 

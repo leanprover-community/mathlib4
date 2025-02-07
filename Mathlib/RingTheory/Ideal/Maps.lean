@@ -102,6 +102,9 @@ theorem map_le_comap_of_inverse [RingHomClass G S R] (g : G) (I : Ideal R)
 
 variable [RingHomClass F R S]
 
+instance (priority := low) [K.IsTwoSided] : (comap f K).IsTwoSided :=
+  ⟨fun b ha ↦ by rw [mem_comap, map_mul]; exact mul_mem_right _ _ ha⟩
+
 /-- The `Ideal` version of `Set.preimage_subset_image_of_inverse`. -/
 theorem comap_le_map_of_inverse (g : G) (I : Ideal S) (h : Function.LeftInverse g f) :
     I.comap f ≤ I.map g :=
@@ -320,6 +323,15 @@ theorem map_comap_eq_self_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass
 theorem map_eq_submodule_map (f : R →+* S) [h : RingHomSurjective f] (I : Ideal R) :
     I.map f = Submodule.map f.toSemilinearMap I :=
   Submodule.ext fun _ => mem_map_iff_of_surjective f h.1
+
+instance (priority := low) (f : R →+* S) [RingHomSurjective f] (I : Ideal R) [I.IsTwoSided] :
+    (I.map f).IsTwoSided where
+  mul_mem_of_left b ha := by
+    rw [map_eq_submodule_map] at ha ⊢
+    obtain ⟨a, ha, rfl⟩ := ha
+    obtain ⟨b, rfl⟩ := f.surjective b
+    rw [RingHom.coe_toSemilinearMap, ← map_mul]
+    exact ⟨_, I.mul_mem_right _ ha, rfl⟩
 
 open Function in
 theorem IsMaximal.comap_piEvalRingHom {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R i)]
@@ -582,6 +594,25 @@ theorem le_comap_pow (n : ℕ) : K.comap f ^ n ≤ (K ^ n).comap f := by
   · rw [pow_succ, pow_succ]
     exact (Ideal.mul_mono_left n_ih).trans (Ideal.le_comap_mul f)
 
+lemma disjoint_map_primeCompl_iff_comap_le {S : Type*} [Semiring S] {f : R →+* S}
+    {p : Ideal R} {I : Ideal S} [p.IsPrime] :
+    Disjoint (I : Set S) (p.primeCompl.map f) ↔ I.comap f ≤ p := by
+  rw [disjoint_comm]
+  simp [Set.disjoint_iff, Set.ext_iff, Ideal.primeCompl, not_imp_not, SetLike.le_def]
+
+/-- For a prime ideal `p` of `R`, `p` extended to `S` and
+restricted back to `R` is `p` if and only if `p` is the restriction of a prime in `S`. -/
+lemma comap_map_eq_self_iff_of_isPrime {S : Type*} [CommSemiring S] {f : R →+* S}
+    (p : Ideal R) [p.IsPrime] :
+    (p.map f).comap f = p ↔ (∃ (q : Ideal S), q.IsPrime ∧ q.comap f = p) := by
+  refine ⟨fun hp ↦ ?_, ?_⟩
+  · obtain ⟨q, hq₁, hq₂, hq₃⟩ := Ideal.exists_le_prime_disjoint _ _
+      (disjoint_map_primeCompl_iff_comap_le.mpr hp.le)
+    exact ⟨q, hq₁, le_antisymm (disjoint_map_primeCompl_iff_comap_le.mp hq₃)
+      (map_le_iff_le_comap.mp hq₂)⟩
+  · rintro ⟨q, hq, rfl⟩
+    simp
+
 end CommRing
 
 end MapAndComap
@@ -601,6 +632,8 @@ variable (f : F) (g : G)
 /-- Kernel of a ring homomorphism as an ideal of the domain. -/
 def ker : Ideal R :=
   Ideal.comap f ⊥
+
+instance (priority := low) : (ker f).IsTwoSided := inferInstanceAs (Ideal.comap f ⊥).IsTwoSided
 
 variable {f} in
 /-- An element is in the kernel if and only if it maps to zero. -/
@@ -706,6 +739,9 @@ def Module.annihilator : Ideal R := RingHom.ker (Module.toAddMonoidEnd R M)
 
 theorem Module.mem_annihilator {r} : r ∈ Module.annihilator R M ↔ ∀ m : M, r • m = 0 :=
   ⟨fun h ↦ (congr($h ·)), (AddMonoidHom.ext ·)⟩
+
+instance (priority := low) : (Module.annihilator R M).IsTwoSided :=
+  inferInstanceAs (RingHom.ker _).IsTwoSided
 
 theorem LinearMap.annihilator_le_of_injective (f : M →ₗ[R] M') (hf : Function.Injective f) :
     Module.annihilator R M' ≤ Module.annihilator R M := fun x h ↦ by
@@ -903,7 +939,7 @@ variable [CommRing R] [CommRing S]
 
 theorem map_ne_bot_of_ne_bot {S : Type*} [Ring S] [Nontrivial S] [Algebra R S]
     [NoZeroSMulDivisors R S] {I : Ideal R} (h : I ≠ ⊥) : map (algebraMap R S) I ≠ ⊥ :=
-  (map_eq_bot_iff_of_injective (NoZeroSMulDivisors.algebraMap_injective R S)).mp.mt h
+  (map_eq_bot_iff_of_injective (FaithfulSMul.algebraMap_injective R S)).mp.mt h
 
 theorem map_eq_iff_sup_ker_eq_of_surjective {I J : Ideal R} (f : R →+* S)
     (hf : Function.Surjective f) : map f I = map f J ↔ I ⊔ RingHom.ker f = J ⊔ RingHom.ker f := by
@@ -1039,18 +1075,16 @@ def idealMap (I : Ideal R) : I →ₗ[R] I.map (algebraMap R S) :=
 
 end Algebra
 
-namespace NoZeroSMulDivisors
+@[simp]
+theorem FaithfulSMul.ker_algebraMap_eq_bot (R A : Type*) [CommSemiring R] [Semiring A]
+    [Algebra R A] [FaithfulSMul R A] : RingHom.ker (algebraMap R A) = ⊥ := by
+  ext; simp
 
-theorem of_ker_algebraMap_eq_bot (R A : Type*) [CommRing R] [Semiring A] [Algebra R A]
-    [NoZeroDivisors A] (h : RingHom.ker (algebraMap R A) = ⊥) : NoZeroSMulDivisors R A :=
-  of_algebraMap_injective ((RingHom.injective_iff_ker_eq_bot _).mpr h)
+@[deprecated (since := "2025-01-31")]
+alias NoZeroSMulDivisors.iff_ker_algebraMap_eq_bot := FaithfulSMul.ker_algebraMap_eq_bot
 
-theorem ker_algebraMap_eq_bot (R A : Type*) [CommSemiring R] [Semiring A] [Nontrivial A]
-    [Algebra R A] [NoZeroSMulDivisors R A] : RingHom.ker (algebraMap R A) = ⊥ := by
-  ext; simp [Algebra.algebraMap_eq_smul_one']
+@[deprecated (since := "2025-01-31")]
+alias NoZeroSMulDivisors.of_ker_algebraMap_eq_bot := FaithfulSMul.ker_algebraMap_eq_bot
 
-theorem iff_ker_algebraMap_eq_bot {R A : Type*} [CommRing R] [Ring A] [IsDomain A] [Algebra R A] :
-    NoZeroSMulDivisors R A ↔ RingHom.ker (algebraMap R A) = ⊥ :=
-  iff_algebraMap_injective.trans (RingHom.injective_iff_ker_eq_bot (algebraMap R A))
-
-end NoZeroSMulDivisors
+@[deprecated (since := "2025-01-31")]
+alias NoZeroSMulDivisors.ker_algebraMap_eq_bot := FaithfulSMul.ker_algebraMap_eq_bot

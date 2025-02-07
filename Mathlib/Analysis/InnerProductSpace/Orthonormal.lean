@@ -5,6 +5,8 @@ Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
 
 import Mathlib.Analysis.InnerProductSpace.LinearMap
+import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Orthonormal sets
