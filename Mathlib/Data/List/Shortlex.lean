@@ -28,6 +28,17 @@ Related files are:
 
 /-! ### shortlex ordering -/
 
+--to add to another file
+theorem InvImage.trichotomous {α β : Type*} {r : α → α → Prop} [IsTrichotomous α r] {f : β → α}
+    (h : Function.Injective f) : ∀ a b, (InvImage r f) a b ∨ a = b ∨ (InvImage r f) b a := by
+  intro a b
+  rw [← Function.Injective.eq_iff h]
+  exact IsTrichotomous.trichotomous (f a) (f b)
+
+instance InvImage.isAsymm {α β : Type*} {r : α → α → Prop} [IsAsymm α r] (f : β → α) :
+    IsAsymm β (InvImage r f) where
+  asymm := fun a b h h2 => IsAsymm.asymm (f a) (f b) h h2
+
 namespace List
 
 /-- Given a relation `r` on `α`, the shortlex order on `List α`, for which
@@ -97,7 +108,7 @@ theorem not_nil_right {s : List α} : ¬ Shortlex r s [] := by
   rw [shortlex_def]
   rintro (h1 | h2)
   · simp only [List.length_nil, not_lt_zero'] at h1
-  · exact List.Lex.not_nil_right _ _ h2.2
+  · exact List.not_lex_nil h2.2
 
 theorem nil_left_or_eq_nil (s : List α) : Shortlex r [] s ∨ s = [] := by
   cases s with
@@ -109,71 +120,12 @@ theorem singleton_iff (a b : α) : Shortlex r [a] [b] ↔ r a b := by
   simp only [shortlex_def, length_singleton, lt_self_iff_false, Lex.singleton_iff, true_and,
     false_or]
 
-instance isOrderConnected [IsOrderConnected α r] [IsTrichotomous α r] :
-    IsOrderConnected (List α) (Shortlex r) where
-  conn := by
-    intro a b c ac
-    rcases shortlex_def.mp ac with h1 | h2
-    · rcases Nat.lt_or_ge a.length b.length with h3 | h4
-      · left; exact of_length_lt h3
-      rcases Nat.lt_or_ge b.length c.length with h3 | h4
-      · right; exact of_length_lt h3
-      omega
-    rcases Nat.lt_or_ge a.length b.length with h3 | h4
-    · left; exact of_length_lt h3
-    rcases Nat.lt_or_ge b.length c.length with h3 | h4
-    · right; exact of_length_lt h3
-    have hab : a.length = b.length := by omega
-    have hbc : b.length = c.length := by omega
-    rcases List.Lex.isOrderConnected.aux r a b c h2.2 with h5 | h6
-    · left
-      exact of_lex hab h5
-    right
-    exact of_lex hbc h6
-
 instance isTrichotomous [IsTrichotomous α r] : IsTrichotomous (List α) (Shortlex r) where
-  trichotomous := by
-    intro a b
-    have : a.length < b.length ∨ a.length = b.length ∨ a.length > b.length :=
-      trichotomous a.length b.length
-    rcases this with h1 | h2 | h3
-    · left; exact of_length_lt h1
-    · induction a with
-      | nil =>
-        cases b with
-        | nil => right; left; rfl
-        | cons head tail => simp only [List.length_nil, List.length_cons, Nat.succ_eq_add_one,
-          self_eq_add_left, add_eq_zero, List.length_eq_zero, one_ne_zero, and_false] at h2
-      | cons head tail ih =>
-        cases b with
-        | nil => simp at h2
-        | cons head1 tail1 =>
-          simp only [length_cons, add_left_inj] at h2
-          rcases @trichotomous _ (List.Lex r) _ (head :: tail) (head1 :: tail1) with h4 | h5 | h6
-          · left
-            apply of_lex
-            · simp only [List.length_cons, Nat.succ_eq_add_one, add_left_inj]
-              exact h2
-            exact h4
-          · right; left; exact h5
-          right; right
-          apply of_lex
-          · simp only [List.length_cons, Nat.succ_eq_add_one, add_left_inj]
-            exact h2.symm
-          exact h6
-    right; right
-    exact of_length_lt h3
+  trichotomous := fun a b => InvImage.trichotomous (by simp [Function.Injective]) _ _
 
 instance isAsymm [IsAsymm α r] : IsAsymm (List α) (Shortlex r) where
-  asymm := by
-    intro a b ab ba
-    rcases shortlex_def.mp ab with h1 | h2
-    · rcases shortlex_def.mp ba with h3 | h4
-      · omega
-      omega
-    rcases shortlex_def.mp ba with h3 | h4
-    · omega
-    exact List.Lex.isAsymm.aux r a b h2.2 h4.2
+  asymm := fun a b ab ba => (@InvImage.isAsymm _ (Prod.Lex (fun x1 x2 ↦ x1 < x2) (Lex r)) _
+      Prod.IsAsymm (fun a : List α ↦ (a.length, a))).asymm a b ab ba
 
 theorem append_right {s₁ s₂ : List α} (t : List α) : Shortlex r s₁ s₂ →
     Shortlex r s₁ (s₂ ++ t) := by
