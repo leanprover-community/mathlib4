@@ -65,9 +65,7 @@ of the coercions of `f` and `g`. All such lemmas use `coeFn` in their name, to d
 function coercion from the coercion to almost everywhere defined functions.
 -/
 
-
 noncomputable section
-
 
 open TopologicalSpace MeasureTheory Filter
 open scoped NNReal ENNReal Topology MeasureTheory Uniformity symmDiff
@@ -90,15 +88,9 @@ theorem eLpNorm_aeeqFun {α E : Type*} [MeasurableSpace α] {μ : Measure α} [N
     eLpNorm (AEEqFun.mk f hf) p μ = eLpNorm f p μ :=
   eLpNorm_congr_ae (AEEqFun.coeFn_mk _ _)
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_aeeqFun := eLpNorm_aeeqFun
-
 theorem Memℒp.eLpNorm_mk_lt_top {α E : Type*} [MeasurableSpace α] {μ : Measure α}
     [NormedAddCommGroup E] {p : ℝ≥0∞} {f : α → E} (hfp : Memℒp f p μ) :
     eLpNorm (AEEqFun.mk f hfp.1) p μ < ∞ := by simp [hfp.2]
-
-@[deprecated (since := "2024-07-27")]
-alias Memℒp.snorm_mk_lt_top := Memℒp.eLpNorm_mk_lt_top
 
 /-- Lp space -/
 def Lp {α} (E : Type*) {m : MeasurableSpace α} [NormedAddCommGroup E] (p : ℝ≥0∞)
@@ -163,9 +155,6 @@ theorem ext {f g : Lp E p μ} (h : f =ᵐ[μ] g) : f = g := by
 
 theorem mem_Lp_iff_eLpNorm_lt_top {f : α →ₘ[μ] E} : f ∈ Lp E p μ ↔ eLpNorm f p μ < ∞ := Iff.rfl
 
-@[deprecated (since := "2024-07-27")]
-alias mem_Lp_iff_snorm_lt_top := mem_Lp_iff_eLpNorm_lt_top
-
 theorem mem_Lp_iff_memℒp {f : α →ₘ[μ] E} : f ∈ Lp E p μ ↔ Memℒp f p μ := by
   simp [mem_Lp_iff_eLpNorm_lt_top, Memℒp, f.stronglyMeasurable.aestronglyMeasurable]
 
@@ -188,14 +177,8 @@ theorem toLp_coeFn (f : Lp E p μ) (hf : Memℒp f p μ) : hf.toLp f = f := by
 theorem eLpNorm_lt_top (f : Lp E p μ) : eLpNorm f p μ < ∞ :=
   f.prop
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_lt_top := eLpNorm_lt_top
-
 theorem eLpNorm_ne_top (f : Lp E p μ) : eLpNorm f p μ ≠ ∞ :=
   (eLpNorm_lt_top f).ne
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_ne_top := eLpNorm_ne_top
 
 @[measurability]
 protected theorem stronglyMeasurable (f : Lp E p μ) : StronglyMeasurable f :=
@@ -293,8 +276,7 @@ theorem edist_toLp_toLp (f g : α → E) (hf : Memℒp f p μ) (hg : Memℒp g p
 
 @[simp]
 theorem edist_toLp_zero (f : α → E) (hf : Memℒp f p μ) : edist (hf.toLp f) 0 = eLpNorm f p μ := by
-  convert edist_toLp_toLp f 0 hf Memℒp.zero
-  simp
+  simpa using edist_toLp_toLp f 0 hf Memℒp.zero
 
 @[simp]
 theorem nnnorm_zero : ‖(0 : Lp E p μ)‖₊ = 0 := by
@@ -308,9 +290,12 @@ theorem norm_zero : ‖(0 : Lp E p μ)‖ = 0 :=
 
 @[simp]
 theorem norm_measure_zero (f : Lp E p (0 : MeasureTheory.Measure α)) : ‖f‖ = 0 := by
-  simp [norm_def]
+  -- Squeezed for performance reasons
+  simp only [norm_def, eLpNorm_measure_zero, ENNReal.zero_toReal]
 
-@[simp] theorem norm_exponent_zero (f : Lp E 0 μ) : ‖f‖ = 0 := by simp [norm_def]
+@[simp] theorem norm_exponent_zero (f : Lp E 0 μ) : ‖f‖ = 0 := by
+  -- Squeezed for performance reasons
+  simp only [norm_def, eLpNorm_exponent_zero, ENNReal.zero_toReal]
 
 theorem nnnorm_eq_zero_iff {f : Lp E p μ} (hp : 0 < p) : ‖f‖₊ = 0 ↔ f = 0 := by
   refine ⟨fun hf => ?_, fun hf => by simp [hf]⟩
@@ -404,9 +389,11 @@ instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E
   { AddGroupNorm.toNormedAddCommGroup
       { toFun := (norm : Lp E p μ → ℝ)
         map_zero' := norm_zero
-        neg' := by simp
+        neg' := by simp only [norm_neg, implies_true] -- squeezed for performance reasons
         add_le' := fun f g => by
-          suffices ‖f + g‖ₑ ≤ ‖f‖ₑ + ‖g‖ₑ by simpa [← ENNReal.coe_add, enorm] using this
+          suffices ‖f + g‖ₑ ≤ ‖f‖ₑ + ‖g‖ₑ by
+            -- Squeezed for performance reasons
+            simpa only [ge_iff_le, enorm, ←ENNReal.coe_add, ENNReal.coe_le_coe] using this
           simp only [Lp.enorm_def]
           exact (eLpNorm_congr_ae (AEEqFun.coeFn_add _ _)).trans_le
             (eLpNorm_add_le (Lp.aestronglyMeasurable _) (Lp.aestronglyMeasurable _) hp.out)
@@ -463,7 +450,9 @@ instance instIsScalarTower [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' E] : IsSc
 instance instBoundedSMul [Fact (1 ≤ p)] : BoundedSMul 𝕜 (Lp E p μ) :=
   -- TODO: add `BoundedSMul.of_nnnorm_smul_le`
   BoundedSMul.of_norm_smul_le fun r f => by
-    suffices ‖r • f‖ₑ ≤ ‖r‖ₑ * ‖f‖ₑ by simpa [← ENNReal.coe_mul, enorm] using this
+    suffices ‖r • f‖ₑ ≤ ‖r‖ₑ * ‖f‖ₑ by
+      -- squeezed for performance reasons
+      simpa only [ge_iff_le, enorm, ←ENNReal.coe_mul, ENNReal.coe_le_coe] using this
     simpa only [eLpNorm_congr_ae (coeFn_smul _ _), enorm_def]
       using eLpNorm_const_smul_le (c := r) (f := f) (p := p)
 
@@ -496,37 +485,6 @@ For a set `s` with `(hs : MeasurableSet s)` and `(hμs : μ s < ∞)`, we build
 `indicatorConstLp p hs hμs c`, the element of `Lp` corresponding to `s.indicator (fun _ => c)`.
 -/
 
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_indicator_le := eLpNormEssSup_indicator_le
-
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_indicator_const_le := eLpNormEssSup_indicator_const_le
-
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_indicator_const_eq := eLpNormEssSup_indicator_const_eq
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_indicator_le := eLpNorm_indicator_le
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_indicator_const₀ := eLpNorm_indicator_const₀
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_indicator_const := eLpNorm_indicator_const
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_indicator_const' := eLpNorm_indicator_const'
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_indicator_const_le := eLpNorm_indicator_const_le
-
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_indicator_eq_snormEssSup_restrict :=
-  eLpNormEssSup_indicator_eq_eLpNormEssSup_restrict
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_indicator_eq_snorm_restrict := eLpNorm_indicator_eq_eLpNorm_restrict
-
 /-- The `ℒ^p` norm of the indicator of a set is uniformly small if the set itself has small measure,
 for any `p < ∞`. Given here as an existential `∀ ε > 0, ∃ η > 0, ...` to avoid later
 management of `ℝ≥0∞`-arithmetic. -/
@@ -552,9 +510,6 @@ theorem exists_eLpNorm_indicator_le (hp : p ≠ ∞) (c : E) {ε : ℝ≥0∞} (
   refine ⟨η, hη_pos, fun s hs => ?_⟩
   refine (eLpNorm_indicator_const_le _ _).trans (le_trans ?_ hη_le)
   exact mul_le_mul_left' (ENNReal.rpow_le_rpow hs hp₀') _
-
-@[deprecated (since := "2024-07-27")]
-alias exists_snorm_indicator_le := exists_eLpNorm_indicator_le
 
 section Topology
 variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
@@ -659,7 +614,9 @@ alias edist_indicatorConstLp_eq_nnnorm := edist_indicatorConstLp_eq_enorm
 theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     dist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
       ‖indicatorConstLp p (hs.symmDiff ht) (measure_symmDiff_ne_top hμs hμt) c‖ := by
-  simp [Lp.dist_edist, edist_indicatorConstLp_eq_enorm, enorm, ENNReal.coe_toReal, Lp.coe_nnnorm]
+  -- Squeezed for performance reasons
+  simp only [Lp.dist_edist, edist_indicatorConstLp_eq_enorm, enorm, ENNReal.coe_toReal,
+    Lp.coe_nnnorm]
 
 /-- A family of `indicatorConstLp` functions tends to an `indicatorConstLp`,
 if the underlying sets tend to the set in the sense of the measure of the symmetric difference. -/
@@ -951,11 +908,14 @@ theorem norm_compLp_sub_le (hg : LipschitzWith c g) (g0 : g 0 = 0) (f f' : Lp E 
   exact hg.dist_le_mul (f a) (f' a)
 
 theorem norm_compLp_le (hg : LipschitzWith c g) (g0 : g 0 = 0) (f : Lp E p μ) :
-    ‖hg.compLp g0 f‖ ≤ c * ‖f‖ := by simpa using hg.norm_compLp_sub_le g0 f 0
+    ‖hg.compLp g0 f‖ ≤ c * ‖f‖ := by
+  -- squeezed for performance reasons
+  simpa only [compLp_zero, sub_zero] using hg.norm_compLp_sub_le g0 f 0
 
 theorem lipschitzWith_compLp [Fact (1 ≤ p)] (hg : LipschitzWith c g) (g0 : g 0 = 0) :
     LipschitzWith c (hg.compLp g0 : Lp E p μ → Lp F p μ) :=
-  LipschitzWith.of_dist_le_mul fun f g => by simp [dist_eq_norm, norm_compLp_sub_le]
+  -- squeezed for performance reasons
+  LipschitzWith.of_dist_le_mul fun f g => by simp only [dist_eq_norm, norm_compLp_sub_le]
 
 theorem continuous_compLp [Fact (1 ≤ p)] (hg : LipschitzWith c g) (g0 : g 0 = 0) :
     Continuous (hg.compLp g0 : Lp E p μ → Lp F p μ) :=
@@ -1163,9 +1123,6 @@ theorem eLpNorm'_lim_eq_lintegral_liminf {ι} [Nonempty ι] [LinearOrder ι] {f 
   refine (ENNReal.continuous_rpow_const.tendsto ‖f_lim a‖₊).comp ?_
   exact (continuous_enorm.tendsto (f_lim a)).comp ha
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_lim_eq_lintegral_liminf := eLpNorm'_lim_eq_lintegral_liminf
-
 theorem eLpNorm'_lim_le_liminf_eLpNorm' {E} [NormedAddCommGroup E] {f : ℕ → α → E} {p : ℝ}
     (hp_pos : 0 < p) (hf : ∀ n, AEStronglyMeasurable (f n) μ) {f_lim : α → E}
     (h_lim : ∀ᵐ x : α ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (f_lim x))) :
@@ -1184,9 +1141,6 @@ theorem eLpNorm'_lim_le_liminf_eLpNorm' {E} [NormedAddCommGroup E] {f : ℕ → 
   simp_rw [eLpNorm'_eq_lintegral_enorm, ← ENNReal.rpow_mul, one_div,
     inv_mul_cancel₀ hp_pos.ne.symm, ENNReal.rpow_one]
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_lim_le_liminf_snorm' := eLpNorm'_lim_le_liminf_eLpNorm'
-
 theorem eLpNorm_exponent_top_lim_eq_essSup_liminf {ι} [Nonempty ι] [LinearOrder ι] {f : ι → α → G}
     {f_lim : α → G} (h_lim : ∀ᵐ x : α ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (f_lim x))) :
     eLpNorm f_lim ∞ μ = essSup (fun x => atTop.liminf fun m => ‖f m x‖ₑ) μ := by
@@ -1196,9 +1150,6 @@ theorem eLpNorm_exponent_top_lim_eq_essSup_liminf {ι} [Nonempty ι] [LinearOrde
   apply (Tendsto.liminf_eq ..).symm
   exact (continuous_enorm.tendsto (f_lim x)).comp hx
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_exponent_top_lim_eq_essSup_liminf := eLpNorm_exponent_top_lim_eq_essSup_liminf
-
 theorem eLpNorm_exponent_top_lim_le_liminf_eLpNorm_exponent_top {ι} [Nonempty ι] [Countable ι]
     [LinearOrder ι] {f : ι → α → F} {f_lim : α → F}
     (h_lim : ∀ᵐ x : α ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (f_lim x))) :
@@ -1206,10 +1157,6 @@ theorem eLpNorm_exponent_top_lim_le_liminf_eLpNorm_exponent_top {ι} [Nonempty �
   rw [eLpNorm_exponent_top_lim_eq_essSup_liminf h_lim]
   simp_rw [eLpNorm_exponent_top, eLpNormEssSup]
   exact ENNReal.essSup_liminf_le _
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_exponent_top_lim_le_liminf_snorm_exponent_top :=
-  eLpNorm_exponent_top_lim_le_liminf_eLpNorm_exponent_top
 
 theorem eLpNorm_lim_le_liminf_eLpNorm {E} [NormedAddCommGroup E] {f : ℕ → α → E}
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) (f_lim : α → E)
@@ -1223,9 +1170,6 @@ theorem eLpNorm_lim_le_liminf_eLpNorm {E} [NormedAddCommGroup E] {f : ℕ → α
   simp_rw [eLpNorm_eq_eLpNorm' hp0 hp_top]
   have hp_pos : 0 < p.toReal := ENNReal.toReal_pos hp0 hp_top
   exact eLpNorm'_lim_le_liminf_eLpNorm' hp_pos hf h_lim
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_lim_le_liminf_snorm := eLpNorm_lim_le_liminf_eLpNorm
 
 /-! ### `Lp` is complete iff Cauchy sequences of `ℒp` have limits in `ℒp` -/
 
@@ -1330,10 +1274,6 @@ private theorem eLpNorm'_sum_norm_sub_le_tsum_of_cauchy_eLpNorm' {f : ℕ → α
   refine (Finset.sum_le_sum ?_).trans (sum_le_tsum _ (fun m _ => zero_le _) ENNReal.summable)
   exact fun m _ => (h_cau m (m + 1) m (Nat.le_succ m) (le_refl m)).le
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_sum_norm_sub_le_tsum_of_cauchy_snorm' :=
-  eLpNorm'_sum_norm_sub_le_tsum_of_cauchy_eLpNorm'
-
 private theorem lintegral_rpow_sum_enorm_sub_le_rpow_tsum
     {f : ℕ → α → E} {p : ℝ} (hp1 : 1 ≤ p) {B : ℕ → ℝ≥0∞} (n : ℕ)
     (hn : eLpNorm' (fun x => ∑ i ∈ Finset.range (n + 1), ‖f (i + 1) x - f i x‖) p μ ≤ ∑' i, B i) :
@@ -1431,9 +1371,6 @@ theorem ae_tendsto_of_cauchy_eLpNorm' [CompleteSpace E] {f : ℕ → α → E} {
   rw [hf_rw]
   exact ⟨l + f 0 x, Tendsto.add_const _ hx⟩
 
-@[deprecated (since := "2024-07-27")]
-alias ae_tendsto_of_cauchy_snorm' := ae_tendsto_of_cauchy_eLpNorm'
-
 theorem ae_tendsto_of_cauchy_eLpNorm [CompleteSpace E] {f : ℕ → α → E}
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hp : 1 ≤ p) {B : ℕ → ℝ≥0∞} (hB : ∑' i, B i ≠ ∞)
     (h_cau : ∀ N n m : ℕ, N ≤ n → N ≤ m → eLpNorm (f n - f m) p μ < B N) :
@@ -1464,9 +1401,6 @@ theorem ae_tendsto_of_cauchy_eLpNorm [CompleteSpace E] {f : ℕ → α → E}
     specialize h_cau N n m hn hm
     rwa [eLpNorm_eq_eLpNorm' (zero_lt_one.trans_le hp).ne.symm hp_top] at h_cau
   exact ae_tendsto_of_cauchy_eLpNorm' hf hp1 hB h_cau'
-
-@[deprecated (since := "2024-07-27")]
-alias ae_tendsto_of_cauchy_snorm := ae_tendsto_of_cauchy_eLpNorm
 
 theorem cauchy_tendsto_of_tendsto {f : ℕ → α → E} (hf : ∀ n, AEStronglyMeasurable (f n) μ)
     (f_lim : α → E) {B : ℕ → ℝ≥0∞} (hB : ∑' i, B i ≠ ∞)
@@ -1604,7 +1538,7 @@ theorem range_toLpHom [Fact (1 ≤ p)] :
     ((toLpHom p μ).range : AddSubgroup (Lp E p μ)) =
       MeasureTheory.Lp.boundedContinuousFunction E p μ := by
   symm
-  convert AddMonoidHom.addSubgroupOf_range_eq_of_le
+  exact AddMonoidHom.addSubgroupOf_range_eq_of_le
       ((ContinuousMap.toAEEqFunAddHom μ).comp (toContinuousMapAddHom α E))
       (by rintro - ⟨f, rfl⟩; exact mem_Lp f : _ ≤ Lp E p μ)
 
@@ -1765,4 +1699,4 @@ end Lp
 
 end MeasureTheory
 
-set_option linter.style.longFile 1900
+set_option linter.style.longFile 1800
