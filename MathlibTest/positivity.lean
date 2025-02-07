@@ -5,6 +5,7 @@ import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.Topology.Algebra.InfiniteSum.Order
 
 /-! # Tests for the `positivity` tactic
 
@@ -379,6 +380,13 @@ example (f g : D → E) : 0 ≤ ∫ x, ‖f x‖ + ‖g x‖ ∂μ := by positiv
 example (f : D → E) (c : ℝ) (hc : 0 < c): 0 ≤ ∫ x, c * ‖f x‖ ∂μ := by positivity
 
 end Integral
+
+/-! ## Infinte Sums -/
+
+example (f : ℕ → ℝ) : 0 ≤ ∑' n, (f n)^2 := by positivity
+example [LinearOrderedField α] [TopologicalSpace α] [OrderClosedTopology α] (f : ℚ → α) :
+    0 ≤ ∑' q, (f q)^2 := by positivity
+example  [Norm α] (f : ℕ → ℝ≥0) (c : ℝ) (hc : 0 < c) : 0 ≤ ∑' n, c * f n := by positivity
 
 /-! ## Big operators -/
 
