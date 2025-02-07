@@ -1,4 +1,12 @@
-import Mathlib
+import Mathlib.Algebra.Lie.OfAssociative
+import Mathlib.LinearAlgebra.TensorProduct.Prod
+import Mathlib.RingTheory.Etale.Pi
+import Mathlib.RingTheory.Ideal.IdempotentFG
+import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
+import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
+import Mathlib.RingTheory.Support
+import Mathlib.RingTheory.TensorProduct.Pi
+import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 open TensorProduct
 
@@ -71,7 +79,7 @@ instance IsLocalizedModule.prodMap {R M N M' N' : Type*} [CommSemiring R] (S : S
     [IsLocalizedModule S f] [IsLocalizedModule S g] :
     IsLocalizedModule S (f.prodMap g) := by
   let e₃ : Localization S ⊗[R] (M × N) ≃ₗ[R] M' × N' :=
-    TensorProduct.prodRight R (Localization S) M N ≪≫ₗ
+    TensorProduct.prodRight R _ (Localization S) M N ≪≫ₗ
         ((isBaseChange S (Localization S)
             (LocalizedModule.mkLinearMap S M)).equiv.restrictScalars R ≪≫ₗ iso S f).prod
         ((isBaseChange S (Localization S)
@@ -172,6 +180,17 @@ instance (R S : Type u) [CommRing R] [CommRing S] [Algebra R S] [Algebra.Etale R
 instance (R S : Type u) [CommRing R] [CommRing S] [Algebra R S] [Algebra.Smooth R S] :
     Module.Flat R S :=
   -- done, but needs to be PRed
+  sorry
+
+lemma Algebra.specComap_surjective_of_rankAtStalk_gt_zero (R S : Type*) [CommRing R] [CommRing S]
+    [Algebra R S] (h : ∀ p, Module.rankAtStalk (R := R) S p > 0) :
+    Function.Surjective (algebraMap R S).specComap :=
+  sorry
+
+-- use that it is flat and that the map on prime spectra is surjective (in PR)
+lemma Algebra.Etale.faithfullyFlat_of_rankAtStalk_gt_zero (R S : Type u) [CommRing R] [CommRing S]
+    [Algebra R S] [Algebra.Etale R S] (h : ∀ p, Module.rankAtStalk (R := R) S p > 0) :
+    Module.FaithfullyFlat R S :=
   sorry
 
 instance (R S : Type u) [CommRing R] [CommRing S] :
@@ -505,11 +524,11 @@ instance [IsSplitOfRank n R S] : Etale R S := by
 
 lemma exists_isSplitOfRank_tensorProduct [Etale R S] [Module.Finite R S] {n : ℕ}
     (hn : Module.rankAtStalk (R := R) S = n) :
-    ∃ (T : Type u) (_ : CommRing T) (_ : Algebra R T),
+    ∃ (T : Type u) (_ : CommRing T) (_ : Algebra R T) (_ : Module.FaithfullyFlat R T),
       IsSplitOfRank n T (T ⊗[R] S) := by
   induction n generalizing R S with
   | zero =>
-      use R, inferInstance, inferInstance
+      use R, inferInstance, inferInstance, inferInstance
       let e : R ⊗[R] S ≃ₐ[R] S := TensorProduct.lid R S
       have : IsSplitOfRank 0 R S := by
         rw [iff_subsingleton_of_isEmpty]
@@ -519,7 +538,7 @@ lemma exists_isSplitOfRank_tensorProduct [Etale R S] [Module.Finite R S] {n : �
       apply IsSplitOfRank.of_equiv e.symm
   | succ n ih =>
       cases subsingleton_or_nontrivial R
-      · use R, inferInstance, inferInstance
+      · use R, inferInstance, inferInstance, inferInstance
         have : IsSplitOfRank (n + 1) R S := .of_subsingleton
         apply IsSplitOfRank.of_equiv (TensorProduct.lid R S).symm
       have : Nontrivial S := by
@@ -545,7 +564,7 @@ lemma exists_isSplitOfRank_tensorProduct [Etale R S] [Module.Finite R S] {n : �
         simp only [Pi.natCast_def, Nat.cast_id]
         have := this p
         omega
-      obtain ⟨V, _, _, hV⟩ := ih this
+      obtain ⟨V, _, _, _, hV⟩ := ih this
       obtain ⟨f⟩ := hV.nonempty_algEquiv_fun
       algebraize [(algebraMap S V).comp (algebraMap R S)]
       let e₁ : V ⊗[R] S ≃ₐ[V] V ⊗[S] (S ⊗[R] S) :=
@@ -560,8 +579,13 @@ lemma exists_isSplitOfRank_tensorProduct [Etale R S] [Module.Finite R S] {n : �
         AlgEquiv.trans (AlgEquiv.prodCongr (AlgEquiv.funUnique _ _ _).symm AlgEquiv.refl)
           (Algebra.prodPiEquiv V V Unit (Fin n)).symm
       let e := e₁.trans <| e₂.trans <| e₃.trans <| e₄.trans e₅
-      refine ⟨V, inferInstance, inferInstance, ?_⟩
-      exact IsSplitOfRank.of_card_eq (ι := Unit ⊕ Fin n) (by simp [add_comm]) e
+      refine ⟨V, inferInstance, inferInstance, ?_, ?_⟩
+      · have : Module.FaithfullyFlat R S := by
+          apply Algebra.Etale.faithfullyFlat_of_rankAtStalk_gt_zero
+          intro p
+          simp [hn]
+        exact Module.FaithfullyFlat.trans R S V
+      · exact IsSplitOfRank.of_card_eq (ι := Unit ⊕ Fin n) (by simp [add_comm]) e
 
 end
 
