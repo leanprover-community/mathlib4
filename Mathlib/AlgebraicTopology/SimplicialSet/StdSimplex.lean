@@ -71,7 +71,7 @@ def _root_.SSet.yonedaEquiv (X : SSet.{u}) (n : SimplexCategory) :
   yonedaCompUliftFunctorEquiv X n
 
 /-- The unique non-degenerate `n`-simplex in `Δ[n]`. -/
-def id (n : ℕ) : Δ[n] _[n] := yonedaEquiv Δ[n] [n] (𝟙 Δ[n])
+def id (n : ℕ) : Δ[n] _[n] := yonedaEquiv Δ[n] ⦋n⦌ (𝟙 Δ[n])
 
 lemma id_eq_objEquiv_symm (n : ℕ) : id n = (objEquiv _ _).symm (𝟙 _) := rfl
 
@@ -135,7 +135,7 @@ namespace Augmented
 
 -- Porting note: an instance of `Subsingleton (⊤_ (Type u))` was added in
 -- `CategoryTheory.Limits.Types` to ease the automation in this definition
-/-- The functor which sends `[n]` to the simplicial set `Δ[n]` equipped by
+/-- The functor which sends `⦋n⦌` to the simplicial set `Δ[n]` equipped by
 the obvious augmentation towards the terminal object of the category of sets. -/
 @[simps]
 noncomputable def stdSimplex : SimplexCategory ⥤ SSet.Augmented.{u} where
