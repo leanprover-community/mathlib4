@@ -7,7 +7,6 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.Double
 import Mathlib.Algebra.Homology.HomologicalComplexLimits
 import Mathlib.CategoryTheory.Generator.Basic
---import Mathlib.CategoryTheory.Generator.Coproduct
 
 /-!
 # Generators of the category of homological complexes
