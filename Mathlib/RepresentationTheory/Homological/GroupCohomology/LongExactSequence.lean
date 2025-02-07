@@ -190,4 +190,116 @@ theorem epi_δ₁_of_isZero (h2 : IsZero (H2 X.X₂)) :
     (map_cochainsFunctor_shortExact hX).epi_δ _ _ rfl (h2.of_iso (isoH2 X.X₂))
   exact epi_comp _ _
 
+variable (X) in
+/-- The short complex `X₁ᴳ ⟶ X₂ᴳ ⟶ X₃ᴳ` associated to a short complex of representations. -/
+noncomputable abbrev H0ShortComplex₂ :=
+  ShortComplex.mk (H0Map (MonoidHom.id G) X.f) (H0Map (MonoidHom.id G) X.g) <| by
+    ext x; exact congr(Action.Hom.hom $(X.zero) x.1)
+
+variable (X) in
+/-- When `i = 0`, the general short complex `Hⁱ(G, X₁) ⟶ Hⁱ(G, X₂) ⟶ Hⁱ(G, X₃)` associated to a
+short complex of representations agrees with our simpler expression of `X₁ᴳ ⟶ X₂ᴳ ⟶ X₃ᴳ.` -/
+noncomputable def isoH0ShortComplex₂ :
+    mapShortComplex₂ X 0 ≅ H0ShortComplex₂ X :=
+  isoMk (isoH0 _) (isoH0 _) (isoH0 _) (map_comp_isoH0_hom (MonoidHom.id G) _).symm
+    (map_comp_isoH0_hom (MonoidHom.id G) _).symm
+
+theorem H0ShortComplex₂_exact :
+    (H0ShortComplex₂ X).Exact :=
+  exact_of_iso (isoH0ShortComplex₂ X) (mapShortComplex₂_exact hX _)
+
+/-- The short complex `X₂ᴳ ⟶ X₃ᴳ ⟶ H¹(G, X₁)` associated to a short exact sequence of
+representations. -/
+noncomputable abbrev H0ShortComplex₃ (H : ShortExact X) :=
+  ShortComplex.mk (H0Map (MonoidHom.id G) X.g) (δ₀ H) <| by
+    rw [δ₀, ← Category.assoc, (CommSq.vert_inv ⟨map_comp_isoH0_hom (MonoidHom.id G) X.g⟩).w]
+    simpa using (map_cochainsFunctor_shortExact H).comp_δ_assoc 0 1 rfl _
+
+/-- When `i = 0`, the general short complex `Hⁱ(G, X₂) ⟶ Hⁱ(G, X₃) ⟶ Hⁱ⁺¹(G, X₁)` associated to a
+short exact sequence of representations agrees with our simpler expression for
+`X₂ᴳ ⟶ X₃ᴳ ⟶ H¹(G, X₁).` -/
+noncomputable def isoH0ShortComplex₃ (H : ShortExact X) :
+    mapShortComplex₃ H (j := 1) rfl ≅ H0ShortComplex₃ H :=
+  isoMk (isoH0 _) (isoH0 _) (isoH1 _) (map_comp_isoH0_hom (MonoidHom.id G) _).symm (by simp [δ₀])
+
+theorem H0ShortComplex₃_exact :
+    (H0ShortComplex₃ hX).Exact :=
+  exact_of_iso (isoH0ShortComplex₃ hX) (mapShortComplex₃_exact hX _)
+
+/-- The short complex  `X₃ᴳ ⟶ H¹(G, X₁) ⟶ H¹(G, X₂)` associated to a short exact sequence of
+representations. -/
+noncomputable abbrev H1ShortComplex₁ :=
+  ShortComplex.mk (δ₀ hX) (H1Map (MonoidHom.id G) X.f) <| by
+    simpa [δ₀, ← map_comp_isoH1_hom]
+      using (map_cochainsFunctor_shortExact hX).δ_comp_assoc 0 1 rfl _
+
+/-- When `i = 0`, the general short complex `Hⁱ(G, X₃) ⟶ Hⁱ⁺¹(G, X₁) ⟶ Hⁱ⁺¹(G, X₂)` associated to
+a short exact sequence of representations agrees with our simpler expression for
+`X₃ᴳ ⟶ H¹(G, X₁) ⟶ H¹(G, X₂).` -/
+noncomputable def isoH1ShortComplex₁ :
+    mapShortComplex₁ hX (i := 0) rfl ≅ H1ShortComplex₁ hX :=
+  isoMk (isoH0 _) (isoH1 _) (isoH1 _) (by simp [δ₀])
+    (map_comp_isoH1_hom (MonoidHom.id G) _).symm
+
+theorem H1ShortComplex₁_exact :
+    (H1ShortComplex₁ hX).Exact :=
+  exact_of_iso (isoH1ShortComplex₁ hX) (mapShortComplex₁_exact _ _)
+
+variable (X) in
+/-- The short complex  `H¹(G, X₁) ⟶ H¹(G, X₂) ⟶ H¹(G, X₃)` associated to a short complex of
+representations. -/
+noncomputable abbrev H1ShortComplex₂ :=
+  ShortComplex.mk (H1Map (MonoidHom.id G) X.f) (H1Map (MonoidHom.id G) X.g) <| by
+    rw [← H1Map_id_comp, X.zero]; exact leftHomologyMap'_zero _ _
+
+variable (X) in
+/-- When `i = 1`, the general short complex `Hⁱ(G, X₁) ⟶ Hⁱ(G, X₂) ⟶ Hⁱ(G, X₃)` associated to
+a short complex of representations agrees with our simpler expression for
+`H¹(G, X₁) ⟶ H¹(G, X₂) ⟶ H¹(G, X₃).` -/
+noncomputable def isoH1ShortComplex₂ :
+    mapShortComplex₂ X 1 ≅ H1ShortComplex₂ X :=
+  isoMk (isoH1 _) (isoH1 _) (isoH1 _) (map_comp_isoH1_hom (MonoidHom.id G) _).symm
+    (map_comp_isoH1_hom (MonoidHom.id G) _).symm
+
+theorem H1ShortComplex₂_exact :
+    (H1ShortComplex₂ X).Exact :=
+  exact_of_iso (isoH1ShortComplex₂ X) (mapShortComplex₂_exact hX _)
+
+/-- The short complex  `H¹(G, X₂) ⟶ H¹(G, X₃) ⟶ H²(G, X₁)` associated to a short exact sequence of
+representations. -/
+noncomputable abbrev H1ShortComplex₃ :=
+  ShortComplex.mk (H1Map (MonoidHom.id G) X.g) (δ₁ hX) <| by
+    rw [δ₁, ← Category.assoc, (CommSq.vert_inv ⟨map_comp_isoH1_hom
+      (MonoidHom.id G) X.g⟩).w]
+    simpa using (map_cochainsFunctor_shortExact hX).comp_δ_assoc 1 2 rfl _
+
+/-- When `i = 1`, the general short complex `Hⁱ(G, X₂) ⟶ Hⁱ(G, X₃) ⟶ Hⁱ⁺¹(G, X₁)` associated to
+a short exact sequence of representations agrees with our simpler expression for
+`H¹(G, X₂) ⟶ H¹(G, X₃) ⟶ H²(G, X₁).` -/
+noncomputable def isoH1ShortComplex₃ :
+    mapShortComplex₃ hX (i := 1) rfl ≅ H1ShortComplex₃ hX :=
+  isoMk (isoH1 _) (isoH1 _) (isoH2 _) (map_comp_isoH1_hom (MonoidHom.id G) _).symm (by simp [δ₁])
+
+theorem H1ShortComplex₃_exact :
+    (H1ShortComplex₃ hX).Exact :=
+  exact_of_iso (isoH1ShortComplex₃ hX) (mapShortComplex₃_exact _ _)
+
+/-- The short complex  `H¹(G, X₃) ⟶ H²(G, X₁) ⟶ H²(G, X₂)` associated to a short exact
+sequence of representations. -/
+noncomputable abbrev H2ShortComplex₁ :=
+  ShortComplex.mk (δ₁ hX) (H2Map (MonoidHom.id G) X.f) <| by
+    simpa [δ₁, ← map_comp_isoH2_hom]
+      using (map_cochainsFunctor_shortExact hX).δ_comp_assoc 1 2 rfl _
+
+/-- When `i = 1`, the general short complex `Hⁱ(G, X₃) ⟶ Hⁱ⁺¹(G, X₁) ⟶ Hⁱ⁺¹(G, X₂)` associated to
+a short exact sequence of representations agrees with our simpler expression for
+`H¹(G, X₃) ⟶ H²(G, X₁) ⟶ H²(G, X₂).` -/
+noncomputable def isoH2ShortComplex₁ :
+    mapShortComplex₁ hX (i := 1) rfl ≅ H2ShortComplex₁ hX :=
+  isoMk (isoH1 _) (isoH2 _) (isoH2 _) (by simp [δ₁]) (map_comp_isoH2_hom (MonoidHom.id G) _).symm
+
+theorem H2ShortComplex₁_exact :
+    (H2ShortComplex₁ hX).Exact :=
+  exact_of_iso (isoH2ShortComplex₁ hX) (mapShortComplex₁_exact _ _)
+
 end groupCohomology
