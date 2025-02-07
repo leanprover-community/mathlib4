@@ -14,7 +14,7 @@ T2 space `X` for `Real`-linear functionals `Λ`.
 
 The measure is first defined through `rieszContent` for `toNNRealLinear`-version of `Λ`.
 The result is first proved for `Real`-linear `Λ` because in a standard proof one has to prove the
-inequalities by `le_antisymm`, yet for `C_c(X, ℝ≥0)` there is no `Neg`.
+inequalities by considering `Λ f` and `Λ (-f)` for all functions `f`, yet on `C_c(X, ℝ≥0)` there is no negation.
 
 ## References
 
