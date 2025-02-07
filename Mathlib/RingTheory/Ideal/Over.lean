@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Yongle Hu
 -/
 import Mathlib.Algebra.Group.Subgroup.Actions
-import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Ideal.Pointwise
 
@@ -15,16 +14,10 @@ This file concerns ideals lying over other ideals.
 Let `f : R →+* S` be a ring homomorphism (typically a ring extension), `I` an ideal of `R` and
 `J` an ideal of `S`. We say `J` lies over `I` (and `I` under `J`) if `I` is the `f`-preimage of `J`.
 This is expressed here by writing `I = J.comap f`.
-
-## Implementation notes
-
-The proofs of the `comap_ne_bot` and `comap_lt_comap` families use an approach
-specific for their situation: we construct an element in `I.comap f` from the
-coefficients of a minimal polynomial.
-Once mathlib has more material on the localization at a prime ideal, the results
-can be proven using more general going-up/going-down theory.
 -/
 
+-- for going-up results about integral extensions, see `Mathlib.RingTheory.Ideal.GoingUp`
+assert_not_exists Algebra.IsIntegral
 
 variable {R : Type*} [CommRing R]
 
@@ -37,85 +30,6 @@ open scoped Pointwise
 section CommRing
 
 variable {S : Type*} [CommRing S] {f : R →+* S} {I J : Ideal S}
-
-theorem coeff_zero_mem_comap_of_root_mem_of_eval_mem {r : S} (hr : r ∈ I) {p : R[X]}
-    (hp : p.eval₂ f r ∈ I) : p.coeff 0 ∈ I.comap f := by
-  rw [← p.divX_mul_X_add, eval₂_add, eval₂_C, eval₂_mul, eval₂_X] at hp
-  refine mem_comap.mpr ((I.add_mem_iff_right ?_).mp hp)
-  exact I.mul_mem_left _ hr
-
-theorem coeff_zero_mem_comap_of_root_mem {r : S} (hr : r ∈ I) {p : R[X]} (hp : p.eval₂ f r = 0) :
-    p.coeff 0 ∈ I.comap f :=
-  coeff_zero_mem_comap_of_root_mem_of_eval_mem hr (hp.symm ▸ I.zero_mem)
-
-theorem exists_coeff_ne_zero_mem_comap_of_non_zero_divisor_root_mem {r : S}
-    (r_non_zero_divisor : ∀ {x}, x * r = 0 → x = 0) (hr : r ∈ I) {p : R[X]} :
-    p ≠ 0 → p.eval₂ f r = 0 → ∃ i, p.coeff i ≠ 0 ∧ p.coeff i ∈ I.comap f := by
-  refine p.recOnHorner ?_ ?_ ?_
-  · intro h
-    contradiction
-  · intro p a coeff_eq_zero a_ne_zero _ _ hp
-    refine ⟨0, ?_, coeff_zero_mem_comap_of_root_mem hr hp⟩
-    simp [coeff_eq_zero, a_ne_zero]
-  · intro p p_nonzero ih _ hp
-    rw [eval₂_mul, eval₂_X] at hp
-    obtain ⟨i, hi, mem⟩ := ih p_nonzero (r_non_zero_divisor hp)
-    refine ⟨i + 1, ?_, ?_⟩
-    · simp [hi, mem]
-    · simpa [hi] using mem
-
-/-- Let `P` be an ideal in `R[x]`.  The map
-`R[x]/P → (R / (P ∩ R))[x] / (P / (P ∩ R))`
-is injective.
--/
-theorem injective_quotient_le_comap_map (P : Ideal R[X]) :
-    Function.Injective <|
-      Ideal.quotientMap
-        (Ideal.map (Polynomial.mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) P)
-        (Polynomial.mapRingHom (Ideal.Quotient.mk (P.comap (C : R →+* R[X]))))
-        le_comap_map := by
-  refine quotientMap_injective' (le_of_eq ?_)
-  rw [comap_map_of_surjective (mapRingHom (Ideal.Quotient.mk (P.comap (C : R →+* R[X]))))
-      (map_surjective (Ideal.Quotient.mk (P.comap (C : R →+* R[X]))) Ideal.Quotient.mk_surjective)]
-  refine le_antisymm (sup_le le_rfl ?_) (le_sup_of_le_left le_rfl)
-  refine fun p hp =>
-    polynomial_mem_ideal_of_coeff_mem_ideal P p fun n => Ideal.Quotient.eq_zero_iff_mem.mp ?_
-  simpa only [coeff_map, coe_mapRingHom] using ext_iff.mp (Ideal.mem_bot.mp (mem_comap.mp hp)) n
-
-/-- The identity in this lemma asserts that the "obvious" square
-```
-    R    → (R / (P ∩ R))
-    ↓          ↓
-R[x] / P → (R / (P ∩ R))[x] / (P / (P ∩ R))
-```
-commutes.  It is used, for instance, in the proof of `quotient_mk_comp_C_is_integral_of_jacobson`,
-in the file `Mathlib.RingTheory.Jacobson.Polynomial`.
--/
-theorem quotient_mk_maps_eq (P : Ideal R[X]) :
-    ((Quotient.mk (map (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) P)).comp C).comp
-        (Quotient.mk (P.comap (C : R →+* R[X]))) =
-      (Ideal.quotientMap (map (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) P)
-            (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) le_comap_map).comp
-        ((Quotient.mk P).comp C) := by
-  refine RingHom.ext fun x => ?_
-  repeat' rw [RingHom.coe_comp, Function.comp_apply]
-  rw [quotientMap_mk, coe_mapRingHom, map_C]
-
-/-- This technical lemma asserts the existence of a polynomial `p` in an ideal `P ⊂ R[x]`
-that is non-zero in the quotient `R / (P ∩ R) [x]`.  The assumptions are equivalent to
-`P ≠ 0` and `P ∩ R = (0)`.
--/
-theorem exists_nonzero_mem_of_ne_bot {P : Ideal R[X]} (Pb : P ≠ ⊥) (hP : ∀ x : R, C x ∈ P → x = 0) :
-    ∃ p : R[X], p ∈ P ∧ Polynomial.map (Quotient.mk (P.comap (C : R →+* R[X]))) p ≠ 0 := by
-  obtain ⟨m, hm⟩ := Submodule.nonzero_mem_of_bot_lt (bot_lt_iff_ne_bot.mpr Pb)
-  refine ⟨m, Submodule.coe_mem m, fun pp0 => hm (Submodule.coe_eq_zero.mp ?_)⟩
-  refine
-    (injective_iff_map_eq_zero (Polynomial.mapRingHom (Ideal.Quotient.mk
-      (P.comap (C : R →+* R[X]))))).mp
-      ?_ _ pp0
-  refine map_injective _ ((Ideal.Quotient.mk (P.comap C)).injective_iff_ker_eq_bot.mpr ?_)
-  rw [mk_ker]
-  exact (Submodule.eq_bot_iff _).mpr fun x hx => hP x (mem_comap.mp hx)
 
 variable {p : Ideal R} {P : Ideal S}
 

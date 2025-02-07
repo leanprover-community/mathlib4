@@ -423,6 +423,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Algebra.HierarchyDesign
 import Mathlib.Algebra.Homology.Additive
+import Mathlib.Algebra.Homology.AlternatingConst
 import Mathlib.Algebra.Homology.Augment
 import Mathlib.Algebra.Homology.Bifunctor
 import Mathlib.Algebra.Homology.BifunctorAssociator
@@ -442,6 +443,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
 import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
 import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
 import Mathlib.Algebra.Homology.DifferentialObject
+import Mathlib.Algebra.Homology.Double
 import Mathlib.Algebra.Homology.Embedding.Basic
 import Mathlib.Algebra.Homology.Embedding.Boundary
 import Mathlib.Algebra.Homology.Embedding.CochainComplex
@@ -1404,6 +1406,8 @@ import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.InnerProductSpace.Completion
 import Mathlib.Analysis.InnerProductSpace.ConformalLinearMap
+import Mathlib.Analysis.InnerProductSpace.Continuous
+import Mathlib.Analysis.InnerProductSpace.Convex
 import Mathlib.Analysis.InnerProductSpace.Defs
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
@@ -1660,7 +1664,9 @@ import Mathlib.CategoryTheory.Abelian.Ext
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.FunctorCategory
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Indization
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory
 import Mathlib.CategoryTheory.Abelian.Images
 import Mathlib.CategoryTheory.Abelian.Injective
@@ -1753,6 +1759,7 @@ import Mathlib.CategoryTheory.ChosenFiniteProducts.InfSemilattice
 import Mathlib.CategoryTheory.Closed.Cartesian
 import Mathlib.CategoryTheory.Closed.Enrichment
 import Mathlib.CategoryTheory.Closed.Functor
+import Mathlib.CategoryTheory.Closed.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Closed.FunctorCategory.Complete
 import Mathlib.CategoryTheory.Closed.FunctorCategory.Groupoid
 import Mathlib.CategoryTheory.Closed.FunctorToTypes
@@ -3056,6 +3063,7 @@ import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.SetLike.Fintype
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Data.Setoid.Partition
+import Mathlib.Data.Setoid.Partition.Card
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Interval
 import Mathlib.Data.Sigma.Lex
@@ -3345,6 +3353,7 @@ import Mathlib.GroupTheory.GroupAction.FixedPoints
 import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.GroupTheory.GroupAction.IterateAct
+import Mathlib.GroupTheory.GroupAction.Iwasawa
 import Mathlib.GroupTheory.GroupAction.Period
 import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.Primitive
@@ -4347,6 +4356,7 @@ import Mathlib.Order.Restriction
 import Mathlib.Order.ScottContinuity
 import Mathlib.Order.SemiconjSup
 import Mathlib.Order.SetNotation
+import Mathlib.Order.Shrink
 import Mathlib.Order.Sublattice
 import Mathlib.Order.SuccPred.Archimedean
 import Mathlib.Order.SuccPred.Basic
