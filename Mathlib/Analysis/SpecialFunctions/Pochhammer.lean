@@ -11,7 +11,7 @@ import Mathlib.Data.Nat.Choose.Cast
 
 This file proves analysis theorems for Pochhammer polynomials.
 
-## Main definitions
+## Main statements
 
 * `Differentiable.descPochhammer_eval` is the proof that the descending Pochhammer polynomial
   `descPochhammer ℝ n` is differentiable.
