@@ -5,7 +5,7 @@ Authors: David Kurniadi Angdinata
 -/
 import Mathlib.RingTheory.Localization.AsSubring
 import Mathlib.RingTheory.Spectrum.Maximal.Basic
-import Mathlib.RingTheory.Spectrum.Prime.RingHom
+import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
 # Maximal spectrum of a commutative (semi)ring
