@@ -216,7 +216,7 @@ theorem ofEq_apply {φ' : M → N} (h : φ = φ') (f : X →ₑ[φ] Y) (a : X) :
     (f.ofEq h) a = f a :=
   rfl
 
-lemma _root_.FaithfulSMul.ofInjective
+lemma _root_.FaithfulSMul.of_injective
     [FaithfulSMul M' X] [MulActionHomClass F M' X Y] (f : F)
     (hf : Function.Injective f) :
     FaithfulSMul M' Y where

@@ -76,7 +76,7 @@ lemma mulLeftRight_comp_congr (e : A ≃ₐ[R] B):
 
 theorem of_AlgEquiv (e : A ≃ₐ[R] B) [IsAzumaya R A] : IsAzumaya R B :=
   let _ : Module.Projective R B := .of_equiv e.toLinearEquiv
-  let _ : FaithfulSMul R B := .ofInjective e e.injective
+  let _ : FaithfulSMul R B := .of_injective e e.injective
   let _ : Module.Finite R B := .equiv e.toLinearEquiv
   ⟨Function.Bijective.of_comp_iff (AlgHom.mulLeftRight R B)
     (Algebra.TensorProduct.congr e e.op).bijective |>.1 <| by

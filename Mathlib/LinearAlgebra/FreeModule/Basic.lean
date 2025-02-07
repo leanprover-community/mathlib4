@@ -109,7 +109,7 @@ theorem infinite [Infinite R] [Nontrivial M] : Infinite M :=
   (Equiv.infinite_iff (chooseBasis R M).repr.toEquiv).mpr Finsupp.infinite_of_right
 
 instance [Module.Free R M] [Nontrivial M] : FaithfulSMul R M :=
-  .ofInjective _ (Module.Free.repr R M).symm.injective
+  .of_injective _ (Module.Free.repr R M).symm.injective
 
 variable {R M N}
 
