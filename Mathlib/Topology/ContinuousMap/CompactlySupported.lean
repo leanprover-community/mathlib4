@@ -702,7 +702,7 @@ lemma add_nnrealPart_le_nnrealPart_add (f g : C_c(α, ℝ)) :
     Pi.add_apply, ContinuousMap.add_apply]
   exact Real.toNNReal_add_le
 
-lemma exist_add_nnrealPart_add_eq (f g : C_c(α, ℝ)) : ∃ (h : C_c(α, ℝ≥0)),
+lemma exists_add_nnrealPart_add_eq (f g : C_c(α, ℝ)) : ∃ (h : C_c(α, ℝ≥0)),
     (f + g).nnrealPart + h = f.nnrealPart + g.nnrealPart ∧
     (-f + -g).nnrealPart + h = (-f).nnrealPart + (-g).nnrealPart := by
   obtain ⟨h, hh⟩ := CompactlySupportedContinuousMap.exists_add_of_le
@@ -836,7 +836,7 @@ noncomputable def toRealLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) :
   toFun := fun f => Λ (nnrealPart f) - Λ (nnrealPart (- f))
   map_add' f g := by
     simp only [neg_add_rev]
-    obtain ⟨h, hh⟩ := exist_add_nnrealPart_add_eq f g
+    obtain ⟨h, hh⟩ := exists_add_nnrealPart_add_eq f g
     rw [← add_zero ((Λ (f + g).nnrealPart).toReal - (Λ (-g + -f).nnrealPart).toReal),
       ← sub_self (Λ h).toReal, sub_add_sub_comm, ← NNReal.coe_add, ← NNReal.coe_add,
       ← LinearMap.map_add, ← LinearMap.map_add, hh.1, add_comm (-g) (-f), hh.2]
