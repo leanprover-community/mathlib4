@@ -5,6 +5,7 @@ Authors: Patrick Massot
 -/
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.SpecificLimits.Normed
+import Mathlib.Topology.Sequences
 
 /-! # Extending a backward bound on a normed group homomorphism from a dense set
 
@@ -14,6 +15,57 @@ Possible TODO (from the PR's review, https://github.com/leanprover-community/mat
 lemmas in this file]."
 -/
 
+
+section new
+
+open Filter Function Metric Bornology ENNReal Filter NNReal Uniformity Pointwise Topology Finset
+
+variable {𝓕 α ι κ E F G : Type*} [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E} {r : ℝ}
+
+@[to_additive]
+theorem controlled_prod_of_mem_closure {s : Subgroup E} (hg : a ∈ closure (s : Set E)) {b : ℕ → ℝ}
+    (b_pos : ∀ n, 0 < b n) :
+    ∃ v : ℕ → E,
+      Tendsto (fun n => ∏ i ∈ range (n + 1), v i) atTop (𝓝 a) ∧
+        (∀ n, v n ∈ s) ∧ ‖v 0 / a‖ < b 0 ∧ ∀ n, 0 < n → ‖v n‖ < b n := by
+  obtain ⟨u : ℕ → E, u_in : ∀ n, u n ∈ s, lim_u : Tendsto u atTop (𝓝 a)⟩ :=
+    mem_closure_iff_seq_limit.mp hg
+  obtain ⟨n₀, hn₀⟩ : ∃ n₀, ∀ n ≥ n₀, ‖u n / a‖ < b 0 :=
+    haveI : { x | ‖x / a‖ < b 0 } ∈ 𝓝 a := by
+      simp_rw [← dist_eq_norm_div]
+      exact Metric.ball_mem_nhds _ (b_pos _)
+    Filter.tendsto_atTop'.mp lim_u _ this
+  set z : ℕ → E := fun n => u (n + n₀)
+  have lim_z : Tendsto z atTop (𝓝 a) := lim_u.comp (tendsto_add_atTop_nat n₀)
+  have mem_𝓤 : ∀ n, { p : E × E | ‖p.1 / p.2‖ < b (n + 1) } ∈ 𝓤 E := fun n => by
+    simpa [← dist_eq_norm_div] using Metric.dist_mem_uniformity (b_pos <| n + 1)
+  obtain ⟨φ : ℕ → ℕ, φ_extr : StrictMono φ, hφ : ∀ n, ‖z (φ <| n + 1) / z (φ n)‖ < b (n + 1)⟩ :=
+    lim_z.cauchySeq.subseq_mem mem_𝓤
+  set w : ℕ → E := z ∘ φ
+  have hw : Tendsto w atTop (𝓝 a) := lim_z.comp φ_extr.tendsto_atTop
+  set v : ℕ → E := fun i => if i = 0 then w 0 else w i / w (i - 1)
+  refine ⟨v, Tendsto.congr (Finset.eq_prod_range_div' w) hw, ?_, hn₀ _ (n₀.le_add_left _), ?_⟩
+  · rintro ⟨⟩
+    · change w 0 ∈ s
+      apply u_in
+    · apply s.div_mem <;> apply u_in
+  · intro l hl
+    obtain ⟨k, rfl⟩ : ∃ k, l = k + 1 := Nat.exists_eq_succ_of_ne_zero hl.ne'
+    apply hφ
+
+@[to_additive]
+theorem controlled_prod_of_mem_closure_range {j : E →* F} {b : F}
+    (hb : b ∈ closure (j.range : Set F)) {f : ℕ → ℝ} (b_pos : ∀ n, 0 < f n) :
+    ∃ a : ℕ → E,
+      Tendsto (fun n => ∏ i ∈ range (n + 1), j (a i)) atTop (𝓝 b) ∧
+        ‖j (a 0) / b‖ < f 0 ∧ ∀ n, 0 < n → ‖j (a n)‖ < f n := by
+  obtain ⟨v, sum_v, v_in, hv₀, hv_pos⟩ := controlled_prod_of_mem_closure hb b_pos
+  choose g hg using v_in
+  exact
+    ⟨g, by simpa [← hg] using sum_v, by simpa [hg 0] using hv₀,
+      fun n hn => by simpa [hg] using hv_pos n hn⟩
+
+end new
 
 open Filter Finset
 

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Analytic.Basic
+import Mathlib.Topology.Sequences
 
 /-!
 # Changing origin in a power series

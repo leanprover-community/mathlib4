@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ben Eltschig
 -/
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
+import Mathlib.Topology.Sequences
 
 /-!
 # Delta-generated topological spaces
