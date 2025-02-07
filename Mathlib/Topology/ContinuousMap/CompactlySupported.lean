@@ -702,31 +702,10 @@ lemma add_nnrealPart_le_nnrealPart_add (f g : C_c(α, ℝ)) :
     Pi.add_apply, ContinuousMap.add_apply]
   exact Real.toNNReal_add_le
 
-lemma exist_add_eq (f₁ f₂ : C_c(α, ℝ≥0)) (h : f₁ ≤ f₂)  : ∃ (g : C_c(α, ℝ≥0)), f₁ + g = f₂ := by
-  set g_cf := f₂.1 - f₁.1 with hg_cf
-  have g_cp : HasCompactSupport g_cf := by
-    apply IsCompact.of_isClosed_subset
-      (IsCompact.union f₁.hasCompactSupport' f₂.hasCompactSupport') isClosed_closure
-    rw [tsupport, tsupport, ← closure_union]
-    apply closure_mono
-    intro x
-    simp only [Function.mem_support, ne_eq, ContinuousMap.toFun_eq_coe,
-      CompactlySupportedContinuousMap.coe_toContinuousMap, Set.mem_union, hg_cf,
-      ContinuousMap.sub_apply, CompactlySupportedContinuousMap.coe_toContinuousMap]
-    by_contra!
-    rw [this.2.1, this.2.2] at this
-    simp only [tsub_self, ne_eq, not_true_eq_false, and_self, and_true] at this
-  use ⟨g_cf, g_cp⟩
-  ext x
-  simp only [CompactlySupportedContinuousMap.coe_add, CompactlySupportedContinuousMap.coe_mk,
-    Pi.add_apply, NNReal.coe_inj, hg_cf, ContinuousMap.sub_apply,
-    CompactlySupportedContinuousMap.coe_toContinuousMap]
-  exact add_tsub_cancel_of_le (h x)
-
 lemma exist_add_nnrealPart_add_eq (f g : C_c(α, ℝ)) : ∃ (h : C_c(α, ℝ≥0)),
     (f + g).nnrealPart + h = f.nnrealPart + g.nnrealPart ∧
     (-f + -g).nnrealPart + h = (-f).nnrealPart + (-g).nnrealPart := by
-  obtain ⟨h, hh⟩ := exist_add_eq (f + g).nnrealPart (f.nnrealPart + g.nnrealPart)
+  obtain ⟨h, hh⟩ := CompactlySupportedContinuousMap.exists_add_of_le
     (add_nnrealPart_le_nnrealPart_add f g)
   use h
   refine ⟨hh, ?_⟩
@@ -779,7 +758,7 @@ lemma exist_add_nnrealPart_add_eq (f g : C_c(α, ℝ)) : ∃ (h : C_c(α, ℝ≥
           zero_add, add_comm, add_zero] at hhx
         rw [sup_eq_left.mpr (neg_nonneg.mpr (le_of_lt hfx)), sup_eq_right.mpr (neg_nonpos.mpr hgx),
           sup_eq_left.mpr (neg_nonneg.mpr (le_of_lt hfgx)), hhx]
-        simp only [neg_add_rev, neg_add_cancel_comm, add_zero]
+        simp
     · push_neg at hgx
       rw [sup_eq_right.mpr (le_of_lt hfx), sup_eq_right.mpr (le_of_lt hgx),
         sup_eq_right.mpr (le_of_lt (add_neg hfx hgx))] at hhx
@@ -789,23 +768,6 @@ lemma exist_add_nnrealPart_add_eq (f g : C_c(α, ℝ)) : ∃ (h : C_c(α, ℝ≥
         sup_eq_left.mpr (neg_nonneg.mpr (le_of_lt (add_neg hfx hgx))), hhx]
       simp only [neg_add_rev, NNReal.coe_zero, add_zero]
       exact AddCommMagma.add_comm (-g x) (-f x)
-
-instance : Coe C(α, ℝ≥0) C(α, ℝ) where
-  coe := fun f => ⟨fun x => NNReal.toReal (f.toFun x), by continuity⟩
-
-instance : Coe C_c(α, ℝ≥0) C_c(α, ℝ) where
-  coe := fun f => ⟨f.toContinuousMap,
-                  by
-                  simp only [ContinuousMap.toFun_eq_coe,
-                    CompactlySupportedContinuousMap.coe_toContinuousMap]
-                  apply HasCompactSupport.comp_left f.hasCompactSupport' rfl⟩
-
-lemma eq_nnrealPart_neg_nnrealPart (f : C_c(α, ℝ)) : f = nnrealPart f - nnrealPart (-f) := by
-  ext x
-  simp only [ContinuousMap.toFun_eq_coe, CompactlySupportedContinuousMap.coe_toContinuousMap,
-    nnrealPart_apply, Real.coe_toNNReal', CompactlySupportedContinuousMap.coe_neg,
-    Pi.neg_apply, CompactlySupportedContinuousMap.coe_sub, CompactlySupportedContinuousMap.coe_mk,
-    ContinuousMap.coe_mk, Pi.sub_apply, max_zero_sub_max_neg_zero_eq_self]
 
 /-- The compactly supported continuous `ℝ≥0`-valued function as a compactly supported `ℝ`-valued
 function. -/
@@ -822,9 +784,7 @@ lemma toReal_apply (f : C_c(α, ℝ≥0)) (x : α) : f.toReal x = f x := compLef
   ext; simp [NNReal.smul_def]
 
 lemma nnrealPart_sub_nnrealPart_neg (f : C_c(α, ℝ)) :
-    (nnrealPart f).toReal - (nnrealPart (-f)).toReal = f := by
-  ext x
-  simp
+    (nnrealPart f).toReal - (nnrealPart (-f)).toReal = f := by ext x; simp
 
 /-- The compactly supported continuous `ℝ≥0`-valued function as a compactly supported `ℝ`-valued
 function. -/
@@ -842,15 +802,10 @@ lemma toRealLinearMap_apply_apply (f : C_c(α, ℝ≥0)) (x : α) :
     toRealLinearMap f x = (f x).toReal := by simp
 
 @[simp]
-lemma nnrealPart_toReal_eq (f : C_c(α, ℝ≥0)) : nnrealPart (toReal f) = f := by
-  ext x
-  simp only [nnrealPart_apply, toReal_apply, Real.toNNReal_coe]
+lemma nnrealPart_toReal_eq (f : C_c(α, ℝ≥0)) : nnrealPart (toReal f) = f := by ext x; simp
 
 @[simp]
-lemma nnrealPart_neg_toReal_eq (f : C_c(α, ℝ≥0)) : nnrealPart (- toReal f) = 0 := by
-  ext x
-  simp only [nnrealPart_apply, coe_neg, Pi.neg_apply, toReal_apply, Real.coe_toNNReal',
-    Left.neg_nonpos_iff, zero_le_coe, sup_of_le_right, coe_zero, Pi.zero_apply, NNReal.coe_zero]
+lemma nnrealPart_neg_toReal_eq (f : C_c(α, ℝ≥0)) : nnrealPart (- toReal f) = 0 := by ext x; simp
 
 section toNNRealLinear
 
