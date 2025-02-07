@@ -319,8 +319,6 @@ end RieszContentRegular
 
 namespace NNRealRMK
 
-section RieszMeasure
-
 variable [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X] [BorelSpace X]
 
 /-- `rieszContent` gives a `Content` from `Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0`. Here `rieszContent Λ` is
@@ -352,7 +350,5 @@ lemma le_rieszMeasure_of_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : ∀ x, f x 
   apply le_trans _ (measure_mono h)
   apply le_rieszMeasure_of_isCompact_tsupport_subset Λ hf f.hasCompactSupport
   exact subset_rfl
-
-end RieszMeasure
 
 end NNRealRMK
