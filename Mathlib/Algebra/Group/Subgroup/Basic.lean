@@ -851,7 +851,7 @@ instance normal_inf_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : 
 
 @[to_additive]
 theorem normal_iInf_normal {ι : Type*} {a : ι → Subgroup G}
-    (norm : ∀ i : ι , (a i).Normal) : (iInf a).Normal := by
+    (norm : ∀ i : ι, (a i).Normal) : (iInf a).Normal := by
   constructor
   intro g g_in_iInf h
   rw [Subgroup.mem_iInf] at g_in_iInf ⊢
