@@ -66,21 +66,15 @@ alias RingEquiv.ringKrullDim := ringKrullDim_eq_of_ringEquiv
 abbrev FiniteRingKrullDim (R : Type*) [CommSemiring R] :=
   FiniteDimensionalOrder (PrimeSpectrum R)
 
-lemma ringKrullDim_ne_top [h : FiniteRingKrullDim R] :
-    ringKrullDim R ≠ ⊤ := Order.krullDim_ne_top_iff_finiteDimensionalOrder.mpr ‹_›
+lemma ringKrullDim_ne_top [FiniteRingKrullDim R] :
+    ringKrullDim R ≠ ⊤ := (Order.finiteDimensionalOrder_iff_krullDim_ne_bot_and_top.mpr ‹_›).2
 
 lemma ringKrullDim_lt_top [FiniteRingKrullDim R] :
     ringKrullDim R < ⊤ := Ne.lt_top (ringKrullDim_ne_top)
 
-lemma finiteRingKrullDim_iff_lt :
-    FiniteRingKrullDim R ↔ ringKrullDim R < ⊤ := by
-  rw [lt_top_iff_ne_top]
-  exact (Order.krullDim_ne_top_iff_finiteDimensionalOrder (α := (PrimeSpectrum R))).symm
-
-instance (priority := 100) finiteRingKrullDimOfSubsingleton [Subsingleton R] :
-  FiniteRingKrullDim R := by
-  rw [finiteRingKrullDim_iff_lt, ringKrullDim_eq_bot_of_subsingleton]
-  exact bot_lt_top
+lemma finiteRingKrullDim_iff_ne_bot_and_top :
+    FiniteRingKrullDim R ↔ (ringKrullDim R ≠ ⊥ ∧ ringKrullDim R ≠ ⊤) :=
+  (Order.finiteDimensionalOrder_iff_krullDim_ne_bot_and_top (α := (PrimeSpectrum R)))
 
 proof_wanted Polynomial.ringKrullDim_le :
     ringKrullDim (Polynomial R) ≤ 2 * (ringKrullDim R) + 1
