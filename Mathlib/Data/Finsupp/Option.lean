@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey
 -/
 import Mathlib.Data.Finsupp.Defs
+import Mathlib.Data.Finset.Option
+import Mathlib.Data.Finsupp.Single
 
 /-!
 # Finsupp version of Option.elim
@@ -18,34 +20,48 @@ We can also define an analogue of `Finsupp.tail` for `Option α →₀ M`.
 noncomputable section
 
 namespace Finsupp
-
 namespace Option
 
 -- variable {n : ℕ} (i : Fin n) {M : Type*} [Zero M] (y : M) (t : Fin (n + 1) →₀ M) (s : Fin n →₀ M)
 variable {α : Type*} (i : α) {M : Type*} [Zero M] (y : M) (t : Option α →₀ M) (s : α →₀ M)
 
+-- TODO: This is already defined, as `Finsupp.some`
 /-- `tail` for maps `Option α →₀ M`. See `Fin.tail` for more details. -/
 def tail (s : Option α →₀ M) : α →₀ M where
   support := Finset.eraseNone s.support
   toFun i := s (some i)
   mem_support_toFun := by simp only [Finset.mem_eraseNone, mem_support_iff, ne_eq, implies_true]
 
+/-- The function that lifts a Finsupp on `α` to a Finsupp on `Option α` in the natural way. (should this be named rec?) -/
+def foobar : Option α →₀ M where
+  support := s.support.map Function.Embedding.some
+  toFun i := Option.elim i 0 s
+  mem_support_toFun := by
+    intros a
+    cases a with
+    | none => simp_rw [Finset.mem_map, mem_support_iff, ne_eq, Function.Embedding.some_apply,
+      reduceCtorEq, and_false, exists_false, Option.elim_none, not_true_eq_false]
+    | some a => simp only [Finset.mem_map, mem_support_iff, ne_eq, Function.Embedding.some_apply,
+      Option.some.injEq, exists_eq_right, Option.elim_some]
+
 /-- `cons` for maps `α →₀ M`. See `Fin.cons` for more details. -/
-def cons (y : M) (s : α →₀ M) : Option α →₀ M where
-  support := sorry --if M = 0 then Finset.insertNone s.support else (s.support.map Function.Embedding.some)
-  toFun a := Option.elim a y s
-  mem_support_toFun := _
+def cons (y : M) (s : α →₀ M) : Option α →₀ M :=
+  Finsupp.update (foobar s) none y
 
 theorem tail_apply : tail t i = t (some i) :=
   rfl
 
 @[simp]
-theorem cons_zero : cons y s none = y :=
-  rfl
+theorem cons_zero : cons y s none = y := by
+  classical
+  simp only [cons, foobar, coe_update, coe_mk, Function.update_self]
+
 
 @[simp]
-theorem cons_succ : cons y s (some i) = s i :=
-  rfl
+theorem cons_succ : cons y s (some i) = s i := by
+  classical
+  simp [cons, foobar, coe_update, coe_mk, Function.update_eq_self]
+
 
 @[simp]
 theorem tail_cons : tail (cons y s) = s :=
