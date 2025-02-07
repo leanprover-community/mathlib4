@@ -442,6 +442,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
 import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
 import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
 import Mathlib.Algebra.Homology.DifferentialObject
+import Mathlib.Algebra.Homology.Double
 import Mathlib.Algebra.Homology.Embedding.Basic
 import Mathlib.Algebra.Homology.Embedding.Boundary
 import Mathlib.Algebra.Homology.Embedding.CochainComplex
@@ -1404,6 +1405,8 @@ import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.InnerProductSpace.Completion
 import Mathlib.Analysis.InnerProductSpace.ConformalLinearMap
+import Mathlib.Analysis.InnerProductSpace.Continuous
+import Mathlib.Analysis.InnerProductSpace.Convex
 import Mathlib.Analysis.InnerProductSpace.Defs
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
@@ -1755,6 +1758,7 @@ import Mathlib.CategoryTheory.ChosenFiniteProducts.InfSemilattice
 import Mathlib.CategoryTheory.Closed.Cartesian
 import Mathlib.CategoryTheory.Closed.Enrichment
 import Mathlib.CategoryTheory.Closed.Functor
+import Mathlib.CategoryTheory.Closed.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Closed.FunctorCategory.Complete
 import Mathlib.CategoryTheory.Closed.FunctorCategory.Groupoid
 import Mathlib.CategoryTheory.Closed.FunctorToTypes
