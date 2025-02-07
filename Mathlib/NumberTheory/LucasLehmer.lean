@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Kim Morrison, Ainsley Pahljina
 -/
 import Mathlib.RingTheory.Fintype
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
 
 /-!

@@ -64,3 +64,15 @@ noncomputable def sSetTopAdj : SSet.toTop ⊣ TopCat.toSSet :=
 noncomputable def SSet.toTopSimplex :
     (yoneda : SimplexCategory ⥤ _) ⋙ SSet.toTop ≅ SimplexCategory.toTop :=
   Presheaf.isExtensionAlongYoneda _
+
+/-- The singular simplicial set of a totally disconnected space is the constant simplicial set. -/
+noncomputable
+def TopCat.toSSetIsoConst (X : TopCat) [TotallyDisconnectedSpace X] :
+    TopCat.toSSet.obj X ≅ (Functor.const _).obj X :=
+  .symm <|
+  NatIso.ofComponents (fun i ↦
+    { inv v := v.1 ⟨Pi.single (I := Fin _) 0 1, (show ∑ _, _ = _ by simp)⟩
+      hom x := TopCat.ofHom ⟨fun _ ↦ x, continuous_const⟩
+      inv_hom_id := types_ext _ _ fun f ↦ TopCat.hom_ext (ContinuousMap.ext
+        fun j ↦ TotallyDisconnectedSpace.eq_of_continuous (α := i.unop.toTopObj) _ f.1.2 _ _)
+      hom_inv_id := rfl }) (by intros; ext; rfl)
