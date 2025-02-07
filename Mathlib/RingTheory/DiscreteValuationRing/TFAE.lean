@@ -100,7 +100,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [IsLocalRing R] [IsDomain R
     · exact sInf_le ⟨hle, inferInstance⟩
     · refine
         le_sInf fun I hI =>
-          (eq_maximalIdeal <| hI.2.isMaximal (fun e => ha₂ ?_)).ge
+          (eq_maximalIdeal <| hI.2.isMaximal_of_ne_bot (fun e => ha₂ ?_)).ge
       rw [← Ideal.span_singleton_eq_bot, eq_bot_iff, ← e]; exact hI.1
   have : ∃ n, maximalIdeal R ^ n ≤ Ideal.span {a} := by
     rw [← this]; apply Ideal.exists_radical_pow_le_of_fg; exact IsNoetherian.noetherian _
@@ -170,9 +170,9 @@ theorem tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain
   tfae_have 1 → 2 := fun _ ↦ inferInstance
   tfae_have 2 → 1 := fun _ ↦ ((IsBezout.TFAE (R := R)).out 0 1).mp ‹_›
   tfae_have 1 → 4
-  | H => ⟨inferInstance, fun P hP hP' ↦ eq_maximalIdeal (hP'.isMaximal hP)⟩
+  | H => ⟨inferInstance, fun P hP hP' ↦ eq_maximalIdeal (hP'.isMaximal_of_ne_bot hP)⟩
   tfae_have 4 → 3 :=
-    fun ⟨h₁, h₂⟩ ↦ { h₁ with maximalOfPrime := (h₂ _ · · ▸ maximalIdeal.isMaximal R) }
+    fun ⟨h₁, h₂⟩ ↦ { h₁, Ring.KrullDimLE.mk₁' fun _ ↦ (h₂ _ · · ▸ maximalIdeal.isMaximal R) with }
   tfae_have 3 → 5 := fun h ↦ maximalIdeal_isPrincipal_of_isDedekindDomain R
   tfae_have 6 ↔ 5 := finrank_cotangentSpace_le_one_iff
   tfae_have 5 → 7 := exists_maximalIdeal_pow_eq_of_principal R

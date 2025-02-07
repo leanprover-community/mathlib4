@@ -280,6 +280,13 @@ theorem isMaximal_comap_of_isIntegral_of_isMaximal' {R S : Type*} [CommRing R] [
   have : Algebra.IsIntegral R S := ⟨hf⟩
   isMaximal_comap_of_isIntegral_of_isMaximal (R := R) (S := S) I
 
+variable (R) in
+theorem _root_.Ring.KrullDimLE.of_isIntegral [Algebra.IsIntegral R S]
+    [IsDomain R] [IsDomain S] [Ring.KrullDimLE 1 R] : Ring.KrullDimLE 1 S :=
+  .mk₁' fun _ H _ =>
+    isMaximal_of_isIntegral_of_isMaximal_comap (R := R) (S := S) _
+      (Ideal.isMaximal_of_isPrime_of_ne_bot _ fun e ↦ H (Ideal.eq_bot_of_comap_eq_bot e))
+
 section IsIntegralClosure
 
 variable (S) {A : Type*} [CommRing A]
@@ -318,6 +325,10 @@ theorem IntegralClosure.comap_lt_comap {I J : Ideal (integralClosure R S)} [I.Is
 theorem IntegralClosure.isMaximal_of_isMaximal_comap (I : Ideal (integralClosure R S)) [I.IsPrime]
     (hI : IsMaximal (I.comap (algebraMap R (integralClosure R S)))) : IsMaximal I :=
   IsIntegralClosure.isMaximal_of_isMaximal_comap S I hI
+
+instance _root_.Ring.KrullDimLE.integralClosure [IsDomain R] [IsDomain S]
+    [Ring.KrullDimLE 1 R] : Ring.KrullDimLE 1 (integralClosure R S) :=
+  .of_isIntegral R
 
 section
 
