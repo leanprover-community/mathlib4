@@ -135,12 +135,6 @@ def toLieHom : A →ₗ⁅R⁆ B :=
 instance : Coe (A →ₐ[R] B) (A →ₗ⁅R⁆ B) :=
   ⟨toLieHom⟩
 
-/- Porting note: is a syntactic tautology
-@[simp]
-theorem toLieHom_coe : f.toLieHom = ↑f :=
-  rfl
--/
-
 @[simp]
 theorem coe_toLieHom : ((f : A →ₗ⁅R⁆ B) : A → B) = f :=
   rfl
