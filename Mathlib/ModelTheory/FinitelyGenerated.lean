@@ -237,8 +237,8 @@ theorem FG.countable_embedding (N : Type*) [L.Structure N] [Countable N] (_ : FG
     Countable (M ↪[L] N) :=
   Function.Embedding.countable ⟨Embedding.toHom, Embedding.toHom_injective⟩
 
-instance FG.instCountable_embedding (N : Type*) [L.Structure N]
-    [Countable N] [h : FG L M] : Countable (M ↪[L] N) :=
+instance FG.instCountable_embedding (N : Type*) [L.Structure N] [Countable N] [h : FG L M] :
+    Countable (M ↪[L] N) :=
   FG.countable_embedding N h
 
 theorem FG.of_finite [Finite M] : FG L M := by
