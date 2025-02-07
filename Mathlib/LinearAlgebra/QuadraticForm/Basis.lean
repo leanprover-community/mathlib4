@@ -49,6 +49,13 @@ theorem map_finsuppSum' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R
   rw [recover]
   exact Q.map_sum' _ (fun i => g i (f i))
 
+lemma Sym2_smul (f : ι → ι → R) (g : ι → ι → N) (hf : ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁)
+    (hg : ∀ a₁ a₂, g a₁ a₂ = g a₂ a₁) :
+    Sym2.lift ⟨f, hf⟩ • Sym2.lift ⟨g, hg⟩ = Sym2.lift ⟨f • g, fun _ _ => by
+      rw [Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', hf, hg]⟩ := by
+  ext ⟨i,j⟩
+  simp_all only [Pi.smul_apply', Sym2.lift_mk]
+
 lemma partial_result (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
     Q.polar_sym2 ∘ Sym2.map (l * g) = Sym2.lift ⟨fun i j => l j • l i • polar (⇑Q) (g i) (g j),
       fun _ _ => by simp_rw [polar_comm]; rw [smul_comm]⟩ := by
@@ -79,6 +86,28 @@ noncomputable def scalar (l : ι →₀ R) : Sym2 ι →₀ R := Finsupp.onFinse
       · aesop
       · aesop
     )
+
+/-
+#check Finsupp.pointwiseModuleScalar
+
+lemma partial_result2 (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
+    Sym2.lift ⟨fun i j => l j • l i • polar (⇑Q) (g i) (g j),
+      fun _ _ => by simp_rw [polar_comm]; rw [smul_comm]⟩ =
+        scalar l * Q.polar_sym2 ∘ Sym2.map g := by
+  rw [polar_sym2]
+  rw [← Sym2.lift_comp_map]
+  rw [scalar]
+  simp_all only [Finset.product_eq_sprod]
+  simp_rw [Finsupp.pointwiseModuleScalar]
+  simp_all only [Finsupp.onFinset_apply]
+  --simp [Sym2_smul]
+  ext ⟨i,j⟩
+  simp_all only [Sym2.lift_mk]
+
+  simp_all only [Finsupp.onFinset_apply]
+
+  sorry
+-/
 
 
 /-
