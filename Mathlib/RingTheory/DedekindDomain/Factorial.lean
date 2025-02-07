@@ -33,6 +33,7 @@ dedekind domain, factorial ideal, factorial, ideal
 -/
 
 open BigOperators
+open Finset (range)
 open Set (mem_univ univ)
 open scoped Nat Polynomial
 
@@ -46,22 +47,23 @@ variable [Semiring R]
 
 def fixedDivisor (𝒻 : R[X]) : Ideal R := Ideal.span <| 𝒻.eval '' S
 
+lemma fixedDivisor_eq_span (𝒻 : R[X]) : 𝒻.fixedDivisor S = (Ideal.span <| 𝒻.eval '' S) := rfl
+
 example (s : R) (hs : s ∈ S) : s ∈ Ideal.span S := (Ideal.mem_span s).mpr fun _ a ↦ a hs
 
 noncomputable abbrev f : ℤ[X] := X ^ 5 + X
 example : f.fixedDivisor univ = Ideal.span {2} := by
   refine eq_of_le_of_le ?_ ?_
   · intro x hx
-    have two_div (x) : 2 ∣ f.eval x := even_iff_two_dvd.mp <| by simp [parity_simps]
     apply Ideal.mem_span_singleton.mpr
-    simp [fixedDivisor] at hx
-    simp at two_div
-    apply Finsupp.mem_ideal_span_range_iff_exists_finsupp.mp at hx
+    simp only [fixedDivisor_eq_span, eval_add, eval_pow, eval_X, Set.image_univ,
+               Finsupp.mem_ideal_span_range_iff_exists_finsupp] at hx
     obtain ⟨c, hc⟩ := hx
     rw [← hc]
     apply Finset.dvd_sum
-    intro i hi
-    exact Dvd.dvd.mul_left (two_div i) (c i)
+    intro i _
+    have two_div : 2 ∣ i^5 + i := even_iff_two_dvd.mp <| by simp [parity_simps]
+    exact two_div.mul_left <| c i
   · have : 2 ∈ f.fixedDivisor univ := Ideal.mem_span 2 |>.mpr fun _ h ↦ h ⟨1, by norm_num⟩
     exact Ideal.span_singleton_le_iff_mem (Ideal.span <| f.eval '' univ) |>.mpr this
 
@@ -96,41 +98,35 @@ def pSequence.eq (ν₁ ν₂ : S.pOrdering p) : ν₁.pSequence = ν₂.pSequen
 open Polynomial (X C)
 
 -- c_0 + (c_1 * (x - a_0)) + (c_2 * (x - a_0) * (x - a_1))
-noncomputable def lemma_12_prod (pOrder: Set.pOrdering S p) (k: ℕ) (c: Fin (k + 1) → R): R[X]
+noncomputable def lemma_12_prod (pOrder : Set.pOrdering S p) (k : ℕ) (c : Fin (k + 1) → R): R[X]
    := ∑ i : Fin (k + 1), (c i) • ∏ j ∈ Finset.range i, (X - Polynomial.C (pOrder.elems j).val)
 
-lemma lemma_12 (pOrder: Set.pOrdering S p) (k: ℕ) (c: Fin (k + 1) → R) (e: ℕ) (s: R) (hs: s ∈ S):
-  (lemma_12_prod S p pOrder k c).eval s ≡ 0 [PMOD (p^e: R)] := by sorry
-
-example (k l : ℕ) : (k ! * l !) ∣ (k + l) ! := k.factorial_mul_factorial_dvd_factorial_add l
-example (k l : ℤ) (hk : 0 ≤ k) (hl : 0 ≤ l) : (k.toNat ! * l.toNat !) ∣ (k + l).toNat ! := sorry
+lemma lemma_12 (pOrder : Set.pOrdering S p) (k e : ℕ) (c : Fin (k + 1) → R) (s : R) (hs : s ∈ S):
+  (lemma_12_prod S p pOrder k c).eval s ≡ 0 [PMOD (p^e : R)] := by sorry
 
 /-- ℕ is a p-ordering of ℤ for any prime `p`. -/
 def natPOrdering : (univ : Set ℤ).pOrdering p where
   elems := (⟨·, mem_univ _⟩)
-  emultiplicity_le := fun k ⟨s, hs⟩ kpos ↦ by
-    dsimp
-
+  emultiplicity_le := fun k ⟨s, hs⟩ kpos ↦ emultiplicity_le_emultiplicity_of_dvd_right <| by
     have hdivk := k.factorial_dvd_descFactorial k
     rw [k.descFactorial_eq_prod_range k] at hdivk
 
-    have prod_cast: (∏ j ∈ Finset.range k, (s - ↑(k - 1 - j))) = (∏ j ∈ Finset.range k, (s - ↑(k - 1) + j)) := by
+    have prod_cast : (∏ j ∈ range k, (s - ↑(k - 1 - j))) = (∏ j ∈ range k, (s - ↑(k - 1) + j)) := by
       apply Finset.prod_congr (rfl)
-      intro x hx
-      simp at hx
+      intro
+      simp
       omega
     conv_rhs => rw [← Finset.prod_range_reflect, prod_cast]
     obtain ⟨a, ha⟩ := k.factorial_coe_dvd_prod (s - ↑(k - 1))
+    have sub_cast : ∏ i ∈ range k, ↑(k - i) = ∏ i ∈ range k, ((k : ℤ) - (i : ℤ)) := by
+      apply Finset.prod_congr rfl
+      intro
+      simp
+      omega
     have fac_range := k.descFactorial_eq_prod_range k
     zify at fac_range
-    have sub_cast: ∏ i ∈ Finset.range k, ↑(k - i) = ∏ i ∈ Finset.range k, ((k : ℤ) - (i : ℤ)) := by
-      apply Finset.prod_congr rfl
-      intro x hx
-      simp at hx
-      omega
     rw [sub_cast] at fac_range
-    rw [← fac_range, Nat.descFactorial_self]
-    exact emultiplicity_le_emultiplicity_of_dvd_right <| by simp [ha]
+    simp [sub_cast, ← fac_range, Nat.descFactorial_self, ha]
 
 
 namespace Polynomial
