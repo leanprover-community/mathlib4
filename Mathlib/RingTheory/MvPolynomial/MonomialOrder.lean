@@ -586,6 +586,11 @@ theorem degree_neg {f : MvPolynomial σ R} :
   unfold degree
   rw [support_neg]
 
+@[simp]
+theorem leadingCoeff_neg {f : MvPolynomial σ R} :
+    m.leadingCoeff (-f) = - m.leadingCoeff f := by
+  simp only [leadingCoeff, degree_neg, coeff_neg]
+
 theorem degree_sub_le {f g : MvPolynomial σ R} :
     m.toSyn (m.degree (f - g)) ≤ m.toSyn (m.degree f) ⊔ m.toSyn (m.degree g) := by
   rw [sub_eq_add_neg]
@@ -619,5 +624,28 @@ theorem isUnit_leadingCoeff {f : MvPolynomial σ R} :
 @[deprecated (since := "2025-01-31")] alias lCoeff_is_unit_iff := isUnit_leadingCoeff
 
 end Field
+
+section Binomial
+
+variable {R : Type*} [CommRing R]
+
+open Finsupp MvPolynomial
+
+lemma degree_X_sub_C [Nontrivial R]
+    {ι : Type*} (m : MonomialOrder ι) (i : ι) (r : R) :
+    m.degree (X i - C r) = single i 1 := by
+  rw [degree_sub_of_lt, degree_X]
+  simp only [degree_C, map_zero, degree_X]
+  rw [← bot_eq_zero, bot_lt_iff_ne_bot, bot_eq_zero, ← map_zero m.toSyn]
+  simp
+
+lemma monic_X_sub_C {ι : Type*} (m : MonomialOrder ι) (i : ι) (r : R) :
+    m.Monic (X i - C r) := by
+  nontriviality R
+  rw [sub_eq_add_neg]
+  apply Monic.add_of_lt monic_X
+  simp [degree_neg, degree_C, degree_X, ← not_le, ← eq_zero_iff]
+
+end Binomial
 
 end MonomialOrder
