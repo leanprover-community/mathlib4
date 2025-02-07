@@ -14,9 +14,10 @@ import Mathlib.Data.NNReal.Basic
 In this file we prove elementary properties of algebraic operations on `ℝ≥0∞`, including addition,
 multiplication, natural powers and truncated subtraction, as well as how these interact with the
 order structure on `ℝ≥0∞`. Notably excluded from this list are inversion and division, the
-definitions and properties of which can be found in `Data.ENNReal.Inv`.
+definitions and properties of which can be found in `Mathlib.Data.ENNReal.Inv`.
 
-Note: the definitions of the operations included in this file can be found in `Data.ENNReal.Basic`.
+Note: the definitions of the operations included in this file can be found in
+`Mathlib.Data.ENNReal.Basic`.
 -/
 
 open Set NNReal ENNReal

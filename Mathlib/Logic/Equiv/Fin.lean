@@ -303,9 +303,8 @@ theorem finRotate_one : finRotate 1 = Equiv.refl _ :=
     simp only [Fin.lt_iff_val_lt_val, Fin.val_last, Fin.val_mk] at h
     simp [finRotate_of_lt h, Fin.ext_iff, Fin.add_def, Nat.mod_eq_of_lt (Nat.succ_lt_succ h)]
 
--- Porting note: was a @[simp]
 theorem finRotate_apply_zero : finRotate n.succ 0 = 1 := by
-  rw [finRotate_succ_apply, Fin.zero_add]
+  simp
 
 theorem coe_finRotate_of_ne_last {i : Fin n.succ} (h : i ≠ Fin.last n) :
     (finRotate (n + 1) i : ℕ) = i + 1 := by

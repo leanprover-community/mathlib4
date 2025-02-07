@@ -54,7 +54,7 @@ namespace Topology
 /-- Topology whose open sets are upper sets.
 
 Note: In general the upper set topology does not coincide with the upper topology. -/
-def upperSet (α :  Type*) [Preorder α] : TopologicalSpace α where
+def upperSet (α : Type*) [Preorder α] : TopologicalSpace α where
   IsOpen := IsUpperSet
   isOpen_univ := isUpperSet_univ
   isOpen_inter _ _ := IsUpperSet.inter
@@ -63,7 +63,7 @@ def upperSet (α :  Type*) [Preorder α] : TopologicalSpace α where
 /-- Topology whose open sets are lower sets.
 
 Note: In general the lower set topology does not coincide with the lower topology. -/
-def lowerSet (α :  Type*) [Preorder α] : TopologicalSpace α where
+def lowerSet (α : Type*) [Preorder α] : TopologicalSpace α where
   IsOpen := IsLowerSet
   isOpen_univ := isLowerSet_univ
   isOpen_inter _ _ := IsLowerSet.inter
@@ -407,7 +407,7 @@ def map (f : α →o β) : C(WithLowerSet α, WithLowerSet β) where
 @[simp] lemma map_comp (g : β →o γ) (f : α →o β) : map (g.comp f) = (map g).comp (map f) := rfl
 
 @[simp] lemma toLowerSet_specializes_toLowerSet {a b : α} :
-  toLowerSet a ⤳ toLowerSet b ↔ a ≤ b := by
+    toLowerSet a ⤳ toLowerSet b ↔ a ≤ b := by
   simp_rw [specializes_iff_closure_subset, IsLowerSet.closure_singleton, Ici_subset_Ici,
     toLowerSet_le_iff]
 
