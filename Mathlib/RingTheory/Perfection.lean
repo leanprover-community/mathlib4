@@ -346,22 +346,6 @@ variable (K : Type u₁) [Field K] (v : Valuation K ℝ≥0)
 variable (O : Type u₂) [CommRing O] [Algebra O K] (hv : v.Integers O)
 variable (p : ℕ)
 
--- -- Porting note: Specified all arguments explicitly
--- /-- `O/(p)` for `O`, ring of integers of `K`. -/
--- def ModP' (K : Type u₁) [Field K] (v : Valuation K ℝ≥0) (O : Type u₂) [CommRing O] [Algebra O K]
---     (_ : v.Integers O) (p : ℕ) :=
---   O ⧸ (Ideal.span {(p : O)} : Ideal O)
-
--- instance commRing' : CommRing (ModP' K v O hv p) :=
---   Ideal.Quotient.commRing (Ideal.span {(p : O)} : Ideal O)
-
--- instance charP' [Fact p.Prime] [hvp : Fact (v p ≠ 1)] : CharP (ModP' K v O hv p) p :=
---   have _ := Fact.mk <| mt hv.one_of_isUnit <| (map_natCast (algebraMap O K) p).symm ▸ hvp.1
---   ModP.charP O p
-
--- instance [hp : Fact p.Prime] [Fact (v p ≠ 1)] : Nontrivial (ModP O p) :=
---   CharP.nontrivial_of_char_ne_one hp.1.ne_one
-
 namespace ModP
 
 section Classical
