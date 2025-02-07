@@ -5,7 +5,9 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Data.Stream.Defs
 import Mathlib.Logic.Function.Basic
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Defs
+import Mathlib.Data.Nat.Defs
+import Mathlib.Tactic.Common
 
 /-!
 # Streams a.k.a. infinite lists a.k.a. infinite sequences

@@ -3,7 +3,8 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Data.List.Basic
+import Batteries.Data.List.Basic
+import Mathlib.Tactic.TypeStar
 
 /-! ### List.modifyLast -/
 
