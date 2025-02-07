@@ -3,20 +3,8 @@ Copyright (c) 2025 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen, Oliver Nash
 -/
--- import Mathlib.Analysis.Calculus.Deriv.Inv
--- import Mathlib.Analysis.Complex.Circle
--- import Mathlib.Analysis.NormedSpace.BallAction
--- import Mathlib.Analysis.SpecialFunctions.ExpDeriv
--- import Mathlib.Analysis.InnerProductSpace.Calculus
--- import Mathlib.Analysis.InnerProductSpace.PiL2
--- import Mathlib.Data.Complex.FiniteDimensional
--- import Mathlib.Geometry.Manifold.Algebra.LieGroup
--- import Mathlib.Geometry.Manifold.Instances.Real
--- import Mathlib.Geometry.Manifold.MFDeriv.Basic
--- import Mathlib.Tactic.Module
-import Mathlib.Topology.Compactification.OnePoint.Basic
-import Mathlib.Topology.PartialHomeomorph
 
+import Mathlib.Topology.Compactification.OnePoint.Basic
 import Mathlib.Geometry.Manifold.Instances.Sphere
 
 /-!
@@ -25,20 +13,11 @@ import Mathlib.Geometry.Manifold.Instances.Sphere
 
 -/
 
-open Metric Module Function
+open Function Metric Module Set Submodule
 
-noncomputable section OnePoint
+noncomputable section
 
-variable {n : ℕ}
-variable {v : EuclideanSpace ℝ (Fin n.succ)}
-variable (hv : ‖v‖ = 1)
-variable (hv' : v ∈ sphere 0 (1:ℝ))
-/-
-    For example, `v` could be
-    `(EuclideanSpace.single (0:Fin n.succ) (1:ℝ))`
--/
-
-open Set Submodule
+variable {n : ℕ} {v : EuclideanSpace ℝ (Fin n.succ)} (hv : ‖v‖ = 1)
 
 /-- The orthogonal complement of the span of a point on the sphere
 is homeomorphic to a Euclidean space of codimension 1. -/
@@ -65,6 +44,7 @@ lemma image_source (s : Set ↥(span ℝ {v})ᗮ) : stereoInvFun hv '' s =
  is homeomorphic to the n-sphere. -/
 def onePointHyperplaneHomeoUnitSphere :
     OnePoint (ℝ ∙ v)ᗮ ≃ₜ sphere (0 : EuclideanSpace ℝ (Fin n.succ)) 1 := by
+  have hv' : v ∈ sphere 0 (1:ℝ) := by simpa
   apply OnePoint.equivOfIsEmbeddingOfRangeEq (f := stereoInvFun hv)
   · constructor
     · apply (Topology.isInducing_iff _).mpr
@@ -93,8 +73,7 @@ def onePointHyperplaneHomeoUnitSphere :
 
 /-- The one-point compactification of Euclidean space is homeomorphic to the sphere. -/
 noncomputable def OnePointEuclidean_homeo_sphere : Homeomorph
-    (OnePoint (EuclideanSpace ℝ (Fin n))) ((sphere (0 : EuclideanSpace ℝ (Fin n.succ)) 1)) :=
-  ((Submodule_homeo_Euclidean ⟨v,hv'⟩).symm.onePointCongr).trans
-    <| onePointHyperplaneHomeoUnitSphere hv hv'
-
-end OnePoint
+    (OnePoint (EuclideanSpace ℝ (Fin n))) ((sphere (0 : EuclideanSpace ℝ (Fin n.succ)) 1)) := by
+  have hv' : v ∈ sphere 0 (1:ℝ) := by simpa
+  exact ((Submodule_homeo_Euclidean ⟨v,hv'⟩).symm.onePointCongr).trans
+    <| onePointHyperplaneHomeoUnitSphere hv

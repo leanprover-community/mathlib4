@@ -1325,7 +1325,6 @@ theorem subtypeRestr_symm_eqOn_of_le {U V : Opens X} (hU : Nonempty U) (hV : Non
 
 end subtypeRestr
 
-
 variable {X X' Z : Type*} [TopologicalSpace X] [TopologicalSpace X'] [TopologicalSpace Z]
   [Nonempty Z] {f : X → X'}
 

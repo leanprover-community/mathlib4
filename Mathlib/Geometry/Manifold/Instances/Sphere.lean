@@ -15,6 +15,7 @@ import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
 import Mathlib.Tactic.Module
 import Mathlib.Topology.PartialHomeomorph
+import Mathlib.Logic.Equiv.PartialEquiv
 
 /-!
 # Manifold structure on the sphere
@@ -296,15 +297,17 @@ theorem stereographic_neg_apply (v : sphere (0 : E) 1) :
   ext1
   simp
 
-lemma PartialEquiv.injective_symm_of_target_eq_univ
-    {α β : Type*} (e : PartialEquiv α β) (h : e.target = Set.univ) :
-    Injective e.symm := by
-  simpa [Set.injective_iff_injOn_univ, h] using e.symm.injOn
 
 /-- The inverse stereographic projection is injective. -/
 theorem injective_stereographic_symm (hv : ‖v‖ = 1) :
     Injective (stereographic hv).symm :=
   (stereographic hv).injective_symm_of_target_eq_univ rfl
+
+/-- The stereographic projection is surjective. -/
+theorem surjective_stereographic (hv : ‖v‖ = 1) :
+    Surjective (stereographic hv) :=
+  PartialEquiv.surjective_of_target_eq_univ _ rfl
+
 end StereographicProjection
 
 section ChartedSpace

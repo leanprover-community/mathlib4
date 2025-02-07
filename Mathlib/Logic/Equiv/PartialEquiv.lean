@@ -881,6 +881,23 @@ theorem pi_trans (ei : ∀ i, PartialEquiv (αi i) (βi i)) (ei' : ∀ i, Partia
 
 end Pi
 
+lemma surjective_of_target_eq_univ
+    {α β : Type*} (e : PartialEquiv α β) (h : e.target = Set.univ) :
+    Surjective e := fun x => ⟨e.symm x, by simp [right_inv, h]⟩
+
+lemma injective_symm_of_target_eq_univ
+    {α β : Type*} (e : PartialEquiv α β) (h : e.target = Set.univ) :
+    Injective e.symm := by
+  simpa [Set.injective_iff_injOn_univ, h] using e.symm.injOn
+
+lemma injective_of_source_eq_univ
+    {α β : Type*} (e : PartialEquiv α β) (h : e.source = Set.univ) :
+    Injective e := HasLeftInverse.injective ⟨e.symm, fun _ => by simp [left_inv, h]⟩
+
+lemma surjective_symm_of_source_eq_univ
+    {α β : Type*} (e : PartialEquiv α β) (h : e.source = Set.univ) :
+    Surjective e.symm := fun x => ⟨e x, by simp [left_inv, h]⟩
+
 end PartialEquiv
 
 namespace Set
