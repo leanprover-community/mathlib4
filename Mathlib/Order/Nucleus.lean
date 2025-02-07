@@ -23,7 +23,7 @@ https://ncatlab.org/nlab/show/nucleus
 
 open Order InfHom
 
-variable {X : Type*} [Order.Frame X]
+variable {X : Type*} [CompleteLattice X]
 
 /-- A nucleus is an inflationary idempotent `inf`-preserving endomorphism of a semilattice.
 In a frame, nuclei correspond to sublocales. -/ -- TODO: Formalise that claim
@@ -138,6 +138,8 @@ instance : CompleteLattice (Nucleus X) := completeLatticeOfCompleteSemilatticeIn
 
 @[simp] theorem inf_aply (m n : Nucleus X) (x : X) : (m ⊓ n) x = m x ⊓ n x := by
   rw [← sInf_pair, sInf_apply, iInf_pair]
+
+variable {X : Type*} [Order.Frame X]
 
 instance : HImp (Nucleus X) where
   himp m n :=
