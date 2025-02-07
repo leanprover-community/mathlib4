@@ -735,15 +735,6 @@ def MonoidHom.comp [MulOneClass M] [MulOneClass N] [MulOneClass P] (hnp : N →*
   map_one' := by simp
   map_mul' := by simp
 
-@[to_additive (attr := simp, norm_cast)]
-theorem OneHom.coe_id [One M] : ↑(OneHom.id M) = _root_.id := rfl
-
-@[to_additive (attr := simp, norm_cast)]
-theorem MulHom.coe_id [Mul M] : ↑(MulHom.id M) = _root_.id := rfl
-
-@[to_additive (attr := simp, norm_cast)]
-theorem MonoidHom.coe_id [MulOneClass M] : ↑(MonoidHom.id M) = _root_.id := rfl
-
 @[to_additive (attr := simp)]
 theorem OneHom.coe_comp [One M] [One N] [One P] (g : OneHom N P) (f : OneHom M N) :
     ↑(g.comp f) = g ∘ f := rfl
