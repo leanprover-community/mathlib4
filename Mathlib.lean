@@ -3062,6 +3062,7 @@ import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.SetLike.Fintype
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Data.Setoid.Partition
+import Mathlib.Data.Setoid.Partition.Card
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Interval
 import Mathlib.Data.Sigma.Lex
@@ -3351,6 +3352,7 @@ import Mathlib.GroupTheory.GroupAction.FixedPoints
 import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.GroupTheory.GroupAction.IterateAct
+import Mathlib.GroupTheory.GroupAction.Iwasawa
 import Mathlib.GroupTheory.GroupAction.Period
 import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.Primitive
