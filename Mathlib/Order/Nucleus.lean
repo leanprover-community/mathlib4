@@ -42,7 +42,7 @@ class NucleusClass (F X : Type*) [SemilatticeInf X] [FunLike F X X] extends InfH
     Prop where
   /-- A nucleus is idempotent. -/
   idempotent (x : X) (f : F) : f (f x) ≤ f x
-  /-- A nucleus is increasing. -/
+  /-- A nucleus is inflationary. -/
   le_apply (x : X) (f : F) : x ≤ f x
 
 namespace Nucleus
@@ -71,6 +71,8 @@ lemma idempotent : n (n x) = n x :=
 
 lemma le_apply : x ≤ n x :=
   n.toClosureOperator.le_closure x
+
+lemma monotone : Monotone n := n.toClosureOperator.monotone
 
 lemma map_inf : n (x ⊓ y) = n x ⊓ n y :=
   InfHomClass.map_inf n x y
@@ -120,27 +122,17 @@ instance : InfSet (Nucleus X) where
       · exact iInf₂_le_of_le f hf inf_le_left
       · exact iInf₂_le_of_le f hf inf_le_right
       · exact ⟨inf_le_of_left_le <| iInf₂_le f hf, inf_le_of_right_le <| iInf₂_le f hf⟩
-    idempotent' x := by
-      simp only [le_iInf_iff, iInf_le_iff]
-      intro a ha b h
-      rw [← idempotent]
-      apply le_trans (h a ha)
-      gcongr
-      simp_all [iInf_le_iff]
-    le_apply' x := by simp [le_apply]}
+    idempotent' x := iInf₂_mono fun f hf ↦ (f.monotone <| iInf₂_le f hf).trans_eq f.idempotent
+    le_apply' x := by simp [le_apply] }
 
 @[simp] theorem sInf_apply (s : Set (Nucleus X)) (x : X) : sInf s x = ⨅ j ∈ s, j x := rfl
 
-@[simp] theorem iInf_apply {ι : Type*} (f : ι → (Nucleus X)) (x : X) :
-    iInf f x = ⨅ j, f j x := by
-  simp only [iInf, sInf_apply]
-  apply le_antisymm
-  all_goals simp_all [sInf_le_iff, lowerBounds]
-  exact fun a b a_1 a_2 a_3 ↦ le_of_le_of_eq (a_1 a_2) (congrFun (congrArg DFunLike.coe a_3) x)
+@[simp] theorem iInf_apply {ι : Type*} (f : ι → (Nucleus X)) (x : X) : iInf f x = ⨅ j, f j x := by
+  rw [iInf, sInf_apply, iInf_range]
 
 instance : CompleteSemilatticeInf (Nucleus X) where
-  sInf_le := by simp_all [← coe_le_coe, Pi.le_def, iInf_le_iff]
-  le_sInf := by simp_all [← coe_le_coe, Pi.le_def]
+  sInf_le := by simp +contextual [← coe_le_coe, Pi.le_def, iInf_le_iff]
+  le_sInf := by simp +contextual [← coe_le_coe, Pi.le_def]
 
 instance : CompleteLattice (Nucleus X) := completeLatticeOfCompleteSemilatticeInf (Nucleus X)
 
