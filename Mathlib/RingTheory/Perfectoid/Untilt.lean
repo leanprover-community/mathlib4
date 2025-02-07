@@ -15,7 +15,7 @@ In this file, we define the untilt function from the pretilt of a
 `p`-adically complete ring to the ring itself. Note that this
 is not the untilt *functor*.
 
-## Main definitions
+## Main definition
 * `PreTilt.untilt` : Given a `p`-adically complete ring `O`, this is the
 multiplicative map from `PreTilt O p` to `O` itself. Specifically, it is
 defined as the limit of `p^n`-th powers of arbitrary lifts in `O` of the
@@ -41,6 +41,11 @@ variable {O : Type*} [CommRing O]
 
 namespace PreTilt
 
+/--
+The auxiliary sequence to define the untilt map. The `(n + 1)`-th term
+is the `p^n`-th powers of arbitrary lifts in `O` of the `n`-th component
+from the perfection of `O/p`.
+-/
 def untiltAux (x : PreTilt O p) (n : ℕ) : O :=
   match n with
   | .zero => 1
@@ -161,12 +166,21 @@ def untilt : PreTilt O p →* O where
     simp only [span_singleton_pow, SModEq.sub_mem, mem_span_singleton]
     exact pow_dvd_mul_untiltAux_sub_untiltAux_mul (O := O) (p := p) _ _ n
 
+/--
+The composition of the mod `p` map
+with the untilt function equals taking the zeroth component of the perfection.
+-/
 theorem mk_untilt_eq_coeff_zero (x : PreTilt O p) :
     Ideal.Quotient.mk (Ideal.span {(p : O)}) (x.untilt) = coeff (ModP O p) p 0 x := by
   simp [untilt]
   rw [← Ideal.Quotient.mk_out ((coeff (ModP O p) p 0) x), Ideal.Quotient.eq, ← SModEq.sub_mem]
   simpa [untiltAux] using (x.untiltAux_smodEq_untiltFun 1).symm
 
+/--
+The composition of the mod `p` map
+with the untilt function equals taking the zeroth component of the perfection.
+A variation of `PreTilt.mk_untilt_eq_coeff_zero`.
+-/
 theorem mk_comp_untilt_eq_coeff_zero :
     Ideal.Quotient.mk (Ideal.span {(p : O)}) ∘ untilt = coeff (ModP O p) p 0 :=
   funext mk_untilt_eq_coeff_zero
@@ -176,5 +190,3 @@ end IsAdicComplete
 end PreTilt
 
 end
-
-#min_imports
