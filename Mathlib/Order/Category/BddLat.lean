@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Adjunction.Unique
 import Mathlib.Order.Category.BddOrd
 import Mathlib.Order.Category.Lat
 import Mathlib.Order.Category.Semilat
+import Mathlib.Order.Hom.WithTop
 
 /-!
 # The category of bounded lattices

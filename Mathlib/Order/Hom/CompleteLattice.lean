@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Hom.WithTop
-import Mathlib.Order.Hom.Dual
-import Mathlib.Order.Hom.BooleanAlgebra
+import Mathlib.Order.Hom.Lattice
 
 /-!
 # Complete lattice homomorphisms
