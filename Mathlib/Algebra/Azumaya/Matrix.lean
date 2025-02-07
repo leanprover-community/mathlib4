@@ -55,17 +55,11 @@ lemma AlgHom.mulLeftRightMatrix.comp_inv:
   simp [sum_apply, Matrix.mul_apply, Finset.sum_mul, Finset.mul_sum, stdBasisMatrix,
     Fintype.sum_prod_type, ite_and]
 
-instance (ι : Type*) [Nonempty ι] : FaithfulSMul R (ι →₀ R) :=
-  .ofInjective (Finsupp.lsingle <| Classical.arbitrary _) (Finsupp.single_injective _)
-
-instance (M : Type*) [AddCommMonoid M] [Module R M] [Module.Free R M] [Nontrivial M] :
-    FaithfulSMul R M := .ofInjective _ (Module.Free.repr R M).symm.injective
-
 namespace IsAzumaya
 
 /-- A nontrivial matrix ring over `R` is an Azumaya algebra over `R`. -/
 theorem matrix [Nonempty n] : IsAzumaya R (Matrix n n R) where
-  eq_of_smul_eq_smul := by nontriviality R; exact instFaithfulSMulOfFreeOfNontrivial R _ |>.1
+  eq_of_smul_eq_smul := by nontriviality R; exact eq_of_smul_eq_smul
   bij := Function.bijective_iff_has_inverse.mpr
     ⟨AlgHom.mulLeftRightMatrix_inv R n,
     DFunLike.congr_fun (AlgHom.mulLeftRightMatrix.inv_comp R n),
