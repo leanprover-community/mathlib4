@@ -207,6 +207,17 @@ theorem prod_le_prod_fiberwise_of_prod_fiber_le_one' {t : Finset ι'} {g : ι �
     ∏ x ∈ s, f x ≤ ∏ y ∈ t, ∏ x ∈ s with g x = y, f x :=
   @prod_fiberwise_le_prod_of_one_le_prod_fiber' _ Nᵒᵈ _ _ _ _ _ _ _ h
 
+@[to_additive]
+lemma prod_image_le_of_one_le
+    {g : ι → ι'} {f : ι' → N} (hf : ∀ u ∈ s.image g, 1 ≤ f u) :
+    ∏ u ∈ s.image g, f u ≤ ∏ u ∈ s, f (g u) := by
+  rw [prod_comp f g]
+  refine prod_le_prod' fun a hag ↦ ?_
+  obtain ⟨i, hi, hig⟩ := Finset.mem_image.mp hag
+  apply le_self_pow (hf a hag)
+  rw [← Nat.pos_iff_ne_zero, card_pos]
+  exact ⟨i, mem_filter.mpr ⟨hi, hig⟩⟩
+
 end OrderedCommMonoid
 
 @[to_additive]
