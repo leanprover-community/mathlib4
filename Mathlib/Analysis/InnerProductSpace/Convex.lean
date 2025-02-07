@@ -8,7 +8,7 @@ import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!
-# Properties of inner product spaces
+# Convexity properties of inner product spaces
 
 ## Main results
 
