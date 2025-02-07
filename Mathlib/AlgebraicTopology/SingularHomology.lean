@@ -20,7 +20,7 @@ noncomputable section
 
 namespace AlgebraicTopology
 
-open CategoryTheory Limits
+open CategoryTheory
 
 variable (R : Type) [CommRing R] (n : ℕ)
 
