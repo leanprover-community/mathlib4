@@ -44,17 +44,20 @@ def IRDIR : FilePath :=
 
 /-- Target directory for caching -/
 initialize CACHEDIR : FilePath ← do
-  match ← IO.getEnv "XDG_CACHE_HOME" with
-  | some path => return path / "mathlib"
+  match ← IO.getEnv "MATHLIB_CACHE_DIR" with
+  | some path => return path
   | none =>
-    let home ← if System.Platform.isWindows then
-      let drive ← IO.getEnv "HOMEDRIVE"
-      let path ← IO.getEnv "HOMEPATH"
-      pure <| return (← drive) ++ (← path)
-    else IO.getEnv "HOME"
-    match home with
-    | some path => return path / ".cache" / "mathlib"
-    | none => pure ⟨".cache"⟩
+    match ← IO.getEnv "XDG_CACHE_HOME" with
+    | some path => return path / "mathlib"
+    | none =>
+      let home ← if System.Platform.isWindows then
+        let drive ← IO.getEnv "HOMEDRIVE"
+        let path ← IO.getEnv "HOMEPATH"
+        pure <| return (← drive) ++ (← path)
+      else IO.getEnv "HOME"
+      match home with
+      | some path => return path / ".cache" / "mathlib"
+      | none => pure ⟨".cache"⟩
 
 /-- Target file path for `curl` configurations -/
 def CURLCFG :=

@@ -421,7 +421,7 @@ theorem eq_iff_norm_eq_and_oangle_eq_zero (x y : V) : x = y ↔ ‖x‖ = ‖y�
     have : ‖y‖ ≠ 0 := by simpa using hy
     obtain rfl : r = 1 := by
       apply mul_right_cancel₀ this
-      simpa [norm_smul, _root_.abs_of_nonneg hr] using h₁
+      simpa [norm_smul, abs_of_nonneg hr] using h₁
     simp
 
 /-- Two vectors with equal norms are equal if and only if they have zero angle between them. -/

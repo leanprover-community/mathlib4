@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Order.PropInstances
+import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Heyting algebras
@@ -350,6 +351,9 @@ theorem himp_triangle (a b c : α) : (a ⇨ b) ⊓ (b ⇨ c) ≤ a ⇨ c := by
 theorem himp_inf_himp_cancel (hba : b ≤ a) (hcb : c ≤ b) : (a ⇨ b) ⊓ (b ⇨ c) = a ⇨ c :=
   (himp_triangle _ _ _).antisymm <| le_inf (himp_le_himp_left hcb) (himp_le_himp_right hba)
 
+theorem gc_inf_himp : GaloisConnection (a ⊓ ·) (a ⇨ ·) :=
+  fun _ _ ↦ Iff.symm le_himp_iff'
+
 -- See note [lower instance priority]
 instance (priority := 100) GeneralizedHeytingAlgebra.toDistribLattice : DistribLattice α :=
   DistribLattice.ofInfSupLe fun a b c => by
@@ -566,6 +570,9 @@ theorem inf_sdiff_sup_left : a \ c ⊓ (a ⊔ b) = a \ c :=
 @[simp]
 theorem inf_sdiff_sup_right : a \ c ⊓ (b ⊔ a) = a \ c :=
   inf_of_le_left <| sdiff_le.trans le_sup_right
+
+theorem gc_sdiff_sup : GaloisConnection (· \ a) (a ⊔ ·) :=
+  fun _ _ ↦ sdiff_le_iff
 
 -- See note [lower instance priority]
 instance (priority := 100) GeneralizedCoheytingAlgebra.toDistribLattice : DistribLattice α :=
