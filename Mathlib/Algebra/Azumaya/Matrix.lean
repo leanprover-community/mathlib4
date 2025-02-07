@@ -79,15 +79,11 @@ namespace IsAzumaya
 
 /-- A nontrivial matrix ring over `R` is an Azumaya algebra over `R`. -/
 theorem matrix [Nonempty n] : IsAzumaya R (Matrix n n R) where
-  eq_of_smul_eq_smul := by
-    if h : Subsingleton R then exact fun _ ↦ Subsingleton.elim _ _
-    else
-    rw [@not_subsingleton_iff_nontrivial] at h
-    exact instFaithfulSMulOfFreeOfNontrivial R _ |>.1
-  bij := ⟨Function.HasLeftInverse.injective ⟨AlgHom.mulLeftRightMatrix_inv R n,
-    DFunLike.congr_fun (AlgHom.mulLeftRightMatrix.inv_comp R n)⟩,
-    Function.HasRightInverse.surjective ⟨AlgHom.mulLeftRightMatrix_inv R n,
-    DFunLike.congr_fun (AlgHom.mulLeftRightMatrix.comp_inv R n)⟩⟩
+  eq_of_smul_eq_smul := by nontriviality R; exact instFaithfulSMulOfFreeOfNontrivial R _ |>.1
+  bij := Function.bijective_iff_has_inverse.mpr
+    ⟨AlgHom.mulLeftRightMatrix_inv R n,
+    DFunLike.congr_fun (AlgHom.mulLeftRightMatrix.inv_comp R n),
+    DFunLike.congr_fun (AlgHom.mulLeftRightMatrix.comp_inv R n)⟩
 
 end IsAzumaya
 
