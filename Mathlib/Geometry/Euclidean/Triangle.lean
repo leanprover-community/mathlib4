@@ -25,10 +25,6 @@ non-degeneracy conditions needed for the particular result, rather
 than requiring affine independence of the points of a triangle
 unnecessarily.
 
-## TODO
-
-Change variable names here: https://leanprover-community.github.io/100.html#27
-
 ## References
 
 * https://en.wikipedia.org/wiki/Law_of_cosines
