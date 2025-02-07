@@ -6,6 +6,10 @@ Authors: Johan Commelin
 
 import Mathlib.Data.Fintype.Basic
 
+/-!
+# Divisibility in finite types
+-/
+
 variable {M : Type*} [Semigroup M]
 
 instance [Fintype M] [DecidableEq M] (a b : M) : Decidable (a ∣ b) :=
