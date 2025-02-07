@@ -266,9 +266,7 @@ theorem lcomp_apply' (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) : lcomp R 
 
 /-- A version of `Function.Injective.comp` for composition of two linear maps. -/
 theorem injective_comp_of_injective (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ)
-    (hf : Injective f) (hg : Injective g) : Injective (g ∘ₗ f) := by
-  intro m₁ m₂ h
-  exact hf (hg h)
+    (hf : Injective f) (hg : Injective g) : Injective (g ∘ₗ f) := hg.comp hf
 
 /-- A version of `Function.Surjective.comp` for composition of two linear maps. -/
 theorem surjective_comp_of_surjective (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (hf : Surjective f)
@@ -299,10 +297,7 @@ theorem lcompₛₗ_apply (f : M →ₛₗ[σ₁₂] N) (g : N →ₛₗ[σ₂�
 
 /-- A version of `Function.Injective.comp` for composition of two semilinear maps. -/
 theorem injective_lcompₛₗ_of_injective (f : M →ₛₗ[σ₁₂] N) (g : N →ₛₗ[σ₂₃] P) (hf : Injective f)
-    (hg : Injective g) : Injective (lcompₛₗ _ _ f g) := by
-  intro m₁ m₂ h
-  simp only [lcompₛₗ_apply] at h
-  exact hf (hg h)
+    (hg : Injective g) : Injective (lcompₛₗ _ _ f g) := hg.comp hf
 
 /-- A version of `Function.Surjective.comp` for composition of two semilinear maps. -/
 theorem surjective_lcompₛₗ_of_surjective (f : M →ₛₗ[σ₁₂] N) (g : N →ₛₗ[σ₂₃] P) (hf : Surjective f)
