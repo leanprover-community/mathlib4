@@ -107,17 +107,17 @@ def subtypeOrEquiv (p q : α → Prop) [DecidablePred p] (h : Disjoint p q) :
   right_inv x := by
     cases x with
     | inl x =>
-        simp only [Sum.elim_inl]
-        rw [subtypeOrLeftEmbedding_apply_left]
-        · simp
-        · simpa using x.prop
+      simp only [Sum.elim_inl]
+      rw [subtypeOrLeftEmbedding_apply_left]
+      · simp
+      · simpa using x.prop
     | inr x =>
-        simp only [Sum.elim_inr]
-        rw [subtypeOrLeftEmbedding_apply_right]
-        · simp
-        · suffices ¬p x by simpa
-          intro hp
-          simpa using h.le_bot x ⟨hp, x.prop⟩
+      simp only [Sum.elim_inr]
+      rw [subtypeOrLeftEmbedding_apply_right]
+      · simp
+      · suffices ¬p x by simpa
+        intro hp
+        simpa using h.le_bot x ⟨hp, x.prop⟩
 
 @[simp]
 theorem subtypeOrEquiv_symm_inl (p q : α → Prop) [DecidablePred p] (h : Disjoint p q)

@@ -706,6 +706,15 @@ def MonoidHom.id (M : Type*) [MulOneClass M] : M →* M where
   map_one' := rfl
   map_mul' _ _ := rfl
 
+@[to_additive (attr := simp)]
+lemma OneHom.coe_id {M : Type*} [One M] : (OneHom.id M : M → M) = _root_.id := rfl
+
+@[to_additive (attr := simp)]
+lemma MulHom.coe_id {M : Type*} [Mul M] : (MulHom.id M : M → M) = _root_.id := rfl
+
+@[to_additive (attr := simp)]
+lemma MonoidHom.coe_id {M : Type*} [MulOneClass M] : (MonoidHom.id M : M → M) = _root_.id := rfl
+
 /-- Composition of `OneHom`s as a `OneHom`. -/
 @[to_additive "Composition of `ZeroHom`s as a `ZeroHom`."]
 def OneHom.comp [One M] [One N] [One P] (hnp : OneHom N P) (hmn : OneHom M N) : OneHom M P where

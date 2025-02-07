@@ -847,6 +847,18 @@ lemma finiteDimensionalOrder_iff_krullDim_ne_bot_and_top :
     · exact (fun h1 ↦ False.elim (h1.1 (krullDim_eq_bot_iff_isEmpty.mpr (not_nonempty_iff.mp h))))
 
 end finiteDimensional
+section typeclass
+
+/-- Typeclass for orders with krull dimension at most `n`. -/
+@[mk_iff]
+class KrullDimLE (n : ℕ) (α : Type*) [Preorder α] : Prop where
+  krullDim_le : krullDim α ≤ n
+
+lemma KrullDimLE.mono {n m : ℕ} (e : n ≤ m) (α : Type*) [Preorder α] [KrullDimLE n α] :
+    KrullDimLE m α :=
+  ⟨KrullDimLE.krullDim_le (n := n).trans (Nat.cast_le.mpr e)⟩
+
+end typeclass
 
 /-!
 ## Concrete calculations

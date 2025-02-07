@@ -19,6 +19,7 @@ The difference between these two definitions is only that when no finite generat
 * `spanRankNat`: The minimum cardinality of a generating set of a submodule as a natural
   number. If no finite generating set exists, the span rank is defined to be `0`.
 * `spanRank`: The minimum cardinality of a generating set of a submodule, possibly infinite, with
+
   type `ℕ∞`. If no finite generating set exists, the span rank is defined to be `⊤`.
 * `FG.spanBasis`: For a finitely generated submodule, get a set of minimum generating elements
   indexed by `Fin (p.spanRankNat)`
@@ -62,7 +63,7 @@ lemma fg_iff_spanRank_eq_spanRankNat {p : Submodule R M} :
     haveI : Nonempty { s // s.Finite ∧ span R s = p } := by
       rwa [nonempty_subtype, ← fg_def]
     exact (WithTop.coe_iInf (OrderBot.bddBelow
-      (Set.range fun i ↦ (spanRankNat.proof_1 p i).toFinset.card))).symm
+      (Set.range (fun i : { s : Set M // s.Finite ∧ span R s = p} ↦ i.2.1.toFinset.card)))).symm
   · intro e
     rw [← spanRank_ne_top_iff_fg, e]
     exact WithTop.coe_ne_top
@@ -78,8 +79,7 @@ theorem FG.exists_fun_spanRankNat_span_range_eq {p : Submodule R M} (h : p.FG) :
     p.spanRankNat ∈ _ := Nat.sInf_mem (Set.range_nonempty _)
   rw [← h₃]
   let f := ((@Fintype.ofFinite s h₁).equivFin).invFun
-  letI t1 : Finite (@Set.Elem M s) := h₁
-  letI t2 : Fintype (@Set.Elem M s) := h₁.fintype
+  letI : Fintype (@Set.Elem M s) := h₁.fintype
   have temp : h₁.toFinset.card = @Fintype.card (@Set.Elem M s)
     (Fintype.ofFinite (@Set.Elem M s)) := by
       rw [Set.Finite.card_toFinset h₁]
@@ -166,10 +166,7 @@ lemma spanRank_eq_zero_iff_eq_bot {I : Submodule R M} : I.spanRank = 0 ↔ I = �
   · rintro rfl
     rw [← bot_eq_zero, eq_bot_iff, bot_eq_zero, ← WithTop.coe_zero]
     apply Submodule.FG.spanRank_le_iff_exists_span_range_eq.mpr
-    refine ⟨fun _ ↦ 0, by
-      convert Submodule.span_empty
-      rw [Set.range_eq_empty_iff]
-      exact Fin.isEmpty'⟩
+    exact ⟨fun _ ↦ 0, by simp⟩
 
 lemma spanRank_sup_le_sum_spanRank {p q : Submodule R M} :
     (p ⊔ q).spanRank ≤ p.spanRank + q.spanRank := by
