@@ -18,10 +18,6 @@ Results in this file are generally given in a form with only those non-degenerac
 needed for the particular result, rather than requiring affine independence of the points of a
 triangle unnecessarily.
 
-## TODO
-
-Change variable names here: https://leanprover-community.github.io/100.html#4
-
 ## References
 
 * https://en.wikipedia.org/wiki/Pythagorean_theorem
