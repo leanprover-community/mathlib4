@@ -191,12 +191,12 @@ protected theorem StateEqRs.refl (t : Register) (ζ : State) : ζ ≃[t]/ac ζ :
 @[symm]
 protected theorem StateEqRs.symm {t : Register} (ζ₁ ζ₂ : State) :
     ζ₁ ≃[t]/ac ζ₂ → ζ₂ ≃[t]/ac ζ₁ := by
-  simp_all [StateEqRs] -- Porting note: was `finish [StateEqRs]`
+  simp_all [StateEqRs]
 
 @[trans]
 protected theorem StateEqRs.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
     ζ₁ ≃[t]/ac ζ₂ → ζ₂ ≃[t]/ac ζ₃ → ζ₁ ≃[t]/ac ζ₃ := by
-  simp_all [StateEqRs] -- Porting note: was `finish [StateEqRs]`
+  simp_all [StateEqRs]
 
 /-- Machine states ζ₁ and ζ₂ are equal except for registers {x | x ≥ t}. -/
 def StateEq (t : Register) (ζ₁ ζ₂ : State) : Prop :=
@@ -220,20 +220,12 @@ protected theorem StateEq.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
   · simp_all only
   · trans ζ₂ <;> assumption
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
-instance (t : Register) : Trans (StateEq (t + 1)) (StateEq (t + 1)) (StateEq (t + 1)) :=
-  ⟨@StateEq.trans _⟩
-
 /-- Transitivity of chaining `≃[t]` and `≃[t]/ac`. -/
 @[trans]
 protected theorem StateEqStateEqRs.trans (t : Register) (ζ₁ ζ₂ ζ₃ : State) :
     ζ₁ ≃[t] ζ₂ → ζ₂ ≃[t]/ac ζ₃ → ζ₁ ≃[t]/ac ζ₃ := by
   simp [StateEq]; intros
   trans ζ₂ <;> assumption
-
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
-instance (t : Register) : Trans (StateEq (t + 1)) (StateEqRs (t + 1)) (StateEqRs (t + 1)) :=
-  ⟨@StateEqStateEqRs.trans _⟩
 
 /-- Writing the same value to register `t` gives `≃[t + 1]` from `≃[t]`. -/
 theorem stateEq_implies_write_eq {t : Register} {ζ₁ ζ₂ : State} (h : ζ₁ ≃[t] ζ₂) (v : Word) :
