@@ -4,7 +4,8 @@ name: Merge master to nightly
 
 on:
   schedule:
-    - cron: '30 */3 * * *'  # 8AM CET/11PM PT
+    - cron: '30 */3 * * *'  # At minute 30 past every 3rd hour.
+  workflow_dispatch:
 
 jobs:
   merge-to-nightly:
@@ -13,7 +14,7 @@ jobs:
       - name: install elan
         run: |
           set -o pipefail
-          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.0.0/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 

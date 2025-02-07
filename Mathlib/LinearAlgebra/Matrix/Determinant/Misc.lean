@@ -12,6 +12,8 @@ import Mathlib.Algebra.Ring.NegOnePow
 In this file, we collect various formulas about determinant of matrices.
 -/
 
+assert_not_exists TwoSidedIdeal
+
 namespace Matrix
 
 variable {R : Type*} [CommRing R]
@@ -57,3 +59,5 @@ theorem submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det' {n : ℕ}
     ← det_transpose, transpose_submatrix, transpose_transpose]
   ext
   simp_rw [Finset.sum_apply, transpose_apply, hv, Pi.zero_apply]
+
+end Matrix

@@ -4,13 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
 
-import Lean.Data.HashMap
+import Std.Data.HashMap
 import Lean.Data.RBMap
 import Lean.Data.RBTree
 import Lean.Data.Json.Printer
 import Lean.Data.Json.Parser
 
-set_option autoImplicit true
+variable {α : Type}
 
 /-- Removes a parent path from the beginning of a path -/
 def System.FilePath.withoutParent (path parent : FilePath) : FilePath :=
@@ -70,7 +70,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.13"
+  "0.1.14"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
 
@@ -92,6 +92,7 @@ abbrev PackageDirs := Lean.RBMap String FilePath compare
 structure CacheM.Context where
   mathlibDepPath : FilePath
   packageDirs : PackageDirs
+  proofWidgetsBuildDir : FilePath
 
 abbrev CacheM := ReaderT CacheM.Context IO
 
@@ -132,13 +133,16 @@ private def CacheM.getContext : IO CacheM.Context := do
     ("Mathlib", root),
     ("Archive", root),
     ("Counterexamples", root),
+    ("MathlibTest", root),
     ("Aesop", LAKEPACKAGESDIR / "aesop"),
     ("Batteries", LAKEPACKAGESDIR / "batteries"),
     ("Cli", LAKEPACKAGESDIR / "Cli"),
     ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
     ("Qq", LAKEPACKAGESDIR / "Qq"),
-    ("ImportGraph", LAKEPACKAGESDIR / "importGraph")
-  ]⟩
+    ("ImportGraph", LAKEPACKAGESDIR / "importGraph"),
+    ("LeanSearchClient", LAKEPACKAGESDIR / "LeanSearchClient"),
+    ("Plausible", LAKEPACKAGESDIR / "plausible")
+  ], LAKEPACKAGESDIR / "proofwidgets" / ".lake" / "build"⟩
 
 def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
 
@@ -256,7 +260,7 @@ partial def getFilesWithExtension
     (← fp.readDir).foldlM (fun acc dir => getFilesWithExtension dir.path extension acc) acc
   else return if fp.extension == some extension then acc.push fp else acc
 
-abbrev HashMap := Lean.HashMap FilePath UInt64
+abbrev HashMap := Std.HashMap FilePath UInt64
 
 namespace HashMap
 
@@ -337,7 +341,7 @@ def packCache (hashMap : HashMap) (overwrite verbose unpackedOnly : Bool)
 /-- Gets the set of all cached files -/
 def getLocalCacheSet : IO <| Lean.RBTree String compare := do
   let paths ← getFilesWithExtension CACHEDIR "ltar"
-  return .fromList (paths.data.map (·.withoutParent CACHEDIR |>.toString)) _
+  return .fromList (paths.toList.map (·.withoutParent CACHEDIR |>.toString)) _
 
 def isPathFromMathlib (path : FilePath) : Bool :=
   match path.components with
@@ -383,7 +387,7 @@ file) regarding the files with specified paths. -/
 def lookup (hashMap : HashMap) (paths : List FilePath) : IO Unit := do
   let mut err := false
   for path in paths do
-    let some hash := hashMap.find? path | err := true
+    let some hash := hashMap[path]? | err := true
     let ltar := CACHEDIR / hash.asLTar
     IO.println s!"{path}: {ltar}"
     for line in (← runCmd (← getLeanTar) #["-k", ltar.toString]).splitOn "\n" |>.dropLast do

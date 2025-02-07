@@ -3,8 +3,9 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.Data.ENNReal.Basic
 import Mathlib.MeasureTheory.SetSemiring
+import Mathlib.Topology.Algebra.InfiniteSum.Defs
+import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Additive Contents
@@ -36,12 +37,16 @@ If `C` is a set ring (`MeasureTheory.IsSetRing C`), we have, for `s, t ∈ C`,
 
 * `MeasureTheory.addContent_union_le`: `m (s ∪ t) ≤ m s + m t`
 * `MeasureTheory.addContent_le_diff`: `m s - m t ≤ m (s \ t)`
+* `IsSetRing.addContent_of_union`: a function on a ring of sets which is additive on pairs of
+disjoint sets defines an additive content
+* `addContent_iUnion_eq_sum_of_tendsto_zero`: if an additive content is continuous at `∅`, then
+its value on a countable disjoint union is the sum of the values
 
 -/
 
-open Set Finset
+open Set Finset Function Filter
 
-open scoped ENNReal
+open scoped ENNReal Topology
 
 namespace MeasureTheory
 
@@ -63,9 +68,8 @@ instance : Inhabited (AddContent C) :=
     sUnion' := by simp }⟩
 
 instance : DFunLike (AddContent C) (Set α) (fun _ ↦ ℝ≥0∞) where
-  coe := fun m s ↦ m.toFun s
-  coe_injective' := by
-    intro m m' h
+  coe m s := m.toFun s
+  coe_injective' m m' _ := by
     cases m
     cases m'
     congr
@@ -74,9 +78,6 @@ variable {m m' : AddContent C}
 
 @[ext] protected lemma AddContent.ext (h : ∀ s, m s = m' s) : m = m' :=
   DFunLike.ext _ _ h
-
-protected lemma AddContent.ext_iff (m m' : AddContent C) : m = m' ↔ ∀ s, m s = m' s :=
-  DFunLike.ext_iff
 
 @[simp] lemma addContent_empty : m ∅ = 0 := m.empty'
 
@@ -94,7 +95,7 @@ lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C) (h_d
   rotate_left
   · simp only [coe_pair, Set.insert_subset_iff, hs, ht, Set.singleton_subset_iff, and_self_iff]
   · simp only [coe_pair, Set.pairwiseDisjoint_insert, pairwiseDisjoint_singleton,
-      mem_singleton_iff, Ne, id, forall_eq, true_and_iff]
+      mem_singleton_iff, Ne, id, forall_eq, true_and]
     exact fun _ => h_dis
   · simp only [coe_pair, sUnion_insert, sUnion_singleton]
     exact hst
@@ -160,9 +161,10 @@ lemma addContent_biUnion_le {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
     {S : Finset ι} (hs : ∀ n ∈ S, s n ∈ C) :
     m (⋃ i ∈ S, s i) ≤ ∑ i ∈ S, m (s i) := by
   classical
-  induction' S using Finset.induction with i S hiS h hs
-  · simp
-  · rw [Finset.sum_insert hiS]
+  induction S using Finset.induction with
+  | empty => simp
+  | @insert i S hiS h =>
+    rw [Finset.sum_insert hiS]
     simp_rw [← Finset.mem_coe, Finset.coe_insert, Set.biUnion_insert]
     simp only [Finset.mem_insert, forall_eq_or_imp] at hs
     refine (addContent_union_le hC hs.1 (hC.biUnion_mem S hs.2)).trans ?_
@@ -175,6 +177,82 @@ lemma le_addContent_diff (m : AddContent C) (hC : IsSetRing C) (hs : s ∈ C) (h
   refine add_tsub_le_assoc.trans_eq ?_
   rw [tsub_eq_zero_of_le
     (addContent_mono hC.isSetSemiring (hC.inter_mem hs ht) ht inter_subset_right), add_zero]
+
+lemma addContent_diff_of_ne_top (m : AddContent C) (hC : IsSetRing C)
+    (hm_ne_top : ∀ s ∈ C, m s ≠ ∞)
+    {s t : Set α} (hs : s ∈ C) (ht : t ∈ C) (hts : t ⊆ s) :
+    m (s \ t) = m s - m t := by
+  have h_union : m (t ∪ s \ t) = m t + m (s \ t) :=
+    addContent_union hC ht (hC.diff_mem hs ht) disjoint_sdiff_self_right
+  simp_rw [Set.union_diff_self, Set.union_eq_right.mpr hts] at h_union
+  rw [h_union, ENNReal.add_sub_cancel_left (hm_ne_top _ ht)]
+
+lemma addContent_accumulate (m : AddContent C) (hC : IsSetRing C)
+    {s : ℕ → Set α} (hs_disj : Pairwise (Disjoint on s)) (hsC : ∀ i, s i ∈ C) (n : ℕ) :
+      m (Set.Accumulate s n) = ∑ i in Finset.range (n + 1), m (s i) := by
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    rw [Finset.sum_range_succ, ← hn, Set.accumulate_succ, addContent_union hC _ (hsC _)]
+    · exact Set.disjoint_accumulate hs_disj (Nat.lt_succ_self n)
+    · exact hC.accumulate_mem hsC n
+
+/-- A function which is additive on disjoint elements in a ring of sets `C` defines an
+additive content on `C`. -/
+def IsSetRing.addContent_of_union (m : Set α → ℝ≥0∞) (hC : IsSetRing C) (m_empty : m ∅ = 0)
+    (m_add : ∀ {s t : Set α} (_hs : s ∈ C) (_ht : t ∈ C), Disjoint s t → m (s ∪ t) = m s + m t) :
+    AddContent C where
+  toFun := m
+  empty' := m_empty
+  sUnion' I h_ss h_dis h_mem := by
+    classical
+    induction I using Finset.induction with
+    | empty => simp only [Finset.coe_empty, Set.sUnion_empty, Finset.sum_empty, m_empty]
+    | @insert s I hsI h =>
+      rw [Finset.coe_insert] at *
+      rw [Set.insert_subset_iff] at h_ss
+      rw [Set.pairwiseDisjoint_insert_of_not_mem] at h_dis
+      swap; · exact hsI
+      have h_sUnion_mem : ⋃₀ ↑I ∈ C := by
+        rw [Set.sUnion_eq_biUnion]
+        apply hC.biUnion_mem
+        intro n hn
+        exact h_ss.2 hn
+      rw [Set.sUnion_insert, m_add h_ss.1 h_sUnion_mem (Set.disjoint_sUnion_right.mpr h_dis.2),
+        Finset.sum_insert hsI, h h_ss.2 h_dis.1]
+      rwa [Set.sUnion_insert] at h_mem
+
+/-- In a ring of sets, continuity of an additive content at `∅` implies σ-additivity.
+This is not true in general in semirings, or without the hypothesis that `m` is finite. See the
+examples 7 and 8 in Halmos' book Measure Theory (1974), page 40. -/
+theorem addContent_iUnion_eq_sum_of_tendsto_zero (hC : IsSetRing C) (m : AddContent C)
+    (hm_ne_top : ∀ s ∈ C, m s ≠ ∞)
+    (hm_tendsto : ∀ ⦃s : ℕ → Set α⦄ (_ : ∀ n, s n ∈ C),
+      Antitone s → (⋂ n, s n) = ∅ → Tendsto (fun n ↦ m (s n)) atTop (𝓝 0))
+    ⦃f : ℕ → Set α⦄ (hf : ∀ i, f i ∈ C) (hUf : (⋃ i, f i) ∈ C)
+    (h_disj : Pairwise (Disjoint on f)) :
+    m (⋃ i, f i) = ∑' i, m (f i) := by
+  -- We use the continuity of `m` at `∅` on the sequence `n ↦ (⋃ i, f i) \ (set.accumulate f n)`
+  let s : ℕ → Set α := fun n ↦ (⋃ i, f i) \ Set.Accumulate f n
+  have hCs n : s n ∈ C := hC.diff_mem hUf (hC.accumulate_mem hf n)
+  have h_tendsto : Tendsto (fun n ↦ m (s n)) atTop (𝓝 0) := by
+    refine hm_tendsto hCs ?_ ?_
+    · intro i j hij x hxj
+      rw [Set.mem_diff] at hxj ⊢
+      exact ⟨hxj.1, fun hxi ↦ hxj.2 (Set.monotone_accumulate hij hxi)⟩
+    · simp_rw [s, Set.diff_eq]
+      rw [Set.iInter_inter_distrib, Set.iInter_const, ← Set.compl_iUnion, Set.iUnion_accumulate]
+      exact Set.inter_compl_self _
+  have hmsn n : m (s n) = m (⋃ i, f i) - ∑ i in Finset.range (n + 1), m (f i) := by
+    rw [addContent_diff_of_ne_top m hC hm_ne_top hUf (hC.accumulate_mem hf n)
+      (Set.accumulate_subset_iUnion _), addContent_accumulate m hC h_disj hf n]
+  simp_rw [hmsn] at h_tendsto
+  refine tendsto_nhds_unique ?_ (ENNReal.tendsto_nat_tsum fun i ↦ m (f i))
+  refine (Filter.tendsto_add_atTop_iff_nat 1).mp ?_
+  rwa [ENNReal.tendsto_const_sub_nhds_zero_iff (hm_ne_top _ hUf) (fun n ↦ ?_)] at h_tendsto
+  rw [← addContent_accumulate m hC h_disj hf]
+  exact addContent_mono hC.isSetSemiring (hC.accumulate_mem hf n) hUf
+    (Set.accumulate_subset_iUnion _)
 
 end IsSetRing
 
