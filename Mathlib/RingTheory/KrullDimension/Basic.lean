@@ -66,8 +66,8 @@ alias RingEquiv.ringKrullDim := ringKrullDim_eq_of_ringEquiv
 abbrev FiniteRingKrullDim (R : Type*) [CommSemiring R] :=
   FiniteDimensionalOrder (PrimeSpectrum R)
 
-lemma ringKrullDim_ne_top [FiniteRingKrullDim R] :
-    ringKrullDim R ≠ ⊤ := (Order.finiteDimensionalOrder_iff_krullDim_ne_bot_and_top.mpr ‹_›).2
+lemma ringKrullDim_ne_top [h : FiniteRingKrullDim R] :
+    ringKrullDim R ≠ ⊤ := (Order.finiteDimensionalOrder_iff_krullDim_ne_bot_and_top.mp h).2
 
 lemma ringKrullDim_lt_top [FiniteRingKrullDim R] :
     ringKrullDim R < ⊤ := Ne.lt_top (ringKrullDim_ne_top)
