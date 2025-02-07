@@ -23,10 +23,12 @@ lemma ComplexShape.down_next (i : ℕ) : (ComplexShape.down ℕ).next i = i - 1 
   · apply (ComplexShape.down ℕ).next_eq'
     simp
 
+namespace ChainComplex
+
 /-- The chain complex `X ←0- X ←𝟙- X ←0- X ←𝟙- X ⋯`.
 It is exact away from `0` and has homology `X` at `0`. -/
 @[simps]
-def ChainComplex.alternatingConst : C ⥤ ChainComplex C ℕ where
+def alternatingConst : C ⥤ ChainComplex C ℕ where
   obj X :=
   { X _ := X
     d i j := if Even i ∧ j + 1 = i then 𝟙 X else 0
@@ -45,41 +47,40 @@ open ZeroObject
 
 /-- The `n`-th homology of the alternating constant complex is zero for non-zero even `n`. -/
 noncomputable
-def ChainComplex.alternatingConstHomologyDataEvenNEZero (X : C) (n : ℕ) (hn : Even n) (h₀ : n ≠ 0) :
+def alternatingConstHomologyDataEvenNEZero (X : C) (n : ℕ) (hn : Even n) (h₀ : n ≠ 0) :
     ((alternatingConst.obj X).sc n).HomologyData :=
   .ofIsLimitKernelFork _ (by simp [Nat.even_add_one, hn]) _ (Limits.zeroKernelOfCancelZero _ (by
     simp [hn, tsub_add_cancel_iff_le, Nat.one_le_iff_ne_zero, h₀]))
 
 /-- The `n`-th homology of the alternating constant complex is zero for odd `n`. -/
 noncomputable
-def ChainComplex.alternatingConstHomologyDataOdd (X : C) (n : ℕ) (hn : Odd n) :
+def alternatingConstHomologyDataOdd (X : C) (n : ℕ) (hn : Odd n) :
     ((alternatingConst.obj X).sc n).HomologyData :=
   .ofIsColimitCokernelCofork _ (by simp [hn]) _ (Limits.zeroCokernelOfZeroCancel _ (by simp [hn]))
 
 /-- The `n`-th homology of the alternating constant complex is `X` for `n = 0`. -/
 noncomputable
-def ChainComplex.alternatingConstHomologyDataZero (X : C) (n : ℕ) (hn : n = 0) :
+def alternatingConstHomologyDataZero (X : C) (n : ℕ) (hn : n = 0) :
     ((alternatingConst.obj X).sc n).HomologyData :=
   .ofZeros _ (by simp [hn]) (by simp [hn])
 
-instance (X : C) (n : ℕ) : (ChainComplex.alternatingConst.obj X).HasHomology n := by
+instance (X : C) (n : ℕ) : (alternatingConst.obj X).HasHomology n := by
   cases' n.even_or_odd with h h
   · cases' n with n
-    · exact ⟨⟨ChainComplex.alternatingConstHomologyDataZero X _ rfl⟩⟩
-    · exact ⟨⟨ChainComplex.alternatingConstHomologyDataEvenNEZero X _ h (by simp)⟩⟩
-  · exact ⟨⟨ChainComplex.alternatingConstHomologyDataOdd X _ h⟩⟩
+    · exact ⟨⟨alternatingConstHomologyDataZero X _ rfl⟩⟩
+    · exact ⟨⟨alternatingConstHomologyDataEvenNEZero X _ h (by simp)⟩⟩
+  · exact ⟨⟨alternatingConstHomologyDataOdd X _ h⟩⟩
 
-lemma ChainComplex.isZero_alternatingConst_homology (X : C) (n : ℕ) (hn : n ≠ 0) :
-    Limits.IsZero ((alternatingConst.obj X).homology n) := by
+/-- The `n`-th homology of the alternating constant complex is `X` for `n ≠ 0`. -/
+lemma isZero_alternatingConst_homology (X : C) (n : ℕ) (hn : n ≠ 0) :
+    IsZero ((alternatingConst.obj X).homology n) := by
   cases' n.even_or_odd with h h
-  · exact (Limits.isZero_zero C).of_iso
-      (ChainComplex.alternatingConstHomologyDataEvenNEZero X _ h hn).left.homologyIso
-  · exact (Limits.isZero_zero C).of_iso
-      (ChainComplex.alternatingConstHomologyDataOdd X _ h).left.homologyIso
+  · exact (isZero_zero C).of_iso (alternatingConstHomologyDataEvenNEZero X _ h hn).left.homologyIso
+  · exact (isZero_zero C).of_iso (alternatingConstHomologyDataOdd X _ h).left.homologyIso
 
 /-- The `n`-th homology of the alternating constant complex is `X` for `n = 0`. -/
 noncomputable
-def ChainComplex.alternatingConstHomologyZero
-    {C : Type*} [Category C] [Limits.HasZeroMorphisms C] [Limits.HasZeroObject C]
-    (X : C) : (alternatingConst.obj X).homology 0 ≅ X :=
-  (ChainComplex.alternatingConstHomologyDataZero X _ rfl).left.homologyIso
+def alternatingConstHomologyZero (X : C) : (alternatingConst.obj X).homology 0 ≅ X :=
+  (alternatingConstHomologyDataZero X _ rfl).left.homologyIso
+
+end ChainComplex
