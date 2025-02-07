@@ -525,7 +525,7 @@ theorem rootMultiplicity_eq_multiplicity [DecidableEq R]
   · rfl
   rename_i h
   simp only [finiteMultiplicity_X_sub_C a h, ↓reduceDIte]
-  rw [← ENat.some_eq_coe, WithTop.untop'_coe]
+  rw [← ENat.some_eq_coe, WithTop.untopD_coe]
   congr
 
 @[simp]
