@@ -52,26 +52,6 @@ def untiltAux (x : PreTilt O p) (n : ℕ) : O :=
   | .succ n =>
   (Quotient.out (coeff (ModP O p) _ n x)) ^ (p ^ n)
 
--- Mathlib.RingTheory.Ideal.Quotient.Defs
-@[simp]
-lemma _root_.Ideal.Quotient.mk_out {R : Type*} [CommRing R] {I : Ideal R} -- [I.IsTwoSided]
-    (x : R ⧸ I) : Ideal.Quotient.mk I (Quotient.out x) = x := Quotient.out_eq x
-
--- Mathlib.LinearAlgebra.SModEq SModEq.zero
-lemma sub_smodEq_zero {R : Type*} [Ring R] {M : Type*} [AddCommGroup M] [Module R M]
-    {U : Submodule R M} {x y : M} :
-    x ≡ y [SMOD U] ↔ x - y ≡ 0 [SMOD U] := by
-  simp only [SModEq.sub_mem, sub_zero]
-
--- Mathlib.RingTheory.AdicCompletion.Basic isHausdorff_iff
-lemma IsHausdorff.eq_iff_smodEq {R : Type*} [CommRing R] {I : Ideal R} {M : Type*} [AddCommGroup M]
-    [Module R M] [IsHausdorff I M] {x y : M} :
-    x = y ↔ ∀ n, x ≡ y [SMOD I ^ n • (⊤ : Submodule R M)] := by
-  refine ⟨fun h _ ↦ h ▸ rfl, fun h ↦ ?_⟩
-  rw [← sub_eq_zero]
-  apply IsHausdorff.haus' (I := I) (x - y)
-  simpa only [SModEq.sub_mem, sub_zero] using h
-
 lemma pow_dvd_untiltAux_sub_untiltAux (x : PreTilt O p) {m n : ℕ} (h : m ≤ n) :
     (p : O) ^ m ∣ x.untiltAux m - x.untiltAux n := by
   cases m with
