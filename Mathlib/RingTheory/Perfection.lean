@@ -321,7 +321,6 @@ section ModP
 
 variable (O : Type u₂) [CommRing O] (p : ℕ)
 
--- Porting note: Specified all arguments explicitly
 /-- `O/(p)` for `O`, ring of integers of `K`. -/
 def ModP :=
   O ⧸ (Ideal.span {(p : O)} : Ideal O)
