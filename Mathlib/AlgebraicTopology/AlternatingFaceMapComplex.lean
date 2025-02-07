@@ -62,8 +62,10 @@ sum of the face maps -/
 def objD (n : ℕ) : X _[n + 1] ⟶ X _[n] :=
   ∑ i : Fin (n + 2), (-1 : ℤ) ^ (i : ℕ) • X.δ i
 
-/-- ## The chain complex relation `d ≫ d`
+/-!
+## The chain complex relation `d ≫ d`
 -/
+
 theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   -- we start by expanding d ≫ d as a double sum
   dsimp
