@@ -60,11 +60,11 @@ of slices are automatically available.
 
 noncomputable section
 
+universe v u
+
 namespace CategoryTheory
 
 open CategoryTheory Category MonoidalCategory Limits Functor Adjunction Over
-
-universe v u
 
 variable {C : Type u} [Category.{v} C]
 
