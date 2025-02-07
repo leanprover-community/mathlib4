@@ -1008,6 +1008,11 @@ abbrev ofTensorComp [MonoidalCategoryStruct C]
 
 variable [MonoidalCategory C]
 
+-- In a monoidal category, everything is central
+instance Central.ofMonoidal {X Y : C} (f : X ⟶ Y) : Central f where
+  left_exchange := by simp [whisker_exchange]
+  right_exchange := by simp [whisker_exchange]
+
 @[reassoc, simp]
 theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : C}
   (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
