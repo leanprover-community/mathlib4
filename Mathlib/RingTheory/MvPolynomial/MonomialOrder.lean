@@ -81,6 +81,25 @@ def leadingCoeff {R : Type*} [CommSemiring R] (f : MvPolynomial σ R) : R :=
 
 @[deprecated (since := "2025-01-31")] alias lCoeff := leadingCoeff
 
+/-- A multivariate polynomial is `Monic` with respect to a monomial order
+if its leading coefficient (for that monomial order) is 1 -/
+def Monic (f : MvPolynomial σ R) : Prop :=
+  m.leadingCoeff f = 1
+
+theorem Monic.def (f : MvPolynomial σ R) : m.Monic f ↔ m.leadingCoeff f = 1 :=
+  Iff.rfl
+
+instance Monic.decidable [DecidableEq R] (f : MvPolynomial σ R) :
+    Decidable (m.Monic f) := by
+  unfold Monic; infer_instance
+
+@[simp]
+theorem Monic.leadingCoeff {f : MvPolynomial σ R} (hf : m.Monic f) : m.leadingCoeff f = 1 :=
+  hf
+
+theorem Monic.coeff_degree {f : MvPolynomial σ R} (hf : m.Monic f) : f.coeff (m.degree f) = 1 :=
+  hf
+
 @[simp]
 theorem degree_zero : m.degree (0 : MvPolynomial σ R) = 0 := by
   simp [degree]
@@ -119,6 +138,25 @@ theorem leadingCoeff_monomial {d : σ →₀ ℕ} (c : R) :
   split_ifs with hc <;> simp [hc]
 
 @[deprecated (since := "2025-01-31")] alias lCoeff_monomial := leadingCoeff_monomial
+
+theorem monic_monomial {d : σ →₀ ℕ} :
+    m.Monic (monomial d (1 : R)) :=
+  m.leadingCoeff_monomial 1
+
+theorem monic_monomial_iff {d : σ →₀ ℕ} {c : R} :
+    m.Monic (monomial d c) ↔ c = 1 :=
+  by rw [Monic, m.leadingCoeff_monomial]
+
+theorem monic_X {s : σ} : m.Monic (X s : MvPolynomial σ R) :=
+  monic_monomial
+
+theorem monic_one : m.Monic (C 1 : MvPolynomial σ R) :=
+  monic_monomial
+
+theorem monic_ne_zero [Nontrivial R] {f : MvPolynomial σ R} (hf : m.Monic f) :
+    f ≠ 0 := fun h ↦ by
+  apply zero_ne_one (α := R)
+  rw [← hf.leadingCoeff, h, leadingCoeff_zero]
 
 theorem degree_le_iff {f : MvPolynomial σ R} {d : σ →₀ ℕ} :
     m.degree f ≼[m] d ↔ ∀ c ∈ f.support, c ≼[m] d := by
