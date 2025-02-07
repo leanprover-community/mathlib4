@@ -6,7 +6,6 @@ Authors: Antoine Chambert-Loir
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Algebra.Polynomial.Degree.Definitions
 import Mathlib.Data.Finsupp.MonomialOrder.DegLex
-import Mathlib.Data.Set.Card
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.MvPolynomial.Groebner
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
