@@ -489,17 +489,18 @@ theorem inner_eq_sum_norm_sq_div_four (x y : E) :
   simp only [sq, ← mul_div_right_comm, ← add_div]
 
 -- See note [lower instance priority]
-instance (priority := 100) InnerProductSpace.toUniformConvexSpace : UniformConvexSpace F :=
-  ⟨fun ε hε => by
-    refine
-      ⟨2 - √(4 - ε ^ 2), sub_pos_of_lt <| (sqrt_lt' zero_lt_two).2 ?_, fun x hx y hy hxy => ?_⟩
-    · norm_num
-      exact pow_pos hε _
-    rw [sub_sub_cancel]
-    refine le_sqrt_of_sq_le ?_
-    rw [sq, eq_sub_iff_add_eq.2 (parallelogram_law_with_norm ℝ x y), ← sq ‖x - y‖, hx, hy]
-    ring_nf
-    gcongr⟩
+instance (priority := 100) InnerProductSpace.toUniformConvexSpace : UniformConvexSpace E := by
+  letI := NormedSpace.restrictScalars ℝ 𝕜 E
+  simp_rw [uniformConvexSpace_iff_le_uniformity_of_norm_add one_pos,
+    Metric.uniformity_eq_comap_nhds_zero, ← tendsto_iff_comap, dist_eq_norm]
+  intro 𝓕 norm_fst norm_snd norm_add
+  suffices Tendsto (fun p ↦ ‖p.1 - p.2‖ * ‖p.1 - p.2‖) 𝓕 (𝓝 0) by simpa using this.sqrt
+  have : ∀ x y : E, ‖x - y‖ * ‖x - y‖ = 2 * (‖x‖ * ‖x‖ + ‖y‖ * ‖y‖) - ‖x + y‖ * ‖x + y‖ :=
+    fun x y ↦ eq_sub_iff_add_eq'.mpr (parallelogram_law_with_norm 𝕜 x y)
+  convert (norm_fst.mul norm_fst |>.add <| norm_snd.mul norm_snd).const_mul 2 |>.sub
+    (norm_add.mul norm_add) using 2
+  · exact this _ _
+  · simp [two_mul, add_mul]
 
 /-- Polarization identity: The real inner product, in terms of the norm. -/
 theorem real_inner_eq_norm_add_mul_self_sub_norm_mul_self_sub_norm_mul_self_div_two (x y : F) :
