@@ -71,8 +71,7 @@ proof_wanted MvPolynomial.fin_ringKrullDim_eq_add_of_isNoetherianRing
 
 section Zero
 
-instance [Subsingleton R] : Ring.KrullDimLE 0 R :=
-  ⟨krullDim_eq_bot.trans_le bot_le⟩
+instance [Subsingleton R] : Ring.KrullDimLE 0 R := ⟨krullDim_eq_bot.trans_le bot_le⟩
 
 lemma Ring.krullDimLE_zero_iff : Ring.KrullDimLE 0 R ↔ ∀ I : Ideal R, I.IsPrime → I.IsMaximal := by
   simp_rw [Ring.KrullDimLE, Order.krullDimLE_iff, Nat.cast_zero,
@@ -105,6 +104,8 @@ end Zero
 
 section One
 
+instance [Ring.KrullDimLE 0 R] : Ring.KrullDimLE 1 R := .mono zero_le_one _
+
 lemma Ring.krullDimLE_one_iff : Ring.KrullDimLE 1 R ↔
     ∀ I : Ideal R, I.IsPrime → I ∈ minimalPrimes R ∨ I.IsMaximal := by
   simp_rw [Ring.KrullDimLE, Order.krullDimLE_iff, Nat.cast_one,
@@ -128,7 +129,7 @@ lemma Ring.krullDimLE_one_iff_of_isPrime_bot [(⊥ : Ideal R).IsPrime] :
 lemma Ring.krullDimLE_one_iff_of_noZeroDivisors [NoZeroDivisors R] :
     Ring.KrullDimLE 1 R ↔ ∀ I : Ideal R, I ≠ ⊥ → I.IsPrime → I.IsMaximal := by
   cases subsingleton_or_nontrivial R
-  · exact iff_of_true (.mono zero_le_one _) fun I h ↦ (h <| Subsingleton.elim ..).elim
+  · exact iff_of_true inferInstance fun I h ↦ (h <| Subsingleton.elim ..).elim
   have := Ideal.bot_prime (α := R)
   exact Ring.krullDimLE_one_iff_of_isPrime_bot
 
@@ -137,7 +138,7 @@ lemma Ring.KrullDimLE.mk₁' (H : ∀ I : Ideal R, I ≠ ⊥ → I.IsPrime → I
     Ring.KrullDimLE 1 R := by
   by_cases hR : (⊥ : Ideal R).IsPrime
   · rwa [Ring.krullDimLE_one_iff_of_isPrime_bot]
-  suffices Ring.KrullDimLE 0 R from .mono zero_le_one _
+  suffices Ring.KrullDimLE 0 R from inferInstance
   exact .mk₀ fun I hI ↦ H I (fun e ↦ hR (e ▸ hI)) hI
 
 end One
