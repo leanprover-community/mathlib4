@@ -207,9 +207,9 @@ end Reindex
 
 section BinaryProduct
 
-open Functor MonoidalCategory ChosenFiniteProducts mapPullbackAdj Sigma Reindex
+open ChosenFiniteProducts Sigma Reindex
 
-variable [HasPullbacks C] {X : C}
+variable [HasFiniteWidePullbacks C] {X : C}
 
 /-- The binary fan provided by `μ_` and `π_` is a binary product in `Over X`. -/
 def isBinaryProductSigmaReindex (Y Z : Over X) :
@@ -226,9 +226,6 @@ def isBinaryProductSigmaReindex (Y Z : Over X) :
     · exact congr_arg CommaMorphism.left (h ⟨ .right⟩)
     · exact congr_arg CommaMorphism.left (h ⟨ .left ⟩)
 
-attribute [local instance] Over.ConstructProducts.over_binaryProduct_of_pullback
-attribute [local instance] Over.over_hasTerminal
-attribute [local instance] hasFiniteProducts_of_has_binary_and_terminal
 attribute [local instance] ChosenFiniteProducts.ofFiniteProducts
 
 /-- The object `(Σ_ Y) (Δ_ Y Z)` is isomorphic to the binary product `Y × Z`
@@ -265,7 +262,7 @@ open MonoidalCategory Over Functor ChosenFiniteProducts
 attribute [local instance] ChosenFiniteProducts.ofFiniteProducts
 attribute [local instance] monoidalOfChosenFiniteProducts
 
-variable [HasPullbacks C] {X : C}
+variable {X : C}
 
 /-- The pull-push composition `(Over.pullback Y.hom) ⋙ (Over.map Y.hom)` is naturally isomorphic
 to the left tensor product functor `Y × _` in `Over X`-/
