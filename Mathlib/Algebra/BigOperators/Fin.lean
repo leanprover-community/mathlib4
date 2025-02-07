@@ -181,6 +181,17 @@ theorem prod_trunc {M : Type*} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) → M
   rw [prod_univ_add, Fintype.prod_eq_one _ hf, mul_one]
   rfl
 
+lemma sum_neg_one_pow (R : Type*) [Ring R] (m : ℕ) :
+    (∑ n : Fin m, (-1) ^ n.1 : R) = if Even m then 0 else 1 := by
+  induction m with
+  | zero => simp
+  | succ n IH =>
+    simp only [Fin.sum_univ_castSucc, Fin.coe_castSucc, IH, Fin.val_last,
+      Nat.even_add_one, ← Nat.not_even_iff_odd, ite_not]
+    split_ifs with h
+    · simp [*]
+    · simp [(Nat.not_even_iff_odd.mp h).neg_pow]
+
 section PartialProd
 
 variable [Monoid α] {n : ℕ}
