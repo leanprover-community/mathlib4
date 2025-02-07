@@ -345,7 +345,7 @@ lemma op_δ : S.op.δ = S.δ.op := Quiver.Hom.unop_inj (by
 
 /-- The duality isomorphism `S.L₂'.op ≅ S.op.L₁'`. -/
 noncomputable def L₂'OpIso : S.L₂'.op ≅ S.op.L₁' :=
-  ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _) (by aesop_cat)
+  ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp)
     (by dsimp; simp only [id_comp, comp_id, S.op_δ])
 
 /-- Exactness of `L₀.X₃ ⟶ L₃.X₁ ⟶ L₃.X₂`. -/
@@ -475,7 +475,7 @@ noncomputable def functorP : SnakeInput C ⥤ C where
   obj S := S.P
   map f := pullback.map _ _ _ _ f.f₁.τ₂ f.f₀.τ₃ f.f₁.τ₃ f.f₁.comm₂₃.symm
       (congr_arg ShortComplex.Hom.τ₃ f.comm₀₁.symm)
-  map_id _ := by dsimp [P]; aesop_cat
+  map_id _ := by dsimp [P]; simp
   map_comp _ _ := by dsimp [P]; aesop_cat
 
 @[reassoc]

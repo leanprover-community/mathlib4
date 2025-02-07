@@ -128,6 +128,7 @@ namespace Measure
 ### Strict subspaces have zero measure
 -/
 
+open scoped Function -- required for scoped `on` notation
 
 /-- If a set is disjoint of its translates by infinitely many bounded vectors, then it has measure
 zero. This auxiliary lemma proves this assuming additionally that the set is bounded. -/
@@ -562,7 +563,7 @@ theorem _root_.AlternatingMap.measure_parallelepiped (ω : G [⋀^Fin n]→ₗ[�
   conv_rhs => rw [ω.eq_smul_basis_det (finBasisOfFinrankEq ℝ G _i.out)]
   simp only [addHaar_parallelepiped, AlternatingMap.measure, coe_nnreal_smul_apply,
     AlternatingMap.smul_apply, Algebra.id.smul_eq_mul, abs_mul, ENNReal.ofReal_mul (abs_nonneg _),
-    Real.ennnorm_eq_ofReal_abs]
+    ← Real.enorm_eq_ofReal_abs, enorm]
 
 instance (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ) : IsAddLeftInvariant ω.measure := by
   rw [AlternatingMap.measure]; infer_instance

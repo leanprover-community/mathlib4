@@ -3,7 +3,6 @@ Copyright (c) 2022 Jesse Reimann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jesse Reimann, Kalle Kytölä
 -/
-import Mathlib.Analysis.RCLike.Basic
 import Mathlib.MeasureTheory.Measure.Content
 import Mathlib.Topology.ContinuousMap.CompactlySupported
 import Mathlib.Topology.PartitionOfUnity
@@ -37,14 +36,27 @@ variable (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0)
 
 /-! ### Construction of the content: -/
 
-section Λ_mono
+section Monotone
 
-@[gcongr]
-lemma Λ_mono (f₁ f₂ : C_c(X, ℝ≥0)) (h : f₁.1 ≤ f₂.1) : Λ f₁ ≤ Λ f₂ := by
-  obtain ⟨g, hg⟩ := exist_add_eq f₁ f₂ h
-  simp only [← hg, map_add, le_add_iff_nonneg_right, zero_le]
+lemma CompactlySupportedContinuousMap.monotone_of_nnreal : Monotone Λ := by
+  intro f₁ f₂ h
+  obtain ⟨g, hg⟩ := CompactlySupportedContinuousMap.exists_add_of_le h
+  rw [← hg]
+  simp
 
-end Λ_mono
+lemma CompactlySupportedContinuousMap.monotone_of_nonneg (Λ : C_c(X, ℝ) →ₗ[ℝ] ℝ)
+    (hΛ : ∀ f, 0 ≤ f → 0 ≤ Λ f) : Monotone Λ := by
+  intro f₁ f₂ h
+  have : 0 ≤ Λ (f₂ - f₁) := by
+    apply hΛ
+    intro x
+    simp only [coe_zero, Pi.zero_apply, coe_sub, Pi.sub_apply, sub_nonneg]
+    exact h x
+  calc Λ f₁ ≤ Λ f₁ + Λ (f₂ - f₁) := by exact (le_add_iff_nonneg_right (Λ f₁)).mpr this
+  _ =  Λ (f₁ + (f₂ - f₁)) := by exact Eq.symm (LinearMap.map_add Λ f₁ (f₂ - f₁))
+  _ = Λ f₂ := by congr; exact add_sub_cancel f₁ f₂
+
+end Monotone
 
 /-- Given a positive linear functional `Λ` on continuous compactly supported functions on `X`
 with values in `ℝ≥0`, for `K ⊆ X` compact define `λ(K) = inf {Λf | 1≤f on K}`.
@@ -231,7 +243,7 @@ lemma rieszContentAux_union {K₁ K₂ : TopologicalSpace.Compacts X}
   have hsuppf : ∀ x ∈ K₁ ⊔ K₂, x ∈ support f := by
     intro x hx
     rw [mem_support]
-    exact Ne.symm (ne_of_lt <| lt_of_lt_of_le (zero_lt_one' ℝ≥0) (hf x hx))
+    exact ne_of_gt <| lt_of_lt_of_le (zero_lt_one' ℝ≥0) (hf x hx)
   have hsubsuppf : (K₁ : Set X) ∪ (K₂ : Set X) ⊆ tsupport f := subset_trans hsuppf subset_closure
   obtain ⟨g₁, g₂, hg₁, hg₂, sum_g⟩ := exists_continuous_add_one_of_isCompact_nnreal K₁.isCompact'
     K₂.isCompact' f.hasCompactSupport'.isCompact disj hsubsuppf
@@ -275,93 +287,33 @@ lemma rieszContent_ne_top {K : Compacts X} : rieszContent Λ K ≠ ⊤ := by
 
 lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
   intro K
-  simp only [rieszContent]
-  apply le_antisymm
-  · apply le_iInf
-    simp only [le_iInf_iff, ENNReal.coe_le_coe]
-    intro K' hK'
-    exact rieszContentAux_mono Λ (Set.Subset.trans hK' interior_subset)
-  · rw [iInf_le_iff]
-    intro b hb
-    rw [rieszContentAux, ENNReal.le_coe_iff]
-    have : b < ⊤ := by
-      obtain ⟨F, hF⟩ := exists_compact_superset K.2
-      exact lt_of_le_of_lt (le_iInf_iff.mp (hb ⟨F, hF.1⟩) hF.2) ENNReal.coe_lt_top
-    use b.toNNReal
-    refine ⟨Eq.symm (ENNReal.coe_toNNReal (ne_of_lt this)), ?_⟩
-    apply NNReal.coe_le_coe.mp
-    simp only [NNReal.coe_le_coe, ← NNReal.coe_le_coe]
-    apply le_iff_forall_pos_le_add.mpr
-    intro ε hε
-    set εnn : ℝ≥0 := ⟨ε, le_of_lt hε⟩
-    have εnneq : ε.toNNReal = εnn := Real.toNNReal_of_nonneg (le_of_lt hε)
-    rw [← NNReal.coe_mk ε (le_of_lt hε), ← NNReal.coe_add, NNReal.coe_le_coe]
-    obtain ⟨f, hfleoneonK, hfle⟩ := exists_lt_rieszContentAux_add_pos Λ K (Real.toNNReal_pos.mpr hε)
-    rw [rieszContentAux, εnneq] at hfle
-    apply le_trans _ hfle.le
-    rw [← NNReal.coe_le_coe, le_iff_forall_one_lt_le_mul₀]
-    · intro α hα
-      have : Λ f * α = Λ (α.toNNReal • f) := by
-        simp only [map_smul, smul_eq_mul, NNReal.coe_mul, Real.coe_toNNReal',
-          max_eq_left <| le_of_lt (lt_of_le_of_lt zero_le_one hα)]
-        exact mul_comm _ _
-      rw [this]
-      set K' := f ⁻¹' (Ici α⁻¹.toNNReal) with hK'
-      have hKK' : K.carrier ⊆ interior K' := by
-        rw [subset_interior_iff]
-        use f ⁻¹' (Ioi α⁻¹.toNNReal)
-        refine ⟨IsOpen.preimage f.1.2 isOpen_Ioi, ?_, ?_⟩
-        · intro x hx
-          rw [Set.mem_preimage, Set.mem_Ioi]
-          exact lt_of_lt_of_le (Real.toNNReal_lt_one.mpr (inv_lt_one_of_one_lt₀ hα))
-            (hfleoneonK x hx)
-        · rw [hK']
-          intro x hx
-          simp only [mem_preimage, mem_Ioi] at hx
-          simp only [mem_preimage, mem_Ici]
-          exact le_of_lt hx
-      have hK'cp : IsCompact K' := by
-        apply IsCompact.of_isClosed_subset f.2
-        · exact IsClosed.preimage f.1.2 isClosed_Ici
-        · rw [hK']
-          apply Set.Subset.trans _ subset_closure
-          intro x hx
-          simp only [mem_preimage, mem_Ici] at hx
-          simp only [mem_support]
-          apply ne_of_gt
-          rw [Real.toNNReal_inv] at hx
-          exact (lt_of_lt_of_le
-            (inv_pos_of_pos (lt_trans zero_lt_one (Real.one_lt_toNNReal.mpr hα))) hx)
-      set hb' := hb ⟨K', hK'cp⟩
-      simp only [Compacts.coe_mk, le_iInf_iff] at hb'
-      have hbK' : b ≤ rieszContent Λ ⟨K', hK'cp⟩ := hb' hKK'
-      rw [ENNReal.le_coe_iff] at hbK'
-      obtain ⟨p, hp⟩ := hbK'
-      simp only [hp.1, ENNReal.toNNReal_coe, NNReal.val_eq_coe, map_smul, smul_eq_mul,
-        NNReal.coe_mul, Real.coe_toNNReal', ge_iff_le]
-      apply le_trans (NNReal.GCongr.toReal_le_toReal hp.2)
-      simp only [rieszContent]
-      rw [rieszContentAux, ← Real.coe_toNNReal (α ⊔ 0) (le_max_right α 0), ← NNReal.coe_mul,
-        NNReal.coe_le_coe]
-      apply csInf_le
-      · simp only [OrderBot.bddBelow]
-      · simp only [mem_image, mem_setOf_eq]
-        use α.toNNReal • f
-        refine ⟨?_, ?_⟩
-        · intro x hx
-          simp only [CompactlySupportedContinuousMap.coe_smul, Pi.smul_apply, smul_eq_mul,
-            ← NNReal.coe_le_coe, NNReal.coe_one, NNReal.coe_mul, Real.coe_toNNReal']
-          rw [← (left_eq_sup.mpr <| le_of_lt (lt_of_le_of_lt zero_le_one hα)), mul_comm]
-          apply (inv_le_iff_one_le_mul₀ (lt_trans zero_lt_one hα)).mp
-          rw [← Set.mem_Ici]
-          simp only [mem_Ici, ge_iff_le]
-          exact Real.toNNReal_le_iff_le_coe.mp hx
-        · simp only [map_smul, smul_eq_mul, mul_eq_mul_right_iff]
-          left
-          rw [Real.toNNReal_eq_toNNReal_iff (le_of_lt (lt_of_le_of_lt zero_le_one hα))
-            (le_max_right α 0), left_eq_sup]
-          exact le_of_lt (lt_of_le_of_lt zero_le_one hα)
-    · exact zero_le (Λ f)
+  simp only [rieszContent, le_antisymm_iff, le_iInf_iff, ENNReal.coe_le_coe]
+  refine ⟨fun K' hK' ↦ rieszContentAux_mono Λ (hK'.trans interior_subset), ?_⟩
+  rw [iInf_le_iff]
+  intro b hb
+  rw [rieszContentAux, ENNReal.le_coe_iff]
+  have : b < ⊤ := by
+    obtain ⟨F, hF⟩ := exists_compact_superset K.2
+    exact (le_iInf_iff.mp (hb ⟨F, hF.1⟩) hF.2).trans_lt ENNReal.coe_lt_top
+  refine ⟨b.toNNReal, (ENNReal.coe_toNNReal this.ne).symm, NNReal.coe_le_coe.mp ?_⟩
+  apply le_iff_forall_pos_le_add.mpr
+  intro ε hε
+  lift ε to ℝ≥0 using hε.le
+  obtain ⟨f, hfleoneonK, hfle⟩ := exists_lt_rieszContentAux_add_pos Λ K (Real.toNNReal_pos.mpr hε)
+  rw [rieszContentAux, Real.toNNReal_of_nonneg hε.le, ← NNReal.coe_lt_coe] at hfle
+  refine ((le_iff_forall_one_lt_le_mul₀ (zero_le (Λ f))).mpr fun α hα ↦ ?_).trans hfle.le
+  rw [mul_comm, ← smul_eq_mul, ← map_smul]
+  set K' := f ⁻¹' Ici α⁻¹
+  have hKK' : ↑K ⊆ interior K' :=
+    subset_interior_iff.2 ⟨f ⁻¹' Ioi α⁻¹, isOpen_Ioi.preimage f.1.2,
+      fun x hx ↦ (inv_lt_one_of_one_lt₀ hα).trans_le (hfleoneonK x hx),
+      preimage_mono Ioi_subset_Ici_self⟩
+  have hK'cp : IsCompact K' := .of_isClosed_subset f.2 (isClosed_Ici.preimage f.1.2) fun x hx ↦
+    subset_closure ((inv_pos_of_pos <| zero_lt_one.trans hα).trans_le hx).ne'
+  set hb' := hb ⟨K', hK'cp⟩
+  simp only [Compacts.coe_mk, le_iInf_iff] at hb'
+  exact (ENNReal.toNNReal_mono (by simp) <| hb' hKK').trans <| csInf_le'
+    ⟨α • f, fun x ↦ (inv_le_iff_one_le_mul₀' (zero_lt_one.trans hα)).mp, by simp⟩
 
 end RieszContentRegular
 
@@ -369,19 +321,23 @@ section RieszMeasure
 
 variable [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X] [BorelSpace X]
 
-/-- `rieszContent` is promoted to a measure. -/
+/-- `rieszContent` gives a `Content` from `Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0`. Here `rieszContent Λ` is
+promoted to a measure. It will be later shown that
+`∫ (x : X), f x ∂(rieszMeasure Λ hΛ) = Λ f` for all `f : C_c(X, ℝ≥0)`. -/
 def rieszMeasure := (rieszContent Λ).measure
 
-lemma leRieszMeasure_Compacts {f : C_c(X, ℝ≥0)} (hf : ∀ (x : X), f x ≤ 1) {K : Compacts X}
-    (h : tsupport f ⊆ K) : ENNReal.ofReal (Λ f) ≤ (rieszMeasure Λ) K := by
-  simp only [rieszMeasure, MeasureTheory.Content.measure_eq_content_of_regular (rieszContent Λ)
+-- not needed anymore?
+lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : ∀ x, f x ≤ 1)
+    {K : Set X} (hK : IsCompact K) (h : tsupport f ⊆ K) : .ofNNReal (Λ f) ≤ rieszMeasure Λ K := by
+  rw [← TopologicalSpace.Compacts.coe_mk K hK]
+  simp only [rieszMeasure, Content.measure_eq_content_of_regular (rieszContent Λ)
     (contentRegular_rieszContent Λ)]
   simp only [rieszContent, ENNReal.ofReal_coe_nnreal, ENNReal.coe_le_coe]
   apply le_iff_forall_pos_le_add.mpr
   intro ε hε
-  obtain ⟨g, hg⟩ := exists_lt_rieszContentAux_add_pos Λ K hε
-  apply le_of_lt (lt_of_le_of_lt _ hg.2)
-  apply Λ_mono Λ
+  obtain ⟨g, hg⟩ := exists_lt_rieszContentAux_add_pos Λ ⟨K, hK⟩ hε
+  apply le_trans _ hg.2.le
+  apply monotone_of_nnreal Λ
   intro x
   simp only [ContinuousMap.toFun_eq_coe, CompactlySupportedContinuousMap.coe_toContinuousMap]
   by_cases hx : x ∈ tsupport f
@@ -389,13 +345,10 @@ lemma leRieszMeasure_Compacts {f : C_c(X, ℝ≥0)} (hf : ∀ (x : X), f x ≤ 1
   · rw [image_eq_zero_of_nmem_tsupport hx]
     exact zero_le (g x)
 
-lemma leRieszMeasure_Opens {f : C_c(X, ℝ≥0)} (hf : ∀ (x : X), f x ≤ 1) {V : Opens X}
-    (h : tsupport f ⊆ V) :
-    ENNReal.ofReal (Λ f) ≤ (rieszMeasure Λ) V := by
-  apply le_trans _ (MeasureTheory.measure_mono h)
-  rw [← TopologicalSpace.Compacts.coe_mk (tsupport f) f.2]
-  apply leRieszMeasure_Compacts Λ hf
-  simp only [Compacts.coe_mk]
+lemma le_rieszMeasure_of_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : ∀ x, f x ≤ 1) {V : Set X}
+    (h : tsupport f ⊆ V) : .ofNNReal (Λ f) ≤ rieszMeasure Λ V := by
+  apply le_trans _ (measure_mono h)
+  apply le_rieszMeasure_of_isCompact_tsupport_subset Λ hf f.hasCompactSupport
   exact subset_rfl
 
 end RieszMeasure

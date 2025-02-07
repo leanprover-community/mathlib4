@@ -68,7 +68,7 @@ def liftToFinsetColimitCocone [HasColimitsOfShape (Finset (Discrete α)) C]
         convert h j using 1
         · simp [← colimit.w (liftToFinsetObj F) ⟨⟨Finset.singleton_subset_iff.2 hj⟩⟩]
           rfl
-        · aesop_cat }
+        · simp }
 
 variable (C) (α)
 
@@ -180,7 +180,7 @@ def liftToFinsetLimitCone [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
         convert h j using 1
         · simp [← limit.w (liftToFinsetObj F) ⟨⟨⟨Finset.singleton_subset_iff.2 hj⟩⟩⟩]
           rfl
-        · aesop_cat }
+        · simp }
 
 variable (C) (α)
 

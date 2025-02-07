@@ -280,13 +280,10 @@ theorem eq_zero_iff_equiv_zero (f : PadicSeq p) : mk f = 0 ↔ f ≈ 0 :=
 theorem ne_zero_iff_nequiv_zero (f : PadicSeq p) : mk f ≠ 0 ↔ ¬f ≈ 0 :=
   eq_zero_iff_equiv_zero _ |>.not
 
-theorem norm_const (q : ℚ) : norm (const (padicNorm p) q) = padicNorm p q :=
-  if hq : q = 0 then by
-    have : const (padicNorm p) q ≈ 0 := by simpa [hq] using Setoid.refl (const (padicNorm p) 0)
-    subst hq; simp [norm, this]
-  else by
-    have : ¬const (padicNorm p) q ≈ 0 := not_equiv_zero_const_of_nonzero hq
-    simp [norm, this]
+theorem norm_const (q : ℚ) : norm (const (padicNorm p) q) = padicNorm p q := by
+  obtain rfl | hq := eq_or_ne q 0
+  · simp [norm]
+  · simp [norm, not_equiv_zero_const_of_nonzero hq]
 
 theorem norm_values_discrete (a : PadicSeq p) (ha : ¬a ≈ 0) : ∃ z : ℤ, a.norm = (p : ℚ) ^ (-z) := by
   let ⟨k, hk, hk'⟩ := norm_eq_norm_app_of_nonzero ha
@@ -952,8 +949,7 @@ theorem norm_eq_zpow_neg_valuation {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : �
   refine Quotient.inductionOn' x fun f hf => ?_
   change (PadicSeq.norm _ : ℝ) = (p : ℝ) ^ (-PadicSeq.valuation _)
   rw [PadicSeq.norm_eq_zpow_neg_valuation]
-  · change ↑((p : ℚ) ^ (-PadicSeq.valuation f)) = (p : ℝ) ^ (-PadicSeq.valuation f)
-    rw [Rat.cast_zpow, Rat.cast_natCast]
+  · rw [Rat.cast_zpow, Rat.cast_natCast]
   · apply CauSeq.not_limZero_of_not_congr_zero
     -- Porting note: was `contrapose! hf`
     intro hf'
@@ -978,10 +974,9 @@ lemma valuation_intCast (n : ℤ) : valuation (n : ℚ_[p]) = padicValInt p n :=
 lemma valuation_natCast (n : ℕ) : valuation (n : ℚ_[p]) = padicValNat p n := by
   rw [← Rat.cast_natCast, valuation_ratCast, padicValRat.of_nat]
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 lemma valuation_ofNat (n : ℕ) [n.AtLeastTwo] :
-    valuation (no_index (OfNat.ofNat n : ℚ_[p])) = padicValNat p n :=
+    valuation (ofNat(n) : ℚ_[p]) = padicValNat p n :=
   valuation_natCast n
 
 @[simp]

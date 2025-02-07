@@ -184,21 +184,19 @@ theorem iterToSum_X (b : S₁) : iterToSum R S₁ S₂ (X b) = X (Sum.inl b) :=
 theorem iterToSum_C_X (c : S₂) : iterToSum R S₁ S₂ (C (X c)) = X (Sum.inr c) :=
   Eq.trans (eval₂_C _ _ (X c)) (eval₂_X _ _ _)
 
-variable (σ)
+section isEmptyRingEquiv
+variable [IsEmpty σ]
 
+variable (σ) in
 /-- The algebra isomorphism between multivariable polynomials in no variables
 and the ground ring. -/
-@[simps!]
-def isEmptyAlgEquiv [he : IsEmpty σ] : MvPolynomial σ R ≃ₐ[R] R :=
-  AlgEquiv.ofAlgHom (aeval (IsEmpty.elim he)) (Algebra.ofId _ _)
-    (by ext)
-    (by
-      ext i m
-      exact IsEmpty.elim' he i)
+@[simps! apply]
+def isEmptyAlgEquiv : MvPolynomial σ R ≃ₐ[R] R :=
+  .ofAlgHom (aeval isEmptyElim) (Algebra.ofId _ _) (by ext) (by ext i m; exact isEmptyElim i)
 
-variable {R S₁ σ} in
+variable {R S₁} in
 @[simp]
-lemma aeval_injective_iff_of_isEmpty [IsEmpty σ] [CommSemiring S₁] [Algebra R S₁] {f : σ → S₁} :
+lemma aeval_injective_iff_of_isEmpty [CommSemiring S₁] [Algebra R S₁] {f : σ → S₁} :
     Function.Injective (aeval f : MvPolynomial σ R →ₐ[R] S₁) ↔
       Function.Injective (algebraMap R S₁) := by
   have : aeval f = (Algebra.ofId R S₁).comp (@isEmptyAlgEquiv R σ _ _).toAlgHom := by
@@ -207,13 +205,20 @@ lemma aeval_injective_iff_of_isEmpty [IsEmpty σ] [CommSemiring S₁] [Algebra R
   rw [this, ← Injective.of_comp_iff' _ (@isEmptyAlgEquiv R σ _ _).bijective]
   rfl
 
+variable (σ) in
 /-- The ring isomorphism between multivariable polynomials in no variables
 and the ground ring. -/
-@[simps!]
-def isEmptyRingEquiv [IsEmpty σ] : MvPolynomial σ R ≃+* R :=
-  (isEmptyAlgEquiv R σ).toRingEquiv
+@[simps! apply]
+def isEmptyRingEquiv : MvPolynomial σ R ≃+* R := (isEmptyAlgEquiv R σ).toRingEquiv
 
-variable {σ}
+lemma isEmptyRingEquiv_symm_toRingHom : (isEmptyRingEquiv R σ).symm.toRingHom = C := rfl
+@[simp] lemma isEmptyRingEquiv_symm_apply (r : R) : (isEmptyRingEquiv R σ).symm r = C r := rfl
+
+lemma isEmptyRingEquiv_eq_coeff_zero {σ R : Type*} [CommSemiring R] [IsEmpty σ] {x} :
+    isEmptyRingEquiv R σ x = x.coeff 0 := by
+  obtain ⟨x, rfl⟩ := (isEmptyRingEquiv R σ).symm.surjective x; simp
+
+end isEmptyRingEquiv
 
 /-- A helper function for `sumRingEquiv`. -/
 @[simps]
@@ -250,7 +255,7 @@ def sumAlgEquiv : MvPolynomial (S₁ ⊕ S₂) R ≃ₐ[R] MvPolynomial S₁ (Mv
   { sumRingEquiv R S₁ S₂ with
     commutes' := by
       intro r
-      have A : algebraMap R (MvPolynomial S₁ (MvPolynomial S₂ R)) r = (C (C r) : _) := rfl
+      have A : algebraMap R (MvPolynomial S₁ (MvPolynomial S₂ R)) r = (C (C r) :) := rfl
       have B : algebraMap R (MvPolynomial (S₁ ⊕ S₂) R) r = C r := rfl
       simp only [sumRingEquiv, mvPolynomialEquivMvPolynomial, Equiv.toFun_as_coe,
         Equiv.coe_fn_mk, B, sumToIter_C, A] }
@@ -266,6 +271,30 @@ lemma sumAlgEquiv_comp_rename_inl :
       MvPolynomial.mapAlgHom (Algebra.ofId _ _) := by
   ext i
   simp
+
+section commAlgEquiv
+variable {R S₁ S₂ : Type*} [CommSemiring R]
+
+variable (R S₁ S₂) in
+/-- The algebra isomorphism between multivariable polynomials in variables `S₁` of multivariable
+polynomials in variables `S₂` and multivariable polynomials in variables `S₂` of multivariable
+polynomials in variables `S₁`. -/
+noncomputable
+def commAlgEquiv : MvPolynomial S₁ (MvPolynomial S₂ R) ≃ₐ[R] MvPolynomial S₂ (MvPolynomial S₁ R) :=
+  (sumAlgEquiv R S₁ S₂).symm.trans <| (renameEquiv _ (.sumComm S₁ S₂)).trans (sumAlgEquiv R S₂ S₁)
+
+@[simp] lemma commAlgEquiv_C (p) : commAlgEquiv R S₁ S₂ (.C p) = .map C p := by
+  suffices (commAlgEquiv R S₁ S₂).toAlgHom.comp
+      (IsScalarTower.toAlgHom R (MvPolynomial S₂ R) _) = mapAlgHom (Algebra.ofId _ _) by
+    exact DFunLike.congr_fun this p
+  ext x : 1
+  simp [commAlgEquiv]
+
+lemma commAlgEquiv_C_X (i) : commAlgEquiv R S₁ S₂ (.C (.X i)) = .X i := by simp
+
+@[simp] lemma commAlgEquiv_X (i) : commAlgEquiv R S₁ S₂ (.X i) = .C (.X i) := by simp [commAlgEquiv]
+
+end commAlgEquiv
 
 section
 
@@ -367,12 +396,12 @@ theorem finSuccEquiv_coeff_coeff (m : Fin n →₀ ℕ) (f : MvPolynomial (Fin (
   induction' f using MvPolynomial.induction_on' with j r p q hp hq generalizing i m
   swap
   · simp only [map_add, Polynomial.coeff_add, coeff_add, hp, hq]
-  simp only [finSuccEquiv_apply, coe_eval₂Hom, eval₂_monomial, RingHom.coe_comp, prod_pow,
+  simp only [finSuccEquiv_apply, coe_eval₂Hom, eval₂_monomial, RingHom.coe_comp, Finsupp.prod_pow,
     Polynomial.coeff_C_mul, coeff_C_mul, coeff_monomial, Fin.prod_univ_succ, Fin.cases_zero,
     Fin.cases_succ, ← map_prod, ← RingHom.map_pow, Function.comp_apply]
   rw [← mul_boole, mul_comm (Polynomial.X ^ j 0), Polynomial.coeff_C_mul_X_pow]; congr 1
   obtain rfl | hjmi := eq_or_ne j (m.cons i)
-  · simpa only [cons_zero, cons_succ, if_pos rfl, monomial_eq, C_1, one_mul, prod_pow] using
+  · simpa only [cons_zero, cons_succ, if_pos rfl, monomial_eq, C_1, one_mul, Finsupp.prod_pow] using
       coeff_monomial m m (1 : R)
   · simp only [hjmi, if_false]
     obtain hij | rfl := ne_or_eq i (j 0)
@@ -382,7 +411,7 @@ theorem finSuccEquiv_coeff_coeff (m : Fin n →₀ ℕ) (f : MvPolynomial (Fin (
       rintro rfl
       rw [cons_tail] at hjmi
       contradiction
-    simpa only [monomial_eq, C_1, one_mul, prod_pow, Finsupp.tail_apply, if_neg hmj.symm] using
+    simpa only [monomial_eq, C_1, one_mul, Finsupp.prod_pow, tail_apply, if_neg hmj.symm] using
       coeff_monomial m j.tail (1 : R)
 
 theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (n + 1)) R) :

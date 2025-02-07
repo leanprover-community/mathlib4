@@ -5,7 +5,7 @@ Authors: Aaron Anderson, Yaël Dillies
 -/
 import Mathlib.Order.Cover
 import Mathlib.Order.LatticeIntervals
-import Mathlib.Order.GaloisConnection
+import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Modular Lattices

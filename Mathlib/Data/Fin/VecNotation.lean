@@ -31,7 +31,7 @@ The main new notation is `![a, b]`, which gets expanded to `vecCons a (vecCons b
 
 ## Examples
 
-Examples of usage can be found in the `test/matrix.lean` file.
+Examples of usage can be found in the `MathlibTest/matrix.lean` file.
 -/
 
 
@@ -143,7 +143,6 @@ theorem tail_cons (x : α) (u : Fin m → α) : vecTail (vecCons x u) = u := by
   ext
   simp [vecTail]
 
-@[simp]
 theorem empty_val' {n' : Type*} (j : n') : (fun i => (![] : Fin 0 → n' → α) i j) = ![] :=
   empty_eq _
 

@@ -36,7 +36,7 @@ and type of `f (g x)` depends on `x` and `g x`. -/
 def dcomp {β : α → Sort u₂} {φ : ∀ {x : α}, β x → Sort u₃} (f : ∀ {x : α} (y : β x), φ y)
     (g : ∀ x, β x) : ∀ x, φ (g x) := fun x => f (g x)
 
-infixr:80 " ∘' " => Function.dcomp
+@[inherit_doc] infixr:80 " ∘' " => Function.dcomp
 
 /-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
 `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation
@@ -44,15 +44,11 @@ from `β` to `α`. -/
 abbrev onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x y => f (g x) (g y)
 
 @[inherit_doc onFun]
-infixl:2 " on " => onFun
+scoped infixl:2 " on " => onFun
 
 abbrev swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
 
-#adaptation_note /-- nightly-2024-03-16: added to replace simp [Function.swap] -/
 theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl
-
--- Porting note: removed, it was never used
--- notation f " -[" op "]- " g => combine f op g
 
 @[simp, mfld_simps]
 theorem id_comp (f : α → β) : id ∘ f = f := rfl
@@ -89,7 +85,7 @@ def Bijective (f : α → β) :=
 theorem Bijective.comp {g : β → φ} {f : α → β} : Bijective g → Bijective f → Bijective (g ∘ f)
   | ⟨h_ginj, h_gsurj⟩, ⟨h_finj, h_fsurj⟩ => ⟨h_ginj.comp h_finj, h_gsurj.comp h_fsurj⟩
 
-/-- `LeftInverse g f` means that g is a left inverse to f. That is, `g ∘ f = id`. -/
+/-- `LeftInverse g f` means that `g` is a left inverse to `f`. That is, `g ∘ f = id`. -/
 def LeftInverse (g : β → α) (f : α → β) : Prop :=
   ∀ x, g (f x) = x
 
@@ -97,7 +93,7 @@ def LeftInverse (g : β → α) (f : α → β) : Prop :=
 def HasLeftInverse (f : α → β) : Prop :=
   ∃ finv : β → α, LeftInverse finv f
 
-/-- `RightInverse g f` means that g is a right inverse to f. That is, `f ∘ g = id`. -/
+/-- `RightInverse g f` means that `g` is a right inverse to `f`. That is, `f ∘ g = id`. -/
 def RightInverse (g : β → α) (f : α → β) : Prop :=
   LeftInverse f g
 
