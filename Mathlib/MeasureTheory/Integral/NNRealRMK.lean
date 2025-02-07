@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
 
-import Mathlib.MeasureTheory.Integral.linearRMK
+import Mathlib.MeasureTheory.Integral.RealRMK
 
 /-!
 #  Riesz–Markov–Kakutani representation theorem for `NNReal`
@@ -25,6 +25,7 @@ inequalities by `le_antisymm`, yet for `C_c(X, ℝ≥0)` there is no `Neg`.
 noncomputable section
 
 open scoped BoundedContinuousFunction NNReal ENNReal
+
 open Set Function TopologicalSpace CompactlySupported CompactlySupportedContinuousMap
   MeasureTheory
 
@@ -44,7 +45,7 @@ theorem lintegral_rieszMeasure_eq [Nonempty X] : ∀ (f : C_c(X, ℝ≥0)),
                                  intro x
                                  simp only [Pi.zero_apply, NNReal.zero_le_coe]),
       ← NNReal.coe_inj, eq_toRealLinear_toReal f,
-      ← LinearRMK.integral_rieszMeasure_eq (toRealLinear Λ) (nonneg_toRealLinear Λ)]
+      ← RealRMK.integral_rieszMeasure (toRealLinear Λ) (nonneg_toRealLinear Λ)]
     · simp only [toReal_apply, NNReal.coe_mk]
       congr
       exact eq_toNNRealLinear_toRealLinear Λ
