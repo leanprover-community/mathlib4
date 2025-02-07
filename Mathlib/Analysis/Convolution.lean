@@ -330,9 +330,6 @@ theorem _root_.HasCompactSupport.convolutionExists_right (hcg : HasCompactSuppor
   refine fun t => mt fun ht : g (x₀ - t) = 0 => ?_
   simp_rw [ht, (L _).map_zero]
 
-@[deprecated (since := "2025-02-06")]
-alias _root_.HasCompactSupport.convolutionExistsRight := HasCompactSupport.convolutionExists_right
-
 theorem _root_.HasCompactSupport.convolutionExists_left_of_continuous_right
     (hcf : HasCompactSupport f) (hf : LocallyIntegrable f μ) (hg : Continuous g) :
     ConvolutionExists f g L μ := by
@@ -395,6 +392,9 @@ theorem _root_.HasCompactSupport.convolutionExists_left
     (hcf : HasCompactSupport f) (hf : Continuous f)
     (hg : LocallyIntegrable g μ) : ConvolutionExists f g L μ := fun x₀ =>
   convolutionExistsAt_flip.mp <| hcf.convolutionExists_right L.flip hg hf x₀
+
+@[deprecated (since := "2025-02-06")]
+alias _root_.HasCompactSupport.convolutionExistsLeft := HasCompactSupport.convolutionExists_left
 
 theorem _root_.HasCompactSupport.convolutionExists_right_of_continuous_left
     (hcg : HasCompactSupport g) (hf : Continuous f) (hg : LocallyIntegrable g μ) :
