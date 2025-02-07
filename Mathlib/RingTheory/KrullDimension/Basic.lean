@@ -71,7 +71,7 @@ proof_wanted MvPolynomial.fin_ringKrullDim_eq_add_of_isNoetherianRing
 
 section Zero
 
-instance (priority := 100) [Subsingleton R] : Ring.KrullDimLE 0 R :=
+instance [Subsingleton R] : Ring.KrullDimLE 0 R :=
   ⟨krullDim_eq_bot.trans_le bot_le⟩
 
 lemma Ring.krullDimLE_zero_iff : Ring.KrullDimLE 0 R ↔ ∀ I : Ideal R, I.IsPrime → I.IsMaximal := by
@@ -83,9 +83,11 @@ lemma Ring.krullDimLE_zero_iff : Ring.KrullDimLE 0 R ↔ ∀ I : Ideal R, I.IsPr
 lemma Ring.KrullDimLE.mk₀ (H : ∀ I : Ideal R, I.IsPrime → I.IsMaximal) : Ring.KrullDimLE 0 R := by
   rwa [Ring.krullDimLE_zero_iff]
 
-instance (priority := 100) Ideal.isMaximal_of_isPrime [Ring.KrullDimLE 0 R]
-    (I : Ideal R) [I.IsPrime] : I.IsMaximal :=
+lemma Ideal.isMaximal_of_isPrime [Ring.KrullDimLE 0 R] (I : Ideal R) [I.IsPrime] : I.IsMaximal :=
   Ring.krullDimLE_zero_iff.mp ‹_› I ‹_›
+
+instance (priority := 100) (I : Ideal R) [I.IsPrime] [Ring.KrullDimLE 0 R] : I.IsMaximal :=
+  I.isMaximal_of_isPrime
 
 lemma Ideal.isMaximal_iff_isPrime [Ring.KrullDimLE 0 R] {I : Ideal R} : I.IsMaximal ↔ I.IsPrime :=
   ⟨IsMaximal.isPrime, fun _ ↦ inferInstance⟩
