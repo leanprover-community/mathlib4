@@ -453,7 +453,7 @@ end Augmented
 /-- Augment a simplicial object with an object. -/
 @[simps]
 def augment (X : SimplicialObject C) (X₀ : C) (f : X _[0] ⟶ X₀)
-    (w : ∀ (i : SimplexCategory) (g₁ g₂ : (⦋0⦌ : SimplexCategory) ⟶ i),
+    (w : ∀ (i : SimplexCategory) (g₁ g₂ : ⦋0⦌ ⟶ i),
       X.map g₁.op ≫ f = X.map g₂.op ≫ f) :
     SimplicialObject.Augmented C where
   left := X
@@ -779,7 +779,7 @@ open Simplicial
 /-- Augment a cosimplicial object with an object. -/
 @[simps]
 def augment (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj ⦋0⦌)
-    (w : ∀ (i : SimplexCategory) (g₁ g₂ : (⦋0⦌ : SimplexCategory) ⟶ i),
+    (w : ∀ (i : SimplexCategory) (g₁ g₂ : ⦋0⦌ ⟶ i),
       f ≫ X.map g₁ = f ≫ X.map g₂) : CosimplicialObject.Augmented C where
   left := X₀
   right := X

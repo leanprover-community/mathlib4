@@ -64,7 +64,7 @@ def spine (n : ℕ) (Δ : X _[n]) : X.Path n where
     simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
     rw [SimplexCategory.δ_zero_mkOfSucc]
 
-lemma spine_map_vertex {n : ℕ} (x : X _[n]) {m : ℕ} (φ : (⦋m⦌ : SimplexCategory) ⟶ ⦋n⦌)
+lemma spine_map_vertex {n : ℕ} (x : X _[n]) {m : ℕ} (φ : ⦋m⦌ ⟶ ⦋n⦌)
     (i : Fin (m + 1)) :
     (spine X m (X.map φ.op x)).vertex i = (spine X n x).vertex (φ.toOrderHom i) := by
   dsimp [spine]

@@ -57,7 +57,7 @@ theorem iff {j : ℕ} {i : Fin (j + 2)} : Isδ₀ (SimplexCategory.δ i) ↔ i =
   · rintro rfl
     exact ⟨rfl, by dsimp; exact Fin.succ_ne_zero (0 : Fin (j + 1))⟩
 
-theorem eq_δ₀ {n : ℕ} {i : (⦋n⦌ : SimplexCategory) ⟶ ⦋n + 1⦌} [Mono i] (hi : Isδ₀ i) :
+theorem eq_δ₀ {n : ℕ} {i : ⦋n⦌ ⟶ ⦋n + 1⦌} [Mono i] (hi : Isδ₀ i) :
     i = SimplexCategory.δ 0 := by
   obtain ⟨j, rfl⟩ := SimplexCategory.eq_δ_of_mono i
   rw [iff] at hi

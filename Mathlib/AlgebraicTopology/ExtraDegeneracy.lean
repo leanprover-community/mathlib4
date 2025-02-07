@@ -159,8 +159,7 @@ theorem shiftFun_succ {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) (i : Fin 
 /-- The shift of a morphism `f : ⦋n⦌ → Δ` in `SimplexCategory` corresponds to
 the monotone map which sends `0` to `0` and `i.succ` to `f.toOrderHom i`. -/
 @[simp]
-def shift {n : ℕ} {Δ : SimplexCategory}
-    (f : (⦋n⦌ : SimplexCategory) ⟶ Δ) : (⦋n + 1⦌ : SimplexCategory) ⟶ Δ :=
+def shift {n : ℕ} {Δ : SimplexCategory} (f : ⦋n⦌ ⟶ Δ) : ⦋n + 1⦌ ⟶ Δ :=
   SimplexCategory.Hom.mk
     { toFun := shiftFun f.toOrderHom
       monotone' := fun i₁ i₂ hi => by
