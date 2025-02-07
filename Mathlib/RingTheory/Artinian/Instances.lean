@@ -6,6 +6,7 @@ Authors: Junyan Xu
 import Mathlib.Algebra.Divisibility.Prod
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.RingTheory.Artinian.Module
+import Mathlib.RingTheory.SimpleModule
 
 /-!
 # Instances related to Artinian rings
@@ -24,5 +25,7 @@ instance : DecompositionMonoid R := MulEquiv.decompositionMonoid (equivPi R)
 
 instance : DecompositionMonoid (Polynomial R) :=
   MulEquiv.decompositionMonoid <| (Polynomial.mapEquiv <| equivPi R).trans (Polynomial.piEquiv _)
+
+theorem isSemisimpleRing_of_isReduced : IsSemisimpleRing R := (equivPi R).symm.isSemisimpleRing
 
 end IsArtinianRing
