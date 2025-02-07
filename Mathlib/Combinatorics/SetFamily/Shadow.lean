@@ -58,9 +58,8 @@ elements from any set in `𝒜`. -/
 def shadow (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
   𝒜.sup fun s => s.image (erase s)
 
--- Porting note: added `inherit_doc` to calm linter
 @[inherit_doc] scoped[FinsetFamily] notation:max "∂ " => Finset.shadow
--- Porting note: had to open FinsetFamily
+
 open FinsetFamily
 
 /-- The shadow of the empty set is empty. -/
@@ -119,7 +118,6 @@ lemma mem_shadow_iterate_iff_exists_card :
     t ∈ ∂^[k] 𝒜 ↔ ∃ u : Finset α, #u = k ∧ Disjoint t u ∧ t ∪ u ∈ 𝒜 := by
   induction' k with k ih generalizing t
   · simp
-  set_option tactic.skipAssignedInstances false in
   simp only [mem_shadow_iff_insert_mem, ih, Function.iterate_succ_apply', card_eq_succ]
   aesop
 
@@ -184,7 +182,6 @@ variable [DecidableEq α] [Fintype α] {𝒜 : Finset (Finset α)} {s t : Finset
 def upShadow (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
   𝒜.sup fun s => sᶜ.image fun a => insert a s
 
--- Porting note: added `inherit_doc` to calm linter
 @[inherit_doc] scoped[FinsetFamily] notation:max "∂⁺ " => Finset.upShadow
 
 /-- The upper shadow of the empty set is empty. -/

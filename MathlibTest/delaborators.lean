@@ -232,4 +232,33 @@ variable (p : (ℕ → ℕ) × (ℕ → ℕ))
 #guard_msgs in
 #check p.1 22
 
+set_option pp.numericProj.prod false in
+/-- info: x.fst : ℕ -/
+#guard_msgs in
+#check x.1
+
+set_option pp.numericProj.prod false in
+/-- info: x.snd : ℕ -/
+#guard_msgs in
+#check x.2
+
+set_option pp.explicit true in
+/-- info: @Prod.fst Nat Nat x : Nat -/
+#guard_msgs in
+#check x.1
+
+set_option pp.explicit true in
+/-- info: @Prod.snd Nat Nat x : Nat -/
+#guard_msgs in
+#check x.2
+
+set_option pp.fieldNotation false in
+/-- info: Prod.fst x : ℕ -/
+#guard_msgs in
+#check x.1
+
+set_option pp.fieldNotation false in
+/-- info: Prod.snd x : ℕ -/
+#guard_msgs in
+#check x.2
 end prod

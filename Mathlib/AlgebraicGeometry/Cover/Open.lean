@@ -32,7 +32,6 @@ namespace Scheme
 /-- An open cover of a scheme `X` is a cover where all component maps are open immersions. -/
 abbrev OpenCover (X : Scheme.{u}) : Type _ := Cover.{v} @IsOpenImmersion X
 
-@[deprecated (since := "2024-06-23")] alias OpenCover.Covers := Cover.covers
 @[deprecated (since := "2024-11-06")] alias OpenCover.IsOpen := Cover.map_prop
 
 variable {X Y Z : Scheme.{u}} (𝒰 : OpenCover X) (f : X ⟶ Z) (g : Y ⟶ Z)
@@ -210,7 +209,7 @@ lemma OpenCover.ext_elem {X : Scheme.{u}} {U : X.Opens} (f g : Γ(X, U)) (𝒰 :
   fapply TopCat.Sheaf.eq_of_locally_eq' X.sheaf
     (fun i ↦ (𝒰.map (𝒰.f i)).opensRange ⊓ U) _ (fun _ ↦ homOfLE inf_le_right)
   · intro x hx
-    simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_inf, Hom.opensRange_coe, Opens.coe_mk,
+    simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_inf, Hom.coe_opensRange, Opens.coe_mk,
       Set.mem_iUnion, Set.mem_inter_iff, Set.mem_range, SetLike.mem_coe, exists_and_right]
     refine ⟨?_, hx⟩
     simpa using ⟨_, 𝒰.covers x⟩
@@ -275,10 +274,10 @@ theorem affineBasisCover_map_range (X : Scheme.{u}) (x : X)
     (r : (X.local_affine x).choose_spec.choose) :
     Set.range (X.affineBasisCover.map ⟨x, r⟩).base =
       (X.affineCover.map x).base '' (PrimeSpectrum.basicOpen r).1 := by
-  erw [coe_comp, Set.range_comp]
+  erw [TopCat.coe_comp, Set.range_comp]
   -- Porting note: `congr` fails to see the goal is comparing image of the same function
   refine congr_arg (_ '' ·) ?_
-  exact (PrimeSpectrum.localization_away_comap_range (Localization.Away r) r : _)
+  exact (PrimeSpectrum.localization_away_comap_range (Localization.Away r) r :)
 
 theorem affineBasisCover_is_basis (X : Scheme.{u}) :
     TopologicalSpace.IsTopologicalBasis
@@ -292,7 +291,7 @@ theorem affineBasisCover_is_basis (X : Scheme.{u}) :
     let U' := (X.affineCover.map (X.affineCover.f a)).base ⁻¹' U
     have hxU' : x ∈ U' := by rw [← e] at haU; exact haU
     rcases PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open hxU'
-        ((X.affineCover.map (X.affineCover.f a)).base.continuous_toFun.isOpen_preimage _
+        ((X.affineCover.map (X.affineCover.f a)).base.hom.continuous_toFun.isOpen_preimage _
           hU) with
       ⟨_, ⟨_, ⟨s, rfl⟩, rfl⟩, hxV, hVU⟩
     refine ⟨_, ⟨⟨_, s⟩, rfl⟩, ?_, ?_⟩ <;> rw [affineBasisCover_map_range]

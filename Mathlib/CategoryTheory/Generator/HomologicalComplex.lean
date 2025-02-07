@@ -6,7 +6,8 @@ Authors: Joël Riou
 
 import Mathlib.Algebra.Homology.Double
 import Mathlib.Algebra.Homology.HomologicalComplexLimits
-import Mathlib.CategoryTheory.Generator.Coproduct
+import Mathlib.CategoryTheory.Generator.Basic
+--import Mathlib.CategoryTheory.Generator.Coproduct
 
 /-!
 # Generators of the category of homological complexes
@@ -58,12 +59,11 @@ variable [HasCoproductsOfShape ι C] [Preadditive C] [HasZeroObject C]
 lemma isSeparator_coproduct_separatingFamily {X : C} (hX : IsSeparator X) :
     IsSeparator (∐ (fun i ↦ separatingFamily c (fun (_ : Unit) ↦ X) ⟨⟨⟩, i⟩)) := by
   let φ (i : ι) := separatingFamily c (fun (_ : Unit) ↦ X) ⟨⟨⟩, i⟩
-  have h := isSeparating_separatingFamily c (X := fun (_ : Unit) ↦ X) (by simpa using hX)
-  let c : Cofan (separatingFamily c (fun (_ : Unit) ↦ X)) := Cofan.mk (∐ φ)
-    (fun ⟨_, i⟩ ↦ Sigma.ι φ i)
-  have hc : IsColimit c := IsColimit.ofWhiskerEquivalence
+  refine isSeparator_of_isColimit_cofan
+    (isSeparating_separatingFamily c (X := fun (_ : Unit) ↦ X) (by simpa using hX))
+      (c := Cofan.mk (∐ φ) (fun ⟨_, i⟩ ↦ Sigma.ι φ i)) ?_
+  exact IsColimit.ofWhiskerEquivalence
     (Discrete.equivalence (Equiv.punitProd.{0} ι).symm) (coproductIsCoproduct φ)
-  exact IsSeparating.isSeparator_of_isColimit_cofan h hc
 
 instance hasSeparator [HasSeparator C] : HasSeparator (HomologicalComplex C c) :=
   ⟨_, isSeparator_coproduct_separatingFamily c (isSeparator_separator C)⟩

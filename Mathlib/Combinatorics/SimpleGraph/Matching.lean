@@ -46,6 +46,8 @@ one edge, and the edges of the subgraph represent the paired vertices.
 * Hall's Marriage Theorem (see `Mathlib.Combinatorics.Hall.Basic`)
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open Function
 
 namespace SimpleGraph
@@ -241,7 +243,7 @@ lemma IsPerfectMatching.induce_connectedComponent_isMatching (h : M.IsPerfectMat
   simpa [h.2.verts_eq_univ] using h.1.induce_connectedComponent c
 
 @[simp]
-lemma IsPerfectMatching.toSubgraph_spanningCoe_iff (h : M.spanningCoe ≤ G') :
+lemma IsPerfectMatching.toSubgraph_iff (h : M.spanningCoe ≤ G') :
     (G'.toSubgraph M.spanningCoe h).IsPerfectMatching ↔ M.IsPerfectMatching := by
   simp only [isPerfectMatching_iff, toSubgraph_adj, spanningCoe_adj]
 
@@ -254,13 +256,11 @@ section Finite
 lemma even_card_of_isPerfectMatching [Fintype V] [DecidableEq V] [DecidableRel G.Adj]
     (c : ConnectedComponent G) (hM : M.IsPerfectMatching) :
     Even (Fintype.card c.supp) := by
-  #adaptation_note
-  /--
-  After https://github.com/leanprover/lean4/pull/5020, some instances that use the chain of coercions
+  #adaptation_note /-- https://github.com/leanprover/lean4/pull/5020
+  some instances that use the chain of coercions
   `[SetLike X], X → Set α → Sort _` are
   blocked by the discrimination tree. This can be fixed by redeclaring the instance for `X`
-  using the double coercion but the proper fix seems to avoid the double coercion.
-  -/
+  using the double coercion but the proper fix seems to avoid the double coercion. -/
   letI : DecidablePred fun x ↦ x ∈ (M.induce c.supp).verts := fun a ↦ G.instDecidableMemSupp c a
   simpa using (hM.induce_connectedComponent_isMatching c).even_card
 
@@ -337,9 +337,18 @@ lemma IsCycles.other_adj_of_adj (h : G.IsCycles) (hadj : G.Adj v w) :
   obtain ⟨w', hww'⟩ := (G.neighborSet v).exists_ne_of_one_lt_ncard (by omega) w
   exact ⟨w', ⟨hww'.2.symm, hww'.1⟩⟩
 
+lemma IsCycles.induce_supp (c : G.ConnectedComponent) (h : G.IsCycles) :
+    (G.induce c.supp).spanningCoe.IsCycles := by
+  intro v ⟨w, hw⟩
+  rw [mem_neighborSet, c.adj_spanningCoe_induce_supp] at hw
+  rw [← h ⟨w, hw.2⟩]
+  congr
+  ext w'
+  simp only [mem_neighborSet, c.adj_spanningCoe_induce_supp, hw, true_and]
+
 open scoped symmDiff
 
-lemma Subgraph.IsPerfectMatching.symmDiff_spanningCoe_IsCycles
+lemma Subgraph.IsPerfectMatching.symmDiff_isCycles
     {M : Subgraph G} {M' : Subgraph G'} (hM : M.IsPerfectMatching)
     (hM' : M'.IsPerfectMatching) : (M.spanningCoe ∆ M'.spanningCoe).IsCycles := by
   intro v
@@ -366,10 +375,12 @@ for `SimpleGraph` rather than `SimpleGraph.Subgraph`.
 def IsAlternating (G G' : SimpleGraph V) :=
   ∀ ⦃v w w': V⦄, w ≠ w' → G.Adj v w → G.Adj v w' → (G'.Adj v w ↔ ¬ G'.Adj v w')
 
-lemma IsPerfectMatching.symmDiff_spanningCoe_of_isAlternating {M : Subgraph G}
-    (hM : M.IsPerfectMatching) (hG' : G'.IsAlternating M.spanningCoe) (hG'cyc : G'.IsCycles)  :
-    (SimpleGraph.toSubgraph (M.spanningCoe ∆ G')
-      (by rfl)).IsPerfectMatching := by
+lemma IsAlternating.mono {G'' : SimpleGraph V} (halt : G.IsAlternating G') (h : G'' ≤ G) :
+    G''.IsAlternating G' := fun _ _ _ hww' hvw hvw' ↦ halt hww' (h hvw) (h hvw')
+
+lemma IsPerfectMatching.symmDiff_of_isAlternating (hM : M.IsPerfectMatching)
+    (hG' : G'.IsAlternating M.spanningCoe) (hG'cyc : G'.IsCycles) :
+    (⊤ : Subgraph (M.spanningCoe ∆ G')).IsPerfectMatching := by
   rw [Subgraph.isPerfectMatching_iff]
   intro v
   simp only [toSubgraph_adj, symmDiff_def, sup_adj, sdiff_adj, Subgraph.spanningCoe_adj]
@@ -378,20 +389,33 @@ lemma IsPerfectMatching.symmDiff_spanningCoe_of_isAlternating {M : Subgraph G}
   · obtain ⟨w', hw'⟩ := hG'cyc.other_adj_of_adj h
     have hmadj :  M.Adj v w ↔ ¬M.Adj v w' := by simpa using hG' hw'.1 h hw'.2
     use w'
-    simp only [hmadj.mp hw.1, hw'.2, not_true_eq_false, and_self, not_false_eq_true, or_true,
-      true_and]
+    simp only [Subgraph.top_adj, sup_adj, sdiff_adj, Subgraph.spanningCoe_adj, hmadj.mp hw.1, hw'.2,
+      not_true_eq_false, and_self, not_false_eq_true, or_true, true_and]
     rintro y (hl | hr)
     · aesop
     · obtain ⟨w'', hw''⟩ := hG'cyc.other_adj_of_adj hr.1
       by_contra! hc
-      simp_all only [show M.Adj v y ↔ ¬M.Adj v w' from by simpa using hG' hc hr.1 hw'.2,
-        not_false_eq_true, ne_eq, iff_true, not_true_eq_false, and_false]
+      simp_all [show M.Adj v y ↔ ¬M.Adj v w' from by simpa using hG' hc hr.1 hw'.2]
   · use w
-    simp only [hw.1, h, not_false_eq_true, and_self, not_true_eq_false, or_false, true_and]
+    simp only [Subgraph.top_adj, sup_adj, sdiff_adj, Subgraph.spanningCoe_adj, hw.1, h,
+      not_false_eq_true, and_self, not_true_eq_false, or_false, true_and]
     rintro y (hl | hr)
     · exact hw.2 _ hl.1
     · have ⟨w', hw'⟩ := hG'cyc.other_adj_of_adj hr.1
-      simp_all only [show M.Adj v y ↔ ¬M.Adj v w' from by simpa using hG' hw'.1 hr.1 hw'.2, not_not,
-        ne_eq, and_false]
+      simp_all [show M.Adj v y ↔ ¬M.Adj v w' from by simpa using hG' hw'.1 hr.1 hw'.2]
+
+lemma IsPerfectMatching.isAlternating_symmDiff_left {M' : Subgraph G'}
+    (hM : M.IsPerfectMatching) (hM' : M'.IsPerfectMatching) :
+    (M.spanningCoe ∆ M'.spanningCoe).IsAlternating M.spanningCoe := by
+  intro v w w' hww' hvw hvw'
+  obtain ⟨v1, hm1, hv1⟩ := hM.1 (hM.2 v)
+  obtain ⟨v2, hm2, hv2⟩ := hM'.1 (hM'.2 v)
+  simp only [symmDiff_def] at *
+  aesop
+
+lemma IsPerfectMatching.isAlternating_symmDiff_right
+    {M' : Subgraph G'} (hM : M.IsPerfectMatching) (hM' : M'.IsPerfectMatching) :
+    (M.spanningCoe ∆ M'.spanningCoe).IsAlternating M'.spanningCoe := by
+  simpa [symmDiff_comm] using isAlternating_symmDiff_left hM' hM
 
 end SimpleGraph

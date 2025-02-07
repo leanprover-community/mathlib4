@@ -26,6 +26,7 @@ groups, which can be found in `Algebra/Category/Group/Adjunctions`.
 
 -/
 
+assert_not_exists Field
 
 universe u v w
 
@@ -49,6 +50,11 @@ theorem commutator_eq_closure : commutator G = Subgroup.closure (commutatorSet G
 
 theorem commutator_eq_normalClosure : commutator G = Subgroup.normalClosure (commutatorSet G) := by
   simp [commutator, Subgroup.commutator_def', commutatorSet]
+
+variable {G} in
+theorem Subgroup.map_subtype_commutator (H : Subgroup G) :
+    (_root_.commutator H).map H.subtype = ⁅H, H⁆ := by
+  rw [_root_.commutator_def, map_commutator, ← MonoidHom.range_eq_map, H.range_subtype]
 
 instance commutator_characteristic : (commutator G).Characteristic :=
   Subgroup.commutator_characteristic ⊤ ⊤
@@ -80,14 +86,13 @@ namespace Abelianization
 
 attribute [local instance] QuotientGroup.leftRel
 
-instance commGroup : CommGroup (Abelianization G) :=
-  { QuotientGroup.Quotient.group _ with
-    mul_comm := fun x y =>
-      Quotient.inductionOn₂' x y fun a b =>
-        Quotient.sound' <|
-          QuotientGroup.leftRel_apply.mpr <|
-            Subgroup.subset_closure
-              ⟨b⁻¹, Subgroup.mem_top b⁻¹, a⁻¹, Subgroup.mem_top a⁻¹, by group⟩ }
+instance commGroup : CommGroup (Abelianization G) where
+  __ := QuotientGroup.Quotient.group _
+  mul_comm x y := Quotient.inductionOn₂ x y fun a b ↦ Quotient.sound' <|
+    QuotientGroup.leftRel_apply.mpr <| Subgroup.subset_closure
+      -- We avoid `group` here to minimize imports while low in the hierarchy;
+      -- typically it would be better to invoke the tactic.
+      ⟨b⁻¹, Subgroup.mem_top _, a⁻¹, Subgroup.mem_top _, by simp [commutatorElement_def, mul_assoc]⟩
 
 instance : Inhabited (Abelianization G) :=
   ⟨1⟩

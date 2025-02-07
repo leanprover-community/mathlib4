@@ -458,7 +458,7 @@ lemma listTake_alternatingWord (i j : B) (p k : ℕ) (h : k < 2 * p) :
     if Even k then alternatingWord i j k else alternatingWord j i k := by
   induction k with
     | zero =>
-      simp only [take_zero, even_zero, ↓reduceIte, alternatingWord]
+      simp only [take_zero, Even.zero, ↓reduceIte, alternatingWord]
     | succ k h' =>
       have hk : k < 2 * p := by omega
       apply h' at hk

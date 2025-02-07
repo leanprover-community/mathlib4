@@ -63,16 +63,14 @@ inductive WalkingParallelPair : Type
 
 open WalkingParallelPair
 
+-- Don't generate unnecessary `sizeOf_spec` lemma which the `simpNF` linter will complain about.
+set_option genSizeOfSpec false in
 /-- The type family of morphisms for the diagram indexing a (co)equalizer. -/
 inductive WalkingParallelPairHom : WalkingParallelPair → WalkingParallelPair → Type
   | left : WalkingParallelPairHom zero one
   | right : WalkingParallelPairHom zero one
   | id (X : WalkingParallelPair) : WalkingParallelPairHom X X
   deriving DecidableEq
-
-/- Porting note: this simplifies using walkingParallelPairHom_id; replacement is below;
-simpNF still complains of striking this from the simp list -/
-attribute [-simp, nolint simpNF] WalkingParallelPairHom.id.sizeOf_spec
 
 /-- Satisfying the inhabited linter -/
 instance : Inhabited (WalkingParallelPairHom zero one) where default := WalkingParallelPairHom.left
@@ -113,11 +111,6 @@ instance walkingParallelPairHomCategory : SmallCategory WalkingParallelPair wher
 @[simp]
 theorem walkingParallelPairHom_id (X : WalkingParallelPair) : WalkingParallelPairHom.id X = 𝟙 X :=
   rfl
-
--- Porting note: simpNF asked me to do this because the LHS of the non-primed version reduced
-@[simp]
-theorem WalkingParallelPairHom.id.sizeOf_spec' (X : WalkingParallelPair) :
-    (WalkingParallelPairHom._sizeOf_inst X X).sizeOf (𝟙 X) = 1 + sizeOf X := by cases X <;> rfl
 
 /-- The functor `WalkingParallelPair ⥤ WalkingParallelPairᵒᵖ` sending left to left and right to
 right.
@@ -533,7 +526,7 @@ theorem Cofork.IsColimit.homIso_natural {X Y : C} {f g : X ⟶ Y} {t : Cofork f 
 def Cone.ofFork {F : WalkingParallelPair ⥤ C} (t : Fork (F.map left) (F.map right)) : Cone F where
   pt := t.pt
   π :=
-    { app := fun X => t.π.app X ≫ eqToHom (by aesop)
+    { app := fun X => t.π.app X ≫ eqToHom (by simp)
       naturality := by rintro _ _ (_|_|_) <;> {dsimp; simp [t.condition]}}
 
 /-- This is a helper construction that can be useful when verifying that a category has all
@@ -548,23 +541,23 @@ def Cocone.ofCofork {F : WalkingParallelPair ⥤ C} (t : Cofork (F.map left) (F.
     Cocone F where
   pt := t.pt
   ι :=
-    { app := fun X => eqToHom (by aesop) ≫ t.ι.app X
+    { app := fun X => eqToHom (by simp) ≫ t.ι.app X
       naturality := by rintro _ _ (_|_|_) <;> {dsimp; simp [t.condition]}}
 
 @[simp]
 theorem Cone.ofFork_π {F : WalkingParallelPair ⥤ C} (t : Fork (F.map left) (F.map right)) (j) :
-    (Cone.ofFork t).π.app j = t.π.app j ≫ eqToHom (by aesop) := rfl
+    (Cone.ofFork t).π.app j = t.π.app j ≫ eqToHom (by simp) := rfl
 
 @[simp]
 theorem Cocone.ofCofork_ι {F : WalkingParallelPair ⥤ C} (t : Cofork (F.map left) (F.map right))
-    (j) : (Cocone.ofCofork t).ι.app j = eqToHom (by aesop) ≫ t.ι.app j := rfl
+    (j) : (Cocone.ofCofork t).ι.app j = eqToHom (by simp) ≫ t.ι.app j := rfl
 
 /-- Given `F : WalkingParallelPair ⥤ C`, which is really the same as
     `parallelPair (F.map left) (F.map right)` and a cone on `F`, we get a fork on
     `F.map left` and `F.map right`. -/
 def Fork.ofCone {F : WalkingParallelPair ⥤ C} (t : Cone F) : Fork (F.map left) (F.map right) where
   pt := t.pt
-  π := { app := fun X => t.π.app X ≫ eqToHom (by aesop)
+  π := { app := fun X => t.π.app X ≫ eqToHom (by simp)
          naturality := by rintro _ _ (_|_|_) <;> {dsimp; simp}}
 
 /-- Given `F : WalkingParallelPair ⥤ C`, which is really the same as
@@ -573,16 +566,16 @@ def Fork.ofCone {F : WalkingParallelPair ⥤ C} (t : Cone F) : Fork (F.map left)
 def Cofork.ofCocone {F : WalkingParallelPair ⥤ C} (t : Cocone F) :
     Cofork (F.map left) (F.map right) where
   pt := t.pt
-  ι := { app := fun X => eqToHom (by aesop) ≫ t.ι.app X
+  ι := { app := fun X => eqToHom (by simp) ≫ t.ι.app X
          naturality := by rintro _ _ (_|_|_) <;> {dsimp; simp}}
 
 @[simp]
 theorem Fork.ofCone_π {F : WalkingParallelPair ⥤ C} (t : Cone F) (j) :
-    (Fork.ofCone t).π.app j = t.π.app j ≫ eqToHom (by aesop) := rfl
+    (Fork.ofCone t).π.app j = t.π.app j ≫ eqToHom (by simp) := rfl
 
 @[simp]
 theorem Cofork.ofCocone_ι {F : WalkingParallelPair ⥤ C} (t : Cocone F) (j) :
-    (Cofork.ofCocone t).ι.app j = eqToHom (by aesop) ≫ t.ι.app j := rfl
+    (Cofork.ofCocone t).ι.app j = eqToHom (by simp) ≫ t.ι.app j := rfl
 
 @[simp]
 theorem Fork.ι_postcompose {f' g' : X ⟶ Y} {α : parallelPair f g ⟶ parallelPair f' g'}
@@ -710,7 +703,7 @@ theorem equalizer.condition : equalizer.ι f g ≫ f = equalizer.ι f g ≫ g :=
 /-- The equalizer built from `equalizer.ι f g` is limiting. -/
 noncomputable def equalizerIsEqualizer : IsLimit (Fork.ofι (equalizer.ι f g)
     (equalizer.condition f g)) :=
-  IsLimit.ofIsoLimit (limit.isLimit _) (Fork.ext (Iso.refl _) (by aesop))
+  IsLimit.ofIsoLimit (limit.isLimit _) (Fork.ext (Iso.refl _) (by simp))
 
 variable {f g}
 
@@ -859,7 +852,7 @@ theorem coequalizer.condition : f ≫ coequalizer.π f g = g ≫ coequalizer.π 
 /-- The cofork built from `coequalizer.π f g` is colimiting. -/
 noncomputable def coequalizerIsCoequalizer :
     IsColimit (Cofork.ofπ (coequalizer.π f g) (coequalizer.condition f g)) :=
-  IsColimit.ofIsoColimit (colimit.isColimit _) (Cofork.ext (Iso.refl _) (by aesop))
+  IsColimit.ofIsoColimit (colimit.isColimit _) (Cofork.ext (Iso.refl _) (by simp))
 
 variable {f g}
 

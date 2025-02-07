@@ -31,8 +31,8 @@ open CategoryTheory Simplicial
 /-- A simplicial set `S` is a *quasicategory* if it satisfies the following horn-filling condition:
 for every `n : ℕ` and `0 < i < n`,
 every map of simplicial sets `σ₀ : Λ[n, i] → S` can be extended to a map `σ : Δ[n] → S`.
-
-[Kerodon, 003A] -/
+-/
+@[kerodon 003A]
 class Quasicategory (S : SSet) : Prop where
   hornFilling' : ∀ ⦃n : ℕ⦄ ⦃i : Fin (n+3)⦄ (σ₀ : Λ[n+2, i] ⟶ S)
     (_h0 : 0 < i) (_hn : i < Fin.last (n+2)),
@@ -50,9 +50,8 @@ lemma Quasicategory.hornFilling {S : SSet} [Quasicategory S] ⦃n : ℕ⦄ ⦃i 
     simp [hn] at h0
   | succ n => exact Quasicategory.hornFilling' σ₀ h0 hn
 
-/-- Every Kan complex is a quasicategory.
-
-[Kerodon, 003C] -/
+/-- Every Kan complex is a quasicategory. -/
+@[kerodon 003C]
 instance (S : SSet) [KanComplex S] : Quasicategory S where
   hornFilling' _ _ σ₀ _ _ := KanComplex.hornFilling σ₀
 

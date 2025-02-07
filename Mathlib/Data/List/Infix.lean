@@ -106,7 +106,6 @@ instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l
 theorem cons_prefix_iff : a :: l₁ <+: b :: l₂ ↔ a = b ∧ l₁ <+: l₂ := by
   simp
 
-@[deprecated (since := "2024-03-26")] alias IsPrefix.filter_map := IsPrefix.filterMap
 
 protected theorem IsPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁ <+: l₂) :
     l₁.reduceOption <+: l₂.reduceOption :=

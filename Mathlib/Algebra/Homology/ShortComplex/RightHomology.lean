@@ -150,7 +150,7 @@ def ofIsLimitKernelFork (hf : S.f = 0) (c : KernelFork S.g) (hc : IsLimit c) :
   wp := by rw [comp_id, hf]
   hp := CokernelCofork.IsColimit.ofId _ hf
   wι := KernelFork.condition _
-  hι := IsLimit.ofIsoLimit hc (Fork.ext (Iso.refl _) (by aesop_cat))
+  hι := IsLimit.ofIsoLimit hc (Fork.ext (Iso.refl _) (by simp))
 
 @[simp] lemma ofIsLimitKernelFork_g' (hf : S.f = 0) (c : KernelFork S.g)
     (hc : IsLimit c) : (ofIsLimitKernelFork S hf c hc).g' = S.g := by
@@ -173,7 +173,7 @@ def ofIsColimitCokernelCofork (hg : S.g = 0) (c : CokernelCofork S.f) (hc : IsCo
   p := c.π
   ι := 𝟙 _
   wp := CokernelCofork.condition _
-  hp := IsColimit.ofIsoColimit hc (Cofork.ext (Iso.refl _) (by aesop_cat))
+  hp := IsColimit.ofIsoColimit hc (Cofork.ext (Iso.refl _) (by simp))
   wι := Cofork.IsColimit.hom_ext hc (by simp [hg])
   hι := KernelFork.IsLimit.ofId _ (Cofork.IsColimit.hom_ext hc (by simp [hg]))
 
@@ -1287,7 +1287,7 @@ lemma hasKernel [S.HasRightHomology] [HasCokernel S.f] :
   haveI : HasLimit (parallelPair h.g' 0) := ⟨⟨⟨_, h.hι'⟩⟩⟩
   let e : parallelPair (cokernel.desc S.f S.g S.zero) 0 ≅ parallelPair h.g' 0 :=
     parallelPair.ext (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) h.hp)
-      (Iso.refl _) (coequalizer.hom_ext (by simp)) (by aesop_cat)
+      (Iso.refl _) (coequalizer.hom_ext (by simp)) (by simp)
   exact hasLimitOfIso e.symm
 
 end HasRightHomology

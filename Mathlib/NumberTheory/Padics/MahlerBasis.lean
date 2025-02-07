@@ -284,7 +284,7 @@ The value of a Mahler series at a natural number `n` is given by the finite sum 
 terms, for any `n ≤ m`.
 -/
 lemma mahlerSeries_apply_nat (ha : Tendsto a atTop (𝓝 0)) {m n : ℕ} (hmn : m ≤ n) :
-    mahlerSeries a (m : ℤ_[p]) = ∑ i in range (n + 1), m.choose i • a i := by
+    mahlerSeries a (m : ℤ_[p]) = ∑ i ∈ range (n + 1), m.choose i • a i := by
   have h_van (i) : m.choose (i + (n + 1)) = 0 := Nat.choose_eq_zero_of_lt (by omega)
   have aux : Summable fun i ↦ m.choose (i + (n + 1)) • a (i + (n + 1)) := by
     simpa only [h_van, zero_smul] using summable_zero
@@ -326,7 +326,7 @@ variable {p : ℕ} [hp : Fact p.Prime] {E : Type*}
 
 /--
 **Mahler's theorem**: for any continuous function `f` from `ℤ_[p]` to a `p`-adic Banach space, the
-Mahler series with coeffients `n ↦ Δ_[1]^[n] f 0` converges to the original function `f`.
+Mahler series with coefficients `n ↦ Δ_[1]^[n] f 0` converges to the original function `f`.
 -/
 lemma hasSum_mahler (f : C(ℤ_[p], E)) : HasSum (fun n ↦ mahlerTerm (Δ_[1]^[n] f 0) n) f := by
   -- First show `∑' n, mahler_term f n` converges to *something*.

@@ -93,12 +93,12 @@ theorem mapPiEvalRingHom_bijective : Bijective (mapPiEvalRingHom S) := by
     simp_rw [map_mk'] at eq
     rw [IsLocalization.eq] at eq ⊢
     obtain ⟨s, hs⟩ := eq
-    refine ⟨⟨update 0 i s, by apply update_same i s.1 0 ▸ s.2⟩, funext fun j ↦ ?_⟩
+    refine ⟨⟨update 0 i s, by apply update_self i s.1 0 ▸ s.2⟩, funext fun j ↦ ?_⟩
     obtain rfl | ne := eq_or_ne j i
     · simpa using hs
-    · simp [update_noteq ne]
+    · simp [update_of_ne ne]
   · obtain ⟨r, s, rfl⟩ := mk'_surjective S x
-    exact ⟨mk' (M := T) _ (update 0 i r) ⟨update 0 i s, by apply update_same i s.1 0 ▸ s.2⟩,
+    exact ⟨mk' (M := T) _ (update 0 i r) ⟨update 0 i s, by apply update_self i s.1 0 ▸ s.2⟩,
       by simp [map_mk']⟩
 
 end Localization
@@ -296,6 +296,11 @@ theorem isLocalization_iff_of_isLocalization [IsLocalization M S] [IsLocalizatio
   ⟨fun _ ↦ isLocalization_of_algEquiv N (algEquiv M S P),
     fun _ ↦ isLocalization_of_algEquiv M (algEquiv N S P)⟩
 
+theorem iff_of_le_of_exists_dvd (N : Submonoid R) (h₁ : M ≤ N) (h₂ : ∀ n ∈ N, ∃ m ∈ M, n ∣ m) :
+    IsLocalization M S ↔ IsLocalization N S :=
+  have : IsLocalization N (Localization M) := of_le_of_exists_dvd _ _ h₁ h₂
+  isLocalization_iff_of_isLocalization _ _ (Localization M)
+
 end
 
 variable (M)
@@ -351,9 +356,6 @@ open IsLocalization
 theorem mk_natCast (m : ℕ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℕ) _
 
-@[deprecated (since := "2024-04-17")]
-alias mk_nat_cast := mk_natCast
-
 variable [IsLocalization M S]
 
 section
@@ -406,9 +408,6 @@ namespace Localization
 
 theorem mk_intCast (m : ℤ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℤ) _
-
-@[deprecated (since := "2024-04-17")]
-alias mk_int_cast := mk_intCast
 
 end Localization
 

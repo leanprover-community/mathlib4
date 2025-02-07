@@ -24,7 +24,7 @@ universe w' w v' v u' u
 namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-  {A : Type u'} [Category.{v'} A] [ConcreteCategory.{w} A]
+  {A : Type u'} [Category.{v'} A] [HasForget.{w} A]
 
 namespace Sheaf
 
@@ -144,7 +144,7 @@ lemma WEqualsLocallyBijective.mk' [HasWeakSheafify J A] [(forget A).ReflectsIsom
       CategoryTheory.toSheafify_naturality, Presheaf.comp_isLocallyInjective_iff,
       Presheaf.comp_isLocallySurjective_iff]
 
-instance {D : Type w} [Category.{w'} D] [ConcreteCategory.{max u v} D]
+instance {D : Type w} [Category.{w'} D] [HasForget.{max u v} D]
     [HasWeakSheafify J D] [J.HasSheafCompose (forget D)]
     [J.PreservesSheafification (forget D)] [(forget D).ReflectsIsomorphisms] :
     J.WEqualsLocallyBijective D := by

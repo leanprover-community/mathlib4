@@ -91,11 +91,9 @@ theorem apply_abs_le_mul_of_one_le {β : Type*} [MulOneClass β] [Preorder β]
   apply_abs_le_mul_of_one_le' (h _) (h _)
 
 /-- The **triangle inequality** in `LinearOrderedAddCommGroup`s. -/
-theorem abs_add (a b : α) : |a + b| ≤ |a| + |b| :=
-  abs_le.2
-    ⟨(neg_add |a| |b|).symm ▸
-        add_le_add (neg_le.2 <| neg_le_abs _) (neg_le.2 <| neg_le_abs _),
-      add_le_add (le_abs_self _) (le_abs_self _)⟩
+theorem abs_add (a b : α) : |a + b| ≤ |a| + |b| := by
+  rw [abs_le, neg_add]
+  constructor <;> gcongr <;> apply_rules [neg_abs_le, le_abs_self]
 
 theorem abs_add' (a b : α) : |a| ≤ |b| + |b + a| := by simpa using abs_add (-b) (b + a)
 

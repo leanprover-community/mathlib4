@@ -5,6 +5,7 @@ Authors: Mitchell Lee, Óscar Álvarez
 -/
 import Mathlib.GroupTheory.Coxeter.Length
 import Mathlib.Data.List.GetD
+import Mathlib.Tactic.Group
 
 /-!
 # Reflections, inversions, and inversion sequences
@@ -41,6 +42,8 @@ inversions of $w$ in some order, but we do not prove that in this file.
 * [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*](bjorner2005)
 
 -/
+
+assert_not_exists TwoSidedIdeal
 
 namespace CoxeterSystem
 

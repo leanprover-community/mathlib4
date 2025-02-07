@@ -5,13 +5,11 @@ Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzza
 Amelia Livingston, Yury Kudryashov
 -/
 import Mathlib.Algebra.FreeMonoid.Basic
+import Mathlib.Algebra.Group.Idempotent
+import Mathlib.Algebra.Group.Nat.Hom
 import Mathlib.Algebra.Group.Submonoid.MulOpposite
 import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Ring.Idempotents
-import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Fintype.Card
-import Mathlib.Data.Nat.Cast.Basic
 
 /-!
 # Submonoids: membership criteria
@@ -32,8 +30,7 @@ In this file we prove various facts about membership in a submonoid:
 submonoid, submonoids
 -/
 
--- We don't need ordered structures to establish basic membership facts for submonoids
-assert_not_exists OrderedSemiring
+assert_not_exists MonoidWithZero
 
 variable {M A B : Type*}
 
@@ -333,7 +330,7 @@ abbrev groupPowers {x : M} {n : ℕ} (hpos : 0 < n) (hx : x ^ n = 1) : Group (po
     simp only [← pow_mul, Int.natMod, SubmonoidClass.coe_pow]
     rw [Int.negSucc_coe, ← Int.add_mul_emod_self (b := (m + 1 : ℕ))]
     nth_rw 1 [← mul_one ((m + 1 : ℕ) : ℤ)]
-    rw [← sub_eq_neg_add, ← mul_sub, ← Int.natCast_pred_of_pos hpos]; norm_cast
+    rw [← sub_eq_neg_add, ← Int.mul_sub, ← Int.natCast_pred_of_pos hpos]; norm_cast
     simp only [Int.toNat_natCast]
     rw [mul_comm, pow_mul, ← pow_eq_pow_mod _ hx, mul_comm k, mul_assoc, pow_mul _ (_ % _),
       ← pow_eq_pow_mod _ hx, pow_mul, pow_mul]
@@ -482,40 +479,6 @@ an additive group if that element has finite order."] Submonoid.groupPowers
 
 end AddSubmonoid
 
-/-! Lemmas about additive closures of `Subsemigroup`. -/
-
-
-namespace MulMemClass
-
-variable {R : Type*} [NonUnitalNonAssocSemiring R] [SetLike M R] [MulMemClass M R] {S : M}
-  {a b : R}
-
-/-- The product of an element of the additive closure of a multiplicative subsemigroup `M`
-and an element of `M` is contained in the additive closure of `M`. -/
-theorem mul_right_mem_add_closure (ha : a ∈ AddSubmonoid.closure (S : Set R)) (hb : b ∈ S) :
-    a * b ∈ AddSubmonoid.closure (S : Set R) := by
-  induction ha using AddSubmonoid.closure_induction with
-  | mem r hr => exact AddSubmonoid.mem_closure.mpr fun y hy => hy (mul_mem hr hb)
-  | one => simp only [zero_mul, zero_mem _]
-  | mul r s _ _ hr hs => simpa only [add_mul] using add_mem hr hs
-
-/-- The product of two elements of the additive closure of a submonoid `M` is an element of the
-additive closure of `M`. -/
-theorem mul_mem_add_closure (ha : a ∈ AddSubmonoid.closure (S : Set R))
-    (hb : b ∈ AddSubmonoid.closure (S : Set R)) : a * b ∈ AddSubmonoid.closure (S : Set R) := by
-  induction hb using AddSubmonoid.closure_induction with
-  | mem r hr => exact MulMemClass.mul_right_mem_add_closure ha hr
-  | one => simp only [mul_zero, zero_mem _]
-  | mul r s _ _ hr hs => simpa only [mul_add] using add_mem hr hs
-
-/-- The product of an element of `S` and an element of the additive closure of a multiplicative
-submonoid `S` is contained in the additive closure of `S`. -/
-theorem mul_left_mem_add_closure (ha : a ∈ S) (hb : b ∈ AddSubmonoid.closure (S : Set R)) :
-    a * b ∈ AddSubmonoid.closure (S : Set R) :=
-  mul_mem_add_closure (AddSubmonoid.mem_closure.mpr fun _sT hT => hT ha) hb
-
-end MulMemClass
-
 namespace Submonoid
 
 /-- An element is in the closure of a two-element set if it is a linear combination of those two
@@ -551,9 +514,3 @@ theorem ofAdd_image_multiples_eq_powers_ofAdd [AddMonoid A] {x : A} :
   exact ofMul_image_powers_eq_multiples_ofMul
 
 end mul_add
-
-/-- The submonoid of primal elements in a cancellative commutative monoid with zero. -/
-def Submonoid.isPrimal (α) [CancelCommMonoidWithZero α] : Submonoid α where
-  carrier := {a | IsPrimal a}
-  mul_mem' := IsPrimal.mul
-  one_mem' := isUnit_one.isPrimal

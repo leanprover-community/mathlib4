@@ -706,6 +706,15 @@ def MonoidHom.id (M : Type*) [MulOneClass M] : M →* M where
   map_one' := rfl
   map_mul' _ _ := rfl
 
+@[to_additive (attr := simp)]
+lemma OneHom.coe_id {M : Type*} [One M] : (OneHom.id M : M → M) = _root_.id := rfl
+
+@[to_additive (attr := simp)]
+lemma MulHom.coe_id {M : Type*} [Mul M] : (MulHom.id M : M → M) = _root_.id := rfl
+
+@[to_additive (attr := simp)]
+lemma MonoidHom.coe_id {M : Type*} [MulOneClass M] : (MonoidHom.id M : M → M) = _root_.id := rfl
+
 /-- Composition of `OneHom`s as a `OneHom`. -/
 @[to_additive "Composition of `ZeroHom`s as a `ZeroHom`."]
 def OneHom.comp [One M] [One N] [One P] (hnp : OneHom N P) (hmn : OneHom M N) : OneHom M P where
@@ -884,17 +893,23 @@ namespace Monoid
 variable (M) [MulOneClass M]
 
 /-- The monoid of endomorphisms. -/
+@[to_additive "The monoid of endomorphisms.", to_additive_dont_translate]
 protected def End := M →* M
 
 namespace End
 
+@[to_additive]
 instance instFunLike : FunLike (Monoid.End M) M M := MonoidHom.instFunLike
+@[to_additive]
 instance instMonoidHomClass : MonoidHomClass (Monoid.End M) M M := MonoidHom.instMonoidHomClass
 
+@[to_additive instOne]
 instance instOne : One (Monoid.End M) where one := .id _
+@[to_additive instMul]
 instance instMul : Mul (Monoid.End M) where mul := .comp
 
-instance : Monoid (Monoid.End M) where
+@[to_additive instMonoid]
+instance instMonoid : Monoid (Monoid.End M) where
   mul := MonoidHom.comp
   one := MonoidHom.id M
   mul_assoc _ _ _ := MonoidHom.comp_assoc _ _ _
@@ -903,53 +918,24 @@ instance : Monoid (Monoid.End M) where
   npow n f := (npowRec n f).copy f^[n] <| by induction n <;> simp [npowRec, *] <;> rfl
   npow_succ _ _ := DFunLike.coe_injective <| Function.iterate_succ _ _
 
+@[to_additive]
 instance : Inhabited (Monoid.End M) := ⟨1⟩
 
-@[simp, norm_cast] lemma coe_pow (f : Monoid.End M) (n : ℕ) : (↑(f ^ n) : M → M) = f^[n] := rfl
+@[to_additive (attr := simp, norm_cast) coe_pow]
+lemma coe_pow (f : Monoid.End M) (n : ℕ) : (↑(f ^ n) : M → M) = f^[n] := rfl
 
-end End
-
-@[simp]
+@[to_additive (attr := simp) coe_one]
 theorem coe_one : ((1 : Monoid.End M) : M → M) = id := rfl
 
-@[simp]
+@[to_additive (attr := simp) coe_mul]
 theorem coe_mul (f g) : ((f * g : Monoid.End M) : M → M) = f ∘ g := rfl
 
-end Monoid
-
-namespace AddMonoid
-
-variable (A : Type*) [AddZeroClass A]
-
-/-- The monoid of endomorphisms. -/
-protected def End := A →+ A
-
-namespace End
-
-instance instFunLike : FunLike (AddMonoid.End A) A A := AddMonoidHom.instFunLike
-instance instAddMonoidHomClass : AddMonoidHomClass (AddMonoid.End A) A A :=
-  AddMonoidHom.instAddMonoidHomClass
-
-instance instOne : One (AddMonoid.End A) where one := .id _
-instance instMul : Mul (AddMonoid.End A) where mul := .comp
-
-@[simp, norm_cast] lemma coe_one : ((1 : AddMonoid.End A) : A → A) = id := rfl
-
-@[simp, norm_cast] lemma coe_mul (f g : AddMonoid.End A) : (f * g : A → A) = f ∘ g := rfl
-
-instance monoid : Monoid (AddMonoid.End A) where
-  mul_assoc _ _ _ := AddMonoidHom.comp_assoc _ _ _
-  mul_one := AddMonoidHom.comp_id
-  one_mul := AddMonoidHom.id_comp
-  npow n f := (npowRec n f).copy (Nat.iterate f n) <| by induction n <;> simp [npowRec, *] <;> rfl
-  npow_succ _ _ := DFunLike.coe_injective <| Function.iterate_succ _ _
-
-@[simp, norm_cast] lemma coe_pow (f : AddMonoid.End A) (n : ℕ) : (↑(f ^ n) : A → A) = f^[n] := rfl
-
-instance : Inhabited (AddMonoid.End A) := ⟨1⟩
-
 end End
-end AddMonoid
+
+@[deprecated (since := "2024-11-20")] protected alias coe_one := End.coe_one
+@[deprecated (since := "2024-11-20")] protected alias coe_mul := End.coe_mul
+
+end Monoid
 
 end End
 

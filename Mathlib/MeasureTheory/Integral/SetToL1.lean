@@ -527,9 +527,6 @@ theorem norm_setToSimpleFunc_le_sum_opNorm {m : MeasurableSpace α} (T : Set α 
     _ ≤ ∑ x ∈ f.range, ‖T (f ⁻¹' {x})‖ * ‖x‖ := by
       refine Finset.sum_le_sum fun b _ => ?_; simp_rw [ContinuousLinearMap.le_opNorm]
 
-@[deprecated (since := "2024-02-02")]
-alias norm_setToSimpleFunc_le_sum_op_norm := norm_setToSimpleFunc_le_sum_opNorm
-
 theorem norm_setToSimpleFunc_le_sum_mul_norm (T : Set α → F →L[ℝ] F') {C : ℝ}
     (hT_norm : ∀ s, MeasurableSet s → ‖T s‖ ≤ C * (μ s).toReal) (f : α →ₛ F) :
     ‖f.setToSimpleFunc T‖ ≤ C * ∑ x ∈ f.range, (μ (f ⁻¹' {x})).toReal * ‖x‖ :=
@@ -610,13 +607,13 @@ namespace SimpleFunc
 
 theorem norm_eq_sum_mul (f : α →₁ₛ[μ] G) :
     ‖f‖ = ∑ x ∈ (toSimpleFunc f).range, (μ (toSimpleFunc f ⁻¹' {x})).toReal * ‖x‖ := by
-  rw [norm_toSimpleFunc, eLpNorm_one_eq_lintegral_nnnorm]
-  have h_eq := SimpleFunc.map_apply (fun x => (‖x‖₊ : ℝ≥0∞)) (toSimpleFunc f)
+  rw [norm_toSimpleFunc, eLpNorm_one_eq_lintegral_enorm]
+  have h_eq := SimpleFunc.map_apply (‖·‖ₑ) (toSimpleFunc f)
   simp_rw [← h_eq]
   rw [SimpleFunc.lintegral_eq_lintegral, SimpleFunc.map_lintegral, ENNReal.toReal_sum]
   · congr
     ext1 x
-    rw [ENNReal.toReal_mul, mul_comm, ← ofReal_norm_eq_coe_nnnorm,
+    rw [ENNReal.toReal_mul, mul_comm, ← ofReal_norm_eq_enorm,
       ENNReal.toReal_ofReal (norm_nonneg _)]
   · intro x _
     by_cases hx0 : x = 0
@@ -1353,14 +1350,14 @@ theorem continuous_setToFun (hT : DominatedFinMeasAdditive μ T C) :
 /-- If `F i → f` in `L1`, then `setToFun μ T hT (F i) → setToFun μ T hT f`. -/
 theorem tendsto_setToFun_of_L1 (hT : DominatedFinMeasAdditive μ T C) {ι} (f : α → E)
     (hfi : Integrable f μ) {fs : ι → α → E} {l : Filter ι} (hfsi : ∀ᶠ i in l, Integrable (fs i) μ)
-    (hfs : Tendsto (fun i => ∫⁻ x, ‖fs i x - f x‖₊ ∂μ) l (𝓝 0)) :
+    (hfs : Tendsto (fun i => ∫⁻ x, ‖fs i x - f x‖ₑ ∂μ) l (𝓝 0)) :
     Tendsto (fun i => setToFun μ T hT (fs i)) l (𝓝 <| setToFun μ T hT f) := by
   classical
     let f_lp := hfi.toL1 f
     let F_lp i := if hFi : Integrable (fs i) μ then hFi.toL1 (fs i) else 0
     have tendsto_L1 : Tendsto F_lp l (𝓝 f_lp) := by
       rw [Lp.tendsto_Lp_iff_tendsto_ℒp']
-      simp_rw [eLpNorm_one_eq_lintegral_nnnorm, Pi.sub_apply]
+      simp_rw [eLpNorm_one_eq_lintegral_enorm, Pi.sub_apply]
       refine (tendsto_congr' ?_).mp hfs
       filter_upwards [hfsi] with i hi
       refine lintegral_congr_ae ?_
@@ -1383,7 +1380,7 @@ theorem tendsto_setToFun_approxOn_of_measurable (hT : DominatedFinMeasAdditive �
       (𝓝 <| setToFun μ T hT f) :=
   tendsto_setToFun_of_L1 hT _ hfi
     (Eventually.of_forall (SimpleFunc.integrable_approxOn hfm hfi h₀ h₀i))
-    (SimpleFunc.tendsto_approxOn_L1_nnnorm hfm _ hs (hfi.sub h₀i).2)
+    (SimpleFunc.tendsto_approxOn_L1_enorm hfm _ hs (hfi.sub h₀i).2)
 
 theorem tendsto_setToFun_approxOn_of_measurable_of_range_subset
     (hT : DominatedFinMeasAdditive μ T C) [MeasurableSpace E] [BorelSpace E] {f : α → E}
@@ -1572,7 +1569,7 @@ theorem tendsto_setToFun_of_dominated_convergence (hT : DominatedFinMeasAdditive
   rw [← Integrable.toL1_sub]
   refine ((fs_int n).sub f_int).coeFn_toL1.mono fun x hx => ?_
   dsimp only
-  rw [hx, ofReal_norm_eq_coe_nnnorm, Pi.sub_apply]
+  rw [hx, ofReal_norm_eq_enorm, Pi.sub_apply]
 
 /-- Lebesgue dominated convergence theorem for filters with a countable basis -/
 theorem tendsto_setToFun_filter_of_dominated_convergence (hT : DominatedFinMeasAdditive μ T C) {ι}
