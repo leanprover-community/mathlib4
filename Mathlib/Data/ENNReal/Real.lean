@@ -330,7 +330,7 @@ theorem ofReal_div_of_pos {x y : ℝ} (hy : 0 < y) :
 
 @[simp]
 theorem toNNReal_mul {a b : ℝ≥0∞} : (a * b).toNNReal = a.toNNReal * b.toNNReal :=
-  WithTop.untop'_zero_mul a b
+  WithTop.untopD_zero_mul a b
 
 theorem toNNReal_mul_top (a : ℝ≥0∞) : ENNReal.toNNReal (a * ∞) = 0 := by simp
 
