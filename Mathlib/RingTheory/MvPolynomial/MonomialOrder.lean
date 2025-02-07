@@ -171,7 +171,7 @@ theorem monic_monomial_iff {d : σ →₀ ℕ} {c : R} :
     m.Monic (monomial d c) ↔ c = 1 :=
   by rw [Monic, m.leadingCoeff_monomial]
 
-@[simp] theorem leadingCoeff_X {s : σ} :
+theorem leadingCoeff_X {s : σ} :
     m.leadingCoeff (X s : MvPolynomial σ R) = 1 :=
   m.leadingCoeff_monomial 1
 
