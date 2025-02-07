@@ -158,12 +158,12 @@ def natTransP (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComp
 
 @[reassoc (attr := simp)]
 theorem P_f_naturality (q n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
-    f.app (op [n]) ≫ (P q).f n = (P q).f n ≫ f.app (op [n]) :=
+    f.app (op ⦋n⦌) ≫ (P q).f n = (P q).f n ≫ f.app (op ⦋n⦌) :=
   HomologicalComplex.congr_hom ((natTransP q).naturality f) n
 
 @[reassoc (attr := simp)]
 theorem Q_f_naturality (q n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
-    f.app (op [n]) ≫ (Q q).f n = (Q q).f n ≫ f.app (op [n]) := by
+    f.app (op ⦋n⦌) ≫ (Q q).f n = (Q q).f n ≫ f.app (op ⦋n⦌) := by
   simp only [Q, HomologicalComplex.sub_f_apply, HomologicalComplex.id_f, comp_sub, P_f_naturality,
     sub_comp, sub_left_inj]
   dsimp

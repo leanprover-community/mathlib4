@@ -59,7 +59,7 @@ theorem spineInjective {n : ℕ} : Function.Injective (spineEquiv (X := X) n) :=
 
 @[simp]
 theorem spineToSimplex_vertex (i : Fin (n + 1)) (f : Path X n) :
-    X.map (SimplexCategory.const [0] [n] i).op (spineToSimplex f) = f.vertex i := by
+    X.map (SimplexCategory.const ⦋0⦌ ⦋n⦌ i).op (spineToSimplex f) = f.vertex i := by
   rw [← spine_vertex, spine_spineToSimplex]
 
 @[simp]
