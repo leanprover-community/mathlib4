@@ -458,7 +458,7 @@ theorem Indep.augment (hI : M.Indep I) (hJ : M.Indep J) (hIJ : I.encard < J.enca
 
 lemma Indep.augment_finset {I J : Finset α} (hI : M.Indep I) (hJ : M.Indep J)
     (hIJ : I.card < J.card) : ∃ e ∈ J, e ∉ I ∧ M.Indep (insert e I) := by
-  obtain ⟨x, hx, hxI⟩ := hI.augment hJ (by simpa [encard_eq_coe_toFinset_card] )
+  obtain ⟨x, hx, hxI⟩ := hI.augment hJ (by simpa [encard_eq_coe_toFinset_card])
   simp only [mem_diff, Finset.mem_coe] at hx
   exact ⟨x, hx.1, hx.2, hxI⟩
 

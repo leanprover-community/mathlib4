@@ -68,10 +68,8 @@ variable (J : GrothendieckTopology C)
 
 -- We follow https://stacks.math.columbia.edu/tag/00VL definition 00VR
 /-- A sheaf of A is a presheaf P : Cᵒᵖ => A such that for every E : A, the
-presheaf of types given by sending U : C to Hom_{A}(E, P U) is a sheaf of types.
-
-https://stacks.math.columbia.edu/tag/00VR
--/
+presheaf of types given by sending U : C to Hom_{A}(E, P U) is a sheaf of types. -/
+@[stacks 00VR]
 def IsSheaf (P : Cᵒᵖ ⥤ A) : Prop :=
   ∀ E : A, Presieve.IsSheaf J (P ⋙ coyoneda.obj (op E))
 
@@ -586,34 +584,35 @@ section
 variable [HasProducts.{max u₁ v₁} A]
 variable [HasProducts.{max u₁ v₁} A']
 
-/--
-The middle object of the fork diagram given in Equation (3) of [MM92], as well as the fork diagram
-of <https://stacks.math.columbia.edu/tag/00VM>.
--/
+/-- The middle object of the fork diagram given in Equation (3) of [MM92], as well as the fork
+diagram of the Stacks entry. -/
+@[stacks 00VM "The middle object of the fork diagram there."]
 def firstObj : A :=
   ∏ᶜ fun f : ΣV, { f : V ⟶ U // R f } => P.obj (op f.1)
 
-/--
-The left morphism of the fork diagram given in Equation (3) of [MM92], as well as the fork diagram
-of <https://stacks.math.columbia.edu/tag/00VM>.
--/
+/-- The left morphism of the fork diagram given in Equation (3) of [MM92], as well as the fork
+diagram of the Stacks entry. -/
+@[stacks 00VM "The left morphism the fork diagram there."]
 def forkMap : P.obj (op U) ⟶ firstObj R P :=
   Pi.lift fun f => P.map f.2.1.op
 
 variable [HasPullbacks C]
 
-/-- The rightmost object of the fork diagram of https://stacks.math.columbia.edu/tag/00VM, which
+/-- The rightmost object of the fork diagram of the Stacks entry, which
 contains the data used to check a family of elements for a presieve is compatible.
 -/
+@[stacks 00VM "The rightmost object of the fork diagram there."]
 def secondObj : A :=
   ∏ᶜ fun fg : (ΣV, { f : V ⟶ U // R f }) × ΣW, { g : W ⟶ U // R g } =>
     P.obj (op (pullback fg.1.2.1 fg.2.2.1))
 
-/-- The map `pr₀*` of <https://stacks.math.columbia.edu/tag/00VM>. -/
+/-- The map `pr₀*` of the Stacks entry. -/
+@[stacks 00VM "The map `pr₀*` there."]
 def firstMap : firstObj R P ⟶ secondObj R P :=
   Pi.lift fun _ => Pi.π _ _ ≫ P.map (pullback.fst _ _).op
 
-/-- The map `pr₁*` of <https://stacks.math.columbia.edu/tag/00VM>. -/
+/-- The map `pr₁*` of the Stacks entry. -/
+@[stacks 00VM "The map `pr₁*` there."]
 def secondMap : firstObj R P ⟶ secondObj R P :=
   Pi.lift fun _ => Pi.π _ _ ≫ P.map (pullback.snd _ _).op
 

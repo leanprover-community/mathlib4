@@ -191,12 +191,12 @@ protected theorem StateEqRs.refl (t : Register) (ζ : State) : ζ ≃[t]/ac ζ :
 @[symm]
 protected theorem StateEqRs.symm {t : Register} (ζ₁ ζ₂ : State) :
     ζ₁ ≃[t]/ac ζ₂ → ζ₂ ≃[t]/ac ζ₁ := by
-  simp_all [StateEqRs] -- Porting note: was `finish [StateEqRs]`
+  simp_all [StateEqRs]
 
 @[trans]
 protected theorem StateEqRs.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
     ζ₁ ≃[t]/ac ζ₂ → ζ₂ ≃[t]/ac ζ₃ → ζ₁ ≃[t]/ac ζ₃ := by
-  simp_all [StateEqRs] -- Porting note: was `finish [StateEqRs]`
+  simp_all [StateEqRs]
 
 /-- Machine states ζ₁ and ζ₂ are equal except for registers {x | x ≥ t}. -/
 def StateEq (t : Register) (ζ₁ ζ₂ : State) : Prop :=

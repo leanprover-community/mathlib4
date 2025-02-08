@@ -333,7 +333,7 @@ theorem const (x : σ) : Primrec₂ fun (_ : α) (_ : β) => x :=
   Primrec.const _
 
 protected theorem pair : Primrec₂ (@Prod.mk α β) :=
-  .pair .fst .snd
+  Primrec.pair .fst .snd
 
 theorem left : Primrec₂ fun (a : α) (_ : β) => a :=
   .fst
@@ -619,15 +619,17 @@ theorem list_findIdx₁ {p : α → β → Bool} (hp : Primrec₂ p) :
 | a :: l => (cond (hp.comp .id (const a)) (const 0) (succ.comp (list_findIdx₁ hp l))).of_eq fun n =>
   by simp [List.findIdx_cons]
 
-theorem list_indexOf₁ [DecidableEq α] (l : List α) : Primrec fun a => l.indexOf a :=
+theorem list_idxOf₁ [DecidableEq α] (l : List α) : Primrec fun a => l.idxOf a :=
   list_findIdx₁ (.swap .beq) l
+
+@[deprecated (since := "2025-01-30")] alias list_indexOf₁ := list_idxOf₁
 
 theorem dom_fintype [Finite α] (f : α → σ) : Primrec f :=
   let ⟨l, _, m⟩ := Finite.exists_univ_list α
   option_some_iff.1 <| by
     haveI := decidableEqOfEncodable α
-    refine ((list_get?₁ (l.map f)).comp (list_indexOf₁ l)).of_eq fun a => ?_
-    rw [List.get?_eq_getElem?, List.getElem?_map, List.getElem?_indexOf (m a), Option.map_some']
+    refine ((list_get?₁ (l.map f)).comp (list_idxOf₁ l)).of_eq fun a => ?_
+    rw [List.get?_eq_getElem?, List.getElem?_map, List.getElem?_idxOf (m a), Option.map_some']
 
 -- Porting note: These are new lemmas
 -- I added it because it actually simplified the proofs
@@ -952,8 +954,10 @@ theorem list_findIdx {f : α → List β} {p : α → β → Bool}
         to₂ <| cond (hp.comp fst <| fst.comp snd) (const 0) (succ.comp <| snd.comp snd)).of_eq
     fun a => by dsimp; induction f a <;> simp [List.findIdx_cons, *]
 
-theorem list_indexOf [DecidableEq α] : Primrec₂ (@List.indexOf α _) :=
+theorem list_idxOf [DecidableEq α] : Primrec₂ (@List.idxOf α _) :=
   to₂ <| list_findIdx snd <| Primrec.beq.comp₂ snd.to₂ (fst.comp fst).to₂
+
+@[deprecated (since := "2025-01-30")] alias list_indexOf := list_idxOf
 
 theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ} (hg : Primrec₂ g)
     (H : ∀ a n, g a ((List.range n).map (f a)) = some (f a n)) : Primrec₂ f :=

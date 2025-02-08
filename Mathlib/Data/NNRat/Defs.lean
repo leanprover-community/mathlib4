@@ -194,8 +194,6 @@ def coeHom : ℚ≥0 →+* ℚ where
 theorem mk_natCast (n : ℕ) : @Eq ℚ≥0 (⟨(n : ℚ), Nat.cast_nonneg' n⟩ : ℚ≥0) n :=
   rfl
 
-@[deprecated (since := "2024-04-05")] alias mk_coe_nat := mk_natCast
-
 @[simp]
 theorem coe_coeHom : ⇑coeHom = ((↑) : ℚ≥0 → ℚ) :=
   rfl
