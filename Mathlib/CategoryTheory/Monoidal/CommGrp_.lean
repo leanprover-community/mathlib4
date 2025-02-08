@@ -19,6 +19,9 @@ variable (C : Type u₁) [Category.{v₁} C] [ChosenFiniteProducts.{v₁} C]
 /-- A commutative group object internal to a cartesian monoidal category. -/
 structure CommGrp_ extends Grp_ C, CommMon_ C where
 
+/-- Turn a commutative group object into a commutative monoid object. -/
+add_decl_doc CommGrp_.toCommMon_
+
 attribute [reassoc (attr := simp)] CommGrp_.mul_comm
 
 namespace CommGrp_
