@@ -208,7 +208,7 @@ theorem Ideal.primeHeight_eq_ringKrullDim_iff [FiniteRingKrullDim R] [IsLocalRin
     simp_rw [h]
     exact IsLocalRing.maximalIdeal_primeHeight_eq_ringKrullDim
 
-theorem IsLocalization.primeHeight_comap (S : Submonoid R) (A : Type*) [CommRing A] [Algebra R A]
+theorem IsLocalization.primeHeight_comap (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
     [IsLocalization S A] (J : Ideal A) [J.IsPrime] :
     (J.comap (algebraMap R A)).primeHeight = J.primeHeight := by
   rw [Ideal.primeHeight, Ideal.primeHeight, ← WithBot.coe_inj, Order.height_eq_krullDim_Iic,
@@ -231,7 +231,7 @@ theorem IsLocalization.primeHeight_comap (S : Submonoid R) (A : Type*) [CommRing
       exact this
     map_rel_iff' := fun {I₁ I₂} => @RelIso.map_rel_iff _ _ _ _ e ⟨_, I₁.1.2⟩ ⟨_, I₂.1.2⟩ }
 
-theorem IsLocalization.height_comap (S : Submonoid R) (A : Type*) [CommRing A] [Algebra R A]
+theorem IsLocalization.height_comap (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
     [IsLocalization S A] (J : Ideal A) : (J.comap (algebraMap R A)).height = J.height := by
   rw [Ideal.height, Ideal.height]
   simp_rw [IsLocalization.primeHeight_comap S A, IsLocalization.minimalPrimes_comap S A,
