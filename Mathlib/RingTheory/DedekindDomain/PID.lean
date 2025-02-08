@@ -200,7 +200,7 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [IsDomain S]
     {P : Ideal Sₚ} (hP : IsPrime P) (hP0 : P ≠ ⊥) :
     P ∈ normalizedFactors (Ideal.map (algebraMap R Sₚ) p) := by
   have non_zero_div : Algebra.algebraMapSubmonoid S p.primeCompl ≤ S⁰ :=
-    map_le_nonZeroDivisors_of_injective _ (NoZeroSMulDivisors.algebraMap_injective _ _)
+    map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective _ _)
       p.primeCompl_le_nonZeroDivisors
   letI : Algebra (Localization.AtPrime p) Sₚ := localizationAlgebra p.primeCompl S
   haveI : IsScalarTower R (Localization.AtPrime p) Sₚ :=
@@ -233,7 +233,7 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [IsDomain S]
     · assumption
     rw [IsScalarTower.algebraMap_eq R S Sₚ]
     exact
-      (IsLocalization.injective Sₚ non_zero_div).comp (NoZeroSMulDivisors.algebraMap_injective _ _)
+      (IsLocalization.injective Sₚ non_zero_div).comp (FaithfulSMul.algebraMap_injective _ _)
 
 /-- Let `p` be a prime in the Dedekind domain `R` and `S` be an integral extension of `R`,
 then the localization `Sₚ` of `S` at `p` is a PID. -/

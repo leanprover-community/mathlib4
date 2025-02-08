@@ -550,7 +550,7 @@ def compChangeOfVariables (m M N : ℕ) (i : Σ n, Fin n → ℕ) (hi : i ∈ co
   rw [mem_compPartialSumSource_iff] at hi
   refine ⟨∑ j, f j, ofFn fun a => f a, fun hi' => ?_, by simp [sum_ofFn]⟩
   rename_i i
-  obtain ⟨j, rfl⟩ : ∃ j : Fin n, f j = i := by rwa [mem_ofFn, Set.mem_range] at hi'
+  obtain ⟨j, rfl⟩ : ∃ j : Fin n, f j = i := by rwa [mem_ofFn', Set.mem_range] at hi'
   exact (hi.2 j).1
 
 @[simp]
