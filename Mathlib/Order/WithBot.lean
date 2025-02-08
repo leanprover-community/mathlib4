@@ -177,6 +177,7 @@ section LE
 
 variable [LE α]
 
+/-- The order on `WithBot α`: it inherits the order of `α`, and `⊥` is the smallest -/
 def le (o₁ o₂ : WithBot α) := ∀ a : α, o₁ = ↑a → ∃ b : α, o₂ = ↑b ∧ a ≤ b
 
 instance (priority := 10) : LE (WithBot α) := ⟨le⟩
@@ -250,6 +251,7 @@ section LT
 
 variable [LT α]
 
+/-- The order on `WithBot α`: it inherits the order of `α`, and `⊥` is the smallest -/
 def lt (o₁ o₂ : WithBot α) := ∃ b : α, o₂ = ↑b ∧ ∀ a : α, o₁ = ↑a → a < b
 
 instance (priority := 10) : LT (WithBot α) := ⟨lt⟩
@@ -769,6 +771,7 @@ section LE
 
 variable [LE α]
 
+/-- The order on `WithTop α`: it inherits the order of `α`, and `⊤` is the biggest -/
 def le (o₁ o₂ : WithTop α) := ∀ a : α, o₂ = ↑a → ∃ b : α, o₁ = ↑b ∧ b ≤ a
 
 instance (priority := 10) : LE (WithTop α) := ⟨le⟩
@@ -861,6 +864,7 @@ section LT
 
 variable [LT α]
 
+/-- The order on `WithTop α`: it inherits the order of `α`, and `⊤` is the biggest -/
 def lt (o₁ o₂ : WithTop α) := ∃ b : α, o₁ = ↑b ∧ ∀ a : α, o₂ = ↑a → b < a
 
 instance (priority := 10) : LT (WithTop α) := ⟨lt⟩
