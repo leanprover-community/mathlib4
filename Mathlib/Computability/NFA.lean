@@ -154,3 +154,60 @@ theorem toNFA_correct (M : DFA α σ) : M.toNFA.accepts = M.accepts := by
   · exact fun h => ⟨M.eval x, h, rfl⟩
 
 end DFA
+
+namespace NFA
+
+variable (M) in
+/-- `M.reverse` constructs an NFA with the same states as `M`, but all the transitions reversed. The
+resulting automaton accepts a word `x` if and only if `M` accepts `List.reverse x`. -/
+@[simps]
+def reverse : NFA α σ where
+  step s a := { s' | s ∈ M.step s' a }
+  start := M.accept
+  accept := M.start
+
+variable (M) in
+@[simp]
+theorem reverse_reverse : M.reverse.reverse = M := by
+  simp [reverse]
+
+theorem disjoint_stepSet_reverse {a : α} {S S' : Set σ} :
+    Disjoint S (M.reverse.stepSet S' a) ↔ Disjoint S' (M.stepSet S a) := by
+  rw [← not_iff_not]
+  simp only [Set.not_disjoint_iff, mem_stepSet, reverse_step, Set.mem_setOf_eq]
+  tauto
+
+theorem disjoint_evalFrom_reverse {x : List α} {S S' : Set σ}
+    (h : Disjoint S (M.reverse.evalFrom S' x)) : Disjoint S' (M.evalFrom S x.reverse) := by
+  simp only [evalFrom, List.foldl_reverse] at h ⊢
+  induction x generalizing S S' with
+  | nil =>
+    rw [disjoint_comm]
+    exact h
+  | cons x xs ih =>
+    rw [List.foldl_cons] at h
+    rw [List.foldr_cons, ← NFA.disjoint_stepSet_reverse, disjoint_comm]
+    exact ih h
+
+theorem disjoint_evalFrom_reverse_iff {x : List α} {S S' : Set σ} :
+    Disjoint S (M.reverse.evalFrom S' x) ↔ Disjoint S' (M.evalFrom S x.reverse) :=
+  ⟨disjoint_evalFrom_reverse, fun h ↦ List.reverse_reverse x ▸ disjoint_evalFrom_reverse h⟩
+
+@[simp]
+theorem mem_accepts_reverse {x : List α} : x ∈ M.reverse.accepts ↔ x.reverse ∈ M.accepts := by
+  simp [mem_accepts, ← Set.not_disjoint_iff, not_iff_not, disjoint_evalFrom_reverse_iff]
+
+end NFA
+
+namespace Language
+
+theorem IsRegular.reverse {L : Language α} (h : L.IsRegular) : L.reverse.IsRegular :=
+  have ⟨σ, x, M, hM⟩ := h
+  ⟨_, inferInstance, M.toNFA.reverse.toDFA, by ext x; simp [hM]⟩
+
+/-- Regular languages are closed under reversal. -/
+@[simp]
+theorem isRegular_reverse_iff {L : Language α} : L.reverse.IsRegular ↔ L.IsRegular :=
+  ⟨fun h ↦ L.reverse_reverse ▸ h.reverse, .reverse⟩
+
+end Language
