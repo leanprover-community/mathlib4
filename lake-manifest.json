@@ -48,7 +48,7 @@
    "rev": "ba9a63be53f16b3b6e4043641c6bad4883e650b4",
    "name": "aesop",
    "manifestFile": "lake-manifest.json",
-   "inputRev": "master",
+   "inputRev": "forward-test-master-no-precomp",
    "inherited": false,
    "configFile": "lakefile.toml"},
   {"url": "https://github.com/leanprover-community/quote4",
