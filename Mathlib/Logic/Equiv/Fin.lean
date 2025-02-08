@@ -179,20 +179,6 @@ theorem finSuccEquivLast_symm_some (i : Fin n) :
 @[simp] theorem finSuccEquivLast_symm_none : finSuccEquivLast.symm none = Fin.last n :=
   finSuccEquiv'_symm_none _
 
-/-- Equivalence between `Π j : Fin (n + 1), α j` and `α i × Π j : Fin n, α (Fin.succAbove i j)`. -/
-@[simps (config := .asFn), deprecated Fin.insertNthEquiv (since := "2024-07-12")]
-def Equiv.piFinSuccAbove (α : Fin (n + 1) → Type u) (i : Fin (n + 1)) :
-    (∀ j, α j) ≃ α i × ∀ j, α (i.succAbove j) where
-  toFun f := (f i, i.removeNth f)
-  invFun f := i.insertNth f.1 f.2
-  left_inv f := by simp
-  right_inv f := by simp
-
-/-- Equivalence between `Fin (n + 1) → β` and `β × (Fin n → β)`. -/
-@[simps! (config := .asFn), deprecated Fin.consEquiv (since := "2024-07-12")]
-def Equiv.piFinSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β × (Fin n → β) :=
-  (Fin.insertNthEquiv (fun _ => β) 0).symm
-
 /-- An embedding `e : Fin (n+1) ↪ ι` corresponds to an embedding `f : Fin n ↪ ι` (corresponding
 the last `n` coordinates of `e`) together with a value not taken by `f` (corresponding to `e 0`). -/
 def Equiv.embeddingFinSucc (n : ℕ) (ι : Type*) :
@@ -211,12 +197,6 @@ def Equiv.embeddingFinSucc (n : ℕ) (ι : Type*) :
     ((Equiv.embeddingFinSucc n ι).symm f : Fin (n + 1) → ι) = Fin.cons f.2.1 f.1 := by
   ext i
   exact Fin.cases rfl (fun j ↦ rfl) i
-
-/-- Equivalence between `Fin (n + 1) → β` and `β × (Fin n → β)` which separates out the last
-element of the tuple. -/
-@[simps! (config := .asFn), deprecated Fin.snocEquiv (since := "2024-07-12")]
-def Equiv.piFinCastSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β × (Fin n → β) :=
-  (Fin.insertNthEquiv (fun _ => β) (.last _)).symm
 
 /-- Equivalence between `Fin m ⊕ Fin n` and `Fin (m + n)` -/
 def finSumFinEquiv : Fin m ⊕ Fin n ≃ Fin (m + n) where
@@ -323,9 +303,8 @@ theorem finRotate_one : finRotate 1 = Equiv.refl _ :=
     simp only [Fin.lt_iff_val_lt_val, Fin.val_last, Fin.val_mk] at h
     simp [finRotate_of_lt h, Fin.ext_iff, Fin.add_def, Nat.mod_eq_of_lt (Nat.succ_lt_succ h)]
 
--- Porting note: was a @[simp]
 theorem finRotate_apply_zero : finRotate n.succ 0 = 1 := by
-  rw [finRotate_succ_apply, Fin.zero_add]
+  simp
 
 theorem coe_finRotate_of_ne_last {i : Fin n.succ} (h : i ≠ Fin.last n) :
     (finRotate (n + 1) i : ℕ) = i + 1 := by

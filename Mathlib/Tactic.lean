@@ -29,6 +29,7 @@ import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
 import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
 import Mathlib.Tactic.CategoryTheory.Bicategory.PureCoherence
 import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
+import Mathlib.Tactic.CategoryTheory.CheckCompositions
 import Mathlib.Tactic.CategoryTheory.Coherence
 import Mathlib.Tactic.CategoryTheory.Coherence.Basic
 import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
@@ -67,6 +68,7 @@ import Mathlib.Tactic.DeclarationNames
 import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Tactic.DeprecateTo
 import Mathlib.Tactic.DeriveCountable
+import Mathlib.Tactic.DeriveEncodable
 import Mathlib.Tactic.DeriveFintype
 import Mathlib.Tactic.DeriveTraversable
 import Mathlib.Tactic.Eqns
