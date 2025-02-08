@@ -23,9 +23,8 @@ is algebraic and that every algebraic element over a field is integral.
 * `IsAlgebraic.iff_exists_smul_integral`: If `R` is reduced and `S` is an `R`-algebra with
   injective `algebraMap`, then an element of `S` is algebraic over `R` iff some `R`-multiple
   is integral over `R`.
-* `Algebra.IsAlgebraic.trans'`: If `A/S/R` is a tower of algebras and both `A/S` and `S/R` are
-  algebraic, then `A/R` is also algebraic, provided that `S` has no zero divisors and
-  `algebraMap S A` is injective (so `S` can be regarded as an `R`-subalgebra of `A`).
+* `Algebra.IsAlgebraic.trans`: If `A/S/R` is a tower of algebras and both `A/S` and `S/R` are
+  algebraic, then `A/R` is also algebraic, provided that `S` has no zero divisors.
 * `Subalgebra.algebraicClosure`: If `R` is a domain and `S` is an arbitrary `R`-algebra,
   then the elements of `S` that are algebraic over `R` form a subalgebra.
 * `Transcendental.extendScalars`: an element of an `R`-algebra that is transcendental over `R`
@@ -90,40 +89,19 @@ variable (K L : Type*) {R S A : Type*}
 
 section Ring
 
-section Field
+variable [CommRing K] [Nontrivial K] [Ring A] [Algebra K A]
 
-variable [Field K] [Field L] [Ring A]
-variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
-
-theorem IsAlgebraic.of_finite (e : A) [FiniteDimensional K A] : IsAlgebraic K e :=
+theorem IsAlgebraic.of_finite (e : A) [Module.Finite K A] : IsAlgebraic K e :=
   (IsIntegral.of_finite K e).isAlgebraic
 
 variable (A)
 
 /-- A field extension is algebraic if it is finite. -/
 @[stacks 09GG "first part"]
-instance Algebra.IsAlgebraic.of_finite [FiniteDimensional K A] : Algebra.IsAlgebraic K A :=
+instance Algebra.IsAlgebraic.of_finite [Module.Finite K A] : Algebra.IsAlgebraic K A :=
   (IsIntegral.of_finite K A).isAlgebraic
 
-end Field
-
 end Ring
-
-section CommRing
-
-variable {K L} [Field K] [Field L] [Ring A]
-variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
-
-/-- If L is an algebraic field extension of K and A is an algebraic algebra over L,
-then A is algebraic over K. -/
-@[stacks 09GJ]
-protected theorem Algebra.IsAlgebraic.trans
-    [L_alg : Algebra.IsAlgebraic K L] [A_alg : Algebra.IsAlgebraic L A] :
-    Algebra.IsAlgebraic K A := by
-  rw [Algebra.isAlgebraic_iff_isIntegral] at L_alg A_alg ⊢
-  exact Algebra.IsIntegral.trans L
-
-end CommRing
 
 section Field
 
@@ -320,9 +298,11 @@ namespace Algebra
 variable (R S A) [NoZeroDivisors S]
 
 /-- Transitivity of algebraicity for algebras over domains. -/
-theorem IsAlgebraic.trans' [Algebra.IsAlgebraic R S] [alg : Algebra.IsAlgebraic S A] :
+@[stacks 09GJ] theorem IsAlgebraic.trans [Algebra.IsAlgebraic R S] [alg : Algebra.IsAlgebraic S A] :
     Algebra.IsAlgebraic R A :=
   ⟨fun _ ↦ (alg.1 _).restrictScalars _⟩
+
+@[deprecated (since := "2025-02-08")] alias IsAlgebraic.trans' := IsAlgebraic.trans
 
 theorem IsIntegral.trans_isAlgebraic [Algebra.IsIntegral R S] [alg : Algebra.IsAlgebraic S A] :
     Algebra.IsAlgebraic R A :=

@@ -114,7 +114,7 @@ to `(y : R) • x ∈ integralClosure R L`. -/
 theorem exists_integral_multiples (s : Finset L) :
     ∃ y ≠ (0 : A), ∀ x ∈ s, IsIntegral A (y • x) :=
   have := IsLocalization.isAlgebraic K (nonZeroDivisors A)
-  have := Algebra.IsAlgebraic.trans' A K L
+  have := Algebra.IsAlgebraic.trans A K L
   Algebra.IsAlgebraic.exists_integral_multiples ..
 
 variable (L)
