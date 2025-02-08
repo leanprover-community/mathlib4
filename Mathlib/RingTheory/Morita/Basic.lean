@@ -6,17 +6,18 @@ Authors: Jujian Zhang, Yunzhou Xie
 import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-!
 # Morita equivalence
 
-For two `R`-algebras `A` and `B` are Morita equivalent if the categories of modules over `A` and
+Two `R`-algebras `A` and `B` are Morita equivalent if the categories of modules over `A` and
 `B` are `R`-linearly equivalent. In this file, we prove that Morita equivalence is an equivalence
 relation and that isomorphic algebras are Morita equivalent.
 
 # Main definitions
 
-- `MoritaEquivalence R A B`: a structure containing a `R`-linear equivalence of categories between
+- `MoritaEquivalence R A B`: a structure containing an `R`-linear equivalence of categories between
   the module categories of `A` and `B`.
 - `IsMoritaEquivalent R A B`: a predicate asserting that `R`-algebras `A` and `B` are Morita
   equivalent.
@@ -43,34 +44,35 @@ universe u₀ u₁ u₂ u₃
 
 open CategoryTheory
 
-variable (R : Type u₀) [CommRing R]
+variable (R : Type u₀) [CommSemiring R]
 
 open scoped ModuleCat.Algebra
 
 /--
-Let `A` and `B` be `R`-algebras. We say that `A` and `B` are Morita equivalent if the categories of
-`A`-modules and `B`-modules are equivalent as `R`-linear categories.
+Let `A` and `B` be `R`-algebras. A Morita equivalence between `A` and `B` is an `R`-linear
+equivalence between the categories of `A`-modules and `B`-modules.
 -/
-@[ext]
 structure MoritaEquivalence
     (A : Type u₁) [Ring A] [Algebra R A]
     (B : Type u₂) [Ring B] [Algebra R B] where
-  /--the underlying equivalence of categories-/
+  /-- The underlying equivalence of categories -/
   eqv : ModuleCat.{max u₁ u₂} A ≌ ModuleCat.{max u₁ u₂} B
-  additive : eqv.functor.Additive := by infer_instance
   linear : eqv.functor.Linear R := by infer_instance
 
 namespace MoritaEquivalence
 
-attribute [instance] MoritaEquivalence.additive MoritaEquivalence.linear
+attribute [instance] MoritaEquivalence.linear
+
+instance {A : Type u₁} [Ring A] [Algebra R A] {B : Type u₂} [Ring B] [Algebra R B]
+    (e : MoritaEquivalence R A B) : e.eqv.functor.Additive :=
+  e.eqv.functor.additive_of_preserves_binary_products
 
 /--
 For any `R`-algebra `A`, `A` is Morita equivalent to itself.
 -/
 def refl (A : Type u₁) [Ring A] [Algebra R A] : MoritaEquivalence R A A where
   eqv := CategoryTheory.Equivalence.refl
-  additive := CategoryTheory.Functor.instAdditiveId
-  linear := CategoryTheory.Functor.instLinearId
+  linear := Functor.instLinearId
 
 /--
 For any `R`-algebras `A` and `B`, if `A` is Morita equivalent to `B`, then `B` is Morita equivalent
@@ -79,7 +81,6 @@ to `A`.
 def symm {A : Type u₁} [Ring A] [Algebra R A] {B : Type u₂} [Ring B] [Algebra R B]
     (e : MoritaEquivalence R A B) : MoritaEquivalence R B A where
   eqv := e.eqv.symm
-  additive := e.eqv.inverse_additive
   linear := e.eqv.inverseLinear R
 
 -- TODO: We have restricted all the rings to the same universe here because of the complication
@@ -98,8 +99,7 @@ def trans {A B C : Type u₁}
     (e : MoritaEquivalence R A B) (e' : MoritaEquivalence R B C) :
     MoritaEquivalence R A C where
   eqv := e.eqv.trans e'.eqv
-  additive := Functor.instAdditiveComp e.eqv.functor e'.eqv.functor
-  linear := Functor.instLinearComp e.eqv.functor e'.eqv.functor
+  linear := e.eqv.functor.instLinearComp e'.eqv.functor
 
 variable {R} in
 /--
@@ -114,7 +114,8 @@ noncomputable def ofAlgEquiv {A : Type u₁} {B : Type u₂}
 end MoritaEquivalence
 
 /--
-Two rings are Morita equivalent if their module categories are equivalent.
+Let `A` and `B` be `R`-algebras. We say that `A` and `B` are Morita equivalent if the categories of
+`A`-modules and `B`-modules are equivalent as `R`-linear categories.
 -/
 structure IsMoritaEquivalent
     (A : Type u₁) [Ring A] [Algebra R A]
