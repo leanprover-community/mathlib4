@@ -31,7 +31,11 @@ structure ContextFreeRule (T N : Type*) where
 
 /-- Context-free grammar that generates words over the alphabet `T` (a type of terminals). -/
 structure ContextFreeGrammar (T : Type*) where
-  /-- Type of nonterminals. -/
+  /-- Type of nonterminals.
+
+  Note that we restrict to `Type` because universe-polymorphism would be unnecessary: One may always
+  restrict a context-free grammar to the finitely many nonterminal symbols that are referred to by
+  its finitely many rules. -/
   NT : Type
   /-- Initial nonterminal. -/
   initial : NT
