@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Types
 -/
 
 
-open CategoryTheory Limits MonoidalCategory ChosenFiniteProducts
+open CategoryTheory Limits MonoidalCategory
 
 open Tactic
 
@@ -104,7 +104,7 @@ theorem braiding_inv_apply {X Y : Type u} {x : X} {y : Y} :
   rfl
 
 @[simp]
-theorem lift_apply {X Y Z : Type u} {f : X ⟶ Y} {g : X ⟶ Z} {x : X} :
+theorem ChosenFiniteProducts.lift_apply {X Y Z : Type u} {f : X ⟶ Y} {g : X ⟶ Z} {x : X} :
     lift f g x = (f x, g x) :=
   rfl
 
