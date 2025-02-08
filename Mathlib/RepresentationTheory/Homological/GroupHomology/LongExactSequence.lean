@@ -40,15 +40,11 @@ lemma map_chainsFunctor_shortExact :
   letI := hX.3
   HomologicalComplex.shortExact_of_degreewise_shortExact _ fun i => {
     exact := by
-      rw [ShortComplex.moduleCat_exact_iff_range_eq_ker]
       have : LinearMap.range X.f.hom.hom = LinearMap.ker X.g.hom.hom :=
         (hX.exact.map (forget₂ (Rep k G) (ModuleCat k))).moduleCat_range_eq_ker
-      show LinearMap.range ((chainsMap (MonoidHom.id G) X.f).f i).hom =
-        LinearMap.ker ((chainsMap (MonoidHom.id G) X.g).f i).hom
-      rw [chainsMap_id_eq_mapRange, chainsMap_id_eq_mapRange, ker_mapRange,
-        range_mapRange_linearMap, this]
-      exact LinearMap.ker_eq_bot.2 ((ModuleCat.mono_iff_injective _).1 <|
-        (forget₂ (Rep k G) (ModuleCat k)).map_mono X.f)
+      simp [moduleCat_exact_iff_range_eq_ker, ker_mapRange, range_mapRange_linearMap X.f.hom.hom
+        (LinearMap.ker_eq_bot.2 ((ModuleCat.mono_iff_injective _).1 <|
+        (forget₂ (Rep k G) (ModuleCat k)).map_mono X.f)), this]
     mono_f := chainsMap_id_f_map_mono X.f i
     epi_g := chainsMap_id_f_map_epi X.g i }
 
@@ -86,7 +82,7 @@ lemma mapShortComplex₃_exact {i j : ℕ} (hij : j + 1 = i) :
 
 /-- The connecting homomorphism `Hᵢ(G, X₃) ⟶ Hⱼ(G, X₁)` associated to an exact sequence
 `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of representations. -/
-noncomputable abbrev δ (i j : ℕ) (hij : i + 1 = j) :
+noncomputable abbrev δ (i j : ℕ) (hij : j + 1 = i) :
     groupHomology X.X₃ i ⟶ groupHomology X.X₁ j :=
   (map_chainsFunctor_shortExact hX).δ i j hij
 
@@ -94,14 +90,14 @@ theorem δ_apply (i j l : ℕ) (hij : j + 1 = i) (hjl : (ComplexShape.down ℕ).
     (z : (Fin i → G) →₀ X.X₃) (hz : (inhomogeneousChains X.X₃).d i j z = 0)
     (y : (Fin i → G) →₀ X.X₂) (hy : (chainsMap (MonoidHom.id G) X.g).f i y = z)
     (x : (Fin j → G) →₀ X.X₁)
-    (hx : Finsupp.mapRange.linearMap X.f.hom.hom x = (inhomogeneousChains X.X₂).d i j y) :
+    (hx : mapRange.linearMap X.f.hom.hom x = (inhomogeneousChains X.X₂).d i j y) :
     δ hX i j hij (groupHomologyπ X.X₃ i <|
       (moduleCatCyclesIso _).inv ⟨z, show ((inhomogeneousChains X.X₃).dFrom i).hom z = 0 by
         simp_all [(inhomogeneousChains X.X₃).dFrom_eq hij]⟩) = groupHomologyπ X.X₁ j
       ((moduleCatCyclesIso _).inv ⟨x, (map_chainsFunctor_shortExact hX).δ_apply_aux i j y x
-        (by simpa [chainsMap_id_eq_mapRange] using hx) _⟩) := by
+        (by simpa [chainsMap_f_id_eq_mapRange] using hx) _⟩) := by
   convert (map_chainsFunctor_shortExact hX).δ_apply i j hij z
-    hz y hy x (by simpa [chainsMap_id_eq_mapRange] using hx) l hjl
+    hz y hy x (by simpa [chainsMap_f_id_eq_mapRange] using hx) l hjl
   <;> rw [moduleCatCyclesIso_inv_apply]
   <;> rfl
 
