@@ -462,8 +462,6 @@ def definedAtRight
 
 end IsExtensionPair
 
-#check Nat.unpair
-
 /-- For a countably generated structure `M` and a structure `N`, if any partial equivalence
 between finitely generated substructures can be extended to any element in the domain,
 then there exists an embedding of `M` in `N`. -/
