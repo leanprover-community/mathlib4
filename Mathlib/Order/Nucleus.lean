@@ -23,9 +23,7 @@ https://ncatlab.org/nlab/show/nucleus
 
 open Order InfHom
 
-section
-
-variable {X : Type*} [CompleteLattice X]
+variable {X : Type*}
 
 /-- A nucleus is an inflationary idempotent `inf`-preserving endomorphism of a semilattice.
 In a frame, nuclei correspond to sublocales. -/ -- TODO: Formalise that claim
@@ -47,13 +45,11 @@ class NucleusClass (F X : Type*) [SemilatticeInf X] [FunLike F X X] extends InfH
   /-- A nucleus is inflationary. -/
   le_apply (x : X) (f : F) : x ≤ f x
 
-end
-
 namespace Nucleus
 
-section
+section CompleteLattice
 
-variable {X : Type*} [CompleteLattice X] {n m : Nucleus X} {x y : X}
+variable [CompleteLattice X] {n m : Nucleus X} {x y : X}
 
 instance : FunLike (Nucleus X) X X where
   coe x := x.toFun
@@ -146,9 +142,8 @@ instance : CompleteLattice (Nucleus X) := completeLatticeOfCompleteSemilatticeIn
   rw [← sInf_pair, sInf_apply, iInf_pair]
 
 end
-section
-
-variable {X : Type*} [Order.Frame X]
+section Frame
+variable [Order.Frame X]
 
 instance : HImp (Nucleus X) where
   himp m n :=
