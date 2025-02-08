@@ -41,13 +41,13 @@ variable [L.Structure M] [L.Structure N] [L.Structure P] [L.Structure Q]
 structure ElementaryEmbedding where
   toFun : M → N
   -- Porting note:
-  -- The autoparam here used to be `obviously`. We would like to replace it with `aesop`
-  -- but that isn't currently sufficient.
+  -- The autoparam here used to be `obviously`.
+  -- We have replaced it with `aesop` but that isn't currently sufficient.
   -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Aesop.20and.20cases
-  -- If that can be improved, we should change this to `by aesop` and remove the proofs below.
+  -- If that can be improved, we should remove the proofs below.
   map_formula' :
     ∀ ⦃n⦄ (φ : L.Formula (Fin n)) (x : Fin n → M), φ.Realize (toFun ∘ x) ↔ φ.Realize x := by
-    intros; trivial
+    aesop
 
 @[inherit_doc FirstOrder.Language.ElementaryEmbedding]
 scoped[FirstOrder] notation:25 A " ↪ₑ[" L "] " B => FirstOrder.Language.ElementaryEmbedding L A B
@@ -281,7 +281,6 @@ namespace Equiv
 /-- A first-order equivalence is also an elementary embedding. -/
 def toElementaryEmbedding (f : M ≃[L] N) : M ↪ₑ[L] N where
   toFun := f
-  map_formula' n φ x := by simp
 
 @[simp]
 theorem toElementaryEmbedding_toEmbedding (f : M ≃[L] N) :
