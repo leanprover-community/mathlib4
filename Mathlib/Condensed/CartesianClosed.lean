@@ -22,4 +22,5 @@ open CategoryTheory
 instance : ChosenFiniteProducts (CondensedSet.{u}) :=
   inferInstanceAs (ChosenFiniteProducts (Sheaf _ _))
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : CartesianClosed (CondensedSet.{u}) := inferInstanceAs (CartesianClosed (Sheaf _ _))
