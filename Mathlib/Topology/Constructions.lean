@@ -37,6 +37,7 @@ product, sum, disjoint union, subspace, quotient space
 noncomputable section
 
 open Topology TopologicalSpace Set Filter Function
+open scoped Set.Notation
 
 universe u v
 
@@ -467,8 +468,6 @@ theorem Continuous.uncurry_right {f : X → Y → Z} (y : Y) (h : Continuous (un
     Continuous fun a => f a y :=
   h.comp (Continuous.Prod.mk_left _)
 
-@[deprecated (since := "2024-03-09")] alias continuous_uncurry_left := Continuous.uncurry_left
-@[deprecated (since := "2024-03-09")] alias continuous_uncurry_right := Continuous.uncurry_right
 
 theorem continuous_curry {g : X × Y → Z} (x : X) (h : Continuous g) : Continuous (curry g x) :=
   Continuous.uncurry_left x h
@@ -1155,8 +1154,20 @@ protected lemma Topology.IsEmbedding.codRestrict {e : X → Y} (he : IsEmbedding
 @[deprecated (since := "2024-10-26")]
 alias Embedding.codRestrict := IsEmbedding.codRestrict
 
-protected lemma Topology.IsEmbedding.inclusion {s t : Set X} (h : s ⊆ t) :
+variable {s t : Set X}
+
+protected lemma Topology.IsEmbedding.inclusion (h : s ⊆ t) :
     IsEmbedding (inclusion h) := IsEmbedding.subtypeVal.codRestrict _ _
+
+protected lemma Topology.IsOpenEmbedding.inclusion (hst : s ⊆ t) (hs : IsOpen (t ↓∩ s)) :
+    IsOpenEmbedding (inclusion hst) where
+  toIsEmbedding := .inclusion _
+  isOpen_range := by rwa [range_inclusion]
+
+protected lemma Topology.IsClosedEmbedding.inclusion (hst : s ⊆ t) (hs : IsClosed (t ↓∩ s)) :
+    IsClosedEmbedding (inclusion hst) where
+  toIsEmbedding := .inclusion _
+  isClosed_range := by rwa [range_inclusion]
 
 @[deprecated (since := "2024-10-26")]
 alias embedding_inclusion := IsEmbedding.inclusion
@@ -1645,9 +1656,7 @@ variable {ι κ : Type*} {σ : ι → Type*} {τ : κ → Type*} [∀ i, Topolog
 theorem continuous_sigmaMk {i : ι} : Continuous (@Sigma.mk ι σ i) :=
   continuous_iSup_rng continuous_coinduced_rng
 
--- Porting note: the proof was `by simp only [isOpen_iSup_iff, isOpen_coinduced]`
 theorem isOpen_sigma_iff {s : Set (Sigma σ)} : IsOpen s ↔ ∀ i, IsOpen (Sigma.mk i ⁻¹' s) := by
-  delta instTopologicalSpaceSigma
   rw [isOpen_iSup_iff]
   rfl
 

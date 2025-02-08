@@ -77,7 +77,9 @@ theorem not_acc_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r
   rw [acc_iff_no_decreasing_seq, not_isEmpty_iff]
   exact ⟨⟨f, k, rfl⟩⟩
 
-/-- A relation is well-founded iff it doesn't have any infinite decreasing sequence. -/
+/-- A strict order relation is well-founded iff it doesn't have any infinite decreasing sequence.
+
+See `wellFounded_iff_no_descending_seq` for a version which works on any relation. -/
 theorem wellFounded_iff_no_descending_seq :
     WellFounded r ↔ IsEmpty (((· > ·) : ℕ → ℕ → Prop) ↪r r) := by
   constructor
@@ -91,6 +93,14 @@ theorem not_wellFounded_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop
   exact ⟨f⟩
 
 end RelEmbedding
+
+theorem not_strictAnti_of_wellFoundedLT [Preorder α] [WellFoundedLT α] (f : ℕ → α) :
+    ¬ StrictAnti f := fun hf ↦
+  (RelEmbedding.natGT f (fun n ↦ hf (by simp))).not_wellFounded_of_decreasing_seq wellFounded_lt
+
+theorem not_strictMono_of_wellFoundedGT [Preorder α] [WellFoundedGT α] (f : ℕ → α) :
+    ¬ StrictMono f :=
+  not_strictAnti_of_wellFoundedLT (α := αᵒᵈ) f
 
 namespace Nat
 

@@ -170,7 +170,7 @@ theorem dist_eq {α β F : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] 
 `dist` and `nndist` versions below -/
 theorem ratio_unique [DilationClass F α β] {f : F} {x y : α} {r : ℝ≥0} (h₀ : edist x y ≠ 0)
     (htop : edist x y ≠ ⊤) (hr : edist (f x) (f y) = r * edist x y) : r = ratio f := by
-  simpa only [hr, ENNReal.mul_eq_mul_right h₀ htop, ENNReal.coe_inj] using edist_eq f x y
+  simpa only [hr, ENNReal.mul_left_inj h₀ htop, ENNReal.coe_inj] using edist_eq f x y
 
 /-- The `ratio` is equal to the distance ratio for any two points
 with nonzero finite distance; `nndist` version -/
@@ -296,7 +296,6 @@ theorem coe_comp (g : β →ᵈ γ) (f : α →ᵈ β) : (g.comp f : α → γ) 
 theorem comp_apply (g : β →ᵈ γ) (f : α →ᵈ β) (x : α) : (g.comp f : α → γ) x = g (f x) :=
   rfl
 
--- Porting note: removed `simp` because it's difficult to auto prove `hne`
 /-- Ratio of the composition `g.comp f` of two dilations is the product of their ratios. We assume
 that there exist two points in `α` at extended distance neither `0` nor `∞` because otherwise
 `Dilation.ratio (g.comp f) = Dilation.ratio f = 1` while `Dilation.ratio g` can be any number. This
@@ -306,7 +305,7 @@ theorem ratio_comp' {g : β →ᵈ γ} {f : α →ᵈ β}
     (hne : ∃ x y : α, edist x y ≠ 0 ∧ edist x y ≠ ⊤) : ratio (g.comp f) = ratio g * ratio f := by
   rcases hne with ⟨x, y, hα⟩
   have hgf := (edist_eq (g.comp f) x y).symm
-  simp_rw [coe_comp, Function.comp, edist_eq, ← mul_assoc, ENNReal.mul_eq_mul_right hα.1 hα.2]
+  simp_rw [coe_comp, Function.comp, edist_eq, ← mul_assoc, ENNReal.mul_left_inj hα.1 hα.2]
     at hgf
   rwa [← ENNReal.coe_inj, ENNReal.coe_mul]
 

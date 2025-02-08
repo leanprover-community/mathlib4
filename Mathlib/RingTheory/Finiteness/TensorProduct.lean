@@ -85,7 +85,7 @@ noncomputable local instance
 instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M]
     [Module R M] [h : Module.Finite R M] : Module.Finite A (TensorProduct R A M) := by
   classical
-    obtain ⟨s, hs⟩ := h.out
+    obtain ⟨s, hs⟩ := h.fg_top
     refine ⟨⟨s.image (TensorProduct.mk R A M 1), eq_top_iff.mpr ?_⟩⟩
     rintro x -
     induction x with
@@ -103,7 +103,7 @@ instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [
 instance Module.Finite.tensorProduct [CommSemiring R] [AddCommMonoid M] [Module R M]
     [AddCommMonoid N] [Module R N] [hM : Module.Finite R M] [hN : Module.Finite R N] :
     Module.Finite R (TensorProduct R M N) where
-  out := (TensorProduct.map₂_mk_top_top_eq_top R M N).subst (hM.out.map₂ _ hN.out)
+  fg_top := (TensorProduct.map₂_mk_top_top_eq_top R M N).subst (hM.fg_top.map₂ _ hN.fg_top)
 
 end ModuleAndAlgebra
 

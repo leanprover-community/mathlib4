@@ -81,14 +81,10 @@ protected def sum (L' : Language.{u', v'}) : Language :=
   ⟨fun n => L.Functions n ⊕ L'.Functions n, fun n => L.Relations n ⊕ L'.Relations n⟩
 
 /-- The type of constants in a given language. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 protected abbrev Constants :=
   L.Functions 0
 
 /-- The type of symbols in a given language. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 abbrev Symbols :=
   (Σ l, L.Functions l) ⊕ (Σ l, L.Relations l)
 
@@ -225,11 +221,8 @@ structure Equiv extends M ≃ N where
 @[inherit_doc]
 scoped[FirstOrder] notation:25 A " ≃[" L "] " B => FirstOrder.Language.Equiv L A B
 
--- Porting note: was [L.Structure P] and [L.Structure Q]
--- The former reported an error.
-variable {L M N} {P : Type*} [Structure L P] {Q : Type*} [Structure L Q]
+variable {L M N} {P : Type*} [L.Structure P] {Q : Type*} [L.Structure Q]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- Interpretation of a constant symbol -/
 @[coe]
 def constantMap (c : L.Constants) : M := funMap c default
@@ -259,7 +252,6 @@ class StrongHomClass (L : outParam Language) (F : Type*) (M N : outParam Type*)
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)
   map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r (φ ∘ x) ↔ RelMap r x
 
--- Porting note: using implicit brackets for `Structure` arguments
 instance (priority := 100) StrongHomClass.homClass {F : Type*} [L.Structure M]
     [L.Structure N] [FunLike F M N] [StrongHomClass L F M N] : HomClass L F M N where
   map_fun := StrongHomClass.map_fun
@@ -819,7 +811,6 @@ def inducedStructure (e : M ≃ N) : L.Structure N :=
   ⟨fun f x => e (funMap f (e.symm ∘ x)), fun r x => RelMap r (e.symm ∘ x)⟩
 
 /-- A bijection as a first-order isomorphism with the induced structure on the codomain. -/
---@[simps!] Porting note: commented out and lemmas added manually
 def inducedStructureEquiv (e : M ≃ N) : @Language.Equiv L M N _ (inducedStructure e) := by
   letI : L.Structure N := inducedStructure e
   exact

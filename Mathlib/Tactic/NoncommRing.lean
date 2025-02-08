@@ -23,9 +23,9 @@ namespace Mathlib.Tactic.NoncommRing
 section nat_lit_mul
 variable {R : Type*} [NonAssocSemiring R] (r : R) (n : ℕ)
 
-lemma nat_lit_mul_eq_nsmul [n.AtLeastTwo] : no_index (OfNat.ofNat n) * r = OfNat.ofNat n • r := by
+lemma nat_lit_mul_eq_nsmul [n.AtLeastTwo] : ofNat(n) * r = OfNat.ofNat n • r := by
   simp only [nsmul_eq_mul, Nat.cast_ofNat]
-lemma mul_nat_lit_eq_nsmul [n.AtLeastTwo] : r * no_index (OfNat.ofNat n) = OfNat.ofNat n • r := by
+lemma mul_nat_lit_eq_nsmul [n.AtLeastTwo] : r * ofNat(n) = OfNat.ofNat n • r := by
   simp only [nsmul_eq_mul', Nat.cast_ofNat]
 
 end nat_lit_mul

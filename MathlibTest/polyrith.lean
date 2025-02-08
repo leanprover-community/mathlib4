@@ -504,7 +504,7 @@ example (a b c : ℤ) (h1 : a = b) (h2 : b = 1) :
   polyrith
 
 example (x y : ℚ) (h1 : x + y = 3) (h2 : 3*x = 7) :
-    x*x*y + y*x*y + 6*x = 3*x*y + 14 :=
+    x*x*y + y*x*y + 6*x = 3*x*y + 14 := by
   polyrith
 
 example (x y z w : ℚ) (hzw : z = w) : x*z + 2*y*z = x*w + 2*y*w := by

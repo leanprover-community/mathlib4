@@ -6,6 +6,7 @@ Authors: Nailin Guan, Yi Song, Xuchun Li
 import Mathlib.GroupTheory.Index
 import Mathlib.Topology.Algebra.ClosedSubgroup
 import Mathlib.Topology.Algebra.OpenSubgroup
+import Mathlib.Topology.Separation.Profinite
 /-!
 # Existence of an open normal subgroup in any clopen neighborhood of the neutral element
 
@@ -28,3 +29,15 @@ theorem exist_openNormalSubgroup_sub_clopen_nhd_of_one {G : Type*} [Group G] [To
   exact fun _ b ↦ hH (H.normalCore_le b)
 
 end TopologicalGroup
+
+namespace ProfiniteGrp
+
+theorem exist_openNormalSubgroup_sub_open_nhd_of_one {G : Type*} [Group G] [TopologicalSpace G]
+    [TopologicalGroup G] [CompactSpace G] [TotallyDisconnectedSpace G] {U : Set G}
+    (UOpen : IsOpen U) (einU : 1 ∈ U) : ∃ H : OpenNormalSubgroup G, (H : Set G) ⊆ U := by
+  rcases ((Filter.HasBasis.mem_iff' ((nhds_basis_clopen (1 : G))) U ).mp <|
+    mem_nhds_iff.mpr (by use U)) with ⟨W, hW, h⟩
+  rcases TopologicalGroup.exist_openNormalSubgroup_sub_clopen_nhd_of_one hW.2 hW.1 with ⟨H, hH⟩
+  exact ⟨H, fun _ a ↦ h (hH a)⟩
+
+end ProfiniteGrp

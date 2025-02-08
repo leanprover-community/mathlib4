@@ -3,10 +3,10 @@ Copyright (c) 2020 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
+import Mathlib.Data.Finite.Sum
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.Exponent
 import Mathlib.GroupTheory.GroupAction.CardCommute
-import Mathlib.Data.Finite.Sum
 
 /-!
 # Dihedral Groups
@@ -18,6 +18,7 @@ represents the rotations of the `n`-gon by `2πi/n`, and `sr i` represents the r
 `n`-gon. `DihedralGroup 0` corresponds to the infinite dihedral group.
 -/
 
+assert_not_exists TwoSidedIdeal
 
 /-- For `n ≠ 0`, `DihedralGroup n` represents the symmetry group of the regular `n`-gon.
 `r i` represents the rotations of the `n`-gon by `2πi/n`, and `sr i` represents the reflections of
@@ -102,12 +103,12 @@ theorem one_def : (1 : DihedralGroup n) = r 0 :=
   rfl
 
 private def fintypeHelper : (ZMod n) ⊕ (ZMod n) ≃ DihedralGroup n where
-  invFun i := match i with
-    | r j => Sum.inl j
-    | sr j => Sum.inr j
-  toFun i := match i with
-    | Sum.inl j => r j
-    | Sum.inr j => sr j
+  invFun
+    | r j => .inl j
+    | sr j => .inr j
+  toFun
+    | .inl j => r j
+    | .inr j => sr j
   left_inv := by rintro (x | x) <;> rfl
   right_inv := by rintro (x | x) <;> rfl
 
@@ -206,6 +207,21 @@ theorem exponent : Monoid.exponent (DihedralGroup n) = lcm n 2 := by
       exact orderOf_r_one.symm
     · convert Monoid.order_dvd_exponent (sr (0 : ZMod n))
       exact (orderOf_sr 0).symm
+
+lemma not_commutative : ∀ {n : ℕ}, n ≠ 1 → n ≠ 2 →
+    ¬Std.Commutative fun (x y : DihedralGroup n) => x * y
+  | 0, _, _ => fun ⟨h'⟩ ↦ by simpa using h' (r 1) (sr 0)
+  | n + 3, _, _ => by
+    rintro ⟨h'⟩
+    specialize h' (r 1) (sr 0)
+    rw [r_mul_sr, zero_sub, sr_mul_r, zero_add, sr.injEq, neg_eq_iff_add_eq_zero,
+      one_add_one_eq_two, ← ZMod.val_eq_zero, ZMod.val_two_eq_two_mod] at h'
+    simpa using Nat.le_of_dvd Nat.zero_lt_two <| Nat.dvd_of_mod_eq_zero h'
+
+lemma commutative_iff {n : ℕ} :
+    Std.Commutative (fun x y : DihedralGroup n ↦ x * y) ↔ n = 1 ∨ n = 2 where
+  mp := by contrapose!; rintro ⟨h1, h2⟩; exact not_commutative h1 h2
+  mpr := by rintro (rfl | rfl) <;> exact ⟨by decide⟩
 
 /-- If n is odd, then the Dihedral group of order $2n$ has $n(n+3)$ pairs (represented as
 $n + n + n + n*n$) of commuting elements. -/

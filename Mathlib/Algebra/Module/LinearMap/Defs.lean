@@ -51,11 +51,7 @@ linear map
 -/
 
 
-assert_not_exists Star
-assert_not_exists DomMulAct
-assert_not_exists Pi.module
-assert_not_exists WCovBy
-assert_not_exists Field
+assert_not_exists Star DomMulAct Pi.module WCovBy Field
 
 open Function
 
@@ -427,7 +423,7 @@ theorem restrictScalars_apply (fₗ : M →ₗ[S] M₂) (x) : restrictScalars R 
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (M →ₗ[S] M₂) → M →ₗ[R] M₂) := fun _ _ h ↦
-  ext (LinearMap.congr_fun h : _)
+  ext (LinearMap.congr_fun h :)
 
 @[simp]
 theorem restrictScalars_inj (fₗ gₗ : M →ₗ[S] M₂) :
@@ -452,6 +448,8 @@ end
 def _root_.RingHom.toSemilinearMap (f : R →+* S) : R →ₛₗ[f] S :=
   { f with
     map_smul' := f.map_mul }
+
+@[simp] theorem _root_.RingHom.coe_toSemilinearMap (f : R →+* S) : ⇑f.toSemilinearMap = f := rfl
 
 section
 
@@ -570,7 +568,7 @@ instance CompatibleSMul.intModule {S : Type*} [Semiring S] [Module S M] [Module 
 
 instance CompatibleSMul.units {R S : Type*} [Monoid R] [MulAction R M] [MulAction R M₂]
     [Semiring S] [Module S M] [Module S M₂] [CompatibleSMul M M₂ R S] : CompatibleSMul M M₂ Rˣ S :=
-  ⟨fun fₗ c x ↦ (CompatibleSMul.map_smul fₗ (c : R) x : _)⟩
+  ⟨fun fₗ c x ↦ (CompatibleSMul.map_smul fₗ (c : R) x :)⟩
 
 end AddCommGroup
 

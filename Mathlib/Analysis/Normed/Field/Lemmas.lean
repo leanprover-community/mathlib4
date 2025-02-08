@@ -3,7 +3,7 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-
+import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Algebra.Group.AddChar
 import Mathlib.Algebra.Group.TypeTags.Finite
 import Mathlib.Algebra.Order.GroupWithZero.Finset
@@ -11,8 +11,8 @@ import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Group.Bounded
 import Mathlib.Analysis.Normed.Group.Rat
 import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.MetricSpace.DilationEquiv
+import Mathlib.Topology.Instances.NNReal.Defs
 
 /-!
 # Normed fields

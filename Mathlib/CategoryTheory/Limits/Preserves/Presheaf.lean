@@ -182,8 +182,8 @@ lemma preservesFiniteLimits_of_isFiltered_costructuredArrow_yoneda
 Proposition 3.3.13 of [Kashiwara2006].
 -/
 theorem isFiltered_costructuredArrow_yoneda_iff_nonempty_preservesFiniteLimits :
-    IsFiltered (CostructuredArrow yoneda A) ↔ Nonempty (PreservesFiniteLimits A) :=
-  ⟨fun _ => ⟨preservesFiniteLimits_of_isFiltered_costructuredArrow_yoneda A⟩,
-   fun ⟨_⟩ => isFiltered_costructuredArrow_yoneda_of_preservesFiniteLimits A⟩
+    IsFiltered (CostructuredArrow yoneda A) ↔ PreservesFiniteLimits A :=
+  ⟨fun _ => preservesFiniteLimits_of_isFiltered_costructuredArrow_yoneda A,
+   fun _ => isFiltered_costructuredArrow_yoneda_of_preservesFiniteLimits A⟩
 
 end CategoryTheory.Limits

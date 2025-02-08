@@ -3,6 +3,7 @@ Copyright (c) 2023 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.SuccPred.Limit
 
 /-!
@@ -141,10 +142,7 @@ alias IsLUB.exists_of_not_isSuccLimit := IsLUB.exists_of_not_isSuccPrelimit
 theorem Order.IsSuccPrelimit.sSup_Iio (h : IsSuccPrelimit x) : sSup (Iio x) = x := by
   obtain rfl | hx := eq_bot_or_bot_lt x
   · simp
-  · refine (csSup_le ⟨⊥, hx⟩ fun a ha ↦ ha.le).antisymm <| le_of_forall_lt fun a ha ↦ ?_
-    rw [lt_csSup_iff' bddAbove_Iio]
-    obtain ⟨b, hb', hb⟩ := (not_covBy_iff ha).1 (h a)
-    use b, hb
+  · exact h.isLUB_Iio.csSup_eq ⟨⊥, hx⟩
 
 theorem Order.IsSuccPrelimit.iSup_Iio (h : IsSuccPrelimit x) : ⨆ a : Iio x, a.1 = x := by
   rw [← sSup_eq_iSup', h.sSup_Iio]
@@ -163,6 +161,15 @@ theorem sSup_Iio_eq_self_iff_isSuccPrelimit : sSup (Iio x) = x ↔ IsSuccPrelimi
 
 theorem iSup_Iio_eq_self_iff_isSuccPrelimit : ⨆ a : Iio x, a.1 = x ↔ IsSuccPrelimit x := by
   rw [← sSup_eq_iSup', sSup_Iio_eq_self_iff_isSuccPrelimit]
+
+theorem iSup_succ [SuccOrder α] (x : α) : ⨆ a : Iio x, succ a.1 = x := by
+  have H : BddAbove (range fun a : Iio x ↦ succ a.1) :=
+    ⟨succ x, by simp +contextual [upperBounds, succ_le_succ, le_of_lt]⟩
+  apply le_antisymm _ (le_of_forall_lt fun y hy ↦ ?_)
+  · rw [ciSup_le_iff' H]
+    exact fun a ↦ succ_le_of_lt a.2
+  · rw [lt_ciSup_iff' H]
+    exact ⟨⟨y, hy⟩, lt_succ_of_not_isMax hy.not_isMax⟩
 
 end ConditionallyCompleteLinearOrderBot
 
