@@ -39,8 +39,9 @@ class SetLikeHom (f : A → B) where
   /-- It is a map from σB → σA with `galois` property-/
   comap : σB → σA
   coe_map (x : σA) : f '' (x : Set A) = map x
-  /- the design of `GaloisConnection` can handle different conditions in the same structure, it
-  avoid adding `Preorder` to `σA` and `σB` -/
+  /-- the design of `GaloisConnection` avoid adding `Preorder` to `σA` and `σB`, there are also
+  theorems such as `Subgroup.gc_map_comap` to handle different conditions in the similar structures.
+  -/
   galois : GaloisConnection map comap
 
 
