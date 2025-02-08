@@ -211,11 +211,11 @@ theorem Topology.IsOpenEmbedding.quasiSober {f : α → β} (hf : IsOpenEmbeddin
 @[deprecated (since := "2024-10-18")]
 alias OpenEmbedding.quasiSober := Topology.IsOpenEmbedding.quasiSober
 
-lemma TopologicalSpace.OpenCover.quasiSober_iff_forall {ι : Type*}
-    (U : TopologicalSpace.OpenCover ι α) : QuasiSober α ↔ ∀ i, QuasiSober (U i) := by
-  refine ⟨fun h i ↦ (U i).isOpenEmbedding'.quasiSober, fun hU ↦ (quasiSober_iff _).mpr ?_⟩
+lemma TopologicalSpace.IsOpenCover.quasiSober_iff_forall {ι : Type*} {U : ι → Opens α}
+    (hU : TopologicalSpace.IsOpenCover U) : QuasiSober α ↔ ∀ i, QuasiSober (U i) := by
+  refine ⟨fun h i ↦ (U i).isOpenEmbedding'.quasiSober, fun hU' ↦ (quasiSober_iff _).mpr ?_⟩
   · rintro t ⟨⟨x, hx⟩, h⟩ h'
-    obtain ⟨i, hi⟩ := U.exists_mem x
+    obtain ⟨i, hi⟩ := hU.exists_mem x
     have H : IsIrreducible ((↑) ⁻¹' t : Set (U i)) :=
       ⟨⟨⟨x, hi⟩, hx⟩, h.preimage (U i).isOpenEmbedding'⟩
     use H.genericPoint
@@ -228,16 +228,15 @@ lemma TopologicalSpace.OpenCover.quasiSober_iff_forall {ι : Type*}
       (closure_mono ?_)
     simpa only [inter_comm t, ← Subtype.image_preimage_coe] using Set.image_subset _ subset_closure
 
-
-lemma TopologicalSpace.OpenCover.quasiSober {ι : Type*} (U : TopologicalSpace.OpenCover ι α)
-    [∀ i, QuasiSober (U i)] : QuasiSober α :=
-  U.quasiSober_iff_forall.mpr ‹_›
+lemma TopologicalSpace.IsOpenCover.quasiSober {ι : Type*} {U : ι → Opens α}
+    (hU : TopologicalSpace.IsOpenCover U) [∀ i, QuasiSober (U i)] : QuasiSober α :=
+  hU.quasiSober_iff_forall.mpr ‹_›
 
 /-- A space is quasi sober if it can be covered by open quasi sober subsets. -/
 theorem quasiSober_of_open_cover (S : Set (Set α)) (hS : ∀ s : S, IsOpen (s : Set α))
     [∀ s : S, QuasiSober s] (hS' : ⋃₀ S = ⊤) : QuasiSober α :=
-  TopologicalSpace.OpenCover.quasiSober
-    ⟨fun s : S ↦ ⟨s, hS s⟩, by simpa [← SetLike.coe_set_eq, sUnion_eq_iUnion] using hS'⟩
+  TopologicalSpace.IsOpenCover.quasiSober (U := fun s : S ↦ ⟨s, hS s⟩) <| by
+    simpa [TopologicalSpace.IsOpenCover, ← SetLike.coe_set_eq, sUnion_eq_iUnion] using hS'
 
 /-- Any Hausdorff space is a quasi-sober space because any irreducible set is a singleton. -/
 instance (priority := 100) T2Space.quasiSober [T2Space α] : QuasiSober α where

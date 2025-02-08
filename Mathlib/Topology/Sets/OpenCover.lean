@@ -8,6 +8,10 @@ import Mathlib.Topology.Sets.Opens
 
 /-!
 # Open covers
+
+We define `IsOpenCover` as a predicate on indexed families of open sets in a topological space `X`,
+asserting that their union is `X`. This is an example of a declaration whose name is actually
+longer than its content; but giving it a name serves as a way of standardizing API.
 -/
 
 open Set Topology
@@ -15,38 +19,32 @@ open Set Topology
 namespace TopologicalSpace
 
 /-- An indexed family of open sets whose union is `X`. -/
-structure OpenCover (ι X : Type*) [TopologicalSpace X] where
-  toFun : ι → Opens X
-  iSup_eq_top' : iSup toFun = ⊤
+def IsOpenCover {ι X : Type*} [TopologicalSpace X] (u : ι → Opens X) : Prop :=
+  iSup u = ⊤
 
-variable {ι X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+variable {ι κ X Y : Type*} [TopologicalSpace X] {u : ι → Opens X}
+  [TopologicalSpace Y] {v : κ → Opens Y}
 
-/-- An open cover is a special kind of function into  opens. -/
-instance : FunLike (OpenCover ι X) ι (Opens X) :=
-  ⟨OpenCover.toFun, fun _ _ ↦ (OpenCover.mk.injEq ..).mpr⟩
+namespace IsOpenCover
 
-namespace OpenCover
+lemma mk (h : iSup u = ⊤) : IsOpenCover u := h
 
-@[simp] lemma coe_mk {f : ι → Opens X} (h : iSup f = ⊤) : mk f h = f := rfl
+lemma iSup_eq_top (hu : IsOpenCover u) : ⨆ i, u i = ⊤ := hu
 
-variable (u : OpenCover ι X)
-
-lemma iSup_eq_top : ⨆ i, u i = ⊤ := u.iSup_eq_top'
-
-lemma iSup_set_eq_univ : ⋃ i, (u i : Set X) = univ := by
-  simpa [← SetLike.coe_set_eq] using u.iSup_eq_top
+lemma iSup_set_eq_univ (hu : IsOpenCover u) : ⋃ i, (u i : Set X) = univ := by
+  simpa [← SetLike.coe_set_eq] using hu.iSup_eq_top
 
 /-- Pullback of a covering of `Y` by a continuous map `X → Y`, giving a covering of `X` with the
 same index type. -/
-def comap (u : OpenCover ι Y) (f : C(X, Y)) : OpenCover ι X :=
-  ⟨fun i ↦ (u i).comap f, by simp [← preimage_iUnion, iSup_set_eq_univ]⟩
+lemma comap (hv : IsOpenCover v) (f : C(X, Y)) : IsOpenCover fun k ↦ (v k).comap f :=
+  by simp [IsOpenCover, ← preimage_iUnion, hv.iSup_set_eq_univ]
 
-lemma exists_mem (a : X) : ∃ i, a ∈ u i := by
-  simpa [← u.iSup_set_eq_univ] using mem_univ a
+lemma exists_mem (hu : IsOpenCover u) (a : X) : ∃ i, a ∈ u i := by
+  simpa [← hu.iSup_set_eq_univ] using mem_univ a
 
-lemma exists_mem_nhds (a : X) : ∃ i, (u i : Set X) ∈ 𝓝 a :=
-  match u.exists_mem a with | ⟨i, hi⟩ => ⟨i, (u i).isOpen.mem_nhds hi⟩
+lemma exists_mem_nhds (hu : IsOpenCover u) (a : X) : ∃ i, (u i : Set X) ∈ 𝓝 a :=
+  match hu.exists_mem a with | ⟨i, hi⟩ => ⟨i, (u i).isOpen.mem_nhds hi⟩
 
-end OpenCover
+end IsOpenCover
 
 end TopologicalSpace
