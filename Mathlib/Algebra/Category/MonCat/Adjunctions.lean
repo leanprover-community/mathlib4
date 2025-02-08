@@ -10,8 +10,6 @@ import Mathlib.Algebra.Group.WithOne.Basic
 import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.Finsupp.SMulWithZero
 
-
-
 /-!
 # Adjunctions regarding the category of monoids
 
