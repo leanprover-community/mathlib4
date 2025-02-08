@@ -31,25 +31,25 @@ open IntermediateField
 /-- The normalized trace function from an extension `K` to the base field `F`.
 Note: this definition does not require the extension `K / F` to be integral (algebraic)
 nor the fields to be of characteristic zero. -/
-noncomputable def normalizedTrace' (a : K) : F :=
+noncomputable def normalizedTraceAux (a : K) : F :=
   Algebra.trace F F⟮a⟯ (AdjoinSimple.gen F a) / Module.finrank F F⟮a⟯
 
-theorem normalizedTrace'_map {E : Type*} [Field E] [Algebra F E] (f : E →ₐ[F] K) (a : E) :
-    normalizedTrace' F K (f a) = normalizedTrace' F E a := by
+theorem normalizedTraceAux_map {E : Type*} [Field E] [Algebra F E] (f : E →ₐ[F] K) (a : E) :
+    normalizedTraceAux F K (f a) = normalizedTraceAux F E a := by
   let e := (F⟮a⟯.equivMap f).trans (equivOfEq <| Set.image_singleton ▸ adjoin_map F {a} f)
-  simp_rw [normalizedTrace', ← LinearEquiv.finrank_eq e.toLinearEquiv]
+  simp_rw [normalizedTraceAux, ← LinearEquiv.finrank_eq e.toLinearEquiv]
   congr
   exact Algebra.trace_eq_of_algEquiv e <| AdjoinSimple.gen F a
 
-theorem normalizedTrace'_intermediateField {E : IntermediateField F K} (a : E) :
-    normalizedTrace' F K a = normalizedTrace' F E a :=
-  normalizedTrace'_map F K E.val a
+theorem normalizedTraceAux_intermediateField {E : IntermediateField F K} (a : E) :
+    normalizedTraceAux F K a = normalizedTraceAux F E a :=
+  normalizedTraceAux_map F K E.val a
 
 variable [CharZero F]
 
 variable {K} in
-theorem normalizedTrace'_eq_of_fininteDimensional [FiniteDimensional F K] (a : K) :
-    normalizedTrace' F K a = Algebra.trace F K a / Module.finrank F K := by
+theorem normalizedTraceAux_eq_of_fininteDimensional [FiniteDimensional F K] (a : K) :
+    normalizedTraceAux F K a = Algebra.trace F K a / Module.finrank F K := by
   have h := (Nat.cast_ne_zero (R := F)).mpr <|
     Nat.pos_iff_ne_zero.mp <| Module.finrank_pos (R := F⟮a⟯) (M := K)
   rw [trace_eq_trace_adjoin F a, ← Module.finrank_mul_finrank F F⟮a⟯ K,
@@ -61,7 +61,7 @@ variable [Algebra.IsIntegral F K]
 
 /-- The normalized trace map from an algebraic extension `K` to the base field `F`. -/
 noncomputable def normalizedTrace : K →ₗ[F] F where
-  toFun := normalizedTrace' F K
+  toFun := normalizedTraceAux F K
   map_add' a b := by
     let E := F⟮a⟯ ⊔ F⟮b⟯
     haveI : FiniteDimensional F F⟮a⟯ := adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral a)
@@ -73,12 +73,12 @@ noncomputable def normalizedTrace : K →ₗ[F] F where
     let a' : E := ⟨a, ha⟩
     let b' : E := ⟨b, hb⟩
     let ab' : E := ⟨a + b, hab⟩
-    rw [normalizedTrace'_intermediateField F K a',
-      normalizedTrace'_intermediateField F K b',
-      normalizedTrace'_intermediateField F K ab',
-      normalizedTrace'_eq_of_fininteDimensional F a',
-      normalizedTrace'_eq_of_fininteDimensional F b',
-      normalizedTrace'_eq_of_fininteDimensional F ab',
+    rw [normalizedTraceAux_intermediateField F K a',
+      normalizedTraceAux_intermediateField F K b',
+      normalizedTraceAux_intermediateField F K ab',
+      normalizedTraceAux_eq_of_fininteDimensional F a',
+      normalizedTraceAux_eq_of_fininteDimensional F b',
+      normalizedTraceAux_eq_of_fininteDimensional F ab',
       ← add_div, ← map_add]
     rfl
   map_smul' m a := by
@@ -89,21 +89,19 @@ noncomputable def normalizedTrace : K →ₗ[F] F where
     have hma : m • a ∈ E := smul_mem E ha
     let a' : E := ⟨a, ha⟩
     let ma' : E := ⟨m • a, hma⟩
-    rw [normalizedTrace'_intermediateField F K a',
-      normalizedTrace'_intermediateField F K ma',
-      normalizedTrace'_eq_of_fininteDimensional F a',
-      normalizedTrace'_eq_of_fininteDimensional F ma',
+    rw [normalizedTraceAux_intermediateField F K a',
+      normalizedTraceAux_intermediateField F K ma',
+      normalizedTraceAux_eq_of_fininteDimensional F a',
+      normalizedTraceAux_eq_of_fininteDimensional F ma',
       ← smul_div_assoc, ← map_smul]
     rfl
 
 variable {F} in
-/-- The normalized trace map `normalizedTrace' F F` is identity. -/
 theorem normalizedTrace_self_apply (a : F) : normalizedTrace F F a = a := by
   dsimp [normalizedTrace]
-  rw [normalizedTrace'_eq_of_fininteDimensional F a, Module.finrank_self F,
+  rw [normalizedTraceAux_eq_of_fininteDimensional F a, Module.finrank_self F,
     Nat.cast_one, div_one, Algebra.trace_self_apply]
 
-/-- The normalized trace map `normalizedTrace' F F` is identity. -/
 @[simp]
 theorem normalizedTrace_self : normalizedTrace F F = LinearMap.id :=
   LinearMap.ext normalizedTrace_self_apply
@@ -111,7 +109,7 @@ theorem normalizedTrace_self : normalizedTrace F F = LinearMap.id :=
 @[simp]
 theorem normalizedTrace_algebraMap_apply (a : F) : normalizedTrace F K (algebraMap F K a) = a :=
   (Algebra.ofId_apply K a ▸
-    normalizedTrace'_map F K (Algebra.ofId F K) a).trans (normalizedTrace_self_apply a)
+    normalizedTraceAux_map F K (Algebra.ofId F K) a).trans (normalizedTrace_self_apply a)
 
 /-- The normalized trace map is a left inverse of the algebra map. -/
 @[simp]
@@ -122,7 +120,7 @@ theorem normalizedTrace_algebraMap : normalizedTrace F K ∘ algebraMap F K = id
 @[simp]
 theorem normalizedTrace_map {E : Type*} [Field E] [Algebra F E] [Algebra.IsIntegral F E]
     (f : E →ₐ[F] K) (a : E) : normalizedTrace F K (f a) = normalizedTrace F E a :=
-  normalizedTrace'_map F K f a
+  normalizedTraceAux_map F K f a
 
 /-- The normalized trace commutes with (injective) maps. -/
 @[simp]
@@ -133,13 +131,13 @@ theorem normalizedTrace_comp {E : Type*} [Field E] [Algebra F E] [Algebra.IsInte
 /-- The normalized trace transfers via restriction to a subextension. -/
 theorem normalizedTrace_intermediateField {E : IntermediateField F K} (a : E) :
     normalizedTrace F K a = normalizedTrace F E a :=
-  normalizedTrace'_intermediateField F K a
+  normalizedTraceAux_intermediateField F K a
 
 theorem normalizedTrace_eq_of_fininteDimensional [FiniteDimensional F K] :
     normalizedTrace F K = (Module.finrank F K : F)⁻¹ • Algebra.trace F K := by
   ext x
   rw [LinearMap.smul_apply, smul_eq_mul, mul_comm, ← div_eq_mul_inv]
-  apply normalizedTrace'_eq_of_fininteDimensional
+  apply normalizedTraceAux_eq_of_fininteDimensional
 
 /-- The normalized trace map is non-trivial. -/
 theorem nontrivial_normalizedTrace : normalizedTrace F K ≠ 0 :=
