@@ -11,7 +11,7 @@ import Mathlib.Data.Fin.SuccPred
 /-!
 # A structure to describe transfinite compositions
 
-Given a well-ordered type `J` and a morphisms `f : X ⟶ Y` in a category,
+Given a well-ordered type `J` and a morphism `f : X ⟶ Y` in a category,
 we introduce a structure `TransfiniteCompositionOfShape J f` expressing
 that `f` is a transfinite composition of shape `J`.
 This allows to extend this structure in order to require
