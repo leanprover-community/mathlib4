@@ -54,15 +54,15 @@ instance quasicategory {X : SSet.{u}} [StrictSegal X] : Quasicategory X := by
       Quiver.Hom.unop_op, horn.face_coe, Subtype.mk.injEq]
     rw [mkOfSucc_δ_gt hgt]
     rfl
-  · /- The only inner horn of `Δ[2]` does not contain the diagonal edge. -/
+  · /- The only inner horn of `Δ⦋2⦌` does not contain the diagonal edge. -/
     have hn0 : n ≠ 0 := by
       rintro rfl
       obtain rfl : k = 0 := by omega
       fin_cases i <;> contradiction
     /- We construct the triangle in the standard simplex as a 2-simplex in
-    the horn. While the triangle is not contained in the inner horn `Λ[2, 1]`,
-    we can inhabit `Λ[n + 2, i] _⦋2⦌` by induction on `n`. -/
-    let triangle : Λ[n + 2, i] _⦋2⦌ := by
+    the horn. While the triangle is not contained in the inner horn `Λ⦋2, 1⦌`,
+    we can inhabit `Λ⦋n + 2, i⦌ _⦋2⦌` by induction on `n`. -/
+    let triangle : Λ⦋n + 2, i⦌ _⦋2⦌ := by
       cases n with
       | zero => contradiction
       | succ _ => exact horn.primitiveTriangle i h₀ hₙ k (by omega)

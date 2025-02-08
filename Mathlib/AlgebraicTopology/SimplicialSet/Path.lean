@@ -109,16 +109,16 @@ lemma map_interval {X Y : SSet.{u}} {n : ℕ} (f : X.Path n) (σ : X ⟶ Y)
     (j l : ℕ) (hjl : j + l ≤ n) :
     (f.map σ).interval j l hjl = (f.interval j l hjl).map σ := rfl
 
-/-- The spine of the unique non-degenerate `n`-simplex in `Δ[n]`.-/
-def stdSimplex.spineId (n : ℕ) : Path Δ[n] n :=
-  spine Δ[n] n (stdSimplex.id n)
+/-- The spine of the unique non-degenerate `n`-simplex in `Δ⦋n⦌`.-/
+def stdSimplex.spineId (n : ℕ) : Path Δ⦋n⦌ n :=
+  spine Δ⦋n⦌ n (stdSimplex.id n)
 
 /-- Any inner horn contains the spine of the unique non-degenerate `n`-simplex
-in `Δ[n]`.-/
+in `Δ⦋n⦌`.-/
 @[simps]
 def horn.spineId {n : ℕ} (i : Fin (n + 3))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :
-    Path Λ[n + 2, i] (n + 2) where
+    Path Λ⦋n + 2, i⦌ (n + 2) where
   vertex j := ⟨stdSimplex.spineId _ |>.vertex j, (horn.const n i j _).property⟩
   arrow j := ⟨stdSimplex.spineId _ |>.arrow j, by
     let edge := horn.primitiveEdge h₀ hₙ j

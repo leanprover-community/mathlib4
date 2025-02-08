@@ -24,7 +24,7 @@ an object in a simplicial category `C`
 * define the notion of path between `0`-simplices of simplicial sets
 * deduce the notion of homotopy between morphisms in a simplicial category
 * obtain that homotopies in simplicial categories can be interpreted as given
-by morphisms `Δ[1] ⊗ X ⟶ Y`.
+by morphisms `Δ⦋1⦌ ⊗ X ⟶ Y`.
 
 ## References
 * [Daniel G. Quillen, *Homotopical algebra*, II §1][quillen-1967]
