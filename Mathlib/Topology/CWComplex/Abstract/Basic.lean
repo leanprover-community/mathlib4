@@ -29,7 +29,7 @@ This file defines (relative) CW-complexes.
   [Zulip](https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/Do.20we.20have.20CW.20complexes.3F/near/231769080).
 -/
 
-open CategoryTheory TopCat
+open TopCat
 
 universe u
 
