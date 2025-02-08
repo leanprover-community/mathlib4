@@ -34,9 +34,7 @@ The following notations are scoped to the `Cardinal` namespace.
   `Mathlib.SetTheory.Cardinal.Continuum`.
 -/
 
-assert_not_exists Module
-assert_not_exists Finsupp
-assert_not_exists Cardinal.mul_eq_self
+assert_not_exists Field Finsupp Module Cardinal.mul_eq_self
 
 noncomputable section
 

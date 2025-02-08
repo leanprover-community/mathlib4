@@ -47,9 +47,7 @@ Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noe
 
 -/
 
-assert_not_exists Finsupp.linearCombination
-assert_not_exists Matrix
-assert_not_exists Pi.basis
+assert_not_exists Finsupp.linearCombination Matrix Pi.basis
 
 open Set Pointwise
 

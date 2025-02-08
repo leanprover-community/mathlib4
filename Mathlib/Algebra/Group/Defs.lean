@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.BinaryRec
-import Mathlib.Algebra.Group.ZeroOne
+import Mathlib.Data.One.Defs
 import Mathlib.Algebra.Group.Operations
 import Mathlib.Logic.Function.Defs
 import Mathlib.Tactic.Simps.Basic
@@ -39,9 +39,7 @@ We register the following instances:
 
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
-assert_not_exists Function.Injective.eq_iff
+assert_not_exists MonoidWithZero DenselyOrdered Function.Injective.eq_iff
 
 universe u v w
 

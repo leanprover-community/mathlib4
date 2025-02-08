@@ -19,8 +19,7 @@ Definitions and results that require fewer imports are in
 
 -/
 
-assert_not_exists Monoid.exponent
-assert_not_exists Module.IsTorsion
+assert_not_exists Monoid.exponent Module.IsTorsion
 
 
 universe u v v'

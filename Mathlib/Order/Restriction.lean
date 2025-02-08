@@ -59,7 +59,7 @@ variable [LocallyFiniteOrderBot α]
 
 open Finset
 
-/-- Restrict domain of a function `f` indexed by `α` to elements `≤ α`, seen as a finite set. -/
+/-- Restrict domain of a function `f` indexed by `α` to elements `≤ a`, seen as a finite set. -/
 def frestrictLe (a : α) := (Iic a).restrict (π := π)
 
 @[simp]

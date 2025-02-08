@@ -182,12 +182,14 @@ variable {ι M}
 theorem apply_eq_component (f : ⨁ i, M i) (i : ι) : f i = component R ι M i f := rfl
 
 -- Note(kmill): `@[ext]` cannot prove `ext_iff` because `R` is not determined by `f` or `g`.
-@[ext (iff := false)]
-theorem ext {f g : ⨁ i, M i} (h : ∀ i, component R ι M i f = component R ι M i g) : f = g :=
+-- This is not useful as an `@[ext]` lemma as the `ext` tactic can not infer `R`.
+theorem ext_component {f g : ⨁ i, M i} (h : ∀ i, component R ι M i f = component R ι M i g) :
+    f = g :=
   DFinsupp.ext h
 
-theorem ext_iff {f g : ⨁ i, M i} : f = g ↔ ∀ i, component R ι M i f = component R ι M i g :=
-  ⟨fun h _ ↦ by rw [h], ext R⟩
+theorem ext_component_iff {f g : ⨁ i, M i} :
+    f = g ↔ ∀ i, component R ι M i f = component R ι M i g :=
+  ⟨fun h _ ↦ by rw [h], ext_component R⟩
 
 @[simp]
 theorem lof_apply [DecidableEq ι] (i : ι) (b : M i) : ((lof R ι M i) b) i = b :=

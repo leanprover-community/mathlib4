@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz, Yongle Hu, Jingting Wang
 -/
 import Mathlib.FieldTheory.Fixed
-import Mathlib.FieldTheory.NormalClosure
+import Mathlib.FieldTheory.Normal.Closure
 import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 
@@ -226,11 +226,12 @@ instance fixedField.smul : SMul K (fixedField (fixingSubgroup K)) where
     rw [smul_mul', show ϕ • (x : E) = ↑x from ϕ.2 x, show ϕ • (y : E) = ↑y from y.2 ϕ]⟩
 
 instance fixedField.algebra : Algebra K (fixedField (fixingSubgroup K)) where
-  toFun x := ⟨x, fun ϕ => Subtype.mem ϕ x⟩
-  map_zero' := rfl
-  map_add' _ _ := rfl
-  map_one' := rfl
-  map_mul' _ _ := rfl
+  algebraMap :=
+  { toFun x := ⟨x, fun ϕ => Subtype.mem ϕ x⟩
+    map_zero' := rfl
+    map_add' _ _ := rfl
+    map_one' := rfl
+    map_mul' _ _ := rfl }
   commutes' _ _ := mul_comm _ _
   smul_def' _ _ := rfl
 

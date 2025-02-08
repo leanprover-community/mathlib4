@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Abelian
+import Mathlib.Algebra.Lie.BaseChange
 import Mathlib.Algebra.Lie.IdealOperations
 import Mathlib.Order.Hom.Basic
+import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 /-!
 # Solvable Lie algebras
@@ -121,6 +123,21 @@ theorem abelian_iff_derived_succ_eq_bot (I : LieIdeal R L) (k : ℕ) :
     IsLieAbelian (derivedSeriesOfIdeal R L k I) ↔ derivedSeriesOfIdeal R L (k + 1) I = ⊥ := by
   rw [add_comm, derivedSeriesOfIdeal_add I 1 k, abelian_iff_derived_one_eq_bot]
 
+open TensorProduct in
+@[simp] theorem derivedSeriesOfIdeal_baseChange {A : Type*} [CommRing A] [Algebra R A] (k : ℕ) :
+    derivedSeriesOfIdeal A (A ⊗[R] L) k (I.baseChange A) =
+      (derivedSeriesOfIdeal R L k I).baseChange A := by
+  induction k with
+  | zero => simp
+  | succ k ih => simp only [derivedSeriesOfIdeal_succ, ih, ← LieSubmodule.baseChange_top,
+    LieSubmodule.lie_baseChange]
+
+open TensorProduct in
+@[simp] theorem derivedSeries_baseChange {A : Type*} [CommRing A] [Algebra R A] (k : ℕ) :
+    derivedSeries A (A ⊗[R] L) k = (derivedSeries R L k).baseChange A := by
+  rw [derivedSeries_def, derivedSeries_def, ← derivedSeriesOfIdeal_baseChange,
+    LieSubmodule.baseChange_top]
+
 end LieAlgebra
 
 namespace LieIdeal
@@ -209,8 +226,8 @@ private theorem coe_derivedSeries_eq_int_aux (R₁ R₂ L : Type*) [CommRing R�
 
 theorem coe_derivedSeries_eq_int (k : ℕ) :
     (derivedSeries R L k : Set L) = (derivedSeries ℤ L k : Set L) := by
-  show ((derivedSeries R L k).toSubmodule : Set L) = ((derivedSeries ℤ L k).toSubmodule : Set L)
-  rw [derivedSeries_def, derivedSeries_def]
+  rw [← LieSubmodule.coe_toSubmodule, ← LieSubmodule.coe_toSubmodule, derivedSeries_def,
+    derivedSeries_def]
   induction k with
   | zero => rfl
   | succ k ih =>
@@ -261,6 +278,27 @@ theorem derivedSeries_lt_top_of_solvable [IsSolvable L] [Nontrivial L] :
   intro contra
   rw [LieIdeal.derivedSeries_eq_top n contra] at hn
   exact top_ne_bot hn
+
+open TensorProduct in
+instance {A : Type*} [CommRing A] [Algebra R A] [IsSolvable L] : IsSolvable (A ⊗[R] L) := by
+  obtain ⟨k, hk⟩ := IsSolvable.solvable R L
+  rw [isSolvable_iff A]
+  use k
+  rw [derivedSeries_baseChange, hk, LieSubmodule.baseChange_bot]
+
+open TensorProduct in
+variable {A : Type*} [CommRing A] [Algebra R A] [Module.FaithfullyFlat R A] in
+theorem isSolvable_tensorProduct_iff : IsSolvable (A ⊗[R] L) ↔ IsSolvable L := by
+  refine ⟨?_, fun _ ↦ inferInstance⟩
+  rw [isSolvable_iff A, isSolvable_iff R]
+  rintro ⟨k, h⟩
+  use k
+  rw [eq_bot_iff] at h ⊢
+  intro x hx
+  rw [derivedSeries_baseChange] at h
+  specialize h <| Submodule.tmul_mem_baseChange_of_mem 1 hx
+  rw [LieSubmodule.mem_bot] at h ⊢
+  rwa [Module.FaithfullyFlat.one_tmul_eq_zero_iff] at h
 
 end LieAlgebra
 

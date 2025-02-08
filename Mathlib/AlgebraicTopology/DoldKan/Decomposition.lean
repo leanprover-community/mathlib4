@@ -80,7 +80,6 @@ theorem decomposition_Q (n q : ℕ) :
 
 variable (X)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- The structure `MorphComponents` is an ad hoc structure that is used in
 the proof that `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ))`
 reflects isomorphisms. The fields are the data that are needed in order to
@@ -132,11 +131,11 @@ theorem postComp_φ : (f.postComp h).φ = f.φ ≫ h := by
 /-- A `MorphComponents` can be precomposed with a morphism of simplicial objects. -/
 @[simps]
 def preComp : MorphComponents X' n Z where
-  a := g.app (op [n + 1]) ≫ f.a
-  b i := g.app (op [n]) ≫ f.b i
+  a := g.app (op ⦋n + 1⦌) ≫ f.a
+  b i := g.app (op ⦋n⦌) ≫ f.b i
 
 @[simp]
-theorem preComp_φ : (f.preComp g).φ = g.app (op [n + 1]) ≫ f.φ := by
+theorem preComp_φ : (f.preComp g).φ = g.app (op ⦋n + 1⦌) ≫ f.φ := by
   unfold φ preComp
   simp only [PInfty_f, comp_add]
   congr 1

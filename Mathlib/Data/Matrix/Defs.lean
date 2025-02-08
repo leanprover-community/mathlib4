@@ -38,8 +38,7 @@ form `fun i j ↦ _` or even `(fun i j ↦ _ : Matrix m n α)`, as these are not
 as having the right type. Instead, `Matrix.of` should be used.
 -/
 
-assert_not_exists Algebra
-assert_not_exists Star
+assert_not_exists Algebra Star
 
 universe u u' v w
 
@@ -213,12 +212,7 @@ instance module [Semiring R] [AddCommMonoid α] [Module R α] : Module R (Matrix
 
 section
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/4481
-the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
--/
-@[simp, nolint simpNF]
+@[simp]
 theorem zero_apply [Zero α] (i : m) (j : n) : (0 : Matrix m n α) i j = 0 := rfl
 
 @[simp]

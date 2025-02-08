@@ -157,7 +157,7 @@ theorem cof_eq (r : α → α → Prop) [IsWellOrder α r] : ∃ S, Unbounded r 
   csInf_mem (Order.cof_nonempty (swap rᶜ))
 
 theorem ord_cof_eq (r : α → α → Prop) [IsWellOrder α r] :
-    ∃ S, Unbounded r S ∧ type (Subrel r S) = (cof (type r)).ord := by
+    ∃ S, Unbounded r S ∧ type (Subrel r (· ∈ S)) = (cof (type r)).ord := by
   let ⟨S, hS, e⟩ := cof_eq r
   let ⟨s, _, e'⟩ := Cardinal.ord_eq S
   let T : Set α := { a | ∃ aS : a ∈ S, ∀ b : S, s b ⟨_, aS⟩ → r b a }
@@ -570,7 +570,7 @@ theorem exists_fundamental_sequence (a : Ordinal.{u}) :
   rcases exists_lsub_cof a with ⟨ι, f, hf, hι⟩
   rcases ord_eq ι with ⟨r, wo, hr⟩
   haveI := wo
-  let r' := Subrel r { i | ∀ j, r j i → f j < f i }
+  let r' := Subrel r fun i ↦ ∀ j, r j i → f j < f i
   let hrr' : r' ↪r r := Subrel.relEmbedding _ _
   haveI := hrr'.isWellOrder
   refine
@@ -921,6 +921,9 @@ theorem isRegular_cof {o : Ordinal} (h : o.IsLimit) : IsRegular o.cof :=
 
 theorem isRegular_aleph0 : IsRegular ℵ₀ :=
   ⟨le_rfl, by simp⟩
+
+lemma fact_isRegular_aleph0 : Fact Cardinal.aleph0.IsRegular where
+  out := Cardinal.isRegular_aleph0
 
 theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c) :=
   ⟨h.trans (le_succ c),

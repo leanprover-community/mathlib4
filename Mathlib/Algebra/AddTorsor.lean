@@ -38,6 +38,8 @@ multiplicative group actions).
 
 -/
 
+open scoped Pointwise
+
 /-- An `AddTorsor G P` gives a structure to the nonempty type `P`,
 acted on by an `AddGroup G` with a transitive and free action given
 by the `+ᵥ` operation and a corresponding subtraction given by the
@@ -162,8 +164,6 @@ theorem vadd_eq_vadd_iff_neg_add_eq_vsub {v₁ v₂ : G} {p₁ p₂ : P} :
 
 namespace Set
 
-open Pointwise
-
 theorem singleton_vsub_self (p : P) : ({p} : Set P) -ᵥ {p} = {(0 : G)} := by
   rw [Set.singleton_vsub_singleton, vsub_self]
 
@@ -230,6 +230,13 @@ theorem vadd_eq_vadd_iff_sub_eq_vsub {v₁ v₂ : G} {p₁ p₂ : P} :
 
 theorem vsub_sub_vsub_comm (p₁ p₂ p₃ p₄ : P) : p₁ -ᵥ p₂ - (p₃ -ᵥ p₄) = p₁ -ᵥ p₃ - (p₂ -ᵥ p₄) := by
   rw [← vsub_vadd_eq_vsub_sub, vsub_vadd_comm, vsub_vadd_eq_vsub_sub]
+
+namespace Set
+
+@[simp] lemma vadd_set_vsub_vadd_set (v : G) (s t : Set P) : (v +ᵥ s) -ᵥ (v +ᵥ t) = s -ᵥ t := by
+  ext; simp [mem_vsub, mem_vadd_set]
+
+end Set
 
 end comm
 

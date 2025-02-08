@@ -3,7 +3,6 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
