@@ -105,9 +105,6 @@ instance instFunLike : FunLike (AddChar A M) A M where
 /-- An additive character maps sums to products. -/
 lemma map_add_eq_mul (ψ : AddChar A M) (x y : A) : ψ (x + y) = ψ x * ψ y := ψ.map_add_eq_mul' x y
 
-@[deprecated (since := "2024-06-06")] alias map_zero_one := map_zero_eq_one
-@[deprecated (since := "2024-06-06")] alias map_add_mul := map_add_eq_mul
-
 /-- Interpret an additive character as a monoid homomorphism. -/
 def toMonoidHom (φ : AddChar A M) : Multiplicative A →* M where
   toFun := φ.toFun
@@ -123,8 +120,6 @@ def toMonoidHom (φ : AddChar A M) : Multiplicative A →* M where
 /-- An additive character maps multiples by natural numbers to powers. -/
 lemma map_nsmul_eq_pow (ψ : AddChar A M) (n : ℕ) (x : A) : ψ (n • x) = ψ x ^ n :=
   ψ.toMonoidHom.map_pow x n
-
-@[deprecated (since := "2024-06-06")] alias map_nsmul_pow := map_nsmul_eq_pow
 
 /-- Additive characters `A → M` are the same thing as monoid homomorphisms from `Multiplicative A`
 to `M`. -/
@@ -253,16 +248,6 @@ lemma eq_one_iff : ψ = 1 ↔ ∀ x, ψ x = 1 := DFunLike.ext_iff
 lemma eq_zero_iff : ψ = 0 ↔ ∀ x, ψ x = 1 := DFunLike.ext_iff
 lemma ne_one_iff : ψ ≠ 1 ↔ ∃ x, ψ x ≠ 1 := DFunLike.ne_iff
 lemma ne_zero_iff : ψ ≠ 0 ↔ ∃ x, ψ x ≠ 1 := DFunLike.ne_iff
-
-/-- An additive character is *nontrivial* if it takes a value `≠ 1`. -/
-@[deprecated "No deprecation message was provided." (since := "2024-06-06")]
-def IsNontrivial (ψ : AddChar A M) : Prop := ∃ a : A, ψ a ≠ 1
-
-set_option linter.deprecated false in
-/-- An additive character is nontrivial iff it is not the trivial character. -/
-@[deprecated ne_one_iff (since := "2024-06-06")]
-lemma isNontrivial_iff_ne_trivial (ψ : AddChar A M) : IsNontrivial ψ ↔ ψ ≠ 1 :=
-  not_forall.symm.trans (DFunLike.ext_iff (f := ψ) (g := 1)).symm.not
 
 noncomputable instance : DecidableEq (AddChar A M) := Classical.decEq _
 
@@ -400,9 +385,6 @@ lemma map_neg_eq_inv (ψ : AddChar A M) (a : A) : ψ (-a) = (ψ a)⁻¹ := by
 /-- An additive character maps integer scalar multiples to integer powers. -/
 lemma map_zsmul_eq_zpow (ψ : AddChar A M) (n : ℤ) (a : A) : ψ (n • a) = (ψ a) ^ n :=
   ψ.toMonoidHom.map_zpow a n
-
-@[deprecated (since := "2024-06-06")] alias map_neg_inv := map_neg_eq_inv
-@[deprecated (since := "2024-06-06")] alias map_zsmul_zpow := map_zsmul_eq_zpow
 
 end fromAddGrouptoDivisionMonoid
 

@@ -28,8 +28,6 @@ variable {S R : Type*} [AddMonoidWithOne R] [SetLike S R] (s : S)
 theorem natCast_mem [AddSubmonoidWithOneClass S R] (n : ℕ) : (n : R) ∈ s := by
   induction n <;> simp [zero_mem, add_mem, one_mem, *]
 
-@[deprecated (since := "2024-04-05")] alias coe_nat_mem := natCast_mem
-
 @[aesop safe apply (rule_sets := [SetLike])]
 lemma ofNat_mem [AddSubmonoidWithOneClass S R] (s : S) (n : ℕ) [n.AtLeastTwo] :
     ofNat(n) ∈ s := by

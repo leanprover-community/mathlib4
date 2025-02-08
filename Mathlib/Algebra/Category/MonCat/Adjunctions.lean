@@ -32,7 +32,7 @@ namespace MonCat
 @[to_additive (attr := simps) "The functor of adjoining a neutral element `zero` to a semigroup"]
 def adjoinOne : Semigrp.{u} ⥤ MonCat.{u} where
   obj S := MonCat.of (WithOne S)
-  map f := ofHom (WithOne.map f)
+  map f := ofHom (WithOne.map f.hom)
   map_id _ := MonCat.hom_ext WithOne.map_id
   map_comp _ _ := MonCat.hom_ext (WithOne.map_comp _ _)
 
@@ -40,13 +40,15 @@ def adjoinOne : Semigrp.{u} ⥤ MonCat.{u} where
 instance hasForgetToSemigroup : HasForget₂ MonCat Semigrp where
   forget₂ :=
     { obj := fun M => Semigrp.of M
-      map f := f.hom.toMulHom }
+      map f := Semigrp.ofHom f.hom.toMulHom }
 
 /-- The `adjoinOne`-forgetful adjunction from `Semigrp` to `MonCat`. -/
 @[to_additive "The `adjoinZero`-forgetful adjunction from `AddSemigrp` to `AddMonCat`"]
 def adjoinOneAdj : adjoinOne ⊣ forget₂ MonCat.{u} Semigrp.{u} :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun _ _ => ConcreteCategory.homEquiv.trans WithOne.lift.symm
+    { homEquiv X Y :=
+        ConcreteCategory.homEquiv.trans (WithOne.lift.symm.trans
+          (ConcreteCategory.homEquiv (X := X) (Y := (forget₂ _ _).obj Y)).symm)
       homEquiv_naturality_left_symm := by
         intros
         ext ⟨_|_⟩ <;> simp <;> rfl }
