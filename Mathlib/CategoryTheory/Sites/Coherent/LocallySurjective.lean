@@ -31,11 +31,11 @@ universe w
 
 open CategoryTheory Sheaf Limits Opposite
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
+attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike
 
 namespace CategoryTheory
 
-variable {C : Type*} (D : Type*) [Category C] [Category D] [ConcreteCategory.{w} D]
+variable {C : Type*} (D : Type*) [Category C] [Category D] [HasForget.{w} D]
 
 lemma regularTopology.isLocallySurjective_iff [Preregular C] {F G : Cᵒᵖ ⥤ D} (f : F ⟶ G) :
     Presheaf.IsLocallySurjective (regularTopology C) f ↔

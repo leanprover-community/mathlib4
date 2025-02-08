@@ -25,14 +25,14 @@ open Limits
 
 section
 
-variable {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C] [HasForget₂ C Ab]
+variable {C : Type u} [Category.{v} C] [HasForget.{w} C] [HasForget₂ C Ab]
 
 @[simp]
 lemma ShortComplex.zero_apply
     [Limits.HasZeroMorphisms C] [(forget₂ C Ab).PreservesZeroMorphisms]
     (S : ShortComplex C) (x : (forget₂ C Ab).obj S.X₁) :
     ((forget₂ C Ab).map S.g) (((forget₂ C Ab).map S.f) x) = 0 := by
-  rw [← comp_apply, ← Functor.map_comp, S.zero, Functor.map_zero]
+  rw [← ConcreteCategory.comp_apply, ← Functor.map_comp, S.zero, Functor.map_zero]
   rfl
 
 section preadditive
@@ -81,7 +81,7 @@ lemma exact_iff_exact_map_forget₂ [S.HasHomology] :
     S.Exact ↔ (S.map (forget₂ C Ab)).Exact :=
   (S.exact_map_iff_of_faithful (forget₂ C Ab)).symm
 
-lemma exact_iff_of_concreteCategory [S.HasHomology] :
+lemma exact_iff_of_hasForget [S.HasHomology] :
     S.Exact ↔ ∀ (x₂ : (forget₂ C Ab).obj S.X₂) (_ : ((forget₂ C Ab).map S.g) x₂ = 0),
       ∃ (x₁ : (forget₂ C Ab).obj S.X₁), ((forget₂ C Ab).map S.f) x₁ = x₂ := by
   rw [S.exact_iff_exact_map_forget₂, ab_exact_iff]
@@ -112,8 +112,8 @@ lemma i_cyclesMk [S.HasHomology] (x₂ : (forget₂ C Ab).obj S.X₂)
     (hx₂ : ((forget₂ C Ab).map S.g) x₂ = 0) :
     (forget₂ C Ab).map S.iCycles (S.cyclesMk x₂ hx₂) = x₂ := by
   dsimp [cyclesMk]
-  erw [← comp_apply, S.mapCyclesIso_hom_iCycles (forget₂ C Ab),
-    ← comp_apply, abCyclesIso_inv_apply_iCycles ]
+  erw [← ConcreteCategory.comp_apply, S.mapCyclesIso_hom_iCycles (forget₂ C Ab),
+    ← ConcreteCategory.comp_apply, abCyclesIso_inv_apply_iCycles]
 
 end ShortComplex
 
@@ -123,10 +123,10 @@ end
 
 section abelian
 
-variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C] [HasForget₂ C Ab]
+variable {C : Type u} [Category.{v} C] [HasForget.{v} C] [HasForget₂ C Ab]
   [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
 
-attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
+attribute [local instance] HasForget.instFunLike HasForget.hasCoeToSort
 
 namespace ShortComplex
 
@@ -172,13 +172,13 @@ lemma δ_apply' (x₃ : (forget₂ C Ab).obj D.L₀.X₃)
   · refine ((congr_hom (e.hom.naturality D.L₁.g) x₂).symm.trans ?_).trans
       (congr_hom (e.hom.naturality D.v₀₁.τ₃) x₃)
     dsimp
-    rw [comp_apply, comp_apply]
+    rw [CategoryTheory.comp_apply, CategoryTheory.comp_apply]
     erw [h₂]
     rfl
   · refine ((congr_hom (e.hom.naturality D.L₂.f) x₁).symm.trans ?_).trans
       (congr_hom (e.hom.naturality D.v₁₂.τ₂) x₂)
     dsimp
-    rw [comp_apply, comp_apply]
+    rw [CategoryTheory.comp_apply, CategoryTheory.comp_apply]
     erw [h₁]
     rfl
 

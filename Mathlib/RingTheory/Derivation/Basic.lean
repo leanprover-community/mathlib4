@@ -137,7 +137,7 @@ theorem leibniz_pow (n : ℕ) : D (a ^ n) = n • a ^ (n - 1) • D a := by
   induction' n with n ihn
   · rw [pow_zero, map_one_eq_zero, zero_smul]
   · rcases (zero_le n).eq_or_lt with (rfl | hpos)
-    · erw [pow_one, one_smul, pow_zero, one_smul]
+    · simp
     · have : a * a ^ (n - 1) = a ^ n := by rw [← pow_succ', Nat.sub_add_cancel hpos]
       simp only [pow_succ', leibniz, ihn, smul_comm a n (_ : M), smul_smul a, add_smul, this,
         Nat.succ_eq_add_one, Nat.add_succ_sub_one, add_zero, one_nsmul]
@@ -438,9 +438,6 @@ protected theorem map_sub : D (a - b) = D a - D b :=
 @[simp]
 theorem map_intCast (n : ℤ) : D (n : A) = 0 := by
   rw [← zsmul_one, D.map_smul_of_tower n, map_one_eq_zero, smul_zero]
-
-@[deprecated (since := "2024-04-05")] alias map_coe_nat := map_natCast
-@[deprecated (since := "2024-04-05")] alias map_coe_int := map_intCast
 
 theorem leibniz_of_mul_eq_one {a b : A} (h : a * b = 1) : D a = -a ^ 2 • D b := by
   rw [neg_smul]

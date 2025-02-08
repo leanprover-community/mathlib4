@@ -88,8 +88,6 @@ section
 /-- Let `x` be a submonoid of `A`, then `NumDenSameDeg 𝒜 x` is a structure with a numerator and a
 denominator with same grading such that the denominator is contained in `x`.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure NumDenSameDeg where
   deg : ι
   (num den : 𝒜 deg)
@@ -271,8 +269,6 @@ end HomogeneousLocalization
 kernel of `embedding 𝒜 x`. This is essentially the subring of `Aₓ` where the numerator and
 denominator share the same grading.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 def HomogeneousLocalization : Type _ :=
   Quotient (Setoid.ker <| HomogeneousLocalization.NumDenSameDeg.embedding 𝒜 x)
 
@@ -446,11 +442,12 @@ instance homogeneousLocalizationCommRing : CommRing (HomogeneousLocalization �
 instance homogeneousLocalizationAlgebra :
     Algebra (HomogeneousLocalization 𝒜 x) (Localization x) where
   smul p q := p.val * q
-  toFun := val
-  map_one' := val_one
-  map_mul' := val_mul
-  map_zero' := val_zero
-  map_add' := val_add
+  algebraMap :=
+  { toFun := val
+    map_one' := val_one
+    map_mul' := val_mul
+    map_zero' := val_zero
+    map_add' := val_add }
   commutes' _ _ := mul_comm _ _
   smul_def' _ _ := rfl
 
@@ -717,7 +714,7 @@ def awayMapₐ : Away 𝒜 f →ₐ[𝒜 0] Away 𝒜 x where
 /-- This is a convenient constructor for `Away 𝒜 f` when `f` is homogeneous.
 `Away.mk 𝒜 hf n x hx` is the fraction `x / f ^ n`. -/
 protected def Away.mk {d : ι} (hf : f ∈ 𝒜 d) (n : ℕ) (x : A) (hx : x ∈ 𝒜 (n • d)) : Away 𝒜 f :=
-  .mk ⟨n • d, ⟨x, hx⟩, ⟨f ^ n, SetLike.pow_mem_graded n hf⟩, ⟨n, rfl⟩⟩
+  HomogeneousLocalization.mk ⟨n • d, ⟨x, hx⟩, ⟨f ^ n, SetLike.pow_mem_graded n hf⟩, ⟨n, rfl⟩⟩
 
 @[simp]
 lemma Away.val_mk {d : ι} (n : ℕ) (hf : f ∈ 𝒜 d) (x : A) (hx : x ∈ 𝒜 (n • d)) :

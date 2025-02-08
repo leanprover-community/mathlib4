@@ -213,6 +213,7 @@ theorem separable_prod' {ι : Sort _} {f : ι → R[X]} {s : Finset ι} :
       h2.1.mul (ih h1.2.2 h2.2)
         (IsCoprime.prod_right fun i his => h1.1.2 i his <| Ne.symm <| ne_of_mem_of_not_mem his has)
 
+open scoped Function in -- required for scoped `on` notation
 theorem separable_prod {ι : Sort _} [Fintype ι] {f : ι → R[X]} (h1 : Pairwise (IsCoprime on f))
     (h2 : ∀ x, (f x).Separable) : (∏ x, f x).Separable :=
   separable_prod' (fun _x _hx _y _hy hxy => h1 hxy) fun x _hx => h2 x

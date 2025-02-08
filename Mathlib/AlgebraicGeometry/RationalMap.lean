@@ -247,7 +247,7 @@ lemma equiv_of_fromSpecStalkOfMem_eq [IrreducibleSpace X]
       ((Set.image_subset_range _ _).trans_eq (Subtype.range_val)).trans inf_le_left,
       ((Set.image_subset_range _ _).trans_eq (Subtype.range_val)).trans inf_le_right, ?_⟩
     rw [← cancel_epi (Scheme.Hom.isoImage _ _).hom]
-    simp only [TopologicalSpace.Opens.carrier_eq_coe, IsOpenMap.functor_obj_coe,
+    simp only [TopologicalSpace.Opens.carrier_eq_coe, IsOpenMap.coe_functor_obj,
       TopologicalSpace.Opens.coe_inf, restrict_hom, ← Category.assoc] at e ⊢
     convert e using 2 <;> rw [← cancel_mono (Scheme.Opens.ι _)] <;> simp
   · rw [← f.fromSpecStalkOfMem_restrict hdense inf_le_left ⟨hxf, hxg⟩,

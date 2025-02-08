@@ -5,6 +5,7 @@ Authors: Kexing Ying
 -/
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Tactic.Common
+import Mathlib.Tactic.FastInstance
 
 /-!
 # Subgroups
@@ -47,9 +48,7 @@ membership of a subgroup's underlying set.
 subgroup, subgroups
 -/
 
-assert_not_exists OrderedAddCommMonoid
-assert_not_exists Multiset
-assert_not_exists Ring
+assert_not_exists OrderedAddCommMonoid Multiset Ring
 
 open Function
 open scoped Int
@@ -177,7 +176,7 @@ variable (H)
 -- Prefer subclasses of `Group` over subclasses of `SubgroupClass`.
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive "An additive subgroup of an `AddGroup` inherits an `AddGroup` structure."]
-instance (priority := 75) toGroup : Group H :=
+instance (priority := 75) toGroup : Group H := fast_instance%
   Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
@@ -185,7 +184,7 @@ instance (priority := 75) toGroup : Group H :=
 /-- A subgroup of a `CommGroup` is a `CommGroup`. -/
 @[to_additive "An additive subgroup of an `AddCommGroup` is an `AddCommGroup`."]
 instance (priority := 75) toCommGroup {G : Type*} [CommGroup G] [SetLike S G] [SubgroupClass S G] :
-    CommGroup H :=
+    CommGroup H := fast_instance%
   Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
@@ -358,7 +357,7 @@ variable (H K : Subgroup G)
 
 /-- Copy of a subgroup with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. -/
-@[to_additive
+@[to_additive (attr := simps)
       "Copy of an additive subgroup with a new `carrier` equal to the old one.
       Useful to fix definitional equalities"]
 protected def copy (K : Subgroup G) (s : Set G) (hs : s = K) : Subgroup G where
@@ -366,10 +365,6 @@ protected def copy (K : Subgroup G) (s : Set G) (hs : s = K) : Subgroup G where
   one_mem' := hs.symm ▸ K.one_mem'
   mul_mem' := hs.symm ▸ K.mul_mem'
   inv_mem' hx := by simpa [hs] using hx -- Porting note: `▸` didn't work here
-
-@[to_additive (attr := simp)]
-theorem coe_copy (K : Subgroup G) (s : Set G) (hs : s = ↑K) : (K.copy s hs : Set G) = s :=
-  rfl
 
 @[to_additive]
 theorem copy_eq (K : Subgroup G) (s : Set G) (hs : s = ↑K) : K.copy s hs = K :=
@@ -510,13 +505,13 @@ theorem mk_eq_one {g : G} {h} : (⟨g, h⟩ : H) = 1 ↔ g = 1 := Submonoid.mk_e
 
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive "An `AddSubgroup` of an `AddGroup` inherits an `AddGroup` structure."]
-instance toGroup {G : Type*} [Group G] (H : Subgroup G) : Group H :=
+instance toGroup {G : Type*} [Group G] (H : Subgroup G) : Group H := fast_instance%
   Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
 /-- A subgroup of a `CommGroup` is a `CommGroup`. -/
 @[to_additive "An `AddSubgroup` of an `AddCommGroup` is an `AddCommGroup`."]
-instance toCommGroup {G : Type*} [CommGroup G] (H : Subgroup G) : CommGroup H :=
+instance toCommGroup {G : Type*} [CommGroup G] (H : Subgroup G) : CommGroup H := fast_instance%
   Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 

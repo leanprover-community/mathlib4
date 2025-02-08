@@ -3,10 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.Algebra.Associated.Basic
-import Mathlib.Algebra.BigOperators.Group.Multiset
-import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Algebra.GroupWithZero.Associated
+import Mathlib.Algebra.GroupWithZero.Submonoid
 import Mathlib.Order.WellFounded
 
 /-!
@@ -19,9 +19,7 @@ import Mathlib.Order.WellFounded
   `Irreducible` is equivalent to `Prime`
 -/
 
-assert_not_exists Field
-assert_not_exists Finsupp
-assert_not_exists Ideal
+assert_not_exists Field Finsupp Ideal
 
 variable {α : Type*}
 
@@ -134,11 +132,6 @@ instance (priority := 100) ufm_of_decomposition_of_wfDvdMonoid
     [CancelCommMonoidWithZero α] [WfDvdMonoid α] [DecompositionMonoid α] :
     UniqueFactorizationMonoid α :=
   { ‹WfDvdMonoid α› with irreducible_iff_prime := irreducible_iff_prime }
-
-@[deprecated ufm_of_decomposition_of_wfDvdMonoid (since := "2024-02-12")]
-theorem ufm_of_gcd_of_wfDvdMonoid [CancelCommMonoidWithZero α] [WfDvdMonoid α]
-    [DecompositionMonoid α] : UniqueFactorizationMonoid α :=
-  ufm_of_decomposition_of_wfDvdMonoid
 
 end Prio
 

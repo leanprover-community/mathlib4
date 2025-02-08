@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 
 import Lean.Elab.Command
+import Lean.Parser.Syntax
 import Batteries.Tactic.Unreachable
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
@@ -93,7 +94,6 @@ initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
     `Mathlib.Tactic.Propose.propose',
     `Lean.Parser.Tactic.traceState,
     `Mathlib.Tactic.tacticMatch_target_,
-    ``Lean.Parser.Tactic.change,
     `change?,
     `«tactic#adaptation_note_»,
     `tacticSleep_heartbeats_,

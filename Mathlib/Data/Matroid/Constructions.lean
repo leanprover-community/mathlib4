@@ -29,6 +29,8 @@ and then construct the other examples using duality and restriction.
 
 -/
 
+assert_not_exists Field
+
 variable {α : Type*} {M : Matroid α} {E B I X R J : Set α}
 
 namespace Matroid
@@ -121,10 +123,13 @@ theorem empty_base_iff : M.Base ∅ ↔ M = loopyOn M.E := by
   exact ⟨fun h I _ ↦ ⟨@h _, fun hI ↦ by simp [hI]⟩, fun h I hI ↦ (h hI.subset_ground).1 hI⟩
 
 theorem eq_loopyOn_or_rkPos (M : Matroid α) : M = loopyOn M.E ∨ RkPos M := by
-  rw [← empty_base_iff, rkPos_iff_empty_not_base]; apply em
+  rw [← empty_base_iff, rkPos_iff]; apply em
 
 theorem not_rkPos_iff : ¬RkPos M ↔ M = loopyOn M.E := by
-  rw [rkPos_iff_empty_not_base, not_iff_comm, empty_base_iff]
+  rw [rkPos_iff, not_iff_comm, empty_base_iff]
+
+instance loopyOn_finiteRk : FiniteRk (loopyOn E) :=
+  ⟨∅, by simp⟩
 
 end LoopyOn
 
@@ -180,6 +185,13 @@ theorem restrict_eq_freeOn_iff : M ↾ I = freeOn I ↔ M.Indep I := by
 
 theorem Indep.restrict_eq_freeOn (hI : M.Indep I) : M ↾ I = freeOn I := by
   rwa [restrict_eq_freeOn_iff]
+
+instance freeOn_finitary : Finitary (freeOn E) := by
+  simp only [finitary_iff, freeOn_indep_iff]
+  exact fun I h e heI ↦ by simpa using h {e} (by simpa)
+
+lemma freeOn_rkPos (hE : E.Nonempty) : RkPos (freeOn E) := by
+  simp [rkPos_iff, hE.ne_empty.symm]
 
 end FreeOn
 
@@ -240,6 +252,20 @@ theorem uniqueBaseOn_restrict' (I E R : Set α) :
 theorem uniqueBaseOn_restrict (h : I ⊆ E) (R : Set α) :
     (uniqueBaseOn I E) ↾ R = uniqueBaseOn (I ∩ R) R := by
   rw [uniqueBaseOn_restrict', inter_right_comm, inter_eq_self_of_subset_left h]
+
+lemma uniqueBaseOn_finiteRk (hI : I.Finite) : FiniteRk (uniqueBaseOn I E) := by
+  rw [← uniqueBaseOn_inter_ground_eq]
+  refine ⟨I ∩ E, ?_⟩
+  rw [uniqueBaseOn_base_iff inter_subset_right, and_iff_right rfl]
+  exact hI.subset inter_subset_left
+
+instance uniqueBaseOn_finitary : Finitary (uniqueBaseOn I E) := by
+  refine ⟨fun K hK ↦ ?_⟩
+  simp only [uniqueBaseOn_indep_iff'] at hK ⊢
+  exact fun e heK ↦ singleton_subset_iff.1 <| hK _ (by simpa) (by simp)
+
+lemma uniqueBaseOn_rkPos (hIE : I ⊆ E) (hI : I.Nonempty) : RkPos (uniqueBaseOn I E) where
+  empty_not_base := by simpa [uniqueBaseOn_base_iff hIE] using Ne.symm <| hI.ne_empty
 
 end uniqueBaseOn
 

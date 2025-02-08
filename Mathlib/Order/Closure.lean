@@ -5,7 +5,6 @@ Authors: Bhavik Mehta, Yaël Dillies
 -/
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.SetLike.Basic
-import Mathlib.Order.GaloisConnection
 import Mathlib.Order.Hom.Basic
 
 /-!

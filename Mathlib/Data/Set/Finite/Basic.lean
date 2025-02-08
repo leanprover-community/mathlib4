@@ -38,10 +38,10 @@ instances since they do not compute anything.
 finite sets
 -/
 
-assert_not_exists OrderedRing
-assert_not_exists MonoidWithZero
+assert_not_exists OrderedRing MonoidWithZero
 
 open Set Function
+open scoped symmDiff
 
 universe u v w x
 
@@ -461,6 +461,7 @@ after possibly setting up some `Fintype` and classical `Decidable` instances.
 
 
 section SetFiniteConstructors
+variable {s t u : Set α}
 
 @[nontriviality]
 theorem Finite.of_subsingleton [Subsingleton α] (s : Set α) : s.Finite :=
@@ -477,7 +478,7 @@ theorem Finite.subset {s : Set α} (hs : s.Finite) {t : Set α} (ht : t ⊆ s) :
   have := hs.to_subtype
   exact Finite.Set.subset _ ht
 
-theorem Finite.union {s t : Set α} (hs : s.Finite) (ht : t.Finite) : (s ∪ t).Finite := by
+theorem Finite.union (hs : s.Finite) (ht : t.Finite) : (s ∪ t).Finite := by
   rw [Set.Finite] at hs ht
   apply toFinite
 
@@ -506,11 +507,16 @@ theorem Finite.inf_of_right {s : Set α} (h : s.Finite) (t : Set α) : (t ⊓ s)
 protected lemma Infinite.mono {s t : Set α} (h : s ⊆ t) : s.Infinite → t.Infinite :=
   mt fun ht ↦ ht.subset h
 
-theorem Finite.diff {s : Set α} (hs : s.Finite) (t : Set α) : (s \ t).Finite :=
-  hs.subset diff_subset
+theorem Finite.diff (hs : s.Finite) : (s \ t).Finite := hs.subset diff_subset
 
 theorem Finite.of_diff {s t : Set α} (hd : (s \ t).Finite) (ht : t.Finite) : s.Finite :=
   (hd.union ht).subset <| subset_diff_union _ _
+
+lemma Finite.symmDiff (hs : s.Finite) (ht : t.Finite) : (s ∆ t).Finite := hs.diff.union ht.diff
+
+lemma Finite.symmDiff_congr (hst : (s ∆ t).Finite) : (s ∆ u).Finite ↔ (t ∆ u).Finite where
+  mp hsu := (hst.union hsu).subset (symmDiff_comm s t ▸ symmDiff_triangle ..)
+  mpr htu := (hst.union htu).subset (symmDiff_triangle ..)
 
 @[simp]
 theorem finite_empty : (∅ : Set α).Finite :=
@@ -662,31 +668,40 @@ theorem finite_option {s : Set (Option α)} : s.Finite ↔ { x : α | some x ∈
     ((h.image some).insert none).subset fun x =>
       x.casesOn (fun _ => Or.inl rfl) fun _ hx => Or.inr <| mem_image_of_mem _ hx⟩
 
-@[elab_as_elim]
-theorem Finite.induction_on {C : Set α → Prop} {s : Set α} (h : s.Finite) (H0 : C ∅)
-    (H1 : ∀ {a s}, a ∉ s → Set.Finite s → C s → C (insert a s)) : C s := by
-  lift s to Finset α using h
-  induction' s using Finset.cons_induction_on with a s ha hs
-  · rwa [Finset.coe_empty]
-  · rw [Finset.coe_cons]
-    exact @H1 a s ha (Set.toFinite _) hs
+/-- Induction principle for finite sets: To prove a property `motive` of a finite set `s`, it's
+enough to prove for the empty set and to prove that `motive t → motive ({a} ∪ t)` for all `t`.
 
-/-- Analogous to `Finset.induction_on'`. -/
+See also `Set.Finite.induction_on` for the version requiring to check `motive t → motive ({a} ∪ t)`
+only for `t ⊆ s`. -/
 @[elab_as_elim]
-theorem Finite.induction_on' {C : Set α → Prop} {S : Set α} (h : S.Finite) (H0 : C ∅)
-    (H1 : ∀ {a s}, a ∈ S → s ⊆ S → a ∉ s → C s → C (insert a s)) : C S := by
-  refine @Set.Finite.induction_on α (fun s => s ⊆ S → C s) S h (fun _ => H0) ?_ Subset.rfl
+theorem Finite.induction_on {motive : ∀ s : Set α, s.Finite → Prop} (s : Set α) (hs : s.Finite)
+    (empty : motive ∅ finite_empty)
+    (insert : ∀ {a s}, a ∉ s →
+      ∀ hs : Set.Finite s, motive s hs → motive (insert a s) (hs.insert a)) :
+    motive s hs := by
+  lift s to Finset α using id hs
+  induction' s using Finset.cons_induction_on with a s ha ih
+  · simpa
+  · simpa using @insert a s ha (Set.toFinite _) (ih _)
+
+/-- Induction principle for finite sets: To prove a property `C` of a finite set `s`, it's enough
+to prove for the empty set and to prove that `C t → C ({a} ∪ t)` for all `t ⊆ s`.
+
+This is analogous to `Finset.induction_on'`. See also `Set.Finite.induction_on` for the version
+requiring `C t → C ({a} ∪ t)` for all `t`. -/
+@[elab_as_elim]
+theorem Finite.induction_on_subset {motive : ∀ s : Set α, s.Finite → Prop} (s : Set α)
+    (hs : s.Finite) (empty : motive ∅ finite_empty)
+    (insert : ∀ {a t}, a ∈ s → ∀ hts : t ⊆ s, a ∉ t → motive t (hs.subset hts) →
+      motive (insert a t) ((hs.subset hts).insert a)) : motive s hs := by
+  refine Set.Finite.induction_on (motive := fun t _ => ∀ hts : t ⊆ s, motive t (hs.subset hts)) s hs
+    (fun _ => empty) ?_ .rfl
   intro a s has _ hCs haS
   rw [insert_subset_iff] at haS
-  exact H1 haS.1 haS.2 has (hCs haS.2)
+  exact insert haS.1 haS.2 has (hCs haS.2)
 
-@[elab_as_elim]
-theorem Finite.dinduction_on {C : ∀ s : Set α, s.Finite → Prop} (s : Set α) (h : s.Finite)
-    (H0 : C ∅ finite_empty)
-    (H1 : ∀ {a s}, a ∉ s → ∀ h : Set.Finite s, C s h → C (insert a s) (h.insert a)) : C s h :=
-  have : ∀ h : s.Finite, C s h :=
-    Finite.induction_on h (fun _ => H0) fun has hs ih _ => H1 has hs (ih _)
-  this h
+@[deprecated (since := "2025-01-03")] alias Finite.induction_on' := Finite.induction_on_subset
+@[deprecated (since := "2025-01-03")] alias Finite.dinduction_on := Finite.induction_on
 
 section
 
@@ -902,9 +917,9 @@ theorem finite_range_findGreatest {P : α → ℕ → Prop} [∀ x, DecidablePre
 
 theorem Finite.exists_maximal_wrt [PartialOrder β] (f : α → β) (s : Set α) (h : s.Finite)
     (hs : s.Nonempty) : ∃ a ∈ s, ∀ a' ∈ s, f a ≤ f a' → f a = f a' := by
-  induction s, h using Set.Finite.dinduction_on with
-  | H0 => exact absurd hs not_nonempty_empty
-  | @H1 a s his _ ih =>
+  induction s, h using Set.Finite.induction_on with
+  | empty => exact absurd hs not_nonempty_empty
+  | @insert a s his _ ih =>
     rcases s.eq_empty_or_nonempty with h | h
     · use a
       simp [h]
