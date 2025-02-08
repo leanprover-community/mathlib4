@@ -216,7 +216,7 @@ theorem IsLocalization.primeHeight_comap (S : Submonoid R) {A : Type*} [CommRing
   let e := IsLocalization.orderIsoOfPrime S A
   have H : ∀ p : Ideal R, p ≤ J.comap (algebraMap R A) → Disjoint (S : Set R) p := by
     intro p hp
-    exact Set.disjoint_of_subset_right hp (e ⟨_, hJ⟩).2.2
+    exact Set.disjoint_of_subset_right hp (e ⟨_, ‹J.IsPrime›⟩).2.2
   refine Order.krullDim_eq_of_orderIso ?_
   exact
   { toFun := fun I => ⟨⟨I.1.1.comap (algebraMap R A), (e ⟨_, I.1.2⟩).2.1⟩, Ideal.comap_mono I.2⟩
