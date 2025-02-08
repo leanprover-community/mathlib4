@@ -443,9 +443,8 @@ lemma card_support_le [Fintype V] [Fintype G.support] :
 
 variable {s : Set V} [DecidablePred (· ∈ s)] [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj]
 
-instance : DecidablePred (· ∈ G.support) := by
-  unfold support Rel.dom
-  infer_instance
+instance : DecidablePred (· ∈ G.support) :=
+  inferInstanceAs <| DecidablePred (· ∈ { v | ∃ w, G.Adj v w })
 
 /-- If the support of the simple graph `G` is a subset of the set `s`, then the induced subgraph of
 `s` has the same number of edges as `G`. -/
