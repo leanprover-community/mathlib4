@@ -188,7 +188,7 @@ def Normal.algHomEquivAut [Normal F E] : (E →ₐ[F] K₁) ≃ E ≃ₐ[F] E wh
   right_inv σ := by
     ext
     simp only [AlgHom.restrictNormal', AlgEquiv.toAlgHom_eq_coe, AlgEquiv.coe_ofBijective]
-    apply NoZeroSMulDivisors.algebraMap_injective E K₁
+    apply FaithfulSMul.algebraMap_injective E K₁
     rw [AlgHom.restrictNormal_commutes]
     simp
 

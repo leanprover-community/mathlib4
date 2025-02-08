@@ -891,20 +891,12 @@ theorem HasFiniteIntegral.tendsto_setIntegral_nhds_zero {ι} {f : α → G}
     (tendsto_setLIntegral_zero (ne_of_lt hf) hs) (fun i => zero_le _)
     fun i => enorm_integral_le_lintegral_enorm _
 
-@[deprecated (since := "2024-04-17")]
-alias HasFiniteIntegral.tendsto_set_integral_nhds_zero :=
-  HasFiniteIntegral.tendsto_setIntegral_nhds_zero
-
 /-- If `f` is integrable, then `∫ x in s, f x ∂μ` is absolutely continuous in `s`: it tends
 to zero as `μ s` tends to zero. -/
 theorem Integrable.tendsto_setIntegral_nhds_zero {ι} {f : α → G} (hf : Integrable f μ)
     {l : Filter ι} {s : ι → Set α} (hs : Tendsto (μ ∘ s) l (𝓝 0)) :
     Tendsto (fun i => ∫ x in s i, f x ∂μ) l (𝓝 0) :=
   hf.2.tendsto_setIntegral_nhds_zero hs
-
-@[deprecated (since := "2024-04-17")]
-alias Integrable.tendsto_set_integral_nhds_zero :=
-  Integrable.tendsto_setIntegral_nhds_zero
 
 /-- If `F i → f` in `L1`, then `∫ x, F i x ∂μ → ∫ x, f x ∂μ`. -/
 theorem tendsto_integral_of_L1 {ι} (f : α → G) (hfi : Integrable f μ) {F : ι → α → G} {l : Filter ι}
@@ -936,9 +928,6 @@ lemma tendsto_setIntegral_of_L1 {ι} (f : α → G) (hfi : Integrable f μ) {F :
     exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hF (fun _ ↦ zero_le')
       (fun _ ↦ eLpNorm_mono_measure _ Measure.restrict_le_self)
 
-@[deprecated (since := "2024-04-17")]
-alias tendsto_set_integral_of_L1 := tendsto_setIntegral_of_L1
-
 /-- If `F i → f` in `L1`, then `∫ x in s, F i x ∂μ → ∫ x in s, f x ∂μ`. -/
 lemma tendsto_setIntegral_of_L1' {ι} (f : α → G) (hfi : Integrable f μ) {F : ι → α → G}
     {l : Filter ι}
@@ -948,9 +937,6 @@ lemma tendsto_setIntegral_of_L1' {ι} (f : α → G) (hfi : Integrable f μ) {F 
   refine tendsto_setIntegral_of_L1 f hfi hFi ?_ s
   simp_rw [eLpNorm_one_eq_lintegral_enorm, Pi.sub_apply] at hF
   exact hF
-
-@[deprecated (since := "2024-04-17")]
-alias tendsto_set_integral_of_L1' := tendsto_setIntegral_of_L1'
 
 variable {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
 
@@ -1086,7 +1072,6 @@ theorem lintegral_coe_eq_integral (f : α → ℝ≥0) (hfi : Integrable (fun x 
   rw [ENNReal.ofReal_toReal]
   rw [← lt_top_iff_ne_top]
   convert hfi.hasFiniteIntegral
-  -- Porting note: `convert` no longer unfolds `HasFiniteIntegral`
   simp_rw [hasFiniteIntegral_iff_enorm, NNReal.enorm_eq]
 
 theorem ofReal_integral_eq_lintegral_ofReal {f : α → ℝ} (hfi : Integrable f μ) (f_nn : 0 ≤ᵐ[μ] f) :
@@ -1330,9 +1315,6 @@ theorem Memℒp.eLpNorm_eq_integral_rpow_norm {f : α → H} {p : ℝ≥0∞} (h
   · exact (hf.aestronglyMeasurable.norm.aemeasurable.pow_const _).aestronglyMeasurable
   rw [A, ← ofReal_rpow_of_nonneg toReal_nonneg (inv_nonneg.2 toReal_nonneg), ofReal_toReal]
   exact (lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp1 hp2 hf.2).ne
-
-@[deprecated (since := "2024-07-27")]
-alias Memℒp.snorm_eq_integral_rpow_norm := Memℒp.eLpNorm_eq_integral_rpow_norm
 
 end NormedAddCommGroup
 
@@ -1638,9 +1620,6 @@ theorem setIntegral_dirac' {mα : MeasurableSpace α} {f : α → E} (hf : Stron
   · exact integral_dirac' _ _ hf
   · exact integral_zero_measure _
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_dirac' := setIntegral_dirac'
-
 theorem setIntegral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f : α → E) (a : α)
     (s : Set α) [Decidable (a ∈ s)] :
     ∫ x in s, f x ∂Measure.dirac a = if a ∈ s then f a else 0 := by
@@ -1648,9 +1627,6 @@ theorem setIntegral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f 
   split_ifs
   · exact integral_dirac _ _
   · exact integral_zero_measure _
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_dirac := setIntegral_dirac
 
 /-- **Markov's inequality** also known as **Chebyshev's first inequality**. -/
 theorem mul_meas_ge_le_integral_of_nonneg {f : α → ℝ} (hf_nonneg : 0 ≤ᵐ[μ] f)
@@ -1901,7 +1877,7 @@ theorem eLpNorm_one_le_of_le {r : ℝ≥0} (hfint : Integrable f μ) (hfint' : 0
   rw [Memℒp.eLpNorm_eq_integral_rpow_norm one_ne_zero ENNReal.one_ne_top
       (memℒp_one_iff_integrable.2 hfint),
     ENNReal.ofReal_le_iff_le_toReal
-      (ENNReal.mul_ne_top (ENNReal.mul_ne_top ENNReal.two_ne_top <| @measure_ne_top _ _ _ hμ _)
+      (ENNReal.mul_ne_top (ENNReal.mul_ne_top ENNReal.ofNat_ne_top <| @measure_ne_top _ _ _ hμ _)
         ENNReal.coe_ne_top)]
   simp_rw [ENNReal.one_toReal, _root_.inv_one, Real.rpow_one, Real.norm_eq_abs, ←
     max_zero_add_max_neg_zero_eq_abs_self, ← Real.coe_toNNReal']
@@ -1912,17 +1888,11 @@ theorem eLpNorm_one_le_of_le {r : ℝ≥0} (hfint : Integrable f μ) (hfint' : 0
     rwa [← two_mul, mul_assoc, mul_le_mul_left (two_pos : (0 : ℝ) < 2)]
   · exact hfint.neg.sup (integrable_zero _ _ μ)
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_one_le_of_le := eLpNorm_one_le_of_le
-
 theorem eLpNorm_one_le_of_le' {r : ℝ} (hfint : Integrable f μ) (hfint' : 0 ≤ ∫ x, f x ∂μ)
     (hf : ∀ᵐ ω ∂μ, f ω ≤ r) : eLpNorm f 1 μ ≤ 2 * μ Set.univ * ENNReal.ofReal r := by
   refine eLpNorm_one_le_of_le hfint hfint' ?_
   simp only [Real.coe_toNNReal', le_max_iff]
   filter_upwards [hf] with ω hω using Or.inl hω
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_one_le_of_le' := eLpNorm_one_le_of_le'
 
 end SnormBound
 
