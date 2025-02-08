@@ -27,8 +27,8 @@ The following notations can be enabled via `open Simplicial`.
 The following notations can be enabled via
 `open CategoryTheory.SimplicialObject.Truncated`.
 
-- `X _[m]ₙ` denotes the `m`-th term of an `n`-truncated simplicial object `X`.
-- `X ^[m]ₙ` denotes the `m`-th term of an `n`-truncated cosimplicial object `X`.
+- `X _⦋m⦌ₙ` denotes the `m`-th term of an `n`-truncated simplicial object `X`.
+- `X ^⦋m⦌ₙ` denotes the `m`-th term of an `n`-truncated cosimplicial object `X`.
 -/
 
 open Opposite
@@ -253,16 +253,16 @@ def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Tr
 variable {C}
 
 open Mathlib.Tactic (subscriptTerm) in
-/-- For `X : Truncated C n` and `m ≤ n`, `X _[m]ₙ` is the `m`-th term of X. The
-proof `p : m ≤ n` can also be provided using the syntax `X _[m, p]ₙ`. -/
+/-- For `X : Truncated C n` and `m ≤ n`, `X _⦋m⦌ₙ` is the `m`-th term of X. The
+proof `p : m ≤ n` can also be provided using the syntax `X _⦋m, p⦌ₙ`. -/
 scoped syntax:max (name := mkNotation)
-  term " _[" term ("," term)? "]" noWs subscriptTerm : term
+  term " _⦋" term ("," term)? "⦌" noWs subscriptTerm : term
 scoped macro_rules
-  | `($X:term _[$m:term]$n:subscript) =>
+  | `($X:term _⦋$m:term⦌$n:subscript) =>
     `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
       (Opposite.op ⟨SimplexCategory.mk $m, by first | trunc |
-      fail "Failed to prove truncation property. Try writing `X _[m, by ...]ₙ`."⟩))
-  | `($X:term _[$m:term, $p:term]$n:subscript) =>
+      fail "Failed to prove truncation property. Try writing `X _⦋m, by ...⦌ₙ`."⟩))
+  | `($X:term _⦋$m:term, $p:term⦌$n:subscript) =>
     `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
       (Opposite.op ⟨SimplexCategory.mk $m, $p⟩))
 
@@ -698,16 +698,16 @@ def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Tr
 variable {C}
 
 open Mathlib.Tactic (subscriptTerm) in
-/-- For `X : Truncated C n` and `m ≤ n`, `X ^[m]ₙ` is the `m`-th term of X. The
-proof `p : m ≤ n` can also be provided using the syntax `X ^[m, p]ₙ`. -/
+/-- For `X : Truncated C n` and `m ≤ n`, `X ^⦋m⦌ₙ` is the `m`-th term of X. The
+proof `p : m ≤ n` can also be provided using the syntax `X ^⦋m, p⦌ₙ`. -/
 scoped syntax:max (name := mkNotation)
-  term " ^[" term ("," term)? "]" noWs subscriptTerm : term
+  term " ^⦋" term ("," term)? "⦌" noWs subscriptTerm : term
 scoped macro_rules
-  | `($X:term ^[$m:term]$n:subscript) =>
+  | `($X:term ^⦋$m:term⦌$n:subscript) =>
     `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
       ⟨SimplexCategory.mk $m, by first | trunc |
-      fail "Failed to prove truncation property. Try writing `X ^[m, by ...]ₙ`."⟩)
-  | `($X:term ^[$m:term, $p:term]$n:subscript) =>
+      fail "Failed to prove truncation property. Try writing `X ^⦋m, by ...⦌ₙ`."⟩)
+  | `($X:term ^⦋$m:term, $p:term⦌$n:subscript) =>
     `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
       ⟨SimplexCategory.mk $m, $p⟩)
 
