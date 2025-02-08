@@ -147,7 +147,7 @@ end CommGrp_
 
 namespace CategoryTheory.Functor
 
-variable {D : Type u₂} [Category.{v₂} D] [ChosenFiniteProducts.{v₂} D] (F : C ⥤ D)
+variable {C} {D : Type u₂} [Category.{v₂} D] [ChosenFiniteProducts.{v₂} D] (F : C ⥤ D)
 variable [PreservesFiniteProducts F]
 
 attribute [local instance] braidedOfChosenFiniteProducts
