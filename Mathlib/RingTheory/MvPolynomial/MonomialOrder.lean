@@ -96,18 +96,13 @@ def leadingCoeff (f : MvPolynomial σ R) : R :=
 
 @[deprecated (since := "2025-01-31")] alias lCoeff := leadingCoeff
 
-theorem leadingCoeff_eq {f : MvPolynomial σ R} : m.leadingCoeff f = f.coeff (m.degree f) := rfl
-
 variable (m) in
 /-- A multivariate polynomial is `Monic` with respect to a monomial order
-if its leading coefficient (for that monomial order) is 1 -/
+if its leading coefficient (for that monomial order) is 1. -/
 def Monic (f : MvPolynomial σ R) : Prop :=
   m.leadingCoeff f = 1
 
-theorem Monic.def (f : MvPolynomial σ R) : m.Monic f ↔ m.leadingCoeff f = 1 :=
-  Iff.rfl
-
-@[nontriviality] theorem monic_of_subsingleton [Subsingleton R] {f : MvPolynomial σ R} :
+@[nontriviality] theorem Monic.of_subsingleton [Subsingleton R] {f : MvPolynomial σ R} :
     m.Monic f :=
   Subsingleton.eq_one (m.leadingCoeff f)
 
@@ -116,7 +111,7 @@ instance Monic.decidable [DecidableEq R] (f : MvPolynomial σ R) :
   unfold Monic; infer_instance
 
 @[simp]
-theorem Monic.leadingCoeff {f : MvPolynomial σ R} (hf : m.Monic f) : m.leadingCoeff f = 1 :=
+theorem Monic.leadingCoeff_eq_one {f : MvPolynomial σ R} (hf : m.Monic f) : m.leadingCoeff f = 1 :=
   hf
 
 theorem Monic.coeff_degree {f : MvPolynomial σ R} (hf : m.Monic f) : f.coeff (m.degree f) = 1 :=
@@ -144,10 +139,6 @@ theorem Monic.ne_zero [Nontrivial R] {f : MvPolynomial σ R} (hf : m.Monic f) :
     f ≠ 0 := by
   rintro rfl
   simp [Monic, leadingCoeff_zero] at hf
-
-theorem Monic.ne_zero_of_ne (h : (0 : R) ≠ 1) {f : MvPolynomial σ R} (hf : m.Monic f) : f ≠ 0 := by
-  nontriviality R
-  exact hf.ne_zero
 
 theorem degree_monomial_le {d : σ →₀ ℕ} (c : R) :
     m.degree (monomial d c) ≼[m] d := by
@@ -186,13 +177,13 @@ theorem leadingCoeff_monomial {d : σ →₀ ℕ} (c : R) :
 
 @[deprecated (since := "2025-01-31")] alias lCoeff_monomial := leadingCoeff_monomial
 
-@[simp] theorem monic_monomial {d : σ →₀ ℕ} :
+@[simp] theorem monic_monomial_one {d : σ →₀ ℕ} :
     m.Monic (monomial d (1 : R)) :=
   m.leadingCoeff_monomial 1
 
-theorem monic_monomial_iff {d : σ →₀ ℕ} {c : R} :
-    m.Monic (monomial d c) ↔ c = 1 :=
-  by rw [Monic, m.leadingCoeff_monomial]
+theorem monic_monomial {d : σ →₀ ℕ} {c : R} :
+    m.Monic (monomial d c) ↔ c = 1 := by
+  rw [Monic, m.leadingCoeff_monomial]
 
 theorem leadingCoeff_X {s : σ} :
     m.leadingCoeff (X s : MvPolynomial σ R) = 1 :=
@@ -200,18 +191,13 @@ theorem leadingCoeff_X {s : σ} :
 
 @[simp] theorem monic_X {s : σ} :
     m.Monic (X s : MvPolynomial σ R) :=
-  monic_monomial
+  monic_monomial_one
 
 theorem leadingCoeff_one : m.leadingCoeff (1 : MvPolynomial σ R) = 1 :=
   m.leadingCoeff_monomial 1
 
 theorem monic_one : m.Monic (C 1 : MvPolynomial σ R) :=
-  monic_monomial
-
-theorem monic_ne_zero [Nontrivial R] {f : MvPolynomial σ R} (hf : m.Monic f) :
-    f ≠ 0 := fun h ↦ by
-  apply zero_ne_one (α := R)
-  rw [← hf.leadingCoeff, h, leadingCoeff_zero]
+  monic_monomial_one
 
 theorem degree_le_iff {f : MvPolynomial σ R} {d : σ →₀ ℕ} :
     m.degree f ≼[m] d ↔ ∀ c ∈ f.support, c ≼[m] d := by
@@ -336,7 +322,7 @@ theorem leadingCoeff_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] 
 
 theorem Monic.add_of_lt {f g : MvPolynomial σ R} (hf : m.Monic f) (h : m.degree g ≺[m] m.degree f) :
     m.Monic (f + g) := by
-  simp only [Monic.def, leadingCoeff_add_of_lt h, hf.leadingCoeff]
+  simp only [Monic, leadingCoeff_add_of_lt h, hf.leadingCoeff_eq_one]
 
 theorem degree_add_of_ne {f g : MvPolynomial σ R}
     (h : m.degree f ≠ m.degree g) :
@@ -453,20 +439,17 @@ alias lCoeff_mul_of_isRegular_right := leadingCoeff_mul_of_isRegular_right
 theorem Monic.mul {f g : MvPolynomial σ R} (hf : m.Monic f) (hg : m.Monic g) :
     m.Monic (f * g) := by
   nontriviality R
-  rw [Monic.def, leadingCoeff_eq, degree_mul_of_mul_leadingCoeff_ne_zero, coeff_mul_of_degree_add,
-    hf.leadingCoeff, hg.leadingCoeff, one_mul]
-  rw [hf.leadingCoeff, hg.leadingCoeff, one_mul]
-  exact one_ne_zero
+  suffices m.leadingCoeff f * m.leadingCoeff g = 1 by
+    rw [Monic, MonomialOrder.leadingCoeff,
+      degree_mul_of_mul_leadingCoeff_ne_zero, coeff_mul_of_degree_add, this]
+    rw [this]
+    exact one_ne_zero
+  rw [hf.leadingCoeff_eq_one, hg.leadingCoeff_eq_one, one_mul]
 
 /-- Monomial degree of product -/
 theorem degree_mul [IsDomain R] {f g : MvPolynomial σ R} (hf : f ≠ 0) (hg : g ≠ 0) :
     m.degree (f * g) = m.degree f + m.degree g :=
   degree_mul_of_isRegular_left (isRegular_of_ne_zero (leadingCoeff_ne_zero_iff.mpr hf)) hg
-
-/-- Monomial degree of product -/
-theorem degree_mul_of_nonzero_mul [IsDomain R] {f g : MvPolynomial σ R} (hfg : f * g ≠ 0) :
-    m.degree (f * g) = m.degree f + m.degree g :=
-  degree_mul (left_ne_zero_of_mul hfg) (right_ne_zero_of_mul hfg)
 
 /-- Multiplicativity of leading coefficients -/
 theorem leadingCoeff_mul [IsDomain R] {f g : MvPolynomial σ R} (hf : f ≠ 0) (hg : g ≠ 0) :
@@ -474,22 +457,6 @@ theorem leadingCoeff_mul [IsDomain R] {f g : MvPolynomial σ R} (hf : f ≠ 0) (
   rw [leadingCoeff, degree_mul hf hg, ← coeff_mul_of_degree_add]
 
 @[deprecated (since := "2025-01-31")] alias lCoeff_mul := leadingCoeff_mul
-
-/- /-- Multiplicativity of leading coefficient -/
-theorem leadingCoeff_pow_of_pow_leadingCoeff_ne_zero {f : MvPolynomial σ R} {n : ℕ}
-    (hf : (m.leadingCoeff f) ^ n ≠ 0) :
-    m.leadingCoeff (f ^ n) = (m.leadingCoeff f) ^ n := by
-  induction n with
-  | zero => simp only [pow_zero, leadingCoeff_one]
-  | succ n hrec =>
-      have : m.leadingCoeff f ^ n ≠ 0 := by
-        intro hf'; apply hf
-        simp [pow_add, hf']
-      simp only [pow_add, pow_one, ← hrec this]
-      apply leadingCoeff_mul_of_mul_leadingCoeff_ne_zero
-      intro hf'; apply hf
-      rw [hrec this] at hf'
-      simp [pow_add, hf'] -/
 
 /-- Monomial degree of powers -/
 theorem degree_pow_le {f : MvPolynomial σ R} (n : ℕ) :
@@ -526,11 +493,11 @@ theorem leadingCoeff_pow_of_pow_leadingCoeff_ne_zero {f : MvPolynomial σ R} {n 
     m.leadingCoeff (f ^ n) = m.leadingCoeff f ^ n := by
   rw [leadingCoeff, degree_pow_of_pow_leadingCoeff_ne_zero hf, coeff_pow_of_smul_degree]
 
-theorem monic_pow {f : MvPolynomial σ R} {n : ℕ} (hf : m.Monic f) :
+theorem Monic.pow {f : MvPolynomial σ R} {n : ℕ} (hf : m.Monic f) :
     m.Monic (f ^ n) := by
   nontriviality R
-  rw [Monic.def, leadingCoeff_pow_of_pow_leadingCoeff_ne_zero, hf.leadingCoeff, one_pow]
-  rw [hf.leadingCoeff, one_pow]
+  rw [Monic, leadingCoeff_pow_of_pow_leadingCoeff_ne_zero, hf.leadingCoeff_eq_one, one_pow]
+  rw [hf.leadingCoeff_eq_one, one_pow]
   exact one_ne_zero
 
 /-- Monomial degree of powers (in a reduced ring) -/
@@ -691,7 +658,7 @@ lemma degree_X_sub_C [Nontrivial R]
 lemma monic_X_add_C {ι : Type*} (m : MonomialOrder ι) (i : ι) (r : R) :
     m.Monic (X i + C r) := by
   nontriviality R
-  apply Monic.add_of_lt monic_X
+  apply monic_X.add_of_lt
   simp [degree_C, degree_X, ← not_le, ← eq_zero_iff]
 
 lemma monic_X_sub_C {ι : Type*} (m : MonomialOrder ι) (i : ι) (r : R) :
