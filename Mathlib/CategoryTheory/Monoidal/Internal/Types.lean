@@ -199,7 +199,12 @@ are naturally compatible with the forgetful functors to `MonCat` and `Mon_ (Type
 noncomputable def commMonTypeEquivalenceCommMonForget :
     CommMonTypeEquivalenceCommMon.functor ⋙ forget₂ CommMonCat MonCat ≅
       CommMon_.forget₂Mon_ (Type u) ⋙ MonTypeEquivalenceMon.functor :=
-  NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
+  Iso.refl _
 
-noncomputable instance commMonTypeInhabited : Inhabited (CommMon_ (Type u)) :=
-  ⟨CommMonTypeEquivalenceCommMon.inverse.obj (CommMonCat.of PUnit)⟩
+/-- The equivalences `Mon_ (Type u) ≌ MonCat.{u}` and `Grp_ (Type u) ≌ Grp.{u}`
+are naturally compatible with the forgetful functors to `MonCat` and `Mon_ (Type u)`.
+-/
+noncomputable def grpTypeEquivalenceGrpForget :
+    GrpTypeEquivalenceGrp.functor ⋙ forget₂ Grp MonCat ≅
+      Grp_.forget₂Mon_ (Type u) ⋙ MonTypeEquivalenceMon.functor :=
+  Iso.refl _
