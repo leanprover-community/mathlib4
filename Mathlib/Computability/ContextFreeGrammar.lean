@@ -25,8 +25,7 @@ open Function
 @[ext]
 structure ContextFreeRule (T N : Type*) where
   /-- Input nonterminal a.k.a. left-hand side. -/
-  input : N -- `N` is not `Type*` because only finite types are useful,
-            -- and bundling (below) universe-polymophic types is ugly.
+  input : N
   /-- Output string a.k.a. right-hand side. -/
   output : List (Symbol T N)
 
