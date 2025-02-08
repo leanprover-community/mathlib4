@@ -125,10 +125,6 @@ instance pointwiseModuleScalar : HMul (α →₀ β) (α → γ) (α →₀ γ) 
       apply hx
       rw [h, zero_smul])
 
-@[simp]
-theorem coe_pointwise_smul2 (f : α →₀ β) (g : α → β) : f * g = ⇑f • g :=
-  rfl
-
 end
 
 
