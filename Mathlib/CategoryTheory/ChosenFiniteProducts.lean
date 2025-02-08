@@ -260,6 +260,14 @@ theorem braiding_hom_fst {X Y : C} : (β_ X Y).hom ≫ fst _ _ = snd _ _ := by
 theorem braiding_hom_snd {X Y : C} : (β_ X Y).hom ≫ snd _ _ = fst _ _ := by
   simp [braiding_eq_braiding, fst, snd]
 
+@[reassoc (attr := simp)]
+theorem braiding_inv_fst {X Y : C} : (β_ X Y).inv ≫ fst _ _ = snd _ _ := by
+  simp [braiding_eq_braiding, fst, snd]
+
+@[reassoc (attr := simp)]
+theorem braiding_inv_snd {X Y : C} : (β_ X Y).inv ≫ snd _ _ = fst _ _ := by
+  simp [braiding_eq_braiding, fst, snd]
+
 /--
 Construct an instance of `ChosenFiniteProducts C` given an instance of `HasFiniteProducts C`.
 -/
@@ -626,11 +634,11 @@ variable [PreservesFiniteProducts F]
 
 attribute [local instance] monoidalOfChosenFiniteProducts
 
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma toUnit_ε {X : C} : toUnit (F.obj X) ≫ LaxMonoidal.ε F = F.map (toUnit X) :=
   (cancel_mono (εIso _).inv).1 (toUnit_unique _ _)
 
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma lift_μ {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
     lift (F.map f) (F.map g) ≫ LaxMonoidal.μ F _ _ = F.map (lift f g) :=
   (cancel_mono (μIso _ _ _).inv).1 (by simp)
@@ -669,10 +677,10 @@ namespace NatTrans
 
 variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
   {D : Type u₁} [Category.{v₁} D] [ChosenFiniteProducts D] (F G : C ⥤ D)
-  [Limits.PreservesFiniteLimits F] [Limits.PreservesFiniteLimits G]
+  [Limits.PreservesFiniteProducts F] [Limits.PreservesFiniteProducts G]
 
 attribute [local instance] Functor.monoidalOfChosenFiniteProducts in
-theorem monoidal_of_preservesFiniteLimits (α : F ⟶ G) :
+theorem monoidal_of_preservesFiniteProducts (α : F ⟶ G) :
     NatTrans.IsMonoidal α where
   unit := (cancel_mono (Functor.Monoidal.εIso _).inv).1 (toUnit_unique _ _)
   tensor {X Y} := by

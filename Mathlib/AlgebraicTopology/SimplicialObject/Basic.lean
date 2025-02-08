@@ -193,12 +193,12 @@ open Simplicial
 
 @[reassoc (attr := simp)]
 theorem δ_naturality {X' X : SimplicialObject C} (f : X ⟶ X') {n : ℕ} (i : Fin (n + 2)) :
-    X.δ i ≫ f.app (op [n]) = f.app (op [n + 1]) ≫ X'.δ i :=
+    X.δ i ≫ f.app (op ⦋n⦌) = f.app (op ⦋n + 1⦌) ≫ X'.δ i :=
   f.naturality _
 
 @[reassoc (attr := simp)]
 theorem σ_naturality {X' X : SimplicialObject C} (f : X ⟶ X') {n : ℕ} (i : Fin (n + 1)) :
-    X.σ i ≫ f.app (op [n + 1]) = f.app (op [n]) ≫ X'.σ i :=
+    X.σ i ≫ f.app (op ⦋n + 1⦌) = f.app (op ⦋n⦌) ≫ X'.σ i :=
   f.naturality _
 
 variable (C)
@@ -453,7 +453,7 @@ end Augmented
 /-- Augment a simplicial object with an object. -/
 @[simps]
 def augment (X : SimplicialObject C) (X₀ : C) (f : X _[0] ⟶ X₀)
-    (w : ∀ (i : SimplexCategory) (g₁ g₂ : ([0] : SimplexCategory) ⟶ i),
+    (w : ∀ (i : SimplexCategory) (g₁ g₂ : ⦋0⦌ ⟶ i),
       X.map g₁.op ≫ f = X.map g₂.op ≫ f) :
     SimplicialObject.Augmented C where
   left := X
@@ -468,7 +468,7 @@ def augment (X : SimplicialObject C) (X₀ : C) (f : X _[0] ⟶ X₀)
 
 -- Porting note: removed @[simp] as the linter complains
 theorem augment_hom_zero (X : SimplicialObject C) (X₀ : C) (f : X _[0] ⟶ X₀) (w) :
-    (X.augment X₀ f w).hom.app (op [0]) = f := by simp
+    (X.augment X₀ f w).hom.app (op ⦋0⦌) = f := by simp
 
 end SimplicialObject
 
@@ -778,8 +778,8 @@ open Simplicial
 
 /-- Augment a cosimplicial object with an object. -/
 @[simps]
-def augment (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj [0])
-    (w : ∀ (i : SimplexCategory) (g₁ g₂ : ([0] : SimplexCategory) ⟶ i),
+def augment (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj ⦋0⦌)
+    (w : ∀ (i : SimplexCategory) (g₁ g₂ : ⦋0⦌ ⟶ i),
       f ≫ X.map g₁ = f ≫ X.map g₂) : CosimplicialObject.Augmented C where
   left := X₀
   right := X
@@ -791,8 +791,8 @@ def augment (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj [0])
         rw [Category.id_comp, Category.assoc, ← X.map_comp, w] }
 
 -- Porting note: removed @[simp] as the linter complains
-theorem augment_hom_zero (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj [0]) (w) :
-    (X.augment X₀ f w).hom.app [0] = f := by simp
+theorem augment_hom_zero (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj ⦋0⦌) (w) :
+    (X.augment X₀ f w).hom.app ⦋0⦌ = f := by simp
 
 end CosimplicialObject
 
