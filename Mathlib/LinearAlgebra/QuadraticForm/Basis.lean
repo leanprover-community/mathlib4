@@ -131,8 +131,6 @@ lemma recover2 : Finsupp.linearCombination R (Q.polar_sym2 ∘ Sym2.map g) (scal
   sorry
 -/
 
-lemma test2 (n : N) : n = 0 ∨ n ≠ 0  := by exact eq_or_ne n 0
-
 open Finsupp in
 theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
     Q (linearCombination R g l) =
@@ -150,7 +148,7 @@ theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι
   have e1 : (Q.polar_sym2 ∘ Sym2.map fun i ↦ l i • g i) = (Q.polar_sym2 ∘ Sym2.map (l * g)) := rfl
   rw [e1]
   simp_rw [test]
-  conv_rhs => rw [sum]
+  --conv_rhs => rw [sum]
   have e2 (p : Sym2 ι) :
       (scalar l * Q.polar_sym2 ∘ Sym2.map g) p = (scalar l) p • Q.polar_sym2 (Sym2.map g p) := rfl
   simp_rw [e2]
@@ -166,11 +164,10 @@ theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι
       · exact mul_eq_zero_of_left hz (l k)
       · exact mul_eq_zero_of_right _ (H hz)
     simp_all only [Sym2.lift_mk, not_true_eq_false]
+  rw [Finsupp.sum_of_support_subset (scalar l) e3]
+  intro p hp
+  exact zero_smul R (Q.polar_sym2 (Sym2.map g p))
 
-
-
-
-  sorry
 
 /-
 open Finsupp in
