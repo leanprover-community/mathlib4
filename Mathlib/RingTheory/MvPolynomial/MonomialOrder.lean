@@ -585,6 +585,15 @@ theorem leadingCoeff_prod_of_regular {ι : Type*}
     m.leadingCoeff (∏ i ∈ s, P i) = ∏ i ∈ s, m.leadingCoeff (P i) := by
   simp only [leadingCoeff, degree_prod_of_regular H, coeff_prod_sum_degree]
 
+theorem Monic.prod {ι : Type*} {P : ι → MvPolynomial σ R} {s : Finset ι}
+    (H : ∀ i ∈ s, m.Monic (P i)) :
+    m.Monic (∏ i ∈ s, P i) := by
+  rw [Monic, leadingCoeff_prod_of_regular]
+  · exact Finset.prod_eq_one H
+  · intro i hi
+    rw [(H i hi).leadingCoeff_eq_one]
+    exact isRegular_one
+
 end Semiring
 
 section Ring

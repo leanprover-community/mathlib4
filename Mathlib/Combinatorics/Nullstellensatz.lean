@@ -165,19 +165,13 @@ private theorem Alon.degree_P [Nontrivial R] (m : MonomialOrder σ) (S : Finset 
   rw [degree_prod_of_regular]
   · simp [Finset.sum_congr rfl (fun r _ ↦ m.degree_X_sub_C i r)]
   · intro r _
-    simp only [leadingCoeff_X_sub_C, isRegular_one]
+    rw [m.monic_X_sub_C]
+    exact isRegular_one
 
 /-- The leading coefficient of `Alon.P S i` is `1`. -/
-private theorem Alon.leadingCoeff_P [Nontrivial R] (m : MonomialOrder σ) (S : Finset R) (i : σ) :
-    m.leadingCoeff (P S i) = 1 := by
-  simp only [P]
-  rw [leadingCoeff_prod_of_regular ?_]
-  · apply Finset.prod_eq_one
-    intro r _
-    apply m.leadingCoeff_X_sub_C
-  · intro r _
-    convert isRegular_one
-    apply leadingCoeff_X_sub_C
+private theorem Alon.monic_P [Nontrivial R] (m : MonomialOrder σ) (S : Finset R) (i : σ) :
+    m.Monic (P S i) :=
+  Monic.prod (fun r _ ↦ m.monic_X_sub_C i r)
 
 /-- The support of `Alon.P S i` is the set of exponents of the form `single i e`,
   for `e ≤ S.card`. -/
@@ -225,7 +219,7 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
     f = linearCombination (MvPolynomial σ R) (fun i ↦ (∏ r ∈ S i, (X i - C r))) h := by
   letI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   obtain ⟨h, r, hf, hh, hr⟩ := degLex.div (b := fun i ↦ Alon.P (S i) i)
-      (fun i ↦ by simp only [Alon.leadingCoeff_P, isUnit_one]) f
+      (fun i ↦ by simp only [(Alon.monic_P ..).leadingCoeff_eq_one, isUnit_one]) f
   use h
   suffices r = 0 by
     rw [this, add_zero] at hf
@@ -285,7 +279,8 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
     exact hh i
   -- one could simplify this by proving `totalDegree_mul_eq` (at least in a domain)
   rw [hg, ← degree_degLexDegree,
-    degree_mul_of_isRegular_right hi (by simp only [Alon.leadingCoeff_P, isRegular_one]),
+    degree_mul_of_isRegular_right hi (by simp only [(Alon.monic_P ..).leadingCoeff_eq_one,
+      isRegular_one]),
     Alon.degree_P, degree_add, degree_degLexDegree, degree_single, ht'] at this
   rw [smul_eq_mul, coeff_mul, Finset.sum_eq_zero]
   rintro ⟨p, q⟩ hpq
