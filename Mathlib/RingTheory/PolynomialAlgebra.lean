@@ -320,15 +320,19 @@ lemma evalRingHom_mapMatrix_comp_compRingEquiv {m} [Fintype m] [DecidableEq m] :
       (compRingEquiv m n R).toRingHom.comp (evalRingHom 0).mapMatrix.mapMatrix := by
   ext; simp
 
-variable [Algebra R S]
+variable [Algebra R A]
 
-/-- If `S` is an `R`-algebra, then `S[X]` is an `R[X]` algebra.
+/-- If `A` is an `R`-algebra, then `A[X]` is an `R[X]` algebra.
 This gives a diamond for `Algebra R[X] R[X][X]`, so this is not a global instance. -/
-@[reducible] def Polynomial.algebra : Algebra R[X] S[X] := (mapRingHom (algebraMap R S)).toAlgebra
+@[reducible] def Polynomial.algebra : Algebra R[X] A[X] :=
+  (mapRingHom (algebraMap R A)).toAlgebra' fun _ _ ↦ by
+    ext; rw [coeff_mul, ← Finset.Nat.sum_antidiagonal_swap, coeff_mul]; simp [Algebra.commutes]
 
 attribute [local instance] Polynomial.algebra
 
-instance : IsScalarTower R R[X] S[X] := .of_algebraMap_eq' (mapRingHom_comp_C _).symm
+instance : IsScalarTower R R[X] A[X] := .of_algebraMap_eq' (mapRingHom_comp_C _).symm
+
+variable [Algebra R S]
 
 instance : Algebra.IsPushout R S R[X] S[X] := by
   constructor
