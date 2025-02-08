@@ -2016,6 +2016,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.PiProd
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Fin
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
@@ -5358,7 +5359,8 @@ import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.Bornology.BoundedOperation
 import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Topology.Bornology.Hom
-import Mathlib.Topology.CWComplex
+import Mathlib.Topology.CWComplex.Abstract.Basic
+import Mathlib.Topology.CWComplex.Classical.Basic
 import Mathlib.Topology.Category.Born
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.Category.CompHaus.EffectiveEpi
