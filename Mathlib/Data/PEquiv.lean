@@ -5,8 +5,8 @@ Authors: Chris Hughes
 -/
 import Mathlib.Data.Option.Basic
 import Batteries.Tactic.Congr
-import Mathlib.Tactic.Contrapose
 import Mathlib.Data.Set.Basic
+import Mathlib.Tactic.Contrapose
 
 /-!
 
