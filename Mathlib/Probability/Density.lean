@@ -219,10 +219,8 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 theorem integrable_pdf_smul_iff [IsFiniteMeasure ℙ] {X : Ω → E} [HasPDF X ℙ μ] {f : E → F}
     (hf : AEStronglyMeasurable f μ) :
     Integrable (fun x => (pdf X ℙ μ x).toReal • f x) μ ↔ Integrable (fun x => f (X x)) ℙ := by
-  -- Porting note: using `erw` because `rw` doesn't recognize `(f <| X ·)` as `f ∘ X`
-  -- https://github.com/leanprover-community/mathlib4/issues/5164
-  erw [← integrable_map_measure (hf.mono_ac HasPDF.absolutelyContinuous)
-    (HasPDF.aemeasurable X ℙ μ),
+  rw [← Function.comp_def,
+    ← integrable_map_measure (hf.mono_ac HasPDF.absolutelyContinuous) (HasPDF.aemeasurable X ℙ μ),
     map_eq_withDensity_pdf X ℙ μ, pdf_def, integrable_rnDeriv_smul_iff HasPDF.absolutelyContinuous]
   rw [withDensity_rnDeriv_eq _ _ HasPDF.absolutelyContinuous]
 

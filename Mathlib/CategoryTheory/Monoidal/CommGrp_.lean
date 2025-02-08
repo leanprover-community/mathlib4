@@ -108,6 +108,19 @@ theorem forget₂CommMon_map_hom {A B : CommGrp_ C} (f : A ⟶ B) :
     ((forget₂CommMon_ C).map f).hom = f.hom :=
   rfl
 
+/-- The forgetful functor from commutative group objects to the ambient category. -/
+@[simps!]
+def forget : CommGrp_ C ⥤ C :=
+  forget₂Grp_ C ⋙ Grp_.forget C
+
+instance : (forget C).Faithful where
+
+@[simp]
+theorem forget₂Grp_comp_forget : forget₂Grp_ C ⋙ Grp_.forget C = forget C := rfl
+
+@[simp]
+theorem forget₂CommMon_comp_forget : forget₂CommMon_ C ⋙ CommMon_.forget C = forget C := rfl
+
 end
 
 section
