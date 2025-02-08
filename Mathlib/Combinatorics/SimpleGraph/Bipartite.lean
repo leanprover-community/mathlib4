@@ -51,13 +51,12 @@ theorem IsBipartite.symm (h : G.IsBipartite s t) : G.IsBipartite t s where
     rw [@and_comm (v ∈ t) (w ∈ s), @and_comm (v ∈ s) (w ∈ t)]
     exact h.mem_of_adj hadj.symm
 
-theorem isBipartite_comm :
-  G.IsBipartite s t ↔ G.IsBipartite t s := ⟨IsBipartite.symm, IsBipartite.symm⟩
+theorem isBipartite_comm : G.IsBipartite s t ↔ G.IsBipartite t s :=
+  ⟨IsBipartite.symm, IsBipartite.symm⟩
 
 /-- If `G.IsBipartite s t` and `v ∈ s`, then if `v` is adjacent to `w` in `G` then `w ∈ t`. -/
-theorem IsBipartite.mem_of_mem_adj (h : G.IsBipartite s t) (hv : v ∈ s) :
-    G.Adj v w → w ∈ t := by
-  intro hadj
+theorem IsBipartite.mem_of_mem_adj (h : G.IsBipartite s t) (hv : v ∈ s) (hadj : G.Adj v w) :
+    w ∈ t := by
   apply h.mem_of_adj at hadj
   have nhv : v ∉ t := Set.disjoint_left.mp h.disjoint hv
   simpa [hv, nhv] using hadj
@@ -82,9 +81,8 @@ theorem isBipartite_neighborSet_disjoint (h : G.IsBipartite s t) (hv : v ∈ s) 
   Set.disjoint_of_subset_left (isBipartite_neighborSet_subset h hv) h.disjoint.symm
 
 /-- If `G.IsBipartite s t` and `w ∈ t`, then if `v` is adjacent to `w` in `G` then `v ∈ s`. -/
-theorem IsBipartite.mem_of_mem_adj' (h : G.IsBipartite s t) (hw : w ∈ t) :
-    G.Adj v w → v ∈ s := by
-  intro hadj
+theorem IsBipartite.mem_of_mem_adj' (h : G.IsBipartite s t) (hw : w ∈ t) (hadj : G.Adj v w) :
+    v ∈ s := by
   apply h.mem_of_adj at hadj
   have nhw : w ∉ s := Set.disjoint_right.mp h.disjoint hw
   simpa [hw, nhw] using hadj
@@ -119,7 +117,7 @@ variable [Fintype V] {s t : Finset V} [DecidableRel G.Adj]
 /-- If `G.IsBipartite s t` and `v ∈ s`, then the neighbor finset of `v` is the set of vertices in
 `s` adjacent to `v` in `G`. -/
 theorem isBipartite_neighborFinset (h : G.IsBipartite s t) (hv : v ∈ s) :
-    G.neighborFinset v = t.filter (G.Adj v ·) := by
+    G.neighborFinset v = { w ∈ t | G.Adj v w } := by
   ext w
   rw [mem_neighborFinset, mem_filter, iff_and_self]
   exact h.mem_of_mem_adj hv
@@ -140,19 +138,18 @@ theorem isBipartite_neighborFinset_subset (h : G.IsBipartite s t) (hv : v ∈ s)
 /-- If `G.IsBipartite s t` and `v ∈ s`, then the neighbor finset of `v` is disjoint to `s`. -/
 theorem isBipartite_neighborFinset_disjoint (h : G.IsBipartite s t) (hv : v ∈ s) :
     Disjoint (G.neighborFinset v) s := by
-  rw [neighborFinset_def, ←disjoint_coe, Set.coe_toFinset]
+  rw [neighborFinset_def, ← disjoint_coe, Set.coe_toFinset]
   exact isBipartite_neighborSet_disjoint h hv
 
 /-- If `G.IsBipartite s t` and `v ∈ s`, then the degree of `v` in `G` is at most the size of `t`. -/
-theorem isBipartite_degree_le (h : G.IsBipartite s t) (hv : v ∈ s) :
-    G.degree v ≤ #t := by
-  rw [←card_neighborFinset_eq_degree]
+theorem isBipartite_degree_le (h : G.IsBipartite s t) (hv : v ∈ s) : G.degree v ≤ #t := by
+  rw [← card_neighborFinset_eq_degree]
   exact card_le_card (isBipartite_neighborFinset_subset h hv)
 
 /-- If `G.IsBipartite s t` and `w ∈ t`, then the neighbor finset of `w` is the set of vertices in
 `s` adjacent to `w` in `G`. -/
 theorem isBipartite_neighborFinset' (h : G.IsBipartite s t) (hw : w ∈ t) :
-    G.neighborFinset w = s.filter (G.Adj · w) := by
+    G.neighborFinset w = { v ∈ s | G.Adj v w } := by
   ext v
   rw [mem_neighborFinset, adj_comm, mem_filter, iff_and_self]
   exact h.mem_of_mem_adj' hw
@@ -173,13 +170,12 @@ theorem isBipartite_neighborFinset_subset' (h : G.IsBipartite s t) (hw : w ∈ t
 /-- If `G.IsBipartite s t` and `w ∈ t`, then the neighbor finset of `w` is disjoint to `t`. -/
 theorem isBipartite_neighborFinset_disjoint' (h : G.IsBipartite s t) (hw : w ∈ t) :
     Disjoint (G.neighborFinset w) t := by
-  rw [neighborFinset_def, ←disjoint_coe, Set.coe_toFinset]
+  rw [neighborFinset_def, ← disjoint_coe, Set.coe_toFinset]
   exact isBipartite_neighborSet_disjoint' h hw
 
 /-- If `G.IsBipartite s t` and `w ∈ t`, then the degree of `w` in `G` is at most the size of `s`. -/
-theorem isBipartite_degree_le' (h : G.IsBipartite s t) (hw : w ∈ t) :
-    G.degree w ≤ #s := by
-  rw [←card_neighborFinset_eq_degree]
+theorem isBipartite_degree_le' (h : G.IsBipartite s t) (hw : w ∈ t) : G.degree w ≤ #s := by
+  rw [← card_neighborFinset_eq_degree]
   exact card_le_card (isBipartite_neighborFinset_subset' h hw)
 
 /-- If `G.IsBipartite s t`, then the sum of the degrees of vertices in `s` is equal to the sum of
@@ -188,7 +184,7 @@ the degrees of vertices in `t`.
 See `sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow`. -/
 theorem isBipartite_sum_degrees_eq (h : G.IsBipartite s t) :
     ∑ v ∈ s, G.degree v = ∑ w ∈ t, G.degree w := by
-  simp_rw [←sum_attach t, ←sum_attach s, ←card_neighborFinset_eq_degree]
+  simp_rw [← sum_attach t, ← sum_attach s, ← card_neighborFinset_eq_degree]
   conv_lhs =>
     rhs; intro v
     rw [isBipartite_bipartiteAbove h v.prop]
@@ -204,10 +200,10 @@ variable [DecidableEq V]
 lemma isBipartite_sum_degrees_eq_twice_card_edges (h : G.IsBipartite s t) :
     ∑ v ∈ s ∪ t, G.degree v = 2 * #G.edgeFinset := by
   have hsub : G.support ⊆ ↑s ∪ ↑t := isBipartite_support_subset h
-  rw [←coe_union, ←Set.toFinset_subset] at hsub
-  rw [←Finset.sum_subset hsub, ←sum_degrees_support_eq_twice_card_edges]
+  rw [← coe_union, ← Set.toFinset_subset] at hsub
+  rw [← Finset.sum_subset hsub, ← sum_degrees_support_eq_twice_card_edges]
   intro v _ hv
-  rwa [Set.mem_toFinset, ←degree_eq_zero_iff_not_mem_support] at hv
+  rwa [Set.mem_toFinset, ← degree_eq_zero_iff_not_mem_support] at hv
 
 /-- The degree-sum formula for bipartite graphs, summing over the "left" part.
 
@@ -215,7 +211,7 @@ See `SimpleGraph.sum_degrees_eq_twice_card_edges` for the general version, and
 `SimpleGraph.isBipartite_sum_degrees_eq_card_edges'` for the version from the "right". -/
 theorem isBipartite_sum_degrees_eq_card_edges (h : G.IsBipartite s t) :
     ∑ v ∈ s, G.degree v = #G.edgeFinset := by
-  rw [←Nat.mul_left_cancel_iff zero_lt_two, ←isBipartite_sum_degrees_eq_twice_card_edges h,
+  rw [← Nat.mul_left_cancel_iff zero_lt_two, ← isBipartite_sum_degrees_eq_twice_card_edges h,
     sum_union (disjoint_coe.mp h.disjoint), two_mul, add_right_inj]
   exact isBipartite_sum_degrees_eq h
 
