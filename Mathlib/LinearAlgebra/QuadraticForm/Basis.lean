@@ -45,8 +45,6 @@ theorem map_finsuppSum' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R
   rw [recover]
   exact Q.map_sum' _ (fun i => g i (f i))
 
-
-
 lemma partial_result1 (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
     Q.polar_sym2 ∘ Sym2.map (l * g) = Sym2.lift ⟨fun i j => l j • l i • polar (⇑Q) (g i) (g j),
       fun _ _ => by simp_rw [polar_comm]; rw [smul_comm]⟩ := by
@@ -110,18 +108,6 @@ lemma test (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
     Q.polar_sym2 ∘ Sym2.map (l * g)  = (scalar l) * Q.polar_sym2 ∘ (Sym2.map g) := by
   rw [partial_result1, partial_result2, partial_result3]
 
-/-
-lemma recover2 : Finsupp.linearCombination R (Q.polar_sym2 ∘ Sym2.map g) (scalar l) =
-    ∑ p ∈ l.support.sym2,
-        p.lift
-          ⟨fun i j => (l i * l j) • polar Q (g i) (g j), fun i j => by
-            simp only [polar_comm, mul_comm]⟩ := by
-  simp_rw [Finsupp.linearCombination_apply]
-  simp_rw [scalar]
-  simp_all only [Finset.product_eq_sprod, Function.comp_apply]
-  sorry
--/
-
 open Finsupp in
 theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
     Q (linearCombination R g l) =
@@ -135,9 +121,6 @@ theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι
   simp only [Finset.inter_self, mul_apply, Function.comp_apply]
   simp only [←smul_eq_mul, smul_assoc]
   simp_all only [sub_left_inj]
-
-  --rw [polar_lift]
-  --have e1 : (Q.polar_sym2 ∘ Sym2.map fun i ↦ l i • g i) = (Q.polar_sym2 ∘ Sym2.map (l * g)) := rfl
   have e2 (p : Sym2 ι) :
       (scalar l * Q.polar_sym2 ∘ Sym2.map g) p = (scalar l) p • Q.polar_sym2 (Sym2.map g p) := rfl
   have e3 : (scalar l).support ⊆  l.support.sym2 := by
@@ -162,18 +145,11 @@ theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι
   intro p hp
   exact zero_smul R (Q.polar_sym2 (Sym2.map g p))
 
-
-/-
 open Finsupp in
 theorem sum_polar_sub_repr_sq (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
-      ∑ p ∈ (bm.repr x).support.sym2,
-        p.lift
-          ⟨fun i j => (bm.repr x i * bm.repr x j) • polar Q (bm i) (bm j), fun i j => by
-            simp only [polar_comm, mul_comm]⟩ -
-        linearCombination R (Q ∘ bm) ((bm.repr x) * (bm.repr x)) = Q x := by
+    linearCombination R (Q.polar_sym2 ∘ Sym2.map bm) (scalar (bm.repr x)) -
+      linearCombination R (Q ∘ bm) ((bm.repr x) * (bm.repr x)) = Q x := by
   rw [← apply_linearCombination', Basis.linearCombination_repr]
--/
-
 
 -- c.f. `_root_.map_finsupp_sum`
 open Finsupp in
@@ -199,7 +175,6 @@ theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι 
   have e1 : (l.sum fun i r ↦ r • r • Q (g i))  = ∑ x ∈ l.support, l x • l x • Q (g x) := rfl
   rw [e1]
   simp_rw [add_right_inj]
-  --rw [polar_lift]
   simp_rw [← test]
   simp_all only [Function.comp_apply]
   rfl
