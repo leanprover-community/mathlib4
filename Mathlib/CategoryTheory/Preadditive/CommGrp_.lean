@@ -47,8 +47,7 @@ private theorem monoidal_hom_ext {X Y Z : C} {f g : X ⊗ Y ⟶ Z}
 
 /-- Auxiliary definition for `commGrpEquivalence`. -/
 @[simps!]
-def commGrpEquivalenceAux :
-    CommGrp_.forget₂Grp_ _ ⋙ Grp_.forget₂Mon_ _ ⋙ Mon_.forget _ ⋙ toCommGrp C ≅
+def commGrpEquivalenceAux : CommGrp_.forget C ⋙ toCommGrp C ≅
       𝟭 (CommGrp_ C) := by
   refine NatIso.ofComponents (fun _ => CommGrp_.mkIso (Iso.refl _) ?_ ?_) ?_
   · exact ((IsZero.iff_id_eq_zero _).2 (Subsingleton.elim _ _)).eq_of_src _ _
@@ -70,7 +69,7 @@ def commGrpEquivalenceAux :
 @[simps!]
 def commGrpEquivalence : C ≌ CommGrp_ C where
   functor := toCommGrp C
-  inverse := CommGrp_.forget₂Grp_ _ ⋙ Grp_.forget₂Mon_ _ ⋙ Mon_.forget _
+  inverse := CommGrp_.forget C
   unitIso := Iso.refl _
   counitIso := commGrpEquivalenceAux
 
