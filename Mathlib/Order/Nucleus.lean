@@ -141,7 +141,7 @@ instance : CompleteLattice (Nucleus X) := completeLatticeOfCompleteSemilatticeIn
 @[simp] theorem inf_aply (m n : Nucleus X) (x : X) : (m ⊓ n) x = m x ⊓ n x := by
   rw [← sInf_pair, sInf_apply, iInf_pair]
 
-end
+end CompleteLattice
 section Frame
 variable [Order.Frame X]
 
@@ -209,5 +209,5 @@ instance : Order.Frame (Nucleus X) where
    __ := Nucleus.instHeytingAlgebra
    __ := Nucleus.instCompleteLattice
 
-end
+end Frame
 end Nucleus
