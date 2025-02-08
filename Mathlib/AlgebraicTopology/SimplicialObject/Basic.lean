@@ -24,7 +24,7 @@ The following notations can be enabled via `open Simplicial`.
 - `X _[n]` denotes the `n`-th term of a simplicial object `X`, where `n : ℕ`.
 - `X ^[n]` denotes the `n`-th term of a cosimplicial object `X`, where `n : ℕ`.
 
-The following notations can be enabled via 
+The following notations can be enabled via
 `open CategoryTheory.SimplicialObject.Truncated`.
 
 - `X _[m]ₙ` denotes the `m`-th term of an `n`-truncated simplicial object `X`.
