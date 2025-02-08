@@ -3,7 +3,7 @@ Copyright (c) 2024 Yoh Tanimioto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani
+import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
 import Mathlib.MeasureTheory.Integral.SetIntegral
 
 /-!
@@ -100,6 +100,55 @@ lemma le_rieszMeasure_of_isOpen_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x :
   · simp only [Compacts.coe_mk]
     exact f.hasCompactSupport
   exact subset_rfl
+
+structure rangeCut (a b δ N : ℝ) where
+  /-- the cutting points -/
+  val : ℤ → ℝ
+  /-- the cutting points are increasing. -/
+  mono : ∀ (j k : ℤ), val j < val k → j < k
+  /-- the cutting point is not less than the first point. -/
+  onelen : ∀ (n : Fin (⌈N⌉₊ + 1)), val 1 ≤ val (n + 1)
+  /-- the cutting point is nondecreasing. -/
+  mono' : ∀ (m n : Fin (⌈N⌉₊ + 1)), m ≤ n → val m ≤ val n
+  /-- the zeroth point is less than `a`. -/
+  zerolea : val 0 < a
+
+def rangeCut.mk' {a b δ N : ℝ} (hδpos : 0 < δ) (hN : N = (b - a) / δ) : rangeCut a b δ N where
+  val := fun n => b + δ * (n - (⌈N⌉₊+1))
+  mono j k := by
+    simp only [add_lt_add_iff_left]
+    intro h
+    apply (@Int.cast_lt ℝ).mp
+    apply @lt_of_tsub_lt_tsub_right ℝ j k (⌈N⌉₊ + 1)
+    exact lt_of_mul_lt_mul_left h (le_of_lt hδpos)
+  onelen n := by
+    simp only [Int.cast_one, sub_add_cancel_right, mul_neg, Int.cast_add, Int.cast_natCast,
+      add_sub_add_right_eq_sub, add_lt_add_iff_left]
+    rw [_root_.mul_sub]
+    apply le_add_neg_iff_le.mp
+    ring_nf
+    exact mul_nonneg (le_of_lt hδpos) (Nat.cast_nonneg _)
+  mono' m n hmn := by
+    simp only [Int.cast_natCast, add_le_add_iff_left]
+    rw [_root_.mul_sub, _root_.mul_sub]
+    simp only [tsub_le_iff_right, sub_add_cancel]
+    apply mul_le_mul_of_nonneg_left _ (le_of_lt hδpos)
+    rw [Nat.cast_le]
+    simp only [Fin.val_fin_le]
+    exact hmn
+  zerolea := by
+    rw [hN]
+    simp only [Int.cast_zero, Int.ceil_add_one, Int.cast_add, Int.cast_one, zero_sub, neg_add_rev]
+    apply lt_tsub_iff_left.mp
+    apply (lt_div_iff₀' hδpos).mp
+    simp only [add_neg_lt_iff_lt_add]
+    rw [neg_lt_iff_pos_add, add_assoc, ← neg_lt_iff_pos_add']
+    apply lt_add_of_lt_add_right _ (Nat.le_ceil _)
+    rw [neg_lt_iff_pos_add]
+    apply pos_of_mul_pos_left _ (le_of_lt hδpos)
+    rw [add_mul, add_mul, div_mul, div_mul, div_self (Ne.symm (ne_of_lt hδpos))]
+    simp only [div_one, one_mul]
+    linarith
 
 /-- The **Riesz-Markov-Kakutani theorem** for a positive linear functional `Λ`. -/
 theorem integral_rieszMeasure [Nonempty X] : ∀ (f : C_c(X, ℝ)),
