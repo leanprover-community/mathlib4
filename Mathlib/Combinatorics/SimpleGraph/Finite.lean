@@ -451,20 +451,12 @@ instance : DecidablePred (· ∈ G.support) := by
 `s` has the same number of edges as `G`. -/
 theorem card_edgeFinset_induce_of_support_subset (h : G.support ⊆ s) :
     #(G.induce s).edgeFinset = #G.edgeFinset := by
-  apply card_bij (fun e _ ↦ e.map (↑))
-  · intro e
-    induction e
-    simp
-  · intro e₁ _ e₂ _
-    induction e₁
-    induction e₂
+  apply card_nbij (fun e ↦ e.map (↑)) (by rintro ⟨_, _⟩; simp)
+  · rintro ⟨_, _⟩ _ ⟨_, _⟩ _
     simp [Subtype.ext_iff_val]
-  · intro e hadj
-    induction' e with v w
-    rw [mem_edgeFinset, mem_edgeSet] at hadj
-    have hv : v ∈ G.support := G.mem_support.mpr ⟨w, hadj⟩
-    have hw : w ∈ G.support := G.mem_support.mpr ⟨v, hadj.symm⟩
-    use s(⟨v, h hv⟩, ⟨w, h hw⟩)
+  · rintro ⟨v, w⟩ hadj
+    rw [Set.coe_toFinset, mem_edgeSet] at hadj
+    use s(⟨v, h ⟨w, hadj⟩⟩, ⟨w, h ⟨v, hadj.symm⟩⟩)
     simp [hadj]
 
 theorem card_edgeFinset_induce_support :
@@ -483,14 +475,8 @@ theorem degree_induce_of_neighborSet_subset {v : s} (h : G.neighborSet v ⊆ s) 
 /-- If the support of the simple graph `G` is a subset of the set `s`, then the degree of vertices
 in the induced subgraph of `s` are the same as in `G`. -/
 theorem degree_induce_of_support_subset (h : G.support ⊆ s) (v : s) :
-    (G.induce s).degree v = G.degree v := by
-  simp_rw [←card_neighborFinset_eq_degree]
-  apply card_bij (fun v _ ↦ ↑v) (by simp) (by simp)
-  intro w hadj
-  rw [mem_neighborFinset] at hadj
-  have hw : w ∈ G.support := G.mem_support.mpr ⟨v, hadj.symm⟩
-  use ⟨w, h hw⟩
-  simp [hadj]
+    (G.induce s).degree v = G.degree v :=
+  degree_induce_of_neighborSet_subset (fun _ hadj ↦ h ⟨v, hadj.symm⟩)
 
 theorem degree_induce_support (v : G.support) :
     (G.induce G.support).degree v = G.degree v :=
