@@ -6,6 +6,7 @@ Authors: Kim Morrison, Johannes Hölzl, Andrew Yang
 import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.CategoryTheory.Adjunction.Over
+-- import Mathlib.Algebra.Category.Mon
 
 /-!
 # Adjunctions in `CommRingCat`
@@ -82,26 +83,25 @@ instance (R : CommRingCat.{u}) : (yoneda.obj R).IsRightAdjoint := ⟨_, ⟨coyon
 def coyonedaUnique {n : Type v} [Unique n] : coyoneda.obj (op n) ≅ 𝟭 CommRingCat.{max u v} :=
   NatIso.ofComponents (fun X ↦ (RingEquiv.piUnique _).toCommRingCatIso) (fun f ↦ by ext; simp)
 
-/-- The units functor `R ↦ Rˣ`. -/
-@[simps]
-def units : CommRingCat.{u} ⥤ CommGrp.{u} where
-  obj R := CommGrp.of Rˣ
-  map f := CommGrp.ofHom (Units.map f.hom)
-
 /-- The monoid algebra functor `CommGrp ⥤ R-Alg` given by `G ↦ R[G]`. -/
 @[simps]
-def monoidAlgebra (R : CommRingCat.{max u v}) : CommGrp.{v} ⥤ Under R where
+def monoidAlgebra (R : CommRingCat.{max u v}) : CommMonCat.{v} ⥤ Under R where
   obj G := Under.mk (CommRingCat.ofHom (MonoidAlgebra.singleOneRingHom (k := R) (G := G)))
   map f := Under.homMk (CommRingCat.ofHom <| MonoidAlgebra.mapDomainRingHom R f.hom)
   map_comp f g := by ext : 2; apply MonoidAlgebra.ringHom_ext <;> intro <;> simp
 
-/-- The adjunction `G ↦ R[G]` and `S ↦ Sˣ` between `CommGrp` and `R-Alg`. -/
+@[simps]
+instance : HasForget₂ CommRingCat CommMonCat where
+  forget₂ := { obj M := .of M, map f := CommMonCat.ofHom f.hom }
+  forget_comp := rfl
+
+/-- The adjunction `G ↦ R[G]` and `S ↦ S` between `CommGrp` and `R-Alg`. -/
 def monoidAlgebraAdj (R : CommRingCat.{u}) :
-    monoidAlgebra R ⊣ Under.forget R ⋙ units where
-  unit := { app G := CommGrp.ofHom (MonoidAlgebra.of R G).toHomUnits }
+    monoidAlgebra R ⊣ Under.forget R ⋙ forget₂ _ _ where
+  unit := { app G := CommMonCat.ofHom (MonoidAlgebra.of R G) }
   counit :=
   { app S := Under.homMk (CommRingCat.ofHom (MonoidAlgebra.liftNCRingHom S.hom.hom
-      (Units.coeHom S.right) (fun _ _ ↦ .all _ _))) (by ext; simp [MonoidAlgebra.liftNCRingHom])
+      (.id _) fun _ _ ↦ .all _ _)) (by ext; simp [MonoidAlgebra.liftNCRingHom]),
     naturality S T f := by
       ext : 2
       apply MonoidAlgebra.ringHom_ext <;>
@@ -109,17 +109,17 @@ def monoidAlgebraAdj (R : CommRingCat.{u}) :
   left_triangle_components G := by
     ext : 2
     apply MonoidAlgebra.ringHom_ext <;> intro <;> simp [MonoidAlgebra.liftNCRingHom]
-  right_triangle_components S := by dsimp [units]; ext; simp [MonoidAlgebra.liftNCRingHom]
+  right_triangle_components S := by dsimp; ext; simp [MonoidAlgebra.liftNCRingHom]
 
 /-- The adjunction `G ↦ ℤ[G]` and `R ↦ Rˣ` between `CommGrp` and `CommRing`. -/
-def unitsAdj {R : CommRingCat.{u}} (hR : Limits.IsInitial R) :
-    monoidAlgebra R ⋙ Under.forget R ⊣ units :=
+def forget₂Adj {R : CommRingCat.{u}} (hR : Limits.IsInitial R) :
+    monoidAlgebra R ⋙ Under.forget R ⊣ forget₂ _ _ :=
   (monoidAlgebraAdj R).comp (Under.equivalenceOfIsInitial hR).toAdjunction
 
 instance (R : CommRingCat) : (monoidAlgebra.{u, u} R).IsLeftAdjoint :=
   ⟨_, ⟨CommRingCat.monoidAlgebraAdj R⟩⟩
 
-instance : CommRingCat.units.IsRightAdjoint :=
-  ⟨_, ⟨CommRingCat.unitsAdj Limits.initialIsInitial⟩⟩
+instance : (forget₂ CommRingCat CommMonCat).IsRightAdjoint :=
+  ⟨_, ⟨CommRingCat.forget₂Adj Limits.initialIsInitial⟩⟩
 
 end CommRingCat
