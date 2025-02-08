@@ -85,7 +85,7 @@ theorem rewrites_iff :
       u = p ++ [Symbol.nonterminal r.input] ++ q ∧ v = p ++ r.output ++ q :=
   ⟨Rewrites.exists_parts, by rintro ⟨p, q, rfl, rfl⟩; apply rewrites_of_exists_parts⟩
 
-lemma nonterminal_rule_if_rewrite : r.Rewrites u v → .nonterminal r.input ∈ u := by
+lemma has_nonterminal_if_rewrite : r.Rewrites u v → .nonterminal r.input ∈ u := by
   simp_rw [rewrites_iff, List.append_assoc]
   exact fun _ ↦ List.mem_iff_append.mpr (by tauto)
 
@@ -207,23 +207,27 @@ lemma Derives.append_right {v w : List (Symbol T g.NT)}
   | refl => rfl
   | tail _ last ih => exact ih.trans_produces <| last.append_right p
 
-lemma produces_empty (g : ContextFreeGrammar T) (u v : List (Symbol T g.NT)) (h : g.Produces u v) :
+lemma produces_nonterminal (g : ContextFreeGrammar T)
+        (u v : List (Symbol T g.NT)) (h : g.Produces u v) :
     ∃ r ∈ g.rules, .nonterminal r.input ∈ u := by
   obtain ⟨w, ⟨l, r⟩⟩ := h
-  exact ⟨w, ⟨l, ContextFreeRule.nonterminal_rule_if_rewrite r⟩⟩
+  exact ⟨w, ⟨l, ContextFreeRule.has_nonterminal_if_rewrite r⟩⟩
 
-lemma derives_empty (g : ContextFreeGrammar T) (t : g.NT) (h : ∀ r ∈ g.rules, r.input ≠ t) :
+lemma derives_nonterminal (g : ContextFreeGrammar T) (t : g.NT) (h : ∀ r ∈ g.rules, r.input ≠ t) :
     ∀ s ≠ [.nonterminal t], ¬g.Derives [.nonterminal t] s := fun _ hs ↦ by
   rw [Derives.iff_eq_or_head]
   push_neg
   refine ⟨hs.symm, fun _ hx ↦ ?_⟩
-  have hxr := produces_empty g _ _ hx
+  have hxr := produces_nonterminal g _ _ hx
   simp_rw [List.mem_singleton, Symbol.nonterminal.injEq] at hxr
   tauto
 
 lemma noninitial_empty (g : ContextFreeGrammar T) (h : ∀ r ∈ g.rules, r.input ≠ g.initial) :
     g.language = 0 :=
-  Language.ext fun _ ↦ ⟨(absurd · (derives_empty g _ h _ (by simp))), fun _ ↦ by contradiction⟩
+  Language.ext fun _ ↦ ⟨
+    (absurd · (derives_nonterminal g _ h _ (by simp))),
+    fun _ ↦ by contradiction
+  ⟩
 
 end ContextFreeGrammar
 
