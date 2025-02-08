@@ -230,7 +230,7 @@ theorem IsLocalization.minimalPrimes_map (S : Submonoid R) (A : Type*) [CommRing
   · intro hp
     refine ⟨⟨?_, Ideal.map_le_iff_le_comap.mpr hp.1.2⟩, ?_⟩
     · rw [IsLocalization.isPrime_iff_isPrime_disjoint S A,
-        IsLocalization.disjoint_comap_iff S A]
+        IsLocalization.disjoint_comap_iff S]
       refine ⟨hp.1.1, ?_⟩
       rintro rfl
       exact hp.1.1.ne_top rfl
