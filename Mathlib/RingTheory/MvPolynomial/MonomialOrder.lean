@@ -64,7 +64,15 @@ and a monomial order `m : MonomialOrder σ`.
   of `f` is non zero, then the degree of `f ^ n` is `n • (m.degree f)`
 
 * `m.leadingCoeff_pow_of_pow_leadingCoeff_ne_zero` : is the `n`th power of the leading coefficient
-  of `f` is non zero, then the leading coefficient of `f ^ n` is that power
+  of `f` is non zero, then the leading coefficient of `f ^ n` is that power.
+
+* `m.degree_prod_of_regular` : the degree of a product of polynomials whose leading coefficients
+  are regular is the sum of their degrees.
+
+* `m.leadingCoeff_prod_of_regular` : the leading coefficient of a product of polynomials
+  whose leading coefficients are regular is the product of their leading coefficients.
+
+* `m.Monic.prod` : a product of monic polynomials is monic.
 
 ## Reference
 
@@ -584,6 +592,16 @@ theorem leadingCoeff_prod_of_regular {ι : Type*}
     {P : ι → MvPolynomial σ R} {s : Finset ι} (H : ∀ i ∈ s, IsRegular (m.leadingCoeff (P i))) :
     m.leadingCoeff (∏ i ∈ s, P i) = ∏ i ∈ s, m.leadingCoeff (P i) := by
   simp only [leadingCoeff, degree_prod_of_regular H, coeff_prod_sum_degree]
+
+/-- A product of monic polynomials is monic -/
+theorem Monic.prod {ι : Type*} {P : ι → MvPolynomial σ R} {s : Finset ι}
+    (H : ∀ i ∈ s, m.Monic (P i)) :
+    m.Monic (∏ i ∈ s, P i) := by
+  rw [Monic, leadingCoeff_prod_of_regular]
+  · exact Finset.prod_eq_one H
+  · intro i hi
+    rw [(H i hi).leadingCoeff_eq_one]
+    exact isRegular_one
 
 end Semiring
 
