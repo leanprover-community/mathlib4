@@ -18,7 +18,7 @@ on intervals.
 
 ## Notes
 
-This file is very similar to the n-ary section of `Mathlib.Data.Set.Basic`, to
+This file is very similar to the n-ary section of `Mathlib.Data.Set.Insert`, to
 `Mathlib.Data.Finset.NAry` and to `Mathlib.Order.Filter.NAry`. Please keep them in sync.
 (porting note - only some of these may exist right now!)
 
