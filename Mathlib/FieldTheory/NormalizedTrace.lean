@@ -10,7 +10,10 @@ import Mathlib.RingTheory.Trace.Basic
 # Normalized trace
 
 This file defines *normalized trace* map, that is, an `F`-linear map from the algebraic closure
-of `F` to `F` defined as the trace of an element divided by it's degree.
+of `F` to `F` defined as the trace of an element from its adjoin extension divided by its degree.
+
+To avoid heavy imports, we define it here as a map from an arbitrary algebraic (equivalently
+integral) extension of `F`.
 
 ## Main definitions
 
