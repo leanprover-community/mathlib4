@@ -485,7 +485,7 @@ theorem frobenius_zmod (p : ℕ) [Fact p.Prime] : frobenius (ZMod p) p = RingHom
   ext a
   rw [frobenius_def, ZMod.pow_card, RingHom.id_apply]
 
--- this was a `simp` lemma, but now the LHS simplify to `φ p`.
+-- This was a `simp` lemma, but now the LHS simplifies to `φ p`.
 theorem card_units (p : ℕ) [Fact p.Prime] : Fintype.card (ZMod p)ˣ = p - 1 := by
   rw [Fintype.card_units, card]
 
