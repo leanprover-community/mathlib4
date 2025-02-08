@@ -1735,4 +1735,4 @@ protected lemma setSubtypeComm_symm_apply (p : α → Prop) (s : {s // ∀ a ∈
 
 end Equiv
 
-set_option linter.style.longFile 2300
+set_option linter.style.longFile 1900
