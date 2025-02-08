@@ -66,9 +66,9 @@ and the unit ball inside the `X`-adic completion of `RatFunc K`.
 
 ## Implementation details
 
-* Since `LaurentSeries` is just an abbreviation of `HahnSeries ℤ _`, the definition of the
+* Since `LaurentSeries` is just an abbreviation of `HahnSeries ℤ R`, the definition of the
 coefficients is given in terms of `HahnSeries.coeff` and this forces sometimes to go back-and-forth
-from `X : _⸨X⸩` to `single 1 1 : HahnSeries ℤ _`.
+from `X : R⸨X⸩` to `single 1 1 : HahnSeries ℤ R`.
 * To prove the isomorphism between the `X`-adic completion of `RatFunc K` and `K⸨X⸩` we construct
 two completions of `RatFunc K`: the first (`LaurentSeries.ratfuncAdicComplPkg`) is its abstract
 uniform completion; the second (`LaurentSeries.LaurentSeriesPkg`) is simply `K⸨X⸩`, once we prove
@@ -197,11 +197,6 @@ variable [Semiring R]
 
 instance : Coe R⟦X⟧ R⸨X⸩ :=
   ⟨HahnSeries.ofPowerSeries ℤ R⟩
-
-/- Porting note: now a syntactic tautology and not needed elsewhere
-theorem coe_powerSeries (x : R⟦X⟧) :
-    (x : R⸨X⸩) = HahnSeries.ofPowerSeries ℤ R x :=
-  rfl -/
 
 @[simp]
 theorem coeff_coe_powerSeries (x : R⟦X⟧) (n : ℕ) :
@@ -359,8 +354,6 @@ theorem coe_smul {S : Type*} [Semiring S] [Module R S] (r : R) (x : S⟦X⟧) :
     ((r • x : S⟦X⟧) : S⸨X⸩) = r • (ofPowerSeries ℤ S x) := by
   ext
   simp [coeff_coe, coeff_smul, smul_ite]
-
--- Porting note: RingHom.map_bit0 and RingHom.map_bit1 no longer exist
 
 @[norm_cast]
 theorem coe_pow (n : ℕ) : ((f ^ n : R⟦X⟧) : R⸨X⸩) = (ofPowerSeries ℤ R f) ^ n :=
