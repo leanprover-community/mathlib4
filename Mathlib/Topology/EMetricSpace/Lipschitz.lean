@@ -506,7 +506,7 @@ theorem continuous_prod_of_dense_continuous_lipschitzWith' [TopologicalSpace α]
 
 theorem continuous_prod_of_continuous_lipschitzWith' [TopologicalSpace α] [PseudoEMetricSpace β]
     [PseudoEMetricSpace γ] (f : α × β → γ) (K : ℝ≥0) (ha : ∀ a, LipschitzWith K fun y => f (a, y))
-    (hb : ∀ b, Continuous fun x => f (x, b)): Continuous f :=
+    (hb : ∀ b, Continuous fun x => f (x, b)) : Continuous f :=
   have : Continuous (f ∘ Prod.swap) :=
     continuous_prod_of_continuous_lipschitzWith _ K hb ha
   this.comp continuous_swap
