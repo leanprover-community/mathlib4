@@ -332,8 +332,7 @@ namespace IsStableUnderTransfiniteComposition
 
 attribute [instance] isStableUnderTransfiniteCompositionOfShape
 
-protected instance isomorphisms :
-    (isomorphisms C).IsStableUnderTransfiniteComposition where
+instance : (isomorphisms C).IsStableUnderTransfiniteComposition where
   isStableUnderTransfiniteCompositionOfShape J _ _ _ _ := ⟨by
     rintro _ _ f ⟨hf⟩
     exact hf.isIso⟩
