@@ -153,7 +153,7 @@ variable (S T : Ideal R) [S.IsTwoSided] [T.IsTwoSided]
 
 /-- The ring homomorphism from the quotient by a smaller ideal to the quotient by a larger ideal.
 
-This is the `Ideal.Quotient` version of `Quot.Factor` -/
+This is the `Ideal.Quotient` version of `Quot.factor` -/
 def factor (H : S ≤ T) : R ⧸ S →+* R ⧸ T :=
   Ideal.Quotient.lift S (mk T) fun _ hx => eq_zero_iff_mem.2 (H hx)
 

@@ -455,6 +455,9 @@ instance : CommRing (PreTilt O p) :=
 instance : CharP (PreTilt O p) p :=
   Perfection.charP (ModP O p) p
 
+instance : PerfectRing (PreTilt O p) p :=
+  Perfection.perfectRing (ModP O p) p
+
 section Classical
 
 open Perfection

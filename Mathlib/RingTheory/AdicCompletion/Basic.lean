@@ -74,6 +74,16 @@ theorem isPrecomplete_iff :
           ∃ L : M, ∀ n, f n ≡ L [SMOD (I ^ n • ⊤ : Submodule R M)] :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 
+theorem IsPrecomplete.exists_pow_dvd {r : R} (_ : IsPrecomplete (Ideal.span {r}) R)
+    {f : ℕ → R} (hf : ∀ {m n}, m ≤ n → r ^ m ∣ f m - f n) :
+    ∃ L : R, ∀ n, r ^ n ∣ f n - L := by
+  suffices ∃ L, ∀ n, f n ≡ L [SMOD Ideal.span {r} ^ n • (⊤ : Ideal R)] by
+    simpa only [Ideal.span_singleton_pow, smul_eq_mul, Ideal.mul_top, SModEq.sub_mem,
+      Ideal.mem_span_singleton] using this
+  refine IsPrecomplete.prec' f (fun {m n} h ↦ ?_)
+  simpa only [Ideal.span_singleton_pow, smul_eq_mul, Ideal.mul_top, SModEq.sub_mem,
+    Ideal.mem_span_singleton] using hf h
+
 variable (I M)
 
 /-- The Hausdorffification of a module with respect to an ideal. -/
