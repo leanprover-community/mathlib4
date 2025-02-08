@@ -131,11 +131,11 @@ theorem postComp_φ : (f.postComp h).φ = f.φ ≫ h := by
 /-- A `MorphComponents` can be precomposed with a morphism of simplicial objects. -/
 @[simps]
 def preComp : MorphComponents X' n Z where
-  a := g.app (op [n + 1]) ≫ f.a
-  b i := g.app (op [n]) ≫ f.b i
+  a := g.app (op ⦋n + 1⦌) ≫ f.a
+  b i := g.app (op ⦋n⦌) ≫ f.b i
 
 @[simp]
-theorem preComp_φ : (f.preComp g).φ = g.app (op [n + 1]) ≫ f.φ := by
+theorem preComp_φ : (f.preComp g).φ = g.app (op ⦋n + 1⦌) ≫ f.φ := by
   unfold φ preComp
   simp only [PInfty_f, comp_add]
   congr 1

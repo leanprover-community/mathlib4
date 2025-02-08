@@ -109,7 +109,7 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
     obtain ⟨W, hxW, hWV, hWU, h_eq⟩ := key_W
     refine ⟨W, hWU, ⟨ℱ.map hWV.op s, ?_⟩, hxW⟩
     convert h_eq using 1
-    simp only [← comp_apply, T.naturality]
+    simp only [← CategoryTheory.comp_apply, T.naturality]
 
 end SurjectiveOnStalks
 

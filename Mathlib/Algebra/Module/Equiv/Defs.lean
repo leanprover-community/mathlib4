@@ -310,6 +310,10 @@ variable {e₁₂} {e₂₃}
 theorem coe_toAddEquiv : e.toAddEquiv = e :=
   rfl
 
+@[simp]
+lemma coe_addEquiv_apply (x : M) : (e : M ≃+ M₂) x = e x := by
+  rfl
+
 /-- The two paths coercion can take to an `AddMonoidHom` are equivalent -/
 theorem toAddMonoidHom_commutes : e.toLinearMap.toAddMonoidHom = e.toAddEquiv.toAddMonoidHom :=
   rfl

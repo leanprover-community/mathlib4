@@ -40,7 +40,7 @@ def AntisymmRel (a b : α) : Prop :=
   r a b ∧ r b a
 
 theorem antisymmRel_swap : AntisymmRel (swap r) = AntisymmRel r :=
-  funext fun _ => funext fun _ => propext and_comm
+  funext₂ fun _ _ ↦ propext and_comm
 
 @[refl]
 theorem antisymmRel_refl [IsRefl α r] (a : α) : AntisymmRel r a a :=

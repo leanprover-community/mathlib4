@@ -312,8 +312,8 @@ lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
     (p.not_nil_of_tail_not_nil (not_nil_of_isCycle_cons hpc)), Set.mem_setOf] at hn hm
   have := ((Walk.cons_isCycle_iff _ _).mp hpc).1.getVert_injOn
       (by omega : n - 1 ≤ p.tail.length) (by omega : m - 1 ≤ p.tail.length)
-      (by simp_all [SimpleGraph.Walk.getVert_tail, show n - 1 + 1 = n from by omega,
-          show m - 1 + 1 = m from by omega])
+      (by simp_all [SimpleGraph.Walk.getVert_tail, show n - 1 + 1 = n by omega,
+          show m - 1 + 1 = m by omega])
   omega
 
 lemma IsCycle.getVert_injOn' {p : G.Walk u u} (hpc : p.IsCycle) :
@@ -324,8 +324,8 @@ lemma IsCycle.getVert_injOn' {p : G.Walk u u} (hpc : p.IsCycle) :
   have : p.length - n = p.length - m := Walk.length_reverse _ ▸ hpc.reverse.getVert_injOn
     (by simp only [Walk.length_reverse, Set.mem_setOf_eq]; omega)
     (by simp only [Walk.length_reverse, Set.mem_setOf_eq]; omega)
-    (by simp [Walk.getVert_reverse, show p.length - (p.length - n) = n from by omega, hnm,
-      show p.length - (p.length - m) = m from by omega])
+    (by simp [Walk.getVert_reverse, show p.length - (p.length - n) = n by omega, hnm,
+      show p.length - (p.length - m) = m by omega])
   omega
 
 lemma IsCycle.snd_ne_penultimate {p : G.Walk u u} (hp : p.IsCycle) : p.snd ≠ p.penultimate := by
@@ -337,12 +337,10 @@ lemma IsCycle.snd_ne_penultimate {p : G.Walk u u} (hp : p.IsCycle) : p.snd ≠ p
 lemma IsCycle.getVert_endpoint_iff {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle) (hl : i ≤ p.length) :
     p.getVert i = u ↔ i = 0 ∨ i = p.length := by
   refine ⟨?_, by aesop⟩
-  intro h
-  by_cases hi : i = 0
-  · left; exact hi
-  · right
-    exact hpc.getVert_injOn (by simp only [Set.mem_setOf_eq]; omega)
-      (by simp only [Set.mem_setOf_eq]; omega) (h.symm ▸ (Walk.getVert_length p).symm)
+  rw [or_iff_not_imp_left]
+  intro h hi
+  exact hpc.getVert_injOn (by simp only [Set.mem_setOf_eq]; omega)
+    (by simp only [Set.mem_setOf_eq]; omega) (h.symm ▸ (Walk.getVert_length p).symm)
 
 lemma IsCycle.getVert_sub_one_neq_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
     (h : i ≤ p.length) : p.getVert (i - 1) ≠ p.getVert (i + 1) := by
@@ -1070,6 +1068,22 @@ instance : SetLike G.ConnectedComponent V where
 theorem mem_supp_iff (C : G.ConnectedComponent) (v : V) :
     v ∈ C.supp ↔ G.connectedComponentMk v = C :=
   Iff.rfl
+
+lemma mem_supp_congr_adj {v w : V} (c : G.ConnectedComponent) (hadj : G.Adj v w) :
+    v ∈ c.supp ↔ w ∈ c.supp := by
+  simp only [ConnectedComponent.mem_supp_iff] at *
+  constructor <;> intro h <;> simp only [← h] <;> apply connectedComponentMk_eq_of_adj
+  · exact hadj.symm
+  · exact hadj
+
+lemma adj_spanningCoe_induce_supp {v w : V} (c : G.ConnectedComponent) :
+    (G.induce c.supp).spanningCoe.Adj v w ↔ v ∈ c.supp ∧ G.Adj v w := by
+  by_cases h : v ∈ c.supp
+  · refine ⟨by aesop, ?_⟩
+    intro h'
+    have : w ∈ c.supp := by rwa [c.mem_supp_congr_adj h'.2] at h
+    aesop
+  · aesop
 
 theorem connectedComponentMk_mem {v : V} : v ∈ G.connectedComponentMk v :=
   rfl

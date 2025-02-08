@@ -275,9 +275,6 @@ end PartialOrder
 
 end CommMonoid
 
-@[deprecated (since := "2024-07-24")] alias mul_eq_one_iff := mul_eq_one
-@[deprecated (since := "2024-07-24")] alias add_eq_zero_iff := add_eq_zero
-
 namespace NeZero
 
 theorem pos {M} [AddZeroClass M] [PartialOrder M] [CanonicallyOrderedAdd M]

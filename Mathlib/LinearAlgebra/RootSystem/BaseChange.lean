@@ -75,7 +75,7 @@ def restrictScalars' :
     root_coroot_two i := by
       have : algebraMap K L 2 = 2 := by
         rw [← Int.cast_two (R := K), ← Int.cast_two (R := L), map_intCast]
-      exact NoZeroSMulDivisors.algebraMap_injective K L <| by simp [this]
+      exact FaithfulSMul.algebraMap_injective K L <| by simp [this]
     reflection_perm := P.reflection_perm
     reflection_perm_root i j := by
       ext; simpa [algebra_compatible_smul L] using P.reflection_perm_root i j
