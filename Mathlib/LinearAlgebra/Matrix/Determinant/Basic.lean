@@ -644,10 +644,7 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
     · simp_rw [sum_mul_sum, ← sum_product', univ_product_univ]
       refine sum_nbij (fun σ ↦ σ.fst.sumCongr σ.snd) ?_ ?_ ?_ ?_
       · intro σ₁₂ _
-        simp only
-        erw [Set.mem_toFinset, MonoidHom.mem_range]
-        use σ₁₂
-        simp only [sumCongrHom_apply]
+        simp
       · intro σ₁ _ σ₂ _
         dsimp only
         intro h

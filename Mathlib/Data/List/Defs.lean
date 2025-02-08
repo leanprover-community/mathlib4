@@ -50,10 +50,6 @@ def getLastI [Inhabited α] : List α → α
   | [_, b] => b
   | _ :: _ :: l => getLastI l
 
-/-- List with a single given element. -/
-@[inline, deprecated List.pure (since := "2024-03-24")]
-protected def ret {α : Type u} (a : α) : List α := [a]
-
 /-- "Inhabited" `take` function: Take `n` elements from a list `l`. If `l` has less than `n`
   elements, append `n - length l` elements `default`. -/
 def takeI [Inhabited α] (n : Nat) (l : List α) : List α :=
@@ -488,10 +484,6 @@ theorem length_mapAccumr₂ :
 
 end MapAccumr
 
-/- #adaptation_note: this attribute should be removed after Mathlib moves to v4.15.0-rc1. -/
-set_option allowUnsafeReducibility true in
-attribute [semireducible] Fin.foldr.loop
-
 section Deprecated
 
 @[deprecated List.mem_cons (since := "2024-08-10")]
@@ -504,8 +496,6 @@ alias ⟨eq_or_mem_of_mem_cons, _⟩ := mem_cons
 theorem not_exists_mem_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x :=
   fun ⟨_, hx, _⟩ => List.not_mem_nil _ hx
 
-@[deprecated (since := "2024-03-23")] alias not_bex_nil := not_exists_mem_nil
-@[deprecated (since := "2024-03-23")] alias bex_cons := exists_mem_cons
 
 @[deprecated (since := "2024-08-10")] alias length_le_of_sublist := Sublist.length_le
 

@@ -30,9 +30,7 @@ resembling the notation $R^{\times}$ for the units of a ring, which is common in
 The results here should be used to golf the basic `Group` lemmas.
 -/
 
-assert_not_exists Multiplicative
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists Multiplicative MonoidWithZero DenselyOrdered
 
 open Function
 
@@ -298,7 +296,7 @@ section Monoid
 
 variable [Monoid α] {a : α}
 
-/-- Partial division. It is defined when the
+/-- Partial division, denoted `a /ₚ u`. It is defined when the
   second argument is invertible, and unlike the division operator
   in `DivisionRing` it is not totalized at zero. -/
 def divp (a : α) (u : Units α) : α :=

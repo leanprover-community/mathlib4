@@ -105,6 +105,11 @@ class FastIsEmpty (α : Sort u) : Prop where
 protected theorem FastSubsingleton.elim {α : Sort u} [h : FastSubsingleton α] : (a b : α) → a = b :=
   h.inst.allEq
 
+protected theorem FastSubsingleton.helim {α β : Sort u} [FastSubsingleton α]
+    (h₂ : α = β) (a : α) (b : β) : HEq a b := by
+  have : Subsingleton α := FastSubsingleton.inst
+  exact Subsingleton.helim h₂ a b
+
 instance (priority := 100) {α : Type u} [inst : FastIsEmpty α] : FastSubsingleton α where
   inst := have := inst.inst; inferInstance
 

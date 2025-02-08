@@ -18,7 +18,7 @@ variable {K : Type v} [SmallCategory K]
 
 open Limits
 
-/-- A converse to `colimitLimitIsoLimitColimit`: if colimits of shape `K` commute with finite
+/-- A converse to `colimitLimitIso`: if colimits of shape `K` commute with finite
 limits, then `K` is filtered. -/
 theorem isFiltered_of_nonempty_limit_colimit_to_colimit_limit
     (h : ∀ {J : Type v} [SmallCategory J] [FinCategory J] (F : J ⥤ K ⥤ Type v),

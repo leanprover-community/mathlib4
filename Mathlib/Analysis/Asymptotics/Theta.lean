@@ -3,7 +3,7 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Analysis.Asymptotics.Lemmas
 import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
@@ -144,12 +144,17 @@ alias ⟨IsTheta.of_norm_left, IsTheta.norm_left⟩ := isTheta_norm_left
 
 alias ⟨IsTheta.of_norm_right, IsTheta.norm_right⟩ := isTheta_norm_right
 
-theorem isTheta_of_norm_eventuallyEq (h : (fun x ↦ ‖f x‖) =ᶠ[l] fun x ↦ ‖g x‖) : f =Θ[l] g :=
-  ⟨IsBigO.of_bound 1 <| by simpa only [one_mul] using h.le,
-    IsBigO.of_bound 1 <| by simpa only [one_mul] using h.symm.le⟩
+theorem IsTheta.of_norm_eventuallyEq_norm (h : (fun x ↦ ‖f x‖) =ᶠ[l] fun x ↦ ‖g x‖) : f =Θ[l] g :=
+  ⟨.of_bound' h.le, .of_bound' h.symm.le⟩
 
-theorem isTheta_of_norm_eventuallyEq' {g : α → ℝ} (h : (fun x ↦ ‖f' x‖) =ᶠ[l] g) : f' =Θ[l] g :=
-  isTheta_of_norm_eventuallyEq <| h.mono fun x hx ↦ by simp only [← hx, norm_norm]
+@[deprecated (since := "2025-01-03")]
+alias isTheta_of_norm_eventuallyEq := IsTheta.of_norm_eventuallyEq_norm
+
+theorem IsTheta.of_norm_eventuallyEq {g : α → ℝ} (h : (fun x ↦ ‖f' x‖) =ᶠ[l] g) : f' =Θ[l] g :=
+  of_norm_eventuallyEq_norm <| h.mono fun x hx ↦ by simp only [← hx, norm_norm]
+
+@[deprecated (since := "2025-01-03")]
+alias isTheta_of_norm_eventuallyEq' := IsTheta.of_norm_eventuallyEq
 
 theorem IsTheta.isLittleO_congr_left (h : f' =Θ[l] g') : f' =o[l] k ↔ g' =o[l] k :=
   ⟨h.symm.trans_isLittleO, h.trans_isLittleO⟩
@@ -203,6 +208,20 @@ theorem IsTheta.smul [NormedSpace 𝕜 E'] [NormedSpace 𝕜' F'] {f₁ : α →
 theorem IsTheta.mul {f₁ f₂ : α → 𝕜} {g₁ g₂ : α → 𝕜'} (h₁ : f₁ =Θ[l] g₁) (h₂ : f₂ =Θ[l] g₂) :
     (fun x ↦ f₁ x * f₂ x) =Θ[l] fun x ↦ g₁ x * g₂ x :=
   h₁.smul h₂
+
+theorem IsTheta.listProd {ι : Type*} {L : List ι} {f : ι → α → 𝕜} {g : ι → α → 𝕜'}
+    (h : ∀ i ∈ L, f i =Θ[l] g i) :
+    (fun x ↦ (L.map (f · x)).prod) =Θ[l] (fun x ↦ (L.map (g · x)).prod) :=
+  ⟨.listProd fun i hi ↦ (h i hi).isBigO, .listProd fun i hi ↦ (h i hi).symm.isBigO⟩
+
+theorem IsTheta.multisetProd {ι : Type*} {s : Multiset ι} {f : ι → α → 𝕜} {g : ι → α → 𝕜'}
+    (h : ∀ i ∈ s, f i =Θ[l] g i) :
+    (fun x ↦ (s.map (f · x)).prod) =Θ[l] (fun x ↦ (s.map (g · x)).prod) :=
+  ⟨.multisetProd fun i hi ↦ (h i hi).isBigO, .multisetProd fun i hi ↦ (h i hi).symm.isBigO⟩
+
+theorem IsTheta.finsetProd {ι : Type*} {s : Finset ι} {f : ι → α → 𝕜} {g : ι → α → 𝕜'}
+    (h : ∀ i ∈ s, f i =Θ[l] g i) : (∏ i ∈ s, f i ·) =Θ[l] (∏ i ∈ s, g i ·) :=
+  ⟨.finsetProd fun i hi ↦ (h i hi).isBigO, .finsetProd fun i hi ↦ (h i hi).symm.isBigO⟩
 
 theorem IsTheta.inv {f : α → 𝕜} {g : α → 𝕜'} (h : f =Θ[l] g) :
     (fun x ↦ (f x)⁻¹) =Θ[l] fun x ↦ (g x)⁻¹ :=

@@ -38,8 +38,7 @@ Equiv, MulEquiv, AddEquiv, RingEquiv, MulAut, AddAut, RingAut
 -/
 
 -- guard against import creep
-assert_not_exists Field
-assert_not_exists Fintype
+assert_not_exists Field Fintype
 
 variable {F α β R S S' : Type*}
 
@@ -230,6 +229,10 @@ instance : Inhabited (R ≃+* R) :=
 @[simp]
 theorem refl_apply (x : R) : RingEquiv.refl R x = x :=
   rfl
+
+@[simp]
+theorem coe_refl_id (R : Type*) [Mul R] [Add R] :
+⇑(RingEquiv.refl R) = id := rfl
 
 @[simp]
 theorem coe_addEquiv_refl : (RingEquiv.refl R : R ≃+ R) = AddEquiv.refl R :=
@@ -442,6 +445,15 @@ theorem ofBijective_apply [NonUnitalRingHomClass F R S] (f : F) (hf : Function.B
     (x : R) : ofBijective f hf x = f x :=
   rfl
 
+/-- Product of a singleton family of (non-unital non-associative semi)rings is isomorphic
+to the only member of this family. -/
+@[simps! (config := .asFn)]
+def piUnique {ι : Type*} (R : ι → Type*) [Unique ι] [∀ i, NonUnitalNonAssocSemiring (R i)] :
+    (∀ i, R i) ≃+* R default where
+  __ := Equiv.piUnique R
+  map_add' _ _ := rfl
+  map_mul' _ _ := rfl
+
 /-- A family of ring isomorphisms `∀ j, (R j ≃+* S j)` generates a
 ring isomorphisms between `∀ j, R j` and `∀ j, S j`.
 
@@ -529,6 +541,14 @@ theorem coe_prodCongr {R R' S S' : Type*} [NonUnitalNonAssocSemiring R]
     (f : R ≃+* R') (g : S ≃+* S') :
     ⇑(RingEquiv.prodCongr f g) = Prod.map f g :=
   rfl
+
+/-- This is `Equiv.piOptionEquivProd` as a `RingEquiv`. -/
+@[simps!]
+def piOptionEquivProd {ι : Type*} {R : Option ι → Type*} [Π i, NonUnitalNonAssocSemiring (R i)] :
+    (Π i, R i) ≃+* R none × (Π i, R (some i)) where
+  toEquiv := Equiv.piOptionEquivProd
+  map_add' _ _ := rfl
+  map_mul' _ _ := rfl
 
 end NonUnitalSemiring
 

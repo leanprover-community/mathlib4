@@ -590,33 +590,52 @@ inner regular Haar measures (and in particular for any Haar measure on a second 
 
 open Pointwise
 
-/-- **Steinhaus Theorem** In any locally compact group `G` with an inner regular Haar measure `μ`,
+@[to_additive]
+private lemma steinhaus_mul_aux (μ : Measure G) [IsHaarMeasure μ] [μ.InnerRegularCompactLTTop]
+    [LocallyCompactSpace G] (E : Set G) (hE : MeasurableSet E)
+    (hEapprox : ∃ K ⊆ E, IsCompact K ∧ 0 < μ K) : E / E ∈ 𝓝 (1 : G) := by
+  /- For any measure `μ` and set `E` containing a compact set `K` of positive measure, there exists
+  a neighborhood `V` of the identity such that `v • K \ K` has small measure for all `v ∈ V`, say
+  `< μ K`. Then `v • K` and `K` can not be disjoint, as otherwise `μ (v • K \ K) = μ (v • K) = μ K`.
+  This show that `K / K` contains the neighborhood `V` of `1`, and therefore that it is
+  itself such a neighborhood. -/
+  obtain ⟨K, hKE, hK, K_closed, hKpos⟩ : ∃ K ⊆ E, IsCompact K ∧ IsClosed K ∧ 0 < μ K := by
+    obtain ⟨K, hKE, hK_comp, hK_meas⟩ := hEapprox
+    exact ⟨closure K, hK_comp.closure_subset_measurableSet hE hKE, hK_comp.closure,
+      isClosed_closure, by rwa [hK_comp.measure_closure]⟩
+  filter_upwards [eventually_nhds_one_measure_smul_diff_lt hK K_closed hKpos.ne' (μ := μ)] with g hg
+  obtain ⟨_, ⟨x, hxK, rfl⟩, hgxK⟩ : ∃ x ∈ g • K, x ∈ K :=
+     not_disjoint_iff.1 fun hd ↦ by simp [hd.symm.sdiff_eq_right, measure_smul] at hg
+  simpa using div_mem_div (hKE hgxK) (hKE hxK)
+
+/-- **Steinhaus Theorem** for finite mass sets.
+
+In any locally compact group `G` with an Haar measure `μ` that's inner regular on finite measure
+sets, for any measurable set `E` of finite positive measure, the set `E / E` is a neighbourhood of
+`1`. -/
+@[to_additive
+"**Steinhaus Theorem** for finite mass sets.
+
+In any locally compact group `G` with an Haar measure `μ` that's inner regular on finite measure
+sets, for any measurable set `E` of finite positive measure, the set `E - E` is a neighbourhood of
+`0`. "]
+theorem div_mem_nhds_one_of_haar_pos_ne_top (μ : Measure G) [IsHaarMeasure μ]
+    [LocallyCompactSpace G] [μ.InnerRegularCompactLTTop] (E : Set G) (hE : MeasurableSet E)
+    (hEpos : 0 < μ E) (hEfin : μ E ≠ ∞) : E / E ∈ 𝓝 (1 : G) :=
+  steinhaus_mul_aux μ E hE <| hE.exists_lt_isCompact_of_ne_top hEfin hEpos
+
+/-- **Steinhaus Theorem**.
+
+In any locally compact group `G` with an inner regular Haar measure `μ`,
 for any measurable set `E` of positive measure, the set `E / E` is a neighbourhood of `1`. -/
 @[to_additive
-"**Steinhaus Theorem** In any locally compact group `G` with an inner regular Haar measure `μ`,
+"**Steinhaus Theorem**.
+
+In any locally compact group `G` with an inner regular Haar measure `μ`,
 for any measurable set `E` of positive measure, the set `E - E` is a neighbourhood of `0`."]
 theorem div_mem_nhds_one_of_haar_pos (μ : Measure G) [IsHaarMeasure μ] [LocallyCompactSpace G]
     [InnerRegular μ] (E : Set G) (hE : MeasurableSet E) (hEpos : 0 < μ E) :
-    E / E ∈ 𝓝 (1 : G) := by
-  /- For any inner regular measure `μ` and set `E` of positive measure, we can find a compact
-    set `K` of positive measure inside `E`. Further, there exists a neighborhood `V` of the
-    identity such that `v • K \ K` has small measure for all `v ∈ V`, say `< μ K`.
-    Then `v • K` and `K` can not be disjoint, as otherwise `μ (v • K \ K) = μ (v • K) = μ K`.
-    This show that `K / K` contains the neighborhood `V` of `1`, and therefore that it is
-    itself such a neighborhood. -/
-  obtain ⟨K, hKE, hK, K_closed, hKpos⟩ :
-      ∃ (K : Set G), K ⊆ E ∧ IsCompact K ∧ IsClosed K ∧ 0 < μ K := by
-    rcases MeasurableSet.exists_lt_isCompact hE hEpos with ⟨K, KE, K_comp, K_meas⟩
-    refine ⟨closure K, ?_, K_comp.closure, isClosed_closure, ?_⟩
-    · exact K_comp.closure_subset_measurableSet hE KE
-    · rwa [K_comp.measure_closure]
-  filter_upwards [eventually_nhds_one_measure_smul_diff_lt hK K_closed hKpos.ne' (μ := μ)] with g hg
-  have : ¬Disjoint (g • K) K := fun hd ↦ by
-    rw [hd.symm.sdiff_eq_right, measure_smul] at hg
-    exact hg.false
-  rcases Set.not_disjoint_iff.1 this with ⟨_, ⟨x, hxK, rfl⟩, hgxK⟩
-  simpa using div_mem_div (hKE hgxK) (hKE hxK)
-
+    E / E ∈ 𝓝 (1 : G) := steinhaus_mul_aux μ E hE <| hE.exists_lt_isCompact hEpos
 
 section SecondCountable_SigmaFinite
 /-! In this section, we investigate uniqueness of left-invariant measures without assuming that

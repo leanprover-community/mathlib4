@@ -196,7 +196,7 @@ def restrictScalars₁₂ (B : M →ₗ[R] N →ₗ[S] Pₗ) : M →ₗ[R'] N �
 
 theorem restrictScalars₁₂_injective : Function.Injective
     (LinearMap.restrictScalars₁₂ R' S' : (M →ₗ[R] N →ₗ[S] Pₗ) → (M →ₗ[R'] N →ₗ[S'] Pₗ)) :=
-  fun _ _ h ↦ ext₂ (congr_fun₂ h : _)
+  fun _ _ h ↦ ext₂ (congr_fun₂ h :)
 
 @[simp]
 theorem restrictScalars₁₂_inj {B B' : M →ₗ[R] N →ₗ[S] Pₗ} :
@@ -428,6 +428,11 @@ noncomputable def restrictScalarsRange :
 @[simp] lemma restrictScalarsRange_apply (m : M') (n : N') :
     k (restrictScalarsRange i j k hk B hB m n) = B (i m) (j n) := by
   simp [restrictScalarsRange]
+
+@[simp]
+lemma eq_restrictScalarsRange_iff (m : M') (n : N') (p : P') :
+    p = restrictScalarsRange i j k hk B hB m n ↔ k p = B (i m) (j n) := by
+  rw [← restrictScalarsRange_apply i j k hk B hB m n, hk.eq_iff]
 
 @[simp]
 lemma restrictScalarsRange_apply_eq_zero_iff (m : M') (n : N') :
