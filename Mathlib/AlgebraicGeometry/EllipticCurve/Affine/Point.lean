@@ -9,51 +9,48 @@ import Mathlib.RingTheory.ClassGroup
 import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
-# Nonsingular rational points on Weierstrass curves in affine coordinates
-
-This file defines the type of points on a Weierstrass curve as an inductive, consisting of the point
-at infinity and affine points satisfying a Weierstrass equation with a nonsingular condition. This
-file also proves that the nonsingular rational points on a Weierstrass curve form an abelian group
-under the geometric group law defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean`.
-
-## Mathematical background
+# Nonsingular points and the group law in affine coordinates
 
 Let `W` be a Weierstrass curve over a field `F` given by a Weierstrass equation `W(X, Y) = 0` in
-affine coordinates. As in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean`, the set of
-nonsingular rational points `W⟮F⟯` of `W` consist of the unique point at infinity `𝓞` and
-nonsingular affine points `(x, y)`. With this description, there is an addition-preserving injection
-between `W⟮F⟯` and the ideal class group of the coordinate ring `F[W] := F[X, Y] / ⟨W(X, Y)⟩` of
-`W`. This is defined by mapping the point at infinity `𝓞` to the trivial ideal class and an affine
-point `(x, y)` to the ideal class of the invertible fractional ideal `⟨X - x, Y - y⟩`. Proving that
-this is well-defined and preserves addition reduce to checking several equalities of integral
-ideals, which is done in `WeierstrassCurve.Affine.CoordinateRing.XYIdeal_neg_mul` and in
-`WeierstrassCurve.Affine.CoordinateRing.XYIdeal_mul_XYIdeal` via explicit ideal computations. Now
-`F[W]` is a free rank two `F[X]`-algebra with basis `{1, Y}`, so every element of `F[W]` is of the
-form `p + qY` for some `p, q` in `F[X]`, and there is an algebra norm `N : F[W] → F[X]`. Injectivity
-can then be shown by computing the degree of such a norm `N(p + qY)` in two different ways, which is
-done in `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis` and in the auxiliary lemmas
-in the proof of `WeierstrassCurve.Affine.Point.instAddCommGroup`.
+affine coordinates. The type of nonsingular points `W⟮F⟯` of `W` is an inductive, consisting of the
+unique point at infinity `𝓞` and nonsingular affine points `(x, y)`. Then `W⟮F⟯` can be endowed with
+a group law, with `𝓞` as the identity nonsingular point, which is uniquely determined by the
+formulae in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean`.
+
+With this description, there is an addition-preserving injection between `W⟮F⟯` and the ideal class
+group of the *affine coordinate ring* `F[W] := F[X, Y] / ⟨W(X, Y)⟩` of `W`. This is given by mapping
+`𝓞` to the trivial ideal class and a nonsingular affine point `(x, y)` to the ideal class of the
+invertible ideal `⟨X - x, Y - y⟩`. Proving that this is well-defined and preserves addition reduces
+to equalities of integral ideals checked in `WeierstrassCurve.Affine.CoordinateRing.XYIdeal_neg_mul`
+and in `WeierstrassCurve.Affine.CoordinateRing.XYIdeal_mul_XYIdeal` via explicit ideal computations.
+Now `F[W]` is a free rank two `F[X]`-algebra with basis `{1, Y}`, so every element of `F[W]` is of
+the form `p + qY` for some `p, q` in `F[X]`, and there is an algebra norm `N : F[W] → F[X]`.
+Injectivity can then be shown by computing the degree of such a norm `N(p + qY)` in two different
+ways, which is done in `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis` and in the
+auxiliary lemmas in the proof of `WeierstrassCurve.Affine.Point.instAddCommGroup`.
+
+This file defines the group law on nonsingular points in affine coordinates.
 
 ## Main definitions
 
- * `WeierstrassCurve.Affine.Point`: a nonsingular rational point on an affine Weierstrass curve.
- * `WeierstrassCurve.Affine.Point.neg`: the negation operation on an affine Weierstrass curve.
- * `WeierstrassCurve.Affine.Point.add`: the addition operation on an affine Weierstrass curve.
- * `WeierstrassCurve.Affine.CoordinateRing`: the coordinate ring `F[W]` of a Weierstrass curve `W`.
+ * `WeierstrassCurve.Affine.CoordinateRing`: the affine coordinate ring `F[W]`.
  * `WeierstrassCurve.Affine.CoordinateRing.basis`: the power basis of `F[W]` over `F[X]`.
+ * `WeierstrassCurve.Affine.Point`: a nonsingular point.
+ * `WeierstrassCurve.Affine.Point.neg`: the negation of a nonsingular point.
+ * `WeierstrassCurve.Affine.Point.add`: the addition of a nonsingular point.
 
 ## Main statements
 
- * `WeierstrassCurve.Affine.Point.instAddCommGroup`: the type of nonsingular rational points on an
-    affine Weierstrass curve forms an abelian group under addition.
- * `WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing`: the coordinate ring of an
-    affine Weierstrass curve is an integral domain.
+ * `WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing`: the affine coordinate ring
+    of a Weierstrass curve is an integral domain.
  * `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis`: the degree of the norm of an
-    element in the coordinate ring of an affine Weierstrass curve in terms of the power basis.
+    element in the affine coordinate ring in terms of its power basis.
+ * `WeierstrassCurve.Affine.Point.instAddCommGroup`: the type of nonsingular points in affine
+    coordinates forms an abelian group under addition.
 
 ## Notations
 
- * `W⟮K⟯`: the group of nonsingular rational points on `W` base changed to `K`.
+ * `W⟮K⟯`: the group of nonsingular points on `W` base changed to `K`.
 
 ## References
 
@@ -62,7 +59,7 @@ in the proof of `WeierstrassCurve.Affine.Point.instAddCommGroup`.
 
 ## Tags
 
-elliptic curve, group law, class group
+elliptic curve, affine, point, group law, class group
 -/
 
 open FractionalIdeal (coeIdeal_mul)
@@ -86,7 +83,7 @@ variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v} {L : Type w} [C
   [CommRing S] [CommRing A] [CommRing B] [Field F] [Field K] [Field L] {W' : Affine R}
   {W : Affine F}
 
-/-! ### The coordinate ring -/
+/-! ### The affine coordinate ring -/
 
 -- Porting note: in Lean 3, this is a `def` under a `derive comm_ring` tag.
 -- This generates a reducible instance of `comm_ring` for `coordinate_ring`. In certain
@@ -95,7 +92,7 @@ variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v} {L : Type w} [C
 -- `local attribute [irreducible] coordinate_ring.comm_ring` to block this type-level unification.
 -- In Lean 4, this is no longer an issue and is now an `abbrev`. See Zulip thread:
 -- https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/.E2.9C.94.20class_group.2Emk
-/-- The coordinate ring `R[W] := R[X, Y] / ⟨W(X, Y)⟩` of `W`. -/
+/-- The affine coordinate ring `R[W] := R[X, Y] / ⟨W(X, Y)⟩` of `W`. -/
 abbrev CoordinateRing : Type r :=
   AdjoinRoot W'.polynomial
 
@@ -107,7 +104,7 @@ namespace CoordinateRing
 
 section Algebra
 
-/-! ### The coordinate ring as an `R[X]`-algebra -/
+/-! ### The affine coordinate ring as an `R[X]`-algebra -/
 
 noncomputable instance : Algebra R W'.CoordinateRing :=
   Quotient.algebra R
@@ -128,7 +125,7 @@ noncomputable abbrev mk : R[X][Y] →+* W'.CoordinateRing :=
 
 open scoped Classical in
 variable (W') in
-/-- The basis `{1, Y}` for the coordinate ring `R[W]` over the polynomial ring `R[X]`. -/
+/-- The basis `{1, Y}` for the affine coordinate ring `R[W]` over the polynomial ring `R[X]`. -/
 protected noncomputable def basis : Basis (Fin 2) R[X] W'.CoordinateRing :=
   (subsingleton_or_nontrivial R).by_cases (fun _ => default) fun _ =>
     (AdjoinRoot.powerBasis' monic_polynomial).basis.reindex <| finCongr natDegree_polynomial
@@ -216,7 +213,7 @@ end Algebra
 
 section Ideal
 
-/-! ### Ideals in the coordinate ring -/
+/-! ### Ideals in the affine coordinate ring -/
 
 variable (W')
 /-- The class of the element `X - x` in `R[W]` for some `x` in `R`. -/
@@ -407,7 +404,7 @@ end Ideal
 
 section Norm
 
-/-! ### Norms on the coordinate ring -/
+/-! ### Norms on the affine coordinate ring -/
 
 lemma norm_smul_basis (p q : R[X]) : Algebra.norm R[X] (p • (1 : W'.CoordinateRing) + q • mk W' Y) =
     p ^ 2 - p * q * (C W'.a₁ * X + C W'.a₃) -
@@ -472,17 +469,17 @@ end Norm
 
 end CoordinateRing
 
-/-! ### Nonsingular rational points -/
+/-! ### Nonsingular points -/
 
 variable (W') in
-/-- A nonsingular rational point on a Weierstrass curve `W` in affine coordinates. This is either
-the unique point at infinity `WeierstrassCurve.Affine.Point.zero` or the nonsingular affine points
+/-- A nonsingular point on a Weierstrass curve `W` in affine coordinates. This is either the unique
+point at infinity `WeierstrassCurve.Affine.Point.zero` or the nonsingular affine points
 `WeierstrassCurve.Affine.Point.some` `(x, y)` satisfying the Weierstrass equation of `W`. -/
 inductive Point
   | zero
   | some {x y : R} (h : W'.Nonsingular x y)
 
-/-- For an algebraic extension `S` of `R`, the type of nonsingular `S`-rational points on `W`. -/
+/-- For an algebraic extension `S` of `R`, the type of nonsingular `S`-points on `W`. -/
 scoped notation3:max W' "⟮" S "⟯" => Affine.Point <| baseChange W' S
 
 namespace Point
@@ -503,9 +500,9 @@ lemma zero_def : 0 = (.zero : W'.Point) :=
 lemma some_ne_zero {x y : R} (h : W'.Nonsingular x y) : Point.some h ≠ 0 := by
   rintro (_ | _)
 
-/-- The negation of a nonsingular rational point on `W`.
+/-- The negation of a nonsingular point on `W`.
 
-Given a nonsingular rational point `P` on `W`, use `-P` instead of `neg P`. -/
+Given a nonsingular point `P` on `W`, use `-P` instead of `neg P`. -/
 def neg : W'.Point → W'.Point
   | 0 => 0
   | some h => some <| (nonsingular_neg ..).mpr h
@@ -531,9 +528,9 @@ instance : InvolutiveNeg W'.Point where
     · simp only [neg_some, negY_negY]
 
 open scoped Classical in
-/-- The addition of two nonsingular rational points on `W`.
+/-- The addition of two nonsingular points on `W`.
 
-Given two nonsingular rational points `P` and `Q` on `W`, use `P + Q` instead of `add P Q`. -/
+Given two nonsingular points `P` and `Q` on `W`, use `P + Q` instead of `add P Q`. -/
 noncomputable def add : W.Point → W.Point → W.Point
   | 0, P => P
   | P, 0 => P

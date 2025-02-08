@@ -8,31 +8,17 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Basic
 import Mathlib.Tactic.LinearCombination'
 
 /-!
-# Formulae for group operations of Weierstrass curves in projective coordinates
+# Negation and addition formulae for nonsingular points in projective coordinates
 
-This file defines the type of points on a Weierstrass curve as a tuple, consisting of an equivalence
-class of triples up to scaling by a unit, satisfying a Weierstrass equation with a nonsingular
-condition. This file also defines the negation and addition operations of the group law for this
-type, and proves that they respect the Weierstrass equation and the nonsingular condition. The fact
-that they form an abelian group is proven in `Mathlib/AlgebraicGeometry/EllipticCurve/Group.lean`.
+Let `W` be a Weierstrass curve over a field `F`. The nonsingular projective points on `W` can be
+given negation and addition operations defined by an analogue of the secant-and-tangent process in
+`Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean`, but the polynomials involved are
+homogeneous, and any instances of division become multiplication in the `Z`-coordinate. Most
+computational proofs are immediate from their analogous proofs for affine coordinates.
 
-## Mathematical background
-
-Let `W` be a Weierstrass curve over a field `F`. A point on the projective plane is an equivalence
-class of triples `[x:y:z]` with coordinates in `F` such that `(x, y, z) ∼ (x', y', z')` precisely
-if there is some unit `u` of `F` such that `(x, y, z) = (ux', uy', uz')`, with an extra condition
-that `(x, y, z) ≠ (0, 0, 0)`. As described in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean`,
-a rational point is a point on the projective plane satisfying a homogeneous Weierstrass equation,
-and being nonsingular means the partial derivatives `W_X(X, Y, Z)`, `W_Y(X, Y, Z)`, and
-`W_Z(X, Y, Z)` do not vanish simultaneously. Note that the vanishing of the Weierstrass equation and
-its partial derivatives are independent of the representative for `[x:y:z]`, and the nonsingularity
-condition already implies `(x, y, z) ≠ (0, 0, 0)`, so a nonsingular rational point on `W` can simply
-be given by a tuple consisting of `[x:y:z]` and the nonsingular condition on any representative.
-
-As in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean`, the set of nonsingular rational points
-forms an abelian group under the same secant-and-tangent process, but the polynomials involved are
-homogeneous, and any instances of division become multiplication in the `Z`-coordinate. Note that
-most computational proofs follow from their analogous proofs for affine coordinates.
+This file defines polynomials associated to negation, doubling, and addition of nonsingular points
+in projective coordinates. The group operations and the group law on actual nonsingular points will
+be defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Point.lean`.
 
 ## Main definitions
 
@@ -46,13 +32,18 @@ most computational proofs follow from their analogous proofs for affine coordina
  * `WeierstrassCurve.Projective.negAddY`: the `Y`-coordinate of `-(P + Q)`.
  * `WeierstrassCurve.Projective.addY`: the `Y`-coordinate of `P + Q`.
 
+## Implementation notes
+
+Whenever possible, all changes to documentation and naming of definitions and theorems should be
+mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Formula.lean`.
+
 ## References
 
 [J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
 
 ## Tags
 
-elliptic curve, rational point, projective coordinates
+elliptic curve, projective, negation, doubling, addition, group law
 -/
 
 local notation3 "x" => (0 : Fin 3)

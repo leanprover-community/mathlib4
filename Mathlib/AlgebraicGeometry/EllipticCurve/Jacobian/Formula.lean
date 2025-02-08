@@ -8,33 +8,17 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Basic
 import Mathlib.Tactic.LinearCombination'
 
 /-!
-# Formulae for group operations of Weierstrass curves in Jacobian coordinates
+# Negation and addition formulae for nonsingular points in Jacobian coordinates
 
-This file defines the type of points on a Weierstrass curve as a tuple, consisting of an equivalence
-class of triples up to scaling by weights, satisfying a Weierstrass equation with a nonsingular
-condition. This file also defines the negation and addition operations of the group law for this
-type, and proves that they respect the Weierstrass equation and the nonsingular condition. The fact
-that they form an abelian group is proven in `Mathlib/AlgebraicGeometry/EllipticCurve/Group.lean`.
-
-## Mathematical background
-
-Let `W` be a Weierstrass curve over a field `F`. A point on the weighted projective plane with
-weights `(2, 3, 1)` is an equivalence class of triples `[x:y:z]` with coordinates in `F` such that
-`(x, y, z) ∼ (x', y', z')` precisely if there is some unit `u` of `F` such that
-`(x, y, z) = (u²x', u³y', uz')`, with an extra condition that `(x, y, z) ≠ (0, 0, 0)`. A rational
-point is a point on the `(2, 3, 1)`-projective plane satisfying a `(2, 3, 1)`-homogeneous
-Weierstrass equation `Y² + a₁XYZ + a₃YZ³ = X³ + a₂X²Z² + a₄XZ⁴ + a₆Z⁶`, and being nonsingular means
-the partial derivatives `W_X(X, Y, Z)`, `W_Y(X, Y, Z)`, and `W_Z(X, Y, Z)` do not vanish
-simultaneously. Note that the vanishing of the Weierstrass equation and its partial derivatives are
-independent of the representative for `[x:y:z]`, and the nonsingularity condition already implies
-`(x, y, z) ≠ (0, 0, 0)`, so a nonsingular rational point on `W` can simply be given by a tuple
-consisting of `[x:y:z]` and the nonsingular condition on any representative. In cryptography, as
-well as in this file, this is often called the Jacobian coordinates of `W`.
-
-As in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean`, the set of nonsingular rational points
-forms an abelian group under the same secant-and-tangent process, but the polynomials involved are
+Let `W` be a Weierstrass curve over a field `F`. The nonsingular Jacobian points on `W` can be given
+negation and addition operations defined by an analogue of the secant-and-tangent process in
+`Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean`, but the polynomials involved are
 `(2, 3, 1)`-homogeneous, and any instances of division become multiplication in the `Z`-coordinate.
-Note that most computational proofs follow from their analogous proofs for affine coordinates.
+Most computational proofs are immediate from their analogous proofs for affine coordinates.
+
+This file defines polynomials associated to negation, doubling, and addition of nonsingular points
+in Jacobian coordinates. The group operations and the group law on actual nonsingular points will be
+defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Point.lean`.
 
 ## Main definitions
 
@@ -48,13 +32,18 @@ Note that most computational proofs follow from their analogous proofs for affin
  * `WeierstrassCurve.Jacobian.negAddY`: the `Y`-coordinate of `-(P + Q)`.
  * `WeierstrassCurve.Jacobian.addY`: the `Y`-coordinate of `P + Q`.
 
+## Implementation notes
+
+Whenever possible, all changes to documentation and naming of definitions and theorems should be
+mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Formula.lean`.
+
 ## References
 
 [J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
 
 ## Tags
 
-elliptic curve, rational point, Jacobian coordinates
+elliptic curve, Jacobian, negation, doubling, addition, group law
 -/
 
 local notation3 "x" => (0 : Fin 3)

@@ -7,52 +7,42 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
 import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Formula
 
 /-!
-# Nonsingular rational points on Weierstrass curves in Jacobian coordinates
+# Nonsingular points and the group law in Jacobian coordinates
 
-This file defines the type of points on a Weierstrass curve as a tuple, consisting of an equivalence
-class of triples up to scaling by weights, satisfying a Weierstrass equation with a nonsingular
-condition. This file also defines the negation and addition operations of the group law for this
-type, and proves that they respect the Weierstrass equation and the nonsingular condition. The fact
-that they form an abelian group is proven in `Mathlib/AlgebraicGeometry/EllipticCurve/Group.lean`.
+Let `W` be a Weierstrass curve over a field `F`. The nonsingular Jacobian points of `W` can be
+endowed with an group law, which is uniquely determined by the formulae in
+`Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Formula.lean` and follows from an equivalence with
+the nonsingular points defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Point.lean`.
 
-## Mathematical background
-
-Let `W` be a Weierstrass curve over a field `F`. A point on the weighted projective plane with
-weights `(2, 3, 1)` is an equivalence class of triples `[x:y:z]` with coordinates in `F` such that
-`(x, y, z) ∼ (x', y', z')` precisely if there is some unit `u` of `F` such that
-`(x, y, z) = (u²x', u³y', uz')`, with an extra condition that `(x, y, z) ≠ (0, 0, 0)`. A rational
-point is a point on the `(2, 3, 1)`-projective plane satisfying a `(2, 3, 1)`-homogeneous
-Weierstrass equation `Y² + a₁XYZ + a₃YZ³ = X³ + a₂X²Z² + a₄XZ⁴ + a₆Z⁶`, and being nonsingular means
-the partial derivatives `W_X(X, Y, Z)`, `W_Y(X, Y, Z)`, and `W_Z(X, Y, Z)` do not vanish
-simultaneously. Note that the vanishing of the Weierstrass equation and its partial derivatives are
-independent of the representative for `[x:y:z]`, and the nonsingularity condition already implies
-`(x, y, z) ≠ (0, 0, 0)`, so a nonsingular rational point on `W` can simply be given by a tuple
-consisting of `[x:y:z]` and the nonsingular condition on any representative. In cryptography, as
-well as in this file, this is often called the Jacobian coordinates of `W`.
-
-As in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean`, the set of nonsingular rational points
-forms an abelian group under the same secant-and-tangent process, but the polynomials involved are
-`(2, 3, 1)`-homogeneous, and any instances of division become multiplication in the `Z`-coordinate.
-Note that most computational proofs follow from their analogous proofs for affine coordinates.
+This file defines the group law on nonsingular points in Jacobian coordinates.
 
 ## Main definitions
 
- * `WeierstrassCurve.Jacobian.neg`: the negation operation on a point representative.
- * `WeierstrassCurve.Jacobian.negMap`: the negation operation on a point class.
- * `WeierstrassCurve.Jacobian.add`: the addition operation on a point representative.
- * `WeierstrassCurve.Jacobian.addMap`: the addition operation on a point class.
- * `WeierstrassCurve.Jacobian.Point`: a nonsingular rational point.
- * `WeierstrassCurve.Jacobian.Point.neg`: the negation operation on a nonsingular rational point.
- * `WeierstrassCurve.Jacobian.Point.add`: the addition operation on a nonsingular rational point.
- * `WeierstrassCurve.Jacobian.Point.toAffineAddEquiv`: the equivalence between the nonsingular
-    rational points in Jacobian coordinates with those in affine coordinates.
+ * `WeierstrassCurve.Jacobian.neg`: the negation of a point representative.
+ * `WeierstrassCurve.Jacobian.negMap`: the negation of a point class.
+ * `WeierstrassCurve.Jacobian.add`: the addition of two point representatives.
+ * `WeierstrassCurve.Jacobian.addMap`: the addition of two point classes.
+ * `WeierstrassCurve.Jacobian.Point`: a nonsingular point.
+ * `WeierstrassCurve.Jacobian.Point.neg`: the negation of a nonsingular point.
+ * `WeierstrassCurve.Jacobian.Point.add`: the addition of two nonsingular points.
+ * `WeierstrassCurve.Jacobian.Point.toAffineAddEquiv`: the equivalence between the type of
+    nonsingular Jacobian points with the type of nonsingular points `W⟮F⟯`.
 
 ## Main statements
 
  * `WeierstrassCurve.Jacobian.nonsingular_neg`: negation preserves the nonsingular condition.
  * `WeierstrassCurve.Jacobian.nonsingular_add`: addition preserves the nonsingular condition.
- * `WeierstrassCurve.Jacobian.Point.instAddCommGroup`: the type of nonsingular rational points on a
-    Jacobian Weierstrass curve forms an abelian group under addition.
+ * `WeierstrassCurve.Jacobian.Point.instAddCommGroup`: the type of nonsingular points on a Jacobian
+    Weierstrass curve forms an abelian group under addition.
+
+## Implementation notes
+
+Note that `W(X, Y, Z)` and its partial derivatives are independent of the point representative, and
+the nonsingularity condition already implies `(x, y, z) ≠ (0, 0, 0)`, so a nonsingular point on `W`
+can be given by `[x : y : z]` and the nonsingular condition on any representative.
+
+Whenever possible, all changes to documentation and naming of definitions and theorems should be
+mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Point.lean`.
 
 ## References
 
@@ -60,7 +50,7 @@ Note that most computational proofs follow from their analogous proofs for affin
 
 ## Tags
 
-elliptic curve, rational point, Jacobian coordinates
+elliptic curve, Jacobian, point, group law
 -/
 
 local notation3 "x" => (0 : Fin 3)
@@ -363,15 +353,15 @@ lemma nonsingularLift_addMap {P Q : PointClass F} (hP : W.NonsingularLift P)
 
 end Addition
 
-/-! ### Nonsingular rational points -/
+/-! ### Nonsingular points -/
 
 variable (W') in
-/-- A nonsingular rational point on `W'`. -/
+/-- A nonsingular point on a Weierstrass curve `W'`. -/
 @[ext]
 structure Point where
-  /-- The point class underlying a nonsingular rational point on `W'`. -/
+  /-- The point class underlying a nonsingular point on `W'`. -/
   {point : PointClass R}
-  /-- The nonsingular condition underlying a nonsingular rational point on `W'`. -/
+  /-- The nonsingular condition underlying a nonsingular point on `W'`. -/
   (nonsingular : W'.NonsingularLift point)
 
 namespace Point
@@ -391,8 +381,8 @@ lemma zero_point [Nontrivial R] : (0 : W'.Point).point = ⟦![1, 1, 0]⟧ :=
 lemma mk_ne_zero [Nontrivial R] {X Y : R} (h : W'.NonsingularLift ⟦![X, Y, 1]⟧) : mk h ≠ 0 :=
   (not_equiv_of_Z_eq_zero_right one_ne_zero rfl).comp <| Quotient.eq.mp.comp Point.ext_iff.mp
 
-/-- The map from a nonsingular rational point on a Weierstrass curve `W'` in affine coordinates
-to the corresponding nonsingular rational point on `W'` in Jacobian coordinates. -/
+/-- The map from a nonsingular point on a Weierstrass curve `W'` in affine coordinates to the
+corresponding nonsingular point on `W'` in Jacobian coordinates. -/
 def fromAffine [Nontrivial R] : W'.toAffine.Point → W'.Point
   | 0 => 0
   | .some h => ⟨(nonsingularLift_some ..).mpr h⟩
@@ -410,8 +400,9 @@ lemma fromAffine_some_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingu
 
 @[deprecated (since := "2025-02-01")] alias fromAffine_ne_zero := fromAffine_some_ne_zero
 
-/-- The negation of a nonsingular rational point on `W`.
-Given a nonsingular rational point `P` on `W`, use `-P` instead of `neg P`. -/
+/-- The negation of a nonsingular point on a Weierstrass curve `W`.
+
+Given a nonsingular point `P` on `W`, use `-P` instead of `neg P`. -/
 def neg (P : W.Point) : W.Point :=
   ⟨nonsingularLift_negMap P.nonsingular⟩
 
@@ -424,8 +415,9 @@ lemma neg_def (P : W.Point) : -P = P.neg :=
 lemma neg_point (P : W.Point) : (-P).point = W.negMap P.point :=
   rfl
 
-/-- The addition of two nonsingular rational points on `W`.
-Given two nonsingular rational points `P` and `Q` on `W`, use `P + Q` instead of `add P Q`. -/
+/-- The addition of two nonsingular points on a Weierstrass curve `W`.
+
+Given two nonsingular points `P` and `Q` on `W`, use `P + Q` instead of `add P Q`. -/
 noncomputable def add (P Q : W.Point) : W.Point :=
   ⟨nonsingularLift_addMap P.nonsingular Q.nonsingular⟩
 
@@ -448,8 +440,8 @@ namespace Point
 
 open scoped Classical in
 variable (W) in
-/-- The map from a point representative that is nonsingular on a Weierstrass curve `W` in Jacobian
-coordinates to the corresponding nonsingular rational point on `W` in affine coordinates. -/
+/-- The map from a nonsingular point representative on a Weierstrass curve `W` in Jacobian
+coordinates to the corresponding nonsingular point on `W` in affine coordinates. -/
 noncomputable def toAffine (P : Fin 3 → F) : W.toAffine.Point :=
   if hP : W.Nonsingular P ∧ P z ≠ 0 then .some <| (nonsingular_of_Z_ne_zero hP.2).mp hP.1 else 0
 
@@ -533,8 +525,8 @@ lemma toAffine_add {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingula
             toAffine_smul _ <| isUnit_dblZ_of_Y_ne' hP.left hQ.left hPz hx <| not_and.mp hxy hx]
         · rwa [add_of_X_ne hP.left hQ.left hPz hQz hx, toAffine_smul _ <| isUnit_addZ_of_X_ne hx]
 
-/-- The map from a nonsingular rational point on a Weierstrass curve `W` in Jacobian coordinates
-to the corresponding nonsingular rational point on `W` in affine coordinates. -/
+/-- The map from a nonsingular point on a Weierstrass curve `W` in Jacobian coordinates to the
+corresponding nonsingular point on `W` in affine coordinates. -/
 noncomputable def toAffineLift (P : W.Point) : W.toAffine.Point :=
   P.point.lift _ fun _ _ => toAffine_of_equiv
 
@@ -567,8 +559,8 @@ lemma toAffineLift_add (P Q : W.Point) :
   exact toAffine_add hP hQ
 
 variable (W) in
-/-- The equivalence between the nonsingular rational points on a Weierstrass curve `W` in Jacobian
-coordinates with the nonsingular rational points on `W` in affine coordinates. -/
+/-- The equivalence between the nonsingular points on a Weierstrass curve `W` in Jacobian
+coordinates with the nonsingular points on `W` in affine coordinates. -/
 @[simps]
 noncomputable def toAffineAddEquiv : W.Point ≃+ W.toAffine.Point where
   toFun := toAffineLift

@@ -8,51 +8,22 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
 import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
 
 /-!
-# Equations and nonsingularity of Weierstrass curves in affine coordinates
+# Weierstrass equations and the nonsingular condition in affine coordinates
 
-This file defines the type of points on a Weierstrass curve as an inductive, consisting of the point
-at infinity and affine points satisfying a Weierstrass equation with a nonsingular condition. This
-file also defines the negation and addition operations of the group law for this type, and proves
-that they respect the Weierstrass equation and the nonsingular condition. The fact that they form an
-abelian group is proven in `Mathlib/AlgebraicGeometry/EllipticCurve/Group.lean`.
+Let `W` be a Weierstrass curve over a commutative ring `R` with coefficients `aᵢ`. An *affine point*
+on `W` is a tuple `(x, y)` of elements in `R` satisfying the *Weierstrass equation* `W(x, y) = 0` in
+*affine coordinates*, where `W(X, Y) := Y² + a₁XY + a₃Y - (X³ + a₂X² + a₄X + a₆)`. It is
+*nonsingular* if its partial derivatives `W_X(x, y)` and `W_Y(x, y)` do not vanish simultaneously.
 
-## Mathematical background
-
-Let `W` be a Weierstrass curve over a field `F`. A rational point on `W` is simply a point
-`[X:Y:Z]` defined over `F` in the projective plane satisfying the homogeneous cubic equation
-`Y²Z + a₁XYZ + a₃YZ² = X³ + a₂X²Z + a₄XZ² + a₆Z³`. Any such point either lies in the affine chart
-`Z ≠ 0` and satisfies the Weierstrass equation obtained by replacing `X / Z` with `X` and `Y / Z`
-with `Y`, or is the unique point at infinity `𝓞 := [0:1:0]` when `Z = 0`. With this new description,
-a nonsingular rational point on `W` is either `𝓞` or an affine point `(x, y)` where the partial
-derivatives `W_X(X, Y)` and `W_Y(X, Y)` do not vanish simultaneously. For a field extension `K` of
-`F`, a `K`-rational point is simply a rational point on `W` base changed to `K`.
-
-The set of nonsingular rational points forms an abelian group under a secant-and-tangent process.
- * The identity rational point is `0`.
- * Given a nonsingular rational point `P`, its negation `-P` is defined to be the unique third
-    point of intersection between `W` and the line through `0` and `P`.
-    Explicitly, if `P` is `(x, y)`, then `-P` is `(x, -y - a₁x - a₃)`.
- * Given two points `P` and `Q`, their addition `P + Q` is defined to be the negation of the unique
-    third point of intersection between `W` and the line `L` through `P` and `Q`.
-    Explicitly, let `P` be `(x₁, y₁)` and let `Q` be `(x₂, y₂)`.
-      * If `x₁ = x₂` and `y₁ = -y₂ - a₁x₂ - a₃`, then `L` is vertical and `P + Q` is `𝓞`.
-      * If `x₁ = x₂` and `y₁ ≠ -y₂ - a₁x₂ - a₃`, then `L` is the tangent of `W` at `P = Q`,
-        and has slope `ℓ := (3x₁² + 2a₂x₁ + a₄ - a₁y₁) / (2y₁ + a₁x₁ + a₃)`.
-      * Otherwise `x₁ ≠ x₂`, then `L` is the secant of `W` through `P` and `Q`, and has slope
-        `ℓ := (y₁ - y₂) / (x₁ - x₂)`.
-
-    In the latter two cases, the `X`-coordinate of `P + Q` is then the unique third solution of the
-    equation obtained by substituting the line `Y = ℓ(X - x₁) + y₁` into the Weierstrass equation,
-    and can be written down explicitly as `x := ℓ² + a₁ℓ - a₂ - x₁ - x₂` by inspecting the `X²`
-    terms. The `Y`-coordinate of `P + Q`, after applying the final negation that maps `Y` to
-    `-Y - a₁X - a₃`, is precisely `y := -(ℓ(x - x₁) + y₁) - a₁x - a₃`.
-
-The group law on this set is then uniquely determined by these constructions.
+This file defines polynomials associated to Weierstrass equations and the nonsingular condition in
+affine coordinates. The group law on the actual type of nonsingular points will be defined in
+`Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Point.lean`, based on the formulae for group
+operations in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean`.
 
 ## Main definitions
 
- * `WeierstrassCurve.Affine.Equation`: the Weierstrass equation of an affine Weierstrass curve.
- * `WeierstrassCurve.Affine.Nonsingular`: the nonsingular condition on an affine Weierstrass curve.
+ * `WeierstrassCurve.Affine.Equation`: the Weierstrass equation in affine coordinates.
+ * `WeierstrassCurve.Affine.Nonsingular`: the nonsingular condition in affine coordinates.
 
 ## Main statements
 
@@ -65,7 +36,7 @@ The group law on this set is then uniquely determined by these constructions.
 
 ## Tags
 
-elliptic curve, rational point, affine coordinates
+elliptic curve, affine, Weierstrass equation, nonsingular
 -/
 
 open Polynomial
@@ -107,7 +78,7 @@ section Equation
 /-! ### Weierstrass equations -/
 
 variable (W) in
-/-- The polynomial `W(X, Y) := Y² + a₁XY + a₃Y = X³ + a₂X² + a₄X + a₆` associated to a Weierstrass
+/-- The polynomial `W(X, Y) := Y² + a₁XY + a₃Y - (X³ + a₂X² + a₄X + a₆)` associated to a Weierstrass
 curve `W` over `R`. For ease of polynomial manipulation, this is represented as a term of type
 `R[X][X]`, where the inner variable represents `X` and the outer variable represents `Y`. For
 clarity, the alternative notations `Y` and `R[X][Y]` are provided in the `Polynomial.Bivariate`
