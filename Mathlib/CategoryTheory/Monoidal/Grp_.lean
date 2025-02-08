@@ -181,6 +181,16 @@ theorem forget₂Mon_obj_mul (A : Grp_ C) : ((forget₂Mon_ C).obj A).mul = A.mu
 theorem forget₂Mon_map_hom {A B : Grp_ C} (f : A ⟶ B) : ((forget₂Mon_ C).map f).hom = f.hom :=
   rfl
 
+/-- The forgetful functor from group objects to the ambient category. -/
+@[simps!]
+def forget : Grp_ C ⥤ C :=
+  forget₂Mon_ C ⋙ Mon_.forget C
+
+instance : (forget C).Faithful where
+
+@[simp]
+theorem forget₂Mon_comp_forget : forget₂Mon_ C ⋙ Mon_.forget C = forget C := rfl
+
 end
 
 section
@@ -226,7 +236,7 @@ noncomputable def mapGrp : Grp_ C ⥤ Grp_ D where
           Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp] }
   map f := F.mapMon.map f
 
-attribute [local instance] NatTrans.monoidal_of_preservesFiniteLimits in
+attribute [local instance] NatTrans.monoidal_of_preservesFiniteProducts in
 /-- `mapGrp` is functorial in the left-exact functor. -/
 @[simps]
 noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp_ C ⥤ Grp_ D where
