@@ -26,7 +26,7 @@ namespace TopCat
 space in `Type (max u v)`. -/
 def uliftFunctor : TopCat.{u} ⥤ TopCat.{max u v} where
   obj X := TopCat.of (ULift.{v} X)
-  map {X Y} f := TopCat.ofHom ⟨ULift.map f, by continuity⟩
+  map {X Y} f := ofHom ⟨ULift.map f, by continuity⟩
 
 /-- Given `X : TopCat.{u}`, this is the homeomorphism `X ≃ₜ uliftFunctor.{v}.obj X`. -/
 def uliftFunctorObjHomeo (X : TopCat.{u}) : X ≃ₜ uliftFunctor.{v}.obj X :=
@@ -52,7 +52,7 @@ def uliftFunctorCompForgetIso : uliftFunctor.{v, u} ⋙ forget TopCat.{max u v} 
 
 /-- The `ULift` functor on categories of topological spaces is fully faithful. -/
 def uliftFunctorFullyFaithful : uliftFunctor.{v, u}.FullyFaithful where
-  preimage f := TopCat.ofHom ⟨ULift.down ∘ f ∘ ULift.up, by continuity⟩
+  preimage f := ofHom ⟨ULift.down ∘ f ∘ ULift.up, by continuity⟩
 
 instance : uliftFunctor.{v, u}.Full :=
   uliftFunctorFullyFaithful.full
