@@ -5034,6 +5034,7 @@ import Mathlib.Tactic.DeclarationNames
 import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Tactic.DeprecateTo
 import Mathlib.Tactic.DeriveCountable
+import Mathlib.Tactic.DeriveEncodable
 import Mathlib.Tactic.DeriveFintype
 import Mathlib.Tactic.DeriveTraversable
 import Mathlib.Tactic.Eqns
@@ -5724,6 +5725,7 @@ import Mathlib.Util.GetAllModules
 import Mathlib.Util.LongNames
 import Mathlib.Util.MemoFix
 import Mathlib.Util.Notation3
+import Mathlib.Util.PPOptions
 import Mathlib.Util.ParseCommand
 import Mathlib.Util.Qq
 import Mathlib.Util.SleepHeartbeats
