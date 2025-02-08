@@ -717,7 +717,7 @@ theorem setOf_mem_list_eq_singleton_of_nodup {l : List α} (H : l.Nodup) {a : α
     { x | x ∈ l } = {a} ↔ l = [a] := by
   refine ⟨fun h ↦ (l.perm_singleton).mp ((setOf_nodup_perm l H).symm.trans ?_), by simp_all⟩
   rw [List.perm_singleton, Finset.toList_eq_singleton_iff, toFinite_toFinset]
-  simp only [h, toFinset_singleton]
+  simp_rw [h, toFinset_singleton]
 
 section
 
