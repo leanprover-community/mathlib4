@@ -32,20 +32,16 @@ Lift the polar
 def polar_sym2 (Q : QuadraticMap R M N) : Sym2 M → N :=
   Sym2.lift ⟨fun m₁ m₂ => (polar Q) m₁ m₂, fun i j => by simp only [polar_comm]⟩
 
-/--
-Lift the polar
--/
-def polar_lift {ι} (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) : Sym2 ι → N :=
-  Q.polar_sym2 ∘ Sym2.map (fun i => (g i (f i)))
-
 lemma recover {ι} (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
-    Q.polar_lift f g = Sym2.lift ⟨fun i j => (polar Q) (g i (f i)) (g j (f j)),
-      fun i j => by simp only [polar_comm]⟩ := (Equiv.symm_apply_eq Sym2.lift).mp rfl
+    Q.polar_sym2 ∘ Sym2.map (fun i => (g i (f i))) =
+      Sym2.lift ⟨fun i j => (polar Q) (g i (f i)) (g j (f j)),
+        fun i j => by simp only [polar_comm]⟩ := (Equiv.symm_apply_eq Sym2.lift).mp rfl
 
 open Finsupp in
 theorem map_finsuppSum' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
     Q (f.sum g) =
-      ∑ p ∈ f.support.sym2, (Q.polar_lift f g p) - ∑ i ∈ f.support, Q (g i (f i)) := by
+      ∑ p ∈ f.support.sym2, ((Q.polar_sym2 ∘ Sym2.map (fun i => (g i (f i)))) p)
+        - ∑ i ∈ f.support, Q (g i (f i)) := by
   rw [recover]
   exact Q.map_sum' _ (fun i => g i (f i))
 
@@ -144,14 +140,11 @@ theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι
   simp only [Finset.inter_self, mul_apply, Function.comp_apply]
   simp only [←smul_eq_mul, smul_assoc]
   simp_all only [sub_left_inj]
-  rw [polar_lift]
+
+  --rw [polar_lift]
   have e1 : (Q.polar_sym2 ∘ Sym2.map fun i ↦ l i • g i) = (Q.polar_sym2 ∘ Sym2.map (l * g)) := rfl
-  rw [e1]
-  simp_rw [test]
-  --conv_rhs => rw [sum]
   have e2 (p : Sym2 ι) :
       (scalar l * Q.polar_sym2 ∘ Sym2.map g) p = (scalar l) p • Q.polar_sym2 (Sym2.map g p) := rfl
-  simp_rw [e2]
   have e3 : (scalar l).support ⊆  l.support.sym2 := by
     intro p hp
     simp [scalar] at hp
@@ -165,6 +158,12 @@ theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι
       · exact mul_eq_zero_of_right _ (H hz)
     simp_all only [Sym2.lift_mk, not_true_eq_false]
   rw [Finsupp.sum_of_support_subset (scalar l) e3]
+  · have d1 (x : Sym2 ι) :
+    Q.polar_sym2 (Sym2.map (fun i ↦ l i • g i) x) = (scalar l) x • Q.polar_sym2 (Sym2.map g x) := by
+      rw [← e2]
+      rw [← test]
+      rfl
+    simp_rw [d1]
   intro p hp
   exact zero_smul R (Q.polar_sym2 (Sym2.map g p))
 
@@ -185,7 +184,8 @@ theorem sum_polar_sub_repr_sq (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : 
 open Finsupp in
 theorem map_finsuppSum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
     Q (f.sum g) =
-      f.sum (fun i r => Q (g i r)) + ∑ p ∈ f.support.sym2 with ¬ p.IsDiag, Q.polar_lift f g p := by
+      f.sum (fun i r => Q (g i r)) +
+      ∑ p ∈ f.support.sym2 with ¬ p.IsDiag, (Q.polar_sym2 ∘ Sym2.map (fun i => (g i (f i)))) p := by
   rw [recover]
   exact Q.map_sum _ _
 
@@ -204,7 +204,7 @@ theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι 
   have e1 : (l.sum fun i r ↦ r • r • Q (g i))  = ∑ x ∈ l.support, l x • l x • Q (g x) := rfl
   rw [e1]
   simp_rw [add_right_inj]
-  rw [polar_lift]
+  --rw [polar_lift]
   simp_rw [← test]
   simp_all only [Function.comp_apply]
   rfl
