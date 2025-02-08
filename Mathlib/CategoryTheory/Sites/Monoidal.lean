@@ -19,6 +19,12 @@ structure. This is not made an instance as in some cases
 it may conflict with monoidal structure deduced from
 chosen finite products.
 
+## TODO
+
+* show that the monoidal category structure on sheaves is closed,
+and that the internal hom can be defined in such a way that the
+underlying presheaf is the internal hom in the category of presheaves.
+
 -/
 
 universe v v' u u'
