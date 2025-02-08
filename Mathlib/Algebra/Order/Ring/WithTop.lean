@@ -9,8 +9,8 @@ import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Order.Monoid.WithTop
 
 /-! # Structures involving `*` and `0` on `WithTop` and `WithBot`
-The main results of this section are `WithTop.canonicallyOrderedCommSemiring` and
-`WithBot.orderedCommSemiring`.
+The main results of this section are `WithTop.instOrderedCommSemiring` and
+`WithBot.instOrderedCommSemiring`.
 -/
 
 variable {α : Type*}
@@ -24,15 +24,15 @@ variable [MulZeroClass α] {a b : WithTop α}
 
 instance instMulZeroClass : MulZeroClass (WithTop α) where
   zero := 0
-  mul a b := match a, b with
+  mul
     | (a : α), (b : α) => ↑(a * b)
     | (a : α), ⊤ => if a = 0 then 0 else ⊤
     | ⊤, (b : α) => if b = 0 then 0 else ⊤
     | ⊤, ⊤ => ⊤
-  mul_zero a := match a with
+  mul_zero
     | (a : α) => congr_arg some <| mul_zero _
     | ⊤ => if_pos rfl
-  zero_mul b := match b with
+  zero_mul
     | (b : α) => congr_arg some <| zero_mul _
     | ⊤ => if_pos rfl
 
@@ -93,10 +93,10 @@ end MulZeroClass
 /-- `Nontrivial α` is needed here as otherwise we have `1 * ⊤ = ⊤` but also `0 * ⊤ = 0`. -/
 instance instMulZeroOneClass [MulZeroOneClass α] [Nontrivial α] : MulZeroOneClass (WithTop α) where
   __ := instMulZeroClass
-  one_mul a := match a with
+  one_mul
     | ⊤ => mul_top (mt coe_eq_coe.1 one_ne_zero)
     | (a : α) => by rw [← coe_one, ← coe_mul, one_mul]
-  mul_one a := match a with
+  mul_one
     | ⊤ => top_mul (mt coe_eq_coe.1 one_ne_zero)
     | (a : α) => by rw [← coe_one, ← coe_mul, mul_one]
 
@@ -164,38 +164,63 @@ instance instCommMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Non
   __ := instMonoidWithZero
   mul_comm a b := by simp_rw [mul_def]; exact if_congr or_comm rfl (Option.map₂_comm mul_comm)
 
-variable [CanonicallyOrderedCommSemiring α]
+instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] [PartialOrder α]
+    [CanonicallyOrderedAdd α] : NonUnitalNonAssocSemiring (WithTop α) where
+  toAddCommMonoid := WithTop.addCommMonoid
+  __ := WithTop.instMulZeroClass
+  right_distrib a b c := by
+    induction' c with c
+    · by_cases ha : a = 0 <;> simp [ha]
+    · by_cases hc : c = 0; · simp [hc]
+      simp only [mul_coe_eq_bind hc]
+      cases a <;> cases b <;> try rfl
+      exact congr_arg some (add_mul _ _ _)
+  left_distrib c a b := by
+    induction' c with c
+    · by_cases ha : a = 0 <;> simp [ha]
+    · by_cases hc : c = 0; · simp [hc]
+      simp only [coe_mul_eq_bind hc]
+      cases a <;> cases b <;> try rfl
+      exact congr_arg some (mul_add _ _ _)
 
-private theorem distrib' (a b c : WithTop α) : (a + b) * c = a * c + b * c := by
-  induction' c with c
-  · by_cases ha : a = 0 <;> simp [ha]
-  · by_cases hc : c = 0
-    · simp [hc]
-    simp only [mul_coe_eq_bind hc]
-    cases a <;> cases b
-    repeat' first | rfl |exact congr_arg some (add_mul _ _ _)
+instance instNonAssocSemiring [NonAssocSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
+    [Nontrivial α] : NonAssocSemiring (WithTop α) where
+  toNonUnitalNonAssocSemiring := instNonUnitalNonAssocSemiring
+  __ := WithTop.instMulZeroOneClass
+  __ := WithTop.addCommMonoidWithOne
 
-/-- This instance requires `CanonicallyOrderedCommSemiring` as it is the smallest class
-that derives from both `NonAssocNonUnitalSemiring` and `CanonicallyOrderedAddCommMonoid`, both
-of which are required for distributivity. -/
-instance commSemiring [Nontrivial α] : CommSemiring (WithTop α) :=
-  { addCommMonoidWithOne, instCommMonoidWithZero with
-    right_distrib := distrib'
-    left_distrib := fun a b c => by
-      rw [mul_comm, distrib', mul_comm b, mul_comm c] }
+instance instNonUnitalSemiring [NonUnitalSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
+    [NoZeroDivisors α] : NonUnitalSemiring (WithTop α) where
+  toNonUnitalNonAssocSemiring := WithTop.instNonUnitalNonAssocSemiring
+  __ := WithTop.instSemigroupWithZero
 
-instance [Nontrivial α] : CanonicallyOrderedCommSemiring (WithTop α) :=
-  { WithTop.commSemiring, WithTop.canonicallyOrderedAddCommMonoid with
-  eq_zero_or_eq_zero_of_mul_eq_zero := eq_zero_or_eq_zero_of_mul_eq_zero}
+instance instSemiring [Semiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
+    [NoZeroDivisors α] [Nontrivial α] : Semiring (WithTop α) where
+  toNonUnitalSemiring := WithTop.instNonUnitalSemiring
+  __ := WithTop.instMonoidWithZero
+  __ := WithTop.addCommMonoidWithOne
+
+instance instCommSemiring [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
+    [NoZeroDivisors α] [Nontrivial α] : CommSemiring (WithTop α) where
+  toSemiring := WithTop.instSemiring
+  __ := WithTop.instCommMonoidWithZero
+
+instance instOrderedCommSemiring [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
+    [NoZeroDivisors α] [Nontrivial α] : OrderedCommSemiring (WithTop α) :=
+  CanonicallyOrderedAdd.toOrderedCommSemiring
 
 /-- A version of `WithTop.map` for `RingHom`s. -/
 @[simps (config := .asFn)]
-protected def _root_.RingHom.withTopMap {R S : Type*} [CanonicallyOrderedCommSemiring R]
-    [DecidableEq R] [Nontrivial R] [CanonicallyOrderedCommSemiring S] [DecidableEq S] [Nontrivial S]
+protected def _root_.RingHom.withTopMap {R S : Type*}
+    [NonAssocSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
+    [DecidableEq R] [Nontrivial R]
+    [NonAssocSemiring S] [PartialOrder S] [CanonicallyOrderedAdd S]
+    [DecidableEq S] [Nontrivial S]
     (f : R →+* S) (hf : Function.Injective f) : WithTop R →+* WithTop S :=
   {MonoidWithZeroHom.withTopMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.withTopMap with}
 
-variable [PosMulStrictMono α] {a a₁ a₂ b₁ b₂ : WithTop α}
+variable [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α] [PosMulStrictMono α]
+  {a a₁ a₂ b₁ b₂ : WithTop α}
 
 @[gcongr]
 protected lemma mul_lt_mul (ha : a₁ < a₂) (hb : b₁ < b₂) : a₁ * b₁ < a₂ * b₂ := by
@@ -306,12 +331,14 @@ instance instMonoidWithZero : MonoidWithZero (WithBot α) := WithTop.instMonoidW
 
 end MonoidWithZero
 
-instance commMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] :
-    CommMonoidWithZero (WithBot α) := WithTop.instCommMonoidWithZero
+instance instCommMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] :
+    CommMonoidWithZero (WithBot α) :=
+  WithTop.instCommMonoidWithZero
 
-instance commSemiring [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
+instance instCommSemiring [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
+    [NoZeroDivisors α] [Nontrivial α] :
     CommSemiring (WithBot α) :=
-  WithTop.commSemiring
+  WithTop.instCommSemiring
 
 instance [MulZeroClass α] [Preorder α] [PosMulMono α] : PosMulMono (WithBot α) :=
   ⟨by
@@ -437,10 +464,13 @@ instance [MulZeroClass α] [Preorder α] [MulPosReflectLE α] : MulPosReflectLE 
     norm_cast at x0
     exact le_of_mul_le_mul_right h x0 ⟩
 
-instance orderedCommSemiring [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
-    OrderedCommSemiring (WithBot α) :=
-  { WithBot.zeroLEOneClass, WithBot.orderedAddCommMonoid, WithBot.commSemiring with
-    mul_le_mul_of_nonneg_left  := fun _ _ _ => mul_le_mul_of_nonneg_left
-    mul_le_mul_of_nonneg_right := fun _ _ _ => mul_le_mul_of_nonneg_right }
+instance instOrderedCommSemiring [OrderedCommSemiring α] [CanonicallyOrderedAdd α]
+    [NoZeroDivisors α] [Nontrivial α] :
+    OrderedCommSemiring (WithBot α) where
+  __ := WithBot.instCommSemiring
+  __ := WithBot.zeroLEOneClass
+  __ := WithBot.orderedAddCommMonoid
+  mul_le_mul_of_nonneg_left  := fun _ _ _ => mul_le_mul_of_nonneg_left
+  mul_le_mul_of_nonneg_right := fun _ _ _ => mul_le_mul_of_nonneg_right
 
 end WithBot

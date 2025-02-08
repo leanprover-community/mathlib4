@@ -200,9 +200,31 @@ class CommShift : Prop where
   commShift_unit : NatTrans.CommShift adj.unit A := by infer_instance
   commShift_counit : NatTrans.CommShift adj.counit A := by infer_instance
 
+open CommShift in
+attribute [instance] commShift_unit commShift_counit
+
+@[reassoc (attr := simp)]
+lemma unit_app_commShiftIso_hom_app [adj.CommShift A] (a : A) (X : C) :
+    adj.unit.app (X⟦a⟧) ≫ ((F ⋙ G).commShiftIso a).hom.app X = (adj.unit.app X)⟦a⟧' := by
+  simpa using (NatTrans.shift_app_comm adj.unit a X).symm
+
+@[reassoc (attr := simp)]
+lemma unit_app_shift_commShiftIso_inv_app [adj.CommShift A] (a : A) (X : C) :
+    (adj.unit.app X)⟦a⟧' ≫ ((F ⋙ G).commShiftIso a).inv.app X = adj.unit.app (X⟦a⟧) := by
+  simp [← cancel_mono (((F ⋙ G).commShiftIso _).hom.app _)]
+
+@[reassoc (attr := simp)]
+lemma commShiftIso_hom_app_counit_app_shift [adj.CommShift A] (a : A) (Y : D) :
+    ((G ⋙ F).commShiftIso a).hom.app Y ≫ (adj.counit.app Y)⟦a⟧' = adj.counit.app (Y⟦a⟧) := by
+  simpa using (NatTrans.shift_app_comm adj.counit a Y)
+
+@[reassoc (attr := simp)]
+lemma commShiftIso_inv_app_counit_app [adj.CommShift A] (a : A) (Y : D) :
+    ((G ⋙ F).commShiftIso a).inv.app Y ≫ adj.counit.app (Y⟦a⟧) = (adj.counit.app Y)⟦a⟧' := by
+  simp [← cancel_epi (((G ⋙ F).commShiftIso _).hom.app _)]
+
 namespace CommShift
 
-attribute [instance] commShift_unit commShift_counit
 
 /-- Constructor for `Adjunction.CommShift`. -/
 lemma mk' (h : NatTrans.CommShift adj.unit A) :
@@ -216,6 +238,30 @@ lemma mk' (h : NatTrans.CommShift adj.unit A) :
     simpa only [NatTrans.comp_app,
       Functor.commShiftIso_id_hom_app, whiskerRight_app, id_comp,
       Functor.commShiftIso_comp_hom_app] using congr_app (h.shift_comm a) X⟩
+
+variable [adj.CommShift A]
+
+/-- The identity adjunction is compatible with the trivial `CommShift` structure on the
+identity functor.
+-/
+instance instId : (Adjunction.id (C := C)).CommShift A where
+  commShift_counit :=
+    inferInstanceAs (NatTrans.CommShift (𝟭 C).leftUnitor.hom A)
+  commShift_unit :=
+    inferInstanceAs (NatTrans.CommShift (𝟭 C).leftUnitor.inv A)
+
+variable {E : Type*} [Category E] {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G')
+  [HasShift E A] [F'.CommShift A] [G'.CommShift A] [adj.CommShift A] [adj'.CommShift A]
+
+/-- Compatibility of `Adjunction.Commshift` with the composition of adjunctions.
+-/
+instance instComp : (adj.comp adj').CommShift A where
+  commShift_counit := by
+    rw [comp_counit]
+    infer_instance
+  commShift_unit := by
+    rw [comp_unit]
+    infer_instance
 
 end CommShift
 
@@ -288,8 +334,8 @@ lemma iso_inv_app (Y : D) :
                     (F.obj (G.obj Y)))) ≫
                 G.map ((shiftFunctor D a).map (adj.counit.app Y)) := by
   obtain rfl : b = -a := by rw [← add_left_inj a, h, neg_add_cancel]
-  simp only [Functor.comp_obj, iso, iso', shiftEquiv', Equiv.toFun_as_coe,
-    conjugateIsoEquiv_apply_inv, conjugateEquiv_apply_app, comp_unit_app, Functor.id_obj,
+  simp only [iso, iso', shiftEquiv', Equiv.toFun_as_coe, conjugateIsoEquiv_apply_inv,
+    conjugateEquiv_apply_app, Functor.comp_obj, comp_unit_app, Functor.id_obj,
     Equivalence.toAdjunction_unit, Equivalence.Equivalence_mk'_unit, Iso.symm_hom, Functor.comp_map,
     comp_counit_app, Equivalence.toAdjunction_counit, Equivalence.Equivalence_mk'_counit,
     Functor.map_shiftFunctorCompIsoId_hom_app, assoc, Functor.map_comp]
@@ -470,9 +516,28 @@ lemma mk' (h : NatTrans.CommShift E.unitIso.hom A) :
   commShift_counit := (Adjunction.CommShift.mk' E.toAdjunction A h).commShift_counit
 
 /--
-If `E : C ≌ D` is an equivalence and we have compatible `CommShift` structures on `E.functor`
-and `E.inverse`, then we also have compatible `CommShift` structures on `E.symm.functor`
-and `E.symm.inverse`.
+The forward functor of the identity equivalence is compatible with shifts.
+-/
+instance : (Equivalence.refl (C := C)).functor.CommShift A := by
+  dsimp
+  infer_instance
+
+/--
+The inverse functor of the identity equivalence is compatible with shifts.
+-/
+instance : (Equivalence.refl (C := C)).inverse.CommShift A := by
+  dsimp
+  infer_instance
+
+/--
+The identity equivalence is compatible with shifts.
+-/
+instance : (Equivalence.refl (C := C)).CommShift A := by
+  dsimp [Equivalence.CommShift, refl_toAdjunction]
+  infer_instance
+
+/--
+If an equivalence `E : C ≌ D` is compatible with shifts, so is `E.symm`.
 -/
 instance [E.CommShift A] : E.symm.CommShift A :=
   mk' E.symm A (inferInstanceAs (NatTrans.CommShift E.counitIso.inv A))
@@ -482,6 +547,31 @@ lemma mk'' (h : NatTrans.CommShift E.counitIso.hom A) :
     E.CommShift A :=
   have := mk' E.symm A (inferInstanceAs (NatTrans.CommShift E.counitIso.inv A))
   inferInstanceAs (E.symm.symm.CommShift A)
+
+variable {F : Type*} [Category F] [HasShift F A] {E' : D ≌ F} [E.CommShift A]
+    [E'.functor.CommShift A] [E'.inverse.CommShift A] [E'.CommShift A]
+
+/--
+If `E : C ≌ D` and `E' : D ≌ F` are equivalence whose forward functors are compatible with shifts,
+so is `(E.trans E').functor`.
+-/
+instance : (E.trans E').functor.CommShift A := by
+  dsimp
+  infer_instance
+
+/--
+If `E : C ≌ D` and `E' : D ≌ F` are equivalence whose inverse functors are compatible with shifts,
+so is `(E.trans E').inverse`.
+-/
+instance : (E.trans E').inverse.CommShift A := by
+  dsimp
+  infer_instance
+
+/--
+If equivalences `E : C ≌ D` and `E' : D ≌ F` are compatible with shifts, so is `E.trans E'`.
+-/
+instance : (E.trans E').CommShift A :=
+  inferInstanceAs ((E.toAdjunction.comp E'.toAdjunction).CommShift A)
 
 end CommShift
 

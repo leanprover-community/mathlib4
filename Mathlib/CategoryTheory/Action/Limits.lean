@@ -209,7 +209,7 @@ variable [HasZeroMorphisms V]
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): in order to ease automation, the `Zero` instance is introduced separately,
 -- and the lemma `Action.zero_hom` was moved just below
-instance {X Y : Action V G} : Zero (X ⟶ Y) := ⟨0, by aesop_cat⟩
+instance {X Y : Action V G} : Zero (X ⟶ Y) := ⟨0, by simp⟩
 
 @[simp]
 theorem zero_hom {X Y : Action V G} : (0 : X ⟶ Y).hom = 0 :=
@@ -219,7 +219,7 @@ instance : HasZeroMorphisms (Action V G) where
 
 instance forget_preservesZeroMorphisms : Functor.PreservesZeroMorphisms (forget V G) where
 
-instance forget₂_preservesZeroMorphisms [ConcreteCategory V] :
+instance forget₂_preservesZeroMorphisms [HasForget V] :
     Functor.PreservesZeroMorphisms (forget₂ (Action V G) V) where
 
 instance functorCategoryEquivalence_preservesZeroMorphisms :
@@ -251,7 +251,7 @@ instance : Preadditive (Action V G) where
 
 instance forget_additive : Functor.Additive (forget V G) where
 
-instance forget₂_additive [ConcreteCategory V] : Functor.Additive (forget₂ (Action V G) V) where
+instance forget₂_additive [HasForget V] : Functor.Additive (forget₂ (Action V G) V) where
 
 instance functorCategoryEquivalence_additive :
     Functor.Additive (functorCategoryEquivalence V G).functor where
@@ -289,7 +289,7 @@ instance : Linear R (Action V G) where
 
 instance forget_linear : Functor.Linear R (forget V G) where
 
-instance forget₂_linear [ConcreteCategory V] : Functor.Linear R (forget₂ (Action V G) V) where
+instance forget₂_linear [HasForget V] : Functor.Linear R (forget₂ (Action V G) V) where
 
 instance functorCategoryEquivalence_linear :
     Functor.Linear R (functorCategoryEquivalence V G).functor where

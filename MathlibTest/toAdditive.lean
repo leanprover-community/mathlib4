@@ -226,9 +226,7 @@ run_cmd do liftCoreM <| successIfFail (getConstInfo `Test.add_some_def.in_namesp
 
 section
 
-set_option linter.unusedVariables false
--- Porting note: not sure what the tests do, but the linter complains.
-
+set_option linter.unusedVariables false in
 def foo_mul {I J K : Type} (n : ℕ) {f : I → Type} (L : Type) [∀ i, One (f i)]
   [Add I] [Mul L] : true := by trivial
 
@@ -424,7 +422,7 @@ run_cmd do
   unless findTranslation? (← getEnv) `localize.s == some `add_localize.s do throwError "3"
 
 /--
-warning: The source declaration one_eq_one was given the simp-attribute(s) reduce_mod_char, simp before calling @[to_additive]. The preferred method is to use something like `@[to_additive (attr := reduce_mod_char, simp)]` to apply the attribute to both one_eq_one and the target declaration zero_eq_zero.
+warning: The source declaration one_eq_one was given the simp-attribute(s) simp, reduce_mod_char before calling @[to_additive]. The preferred method is to use something like `@[to_additive (attr := simp, reduce_mod_char)]` to apply the attribute to both one_eq_one and the target declaration zero_eq_zero.
 note: this linter can be disabled with `set_option linter.existingAttributeWarning false`
 -/
 #guard_msgs in

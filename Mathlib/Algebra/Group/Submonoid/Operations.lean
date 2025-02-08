@@ -5,9 +5,10 @@ Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzza
 Amelia Livingston, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Faithful
-import Mathlib.Algebra.Group.Nat.Basic
+import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Submonoid.Basic
+import Mathlib.Algebra.Group.Submonoid.MulAction
 import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
@@ -973,74 +974,9 @@ theorem Submonoid.equivMapOfInjective_coe_mulEquiv (e : M ≃* N) :
   ext
   rfl
 
-section Actions
-
-/-! ### Actions by `Submonoid`s
-
-These instances transfer the action by an element `m : M` of a monoid `M` written as `m • a` onto
-the action by an element `s : S` of a submonoid `S : Submonoid M` such that `s • a = (s : M) • a`.
-
-These instances work particularly well in conjunction with `Monoid.toMulAction`, enabling
-`s • m` as an alias for `↑s * m`.
--/
-
-
-namespace Submonoid
-
-variable {M' : Type*} {α β : Type*}
-
-section MulOneClass
-
-variable [MulOneClass M']
-
-@[to_additive]
-instance smul [SMul M' α] (S : Submonoid M') : SMul S α :=
-  SMul.comp _ S.subtype
-
-@[to_additive]
-instance smulCommClass_left [SMul M' β] [SMul α β] [SMulCommClass M' α β]
-    (S : Submonoid M') : SMulCommClass S α β :=
-  ⟨fun a _ _ => (smul_comm (a : M') _ _ : _)⟩
-
-@[to_additive]
-instance smulCommClass_right [SMul α β] [SMul M' β] [SMulCommClass α M' β]
-    (S : Submonoid M') : SMulCommClass α S β :=
-  ⟨fun a s => (smul_comm a (s : M') : _)⟩
-
-/-- Note that this provides `IsScalarTower S M' M'` which is needed by `SMulMulAssoc`. -/
-instance isScalarTower [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' α β]
-      (S : Submonoid M') :
-    IsScalarTower S α β :=
-  ⟨fun a => (smul_assoc (a : M') : _)⟩
-
-section SMul
-variable [SMul M' α] {S : Submonoid M'}
-
-@[to_additive] lemma smul_def (g : S) (a : α) : g • a = (g : M') • a := rfl
-
-@[to_additive (attr := simp)]
-lemma mk_smul (g : M') (hg : g ∈ S) (a : α) : (⟨g, hg⟩ : S) • a = g • a := rfl
-
-instance faithfulSMul [FaithfulSMul M' α] : FaithfulSMul S α :=
+instance Submonoid.faithfulSMul {M' α : Type*} [MulOneClass M'] [SMul M' α] {S : Submonoid M'}
+    [FaithfulSMul M' α] : FaithfulSMul S α :=
   ⟨fun h => Subtype.ext <| eq_of_smul_eq_smul h⟩
-
-end SMul
-end MulOneClass
-
-variable [Monoid M']
-
-/-- The action by a submonoid is the action by the underlying monoid. -/
-@[to_additive
-      "The additive action by an `AddSubmonoid` is the action by the underlying `AddMonoid`. "]
-instance mulAction [MulAction M' α] (S : Submonoid M') : MulAction S α :=
-  MulAction.compHom _ S.subtype
-
-example {S : Submonoid M'} : IsScalarTower S M' M' := by infer_instance
-
-
-end Submonoid
-
-end Actions
 
 section Units
 

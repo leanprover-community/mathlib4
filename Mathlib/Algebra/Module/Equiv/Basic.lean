@@ -49,7 +49,7 @@ def restrictScalars (f : M ≃ₗ[S] M₂) : M ≃ₗ[R] M₂ :=
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (M ≃ₗ[S] M₂) → M ≃ₗ[R] M₂) := fun _ _ h ↦
-  ext (LinearEquiv.congr_fun h : _)
+  ext (LinearEquiv.congr_fun h :)
 
 @[simp]
 theorem restrictScalars_inj (f g : M ≃ₗ[S] M₂) :
@@ -482,6 +482,41 @@ theorem symm_neg : (neg R : M ≃ₗ[R] M).symm = neg R :=
 
 end Neg
 
+section Semiring
+
+open LinearMap
+
+variable {M₂₁ M₂₂ : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMonoid M₂]
+  [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R M₁] [Module R M₂] [Module R M₂₁] [Module R M₂₂]
+
+/-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives a
+additive isomorphism between the two function spaces.
+
+See also `LinearEquiv.arrowCongr` for the linear version of this isomorphism. -/
+def arrowCongrAddEquiv (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : M₂₁ ≃ₗ[R] M₂₂) :
+    (M₁ →ₗ[R] M₂₁) ≃+ (M₂ →ₗ[R] M₂₂) where
+  toFun f := e₂.comp (f.comp e₁.symm.toLinearMap)
+  invFun f := e₂.symm.comp (f.comp e₁.toLinearMap)
+  left_inv f := by
+    ext x
+    simp only [symm_apply_apply, Function.comp_apply, coe_comp, coe_coe]
+  right_inv f := by
+    ext x
+    simp only [Function.comp_apply, apply_symm_apply, coe_comp, coe_coe]
+  map_add' f g := by
+    ext x
+    simp only [map_add, add_apply, Function.comp_apply, coe_comp, coe_coe]
+
+/-- If `M` and `M₂` are linearly isomorphic then the endomorphism rings of `M` and `M₂`
+are isomorphic.
+
+See `LinearEquiv.conj` for the linear version of this isomorphism. -/
+def conjRingEquiv (e : M₁ ≃ₗ[R] M₂) : Module.End R M₁ ≃+* Module.End R M₂ where
+  __ := arrowCongrAddEquiv e e
+  map_mul' _ _ := by ext; simp [arrowCongrAddEquiv]
+
+end Semiring
+
 section CommSemiring
 
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
@@ -494,24 +529,15 @@ def smulOfUnit (a : Rˣ) : M ≃ₗ[R] M :=
   DistribMulAction.toLinearEquiv R M a
 
 /-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives a
-linear isomorphism between the two function spaces. -/
+linear isomorphism between the two function spaces.
+
+See `LinearEquiv.arrowCongrAddEquiv` for the additive version of this isomorphism that works
+over a not necessarily commutative semiring. -/
 def arrowCongr {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommMonoid M₁] [AddCommMonoid M₂]
     [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R M₁] [Module R M₂] [Module R M₂₁]
     [Module R M₂₂] (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : M₂₁ ≃ₗ[R] M₂₂) : (M₁ →ₗ[R] M₂₁) ≃ₗ[R] M₂ →ₗ[R] M₂₂ where
-  toFun := fun f : M₁ →ₗ[R] M₂₁ ↦ (e₂ : M₂₁ →ₗ[R] M₂₂).comp <| f.comp (e₁.symm : M₂ →ₗ[R] M₁)
-  invFun f := (e₂.symm : M₂₂ →ₗ[R] M₂₁).comp <| f.comp (e₁ : M₁ →ₗ[R] M₂)
-  left_inv f := by
-    ext x
-    simp only [symm_apply_apply, Function.comp_apply, coe_comp, coe_coe]
-  right_inv f := by
-    ext x
-    simp only [Function.comp_apply, apply_symm_apply, coe_comp, coe_coe]
-  map_add' f g := by
-    ext x
-    simp only [map_add, add_apply, Function.comp_apply, coe_comp, coe_coe]
-  map_smul' c f := by
-    ext x
-    simp only [smul_apply, Function.comp_apply, coe_comp, map_smulₛₗ e₂, coe_coe]
+  __ := arrowCongrAddEquiv e₁ e₂
+  map_smul' c f := by ext; simp [arrowCongrAddEquiv]
 
 @[simp]
 theorem arrowCongr_apply {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommMonoid M₁]
@@ -547,7 +573,11 @@ def congrRight (f : M₂ ≃ₗ[R] M₃) : (M →ₗ[R] M₂) ≃ₗ[R] M →ₗ
   arrowCongr (LinearEquiv.refl R M) f
 
 /-- If `M` and `M₂` are linearly isomorphic then the two spaces of linear maps from `M` and `M₂` to
-themselves are linearly isomorphic. -/
+themselves are linearly isomorphic.
+
+See `LinearEquiv.conjRingEquiv` for the isomorphism between endomorphism rings,
+which works over a not necessarily commutative semiring. -/
+-- TODO: upgrade to AlgEquiv (but this file currently cannot import AlgEquiv)
 def conj (e : M ≃ₗ[R] M₂) : Module.End R M ≃ₗ[R] Module.End R M₂ :=
   arrowCongr e e
 
@@ -582,12 +612,8 @@ isomorphism between `M₂ →ₗ[R] M` and `M₃ →ₗ[R] M`, if `M` is both an
 `S`-module and their actions commute. -/
 def congrLeft {R} (S) [Semiring R] [Semiring S] [Module R M₂] [Module R M₃] [Module R M]
     [Module S M] [SMulCommClass R S M] (e : M₂ ≃ₗ[R] M₃) : (M₂ →ₗ[R] M) ≃ₗ[S] (M₃ →ₗ[R] M) where
-  toFun f := f.comp e.symm.toLinearMap
-  invFun f := f.comp e.toLinearMap
-  map_add' _ _ := rfl
+  __ := e.arrowCongrAddEquiv (.refl ..)
   map_smul' _ _ := rfl
-  left_inv f := by dsimp only; apply DFunLike.ext; exact (congr_arg f <| e.left_inv ·)
-  right_inv f := by dsimp only; apply DFunLike.ext; exact (congr_arg f <| e.right_inv ·)
 
 end CommSemiring
 

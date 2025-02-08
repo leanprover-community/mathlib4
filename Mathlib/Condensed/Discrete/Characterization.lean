@@ -33,8 +33,6 @@ universe u
 
 open CategoryTheory Limits Functor FintypeCat
 
-attribute [local instance] ConcreteCategory.instFunLike
-
 namespace Condensed
 
 variable {C : Type*} [Category C] [HasWeakSheafify (coherentTopology CompHaus.{u}) C]

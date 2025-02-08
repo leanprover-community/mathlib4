@@ -9,6 +9,7 @@ import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Topology.ContinuousMap.Defs
+import Mathlib.Algebra.Group.Submonoid.Basic
 
 /-!
 # Theory of topological monoids
@@ -89,7 +90,7 @@ theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F �
 @[to_additive (attr := continuity, fun_prop)]
 theorem Continuous.mul {f g : X → M} (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => f x * g x :=
-  continuous_mul.comp (hf.prod_mk hg : _)
+  continuous_mul.comp (hf.prod_mk hg :)
 
 @[to_additive (attr := continuity)]
 theorem continuous_mul_left (a : M) : Continuous fun b : M => a * b :=
@@ -102,7 +103,7 @@ theorem continuous_mul_right (a : M) : Continuous fun b : M => b * a :=
 @[to_additive (attr := fun_prop)]
 theorem ContinuousOn.mul {f g : X → M} {s : Set X} (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun x => f x * g x) s :=
-  (continuous_mul.comp_continuousOn (hf.prod hg) : _)
+  (continuous_mul.comp_continuousOn (hf.prod hg) :)
 
 @[to_additive]
 theorem tendsto_mul {a b : M} : Tendsto (fun p : M × M => p.fst * p.snd) (𝓝 (a, b)) (𝓝 (a * b)) :=
@@ -566,6 +567,12 @@ such that `V * V ⊆ U`. -/
 theorem exists_open_nhds_one_mul_subset {U : Set M} (hU : U ∈ 𝓝 (1 : M)) :
     ∃ V : Set M, IsOpen V ∧ (1 : M) ∈ V ∧ V * V ⊆ U := by
   simpa only [mul_subset_iff] using exists_open_nhds_one_split hU
+
+@[to_additive]
+theorem Filter.HasBasis.mul_self {p : ι → Prop} {s : ι → Set M} (h : (𝓝 1).HasBasis p s) :
+    (𝓝 1).HasBasis p fun i => s i * s i := by
+  rw [← nhds_mul_nhds_one, ← map₂_mul, ← map_uncurry_prod]
+  simpa only [← image_mul_prod] using h.prod_self.map _
 
 end MulOneClass
 

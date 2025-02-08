@@ -12,11 +12,7 @@ This file defines the `NoZeroSMulDivisors` class, and includes some tests
 for the vanishing of elements (especially in modules over division rings).
 -/
 
-assert_not_exists Multiset
-assert_not_exists Set.indicator
-assert_not_exists Pi.single_smul₀
-assert_not_exists Field
-assert_not_exists Module
+assert_not_exists Multiset Set.indicator Pi.single_smul₀ Field Module
 
 section NoZeroSMulDivisors
 

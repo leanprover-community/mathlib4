@@ -21,6 +21,8 @@ which is a continuous linear map `SeparationQuotient E →L[K] E`.
 
 assert_not_exists LinearIndependent
 
+open scoped Topology
+
 namespace SeparationQuotient
 
 section SMul
@@ -195,6 +197,10 @@ instance instGroup [Group G] [TopologicalGroup G] : Group (SeparationQuotient G)
 instance instCommGroup [CommGroup G] [TopologicalGroup G] : CommGroup (SeparationQuotient G) :=
   surjective_mk.commGroup mk mk_one mk_mul mk_inv mk_div mk_pow mk_zpow
 
+/-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/
+theorem nhds_mk (x : G) : 𝓝 (mk x) = .map mk (𝓝 x) :=
+  le_antisymm ((SeparationQuotient.isOpenMap_mk).nhds_le x) continuous_quot_mk.continuousAt
+
 end Group
 
 section UniformGroup
@@ -268,7 +274,7 @@ theorem mk_natCast [NatCast R] (n : ℕ) : mk (n : R) = n := rfl
 
 @[simp]
 theorem mk_ofNat [NatCast R] (n : ℕ) [n.AtLeastTwo] :
-    mk (no_index (OfNat.ofNat n) : R) = OfNat.ofNat n :=
+    mk (ofNat(n) : R) = OfNat.ofNat n :=
   rfl
 
 instance instIntCast [IntCast R] : IntCast (SeparationQuotient R) where
@@ -364,8 +370,10 @@ end DistribSMul
 
 section Module
 
-variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R S M N : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
     [TopologicalSpace M] [ContinuousAdd M] [ContinuousConstSMul R M]
+    [Semiring S] [AddCommMonoid N] [Module S N]
+    [TopologicalSpace N]
 
 instance instModule : Module R (SeparationQuotient M) :=
   surjective_mk.module R mkAddMonoidHom mk_smul
@@ -379,6 +387,20 @@ def mkCLM : M →L[R] SeparationQuotient M where
   map_add' := mk_add
   map_smul' := mk_smul
 
+variable {R M}
+
+/-- The lift (as a continuous linear map) of `f` with `f x = f y` for `Inseparable x y`. -/
+@[simps]
+noncomputable def liftCLM {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, Inseparable x y → f x = f y) :
+    SeparationQuotient M →SL[σ] N where
+  toFun := SeparationQuotient.lift f hf
+  map_add' := Quotient.ind₂ <| map_add f
+  map_smul' {r} := Quotient.ind <| map_smulₛₗ f r
+
+@[simp]
+theorem liftCLM_mk {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, Inseparable x y → f x = f y)
+    (x : M) : liftCLM f hf (mk x) = f x := rfl
+
 end Module
 
 section Algebra
@@ -386,7 +408,7 @@ variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     [TopologicalSpace A] [TopologicalSemiring A] [ContinuousConstSMul R A]
 
 instance instAlgebra : Algebra R (SeparationQuotient A) where
-  toRingHom := mkRingHom.comp (algebraMap R A)
+  algebraMap := mkRingHom.comp (algebraMap R A)
   commutes' r := Quotient.ind fun a => congrArg _ <| Algebra.commutes r a
   smul_def' r := Quotient.ind fun a => congrArg _ <| Algebra.smul_def r a
 

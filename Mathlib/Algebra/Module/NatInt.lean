@@ -26,11 +26,7 @@ This file concerns modules where the scalars are the natural numbers or the inte
 semimodule, module, vector space
 -/
 
-assert_not_exists Field
-assert_not_exists Invertible
-assert_not_exists Multiset
-assert_not_exists Pi.single_smul₀
-assert_not_exists Set.indicator
+assert_not_exists Field Invertible Multiset Pi.single_smul₀ Set.indicator
 
 open Function Set
 
@@ -103,11 +99,7 @@ lemma Nat.cast_smul_eq_nsmul (n : ℕ) (b : M) : (n : R) • b = n • b := by
 
 /-- `nsmul` is equal to any other module structure via a cast. -/
 lemma ofNat_smul_eq_nsmul (n : ℕ) [n.AtLeastTwo] (b : M) :
-    (ofNat(n) : R) • b = OfNat.ofNat n • b := Nat.cast_smul_eq_nsmul ..
-
-/-- `nsmul` is equal to any other module structure via a cast. -/
-@[deprecated Nat.cast_smul_eq_nsmul (since := "2024-07-23")]
-lemma nsmul_eq_smul_cast (n : ℕ) (b : M) : n • b = (n : R) • b := (Nat.cast_smul_eq_nsmul ..).symm
+    (ofNat(n) : R) • b = ofNat(n) • b := Nat.cast_smul_eq_nsmul ..
 
 end
 
@@ -141,6 +133,3 @@ theorem Nat.smul_one_eq_cast {R : Type*} [NonAssocSemiring R] (m : ℕ) : m • 
 
 theorem Int.smul_one_eq_cast {R : Type*} [NonAssocRing R] (m : ℤ) : m • (1 : R) = ↑m := by
   rw [zsmul_eq_mul, mul_one]
-
-@[deprecated (since := "2024-05-03")] alias Nat.smul_one_eq_coe := Nat.smul_one_eq_cast
-@[deprecated (since := "2024-05-03")] alias Int.smul_one_eq_coe := Int.smul_one_eq_cast

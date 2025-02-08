@@ -66,15 +66,10 @@ open Structure Cardinal Fin
 
 namespace Term
 
--- Porting note: universes in different order
 /-- A term `t` with variables indexed by `α` can be evaluated by giving a value to each variable. -/
 def realize (v : α → M) : ∀ _t : L.Term α, M
   | var k => v k
   | func f ts => funMap f fun i => (ts i).realize v
-
-/- Porting note: The equation lemma of `realize` is too strong; it simplifies terms like the LHS of
-`realize_functions_apply₁`. Even `eqns` can't fix this. We removed `simp` attr from `realize` and
-prepare new simp lemmas for `realize`. -/
 
 @[simp]
 theorem realize_var (v : α → M) (k) : realize v (var k : L.Term α) = v k := rfl
@@ -183,10 +178,7 @@ theorem realize_varsToConstants [L[[α]].Structure M] [(lhomWithConstants L α).
     {t : L.Term (α ⊕ β)} {v : β → M} :
     t.varsToConstants.realize v = t.realize (Sum.elim (fun a => ↑(L.con a)) v) := by
   induction' t with ab n f ts ih
-  · cases' ab with a b
-    -- Porting note: both cases were `simp [Language.con]`
-    · simp [Language.con, realize, funMap_eq_coe_constants]
-    · simp [realize, constantMap]
+  · cases' ab with a b <;> simp [Language.con]
   · simp only [realize, constantsOn, constantsOnFunc, ih, varsToConstants]
     -- Porting note: below lemma does not work with simp for some reason
     rw [withConstants_funMap_sum_inl]
@@ -232,7 +224,6 @@ namespace BoundedFormula
 
 open Term
 
--- Porting note: universes in different order
 /-- A bounded formula can be evaluated as true or false by giving values to each free variable. -/
 def Realize : ∀ {l} (_f : L.BoundedFormula α l) (_v : α → M) (_xs : Fin l → M), Prop
   | _, falsum, _v, _xs => False
@@ -323,7 +314,7 @@ theorem realize_iff : (φ.iff ψ).Realize v xs ↔ (φ.Realize v xs ↔ ψ.Reali
   simp only [BoundedFormula.iff, realize_inf, realize_imp, and_imp, ← iff_def]
 
 theorem realize_castLE_of_eq {m n : ℕ} (h : m = n) {h' : m ≤ n} {φ : L.BoundedFormula α m}
-    {v : α → M} {xs : Fin n → M} : (φ.castLE h').Realize v xs ↔ φ.Realize v (xs ∘ cast h) := by
+    {v : α → M} {xs : Fin n → M} : (φ.castLE h').Realize v xs ↔ φ.Realize v (xs ∘ Fin.cast h) := by
   subst h
   simp only [castLE_rfl, cast_refl, OrderIso.coe_refl, Function.comp_id]
 
@@ -422,7 +413,7 @@ theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormul
   induction φ with
   | falsum => rfl
   | equal =>
-    simp only [Realize, freeVarFinset.eq_2]
+    simp only [Realize, restrictFreeVar, freeVarFinset.eq_2]
     rw [realize_restrictVarLeft v' (by simp [hv']), realize_restrictVarLeft v' (by simp [hv'])]
     simp [Function.comp_apply]
   | rel =>
@@ -431,7 +422,7 @@ theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormul
     rw [realize_restrictVarLeft v' (by simp [hv'])]
     simp [Function.comp_apply]
   | imp _ _ ih1 ih2 =>
-    simp only [Realize, freeVarFinset.eq_4]
+    simp only [Realize, restrictFreeVar, freeVarFinset.eq_4]
     rw [ih1, ih2] <;> simp [hv']
   | all _ ih3 =>
     simp only [restrictFreeVar, Realize]
@@ -480,10 +471,6 @@ theorem realize_all_liftAt_one_self {n : ℕ} {φ : L.BoundedFormula α n} {v : 
     simp
 
 end BoundedFormula
-
--- Porting note: in Lean 3 we used these unprotected above, and then protected them here.
--- attribute [protected] bounded_formula.falsum bounded_formula.equal bounded_formula.rel
--- attribute [protected] bounded_formula.imp bounded_formula.all
 
 namespace LHom
 

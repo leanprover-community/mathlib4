@@ -132,7 +132,7 @@ end Lattice
 
 section CanonicallyOrdered
 
-variable [CanonicallyOrderedAddCommMonoid α] [LocallyFiniteOrder α]
+variable [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] [LocallyFiniteOrder α]
 variable (f : ι →₀ α)
 
 theorem card_Iic : #(Iic f) = ∏ i ∈ f.support, #(Iic (f i)) := by
