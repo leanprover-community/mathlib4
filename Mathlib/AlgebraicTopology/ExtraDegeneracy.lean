@@ -45,6 +45,8 @@ equivalence.
 
 open CategoryTheory Category SimplicialObject.Augmented Opposite Simplicial
 
+namespace CategoryTheory
+
 namespace SimplicialObject
 
 namespace Augmented
@@ -60,13 +62,13 @@ structure formally behave like extra degeneracies `σ (-1)`. -/
 structure ExtraDegeneracy (X : SimplicialObject.Augmented C) where
   s' : point.obj X ⟶ drop.obj X _[0]
   s : ∀ n : ℕ, drop.obj X _[n] ⟶ drop.obj X _[n + 1]
-  s'_comp_ε : s' ≫ X.hom.app (op [0]) = 𝟙 _
-  s₀_comp_δ₁ : s 0 ≫ X.left.δ 1 = X.hom.app (op [0]) ≫ s'
-  s_comp_δ₀ : ∀ n : ℕ, s n ≫ X.left.δ 0 = 𝟙 _
+  s'_comp_ε : s' ≫ X.hom.app (op [0]) = 𝟙 _ := by aesop_cat
+  s₀_comp_δ₁ : s 0 ≫ X.left.δ 1 = X.hom.app (op [0]) ≫ s' := by aesop_cat
+  s_comp_δ₀ : ∀ n : ℕ, s n ≫ X.left.δ 0 = 𝟙 _ := by aesop_cat
   s_comp_δ :
-    ∀ (n : ℕ) (i : Fin (n + 2)), s (n + 1) ≫ X.left.δ i.succ = X.left.δ i ≫ s n
+    ∀ (n : ℕ) (i : Fin (n + 2)), s (n + 1) ≫ X.left.δ i.succ = X.left.δ i ≫ s n := by aesop_cat
   s_comp_σ :
-    ∀ (n : ℕ) (i : Fin (n + 1)), s n ≫ X.left.σ i.succ = X.left.σ i ≫ s (n + 1)
+    ∀ (n : ℕ) (i : Fin (n + 1)), s n ≫ X.left.σ i.succ = X.left.σ i ≫ s (n + 1) := by aesop_cat
 
 namespace ExtraDegeneracy
 
@@ -131,6 +133,8 @@ end ExtraDegeneracy
 end Augmented
 
 end SimplicialObject
+
+end CategoryTheory
 
 namespace SSet
 
@@ -351,8 +355,6 @@ end AugmentedCechNerve
 
 end Arrow
 
-end CategoryTheory
-
 namespace SimplicialObject
 
 namespace Augmented
@@ -360,11 +362,18 @@ namespace Augmented
 namespace ExtraDegeneracy
 
 open AlgebraicTopology CategoryTheory Limits
+variable {C : Type*} [Category C]
+
+/-- The constant augmented simplicial object has an extra degeneracy. -/
+@[simps]
+def const (X : C) : ExtraDegeneracy (Augmented.const.obj X) where
+  s' := 𝟙 _
+  s _ := 𝟙 _
 
 /-- If `C` is a preadditive category and `X` is an augmented simplicial object
 in `C` that has an extra degeneracy, then the augmentation on the alternating
 face map complex of `X` is a homotopy equivalence. -/
-noncomputable def homotopyEquiv {C : Type*} [Category C] [Preadditive C] [HasZeroObject C]
+noncomputable def homotopyEquiv [Preadditive C] [HasZeroObject C]
     {X : SimplicialObject.Augmented C} (ed : ExtraDegeneracy X) :
     HomotopyEquiv (AlgebraicTopology.AlternatingFaceMapComplex.obj (drop.obj X))
       ((ChainComplex.single₀ C).obj (point.obj X)) where
@@ -414,3 +423,5 @@ end ExtraDegeneracy
 end Augmented
 
 end SimplicialObject
+
+end CategoryTheory
