@@ -36,7 +36,7 @@ variable {C : Type u} [Category.{v} C] (J : Type w) [LinearOrder J] [OrderBot J]
   {X Y : C} (f : X ⟶ Y)
 
 /-- Given a well-ordered type `J`, a morphism `f : X ⟶ Y` in a category `C`
-is a transfinite composition of shape if we have a well order continuous
+is a transfinite composition of shape `J` if we have a well order continuous
 functor `F : J ⥤ C`, an isomorphism `F.obj ⊥ ≅ X`, a colimit cocone for `F`
 whose point is `Y`, such that the composition `X ⟶ F.obj ⊥ ⟶ Y` is `f`. -/
 structure TransfiniteCompositionOfShape [SuccOrder J] [WellFoundedLT J] where
