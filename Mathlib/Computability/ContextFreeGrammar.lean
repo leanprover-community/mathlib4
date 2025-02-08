@@ -23,7 +23,7 @@ open Function
 
 /-- Rule that rewrites a single nonterminal to any string (a list of symbols). -/
 @[ext]
-structure ContextFreeRule (T : Type*) (N : Type) where
+structure ContextFreeRule (T N : Type*) where
   /-- Input nonterminal a.k.a. left-hand side. -/
   input : N -- `N` is not `Type*` because only finite types are useful,
             -- and bundling (below) universe-polymophic types is ugly.
