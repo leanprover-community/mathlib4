@@ -186,31 +186,28 @@ instance Sigma.deltaGeneratedSpace {ι : Type*} {X : ι → Type*} [∀ i, Topol
   corresponding path is defined separately because continuity is annoying to prove. -/
 private noncomputable def Path.sigmaConcatFun {X : Type*} [TopologicalSpace X] {s : ℕ → X}
     (γ : (n : ℕ) → Path (s n) (s n.succ)) (x : X) : I → X := fun t ↦ by
-  refine if ht : t < 1 then ?_ else x
-  have ht' : 0 < σ t := by rw [lt_symm_comm]; simp [ht]
-  have ht'' : _ := coe_pos.2 ht'
   let n := Nat.log 2 ⌊(σ t).1⁻¹⌋₊
-  let t' : I := ⟨2 * (1 - σ t * (2 ^ n : ℕ)), by
-    suffices (σ t : ℝ) * (2 ^ n : ℕ) ≤ 1 by linarith
+  refine if ht : t < 1 then γ n ⟨2 * (1 - σ t * (2 ^ n : ℕ)), ?_, ?_⟩ else x
+  all_goals have ht' := symm_one ▸ symm_lt_symm.2 ht; have ht'' := coe_pos.2 ht'
+  · suffices (σ t : ℝ) * (2 ^ n : ℕ) ≤ 1 by linarith
     refine (mul_le_mul_of_nonneg_left ?_ (σ t).2.1).trans (mul_inv_cancel₀ ht''.ne.symm).le
     refine (Nat.cast_le.2 <| Nat.pow_log_le_self 2
       (Nat.floor_pos.2 <| (one_le_inv₀ ht'').2 (σ t).2.2).ne.symm).trans ?_
-    exact Nat.floor_le <| by simp [t.2.2], by
-    suffices h : 1 ≤ (σ t : ℝ) * (2 * (2 ^ n : ℕ)) by rw [mul_left_comm] at h; linarith
+    exact Nat.floor_le <| by simp [t.2.2]
+  · suffices h : 1 ≤ (σ t : ℝ) * (2 * (2 ^ n : ℕ)) by rw [mul_left_comm] at h; linarith
     refine (mul_inv_cancel₀ ht''.ne.symm).symm.le.trans <|
       mul_le_mul_of_nonneg_left ?_ (σ t).2.1
     rw [← Nat.cast_ofNat, ← Nat.cast_mul, ← Nat.pow_succ']
     exact (Nat.lt_succ_floor _).le.trans <| Nat.cast_le.2 <| Nat.succ_le_of_lt <|
-      Nat.lt_pow_succ_log_self one_lt_two _⟩
-  exact γ n t'
+      Nat.lt_pow_succ_log_self one_lt_two _
 
 /-- On closed intervals [1 - 2 ^ n, 1 - 2 ^ (n + 1)], `sigmaConcatFun γ x` agrees with a
   reparametrisation of `γ n`. -/
 private lemma Path.sigmaConcatFun_eqOn {X : Type*} [TopologicalSpace X] {s : ℕ → X}
     (γ : (n : ℕ) → Path (s n) (s n.succ)) {x : X} (n : ℕ) :
     Set.EqOn (sigmaConcatFun γ x) (fun t ↦ (γ n).extend (2 * (1 - (1 - t) * (2 ^ n))))
-    (Set.Icc (σ ⟨1 / 2 ^ n, by simp [inv_le_one₀, one_le_pow₀]⟩)
-      (σ ⟨1 / 2 ^ (n+1), by simp [inv_le_one₀, one_le_pow₀]⟩)) := fun t ht ↦ by
+    (Set.Icc (σ ⟨(2 ^ n)⁻¹, by simp [inv_le_one₀, one_le_pow₀]⟩)
+      (σ ⟨(2 ^ (n+1))⁻¹, by simp [inv_le_one₀, one_le_pow₀]⟩)) := fun t ht ↦ by
   simp only [Set.mem_Icc, ← Subtype.coe_le_coe, coe_symm_eq] at ht
   have ht' : t < 1 := coe_lt_one.1 <| ht.2.trans_lt <| by simp
   have ht'' : 1 - t.1 > 0 := by linarith [coe_lt_one.2 ht']
@@ -220,26 +217,26 @@ private lemma Path.sigmaConcatFun_eqOn {X : Type*} [TopologicalSpace X] {s : ℕ
     rw [Set.projIcc_of_mem _ <| Set.mem_Icc.1 ⟨?_, ?_⟩]
     · simp [hn]
     · have h := mul_le_mul_of_nonneg_right ht.1 (a := 2 ^ n) (by simp)
-      rw [sub_mul, IsUnit.div_mul_cancel (by simp)] at h
+      rw [sub_mul, inv_mul_cancel₀ (by simp)] at h
       linarith
     · have h := mul_le_mul_of_nonneg_right ht.2 (a := 2 ^ (n+1)) (by simp)
-      rw [sub_mul, IsUnit.div_mul_cancel (by simp), pow_succ] at h
+      rw [sub_mul, inv_mul_cancel₀ (by simp), pow_succ] at h
       linarith
   · replace hn : Nat.log 2 ⌊(1 - t : ℝ)⁻¹⌋₊ = n + 1 := by
       refine le_antisymm ?_ <| n.succ_le_of_lt <| (Ne.symm hn).lt_of_le ?_
       · refine (Nat.log_mono_right <| Nat.floor_le_floor <| inv_anti₀ (by simp) <|
           le_sub_comm.1 ht.2).trans ?_
-        rw [← Nat.cast_ofNat (R := ℝ), ← Nat.cast_pow, one_div, inv_inv, Nat.floor_natCast,
+        rw [← Nat.cast_ofNat (R := ℝ), ← Nat.cast_pow, inv_inv, Nat.floor_natCast,
           Nat.log_pow one_lt_two _]
       · refine le_trans ?_ <| Nat.log_mono_right <| Nat.floor_le_floor <| inv_anti₀ ht'' <|
           sub_le_comm.1 ht.1
-        rw [← Nat.cast_ofNat (R := ℝ), ← Nat.cast_pow, one_div, inv_inv, Nat.floor_natCast,
+        rw [← Nat.cast_ofNat (R := ℝ), ← Nat.cast_pow, inv_inv, Nat.floor_natCast,
           Nat.log_pow one_lt_two _]
-    have ht'' : (2 * (1 - (1 - t.1) * 2 ^ n)) = 1 := by
-      suffices h : t.1 = 1 - 1 / 2 ^ (n + 1) by
+    have ht'' : 2 * (1 - (1 - t.1) * 2 ^ n) = 1 := by
+      suffices h : t.1 = 1 - (2 ^ (n + 1))⁻¹ by
         rw [h, pow_succ]; simp [mul_sub, show (2 : ℝ) - 1 = 1 by ring]
       refine le_antisymm ht.2 ?_
-      rw [sub_le_comm, ← hn, ← Nat.cast_ofNat (R := ℝ), ← Nat.cast_pow, one_div]
+      rw [sub_le_comm, ← hn, ← Nat.cast_ofNat (R := ℝ), ← Nat.cast_pow]
       refine le_trans (by rw [inv_inv]) <| inv_anti₀ (by simp) <| (Nat.cast_le.2 <|
         Nat.pow_log_le_self 2 ?_).trans <| Nat.floor_le (inv_pos.2 ht'').le
       exact (Nat.floor_pos.2 <| (one_le_inv₀ ht'').2 (σ t).2.2).ne.symm
@@ -260,32 +257,32 @@ private noncomputable def Path.sigmaConcat {X : Type*} [TopologicalSpace X] {s :
         fun n ↦ (Continuous.continuousOn (by continuity)).congr <| sigmaConcatFun_eqOn γ n
       cases h : Nat.log 2 ⌊(σ t : ℝ)⁻¹⌋₊ with
       | zero =>
-        refine ContinuousOn.continuousAt (s := Set.Iic ⟨1 / 2, by simp, one_half_lt_one.le⟩) ?_ ?_
+        refine ContinuousOn.continuousAt (s := Set.Iic ⟨2⁻¹, by simp, ?_⟩) ?_ ?_
         · convert hγ' 0 using 1
           rw [← Set.Icc_bot, show (⊥ : I) = 0 by rfl]; convert rfl using 2 <;> ext
-          all_goals simp [show (1 : ℝ) - 2⁻¹ = 2⁻¹ by ring]
-        · refine Iic_mem_nhds <| Subtype.coe_lt_coe.1 (?_ : t.1 < 1 / 2)
+          all_goals simp [show (1 : ℝ) - 2⁻¹ = 2⁻¹ by ring, (one_div (2 : ℝ)) ▸ one_half_lt_one.le]
+        · refine Iic_mem_nhds <| Subtype.coe_lt_coe.1 (?_ : t.1 < 2⁻¹)
           rw [Nat.log_eq_zero_iff, or_iff_left one_lt_two.not_le, Nat.floor_lt (inv_pos.2 ht'').le,
             inv_lt_comm₀ (by exact ht'') two_pos, coe_symm_eq, lt_sub_comm] at h
           exact h.trans_eq (by ring)
       | succ n =>
         refine ContinuousOn.continuousAt (s := Set.Icc
-          ⟨1 - 1 / 2 ^ n, by simp [inv_le_one_of_one_le₀ <| one_le_pow₀ one_le_two (M₀ := ℝ)]⟩
-          ⟨1 - 1 / 2 ^ (n + 2), by
+          ⟨1 - (2 ^ n)⁻¹, by simp [inv_le_one_of_one_le₀ <| one_le_pow₀ one_le_two (M₀ := ℝ)]⟩
+          ⟨1 - (2 ^ (n + 2))⁻¹, by
             simp [inv_le_one_of_one_le₀ <| one_le_pow₀ one_le_two (M₀ := ℝ)]⟩) ?_ ?_
         · convert (hγ' n).union_isClosed isClosed_Icc isClosed_Icc <| hγ' (n + 1) using 1
           rw [add_assoc, one_add_one_eq_two, Set.Icc_union_Icc_eq_Icc]
           · rfl
-          · simp only [one_div, symm_le_symm, Subtype.mk_le_mk]
+          · simp only [symm_le_symm, Subtype.mk_le_mk]
             exact inv_anti₀ (by simp) <| pow_le_pow_right₀ one_le_two (by simp)
-          · simp only [one_div, symm_le_symm, Subtype.mk_le_mk]
+          · simp only [symm_le_symm, Subtype.mk_le_mk]
             exact inv_anti₀ (by simp) <| pow_le_pow_right₀ one_le_two (by simp)
         · refine Icc_mem_nhds ?_ ?_ <;> rw [← Subtype.coe_lt_coe, Subtype.coe_mk]
           · replace h := h.symm.le; rw [← Nat.pow_le_iff_le_log one_lt_two (Nat.floor_pos.2 <|
               (one_le_inv₀ ht'').2 (σ t).2.2).ne.symm, Nat.le_floor_iff (inv_pos.2 ht'').le,
               le_inv_comm₀ (by simp) ht'', coe_symm_eq, sub_le_comm] at h
-            refine (sub_lt_sub_left ?_ 1).trans_le h; rw [one_div]
-            refine inv_strictAnti₀ (by simp) ?_; rw [Nat.cast_pow, Nat.cast_ofNat]
+            refine (sub_lt_sub_left (inv_strictAnti₀ (by simp) ?_) 1).trans_le h
+            rw [Nat.cast_pow, Nat.cast_ofNat]
             exact pow_lt_pow_right₀ one_lt_two n.lt_succ_self
           · replace h := h.trans_lt (Nat.lt_succ_self _); rw [← Nat.lt_pow_iff_log_lt one_lt_two
               (Nat.floor_pos.2 <| (one_le_inv₀ ht'').2 (σ t).2.2).ne.symm, Nat.floor_lt
@@ -296,7 +293,7 @@ private noncomputable def Path.sigmaConcat {X : Type*} [TopologicalSpace X] {s :
       convert hb.1.tendsto_right_iff.2 fun n _ ↦ ?_ using 1
       · simp [sigmaConcatFun]
       rw [eventually_nhds_iff]
-      use Set.Ioi ⟨1 - 1 / 2 ^ n, by rw [sub_nonneg, div_le_one] <;> simp [one_le_pow₀], by simp⟩
+      use Set.Ioi ⟨1 - (2 ^ n)⁻¹, by rw [sub_nonneg, inv_le_one₀] <;> simp [one_le_pow₀], by simp⟩
       refine ⟨fun t ht ↦ ?_, isOpen_Ioi, by simp [← coe_lt_one]⟩
       by_cases ht' : t < 1
       · have ht'' := symm_one ▸ symm_lt_symm.2 ht'; have ht''' := coe_pos.2 ht''
@@ -322,9 +319,9 @@ private lemma Path.sigmaConcat_applyAt {X : Type*} [TopologicalSpace X] {s : ℕ
     γ n t := by
   rw [sigmaConcat, coe_mk_mk]
   refine (sigmaConcatFun_eqOn γ n ⟨?_, ?_⟩).trans ?_
-  · rw [symm_le_symm, Subtype.mk_le_mk]
+  · rw [symm_le_symm, Subtype.mk_le_mk, ← one_div]
     exact div_le_div_of_nonneg_right (by linarith [t.2.1]) (by simp)
-  · rw [symm_le_symm, Subtype.mk_le_mk, pow_succ', ← div_div]
+  · rw [symm_le_symm, Subtype.mk_le_mk, pow_succ', ← one_div, ← div_div]
     exact div_le_div_of_nonneg_right (by linarith [t.2.2]) (by simp)
   · simp [mul_div_cancel₀ t.1 two_pos.ne.symm]
 
@@ -354,17 +351,17 @@ private lemma LocPathConnectedSpace.eq_coinduced_paths [FirstCountableTopology X
   -- By assumption, this preimage is closed.
   specialize hu γ'; rw [γ'.coe_mk, ← isClosed_compl_iff, ← u.preimage_compl] at hu
   -- It thus suffices that the sequence `1, 1/2, 3/4, ...` lies in this preimage and tends to `1`.
-  refine hu.isSeqClosed (x := fun n ↦ σ ⟨1 / 2 ^ n, by simp [inv_le_one₀, one_le_pow₀]⟩) ?_ ?_
+  refine hu.isSeqClosed (x := fun n ↦ σ ⟨(2 ^ n)⁻¹, by simp [inv_le_one₀, one_le_pow₀]⟩) ?_ ?_
   · intro n; rw [Set.mem_preimage]; dsimp [γ']
     have h := Path.sigmaConcat_applyAt (γ := γ) (x := x) (hb := hbx) (hγ := hγ) n 0
-    simp_rw [Set.Icc.coe_zero, zero_div, sub_zero, Path.source] at h
+    simp_rw [Set.Icc.coe_zero, zero_div, sub_zero, Path.source, one_div] at h
     rw [h]; exact hs _
   · rw [tendsto_subtype_rng]
     simp_rw [coe_symm_eq, Set.Icc.coe_one]; rw [← sub_zero 1]
     refine Filter.Tendsto.sub (by simp) ?_
-    simp_rw [sub_zero, ← one_div_pow]
+    simp_rw [← inv_pow]
     apply tendsto_pow_atTop_nhds_zero_of_abs_lt_one
-    rw [abs_of_pos (by simp)]; exact one_half_lt_one
+    rw [abs_of_pos (by simp), ← one_div]; exact one_half_lt_one
 
 /-- A first-countable space is delta-generated iff it is locally path-connected.-/
 theorem FirstCountableTopology.deltaGeneratedSpace_iff [FirstCountableTopology X] :
