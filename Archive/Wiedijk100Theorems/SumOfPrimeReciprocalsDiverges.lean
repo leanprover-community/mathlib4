@@ -5,6 +5,7 @@ Authors: Manuel Candales
 -/
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Data.Nat.Squarefree
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # Divergence of the Prime Reciprocal Series
@@ -227,7 +228,6 @@ theorem Real.tendsto_sum_one_div_prime_atTop :
   refine lt_irrefl (x : ℝ) ?_
   calc
     (x : ℝ) = (#U' : ℝ) + (#M' : ℝ) := by assumption_mod_cast
-    _ < x / 2 + x / 2 := add_lt_add_of_lt_of_le h3 h4
-    _ = x := add_halves (x : ℝ)
+    _ < x := by linear_combination h3 + h4
 
 end Theorems100
