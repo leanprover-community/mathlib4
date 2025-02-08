@@ -202,12 +202,6 @@ end
 instance : Inhabited (ModuleCat R) :=
   ⟨of R R⟩
 
-instance moduleHasForget : HasForget.{v} (ModuleCat.{v} R) where
-  forget :=
-    { obj := fun R => R
-      map := fun f => f.hom }
-  forget_faithful := ⟨fun h => by ext x; simpa using congrFun h x⟩
-
 /- Not a `@[simp]` lemma since it will rewrite the (co)domain of maps and cause
 definitional equality issues. -/
 lemma forget_obj {M : ModuleCat.{v} R} : (forget (ModuleCat.{v} R)).obj M = M := rfl

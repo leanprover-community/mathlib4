@@ -241,6 +241,9 @@ lemma addLECancellable_of_ne_top [Preorder α] [ContravariantClass α α (· + �
 lemma addLECancellable_of_lt_top [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)]
     (ha : a < ⊤) : AddLECancellable a := addLECancellable_of_ne_top ha.ne
 
+lemma addLECancellable_coe [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)] (a : α) :
+    AddLECancellable (a : WithTop α) := addLECancellable_of_ne_top coe_ne_top
+
 lemma addLECancellable_iff_ne_top [Nonempty α] [Preorder α]
     [ContravariantClass α α (· + ·) (· ≤ ·)] : AddLECancellable a ↔ a ≠ ⊤ where
   mp := by rintro h rfl; exact (coe_lt_top <| Classical.arbitrary _).not_le <| h <| by simp
