@@ -277,9 +277,14 @@ theorem pullbackDiagonalMapIdIso_inv_snd_snd :
   rw [Iso.inv_comp_eq]
   simp
 
-theorem pullback.diagonal_comp (f : X ⟶ Y) (g : Y ⟶ Z) [HasPullback f f] [HasPullback g g]
-    [HasPullback (f ≫ g) (f ≫ g)] :
+theorem pullback.diagonal_comp (f : X ⟶ Y) (g : Y ⟶ Z) :
     diagonal (f ≫ g) = diagonal f ≫ (pullbackDiagonalMapIdIso f f g).inv ≫ pullback.snd _ _ := by
+  ext <;> simp
+
+@[reassoc]
+lemma pullback.comp_diagonal (f : X ⟶ Y) (g : Y ⟶ Z) :
+    f ≫ pullback.diagonal g = pullback.diagonal (f ≫ g) ≫
+      pullback.map (f ≫ g) (f ≫ g) g g f f (𝟙 Z) (by simp) (by simp) := by
   ext <;> simp
 
 theorem pullback_map_diagonal_isPullback :

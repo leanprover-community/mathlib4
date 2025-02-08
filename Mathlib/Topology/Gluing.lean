@@ -428,7 +428,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
   · rw [← Set.image_preimage_eq_inter_range]
     apply (Opens.isOpenEmbedding (X := TopCat.of α) (U i)).isOpenMap
     convert hs i using 1
-    erw [← ι_fromOpenSubsetsGlue, coe_comp, Set.preimage_comp]
+    rw [← ι_fromOpenSubsetsGlue, coe_comp, Set.preimage_comp]
     congr! 1
     exact Set.preimage_image_eq _ (fromOpenSubsetsGlue_injective U)
   · refine ⟨Set.mem_image_of_mem _ hx, ?_⟩
