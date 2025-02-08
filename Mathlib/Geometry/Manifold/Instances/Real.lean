@@ -3,8 +3,8 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Geometry.Manifold.InteriorBoundary
-import Mathlib.Geometry.Manifold.IsManifold
+import Mathlib.Geometry.Manifold.IsManifold.Basic
+import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
@@ -13,7 +13,8 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 We introduce the necessary bits to be able to define manifolds modelled over `ℝ^n`, boundaryless
 or with boundary or with corners. As a concrete example, we construct explicitly the manifold with
 boundary structure on the real interval `[x, y]`, and prove that its boundary is indeed `{x,y}`
-whenever `x < y`.
+whenever `x < y`. As a corollary, a product `M × [x, y]` with a manifold `M` without boundary
+has boundary `M × {x, y}`.
 
 More specifically, we introduce
 * `modelWithCornersEuclideanHalfSpace n :
@@ -116,7 +117,6 @@ instance : LocPathConnectedSpace (EuclideanQuadrant n) :=
 theorem range_euclideanHalfSpace (n : ℕ) [NeZero n] :
     (range fun x : EuclideanHalfSpace n => x.val) = { y | 0 ≤ y 0 } :=
   Subtype.range_val
-@[deprecated (since := "2024-04-05")] alias range_half_space := range_euclideanHalfSpace
 
 open ENNReal in
 @[simp]
@@ -163,7 +163,6 @@ theorem frontier_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
 theorem range_euclideanQuadrant (n : ℕ) :
     (range fun x : EuclideanQuadrant n => x.val) = { y | ∀ i : Fin n, 0 ≤ y i } :=
   Subtype.range_val
-@[deprecated (since := "2024-04-05")] alias range_quadrant := range_euclideanQuadrant
 
 end
 
@@ -451,8 +450,16 @@ lemma boundary_Icc : (𝓡∂ 1).boundary (Icc x y) = {⊥, ⊤} := by
       constructor <;> by_contra h <;> rw [congrArg Subtype.val h] at hp
       exacts [left_mem_Ioo.mp hp, right_mem_Ioo.mp hp]
 
-/-- The manifold structure on `[x, y]` is smooth.
--/
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+
+/-- A product `M × [x,y]` for `M` boundaryless has boundary `M × {x, y}`. -/
+lemma boundary_product [I.Boundaryless] :
+    (I.prod (𝓡∂ 1)).boundary (M × Icc x y) = Set.prod univ {⊥, ⊤} := by
+  rw [I.boundary_of_boundaryless_left, boundary_Icc]
+
+/-- The manifold structure on `[x, y]` is smooth. -/
 instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
     IsManifold (𝓡∂ 1) n (Icc x y) := by
   have M : ContDiff ℝ n (show EuclideanSpace ℝ (Fin 1) → EuclideanSpace ℝ (Fin 1)

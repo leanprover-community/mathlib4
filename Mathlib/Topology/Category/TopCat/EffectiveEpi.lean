@@ -29,21 +29,28 @@ noncomputable
 def effectiveEpiStructOfQuotientMap {B X : TopCat.{u}} (π : X ⟶ B) (hπ : IsQuotientMap π) :
     EffectiveEpiStruct π where
   /- `IsQuotientMap.lift` gives the required morphism -/
-  desc e h := hπ.lift e fun a b hab ↦
-    DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
+  desc e h := ofHom <| hπ.lift e.hom fun a b hab ↦
+    CategoryTheory.congr_fun (h
+      (ofHom ⟨fun _ ↦ a, continuous_const⟩)
+      (ofHom ⟨fun _ ↦ b, continuous_const⟩)
     (by ext; exact hab)) a
   /- `IsQuotientMap.lift_comp` gives the factorisation -/
-  fac e h := (hπ.lift_comp e
-    fun a b hab ↦ DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
+  fac e h := hom_ext (hπ.lift_comp e.hom
+    fun a b hab ↦ CategoryTheory.congr_fun (h
+      (ofHom ⟨fun _ ↦ a, continuous_const⟩)
+      (ofHom ⟨fun _ ↦ b, continuous_const⟩)
     (by ext; exact hab)) a)
   /- Uniqueness follows from the fact that `IsQuotientMap.lift` is an equivalence (given by
   `IsQuotientMap.liftEquiv`). -/
   uniq e h g hm := by
-    suffices g = hπ.liftEquiv ⟨e,
-      fun a b hab ↦ DFunLike.congr_fun
-        (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩ (by ext; exact hab))
-        a⟩ by assumption
-    rw [← Equiv.symm_apply_eq hπ.liftEquiv]
+    suffices g = ofHom (hπ.liftEquiv ⟨e.hom,
+      fun a b hab ↦ CategoryTheory.congr_fun (h
+          (ofHom ⟨fun _ ↦ a, continuous_const⟩)
+          (ofHom ⟨fun _ ↦ b, continuous_const⟩)
+          (by ext; exact hab))
+        a⟩) by assumption
+    apply hom_ext
+    rw [hom_ofHom, ← Equiv.symm_apply_eq hπ.liftEquiv]
     ext
     simp only [IsQuotientMap.liftEquiv_symm_apply_coe, ContinuousMap.comp_apply, ← hm]
     rfl
