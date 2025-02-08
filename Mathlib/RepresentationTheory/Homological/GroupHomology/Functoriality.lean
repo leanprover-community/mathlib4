@@ -219,7 +219,7 @@ theorem H0π_comp_H0Map :
 theorem map_comp_isoH0_hom :
     map f φ 0 ≫ (isoH0 B).hom = (isoH0 A).hom ≫ H0Map f φ := by
   simp [isoZeroCycles, ← cancel_epi (groupHomologyπ _ _),
-    chainsMap_f_0_comp_zeroChainsLequiv_assoc f φ]
+    chainsMap_f_0_comp_zeroChainsLequiv_assoc f φ, ← LinearEquiv.toModuleIso_hom]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map from the short complex `(G × G →₀ A) --dOne--> (G →₀ A) --dZero--> A`
@@ -290,7 +290,7 @@ lemma cyclesMap_comp_isoOneCycles_hom :
       (isoOneCycles A).hom ≫ mapOneCycles f φ := by
   simp_rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i, mapOneCycles,
     Category.assoc, cyclesMap'_i, isoOneCycles, ← Category.assoc]
-  simp [chainsMap_f_1_comp_oneChainsLequiv f φ, mapShortComplexH1]
+  simp [chainsMap_f_1_comp_oneChainsLequiv f φ, mapShortComplexH1, ← LinearEquiv.toModuleIso_hom]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map `H₁(G, A) ⟶ H₁(H, B)`. -/
@@ -395,7 +395,7 @@ lemma cyclesMap_comp_isoTwoCycles_hom :
       (isoTwoCycles A).hom ≫ mapTwoCycles f φ := by
   simp_rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH2 B)).i, mapTwoCycles,
       Category.assoc, cyclesMap'_i, isoTwoCycles, ← Category.assoc]
-  simp [chainsMap_f_2_comp_twoChainsLequiv f φ, mapShortComplexH2]
+  simp [chainsMap_f_2_comp_twoChainsLequiv f φ, mapShortComplexH2, ← LinearEquiv.toModuleIso_hom]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map `H₂(G, A) ⟶ H₂(H, B)`. -/
