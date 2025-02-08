@@ -179,8 +179,8 @@ variable [Preorder α] [CanonicallyOrderedMul α] {a b : α}
 theorem one_lt_of_gt (h : a < b) : 1 < b :=
   (one_le _).trans_lt h
 
-alias LT.lt.one_lt := one_lt_of_gt
 alias LT.lt.pos := pos_of_gt
+@[to_additive existing] alias LT.lt.one_lt := one_lt_of_gt
 
 end Preorder
 
@@ -203,8 +203,8 @@ theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
 theorem one_lt_of_ne_one (h : a ≠ 1) : 1 < a :=
   one_lt_iff_ne_one.2 h
 
-alias NE.ne.one_lt := one_lt_of_ne_one
 alias NE.ne.pos := pos_of_ne_zero
+@[to_additive existing] alias NE.ne.one_lt := one_lt_of_ne_one
 
 @[to_additive]
 theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_left Eq.symm
