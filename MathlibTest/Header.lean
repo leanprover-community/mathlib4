@@ -9,7 +9,7 @@ import Lake
 import Mathlib.Tactic.Linter.Header
 import /- -/ Mathlib.Tactic -- the `TextBased` linter does not flag this `broadImport`
 import Mathlib.Tactic.Have
-import Mathlib.Deprecated.Subfield
+import Mathlib.Deprecated.MinMax
 
 /--
 warning: In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter (see e.g. https://github.com/leanprover-community/mathlib4/pull/13779). Please consider carefully if this import is useful and make sure to benchmark it. If this is fine, feel free to silence this linter.

@@ -50,13 +50,15 @@ class HundredTheorem:
     number: str
     # a human-readable title
     title: str
+    # If a theorem is merely *stated* in mathlib, the name of the declaration
+    statement: Optional[str] = None
     # if a theorem is formalised in mathlib, the archive or counterexamples,
     # the name of the corresponding declaration (optional)
     decl: Optional[str] = None
     # like |decl|, but a list of declarations (if one theorem is split into multiple declarations) (optional)
     decls: Optional[List[str]] = None
     # name(s) of the author(s) of this formalization (optional)
-    author: Optional[str] = None
+    authors: Optional[str] = None
     # Date of the formalization, in the form `YYYY`, `YYYY-MM` or `YYYY-MM-DD` (optional)
     date: Optional[str] = None
     links: Optional[Mapping[str, str]] = None
@@ -77,13 +79,15 @@ class ThousandPlusTheorem:
     wikidata: str
     # a human-readable title
     title: str
+    # If a theorem is merely *stated* in mathlib, the name of the declaration
+    statement: Optional[str] = None
     # if a theorem is formalised in mathlib, the archive or counterexamples,
     # the name of the corresponding declaration (optional)
     decl: Optional[str] = None
     # like |decl|, but a list of declarations (if one theorem is split into multiple declarations) (optional)
     decls: Optional[List[str]] = None
     # name(s) of the author(s) of this formalization (optional)
-    author: Optional[str] = None
+    authors: Optional[str] = None
     # Date of the formalization, in the form `YYYY`, `YYYY-MM` or `YYYY-MM-DD` (optional)
     date: Optional[str] = None
     # for external projects, an URL referring to the result
@@ -140,13 +144,20 @@ for index, entry in thousand.items():
     try:
         _thm = ThousandPlusTheorem(index, **entry)
     except TypeError as e:
-        print(f"error: entry for theorem {index} is invalid: {e}")
+        print(f"error: entry for theorem {index} is invalid: {e}", file=sys.stderr)
         errors += 1
     # Also verify that the |decl| and |decls| fields are not *both* provided.
     if _thm.decl and _thm.decls:
         print(
-            f"warning: entry for theorem {index} has both a decl and a decls field; "
+            f"error: entry for theorem {index} has both a decl and a decls field; "
             "please only provide one of these",
+            file=sys.stderr,
+        )
+        errors += 1
+    elif _thm.statement and (_thm.decl or _thm.decls):
+        print(
+            f"error: entry for theorem {index} has both a statement and a decl(s) field: "
+            "the former is superfluous; please remove it",
             file=sys.stderr,
         )
         errors += 1

@@ -55,7 +55,7 @@ namespace Functor
 -- "weigh more" than structural maps.
 -- (However by this argument `associativity` is currently stated backwards!)
 /-- A functor `F : C ⥤ D` between monoidal categories is lax monoidal if it is
-equipped with morphisms `ε : 𝟙 _D ⟶ F.obj (𝟙_ C)` and `μ X Y : F.obj X ⊗ F.obj Y ⟶ F.obj (X ⊗ Y)`,
+equipped with morphisms `ε : 𝟙_ D ⟶ F.obj (𝟙_ C)` and `μ X Y : F.obj X ⊗ F.obj Y ⟶ F.obj (X ⊗ Y)`,
 satisfying the appropriate coherences. -/
 class LaxMonoidal where
   /-- unit morphism -/

@@ -88,4 +88,28 @@ lemma propertyIsLocal : PropertyIsLocal Flat where
     (stableUnderComposition.stableUnderCompositionWithLocalizationAway
       holdsForLocalizationAway).right
 
+lemma ofLocalizationPrime : OfLocalizationPrime Flat := by
+  introv R h
+  algebraize_only [f]
+  rw [RingHom.Flat]
+  apply Module.flat_of_isLocalized_maximal S S (fun P ↦ Localization.AtPrime P)
+    (fun P ↦ Algebra.linearMap S _)
+  intro P _
+  algebraize_only [Localization.localRingHom (Ideal.comap f P) P f rfl]
+  have : IsScalarTower R (Localization.AtPrime (Ideal.comap f P)) (Localization.AtPrime P) :=
+    .of_algebraMap_eq fun x ↦ (Localization.localRingHom_to_map _ _ _ rfl x).symm
+  replace h : Module.Flat (Localization.AtPrime (Ideal.comap f P)) (Localization.AtPrime P) := h ..
+  exact Module.Flat.trans R (Localization.AtPrime <| Ideal.comap f P) (Localization.AtPrime P)
+
+lemma localRingHom {f : R →+* S} (hf : f.Flat)
+    (P : Ideal S) [P.IsPrime] (Q : Ideal R) [Q.IsPrime] (hQP : Q = Ideal.comap f P) :
+    (Localization.localRingHom Q P f hQP).Flat := by
+  subst hQP
+  algebraize [f, Localization.localRingHom (Ideal.comap f P) P f rfl]
+  have : IsScalarTower R (Localization.AtPrime (Ideal.comap f P)) (Localization.AtPrime P) :=
+    .of_algebraMap_eq fun x ↦ (Localization.localRingHom_to_map _ _ _ rfl x).symm
+  rw [RingHom.Flat, Module.flat_iff_of_isLocalization
+    (S := (Localization.AtPrime (Ideal.comap f P))) (p := (Ideal.comap f P).primeCompl)]
+  exact Module.Flat.trans R S (Localization.AtPrime P)
+
 end RingHom.Flat

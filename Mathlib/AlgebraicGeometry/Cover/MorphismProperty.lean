@@ -113,7 +113,7 @@ def Cover.bind [P.IsStableUnderComposition] (f : ∀ x : 𝒰.J, (𝒰.obj x).Co
     rcases (f (𝒰.f x)).covers y with ⟨z, hz⟩
     change x ∈ Set.range ((f (𝒰.f x)).map ((f (𝒰.f x)).f y) ≫ 𝒰.map (𝒰.f x)).base
     use z
-    erw [comp_apply]
+    simp only [comp_coeBase, TopCat.hom_comp, ContinuousMap.comp_apply]
     rw [hz, hy]
   map_prop _ := P.comp_mem _ _ ((f _).map_prop _) (𝒰.map_prop _)
 
