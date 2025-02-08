@@ -262,9 +262,8 @@ namespace Embedding
 theorem eqToHom_comp (h : M = N) (h' : N = P) :
     (eqToHom h').comp (eqToHom h) = eqToHom (h.trans h') := eqToHom_trans h h'
 
-@[simp]
 theorem eqToHom_comp_apply (h : M = N) (h' : N = P) (m : M) :
-    (eqToHom h' : N ↪[L] P) ((eqToHom h : M ↪[L] N) m) = eqToHom (h.trans h') m := by
+    eqToHom h' (eqToHom h m) = eqToHom (h.trans h') m := by
   cases h
   rfl
 
