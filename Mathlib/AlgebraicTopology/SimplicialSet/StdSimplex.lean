@@ -71,9 +71,9 @@ lemma ext {n d : ℕ} (x y : Δ[n] _[d]) (h : ∀ (i : Fin (d + 1)), x i = y i) 
 
 @[simp]
 lemma objEquiv_toOrderHom_apply {n i : ℕ}
-    (x : (stdSimplex.{u} _[n]).obj (op (.mk i))) (j : Fin (i + 1)) :
+    (x : (stdSimplex.{u} ^[n]).obj (op (.mk i))) (j : Fin (i + 1)) :
     DFunLike.coe (F := Fin (i + 1) →o Fin (n + 1))
-      ((DFunLike.coe (F := Δ[n].obj (op [i]) ≃ (([i] : SimplexCategory) ⟶ [n]))
+      ((DFunLike.coe (F := Δ[n].obj (op ⦋i⦌) ≃ (⦋i⦌ ⟶ ⦋n⦌))
         objEquiv x)).toOrderHom j = x j :=
   rfl
 
@@ -116,13 +116,6 @@ def _root_.SSet.yonedaEquiv {X : SSet.{u}} {n : SimplexCategory} :
 lemma yonedaEquiv_map {n m : SimplexCategory} (f : n ⟶ m) :
     yonedaEquiv.{u} (stdSimplex.map f) = objEquiv.symm f :=
   yonedaEquiv.symm.injective rfl
-
-/-- The unique non-degenerate `n`-simplex in `Δ[n]`. -/
-def id (n : ℕ) : Δ[n] _[n] := yonedaEquiv (𝟙 Δ[n])
-
-lemma id_eq_objEquiv_symm (n : ℕ) : id n = objEquiv.symm (𝟙 _) := rfl
-
-lemma objEquiv_id (n : ℕ) : objEquiv (id n) = 𝟙 _ := rfl
 
 /-- The (degenerate) `m`-simplex in the standard simplex concentrated in vertex `k`. -/
 def const (n : ℕ) (k : Fin (n+1)) (m : SimplexCategoryᵒᵖ) : Δ[n].obj m :=
@@ -299,7 +292,7 @@ namespace Augmented
 
 -- Porting note: an instance of `Subsingleton (⊤_ (Type u))` was added in
 -- `CategoryTheory.Limits.Types` to ease the automation in this definition
-/-- The functor which sends `[n]` to the simplicial set `Δ[n]` equipped by
+/-- The functor which sends `⦋n⦌` to the simplicial set `Δ[n]` equipped by
 the obvious augmentation towards the terminal object of the category of sets. -/
 @[simps]
 noncomputable def stdSimplex : SimplexCategory ⥤ SSet.Augmented.{u} where

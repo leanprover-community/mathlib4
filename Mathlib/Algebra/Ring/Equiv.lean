@@ -231,6 +231,10 @@ theorem refl_apply (x : R) : RingEquiv.refl R x = x :=
   rfl
 
 @[simp]
+theorem coe_refl_id (R : Type*) [Mul R] [Add R] :
+⇑(RingEquiv.refl R) = id := rfl
+
+@[simp]
 theorem coe_addEquiv_refl : (RingEquiv.refl R : R ≃+ R) = AddEquiv.refl R :=
   rfl
 

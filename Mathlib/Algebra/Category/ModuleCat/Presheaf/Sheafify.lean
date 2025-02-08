@@ -32,8 +32,6 @@ namespace CategoryTheory
 
 namespace Presieve.FamilyOfElements
 
-attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike
-
 section smul
 
 variable {R : Cᵒᵖ ⥤ RingCat.{u}} {M : PresheafOfModules.{v} R} {X : C} {P : Presieve X}

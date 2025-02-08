@@ -217,7 +217,7 @@ def mkOneInstance (n cls : Name) (tac : MVarId → TermElabM Unit)
     let params := params.pop
     let tgt := mkAppN tgt params
     let tgt ← mkInst cls tgt
-    params.zipWithIndex.foldrM (fun (param, i) tgt => do
+    params.zipIdx.foldrM (fun (param, i) tgt => do
       -- add typeclass hypothesis for each inductive parameter
       let tgt ← (do
         guard (i < decl.numParams)

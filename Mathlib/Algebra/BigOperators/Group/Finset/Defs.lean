@@ -312,9 +312,6 @@ theorem prod_empty : ∏ x ∈ ∅, f x = 1 :=
 theorem prod_of_isEmpty [IsEmpty α] (s : Finset α) : ∏ i ∈ s, f i = 1 := by
   rw [eq_empty_of_isEmpty s, prod_empty]
 
-@[deprecated (since := "2024-06-11")] alias prod_of_empty := prod_of_isEmpty
-@[deprecated (since := "2024-06-11")] alias sum_of_empty := sum_of_isEmpty
-
 @[to_additive (attr := simp)]
 theorem prod_const_one : (∏ _x ∈ s, (1 : β)) = 1 := by
   simp only [Finset.prod, Multiset.map_const', Multiset.prod_replicate, one_pow]
