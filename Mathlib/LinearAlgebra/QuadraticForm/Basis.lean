@@ -45,12 +45,7 @@ theorem map_finsuppSum' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R
   rw [recover]
   exact Q.map_sum' _ (fun i => g i (f i))
 
-lemma Sym2_smul (f : ι → ι → R) (g : ι → ι → N) (hf : ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁)
-    (hg : ∀ a₁ a₂, g a₁ a₂ = g a₂ a₁) :
-    Sym2.lift ⟨f, hf⟩ • Sym2.lift ⟨g, hg⟩ = Sym2.lift ⟨f • g, fun _ _ => by
-      rw [Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', hf, hg]⟩ := by
-  ext ⟨i,j⟩
-  simp_all only [Pi.smul_apply', Sym2.lift_mk]
+
 
 lemma partial_result1 (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
     Q.polar_sym2 ∘ Sym2.map (l * g) = Sym2.lift ⟨fun i j => l j • l i • polar (⇑Q) (g i) (g j),
@@ -69,7 +64,7 @@ lemma partial_result2 (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) 
       Sym2.lift ⟨fun i j => l j • l i, fun a b => by
         simp only [smul_eq_mul, mul_comm]⟩ • Sym2.lift ⟨fun i j => polar (⇑Q) (g i) (g j),
       fun _ _ => by simp_rw [polar_comm]⟩ := by
-  rw [Sym2_smul]
+  rw [Sym2.smul]
   ext ⟨i,j⟩
   simp_all only [Sym2.lift_mk, Pi.smul_apply']
   rw [← smul_assoc]

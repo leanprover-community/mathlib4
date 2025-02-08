@@ -7,6 +7,7 @@ import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Sym.Basic
 import Mathlib.Data.Sym.Sym2.Init
 import Mathlib.Data.SetLike.Basic
+import Mathlib.Algebra.Group.Action.Pi
 
 /-!
 # The symmetric square
@@ -779,5 +780,12 @@ instance [Nontrivial α] : Nontrivial (Sym2 α) :=
 -- TODO: use a sort order if available, https://github.com/leanprover-community/mathlib/issues/18166
 unsafe instance [Repr α] : Repr (Sym2 α) where
   reprPrec s _ := f!"s({repr s.unquot.1}, {repr s.unquot.2})"
+
+lemma smul {ι R N} [SMul R N] (f : ι → ι → R) (g : ι → ι → N) (hf : ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁)
+    (hg : ∀ a₁ a₂, g a₁ a₂ = g a₂ a₁) :
+    Sym2.lift ⟨f, hf⟩ • Sym2.lift ⟨g, hg⟩ = Sym2.lift ⟨f • g, fun _ _ => by
+      rw [Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', hf, hg]⟩ := by
+  ext ⟨i,j⟩
+  simp_all only [Pi.smul_apply', Sym2.lift_mk]
 
 end Sym2
