@@ -174,7 +174,7 @@ instance commRingStructureSheafInTypeObj (U : (Opens (ProjectiveSpectrum.top �
 
 /-- The structure presheaf, valued in `CommRing`, constructed by dressing up the `Type` valued
 structure presheaf. -/
-@[simps]
+@[simps obj_carrier]
 def structurePresheafInCommRing : Presheaf CommRingCat (ProjectiveSpectrum.top 𝒜) where
   obj U := CommRingCat.of ((structureSheafInType 𝒜).1.obj U)
   map i := CommRingCat.ofHom
@@ -183,10 +183,6 @@ def structurePresheafInCommRing : Presheaf CommRingCat (ProjectiveSpectrum.top �
       map_add' := fun _ _ => rfl
       map_one' := rfl
       map_mul' := fun _ _ => rfl }
-
--- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-attribute [nolint simpNF]
-  AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.structurePresheafInCommRing_map_hom_apply
 
 /-- Some glue, verifying that the structure presheaf valued in `CommRing` agrees with the `Type`
 valued structure presheaf. -/
@@ -272,8 +268,6 @@ theorem stalkToFiberRingHom_germ (U : Opens (ProjectiveSpectrum.top 𝒜))
     (x : ProjectiveSpectrum.top 𝒜) (hx : x ∈ U) (s : (Proj.structureSheaf 𝒜).1.obj (op U)) :
     stalkToFiberRingHom 𝒜 x ((Proj.structureSheaf 𝒜).presheaf.germ _ x hx s) = s.1 ⟨x, hx⟩ :=
   RingHom.ext_iff.1 (CommRingCat.hom_ext_iff.mp (germ_comp_stalkToFiberRingHom 𝒜 U x hx)) s
-
-@[deprecated (since := "2024-07-30")] alias stalkToFiberRingHom_germ' := stalkToFiberRingHom_germ
 
 theorem mem_basicOpen_den (x : ProjectiveSpectrum.top 𝒜)
     (f : HomogeneousLocalization.NumDenSameDeg 𝒜 x.asHomogeneousIdeal.toIdeal.primeCompl) :
@@ -361,8 +355,6 @@ theorem Proj.stalkIso'_germ (U : Opens (ProjectiveSpectrum.top 𝒜))
     (x : ProjectiveSpectrum.top 𝒜) (hx : x ∈ U) (s : (Proj.structureSheaf 𝒜).1.obj (op U)) :
     Proj.stalkIso' 𝒜 x ((Proj.structureSheaf 𝒜).presheaf.germ _ x hx s) = s.1 ⟨x, hx⟩ :=
   stalkToFiberRingHom_germ 𝒜 U x hx s
-
-@[deprecated (since := "2024-07-30")] alias Proj.stalkIso'_germ' := Proj.stalkIso'_germ
 
 @[simp]
 theorem Proj.stalkIso'_symm_mk (x) (f) :

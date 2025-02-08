@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
 
 import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
-import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.CategoryTheory.Category.ReflQuiv
 import Mathlib.Combinatorics.Quiver.ReflQuiver
 
@@ -36,10 +35,16 @@ category of 2-truncated simplicial sets.
 
 namespace SSet
 open CategoryTheory Category Limits Functor Opposite Simplicial Nerve
-open SimplexCategory.Truncated SimplicialObject.Truncated
 universe v u
 
 section
+
+local macro:1000 (priority := high) X:term " _[" n:term "]₂" : term =>
+    `(($X : SSet.Truncated 2).obj (Opposite.op ⟨SimplexCategory.mk $n, by decide⟩))
+
+set_option quotPrecheck false
+local macro:max (priority := high) "⦋" n:term "⦌₂" : term =>
+  `((⟨SimplexCategory.mk $n, by decide⟩ : SimplexCategory.Truncated 2))
 
 /-- A 2-truncated simplicial set `S` has an underlying refl quiver with `S _[0]₂` as its underlying
 type. -/
@@ -47,11 +52,11 @@ def OneTruncation₂ (S : SSet.Truncated 2) := S _[0]₂
 
 /-- Abbreviations for face maps in the 2-truncated simplex category. -/
 abbrev δ₂ {n} (i : Fin (n + 2)) (hn := by decide) (hn' := by decide) :
-    (⟨[n], hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[n + 1], hn'⟩ := SimplexCategory.δ i
+    (⟨⦋n⦌, hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨⦋n + 1⦌, hn'⟩ := SimplexCategory.δ i
 
 /-- Abbreviations for degeneracy maps in the 2-truncated simplex category. -/
 abbrev σ₂ {n} (i : Fin (n + 1)) (hn := by decide) (hn' := by decide) :
-    (⟨[n+1], hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[n], hn'⟩ := SimplexCategory.σ i
+    (⟨⦋n+1⦌, hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨⦋n⦌, hn'⟩ := SimplexCategory.σ i
 
 @[reassoc (attr := simp)]
 lemma δ₂_zero_comp_σ₂_zero : δ₂ (0 : Fin 2) ≫ σ₂ 0 = 𝟙 _ := SimplexCategory.δ_comp_σ_self
@@ -91,7 +96,7 @@ lemma OneTruncation₂.id_edge {S : SSet.Truncated 2} (X : OneTruncation₂ S) :
 def oneTruncation₂ : SSet.Truncated.{u} 2 ⥤ ReflQuiv.{u, u} where
   obj S := ReflQuiv.of (OneTruncation₂ S)
   map {S T} F := {
-    obj := F.app (op [0]₂)
+    obj := F.app (op ⦋0⦌₂)
     map := fun f ↦
       { edge := F.app _ f.edge
         src_eq := by rw [← FunctorToTypes.naturality, f.src_eq]
@@ -186,19 +191,17 @@ variable {V : SSet}
 
 namespace Truncated
 
-local notation (priority := high) "[" n "]" => SimplexCategory.mk n
-
 /-- The map that picks up the initial vertex of a 2-simplex, as a morphism in the 2-truncated
 simplex category. -/
-def ι0₂ : [0]₂ ⟶ [2]₂ := δ₂ (n := 0) 1 ≫ δ₂ (n := 1) 1
+def ι0₂ : ⦋0⦌₂ ⟶ ⦋2⦌₂ := δ₂ (n := 0) 1 ≫ δ₂ (n := 1) 1
 
 /-- The map that picks up the middle vertex of a 2-simplex, as a morphism in the 2-truncated
 simplex category. -/
-def ι1₂ : [0]₂ ⟶ [2]₂ := δ₂ (n := 0) 0 ≫ δ₂ (n := 1) 2
+def ι1₂ : ⦋0⦌₂ ⟶ ⦋2⦌₂ := δ₂ (n := 0) 0 ≫ δ₂ (n := 1) 2
 
 /-- The map that picks up the final vertex of a 2-simplex, as a morphism in the 2-truncated
 simplex category. -/
-def ι2₂ : [0]₂ ⟶ [2]₂ := δ₂ (n := 0) 0 ≫ δ₂ (n := 1) 1
+def ι2₂ : ⦋0⦌₂ ⟶ ⦋2⦌₂ := δ₂ (n := 0) 0 ≫ δ₂ (n := 1) 1
 
 /-- The initial vertex of a 2-simplex in a 2-truncated simplicial set. -/
 def ev0₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : OneTruncation₂ V := V.map ι0₂.op φ
@@ -210,13 +213,13 @@ def ev1₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : OneTruncation₂ V := V.map
 def ev2₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : OneTruncation₂ V := V.map ι2₂.op φ
 
 /-- The 0th face of a 2-simplex, as a morphism in the 2-truncated simplex category. -/
-def δ0₂ : [1]₂ ⟶ [2]₂ := δ₂ (n := 1) 0
+def δ0₂ : ⦋1⦌₂ ⟶ ⦋2⦌₂ := δ₂ (n := 1) 0
 
 /-- The 1st face of a 2-simplex, as a morphism in the 2-truncated simplex category. -/
-def δ1₂ : [1]₂ ⟶ [2]₂ := δ₂ (n := 1) 1
+def δ1₂ : ⦋1⦌₂ ⟶ ⦋2⦌₂ := δ₂ (n := 1) 1
 
 /-- The 2nd face of a 2-simplex, as a morphism in the 2-truncated simplex category. -/
-def δ2₂ : [1]₂ ⟶ [2]₂ := δ₂ (n := 1) 2
+def δ2₂ : ⦋1⦌₂ ⟶ ⦋2⦌₂ := δ₂ (n := 1) 2
 
 /-- The arrow in the ReflQuiver `OneTruncation₂ V` of a 2-truncated simplicial set arising from the
 0th face of a 2-simplex. -/

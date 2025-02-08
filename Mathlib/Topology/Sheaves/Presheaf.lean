@@ -38,7 +38,6 @@ variable (C : Type u) [Category.{v} C]
 namespace TopCat
 
 /-- The category of `C`-valued presheaves on a (bundled) topological space `X`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 def Presheaf (X : TopCat.{w}) : Type max u v w :=
   (Opens X)ᵒᵖ ⥤ C
 
@@ -131,14 +130,14 @@ theorem restrict_restrict {X : TopCat} {C : Type*} [Category C] [HasForget C]
     {F : X.Presheaf C} {U V W : Opens X} (e₁ : U ≤ V) (e₂ : V ≤ W) (x : F.obj (op W)) :
     x |_ V |_ U = x |_ U := by
   delta restrictOpen restrict
-  rw [← comp_apply, ← Functor.map_comp]
+  rw [← CategoryTheory.comp_apply, ← Functor.map_comp]
   rfl
 
 theorem map_restrict {X : TopCat} {C : Type*} [Category C] [HasForget C]
     {F G : X.Presheaf C} (e : F ⟶ G) {U V : Opens X} (h : U ≤ V) (x : F.obj (op V)) :
     e.app _ (x |_ U) = e.app _ x |_ U := by
   delta restrictOpen restrict
-  rw [← comp_apply, NatTrans.naturality, comp_apply]
+  rw [← CategoryTheory.comp_apply, NatTrans.naturality, CategoryTheory.comp_apply]
 
 open CategoryTheory.Limits
 
