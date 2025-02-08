@@ -396,7 +396,7 @@ theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) (x : E) : p.comp (id 𝕜
 theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (v0 : Fin 0 → E) :
     (id 𝕜 F (p 0 v0)).comp p = p := by
   ext1 n
-  obtain rfl|n_pos := n.eq_zero_or_pos
+  obtain rfl | n_pos := n.eq_zero_or_pos
   · ext v
     simp only [comp_coeff_zero', id_apply_zero]
     congr with i

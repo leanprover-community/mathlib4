@@ -96,9 +96,8 @@ derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor ser
 
 noncomputable section
 
-open NNReal Topology Filter Set Fin Function
-
-open scoped ContDiff
+open Set Fin Filter Function
+open scoped NNReal Topology ContDiff
 
 universe u uE uF uG uX
 
