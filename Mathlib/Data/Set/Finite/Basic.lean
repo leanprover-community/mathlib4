@@ -394,7 +394,7 @@ theorem List.finite_toSet (l : List α) : { x | x ∈ l }.Finite :=
 -- Since this simp theorem is specifically to be used when working with
 -- set builder notation, we explicitly add the instance requirement
 -- `[Fintype {x | x ∈ l}]` instead of making it a global instance
--- (as the proper simp-normal form of `↑ {x | p x }` is `{ x // p x }`)
+-- (as the proper simp-normal form of `↑ { x | p x }` is `{ x // p x }`)
 @[simp]
 theorem List.setOf_finset (l : List α) [DecidableEq α] [Fintype {x | x ∈ l}] :
     {x | x ∈ l}.toFinset = l.toFinset := by
