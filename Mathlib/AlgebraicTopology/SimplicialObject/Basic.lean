@@ -270,7 +270,7 @@ scoped macro_rules
 
 open SimplexCategory.Truncated.Meta (subscript) in
 open Lean PrettyPrinter.Delaborator SubExpr in
-/-- Delaborator for the notation `X _[m]ₙ`. -/
+/-- Delaborator for the notation `X _⦋m⦌ₙ`. -/
 @[app_delab Prefunctor.obj]
 def delabMkNotation : Delab :=
   whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
@@ -288,8 +288,8 @@ def delabMkNotation : Delab :=
     let f ← withNaryArg 4 <| withAppArg delab
     if (← getPPOption getPPProofs) then
       let p ← withAppArg <| withAppArg <| withAppArg delab
-      `($f _[$m, $p]$n)
-    else `($f _[$m]$n)
+      `($f _⦋$m, $p⦌$n)
+    else `($f _⦋$m⦌$n)
 
 end Meta
 
@@ -742,7 +742,7 @@ scoped macro_rules
 
 open SimplexCategory.Truncated.Meta (subscript) in
 open Lean PrettyPrinter.Delaborator SubExpr in
-/-- Delaborator for the notation `X ^[m]ₙ`. -/
+/-- Delaborator for the notation `X ^⦋m⦌ₙ`. -/
 @[app_delab Prefunctor.obj]
 def delabMkNotation : Delab :=
   whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
@@ -758,8 +758,8 @@ def delabMkNotation : Delab :=
     let f ← withNaryArg 4 <| withAppArg delab
     if (← getPPOption getPPProofs) then
       let p ← withAppArg <| withAppArg delab
-      `($f ^[$m, $p]$n)
-    else `($f ^[$m]$n)
+      `($f ^⦋$m, $p⦌$n)
+    else `($f ^⦋$m⦌$n)
 
 end Meta
 
