@@ -23,22 +23,12 @@ open CategoryTheory Limits
 
 namespace Fin
 
-variable {n : ℕ}
-
-instance [NeZero n] (i : Fin n) : Unique (0 ⟶ i) where
-  default := homOfLE bot_le
-  uniq _ := rfl
-
-instance (i : Fin (n + 1)) : Unique (i ⟶ Fin.last n) where
-  default := homOfLE le_top
-  uniq _ := rfl
-
-variable (n)
+variable (n : ℕ)
 
 /-- `0` is an initial object in `Fin n` when `n ≠ 0`. -/
-def zeroIsInitial [NeZero n] : IsInitial (0 : Fin n) := IsInitial.ofUnique _
+def isInitialZero [NeZero n] : IsInitial (0 : Fin n) := isInitialBot
 
 /-- `Fin.last n` is a terminal object in `Fin (n + 1)`. -/
-def lastIsTerminal : IsTerminal (Fin.last n) := IsTerminal.ofUnique _
+def isTerminalLast : IsTerminal (Fin.last n) := isTerminalTop
 
 end Fin
