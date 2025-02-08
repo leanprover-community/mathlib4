@@ -5,6 +5,7 @@ Authors: Mitchell Lee, Óscar Álvarez
 -/
 import Mathlib.GroupTheory.Coxeter.Length
 import Mathlib.Data.List.GetD
+import Mathlib.Tactic.Group
 
 /-!
 # Reflections, inversions, and inversion sequences
@@ -469,10 +470,8 @@ theorem getElem_leftInvSeq_alternatingWord
     (i j : B) (p k : ℕ) (h : k < 2 * p) :
     (lis (alternatingWord i j (2 * p)))[k]'(by simp; omega) =
     π alternatingWord j i (2 * k + 1) := by
-  revert i j
-  induction k with
+  induction k generalizing i j with
   | zero =>
-    intro i j
     simp only [CoxeterSystem.getElem_leftInvSeq cs (alternatingWord i j (2 * p)) 0 (by simp [h]),
       take_zero, wordProd_nil, one_mul, inv_one, mul_one, alternatingWord, concat_eq_append,
       nil_append, wordProd_singleton]
@@ -480,8 +479,7 @@ theorem getElem_leftInvSeq_alternatingWord
     simp only [getElem_alternatingWord i j (2 * p) 0 (by simp [h]), add_zero, even_two,
       Even.mul_right, ↓reduceIte]
   | succ k hk =>
-    intro i j
-    simp only [getElem_succ_leftInvSeq_alternatingWord cs i j p k h, hk (by omega),
+    simp only [getElem_succ_leftInvSeq_alternatingWord cs i j p k h, hk _ _ (by omega),
       MulAut.conj_apply, inv_simple, alternatingWord_succ' j i, even_two, Even.mul_right,
       ↓reduceIte, wordProd_cons]
     rw [(by ring: 2 * (k + 1) = 2 * k + 1 + 1), alternatingWord_succ j i, wordProd_concat]
