@@ -167,7 +167,7 @@ theorem isPrime_of_isPrime_disjoint (I : Ideal R) (hp : I.IsPrime) (hd : Disjoin
   rw [isPrime_iff_isPrime_disjoint M S, comap_map_of_isPrime_disjoint M S I hp hd]
   exact ⟨hp, hd⟩
 
-theorem disjoint_comap_iff (S : Submonoid R) (A : Type*) [CommRing A]
+theorem disjoint_comap_iff (S : Submonoid R) {A : Type*} [CommRing A]
     [Algebra R A] [IsLocalization S A] (J : Ideal A) :
     Disjoint (S : Set R) (J.comap (algebraMap R A)) ↔ J ≠ ⊤ := by
   rw [← iff_not_comm]
