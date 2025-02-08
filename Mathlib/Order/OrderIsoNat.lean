@@ -206,8 +206,8 @@ theorem exists_increasing_or_nonincreasing_subseq (r : α → α → Prop) [IsTr
 /-- The **monotone chain condition**: a preorder is co-well-founded iff every increasing sequence
 contains two non-increasing indices.
 
-See `WellFoundedGT.monotone_chain_condition_iff` for a stronger version on partial orders. -/
-theorem WellFoundedGT.monotone_chain_condition_iff' [Preorder α] :
+See `wellFoundedGT_iff_monotone_chain_condition` for a stronger version on partial orders. -/
+theorem wellFoundedGT_iff_monotone_chain_condition' [Preorder α] :
     WellFoundedGT α ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → ¬a n < a m := by
   refine ⟨fun h a => ?_, fun h => ?_⟩
   · obtain ⟨x, ⟨n, rfl⟩, H⟩ := h.wf.has_min _ (Set.range_nonempty a)
@@ -219,33 +219,33 @@ theorem WellFoundedGT.monotone_chain_condition_iff' [Preorder α] :
 
 theorem WellFoundedGT.monotone_chain_condition' [Preorder α] [h : WellFoundedGT α] (a : ℕ →o α) :
     ∃ n, ∀ m, n ≤ m → ¬a n < a m :=
-  WellFoundedGT.monotone_chain_condition_iff'.1 h a
+  wellFoundedGT_iff_monotone_chain_condition'.1 h a
 
 /-- A stronger version of the **monotone chain** condition for partial orders.
 
-See `WellFoundedGT.monotone_chain_condition_iff'` for a version on preorders.  -/
-theorem WellFoundedGT.monotone_chain_condition_iff [PartialOrder α] :
+See `wellFoundedGT_iff_monotone_chain_condition'` for a version on preorders.  -/
+theorem wellFoundedGT_iff_monotone_chain_condition [PartialOrder α] :
     WellFoundedGT α ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → a n = a m :=
-  WellFoundedGT.monotone_chain_condition_iff'.trans <| by
+  wellFoundedGT_iff_monotone_chain_condition'.trans <| by
   congrm ∀ a, ∃ n, ∀ m h, ?_
   rw [lt_iff_le_and_ne]
   simp [a.mono h]
 
 theorem WellFoundedGT.monotone_chain_condition [PartialOrder α] [h : WellFoundedGT α] (a : ℕ →o α) :
     ∃ n, ∀ m, n ≤ m → a n = a m :=
-  WellFoundedGT.monotone_chain_condition_iff.1 h a
+  wellFoundedGT_iff_monotone_chain_condition.1 h a
 
-@[deprecated WellFoundedGT.monotone_chain_condition_iff' (since := "2025-01-15")]
+@[deprecated wellFoundedGT_iff_monotone_chain_condition' (since := "2025-01-15")]
 theorem WellFounded.monotone_chain_condition' [Preorder α] :
     WellFounded ((· > ·) : α → α → Prop) ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → ¬a n < a m := by
   rw [← isWellFounded_iff]
-  exact WellFoundedGT.monotone_chain_condition_iff'
+  exact wellFoundedGT_iff_monotone_chain_condition'
 
-@[deprecated WellFoundedGT.monotone_chain_condition_iff (since := "2025-01-15")]
+@[deprecated wellFoundedGT_iff_monotone_chain_condition (since := "2025-01-15")]
 theorem WellFounded.monotone_chain_condition [PartialOrder α] :
     WellFounded ((· > ·) : α → α → Prop) ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → a n = a m := by
   rw [← isWellFounded_iff]
-  exact WellFoundedGT.monotone_chain_condition_iff
+  exact wellFoundedGT_iff_monotone_chain_condition
 
 /-- Given an eventually-constant monotone sequence `a₀ ≤ a₁ ≤ a₂ ≤ ...` in a partially-ordered
 type, `monotonicSequenceLimitIndex a` is the least natural number `n` for which `aₙ` reaches the
