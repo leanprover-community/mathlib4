@@ -417,12 +417,6 @@ theorem length_permutations'Aux (s : List α) (x : α) :
   · simp
   · simpa using IH
 
-@[deprecated "No deprecation message was provided." (since := "2024-06-12")]
-theorem permutations'Aux_get_zero (s : List α) (x : α)
-    (hn : 0 < length (permutations'Aux x s) := (by simp)) :
-    (permutations'Aux x s).get ⟨0, hn⟩ = x :: s :=
-  get_permutations'Aux _ _ _ _
-
 theorem injective_permutations'Aux (x : α) : Function.Injective (permutations'Aux x) := by
   intro s t h
   apply insertIdx_injective s.length x
