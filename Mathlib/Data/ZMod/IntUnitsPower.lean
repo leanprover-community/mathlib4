@@ -23,8 +23,7 @@ by using `Module R (Additive M)` in its place, especially since this already has
 `R = ℕ` and `R = ℤ`.
 -/
 
-assert_not_exists Ideal
-assert_not_exists TwoSidedIdeal
+assert_not_exists Ideal TwoSidedIdeal
 
 instance : SMul (ZMod 2) (Additive ℤˣ) where
   smul z au := .ofMul <| au.toMul ^ z.val

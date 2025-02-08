@@ -9,7 +9,7 @@ import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Sigma.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Lean.Elab.Tactic
 
 /-!

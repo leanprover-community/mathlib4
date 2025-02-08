@@ -17,8 +17,7 @@ This file contains the commutative ring instance on `ℤ`.
 See note [foundational algebra order theory].
 -/
 
-assert_not_exists DenselyOrdered
-assert_not_exists Set.Subsingleton
+assert_not_exists DenselyOrdered Set.Subsingleton
 
 namespace Int
 

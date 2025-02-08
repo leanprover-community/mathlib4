@@ -51,11 +51,7 @@ linear map
 -/
 
 
-assert_not_exists Star
-assert_not_exists DomMulAct
-assert_not_exists Pi.module
-assert_not_exists WCovBy
-assert_not_exists Field
+assert_not_exists Star DomMulAct Pi.module WCovBy Field
 
 open Function
 
@@ -452,6 +448,8 @@ end
 def _root_.RingHom.toSemilinearMap (f : R →+* S) : R →ₛₗ[f] S :=
   { f with
     map_smul' := f.map_mul }
+
+@[simp] theorem _root_.RingHom.coe_toSemilinearMap (f : R →+* S) : ⇑f.toSemilinearMap = f := rfl
 
 section
 

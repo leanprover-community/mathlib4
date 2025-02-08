@@ -15,10 +15,7 @@ This file contains the basic results on `Submodule.FG` and `Module.Finite` that 
 further imports.
 -/
 
-assert_not_exists Basis
-assert_not_exists Ideal.radical
-assert_not_exists Matrix
-assert_not_exists Subalgebra
+assert_not_exists Basis Ideal.radical Matrix Subalgebra
 
 open Function (Surjective)
 open Finsupp
@@ -190,6 +187,9 @@ namespace Finite
 open Submodule Set
 
 variable {R M N}
+
+instance [Module.Finite R M] : IsCoatomic (Submodule R M) :=
+  CompleteLattice.coatomic_of_top_compact <| by rwa [← fg_iff_compact, ← finite_def]
 
 -- See note [lower instance priority]
 instance (priority := 100) of_finite [Finite M] : Module.Finite R M := by

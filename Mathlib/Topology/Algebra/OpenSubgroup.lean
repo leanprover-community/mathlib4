@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Nailin Guan
+Authors: Johan Commelin, Nailin Guan, Yi Song, Xuchun Li
 -/
 import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.RingTheory.Ideal.Defs
@@ -10,7 +10,7 @@ import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Sets.Opens
 
 /-!
-# Open subgroups of a topological groups
+# Open subgroups of a topological group
 
 This files builds the lattice `OpenSubgroup G` of open subgroups in a topological group `G`,
 and its additive version `OpenAddSubgroup`.  This lattice has a top element, the subgroup of all

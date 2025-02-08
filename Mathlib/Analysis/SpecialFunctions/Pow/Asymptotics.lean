@@ -199,8 +199,7 @@ theorem isBigO_cpow_rpow (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|)
     _ =Θ[l] (show α → ℝ from fun x => abs (f x) ^ (g x).re / (1 : ℝ)) :=
       ((isTheta_refl _ _).div (isTheta_exp_arg_mul_im hl))
     _ =ᶠ[l] (show α → ℝ from fun x => abs (f x) ^ (g x).re) := by
-      simp only [ofReal_one, div_one]
-      rfl
+      simp only [ofReal_one, div_one, EventuallyEq.rfl]
 
 theorem isTheta_cpow_rpow (hl_im : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|)
     (hl : ∀ᶠ x in l, f x = 0 → re (g x) = 0 → g x = 0) :
@@ -212,19 +211,12 @@ theorem isTheta_cpow_rpow (hl_im : IsBoundedUnder (· ≤ ·) l fun x => |(g x).
     _ =Θ[l] fun x => abs (f x) ^ (g x).re / (1 : ℝ) :=
       (isTheta_refl _ _).div (isTheta_exp_arg_mul_im hl_im)
     _ =ᶠ[l] (fun x => abs (f x) ^ (g x).re) := by
-      simp only [ofReal_one, div_one]
-      rfl
+      simp only [ofReal_one, div_one, EventuallyEq.rfl]
 
 theorem isTheta_cpow_const_rpow {b : ℂ} (hl : b.re = 0 → b ≠ 0 → ∀ᶠ x in l, f x ≠ 0) :
     (fun x => f x ^ b) =Θ[l] fun x => abs (f x) ^ b.re :=
   isTheta_cpow_rpow isBoundedUnder_const <| by
-    -- Porting note: was
-    -- simpa only [eventually_imp_distrib_right, Ne.def, ← not_frequently, not_imp_not, Imp.swap]
-    --   using hl
-    -- but including `Imp.swap` caused an infinite loop
-    convert hl
-    rw [eventually_imp_distrib_right]
-    tauto
+    simpa only [eventually_imp_distrib_right, not_imp_not, Imp.swap (a := b.re = 0)] using hl
 
 end
 

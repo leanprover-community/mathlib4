@@ -189,7 +189,7 @@ theorem imageBasicOpen_image_preimage :
     (g.base : X.carrier.1 ⟶ Y.carrier.1)
   · ext
     simp_rw [types_comp_apply, ← TopCat.comp_app, ← PresheafedSpace.comp_base]
-    congr 2
+    congr 3
     exact coequalizer.condition f.toShHom g.toShHom
   · apply isColimitCoforkMapOfIsColimit (forget TopCat)
     apply isColimitCoforkMapOfIsColimit (SheafedSpace.forget _)
@@ -226,11 +226,11 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
     IsLocalHom ((coequalizer.π f.toShHom g.toShHom :).stalkMap x).hom := by
   constructor
   rintro a ha
-  rcases TopCat.Presheaf.germ_exist (C := CommRingCat) _ _ a with ⟨U, hU, s, rfl⟩
-  -- need `erw` to see through `ConcreteCategory.instFunLike`
-  rw [← CommRingCat.forget_map_apply, PresheafedSpace.stalkMap_germ_apply
-    (coequalizer.π (C := SheafedSpace _) f.toShHom g.toShHom) U _ hU] at ha
-  rw [CommRingCat.forget_map_apply]
+  rcases TopCat.Presheaf.germ_exist _ _ a with ⟨U, hU, s, rfl⟩
+  rw [← CommRingCat.forget_map_apply, forget_map_eq_coe,
+    PresheafedSpace.stalkMap_germ_apply
+      (coequalizer.π (C := SheafedSpace _) f.toShHom g.toShHom) U _ hU] at ha
+  rw [coe_toHasForget_instFunLike]
   let V := imageBasicOpen f g U s
   have hV : (coequalizer.π f.toShHom g.toShHom).base ⁻¹'
       ((coequalizer.π f.toShHom g.toShHom).base '' V.1) = V.1 :=

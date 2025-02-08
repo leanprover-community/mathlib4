@@ -11,8 +11,7 @@ import Mathlib.Logic.Unique
 # The unit of the natural numbers
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 namespace Nat
 

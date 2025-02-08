@@ -209,14 +209,14 @@ instance [HasLimits C] : HasColimits.{v} (SheafedSpace C) :=
 noncomputable instance [HasLimits C] : PreservesColimits (forget.{_, _, v} C) :=
   Limits.comp_preservesColimits forgetToPresheafedSpace (PresheafedSpace.forget C)
 
-section ConcreteCategory
+section HasForget
 
-variable [ConcreteCategory.{v} C] [HasColimits C] [HasLimits C]
+variable [HasForget.{v} C] [HasColimits C] [HasLimits C]
 variable  [PreservesLimits (CategoryTheory.forget C)]
 variable [PreservesFilteredColimits (CategoryTheory.forget C)]
 variable [(CategoryTheory.forget C).ReflectsIsomorphisms]
 
-attribute [local instance] ConcreteCategory.instFunLike in
+attribute [local instance] HasForget.instFunLike in
 lemma hom_stalk_ext {X Y : SheafedSpace C} (f g : X ⟶ Y) (h : f.base = g.base)
     (h' : ∀ x, f.stalkMap x = (Y.presheaf.stalkCongr (h ▸ rfl)).hom ≫ g.stalkMap x) :
     f = g := by
@@ -241,7 +241,7 @@ lemma mono_of_base_injective_of_stalk_epi {X Y : SheafedSpace C} (f : X ⟶ Y)
     ← PresheafedSpace.stalkMap.comp ⟨g, gc⟩ f, ← PresheafedSpace.stalkMap.comp ⟨g, hc⟩ f]
   congr 1
 
-end ConcreteCategory
+end HasForget
 
 end SheafedSpace
 

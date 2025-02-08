@@ -30,7 +30,7 @@ We prove that these are equivalent.
 universe v u
 
 
-attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+attribute [local instance] CategoryTheory.HasForget.instFunLike
 
 noncomputable section
 
@@ -46,7 +46,7 @@ section LocallySurjective
 
 open scoped AlgebraicGeometry
 
-variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C] {X : TopCat.{v}}
+variable {C : Type u} [Category.{v} C] [HasForget.{v} C] {X : TopCat.{v}}
 variable {ℱ 𝒢 : X.Presheaf C}
 
 /-- A map of presheaves `T : ℱ ⟶ 𝒢` is **locally surjective** if for any open set `U`,
@@ -109,7 +109,7 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
     obtain ⟨W, hxW, hWV, hWU, h_eq⟩ := key_W
     refine ⟨W, hWU, ⟨ℱ.map hWV.op s, ?_⟩, hxW⟩
     convert h_eq using 1
-    simp only [← comp_apply, T.naturality]
+    simp only [← CategoryTheory.comp_apply, T.naturality]
 
 end SurjectiveOnStalks
 

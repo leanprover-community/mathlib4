@@ -66,8 +66,8 @@ instance : Inhabited FinBoolAlg :=
 instance largeCategory : LargeCategory FinBoolAlg :=
   InducedCategory.category FinBoolAlg.toBoolAlg
 
-instance concreteCategory : ConcreteCategory FinBoolAlg :=
-  InducedCategory.concreteCategory FinBoolAlg.toBoolAlg
+instance hasForget : HasForget FinBoolAlg :=
+  InducedCategory.hasForget FinBoolAlg.toBoolAlg
 
 instance instFunLike {X Y : FinBoolAlg} : FunLike (X ⟶ Y) X Y :=
   BoundedLatticeHom.instFunLike

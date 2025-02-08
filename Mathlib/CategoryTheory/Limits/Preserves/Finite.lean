@@ -78,7 +78,6 @@ lemma preservesFiniteLimits_of_preservesFiniteLimitsOfSize (F : C ⥤ D)
       ∀ (J : Type w) {𝒥 : SmallCategory J} (_ : @FinCategory J 𝒥), PreservesLimitsOfShape J F) :
     PreservesFiniteLimits F where
       preservesFiniteLimits J (_ : SmallCategory J) _ := by
-        letI : Category (ULiftHom (ULift J)) := ULiftHom.category
         haveI := h (ULiftHom (ULift J)) CategoryTheory.finCategoryUlift
         exact preservesLimitsOfShape_of_equiv (ULiftHomULiftCategory.equiv J).symm F
 

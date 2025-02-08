@@ -67,7 +67,6 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι
 /-! ### Paths -/
 
 /-- Continuous path connecting two points `x` and `y` in a topological space -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 structure Path (x y : X) extends C(I, X) where
   /-- The start point of a `Path`. -/
   source' : toFun 0 = x
