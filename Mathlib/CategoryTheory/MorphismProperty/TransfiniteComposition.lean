@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.TransfiniteCompositionOfShape
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Preorder
 import Mathlib.Order.Shrink
 import Mathlib.Logic.UnivLE
 
@@ -143,6 +142,18 @@ def ofOrderIso {J' : Type w'} [LinearOrder J'] [OrderBot J']
     replace eq := congr_arg h.F.mapArrow.obj eq
     convert this using 1
 
+/-- If `f` is a transfinite composition of shape `J` of morphisms
+in `W.preimage F`, then `F` is a transfinite composition of shape `J`
+of morphisms in `W` provided `F` preserves suitable colimits. -/
+@[simps toTransfiniteCompositionOfShape]
+noncomputable def map {W : MorphismProperty D} {F : C ⥤ D}
+    [PreservesWellOrderContinuousOfShape J F]
+    [PreservesColimitsOfShape J F]
+    (h : (W.inverseImage F).TransfiniteCompositionOfShape J f) :
+    W.TransfiniteCompositionOfShape J (F.map f) where
+  __ := h.toTransfiniteCompositionOfShape.map F
+  map_mem j hj := h.map_mem j hj
+
 end
 
 /-- If `F : ComposableArrows C n` and all maps `F.obj i.castSucc ⟶ F.obj i.succ`
@@ -182,6 +193,44 @@ transfinite composition of shape `Fin 3` of morphisms in `W`. -/
 def ofComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hf : W f) (hg : W g) :
     W.TransfiniteCompositionOfShape (Fin 3) (f ≫ g) :=
   ofComposableArrows W (.mk₂ f g) (fun i ↦ by fin_cases i <;> assumption)
+
+variable {J}
+
+section isomorphisms
+
+variable {X Y : C} {f : X ⟶ Y} (h : (isomorphisms C).TransfiniteCompositionOfShape J f)
+
+instance {j : J} (g : ⊥ ⟶ j) : IsIso (h.F.map g) := by
+  obtain rfl : g = homOfLE bot_le := rfl
+  induction j using SuccOrder.limitRecOn with
+  | hm j hj =>
+    obtain rfl := hj.eq_bot
+    dsimp
+    infer_instance
+  | hs j hj hj' =>
+    have : IsIso _ := h.map_mem j hj
+    rw [← homOfLE_comp bot_le (Order.le_succ j), h.F.map_comp]
+    infer_instance
+  | hl j hj hj' =>
+    letI : OrderBot (Set.Iio j) :=
+      { bot := ⟨⊥, Order.IsSuccLimit.bot_lt hj⟩
+        bot_le j := bot_le }
+    simpa using Functor.IsEventuallyConstantFrom.isIso_ι_of_isColimit
+      (i₀ := ⊥) (fun i _ ↦ hj' i.1 i.2) (h.F.isColimitOfIsWellOrderContinuous j hj)
+
+instance {j j' : J} (f : j ⟶ j') : IsIso (h.F.map f) :=
+  IsIso.of_isIso_fac_left (h.F.map_comp (homOfLE bot_le) f).symm
+
+instance (j : J) : IsIso (h.incl.app j) :=
+  Functor.IsEventuallyConstantFrom.isIso_ι_of_isColimit'
+    (fun _ _  ↦ inferInstance) h.isColimit j (homOfLE bot_le)
+
+include h in
+lemma isIso : IsIso f := by
+  rw [← h.fac]
+  infer_instance
+
+end isomorphisms
 
 end TransfiniteCompositionOfShape
 
@@ -240,10 +289,8 @@ lemma transfiniteCompositionsOfShape_map_of_preserves (G : C ⥤ D)
     [PreservesColimitsOfShape J G]
     (h : (P.inverseImage G).transfiniteCompositionsOfShape J f) :
     P.transfiniteCompositionsOfShape J (G.map f) := by
-  sorry
-  /-
-  obtain ⟨F, hF, c, hc⟩  := h
-  exact ⟨F ⋙ G, hF, _, isColimitOfPreserves G hc⟩-/
+  obtain ⟨h⟩ := h
+  exact ⟨h.map⟩
 
 /-- A class of morphisms `W : MorphismProperty C` is stable under transfinite compositions
 of shape `J` if for any well-order-continuous functor `F : J ⥤ C` such that
@@ -288,26 +335,8 @@ attribute [instance] isStableUnderTransfiniteCompositionOfShape
 protected instance isomorphisms :
     (isomorphisms C).IsStableUnderTransfiniteComposition where
   isStableUnderTransfiniteCompositionOfShape J _ _ _ _ := ⟨by
-    sorry /-
-    rintro _ _ _ ⟨F, hF, c, hc⟩
-    suffices ∀ (j : J), IsIso (F.map ((homOfLE bot_le) : ⊥ ⟶ j)) from
-      Functor.IsEventuallyConstantFrom.isIso_ι_of_isColimit (fun j f ↦ this j) hc
-    intro j
-    induction j using SuccOrder.limitRecOn with
-    | hm _ h =>
-        obtain rfl := h.eq_bot
-        dsimp
-        infer_instance
-    | hs j hj h =>
-        have : IsIso _ := hF j hj
-        rw [← homOfLE_comp bot_le (Order.le_succ j), F.map_comp]
-        infer_instance
-    | hl j hj h =>
-        letI : OrderBot (Set.Iio j) :=
-          { bot := ⟨⊥, Order.IsSuccLimit.bot_lt hj ⟩
-            bot_le j := bot_le }
-        simpa using Functor.IsEventuallyConstantFrom.isIso_ι_of_isColimit (i₀ := ⊥)
-          (fun i _ ↦ h i.1 i.2) (F.isColimitOfIsWellOrderContinuous j hj)-/ ⟩
+    rintro _ _ f ⟨hf⟩
+    exact hf.isIso⟩
 
 variable [IsStableUnderTransfiniteComposition.{w'} W]
 
