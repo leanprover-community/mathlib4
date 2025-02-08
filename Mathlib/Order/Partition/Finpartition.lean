@@ -501,6 +501,9 @@ lemma mem_part_self : a ∈ P.part a ↔ a ∈ s := by
   · simp [part, ha, choose_property (p := fun s => a ∈ s) P.parts (P.existsUnique_mem ha)]
   · simp [P.part_eq_empty.2, ha]
 
+@[deprecated (since := "2025-02-07")]
+alias ⟨_, mem_part⟩ := mem_part_self
+
 lemma part_eq_iff_mem (ht : t ∈ P.parts) : P.part a = t ↔ a ∈ t := by
   constructor
   · rintro rfl
