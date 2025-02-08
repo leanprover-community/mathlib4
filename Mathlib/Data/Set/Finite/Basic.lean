@@ -391,6 +391,11 @@ end Multiset
 theorem List.finite_toSet (l : List α) : { x | x ∈ l }.Finite :=
   (show Multiset α from ⟦l⟧).finite_toSet
 
+@[simp]
+theorem List.setOf_finset (l : List α) [DecidableEq α] : {x | x ∈ l}.toFinset = l.toFinset := by
+  ext
+  rw [Set.mem_toFinset, mem_setOf_eq, mem_toFinset]
+
 /-! ### Finite instances
 
 There is seemingly some overlap between the following instances and the `Fintype` instances
@@ -705,13 +710,8 @@ theorem Finite.induction_on_subset {motive : ∀ s : Set α, s.Finite → Prop} 
 
 theorem setOf_nodup_perm (l : List α) (H : l.Nodup) [DecidableEq α] :
     l.finite_toSet.toFinset.toList.Perm l := by
-  rw [List.perm_iff_count]
-  intro a
-  by_cases h : a ∈ l
-  · rw [l.count_eq_one_of_mem H h,
-      l.finite_toSet.toFinset.toList.count_eq_one_of_mem (Finset.nodup_toList _) (by simp_all)]
-  · rw [l.count_eq_zero_of_not_mem h,
-      l.finite_toSet.toFinset.toList.count_eq_zero_of_not_mem (by simp_all)]
+  rw [toFinite_toFinset, List.setOf_finset]
+  exact List.toFinset_toList H
 
 theorem setOf_mem_list_eq_singleton_of_nodup {l : List α} (H : l.Nodup) {a : α} [DecidableEq α] :
     { x | x ∈ l } = {a} ↔ l = [a] := by
