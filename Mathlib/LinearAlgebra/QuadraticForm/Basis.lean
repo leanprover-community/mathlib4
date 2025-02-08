@@ -137,7 +137,7 @@ theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι
   simp_all only [sub_left_inj]
 
   --rw [polar_lift]
-  have e1 : (Q.polar_sym2 ∘ Sym2.map fun i ↦ l i • g i) = (Q.polar_sym2 ∘ Sym2.map (l * g)) := rfl
+  --have e1 : (Q.polar_sym2 ∘ Sym2.map fun i ↦ l i • g i) = (Q.polar_sym2 ∘ Sym2.map (l * g)) := rfl
   have e2 (p : Sym2 ι) :
       (scalar l * Q.polar_sym2 ∘ Sym2.map g) p = (scalar l) p • Q.polar_sym2 (Sym2.map g p) := rfl
   have e3 : (scalar l).support ⊆  l.support.sym2 := by
