@@ -123,7 +123,8 @@ open PiNotation
 #check (x : Nat) → P x
 
 /-!
-`Π` notation doesn't have binder predicates.
+Note that the implementation of the `Π` delaborator in `Mathlib.Util.Delaborators`
+does not (yet?) make use of binder predicates.
 -/
 /-- info: Π (x : ℕ), x > 0 → α x : Type -/
 #guard_msgs in
