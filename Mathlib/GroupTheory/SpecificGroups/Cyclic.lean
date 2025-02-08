@@ -8,6 +8,7 @@ import Mathlib.Data.ZMod.Aut
 import Mathlib.Data.ZMod.QuotientGroup
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.GroupTheory.Subgroup.Simple
+import Mathlib.Tactic.Group
 
 /-!
 # Cyclic groups
@@ -52,6 +53,14 @@ theorem IsCyclic.exists_generator [Group α] [IsCyclic α] : ∃ g : α, ∀ x, 
 theorem isCyclic_iff_exists_zpowers_eq_top [Group α] : IsCyclic α ↔ ∃ g : α, zpowers g = ⊤ := by
   simp only [eq_top_iff', mem_zpowers_iff]
   exact ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+
+@[to_additive]
+protected theorem Subgroup.isCyclic_iff_exists_zpowers_eq_top [Group α] (H : Subgroup α) :
+    IsCyclic H ↔ ∃ g : α, Subgroup.zpowers g = H := by
+  rw [isCyclic_iff_exists_zpowers_eq_top]
+  simp_rw [← (map_injective H.subtype_injective).eq_iff, ← MonoidHom.range_eq_map,
+    H.range_subtype, MonoidHom.map_zpowers, Subtype.exists, coeSubtype, exists_prop]
+  exact exists_congr fun g ↦ and_iff_right_of_imp fun h ↦ h ▸ mem_zpowers g
 
 @[to_additive]
 instance (priority := 100) isCyclic_of_subsingleton [Group α] [Subsingleton α] : IsCyclic α :=
