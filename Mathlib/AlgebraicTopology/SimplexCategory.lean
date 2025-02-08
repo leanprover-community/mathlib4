@@ -741,13 +741,13 @@ noncomputable def inclusion.fullyFaithful (n : ℕ) :
 theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
     f.toOrderHom = g.toOrderHom → f = g := SimplexCategory.Hom.ext _ _
 
-/-- Some quick attempts to prove that `[m]` is `n`-truncated (`[m].len ≤ n`). -/
+/-- Some quick attempts to prove that `⦋m⦌` is `n`-truncated (`⦋m⦌.len ≤ n`). -/
 macro "trunc" : tactic =>
   `(tactic| first | decide | assumption |
     dsimp only [SimplexCategory.len_mk]; omega)
 
 /-- Make a morphism in `Truncated n` from a morphism in `SimplexCategory`. This
-is equivalent to `@id ([a]ₙ ⟶ [b]ₙ) f`. -/
+is equivalent to `@id (⦋a⦌ₙ ⟶ ⦋b⦌ₙ) f`. -/
 abbrev Hom.tr {n : ℕ} {a b : SimplexCategory} (f : a ⟶ b)
     (ha : a.len ≤ n := by trunc) (hb : b.len ≤ n := by trunc) :
     (⟨a, ha⟩ : Truncated n) ⟶ ⟨b, hb⟩ :=
