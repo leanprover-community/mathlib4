@@ -5,7 +5,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Nat.Find
-import Mathlib.Data.Set.Insert
+import Mathlib.Data.Set.Basic
 
 /-!
 # Further lemmas about the natural numbers

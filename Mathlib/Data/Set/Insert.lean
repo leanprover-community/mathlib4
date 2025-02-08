@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Data.Set.Basic
+import Mathlib.Data.One.Defs
 
 /-!
 # Lemmas about insertion, singleton, and pairs
