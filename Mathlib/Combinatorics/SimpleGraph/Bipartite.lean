@@ -201,18 +201,6 @@ theorem isBipartite_sum_degrees_eq (h : G.IsBipartite s t) :
 
 variable [DecidableEq V]
 
-/-- The degree-sum formula only counting over the vertices that form edges.
-
-See `SimpleGraph.sum_degrees_eq_twice_card_edges`. -/
-theorem sum_degrees_support_eq_twice_card_edges :
-    ∑ v ∈ G.support, G.degree v = 2 * #G.edgeFinset := by
-  simp_rw [←sum_degrees_eq_twice_card_edges,
-    ←sum_add_sum_compl G.support.toFinset, self_eq_add_right]
-  apply Finset.sum_eq_zero
-  intro v hv
-  rw [degree_eq_zero_iff_not_mem_support]
-  rwa [mem_compl, Set.mem_toFinset] at hv
-
 lemma isBipartite_sum_degrees_eq_twice_card_edges (h : G.IsBipartite s t) :
     ∑ v ∈ s ∪ t, G.degree v = 2 * #G.edgeFinset := by
   have hsub : G.support ⊆ ↑s ∪ ↑t := isBipartite_support_subset h
