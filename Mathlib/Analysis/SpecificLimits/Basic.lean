@@ -21,11 +21,7 @@ instances of these such as `ℝ`, `ℝ≥0` and `ℝ≥0∞`.
 
 noncomputable section
 
-open scoped Classical
-open Set Function Filter Finset Metric
-
-open scoped Classical
-open Topology Nat uniformity NNReal ENNReal
+open Set Function Filter Finset Metric Topology Nat uniformity NNReal ENNReal
 
 variable {α : Type*} {β : Type*} {ι : Type*}
 
@@ -113,7 +109,7 @@ theorem Filter.EventuallyEq.div_mul_cancel_atTop {α K : Type*} [LinearOrderedSe
     {f g : α → K} {l : Filter α} (hg : Tendsto g l atTop) :
     (fun x ↦ f x / g x * g x) =ᶠ[l] fun x ↦ f x :=
   div_mul_cancel <| hg.mono_right <| le_principal_iff.mpr <|
-    mem_of_superset (Ioi_mem_atTop 0) <| by aesop
+    mem_of_superset (Ioi_mem_atTop 0) <| by simp
 
 /-- If when `x` tends to `∞`, `g` tends to `∞` and `f x / g x` tends to a positive
   constant, then `f` tends to `∞`. -/
@@ -552,6 +548,7 @@ def posSumOfEncodable {ε : ℝ} (hε : 0 < ε) (ι) [Encodable ι] :
 
 theorem Set.Countable.exists_pos_hasSum_le {ι : Type*} {s : Set ι} (hs : s.Countable) {ε : ℝ}
     (hε : 0 < ε) : ∃ ε' : ι → ℝ, (∀ i, 0 < ε' i) ∧ ∃ c, HasSum (fun i : s ↦ ε' i) c ∧ c ≤ ε := by
+  classical
   haveI := hs.toEncodable
   rcases posSumOfEncodable hε s with ⟨f, hf0, ⟨c, hfc, hcε⟩⟩
   refine ⟨fun i ↦ if h : i ∈ s then f ⟨i, h⟩ else 1, fun i ↦ ?_, ⟨c, ?_, hcε⟩⟩
@@ -563,6 +560,7 @@ theorem Set.Countable.exists_pos_hasSum_le {ι : Type*} {s : Set ι} (hs : s.Cou
 theorem Set.Countable.exists_pos_forall_sum_le {ι : Type*} {s : Set ι} (hs : s.Countable) {ε : ℝ}
     (hε : 0 < ε) : ∃ ε' : ι → ℝ,
     (∀ i, 0 < ε' i) ∧ ∀ t : Finset ι, ↑t ⊆ s → ∑ i ∈ t, ε' i ≤ ε := by
+  classical
   rcases hs.exists_pos_hasSum_le hε with ⟨ε', hpos, c, hε'c, hcε⟩
   refine ⟨ε', hpos, fun t ht ↦ ?_⟩
   rw [← sum_subtype_of_mem _ ht]

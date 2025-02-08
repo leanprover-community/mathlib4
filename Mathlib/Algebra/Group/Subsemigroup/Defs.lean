@@ -97,8 +97,8 @@ instance : SetLike (Subsemigroup M) M :=
 @[to_additive]
 instance : MulMemClass (Subsemigroup M) M where mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
 
-initialize_simps_projections Subsemigroup (carrier → coe)
-initialize_simps_projections AddSubsemigroup (carrier → coe)
+initialize_simps_projections Subsemigroup (carrier → coe, as_prefix coe)
+initialize_simps_projections AddSubsemigroup (carrier → coe, as_prefix coe)
 
 @[to_additive (attr := simp)]
 theorem mem_carrier {s : Subsemigroup M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=

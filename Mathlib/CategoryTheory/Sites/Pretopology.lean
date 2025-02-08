@@ -172,7 +172,7 @@ def trivial : Pretopology C where
   pullbacks X Y f S := by
     rintro ⟨Z, g, i, rfl⟩
     refine ⟨pullback g f, pullback.snd _ _, ?_, ?_⟩
-    · refine ⟨⟨pullback.lift (f ≫ inv g) (𝟙 _) (by simp), ⟨?_, by aesop_cat⟩⟩⟩
+    · refine ⟨⟨pullback.lift (f ≫ inv g) (𝟙 _) (by simp), ⟨?_, by simp⟩⟩⟩
       ext
       · rw [assoc, pullback.lift_fst, ← pullback.condition_assoc]
         simp

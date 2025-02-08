@@ -398,14 +398,16 @@ def equivEmptyEquiv (α : Sort u) : α ≃ Empty ≃ IsEmpty α :=
 def propEquivPEmpty {p : Prop} (h : ¬p) : p ≃ PEmpty := @equivPEmpty p <| IsEmpty.prop_iff.2 h
 
 /-- If both `α` and `β` have a unique element, then `α ≃ β`. -/
-def equivOfUnique (α β : Sort _) [Unique.{u} α] [Unique.{v} β] : α ≃ β where
+def ofUnique (α β : Sort _) [Unique.{u} α] [Unique.{v} β] : α ≃ β where
   toFun := default
   invFun := default
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 
+@[deprecated (since := "2024-12-26")] alias equivOfUnique := ofUnique
+
 /-- If `α` has a unique element, then it is equivalent to any `PUnit`. -/
-def equivPUnit (α : Sort u) [Unique α] : α ≃ PUnit.{v} := equivOfUnique α _
+def equivPUnit (α : Sort u) [Unique α] : α ≃ PUnit.{v} := ofUnique α _
 
 /-- The `Sort` of proofs of a true proposition is equivalent to `PUnit`. -/
 def propEquivPUnit {p : Prop} (h : p) : p ≃ PUnit.{0} := @equivPUnit p <| uniqueProp h

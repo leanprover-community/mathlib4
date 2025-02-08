@@ -1265,11 +1265,11 @@ theorem integral_Ioi_deriv_mul_eq_sub
     intro x (hx : a < x)
     apply ((hu x hx).mul (hv x hx)).congr_of_eventuallyEq
     filter_upwards [eventually_ne_nhds hx.ne.symm] with y hy
-    exact Function.update_noteq hy a' (u * v)
+    exact Function.update_of_ne hy a' (u * v)
   have htendsto : Tendsto f atTop (𝓝 b') := by
     apply h_infty.congr'
     filter_upwards [eventually_ne_atTop a] with x hx
-    exact (Function.update_noteq hx a' (u * v)).symm
+    exact (Function.update_of_ne hx a' (u * v)).symm
   simpa using integral_Ioi_of_hasDerivAt_of_tendsto
     (continuousWithinAt_update_same.mpr h_zero) hderiv huv htendsto
 
@@ -1296,11 +1296,11 @@ theorem integral_Iic_deriv_mul_eq_sub
     intro x hx
     apply ((hu x hx).mul (hv x hx)).congr_of_eventuallyEq
     filter_upwards [Iio_mem_nhds hx] with x (hx : x < a)
-    exact Function.update_noteq (ne_of_lt hx) a' (u * v)
+    exact Function.update_of_ne (ne_of_lt hx) a' (u * v)
   have htendsto : Tendsto f atBot (𝓝 b') := by
     apply h_infty.congr'
     filter_upwards [Iio_mem_atBot a] with x (hx : x < a)
-    exact (Function.update_noteq (ne_of_lt hx) a' (u * v)).symm
+    exact (Function.update_of_ne (ne_of_lt hx) a' (u * v)).symm
   simpa using integral_Iic_of_hasDerivAt_of_tendsto
     (continuousWithinAt_update_same.mpr h_zero) hderiv huv htendsto
 

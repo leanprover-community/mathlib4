@@ -542,7 +542,7 @@ def id (α : Type*) [NonAssocSemiring α] : α →+* α where
 instance : Inhabited (α →+* α) :=
   ⟨id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(RingHom.id α) = _root_.id := rfl
 
 @[simp]

@@ -165,9 +165,9 @@ theorem disjoint_bits (p q : ℕ) :
 
 open MeasureTheory.Measure
 
-private def measureableSpace_list_int : MeasurableSpace (List ℤ) := ⊤
+private def measurableSpace_list_int : MeasurableSpace (List ℤ) := ⊤
 
-attribute [local instance] measureableSpace_list_int
+attribute [local instance] measurableSpace_list_int
 
 private theorem measurableSingletonClass_list_int : MeasurableSingletonClass (List ℤ) :=
   { measurableSet_singleton := fun _ => trivial }

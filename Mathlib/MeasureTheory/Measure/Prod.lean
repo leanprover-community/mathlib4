@@ -308,7 +308,7 @@ theorem measure_ae_null_of_prod_null {s : Set (α × β)} (h : μ.prod ν s = 0)
   rw [measure_prod_null mt] at ht
   rw [eventuallyLE_antisymm_iff]
   exact
-    ⟨EventuallyLE.trans_eq (Eventually.of_forall fun x => (measure_mono (preimage_mono hst) : _))
+    ⟨EventuallyLE.trans_eq (Eventually.of_forall fun x => measure_mono (preimage_mono hst))
         ht,
       Eventually.of_forall fun x => zero_le _⟩
 

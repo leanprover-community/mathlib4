@@ -195,7 +195,7 @@ To check that `f` is an embedding it suffices to check that `U i → Y` is an em
 theorem isEmbedding_of_iSup_eq_top_of_preimage_subset_range
     {X Y} [TopologicalSpace X] [TopologicalSpace Y]
     (f : X → Y) (h : Continuous f) {ι : Type*}
-    (U : ι → Opens Y) (hU : Set.range f ⊆ (iSup U : _))
+    (U : ι → Opens Y) (hU : Set.range f ⊆ (iSup U :))
     (V : ι → Type*) [∀ i, TopologicalSpace (V i)]
     (iV : ∀ i, V i → X) (hiV : ∀ i, Continuous (iV i)) (hV : ∀ i, f ⁻¹' U i ⊆ Set.range (iV i))
     (hV' : ∀ i, IsEmbedding (f ∘ iV i)) : IsEmbedding f := by

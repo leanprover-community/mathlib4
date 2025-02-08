@@ -89,7 +89,7 @@ def Cover.mkOfCovers (J : Type*) (obj : J → Scheme.{u}) (map : (j : J) → obj
   covers x := (covers x).choose_spec
   map_prop := map_prop
 
-/-- Turn a `P`-cover into a `Q`-cover by showing that the components satisfiy `Q`. -/
+/-- Turn a `P`-cover into a `Q`-cover by showing that the components satisfy `Q`. -/
 def Cover.changeProp (Q : MorphismProperty Scheme.{u}) (𝒰 : X.Cover P) (h : ∀ j, Q (𝒰.map j)) :
     X.Cover Q where
   J := 𝒰.J

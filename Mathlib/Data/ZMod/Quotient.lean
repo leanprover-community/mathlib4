@@ -63,6 +63,7 @@ end Int
 noncomputable section ChineseRemainder
 open Ideal
 
+open scoped Function in -- required for scoped `on` notation
 /-- The **Chinese remainder theorem**, elementary version for `ZMod`. See also
 `Mathlib.Data.ZMod.Basic` for versions involving only two numbers. -/
 def ZMod.prodEquivPi {ι : Type*} [Fintype ι] (a : ι → ℕ)
@@ -141,9 +142,6 @@ theorem orbitZPowersEquiv_symm_apply (k : ZMod (minimalPeriod (a • ·) b)) :
     (orbitZPowersEquiv a b).symm k =
       (⟨a, mem_zpowers a⟩ : zpowers a) ^ (cast k : ℤ) • ⟨b, mem_orbit_self b⟩ :=
   rfl
-
-@[deprecated (since := "2024-02-21")]
-alias _root_.AddAction.orbit_zmultiples_equiv_symm_apply := orbitZMultiplesEquiv_symm_apply
 
 theorem orbitZPowersEquiv_symm_apply' (k : ℤ) :
     (orbitZPowersEquiv a b).symm k =

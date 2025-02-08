@@ -12,7 +12,7 @@ In this file we introduce 3 typeclass mixins that relate topology and order stru
 
 - `ClosedIicTopology` says that all the intervals $(-∞, a]$ (formally, `Set.Iic a`)
   are closed sets;
-- `ClosedIciTopoplogy` says that all the intervals $[a, +∞)$ (formally, `Set.Ici a`)
+- `ClosedIciTopology` says that all the intervals $[a, +∞)$ (formally, `Set.Ici a`)
   are closed sets;
 - `OrderClosedTopology` says that the set of points `(x, y)` such that `x ≤ y`
   is closed in the product topology.
@@ -25,7 +25,7 @@ We prove many basic properties of such topologies.
 
 This file contains the proofs of the following facts.
 For exact requirements
-(`OrderClosedTopology` vs `ClosedIciTopoplogy` vs `ClosedIicTopology,
+(`OrderClosedTopology` vs `ClosedIciTopology` vs `ClosedIicTopology,
 `Preorder` vs `PartialOrder` vs `LinearOrder` etc)
 see their statements.
 
@@ -107,10 +107,6 @@ variable [TopologicalSpace α] [Preorder α] [ClosedIicTopology α] {f : β → 
 
 theorem isClosed_Iic : IsClosed (Iic a) :=
   ClosedIicTopology.isClosed_Iic a
-
-@[deprecated isClosed_Iic (since := "2024-02-15")]
-lemma ClosedIicTopology.isClosed_le' (a : α) : IsClosed {x | x ≤ a} := isClosed_Iic a
-export ClosedIicTopology (isClosed_le')
 
 instance : ClosedIciTopology αᵒᵈ where
   isClosed_Ici _ := isClosed_Iic (α := α)
@@ -414,10 +410,6 @@ variable [TopologicalSpace α] [Preorder α] [ClosedIciTopology α] {f : β → 
 
 theorem isClosed_Ici {a : α} : IsClosed (Ici a) :=
   ClosedIciTopology.isClosed_Ici a
-
-@[deprecated isClosed_Ici (since := "2024-02-15")]
-lemma ClosedIciTopology.isClosed_ge' (a : α) : IsClosed {x | a ≤ x} := isClosed_Ici a
-export ClosedIciTopology (isClosed_ge')
 
 instance : ClosedIicTopology αᵒᵈ where
   isClosed_Iic _ := isClosed_Ici (α := α)

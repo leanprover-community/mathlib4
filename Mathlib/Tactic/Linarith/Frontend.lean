@@ -223,7 +223,7 @@ abbrev ExprMultiMap α := Array (Expr × List α)
 (If the key is not in the map it returns `self.size` as the index.) -/
 def ExprMultiMap.find {α : Type} (self : ExprMultiMap α) (k : Expr) : MetaM (Nat × List α) := do
   for h : i in [:self.size] do
-    let (k', vs) := self[i]'h.2
+    let (k', vs) := self[i]
     if ← isDefEq k' k then
       return (i, vs)
   return (self.size, [])
@@ -233,7 +233,7 @@ in the map. -/
 def ExprMultiMap.insert {α : Type} (self : ExprMultiMap α) (k : Expr) (v : α) :
     MetaM (ExprMultiMap α) := do
   for h : i in [:self.size] do
-    if ← isDefEq (self[i]'h.2).1 k then
+    if ← isDefEq self[i].1 k then
       return self.modify i fun (k, vs) => (k, v::vs)
   return self.push (k, [v])
 

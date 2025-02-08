@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.Indicator
+import Mathlib.Algebra.Group.Even
 import Mathlib.Data.Finset.Piecewise
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Preimage
@@ -218,7 +219,7 @@ open scoped Batteries.ExtendedBinder
 
 /-- Delaborator for `Finset.prod`. The `pp.piBinderTypes` option controls whether
 to show the domain type when the product is over `Finset.univ`. -/
-@[delab app.Finset.prod] def delabFinsetProd : Delab :=
+@[app_delab Finset.prod] def delabFinsetProd : Delab :=
   whenPPOption getPPNotation <| withOverApp 5 <| do
   let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
   guard <| f.isLambda
@@ -239,7 +240,7 @@ to show the domain type when the product is over `Finset.univ`. -/
 
 /-- Delaborator for `Finset.sum`. The `pp.piBinderTypes` option controls whether
 to show the domain type when the sum is over `Finset.univ`. -/
-@[delab app.Finset.sum] def delabFinsetSum : Delab :=
+@[app_delab Finset.sum] def delabFinsetSum : Delab :=
   whenPPOption getPPNotation <| withOverApp 5 <| do
   let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
   guard <| f.isLambda
@@ -542,6 +543,12 @@ theorem prod_disj_sum (s : Finset α) (t : Finset γ) (f : α ⊕ γ → β) :
     ∏ x ∈ s.disjSum t, f x = (∏ x ∈ s, f (Sum.inl x)) * ∏ x ∈ t, f (Sum.inr x) := by
   rw [← map_inl_disjUnion_map_inr, prod_disjUnion, prod_map, prod_map]
   rfl
+
+@[to_additive]
+lemma prod_sum_eq_prod_toLeft_mul_prod_toRight (s : Finset (α ⊕ γ)) (f : α ⊕ γ → β) :
+    ∏ x ∈ s, f x = (∏ x ∈ s.toLeft, f (Sum.inl x)) * ∏ x ∈ s.toRight, f (Sum.inr x) := by
+  rw [← Finset.toLeft_disjSum_toRight (u := s), Finset.prod_disj_sum, Finset.toLeft_disjSum,
+    Finset.toRight_disjSum]
 
 @[to_additive]
 theorem prod_sum_elim (s : Finset α) (t : Finset γ) (f : α → β) (g : γ → β) :
@@ -946,8 +953,8 @@ theorem prod_eq_mul {s : Finset α} {f : α → β} (a b : α) (hn : a ≠ b)
 "A sum over `s.subtype p` equals one over `{x ∈ s | p x}`."]
 theorem prod_subtype_eq_prod_filter (f : α → β) {p : α → Prop} [DecidablePred p] :
     ∏ x ∈ s.subtype p, f x = ∏ x ∈ s with p x, f x := by
-  conv_lhs => erw [← prod_map (s.subtype p) (Function.Embedding.subtype _) f]
-  exact prod_congr (subtype_map _) fun x _hx => rfl
+  have := prod_map (s.subtype p) (Function.Embedding.subtype _) f
+  simp_all
 
 /-- If all elements of a `Finset` satisfy the predicate `p`, a product
 over `s.subtype p` equals that product over `s`. -/

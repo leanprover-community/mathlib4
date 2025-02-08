@@ -365,7 +365,7 @@ def map (f : α → β) : RegularExpression α → RegularExpression β
 protected theorem map_pow (f : α → β) (P : RegularExpression α) :
     ∀ n : ℕ, map f (P ^ n) = map f P ^ n
   | 0 => by unfold map; rfl
-  | n + 1 => (congr_arg (· * map f P) (RegularExpression.map_pow f P n) : _)
+  | n + 1 => (congr_arg (· * map f P) (RegularExpression.map_pow f P n) :)
 
 #adaptation_note /-- around nightly-2024-02-25,
   we need to write `comp x y` in the pattern `comp P Q`, instead of `x * y`. -/
@@ -403,7 +403,7 @@ theorem matches'_map (f : α → β) :
     exact image_singleton
   -- Porting note: the following close with last `rw` but not with `simp`?
   | R + S => by simp only [matches'_map, map, matches'_add]; rw [map_add]
-  | comp R S => by simp only [matches'_map, map, matches'_mul]; erw [map_mul]
+  | comp R S => by simp [matches'_map]
   | star R => by
     simp_rw [map, matches', matches'_map]
     rw [Language.kstar_eq_iSup_pow, Language.kstar_eq_iSup_pow]

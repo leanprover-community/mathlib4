@@ -491,7 +491,6 @@ lemma toSpec_fromSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) (x :
   rw [← FromSpec.num_mem_carrier_iff f_deg hm x]
   exact ToSpec.mk_mem_carrier _ z
 
-@[deprecated (since := "2024-03-02")] alias toSpecFromSpec := toSpec_fromSpec
 
 end toSpecFromSpec
 

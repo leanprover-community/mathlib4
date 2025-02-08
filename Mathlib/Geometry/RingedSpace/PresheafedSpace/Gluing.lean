@@ -242,7 +242,7 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
       (opensFunctor (D.f j i)).obj
         ((Opens.map (𝖣.t j i).base).obj ((Opens.map (𝖣.f i j).base).obj U)) := by
   ext1
-  dsimp only [Opens.map_coe, IsOpenMap.functor_obj_coe]
+  dsimp only [Opens.map_coe, IsOpenMap.coe_functor_obj]
   rw [← show _ = (𝖣.ι i).base from 𝖣.ι_gluedIso_inv (PresheafedSpace.forget _) i, ←
     show _ = (𝖣.ι j).base from 𝖣.ι_gluedIso_inv (PresheafedSpace.forget _) j]
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw` on `coe_comp`
@@ -328,7 +328,7 @@ def ιInvAppπApp {i : D.J} (U : Opens (D.U i).carrier) (j) :
       D.opensImagePreimageMap i j U ≫ (D.f j k).c.app _ ≫ (D.V (j, k)).presheaf.map (eqToHom ?_)
     rw [Functor.op_obj]
     congr 1; ext1
-    dsimp only [Functor.op_obj, Opens.map_coe, unop_op, IsOpenMap.functor_obj_coe]
+    dsimp only [Functor.op_obj, Opens.map_coe, unop_op, IsOpenMap.coe_functor_obj]
     rw [Set.preimage_preimage]
     change (D.f j k ≫ 𝖣.ι j).base ⁻¹' _ = _
     -- Porting note: used to be `congr 3`
@@ -354,10 +354,10 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
             induction Y using Opposite.rec' with | h Y => ?_
             let f : Y ⟶ X := f'.unop; have : f' = f.op := rfl; clear_value f; subst this
             rcases f with (_ | ⟨j, k⟩ | ⟨j, k⟩)
-            · erw [Category.id_comp, CategoryTheory.Functor.map_id]
-              rw [Category.comp_id]
-            · erw [Category.id_comp]; congr 1
-            erw [Category.id_comp]
+            · simp
+            · simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp]
+              congr 1
+            simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp]
             -- It remains to show that the blue is equal to red + green in the original diagram.
             -- The proof strategy is illustrated in ![this diagram](https://i.imgur.com/mBzV1Rx.png)
             -- where we prove red = pink = light-blue = green = blue.

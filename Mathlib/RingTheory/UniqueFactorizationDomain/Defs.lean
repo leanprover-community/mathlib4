@@ -135,11 +135,6 @@ instance (priority := 100) ufm_of_decomposition_of_wfDvdMonoid
     UniqueFactorizationMonoid α :=
   { ‹WfDvdMonoid α› with irreducible_iff_prime := irreducible_iff_prime }
 
-@[deprecated ufm_of_decomposition_of_wfDvdMonoid (since := "2024-02-12")]
-theorem ufm_of_gcd_of_wfDvdMonoid [CancelCommMonoidWithZero α] [WfDvdMonoid α]
-    [DecompositionMonoid α] : UniqueFactorizationMonoid α :=
-  ufm_of_decomposition_of_wfDvdMonoid
-
 end Prio
 
 namespace UniqueFactorizationMonoid

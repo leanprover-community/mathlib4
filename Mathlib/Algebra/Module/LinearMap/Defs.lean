@@ -427,7 +427,7 @@ theorem restrictScalars_apply (fₗ : M →ₗ[S] M₂) (x) : restrictScalars R 
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (M →ₗ[S] M₂) → M →ₗ[R] M₂) := fun _ _ h ↦
-  ext (LinearMap.congr_fun h : _)
+  ext (LinearMap.congr_fun h :)
 
 @[simp]
 theorem restrictScalars_inj (fₗ gₗ : M →ₗ[S] M₂) :
@@ -570,7 +570,7 @@ instance CompatibleSMul.intModule {S : Type*} [Semiring S] [Module S M] [Module 
 
 instance CompatibleSMul.units {R S : Type*} [Monoid R] [MulAction R M] [MulAction R M₂]
     [Semiring S] [Module S M] [Module S M₂] [CompatibleSMul M M₂ R S] : CompatibleSMul M M₂ Rˣ S :=
-  ⟨fun fₗ c x ↦ (CompatibleSMul.map_smul fₗ (c : R) x : _)⟩
+  ⟨fun fₗ c x ↦ (CompatibleSMul.map_smul fₗ (c : R) x :)⟩
 
 end AddCommGroup
 

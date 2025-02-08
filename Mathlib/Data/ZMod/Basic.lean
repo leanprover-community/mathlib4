@@ -34,10 +34,16 @@ This is a ring hom if the ring has characteristic dividing `n`
 -/
 
 assert_not_exists Submodule
+assert_not_exists TwoSidedIdeal
 
 open Function ZMod
 
 namespace ZMod
+
+/-- For non-zero `n : ℕ`, the ring `Fin n` is equivalent to `ZMod n`. -/
+def finEquiv : ∀ (n : ℕ) [NeZero n], Fin n ≃+* ZMod n
+  | 0, h => (h.ne _ rfl).elim
+  | _ + 1, _ => .refl _
 
 instance charZero : CharZero (ZMod 0) := inferInstanceAs (CharZero ℤ)
 
@@ -1041,7 +1047,7 @@ theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val 
     refine (a.val_lt.not_le <| Nat.le_of_mul_le_mul_left ?_ zero_lt_two).elim
     rw [he, mul_comm]
     apply Nat.mul_le_mul_left
-    erw [Nat.succ_le_succ_iff, Nat.succ_le_succ_iff]; simp
+    simp
   · rintro (rfl | h)
     · rw [val_zero, mul_zero]
       apply dvd_zero
@@ -1268,20 +1274,8 @@ variable {n a : ℕ}
 theorem valMinAbs_natAbs_eq_min {n : ℕ} [hpos : NeZero n] (a : ZMod n) :
     a.valMinAbs.natAbs = min a.val (n - a.val) := by
   rw [valMinAbs_def_pos]
-  split_ifs with h
-  · rw [Int.natAbs_ofNat]
-    symm
-    apply
-      min_eq_left (le_trans h (le_trans (Nat.half_le_of_sub_le_half _) (Nat.sub_le_sub_left h n)))
-    rw [Nat.sub_sub_self (Nat.div_le_self _ _)]
-  · rw [← Int.natAbs_neg, neg_sub, ← Nat.cast_sub a.val_le]
-    symm
-    apply
-      min_eq_right
-        (le_trans (le_trans (Nat.sub_le_sub_left (lt_of_not_ge h) n) (Nat.le_half_of_half_lt_sub _))
-          (le_of_not_ge h))
-    rw [Nat.sub_sub_self (Nat.div_lt_self (lt_of_le_of_ne' (Nat.zero_le _) hpos.1) one_lt_two)]
-    apply Nat.lt_succ_self
+  have := a.val_lt
+  omega
 
 theorem valMinAbs_natCast_of_le_half (ha : a ≤ n / 2) : (a : ZMod n).valMinAbs = a := by
   cases n

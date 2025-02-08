@@ -233,16 +233,6 @@ theorem inseparableSetoid_ring (α) [CommRing α] [TopologicalSpace α] [Topolog
   Setoid.ext fun x y =>
     addGroup_inseparable_iff.trans <| .trans (by rfl) (Submodule.quotientRel_def _).symm
 
-@[deprecated (since := "2024-03-09")]
-alias ring_sep_rel := inseparableSetoid_ring
-
--- Equality of types is evil
-@[deprecated UniformSpace.inseparableSetoid_ring (since := "2024-02-16")]
-theorem ring_sep_quot (α : Type u) [r : CommRing α] [TopologicalSpace α] [TopologicalRing α] :
-    SeparationQuotient α = (α ⧸ (⊥ : Ideal α).closure) := by
-  rw [SeparationQuotient, @inseparableSetoid_ring α r]
-  rfl
-
 /-- Given a topological ring `α` equipped with a uniform structure that makes subtraction uniformly
 continuous, get an homeomorphism between the separated quotient of `α` and the quotient ring
 corresponding to the closure of zero. -/

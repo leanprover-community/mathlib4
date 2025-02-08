@@ -192,7 +192,7 @@ theorem type_empty : type (@EmptyRelation Empty) = 0 :=
 
 theorem type_eq_one_of_unique (r) [IsWellOrder α r] [Nonempty α] [Subsingleton α] : type r = 1 := by
   cases nonempty_unique α
-  exact (RelIso.relIsoOfUniqueOfIrrefl r _).ordinal_type_eq
+  exact (RelIso.ofUniqueOfIrrefl r _).ordinal_type_eq
 
 @[simp]
 theorem type_eq_one_iff_unique [IsWellOrder α r] : type r = 1 ↔ Nonempty (Unique α) :=
@@ -487,10 +487,8 @@ theorem typein_surjOn (r : α → α → Prop) [IsWellOrder α r] :
 
 That is, `enum` maps an initial segment of the ordinals, those less than the order type of `r`, to
 the elements of `α`. -/
--- The explicit typing is required in order for `simp` to work properly.
 @[simps! symm_apply_coe]
-def enum (r : α → α → Prop) [IsWellOrder α r] :
-    @RelIso { o // o < type r } α (Subrel (· < ·) { o | o < type r }) r :=
+def enum (r : α → α → Prop) [IsWellOrder α r] : (· < · : Iio (type r) → Iio (type r) → Prop) ≃r r :=
   (typein r).subrelIso
 
 @[simp]
@@ -507,20 +505,20 @@ theorem enum_typein (r : α → α → Prop) [IsWellOrder α r] (a : α) :
     enum r ⟨typein r a, typein_lt_type r a⟩ = a :=
   enum_type (PrincipalSeg.ofElement r a)
 
-theorem enum_lt_enum {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : {o // o < type r}} :
+theorem enum_lt_enum {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Iio (type r)} :
     r (enum r o₁) (enum r o₂) ↔ o₁ < o₂ :=
   (enum _).map_rel_iff
 
-theorem enum_le_enum (r : α → α → Prop) [IsWellOrder α r] {o₁ o₂ : {o // o < type r}} :
+theorem enum_le_enum (r : α → α → Prop) [IsWellOrder α r] {o₁ o₂ : Iio (type r)} :
     ¬r (enum r o₁) (enum r o₂) ↔ o₂ ≤ o₁ := by
   rw [enum_lt_enum (r := r), not_lt]
 
 @[simp]
-theorem enum_le_enum' (a : Ordinal) {o₁ o₂ : {o // o < type (· < ·)}} :
+theorem enum_le_enum' (a : Ordinal) {o₁ o₂ : Iio (type (· < ·))} :
     enum (· < ·) o₁ ≤ enum (α := a.toType) (· < ·) o₂ ↔ o₁ ≤ o₂ := by
   rw [← enum_le_enum, not_lt]
 
-theorem enum_inj {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : {o // o < type r}} :
+theorem enum_inj {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Iio (type r)} :
     enum r o₁ = enum r o₂ ↔ o₁ = o₂ :=
   EmbeddingLike.apply_eq_iff_eq _
 
@@ -869,10 +867,9 @@ theorem type_sum_lex {α β : Type u} (r : α → α → Prop) (s : β → β �
 theorem card_nat (n : ℕ) : card.{u} n = n := by
   induction n <;> [simp; simp only [card_add, card_one, Nat.cast_succ, *]]
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem card_ofNat (n : ℕ) [n.AtLeastTwo] :
-    card.{u} (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+    card.{u} ofNat(n) = OfNat.ofNat n :=
   card_nat n
 
 instance instAddLeftMono : AddLeftMono Ordinal.{u} where
@@ -1213,9 +1210,8 @@ theorem ord_nat (n : ℕ) : ord n = n :=
 @[simp]
 theorem ord_one : ord 1 = 1 := by simpa using ord_nat 1
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord ofNat(n) = OfNat.ofNat n :=
   ord_nat n
 
 @[simp]
@@ -1380,10 +1376,9 @@ theorem nat_le_card {o} {n : ℕ} : (n : Cardinal) ≤ card o ↔ (n : Ordinal) 
 theorem one_le_card {o} : 1 ≤ card o ↔ 1 ≤ o := by
   simpa using nat_le_card (n := 1)
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_le_card {o} {n : ℕ} [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n : Cardinal)) ≤ card o ↔ (OfNat.ofNat n : Ordinal) ≤ o :=
+    (ofNat(n) : Cardinal) ≤ card o ↔ (OfNat.ofNat n : Ordinal) ≤ o :=
   nat_le_card
 
 @[simp]
@@ -1407,20 +1402,18 @@ theorem zero_lt_card {o} : 0 < card o ↔ 0 < o := by
 theorem one_lt_card {o} : 1 < card o ↔ 1 < o := by
   simpa using nat_lt_card (n := 1)
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_lt_card {o} {n : ℕ} [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n : Cardinal)) < card o ↔ (OfNat.ofNat n : Ordinal) < o :=
+    (ofNat(n) : Cardinal) < card o ↔ (OfNat.ofNat n : Ordinal) < o :=
   nat_lt_card
 
 @[simp]
 theorem card_lt_nat {o} {n : ℕ} : card o < n ↔ o < n :=
   lt_iff_lt_of_le_iff_le nat_le_card
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem card_lt_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
-    card o < (no_index (OfNat.ofNat n)) ↔ o < OfNat.ofNat n :=
+    card o < ofNat(n) ↔ o < OfNat.ofNat n :=
   card_lt_nat
 
 @[simp]
@@ -1431,10 +1424,9 @@ theorem card_le_nat {o} {n : ℕ} : card o ≤ n ↔ o ≤ n :=
 theorem card_le_one {o} : card o ≤ 1 ↔ o ≤ 1 := by
   simpa using card_le_nat (n := 1)
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem card_le_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
-    card o ≤ (no_index (OfNat.ofNat n)) ↔ o ≤ OfNat.ofNat n :=
+    card o ≤ ofNat(n) ↔ o ≤ OfNat.ofNat n :=
   card_le_nat
 
 @[simp]
@@ -1459,10 +1451,9 @@ theorem lift_down' {a : Cardinal.{u}} {b : Ordinal.{max u v}}
     (h : card.{max u v} b ≤ Cardinal.lift.{v, u} a) : ∃ a', lift.{v, u} a' = b :=
   mem_range_lift_of_card_le h
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem card_eq_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
-    card o = (no_index (OfNat.ofNat n)) ↔ o = OfNat.ofNat n :=
+    card o = ofNat(n) ↔ o = OfNat.ofNat n :=
   card_eq_nat
 
 @[simp]

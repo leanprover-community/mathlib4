@@ -129,7 +129,7 @@ theorem algHom_ext' ⦃f g : (⨁ i, A i) →ₐ[R] B⦄
 theorem algHom_ext ⦃f g : (⨁ i, A i) →ₐ[R] B⦄ (h : ∀ i x, f (of A i x) = g (of A i x)) : f = g :=
   algHom_ext' R A fun i => LinearMap.ext <| h i
 
-/-- The piecewise multiplication from the `Mul` instance, as a bundled linear homomorphism.
+/-- The piecewise multiplication from the `Mul` instance, as a bundled linear map.
 
 This is the graded version of `LinearMap.mul`, and the linear version of `DirectSum.gMulHom` -/
 @[simps]

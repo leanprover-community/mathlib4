@@ -48,9 +48,6 @@ theorem toPartENat_eq_top {c : Cardinal} :
 theorem toPartENat_apply_of_aleph0_le {c : Cardinal} (h : ℵ₀ ≤ c) : toPartENat c = ⊤ :=
   congr_arg PartENat.ofENat (toENat_eq_top.2 h)
 
-@[deprecated (since := "2024-02-15")]
-alias toPartENat_cast := toPartENat_natCast
-
 @[simp]
 theorem mk_toPartENat_of_infinite [h : Infinite α] : toPartENat #α = ⊤ :=
   toPartENat_apply_of_aleph0_le (infinite_iff.1 h)
@@ -62,7 +59,6 @@ theorem aleph0_toPartENat : toPartENat ℵ₀ = ⊤ :=
 theorem toPartENat_surjective : Surjective toPartENat := fun x =>
   PartENat.casesOn x ⟨ℵ₀, toPartENat_apply_of_aleph0_le le_rfl⟩ fun n => ⟨n, toPartENat_natCast n⟩
 
-@[deprecated (since := "2024-02-15")] alias toPartENat_eq_top_iff_le_aleph0 := toPartENat_eq_top
 
 theorem toPartENat_strictMonoOn : StrictMonoOn toPartENat (Set.Iic ℵ₀) :=
   PartENat.withTopOrderIso.symm.strictMono.comp_strictMonoOn toENat_strictMonoOn
@@ -79,9 +75,12 @@ lemma toPartENat_le_iff_of_lt_aleph0 {c c' : Cardinal} (hc' : c' < ℵ₀) :
   simp_rw [← partENatOfENat_toENat, toENat_nat, ← toENat_le_nat,
    ← PartENat.withTopOrderIso.symm.le_iff_le, PartENat.ofENat_le, map_le_map_iff]
 
-lemma toPartENat_eq_iff_of_le_aleph0 {c c' : Cardinal} (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) :
+lemma toPartENat_inj_of_le_aleph0 {c c' : Cardinal} (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) :
     toPartENat c = toPartENat c' ↔ c = c' :=
   toPartENat_strictMonoOn.injOn.eq_iff hc hc'
+
+@[deprecated (since := "2024-12-29")] alias toPartENat_eq_iff_of_le_aleph0 :=
+  toPartENat_inj_of_le_aleph0
 
 theorem toPartENat_mono {c c' : Cardinal} (h : c ≤ c') :
     toPartENat c ≤ toPartENat c' :=

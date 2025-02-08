@@ -299,12 +299,11 @@ end UniqueFactorizationMonoid
 
 namespace UniqueFactorizationMonoid
 
-open scoped Classical
-
 open Multiset Associates
 
 variable [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α]
 
+open scoped Classical in
 /-- Noncomputably defines a `normalizationMonoid` structure on a `UniqueFactorizationMonoid`. -/
 protected noncomputable def normalizationMonoid : NormalizationMonoid α :=
   normalizationMonoidOfMonoidHomRightInverse

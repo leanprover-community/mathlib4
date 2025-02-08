@@ -65,7 +65,7 @@ lemma natCast_log {n : ℕ} : Real.log n = log n := ofReal_natCast n ▸ ofReal_
 
 @[simp]
 lemma ofNat_log {n : ℕ} [n.AtLeastTwo] :
-    Real.log (no_index (OfNat.ofNat n)) = log (OfNat.ofNat n) :=
+    Real.log ofNat(n) = log (OfNat.ofNat n) :=
   natCast_log
 
 theorem log_ofReal_re (x : ℝ) : (log (x : ℂ)).re = Real.log x := by simp [log_re]

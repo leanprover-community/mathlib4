@@ -576,6 +576,7 @@ lemma setLIntegral_toKernel_prod [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ 
 @[deprecated (since := "2024-06-29")]
 alias set_lintegral_toKernel_prod := setLIntegral_toKernel_prod
 
+open scoped Function in -- required for scoped `on` notation
 lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
     (a : α) {s : Set (β × ℝ)} (hs : MeasurableSet s) :
     ∫⁻ b, hf.toKernel f (a, b) {y | (b, y) ∈ s} ∂(ν a) = κ a s := by

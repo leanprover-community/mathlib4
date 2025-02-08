@@ -254,12 +254,29 @@ end SMul
 
 section mul_inv
 
-variable {α β : Type*} [NormedField β] {t u v w : α → β} {l : Filter α}
+variable {α ι β : Type*} [NormedField β] {t u v w : α → β} {l : Filter α}
 
-theorem IsEquivalent.mul (htu : t ~[l] u) (hvw : v ~[l] w) : t * v ~[l] u * w :=
+protected theorem IsEquivalent.mul (htu : t ~[l] u) (hvw : v ~[l] w) : t * v ~[l] u * w :=
   htu.smul hvw
 
-theorem IsEquivalent.inv (huv : u ~[l] v) : (fun x ↦ (u x)⁻¹) ~[l] fun x ↦ (v x)⁻¹ := by
+theorem IsEquivalent.listProd {L : List ι} {f g : ι → α → β} (h : ∀ i ∈ L, f i ~[l] g i) :
+    (fun x ↦ (L.map (f · x)).prod) ~[l] (fun x ↦ (L.map (g · x)).prod) := by
+  induction L with
+  | nil => simp [IsEquivalent.refl]
+  | cons i L ihL =>
+    simp only [List.forall_mem_cons, List.map_cons, List.prod_cons] at h ⊢
+    exact h.1.mul (ihL h.2)
+
+theorem IsEquivalent.multisetProd {s : Multiset ι} {f g : ι → α → β} (h : ∀ i ∈ s, f i ~[l] g i) :
+    (fun x ↦ (s.map (f · x)).prod) ~[l] (fun x ↦ (s.map (g · x)).prod) := by
+  obtain ⟨l, rfl⟩ : ∃ l : List ι, ↑l = s := Quotient.mk_surjective s
+  exact listProd h
+
+theorem IsEquivalent.finsetProd {s : Finset ι} {f g : ι → α → β} (h : ∀ i ∈ s, f i ~[l] g i) :
+    (∏ i ∈ s, f i ·) ~[l] (∏ i ∈ s, g i ·) :=
+  multisetProd h
+
+protected theorem IsEquivalent.inv (huv : u ~[l] v) : (fun x ↦ (u x)⁻¹) ~[l] fun x ↦ (v x)⁻¹ := by
   rw [isEquivalent_iff_exists_eq_mul] at *
   rcases huv with ⟨φ, hφ, h⟩
   rw [← inv_one]
@@ -267,7 +284,7 @@ theorem IsEquivalent.inv (huv : u ~[l] v) : (fun x ↦ (u x)⁻¹) ~[l] fun x �
   convert h.inv
   simp [mul_comm]
 
-theorem IsEquivalent.div (htu : t ~[l] u) (hvw : v ~[l] w) :
+protected theorem IsEquivalent.div (htu : t ~[l] u) (hvw : v ~[l] w) :
     (fun x ↦ t x / v x) ~[l] fun x ↦ u x / w x := by
   simpa only [div_eq_mul_inv] using htu.mul hvw.inv
 

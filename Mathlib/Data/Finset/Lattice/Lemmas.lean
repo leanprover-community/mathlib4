@@ -25,7 +25,7 @@ assert_not_exists Multiset.powerset
 
 assert_not_exists CompleteLattice
 
-assert_not_exists OrderedCommMonoid
+assert_not_exists Monoid
 
 open Multiset Subtype Function
 

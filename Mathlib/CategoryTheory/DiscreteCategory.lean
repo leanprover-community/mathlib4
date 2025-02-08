@@ -246,9 +246,9 @@ def equivalence {I : Type u₁} {J : Type u₂} (e : I ≃ J) : Discrete I ≌ D
   functor := Discrete.functor (Discrete.mk ∘ (e : I → J))
   inverse := Discrete.functor (Discrete.mk ∘ (e.symm : J → I))
   unitIso :=
-    Discrete.natIso fun i => eqToIso (by aesop_cat)
+    Discrete.natIso fun i => eqToIso (by simp)
   counitIso :=
-    Discrete.natIso fun j => eqToIso (by aesop_cat)
+    Discrete.natIso fun j => eqToIso (by simp)
 
 /-- We can convert an equivalence of `discrete` categories to a type-level `Equiv`. -/
 @[simps]

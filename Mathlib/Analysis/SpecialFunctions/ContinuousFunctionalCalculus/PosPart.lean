@@ -7,7 +7,7 @@ Authors: Jireh Loreaux
 import Mathlib.Topology.ContinuousMap.StarOrdered
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Topology.ContinuousMap.StoneWeierstrass
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 
 /-! # The positive (and negative) parts of a selfadjoint element in a C⋆-algebra
 
@@ -75,7 +75,7 @@ lemma posPart_sub_negPart (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : a⁺ - 
 
 section Unique
 
-variable [UniqueNonUnitalContinuousFunctionalCalculus ℝ A]
+variable [T2Space A]
 
 @[simp]
 lemma posPart_neg (a : A) : (-a)⁺ = a⁻ := by
@@ -205,7 +205,6 @@ local notation "σₙ" => quasispectrum
 
 open ContinuousMapZero
 
-variable [UniqueNonUnitalContinuousFunctionalCalculus ℝ A]
 variable [TopologicalRing A] [T2Space A]
 
 open NonUnitalContinuousFunctionalCalculus in
@@ -265,6 +264,7 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
           zero_add]
       map_star' := fun f ↦ by simp [← map_star] }
   have key : (cfcₙHomSuperset ha has) = ψ :=
+    have : UniqueNonUnitalContinuousFunctionalCalculus ℝ A := inferInstance
     UniqueNonUnitalContinuousFunctionalCalculus.eq_of_continuous_of_map_id s rfl
     (cfcₙHomSuperset ha has) ψ (cfcₙHomSuperset_continuous ha has)
     ((cfcₙHomSuperset_continuous hb' hbs).add (cfcₙHomSuperset_continuous hc' hcs))
@@ -311,7 +311,7 @@ namespace CFC
 
 variable {A : Type*} [Ring A] [Algebra ℝ A] [StarRing A] [TopologicalSpace A]
 variable [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
-variable [UniqueNonUnitalContinuousFunctionalCalculus ℝ A]
+variable [T2Space A]
 
 @[simp]
 lemma posPart_one : (1 : A)⁺ = 1 := by

@@ -278,7 +278,7 @@ structure LEquiv (L L' : Language) where
   left_inv : invLHom.comp toLHom = LHom.id L
   right_inv : toLHom.comp invLHom = LHom.id L'
 
-infixl:10 " ≃ᴸ " => LEquiv
+@[inherit_doc] infixl:10 " ≃ᴸ " => LEquiv
 
 -- \^L
 namespace LEquiv
@@ -363,7 +363,7 @@ theorem constantsOnMap_isExpansionOn {f : α → β} {fα : α → M} {fβ : β 
   letI := constantsOn.structure fα
   letI := constantsOn.structure fβ
   exact
-    ⟨fun {n} => Nat.casesOn n (fun F _x => (congr_fun h F : _)) fun n F => isEmptyElim F, fun R =>
+    ⟨fun {n} => Nat.casesOn n (fun F _x => (congr_fun h F :)) fun n F => isEmptyElim F, fun R =>
       isEmptyElim R⟩
 
 end ConstantsOn

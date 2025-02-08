@@ -227,10 +227,6 @@ theorem LinearIndependent.span_eq_top_of_card_eq_finrank {ι : Type*} [Nonempty 
   have : FiniteDimensional K V := .of_finrank_pos <| card_eq ▸ Fintype.card_pos
   lin_ind.span_eq_top_of_card_eq_finrank' card_eq
 
-@[deprecated (since := "2024-02-14")]
-alias span_eq_top_of_linearIndependent_of_card_eq_finrank :=
-  LinearIndependent.span_eq_top_of_card_eq_finrank
-
 /-- A linear independent family of `finrank K V` vectors forms a basis. -/
 @[simps! repr_apply]
 noncomputable def basisOfLinearIndependentOfCardEqFinrank {ι : Type*} [Nonempty ι] [Fintype ι]

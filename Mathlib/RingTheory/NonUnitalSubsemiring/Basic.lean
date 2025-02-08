@@ -477,6 +477,7 @@ variable [NonUnitalNonAssocSemiring S]
 variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
 
 /-- Closure of a non-unital subsemiring `S` equals `S`. -/
+@[simp]
 theorem closure_eq (s : NonUnitalSubsemiring R) : closure (s : Set R) = s :=
   (NonUnitalSubsemiring.gi R).l_u_eq s
 

@@ -107,7 +107,7 @@ def subobjectEquiv [HasFiniteLimits C] [PreservesFiniteLimits T] (A : Structured
     refine ⟨fun h => Subobject.mk_le_mk_of_comm ?_ ?_, fun h => ?_⟩
     · exact homMk (Subobject.ofMkLEMk _ _ h)
         ((cancel_mono (T.map g.right)).1 (by simp [← T.map_comp]))
-    · aesop_cat
+    · simp
     · refine Subobject.mk_le_mk_of_comm (Subobject.ofMkLEMk _ _ h).right ?_
       exact congr_arg CommaMorphism.right (Subobject.ofMkLEMk_comp h)
 
@@ -187,7 +187,7 @@ theorem lift_projectQuotient [HasFiniteColimits C] [PreservesFiniteColimits S]
         · exact (Subobject.underlyingIso f.unop.left.op).unop
         · refine (cancel_epi (S.map f.unop.left)).1 ?_
           simpa [← Category.assoc, ← S.map_comp] using hq
-      · exact Quiver.Hom.unop_inj (by aesop_cat))
+      · exact Quiver.Hom.unop_inj (by simp))
 
 /-- Technical lemma for `quotientEquiv`. -/
 theorem unop_left_comp_ofMkLEMk_unop {A : CostructuredArrow S T} {P Q : (CostructuredArrow S T)ᵒᵖ}

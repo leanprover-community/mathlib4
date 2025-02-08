@@ -219,7 +219,6 @@ noncomputable def factors (a : Associates α) : FactorSet α := by
 theorem factors_zero : (0 : Associates α).factors = ⊤ :=
   dif_pos rfl
 
-@[deprecated (since := "2024-03-16")] alias factors_0 := factors_zero
 
 @[simp]
 theorem factors_mk (a : α) (h : a ≠ 0) : (Associates.mk a).factors = factors' a := by

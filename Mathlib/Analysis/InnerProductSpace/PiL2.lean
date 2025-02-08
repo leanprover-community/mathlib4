@@ -106,12 +106,13 @@ abbrev EuclideanSpace (𝕜 : Type*) (n : Type*) : Type _ :=
 
 section Notation
 open Lean Meta Elab Term Macro TSyntax PrettyPrinter.Delaborator SubExpr
+open Mathlib.Tactic (subscriptTerm)
 
 /-- Notation for vectors in Lp space. `!₂[x, y, ...]` is a shorthand for
 `(WithLp.equiv 2 _ _).symm ![x, y, ...]`, of type `EuclideanSpace _ (Fin _)`.
 
 This also works for other subscripts. -/
-syntax (name := PiLp.vecNotation) "!" noWs subscript(term) noWs "[" term,* "]" : term
+syntax (name := PiLp.vecNotation) "!" noWs subscriptTerm noWs "[" term,* "]" : term
 macro_rules | `(!$p:subscript[$e:term,*]) => do
   -- override the `Fin n.succ` to a literal
   let n := e.getElems.size
@@ -119,7 +120,7 @@ macro_rules | `(!$p:subscript[$e:term,*]) => do
 
 set_option trace.debug true in
 /-- Unexpander for the `!₂[x, y, ...]` notation. -/
-@[delab app.DFunLike.coe]
+@[app_delab DFunLike.coe]
 def EuclideanSpace.delabVecNotation : Delab :=
   whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 6 do
     -- check that the `(WithLp.equiv _ _).symm` is present

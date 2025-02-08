@@ -7,6 +7,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Rat.Defs
+import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # The rational numbers are a commutative ring

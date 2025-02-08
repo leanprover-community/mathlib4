@@ -357,7 +357,7 @@ protected theorem measurable_comp_iff {f : β → γ} (e : α ≃ᵐ β) :
 /-- Any two types with unique elements are measurably equivalent. -/
 def ofUniqueOfUnique (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] [Unique α] [Unique β] :
     α ≃ᵐ β where
-  toEquiv := equivOfUnique α β
+  toEquiv := ofUnique α β
   measurable_toFun := Subsingleton.measurable
   measurable_invFun := Subsingleton.measurable
 
@@ -428,8 +428,7 @@ def Set.rangeInl : (range Sum.inl : Set (α ⊕ β)) ≃ᵐ α where
   toEquiv := Equiv.Set.rangeInl α β
   measurable_toFun s (hs : MeasurableSet s) := by
     refine ⟨_, hs.inl_image, Set.ext ?_⟩
-    rintro ⟨ab, a, rfl⟩
-    simp [Set.range_inl]
+    simp
   measurable_invFun := Measurable.subtype_mk measurable_inl
 
 /-- `β` is equivalent to its image in `α ⊕ β` as measurable spaces. -/
@@ -437,8 +436,7 @@ def Set.rangeInr : (range Sum.inr : Set (α ⊕ β)) ≃ᵐ β where
   toEquiv := Equiv.Set.rangeInr α β
   measurable_toFun s (hs : MeasurableSet s) := by
     refine ⟨_, hs.inr_image, Set.ext ?_⟩
-    rintro ⟨ab, b, rfl⟩
-    simp [Set.range_inr]
+    simp
   measurable_invFun := Measurable.subtype_mk measurable_inr
 
 /-- Products distribute over sums (on the right) as measurable spaces. -/

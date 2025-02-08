@@ -103,9 +103,9 @@ variable (R A B M N : Type*)
 
 /-- A module over a semiring is `Module.Finite` if it is finitely generated as a module. -/
 protected class Module.Finite [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
-  out : (⊤ : Submodule R M).FG
+  fg_top : (⊤ : Submodule R M).FG
 
-attribute [inherit_doc Module.Finite] Module.Finite.out
+attribute [inherit_doc Module.Finite] Module.Finite.fg_top
 
 namespace Module
 
@@ -131,7 +131,7 @@ variable {R M N}
 
 /-- See also `Module.Finite.exists_fin'`. -/
 lemma exists_fin [Module.Finite R M] : ∃ (n : ℕ) (s : Fin n → M), Submodule.span R (range s) = ⊤ :=
-  Submodule.fg_iff_exists_fin_generating_family.mp out
+  Submodule.fg_iff_exists_fin_generating_family.mp fg_top
 
 end Finite
 

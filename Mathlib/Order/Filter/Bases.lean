@@ -197,7 +197,7 @@ protected theorem mem_filter_iff (h : IsBasis p s) {U : Set α} :
     exists_exists_and_eq_and]
 
 theorem filter_eq_generate (h : IsBasis p s) : h.filter = generate { U | ∃ i, p i ∧ s i = U } := by
-  erw [h.filterBasis.generate]; rfl
+  rw [IsBasis.filter, ← h.filterBasis.generate, IsBasis.filterBasis]
 
 end IsBasis
 
@@ -578,6 +578,7 @@ theorem _root_.Disjoint.exists_mem_filter_basis (h : Disjoint l l') (hl : l.HasB
     (hl' : l'.HasBasis p' s') : ∃ i, p i ∧ ∃ i', p' i' ∧ Disjoint (s i) (s' i') :=
   (hl.disjoint_iff hl').1 h
 
+open scoped Function in -- required for scoped `on` notation
 theorem _root_.Pairwise.exists_mem_filter_basis_of_disjoint {I} [Finite I] {l : I → Filter α}
     {ι : I → Sort*} {p : ∀ i, ι i → Prop} {s : ∀ i, ι i → Set α} (hd : Pairwise (Disjoint on l))
     (h : ∀ i, (l i).HasBasis (p i) (s i)) :

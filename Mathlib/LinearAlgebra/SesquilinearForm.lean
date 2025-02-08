@@ -65,6 +65,7 @@ theorem isOrtho_zero_right (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) (x)
 theorem isOrtho_flip {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M} {x y} : B.IsOrtho x y ↔ B.flip.IsOrtho y x := by
   simp_rw [isOrtho_def, flip_apply]
 
+open scoped Function in -- required for scoped `on` notation
 /-- A set of vectors `v` is orthogonal with respect to some bilinear map `B` if and only
 if for all `i ≠ j`, `B (v i) (v j) = 0`. For orthogonality between two elements, use
 `BilinForm.isOrtho` -/

@@ -60,6 +60,9 @@ an `AddMonoid`/`Monoid` instead of the `AddMonoid`/`Monoid` itself.
 * Affine maps are Freiman homs.
 -/
 
+assert_not_exists Ideal
+assert_not_exists TwoSidedIdeal
+
 open Multiset Set
 open scoped Pointwise
 

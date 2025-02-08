@@ -15,10 +15,7 @@ We construct the power functions `x ^ y`, where `x` and `y` are real numbers.
 
 noncomputable section
 
-open scoped Classical
-open Real ComplexConjugate
-
-open Finset Set
+open Real ComplexConjugate Finset Set
 
 /-
 ## Definitions
@@ -387,6 +384,12 @@ theorem rpow_mul {x : ℝ} (hx : 0 ≤ x) (y z : ℝ) : x ^ (y * z) = (x ^ y) ^ 
       Complex.ofReal_cpow hx, Complex.ofReal_mul, Complex.cpow_mul, Complex.ofReal_cpow hx] <;>
     simp only [(Complex.ofReal_mul _ _).symm, (Complex.ofReal_log hx).symm, Complex.ofReal_im,
       neg_lt_zero, pi_pos, le_of_lt pi_pos]
+
+lemma rpow_pow_comm {x : ℝ} (hx : 0 ≤ x) (y : ℝ) (n : ℕ) : (x ^ y) ^ n = (x ^ n) ^ y := by
+  simp_rw [← rpow_natCast, ← rpow_mul hx, mul_comm y]
+
+lemma rpow_zpow_comm {x : ℝ} (hx : 0 ≤ x) (y : ℝ) (n : ℤ) : (x ^ y) ^ n = (x ^ n) ^ y := by
+  simp_rw [← rpow_intCast, ← rpow_mul hx, mul_comm y]
 
 lemma rpow_add_intCast {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℤ) : x ^ (y + n) = x ^ y * x ^ n := by
   rw [rpow_def, rpow_def, Complex.ofReal_add,
@@ -899,6 +902,12 @@ lemma antitone_rpow_of_base_le_one {b : ℝ} (hb₀ : 0 < b) (hb₁ : b ≤ 1) :
   case inl => exact (strictAnti_rpow_of_base_lt_one hb₀ hb₁).antitone
   case inr => intro _ _ _; simp
 
+lemma rpow_right_inj (hx₀ : 0 < x) (hx₁ : x ≠ 1) : x ^ y = x ^ z ↔ y = z := by
+  refine ⟨fun H ↦ ?_, fun H ↦ by rw [H]⟩
+  rcases hx₁.lt_or_lt with h | h
+  · exact (strictAnti_rpow_of_base_lt_one hx₀ h).injective H
+  · exact (strictMono_rpow_of_base_gt_one h).injective H
+
 /-- Guessing rule for the `bound` tactic: when trying to prove `x ^ y ≤ x ^ z`, we can either assume
 `1 ≤ x` or `0 < x ≤ 1`. -/
 @[bound] lemma rpow_le_rpow_of_exponent_le_or_ge {x y z : ℝ}
@@ -972,36 +981,6 @@ theorem rpow_div_two_eq_sqrt {x : ℝ} (r : ℝ) (hx : 0 ≤ x) : x ^ (r / 2) = 
   ring
 
 end Sqrt
-
-variable {n : ℕ}
-
-theorem exists_rat_pow_btwn_rat_aux (hn : n ≠ 0) (x y : ℝ) (h : x < y) (hy : 0 < y) :
-    ∃ q : ℚ, 0 < q ∧ x < (q : ℝ) ^ n ∧ (q : ℝ) ^ n < y := by
-  have hn' : 0 < (n : ℝ) := mod_cast hn.bot_lt
-  obtain ⟨q, hxq, hqy⟩ :=
-    exists_rat_btwn (rpow_lt_rpow (le_max_left 0 x) (max_lt hy h) <| inv_pos.mpr hn')
-  have := rpow_nonneg (le_max_left 0 x) n⁻¹
-  have hq := this.trans_lt hxq
-  replace hxq := rpow_lt_rpow this hxq hn'
-  replace hqy := rpow_lt_rpow hq.le hqy hn'
-  rw [rpow_natCast, rpow_natCast, rpow_inv_natCast_pow _ hn] at hxq hqy
-  · exact ⟨q, mod_cast hq, (le_max_right _ _).trans_lt hxq, hqy⟩
-  · exact hy.le
-  · exact le_max_left _ _
-
-theorem exists_rat_pow_btwn_rat (hn : n ≠ 0) {x y : ℚ} (h : x < y) (hy : 0 < y) :
-    ∃ q : ℚ, 0 < q ∧ x < q ^ n ∧ q ^ n < y := by
-  apply_mod_cast exists_rat_pow_btwn_rat_aux hn x y <;> assumption
-
-/-- There is a rational power between any two positive elements of an archimedean ordered field. -/
-theorem exists_rat_pow_btwn {α : Type*} [LinearOrderedField α] [Archimedean α] (hn : n ≠ 0)
-    {x y : α} (h : x < y) (hy : 0 < y) : ∃ q : ℚ, 0 < q ∧ x < (q : α) ^ n ∧ (q : α) ^ n < y := by
-  obtain ⟨q₂, hx₂, hy₂⟩ := exists_rat_btwn (max_lt h hy)
-  obtain ⟨q₁, hx₁, hq₁₂⟩ := exists_rat_btwn hx₂
-  have : (0 : α) < q₂ := (le_max_right _ _).trans_lt hx₂
-  norm_cast at hq₁₂ this
-  obtain ⟨q, hq, hq₁, hq₂⟩ := exists_rat_pow_btwn_rat hn hq₁₂ this
-  refine ⟨q, hq, (le_max_left _ _).trans_lt <| hx₁.trans ?_, hy₂.trans' ?_⟩ <;> assumption_mod_cast
 
 end Real
 

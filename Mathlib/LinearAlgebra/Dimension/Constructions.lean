@@ -57,7 +57,7 @@ theorem LinearIndependent.sum_elim_of_quotient
 theorem LinearIndependent.union_of_quotient
     {M' : Submodule R M} {s : Set M} (hs : s ⊆ M') (hs' : LinearIndependent (ι := s) R Subtype.val)
   {t : Set M} (ht : LinearIndependent (ι := t) R (Submodule.Quotient.mk (p := M') ∘ Subtype.val)) :
-    LinearIndependent (ι := (s ∪ t : _)) R Subtype.val := by
+    LinearIndependent (ι := (s ∪ t :)) R Subtype.val := by
   refine (LinearIndependent.sum_elim_of_quotient (f := Set.embeddingOfSubset s M' hs)
     (of_comp M'.subtype (by simpa using hs')) Subtype.val ht).to_subtype_range' ?_
   simp only [embeddingOfSubset_apply_coe, Sum.elim_range, Subtype.range_val]

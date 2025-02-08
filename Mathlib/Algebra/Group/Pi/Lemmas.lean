@@ -69,7 +69,7 @@ def Pi.mulHom {γ : Type w} [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f
 theorem Pi.mulHom_injective {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i)
     (hg : ∀ i, Function.Injective (g i)) : Function.Injective (Pi.mulHom g) := fun _ _ h =>
   let ⟨i⟩ := ‹Nonempty I›
-  hg i ((funext_iff.mp h : _) i)
+  hg i ((funext_iff.mp h :) i)
 
 /-- A family of monoid homomorphisms `f a : γ →* β a` defines a monoid homomorphism
 `Pi.monoidHom f : γ →* Π a, β a` given by `Pi.monoidHom f x b = f b x`. -/
@@ -289,7 +289,7 @@ theorem Pi.update_eq_div_mul_mulSingle [∀ i, Group <| f i] (g : ∀ i : I, f i
   ext j
   rcases eq_or_ne i j with (rfl | h)
   · simp
-  · simp [Function.update_noteq h.symm, h]
+  · simp [Function.update_of_ne h.symm, h]
 
 @[to_additive]
 theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommMonoid M]

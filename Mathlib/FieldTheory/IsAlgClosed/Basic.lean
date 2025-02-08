@@ -32,7 +32,7 @@ polynomial in `k` splits.
 
 algebraic closure, algebraically closed
 
-## Main reults
+## Main results
 
 - `IsAlgClosure.of_splits`: if `K / k` is algebraic, and every monic irreducible polynomial over
   `k` splits in `K`, then `K` is algebraically closed (in fact an algebraic closure of `k`).
@@ -382,7 +382,7 @@ noncomputable def equivOfAlgebraic' [Nontrivial S] [NoZeroSMulDivisors R S]
   letI : NoZeroSMulDivisors R L := NoZeroSMulDivisors.of_algebraMap_injective <| by
     rw [IsScalarTower.algebraMap_eq R S L]
     exact (Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective S L)
-            (NoZeroSMulDivisors.algebraMap_injective R S) : _)
+            (NoZeroSMulDivisors.algebraMap_injective R S) :)
   letI : IsAlgClosure R L :=
     { isAlgClosed := IsAlgClosure.isAlgClosed S
       isAlgebraic := ‹_› }

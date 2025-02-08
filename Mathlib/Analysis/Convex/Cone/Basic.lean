@@ -41,10 +41,7 @@ assert_not_exists NormedSpace
 assert_not_exists Real
 assert_not_exists Cardinal
 
-open Set LinearMap
-
-open scoped Classical
-open Pointwise
+open Set LinearMap Pointwise
 
 variable {𝕜 E F G : Type*}
 

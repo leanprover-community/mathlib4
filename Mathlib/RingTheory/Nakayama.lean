@@ -84,7 +84,7 @@ lemma eq_bot_of_set_smul_eq_of_subset_jacobson_annihilator {s : Set R}
 lemma top_ne_ideal_smul_of_le_jacobson_annihilator [Nontrivial M]
     [Module.Finite R M] {I} (h : I ≤ (Module.annihilator R M).jacobson) :
     (⊤ : Submodule R M) ≠ I • ⊤ := fun H => top_ne_bot <|
-  eq_bot_of_eq_ideal_smul_of_le_jacobson_annihilator Module.Finite.out H <|
+  eq_bot_of_eq_ideal_smul_of_le_jacobson_annihilator Module.Finite.fg_top H <|
     (congrArg (I ≤ Ideal.jacobson ·) annihilator_top).mpr h
 
 open Pointwise in

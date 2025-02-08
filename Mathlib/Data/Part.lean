@@ -397,7 +397,7 @@ theorem assert_pos {p : Prop} {f : p → Part α} (h : p) : assert p f = f h := 
   simp only [h', mk.injEq, h, exists_prop_of_true, true_and]
   apply Function.hfunext
   · simp only [h, h', exists_prop_of_true]
-  · aesop
+  · simp
 
 theorem assert_neg {p : Prop} {f : p → Part α} (h : ¬p) : assert p f = none := by
   dsimp [assert, none]; congr

@@ -193,9 +193,8 @@ Note that this is not an instance, as for some times a more efficient algorithm 
 abbrev antidiagonalOfLocallyFinite : HasAntidiagonal A where
   antidiagonal n := Finset.filter (fun uv => uv.fst + uv.snd = n) (Finset.product (Iic n) (Iic n))
   mem_antidiagonal {n} {a} := by
-    simp only [Prod.forall, mem_filter, and_iff_right_iff_imp]
-    intro h; rw [← h]
-    erw [mem_product, mem_Iic, mem_Iic]
-    exact ⟨le_self_add, le_add_self⟩
+    simp only [mem_filter, and_iff_right_iff_imp]
+    intro h
+    simp [← h]
 
 end Finset

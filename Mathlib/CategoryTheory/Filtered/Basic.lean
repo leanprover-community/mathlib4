@@ -829,9 +829,6 @@ theorem of_isInitial {X : C} (h : IsInitial X) : IsCofiltered C :=
 instance (priority := 100) of_hasInitial [HasInitial C] : IsCofiltered C :=
   of_isInitial _ initialIsInitial
 
-@[deprecated (since := "2024-03-11")]
-alias _root_.CategoryTheory.cofiltered_of_hasFiniteLimits := of_hasFiniteLimits
-
 /-- For every universe `w`, `C` is filtered if and only if every finite diagram in `C` with shape
     in `w` admits a cocone. -/
 theorem iff_cone_nonempty : IsCofiltered C ↔

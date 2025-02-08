@@ -764,6 +764,17 @@ instance group : Group c.Quotient :=
     toInv := Con.hasInv _
     toDiv := Con.hasDiv _ }
 
+/-- The quotient of a `CommGroup` by a congruence relation is a `CommGroup`. -/
+@[to_additive "The quotient of an `AddCommGroup` by an additive congruence
+relation is an `AddCommGroup`."]
+instance commGroup {M : Type*} [CommGroup M] (c : Con M) : CommGroup c.Quotient :=
+  { (Function.Surjective.commGroup _ Quotient.mk''_surjective rfl (fun _ _ => rfl) (fun _ => rfl)
+      (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) : CommGroup c.Quotient) with
+    /- The `toGroup` field is given explicitly for performance reasons.
+    This avoids any need to unfold `Function.Surjective.commGroup` when the type checker is
+    checking that instance diagrams commute -/
+    toGroup := Con.group _ }
+
 end Groups
 
 section Units

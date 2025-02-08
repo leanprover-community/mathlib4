@@ -286,11 +286,8 @@ def galoisCoinsertionIntermediateFieldSubgroup [FiniteDimensional F E] [IsGalois
     GaloisCoinsertion (OrderDual.toDual ∘
       (IntermediateField.fixingSubgroup : IntermediateField F E → Subgroup (E ≃ₐ[F] E)))
       ((IntermediateField.fixedField : Subgroup (E ≃ₐ[F] E) → IntermediateField F E) ∘
-        OrderDual.toDual) where
-  choice H _ := IntermediateField.fixedField H
-  gc K H := (IntermediateField.le_iff_le H K).symm
-  u_l_le K := le_of_eq (fixedField_fixingSubgroup K)
-  choice_eq _ _ := rfl
+        OrderDual.toDual) :=
+  OrderIso.toGaloisCoinsertion intermediateFieldEquivSubgroup
 
 end IsGalois
 

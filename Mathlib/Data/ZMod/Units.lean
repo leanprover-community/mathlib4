@@ -12,6 +12,7 @@ import Mathlib.RingTheory.Coprime.Lemmas
 # Lemmas about units in `ZMod`.
 -/
 
+assert_not_exists TwoSidedIdeal
 
 namespace ZMod
 

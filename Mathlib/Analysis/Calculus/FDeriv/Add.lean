@@ -23,8 +23,6 @@ This file contains the usual formulas (and existence assertions) for the derivat
 
 open Filter Asymptotics ContinuousLinearMap
 
-open scoped Classical
-
 noncomputable section
 
 section
@@ -229,10 +227,11 @@ theorem differentiable_add_const_iff (c : F) :
   ⟨fun h => by simpa using h.add_const (-c), fun h => h.add_const c⟩
 
 theorem fderivWithin_add_const (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
-    fderivWithin 𝕜 (fun y => f y + c) s x = fderivWithin 𝕜 f s x :=
-  if hf : DifferentiableWithinAt 𝕜 f s x then (hf.hasFDerivWithinAt.add_const c).fderivWithin hxs
-  else by
-    rw [fderivWithin_zero_of_not_differentiableWithinAt hf,
+    fderivWithin 𝕜 (fun y => f y + c) s x = fderivWithin 𝕜 f s x := by
+  classical
+  by_cases hf : DifferentiableWithinAt 𝕜 f s x
+  · exact (hf.hasFDerivWithinAt.add_const c).fderivWithin hxs
+  · rw [fderivWithin_zero_of_not_differentiableWithinAt hf,
       fderivWithin_zero_of_not_differentiableWithinAt]
     simpa
 
@@ -424,10 +423,11 @@ theorem differentiable_neg_iff : (Differentiable 𝕜 fun y => -f y) ↔ Differe
   ⟨fun h => by simpa only [neg_neg] using h.neg, fun h => h.neg⟩
 
 theorem fderivWithin_neg (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    fderivWithin 𝕜 (fun y => -f y) s x = -fderivWithin 𝕜 f s x :=
-  if h : DifferentiableWithinAt 𝕜 f s x then h.hasFDerivWithinAt.neg.fderivWithin hxs
-  else by
-    rw [fderivWithin_zero_of_not_differentiableWithinAt h,
+    fderivWithin 𝕜 (fun y => -f y) s x = -fderivWithin 𝕜 f s x := by
+  classical
+  by_cases h : DifferentiableWithinAt 𝕜 f s x
+  · exact h.hasFDerivWithinAt.neg.fderivWithin hxs
+  · rw [fderivWithin_zero_of_not_differentiableWithinAt h,
       fderivWithin_zero_of_not_differentiableWithinAt, neg_zero]
     simpa
 
@@ -739,6 +739,7 @@ theorem differentiableWithinAt_comp_add_right (a : E) :
 
 theorem fderivWithin_comp_add_right (a : E) :
     fderivWithin 𝕜 (fun x ↦ f (x + a)) s x = fderivWithin 𝕜 f (a +ᵥ s) (x + a) := by
+  classical
   simp only [fderivWithin, hasFDerivWithinAt_comp_add_right, DifferentiableWithinAt]
 
 theorem hasFDerivWithinAt_comp_add_left (a : E) :

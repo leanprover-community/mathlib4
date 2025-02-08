@@ -298,6 +298,11 @@ theorem mem_subgroupOf {H K : Subgroup G} {h : K} : h ∈ H.subgroupOf K ↔ (h 
 theorem subgroupOf_map_subtype (H K : Subgroup G) : (H.subgroupOf K).map K.subtype = H ⊓ K :=
   SetLike.ext' <| by refine Subtype.image_preimage_coe _ _ |>.trans ?_; apply Set.inter_comm
 
+@[to_additive]
+theorem map_subgroupOf_eq_of_le {H K : Subgroup G} (h : H ≤ K) :
+    (H.subgroupOf K).map K.subtype = H := by
+  rwa [subgroupOf_map_subtype, inf_eq_left]
+
 @[to_additive (attr := simp)]
 theorem bot_subgroupOf : (⊥ : Subgroup G).subgroupOf H = ⊥ :=
   Eq.symm (Subgroup.ext fun _g => Subtype.ext_iff)

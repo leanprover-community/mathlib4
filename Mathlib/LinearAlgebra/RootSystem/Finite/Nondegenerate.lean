@@ -184,6 +184,14 @@ lemma orthogonal_corootSpan_eq :
     P.CorootForm.orthogonal P.corootSpan = LinearMap.ker P.CorootForm :=
   P.flip.orthogonal_rootSpan_eq
 
+lemma rootSpan_eq_top_iff :
+    P.rootSpan = ⊤ ↔ P.corootSpan = ⊤ := by
+  have := P.toPerfectPairing.reflexive_left
+  have := P.toPerfectPairing.reflexive_right
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩ <;> apply Submodule.eq_top_of_finrank_eq
+  · rw [P.finrank_corootSpan_eq, h, finrank_top, P.toPerfectPairing.finrank_eq]
+  · rw [← P.finrank_corootSpan_eq, h, finrank_top, P.toPerfectPairing.finrank_eq]
+
 end Field
 
 section LinearOrderedCommRing
@@ -215,7 +223,7 @@ lemma rootForm_pos_of_ne_zero {x : M} (hx : x ∈ P.rootSpan) (h : x ≠ 0) :
 lemma _root_.RootSystem.rootForm_anisotropic (P : RootSystem ι R M N) :
     P.RootForm.toQuadraticMap.Anisotropic :=
   fun x ↦ P.eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero <| by
-    simpa only [rootSpan, P.span_eq_top] using Submodule.mem_top
+    simpa only [rootSpan, P.span_root_eq_top] using Submodule.mem_top
 
 end LinearOrderedCommRing
 

@@ -185,6 +185,8 @@ end sum'
 
 section disjointSigma
 
+open scoped Function -- required for scoped `on` notation
+
 variable {α ι : Type*} {M : ι → Matroid α}
 
 /-- The sum of an indexed collection of matroids on `α` with pairwise disjoint ground sets,

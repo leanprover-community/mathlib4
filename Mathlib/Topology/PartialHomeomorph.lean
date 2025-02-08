@@ -1018,7 +1018,7 @@ theorem continuousWithinAt_iff_continuousWithinAt_comp_left {f : Z → X} {s : S
 neighborhood of the initial point is sent to the source of the partial homeomorphism -/
 theorem continuousAt_iff_continuousAt_comp_left {f : Z → X} {x : Z} (h : f ⁻¹' e.source ∈ 𝓝 x) :
     ContinuousAt f x ↔ ContinuousAt (e ∘ f) x := by
-  have hx : f x ∈ e.source := (mem_of_mem_nhds h : _)
+  have hx : f x ∈ e.source := (mem_of_mem_nhds h :)
   have h' : f ⁻¹' e.source ∈ 𝓝[univ] x := by rwa [nhdsWithin_univ]
   rw [← continuousWithinAt_univ, ← continuousWithinAt_univ,
     e.continuousWithinAt_iff_continuousWithinAt_comp_left hx h']

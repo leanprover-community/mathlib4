@@ -195,9 +195,9 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
   let α₂ : (F.mapCone c).toStructuredArrow ⋙ map f₂ ⟶ s.toStructuredArrow :=
     { app := fun X => eqToHom (by simp [← h₂]) }
   let c₁ : Cone (s.toStructuredArrow ⋙ pre s.pt K F) :=
-    (Cones.postcompose (whiskerRight α₁ (pre s.pt K F) : _)).obj (c.toStructuredArrowCone F f₁)
+    (Cones.postcompose (whiskerRight α₁ (pre s.pt K F) :)).obj (c.toStructuredArrowCone F f₁)
   let c₂ : Cone (s.toStructuredArrow ⋙ pre s.pt K F) :=
-    (Cones.postcompose (whiskerRight α₂ (pre s.pt K F) : _)).obj (c.toStructuredArrowCone F f₂)
+    (Cones.postcompose (whiskerRight α₂ (pre s.pt K F) :)).obj (c.toStructuredArrowCone F f₂)
   -- The two cones can then be combined and we may obtain a cone over the two cones since
   -- `StructuredArrow s.pt F` is cofiltered.
   let c₀ := IsCofiltered.cone (biconeMk _ c₁ c₂)

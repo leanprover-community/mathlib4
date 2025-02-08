@@ -78,8 +78,6 @@ Some set instances do not appear here since they are consequences of others, for
 
 namespace Finite.Set
 
-open scoped Classical
-
 theorem finite_pure (a : α) : (pure a : Set α).Finite :=
   toFinite _
 

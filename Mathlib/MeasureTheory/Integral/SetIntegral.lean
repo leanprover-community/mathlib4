@@ -1072,6 +1072,24 @@ theorem Continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero [IsFiniteMea
 
 end OpenPos
 
+section Support
+
+variable {M : Type*} [NormedAddCommGroup M] [NormedSpace ℝ M] {mX : MeasurableSpace X}
+  {ν : Measure X} {F : X → M}
+
+theorem MeasureTheory.setIntegral_support : ∫ x in support F, F x ∂ν = ∫ x, F x ∂ν := by
+  nth_rw 2 [← setIntegral_univ]
+  rw [setIntegral_eq_of_subset_of_forall_diff_eq_zero MeasurableSet.univ (subset_univ (support F))]
+  exact fun _ hx => nmem_support.mp <| not_mem_of_mem_diff hx
+
+theorem MeasureTheory.setIntegral_tsupport [TopologicalSpace X] :
+    ∫ x in tsupport F, F x ∂ν = ∫ x, F x ∂ν := by
+  nth_rw 2 [← setIntegral_univ]
+  rw [setIntegral_eq_of_subset_of_forall_diff_eq_zero MeasurableSet.univ (subset_univ (tsupport F))]
+  exact fun _ hx => image_eq_zero_of_nmem_tsupport <| not_mem_of_mem_diff hx
+
+end Support
+
 /-! Fundamental theorem of calculus for set integrals -/
 section FTC
 
@@ -1492,7 +1510,7 @@ theorem measure_le_lintegral_thickenedIndicator (μ : Measure X) {E : Set X}
 
 end thickenedIndicator
 
--- We declare a new `{X : Type*}` to discard the instance `[MeasureableSpace X]`
+-- We declare a new `{X : Type*}` to discard the instance `[MeasurableSpace X]`
 -- which has been in scope for the entire file up to this point.
 variable {X : Type*}
 

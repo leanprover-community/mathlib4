@@ -500,7 +500,7 @@ def createsLimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K
     CreatesLimit K₂ F :=
   { reflectsLimit_of_iso_diagram F h with
     lifts := fun c t =>
-      let t' := (IsLimit.postcomposeInvEquiv (isoWhiskerRight h F : _) c).symm t
+      let t' := (IsLimit.postcomposeInvEquiv (isoWhiskerRight h F :) c).symm t
       { liftedCone := (Cones.postcompose h.hom).obj (liftLimit t')
         validLift :=
           Functor.mapConePostcompose F ≪≫
@@ -513,7 +513,7 @@ def createsLimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K
 /-- If `F` creates the limit of `K` and `F ≅ G`, then `G` creates the limit of `K`. -/
 def createsLimitOfNatIso {F G : C ⥤ D} (h : F ≅ G) [CreatesLimit K F] : CreatesLimit K G where
   lifts c t :=
-    { liftedCone := liftLimit ((IsLimit.postcomposeInvEquiv (isoWhiskerLeft K h : _) c).symm t)
+    { liftedCone := liftLimit ((IsLimit.postcomposeInvEquiv (isoWhiskerLeft K h :) c).symm t)
       validLift := by
         refine (IsLimit.mapConeEquiv h ?_).uniqueUpToIso t
         apply IsLimit.ofIsoLimit _ (liftedLimitMapsToOriginal _).symm
@@ -534,7 +534,7 @@ def createsColimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅
     CreatesColimit K₂ F :=
   { reflectsColimit_of_iso_diagram F h with
     lifts := fun c t =>
-      let t' := (IsColimit.precomposeHomEquiv (isoWhiskerRight h F : _) c).symm t
+      let t' := (IsColimit.precomposeHomEquiv (isoWhiskerRight h F :) c).symm t
       { liftedCocone := (Cocones.precompose h.inv).obj (liftColimit t')
         validLift :=
           Functor.mapCoconePrecompose F ≪≫
@@ -548,7 +548,7 @@ def createsColimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅
 /-- If `F` creates the colimit of `K` and `F ≅ G`, then `G` creates the colimit of `K`. -/
 def createsColimitOfNatIso {F G : C ⥤ D} (h : F ≅ G) [CreatesColimit K F] : CreatesColimit K G where
   lifts c t :=
-    { liftedCocone := liftColimit ((IsColimit.precomposeHomEquiv (isoWhiskerLeft K h : _) c).symm t)
+    { liftedCocone := liftColimit ((IsColimit.precomposeHomEquiv (isoWhiskerLeft K h :) c).symm t)
       validLift := by
         refine (IsColimit.mapCoconeEquiv h ?_).uniqueUpToIso t
         apply IsColimit.ofIsoColimit _ (liftedColimitMapsToOriginal _).symm

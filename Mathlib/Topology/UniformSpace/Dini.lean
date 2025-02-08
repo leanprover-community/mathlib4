@@ -65,7 +65,7 @@ lemma tendstoLocallyUniformly_of_forall_tendsto
   exact hF_mono hnm z
 
 /-- **Dini's theorem** If `F n` is a monotone increasing collection of continuous functions on a
-set `s` converging pointwise to a continuous funciton `f`, then `F n` converges locally uniformly
+set `s` converging pointwise to a continuous function `f`, then `F n` converges locally uniformly
 to `f`. -/
 lemma tendstoLocallyUniformlyOn_of_forall_tendsto {s : Set α}
     (hF_cont : ∀ i, ContinuousOn (F i) s) (hF_mono : ∀ x ∈ s, Monotone (F · x))

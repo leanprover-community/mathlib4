@@ -88,17 +88,13 @@ theorem natDegree_add_le_iff_right {n : ℕ} (p q : R[X]) (pn : p.natDegree ≤ 
   rw [add_comm]
   exact natDegree_add_le_iff_left _ _ pn
 
-theorem natDegree_C_mul_le (a : R) (f : R[X]) : (C a * f).natDegree ≤ f.natDegree :=
-  calc
-    (C a * f).natDegree ≤ (C a).natDegree + f.natDegree := natDegree_mul_le
-    _ = 0 + f.natDegree := by rw [natDegree_C a]
-    _ = f.natDegree := zero_add _
+-- TODO: Do we really want the following two lemmas? They are straightforward consequences of a
+-- more atomic lemma
+theorem natDegree_C_mul_le (a : R) (f : R[X]) : (C a * f).natDegree ≤ f.natDegree := by
+  simpa using natDegree_mul_le (p := C a)
 
-theorem natDegree_mul_C_le (f : R[X]) (a : R) : (f * C a).natDegree ≤ f.natDegree :=
-  calc
-    (f * C a).natDegree ≤ f.natDegree + (C a).natDegree := natDegree_mul_le
-    _ = f.natDegree + 0 := by rw [natDegree_C a]
-    _ = f.natDegree := add_zero _
+theorem natDegree_mul_C_le (f : R[X]) (a : R) : (f * C a).natDegree ≤ f.natDegree := by
+  simpa using natDegree_mul_le (q := C a)
 
 theorem eq_natDegree_of_le_mem_support (pn : p.natDegree ≤ n) (ns : n ∈ p.support) :
     p.natDegree = n :=
@@ -132,11 +128,17 @@ theorem natDegree_mul_C_eq_of_mul_ne_zero (h : p.leadingCoeff * a ≠ 0) :
 /-- Although not explicitly stated, the assumptions of lemma `nat_degree_C_mul_eq_of_mul_ne_zero`
 force the polynomial `p` to be non-zero, via `p.leading_coeff ≠ 0`.
 -/
-theorem natDegree_C_mul_eq_of_mul_ne_zero (h : a * p.leadingCoeff ≠ 0) :
+theorem natDegree_C_mul_of_mul_ne_zero (h : a * p.leadingCoeff ≠ 0) :
     (C a * p).natDegree = p.natDegree := by
   refine eq_natDegree_of_le_mem_support (natDegree_C_mul_le a p) ?_
   refine mem_support_iff.mpr ?_
   rwa [coeff_C_mul]
+
+@[deprecated (since := "2025-01-03")]
+alias natDegree_C_mul_eq_of_mul_ne_zero := natDegree_C_mul_of_mul_ne_zero
+
+lemma degree_C_mul_of_mul_ne_zero (h : a * p.leadingCoeff ≠ 0) : (C a * p).degree = p.degree := by
+  rw [degree_mul' (by simpa)]; simp [left_ne_zero_of_mul h]
 
 theorem natDegree_add_coeff_mul (f g : R[X]) :
     (f * g).coeff (f.natDegree + g.natDegree) = f.coeff f.natDegree * g.coeff g.natDegree := by
@@ -177,6 +179,8 @@ theorem coeff_add_eq_left_of_lt (qn : q.natDegree < n) : (p + q).coeff n = p.coe
 theorem coeff_add_eq_right_of_lt (pn : p.natDegree < n) : (p + q).coeff n = q.coeff n := by
   rw [add_comm]
   exact coeff_add_eq_left_of_lt pn
+
+open scoped Function -- required for scoped `on` notation
 
 theorem degree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
     (h : Set.Pairwise { i | i ∈ s ∧ f i ≠ 0 } (Ne on degree ∘ f)) :

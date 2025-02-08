@@ -51,7 +51,6 @@ See chapter 8 of [Barry Simon, *Convexity*][simon2011]
 -/
 
 open Set
-open scoped Classical
 
 variable {E F : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [T2Space E]
   [TopologicalAddGroup E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] {s : Set E}

@@ -241,6 +241,7 @@ lemma setIntegral_densityProcess_of_mem (hκν : fst κ ≤ ν) [hν : IsFiniteK
 @[deprecated (since := "2024-04-17")]
 alias set_integral_densityProcess_of_mem := setIntegral_densityProcess_of_mem
 
+open scoped Function in -- required for scoped `on` notation
 lemma setIntegral_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) {A : Set γ}
     (hA : MeasurableSet[countableFiltration γ n] A) :

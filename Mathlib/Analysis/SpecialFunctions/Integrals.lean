@@ -21,7 +21,6 @@ This file contains proofs of the integrals of various specific functions. This i
 * Integrals of the form `sin x ^ m * cos x ^ n`
 
 With these lemmas, many simple integrals can be computed by `simp` or `norm_num`.
-See `test/integration.lean` for specific examples.
 
 This file also contains some facts about the interval integrability of specific functions.
 

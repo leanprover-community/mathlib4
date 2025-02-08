@@ -5,6 +5,7 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Algebra.Ring.Parity
 import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Group.Int.Even
 
 /-!
 # Basic parity lemmas for the ring `ℤ`
@@ -154,10 +155,9 @@ theorem isSquare_natCast_iff {n : ℕ} : IsSquare (n : ℤ) ↔ IsSquare n := by
   · exact ⟨x.natAbs, (natAbs_mul_natAbs_eq h.symm).symm⟩
   · exact ⟨x, mod_cast h⟩
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem isSquare_ofNat_iff {n : ℕ} :
-    IsSquare (no_index (OfNat.ofNat n) : ℤ) ↔ IsSquare (OfNat.ofNat n : ℕ) :=
+    IsSquare (ofNat(n) : ℤ) ↔ IsSquare (ofNat(n) : ℕ) :=
   isSquare_natCast_iff
 
 end Int

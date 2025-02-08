@@ -1,9 +1,10 @@
 /-
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Floris van Doorn
+Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
@@ -134,6 +135,9 @@ theorem coe_singletonOneHom : (singletonOneHom : α → Set α) = singleton :=
 
 @[to_additive] lemma image_op_one : (1 : Set α).image op = 1 := image_singleton
 
+@[to_additive (attr := simp)]
+lemma one_prod_one [One β] : (1 ×ˢ 1 : Set (α × β)) = 1 := by ext; simp [Prod.ext_iff]
+
 end One
 
 /-! ### Set negation/inversion -/
@@ -200,6 +204,9 @@ theorem sUnion_inv (S : Set (Set α)) : (⋃₀ S)⁻¹ = ⋃ s ∈ S, s⁻¹ :=
 @[to_additive (attr := simp)]
 theorem compl_inv : sᶜ⁻¹ = s⁻¹ᶜ :=
   preimage_compl
+
+@[to_additive (attr := simp)]
+lemma inv_prod [Inv β] (s : Set α) (t : Set β) : (s ×ˢ t)⁻¹ = s⁻¹ ×ˢ t⁻¹ := rfl
 
 end Inv
 
@@ -466,6 +473,10 @@ open MulOpposite
 @[to_additive (attr := simp)]
 theorem image_op_mul : op '' (s * t) = op '' t * op '' s :=
   image_image2_antidistrib op_mul
+
+@[to_additive (attr := simp)]
+lemma prod_mul_prod_comm [Mul β] (s₁ s₂: Set α) (t₁ t₂ : Set β) :
+   (s₁ ×ˢ t₁) * (s₂ ×ˢ t₂) = (s₁ * s₂) ×ˢ (t₁ * t₂) := by ext; simp [mem_mul]; aesop
 
 end Mul
 
@@ -1165,6 +1176,11 @@ theorem univ_pow : ∀ {n : ℕ}, n ≠ 0 → (univ : Set α) ^ n = univ
 protected theorem _root_.IsUnit.set : IsUnit a → IsUnit ({a} : Set α) :=
   IsUnit.map (singletonMonoidHom : α →* Set α)
 
+@[to_additive]
+lemma prod_pow [Monoid β] (s : Set α) (t : Set β) : ∀ n, (s ×ˢ t) ^ n = (s ^ n) ×ˢ (t ^ n)
+  | 0 => by simp
+  | n + 1 => by simp [pow_succ, prod_pow _ _ n]
+
 end Monoid
 
 section IsLeftCancelMul
@@ -1495,3 +1511,5 @@ lemma MapsTo.div [DivisionCommMonoid β] {A : Set α} {B₁ B₂ : Set β} {f₁
 end Pointwise
 
 end Set
+
+set_option linter.style.longFile 1700

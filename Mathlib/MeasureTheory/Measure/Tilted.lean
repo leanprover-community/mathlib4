@@ -119,14 +119,6 @@ lemma tilted_apply_eq_ofReal_integral [SFinite μ] (f : α → ℝ) (s : Set α)
     · exact ae_of_all _ (fun _ ↦ by positivity)
   · simp [tilted_of_not_integrable hf, integral_undef hf]
 
-instance isFiniteMeasure_tilted : IsFiniteMeasure (μ.tilted f) := by
-  by_cases hf : Integrable (fun x ↦ exp (f x)) μ
-  · refine isFiniteMeasure_withDensity_ofReal ?_
-    suffices Integrable (fun x ↦ exp (f x) / ∫ x, exp (f x) ∂μ) μ by exact this.2
-    exact hf.div_const _
-  · simp only [hf, not_false_eq_true, tilted_of_not_integrable]
-    infer_instance
-
 lemma isProbabilityMeasure_tilted [NeZero μ] (hf : Integrable (fun x ↦ exp (f x)) μ) :
     IsProbabilityMeasure (μ.tilted f) := by
   constructor
@@ -138,6 +130,16 @@ lemma isProbabilityMeasure_tilted [NeZero μ] (hf : Integrable (fun x ↦ exp (f
   · simp only [ne_eq, ENNReal.ofReal_eq_zero, not_le]
     exact integral_exp_pos hf
   · simp
+
+instance isZeroOrProbabilityMeasure_tilted : IsZeroOrProbabilityMeasure (μ.tilted f) := by
+  rcases eq_zero_or_neZero μ with hμ | hμ
+  · simp only [hμ, tilted_zero_measure]
+    infer_instance
+  by_cases hf : Integrable (fun x ↦ exp (f x)) μ
+  · have := isProbabilityMeasure_tilted hf
+    infer_instance
+  · simp only [hf, not_false_eq_true, tilted_of_not_integrable]
+    infer_instance
 
 section lintegral
 

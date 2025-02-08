@@ -3,9 +3,11 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
+import Mathlib.Tactic.Cases
 import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Algebra.Group.Int
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Data.Int.Cast.Basic
 
 /-!
 # The integers are a ring

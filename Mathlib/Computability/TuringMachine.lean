@@ -1828,12 +1828,12 @@ theorem tr_respects : Respects (TM0.step M) (TM1.step (tr M)) fun a b ↦ trCfg 
       cases' s with d a <;> rfl
     intro e
     refine TransGen.head ?_ (TransGen.head' this ?_)
-    · simp only [TM1.step, TM1.stepAux]
+    · simp only [TM1.step, TM1.stepAux, tr]
       rw [e]
       rfl
     cases e' : M q' _
     · apply ReflTransGen.single
-      simp only [TM1.step, TM1.stepAux]
+      simp only [TM1.step, TM1.stepAux, tr]
       rw [e']
       rfl
     · rfl
@@ -1926,7 +1926,6 @@ section
 variable [DecidableEq K]
 
 /-- The step function for the TM2 model. -/
-@[simp]
 def stepAux : Stmt₂ → σ → (∀ k, List (Γ k)) → Cfg₂
   | push k f q, v, S => stepAux q v (update S k (f v :: S k))
   | peek k f q, v, S => stepAux q (f v (S k).head?) S
@@ -1937,10 +1936,12 @@ def stepAux : Stmt₂ → σ → (∀ k, List (Γ k)) → Cfg₂
   | halt, v, S => ⟨none, v, S⟩
 
 /-- The step function for the TM2 model. -/
-@[simp]
 def step (M : Λ → Stmt₂) : Cfg₂ → Option Cfg₂
   | ⟨none, _, _⟩ => none
   | ⟨some l, v, S⟩ => some (stepAux (M l) v S)
+
+attribute [simp] stepAux.eq_1 stepAux.eq_2 stepAux.eq_3
+  stepAux.eq_4 stepAux.eq_5 stepAux.eq_6 stepAux.eq_7 step.eq_1 step.eq_2
 
 /-- The (reflexive) reachability relation for the TM2 model. -/
 def Reaches (M : Λ → Stmt₂) : Cfg₂ → Cfg₂ → Prop :=
@@ -2292,7 +2293,7 @@ noncomputable def trStmts₁ : Stmt₂ → Finset Λ'₂₁
 
 theorem trStmts₁_run {k : K} {s : StAct₂ k} {q : Stmt₂} :
     trStmts₁ (stRun s q) = {go k s q, ret q} ∪ trStmts₁ q := by
-  cases s <;> simp only [trStmts₁]
+  cases s <;> simp only [trStmts₁, stRun]
 
 theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (Γ k)}
     {L : ListBlank (∀ k, Option (Γ k))}
@@ -2305,7 +2306,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : Stmt₂₁} {v : σ} {S 
         TM1.stepAux (trStAct q o) v
             ((Tape.move Dir.right)^[(S k).length] (Tape.mk' ∅ (addBottom L))) =
           TM1.stepAux q v' ((Tape.move Dir.right)^[(S' k).length] (Tape.mk' ∅ (addBottom L'))) := by
-  simp only [Function.update_same]; cases o with simp only [stWrite, stVar, trStAct, TM1.stepAux]
+  simp only [Function.update_self]; cases o with simp only [stWrite, stVar, trStAct, TM1.stepAux]
   | push f =>
     have := Tape.write_move_right_n fun a : Γ' ↦ (a.1, update a.2 k (some (f v)))
     refine
@@ -2320,7 +2321,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : Stmt₂₁} {v : σ} {S 
     by_cases h' : k' = k
     · subst k'
       split_ifs with h
-        <;> simp only [List.reverse_cons, Function.update_same, ListBlank.nth_mk, List.map]
+        <;> simp only [List.reverse_cons, Function.update_self, ListBlank.nth_mk, List.map]
       · rw [List.getI_eq_getElem _, List.getElem_append_right] <;>
         simp only [List.length_append, List.length_reverse, List.length_map, ← h,
           Nat.sub_self, List.length_singleton, List.getElem_singleton,
@@ -2333,8 +2334,8 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : Stmt₂₁} {v : σ} {S 
         rw [List.getI_eq_default, List.getI_eq_default] <;>
           simp only [Nat.add_one_le_iff, h, List.length, le_of_lt, List.length_reverse,
             List.length_append, List.length_map]
-    · split_ifs <;> rw [Function.update_noteq h', ← proj_map_nth, hL]
-      rw [Function.update_noteq h']
+    · split_ifs <;> rw [Function.update_of_ne h', ← proj_map_nth, hL]
+      rw [Function.update_of_ne h']
   | peek f =>
     rw [Function.update_eq_self]
     use L, hL; rw [Tape.move_left_right]; congr
@@ -2363,7 +2364,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : Stmt₂₁} {v : σ} {S 
       rw [ListBlank.nth_map, ListBlank.nth_modifyNth, proj, PointedMap.mk_val]
       by_cases h' : k' = k
       · subst k'
-        split_ifs with h <;> simp only [Function.update_same, ListBlank.nth_mk, List.tail]
+        split_ifs with h <;> simp only [Function.update_self, ListBlank.nth_mk, List.tail]
         · rw [List.getI_eq_default]
           · rfl
           rw [h, List.length_reverse, List.length_map]
@@ -2375,8 +2376,8 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : Stmt₂₁} {v : σ} {S 
           rw [List.getI_eq_default, List.getI_eq_default] <;>
             simp only [Nat.add_one_le_iff, h, List.length, le_of_lt, List.length_reverse,
               List.length_append, List.length_map]
-      · split_ifs <;> rw [Function.update_noteq h', ← proj_map_nth, hL]
-        rw [Function.update_noteq h']
+      · split_ifs <;> rw [Function.update_of_ne h', ← proj_map_nth, hL]
+        rw [Function.update_of_ne h']
 
 end
 
@@ -2480,9 +2481,9 @@ theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L) (TM1.init (trIni
     simp only []
     by_cases h : k' = k
     · subst k'
-      simp only [Function.update_same]
+      simp only [Function.update_self]
       rw [ListBlank.nth_mk, List.getI_eq_iget_getElem?, ← List.map_reverse, List.getElem?_map]
-    · simp only [Function.update_noteq h]
+    · simp only [Function.update_of_ne h]
       rw [ListBlank.nth_mk, List.getI_eq_iget_getElem?, List.map, List.reverse_nil]
       cases L.reverse[i]? <;> rfl
   · rw [trInit, TM1.init]

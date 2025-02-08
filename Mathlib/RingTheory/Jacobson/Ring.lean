@@ -6,7 +6,7 @@ Authors: Devon Tuma
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Jacobson.Polynomial
-import Mathlib.RingTheory.Artinian
+import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Jacobson Rings

@@ -437,7 +437,7 @@ def vectorEquiv : List.Vector G n ≃ vectorsProdEqOne G (n + 1) where
 /-- Given a vector `v` of length `n` whose product is 1, make a vector of length `n - 1`,
 by deleting the last entry of `v`. -/
 def equivVector : ∀ n, vectorsProdEqOne G n ≃ List.Vector G (n - 1)
-  | 0 => (equivOfUnique (vectorsProdEqOne G 0) (vectorsProdEqOne G 1)).trans (vectorEquiv G 0).symm
+  | 0 => (ofUnique (vectorsProdEqOne G 0) (vectorsProdEqOne G 1)).trans (vectorEquiv G 0).symm
   | (n + 1) => (vectorEquiv G n).symm
 
 instance [Fintype G] : Fintype (vectorsProdEqOne G n) :=

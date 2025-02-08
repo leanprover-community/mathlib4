@@ -166,15 +166,6 @@ theorem one_le_inv_iff : 1 ≤ a⁻¹ ↔ 0 < a ∧ a ≤ 1 := one_le_inv_iff₀
 ### Relating two divisions.
 -/
 
-@[deprecated (since := "2024-02-16")] alias div_le_div_of_le_of_nonneg := div_le_div_of_nonneg_right
-@[deprecated (since := "2024-02-16")] alias div_lt_div_of_lt := div_lt_div_of_pos_right
-@[deprecated (since := "2024-02-16")] alias div_le_div_of_le_left := div_le_div_of_nonneg_left
-@[deprecated (since := "2024-02-16")] alias div_lt_div_of_lt_left := div_lt_div_of_pos_left
-
-@[deprecated div_le_div_of_nonneg_right (since := "2024-02-16")]
-lemma div_le_div_of_le (hc : 0 ≤ c) (hab : a ≤ b) : a / c ≤ b / c :=
-  div_le_div_of_nonneg_right hab hc
-
 @[deprecated div_le_div_iff_of_pos_right (since := "2024-11-12")]
 theorem div_le_div_right (hc : 0 < c) : a / c ≤ b / c ↔ a ≤ b := div_le_div_iff_of_pos_right hc
 
@@ -798,6 +789,24 @@ theorem abs_div (a b : α) : |a / b| = |a| / |b| :=
   map_div₀ (absHom : α →*₀ α) a b
 
 theorem abs_one_div (a : α) : |1 / a| = 1 / |a| := by rw [abs_div, abs_one]
+
+theorem uniform_continuous_npow_on_bounded (B : α) {ε : α} (hε : 0 < ε) (n : ℕ) :
+    ∃ δ > 0, ∀ q r : α, |r| ≤ B → |q - r| ≤ δ → |q ^ n - r ^ n| < ε := by
+  wlog B_pos : 0 < B generalizing B
+  · have ⟨δ, δ_pos, cont⟩ := this 1 zero_lt_one
+    exact ⟨δ, δ_pos, fun q r hr ↦ cont q r (hr.trans ((le_of_not_lt B_pos).trans zero_le_one))⟩
+  have pos : 0 < 1 + ↑n * (B + 1) ^ (n - 1) := zero_lt_one.trans_le <| le_add_of_nonneg_right <|
+    mul_nonneg n.cast_nonneg <| (pow_pos (B_pos.trans <| lt_add_of_pos_right _ zero_lt_one) _).le
+  refine ⟨min 1 (ε / (1 + n * (B + 1) ^ (n - 1))), lt_min zero_lt_one (div_pos hε pos),
+    fun q r hr hqr ↦ (abs_pow_sub_pow_le ..).trans_lt ?_⟩
+  rw [le_inf_iff, le_div_iff₀ pos, mul_one_add, ← mul_assoc] at hqr
+  obtain h | h := (abs_nonneg (q - r)).eq_or_lt
+  · simpa only [← h, zero_mul] using hε
+  refine (lt_of_le_of_lt ?_ <| lt_add_of_pos_left _ h).trans_le hqr.2
+  refine mul_le_mul_of_nonneg_left (pow_le_pow_left₀ ((abs_nonneg _).trans le_sup_left) ?_ _)
+    (mul_nonneg (abs_nonneg _) n.cast_nonneg)
+  refine max_le ?_ (hr.trans <| le_add_of_nonneg_right zero_le_one)
+  exact add_sub_cancel r q ▸ (abs_add_le ..).trans (add_le_add hr hqr.1)
 
 end
 

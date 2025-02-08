@@ -260,6 +260,9 @@ theorem add_mk_eq_max {α β : Type u} [Infinite α] : #α + #β = max #α #β :
 theorem add_mk_eq_max' {α β : Type u} [Infinite β] : #α + #β = max #α #β :=
   add_eq_max' (aleph0_le_mk β)
 
+theorem add_mk_eq_self {α : Type*} [Infinite α] : #α + #α = #α := by
+  simp
+
 theorem add_le_max (a b : Cardinal) : a + b ≤ max (max a b) ℵ₀ := by
   rcases le_or_lt ℵ₀ a with ha | ha
   · rw [add_eq_max ha]
@@ -460,15 +463,9 @@ theorem add_le_add_iff_of_lt_aleph0 {α β γ : Cardinal} (γ₀ : γ < ℵ₀) 
 theorem add_nat_le_add_nat_iff {α β : Cardinal} (n : ℕ) : α + n ≤ β + n ↔ α ≤ β :=
   add_le_add_iff_of_lt_aleph0 (nat_lt_aleph0 n)
 
-@[deprecated (since := "2024-02-12")]
-alias add_nat_le_add_nat_iff_of_lt_aleph_0 := add_nat_le_add_nat_iff
-
 @[simp]
 theorem add_one_le_add_one_iff {α β : Cardinal} : α + 1 ≤ β + 1 ↔ α ≤ β :=
   add_le_add_iff_of_lt_aleph0 one_lt_aleph0
-
-@[deprecated (since := "2024-02-12")]
-alias add_one_le_add_one_iff_of_lt_aleph_0 := add_one_le_add_one_iff
 
 end aleph
 

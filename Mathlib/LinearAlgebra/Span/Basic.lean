@@ -136,10 +136,8 @@ end
 theorem span_smul_eq_of_isUnit (s : Set M) (r : R) (hr : IsUnit r) : span R (r • s) = span R s := by
   apply le_antisymm
   · apply span_smul_le
-  · convert span_smul_le (r • s) ((hr.unit⁻¹ : _) : R)
-    rw [smul_smul]
-    erw [hr.unit.inv_val]
-    rw [one_smul]
+  · convert span_smul_le (r • s) ((hr.unit⁻¹ :) : R)
+    simp [smul_smul]
 
 /-- We can regard `coe_iSup_of_chain` as the statement that `(↑) : (Submodule R M) → Set M` is
 Scott continuous for the ω-complete partial order induced by the complete lattice structures. -/
@@ -147,20 +145,6 @@ theorem coe_scott_continuous :
     OmegaCompletePartialOrder.ωScottContinuous ((↑) : Submodule R M → Set M) :=
   OmegaCompletePartialOrder.ωScottContinuous.of_monotone_map_ωSup
     ⟨SetLike.coe_mono, coe_iSup_of_chain⟩
-
-theorem disjoint_span_singleton {K E : Type*} [DivisionRing K] [AddCommGroup E] [Module K E]
-    {s : Submodule K E} {x : E} : Disjoint s (K ∙ x) ↔ x ∈ s → x = 0 := by
-  refine disjoint_def.trans ⟨fun H hx => H x hx <| subset_span <| mem_singleton x, ?_⟩
-  intro H y hy hyx
-  obtain ⟨c, rfl⟩ := mem_span_singleton.1 hyx
-  by_cases hc : c = 0
-  · rw [hc, zero_smul]
-  · rw [s.smul_mem_iff hc] at hy
-    rw [H hy, smul_zero]
-
-theorem disjoint_span_singleton' {K E : Type*} [DivisionRing K] [AddCommGroup E] [Module K E]
-    {p : Submodule K E} {x : E} (x0 : x ≠ 0) : Disjoint p (K ∙ x) ↔ x ∉ p :=
-  disjoint_span_singleton.trans ⟨fun h₁ h₂ => x0 (h₁ h₂), fun h₁ h₂ => (h₁ h₂).elim⟩
 
 variable (R S s)
 
@@ -447,13 +431,13 @@ end AddCommGroup
 
 section DivisionRing
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V]
+variable [DivisionRing K] [AddCommGroup V] [Module K V] {s : Submodule K V} {x : V}
 
-/-- There is no vector subspace between `p` and `(K ∙ x) ⊔ p`, `WCovBy` version. -/
-theorem wcovBy_span_singleton_sup (x : V) (p : Submodule K V) : WCovBy p ((K ∙ x) ⊔ p) := by
+/-- There is no vector subspace between `s` and `(K ∙ x) ⊔ s`, `WCovBy` version. -/
+theorem wcovBy_span_singleton_sup (x : V) (s : Submodule K V) : WCovBy s ((K ∙ x) ⊔ s) := by
   refine ⟨le_sup_right, fun q hpq hqp ↦ hqp.not_le ?_⟩
   rcases SetLike.exists_of_lt hpq with ⟨y, hyq, hyp⟩
-  obtain ⟨c, z, hz, rfl⟩ : ∃ c : K, ∃ z ∈ p, c • x + z = y := by
+  obtain ⟨c, z, hz, rfl⟩ : ∃ c : K, ∃ z ∈ s, c • x + z = y := by
     simpa [mem_sup, mem_span_singleton] using hqp.le hyq
   rcases eq_or_ne c 0 with rfl | hc
   · simp [hz] at hyp
@@ -461,9 +445,32 @@ theorem wcovBy_span_singleton_sup (x : V) (p : Submodule K V) : WCovBy p ((K ∙
       rwa [q.add_mem_iff_left (hpq.le hz), q.smul_mem_iff hc] at hyq
     simp [hpq.le, this]
 
-/-- There is no vector subspace between `p` and `(K ∙ x) ⊔ p`, `CovBy` version. -/
-theorem covBy_span_singleton_sup {x : V} {p : Submodule K V} (h : x ∉ p) : CovBy p ((K ∙ x) ⊔ p) :=
+/-- There is no vector subspace between `s` and `(K ∙ x) ⊔ s`, `CovBy` version. -/
+theorem covBy_span_singleton_sup {x : V} {s : Submodule K V} (h : x ∉ s) : CovBy s ((K ∙ x) ⊔ s) :=
   ⟨by simpa, (wcovBy_span_singleton_sup _ _).2⟩
+
+theorem disjoint_span_singleton : Disjoint s (K ∙ x) ↔ x ∈ s → x = 0 := by
+  refine disjoint_def.trans ⟨fun H hx => H x hx <| subset_span <| mem_singleton x, ?_⟩
+  intro H y hy hyx
+  obtain ⟨c, rfl⟩ := mem_span_singleton.1 hyx
+  by_cases hc : c = 0
+  · rw [hc, zero_smul]
+  · rw [s.smul_mem_iff hc] at hy
+    rw [H hy, smul_zero]
+
+theorem disjoint_span_singleton' (x0 : x ≠ 0) : Disjoint s (K ∙ x) ↔ x ∉ s :=
+  disjoint_span_singleton.trans ⟨fun h₁ h₂ => x0 (h₁ h₂), fun h₁ h₂ => (h₁ h₂).elim⟩
+
+lemma disjoint_span_singleton_of_not_mem (hx : x ∉ s) : Disjoint s (K ∙ x) := by
+  rw [disjoint_span_singleton]
+  intro h
+  contradiction
+
+lemma isCompl_span_singleton_of_isCoatom_of_not_mem (hs : IsCoatom s) (hx : x ∉ s) :
+    IsCompl s (K ∙ x) := by
+  refine ⟨disjoint_span_singleton_of_not_mem hx, ?_⟩
+  rw [← covBy_top_iff] at hs
+  simpa only [codisjoint_iff, sup_comm, not_lt_top_iff] using hs.2 (covBy_span_singleton_sup hx).1
 
 end DivisionRing
 
@@ -618,9 +625,14 @@ def toSpanNonzeroSingleton : R ≃ₗ[R] R ∙ x :=
     (LinearEquiv.ofEq (range <| toSpanSingleton R M x) (R ∙ x) (span_singleton_eq_range R M x).symm)
 
 @[simp] theorem toSpanNonzeroSingleton_apply (t : R) :
-    LinearEquiv.toSpanNonzeroSingleton R M x h t =
+    toSpanNonzeroSingleton R M x h t =
       (⟨t • x, Submodule.smul_mem _ _ (Submodule.mem_span_singleton_self x)⟩ : R ∙ x) := by
   rfl
+
+@[simp]
+lemma toSpanNonzeroSingleton_symm_apply_smul (m : R ∙ x) :
+    (toSpanNonzeroSingleton R M x h).symm m • x = m :=
+  congrArg Subtype.val <| apply_symm_apply (toSpanNonzeroSingleton R M x h) m
 
 theorem toSpanNonzeroSingleton_one :
     LinearEquiv.toSpanNonzeroSingleton R M x h 1 =

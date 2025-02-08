@@ -45,7 +45,7 @@ instance : SetLike (Compacts α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Compacts α) : Set α := s
 
-initialize_simps_projections Compacts (carrier → coe)
+initialize_simps_projections Compacts (carrier → coe, as_prefix coe)
 
 protected theorem isCompact (s : Compacts α) : IsCompact (s : Set α) :=
   s.isCompact'
@@ -197,7 +197,7 @@ instance : SetLike (NonemptyCompacts α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : NonemptyCompacts α) : Set α := s
 
-initialize_simps_projections NonemptyCompacts (carrier → coe)
+initialize_simps_projections NonemptyCompacts (carrier → coe, as_prefix coe)
 
 protected theorem isCompact (s : NonemptyCompacts α) : IsCompact (s : Set α) :=
   s.isCompact'
@@ -288,7 +288,7 @@ instance : SetLike (PositiveCompacts α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : PositiveCompacts α) : Set α := s
 
-initialize_simps_projections PositiveCompacts (carrier → coe)
+initialize_simps_projections PositiveCompacts (carrier → coe, as_prefix coe)
 
 protected theorem isCompact (s : PositiveCompacts α) : IsCompact (s : Set α) :=
   s.isCompact'
@@ -417,7 +417,7 @@ instance : SetLike (CompactOpens α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : CompactOpens α) : Set α := s
 
-initialize_simps_projections CompactOpens (carrier → coe)
+initialize_simps_projections CompactOpens (carrier → coe, as_prefix coe)
 
 protected theorem isCompact (s : CompactOpens α) : IsCompact (s : Set α) :=
   s.isCompact'

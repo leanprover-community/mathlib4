@@ -7,6 +7,7 @@ import Mathlib.MeasureTheory.Group.Action
 import Mathlib.MeasureTheory.Measure.Prod
 import Mathlib.Topology.Algebra.Module.Equiv
 import Mathlib.Topology.ContinuousMap.CocompactMap
+import Mathlib.Topology.Algebra.ContinuousMonoidHom
 
 /-!
 # Measures on Groups
@@ -704,10 +705,11 @@ theorem isHaarMeasure_of_isCompact_nonempty_interior [TopologicalGroup G] [Borel
     toIsOpenPosMeasure := isOpenPosMeasure_of_mulLeftInvariant_of_compact K hK h }
 
 /-- The image of a Haar measure under a continuous surjective proper group homomorphism is again
-a Haar measure. See also `MulEquiv.isHaarMeasure_map`. -/
+a Haar measure. See also `MulEquiv.isHaarMeasure_map` and `ContinuousMulEquiv.isHaarMeasure_map`. -/
 @[to_additive
 "The image of an additive Haar measure under a continuous surjective proper additive group
-homomorphism is again an additive Haar measure. See also `AddEquiv.isAddHaarMeasure_map`."]
+homomorphism is again an additive Haar measure. See also `AddEquiv.isAddHaarMeasure_map`,
+`ContinuousAddEquiv.isAddHaarMeasure_map` and `ContinuousLinearEquiv.isAddHaarMeasure_map`."]
 theorem isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type*} [Group H]
     [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H] [TopologicalGroup H]
     (f : G →* H) (hf : Continuous f) (h_surj : Surjective f)
@@ -768,6 +770,16 @@ nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [TopologicalGrou
   we needed to write `e.toMonoidHom` instead of just `e`, to avoid unification issues.
   -/
   isHaarMeasure_map μ e.toMonoidHom he e.surjective f.isClosedEmbedding.tendsto_cocompact
+
+/--
+A convenience wrapper for MeasureTheory.Measure.isHaarMeasure_map.
+-/
+@[to_additive "A convenience wrapper for MeasureTheory.Measure.isAddHaarMeasure_map.
+"]
+instance _root_.ContinuousMulEquiv.isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type*}
+    [Group H] [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H]
+    [TopologicalGroup H] (e : G ≃ₜ* H) : (μ.map e).IsHaarMeasure :=
+  e.toMulEquiv.isHaarMeasure_map μ e.continuous e.symm.continuous
 
 /-- A convenience wrapper for MeasureTheory.Measure.isAddHaarMeasure_map`. -/
 instance _root_.ContinuousLinearEquiv.isAddHaarMeasure_map

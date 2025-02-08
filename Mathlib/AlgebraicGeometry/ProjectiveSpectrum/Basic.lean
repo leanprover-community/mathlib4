@@ -250,7 +250,7 @@ lemma pullbackAwayιIso_inv_snd :
   rw [← pullbackAwayιIso_hom_SpecMap_awayMap_right, Iso.inv_hom_id_assoc]
 
 open TopologicalSpace.Opens in
-/-- Given a family of homogeneous elements `f` of positive degree that spans the irrelavent ideal,
+/-- Given a family of homogeneous elements `f` of positive degree that spans the irrelevant ideal,
 `Spec (A_f)₀ ⟶ Proj A` forms an affine open cover of `Proj A`. -/
 noncomputable
 def openCoverOfISupEqTop {ι : Type*} (f : ι → A) {m : ι → ℕ}

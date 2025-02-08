@@ -267,6 +267,10 @@ theorem cyclotomic.eval_apply {R S : Type*} (q : R) (n : ℕ) [Ring R] [Ring S] 
     eval (f q) (cyclotomic n S) = f (eval q (cyclotomic n R)) := by
   rw [← map_cyclotomic n f, eval_map, eval₂_at_apply]
 
+@[simp] theorem cyclotomic.eval_apply_ofReal (q : ℝ) (n : ℕ) :
+    eval (q : ℂ) (cyclotomic n ℂ) = (eval q (cyclotomic n ℝ)) :=
+  cyclotomic.eval_apply q n (algebraMap ℝ ℂ)
+
 /-- The zeroth cyclotomic polyomial is `1`. -/
 @[simp]
 theorem cyclotomic_zero (R : Type*) [Ring R] : cyclotomic 0 R = 1 := by

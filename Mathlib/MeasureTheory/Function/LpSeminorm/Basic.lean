@@ -311,6 +311,8 @@ theorem eLpNorm_measure_zero {f : α → F} : eLpNorm f p (0 : Measure α) = 0 :
 @[deprecated (since := "2024-07-27")]
 alias snorm_measure_zero := eLpNorm_measure_zero
 
+@[simp] lemma memℒp_measure_zero {f : α → F} : Memℒp f p (0 : Measure α) := by simp [Memℒp]
+
 end Zero
 
 section Neg

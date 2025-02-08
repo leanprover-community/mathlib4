@@ -543,7 +543,7 @@ lemma reflexiveCoforkEquivCofork_functor_obj_π (G : ReflexiveCofork F) :
     ((reflexiveCoforkEquivCofork F).functor.obj G).π = G.π := by
   dsimp [reflexiveCoforkEquivCofork]
   rw [ReflexiveCofork.π, Cofork.π]
-  aesop_cat
+  simp
 
 @[simp]
 lemma reflexiveCoforkEquivCofork_inverse_obj_π

@@ -31,7 +31,7 @@ choice that `0 * x = x * 0 = 0` for any `x` (while the other cases are defined n
 This does not distribute with addition, as `⊥ = ⊥ + ⊤ = 1*⊥ + (-1)*⊥ ≠ (1 - 1) * ⊥ = 0 * ⊥ = 0`.
 Distributivity `x * (y + z) = x * y + x * z` is recovered in the case where either `0 ≤ x < ⊤`,
 see `Ereal.left_distrib_of_nonneg_of_ne_top`, or `0 ≤ y, z`, see `Ereal.left_distrib_of_nonneg`
-(similarily for right distributivity).
+(similarly for right distributivity).
 
 `EReal` is a `CompleteLinearOrder`; this is deduced by type class inference from
 the fact that `WithBot (WithTop L)` is a complete linear order if `L` is

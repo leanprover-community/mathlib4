@@ -243,7 +243,7 @@ evaluates the section on the point corresponding to a given homogeneous prime id
 def openToLocalization (U : Opens (ProjectiveSpectrum.top 𝒜)) (x : ProjectiveSpectrum.top 𝒜)
     (hx : x ∈ U) : (Proj.structureSheaf 𝒜).1.obj (op U) ⟶ CommRingCat.of (at x) :=
   CommRingCat.ofHom
-  { toFun s := (s.1 ⟨x, hx⟩ : _)
+  { toFun s := (s.1 ⟨x, hx⟩ :)
     map_one' := rfl
     map_mul' _ _ := rfl
     map_zero' := rfl

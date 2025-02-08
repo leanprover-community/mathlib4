@@ -124,7 +124,7 @@ scoped notation "𝟙_ " C:max => (MonoidalCategoryStruct.tensorUnit : C)
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Used to ensure that `𝟙_` notation is used, as the ascription makes this not automatic. -/
-@[delab app.CategoryTheory.MonoidalCategoryStruct.tensorUnit]
+@[app_delab CategoryTheory.MonoidalCategoryStruct.tensorUnit]
 def delabTensorUnit : Delab := whenPPOption getPPNotation <| withOverApp 3 do
   let e ← getExpr
   guard <| e.isAppOfArity ``MonoidalCategoryStruct.tensorUnit 3

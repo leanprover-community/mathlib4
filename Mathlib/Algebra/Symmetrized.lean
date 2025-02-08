@@ -35,7 +35,7 @@ open Function
 def SymAlg (α : Type*) : Type _ :=
   α
 
-postfix:max "ˢʸᵐ" => SymAlg
+@[inherit_doc] postfix:max "ˢʸᵐ" => SymAlg
 
 namespace SymAlg
 

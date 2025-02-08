@@ -5,7 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Order.AbsoluteValue
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
 import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.Data.Int.Cast.Lemmas
 

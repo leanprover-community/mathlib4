@@ -154,7 +154,7 @@ def lift : W.Localization ⥤ D :=
       -- Porting note: rest of proof was `rcases r with ⟨⟩; tidy`
       rcases r with (_|_|⟨f,hf⟩|⟨f,hf⟩)
       · aesop_cat
-      · aesop_cat
+      · simp
       all_goals
         dsimp
         haveI := hG f hf

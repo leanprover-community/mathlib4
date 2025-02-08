@@ -199,7 +199,7 @@ def eraseProofs (e : Expr) : MetaM Expr :=
   Meta.transform (skipConstInApp := true) e
     (pre := fun e => do
       if (← Meta.isProof e) then
-        return .continue (← mkSyntheticSorry (← inferType e))
+        return .continue (← mkSorry (← inferType e) true)
       else
         return .continue)
 
@@ -262,6 +262,7 @@ section recognizers
 partial def numeral? (e : Expr) : Option Nat :=
   if let some n := e.rawNatLit? then n
   else
+    let e := e.consumeMData -- `OfNat` numerals may have `no_index` around them from `ofNat()`
     let f := e.getAppFn
     if !f.isConst then none
     else

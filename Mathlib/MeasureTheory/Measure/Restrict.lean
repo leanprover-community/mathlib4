@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.MeasureTheory.Measure.Comap
+import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 
 /-!
 # Restricting a measure to a subset or a subtype

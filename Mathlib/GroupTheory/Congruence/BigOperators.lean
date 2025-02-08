@@ -6,7 +6,7 @@ Authors: Amelia Livingston
 
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.BigOperators.Group.Multiset
-import Mathlib.Algebra.BigOperators.Group.List
+import Mathlib.Algebra.BigOperators.Group.List.Lemmas
 import Mathlib.GroupTheory.Congruence.Defs
 
 /-!
