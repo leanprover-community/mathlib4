@@ -13,7 +13,7 @@ import Mathlib.Logic.UnivLE
 
 Given a well ordered type `J`, `W : MorphismProperty C` and
 a morphism `f : X ⟶ Y`, we define a structure `W.TransfiniteCompositionOfShape J f`
-which expresses that `f` is a transfinite composition of morphisms in `J`.
+which expresses that `f` is a transfinite composition of shape `J` of morphisms in `W`.
 This structures extends `CategoryTheory.TransfiniteCompositionOfShape` which was
 defined in the file `CategoryTheory.Limits.Shape.Preorder.TransfiniteCompositionOfShape`.
 We use this structure in order to define the class of morphisms
@@ -23,7 +23,7 @@ In particular, if `J := ℕ`, we define `W.IsStableUnderInfiniteComposition`,
 
 Finally, we introduce the class `W.IsStableUnderTransfiniteComposition`
 which says that `W.IsStableUnderTransfiniteCompositionOfShape J`
-holds for any well ordered type `J` in a certain universe `u`.
+holds for any well ordered type `J` in a certain universe `w`.
 
 -/
 
