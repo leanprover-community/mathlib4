@@ -5,7 +5,6 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Closed.Types
 import Mathlib.CategoryTheory.Sites.CartesianClosed
-import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 import Mathlib.CategoryTheory.Sites.Equivalence
 import Mathlib.Condensed.Light.Basic
 /-!
