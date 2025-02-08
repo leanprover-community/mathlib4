@@ -193,31 +193,28 @@ theorem map_finsuppSum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R 
 open Finsupp in
 theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
     Q (linearCombination R g l) = linearCombination R (Q ∘ g) (l * l) +
-      ∑ p ∈ l.support.sym2 with ¬ p.IsDiag,
-        p.lift
-          ⟨fun i j => (l i * l j) • polar Q (g i) (g j), fun i j => by
-            simp only [polar_comm, mul_comm]⟩ := by
-  simp_rw [linearCombination_apply, map_finsuppSum]
-  have e1 (p : Sym2 ι) : Q.polar_lift l (fun i a ↦ a • g i) p =
-    Sym2.lift ⟨fun i j ↦ polar (Q) (l i • g i) (l j • g j), fun _ _ => by simp [polar_comm]⟩ p := by
-    simp_rw [recover]
-  simp_rw [e1]
-  simp_rw [polar_smul_left, polar_smul_right,
-    map_smul, mul_smul, add_left_inj]
-  rw [Finsupp.sum, Finsupp.sum_of_support_subset (l * l)
+      ∑ p ∈ l.support.sym2 with ¬ p.IsDiag, ((scalar l) * (Q.polar_sym2 ∘ Sym2.map g)) p := by
+  simp_rw [linearCombination_apply, map_finsuppSum,
+    map_smul, mul_smul]
+  rw [Finsupp.sum_of_support_subset (l * l)
     (subset_trans Finsupp.support_mul (by rw [Finset.inter_self])) (fun i a => a • (⇑Q ∘ g) i)
     (fun _ _=> by simp only [Function.comp_apply, zero_smul])]
   simp only [Finset.inter_self, mul_apply, Function.comp_apply]
   simp only [←smul_eq_mul, smul_assoc]
+  have e1 : (l.sum fun i r ↦ r • r • Q (g i))  = ∑ x ∈ l.support, l x • l x • Q (g x) := rfl
+  rw [e1]
+  simp_rw [add_right_inj]
+  rw [polar_lift]
+  simp_rw [← test]
+  simp_all only [Function.comp_apply]
+  rfl
 
 -- c.f. `LinearMap.sum_repr_mul_repr_mul`
 open Finsupp in
 theorem sum_repr_sq_add_sum_repr_mul_polar (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
     linearCombination R (Q ∘ bm) ((bm.repr x) * (bm.repr x)) +
       ∑ p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag,
-        p.lift
-          ⟨fun i j => (bm.repr x i * bm.repr x j) • polar Q (bm i) (bm j), fun i j => by
-            simp only [polar_comm, mul_comm]⟩ = Q x := by
+        ((scalar (bm.repr x)) * (Q.polar_sym2 ∘ Sym2.map bm)) p = Q x := by
   rw [← apply_linearCombination, Basis.linearCombination_repr]
 
 end
