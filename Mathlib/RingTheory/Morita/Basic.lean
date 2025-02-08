@@ -124,7 +124,7 @@ structure IsMoritaEquivalent
 
 namespace IsMoritaEquivalent
 
-lemma refl {A : Type u₁} [Ring A] [Algebra R A] : IsMoritaEquivalent R A A where
+lemma refl (A : Type u₁) [Ring A] [Algebra R A] : IsMoritaEquivalent R A A where
   cond := ⟨.refl R A⟩
 
 lemma symm {A : Type u₁} [Ring A] [Algebra R A] {B : Type u₂} [Ring B] [Algebra R B]
