@@ -26,9 +26,9 @@ namespace Fin
 variable (n : ℕ)
 
 /-- `0` is an initial object in `Fin n` when `n ≠ 0`. -/
-def zeroIsInitial [NeZero n] : IsInitial (0 : Fin n) := isInitialBot
+def isInitialZero [NeZero n] : IsInitial (0 : Fin n) := isInitialBot
 
 /-- `Fin.last n` is a terminal object in `Fin (n + 1)`. -/
-def lastIsTerminal : IsTerminal (Fin.last n) := isTerminalTop
+def isTerminalLast : IsTerminal (Fin.last n) := isTerminalTop
 
 end Fin
