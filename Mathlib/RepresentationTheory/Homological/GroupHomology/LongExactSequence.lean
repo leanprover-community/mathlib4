@@ -139,6 +139,7 @@ theorem epi_δ₀_of_isZero (h0 : IsZero (H0 X.X₂)) : Epi (δ₀ hX) := by
 general `δ`. -/
 noncomputable def δ₁ : H2 X.X₃ ⟶ H1 X.X₁ :=
   (isoH2 X.X₃).inv ≫ (map_chainsFunctor_shortExact hX).δ 2 1 rfl ≫ (isoH1 X.X₁).hom
+
 theorem δ₁_apply_aux (y : G × G →₀ X.X₂) (x : G →₀ X.X₁)
     (hx : mapRange.linearMap X.f.hom.hom x = dOne X.X₂ y) :
     dZero X.X₁ x = 0 := by
@@ -234,6 +235,7 @@ a short exact sequence of representations agrees with our simpler expression for
 noncomputable def isoH1ShortComplex₃ :
     mapShortComplex₃ hX (j := 0) rfl ≅ H1ShortComplex₃ hX :=
   isoMk (isoH1 _) (isoH1 _) (isoH0 _) (map_comp_isoH1_hom (MonoidHom.id G) _).symm (by simp [δ₀])
+
 theorem H1ShortComplex₃_exact :
     (H1ShortComplex₃ hX).Exact :=
   exact_of_iso (isoH1ShortComplex₃ hX) (mapShortComplex₃_exact _ _)
@@ -252,6 +254,7 @@ a short complex of representations agrees with our simpler expression for
 noncomputable def isoH1ShortComplex₂ :
     mapShortComplex₂ X 1 ≅ H1ShortComplex₂ X :=
   isoMk (isoH1 _) (isoH1 _) (isoH1 _) (map_comp_isoH1_hom _ _).symm (map_comp_isoH1_hom _ _).symm
+
 theorem H1ShortComplex₂_exact :
     (H1ShortComplex₂ X).Exact :=
   exact_of_iso (isoH1ShortComplex₂ X) (mapShortComplex₂_exact hX _)
