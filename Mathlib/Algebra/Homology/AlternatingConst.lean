@@ -37,8 +37,6 @@ def alternatingConst [HasZeroMorphisms C] : C ⥤ ChainComplex C ℕ where
   map_id X := by ext; simp
   map_comp f g := by ext; simp
 
-section
-
 variable [HasZeroMorphisms C] [HasZeroObject C]
 
 open ZeroObject
@@ -81,19 +79,20 @@ noncomputable
 def alternatingConstHomologyZero (X : C) : (alternatingConst.obj X).homology 0 ≅ X :=
   (alternatingConstHomologyDataZero X _ rfl).left.homologyIso
 
-end
-
+end ChainComplex
 section
 
 variable [Preadditive C] [HasZeroObject C]
 
 /-- The alternating face complex of the constant complex is the alternating constant complex. -/
-def alternatingFaceMapComplexConst :
+def AlgebraicTopology.alternatingFaceMapComplexConst :
     Functor.const _ ⋙ alternatingFaceMapComplex C ≅ ChainComplex.alternatingConst :=
   NatIso.ofComponents (fun X ↦ HomologicalComplex.Hom.isoOfComponents (fun _ ↦ Iso.refl _) <| by
     rintro _ i rfl
     simp [SimplicialObject.δ, ← Finset.sum_smul, Fin.sum_neg_one_pow, Nat.even_add_one,
       ← Nat.not_even_iff_odd]) (by intros; ext; simp)
+
+namespace ChainComplex
 
 /-- `alternatingConst.obj X` is homotopy equivalent to the chain
 complex `(single₀ C).obj X`. -/
@@ -101,7 +100,5 @@ noncomputable def alternatingConstHomotopyEquiv (X : C) :
     HomotopyEquiv (alternatingConst.obj X) ((single₀ C).obj X) :=
   (HomotopyEquiv.ofIso (alternatingFaceMapComplexConst.app X).symm).trans
     ((SimplicialObject.Augmented.ExtraDegeneracy.const X).homotopyEquiv)
-
-end
 
 end ChainComplex
