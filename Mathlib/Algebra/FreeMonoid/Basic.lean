@@ -434,9 +434,9 @@ isomorphic"]
 def freeMonoidCongr (e : α ≃ β) :  FreeMonoid α ≃* FreeMonoid β where
   toFun := FreeMonoid.map ⇑e
   invFun := FreeMonoid.map ⇑e.symm
-  left_inv := fun _ => map_symm_apply_map_eq e
-  right_inv := fun _ => map_apply_map_symm_eq e
-  map_mul' := (by simp [map_mul])
+  left_inv _ := map_symm_apply_map_eq e
+  right_inv _ := map_apply_map_symm_eq e
+  map_mul' := by simp [map_mul]
 
 @[to_additive (attr := simp)]
 theorem freeMonoidCongr_of (e : α ≃ β) (a : α) : freeMonoidCongr e (of a) = of (e a) := rfl
