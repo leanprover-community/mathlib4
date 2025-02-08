@@ -209,18 +209,20 @@ lemma isBipartite_sum_degrees_eq_twice_card_edges (h : G.IsBipartite s t) :
   intro v _ hv
   rwa [Set.mem_toFinset, ←degree_eq_zero_iff_not_mem_support] at hv
 
-/-- The degree-sum formula for bipartite graphs.
+/-- The degree-sum formula for bipartite graphs, summing over the "left" part.
 
-See `SimpleGraph.sum_degrees_eq_twice_card_edges`. -/
+See `SimpleGraph.sum_degrees_eq_twice_card_edges` for the general version, and
+`SimpleGraph.isBipartite_sum_degrees_eq_card_edges'` for the version from the "right". -/
 theorem isBipartite_sum_degrees_eq_card_edges (h : G.IsBipartite s t) :
     ∑ v ∈ s, G.degree v = #G.edgeFinset := by
   rw [←Nat.mul_left_cancel_iff zero_lt_two, ←isBipartite_sum_degrees_eq_twice_card_edges h,
     sum_union (disjoint_coe.mp h.disjoint), two_mul, add_right_inj]
   exact isBipartite_sum_degrees_eq h
 
-/-- The degree-sum formula for bipartite graphs.
+/-- The degree-sum formula for bipartite graphs, summing over the "right" part.
 
-See `SimpleGraph.sum_degrees_eq_twice_card_edges`. -/
+See `SimpleGraph.sum_degrees_eq_twice_card_edges` for the general version, and
+`SimpleGraph.isBipartite_sum_degrees_eq_card_edges` for the version from the "left". -/
 theorem isBipartite_sum_degrees_eq_card_edges' (h : G.IsBipartite s t) :
     ∑ v ∈ t, G.degree v = #G.edgeFinset := isBipartite_sum_degrees_eq_card_edges h.symm
 
