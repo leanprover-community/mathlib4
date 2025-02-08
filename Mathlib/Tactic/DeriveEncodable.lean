@@ -14,6 +14,9 @@ import Mathlib.Data.Nat.Pairing
 # `Encodable` deriving handler
 
 Adds a deriving handler for the `Encodable` class.
+
+The resulting `Encodable` instance should be considered to be opaque.
+The specific encoding used is an implementation detail.
 -/
 
 namespace Mathlib.Deriving.Encodable
@@ -169,7 +172,7 @@ where
     return alts
 
 /-- Constructs a function from the inductive type to `S`. -/
-def mkToSFuns (ctx : Deriving.Context) (toSFunNames : Array Name) :
+private def mkToSFuns (ctx : Deriving.Context) (toSFunNames : Array Name) :
     TermElabM (TSyntax `command) := do
   let mut res : Array (TSyntax `command) := #[]
   for i in [:toSFunNames.size] do
@@ -237,7 +240,7 @@ where
     return alts
 
 /-- Constructs a function from `S` to the inductive type. -/
-def mkFromSFuns (ctx : Deriving.Context) (fromSFunNames : Array Name) :
+private def mkFromSFuns (ctx : Deriving.Context) (fromSFunNames : Array Name) :
     TermElabM (TSyntax `command) := do
   let mut res : Array (TSyntax `command) := #[]
   for i in [:fromSFunNames.size] do
@@ -261,7 +264,7 @@ Constructing the proofs that the `fromS` functions are left inverses of the `toS
 Constructs a proof that the functions created by `mkFromSFuns` are left inverses
 of the ones created by `mkToSFuns`.
 -/
-def mkInjThms (ctx : Deriving.Context) (toSFunNames fromSFunNames : Array Name) :
+private def mkInjThms (ctx : Deriving.Context) (toSFunNames fromSFunNames : Array Name) :
     TermElabM (TSyntax `command) := do
   let mut res : Array (TSyntax `command) := #[]
   for i in [:toSFunNames.size] do
