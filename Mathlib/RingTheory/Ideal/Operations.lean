@@ -636,6 +636,10 @@ theorem isCoprime_iff_codisjoint : IsCoprime I J ↔ Codisjoint I J := by
     refine ⟨1, 1, ?_⟩
     simpa only [one_eq_top, top_mul, Submodule.add_eq_sup]
 
+theorem isCoprime_of_isMaximal [I.IsMaximal] [J.IsMaximal] (ne : I ≠ J) : IsCoprime I J := by
+  rw [isCoprime_iff_codisjoint, isMaximal_def] at *
+  exact IsCoatom.codisjoint_of_ne ‹_› ‹_› ne
+
 theorem isCoprime_iff_add : IsCoprime I J ↔ I + J = 1 := by
   rw [isCoprime_iff_codisjoint, codisjoint_iff, add_eq_sup, one_eq_top]
 
@@ -1202,6 +1206,10 @@ theorem Ideal.span_singleton_nonZeroDivisors {R : Type*} [CommSemiring R] [NoZer
   · exact ⟨fun _ _ _ ↦ Subsingleton.eq_zero _, fun _ _ _ ↦ Subsingleton.eq_zero _⟩
   · rw [mem_nonZeroDivisors_iff_ne_zero, mem_nonZeroDivisors_iff_ne_zero, ne_eq, zero_eq_bot,
       span_singleton_eq_bot]
+
+theorem Ideal.primeCompl_le_nonZeroDivisors {R : Type*} [CommSemiring R] [NoZeroDivisors R]
+    (P : Ideal R) [P.IsPrime] : P.primeCompl ≤ nonZeroDivisors R :=
+  le_nonZeroDivisors_of_noZeroDivisors <| not_not_intro P.zero_mem
 
 namespace Submodule
 

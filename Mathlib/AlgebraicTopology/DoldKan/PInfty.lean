@@ -71,12 +71,12 @@ theorem QInfty_f (n : ℕ) : (QInfty.f n : X _[n] ⟶ X _[n]) = (Q n).f n :=
 
 @[reassoc (attr := simp)]
 theorem PInfty_f_naturality (n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
-    f.app (op [n]) ≫ PInfty.f n = PInfty.f n ≫ f.app (op [n]) :=
+    f.app (op ⦋n⦌) ≫ PInfty.f n = PInfty.f n ≫ f.app (op ⦋n⦌) :=
   P_f_naturality n n f
 
 @[reassoc (attr := simp)]
 theorem QInfty_f_naturality (n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
-    f.app (op [n]) ≫ QInfty.f n = QInfty.f n ≫ f.app (op [n]) :=
+    f.app (op ⦋n⦌) ≫ QInfty.f n = QInfty.f n ≫ f.app (op ⦋n⦌) :=
   Q_f_naturality n n f
 
 @[reassoc (attr := simp)]
@@ -157,7 +157,7 @@ computes `PInfty` for the associated object in `SimplicialObject (Karoubi C)`
 in terms of `PInfty` for `Y.X : SimplicialObject C` and `Y.p`. -/
 theorem karoubi_PInfty_f {Y : Karoubi (SimplicialObject C)} (n : ℕ) :
     ((PInfty : K[(karoubiFunctorCategoryEmbedding _ _).obj Y] ⟶ _).f n).f =
-      Y.p.app (op [n]) ≫ (PInfty : K[Y.X] ⟶ _).f n := by
+      Y.p.app (op ⦋n⦌) ≫ (PInfty : K[Y.X] ⟶ _).f n := by
   -- We introduce P_infty endomorphisms P₁, P₂, P₃, P₄ on various objects Y₁, Y₂, Y₃, Y₄.
   let Y₁ := (karoubiFunctorCategoryEmbedding _ _).obj Y
   let Y₂ := Y.X
@@ -168,7 +168,7 @@ theorem karoubi_PInfty_f {Y : Karoubi (SimplicialObject C)} (n : ℕ) :
   let P₃ : K[Y₃] ⟶ _ := PInfty
   let P₄ : K[Y₄] ⟶ _ := PInfty
   -- The statement of lemma relates P₁ and P₂.
-  change (P₁.f n).f = Y.p.app (op [n]) ≫ P₂.f n
+  change (P₁.f n).f = Y.p.app (op ⦋n⦌) ≫ P₂.f n
   -- The proof proceeds by obtaining relations h₃₂, h₄₃, h₁₄.
   have h₃₂ : (P₃.f n).f = P₂.f n := Karoubi.hom_ext_iff.mp (map_PInfty_f (toKaroubi C) Y₂ n)
   have h₄₃ : P₄.f n = P₃.f n := by
@@ -188,7 +188,7 @@ theorem karoubi_PInfty_f {Y : Karoubi (SimplicialObject C)} (n : ℕ) :
   have eq := Karoubi.hom_ext_iff.mp (PInfty_f_naturality n π)
   simp only [Karoubi.comp_f] at eq
   dsimp [π] at eq
-  rw [← eq, app_idem_assoc Y (op [n])]
+  rw [← eq, app_idem_assoc Y (op ⦋n⦌)]
 
 end DoldKan
 

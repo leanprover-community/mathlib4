@@ -100,7 +100,7 @@ variable (m : ℕ) (h : m ≤ n + 1)
 
 @[simp]
 theorem spineToSimplex_vertex (i : Fin (m + 1)) (f : Path X m) :
-    X.map (tr (SimplexCategory.const [0] [m] i)).op (sx.spineToSimplex m h f) =
+    X.map (tr (SimplexCategory.const ⦋0⦌ ⦋m⦌ i)).op (sx.spineToSimplex m h f) =
       f.vertex i := by
   rw [← spine_vertex, spine_spineToSimplex_apply]
 
@@ -262,7 +262,7 @@ lemma isStrictSegal (sx : StrictSegal X) : IsStrictSegal X where
 
 @[simp]
 theorem spineToSimplex_vertex (i : Fin (n + 1)) (f : Path X n) :
-    X.map (SimplexCategory.const [0] [n] i).op (sx.spineToSimplex f) =
+    X.map (SimplexCategory.const ⦋0⦌ ⦋n⦌ i).op (sx.spineToSimplex f) =
       f.vertex i := by
   rw [← spine_vertex, spine_spineToSimplex_apply]
 

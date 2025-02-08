@@ -71,9 +71,9 @@ lemma ext {n d : ℕ} (x y : Δ[n] _[d]) (h : ∀ (i : Fin (d + 1)), x i = y i) 
 
 @[simp]
 lemma objEquiv_toOrderHom_apply {n i : ℕ}
-    (x : (stdSimplex.{u} _[n]).obj (op (.mk i))) (j : Fin (i + 1)) :
+    (x : (stdSimplex.{u} ^[n]).obj (op (.mk i))) (j : Fin (i + 1)) :
     DFunLike.coe (F := Fin (i + 1) →o Fin (n + 1))
-      ((DFunLike.coe (F := Δ[n].obj (op [i]) ≃ (([i] : SimplexCategory) ⟶ [n]))
+      ((DFunLike.coe (F := Δ[n].obj (op ⦋i⦌) ≃ (⦋i⦌ ⟶ ⦋n⦌))
         objEquiv x)).toOrderHom j = x j :=
   rfl
 
@@ -292,7 +292,7 @@ namespace Augmented
 
 -- Porting note: an instance of `Subsingleton (⊤_ (Type u))` was added in
 -- `CategoryTheory.Limits.Types` to ease the automation in this definition
-/-- The functor which sends `[n]` to the simplicial set `Δ[n]` equipped by
+/-- The functor which sends `⦋n⦌` to the simplicial set `Δ[n]` equipped by
 the obvious augmentation towards the terminal object of the category of sets. -/
 @[simps]
 noncomputable def stdSimplex : SimplexCategory ⥤ SSet.Augmented.{u} where

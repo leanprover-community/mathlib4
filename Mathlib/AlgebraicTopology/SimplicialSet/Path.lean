@@ -129,7 +129,7 @@ variable {n : ℕ} (X : SSet.Truncated.{u} (n + 1))
 formed by traversing in order through its vertices. -/
 def spine (m : ℕ) (h : m ≤ n + 1 := by omega) (Δ : X.obj (op ⟨.mk m, h⟩)) :
     Path X m where
-  vertex i := X.map (tr (SimplexCategory.const [0] [m] i)).op Δ
+  vertex i := X.map (tr (SimplexCategory.const ⦋0⦌ ⦋m⦌ i)).op Δ
   arrow i := X.map (tr (mkOfSucc i)).op Δ
   arrow_src i := by
     dsimp only [tr, trunc, SimplicialObject.Truncated.trunc, incl,
@@ -154,7 +154,7 @@ variable (m : ℕ) (hₘ : m ≤ n + 1)
 @[simp]
 lemma spine_vertex (Δ : X.obj (op ⟨.mk m, hₘ⟩)) (i : Fin (m + 1)) :
     (X.spine m hₘ Δ).vertex i =
-      X.map (tr (SimplexCategory.const [0] [m] i)).op Δ :=
+      X.map (tr (SimplexCategory.const ⦋0⦌ ⦋m⦌ i)).op Δ :=
   rfl
 
 /- We write this lemma manually to ensure it refers to `Path.arrow`. -/
@@ -195,11 +195,11 @@ namespace Path
 variable {X : SSet.{u}} {n : ℕ}
 
 /-- A path includes the data of `n + 1` 0-simplices in `X`. -/
-abbrev vertex (f : Path X n) (i : Fin (n + 1)) : X.obj (op [0]) :=
+abbrev vertex (f : Path X n) (i : Fin (n + 1)) : X.obj (op ⦋0⦌) :=
   Truncated.Path.vertex f i
 
 /-- A path includes the data of `n` 1-simplices in `X`. -/
-abbrev arrow (f : Path X n) (i : Fin n) : X.obj (op [1]) :=
+abbrev arrow (f : Path X n) (i : Fin n) : X.obj (op ⦋1⦌) :=
   Truncated.Path.arrow f i
 
 /-- The source of a 1-simplex in a path is identified with the source vertex. -/
@@ -235,12 +235,12 @@ def map (f : Path X n) (σ : X ⟶ Y) : Path Y n :=
 
 @[simp]
 lemma map_vertex (f : Path X n) (σ : X ⟶ Y) (i : Fin (n + 1)) :
-    (f.map σ).vertex i = σ.app (op [0]) (f.vertex i) :=
+    (f.map σ).vertex i = σ.app (op ⦋0⦌) (f.vertex i) :=
   rfl
 
 @[simp]
 lemma map_arrow (f : Path X n) (σ : X ⟶ Y) (i : Fin n) :
-    (f.map σ).arrow i = σ.app (op [1]) (f.arrow i) :=
+    (f.map σ).arrow i = σ.app (op ⦋1⦌) (f.arrow i) :=
   rfl
 
 /-- `Path.map` respects subintervals of paths. -/
@@ -261,7 +261,7 @@ def spine : X _[n] → Path X n :=
 
 @[simp]
 lemma spine_vertex (Δ : X _[n]) (i : Fin (n + 1)) :
-    (X.spine n Δ).vertex i = X.map (SimplexCategory.const [0] [n] i).op Δ :=
+    (X.spine n Δ).vertex i = X.map (SimplexCategory.const ⦋0⦌ ⦋n⦌ i).op Δ :=
   rfl
 
 @[simp]
@@ -276,7 +276,7 @@ lemma truncation_spine (m : ℕ) (h : m ≤ n + 1) :
   rfl
 
 lemma spine_map_vertex (Δ : X _[n]) {m : ℕ}
-    (φ : ([m] : SimplexCategory) ⟶ [n]) (i : Fin (m + 1)) :
+    (φ : ⦋m⦌ ⟶ ⦋n⦌) (i : Fin (m + 1)) :
     (X.spine m (X.map φ.op Δ)).vertex i =
       (X.spine n Δ).vertex (φ.toOrderHom i) :=
   truncation (max m n + 1) |>.obj X
