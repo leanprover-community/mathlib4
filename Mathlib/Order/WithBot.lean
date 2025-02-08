@@ -177,12 +177,14 @@ section LE
 
 variable [LE α]
 
-instance (priority := 10) le : LE (WithBot α) :=
-  ⟨fun o₁ o₂ => ∀ a : α, o₁ = ↑a → ∃ b : α, o₂ = ↑b ∧ a ≤ b⟩
+def le (o₁ o₂ : WithBot α) := ∀ a : α, o₁ = ↑a → ∃ b : α, o₂ = ↑b ∧ a ≤ b
+
+instance (priority := 10) : LE (WithBot α) :=
+  ⟨le⟩
 
 @[simp, norm_cast]
 theorem coe_le_coe : (a : WithBot α) ≤ b ↔ a ≤ b := by
-  simp [LE.le]
+  simp [LE.le, le]
 
 instance orderBot : OrderBot (WithBot α) where
   bot_le _ := fun _ h => Option.noConfusion h
@@ -249,12 +251,13 @@ section LT
 
 variable [LT α]
 
-instance (priority := 10) lt : LT (WithBot α) :=
-  ⟨fun o₁ o₂ : WithBot α => ∃ b : α, o₂ = ↑b ∧ ∀ a : α, o₁ = ↑a → a < b⟩
+def lt (o₁ o₂ : WithBot α) := ∃ b : α, o₂ = ↑b ∧ ∀ a : α, o₁ = ↑a → a < b
+
+instance (priority := 10) : LT (WithBot α) := ⟨lt⟩
 
 @[simp, norm_cast]
 theorem coe_lt_coe : (a : WithBot α) < b ↔ a < b := by
-  simp [LT.lt]
+  simp [LT.lt, lt]
 
 @[simp]
 theorem bot_lt_coe (a : α) : ⊥ < (a : WithBot α) :=
@@ -312,11 +315,11 @@ theorem unbot'_lt_iff {a : WithBot α} {b c : α} (h : a = ⊥ → b < c) :
 end LT
 
 instance preorder [Preorder α] : Preorder (WithBot α) where
-  le := (· ≤ ·)
-  lt := (· < ·)
+  le := le
+  lt := lt
   lt_iff_le_not_le := by
     intros a b
-    cases a <;> cases b <;> simp [lt_iff_le_not_le]
+    cases a <;> cases b <;> simp [le, lt, lt_iff_le_not_le]
   le_refl _ a ha := ⟨a, ha, le_rfl⟩
   le_trans _ _ _ h₁ h₂ a ha :=
     let ⟨b, hb, ab⟩ := h₁ a ha
@@ -767,8 +770,9 @@ section LE
 
 variable [LE α]
 
-instance (priority := 10) le : LE (WithTop α) :=
-  ⟨fun o₁ o₂ => ∀ a : α, o₂ = ↑a → ∃ b : α, o₁ = ↑b ∧ b ≤ a⟩
+def le (o₁ o₂ : WithTop α) := ∀ a : α, o₂ = ↑a → ∃ b : α, o₁ = ↑b ∧ b ≤ a
+
+instance (priority := 10) : LE (WithTop α) := ⟨le⟩
 
 theorem toDual_le_iff {a : WithTop α} {b : WithBot αᵒᵈ} :
     WithTop.toDual a ≤ b ↔ WithBot.ofDual b ≤ a :=
@@ -825,8 +829,8 @@ protected theorem top_le_iff : ∀ {a : WithTop α}, ⊤ ≤ a ↔ a = ⊤
   | (a : α) => by simp [not_top_le_coe _]
   | ⊤ => by simp
 
-theorem le_coe : ∀ {o : Option α}, a ∈ o → (@LE.le (WithTop α) _ o b ↔ a ≤ b)
-  | _, rfl => coe_le_coe
+theorem le_coe {x : WithTop α} : ↑a = x → (x ≤ b ↔ a ≤ b)
+  | rfl => coe_le_coe
 
 theorem le_coe_iff {x : WithTop α} : x ≤ b ↔ ∃ a : α, x = a ∧ a ≤ b :=
   @WithBot.coe_le_iff (αᵒᵈ) _ _ (toDual x)
@@ -858,8 +862,9 @@ section LT
 
 variable [LT α]
 
-instance (priority := 10) lt : LT (WithTop α) :=
-  ⟨fun o₁ o₂ : Option α => ∃ b ∈ o₁, ∀ a ∈ o₂, b < a⟩
+def lt (o₁ o₂ : WithTop α) := ∃ b : α, o₁ = ↑b ∧ ∀ a : α, o₂ = ↑a → b < a
+
+instance (priority := 10) : LT (WithTop α) := ⟨lt⟩
 
 theorem toDual_lt_iff {a : WithTop α} {b : WithBot αᵒᵈ} :
     WithTop.toDual a < b ↔ WithBot.ofDual b < a :=
@@ -1085,8 +1090,8 @@ protected theorem lt_top_iff_ne_top {x : WithTop α} : x < ⊤ ↔ x ≠ ⊤ :=
 end LT
 
 instance preorder [Preorder α] : Preorder (WithTop α) where
-  le := (· ≤ ·)
-  lt := (· < ·)
+  le := le
+  lt := lt
   lt_iff_le_not_le := @lt_iff_le_not_le (WithBot αᵒᵈ)ᵒᵈ _
   le_refl := @le_refl (WithBot αᵒᵈ)ᵒᵈ _
   le_trans := @le_trans (WithBot αᵒᵈ)ᵒᵈ _
