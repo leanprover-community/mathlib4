@@ -179,8 +179,7 @@ variable [LE α]
 
 def le (o₁ o₂ : WithBot α) := ∀ a : α, o₁ = ↑a → ∃ b : α, o₂ = ↑b ∧ a ≤ b
 
-instance (priority := 10) : LE (WithBot α) :=
-  ⟨le⟩
+instance (priority := 10) : LE (WithBot α) := ⟨le⟩
 
 @[simp, norm_cast]
 theorem coe_le_coe : (a : WithBot α) ≤ b ↔ a ≤ b := by

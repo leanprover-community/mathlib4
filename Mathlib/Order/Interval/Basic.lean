@@ -274,7 +274,7 @@ variable [LE α]
 
 -- Porting note: previously found using `deriving`
 instance : Inhabited (Interval α) := WithBot.inhabited
-instance : LE (Interval α) := WithBot.le
+instance : LE (Interval α) := WithBot.instLE
 instance : OrderBot (Interval α) := WithBot.orderBot
 
 instance : Coe (NonemptyInterval α) (Interval α) :=
