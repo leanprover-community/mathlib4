@@ -170,39 +170,32 @@ instance : HImp (Nucleus X) where
       simp only [ge_iff_le, le_himp_iff, iInf_inf, iInf_le_iff, le_inf_iff, le_iInf_iff]
       intro b1 h2
       rcases h2 j with ⟨h3, h4⟩
-      exact le_trans (by simp[h4]) (h3 (by exact hj))
-    map_inf' i j := by
-      apply le_antisymm
-      · simp only [ge_iff_le, iInf_inf, le_iInf_iff, le_inf_iff, le_himp_iff, iInf_le_iff]
-        refine fun k ↦ ⟨fun h1 f h2 ↦ ?_, fun k h1 f h2 ↦ ?_⟩
-        all_goals rcases h2 k with ⟨h2_1, h2_2⟩;
-        all_goals refine le_trans (inf_of_le_left h2_2).ge (h2_1 ?_)
-        · exact inf_le_of_left_le h1
-        · exact inf_le_of_right_le h1
-      · simp only [ge_iff_le, iInf_inf, le_iInf_iff, le_himp_iff, iInf_le_iff, le_inf_iff]
-        intro k h2 l h3
-        have h8 : k = (i ⊔ k) ⊓ (j ⊔ k) := by simp [inf_sup_left, inf_sup_right, h2]
-        rw [h8, map_inf, le_inf_iff]
-        rcases h3 (i ⊔ k) with ⟨⟨h4, h5⟩, h7⟩
-        apply And.intro
-        · apply le_trans' (h4 le_sup_left)
-          simp only [le_inf_iff, le_refl, true_and]
-          exact Preorder.le_trans _ _ _ h7 (by gcongr; simp)
-        · apply le_trans' (h5 (j ⊔ k) le_sup_left)
-          simp only [le_inf_iff, le_refl, true_and]
-          exact Preorder.le_trans _ _ _ h7 (by gcongr; simp)
+      exact le_trans (by simp [h4]) (h3 (by exact hj))
+    map_inf' x y := by
+      simp only [and_assoc, le_antisymm_iff, le_inf_iff, le_iInf_iff]
+      refine ⟨fun z hxz ↦ iInf₂_le _ <| inf_le_of_left_le hxz,
+        fun z hyz ↦ iInf₂_le _ <| inf_le_of_right_le hyz, ?_⟩
+      have : Nonempty X := ⟨x⟩
+      simp only [iInf_inf, le_iInf_iff, le_himp_iff, iInf_le_iff, le_inf_iff, forall_and,
+        forall_const, and_imp]
+      intro k hxyk l hlx hly hlk
+      calc
+        l = (l ⊓ m (x ⊔ k)) ⊓ (l ⊓ m (y ⊔ k)) := by
+          rw [← inf_inf_distrib_left, ← map_inf, ← sup_inf_right, sup_eq_right.2 hxyk,
+            inf_eq_left.2 hlk]
+        _ ≤ n (x ⊔ k) ⊓ n (y ⊔ k) := by
+          gcongr; exacts [hlx (x ⊔ k) le_sup_left, hly (y ⊔ k) le_sup_left]
+        _ = n k := by rw [← map_inf, ← sup_inf_right, sup_eq_right.2 hxyk]
     le_apply' := by
-      simp only [ge_iff_le, le_iInf_iff, le_himp_iff]
-      refine fun _ _ h ↦ inf_le_of_left_le (le_trans h n.le_apply)}
+      simp only [le_iInf_iff, le_himp_iff]
+      exact fun _ _ h ↦ inf_le_of_left_le <| h.trans n.le_apply }
 
 @[simp] theorem himp_apply (m n : Nucleus X) (x : X) : (m ⇨ n) x = ⨅ y ≥ x, m y ⇨ n y := rfl
 
 instance : HeytingAlgebra (Nucleus X) where
   le_himp_iff _ n _ := by
-    simp [← coe_le_coe, Pi.le_def]
-    exact ⟨fun h i ↦ h i i le_rfl,
-      fun h1 i j _ ↦ le_trans (inf_le_inf_right (n j) (by gcongr)) (h1 j)⟩
-  compl m := m ⇨ ⊥
+    simpa [← coe_le_coe, Pi.le_def]
+      using ⟨fun h i ↦ h i i le_rfl, fun h i j _ ↦ (h j).trans' <| by gcongr⟩
   himp_bot m := rfl
 
 instance : Order.Frame (Nucleus X) where
