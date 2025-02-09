@@ -445,6 +445,7 @@ section StarOrderedRing
 
 variable {𝕜 : Type*} [CommRing 𝕜] [StarRing 𝕜]
 
+/-- Notation for `Sum.elim`, scoped within the `Matrix` namespace. -/
 scoped infixl:65 " ⊕ᵥ " => Sum.elim
 
 theorem schur_complement_eq₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A : Matrix m m 𝕜}

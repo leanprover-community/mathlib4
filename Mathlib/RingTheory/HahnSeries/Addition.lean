@@ -3,9 +3,10 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.RingTheory.HahnSeries.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.RingTheory.HahnSeries.Basic
 
 /-!
 # Additive properties of Hahn series
@@ -26,7 +27,7 @@ open Finset Function
 
 noncomputable section
 
-variable {Γ Γ' R S U V : Type*}
+variable {Γ Γ' R S U V α : Type*}
 
 namespace HahnSeries
 
@@ -233,11 +234,24 @@ end Domain
 
 end AddMonoid
 
-instance [AddCommMonoid R] : AddCommMonoid (HahnSeries Γ R) :=
+section AddCommMonoid
+
+variable [AddCommMonoid R]
+
+instance : AddCommMonoid (HahnSeries Γ R) :=
   { inferInstanceAs (AddMonoid (HahnSeries Γ R)) with
     add_comm := fun x y => by
       ext
       apply add_comm }
+
+open BigOperators
+
+@[simp]
+theorem coeff_sum {s : Finset α} {x : α → HahnSeries Γ R} (g : Γ) :
+    (∑ i ∈ s, x i).coeff g = ∑ i ∈ s, (x i).coeff g :=
+  cons_induction rfl (fun i s his hsum => by rw [sum_cons, sum_cons, add_coeff, hsum]) s
+
+end AddCommMonoid
 
 section AddGroup
 

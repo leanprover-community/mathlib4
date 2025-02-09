@@ -53,7 +53,7 @@ topological space which satisfies `CompactSpace` and `T2Space`.
 We also add wrappers around structures which already exist. Here are the main ones, all in the
 `Compactum` namespace:
 
-- `forget : Compactum ⥤ Type*` is the forgetful functor, which induces a `ConcreteCategory`
+- `forget : Compactum ⥤ Type*` is the forgetful functor, which induces a `HasForget`
   instance for `Compactum`.
 - `free : Type* ⥤ Compactum` is the left adjoint to `forget`, and the adjunction is in `adj`.
 - `str : Ultrafilter X → X` is the structure map for `X : Compactum`.
@@ -102,7 +102,7 @@ def adj : free ⊣ forget :=
   Monad.adj _
 
 -- Basic instances
-instance : ConcreteCategory Compactum where forget := forget
+instance : HasForget Compactum where forget := forget
 
 -- Porting note: changed from forget to X.A
 instance : CoeSort Compactum Type* :=

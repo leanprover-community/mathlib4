@@ -18,6 +18,8 @@ assumptions on `p`. The `p`-adic valuations on `ℕ` and `ℤ` agree with that o
 The valuation induces a norm on `ℚ`. This norm is defined in padicNorm.lean.
 -/
 
+assert_not_exists Field
+
 universe u
 
 open Nat

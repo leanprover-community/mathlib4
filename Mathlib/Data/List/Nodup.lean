@@ -122,7 +122,7 @@ theorem not_nodup_of_get_eq_of_ne (xs : List α) (n m : Fin xs.length)
 
 theorem indexOf_getElem [DecidableEq α] {l : List α} (H : Nodup l) (i : Nat) (h : i < l.length) :
     indexOf l[i] l = i :=
-  suffices (⟨indexOf l[i] l, indexOf_lt_length.2 (getElem_mem _)⟩ : Fin l.length) = ⟨i, h⟩
+  suffices (⟨indexOf l[i] l, indexOf_lt_length_iff.2 (getElem_mem _)⟩ : Fin l.length) = ⟨i, h⟩
     from Fin.val_eq_of_eq this
   nodup_iff_injective_get.1 H (by simp)
 

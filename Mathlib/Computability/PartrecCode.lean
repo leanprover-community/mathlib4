@@ -32,6 +32,7 @@ of some code.
 * `Nat.Partrec.Code.exists_code`: Partial recursiveness is equivalent to being the eval of a code.
 * `Nat.Partrec.Code.evaln_prim`: `evaln` is primitive recursive.
 * `Nat.Partrec.Code.fixed_point`: Roger's fixed point theorem.
+* `Nat.Partrec.Code.fixed_point₂`: Kleene's second recursion theorem.
 
 ## References
 
@@ -198,16 +199,10 @@ theorem encode_lt_prec (cf cg) :
 
 theorem encode_lt_rfind' (cf) : encode cf < encode (rfind' cf) := by
   simp only [encodeCode_eq, encodeCode]
-  have := Nat.mul_le_mul_right cf.encodeCode (by decide : 1 ≤ 2 * 2)
-  rw [one_mul, mul_assoc] at this
-  refine lt_of_le_of_lt (le_trans this ?_) (lt_add_of_pos_right _ (by decide : 0 < 4))
-  exact le_of_lt (Nat.lt_succ_of_le <| Nat.mul_le_mul_left _ <| le_of_lt <|
-    Nat.lt_succ_of_le <| Nat.mul_le_mul_left _ <| le_rfl)
+  omega
 
 end Nat.Partrec.Code
 
--- Porting note: Opening `Primrec` inside `namespace Nat.Partrec.Code` causes it to resolve
--- to `Nat.Partrec`. Needs `open _root_.Partrec` support
 section
 open Primrec
 namespace Nat.Partrec.Code
@@ -557,7 +552,6 @@ theorem exists_code {f : ℕ →. ℕ} : Nat.Partrec f ↔ ∃ c : Code, eval c 
     | prec cf cg pf pg => exact pf.prec pg
     | rfind' cf pf => exact pf.rfind'
 
--- Porting note: `>>`s in `evaln` are now `>>=` because `>>`s are not elaborated well in Lean4.
 /-- A modified evaluation for the code which returns an `Option ℕ` instead of a `Part ℕ`. To avoid
 undecidability, `evaln` takes a parameter `k` and fails if it encounters a number ≥ k in the course
 of its execution. Other than this, the semantics are the same as in `Nat.Partrec.Code.eval`.
@@ -986,9 +980,9 @@ theorem eval_part : Partrec₂ eval :=
     (evaln_prim.to_comp.comp ((Computable.snd.pair (fst.comp fst)).pair (snd.comp fst))).to₂).of_eq
     fun a => by simp [eval_eq_rfindOpt]
 
-/-- Roger's fixed-point theorem: Any total, computable `f` has a fixed point: That is, under the
-interpretation given by `Nat.Partrec.Code.eval`, there is a code `c` such that `c` and `f c` have
-the same evaluation.
+/-- **Roger's fixed-point theorem**: any total, computable `f` has a fixed point.
+That is, under the interpretation given by `Nat.Partrec.Code.eval`, there is a code `c`
+such that `c` and `f c` have the same evaluation.
 -/
 theorem fixed_point {f : Code → Code} (hf : Computable f) : ∃ c : Code, eval (f c) = eval c :=
   let g (x y : ℕ) : Part ℕ := eval (ofNat Code x) x >>= fun b => eval (ofNat Code b) y
@@ -1007,6 +1001,7 @@ theorem fixed_point {f : Code → Code} (hf : Computable f) : ∃ c : Code, eval
       show eval (f (curry cg (encode cF))) n = eval (curry cg (encode cF)) n by
         simp [F, g, eg', eF', Part.map_id']⟩
 
+/-- **Kleene's second recursion theorem** -/
 theorem fixed_point₂ {f : Code → ℕ →. ℕ} (hf : Partrec₂ f) : ∃ c : Code, eval c = f c :=
   let ⟨cf, ef⟩ := exists_code.1 hf
   (fixed_point (curry_prim.comp (_root_.Primrec.const cf) Primrec.encode).to_comp).imp fun c e =>

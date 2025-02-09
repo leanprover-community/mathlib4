@@ -3,7 +3,7 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury, Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.PerfectPairing
+import Mathlib.LinearAlgebra.PerfectPairing.Basic
 import Mathlib.LinearAlgebra.Reflection
 
 /-!
@@ -149,6 +149,33 @@ protected def flip : RootPairing ι R N M :=
 @[simp]
 lemma flip_flip : P.flip.flip = P :=
   rfl
+
+variable (ι R M N) in
+/-- `RootPairing.flip` as an equivalence. -/
+@[simps] def flipEquiv : RootPairing ι R N M ≃ RootPairing ι R M N where
+  toFun P := P.flip
+  invFun P := P.flip
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+/-- If we interchange the roles of `M` and `N`, we still have a root system. -/
+protected def _root_.RootSystem.flip (P : RootSystem ι R M N) : RootSystem ι R N M :=
+  { toRootPairing := P.toRootPairing.flip
+    span_root_eq_top := P.span_coroot_eq_top
+    span_coroot_eq_top := P.span_root_eq_top }
+
+@[simp]
+protected lemma _root_.RootSystem.flip_flip (P : RootSystem ι R M N) :
+    P.flip.flip = P :=
+  rfl
+
+variable (ι R M N) in
+/-- `RootSystem.flip` as an equivalence. -/
+@[simps] def _root_.RootSystem.flipEquiv : RootSystem ι R N M ≃ RootSystem ι R M N where
+  toFun P := P.flip
+  invFun P := P.flip
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 /-- Roots written as functionals on the coweight space. -/
 abbrev root' (i : ι) : Dual R N := P.toPerfectPairing (P.root i)
@@ -353,22 +380,60 @@ lemma pairing_reflection_perm_self_right (i j : ι) :
     sub_add_cancel_left, ← toLin_toPerfectPairing, map_neg, toLin_toPerfectPairing,
     root_coroot_eq_pairing]
 
+/-- If `R` is an `S`-algebra, a root pairing over `R` is said to be valued in `S` if the pairing
+between a root and coroot always belongs to `S`.
+
+Of particular interest is the case `S = ℤ`. See `RootPairing.IsCrystallographic`. -/
+@[mk_iff]
+class IsValuedIn (S : Type*) [CommRing S] [Algebra S R] : Prop where
+  exists_value : ∀ i j, ∃ s, algebraMap S R s = P.pairing i j
+
+protected alias exists_value := IsValuedIn.exists_value
+
 /-- A root pairing is said to be crystallographic if the pairing between a root and coroot is
 always an integer. -/
-class IsCrystallographic : Prop where
-  exists_int : ∀ i j, ∃ z : ℤ, z = P.pairing i j
+abbrev IsCrystallographic := P.IsValuedIn ℤ
 
-protected lemma exists_int [P.IsCrystallographic] (i j : ι) :
-    ∃ z : ℤ, z = P.pairing i j :=
-  IsCrystallographic.exists_int i j
+section IsValuedIn
 
-lemma isCrystallographic_iff :
-    P.IsCrystallographic ↔ ∀ i j, ∃ z : ℤ, z = P.pairing i j :=
-  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+instance : P.IsValuedIn R where
+  exists_value i j := by simp
 
-instance [P.IsCrystallographic] : P.flip.IsCrystallographic := by
-  rw [isCrystallographic_iff, forall_comm]
-  exact P.exists_int
+variable (S : Type*) [CommRing S] [Algebra S R]
+
+variable {S} in
+lemma isValuedIn_iff_mem_range :
+    P.IsValuedIn S ↔ ∀ i j, P.pairing i j ∈ range (algebraMap S R) := by
+  simp only [isValuedIn_iff, mem_range]
+
+instance : P.IsValuedIn R where
+  exists_value := by simp
+
+instance [P.IsValuedIn S] : P.flip.IsValuedIn S := by
+  rw [isValuedIn_iff, forall_comm]
+  exact P.exists_value
+
+/-- A variant of `RootPairing.pairing` for root pairings which are valued in a smaller set of
+coefficients.
+
+Note that it is uniquely-defined only when the map `S → R` is injective, i.e., when we have
+`[NoZeroSMulDivisors S R]`. -/
+def pairingIn [P.IsValuedIn S] (i j : ι) : S :=
+  (P.exists_value i j).choose
+
+@[simp]
+lemma algebraMap_pairingIn [P.IsValuedIn S] (i j : ι) :
+    algebraMap S R (P.pairingIn S i j) = P.pairing i j :=
+  (P.exists_value i j).choose_spec
+
+lemma IsValuedIn.trans (T : Type*) [CommRing T] [Algebra T S] [Algebra T R] [IsScalarTower T S R]
+    [P.IsValuedIn T] :
+    P.IsValuedIn S where
+  exists_value i j := by
+    use algebraMap T S (P.pairingIn T i j)
+    simp [← RingHom.comp_apply, ← IsScalarTower.algebraMap_eq T S R]
+
+end IsValuedIn
 
 /-- A root pairing is said to be reduced if any linearly dependent pair of roots is related by a
 sign. -/
@@ -384,6 +449,26 @@ lemma isReduced_iff : P.IsReduced ↔ ∀ i j : ι, i ≠ j →
   · by_cases h' : i = j
     · exact Or.inl (congrArg P.root h')
     · exact Or.inr (h i j h' hLin)
+
+variable {P} in
+lemma smul_coroot_eq_of_root_eq_smul [Finite ι] [NoZeroSMulDivisors ℤ N] (i j : ι) (t : R)
+    (h : P.root j = t • P.root i) :
+    t • P.coroot j = P.coroot i := by
+  have hij : t * P.pairing i j = 2 := by simpa using ((P.coroot' j).congr_arg h).symm
+  refine Module.eq_of_mapsTo_reflection_of_mem (f := P.root' i) (g := P.root' i)
+    (finite_range P.coroot) (by simp [hij]) (by simp) (by simp [hij]) (by simp) ?_
+    (P.mapsTo_coreflection_coroot i) (mem_range_self i)
+  convert P.mapsTo_coreflection_coroot j
+  ext x
+  replace h : P.root' j = t • P.root' i := by ext; simp [h, root']
+  simp [Module.preReflection_apply, coreflection_apply, h, smul_comm _ t, mul_smul]
+
+variable {P} in
+@[simp] lemma coroot_eq_smul_coroot_iff [Finite ι] [NoZeroSMulDivisors ℤ M] [NoZeroSMulDivisors ℤ N]
+    {i j : ι} {t : R} :
+    P.coroot i = t • P.coroot j ↔ P.root j = t • P.root i :=
+  ⟨fun h ↦ (P.flip.smul_coroot_eq_of_root_eq_smul j i t h).symm,
+    fun h ↦ (P.smul_coroot_eq_of_root_eq_smul i j t h).symm⟩
 
 /-- The linear span of roots. -/
 abbrev rootSpan := span R (range P.root)
@@ -493,11 +578,18 @@ def coxeterWeight : R := pairing P i j * pairing P j i
 lemma coxeterWeight_swap : coxeterWeight P i j = coxeterWeight P j i := by
   simp only [coxeterWeight, mul_comm]
 
-lemma exists_int_eq_coxeterWeight [P.IsCrystallographic] (i j : ι) :
-    ∃ z : ℤ, P.coxeterWeight i j = z := by
-  obtain ⟨a, ha⟩ := P.exists_int i j
-  obtain ⟨b, hb⟩ := P.exists_int j i
-  exact ⟨a * b, by simp [coxeterWeight, ha, hb]⟩
+/-- A variant of `RootPairing.coxeterWeight` for root pairings which are valued in a smaller set of
+coefficients.
+
+Note that it is uniquely-defined only when the map `S → R` is injective, i.e., when we have
+`[NoZeroSMulDivisors S R]`. -/
+def coxeterWeightIn (S : Type*) [CommRing S] [Algebra S R] [P.IsValuedIn S] (i j : ι) : S :=
+  P.pairingIn S i j * P.pairingIn S j i
+
+@[simp] lemma algebraMap_coxeterWeightIn (S : Type*) [CommRing S] [Algebra S R] [P.IsValuedIn S]
+    (i j : ι) :
+    algebraMap S R (P.coxeterWeightIn S i j) = P.coxeterWeight i j := by
+  simp [coxeterWeightIn, coxeterWeight]
 
 /-- Two roots are orthogonal when they are fixed by each others' reflections. -/
 def IsOrthogonal : Prop := pairing P i j = 0 ∧ pairing P j i = 0

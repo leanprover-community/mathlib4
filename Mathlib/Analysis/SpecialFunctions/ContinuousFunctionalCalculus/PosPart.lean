@@ -264,8 +264,8 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
           zero_add]
       map_star' := fun f ↦ by simp [← map_star] }
   have key : (cfcₙHomSuperset ha has) = ψ :=
-    have : UniqueNonUnitalContinuousFunctionalCalculus ℝ A := inferInstance
-    UniqueNonUnitalContinuousFunctionalCalculus.eq_of_continuous_of_map_id s rfl
+    have : ContinuousMapZero.UniqueHom ℝ A := inferInstance
+    ContinuousMapZero.UniqueHom.eq_of_continuous_of_map_id s rfl
     (cfcₙHomSuperset ha has) ψ (cfcₙHomSuperset_continuous ha has)
     ((cfcₙHomSuperset_continuous hb' hbs).add (cfcₙHomSuperset_continuous hc' hcs))
     (by simpa [zero, ψ, -cfcₙHomSuperset_apply, cfcₙHomSuperset_id, sub_eq_add_neg] using habc)

@@ -46,7 +46,7 @@ def FGModuleCat :=
   FullSubcategory fun V : ModuleCat.{u} R => Module.Finite R V
 -- Porting note: still no derive handler via `dsimp`.
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
--- deriving LargeCategory, ConcreteCategory,Preadditive
+-- deriving LargeCategory, HasForget,Preadditive
 
 variable {R}
 
@@ -72,7 +72,7 @@ instance : LargeCategory (FGModuleCat R) := by
   dsimp [FGModuleCat]
   infer_instance
 
-instance : ConcreteCategory (FGModuleCat R) := by
+instance : HasForget (FGModuleCat R) := by
   dsimp [FGModuleCat]
   infer_instance
 

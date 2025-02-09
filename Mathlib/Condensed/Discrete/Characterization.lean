@@ -33,7 +33,7 @@ universe u
 
 open CategoryTheory Limits Functor FintypeCat
 
-attribute [local instance] ConcreteCategory.instFunLike
+attribute [local instance] HasForget.instFunLike
 
 namespace Condensed
 

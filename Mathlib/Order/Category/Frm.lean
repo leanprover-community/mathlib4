@@ -56,11 +56,11 @@ instance bundledHom : BundledHom Hom where
   comp _ _ _ := FrameHom.comp
   hom_ext _ _ := DFunLike.coe_injective
 
--- Porting note: Originally `deriving instance LargeCategory, ConcreteCategory for Frm`
+-- Porting note: Originally `deriving instance LargeCategory, HasForget for Frm`
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
 deriving instance LargeCategory, Category for Frm
 
-instance : ConcreteCategory Frm := by
+instance : HasForget Frm := by
   unfold Frm
   infer_instance
 

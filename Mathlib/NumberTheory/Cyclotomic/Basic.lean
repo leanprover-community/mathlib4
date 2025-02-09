@@ -301,7 +301,7 @@ protected theorem finite [IsDomain B] [h₁ : Finite S] [h₂ : IsCyclotomicExte
     Module.Finite A B := by
   cases' nonempty_fintype S with h
   revert h₂ A B
-  refine Set.Finite.induction_on h₁ (fun A B => ?_) @fun n S _ _ H A B => ?_
+  refine Set.Finite.induction_on _ h₁ (fun A B => ?_) @fun n S _ _ H A B => ?_
   · intro _ _ _ _ _
     refine Module.finite_def.2 ⟨({1} : Finset B), ?_⟩
     simp [← top_toSubmodule, ← empty, toSubmodule_bot, Submodule.one_eq_span]

@@ -19,13 +19,13 @@ Further, we prove that the functor `lim : Discrete ℕ ⥤ LightCondMod R` prese
 
 universe v u w u' v'
 
-open CategoryTheory Sheaf Limits ConcreteCategory GrothendieckTopology
+open CategoryTheory Sheaf Limits HasForget GrothendieckTopology
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
+attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike
 
 namespace LightCondensed
 
-variable (A : Type u') [Category.{v'} A] [ConcreteCategory.{w} A]
+variable (A : Type u') [Category.{v'} A] [HasForget.{w} A]
   [PreservesFiniteProducts (CategoryTheory.forget A)]
 
 variable {X Y : LightCondensed.{u} A} (f : X ⟶ Y)

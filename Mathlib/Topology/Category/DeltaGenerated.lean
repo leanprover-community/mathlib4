@@ -41,8 +41,8 @@ attribute [instance] deltaGenerated
 instance : LargeCategory.{u} DeltaGenerated.{u} :=
   InducedCategory.category toTop
 
-instance : ConcreteCategory.{u} DeltaGenerated.{u} :=
-  InducedCategory.concreteCategory _
+instance : HasForget.{u} DeltaGenerated.{u} :=
+  InducedCategory.hasForget _
 
 /-- Constructor for objects of the category `DeltaGenerated` -/
 def of (X : Type u) [TopologicalSpace X] [DeltaGeneratedSpace X] : DeltaGenerated.{u} where

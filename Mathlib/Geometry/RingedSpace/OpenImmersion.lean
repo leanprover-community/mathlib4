@@ -718,7 +718,7 @@ end Pullback
 
 section OfStalkIso
 
-variable [HasLimits C] [HasColimits C] [ConcreteCategory C]
+variable [HasLimits C] [HasColimits C] [HasForget C]
 variable [(CategoryTheory.forget C).ReflectsIsomorphisms]
   [PreservesLimits (CategoryTheory.forget C)]
 

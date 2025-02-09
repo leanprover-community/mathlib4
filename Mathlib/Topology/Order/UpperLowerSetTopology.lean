@@ -253,6 +253,9 @@ interval (-∞,a].
   rw [closure_eq_lowerClosure, lowerClosure_singleton]
   rfl
 
+lemma specializes_iff_le {a b : α} : a ⤳ b ↔ b ≤ a := by
+  simp only [specializes_iff_closure_subset, closure_singleton, Iic_subset_Iic]
+
 end Preorder
 
 section maps

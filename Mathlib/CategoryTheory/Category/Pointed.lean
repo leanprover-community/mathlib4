@@ -82,7 +82,7 @@ instance largeCategory : LargeCategory Pointed where
 @[simp] lemma Hom.comp_toFun' {X Y Z : Pointed.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).toFun = g.toFun ∘ f.toFun := rfl
 
-instance concreteCategory : ConcreteCategory Pointed where
+instance hasForget : HasForget Pointed where
   forget :=
     { obj := Pointed.X
       map := @Hom.toFun }

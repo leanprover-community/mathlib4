@@ -1434,6 +1434,50 @@ theorem prod_unique_nonempty {α β : Type*} [CommMonoid β] [Unique α] (s : Fi
     (h : s.Nonempty) : ∏ x ∈ s, f x = f default := by
   rw [h.eq_singleton_default, Finset.prod_singleton]
 
+section Image_Overlap
+
+variable {α β ι : Type*} [DecidableEq ι] [DecidableEq α]
+
+@[to_additive]
+lemma prod_filter_of_pairwise_eq_one [CommMonoid β] {f : ι → α} {g : α → β} {n : ι} {I : Finset ι}
+    (hn : n ∈ I) (hf : (I : Set ι).Pairwise fun i j ↦ f i = f j → g (f i) = 1) :
+    ∏ j ∈ filter (fun j ↦ f j = f n) I, g (f j) = g (f n) := by
+  have h j (hj : j ∈ (filter (fun i ↦ f i = f n) I).erase n) : g (f j) = 1 := by
+    simp only [mem_erase, mem_filter] at hj
+    exact hf hj.2.1 hn hj.1 hj.2.2
+  rw [← mul_one (g (f n)), ← prod_eq_one h,
+    ← mul_prod_erase (filter (f · = f n) I) (fun i ↦ g (f i)) <| mem_filter.mpr ⟨hn, by rfl⟩]
+
+/-- A version of `Finset.prod_map` and `Finset.prod_image`, but we do not assume that `f` is
+injective. Rather, we assume that the image of `f` on `I` only overlaps where `g (f i) = 1`.
+The conclusion is the same as in `prod_image`.-/
+@[to_additive (attr := simp)
+"A version of `Finset.sum_map` and `Finset.sum_image`, but we do not assume that `f` is
+injective. Rather, we assume that the image of `f` on `I` only overlaps where `g (f i) = 0`.
+The conclusion is the same as in `sum_image`."]
+lemma prod_image_of_pairwise_eq_one [CommMonoid β] {f : ι → α} {g : α → β} {I : Finset ι}
+    (hf : (I : Set ι).Pairwise fun i j ↦ f i = f j → g (f i) = 1) :
+    ∏ s ∈ I.image f, g s = ∏ i ∈ I, g (f i) := by
+  rw [prod_image']
+  exact fun n hnI => (prod_filter_of_pairwise_eq_one hnI hf).symm
+
+/-- A version of `Finset.prod_map` and `Finset.prod_image`, but we do not assume that `f` is
+injective. Rather, we assume that the images of `f` are disjoint on `I`, and `g ⊥ = 1`. The
+conclusion is the same as in `prod_image`.-/
+@[to_additive (attr := simp)
+"A version of `Finset.sum_map` and `Finset.sum_image`, but we do not assume that `f` is
+injective. Rather, we assume that the images of `f` are disjoint on `I`, and `g ⊥ = 0`. The
+conclusion is the same as in `sum_image`."
+]
+lemma prod_image_of_disjoint [CommMonoid β] [PartialOrder α] [OrderBot α] {f : ι → α} {g : α → β}
+    (hg_bot : g ⊥ = 1) {I : Finset ι} (hf_disj : (I : Set ι).PairwiseDisjoint f) :
+    ∏ s ∈ I.image f, g s = ∏ i ∈ I, g (f i) := by
+  refine prod_image_of_pairwise_eq_one <| hf_disj.imp fun i j (hdisj : Disjoint _ _) hfij ↦ ?_
+  rw [← hfij, disjoint_self] at hdisj
+  rw [hdisj, hg_bot]
+
+end Image_Overlap
+
 end Finset
 
 namespace Fintype
@@ -1546,7 +1590,7 @@ theorem prod_toFinset {M : Type*} [DecidableEq α] [CommMonoid M] (f : α → M)
 
 @[simp]
 theorem sum_toFinset_count_eq_length [DecidableEq α] (l : List α) :
-    ∑ a in l.toFinset, l.count a = l.length := by
+    ∑ a ∈ l.toFinset, l.count a = l.length := by
   simpa [List.map_const'] using (Finset.sum_list_map_count l fun _ => (1 : ℕ)).symm
 
 end List
@@ -1559,7 +1603,7 @@ lemma mem_sum {s : Finset ι} {m : ι → Multiset α} : a ∈ ∑ i ∈ s, m i 
 
 variable [DecidableEq α]
 
-theorem toFinset_sum_count_eq (s : Multiset α) : ∑ a in s.toFinset, s.count a = card s := by
+theorem toFinset_sum_count_eq (s : Multiset α) : ∑ a ∈ s.toFinset, s.count a = card s := by
   simpa using (Finset.sum_multiset_map_count s (fun _ => (1 : ℕ))).symm
 
 @[simp] lemma sum_count_eq_card {s : Finset α} {m : Multiset α} (hms : ∀ a ∈ m, a ∈ s) :

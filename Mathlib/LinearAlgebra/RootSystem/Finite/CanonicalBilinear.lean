@@ -268,10 +268,10 @@ instance instIsRootPositiveRootForm : IsRootPositive P P.RootForm where
 lemma coxeterWeight_mem_set_of_isCrystallographic (i j : ι) [P.IsCrystallographic] :
     P.coxeterWeight i j ∈ ({0, 1, 2, 3, 4} : Set R) := by
   obtain ⟨n, hcn⟩ : ∃ n : ℕ, P.coxeterWeight i j = n := by
-    obtain ⟨z, hz⟩ := P.exists_int_eq_coxeterWeight i j
-    have hz₀ : 0 ≤ z := by simpa [hz] using P.coxeterWeight_non_neg P.RootForm i j
-    obtain ⟨n, rfl⟩ := Int.eq_ofNat_of_zero_le hz₀
-    exact ⟨n, by simp [hz]⟩
+    have : 0 ≤ P.coxeterWeightIn ℤ i j := by
+      simpa [← P.algebraMap_coxeterWeightIn ℤ] using P.coxeterWeight_non_neg P.RootForm i j
+    obtain ⟨n, hn⟩ := Int.eq_ofNat_of_zero_le this
+    exact ⟨n, by simp [← P.algebraMap_coxeterWeightIn ℤ, hn]⟩
   have : P.coxeterWeight i j ≤ 4 := P.coxeterWeight_le_four i j
   simp only [hcn, mem_insert_iff, mem_singleton_iff] at this ⊢
   norm_cast at this ⊢

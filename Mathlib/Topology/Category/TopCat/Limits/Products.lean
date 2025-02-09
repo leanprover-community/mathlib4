@@ -217,9 +217,9 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
   · rintro ⟨y, rfl⟩
     simp_rw [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range]
     -- sizable changes in this proof after https://github.com/leanprover-community/mathlib4/pull/13170
-    rw [← comp_apply, ← comp_apply]
+    rw [← CategoryTheory.comp_apply, ← CategoryTheory.comp_apply]
     simp_rw [Limits.prod.map_fst,
-      Limits.prod.map_snd, comp_apply]
+      Limits.prod.map_snd, CategoryTheory.comp_apply]
     exact ⟨exists_apply_eq_apply _ _, exists_apply_eq_apply _ _⟩
   · rintro ⟨⟨x₁, hx₁⟩, ⟨x₂, hx₂⟩⟩
     use (prodIsoProd W X).inv (x₁, x₂)
@@ -227,12 +227,12 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
     apply Concrete.limit_ext
     rintro ⟨⟨⟩⟩
     · change limit.π (pair Y Z) _ ((prod.map f g) _) = _
-      erw [← comp_apply, Limits.prod.map_fst]
+      erw [← CategoryTheory.comp_apply, Limits.prod.map_fst]
       change (_ ≫ _ ≫ f) _ = _
       rw [TopCat.prodIsoProd_inv_fst_assoc,TopCat.comp_app]
       exact hx₁
     · change limit.π (pair Y Z) _ ((prod.map f g) _) = _
-      erw [← comp_apply, Limits.prod.map_snd]
+      erw [← CategoryTheory.comp_apply, Limits.prod.map_snd]
       change (_ ≫ _ ≫ g) _ = _
       rw [TopCat.prodIsoProd_inv_snd_assoc,TopCat.comp_app]
       exact hx₂

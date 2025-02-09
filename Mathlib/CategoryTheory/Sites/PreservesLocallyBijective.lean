@@ -24,7 +24,7 @@ namespace CategoryTheory
 
 namespace Presheaf
 
-variable [ConcreteCategory A]
+variable [HasForget A]
 
 lemma isLocallyInjective_whisker [H.IsCocontinuous J K] [IsLocallyInjective K f] :
     IsLocallyInjective J (whiskerLeft H.op f) where

@@ -34,11 +34,12 @@ variable [Semiring A] [Algebra R A]
 section PUnit
 
 instance _root_.PUnit.algebra : Algebra R PUnit.{v + 1} where
-  toFun _ := PUnit.unit
-  map_one' := rfl
-  map_mul' _ _ := rfl
-  map_zero' := rfl
-  map_add' _ _ := rfl
+  algebraMap :=
+  { toFun _ := PUnit.unit
+    map_one' := rfl
+    map_mul' _ _ := rfl
+    map_zero' := rfl
+    map_add' _ _ := rfl }
   commutes' _ _ := rfl
   smul_def' _ _ := rfl
 
@@ -51,9 +52,10 @@ end PUnit
 section ULift
 
 instance _root_.ULift.algebra : Algebra R (ULift A) :=
-  { ULift.module',
-    (ULift.ringEquiv : ULift A ≃+* A).symm.toRingHom.comp (algebraMap R A) with
-    toFun := fun r => ULift.up (algebraMap R A r)
+  { ULift.module' with
+    algebraMap :=
+    { (ULift.ringEquiv : ULift A ≃+* A).symm.toRingHom.comp (algebraMap R A) with
+      toFun := fun r => ULift.up (algebraMap R A r) }
     commutes' := fun r x => ULift.down_injective <| Algebra.commutes r x.down
     smul_def' := fun r x => ULift.down_injective <| Algebra.smul_def' r x.down }
 
@@ -69,7 +71,7 @@ end ULift
 
 /-- Algebra over a subsemiring. This builds upon `Subsemiring.module`. -/
 instance ofSubsemiring (S : Subsemiring R) : Algebra S A where
-  toRingHom := (algebraMap R A).comp S.subtype
+  algebraMap := (algebraMap R A).comp S.subtype
   smul := (· • ·)
   commutes' r x := Algebra.commutes (r : R) x
   smul_def' r x := Algebra.smul_def (r : R) x
@@ -87,7 +89,7 @@ theorem algebraMap_ofSubsemiring_apply (S : Subsemiring R) (x : S) : algebraMap 
 /-- Algebra over a subring. This builds upon `Subring.module`. -/
 instance ofSubring {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (S : Subring R) :
     Algebra S A where -- Porting note: don't use `toSubsemiring` because of a timeout
-  toRingHom := (algebraMap R A).comp S.subtype
+  algebraMap := (algebraMap R A).comp S.subtype
   smul := (· • ·)
   commutes' r x := Algebra.commutes (r : R) x
   smul_def' r x := Algebra.smul_def (r : R) x
@@ -143,11 +145,12 @@ abbrev semiringToRing (R : Type*) [CommRing R] [Semiring A] [Algebra R A] : Ring
     intCast_negSucc := fun z => by simp }
 
 instance {R : Type*} [Ring R] : Algebra (Subring.center R) R where
-  toFun := Subtype.val
-  map_one' := rfl
-  map_mul' _ _ := rfl
-  map_zero' := rfl
-  map_add' _ _ := rfl
+  algebraMap :=
+  { toFun := Subtype.val
+    map_one' := rfl
+    map_mul' _ _ := rfl
+    map_zero' := rfl
+    map_add' _ _ := rfl }
   commutes' r x := (Subring.mem_center_iff.1 r.2 x).symm
   smul_def' _ _ := rfl
 
@@ -235,7 +238,7 @@ variable {R : Type*} [Semiring R]
 instance (priority := 99) Semiring.toNatAlgebra : Algebra ℕ R where
   commutes' := Nat.cast_commute
   smul_def' _ _ := nsmul_eq_mul _ _
-  toRingHom := Nat.castRingHom R
+  algebraMap := Nat.castRingHom R
 
 instance nat_algebra_subsingleton : Subsingleton (Algebra ℕ R) :=
   ⟨fun P Q => by ext; simp⟩
@@ -253,7 +256,7 @@ variable (R : Type*) [Ring R]
 instance (priority := 99) Ring.toIntAlgebra : Algebra ℤ R where
   commutes' := Int.cast_commute
   smul_def' _ _ := zsmul_eq_mul _ _
-  toRingHom := Int.castRingHom R
+  algebraMap := Int.castRingHom R
 
 /-- A special case of `eq_intCast'` that happens to be true definitionally -/
 @[simp]

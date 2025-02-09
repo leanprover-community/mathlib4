@@ -46,11 +46,8 @@ variable {C : Type u₃} [Category.{v₃} C]
 variable {F : J ⥤ C}
 
 /-- A cone `t` on `F` is a limit cone if each cone on `F` admits a unique
-cone morphism to `t`.
-
-See <https://stacks.math.columbia.edu/tag/002E>.
-  -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
+cone morphism to `t`. -/
+@[stacks 002E]
 structure IsLimit (t : Cone F) where
   /-- There is a morphism from any cone point to `t.pt` -/
   lift : ∀ s : Cone F, s.pt ⟶ t.pt
@@ -496,11 +493,8 @@ end
 end IsLimit
 
 /-- A cocone `t` on `F` is a colimit cocone if each cocone on `F` admits a unique
-cocone morphism from `t`.
-
-See <https://stacks.math.columbia.edu/tag/002F>.
--/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
+cocone morphism from `t`. -/
+@[stacks 002F]
 structure IsColimit (t : Cocone F) where
   /-- `t.pt` maps to all other cocone covertices -/
   desc : ∀ s : Cocone F, t.pt ⟶ s.pt

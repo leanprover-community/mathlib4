@@ -5,7 +5,7 @@ Authors: Johan Commelin, Adam Topaz
 -/
 import Mathlib.AlgebraicTopology.SimplexCategory
 import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.Instances.NNReal
+import Mathlib.Topology.Instances.NNReal.Defs
 
 /-!
 # Topological simplices
@@ -22,10 +22,10 @@ namespace SimplexCategory
 
 open Simplicial NNReal CategoryTheory
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
+attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike
 
 -- Porting note: added, should be moved
-instance (x : SimplexCategory) : Fintype (ConcreteCategory.forget.obj x) :=
+instance (x : SimplexCategory) : Fintype (HasForget.forget.obj x) :=
   inferInstanceAs (Fintype (Fin _))
 
 /-- The topological simplex associated to `x : SimplexCategory`.
@@ -81,7 +81,7 @@ def toTop : SimplexCategory ⥤ TopCat where
     apply toTopObj.ext
     funext i
     dsimp
-    simp only [comp_apply, TopCat.coe_of_of, ContinuousMap.coe_mk, coe_toTopMap]
+    simp only [CategoryTheory.comp_apply, TopCat.coe_of_of, ContinuousMap.coe_mk, coe_toTopMap]
     rw [← Finset.sum_biUnion]
     · apply Finset.sum_congr
       · exact Finset.ext (fun j => ⟨fun hj => by simpa using hj, fun hj => by simpa using hj⟩)

@@ -149,10 +149,8 @@ In a monoidal category, we can take the tensor product of objects, `X ⊗ Y` and
 Tensor product does not need to be strictly associative on objects, but there is a
 specified associator, `α_ X Y Z : (X ⊗ Y) ⊗ Z ≅ X ⊗ (Y ⊗ Z)`. There is a tensor unit `𝟙_ C`,
 with specified left and right unitor isomorphisms `λ_ X : 𝟙_ C ⊗ X ≅ X` and `ρ_ X : X ⊗ 𝟙_ C ≅ X`.
-These associators and unitors satisfy the pentagon and triangle equations.
-
-See <https://stacks.math.columbia.edu/tag/0FFK>.
--/
+These associators and unitors satisfy the pentagon and triangle equations. -/
+@[stacks 0FFK]
 -- Porting note: The Mathport did not translate the temporary notation
 class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] extends MonoidalCategoryStruct C where
   tensorHom_def {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
@@ -818,19 +816,16 @@ abbrev tensorUnitRight : C ⥤ C := tensorRight (𝟙_ C)
 
 -- We can express the associator and the unitors, given componentwise above,
 -- as natural isomorphisms.
--- Porting Note: Had to add a `simps!` because Lean was complaining this wasn't a constructor app.
 /-- The associator as a natural isomorphism. -/
 @[simps!]
 def associatorNatIso : leftAssocTensor C ≅ rightAssocTensor C :=
   NatIso.ofComponents (fun _ => MonoidalCategory.associator _ _ _)
 
--- Porting Note: same as above
 /-- The left unitor as a natural isomorphism. -/
 @[simps!]
 def leftUnitorNatIso : tensorUnitLeft C ≅ 𝟭 C :=
   NatIso.ofComponents MonoidalCategory.leftUnitor
 
--- Porting Note: same as above
 /-- The right unitor as a natural isomorphism. -/
 @[simps!]
 def rightUnitorNatIso : tensorUnitRight C ≅ 𝟭 C :=

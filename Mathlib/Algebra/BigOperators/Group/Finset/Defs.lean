@@ -194,21 +194,36 @@ macro_rules (kind := bigprod)
     | some p => `(Finset.prod (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
     | none => `(Finset.prod $s (fun $x ↦ $v))
 
-/-- (Deprecated, use `∑ x ∈ s, f x`)
-`∑ x in s, f x` is notation for `Finset.sum s f`. It is the sum of `f x`,
-where `x` ranges over the finite set `s`. -/
-syntax (name := bigsumin) "∑ " extBinder " in " term ", " term:67 : term
-macro_rules (kind := bigsumin)
-  | `(∑ $x:ident in $s, $r) => `(∑ $x:ident ∈ $s, $r)
-  | `(∑ $x:ident : $t in $s, $r) => `(∑ $x:ident ∈ ($s : Finset $t), $r)
+section deprecated -- since 2024-30-01
+open Elab Term Tactic TryThis
 
-/-- (Deprecated, use `∏ x ∈ s, f x`)
-`∏ x in s, f x` is notation for `Finset.prod s f`. It is the product of `f x`,
-where `x` ranges over the finite set `s`. -/
+/-- Deprecated, use `∑ x ∈ s, f x` instead. -/
+syntax (name := bigsumin) "∑ " extBinder " in " term ", " term:67 : term
+
+/-- Deprecated, use `∏ x ∈ s, f x` instead. -/
 syntax (name := bigprodin) "∏ " extBinder " in " term ", " term:67 : term
-macro_rules (kind := bigprodin)
-  | `(∏ $x:ident in $s, $r) => `(∏ $x:ident ∈ $s, $r)
-  | `(∏ $x:ident : $t in $s, $r) => `(∏ $x:ident ∈ ($s : Finset $t), $r)
+
+elab_rules : term
+  | `(∑%$tk $x:ident in $s, $r) => do
+    addSuggestion tk (← `(∑ $x ∈ $s, $r)) (origSpan? := ← getRef) (header :=
+      "The '∑ x in s, f x' notation is deprecated: please use '∑ x ∈ s, f x' instead:\n")
+    elabTerm (← `(∑ $x:ident ∈ $s, $r)) none
+  | `(∑%$tk $x:ident : $_t in $s, $r) => do
+    addSuggestion tk (← `(∑ $x ∈ $s, $r)) (origSpan? := ← getRef) (header :=
+      "The '∑ x : t in s, f x' notation is deprecated: please use '∑ x ∈ s, f x' instead:\n")
+    elabTerm (← `(∑ $x:ident ∈ $s, $r)) none
+
+elab_rules : term
+  | `(∏%$tk $x:ident in $s, $r) => do
+    addSuggestion tk (← `(∏ $x ∈ $s, $r)) (origSpan? := ← getRef) (header :=
+      "The '∏ x in s, f x' notation is deprecated: please use '∏ x ∈ s, f x' instead:\n")
+    elabTerm (← `(∏ $x:ident ∈ $s, $r)) none
+  | `(∏%$tk $x:ident : $_t in $s, $r) => do
+    addSuggestion tk (← `(∏ $x ∈ $s, $r)) (origSpan? := ← getRef) (header :=
+      "The '∏ x : t in s, f x' notation is deprecated: please use '∏ x ∈ s, f x' instead:\n")
+    elabTerm (← `(∏ $x:ident ∈ $s, $r)) none
+
+end deprecated
 
 open Lean Meta Parser.Term PrettyPrinter.Delaborator SubExpr
 open scoped Batteries.ExtendedBinder
@@ -271,7 +286,7 @@ lemma prod_map_val [CommMonoid β] (s : Finset α) (f : α → β) : (s.1.map f)
   rfl
 
 @[simp]
-theorem sum_multiset_singleton (s : Finset α) : (s.sum fun x => {x}) = s.val := by
+theorem sum_multiset_singleton (s : Finset α) : ∑ a ∈ s, {a} = s.val := by
   simp only [sum_eq_multiset_sum, Multiset.sum_map_singleton]
 
 end Finset
@@ -480,6 +495,16 @@ theorem prod_dite_irrel (p : Prop) [Decidable p] (s : Finset α) (f : p → α �
     ∏ x ∈ s, (if h : p then f h x else g h x) =
       if h : p then ∏ x ∈ s, f h x else ∏ x ∈ s, g h x := by
   split_ifs with h <;> rfl
+
+@[to_additive]
+theorem ite_prod_one (p : Prop) [Decidable p] (s : Finset α) (f : α → β) :
+    (if p then (∏ x ∈ s, f x) else 1) = ∏ x ∈ s, if p then f x else 1 := by
+  simp only [prod_ite_irrel, prod_const_one]
+
+@[to_additive]
+theorem ite_one_prod (p : Prop) [Decidable p] (s : Finset α) (f : α → β) :
+    (if p then 1 else (∏ x ∈ s, f x)) = ∏ x ∈ s, if p then 1 else f x := by
+  simp only [prod_ite_irrel, prod_const_one]
 
 @[to_additive]
 theorem nonempty_of_prod_ne_one (h : ∏ x ∈ s, f x ≠ 1) : s.Nonempty :=

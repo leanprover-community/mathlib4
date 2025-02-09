@@ -386,7 +386,7 @@ variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     [TopologicalSpace A] [TopologicalSemiring A] [ContinuousConstSMul R A]
 
 instance instAlgebra : Algebra R (SeparationQuotient A) where
-  toRingHom := mkRingHom.comp (algebraMap R A)
+  algebraMap := mkRingHom.comp (algebraMap R A)
   commutes' r := Quotient.ind fun a => congrArg _ <| Algebra.commutes r a
   smul_def' r := Quotient.ind fun a => congrArg _ <| Algebra.smul_def r a
 

@@ -51,7 +51,7 @@ theorem essSup_trim (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] 
 
 theorem eLpNormEssSup_trim (hm : m ≤ m0) {f : α → E} (hf : StronglyMeasurable[m] f) :
     eLpNormEssSup f (μ.trim hm) = eLpNormEssSup f μ :=
-  essSup_trim _ (@StronglyMeasurable.ennnorm _ m _ _ _ hf)
+  essSup_trim _ (@StronglyMeasurable.enorm _ m _ _ _ hf)
 
 @[deprecated (since := "2024-07-27")]
 alias snormEssSup_trim := eLpNormEssSup_trim
@@ -67,7 +67,7 @@ theorem eLpNorm_trim (hm : m ≤ m0) {f : α → E} (hf : StronglyMeasurable[m] 
 @[deprecated (since := "2024-07-27")]
 alias snorm_trim := eLpNorm_trim
 
-theorem eLpNorm_trim_ae (hm : m ≤ m0) {f : α → E} (hf : AEStronglyMeasurable f (μ.trim hm)) :
+theorem eLpNorm_trim_ae (hm : m ≤ m0) {f : α → E} (hf : AEStronglyMeasurable[m] f (μ.trim hm)) :
     eLpNorm f p (μ.trim hm) = eLpNorm f p μ := by
   rw [eLpNorm_congr_ae hf.ae_eq_mk, eLpNorm_congr_ae (ae_eq_of_ae_eq_trim hf.ae_eq_mk)]
   exact eLpNorm_trim hm hf.stronglyMeasurable_mk

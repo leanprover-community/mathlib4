@@ -123,19 +123,15 @@ instance limitSubobjectProduct_mono [HasLimitsOfSize.{w, w} C] (F : J ⥤ C) :
     Mono (limitSubobjectProduct F) :=
   mono_comp _ _
 
-/-- Any category with products and equalizers has all limits.
-
-See <https://stacks.math.columbia.edu/tag/002N>.
--/
+/-- Any category with products and equalizers has all limits. -/
+@[stacks 002N]
 theorem has_limits_of_hasEqualizers_and_products [HasProducts.{w} C] [HasEqualizers C] :
     HasLimitsOfSize.{w, w} C :=
   { has_limits_of_shape :=
     fun _ _ => { has_limit := fun F => hasLimit_of_equalizer_and_product F } }
 
-/-- Any category with finite products and equalizers has all finite limits.
-
-See <https://stacks.math.columbia.edu/tag/002O>.
--/
+/-- Any category with finite products and equalizers has all finite limits. -/
+@[stacks 002O]
 theorem hasFiniteLimits_of_hasEqualizers_and_finite_products [HasFiniteProducts C]
     [HasEqualizers C] : HasFiniteLimits C where
   out _ := { has_limit := fun F => hasLimit_of_equalizer_and_product F }
@@ -343,19 +339,15 @@ instance colimitQuotientCoproduct_epi [HasColimitsOfSize.{w, w} C] (F : J ⥤ C)
     Epi (colimitQuotientCoproduct F) :=
   epi_comp _ _
 
-/-- Any category with coproducts and coequalizers has all colimits.
-
-See <https://stacks.math.columbia.edu/tag/002P>.
--/
+/-- Any category with coproducts and coequalizers has all colimits. -/
+@[stacks 002P]
 theorem has_colimits_of_hasCoequalizers_and_coproducts [HasCoproducts.{w} C] [HasCoequalizers C] :
     HasColimitsOfSize.{w, w} C where
   has_colimits_of_shape := fun _ _ =>
       { has_colimit := fun F => hasColimit_of_coequalizer_and_coproduct F }
 
-/-- Any category with finite coproducts and coequalizers has all finite colimits.
-
-See <https://stacks.math.columbia.edu/tag/002Q>.
--/
+/-- Any category with finite coproducts and coequalizers has all finite colimits. -/
+@[stacks 002Q]
 theorem hasFiniteColimits_of_hasCoequalizers_and_finite_coproducts [HasFiniteCoproducts C]
     [HasCoequalizers C] : HasFiniteColimits C where
   out _ := { has_colimit := fun F => hasColimit_of_coequalizer_and_coproduct F }

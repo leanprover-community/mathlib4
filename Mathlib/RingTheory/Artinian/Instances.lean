@@ -19,7 +19,7 @@ namespace IsArtinianRing
 
 variable (R : Type*) [CommRing R] [IsArtinianRing R] [IsReduced R]
 
-attribute [local instance] subtype_isMaximal_finite fieldOfSubtypeIsMaximal
+attribute [local instance] fieldOfSubtypeIsMaximal
 
 instance : DecompositionMonoid R := MulEquiv.decompositionMonoid (equivPi R)
 

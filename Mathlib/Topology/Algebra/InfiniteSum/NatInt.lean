@@ -426,11 +426,7 @@ theorem HasProd.nat_mul_neg {f : ℤ → M} (hf : HasProd f m) :
       · intro x hx
         simp only [u1, u2, mem_inter, mem_image, exists_prop] at hx
         suffices x = 0 by simp only [this, eq_self_iff_true, if_true]
-        apply le_antisymm
-        · rcases hx.2 with ⟨a, _, rfl⟩
-          simp only [Right.neg_nonpos_iff, Nat.cast_nonneg]
-        · rcases hx.1 with ⟨a, _, rfl⟩
-          simp only [Nat.cast_nonneg]
+        omega
     _ = (∏ x ∈ u1, f x) * ∏ x ∈ u2, f x := prod_union_inter
     _ = (∏ b ∈ v', f b) * ∏ b ∈ v', f (-b) := by
       simp only [u1, u2, Nat.cast_inj, imp_self, implies_true, forall_const, prod_image, neg_inj]

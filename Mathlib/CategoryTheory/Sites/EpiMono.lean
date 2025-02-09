@@ -26,7 +26,7 @@ namespace CategoryTheory
 open Category ConcreteCategory
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-  (A : Type u') [Category.{v'} A] [ConcreteCategory.{w} A]
+  (A : Type u') [Category.{v'} A] [HasForget.{w} A]
   [HasFunctorialSurjectiveInjectiveFactorization A]
   [J.WEqualsLocallyBijective A]
 

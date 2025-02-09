@@ -41,7 +41,6 @@ The constructions of the ring homomorphisms go through an auxiliary constructor
 
 noncomputable section
 
-open scoped Classical
 open Nat IsLocalRing Padic
 
 namespace PadicInt
@@ -293,6 +292,7 @@ def residueField : IsLocalRing.ResidueField ℤ_[p] ≃+* ZMod p := by
   exact_mod_cast (@PadicInt.ker_toZMod p _) ▸ RingHom.quotientKerEquivOfSurjective
     (ZMod.ringHom_surjective PadicInt.toZMod)
 
+open scoped Classical in
 /-- `appr n x` gives a value `v : ℕ` such that `x` and `↑v : ℤ_p` are congruent mod `p^n`.
 See `appr_spec`. -/
 -- Porting note: removing irreducible solves a lot of problems

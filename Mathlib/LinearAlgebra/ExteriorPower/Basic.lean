@@ -17,8 +17,12 @@ We study the exterior powers of a module `M` over a commutative ring `R`.
 
 * `exteriorPower.presentation R n M` is the standard presentation of the `R`-module `⋀[R]^n M`.
 
+* `exteriorPower.map n f : ⋀[R]^n M →ₗ[R] ⋀[R]^n N` is the linear map on `nth` exterior powers
+induced by a linear map `f : M →ₗ[R] N`. (See the file `Algebra.Category.ModuleCat.ExteriorPower`
+for the corresponding functor `ModuleCat R ⥤ ModuleCat R`.)
+
 ## Theorems
-* `ιMulti_span`: The image of `exteriorPower.ιMulti` spans `⋀[R]^n M`.
+* `exteriorPower.ιMulti_span`: The image of `exteriorPower.ιMulti` spans `⋀[R]^n M`.
 
 * We construct `exteriorPower.alternatingMapLinearEquiv` which
 expresses the universal property of the exterior power as a
@@ -29,7 +33,7 @@ alternating maps and linear maps from the exterior power.
 
 open scoped TensorProduct
 
-universe u v uM uN uN' uN'' uE uF
+universe u
 
 variable (R : Type u) [CommRing R] (n : ℕ) {M N N' : Type*}
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
@@ -82,7 +86,7 @@ noncomputable def relations (ι : Type*) [DecidableEq ι] (M : Type*)
     Module.Relations R where
   G := ι → M
   R := Rels R ι M
-  relation r := match r with
+  relation
     | .add m i x y => Finsupp.single (update m i x) 1 +
         Finsupp.single (update m i y) 1 -
         Finsupp.single (update m i (x + y)) 1
@@ -197,5 +201,37 @@ lemma alternatingMapLinearEquiv_comp (g : N →ₗ[R] N') (f : M [⋀^Fin n]→�
   ext
   simp only [alternatingMapLinearEquiv_comp_ιMulti, LinearMap.compAlternatingMap_apply,
     LinearMap.coe_comp, comp_apply, alternatingMapLinearEquiv_apply_ιMulti]
+
+/-! Functoriality of the exterior powers. -/
+
+variable (n) in
+/-- The linear map between `n`th exterior powers induced by a linear map between the modules. -/
+noncomputable def map (f : M →ₗ[R] N) : ⋀[R]^n M →ₗ[R] ⋀[R]^n N :=
+  alternatingMapLinearEquiv ((ιMulti R n).compLinearMap f)
+
+@[simp] lemma alternatingMapLinearEquiv_symm_map (f : M →ₗ[R] N) :
+    alternatingMapLinearEquiv.symm (map n f) = (ιMulti R n).compLinearMap f := by
+  simp only [map, LinearEquiv.symm_apply_apply]
+
+@[simp]
+theorem map_comp_ιMulti (f : M →ₗ[R] N) :
+    (map n f).compAlternatingMap (ιMulti R n) = (ιMulti R n).compLinearMap f := by
+  simp only [map, alternatingMapLinearEquiv_comp_ιMulti]
+
+@[simp]
+theorem map_apply_ιMulti (f : M →ₗ[R] N) (m : Fin n → M) :
+    map n f (ιMulti R n m) = ιMulti R n (f ∘ m) := by
+  simp only [map, alternatingMapLinearEquiv_apply_ιMulti, AlternatingMap.compLinearMap_apply]
+  rfl
+
+@[simp]
+theorem map_id :
+    map n (LinearMap.id (R := R) (M := M)) = LinearMap.id := by
+  aesop
+
+@[simp]
+theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
+    map n (g ∘ₗ f) = map n g ∘ₗ map n f := by
+  aesop
 
 end exteriorPower

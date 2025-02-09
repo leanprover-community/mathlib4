@@ -42,24 +42,19 @@ namespace Action
 
 variable {V}
 
-@[simp 1100]
-theorem ρ_one {G : MonCat.{u}} (A : Action V G) : A.ρ 1 = 𝟙 A.V := by rw [MonoidHom.map_one]; rfl
+theorem ρ_one {G : MonCat.{u}} (A : Action V G) : A.ρ 1 = 𝟙 A.V := by simp
 
 /-- When a group acts, we can lift the action to the group of automorphisms. -/
-@[simps]
-def ρAut {G : Grp.{u}} (A : Action V (MonCat.of G)) : G ⟶ Grp.of (Aut A.V) where
-  toFun g :=
-    { hom := A.ρ g
-      inv := A.ρ (g⁻¹ : G)
-      hom_inv_id := (A.ρ.map_mul (g⁻¹ : G) g).symm.trans (by rw [inv_mul_cancel, ρ_one])
-      inv_hom_id := (A.ρ.map_mul g (g⁻¹ : G)).symm.trans (by rw [mul_inv_cancel, ρ_one]) }
-  map_one' := Aut.ext A.ρ.map_one
-  map_mul' x y := Aut.ext (A.ρ.map_mul x y)
-
--- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657),
--- but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
--- It would be worth fixing these, as `ρAut_apply_inv` is used in `erw` later.
-attribute [nolint simpNF] Action.ρAut_apply_inv Action.ρAut_apply_hom
+@[simps!]
+def ρAut {G : Grp.{u}} (A : Action V (MonCat.of G)) : G ⟶ Grp.of (Aut A.V) :=
+  Grp.ofHom
+  { toFun g :=
+      { hom := A.ρ g
+        inv := A.ρ (g⁻¹ : G)
+        hom_inv_id := (A.ρ.hom.map_mul (g⁻¹ : G) g).symm.trans (by rw [inv_mul_cancel, ρ_one])
+        inv_hom_id := (A.ρ.hom.map_mul g (g⁻¹ : G)).symm.trans (by rw [mul_inv_cancel, ρ_one]) }
+    map_one' := Aut.ext A.ρ.hom.map_one
+    map_mul' x y := Aut.ext (A.ρ.hom.map_mul x y) }
 
 variable (G : MonCat.{u})
 
@@ -86,7 +81,11 @@ commuting with the action of `G`.
 @[ext]
 structure Hom (M N : Action V G) where
   hom : M.V ⟶ N.V
-  comm : ∀ g : G, M.ρ g ≫ hom = hom ≫ N.ρ g := by aesop_cat
+  -- Have to insert type hint for `F`, otherwise it ends up as:
+  -- `(fun α β => ↑α →* β) (MonCat.of (End _)) G`
+  -- which `simp` reduces to `↑(MonCat.of (End _)) →* β` instead of `End _ →* β`.
+  -- Strangely enough, the `@[reassoc]` version works fine.
+  comm : ∀ g : G, DFunLike.coe (F := _ →* End _) M.ρ.hom g ≫ hom = hom ≫ N.ρ g := by aesop_cat
 
 namespace Hom
 
@@ -170,8 +169,8 @@ def functor : Action V G ⥤ SingleObj G ⥤ V where
   obj M :=
     { obj := fun _ => M.V
       map := fun g => M.ρ g
-      map_id := fun _ => M.ρ.map_one
-      map_comp := fun g h => M.ρ.map_mul h g }
+      map_id := fun _ => M.ρ.hom.map_one
+      map_comp := fun g h => M.ρ.hom.map_mul h g }
   map f :=
     { app := fun _ => f.hom
       naturality := fun _ _ g => f.comm g }
@@ -181,7 +180,7 @@ def functor : Action V G ⥤ SingleObj G ⥤ V where
 def inverse : (SingleObj G ⥤ V) ⥤ Action V G where
   obj F :=
     { V := F.obj PUnit.unit
-      ρ :=
+      ρ := MonCat.ofHom
         { toFun := fun g => F.map g
           map_one' := F.map_id PUnit.unit
           map_mul' := fun g h => F.map_comp h g } }
@@ -223,19 +222,6 @@ instance : (FunctorCategoryEquivalence.functor (V := V) (G := G)).IsEquivalence 
 instance : (FunctorCategoryEquivalence.inverse (V := V) (G := G)).IsEquivalence :=
   (functorCategoryEquivalence V G).isEquivalence_inverse
 
-/-
-porting note: these two lemmas are redundant with the projections created by the @[simps]
-attribute above
-
-theorem functorCategoryEquivalence.functor_def :
-    (functorCategoryEquivalence V G).functor = FunctorCategoryEquivalence.functor :=
-  rfl
-
-theorem functorCategoryEquivalence.inverse_def :
-    (functorCategoryEquivalence V G).inverse = FunctorCategoryEquivalence.inverse :=
-  rfl
--/
-
 end
 
 section Forget
@@ -244,7 +230,7 @@ variable (V G)
 
 /-- (implementation) The forgetful functor from bundled actions to the underlying objects.
 
-Use the `CategoryTheory.forget` API provided by the `ConcreteCategory` instance below,
+Use the `CategoryTheory.forget` API provided by the `HasForget` instance below,
 rather than using this directly.
 -/
 @[simps]
@@ -254,10 +240,10 @@ def forget : Action V G ⥤ V where
 
 instance : (forget V G).Faithful where map_injective w := Hom.ext w
 
-instance [ConcreteCategory V] : ConcreteCategory (Action V G) where
-  forget := forget V G ⋙ ConcreteCategory.forget
+instance [HasForget V] : HasForget (Action V G) where
+  forget := forget V G ⋙ HasForget.forget
 
-instance hasForgetToV [ConcreteCategory V] : HasForget₂ (Action V G) V where forget₂ := forget V G
+instance hasForgetToV [HasForget V] : HasForget₂ (Action V G) V where forget₂ := forget V G
 
 /-- The forgetful functor is intertwined by `functorCategoryEquivalence` with
 evaluation at `PUnit.star`. -/
@@ -288,8 +274,8 @@ def actionPunitEquivalence : Action V (MonCat.of PUnit) ≌ V where
       map := fun f => ⟨f, fun ⟨⟩ => by simp⟩ }
   unitIso :=
     NatIso.ofComponents fun X => mkIso (Iso.refl _) fun ⟨⟩ => by
-      simp only [MonCat.oneHom_apply, MonCat.one_of, End.one_def, id_eq, Functor.comp_obj,
-        forget_obj, Iso.refl_hom, Category.comp_id]
+      simp only [MonCat.hom_one, MonoidHom.one_apply, MonCat.one_of, End.one_def,
+        Functor.comp_obj, Iso.refl_hom, Category.comp_id]
       exact ρ_one X
   counitIso := NatIso.ofComponents fun _ => Iso.refl _
 
@@ -338,12 +324,12 @@ the categories of `G`-actions within those categories. -/
 def mapAction (F : V ⥤ W) (G : MonCat.{u}) : Action V G ⥤ Action W G where
   obj M :=
     { V := F.obj M.V
-      ρ :=
+      ρ := MonCat.ofHom
         { toFun := fun g => F.map (M.ρ g)
-          map_one' := by simp only [End.one_def, Action.ρ_one, F.map_id, MonCat.one_of]
+          map_one' := by simp
           map_mul' := fun g h => by
             dsimp
-            rw [map_mul, MonCat.mul_of, End.mul_def, End.mul_def, F.map_comp] } }
+            rw [map_mul, MonCat.mul_of, End.mul_def, F.map_comp] } }
   map f :=
     { hom := F.map f.hom
       comm := fun g => by dsimp; rw [← F.map_comp, f.comm, F.map_comp] }

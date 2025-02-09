@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
-import Mathlib.AlgebraicGeometry.PrimeSpectrum.TensorProduct
+import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
 import Mathlib.Topology.LocalAtTarget
 
 /-!
@@ -39,7 +39,7 @@ theorem Scheme.Hom.stalkMap_surjective (f : X.Hom Y) [SurjectiveOnStalks f] (x) 
 namespace SurjectiveOnStalks
 
 instance (priority := 900) [IsOpenImmersion f] : SurjectiveOnStalks f :=
-  ⟨fun _ ↦ (ConcreteCategory.bijective_of_isIso (C := CommRingCat) _).2⟩
+  ⟨fun _ ↦ (ConcreteCategory.bijective_of_isIso _).2⟩
 
 instance : MorphismProperty.IsMultiplicative @SurjectiveOnStalks where
   id_mem _ := inferInstance

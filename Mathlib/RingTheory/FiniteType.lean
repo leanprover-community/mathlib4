@@ -75,10 +75,10 @@ protected theorem polynomial : FiniteType R R[X] :=
       rw [Finset.coe_singleton]
       exact Polynomial.adjoin_X⟩⟩
 
-open scoped Classical
 
 protected theorem freeAlgebra (ι : Type*) [Finite ι] : FiniteType R (FreeAlgebra R ι) := by
   cases nonempty_fintype ι
+  classical
   exact
     ⟨⟨Finset.univ.image (FreeAlgebra.ι R), by
         rw [Finset.coe_image, Finset.coe_univ, Set.image_univ]
@@ -86,6 +86,7 @@ protected theorem freeAlgebra (ι : Type*) [Finite ι] : FiniteType R (FreeAlgeb
 
 protected theorem mvPolynomial (ι : Type*) [Finite ι] : FiniteType R (MvPolynomial ι R) := by
   cases nonempty_fintype ι
+  classical
   exact
     ⟨⟨Finset.univ.image MvPolynomial.X, by
         rw [Finset.coe_image, Finset.coe_univ, Set.image_univ]
