@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Niklas Mohrin. All rights reserved.
+Copyright (c) 2025 Niklas Mohrin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Niklas Mohrin
 -/
@@ -10,12 +10,12 @@ import Mathlib.Data.Fintype.BigOperators
 /-!
 # Network Flows
 
-In this file we introduce network flows. A flow network can be seen as a directed graph where each
-arc of the graph has a fixed capacity. A flow from a source vertex `s` to a sink vertex `t` is an
-assignment of "flow units" to each edge, such that for all vertices other than the source and the
-sink, the incoming flow must equal the outgoing flow (_flow conservation_). The value of such an
-assignment is the amount of flow units leaving the source `s` and arriving at the sink `t`. In
-practice, we are usually interested in finding a flow of maximal value for a given network.
+In this file we introduce network flows. A flow network is as a directed graph where each arc of the
+graph has a fixed capacity. A flow from a source vertex `s` to a sink vertex `t` is an assignment of
+"flow units" to each edge, such that for all vertices other than the source and the sink, the
+incoming flow must equal the outgoing flow (_flow conservation_). The value of such an assignment is
+the amount of flow units leaving the source `s` and arriving at the sink `t`. In practice, we are
+usually interested in finding a flow of maximal value for a given network.
 
 ## Main definitions
 
