@@ -116,9 +116,14 @@ theorem normalizedTrace_self_apply (a : F) : normalizedTrace F F a = a := by
 theorem normalizedTrace_self : normalizedTrace F F = LinearMap.id :=
   LinearMap.ext normalizedTrace_self_apply
 
+variable {K} in
+theorem normalizedTrace_eq_of_fininteDimensional_apply [FiniteDimensional F K] (a : K) :
+    normalizedTrace F K a = (Module.finrank F K : F)⁻¹ • Algebra.trace F K a :=
+  normalizedTraceAux_eq_of_fininteDimensional F a
+
 theorem normalizedTrace_eq_of_fininteDimensional [FiniteDimensional F K] :
     normalizedTrace F K = (Module.finrank F K : F)⁻¹ • Algebra.trace F K :=
-  LinearMap.ext <| normalizedTraceAux_eq_of_fininteDimensional F
+  LinearMap.ext <| normalizedTrace_eq_of_fininteDimensional_apply F
 
 /-- The normalized trace transfers via (injective) maps. -/
 @[simp]
@@ -147,6 +152,31 @@ theorem normalizedTrace_algebraMap_apply (a : E) :
 theorem normalizedTrace_algebraMap :
     normalizedTrace F K ∘ₗ Algebra.linearMap E K = normalizedTrace F E :=
   LinearMap.ext <| normalizedTrace_algebraMap_apply F E K
+
+variable [FiniteDimensional F E]
+
+theorem normalizedTrace_trans_apply [Algebra.IsIntegral E K] [CharZero E] (a : K) :
+    normalizedTrace F E (normalizedTrace E K a) = normalizedTrace F K a := by
+  haveI : FiniteDimensional E E⟮a⟯ :=
+    IntermediateField.adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral a)
+  rw [normalizedTrace_def E K, inv_natCast_smul_eq (R := E) (S := F), map_smul,
+    normalizedTrace_eq_of_fininteDimensional F E, LinearMap.smul_apply, ← smul_assoc,
+    smul_eq_mul (a := _⁻¹), ← mul_inv, Algebra.trace_trace, mul_comm,
+    ← Nat.cast_mul, Module.finrank_mul_finrank, eq_comm]
+  let E' := E⟮a⟯.restrictScalars F
+  haveI : FiniteDimensional F E' := Module.Finite.trans E E⟮a⟯
+  have h_finrank_eq : Module.finrank F E⟮a⟯ = Module.finrank F E' := rfl
+  have h_trace_eq :
+    (Algebra.trace F E⟮a⟯) (AdjoinSimple.gen E a) =
+    (Algebra.trace F E') (AdjoinSimple.gen E a : E') := rfl
+  let a' : E' := AdjoinSimple.gen E a
+  rw [h_finrank_eq, h_trace_eq, ← normalizedTrace_eq_of_fininteDimensional_apply F (K := E'),
+    ← normalizedTrace_intermediateField F K a']
+  congr
+
+theorem normalizedTrace_trans [Algebra.IsIntegral E K] [CharZero E] :
+    normalizedTrace F E ∘ₗ normalizedTrace E K = normalizedTrace F K :=
+  LinearMap.ext <| normalizedTrace_trans_apply F E K
 
 end IsScalarTower
 
