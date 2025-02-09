@@ -348,6 +348,11 @@ theorem not_mem_empty (x : α) : ¬x ∈ (∅ : Set α) :=
 theorem not_not_mem : ¬a ∉ s ↔ a ∈ s :=
   not_not
 
+theorem ssubset_of_subset_of_mem_not_mem {x : α} (hst : s ⊆ t) (hxt : x ∈ t)
+    (hxs : x ∉ s) : s ⊂ t := hst.ssubset_of_not_subset fun a ↦ hxs (a hxt)
+
+alias _root_.HasSubset.Subset.ssubset_of_mem_not_mem := ssubset_of_subset_of_mem_not_mem
+
 /-! ### Non-empty sets -/
 
 -- Porting note: we seem to need parentheses at `(↥s)`,
