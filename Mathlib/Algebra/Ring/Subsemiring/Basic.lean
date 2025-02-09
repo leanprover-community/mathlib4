@@ -751,6 +751,9 @@ open RingHom
 def inclusion {S T : Subsemiring R} (h : S ≤ T) : S →+* T :=
   S.subtype.codRestrict _ fun x => h x.2
 
+theorem inclusion_injective {S T : Subsemiring R} (h : S ≤ T) :
+    Function.Injective (inclusion h) := Set.inclusion_injective h
+
 @[simp]
 theorem rangeS_subtype (s : Subsemiring R) : s.subtype.rangeS = s :=
   SetLike.coe_injective <| (coe_rangeS _).trans Subtype.range_coe
@@ -809,7 +812,7 @@ theorem ofLeftInverseS_symm_apply {g : S → R} {f : R →+* S} (h : Function.Le
   rfl
 
 /-- Given an equivalence `e : R ≃+* S` of semirings and a subsemiring `s` of `R`,
-`subsemiring_map e s` is the induced equivalence between `s` and `s.map e` -/
+`subsemiringMap e s` is the induced equivalence between `s` and `s.map e` -/
 def subsemiringMap (e : R ≃+* S) (s : Subsemiring R) : s ≃+* s.map (e : R →+* S) :=
   { e.toAddEquiv.addSubmonoidMap s.toAddSubmonoid, e.toMulEquiv.submonoidMap s.toSubmonoid with }
 
@@ -896,7 +899,6 @@ instance mulActionWithZero [Zero α] [MulActionWithZero R' α] (S : Subsemiring 
     MulActionWithZero S α :=
   MulActionWithZero.compHom _ S.subtype.toMonoidWithZeroHom
 
--- Porting note: instance named explicitly for use in `RingTheory/Subring/Basic`
 /-- The action by a subsemiring is the action by the underlying semiring. -/
 instance module [AddCommMonoid α] [Module R' α] (S : Subsemiring R') : Module S α :=
   -- Porting note: copying over the `smul` field causes a timeout

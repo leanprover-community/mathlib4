@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.MonoidAlgebra.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Data.Finset.Sort
 import Mathlib.Tactic.FastInstance
 import Mathlib.Algebra.Group.Submonoid.Operations
+import Mathlib.Algebra.MonoidAlgebra.Defs
 
 /-!
 # Theory of univariate polynomials
@@ -475,9 +475,6 @@ theorem C_pow : C (a ^ n) = C a ^ n :=
 theorem C_eq_natCast (n : ℕ) : C (n : R) = (n : R[X]) :=
   map_natCast C n
 
-@[deprecated (since := "2024-04-17")]
-alias C_eq_nat_cast := C_eq_natCast
-
 @[simp]
 theorem C_mul_monomial : C a * monomial n b = monomial n (a * b) := by
   simp only [← monomial_zero_left, monomial_mul_monomial, zero_add]
@@ -654,9 +651,6 @@ lemma coeff_C_succ {r : R} {n : ℕ} : coeff (C r) (n + 1) = 0 := by simp [coeff
 @[simp]
 theorem coeff_natCast_ite : (Nat.cast m : R[X]).coeff n = ite (n = 0) m 0 := by
   simp only [← C_eq_natCast, coeff_C, Nat.cast_ite, Nat.cast_zero]
-
-@[deprecated (since := "2024-04-17")]
-alias coeff_nat_cast_ite := coeff_natCast_ite
 
 @[simp]
 theorem coeff_ofNat_zero (a : ℕ) [a.AtLeastTwo] :
@@ -836,9 +830,6 @@ theorem binomial_eq_binomial {k l m n : ℕ} {u v : R} (hu : u ≠ 0) (hv : v �
 
 theorem natCast_mul (n : ℕ) (p : R[X]) : (n : R[X]) * p = n • p :=
   (nsmul_eq_mul _ _).symm
-
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_mul := natCast_mul
 
 /-- Summing the values of a function applied to the coefficients of a polynomial -/
 def sum {S : Type*} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S) : S :=
@@ -1096,9 +1087,6 @@ theorem support_neg {p : R[X]} : (-p).support = p.support := by
   rw [← ofFinsupp_neg, support, support, Finsupp.support_neg]
 
 theorem C_eq_intCast (n : ℤ) : C (n : R) = n := by simp
-
-@[deprecated (since := "2024-04-17")]
-alias C_eq_int_cast := C_eq_intCast
 
 theorem C_neg : C (-a) = -C a :=
   RingHom.map_neg C a
