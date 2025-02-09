@@ -138,14 +138,11 @@ theorem normalizedTrace_algebraMap :
 
 end IsScalarTower
 
-@[simp]
-theorem normalizedTrace_algebraMap_eq_id_apply (a : F) :
+theorem normalizedTrace_algebraMap_apply_eq_self (a : F) :
     normalizedTrace F K (algebraMap F K a) = a := by simp
 
 /-- The normalized trace map is a left inverse of the algebra map. -/
-@[simp]
-theorem normalizedTrace_algebraMap_eq_id : normalizedTrace F K ∘ algebraMap F K = id :=
-  funext <| normalizedTrace_algebraMap_eq_id_apply F K
+theorem normalizedTrace_algebraMap_eq_id : normalizedTrace F K ∘ algebraMap F K = id := by simp
 
 /-- The normalized trace commutes with (injective) maps. -/
 @[simp]
@@ -165,7 +162,7 @@ theorem normalizedTrace_eq_of_fininteDimensional [FiniteDimensional F K] :
   apply normalizedTraceAux_eq_of_fininteDimensional
 
 theorem normalizedTrace_surjective : Function.Surjective (normalizedTrace F K) :=
-  fun a ↦ ⟨algebraMap F K a, normalizedTrace_algebraMap_eq_id_apply F K a⟩
+  fun a ↦ ⟨algebraMap F K a, normalizedTrace_algebraMap_apply_eq_self F K a⟩
 
 /-- The normalized trace map is non-trivial. -/
 theorem normalizedTrace_ne_zero : normalizedTrace F K ≠ 0 :=
