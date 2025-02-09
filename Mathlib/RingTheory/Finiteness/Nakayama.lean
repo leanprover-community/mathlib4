@@ -17,14 +17,7 @@ import Mathlib.RingTheory.Ideal.Operations
 
 -/
 
-open Function (Surjective)
-open Finsupp
-
 namespace Submodule
-
-variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-
-open Set
 
 /-- **Nakayama's Lemma**. Atiyah-Macdonald 2.5, Eisenbud 4.7, Matsumura 2.2. -/
 @[stacks 00DV]
