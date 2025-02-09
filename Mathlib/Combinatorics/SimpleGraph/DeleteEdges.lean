@@ -101,7 +101,7 @@ lemma deleteIncidenceSet_le (G : SimpleGraph V) (x : V) : G.deleteIncidenceSet x
 
 lemma edgeSet_fromEdgeSet_incidenceSet (G : SimpleGraph V) (x : V) :
     (fromEdgeSet (G.incidenceSet x)).edgeSet = G.incidenceSet x := by
-  rw [edgeSet_fromEdgeSet, sdiff_eq_left, ←Set.subset_compl_iff_disjoint_right, Set.compl_setOf]
+  rw [edgeSet_fromEdgeSet, sdiff_eq_left, ← Set.subset_compl_iff_disjoint_right, Set.compl_setOf]
   exact (incidenceSet_subset G x).trans G.edgeSet_subset_setOf_not_isDiag
 
 /-- The edge set of `G.deleteIncidenceSet x` is the edge set of `G` set difference the incidence
@@ -113,10 +113,8 @@ theorem edgeSet_deleteIncidenceSet (G : SimpleGraph V) (x : V) :
 /-- The support of `G.deleteIncidenceSet x` is a subset of the support of `G` set difference the
 singleton set `{x}`. -/
 theorem deleteIncidenceSet_support_subset (G : SimpleGraph V) (x : V) :
-    (G.deleteIncidenceSet x).support ⊆ G.support \ {x} := by
-  intro v
-  simp_rw [mem_support, deleteIncidenceSet_adj]
-  tauto
+    (G.deleteIncidenceSet x).support ⊆ G.support \ {x} :=
+  fun _ ↦ by simp_rw [mem_support, deleteIncidenceSet_adj]; tauto
 
 /-- If the vertex `x` is not in the set `s`, then the induced subgraph in `G.deleteIncidenceSet x`
 by `s` is equal to the induced subgraph in `G` by `s`. -/
@@ -124,8 +122,7 @@ theorem deleteIncidenceSet_induce_of_not_mem (G : SimpleGraph V) {s : Set V} {x 
     (G.deleteIncidenceSet x).induce s = G.induce s := by
   ext v₁ v₂
   simp_rw [comap_adj, Function.Embedding.coe_subtype, deleteIncidenceSet_adj, and_iff_left_iff_imp]
-  intro hadj
-  exact ⟨v₁.prop.ne_of_not_mem h, v₂.prop.ne_of_not_mem h⟩
+  exact fun _ ↦ ⟨v₁.prop.ne_of_not_mem h, v₂.prop.ne_of_not_mem h⟩
 
 variable [Fintype V] [DecidableEq V]
 
@@ -133,30 +130,27 @@ variable [Fintype V] [DecidableEq V]
 subgraph of the vertices `{x}ᶜ`. -/
 theorem card_edgeFinset_induce_compl_singleton (G : SimpleGraph V) [DecidableRel G.Adj] (x : V) :
     #(G.induce {x}ᶜ).edgeFinset = #(G.deleteIncidenceSet x).edgeFinset := by
-  trans ((G.deleteIncidenceSet x).induce {x}ᶜ).edgeFinset.card
-  · have h_not_mem : x ∉ ({x}ᶜ : Set V) := by
-      rw [Set.not_mem_compl_iff]
-      exact Set.mem_singleton x
-    simp_rw [Set.toFinset_card, G.deleteIncidenceSet_induce_of_not_mem h_not_mem]
-  · apply card_edgeFinset_induce_of_support_subset
-    trans G.support \ {x}
-    · exact deleteIncidenceSet_support_subset G x
-    · rw [Set.compl_eq_univ_diff]
-      apply Set.diff_subset_diff_left
-      exact Set.subset_univ G.support
+  have h_not_mem : x ∉ ({x}ᶜ : Set V) := Set.not_mem_compl_iff.mpr (Set.mem_singleton x)
+  simp_rw [Set.toFinset_card,
+    ← G.deleteIncidenceSet_induce_of_not_mem h_not_mem, ← Set.toFinset_card]
+  apply card_edgeFinset_induce_of_support_subset
+  trans G.support \ {x}
+  · exact deleteIncidenceSet_support_subset G x
+  · rw [Set.compl_eq_univ_diff]
+    exact Set.diff_subset_diff_left (Set.subset_univ G.support)
 
 /-- The finite edge set of `G.deleteIncidenceSet x` is the finite edge set of the simple graph `G`
 set difference the finite incidence set of the vertex `x`. -/
 theorem edgeFinset_deleteIncidenceSet_eq_sdiff (G : SimpleGraph V) [DecidableRel G.Adj] (x : V) :
     (G.deleteIncidenceSet x).edgeFinset = G.edgeFinset \ (G.incidenceFinset x) := by
-  rw [←Set.toFinset_diff, Set.toFinset_inj]
+  rw [← Set.toFinset_diff, Set.toFinset_inj]
   exact G.edgeSet_deleteIncidenceSet x
 
 /-- Deleting the incident set of the vertex `x` deletes exactly `G.degree x` edges from the edge
 set of the simple graph `G`. -/
 theorem card_edgeFinset_deleteIncidenceSet (G : SimpleGraph V) [DecidableRel G.Adj] (x : V) :
     #(G.deleteIncidenceSet x).edgeFinset = #G.edgeFinset-G.degree x := by
-  simp_rw [←card_incidenceFinset_eq_degree, ←Finset.card_sdiff (G.incidenceFinset_subset x),
+  simp_rw [← card_incidenceFinset_eq_degree, ← card_sdiff (G.incidenceFinset_subset x),
     edgeFinset_deleteIncidenceSet_eq_sdiff]
 
 /-- Deleting the incident set of the vertex `x` is equivalent to filtering the edges of the simple
@@ -164,19 +158,20 @@ graph `G` that do not contain `x`. -/
 theorem edgeFinset_deleteIncidenceSet_eq_filter (G : SimpleGraph V) [DecidableRel G.Adj] (x : V) :
     (G.deleteIncidenceSet x).edgeFinset = G.edgeFinset.filter (x ∉ ·) := by
   rw [edgeFinset_deleteIncidenceSet_eq_sdiff, sdiff_eq_filter]
-  apply Finset.filter_congr
-  intro e he
+  apply filter_congr
+  intro _ h
   rw [Set.mem_toFinset, incidenceSet, Set.mem_setOf_eq, not_and, Classical.imp_iff_right_iff]
-  left; rwa [mem_edgeFinset] at he
+  left
+  rwa [mem_edgeFinset] at h
 
 /-- The support of `G.deleteIncidenceSet x` is at most `1` less than the support of the simple
 graph `G`. -/
 theorem card_support_deleteIncidenceSet
     (G : SimpleGraph V) [DecidableRel G.Adj] {x : V} (hx : x ∈ G.support) :
-    Fintype.card (G.deleteIncidenceSet x).support ≤ Fintype.card G.support - 1 := by
-  rw [←Set.singleton_subset_iff, ←Set.toFinset_subset_toFinset] at hx
-  simp_rw [←Set.card_singleton x, ←Set.toFinset_card, ←Finset.card_sdiff hx, ←Set.toFinset_diff]
-  apply Finset.card_le_card
+    card (G.deleteIncidenceSet x).support ≤ card G.support - 1 := by
+  rw [← Set.singleton_subset_iff, ← Set.toFinset_subset_toFinset] at hx
+  simp_rw [← Set.card_singleton x, ← Set.toFinset_card, ← card_sdiff hx, ← Set.toFinset_diff]
+  apply card_le_card
   rw [Set.toFinset_subset_toFinset]
   exact G.deleteIncidenceSet_support_subset x
 
