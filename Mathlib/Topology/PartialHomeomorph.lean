@@ -1363,7 +1363,7 @@ noncomputable def lift_openEmbedding (e : PartialHomeomorph X Z) (hf : IsOpenEmb
         rw [← hx'x, hf.toPartialHomeomorph_left_inv]; exact hx
       have : ContinuousOn (hf.toPartialHomeomorph).symm (f '' univ) :=
         (hf.toPartialHomeomorph).continuousOn_invFun
-      apply this.mono; gcongr; exact fun ⦃a⦄ a ↦ trivial
+      exact this.mono <| image_mono <| subset_univ _
     exact ContinuousOn.congr this heq
   continuousOn_invFun := hf.continuous.comp_continuousOn e.continuousOn_invFun
 
