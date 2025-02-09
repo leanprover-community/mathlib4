@@ -1460,6 +1460,7 @@ import Mathlib.Analysis.Meromorphic.Order
 import Mathlib.Analysis.Normed.Affine.AddTorsor
 import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 import Mathlib.Analysis.Normed.Affine.ContinuousAffineMap
+import Mathlib.Analysis.Normed.Affine.DistPt
 import Mathlib.Analysis.Normed.Affine.Isometry
 import Mathlib.Analysis.Normed.Affine.MazurUlam
 import Mathlib.Analysis.Normed.Algebra.Basic
