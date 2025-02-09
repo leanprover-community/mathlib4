@@ -695,7 +695,7 @@ def piConstAdj [Limits.HasProducts.{v} C] (X : C) :
     naturality _ _ _ := by apply Quiver.Hom.unop_inj; aesop_cat }
   left_triangle_components _ := by apply Quiver.Hom.unop_inj; aesop_cat
 
-/-- The functor sending `(X, n)` to the coprouct of copies of `X` indexed by `n`. -/
+/-- The functor sending `(X, n)` to the coproduct of copies of `X` indexed by `n`. -/
 @[simps]
 def sigmaConst [Limits.HasCoproducts.{w} C] : C ⥤ Type w ⥤ C where
   obj X := { obj n := ∐ fun _ : n ↦ X, map f := Limits.Sigma.map' f fun _ ↦ 𝟙 _ }
