@@ -453,19 +453,19 @@ theorem Base.rankPos_of_nonempty (hB : M.Base B) (h : B.Nonempty) : M.RankPos :=
 theorem Base.rankFinite_of_finite (hB : M.Base B) (hfin : B.Finite) : RankFinite M :=
   ⟨⟨B, hB, hfin⟩⟩
 
-theorem Base.inrankFinite_of_infinite (hB : M.Base B) (h : B.Infinite) : RankInfinite M :=
+theorem Base.rankInfinite_of_infinite (hB : M.Base B) (h : B.Infinite) : RankInfinite M :=
   ⟨⟨B, hB, h⟩⟩
 
 theorem not_rankFinite (M : Matroid α) [RankInfinite M] : ¬ RankFinite M := by
   intro h; obtain ⟨B,hB⟩ := M.exists_base; exact hB.infinite hB.finite
 
-theorem not_inrankFinite (M : Matroid α) [RankFinite M] : ¬ RankInfinite M := by
+theorem not_rankInfinite (M : Matroid α) [RankFinite M] : ¬ RankInfinite M := by
   intro h; obtain ⟨B,hB⟩ := M.exists_base; exact hB.infinite hB.finite
 
-theorem finite_or_inrankFinite (M : Matroid α) : RankFinite M ∨ RankInfinite M :=
+theorem finite_or_rankInfinite (M : Matroid α) : RankFinite M ∨ RankInfinite M :=
   let ⟨B, hB⟩ := M.exists_base
   B.finite_or_infinite.elim
-  (Or.inl ∘ hB.rankFinite_of_finite) (Or.inr ∘ hB.inrankFinite_of_infinite)
+  (Or.inl ∘ hB.rankFinite_of_finite) (Or.inr ∘ hB.rankInfinite_of_infinite)
 
 theorem Base.diff_finite_comm (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) :
     (B₁ \ B₂).Finite ↔ (B₂ \ B₁).Finite :=
