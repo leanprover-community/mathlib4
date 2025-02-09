@@ -101,5 +101,4 @@ lemma hasIterationOfShape_of_initialSeg {α : Type*} [LinearOrder α]
 instance (j : J) : HasIterationOfShape (Set.Iic j) C :=
   hasIterationOfShape_of_initialSeg C (Set.initialSegIic j)
 
-
 end CategoryTheory.Limits
