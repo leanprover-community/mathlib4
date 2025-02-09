@@ -26,7 +26,7 @@ noncomputable instance : ChosenFiniteProducts AddCommGrp.{u} where
 
 attribute [local instance] Functor.monoidalOfChosenFiniteProducts
 
--- TODO: is this evil??
+@[simp]
 theorem μ_forget_apply {X Y : AddCommGrp.{u}} (p : X) (q : Y) :
     Functor.LaxMonoidal.μ (forget AddCommGrp.{u}) X Y (p, q) = (p, q) := by
   apply Prod.ext
