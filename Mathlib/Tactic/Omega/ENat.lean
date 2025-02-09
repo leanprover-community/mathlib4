@@ -8,17 +8,17 @@ import Mathlib.Data.ENat.Basic
 /-!
 # `enat_omega`
 
-In this file we implement `enat_omega`: a simple wrapper around `omega` for solving goals involving
+This file implements `enat_omega`, a simple wrapper around `omega` for solving goals involving
 `ENat`s.
 
 ## Implementation details
-It uses the following pipeline:
-1. Use `cases` tactic with each `ENat` variable, producing two new goals: with the variable equal
-to `⊤`, and with the variable equal to finite natural number.
-2. Simplify arithmetical expressions involving infities, making (in)equalities trivial, or containig
-no infinities. At this step we use `enat_omega_top_simps` simp set.
-3. Translate remaining goals from `ENat` to `Nat` using `enat_omega_coe_simps` simp set.
-4. Use `omega` to finish them.
+The implementation follows these steps:
+1. Apply the `cases` tactic to each `ENat` variable, producing two goals: one where the variable
+   is `⊤`, and one where it is a finite natural number.
+2. Simplify arithmetic expressions involving infinities, making (in)equalities either trivial
+   or free of infinities. This step uses the `enat_omega_top_simps` simp set.
+3. Translate the remaining goals from `ENat` to `Nat` using the `enat_omega_coe_simps` simp set.
+4. Finish the proof using `omega`.
 
 -/
 
@@ -31,34 +31,34 @@ attribute [enat_omega_top_simps] top_add ENat.sub_top ENat.top_sub_coe ENat.mul_
 @[enat_omega_top_simps] lemma not_lt_top (x : ENat) :
     ¬(⊤ < x) := by cases x <;> simp
 
-@[enat_omega_coe_simps] lemma coe_add' (m n : ℕ) :
-    (m : ENat) + (n : ENat) = ((m + n : ℕ) : ENat) := (ENat.coe_add m n).symm
+@[enat_omega_coe_simps] lemma coe_add (m n : ℕ) :
+    (m : ENat) + (n : ENat) = ((m + n : ℕ) : ENat) := rfl
 
-@[enat_omega_coe_simps] lemma coe_sub' (m n : ℕ) :
-    (m : ENat) - (n : ENat) = ((m - n : ℕ) : ENat) := (ENat.coe_sub m n).symm
+@[enat_omega_coe_simps] lemma coe_sub (m n : ℕ) :
+    (m : ENat) - (n : ENat) = ((m - n : ℕ) : ENat) := rfl
 
-@[enat_omega_coe_simps] lemma coe_mul' (m n : ℕ) :
-    (m : ENat) * (n : ENat) = ((m * n : ℕ) : ENat) := (ENat.coe_mul m n).symm
+@[enat_omega_coe_simps] lemma coe_mul (m n : ℕ) :
+    (m : ENat) * (n : ENat) = ((m * n : ℕ) : ENat) := rfl
 
 @[enat_omega_coe_simps] lemma coe_ofNat (n : ℕ) [n.AtLeastTwo] :
     (OfNat.ofNat n : ENat) = (OfNat.ofNat n : ℕ) := rfl
 
-@[enat_omega_coe_simps] lemma coe_zero' : (0 : ENat) = ((0 : ℕ) : ENat) := rfl
+@[enat_omega_coe_simps] lemma coe_zero : (0 : ENat) = ((0 : ℕ) : ENat) := rfl
 
-@[enat_omega_coe_simps] lemma coe_one' : (1 : ENat) = ((1 : ℕ) : ENat) := rfl
+@[enat_omega_coe_simps] lemma coe_one : (1 : ENat) = ((1 : ℕ) : ENat) := rfl
 
 attribute [enat_omega_coe_simps] ENat.coe_inj ENat.coe_le_coe ENat.coe_lt_coe
 
 open Qq Lean Elab Tactic Term Meta in
-/-- Find the first `ENat` in the context and use `cases` tactic with it.
-Then simplifies expressions involving `⊤` using `enat_omega_top_simps` simp set. -/
+/-- Finds the first `ENat` in the context and applies the `cases` tactic to it.
+Then simplifies expressions involving `⊤` using the `enat_omega_top_simps` simp set. -/
 elab "cases_first_ENat" : tactic => focus do
   let g ← getMainGoal
-  let (g', _) ← g.renameInaccessibleFVars
-  setGoals [g']
-  g'.withContext do
-    let ctx ← getLCtx
-    let decl? ← ctx.findDeclM? fun decl => do
+  -- later we call `cases`, and the name of variable has to be accessible
+  let (g, _) ← g.renameInaccessibleFVars
+  setGoals [g]
+  g.withContext do
+    let decl? ← (← getLCtx).findDeclM? fun decl => do
       if ← (isExprDefEq (← inferType decl.toExpr) q(ENat)) then
         return Option.some decl
       else
