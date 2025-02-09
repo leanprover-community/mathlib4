@@ -205,6 +205,9 @@ lemma le_sdiff : x ≤ y \ z ↔ x ≤ y ∧ Disjoint x z :=
 @[simp] lemma sdiff_eq_left : x \ y = x ↔ Disjoint x y :=
   ⟨fun h ↦ disjoint_sdiff_self_left.mono_left h.ge, Disjoint.sdiff_eq_left⟩
 
+@[simp] theorem sdiff_lt_iff : x \ y < x ↔ ¬ Disjoint x y := by
+  rw [lt_iff_le_and_ne, and_iff_right sdiff_le, Ne, sdiff_eq_left]
+
 /- TODO: we could make an alternative constructor for `GeneralizedBooleanAlgebra` using
 `Disjoint x (y \ x)` and `x ⊔ (y \ x) = y` as axioms. -/
 theorem Disjoint.sdiff_eq_of_sup_eq (hi : Disjoint x z) (hs : x ⊔ z = y) : y \ x = z :=
