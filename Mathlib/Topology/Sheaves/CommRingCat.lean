@@ -90,9 +90,7 @@ section SubmonoidPresheaf
 
 open scoped nonZeroDivisors
 
-variable {X : TopCat.{w}} {C : Type u} [Category.{v} C] [HasForget C]
-
-attribute [local instance 1000] HasForget.hasCoeToSort HasForget.instFunLike
+variable {X : TopCat.{w}} {C : Type u} [Category.{v} C]
 
 -- note: this was specialized to `CommRingCat` in #19757
 /-- A subpresheaf with a submonoid structure on each of the components. -/
