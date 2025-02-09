@@ -676,9 +676,9 @@ lemma of_stalkMap (hQ : OfLocalizationPrime Q) (H : ∀ x, Q (f.stalkMap x).hom)
 /-- Let `Q` be a property of ring maps that is stable under localization.
 Then if the associated property of scheme morphisms holds for `f`, `Q` holds on all stalks. -/
 lemma stalkMap
-      (hQ : ∀ {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (_ : Q f)
-        (J : Ideal S) (_ : J.IsPrime), Q (Localization.localRingHom _ J f rfl))
-      (hf : P f) (x : X) : Q (f.stalkMap x).hom := by
+    (hQ : ∀ {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (_ : Q f)
+      (J : Ideal S) (_ : J.IsPrime), Q (Localization.localRingHom _ J f rfl))
+    (hf : P f) (x : X) : Q (f.stalkMap x).hom := by
   have hQi := (HasRingHomProperty.isLocal_ringHomProperty P).respectsIso
   wlog h : IsAffine X ∧ IsAffine Y generalizing X Y f
   · obtain ⟨U, hU, hfx, _⟩ := Opens.isBasis_iff_nbhd.mp (isBasis_affine_open Y)

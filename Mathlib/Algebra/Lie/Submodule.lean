@@ -149,8 +149,7 @@ theorem toSubmodule_inj : (N : Submodule R M) = (N' : Submodule R M) ↔ N = N' 
 equalities. -/
 protected def copy (s : Set M) (hs : s = ↑N) : LieSubmodule R L M where
   carrier := s
-  -- Porting note: all the proofs below were in term mode
-  zero_mem' := by exact hs.symm ▸ N.zero_mem'
+  zero_mem' := by simp [hs]
   add_mem' x y := by rw [hs] at x y ⊢; exact N.add_mem' x y
   smul_mem' := by exact hs.symm ▸ N.smul_mem'
   lie_mem := by exact hs.symm ▸ N.lie_mem
@@ -1242,7 +1241,6 @@ theorem inclusion_injective {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) :
   fun x y ↦ by
   simp only [inclusion_apply, imp_self, Subtype.mk_eq_mk, SetLike.coe_eq_coe]
 
--- Porting note: LHS simplifies, so moved @[simp] to new theorem `map_sup_ker_eq_map'`
 theorem map_sup_ker_eq_map : LieIdeal.map f (I ⊔ f.ker) = LieIdeal.map f I := by
   suffices LieIdeal.map f (I ⊔ f.ker) ≤ LieIdeal.map f I by
     exact le_antisymm this (LieIdeal.map_mono le_sup_left)

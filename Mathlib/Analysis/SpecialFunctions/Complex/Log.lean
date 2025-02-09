@@ -57,7 +57,7 @@ theorem exp_inj_of_neg_pi_lt_of_le_pi {x y : ℂ} (hx₁ : -π < x.im) (hx₂ : 
   rw [← log_exp hx₁ hx₂, ← log_exp hy₁ hy₂, hxy]
 
 theorem ofReal_log {x : ℝ} (hx : 0 ≤ x) : (x.log : ℂ) = log x :=
-  Complex.ext (by rw [log_re, ofReal_re, abs_of_nonneg hx])
+  Complex.ext (by rw [log_re, ofReal_re, Complex.abs_of_nonneg hx])
     (by rw [ofReal_im, log_im, arg_ofReal_of_nonneg hx])
 
 @[simp, norm_cast]
