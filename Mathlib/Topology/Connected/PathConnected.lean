@@ -688,7 +688,7 @@ lemma sigmaConcatFun_eqOn {X : Type*} [TopologicalSpace X] {s : ℕ → X}
       (σ ⟨(2 ^ (n+1))⁻¹, by simp [inv_le_one₀, one_le_pow₀]⟩)) := fun t ht ↦ by
   simp only [Set.mem_Icc, ← Subtype.coe_le_coe, coe_symm_eq] at ht
   have ht' : t < 1 := coe_lt_one.1 <| ht.2.trans_lt <| by simp
-  have ht'' : 1 - t.1 > 0 := by linarith [coe_lt_one.2 ht']
+  have ht'' : 0 < 1 - t.1 := by linarith [coe_lt_one.2 ht']
   simp only [sigmaConcatFun, ht', ↓reduceDIte, coe_symm_eq]
   by_cases hn : Nat.log 2 ⌊(1 - t : ℝ)⁻¹⌋₊ = n
   · refine congr (by rw [hn]) ?_
@@ -790,7 +790,7 @@ noncomputable def sigmaConcat {X : Type*} [TopologicalSpace X] {s : ℕ → X}
 lemma sigmaConcat_applyAt {X : Type*} [TopologicalSpace X] {s : ℕ → X}
     {γ : (n : ℕ) → Path (s n) (s n.succ)} {x : X} {b : ℕ → Set X} {hb : (𝓝 x).HasAntitoneBasis b}
     {hγ : ∀ n t, γ n t ∈ b n} (n : ℕ) (t : I) :
-    Path.sigmaConcat γ x hb hγ (σ ⟨(1 - t / 2) / 2 ^ n,
+    sigmaConcat γ x hb hγ (σ ⟨(1 - t / 2) / 2 ^ n,
       div_nonneg (by linarith [t.2.2]) (by simp),
       (div_le_one₀ (by simp)).2 <| by
         linarith [one_le_pow₀ (M₀ := ℝ) one_le_two (n := n), t.2.1]⟩) =
@@ -802,6 +802,41 @@ lemma sigmaConcat_applyAt {X : Type*} [TopologicalSpace X] {s : ℕ → X}
   · rw [symm_le_symm, Subtype.mk_le_mk, pow_succ', ← one_div, ← div_div]
     exact div_le_div_of_nonneg_right (by linarith [t.2.2]) (by simp)
   · simp [mul_div_cancel₀ t.1 two_pos.ne.symm]
+
+/-- The concatenation of a sequence of paths is the same as the concatenation of the first path
+  with the concatenation of the remaining paths. -/
+lemma sigmaConcat_eq_trans_sigmaConcat {X : Type*} [TopologicalSpace X] {s : ℕ → X}
+    {γ : (n : ℕ) → Path (s n) (s n.succ)} {x : X} {b : ℕ → Set X} {hb : (𝓝 x).HasAntitoneBasis b}
+    {hγ : ∀ n t, γ n t ∈ b n} : sigmaConcat γ x hb hγ = (γ 0).trans
+      (sigmaConcat (fun n ↦ γ (n + 1)) x hb fun n t ↦ hb.2 n.le_succ <| hγ (n + 1) t) := by
+  ext t
+  by_cases ht : (t : ℝ) ≤ 1 / 2 <;> dsimp [trans, sigmaConcat] <;> simp only [ht, ↓reduceIte]
+  · refine (sigmaConcatFun_eqOn γ 0 ?_).trans <| by simp
+    simpa [← Subtype.coe_le_coe, show (1 - 2⁻¹ : ℝ) = 2⁻¹ by ring] using ht
+  · apply lt_of_not_le at ht
+    by_cases ht' : t < 1
+    · dsimp [extend, IccExtend, sigmaConcatFun]
+      have ht'' : 0 < 1 - t.1 := by linarith [unitInterval.coe_lt_one.2 ht']
+      have h : (projIcc 0 1 one_pos.le (2 * t.1 - 1) : ℝ) = 2 * t - 1 := by
+        rw [projIcc_of_mem _ ⟨by linarith, by linarith⟩]
+      simp only [ht', ↓reduceDIte, ← Subtype.coe_lt_coe, h, Icc.coe_one,
+        show 2 * t.1 - 1 < 1 by linarith]
+      refine congr (congrArg (fun n ↦ ⇑(γ n)) ?_) ?_
+      · rw [h, ← sub_add, ← add_sub_right_comm, one_add_one_eq_two, ← mul_one_sub,
+          mul_inv, ← div_eq_inv_mul, Nat.floor_div_ofNat, Nat.log_div_base]
+        refine (Nat.sub_one_add_one (Nat.log_pos one_lt_two ?_).ne.symm).symm
+        rw [Nat.le_floor_iff (inv_pos.2 ht'').le]
+        exact le_inv_of_le_inv₀ ht'' <| by linarith
+      · rw [Subtype.mk_eq_mk, ← sub_add, ← add_sub_right_comm, one_add_one_eq_two, ← mul_one_sub,
+          mul_inv, ← div_eq_inv_mul]
+        rw [Nat.floor_div_ofNat, Nat.log_div_base]
+        simp_rw [Nat.cast_pow]; rw [pow_sub₀ _ two_pos.ne.symm ?_]
+        · ring
+        · rw [← Nat.pow_le_iff_le_log one_lt_two <| (Nat.floor_pos.2 <| (one_le_inv₀ ht'').2
+            (by exact (σ t).2.2)).ne.symm, Nat.le_floor_iff (inv_pos.2 ht'').le]
+          exact le_inv_of_le_inv₀ ht'' <| by linarith
+    · rw [show t = 1 by simpa [unitInterval.lt_one_iff_ne_one] using ht']
+      simp [show (2 - 1 : ℝ) = 1 by ring, sigmaConcatFun]
 
 end Path
 
