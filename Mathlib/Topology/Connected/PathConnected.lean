@@ -8,13 +8,13 @@ import Mathlib.Topology.Path
 /-!
 # Path connectedness
 
+Continuing from `Mathlib.Topology.Path`, this file defines path components and path-connected
+spaces.
+
 ## Main definitions
 
 In the file the unit interval `[0, 1]` in `ℝ` is denoted by `I`, and `X` is a topological space.
 
-* `Path (x y : X)` is the type of paths from `x` to `y`, i.e., continuous maps from `I` to `X`
-  mapping `0` to `x` and `1` to `y`.
-* `Path.map` is the image of a path under a continuous map.
 * `Joined (x y : X)` means there is a path between `x` and `y`.
 * `Joined.somePath (h : Joined x y)` selects some path between two points `x` and `y`.
 * `pathComponent (x : X)` is the set of points joined to `x`.
@@ -28,12 +28,10 @@ Then there are corresponding relative notions for `F : Set X`.
 * `pathComponentIn F (x : X)` is the set of points joined to `x` in `F`.
 * `IsPathConnected F` asserts that `F` is non-empty and every two
   points of `F` are joined in `F`.
-* `LocPathConnectedSpace X` is a predicate class asserting that `X` is locally path-connected:
-  each point has a basis of path-connected neighborhoods (we do *not* ask these to be open).
 
 ## Main theorems
 
-* `Joined` and `JoinedIn F` are transitive relations.
+* `Joined` is an equivalence relation, while `JoinedIn F` is at least symmetric and transitive.
 
 One can link the absolute and relative version in two directions, using `(univ : Set X)` or the
 subtype `↥F`.
@@ -41,19 +39,8 @@ subtype `↥F`.
 * `pathConnectedSpace_iff_univ : PathConnectedSpace X ↔ IsPathConnected (univ : Set X)`
 * `isPathConnected_iff_pathConnectedSpace : IsPathConnected F ↔ PathConnectedSpace ↥F`
 
-For locally path connected spaces, we have
-* `pathConnectedSpace_iff_connectedSpace : PathConnectedSpace X ↔ ConnectedSpace X`
-* `IsOpen.isConnected_iff_isPathConnected (U_op : IsOpen U) : IsPathConnected U ↔ IsConnected U`
-
-## Implementation notes
-
-By default, all paths have `I` as their source and `X` as their target, but there is an
-operation `Set.IccExtend` that will extend any continuous map `γ : I → X` into a continuous map
-`IccExtend zero_le_one γ : ℝ → X` that is constant before `0` and after `1`.
-
-This is used to define `Path.extend` that turns `γ : Path x y` into a continuous map
-`γ.extend : ℝ → X` whose restriction to `I` is the original `γ`, and is equal to `x`
-on `(-∞, 0]` and to `y` on `[1, +∞)`.
+Furthermore, it is shown that continuous images and quotients of path-connected sets/spaces are
+path-connected, and that every path-connected set/space is also connected.
 -/
 
 noncomputable section

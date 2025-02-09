@@ -5,7 +5,37 @@ Authors: Patrick Massot, Ben Eltschig
 -/
 import Mathlib.Topology.Connected.PathConnected
 
-/-! ### Locally path connected spaces -/
+/-!
+# Locally path-connected spaces
+
+This file defines `LocPathConnectedSpace X`, a predicate class asserting that `X` is locally
+path-connected, in that each point has a basis of path-connected neighborhoods.
+
+## Main results
+
+* `IsOpen.pathComponent` / `IsClosed.pathComponent`: in locally path-connected spaces,
+  path-components are both open and closed.
+* `pathComponent_eq_connectedComponent`: in locally path-connected spaces, path-components and
+  connected components agree.
+* `pathConnectedSpace_iff_connectedSpace`: locally path-connected spaces are path-connected iff they
+  are connected.
+* `instLocallyConnectedSpace`: locally path-connected spaces are also locally connected.
+* `IsOpen.locPathConnectedSpace`: open subsets of locally path-connected spaces are
+  locally path-connected.
+* `LocPathConnectedSpace.coinduced` / `Quotient.locPathConnectedSpace`: quotients of locally
+  path-connected spaces are locally path-connected.
+* `Sum.locPathConnectedSpace` / `Sigma.locPathConnectedSpace`: disjoint unions of locally
+  path-connected spaces are locally path-connected.
+
+Abstractly, this also shows that locally path-connected spaces form a coreflective subcategory of
+the category of topological spaces, although we do not prove that in this form here.
+
+## Implementation notes
+
+In the definition of `LocPathConnectedSpace X` we require neighbourhoods in the basis to be
+path-connected, but not necessarily open; that they can also be required to be open is shown as
+a theorem in `isOpen_isPathConnected_basis`.
+-/
 
 noncomputable section
 
@@ -163,7 +193,6 @@ instance Quot.locPathConnectedSpace {r : X → X → Prop} : LocPathConnectedSpa
 instance Quotient.locPathConnectedSpace {s : Setoid X} : LocPathConnectedSpace (Quotient s) :=
   isQuotientMap_quotient_mk'.locPathConnectedSpace
 
-
 /-- Disjoint unions of locally path-connected spaces are locally path-connected. -/
 instance Sum.locPathConnectedSpace.{u} {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
     [LocPathConnectedSpace X] [LocPathConnectedSpace Y] :
@@ -184,7 +213,6 @@ instance Sum.locPathConnectedSpace.{u} {X Y : Type u} [TopologicalSpace X] [Topo
       · exact (image_mono pathComponentIn_subset).trans (u.image_preimage_subset _)
     · exact isOpenMap_inr _ <| (hu.preimage continuous_inr).pathComponentIn _
     · exact ⟨y, mem_pathComponentIn_self hxu, rfl⟩
-
 
 /-- Disjoint unions of locally path-connected spaces are locally path-connected. -/
 instance Sigma.locPathConnectedSpace {X : ι → Type*}
