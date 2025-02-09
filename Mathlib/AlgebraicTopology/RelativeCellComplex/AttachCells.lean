@@ -41,7 +41,7 @@ structure AttachCells where
   ι : Type w
   /-- for each `i : ι`, we shall attach a cell given by the morphism `g (π i)`. -/
   π : ι → α
-  /-- a colimit cofan which gives aj coproduct of the object `A (π i)` -/
+  /-- a colimit cofan which gives the coproduct of the object `A (π i)` -/
   cofan₁ : Cofan (fun i ↦ A (π i))
   /-- a colimit cofan which gives the coproduct of the object `B (π i)` -/
   cofan₂ : Cofan (fun i ↦ B (π i))
