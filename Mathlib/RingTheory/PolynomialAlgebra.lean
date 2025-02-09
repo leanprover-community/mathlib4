@@ -320,8 +320,6 @@ lemma evalRingHom_mapMatrix_comp_compRingEquiv {m} [Fintype m] [DecidableEq m] :
       (compRingEquiv m n R).toRingHom.comp (evalRingHom 0).mapMatrix.mapMatrix := by
   ext; simp
 
-variable [Algebra R A]
-
 /-- If `A` is an `R`-algebra, then `A[X]` is an `R[X]` algebra.
 This gives a diamond for `Algebra R[X] R[X][X]`, so this is not a global instance. -/
 @[reducible] def Polynomial.algebra : Algebra R[X] A[X] :=
