@@ -57,7 +57,7 @@ lemma le_retracts (P : MorphismProperty C) : P ≤ P.retracts := by
   intro X Y f hf
   exact ⟨_, _, f, { i := 𝟙 _, r := 𝟙 _}, hf⟩
 
-lemma monotone_retracts : Monotone (retracts (C := C)) := by
+lemma retracts_monotone : Monotone (retracts (C := C)) := by
   intro _ _ h _ _ _ ⟨_, _, _, hg, hg'⟩
   exact ⟨_, _, _, hg, h _ hg'⟩
 

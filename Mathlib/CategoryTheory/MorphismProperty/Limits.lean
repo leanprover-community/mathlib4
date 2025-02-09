@@ -53,7 +53,7 @@ lemma le_pullbacks : P ≤ P.pullbacks := by
   intro A B q hq
   exact P.pullbacks_mk IsPullback.of_id_fst hq
 
-lemma monotone_pullbacks : Monotone (pullbacks (C := C)) := by
+lemma pullbacks_monotone : Monotone (pullbacks (C := C)) := by
   rintro _ _ h _ _ _ ⟨_, _, _, _, _, hp, sq⟩
   exact ⟨_, _, _, _, _, h _ hp, sq⟩
 
@@ -72,7 +72,7 @@ lemma le_pushouts : P ≤ P.pushouts := by
   intro X Y p hp
   exact P.pushouts_mk IsPushout.of_id_fst hp
 
-lemma monotone_pushouts : Monotone (pushouts (C := C)) := by
+lemma pushouts_monotone : Monotone (pushouts (C := C)) := by
   rintro _ _ h _ _ _ ⟨_, _, _, _, _, hp, sq⟩
   exact ⟨_, _, _, _, _, h _ hp, sq⟩
 
@@ -404,7 +404,7 @@ inductive colimitsOfShape : MorphismProperty C
     (h₁ : IsColimit c₁) (h₂ : IsColimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f) :
       colimitsOfShape (h₁.desc (Cocone.mk _ (f ≫ c₂.ι)))
 
-lemma monotone_colimitsOfShape {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W₂)
+lemma colimitsOfShape_monotone {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W₂)
     (J : Type*) [Category J] :
     W₁.colimitsOfShape J ≤ W₂.colimitsOfShape J := by
   rintro _ _ _ ⟨_, _, _, _, _, h₂, f, hf⟩
