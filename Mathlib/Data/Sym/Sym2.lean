@@ -268,6 +268,10 @@ def _root_.Function.Embedding.sym2Map (f : α ↪ β) : Sym2 α ↪ Sym2 β wher
   toFun := map f
   inj' := map.injective f.injective
 
+lemma lift_comp_map {g : γ → α} (f : {f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁}) :
+    lift ⟨fun (c₁ c₂ : γ) => f.val (g c₁) (g c₂), fun _ _ => f.prop _ _⟩ = lift f ∘ (map g) :=
+  lift.apply_eq_iff_eq_symm_apply.mpr rfl
+
 section Membership
 
 /-! ### Membership and set coercion -/
