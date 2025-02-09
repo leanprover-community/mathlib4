@@ -49,7 +49,7 @@ def finTwoArrowEquiv (α : Type*) : (Fin 2 → α) ≃ α × α :=
 
 /-- An equivalence that removes `i` and maps it to `none`.
 This is a version of `Fin.predAbove` that produces `Option (Fin n)` instead of
-mapping both `i.cast_succ` and `i.succ` to `i`. -/
+mapping both `i.castSucc` and `i.succ` to `i`. -/
 def finSuccEquiv' (i : Fin (n + 1)) : Fin (n + 1) ≃ Option (Fin n) where
   toFun := i.insertNth none some
   invFun x := x.casesOn' i (Fin.succAbove i)
