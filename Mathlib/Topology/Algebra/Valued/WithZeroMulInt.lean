@@ -51,14 +51,15 @@ theorem tendsto_zero_pow_of_le_neg_one {K : Type*} [Ring K] [Valued K ℤₘ₀]
     apply lt_of_le_of_lt (pow_one (Valued.v x) ▸ hx)
     exact h_lt
 
-theorem hasBasis_uniformity (K : Type*) [Field K] [Valued K ℤₘ₀] [IsDiscreteValuationRing 𝒪[K]] :
+variable (K : Type*) [Field K] [Valued K ℤₘ₀]
+
+theorem hasBasis_uniformity_le_one [IsDiscreteValuationRing 𝒪[K]] :
     (uniformity K).HasBasis
       (fun (γ : ℤₘ₀ˣ) => γ ≤ 1) (fun (γ : ℤₘ₀ˣ) => { p | Valued.v (p.2 - p.1) < γ }) := by
-  have hq : ∀ (γ : ℤₘ₀ˣ), True →
+  have hq (γ : ℤₘ₀ˣ) (_ : True) :
     ∃ (γ' : ℤₘ₀ˣ), True ∧ γ' ≤ 1 ∧
       { p : K × _ | Valued.v (p.2 - p.1) < γ' } ⊆
         { p | Valued.v (p.2 - p.1) < γ } := by
-    intro γ _
     choose ϖ _ using IsDiscreteValuationRing.exists_irreducible 𝒪[K]
     by_cases hγ : 1 < γ
     · exact ⟨1, trivial, le_refl _, fun _ hx => lt_trans (Set.mem_setOf.1 hx) hγ⟩
@@ -66,8 +67,10 @@ theorem hasBasis_uniformity (K : Type*) [Field K] [Valued K ℤₘ₀] [IsDiscre
   convert (Valued.hasBasis_uniformity _ _).restrict hq
   simp only [true_and]
 
-theorem valuation_le_pow_of_maximalIdeal {K : Type*} [Field K] [Valued K ℤₘ₀]
-    [IsDiscreteValuationRing 𝒪[K]] {x : 𝒪[K]} (n : ℕ) (hx : x ∈ 𝓂[K] ^ n) :
+variable {K}
+
+theorem valuation_le_pow_of_maximalIdeal [IsDiscreteValuationRing 𝒪[K]]
+    {x : 𝒪[K]} (n : ℕ) (hx : x ∈ 𝓂[K] ^ n) :
     Valued.v x.val ≤ Multiplicative.ofAdd (-n : ℤ) := by
   sorry
 
@@ -84,30 +87,30 @@ open scoped Classical in
 /-- There is a finite covering of the `v`-adic integers of open balls of radius less than one,
 obtained by using the finite representatives in the quotient of the `v`-adic integers by an
 appropriate power of the maximal ideal. -/
-theorem finite_subcover_of_uniformity_basis {K : Type*} [Field K] [Valued K ℤₘ₀]
-    [IsDiscreteValuationRing 𝒪[K]] {γ : ℤₘ₀ˣ} (h : Finite 𝓀[K]) (hγ : γ.val ≤ 1) :
+theorem finite_subcover_of_uniformity_basis [IsDiscreteValuationRing 𝒪[K]] {γ : ℤₘ₀ˣ}
+    (h : Finite 𝓀[K]) (hγ : γ.val ≤ 1) :
     ∃ t : Set K, Set.Finite t ∧
       (𝒪[K]).carrier ⊆ ⋃ y ∈ t,
         { x | (x, y) ∈ { p | Valued.v (p.2 - p.1) < γ.val } } := by
-  let M := (Valued.maximalIdeal K) ^ (- toAdd (unitsWithZeroEquiv γ) + 1).toNat
-  letI := integer.finite_quotient_maximalIdeal_pow_of_finite_residueField h
-    (-toAdd (unitsWithZeroEquiv γ) + 1).toNat
-  have h : Fintype (𝒪[K] ⧸ M) := Fintype.ofFinite _
+  let m := (- toAdd (unitsWithZeroEquiv γ) + 1).toNat
+  letI := integer.finite_quotient_maximalIdeal_pow_of_finite_residueField h m
+  have h := Fintype.ofFinite (𝒪[K] ⧸ 𝓂[K] ^ m)
   let T := h.elems.image Quotient.out
   refine ⟨Subtype.val '' T.toSet, (Set.Finite.image _ (Finset.finite_toSet _)), fun x hx => ?_⟩
   simp only [Set.mem_iUnion]
-  let y := Quotient.out <| Ideal.Quotient.mk M ⟨x, hx⟩
-  have h_mem : (Ideal.Quotient.mk M ⟨x, hx⟩).out ∈ T := Finset.mem_image_of_mem _ (h.complete _)
-  refine ⟨y, Set.mem_image_of_mem _ h_mem,
-    lt_of_le_of_lt (valuation_le_pow_of_maximalIdeal _ (Ideal.Quotient.out_sub M _)) ?_⟩
-  rw [← coe_unitsWithZeroEquiv_eq_units_val, coe_lt_coe, ← ofAdd_toAdd (unitsWithZeroEquiv γ),
-    ofAdd_lt, ofAdd_toAdd, Int.toNat_of_nonneg]
+  let y := (Ideal.Quotient.mk (𝓂[K] ^ m) ⟨x, hx⟩).out
+  refine ⟨y, Set.mem_image_of_mem _ <| Finset.mem_image_of_mem _ (h.complete _),
+    lt_of_le_of_lt (valuation_le_pow_of_maximalIdeal _ (Ideal.Quotient.out_sub _ _)) ?_⟩
+  simp only [m, ← coe_unitsWithZeroEquiv_eq_units_val, coe_lt_coe]
+  rw [← ofAdd_toAdd (unitsWithZeroEquiv γ), ofAdd_lt, ofAdd_toAdd, Int.toNat_of_nonneg]
   · linarith
   · simp only [le_neg_add_iff_add_le, add_zero]
     exact le_trans (units_toAdd_le_of_le one_ne_zero hγ) zero_le_one
 
+variable (K)
+
 open Set Valued in
-theorem integers_isClosed (K : Type*) [Field K] [Valued K ℤₘ₀] : IsClosed (𝒪[K] : Set K) := by
+theorem integers_isClosed : IsClosed (𝒪[K] : Set K) := by
   refine isClosed_iff_nhds.2 fun x hx => ?_
   simp only [isClosed_iff_nhds, SetLike.mem_coe, Valuation.mem_integer_iff, not_le] at hx ⊢
   contrapose! hx
@@ -119,7 +122,7 @@ theorem integers_compactSpace {K : Type*} [Field K] [Valued K ℤₘ₀] [Comple
     [IsDiscreteValuationRing 𝒪[K]] (h : Finite 𝓀[K]) : CompactSpace 𝒪[K] := by
   refine CompactSpace.mk (isCompact_iff_isCompact_univ.1 <| ?_)
   exact isCompact_iff_totallyBounded_isComplete.2
-    ⟨(hasBasis_uniformity K).totallyBounded_iff.2 <| fun _ hγ =>
+    ⟨(hasBasis_uniformity_le_one K).totallyBounded_iff.2 <| fun _ hγ =>
       finite_subcover_of_uniformity_basis h hγ, (integers_isClosed K).isComplete⟩
 
 end Valued.WithZeroMulInt
