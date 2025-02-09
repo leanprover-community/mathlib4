@@ -145,6 +145,18 @@ end CompleteLattice
 section Frame
 variable [Order.Frame X]
 
+lemma map_himp_apply {n : Nucleus X} {x y : X} : n (x ⇨ n y) = x ⇨ n y := by
+  refine le_antisymm ?_ le_apply
+  rw [le_himp_iff, himp_eq_sSup]
+  have h1 : n (sSup {w | w ⊓ x ≤ n y}) ⊓ x ≤
+      n (sSup {w | w ⊓ x ≤ n y}) ⊓ n x := by
+    simp only [le_inf_iff, inf_le_left, true_and]
+    exact inf_le_of_right_le le_apply
+  apply le_trans h1
+  rw [← map_inf, sSup_inf_eq, ← @idempotent _ _ n y]
+  gcongr
+  simp [idempotent]
+
 instance : HImp (Nucleus X) where
   himp m n :=
   { toFun x := ⨅ y ≥ x, m y ⇨ n y
@@ -152,19 +164,7 @@ instance : HImp (Nucleus X) where
       apply le_iInf₂
       intro j hj
       have h : (m (m j ⇨ n j)) ⇨ (n (m j ⇨ n j)) = m j ⇨ n j := by
-        have h_fix : n (m j ⇨ n j) = m j ⇨ n j := by
-          refine le_antisymm ?_ le_apply
-          rw [le_himp_iff, himp_eq_sSup]
-          have h1 : n (sSup {w | w ⊓ m j ≤ n j}) ⊓ m j ≤
-              n (sSup {w | w ⊓ m j ≤ n j}) ⊓  n (m j) := by
-            simp only [le_inf_iff, inf_le_left, true_and]
-            exact inf_le_of_right_le le_apply
-          apply le_trans h1
-          rw [← map_inf, sSup_inf_eq, ← @idempotent _ _ n j]
-          gcongr
-          apply iSup₂_le
-          simp [idempotent]
-        rw [h_fix, himp_himp, ← map_inf, inf_of_le_right (le_trans n.le_apply le_himp)]
+        rw [map_himp_apply, himp_himp, ← map_inf, inf_of_le_right (le_trans n.le_apply le_himp)]
       rw [← h]
       refine iInf₂_le (m j ⇨ n j) ?_
       simp only [ge_iff_le, le_himp_iff, iInf_inf, iInf_le_iff, le_inf_iff, le_iInf_iff]
