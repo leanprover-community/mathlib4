@@ -41,26 +41,26 @@ open AffineSubspace
 /-- `p` is equidistant from two points in `s` if and only if its
 `orthogonalProjection` is. -/
 theorem dist_eq_iff_dist_orthogonalProjection_eq {s : AffineSubspace ℝ P} [Nonempty s]
-    [HasOrthogonalProjection s.direction] {p1 p2 : P} (p3 : P) (hp1 : p1 ∈ s) (hp2 : p2 ∈ s) :
-    dist p1 p3 = dist p2 p3 ↔
-      dist p1 (orthogonalProjection s p3) = dist p2 (orthogonalProjection s p3) := by
+    [HasOrthogonalProjection s.direction] {p₁ p₂ : P} (p₃ : P) (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) :
+    dist p₁ p₃ = dist p₂ p₃ ↔
+      dist p₁ (orthogonalProjection s p₃) = dist p₂ (orthogonalProjection s p₃) := by
   rw [← mul_self_inj_of_nonneg dist_nonneg dist_nonneg, ←
     mul_self_inj_of_nonneg dist_nonneg dist_nonneg,
-    dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p3 hp1,
-    dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p3 hp2]
+    dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p₃ hp₁,
+    dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p₃ hp₂]
   simp
 
 /-- `p` is equidistant from a set of points in `s` if and only if its
 `orthogonalProjection` is. -/
 theorem dist_set_eq_iff_dist_orthogonalProjection_eq {s : AffineSubspace ℝ P} [Nonempty s]
     [HasOrthogonalProjection s.direction] {ps : Set P} (hps : ps ⊆ s) (p : P) :
-    (Set.Pairwise ps fun p1 p2 => dist p1 p = dist p2 p) ↔
-      Set.Pairwise ps fun p1 p2 =>
-        dist p1 (orthogonalProjection s p) = dist p2 (orthogonalProjection s p) :=
-  ⟨fun h _ hp1 _ hp2 hne =>
-    (dist_eq_iff_dist_orthogonalProjection_eq p (hps hp1) (hps hp2)).1 (h hp1 hp2 hne),
-    fun h _ hp1 _ hp2 hne =>
-    (dist_eq_iff_dist_orthogonalProjection_eq p (hps hp1) (hps hp2)).2 (h hp1 hp2 hne)⟩
+    (Set.Pairwise ps fun p₁ p₂ => dist p₁ p = dist p₂ p) ↔
+      Set.Pairwise ps fun p₁ p₂ =>
+        dist p₁ (orthogonalProjection s p) = dist p₂ (orthogonalProjection s p) :=
+  ⟨fun h _ hp₁ _ hp₂ hne =>
+    (dist_eq_iff_dist_orthogonalProjection_eq p (hps hp₁) (hps hp₂)).1 (h hp₁ hp₂ hne),
+    fun h _ hp₁ _ hp₂ hne =>
+    (dist_eq_iff_dist_orthogonalProjection_eq p (hps hp₁) (hps hp₂)).2 (h hp₁ hp₂ hne)⟩
 
 /-- There exists `r` such that `p` has distance `r` from all the
 points of a set of points in `s` if and only if there exists (possibly
@@ -68,7 +68,7 @@ different) `r` such that its `orthogonalProjection` has that distance
 from all the points in that set. -/
 theorem exists_dist_eq_iff_exists_dist_orthogonalProjection_eq {s : AffineSubspace ℝ P} [Nonempty s]
     [HasOrthogonalProjection s.direction] {ps : Set P} (hps : ps ⊆ s) (p : P) :
-    (∃ r, ∀ p1 ∈ ps, dist p1 p = r) ↔ ∃ r, ∀ p1 ∈ ps, dist p1 ↑(orthogonalProjection s p) = r := by
+    (∃ r, ∀ p₁ ∈ ps, dist p₁ p = r) ↔ ∃ r, ∀ p₁ ∈ ps, dist p₁ ↑(orthogonalProjection s p) = r := by
   have h := dist_set_eq_iff_dist_orthogonalProjection_eq hps p
   simp_rw [Set.pairwise_eq_iff_exists_eq] at h
   exact h
@@ -106,11 +106,11 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
         Submodule.smul_mem _ _
           (vsub_mem_vectorSpan ℝ (Set.mem_insert _ _)
             (Set.mem_insert_of_mem _ (orthogonalProjection_mem _)))
-    · intro p1 hp1
+    · intro p₁ hp₁
       rw [Sphere.mem_coe, mem_sphere, ← mul_self_inj_of_nonneg dist_nonneg (Real.sqrt_nonneg _),
         Real.mul_self_sqrt (add_nonneg (mul_self_nonneg _) (mul_self_nonneg _))]
-      cases' hp1 with hp1 hp1
-      · rw [hp1]
+      cases' hp₁ with hp₁ hp₁
+      · rw [hp₁]
         rw [hpo,
           dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd (orthogonalProjection_mem p) hcc _ _
             (vsub_orthogonalProjection_mem_direction_orthogonal s p),
@@ -120,9 +120,9 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
         simp (disch := field_simp_discharge) only [div_div, sub_div', one_mul, mul_div_assoc',
           div_mul_eq_mul_div, add_div', eq_div_iff, div_eq_iff, ycc₂]
         ring
-      · rw [dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq _ (hps hp1),
+      · rw [dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq _ (hps hp₁),
           orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ hcc, Subtype.coe_mk,
-          dist_of_mem_subset_mk_sphere hp1 hcr, dist_eq_norm_vsub V cc₂ cc, vadd_vsub, norm_smul, ←
+          dist_of_mem_subset_mk_sphere hp₁ hcr, dist_eq_norm_vsub V cc₂ cc, vadd_vsub, norm_smul, ←
           dist_eq_norm_vsub V, Real.norm_eq_abs, abs_div, abs_of_nonneg dist_nonneg,
           div_mul_cancel₀ _ hy0, abs_mul_abs_self]
   · rintro ⟨cc₃, cr₃⟩ ⟨hcc₃, hcr₃⟩
@@ -130,8 +130,8 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
     obtain ⟨t₃, cc₃', hcc₃', hcc₃''⟩ :
       ∃ r : ℝ, ∃ p0 ∈ s, cc₃ = r • (p -ᵥ ↑((orthogonalProjection s) p)) +ᵥ p0 := by
       rwa [mem_affineSpan_insert_iff (orthogonalProjection_mem p)] at hcc₃
-    have hcr₃' : ∃ r, ∀ p1 ∈ ps, dist p1 cc₃ = r :=
-      ⟨cr₃, fun p1 hp1 => dist_of_mem_subset_mk_sphere (Set.mem_insert_of_mem _ hp1) hcr₃⟩
+    have hcr₃' : ∃ r, ∀ p₁ ∈ ps, dist p₁ cc₃ = r :=
+      ⟨cr₃, fun p₁ hp₁ => dist_of_mem_subset_mk_sphere (Set.mem_insert_of_mem _ hp₁) hcr₃⟩
     rw [exists_dist_eq_iff_exists_dist_orthogonalProjection_eq hps cc₃, hcc₃'',
       orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ hcc₃'] at hcr₃'
     cases' hcr₃' with cr₃' hcr₃'
@@ -395,8 +395,8 @@ orthogonal projection, produces the original point if the vector is a
 multiple of the result of subtracting a point's orthogonal projection
 from that point. -/
 theorem orthogonalProjection_vadd_smul_vsub_orthogonalProjection {n : ℕ} (s : Simplex ℝ P n)
-    {p1 : P} (p2 : P) (r : ℝ) (hp : p1 ∈ affineSpan ℝ (Set.range s.points)) :
-    s.orthogonalProjectionSpan (r • (p2 -ᵥ s.orthogonalProjectionSpan p2 : V) +ᵥ p1) = ⟨p1, hp⟩ :=
+    {p₁ : P} (p₂ : P) (r : ℝ) (hp : p₁ ∈ affineSpan ℝ (Set.range s.points)) :
+    s.orthogonalProjectionSpan (r • (p₂ -ᵥ s.orthogonalProjectionSpan p₂ : V) +ᵥ p₁) = ⟨p₁, hp⟩ :=
   EuclideanGeometry.orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ _
 
 theorem coe_orthogonalProjection_vadd_smul_vsub_orthogonalProjection {n : ℕ} {r₁ : ℝ}
@@ -405,16 +405,16 @@ theorem coe_orthogonalProjection_vadd_smul_vsub_orthogonalProjection {n : ℕ} {
   congrArg ((↑) : _ → P) (orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ _ hp₁o)
 
 theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq {n : ℕ}
-    (s : Simplex ℝ P n) {p1 : P} (p2 : P) (hp1 : p1 ∈ affineSpan ℝ (Set.range s.points)) :
-    dist p1 p2 * dist p1 p2 =
-      dist p1 (s.orthogonalProjectionSpan p2) * dist p1 (s.orthogonalProjectionSpan p2) +
-        dist p2 (s.orthogonalProjectionSpan p2) * dist p2 (s.orthogonalProjectionSpan p2) := by
-  rw [PseudoMetricSpace.dist_comm p2 _, dist_eq_norm_vsub V p1 _, dist_eq_norm_vsub V p1 _,
-    dist_eq_norm_vsub V _ p2, ← vsub_add_vsub_cancel p1 (s.orthogonalProjectionSpan p2) p2,
+    (s : Simplex ℝ P n) {p₁ : P} (p₂ : P) (hp₁ : p₁ ∈ affineSpan ℝ (Set.range s.points)) :
+    dist p₁ p₂ * dist p₁ p₂ =
+      dist p₁ (s.orthogonalProjectionSpan p₂) * dist p₁ (s.orthogonalProjectionSpan p₂) +
+        dist p₂ (s.orthogonalProjectionSpan p₂) * dist p₂ (s.orthogonalProjectionSpan p₂) := by
+  rw [PseudoMetricSpace.dist_comm p₂ _, dist_eq_norm_vsub V p₁ _, dist_eq_norm_vsub V p₁ _,
+    dist_eq_norm_vsub V _ p₂, ← vsub_add_vsub_cancel p₁ (s.orthogonalProjectionSpan p₂) p₂,
     norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero]
   exact
-    Submodule.inner_right_of_mem_orthogonal (vsub_orthogonalProjection_mem_direction p2 hp1)
-      (orthogonalProjection_vsub_mem_direction_orthogonal _ p2)
+    Submodule.inner_right_of_mem_orthogonal (vsub_orthogonalProjection_mem_direction p₂ hp₁)
+      (orthogonalProjection_vsub_mem_direction_orthogonal _ p₂)
 
 theorem dist_circumcenter_sq_eq_sq_sub_circumradius {n : ℕ} {r : ℝ} (s : Simplex ℝ P n) {p₁ : P}
     (h₁ : ∀ i : Fin (n + 1), dist (s.points i) p₁ = r)

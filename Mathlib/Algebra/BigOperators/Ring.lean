@@ -266,8 +266,6 @@ theorem prod_range_natCast_sub (n k : ℕ) :
   · rw [← mem_range] at hnk
     rw [prod_eq_zero hnk, prod_eq_zero hnk] <;> simp
 
-@[deprecated (since := "2024-05-27")] alias prod_range_cast_nat_sub := prod_range_natCast_sub
-
 
 end CommRing
 
