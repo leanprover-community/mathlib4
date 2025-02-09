@@ -46,12 +46,14 @@ section NetworkDefinition
 variable (V : Type u_V) (R : Type u_R) [Zero R] [LE R]
 
 /-- A flow network assigning non-negative capacities to all pairs of vertices. -/
-structure Network extends Digraph V where
-  Adj _ _ := True
+structure Network where
   /-- The assigned capacities. -/
   cap : V → V → R
   nonneg : ∀ u v, 0 ≤ cap u v
-  cap_zero_of_not_adj : ∀ u v, ¬Adj u v → cap u v = 0 := by intro u v; aesop
+
+/-- A `Network` where the capacities are only non-zero on arcs of `G`. -/
+structure NetworkOn (G : Digraph V) extends Network V R where
+  cap_zero_of_not_adj : ∀ u v, ¬G.Adj u v → cap u v = 0
 
 end NetworkDefinition
 
