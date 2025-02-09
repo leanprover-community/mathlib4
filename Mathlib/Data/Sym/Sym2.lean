@@ -270,9 +270,8 @@ def _root_.Function.Embedding.sym2Map (f : α ↪ β) : Sym2 α ↪ Sym2 β wher
   inj' := map.injective f.injective
 
 lemma lift_comp_map {g : γ → α} (h : {f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁}) :
-    lift ⟨fun (c₁ c₂ : γ) => h.val (g c₁) (g c₂), by aesop⟩ = lift h ∘ (map g) := by
-  ext ⟨_,_⟩
-  simp_all only [lift_mk, comp_apply, map_pair_eq]
+    lift ⟨fun (c₁ c₂ : γ) => h.val (g c₁) (g c₂), by aesop⟩ = lift h ∘ (map g) :=
+  lift.apply_eq_iff_eq_symm_apply.mpr rfl
 
 lemma lift_comp_map_apply {g : γ → α} (h : {f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁})
     (p : Sym2 γ) :
@@ -787,9 +786,5 @@ lemma smul {ι R N} [SMul R N] (f : ι → ι → R) (g : ι → ι → N) (hf :
       rw [Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', hf, hg]⟩ := by
   ext ⟨i,j⟩
   simp_all only [Pi.smul_apply', Sym2.lift_mk]
-
-lemma comp_map {κ} (f : α → α → β) (hf : ∀ (a₁ a₂ : α), f a₁ a₂ = f a₂ a₁)  (g : κ → α) :
-    Sym2.lift ⟨f,hf⟩ ∘ Sym2.map g =  Sym2.lift ⟨fun i j => f (g i) (g j), fun _ _ => hf _ _⟩ :=
-  Sym2.lift.symm_apply_eq.mp rfl
 
 end Sym2
