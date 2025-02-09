@@ -37,7 +37,6 @@ structure Path (n : ℕ) where
   /-- The targets of the 1-simplices in a path are identified with appropriate 0-simplices.-/
   arrow_tgt (i : Fin n) : X.δ 0 (arrow i) = vertex i.succ
 
-
 variable {X} in
 /-- For `j + l ≤ n`, a path of length `n` restricts to a path of length `l`, namely the subpath
 spanned by the vertices `j ≤ i ≤ j + l` and edges `j ≤ i < j + l`. -/
