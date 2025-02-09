@@ -185,6 +185,20 @@ theorem integrable_inner (f g : α →₂[μ] E) : Integrable (fun x : α => ⟪
           ((Lp.aestronglyMeasurable f).inner (Lp.aestronglyMeasurable g)))).mp
     (AEEqFun.integrable_iff_mem_L1.mpr (mem_L1_inner f g))
 
+lemma _root_.MeasureTheory.Memℒp.integrable_mul' {f g : α → ℝ}
+    (hf : Memℒp f 2 μ) (hg : Memℒp g 2 μ) :
+    Integrable (f * g) μ := by
+  have h := L2.integrable_inner (𝕜 := ℝ) (hf.toLp f) (hg.toLp g)
+  simp only [RCLike.inner_apply, conj_trivial] at h
+  have h_eq : f * g =ᵐ[μ] fun a ↦ hf.toLp f a * hg.toLp g a := by
+    filter_upwards [hf.coeFn_toLp, hg.coeFn_toLp] with a hf hg
+    simp [hf, hg]
+  rwa [integrable_congr h_eq]
+
+lemma _root_.MeasureTheory.Memℒp.integrable_mul {f g : α → ℝ}
+    (hf : Memℒp f 2 μ) (hg : Memℒp g 2 μ) :
+    Integrable (fun x ↦ f x * g x) μ := hf.integrable_mul' hg
+
 private theorem add_left' (f f' g : α →₂[μ] E) : ⟪f + f', g⟫ = inner f g + inner f' g := by
   simp_rw [inner_def, ← integral_add (integrable_inner (𝕜 := 𝕜) f g) (integrable_inner f' g),
     ← inner_add_left]
