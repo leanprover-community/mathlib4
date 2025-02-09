@@ -5428,6 +5428,7 @@ import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.Connected.Basic
 import Mathlib.Topology.Connected.Clopen
 import Mathlib.Topology.Connected.LocallyConnected
+import Mathlib.Topology.Connected.LochConnected
 import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Connected.Separation
 import Mathlib.Topology.Connected.TotallyDisconnected
@@ -5635,6 +5636,7 @@ import Mathlib.Topology.Order.UpperLowerSetTopology
 import Mathlib.Topology.Partial
 import Mathlib.Topology.PartialHomeomorph
 import Mathlib.Topology.PartitionOfUnity
+import Mathlib.Topology.Path
 import Mathlib.Topology.Perfect
 import Mathlib.Topology.PreorderRestrict
 import Mathlib.Topology.QuasiSeparated
