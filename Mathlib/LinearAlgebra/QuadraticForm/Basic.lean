@@ -327,33 +327,36 @@ theorem choose_exists_companion : Q.exists_companion.choose = polarBilin Q :=
     rw [polarBilin_apply_apply, polar, Q.exists_companion.choose_spec, sub_sub,
       add_sub_cancel_left]
 
+/--
+Lift the polar
+-/
+def polar_sym2 (Q : QuadraticMap R M N) : Sym2 M → N :=
+  Sym2.lift ⟨fun m₁ m₂ => (polar Q) m₁ m₂, fun i j => by simp only [polar_comm]⟩
+
 protected theorem map_sum {ι} [DecidableEq ι] (Q : QuadraticMap R M N) (s : Finset ι) (f : ι → M) :
-    Q (∑ i ∈ s, f i) = ∑ i ∈ s, Q (f i) +
-      ∑ ij ∈ s.sym2 with ¬ ij.IsDiag,
-        Sym2.lift ⟨fun i j => polar Q (f i) (f j), fun _ _ => polar_comm _ _ _⟩ ij := by
+    Q (∑ i ∈ s, f i) = ∑ i ∈ s, Q (f i)
+      + ∑ ij ∈ s.sym2 with ¬ ij.IsDiag, (Q.polar_sym2 ∘ Sym2.map f) ij := by
   induction s using Finset.cons_induction with
   | empty => simp
   | cons a s ha ih =>
     simp_rw [Finset.sum_cons, QuadraticMap.map_add, ih, add_assoc, Finset.sym2_cons,
       Finset.sum_filter, Finset.sum_disjUnion, Finset.sum_map, Finset.sum_cons,
-      Sym2.mkEmbedding_apply, Sym2.isDiag_iff_proj_eq, not_true, if_false, zero_add, Sym2.lift_mk,
-      ← polarBilin_apply_apply, _root_.map_sum, polarBilin_apply_apply]
+      Sym2.mkEmbedding_apply, Sym2.isDiag_iff_proj_eq, not_true, if_false, zero_add, polar_sym2,
+      Sym2.comp_map, Sym2.lift_mk, ← polarBilin_apply_apply, _root_.map_sum, polarBilin_apply_apply]
     congr 2
     rw [add_comm]
     congr! with i hi
     rw [if_pos (ne_of_mem_of_not_mem hi ha).symm]
 
 protected theorem map_sum' {ι} (Q : QuadraticMap R M N) (s : Finset ι) (f : ι → M) :
-    Q (∑ i ∈ s, f i) =
-      ∑ ij ∈ s.sym2,
-        ij.lift ⟨fun i j => polar Q (f i) (f j), fun _ _ => polar_comm _ _ _⟩
-      - ∑ i ∈ s, Q (f i) := by
+    Q (∑ i ∈ s, f i) = ∑ ij ∈ s.sym2, (Q.polar_sym2 ∘ Sym2.map f) ij - ∑ i ∈ s, Q (f i) := by
   induction s using Finset.cons_induction with
   | empty => simp
   | cons a s ha ih =>
     simp_rw [Finset.sum_cons, QuadraticMap.map_add Q, ih, add_assoc, Finset.sym2_cons,
-      Finset.sum_disjUnion, Finset.sum_map, Finset.sum_cons, Sym2.mkEmbedding_apply, Sym2.lift_mk,
-      ← polarBilin_apply_apply, _root_.map_sum, polarBilin_apply_apply, polar_self]
+      Finset.sum_disjUnion, Finset.sum_map, Finset.sum_cons, Sym2.mkEmbedding_apply, polar_sym2,
+      Sym2.comp_map, Sym2.lift_mk, ← polarBilin_apply_apply, _root_.map_sum, polarBilin_apply_apply,
+      polar_self]
     abel_nf
 
 end CommRing

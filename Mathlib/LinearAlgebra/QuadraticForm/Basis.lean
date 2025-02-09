@@ -26,23 +26,11 @@ variable {ι R M N}
 
 variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
-/--
-Lift the polar
--/
-def polar_sym2 (Q : QuadraticMap R M N) : Sym2 M → N :=
-  Sym2.lift ⟨fun m₁ m₂ => (polar Q) m₁ m₂, fun i j => by simp only [polar_comm]⟩
-
-lemma recover {ι} (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
-    Q.polar_sym2 ∘ Sym2.map (fun i => (g i (f i))) =
-      Sym2.lift ⟨fun i j => (polar Q) (g i (f i)) (g j (f j)),
-        fun i j => by simp only [polar_comm]⟩ := (Equiv.symm_apply_eq Sym2.lift).mp rfl
-
 open Finsupp in
 theorem map_finsuppSum' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
     Q (f.sum g) =
       ∑ p ∈ f.support.sym2, ((Q.polar_sym2 ∘ Sym2.map (fun i => (g i (f i)))) p)
         - ∑ i ∈ f.support, Q (g i (f i)) := by
-  rw [recover]
   exact Q.map_sum' _ (fun i => g i (f i))
 
 lemma partial_result1 (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
@@ -157,7 +145,6 @@ theorem map_finsuppSum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R 
     Q (f.sum g) =
       f.sum (fun i r => Q (g i r)) +
       ∑ p ∈ f.support.sym2 with ¬ p.IsDiag, (Q.polar_sym2 ∘ Sym2.map (fun i => (g i (f i)))) p := by
-  rw [recover]
   exact Q.map_sum _ _
 
 -- c.f. `Finsupp.apply_linearCombination`
