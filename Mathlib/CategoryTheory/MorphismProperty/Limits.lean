@@ -414,7 +414,6 @@ variable {J} in
 lemma colimitsOfShape_le_of_final {J' : Type*} [Category J'] (F : J ⥤ J') [F.Final] :
     W.colimitsOfShape J' ≤ W.colimitsOfShape J := by
   intro _ _ _ ⟨X₁, X₂, c₁, c₂, h₁, h₂, f, hf⟩
-  let x := F ⋙ X₁
   have h₁' : IsColimit (c₁.whisker F) := (Functor.Final.isColimitWhiskerEquiv F c₁).symm h₁
   have h₂' : IsColimit (c₂.whisker F) := (Functor.Final.isColimitWhiskerEquiv F c₂).symm h₂
   have : h₁.desc (Cocone.mk c₂.pt (f ≫ c₂.ι)) =
@@ -424,7 +423,7 @@ lemma colimitsOfShape_le_of_final {J' : Type*} [Category J'] (F : J ⥤ J') [F.F
       dsimp at this ⊢
       simp [this])
   rw [this]
-  exact ⟨_, _, _, _, h₁', h₂', _, fun j ↦ hf _⟩
+  exact ⟨_, _, _, _, h₁', h₂', _, fun _ ↦ hf _⟩
 
 variable {J} in
 lemma colimitsOfShape_eq_of_equivalence {J' : Type*} [Category J'] (e : J ≌ J') :
