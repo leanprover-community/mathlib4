@@ -302,6 +302,11 @@ theorem matroid_flat_iff [IsDomain A] {s : Set A} :
   refine Set.ext fun a ↦ ⟨(hs _ <| adjoin_eq s ▸ ·), fun h ↦ ?_⟩
   exact isAlgebraic_algebraMap (A := A) (by exact (⟨a, subset_adjoin h⟩ : adjoin R s))
 
+theorem matroid_spanning_iff [IsDomain A] {s : Set A} :
+    (matroid inj).Spanning s ↔ Algebra.IsAlgebraic (adjoin R s) A := by
+  simp_rw [Matroid.spanning_iff, matroid_e, subset_univ, and_true, eq_univ_iff_forall,
+    matroid_closure_eq, SetLike.mem_coe, mem_algebraicClosure, Algebra.isAlgebraic_def]
+
 theorem matroid_flat_of_subsingleton [Subsingleton A] (s : Set A) : (matroid inj).Flat s := by
   simp_rw [Matroid.flat_iff, matroid_e, subset_univ, and_true, matroid_basis_iff_of_subsingleton]
   exact fun I X hIs hIX ↦ (hIX.symm.trans hIs).subset
@@ -311,12 +316,7 @@ theorem matroid_closure_of_subsingleton [Subsingleton A] (s : Set A) :
   simp_rw [Matroid.closure, matroid_flat_of_subsingleton, true_and, matroid_e, inter_univ]
   exact subset_antisymm (sInter_subset_of_mem <| subset_refl s) (subset_sInter fun _ ↦ id)
 
-theorem matroid_spanning_iff [IsDomain A] {s : Set A} :
-    (matroid inj).Spanning s ↔ Algebra.IsAlgebraic (adjoin R s) A := by
-  simp_rw [Matroid.spanning_iff, matroid_e, subset_univ, and_true, eq_univ_iff_forall,
-    matroid_closure_eq, SetLike.mem_coe, mem_algebraicClosure, Algebra.isAlgebraic_def]
-
-theorem matroid_spanning_iff_of_subsingleton [Subsingleton A] (s : Set A) :
+theorem matroid_spanning_iff_of_subsingleton [Subsingleton A] {s : Set A} :
     (matroid inj).Spanning s ↔ s = univ := by
   simp_rw [Matroid.spanning_iff, matroid_closure_of_subsingleton, matroid_e, subset_univ, and_true]
 
