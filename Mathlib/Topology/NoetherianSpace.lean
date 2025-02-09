@@ -70,7 +70,7 @@ protected theorem _root_.Topology.IsInducing.noetherianSpace [NoetherianSpace α
 @[deprecated (since := "2024-10-28")]
 alias _root_.Inducing.noetherianSpace := IsInducing.noetherianSpace
 
-/-- [Stacks: Lemma 0052 (1)](https://stacks.math.columbia.edu/tag/0052)-/
+@[stacks 0052 "(1)"]
 instance NoetherianSpace.set [NoetherianSpace α] (s : Set α) : NoetherianSpace s :=
   IsInducing.subtypeVal.noetherianSpace
 
@@ -191,7 +191,7 @@ theorem NoetherianSpace.exists_finset_irreducible [NoetherianSpace α] (s : Clos
   simpa [Set.exists_finite_iff_finset, Finset.sup_id_eq_sSup]
     using NoetherianSpace.exists_finite_set_closeds_irreducible s
 
-/-- [Stacks: Lemma 0052 (2)](https://stacks.math.columbia.edu/tag/0052) -/
+@[stacks 0052 "(2)"]
 theorem NoetherianSpace.finite_irreducibleComponents [NoetherianSpace α] :
     (irreducibleComponents α).Finite := by
   obtain ⟨S : Set (Set α), hSf, hSc, hSi, hSU⟩ :=
@@ -201,7 +201,7 @@ theorem NoetherianSpace.finite_irreducibleComponents [NoetherianSpace α] :
   rcases isIrreducible_iff_sUnion_isClosed.1 hs.1 S hSc (hSU ▸ Set.subset_univ _) with ⟨t, htS, ht⟩
   rwa [ht.antisymm (hs.2 (hSi _ htS) ht)]
 
-/-- [Stacks: Lemma 0052 (3)](https://stacks.math.columbia.edu/tag/0052) -/
+@[stacks 0052 "(3)"]
 theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [NoetherianSpace α]
     (Z : Set α) (H : Z ∈ irreducibleComponents α) :
     ∃ o : Set α, IsOpen o ∧ o ≠ ∅ ∧ o ≤ Z := by

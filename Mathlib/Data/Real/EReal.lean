@@ -1291,7 +1291,7 @@ private lemma exists_lt_add_right {a b c : EReal} (hc : c < a + b) : ∃ b' < b,
   simp_rw [add_comm a] at hc ⊢; exact exists_lt_add_left hc
 
 lemma add_le_of_forall_lt {a b c : EReal} (h : ∀ a' < a, ∀ b' < b, a' + b' ≤ c) : a + b ≤ c := by
-  refine le_of_forall_ge_of_dense fun d hd ↦ ?_
+  refine le_of_forall_lt_imp_le_of_dense fun d hd ↦ ?_
   obtain ⟨a', ha', hd⟩ := exists_lt_add_left hd
   obtain ⟨b', hb', hd⟩ := exists_lt_add_right hd
   exact hd.le.trans (h _ ha' _ hb')

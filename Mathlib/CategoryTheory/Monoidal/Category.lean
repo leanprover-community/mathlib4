@@ -140,6 +140,13 @@ scoped notation "λ_" => MonoidalCategoryStruct.leftUnitor
 /-- Notation for the `rightUnitor`: `X ⊗ 𝟙_C ≃ X` -/
 scoped notation "ρ_" => MonoidalCategoryStruct.rightUnitor
 
+/-- The property that the pentagon relation is satisfied by four objects
+in a category equipped with a `MonoidalCategoryStruct`. -/
+def Pentagon {C :Type u} [Category.{v} C] [MonoidalCategoryStruct C]
+    (Y₁ Y₂ Y₃ Y₄ : C) : Prop :=
+  (α_ Y₁ Y₂ Y₃).hom ▷ Y₄ ≫ (α_ Y₁ (Y₂ ⊗ Y₃) Y₄).hom ≫ Y₁ ◁ (α_ Y₂ Y₃ Y₄).hom =
+    (α_ (Y₁ ⊗ Y₂) Y₃ Y₄).hom ≫ (α_ Y₁ Y₂ (Y₃ ⊗ Y₄)).hom
+
 end MonoidalCategory
 
 open MonoidalCategory
@@ -149,10 +156,8 @@ In a monoidal category, we can take the tensor product of objects, `X ⊗ Y` and
 Tensor product does not need to be strictly associative on objects, but there is a
 specified associator, `α_ X Y Z : (X ⊗ Y) ⊗ Z ≅ X ⊗ (Y ⊗ Z)`. There is a tensor unit `𝟙_ C`,
 with specified left and right unitor isomorphisms `λ_ X : 𝟙_ C ⊗ X ≅ X` and `ρ_ X : X ⊗ 𝟙_ C ≅ X`.
-These associators and unitors satisfy the pentagon and triangle equations.
-
-See <https://stacks.math.columbia.edu/tag/0FFK>.
--/
+These associators and unitors satisfy the pentagon and triangle equations. -/
+@[stacks 0FFK]
 -- Porting note: The Mathport did not translate the temporary notation
 class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] extends MonoidalCategoryStruct C where
   tensorHom_def {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
@@ -161,8 +166,8 @@ class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] extends MonoidalCate
   /-- Tensor product of identity maps is the identity: `(𝟙 X₁ ⊗ 𝟙 X₂) = 𝟙 (X₁ ⊗ X₂)` -/
   tensor_id : ∀ X₁ X₂ : C, 𝟙 X₁ ⊗ 𝟙 X₂ = 𝟙 (X₁ ⊗ X₂) := by aesop_cat
   /--
-  Composition of tensor products is tensor product of compositions:
-  `(f₁ ⊗ g₁) ∘ (f₂ ⊗ g₂) = (f₁ ∘ f₂) ⊗ (g₁ ⊗ g₂)`
+  Tensor product of compositions is composition of tensor products:
+  `(f₁ ≫ g₁) ⊗ (f₂ ≫ g₂) = (f₁ ⊗ f₂) ≫ (g₁ ⊗ g₂)`
   -/
   tensor_comp :
     ∀ {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂),
