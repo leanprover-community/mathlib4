@@ -1143,6 +1143,7 @@ import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 import Mathlib.AlgebraicTopology.SimplicialSet.Path
 import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
+import Mathlib.AlgebraicTopology.SingularHomology.Basic
 import Mathlib.AlgebraicTopology.SingularSet
 import Mathlib.AlgebraicTopology.TopologicalSimplex
 import Mathlib.Analysis.Analytic.Basic
@@ -2016,8 +2017,10 @@ import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.PiProd
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Fin
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder.TransfiniteCompositionOfShape
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Assoc
@@ -3041,6 +3044,7 @@ import Mathlib.Data.Set.Finite.Range
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Functor
 import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Insert
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Set.List
 import Mathlib.Data.Set.MemPartition
@@ -3860,6 +3864,7 @@ import Mathlib.MeasureTheory.Group.Prod
 import Mathlib.MeasureTheory.Integral.Asymptotics
 import Mathlib.MeasureTheory.Integral.Average
 import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.MeasureTheory.Integral.BochnerL1
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 import Mathlib.MeasureTheory.Integral.CircleIntegral
 import Mathlib.MeasureTheory.Integral.CircleTransform
@@ -3882,7 +3887,7 @@ import Mathlib.MeasureTheory.Integral.PeakFunction
 import Mathlib.MeasureTheory.Integral.Periodic
 import Mathlib.MeasureTheory.Integral.Pi
 import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani
+import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Integral.SetToL1
 import Mathlib.MeasureTheory.Integral.TorusIntegral
@@ -5361,7 +5366,8 @@ import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.Bornology.BoundedOperation
 import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Topology.Bornology.Hom
-import Mathlib.Topology.CWComplex
+import Mathlib.Topology.CWComplex.Abstract.Basic
+import Mathlib.Topology.CWComplex.Classical.Basic
 import Mathlib.Topology.Category.Born
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.Category.CompHaus.EffectiveEpi
