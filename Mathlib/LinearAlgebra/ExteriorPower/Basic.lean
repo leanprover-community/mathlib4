@@ -232,8 +232,8 @@ theorem map_comp_ιMulti (f : M →ₗ[R] N) :
 @[simp]
 theorem map_apply_ιMulti (f : M →ₗ[R] N) (m : Fin n → M) :
     map n f (ιMulti R n m) = ιMulti R n (f ∘ m) := by
-  simp only [map, alternatingMapLinearEquiv_apply_ιMulti, AlternatingMap.compLinearMap_apply]
-  rfl
+  simp only [map, alternatingMapLinearEquiv_apply_ιMulti, AlternatingMap.compLinearMap_apply,
+    Function.comp_def]
 
 @[simp]
 lemma map_comp_ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) (f : M →ₗ[R] N) :

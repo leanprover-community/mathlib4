@@ -308,8 +308,8 @@ def pullbackConeOfLeftFst :
                     constructor
                     · change _ ∈ U.unop at h₁
                       convert h₁
-                      erw [TopCat.pullbackIsoProdSubtype_inv_fst_apply]
-                    · erw [TopCat.pullbackIsoProdSubtype_inv_snd_apply]
+                      rw [TopCat.pullbackIsoProdSubtype_inv_fst_apply]
+                    · rw [TopCat.pullbackIsoProdSubtype_inv_snd_apply]
                   · rintro _ ⟨x, h₁, rfl⟩
                     exact ⟨_, h₁, CategoryTheory.congr_fun pullback.condition x⟩))
       naturality := by
@@ -713,12 +713,14 @@ end Pullback
 
 section OfStalkIso
 
-variable [HasLimits C] [HasColimits C] [HasForget C]
+variable [HasLimits C] [HasColimits C] {FC : C → C → Type*} {CC : C → Type v}
+variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [instCC : ConcreteCategory.{v} C FC]
 variable [(CategoryTheory.forget C).ReflectsIsomorphisms]
   [PreservesLimits (CategoryTheory.forget C)]
 
 variable [PreservesFilteredColimits (CategoryTheory.forget C)]
 
+include instCC in
 /-- Suppose `X Y : SheafedSpace C`, where `C` is a concrete category,
 whose forgetful functor reflects isomorphisms, preserves limits and filtered colimits.
 Then a morphism `X ⟶ Y` that is a topological open embedding
