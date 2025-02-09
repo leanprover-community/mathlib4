@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.MorphismProperty.Limits
 # Attaching cells
 
 Given a family of morphisms `g a : A a ⟶ B a` and a morphism `f : X₁ ⟶ X₂`,
-we introduce a structure `AttachCells g f` whch expresses that `X₂`
+we introduce a structure `AttachCells g f` which expresses that `X₂`
 is obtained from `X₁` by attaching cells of the form `g a`. It means that
 there is a pushout diagram of the form
 ```
