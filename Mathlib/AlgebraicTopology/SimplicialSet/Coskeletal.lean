@@ -64,7 +64,7 @@ Strict Segal, one can produce an `n`-simplex in `X`. -/
 @[simp]
 noncomputable def lift {X : SSet.{u}} (sx : StrictSegal X) {n}
     (s : Cone (proj (op ⦋n⦌) (Truncated.inclusion 2).op ⋙
-      (Truncated.inclusion 2).op ⋙ X)) (x : s.pt) : X _[n] :=
+      (Truncated.inclusion 2).op ⋙ X)) (x : s.pt) : X _⦋n⦌ :=
   sx.spineToSimplex {
     vertex := fun i ↦ s.π.app (.mk (Y := op ⦋0⦌₂) (.op (SimplexCategory.const _ _ i))) x
     arrow := fun i ↦ s.π.app (.mk (Y := op ⦋1⦌₂) (.op (mkOfLe _ _ (Fin.castSucc_le_succ i)))) x

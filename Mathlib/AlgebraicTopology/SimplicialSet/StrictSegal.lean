@@ -10,8 +10,8 @@ import Mathlib.AlgebraicTopology.SimplicialSet.Path
 # Strict Segal simplicial sets
 
 A simplicial set `X` satisfies the `StrictSegal` condition if for all `n`, the map
-`X.spine n : X _[n] → X.Path n` is an equivalence, with equivalence inverse
-`spineToSimplex {n : ℕ} : Path X n → X _[n]`.
+`X.spine n : X _⦋n⦌ → X.Path n` is an equivalence, with equivalence inverse
+`spineToSimplex {n : ℕ} : Path X n → X _⦋n⦌`.
 
 Examples of `StrictSegal` simplicial sets are given by nerves of categories.
 
@@ -73,7 +73,7 @@ section autoParam
 
 variable (m : ℕ) (h : m ≤ n + 1 := by omega)
 
-/-- The fields of `StrictSegal` define an equivalence between `X _[m]ₙ₊₁`
+/-- The fields of `StrictSegal` define an equivalence between `X _⦋m⦌ₙ₊₁`
 and `Path X m`. -/
 def spineEquiv : X.obj (op ⟨.mk m, h⟩) ≃ Path X m where
   toFun := X.spine m
@@ -210,7 +210,7 @@ variable (X : SSet.{u})
 are uniquely determined by their spine. -/
 structure StrictSegal where
   /-- The inverse to `spine X n`. -/
-  spineToSimplex {n : ℕ} : Path X n → X _[n]
+  spineToSimplex {n : ℕ} : Path X n → X _⦋n⦌
   /-- `spineToSimplex` is a right inverse to `spine X n`. -/
   spine_spineToSimplex (n : ℕ) : spine X n ∘ spineToSimplex = id
   /-- `spineToSimplex` is a left inverse to `spine X n`. -/
@@ -238,13 +238,13 @@ lemma spine_spineToSimplex_apply {n : ℕ} (f : Path X n) :
   congr_fun (sx.spine_spineToSimplex n) f
 
 @[simp]
-lemma spineToSimplex_spine_apply {n : ℕ} (Δ : X _[n]) :
+lemma spineToSimplex_spine_apply {n : ℕ} (Δ : X _⦋n⦌) :
     sx.spineToSimplex (X.spine n Δ) = Δ :=
   congr_fun (sx.spineToSimplex_spine n) Δ
 
-/-- The fields of `StrictSegal` define an equivalence between `X _[n]`
+/-- The fields of `StrictSegal` define an equivalence between `X _⦋n⦌`
 and `Path X n`. -/
-def spineEquiv (n : ℕ) : X _[n] ≃ Path X n where
+def spineEquiv (n : ℕ) : X _⦋n⦌ ≃ Path X n where
   toFun := X.spine n
   invFun := sx.spineToSimplex
   left_inv := sx.spineToSimplex_spine_apply
@@ -273,7 +273,7 @@ theorem spineToSimplex_arrow (i : Fin n) (f : Path X n) :
 
 /-- In the presence of the strict Segal condition, a path of length `n` can be
 "composed" by taking the diagonal edge of the resulting `n`-simplex. -/
-def spineToDiagonal (f : Path X n) : X _[1] :=
+def spineToDiagonal (f : Path X n) : X _⦋1⦌ :=
   SimplicialObject.diagonal X (sx.spineToSimplex f)
 
 section interval

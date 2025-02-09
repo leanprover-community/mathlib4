@@ -255,17 +255,17 @@ section spine
 variable (X : SSet.{u}) (n : ℕ)
 
 /-- The spine of an `n`-simplex in `X` is the path of edges of length `n` formed
-by traversing in order through the vertices of `X _[n]ₙ₊₁`. -/
-def spine : X _[n] → Path X n :=
+by traversing in order through the vertices of `X _⦋n⦌ₙ₊₁`. -/
+def spine : X _⦋n⦌ → Path X n :=
   truncation (n + 1) |>.obj X |>.spine n
 
 @[simp]
-lemma spine_vertex (Δ : X _[n]) (i : Fin (n + 1)) :
+lemma spine_vertex (Δ : X _⦋n⦌) (i : Fin (n + 1)) :
     (X.spine n Δ).vertex i = X.map (SimplexCategory.const ⦋0⦌ ⦋n⦌ i).op Δ :=
   rfl
 
 @[simp]
-lemma spine_arrow (Δ : X _[n]) (i : Fin n) :
+lemma spine_arrow (Δ : X _⦋n⦌) (i : Fin n) :
     (X.spine n Δ).arrow i = X.map (mkOfSucc i).op Δ :=
   rfl
 
@@ -275,14 +275,14 @@ lemma truncation_spine (m : ℕ) (h : m ≤ n + 1) :
     ((truncation (n + 1)).obj X).spine m = X.spine m :=
   rfl
 
-lemma spine_map_vertex (Δ : X _[n]) {m : ℕ}
+lemma spine_map_vertex (Δ : X _⦋n⦌) {m : ℕ}
     (φ : ⦋m⦌ ⟶ ⦋n⦌) (i : Fin (m + 1)) :
     (X.spine m (X.map φ.op Δ)).vertex i =
       (X.spine n Δ).vertex (φ.toOrderHom i) :=
   truncation (max m n + 1) |>.obj X
     |>.spine_map_vertex n (by omega) Δ m (by omega) φ i
 
-lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ n) (Δ : X _[n]) :
+lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ n) (Δ : X _⦋n⦌) :
     X.spine l (X.map (subinterval j l h).op Δ) = (X.spine n Δ).interval j l h :=
   truncation (n + 1) |>.obj X |>.spine_map_subinterval n (by omega) j l h Δ
 
