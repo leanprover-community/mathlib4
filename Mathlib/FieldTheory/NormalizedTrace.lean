@@ -99,6 +99,10 @@ noncomputable def normalizedTrace : K →ₗ[F] F where
       ← smul_div_assoc, ← map_smul]
     rfl
 
+theorem normalizedTrace_def (a : K) :
+    normalizedTrace F K a = Algebra.trace F F⟮a⟯ (AdjoinSimple.gen F a) / Module.finrank F F⟮a⟯ :=
+  rfl
+
 variable {F} in
 theorem normalizedTrace_self_apply (a : F) : normalizedTrace F F a = a := by
   dsimp [normalizedTrace]
@@ -142,7 +146,10 @@ theorem normalizedTrace_eq_of_fininteDimensional [FiniteDimensional F K] :
   rw [LinearMap.smul_apply, smul_eq_mul, mul_comm, ← div_eq_mul_inv]
   apply normalizedTraceAux_eq_of_fininteDimensional
 
+theorem normalizedTrace_surjective : Function.Surjective (normalizedTrace F K) :=
+  fun a ↦ ⟨algebraMap F K a, normalizedTrace_algebraMap_apply F K a⟩
+
 /-- The normalized trace map is non-trivial. -/
-theorem nontrivial_normalizedTrace : normalizedTrace F K ≠ 0 :=
-  DFunLike.ne_iff.mpr
-    ⟨1, (map_one (algebraMap F K) ▸ normalizedTrace_algebraMap_apply F K 1) ▸ one_ne_zero⟩
+theorem normalizedTrace_ne_zero : normalizedTrace F K ≠ 0 :=
+  let ⟨a, ha⟩ := normalizedTrace_surjective F K 1
+  DFunLike.ne_iff.mpr <| ⟨a, ha ▸ one_ne_zero⟩
