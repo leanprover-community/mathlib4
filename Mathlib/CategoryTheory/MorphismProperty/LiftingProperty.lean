@@ -94,7 +94,7 @@ lemma gc_llp_rlp :
       (rlp ∘ OrderDual.ofDual) :=
   fun _ _ ↦ le_llp_iff_le_rlp _ _
 
-lemma le_rlp_llp : T ≤ T.rlp.llp := by
+lemma le_llp_rlp : T ≤ T.rlp.llp := by
   rw [le_llp_iff_le_rlp]
 
 @[simp]
@@ -111,47 +111,47 @@ lemma antitone_rlp : Antitone (rlp : MorphismProperty C → _) :=
 lemma antitone_llp : Antitone (llp : MorphismProperty C → _) :=
   fun _ _ h ↦ gc_llp_rlp.monotone_l h
 
-lemma pushouts_le_rlp_llp : T.pushouts ≤ T.rlp.llp := by
+lemma pushouts_le_llp_rlp : T.pushouts ≤ T.rlp.llp := by
   intro A B i hi
   exact (T.rlp.llp.isStableUnderCobaseChange_iff_pushouts_le).1 inferInstance i
-    (pushouts_monotone T.le_rlp_llp _ hi)
+    (pushouts_monotone T.le_llp_rlp _ hi)
 
 @[simp]
-lemma pushouts_rlp : T.pushouts.rlp = T.rlp := by
+lemma rlp_pushouts : T.pushouts.rlp = T.rlp := by
   apply le_antisymm
   · exact antitone_rlp T.le_pushouts
   · rw [← le_llp_iff_le_rlp]
-    exact T.pushouts_le_rlp_llp
+    exact T.pushouts_le_llp_rlp
 
-lemma colimitsOfShape_discrete_le_rlp_llp (J : Type w) :
+lemma colimitsOfShape_discrete_le_llp_rlp (J : Type w) :
     T.colimitsOfShape (Discrete J) ≤ T.rlp.llp := by
   intro A B i hi
   exact (T.rlp.llp.isStableUnderColimitsOfShape_iff_colimitsOfShape_le (Discrete J)).1
     (llp_isStableUnderCoproductsOfShape _ _) _
-      (colimitsOfShape_monotone T.le_rlp_llp _ _ hi)
+      (colimitsOfShape_monotone T.le_llp_rlp _ _ hi)
 
-lemma coproducts_le_rlp_llp : (coproducts.{w} T) ≤ T.rlp.llp := by
+lemma coproducts_le_llp_rlp : (coproducts.{w} T) ≤ T.rlp.llp := by
   intro A B i hi
   rw [coproducts_iff] at hi
   obtain ⟨J, hi⟩ := hi
-  exact T.colimitsOfShape_discrete_le_rlp_llp J _ hi
+  exact T.colimitsOfShape_discrete_le_llp_rlp J _ hi
 
 @[simp]
-lemma coproducts_rlp : (coproducts.{w} T).rlp = T.rlp := by
+lemma rlp_coproducts : (coproducts.{w} T).rlp = T.rlp := by
   apply le_antisymm
   · exact antitone_rlp T.le_coproducts
   · rw [← le_llp_iff_le_rlp]
-    exact T.coproducts_le_rlp_llp
+    exact T.coproducts_le_llp_rlp
 
-lemma retracts_le_rlp_llp : T.retracts ≤ T.rlp.llp :=
-  le_trans (retracts_monotone T.le_rlp_llp) T.rlp.llp.retracts_le
+lemma retracts_le_llp_rlp : T.retracts ≤ T.rlp.llp :=
+  le_trans (retracts_monotone T.le_llp_rlp) T.rlp.llp.retracts_le
 
 @[simp]
-lemma retracts_rlp : T.retracts.rlp = T.rlp := by
+lemma rlp_retracts : T.retracts.rlp = T.rlp := by
   apply le_antisymm
   · exact antitone_rlp T.le_retracts
   · rw [← le_llp_iff_le_rlp]
-    exact T.retracts_le_rlp_llp
+    exact T.retracts_le_llp_rlp
 
 end MorphismProperty
 
