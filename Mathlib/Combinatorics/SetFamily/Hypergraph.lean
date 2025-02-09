@@ -1,8 +1,7 @@
-
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Data.Finset.Slice
 import Mathlib.Combinatorics.SimpleGraph.Basic
-universe u
+universe u v
 open Function Set
 section FamHom
 variable {α β γ : Type*}
@@ -57,7 +56,7 @@ protected theorem map_mem (f : 𝒜 →s ℬ) {A} : A ∈ 𝒜 → A.image f  �
   f.map_mem'
 
 @[simp]
-theorem coe_fn_toFun (f : 𝒜 →s ℬ) : f.toFun = (f : α → β) :=
+theorem coe_fn_toFun (f :𝒜 →s ℬ) : f.toFun = (f : α → β) :=
   rfl
 
 /-- The map `coe_fn : (𝒜 →s ℬ) → (α → β)` is injective. -/
@@ -105,7 +104,7 @@ infixl:25 " ↪s " => FamInjHom
 --   ⟨fun _ => hs.1 _, fun h => hs.2 h, fun h₁ h₂ => hs.3 h₁ h₂⟩
 
 namespace FamInjHom
-#check Finset.map_eq_image
+
 /-- A set embedding is also a set homomorphism -/
 def toFamHom (f : 𝒜 ↪s ℬ) : 𝒜 →s ℬ where
   toFun := f.toEmbedding.toFun
@@ -196,6 +195,7 @@ theorem coe_trans (f : 𝒜 ↪s ℬ) (g : ℬ ↪s 𝒞) : (f.trans g) = g ∘ 
 end FamInjHom
 
 end FamHom
+open Finset
 variable {ι : Sort*}
 @[ext]
 structure HyperGraph (r : ℕ) (V : Type u)  where
@@ -235,11 +235,11 @@ lemma mk'_edges {r : ℕ} {V : Type u} (edges : Finset V → Bool) (e : Finset V
 
 /-- We can enumerate r-hypergraphs on a Fintype by enumerating all families of r-set -/
 instance {r : ℕ} {V : Type u} [Fintype V] [DecidableEq V] : Fintype (HyperGraph r V) where
-  elems := Finset.univ.map HyperGraph.mk'
+  elems := univ.map HyperGraph.mk'
   complete := by
     classical
     rintro ⟨edges, hr⟩
-    simp only [Finset.mem_map, Finset.mem_univ, true_and, Subtype.exists]
+    simp only [mem_map, Finset.mem_univ, true_and, Subtype.exists]
     refine ⟨fun e  ↦ e ∈ edges,?_,?_⟩
     · simp only [decide_eq_true_eq]
       apply hr
@@ -442,7 +442,7 @@ instance [IsEmpty V] (hr : 0 < r) : Unique (HyperGraph r V) where
     simp only [mem_iff, mem_bot, iff_false]
     intro he;
     have : 0 < e.card := (G.Sized he) ▸ hr;
-    obtain ⟨a,ha⟩:=Finset.card_pos.1 this
+    obtain ⟨a,ha⟩:=card_pos.1 this
     exact IsEmpty.false a
 
 -- instance [Nonempty V] (r : ℕ): Nontrivial (HyperGraph r V) :=
@@ -491,7 +491,7 @@ def neighborHyperGraph [DecidableEq V] (G : HyperGraph r V) (v : V) : HyperGraph
   Sized := by
     intro f hf; simp only [mem_image, mem_setOf_eq] at hf
     obtain ⟨e,he,he2⟩:= hf
-    rw [← he2]; exact G.Sized he.1 ▸ Finset.card_erase_of_mem he.2
+    rw [← he2]; exact G.Sized he.1 ▸ card_erase_of_mem he.2
 
 lemma mem_neighborHyperGraph_iff [DecidableEq V] {G : HyperGraph r V} {v : V} {e : Finset V} :
  e ∈ G.neighborHyperGraph v ↔ insert v e ∈ G ∧ e.card = r - 1 ∧ v ∉ e := by
@@ -499,11 +499,11 @@ lemma mem_neighborHyperGraph_iff [DecidableEq V] {G : HyperGraph r V} {v : V} {e
   · change  e ∈ (fun e => e.erase v) '' {e | e ∈ G ∧ v ∈ e} at h
     simp only [mem_image, mem_setOf_eq] at h
     obtain ⟨f,h1,h2⟩:= h
-    rw [← h2]; rw [Finset.insert_erase h1.2, Finset.card_erase_of_mem h1.2,G.Sized h1.1]
+    rw [← h2]; rw [insert_erase h1.2, card_erase_of_mem h1.2,G.Sized h1.1]
     use h1.1,rfl
-    exact Finset.not_mem_erase v f
-  · use (insert v e),⟨h.1, Finset.mem_insert_self v e⟩
-    simp only [Finset.erase_insert_eq_erase, Finset.erase_eq_self]
+    exact not_mem_erase v f
+  · use (insert v e),⟨h.1, mem_insert_self v e⟩
+    simp only [erase_insert_eq_erase, erase_eq_self]
     exact h.2.2
 
 instance neighborHyperGraph.memDecidable [DecidableEq V] (G : HyperGraph r V)(v : V)
@@ -541,7 +541,7 @@ def linkHyperGraph [DecidableEq V] (G : HyperGraph r V) (e : Finset V) : HyperGr
   Sized := by
     intro f hf; simp only [mem_image, mem_setOf_eq] at hf
     obtain ⟨e,he,he2⟩:= hf
-    rw [← he2]; exact G.Sized he.1 ▸ Finset.card_sdiff he.2
+    rw [← he2]; exact G.Sized he.1 ▸ card_sdiff he.2
 
 lemma mem_linkHyperGraph_iff [DecidableEq V] {G : HyperGraph r V} {e f : Finset V} :
  f ∈ G.linkHyperGraph e ↔ Disjoint e f ∧ e ∪ f ∈ G ∧ f.card = r - e.card := by
@@ -550,19 +550,119 @@ lemma mem_linkHyperGraph_iff [DecidableEq V] {G : HyperGraph r V} {e f : Finset 
     simp only [mem_image, mem_setOf_eq] at h
     obtain ⟨g,h1,h2⟩:= h
     rw [← h2];
-    rw [Finset.union_sdiff_of_subset h1.2]
-    use Finset.disjoint_sdiff, h1.1
-    rw [Finset.card_sdiff h1.2,G.Sized h1.1]
-  · use (e ∪ f), ⟨h.2.1, Finset.subset_union_left⟩, Finset.union_sdiff_cancel_left h.1
+    rw [union_sdiff_of_subset h1.2]
+    use disjoint_sdiff, h1.1
+    rw [card_sdiff h1.2,G.Sized h1.1]
+  · use (e ∪ f), ⟨h.2.1, subset_union_left⟩, union_sdiff_cancel_left h.1
 
 def toGraph [DecidableEq V] (G : HyperGraph r V) [DecidablePred (· ∈ G)] : SimpleGraph V where
   Adj := fun v w ↦ ∃ e ∈ G, v ∈ e ∧ w ∈ e ∧ v ≠ w
   symm := by aesop_graph
   loopless := by aesop_graph
 
+section Maps
 
+variable {V W X : Type*} {r : ℕ} (G : SimpleGraph V) (G' : SimpleGraph W) {u v : V}
+
+
+/-- Given an injective function, there is a covariant induced map on graphs by pushing forward
+the adjacency relation.
+
+This is injective (see `SimpleGraph.map_injective`). -/
+protected def map (f : V ↪ W) (G : HyperGraph r V) : HyperGraph r W where
+  Edges :=  {a | ∃ e ∈ G, a = e.map f}
+  Sized := by
+    intro e he
+    obtain ⟨e',he',he2⟩ := he
+    rw [he2]
+    exact card_map f ▸ (G.Sized he')
+
+variable {s : ℕ}
+structure Hom {α β : Type*} [DecidableEq α] [DecidableEq β]
+   (G : HyperGraph r α) (H : HyperGraph s β) where
+  toFun : α → β
+  map_mem' : ∀ {e}, e ∈ G → e.image toFun ∈ H
+
+infixl:25 " →h " => Hom
+
+namespace Hom
+variable {α β γ : Type*} {t : ℕ} [DecidableEq α] [DecidableEq β][DecidableEq γ]
+{G : HyperGraph r α} {H : HyperGraph s β} {I : HyperGraph t γ}
+instance : FunLike (G →h H) α β where
+  coe o := o.toFun
+  coe_injective' f g h := by
+    cases f
+    cases g
+    congr
+
+initialize_simps_projections HyperGraph.Hom (toFun → apply)
+
+protected theorem map_mem (f : G →h H) {e : Finset α} : e ∈ G → e.image f  ∈ H :=
+  f.map_mem'
+
+@[simp]
+theorem coe_fn_toFun (f : G →h H) : f.toFun = (f : α → β) :=
+  rfl
+
+/-- The map `coe_fn : (𝒜 →s ℬ) → (α → β)` is injective. -/
+theorem coe_fn_injective : Injective fun (f : G →h H) => (f : α → β) :=
+  DFunLike.coe_injective
+
+@[ext]
+theorem ext ⦃f g : G →h H⦄ (h : ∀ x, f x = g x) : f = g :=
+  DFunLike.ext f g h
+
+/-- Identity map is a Set homomorphism. -/
+@[refl, simps]
+protected def id (H : HyperGraph r α) : H →h H  :=
+  ⟨fun x => x, by simp⟩
+
+/-- Composition of two Set homomorphisms is a Set homomorphism. -/
+@[simps]
+protected def comp (g : H →h I) (f : G →h H) : G →h I :=
+  ⟨fun x => g (f x), by
+    intro A hA; convert g.map_mem <| f.map_mem hA
+    ext; simp⟩
+
+end Hom
+
+
+
+
+variable  (G : HyperGraph r V) [DecidableEq V] {α : Type*}
+
+abbrev Coloring (s : ℕ) (α : Type v) [DecidableEq α] := G →h (⊤ : HyperGraph s α)
+
+structure EdgeColoring (α : Type v) where
+  toFun : Finset V → α
+  valid : ∀ e f , e ∈ G → f ∈ G → e ≠ f → toFun e ≠ toFun f
+
+instance : FunLike (EdgeColoring G α) (Finset V) α where
+  coe o := o.toFun
+  coe_injective' f g h := by
+    cases f
+    cases g
+    congr
+
+variable {G}
+variable {α β : Type*} [DecidableEq α] [DecidableEq β] (C : G.Coloring s α)
+
+theorem Coloring.valid {e : Finset V} (h : e ∈ G) : s ≤ (e.image C).card  := by
+  have := C.map_mem' h;
+  simp only [mem_top] at this
+  exact this.symm.le
+
+variable (C : G.Coloring r α)
+theorem Coloring.strong {e : Finset V} {v w : V} (h : e ∈ G) :
+  v ∈ e → w ∈ e → v ≠ w → C v ≠ C w := by
+  intro hv hw hne heq
+  apply hne
+  apply (injOn_of_card_image_eq <| le_antisymm card_image_le (G.Sized h ▸ C.valid h)) hv hw heq
+
+end Maps
 
 end HyperGraph
+
 
 -- /-- A set isomorphism is an equivalence that is also a set embedding. -/
 -- structure SetIso {α β : Type*}
