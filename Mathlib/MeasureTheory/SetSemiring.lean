@@ -727,7 +727,8 @@ variable {ι : Type*} {α : ι → Type*} (C : (i : ι) → Set (Set (α i)))
 
 example : s = s ∨ False := by exact (Or.inl rfl)
 
-theorem l (s : Set ι) (hs : s.Finite) (hC : ∀ i ∈ s, IsSetSemiring (C i)) : s.Nonempty →  IsSetSemiring (s.pi '' s.pi C) := by
+theorem l (s : Set ι) (hs : s.Finite) (hC : ∀ i ∈ s, IsSetSemiring (C i)) :
+    s.Nonempty →  IsSetSemiring (s.pi '' s.pi C) := by
   refine Set.Finite.induction_on_subset s hs ?_ ?_
   · simp
   · intro a t ha hts t_fin h_ind _
@@ -747,11 +748,19 @@ theorem l (s : Set ι) (hs : s.Finite) (hC : ∀ i ∈ s, IsSetSemiring (C i)) :
       · simp_rw [Set.mem_image, Set.mem_pi, Set.mem_insert_iff, insert_pi] at hu hv
         obtain ⟨x, ⟨hx1, hx2⟩⟩ := hu
         obtain ⟨y, ⟨hy1, hy2⟩⟩ := hv
-
+        have hx : t.pi x ∈ t.pi '' t.pi C :=
+          Set.mem_image_of_mem t.pi <| Set.mem_pi.mpr fun i hi ↦ hx1 i (Or.inr hi)
+        have hy : t.pi y ∈ t.pi '' t.pi C :=
+          Set.mem_image_of_mem t.pi <| Set.mem_pi.mpr fun i hi ↦ hy1 i (Or.inr hi)
         obtain ⟨J, ⟨hJ1, hJ2, hJ3⟩⟩ :=
+          (h_ind h).diff_eq_sUnion' (t.pi x) hx (t.pi y) hy
+        obtain ⟨K, ⟨hK1, hK2, hK3⟩⟩ :=
           (hC a ha).diff_eq_sUnion' (x a) (hx1 a (Or.inl rfl)) (y a) (hy1 a (Or.inl rfl))
         classical
-        let D := fun i ↦ if i = a then J else {x i}
+        let D : Finset (Set ((i : ι) → α i)):= ⋃ (j ∈ J), {j ∩ Function.eval a ⁻¹' (x a ∩ y a)}
+        let E := ⋃ (k ∈ K), {t.pi x ∩ Function.eval a ⁻¹' k}
+        use (D ∪ E)
+
 
         sorry
       sorry
