@@ -325,7 +325,7 @@ theorem lift_trdeg_le_of_injective (f : A →ₐ[R] A') (hf : Injective f) :
 
 theorem trdeg_le_of_injective {A' : Type v} [CommRing A'] [Algebra R A'] (f : A →ₐ[R] A')
     (hf : Injective f) : trdeg R A ≤ trdeg R A' := by
-  rw [← (trdeg R A).lift_id, ← (trdeg R A').lift_id]; exact lift_trdeg_le_of_injective hf
+  rw [← (trdeg R A).lift_id, ← (trdeg R A').lift_id]; exact lift_trdeg_le_of_injective f hf
 
 theorem lift_trdeg_le_of_surjective (f : A →ₐ[R] A') (hf : Surjective f) :
     lift.{v} (trdeg R A') ≤ lift.{v'} (trdeg R A) := by
