@@ -30,8 +30,8 @@ open MeasureTheory Real Set Filter Topology
 lemma lintegral_Iic_eq_lintegral_Iio_add_Icc {y z : ℝ} (f : ℝ → ℝ≥0∞) (hzy : z ≤ y) :
     ∫⁻ x in Iic y, f x = (∫⁻ x in Iio z, f x) + ∫⁻ x in Icc z y, f x := by
   rw [← Iio_union_Icc_eq_Iic hzy, lintegral_union measurableSet_Icc]
-  rw [Set.disjoint_iff]
-  rintro x ⟨h1 : x < _, h2, _⟩
+  simp_rw [Set.disjoint_iff_forall_ne, mem_Iio, mem_Icc]
+  intros
   linarith
 
 namespace ProbabilityTheory
@@ -49,8 +49,9 @@ def gammaPDF (a r x : ℝ) : ℝ≥0∞ :=
   ENNReal.ofReal (gammaPDFReal a r x)
 
 lemma gammaPDF_eq (a r x : ℝ) :
-    gammaPDF a r x = ENNReal.ofReal (if 0 ≤ x then
-    r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x)) else 0) := rfl
+    gammaPDF a r x =
+      ENNReal.ofReal (if 0 ≤ x then r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x)) else 0) :=
+  rfl
 
 lemma gammaPDF_of_neg {a r x : ℝ} (hx : x < 0) : gammaPDF a r x = 0 := by
   simp only [gammaPDF_eq, if_neg (not_le.mpr hx), ENNReal.ofReal_zero]

@@ -30,7 +30,7 @@ A *normal domain* is a domain that is integrally closed in its field of fraction
 [Stacks: normal domain](https://stacks.math.columbia.edu/tag/037B#0309)
 Normal domains are the major use case of `IsIntegrallyClosed` at the time of writing, and we have
 quite a few results that can be moved wholesale to a new `NormalDomain` definition.
-In fact, before PR #6126 `IsIntegrallyClosed` was exactly defined to be a normal domain.
+In fact, before PR https://github.com/leanprover-community/mathlib4/pull/6126 `IsIntegrallyClosed` was exactly defined to be a normal domain.
 (So you might want to copy some of its API when you define normal domains.)
 
 A normal ring means that localizations at all prime ideals are normal domains.
@@ -165,7 +165,7 @@ variable (R)
 @[simp]
 theorem integralClosure_eq_bot [IsIntegrallyClosedIn R A] [NoZeroSMulDivisors R A] [Nontrivial A] :
     integralClosure R A = ⊥ :=
-  (integralClosure_eq_bot_iff A (NoZeroSMulDivisors.algebraMap_injective _ _)).mpr ‹_›
+  (integralClosure_eq_bot_iff A (FaithfulSMul.algebraMap_injective _ _)).mpr ‹_›
 
 variable {A} {B : Type*} [CommRing B]
 
@@ -276,46 +276,30 @@ theorem isIntegrallyClosedOfFiniteExtension [IsDomain R] [FiniteDimensional K L]
 
 end integralClosure
 
+section localization
+
+variable {R : Type*} (S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+
+lemma isIntegrallyClosed_of_isLocalization [IsIntegrallyClosed R] [IsDomain R] (M : Submonoid R)
+    (hM : M ≤ R⁰) [IsLocalization M S] : IsIntegrallyClosed S := by
+  let K := FractionRing R
+  let g : S →+* K := IsLocalization.map _ (T := R⁰) (RingHom.id R) hM
+  letI := g.toAlgebra
+  have : IsScalarTower R S K := IsScalarTower.of_algebraMap_eq'
+    (by rw [RingHom.algebraMap_toAlgebra, IsLocalization.map_comp, RingHomCompTriple.comp_eq])
+  have := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization M S K
+  refine (isIntegrallyClosed_iff_isIntegralClosure (K := K)).mpr
+    ⟨IsFractionRing.injective _ _, fun {x} ↦ ⟨?_, fun e ↦ e.choose_spec ▸ isIntegral_algebraMap⟩⟩
+  intro hx
+  obtain ⟨⟨y, y_mem⟩, hy⟩ := hx.exists_multiple_integral_of_isLocalization M _
+  obtain ⟨z, hz⟩ := (isIntegrallyClosed_iff _).mp ‹_› hy
+  refine ⟨IsLocalization.mk' S z ⟨y, y_mem⟩, (IsLocalization.lift_mk'_spec _ _ _ _).mpr ?_⟩
+  rw [RingHom.comp_id, hz, ← Algebra.smul_def, Submonoid.mk_smul]
+
+end localization
 /-- Any field is integral closed. -/
 /- Although `infer_instance` can find this if you import Mathlib, in this file they have not been
-  proven yet. However, the next theorem is a fundamental property of `IsIntegrallyClosed`,
+  proven yet. However, it is used to prove a fundamental property of `IsIntegrallyClosed`,
   and it is not desirable to involve more content from other files. -/
 instance Field.instIsIntegrallyClosed (K : Type*) [Field K] : IsIntegrallyClosed K :=
   (isIntegrallyClosed_iff K).mpr fun {x} _ ↦ ⟨x, rfl⟩
-
-open Localization Ideal IsLocalization in
-/-- An integral domain `R` is integral closed if `Rₘ` is integral closed
-for any maximal ideal `m` of `R`. -/
-theorem IsIntegrallyClosed.of_localization_maximal {R : Type*} [CommRing R] [IsDomain R]
-    (h : ∀ p : Ideal R, p ≠ ⊥ → [p.IsMaximal] → IsIntegrallyClosed (Localization.AtPrime p)) :
-    IsIntegrallyClosed R := by
-  by_cases hf : IsField R
-  · exact hf.toField.instIsIntegrallyClosed
-  apply (isIntegrallyClosed_iff (FractionRing R)).mpr
-  rintro ⟨x⟩ hx
-  let I : Ideal R := span {x.2.1} / span {x.1}
-  have h1 : 1 ∈ I := by
-    apply I.eq_top_iff_one.mp
-    by_contra hn
-    rcases I.exists_le_maximal hn with ⟨p, hpm, hpi⟩
-    have hic := h p (Ring.ne_bot_of_isMaximal_of_not_isField hpm hf)
-    have hxp : IsIntegral (Localization.AtPrime p) (mk x.1 x.2) := hx.tower_top
-    /- `x.1 / x.2.1 ∈ Rₚ` since it is integral over `Rₚ` and `Rₚ` is integrally closed.
-      More precisely, `x.1 / x.2.1 = y.1 / y.2.1` where `y.1, y.2.1 ∈ R` and `y.2.1 ∉ p`. -/
-    rcases (isIntegrallyClosed_iff (FractionRing R)).mp hic hxp with ⟨⟨y⟩, hy⟩
-    /- `y.2.1 ∈ I` since for all `a ∈ Ideal.span {x.1}`, say `a = b * x.1`,
-      we have `y.2 * a = b * x.1 * y.2 = b * y.1 * x.2.1 ∈ Ideal.span {x.2.1}`. -/
-    have hyi : y.2.1 ∈ I := by
-      intro a ha
-      rcases mem_span_singleton'.mp ha with ⟨b, hb⟩
-      apply mem_span_singleton'.mpr ⟨b * y.1, _⟩
-      rw [← hb, ← mul_assoc, mul_comm y.2.1 b, mul_assoc, mul_assoc]
-      exact congrArg (HMul.hMul b) <| (mul_comm y.1 x.2.1).trans <|
-        NoZeroSMulDivisors.algebraMap_injective R (Localization R⁰) <| mk'_eq_iff_eq.mp <|
-          (mk'_eq_algebraMap_mk'_of_submonoid_le _ _ p.primeCompl_le_nonZeroDivisors y.1 y.2).trans
-            <| show algebraMap (Localization.AtPrime p) _ (mk' _ y.1 y.2) = mk' _ x.1 x.2
-              by simpa only [← mk_eq_mk', ← hy] using by rfl
-    -- `y.2.1 ∈ I` implies `y.2.1 ∈ p` since `I ⊆ p`, which contradicts to the choice of `y`.
-    exact y.2.2 (hpi hyi)
-  rcases mem_span_singleton'.mp (h1 x.1 (mem_span_singleton_self x.1)) with ⟨y, hy⟩
-  exact ⟨y, (eq_mk'_of_mul_eq (hy.trans (one_mul x.1))).trans (mk_eq_mk'_apply x.1 x.2).symm⟩

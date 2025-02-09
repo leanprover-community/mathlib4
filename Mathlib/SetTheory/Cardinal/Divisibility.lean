@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
 import Mathlib.Algebra.IsPrimePow
-import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.Tactic.WLOG
 
 /-!
@@ -30,8 +30,6 @@ Note furthermore that no infinite cardinal is irreducible
 
 
 namespace Cardinal
-
-open Cardinal
 
 universe u
 

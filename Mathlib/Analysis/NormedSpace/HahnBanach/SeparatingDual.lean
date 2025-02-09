@@ -5,8 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
+import Mathlib.Analysis.NormedSpace.Multilinear.Basic
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
 import Mathlib.LinearAlgebra.Dual
-import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
 /-!
 # Spaces with separating dual
@@ -26,7 +27,7 @@ equivalences acts transitively on the set of nonzero vectors.
 registers that continuous linear forms on `E` separate points of `E`. -/
 @[mk_iff separatingDual_def]
 class SeparatingDual (R V : Type*) [Ring R] [AddCommGroup V] [TopologicalSpace V]
-    [TopologicalSpace R] [Module R V] : Prop :=
+    [TopologicalSpace R] [Module R V] : Prop where
   /-- Any nonzero vector can be mapped by a continuous linear map to a nonzero scalar. -/
   exists_ne_zero' : ∀ (x : V), x ≠ 0 → ∃ f : V →L[R] R, f x ≠ 0
 
@@ -130,13 +131,13 @@ theorem exists_continuousLinearEquiv_apply_eq [ContinuousSMul R V]
     map_smul' := by simp [smul_smul]
     left_inv := fun z ↦ by
       simp only [id_eq, eq_mpr_eq_cast, RingHom.id_apply, smul_eq_mul, AddHom.toFun_eq_coe,
-        -- Note: #8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
+        -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
         AddHom.coe_mk, map_add, map_smulₛₗ _, map_sub, Gx, mul_sub, mul_one, add_sub_cancel]
       rw [mul_comm (G z), ← mul_assoc, inv_mul_cancel₀ Gy]
       simp only [smul_sub, one_mul]
       abel
     right_inv := fun z ↦ by
-        -- Note: #8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
+        -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
       simp only [map_add, map_smulₛₗ _, map_mul, map_inv₀, RingHom.id_apply, map_sub, Gx,
         smul_eq_mul, mul_sub, mul_one]
       rw [mul_comm _ (G y), ← mul_assoc, mul_inv_cancel₀ Gy]

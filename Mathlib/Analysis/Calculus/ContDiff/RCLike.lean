@@ -24,12 +24,13 @@ section Real
   its extension fields such as `ℂ`).
 -/
 
-variable {n : ℕ∞} {𝕂 : Type*} [RCLike 𝕂] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕂 E']
-  {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕂 F']
+variable {n : WithTop ℕ∞} {𝕂 : Type*} [RCLike 𝕂] {E' : Type*} [NormedAddCommGroup E']
+  [NormedSpace 𝕂 E'] {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕂 F']
 
 /-- If a function has a Taylor series at order at least 1, then at points in the interior of the
     domain of definition, the term of order 1 of this series is a strict derivative of `f`. -/
-theorem HasFTaylorSeriesUpToOn.hasStrictFDerivAt {s : Set E'} {f : E' → F'} {x : E'}
+theorem HasFTaylorSeriesUpToOn.hasStrictFDerivAt {n : WithTop ℕ∞}
+    {s : Set E'} {f : E' → F'} {x : E'}
     {p : E' → FormalMultilinearSeries 𝕂 E' F'} (hf : HasFTaylorSeriesUpToOn n f p s) (hn : 1 ≤ n)
     (hs : s ∈ 𝓝 x) : HasStrictFDerivAt f ((continuousMultilinearCurryFin1 𝕂 E' F') (p x 1)) x :=
   hasStrictFDerivAt_of_hasFDerivAt_of_continuousAt (hf.eventually_hasFDerivAt hn hs) <|
@@ -40,7 +41,7 @@ us as `f'`, then `f'` is also a strict derivative. -/
 theorem ContDiffAt.hasStrictFDerivAt' {f : E' → F'} {f' : E' →L[𝕂] F'} {x : E'}
     (hf : ContDiffAt 𝕂 n f x) (hf' : HasFDerivAt f f' x) (hn : 1 ≤ n) :
     HasStrictFDerivAt f f' x := by
-  rcases hf 1 hn with ⟨u, H, p, hp⟩
+  rcases hf.of_le hn 1 le_rfl with ⟨u, H, p, hp⟩
   simp only [nhdsWithin_univ, mem_univ, insert_eq_of_mem] at H
   have := hp.hasStrictFDerivAt le_rfl H
   rwa [hf'.unique this.hasFDerivAt]
@@ -134,7 +135,7 @@ lemma ContDiff.locallyLipschitz {f : E' → F'} (hf : ContDiff 𝕂 1 f) : Local
   use K, t
 
 /-- A `C^1` function with compact support is Lipschitz. -/
-theorem ContDiff.lipschitzWith_of_hasCompactSupport {f : E' → F'} {n : ℕ∞}
+theorem ContDiff.lipschitzWith_of_hasCompactSupport {f : E' → F'}
     (hf : HasCompactSupport f) (h'f : ContDiff 𝕂 n f) (hn : 1 ≤ n) :
     ∃ C, LipschitzWith C f := by
   obtain ⟨C, hC⟩ := (hf.fderiv 𝕂).exists_bound_of_continuous (h'f.continuous_fderiv hn)

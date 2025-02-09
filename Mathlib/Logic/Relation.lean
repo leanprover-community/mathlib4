@@ -213,7 +213,7 @@ instance [Decidable (∃ a b, r a b ∧ f a = c ∧ g b = d)] : Decidable (Relat
 
 end Map
 
-variable {r : α → α → Prop} {a b c d : α}
+variable {r : α → α → Prop} {a b c : α}
 
 /-- `ReflTransGen r`: reflexive transitive closure of `r` -/
 @[mk_iff ReflTransGen.cases_tail_iff]
@@ -245,7 +245,7 @@ namespace ReflGen
 
 theorem to_reflTransGen : ∀ {a b}, ReflGen r a b → ReflTransGen r a b
   | a, _, refl => by rfl
-  | a, b, single h => ReflTransGen.tail ReflTransGen.refl h
+  | _, _, single h => ReflTransGen.tail ReflTransGen.refl h
 
 theorem mono {p : α → α → Prop} (hp : ∀ a b, r a b → p a b) : ∀ {a b}, ReflGen r a b → ReflGen p a b
   | a, _, ReflGen.refl => by rfl
@@ -688,15 +688,6 @@ theorem Quot.eqvGen_sound (H : EqvGen r a b) : Quot.mk r a = Quot.mk r b :=
     (fun _ _ _ IH ↦ Eq.symm IH)
     (fun _ _ _ _ _ IH₁ IH₂ ↦ Eq.trans IH₁ IH₂)
     H
-
-instance Quotient.decidableEq {α : Sort*} {s : Setoid α} [d : ∀ a b : α, Decidable (a ≈ b)] :
-    DecidableEq (Quotient s) :=
-  fun q₁ q₂ : Quotient s ↦
-    Quotient.recOnSubsingleton₂ q₁ q₂
-      (fun a₁ a₂ ↦
-        match (d a₁ a₂) with
-        | (isTrue h₁)  => isTrue (Quotient.sound h₁)
-        | (isFalse h₂) => isFalse (fun h ↦ absurd (Quotient.exact h) h₂))
 
 theorem Equivalence.eqvGen_iff (h : Equivalence r) : EqvGen r a b ↔ r a b :=
   Iff.intro

@@ -10,6 +10,7 @@ import Mathlib.Util.CompileInductive
 import Batteries.Tactic.Lint.Basic
 import Batteries.Data.List.Lemmas
 import Batteries.Data.RBMap.Basic
+import Batteries.Logic
 
 /-!
 ## Definitions on lists
@@ -48,10 +49,6 @@ def getLastI [Inhabited α] : List α → α
   | [a] => a
   | [_, b] => b
   | _ :: _ :: l => getLastI l
-
-/-- List with a single given element. -/
-@[inline, deprecated List.pure (since := "2024-03-24")]
-protected def ret {α : Type u} (a : α) : List α := [a]
 
 /-- "Inhabited" `take` function: Take `n` elements from a list `l`. If `l` has less than `n`
   elements, append `n - length l` elements `default`. -/
@@ -209,7 +206,7 @@ but are equal up to permutation, as shown by `List.permutations_perm_permutation
 @[simp]
 def permutations' : List α → List (List α)
   | [] => [[]]
-  | t :: ts => (permutations' ts).bind <| permutations'Aux t
+  | t :: ts => (permutations' ts).flatMap <| permutations'Aux t
 
 end Permutations
 
@@ -383,7 +380,7 @@ def map₂Right (f : Option α → β → γ) (as : List α) (bs : List β) : Li
 /-- Asynchronous version of `List.map`.
 -/
 def mapAsyncChunked {α β} (f : α → β) (xs : List α) (chunk_size := 1024) : List β :=
-  ((xs.toChunks chunk_size).map fun xs => Task.spawn fun _ => List.map f xs).bind Task.get
+  ((xs.toChunks chunk_size).map fun xs => Task.spawn fun _ => List.map f xs).flatMap Task.get
 
 
 /-!
@@ -499,8 +496,6 @@ alias ⟨eq_or_mem_of_mem_cons, _⟩ := mem_cons
 theorem not_exists_mem_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x :=
   fun ⟨_, hx, _⟩ => List.not_mem_nil _ hx
 
-@[deprecated (since := "2024-03-23")] alias not_bex_nil := not_exists_mem_nil
-@[deprecated (since := "2024-03-23")] alias bex_cons := exists_mem_cons
 
 @[deprecated (since := "2024-08-10")] alias length_le_of_sublist := Sublist.length_le
 

@@ -26,13 +26,13 @@ Isabelle formalization.
 measure preserving map, measure
 -/
 
+open MeasureTheory.Measure Function Set
+open scoped ENNReal
 
 variable {α β γ δ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
   [MeasurableSpace δ]
 
 namespace MeasureTheory
-
-open Measure Function Set
 
 variable {μa : Measure α} {μb : Measure β} {μc : Measure γ} {μd : Measure δ}
 
@@ -102,13 +102,13 @@ protected theorem comp_left_iff {g : α → β} {e : β ≃ᵐ γ} (h : MeasureP
     MeasurePreserving (e ∘ g) μa μc ↔ MeasurePreserving g μa μb := by
   refine ⟨fun hg => ?_, fun hg => h.comp hg⟩
   convert (MeasurePreserving.symm e h).comp hg
-  simp [← Function.comp.assoc e.symm e g]
+  simp [← Function.comp_assoc e.symm e g]
 
 protected theorem comp_right_iff {g : α → β} {e : γ ≃ᵐ α} (h : MeasurePreserving e μc μa) :
     MeasurePreserving (g ∘ e) μc μb ↔ MeasurePreserving g μa μb := by
   refine ⟨fun hg => ?_, fun hg => hg.comp h⟩
   convert hg.comp (MeasurePreserving.symm e h)
-  simp [Function.comp.assoc g e e.symm]
+  simp [Function.comp_assoc g e e.symm]
 
 protected theorem sigmaFinite {f : α → β} (hf : MeasurePreserving f μa μb) [SigmaFinite μb] :
     SigmaFinite μa :=
@@ -138,6 +138,16 @@ theorem aeconst_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s :
     (hs : NullMeasurableSet s μb) :
     Filter.EventuallyConst (f ⁻¹' s) (ae μa) ↔ Filter.EventuallyConst s (ae μb) :=
   aeconst_comp hf hs.mem
+
+theorem add_measure {f μa' μb'} (hf : MeasurePreserving f μa μb)
+    (hf' : MeasurePreserving f μa' μb') : MeasurePreserving f (μa + μa') (μb + μb') where
+  measurable := hf.measurable
+  map_eq := by rw [Measure.map_add _ _ hf.measurable, hf.map_eq, hf'.map_eq]
+
+theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] {f : α → β}
+    (hf : MeasurePreserving f μa μb) (c : R) : MeasurePreserving f (c • μa) (c • μb) where
+  measurable := hf.measurable
+  map_eq := by rw [Measure.map_smul, hf.map_eq]
 
 variable {μ : Measure α} {f : α → α} {s : Set α}
 

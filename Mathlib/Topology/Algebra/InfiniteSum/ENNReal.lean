@@ -5,7 +5,7 @@ Authors: Edward van de Meent
 -/
 import Mathlib.Data.Real.ENatENNReal
 import Mathlib.Data.Set.Card
-import Mathlib.Topology.Instances.ENNReal
+import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Infinite sums of ENNReal and Set.encard

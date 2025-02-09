@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone
 -/
 import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Topology.UniformSpace.Basic
 
 /-!
@@ -88,7 +87,7 @@ lemma _root_.isOpen.dynEntourage [TopologicalSpace X] {T : X → X} (T_cont : Co
     IsOpen (dynEntourage T U n) := by
   rw [dynEntourage_eq_inter_Ico T U n]
   refine isOpen_iInter_of_finite fun k ↦ ?_
-  exact continuous_def.1 ((T_cont.prod_map T_cont).iterate k) U U_open
+  exact U_open.preimage ((T_cont.prodMap T_cont).iterate k)
 
 lemma dynEntourage_monotone (T : X → X) (n : ℕ) :
     Monotone (fun U : Set (X × X) ↦ dynEntourage T U n) :=

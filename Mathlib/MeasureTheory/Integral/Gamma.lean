@@ -24,11 +24,11 @@ theorem integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 0 < p) (hq : - 1 < q) :
     _ = ∫ (x : ℝ) in Ioi 0, (1 / p * x ^ (1 / p - 1)) • ((x ^ (1 / p)) ^ q * exp (-x)) := by
       rw [← integral_comp_rpow_Ioi _ (one_div_ne_zero (ne_of_gt hp)),
         abs_eq_self.mpr (le_of_lt (one_div_pos.mpr hp))]
-      refine setIntegral_congr measurableSet_Ioi (fun _ hx => ?_)
+      refine setIntegral_congr_fun measurableSet_Ioi (fun _ hx => ?_)
       rw [← rpow_mul (le_of_lt hx) _ p, one_div_mul_cancel (ne_of_gt hp), rpow_one]
     _ = ∫ (x : ℝ) in Ioi 0, 1 / p * exp (-x) * x ^ (1 / p - 1 + q / p) := by
       simp_rw [smul_eq_mul, mul_assoc]
-      refine setIntegral_congr measurableSet_Ioi (fun _ hx => ?_)
+      refine setIntegral_congr_fun measurableSet_Ioi (fun _ hx => ?_)
       rw [← rpow_mul (le_of_lt hx), div_mul_eq_mul_div, one_mul, rpow_add hx]
       ring_nf
     _ = (1 / p) * Gamma ((q + 1) / p) := by
@@ -41,7 +41,7 @@ theorem integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 0 < p) (hq : - 1 
       b ^ (-(q + 1) / p) * (1 / p) * Gamma ((q + 1) / p) := by
   calc
     _ = ∫ x in Ioi (0 : ℝ), b ^ (-p⁻¹ * q) * ((b ^ p⁻¹ * x) ^ q * rexp (-(b ^ p⁻¹ * x) ^ p)) := by
-      refine setIntegral_congr measurableSet_Ioi (fun _ hx => ?_)
+      refine setIntegral_congr_fun measurableSet_Ioi (fun _ hx => ?_)
       rw [mul_rpow _ (le_of_lt hx), mul_rpow _ (le_of_lt hx), ← rpow_mul, ← rpow_mul,
         inv_mul_cancel₀, rpow_one, mul_assoc, ← mul_assoc, ← rpow_add, neg_mul p⁻¹, neg_add_cancel,
         rpow_zero, one_mul, neg_mul]
@@ -88,7 +88,7 @@ theorem Complex.integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 1 ≤ p) (hq : 
         smul_eq_mul, mul_one, mul_comm]
     _ = 2 * π * ∫ x in Ioi (0 : ℝ), x ^ (q + 1) * rexp (-x ^ p) := by
       congr 1
-      refine setIntegral_congr measurableSet_Ioi (fun x hx => ?_)
+      refine setIntegral_congr_fun measurableSet_Ioi (fun x hx => ?_)
       rw [mem_Ioi] at hx
       rw [abs_eq_self.mpr hx.le, rpow_add hx, rpow_one]
       ring
@@ -115,7 +115,7 @@ theorem Complex.integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 1 ≤ p) 
         smul_eq_mul, mul_one, mul_comm]
     _ = 2 * π * ∫ x in Ioi (0 : ℝ), x ^ (q + 1) * rexp (-b * x ^ p) := by
       congr 1
-      refine setIntegral_congr measurableSet_Ioi (fun x hx => ?_)
+      refine setIntegral_congr_fun measurableSet_Ioi (fun x hx => ?_)
       rw [mem_Ioi] at hx
       rw [abs_eq_self.mpr hx.le, rpow_add hx, rpow_one]
       ring

@@ -42,7 +42,7 @@ lemma ProperSpace.of_nontriviallyNormedField_of_weaklyLocallyCompactSpace
     ext
     simp only [mem_closedBall, dist_zero_right, Set.mem_smul_set_iff_inv_smul_mem₀ this,
       smul_eq_mul, norm_mul, norm_inv, norm_pow,
-      inv_mul_le_iff (by simpa only [norm_pow] using norm_pos_iff.mpr this)]
+      inv_mul_le_iff₀ (by simpa only [norm_pow] using norm_pos_iff.mpr this)]
   have hTop : Tendsto (fun n ↦ ‖c‖^n * r) atTop atTop :=
     Tendsto.atTop_mul_const rpos (tendsto_pow_atTop_atTop_of_one_lt hc)
   exact .of_seq_closedBall hTop (Eventually.of_forall hC)

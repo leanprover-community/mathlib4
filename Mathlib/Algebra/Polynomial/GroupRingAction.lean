@@ -128,9 +128,9 @@ protected noncomputable def polynomial (g : P →+*[M] Q) : P[X] →+*[M] Q[X] w
         smul_mul', smul_C, smul_pow', smul_X, coe_fn_coe]
   -- Porting note: added `.toRingHom`
   map_zero' := Polynomial.map_zero g.toRingHom
-  map_add' p q := Polynomial.map_add g.toRingHom
+  map_add' _ _ := Polynomial.map_add g.toRingHom
   map_one' := Polynomial.map_one g.toRingHom
-  map_mul' p q := Polynomial.map_mul g.toRingHom
+  map_mul' _ _ := Polynomial.map_mul g.toRingHom
 
 @[simp]
 theorem coe_polynomial (g : P →+*[M] Q) : (g.polynomial : P[X] → Q[X]) = map g := rfl

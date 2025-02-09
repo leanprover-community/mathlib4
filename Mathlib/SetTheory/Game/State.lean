@@ -206,7 +206,7 @@ instance shortOfStateAux : ∀ (n : ℕ) {s : S} (h : turnBound s ≤ n), Short 
       have j := (rightMovesOfStateAux _ _).toFun j
       exfalso
       exact turnBound_ne_zero_of_right_move j.2 (nonpos_iff_eq_zero.mp h)
-  | n + 1, s, h =>
+  | n + 1, _, h =>
     Short.mk'
       (fun i =>
         shortOfRelabelling (relabellingMoveLeftAux (n + 1) h i).symm (shortOfStateAux n _))

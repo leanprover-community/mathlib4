@@ -21,8 +21,8 @@ and provide instances for some basic constructions (`⊥`, `⊤`, `Filter.princi
 that deduces two axioms of a `Filter` from the countable intersection property.
 
 Note that there also exists a typeclass `CardinalInterFilter`, and thus an alternative spelling of
-`CountableInterFilter` as `CardinalInterFilter l (aleph 1)`. The former (defined here) is the
-preferred spelling; it has the advantage of not requiring the user to import the theory ordinals.
+`CountableInterFilter` as `CardinalInterFilter l ℵ₁`. The former (defined here) is the
+preferred spelling; it has the advantage of not requiring the user to import the theory of ordinals.
 
 ## Tags
 filter, countable

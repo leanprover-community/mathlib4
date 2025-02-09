@@ -15,6 +15,8 @@ in an abelian category, we construct the associated class in
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 universe w' w v u
 
 namespace CategoryTheory
@@ -28,6 +30,8 @@ open Abelian
 namespace ShortComplex
 
 variable (S : ShortComplex C)
+
+lemma ext_mk₀_f_comp_ext_mk₀_g : (Ext.mk₀ S.f).comp (Ext.mk₀ S.g) (zero_add 0) = 0 := by simp
 
 namespace ShortExact
 
@@ -92,12 +96,24 @@ lemma comp_extClass : (Ext.mk₀ S.g).comp hS.extClass (zero_add 1) = 0 := by
   exact comp_distTriang_mor_zero₂₃ _ hS.singleTriangle_distinguished
 
 @[simp]
+lemma comp_extClass_assoc {Y : C} {n : ℕ} (γ : Ext S.X₁ Y n) {n' : ℕ} (h : 1 + n = n') :
+    (Ext.mk₀ S.g).comp (hS.extClass.comp γ h) (zero_add n') = 0 := by
+  rw [← Ext.comp_assoc (a₁₂ := 1) _ _ _ (by omega) (by omega) (by omega),
+    comp_extClass, Ext.zero_comp]
+
+@[simp]
 lemma extClass_comp : hS.extClass.comp (Ext.mk₀ S.f) (add_zero 1) = 0 := by
   letI := HasDerivedCategory.standard C
   ext
   simp only [Ext.comp_hom, Ext.mk₀_hom, extClass_hom, Ext.zero_hom,
     ShiftedHom.comp_mk₀]
   exact comp_distTriang_mor_zero₃₁ _ hS.singleTriangle_distinguished
+
+@[simp]
+lemma extClass_comp_assoc {Y : C} {n : ℕ} (γ : Ext S.X₂ Y n) {n' : ℕ} {h : 1 + n = n'} :
+    hS.extClass.comp ((Ext.mk₀ S.f).comp γ (zero_add n)) h = 0 := by
+  rw [← Ext.comp_assoc (a₁₂ := 1) _ _ _ (by omega) (by omega) (by omega),
+    extClass_comp, Ext.zero_comp]
 
 end ShortExact
 

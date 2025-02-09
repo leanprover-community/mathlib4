@@ -35,7 +35,7 @@ argument in the instance below for `mul_le_mul_of_nonneg_right`. -/
 private lemma mul_le_mul_of_nonneg_left {R : Type*} [CommSemiring R] [PartialOrder R]
     [StarRing R] [StarOrderedRing R] {a b c : R} (hab : a ≤ b) (hc : 0 ≤ c) : c * a ≤ c * b := by
   rw [StarOrderedRing.nonneg_iff] at hc
-  induction hc using AddSubmonoid.closure_induction' with
+  induction hc using AddSubmonoid.closure_induction with
   | mem _ h =>
     obtain ⟨x, rfl⟩ := h
     simp_rw [mul_assoc, mul_comm x, ← mul_assoc]

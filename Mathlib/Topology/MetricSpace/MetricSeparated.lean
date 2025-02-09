@@ -27,7 +27,7 @@ def IsMetricSeparated {X : Type*} [EMetricSpace X] (s t : Set X) :=
 
 namespace IsMetricSeparated
 
-variable {X : Type*} [EMetricSpace X] {s t : Set X} {x y : X}
+variable {X : Type*} [EMetricSpace X] {s t : Set X}
 
 @[symm]
 theorem symm (h : IsMetricSeparated s t) : IsMetricSeparated t s :=
@@ -89,7 +89,7 @@ theorem union_right_iff {t'} :
 
 theorem finite_iUnion_left_iff {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set X}
     {t : Set X} : IsMetricSeparated (⋃ i ∈ I, s i) t ↔ ∀ i ∈ I, IsMetricSeparated (s i) t := by
-  refine Finite.induction_on hI (by simp) @fun i I _ _ hI => ?_
+  refine Finite.induction_on _ hI (by simp) @fun i I _ _ hI => ?_
   rw [biUnion_insert, forall_mem_insert, union_left_iff, hI]
 
 alias ⟨_, finite_iUnion_left⟩ := finite_iUnion_left_iff

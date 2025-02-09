@@ -60,15 +60,15 @@ theorem coe_toBddLat (X : BddDistLat) : ↥X.toBddLat = ↥X :=
 instance : LargeCategory.{u} BddDistLat :=
   InducedCategory.category toBddLat
 
-instance : ConcreteCategory BddDistLat :=
-  InducedCategory.concreteCategory toBddLat
+instance : HasForget BddDistLat :=
+  InducedCategory.hasForget toBddLat
 
 instance hasForgetToDistLat : HasForget₂ BddDistLat DistLat where
   forget₂ :=
     -- Porting note: was `⟨X⟩`
     -- see https://github.com/leanprover-community/mathlib4/issues/4998
     { obj := fun X => { α := X }
-      map := fun {X Y} => BoundedLatticeHom.toLatticeHom }
+      map := fun {_ _} => BoundedLatticeHom.toLatticeHom }
 
 instance hasForgetToBddLat : HasForget₂ BddDistLat BddLat :=
   InducedCategory.hasForget₂ toBddLat
@@ -91,7 +91,7 @@ def Iso.mk {α β : BddDistLat.{u}} (e : α ≃o β) : α ≅ β where
 @[simps]
 def dual : BddDistLat ⥤ BddDistLat where
   obj X := of Xᵒᵈ
-  map {X Y} := BoundedLatticeHom.dual
+  map {_ _} := BoundedLatticeHom.dual
 
 /-- The equivalence between `BddDistLat` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]

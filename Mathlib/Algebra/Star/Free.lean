@@ -48,7 +48,7 @@ instance : StarRing (FreeAlgebra R X) where
     unfold Star.star
     simp only [Function.comp_apply]
     let y := lift R (X := X) (MulOpposite.op ∘ ι R)
-    apply induction (C := fun x ↦ (y (y x).unop).unop = x) _ _ _ _ x
+    refine induction (C := fun x ↦ (y (y x).unop).unop = x) _ _ ?_ ?_ ?_ ?_ x
     · intros
       simp only [AlgHom.commutes, MulOpposite.algebraMap_apply, MulOpposite.unop_op]
     · intros

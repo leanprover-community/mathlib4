@@ -197,7 +197,7 @@ theorem LocallyFinite.sum_elim {g : ι' → Set X} (hf : LocallyFinite f) (hg : 
 
 theorem locallyFinite_option {f : Option ι → Set X} :
     LocallyFinite f ↔ LocallyFinite (f ∘ some) := by
-  rw [← (Equiv.optionEquivSumPUnit.{_, 0} ι).symm.locallyFinite_comp_iff, locallyFinite_sum]
+  rw [← (Equiv.optionEquivSumPUnit.{0, _} ι).symm.locallyFinite_comp_iff, locallyFinite_sum]
   simp only [locallyFinite_of_finite, and_true]
   rfl
 

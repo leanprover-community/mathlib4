@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Order.BoundedOrder
+import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
 # Do not combine OrderedCancelAddCommMonoid with BoundedOrder

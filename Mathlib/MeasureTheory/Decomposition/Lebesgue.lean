@@ -3,9 +3,10 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
+import Mathlib.MeasureTheory.Decomposition.UnsignedHahn
+import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
+import Mathlib.MeasureTheory.Function.L1Space.Integrable
 import Mathlib.MeasureTheory.Measure.Sub
-import Mathlib.MeasureTheory.Decomposition.SignedHahn
-import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 
 /-!
 # Lebesgue decomposition
@@ -52,7 +53,7 @@ namespace MeasureTheory
 
 namespace Measure
 
-variable {α β : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
+variable {α : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
 
 /-- A pair of measures `μ` and `ν` is said to `HaveLebesgueDecomposition` if there exists a
 measure `ξ` and a measurable function `f`, such that `ξ` is mutually singular with respect to
@@ -229,6 +230,18 @@ lemma absolutelyContinuous_withDensity_rnDeriv [HaveLebesgueDecomposition ν μ]
     · exact measure_mono_null Set.inter_subset_left hνs
   · exact measure_mono_null Set.inter_subset_right ht2
 
+lemma AbsolutelyContinuous.withDensity_rnDeriv {ξ : Measure α} [μ.HaveLebesgueDecomposition ν]
+    (hξμ : ξ ≪ μ) (hξν : ξ ≪ ν) :
+    ξ ≪ ν.withDensity (μ.rnDeriv ν) := by
+  conv_rhs at hξμ => rw [μ.haveLebesgueDecomposition_add ν, add_comm]
+  refine absolutelyContinuous_of_add_of_mutuallySingular hξμ ?_
+  exact MutuallySingular.mono_ac (mutuallySingular_singularPart μ ν).symm hξν .rfl
+
+lemma absolutelyContinuous_withDensity_rnDeriv_swap [ν.HaveLebesgueDecomposition μ] :
+    ν.withDensity (μ.rnDeriv ν) ≪ μ.withDensity (ν.rnDeriv μ) :=
+  (withDensity_absolutelyContinuous ν (μ.rnDeriv ν)).withDensity_rnDeriv
+    (absolutelyContinuous_of_le (withDensity_rnDeriv_le _ _))
+
 lemma singularPart_eq_zero_of_ac (h : μ ≪ ν) : μ.singularPart ν = 0 := by
   rw [← MutuallySingular.self_iff]
   exact MutuallySingular.mono_ac (mutuallySingular_singularPart _ _)
@@ -369,7 +382,7 @@ theorem rnDeriv_lt_top (μ ν : Measure α) [SigmaFinite μ] : ∀ᵐ x ∂ν, �
   suffices ∀ n, ∀ᵐ x ∂ν, x ∈ spanningSets μ n → μ.rnDeriv ν x < ∞ by
     filter_upwards [ae_all_iff.2 this] with _ hx using hx _ (mem_spanningSetsIndex _ _)
   intro n
-  rw [← ae_restrict_iff' (measurable_spanningSets _ _)]
+  rw [← ae_restrict_iff' (measurableSet_spanningSets _ _)]
   apply ae_lt_top (measurable_rnDeriv _ _)
   refine (lintegral_rnDeriv_lt_top_of_measure_ne_top _ ?_).ne
   exact (measure_spanningSets_lt_top _ _).ne
@@ -660,36 +673,34 @@ lemma rnDeriv_add (ν₁ ν₂ μ : Measure α) [IsFiniteMeasure ν₁] [IsFinit
   · exact ((measurable_rnDeriv _ _).add (measurable_rnDeriv _ _)).aemeasurable
   · exact (lintegral_rnDeriv_lt_top (ν₁ + ν₂) μ).ne
 
-open VectorMeasure SignedMeasure
-
 /-- If two finite measures `μ` and `ν` are not mutually singular, there exists some `ε > 0` and
 a measurable set `E`, such that `ν(E) > 0` and `E` is positive with respect to `μ - εν`.
 
 This lemma is useful for the Lebesgue decomposition theorem. -/
 theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMeasure μ]
-    [IsFiniteMeasure ν] (h : ¬μ ⟂ₘ ν) :
+    [IsFiniteMeasure ν] (h : ¬ μ ⟂ₘ ν) :
     ∃ ε : ℝ≥0, 0 < ε ∧
-      ∃ E : Set α,
-        MeasurableSet E ∧ 0 < ν E ∧ 0 ≤[E] μ.toSignedMeasure - (ε • ν).toSignedMeasure := by
+      ∃ E : Set α, MeasurableSet E ∧ 0 < ν E
+        ∧ ∀ A, MeasurableSet A → ε * ν (A ∩ E) ≤ μ (A ∩ E) := by
   -- for all `n : ℕ`, obtain the Hahn decomposition for `μ - (1 / n) ν`
-  have :
-    ∀ n : ℕ, ∃ i : Set α,
-      MeasurableSet i ∧
-        0 ≤[i] μ.toSignedMeasure - ((1 / (n + 1) : ℝ≥0) • ν).toSignedMeasure ∧
-          μ.toSignedMeasure - ((1 / (n + 1) : ℝ≥0) • ν).toSignedMeasure ≤[iᶜ] 0 := by
-    intro; exact exists_compl_positive_negative _
-  choose f hf₁ hf₂ hf₃ using this
+  have h_decomp (n : ℕ) : ∃ s : Set α, MeasurableSet s
+        ∧ (∀ t, MeasurableSet t → ((1 / (n + 1) : ℝ≥0) • ν) (t ∩ s) ≤ μ (t ∩ s))
+        ∧ (∀ t, MeasurableSet t → μ (t ∩ sᶜ) ≤ ((1 / (n + 1) : ℝ≥0) • ν) (t ∩ sᶜ)) := by
+    obtain ⟨s, hs, hs_le, hs_ge⟩ := hahn_decomposition μ ((1 / (n + 1) : ℝ≥0) • ν)
+    refine ⟨s, hs, fun t ht ↦ ?_, fun t ht ↦ ?_⟩
+    · exact hs_le (t ∩ s) (ht.inter hs) inter_subset_right
+    · exact hs_ge (t ∩ sᶜ) (ht.inter hs.compl) inter_subset_right
+  choose f hf₁ hf₂ hf₃ using h_decomp
   -- set `A` to be the intersection of all the negative parts of obtained Hahn decompositions
   -- and we show that `μ A = 0`
   let A := ⋂ n, (f n)ᶜ
   have hAmeas : MeasurableSet A := MeasurableSet.iInter fun n ↦ (hf₁ n).compl
-  have hA₂ : ∀ n : ℕ, μ.toSignedMeasure - ((1 / (n + 1) : ℝ≥0) • ν).toSignedMeasure ≤[A] 0 := by
-    intro n; exact restrict_le_restrict_subset _ _ (hf₁ n).compl (hf₃ n) (iInter_subset _ _)
-  have hA₃ : ∀ n : ℕ, μ A ≤ (1 / (n + 1) : ℝ≥0) * ν A := by
-    intro n
-    have := nonpos_of_restrict_le_zero _ (hA₂ n)
-    rwa [toSignedMeasure_sub_apply hAmeas, sub_nonpos, ENNReal.toReal_le_toReal] at this
-    exacts [measure_ne_top _ _, measure_ne_top _ _]
+  have hA₂ (n : ℕ) (t : Set α) (ht : MeasurableSet t) :
+      μ (t ∩ A) ≤ ((1 / (n + 1) : ℝ≥0) • ν) (t ∩ A) := by
+    specialize hf₃ n (t ∩ A) (ht.inter hAmeas)
+    have : A ∩ (f n)ᶜ = A := inter_eq_left.mpr (iInter_subset _ n)
+    rwa [inter_assoc, this] at hf₃
+  have hA₃ (n : ℕ) : μ A ≤ (1 / (n + 1) : ℝ≥0) * ν A := by simpa using hA₂ n univ .univ
   have hμ : μ A = 0 := by
     lift μ A to ℝ≥0 using measure_ne_top _ _ with μA
     lift ν A to ℝ≥0 using measure_ne_top _ _ with νA
@@ -745,7 +756,6 @@ theorem zero_mem_measurableLE : (0 : α → ℝ≥0∞) ∈ measurableLE μ ν :
 
 theorem sup_mem_measurableLE {f g : α → ℝ≥0∞} (hf : f ∈ measurableLE μ ν)
     (hg : g ∈ measurableLE μ ν) : (fun a ↦ f a ⊔ g a) ∈ measurableLE μ ν := by
-  simp_rw [ENNReal.sup_eq_max]
   refine ⟨Measurable.max hf.1 hg.1, fun A hA ↦ ?_⟩
   have h₁ := hA.inter (measurableSet_le hf.1 hg.1)
   have h₂ := hA.inter (measurableSet_lt hg.1 hf.1)
@@ -777,7 +787,7 @@ theorem iSup_mem_measurableLE (f : ℕ → α → ℝ≥0∞) (hf : ∀ n, f n �
       (fun a : α ↦ ⨆ (k : ℕ) (_ : k ≤ m + 1), f k a) = fun a ↦
         f m.succ a ⊔ ⨆ (k : ℕ) (_ : k ≤ m), f k a :=
       funext fun _ ↦ iSup_succ_eq_sup _ _ _
-    refine ⟨measurable_iSup fun n ↦ Measurable.iSup_Prop _ (hf n).1, fun A hA ↦ ?_⟩
+    refine ⟨.iSup fun n ↦ Measurable.iSup_Prop _ (hf n).1, fun A hA ↦ ?_⟩
     rw [this]; exact (sup_mem_measurableLE (hf m.succ) hm).2 A hA
 
 theorem iSup_mem_measurableLE' (f : ℕ → α → ℝ≥0∞) (hf : ∀ n, f n ∈ measurableLE μ ν) (n : ℕ) :
@@ -817,8 +827,8 @@ with respect to `ν` and `μ = ξ + ν.withDensity f`.
 This is not an instance since this is also shown for the more general σ-finite measures with
 `MeasureTheory.Measure.haveLebesgueDecomposition_of_sigmaFinite`. -/
 theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    HaveLebesgueDecomposition μ ν :=
-  ⟨by
+    HaveLebesgueDecomposition μ ν where
+  lebesgue_decomposition := by
     have h := @exists_seq_tendsto_sSup _ _ _ _ _ (measurableLEEval ν μ)
       ⟨0, 0, zero_mem_measurableLE, by simp⟩ (OrderTop.bddAbove _)
     choose g _ hg₂ f hf₁ hf₂ using h
@@ -826,17 +836,16 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
     set ξ := ⨆ (n) (k) (_ : k ≤ n), f k with hξ
     -- we see that `ξ` has the largest integral among all functions in `measurableLE`
     have hξ₁ : sSup (measurableLEEval ν μ) = ∫⁻ a, ξ a ∂ν := by
-      have :=
-        @lintegral_tendsto_of_tendsto_of_monotone _ _ ν (fun n ↦ ⨆ (k) (_ : k ≤ n), f k)
+      have := @lintegral_tendsto_of_tendsto_of_monotone _ _ ν (fun n ↦ ⨆ (k) (_ : k ≤ n), f k)
           (⨆ (n) (k) (_ : k ≤ n), f k) ?_ ?_ ?_
       · refine tendsto_nhds_unique ?_ this
-        refine tendsto_of_tendsto_of_tendsto_of_le_of_le hg₂ tendsto_const_nhds ?_ ?_
-        · intro n; rw [← hf₂ n]
+        refine tendsto_of_tendsto_of_tendsto_of_le_of_le hg₂ tendsto_const_nhds (fun n ↦ ?_)
+          fun n ↦ ?_
+        · rw [← hf₂ n]
           apply lintegral_mono
           convert iSup_le_le f n n le_rfl
           simp only [iSup_apply]
-        · intro n
-          exact le_sSup ⟨⨆ (k : ℕ) (_ : k ≤ n), f k, iSup_mem_measurableLE' _ hf₁ _, rfl⟩
+        · exact le_sSup ⟨⨆ (k : ℕ) (_ : k ≤ n), f k, iSup_mem_measurableLE' _ hf₁ _, rfl⟩
       · intro n
         refine Measurable.aemeasurable ?_
         convert (iSup_mem_measurableLE _ hf₁ n).1
@@ -846,22 +855,26 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
       · refine Filter.Eventually.of_forall fun a ↦ ?_
         simp [tendsto_atTop_iSup (iSup_monotone' f a)]
     have hξm : Measurable ξ := by
-      convert measurable_iSup fun n ↦ (iSup_mem_measurableLE _ hf₁ n).1
+      convert Measurable.iSup fun n ↦ (iSup_mem_measurableLE _ hf₁ n).1
       simp [hξ]
-    -- `ξ` is the `f` in the theorem statement and we set `μ₁` to be `μ - ν.withDensity ξ`
-    -- since we need `μ₁ + ν.withDensity ξ = μ`
-    set μ₁ := μ - ν.withDensity ξ with hμ₁
+    -- we see that `ξ` has the largest integral among all functions in `measurableLE`
+    have hξle A (hA : MeasurableSet A) : ∫⁻ a in A, ξ a ∂ν ≤ μ A := by
+        rw [hξ]
+        simp_rw [iSup_apply]
+        rw [lintegral_iSup (fun n ↦ (iSup_mem_measurableLE _ hf₁ n).1) (iSup_monotone _)]
+        exact iSup_le fun n ↦ (iSup_mem_measurableLE _ hf₁ n).2 A hA
     have hle : ν.withDensity ξ ≤ μ := by
-      refine le_iff.2 fun B hB ↦ ?_
-      rw [hξ, withDensity_apply _ hB]
-      simp_rw [iSup_apply]
-      rw [lintegral_iSup (fun i ↦ (iSup_mem_measurableLE _ hf₁ i).1) (iSup_monotone _)]
-      exact iSup_le fun i ↦ (iSup_mem_measurableLE _ hf₁ i).2 B hB
+      refine le_intro fun B hB _ ↦ ?_
+      rw [withDensity_apply _ hB]
+      exact hξle B hB
     have : IsFiniteMeasure (ν.withDensity ξ) := by
       refine isFiniteMeasure_withDensity ?_
       have hle' := hle univ
       rw [withDensity_apply _ MeasurableSet.univ, Measure.restrict_univ] at hle'
       exact ne_top_of_le_ne_top (measure_ne_top _ _) hle'
+    -- `ξ` is the `f` in the theorem statement and we set `μ₁` to be `μ - ν.withDensity ξ`
+    -- since we need `μ₁ + ν.withDensity ξ = μ`
+    set μ₁ := μ - ν.withDensity ξ with hμ₁
     refine ⟨⟨μ₁, ξ⟩, hξm, ?_, ?_⟩
     · by_contra h
       -- if they are not mutually singular, then from `exists_positive_of_not_mutuallySingular`,
@@ -869,38 +882,21 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
       -- positive with respect to `ν - εμ`
       obtain ⟨ε, hε₁, E, hE₁, hE₂, hE₃⟩ := exists_positive_of_not_mutuallySingular μ₁ ν h
       simp_rw [hμ₁] at hE₃
-      have hξle : ∀ A, MeasurableSet A → (∫⁻ a in A, ξ a ∂ν) ≤ μ A := by
-        intro A hA; rw [hξ]
-        simp_rw [iSup_apply]
-        rw [lintegral_iSup (fun n ↦ (iSup_mem_measurableLE _ hf₁ n).1) (iSup_monotone _)]
-        exact iSup_le fun n ↦ (iSup_mem_measurableLE _ hf₁ n).2 A hA
       -- since `E` is positive, we have `∫⁻ a in A ∩ E, ε + ξ a ∂ν ≤ μ (A ∩ E)` for all `A`
-      have hε₂ : ∀ A : Set α, MeasurableSet A → (∫⁻ a in A ∩ E, ε + ξ a ∂ν) ≤ μ (A ∩ E) := by
-        intro A hA
-        have := subset_le_of_restrict_le_restrict _ _ hE₁ hE₃ A.inter_subset_right
-        rwa [zero_apply, toSignedMeasure_sub_apply (hA.inter hE₁),
-          Measure.sub_apply (hA.inter hE₁) hle,
-          ENNReal.toReal_sub_of_le _ (measure_ne_top _ _), sub_nonneg, le_sub_iff_add_le,
-          ← ENNReal.toReal_add, ENNReal.toReal_le_toReal, Measure.coe_smul, Pi.smul_apply,
-          withDensity_apply _ (hA.inter hE₁), show ε • ν (A ∩ E) = (ε : ℝ≥0∞) * ν (A ∩ E) by rfl,
-          ← setLIntegral_const, ← lintegral_add_left measurable_const] at this
-        · rw [Ne, ENNReal.add_eq_top, not_or]
-          exact ⟨measure_ne_top _ _, measure_ne_top _ _⟩
-        · exact measure_ne_top _ _
-        · exact measure_ne_top _ _
-        · exact measure_ne_top _ _
-        · rw [withDensity_apply _ (hA.inter hE₁)]
-          exact hξle (A ∩ E) (hA.inter hE₁)
+      have hε₂ (A : Set α) (hA : MeasurableSet A) : ∫⁻ a in A ∩ E, ε + ξ a ∂ν ≤ μ (A ∩ E) := by
+        specialize hE₃ A hA
+        rw [lintegral_add_left measurable_const, lintegral_const, restrict_apply_univ]
+        rw [Measure.sub_apply (hA.inter hE₁) hle, withDensity_apply _ (hA.inter hE₁)] at hE₃
+        refine add_le_of_le_tsub_right_of_le (hξle _ (hA.inter hE₁)) hE₃
       -- from this, we can show `ξ + ε * E.indicator` is a function in `measurableLE` with
       -- integral greater than `ξ`
       have hξε : (ξ + E.indicator fun _ ↦ (ε : ℝ≥0∞)) ∈ measurableLE ν μ := by
-        refine ⟨Measurable.add hξm (Measurable.indicator measurable_const hE₁), fun A hA ↦ ?_⟩
-        have :
-          (∫⁻ a in A, (ξ + E.indicator fun _ ↦ (ε : ℝ≥0∞)) a ∂ν) =
-            (∫⁻ a in A ∩ E, ε + ξ a ∂ν) + ∫⁻ a in A \ E, ξ a ∂ν := by
+        refine ⟨hξm.add (measurable_const.indicator hE₁), fun A hA ↦ ?_⟩
+        have : ∫⁻ a in A, (ξ + E.indicator fun _ ↦ (ε : ℝ≥0∞)) a ∂ν =
+            ∫⁻ a in A ∩ E, ε + ξ a ∂ν + ∫⁻ a in A \ E, ξ a ∂ν := by
           simp only [lintegral_add_left measurable_const, lintegral_add_left hξm,
             setLIntegral_const, add_assoc, lintegral_inter_add_diff _ _ hE₁, Pi.add_apply,
-            lintegral_indicator _ hE₁, restrict_apply hE₁]
+            lintegral_indicator hE₁, restrict_apply hE₁]
           rw [inter_comm, add_comm]
         rw [this, ← measure_inter_add_diff A hE₁]
         exact add_le_add (hε₂ A hA) (hξle (A \ E) (hA.diff hE₁))
@@ -908,21 +904,22 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
         le_sSup ⟨ξ + E.indicator fun _ ↦ (ε : ℝ≥0∞), hξε, rfl⟩
       -- but this contradicts the maximality of `∫⁻ x, ξ x ∂ν`
       refine not_lt.2 this ?_
-      rw [hξ₁, lintegral_add_left hξm, lintegral_indicator _ hE₁, setLIntegral_const]
+      rw [hξ₁, lintegral_add_left hξm, lintegral_indicator hE₁, setLIntegral_const]
       refine ENNReal.lt_add_right ?_ (ENNReal.mul_pos_iff.2 ⟨ENNReal.coe_pos.2 hε₁, hE₂⟩).ne'
       have := measure_ne_top (ν.withDensity ξ) univ
       rwa [withDensity_apply _ MeasurableSet.univ, Measure.restrict_univ] at this
     -- since `ν.withDensity ξ ≤ μ`, it is clear that `μ = μ₁ + ν.withDensity ξ`
-    · rw [hμ₁]; ext1 A hA
+    · rw [hμ₁]
+      ext1 A hA
       rw [Measure.coe_add, Pi.add_apply, Measure.sub_apply hA hle, add_comm,
-        add_tsub_cancel_of_le (hle A)]⟩
+        add_tsub_cancel_of_le (hle A)]
 
 /-- If any finite measure has a Lebesgue decomposition with respect to `ν`,
 then the same is true for any s-finite measure. -/
 theorem HaveLebesgueDecomposition.sfinite_of_isFiniteMeasure [SFinite μ]
     (_h : ∀ (μ : Measure α) [IsFiniteMeasure μ], HaveLebesgueDecomposition μ ν) :
     HaveLebesgueDecomposition μ ν :=
-  sum_sFiniteSeq μ ▸ sum_left _
+  sum_sfiniteSeq μ ▸ sum_left _
 
 attribute [local instance] haveLebesgueDecomposition_of_finiteMeasure
 
@@ -938,7 +935,7 @@ nonrec instance (priority := 100) haveLebesgueDecomposition_of_sigmaFinite
   · exact .sfinite_of_isFiniteMeasure fun μ _ ↦ this μ ‹_›
   -- Take a disjoint cover that consists of sets of finite measure `ν`.
   set s : ℕ → Set α := disjointed (spanningSets ν)
-  have hsm : ∀ n, MeasurableSet (s n) := .disjointed <| measurable_spanningSets _
+  have hsm : ∀ n, MeasurableSet (s n) := .disjointed <| measurableSet_spanningSets _
   have hs : ∀ n, Fact (ν (s n) < ⊤) := fun n ↦
     ⟨lt_of_le_of_lt (measure_mono <| disjointed_le ..) (measure_spanningSets_lt_top ν n)⟩
   -- Note that the restrictions of `μ` and `ν` to `s n` are finite measures.

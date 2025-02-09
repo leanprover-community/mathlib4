@@ -55,7 +55,7 @@ Results for completed L-functions:
   the functional equation relating `completedLFunction Φ (1 - s)` to `completedLFunction (𝓕 Φ) s`.
 -/
 
-open HurwitzZeta Complex ZMod Finset Classical Topology Filter Set
+open HurwitzZeta Complex ZMod Finset Topology Filter Set
 
 open scoped Real
 
@@ -118,7 +118,7 @@ lemma LFunction_eq_LSeries (Φ : ZMod N → ℂ) {s : ℂ} (hs : 1 < re s) :
 
 lemma differentiableAt_LFunction (Φ : ZMod N → ℂ) (s : ℂ) (hs : s ≠ 1 ∨ ∑ j, Φ j = 0) :
     DifferentiableAt ℂ (LFunction Φ) s := by
-  apply (differentiable_neg.const_cpow (Or.inl <| NeZero.ne _) s).mul
+  refine .mul (by fun_prop) ?_
   rcases ne_or_eq s 1 with hs' | rfl
   · exact .sum fun j _ ↦ (differentiableAt_hurwitzZeta _ hs').const_mul _
   · have := DifferentiableAt.sum (u := univ) fun j _ ↦
@@ -177,13 +177,13 @@ lemma LFunction_stdAddChar_eq_expZeta (j : ZMod N) (s : ℂ) (hjs : j ≠ 0 ∨ 
   let g := expZeta (toAddCircle j)
   have hU {u} : u ∈ U ↔ u ≠ 1 ∨ j ≠ 0 := by simp only [mem_ite_univ_right, U]; tauto
   -- hypotheses for uniqueness of analytic continuation
-  have hf : AnalyticOn ℂ f U := by
-    refine DifferentiableOn.analyticOn (fun u hu ↦ ?_) hUo
+  have hf : AnalyticOnNhd ℂ f U := by
+    refine DifferentiableOn.analyticOnNhd (fun u hu ↦ ?_) hUo
     refine (differentiableAt_LFunction _ _ ((hU.mp hu).imp_right fun h ↦ ?_)).differentiableWithinAt
     simp only [mul_comm j, AddChar.sum_mulShift _ (isPrimitive_stdAddChar _), h,
       ↓reduceIte, CharP.cast_eq_zero, or_true]
-  have hg : AnalyticOn ℂ g U := by
-    refine DifferentiableOn.analyticOn (fun u hu ↦ ?_) hUo
+  have hg : AnalyticOnNhd ℂ g U := by
+    refine DifferentiableOn.analyticOnNhd (fun u hu ↦ ?_) hUo
     refine (differentiableAt_expZeta _ _ ((hU.mp hu).imp_right fun h ↦ ?_)).differentiableWithinAt
     rwa [ne_eq, toAddCircle_eq_zero]
   have hUc : IsPreconnected U := by
@@ -294,6 +294,11 @@ noncomputable def completedLFunction (Φ : ZMod N → ℂ) (s : ℂ) : ℂ :=
 @[simp] lemma completedLFunction_zero (s : ℂ) : completedLFunction (0 : ZMod N → ℂ) s = 0 := by
   simp only [completedLFunction, Pi.zero_apply, zero_mul, sum_const_zero, mul_zero, zero_add]
 
+lemma completedLFunction_const_mul (a : ℂ) (Φ : ZMod N → ℂ) (s : ℂ) :
+    completedLFunction (fun j ↦ a * Φ j) s = a * completedLFunction Φ s := by
+  simp only [completedLFunction, mul_add, mul_sum]
+  congr with i <;> ring
+
 lemma completedLFunction_def_even (hΦ : Φ.Even) (s : ℂ) :
     completedLFunction Φ s = N ^ (-s) * ∑ j, Φ j * completedHurwitzZetaEven (toAddCircle j) s := by
   suffices ∑ j, Φ j * completedHurwitzZetaOdd (toAddCircle j) s = 0 by
@@ -330,7 +335,7 @@ noncomputable def completedLFunction₀ (Φ : ZMod N → ℂ) (s : ℂ) : ℂ :=
 lemma differentiable_completedLFunction₀ (Φ : ZMod N → ℂ) :
     Differentiable ℂ (completedLFunction₀ Φ) := by
   refine .add ?_ ?_ <;>
-  refine (differentiable_neg.const_cpow <| .inl <| NeZero.ne _).mul (.sum fun i _ ↦ .const_mul ?_ _)
+  refine .mul (by fun_prop) (.sum fun i _ ↦ .const_mul ?_ _)
   exacts [differentiable_completedHurwitzZetaEven₀ _, differentiable_completedHurwitzZetaOdd _]
 
 lemma completedLFunction_eq (Φ : ZMod N → ℂ) (s : ℂ) :
@@ -352,12 +357,12 @@ lemma differentiableAt_completedLFunction (Φ : ZMod N → ℂ) (s : ℂ) (hs₀
   -- correction terms from `completedLFunction_eq` are differentiable at `s`.
   refine ((differentiable_completedLFunction₀ _ _).sub ?_).sub ?_
   · -- term with `1 / s`
-    refine ((differentiable_neg.const_cpow <| .inl <| NeZero.ne _) s).mul (hs₀.elim ?_ ?_)
+    refine .mul (by fun_prop) (hs₀.elim ?_ ?_)
     · exact fun h ↦ (differentiableAt_const _).div differentiableAt_id h
     · exact fun h ↦ by simp only [h, funext zero_div, differentiableAt_const]
   · -- term with `1 / (1 - s)`
-    refine ((differentiable_neg.const_cpow <| .inl <| NeZero.ne _) s).mul (hs₁.elim ?_ ?_)
-    · exact fun h ↦ (differentiableAt_const _).div (by fun_prop) (by rwa [sub_ne_zero, ne_comm])
+    refine .mul (by fun_prop) (hs₁.elim ?_ ?_)
+    · exact fun h ↦ .div (by fun_prop) (by fun_prop) (by rwa [sub_ne_zero, ne_comm])
     · exact fun h ↦ by simp only [h, zero_div, differentiableAt_const]
 
 /--
@@ -407,7 +412,7 @@ private lemma completedLFunction_one_sub_of_one_lt_even (hΦ : Φ.Even) {s : ℂ
     simp only [completedLFunction_def_even hΦ, neg_sub, completedHurwitzZetaEven_one_sub, this]
   -- reduce to equality with un-completed L-functions:
   suffices ∑ x, Φ x * cosZeta (toAddCircle x) s = LFunction (𝓕 Φ) s by
-    simpa only [cosZeta, Function.update_noteq hs₀, ← mul_div_assoc, ← sum_div,
+    simpa only [cosZeta, Function.update_of_ne hs₀, ← mul_div_assoc, ← sum_div,
       LFunction_eq_completed_div_gammaFactor_even (dft_even_iff.mpr hΦ) _ (.inl hs₀),
       div_left_inj' (Gammaℝ_ne_zero_of_re_pos (zero_lt_one.trans hs))]
   -- expand out `LFunction (𝓕 Φ)` and use parity:
@@ -451,7 +456,7 @@ Functional equation for completed L-functions (even case), valid at all points o
 theorem completedLFunction_one_sub_even (hΦ : Φ.Even) (s : ℂ)
     (hs₀ : s ≠ 0 ∨ ∑ j, Φ j = 0) (hs₁ : s ≠ 1 ∨ Φ 0 = 0) :
     completedLFunction Φ (1 - s) = N ^ (s - 1) * completedLFunction (𝓕 Φ) s := by
-  -- We prove this using `AnalyticOn.eqOn_of_preconnected_of_eventuallyEq`, so we need to
+  -- We prove this using `AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq`, so we need to
   -- gather up the ingredients for this big theorem.
   -- First set up some notations:
   let F (t) := completedLFunction Φ (1 - t)
@@ -477,12 +482,14 @@ theorem completedLFunction_one_sub_even (hΦ : Φ.Even) (s : ℂ)
       simp [U, Uc, h, h', and_comm]
     · simp only [rank_real_complex, Nat.one_lt_ofNat]
   -- Analyticity on U:
-  have hF : AnalyticOn ℂ F U := by
-    refine DifferentiableOn.analyticOn (fun t ht ↦ DifferentiableAt.differentiableWithinAt ?_) hUo
+  have hF : AnalyticOnNhd ℂ F U := by
+    refine DifferentiableOn.analyticOnNhd
+      (fun t ht ↦ DifferentiableAt.differentiableWithinAt ?_) hUo
     refine (differentiableAt_completedLFunction Φ _ ?_ ?_).comp t (differentiableAt_id.const_sub 1)
     exacts [ht.2.imp_left (sub_ne_zero.mpr ∘ Ne.symm), ht.1.imp_left sub_eq_self.not.mpr]
-  have hG : AnalyticOn ℂ G U := by
-    refine DifferentiableOn.analyticOn (fun t ht ↦ DifferentiableAt.differentiableWithinAt ?_) hUo
+  have hG : AnalyticOnNhd ℂ G U := by
+    refine DifferentiableOn.analyticOnNhd
+      (fun t ht ↦ DifferentiableAt.differentiableWithinAt ?_) hUo
     apply ((differentiableAt_id.sub_const 1).const_cpow (.inl (NeZero.ne _))).mul
     apply differentiableAt_completedLFunction _ _ (ht.1.imp_right fun h ↦ dft_apply_zero Φ ▸ h)
     exact ht.2.imp_right (fun h ↦ by simp only [← dft_apply_zero, dft_dft, neg_zero, h, smul_zero])
@@ -512,7 +519,7 @@ theorem completedLFunction_one_sub_odd (hΦ : Φ.Odd) (s : ℂ) :
   have hFG : F =ᶠ[𝓝 2] G := by filter_upwards [this] with t ht
     using completedLFunction_one_sub_of_one_lt_odd hΦ ht
   -- now apply the big hammer to finish
-  rw [← analyticOn_univ_iff_differentiable] at hF hG
+  rw [← analyticOnNhd_univ_iff_differentiable] at hF hG
   exact congr_fun (hF.eq_of_eventuallyEq hG hFG) s
 
 end signed

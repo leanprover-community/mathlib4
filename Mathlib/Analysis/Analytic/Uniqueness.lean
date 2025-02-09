@@ -13,7 +13,7 @@ import Mathlib.Analysis.Analytic.ChangeOrigin
 # Uniqueness principle for analytic functions
 
 We show that two analytic functions which coincide around a point coincide on whole connected sets,
-in `AnalyticOn.eqOn_of_preconnected_of_eventuallyEq`.
+in `AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq`.
 -/
 
 
@@ -154,13 +154,14 @@ theorem HasFPowerSeriesOnBall.r_eq_top_of_exists {f : 𝕜 → E} {r : ℝ≥0�
 
 end Uniqueness
 
-namespace AnalyticOn
+namespace AnalyticOnNhd
 
 /-- If an analytic function vanishes around a point, then it is uniformly zero along
 a connected set. Superseded by `eqOn_zero_of_preconnected_of_locally_zero` which does not assume
 completeness of the target space. -/
 theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f : E → F} {U : Set E}
-    (hf : AnalyticOn 𝕜 f U) (hU : IsPreconnected U) {z₀ : E} (h₀ : z₀ ∈ U) (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
+    (hf : AnalyticOnNhd 𝕜 f U) (hU : IsPreconnected U)
+    {z₀ : E} (h₀ : z₀ ∈ U) (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
     EqOn f 0 U := by
   /- Let `u` be the set of points around which `f` vanishes. It is clearly open. We have to show
     that its limit points in `U` still belong to it, from which the inclusion `U ⊆ u` will follow
@@ -182,7 +183,7 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
     EMetric.mem_closure_iff.1 xu (r / 2) (ENNReal.half_pos hp.r_pos.ne')
   let q := p.changeOrigin (y - x)
   have has_series : HasFPowerSeriesOnBall f q y (r / 2) := by
-    have A : (‖y - x‖₊ : ℝ≥0∞) < r / 2 := by rwa [edist_comm, edist_eq_coe_nnnorm_sub] at hxy
+    have A : (‖y - x‖₊ : ℝ≥0∞) < r / 2 := by rwa [edist_comm, edist_eq_enorm_sub] at hxy
     have := hp.changeOrigin (A.trans_le ENNReal.half_le_self)
     simp only [add_sub_cancel] at this
     apply this.mono (ENNReal.half_pos hp.r_pos.ne')
@@ -204,11 +205,12 @@ neighborhood of a point `z₀`, then it is uniformly zero along a connected set.
 version assuming only that the function vanishes at some points arbitrarily close to `z₀`, see
 `eqOn_zero_of_preconnected_of_frequently_eq_zero`. -/
 theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : E → F} {U : Set E}
-    (hf : AnalyticOn 𝕜 f U) (hU : IsPreconnected U) {z₀ : E} (h₀ : z₀ ∈ U) (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
+    (hf : AnalyticOnNhd 𝕜 f U) (hU : IsPreconnected U)
+    {z₀ : E} (h₀ : z₀ ∈ U) (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
     EqOn f 0 U := by
   let F' := UniformSpace.Completion F
   set e : F →L[𝕜] F' := UniformSpace.Completion.toComplL
-  have : AnalyticOn 𝕜 (e ∘ f) U := fun x hx => (e.analyticAt _).comp (hf x hx)
+  have : AnalyticOnNhd 𝕜 (e ∘ f) U := fun x hx => (e.analyticAt _).comp (hf x hx)
   have A : EqOn (e ∘ f) 0 U := by
     apply eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux this hU h₀
     filter_upwards [hfz₀] with x hx
@@ -221,8 +223,8 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : E → F} {U : Set E}
 neighborhood of a point `z₀`, then they coincide globally along a connected set.
 For a one-dimensional version assuming only that the functions coincide at some points
 arbitrarily close to `z₀`, see `eqOn_of_preconnected_of_frequently_eq`. -/
-theorem eqOn_of_preconnected_of_eventuallyEq {f g : E → F} {U : Set E} (hf : AnalyticOn 𝕜 f U)
-    (hg : AnalyticOn 𝕜 g U) (hU : IsPreconnected U) {z₀ : E} (h₀ : z₀ ∈ U) (hfg : f =ᶠ[𝓝 z₀] g) :
+theorem eqOn_of_preconnected_of_eventuallyEq {f g : E → F} {U : Set E} (hf : AnalyticOnNhd 𝕜 f U)
+    (hg : AnalyticOnNhd 𝕜 g U) (hU : IsPreconnected U) {z₀ : E} (h₀ : z₀ ∈ U) (hfg : f =ᶠ[𝓝 z₀] g) :
     EqOn f g U := by
   have hfg' : f - g =ᶠ[𝓝 z₀] 0 := hfg.mono fun z h => by simp [h]
   simpa [sub_eq_zero] using fun z hz =>
@@ -232,9 +234,9 @@ theorem eqOn_of_preconnected_of_eventuallyEq {f g : E → F} {U : Set E} (hf : A
 coincide in a neighborhood of a point `z₀`, then they coincide everywhere.
 For a one-dimensional version assuming only that the functions coincide at some points
 arbitrarily close to `z₀`, see `eq_of_frequently_eq`. -/
-theorem eq_of_eventuallyEq {f g : E → F} [PreconnectedSpace E] (hf : AnalyticOn 𝕜 f univ)
-    (hg : AnalyticOn 𝕜 g univ) {z₀ : E} (hfg : f =ᶠ[𝓝 z₀] g) : f = g :=
+theorem eq_of_eventuallyEq {f g : E → F} [PreconnectedSpace E] (hf : AnalyticOnNhd 𝕜 f univ)
+    (hg : AnalyticOnNhd 𝕜 g univ) {z₀ : E} (hfg : f =ᶠ[𝓝 z₀] g) : f = g :=
   funext fun x =>
     eqOn_of_preconnected_of_eventuallyEq hf hg isPreconnected_univ (mem_univ z₀) hfg (mem_univ x)
 
-end AnalyticOn
+end AnalyticOnNhd

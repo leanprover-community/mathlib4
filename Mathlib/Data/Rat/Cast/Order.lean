@@ -3,10 +3,9 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Ring.Rat
+import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Data.Rat.Cast.CharZero
 import Mathlib.Tactic.Positivity.Core
-import Mathlib.Algebra.Order.Field.Basic
 
 /-!
 # Casts of rational numbers into linear ordered fields.
@@ -46,6 +45,9 @@ def castOrderEmbedding : ℚ ↪o K :=
 
 @[simp, norm_cast] lemma cast_lt : (p : K) < q ↔ p < q := cast_strictMono.lt_iff_lt
 
+@[gcongr] alias ⟨_, _root_.GCongr.ratCast_le_ratCast⟩ := cast_le
+@[gcongr] alias ⟨_, _root_.GCongr.ratCast_lt_ratCast⟩ := cast_lt
+
 @[simp] lemma cast_nonneg : 0 ≤ (q : K) ↔ 0 ≤ q := by norm_cast
 
 @[simp] lemma cast_nonpos : (q : K) ≤ 0 ↔ q ≤ 0 := by norm_cast
@@ -53,6 +55,38 @@ def castOrderEmbedding : ℚ ↪o K :=
 @[simp] lemma cast_pos : (0 : K) < q ↔ 0 < q := by norm_cast
 
 @[simp] lemma cast_lt_zero : (q : K) < 0 ↔ q < 0 := by norm_cast
+
+@[simp, norm_cast]
+theorem cast_le_natCast {m : ℚ} {n : ℕ} : (m : K) ≤ n ↔ m ≤ (n : ℚ) := by
+  rw [← cast_le (K := K), cast_natCast]
+
+@[simp, norm_cast]
+theorem natCast_le_cast {m : ℕ} {n : ℚ} : (m : K) ≤ n ↔ (m : ℚ) ≤ n := by
+  rw [← cast_le (K := K), cast_natCast]
+
+@[simp, norm_cast]
+theorem cast_le_intCast {m : ℚ} {n : ℤ} : (m : K) ≤ n ↔ m ≤ (n : ℚ) := by
+  rw [← cast_le (K := K), cast_intCast]
+
+@[simp, norm_cast]
+theorem intCast_le_cast {m : ℤ} {n : ℚ} : (m : K) ≤ n ↔ (m : ℚ) ≤ n := by
+  rw [← cast_le (K := K), cast_intCast]
+
+@[simp, norm_cast]
+theorem cast_lt_natCast {m : ℚ} {n : ℕ} : (m : K) < n ↔ m < (n : ℚ) := by
+  rw [← cast_lt (K := K), cast_natCast]
+
+@[simp, norm_cast]
+theorem natCast_lt_cast {m : ℕ} {n : ℚ} : (m : K) < n ↔ (m : ℚ) < n := by
+  rw [← cast_lt (K := K), cast_natCast]
+
+@[simp, norm_cast]
+theorem cast_lt_intCast {m : ℚ} {n : ℤ} : (m : K) < n ↔ m < (n : ℚ) := by
+  rw [← cast_lt (K := K), cast_intCast]
+
+@[simp, norm_cast]
+theorem intCast_lt_cast {m : ℤ} {n : ℚ} : (m : K) < n ↔ (m : ℚ) < n := by
+  rw [← cast_lt (K := K), cast_intCast]
 
 @[simp, norm_cast]
 lemma cast_min (p q : ℚ) : (↑(min p q) : K) = min (p : K) (q : K) := (@cast_mono K _).map_min
@@ -112,7 +146,7 @@ namespace NNRat
 variable {K} [LinearOrderedSemifield K] {p q : ℚ≥0}
 
 theorem cast_strictMono : StrictMono ((↑) : ℚ≥0 → K) := fun p q h => by
-  rwa [NNRat.cast_def, NNRat.cast_def, div_lt_div_iff, ← Nat.cast_mul, ← Nat.cast_mul,
+  rwa [NNRat.cast_def, NNRat.cast_def, div_lt_div_iff₀, ← Nat.cast_mul, ← Nat.cast_mul,
     Nat.cast_lt (α := K), ← NNRat.lt_def]
   · simp
   · simp
@@ -140,19 +174,35 @@ def castOrderEmbedding : ℚ≥0 ↪o K :=
 section ofNat
 variable {n : ℕ} [n.AtLeastTwo]
 
-@[simp] lemma cast_le_ofNat : (p : K) ≤ no_index (OfNat.ofNat n) ↔ p ≤ OfNat.ofNat n := by
+@[simp] lemma cast_le_ofNat : (p : K) ≤ ofNat(n) ↔ p ≤ OfNat.ofNat n := by
   simp [← cast_le (K := K)]
 
-@[simp] lemma ofNat_le_cast : no_index (OfNat.ofNat n) ≤ (p : K) ↔ OfNat.ofNat n ≤ p := by
+@[simp] lemma ofNat_le_cast : ofNat(n) ≤ (p : K) ↔ OfNat.ofNat n ≤ p := by
   simp [← cast_le (K := K)]
 
-@[simp] lemma cast_lt_ofNat : (p : K) < no_index (OfNat.ofNat n) ↔ p < OfNat.ofNat n := by
+@[simp] lemma cast_lt_ofNat : (p : K) < ofNat(n) ↔ p < OfNat.ofNat n := by
   simp [← cast_lt (K := K)]
 
-@[simp] lemma ofNat_lt_cast : no_index (OfNat.ofNat n) < (p : K) ↔ OfNat.ofNat n < p := by
+@[simp] lemma ofNat_lt_cast : ofNat(n) < (p : K) ↔ OfNat.ofNat n < p := by
   simp [← cast_lt (K := K)]
 
 end ofNat
+
+@[simp, norm_cast]
+theorem cast_le_natCast {m : ℚ≥0} {n : ℕ} : (m : K) ≤ n ↔ m ≤ (n : ℚ≥0) := by
+  rw [← cast_le (K := K), cast_natCast]
+
+@[simp, norm_cast]
+theorem natCast_le_cast {m : ℕ} {n : ℚ≥0} : (m : K) ≤ n ↔ (m : ℚ≥0) ≤ n := by
+  rw [← cast_le (K := K), cast_natCast]
+
+@[simp, norm_cast]
+theorem cast_lt_natCast {m : ℚ≥0} {n : ℕ} : (m : K) < n ↔ m < (n : ℚ≥0) := by
+  rw [← cast_lt (K := K), cast_natCast]
+
+@[simp, norm_cast]
+theorem natCast_lt_cast {m : ℕ} {n : ℚ≥0} : (m : K) < n ↔ (m : ℚ≥0) < n := by
+  rw [← cast_lt (K := K), cast_natCast]
 
 @[simp, norm_cast] lemma cast_min (p q : ℚ≥0) : (↑(min p q) : K) = min (p : K) (q : K) :=
   (@cast_mono K _).map_min

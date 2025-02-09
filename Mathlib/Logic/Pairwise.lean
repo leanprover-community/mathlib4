@@ -5,7 +5,6 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Data.Set.Defs
-import Mathlib.Tactic.Common
 
 /-!
 # Relations holding pairwise
@@ -21,11 +20,11 @@ This file defines pairwise relations.
 
 open Set Function
 
-variable {α β γ ι ι' : Type*} {r p q : α → α → Prop}
+variable {α β ι : Type*} {r p : α → α → Prop}
 
 section Pairwise
 
-variable {f g : ι → α} {s t u : Set α} {a b : α}
+variable {f : ι → α} {s : Set α} {a b : α}
 
 /-- A relation `r` holds pairwise if `r i j` for all `i ≠ j`. -/
 def Pairwise (r : α → α → Prop) :=

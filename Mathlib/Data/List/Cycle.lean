@@ -196,7 +196,6 @@ theorem prev_getLast_cons (h : x ∈ x :: l) :
 theorem prev_cons_cons_eq' (y z : α) (h : x ∈ y :: z :: l) (hx : x = y) :
     prev (y :: z :: l) x h = getLast (z :: l) (cons_ne_nil _ _) := by rw [prev, dif_pos hx]
 
---@[simp] Porting note (#10618): `simp` can prove it
 theorem prev_cons_cons_eq (z : α) (h : x ∈ x :: z :: l) :
     prev (x :: z :: l) x h = getLast (z :: l) (cons_ne_nil _ _) :=
   prev_cons_cons_eq' l x x z h rfl
@@ -218,7 +217,7 @@ theorem prev_ne_cons_cons (y z : α) (h : x ∈ y :: z :: l) (hy : x ≠ y) (hz 
   · rw [prev, dif_neg hy, if_neg hz]
 
 theorem next_mem (h : x ∈ l) : l.next x h ∈ l :=
-  nextOr_mem (get_mem _ _ _)
+  nextOr_mem (get_mem _ _)
 
 theorem prev_mem (h : x ∈ l) : l.prev x h ∈ l := by
   cases' l with hd tl
@@ -234,7 +233,7 @@ theorem prev_mem (h : x ∈ l) : l.prev x h ∈ l := by
       · exact mem_cons_of_mem _ (hl _ _)
 
 theorem next_get (l : List α) (h : Nodup l) (i : Fin l.length) :
-    next l (l.get i) (get_mem _ _ _) =
+    next l (l.get i) (get_mem _ _) =
       l.get ⟨(i + 1) % l.length, Nat.mod_lt _ (i.1.zero_le.trans_lt i.2)⟩ :=
   match l, h, i with
   | [], _, i => by simpa using i.2
@@ -255,7 +254,7 @@ theorem next_get (l : List α) (h : Nodup l) (i : Fin l.length) :
     · subst hi'
       rw [next_getLast_cons]
       · simp [hi', get]
-      · rw [get_cons_succ]; exact get_mem _ _ _
+      · rw [get_cons_succ]; exact get_mem _ _
       · exact hx'
       · simp [getLast_eq_getElem]
       · exact hn.of_cons
@@ -272,12 +271,12 @@ theorem next_get (l : List α) (h : Nodup l) (i : Fin l.length) :
         intro h
         have := nodup_iff_injective_get.1 hn h
         simp at this; simp [this] at hi'
-      · rw [get_cons_succ]; exact get_mem _ _ _
+      · rw [get_cons_succ]; exact get_mem _ _
 
 -- Unused variable linter incorrectly reports that `h` is unused here.
 set_option linter.unusedVariables false in
 theorem prev_get (l : List α) (h : Nodup l) (i : Fin l.length) :
-    prev l (l.get i) (get_mem _ _ _) =
+    prev l (l.get i) (get_mem _ _) =
       l.get ⟨(i + (l.length - 1)) % l.length, Nat.mod_lt _ i.pos⟩ :=
   match l with
   | [] => by simpa using i.2
@@ -334,7 +333,7 @@ theorem prev_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
   obtain ⟨⟨n, hn⟩, rfl⟩ := get_of_mem hx
   simp only [next_get, prev_get, h, Nat.mod_add_mod]
   cases' l with hd tl
-  · simp at hx
+  · simp at hn
   · have : (n + 1 + length tl) % (length tl + 1) = n := by
       rw [length_cons] at hn
       rw [add_assoc, add_comm 1, Nat.add_mod_right, Nat.mod_eq_of_lt hn]
@@ -345,7 +344,7 @@ theorem next_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
   obtain ⟨⟨n, hn⟩, rfl⟩ := get_of_mem hx
   simp only [next_get, prev_get, h, Nat.mod_add_mod]
   cases' l with hd tl
-  · simp at hx
+  · simp at hn
   · have : (n + length tl + 1) % (length tl + 1) = n := by
       rw [length_cons] at hn
       rw [add_assoc, Nat.add_mod_right, Nat.mod_eq_of_lt hn]
@@ -399,7 +398,7 @@ namespace Cycle
 
 variable {α : Type*}
 
--- Porting note (#11445): new definition
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- The coercion from `List α` to `Cycle α` -/
 @[coe] def ofList : List α → Cycle α :=
   Quot.mk _
@@ -812,7 +811,6 @@ theorem chain_coe_cons (r : α → α → Prop) (a : α) (l : List α) :
     Chain r (a :: l) ↔ List.Chain r a (l ++ [a]) :=
   Iff.rfl
 
---@[simp] Porting note (#10618): `simp` can prove it
 theorem chain_singleton (r : α → α → Prop) (a : α) : Chain r [a] ↔ r a a := by
   rw [chain_coe_cons, nil_append, List.chain_singleton]
 
@@ -824,13 +822,10 @@ theorem chain_ne_nil (r : α → α → Prop) {l : List α} :
 
 theorem chain_map {β : Type*} {r : α → α → Prop} (f : β → α) {s : Cycle β} :
     Chain r (s.map f) ↔ Chain (fun a b => r (f a) (f b)) s :=
-  Quotient.inductionOn' s fun l => by
+  Quotient.inductionOn s fun l => by
     cases' l with a l
     · rfl
-    dsimp only [Chain, ← mk''_eq_coe, Quotient.liftOn'_mk'', Cycle.map, Quotient.map', Quot.map,
-      Quotient.mk'', Quotient.liftOn', Quotient.liftOn, Quot.liftOn_mk, List.map]
-    rw [← concat_eq_append, ← List.map_concat, List.chain_map f]
-    simp
+    · simp [← concat_eq_append, ← List.map_concat, List.chain_map f]
 
 nonrec theorem chain_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
     Chain r (List.range n.succ) ↔ r n 0 ∧ ∀ m < n, r m m.succ := by

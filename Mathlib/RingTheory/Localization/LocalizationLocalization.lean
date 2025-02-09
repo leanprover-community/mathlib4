@@ -27,8 +27,7 @@ namespace IsLocalization
 
 section LocalizationLocalization
 
-variable {R : Type*} [CommSemiring R] (M : Submonoid R) {S : Type*} [CommSemiring S]
-variable [Algebra R S] {P : Type*} [CommSemiring P]
+variable {R : Type*} [CommSemiring R] (M : Submonoid R) {S : Type*} [CommSemiring S] [Algebra R S]
 variable (N : Submonoid S) (T : Type*) [CommSemiring T] [Algebra R T]
 
 
@@ -231,7 +230,7 @@ theorem isLocalization_of_is_exists_mul_mem (M N : Submonoid R) [IsLocalization 
   { map_units' := fun y => by
       obtain ⟨m, hm⟩ := h' y
       have := IsLocalization.map_units S ⟨_, hm⟩
-      erw [map_mul] at this
+      rw [map_mul] at this
       exact (IsUnit.mul_iff.mp this).2
     surj' := fun z => by
       obtain ⟨⟨y, s⟩, e⟩ := IsLocalization.surj M z
@@ -251,7 +250,7 @@ end IsLocalization
 
 namespace IsFractionRing
 
-variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
+variable {R : Type*} [CommRing R] (M : Submonoid R)
 
 open IsLocalization
 

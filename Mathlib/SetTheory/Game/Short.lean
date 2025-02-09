@@ -37,13 +37,6 @@ inductive Short : PGame.{u} → Type (u + 1)
     ∀ {α β : Type u} {L : α → PGame.{u}} {R : β → PGame.{u}} (_ : ∀ i : α, Short (L i))
       (_ : ∀ j : β, Short (R j)) [Fintype α] [Fintype β], Short ⟨α, β, L, R⟩
 
--- Porting note: Added `simpNF` exception. It's unclear what puts `eq_iff_true_of_subsingleton` into
--- the simp set. A minimal reproduction of the simpNF error needs to import transitively at least
--- `Mathlib.Logic.Unique`.
---
--- The simplifier can already prove this using `eq_iff_true_of_subsingleton`
-attribute [nolint simpNF] Short.mk.injEq
-
 instance subsingleton_short (x : PGame) : Subsingleton (Short x) := by
   induction x with
   | mk xl xr xL xR =>
@@ -51,7 +44,6 @@ instance subsingleton_short (x : PGame) : Subsingleton (Short x) := by
     intro a b
     cases a; cases b
     congr!
-
 
 -- Porting note: We use `induction` to prove `subsingleton_short` instead of recursion.
 -- A proof using recursion generates a harder `decreasing_by` goal than in Lean 3 for some reason:
@@ -136,7 +128,7 @@ def moveRightShort' {xl xr} (xL xR) [S : Short (mk xl xr xL xR)] (j : xr) : Shor
 
 attribute [local instance] moveRightShort'
 
-theorem short_birthday (x : PGame.{u}) : [Short x] → x.birthday < Ordinal.omega := by
+theorem short_birthday (x : PGame.{u}) : [Short x] → x.birthday < Ordinal.omega0 := by
   -- Porting note: Again `induction` is used instead of `pgame_wf_tac`
   induction x with
   | mk xl xr xL xR ihl ihr =>
@@ -217,13 +209,10 @@ instance shortNat : ∀ n : ℕ, Short n
   | 0 => PGame.short0
   | n + 1 => @PGame.shortAdd _ _ (shortNat n) PGame.short1
 
-instance shortOfNat (n : ℕ) [Nat.AtLeastTwo n] : Short (no_index (OfNat.ofNat n)) := shortNat n
+instance shortOfNat (n : ℕ) [Nat.AtLeastTwo n] : Short ofNat(n) := shortNat n
 
--- Porting note: `bit0` and `bit1` are deprecated so these instances can probably be removed.
-set_option linter.deprecated false in
 instance shortBit0 (x : PGame.{u}) [Short x] : Short (x + x) := by infer_instance
 
-set_option linter.deprecated false in
 instance shortBit1 (x : PGame.{u}) [Short x] : Short ((x + x) + 1) := shortAdd _ _
 
 /-- Auxiliary construction of decidability instances.

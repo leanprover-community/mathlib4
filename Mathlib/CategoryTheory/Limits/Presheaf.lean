@@ -3,7 +3,7 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Joël Riou
 -/
-import Mathlib.CategoryTheory.Comma.Presheaf
+import Mathlib.CategoryTheory.Comma.Presheaf.Basic
 import Mathlib.CategoryTheory.Elements
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Limits.Final
@@ -74,7 +74,7 @@ def restrictedYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type v₁) (E : ℰ) :
       (Functor.const (CostructuredArrow yoneda P)).obj E) ≃
       (P ⟶ (restrictedYoneda A).obj E) where
   toFun f :=
-    { app := fun X x => f.app (CostructuredArrow.mk (yonedaEquiv.symm x))
+    { app := fun _ x => f.app (CostructuredArrow.mk (yonedaEquiv.symm x))
       naturality := fun {X₁ X₂} φ => by
         ext x
         let ψ : CostructuredArrow.mk (yonedaEquiv.symm (P.toPrefunctor.map φ x)) ⟶
@@ -155,10 +155,11 @@ noncomputable def yonedaAdjunction : L ⊣ restrictedYoneda A :=
         apply yonedaEquiv.injective
         simp [yonedaEquiv] }
 
+include α in
 /-- Any left Kan extension along the Yoneda embedding preserves colimits. -/
-noncomputable def preservesColimitsOfSizeOfIsLeftKanExtension :
+lemma preservesColimitsOfSize_of_isLeftKanExtension :
     PreservesColimitsOfSize.{v₃, u₃} L :=
-  (yonedaAdjunction L α).leftAdjointPreservesColimits
+  (yonedaAdjunction L α).leftAdjoint_preservesColimits
 
 lemma isIso_of_isLeftKanExtension : IsIso α :=
   (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension _ α).isIso_hom
@@ -166,9 +167,9 @@ lemma isIso_of_isLeftKanExtension : IsIso α :=
 variable (A)
 
 /-- See Property 2 of https://ncatlab.org/nlab/show/Yoneda+extension#properties. -/
-noncomputable instance preservesColimitsOfSizeLeftKanExtension :
+noncomputable instance preservesColimitsOfSize_leftKanExtension :
     PreservesColimitsOfSize.{v₃, u₃} (yoneda.leftKanExtension A) :=
-  (yonedaAdjunction _ (yoneda.leftKanExtensionUnit A)).leftAdjointPreservesColimits
+  (yonedaAdjunction _ (yoneda.leftKanExtensionUnit A)).leftAdjoint_preservesColimits
 
 instance : IsIso (yoneda.leftKanExtensionUnit A) :=
   isIso_of_isLeftKanExtension _ (yoneda.leftKanExtensionUnit A)
@@ -202,8 +203,7 @@ noncomputable def coconeOfRepresentable (P : Cᵒᵖ ⥤ Type v₁) :
     { app := fun x => yonedaEquiv.symm x.unop.2
       naturality := fun {x₁ x₂} f => by
         dsimp
-        rw [comp_id]
-        erw [← yonedaEquiv_symm_map]
+        rw [comp_id, ← yonedaEquiv_symm_map]
         congr 1
         rw [f.unop.2] }
 
@@ -258,12 +258,12 @@ instance [L.IsLeftKanExtension α] : IsIso α :=
 
 lemma isLeftKanExtension_along_yoneda_iff :
     L.IsLeftKanExtension α ↔
-      (IsIso α ∧ Nonempty (PreservesColimitsOfSize.{v₁, max u₁ v₁} L)) := by
+      (IsIso α ∧ PreservesColimitsOfSize.{v₁, max u₁ v₁} L) := by
   constructor
   · intro
-    exact ⟨inferInstance, ⟨preservesColimitsOfNatIso
-      (Functor.leftKanExtensionUnique _ (yoneda.leftKanExtensionUnit A) _ α)⟩⟩
-  · rintro ⟨_, ⟨_⟩⟩
+    exact ⟨inferInstance, preservesColimits_of_natIso
+      (Functor.leftKanExtensionUnique _ (yoneda.leftKanExtensionUnit A) _ α)⟩
+  · rintro ⟨_, _⟩
     apply Functor.LeftExtension.IsPointwiseLeftKanExtension.isLeftKanExtension
       (E := Functor.LeftExtension.mk _ α)
     intro P
@@ -560,7 +560,7 @@ variable {I : Type v₁} [SmallCategory I] (F : I ⥤ C)
     Proposition 2.6.3(ii) in [Kashiwara2006] -/
 theorem final_toCostructuredArrow_comp_pre {c : Cocone (F ⋙ yoneda)} (hc : IsColimit c) :
     Functor.Final (c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) := by
-  apply Functor.cofinal_of_isTerminal_colimit_comp_yoneda
+  apply Functor.final_of_isTerminal_colimit_comp_yoneda
 
   suffices IsTerminal (colimit ((c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) ⋙
       CostructuredArrow.toOver yoneda c.pt)) by
@@ -572,7 +572,7 @@ theorem final_toCostructuredArrow_comp_pre {c : Cocone (F ⋙ yoneda)} (hc : IsC
       (CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow c.pt).isoCompInverse
 
   apply IsTerminal.ofIso Over.mkIdTerminal
-  let isc : IsColimit ((Over.forget _).mapCocone _) := PreservesColimit.preserves
+  let isc : IsColimit ((Over.forget _).mapCocone _) := isColimitOfPreserves _
     (colimit.isColimit ((c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) ⋙
       CostructuredArrow.toOver yoneda c.pt))
   exact Over.isoMk (hc.coconePointUniqueUpToIso isc) (hc.hom_ext fun i => by simp)

@@ -134,15 +134,13 @@ theorem lineMap_le_right_iff_le (h : r < 1) : lineMap a b r ≤ b ↔ a ≤ b :=
   Iff.trans (by rw [lineMap_apply_one]) (lineMap_le_lineMap_iff_of_lt h)
 
 @[simp]
-theorem midpoint_le_right : midpoint k a b ≤ b ↔ a ≤ b :=
-  lineMap_le_right_iff_le <| inv_lt_one one_lt_two
+theorem midpoint_le_right : midpoint k a b ≤ b ↔ a ≤ b := lineMap_le_right_iff_le two_inv_lt_one
 
 theorem right_le_lineMap_iff_le (h : r < 1) : b ≤ lineMap a b r ↔ b ≤ a :=
   lineMap_le_right_iff_le (E := Eᵒᵈ) h
 
 @[simp]
-theorem right_le_midpoint : b ≤ midpoint k a b ↔ b ≤ a :=
-  right_le_lineMap_iff_le <| inv_lt_one one_lt_two
+theorem right_le_midpoint : b ≤ midpoint k a b ↔ b ≤ a := right_le_lineMap_iff_le two_inv_lt_one
 
 end
 

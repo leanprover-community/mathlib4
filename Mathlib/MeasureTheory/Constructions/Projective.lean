@@ -46,6 +46,16 @@ namespace IsProjectiveMeasureFamily
 
 variable {I J : Finset ι}
 
+lemma eq_zero_of_isEmpty [h : IsEmpty (Π i, α i)]
+    (hP : IsProjectiveMeasureFamily P) (I : Finset ι) :
+    P I = 0 := by
+  classical
+  obtain ⟨i, hi⟩ := isEmpty_pi.mp h
+  rw [hP (insert i I) I (I.subset_insert i)]
+  have : IsEmpty (Π j : ↑(insert i I), α j) := by simp [hi]
+  rw [(P (insert i I)).eq_zero_of_isEmpty]
+  simp
+
 /-- Auxiliary lemma for `measure_univ_eq`. -/
 lemma measure_univ_eq_of_subset (hP : IsProjectiveMeasureFamily P) (hJI : J ⊆ I) :
     P I univ = P J univ := by

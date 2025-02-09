@@ -39,7 +39,7 @@ variable [Module.Finite K L]
 variable [Module.Finite R L] [Module.Free R L]
 variable [Module.Finite R M] [Module.Free R M]
 
-open FiniteDimensional LieSubalgebra Module.Free Polynomial
+open Module LieSubalgebra Module.Free Polynomial
 
 variable (K)
 
@@ -117,10 +117,8 @@ section Field
 
 variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L] [Module.Finite K L]
 
-open FiniteDimensional LieSubalgebra LieSubmodule Polynomial Cardinal LieModule engel_isBot_of_isMin
+open Module LieSubalgebra LieSubmodule Polynomial Cardinal LieModule engel_isBot_of_isMin
 
-#adaptation_note /-- otherwise there is a spurious warning on `contrapose!` below. -/
-set_option linter.unusedVariables false in
 /-- Let `L` be a Lie algebra of dimension `n` over a field `K` with at least `n` elements.
 Given a Lie subalgebra `U` of `L`, and an element `x ∈ U` such that `U ≤ engel K x`.
 Suppose that `engel K x` is minimal amongst the Engel subalgebras `engel K y` for `y ∈ U`.
@@ -152,7 +150,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   obtain hr|hr : r = finrank K L ∨ r < finrank K L := (Submodule.finrank_le _).eq_or_lt
   · suffices engel K y ≤ engel K x from hmin Ey this
     suffices engel K x = ⊤ by simp_rw [this, le_top]
-    apply LieSubalgebra.to_submodule_injective
+    apply LieSubalgebra.toSubmodule_injective
     apply Submodule.eq_top_of_finrank_eq hr
   -- So from now on, we assume that `r < finrank K L`.
   -- We denote by `x'` and `y'` the elements `x` and `y` viewed as terms of `U`.
@@ -164,13 +162,6 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   --   viewed as endomorphism of `E`. Note that `χ` is polynomial in its argument `r`.
   -- Similarly: `ψ r` is the characteristic polynomial of `⁅r • u + x, _⁆`
   --   viewed as endomorphism of `Q`. Note that `ψ` is polynomial in its argument `r`.
-  #adaptation_note
-  /--
-  After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
-  See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
-  -/
-  letI := E.instLieRingModuleSubtypeMemSubmodule
-  letI : LieModule K U E := LieSubmodule.instLieModule E
   let χ : Polynomial (K[X]) := lieCharpoly K E x' u
   let ψ : Polynomial (K[X]) := lieCharpoly K Q x' u
   -- It suffices to show that `χ` is the monomial `X ^ r`.
@@ -217,7 +208,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     obtain hz₀|hz₀ := eq_or_ne z 0
     · -- If `z = 0`, then `⁅α • u + x, x⁆` vanishes and we use our assumption `x ≠ 0`.
       refine ⟨⟨x, self_mem_engel K x⟩, ?_, ?_⟩
-      · simpa [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero] using hx₀
+      · exact Subtype.coe_ne_coe.mp hx₀
       · dsimp only [z] at hz₀
         simp only [coe_bracket_of_module, hz₀, LieHom.map_zero, LinearMap.zero_apply]
     -- If `z ≠ 0`, then `⁅α • u + x, z⁆` vanishes per axiom of Lie algebras
@@ -253,8 +244,9 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     -- From this we deduce that there exists an `n` such that `⁅x, _⁆ ^ n` vanishes on `⁅x, z⁆`.
     -- On the other hand, our goal is to show `z = 0` in `Q`,
     -- which is equivalent to showing that `⁅x, _⁆ ^ n` vanishes on `z`, for some `n`.
-    simp only [coe_bracket_of_module, LieSubmodule.mem_mk_iff', mem_coe_submodule, mem_engel_iff,
-      LieSubmodule.Quotient.mk'_apply, LieSubmodule.Quotient.mk_eq_zero', E, Q] at this ⊢
+    simp only [coe_bracket_of_module, LieSubmodule.mem_mk_iff', LieSubalgebra.mem_toSubmodule,
+      mem_engel_iff, LieSubmodule.Quotient.mk'_apply, LieSubmodule.Quotient.mk_eq_zero', E, Q]
+      at this ⊢
     -- Hence we win.
     obtain ⟨n, hn⟩ := this
     use n+1
@@ -327,7 +319,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     rw [← hn]
     clear hn
     induction n with
-    | zero => simp only [pow_zero, LinearMap.one_apply]
+    | zero => simp only [z', pow_zero, LinearMap.one_apply]
     | succ n ih => rw [pow_succ', pow_succ', LinearMap.mul_apply, ih]; rfl
   classical
   -- Now let `n` be the smallest power such that `⁅v, _⁆ ^ n` kills `z'`.
@@ -366,8 +358,8 @@ lemma exists_isCartanSubalgebra_engel_of_finrank_le_card (h : finrank K L ≤ #K
   rintro ⟨_, y, hy, rfl⟩ hyx
   suffices finrank K (engel K x) ≤ finrank K (engel K y) by
     suffices engel K y = engel K x from this.ge
-    apply LieSubalgebra.to_submodule_injective
-    exact eq_of_le_of_finrank_le hyx this
+    apply LieSubalgebra.toSubmodule_injective
+    exact Submodule.eq_of_le_of_finrank_le hyx this
   rw [(isRegular_iff_finrank_engel_eq_rank K x).mp hx]
   apply rank_le_finrank_engel
 

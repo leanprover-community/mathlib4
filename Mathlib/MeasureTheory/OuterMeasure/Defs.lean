@@ -3,7 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Topology.Instances.ENNReal
+import Mathlib.Topology.Instances.ENNReal.Defs
+import Mathlib.Topology.Algebra.InfiniteSum.Defs
 
 /-!
 # Definitions of an outer measure and the corresponding `FunLike` class
@@ -38,6 +39,8 @@ variable {α : Type*}
 
 namespace MeasureTheory
 
+open scoped Function -- required for scoped `on` notation
+
 /-- An outer measure is a countably subadditive monotone function that sends `∅` to `0`. -/
 structure OuterMeasure (α : Type*) where
   /-- Outer measure function. Use automatic coercion instead. -/
@@ -61,9 +64,6 @@ namespace OuterMeasure
 instance : FunLike (OuterMeasure α) (Set α) ℝ≥0∞ where
   coe m := m.measureOf
   coe_injective' | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
-
-instance instCoeFun : CoeFun (OuterMeasure α) (fun _ => Set α → ℝ≥0∞) :=
-  inferInstance
 
 @[simp] theorem measureOf_eq_coe (m : OuterMeasure α) : m.measureOf = m := rfl
 

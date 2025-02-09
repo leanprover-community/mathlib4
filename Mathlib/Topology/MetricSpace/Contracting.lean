@@ -137,7 +137,7 @@ theorem efixedPoint_eq_of_edist_lt_top (hf : ContractingWith K f) {x : α} (hx :
     efixedPoint f hf x hx = efixedPoint f hf y hy := by
   refine (hf.eq_or_edist_eq_top_of_fixedPoints ?_ ?_).elim id fun h' ↦ False.elim (ne_of_lt ?_ h')
     <;> try apply efixedPoint_isFixedPt
-  change edistLtTopSetoid.Rel _ _
+  change edistLtTopSetoid _ _
   trans x
   · apply Setoid.symm' -- Porting note: Originally `symm`
     exact hf.edist_efixedPoint_lt_top hx
@@ -221,7 +221,7 @@ theorem efixedPoint_eq_of_edist_lt_top' (hf : ContractingWith K f) {s : Set α} 
     efixedPoint' f hsc hsf hfs x hxs hx = efixedPoint' f htc htf hft y hyt hy := by
   refine (hf.eq_or_edist_eq_top_of_fixedPoints ?_ ?_).elim id fun h' ↦ False.elim (ne_of_lt ?_ h')
     <;> try apply efixedPoint_isFixedPt'
-  change edistLtTopSetoid.Rel _ _
+  change edistLtTopSetoid _ _
   trans x
   · apply Setoid.symm' -- Porting note: Originally `symm`
     apply edist_efixedPoint_lt_top'
@@ -266,7 +266,7 @@ theorem dist_fixedPoint_fixedPoint_of_dist_le' (g : α → α) {x y} (hx : IsFix
     dist x y = dist y x := dist_comm x y
     _ ≤ dist y (f y) / (1 - K) := hf.dist_le_of_fixedPoint y hx
     _ = dist (f y) (g y) / (1 - K) := by rw [hy.eq, dist_comm]
-    _ ≤ C / (1 - K) := (div_le_div_right hf.one_sub_K_pos).2 (hfg y)
+    _ ≤ C / (1 - K) := (div_le_div_iff_of_pos_right hf.one_sub_K_pos).2 (hfg y)
 
 variable [Nonempty α] [CompleteSpace α]
 variable (f)
@@ -295,8 +295,10 @@ theorem aposteriori_dist_iterate_fixedPoint_le (x n) :
 
 theorem apriori_dist_iterate_fixedPoint_le (x n) :
     dist (f^[n] x) (fixedPoint f hf) ≤ dist x (f x) * (K : ℝ) ^ n / (1 - K) :=
-  le_trans (hf.aposteriori_dist_iterate_fixedPoint_le x n) <|
-    (div_le_div_right hf.one_sub_K_pos).2 <| hf.toLipschitzWith.dist_iterate_succ_le_geometric x n
+  calc
+    _ ≤ dist (f^[n] x) (f^[n + 1] x) / (1 - K) := hf.aposteriori_dist_iterate_fixedPoint_le x n
+    _ ≤ _ := by
+      gcongr; exacts [hf.one_sub_K_pos.le, hf.toLipschitzWith.dist_iterate_succ_le_geometric x n]
 
 theorem tendsto_iterate_fixedPoint (x) :
     Tendsto (fun n ↦ f^[n] x) atTop (𝓝 <| fixedPoint f hf) := by
