@@ -107,7 +107,7 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
   have hq : 0 < q - 1 := by rw [← Fintype.card_units, Fintype.card_pos_iff]; exact ⟨1⟩
   let S : Finset (σ → K) := {x | ∀ i ∈ s, eval x (f i) = 0}
   have hS (x : σ → K) : x ∈ S ↔ ∀ i ∈ s, eval x (f i) = 0 := by simp [S]
-  /- The polynomial `F = ∏ i in s, (1 - (f i)^(q - 1))` has the nice property
+  /- The polynomial `F = ∏ i ∈ s, (1 - (f i)^(q - 1))` has the nice property
     that it takes the value `1` on elements of `{x : σ → K // ∀ i ∈ s, (f i).eval x = 0}`
     while it is `0` outside that locus.
     Hence the sum of its values is equal to the cardinality of

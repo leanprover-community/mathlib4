@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Polynomial.Degree.Domain
+import Mathlib.Algebra.Ring.NonZeroDivisors
 import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
@@ -47,8 +48,6 @@ the codomain is not a field or even an integral domain.
 -/
 
 noncomputable section
-
-open scoped Classical
 
 open scoped nonZeroDivisors Polynomial
 

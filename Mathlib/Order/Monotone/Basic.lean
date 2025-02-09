@@ -133,18 +133,6 @@ instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a < b → f b < f a)] :
 
 end Decidable
 
-lemma monotone_inclusion_le_le_of_le [Preorder α] {k j : α} (hkj : k ≤ j) :
-    Monotone (fun ⟨i, hi⟩ => ⟨i, hi.trans hkj⟩ : { i // i ≤ k } → { i // i ≤ j}) :=
-  fun _ _ h => h
-
-lemma monotone_inclusion_lt_le_of_le [Preorder α] {k j : α} (hkj : k ≤ j) :
-    Monotone (fun ⟨i, hi⟩ => ⟨i, hi.le.trans hkj⟩ : { i // i < k } → { i // i ≤ j}) :=
-  fun _ _ h => h
-
-lemma monotone_inclusion_lt_lt_of_le [Preorder α] {k j : α} (hkj : k ≤ j) :
-    Monotone (fun ⟨i, hi⟩ => ⟨i, lt_of_lt_of_le hi hkj⟩ : { i // i < k } → { i // i < j}) :=
-  fun _ _ h => h
-
 /-! ### Monotonicity on the dual order
 
 Strictly, many of the `*On.dual` lemmas in this section should use `ofDual ⁻¹' s` instead of `s`,
@@ -1067,6 +1055,18 @@ theorem Monotone.prod_map (hf : Monotone f) (hg : Monotone g) : Monotone (Prod.m
 
 theorem Antitone.prod_map (hf : Antitone f) (hg : Antitone g) : Antitone (Prod.map f g) :=
   fun _ _ h ↦ ⟨hf h.1, hg h.2⟩
+
+lemma monotone_prod_iff {h : α × β → γ} :
+    Monotone h ↔ (∀ a, Monotone (fun b => h (a, b))) ∧ (∀ b, Monotone (fun a => h (a, b))) where
+  mp h := ⟨fun _ _ _ hab => h (Prod.mk_le_mk_iff_right.mpr hab),
+    fun _ _ _ hab => h (Prod.mk_le_mk_iff_left.mpr hab)⟩
+  mpr h _ _ hab := le_trans (h.1 _ (Prod.mk_le_mk.mp hab).2) (h.2 _ (Prod.mk_le_mk.mp hab).1)
+
+lemma antitone_prod_iff {h : α × β → γ} :
+    Antitone h ↔ (∀ a, Antitone (fun b => h (a, b))) ∧ (∀ b, Antitone (fun a => h (a, b))) where
+  mp h := ⟨fun _ _ _ hab => h (Prod.mk_le_mk_iff_right.mpr hab),
+    fun _ _ _ hab => h (Prod.mk_le_mk_iff_left.mpr hab)⟩
+  mpr h _ _ hab:= le_trans (h.1 _ (Prod.mk_le_mk.mp hab).2) (h.2 _ (Prod.mk_le_mk.mp hab).1)
 
 end Preorder
 

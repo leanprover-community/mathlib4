@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Algebra.Ring.Nat
+import Mathlib.Tactic.ByContra
 
 /-! # Embeddings of complex shapes
 
@@ -212,5 +213,25 @@ instance : (embeddingUpIntLE p).IsRelIff := by dsimp [embeddingUpIntLE]; infer_i
 
 instance : (embeddingUpIntLE p).IsTruncLE where
   mem_prev {_ k} h := ⟨k + 1, by dsimp at h ⊢; omega⟩
+
+lemma not_mem_range_embeddingUpIntLE_iff (n : ℤ) :
+    (∀ (i : ℕ), (embeddingUpIntLE p).f i ≠ n) ↔ p < n := by
+  constructor
+  · intro h
+    by_contra!
+    exact h (p - n).natAbs (by simp; omega)
+  · intros
+    dsimp
+    omega
+
+lemma not_mem_range_embeddingUpIntGE_iff (n : ℤ) :
+    (∀ (i : ℕ), (embeddingUpIntGE p).f i ≠ n) ↔ n < p := by
+  constructor
+  · intro h
+    by_contra!
+    exact h (n - p).natAbs (by simp; omega)
+  · intros
+    dsimp
+    omega
 
 end ComplexShape

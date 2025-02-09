@@ -7,6 +7,7 @@ import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Analysis.Calculus.DSlope
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Analytic.Uniqueness
+import Mathlib.Topology.Perfect
 
 /-!
 # Principle of isolated zeros
@@ -189,57 +190,6 @@ theorem exists_eventuallyEq_pow_smul_nonzero_iff (hf : AnalyticAt 𝕜 f z₀) :
       hp.iterate_dslope_fslope_ne_zero (hf_ne.imp hp.locally_zero_iff.mpr),
       hp.eq_pow_order_mul_iterate_dslope⟩
 
-open scoped Classical in
-/-- The order of vanishing of `f` at `z₀`, as an element of `ℕ∞`.
-
-This is defined to be `∞` if `f` is identically 0 on a neighbourhood of `z₀`, and otherwise the
-unique `n` such that `f z = (z - z₀) ^ n • g z` with `g` analytic and non-vanishing at `z₀`. See
-`AnalyticAt.order_eq_top_iff` and `AnalyticAt.order_eq_nat_iff` for these equivalences. -/
-noncomputable def order (hf : AnalyticAt 𝕜 f z₀) : ENat :=
-  if h : ∀ᶠ z in 𝓝 z₀, f z = 0 then ⊤
-  else ↑(hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose
-
-lemma order_eq_top_iff (hf : AnalyticAt 𝕜 f z₀) : hf.order = ⊤ ↔ ∀ᶠ z in 𝓝 z₀, f z = 0 := by
-  unfold order
-  split_ifs with h
-  · rwa [eq_self, true_iff]
-  · simpa only [ne_eq, ENat.coe_ne_top, false_iff] using h
-
-lemma order_eq_nat_iff (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) : hf.order = ↑n ↔
-    ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z := by
-  unfold order
-  split_ifs with h
-  · simp only [ENat.top_ne_coe, false_iff]
-    contrapose! h
-    rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff]
-    exact ⟨n, h⟩
-  · rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff] at h
-    refine ⟨fun hn ↦ (WithTop.coe_inj.mp hn : h.choose = n) ▸ h.choose_spec, fun h' ↦ ?_⟩
-    rw [unique_eventuallyEq_pow_smul_nonzero h.choose_spec h']
-
-/- An analytic function `f` has finite order at a point `z₀` iff it locally looks
-  like `(z - z₀) ^ order • g`, where `g` is analytic and does not vanish at
-  `z₀`. -/
-lemma order_neq_top_iff (hf : AnalyticAt 𝕜 f z₀) :
-    hf.order ≠ ⊤ ↔ ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0
-      ∧ f =ᶠ[𝓝 z₀] fun z ↦ (z - z₀) ^ (hf.order.toNat) • g z := by
-  simp only [← ENat.coe_toNat_eq_self, Eq.comm, EventuallyEq, ← hf.order_eq_nat_iff]
-
-/- An analytic function has order zero at a point iff it does not vanish there. -/
-lemma order_eq_zero_iff (hf : AnalyticAt 𝕜 f z₀) :
-    hf.order = 0 ↔ f z₀ ≠ 0 := by
-  rw [← ENat.coe_zero, order_eq_nat_iff hf 0]
-  constructor
-  · intro ⟨g, _, _, hg⟩
-    simpa [hg.self_of_nhds]
-  · exact fun hz ↦ ⟨f, hf, hz, by simp⟩
-
-/- An analytic function vanishes at a point if its order is nonzero when converted to ℕ. -/
-lemma apply_eq_zero_of_order_toNat_ne_zero (hf : AnalyticAt 𝕜 f z₀) :
-    hf.order.toNat ≠ 0 → f z₀ = 0 := by
-  simp [hf.order_eq_zero_iff]
-  tauto
-
 end AnalyticAt
 
 namespace AnalyticOnNhd
@@ -305,5 +255,47 @@ theorem eq_of_frequently_eq [ConnectedSpace 𝕜] (hf : AnalyticOnNhd 𝕜 f uni
 
 @[deprecated (since := "2024-09-26")]
 alias _root_.AnalyticOn.eq_of_frequently_eq := eq_of_frequently_eq
+
+section Mul
+/-!
+### Vanishing of products of analytic functions
+-/
+
+variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
+  {B : Type*} [NormedAddCommGroup B] [NormedSpace 𝕜 B] [Module A B]
+
+/-- If `f, g` are analytic on a neighbourhood of the preconnected open set `U`, and `f • g = 0`
+on `U`, then either `f = 0` on `U` or `g = 0` on `U`. -/
+lemma eq_zero_or_eq_zero_of_smul_eq_zero [NoZeroSMulDivisors A B]
+    {f : 𝕜 → A} {g : 𝕜 → B} (hf : AnalyticOnNhd 𝕜 f U) (hg : AnalyticOnNhd 𝕜 g U)
+    (hfg : ∀ z ∈ U, f z • g z = 0) (hU : IsPreconnected U) :
+    (∀ z ∈ U, f z = 0) ∨ (∀ z ∈ U, g z = 0) := by
+  -- We want to apply `IsPreconnected.preperfect_of_nontrivial` which requires `U` to have at least
+  -- two elements. So we need to dispose of the cases `#U = 0` and `#U = 1` first.
+  by_cases hU' : U = ∅
+  · simp [hU']
+  obtain ⟨z, hz⟩ : ∃ z, z ∈ U := nonempty_iff_ne_empty.mpr hU'
+  by_cases hU'' : U = {z}
+  · simpa [hU''] using hfg z hz
+  apply (nontrivial_iff_ne_singleton hz).mpr at hU''
+  -- Now connectedness implies that `z` is an accumulation point of `U`, so at least one of
+  -- `f` and `g` must vanish frequently in a neighbourhood of `z`.
+  have : ∃ᶠ w in 𝓝[≠] z, w ∈ U :=
+    frequently_mem_iff_neBot.mpr <| hU.preperfect_of_nontrivial hU'' z hz
+  have : ∃ᶠ w in 𝓝[≠] z, f w = 0 ∨ g w = 0 :=
+    this.mp <| by filter_upwards with w hw using smul_eq_zero.mp (hfg w hw)
+  cases frequently_or_distrib.mp this with
+  | inl h => exact Or.inl <| hf.eqOn_zero_of_preconnected_of_frequently_eq_zero hU hz h
+  | inr h => exact Or.inr <| hg.eqOn_zero_of_preconnected_of_frequently_eq_zero hU hz h
+
+/-- If `f, g` are analytic on a neighbourhood of the preconnected open set `U`, and `f * g = 0`
+on `U`, then either `f = 0` on `U` or `g = 0` on `U`. -/
+lemma eq_zero_or_eq_zero_of_mul_eq_zero [NoZeroDivisors A]
+    {f g : 𝕜 → A} (hf : AnalyticOnNhd 𝕜 f U) (hg : AnalyticOnNhd 𝕜 g U)
+    (hfg : ∀ z ∈ U, f z * g z = 0) (hU : IsPreconnected U) :
+    (∀ z ∈ U, f z = 0) ∨ (∀ z ∈ U, g z = 0) :=
+  eq_zero_or_eq_zero_of_smul_eq_zero hf hg hfg hU
+
+end Mul
 
 end AnalyticOnNhd

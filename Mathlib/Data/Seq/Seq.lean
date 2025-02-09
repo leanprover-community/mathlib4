@@ -418,12 +418,8 @@ def ofMLList : MLList Id α → Seq α :=
     | .none => none
     | .some (a, l') => some (a, l')
 
-@[deprecated (since := "2024-07-26")] alias ofLazyList := ofMLList
-
 instance coeMLList : Coe (MLList Id α) (Seq α) :=
   ⟨ofMLList⟩
-
-@[deprecated (since := "2024-07-26")] alias coeLazyList := coeMLList
 
 /-- Translate a sequence into a `MLList`. -/
 unsafe def toMLList : Seq α → MLList Id α
@@ -431,8 +427,6 @@ unsafe def toMLList : Seq α → MLList Id α
     match destruct s with
     | none => .nil
     | some (a, s') => .cons a (toMLList s')
-
-@[deprecated (since := "2024-07-26")] alias toLazyList := toMLList
 
 end MLList
 
