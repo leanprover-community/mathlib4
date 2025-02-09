@@ -222,30 +222,16 @@ lemma succStruct_prop_le_propArrow :
     dsimp [succStruct]
     infer_instance
 
-@[nolint unusedHavesSuffices]
-lemma transfiniteCompositionOfShape_succStruct_prop_ιIteration :
-    (succStruct I κ).prop.transfiniteCompositionsOfShape κ.ord.toType (ιIteration I κ) := by
+noncomputable def transfiniteCompositionOfShapeSuccStructPropιIteration :
+    (succStruct I κ).prop.TransfiniteCompositionOfShape κ.ord.toType (ιIteration I κ) :=
   have := hasIterationOfShape I κ
-  apply SuccStruct.transfiniteCompositionOfShape_ιIteration
+  (succStruct I κ).transfiniteCompositionOfShapeιIteration κ.ord.toType
 
-@[nolint unusedHavesSuffices]
-lemma transfiniteCompositionOfShape_succStruct_iterationFunctor_map_from_bot (j : κ.ord.toType) :
-    (succStruct I κ).prop.transfiniteCompositionsOfShape (Set.Iic j)
-      ((iterationFunctor I κ).map (homOfLE bot_le : ⊥ ⟶ j)) := by
-  have := hasIterationOfShape I κ
-  apply SuccStruct.transfiniteCompositionOfShape_iterationFunctor_map_from_bot
-
-lemma transfiniteCompositionOfShape_propArrow_ιIteration :
-    ((propArrow.{w} I).functorCategory (Arrow C)).transfiniteCompositionsOfShape
+noncomputable def transfiniteCompositionOfShapePropArrowιIteration :
+    ((propArrow.{w} I).functorCategory (Arrow C)).TransfiniteCompositionOfShape
       κ.ord.toType (ιIteration I κ) :=
-  monotone_transfiniteCompositionsOfShape _ (succStruct_prop_le_propArrow I κ) _
-    (transfiniteCompositionOfShape_succStruct_prop_ιIteration I κ)
-
-lemma transfiniteCompositionOfShape_propArrow_iterationFunctor_map_from_bot (j : κ.ord.toType) :
-    ((propArrow.{w} I).functorCategory (Arrow C)).transfiniteCompositionsOfShape
-      (Set.Iic j) (((iterationFunctor I κ).map (homOfLE bot_le : ⊥ ⟶ j))) :=
-  monotone_transfiniteCompositionsOfShape _ (succStruct_prop_le_propArrow I κ) _
-    (transfiniteCompositionOfShape_succStruct_iterationFunctor_map_from_bot I κ j)
+  (transfiniteCompositionOfShapeSuccStructPropιIteration I κ).ofLE
+    (succStruct_prop_le_propArrow I κ)
 
 omit κ in
 lemma propArrow_functorCategory_arrow_le (f : Arrow C) :
@@ -267,7 +253,7 @@ lemma isEventuallyConstantFrom_bot_iterationFunctor_evaluation_right (f : Arrow 
   apply transfiniteCompositionsOfShape_map_of_preserves
   exact monotone_transfiniteCompositionsOfShape _
     (propArrow_functorCategory_arrow_le I f) _
-    (transfiniteCompositionOfShape_propArrow_iterationFunctor_map_from_bot _ _ _)
+    ((transfiniteCompositionOfShapePropArrowιIteration I κ).iic j).mem
 
 instance isIso_ιIteration_app_right (f : Arrow C) :
     IsIso ((ιIteration I κ).app f).right := by
@@ -278,7 +264,7 @@ instance isIso_ιIteration_app_right (f : Arrow C) :
   apply transfiniteCompositionsOfShape_map_of_preserves
   exact monotone_transfiniteCompositionsOfShape _
     (propArrow_functorCategory_arrow_le I f) _
-    (transfiniteCompositionOfShape_propArrow_ιIteration I κ)
+    (transfiniteCompositionOfShapePropArrowιIteration I κ).mem
 
 instance (f : Arrow C) (j : κ.ord.toType) :
     IsIso (((iterationCocone I κ).ι.app j).app f).right :=
@@ -388,7 +374,7 @@ lemma transfiniteCompositionsOfShape_ιObj :
     (((evaluation _ (Arrow C)).obj (Arrow.mk f) ⋙ Arrow.leftFunc).map (ιIteration I κ))
   apply transfiniteCompositionsOfShape_map_of_preserves
   apply monotone_transfiniteCompositionsOfShape _ _ _
-    (transfiniteCompositionOfShape_propArrow_ιIteration I κ)
+    (transfiniteCompositionOfShapePropArrowιIteration I κ).mem
   intro _ _ _ h
   exact (h f).1
 

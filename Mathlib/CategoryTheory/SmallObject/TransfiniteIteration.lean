@@ -132,20 +132,23 @@ instance : (Φ.iterationFunctor J).IsWellOrderContinuous where
     simp [Φ.arrow_mk_iterationFunctor_map k i hk.le (Φ.iter i) (by simp),
       restrictionLTiterationFunctorIso]⟩
 
-lemma transfiniteCompositionOfShape_ιIteration :
-    Φ.prop.transfiniteCompositionsOfShape J (Φ.ιIteration J) := by
-  simp only [← MorphismProperty.arrow_mk_mem_toSet_iff]
-  rw [arrow_mk_ιIteration, MorphismProperty.arrow_mk_mem_toSet_iff]
-  sorry
-  --exact ⟨_, Φ.prop_iterationFunctor_map_succ, _, Φ.isColimitIterationCocone J⟩
+/-- The inclusion `Φ.ιIteration J` is a transfinite composition of
+shape `J` of morphisms in `Φ.prop`. -/
+noncomputable def transfiniteCompositionOfShapeιIteration :
+    Φ.prop.TransfiniteCompositionOfShape J (Φ.ιIteration J) where
+  isoBot := (Φ.iterationFunctorObjBotIso J).symm
+  map_mem := Φ.prop_iterationFunctor_map_succ
+  F := Φ.iterationFunctor J
+  incl := (Φ.iterationCocone J).ι
+  isColimit := Φ.isColimitIterationCocone J
 
 variable {J}
 
-lemma transfiniteCompositionOfShape_iterationFunctor_map_from_bot (j : J) :
-    Φ.prop.transfiniteCompositionsOfShape (Set.Iic j)
-      ((Φ.iterationFunctor J).map (homOfLE bot_le : ⊥ ⟶ j)) :=
-  Φ.prop.transfiniteCompositionsOfShape_map_bot_le (Φ.iterationFunctor J) _
-    (fun _ hi ↦ Φ.prop_iterationFunctor_map_succ _ hi.not_isMax)
+--lemma transfiniteCompositionOfShape_iterationFunctor_map_from_bot (j : J) :
+--    Φ.prop.transfiniteCompositionsOfShape (Set.Iic j)
+--      ((Φ.iterationFunctor J).map (homOfLE bot_le : ⊥ ⟶ j)) :=
+--  Φ.prop.transfiniteCompositionsOfShape_map_bot_le (Φ.iterationFunctor J) _
+--    (fun _ hi ↦ Φ.prop_iterationFunctor_map_succ _ hi.not_isMax)
 
 noncomputable def iterationFunctorObjSuccIso (j : J) (hj : ¬ IsMax j) :
     (Φ.iterationFunctor J).obj (Order.succ j) ≅

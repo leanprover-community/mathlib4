@@ -11,10 +11,17 @@ import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 /-!
 # The left lifting property is stable under transfinite composition
 
-Let `C` be a category, and `p : X ⟶ Y` be a morphism in `C`. In this file,
-we show that a transfinite composition of morphisms that have the left
-lifting property with respect to `p` also has the left lifting property with
-respect to `p`, see `HasLiftingProperty.transfiniteComposition.hasLiftingProperty_ι_app_bot`.
+In this file, we show that if `W : MorphismProperty C`, then
+`W.llp.IsStableUnderTransfiniteCompositionOfShape J`, i.e.
+the class of morphisms which have the left lifting property with
+respect to `W` is stable under transfinite composition.
+
+The main technical lemma is
+`HasLiftingProperty.transfiniteComposition.hasLiftingProperty_ι_app_bot`.
+It corresponds to the particular case `W` contains only one morphism `p : X ⟶ Y`:
+it shows that a transfinite composition of morphisms that have the left
+lifting property with respect to `p` also has the left lifting property
+with respect to `p`.
 
 About the proof, given a colimit cocone `c` for a well-order-continuous
 functor `F : J ⥤ C` from a well-ordered type `J`, we introduce a projective
@@ -40,10 +47,6 @@ This is constructed by transfinite induction on `j`:
 * In order to pass from `j` to `Order.succ j`, we use the assumption that
 `F.obj j ⟶ F.obj (Order.succ j)` has the left lifting property with respect to `p`;
 * When `j` is a limit element, we use the "continuity" of `F`.
-
-TODO: Given `P : MorphismProperty C`, deduce that the class of morphisms
-that have the left lifting property with respect to `P` is stable
-by transfinite composition.
 
 -/
 
@@ -231,11 +234,12 @@ variable (W : MorphismProperty C)
 instance llp_isStableUnderTransfiniteCompositionOfShape :
     W.llp.IsStableUnderTransfiniteCompositionOfShape J := by
   rw [isStableUnderTransfiniteCompositionOfShape_iff]
-  rintro _ _ _ ⟨t⟩
-  sorry
-  --rintro _ _ _ ⟨F, hF, c, hc⟩ X Y p hp
-  --exact HasLiftingProperty.transfiniteComposition.hasLiftingProperty_ι_app_bot hc
-  --  (fun j hj ↦ hF j hj p hp)
+  rintro X Y f ⟨h⟩
+  have : W.llp (h.incl.app ⊥) := fun _ _ p hp ↦
+    HasLiftingProperty.transfiniteComposition.hasLiftingProperty_ι_app_bot
+      (hc := h.isColimit) (fun j hj ↦ h.map_mem j hj _ hp)
+  exact (MorphismProperty.arrow_mk_iso_iff _
+    (Arrow.isoMk h.isoBot.symm (Iso.refl _))).2 this
 
 lemma transfiniteCompositionsOfShape_le_rlp_llp :
     W.transfiniteCompositionsOfShape J ≤ W.rlp.llp := by

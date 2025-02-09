@@ -154,6 +154,24 @@ noncomputable def map {W : MorphismProperty D} {F : C ⥤ D}
   __ := h.toTransfiniteCompositionOfShape.map F
   map_mem j hj := h.map_mem j hj
 
+/-- A transfinite composition of shape `J` of morphisms in `W` induces a transfinite
+composition of shape `Set.Iic j` (for any `j : J`). -/
+def iic (j : J) :
+    W.TransfiniteCompositionOfShape (Set.Iic j) (h.F.map (homOfLE bot_le : ⊥ ⟶ j)) where
+  __ := h.toTransfiniteCompositionOfShape.iic j
+  map_mem i hi := by
+    have := h.map_mem i.1 (by
+      rw [not_isMax_iff] at hi ⊢
+      obtain ⟨i', hi'⟩ := hi
+      exact ⟨j, lt_of_lt_of_le hi' i'.2⟩)
+    rw [← W.arrow_mk_mem_toSet_iff] at this ⊢
+    have pif := (Subtype.mono_coe (Set.Iic j)).functor
+    have eq : Arrow.mk ((Subtype.mono_coe _).functor.map (homOfLE (Order.le_succ i))) =
+      Arrow.mk (homOfLE (Order.le_succ i.1)) :=
+        Arrow.ext rfl (Set.Iic.succ_coe_of_not_isMax hi) rfl
+    replace eq := congr_arg h.F.mapArrow.obj eq
+    convert this using 1
+
 end
 
 /-- If `F : ComposableArrows C n` and all maps `F.obj i.castSucc ⟶ F.obj i.succ`
@@ -259,29 +277,6 @@ variable {W J} in
 lemma TransfiniteCompositionOfShape.mem {X Y : C} (f : X ⟶ Y)
     (h : W.TransfiniteCompositionOfShape J f) :
     W.transfiniteCompositionsOfShape J f := ⟨h⟩
-
--- to be moved
-instance (ι : Type*) [Preorder ι] [OrderBot ι] (j : ι) :
-    OrderBot (Set.Iic j) where
-  bot := ⟨⊥, bot_le⟩
-  bot_le _ := bot_le
-
-variable {J} in
-lemma transfiniteCompositionsOfShape_map_bot_le
-    (F : J ⥤ C) [F.IsWellOrderContinuous] (j : J)
-    (hF : ∀ (i : J) (_ : i < j), W (F.map (homOfLE (Order.le_succ i)))) :
-    W.transfiniteCompositionsOfShape (Set.Iic j) (F.map (homOfLE bot_le : ⊥ ⟶ j)) := by
-  sorry
-  /-
-  refine ⟨_, fun ⟨i, hi⟩ hi' ↦ ?_, _, F.isColimitCoconeLE j⟩
-  dsimp [Monotone.functor]
-  have := Set.Iic.succ_coe _ hi'
-  dsimp at this
-  have := hF i (by
-    simp only [not_isMax_iff, Subtype.exists, Subtype.mk_lt_mk, Set.mem_Iic, exists_prop] at hi'
-    obtain ⟨k, hk⟩ := hi'
-    exact lt_of_lt_of_le hk.2 hk.1)
-  convert this-/
 
 lemma transfiniteCompositionsOfShape_map_of_preserves (G : C ⥤ D)
     [PreservesWellOrderContinuousOfShape J G]
