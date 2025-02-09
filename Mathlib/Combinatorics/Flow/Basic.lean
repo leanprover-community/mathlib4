@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Niklas Mohrin
 -/
 import Mathlib.Combinatorics.Digraph.Basic
+import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Data.Fintype.BigOperators
 
 /-!
@@ -54,8 +55,8 @@ structure Network extends Digraph V where
   cap_zero_of_not_adj : ∀ u v, ¬Adj u v → cap u v = 0 := by intro u v; aesop
 
 /-- A `Network` where all capacities are symmetrical. -/
-structure UndirectedNetwork extends Network V R where
-  symm : ∀ u v, cap u v = cap v u
+structure UndirectedNetwork extends Network V R, SimpleGraph V where
+  cap_symm : ∀ u v, cap u v = cap v u
 
 end NetworkDefinition
 
