@@ -23,6 +23,7 @@ namespace OmegaExtensions.PNat
 
 open Qq in
 
+/-- For each `x : PNat` in the context add the `0 < (↑x : ℕ)` hypothesis. -/
 elab "omega_preprocess_pnat" : tactic =>
   Lean.Elab.Tactic.withMainContext do
     let goal ← Lean.Elab.Tactic.getMainGoal
