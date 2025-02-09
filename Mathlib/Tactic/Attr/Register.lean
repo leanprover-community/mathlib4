@@ -87,3 +87,12 @@ register_label_attr is_poly
 
 /-- A simp set for the `fin_omega` wrapper around `omega`. -/
 register_simp_attr fin_omega
+
+/-- A simp set for simplifying expressions involving `⊤` in `enat_omega`. -/
+register_simp_attr enat_omega_top_simps
+
+/-- A simp set for pushing coercions from `ℕ` to `ℕ∞` in `enat_omega`. -/
+register_simp_attr enat_omega_coe_simps
+
+/-- A simp set for the `pnat_omega` wrapper around `omega`. -/
+register_simp_attr pnat_omega_coe_simps
