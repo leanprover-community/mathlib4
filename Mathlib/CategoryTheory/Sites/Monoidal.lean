@@ -24,6 +24,8 @@ chosen finite products.
 * show that the monoidal category structure on sheaves is closed,
 and that the internal hom can be defined in such a way that the
 underlying presheaf is the internal hom in the category of presheaves.
+Note that a `MonoidalClosed` instance on sheaves can already be obtained
+abstractly using the material in `CategoryTheory.Monoidal.Braided.Reflection`.
 
 -/
 
