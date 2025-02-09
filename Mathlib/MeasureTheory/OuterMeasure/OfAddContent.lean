@@ -34,6 +34,8 @@ the outer measure induced by `m`. The induced outer measure is equal to `m` on `
 * `MeasureTheory.AddContent.measureCaratheodory_eq`: The measure
   `MeasureTheory.AddContent.measureCaratheodory` generated from an `m : AddContent C`
   on a `IsSetSemiring C` coincides with `m` on `C`.
+* `MeasureTheory.AddContent.measure_eq`: The measure defined through a sigma-subadditive
+  content on a semiring coincides with the content on the semiring.
 -/
 
 open Set
@@ -110,7 +112,7 @@ theorem isCaratheodory_ofFunction_of_mem (hC : IsSetSemiring C) (m : AddContent 
     exact le_trans h6 <| Finset.sum_le_sum <| fun b _ ↦ OuterMeasure.ofFunction_le b
 
 /-- Every `s ∈ C` for an `m : AddContent C` with `IsSetSemiring C` is Carathéodory measurable
-with respect to the `inducedOuterMeasure` from `m.extend`. The latter is `∞` outside of `C`.-/
+with respect to the `inducedOuterMeasure` from `m`. -/
 theorem isCaratheodory_inducedOuterMeasure_of_mem (hC : IsSetSemiring C) (m : AddContent C)
     {s : Set α} (hs : s ∈ C) :
     (inducedOuterMeasure (fun x _ ↦ m x) hC.empty_mem addContent_empty).IsCaratheodory s :=
@@ -125,7 +127,7 @@ theorem isCaratheodory_inducedOuterMeasure (hC : IsSetSemiring C) (m : AddConten
   | compl t _ h => exact OuterMeasure.isCaratheodory_compl _ h
   | iUnion f _ h => exact OuterMeasure.isCaratheodory_iUnion _ h
 
-/-- Construct a measure from a sigma-subadditive function on a semiring. This
+/-- Construct a measure from a sigma-subadditive content on a semiring. This
 measure is defined on the associated Carathéodory sigma-algebra. -/
 noncomputable def measureCaratheodory (m : AddContent C) (hC : IsSetSemiring C)
     (m_sigma_subadd : m.IsSigmaSubadditive) :
@@ -162,6 +164,8 @@ noncomputable def measure [mα : MeasurableSpace α] (m : AddContent C) (hC : Is
   (m.measureCaratheodory hC m_sigma_subadd).trim <|
     fun s a ↦ isCaratheodory_inducedOuterMeasure hC m s (hC_gen s a)
 
+/-- The measure defined through a sigma-subadditive
+  content on a semiring coincides with the content on the semiring. -/
 theorem measure_eq [mα : MeasurableSpace α] (m : AddContent C) (hC : IsSetSemiring C)
     (hC_gen : mα = MeasurableSpace.generateFrom C) (m_sigma_subadd : m.IsSigmaSubadditive)
     (hs : s ∈ C) :
