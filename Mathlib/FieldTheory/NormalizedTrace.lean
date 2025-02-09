@@ -113,11 +113,22 @@ theorem normalizedTrace_self_apply (a : F) : normalizedTrace F F a = a := by
 theorem normalizedTrace_self : normalizedTrace F F = LinearMap.id :=
   LinearMap.ext normalizedTrace_self_apply
 
+theorem normalizedTrace_eq_of_fininteDimensional [FiniteDimensional F K] :
+    normalizedTrace F K = (Module.finrank F K : F)⁻¹ • Algebra.trace F K := by
+  ext x
+  rw [LinearMap.smul_apply, smul_eq_mul, mul_comm, ← div_eq_mul_inv]
+  apply normalizedTraceAux_eq_of_fininteDimensional
+
 /-- The normalized trace transfers via (injective) maps. -/
 @[simp]
 theorem normalizedTrace_map {E : Type*} [Field E] [Algebra F E] [Algebra.IsIntegral F E]
     (f : E →ₐ[F] K) (a : E) : normalizedTrace F K (f a) = normalizedTrace F E a :=
   normalizedTraceAux_map F K f a
+
+/-- The normalized trace transfers via restriction to a subextension. -/
+theorem normalizedTrace_intermediateField {E : IntermediateField F K} (a : E) :
+    normalizedTrace F K a = normalizedTrace F E a :=
+  normalizedTraceAux_intermediateField F K a
 
 section IsScalarTower
 
@@ -133,8 +144,8 @@ theorem normalizedTrace_algebraMap_apply (a : E) :
 
 @[simp]
 theorem normalizedTrace_algebraMap :
-    normalizedTrace F K ∘ algebraMap E K = normalizedTrace F E :=
-  funext <| normalizedTrace_algebraMap_apply F E K
+    normalizedTrace F K ∘ₗ Algebra.linearMap E K = normalizedTrace F E :=
+  LinearMap.ext <| normalizedTrace_algebraMap_apply F E K
 
 end IsScalarTower
 
@@ -142,24 +153,15 @@ theorem normalizedTrace_algebraMap_apply_eq_self (a : F) :
     normalizedTrace F K (algebraMap F K a) = a := by simp
 
 /-- The normalized trace map is a left inverse of the algebra map. -/
-theorem normalizedTrace_algebraMap_eq_id : normalizedTrace F K ∘ algebraMap F K = id := by simp
+theorem normalizedTrace_algebraMap_eq_id :
+    normalizedTrace F K ∘ₗ Algebra.linearMap F K = LinearMap.id :=
+  LinearMap.ext <| normalizedTrace_algebraMap_apply_eq_self F K
 
 /-- The normalized trace commutes with (injective) maps. -/
 @[simp]
 theorem normalizedTrace_comp_algHom {E : Type*} [Field E] [Algebra F E] [Algebra.IsIntegral F E]
     (f : E →ₐ[F] K) : normalizedTrace F K ∘ₗ f = normalizedTrace F E :=
   LinearMap.ext <| normalizedTrace_map F K f
-
-/-- The normalized trace transfers via restriction to a subextension. -/
-theorem normalizedTrace_intermediateField {E : IntermediateField F K} (a : E) :
-    normalizedTrace F K a = normalizedTrace F E a :=
-  normalizedTraceAux_intermediateField F K a
-
-theorem normalizedTrace_eq_of_fininteDimensional [FiniteDimensional F K] :
-    normalizedTrace F K = (Module.finrank F K : F)⁻¹ • Algebra.trace F K := by
-  ext x
-  rw [LinearMap.smul_apply, smul_eq_mul, mul_comm, ← div_eq_mul_inv]
-  apply normalizedTraceAux_eq_of_fininteDimensional
 
 theorem normalizedTrace_surjective : Function.Surjective (normalizedTrace F K) :=
   fun a ↦ ⟨algebraMap F K a, normalizedTrace_algebraMap_apply_eq_self F K a⟩
