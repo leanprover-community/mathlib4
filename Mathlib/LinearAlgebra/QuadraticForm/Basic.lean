@@ -335,14 +335,14 @@ theorem choose_exists_companion : Q.exists_companion.choose = polarBilin Q :=
 
 protected theorem map_sum {ι} [DecidableEq ι] (Q : QuadraticMap R M N) (s : Finset ι) (f : ι → M) :
     Q (∑ i ∈ s, f i) = ∑ i ∈ s, Q (f i)
-      + ∑ ij ∈ s.sym2 with ¬ ij.IsDiag, polar_sym2 Q (ij.map f) := by
+      + ∑ ij ∈ s.sym2 with ¬ ij.IsDiag, polarSym2 Q (ij.map f) := by
   induction s using Finset.cons_induction with
   | empty => simp
   | cons a s ha ih =>
     simp_rw [Finset.sum_cons, QuadraticMap.map_add, ih, add_assoc, Finset.sym2_cons,
       Finset.sum_filter, Finset.sum_disjUnion, Finset.sum_map, Finset.sum_cons,
-      Sym2.mkEmbedding_apply, Sym2.isDiag_iff_proj_eq, not_true, if_false, zero_add, polar_sym2,
-      ← Sym2.lift_comp_map, Sym2.lift_mk, ← polarBilin_apply_apply, _root_.map_sum,
+      Sym2.mkEmbedding_apply, Sym2.isDiag_iff_proj_eq, not_true, if_false, zero_add, polarSym2,
+      ← Sym2.lift_comp_map_apply, Sym2.lift_mk, ← polarBilin_apply_apply, _root_.map_sum,
       polarBilin_apply_apply]
     congr 2
     rw [add_comm]
@@ -350,13 +350,13 @@ protected theorem map_sum {ι} [DecidableEq ι] (Q : QuadraticMap R M N) (s : Fi
     rw [if_pos (ne_of_mem_of_not_mem hi ha).symm]
 
 protected theorem map_sum' {ι} (Q : QuadraticMap R M N) (s : Finset ι) (f : ι → M) :
-    Q (∑ i ∈ s, f i) = ∑ ij ∈ s.sym2, ((polar_sym2 Q) ∘ Sym2.map f) ij - ∑ i ∈ s, Q (f i) := by
+    Q (∑ i ∈ s, f i) = ∑ ij ∈ s.sym2, (polarSym2 Q (ij.map f))  - ∑ i ∈ s, Q (f i) := by
   induction s using Finset.cons_induction with
   | empty => simp
   | cons a s ha ih =>
     simp_rw [Finset.sum_cons, QuadraticMap.map_add Q, ih, add_assoc, Finset.sym2_cons,
-      Finset.sum_disjUnion, Finset.sum_map, Finset.sum_cons, Sym2.mkEmbedding_apply, polar_sym2,
-      ← Sym2.lift_comp_map, Sym2.lift_mk, ← polarBilin_apply_apply, _root_.map_sum,
+      Finset.sum_disjUnion, Finset.sum_map, Finset.sum_cons, Sym2.mkEmbedding_apply, polarSym2,
+      ← Sym2.lift_comp_map_apply, Sym2.lift_mk, ← polarBilin_apply_apply, _root_.map_sum,
       polarBilin_apply_apply, polar_self]
     abel_nf
 
