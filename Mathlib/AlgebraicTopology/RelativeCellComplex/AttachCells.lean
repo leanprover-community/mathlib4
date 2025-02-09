@@ -14,7 +14,7 @@ is obtained from `X₁` by attaching cells of the form `g a`. It means that
 there is a pushout diagram of the form
 ```
 ⨿ i, A (π i) -----> X₁
-  |                 |
+  |                 |f
   v                 v
 ⨿ i, B (π i) -----> X₂
 ```
@@ -79,6 +79,7 @@ lemma pushouts_coproducts : (coproducts.{w} (ofHoms g)).pushouts f := by
 /-- The inclusion of a cell. -/
 def cell (i : c.ι) : B (c.π i) ⟶ X₂ := c.cofan₂.inj i ≫ c.g₂
 
+@[reassoc]
 lemma cell_def (i : c.ι) : c.cell i = c.cofan₂.inj i ≫ c.g₂ := rfl
 
 lemma hom_ext {Z : C} {φ φ' : X₂ ⟶ Z}
