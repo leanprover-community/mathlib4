@@ -540,6 +540,18 @@ lemma inf_eq_and_sup_eq_iff : a ⊓ b = c ∧ a ⊔ b = c ↔ a = c ∧ b = c :=
   · rintro ⟨rfl, rfl⟩
     exact ⟨inf_idem _, sup_idem _⟩
 
+@[simp] lemma lt_sup_left_iff : a < a ⊔ b ↔ ¬ b ≤ a := by
+  rw [lt_iff_le_not_le, and_iff_right le_sup_left, sup_le_iff, and_iff_right rfl.le]
+
+@[simp] lemma lt_sup_right_iff : b < a ⊔ b ↔ ¬ a ≤ b := by
+  rw [sup_comm, lt_sup_left_iff]
+
+@[simp] lemma inf_lt_left_iff : a ⊓ b < a ↔ ¬ a ≤ b := by
+  rw [lt_iff_le_not_le, and_iff_right inf_le_left, le_inf_iff, and_iff_right rfl.le]
+
+@[simp] lemma inf_lt_right_iff : a ⊓ b < b ↔ ¬ b ≤ a := by
+  rw [inf_comm, inf_lt_left_iff]
+
 /-!
 #### Distributivity laws
 -/

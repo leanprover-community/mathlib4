@@ -715,12 +715,12 @@ theorem union_univ (s : Set α) : s ∪ univ = univ := sup_top_eq _
 theorem univ_union (s : Set α) : univ ∪ s = univ := top_sup_eq _
 
 @[simp]
-theorem ssubset_union_left_iff : s ⊂ s ∪ t ↔ ¬ t ⊆ s := by
-  rw [ssubset_iff_subset_ne, and_iff_right subset_union_left, Ne, eq_comm, union_eq_left]
+theorem ssubset_union_left_iff : s ⊂ s ∪ t ↔ ¬ t ⊆ s :=
+  lt_sup_left_iff
 
 @[simp]
-theorem ssubset_union_right_iff : t ⊂ s ∪ t ↔ ¬ s ⊆ t := by
-  rw [ssubset_iff_subset_ne, and_iff_right subset_union_right, Ne, eq_comm, union_eq_right]
+theorem ssubset_union_right_iff : t ⊂ s ∪ t ↔ ¬ s ⊆ t :=
+  lt_sup_right_iff
 
 /-! ### Lemmas about intersection -/
 
@@ -841,12 +841,12 @@ theorem setOf_inter_eq_sep (p : α → Prop) (s : Set α) : {a | p a} ∩ s = {a
   inter_comm _ _
 
 @[simp]
-theorem inter_ssubset_right_iff : s ∩ t ⊂ t ↔ ¬ t ⊆ s := by
-  rw [ssubset_iff_subset_ne, and_iff_right inter_subset_right, Ne, inter_eq_right]
+theorem inter_ssubset_right_iff : s ∩ t ⊂ t ↔ ¬ t ⊆ s :=
+  inf_lt_right_iff
 
 @[simp]
-theorem inter_ssubset_left_iff : s ∩ t ⊂ s ↔ ¬ s ⊆ t := by
-  rw [ssubset_iff_subset_ne, and_iff_right inter_subset_left, Ne, inter_eq_left]
+theorem inter_ssubset_left_iff : s ∩ t ⊂ s ↔ ¬ s ⊆ t :=
+  inf_lt_left_iff
 
 /-! ### Distributivity laws -/
 
