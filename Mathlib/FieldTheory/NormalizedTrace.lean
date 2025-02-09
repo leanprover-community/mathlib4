@@ -35,7 +35,7 @@ open IntermediateField
 Note: this definition does not require the extension `K / F` to be integral (algebraic)
 nor the fields to be of characteristic zero. -/
 noncomputable def normalizedTraceAux (a : K) : F :=
-  Algebra.trace F F⟮a⟯ (AdjoinSimple.gen F a) / Module.finrank F F⟮a⟯
+  (Module.finrank F F⟮a⟯ : F)⁻¹ • Algebra.trace F F⟮a⟯ (AdjoinSimple.gen F a)
 
 theorem normalizedTraceAux_map {E : Type*} [Field E] [Algebra F E] (f : E →ₐ[F] K) (a : E) :
     normalizedTraceAux F K (f a) = normalizedTraceAux F E a := by
@@ -52,12 +52,14 @@ variable [CharZero F]
 
 variable {K} in
 theorem normalizedTraceAux_eq_of_fininteDimensional [FiniteDimensional F K] (a : K) :
-    normalizedTraceAux F K a = Algebra.trace F K a / Module.finrank F K := by
+    normalizedTraceAux F K a = (Module.finrank F K : F)⁻¹ • Algebra.trace F K a := by
   have h := (Nat.cast_ne_zero (R := F)).mpr <|
     Nat.pos_iff_ne_zero.mp <| Module.finrank_pos (R := F⟮a⟯) (M := K)
-  rw [trace_eq_trace_adjoin F a, ← Module.finrank_mul_finrank F F⟮a⟯ K,
+  rw [smul_eq_mul, mul_comm, ← div_eq_mul_inv, trace_eq_trace_adjoin F a,
+   ← Module.finrank_mul_finrank F F⟮a⟯ K,
     nsmul_eq_mul, Nat.cast_mul,
-    mul_comm, mul_div_mul_right _ _ h]
+    mul_comm, mul_div_mul_right _ _ h,
+    div_eq_mul_inv, mul_comm, ← smul_eq_mul]
   rfl
 
 variable [Algebra.IsIntegral F K]
@@ -82,7 +84,7 @@ noncomputable def normalizedTrace : K →ₗ[F] F where
       normalizedTraceAux_eq_of_fininteDimensional F a',
       normalizedTraceAux_eq_of_fininteDimensional F b',
       normalizedTraceAux_eq_of_fininteDimensional F ab',
-      ← add_div, ← map_add]
+      ← smul_add, ← map_add]
     rfl
   map_smul' m a := by
     dsimp only [AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply]
@@ -96,28 +98,27 @@ noncomputable def normalizedTrace : K →ₗ[F] F where
       normalizedTraceAux_intermediateField F K ma',
       normalizedTraceAux_eq_of_fininteDimensional F a',
       normalizedTraceAux_eq_of_fininteDimensional F ma',
-      ← smul_div_assoc, ← map_smul]
+      smul_comm, ← map_smul _ m]
     rfl
 
 theorem normalizedTrace_def (a : K) :
-    normalizedTrace F K a = Algebra.trace F F⟮a⟯ (AdjoinSimple.gen F a) / Module.finrank F F⟮a⟯ :=
+    normalizedTrace F K a =
+    (Module.finrank F F⟮a⟯ : F )⁻¹ • Algebra.trace F F⟮a⟯ (AdjoinSimple.gen F a) :=
   rfl
 
 variable {F} in
 theorem normalizedTrace_self_apply (a : F) : normalizedTrace F F a = a := by
   dsimp [normalizedTrace]
   rw [normalizedTraceAux_eq_of_fininteDimensional F a, Module.finrank_self F,
-    Nat.cast_one, div_one, Algebra.trace_self_apply]
+    Nat.cast_one, inv_one, one_smul, Algebra.trace_self_apply]
 
 @[simp]
 theorem normalizedTrace_self : normalizedTrace F F = LinearMap.id :=
   LinearMap.ext normalizedTrace_self_apply
 
 theorem normalizedTrace_eq_of_fininteDimensional [FiniteDimensional F K] :
-    normalizedTrace F K = (Module.finrank F K : F)⁻¹ • Algebra.trace F K := by
-  ext x
-  rw [LinearMap.smul_apply, smul_eq_mul, mul_comm, ← div_eq_mul_inv]
-  apply normalizedTraceAux_eq_of_fininteDimensional
+    normalizedTrace F K = (Module.finrank F K : F)⁻¹ • Algebra.trace F K :=
+  LinearMap.ext <| normalizedTraceAux_eq_of_fininteDimensional F
 
 /-- The normalized trace transfers via (injective) maps. -/
 @[simp]
