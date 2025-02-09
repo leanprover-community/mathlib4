@@ -145,7 +145,7 @@ lemma mem_codiscrete_subtype_iff_mem_codiscreteWithin {S : Set X} {U : Set S} :
     exact tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
       continuous_subtype_val.continuousWithinAt <| eventually_mem_nhdsWithin.mono (by simp)
 
-/-- If a set is codiscrete with `U`, then it is codiscrete within any subset of `U`. -/
+/-- If a set is codiscrete within `U`, then it is codiscrete within any subset of `U`. -/
 lemma Filter.codiscreteWithin.mono {X : Type u_1} [TopologicalSpace X] {U₁ U₂ : Set X}
     (hU : U₁ ⊆ U₂) :
     (Filter.codiscreteWithin U₁) ≤ (Filter.codiscreteWithin U₂) := by
