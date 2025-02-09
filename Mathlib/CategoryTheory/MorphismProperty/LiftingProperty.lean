@@ -114,7 +114,7 @@ lemma antitone_llp : Antitone (llp : MorphismProperty C → _) :=
 lemma pushouts_le_rlp_llp : T.pushouts ≤ T.rlp.llp := by
   intro A B i hi
   exact (T.rlp.llp.isStableUnderCobaseChange_iff_pushouts_le).1 inferInstance i
-    (monotone_pushouts T.le_rlp_llp _ hi)
+    (pushouts_monotone T.le_rlp_llp _ hi)
 
 @[simp]
 lemma pushouts_rlp : T.pushouts.rlp = T.rlp := by
@@ -128,7 +128,7 @@ lemma colimitsOfShape_discrete_le_rlp_llp (J : Type w) :
   intro A B i hi
   exact (T.rlp.llp.isStableUnderColimitsOfShape_iff_colimitsOfShape_le (Discrete J)).1
     (llp_isStableUnderCoproductsOfShape _ _) _
-      (monotone_colimitsOfShape T.le_rlp_llp _ _ hi)
+      (colimitsOfShape_monotone T.le_rlp_llp _ _ hi)
 
 lemma coproducts_le_rlp_llp : (coproducts.{w} T) ≤ T.rlp.llp := by
   intro A B i hi
@@ -144,7 +144,7 @@ lemma coproducts_rlp : (coproducts.{w} T).rlp = T.rlp := by
     exact T.coproducts_le_rlp_llp
 
 lemma retracts_le_rlp_llp : T.retracts ≤ T.rlp.llp :=
-  le_trans (monotone_retracts T.le_rlp_llp) T.rlp.llp.retracts_le
+  le_trans (retracts_monotone T.le_rlp_llp) T.rlp.llp.retracts_le
 
 @[simp]
 lemma retracts_rlp : T.retracts.rlp = T.rlp := by

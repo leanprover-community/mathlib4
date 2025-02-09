@@ -1143,6 +1143,7 @@ import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 import Mathlib.AlgebraicTopology.SimplicialSet.Path
 import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
+import Mathlib.AlgebraicTopology.SingularHomology.Basic
 import Mathlib.AlgebraicTopology.SingularSet
 import Mathlib.AlgebraicTopology.TopologicalSimplex
 import Mathlib.Analysis.Analytic.Basic
@@ -1984,6 +1985,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Preorder
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
@@ -2103,6 +2105,7 @@ import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
 import Mathlib.CategoryTheory.Monoidal.Braided.Reflection
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Comon_
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.Center
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
@@ -2115,6 +2118,7 @@ import Mathlib.CategoryTheory.Monoidal.Free.Basic
 import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+import Mathlib.CategoryTheory.Monoidal.Grp_
 import Mathlib.CategoryTheory.Monoidal.Hopf_
 import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Internal.Limits
@@ -2259,6 +2263,7 @@ import Mathlib.CategoryTheory.Sites.LocallyFullyFaithful
 import Mathlib.CategoryTheory.Sites.LocallyInjective
 import Mathlib.CategoryTheory.Sites.LocallySurjective
 import Mathlib.CategoryTheory.Sites.MayerVietorisSquare
+import Mathlib.CategoryTheory.Sites.Monoidal
 import Mathlib.CategoryTheory.Sites.MorphismProperty
 import Mathlib.CategoryTheory.Sites.NonabelianCohomology.H1
 import Mathlib.CategoryTheory.Sites.OneHypercover
