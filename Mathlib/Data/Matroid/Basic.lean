@@ -252,6 +252,7 @@ instance finite_of_finite [Finite α] {M : Matroid α} : M.Finite :=
 @[mk_iff] class RankFinite (M : Matroid α) : Prop where
   /-- There is a finite base -/
   exists_finite_base : ∃ B, M.Base B ∧ B.Finite
+
 @[deprecated (since := "2025-02-09")] alias FiniteRk := RankFinite
 
 instance rankFinite_of_finite (M : Matroid α) [M.Finite] : RankFinite M :=
@@ -261,12 +262,14 @@ instance rankFinite_of_finite (M : Matroid α) [M.Finite] : RankFinite M :=
 @[mk_iff] class RankInfinite (M : Matroid α) : Prop where
   /-- There is an infinite base -/
   exists_infinite_base : ∃ B, M.Base B ∧ B.Infinite
+
 @[deprecated (since := "2025-02-09")] alias InfiniteRk := RankInfinite
 
 /-- A `RankPos` matroid is one whose bases are nonempty. -/
 @[mk_iff] class RankPos (M : Matroid α) : Prop where
   /-- The empty set isn't a base -/
   empty_not_base : ¬M.Base ∅
+
 @[deprecated (since := "2025-02-09")] alias RkPos := RankPos
 
 instance rankPos_nonempty {M : Matroid α} [M.RankPos] : M.Nonempty := by
