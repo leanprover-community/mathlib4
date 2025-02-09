@@ -335,7 +335,7 @@ theorem choose_exists_companion : Q.exists_companion.choose = polarBilin Q :=
 
 protected theorem map_sum {ι} [DecidableEq ι] (Q : QuadraticMap R M N) (s : Finset ι) (f : ι → M) :
     Q (∑ i ∈ s, f i) = ∑ i ∈ s, Q (f i)
-      + ∑ ij ∈ s.sym2 with ¬ ij.IsDiag, ((polar_sym2 Q) ∘ Sym2.map f) ij := by
+      + ∑ ij ∈ s.sym2 with ¬ ij.IsDiag, polar_sym2 Q (ij.map f) := by
   induction s using Finset.cons_induction with
   | empty => simp
   | cons a s ha ih =>
