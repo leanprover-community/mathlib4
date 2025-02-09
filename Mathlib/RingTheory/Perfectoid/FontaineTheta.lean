@@ -58,10 +58,37 @@ section
 --     {U : Submodule R M} {x y : M} : x ≡ y [SMOD U] ↔ U.mkQ x = U.mkQ y := by
 --   simp only [SModEq.def, Submodule.mkQ_apply]
 
+-- Mathlib.LinearAlgebra.Quotient.Defs before Submodule.Quotient.instZeroQuotient
 @[simp]
 theorem Submodule.Quotient.mk_out {R : Type*} [Ring R] {M : Type*} [AddCommGroup M] [Module R M]
     {U : Submodule R M} (x : M ⧸ U) : Submodule.Quotient.mk (x.out) = x :=
   Quotient.out_eq x
+
+-- Mathlib.LinearAlgebra.Quotient.Basic after Submodule.mapQ_id
+@[simp]
+theorem Submodule.mapQ_eq_factor {R : Type*} [Ring R] {I J : Ideal R}
+    [I.IsTwoSided] [J.IsTwoSided] (h : I ≤ J) (x : R ⧸ I) :
+    Submodule.mapQ I J LinearMap.id h x = Ideal.Quotient.factor I J h x := rfl
+
+-- Mathlib.RingTheory.Ideal.Quotient.Defs before Ideal.quotEquivOfEq
+@[simp]
+theorem Ideal.Quotient.factor_factor {R : Type*} [Ring R] (S T U : Ideal R) [S.IsTwoSided]
+    [T.IsTwoSided] [U.IsTwoSided] (H₁ : S ≤ T) (H₂ : T ≤ U) (x : R ⧸ S) :
+    factor T U H₂ (factor S T H₁ x) = factor S U (H₁.trans H₂) x := by
+  obtain ⟨r, rfl⟩  := mk_surjective x
+  simp only [factor_mk]
+
+@[simp]
+theorem Ideal.Quotient.factor_comp_factor {R : Type*} [Ring R] (S T U : Ideal R) [S.IsTwoSided]
+    [T.IsTwoSided] [U.IsTwoSided] (H₁ : S ≤ T) (H₂ : T ≤ U) :
+    (factor T U H₂).comp (factor S T H₁) = factor S U (H₁.trans H₂) :=
+  RingHom.ext <| Ideal.Quotient.factor_factor S T U H₁ H₂
+
+-- Mathlib.RingTheory.Ideal.Quotient.Defs at last
+@[simp]
+theorem Ideal.quotEquivOfEq_eq_factor {R : Type*}  [Ring R]  {I J : Ideal R}
+    [I.IsTwoSided] [J.IsTwoSided] (h : I = J) (x : R ⧸ I) :
+    Ideal.quotEquivOfEq h x = Ideal.Quotient.factor I J (h ▸ le_refl I) x := rfl
 
 -- RingTheory.AdicCompletion.Basic
 theorem IsPrecomplete.of_SModEq_succ {R : Type*} [CommRing R] {I : Ideal R}
@@ -96,6 +123,7 @@ theorem IsPrecomplete.function_of_SModEq_succ {α R : Type*} [CommRing R] {I : I
     fun n a => (Classical.choose_spec <| IsPrecomplete.of_SModEq_succ (hf (a := a))) n⟩
 
 -- useful in AdicComplete case
+-- Mathlib.LinearAlgebra.Quotient.Basic at last
 def Submodule.mapQPowSucc {R : Type*} [CommRing R] {I : Ideal R}
     {M : Type*} [AddCommGroup M] [Module R M] (n : ℕ) :
     M ⧸ (I ^ (n + 1) • ⊤ : Submodule R M) →ₗ[R] M ⧸ (I ^ n • ⊤ : Submodule R M) :=
@@ -116,6 +144,7 @@ theorem Submodule.mk_out_eq_mapQPowSucc {R : Type*} [CommRing R] {I : Ideal R}
   nth_rw 2 [← Submodule.Quotient.mk_out x]
   simp only [mapQPowSucc_mk]
 
+-- Mathlib.RingTheory.Ideal.Quotient.Defs at last
 def Ideal.Quotient.factorPowSucc {R : Type*} [CommRing R] {I : Ideal R} (n : ℕ) :
     R ⧸ I ^ (n + 1) →+* R ⧸ I ^ n :=
   Ideal.Quotient.factor _ _ (Ideal.pow_le_pow_right n.le_succ)
@@ -146,7 +175,26 @@ theorem IsPrecomplete.of_eq_mapQPowSucc {R : Type*} [CommRing R] {I : Ideal R}
   refine ⟨Classical.choose <| of_SModEq_succ (I := I) (f := f') hf', ?_⟩
   simpa [SModEq, f'] using (Classical.choose_spec <| of_SModEq_succ (I := I) (f := f') hf')
 
--- may not add
+theorem IsPrecomplete.of_eq_mapQPowSucc' {R : Type*} [CommRing R] {I : Ideal R}
+    [IsPrecomplete I R]
+    {f : (n : ℕ) → R ⧸ I ^ n} (hf : ∀ {m}, f m = factorPowSucc m (f (m + 1))) :
+    ∃ L : R, ∀ n, f n = Ideal.Quotient.mk _ L := by
+  let i := fun n ↦ (I ^ n).quotEquivOfEq (J := I ^ n • ⊤) (mul_top _).symm
+  let f' := fun n => i n (f n)
+  suffices ∃ L : R, ∀ n, f' n = Submodule.mkQ (I ^ n • ⊤ : Ideal R) L by
+    obtain ⟨L, hL⟩ := this
+    refine ⟨L, fun n ↦ ?_⟩
+    have := hL n
+    apply_fun (i n).symm at this
+    simpa only [RingEquiv.symm_apply_apply, mkQ_apply, mk_eq_mk, quotientEquiv_symm_mk,
+      RingEquiv.symm_refl, RingEquiv.refl_apply, i, f'] using this
+  apply IsPrecomplete.of_eq_mapQPowSucc
+  intro m
+  have := hf (m := m)
+  apply_fun i m at this
+  simpa [f', i, mapQPowSucc, factorPowSucc] using this
+
+-- may not add -- add
 theorem IsPrecomplete.function_of_eq_mapQPowSucc {α R : Type*} [CommRing R] {I : Ideal R}
     {M : Type*} [AddCommGroup M] [Module R M] [IsPrecomplete I M]
     {f : (n : ℕ) → α → M ⧸ (I ^ n • ⊤)}
@@ -155,6 +203,14 @@ theorem IsPrecomplete.function_of_eq_mapQPowSucc {α R : Type*} [CommRing R] {I 
     ⟨fun a ↦ Classical.choose <| IsPrecomplete.of_eq_mapQPowSucc (hf (a := a)),
     fun n a => (Classical.choose_spec <| IsPrecomplete.of_eq_mapQPowSucc (hf (a := a))) n⟩
 
+theorem IsPrecomplete.function_of_eq_mapQPowSucc' {α R : Type*} [CommRing R] {I : Ideal R}
+    [IsPrecomplete I R]
+    {f : (n : ℕ) → α → R ⧸ I ^ n}
+    (hf : ∀ {m a}, f m a = Ideal.Quotient.factorPowSucc m (f (m + 1) a)) :
+    ∃ F : α → R, ∀ n a, f n a = Ideal.Quotient.mk (I ^ n) (F a) :=
+    ⟨fun a ↦ Classical.choose <| IsPrecomplete.of_eq_mapQPowSucc' (hf (a := a)),
+    fun n a => (Classical.choose_spec <| IsPrecomplete.of_eq_mapQPowSucc' (hf (a := a))) n⟩
+
 theorem IsHausdorff.eq_of_SModEq {R : Type*} [CommRing R] {I : Ideal R}
     {M : Type*} [AddCommGroup M] [Module R M] [IsHausdorff I M]
     {x y : M} (h : ∀ n, x ≡ y [SMOD (I ^ n • ⊤ : Submodule R M)]) : x = y := by
@@ -162,8 +218,20 @@ theorem IsHausdorff.eq_of_SModEq {R : Type*} [CommRing R] {I : Ideal R}
   apply IsHausdorff.haus' (I := I)
   exact fun n ↦ sub_smodEq_zero.mp (h n)
 
+theorem IsHausdorff.eq_of_SModEq' {R : Type*} [CommRing R] {I : Ideal R}
+    [IsHausdorff I R]
+    {x y : R} (h : ∀ n, x ≡ y [SMOD I ^ n]) : x = y := by
+  rw [← sub_eq_zero]
+  apply IsHausdorff.haus' (I := I)
+  intro n
+  simp only [SModEq, mk_eq_mk] at h
+  have := h n
+  apply_fun (I ^ n).quotEquivOfEq (J := I ^ n • ⊤) (mul_top _).symm at this
+  rw [← sub_eq_zero] at this
+  simpa [SModEq] using this
+
 theorem IsHausdorff.map_add {R : Type*} [CommRing R] {I : Ideal R}
-    {N M : Type*} [AddCommGroup N] [Module R N] [AddCommGroup M] [Module R M] [IsHausdorff I M]
+    {N M : Type*} [Add N] [AddCommGroup M] [Module R M] [IsHausdorff I M]
     {f : (n : ℕ) → N → M ⧸ (I ^ n • ⊤)} (hf : ∀ (n x y), f n (x + y) = f n x + f n y) {F : N → M}
     (hF : ∀ (n x), f n x = mkQ (I^n • ⊤ : Submodule R M) (F x)) (x y : N) :
     F (x + y) = F x + F y := by
@@ -171,6 +239,59 @@ theorem IsHausdorff.map_add {R : Type*} [CommRing R] {I : Ideal R}
   simp only [mkQ_apply] at hF
   simp only [SModEq, ← hF, mk_add]
   exact hf _ _ _
+
+theorem IsHausdorff.map_add' {R : Type*} [CommRing R] {I : Ideal R}
+    [IsHausdorff I R]
+    {N : Type*} [Add N]
+    {f : (n : ℕ) → N → R ⧸ (I ^ n)} (hf : ∀ (n x y), f n (x + y) = f n x + f n y)
+    {F : N → R} (hF : ∀ (n x), f n x = Ideal.Quotient.mk (I^n) (F x)) (x y : N) :
+    F (x + y) = F x + F y := by
+  refine eq_of_SModEq' (I := I) (fun n ↦ ?_)
+  simp only [SModEq, mk_eq_mk, ← hF, _root_.map_add]
+  exact hf n _ _
+
+theorem IsHausdorff.map_smul {R : Type*} [CommRing R] {I : Ideal R}
+    {N M : Type*} [HSMul R N N] [AddCommGroup M] [Module R M] [IsHausdorff I M]
+    {f : (n : ℕ) → N → M ⧸ (I ^ n • ⊤)} (hf : ∀ (n : ℕ) (r : R) (x : N), f n (r • x) = r • f n x)
+    {F : N → M} (hF : ∀ (n x), f n x = mkQ (I ^ n • ⊤ : Submodule R M) (F x)) (r : R) (x : N) :
+    F (r • x) = r • F x := by
+  refine eq_of_SModEq (I := I) (fun n ↦ ?_)
+  simp only [mkQ_apply] at hF
+  simp only [SModEq, ← hF, mk_smul]
+  exact hf _ _ _
+
+theorem IsHausdorff.map_mul {S R : Type*} [CommRing R] {I : Ideal R}
+    [IsHausdorff I R] [Mul S]
+    {f : (n : ℕ) → S → R ⧸ I ^ n} (hf : ∀ (n x y), f n (x * y) = f n x * f n y)
+    {F : S → R} (hF : ∀ (n x), f n x = Ideal.Quotient.mk (I^n) (F x)) (x y : S) :
+    F (x * y) = F x * F y := by
+  refine eq_of_SModEq' (I := I) (fun n ↦ ?_)
+  simp only [SModEq, mk_eq_mk, ← hF, _root_.map_mul]
+  exact hf n _ _
+
+theorem IsHausdorff.eq_one {R : Type*} [CommRing R] {I : Ideal R}
+    [IsHausdorff I R]
+    {L : R} (hL : ∀ n, Ideal.Quotient.mk (I ^ n) L = 1) :
+    L = 1 := by
+  apply IsHausdorff.eq_of_SModEq' (I := I)
+  intro n
+  simpa [SModEq, mk_zero] using hL n
+
+theorem IsHausdorff.eq_zero {R : Type*} [CommRing R] {I : Ideal R}
+    {M : Type*} [AddCommGroup M] [Module R M] [IsHausdorff I M]
+    {L : M} (hL : ∀ n, mkQ (I ^ n • ⊤ : Submodule R M) L = 0) :
+    L = 0 := by
+  apply IsHausdorff.eq_of_SModEq (I := I)
+  intro n
+  simpa [SModEq, mk_zero] using hL n
+
+theorem IsHausdorff.eq_zero' {R : Type*} [CommRing R] {I : Ideal R}
+    [IsHausdorff I R]
+    {L : R} (hL : ∀ n, Ideal.Quotient.mk (I ^ n) L = 0) :
+    L = 0 := by
+  apply IsHausdorff.eq_of_SModEq' (I := I)
+  intro n
+  simpa [SModEq, mk_zero] using hL n
 
 noncomputable
 def IsAdicComplete.limAddHom {R : Type*} [CommRing R] {I : Ideal R}
@@ -183,7 +304,9 @@ def IsAdicComplete.limAddHom {R : Type*} [CommRing R] {I : Ideal R}
       map_add' := IsHausdorff.map_add (fun n ↦ (f n).map_add') <|
         Classical.choose_spec <|
           IsPrecomplete.function_of_eq_mapQPowSucc (I := I) (f := fun n ↦ f n) hf
-      map_smul' := sorry
+      map_smul' := IsHausdorff.map_smul (fun n ↦ (f n).map_smul') <|
+        Classical.choose_spec <|
+          IsPrecomplete.function_of_eq_mapQPowSucc (I := I) (f := fun n ↦ f n) hf
 
 theorem IsAdicComplete.eq_mkQ_limAddHom {R : Type*} [CommRing R] {I : Ideal R}
     {N M : Type*} [AddCommGroup N] [Module R N] [AddCommGroup M] [Module R M] [IsAdicComplete I M]
@@ -197,7 +320,7 @@ theorem IsAdicComplete.eq_mkQ_comp_limAddHom {R : Type*} [CommRing R] {I : Ideal
     {N M : Type*} [AddCommGroup N] [Module R N] [AddCommGroup M] [Module R M] [IsAdicComplete I M]
     {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ n • ⊤)}
     (hf : ∀ {m a}, f m a = mapQPowSucc m (f (m + 1) a))
-    (n) : f n = (mkQ (I^n • ⊤ : Submodule R M)).comp (limAddHom hf) :=
+    (n : ℕ) : f n = (mkQ (I^n • ⊤ : Submodule R M)).comp (limAddHom hf) :=
   LinearMap.ext (IsAdicComplete.eq_mkQ_limAddHom hf n)
 
 noncomputable
@@ -207,17 +330,27 @@ def IsAdicComplete.limRingHom
     {f : (n : ℕ) → S →+* R ⧸ I ^ n}
     (hf : ∀ {m a}, f m a = factorPowSucc m (f (m + 1) a)) :
     S →+* R where
-      toFun := sorry
-      map_one' := sorry
-      map_mul' := sorry
-      map_zero' := sorry
-      map_add' := sorry
+      toFun := Classical.choose <|
+        IsPrecomplete.function_of_eq_mapQPowSucc' (I := I) (f := fun n ↦ f n) hf
+      map_one' := IsHausdorff.eq_one <| fun n ↦ by
+          simpa only [(f n).map_one] using ((Classical.choose_spec <|
+            IsPrecomplete.function_of_eq_mapQPowSucc' (I := I) (f := fun n ↦ f n) hf) n 1).symm
+      map_mul' := IsHausdorff.map_mul (fun n ↦ (f n).map_mul) <|
+        Classical.choose_spec <|
+          IsPrecomplete.function_of_eq_mapQPowSucc' (I := I) (f := fun n ↦ f n) hf
+      map_zero' := IsHausdorff.eq_zero' <| fun n ↦ by
+          simpa only [(f n).map_zero] using ((Classical.choose_spec <|
+            IsPrecomplete.function_of_eq_mapQPowSucc' (I := I) (f := fun n ↦ f n) hf) n 0).symm
+      map_add' := IsHausdorff.map_add' (fun n ↦ (f n).map_add) <|
+        Classical.choose_spec <|
+          IsPrecomplete.function_of_eq_mapQPowSucc' (I := I) (f := fun n ↦ f n) hf
 
 theorem IsAdicComplete.eq_mk_limRingHom {R S: Type*} [CommRing R] [Ring S] {I : Ideal R}
     [IsAdicComplete I R]
     {f : (n : ℕ) → S →+* R ⧸ I ^ n}
     (hf : ∀ {m a}, f m a = factorPowSucc m (f (m + 1) a))
-    (n a) : f n a = Ideal.Quotient.mk (I^n) (limRingHom hf a) := sorry
+    (n a) : f n a = Ideal.Quotient.mk (I^n) (limRingHom hf a) := (Classical.choose_spec <|
+    IsPrecomplete.function_of_eq_mapQPowSucc' (I := I) (f := fun n ↦ f n) hf) n a
 
 theorem IsAdicComplete.eq_mk_comp_limRingHom {R S: Type*} [CommRing R] [Ring S] {I : Ideal R}
     [IsAdicComplete I R]
