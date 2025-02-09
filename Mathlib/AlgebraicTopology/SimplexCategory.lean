@@ -749,11 +749,13 @@ instance : ConcreteCategory SimplexCategory (fun i j => Fin (i.len + 1) →o Fin
   hom := Hom.toOrderHom
   ofHom f := Hom.mk f
 
-instance (x : SimplexCategory) : Fintype (HasForget.forget.obj x) :=
+instance (x : SimplexCategory) : Fintype (ToType x) :=
   inferInstanceAs (Fintype (Fin _))
 
-instance (x : SimplexCategory) (n : ℕ) : OfNat (HasForget.forget.obj x) n :=
+instance (x : SimplexCategory) (n : ℕ) : OfNat (ToType x) n :=
   inferInstanceAs (OfNat (Fin _) n)
+
+lemma toType_apply (x : SimplexCategory) : ToType x = Fin (x.len + 1) := rfl
 
 end Concrete
 
