@@ -160,15 +160,9 @@ instance natCast : NatCast { x : α // 0 ≤ x } :=
 protected theorem coe_natCast (n : ℕ) : ((↑n : { x : α // 0 ≤ x }) : α) = n :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias coe_nat_cast := Nonneg.coe_natCast
-
 @[simp]
 theorem mk_natCast (n : ℕ) : (⟨n, n.cast_nonneg'⟩ : { x : α // 0 ≤ x }) = n :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias mk_nat_cast := mk_natCast
 
 instance addMonoidWithOne : AddMonoidWithOne { x : α // 0 ≤ x } :=
   { Nonneg.one (α := α) with
