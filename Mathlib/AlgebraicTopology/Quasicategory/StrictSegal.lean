@@ -60,8 +60,8 @@ instance quasicategory {X : SSet.{u}} [StrictSegal X] : Quasicategory X := by
       fin_cases i <;> contradiction
     · /- We construct the triangle in the standard simplex as a 2-simplex in
       the horn. While the triangle is not contained in the inner horn `Λ[2, 1]`,
-      it suffices to inhabit `Λ[n + 3, i] _[2]`. -/
-      let triangle : (Λ[n + 3, i] : SSet.{u}) _[2] :=
+      it suffices to inhabit `Λ[n + 3, i] _⦋2⦌`. -/
+      let triangle : (Λ[n + 3, i] : SSet.{u}) _⦋2⦌ :=
         horn.primitiveTriangle i h₀ hₙ k (by omega)
       /- The interval spanning from `k` to `k + 2` is equivalently the spine
       of the triangle with vertices `k`, `k + 1`, and `k + 2`. -/
