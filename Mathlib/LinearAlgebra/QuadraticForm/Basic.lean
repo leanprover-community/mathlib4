@@ -132,7 +132,7 @@ theorem polar_comp {F : Type*} [CommRing S] [FunLike F N S] [AddMonoidHomClass F
 Lift the polar to `Sym2`
 -/
 def polarSym2 (f : M → N) : Sym2 M → N :=
-  Sym2.lift ⟨fun m₁ m₂ => (polar f) m₁ m₂, fun i j => by simp only [polar_comm]⟩
+  Sym2.lift ⟨polar f, polar_comm _⟩
 
 end QuadraticMap
 
