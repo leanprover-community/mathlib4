@@ -55,7 +55,7 @@ lemma comp_app {X Y Z : SSet} (f : X ⟶ Y) (g : Y ⟶ Z) (n : SimplexCategory�
 
 /-- The constant map of simplicial sets `X ⟶ Y` induced by a simplex `y : Y _[0]`. -/
 @[simps]
-def const {X Y : SSet.{u}} (y : Y _[0]) : X ⟶ Y where
+def const {X Y : SSet.{u}} (y : Y _⦋0⦌) : X ⟶ Y where
   app n _ := Y.map (n.unop.const _ 0).op y
   naturality n m f := by
     ext
@@ -64,11 +64,11 @@ def const {X Y : SSet.{u}} (y : Y _[0]) : X ⟶ Y where
     rfl
 
 @[simp]
-lemma comp_const {X Y Z : SSet.{u}} (f : X ⟶ Y) (z : Z _[0]) :
+lemma comp_const {X Y Z : SSet.{u}} (f : X ⟶ Y) (z : Z _⦋0⦌) :
     f ≫ const z = const z := rfl
 
 @[simp]
-lemma const_comp {X Y Z : SSet.{u}} (y : Y _[0]) (g : Y ⟶ Z) :
+lemma const_comp {X Y Z : SSet.{u}} (y : Y _⦋0⦌) (g : Y ⟶ Z) :
     const (X := X) y ≫ g = const (g.app _ y) := by
   ext m x
   simp [FunctorToTypes.naturality]
