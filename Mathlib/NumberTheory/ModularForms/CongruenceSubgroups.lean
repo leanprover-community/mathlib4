@@ -3,9 +3,6 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Data.ZMod.Basic
-import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 
 /-!
@@ -67,17 +64,7 @@ theorem Gamma_one_top : Gamma 1 = ⊤ := by
 lemma mem_Gamma_one (γ : SL(2, ℤ)) : γ ∈ Γ(1) := by
   simp only [Gamma_one_top, Subgroup.mem_top]
 
-theorem Gamma_zero_bot : Gamma 0 = ⊥ := by
-  ext
-  simp only [Gamma_mem, coe_matrix_coe, Int.coe_castRingHom, map_apply, Int.cast_id,
-    Subgroup.mem_bot]
-  constructor
-  · intro h
-    ext i j
-    fin_cases i <;> fin_cases j <;> simp only [h]
-    exacts [h.1, h.2.1, h.2.2.1, h.2.2.2]
-  · intro h
-    simp [h]
+theorem Gamma_zero_bot : Gamma 0 = ⊥ := rfl
 
 lemma ModularGroup_T_pow_mem_Gamma (N M : ℤ) (hNM : N ∣ M) :
     (ModularGroup.T ^ M) ∈ Gamma (Int.natAbs N) := by
