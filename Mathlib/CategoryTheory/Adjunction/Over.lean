@@ -55,12 +55,6 @@ def pullback {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
     Over.homMk (pullback.lift (pullback.fst _ _ ≫ k.left) (pullback.snd _ _)
       (by simp [pullback.condition]))
 
-@[deprecated (since := "2024-05-15")]
-noncomputable alias Limits.baseChange := Over.pullback
-
-@[deprecated (since := "2024-07-08")]
-noncomputable alias baseChange := pullback
-
 /-- `Over.map f` is left adjoint to `Over.pullback f`. -/
 @[simps! unit_app counit_app]
 def mapPullbackAdj {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ pullback f :=
@@ -77,9 +71,6 @@ def mapPullbackAdj {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ pullback f :=
             ext
             · simp
             · simpa using (Over.w v).symm } }
-
-@[deprecated (since := "2024-07-08")]
-noncomputable alias mapAdjunction := mapPullbackAdj
 
 /-- pullback (𝟙 X) : Over X ⥤ Over X is the identity functor. -/
 def pullbackId {X : C} : pullback (𝟙 X) ≅ 𝟭 _ :=
@@ -116,10 +107,6 @@ instance [HasBinaryProducts C] : (forget X).IsLeftAdjoint  :=
   ⟨_, ⟨forgetAdjStar X⟩⟩
 
 end Over
-
-@[deprecated (since := "2024-05-18")] noncomputable alias star := Over.star
-
-@[deprecated (since := "2024-05-18")] noncomputable alias forgetAdjStar := Over.forgetAdjStar
 
 namespace Under
 
@@ -168,6 +155,14 @@ def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : pushout (f ≫ g) ≅
 
 instance pushoutIsLeftAdjoint {X Y : C} (f : X ⟶ Y) : (pushout f).IsLeftAdjoint  :=
   ⟨_, ⟨mapPushoutAdj f⟩⟩
+
+/-- If `X : C` is initial, then the under category of `X` is equivalent to `C`. -/
+def equivalenceOfIsInitial {C : Type*} [Category C] {X : C} (hX : IsInitial X) :
+    Under X ≌ C where
+  functor := Under.forget X
+  inverse := { obj Y := Under.mk (hX.to Y), map f := Under.homMk f }
+  unitIso := NatIso.ofComponents (fun Y ↦ Under.isoMk (Iso.refl _) (hX.hom_ext _ _))
+  counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 end Under
 

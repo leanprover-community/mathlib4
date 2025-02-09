@@ -4,15 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.Separated
-import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
-import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
+import Mathlib.AlgebraicGeometry.Morphisms.Finite
 
 /-!
 
 # Proper morphisms
 
 A morphism of schemes is proper if it is separated, universally closed and (locally) of finite type.
-Note that we don't require quasi-compact, since this is implied by universally closed (TODO).
+Note that we don't require quasi-compact, since this is implied by universally closed.
 
 -/
 
@@ -51,7 +50,7 @@ instance : MorphismProperty.IsMultiplicative @IsProper := by
   rw [isProper_eq]
   infer_instance
 
-instance (priority := 900) [IsClosedImmersion f] : IsProper f where
+instance (priority := 900) [IsFinite f] : IsProper f where
 
 instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsProper := by
   rw [isProper_eq]
@@ -62,5 +61,17 @@ instance : IsLocalAtTarget @IsProper := by
   infer_instance
 
 end IsProper
+
+lemma IsFinite.eq_isProper_inf_isAffineHom :
+    @IsFinite = (@IsProper ⊓ @IsAffineHom : MorphismProperty _) := by
+  have : (@IsAffineHom ⊓ @IsSeparated : MorphismProperty _) = @IsAffineHom :=
+    inf_eq_left.mpr fun _ _ _ _ ↦ inferInstance
+  rw [inf_comm, isProper_eq, inf_assoc, ← inf_assoc, this, eq_inf,
+    IsIntegralHom.eq_universallyClosed_inf_isAffineHom, inf_assoc, inf_left_comm]
+
+lemma IsFinite.iff_isProper_and_isAffineHom :
+    IsFinite f ↔ IsProper f ∧ IsAffineHom f := by
+  rw [eq_isProper_inf_isAffineHom]
+  rfl
 
 end AlgebraicGeometry
