@@ -129,7 +129,7 @@ theorem polar_comp {F : Type*} [CommRing S] [FunLike F N S] [AddMonoidHomClass F
   simp only [polar, Pi.smul_apply, Function.comp_apply, map_sub]
 
 /--
-Lift the polar to Sym2
+Lift the polar to `Sym2`
 -/
 def polarSym2 (f : M → N) : Sym2 M → N :=
   Sym2.lift ⟨fun m₁ m₂ => (polar f) m₁ m₂, fun i j => by simp only [polar_comm]⟩
