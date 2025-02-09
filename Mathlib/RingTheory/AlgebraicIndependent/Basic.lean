@@ -317,13 +317,13 @@ theorem AlgebraicIndependent.cardinalMk_le_trdeg [Nontrivial R] {ι : Type v} {x
     (hx : AlgebraicIndependent R x) : #ι ≤ trdeg R A := by
   rw [← (#ι).lift_id, ← (trdeg R A).lift_id]; exact hx.lift_cardinalMk_le_trdeg
 
-theorem lift_trdeg_le_of_injective {f : A →ₐ[R] A'} (hf : Injective f) :
+theorem lift_trdeg_le_of_injective (f : A →ₐ[R] A') (hf : Injective f) :
     lift.{v'} (trdeg R A) ≤ lift.{v} (trdeg R A') := by
   nontriviality R
   rw [trdeg, lift_iSup (bddAbove_range _)]
   exact ciSup_le' fun i ↦ (i.2.map' hf).lift_cardinalMk_le_trdeg
 
-theorem trdeg_le_of_injective {A' : Type v} [CommRing A'] [Algebra R A'] {f : A →ₐ[R] A'}
+theorem trdeg_le_of_injective {A' : Type v} [CommRing A'] [Algebra R A'] (f : A →ₐ[R] A')
     (hf : Injective f) : trdeg R A ≤ trdeg R A' := by
   rw [← (trdeg R A).lift_id, ← (trdeg R A').lift_id]; exact lift_trdeg_le_of_injective hf
 
@@ -338,6 +338,15 @@ theorem lift_trdeg_le_of_surjective (f : A →ₐ[R] A') (hf : Surjective f) :
 theorem trdeg_le_of_surjective {A' : Type v} [CommRing A'] [Algebra R A'] (f : A →ₐ[R] A')
     (hf : Surjective f) : trdeg R A' ≤ trdeg R A := by
   rw [← (trdeg R A).lift_id, ← (trdeg R A').lift_id]; exact lift_trdeg_le_of_surjective f hf
+
+theorem AlgEquiv.lift_trdeg_eq (e : A ≃ₐ[R] A') :
+    lift.{v'} (trdeg R A) = lift.{v} (trdeg R A') :=
+  (lift_trdeg_le_of_injective e.toAlgHom e.injective).antisymm
+    (lift_trdeg_le_of_surjective e.toAlgHom e.surjective)
+
+theorem AlgEquiv.trdeg_eq {A' : Type v} [CommRing A'] [Algebra R A'] (e : A ≃ₐ[R] A') :
+    trdeg R A = trdeg R A' := by
+  rw [← (trdeg R A).lift_id, e.lift_trdeg_eq, lift_id]
 
 end trdeg
 
