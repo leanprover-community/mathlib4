@@ -805,7 +805,7 @@ lemma sigmaConcat_applyAt {X : Type*} [TopologicalSpace X] {s : ℕ → X}
 
 /-- The concatenation of a sequence of paths is the same as the concatenation of the first path
   with the concatenation of the remaining paths. -/
-lemma sigmaConcat_eq_trans_sigmaConcat {X : Type*} [TopologicalSpace X] {s : ℕ → X}
+lemma sigmaConcat_eq_trans {X : Type*} [TopologicalSpace X] {s : ℕ → X}
     {γ : (n : ℕ) → Path (s n) (s n.succ)} {x : X} {b : ℕ → Set X} {hb : (𝓝 x).HasAntitoneBasis b}
     {hγ : ∀ n t, γ n t ∈ b n} : sigmaConcat γ x hb hγ = (γ 0).trans
       (sigmaConcat (fun n ↦ γ (n + 1)) x hb fun n t ↦ hb.2 n.le_succ <| hγ (n + 1) t) := by
