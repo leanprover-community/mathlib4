@@ -464,7 +464,7 @@ lemma addVal_eq_zero_iff {x : R} :
   · simp
   obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
   obtain ⟨n, u, rfl⟩ := eq_unit_mul_pow_irreducible hx hϖ
-  simp [hϖ.unit_pow_iff, hϖ]
+  simp [isUnit_pow_iff_of_not_isUnit hϖ.not_unit, hϖ]
 
 end
 
