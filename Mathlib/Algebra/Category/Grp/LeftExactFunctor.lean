@@ -51,8 +51,8 @@ noncomputable def unitIso : 𝟭 (C ⥤ₗ AddCommGrp) ≅
     simp
     intro x y
     sorry
-  · aesop_cat
-  · aesop_cat
+  · sorry
+  · sorry
 
 
 
