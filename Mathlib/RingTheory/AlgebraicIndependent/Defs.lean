@@ -50,6 +50,8 @@ variable [CommRing R] [CommRing A] [CommRing A'] [Algebra R A] [Algebra R A']
 @[stacks 030E "(1)"] def AlgebraicIndependent : Prop :=
   Injective (MvPolynomial.aeval x : MvPolynomial ι R →ₐ[R] A)
 
+/-- `s : Set A` is algebraic independent over `R` if the family `(↑) : s → A` is algebraic
+independent over `R`. -/
 protected abbrev Set.AlgebraicIndependent (s : Set A) : Prop := AlgebraicIndependent R ((↑) : s → A)
 
 variable {R} {x}

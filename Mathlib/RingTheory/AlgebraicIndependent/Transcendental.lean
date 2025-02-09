@@ -73,8 +73,24 @@ theorem isEmpty_of_isAlgebraic [Algebra.IsAlgebraic R A] : IsEmpty ι := by
 
 end AlgebraicIndependent
 
-theorem trdeg_eq_zero_of_isAlgebraic [Algebra.IsAlgebraic R A] : trdeg R A = 0 :=
+theorem trdeg_eq_zero [Algebra.IsAlgebraic R A] : trdeg R A = 0 :=
   bot_unique <| ciSup_le' fun s ↦ have := s.2.isEmpty_of_isAlgebraic; (Cardinal.mk_eq_zero _).le
+
+variable (R A) in
+theorem zero_lt_trdeg [Algebra.Transcendental R A] : 0 < trdeg R A :=
+  have ⟨x, hx⟩ := Algebra.Transcendental.transcendental (R := R) (A := A)
+  zero_lt_one.trans_le <| le_ciSup_of_le (Cardinal.bddAbove_range _)
+    ⟨{x}, algebraicIndependent_unique_type_iff.mpr hx⟩ (by simp)
+
+theorem trdeg_eq_zero_iff : trdeg R A = 0 ↔ Algebra.IsAlgebraic R A := by
+  by_cases h : Algebra.IsAlgebraic R A
+  · exact iff_of_true trdeg_eq_zero h
+  rw [← not_iff_not]
+  rw [← Algebra.transcendental_iff_not_isAlgebraic] at h ⊢
+  exact iff_of_true (zero_lt_trdeg R A).ne' h
+
+theorem trdeg_ne_zero_iff : trdeg R A ≠ 0 ↔ Algebra.Transcendental R A := by
+  rw [Algebra.transcendental_iff_not_isAlgebraic, Ne, trdeg_eq_zero_iff]
 
 open AlgebraicIndependent
 
@@ -100,6 +116,13 @@ theorem AlgebraicIndependent.insert_iff {s : Set A} {a : A} (h : a ∉ s) :
   convert option_iff (a := a) using 2
   · ext (_|_) <;> rfl
   · rw [Subtype.range_val]
+
+protected theorem AlgebraicIndependent.insert {s : Set A} {a : A} (hs : s.AlgebraicIndependent R)
+    (ha : Transcendental (adjoin R s) a) : (insert a s).AlgebraicIndependent R := by
+  nontriviality R
+  have := hs.algebraMap_injective.nontrivial
+  exact (insert_iff fun h ↦ ha <| isAlgebraic_algebraMap
+    (⟨a, subset_adjoin h⟩ : adjoin R s)).mpr ⟨hs, ha⟩
 
 theorem algebraicIndependent_of_set_of_finite (s : Set ι)
     (ind : AlgebraicIndependent R fun i : s ↦ x i)
