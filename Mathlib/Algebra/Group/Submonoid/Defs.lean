@@ -7,6 +7,7 @@ Amelia Livingston, Yury Kudryashov
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Subsemigroup.Defs
 import Mathlib.Tactic.FastInstance
+import Mathlib.Data.Set.Insert
 
 /-!
 # Submonoids: definition
