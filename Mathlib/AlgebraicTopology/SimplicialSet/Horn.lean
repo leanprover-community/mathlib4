@@ -101,7 +101,7 @@ end
 This edge only exists if `{i, a, b}` has cardinality less than `n`. -/
 @[simps]
 def edge (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) :
-    (Λ[n, i] : SSet.{u}) _[1] :=
+    (Λ[n, i] : SSet.{u}) _⦋1⦌ :=
   ⟨stdSimplex.edge n a b hab, by
     simp [subcomplexHorn_eq_iSup]
     have hS : ¬ ({i, a, b} = Finset.univ) := fun hS ↦ by
@@ -120,7 +120,7 @@ def edge (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) :
 assuming `3 ≤ n`. -/
 @[simps!]
 def edge₃ (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : 3 ≤ n) :
-    (Λ[n, i] : SSet.{u}) _[1] :=
+    (Λ[n, i] : SSet.{u}) _⦋1⦌ :=
   horn.edge n i a b hab <| Finset.card_le_three.trans H
 
 /-- The edge of `Λ[n, i]` with endpoints `j` and `j+1`.
@@ -130,7 +130,7 @@ which is the type of horn that occurs in the horn-filling condition of quasicate
 @[simps!]
 def primitiveEdge {n : ℕ} {i : Fin (n+1)}
     (h₀ : 0 < i) (hₙ : i < Fin.last n) (j : Fin n) :
-    (Λ[n, i] : SSet.{u}) _[1] := by
+    (Λ[n, i] : SSet.{u}) _⦋1⦌ := by
   refine horn.edge n i j.castSucc j.succ ?_ ?_
   · simp only [← Fin.val_fin_le, Fin.coe_castSucc, Fin.val_succ, le_add_iff_nonneg_right, zero_le]
   simp only [← Fin.val_fin_lt, Fin.val_zero, Fin.val_last] at h₀ hₙ
@@ -146,7 +146,7 @@ which is the type of horn that occurs in the horn-filling condition of quasicate
 @[simps]
 def primitiveTriangle {n : ℕ} (i : Fin (n+4))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n+3))
-    (k : ℕ) (h : k < n+2) : (Λ[n+3, i] : SSet.{u}) _[2] := by
+    (k : ℕ) (h : k < n+2) : (Λ[n+3, i] : SSet.{u}) _⦋2⦌ := by
   refine ⟨stdSimplex.triangle
     (n := n+3) ⟨k, by omega⟩ ⟨k+1, by omega⟩ ⟨k+2, by omega⟩ ?_ ?_, ?_⟩
   · simp only [Fin.mk_le_mk, le_add_iff_nonneg_right, zero_le]
@@ -186,7 +186,7 @@ def primitiveTriangle {n : ℕ} (i : Fin (n+4))
     · exact Ne.symm hl.2.2.2
 
 /-- The `j`th face of codimension `1` of the `i`-th horn. -/
-def face {n : ℕ} (i j : Fin (n+2)) (h : j ≠ i) : (Λ[n+1, i] : SSet.{u}) _[n] :=
+def face {n : ℕ} (i j : Fin (n+2)) (h : j ≠ i) : (Λ[n+1, i] : SSet.{u}) _⦋n⦌ :=
   yonedaEquiv (Subpresheaf.lift (stdSimplex.δ j) (by
     simpa using face_le_subcomplexHorn _ _ h))
 
