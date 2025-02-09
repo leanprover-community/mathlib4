@@ -3,8 +3,8 @@ Copyright (c) 2025 Niklas Mohrin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Niklas Mohrin
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Combinatorics.Digraph.Basic
-import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # Network Flows
