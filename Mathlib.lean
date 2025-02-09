@@ -5428,7 +5428,7 @@ import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.Connected.Basic
 import Mathlib.Topology.Connected.Clopen
 import Mathlib.Topology.Connected.LocallyConnected
-import Mathlib.Topology.Connected.LochConnected
+import Mathlib.Topology.Connected.LocPathConnected
 import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Connected.Separation
 import Mathlib.Topology.Connected.TotallyDisconnected
