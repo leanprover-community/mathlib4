@@ -135,7 +135,7 @@ def polarSym2 (f : M → N) : Sym2 M → N :=
   Sym2.lift ⟨polar f, polar_comm _⟩
 
 @[simp]
-lemma polarSym2_sym2Mk (f : M → N) (x y : M ) : polarSym2 f (Sym2.mk (x, y)) = polar f x y := rfl
+lemma polarSym2_sym2Mk (f : M → N) (x y : M ) : polarSym2 f (.mk (x, y)) = polar f x y := rfl
 
 end QuadraticMap
 
