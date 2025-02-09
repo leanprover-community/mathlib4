@@ -30,10 +30,8 @@ variable {T : Type u₁} [Category.{v₁} T]
 variable {D : Type u₂} [Category.{v₂} D]
 
 /-- The over category has as objects arrows in `T` with codomain `X` and as morphisms commutative
-triangles.
-
-See <https://stacks.math.columbia.edu/tag/001G>.
--/
+triangles. -/
+@[stacks 001G]
 def Over (X : T) :=
   CostructuredArrow (𝟭 T) X
 
@@ -92,23 +90,17 @@ end
 
 /-- To give a morphism in the over category, it suffices to give an arrow fitting in a commutative
     triangle. -/
-@[simps!]
+@[simps! left]
 def homMk {U V : Over X} (f : U.left ⟶ V.left) (w : f ≫ V.hom = U.hom := by aesop_cat) : U ⟶ V :=
   CostructuredArrow.homMk f w
-
--- Porting note: simp solves this; simpNF still sees them after `-simp` (?)
-attribute [-simp, nolint simpNF] homMk_right_down_down
 
 /-- Construct an isomorphism in the over category given isomorphisms of the objects whose forward
 direction gives a commutative triangle.
 -/
-@[simps!]
+@[simps! hom_left inv_left]
 def isoMk {f g : Over X} (hl : f.left ≅ g.left) (hw : hl.hom ≫ g.hom = f.hom := by aesop_cat) :
     f ≅ g :=
   CostructuredArrow.isoMk hl hw
-
--- Porting note: simp solves this; simpNF still sees them after `-simp` (?)
-attribute [-simp, nolint simpNF] isoMk_hom_right_down_down isoMk_inv_right_down_down
 
 @[reassoc (attr := simp)]
 lemma hom_left_inv_left {f g : Over X} (e : f ≅ g) :
@@ -124,10 +116,8 @@ section
 
 variable (X)
 
-/-- The forgetful functor mapping an arrow to its domain.
-
-See <https://stacks.math.columbia.edu/tag/001G>.
--/
+/-- The forgetful functor mapping an arrow to its domain. -/
+@[stacks 001G]
 def forget : Over X ⥤ T :=
   Comma.fst _ _
 
@@ -147,10 +137,8 @@ def forgetCocone (X : T) : Limits.Cocone (forget X) :=
   { pt := X
     ι := { app := Comma.hom } }
 
-/-- A morphism `f : X ⟶ Y` induces a functor `Over X ⥤ Over Y` in the obvious way.
-
-See <https://stacks.math.columbia.edu/tag/001G>.
--/
+/-- A morphism `f : X ⟶ Y` induces a functor `Over X ⥤ Over Y` in the obvious way. -/
+@[stacks 001G]
 def map {Y : T} (f : X ⟶ Y) : Over X ⥤ Over Y :=
   Comma.mapRight _ <| Discrete.natTrans fun _ => f
 
@@ -464,12 +452,9 @@ def mk {X Y : T} (f : X ⟶ Y) : Under X :=
 
 /-- To give a morphism in the under category, it suffices to give a morphism fitting in a
     commutative triangle. -/
-@[simps!]
+@[simps! right]
 def homMk {U V : Under X} (f : U.right ⟶ V.right) (w : U.hom ≫ f = V.hom := by aesop_cat) : U ⟶ V :=
   StructuredArrow.homMk f w
-
--- Porting note: simp solves this; simpNF still sees them after `-simp` (?)
-attribute [-simp, nolint simpNF] homMk_left_down_down
 
 /-- Construct an isomorphism in the over category given isomorphisms of the objects whose forward
 direction gives a commutative triangle.

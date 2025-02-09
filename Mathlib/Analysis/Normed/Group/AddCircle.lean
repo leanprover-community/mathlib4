@@ -229,9 +229,6 @@ theorem norm_div_natCast {m n : ℕ} :
   have : p⁻¹ * (↑m / ↑n * p) = ↑m / ↑n := by rw [mul_comm _ p, inv_mul_cancel_left₀ hp.out.ne.symm]
   rw [norm_eq' p hp.out, this, abs_sub_round_div_natCast_eq]
 
-@[deprecated (since := "2024-04-17")]
-alias norm_div_nat_cast := norm_div_natCast
-
 theorem exists_norm_eq_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFinAddOrder u) :
     ∃ k : ℕ, ‖u‖ = p * (k / addOrderOf u) := by
   let n := addOrderOf u
