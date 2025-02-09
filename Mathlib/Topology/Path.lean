@@ -28,6 +28,9 @@ In this file the unit interval `[0, 1]` in `ℝ` is denoted by `I`, and `X` is a
 * `Path.truncate γ t₀ t₁ : Path (γ t₀) (γ t₁)` is the path that follows `γ` from `t₀` to `t₁` and
   stays constant otherwise.
 * `Path.extend γ : ℝ → X` is the extension `γ` to `ℝ` that is constant before `0` and after `1`.
+* `Path.sigmaConcat γ x hb hγ` is the concatenation of countably many paths `γ n` leading up to
+  some point `x`, given an antitone neighbourhood basis `b : ℕ → Set X` at `x` such that `γ n` lies
+  in `b n` for all `n`.
 
 `Path x y` is equipped with the topology induced by the compact-open topology on `C(I,X)`, and
 several of the above constructions are shown to be continuous.
