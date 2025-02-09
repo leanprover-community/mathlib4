@@ -185,10 +185,10 @@ theorem argmin_cons (f : α → β) (a : α) (l : List α) :
 variable [DecidableEq α]
 
 theorem index_of_argmax :
-    ∀ {l : List α} {m : α}, m ∈ argmax f l → ∀ {a}, a ∈ l → f m ≤ f a → l.indexOf m ≤ l.indexOf a
+    ∀ {l : List α} {m : α}, m ∈ argmax f l → ∀ {a}, a ∈ l → f m ≤ f a → l.idxOf m ≤ l.idxOf a
   | [], m, _, _, _, _ => by simp
   | hd :: tl, m, hm, a, ha, ham => by
-    simp only [indexOf_cons, argmax_cons, Option.mem_def] at hm ⊢
+    simp only [idxOf_cons, argmax_cons, Option.mem_def] at hm ⊢
     cases h : argmax f tl
     · rw [h] at hm
       simp_all
@@ -206,12 +206,12 @@ theorem index_of_argmax :
       exact Nat.zero_le _
 
 theorem index_of_argmin :
-    ∀ {l : List α} {m : α}, m ∈ argmin f l → ∀ {a}, a ∈ l → f a ≤ f m → l.indexOf m ≤ l.indexOf a :=
+    ∀ {l : List α} {m : α}, m ∈ argmin f l → ∀ {a}, a ∈ l → f a ≤ f m → l.idxOf m ≤ l.idxOf a :=
   @index_of_argmax _ βᵒᵈ _ _ _
 
 theorem mem_argmax_iff :
     m ∈ argmax f l ↔
-      m ∈ l ∧ (∀ a ∈ l, f a ≤ f m) ∧ ∀ a ∈ l, f m ≤ f a → l.indexOf m ≤ l.indexOf a :=
+      m ∈ l ∧ (∀ a ∈ l, f a ≤ f m) ∧ ∀ a ∈ l, f m ≤ f a → l.idxOf m ≤ l.idxOf a :=
   ⟨fun hm => ⟨argmax_mem hm, fun _ ha => le_of_mem_argmax ha hm, fun _ => index_of_argmax hm⟩,
     by
       rintro ⟨hml, ham, hma⟩
@@ -220,21 +220,21 @@ theorem mem_argmax_iff :
       · have :=
           _root_.le_antisymm (hma n (argmax_mem harg) (le_of_mem_argmax hml harg))
             (index_of_argmax harg hml (ham _ (argmax_mem harg)))
-        rw [(indexOf_inj hml (argmax_mem harg)).1 this, Option.mem_def]⟩
+        rw [(idxOf_inj hml (argmax_mem harg)).1 this, Option.mem_def]⟩
 
 theorem argmax_eq_some_iff :
     argmax f l = some m ↔
-      m ∈ l ∧ (∀ a ∈ l, f a ≤ f m) ∧ ∀ a ∈ l, f m ≤ f a → l.indexOf m ≤ l.indexOf a :=
+      m ∈ l ∧ (∀ a ∈ l, f a ≤ f m) ∧ ∀ a ∈ l, f m ≤ f a → l.idxOf m ≤ l.idxOf a :=
   mem_argmax_iff
 
 theorem mem_argmin_iff :
     m ∈ argmin f l ↔
-      m ∈ l ∧ (∀ a ∈ l, f m ≤ f a) ∧ ∀ a ∈ l, f a ≤ f m → l.indexOf m ≤ l.indexOf a :=
+      m ∈ l ∧ (∀ a ∈ l, f m ≤ f a) ∧ ∀ a ∈ l, f a ≤ f m → l.idxOf m ≤ l.idxOf a :=
   @mem_argmax_iff _ βᵒᵈ _ _ _ _ _
 
 theorem argmin_eq_some_iff :
     argmin f l = some m ↔
-      m ∈ l ∧ (∀ a ∈ l, f m ≤ f a) ∧ ∀ a ∈ l, f a ≤ f m → l.indexOf m ≤ l.indexOf a :=
+      m ∈ l ∧ (∀ a ∈ l, f m ≤ f a) ∧ ∀ a ∈ l, f a ≤ f m → l.idxOf m ≤ l.idxOf a :=
   mem_argmin_iff
 
 end LinearOrder
@@ -281,15 +281,9 @@ theorem minimum_mem {l : List α} {m : α} : (minimum l : WithBot α) = m → m 
 theorem maximum_eq_bot {l : List α} : l.maximum = ⊥ ↔ l = [] :=
   argmax_eq_none
 
-@[simp, deprecated maximum_eq_bot "Don't mix Option and WithBot" (since := "2024-05-27")]
-theorem maximum_eq_none {l : List α} : l.maximum = none ↔ l = [] := maximum_eq_bot
-
 @[simp]
 theorem minimum_eq_top {l : List α} : l.minimum = ⊤ ↔ l = [] :=
   argmin_eq_none
-
-@[simp, deprecated minimum_eq_top "Don't mix Option and WithTop" (since := "2024-05-27")]
-theorem minimum_eq_none {l : List α} : l.minimum = none ↔ l = [] := minimum_eq_top
 
 theorem not_maximum_lt_of_mem : a ∈ l → (maximum l : WithBot α) = m → ¬m < a :=
   not_lt_of_mem_argmax

@@ -25,9 +25,6 @@ theorem pow_mul_meas_ge_le_eLpNorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞
   gcongr
   exact mul_meas_ge_le_lintegral₀ (hf.enorm.pow_const _) ε
 
-@[deprecated (since := "2024-07-27")]
-alias pow_mul_meas_ge_le_snorm := pow_mul_meas_ge_le_eLpNorm
-
 theorem mul_meas_ge_le_pow_eLpNorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     (hf : AEStronglyMeasurable f μ) (ε : ℝ≥0∞) :
     ε * μ { x | ε ≤ (‖f x‖₊ : ℝ≥0∞) ^ p.toReal } ≤ eLpNorm f p μ ^ p.toReal := by
@@ -39,9 +36,6 @@ theorem mul_meas_ge_le_pow_eLpNorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞
   gcongr
   exact pow_mul_meas_ge_le_eLpNorm μ hp_ne_zero hp_ne_top hf ε
 
-@[deprecated (since := "2024-07-27")]
-alias mul_meas_ge_le_pow_snorm := mul_meas_ge_le_pow_eLpNorm
-
 /-- A version of Chebyshev-Markov's inequality using Lp-norms. -/
 theorem mul_meas_ge_le_pow_eLpNorm' (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     (hf : AEStronglyMeasurable f μ) (ε : ℝ≥0∞) :
@@ -49,9 +43,6 @@ theorem mul_meas_ge_le_pow_eLpNorm' (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ �
   convert mul_meas_ge_le_pow_eLpNorm μ hp_ne_zero hp_ne_top hf (ε ^ p.toReal) using 4
   ext x
   rw [ENNReal.rpow_le_rpow_iff (ENNReal.toReal_pos hp_ne_zero hp_ne_top)]
-
-@[deprecated (since := "2024-07-27")]
-alias mul_meas_ge_le_pow_snorm' := mul_meas_ge_le_pow_eLpNorm'
 
 theorem meas_ge_le_mul_pow_eLpNorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     (hf : AEStronglyMeasurable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
@@ -63,9 +54,6 @@ theorem meas_ge_le_mul_pow_eLpNorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞
   rw [ENNReal.inv_rpow, ← ENNReal.mul_le_mul_left hεpow hεpow', ← mul_assoc,
     ENNReal.mul_inv_cancel hεpow hεpow', one_mul]
   exact mul_meas_ge_le_pow_eLpNorm' μ hp_ne_zero hp_ne_top hf ε
-
-@[deprecated (since := "2024-07-27")]
-alias meas_ge_le_mul_pow_snorm := meas_ge_le_mul_pow_eLpNorm
 
 theorem Memℒp.meas_ge_lt_top' {μ : Measure α} (hℒp : Memℒp f p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) :

@@ -342,9 +342,6 @@ section cast
 theorem natCast_coeff_zero {n : ℕ} {R : Type*} [Semiring R] : (n : R[X]).coeff 0 = n := by
   simp only [coeff_natCast_ite, ite_true]
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_coeff_zero := natCast_coeff_zero
-
 @[norm_cast]
 theorem natCast_inj {m n : ℕ} {R : Type*} [Semiring R] [CharZero R] :
     (↑m : R[X]) = ↑n ↔ m = n := by
@@ -355,15 +352,9 @@ theorem natCast_inj {m n : ℕ} {R : Type*} [Semiring R] [CharZero R] :
   · rintro rfl
     rfl
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_inj := natCast_inj
-
 @[simp]
 theorem intCast_coeff_zero {i : ℤ} {R : Type*} [Ring R] : (i : R[X]).coeff 0 = i := by
   cases i <;> simp
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast_coeff_zero := intCast_coeff_zero
 
 @[norm_cast]
 theorem intCast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X]) = ↑n ↔ m = n := by
@@ -373,9 +364,6 @@ theorem intCast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X]
     simpa using h
   · rintro rfl
     rfl
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast_inj := intCast_inj
 
 end cast
 

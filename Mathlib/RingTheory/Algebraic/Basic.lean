@@ -560,6 +560,15 @@ theorem IsAlgebraic.exists_nonzero_dvd
   rw [map_sub, hq, zero_sub, dvd_neg, aeval_X, aeval_C] at key
   exact ⟨q.coeff 0, hq0, key⟩
 
+open Function (Injective) in
+theorem Algebra.IsAlgebraic.injective_tower_top (S) {A} [CommRing S] [NoZeroDivisors S]
+    [Algebra R S] [alg : Algebra.IsAlgebraic R S] [Ring A] [Algebra R A] [Algebra S A]
+    [IsScalarTower R S A] (inj : Injective (algebraMap R A)) : Injective (algebraMap S A) := by
+  refine (injective_iff_map_eq_zero _).mpr fun s eq ↦ of_not_not fun ne ↦ ?_
+  have ⟨r, ne, dvd⟩ := (alg.1 s).exists_nonzero_dvd (mem_nonZeroDivisors_of_ne_zero ne)
+  refine ne (inj <| map_zero (algebraMap R A) ▸ zero_dvd_iff.mp ?_)
+  simp_rw [← eq, IsScalarTower.algebraMap_apply R S A, map_dvd (algebraMap S A) dvd]
+
 /-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
 if `b` is algebraic over `R`. -/
 theorem IsAlgebraic.exists_smul_eq_mul
