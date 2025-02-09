@@ -6,6 +6,7 @@ Authors: Chriara Cimino, Christian Krause
 import Mathlib.Order.Closure
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.Hom.Lattice
+import Mathlib.Tactic.MinImports
 
 /-!
 # Nucleus
@@ -138,24 +139,24 @@ instance : CompleteSemilatticeInf (Nucleus X) where
 
 instance : CompleteLattice (Nucleus X) := completeLatticeOfCompleteSemilatticeInf (Nucleus X)
 
-@[simp] theorem inf_aply (m n : Nucleus X) (x : X) : (m ⊓ n) x = m x ⊓ n x := by
+@[simp] theorem inf_apply (m n : Nucleus X) (x : X) : (m ⊓ n) x = m x ⊓ n x := by
   rw [← sInf_pair, sInf_apply, iInf_pair]
 
 end CompleteLattice
 section Frame
-variable [Order.Frame X]
+variable [Order.Frame X] {n : Nucleus X} {x y : X}
 
-lemma map_himp_apply {n : Nucleus X} {x y : X} : n (x ⇨ n y) = x ⇨ n y := by
-  refine le_antisymm ?_ le_apply
-  rw [le_himp_iff, himp_eq_sSup]
-  have h1 : n (sSup {w | w ⊓ x ≤ n y}) ⊓ x ≤
-      n (sSup {w | w ⊓ x ≤ n y}) ⊓ n x := by
-    simp only [le_inf_iff, inf_le_left, true_and]
-    exact inf_le_of_right_le le_apply
-  apply le_trans h1
-  rw [← map_inf, sSup_inf_eq, ← @idempotent _ _ n y]
-  gcongr
-  simp [idempotent]
+-- TODO: Does this hold as an equality?
+lemma map_himp_le : n (x ⇨ y) ≤ x ⇨ n y := by
+  rw [le_himp_iff]
+  calc
+    n (x ⇨ y) ⊓ x
+    _ ≤ n (x ⇨ y) ⊓ n x := by gcongr; exact n.le_apply
+    _ = n (y ⊓ x) := by rw [← map_inf, himp_inf_self]
+    _ ≤ n y := by gcongr; exact inf_le_left
+
+lemma map_himp_apply (n : Nucleus X) (x y : X) : n (x ⇨ n y) = x ⇨ n y :=
+  le_antisymm (map_himp_le.trans_eq <| by rw [n.idempotent]) n.le_apply
 
 instance : HImp (Nucleus X) where
   himp m n :=
