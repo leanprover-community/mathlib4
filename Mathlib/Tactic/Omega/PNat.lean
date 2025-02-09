@@ -1,9 +1,28 @@
+/-
+Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasilii Nesterov
+-/
 import Mathlib.Data.PNat.Basic
+
+/-!
+# `pnat_omega`
+
+In this file we implement `enat_omega`: a simple wrapper around `omega` for solving goals involving
+`PNat`s.
+
+## Implementation details
+It uses the following pipeline:
+1. For each `x : PNat` in the context add the `0 < (↑x : ℕ)` hypothesis.
+2. Translate the arithmetic on `PNat` to `Nat` using `pnat_omega_coe_simps` simp set.
+3. Finish the goal using `omega`.
+
+-/
 
 namespace OmegaExtensions.PNat
 
 open Qq in
-/--  -/
+
 elab "omega_preprocess_pnat" : tactic =>
   Lean.Elab.Tactic.withMainContext do
     let goal ← Lean.Elab.Tactic.getMainGoal
@@ -39,6 +58,7 @@ lemma sub_coe' (a b : PNat) : ((a - b : PNat) : Nat) = a.val - 1 - b.val + 1 := 
   simp only [PNat.mk_coe, PNat.sub_coe, ← PNat.coe_lt_coe]
   split_ifs <;> omega
 
+/-- Simple wrapper around `omega` for solving goals involving `PNat`s. -/
 macro "pnat_omega" : tactic => `(tactic| focus (
   omega_preprocess_pnat;
   simp only [pnat_omega_coe_simps] at *;

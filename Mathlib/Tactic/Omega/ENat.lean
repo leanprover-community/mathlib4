@@ -1,4 +1,26 @@
+/-
+Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasilii Nesterov
+-/
 import Mathlib.Data.ENat.Basic
+
+/-!
+# `enat_omega`
+
+In this file we implement `enat_omega`: a simple wrapper around `omega` for solving goals involving
+`ENat`s.
+
+## Implementation details
+It uses the following pipeline:
+1. Use `cases` tactic with each `ENat` variable, producing two new goals: with the variable equal
+to `⊤`, and with the variable equal to finite natural number.
+2. Simplify arithmetical expressions involving infities, making (in)equalities trivial, or containig
+no infinities. At this step we use `enat_omega_top_simps` simp set.
+3. Translate remaining goals from `ENat` to `Nat` using `enat_omega_coe_simps` simp set.
+4. Use `omega` to finish them.
+
+-/
 
 namespace OmegaExtensions.ENat
 
@@ -28,7 +50,7 @@ attribute [enat_omega_top_simps] top_add ENat.sub_top ENat.top_sub_coe ENat.mul_
 attribute [enat_omega_coe_simps] ENat.coe_inj ENat.coe_le_coe ENat.coe_lt_coe
 
 open Qq Lean Elab Tactic Term Meta in
-def casesFirstENat : TacticM Unit := focus do
+elab "cases_first_ENat" : tactic => focus do
   let g ← getMainGoal
   let (g', _) ← g.renameInaccessibleFVars
   setGoals [g']
@@ -44,8 +66,7 @@ def casesFirstENat : TacticM Unit := focus do
     evalTactic (← `(tactic| cases' $x:ident with $x:ident <;>
       try simp only [enat_omega_top_simps] at *))
 
-elab "cases_first_ENat" : tactic => casesFirstENat
-
+/-- Simple wrapper around `omega` for solving goals involving `ENat`s. -/
 macro "enat_omega" : tactic => `(tactic| focus (
     (repeat' cases_first_ENat) <;>
     (try simp only [enat_omega_top_simps, enat_omega_coe_simps] at *) <;>
