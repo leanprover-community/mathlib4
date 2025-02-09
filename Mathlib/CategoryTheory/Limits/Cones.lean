@@ -169,8 +169,6 @@ theorem Cocone.w {F : J ⥤ C} (c : Cocone F) {j j' : J} (f : j ⟶ j') :
   rw [c.ι.naturality f]
   apply comp_id
 
-attribute [simp 1001] Cocone.w_assoc
-
 end
 
 variable {F : J ⥤ C}

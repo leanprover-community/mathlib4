@@ -115,7 +115,7 @@ lemma norm_one_add_mul_inv_le {t : ℝ} (ht : t ∈ Set.Icc 0 1) {z : ℂ} (hz :
     _ ≤ 1 - t * ‖z‖ := by
       nlinarith [norm_nonneg z]
     _ = 1 - ‖t * z‖ := by
-      rw [norm_mul, norm_eq_abs (t : ℂ), abs_of_nonneg ht.1]
+      rw [norm_mul, norm_eq_abs (t : ℂ), Complex.abs_of_nonneg ht.1]
     _ ≤ ‖1 + t * z‖ := by
       rw [← norm_neg (t * z), ← sub_neg_eq_add]
       convert norm_sub_norm_le 1 (-(t * z))
@@ -162,7 +162,7 @@ lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
     _ = ∫ t in (0 : ℝ)..1, t ^ n * ‖(1 + t * z)⁻¹‖ := by
         refine intervalIntegral.integral_congr <| fun t ht ↦ ?_
         rw [Set.uIcc_of_le zero_le_one, Set.mem_Icc] at ht
-        simp_rw [norm_mul, norm_pow, norm_eq_abs, abs_of_nonneg ht.1]
+        simp_rw [norm_mul, norm_pow, norm_eq_abs, Complex.abs_of_nonneg ht.1]
     _ ≤ ∫ t in (0 : ℝ)..1, t ^ n * (1 - ‖z‖)⁻¹ :=
         intervalIntegral.integral_mono_on zero_le_one
           (integrable_pow_mul_norm_one_add_mul_inv n hz) help <|

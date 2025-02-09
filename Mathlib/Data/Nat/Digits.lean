@@ -150,22 +150,22 @@ theorem ofDigits_eq_foldr {α : Type*} [Semiring α] (b : α) (L : List ℕ) :
   · dsimp [ofDigits]
     rw [ih]
 
-theorem ofDigits_eq_sum_map_with_index_aux (b : ℕ) (l : List ℕ) :
-    ((List.range l.length).zipWith ((fun i a : ℕ => a * b ^ (i + 1))) l).sum =
-      b * ((List.range l.length).zipWith (fun i a => a * b ^ i) l).sum := by
+theorem ofDigits_eq_sum_mapIdx_aux (b : ℕ) (l : List ℕ) :
+    (l.zipWith ((fun a i : ℕ => a * b ^ (i + 1))) (List.range l.length)).sum =
+      b * (l.zipWith (fun a i => a * b ^ i) (List.range l.length)).sum := by
   suffices
-    (List.range l.length).zipWith (fun i a : ℕ => a * b ^ (i + 1)) l =
-      (List.range l.length).zipWith (fun i a => b * (a * b ^ i)) l
+    l.zipWith (fun a i : ℕ => a * b ^ (i + 1)) (List.range l.length) =
+      l.zipWith (fun a i=> b * (a * b ^ i)) (List.range l.length)
     by simp [this]
   congr; ext; simp [pow_succ]; ring
 
 theorem ofDigits_eq_sum_mapIdx (b : ℕ) (L : List ℕ) :
     ofDigits b L = (L.mapIdx fun i a => a * b ^ i).sum := by
-  rw [List.mapIdx_eq_enum_map, List.enum_eq_zip_range, List.map_uncurry_zip_eq_zipWith,
-    ofDigits_eq_foldr]
+  rw [List.mapIdx_eq_zipIdx_map, List.zipIdx_eq_zip_range', List.map_zip_eq_zipWith,
+    ofDigits_eq_foldr, ← List.range_eq_range']
   induction' L with hd tl hl
   · simp
-  · simpa [List.range_succ_eq_map, List.zipWith_map_left, ofDigits_eq_sum_map_with_index_aux] using
+  · simpa [List.range_succ_eq_map, List.zipWith_map_right, ofDigits_eq_sum_mapIdx_aux] using
       Or.inl hl
 
 @[simp]

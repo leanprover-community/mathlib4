@@ -3,8 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Tactic.StacksAttribute
 import Mathlib.Topology.Compactness.Lindelof
+import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Regular, normal, T₃, T₄ and T₅ spaces
@@ -637,8 +638,8 @@ theorem connectedComponent_eq_iInter_isClopen [T2Space X] [CompactSpace X] (x : 
           ⟨s ∩ v, H2, mem_inter H.2.1 h1⟩
 
 /-- `ConnectedComponents X` is Hausdorff when `X` is Hausdorff and compact -/
+@[stacks 0900 "The Stacks entry proves profiniteness."]
 instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (ConnectedComponents X) := by
-  -- Proof follows that of: https://stacks.math.columbia.edu/tag/0900
   -- Fix 2 distinct connected components, with points a and b
   refine ⟨ConnectedComponents.surjective_coe.forall₂.2 fun a b ne => ?_⟩
   rw [ConnectedComponents.coe_ne_coe] at ne

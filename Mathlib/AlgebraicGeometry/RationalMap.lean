@@ -430,10 +430,10 @@ lemma RationalMap.fromFunctionField_ofFunctionField [IsIntegral X] [LocallyOfFin
 
 lemma RationalMap.eq_of_fromFunctionField_eq [IsIntegral X] (f g : X.RationalMap Y)
     (H : f.fromFunctionField = g.fromFunctionField) : f = g := by
-    obtain ⟨f, rfl⟩ := f.exists_rep
-    obtain ⟨g, rfl⟩ := g.exists_rep
-    refine PartialMap.toRationalMap_eq_iff.mpr ?_
-    exact PartialMap.equiv_of_fromSpecStalkOfMem_eq _ _ _ _ H
+  obtain ⟨f, rfl⟩ := f.exists_rep
+  obtain ⟨g, rfl⟩ := g.exists_rep
+  refine PartialMap.toRationalMap_eq_iff.mpr ?_
+  exact PartialMap.equiv_of_fromSpecStalkOfMem_eq _ _ _ _ H
 
 /--
 Given `S`-schemes `X` and `Y` such that `Y` is locally of finite type and `X` is integral,

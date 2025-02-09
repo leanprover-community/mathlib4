@@ -200,6 +200,10 @@ theorem card_eq_two_iff' (x : α) : Nat.card α = 2 ↔ ∃! y, y ≠ x :=
   toNat_eq_ofNat.trans (mk_eq_two_iff' x)
 
 @[simp]
+theorem card_subtype_true : Nat.card {_a : α // True} = Nat.card α :=
+  card_congr <| Equiv.subtypeUnivEquiv fun _ => trivial
+
+@[simp]
 theorem card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α + Nat.card β := by
   have := Fintype.ofFinite α
   have := Fintype.ofFinite β
@@ -216,6 +220,11 @@ theorem card_ulift (α : Type*) : Nat.card (ULift α) = Nat.card α :=
 @[simp]
 theorem card_plift (α : Type*) : Nat.card (PLift α) = Nat.card α :=
   card_congr Equiv.plift
+
+theorem card_sigma {β : α → Type*} [Fintype α] [∀ a, Finite (β a)] :
+    Nat.card (Sigma β) = ∑ a, Nat.card (β a) := by
+  letI _ (a : α) : Fintype (β a) := Fintype.ofFinite (β a)
+  simp_rw [Nat.card_eq_fintype_card, Fintype.card_sigma]
 
 theorem card_pi {β : α → Type*} [Fintype α] : Nat.card (∀ a, β a) = ∏ a, Nat.card (β a) := by
   simp_rw [Nat.card, mk_pi, prod_eq_of_fintype, toNat_lift, map_prod]

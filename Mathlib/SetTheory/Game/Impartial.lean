@@ -103,16 +103,11 @@ termination_by G
 variable (G : PGame) [Impartial G]
 
 theorem nonpos : ¬0 < G := by
-  intro h
-  have h' := neg_lt_neg_iff.2 h
-  rw [neg_zero, lt_congr_left (Equiv.symm (neg_equiv_self G))] at h'
-  exact (h.trans h').false
+  apply (lt_asymm · ?_)
+  rwa [← neg_lt_neg_iff, neg_zero, ← lt_congr_right (neg_equiv_self G)]
 
 theorem nonneg : ¬G < 0 := by
-  intro h
-  have h' := neg_lt_neg_iff.2 h
-  rw [neg_zero, lt_congr_right (Equiv.symm (neg_equiv_self G))] at h'
-  exact (h.trans h').false
+  simpa using nonpos (-G)
 
 /-- In an impartial game, either the first player always wins, or the second player always wins. -/
 theorem equiv_or_fuzzy_zero : (G ≈ 0) ∨ G ‖ 0 := by

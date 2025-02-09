@@ -1066,16 +1066,6 @@ theorem isClosed_setOf_continuous [TopologicalSpace α] (h : RestrictGenTopology
   rw [← tendsto_id', UniformOnFun.tendsto_iff_tendstoUniformlyOn] at huf
   exact (huf s hs).continuousOn <| hu fun _ ↦ Continuous.continuousOn
 
-/-- Suppose that the topology on `α` is defined by its restrictions to the sets of `𝔖`.
-
-Then the set of continuous functions is closed
-in the topology of uniform convergence on the sets of `𝔖`. -/
-@[deprecated isClosed_setOf_continuous (since := "2024-06-29")]
-theorem isClosed_setOf_continuous_of_le [t : TopologicalSpace α]
-    (h : t ≤ ⨆ s ∈ 𝔖, .coinduced (Subtype.val : s → α) inferInstance) :
-    IsClosed {f : α →ᵤ[𝔖] β | Continuous (toFun 𝔖 f)} :=
-  isClosed_setOf_continuous ⟨fun u hu ↦ h _ <| by simpa only [isOpen_iSup_iff, isOpen_coinduced]⟩
-
 variable (𝔖) in
 theorem uniformSpace_eq_inf_precomp_of_cover {δ₁ δ₂ : Type*} (φ₁ : δ₁ → α) (φ₂ : δ₂ → α)
     (𝔗₁ : Set (Set δ₁)) (𝔗₂ : Set (Set δ₂))

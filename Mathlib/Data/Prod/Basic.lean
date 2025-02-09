@@ -17,8 +17,6 @@ It also defines better delaborators for product projections.
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
-@[deprecated (since := "2024-05-08")] alias Prod_map := Prod.map_apply
-
 namespace Prod
 
 lemma swap_eq_iff_eq_swap {x : α × β} {y : β × α} : x.swap = y ↔ x = y.swap := by aesop
@@ -87,8 +85,6 @@ theorem id_prod : (fun p : α × β ↦ (p.1, p.2)) = id :=
 @[simp]
 theorem map_iterate (f : α → α) (g : β → β) (n : ℕ) :
     (Prod.map f g)^[n] = Prod.map f^[n] g^[n] := by induction n <;> simp [*, Prod.map_comp_map]
-
-@[deprecated (since := "2024-07-03")] alias iterate_prod_map := Prod.map_iterate
 
 theorem fst_surjective [h : Nonempty β] : Function.Surjective (@fst α β) :=
   fun x ↦ h.elim fun y ↦ ⟨⟨x, y⟩, rfl⟩
@@ -230,13 +226,6 @@ theorem RightInverse.prodMap :
 theorem Involutive.prodMap {f : α → α} {g : β → β} :
     Involutive f → Involutive g → Involutive (map f g) :=
   LeftInverse.prodMap
-
-@[deprecated (since := "2024-05-08")] alias Injective.Prod_map := Injective.prodMap
-@[deprecated (since := "2024-05-08")] alias Surjective.Prod_map := Surjective.prodMap
-@[deprecated (since := "2024-05-08")] alias Bijective.Prod_map := Bijective.prodMap
-@[deprecated (since := "2024-05-08")] alias LeftInverse.Prod_map := LeftInverse.prodMap
-@[deprecated (since := "2024-05-08")] alias RightInverse.Prod_map := RightInverse.prodMap
-@[deprecated (since := "2024-05-08")] alias Involutive.Prod_map := Involutive.prodMap
 
 end Function
 

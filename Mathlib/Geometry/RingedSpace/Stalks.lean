@@ -48,9 +48,6 @@ theorem stalkMap_germ {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (U : Op
       X.presheaf.germ ((Opens.map α.base).obj U) x hx := by
   rw [Hom.stalkMap, stalkFunctor_map_germ_assoc, stalkPushforward_germ]
 
-@[deprecated (since := "2024-07-30")] alias stalkMap_germ' := stalkMap_germ
-@[deprecated (since := "2024-07-30")] alias stalkMap_germ'_assoc := stalkMap_germ
-
 section Restrict
 
 /-- For an open embedding `f : U ⟶ X` and a point `x : U`, we get an isomorphism between the stalk
@@ -188,7 +185,7 @@ def stalkIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ≅ Y) (x : X) :
 @[reassoc, elementwise, simp, nolint simpNF]
 theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
     (f : X ⟶ Y) {x y : X} (h : x ⤳ y) :
-    Y.presheaf.stalkSpecializes (f.base.map_specializes h) ≫ f.stalkMap x =
+    Y.presheaf.stalkSpecializes (f.base.hom.map_specializes h) ≫ f.stalkMap x =
       f.stalkMap y ≫ X.presheaf.stalkSpecializes h := by
   -- Porting note: the original one liner `dsimp [stalkMap]; simp [stalkMap]` doesn't work,
   -- I had to uglify this

@@ -96,9 +96,8 @@ def atMostOneFixedPointEquivSum_derangements [DecidableEq α] (a : α) :
       · rw [Set.eq_empty_iff_forall_not_mem]
         exact ⟨fun h x hx => h.2 (h.1 hx ▸ hx), fun h => ⟨fun x hx => (h _ hx).elim, h _⟩⟩
     _ ≃ derangements ({a}ᶜ : Set α) ⊕ derangements α := by
-      -- Porting note: was `subtypeEquiv _` but now needs the placeholder to be provided explicitly
       refine
-        Equiv.sumCongr ((derangements.subtypeEquiv (· ∈ ({a}ᶜ : Set α))).trans <|
+        Equiv.sumCongr ((derangements.subtypeEquiv _).trans <|
             subtypeEquivRight fun x => ?_).symm
           (subtypeEquivRight fun f => mem_derangements_iff_fixedPoints_eq_empty.symm)
       rw [eq_comm, Set.ext_iff]

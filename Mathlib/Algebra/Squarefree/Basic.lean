@@ -281,6 +281,4 @@ theorem squarefree_natAbs {n : ℤ} : Squarefree n.natAbs ↔ Squarefree n := by
 theorem squarefree_natCast {n : ℕ} : Squarefree (n : ℤ) ↔ Squarefree n := by
   rw [← squarefree_natAbs, natAbs_ofNat]
 
-@[deprecated (since := "2024-04-05")] alias squarefree_coe_nat := squarefree_natCast
-
 end Int

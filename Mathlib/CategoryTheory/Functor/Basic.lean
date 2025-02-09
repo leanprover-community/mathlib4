@@ -5,6 +5,7 @@ Authors: Tim Baumann, Stephen Morgan, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Combinatorics.Quiver.Prefunctor
+import Mathlib.Tactic.CategoryTheory.CheckCompositions
 
 /-!
 # Functors
@@ -30,10 +31,8 @@ section
 To apply a functor `F` to an object use `F.obj X`, and to a morphism use `F.map f`.
 
 The axiom `map_id` expresses preservation of identities, and
-`map_comp` expresses functoriality.
-
-See <https://stacks.math.columbia.edu/tag/001B>.
--/
+`map_comp` expresses functoriality. -/
+@[stacks 001B]
 structure Functor (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
     extends Prefunctor C D : Type max v₁ v₂ u₁ u₂ where
   /-- A functor preserves identity morphisms. -/

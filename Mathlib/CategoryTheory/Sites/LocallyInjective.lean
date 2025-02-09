@@ -243,8 +243,8 @@ lemma mono_of_isLocallyInjective [IsLocallyInjective φ] : Mono φ := by
   infer_instance
 
 instance {F G : Sheaf J (Type w)} (f : F ⟶ G) :
-    IsLocallyInjective (imageSheafι f) := by
-  dsimp [imageSheafι]
+    IsLocallyInjective (Sheaf.imageι f) := by
+  dsimp [Sheaf.imageι]
   infer_instance
 
 end Sheaf

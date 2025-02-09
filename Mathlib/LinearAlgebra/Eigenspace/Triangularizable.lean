@@ -219,7 +219,7 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
       rw [Algebra.algebraMap_eq_smul_one, ← End.genEigenspace_nat]
       apply aux μ' hμ'
     · have := this.supIndep' (m.support.erase μ)
-      apply Finset.supIndep_antimono_fun _ this
+      apply this.antitone_fun
       intro μ' hμ'
       rw [Algebra.algebraMap_eq_smul_one, ← End.genEigenspace_nat]
       apply aux μ' hμ'

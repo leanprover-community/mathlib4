@@ -108,6 +108,9 @@ instance [Nontrivial M] : Nonempty (Module.Free.ChooseBasisIndex R M) :=
 theorem infinite [Infinite R] [Nontrivial M] : Infinite M :=
   (Equiv.infinite_iff (chooseBasis R M).repr.toEquiv).mpr Finsupp.infinite_of_right
 
+instance [Module.Free R M] [Nontrivial M] : FaithfulSMul R M :=
+  .of_injective _ (Module.Free.repr R M).symm.injective
+
 variable {R M N}
 
 theorem of_equiv (e : M ≃ₗ[R] N) : Module.Free R N :=

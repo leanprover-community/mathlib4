@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.FieldTheory.SeparableClosure
-import Mathlib.FieldTheory.PurelyInseparable
+import Mathlib.FieldTheory.PurelyInseparable.Basic
 import Mathlib.LinearAlgebra.FreeAlgebra
 import Mathlib.Order.Interval.Set.WithBotTop
 import Mathlib.Order.DirectedInverseSystem
@@ -122,6 +122,7 @@ def leastExt : ι → ι :=
       rw [adjoin_basis_eq_top, ← eq_top_iff] at this
       apply_fun Module.rank F at this
       refine ne_of_lt ?_ this
+      let _ : AddCommMonoid (⊤ : IntermediateField F E) := inferInstance
       conv_rhs => rw [topEquiv.toLinearEquiv.rank_eq]
       have := mk_Iio_ord_toType i
       obtain eq | lt := rank_inf.out.eq_or_lt

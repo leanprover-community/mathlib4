@@ -85,17 +85,17 @@ def shiftIso (n a a' : M) (ha' : n + a = a') :
     shiftFunctor C n ⋙ F.shift a ≅ F.shift a' :=
   ShiftSequence.shiftIso n a a' ha'
 
-@[reassoc (attr := simp 1100)]
+@[reassoc (attr := simp)]
 lemma shiftIso_hom_naturality {X Y : C} (n a a' : M) (ha' : n + a = a') (f : X ⟶ Y) :
     (shift F a).map (f⟦n⟧') ≫ (shiftIso F n a a' ha').hom.app Y =
       (shiftIso F n a a' ha').hom.app X ≫ (shift F a').map f :=
   (F.shiftIso n a a' ha').hom.naturality f
 
-@[reassoc (attr := simp 1100)]
+@[reassoc]
 lemma shiftIso_inv_naturality {X Y : C} (n a a' : M) (ha' : n + a = a') (f : X ⟶ Y) :
     (shift F a').map f ≫ (shiftIso F n a a' ha').inv.app Y =
-      (shiftIso F n a a' ha').inv.app X ≫ (shift F a).map (f⟦n⟧') :=
-  (F.shiftIso n a a' ha').inv.naturality f
+      (shiftIso F n a a' ha').inv.app X ≫ (shift F a).map (f⟦n⟧') := by
+  simp
 
 variable (M)
 

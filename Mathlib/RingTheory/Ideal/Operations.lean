@@ -61,7 +61,7 @@ apply. -/
 protected theorem _root_.Ideal.smul_eq_mul (I J : Ideal R) : I • J = I * J :=
   rfl
 
-variable {I : Ideal R} {N : Submodule R M}
+variable {I J : Ideal R} {N : Submodule R M}
 
 theorem smul_le_right : I • N ≤ N :=
   smul_le.2 fun r _ _ ↦ N.smul_mem r
@@ -72,11 +72,14 @@ theorem map_le_smul_top (I : Ideal R) (f : R →ₗ[R] M) :
   rw [← mul_one y, ← smul_eq_mul, f.map_smul]
   exact smul_mem_smul hy mem_top
 
-variable (I N)
+variable (I J N)
 
 @[simp]
 theorem top_smul : (⊤ : Ideal R) • N = N :=
   le_antisymm smul_le_right fun r hri => one_smul R r ▸ smul_mem_smul mem_top hri
+
+protected theorem mul_smul : (I * J) • N = I • J • N :=
+  Submodule.smul_assoc _ _ _
 
 theorem mem_of_span_top_of_smul_mem (M' : Submodule R M) (s : Set R) (hs : Ideal.span s = ⊤) (x : M)
     (H : ∀ r : s, (r : R) • x ∈ M') : x ∈ M' := by
@@ -252,15 +255,26 @@ theorem mul_le : I * J ≤ K ↔ ∀ r ∈ I, ∀ s ∈ J, r * s ∈ K :=
   Submodule.smul_le
 
 theorem mul_le_left : I * J ≤ J :=
-  Ideal.mul_le.2 fun _ _ _ => J.mul_mem_left _
+  mul_le.2 fun _ _ _ => J.mul_mem_left _
 
 @[simp]
 theorem sup_mul_left_self : I ⊔ J * I = I :=
-  sup_eq_left.2 Ideal.mul_le_left
+  sup_eq_left.2 mul_le_left
 
 @[simp]
 theorem mul_left_self_sup : J * I ⊔ I = I :=
-  sup_eq_right.2 Ideal.mul_le_left
+  sup_eq_right.2 mul_le_left
+
+theorem mul_le_right [I.IsTwoSided] : I * J ≤ I :=
+  mul_le.2 fun _ hr _ _ ↦ I.mul_mem_right _ hr
+
+@[simp]
+theorem sup_mul_right_self [I.IsTwoSided] : I ⊔ I * J = I :=
+  sup_eq_left.2 mul_le_right
+
+@[simp]
+theorem mul_right_self_sup [I.IsTwoSided] : I * J ⊔ I = I :=
+  sup_eq_right.2 mul_le_right
 
 protected theorem mul_assoc : I * J * K = I * (J * K) :=
   Submodule.smul_assoc I J K
@@ -314,6 +328,33 @@ theorem pow_right_mono (e : I ≤ J) (n : ℕ) : I ^ n ≤ J ^ n := by
   · rw [Submodule.pow_succ, Submodule.pow_succ]
     exact Ideal.mul_mono hn e
 
+namespace IsTwoSided
+
+instance (priority := low) [J.IsTwoSided] : (I * J).IsTwoSided :=
+  ⟨fun b ha ↦ Submodule.mul_induction_on ha
+    (fun i hi j hj ↦ by rw [mul_assoc]; exact mul_mem_mul hi (mul_mem_right _ _ hj))
+    fun x y hx hy ↦ by rw [right_distrib]; exact add_mem hx hy⟩
+
+variable [I.IsTwoSided] (m n : ℕ)
+
+instance (priority := low) : (I ^ n).IsTwoSided :=
+  n.rec
+    (by rw [Submodule.pow_zero, one_eq_top]; infer_instance)
+    (fun _ _ ↦ by rw [Submodule.pow_succ]; infer_instance)
+
+protected theorem mul_one : I * 1 = I :=
+  mul_le_right.antisymm fun i hi ↦ mul_one i ▸ mul_mem_mul hi (one_eq_top (R := R) ▸ trivial)
+
+protected theorem pow_add : I ^ (m + n) = I ^ m * I ^ n := by
+  obtain rfl | h := eq_or_ne n 0
+  · rw [add_zero, Submodule.pow_zero, IsTwoSided.mul_one]
+  · exact Submodule.pow_add _ h
+
+protected theorem pow_succ : I ^ (n + 1) = I * I ^ n := by
+  rw [add_comm, IsTwoSided.pow_add, Submodule.pow_one]
+
+end IsTwoSided
+
 @[simp]
 theorem mul_eq_bot [NoZeroDivisors R] : I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ :=
   ⟨fun hij =>
@@ -352,29 +393,6 @@ theorem prod_mem_prod {ι : Type*} {s : Finset ι} {I : ι → Ideal R} {x : ι 
       exact
         mul_mem_mul (h a <| Finset.mem_insert_self a s)
           (IH fun i hi => h i <| Finset.mem_insert_of_mem hi)
-
-theorem mul_le_right : I * J ≤ I :=
-  Ideal.mul_le.2 fun _ hr _ _ => I.mul_mem_right _ hr
-
-#adaptation_note
-/--
-On nightly-2024-11-12, we had to add `nolint simpNF` to the following lemma,
-as otherwise we get a deterministic timeout in typeclass inference.
-This should be investigated.
--/
-@[simp, nolint simpNF]
-theorem sup_mul_right_self : I ⊔ I * J = I :=
-  sup_eq_left.2 Ideal.mul_le_right
-
-#adaptation_note
-/--
-On nightly-2024-11-12, we had to add `nolint simpNF` to the following lemma,
-as otherwise we get a deterministic timeout in typeclass inference.
-This should be investigated.
--/
-@[simp, nolint simpNF]
-theorem mul_right_self_sup : I * J ⊔ I = I :=
-  sup_eq_right.2 Ideal.mul_le_right
 
 lemma sup_pow_add_le_pow_sup_pow {n m : ℕ} : (I ⊔ J) ^ (n + m) ≤ I ^ n ⊔ J ^ m := by
   rw [← Ideal.add_eq_sup, ← Ideal.add_eq_sup, add_pow, Ideal.sum_eq_sup]
@@ -618,6 +636,10 @@ theorem isCoprime_iff_codisjoint : IsCoprime I J ↔ Codisjoint I J := by
     refine ⟨1, 1, ?_⟩
     simpa only [one_eq_top, top_mul, Submodule.add_eq_sup]
 
+theorem isCoprime_of_isMaximal [I.IsMaximal] [J.IsMaximal] (ne : I ≠ J) : IsCoprime I J := by
+  rw [isCoprime_iff_codisjoint, isMaximal_def] at *
+  exact IsCoatom.codisjoint_of_ne ‹_› ‹_› ne
+
 theorem isCoprime_iff_add : IsCoprime I J ↔ I + J = 1 := by
   rw [isCoprime_iff_codisjoint, codisjoint_iff, add_eq_sup, one_eq_top]
 
@@ -646,9 +668,6 @@ theorem _root_.IsCoprime.sup_eq (h : IsCoprime I J) : I ⊔ J = ⊤ := isCoprime
 
 theorem inf_eq_mul_of_isCoprime (coprime : IsCoprime I J) : I ⊓ J = I * J :=
   (Ideal.mul_eq_inf_of_coprime coprime.sup_eq).symm
-
-@[deprecated (since := "2024-05-28")]
-alias inf_eq_mul_of_coprime := inf_eq_mul_of_isCoprime
 
 theorem isCoprime_span_singleton_iff (x y : R) :
     IsCoprime (span <| singleton x) (span <| singleton y) ↔ IsCoprime x y := by
@@ -912,7 +931,7 @@ theorem IsPrime.prod_le {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp :
 /-- The product of a finite number of elements in the commutative semiring `R` lies in the
   prime ideal `p` if and only if at least one of those elements is in `p`. -/
 theorem IsPrime.prod_mem_iff {s : Finset ι} {x : ι → R} {p : Ideal R} [hp : p.IsPrime] :
-    ∏ i in s, x i ∈ p ↔ ∃ i ∈ s, x i ∈ p := by
+    ∏ i ∈ s, x i ∈ p ↔ ∃ i ∈ s, x i ∈ p := by
   simp_rw [← span_singleton_le_iff_mem, ← prod_span_singleton]
   exact hp.prod_le
 
@@ -1035,7 +1054,8 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
       exact hs <| Or.inr <| Set.mem_biUnion hjt <|
         add_sub_cancel_left r s ▸ (f j).sub_mem hj <| hr j hjt
 
-/-- Prime avoidance. Atiyah-Macdonald 1.11, Eisenbud 3.3, Stacks 00DS, Matsumura Ex.1.6. -/
+/-- Prime avoidance. Atiyah-Macdonald 1.11, Eisenbud 3.3, Matsumura Ex.1.6. -/
+@[stacks 00DS]
 theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι → Ideal R} (a b : ι)
     (hp : ∀ i ∈ s, i ≠ a → i ≠ b → IsPrime (f i)) {I : Ideal R} :
     ((I : Set R) ⊆ ⋃ i ∈ (↑s : Set ι), f i) ↔ ∃ i ∈ s, I ≤ f i :=
@@ -1187,6 +1207,10 @@ theorem Ideal.span_singleton_nonZeroDivisors {R : Type*} [CommSemiring R] [NoZer
   · rw [mem_nonZeroDivisors_iff_ne_zero, mem_nonZeroDivisors_iff_ne_zero, ne_eq, zero_eq_bot,
       span_singleton_eq_bot]
 
+theorem Ideal.primeCompl_le_nonZeroDivisors {R : Type*} [CommSemiring R] [NoZeroDivisors R]
+    (P : Ideal R) [P.IsPrime] : P.primeCompl ≤ nonZeroDivisors R :=
+  le_nonZeroDivisors_of_noZeroDivisors <| not_not_intro P.zero_mem
+
 namespace Submodule
 
 variable {R : Type u} {M : Type v}
@@ -1195,7 +1219,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 instance moduleSubmodule : Module (Ideal R) (Submodule R M) where
   smul_add := smul_sup
   add_smul := sup_smul
-  mul_smul := Submodule.smul_assoc
+  mul_smul := Submodule.mul_smul
   one_smul := by simp
   zero_smul := bot_smul
   smul_zero := smul_bot

@@ -30,8 +30,8 @@ The approach taken here is inspired by `Mathlib/Algebra/Opposites.lean`. We use 
 
 open Function
 
-/-- The symmetrized algebra has the same underlying space as the original algebra.
--/
+/-- The symmetrized algebra (denoted as `αˢʸᵐ`)
+has the same underlying space as the original algebra `α`. -/
 def SymAlg (α : Type*) : Type _ :=
   α
 

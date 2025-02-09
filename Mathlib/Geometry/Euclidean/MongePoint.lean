@@ -301,8 +301,7 @@ theorem eq_mongePoint_of_forall_mem_mongePlane {n : ℕ} {s : Simplex ℝ P (n +
     · rintro ⟨i, rfl⟩
       use i, ⟨Set.mem_univ _, i.property.symm⟩
     · rintro ⟨i, ⟨-, hi⟩, rfl⟩
-      -- Porting note: was `use ⟨i, hi.symm⟩, rfl`
-      exact ⟨⟨i, hi.symm⟩, rfl⟩
+      use ⟨i, hi.symm⟩
   rw [hu, ← vectorSpan_image_eq_span_vsub_set_left_ne ℝ _ (Set.mem_univ _), Set.image_univ] at hi
   have hv : p -ᵥ s.mongePoint ∈ vectorSpan ℝ (Set.range s.points) := by
     let s₁ : Finset (Fin (n + 3)) := univ.erase i₁

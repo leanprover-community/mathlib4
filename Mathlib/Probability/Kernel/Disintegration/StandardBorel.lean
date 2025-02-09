@@ -159,10 +159,6 @@ instance condKernelUnitReal.instIsCondKernel (κ : Kernel Unit (α × ℝ)) [IsF
     κ.IsCondKernel κ.condKernelUnitReal where
   disintegrate := by rw [condKernelUnitReal, compProd_toKernel]; ext; simp
 
-@[deprecated disintegrate (since := "2024-07-26")]
-lemma compProd_fst_condKernelUnitReal (κ : Kernel Unit (α × ℝ)) [IsFiniteKernel κ] :
-    fst κ ⊗ₖ condKernelUnitReal κ = κ := disintegrate _ _
-
 end Real
 
 section BorelSnd
@@ -327,10 +323,6 @@ instance condKernelBorel.instIsCondKernel (κ : Kernel α (γ × Ω)) [IsFiniteK
   disintegrate := by
     rw [condKernelBorel, compProd_fst_borelMarkovFromReal _ _ (compProd_fst_condKernelReal _)]
 
-@[deprecated disintegrate (since := "2024-07-26")]
-lemma compProd_fst_condKernelBorel (κ : Kernel α (γ × Ω)) [IsFiniteKernel κ] :
-    fst κ ⊗ₖ condKernelBorel κ = κ := disintegrate _ _
-
 end CountablyGenerated
 
 section Unit
@@ -351,10 +343,6 @@ instance instIsMarkovKernelCondKernelUnitBorel : IsMarkovKernel κ.condKernelUni
 instance condKernelUnitBorel.instIsCondKernel : κ.IsCondKernel κ.condKernelUnitBorel where
   disintegrate := by
     rw [condKernelUnitBorel, compProd_fst_borelMarkovFromReal _ _ (disintegrate _ _)]
-
-@[deprecated disintegrate (since := "2024-07-26")]
-lemma compProd_fst_condKernelUnitBorel (κ : Kernel Unit (α × Ω)) [IsFiniteKernel κ] :
-    fst κ ⊗ₖ condKernelUnitBorel κ = κ := disintegrate _ _
 
 end Unit
 
@@ -391,22 +379,6 @@ instance _root_.MeasureTheory.Measure.instIsMarkovKernelCondKernel
   rw [Measure.condKernel]
   infer_instance
 
-/-- **Disintegration** of finite product measures on `α × Ω`, where `Ω` is standard Borel. Such a
-measure can be written as the composition-product of `ρ.fst` (marginal measure over `α`) and
-a Markov kernel from `α` to `Ω`. We call that Markov kernel `ρ.condKernel`. -/
-@[deprecated Measure.disintegrate (since := "2024-07-24")]
-lemma _root_.MeasureTheory.Measure.compProd_fst_condKernel
-    (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ] :
-    ρ.fst ⊗ₘ ρ.condKernel = ρ := ρ.disintegrate ρ.condKernel
-
-set_option linter.unusedVariables false in
-/-- Auxiliary lemma for `condKernel_apply_of_ne_zero`. -/
-@[deprecated Measure.IsCondKernel.apply_of_ne_zero (since := "2024-07-24"), nolint unusedArguments]
-lemma _root_.MeasureTheory.Measure.condKernel_apply_of_ne_zero_of_measurableSet
-    [MeasurableSingletonClass α] {x : α} (hx : ρ.fst {x} ≠ 0) {s : Set Ω} (hs : MeasurableSet s) :
-    ρ.condKernel x s = (ρ.fst {x})⁻¹ * ρ ({x} ×ˢ s) :=
-  Measure.IsCondKernel.apply_of_ne_zero _ _ hx _
-
 /-- If the singleton `{x}` has non-zero mass for `ρ.fst`, then for all `s : Set Ω`,
 `ρ.condKernel x s = (ρ.fst {x})⁻¹ * ρ ({x} ×ˢ s)` . -/
 lemma _root_.MeasureTheory.Measure.condKernel_apply_of_ne_zero [MeasurableSingletonClass α]
@@ -415,17 +387,6 @@ lemma _root_.MeasureTheory.Measure.condKernel_apply_of_ne_zero [MeasurableSingle
   Measure.IsCondKernel.apply_of_ne_zero _ _ hx _
 
 end Measure
-
-section Countable
-
-variable [Countable α]
-
-@[deprecated disintegrate (since := "2024-07-24")]
-lemma compProd_fst_condKernelCountable (κ : Kernel α (β × Ω)) [IsFiniteKernel κ] :
-    fst κ ⊗ₖ condKernelCountable (fun a ↦ (κ a).condKernel)
-      (fun x y h ↦ by simp [apply_congr_of_mem_measurableAtom _ h]) = κ := disintegrate _ _
-
-end Countable
 
 section CountableOrCountablyGenerated
 variable [h : CountableOrCountablyGenerated α β] (κ : Kernel α (β × Ω)) [IsFiniteKernel κ]
@@ -450,11 +411,6 @@ instance instIsMarkovKernelCondKernel : IsMarkovKernel (condKernel κ) := by
 
 instance condKernel.instIsCondKernel : κ.IsCondKernel κ.condKernel where
   disintegrate := by rw [condKernel_def]; split_ifs with hα <;> exact disintegrate _ _
-
-/-- **Disintegration** of finite kernels.
-The composition-product of `fst κ` and `condKernel κ` is equal to `κ`. -/
-@[deprecated Kernel.disintegrate (since := "2024-07-26")]
-lemma compProd_fst_condKernel : fst κ ⊗ₖ condKernel κ = κ := κ.disintegrate κ.condKernel
 
 end CountableOrCountablyGenerated
 

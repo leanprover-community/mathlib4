@@ -52,6 +52,10 @@ theorem continuousSMul_of_algebraMap [TopologicalSemiring A] (h : Continuous (al
     ContinuousSMul R A :=
   ⟨(continuous_algebraMap_iff_smul R A).1 h⟩
 
+instance Subalgebra.continuousSMul (S : Subalgebra R A) (X) [TopologicalSpace X] [MulAction A X]
+    [ContinuousSMul A X] : ContinuousSMul S X :=
+  Subsemiring.continuousSMul S.toSubsemiring X
+
 section
 variable [ContinuousSMul R A]
 
@@ -191,7 +195,7 @@ theorem map_smul_of_tower {R S : Type*} [CommSemiring S] [SMul R A] [Algebra S A
   map_smul f c x
 
 protected theorem map_sum {ι : Type*} (f : A →A[R] B) (s : Finset ι) (g : ι → A) :
-    f (∑ i in s, g i) = ∑ i in s, f (g i) :=
+    f (∑ i ∈ s, g i) = ∑ i ∈ s, f (g i) :=
   map_sum ..
 
 /-- Any two continuous `R`-algebra morphisms from `R` are equal -/

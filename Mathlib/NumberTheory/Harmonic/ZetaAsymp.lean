@@ -368,8 +368,7 @@ lemma tendsto_Gamma_term_aux : Tendsto (fun s ↦ 1 / (s - 1) - 1 / Gammaℝ s /
     simp only [mem_preimage, one_re, mem_Ioi, zero_lt_one]
   rw [EventuallyEq, eventually_nhdsWithin_iff]
   filter_upwards [this] with a ha _
-  rw [Pi.div_apply, ← sub_div, div_right_comm, sub_div' _ _ _ (Gammaℝ_ne_zero_of_re_pos ha),
-    one_mul]
+  rw [Pi.div_apply, ← sub_div, div_right_comm, sub_div' (Gammaℝ_ne_zero_of_re_pos ha), one_mul]
 
 lemma tendsto_riemannZeta_sub_one_div_Gammaℝ :
     Tendsto (fun s ↦ riemannZeta s - 1 / Gammaℝ s / (s - 1)) (𝓝[≠] 1)

@@ -67,7 +67,7 @@ git checkout "${currCommit}"
 
 printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</details>\n' "$(
   printf "|Files|Import difference|\n|-|-|\n"
-  (awk -F, -v all="${all}" -v ghLimit='261752' -v newFiles="$(
+  (gawk -F, -v all="${all}" -v ghLimit='261752' -v newFiles="$(
       # we pass the "A"dded files with respect to master, converting them to module names
       git diff --name-only --diff-filter=A master | tr '\n' , | sed 's=\.lean,=,=g; s=/=.=g'
     )" '

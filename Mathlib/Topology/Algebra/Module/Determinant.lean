@@ -20,6 +20,12 @@ noncomputable abbrev det {R : Type*} [CommRing R] {M : Type*} [TopologicalSpace 
     [Module R M] (A : M →L[R] M) : R :=
   LinearMap.det (A : M →ₗ[R] M)
 
+theorem det_pi {ι R M : Type*} [Fintype ι] [CommRing R] [AddCommGroup M]
+    [TopologicalSpace M] [Module R M] [Module.Free R M] [Module.Finite R M]
+    (f : ι → M →L[R] M) :
+    (pi (fun i ↦ (f i).comp (proj i))).det = ∏ i, (f i).det :=
+  LinearMap.det_pi _
+
 end ContinuousLinearMap
 
 namespace ContinuousLinearEquiv

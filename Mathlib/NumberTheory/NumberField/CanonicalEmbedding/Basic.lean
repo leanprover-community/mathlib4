@@ -309,10 +309,9 @@ end commMap
 
 noncomputable section norm
 
-open scoped Classical
-
 variable {K}
 
+open scoped Classical in
 /-- The norm at the infinite place `w` of an element of the mixed space. --/
 def normAtPlace (w : InfinitePlace K) : (mixedSpace K) →*₀ ℝ where
   toFun x := if hw : IsReal w then ‖x.1 ⟨w, hw⟩‖ else ‖x.2 ⟨w, not_isReal_iff_isComplex.mp hw⟩‖
@@ -380,6 +379,7 @@ theorem exists_normAtPlace_ne_zero_iff {x : mixedSpace K} :
 
 variable [NumberField K]
 
+open scoped Classical in
 theorem nnnorm_eq_sup_normAtPlace (x : mixedSpace K) :
     ‖x‖₊ = univ.sup fun w ↦ ⟨normAtPlace w x, normAtPlace_nonneg w x⟩ := by
   have :
@@ -395,6 +395,7 @@ theorem nnnorm_eq_sup_normAtPlace (x : mixedSpace K) :
   · ext w
     simp [normAtPlace_apply_isComplex w.prop]
 
+open scoped Classical in
 theorem norm_eq_sup'_normAtPlace (x : mixedSpace K) :
     ‖x‖ = univ.sup' univ_nonempty fun w ↦ normAtPlace w x := by
   rw [← coe_nnnorm, nnnorm_eq_sup_normAtPlace, ← sup'_eq_sup univ_nonempty, ← NNReal.val_eq_coe,
@@ -460,8 +461,6 @@ end norm
 
 noncomputable section stdBasis
 
-open scoped Classical
-
 open Complex MeasureTheory MeasureTheory.Measure ZSpan Matrix ComplexConjugate
 
 variable [NumberField K]
@@ -469,6 +468,7 @@ variable [NumberField K]
 /-- The type indexing the basis `stdBasis`. -/
 abbrev index := {w : InfinitePlace K // IsReal w} ⊕ ({w : InfinitePlace K // IsComplex w}) × (Fin 2)
 
+open scoped Classical in
 /-- The `ℝ`-basis of the mixed space of `K` formed by the vector equal to `1` at `w` and `0`
 elsewhere for `IsReal w` and by the couple of vectors equal to `1` (resp. `I`) at `w` and `0`
 elsewhere for `IsComplex w`. -/
@@ -494,6 +494,7 @@ theorem stdBasis_apply_ofIsComplex_snd (x : mixedSpace K)
 
 variable (K)
 
+open scoped Classical in
 theorem fundamentalDomain_stdBasis :
     fundamentalDomain (stdBasis K) =
         (Set.univ.pi fun _ => Set.Ico 0 1) ×ˢ
@@ -501,6 +502,7 @@ theorem fundamentalDomain_stdBasis :
   ext
   simp [stdBasis, mem_fundamentalDomain, Complex.measurableEquivPi]
 
+open scoped Classical in
 theorem volume_fundamentalDomain_stdBasis :
     volume (fundamentalDomain (stdBasis K)) = 1 := by
   rw [fundamentalDomain_stdBasis, volume_eq_prod, prod_prod, volume_pi, volume_pi, pi_pi, pi_pi,
@@ -508,6 +510,7 @@ theorem volume_fundamentalDomain_stdBasis :
     sub_zero, ENNReal.ofReal_one, prod_const_one, prod_const_one, prod_const_one, one_mul]
   exact (MeasurableSet.pi Set.countable_univ (fun _ _ => measurableSet_Ico)).nullMeasurableSet
 
+open scoped Classical in
 /-- The `Equiv` between `index K` and `K →+* ℂ` defined by sending a real infinite place `w` to
 the unique corresponding embedding `w.embedding`, and the pair `⟨w, 0⟩` (resp. `⟨w, 1⟩`) for a
 complex infinite place `w` to `w.embedding` (resp. `conjugate w.embedding`). -/
@@ -544,6 +547,7 @@ theorem indexEquiv_apply_ofIsComplex_snd (w : {w : InfinitePlace K // IsComplex 
 
 variable (K)
 
+open scoped Classical in
 /-- The matrix that gives the representation on `stdBasis` of the image by `commMap` of an
 element `x` of `(K →+* ℂ) → ℂ` fixed by the map `x_φ ↦ conj x_(conjugate φ)`,
 see `stdBasis_repr_eq_matrixToStdBasis_mul`. -/
@@ -551,6 +555,7 @@ def matrixToStdBasis : Matrix (index K) (index K) ℂ :=
   fromBlocks (diagonal fun _ => 1) 0 0 <| reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _)
     (blockDiagonal (fun _ => (2 : ℂ)⁻¹ • !![1, 1; - I, I]))
 
+open scoped Classical in
 theorem det_matrixToStdBasis :
     (matrixToStdBasis K).det = (2⁻¹ * I) ^ nrComplexPlaces K :=
   calc
@@ -563,6 +568,7 @@ theorem det_matrixToStdBasis :
   _ = (2⁻¹ * Complex.I) ^ Fintype.card {w : InfinitePlace K // IsComplex w} := by
       rw [prod_const, Fintype.card]
 
+open scoped Classical in
 /-- Let `x : (K →+* ℂ) → ℂ` such that `x_φ = conj x_(conj φ)` for all `φ : K →+* ℂ`, then the
 representation of `commMap K x` on `stdBasis` is given (up to reindexing) by the product of
 `matrixToStdBasis` by `x`. -/
@@ -957,10 +963,9 @@ theorem negAt_signSet_apply_of_isComplex (x : mixedSpace K) (w : {w // IsComplex
 variable (A : Set (mixedSpace K)) {x : mixedSpace K}
 
 variable (s) in
- /-- `negAt s A` is also equal to the preimage of `A` by `negAt s`. This fact is used to simplify
- some proofs. -/
- theorem negAt_preimage :
-    negAt s ⁻¹' A = negAt s '' A := by
+/-- `negAt s A` is also equal to the preimage of `A` by `negAt s`. This fact is used to simplify
+some proofs. -/
+theorem negAt_preimage : negAt s ⁻¹' A = negAt s '' A := by
   rw [ContinuousLinearEquiv.image_eq_preimage, negAt_symm]
 
 /-- The `plusPart` of a subset `A` of the `mixedSpace` is the set of points in `A` that are
@@ -973,19 +978,18 @@ theorem neg_of_mem_negA_plusPart (hx : x ∈ negAt s '' (plusPart A)) {w : {w //
   rw [negAt_apply_of_isReal_and_mem _ hw, neg_lt_zero]
   exact hy.2 w
 
- theorem pos_of_not_mem_negAt_plusPart (hx : x ∈ negAt s '' (plusPart A)) {w : {w // IsReal w}}
+theorem pos_of_not_mem_negAt_plusPart (hx : x ∈ negAt s '' (plusPart A)) {w : {w // IsReal w}}
     (hw : w ∉ s) : 0 < x.1 w := by
   obtain ⟨y, hy, rfl⟩ := hx
   rw [negAt_apply_of_isReal_and_not_mem _ hw]
   exact hy.2 w
 
 open scoped Function in -- required for scoped `on` notation
- /-- The images of `plusPart` by `negAt` are pairwise disjoint. -/
- theorem disjoint_negAt_plusPart : Pairwise (Disjoint on (fun s ↦ negAt s '' (plusPart A))) := by
+/-- The images of `plusPart` by `negAt` are pairwise disjoint. -/
+theorem disjoint_negAt_plusPart : Pairwise (Disjoint on (fun s ↦ negAt s '' (plusPart A))) := by
   intro s t hst
   refine Set.disjoint_left.mpr fun _ hx hx' ↦ ?_
-  obtain ⟨w, hw | hw⟩ : ∃ w, (w ∈ s ∧ w ∉ t) ∨ (w ∈ t ∧ w ∉ s) := by
-    exact Set.symmDiff_nonempty.mpr hst
+  obtain ⟨w, hw | hw⟩ : ∃ w, (w ∈ s ∧ w ∉ t) ∨ (w ∈ t ∧ w ∉ s) := Set.symmDiff_nonempty.mpr hst
   · exact lt_irrefl _ <|
       (neg_of_mem_negA_plusPart A hx hw.1).trans (pos_of_not_mem_negAt_plusPart A hx' hw.2)
   · exact lt_irrefl _ <|

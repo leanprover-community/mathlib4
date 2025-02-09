@@ -7,8 +7,8 @@ import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Algebra.MonoidAlgebra.Defs
-import Mathlib.Data.Finsupp.Basic
+import Mathlib.Algebra.MonoidAlgebra.MapDomain
+import Mathlib.Data.Finsupp.SMul
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 
 /-!
@@ -138,6 +138,17 @@ theorem single_eq_algebraMap_mul_of [CommSemiring k] [Monoid G] (a : G) (b : k) 
 theorem single_algebraMap_eq_algebraMap_mul_of {A : Type*} [CommSemiring k] [Semiring A]
     [Algebra k A] [Monoid G] (a : G) (b : k) :
     single a (algebraMap k A b) = algebraMap k (MonoidAlgebra A G) b * of A G a := by simp
+
+instance isLocalHom_singleOneAlgHom
+    {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Monoid G] :
+    IsLocalHom (singleOneAlgHom : A →ₐ[k] MonoidAlgebra A G) where
+  map_nonunit := isLocalHom_singleOneRingHom.map_nonunit
+
+instance isLocalHom_algebraMap
+    {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Monoid G]
+    [IsLocalHom (algebraMap k A)] :
+    IsLocalHom (algebraMap k (MonoidAlgebra A G)) where
+  map_nonunit _ hx := .of_map _ _ <| isLocalHom_singleOneAlgHom (k := k).map_nonunit _ hx
 
 end Algebra
 
@@ -409,6 +420,15 @@ def singleZeroAlgHom [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] :
 theorem coe_algebraMap [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] :
     (algebraMap R k[G] : R → k[G]) = single 0 ∘ algebraMap R k :=
   rfl
+
+instance isLocalHom_singleZeroAlgHom [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] :
+    IsLocalHom (singleZeroAlgHom : k →ₐ[R] k[G]) where
+  map_nonunit := isLocalHom_singleZeroRingHom.map_nonunit
+
+instance isLocalHom_algebraMap [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G]
+    [IsLocalHom (algebraMap R k)] :
+    IsLocalHom (algebraMap R k[G]) where
+  map_nonunit _ hx := .of_map _ _ <| isLocalHom_singleZeroAlgHom (R := R).map_nonunit _ hx
 
 end Algebra
 

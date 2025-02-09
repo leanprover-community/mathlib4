@@ -7,6 +7,8 @@ import Mathlib.CategoryTheory.Limits.FinallySmall
 import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Filtered.Small
 import Mathlib.CategoryTheory.ClosedUnderIsomorphisms
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
 
 /-!
 # Ind-objects
@@ -41,6 +43,8 @@ The recommended alternative is to consider ind-objects over `ULiftHom.{w} C` ins
 universe v v' u u'
 
 namespace CategoryTheory.Limits
+
+section NonSmall
 
 variable {C : Type u} [Category.{v} C]
 
@@ -184,5 +188,24 @@ embedding is an ind-object. -/
 theorem isIndObject_limit_comp_yoneda {J : Type u'} [Category.{v'} J] (F : J ⥤ C) [HasLimit F] :
     IsIndObject (limit (F ⋙ yoneda)) :=
   IsIndObject.map (preservesLimitIso yoneda F).hom (isIndObject_yoneda (limit F))
+
+end NonSmall
+
+section Small
+
+variable {C : Type u} [SmallCategory C]
+
+/-- Presheaves over a small finitely cocomplete category `C : Type u` are Ind-objects if and only if
+they are left-exact. -/
+lemma isIndObject_iff_preservesFiniteLimits [HasFiniteColimits C] (A : Cᵒᵖ ⥤ Type u) :
+    IsIndObject A ↔ PreservesFiniteLimits A :=
+  (isIndObject_iff A).trans <| by
+    refine ⟨fun ⟨h₁, h₂⟩ => ?_, fun h => ⟨?_, ?_⟩⟩
+    · apply preservesFiniteLimits_of_isFiltered_costructuredArrow_yoneda
+    · exact isFiltered_costructuredArrow_yoneda_of_preservesFiniteLimits A
+    · have := essentiallySmallSelf (CostructuredArrow yoneda A)
+      apply finallySmall_of_essentiallySmall
+
+end Small
 
 end CategoryTheory.Limits

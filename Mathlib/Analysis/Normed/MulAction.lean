@@ -23,7 +23,7 @@ variable {α β : Type*}
 section SeminormedAddGroup
 
 variable [SeminormedAddGroup α] [SeminormedAddGroup β] [SMulZeroClass α β]
-variable [BoundedSMul α β]
+variable [BoundedSMul α β] {r : α} {x : β}
 
 @[bound]
 theorem norm_smul_le (r : α) (x : β) : ‖r • x‖ ≤ ‖r‖ * ‖x‖ := by
@@ -32,6 +32,10 @@ theorem norm_smul_le (r : α) (x : β) : ‖r • x‖ ≤ ‖r‖ * ‖x‖ := 
 @[bound]
 theorem nnnorm_smul_le (r : α) (x : β) : ‖r • x‖₊ ≤ ‖r‖₊ * ‖x‖₊ :=
   norm_smul_le _ _
+
+@[bound]
+lemma enorm_smul_le : ‖r • x‖ₑ ≤ ‖r‖ₑ * ‖x‖ₑ := by
+  simpa [enorm, ← ENNReal.coe_mul] using nnnorm_smul_le ..
 
 theorem dist_smul_le (s : α) (x y : β) : dist (s • x) (s • y) ≤ ‖s‖ * dist x y := by
   simpa only [dist_eq_norm, sub_zero] using dist_smul_pair s x y
@@ -90,6 +94,8 @@ theorem norm_smul (r : α) (x : β) : ‖r • x‖ = ‖r‖ * ‖x‖ := by
 
 theorem nnnorm_smul (r : α) (x : β) : ‖r • x‖₊ = ‖r‖₊ * ‖x‖₊ :=
   NNReal.eq <| norm_smul r x
+
+lemma enorm_smul (r : α) (x : β) : ‖r • x‖ₑ = ‖r‖ₑ * ‖x‖ₑ := by simp [enorm, nnnorm_smul]
 
 end NormedDivisionRing
 

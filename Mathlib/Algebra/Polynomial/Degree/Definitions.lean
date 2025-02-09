@@ -174,18 +174,12 @@ theorem natDegree_one : natDegree (1 : R[X]) = 0 :=
 theorem natDegree_natCast (n : ℕ) : natDegree (n : R[X]) = 0 := by
   simp only [← C_eq_natCast, natDegree_C]
 
-@[deprecated (since := "2024-04-17")]
-alias natDegree_nat_cast := natDegree_natCast
-
 @[simp]
 theorem natDegree_ofNat (n : ℕ) [Nat.AtLeastTwo n] :
     natDegree (ofNat(n) : R[X]) = 0 :=
   natDegree_natCast _
 
 theorem degree_natCast_le (n : ℕ) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
-
-@[deprecated (since := "2024-04-17")]
-alias degree_nat_cast_le := degree_natCast_le
 
 @[simp]
 theorem degree_monomial (n : ℕ) (ha : a ≠ 0) : degree (monomial n a) = n := by
@@ -287,13 +281,7 @@ theorem natDegree_neg_le_of_le {p : R[X]} (hp : natDegree p ≤ m) : natDegree (
 theorem natDegree_intCast (n : ℤ) : natDegree (n : R[X]) = 0 := by
   rw [← C_eq_intCast, natDegree_C]
 
-@[deprecated (since := "2024-04-17")]
-alias natDegree_int_cast := natDegree_intCast
-
 theorem degree_intCast_le (n : ℤ) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
-
-@[deprecated (since := "2024-04-17")]
-alias degree_int_cast_le := degree_intCast_le
 
 @[simp]
 theorem leadingCoeff_neg (p : R[X]) : (-p).leadingCoeff = -p.leadingCoeff := by

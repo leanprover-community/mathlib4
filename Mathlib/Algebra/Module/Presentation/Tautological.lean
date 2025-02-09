@@ -33,7 +33,7 @@ inductive tautological.R
 noncomputable def tautologicalRelations : Relations A where
   G := M
   R := tautological.R A M
-  relation r := match r with
+  relation
     | .add m₁ m₂ => Finsupp.single m₁ 1 + Finsupp.single m₂ 1 - Finsupp.single (m₁ + m₂) 1
     | .smul a m => a • Finsupp.single m 1 - Finsupp.single (a • m) 1
 

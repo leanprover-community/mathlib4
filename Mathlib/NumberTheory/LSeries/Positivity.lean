@@ -17,7 +17,7 @@ The main results of this file are as follows.
   when `x : ℝ` is in the open half-plane of absolute convergence; see
   `LSeries.positive` and `ArithmeticFunction.LSeries_positive`.
 
-* If in addition the L_series of `a` agrees on some open right half-plane where it
+* If in addition the L-series of `a` agrees on some open right half-plane where it
   converges with an entire function `f`, then `f` is positive on the real axis;
   see `LSeries.positive_of_eq_differentiable` and
   `ArithmeticFunction.LSeries_positive_of_eq_differentiable`.

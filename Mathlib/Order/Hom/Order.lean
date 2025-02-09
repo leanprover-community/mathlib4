@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Anne Baanen
 -/
 import Mathlib.Logic.Function.Iterate
-import Mathlib.Order.GaloisConnection
+import Mathlib.Order.GaloisConnection.Basic
 import Mathlib.Order.Hom.Basic
 
 /-!

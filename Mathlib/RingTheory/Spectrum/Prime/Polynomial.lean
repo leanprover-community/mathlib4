@@ -146,10 +146,10 @@ lemma mem_image_comap_C_basicOpen (f : R[X]) (x : PrimeSpectrum R) :
   · simp [Polynomial.ext_iff]
 
 lemma image_comap_C_basicOpen (f : R[X]) :
-      comap C '' basicOpen f = (zeroLocus (Set.range f.coeff))ᶜ := by
-    ext p
-    rw [mem_image_comap_C_basicOpen]
-    simp [Set.range_subset_iff]
+    comap C '' basicOpen f = (zeroLocus (Set.range f.coeff))ᶜ := by
+  ext p
+  rw [mem_image_comap_C_basicOpen]
+  simp [Set.range_subset_iff]
 
 lemma isOpenMap_comap_C : IsOpenMap (comap (R := R) C) := by
   intro U hU
@@ -160,6 +160,12 @@ lemma isOpenMap_comap_C : IsOpenMap (comap (R := R) C) := by
   obtain ⟨r, rfl⟩ := hS ht
   simp only [image_comap_C_basicOpen]
   exact (isClosed_zeroLocus _).isOpen_compl
+
+lemma comap_C_surjective : Function.Surjective (comap (R := R) C) := by
+  intro x
+  refine ⟨comap (evalRingHom 0) x, ?_⟩
+  rw [← comap_comp_apply, (show (evalRingHom 0).comp C = .id R by ext; simp),
+    comap_id, ContinuousMap.id_apply]
 
 lemma exists_image_comap_of_monic (f g : R[X]) (hg : g.Monic) :
     ∃ t : Finset R, comap C '' (zeroLocus {g} \ zeroLocus {f}) = (zeroLocus t)ᶜ := by
@@ -203,10 +209,10 @@ lemma mem_image_comap_C_basicOpen (f : MvPolynomial σ R) (x : PrimeSpectrum R) 
   · simp [MvPolynomial.ext_iff, coeff_map]
 
 lemma image_comap_C_basicOpen (f : MvPolynomial σ R) :
-      comap (C (σ := σ)) '' basicOpen f = (zeroLocus (Set.range f.coeff))ᶜ := by
-    ext p
-    rw [mem_image_comap_C_basicOpen]
-    simp [Set.range_subset_iff]
+    comap (C (σ := σ)) '' basicOpen f = (zeroLocus (Set.range f.coeff))ᶜ := by
+  ext p
+  rw [mem_image_comap_C_basicOpen]
+  simp [Set.range_subset_iff]
 
 lemma isOpenMap_comap_C : IsOpenMap (comap (R := R) (C (σ := σ))) := by
   intro U hU
@@ -217,5 +223,11 @@ lemma isOpenMap_comap_C : IsOpenMap (comap (R := R) (C (σ := σ))) := by
   obtain ⟨r, rfl⟩ := hS ht
   simp only [image_comap_C_basicOpen]
   exact (isClosed_zeroLocus _).isOpen_compl
+
+lemma comap_C_surjective : Function.Surjective (comap (R := R) (C (σ := σ))) := by
+  intro x
+  refine ⟨comap (eval₂Hom (.id _) 0) x, ?_⟩
+  rw [← comap_comp_apply, (show (eval₂Hom (.id _) 0).comp C = .id R by ext; simp),
+    comap_id, ContinuousMap.id_apply]
 
 end MvPolynomial

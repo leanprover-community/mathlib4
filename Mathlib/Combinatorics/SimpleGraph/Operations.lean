@@ -148,6 +148,9 @@ def edge : SimpleGraph V := fromEdgeSet {s(s, t)}
 lemma edge_adj (v w : V) : (edge s t).Adj v w ↔ (v = s ∧ w = t ∨ v = t ∧ w = s) ∧ v ≠ w := by
   rw [edge, fromEdgeSet_adj, Set.mem_singleton_iff, Sym2.eq_iff]
 
+lemma edge_comm : edge s t = edge t s := by
+  rw [edge, edge, Sym2.eq_swap]
+
 variable [DecidableEq V] in
 instance : DecidableRel (edge s t).Adj := fun _ _ ↦ by
   rw [edge_adj]; infer_instance
@@ -158,6 +161,9 @@ lemma edge_self_eq_bot : edge s s = ⊥ := by
 @[simp]
 lemma sup_edge_self : G ⊔ edge s s = G := by
   rw [edge_self_eq_bot, sup_of_le_left bot_le]
+
+lemma lt_sup_edge (hne : s ≠ t) (hn : ¬ G.Adj s t) : G < G ⊔ edge s t :=
+  left_lt_sup.2 fun h ↦ hn <| h <| (edge_adj ..).mpr ⟨Or.inl ⟨rfl, rfl⟩, hne⟩
 
 variable {s t}
 

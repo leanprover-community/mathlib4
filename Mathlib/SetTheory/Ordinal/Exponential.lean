@@ -21,16 +21,24 @@ universe u v w
 
 namespace Ordinal
 
-/-- The ordinal exponential, defined by transfinite recursion. -/
-instance pow : Pow Ordinal Ordinal :=
-  ⟨fun a b => if a = 0 then 1 - b else limitRecOn b 1 (fun _ IH => IH * a) fun b _ => bsup.{u, u} b⟩
+/-- The ordinal exponential, defined by transfinite recursion.
 
-theorem opow_def (a b : Ordinal) :
-    a ^ b = if a = 0 then 1 - b else limitRecOn b 1 (fun _ IH => IH * a) fun b _ => bsup.{u, u} b :=
-  rfl
+We call this `opow` in theorems in order to disambiguate from other exponentials. -/
+instance instPow : Pow Ordinal Ordinal :=
+  ⟨fun a b ↦ if a = 0 then 1 - b else
+    limitRecOn b 1 (fun _ x ↦ x * a) fun o _ f ↦ ⨆ x : Iio o, f x.1 x.2⟩
 
--- Porting note: `if_pos rfl` → `if_true`
-theorem zero_opow' (a : Ordinal) : 0 ^ a = 1 - a := by simp only [opow_def, if_true]
+private theorem opow_of_ne_zero {a b : Ordinal} (h : a ≠ 0) : a ^ b =
+    limitRecOn b 1 (fun _ x ↦ x * a) fun o _ f ↦ ⨆ x : Iio o, f x.1 x.2 :=
+  if_neg h
+
+/-- `0 ^ a = 1` if `a = 0` and `0 ^ a = 0` otherwise. -/
+theorem zero_opow' (a : Ordinal) : 0 ^ a = 1 - a :=
+  if_pos rfl
+
+theorem zero_opow_le (a : Ordinal) : (0 : Ordinal) ^ a ≤ 1 := by
+  rw [zero_opow']
+  exact sub_le_self 1 a
 
 @[simp]
 theorem zero_opow {a : Ordinal} (a0 : a ≠ 0) : (0 : Ordinal) ^ a = 0 := by
@@ -38,29 +46,34 @@ theorem zero_opow {a : Ordinal} (a0 : a ≠ 0) : (0 : Ordinal) ^ a = 0 := by
 
 @[simp]
 theorem opow_zero (a : Ordinal) : a ^ (0 : Ordinal) = 1 := by
-  by_cases h : a = 0
-  · simp only [opow_def, if_pos h, sub_zero]
-  · simp only [opow_def, if_neg h, limitRecOn_zero]
+  obtain rfl | h := eq_or_ne a 0
+  · rw [zero_opow', Ordinal.sub_zero]
+  · rw [opow_of_ne_zero h, limitRecOn_zero]
 
 @[simp]
-theorem opow_succ (a b : Ordinal) : a ^ succ b = a ^ b * a :=
-  if h : a = 0 then by subst a; simp only [zero_opow (succ_ne_zero _), mul_zero]
-  else by simp only [opow_def, limitRecOn_succ, if_neg h]
+theorem opow_succ (a b : Ordinal) : a ^ succ b = a ^ b * a := by
+  obtain rfl | h := eq_or_ne a 0
+  · rw [zero_opow (succ_ne_zero b), mul_zero]
+  · rw [opow_of_ne_zero h, opow_of_ne_zero h, limitRecOn_succ]
 
-theorem opow_limit {a b : Ordinal} (a0 : a ≠ 0) (h : IsLimit b) :
-    a ^ b = bsup.{u, u} b fun c _ => a ^ c := by
-  simp only [opow_def, if_neg a0]; rw [limitRecOn_limit _ _ _ _ h]
+theorem opow_limit {a b : Ordinal} (ha : a ≠ 0) (hb : IsLimit b) :
+    a ^ b = ⨆ x : Iio b, a ^ x.1 := by
+  simp_rw [opow_of_ne_zero ha, limitRecOn_limit _ _ _ _ hb]
 
 theorem opow_le_of_limit {a b c : Ordinal} (a0 : a ≠ 0) (h : IsLimit b) :
-    a ^ b ≤ c ↔ ∀ b' < b, a ^ b' ≤ c := by rw [opow_limit a0 h, bsup_le_iff]
+    a ^ b ≤ c ↔ ∀ b' < b, a ^ b' ≤ c := by
+  rw [opow_limit a0 h, Ordinal.iSup_le_iff, Subtype.forall]
+  rfl
 
 theorem lt_opow_of_limit {a b c : Ordinal} (b0 : b ≠ 0) (h : IsLimit c) :
     a < b ^ c ↔ ∃ c' < c, a < b ^ c' := by
-  rw [← not_iff_not, not_exists]; simp only [not_lt, opow_le_of_limit b0 h, exists_prop, not_and]
+  rw [← not_iff_not, not_exists]
+  simp only [not_lt, opow_le_of_limit b0 h, exists_prop, not_and]
 
 @[simp]
 theorem opow_one (a : Ordinal) : a ^ (1 : Ordinal) = a := by
-  rw [← succ_zero, opow_succ]; simp only [opow_zero, one_mul]
+  rw [← succ_zero, opow_succ]
+  simp only [opow_zero, one_mul]
 
 @[simp]
 theorem one_opow (a : Ordinal) : (1 : Ordinal) ^ a = 1 := by
@@ -317,8 +330,7 @@ theorem lt_opow_succ_log_self {b : Ordinal} (hb : 1 < b) (x : Ordinal) :
 
 theorem opow_log_le_self (b : Ordinal) {x : Ordinal} (hx : x ≠ 0) : b ^ log b x ≤ x := by
   rcases eq_or_ne b 0 with (rfl | b0)
-  · rw [zero_opow']
-    exact (sub_le_self _ _).trans (one_le_iff_ne_zero.2 hx)
+  · exact (zero_opow_le _).trans (one_le_iff_ne_zero.2 hx)
   rcases lt_or_eq_of_le (one_le_iff_ne_zero.2 b0) with (hb | rfl)
   · refine le_of_not_lt fun h => (lt_succ (log b x)).not_le ?_
     have := @csInf_le' _ _ { o | x < b ^ o } _ h

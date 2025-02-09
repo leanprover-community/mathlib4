@@ -198,7 +198,7 @@ attribute [-instance] Fintype.decidableForallFintype
 
 Note that this does depend on the order of the ground set, unlike the Kruskal-Katona theorem itself
 (although `kruskal_katona` currently is stated in an order-dependent manner). -/
-private def familyMeasure (𝒜 : Finset (Finset (Fin n))) : ℕ := ∑ A in 𝒜, ∑ a in A, 2 ^ (a : ℕ)
+private def familyMeasure (𝒜 : Finset (Finset (Fin n))) : ℕ := ∑ A ∈ 𝒜, ∑ a ∈ A, 2 ^ (a : ℕ)
 
 /-- Applying a compression strictly decreases the measure. This helps show that "compress until we
 can't any more" is a terminating process. -/

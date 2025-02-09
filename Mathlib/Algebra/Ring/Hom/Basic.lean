@@ -6,7 +6,7 @@ Authors: Amelia Livingston, Jireh Loreaux
 import Mathlib.Algebra.Divisibility.Hom
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Insert
 
 /-!
 # Additional lemmas about homomorphisms of semirings and rings

@@ -212,15 +212,16 @@ section
 
 /-- The continuous function from the basic open set `D(f)` in `Proj`
 to the corresponding basic open set in `Spec A⁰_f`. -/
-@[simps! (config := .lemmasOnly) apply_asIdeal]
-def toSpec (f : A) : (Proj.T| pbo f) ⟶ Spec.T A⁰_ f where
-  toFun := ToSpec.toFun f
-  continuous_toFun := by
-    rw [PrimeSpectrum.isTopologicalBasis_basic_opens.continuous_iff]
-    rintro _ ⟨x, rfl⟩
-    obtain ⟨x, rfl⟩ := Quotient.mk''_surjective x
-    rw [ToSpec.preimage_basicOpen]
-    exact (pbo x.num).2.preimage continuous_subtype_val
+@[simps! (config := .lemmasOnly) hom_apply_asIdeal]
+def toSpec (f : A) : (Proj.T| pbo f) ⟶ Spec.T A⁰_ f :=
+  TopCat.ofHom
+  { toFun := ToSpec.toFun f
+    continuous_toFun := by
+      rw [PrimeSpectrum.isTopologicalBasis_basic_opens.continuous_iff]
+      rintro _ ⟨x, rfl⟩
+      obtain ⟨x, rfl⟩ := Quotient.mk''_surjective x
+      rw [ToSpec.preimage_basicOpen]
+      exact (pbo x.num).2.preimage continuous_subtype_val }
 
 variable {𝒜} in
 lemma toSpec_preimage_basicOpen {f} (z : HomogeneousLocalization.NumDenSameDeg 𝒜 (.powers f)) :
@@ -543,21 +544,22 @@ variable {𝒜} in
 /-- The continuous function `Spec A⁰_f → Proj|D(f)` sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}` where
 `m` is the degree of `f` -/
 def fromSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
-    (Spec.T (A⁰_ f)) ⟶ (Proj.T| (pbo f)) where
-  toFun := FromSpec.toFun f_deg hm
-  continuous_toFun := by
-    rw [isTopologicalBasis_subtype (ProjectiveSpectrum.isTopologicalBasis_basic_opens 𝒜) (pbo f).1
-      |>.continuous_iff]
-    rintro s ⟨_, ⟨a, rfl⟩, rfl⟩
-    have h₁ : Subtype.val (p := (pbo f).1) ⁻¹' (pbo a) =
-        ⋃ i : ℕ, Subtype.val (p := (pbo f).1) ⁻¹' (pbo (decompose 𝒜 a i)) := by
-      simp [ProjectiveSpectrum.basicOpen_eq_union_of_projection 𝒜 a]
-    let e : _ ≃ _ :=
-      ⟨FromSpec.toFun f_deg hm, ToSpec.toFun f, toSpec_fromSpec _ _ _, fromSpec_toSpec _ _ _⟩
-    change IsOpen <| e ⁻¹' _
-    rw [Set.preimage_equiv_eq_image_symm, h₁, Set.image_iUnion]
-    exact isOpen_iUnion fun i ↦ toSpec.image_basicOpen_eq_basicOpen f_deg hm a i ▸
-      PrimeSpectrum.isOpen_basicOpen
+    (Spec.T (A⁰_ f)) ⟶ (Proj.T| (pbo f)) :=
+  TopCat.ofHom
+  { toFun := FromSpec.toFun f_deg hm
+    continuous_toFun := by
+      rw [isTopologicalBasis_subtype (ProjectiveSpectrum.isTopologicalBasis_basic_opens 𝒜) (pbo f).1
+        |>.continuous_iff]
+      rintro s ⟨_, ⟨a, rfl⟩, rfl⟩
+      have h₁ : Subtype.val (p := (pbo f).1) ⁻¹' (pbo a) =
+          ⋃ i : ℕ, Subtype.val (p := (pbo f).1) ⁻¹' (pbo (decompose 𝒜 a i)) := by
+        simp [ProjectiveSpectrum.basicOpen_eq_union_of_projection 𝒜 a]
+      let e : _ ≃ _ :=
+        ⟨FromSpec.toFun f_deg hm, ToSpec.toFun f, toSpec_fromSpec _ _ _, fromSpec_toSpec _ _ _⟩
+      change IsOpen <| e ⁻¹' _
+      rw [Set.preimage_equiv_eq_image_symm, h₁, Set.image_iUnion]
+      exact isOpen_iUnion fun i ↦ toSpec.image_basicOpen_eq_basicOpen f_deg hm a i ▸
+        PrimeSpectrum.isOpen_basicOpen }
 
 end ProjIsoSpecTopComponent
 
@@ -672,7 +674,7 @@ lemma toSpec_base_apply_eq {f} (x : Proj| pbo f) :
 lemma toSpec_base_isIso {f} {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     IsIso (toSpec 𝒜 f).base := by
   convert (projIsoSpecTopComponent f_deg hm).isIso_hom
-  exact DFunLike.ext _ _ <| toSpec_base_apply_eq 𝒜
+  exact ConcreteCategory.hom_ext _ _ <| toSpec_base_apply_eq 𝒜
 
 lemma mk_mem_toSpec_base_apply {f} (x : Proj| pbo f)
     (z : NumDenSameDeg 𝒜 (.powers f)) :

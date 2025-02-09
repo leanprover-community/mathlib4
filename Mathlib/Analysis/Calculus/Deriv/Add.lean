@@ -52,10 +52,12 @@ nonrec theorem HasDerivAt.add (hf : HasDerivAt f f' x) (hg : HasDerivAt g g' x) 
     HasDerivAt (fun x => f x + g x) (f' + g') x :=
   hf.add hg
 
-theorem derivWithin_add (hxs : UniqueDiffWithinAt 𝕜 s x) (hf : DifferentiableWithinAt 𝕜 f s x)
+theorem derivWithin_add (hf : DifferentiableWithinAt 𝕜 f s x)
     (hg : DifferentiableWithinAt 𝕜 g s x) :
-    derivWithin (fun y => f y + g y) s x = derivWithin f s x + derivWithin g s x :=
-  (hf.hasDerivWithinAt.add hg.hasDerivWithinAt).derivWithin hxs
+    derivWithin (fun y => f y + g y) s x = derivWithin f s x + derivWithin g s x := by
+  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
+  · exact (hf.hasDerivWithinAt.add hg.hasDerivWithinAt).derivWithin hxs
+  · simp [derivWithin_zero_of_isolated hxs]
 
 @[simp]
 theorem deriv_add (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
@@ -78,9 +80,11 @@ nonrec theorem HasDerivAt.add_const (hf : HasDerivAt f f' x) (c : F) :
     HasDerivAt (fun x => f x + c) f' x :=
   hf.add_const c
 
-theorem derivWithin_add_const (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
+theorem derivWithin_add_const (c : F) :
     derivWithin (fun y => f y + c) s x = derivWithin f s x := by
-  simp only [derivWithin, fderivWithin_add_const hxs]
+  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
+  · simp only [derivWithin, fderivWithin_add_const hxs]
+  · simp [derivWithin_zero_of_isolated hxs]
 
 theorem deriv_add_const (c : F) : deriv (fun y => f y + c) x = deriv f x := by
   simp only [deriv, fderiv_add_const]
@@ -105,9 +109,11 @@ nonrec theorem HasDerivAt.const_add (c : F) (hf : HasDerivAt f f' x) :
     HasDerivAt (fun x => c + f x) f' x :=
   hf.const_add c
 
-theorem derivWithin_const_add (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
+theorem derivWithin_const_add (c : F) :
     derivWithin (fun y => c + f y) s x = derivWithin f s x := by
-  simp only [derivWithin, fderivWithin_const_add hxs]
+  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
+  · simp only [derivWithin, fderivWithin_const_add hxs]
+  · simp [derivWithin_zero_of_isolated hxs]
 
 theorem deriv_const_add (c : F) : deriv (fun y => c + f y) x = deriv f x := by
   simp only [deriv, fderiv_const_add]
@@ -160,10 +166,11 @@ theorem HasDerivAt.sum (h : ∀ i ∈ u, HasDerivAt (A i) (A' i) x) :
     HasDerivAt (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) x :=
   HasDerivAtFilter.sum h
 
-theorem derivWithin_sum (hxs : UniqueDiffWithinAt 𝕜 s x)
-    (h : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (A i) s x) :
-    derivWithin (fun y => ∑ i ∈ u, A i y) s x = ∑ i ∈ u, derivWithin (A i) s x :=
-  (HasDerivWithinAt.sum fun i hi => (h i hi).hasDerivWithinAt).derivWithin hxs
+theorem derivWithin_sum (h : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (A i) s x) :
+    derivWithin (fun y => ∑ i ∈ u, A i y) s x = ∑ i ∈ u, derivWithin (A i) s x := by
+  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
+  · exact (HasDerivWithinAt.sum fun i hi => (h i hi).hasDerivWithinAt).derivWithin hxs
+  · simp [derivWithin_zero_of_isolated hxs]
 
 @[simp]
 theorem deriv_sum (h : ∀ i ∈ u, DifferentiableAt 𝕜 (A i) x) :
@@ -189,9 +196,10 @@ nonrec theorem HasDerivAt.neg (h : HasDerivAt f f' x) : HasDerivAt (fun x => -f 
 nonrec theorem HasStrictDerivAt.neg (h : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x => -f x) (-f') x := by simpa using h.neg.hasStrictDerivAt
 
-theorem derivWithin.neg (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    derivWithin (fun y => -f y) s x = -derivWithin f s x := by
-  simp only [derivWithin, fderivWithin_neg hxs, ContinuousLinearMap.neg_apply]
+theorem derivWithin.neg : derivWithin (fun y => -f y) s x = -derivWithin f s x := by
+  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
+  · simp only [derivWithin, fderivWithin_neg hxs, ContinuousLinearMap.neg_apply]
+  · simp [derivWithin_zero_of_isolated hxs]
 
 theorem deriv.neg : deriv (fun y => -f y) x = -deriv f x := by
   simp only [deriv, fderiv_neg, ContinuousLinearMap.neg_apply]
@@ -276,10 +284,12 @@ theorem HasStrictDerivAt.sub (hf : HasStrictDerivAt f f' x) (hg : HasStrictDeriv
     HasStrictDerivAt (fun x => f x - g x) (f' - g') x := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
 
-theorem derivWithin_sub (hxs : UniqueDiffWithinAt 𝕜 s x) (hf : DifferentiableWithinAt 𝕜 f s x)
+theorem derivWithin_sub (hf : DifferentiableWithinAt 𝕜 f s x)
     (hg : DifferentiableWithinAt 𝕜 g s x) :
-    derivWithin (fun y => f y - g y) s x = derivWithin f s x - derivWithin g s x :=
-  (hf.hasDerivWithinAt.sub hg.hasDerivWithinAt).derivWithin hxs
+    derivWithin (fun y => f y - g y) s x = derivWithin f s x - derivWithin g s x := by
+  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
+  · exact (hf.hasDerivWithinAt.sub hg.hasDerivWithinAt).derivWithin hxs
+  · simp [derivWithin_zero_of_isolated hxs]
 
 @[simp]
 theorem deriv_sub (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
@@ -298,9 +308,11 @@ nonrec theorem HasDerivAt.sub_const (hf : HasDerivAt f f' x) (c : F) :
     HasDerivAt (fun x => f x - c) f' x :=
   hf.sub_const c
 
-theorem derivWithin_sub_const (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
+theorem derivWithin_sub_const (c : F) :
     derivWithin (fun y => f y - c) s x = derivWithin f s x := by
-  simp only [derivWithin, fderivWithin_sub_const hxs]
+  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
+  · simp only [derivWithin, fderivWithin_sub_const hxs]
+  · simp [derivWithin_zero_of_isolated hxs]
 
 theorem deriv_sub_const (c : F) : deriv (fun y => f y - c) x = deriv f x := by
   simp only [deriv, fderiv_sub_const]
@@ -321,13 +333,14 @@ nonrec theorem HasDerivAt.const_sub (c : F) (hf : HasDerivAt f f' x) :
     HasDerivAt (fun x => c - f x) (-f') x :=
   hf.const_sub c
 
-theorem derivWithin_const_sub (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
+theorem derivWithin_const_sub (c : F) :
     derivWithin (fun y => c - f y) s x = -derivWithin f s x := by
-  simp [derivWithin, fderivWithin_const_sub hxs]
+  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
+  · simp [derivWithin, fderivWithin_const_sub hxs]
+  · simp [derivWithin_zero_of_isolated hxs]
 
 theorem deriv_const_sub (c : F) : deriv (fun y => c - f y) x = -deriv f x := by
-  simp only [← derivWithin_univ,
-    derivWithin_const_sub (uniqueDiffWithinAt_univ : UniqueDiffWithinAt 𝕜 _ _)]
+  simp only [← derivWithin_univ, derivWithin_const_sub]
 
 lemma differentiableAt_comp_sub_const {a b : 𝕜} :
     DifferentiableAt 𝕜 (fun x ↦ f (x - b)) a ↔ DifferentiableAt 𝕜 f (a - b) := by

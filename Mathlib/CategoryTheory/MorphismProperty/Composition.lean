@@ -235,6 +235,14 @@ lemma precomp_iff [W.RespectsLeft W'] [W.HasOfPrecompProperty W']
     W (f ≫ g) ↔ W g :=
   ⟨W.of_precomp f g hf, fun hg ↦ RespectsLeft.precomp _ hf _ hg⟩
 
+lemma HasOfPostcompProperty.of_le (Q : MorphismProperty C) [W.HasOfPostcompProperty Q]
+    (hle : W' ≤ Q) : W.HasOfPostcompProperty W' where
+  of_postcomp f g hg hfg := W.of_postcomp (W' := Q) f g (hle _ hg) hfg
+
+lemma HasOfPrecompProperty.of_le (Q : MorphismProperty C) [W.HasOfPrecompProperty Q]
+    (hle : W' ≤ Q) : W.HasOfPrecompProperty W' where
+  of_precomp f g hg hfg := W.of_precomp (W' := Q) f g (hle _ hg) hfg
+
 end
 
 instance : (isomorphisms C).HasTwoOutOfThreeProperty where

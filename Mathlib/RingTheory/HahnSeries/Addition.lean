@@ -3,9 +3,10 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.RingTheory.HahnSeries.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.RingTheory.HahnSeries.Basic
 
 /-!
 # Additive properties of Hahn series
@@ -26,7 +27,7 @@ open Finset Function
 
 noncomputable section
 
-variable {Γ Γ' R S U V : Type*}
+variable {Γ Γ' R S U V α : Type*}
 
 namespace HahnSeries
 
@@ -58,17 +59,23 @@ instance : AddMonoid (HahnSeries Γ R) where
     apply add_zero
 
 @[simp]
-theorem add_coeff' {x y : HahnSeries Γ R} : (x + y).coeff = x.coeff + y.coeff :=
+theorem coeff_add' {x y : HahnSeries Γ R} : (x + y).coeff = x.coeff + y.coeff :=
   rfl
 
-theorem add_coeff {x y : HahnSeries Γ R} {a : Γ} : (x + y).coeff a = x.coeff a + y.coeff a :=
+@[deprecated (since := "2025-01-31")] alias add_coeff' := coeff_add'
+
+theorem coeff_add {x y : HahnSeries Γ R} {a : Γ} : (x + y).coeff a = x.coeff a + y.coeff a :=
   rfl
+
+@[deprecated (since := "2025-01-31")] alias add_coeff := coeff_add
 
 @[simp]
-theorem nsmul_coeff {x : HahnSeries Γ R} {n : ℕ} : (n • x).coeff = n • x.coeff := by
+theorem coeff_nsmul {x : HahnSeries Γ R} {n : ℕ} : (n • x).coeff = n • x.coeff := by
   induction n with
   | zero => simp
   | succ n ih => simp [add_nsmul, ih]
+
+@[deprecated (since := "2025-01-31")] alias nsmul_coeff := coeff_nsmul
 
 @[simp]
 protected lemma map_add [AddMonoid S] (f : R →+ S) {x y : HahnSeries Γ R} :
@@ -109,9 +116,9 @@ lemma addOppositeEquiv_orderTop (x : HahnSeries Γ (Rᵃᵒᵖ)) :
   classical
   simp only [orderTop, AddOpposite.unop_op, mk_eq_zero, EmbeddingLike.map_eq_zero_iff,
     addOppositeEquiv_support, ne_eq]
-  simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, zero_coeff]
+  simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, coeff_zero]
   simp_rw [HahnSeries.ext_iff, funext_iff]
-  simp only [Pi.zero_apply, AddOpposite.unop_eq_zero_iff, zero_coeff]
+  simp only [Pi.zero_apply, AddOpposite.unop_eq_zero_iff, coeff_zero]
 
 @[simp]
 lemma addOppositeEquiv_symm_orderTop (x : (HahnSeries Γ R)ᵃᵒᵖ) :
@@ -124,9 +131,9 @@ lemma addOppositeEquiv_leadingCoeff (x : HahnSeries Γ (Rᵃᵒᵖ)) :
   classical
   simp only [leadingCoeff, AddOpposite.unop_op, mk_eq_zero, EmbeddingLike.map_eq_zero_iff,
     addOppositeEquiv_support, ne_eq]
-  simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, zero_coeff]
+  simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, coeff_zero]
   simp_rw [HahnSeries.ext_iff, funext_iff]
-  simp only [Pi.zero_apply, AddOpposite.unop_eq_zero_iff, zero_coeff]
+  simp only [Pi.zero_apply, AddOpposite.unop_eq_zero_iff, coeff_zero]
   split <;> rfl
 
 @[simp]
@@ -137,7 +144,7 @@ lemma addOppositeEquiv_symm_leadingCoeff (x : (HahnSeries Γ R)ᵃᵒᵖ) :
 
 theorem support_add_subset {x y : HahnSeries Γ R} : support (x + y) ⊆ support x ∪ support y :=
   fun a ha => by
-  rw [mem_support, add_coeff] at ha
+  rw [mem_support, coeff_add] at ha
   rw [Set.mem_union, mem_support, mem_support]
   contrapose! ha
   rw [ha.1, ha.2, add_zero]
@@ -171,7 +178,7 @@ theorem orderTop_add_eq_left {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
   have hx : x ≠ 0 := ne_zero_iff_orderTop.mpr hxy.ne_top
   let g : Γ := Set.IsWF.min x.isWF_support (support_nonempty_iff.2 hx)
   have hcxyne : (x + y).coeff g ≠ 0 := by
-    rw [add_coeff, coeff_eq_zero_of_lt_orderTop (lt_of_eq_of_lt (orderTop_of_ne hx).symm hxy),
+    rw [coeff_add, coeff_eq_zero_of_lt_orderTop (lt_of_eq_of_lt (orderTop_of_ne hx).symm hxy),
       add_zero]
     exact coeff_orderTop_ne (orderTop_of_ne hx)
   have hxyx : (x + y).orderTop ≤ x.orderTop := by
@@ -193,7 +200,7 @@ theorem leadingCoeff_add_eq_left {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
   · rw [h, orderTop_zero] at ho
     rw [h, orderTop_eq_top_iff.mp ho.symm]
   · rw [orderTop_of_ne h, orderTop_of_ne hx, WithTop.coe_eq_coe] at ho
-    rw [leadingCoeff_of_ne h, leadingCoeff_of_ne hx, ho, add_coeff,
+    rw [leadingCoeff_of_ne h, leadingCoeff_of_ne hx, ho, coeff_add,
       coeff_eq_zero_of_lt_orderTop (lt_of_eq_of_lt (orderTop_of_ne hx).symm hxy), add_zero]
 
 theorem leadingCoeff_add_eq_right {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
@@ -214,8 +221,8 @@ def single.addMonoidHom (a : Γ) : R →+ HahnSeries Γ R :=
 @[simps]
 def coeff.addMonoidHom (g : Γ) : HahnSeries Γ R →+ R where
   toFun f := f.coeff g
-  map_zero' := zero_coeff
-  map_add' _ _ := add_coeff
+  map_zero' := coeff_zero
+  map_add' _ _ := coeff_add
 
 section Domain
 
@@ -233,11 +240,24 @@ end Domain
 
 end AddMonoid
 
-instance [AddCommMonoid R] : AddCommMonoid (HahnSeries Γ R) :=
+section AddCommMonoid
+
+variable [AddCommMonoid R]
+
+instance : AddCommMonoid (HahnSeries Γ R) :=
   { inferInstanceAs (AddMonoid (HahnSeries Γ R)) with
     add_comm := fun x y => by
       ext
       apply add_comm }
+
+open BigOperators
+
+@[simp]
+theorem coeff_sum {s : Finset α} {x : α → HahnSeries Γ R} (g : Γ) :
+    (∑ i ∈ s, x i).coeff g = ∑ i ∈ s, (x i).coeff g :=
+  cons_induction rfl (fun i s his hsum => by rw [sum_cons, sum_cons, coeff_add, hsum]) s
+
+end AddCommMonoid
 
 section AddGroup
 
@@ -258,11 +278,15 @@ instance : AddGroup (HahnSeries Γ R) :=
       apply neg_add_cancel }
 
 @[simp]
-theorem neg_coeff' {x : HahnSeries Γ R} : (-x).coeff = -x.coeff :=
+theorem coeff_neg' {x : HahnSeries Γ R} : (-x).coeff = -x.coeff :=
   rfl
 
-theorem neg_coeff {x : HahnSeries Γ R} {a : Γ} : (-x).coeff a = -x.coeff a :=
+@[deprecated (since := "2025-01-31")] alias neg_coeff' := coeff_neg'
+
+theorem coeff_neg {x : HahnSeries Γ R} {a : Γ} : (-x).coeff a = -x.coeff a :=
   rfl
+
+@[deprecated (since := "2025-01-31")] alias neg_coeff := coeff_neg
 
 @[simp]
 theorem support_neg {x : HahnSeries Γ R} : (-x).support = x.support := by
@@ -285,12 +309,16 @@ theorem order_neg [Zero Γ] {f : HahnSeries Γ R} : (-f).order = f.order := by
   simp only [order, support_neg, neg_eq_zero]
 
 @[simp]
-theorem sub_coeff' {x y : HahnSeries Γ R} : (x - y).coeff = x.coeff - y.coeff := by
+theorem coeff_sub' {x y : HahnSeries Γ R} : (x - y).coeff = x.coeff - y.coeff := by
   ext
   simp [sub_eq_add_neg]
 
-theorem sub_coeff {x y : HahnSeries Γ R} {a : Γ} : (x - y).coeff a = x.coeff a - y.coeff a := by
+@[deprecated (since := "2025-01-31")] alias sub_coeff' := coeff_sub'
+
+theorem coeff_sub {x y : HahnSeries Γ R} {a : Γ} : (x - y).coeff a = x.coeff a - y.coeff a := by
   simp
+
+@[deprecated (since := "2025-01-31")] alias sub_coeff := coeff_sub
 
 @[simp]
 protected lemma map_sub [AddGroup S] (f : R →+ S) {x y : HahnSeries Γ R} :
@@ -332,15 +360,17 @@ instance : SMul R (HahnSeries Γ V) :=
       isPWO_support' := x.isPWO_support.mono (Function.support_const_smul_subset r x.coeff) }⟩
 
 @[simp]
-theorem smul_coeff {r : R} {x : HahnSeries Γ V} {a : Γ} : (r • x).coeff a = r • x.coeff a :=
+theorem coeff_smul {r : R} {x : HahnSeries Γ V} {a : Γ} : (r • x).coeff a = r • x.coeff a :=
   rfl
+
+@[deprecated (since := "2025-01-31")] alias smul_coeff := coeff_smul
 
 instance : SMulZeroClass R (HahnSeries Γ V) :=
   { inferInstanceAs (SMul R (HahnSeries Γ V)) with
     smul_zero := by
       intro
       ext
-      simp only [smul_coeff, zero_coeff, smul_zero]}
+      simp only [coeff_smul, coeff_zero, smul_zero]}
 
 theorem orderTop_smul_not_lt (r : R) (x : HahnSeries Γ V) : ¬ (r • x).orderTop < x.orderTop := by
   by_cases hrx : r • x = 0

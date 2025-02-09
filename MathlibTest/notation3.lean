@@ -20,6 +20,50 @@ notation3 "∀ᶠ " (...) " in " f ", " r:(scoped p => Filter.eventually p f) =>
 /-- info: ∀ᶠ (x : ℕ) in Filter.atTop, x < 3 : Prop -/
 #guard_msgs in #check ∀ᶠ x in Filter.atTop, x < 3
 
+/-!
+Test that `pp.tagAppFns` causes tokens to be tagged with head constant.
+-/
+
+open Lean in
+def findWithTag (tag : Nat) (f : Format) : List Format :=
+  match f with
+  | .nil => []
+  | .line => []
+  | .align _ => []
+  | .text _ => []
+  | .nest _ f' => findWithTag tag f'
+  | .append f' f'' => findWithTag tag f' ++ findWithTag tag f''
+  | .group f' _ => findWithTag tag f'
+  | .tag t f' => (if t = tag then [f'] else []) ++ findWithTag tag f'
+
+open Lean Elab Term in
+def testTagAppFns (n : Name) : TermElabM Unit := do
+  let stx ← `(∀ᶠ x in Filter.atTop, x < 3)
+  let e ← elabTermAndSynthesize stx none
+  let f ← Meta.ppExprWithInfos e
+  -- Find tags for the constant `n`
+  let tags : Array Nat := f.infos.fold (init := #[]) fun tags tag info =>
+    match info with
+    | .ofTermInfo info | .ofDelabTermInfo info =>
+      if info.expr.isConstOf n then
+        tags.push tag
+      else
+        tags
+    | _ => tags
+  let fmts := tags.map (findWithTag · f.fmt)
+  unless fmts.all (!·.isEmpty) do throwError "missing tag"
+  let fmts := fmts.toList.flatten
+  logInfo m!"{repr <| fmts.map (·.pretty.trim)}"
+
+section
+/-- info: [] -/
+#guard_msgs in #eval testTagAppFns ``Filter.eventually
+set_option pp.tagAppFns true
+/-- info: ["∀ᶠ", "in", ","] -/
+#guard_msgs in #eval testTagAppFns ``Filter.eventually
+end
+
+
 -- Testing lambda expressions:
 notation3 "∀ᶠ' " f ", " p => Filter.eventually (fun x => (p : _ → _) x) f
 /-- info: ∀ᶠ' Filter.atTop, fun x ↦ x < 3 : Prop -/
@@ -45,9 +89,7 @@ notation3 "∃' " (...) ", " r:(scoped p => Exists p) => r
 
 def func (x : α) : α := x
 notation3 "func! " (...) ", " r:(scoped p => func p) => r
--- Make sure it handles additional arguments. Should not consume `(· * 2)`.
--- Note: right now this causes the notation to not pretty print at all.
-/-- info: func (fun x ↦ x) fun x ↦ x * 2 : ℕ → ℕ -/
+/-- info: (func! (x : ℕ → ℕ), x) fun x ↦ x * 2 : ℕ → ℕ -/
 #guard_msgs in #check (func! (x : Nat → Nat), x) (· * 2)
 
 structure MyUnit where
@@ -192,8 +234,8 @@ info: [notation3] syntax declaration has name Test.termδNat
 (matchExpr✝ (Expr.isConstOf✝ · `Nat)))
           pure✝ >=>
         pure✝
-[notation3] Defined delaborator Test.termδNat.delab
-[notation3] Adding `delab` attribute for keys [app.Inhabited.default]
+[notation3] Creating delaborator for key Mathlib.Notation3.DelabKey.app (some `Inhabited.default) 2
+[notation3] Defined delaborator Test.termδNat.«delab_app.Inhabited.default»
 -/
 #guard_msgs in
 set_option trace.notation3 true in
@@ -203,5 +245,21 @@ notation3 "δNat" => (default : Nat)
 #guard_msgs in #check (default : Nat)
 /-- info: δNat : ℕ -/
 #guard_msgs in #check @default Nat (Inhabited.mk 5)
+
+
+notation3 "(" "ignorez " "SVP" ")" => Sort _
+notation3 "Objet " "mathématique " "supérieur" => Type _
+notation3 "Énoncé" => Prop
+notation3 "Objet " "mathématique" => Type
+/-- info: 1 = 1 : Énoncé -/
+#guard_msgs in #check 1 = 1
+/-- info: Énoncé : Objet mathématique -/
+#guard_msgs in #check Prop
+/-- info: Nat : Objet mathématique -/
+#guard_msgs in #check Nat
+/-- info: Objet mathématique : Objet mathématique supérieur -/
+#guard_msgs in #check Type
+/-- info: PSum.{u, v} (α : (ignorez SVP)) (β : (ignorez SVP)) : (ignorez SVP) -/
+#guard_msgs in #check PSum
 
 end Test

@@ -121,15 +121,6 @@ theorem div2_bit (b n) : div2 (bit b n) = n := by
     rw [Nat.div_eq_of_lt] <;> simp
   · decide
 
-@[deprecated (since := "2024-04-02")] alias le_coe_nat_sub := le_natCast_sub
-@[deprecated (since := "2024-04-02")] alias succ_coe_nat_pos := succ_natCast_pos
-@[deprecated (since := "2024-04-02")] alias coe_natAbs := natCast_natAbs
-@[deprecated (since := "2024-04-02")] alias coe_nat_eq_zero := natCast_eq_zero
-@[deprecated (since := "2024-04-02")] alias coe_nat_ne_zero := natCast_ne_zero
-@[deprecated (since := "2024-04-02")] alias coe_nat_ne_zero_iff_pos := natCast_ne_zero_iff_pos
-@[deprecated (since := "2024-04-02")] alias abs_coe_nat := abs_natCast
-@[deprecated (since := "2024-04-02")] alias coe_nat_nonpos_iff := natCast_nonpos_iff
-
 /-- Like `Int.ediv_emod_unique`, but permitting negative `b`. -/
 theorem ediv_emod_unique' {a b r q : Int} (h : b ≠ 0) :
     a / b = q ∧ a % b = r ↔ r + b * q = a ∧ 0 ≤ r ∧ r < |b| := by

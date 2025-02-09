@@ -212,8 +212,7 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
   set K := s'.sup id
   suffices I ≤ K by
     obtain ⟨t, hts', htI⟩ := finitelyAtomistic s' hs'S I this
-    #adaptation_note
-    /-- Prior to https://github.com/leanprover/lean4/pull/6024
+    #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
     we could write `hts'.trans hs'.subset` instead of
     `Finset.Subset.trans hts' hs'.subset` in the next line. -/
     exact ⟨t, Finset.Subset.trans hts' hs'.subset, htI⟩

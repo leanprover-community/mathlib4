@@ -46,10 +46,6 @@ lemma lt_iff_le_not_le : a < b ↔ a ≤ b ∧ ¬b ≤ a := Preorder.lt_iff_le_n
 
 lemma lt_of_le_not_le (hab : a ≤ b) (hba : ¬ b ≤ a) : a < b := lt_iff_le_not_le.2 ⟨hab, hba⟩
 
-@[deprecated "No deprecation message was provided." (since := "2024-07-30")]
-theorem le_not_le_of_lt : ∀ {a b : α}, a < b → a ≤ b ∧ ¬b ≤ a
-  | _a, _b, hab => lt_iff_le_not_le.mp hab
-
 lemma le_of_eq (hab : a = b) : a ≤ b := by rw [hab]
 lemma le_of_lt (hab : a < b) : a ≤ b := (lt_iff_le_not_le.1 hab).1
 lemma not_le_of_lt (hab : a < b) : ¬ b ≤ a := (lt_iff_le_not_le.1 hab).2

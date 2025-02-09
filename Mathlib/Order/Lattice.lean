@@ -103,13 +103,9 @@ variable [SemilatticeSup α] {a b c d : α}
 theorem le_sup_left : a ≤ a ⊔ b :=
   SemilatticeSup.le_sup_left a b
 
-@[deprecated (since := "2024-06-04")] alias le_sup_left' := le_sup_left
-
 @[simp]
 theorem le_sup_right : b ≤ a ⊔ b :=
   SemilatticeSup.le_sup_right a b
-
-@[deprecated (since := "2024-06-04")] alias le_sup_right' := le_sup_right
 
 theorem le_sup_of_le_left (h : c ≤ a) : c ≤ a ⊔ b :=
   le_trans h le_sup_left
@@ -307,13 +303,9 @@ variable [SemilatticeInf α] {a b c d : α}
 theorem inf_le_left : a ⊓ b ≤ a :=
   SemilatticeInf.inf_le_left a b
 
-@[deprecated (since := "2024-06-04")] alias inf_le_left' := inf_le_left
-
 @[simp]
 theorem inf_le_right : a ⊓ b ≤ b :=
   SemilatticeInf.inf_le_right a b
-
-@[deprecated (since := "2024-06-04")] alias inf_le_right' := inf_le_right
 
 theorem le_inf : a ≤ b → a ≤ c → a ≤ b ⊓ c :=
   SemilatticeInf.le_inf a b c

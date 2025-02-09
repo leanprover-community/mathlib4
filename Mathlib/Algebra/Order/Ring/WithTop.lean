@@ -24,15 +24,15 @@ variable [MulZeroClass α] {a b : WithTop α}
 
 instance instMulZeroClass : MulZeroClass (WithTop α) where
   zero := 0
-  mul a b := match a, b with
+  mul
     | (a : α), (b : α) => ↑(a * b)
     | (a : α), ⊤ => if a = 0 then 0 else ⊤
     | ⊤, (b : α) => if b = 0 then 0 else ⊤
     | ⊤, ⊤ => ⊤
-  mul_zero a := match a with
+  mul_zero
     | (a : α) => congr_arg some <| mul_zero _
     | ⊤ => if_pos rfl
-  zero_mul b := match b with
+  zero_mul
     | (b : α) => congr_arg some <| zero_mul _
     | ⊤ => if_pos rfl
 
@@ -93,10 +93,10 @@ end MulZeroClass
 /-- `Nontrivial α` is needed here as otherwise we have `1 * ⊤ = ⊤` but also `0 * ⊤ = 0`. -/
 instance instMulZeroOneClass [MulZeroOneClass α] [Nontrivial α] : MulZeroOneClass (WithTop α) where
   __ := instMulZeroClass
-  one_mul a := match a with
+  one_mul
     | ⊤ => mul_top (mt coe_eq_coe.1 one_ne_zero)
     | (a : α) => by rw [← coe_one, ← coe_mul, one_mul]
-  mul_one a := match a with
+  mul_one
     | ⊤ => top_mul (mt coe_eq_coe.1 one_ne_zero)
     | (a : α) => by rw [← coe_one, ← coe_mul, mul_one]
 

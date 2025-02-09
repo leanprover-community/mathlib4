@@ -92,9 +92,6 @@ lemma not_isPrimitive_mulShift [Finite R] (e : AddChar R R') {r : R}
 /-- Definition for a primitive additive character on a finite ring `R` into a cyclotomic extension
 of a field `R'`. It records which cyclotomic extension it is, the character, and the
 fact that the character is primitive. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- can't prove that they always exist (referring to providing an `Inhabited` instance)
--- @[nolint has_nonempty_instance]
 structure PrimitiveAddChar (R : Type u) [CommRing R] (R' : Type v) [Field R'] where
   /-- The first projection from `PrimitiveAddChar`, giving the cyclotomic field. -/
   n : ℕ+
@@ -226,8 +223,6 @@ noncomputable def FiniteField.primitiveChar (F F' : Type*) [Field F] [Finite F] 
     exact ne_one_iff.2
       ⟨a, fun hf => ha <| (ψ.prim.zmod_char_eq_one_iff pp <| Algebra.trace (ZMod p) F a).mp hf⟩
   exact ⟨ψ.n, ψ', IsPrimitive.of_ne_one hψ'⟩
-@[deprecated (since := "2024-05-30")] alias primitiveCharFiniteField := FiniteField.primitiveChar
-
 /-!
 ### The sum of all character values
 -/

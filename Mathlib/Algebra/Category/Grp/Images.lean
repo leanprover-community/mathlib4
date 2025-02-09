@@ -34,18 +34,18 @@ section
 -- implementation details of `IsImage` for `AddCommGrp`; use the API, not these
 /-- the image of a morphism in `AddCommGrp` is just the bundling of `AddMonoidHom.range f` -/
 def image : AddCommGrp :=
-  AddCommGrp.of (AddMonoidHom.range f)
+  AddCommGrp.of (AddMonoidHom.range f.hom)
 
 /-- the inclusion of `image f` into the target -/
 def image.ι : image f ⟶ H :=
-  f.range.subtype
+  ofHom f.hom.range.subtype
 
 instance : Mono (image.ι f) :=
   ConcreteCategory.mono_of_injective (image.ι f) Subtype.val_injective
 
 /-- the corestriction map to the image -/
 def factorThruImage : G ⟶ image f :=
-  f.rangeRestrict
+  ofHom f.hom.rangeRestrict
 
 theorem image.fac : factorThruImage f ≫ image.ι f = f := by
   ext
@@ -56,25 +56,26 @@ attribute [local simp] image.fac
 variable {f}
 
 /-- the universal property for the image factorisation -/
-noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I where
-  toFun := (fun x => F'.e (Classical.indefiniteDescription _ x.2).1 : image f → F'.I)
-  map_zero' := by
-    haveI := F'.m_mono
-    apply injective_of_mono F'.m
-    change (F'.e ≫ F'.m) _ = _
-    rw [F'.fac, AddMonoidHom.map_zero]
-    exact (Classical.indefiniteDescription (fun y => f y = 0) _).2
-  map_add' := by
-    intro x y
-    haveI := F'.m_mono
-    apply injective_of_mono F'.m
-    rw [AddMonoidHom.map_add]
-    change (F'.e ≫ F'.m) _ = (F'.e ≫ F'.m) _ + (F'.e ≫ F'.m) _
-    rw [F'.fac]
-    rw [(Classical.indefiniteDescription (fun z => f z = _) _).2]
-    rw [(Classical.indefiniteDescription (fun z => f z = _) _).2]
-    rw [(Classical.indefiniteDescription (fun z => f z = _) _).2]
-    rfl
+noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I :=
+  ofHom
+  { toFun := (fun x => F'.e (Classical.indefiniteDescription _ x.2).1 : image f → F'.I)
+    map_zero' := by
+      haveI := F'.m_mono
+      apply injective_of_mono F'.m
+      change (F'.e ≫ F'.m) _ = _
+      rw [F'.fac, AddMonoidHom.map_zero]
+      exact (Classical.indefiniteDescription (fun y => f y = 0) _).2
+    map_add' := by
+      intro x y
+      haveI := F'.m_mono
+      apply injective_of_mono F'.m
+      rw [AddMonoidHom.map_add]
+      change (F'.e ≫ F'.m) _ = (F'.e ≫ F'.m) _ + (F'.e ≫ F'.m) _
+      rw [F'.fac]
+      rw [(Classical.indefiniteDescription (fun z => f z = _) _).2]
+      rw [(Classical.indefiniteDescription (fun z => f z = _) _).2]
+      rw [(Classical.indefiniteDescription (fun z => f z = _) _).2]
+      rfl }
 
 theorem image.lift_fac (F' : MonoFactorisation f) : image.lift F' ≫ F'.m = image.ι f := by
   ext x
@@ -100,7 +101,7 @@ noncomputable def isImage : IsImage (monoFactorisation f) where
 agrees with the usual group-theoretical range.
 -/
 noncomputable def imageIsoRange {G H : AddCommGrp.{0}} (f : G ⟶ H) :
-    Limits.image f ≅ AddCommGrp.of f.range :=
+    Limits.image f ≅ AddCommGrp.of f.hom.range :=
   IsImage.isoExt (Image.isImage f) (isImage f)
 
 end AddCommGrp

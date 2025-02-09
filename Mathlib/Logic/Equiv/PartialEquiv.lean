@@ -164,19 +164,13 @@ def Simps.symm_apply (e : PartialEquiv α β) : β → α :=
 
 initialize_simps_projections PartialEquiv (toFun → apply, invFun → symm_apply)
 
--- Porting note: this can be proven with `dsimp only`
--- @[simp, mfld_simps]
--- theorem coe_mk (f : α → β) (g s t ml mr il ir) :
---  (PartialEquiv.mk f g s t ml mr il ir : α → β) = f := by dsimp only
+theorem coe_mk (f : α → β) (g s t ml mr il ir) :
+    (PartialEquiv.mk f g s t ml mr il ir : α → β) = f := rfl
 
 @[simp, mfld_simps]
 theorem coe_symm_mk (f : α → β) (g s t ml mr il ir) :
     ((PartialEquiv.mk f g s t ml mr il ir).symm : β → α) = g :=
   rfl
-
--- Porting note: this is now a syntactic tautology
--- @[simp, mfld_simps]
--- theorem toFun_as_coe : e.toFun = e := rfl
 
 @[simp, mfld_simps]
 theorem invFun_as_coe : e.invFun = e.symm :=
@@ -493,6 +487,8 @@ theorem restr_coe_symm (s : Set α) : ((e.restr s).symm : β → α) = e.symm :=
 theorem restr_source (s : Set α) : (e.restr s).source = e.source ∩ s :=
   rfl
 
+theorem source_restr_subset_source (s : Set α) : (e.restr s).source ⊆ e.source := inter_subset_left
+
 @[simp, mfld_simps]
 theorem restr_target (s : Set α) : (e.restr s).target = e.target ∩ e.symm ⁻¹' s :=
   rfl
@@ -560,6 +556,19 @@ theorem ofSet_coe (s : Set α) : (PartialEquiv.ofSet s : α → α) = id :=
 theorem ofSet_symm (s : Set α) : (PartialEquiv.ofSet s).symm = PartialEquiv.ofSet s :=
   rfl
 
+/-- `Function.const` as a `PartialEquiv`.
+It consists of two constant maps in opposite directions. -/
+@[simps]
+def single (a : α) (b : β) : PartialEquiv α β where
+  toFun := Function.const α b
+  invFun := Function.const β a
+  source := {a}
+  target := {b}
+  map_source' _ _ := rfl
+  map_target' _ _ := rfl
+  left_inv' a' ha' := by rw [eq_of_mem_singleton ha', const_apply]
+  right_inv' b' hb' := by rw [eq_of_mem_singleton hb', const_apply]
+
 /-- Composing two partial equivs if the target of the first coincides with the source of the
 second. -/
 @[simps]
@@ -574,7 +583,9 @@ protected def trans' (e' : PartialEquiv β γ) (h : e.target = e'.source) : Part
   right_inv' y hy := by simp [hy, h]
 
 /-- Composing two partial equivs, by restricting to the maximal domain where their composition
-is well defined. -/
+is well defined.
+Within the `Manifold` namespace, there is the notation `e ≫ f` for this.
+-/
 @[trans]
 protected def trans : PartialEquiv α γ :=
   PartialEquiv.trans' (e.symm.restr e'.source).symm (e'.restr e.target) (inter_comm _ _)

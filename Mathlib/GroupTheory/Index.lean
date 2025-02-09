@@ -185,8 +185,6 @@ theorem index_top : (⊤ : Subgroup G).index = 1 :=
 theorem index_bot : (⊥ : Subgroup G).index = Nat.card G :=
   Cardinal.toNat_congr QuotientGroup.quotientBot.toEquiv
 
-@[deprecated (since := "2024-06-15")] alias index_bot_eq_card := index_bot
-
 @[to_additive (attr := simp)]
 theorem relindex_top_left : (⊤ : Subgroup G).relindex H = 1 :=
   index_top
@@ -198,8 +196,6 @@ theorem relindex_top_right : H.relindex ⊤ = H.index := by
 @[to_additive (attr := simp)]
 theorem relindex_bot_left : (⊥ : Subgroup G).relindex H = Nat.card H := by
   rw [relindex, bot_subgroupOf, index_bot]
-
-@[deprecated (since := "2024-06-15")] alias relindex_bot_left_eq_card := relindex_bot_left
 
 @[to_additive (attr := simp)]
 theorem relindex_bot_right : H.relindex ⊥ = 1 := by rw [relindex, subgroupOf_bot_eq_top, index_top]
@@ -220,17 +216,11 @@ theorem card_mul_index : Nat.card H * H.index = Nat.card G := by
   rw [← relindex_bot_left, ← index_bot]
   exact relindex_mul_index bot_le
 
-@[deprecated (since := "2024-06-15")] alias nat_card_dvd_of_injective := card_dvd_of_injective
-
-@[deprecated (since := "2024-06-15")] alias nat_card_dvd_of_le := card_dvd_of_le
-
 @[to_additive]
 theorem card_dvd_of_surjective (f : G →* G') (hf : Function.Surjective f) :
     Nat.card G' ∣ Nat.card G := by
   rw [← Nat.card_congr (QuotientGroup.quotientKerEquivOfSurjective f hf).toEquiv]
   exact Dvd.intro_left (Nat.card f.ker) f.ker.card_mul_index
-
-@[deprecated (since := "2024-06-15")] alias nat_card_dvd_of_surjective := card_dvd_of_surjective
 
 @[to_additive]
 theorem card_range_dvd (f : G →* G') : Nat.card f.range ∣ Nat.card G :=

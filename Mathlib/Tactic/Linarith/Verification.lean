@@ -214,10 +214,10 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
           return certificate
       let (sm, zip) ←
         withTraceNode `linarith (return m!"{exceptEmoji ·} Building final expression") do
-          let enum_inputs := inputs.enum
+          let enum_inputs := inputs.zipIdx
           -- construct a list pairing nonzero coeffs with the proof of their corresponding
           -- comparison
-          let zip := enum_inputs.filterMap fun ⟨n, e⟩ => (certificate[n]?).map (e, ·)
+          let zip := enum_inputs.filterMap fun ⟨e, n⟩ => (certificate[n]?).map (e, ·)
           let mls ← zip.mapM fun ⟨e, n⟩ => do mulExpr n (← leftOfIneqProof e)
           -- `sm` is the sum of input terms, scaled to cancel out all variables.
           let sm ← addExprs mls

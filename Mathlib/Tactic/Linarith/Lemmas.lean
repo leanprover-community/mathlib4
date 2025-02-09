@@ -100,9 +100,6 @@ lemma zero_mul_eq {α} {R : α → α → Prop} [Semiring α] {a b : α} (h : a 
 
 lemma natCast_nonneg (α : Type u) [OrderedSemiring α] (n : ℕ) : (0 : α) ≤ n := Nat.cast_nonneg n
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_nonneg := natCast_nonneg
-
 end Linarith
 
 section

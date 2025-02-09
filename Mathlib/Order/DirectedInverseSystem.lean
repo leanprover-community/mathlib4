@@ -144,15 +144,13 @@ theorem mk_injective (h : ∀ i j hij, Function.Injective (f i j hij)) (i) :
 
 section map₀
 
-open Classical (arbitrary)
-
 variable [Nonempty ι] (ih : ∀ i, F i)
 
 /-- "Nullary map" to construct an element in the direct limit. -/
-noncomputable def map₀ : DirectLimit F f := ⟦⟨arbitrary ι, ih _⟩⟧
+noncomputable def map₀ : DirectLimit F f := ⟦⟨Classical.arbitrary ι, ih _⟩⟧
 
 theorem map₀_def (compat : ∀ i j h, f i j h (ih i) = ih j) (i) : map₀ f ih = ⟦⟨i, ih i⟩⟧ :=
-  have ⟨j, hcj, hij⟩ := exists_ge_ge (arbitrary ι) i
+  have ⟨j, hcj, hij⟩ := exists_ge_ge (Classical.arbitrary ι) i
   Quotient.sound ⟨j, hcj, hij, (compat ..).trans (compat ..).symm⟩
 
 end map₀

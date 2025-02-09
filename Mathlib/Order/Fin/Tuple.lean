@@ -154,14 +154,6 @@ not a definitional equality. -/
 
 end Fin
 
-/-- Order isomorphism between `Π j : Fin (n + 1), α j` and
-`α i × Π j : Fin n, α (Fin.succAbove i j)`. -/
-@[deprecated Fin.insertNthOrderIso (since := "2024-07-12")]
-def OrderIso.piFinSuccAboveIso (α : Fin (n + 1) → Type*) [∀ i, LE (α i)]
-    (i : Fin (n + 1)) : (∀ j, α j) ≃o α i × ∀ j, α (i.succAbove j) where
-  toEquiv := (Fin.insertNthEquiv α i).symm
-  map_rel_iff' := Iff.symm i.forall_iff_succAbove
-
 /-- `Fin.succAbove` as an order isomorphism between `Fin n` and `{x : Fin (n + 1) // x ≠ p}`. -/
 def finSuccAboveOrderIso (p : Fin (n + 1)) : Fin n ≃o { x : Fin (n + 1) // x ≠ p } where
   __ := finSuccAboveEquiv p

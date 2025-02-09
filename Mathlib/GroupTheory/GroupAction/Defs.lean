@@ -5,8 +5,8 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.Group.Submonoid.MulAction
 
 /-!
 # Definition of `orbit`, `fixedPoints` and `stabilizer`

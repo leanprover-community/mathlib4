@@ -53,13 +53,5 @@ lemma center_units_eq : center G₀ˣ = ((↑) : G₀ˣ → G₀) ⁻¹' center 
     a / b ∈ centralizer s := by
   simpa only [div_eq_mul_inv] using mul_mem_centralizer ha (inv_mem_centralizer₀ hb)
 
-@[deprecated inv_mem_center (since := "2024-06-17")]
-theorem inv_mem_center₀ (ha : a ∈ Set.center G₀) : a⁻¹ ∈ Set.center G₀ :=
-  inv_mem_center ha
-
-@[deprecated div_mem_center (since := "2024-06-17")]
-theorem div_mem_center₀ (ha : a ∈ Set.center G₀) (hb : b ∈ Set.center G₀) : a / b ∈ Set.center G₀ :=
-  div_mem_center ha hb
-
 end GroupWithZero
 end Set

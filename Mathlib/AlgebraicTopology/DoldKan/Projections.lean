@@ -54,7 +54,7 @@ lemma P_succ (q : ℕ) : (P (q+1) : K[X] ⟶ K[X]) = P q ≫ (𝟙 _ + Hσ q) :=
 
 /-- All the `P q` coincide with `𝟙 _` in degree 0. -/
 @[simp]
-theorem P_f_0_eq (q : ℕ) : ((P q).f 0 : X _[0] ⟶ X _[0]) = 𝟙 _ := by
+theorem P_f_0_eq (q : ℕ) : ((P q).f 0 : X _⦋0⦌ ⟶ X _⦋0⦌) = 𝟙 _ := by
   induction' q with q hq
   · rfl
   · simp only [P_succ, HomologicalComplex.add_f_apply, HomologicalComplex.comp_f,
@@ -68,7 +68,7 @@ theorem P_add_Q (q : ℕ) : P q + Q q = 𝟙 K[X] := by
   rw [Q]
   abel
 
-theorem P_add_Q_f (q n : ℕ) : (P q).f n + (Q q).f n = 𝟙 (X _[n]) :=
+theorem P_add_Q_f (q n : ℕ) : (P q).f n + (Q q).f n = 𝟙 (X _⦋n⦌) :=
   HomologicalComplex.congr_hom (P_add_Q q) n
 
 @[simp]
@@ -81,21 +81,21 @@ theorem Q_succ (q : ℕ) : (Q (q + 1) : K[X] ⟶ _) = Q q - P q ≫ Hσ q := by
 
 /-- All the `Q q` coincide with `0` in degree 0. -/
 @[simp]
-theorem Q_f_0_eq (q : ℕ) : ((Q q).f 0 : X _[0] ⟶ X _[0]) = 0 := by
+theorem Q_f_0_eq (q : ℕ) : ((Q q).f 0 : X _⦋0⦌ ⟶ X _⦋0⦌) = 0 := by
   simp only [HomologicalComplex.sub_f_apply, HomologicalComplex.id_f, Q, P_f_0_eq, sub_self]
 
 namespace HigherFacesVanish
 
 /-- This lemma expresses the vanishing of
-`(P q).f (n+1) ≫ X.δ k : X _[n+1] ⟶ X _[n]` when `k≠0` and `k≥n-q+2` -/
-theorem of_P : ∀ q n : ℕ, HigherFacesVanish q ((P q).f (n + 1) : X _[n + 1] ⟶ X _[n + 1])
+`(P q).f (n+1) ≫ X.δ k : X _⦋n+1⦌ ⟶ X _⦋n⦌` when `k≠0` and `k≥n-q+2` -/
+theorem of_P : ∀ q n : ℕ, HigherFacesVanish q ((P q).f (n + 1) : X _⦋n + 1⦌ ⟶ X _⦋n + 1⦌)
   | 0 => fun n j hj₁ => by omega
   | q + 1 => fun n => by
     simp only [P_succ]
     exact (of_P q n).induction
 
 @[reassoc]
-theorem comp_P_eq_self {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVanish q φ) :
+theorem comp_P_eq_self {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFacesVanish q φ) :
     φ ≫ (P q).f (n + 1) = φ := by
   induction' q with q hq
   · simp only [P_zero]
@@ -115,7 +115,7 @@ theorem comp_P_eq_self {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFa
 
 end HigherFacesVanish
 
-theorem comp_P_eq_self_iff {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} :
+theorem comp_P_eq_self_iff {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} :
     φ ≫ (P q).f (n + 1) = φ ↔ HigherFacesVanish q φ := by
   constructor
   · intro hφ
@@ -125,13 +125,13 @@ theorem comp_P_eq_self_iff {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} :
   · exact HigherFacesVanish.comp_P_eq_self
 
 @[reassoc (attr := simp)]
-theorem P_f_idem (q n : ℕ) : ((P q).f n : X _[n] ⟶ _) ≫ (P q).f n = (P q).f n := by
+theorem P_f_idem (q n : ℕ) : ((P q).f n : X _⦋n⦌ ⟶ _) ≫ (P q).f n = (P q).f n := by
   rcases n with (_|n)
   · rw [P_f_0_eq q, comp_id]
   · exact (HigherFacesVanish.of_P q n).comp_P_eq_self
 
 @[reassoc (attr := simp)]
-theorem Q_f_idem (q n : ℕ) : ((Q q).f n : X _[n] ⟶ _) ≫ (Q q).f n = (Q q).f n :=
+theorem Q_f_idem (q n : ℕ) : ((Q q).f n : X _⦋n⦌ ⟶ _) ≫ (Q q).f n = (Q q).f n :=
   idem_of_id_sub_idem _ (P_f_idem q n)
 
 @[reassoc (attr := simp)]
@@ -158,12 +158,12 @@ def natTransP (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComp
 
 @[reassoc (attr := simp)]
 theorem P_f_naturality (q n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
-    f.app (op [n]) ≫ (P q).f n = (P q).f n ≫ f.app (op [n]) :=
+    f.app (op ⦋n⦌) ≫ (P q).f n = (P q).f n ≫ f.app (op ⦋n⦌) :=
   HomologicalComplex.congr_hom ((natTransP q).naturality f) n
 
 @[reassoc (attr := simp)]
 theorem Q_f_naturality (q n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
-    f.app (op [n]) ≫ (Q q).f n = (Q q).f n ≫ f.app (op [n]) := by
+    f.app (op ⦋n⦌) ≫ (Q q).f n = (Q q).f n ≫ f.app (op ⦋n⦌) := by
   simp only [Q, HomologicalComplex.sub_f_apply, HomologicalComplex.id_f, comp_sub, P_f_naturality,
     sub_comp, sub_left_inj]
   dsimp

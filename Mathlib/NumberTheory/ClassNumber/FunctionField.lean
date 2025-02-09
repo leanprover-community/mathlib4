@@ -29,12 +29,11 @@ variable [Algebra Fq[X] F] [Algebra (RatFunc Fq) F]
 variable [IsScalarTower Fq[X] (RatFunc Fq) F]
 variable [FunctionField Fq F] [Algebra.IsSeparable (RatFunc Fq) F]
 
-open scoped Classical
-
 namespace RingOfIntegers
 
 open FunctionField
 
+open scoped Classical in
 noncomputable instance : Fintype (ClassGroup (ringOfIntegers Fq F)) :=
   ClassGroup.fintypeOfAdmissibleOfFinite (RatFunc Fq) F
     (Polynomial.cardPowDegreeIsAdmissible :

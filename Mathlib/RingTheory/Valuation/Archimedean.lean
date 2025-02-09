@@ -24,6 +24,8 @@ variable {F Γ₀ O : Type*} [Field F] [LinearOrderedCommGroupWithZero Γ₀]
 instance : LinearOrderedCommGroupWithZero (MonoidHom.mrange v) where
   __ : CommGroupWithZero (MonoidHom.mrange v) := inferInstance
   __ : LinearOrder (MonoidHom.mrange v) := inferInstance
+  bot := 0
+  bot_le a := show (0 : Γ₀) ≤ _ from zero_le'
   zero_le_one := Subtype.coe_le_coe.mp zero_le_one
   mul_le_mul_left := by
     simp only [Subtype.forall, MonoidHom.mem_mrange, forall_exists_index, Submonoid.mk_mul_mk,

@@ -149,6 +149,14 @@ theorem verschiebung_coeff_add_one (x : 𝕎 R) (n : ℕ) :
 theorem verschiebung_coeff_succ (x : 𝕎 R) (n : ℕ) : (verschiebung x).coeff n.succ = x.coeff n :=
   rfl
 
+variable (p R) in
+theorem verschiebung_injective : Function.Injective (verschiebung : 𝕎 R → 𝕎 R) := by
+  rw [injective_iff_map_eq_zero]
+  intro w h
+  ext n
+  rw [← verschiebung_coeff_succ, h]
+  simp only [zero_coeff]
+
 theorem aeval_verschiebungPoly (x : 𝕎 R) (n : ℕ) :
     aeval x.coeff (verschiebungPoly n) = (verschiebung x).coeff n :=
   aeval_verschiebung_poly' x n

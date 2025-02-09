@@ -70,17 +70,18 @@ instance natLERec.directedSystem : DirectedSystem G' fun i j h => natLERec f' i 
 
 end DirectedSystem
 
--- Porting note: Instead of `Σ i, G i`, we use the alias `Language.Structure.Sigma`
--- which depends on `f`. This way, Lean can infer what `L` and `f` are in the `Setoid` instance.
--- Otherwise we have a "cannot find synthesization order" error. See the discussion at
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/local.20instance.20cannot.20find.20synthesization.20order.20in.20porting
-
 set_option linter.unusedVariables false in
-/-- Alias for `Σ i, G i`. -/
+/-- Alias for `Σ i, G i`.
+
+Instead of `Σ i, G i`, we use the alias `Language.Structure.Sigma` which depends on `f`.
+This way, Lean can infer what `L` and `f` are in the `Setoid` instance.
+Otherwise we have a "cannot find synthesization order" error.
+See also the discussion at
+https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/local.20instance.20cannot.20find.20synthesization.20order.20in.20porting
+-/
 @[nolint unusedArguments]
 protected abbrev Structure.Sigma (f : ∀ i j, i ≤ j → G i ↪[L] G j) := Σ i, G i
 
--- Porting note: Setting up notation for `Language.Structure.Sigma`: add a little asterisk to `Σ`
 local notation "Σˣ" => Structure.Sigma
 
 /-- Constructor for `FirstOrder.Language.Structure.Sigma` alias. -/
@@ -150,11 +151,7 @@ end DirectLimit
 def DirectLimit [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] :=
   Quotient (DirectLimit.setoid G f)
 
-attribute [local instance] DirectLimit.setoid
-
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): Added local instance
-attribute [local instance] DirectLimit.sigmaStructure
-
+attribute [local instance] DirectLimit.setoid DirectLimit.sigmaStructure
 
 instance [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] [Inhabited ι]
     [Inhabited (G default)] : Inhabited (DirectLimit G f) :=
@@ -288,8 +285,8 @@ variable {L ι G f}
 theorem of_apply {i : ι} {x : G i} : of L ι G f i x = ⟦.mk f i x⟧ :=
   rfl
 
--- Porting note: removed the `@[simp]`, it is not in simp-normal form, but the simp-normal version
--- of this theorem would not be useful.
+-- This is not a simp-lemma because it is not in simp-normal form,
+-- but the simp-normal version of this theorem would not be useful.
 theorem of_f {i j : ι} {hij : i ≤ j} {x : G i} : of L ι G f j (f i j hij x) = of L ι G f i x := by
   rw [of_apply, of_apply, Quotient.eq]
   refine Setoid.symm ⟨j, hij, refl j, ?_⟩

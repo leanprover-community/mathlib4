@@ -219,9 +219,7 @@ instance sequentialFunctor_initial : (sequentialFunctor J).Initial where
     · right
       exact ⟨CostructuredArrow.homMk (homOfLE h).op rfl⟩
 
-/--
-This is proved in https://stacks.math.columbia.edu/tag/0032
--/
+@[stacks 0032]
 proof_wanted preorder_of_cofiltered (J : Type*) [Category J] [IsCofiltered J] :
     ∃ (I : Type*) (_ : Preorder I) (_ : IsCofiltered I) (F : I ⥤ J), F.Initial
 

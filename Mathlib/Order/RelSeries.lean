@@ -177,7 +177,7 @@ instance membership : Membership α (RelSeries r) :=
 theorem mem_def : x ∈ s ↔ x ∈ Set.range s := Iff.rfl
 
 @[simp] theorem mem_toList : x ∈ s.toList ↔ x ∈ s := by
-  rw [RelSeries.toList, List.mem_ofFn, RelSeries.mem_def]
+  rw [RelSeries.toList, List.mem_ofFn', RelSeries.mem_def]
 
 theorem subsingleton_of_length_eq_zero (hs : s.length = 0) : {x | x ∈ s}.Subsingleton := by
   rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩

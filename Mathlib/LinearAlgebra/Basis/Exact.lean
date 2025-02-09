@@ -57,7 +57,7 @@ private lemma top_le_span_of_aux (v : κ ⊕ σ → M)
     replace hs := DFunLike.congr_fun hs (s m)
     simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq] at hs
     simp [hs]
-  have : m ∈ Submodule.span R (Set.range v) := hsp trivial
+  have : m ∈ Submodule.span R (Set.range v) := hsp Submodule.mem_top
   obtain ⟨c, rfl⟩ := Finsupp.mem_span_range_iff_exists_finsupp.mp this
   simp only [LinearMap.mem_ker, Finsupp.sum, map_sum, map_smul,
     Finset.sum_sum_eq_sum_toLeft_add_sum_toRight, map_add, hslzero, smul_zero,

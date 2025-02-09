@@ -52,7 +52,7 @@ namespace finGaloisGroupMap
 @[simp]
 lemma map_id (L : (FiniteGaloisIntermediateField k K)ᵒᵖ) :
     (finGaloisGroupMap (𝟙 L)) = 𝟙 L.unop.finGaloisGroup :=
-  AlgEquiv.restrictNormalHom_id _ _
+  ConcreteCategory.ext (AlgEquiv.restrictNormalHom_id _ _)
 
 @[simp]
 lemma map_comp {L₁ L₂ L₃ : (FiniteGaloisIntermediateField k K)ᵒᵖ} (f : L₁ ⟶ L₂) (g : L₂ ⟶ L₃) :
@@ -68,6 +68,7 @@ lemma map_comp {L₁ L₂ L₃ : (FiniteGaloisIntermediateField k K)ᵒᵖ} (f :
   haveI : IsScalarTower k L₃ L₁ := IsScalarTower.of_algebraMap_eq' rfl
   haveI : IsScalarTower k L₃ L₂ := IsScalarTower.of_algebraMap_eq' rfl
   haveI : IsScalarTower L₃ L₂ L₁ := IsScalarTower.of_algebraMap_eq' rfl
+  ext : 1
   apply IsScalarTower.AlgEquiv.restrictNormalHom_comp k L₃ L₂ L₁
 
 end finGaloisGroupMap

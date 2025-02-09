@@ -42,6 +42,13 @@ theorem cpow_eq_zero_iff (x y : ℂ) : x ^ y = 0 ↔ x = 0 ∧ y ≠ 0 := by
   simp only [cpow_def]
   split_ifs <;> simp [*, exp_ne_zero]
 
+theorem cpow_ne_zero_iff {x y : ℂ} :
+    x ^ y ≠ 0 ↔ x ≠ 0 ∨ y = 0 := by
+  rw [ne_eq, cpow_eq_zero_iff, not_and_or, ne_eq, not_not]
+
+theorem cpow_ne_zero_iff_of_exponent_ne_zero {x y : ℂ} (hy : y ≠ 0) :
+    x ^ y ≠ 0 ↔ x ≠ 0 := by simp [hy]
+
 @[simp]
 theorem zero_cpow {x : ℂ} (h : x ≠ 0) : (0 : ℂ) ^ x = 0 := by simp [cpow_def, *]
 
@@ -119,9 +126,6 @@ lemma cpow_mul_ofNat (x y : ℂ) (n : ℕ) [n.AtLeastTwo] :
 @[simp, norm_cast]
 theorem cpow_natCast (x : ℂ) (n : ℕ) : x ^ (n : ℂ) = x ^ n := by simpa using cpow_nat_mul x n 1
 
-@[deprecated (since := "2024-04-17")]
-alias cpow_nat_cast := cpow_natCast
-
 @[simp]
 lemma cpow_ofNat (x : ℂ) (n : ℕ) [n.AtLeastTwo] :
     x ^ (ofNat(n) : ℂ) = x ^ ofNat(n) :=
@@ -131,9 +135,6 @@ theorem cpow_two (x : ℂ) : x ^ (2 : ℂ) = x ^ (2 : ℕ) := cpow_ofNat x 2
 
 @[simp, norm_cast]
 theorem cpow_intCast (x : ℂ) (n : ℤ) : x ^ (n : ℂ) = x ^ n := by simpa using cpow_int_mul x n 1
-
-@[deprecated (since := "2024-04-17")]
-alias cpow_int_cast := cpow_intCast
 
 @[simp]
 theorem cpow_nat_inv_pow (x : ℂ) {n : ℕ} (hn : n ≠ 0) : (x ^ (n⁻¹ : ℂ)) ^ n = x := by

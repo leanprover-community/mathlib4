@@ -66,12 +66,12 @@ def dualSubmoduleToDual [NoZeroSMulDivisors R S] (N : Submodule R M) :
     B.dualSubmodule N →ₗ[R] Module.Dual R N :=
   { toFun := fun x ↦
     { toFun := B.dualSubmoduleParing x
-      map_add' := fun x y ↦ NoZeroSMulDivisors.algebraMap_injective R S (by simp)
-      map_smul' := fun r m ↦ NoZeroSMulDivisors.algebraMap_injective R S
+      map_add' := fun x y ↦ FaithfulSMul.algebraMap_injective R S (by simp)
+      map_smul' := fun r m ↦ FaithfulSMul.algebraMap_injective R S
         (by simp [← Algebra.smul_def]) }
-    map_add' := fun x y ↦ LinearMap.ext fun z ↦ NoZeroSMulDivisors.algebraMap_injective R S
+    map_add' := fun x y ↦ LinearMap.ext fun z ↦ FaithfulSMul.algebraMap_injective R S
       (by simp)
-    map_smul' := fun r x ↦ LinearMap.ext fun y ↦ NoZeroSMulDivisors.algebraMap_injective R S
+    map_smul' := fun r x ↦ LinearMap.ext fun y ↦ FaithfulSMul.algebraMap_injective R S
       (by simp [← Algebra.smul_def]) }
 
 lemma dualSubmoduleToDual_injective (hB : B.Nondegenerate) [NoZeroSMulDivisors R S]

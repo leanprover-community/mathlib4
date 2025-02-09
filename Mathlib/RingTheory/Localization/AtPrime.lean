@@ -38,19 +38,6 @@ section AtPrime
 
 variable (P : Ideal R) [hp : P.IsPrime]
 
-namespace Ideal
-
-/-- The complement of a prime ideal `P ⊆ R` is a submonoid of `R`. -/
-def primeCompl : Submonoid R where
-  carrier := (Pᶜ : Set R)
-  one_mem' := by convert P.ne_top_iff_one.1 hp.1
-  mul_mem' {_ _} hnx hny hxy := Or.casesOn (hp.mem_or_mem hxy) hnx hny
-
-theorem primeCompl_le_nonZeroDivisors [NoZeroDivisors R] : P.primeCompl ≤ nonZeroDivisors R :=
-  le_nonZeroDivisors_of_noZeroDivisors <| not_not_intro P.zero_mem
-
-end Ideal
-
 /-- Given a prime ideal `P`, the typeclass `IsLocalization.AtPrime S P` states that `S` is
 isomorphic to the localization of `R` at the complement of `P`. -/
 protected abbrev IsLocalization.AtPrime :=

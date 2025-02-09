@@ -105,8 +105,7 @@ private theorem coe_lowerCentralSeries_eq_int_aux (R₁ R₂ L M : Type*)
 
 theorem coe_lowerCentralSeries_eq_int [LieModule R L M] (k : ℕ) :
     (lowerCentralSeries R L M k : Set M) = (lowerCentralSeries ℤ L M k : Set M) := by
-  show ((lowerCentralSeries R L M k).toSubmodule : Set M) =
-       ((lowerCentralSeries ℤ L M k).toSubmodule : Set M)
+  rw [← LieSubmodule.coe_toSubmodule, ← LieSubmodule.coe_toSubmodule]
   induction k with
   | zero => rfl
   | succ k ih =>
@@ -172,7 +171,7 @@ theorem eventually_iInf_lowerCentralSeries_eq [IsArtinian R M] :
   have h_wf : WellFoundedGT (LieSubmodule R L M)ᵒᵈ :=
     LieSubmodule.wellFoundedLT_of_isArtinian R L M
   obtain ⟨n, hn : ∀ m, n ≤ m → lowerCentralSeries R L M n = lowerCentralSeries R L M m⟩ :=
-    WellFounded.monotone_chain_condition.mp h_wf.wf ⟨_, antitone_lowerCentralSeries R L M⟩
+    h_wf.monotone_chain_condition ⟨_, antitone_lowerCentralSeries R L M⟩
   refine Filter.eventually_atTop.mpr ⟨n, fun l hl ↦ le_antisymm (iInf_le _ _) (le_iInf fun m ↦ ?_)⟩
   rcases le_or_lt l m with h | h
   · rw [← hn _ hl, ← hn _ (hl.trans h)]

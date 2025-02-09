@@ -18,10 +18,6 @@ We also specialize for `Tree Unit`, which is a binary tree without any
 additional data. We provide the notation `a △ b` for making a `Tree Unit` with children
 `a` and `b`.
 
-## TODO
-
-Implement a `Traversable` instance for `Tree`.
-
 ## References
 
 <https://leanprover-community.github.io/archive/stream/113488-general/topic/tactic.20question.html>
@@ -45,11 +41,38 @@ variable {α : Type u}
 instance : Inhabited (Tree α) :=
   ⟨nil⟩
 
+/--
+Do an action for every node of the tree.
+Actions are taken in node -> left subtree -> right subtree recursive order.
+This function is the `traverse` function for the `Traversable Tree` instance.
+-/
+def traverse {m : Type* → Type*} [Applicative m] {α β} (f : α → m β) : Tree α → m (Tree β)
+  | .nil => pure nil
+  | .node a l r => .node <$> f a <*> traverse f l <*> traverse f r
+
 /-- Apply a function to each value in the tree.  This is the `map` function for the `Tree` functor.
 -/
 def map {β} (f : α → β) : Tree α → Tree β
   | nil => nil
   | node a l r => node (f a) (map f l) (map f r)
+
+theorem id_map (t : Tree α) : t.map id = t := by
+  induction t with
+  | nil => rw [map]
+  | node v l r hl hr => rw [map, hl, hr, id_eq]
+
+theorem comp_map {β γ : Type*} (f : α → β) (g : β → γ) (t : Tree α) :
+    t.map (g ∘ f) = (t.map f).map g := by
+  induction t with
+  | nil => rw [map, map, map]
+  | node v l r hl hr => rw [map, map, map, hl, hr, Function.comp_apply]
+
+theorem traverse_pure (t : Tree α) {m : Type u → Type*} [Applicative m] [LawfulApplicative m] :
+    t.traverse (pure : α → m α) = pure t := by
+  induction t with
+  | nil => rw [traverse]
+  | node v l r hl hr =>
+    rw [traverse, hl, hr, map_pure, pure_seq, seq_pure, map_pure, map_pure]
 
 /-- The number of internal nodes (i.e. not including leaves) of a binary tree -/
 @[simp]

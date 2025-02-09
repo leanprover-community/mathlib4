@@ -304,17 +304,5 @@ theorem tendsto_const_mul_pow_atBot_iff {c : α} {n : ℕ} :
     Tendsto (fun x => c * x ^ n) atTop atBot ↔ n ≠ 0 ∧ c < 0 := by
   simp only [← tendsto_neg_atTop_iff, ← neg_mul, tendsto_const_mul_pow_atTop_iff, neg_pos]
 
-@[deprecated (since := "2024-05-06")]
-alias Tendsto.neg_const_mul_atTop := Tendsto.const_mul_atTop_of_neg
-
-@[deprecated (since := "2024-05-06")]
-alias Tendsto.atTop_mul_neg_const := Tendsto.atTop_mul_const_of_neg
-
-@[deprecated (since := "2024-05-06")]
-alias Tendsto.neg_const_mul_atBot := Tendsto.const_mul_atBot_of_neg
-
-@[deprecated (since := "2024-05-06")]
-alias Tendsto.atBot_mul_neg_const := Tendsto.atBot_mul_const_of_neg
-
 end LinearOrderedField
 end Filter

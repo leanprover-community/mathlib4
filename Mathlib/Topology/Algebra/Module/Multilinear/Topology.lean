@@ -225,7 +225,6 @@ instance : ContinuousEvalConst (ContinuousMultilinearMap 𝕜 E F) (Π i, E i) F
     (uniformContinuous_eval_const x).continuous
 
 @[deprecated (since := "2024-10-05")] protected alias continuous_eval_const := continuous_eval_const
-@[deprecated (since := "2024-04-10")] alias continuous_eval_left := continuous_eval_const
 @[deprecated (since := "2024-10-05")] protected alias continuous_coe_fun := continuous_coeFun
 
 instance instT2Space [T2Space F] : T2Space (ContinuousMultilinearMap 𝕜 E F) :=

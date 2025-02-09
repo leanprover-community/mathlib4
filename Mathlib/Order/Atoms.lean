@@ -255,11 +255,15 @@ theorem IsAtom.inf_eq_bot_of_ne [SemilatticeInf α] [OrderBot α] {a b : α} (ha
 
 theorem IsAtom.disjoint_of_ne [SemilatticeInf α] [OrderBot α] {a b : α} (ha : IsAtom a)
     (hb : IsAtom b) (hab : a ≠ b) : Disjoint a b :=
-  disjoint_iff.mpr (IsAtom.inf_eq_bot_of_ne ha hb hab)
+  disjoint_iff.mpr (ha.inf_eq_bot_of_ne hb hab)
 
 theorem IsCoatom.sup_eq_top_of_ne [SemilatticeSup α] [OrderTop α] {a b : α} (ha : IsCoatom a)
     (hb : IsCoatom b) (hab : a ≠ b) : a ⊔ b = ⊤ :=
   ha.dual.inf_eq_bot_of_ne hb.dual hab
+
+theorem IsCoatom.codisjoint_of_ne [SemilatticeSup α] [OrderTop α] {a b : α} (ha : IsCoatom a)
+    (hb : IsCoatom b) (hab : a ≠ b) : Codisjoint a b :=
+  codisjoint_iff.mpr (ha.sup_eq_top_of_ne hb hab)
 
 end Pairwise
 
@@ -687,9 +691,6 @@ theorem eq_top_of_lt : b = ⊤ :=
 
 alias _root_.LT.lt.eq_bot := eq_bot_of_lt
 alias _root_.LT.lt.eq_top := eq_top_of_lt
-@[deprecated (since := "2024-05-29")] alias LT.lt.eq_bot := _root_.LT.lt.eq_bot
-@[deprecated (since := "2024-05-29")] alias LT.lt.eq_top := _root_.LT.lt.eq_top
-
 end Preorder
 
 section BoundedOrder

@@ -134,8 +134,6 @@ def recOn_false [h : Decidable p] {h₁ : p → Sort u} {h₂ : ¬p → Sort u} 
 
 @[deprecated (since := "2024-09-03")] alias by_cases := byCases
 @[deprecated (since := "2024-09-03")] alias by_contradiction := byContradiction
-@[deprecated (since := "2024-07-27")] alias not_not_iff := not_not
-
 end Decidable
 
 @[deprecated (since := "2024-09-03")] alias Or.decidable := instDecidableOr

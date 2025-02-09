@@ -126,6 +126,28 @@ lemma finitePresentation_of_isFinite [P.IsFinite] :
     FinitePresentation R S :=
   FinitePresentation.equiv (P.quotientEquiv.restrictScalars R)
 
+variable (R S) in
+/-- An arbitrary choice of a finite presentation of a finitely presented algebra. -/
+noncomputable
+def ofFinitePresentation [FinitePresentation R S] : Presentation.{0, 0} R S :=
+  letI H := FinitePresentation.out (R := R) (A := S)
+  letI n : ℕ := H.choose
+  letI f : MvPolynomial (Fin n) R →ₐ[R] S := H.choose_spec.choose
+  haveI hf : Function.Surjective f := H.choose_spec.choose_spec.1
+  haveI hf' : (RingHom.ker f).FG := H.choose_spec.choose_spec.2
+  letI H' := Submodule.fg_iff_exists_fin_generating_family.mp hf'
+  let m : ℕ := H'.choose
+  let v : Fin m → MvPolynomial (Fin n) R := H'.choose_spec.choose
+  let hv : Ideal.span (Set.range v) = RingHom.ker f := H'.choose_spec.choose_spec
+  { __ := Generators.ofSurjective (fun x ↦ f (.X x)) (by convert hf; ext; simp)
+    rels := Fin m
+    relation := v
+    span_range_relation_eq_ker := hv.trans (by congr; ext; simp) }
+
+instance [FinitePresentation R S] : (ofFinitePresentation R S).IsFinite where
+  finite_vars := Finite.of_fintype (Fin _)
+  finite_rels := Finite.of_fintype (Fin _)
+
 section Construction
 
 /-- If `algebraMap R S` is bijective, the empty generators are a presentation with no relations. -/

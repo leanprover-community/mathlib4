@@ -170,15 +170,11 @@ def toPreimages : J ⥤ Type v where
     rw [← mem_preimage, preimage_preimage, mem_preimage]
     convert h (g ≫ f); rw [F.map_comp]; rfl
   map_id j := by
-    #adaptation_note /-- nightly-2024-03-16: simp was
-    simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_id] -/
-    simp only [MapsTo.restrict, Subtype.map_def, F.map_id]
+    simp +unfoldPartialApp only [MapsTo.restrict, Subtype.map, F.map_id]
     ext
     rfl
   map_comp f g := by
-    #adaptation_note /-- nightly-2024-03-16: simp was
-    simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_comp] -/
-    simp only [MapsTo.restrict, Subtype.map_def, F.map_comp]
+    simp +unfoldPartialApp only [MapsTo.restrict, Subtype.map, F.map_comp]
     rfl
 
 instance toPreimages_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite ((F.toPreimages s).obj j) :=
@@ -253,15 +249,11 @@ def toEventualRanges : J ⥤ Type v where
   obj j := F.eventualRange j
   map f := (F.eventualRange_mapsTo f).restrict _ _ _
   map_id i := by
-    #adaptation_note /--- nightly-2024-03-16: simp was
-    simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_id] -/
-    simp only [MapsTo.restrict, Subtype.map_def, F.map_id]
+    simp +unfoldPartialApp only [MapsTo.restrict, Subtype.map, F.map_id]
     ext
     rfl
   map_comp _ _ := by
-    #adaptation_note /-- nightly-2024-03-16: simp was
-    simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_comp] -/
-    simp only [MapsTo.restrict, Subtype.map_def, F.map_comp]
+    simp +unfoldPartialApp only [MapsTo.restrict, Subtype.map, F.map_comp]
     rfl
 
 instance toEventualRanges_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite (F.toEventualRanges.obj j) :=
@@ -344,7 +336,7 @@ theorem eventually_injective [Nonempty J] [Finite F.sections] :
   have card_le : ∀ j, Fintype.card (F.obj j) ≤ Fintype.card F.sections :=
     fun j => Fintype.card_le_of_surjective _ (F.eval_section_surjective_of_surjective Fsur j)
   let fn j := Fintype.card F.sections - Fintype.card (F.obj j)
-  refine ⟨fn.argmin Nat.lt_wfRel.wf,
+  refine ⟨fn.argmin,
     fun i f => ((Fintype.bijective_iff_surjective_and_card _).2
       ⟨Fsur f, le_antisymm ?_ (Fintype.card_le_of_surjective _ <| Fsur f)⟩).1⟩
   rw [← Nat.sub_le_sub_iff_left (card_le i)]

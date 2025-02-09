@@ -109,7 +109,7 @@ instance [L.IsAlgebraic] [L.IsRelational] : Unique (L →ᴸ L') :=
 def comp (g : L' →ᴸ L'') (f : L →ᴸ L') : L →ᴸ L'' :=
   ⟨fun _n F => g.1 (f.1 F), fun _ R => g.2 (f.2 R)⟩
 
--- Porting note: added ᴸ to avoid clash with function composition
+-- added ᴸ to avoid clash with function composition
 @[inherit_doc]
 local infixl:60 " ∘ᴸ " => LHom.comp
 
