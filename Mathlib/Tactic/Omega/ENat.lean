@@ -28,17 +28,21 @@ attribute [enat_omega_top_simps] top_add ENat.sub_top ENat.top_sub_coe ENat.mul_
 attribute [enat_omega_coe_simps] ENat.coe_inj ENat.coe_le_coe ENat.coe_lt_coe
 
 open Qq Lean Elab Tactic Term Meta in
-def casesFirstENat : TacticM Unit := withMainContext do
-  let ctx ← getLCtx
-  let decl? ← ctx.findDeclM? fun decl => do
-    if ← (isExprDefEq (← inferType decl.toExpr) q(ENat)) then
-      return Option.some decl
-    else
-      return Option.none
-  let .some decl := decl? | throwError "No ENats"
-  let x := mkIdent decl.userName
-  evalTactic (← `(tactic| cases' $x:ident with $x:ident <;>
-    try simp only [enat_omega_top_simps] at *))
+def casesFirstENat : TacticM Unit := focus do
+  let g ← getMainGoal
+  let (g', _) ← g.renameInaccessibleFVars
+  setGoals [g']
+  g'.withContext do
+    let ctx ← getLCtx
+    let decl? ← ctx.findDeclM? fun decl => do
+      if ← (isExprDefEq (← inferType decl.toExpr) q(ENat)) then
+        return Option.some decl
+      else
+        return Option.none
+    let .some decl := decl? | throwError "No ENats"
+    let x := mkIdent decl.userName
+    evalTactic (← `(tactic| cases' $x:ident with $x:ident <;>
+      try simp only [enat_omega_top_simps] at *))
 
 elab "cases_first_ENat" : tactic => casesFirstENat
 

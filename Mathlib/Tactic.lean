@@ -190,6 +190,9 @@ import Mathlib.Tactic.NormNum.Result
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.Observe
 import Mathlib.Tactic.OfNat
+import Mathlib.Tactic.Omega.ENat
+import Mathlib.Tactic.Omega.PNat
+import Mathlib.Tactic.OmegaExtensions
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.Peel
 import Mathlib.Tactic.Polyrith
