@@ -21,8 +21,8 @@ integral) extension of `F`.
 
 ## Main results
 
-- `normalizedTrace_intermediateField`: for a tower `K / E / F`, `normalizedTrace F E` agrees with
-  `normalizedTrace F K` on `E`.
+- `normalizedTrace_intermediateField`: for a tower `K / E / F` of algebraic extensions,
+  `normalizedTrace F E` agrees with `normalizedTrace F K` on `E`.
 - `normalizedTrace_self`: `normalizedTrace F F` is the identity map.
 
 -/
@@ -113,25 +113,43 @@ theorem normalizedTrace_self_apply (a : F) : normalizedTrace F F a = a := by
 theorem normalizedTrace_self : normalizedTrace F F = LinearMap.id :=
   LinearMap.ext normalizedTrace_self_apply
 
-@[simp]
-theorem normalizedTrace_algebraMap_apply (a : F) : normalizedTrace F K (algebraMap F K a) = a :=
-  (Algebra.ofId_apply K a ▸
-    normalizedTraceAux_map F K (Algebra.ofId F K) a).trans (normalizedTrace_self_apply a)
-
-/-- The normalized trace map is a left inverse of the algebra map. -/
-@[simp]
-theorem normalizedTrace_algebraMap : normalizedTrace F K ∘ algebraMap F K = id :=
-  funext <| normalizedTrace_algebraMap_apply F K
-
 /-- The normalized trace transfers via (injective) maps. -/
 @[simp]
 theorem normalizedTrace_map {E : Type*} [Field E] [Algebra F E] [Algebra.IsIntegral F E]
     (f : E →ₐ[F] K) (a : E) : normalizedTrace F K (f a) = normalizedTrace F E a :=
   normalizedTraceAux_map F K f a
 
+section IsScalarTower
+
+variable (F E K : Type*) [Field F] [Field E] [Field K]
+variable [Algebra F E] [Algebra E K] [Algebra F K] [IsScalarTower F E K]
+variable [Algebra.IsIntegral F E] [Algebra.IsIntegral F K]
+variable [CharZero F]
+
+@[simp]
+theorem normalizedTrace_algebraMap_apply (a : E) :
+    normalizedTrace F K (algebraMap E K a) = normalizedTrace F E a :=
+  normalizedTrace_map F K (IsScalarTower.toAlgHom F E K) a
+
+@[simp]
+theorem normalizedTrace_algebraMap :
+    normalizedTrace F K ∘ algebraMap E K = normalizedTrace F E :=
+  funext <| normalizedTrace_algebraMap_apply F E K
+
+end IsScalarTower
+
+@[simp]
+theorem normalizedTrace_algebraMap_eq_id_apply (a : F) :
+    normalizedTrace F K (algebraMap F K a) = a := by simp
+
+/-- The normalized trace map is a left inverse of the algebra map. -/
+@[simp]
+theorem normalizedTrace_algebraMap_eq_id : normalizedTrace F K ∘ algebraMap F K = id :=
+  funext <| normalizedTrace_algebraMap_eq_id_apply F K
+
 /-- The normalized trace commutes with (injective) maps. -/
 @[simp]
-theorem normalizedTrace_comp {E : Type*} [Field E] [Algebra F E] [Algebra.IsIntegral F E]
+theorem normalizedTrace_comp_algHom {E : Type*} [Field E] [Algebra F E] [Algebra.IsIntegral F E]
     (f : E →ₐ[F] K) : normalizedTrace F K ∘ₗ f = normalizedTrace F E :=
   LinearMap.ext <| normalizedTrace_map F K f
 
@@ -147,7 +165,7 @@ theorem normalizedTrace_eq_of_fininteDimensional [FiniteDimensional F K] :
   apply normalizedTraceAux_eq_of_fininteDimensional
 
 theorem normalizedTrace_surjective : Function.Surjective (normalizedTrace F K) :=
-  fun a ↦ ⟨algebraMap F K a, normalizedTrace_algebraMap_apply F K a⟩
+  fun a ↦ ⟨algebraMap F K a, normalizedTrace_algebraMap_eq_id_apply F K a⟩
 
 /-- The normalized trace map is non-trivial. -/
 theorem normalizedTrace_ne_zero : normalizedTrace F K ≠ 0 :=
