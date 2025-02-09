@@ -348,6 +348,11 @@ theorem not_mem_empty (x : α) : ¬x ∈ (∅ : Set α) :=
 theorem not_not_mem : ¬a ∉ s ↔ a ∈ s :=
   not_not
 
+theorem ssubset_of_subset_of_mem_not_mem {x : α} (hst : s ⊆ t) (hxt : x ∈ t)
+    (hxs : x ∉ s) : s ⊂ t := hst.ssubset_of_not_subset fun a ↦ hxs (a hxt)
+
+alias _root_.HasSubset.Subset.ssubset_of_mem_not_mem := ssubset_of_subset_of_mem_not_mem
+
 /-! ### Non-empty sets -/
 
 -- Porting note: we seem to need parentheses at `(↥s)`,
@@ -709,6 +714,14 @@ theorem union_univ (s : Set α) : s ∪ univ = univ := sup_top_eq _
 @[simp]
 theorem univ_union (s : Set α) : univ ∪ s = univ := top_sup_eq _
 
+@[simp]
+theorem ssubset_union_left_iff : s ⊂ s ∪ t ↔ ¬ t ⊆ s := by
+  rw [ssubset_iff_subset_ne, and_iff_right subset_union_left, Ne, eq_comm, union_eq_left]
+
+@[simp]
+theorem ssubset_union_right_iff : t ⊂ s ∪ t ↔ ¬ s ⊆ t := by
+  rw [ssubset_iff_subset_ne, and_iff_right subset_union_right, Ne, eq_comm, union_eq_right]
+
 /-! ### Lemmas about intersection -/
 
 
@@ -826,6 +839,14 @@ theorem inter_setOf_eq_sep (s : Set α) (p : α → Prop) : s ∩ {a | p a} = {a
 
 theorem setOf_inter_eq_sep (p : α → Prop) (s : Set α) : {a | p a} ∩ s = {a ∈ s | p a} :=
   inter_comm _ _
+
+@[simp]
+theorem inter_ssubset_right_iff : s ∩ t ⊂ t ↔ ¬ t ⊆ s := by
+  rw [ssubset_iff_subset_ne, and_iff_right inter_subset_right, Ne, inter_eq_right]
+
+@[simp]
+theorem inter_ssubset_left_iff : s ∩ t ⊂ s ↔ ¬ s ⊆ t := by
+  rw [ssubset_iff_subset_ne, and_iff_right inter_subset_left, Ne, inter_eq_left]
 
 /-! ### Distributivity laws -/
 
@@ -1188,6 +1209,11 @@ theorem diff_union_inter (s t : Set α) : s \ t ∪ s ∩ t = s := by
 @[simp]
 theorem inter_union_compl (s t : Set α) : s ∩ t ∪ s ∩ tᶜ = s :=
   inter_union_diff _ _
+
+@[simp]
+theorem diff_ssubset_left_iff : s \ t ⊂ s ↔ (s ∩ t).Nonempty := by
+  rw [ssubset_iff_subset_ne, and_iff_right diff_subset, Ne, sdiff_eq_left,
+    disjoint_iff_inter_eq_empty, nonempty_iff_ne_empty]
 
 @[gcongr]
 theorem diff_subset_diff {s₁ s₂ t₁ t₂ : Set α} : s₁ ⊆ s₂ → t₂ ⊆ t₁ → s₁ \ t₁ ⊆ s₂ \ t₂ :=
