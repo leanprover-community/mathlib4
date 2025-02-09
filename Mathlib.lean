@@ -1985,6 +1985,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Preorder
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
@@ -2262,6 +2263,7 @@ import Mathlib.CategoryTheory.Sites.LocallyFullyFaithful
 import Mathlib.CategoryTheory.Sites.LocallyInjective
 import Mathlib.CategoryTheory.Sites.LocallySurjective
 import Mathlib.CategoryTheory.Sites.MayerVietorisSquare
+import Mathlib.CategoryTheory.Sites.Monoidal
 import Mathlib.CategoryTheory.Sites.MorphismProperty
 import Mathlib.CategoryTheory.Sites.NonabelianCohomology.H1
 import Mathlib.CategoryTheory.Sites.OneHypercover
