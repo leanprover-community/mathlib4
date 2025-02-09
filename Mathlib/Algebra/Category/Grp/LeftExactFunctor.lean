@@ -12,12 +12,15 @@ import Mathlib.CategoryTheory.Preadditive.CommGrp_
 /-!
 # The forgetful functor `(C ⥤ₗ AddCommGroup) ⥤ (C ⥤ₗ Type v)` is an equivalence
 
-We construct a quasi-inverse for the 
+We construct a quasi-inverse for the
 -/
 
 open CategoryTheory MonoidalCategory Limits
 
+
 universe v v' u u'
+
+namespace AddCommGrp
 
 section
 
@@ -84,3 +87,5 @@ noncomputable def forgetEquivalence : (C ⥤ₗ AddCommGrp.{v}) ≌ (C ⥤ₗ Ty
   counitIso := Iso.refl _
 
 end
+
+end AddCommGrp
