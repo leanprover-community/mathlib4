@@ -48,6 +48,8 @@ instance IsStableUnderRetracts.isomorphisms : (isomorphisms C).IsStableUnderRetr
     · rw [← h.i_w_assoc, IsIso.hom_inv_id_assoc, h.retract_left]
     · rw [Category.assoc, Category.assoc, h.r_w, IsIso.inv_hom_id_assoc, h.retract_right]
 
+/-- The class of morphisms that are retracts of morphisms
+belonging to `P : MorphismProperty C`. -/
 def retracts (P : MorphismProperty C) : MorphismProperty C :=
   fun _ _ f ↦ ∃ (Z W : C) (g : Z ⟶ W) (_ : RetractArrow f g), P g
 
