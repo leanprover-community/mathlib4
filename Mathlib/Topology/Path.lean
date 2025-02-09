@@ -645,7 +645,7 @@ theorem refl_reparam {f : I → I} (hfcont : Continuous f) (hf₀ : f 0 = 0) (hf
 
 /-- The concatenation of countably many paths leading up to some point `x` as a function. The
 corresponding path is defined separately because continuity takes some effort to prove. -/
-noncomputable def sigmaConcatFun {X : Type*} [TopologicalSpace X] {s : ℕ → X}
+def sigmaConcatFun {X : Type*} [TopologicalSpace X] {s : ℕ → X}
     (γ : (n : ℕ) → Path (s n) (s n.succ)) (x : X) : I → X := fun t ↦ by
   let n := Nat.log 2 ⌊(σ t).1⁻¹⌋₊
   refine if ht : t < 1 then γ n ⟨2 * (1 - σ t * (2 ^ n : ℕ)), ?_, ?_⟩ else x
@@ -706,7 +706,7 @@ lemma sigmaConcatFun_eqOn {X : Type*} [TopologicalSpace X] {s : ℕ → X}
     linarith
 
 /-- The concatenation of countably many paths leading up to some point `x`. -/
-noncomputable def sigmaConcat {X : Type*} [TopologicalSpace X] {s : ℕ → X}
+def sigmaConcat {X : Type*} [TopologicalSpace X] {s : ℕ → X}
     (γ : (n : ℕ) → Path (s n) (s n.succ)) (x : X) {b : ℕ → Set X} (hb : (𝓝 x).HasAntitoneBasis b)
     (hγ : ∀ n t, γ n t ∈ b n) : Path (s 0) x where
   toFun := sigmaConcatFun γ x
