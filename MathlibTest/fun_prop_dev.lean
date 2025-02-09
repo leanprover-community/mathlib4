@@ -393,7 +393,7 @@ example (f : β → γ) (g : α → β) (h : B) : Con (fun x => f (g x)) := by f
 end MultipleLambdaTheorems
 
 
-/-- warning: `?m` is not a `fun_prop` goal! -/
+/-- info: `?m` is not a `fun_prop` goal! -/
 #guard_msgs in
 #check_failure ((by fun_prop) : ?m)
 
