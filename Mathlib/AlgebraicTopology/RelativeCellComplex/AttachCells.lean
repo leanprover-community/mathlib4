@@ -18,7 +18,7 @@ there is a pushout diagram of the form
   v                 v
 ⨿ i, B (π i) -----> X₂
 ```
-This means that the morphism `f` is a pushout of coproducts of morphisms
+In other words, the morphism `f` is a pushout of coproducts of morphisms
 of the form `g a : A a ⟶ B a`, see `nonempty_attachCells_iff`.
 
 -/
