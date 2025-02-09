@@ -308,8 +308,8 @@ def pullbackConeOfLeftFst :
                     constructor
                     · change _ ∈ U.unop at h₁
                       convert h₁
-                      erw [TopCat.pullbackIsoProdSubtype_inv_fst_apply]
-                    · erw [TopCat.pullbackIsoProdSubtype_inv_snd_apply]
+                      rw [TopCat.pullbackIsoProdSubtype_inv_fst_apply]
+                    · rw [TopCat.pullbackIsoProdSubtype_inv_snd_apply]
                   · rintro _ ⟨x, h₁, rfl⟩
                     exact ⟨_, h₁, CategoryTheory.congr_fun pullback.condition x⟩))
       naturality := by

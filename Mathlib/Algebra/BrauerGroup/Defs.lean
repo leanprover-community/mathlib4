@@ -14,7 +14,7 @@ import Mathlib.Algebra.Category.AlgebraCat.Basic
 We introduce the definition of Brauer group of a field K, which is the quotient of the set of
 all finite-dimensional central simple algebras over K modulo the Brauer Equivalence where two
 central simple algebras `A` and `B` are Brauer Equivalent if there exist `n, m ∈ ℕ+` such
-that `Mₙ(A) ≃ₐ[K] Mₙ(B)`.
+that `Mₙ(A) ≃ₐ[K] Mₘ(B)`.
 
 # TODOs
 1. Prove that the Brauer group is an abelian group where multiplication is defined as tensorproduct.
@@ -49,18 +49,18 @@ attribute [instance] CSA.isCentral CSA.isSimple CSA.fin_dim
 /-- Two finite dimensional central simple algebras `A` and `B` are Brauer Equivalent
   if there exist `n, m ∈ ℕ+` such that the `Mₙ(A) ≃ₐ[K] Mₙ(B)`. -/
 abbrev IsBrauerEquivalent (A B : CSA K) : Prop :=
-  ∃n m : ℕ, n ≠ 0 ∧ m ≠ 0 ∧ (Nonempty <| Matrix (Fin n) (Fin n) A ≃ₐ[K] Matrix (Fin m) (Fin m) B)
+  ∃ n m : ℕ, n ≠ 0 ∧ m ≠ 0 ∧ (Nonempty <| Matrix (Fin n) (Fin n) A ≃ₐ[K] Matrix (Fin m) (Fin m) B)
 
 namespace IsBrauerEquivalent
 
 @[refl]
 lemma refl (A : CSA K) : IsBrauerEquivalent A A :=
-    ⟨1, 1, one_ne_zero, one_ne_zero, ⟨AlgEquiv.refl⟩⟩
+  ⟨1, 1, one_ne_zero, one_ne_zero, ⟨AlgEquiv.refl⟩⟩
 
 @[symm]
 lemma symm {A B : CSA K} (h : IsBrauerEquivalent A B) : IsBrauerEquivalent B A :=
-    let ⟨n, m, hn, hm, ⟨iso⟩⟩ := h
-    ⟨m, n, hm, hn, ⟨iso.symm⟩⟩
+  let ⟨n, m, hn, hm, ⟨iso⟩⟩ := h
+  ⟨m, n, hm, hn, ⟨iso.symm⟩⟩
 
 open Matrix in
 @[trans]

@@ -524,3 +524,19 @@ theorem MonoidHom.comp_id_commMonCat {G : CommMonCat.{u}} {H : Type u} [CommMono
 theorem MonoidHom.id_commMonCat_comp {G : Type u} [CommMonoid G] {H : CommMonCat.{u}} (f : G →* H) :
     MonoidHom.comp (CommMonCat.Hom.hom (𝟙 H)) f = f := by
   simp
+
+/-- The equivalence between `AddMonCat` and `MonCat`. -/
+@[simps]
+def AddMonCat.equivalence : AddMonCat ≌ MonCat where
+  functor := { obj X := .of (Multiplicative X), map f := MonCat.ofHom f.hom.toMultiplicative }
+  inverse := { obj X := .of (Additive X), map f := ofHom f.hom.toAdditive }
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+
+/-- The equivalence between `AddCommMonCat` and `CommMonCat`. -/
+@[simps]
+def AddCommMonCat.equivalence : AddCommMonCat ≌ CommMonCat where
+  functor := { obj X := .of (Multiplicative X), map f := CommMonCat.ofHom f.hom.toMultiplicative }
+  inverse := { obj X := .of (Additive X), map f := ofHom f.hom.toAdditive }
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
