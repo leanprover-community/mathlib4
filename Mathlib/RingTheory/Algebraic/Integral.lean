@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.RingTheory.Algebraic.Basic
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+import Mathlib.RingTheory.MvPolynomial.Basic
 
 /-!
 # Algebraic elements and integral elements
@@ -318,10 +319,13 @@ variable (R S)
 /-- If `R` is a domain and `S` is an arbitrary `R`-algebra, then the elements of `S`
 that are algebraic over `R` form a subalgebra. -/
 def Subalgebra.algebraicClosure [IsDomain R] : Subalgebra R S where
-  carrier := {s | _root_.IsAlgebraic R s}
+  carrier := {s | IsAlgebraic R s}
   mul_mem' ha hb := ha.mul hb
   add_mem' ha hb := ha.add hb
   algebraMap_mem' := isAlgebraic_algebraMap
+
+theorem Subalgebra.mem_algebraicClosure_iff [IsDomain R] {s : S} :
+    s ∈ Subalgebra.algebraicClosure R S ↔ IsAlgebraic R s := rfl
 
 theorem integralClosure_le_algebraicClosure [IsDomain R] :
     integralClosure R S ≤ Subalgebra.algebraicClosure R S :=
@@ -391,3 +395,34 @@ lemma subalgebraAlgebraicClosure [IsDomain R] [NoZeroDivisors S] :
     Transcendental (Subalgebra.algebraicClosure R S) a := ha.extendScalars _
 
 end Transcendental
+
+section Polynomial
+
+variable [alg : Algebra.IsAlgebraic R S]
+
+attribute [local instance] Polynomial.algebra
+
+instance [NoZeroDivisors R] : Algebra.IsAlgebraic R[X] S[X] where
+  isAlgebraic p := p.induction_on' (fun _ _ ↦ .add) fun n s ↦ by
+    have ⟨q, ne, eq⟩ := alg.1 s
+    rw [← C_mul_X_pow_eq_monomial]
+    refine .mul ⟨q.mapRingHom C, (map_ne_zero_iff _ (map_injective _ C_injective)).2 ne, ?_⟩ ?_
+    · simpa [map_C_aeval_C]
+    convert isAlgebraic_algebraMap (X ^ n)
+    · simp
+    · have := alg.nontrivial; infer_instance
+
+instance [NoZeroDivisors S] : Algebra.IsAlgebraic R[X] S[X] := by
+  by_cases h : Function.Injective (algebraMap R S)
+  · have := h.noZeroDivisors _ (map_zero _) (map_mul _); infer_instance
+  rw [← Polynomial.map_injective_iff] at h
+  exact Algebra.isAlgebraic_of_not_injective h
+
+attribute [local instance] MvPolynomial.algebraMvPolynomial
+
+instance {σ} [NoZeroDivisors R] : Algebra.IsAlgebraic (MvPolynomial σ R) (MvPolynomial σ S) where
+  isAlgebraic p := by
+    refine p.induction_on' (fun _ _ ↦ ?_) fun _ _ ↦ .add
+    sorry
+
+end Polynomial

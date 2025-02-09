@@ -51,12 +51,13 @@ as a bilinear function of two arguments.
 def toFunBilinear : A →ₗ[A] R[X] →ₗ[R] A[X] :=
   LinearMap.toSpanSingleton A _ (aeval (Polynomial.X : A[X])).toLinearMap
 
+@[simp] theorem toFunBilinear_apply_eq_smul (a : A) (p : R[X]) :
+    toFunBilinear R A a p = a • p.map (algebraMap R A) := rfl
+
 theorem toFunBilinear_apply_eq_sum (a : A) (p : R[X]) :
-    toFunBilinear R A a p = p.sum fun n r => monomial n (a * algebraMap R A r) := by
-  simp only [toFunBilinear_apply_apply, aeval_def, eval₂_eq_sum, Polynomial.sum, Finset.smul_sum]
-  congr with i : 1
-  rw [← Algebra.smul_def, ← C_mul', mul_smul_comm, C_mul_X_pow_eq_monomial, ← Algebra.commutes,
-    ← Algebra.smul_def, smul_monomial]
+    toFunBilinear R A a p = p.sum fun n r ↦ monomial n (a * algebraMap R A r) := by
+  conv_lhs => rw [toFunBilinear_apply_eq_smul, ← p.sum_monomial_eq, sum, Polynomial.map_sum]
+  simp [Finset.smul_sum, sum, ← smul_eq_mul]
 
 /-- (Implementation detail).
 The function underlying `A ⊗[R] R[X] →ₐ[R] A[X]`,
@@ -109,7 +110,9 @@ def toFunAlgHom : A ⊗[R] R[X] →ₐ[R] A[X] :=
   algHomOfLinearMapTensorProduct (toFunLinear R A) (toFunLinear_mul_tmul_mul R A)
     (toFunLinear_one_tmul_one R A)
 
-@[simp]
+@[simp] theorem toFunAlgHom_apply_tmul_eq_smul (a : A) (p : R[X]) :
+    toFunAlgHom R A (a ⊗ₜ[R] p) = a • p.map (algebraMap R A) := rfl
+
 theorem toFunAlgHom_apply_tmul (a : A) (p : R[X]) :
     toFunAlgHom R A (a ⊗ₜ[R] p) = p.sum fun n r => monomial n (a * (algebraMap R A) r) :=
   toFunBilinear_apply_eq_sum R A _ _
@@ -181,6 +184,9 @@ theorem polyEquivTensor_apply (p : A[X]) :
   rfl
 
 @[simp]
+theorem polyEquivTensor_symm_apply_tmul_eq_smul (a : A) (p : R[X]) :
+    (polyEquivTensor R A).symm (a ⊗ₜ p) = a • p.map (algebraMap R A) := rfl
+
 theorem polyEquivTensor_symm_apply_tmul (a : A) (p : R[X]) :
     (polyEquivTensor R A).symm (a ⊗ₜ p) = p.sum fun n r => monomial n (a * algebraMap R A r) :=
   toFunAlgHom_apply_tmul _ _ _ _
@@ -320,8 +326,6 @@ lemma evalRingHom_mapMatrix_comp_compRingEquiv {m} [Fintype m] [DecidableEq m] :
       (compRingEquiv m n R).toRingHom.comp (evalRingHom 0).mapMatrix.mapMatrix := by
   ext; simp
 
-variable [Algebra R A]
-
 /-- If `A` is an `R`-algebra, then `A[X]` is an `R[X]` algebra.
 This gives a diamond for `Algebra R[X] R[X][X]`, so this is not a global instance. -/
 @[reducible] def Polynomial.algebra : Algebra R[X] A[X] :=
@@ -330,16 +334,22 @@ This gives a diamond for `Algebra R[X] R[X][X]`, so this is not a global instanc
 
 attribute [local instance] Polynomial.algebra
 
+@[simp]
+theorem Polynomial.algebraMap_def : algebraMap R[X] A[X] = mapRingHom (algebraMap R A) := rfl
+
 instance : IsScalarTower R R[X] A[X] := .of_algebraMap_eq' (mapRingHom_comp_C _).symm
+
+theorem Polynomial.aeval_C_comp_mapRingHom (a : A) :
+    (@AlgHom.toRingHom _ _ _ _ _ _ (_) _ <| aeval (C a)).comp (mapRingHom C) =
+      C.comp (aeval (R := R) a).toRingHom := by ext <;> simp
+
+theorem Polynomial.map_C_aeval_C (p : R[X]) (a : A) : (p.map C).aeval (C a) = C (p.aeval a) :=
+  congr($(aeval_C_comp_mapRingHom a) p)
 
 variable [Algebra R S]
 
-instance : Algebra.IsPushout R S R[X] S[X] := by
-  constructor
-  let e : S[X] ≃ₐ[S] TensorProduct R S R[X] := { __ := polyEquivTensor R S, commutes' := by simp }
-  convert (TensorProduct.isBaseChange R R[X] S).comp (.ofEquiv e.symm.toLinearEquiv) using 1
-  ext : 2
-  refine Eq.trans ?_ (polyEquivTensor_symm_apply_tmul R S _ _).symm
-  simp [RingHom.algebraMap_toAlgebra]
+instance : Algebra.IsPushout R S R[X] S[X] where
+  out := .of_equiv (polyEquivTensor' R S).symm fun _ ↦
+    (polyEquivTensor_symm_apply_tmul_eq_smul ..).trans <| one_smul ..
 
 instance : Algebra.IsPushout R R[X] S S[X] := .symm inferInstance

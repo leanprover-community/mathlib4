@@ -762,4 +762,30 @@ lemma aeval_sum_elim {σ τ : Type*} (p : MvPolynomial (σ ⊕ τ) R) (f : τ �
 
 end CommSemiring
 
+section Algebra
+
+variable {R S σ : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
+
+/--
+If `S` is an `R`-algebra, then `MvPolynomial σ S` is a `MvPolynomial σ R` algebra.
+
+Warning: This produces a diamond for
+`Algebra (MvPolynomial σ R) (MvPolynomial σ (MvPolynomial σ S))`. That's why it is not a
+global instance.
+-/
+noncomputable def algebraMvPolynomial : Algebra (MvPolynomial σ R) (MvPolynomial σ S) :=
+  (MvPolynomial.map (algebraMap R S)).toAlgebra
+
+attribute [local instance] algebraMvPolynomial
+
+@[simp]
+lemma algebraMap_def :
+    algebraMap (MvPolynomial σ R) (MvPolynomial σ S) = MvPolynomial.map (algebraMap R S) :=
+  rfl
+
+instance : IsScalarTower R (MvPolynomial σ R) (MvPolynomial σ S) :=
+  IsScalarTower.of_algebraMap_eq' (by ext; simp)
+
+end Algebra
+
 end MvPolynomial
