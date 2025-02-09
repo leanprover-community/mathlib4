@@ -232,9 +232,9 @@ instance comap_finitary (N : Matroid β) [N.Finitary] (f : α → β) : (N.comap
   rw [← hJ'.image_eq] at hfin ⊢
   exact (hI J' (hJ'J.trans hJ) (hfin.of_finite_image hJ'.injOn)).1
 
-instance comap_finiteRk (N : Matroid β) [N.FiniteRk] (f : α → β) : (N.comap f).FiniteRk := by
+instance comap_finiteRank (N : Matroid β) [N.FiniteRank] (f : α → β) : (N.comap f).FiniteRank := by
   obtain ⟨B, hB⟩ := (N.comap f).exists_base
-  refine hB.finiteRk_of_finite ?_
+  refine hB.finiteRank_of_finite ?_
   simp only [comap_base_iff] at hB
   exact (hB.1.indep.finite.of_finite_image hB.2.1)
 
@@ -287,7 +287,7 @@ lemma comapOn_dual_eq_of_bijOn (h : BijOn f E N.E) :
 instance comapOn_finitary [N.Finitary] : (N.comapOn E f).Finitary := by
   rw [comapOn]; infer_instance
 
-instance comapOn_finiteRk [N.FiniteRk] : (N.comapOn E f).FiniteRk := by
+instance comapOn_finiteRank [N.FiniteRank] : (N.comapOn E f).FiniteRank := by
   rw [comapOn]; infer_instance
 
 end comapOn
@@ -490,13 +490,13 @@ instance [M.Finitary] {f : α → β} (hf) : (M.map f hf).Finitary := by
   specialize hI (f '' J₀) (image_subset f hJ₀I₀) (hJ₀.image _)
   rwa [map_image_indep_iff (hJ₀I₀.trans hI₀E)] at hI
 
-instance [M.FiniteRk] {f : α → β} (hf) : (M.map f hf).FiniteRk :=
+instance [M.FiniteRank] {f : α → β} (hf) : (M.map f hf).FiniteRank :=
   let ⟨_, hB⟩ := M.exists_base
-  (hB.map hf).finiteRk_of_finite (hB.finite.image _)
+  (hB.map hf).finiteRank_of_finite (hB.finite.image _)
 
-instance [M.RkPos] {f : α → β} (hf) : (M.map f hf).RkPos :=
+instance [M.RankPos] {f : α → β} (hf) : (M.map f hf).RankPos :=
   let ⟨_, hB⟩ := M.exists_base
-  (hB.map hf).rkPos_of_nonempty (hB.nonempty.image _)
+  (hB.map hf).rankPos_of_nonempty (hB.nonempty.image _)
 
 end map
 
@@ -572,11 +572,11 @@ instance [M.Finite] {f : α ↪ β} : (M.mapEmbedding f).Finite :=
 instance [M.Finitary] {f : α ↪ β} : (M.mapEmbedding f).Finitary :=
   inferInstanceAs (M.map f f.injective.injOn).Finitary
 
-instance [M.FiniteRk] {f : α ↪ β} : (M.mapEmbedding f).FiniteRk :=
-  inferInstanceAs (M.map f f.injective.injOn).FiniteRk
+instance [M.FiniteRank] {f : α ↪ β} : (M.mapEmbedding f).FiniteRank :=
+  inferInstanceAs (M.map f f.injective.injOn).FiniteRank
 
-instance [M.RkPos] {f : α ↪ β} : (M.mapEmbedding f).RkPos :=
-  inferInstanceAs (M.map f f.injective.injOn).RkPos
+instance [M.RankPos] {f : α ↪ β} : (M.mapEmbedding f).RankPos :=
+  inferInstanceAs (M.map f f.injective.injOn).RankPos
 
 end mapEmbedding
 
@@ -620,11 +620,11 @@ instance [M.Finite] {f : α ≃ β} : (M.mapEquiv f).Finite :=
 instance [M.Finitary] {f : α ≃ β} : (M.mapEquiv f).Finitary :=
   inferInstanceAs (M.map f f.injective.injOn).Finitary
 
-instance [M.FiniteRk] {f : α ≃ β} : (M.mapEquiv f).FiniteRk :=
-  inferInstanceAs (M.map f f.injective.injOn).FiniteRk
+instance [M.FiniteRank] {f : α ≃ β} : (M.mapEquiv f).FiniteRank :=
+  inferInstanceAs (M.map f f.injective.injOn).FiniteRank
 
-instance [M.RkPos] {f : α ≃ β} : (M.mapEquiv f).RkPos :=
-  inferInstanceAs (M.map f f.injective.injOn).RkPos
+instance [M.RankPos] {f : α ≃ β} : (M.mapEquiv f).RankPos :=
+  inferInstanceAs (M.map f f.injective.injOn).RankPos
 
 end mapEquiv
 
@@ -698,7 +698,7 @@ lemma map_val_restrictSubtype_ground_eq (M : Matroid α) :
 instance [M.Finitary] {X : Set α} : (M.restrictSubtype X).Finitary := by
   rw [restrictSubtype]; infer_instance
 
-instance [M.FiniteRk] {X : Set α} : (M.restrictSubtype X).FiniteRk := by
+instance [M.FiniteRank] {X : Set α} : (M.restrictSubtype X).FiniteRank := by
   rw [restrictSubtype]; infer_instance
 
 instance [M.Finite] : (M.restrictSubtype M.E).Finite :=
@@ -709,10 +709,10 @@ instance [M.Nonempty] : (M.restrictSubtype M.E).Nonempty :=
   have := M.ground_nonempty.coe_sort
   ⟨by simp⟩
 
-instance [M.RkPos] : (M.restrictSubtype M.E).RkPos := by
+instance [M.RankPos] : (M.restrictSubtype M.E).RankPos := by
   obtain ⟨B, hB⟩ := (M.restrictSubtype M.E).exists_base
   have hB' : M.Base ↑B := by simpa using hB.map Subtype.val_injective.injOn
-  exact hB.rkPos_of_nonempty <| by simpa using hB'.nonempty
+  exact hB.rankPos_of_nonempty <| by simpa using hB'.nonempty
 
 end restrictSubtype
 
