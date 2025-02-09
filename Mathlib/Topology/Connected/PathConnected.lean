@@ -659,9 +659,8 @@ theorem refl_reparam {f : I → I} (hfcont : Continuous f) (hf₀ : f 0 = 0) (hf
 
 /-! #### Concatenating countably many paths -/
 
-
 /-- The concatenation of countably many paths leading up to some point `x` as a function. The
-  corresponding path is defined separately because continuity takes some effort to prove. -/
+corresponding path is defined separately because continuity takes some effort to prove. -/
 noncomputable def sigmaConcatFun {X : Type*} [TopologicalSpace X] {s : ℕ → X}
     (γ : (n : ℕ) → Path (s n) (s n.succ)) (x : X) : I → X := fun t ↦ by
   let n := Nat.log 2 ⌊(σ t).1⁻¹⌋₊
@@ -680,7 +679,7 @@ noncomputable def sigmaConcatFun {X : Type*} [TopologicalSpace X] {s : ℕ → X
       Nat.lt_pow_succ_log_self one_lt_two _
 
 /-- On closed intervals [1 - 2 ^ n, 1 - 2 ^ (n + 1)], `sigmaConcatFun γ x` agrees with a
-  reparametrisation of `γ n`. -/
+reparametrisation of `γ n`. -/
 lemma sigmaConcatFun_eqOn {X : Type*} [TopologicalSpace X] {s : ℕ → X}
     (γ : (n : ℕ) → Path (s n) (s n.succ)) {x : X} (n : ℕ) :
     Set.EqOn (sigmaConcatFun γ x) (fun t ↦ (γ n).extend (2 * (1 - (1 - t) * (2 ^ n))))
@@ -780,7 +779,7 @@ noncomputable def sigmaConcat {X : Type*} [TopologicalSpace X] {s : ℕ → X}
         rw [← Nat.pow_le_iff_le_log one_lt_two (Nat.floor_pos.2 <| (one_le_inv₀ ht''').2
           (σ t).2.2).ne.symm, Nat.le_floor_iff (inv_pos.2 ht''').le, le_inv_comm₀ (by simp) ht''',
           coe_symm_eq, sub_le_comm]
-        apply LT.lt.le; simpa using ht
+        apply le_of_lt; simpa using ht
       · rw [unitInterval.lt_one_iff_ne_one, not_ne_iff] at ht'; rw [ht']
         simp [sigmaConcatFun, mem_of_mem_nhds <| hb.1.mem_of_mem trivial]
   source' := by simp [sigmaConcatFun]
@@ -804,7 +803,7 @@ lemma sigmaConcat_applyAt {X : Type*} [TopologicalSpace X] {s : ℕ → X}
   · simp [mul_div_cancel₀ t.1 two_pos.ne.symm]
 
 /-- The concatenation of a sequence of paths is the same as the concatenation of the first path
-  with the concatenation of the remaining paths. -/
+with the concatenation of the remaining paths. -/
 lemma sigmaConcat_eq_trans {X : Type*} [TopologicalSpace X] {s : ℕ → X}
     {γ : (n : ℕ) → Path (s n) (s n.succ)} {x : X} {b : ℕ → Set X} {hb : (𝓝 x).HasAntitoneBasis b}
     {hγ : ∀ n t, γ n t ∈ b n} : sigmaConcat γ x hb hγ = (γ 0).trans

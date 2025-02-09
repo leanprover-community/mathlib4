@@ -1500,11 +1500,11 @@ open Classical in
 theorem ContinuousOn.union_isClosed {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     {s t : Set X} (hs : IsClosed s) (ht : IsClosed t) {f : X → Y} (hfs : ContinuousOn f s)
     (hft : ContinuousOn f t) : ContinuousOn f (s ∪ t) := by
-  refine fun x hx ↦ ContinuousWithinAt.union ?_ ?_
+  refine fun x hx ↦ .union ?_ ?_
   · refine if hx : x ∈ s then hfs x hx else continuousWithinAt_of_not_mem_closure ?_
-    rw [hs.closure_eq]; exact hx
+    rwa [hs.closure_eq]
   · refine if hx : x ∈ t then hft x hx else continuousWithinAt_of_not_mem_closure ?_
-    rw [ht.closure_eq]; exact hx
+    rwa [ht.closure_eq]
 
 /-- If `f` is continuous on some neighbourhood `s'` of `s` and `f` maps `s` to `t`,
 the preimage of a set neighbourhood of `t` is a set neighbourhood of `s`. -/
