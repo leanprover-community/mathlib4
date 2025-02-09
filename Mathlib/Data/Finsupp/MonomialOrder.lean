@@ -15,6 +15,7 @@ A *monomial order* is well ordering relation on a type of the form `σ →₀ �
 is compatible with addition and for which `0` is the smallest element.
 Since several monomial orders may have to be used simultaneously, one cannot
 get them as instances.
+
 In this formalization, they are presented as a structure `MonomialOrder` which encapsulates
 `MonomialOrder.toSyn`, an additive and monotone isomorphism to a linearly ordered cancellative
 additive commutative monoid.
