@@ -232,9 +232,9 @@ instance comap_finitary (N : Matroid β) [N.Finitary] (f : α → β) : (N.comap
   rw [← hJ'.image_eq] at hfin ⊢
   exact (hI J' (hJ'J.trans hJ) (hfin.of_finite_image hJ'.injOn)).1
 
-instance comap_finiteRank (N : Matroid β) [N.FiniteRank] (f : α → β) : (N.comap f).FiniteRank := by
+instance comap_rankFinite (N : Matroid β) [N.RankFinite] (f : α → β) : (N.comap f).RankFinite := by
   obtain ⟨B, hB⟩ := (N.comap f).exists_base
-  refine hB.finiteRank_of_finite ?_
+  refine hB.rankFinite_of_finite ?_
   simp only [comap_base_iff] at hB
   exact (hB.1.indep.finite.of_finite_image hB.2.1)
 
@@ -287,7 +287,7 @@ lemma comapOn_dual_eq_of_bijOn (h : BijOn f E N.E) :
 instance comapOn_finitary [N.Finitary] : (N.comapOn E f).Finitary := by
   rw [comapOn]; infer_instance
 
-instance comapOn_finiteRank [N.FiniteRank] : (N.comapOn E f).FiniteRank := by
+instance comapOn_rankFinite [N.RankFinite] : (N.comapOn E f).RankFinite := by
   rw [comapOn]; infer_instance
 
 end comapOn
@@ -490,9 +490,9 @@ instance [M.Finitary] {f : α → β} (hf) : (M.map f hf).Finitary := by
   specialize hI (f '' J₀) (image_subset f hJ₀I₀) (hJ₀.image _)
   rwa [map_image_indep_iff (hJ₀I₀.trans hI₀E)] at hI
 
-instance [M.FiniteRank] {f : α → β} (hf) : (M.map f hf).FiniteRank :=
+instance [M.RankFinite] {f : α → β} (hf) : (M.map f hf).RankFinite :=
   let ⟨_, hB⟩ := M.exists_base
-  (hB.map hf).finiteRank_of_finite (hB.finite.image _)
+  (hB.map hf).rankFinite_of_finite (hB.finite.image _)
 
 instance [M.RankPos] {f : α → β} (hf) : (M.map f hf).RankPos :=
   let ⟨_, hB⟩ := M.exists_base
@@ -572,8 +572,8 @@ instance [M.Finite] {f : α ↪ β} : (M.mapEmbedding f).Finite :=
 instance [M.Finitary] {f : α ↪ β} : (M.mapEmbedding f).Finitary :=
   inferInstanceAs (M.map f f.injective.injOn).Finitary
 
-instance [M.FiniteRank] {f : α ↪ β} : (M.mapEmbedding f).FiniteRank :=
-  inferInstanceAs (M.map f f.injective.injOn).FiniteRank
+instance [M.RankFinite] {f : α ↪ β} : (M.mapEmbedding f).RankFinite :=
+  inferInstanceAs (M.map f f.injective.injOn).RankFinite
 
 instance [M.RankPos] {f : α ↪ β} : (M.mapEmbedding f).RankPos :=
   inferInstanceAs (M.map f f.injective.injOn).RankPos
@@ -620,8 +620,8 @@ instance [M.Finite] {f : α ≃ β} : (M.mapEquiv f).Finite :=
 instance [M.Finitary] {f : α ≃ β} : (M.mapEquiv f).Finitary :=
   inferInstanceAs (M.map f f.injective.injOn).Finitary
 
-instance [M.FiniteRank] {f : α ≃ β} : (M.mapEquiv f).FiniteRank :=
-  inferInstanceAs (M.map f f.injective.injOn).FiniteRank
+instance [M.RankFinite] {f : α ≃ β} : (M.mapEquiv f).RankFinite :=
+  inferInstanceAs (M.map f f.injective.injOn).RankFinite
 
 instance [M.RankPos] {f : α ≃ β} : (M.mapEquiv f).RankPos :=
   inferInstanceAs (M.map f f.injective.injOn).RankPos
@@ -698,7 +698,7 @@ lemma map_val_restrictSubtype_ground_eq (M : Matroid α) :
 instance [M.Finitary] {X : Set α} : (M.restrictSubtype X).Finitary := by
   rw [restrictSubtype]; infer_instance
 
-instance [M.FiniteRank] {X : Set α} : (M.restrictSubtype X).FiniteRank := by
+instance [M.RankFinite] {X : Set α} : (M.restrictSubtype X).RankFinite := by
   rw [restrictSubtype]; infer_instance
 
 instance [M.Finite] : (M.restrictSubtype M.E).Finite :=

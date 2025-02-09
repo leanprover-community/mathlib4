@@ -105,7 +105,7 @@ theorem eq_loopyOn_iff : M = loopyOn E ↔ M.E = E ∧ ∀ X ⊆ M.E, M.Indep X 
   ⟨fun h ↦ ⟨loopyOn_indep_iff.mp h.indep, h.subset_ground⟩,
     by rintro ⟨rfl, hX⟩; rw [basis_iff]; simp⟩
 
-instance : FiniteRank (loopyOn E) :=
+instance : RankFinite (loopyOn E) :=
   ⟨⟨∅, loopyOn_base_iff.2 rfl, finite_empty⟩⟩
 
 theorem Finite.loopyOn_finite (hE : E.Finite) : Matroid.Finite (loopyOn E) :=
@@ -128,7 +128,7 @@ theorem eq_loopyOn_or_rankPos (M : Matroid α) : M = loopyOn M.E ∨ RankPos M :
 theorem not_rankPos_iff : ¬RankPos M ↔ M = loopyOn M.E := by
   rw [rankPos_iff, not_iff_comm, empty_base_iff]
 
-instance loopyOn_finiteRank : FiniteRank (loopyOn E) :=
+instance loopyOn_rankFinite : RankFinite (loopyOn E) :=
   ⟨∅, by simp⟩
 
 end LoopyOn
@@ -253,7 +253,7 @@ theorem uniqueBaseOn_restrict (h : I ⊆ E) (R : Set α) :
     (uniqueBaseOn I E) ↾ R = uniqueBaseOn (I ∩ R) R := by
   rw [uniqueBaseOn_restrict', inter_right_comm, inter_eq_self_of_subset_left h]
 
-lemma uniqueBaseOn_finiteRank (hI : I.Finite) : FiniteRank (uniqueBaseOn I E) := by
+lemma uniqueBaseOn_rankFinite (hI : I.Finite) : RankFinite (uniqueBaseOn I E) := by
   rw [← uniqueBaseOn_inter_ground_eq]
   refine ⟨I ∩ E, ?_⟩
   rw [uniqueBaseOn_base_iff inter_subset_right, and_iff_right rfl]
