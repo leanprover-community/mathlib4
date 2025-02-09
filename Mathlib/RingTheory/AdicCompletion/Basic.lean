@@ -282,6 +282,10 @@ section LinearMap
 variable [IsAdicComplete I M]
 variable {N : Type*} [AddCommMonoid N] [Module R N]
 
+/--
+The limit linear map `F : N →ₗ[R] M` of a sequence of compatible
+linear maps `N →ₗ[R] M ⧸ (I ^ n • ⊤)`.
+-/
 noncomputable
 def limLinearMap
     {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ n • ⊤)}
@@ -296,12 +300,22 @@ def limLinearMap
         Classical.choose_spec <|
           IsPrecomplete.function_of_eq_mapQPowSucc (I := I) (f := fun n ↦ f n) hf
 
+/--
+Let `F : N →ₗ[R] M` be the limit of `f n : N →ₗ[R] M ⧸ (I ^ n • ⊤)`.
+Then the compositon of limit linear map `F : N →ₗ[R] M` with the canonial
+projection `M →ₗ[R] M ⧸ (I ^ n • ⊤)` is `f n` .
+-/
 theorem eq_mkQ_limLinearMap {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ n • ⊤)}
     (hf : ∀ {m a}, f m a = mapQPowSucc I M m (f (m + 1) a)) (n : ℕ) (a : N) :
     f n a = (mkQ (I^n • ⊤ : Submodule R M) (limLinearMap hf a)) :=
   (Classical.choose_spec <|
     IsPrecomplete.function_of_eq_mapQPowSucc (I := I) (f := fun n ↦ f n) hf) n a
 
+/--
+Let `F : N →ₗ[R] M` be the limit of `f n : N →ₗ[R] M ⧸ (I ^ n • ⊤)`.
+Then the compositon of limit linear map `F : N →ₗ[R] M` with the canonial
+projection `M →ₗ[R] M ⧸ (I ^ n • ⊤)` is `f n` .
+-/
 theorem eq_mkQ_comp_limLinearMap {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ n • ⊤)}
     (hf : ∀ {m a}, f m a = mapQPowSucc I M m (f (m + 1) a)) (n : ℕ) :
     f n = (mkQ (I ^ n • ⊤ : Submodule R M)).comp (limLinearMap hf) :=
@@ -313,6 +327,10 @@ section RingHom
 
 variable [IsAdicComplete I R] {S : Type*} [NonAssocSemiring S]
 
+/--
+The limit ring map `F : S →+* R` of a sequence of compatible
+ring maps `S →+* R ⧸ I ^ n`.
+-/
 noncomputable
 def limRingHom {f : (n : ℕ) → S →+* R ⧸ I ^ n}
     (hf : ∀ {m a}, f m a = factorPowSucc I m (f (m + 1) a)) :
@@ -332,12 +350,22 @@ def limRingHom {f : (n : ℕ) → S →+* R ⧸ I ^ n}
         Classical.choose_spec <|
           IsPrecomplete.function_of_eq_mapQPowSucc' (I := I) (f := fun n ↦ f n) hf
 
+/--
+Let `F : S →+* R` be the limit of `f n : S →+* R ⧸ I ^ n`.
+Then the compositon of limit ring map `F : S →+* R` with the canonial
+projection `R →+* R ⧸ I ^ n` is `f n` .
+-/
 theorem eq_mk_limRingHom {f : (n : ℕ) → S →+* R ⧸ I ^ n}
     (hf : ∀ {m a}, f m a = factorPowSucc I m (f (m + 1) a)) (n : ℕ) (a : S) :
     f n a = Ideal.Quotient.mk (I ^ n) (limRingHom hf a) :=
   (Classical.choose_spec <|
     IsPrecomplete.function_of_eq_mapQPowSucc' (I := I) (f := fun n ↦ f n) hf) n a
 
+/--
+Let `F : S →+* R` be the limit of `f n : S →+* R ⧸ I ^ n`.
+Then the compositon of limit ring map `F : S →+* R` with the canonial
+projection `R →+* R ⧸ I ^ n` is `f n` .
+-/
 theorem eq_mk_comp_limRingHom {f : (n : ℕ) → S →+* R ⧸ I ^ n}
     (hf : ∀ {m a}, f m a = factorPowSucc I m (f (m + 1) a)) (n : ℕ) :
     f n = (Ideal.Quotient.mk (I^n)).comp (limRingHom hf) :=
