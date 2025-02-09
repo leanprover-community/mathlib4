@@ -34,6 +34,7 @@ We also add an `instance`:
 * `smulMonoidWithZeroHom`: Scalar multiplication bundled as a morphism of monoids with zero.
 -/
 
+assert_not_exists Units
 
 variable {R R' M M' : Type*}
 

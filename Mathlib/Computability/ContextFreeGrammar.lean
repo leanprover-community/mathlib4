@@ -37,7 +37,7 @@ structure ContextFreeGrammar.{uN,uT} (T : Type uT) where
   /-- Initial nonterminal. -/
   initial : NT
   /-- Rewrite rules. -/
-  rules : List (ContextFreeRule T NT)
+  rules : Finset (ContextFreeRule T NT)
 
 universe uT uN
 variable {T : Type uT}
@@ -223,10 +223,10 @@ lemma reverse_bijective : Bijective (reverse : ContextFreeRule T N → ContextFr
   reverse_involutive.bijective
 
 lemma reverse_injective : Injective (reverse : ContextFreeRule T N → ContextFreeRule T N) :=
-  reverse_involutive.injective
+  reverse_bijective.injective
 
 lemma reverse_surjective : Surjective (reverse : ContextFreeRule T N → ContextFreeRule T N) :=
-  reverse_involutive.surjective
+  reverse_bijective.surjective
 
 protected lemma Rewrites.reverse : ∀ {u v}, r.Rewrites u v → r.reverse.Rewrites u.reverse v.reverse
   | _, _, head s => by simpa using .append_left .input_output _
@@ -245,7 +245,7 @@ variable {g : ContextFreeGrammar T} {u v : List (Symbol T g.NT)} {w : List T}
 
 /-- Grammar for a reversed language. -/
 @[simps] def reverse (g : ContextFreeGrammar T) : ContextFreeGrammar T :=
-  ⟨g.NT, g.initial, g.rules.map .reverse⟩
+  ⟨g.NT, g.initial, g.rules.map (⟨ContextFreeRule.reverse, ContextFreeRule.reverse_injective⟩)⟩
 
 @[simp] lemma reverse_reverse (g : ContextFreeGrammar T) : g.reverse.reverse = g := by
   simp [reverse, Finset.map_map]
@@ -257,10 +257,10 @@ lemma reverse_bijective : Bijective (reverse : ContextFreeGrammar T → ContextF
   reverse_involutive.bijective
 
 lemma reverse_injective : Injective (reverse : ContextFreeGrammar T → ContextFreeGrammar T) :=
-  reverse_involutive.injective
+  reverse_bijective.injective
 
 lemma reverse_surjective : Surjective (reverse : ContextFreeGrammar T → ContextFreeGrammar T) :=
-  reverse_involutive.surjective
+  reverse_bijective.surjective
 
 lemma produces_reverse : g.reverse.Produces u.reverse v.reverse ↔ g.Produces u v :=
   (Equiv.ofBijective _ ContextFreeRule.reverse_bijective).exists_congr

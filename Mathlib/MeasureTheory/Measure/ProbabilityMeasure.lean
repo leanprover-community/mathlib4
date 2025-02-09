@@ -74,8 +74,8 @@ convergence in distribution, convergence in law, weak convergence of measures, p
 
 noncomputable section
 
-open MeasureTheory Set Filter BoundedContinuousFunction
-open scoped Topology ENNReal NNReal BoundedContinuousFunction
+open Set Filter BoundedContinuousFunction Topology
+open scoped ENNReal NNReal
 
 namespace MeasureTheory
 
@@ -256,7 +256,7 @@ theorem toFiniteMeasure_isEmbedding (Ω : Type*) [MeasurableSpace Ω] [Topologic
     [OpensMeasurableSpace Ω] :
     IsEmbedding (toFiniteMeasure : ProbabilityMeasure Ω → FiniteMeasure Ω) where
   eq_induced := rfl
-  inj _μ _ν h := Subtype.eq <| congr_arg FiniteMeasure.toMeasure h
+  injective _μ _ν h := Subtype.eq <| congr_arg FiniteMeasure.toMeasure h
 
 @[deprecated (since := "2024-10-26")]
 alias toFiniteMeasure_embedding := toFiniteMeasure_isEmbedding

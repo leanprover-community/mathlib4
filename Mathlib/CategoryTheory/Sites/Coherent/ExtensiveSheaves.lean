@@ -90,10 +90,10 @@ theorem Presieve.isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ Type w) :
       inferInstanceAs <| ∀ (i : α), Mono (Sigma.ι Z i)
     let i : K ≅ Discrete.functor (fun i ↦ op (Z i)) := Discrete.natIsoFunctor
     let _ : PreservesLimit (Discrete.functor (fun i ↦ op (Z i))) F :=
-        Presieve.preservesProductOfIsSheafFor F ?_ initialIsInitial _ (coproductIsCoproduct Z)
+        Presieve.preservesProduct_of_isSheafFor F ?_ initialIsInitial _ (coproductIsCoproduct Z)
         (FinitaryExtensive.isPullback_initial_to_sigma_ι Z)
         (hF (Presieve.ofArrows Z (fun i ↦ Sigma.ι Z i)) ?_)
-    · exact preservesLimitOfIsoDiagram F i.symm
+    · exact preservesLimit_of_iso_diagram F i.symm
     · apply hF
       refine ⟨Empty, inferInstance, Empty.elim, IsEmpty.elim inferInstance, rfl, ⟨default,?_, ?_⟩⟩
       · ext b
@@ -114,24 +114,23 @@ theorem Presieve.isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ Type w) :
 A presheaf on a category which is `FinitaryExtensive` is a sheaf iff it preserves finite products.
 -/
 theorem Presheaf.isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ D) :
-    IsSheaf (extensiveTopology C) F ↔ Nonempty (PreservesFiniteProducts F) := by
+    IsSheaf (extensiveTopology C) F ↔ PreservesFiniteProducts F := by
   constructor
   · intro h
     rw [IsSheaf] at h
-    refine ⟨⟨fun J _ ↦ ⟨fun {K} ↦ ⟨fun {c} hc ↦ ?_⟩⟩⟩⟩
+    refine ⟨fun J _ ↦ ⟨fun {K} ↦ ⟨fun {c} hc ↦ ?_⟩⟩⟩
+    constructor
     apply coyonedaJointlyReflectsLimits
     intro ⟨E⟩
     specialize h E
     rw [Presieve.isSheaf_iff_preservesFiniteProducts] at h
     have : PreservesLimit K (F.comp (coyoneda.obj ⟨E⟩)) := (h.some.preserves J).preservesLimit
-    change IsLimit ((F.comp (coyoneda.obj ⟨E⟩)).mapCone c)
-    apply this.preserves
-    exact hc
-  · intro ⟨_⟩ E
+    exact isLimitOfPreserves (F.comp (coyoneda.obj ⟨E⟩)) hc
+  · intro _ E
     rw [Presieve.isSheaf_iff_preservesFiniteProducts]
     exact ⟨inferInstance⟩
 
-noncomputable instance (F : Sheaf (extensiveTopology C) D) : PreservesFiniteProducts F.val :=
-  ((Presheaf.isSheaf_iff_preservesFiniteProducts F.val).mp F.cond).some
+instance (F : Sheaf (extensiveTopology C) D) : PreservesFiniteProducts F.val :=
+  (Presheaf.isSheaf_iff_preservesFiniteProducts F.val).mp F.cond
 
 end CategoryTheory

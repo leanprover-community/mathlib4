@@ -7,7 +7,7 @@ universe u
 section
 variable {α : Type u} [LinearOrderedField α] (a b c d : α)
 
--- prior to #12083, `cancel_denoms` would not make progress on this
+-- prior to https://github.com/leanprover-community/mathlib4/pull/12083, `cancel_denoms` would not make progress on this
 example : ¬ (4 / 2 : ℚ) = 3 := by cancel_denoms
 
 example (h : a / 5 + b / 4 < c) : 4*a + 5*b < 20*c := by

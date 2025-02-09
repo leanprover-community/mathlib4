@@ -55,17 +55,15 @@ instance : Inhabited FinPartOrd :=
 instance largeCategory : LargeCategory FinPartOrd :=
   InducedCategory.category FinPartOrd.toPartOrd
 
-instance concreteCategory : ConcreteCategory FinPartOrd :=
-  InducedCategory.concreteCategory FinPartOrd.toPartOrd
+instance hasForget : HasForget FinPartOrd :=
+  InducedCategory.hasForget FinPartOrd.toPartOrd
 
 instance hasForgetToPartOrd : HasForget₂ FinPartOrd PartOrd :=
   InducedCategory.hasForget₂ FinPartOrd.toPartOrd
 
 instance hasForgetToFintype : HasForget₂ FinPartOrd FintypeCat where
-  forget₂ :=
-    { obj := fun X => ⟨X, inferInstance⟩
-      -- Porting note: Originally `map := fun X Y => coeFn`
-      map := fun {X Y} (f : OrderHom X Y) => ⇑f }
+  forget₂.obj X := FintypeCat.of X
+  forget₂.map {X Y} (f : OrderHom X Y) := (f : X → Y)
 
 /-- Constructs an isomorphism of finite partial orders from an order isomorphism between them. -/
 @[simps]

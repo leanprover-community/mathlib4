@@ -18,87 +18,6 @@ universe u
 
 variable {m n : ℕ}
 
-/-- Equivalence between `Fin 0` and `Empty`. -/
-def finZeroEquiv : Fin 0 ≃ Empty :=
-  Equiv.equivEmpty _
-
-/-- Equivalence between `Fin 0` and `PEmpty`. -/
-def finZeroEquiv' : Fin 0 ≃ PEmpty.{u} :=
-  Equiv.equivPEmpty _
-
-/-- Equivalence between `Fin 1` and `Unit`. -/
-def finOneEquiv : Fin 1 ≃ Unit :=
-  Equiv.equivPUnit _
-
-/-- Equivalence between `Fin 2` and `Bool`. -/
-def finTwoEquiv : Fin 2 ≃ Bool where
-  toFun := ![false, true]
-  invFun b := b.casesOn 0 1
-  left_inv := Fin.forall_fin_two.2 <| by simp
-  right_inv := Bool.forall_bool.2 <| by simp
-
-/-!
-### Tuples
-
-This section defines a bunch of equivalences between `n + 1`-tuples and products of `n`-tuples with
-an entry.
--/
-
-namespace Fin
-
-/-- Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
-given by separating out the first element of the tuple.
-
-This is `Fin.cons` as an `Equiv`. -/
-@[simps]
-def consEquiv (α : Fin (n + 1) → Type*) : α 0 × (∀ i, α (succ i)) ≃ ∀ i, α i where
-  toFun f := cons f.1 f.2
-  invFun f := (f 0, tail f)
-  left_inv f := by simp
-  right_inv f := by simp
-
-/-- Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
-given by separating out the last element of the tuple.
-
-This is `Fin.snoc` as an `Equiv`. -/
-@[simps]
-def snocEquiv (α : Fin (n + 1) → Type*) : α (last n) × (∀ i, α (castSucc i)) ≃ ∀ i, α i where
-  toFun f _ := Fin.snoc f.2 f.1 _
-  invFun f := ⟨f _, Fin.init f⟩
-  left_inv f := by simp
-  right_inv f := by simp
-
-/-- Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
-given by separating out the `p`-th element of the tuple.
-
-This is `Fin.insertNth` as an `Equiv`. -/
-@[simps]
-def insertNthEquiv (α : Fin (n + 1) → Type u) (p : Fin (n + 1)) :
-    α p × (∀ i, α (p.succAbove i)) ≃ ∀ i, α i where
-  toFun f := insertNth p f.1 f.2
-  invFun f := (f p, removeNth p f)
-  left_inv f := by ext <;> simp
-  right_inv f := by simp
-
-@[simp] lemma insertNthEquiv_zero (α : Fin (n + 1) → Type*) : insertNthEquiv α 0 = consEquiv α :=
-  Equiv.symm_bijective.injective <| by ext <;> rfl
-
-/-- Note this lemma can only be written about non-dependent tuples as `insertNth (last n) = snoc` is
-not a definitional equality. -/
-@[simp] lemma insertNthEquiv_last (n : ℕ) (α : Type*) :
-    insertNthEquiv (fun _ ↦ α) (last n) = snocEquiv (fun _ ↦ α) := by ext; simp
-
-end Fin
-
-/-- `Π i : Fin 2, α i` is equivalent to `α 0 × α 1`. See also `finTwoArrowEquiv` for a
-non-dependent version and `prodEquivPiFinTwo` for a version with inputs `α β : Type u`. -/
-@[simps (config := .asFn)]
-def piFinTwoEquiv (α : Fin 2 → Type u) : (∀ i, α i) ≃ α 0 × α 1 where
-  toFun f := (f 0, f 1)
-  invFun p := Fin.cons p.1 <| Fin.cons p.2 finZeroElim
-  left_inv _ := funext <| Fin.forall_fin_two.2 ⟨rfl, rfl⟩
-  right_inv := fun _ => rfl
-
 /-!
 ### Miscellaneous
 
@@ -260,20 +179,6 @@ theorem finSuccEquivLast_symm_some (i : Fin n) :
 @[simp] theorem finSuccEquivLast_symm_none : finSuccEquivLast.symm none = Fin.last n :=
   finSuccEquiv'_symm_none _
 
-/-- Equivalence between `Π j : Fin (n + 1), α j` and `α i × Π j : Fin n, α (Fin.succAbove i j)`. -/
-@[simps (config := .asFn), deprecated Fin.insertNthEquiv (since := "2024-07-12")]
-def Equiv.piFinSuccAbove (α : Fin (n + 1) → Type u) (i : Fin (n + 1)) :
-    (∀ j, α j) ≃ α i × ∀ j, α (i.succAbove j) where
-  toFun f := (f i, i.removeNth f)
-  invFun f := i.insertNth f.1 f.2
-  left_inv f := by simp
-  right_inv f := by simp
-
-/-- Equivalence between `Fin (n + 1) → β` and `β × (Fin n → β)`. -/
-@[simps! (config := .asFn), deprecated Fin.consEquiv (since := "2024-07-12")]
-def Equiv.piFinSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β × (Fin n → β) :=
-  (Fin.insertNthEquiv (fun _ => β) 0).symm
-
 /-- An embedding `e : Fin (n+1) ↪ ι` corresponds to an embedding `f : Fin n ↪ ι` (corresponding
 the last `n` coordinates of `e`) together with a value not taken by `f` (corresponding to `e 0`). -/
 def Equiv.embeddingFinSucc (n : ℕ) (ι : Type*) :
@@ -292,12 +197,6 @@ def Equiv.embeddingFinSucc (n : ℕ) (ι : Type*) :
     ((Equiv.embeddingFinSucc n ι).symm f : Fin (n + 1) → ι) = Fin.cons f.2.1 f.1 := by
   ext i
   exact Fin.cases rfl (fun j ↦ rfl) i
-
-/-- Equivalence between `Fin (n + 1) → β` and `β × (Fin n → β)` which separates out the last
-element of the tuple. -/
-@[simps! (config := .asFn), deprecated Fin.snocEquiv (since := "2024-07-12")]
-def Equiv.piFinCastSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β × (Fin n → β) :=
-  (Fin.insertNthEquiv (fun _ => β) (.last _)).symm
 
 /-- Equivalence between `Fin m ⊕ Fin n` and `Fin (m + n)` -/
 def finSumFinEquiv : Fin m ⊕ Fin n ≃ Fin (m + n) where
@@ -404,9 +303,8 @@ theorem finRotate_one : finRotate 1 = Equiv.refl _ :=
     simp only [Fin.lt_iff_val_lt_val, Fin.val_last, Fin.val_mk] at h
     simp [finRotate_of_lt h, Fin.ext_iff, Fin.add_def, Nat.mod_eq_of_lt (Nat.succ_lt_succ h)]
 
--- Porting note: was a @[simp]
 theorem finRotate_apply_zero : finRotate n.succ 0 = 1 := by
-  rw [finRotate_succ_apply, Fin.zero_add]
+  simp
 
 theorem coe_finRotate_of_ne_last {i : Fin n.succ} (h : i ≠ Fin.last n) :
     (finRotate (n + 1) i : ℕ) = i + 1 := by

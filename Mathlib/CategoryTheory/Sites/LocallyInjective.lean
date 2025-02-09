@@ -29,10 +29,10 @@ namespace CategoryTheory
 open Opposite Limits
 
 variable {C : Type u} [Category.{v} C]
-  {D : Type u'} [Category.{v'} D] [ConcreteCategory.{w} D]
+  {D : Type u'} [Category.{v'} D] [HasForget.{w} D]
   (J : GrothendieckTopology C)
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
+attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike
 
 namespace Presheaf
 
@@ -166,7 +166,7 @@ lemma isLocallyInjective_iff_injective_of_separated
     exact (hsep _ (equalizerSieve_mem J φ x y h)).ext (fun _ _ hf => hf)
   · apply isLocallyInjective_of_injective
 
-instance (F : Cᵒᵖ ⥤ Type w) (G : GrothendieckTopology.Subpresheaf F) :
+instance (F : Cᵒᵖ ⥤ Type w) (G : Subpresheaf F) :
     IsLocallyInjective J G.ι :=
   isLocallyInjective_of_injective _ _ (fun X => by
     intro ⟨x, _⟩ ⟨y, _⟩ h
@@ -189,7 +189,7 @@ instance isLocallyInjective_toSheafify (P : Cᵒᵖ ⥤ Type max u v) :
   rw [GrothendieckTopology.plusMap_toPlus]
   infer_instance
 
-instance isLocallyInjective_toSheafify' [ConcreteCategory.{max u v} D]
+instance isLocallyInjective_toSheafify' [HasForget.{max u v} D]
     (P : Cᵒᵖ ⥤ D) [HasWeakSheafify J D] [J.HasSheafCompose (forget D)]
     [J.PreservesSheafification (forget D)] :
     IsLocallyInjective J (toSheafify J P) := by
@@ -243,8 +243,8 @@ lemma mono_of_isLocallyInjective [IsLocallyInjective φ] : Mono φ := by
   infer_instance
 
 instance {F G : Sheaf J (Type w)} (f : F ⟶ G) :
-    IsLocallyInjective (GrothendieckTopology.imageSheafι f) := by
-  dsimp [GrothendieckTopology.imageSheafι]
+    IsLocallyInjective (Sheaf.imageι f) := by
+  dsimp [Sheaf.imageι]
   infer_instance
 
 end Sheaf

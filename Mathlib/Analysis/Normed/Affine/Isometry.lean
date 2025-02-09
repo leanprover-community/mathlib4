@@ -46,7 +46,7 @@ variable (𝕜 : Type*) {V V₁ V₁' V₂ V₃ V₄ : Type*} {P₁ P₁' : Type
   [SeminormedAddCommGroup V₄] [NormedSpace 𝕜 V₄] [PseudoMetricSpace P₄] [NormedAddTorsor V₄ P₄]
 
 /-- A `𝕜`-affine isometric embedding of one normed add-torsor over a normed `𝕜`-space into
-another. -/
+another, denoted as `f : P →ᵃⁱ[𝕜] P₂`. -/
 structure AffineIsometry extends P →ᵃ[𝕜] P₂ where
   norm_map : ∀ x : V, ‖linear x‖ = ‖x‖
 
@@ -180,7 +180,7 @@ theorem comp_continuous_iff {α : Type*} [TopologicalSpace α] {g : α → P} :
 def id : P →ᵃⁱ[𝕜] P :=
   ⟨AffineMap.id 𝕜 P, fun _ => rfl⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(id : P →ᵃⁱ[𝕜] P) = _root_.id :=
   rfl
 
@@ -260,14 +260,15 @@ end AffineSubspace
 
 variable (𝕜 P P₂)
 
-/-- An affine isometric equivalence between two normed vector spaces. -/
+/-- An affine isometric equivalence between two normed vector spaces,
+denoted `f : P ≃ᵃⁱ[𝕜] P₂`. -/
 structure AffineIsometryEquiv extends P ≃ᵃ[𝕜] P₂ where
   norm_map : ∀ x, ‖linear x‖ = ‖x‖
 
 variable {𝕜 P P₂}
 
 -- `≃ᵃᵢ` would be more consistent with the linear isometry equiv notation, but it is uglier
-notation:25 P " ≃ᵃⁱ[" 𝕜:25 "] " P₂:0 => AffineIsometryEquiv 𝕜 P P₂
+@[inherit_doc] notation:25 P " ≃ᵃⁱ[" 𝕜:25 "] " P₂:0 => AffineIsometryEquiv 𝕜 P P₂
 
 namespace AffineIsometryEquiv
 
@@ -650,7 +651,7 @@ def pointReflection (x : P) : P ≃ᵃⁱ[𝕜] P :=
 
 variable {𝕜}
 
-theorem pointReflection_apply (x y : P) : (pointReflection 𝕜 x) y = x -ᵥ y +ᵥ x :=
+theorem pointReflection_apply (x y : P) : (pointReflection 𝕜 x) y = (x -ᵥ y) +ᵥ x :=
   rfl
 
 @[simp]

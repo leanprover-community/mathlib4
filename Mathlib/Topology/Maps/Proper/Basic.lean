@@ -273,8 +273,8 @@ protected lemma IsHomeomorph.isProperMap (hf : IsHomeomorph f) : IsProperMap f :
 @[simp] lemma isProperMap_id : IsProperMap (id : X → X) := IsHomeomorph.id.isProperMap
 
 /-- A closed embedding is proper. -/
-lemma IsClosedEmbedding.isProperMap (hf : IsClosedEmbedding f) : IsProperMap f :=
-  isProperMap_of_isClosedMap_of_inj hf.continuous hf.inj hf.isClosedMap
+lemma Topology.IsClosedEmbedding.isProperMap (hf : IsClosedEmbedding f) : IsProperMap f :=
+  isProperMap_of_isClosedMap_of_inj hf.continuous hf.injective hf.isClosedMap
 
 @[deprecated (since := "2024-10-20")]
 alias isProperMap_of_closedEmbedding := IsClosedEmbedding.isProperMap
@@ -296,8 +296,6 @@ alias isProperMap_restr_of_proper_of_closed := IsProperMap.restrict
 /-- The range of a proper map is closed. -/
 lemma IsProperMap.isClosed_range (hf : IsProperMap f) : IsClosed (range f) :=
   hf.isClosedMap.isClosed_range
-
-@[deprecated (since := "2024-05-08")] alias IsProperMap.closed_range := IsProperMap.isClosed_range
 
 /-- Version of `isProperMap_iff_isClosedMap_and_compact_fibers` in terms of `cofinite` and
 `cocompact`. Only works when the codomain is `T1`. -/

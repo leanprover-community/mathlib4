@@ -62,7 +62,7 @@ def IsLocalMin :=
 def IsLocalMax :=
   IsMaxFilter f (𝓝 a) a
 
-/-- `IsLocalExtrOn f s a` means `IsLocalMinOn f s a ∨ IsLocalMaxOn f s a`. -/
+/-- `IsLocalExtr f s a` means `IsLocalMin f s a ∨ IsLocalMax f s a`. -/
 def IsLocalExtr :=
   IsExtrFilter f (𝓝 a) a
 

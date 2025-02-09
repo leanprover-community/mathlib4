@@ -44,7 +44,7 @@ section
 #guard_msgs in
 variable {A : Type} [NormedRing A] [NormedAlgebra ℂ A] [StarRing A]
   [CStarRing A] [StarModule ℂ A] (x : A) in
-#synth NonUnitalNonAssocSemiring (elementalStarAlgebra ℂ x)
+#synth NonUnitalNonAssocSemiring (StarAlgebra.elemental ℂ x)
 
 end
 
@@ -84,11 +84,28 @@ end
 section
 
 -- Initial issue: https://github.com/leanprover-community/mathlib4/issues/12232
--- reduced from 9000 to 1000 after `@[simp low] map_zero` in #16679 (only 10 needed)
+-- reduced from 9000 to 1000 after `@[simp low] map_zero` in https://github.com/leanprover-community/mathlib4/pull/16679 (only 10 needed)
 
 open Equiv in
 set_option synthInstance.maxHeartbeats 1000 in
 example {n : ℕ} (p : Fin (n + 1)) (e : Perm (Fin n)) :
     Equiv.Perm.decomposeFin.symm (p, e) 0 = p := by simp
+
+end
+
+section
+
+-- synthinstance heartbeat count was reduced from 20000 to 500 in the fix at https://github.com/leanprover-community/mathlib4/pull/21449
+-- This fixes the failing simpNF of `MvPolynomial.vanishingIdeal_zeroLocus_eq_radical`
+variable (σ k : Type*) [Field k] [IsAlgClosed k] [Finite σ] (I : Ideal (MvPolynomial σ k)) in
+
+set_option synthInstance.maxHeartbeats 1000 in
+/--
+error: failed to synthesize
+  I.IsPrime
+Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#synth I.IsPrime
 
 end

@@ -42,10 +42,8 @@ open Category
 The inverse morphism is bundled.
 
 See also `CategoryTheory.Core` for the category with the same objects and isomorphisms playing
-the role of morphisms.
-
-See <https://stacks.math.columbia.edu/tag/0017>.
--/
+the role of morphisms. -/
+@[stacks 0017]
 structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
   /-- The forward direction of an isomorphism. -/
   hom : X ⟶ Y
@@ -326,9 +324,6 @@ theorem eq_inv_of_inv_hom_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (inv_hom_id :
   (inv_eq_of_inv_hom_id inv_hom_id).symm
 
 instance id (X : C) : IsIso (𝟙 X) := ⟨⟨𝟙 X, by simp⟩⟩
-
-@[deprecated (since := "2024-05-15")] alias of_iso := CategoryTheory.Iso.isIso_hom
-@[deprecated (since := "2024-05-15")] alias of_iso_inv := CategoryTheory.Iso.isIso_inv
 
 variable {f : X ⟶ Y} {h : Y ⟶ Z}
 

@@ -30,7 +30,7 @@ A *normal domain* is a domain that is integrally closed in its field of fraction
 [Stacks: normal domain](https://stacks.math.columbia.edu/tag/037B#0309)
 Normal domains are the major use case of `IsIntegrallyClosed` at the time of writing, and we have
 quite a few results that can be moved wholesale to a new `NormalDomain` definition.
-In fact, before PR #6126 `IsIntegrallyClosed` was exactly defined to be a normal domain.
+In fact, before PR https://github.com/leanprover-community/mathlib4/pull/6126 `IsIntegrallyClosed` was exactly defined to be a normal domain.
 (So you might want to copy some of its API when you define normal domains.)
 
 A normal ring means that localizations at all prime ideals are normal domains.
@@ -165,7 +165,7 @@ variable (R)
 @[simp]
 theorem integralClosure_eq_bot [IsIntegrallyClosedIn R A] [NoZeroSMulDivisors R A] [Nontrivial A] :
     integralClosure R A = ⊥ :=
-  (integralClosure_eq_bot_iff A (NoZeroSMulDivisors.algebraMap_injective _ _)).mpr ‹_›
+  (integralClosure_eq_bot_iff A (FaithfulSMul.algebraMap_injective _ _)).mpr ‹_›
 
 variable {A} {B : Type*} [CommRing B]
 

@@ -21,7 +21,7 @@ assert_not_exists Monoid
 open Nat
 
 namespace List
-variable {α β : Type*} {l l₁ l₂ : List α} {a : α}
+variable {α : Type*}
 
 open Perm (swap)
 

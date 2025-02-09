@@ -12,6 +12,7 @@ import Mathlib.SetTheory.Cardinal.Finite
 # fintype instances relating to units
 -/
 
+assert_not_exists Field
 
 variable {α : Type*}
 
@@ -29,18 +30,24 @@ instance [Monoid α] [Fintype α] [DecidableEq α] : Fintype αˣ :=
 
 instance [Monoid α] [Finite α] : Finite αˣ := Finite.of_injective _ Units.ext
 
-theorem Fintype.card_eq_card_units_add_one [GroupWithZero α] [Fintype α] [DecidableEq α] :
-    Fintype.card α = Fintype.card αˣ + 1 := by
-  rw [eq_comm, Fintype.card_congr unitsEquivNeZero]
-  have := Fintype.card_congr (Equiv.sumCompl (· = (0 : α)))
-  rwa [Fintype.card_sum, add_comm, Fintype.card_subtype_eq] at this
+variable (α)
+
+theorem Nat.card_units [GroupWithZero α] :
+    Nat.card αˣ = Nat.card α - 1 := by
+  classical
+  rw [Nat.card_congr unitsEquivNeZero, eq_comm, ← Nat.card_congr (Equiv.sumCompl (· = (0 : α)))]
+  rcases finite_or_infinite {a : α // a ≠ 0}
+  · rw [Nat.card_sum, Nat.card_unique, add_tsub_cancel_left]
+  · rw [Nat.card_eq_zero_of_infinite, Nat.card_eq_zero_of_infinite, zero_tsub]
 
 theorem Nat.card_eq_card_units_add_one [GroupWithZero α] [Finite α] :
     Nat.card α = Nat.card αˣ + 1 := by
-  have : Fintype α := Fintype.ofFinite α
-  classical
-    rw [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card, Fintype.card_eq_card_units_add_one]
+  rw [Nat.card_units, tsub_add_cancel_of_le Nat.card_pos]
 
 theorem Fintype.card_units [GroupWithZero α] [Fintype α] [DecidableEq α] :
     Fintype.card αˣ = Fintype.card α - 1 := by
-  rw [@Fintype.card_eq_card_units_add_one α, Nat.add_sub_cancel]
+  rw [← Nat.card_eq_fintype_card, Nat.card_units, Nat.card_eq_fintype_card]
+
+theorem Fintype.card_eq_card_units_add_one [GroupWithZero α] [Fintype α] [DecidableEq α] :
+    Fintype.card α = Fintype.card αˣ + 1 := by
+  rw [Fintype.card_units, tsub_add_cancel_of_le Fintype.card_pos]

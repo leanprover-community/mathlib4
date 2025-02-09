@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Set.Function
 import Mathlib.Logic.Pairwise
 import Mathlib.Logic.Relation
+import Mathlib.Tactic.Cases
 
 /-!
 # Relations holding pairwise
@@ -194,7 +195,7 @@ protected theorem Pairwise.image {s : Set ι} (h : s.Pairwise (r on f)) : (f '' 
 /-- See also `Set.Pairwise.image`. -/
 theorem InjOn.pairwise_image {s : Set ι} (h : s.InjOn f) :
     (f '' s).Pairwise r ↔ s.Pairwise (r on f) := by
-  simp (config := { contextual := true }) [h.eq_iff, Set.Pairwise]
+  simp +contextual [h.eq_iff, Set.Pairwise]
 
 lemma _root_.Pairwise.range_pairwise (hr : Pairwise (r on f)) : (Set.range f).Pairwise r :=
   image_univ ▸ (pairwise_univ.mpr hr).image
