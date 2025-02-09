@@ -128,6 +128,12 @@ theorem polar_comp {F : Type*} [CommRing S] [FunLike F N S] [AddMonoidHomClass F
     polar (g ∘ f) x y = g (polar f x y) := by
   simp only [polar, Pi.smul_apply, Function.comp_apply, map_sub]
 
+/--
+Lift the polar to Sym2
+-/
+def polar_sym2 (f : M → N) : Sym2 M → N :=
+  Sym2.lift ⟨fun m₁ m₂ => (polar f) m₁ m₂, fun i j => by simp only [polar_comm]⟩
+
 end QuadraticMap
 
 end Polar
@@ -327,15 +333,9 @@ theorem choose_exists_companion : Q.exists_companion.choose = polarBilin Q :=
     rw [polarBilin_apply_apply, polar, Q.exists_companion.choose_spec, sub_sub,
       add_sub_cancel_left]
 
-/--
-Lift the polar
--/
-def polar_sym2 (Q : QuadraticMap R M N) : Sym2 M → N :=
-  Sym2.lift ⟨fun m₁ m₂ => (polar Q) m₁ m₂, fun i j => by simp only [polar_comm]⟩
-
 protected theorem map_sum {ι} [DecidableEq ι] (Q : QuadraticMap R M N) (s : Finset ι) (f : ι → M) :
     Q (∑ i ∈ s, f i) = ∑ i ∈ s, Q (f i)
-      + ∑ ij ∈ s.sym2 with ¬ ij.IsDiag, (Q.polar_sym2 ∘ Sym2.map f) ij := by
+      + ∑ ij ∈ s.sym2 with ¬ ij.IsDiag, ((polar_sym2 Q) ∘ Sym2.map f) ij := by
   induction s using Finset.cons_induction with
   | empty => simp
   | cons a s ha ih =>
@@ -350,7 +350,7 @@ protected theorem map_sum {ι} [DecidableEq ι] (Q : QuadraticMap R M N) (s : Fi
     rw [if_pos (ne_of_mem_of_not_mem hi ha).symm]
 
 protected theorem map_sum' {ι} (Q : QuadraticMap R M N) (s : Finset ι) (f : ι → M) :
-    Q (∑ i ∈ s, f i) = ∑ ij ∈ s.sym2, (Q.polar_sym2 ∘ Sym2.map f) ij - ∑ i ∈ s, Q (f i) := by
+    Q (∑ i ∈ s, f i) = ∑ ij ∈ s.sym2, ((polar_sym2 Q) ∘ Sym2.map f) ij - ∑ i ∈ s, Q (f i) := by
   induction s using Finset.cons_induction with
   | empty => simp
   | cons a s ha ih =>
