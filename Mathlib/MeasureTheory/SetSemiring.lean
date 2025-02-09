@@ -9,7 +9,7 @@ import Mathlib.Data.Set.Pairwise.Lattice
 import Mathlib.Order.CompleteLattice
 import Mathlib.MeasureTheory.MeasurableSpace.Pi
 import Mathlib.MeasureTheory.PiSystem
-import Mathlib.MeasureTheory.MeasurableSpace.Pi
+import Mathlib.Data.Set.Finite.Basic
 
 /-! # Semirings of sets
 
@@ -723,17 +723,61 @@ end IsSetRing
 
 section piSemiring
 
-variable {ι : Type*} {hι : Fintype ι} [Inhabited ι] {α : ι → Type*} (C : (i : ι) → Set (Set (α i)))
+variable {ι : Type*} {α : ι → Type*} (C : (i : ι) → Set (Set (α i)))
 
-theorem l (hC : ∀ i, IsSetSemiring (C i)) : IsSetSemiring (univ.pi '' univ.pi C) := by
-  refine (IsSetSemiring.iff _).mpr ⟨?_, ?_, ?_⟩
+example : s = s ∨ False := by exact (Or.inl rfl)
+
+theorem l (s : Set ι) (hs : s.Finite) (hC : ∀ i ∈ s, IsSetSemiring (C i)) : s.Nonempty →  IsSetSemiring (s.pi '' s.pi C) := by
+  refine Set.Finite.induction_on_subset s hs ?_ ?_
+  · simp
+  · intro a t ha hts t_fin h_ind _
+    refine (IsSetSemiring.iff _).mpr ⟨?_, ?_, ?_⟩
+    · simp only [insert_pi, Set.mem_image, mem_inter_iff, Set.mem_preimage, Function.eval,
+      Set.mem_pi]
+      use fun _ ↦ ∅
+      simp only [Set.preimage_empty, Set.empty_inter, and_true]
+      refine ⟨(hC a ha).empty_mem, fun i hi ↦ (hC i (hts hi)).empty_mem⟩
+    · apply IsPiSystem.pi_subset (insert a t) (fun i hi ↦ (hC i ?_).isPiSystem)
+      rw [mem_insert_iff] at hi
+      cases' hi with h1 h2
+      · exact h1 ▸ ha
+      · exact hts h2
+    · intro u hu v hv
+      by_cases h : t.Nonempty
+      · simp_rw [Set.mem_image, Set.mem_pi, Set.mem_insert_iff, insert_pi] at hu hv
+        obtain ⟨x, ⟨hx1, hx2⟩⟩ := hu
+        obtain ⟨y, ⟨hy1, hy2⟩⟩ := hv
+
+        obtain ⟨J, ⟨hJ1, hJ2, hJ3⟩⟩ :=
+          (hC a ha).diff_eq_sUnion' (x a) (hx1 a (Or.inl rfl)) (y a) (hy1 a (Or.inl rfl))
+        classical
+        let D := fun i ↦ if i = a then J else {x i}
+
+        sorry
+      sorry
+/--        obtain ⟨x, ⟨⟨hx1, hx2⟩, hx3⟩⟩ := hu
+        obtain ⟨y, ⟨⟨hy1, hy2⟩, hy3⟩⟩ := hv
+        have hx : t.pi x ∈ t.pi '' t.pi C := by
+          · simp only [Set.mem_image, Set.mem_pi]
+            use x
+        have hy : t.pi y ∈ t.pi '' t.pi C := by
+          · simp only [Set.mem_image, Set.mem_pi]
+            use y
+        obtain ⟨I, ⟨hI1, hI2, hI3⟩⟩ := (h_ind h).diff_eq_sUnion' (t.pi x) hx (t.pi y) hy
+        obtain ⟨J, ⟨hJ1, hJ2, hJ3⟩⟩ := (hC a ha).diff_eq_sUnion' (x a) hx1 (y a) hy1
+        --let I' := Set.pi (insert a t) (fun j i ↦ if i = a then j else x i)-/
+
+      sorry
+
+
+  sorry
+
   · simp only [Set.mem_image, Set.mem_pi, Set.mem_univ, forall_const, univ_pi_eq_empty_iff]
     use fun _ ↦ ∅
     simp only [exists_const, and_true]
     exact fun _ ↦ (hC _).empty_mem
   · exact IsPiSystem.pi (fun i ↦ (hC i).isPiSystem)
-  ·
-    sorry
+  · sorry
 
 
 end piSemiring

@@ -39,12 +39,8 @@ theorem IsPiSystem.pi_subset {C : ∀ i, Set (Set (α i))} (s : Set ι)
   rcases hst i with ⟨x, a⟩
   exact Set.nonempty_of_mem (a hi)
 
-/-- Boxes formed by π-systems form a π-system. -/
 theorem IsPiSystem.pi {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (C i)) :
-    IsPiSystem (pi univ '' pi univ C) := by
-  rintro _ ⟨s₁, hs₁, rfl⟩ _ ⟨s₂, hs₂, rfl⟩ hst
-  rw [← pi_inter_distrib] at hst ⊢; rw [univ_pi_nonempty_iff] at hst
-  exact mem_image_of_mem _ fun i _ => hC i _ (hs₁ i (mem_univ i)) _ (hs₂ i (mem_univ i)) (hst i)
+    IsPiSystem (pi univ '' pi univ C) := IsPiSystem.pi_subset univ (fun i _ ↦ hC i)
 
 /-- Boxes form a π-system. -/
 theorem isPiSystem_pi [∀ i, MeasurableSpace (α i)] :
