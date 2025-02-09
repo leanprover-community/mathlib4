@@ -332,10 +332,6 @@ theorem support_smul_subset_vadd_support' [MulZeroClass R] [SMulWithZero R V] {x
 theorem support_smul_subset_vadd_support [MulZeroClass R] [SMulWithZero R V] {x : HahnSeries Γ R}
     {y : HahnModule Γ' R V} :
     ((of R).symm (x • y)).support ⊆ x.support +ᵥ ((of R).symm y).support := by
-  have h : x.support +ᵥ ((of R).symm y).support =
-      x.support +ᵥ ((of R).symm y).support := by
-    exact rfl
-  rw [h]
   exact support_smul_subset_vadd_support'
 
 theorem orderTop_vAdd_le_orderTop_smul {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ'] [VAdd Γ Γ']
@@ -361,8 +357,8 @@ theorem coeff_smul_order_add_order {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Z
   by_cases hx : x = (0 : HahnSeries Γ R); · simp [HahnSeries.coeff_zero, hx]
   by_cases hy : (of R).symm y = 0; · simp [hy, coeff_smul]
   rw [HahnSeries.order_of_ne hx, HahnSeries.order_of_ne hy, coeff_smul,
-    HahnSeries.leadingCoeff_of_ne hx, HahnSeries.leadingCoeff_of_ne hy]
-  erw [Finset.vaddAntidiagonal_min_vadd_min, Finset.sum_singleton]
+    HahnSeries.leadingCoeff_of_ne hx, HahnSeries.leadingCoeff_of_ne hy, ← vadd_eq_add,
+    Finset.vaddAntidiagonal_min_vadd_min, Finset.sum_singleton]
 
 @[deprecated (since := "2025-01-31")] alias smul_coeff_order_add_order := coeff_smul_order_add_order
 
@@ -661,10 +657,10 @@ namespace HahnSeries
 
 instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] :
     NoZeroDivisors (HahnSeries Γ R) where
-    eq_zero_or_eq_zero_of_mul_eq_zero {x y} xy := by
-      haveI : NoZeroSMulDivisors (HahnSeries Γ R) (HahnSeries Γ R) :=
-        HahnModule.instNoZeroSMulDivisors
-      exact eq_zero_or_eq_zero_of_smul_eq_zero xy
+  eq_zero_or_eq_zero_of_mul_eq_zero {x y} xy := by
+    haveI : NoZeroSMulDivisors (HahnSeries Γ R) (HahnSeries Γ R) :=
+      HahnModule.instNoZeroSMulDivisors
+    exact eq_zero_or_eq_zero_of_smul_eq_zero xy
 
 instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Ring R] [IsDomain R] :
     IsDomain (HahnSeries Γ R) :=
