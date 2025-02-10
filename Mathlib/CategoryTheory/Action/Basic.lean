@@ -43,7 +43,6 @@ namespace Action
 
 variable {V}
 
-@[simp 1100]
 theorem ρ_one {G : Type u} [Monoid G] (A : Action V G) : A.ρ 1 = 𝟙 A.V := by
   rw [MonoidHom.map_one]; rfl
 
@@ -57,11 +56,6 @@ def ρAut {G : Type u} [Group G] (A : Action V G) : G →* Aut A.V where
       inv_hom_id := (A.ρ.map_mul g (g⁻¹ : G)).symm.trans (by rw [mul_inv_cancel, ρ_one]) }
   map_one' := Aut.ext A.ρ.map_one
   map_mul' x y := Aut.ext (A.ρ.map_mul x y)
-
--- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657),
--- but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
--- It would be worth fixing these, as `ρAut_apply_inv` is used in `erw` later.
-attribute [nolint simpNF] Action.ρAut_apply_inv Action.ρAut_apply_hom
 
 variable (G : Type u) [Monoid G]
 
@@ -250,7 +244,7 @@ instance [HasForget V] : HasForget (Action V G) where
 abbrev HomSubtype {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
     [ConcreteCategory V FV] (M N : Action V G) :=
   { f : FV M.V N.V // ∀ g : G,
-      f ∘ ConcreteCategory.hom (M.ρ.hom g) = ConcreteCategory.hom (N.ρ.hom g) ∘ f }
+      f ∘ ConcreteCategory.hom (M.ρ g) = ConcreteCategory.hom (N.ρ g) ∘ f }
 
 instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
     [ConcreteCategory V FV] (M N : Action V G) :
