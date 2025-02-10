@@ -294,6 +294,13 @@ theorem left_le_veblen (a b : Ordinal) : a ≤ veblen a b :=
 theorem isNormal_veblen_zero : IsNormal (veblen · 0) :=
   (isNormal_opow one_lt_omega0).veblenWith_zero (by simp)
 
+theorem cmp_veblen_eq : cmp (veblen o₁ a) (veblen o₂ b) =
+  match cmp o₁ o₂ with
+    | .eq => cmp a b
+    | .lt => cmp a (veblen o₂ b)
+    | .gt => cmp (veblen o₁ a) b :=
+  cmp_veblenWith_eq (isNormal_opow one_lt_omega0)
+
 /-- `veblen o₁ a < veblen o₂ b` iff one of the following holds:
 * `o₁ = o₂` and `a < b`
 * `o₁ < o₂` and `a < veblen o₂ b`
