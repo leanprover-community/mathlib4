@@ -162,16 +162,12 @@ instance : HImp (Nucleus X) where
   himp m n :=
   { toFun x := ⨅ y ≥ x, m y ⇨ n y
     idempotent' i := by
-      apply le_iInf₂
+      refine le_iInf₂ ?_
       intro j hj
       have h : (m (m j ⇨ n j)) ⇨ (n (m j ⇨ n j)) = m j ⇨ n j := by
         rw [map_himp_apply, himp_himp, ← map_inf, inf_of_le_right (le_trans n.le_apply le_himp)]
       rw [← h]
-      refine iInf₂_le (m j ⇨ n j) ?_
-      simp only [ge_iff_le, le_himp_iff, iInf_inf, iInf_le_iff, le_inf_iff, le_iInf_iff]
-      intro b1 h2
-      rcases h2 j with ⟨h3, h4⟩
-      exact le_trans (by simp [h4]) (h3 (by exact hj))
+      exact iInf₂_le (m j ⇨ n j) (biInf_le (fun i ↦ m i ⇨ n i) hj)
     map_inf' x y := by
       simp only [and_assoc, le_antisymm_iff, le_inf_iff, le_iInf_iff]
       refine ⟨fun z hxz ↦ iInf₂_le _ <| inf_le_of_left_le hxz,
