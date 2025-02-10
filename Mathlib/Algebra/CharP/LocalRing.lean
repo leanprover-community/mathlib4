@@ -19,6 +19,7 @@ import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 -/
 
 
+-- TODO rename charP_zero_or_isPrimePow
 /-- In a local ring the characteristic is either zero or a prime power. -/
 theorem charP_zero_or_prime_power (R : Type*) [CommRing R] [IsLocalRing R] (q : ℕ)
     [char_R_q : CharP R q] : q = 0 ∨ IsPrimePow q := by

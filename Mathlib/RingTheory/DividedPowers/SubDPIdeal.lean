@@ -242,6 +242,7 @@ theorem coe_def (J : SubDPIdeal hI) : J.toIdeal = J.carrier := rfl
 @[simp]
 theorem memCarrier {s : SubDPIdeal hI} {x : A} : x ∈ s.carrier ↔ x ∈ s := Iff.rfl
 
+-- TODO rename isSubDPIdealsSubDPIdeal
 lemma toIsSubDPIdeal (J : SubDPIdeal hI) : IsSubDPIdeal hI J.carrier where
   isSubideal := J.isSubideal
   dpow_mem   := J.dpow_mem
