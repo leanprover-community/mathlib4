@@ -49,7 +49,7 @@ variable (K : Type) [Field K] [Algebra R[X] K] [IsFractionRing R[X] K]
 
 section TwoDenominators
 
-open algebraMap
+open scoped algebraMap
 
 /-- Let R be an integral domain and f, g₁, g₂ ∈ R[X]. Let g₁ and g₂ be monic and coprime.
 Then, ∃ q, r₁, r₂ ∈ R[X] such that f / g₁g₂ = q + r₁/g₁ + r₂/g₂ and deg(r₁) < deg(g₁) and

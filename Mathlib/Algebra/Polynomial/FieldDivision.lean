@@ -600,9 +600,8 @@ theorem divByMonic_add_X_sub_C_mul_derivate_divByMonic_eq_derivative
     {K : Type*} [Field K] (f : K[X]) (a : K) :
     f /ₘ (X - C a) + (X - C a) * derivative (f /ₘ (X - C a)) = derivative f := by
   have key := by apply congrArg derivative <| X_sub_C_mul_divByMonic_eq_sub_modByMonic f a
-  rw [modByMonic_X_sub_C_eq_C_eval, derivative_mul, derivative_sub, derivative_X, derivative_sub,
-      derivative_C, sub_zero, one_mul, derivative_C, sub_zero] at key
-  assumption
+  simpa only [derivative_mul, derivative_sub, derivative_X, derivative_C, sub_zero, one_mul,
+    modByMonic_X_sub_C_eq_C_eval] using key
 
 theorem X_sub_C_dvd_derivative_of_X_sub_C_dvd_divByMonic {K : Type*} [Field K] (f : K[X]) {a : K}
     (hf : (X - C a) ∣ f /ₘ (X - C a)) : X - C a ∣ derivative f := by
