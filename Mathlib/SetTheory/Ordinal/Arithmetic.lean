@@ -213,8 +213,7 @@ theorem isSuccLimit_iff {o : Ordinal} : IsSuccLimit o ↔ o ≠ 0 ∧ IsSuccPrel
 theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Ordinal) := isSuccPrelimit_bot
 
 @[simp]
-theorem not_isSuccLimit_zero : ¬ IsSuccLimit (0 : Ordinal) :=
-  not_isSuccLimit_bot
+theorem not_isSuccLimit_zero : ¬ IsSuccLimit (0 : Ordinal) := not_isSuccLimit_bot
 
 @[simp]
 theorem isSuccPrelimit_lift {o : Ordinal} : IsSuccPrelimit (lift.{u, v} o) ↔ IsSuccPrelimit o :=
@@ -543,7 +542,7 @@ theorem lt_add_iff {a b c : Ordinal} (hc : c ≠ 0) : a < b + c ↔ ∃ d < c, a
 theorem add_le_iff {a b c : Ordinal} (hb : b ≠ 0) : a + b ≤ c ↔ ∀ d < b, a + d < c := by
   simpa using (lt_add_iff hb).not
 
-@[deprecated add_le_iff (since := "2025-02-09")]
+@[deprecated add_le_iff (since := "2024-12-08")]
 theorem add_le_of_forall_add_lt {a b c : Ordinal} (hb : 0 < b) (h : ∀ d < b, a + d < c) :
     a + b ≤ c :=
   (add_le_iff hb.ne').2 h
