@@ -41,9 +41,9 @@ Given `M : Matroid α` ...
     subset of `X`.
 * `M.Finite` means that `M` has finite ground set.
 * `M.Nonempty` means that the ground set of `M` is nonempty.
-* `FiniteRk M` means that the bases of `M` are finite.
-* `InfiniteRk M` means that the bases of `M` are infinite.
-* `RkPos M` means that the bases of `M` are nonempty.
+* `RankFinite M` means that the bases of `M` are finite.
+* `RankInfinite M` means that the bases of `M` are infinite.
+* `RankPos M` means that the bases of `M` are nonempty.
 * `Finitary M` means that a set is independent if and only if all its finite subsets are
     independent.
 
@@ -81,7 +81,7 @@ There are a few design decisions worth discussing.
   (for instance, it is harder to prove that something is a matroid in the first place,
   and one must deal with `ℕ∞` rather than `ℕ`).
   For serious work on finite matroids, we provide the typeclasses
-  `[M.Finite]` and `[FiniteRk M]` and associated API.
+  `[M.Finite]` and `[RankFinite M]` and associated API.
 
 ### Cardinality
   Just as with bases of a vector space,
@@ -248,31 +248,37 @@ theorem set_finite (M : Matroid α) [M.Finite] (X : Set α) (hX : X ⊆ M.E := b
 instance finite_of_finite [Finite α] {M : Matroid α} : M.Finite :=
   ⟨Set.toFinite _⟩
 
-/-- A `FiniteRk` matroid is one whose bases are finite -/
-@[mk_iff] class FiniteRk (M : Matroid α) : Prop where
+/-- A `RankFinite` matroid is one whose bases are finite -/
+@[mk_iff] class RankFinite (M : Matroid α) : Prop where
   /-- There is a finite base -/
   exists_finite_base : ∃ B, M.Base B ∧ B.Finite
 
-instance finiteRk_of_finite (M : Matroid α) [M.Finite] : FiniteRk M :=
+@[deprecated (since := "2025-02-09")] alias FiniteRk := RankFinite
+
+instance rankFinite_of_finite (M : Matroid α) [M.Finite] : RankFinite M :=
   ⟨M.exists_base.imp (fun B hB ↦ ⟨hB, M.set_finite B (M.subset_ground _ hB)⟩)⟩
 
-/-- An `InfiniteRk` matroid is one whose bases are infinite. -/
-@[mk_iff] class InfiniteRk (M : Matroid α) : Prop where
+/-- An `RankInfinite` matroid is one whose bases are infinite. -/
+@[mk_iff] class RankInfinite (M : Matroid α) : Prop where
   /-- There is an infinite base -/
   exists_infinite_base : ∃ B, M.Base B ∧ B.Infinite
 
-/-- A `RkPos` matroid is one whose bases are nonempty. -/
-@[mk_iff] class RkPos (M : Matroid α) : Prop where
+@[deprecated (since := "2025-02-09")] alias InfiniteRk := RankInfinite
+
+/-- A `RankPos` matroid is one whose bases are nonempty. -/
+@[mk_iff] class RankPos (M : Matroid α) : Prop where
   /-- The empty set isn't a base -/
   empty_not_base : ¬M.Base ∅
 
-instance rkPos_nonempty {M : Matroid α} [M.RkPos] : M.Nonempty := by
+@[deprecated (since := "2025-02-09")] alias RkPos := RankPos
+
+instance rankPos_nonempty {M : Matroid α} [M.RankPos] : M.Nonempty := by
   obtain ⟨B, hB⟩ := M.exists_base
   obtain rfl | ⟨e, heB⟩ := B.eq_empty_or_nonempty
-  · exact False.elim <| RkPos.empty_not_base hB
+  · exact False.elim <| RankPos.empty_not_base hB
   exact ⟨e, M.subset_ground B hB heB ⟩
 
-@[deprecated (since := "2025-01-20")] alias rkPos_iff_empty_not_base := rkPos_iff
+@[deprecated (since := "2025-01-20")] alias rkPos_iff_empty_not_base := rankPos_iff
 
 section exchange
 namespace ExchangeProperty
@@ -430,42 +436,42 @@ theorem Base.infinite_of_infinite (hB : M.Base B) (h : B.Infinite) (hB₁ : M.Ba
     B₁.Infinite :=
   by_contra (fun hB_inf ↦ (hB₁.finite_of_finite (not_infinite.mp hB_inf) hB).not_infinite h)
 
-theorem Base.finite [FiniteRk M] (hB : M.Base B) : B.Finite :=
-  let ⟨_,hB₀⟩ := ‹FiniteRk M›.exists_finite_base
+theorem Base.finite [RankFinite M] (hB : M.Base B) : B.Finite :=
+  let ⟨_,hB₀⟩ := ‹RankFinite M›.exists_finite_base
   hB₀.1.finite_of_finite hB₀.2 hB
 
-theorem Base.infinite [InfiniteRk M] (hB : M.Base B) : B.Infinite :=
-  let ⟨_,hB₀⟩ := ‹InfiniteRk M›.exists_infinite_base
+theorem Base.infinite [RankInfinite M] (hB : M.Base B) : B.Infinite :=
+  let ⟨_,hB₀⟩ := ‹RankInfinite M›.exists_infinite_base
   hB₀.1.infinite_of_infinite hB₀.2 hB
 
-theorem empty_not_base [h : RkPos M] : ¬M.Base ∅ :=
+theorem empty_not_base [h : RankPos M] : ¬M.Base ∅ :=
   h.empty_not_base
 
-theorem Base.nonempty [RkPos M] (hB : M.Base B) : B.Nonempty := by
+theorem Base.nonempty [RankPos M] (hB : M.Base B) : B.Nonempty := by
   rw [nonempty_iff_ne_empty]; rintro rfl; exact M.empty_not_base hB
 
-theorem Base.rkPos_of_nonempty (hB : M.Base B) (h : B.Nonempty) : M.RkPos := by
-  rw [rkPos_iff]
+theorem Base.rankPos_of_nonempty (hB : M.Base B) (h : B.Nonempty) : M.RankPos := by
+  rw [rankPos_iff]
   intro he
   obtain rfl := he.eq_of_subset_base hB (empty_subset B)
   simp at h
 
-theorem Base.finiteRk_of_finite (hB : M.Base B) (hfin : B.Finite) : FiniteRk M :=
+theorem Base.rankFinite_of_finite (hB : M.Base B) (hfin : B.Finite) : RankFinite M :=
   ⟨⟨B, hB, hfin⟩⟩
 
-theorem Base.infiniteRk_of_infinite (hB : M.Base B) (h : B.Infinite) : InfiniteRk M :=
+theorem Base.rankInfinite_of_infinite (hB : M.Base B) (h : B.Infinite) : RankInfinite M :=
   ⟨⟨B, hB, h⟩⟩
 
-theorem not_finiteRk (M : Matroid α) [InfiniteRk M] : ¬ FiniteRk M := by
+theorem not_rankFinite (M : Matroid α) [RankInfinite M] : ¬ RankFinite M := by
   intro h; obtain ⟨B,hB⟩ := M.exists_base; exact hB.infinite hB.finite
 
-theorem not_infiniteRk (M : Matroid α) [FiniteRk M] : ¬ InfiniteRk M := by
+theorem not_rankInfinite (M : Matroid α) [RankFinite M] : ¬ RankInfinite M := by
   intro h; obtain ⟨B,hB⟩ := M.exists_base; exact hB.infinite hB.finite
 
-theorem finite_or_infiniteRk (M : Matroid α) : FiniteRk M ∨ InfiniteRk M :=
+theorem finite_or_rankInfinite (M : Matroid α) : RankFinite M ∨ RankInfinite M :=
   let ⟨B, hB⟩ := M.exists_base
   B.finite_or_infinite.elim
-  (Or.inl ∘ hB.finiteRk_of_finite) (Or.inr ∘ hB.infiniteRk_of_infinite)
+  (Or.inl ∘ hB.rankFinite_of_finite) (Or.inr ∘ hB.rankInfinite_of_infinite)
 
 theorem Base.diff_finite_comm (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) :
     (B₁ \ B₂).Finite ↔ (B₂ \ B₁).Finite :=
@@ -575,13 +581,13 @@ theorem Base.indep (hB : M.Base B) : M.Indep B :=
 theorem Dep.nonempty (hD : M.Dep D) : D.Nonempty := by
   rw [nonempty_iff_ne_empty]; rintro rfl; exact hD.not_indep M.empty_indep
 
-theorem Indep.finite [FiniteRk M] (hI : M.Indep I) : I.Finite :=
+theorem Indep.finite [RankFinite M] (hI : M.Indep I) : I.Finite :=
   let ⟨_, hB, hIB⟩ := hI.exists_base_superset
   hB.finite.subset hIB
 
-theorem Indep.rkPos_of_nonempty (hI : M.Indep I) (hne : I.Nonempty) : M.RkPos := by
+theorem Indep.rankPos_of_nonempty (hI : M.Indep I) (hne : I.Nonempty) : M.RankPos := by
   obtain ⟨B, hB, hIB⟩ := hI.exists_base_superset
-  exact hB.rkPos_of_nonempty (hne.mono hIB)
+  exact hB.rankPos_of_nonempty (hne.mono hIB)
 
 theorem Indep.inter_right (hI : M.Indep I) (X : Set α) : M.Indep (I ∩ X) :=
   hI.subset inter_subset_left
@@ -736,7 +742,7 @@ theorem indep_iff_forall_finite_subset_indep {M : Matroid α} [Finitary M] :
     M.Indep I ↔ ∀ J, J ⊆ I → J.Finite → M.Indep J :=
   ⟨fun h _ hJI _ ↦ h.subset hJI, Finitary.indep_of_forall_finite I⟩
 
-instance finitary_of_finiteRk {M : Matroid α} [FiniteRk M] : Finitary M :=
+instance finitary_of_rankFinite {M : Matroid α} [RankFinite M] : Finitary M :=
 ⟨ by
   refine fun I hI ↦ I.finite_or_infinite.elim (hI _ Subset.rfl) (fun h ↦ False.elim ?_)
   obtain ⟨B, hB⟩ := M.exists_base
@@ -839,7 +845,7 @@ theorem Basis.eq_of_subset_indep (hI : M.Basis I X) (hJ : M.Indep J) (hIJ : I �
     I = J :=
   hIJ.antisymm (hI.1.2 ⟨hJ, hJX⟩ hIJ)
 
-theorem Basis.Finite (hI : M.Basis I X) [FiniteRk M] : I.Finite := hI.indep.finite
+theorem Basis.Finite (hI : M.Basis I X) [RankFinite M] : I.Finite := hI.indep.finite
 
 theorem basis_iff' :
     M.Basis I X ↔ (M.Indep I ∧ I ⊆ X ∧ ∀ ⦃J⦄, M.Indep J → I ⊆ J → J ⊆ X → I = J) ∧ X ⊆ M.E := by
