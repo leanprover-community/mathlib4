@@ -325,6 +325,9 @@ lemma add_left_injective_of_ne_top {n : ℕ∞} (hn : n ≠ ⊤) : Function.Inje
     ((WithTop.add_le_add_iff_right hn).mp e.le)
     ((WithTop.add_le_add_iff_right hn).mp e.ge)
 
+lemma add_right_injective_of_ne_top {n : ℕ∞} (hn : n ≠ ⊤) : Function.Injective (n + ·) := by
+  simp_rw [add_comm n _]; exact add_left_injective_of_ne_top hn
+
 section withTop_enat
 
 lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n) : (m + 1 : ℕ) ≤ n := by
