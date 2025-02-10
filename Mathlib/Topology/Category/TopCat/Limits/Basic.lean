@@ -132,8 +132,8 @@ of the underlying cocone of types, this is the type `c.pt`
 with the infimum of the topologies that are coinduced by the maps `c.ι.app j`. -/
 def coconePtOfCoconeForget : Type _ := c.pt
 
-@[simp]
-instance : TopologicalSpace (coconePtOfCoconeForget c) :=
+instance topologicalSpaceCoconePtOfCoconeForget :
+    TopologicalSpace (coconePtOfCoconeForget c) :=
   (⨆ j, (F.obj j).str.coinduced (c.ι.app j))
 
 /-- Given a functor `F : J ⥤ TopCat` and a cocone `c : Cocone (F ⋙ forget)`
@@ -158,7 +158,7 @@ def isColimitCoconeOfForget (c : Cocone (F ⋙ forget)) (hc : IsColimit c) :
   refine IsColimit.ofFaithful forget (ht := hc)
     (fun s ↦ ofHom (ContinuousMap.mk (hc.desc ((forget).mapCocone s)) ?_)) (fun _ ↦ rfl)
   rw [continuous_iff_le_induced]
-  dsimp
+  dsimp [topologicalSpaceCoconePtOfCoconeForget]
   rw [iSup_le_iff]
   intro j
   rw [coinduced_le_iff_le_induced, induced_compose]
@@ -184,7 +184,7 @@ theorem coinduced_of_isColimit :
   have he (j : J) : c'.ι.app j ≫ e.hom = c.ι.app j :=
     IsColimit.comp_coconePointUniqueUpToIso_hom hc' hc j
   apply (homeoOfIso e).coinduced_eq.symm.trans
-  dsimp [coconeOfCoconeForget_pt, c']
+  dsimp [coconeOfCoconeForget_pt, c', topologicalSpaceCoconePtOfCoconeForget]
   simp only [coinduced_iSup, c']
   conv_rhs => simp only [← he]
   rfl
