@@ -3,6 +3,7 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Topology.EMetricSpace.Defs
 import Mathlib.Topology.UniformSpace.UniformConvergence

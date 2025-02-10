@@ -2575,10 +2575,12 @@ import Mathlib.Data.DFinsupp.Small
 import Mathlib.Data.DFinsupp.Submonoid
 import Mathlib.Data.DFinsupp.WellFounded
 import Mathlib.Data.DList.Instances
+import Mathlib.Data.ENNReal.Action
 import Mathlib.Data.ENNReal.Basic
 import Mathlib.Data.ENNReal.Inv
 import Mathlib.Data.ENNReal.Lemmas
 import Mathlib.Data.ENNReal.Operations
+import Mathlib.Data.ENNReal.Order
 import Mathlib.Data.ENNReal.Real
 import Mathlib.Data.ENat.Basic
 import Mathlib.Data.ENat.BigOperators
