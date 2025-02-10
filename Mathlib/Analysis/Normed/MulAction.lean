@@ -68,13 +68,21 @@ section SeminormedRing
 
 variable [SeminormedRing α] [SeminormedAddCommGroup β] [Module α β]
 
-theorem BoundedSMul.of_norm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖ ≤ ‖r‖ * ‖x‖) :
-    BoundedSMul α β :=
+namespace BoundedSMul
+
+theorem of_norm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖ ≤ ‖r‖ * ‖x‖) : BoundedSMul α β :=
   { dist_smul_pair' := fun a b₁ b₂ => by simpa [smul_sub, dist_eq_norm] using h a (b₁ - b₂)
     dist_pair_smul' := fun a₁ a₂ b => by simpa [sub_smul, dist_eq_norm] using h (a₁ - a₂) b }
 
-theorem BoundedSMul.of_nnnorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖₊ ≤ ‖r‖₊ * ‖x‖₊) :
-    BoundedSMul α β := .of_norm_smul_le h
+theorem of_nnnorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖₊ ≤ ‖r‖₊ * ‖x‖₊) : BoundedSMul α β :=
+  .of_norm_smul_le h
+
+theorem of_enorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖ₑ ≤ ‖r‖ₑ * ‖x‖ₑ) : BoundedSMul α β :=
+  .of_norm_smul_le <| fun r x => by
+    simpa [← ofReal_norm, ← ENNReal.ofReal_mul, ENNReal.ofReal_le_ofReal_iff, norm_nonneg,
+      mul_nonneg] using h r x
+
+end BoundedSMul
 
 end SeminormedRing
 

@@ -448,11 +448,7 @@ instance instIsScalarTower [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' E] : IsSc
   smul_assoc k k' f := Subtype.ext <| smul_assoc k k' (f : α →ₘ[μ] E)
 
 instance instBoundedSMul [Fact (1 ≤ p)] : BoundedSMul 𝕜 (Lp E p μ) :=
-  -- TODO: add `BoundedSMul.of_nnnorm_smul_le`
-  BoundedSMul.of_norm_smul_le fun r f => by
-    suffices ‖r • f‖ₑ ≤ ‖r‖ₑ * ‖f‖ₑ by
-      -- squeezed for performance reasons
-      simpa only [ge_iff_le, enorm, ←ENNReal.coe_mul, ENNReal.coe_le_coe] using this
+  BoundedSMul.of_enorm_smul_le fun r f => by
     simpa only [eLpNorm_congr_ae (coeFn_smul _ _), enorm_def]
       using eLpNorm_const_smul_le (c := r) (f := f) (p := p)
 
