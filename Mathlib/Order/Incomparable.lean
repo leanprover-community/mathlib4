@@ -43,9 +43,6 @@ theorem incompRel_compl : IncompRel rᶜ = AntisymmRel r := by
 theorem incompRel_compl_apply : IncompRel rᶜ a b ↔ AntisymmRel r a b := by
   simp
 
-theorem antisymmRel_swap_apply : AntisymmRel (swap r) a b ↔ AntisymmRel r a b :=
-  and_comm
-
 theorem incompRel_swap : IncompRel (swap r) = IncompRel r :=
   antisymmRel_swap rᶜ
 
