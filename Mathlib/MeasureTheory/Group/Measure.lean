@@ -729,8 +729,8 @@ a Haar measure. See also `isHaarMeasure_map`. -/
 homomorphism is again an additive Haar measure. See also `isAddHaarMeasure_map`."]
 theorem isHaarMeasure_map_of_isFiniteMeasure
     [BorelSpace G] [IsTopologicalGroup G] {H : Type*} [Group H]
-    [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H] [IsTopologicalGroup H] [IsFiniteMeasure μ]
-    (f : G →* H) (hf : Continuous f) (h_surj : Surjective f) :
+    [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H] [IsTopologicalGroup H]
+    [IsFiniteMeasure μ] (f : G →* H) (hf : Continuous f) (h_surj : Surjective f) :
     IsHaarMeasure (Measure.map f μ) where
   toIsMulLeftInvariant := isMulLeftInvariant_map f.toMulHom hf.measurable h_surj
   toIsOpenPosMeasure := hf.isOpenPosMeasure_map h_surj
@@ -774,8 +774,8 @@ A convenience wrapper for MeasureTheory.Measure.isHaarMeasure_map.
 -/
 @[to_additive "A convenience wrapper for MeasureTheory.Measure.isAddHaarMeasure_map.
 "]
-instance _root_.ContinuousMulEquiv.isHaarMeasure_map [BorelSpace G] [IsTopologicalGroup G] {H : Type*}
-    [Group H] [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H]
+instance _root_.ContinuousMulEquiv.isHaarMeasure_map [BorelSpace G] [IsTopologicalGroup G]
+    {H : Type*} [Group H] [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H]
     [IsTopologicalGroup H] (e : G ≃ₜ* H) : (μ.map e).IsHaarMeasure :=
   e.toMulEquiv.isHaarMeasure_map μ e.continuous e.symm.continuous
 

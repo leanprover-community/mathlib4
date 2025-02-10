@@ -1107,8 +1107,9 @@ protected theorem continuous_of_forall [TopologicalSpace E] [IsTopologicalAddGro
     Continuous p :=
   Seminorm.continuous_of_continuousAt_zero (continuousAt_zero_of_forall hp)
 
-protected theorem continuous [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
-    {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.ball 0 r ∈ (𝓝 0 : Filter E)) : Continuous p :=
+protected theorem continuous [TopologicalSpace E] [IsTopologicalAddGroup E]
+    [ContinuousConstSMul 𝕜 E] {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.ball 0 r ∈ (𝓝 0 : Filter E)) :
+    Continuous p :=
   Seminorm.continuous_of_continuousAt_zero (continuousAt_zero hp)
 
 /-- A seminorm is continuous if `p.closedBall 0 r ∈ 𝓝 0` for *all* `r > 0`.
@@ -1119,9 +1120,9 @@ protected theorem continuous_of_forall' [TopologicalSpace E] [IsTopologicalAddGr
     Continuous p :=
   Seminorm.continuous_of_continuousAt_zero (continuousAt_zero_of_forall' hp)
 
-protected theorem continuous' [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
-    {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
-    Continuous p :=
+protected theorem continuous' [TopologicalSpace E] [IsTopologicalAddGroup E]
+    [ContinuousConstSMul 𝕜 E] {p : Seminorm 𝕜 E} {r : ℝ}
+    (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) : Continuous p :=
   Seminorm.continuous_of_continuousAt_zero (continuousAt_zero' hp)
 
 theorem continuous_of_le [TopologicalSpace E] [IsTopologicalAddGroup E]

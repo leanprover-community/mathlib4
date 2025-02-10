@@ -10,8 +10,8 @@ import Mathlib.Topology.Separation.Profinite
 /-!
 # Existence of an open normal subgroup in any clopen neighborhood of the neutral element
 
-This file proves the lemma `IsTopologicalGroup.exist_openNormalSubgroup_sub_clopen_nhd_of_one`, which
-states that in a compact topological group, for any clopen neighborhood of 1,
+This file proves the lemma `IsTopologicalGroup.exist_openNormalSubgroup_sub_clopen_nhd_of_one`,
+which states that in a compact topological group, for any clopen neighborhood of 1,
 there exists an open normal subgroup contained within it.
 
 This file is split out from the file `OpenSubgroup` because it needs more imports.

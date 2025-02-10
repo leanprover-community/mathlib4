@@ -136,8 +136,8 @@ def toHSpace (M : Type u) [MulOneClass M] [TopologicalSpace M] [ContinuousMul M]
   hmulE := (HomotopyRel.refl _ _).cast rfl (by ext1; apply mul_one)
 
 @[to_additive]
-instance (priority := 600) hSpace (G : Type u) [TopologicalSpace G] [Group G] [IsTopologicalGroup G] :
-    HSpace G :=
+instance (priority := 600) hSpace (G : Type u) [TopologicalSpace G] [Group G]
+    [IsTopologicalGroup G] : HSpace G :=
   toHSpace G
 
 theorem one_eq_hSpace_e {G : Type u} [TopologicalSpace G] [Group G] [IsTopologicalGroup G] :

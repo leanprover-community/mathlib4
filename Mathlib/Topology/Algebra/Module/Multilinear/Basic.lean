@@ -498,13 +498,14 @@ instance : AddCommGroup (ContinuousMultilinearMap R M₁ M₂) :=
   toMultilinearMap_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
-theorem neg_prod_neg [AddCommGroup M₃] [Module R M₃] [TopologicalSpace M₃] [IsTopologicalAddGroup M₃]
-    (f : ContinuousMultilinearMap R M₁ M₂) (g : ContinuousMultilinearMap R M₁ M₃) :
-    (-f).prod (-g) = - f.prod g :=
+theorem neg_prod_neg [AddCommGroup M₃] [Module R M₃] [TopologicalSpace M₃]
+    [IsTopologicalAddGroup M₃] (f : ContinuousMultilinearMap R M₁ M₂)
+    (g : ContinuousMultilinearMap R M₁ M₃) : (-f).prod (-g) = - f.prod g :=
   rfl
 
-theorem sub_prod_sub [AddCommGroup M₃] [Module R M₃] [TopologicalSpace M₃] [IsTopologicalAddGroup M₃]
-    (f₁ f₂ : ContinuousMultilinearMap R M₁ M₂) (g₁ g₂ : ContinuousMultilinearMap R M₁ M₃) :
+theorem sub_prod_sub [AddCommGroup M₃] [Module R M₃] [TopologicalSpace M₃]
+    [IsTopologicalAddGroup M₃] (f₁ f₂ : ContinuousMultilinearMap R M₁ M₂)
+    (g₁ g₂ : ContinuousMultilinearMap R M₁ M₃) :
     (f₁ - f₂).prod (g₁ - g₂) = f₁.prod g₁ - f₂.prod g₂ :=
   rfl
 

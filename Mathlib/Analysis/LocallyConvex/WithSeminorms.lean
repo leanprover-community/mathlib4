@@ -398,8 +398,9 @@ theorem SeminormFamily.withSeminorms_of_nhds [IsTopologicalAddGroup E] (p : Semi
   rw [AddGroupFilterBasis.nhds_zero_eq]
   exact h
 
-theorem SeminormFamily.withSeminorms_of_hasBasis [IsTopologicalAddGroup E] (p : SeminormFamily 𝕜 E ι)
-    (h : (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ p.basisSets) id) : WithSeminorms p :=
+theorem SeminormFamily.withSeminorms_of_hasBasis [IsTopologicalAddGroup E]
+    (p : SeminormFamily 𝕜 E ι) (h : (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ p.basisSets) id) :
+    WithSeminorms p :=
   p.withSeminorms_of_nhds <|
     Filter.HasBasis.eq_of_same_basis h p.addGroupFilterBasis.toFilterBasis.hasBasis
 

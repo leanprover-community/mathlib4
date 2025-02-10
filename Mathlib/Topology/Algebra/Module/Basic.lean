@@ -259,8 +259,8 @@ theorem isOpenQuotientMap_mkQ [ContinuousAdd M] : IsOpenQuotientMap S.mkQ :=
 instance topologicalAddGroup_quotient [IsTopologicalAddGroup M] : IsTopologicalAddGroup (M ⧸ S) :=
   inferInstanceAs <| IsTopologicalAddGroup (M ⧸ S.toAddSubgroup)
 
-instance continuousSMul_quotient [TopologicalSpace R] [IsTopologicalAddGroup M] [ContinuousSMul R M] :
-    ContinuousSMul R (M ⧸ S) where
+instance continuousSMul_quotient [TopologicalSpace R] [IsTopologicalAddGroup M]
+    [ContinuousSMul R M] : ContinuousSMul R (M ⧸ S) where
   continuous_smul := by
     rw [← (IsOpenQuotientMap.id.prodMap S.isOpenQuotientMap_mkQ).continuous_comp_iff]
     exact continuous_quot_mk.comp continuous_smul
