@@ -204,7 +204,7 @@ lemma spanRank_sup_le_sum_spanRank {p q : Submodule R M} :
     Set.Sum.elim_range, Submodule.span_union, hf, hg]
 
 lemma spanRank_span_set_finite {s : Set R} (hs : s.Finite) :
-  (Submodule.span R s).spanRank ≤ hs.toFinset.card := by
+    (Submodule.span R s).spanRank ≤ hs.toFinset.card := by
   rw [Submodule.FG.spanRank_le_iff_exists_span_range_eq]
   refine ⟨Subtype.val ∘ hs.toFinset.equivFin.symm, ?_⟩
   rw [Set.range_comp, Set.range_eq_univ.mpr (Equiv.surjective _), Set.image_univ,
