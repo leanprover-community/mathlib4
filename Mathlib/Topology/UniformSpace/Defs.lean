@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Order.Filter.Tendsto
-import Mathlib.Tactic.Monotonicity
+import Mathlib.Tactic.Monotonicity.Basic
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.Constructions
 
