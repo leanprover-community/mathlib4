@@ -195,13 +195,20 @@ theorem eLpNorm'_exponent_zero {f : α → ε} : eLpNorm' f 0 μ = 1 := by
 @[simp]
 theorem eLpNorm_exponent_zero {f : α → ε} : eLpNorm f 0 μ = 0 := by simp [eLpNorm]
 
-@[simp]
-theorem memℒp_zero_iff_aestronglyMeasurable [TopologicalSpace ε] {f : α → ε} :
-    Memℒp f 0 μ ↔ AEStronglyMeasurable f μ := by simp [Memℒp, eLpNorm_exponent_zero]
+section
+
+variable [TopologicalSpace ε]
 
 @[simp]
-theorem eLpNorm'_zero (hp0_lt : 0 < q) : eLpNorm' (0 : α → F) q μ = 0 := by
+theorem memℒp_zero_iff_aestronglyMeasurable {f : α → ε} :
+    Memℒp f 0 μ ↔ AEStronglyMeasurable f μ := by simp [Memℒp, eLpNorm_exponent_zero]
+
+variable [ENormedAddMonoid ε]
+
+@[simp]
+theorem eLpNorm'_zero (hp0_lt : 0 < q) : eLpNorm' (0 : α → ε) q μ = 0 := by
   simp [eLpNorm'_eq_lintegral_enorm, hp0_lt]
+  sorry -- TODO: fix proof!
 
 @[simp]
 theorem eLpNorm'_zero' (hq0_ne : q ≠ 0) (hμ : μ ≠ 0) : eLpNorm' (0 : α → F) q μ = 0 := by
@@ -210,11 +217,12 @@ theorem eLpNorm'_zero' (hq0_ne : q ≠ 0) (hμ : μ ≠ 0) : eLpNorm' (0 : α �
   · simp [eLpNorm'_eq_lintegral_enorm, ENNReal.rpow_eq_zero_iff, hμ, hq_neg]
 
 @[simp]
-theorem eLpNormEssSup_zero : eLpNormEssSup (0 : α → F) μ = 0 := by
+theorem eLpNormEssSup_zero : eLpNormEssSup (0 : α → ε) μ = 0 := by
   simp [eLpNormEssSup, ← bot_eq_zero', essSup_const_bot]
+  sorry -- TODO: fix proof!
 
 @[simp]
-theorem eLpNorm_zero : eLpNorm (0 : α → F) p μ = 0 := by
+theorem eLpNorm_zero : eLpNorm (0 : α → ε) p μ = 0 := by
   by_cases h0 : p = 0
   · simp [h0]
   by_cases h_top : p = ∞
@@ -223,15 +231,17 @@ theorem eLpNorm_zero : eLpNorm (0 : α → F) p μ = 0 := by
   simp [eLpNorm_eq_eLpNorm' h0 h_top, ENNReal.toReal_pos h0 h_top]
 
 @[simp]
-theorem eLpNorm_zero' : eLpNorm (fun _ : α => (0 : F)) p μ = 0 := by convert eLpNorm_zero (F := F)
+theorem eLpNorm_zero' : eLpNorm (fun _ : α => (0 : ε)) p μ = 0 := eLpNorm_zero
 
-@[simp] lemma Memℒp.zero : Memℒp (0 : α → E) p μ :=
+@[simp] lemma Memℒp.zero : Memℒp (0 : α → ε) p μ :=
   ⟨aestronglyMeasurable_zero, by rw [eLpNorm_zero]; exact ENNReal.coe_lt_top⟩
 
-@[simp] lemma Memℒp.zero' : Memℒp (fun _ : α => (0 : E)) p μ := Memℒp.zero
+@[simp] lemma Memℒp.zero' : Memℒp (fun _ : α => (0 : ε)) p μ := Memℒp.zero
 
 @[deprecated (since := "2025-01-21")] alias zero_memℒp := Memℒp.zero
 @[deprecated (since := "2025-01-21")] alias zero_mem_ℒp := Memℒp.zero'
+
+end
 
 variable [MeasurableSpace α]
 
