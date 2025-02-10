@@ -71,11 +71,8 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
   The triangle equation is written as a family of equalities between morphisms, it is more
   complicated if we write it as an equality of natural transformations, because then we would have
-  to insert natural transformations like `F ⟶ F1`.
-
-See <https://stacks.math.columbia.edu/tag/001J>
--/
-@[ext]
+  to insert natural transformations like `F ⟶ F1`. -/
+@[ext, stacks 001J]
 structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Category.{v₂} D] where mk' ::
   /-- A functor in one direction -/
   functor : C ⥤ D
@@ -425,10 +422,8 @@ theorem pow_neg_one (e : C ≌ C) : e ^ (-1 : ℤ) = e.symm :=
 -- Note: the better formulation of this would involve `HasShift`.
 end
 
-/-- The functor of an equivalence of categories is essentially surjective.
-
-See <https://stacks.math.columbia.edu/tag/02C3>.
--/
+/-- The functor of an equivalence of categories is essentially surjective. -/
+@[stacks 02C3]
 instance essSurj_functor (e : C ≌ E) : e.functor.EssSurj :=
   ⟨fun Y => ⟨e.inverse.obj Y, ⟨e.counitIso.app Y⟩⟩⟩
 
@@ -443,20 +438,16 @@ def fullyFaithfulFunctor (e : C ≌ E) : e.functor.FullyFaithful where
 def fullyFaithfulInverse (e : C ≌ E) : e.inverse.FullyFaithful where
   preimage {X Y} f := e.counitIso.inv.app X ≫ e.functor.map f ≫ e.counitIso.hom.app Y
 
-/-- The functor of an equivalence of categories is faithful.
-
-See <https://stacks.math.columbia.edu/tag/02C3>.
--/
+/-- The functor of an equivalence of categories is faithful. -/
+@[stacks 02C3]
 instance faithful_functor (e : C ≌ E) : e.functor.Faithful :=
   e.fullyFaithfulFunctor.faithful
 
 instance faithful_inverse (e : C ≌ E) : e.inverse.Faithful :=
   e.fullyFaithfulInverse.faithful
 
-/-- The functor of an equivalence of categories is full.
-
-See <https://stacks.math.columbia.edu/tag/02C3>.
--/
+/-- The functor of an equivalence of categories is full. -/
+@[stacks 02C3]
 instance full_functor (e : C ≌ E) : e.functor.Full :=
   e.fullyFaithfulFunctor.full
 
@@ -527,10 +518,8 @@ noncomputable def inv (F : C ⥤ D) [F.IsEquivalence] : D ⥤ C where
   map_id X := by apply F.map_injective; simp
   map_comp {X Y Z} f g := by apply F.map_injective; simp
 
-/-- Interpret a functor that is an equivalence as an equivalence.
-
-See <https://stacks.math.columbia.edu/tag/02C3>. -/
-@[simps functor]
+/-- Interpret a functor that is an equivalence as an equivalence. -/
+@[simps functor, stacks 02C3]
 noncomputable def asEquivalence (F : C ⥤ D) [F.IsEquivalence] : C ≌ D where
   functor := F
   inverse := F.inv
@@ -606,6 +595,16 @@ noncomputable instance inducedFunctorOfEquiv {C' : Type*} (e : C' ≃ D) :
 noncomputable instance fullyFaithfulToEssImage (F : C ⥤ D) [F.Full] [F.Faithful] :
     IsEquivalence F.toEssImage where
 
+/-- A biimplication of properties on the objects of a category `C` induces an equivalence of the
+respective induced full subcategories of `C`. -/
+@[simps]
+def ofFullSubcategory {Z Z' : C → Prop} (h : ∀ X, Z X ↔ Z' X) :
+    FullSubcategory Z ≌ FullSubcategory Z' where
+  functor := FullSubcategory.map (fun _ => (h _).mp)
+  inverse := FullSubcategory.map (fun _ => (h _).mpr)
+  unitIso := NatIso.ofComponents (fun X => Iso.refl _)
+  counitIso := NatIso.ofComponents (fun X => Iso.refl _)
+
 end Equivalence
 
 namespace Iso
@@ -637,20 +636,5 @@ def isoInverseComp {G : C ≌ D} (i : G.functor ⋙ H ≅ F) : H ≅ G.inverse �
     ≪≫ isoWhiskerLeft G.inverse i
 
 end Iso
-
-@[deprecated (since := "2024-04-06")] alias IsEquivalence := Functor.IsEquivalence
-@[deprecated (since := "2024-04-06")] alias IsEquivalence.fun_inv_map := Functor.fun_inv_map
-@[deprecated (since := "2024-04-06")] alias IsEquivalence.inv_fun_map := Functor.inv_fun_map
-@[deprecated (since := "2024-04-06")] alias IsEquivalence.ofIso := Equivalence.changeFunctor
-@[deprecated (since := "2024-04-06")]
-alias IsEquivalence.ofIso_trans := Equivalence.changeFunctor_trans
-@[deprecated (since := "2024-04-06")]
-alias IsEquivalence.ofIso_refl := Equivalence.changeFunctor_refl
-@[deprecated (since := "2024-04-06")]
-alias IsEquivalence.equivOfIso := Functor.isEquivalence_iff_of_iso
-@[deprecated (since := "2024-04-06")]
-alias IsEquivalence.cancelCompRight := Functor.isEquivalence_of_comp_right
-@[deprecated (since := "2024-04-06")]
-alias IsEquivalence.cancelCompLeft := Functor.isEquivalence_of_comp_left
 
 end CategoryTheory

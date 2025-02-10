@@ -3,6 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Group.TypeTags.Hom
 import Mathlib.Algebra.Ring.Hom.Basic
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Algebra.Ring.Parity
@@ -120,8 +121,6 @@ end Ring
 theorem cast_dvd_cast [CommRing α] (m n : ℤ) (h : m ∣ n) : (m : α) ∣ (n : α) :=
   RingHom.map_dvd (Int.castRingHom α) h
 
-@[deprecated (since := "2024-05-25")] alias coe_int_dvd := cast_dvd_cast
-
 end cast
 
 end Int
@@ -140,10 +139,6 @@ variable [Ring α] {a x y : α}
 @[simp] lemma intCast_mul_intCast_mul (h : SemiconjBy a x y) (m n : ℤ) :
     SemiconjBy (m * a) (n * x) (n * y) := (h.intCast_mul_left m).intCast_mul_right n
 
-@[deprecated (since := "2024-05-27")] alias cast_int_mul_right := intCast_mul_right
-@[deprecated (since := "2024-05-27")] alias cast_int_mul_left := intCast_mul_left
-@[deprecated (since := "2024-05-27")] alias cast_int_mul_cast_int_mul := intCast_mul_intCast_mul
-
 end SemiconjBy
 
 namespace Commute
@@ -153,9 +148,6 @@ variable [NonAssocRing α] {a : α} {n : ℤ}
 @[simp] lemma intCast_left : Commute (n : α) a := Int.cast_commute _ _
 
 @[simp] lemma intCast_right : Commute a n := Int.commute_cast _ _
-
-@[deprecated (since := "2024-05-27")] alias cast_int_right := intCast_right
-@[deprecated (since := "2024-05-27")] alias cast_int_left := intCast_left
 
 end NonAssocRing
 
@@ -180,14 +172,6 @@ lemma intCast_mul_self : Commute ((n : α) * a) a := (Commute.refl a).intCast_mu
 lemma self_intCast_mul_intCast_mul : Commute (m * a : α) (n * a : α) :=
   (Commute.refl a).intCast_mul_intCast_mul m n
 
-@[deprecated (since := "2024-05-27")] alias cast_int_mul_right := intCast_mul_right
-@[deprecated (since := "2024-05-27")] alias cast_int_mul_left := intCast_mul_left
-@[deprecated (since := "2024-05-27")] alias cast_int_mul_cast_int_mul := intCast_mul_intCast_mul
-@[deprecated (since := "2024-05-27")] alias self_cast_int_mul := self_intCast_mul
-@[deprecated (since := "2024-05-27")] alias cast_int_mul_self := intCast_mul_self
-@[deprecated (since := "2024-05-27")]
-alias self_cast_int_mul_cast_int_mul := self_intCast_mul_intCast_mul
-
 end Ring
 end Commute
 
@@ -209,9 +193,6 @@ variable [AddGroupWithOne A]
 
 theorem eq_intCastAddHom (f : ℤ →+ A) (h1 : f 1 = 1) : f = Int.castAddHom A :=
   ext_int <| by simp [h1]
-
-@[deprecated (since := "2024-04-17")]
-alias eq_int_castAddHom := eq_intCastAddHom
 
 end AddMonoidHom
 

@@ -7,8 +7,8 @@ import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Module.Submodule.Pointwise
+import Mathlib.Algebra.Ring.NonZeroDivisors
 import Mathlib.Data.Set.Semiring
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
 
@@ -300,8 +300,15 @@ protected theorem pow_zero : M ^ 0 = 1 := rfl
 
 protected theorem pow_succ {n : ℕ} : M ^ (n + 1) = M ^ n * M := rfl
 
+protected theorem pow_add {m n : ℕ} (h : n ≠ 0) : M ^ (m + n) = M ^ m * M ^ n :=
+  npowRec_add m n h _ M.one_mul
+
 protected theorem pow_one : M ^ 1 = M := by
   rw [Submodule.pow_succ, Submodule.pow_zero, Submodule.one_mul]
+
+/-- `Submodule.pow_succ` with the right hand side commuted. -/
+protected theorem pow_succ' {n : ℕ} (h : n ≠ 0) : M ^ (n + 1) = M * M ^ n := by
+  rw [add_comm, M.pow_add h, Submodule.pow_one]
 
 theorem pow_toAddSubmonoid {n : ℕ} (h : n ≠ 0) : (M ^ n).toAddSubmonoid = M.toAddSubmonoid ^ n := by
   induction n with
@@ -348,11 +355,11 @@ theorem one_eq_range : (1 : Submodule R A) = LinearMap.range (Algebra.linearMap 
     LinearMap.toSpanSingleton_eq_algebra_linearMap]
 
 theorem algebraMap_mem (r : R) : algebraMap R A r ∈ (1 : Submodule R A) := by
-  rw [one_eq_range]; exact LinearMap.mem_range_self _ _
+  simp [one_eq_range]
 
 @[simp]
 theorem mem_one {x : A} : x ∈ (1 : Submodule R A) ↔ ∃ y, algebraMap R A y = x := by
-  rw [one_eq_range]; rfl
+  simp [one_eq_range]
 
 protected theorem map_one {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') :
     map f.toLinearMap (1 : Submodule R A) = 1 := by
