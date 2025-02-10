@@ -3,15 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.PrimeSpectrum
-import Mathlib.RingTheory.Localization.AtPrime
-import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.Algebra.Exact
-import Mathlib.Algebra.Module.LocalizedModule.Basic
-import Mathlib.Algebra.Module.LocalizedModule.Submodule
-import Mathlib.RingTheory.Localization.Module
+import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.Localization.Finiteness
 import Mathlib.RingTheory.Nakayama
+import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
 
@@ -257,7 +253,7 @@ theorem Module.support_quotient (I : Ideal R) :
         intro r hr n hn
         rw [← algebraMap_smul Rₚ, Submodule.restrictScalars_mem]
         exact Submodule.smul_mem_smul (Ideal.mem_map_of_mem _ hr) hn
-      have := Submodule.eq_bot_of_le_smul_of_le_jacobson_bot _ ⊤ Module.Finite.out this.ge
+      have := Submodule.eq_bot_of_le_smul_of_le_jacobson_bot _ ⊤ Module.Finite.fg_top this.ge
         ((Ideal.map_mono hp₂).trans (by
           rw [Localization.AtPrime.map_eq_maximalIdeal]
           exact IsLocalRing.maximalIdeal_le_jacobson _))
