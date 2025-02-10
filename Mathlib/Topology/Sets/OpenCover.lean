@@ -45,6 +45,10 @@ lemma exists_mem (hu : IsOpenCover u) (a : X) : ∃ i, a ∈ u i := by
 lemma exists_mem_nhds (hu : IsOpenCover u) (a : X) : ∃ i, (u i : Set X) ∈ 𝓝 a :=
   match hu.exists_mem a with | ⟨i, hi⟩ => ⟨i, (u i).isOpen.mem_nhds hi⟩
 
+lemma iUnion_inter (hu : IsOpenCover u) (s : Set X) :
+    ⋃ i, s ∩ u i = s := by
+  simp [← inter_iUnion, hu.iSup_set_eq_univ]
+
 end IsOpenCover
 
 end TopologicalSpace
