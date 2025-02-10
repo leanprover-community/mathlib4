@@ -278,6 +278,13 @@ instance : CommGroup (ContinuousMonoidHom A E) where
   inv f := (inv E).comp f
   inv_mul_cancel f := ext fun x => inv_mul_cancel (f x)
 
+/-- For `f : F` where `F` is a class of continuous monoid hom, this yields an element
+`ContinuousMonoidHom A B`. -/
+@[to_additive "For `f : F` where `F` is a class of continuous additive monoid hom, this yields
+an element `ContinuousAddMonoidHom A B`."]
+def ofClass (F : Type*) [FunLike F A B] [ContinuousMapClass F A B]
+    [MonoidHomClass F A B] (f : F) : (ContinuousMonoidHom A B) := toContinuousMonoidHom f
+
 end ContinuousMonoidHom
 
 end
@@ -445,6 +452,10 @@ theorem equivLike_inv_eq_symm (f : M ≃ₜ* N) : EquivLike.inv f = f.symm := rf
 
 @[to_additive (attr := simp)]
 theorem symm_symm (f : M ≃ₜ* N) : f.symm.symm = f := rfl
+
+@[to_additive]
+theorem symm_bijective : Function.Bijective (symm : M ≃ₜ* N → _) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 /-- `e.symm` is a right inverse of `e`, written as `e (e.symm y) = y`. -/
 @[to_additive (attr := simp) "`e.symm` is a right inverse of `e`, written as `e (e.symm y) = y`."]
