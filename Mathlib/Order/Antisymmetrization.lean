@@ -39,6 +39,9 @@ variable (r : α → α → Prop)
 def AntisymmRel (a b : α) : Prop :=
   r a b ∧ r b a
 
+theorem antisymmRel_swap_apply : AntisymmRel (swap r) a b ↔ AntisymmRel r a b :=
+  and_comm
+
 theorem antisymmRel_swap : AntisymmRel (swap r) = AntisymmRel r :=
   funext₂ fun _ _ ↦ propext and_comm
 

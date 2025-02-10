@@ -25,10 +25,8 @@ section Relation
 variable (r : α → α → Prop)
 
 /-- The incomparability relation `IncompRel r a b` means `¬ r a b` and `¬ r b a`. -/
-def IncompRel : α → α → Prop :=
-  AntisymmRel rᶜ
-
-theorem incompRel_iff {r} : IncompRel r a b ↔ ¬ r a b ∧ ¬ r b a := Iff.rfl
+def IncompRel (a b : α) : Prop :=
+  ¬ r a b ∧ ¬ r b a
 
 theorem IncompRel.not_le [LE α] (h : IncompRel (· ≤ ·) a b) : ¬ a ≤ b := h.1
 theorem IncompRel.not_ge [LE α] (h : IncompRel (· ≤ ·) a b) : ¬ b ≤ a := h.2
@@ -38,16 +36,29 @@ theorem LE.le.not_incompRel [LE α] (h : a ≤ b) : ¬ IncompRel (· ≤ ·) a b
 theorem antisymmRel_compl : AntisymmRel rᶜ = IncompRel r :=
   rfl
 
+theorem antisymmRel_compl_apply : AntisymmRel rᶜ a b ↔ IncompRel r a b := by
+  simp
+
 @[simp]
 theorem incompRel_compl : IncompRel rᶜ = AntisymmRel r := by
-  simp [IncompRel, AntisymmRel, compl]
+  simp [← antisymmRel_compl, AntisymmRel, compl]
+
+@[simp]
+theorem incompRel_compl_apply : IncompRel rᶜ a b ↔ AntisymmRel r a b := by
+  simp
+
+theorem antisymmRel_swap_apply : AntisymmRel (swap r) a b ↔ AntisymmRel r a b :=
+  and_comm
 
 theorem incompRel_swap : IncompRel (swap r) = IncompRel r :=
-  antisymmRel_swap _
+  antisymmRel_swap rᶜ
+
+theorem incompRel_swap_apply : IncompRel (swap r) a b ↔ IncompRel r a b :=
+  antisymmRel_swap_apply rᶜ
 
 @[refl]
 theorem IncompRel.refl [IsIrrefl α r] (a : α) : IncompRel r a a :=
-  AntisymmRel.rfl
+  AntisymmRel.refl rᶜ a
 
 variable {r} in
 theorem IncompRel.rfl [IsIrrefl α r] {a : α} : IncompRel r a a := .refl ..
@@ -75,7 +86,7 @@ theorem AntisymmRel.not_incompRel (h : AntisymmRel r a b) : ¬ IncompRel r a b :
 
 @[simp]
 theorem not_incompRel [IsTotal α r] : ¬ IncompRel r a b := by
-  rw [incompRel_iff, not_and_or, not_not, not_not]
+  rw [IncompRel, not_and_or, not_not, not_not]
   exact IsTotal.total a b
 
 end Relation
@@ -89,7 +100,7 @@ theorem IncompRel.not_gt (h : IncompRel (· ≤ ·) a b) : ¬ b < a := mt le_of_
 theorem LT.lt.not_incompRel (h : a < b) : ¬ IncompRel (· ≤ ·) a b := fun h' ↦ h'.not_lt h
 
 theorem not_le_iff_lt_or_incompRel : ¬ b ≤ a ↔ a < b ∨ IncompRel (· ≤ ·) a b := by
-  rw [lt_iff_le_not_le, incompRel_iff]
+  rw [lt_iff_le_not_le, IncompRel]
   tauto
 
 /-- Exactly one of the following is true. -/
