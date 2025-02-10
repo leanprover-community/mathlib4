@@ -948,8 +948,6 @@ instance mono : Mono f :=
 instance : SheafedSpace.IsOpenImmersion (LocallyRingedSpace.forgetToSheafedSpace.map f) :=
   H
 
--- note to reviewers: is there a `count_heartbeats` for this?
-set_option synthInstance.maxHeartbeats 40000 in
 /-- An explicit pullback cone over `cospan f g` if `f` is an open immersion. -/
 def pullbackConeOfLeft : PullbackCone f g := by
   refine PullbackCone.mk ?_
@@ -969,7 +967,6 @@ def pullbackConeOfLeft : PullbackCone f g := by
 instance : LocallyRingedSpace.IsOpenImmersion (pullbackConeOfLeft f g).snd :=
   show PresheafedSpace.IsOpenImmersion (Y.toPresheafedSpace.ofRestrict _) by infer_instance
 
-set_option synthInstance.maxHeartbeats 40000 in
 /-- The constructed `pullbackConeOfLeft` is indeed limiting. -/
 def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
   PullbackCone.isLimitAux' _ fun s => by
