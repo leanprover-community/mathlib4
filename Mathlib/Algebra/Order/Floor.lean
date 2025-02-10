@@ -788,6 +788,9 @@ theorem floor_eq_on_Ico' (n : ℤ) : ∀ a ∈ Set.Ico (n : α) (n + 1), (⌊a�
 theorem preimage_floor_singleton (m : ℤ) : (floor : α → ℤ) ⁻¹' {m} = Ico (m : α) (m + 1) :=
   ext fun _ => floor_eq_iff
 
+lemma floor_eq_self_iff_mem (a : α) : ⌊a⌋ = a ↔ a ∈ Set.range Int.cast := by
+  aesop
+
 /-! #### Fractional part -/
 
 
@@ -1188,6 +1191,9 @@ theorem ceil_eq_on_Ioc (z : ℤ) : ∀ a ∈ Set.Ioc (z - 1 : α) z, ⌈a⌉ = z
 theorem ceil_eq_on_Ioc' (z : ℤ) : ∀ a ∈ Set.Ioc (z - 1 : α) z, (⌈a⌉ : α) = z := fun a ha =>
   mod_cast ceil_eq_on_Ioc z a ha
 
+lemma ceil_eq_self_iff_mem (a : α) : ⌈a⌉ = a ↔ a ∈ Set.range Int.cast := by
+  aesop
+
 @[bound]
 theorem floor_le_ceil (a : α) : ⌊a⌋ ≤ ⌈a⌉ :=
   cast_le.1 <| (floor_le _).trans <| le_ceil _
@@ -1196,19 +1202,14 @@ theorem floor_le_ceil (a : α) : ⌊a⌋ ≤ ⌈a⌉ :=
 theorem floor_lt_ceil_of_lt {a b : α} (h : a < b) : ⌊a⌋ < ⌈b⌉ :=
   cast_lt.1 <| (floor_le a).trans_lt <| h.trans_le <| le_ceil b
 
-lemma floor_eq_self_iff_mem (a : α) : ⌊a⌋ = a ↔ a ∈ Set.range Int.cast := by
-  aesop
-
-lemma ceil_eq_self_iff_mem (a : α) : ⌈a⌉ = a ↔ a ∈ Set.range Int.cast := by
-  aesop
-
 lemma ceil_eq_floor_add_one_iff_not_mem (a : α) : ⌈a⌉ = ⌊a⌋ + 1 ↔ a ∉ Set.range Int.cast := by
-  refine ⟨fun h ht => ?_, fun h => le_antisymm (Int.ceil_le_floor_add_one _) <|
-    Int.add_one_le_ceil_iff.mpr <|
-    lt_of_le_of_ne (Int.floor_le a) ((iff_false_right h).mp (floor_eq_self_iff_mem a))⟩
-  have := ((floor_eq_self_iff_mem _).mpr ht).trans ((ceil_eq_self_iff_mem _).mpr ht).symm
-  rw [Int.cast_inj] at this
-  linarith
+  refine ⟨fun h ht => ?_, fun h => ?_⟩
+  · have := ((floor_eq_self_iff_mem _).mpr ht).trans ((ceil_eq_self_iff_mem _).mpr ht).symm
+    rw [Int.cast_inj] at this
+    linarith
+  · apply le_antisymm (Int.ceil_le_floor_add_one _)
+    rw [Int.add_one_le_ceil_iff]
+    exact lt_of_le_of_ne (Int.floor_le a) ((iff_false_right h).mp (floor_eq_self_iff_mem a))
 
 -- Porting note: in mathlib3 there was no need for the type annotation in `(m : α)`
 @[simp]
