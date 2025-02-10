@@ -204,6 +204,10 @@ theorem right_inv {f : Equidecomp X G} {x : X} (h : x ∈ f.target) :
 @[simp]
 theorem symm_symm (f : Equidecomp X G) : f.symm.symm = f := rfl
 
+theorem symm_involutive : Function.Involutive (symm : Equidecomp X G → _) := symm_symm
+
+theorem symm_bijective : Function.Bijective (symm : Equidecomp X G → _) := symm_involutive.bijective
+
 @[simp]
 theorem refl_symm : (refl X G).symm = refl X G := rfl
 

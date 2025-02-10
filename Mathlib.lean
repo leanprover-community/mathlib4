@@ -550,6 +550,7 @@ import Mathlib.Algebra.Lie.Quotient
 import Mathlib.Algebra.Lie.Rank
 import Mathlib.Algebra.Lie.Semisimple.Basic
 import Mathlib.Algebra.Lie.Semisimple.Defs
+import Mathlib.Algebra.Lie.Semisimple.Lemmas
 import Mathlib.Algebra.Lie.SkewAdjoint
 import Mathlib.Algebra.Lie.Sl2
 import Mathlib.Algebra.Lie.Solvable
@@ -1488,6 +1489,7 @@ import Mathlib.Analysis.Normed.Group.CocompactMap
 import Mathlib.Analysis.Normed.Group.Completeness
 import Mathlib.Analysis.Normed.Group.Completion
 import Mathlib.Analysis.Normed.Group.Constructions
+import Mathlib.Analysis.Normed.Group.Continuity
 import Mathlib.Analysis.Normed.Group.ControlledClosure
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.Normed.Group.HomCompletion
@@ -1503,6 +1505,7 @@ import Mathlib.Analysis.Normed.Group.SemiNormedGrp.Completion
 import Mathlib.Analysis.Normed.Group.SemiNormedGrp.Kernels
 import Mathlib.Analysis.Normed.Group.Seminorm
 import Mathlib.Analysis.Normed.Group.SeparationQuotient
+import Mathlib.Analysis.Normed.Group.Subgroup
 import Mathlib.Analysis.Normed.Group.Submodule
 import Mathlib.Analysis.Normed.Group.Tannery
 import Mathlib.Analysis.Normed.Group.Ultra
@@ -1587,6 +1590,7 @@ import Mathlib.Analysis.Seminorm
 import Mathlib.Analysis.SpecialFunctions.Arsinh
 import Mathlib.Analysis.SpecialFunctions.Bernstein
 import Mathlib.Analysis.SpecialFunctions.BinaryEntropy
+import Mathlib.Analysis.SpecialFunctions.Choose
 import Mathlib.Analysis.SpecialFunctions.CompareExp
 import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 import Mathlib.Analysis.SpecialFunctions.Complex.Arctan
@@ -2403,6 +2407,7 @@ import Mathlib.Combinatorics.SimpleGraph.Circulant
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Represents
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 import Mathlib.Combinatorics.SimpleGraph.Dart
@@ -3967,6 +3972,7 @@ import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
 import Mathlib.MeasureTheory.OuterMeasure.Caratheodory
 import Mathlib.MeasureTheory.OuterMeasure.Defs
 import Mathlib.MeasureTheory.OuterMeasure.Induced
+import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
 import Mathlib.MeasureTheory.OuterMeasure.OfFunction
 import Mathlib.MeasureTheory.OuterMeasure.Operations
 import Mathlib.MeasureTheory.PiSystem
@@ -5435,6 +5441,7 @@ import Mathlib.Topology.Compactness.PseudometrizableLindelof
 import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.Connected.Basic
 import Mathlib.Topology.Connected.Clopen
+import Mathlib.Topology.Connected.LocPathConnected
 import Mathlib.Topology.Connected.LocallyConnected
 import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Connected.Separation
@@ -5643,6 +5650,7 @@ import Mathlib.Topology.Order.UpperLowerSetTopology
 import Mathlib.Topology.Partial
 import Mathlib.Topology.PartialHomeomorph
 import Mathlib.Topology.PartitionOfUnity
+import Mathlib.Topology.Path
 import Mathlib.Topology.Perfect
 import Mathlib.Topology.PreorderRestrict
 import Mathlib.Topology.QuasiSeparated
