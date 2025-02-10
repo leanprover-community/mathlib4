@@ -1,6 +1,7 @@
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Data.Finset.Slice
 import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Data.ENat.Lattice
 universe u v
 open Function Set
 section FamHom
@@ -445,12 +446,6 @@ instance [IsEmpty V] (hr : 0 < r) : Unique (HyperGraph r V) where
     obtain ⟨a,ha⟩:=card_pos.1 this
     exact IsEmpty.false a
 
--- instance [Nonempty V] (r : ℕ): Nontrivial (HyperGraph r V) :=
---   ⟨⟨⊥, ⊤, by
---     intro hf
-
---     sorry⟩⟩
-
 section Decidable
 
 variable (V) (G H : HyperGraph r V) [DecidablePred (· ∈ G)] [DecidablePred (· ∈ H)]
@@ -481,20 +476,20 @@ def support : Set V := {v | ∃ e ∈ G, v ∈ e}
 
 theorem mem_support {v : V} : v ∈ G.support ↔ ∃ e ∈ G, v ∈ e :=
   Iff.rfl
-
-theorem support_mono {G G' : HyperGraph r V} (h : G ≤ G') : G.support ⊆ G'.support :=
+variable {G}
+theorem support_mono {G' : HyperGraph r V} (h : G ≤ G') : G.support ⊆ G'.support :=
    fun _ ⟨e, he⟩ ↦ ⟨e, (h he.1), he.2⟩
-
+variable (G)
 /-- `G.neighborSet v` is the set of vertices adjacent to `v` in `G`. -/
-def neighborHyperGraph [DecidableEq V] (G : HyperGraph r V) (v : V) : HyperGraph (r - 1) V where
+def neighborHyperGraph [DecidableEq V] (v : V) : HyperGraph (r - 1) V where
   Edges := (fun e => e.erase v) '' {e | e ∈ G ∧ v ∈ e}
   Sized := by
     intro f hf; simp only [mem_image, mem_setOf_eq] at hf
     obtain ⟨e,he,he2⟩:= hf
     rw [← he2]; exact G.Sized he.1 ▸ card_erase_of_mem he.2
-
-lemma mem_neighborHyperGraph_iff [DecidableEq V] {G : HyperGraph r V} {v : V} {e : Finset V} :
- e ∈ G.neighborHyperGraph v ↔ insert v e ∈ G ∧ e.card = r - 1 ∧ v ∉ e := by
+variable {G}
+lemma mem_neighborHyperGraph_iff [DecidableEq V] {v : V} {e : Finset V} :
+    e ∈ G.neighborHyperGraph v ↔ insert v e ∈ G ∧ e.card = r - 1 ∧ v ∉ e := by
   constructor <;> intro h
   · change  e ∈ (fun e => e.erase v) '' {e | e ∈ G ∧ v ∈ e} at h
     simp only [mem_image, mem_setOf_eq] at h
@@ -505,8 +500,8 @@ lemma mem_neighborHyperGraph_iff [DecidableEq V] {G : HyperGraph r V} {v : V} {e
   · use (insert v e),⟨h.1, mem_insert_self v e⟩
     simp only [erase_insert_eq_erase, erase_eq_self]
     exact h.2.2
-
-instance neighborHyperGraph.memDecidable [DecidableEq V] (G : HyperGraph r V)(v : V)
+variable (G)
+instance neighborHyperGraph.memDecidable [DecidableEq V] (v : V)
 [DecidablePred (· ∈ G)] : DecidablePred (· ∈ G.neighborHyperGraph v) := by
   intro e; simp_rw [mem_neighborHyperGraph_iff]
   infer_instance
@@ -530,12 +525,13 @@ lemma incidenceHyperGraph_le_of_le [DecidableEq V] {G H : HyperGraph r V} (v : V
   rw [mem_incidenceHyperGraph_iff] at *
   use (hle he.1), he.2
 
-instance incidenceHyperGraph.memDecidable [DecidableEq V] (G : HyperGraph r V)(v : V)
+instance incidenceHyperGraph.memDecidable [DecidableEq V] (v : V)
 [DecidablePred (· ∈ G)] : DecidablePred (· ∈ G.incidenceHyperGraph v) := by
   intro e; simp_rw [mem_incidenceHyperGraph_iff]
   infer_instance
 
-def linkHyperGraph [DecidableEq V] (G : HyperGraph r V) (e : Finset V) : HyperGraph (r - e.card) V
+variable (e)
+def linkHyperGraph [DecidableEq V] : HyperGraph (r - e.card) V
     where
   Edges := (fun f => f \ e) '' {f | f ∈ G ∧ e ⊆ f}
   Sized := by
@@ -562,13 +558,7 @@ def toGraph [DecidableEq V] (G : HyperGraph r V) [DecidablePred (· ∈ G)] : Si
 
 section Maps
 
-variable {V W X : Type*} {r : ℕ} (G : SimpleGraph V) (G' : SimpleGraph W) {u v : V}
-
-
-/-- Given an injective function, there is a covariant induced map on graphs by pushing forward
-the adjacency relation.
-
-This is injective (see `SimpleGraph.map_injective`). -/
+variable {W : Type*}  {u v : V}
 protected def map (f : V ↪ W) (G : HyperGraph r V) : HyperGraph r W where
   Edges :=  {a | ∃ e ∈ G, a = e.map f}
   Sized := by
@@ -612,12 +602,12 @@ theorem coe_fn_injective : Injective fun (f : G →h H) => (f : α → β) :=
 theorem ext ⦃f g : G →h H⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
-/-- Identity map is a Set homomorphism. -/
+/-- Identity map is a HyperGraph homomorphism. -/
 @[refl, simps]
 protected def id (H : HyperGraph r α) : H →h H  :=
   ⟨fun x => x, by simp⟩
 
-/-- Composition of two Set homomorphisms is a Set homomorphism. -/
+/-- Composition of two HyperGraph homomorphisms is a HyperGraph homomorphism. -/
 @[simps]
 protected def comp (g : H →h I) (f : G →h H) : G →h I :=
   ⟨fun x => g (f x), by
@@ -626,10 +616,7 @@ protected def comp (g : H →h I) (f : G →h H) : G →h I :=
 
 end Hom
 
-
-
-
-variable  (G : HyperGraph r V) [DecidableEq V] {α : Type*}
+variable (G : HyperGraph r V) [DecidableEq V] {α : Type*}
 
 abbrev Coloring (s : ℕ) (α : Type v) [DecidableEq α] := G →h (⊤ : HyperGraph s α)
 
@@ -658,6 +645,32 @@ theorem Coloring.strong {e : Finset V} {v w : V} (h : e ∈ G) :
   intro hv hw hne heq
   apply hne
   apply (injOn_of_card_image_eq <| le_antisymm card_image_le (G.Sized h ▸ C.valid h)) hv hw heq
+
+variable (G)
+
+abbrev VertexColoring := G.Coloring 2
+
+variable {G} (C : G.VertexColoring α) {e : Finset V}
+theorem VertexColoring.valid' (h : e ∈ G) : ∃ v w, v ∈ e ∧ w ∈ e ∧ C v ≠ C w := by
+  have : 1 < _ := C.valid h
+  rw [one_lt_card_iff] at this
+  obtain ⟨a,b,ha,hb,hne⟩ := this
+  simp only [Finset.mem_image] at ha hb
+  obtain ⟨v,hv,hcv⟩:= ha
+  obtain ⟨w,hw,hcw⟩:= hb
+  use v,w,hv,hw
+  subst_vars; exact hne
+
+
+/-- Whether a hypergraph can be colored by at most `n` colors. -/
+def VertexColorable (n : ℕ) : Prop := Nonempty (G.VertexColoring (Fin n))
+
+/--If `G` is VertexColorable, then `ENat.toNat G.vertexChromaticNumber` is the `ℕ`-valued chromatic
+number. -/
+noncomputable def vertexChromaticNumber : ℕ∞ := ⨅ n ∈ setOf G.VertexColorable, (n : ℕ∞)
+
+instance : Insert  (Finset V) (HyperGraph r V) where
+  insert := fun e G => (fromSet r {e}) ⊔ G
 
 end Maps
 
@@ -732,10 +745,6 @@ end HyperGraph
 -- protected def symm (f : 𝒜 ≃s ℬ) : ℬ ≃s 𝒜 :=
 --   ⟨f.toEquiv.symm, by intro B; rw [← f.map_mem_iff, ← coe_fn_toEquiv, f.1.image_symm_image]⟩
 
--- /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
---   because `SetIso` defines custom coercions other than the ones given by `DFunLike`. -/
--- def Simps.apply (h : 𝒜 ≃s ℬ) : α → β :=
---   h
 
 -- /-- See Note [custom simps projection]. -/
 -- def Simps.symm_apply (h : 𝒜 ≃s ℬ) : β → α :=
@@ -761,15 +770,6 @@ end HyperGraph
 -- theorem default_def (𝒜 : Set (Finset α)) : default = SetIso.refl 𝒜 :=
 --   rfl
 
--- /-- A set isomorphism between equal sets on equal types. -/
--- @[simps! toEquiv apply]
--- protected def cast {α β : Type u} {𝒜 : Set (Finset α)} {ℬ : Set (Finset β)} (h₁ : α = β) (h₂ : HEq 𝒜 ℬ) :
---     𝒜 ≃s ℬ :=
---   ⟨Equiv.cast h₁, @fun A => by
---     subst h₁
---     rw [eq_of_heq h₂]
---     simp⟩
-
 -- @[simp]
 -- protected theorem cast_symm {α β : Type u} {𝒜 : Set (Finset α)} {ℬ : Set (Finset β)} (h₁ : α = β)
 --     (h₂ : HEq 𝒜 ℬ) : (SetIso.cast h₁ h₂).symm = SetIso.cast h₁.symm h₂.symm := rfl
@@ -777,12 +777,6 @@ end HyperGraph
 -- @[simp]
 -- protected theorem cast_refl {α : Type u} {𝒜 : Set (Finset α)} (h₁ : α = α := rfl)
 --     (h₂ : HEq 𝒜 𝒜 := HEq.rfl) : SetIso.cast h₁ h₂ = SetIso.refl 𝒜 := rfl
-
--- @[simp]
--- protected theorem cast_trans {α β γ : Type u} {𝒜 : Set (Finset α)} {ℬ : Set (Finset β)} {𝒞 : Set (Finset γ)}
---   (h₁ : α = β) (h₁' : β = γ) (h₂ : HEq 𝒜 ℬ) (h₂' : HEq ℬ 𝒞) :
---     (SetIso.cast h₁ h₂).trans (SetIso.cast h₁' h₂') = SetIso.cast (h₁.trans h₁') (h₂.trans h₂') :=
---   ext fun x => by subst h₁; rfl
 
 -- /-- A set isomorphism is also a set isomorphism between complemented sets. -/
 -- @[simps!]
