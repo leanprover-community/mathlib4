@@ -3,6 +3,7 @@ Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
+import Mathlib.Algebra.Order.GroupWithZero.Bounds
 import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Topology.MetricSpace.Sequences
@@ -253,7 +254,7 @@ theorem smoothingFun_one_le (hμ1 : μ 1 ≤ 1) : smoothingFun μ 1 ≤ 1 := by
   rw [one_pow]
   conv_rhs => rw [← one_rpow (1 / n : ℝ)]
   have hn1 : 0 < (1 / n : ℝ) := by
-    apply div_pos zero_lt_one
+    apply _root_.div_pos zero_lt_one
     rw [← cast_zero, cast_lt]
     exact succ_le_iff.mp hn
   exact (rpow_le_rpow_iff (apply_nonneg μ _) zero_le_one hn1).mpr hμ1
