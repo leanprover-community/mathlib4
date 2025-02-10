@@ -19,14 +19,8 @@ The `HashMemo` contains all information `Cache` needs about the modules.
 structure HashMemo where
   /-- Hash of mathlib's lake project settings. -/
   rootHash : UInt64
-  /-- Stores the imports of a module -/
   depsMap  : Std.HashMap FilePath (Array FilePath) := ∅
-  /--
-  For modules in Mathlib or upstream, this contains the same information
-  as `hashMap`. Downstream modules have `none` here and do not appear in `hashMap`.
-  -/
   cache    : Std.HashMap FilePath (Option UInt64) := ∅
-  /-- Stores the hash of the module's content for modules in Mathlib or upstream. -/
   hashMap  : NameHashMap := ∅
   deriving Inhabited
 
