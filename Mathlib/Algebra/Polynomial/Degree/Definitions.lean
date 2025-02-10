@@ -103,7 +103,6 @@ theorem degree_eq_iff_natDegree_eq_of_pos {p : R[X]} {n : ℕ} (hn : 0 < n) :
   · exact degree_eq_iff_natDegree_eq h
 
 theorem natDegree_eq_of_degree_eq_some {p : R[X]} {n : ℕ} (h : degree p = n) : natDegree p = n := by
-  -- Porting note: `Nat.cast_withBot` is required.
   rw [natDegree, h, Nat.cast_withBot, WithBot.unbot'_coe]
 
 theorem degree_ne_of_natDegree_ne {n : ℕ} : p.natDegree ≠ n → degree p ≠ n :=
@@ -362,7 +361,6 @@ theorem natDegree_C_mul_X_pow_le (a : R) (n : ℕ) : natDegree (C a * X ^ n) ≤
 theorem degree_erase_le (p : R[X]) (n : ℕ) : degree (p.erase n) ≤ degree p := by
   rcases p with ⟨p⟩
   simp only [erase_def, degree, coeff, support]
-  -- Porting note: simpler convert-free proof to be explicit about definition unfolding
   apply sup_mono
   rw [Finsupp.support_erase]
   apply Finset.erase_subset
@@ -493,7 +491,6 @@ theorem degree_zero_le : degree (0 : R[X]) ≤ 0 := natDegree_eq_zero_iff_degree
 
 theorem degree_le_iff_coeff_zero (f : R[X]) (n : WithBot ℕ) :
     degree f ≤ n ↔ ∀ m : ℕ, n < m → coeff f m = 0 := by
-  -- Porting note: `Nat.cast_withBot` is required.
   simp only [degree, Finset.max, Finset.sup_le_iff, mem_support_iff, Ne, ← not_le,
     not_imp_comm, Nat.cast_withBot]
 

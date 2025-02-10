@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.CategoryTheory.Monoidal.CommMon_
-import Mathlib.CategoryTheory.Monoidal.Types.Symmetric
+import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
 /-!
 # `Mon_ (Type u) ≌ MonCat.{u}`
