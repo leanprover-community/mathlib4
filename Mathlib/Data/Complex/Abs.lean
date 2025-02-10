@@ -3,8 +3,7 @@ Copyright (c) 2017 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
 -/
-import Mathlib.Data.Complex.Basic
-import Mathlib.Data.Real.Sqrt
+import Mathlib.Data.Complex.Norm
 
 /-!
 # Absolute values of complex numbers
@@ -303,5 +302,8 @@ lemma re_neg_ne_zero_of_re_pos {s : ℂ} (hs : 0 < s.re) : (-s).re ≠ 0 :=
 
 lemma re_neg_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : (-s).re ≠ 0 :=
   re_neg_ne_zero_of_re_pos <| zero_lt_one.trans hs
+
+@[simp]
+theorem norm_eq_abs (z : ℂ) : ‖z‖ = abs z := rfl
 
 end Complex

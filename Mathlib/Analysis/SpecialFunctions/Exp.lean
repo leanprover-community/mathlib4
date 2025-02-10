@@ -78,7 +78,7 @@ lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
     rw [NormedAddCommGroup.nhds_zero_basis_norm_lt.eventually_iff]
     refine ⟨1, one_pos, fun x hx ↦ ?_⟩
     convert exp_bound hx.out.le hn using 1
-    field_simp [mul_comm]
+    field_simp [mul_comm, Complex.norm_eq_abs]
 
 lemma exp_sub_sum_range_succ_isLittleO_pow (n : ℕ) :
     (fun x ↦ exp x - ∑ i ∈ Finset.range (n + 1), x ^ i / i !) =o[𝓝 0] (· ^ n) :=
@@ -139,7 +139,7 @@ lemma UniformlyContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | 
     simp only [norm_eq_abs, abs_exp, Real.exp_le_exp]
     exact hy
   simp only [gt_iff_lt, dist_zero_right, norm_eq_abs, Set.mem_setOf_eq, norm_mul,
-    Complex.abs_exp] at *
+    Complex.abs_exp, map_mul] at *
   apply lt_of_le_of_lt (mul_le_mul h3.le hya (Real.exp_nonneg y.re) (le_of_lt ha))
   have hrr : ε / (2 * a.exp) * a.exp = ε / 2 := by
     nth_rw 2 [mul_comm]
