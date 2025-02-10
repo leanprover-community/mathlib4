@@ -258,7 +258,7 @@ of morphisms in `W`. -/
 def transfiniteCompositionsOfShape : MorphismProperty C :=
   fun _ _ f ↦ Nonempty (W.TransfiniteCompositionOfShape J f)
 
-lemma monotone_transfiniteCompositionsOfShape :
+lemma transfiniteCompositionsOfShape_monotone :
     Monotone (transfiniteCompositionsOfShape (C := C) (J := J)) := by
   rintro _ _ h _ _ _ ⟨t⟩
   exact ⟨t.ofLE h⟩

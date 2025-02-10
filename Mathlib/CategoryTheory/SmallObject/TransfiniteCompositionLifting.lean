@@ -231,7 +231,7 @@ namespace MorphismProperty
 variable (W : MorphismProperty C)
   (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
 
-instance llp_isStableUnderTransfiniteCompositionOfShape :
+instance isStableUnderTransfiniteCompositionOfShape_llp :
     W.llp.IsStableUnderTransfiniteCompositionOfShape J := by
   rw [isStableUnderTransfiniteCompositionOfShape_iff]
   rintro X Y f ⟨h⟩
@@ -243,9 +243,9 @@ instance llp_isStableUnderTransfiniteCompositionOfShape :
 
 lemma transfiniteCompositionsOfShape_le_llp_rlp :
     W.transfiniteCompositionsOfShape J ≤ W.rlp.llp := by
-  have := W.rlp.llp_isStableUnderTransfiniteCompositionOfShape J
+  have := W.rlp.isStableUnderTransfiniteCompositionOfShape_llp J
   rw [isStableUnderTransfiniteCompositionOfShape_iff] at this
-  exact le_trans (monotone_transfiniteCompositionsOfShape J W.le_llp_rlp) this
+  exact le_trans (transfiniteCompositionsOfShape_monotone J W.le_llp_rlp) this
 
 lemma transfiniteCompositions_le_llp_rlp :
     transfiniteCompositions.{w} W ≤ W.rlp.llp := by
