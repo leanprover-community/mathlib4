@@ -49,14 +49,12 @@ This is the free commutative `R`-algebra generated (`R`-linearly) by the module 
 
 open MvPolynomial RingQuot
 
-noncomputable section
 universe u
-variable (R L : Type u) {RL : Type u} [CommRing R]
-         [AddCommMonoid L] [Module R L]
-         [CommRing RL] [Algebra R RL]
 
-         {L' : Type u} [CommRing L'] [Algebra R L']
---local notation "ι" => TensorAlgebra.ι R
+noncomputable section
+
+variable (R L : Type*) {RL : Type*} [CommRing R] [AddCommMonoid L] [Module R L]
+variable [CommRing RL] [Algebra R RL] {L' : Type*} [CommRing L'] [Algebra R L']
 
 open TensorAlgebra in
 /--
@@ -72,7 +70,6 @@ the tensor algebra by the commutativity relation
 -/
 abbrev SymmetricAlgebra := RingQuot (SymRel R L)
 
-
 variable {R} {L} in
 /--
 Given a morphism ι : L →ₗ[R] RL, where RL is some commutative algebra over R,
@@ -81,17 +78,13 @@ symmetric algebra of L, i.e. it means that for any morphism φ : L →ₗ[R] A i
 commutative algebra A, there exists a unique φ' : RL →ₐ[R] A such that φ = φ' ∘ ι.
 -/
 structure IsSymmetricAlgebra (ι : L →ₗ[R] RL) : Prop where
-  ex_map {A : Type u} [CommRing A] [Algebra R A] (φ : L →ₗ[R] A)
+  ex_map {A : Type*} [CommRing A] [Algebra R A] (φ : L →ₗ[R] A)
     : ∃! φ' : RL →ₐ[R] A, φ = φ'.toLinearMap ∘ₗ ι
 
-
-
-local notation "𝔖" => SymmetricAlgebra
-
-
 namespace SymmetricAlgebra
+
 open TensorAlgebra in
-instance : CommRing (𝔖 R L) where
+instance : CommRing (SymmetricAlgebra R L) where
   mul_comm a b := match a, b with
     | ⟨a⟩, ⟨b⟩ => by
       apply Quot.ind _ a; apply Quot.ind _ b; intro a b;
@@ -129,12 +122,12 @@ instance : CommRing (𝔖 R L) where
 /--
 Algebra homomorphism from the tensor algebra over L to the symmetric algebra over L.
 -/
-abbrev algHom : TensorAlgebra R L →ₐ[R] 𝔖 R L := RingQuot.mkAlgHom R (SymRel R L)
+abbrev algHom : TensorAlgebra R L →ₐ[R] SymmetricAlgebra R L := RingQuot.mkAlgHom R (SymRel R L)
 
 /--
 Canonical inclusion of `L` into the symmetric algebra `𝔖 R L`.
 -/
-def ι : L →ₗ[R] 𝔖 R L := (algHom R L).toLinearMap.comp (TensorAlgebra.ι R (M := L))
+def ι : L →ₗ[R] SymmetricAlgebra R L := (algHom R L).toLinearMap.comp (TensorAlgebra.ι R (M := L))
 
 end SymmetricAlgebra
 
@@ -142,19 +135,18 @@ namespace IsSymmetricAlgebra
 /--
 The zero module over base ring R has R as its symmetric algebra
 -/
-theorem baseRingOfZeroModule (hm : Subsingleton L) :
-   IsSymmetricAlgebra (R := R) (L := L) (RL := R) 0 where
-    ex_map := by
-      intro a b c φ
-      have hφ : φ = 0 := Subsingleton.eq_zero φ
-      let φ' : R →ₐ[R] a := Algebra.ofId R a
-      use φ'
-      constructor
-      · rw [hφ]
-        ext x
-        simp only [LinearMap.zero_apply, LinearMap.comp_zero]
-      ·  intro ψ hψ
-         exact Algebra.ext_id_iff.mpr trivial
+theorem baseRingOfZeroModule [Subsingleton L] :
+    IsSymmetricAlgebra (R := R) (L := L) (RL := R) 0 where
+  ex_map := by
+    intro a b c φ
+    have hφ : φ = 0 := Subsingleton.eq_zero φ
+    use Algebra.ofId R a
+    constructor
+    · rw [hφ]
+      ext x
+      simp only [LinearMap.zero_apply, LinearMap.comp_zero]
+    · intro ψ hψ
+      exact Algebra.ext_id_iff.mpr trivial
 
 open SymmetricAlgebra in
 /--
@@ -166,11 +158,11 @@ theorem SymmetricAlgebra.isSymmetricAlgebra : IsSymmetricAlgebra (ι R L) where
     intro alg com halg φ
     let tensorphi : TensorAlgebra R L →ₐ[R] alg := TensorAlgebra.lift R φ
     have res : ∀ ⦃x y : TensorAlgebra R L⦄, SymRel R L x y → tensorphi x = tensorphi y := by
-        intro x y h
-        induction h
-        case mul_comm x y =>
-          simp only [map_mul]
-          rw [@NonUnitalCommSemiring.mul_comm]
+      intro x y h
+      induction h
+      case mul_comm x y =>
+        simp only [map_mul]
+        rw [@NonUnitalCommSemiring.mul_comm]
     use (RingQuot.liftAlgHom (S := R) (s := SymRel R L) (B := alg)) ⟨TensorAlgebra.lift R φ, res⟩
     constructor
     · unfold ι
@@ -178,10 +170,7 @@ theorem SymmetricAlgebra.isSymmetricAlgebra : IsSymmetricAlgebra (ι R L) where
       simp
     · intro a b
       apply RingQuot.liftAlgHom_unique
-      exact
-        (TensorAlgebra.lift_unique φ (a.comp (RingQuot.mkAlgHom R (SymRel R L)))).mp
-          (id (Eq.symm b))
-
+      exact (TensorAlgebra.lift_unique φ (a.comp (RingQuot.mkAlgHom R (SymRel R L)))).mp (Eq.symm b)
 
 variable {L}
 
@@ -193,70 +182,61 @@ def lift {iM : L →ₗ[R] RL} (salg : IsSymmetricAlgebra iM) (φ : L →ₗ[R] 
   (salg.ex_map φ).choose
 
 /--
-The lift `φ' : RL →ₐ[R] L'` of a morhpism `φ : L →ₗ[R] L'` satisfies `φ = φ' ∘ ι`
+The lift `φ' : RL →ₐ[R] L'` of a morphism `φ : L →ₗ[R] L'` satisfies `φ = φ' ∘ ι`
 -/
 theorem lift_spec {iM : L →ₗ[R] RL} (salg : IsSymmetricAlgebra iM) (φ : L →ₗ[R] L') :
-         φ = (lift R salg φ).toLinearMap ∘ₗ iM := (salg.ex_map φ).choose_spec.1
+    φ = (lift R salg φ).toLinearMap ∘ₗ iM := (salg.ex_map φ).choose_spec.1
 
-lemma comp_spec {M : Type u} [AddCommMonoid M] [Module R M]
-         {RM RM' : Type u}
-         [CommRing RM] [Algebra R RM] [CommRing RM'] [Algebra R RM']
-         {iM : M →ₗ[R] RM} {iM' : M →ₗ[R] RM'}
-         (salg : IsSymmetricAlgebra iM) (salg' : IsSymmetricAlgebra iM') :
-  iM = ((AlgHom.comp (lift _ salg' iM) (lift _ salg iM')).toLinearMap) ∘ₗ iM := by
+lemma comp_spec {M : Type*} [AddCommMonoid M] [Module R M] {RM RM' : Type*} [CommRing RM]
+    [Algebra R RM] [CommRing RM'] [Algebra R RM'] {iM : M →ₗ[R] RM} {iM' : M →ₗ[R] RM'}
+    (salg : IsSymmetricAlgebra iM) (salg' : IsSymmetricAlgebra iM') :
+    iM = ((AlgHom.comp (lift _ salg' iM) (lift _ salg iM')).toLinearMap) ∘ₗ iM := by
   rw [AlgHom.comp_toLinearMap]
   rw [LinearMap.comp_assoc]
   rw [← lift_spec _ salg iM']
   exact lift_spec _ salg' iM
 
 @[simp]
-lemma comp_id {M : Type u} [AddCommMonoid M] [Module R M]
-    {RM RM' : Type u}
+lemma comp_id {M : Type*} [AddCommMonoid M] [Module R M] {RM : Type u} {RM' : Type u}
     [CommRing RM] [Algebra R RM] [CommRing RM'] [Algebra R RM']
     {iM : M →ₗ[R] RM} {iM' : M →ₗ[R] RM'}
     (salg : IsSymmetricAlgebra iM) (salg' : IsSymmetricAlgebra iM')
     : (lift R salg' iM).comp (lift R salg iM') = AlgHom.id R RM :=
-    (salg.ex_map iM).unique (comp_spec _ salg salg') (by rfl)
+  (salg.ex_map iM).unique (comp_spec _ salg salg') rfl
 
-
-lemma lift_comp {M : Type u} [AddCommMonoid M] [Module R M]
-    {RM RM' : Type u}
+lemma lift_comp {M : Type*} [AddCommMonoid M] [Module R M] {RM RM' : Type*}
     [CommRing RM] [Algebra R RM] [CommRing RM'] [Algebra R RM']
     {iM : M →ₗ[R] RM} {iM' : M →ₗ[R] RM'}
     (salg : IsSymmetricAlgebra iM) (salg' : IsSymmetricAlgebra iM') :
-    ⇑(lift R salg' iM) ∘ ⇑(lift R salg iM') =
-    (AlgHom.comp (lift R salg' iM) (lift R salg iM')) := rfl
+    ⇑(lift R salg' iM) ∘ ⇑(lift R salg iM') = (AlgHom.comp (lift R salg' iM) (lift R salg iM')) :=
+  rfl
 
 /--
 Two algebras RM and RM' satisfying the universal property for the symmetric algebra of M over R
 must be isomorphic
 -/
-def isomorphismOfSymmetricAlgebraOfSymmetricAlgebra {M : Type u} [AddCommMonoid M] [Module R M]
-    {RM RM' : Type u}
-    [CommRing RM] [Algebra R RM] [CommRing RM'] [Algebra R RM']
+def isomorphismOfSymmetricAlgebraOfSymmetricAlgebra {M : Type*} [AddCommMonoid M] [Module R M]
+    {RM RM' : Type u} [CommRing RM] [Algebra R RM] [CommRing RM'] [Algebra R RM']
     {iM : M →ₗ[R] RM} {iM' : M →ₗ[R] RM'}
     (salg : IsSymmetricAlgebra iM) (salg' : IsSymmetricAlgebra iM') : RM ≃ₐ[R] RM' where
   toFun : RM →ₐ[R] RM' := lift R salg iM'
   invFun : RM' →ₐ[R] RM := lift R salg' iM
   left_inv := by
     rw [@Function.leftInverse_iff_comp]
-    simp[lift_comp]
+    simp [lift_comp]
   right_inv := by
     rw [@Function.rightInverse_iff_comp]
-    simp[lift_comp]
+    simp [lift_comp]
   map_mul' := by simp only [map_mul, implies_true]
   map_add' := by simp only [map_add, implies_true]
   commutes' := by simp only [AlgHom.commutes, implies_true]
-
-
-variable (I : Type u) (basis_I : Basis I R L)
 
 /--
 Given a basis I of an R-module L, the polynomial ring with variables generated by the elements
 of I satisfies the universal property of a symmetric algebra of L
 -/
-theorem mvPolynomial :
-  IsSymmetricAlgebra (Basis.constr basis_I R (fun i ↦ MvPolynomial.X i) : L →ₗ[R] MvPolynomial I R)
+theorem mvPolynomial (I : Type*) (basis_I : Basis I R L) :
+    IsSymmetricAlgebra (Basis.constr basis_I R (fun i ↦ ((MvPolynomial.X i) : (MvPolynomial I R))))
   where
   ex_map := by
     intro alg b c φ
@@ -267,9 +247,6 @@ theorem mvPolynomial :
       simp
     · intro f hf
       ext i
-      simp only [aeval_X]
-      rw [hf]
-      simp only [LinearMap.coe_comp, LieHom.coe_toLinearMap, AlgHom.coe_toLieHom,
-        Function.comp_apply, Basis.constr_basis, AlgHom.toLinearMap_apply]
+      simp [aeval_X, hf]
 
 end IsSymmetricAlgebra
