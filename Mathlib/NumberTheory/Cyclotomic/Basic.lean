@@ -461,6 +461,7 @@ theorem isGalois : IsGalois K L :=
   IsGalois.of_separable_splitting_field (X_pow_sub_one_separable_iff.2
     (IsCyclotomicExtension.neZero' n K L).1)
 
+-- TODO rename isSplittingField_cyclotomic
 /-- If `IsCyclotomicExtension {n} K L`, then `L` is the splitting field of `cyclotomic n K`. -/
 theorem splitting_field_cyclotomic : IsSplittingField K L (cyclotomic n K) :=
   { splits' := splits_cyclotomic K L (mem_singleton n)

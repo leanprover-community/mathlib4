@@ -260,10 +260,12 @@ end Nat
 
 namespace List
 
+-- TODO rename
 lemma toFinset_range'_1 (a b : ℕ) : (List.range' a b).toFinset = Ico a (a + b) := by
   ext x
   rw [List.mem_toFinset, List.mem_range'_1, Finset.mem_Ico]
 
+-- TODO rename
 lemma toFinset_range'_1_1 (a : ℕ) : (List.range' 1 a).toFinset = Icc 1 a := by
   ext x
   rw [List.mem_toFinset, List.mem_range'_1, add_comm, Nat.lt_succ_iff, Finset.mem_Icc]
