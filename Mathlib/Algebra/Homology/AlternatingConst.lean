@@ -80,7 +80,6 @@ def alternatingConstHomologyZero (X : C) : (alternatingConst.obj X).homology 0 â
   (alternatingConstHomologyDataZero X _ rfl).left.homologyIso
 
 end ChainComplex
-section
 
 variable [Preadditive C] [HasZeroObject C]
 
