@@ -28,6 +28,10 @@ usually interested in finding a flow of maximal value for a given network.
 For flows `f f' : N.PseudoFlow`, we define `f ≤ f'` as the _subflow relation_, indicating that for
 all `u v : V`, `f u v ≤ f' u v`.
 
+## Naming conventions
+
+We follow the literature and will usually use `s` for the source vertex and `t` for the sink vertex.
+
 ## References
 
 See [goldberg_network_1989] for a thorough introduction to the topic.
