@@ -161,9 +161,9 @@ lemma map_bijective (X Y : C) :
     Function.Bijective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
   hF.homEquiv.bijective
 
-@[simp, reassoc]
+@[simp]
 lemma preimage_id {X : C} :
-    hF.preimage (𝟙 (F.obj X)) = (𝟙 X) :=
+    hF.preimage (𝟙 (F.obj X)) = 𝟙 X :=
   hF.map_injective (by simp)
 
 @[simp, reassoc]
