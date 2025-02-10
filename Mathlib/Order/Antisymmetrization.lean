@@ -87,10 +87,16 @@ theorem antisymmRel_iff_eq [IsRefl α r] [IsAntisymm α r] : AntisymmRel r a b �
 
 alias ⟨AntisymmRel.eq, _⟩ := antisymmRel_iff_eq
 
-theorem AntisymmRel.le [LE α] (h : AntisymmRel (· ≤ ·) a b) : a ≤ b := h.1
-theorem AntisymmRel.ge [LE α] (h : AntisymmRel (· ≤ ·) a b) : b ≤ a := h.2
-
 end Relation
+
+section LE
+
+variable [LE α]
+
+theorem AntisymmRel.le (h : AntisymmRel (· ≤ ·) a b) : a ≤ b := h.1
+theorem AntisymmRel.ge (h : AntisymmRel (· ≤ ·) a b) : b ≤ a := h.2
+
+end LE
 
 section IsPreorder
 

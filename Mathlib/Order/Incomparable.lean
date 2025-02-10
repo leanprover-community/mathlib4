@@ -85,11 +85,17 @@ theorem not_incompRel [IsTotal α r] : ¬ IncompRel r a b := by
   rw [IncompRel, not_and_or, not_not, not_not]
   exact IsTotal.total a b
 
-theorem IncompRel.not_le [LE α] (h : IncompRel (· ≤ ·) a b) : ¬ a ≤ b := h.1
-theorem IncompRel.not_ge [LE α] (h : IncompRel (· ≤ ·) a b) : ¬ b ≤ a := h.2
-theorem LE.le.not_incompRel [LE α] (h : a ≤ b) : ¬ IncompRel (· ≤ ·) a b := fun h' ↦ h'.not_le h
-
 end Relation
+
+section LE
+
+variable [LE α]
+
+theorem IncompRel.not_le (h : IncompRel (· ≤ ·) a b) : ¬ a ≤ b := h.1
+theorem IncompRel.not_ge (h : IncompRel (· ≤ ·) a b) : ¬ b ≤ a := h.2
+theorem LE.le.not_incompRel (h : a ≤ b) : ¬ IncompRel (· ≤ ·) a b := fun h' ↦ h'.not_le h
+
+end LE
 
 section Preorder
 
