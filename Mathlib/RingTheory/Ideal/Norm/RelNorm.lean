@@ -58,8 +58,8 @@ variable {R}
 @[simp]
 theorem spanNorm_eq_bot_iff {I : Ideal S} : spanNorm R I = ⊥ ↔ I = ⊥ := by
   simp only [spanNorm, span_eq_bot, Set.mem_image, SetLike.mem_coe, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂, Algebra.intNorm_eq_zero, @eq_bot_iff _ _ _ I, SetLike.le_def, map]
-  rfl
+    forall_apply_eq_imp_iff₂, Algebra.intNorm_eq_zero, @eq_bot_iff _ _ _ I, SetLike.le_def, map,
+    mem_bot]
 
 variable (R)
 
@@ -234,7 +234,7 @@ theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanN
     (Rₘ := Localization.AtPrime P) (Sₘ := Localization P') _ _ P.primeCompl_le_nonZeroDivisors]
   rw [← (I.map _).span_singleton_generator, ← (J.map _).span_singleton_generator,
     span_singleton_mul_span_singleton, spanNorm_singleton, spanNorm_singleton,
-      spanNorm_singleton, span_singleton_mul_span_singleton, _root_.map_mul]
+    spanNorm_singleton, span_singleton_mul_span_singleton, _root_.map_mul]
 
 /-- The relative norm `Ideal.relNorm R (I : Ideal S)`, where `R` and `S` are Dedekind domains,
 and `S` is an extension of `R` that is finite and free as a module. -/
