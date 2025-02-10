@@ -33,7 +33,7 @@ theorem antisymmRel_compl : AntisymmRel rᶜ = IncompRel r :=
   rfl
 
 theorem antisymmRel_compl_apply : AntisymmRel rᶜ a b ↔ IncompRel r a b :=
-  Iff.rfl
+  .rfl
 
 @[simp]
 theorem incompRel_compl : IncompRel rᶜ = AntisymmRel r := by
