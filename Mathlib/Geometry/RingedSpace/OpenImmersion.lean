@@ -713,12 +713,14 @@ end Pullback
 
 section OfStalkIso
 
-variable [HasLimits C] [HasColimits C] [HasForget C]
+variable [HasLimits C] [HasColimits C] {FC : C → C → Type*} {CC : C → Type v}
+variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [instCC : ConcreteCategory.{v} C FC]
 variable [(CategoryTheory.forget C).ReflectsIsomorphisms]
   [PreservesLimits (CategoryTheory.forget C)]
 
 variable [PreservesFilteredColimits (CategoryTheory.forget C)]
 
+include instCC in
 /-- Suppose `X Y : SheafedSpace C`, where `C` is a concrete category,
 whose forgetful functor reflects isomorphisms, preserves limits and filtered colimits.
 Then a morphism `X ⟶ Y` that is a topological open embedding
