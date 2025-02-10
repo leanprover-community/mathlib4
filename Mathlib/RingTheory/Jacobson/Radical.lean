@@ -88,6 +88,7 @@ theorem jacobson_le_of_eq_bot {N : Submodule R M} (h : jacobson R (M ⧸ N) = �
 
 variable (R M)
 
+@[simp]
 theorem jacobson_quotient_jacobson : jacobson R (M ⧸ jacobson R M) = ⊥ := by
   rw [jacobson_quotient_of_le le_rfl, mkQ_map_self]
 
@@ -158,6 +159,7 @@ theorem jacobson_le_of_eq_bot {I : Ideal R} [I.IsTwoSided] (h : jacobson (R ⧸ 
 
 variable (R)
 
+@[simp]
 theorem jacobson_quotient_jacobson : jacobson (R ⧸ jacobson R) = ⊥ :=
   (jacobson_quotient_of_le le_rfl).trans <| SetLike.ext' <| by
     apply SetLike.ext'_iff.mp (jacobson R).mkQ_map_self
