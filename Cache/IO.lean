@@ -118,19 +118,6 @@ def isMathlibRoot : IO Bool :=
 
 section
 
-private def parseMathlibDepPath (json : Lean.Json) : Except String (Option FilePath) := do
-  let deps ← (← json.getObjVal? "packages").getArr?
-  for d in deps do
-    let n := ← (← d.getObjVal? "name").getStr?
-    if n != "mathlib" then
-      continue
-    let t := ← (← d.getObjVal? "type").getStr?
-    if t == "path" then
-      return some ⟨← (← d.getObjVal? "dir").getStr?⟩
-    else
-      return LAKEPACKAGESDIR / "mathlib"
-  return none
-
 /-- Find path to Mathlib root directory -/
 private def CacheM.mathlibDepPath (sp : SearchPath) : IO FilePath := do
   let mathlibRootFile ← Lean.findLean sp `Mathlib
