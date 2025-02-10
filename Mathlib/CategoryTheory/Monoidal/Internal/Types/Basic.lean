@@ -147,7 +147,4 @@ are naturally compatible with the forgetful functors to `MonCat` and `Mon_ (Type
 noncomputable def commMonTypeEquivalenceCommMonForget :
     CommMonTypeEquivalenceCommMon.functor ⋙ forget₂ CommMonCat MonCat ≅
       CommMon_.forget₂Mon_ (Type u) ⋙ MonTypeEquivalenceMon.functor :=
-  NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
-
-noncomputable instance commMonTypeInhabited : Inhabited (CommMon_ (Type u)) :=
-  ⟨CommMonTypeEquivalenceCommMon.inverse.obj (CommMonCat.of PUnit)⟩
+  Iso.refl _

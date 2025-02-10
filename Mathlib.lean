@@ -85,6 +85,7 @@ import Mathlib.Algebra.Category.Grp.Abelian
 import Mathlib.Algebra.Category.Grp.Adjunctions
 import Mathlib.Algebra.Category.Grp.Basic
 import Mathlib.Algebra.Category.Grp.Biproducts
+import Mathlib.Algebra.Category.Grp.ChosenFiniteProducts
 import Mathlib.Algebra.Category.Grp.Colimits
 import Mathlib.Algebra.Category.Grp.EnoughInjectives
 import Mathlib.Algebra.Category.Grp.EpiMono
@@ -96,6 +97,7 @@ import Mathlib.Algebra.Category.Grp.Images
 import Mathlib.Algebra.Category.Grp.Injective
 import Mathlib.Algebra.Category.Grp.Kernels
 import Mathlib.Algebra.Category.Grp.LargeColimits
+import Mathlib.Algebra.Category.Grp.LeftExactFunctor
 import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.Algebra.Category.Grp.Subobject
@@ -1680,6 +1682,7 @@ import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory
 import Mathlib.CategoryTheory.Abelian.Images
+import Mathlib.CategoryTheory.Abelian.Indization
 import Mathlib.CategoryTheory.Abelian.Injective
 import Mathlib.CategoryTheory.Abelian.InjectiveResolution
 import Mathlib.CategoryTheory.Abelian.LeftDerived
@@ -2116,6 +2119,7 @@ import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.Center
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+import Mathlib.CategoryTheory.Monoidal.CommGrp_
 import Mathlib.CategoryTheory.Monoidal.CommMon_
 import Mathlib.CategoryTheory.Monoidal.Comon_
 import Mathlib.CategoryTheory.Monoidal.Conv
@@ -2130,7 +2134,9 @@ import Mathlib.CategoryTheory.Monoidal.Hopf_
 import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Internal.Limits
 import Mathlib.CategoryTheory.Monoidal.Internal.Module
-import Mathlib.CategoryTheory.Monoidal.Internal.Types
+import Mathlib.CategoryTheory.Monoidal.Internal.Types.Basic
+import Mathlib.CategoryTheory.Monoidal.Internal.Types.CommGrp_
+import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp_
 import Mathlib.CategoryTheory.Monoidal.Limits
 import Mathlib.CategoryTheory.Monoidal.Linear
 import Mathlib.CategoryTheory.Monoidal.Mod_
@@ -2176,10 +2182,12 @@ import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.CategoryTheory.Preadditive.Biproducts
+import Mathlib.CategoryTheory.Preadditive.CommGrp_
 import Mathlib.CategoryTheory.Preadditive.EilenbergMoore
 import Mathlib.CategoryTheory.Preadditive.EndoFunctor
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 import Mathlib.CategoryTheory.Preadditive.HomOrthogonal
+import Mathlib.CategoryTheory.Preadditive.Indization
 import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.CategoryTheory.Preadditive.InjectiveResolution
 import Mathlib.CategoryTheory.Preadditive.LeftExact
