@@ -573,16 +573,6 @@ lemma cocircuit_iff_minimal_compl_nonspanning :
     not_disjoint_iff_nonempty_inter, ← and_imp, and_iff_left_of_imp Base.subset_ground,
       inter_comm K]
 
-
-lemma Base.exchange_base_of_not_mem_closure (hB : M.Base B) (he : e ∈ B)
-    (hf : f ∉ M.closure (B \ {e})) (hfE : f ∈ M.E := by aesop_mat) :
-    M.Base (insert f (B \ {e})) := by
-  obtain rfl | hne := eq_or_ne f e
-  · simpa [he]
-  have ⟨hi, hfB⟩ : M.Indep (insert f (B \ {e})) ∧ f ∉ B := by
-    simpa [(hB.indep.diff _).not_mem_closure_iff, hne] using hf
-  exact hB.exchange_base_of_indep hfB hi
-
 /-- For an element `e` of a base `B`, the complement of the closure of `B \ {e}` is a cocircuit.-/
 lemma Base.compl_closure_diff_singleton_cocircuit (hB : M.Base B) (he : e ∈ B) :
     M.Cocircuit (M.E \ M.closure (B \ {e})) := by
