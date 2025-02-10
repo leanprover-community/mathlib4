@@ -78,7 +78,7 @@ abbrev PackageDirs := Lean.RBMap String FilePath compare
 /--
 `CacheM` stores the following information:
 * the root directory where `Mathlib.lean` lies
-* package direcotories
+* package directories
 * the build directory for proofwidgets
 -/
 structure CacheM.Context where
