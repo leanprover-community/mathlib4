@@ -53,7 +53,7 @@ structure Network where
 
 /-- A `Network` where the capacities are only non-zero on arcs of `G`. -/
 structure NetworkOn (G : Digraph V) extends Network V R where
-  cap_zero_of_not_adj : ∀ u v, ¬G.Adj u v → cap u v = 0
+  cap_eq_zero_of_not_adj : ∀ u v, ¬G.Adj u v → cap u v = 0
 
 end NetworkDefinition
 
@@ -173,7 +173,7 @@ lemma sum_outgoing_eq_sum_incoming : ∑ v, f.outgoing v = ∑ v, f.incoming v :
   rw [Finset.sum_comm]
 
 @[simp]
-lemma sum_excess_zero : ∑ v, f.excess v = 0 := by simp [excess, sum_outgoing_eq_sum_incoming]
+lemma sum_excess_eq_zero : ∑ v, f.excess v = 0 := by simp [excess, sum_outgoing_eq_sum_incoming]
 
 end PseudoFlow
 
@@ -181,24 +181,24 @@ namespace Flow
 
 variable {s t : V} (f : N.Flow s t)
 
-lemma excess_source_zero_of_eq (hst : s = t) : f.excess s = 0 := by
-  rw [← f.sum_excess_zero]
+lemma excess_source_eq_zero_of_eq (hst : s = t) : f.excess s = 0 := by
+  rw [← f.sum_excess_eq_zero]
   apply Eq.symm
   apply Finset.sum_eq_single_of_mem s (Finset.mem_univ _)
   intro v _ hs
   simp [PseudoFlow.excess, f.conservation v hs (hst ▸ hs)]
 
-lemma value_zero_of_eq (hst : s = t) : f.value = 0 := by
+lemma value_eq_zero_of_eq (hst : s = t) : f.value = 0 := by
   subst t
-  rw [PreFlow.value, f.excess_source_zero_of_eq rfl]
+  rw [PreFlow.value, f.excess_source_eq_zero_of_eq rfl]
 
 lemma excess_source_eq_neg_excess_sink : f.excess s = -f.excess t := by
   wlog hst : s ≠ t
   · rw [not_not] at hst
     subst t
-    simp [f.excess_source_zero_of_eq]
+    simp [f.excess_source_eq_zero_of_eq]
   apply eq_neg_of_add_eq_zero_left
-  rw [← f.sum_excess_zero]
+  rw [← f.sum_excess_eq_zero]
   apply Eq.symm
   apply Finset.sum_eq_add_of_mem s t (Finset.mem_univ _) (Finset.mem_univ _) hst
   intro v _ hv
