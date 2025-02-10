@@ -25,7 +25,7 @@ as well as topology inducing maps, topological embeddings, and quotient maps.
 * `IsInducing`: a map `f : X → Y` is called *inducing*,
   if the topology on the domain is equal to the induced topology.
 
-* `Embedding`: a map `f : X → Y` is an *embedding*,
+* `IsEmbedding`: a map `f : X → Y` is an *embedding*,
   if it is a topology inducing map and it is injective.
 
 * `IsOpenEmbedding`: a map `f : X → Y` is an *open embedding*,
@@ -110,7 +110,7 @@ structure IsInducing (f : X → Y) : Prop where
 @[mk_iff]
 structure IsEmbedding (f : X → Y) extends IsInducing f : Prop where
   /-- A topological embedding is injective. -/
-  inj : Function.Injective f
+  injective : Function.Injective f
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding := IsEmbedding

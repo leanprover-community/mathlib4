@@ -7,7 +7,10 @@ import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.RingTheory.Nilpotent.Defs
+import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Nilpotent.Basic
+import Mathlib.Tactic.Peel
 
 /-!
 # Eigenvectors and eigenvalues
@@ -260,10 +263,9 @@ noncomputable def maxUnifEigenspaceIndex (f : End R M) (μ : R) :=
 
 /-- For an endomorphism of a Noetherian module, the maximal eigenspace is always of the form kernel
 `(f - μ • id) ^ k` for some `k`. -/
-lemma genEigenspace_top_eq_maxUnifEigenspaceIndex [h : IsNoetherian R M] (f : End R M) (μ : R) :
+lemma genEigenspace_top_eq_maxUnifEigenspaceIndex [IsNoetherian R M] (f : End R M) (μ : R) :
     genEigenspace f μ ⊤ = f.genEigenspace μ (maxUnifEigenspaceIndex f μ) := by
-  rw [isNoetherian_iff] at h
-  have := WellFounded.iSup_eq_monotonicSequenceLimit h <|
+  have := WellFoundedGT.iSup_eq_monotonicSequenceLimit <|
     (f.genEigenspace μ).comp <| WithTop.coeOrderHom.toOrderHom
   convert this using 1
   simp only [genEigenspace, OrderHom.coe_mk, le_top, iSup_pos, OrderHom.comp_coe,
@@ -636,7 +638,7 @@ lemma disjoint_genEigenspace [NoZeroSMulDivisors R M]
     apply mapsTo_genEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f _)
     apply isNilpotent_restrict_genEigenspace_nat
   have hf₁₂ : f₂ - f₁ = algebraMap R (End R p) (μ₁ - μ₂) := by ext; simp [f₁, f₂, sub_smul]
-  rw [hf₁₂, IsNilpotent.map_iff (NoZeroSMulDivisors.algebraMap_injective R (End R p)),
+  rw [hf₁₂, IsNilpotent.map_iff (FaithfulSMul.algebraMap_injective R (End R p)),
     isNilpotent_iff_eq_zero, sub_eq_zero] at this
   contradiction
 
@@ -664,11 +666,11 @@ lemma injOn_iSup_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
   apply injOn_maxGenEigenspace
 
 theorem independent_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) (k : ℕ∞) :
-    CompleteLattice.Independent (f.genEigenspace · k) := by
+    iSupIndep (f.genEigenspace · k) := by
   classical
   suffices ∀ μ₁ (s : Finset R), μ₁ ∉ s → Disjoint (f.genEigenspace μ₁ k)
     (s.sup fun μ ↦ f.genEigenspace μ k) by
-    simp_rw [CompleteLattice.independent_iff_supIndep_of_injOn (injOn_genEigenspace f k),
+    simp_rw [iSupIndep_iff_supIndep_of_injOn (injOn_genEigenspace f k),
       Finset.supIndep_iff_disjoint_erase]
     exact fun s μ _ ↦ this _ _ (s.not_mem_erase μ)
   intro μ₁ s
@@ -703,27 +705,29 @@ theorem independent_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) (k : �
   rwa [ih.eq_bot, Submodule.mem_bot] at hyz
 
 theorem independent_maxGenEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
-    CompleteLattice.Independent f.maxGenEigenspace := by
+    iSupIndep f.maxGenEigenspace := by
   apply independent_genEigenspace
 
 @[deprecated independent_genEigenspace (since := "2024-10-23")]
 theorem independent_iSup_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
-    CompleteLattice.Independent (fun μ ↦ ⨆ k : ℕ, f.genEigenspace μ k) := by
+    iSupIndep (fun μ ↦ ⨆ k : ℕ, f.genEigenspace μ k) := by
   simp_rw [iSup_genEigenspace_eq]
   apply independent_maxGenEigenspace
 
 /-- The eigenspaces of a linear operator form an independent family of subspaces of `M`.  That is,
 any eigenspace has trivial intersection with the span of all the other eigenspaces. -/
-theorem eigenspaces_independent [NoZeroSMulDivisors R M] (f : End R M) :
-    CompleteLattice.Independent f.eigenspace :=
+theorem eigenspaces_iSupIndep [NoZeroSMulDivisors R M] (f : End R M) :
+    iSupIndep f.eigenspace :=
   (f.independent_genEigenspace 1).mono fun _ ↦ le_rfl
+
+@[deprecated (since := "2024-11-24")] alias eigenspaces_independent := eigenspaces_iSupIndep
 
 /-- Eigenvectors corresponding to distinct eigenvalues of a linear operator are linearly
     independent. -/
 theorem eigenvectors_linearIndependent' {ι : Type*} [NoZeroSMulDivisors R M]
     (f : End R M) (μ : ι → R) (hμ : Function.Injective μ) (v : ι → M)
     (h_eigenvec : ∀ i, f.HasEigenvector (μ i) (v i)) : LinearIndependent R v :=
-  f.eigenspaces_independent.comp hμ |>.linearIndependent _
+  f.eigenspaces_iSupIndep.comp hμ |>.linearIndependent _
     (fun i ↦ h_eigenvec i |>.left) (fun i ↦ h_eigenvec i |>.right)
 
 /-- Eigenvectors corresponding to distinct eigenvalues of a linear operator are linearly

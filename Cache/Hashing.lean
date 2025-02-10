@@ -84,19 +84,26 @@ Computes the hash of a file, which mixes:
 * The hash of its content
 * The hashes of the imported files that are part of `Mathlib`
 -/
-partial def getFileHash (filePath : FilePath) : HashM <| Option UInt64 := do
+partial def getHash (filePath : FilePath) (visited : Std.HashSet FilePath := ∅) :
+    HashM <| Option UInt64 := do
+  if visited.contains filePath then
+    throw <| IO.userError s!"dependency loop found involving {filePath}!"
+  let visitedNew := visited.insert filePath
   match (← get).cache[filePath]? with
   | some hash? => return hash?
   | none =>
     let fixedPath := (← IO.getPackageDir filePath) / filePath
     if !(← fixedPath.pathExists) then
-      IO.println s!"Warning: {fixedPath} not found. Skipping all files that depend on it"
+      IO.println s!"Warning: {fixedPath} not found. Skipping all files that depend on it."
+      if fixedPath.extension != "lean" then
+        IO.println s!"Note that `lake exe cache get ...` expects file names \
+          (e.g. `Mathlib/Init.lean`), not module names (e.g. `Mathlib.Init`)."
       modify fun stt => { stt with cache := stt.cache.insert filePath none }
       return none
     let content ← IO.FS.readFile fixedPath
     let fileImports := getFileImports content (← getPackageDirs)
     let mut importHashes := #[]
-    for importHash? in ← fileImports.mapM getFileHash do
+    for importHash? in ← fileImports.mapM (getHash (visited := visitedNew)) do
       match importHash? with
       | some importHash => importHashes := importHashes.push importHash
       | none =>
@@ -116,6 +123,6 @@ def roots : Array FilePath := #["Mathlib.lean"]
 
 /-- Main API to retrieve the hashes of the Lean files -/
 def getHashMemo (extraRoots : Array FilePath) : CacheM HashMemo :=
-  return (← StateT.run ((roots ++ extraRoots).mapM getFileHash) { rootHash := ← getRootHash }).2
+  return (← StateT.run ((roots ++ extraRoots).mapM getHash) { rootHash := ← getRootHash }).2
 
 end Cache.Hashing

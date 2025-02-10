@@ -3,7 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Group.Multiset
+import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 import Mathlib.Data.Multiset.Dedup
 
 /-!
@@ -19,8 +19,7 @@ This file defines a few basic operations on `Multiset`, notably the monadic bind
 * `Multiset.sigma`: Disjoint sum of multisets in a sigma type.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists MulAction
+assert_not_exists MonoidWithZero MulAction
 
 universe v
 
@@ -194,20 +193,23 @@ theorem le_bind {α β : Type*} {f : α → Multiset β} (S : Multiset α) {x : 
   rw [count_bind, hm', sum_cons]
   exact Nat.le_add_right _ _
 
--- Porting note (#11119): @[simp] removed because not in normal form
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed because not in normal form
 theorem attach_bind_coe (s : Multiset α) (f : α → Multiset β) :
     (s.attach.bind fun i => f i) = s.bind f :=
   congr_arg join <| attach_map_val' _ _
 
 variable {f s t}
 
+open scoped Function in -- required for scoped `on` notation
 @[simp] lemma nodup_bind :
-    Nodup (bind s f) ↔ (∀ a ∈ s, Nodup (f a)) ∧ s.Pairwise fun a b => Disjoint (f a) (f b) := by
+    Nodup (bind s f) ↔ (∀ a ∈ s, Nodup (f a)) ∧ s.Pairwise (Disjoint on f) := by
   have : ∀ a, ∃ l : List β, f a = l := fun a => Quot.induction_on (f a) fun l => ⟨l, rfl⟩
   choose f' h' using this
   have : f = fun a ↦ ofList (f' a) := funext h'
   have hd : Symmetric fun a b ↦ List.Disjoint (f' a) (f' b) := fun a b h ↦ h.symm
-  exact Quot.induction_on s <| by simp [this, List.nodup_flatMap, pairwise_coe_iff_pairwise hd]
+  exact Quot.induction_on s <| by
+    unfold Function.onFun
+    simp [this, List.nodup_flatMap, pairwise_coe_iff_pairwise hd]
 
 @[simp]
 lemma dedup_bind_dedup [DecidableEq α] [DecidableEq β] (s : Multiset α) (f : α → Multiset β) :

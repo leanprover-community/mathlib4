@@ -45,36 +45,44 @@ open Complex
 
 variable (r : ℝ)
 
-theorem convex_halfspace_re_lt : Convex ℝ { c : ℂ | c.re < r } :=
-  convex_halfspace_lt (.mk add_re smul_re) _
+theorem convex_halfSpace_re_lt : Convex ℝ { c : ℂ | c.re < r } :=
+  convex_halfSpace_lt (.mk add_re smul_re) _
+@[deprecated (since := "2024-11-12")] alias convex_halfspace_re_lt := convex_halfSpace_re_lt
 
-theorem convex_halfspace_re_le : Convex ℝ { c : ℂ | c.re ≤ r } :=
-  convex_halfspace_le (.mk add_re smul_re) _
+theorem convex_halfSpace_re_le : Convex ℝ { c : ℂ | c.re ≤ r } :=
+  convex_halfSpace_le (.mk add_re smul_re) _
+@[deprecated (since := "2024-11-12")] alias convex_halfspace_re_le := convex_halfSpace_re_le
 
-theorem convex_halfspace_re_gt : Convex ℝ { c : ℂ | r < c.re } :=
-  convex_halfspace_gt (.mk add_re smul_re) _
+theorem convex_halfSpace_re_gt : Convex ℝ { c : ℂ | r < c.re } :=
+  convex_halfSpace_gt (.mk add_re smul_re) _
+@[deprecated (since := "2024-11-12")] alias convex_halfspace_re_gt := convex_halfSpace_re_gt
 
-theorem convex_halfspace_re_ge : Convex ℝ { c : ℂ | r ≤ c.re } :=
-  convex_halfspace_ge (.mk add_re smul_re) _
+theorem convex_halfSpace_re_ge : Convex ℝ { c : ℂ | r ≤ c.re } :=
+  convex_halfSpace_ge (.mk add_re smul_re) _
+@[deprecated (since := "2024-11-12")] alias convex_halfspace_re_ge := convex_halfSpace_re_ge
 
-theorem convex_halfspace_im_lt : Convex ℝ { c : ℂ | c.im < r } :=
-  convex_halfspace_lt (.mk add_im smul_im) _
+theorem convex_halfSpace_im_lt : Convex ℝ { c : ℂ | c.im < r } :=
+  convex_halfSpace_lt (.mk add_im smul_im) _
+@[deprecated (since := "2024-11-12")] alias convex_halfspace_im_lt := convex_halfSpace_im_lt
 
-theorem convex_halfspace_im_le : Convex ℝ { c : ℂ | c.im ≤ r } :=
-  convex_halfspace_le (.mk add_im smul_im) _
+theorem convex_halfSpace_im_le : Convex ℝ { c : ℂ | c.im ≤ r } :=
+  convex_halfSpace_le (.mk add_im smul_im) _
+@[deprecated (since := "2024-11-12")] alias convex_halfspace_im_le := convex_halfSpace_im_le
 
-theorem convex_halfspace_im_gt : Convex ℝ { c : ℂ | r < c.im } :=
-  convex_halfspace_gt (.mk add_im smul_im) _
+theorem convex_halfSpace_im_gt : Convex ℝ { c : ℂ | r < c.im } :=
+  convex_halfSpace_gt (.mk add_im smul_im) _
+@[deprecated (since := "2024-11-12")] alias convex_halfspace_im_gt := convex_halfSpace_im_gt
 
-theorem convex_halfspace_im_ge : Convex ℝ { c : ℂ | r ≤ c.im } :=
-  convex_halfspace_ge (.mk add_im smul_im) _
+theorem convex_halfSpace_im_ge : Convex ℝ { c : ℂ | r ≤ c.im } :=
+  convex_halfSpace_ge (.mk add_im smul_im) _
+@[deprecated (since := "2024-11-12")] alias convex_halfspace_im_ge := convex_halfSpace_im_ge
 
 lemma Complex.isConnected_of_upperHalfPlane {r} {s : Set ℂ} (hs₁ : {z | r < z.im} ⊆ s)
     (hs₂ : s ⊆ {z | r ≤ z.im}) : IsConnected s := by
   refine .subset_closure ?_ hs₁ (by simpa only [closure_setOf_lt_im] using hs₂)
-  exact (convex_halfspace_im_gt r).isConnected ⟨(r + 1) * I, by simp⟩
+  exact (convex_halfSpace_im_gt r).isConnected ⟨(r + 1) * I, by simp⟩
 
 lemma Complex.isConnected_of_lowerHalfPlane {r} {s : Set ℂ} (hs₁ : {z | z.im < r} ⊆ s)
     (hs₂ : s ⊆ {z | z.im ≤ r}) : IsConnected s := by
   refine .subset_closure ?_ hs₁ (by simpa only [closure_setOf_im_lt] using hs₂)
-  exact (convex_halfspace_im_lt r).isConnected ⟨(r - 1) * I, by simp⟩
+  exact (convex_halfSpace_im_lt r).isConnected ⟨(r - 1) * I, by simp⟩

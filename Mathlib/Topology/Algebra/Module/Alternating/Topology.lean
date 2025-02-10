@@ -49,7 +49,7 @@ instance instUniformSpace : UniformSpace (E [⋀^ι]→L[𝕜] F) :=
 
 lemma isUniformEmbedding_toContinuousMultilinearMap :
     IsUniformEmbedding (toContinuousMultilinearMap : (E [⋀^ι]→L[𝕜] F) → _) where
-  inj := toContinuousMultilinearMap_injective
+  injective := toContinuousMultilinearMap_injective
   comap_uniformity := rfl
 
 @[deprecated (since := "2024-10-01")]

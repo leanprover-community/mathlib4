@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
-import Mathlib.Algebra.MvPolynomial.Basic
+import Mathlib.Algebra.MvPolynomial.Eval
 
 /-!
 # Renaming variables of polynomials
@@ -230,10 +230,10 @@ theorem exists_finset_rename₂ (p₁ p₂ : MvPolynomial σ R) :
     use rename (Set.inclusion s₁.subset_union_left) q₁
     use rename (Set.inclusion s₁.subset_union_right) q₂
     constructor -- Porting note: was `<;> simp <;> rfl` but Lean couldn't infer the arguments
-    · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    · -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
       erw [rename_rename (Set.inclusion s₁.subset_union_left)]
       rfl
-    · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    · -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
       erw [rename_rename (Set.inclusion s₁.subset_union_right)]
       rfl
 

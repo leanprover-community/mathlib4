@@ -3,11 +3,11 @@ Copyright (c) 2021 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
+import Mathlib.LinearAlgebra.Finsupp.SumProd
+import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.BigOperators
 import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.LinearAlgebra.Finsupp
-import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
 # Homogeneous ideals of a graded algebra
@@ -562,7 +562,7 @@ section IrrelevantIdeal
 
 variable [Semiring A]
 variable [DecidableEq ι]
-variable [CanonicallyOrderedAddCommMonoid ι]
+variable [AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι]
 variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
 
 open GradedRing SetLike.GradedMonoid DirectSum

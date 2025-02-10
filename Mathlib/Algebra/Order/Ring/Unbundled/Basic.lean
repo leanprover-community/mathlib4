@@ -113,8 +113,7 @@ TODO: the mixin assumptiosn can be relaxed in most cases
 
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists MonoidHom
+assert_not_exists OrderedCommMonoid MonoidHom
 
 open Function
 
@@ -589,24 +588,7 @@ theorem mul_nonneg_of_three [ExistsAddOfLE α] [MulPosStrictMono α] [PosMulStri
   have or_a := le_total 0 a
   have or_b := le_total 0 b
   have or_c := le_total 0 c
-  -- Porting note used to be by `itauto` from here
-  exact Or.elim or_c
-    (fun (h0 : 0 ≤ c) =>
-      Or.elim or_b
-        (fun (h1 : 0 ≤ b) =>
-            Or.elim or_a (fun (h2 : 0 ≤ a) => Or.inl (Or.inl ⟨h2, h1⟩))
-              (fun (_ : a ≤ 0) => Or.inr (Or.inl (Or.inl ⟨h1, h0⟩))))
-        (fun (h1 : b ≤ 0) =>
-            Or.elim or_a (fun (h3 : 0 ≤ a) => Or.inr (Or.inr (Or.inl ⟨h0, h3⟩)))
-              (fun (h3 : a ≤ 0) => Or.inl (Or.inr ⟨h3, h1⟩))))
-    (fun (h0 : c ≤ 0) =>
-      Or.elim or_b
-        (fun (h4 : 0 ≤ b) =>
-            Or.elim or_a (fun (h5 : 0 ≤ a) => Or.inl (Or.inl ⟨h5, h4⟩))
-              (fun (h5 : a ≤ 0) => Or.inr (Or.inr (Or.inr ⟨h0, h5⟩))))
-        (fun (h4 : b ≤ 0) =>
-            Or.elim or_a (fun (_ : 0 ≤ a) => Or.inr (Or.inl (Or.inr ⟨h4, h0⟩)))
-              (fun (h6 : a ≤ 0) => Or.inl (Or.inr ⟨h6, h4⟩))))
+  aesop
 
 lemma mul_nonneg_iff_pos_imp_nonneg [ExistsAddOfLE α] [PosMulStrictMono α] [MulPosStrictMono α]
     [AddLeftMono α] [AddLeftReflectLE α] :
@@ -764,7 +746,7 @@ alias two_mul_le_add_pow_two := two_mul_le_add_sq
 /-- Binary, squared, and division-free **arithmetic mean-geometric mean inequality**
 (aka AM-GM inequality) for linearly ordered commutative semirings. -/
 lemma four_mul_le_sq_add [ExistsAddOfLE α] [MulPosStrictMono α]
-    [ContravariantClass α α (· + ·) (· ≤ ·)] [CovariantClass α α (· + ·) (· ≤ ·)]
+    [AddLeftReflectLE α] [AddLeftMono α]
     (a b : α) : 4 * a * b ≤ (a + b) ^ 2 := by
   calc 4 * a * b
     _ = 2 * a * b + 2 * a * b := by rw [mul_assoc, two_add_two_eq_four.symm, add_mul, mul_assoc]
@@ -773,6 +755,16 @@ lemma four_mul_le_sq_add [ExistsAddOfLE α] [MulPosStrictMono α]
     _ = (a + b) ^ 2 := (add_sq a b).symm
 
 alias four_mul_le_pow_two_add := four_mul_le_sq_add
+
+/-- Binary and division-free **arithmetic mean-geometric mean inequality**
+(aka AM-GM inequality) for linearly ordered commutative semirings. -/
+lemma two_mul_le_add_of_sq_eq_mul [ExistsAddOfLE α] [MulPosStrictMono α] [PosMulStrictMono α]
+    [AddLeftReflectLE α] [AddLeftMono α] {a b r : α}
+    (ha : 0 ≤ a) (hb : 0 ≤ b) (ht : r ^ 2 = a * b) : 2 * r ≤ a + b := by
+  apply nonneg_le_nonneg_of_sq_le_sq (Left.add_nonneg ha hb)
+  conv_rhs => rw [← pow_two]
+  convert four_mul_le_sq_add a b using 1
+  rw [mul_mul_mul_comm, two_mul, two_add_two_eq_four, ← pow_two, ht, mul_assoc]
 
 end LinearOrderedCommSemiring
 

@@ -147,6 +147,9 @@ open Lean Elab Command in
 as a comment to a pull request.  It takes as input
 * the number `PR` and the name `repo` as a `String` containing the relevant pull-request
   (it reads and posts comments there)
+* the optional `jobID` numeral for reporting the action that produced the output
+  (`jobID` is a natural number, even though it gets converted to a `String` -- this is mostly
+  due to the fact that it is easier to get CI to pass a number, than a string with quotations)
 * the `String` `tempFile` of a temporary file where the command stores transient information.
 
 The code itself interfaces with the shell to retrieve and process json data and eventually
@@ -162,9 +165,10 @@ Here is a summary of the steps:
 * process the final string to produce a summary (using `benchOutput`),
 * finally post the resulting output to the PR (using `gh pr comment ...`).
 -/
-def addBenchSummaryComment (PR : Nat) (repo : String)
+def addBenchSummaryComment (PR : Nat) (repo : String) (jobID : Nat := 0)
     (author : String := "leanprover-bot") (tempFile : String := "benchOutput.json") :
     CommandElabM Unit := do
+  let job_msg := s!"\n[CI run](https://github.com/{repo}/actions/runs/{jobID})"
   let PR := s!"{PR}"
   let jq := s!".comments | last | select(.author.login==\"{author}\") | .body"
 
@@ -190,17 +194,17 @@ def addBenchSummaryComment (PR : Nat) (repo : String)
   -- retrieve the data from the speed-center
   let curlSpeedCenter : IO.Process.SpawnArgs :=
     { cmd := "curl"
-      args := #[s!"http://speed.lean-fro.org/mathlib4/api/compare/{source}/to/{target}?all_values=true"] }
+      args := #[s!"https://speed.lean-lang.org/mathlib4/api/compare/{source}/to/{target}?all_values=true"] }
   dbg_trace "\n#running\n\
-    curl http://speed.lean-fro.org/mathlib4/api/compare/{source}/to/{target}?all_values=true > {tempFile}.src"
+    curl https://speed.lean-lang.org/mathlib4/api/compare/{source}/to/{target}?all_values=true > {tempFile}.src"
   let bench ← IO.Process.run curlSpeedCenter
   IO.FS.writeFile (tempFile ++ ".src") bench
 
   -- Extract all instruction changes whose magnitude is larger than `threshold`.
-  let threshold := s!"{10 ^ 9}"
+  let threshold := 10 ^ 9
   let jq1 : IO.Process.SpawnArgs :=
     { cmd := "jq"
-      args := #["-r", "--arg", "thr", threshold,
+      args := #["-r", "--arg", "thr", s!"{threshold}",
         ".differences | .[] | ($thr|tonumber) as $th |
         select(.dimension.metric == \"instructions\" and ((.diff >= $th) or (.diff <= -$th)))",
         (tempFile ++ ".src")] }
@@ -220,6 +224,12 @@ def addBenchSummaryComment (PR : Nat) (repo : String)
     jq -c '[\{file: .dimension.benchmark, diff: .diff, reldiff: .reldiff}]' {tempFile} > \
       {tempFile}.2"
   let secondFilter ← IO.Process.run jq2
+  if secondFilter == "" then
+    let _ ← IO.Process.run
+      { cmd := "gh", args := #["pr", "comment", PR, "--repo", repo, "--body",
+        s!"No benchmark entry differed by at least {formatDiff threshold} instructions." ++
+          job_msg] }
+  else
   IO.FS.writeFile tempFile secondFilter
   let jq3 : IO.Process.SpawnArgs :=
     { cmd := "jq", args := #["-n", "reduce inputs as $in (null; . + $in)", tempFile] }
@@ -230,7 +240,7 @@ def addBenchSummaryComment (PR : Nat) (repo : String)
   IO.println report
   -- Post the computed summary as a github comment.
   let add_comment : IO.Process.SpawnArgs :=
-    { cmd := "gh", args := #["pr", "comment", PR, "--repo", repo, "--body", report] }
+    { cmd := "gh", args := #["pr", "comment", PR, "--repo", repo, "--body", report ++ job_msg] }
   let _ ← IO.Process.run add_comment
 
 end BenchAction

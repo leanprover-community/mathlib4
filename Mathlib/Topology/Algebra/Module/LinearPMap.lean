@@ -28,7 +28,7 @@ underlying spaces are normed.
 
 * `LinearPMap.closable_iff_exists_closed_extension`: an unbounded operator is closable iff it has a
   closed extension.
-* `LinearPMap.closable.exists_unique`: there exists a unique closure
+* `LinearPMap.closable.existsUnique`: there exists a unique closure
 * `LinearPMap.closureHasCore`: the domain of `f` is a core of its closure
 
 ## References
@@ -82,7 +82,7 @@ theorem IsClosable.leIsClosable {f g : E →ₗ.[R] F} (hf : f.IsClosable) (hfg 
 /-- The closure is unique. -/
 theorem IsClosable.existsUnique {f : E →ₗ.[R] F} (hf : f.IsClosable) :
     ∃! f' : E →ₗ.[R] F, f.graph.topologicalClosure = f'.graph := by
-  refine exists_unique_of_exists_of_unique hf fun _ _ hy₁ hy₂ => eq_of_eq_graph ?_
+  refine existsUnique_of_exists_of_unique hf fun _ _ hy₁ hy₂ => eq_of_eq_graph ?_
   rw [← hy₁, ← hy₂]
 
 open Classical in
@@ -155,7 +155,7 @@ theorem closureHasCore (f : E →ₗ.[R] F) : f.closure.HasCore f.domain := by
     intro hx
     exact f.le_closure.1 hx
   let z : f.closure.domain := ⟨y.1, f.le_closure.1 y.2⟩
-  have hyz : (y : E) = z := by simp
+  have hyz : (y : E) = z := by simp [z]
   rw [f.le_closure.2 hyz]
   exact domRestrict_apply (hxy.trans hyz)
 

@@ -17,7 +17,7 @@ embedding of `Aut F` into `∀ X, Aut (F.obj X)` where
 
 ## References
 
-- Stacks Project: Tag 0BMQ
+- [Stacks 0BMQ](https://stacks.math.columbia.edu/tag/0BMQ)
 
 -/
 
@@ -84,7 +84,7 @@ lemma autEmbedding_range_isClosed : IsClosed (Set.range (autEmbedding F)) := by
 
 lemma autEmbedding_isClosedEmbedding : IsClosedEmbedding (autEmbedding F) where
   eq_induced := rfl
-  inj := autEmbedding_injective F
+  injective := autEmbedding_injective F
   isClosed_range := autEmbedding_range_isClosed F
 
 @[deprecated (since := "2024-10-20")]

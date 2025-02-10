@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Topology.LocalAtTarget
-import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Separation.Regular
 import Mathlib.Tactic.StacksAttribute
 
 /-!
@@ -106,7 +106,7 @@ lemma isClosed_singleton_of_isLocallyClosed_singleton [JacobsonSpace X] {x : X}
 
 lemma Topology.IsOpenEmbedding.preimage_closedPoints (hf : IsOpenEmbedding f) [JacobsonSpace Y] :
     f ⁻¹' closedPoints Y = closedPoints X := by
-  apply subset_antisymm (preimage_closedPoints_subset hf.inj hf.continuous)
+  apply subset_antisymm (preimage_closedPoints_subset hf.injective hf.continuous)
   intros x hx
   apply isClosed_singleton_of_isLocallyClosed_singleton
   rw [← Set.image_singleton]

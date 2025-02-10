@@ -208,7 +208,7 @@ theorem eulerProduct (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
   have H (n : ℕ) : ∏ i ∈ range n, Set.mulIndicator {p | Nat.Prime p} F i =
                      ∏ p ∈ primesBelow n, ∑' (e : ℕ), f (p ^ e) :=
     prod_mulIndicator_eq_prod_filter (range n) (fun _ ↦ F) (fun _ ↦ {p | Nat.Prime p}) id
-  simpa only [H]
+  simpa only [F, H]
 
 include hf₁ hmul in
 /-- The *Euler Product* for multiplicative (on coprime arguments) functions.

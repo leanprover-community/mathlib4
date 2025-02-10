@@ -131,7 +131,7 @@ lemma Topology.IsEmbedding.isLocallyClosed_iff {s : Set X}
     {f : X → Y} (hf : IsEmbedding f) :
     IsLocallyClosed s ↔ ∃ s' : Set Y, IsLocallyClosed s' ∧ s' ∩ range f = f '' s := by
   simp_rw [hf.isInducing.isLocallyClosed_iff,
-    ← (image_injective.mpr hf.inj).eq_iff, image_preimage_eq_inter_range]
+    ← (image_injective.mpr hf.injective).eq_iff, image_preimage_eq_inter_range]
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.isLocallyClosed_iff := IsEmbedding.isLocallyClosed_iff

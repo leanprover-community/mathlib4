@@ -40,9 +40,9 @@ their defining property is invariant through shrinking. Injective
 functions are an example of how complicated it can get.
 -/
 
-universe u v w
+universe u v
 
-variable {α : Type u} {β : Type v} {γ : Sort w}
+variable {α : Type u} {β : Type v}
 
 namespace Plausible
 
@@ -194,15 +194,14 @@ theorem List.applyId_zip_eq [DecidableEq α] {xs ys : List α} (h₀ : List.Nodu
       subst h₂
       cases ys
       · cases h₁
-      · simp only [applyId, map, Prod.toSigma, dlookup_cons_eq, Option.getD_some,
-          getElem?_cons_zero, Option.some.injEq]
+      · simp
     · cases ys
       · cases h₁
       · cases' h₀ with _ _ h₀ h₁
         simp only [getElem?_cons_succ, zip_cons_cons, applyId_cons] at h₂ ⊢
         rw [if_neg]
         · apply xs_ih <;> solve_by_elim [Nat.succ.inj]
-        · apply h₀; apply List.getElem?_mem h₂
+        · apply h₀; apply List.mem_of_getElem? h₂
 
 theorem applyId_mem_iff [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs) (h₁ : xs ~ ys)
     (x : α) : List.applyId.{u} (xs.zip ys) x ∈ ys ↔ x ∈ xs := by
@@ -312,10 +311,6 @@ protected def shrinkPerm {α : Type} [DecidableEq α] :
     let i ← List.finRange <| k / n
     pure <| Perm.slice (i * n) n xs
 
-
--- Porting note: removed, there is no `sizeof` in the new `Sampleable`
--- instance [SizeOf α] : SizeOf (InjectiveFunction α) :=
---   ⟨fun ⟨xs, _, _⟩ => SizeOf.sizeOf (xs.map Sigma.fst)⟩
 
 /-- Shrink an injective function slicing a segment in the middle of the domain and removing
 the corresponding elements in the codomain, hence maintaining the property that
