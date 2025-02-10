@@ -202,8 +202,6 @@ lemma isClosed_iff_of_isColimit (X : Set c.pt) :
     IsClosed X ↔ ∀ (j : J), IsClosed (c.ι.app j ⁻¹' X) := by
   simp only [← isOpen_compl_iff, isOpen_iff_of_isColimit _ hc,
     Functor.const_obj_obj, Set.preimage_compl]
-example {X Y : Type w} [TopologicalSpace Y] [TopologicalSpace X] (f : X → Y) :
-    Continuous f ↔ ∀ (U : Set Y), IsOpen U → IsOpen (f ⁻¹' U) := by exact continuous_def
 
 lemma continuous_iff_of_isColimit {X : Type w} [TopologicalSpace X] (f : c.pt → X) :
     Continuous f ↔ ∀ (j : J), Continuous (f ∘ c.ι.app j) := by
