@@ -7,9 +7,9 @@ open Lake DSL
 ## Mathlib dependencies on upstream projects
 -/
 
-require "leanprover-community" / "batteries" @ git "main"
+require "leanprover-community" / "batteries" @ git "nightly-testing"
 require "leanprover-community" / "Qq" @ git "master"
-require "leanprover-community" / "aesop" @ git "master"
+require "leanprover-community" / "aesop" @ git "forward-test-master-no-precomp"
 require "leanprover-community" / "proofwidgets" @ git "v0.0.52-pre" -- ProofWidgets should always be pinned to a specific version
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
@@ -38,7 +38,9 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   -- `latest_import.yml` uses this comment: if you edit it, make sure that the workflow still works
   ⟨`linter.style.missingEnd, true⟩,
   ⟨`linter.style.multiGoal, true⟩,
-  ⟨`linter.style.setOption, true⟩
+  ⟨`linter.style.setOption, true⟩,
+  ⟨`aesop.collectStats, true⟩,
+  ⟨`maxHeartbeats, .ofNat 400000⟩
 ]
 
 /-- These options are passed as `leanOptions` to building mathlib, as well as the
