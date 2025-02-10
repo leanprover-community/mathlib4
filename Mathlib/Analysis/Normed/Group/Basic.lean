@@ -946,9 +946,17 @@ theorem continuous_norm' : Continuous fun a : E => ‖a‖ := by
 theorem continuous_nnnorm' : Continuous fun a : E => ‖a‖₊ :=
   continuous_norm'.subtype_mk _
 
-@[to_additive (attr := continuity) continuous_enorm]
-lemma continuous_enorm' {E : Type*} [SeminormedGroup E] : Continuous fun a : E ↦ ‖a‖ₑ :=
-  ENNReal.isOpenEmbedding_coe.continuous.comp continuous_nnnorm'
+lemma continuous_enorm {E : Type*} [TopologicalSpace E] [ContinuousENorm E] :
+    Continuous fun a : E ↦ ‖a‖ₑ :=
+  ContinuousENorm.continuous_enorm
+
+section Instances
+
+@[to_additive]
+instance SeminormedGroup.toContinuousENorm [SeminormedGroup E] : ContinuousENorm E where
+  continuous_enorm := ENNReal.isOpenEmbedding_coe.continuous.comp continuous_nnnorm'
+
+end Instances
 
 set_option linter.docPrime false in
 @[to_additive Inseparable.norm_eq_norm]
@@ -962,7 +970,7 @@ theorem Inseparable.nnnorm_eq_nnnorm' {u v : E} (h : Inseparable u v) : ‖u‖�
 
 @[to_additive Inseparable.enorm_eq_enorm]
 theorem Inseparable.enorm_eq_enorm' {u v : E} (h : Inseparable u v) : ‖u‖ₑ = ‖v‖ₑ :=
-  h.map continuous_enorm' |>.eq
+  h.map continuous_enorm |>.eq
 
 @[to_additive]
 theorem mem_closure_one_iff_norm {x : E} : x ∈ closure ({1} : Set E) ↔ ‖x‖ = 0 := by
@@ -971,14 +979,6 @@ theorem mem_closure_one_iff_norm {x : E} : x ∈ closure ({1} : Set E) ↔ ‖x�
 @[to_additive]
 theorem closure_one_eq : closure ({1} : Set E) = { x | ‖x‖ = 0 } :=
   Set.ext fun _x => mem_closure_one_iff_norm
-
-section Instances
-
-@[to_additive]
-instance SeminormedGroup.toContinuousENorm [SeminormedGroup E] : ContinuousENorm E where
-  continuous_enorm := continuous_enorm'
-
-end Instances
 
 section
 
@@ -994,10 +994,11 @@ theorem Filter.Tendsto.nnnorm' (h : Tendsto f l (𝓝 a)) : Tendsto (fun x => �
 
 @[to_additive Filter.Tendsto.enorm]
 lemma Filter.Tendsto.enorm' (h : Tendsto f l (𝓝 a)) : Tendsto (‖f ·‖ₑ) l (𝓝 ‖a‖ₑ) :=
-  .comp continuous_enorm'.continuousAt h
+  .comp continuous_enorm.continuousAt h
 
 end
 
+-- FIXME: generalise as appropriate and move next continuous_enorm?!
 section
 
 variable [TopologicalSpace α] {f : α → E} {s : Set α} {a : α}
@@ -1012,7 +1013,7 @@ theorem Continuous.nnnorm' : Continuous f → Continuous fun x => ‖f x‖₊ :
 
 @[to_additive (attr := fun_prop) Continuous.enorm]
 lemma Continuous.enorm' {E : Type*} [TopologicalSpace E] [ContinuousENorm E] :
-    Continuous f → Continuous (‖f ·‖ₑ) := continuous_enorm'.comp
+    Continuous f → Continuous (‖f ·‖ₑ) := continuous_enorm.comp
 
 @[to_additive (attr := fun_prop) ContinuousAt.norm]
 theorem ContinuousAt.norm' {a : α} (h : ContinuousAt f a) : ContinuousAt (fun x => ‖f x‖) a :=
