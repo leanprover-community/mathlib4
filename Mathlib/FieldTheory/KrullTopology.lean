@@ -277,6 +277,10 @@ theorem krullTopology_totallyDisconnected {K L : Type*} [Field K] [Field L] [Alg
     not_forall]
   exact ⟨x, IntermediateField.mem_adjoin_simple_self K x, hx⟩
 
+instance {K L : Type*} [Field K] [Field L] [Algebra K L] [Algebra.IsIntegral K L] :
+    TotallyDisconnectedSpace (L ≃ₐ[K] L) where
+  isTotallyDisconnected_univ := krullTopology_totallyDisconnected
+
 end TotallyDisconnected
 
 @[simp] lemma IntermediateField.fixingSubgroup_top (K L : Type*) [Field K] [Field L] [Algebra K L] :

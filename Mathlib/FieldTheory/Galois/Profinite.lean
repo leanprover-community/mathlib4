@@ -320,9 +320,6 @@ noncomputable def continuousMulEquivToLimit [IsGalois k K] :
 instance [IsGalois k K] : CompactSpace (K ≃ₐ[k] K) :=
   (continuousMulEquivToLimit k K).symm.compactSpace
 
-instance [IsGalois k K] : TotallyDisconnectedSpace (K ≃ₐ[k] K) :=
-  (continuousMulEquivToLimit k K).symm.totallyDisconnectedSpace
-
 /--Turn `Gal(K/k)` into a profinite group as there is
   a `ContinuousMulEquiv` to a `ProfiniteGrp` given above. -/
 noncomputable def profiniteGalGrp [IsGalois k K] : ProfiniteGrp :=
