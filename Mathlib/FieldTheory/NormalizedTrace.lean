@@ -104,6 +104,12 @@ theorem normalizedTrace_def (a : K) :
     (Module.finrank F F⟮a⟯ : F)⁻¹ • Algebra.trace F F⟮a⟯ (AdjoinSimple.gen F a) :=
   rfl
 
+/- Could be an alternative definition but it is harder to work with linearlity. -/
+theorem normalizedTrace_minpoly (a : K) :
+    normalizedTrace F K a = ((minpoly F a).natDegree : F)⁻¹ • -(minpoly F a).nextCoeff :=
+  have ha : IsIntegral F a := Algebra.IsIntegral.isIntegral a
+  IntermediateField.adjoin.finrank ha ▸ trace_adjoinSimpleGen ha ▸ normalizedTrace_def F K a
+
 variable {F} in
 theorem normalizedTrace_self_apply (a : F) : normalizedTrace F F a = a := by
   dsimp [normalizedTrace]
