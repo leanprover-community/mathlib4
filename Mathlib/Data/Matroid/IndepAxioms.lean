@@ -93,10 +93,32 @@ variable {α : Type*}
 
 section IndepMatroid
 
-/-- A matroid as defined by the independence axioms. This is the same thing as a `Matroid`,
-  and so does not need its own API; it exists to make it easier to construct a matroid from its
-  independent sets. The constructed `IndepMatroid` can then be converted into a matroid
-  with `IndepMatroid.matroid`. -/
+/-- A matroid as defined by a ground set and an independence predicate.
+This definition is an implementation detail whose purpose is to organize the multiple
+different versions of the independence axioms;
+usually, terms of type `IndepMatroid` should either be directly piped into `IndepMatroid.matroid`,
+or should be constructed as a private definition
+which is then converted into a matroid via `IndepMatroid.matroid`.
+
+To define a `Matroid α` from a known independence predicate
+`MyIndep : Set α → Prop` and ground set `E : Set α`, one can either write
+```
+def myMatroid (…) : Matroid α :=
+  IndepMatroid.matroid <| IndepMatroid.ofFoo E MyIndep _ _ … _
+```
+or, slightly more indirectly,
+```
+private def myIndepMatroid (…) : IndepMatroid α := IndepMatroid.ofFoo E MyIndep _ _ … _
+
+def myMatroid (…) : Matroid α := (myIndepMatroid …).matroid
+```
+In both cases, `IndepMatroid.ofFoo` is either `IndepMatroid.mk`,
+or one of the several other available constructors for `IndepMatroid`,
+and the `_` represent the proofs that this constructor requires.
+
+After such a definition is made, the facts that `myMatroid.Indep = myIndep` and `myMatroid.E = E`
+are true by either `rfl` or `simp [myMatroid]`, and can be made directly into @[simp] lemmas.
+-/
 structure IndepMatroid (α : Type*) where
   /-- The ground set -/
   (E : Set α)
