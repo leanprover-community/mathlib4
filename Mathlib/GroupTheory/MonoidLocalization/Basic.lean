@@ -261,7 +261,7 @@ theorem mk_pow (n : ℕ) (a : M) (b : S) : mk a b ^ n = mk (a ^ n) (b ^ n) := by
 
 @[to_additive]
 theorem mk_prod {ι} (t : Finset ι) (f : ι → M) (s : ι → S) :
-    ∏ i in t, mk (f i) (s i) = mk (∏ i in t, f i) (∏ i in t, s i) := by
+    ∏ i ∈ t, mk (f i) (s i) = mk (∏ i ∈ t, f i) (∏ i ∈ t, s i) := by
   classical
   induction t using Finset.induction_on <;> simp [mk_one, Finset.prod_insert, *, mk_mul]
 
