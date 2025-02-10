@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Order.Filter.AtTopBot.Tendsto
+import Mathlib.Order.Filter.AtTopBot.Basic
 import Mathlib.Order.Filter.Finite
 
 /-!
