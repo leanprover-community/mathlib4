@@ -431,6 +431,9 @@ theorem self_comp_symm (e : M₁ ≃SL[σ₁₂] M₂) : (e : M₁ → M₂) ∘
 @[simp]
 theorem symm_symm (e : M₁ ≃SL[σ₁₂] M₂) : e.symm.symm = e := rfl
 
+theorem symm_bijective : Function.Bijective (ContinuousLinearEquiv.symm : (M₁ ≃SL[σ₁₂] M₂) → _) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 @[simp]
 theorem refl_symm : (ContinuousLinearEquiv.refl R₁ M₁).symm = ContinuousLinearEquiv.refl R₁ M₁ :=
   rfl
@@ -549,8 +552,8 @@ variable {M₁} {R₄ : Type*} [Semiring R₄] [Module R₄ M₄] {σ₃₄ : R�
 This is a continuous version of `ULift.moduleEquiv`. -/
 def ulift : ULift M₁ ≃L[R₁] M₁ :=
   { ULift.moduleEquiv with
-    continuous_toFun := continuous_uLift_down
-    continuous_invFun := continuous_uLift_up }
+    continuous_toFun := continuous_uliftDown
+    continuous_invFun := continuous_uliftUp }
 
 /-- A pair of continuous (semi)linear equivalences generates an equivalence between the spaces of
 continuous linear maps. See also `ContinuousLinearEquiv.arrowCongr`. -/
@@ -851,6 +854,28 @@ def piFinTwo (M : Fin 2 → Type*) [∀ i, AddCommMonoid (M i)] [∀ i, Module R
 @[simps! (config := .asFn) apply symm_apply]
 def finTwoArrow : (Fin 2 → M) ≃L[R] M × M :=
   { piFinTwo R fun _ => M with toLinearEquiv := LinearEquiv.finTwoArrow R M }
+
+section
+variable {n : ℕ} {R : Type*} {M : Fin n.succ → Type*} {N : Type*}
+variable [Semiring R]
+variable [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] [∀ i, TopologicalSpace (M i)]
+
+variable (R M) in
+/-- `Fin.consEquiv` as a continuous linear equivalence.  -/
+@[simps!]
+def _root_.Fin.consEquivL : (M 0 × Π i, M (Fin.succ i)) ≃L[R] (Π i, M i) where
+  __ := Fin.consLinearEquiv R M
+  continuous_toFun := continuous_id.fst.finCons continuous_id.snd
+  continuous_invFun := .prod_mk (continuous_apply 0) (by continuity)
+
+/-- `Fin.cons` in the codomain of continuous linear maps. -/
+abbrev _root_.ContinuousLinearMap.finCons
+    [AddCommMonoid N] [Module R N] [TopologicalSpace N]
+    (f : N →L[R] M 0) (fs : N →L[R] Π i, M (Fin.succ i)) :
+    N →L[R] Π i, M i :=
+  Fin.consEquivL R M ∘L f.prod fs
+
+end
 
 end
 

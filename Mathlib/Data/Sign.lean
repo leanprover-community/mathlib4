@@ -115,11 +115,8 @@ instance : BoundedOrder SignType where
   le_top := LE.of_pos
   bot := -1
   bot_le :=
-    #adaptation_note
-    /--
-    Added `by exact` after https://github.com/leanprover/lean4/pull/6053,
-    but don't understand why it was needed.
-    -/
+    #adaptation_note /-- https://github.com/leanprover/lean4/pull/6053
+    Added `by exact`, but don't understand why it was needed. -/
     by exact LE.of_neg
 
 instance : HasDistribNeg SignType :=

@@ -60,7 +60,7 @@ def Spec.topObj (R : CommRingCat.{u}) : TopCat :=
 /-- The induced map of a ring homomorphism on the ring spectra, as a morphism of topological spaces.
 -/
 def Spec.topMap {R S : CommRingCat.{u}} (f : R ⟶ S) : Spec.topObj S ⟶ Spec.topObj R :=
-  PrimeSpectrum.comap f.hom
+  TopCat.ofHom (PrimeSpectrum.comap f.hom)
 
 @[simp]
 theorem Spec.topMap_id (R : CommRingCat.{u}) : Spec.topMap (𝟙 R) = 𝟙 (Spec.topObj R) :=
@@ -420,7 +420,7 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
     change PrimeSpectrum.basicOpen r ≤ U at hrU
     apply_fun (Spec.topMap (CommRingCat.ofHom (algebraMap R S)) _* (structureSheaf S).1).map
         (homOfLE hrU).op at e
-    simp only [Functor.op_map, map_zero, ← comp_apply, toOpen_res] at e
+    simp only [Functor.op_map, map_zero, ← CategoryTheory.comp_apply, toOpen_res] at e
     have : toOpen S (PrimeSpectrum.basicOpen <| algebraMap R S r) x = 0 := by
       refine Eq.trans ?_ e; rfl
     have :=
