@@ -414,7 +414,7 @@ theorem digits_base_pow_mul {b k m : ℕ} (hb : 1 < b) (hm : 0 < m) :
     have hmb : 0 < m * b := lt_mul_of_lt_of_one_lt' hm hb
     let h1 := digits_def' hb hmb
     have h2 : m = m * b / b :=
-      Nat.eq_div_of_mul_eq_left (not_eq_zero_of_lt hb) rfl
+      Nat.eq_div_of_mul_eq_left (ne_zero_of_lt hb) rfl
     simp only [mul_mod_left, ← h2] at h1
     rw [List.replicate_succ', List.append_assoc, List.singleton_append, ← h1, ← ih hmb]
     ring_nf
