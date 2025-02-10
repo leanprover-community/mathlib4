@@ -53,14 +53,14 @@ namespace Augmented
 
 variable {C : Type*} [Category C]
 
--- Porting note: in the formulation of the axioms `s_comp_δ₀`, etc, `drop.obj X` has been
--- replaced by `X.left` in order to have lemmas with LHS/RHS in normal form
 /-- The datum of an extra degeneracy is a technical condition on
 augmented simplicial objects. The morphisms `s'` and `s n` of the
 structure formally behave like extra degeneracies `σ (-1)`. -/
 @[ext]
 structure ExtraDegeneracy (X : SimplicialObject.Augmented C) where
+  /-- a section of the augmentation in dimension `0` -/
   s' : point.obj X ⟶ drop.obj X _⦋0⦌
+  /-- the extra degeneracy -/
   s : ∀ n : ℕ, drop.obj X _⦋n⦌ ⟶ drop.obj X _⦋n + 1⦌
   s'_comp_ε : s' ≫ X.hom.app (op ⦋0⦌) = 𝟙 _ := by aesop_cat
   s₀_comp_δ₁ : s 0 ≫ X.left.δ 1 = X.hom.app (op ⦋0⦌) ≫ s' := by aesop_cat
