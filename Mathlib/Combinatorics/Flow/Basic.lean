@@ -197,23 +197,23 @@ lemma value_eq_zero_of_eq (hst : s = t) : f.value = 0 := by
   subst t
   rw [PreFlow.value, f.excess_source_eq_zero_of_eq rfl]
 
-lemma excess_source_eq_neg_excess_sink : f.excess s = -f.excess t := by
-  wlog hst : s ≠ t
-  · rw [not_not] at hst
-    subst t
-    simp [f.excess_source_eq_zero_of_eq]
-  apply eq_neg_of_add_eq_zero_left
-  rw [← f.sum_excess_eq_zero]
-  apply Eq.symm
-  apply Finset.sum_eq_add_of_mem s t (Finset.mem_univ _) (Finset.mem_univ _) hst
-  intro v _ hv
-  simp [PseudoFlow.excess, f.conservation v hv.left hv.right]
+@[simp]
+lemma neg_excess_sink : -f.excess t = f.excess s := by
+  by_cases hst : s = t
+  · simp only [← hst, excess_source_eq_zero_of_eq, neg_zero]
+  · apply neg_eq_of_add_eq_zero_left
+    rw [← f.sum_excess_eq_zero]
+    apply Eq.symm
+    apply Finset.sum_eq_add_of_mem s t (Finset.mem_univ _) (Finset.mem_univ _) hst
+    intro v _ hv
+    simp [PseudoFlow.excess, f.conservation v hv.left hv.right]
 
-lemma excess_sink_eq_neg_excess_source : f.excess t = -f.excess s := by
-  rw [excess_source_eq_neg_excess_sink, neg_neg]
+@[simp]
+lemma neg_excess_source : -f.excess s = f.excess t := by
+  rw [← neg_excess_sink, neg_neg]
 
 lemma value_eq_outgoing_sub_incoming_source : f.value = f.outgoing s - f.incoming s := by
-  rw [PreFlow.value, excess_sink_eq_neg_excess_source, PseudoFlow.excess, neg_sub]
+  rw [PreFlow.value, ← neg_excess_source, PseudoFlow.excess, neg_sub]
 
 end Flow
 end SummingLemmas
