@@ -36,6 +36,7 @@ and the set of factors of `a`.
 
 -/
 
+assert_not_exists Field
 
 variable {M : Type*} [CancelCommMonoidWithZero M]
 
