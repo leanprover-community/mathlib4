@@ -76,9 +76,8 @@ theorem δ_apply_aux (x₂ : ((forget₂ C Ab).obj (S.X₂.X i))) (x₁ : ((forg
   have : ∀ {X Y : Ab} (f : X ⟶ Y), (f : X → Y) =
     @DFunLike.coe _ _ _ (HasForget.toFunLike _ _ _) f := by intros; ext; rfl
   rw [this, this, ← forget₂_comp_apply, ← HomologicalComplex.Hom.comm, forget₂_comp_apply,
-    ← this, ← this, hx₁, this, this,
-    ← forget₂_comp_apply, HomologicalComplex.d_comp_d, Functor.map_zero, ← this, ← this,
-    map_zero]
+    ← this, ← this, hx₁, this, this, ← forget₂_comp_apply, HomologicalComplex.d_comp_d,
+    Functor.map_zero, ← this, ← this, map_zero]
   rfl
 
 lemma δ_apply (x₃ : (forget₂ C Ab).obj (S.X₃.X i))
