@@ -587,64 +587,13 @@ noncomputable def ofInjectiveField {E F : Type*} [DivisionRing E] [Semiring F] [
     [Algebra R E] [Algebra R F] (f : E →ₐ[R] F) : E ≃ₐ[R] f.range :=
   ofInjective f f.toRingHom.injective
 
-open Lean Parser.Tactic Elab Tactic Meta
-syntax (name := erw?) "erw? " "[" rwRule "]" : tactic
-
-/--
-Check if two expressions are different at reducible transparency.
-Attempt to log an info message for the first subexpressions which are different
-(but agree at default transparency).
--/
-def _root_.Lean.Expr.logDiffs (tk : Syntax) (e₁ e₂ : Expr) : MetaM Bool := do
-  logInfoAt tk m!"Checking if {e₁} and {e₂} agree at reducible transparency"
-  if ← withReducible (isDefEq e₁ e₂) then
-    -- They agree at reducible transparency, done
-    logInfoAt tk m!"{e₁} and {e₂} agree at reducible transparency"
-    return false
-  else
-    logInfoAt tk "Nope"
-    if ← isDefEq e₁ e₂ then
-      -- Recurse inwards
-      match e₁, e₂ with
-      | Expr.app f₁ a₁, Expr.app f₂ a₂ =>
-        if ← logDiffs tk f₁ f₂ then
-          return true
-        else if ← logDiffs tk a₁ a₂ then
-          return true
-        else
-          logInfoAt tk m!"{e₁} and {e₂} agree at default transparency, but not reducibly"
-          return true
-      | _, _ =>
-        return false
-    else
-      return false
-
-elab_rules : tactic
-  | `(tactic| erw?%$tk [$r]) => do
-    withMainContext do
-    let g ← getMainGoal
-    evalTactic (← `(tactic| erw [$r]))
-    let e := (← instantiateMVars (mkMVar g)).headBeta
-    match e.getAppFnArgs with
-    | (``Eq.mpr, #[_, _, e, _]) =>
-      match e.getAppFnArgs with
-      | (``id, #[ty, e]) =>
-        logInfoAt tk m!"Expression in target: {ty}"
-        let inferred ← inferType e
-        logInfoAt tk m!"Synthesized expression: {inferred}"
-        _ ← Lean.Expr.logDiffs tk ty inferred
-      | _ => logErrorAt tk "Unexpected term produced by `erw`."
-    | _ => logErrorAt tk "Unexpected term produced by `erw`."
-
-
 /-- Given an equivalence `e : A ≃ₐ[R] B` of `R`-algebras and a subalgebra `S` of `A`,
 `subalgebraMap` is the induced equivalence between `S` and `S.map e` -/
 @[simps!]
 def subalgebraMap (e : A ≃ₐ[R] B) (S : Subalgebra R A) : S ≃ₐ[R] S.map (e : A →ₐ[R] B) :=
   { e.toRingEquiv.subsemiringMap S.toSubsemiring with
     commutes' := fun r => by
-      ext; dsimp only
-      erw? [RingEquiv.subsemiringMap_apply_coe]
+      ext; dsimp only; erw [RingEquiv.subsemiringMap_apply_coe]
       exact e.commutes _ }
 
 end AlgEquiv
