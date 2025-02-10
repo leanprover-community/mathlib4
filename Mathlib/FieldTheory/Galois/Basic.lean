@@ -35,7 +35,7 @@ Together, these two results prove the Galois correspondence.
 
 open scoped Polynomial IntermediateField
 
-open Module AlgEquiv
+open Module AlgEquiv IntermediateField
 
 section
 
