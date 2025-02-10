@@ -690,7 +690,7 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
       apply norm_eq_norm_of_isMaxOn_of_ball_subset hd hmax
       -- move to a lemma?
       intro z hz
-      rw [mem_ball, dist_zero_left, dist_eq, norm_eq_abs, Complex.abs_of_nonneg hx₀] at hz
+      rw [mem_ball, dist_zero_left, dist_eq, norm_eq_abs, Complex.norm_of_nonneg hx₀] at hz
       rw [mem_setOf_eq]
       contrapose! hz
       calc
