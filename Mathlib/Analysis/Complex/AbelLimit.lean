@@ -75,7 +75,7 @@ private lemma stolzCone_subset_stolzSet_aux' (s : ℝ) :
     fun x y hx₀ hx₁ hy ↦ ?_⟩
   have H : sqrt ((1 - x) ^ 2 + y ^ 2) ≤ 1 - x / 2 := by
     calc sqrt ((1 - x) ^ 2 + y ^ 2)
-      _ ≤ sqrt ((1 - x) ^ 2 + (s * x) ^ 2) := sqrt_le_sqrt <| by rw [← _root_.sq_abs y]; gcongr
+      _ ≤ sqrt ((1 - x) ^ 2 + (s * x) ^ 2) := sqrt_le_sqrt <| by rw [← sq_abs y]; gcongr
       _ = sqrt (1 - 2 * x + (1 + s ^ 2) * x * x) := by congr 1; ring
       _ ≤ sqrt (1 - 2 * x + (1 + s ^ 2) * (1 / (1 + s ^ 2)) * x) := sqrt_le_sqrt <| by gcongr
       _ = sqrt (1 - x) := by congr 1; field_simp; ring
@@ -85,7 +85,7 @@ private lemma stolzCone_subset_stolzSet_aux' (s : ℝ) :
         rw [div_le_one (by positivity)]
         exact le_add_of_nonneg_right <| sq_nonneg s
   calc sqrt (x ^ 2 + y ^ 2)
-    _ ≤ sqrt (x ^ 2 + (s * x) ^ 2) := sqrt_le_sqrt <| by rw [← _root_.sq_abs y]; gcongr
+    _ ≤ sqrt (x ^ 2 + (s * x) ^ 2) := sqrt_le_sqrt <| by rw [← sq_abs y]; gcongr
     _ = sqrt ((1 + s ^ 2) * x ^ 2) := by congr; ring
     _ = sqrt (1 + s ^ 2) * x := by rw [sqrt_mul' _ (sq_nonneg x), sqrt_sq hx₀.le]
     _ = 2 * sqrt (1 + s ^ 2) * (x / 2) := by ring

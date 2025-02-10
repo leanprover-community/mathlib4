@@ -29,20 +29,23 @@ This file defines (relative) CW-complexes.
   [Zulip](https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/Do.20we.20have.20CW.20complexes.3F/near/231769080).
 -/
 
-open CategoryTheory TopCat
+open TopCat
 
 universe u
+
+namespace CategoryTheory
 
 namespace RelativeCWComplex
 
 /-- The inclusion map from the `n`-sphere to the `(n + 1)`-disk. (For `n = -1`, this
 involves the empty space `𝕊 (-1)`. This is the reason why `sphere` takes `n : ℤ` as
 an input rather than `n : ℕ`.) -/
-def sphereInclusion (n : ℤ) : 𝕊 n ⟶ 𝔻 (n + 1) where
-  toFun := fun ⟨p, hp⟩ ↦ ⟨p, le_of_eq hp⟩
-  continuous_toFun := ⟨fun t ⟨s, ⟨r, hro, hrs⟩, hst⟩ ↦ by
-    rw [isOpen_induced_iff, ← hst, ← hrs]
-    tauto⟩
+def sphereInclusion (n : ℤ) : 𝕊 n ⟶ 𝔻 (n + 1) :=
+  TopCat.ofHom
+  { toFun := fun ⟨p, hp⟩ ↦ ⟨p, le_of_eq hp⟩
+    continuous_toFun := ⟨fun t ⟨s, ⟨r, hro, hrs⟩, hst⟩ ↦ by
+      rw [isOpen_induced_iff, ← hst, ← hrs]
+      tauto⟩ }
 
 /-- A type witnessing that `X'` is obtained from `X` by attaching generalized cells `f : S ⟶ D` -/
 structure AttachGeneralizedCells {S D : TopCat.{u}} (f : S ⟶ D) (X X' : TopCat.{u}) where
@@ -98,3 +101,5 @@ instance : Coe RelativeCWComplex TopCat where coe X := toTopCat X
 end Topology
 
 end RelativeCWComplex
+
+end CategoryTheory

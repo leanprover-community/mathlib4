@@ -1963,9 +1963,9 @@ lemma count_sub (a : α) (s t : Multiset α) : count a (s - t) = count a s - cou
 /-- This is a special case of `tsub_le_iff_right`, which should be used instead of this.
 This is needed to prove `OrderedSub (Multiset α)`. -/
 protected lemma sub_le_iff_le_add : s - t ≤ u ↔ s ≤ u + t := by
-  revert s
-  exact @(Multiset.induction_on t (by simp [Multiset.sub_zero]) fun a t IH s => by
-      simp [IH, erase_le_iff_le_cons])
+  induction t using Multiset.induction_on generalizing s with
+  | empty => simp [Multiset.sub_zero]
+  | cons a s IH => simp [IH, erase_le_iff_le_cons]
 
 /-- This is a special case of `tsub_le_iff_left`, which should be used instead of this. -/
 protected lemma sub_le_iff_le_add' : s - t ≤ u ↔ s ≤ t + u := by

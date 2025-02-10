@@ -42,7 +42,7 @@ class NucleusClass (F X : Type*) [SemilatticeInf X] [FunLike F X X] extends InfH
     Prop where
   /-- A nucleus is idempotent. -/
   idempotent (x : X) (f : F) : f (f x) ≤ f x
-  /-- A nucleus is increasing. -/
+  /-- A nucleus is inflationary. -/
   le_apply (x : X) (f : F) : x ≤ f x
 
 namespace Nucleus
@@ -55,6 +55,7 @@ instance : FunLike (Nucleus X) X X where
 
 lemma toFun_eq_coe (n : Nucleus X) : n.toFun = n := rfl
 @[simp] lemma coe_toInfHom (n : Nucleus X) : ⇑n.toInfHom = n := rfl
+@[simp] lemma coe_mk (f : InfHom X X) (h1 h2) : ⇑(mk f h1 h2) = f := rfl
 
 instance : NucleusClass (Nucleus X) X where
   idempotent _ _ := idempotent' ..
@@ -63,13 +64,15 @@ instance : NucleusClass (Nucleus X) X where
 
 /-- Every `Nucleus` is a `ClosureOperator`. -/
 def toClosureOperator (n : Nucleus X) : ClosureOperator X :=
-   ClosureOperator.mk' n (OrderHomClass.mono n) n.le_apply' n.idempotent'
+  ClosureOperator.mk' n (OrderHomClass.mono n) n.le_apply' n.idempotent'
 
 lemma idempotent : n (n x) = n x :=
   n.toClosureOperator.idempotent x
 
 lemma le_apply : x ≤ n x :=
   n.toClosureOperator.le_closure x
+
+lemma monotone : Monotone n := n.toClosureOperator.monotone
 
 lemma map_inf : n (x ⊓ y) = n x ⊓ n y :=
   InfHomClass.map_inf n x y
@@ -109,5 +112,28 @@ instance instTop : Top (Nucleus X) where
 instance : BoundedOrder (Nucleus X) where
   bot_le _ _ := le_apply
   le_top _ _ := by simp
+
+instance : InfSet (Nucleus X) where
+  sInf s :=
+  { toFun x := ⨅ f ∈ s, f x,
+    map_inf' x y := by
+      simp only [InfHomClass.map_inf, le_antisymm_iff, le_inf_iff, le_iInf_iff]
+      refine ⟨⟨?_, ?_⟩, ?_⟩ <;> rintro f hf
+      · exact iInf₂_le_of_le f hf inf_le_left
+      · exact iInf₂_le_of_le f hf inf_le_right
+      · exact ⟨inf_le_of_left_le <| iInf₂_le f hf, inf_le_of_right_le <| iInf₂_le f hf⟩
+    idempotent' x := iInf₂_mono fun f hf ↦ (f.monotone <| iInf₂_le f hf).trans_eq f.idempotent
+    le_apply' x := by simp [le_apply] }
+
+@[simp] theorem sInf_apply (s : Set (Nucleus X)) (x : X) : sInf s x = ⨅ j ∈ s, j x := rfl
+
+@[simp] theorem iInf_apply {ι : Type*} (f : ι → (Nucleus X)) (x : X) : iInf f x = ⨅ j, f j x := by
+  rw [iInf, sInf_apply, iInf_range]
+
+instance : CompleteSemilatticeInf (Nucleus X) where
+  sInf_le := by simp +contextual [← coe_le_coe, Pi.le_def, iInf_le_iff]
+  le_sInf := by simp +contextual [← coe_le_coe, Pi.le_def]
+
+instance : CompleteLattice (Nucleus X) := completeLatticeOfCompleteSemilatticeInf (Nucleus X)
 
 end Nucleus

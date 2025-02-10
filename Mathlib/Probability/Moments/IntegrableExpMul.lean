@@ -137,7 +137,7 @@ lemma aemeasurable_of_integrable_exp_mul (huv : u ≠ v)
     (hv_int : Integrable (fun ω ↦ exp (v * X ω)) μ) :
     AEMeasurable X μ := by
   by_cases hu : u = 0
-  · have hv : v ≠ 0 := fun h_eq ↦ huv (h_eq ▸ hu)
+  · have hv : v ≠ 0 := ne_of_ne_of_eq huv.symm hu
     exact aemeasurable_of_aemeasurable_exp_mul hv hv_int.aemeasurable
   · exact aemeasurable_of_aemeasurable_exp_mul hu hu_int.aemeasurable
 
@@ -584,7 +584,7 @@ lemma integrable_rpow_mul_cexp_of_re_mem_interior_integrableExpSet
   refine (integrable_rpow_abs_mul_exp_of_mem_interior_integrableExpSet hz hp).mono ?_ ?_
   · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
   refine ae_of_all _ fun ω ↦ ?_
-  simp only [norm_mul, Real.norm_eq_abs, abs_abs, Real.abs_exp]
+  simp only [norm_mul, Real.norm_eq_abs, Complex.abs_abs, Real.abs_exp]
   gcongr
   exact abs_rpow_le_abs_rpow _ _
 
