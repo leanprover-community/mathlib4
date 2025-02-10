@@ -14,9 +14,7 @@ This file proves asymptotic theorems for binomial coefficents and factorial vari
 ## Main statements
 
 * `isEquivalent_descFactorial` is the proof that `n.descFactorial k ~ n^k` as `n → ∞`.
-
 * `isEquivalent_choose` is the proof that `n.choose k ~ n^k / k!` as `n → ∞`.
-
 * `isTheta_choose` is the proof that `n.choose k = Θ(n^k)` as `n → ∞`.
 -/
 
