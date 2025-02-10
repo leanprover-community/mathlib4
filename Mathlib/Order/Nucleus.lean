@@ -159,12 +159,12 @@ lemma map_himp_apply (n : Nucleus X) (x y : X) : n (x ⇨ n y) = x ⇨ n y :=
 instance : HImp (Nucleus X) where
   himp m n :=
   { toFun x := ⨅ y ≥ x, m y ⇨ n y
-    idempotent' i := by
-      refine le_iInf₂ (fun j hj ↦ ?_)
-      have h : (m (m j ⇨ n j)) ⇨ (n (m j ⇨ n j)) = m j ⇨ n j := by
-        rw [map_himp_apply, himp_himp, ← map_inf, inf_of_le_right (le_trans n.le_apply le_himp)]
-      rw [← h]
-      exact iInf₂_le (m j ⇨ n j) <| biInf_le (fun i ↦ m i ⇨ n i) hj
+    idempotent' x := le_iInf₂ fun y hy ↦
+      calc
+        ⨅ z ≥ ⨅ w ≥ x, m w ⇨ n w, m z ⇨ n z
+        _ ≤ m (m y ⇨ n y) ⇨ n (m y ⇨ n y) := iInf₂_le _ <| biInf_le _ hy
+        _ = m y ⇨ n y := by
+          rw [map_himp_apply, himp_himp, ← map_inf, inf_of_le_right (le_trans n.le_apply le_himp)]
     map_inf' x y := by
       simp only [and_assoc, le_antisymm_iff, le_inf_iff, le_iInf_iff]
       refine ⟨fun z hxz ↦ iInf₂_le _ <| inf_le_of_left_le hxz,
