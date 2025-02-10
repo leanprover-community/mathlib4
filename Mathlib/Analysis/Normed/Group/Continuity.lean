@@ -93,6 +93,14 @@ lemma continuous_enorm {E : Type*} [TopologicalSpace E] [ContinuousENorm E] :
     Continuous fun a : E ↦ ‖a‖ₑ :=
   ContinuousENorm.continuous_enorm
 
+section Instances
+
+@[to_additive]
+instance SeminormedGroup.toContinuousENorm [SeminormedGroup E] : ContinuousENorm E where
+  continuous_enorm := ENNReal.isOpenEmbedding_coe.continuous.comp continuous_nnnorm'
+
+end Instances
+
 set_option linter.docPrime false in
 @[to_additive Inseparable.norm_eq_norm]
 theorem Inseparable.norm_eq_norm' {u v : E} (h : Inseparable u v) : ‖u‖ = ‖v‖ :=
