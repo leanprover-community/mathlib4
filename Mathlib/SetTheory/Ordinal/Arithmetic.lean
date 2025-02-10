@@ -210,8 +210,7 @@ theorem isSuccLimit_iff {o : Ordinal} : IsSuccLimit o ↔ o ≠ 0 ∧ IsSuccPrel
   simp [IsSuccLimit]
 
 @[simp]
-theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Ordinal) :=
-  isSuccPrelimit_bot
+theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Ordinal) := isSuccPrelimit_bot
 
 @[simp]
 theorem not_isSuccLimit_zero : ¬ IsSuccLimit (0 : Ordinal) :=

@@ -299,12 +299,17 @@ theorem IsAcc.forall_lt {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) :
 theorem IsAcc.pos {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) :
     0 < o := Ordinal.pos_iff_ne_zero.mpr ((isAcc_iff _ _).mp h).1
 
-theorem IsAcc.isLimit {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) : IsSuccLimit o := by
+theorem IsAcc.isSuccLimit {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) : IsSuccLimit o := by
   rw [isAcc_iff] at h
   rw [isSuccLimit_iff]
   refine ⟨h.1, isSuccPrelimit_of_succ_ne fun x hx ↦ ?_⟩
   rcases h.2 x (lt_of_lt_of_le (lt_succ x) hx.le) with ⟨p, hp⟩
   exact (hx.symm ▸ (succ_le_iff.mpr hp.2.1)).not_lt hp.2.2
+
+set_option linter.deprecated false in
+@[deprecated IsAcc.isSuccLimit (since := "2025-02-09")]
+theorem IsAcc.isLimit {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) : IsLimit o :=
+  h.isSuccLimit
 
 theorem IsAcc.mono {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc S) :
     o.IsAcc T := by
