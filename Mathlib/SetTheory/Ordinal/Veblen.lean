@@ -16,7 +16,7 @@ We define the two-arguments Veblen function, which satisfies `veblen 0 a = ω ^ 
 * `veblenWith`: The Veblen hierarchy with a specified initial function.
 * `veblen`: The Veblen hierarchy starting with `ω ^ ·`.
 
-## Todo
+## TODO
 
 - Define the epsilon numbers and gamma numbers.
 - Prove that `ε₀` and `Γ₀` are countable.
