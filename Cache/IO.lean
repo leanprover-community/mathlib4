@@ -9,26 +9,9 @@ import Lean.Data.RBMap
 import Lean.Data.RBTree
 import Lean.Data.Json.Printer
 import Lean.Data.Json.Parser
+import Cache.Lean
 
 variable {α : Type}
-
-/-- Removes a parent path from the beginning of a path -/
-def System.FilePath.withoutParent (path parent : FilePath) : FilePath :=
-  let rec aux : List String → List String → List String
-    | z@(x :: xs), y :: ys => if x == y then aux xs ys else z
-    | [], _ => []
-    | x, [] => x
-  mkFilePath <| aux path.components parent.components
-
-def Nat.toHexDigits (n : Nat) : Nat → (res : String := "") → String
-  | 0, s => s
-  | len+1, s =>
-    let b := UInt8.ofNat (n >>> (len * 8))
-    Nat.toHexDigits n len <|
-      s.push (Nat.digitChar (b >>> 4).toNat) |>.push (Nat.digitChar (b &&& 15).toNat)
-
-def UInt64.asLTar (n : UInt64) : String :=
-  s!"{Nat.toHexDigits n.toNat 8}.ltar"
 
 namespace Cache.IO
 
@@ -92,11 +75,19 @@ def getLeanTar : IO String := do
 
 abbrev PackageDirs := Lean.RBMap String FilePath compare
 
+/--
+`CacheM` stores the following information:
+* the root directory where `Mathlib.lean` lies
+* package direcotories
+* the build directory for proofwidgets
+-/
 structure CacheM.Context where
+  /-- root directory for mathlib files -/
   mathlibDepPath : FilePath
   packageDirs : PackageDirs
   proofWidgetsBuildDir : FilePath
 
+@[inherit_doc CacheM.Context]
 abbrev CacheM := ReaderT CacheM.Context IO
 
 /-- Whether this is running on Mathlib repo or not -/
@@ -130,6 +121,7 @@ private def CacheM.mathlibDepPath : IO FilePath := do
   | .error e => throw <| IO.userError s!"Cannot parse lake-manifest.json: {e}"
 
 -- TODO this should be generated automatically from the information in `lakefile.lean`.
+@[inherit_doc CacheM.Context]
 private def CacheM.getContext : IO CacheM.Context := do
   let root ← CacheM.mathlibDepPath
   return ⟨root, .ofList [
@@ -147,6 +139,7 @@ private def CacheM.getContext : IO CacheM.Context := do
     ("Plausible", LAKEPACKAGESDIR / "plausible")
   ], LAKEPACKAGESDIR / "proofwidgets" / ".lake" / "build"⟩
 
+@[inherit_doc CacheM.Context]
 def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
 
 end
@@ -155,8 +148,11 @@ def mathlibDepPath : CacheM FilePath := return (← read).mathlibDepPath
 
 def getPackageDirs : CacheM PackageDirs := return (← read).packageDirs
 
-def getPackageDir (path : FilePath) : CacheM FilePath := do
-  match path.withExtension "" |>.components.head? with
+/--
+Get the correct package directory the file `sourceFile`.
+-/
+def getPackageDir (sourceFile : FilePath) : CacheM FilePath := do
+  match sourceFile.withExtension "" |>.components.head? with
   | none => throw <| IO.userError "Can't find package directory for empty path"
   | some pkg => match (← getPackageDirs).find? pkg with
     | none => throw <| IO.userError s!"Unknown package directory for {pkg}"
@@ -263,45 +259,45 @@ partial def getFilesWithExtension
     (← fp.readDir).foldlM (fun acc dir => getFilesWithExtension dir.path extension acc) acc
   else return if fp.extension == some extension then acc.push fp else acc
 
-abbrev HashMap := Std.HashMap FilePath UInt64
+/--
+The Hash map of the cache.
+-/
+abbrev NameHashMap := Std.HashMap FilePath UInt64
 
-namespace HashMap
+namespace NameHashMap
 
 /-- Filter the hashmap by whether the entries exist as files in the cache directory.
 
 If `keep` is true, the result will contain the entries that do exist;
 if `keep` is false, the result will contain the entries that do not exist.
 -/
-def filterExists (hashMap : HashMap) (keep : Bool) : IO HashMap :=
-  hashMap.foldM (init := default) fun acc path hash => do
+def filterExists (hashMap : NameHashMap) (keep : Bool) : IO NameHashMap :=
+  hashMap.foldM (init := ∅) fun acc path hash => do
     let exist ← (CACHEDIR / hash.asLTar).pathExists
     let add := if keep then exist else !exist
     if add then return acc.insert path hash else return acc
 
-def hashes (hashMap : HashMap) : Lean.RBTree UInt64 compare :=
-  hashMap.fold (init := default) fun acc _ hash => acc.insert hash
+def hashes (hashMap : NameHashMap) : Lean.RBTree UInt64 compare :=
+  hashMap.fold (init := ∅) fun acc _ hash => acc.insert hash
 
-end HashMap
-
-def mkDir (path : FilePath) : IO Unit := do
-  if !(← path.pathExists) then IO.FS.createDirAll path
+end NameHashMap
 
 /--
 Given a path to a Lean file, concatenates the paths to its build files.
 Each build file also has a `Bool` indicating whether that file is required for caching to proceed.
 -/
-def mkBuildPaths (path : FilePath) : CacheM <| List (FilePath × Bool) := do
-  let packageDir ← getPackageDir path
+def mkBuildPaths (sourceFile : FilePath) : CacheM <| List (FilePath × Bool) := do
+  let packageDir ← getPackageDir sourceFile
   return [
     -- Note that `packCache` below requires that the `.trace` file is first in this list.
-    (packageDir / LIBDIR / path.withExtension "trace", true),
-    (packageDir / LIBDIR / path.withExtension "olean", true),
-    (packageDir / LIBDIR / path.withExtension "olean.hash", true),
-    (packageDir / LIBDIR / path.withExtension "ilean", true),
-    (packageDir / LIBDIR / path.withExtension "ilean.hash", true),
-    (packageDir / IRDIR  / path.withExtension "c", true),
-    (packageDir / IRDIR  / path.withExtension "c.hash", true),
-    (packageDir / LIBDIR / path.withExtension "extra", false)]
+    (packageDir / LIBDIR / sourceFile.withExtension "trace", true),
+    (packageDir / LIBDIR / sourceFile.withExtension "olean", true),
+    (packageDir / LIBDIR / sourceFile.withExtension "olean.hash", true),
+    (packageDir / LIBDIR / sourceFile.withExtension "ilean", true),
+    (packageDir / LIBDIR / sourceFile.withExtension "ilean.hash", true),
+    (packageDir / IRDIR  / sourceFile.withExtension "c", true),
+    (packageDir / IRDIR  / sourceFile.withExtension "c.hash", true),
+    (packageDir / LIBDIR / sourceFile.withExtension "extra", false)]
 
 /-- Check that all required build files exist. -/
 def allExist (paths : List (FilePath × Bool)) : IO Bool := do
@@ -310,20 +306,20 @@ def allExist (paths : List (FilePath × Bool)) : IO Bool := do
   pure true
 
 /-- Compresses build files into the local cache and returns an array with the compressed files -/
-def packCache (hashMap : HashMap) (overwrite verbose unpackedOnly : Bool)
+def packCache (hashMap : NameHashMap) (overwrite verbose unpackedOnly : Bool)
     (comment : Option String := none) :
     CacheM <| Array String := do
-  mkDir CACHEDIR
+  IO.FS.createDirAll CACHEDIR
   IO.println "Compressing cache"
   let mut acc := #[]
   let mut tasks := #[]
-  for (path, hash) in hashMap.toList do
+  for (sourceFile, hash) in hashMap.toList do
     let zip := hash.asLTar
     let zipPath := CACHEDIR / zip
-    let buildPaths ← mkBuildPaths path
+    let buildPaths ← mkBuildPaths sourceFile
     if ← allExist buildPaths then
       if overwrite || !(← zipPath.pathExists) then
-        acc := acc.push (path, zip)
+        acc := acc.push (sourceFile, zip)
         tasks := tasks.push <| ← IO.asTask do
           -- Note here we require that the `.trace` file is first
           -- in the list generated by `mkBuildPaths`.
@@ -332,7 +328,7 @@ def packCache (hashMap : HashMap) (overwrite verbose unpackedOnly : Bool)
           runCmd (← getLeanTar) <| #[zipPath.toString, trace] ++
             (if let some c := comment then #["-c", s!"git=mathlib4@{c}"] else #[]) ++ args
       else if !unpackedOnly then
-        acc := acc.push (path, zip)
+        acc := acc.push (sourceFile, zip)
   for task in tasks do
     _ ← IO.ofExcept task.get
   acc := acc.qsort (·.1.1 < ·.1.1)
@@ -353,7 +349,7 @@ def isPathFromMathlib (path : FilePath) : Bool :=
   | _ => false
 
 /-- Decompresses build files into their respective folders -/
-def unpackCache (hashMap : HashMap) (force : Bool) : CacheM Unit := do
+def unpackCache (hashMap : NameHashMap) (force : Bool) : CacheM Unit := do
   let hashMap ← hashMap.filterExists true
   let size := hashMap.size
   if size > 0 then
@@ -381,13 +377,13 @@ instance : Ord FilePath where
   compare x y := compare x.toString y.toString
 
 /-- Removes all cache files except for what's in the `keep` set -/
-def cleanCache (keep : Lean.RBTree FilePath compare := default) : IO Unit := do
+def cleanCache (keep : Lean.RBTree FilePath compare := ∅) : IO Unit := do
   for path in ← getFilesWithExtension CACHEDIR "ltar" do
     if !keep.contains path then IO.FS.removeFile path
 
 /-- Prints the LTAR file and embedded comments (in particular, the mathlib commit that built the
 file) regarding the files with specified paths. -/
-def lookup (hashMap : HashMap) (paths : List FilePath) : IO Unit := do
+def lookup (hashMap : NameHashMap) (paths : List FilePath) : IO Unit := do
   let mut err := false
   for path in paths do
     let some hash := hashMap[path]? | err := true

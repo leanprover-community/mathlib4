@@ -11,16 +11,16 @@ Usage: cache [COMMAND]
 
 Commands:
   # No privilege required
-  get  [ARGS]  Download linked files missing on the local cache and decompress
-  get! [ARGS]  Download all linked files and decompress
-  get- [ARGS]  Download linked files missing to the local cache, but do not decompress
-  pack         Compress non-compressed build files into the local cache
-  pack!        Compress build files into the local cache (no skipping)
-  unpack       Decompress linked already downloaded files
-  unpack!      Decompress linked already downloaded files (no skipping)
-  clean        Delete non-linked files
-  clean!       Delete everything on the local cache
-  lookup       Show information about cache files for the given lean files
+  get  [ARGS]   Download linked files missing on the local cache and decompress
+  get! [ARGS]   Download all linked files and decompress
+  get- [ARGS]   Download linked files missing to the local cache, but do not decompress
+  pack          Compress non-compressed build files into the local cache
+  pack!         Compress build files into the local cache (no skipping)
+  unpack        Decompress linked already downloaded files
+  unpack!       Decompress linked already downloaded files (no skipping)
+  clean         Delete non-linked files
+  clean!        Delete everything on the local cache
+  lookup [ARGS] Show information about cache files for the given lean files
 
   # Privilege required
   put          Run 'mk' then upload linked files missing on the server
@@ -81,14 +81,16 @@ def main (args : List String) : IO Unit := do
     Process.exit 0
   CacheM.run do
   let hashMemo ← getHashMemo extraRoots
-  let hashMap := hashMemo.hashMap
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
   if leanTarArgs.contains (args.headD "") then validateLeanTar
   let get (args : List String) (force := false) (decompress := true) := do
-    let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByFilePaths (toPaths args)
+    let hashMap ← if args.isEmpty then
+        pure hashMemo.hashMap
+      else
+        hashMemo.filterByFilePaths (toPaths args)
     getFiles hashMap force force goodCurl decompress
   let pack (overwrite verbose unpackedOnly := false) := do
-    packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
+    packCache hashMemo.hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do
     putFiles (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getToken)
   match args with
@@ -97,10 +99,10 @@ def main (args : List String) : IO Unit := do
   | "get-" :: args => get args (decompress := false)
   | ["pack"] => discard <| pack
   | ["pack!"] => discard <| pack (overwrite := true)
-  | ["unpack"] => unpackCache hashMap false
-  | ["unpack!"] => unpackCache hashMap true
+  | ["unpack"] => unpackCache hashMemo.hashMap false
+  | ["unpack!"] => unpackCache hashMemo.hashMap true
   | ["clean"] =>
-    cleanCache <| hashMap.fold (fun acc _ hash => acc.insert <| CACHEDIR / hash.asLTar) .empty
+    cleanCache <| hashMemo.hashMap.fold (fun acc _ hash => acc.insert <| CACHEDIR / hash.asLTar) .empty
   | ["clean!"] => cleanCache
   -- We allow arguments for `put*` so they can be added to the `roots`.
   | "put" :: _ => put
@@ -108,10 +110,10 @@ def main (args : List String) : IO Unit := do
   | "put-unpacked" :: _ => put (unpackedOnly := true)
   | ["commit"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
-    commit hashMap false (← getToken)
+    commit hashMemo.hashMap false (← getToken)
   | ["commit!"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
-    commit hashMap true (← getToken)
+    commit hashMemo.hashMap true (← getToken)
   | ["collect"] => IO.println "TODO"
-  | "lookup" :: args => lookup hashMap (toPaths args)
+  | "lookup" :: args => lookup hashMemo.hashMap (toPaths args)
   | _ => println help
