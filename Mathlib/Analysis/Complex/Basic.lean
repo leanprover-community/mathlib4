@@ -3,14 +3,15 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Data.Complex.Module
-import Mathlib.Data.Complex.Norm
 import Mathlib.Data.Complex.Order
 import Mathlib.Data.Complex.Trigonometric
+import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Field
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.RealVectorSpace
+
+import Mathlib.Data.Complex.Norm
 
 /-!
 
@@ -78,10 +79,25 @@ instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [Semin
     [NormedAlgebra ℂ A] : NormedAlgebra ℝ A :=
   NormedAlgebra.restrictScalars ℝ ℂ A
 
+@[simp 1100]
+theorem comap_abs_nhds_zero : comap abs (𝓝 0) = 𝓝 0 :=
+  comap_norm_nhds_zero
+
+-- This result cannot be moved to `Data/Complex/Norm` since `ℤ` gets its norm from its
+-- normed ring structure and that file does not know about rings
 @[simp 1100, norm_cast] lemma nnnorm_intCast (n : ℤ) : ‖(n : ℂ)‖₊ = ‖n‖₊ := by
   ext; exact norm_intCast n
 
 @[deprecated (since := "2024-08-25")] alias nnnorm_int := nnnorm_intCast
+
+@[continuity, fun_prop]
+theorem continuous_abs : Continuous abs :=
+  continuous_norm
+
+@[continuity, fun_prop]
+theorem continuous_normSq : Continuous normSq := by
+  simpa [← normSq_eq_abs] using continuous_abs.pow 2
+
 
 theorem nnnorm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖₊ = 1 :=
   (pow_left_inj₀ zero_le' zero_le' hn).1 <| by rw [← nnnorm_pow, h, nnnorm_one, one_pow]

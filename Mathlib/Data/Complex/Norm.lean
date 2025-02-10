@@ -12,15 +12,19 @@ import Mathlib.Data.Complex.Abs
 
 noncomputable section
 
+namespace Complex
+variable {z : ℂ}
+
 open ComplexConjugate Topology Filter
 
-namespace Complex
-
 instance : Norm ℂ :=
-  ⟨fun z ↦ Real.sqrt (normSq z)⟩
+  ⟨abs⟩
 
 @[simp]
-theorem norm_eq_abs (z : ℂ) : ‖z‖ = Complex.abs z := rfl
+theorem norm_eq_abs (z : ℂ) : ‖z‖ = abs z :=
+  rfl
+
+lemma norm_I : ‖I‖ = 1 := abs_I
 
 instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
   AddGroupNorm.toNormedAddCommGroup
@@ -29,49 +33,10 @@ instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
       neg' := abs.map_neg
       eq_zero_of_map_eq_zero' := fun _ => abs.eq_zero.1 }
 
-lemma norm_I : ‖I‖ = 1 := abs_I
-
 @[simp] lemma nnnorm_I : ‖I‖₊ = 1 := by simp [nnnorm]
 
-@[simp 1100, norm_cast] lemma norm_real (r : ℝ) : ‖(r : ℂ)‖ = ‖r‖ := abs_ofReal _
-
-@[simp 1100, norm_cast] lemma norm_natCast (n : ℕ) : ‖(n : ℂ)‖ = n := abs_natCast _
-
-@[simp 1100, norm_cast] lemma norm_intCast (n : ℤ) : ‖(n : ℂ)‖ = |(n : ℝ)| := abs_intCast n
-
-@[simp 1100, norm_cast] lemma norm_ratCast (q : ℚ) : ‖(q : ℂ)‖ = |(q : ℝ)| := norm_real _
-
-@[simp 1100] lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ‖(ofNat(n) : ℂ)‖ = OfNat.ofNat n := norm_natCast n
-
-@[simp 1100, norm_cast] lemma norm_nnratCast (q : ℚ≥0) :
-    ‖(q : ℂ)‖ = q := Complex.abs_of_nonneg q.cast_nonneg
-
-@[deprecated (since := "2024-08-25")] alias norm_nat := norm_natCast
-@[deprecated (since := "2024-08-25")] alias norm_int := norm_intCast
-@[deprecated (since := "2024-08-25")] alias norm_rat := norm_ratCast
-
-@[simp, norm_cast] lemma nnnorm_real (r : ℝ) : ‖(r : ℂ)‖₊ = ‖r‖₊ := by ext; exact norm_real _
-
-@[simp 1100, norm_cast] lemma nnnorm_natCast (n : ℕ) : ‖(n : ℂ)‖₊ = n := Subtype.ext <| by simp
-
-@[simp 1100, norm_cast] lemma nnnorm_ratCast (q : ℚ) : ‖(q : ℂ)‖₊ = ‖(q : ℝ)‖₊ := nnnorm_real q
-
-@[simp 1100] lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ‖(ofNat(n) : ℂ)‖₊ = OfNat.ofNat n := nnnorm_natCast n
-
-@[deprecated (since := "2024-08-25")] alias nnnorm_nat := nnnorm_natCast
-
-@[simp 1100, norm_cast] lemma nnnorm_nnratCast (q : ℚ≥0) :
-    ‖(q : ℂ)‖₊ = q := by simp [nnnorm, -norm_eq_abs]
-
-theorem norm_int_of_nonneg {n : ℤ} (hn : 0 ≤ n) : ‖(n : ℂ)‖ = n := by
-  rw [norm_intCast, ← Int.cast_abs, _root_.abs_of_nonneg hn]
-
-lemma normSq_eq_norm_sq (z : ℂ) : normSq z = ‖z‖ ^ 2 := by
-  rw [normSq_eq_abs, norm_eq_abs]
-
-theorem dist_eq (z w : ℂ) : dist z w = abs (z - w) := rfl
+theorem dist_eq (z w : ℂ) : dist z w = abs (z - w) :=
+  rfl
 
 theorem dist_eq_re_im (z w : ℂ) : dist z w = √((z.re - w.re) ^ 2 + (z.im - w.im) ^ 2) := by
   rw [sq, sq]
@@ -112,6 +77,36 @@ theorem dist_self_conj (z : ℂ) : dist z (conj z) = 2 * |z.im| := by rw [dist_c
 theorem nndist_self_conj (z : ℂ) : nndist z (conj z) = 2 * Real.nnabs z.im := by
   rw [nndist_comm, nndist_conj_self]
 
-end Complex
+@[simp 1100, norm_cast] lemma norm_real (r : ℝ) : ‖(r : ℂ)‖ = ‖r‖ := abs_ofReal _
+@[simp 1100, norm_cast] lemma norm_natCast (n : ℕ) : ‖(n : ℂ)‖ = n := abs_natCast _
+@[simp 1100, norm_cast] lemma norm_intCast (n : ℤ) : ‖(n : ℂ)‖ = |(n : ℝ)| := abs_intCast n
+@[simp 1100, norm_cast] lemma norm_ratCast (q : ℚ) : ‖(q : ℂ)‖ = |(q : ℝ)| := norm_real _
 
-end
+@[simp, norm_cast] lemma nnnorm_real (r : ℝ) : ‖(r : ℂ)‖₊ = ‖r‖₊ := by ext; exact norm_real _
+@[simp 1100, norm_cast] lemma nnnorm_natCast (n : ℕ) : ‖(n : ℂ)‖₊ = n := Subtype.ext <| by simp
+@[simp 1100, norm_cast] lemma nnnorm_ratCast (q : ℚ) : ‖(q : ℂ)‖₊ = ‖(q : ℝ)‖₊ := nnnorm_real q
+
+@[simp 1100] lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ‖(ofNat(n) : ℂ)‖ = OfNat.ofNat n := norm_natCast n
+
+@[simp 1100] lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ‖(ofNat(n) : ℂ)‖₊ = OfNat.ofNat n := nnnorm_natCast n
+
+@[deprecated (since := "2024-08-25")] alias norm_nat := norm_natCast
+@[deprecated (since := "2024-08-25")] alias norm_int := norm_intCast
+@[deprecated (since := "2024-08-25")] alias norm_rat := norm_ratCast
+@[deprecated (since := "2024-08-25")] alias nnnorm_nat := nnnorm_natCast
+
+@[simp 1100, norm_cast]
+lemma norm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖ = q := Complex.abs_of_nonneg q.cast_nonneg
+
+@[simp 1100, norm_cast]
+lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖₊ = q := by simp [nnnorm, -norm_eq_abs]
+
+theorem norm_int_of_nonneg {n : ℤ} (hn : 0 ≤ n) : ‖(n : ℂ)‖ = n := by
+  rw [norm_intCast, ← Int.cast_abs, abs_of_nonneg hn]
+
+lemma normSq_eq_norm_sq (z : ℂ) : normSq z = ‖z‖ ^ 2 := by
+  rw [normSq_eq_abs, norm_eq_abs]
+
+end Complex
