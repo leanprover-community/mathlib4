@@ -170,6 +170,8 @@ instance (priority := 10) CanonicallyOrderedMul.toOrderBot : OrderBot α where
   bot := 1
   bot_le := one_le
 
+@[to_additive] theorem bot_eq_one : (⊥ : α) = 1 := rfl
+
 end LE
 
 section Preorder
@@ -187,7 +189,6 @@ end Preorder
 section PartialOrder
 variable [PartialOrder α] [CanonicallyOrderedMul α] {a b c : α}
 
-@[to_additive] theorem bot_eq_one : (⊥ : α) = 1 := rfl
 @[to_additive (attr := simp)] theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 := le_bot_iff
 @[to_additive] theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 := bot_lt_iff_ne_bot
 @[to_additive] theorem one_lt_of_ne_one (h : a ≠ 1) : 1 < a := h.bot_lt
