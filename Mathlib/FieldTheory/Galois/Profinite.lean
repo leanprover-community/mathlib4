@@ -115,16 +115,18 @@ variable {k K : Type*} [Field k] [Field K] [Algebra k K]
 namespace InfiniteGalois
 
 variable (k K) in
-/--`finGaloisGroupFunctor` composite with the forgetful functor from `FiniteGrp` to `ProfiniteGrp`-/
+/-- The composition of `finGaloisGroupFunctor` with
+the forgetful functor from `FiniteGrp` to `ProfiniteGrp`. -/
 noncomputable abbrev profinGaloisGroupFunctor :
     (FiniteGaloisIntermediateField k K)ᵒᵖ ⥤ ProfiniteGrp :=
   (finGaloisGroupFunctor k K) ⋙ forget₂ FiniteGrp ProfiniteGrp
 
 variable (k K) in
-/--Define the homomorphism from `Gal(K/k)` to `lim Gal(L/k)` where `L` is a
-  `FiniteGaloisIntermediateField` ordered by inverse inclusion. This homomorphism is given by the
-  canonical projection from `Gal(K/k)` to `Gal(L/k)` viewing the limit as a
-  subgroup of the product space. -/
+/--
+The homomorphism from `Gal(K/k)` to `lim Gal(L/k)` where `L` is a
+`FiniteGaloisIntermediateField k K` ordered by inverse inclusion. It is induced by the
+canonical projections from `Gal(K/k)` to `Gal(L/k)`.
+-/
 @[simps]
 noncomputable def algEquivToLimit : (K ≃ₐ[k] K) →* limit (profinGaloisGroupFunctor k K) where
   toFun σ := {
@@ -169,7 +171,7 @@ lemma algEquivToLimit_continuous : Continuous (algEquivToLimit k K) := by
   convert restrictNormalHom_continuous L.unop.1
   exact (DiscreteTopology.eq_bot (α := L.unop ≃ₐ[k] L.unop)).symm
 
-/--Define the coordinate map from `lim Gal(L/k)` to a specific `Gal(L/k)`-/
+/-- The coordinate map from `lim Gal(L/k)` to a specific `Gal(L/k)`. -/
 noncomputable def proj (L : FiniteGaloisIntermediateField k K) :
     limit (profinGaloisGroupFunctor k K) →* (L ≃ₐ[k] L) where
   toFun g := g.val (op L)
@@ -222,11 +224,6 @@ lemma toAlgEquivAux_eq_liftNormal [IsGalois k K] (g : limit (profinGaloisGroupFu
   rw [toAlgEquivAux_def g x L hx]
   exact (AlgEquiv.liftNormal_commutes (proj L g) _ ⟨x, hx⟩).symm
 
-protected lemma AlgEquiv.aut_inv (ϕ : K ≃ₐ[k] K) : ϕ⁻¹ = ϕ.symm := rfl
-
-instance instSMulMemClass : SMulMemClass (IntermediateField k K) k K where
-  smul_mem := fun _ _ hx ↦ IntermediateField.smul_mem _ hx
-
 /--Turn `toAlgEquivAux` into an `AlgEquiv`.
 It is done by using above lifting lemmas on bigger `FiniteGaloisIntermediateField`. -/
 @[simps]
@@ -263,7 +260,7 @@ noncomputable def limitToAlgEquiv [IsGalois k K]
     simp only [toAlgEquivAux_eq_liftNormal g _ ⊥ (algebraMap_mem _ x), AlgEquiv.commutes]
 
 variable (k K) in
-/--Turn `algEquivToLimit` into a mulEquiv-/
+/-- `algEquivToLimit` as a `MulEquiv`. -/
 noncomputable def mulEquivToLimit [IsGalois k K] :
     (K ≃ₐ[k] K) ≃* limit (profinGaloisGroupFunctor k K) where
   toFun := algEquivToLimit k K
@@ -281,8 +278,9 @@ noncomputable def mulEquivToLimit [IsGalois k K] :
     simp_rw [this]
     exact proj_lift_adjoin_simple _ _ _ _ x.2
 
+open scoped Topology in
 lemma krullTopology_mem_nhds_one_of_isGalois [IsGalois k K] (A : Set (K ≃ₐ[k] K)) :
-    A ∈ nhds 1 ↔ ∃ (L : FiniteGaloisIntermediateField k K), (L.fixingSubgroup : Set _) ⊆ A := by
+    A ∈ 𝓝 1 ↔ ∃ (L : FiniteGaloisIntermediateField k K), (L.fixingSubgroup : Set _) ⊆ A := by
   rw [krullTopology_mem_nhds_one]
   refine ⟨fun ⟨L, _, hL⟩ ↦ ?_, fun ⟨L, hL⟩ ↦ ⟨L, inferInstance, hL⟩⟩
   use mk (normalClosure k L K)
@@ -328,16 +326,16 @@ instance [IsGalois k K] : TotallyDisconnectedSpace (K ≃ₐ[k] K) :=
 /--Turn `Gal(K/k)` into a profinite group as there is
   a `ContinuousMulEquiv` to a `ProfiniteGrp` given above. -/
 noncomputable def profiniteGalGrp [IsGalois k K] : ProfiniteGrp :=
-  ProfiniteGrp.ofContinuousMulEquiv (continuousMulEquivToLimit k K).symm
+  ProfiniteGrp.of (K ≃ₐ[k] K)
 
 /--`profiniteGalGrp` version of `continuousMulEquivToLimit`-/
 noncomputable def continuousMulEquivProfiniteGalGrpToLimit [IsGalois k K] :
     profiniteGalGrp k K ≃ₜ* (limit (profinGaloisGroupFunctor k K)) :=
-  (continuousMulEquivToLimit k K)
+  continuousMulEquivToLimit k K
 
 /--The categorical isomorphism between `profiniteGalGrp` and `lim Gal(L/k)` where `L` is a
   `FiniteGaloisIntermediateField` ordered by inverse inclusion. -/
-noncomputable def IsoProfiniteGalGrpLimit [IsGalois k K] :
+noncomputable def profiniteGalGrpIsoLimit [IsGalois k K] :
     profiniteGalGrp k K ≅ (limit (profinGaloisGroupFunctor k K)) :=
   ContinuousMulEquiv.toProfiniteGrpIso (continuousMulEquivToLimit k K)
 
