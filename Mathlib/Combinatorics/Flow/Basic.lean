@@ -80,6 +80,7 @@ cumbersome, sometimes significantly so. -/
 @[ext]
 structure PseudoFlow (N : Network V R) where
   /-- The assignment of flow values to each arc.
+
   Do NOT use. Use the coercion to function instead. -/
   toFun : V → V → R
   nonneg' : ∀ u v, 0 ≤ toFun u v
