@@ -17,7 +17,7 @@ category with objects `ℕ` and morphisms `n ⟶ m` the monotone maps from
 
 In this file, we define the generating maps for the simplex category, show that
 this category is equivalent to `NonemptyFinLinOrd`, and establish basic
-properties of its epimorphisms and monomorphisms between objects of the category.
+properties of its epimorphisms and monomorphisms.
 -/
 
 universe v
