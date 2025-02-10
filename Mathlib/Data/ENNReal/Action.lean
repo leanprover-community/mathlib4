@@ -8,7 +8,7 @@ import Mathlib.Data.ENNReal.Order
 /-!
 # Scalar multiplication on `ℝ≥0∞`.
 
-This file defines basic scalar actions on extended nonnegative reals, showing that 
+This file defines basic scalar actions on extended nonnegative reals, showing that
 `MulAction`s, `DistribMulAction`s, `Module`s and `Algebra`s restrict from `ℝ≥0∞` to `ℝ≥0`.
 -/
 
