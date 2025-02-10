@@ -65,7 +65,7 @@ theorem tendstoInMeasure_iff_norm [SeminormedAddCommGroup E] {l : Filter ι} {f 
 theorem tendstoInMeasure_iff_tendsto_toNNReal [Dist E] [IsFiniteMeasure μ]
     {f : ι → α → E} {l : Filter ι} {g : α → E} :
     TendstoInMeasure μ f l g ↔
-    ∀ ε, 0 < ε → Tendsto (fun i => (μ { x | ε ≤ dist (f i x) (g x) }).toNNReal) l (𝓝 0) := by
+      ∀ ε, 0 < ε → Tendsto (fun i => (μ { x | ε ≤ dist (f i x) (g x) }).toNNReal) l (𝓝 0) := by
   have hfin ε i : μ { x | ε ≤ dist (f i x) (g x) } ≠ ⊤ :=
     measure_ne_top μ {x | ε ≤ dist (f i x) (g x)}
   refine ⟨fun h ε hε ↦ ?_, fun h ε hε ↦ ?_⟩
@@ -259,7 +259,7 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae' {u : Filter ι} [NeBot u] [IsCou
 
 /-- `TendstoInMeasure` is equivalent to every subsequence having another subsequence
 ￼which converges almost surely. -/
-theorem exists_seq_tendstoInMeasure_atTop_iff (hfin : MeasureTheory.IsFiniteMeasure μ)
+theorem exists_seq_tendstoInMeasure_atTop_iff [IsFiniteMeasure μ]
     {f : ℕ → α → E} (hf : ∀ (n : ℕ), AEStronglyMeasurable (f n) μ) {g : α → E} :
     TendstoInMeasure μ f atTop g ↔
       ∀ ns : ℕ → ℕ, StrictMono ns → ∃ ns' : ℕ → ℕ, StrictMono ns' ∧
