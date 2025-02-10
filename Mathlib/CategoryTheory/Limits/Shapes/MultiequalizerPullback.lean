@@ -40,8 +40,7 @@ noncomputable def pushoutCocone : Multicofork I :=
           have := h.symm.le (Set.mem_univ k)
           simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at this
           tauto
-        rfl) ≫ s.inr)
-  (by
+        rfl) ≫ s.inr) (by
     rintro ⟨⟨k₁, k₂⟩, hk⟩
     have hk₁ := h.symm.le (Set.mem_univ k₁)
     have hk₂ := h.symm.le (Set.mem_univ k₂)
