@@ -30,8 +30,7 @@ variable {ι : Type*} (b : Basis ι ℤ L)
 lemma ZLattice.exists_forall_abs_repr_le_norm :
     ∃ (ε : ℝ), 0 < ε ∧ ∀ (x : L), ∀ i, ε * |b.repr x i| ≤ ‖x‖ := by
   wlog H : IsZLattice ℝ L
-  · have inst : Finite ι := Module.Finite.finite_basis b
-    let E' := Submodule.span ℝ (L : Set E)
+  · let E' := Submodule.span ℝ (L : Set E)
     let L' : Submodule ℤ E' := ZLattice.comap ℝ L E'.subtype
     have inst : DiscreteTopology L' :=
       ZLattice.comap_discreteTopology _ _ (by fun_prop) Subtype.val_injective
@@ -59,7 +58,6 @@ lemma ZLattice.exists_forall_abs_repr_le_norm :
   rw [abs_mul, abs_mul, abs_inv, mul_left_comm, abs_norm, inv_mul_lt_iff₀ (by positivity),
     mul_one, abs_eq_self.mpr (by positivity), ← Int.cast_abs] at this
   exact this.le
-
 
 /--
 Given a basis of a (possibly not full rank) `ℤ`-lattice, there exists a `ε > 0` such that
