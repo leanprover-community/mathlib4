@@ -847,6 +847,7 @@ theorem measurable_pi_lambda (f : α → ∀ a, π a) (hf : ∀ a, Measurable fu
   measurable_pi_iff.mpr hf
 
 /-- The function `(f, x) ↦ update f a x : (Π a, π a) × π a → Π a, π a` is measurable. -/
+@[measurability, fun_prop]
 theorem measurable_update'  {a : δ} [DecidableEq δ] :
     Measurable (fun p : (∀ i, π i) × π a ↦ update p.1 a p.2) := by
   rw [measurable_pi_iff]
@@ -858,10 +859,12 @@ theorem measurable_update'  {a : δ} [DecidableEq δ] :
     exact measurable_snd
   · exact measurable_pi_iff.1 measurable_fst _
 
+@[measurability, fun_prop]
 theorem measurable_uniqueElim [Unique δ] :
     Measurable (uniqueElim : π (default : δ) → ∀ i, π i) := by
   simp_rw [measurable_pi_iff, Unique.forall_iff, uniqueElim_default]; exact measurable_id
 
+@[measurability, fun_prop]
 theorem measurable_updateFinset [DecidableEq δ] {s : Finset δ} {x : ∀ i, π i} :
     Measurable (updateFinset x s) := by
   simp (config := { unfoldPartialApp := true }) only [updateFinset, measurable_pi_iff]
@@ -871,10 +874,11 @@ theorem measurable_updateFinset [DecidableEq δ] {s : Finset δ} {x : ∀ i, π 
 /-- The function `update f a : π a → Π a, π a` is always measurable.
   This doesn't require `f` to be measurable.
   This should not be confused with the statement that `update f a x` is measurable. -/
-@[measurability]
+@[measurability, fun_prop]
 theorem measurable_update (f : ∀ a : δ, π a) {a : δ} [DecidableEq δ] : Measurable (update f a) :=
   measurable_update'.comp measurable_prod_mk_left
 
+@[measurability, fun_prop]
 theorem measurable_update_left {a : δ} [DecidableEq δ] {x : π a} :
     Measurable (update · a x) :=
   measurable_update'.comp measurable_prod_mk_right
@@ -1494,3 +1498,4 @@ theorem measurableSet_liminf {s : ℕ → Set α} (hs : ∀ n, MeasurableSet <| 
   simpa only [← bliminf_true] using measurableSet_bliminf fun n _ => hs n
 
 end MeasurableSet
+set_option linter.style.longFile 1700
