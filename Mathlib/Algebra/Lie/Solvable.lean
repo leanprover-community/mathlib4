@@ -449,13 +449,11 @@ theorem derivedLength_zero (I : LieIdeal R L) [IsSolvable I] :
 theorem abelian_of_solvable_ideal_eq_bot_iff (I : LieIdeal R L) [h : IsSolvable I] :
     derivedAbelianOfIdeal I = ⊥ ↔ I = ⊥ := by
   dsimp only [derivedAbelianOfIdeal]
-  split -- Porting note: Original tactic was `cases' h : derivedAbelianOfIdeal R L I with k`
-  · rename_i h
-    rw [derivedLength_zero] at h
-    rw [h]
+  split
+  · simp_all only [derivedLength_zero]
   · rename_i k h
     obtain ⟨_, h₂⟩ := (derivedSeries_of_derivedLength_succ R L I k).mp h
-    have h₃ : I ≠ ⊥ := by intro contra; apply h₂; rw [contra]; apply derivedSeries_of_bot_eq_bot
+    have h₃ : I ≠ ⊥ := by rintro rfl; apply h₂; apply derivedSeries_of_bot_eq_bot
     simp only [h₂, h₃]
 
 end LieAlgebra
