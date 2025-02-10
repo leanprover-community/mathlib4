@@ -76,6 +76,7 @@ def ofList : List α → Multiset α :=
 instance : Coe (List α) (Multiset α) :=
   ⟨ofList⟩
 
+-- TODO rename below
 @[simp]
 theorem quot_mk_to_coe (l : List α) : @Eq (Multiset α) ⟦l⟧ l :=
   rfl
