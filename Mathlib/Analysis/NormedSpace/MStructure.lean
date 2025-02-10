@@ -339,16 +339,16 @@ lemma idemFst_compl : (1 : AddMonoid.End (WithLp p (α × β))) - idemFst = idem
     rw [AddMonoidHom.sub_apply, idemFst_apply, idemSnd_apply, AddMonoid.End.coe_one, id_eq,
       sub_eq_iff_eq_add, add_comm, ← WithLp.equiv_symm_add, Prod.mk_add_mk, zero_add, add_zero]; rfl
 
-theorem prod_norm_eq_sup_idemFst (x : WithLp ∞ (α × β)) :
+theorem prod_norm_eq_idemFst_sup_idemSnd (x : WithLp ∞ (α × β)) :
     ‖x‖ = ‖idemFst x‖ ⊔ ‖idemSnd x‖ := by
   rw [WithLp.prod_norm_eq_sup, ← WithLp.norm_equiv_symm_fst ∞ α β x.1,
-    ← WithLp.norm_equiv_symm_snd ∞ α β x.2, idemFst_compl]
+    ← WithLp.norm_equiv_symm_snd ∞ α β x.2]
   rfl
 
 lemma prod_norm_eq_add_idemFst [Fact (1 ≤ p)] (hp : 0 < p.toReal) (x : WithLp p (α × β)) :
-    ‖x‖ = (‖idemFst x‖ ^ p.toReal + ‖(1 - idemFst) x‖ ^ p.toReal) ^ (1 / p.toReal) := by
+    ‖x‖ = (‖idemFst x‖ ^ p.toReal + ‖idemSnd x‖ ^ p.toReal) ^ (1 / p.toReal) := by
   rw [WithLp.prod_norm_eq_add hp, ← WithLp.norm_equiv_symm_fst p α β x.1,
-    ← WithLp.norm_equiv_symm_snd p α β x.2, idemFst_compl]
+    ← WithLp.norm_equiv_symm_snd p α β x.2]
   rfl
 
 lemma idemFst_Lprojection :
@@ -357,7 +357,7 @@ lemma idemFst_Lprojection :
   Lnorm x := by
     rw [prod_norm_eq_add_idemFst (by simp only [one_toReal, zero_lt_one])]
     simp only [one_toReal, Real.rpow_one, ne_eq, one_ne_zero, not_false_eq_true, div_self,
-      AddMonoid.End.smul_def]
+      AddMonoid.End.smul_def, _root_.add_right_inj, idemFst_compl]
 
 lemma idemSnd_Lprojection :
     IsLprojection (WithLp 1 (α × β)) (idemSnd : AddMonoid.End (WithLp 1 (α × β))) := by
