@@ -201,4 +201,12 @@ lemma toRight_union : (u ∪ v).toRight = u.toRight ∪ v.toRight := by ext x; s
 lemma toLeft_sdiff : (u \ v).toLeft = u.toLeft \ v.toLeft := by ext x; simp
 lemma toRight_sdiff : (u \ v).toRight = u.toRight \ v.toRight := by ext x; simp
 
+/-- Finsets on sum types are equivalent to pairs of finsets on each summand. -/
+@[simps apply_fst apply_snd symm_apply]
+def sumEquiv {α β : Type*} : Finset (α ⊕ β) ≃ Finset α × Finset β where
+  toFun s := (s.toLeft, s.toRight)
+  invFun s := disjSum s.1 s.2
+  left_inv s := toLeft_disjSum_toRight
+  right_inv s := by simp
+
 end Finset

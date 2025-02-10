@@ -906,6 +906,38 @@ lemma tendsto_finset_prod_atTop :
     use (Finset.image Prod.fst b, Finset.image Prod.snd b)
     exact Finset.subset_product
 
+lemma tendsto_toLeft_atTop :
+    Tendsto (Finset.toLeft (α := α) (β := β)) atTop atTop := by
+  intro s hs
+  simp only [mem_atTop_sets, Finset.le_eq_subset, Filter.mem_map, Set.mem_preimage] at hs ⊢
+  obtain ⟨t, H⟩ := hs
+  exact ⟨t.disjSum ∅, fun b hb ↦ H _ (by simpa [← Finset.coe_subset, Set.subset_def] using hb)⟩
+
+lemma tendsto_toRight_atTop :
+    Tendsto (Finset.toRight (α := α) (β := β)) atTop atTop := by
+  intro s hs
+  simp only [mem_atTop_sets, Finset.le_eq_subset, Filter.mem_map, Set.mem_preimage] at hs ⊢
+  obtain ⟨t, H⟩ := hs
+  exact ⟨.disjSum ∅ t, fun b hb ↦ H _ (by simpa [← Finset.coe_subset, Set.subset_def] using hb)⟩
+
+lemma tendsto_sumEquiv_atTop :
+    Tendsto (Finset.sumEquiv (α := α) (β := β)) atTop atTop := by
+  simp only [Finset.sumEquiv, Equiv.coe_fn_mk, le_prod, Tendsto,
+    Filter.map_map, Function.comp_def, ← prod_atTop_atTop_eq]
+  exact ⟨tendsto_toLeft_atTop, tendsto_toRight_atTop⟩
+
+lemma tendsto_sumEquiv_symm_atTop :
+    Tendsto (Finset.sumEquiv (α := α) (β := β)).symm atTop atTop := by
+  rw [Tendsto, ← prod_atTop_atTop_eq,
+    ((atTop_basis.prod atTop_basis).map _).le_basis_iff atTop_basis]
+  rintro s -
+  refine ⟨(s.toLeft, s.toRight), ?_⟩
+  simp +contextual [Set.subset_def, forall_comm (α := Finset (α ⊕ β)), ← Finset.coe_subset]
+
+lemma atTop_map_sumEquiv : atTop.map (Finset.sumEquiv (α := α) (β := β)) = atTop :=
+  tendsto_sumEquiv_atTop.antisymm
+    (by rw [← comap_equiv_symm, ← tendsto_iff_comap]; exact tendsto_sumEquiv_symm_atTop)
+
 theorem prod_atBot_atBot_eq [Preorder α] [Preorder β] :
     (atBot : Filter α) ×ˢ (atBot : Filter β) = (atBot : Filter (α × β)) :=
   @prod_atTop_atTop_eq αᵒᵈ βᵒᵈ _ _

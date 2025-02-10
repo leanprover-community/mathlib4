@@ -72,6 +72,27 @@ section ContinuousMul
 
 variable [CommMonoid α] [TopologicalSpace α] [ContinuousMul α]
 
+section Sum
+
+@[to_additive]
+lemma HasProd.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M]
+    {f : α ⊕ β → M} {a b : M}
+    (h₁ : HasProd (f ∘ Sum.inl) a) (h₂ : HasProd (f ∘ Sum.inr) b) : HasProd f (a * b) := by
+  have : Tendsto ((∏ b ∈ ·, f b) ∘ sumEquiv.symm) (atTop.map sumEquiv) (nhds (a * b)) := by
+    rw [atTop_map_sumEquiv, ← prod_atTop_atTop_eq]
+    convert (tendsto_mul.comp (nhds_prod_eq (x := a) (y := b) ▸ Tendsto.prod_map h₁ h₂))
+    ext
+    simp [sumEquiv]
+  simpa [Tendsto, Filter.map_map, Function.comp_assoc] using this
+
+@[to_additive]
+lemma Multipliable.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M]
+    (f : α ⊕ β → M) (h₁ : Multipliable (f ∘ Sum.inl)) (h₂ : Multipliable (f ∘ Sum.inr)) :
+    Multipliable f :=
+  ⟨_, .sum h₁.choose_spec h₂.choose_spec⟩
+
+end Sum
+
 section RegularSpace
 
 variable [RegularSpace α]
