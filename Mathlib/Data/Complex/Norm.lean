@@ -112,18 +112,6 @@ theorem dist_self_conj (z : ℂ) : dist z (conj z) = 2 * |z.im| := by rw [dist_c
 theorem nndist_self_conj (z : ℂ) : nndist z (conj z) = 2 * Real.nnabs z.im := by
   rw [nndist_comm, nndist_conj_self]
 
-@[simp 1100]
-theorem comap_abs_nhds_zero : comap abs (𝓝 0) = 𝓝 0 :=
-  comap_norm_nhds_zero
-
-@[continuity, fun_prop]
-theorem continuous_abs : Continuous abs :=
-  continuous_norm
-
-@[continuity, fun_prop]
-theorem continuous_normSq : Continuous normSq := by
-  simpa [← normSq_eq_abs] using continuous_abs.pow 2
-
 end Complex
 
 end
