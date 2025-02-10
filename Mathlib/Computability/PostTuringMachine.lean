@@ -12,11 +12,11 @@ import Mathlib.Data.PFun
 /-!
 # Turing machines
 
-The files `TuringMachine0.lean` and `TuringMachine.lean` define
+The files `PostTuringMachine.lean` and `TuringMachine.lean` define
 a sequence of simple machine languages, starting with Turing machines and working
 up to more complex languages based on Wang B-machines.
 
-`TuringMachine0.lean` covers the TM0 model and TM1 model;
+`PostTuringMachine.lean` covers the TM0 model and TM1 model;
 `TuringMachine.lean` adds the TM2 model.
 
 ## Naming conventions
