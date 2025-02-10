@@ -114,9 +114,27 @@ section rankAtStalk
 
 lemma Algebra.exists_cover_rankAtStalk_eq {R : Type*} (S : Type*) [CommRing R] [CommRing S]
     [Algebra R S] [Module.FinitePresentation R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] :
-    ∃ r ∉ p, ∃ (n : ℕ),
-      Module.rankAtStalk (R := Localization.Away r) (Localization.Away r ⊗[R] S) = n :=
-  sorry
+    ∃ r ∉ p,
+      Module.rankAtStalk (R := Localization.Away r) (Localization.Away r ⊗[R] S) =
+        Module.rankAtStalk S ⟨p, inferInstance⟩ := by
+  have := Module.isLocallyConstant_rankAtStalk (R := R) (M := S)
+  obtain ⟨U, hU, hp, heq⟩ := (Module.isLocallyConstant_rankAtStalk (M := S)).exists_open ⟨p, ‹_›⟩
+  obtain ⟨V, ⟨r, rfl⟩, (hr : r ∉ p), hrU⟩ :=
+    PrimeSpectrum.isTopologicalBasis_basic_opens.exists_subset_of_mem_open hp hU
+  refine ⟨r, hr, ?_⟩
+  ext q
+  rw [Module.rankAtStalk_tensorProduct]
+  apply heq
+  apply hrU
+  simp only [PrimeSpectrum.basicOpen_eq_zeroLocus_compl, Set.mem_compl_iff,
+    PrimeSpectrum.mem_zeroLocus, Ideal.coe_comap, Set.singleton_subset_iff, Set.mem_preimage,
+    SetLike.mem_coe]
+  obtain ⟨-, b⟩ := (IsLocalization.isPrime_iff_isPrime_disjoint (.powers r) _ q.asIdeal).mp q.2
+  rw [Set.disjoint_left] at b
+  simp only [SetLike.mem_coe, Ideal.coe_comap, Set.mem_preimage] at b
+  apply b
+  use 1
+  simp
 
 end rankAtStalk
 
@@ -512,7 +530,7 @@ theorem Algebra.Etale.equalizer {R S T : Type u} [CommRing R] [CommRing S] [Comm
   wlog h : ∃ (n : ℕ), Module.rankAtStalk (R := R) S = n
   · apply Algebra.etale_of_exists_cover'
     intro p hp
-    obtain ⟨r, hr, n, hn⟩ := Algebra.exists_cover_rankAtStalk_eq S p
+    obtain ⟨r, hr, hn⟩ := Algebra.exists_cover_rankAtStalk_eq S p
     use r, hr
     let A := Localization.Away r
     let f' : A ⊗[R] S →ₐ[A] A ⊗[R] T := Algebra.TensorProduct.map (AlgHom.id _ _) f
@@ -521,13 +539,13 @@ theorem Algebra.Etale.equalizer {R S T : Type u} [CommRing R] [CommRing S] [Comm
       AlgHom.tensorEqualizerEquiv A A f g
     have : Algebra.Etale A (AlgHom.equalizer f' g') := by
       apply this
-      use n
+      use Module.rankAtStalk S ⟨p, hp⟩
     exact Algebra.Etale.of_equiv (A := AlgHom.equalizer f' g') cong.symm
   obtain ⟨n, hn⟩ := h
   wlog h : ∃ (m : ℕ), Module.rankAtStalk (R := R) T = m
   · apply Algebra.etale_of_exists_cover'
     intro p hp
-    obtain ⟨r, hr, m, hm⟩ := Algebra.exists_cover_rankAtStalk_eq T p
+    obtain ⟨r, hr, hm⟩ := Algebra.exists_cover_rankAtStalk_eq T p
     use r, hr
     let A := Localization.Away r
     let f' : A ⊗[R] S →ₐ[A] A ⊗[R] T := Algebra.TensorProduct.map (AlgHom.id _ _) f
@@ -539,7 +557,7 @@ theorem Algebra.Etale.equalizer {R S T : Type u} [CommRing R] [CommRing S] [Comm
       · ext p
         rw [Module.rankAtStalk_tensorProduct, hn]
         rfl
-      · use m
+      · use (Module.rankAtStalk T ⟨p, hp⟩)
     exact Algebra.Etale.of_equiv (A := AlgHom.equalizer f' g') cong.symm
   obtain ⟨m, hm⟩ := h
   apply Algebra.Etale.equalizer_of_rankAtStalk_eq hn hm
