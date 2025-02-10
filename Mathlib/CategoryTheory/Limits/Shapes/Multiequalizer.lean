@@ -1,9 +1,8 @@
 /-
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz
+Authors: Adam Topaz, Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.ConeCategory
@@ -29,8 +28,6 @@ Prove that the limit of any diagram is a multiequalizer (and similarly for colim
 
 
 namespace CategoryTheory.Limits
-
-open CategoryTheory
 
 universe w w' v u
 
@@ -81,7 +78,7 @@ def MultispanShape.prod (ι : Type w) : MultispanShape where
   snd := _root_.Prod.snd
 
 /-- Given a linearly ordered type `ι`, this is the shape of multicoequalizer diagrams
-corresponding to situations where we want to coequalizer two families of maps
+corresponding to situations where we want to coequalize two families of maps
 `V ⟨i, j⟩ ⟶ U i` and `V ⟨i, j⟩ ⟶ U j` with `i < j`. -/
 @[simps]
 def MultispanShape.ofLinearOrder (ι : Type w) [LinearOrder ι] : MultispanShape where
@@ -1008,86 +1005,5 @@ def isColimitToLinearOrder (c : Multicofork I) (hc : IsColimit c) (h : I.SymmStr
 end Multicofork
 
 end symmetry
-
-namespace Multicofork.IsColimit
-
-variable {ι : Type*} [LinearOrder ι] {I : MultispanIndex (.ofLinearOrder ι) C}
-  (c : Multicofork I)
-
-namespace isPushout
-
-variable {i j : ι} {hij : i < j} (h : (⊤ : Set ι) = {i, j})
-  (s : PushoutCocone (I.fst ⟨⟨i, j⟩, hij⟩) (I.snd ⟨⟨i, j⟩, hij⟩))
-
-open Classical in
-/-- Given a type `ι` containing only two elements `i < j`,
-`I : MultispanIndex (.ofLinearOrder ι) C`, this is the multicofork
-for `I` attached to a pushout cocone for the morphism
-`I.fst ⟨⟨i, j⟩, _⟩` and `I.snd ⟨⟨i, j⟩, _⟩`. -/
-noncomputable def pushoutCocone : Multicofork I :=
-  Multicofork.ofπ _ s.pt (fun k ↦
-    if hk : k = i then
-      eqToHom (by simp [hk]) ≫ s.inl
-    else
-      eqToHom (by
-        obtain rfl : k = j := by
-          have := h.le (Set.mem_univ k)
-          aesop
-        rfl) ≫ s.inr)
-  (by
-    rintro ⟨⟨k₁, k₂⟩, hk⟩
-    dsimp at hk
-    obtain rfl : i = k₁ := by
-      have hk₁ := h.le (Set.mem_univ k₁)
-      have hk₂ := h.le (Set.mem_univ k₂)
-      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hk₁ hk₂
-      obtain rfl | rfl := hk₁
-      · rfl
-      · obtain rfl | rfl := hk₂
-        · have := hij.trans hk
-          simp at this
-        · simp at hk
-    obtain rfl : j = k₂ := by
-      have := h.le (Set.mem_univ k₂)
-      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at this
-      obtain rfl | rfl := this
-      · simp at hk
-      · rfl
-    dsimp only
-    rw [dif_pos (by rfl), dif_neg (by rintro (rfl : j = i); simp at hk),
-      eqToHom_refl, eqToHom_refl, Category.id_comp, Category.id_comp]
-    apply s.condition)
-
-@[simp]
-lemma pushoutCocone_π_eq_inl : (pushoutCocone h s).π i = s.inl := by
-  dsimp only [pushoutCocone, ofπ, π]
-  rw [dif_pos rfl, eqToHom_refl, Category.id_comp]
-
-@[simp]
-lemma pushoutCocone_π_eq_inr : (pushoutCocone h s).π j = s.inr := by
-  dsimp only [pushoutCocone, ofπ, π]
-  rw [dif_neg (by rintro rfl; simp at hij), eqToHom_refl, Category.id_comp]
-
-end isPushout
-
-/-- A multicoequalizer for `I : MultispanIndex (.ofLinearOrder ι) C` is also
-a pushout when `ι` has exactly two elements. -/
-lemma isPushout (hc : IsColimit c) {i j : ι} (hij : i < j) (h : (⊤ : Set ι) = {i, j}) :
-    IsPushout (I.fst ⟨⟨i, j⟩, hij⟩) (I.snd ⟨⟨i, j⟩, hij⟩) (c.π i) (c.π j) where
-  w := c.condition _
-  isColimit' := ⟨PushoutCocone.IsColimit.mk _
-    (fun s ↦ hc.desc (isPushout.pushoutCocone h s))
-    (fun s ↦ by simpa using hc.fac (isPushout.pushoutCocone h s) (.right i))
-    (fun s ↦ by simpa using hc.fac (isPushout.pushoutCocone h s) (.right j))
-    (fun s m h₁ h₂ ↦ by
-      apply Multicofork.IsColimit.hom_ext hc
-      intro k
-      have := h.le (Set.mem_univ k)
-      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at this
-      obtain rfl | rfl := this
-      · simpa [h₁] using (hc.fac (isPushout.pushoutCocone h s) (.right k)).symm
-      · simpa [h₂] using (hc.fac (isPushout.pushoutCocone h s) (.right k)).symm)⟩
-
-end Multicofork.IsColimit
 
 end CategoryTheory.Limits
