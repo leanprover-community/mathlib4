@@ -30,7 +30,7 @@ universe u
 
 namespace Ordinal
 
-variable {f : Ordinal.{u} → Ordinal.{u}} {o o₁ o₂ a b c d : Ordinal.{u}}
+variable {f : Ordinal.{u} → Ordinal.{u}} {o o₁ o₂ a b : Ordinal.{u}}
 
 /-! ### Veblen function with a given starting function -/
 
@@ -75,9 +75,9 @@ protected alias IsNormal.veblenWith := isNormal_veblenWith
 
 theorem veblenWith_veblenWith_of_lt (h : o₁ < o₂) (a : Ordinal) :
     veblenWith f o₁ (veblenWith f o₂ a) = veblenWith f o₂ a := by
-  let x : {a // a < b} := ⟨a, h⟩
+  let x : Set.Iio _ := ⟨o₁, h⟩
   rw [veblenWith_of_ne_zero f h.bot_lt.ne',
-    derivFamily_fp (f := fun y : Set.Iio b ↦ veblenWith f y.1) (i := x)]
+    derivFamily_fp (f := fun y : Set.Iio o₂ ↦ veblenWith f y.1) (i := x)]
   exact hf.veblenWith x
 
 theorem veblenWith_succ (o : Ordinal) : veblenWith f (Order.succ o) = deriv (veblenWith f o) := by
@@ -113,7 +113,7 @@ theorem veblenWith_inj : veblenWith f o a = veblenWith f o b ↔ a = b :=
   (veblenWith_injective hf o).eq_iff
 
 theorem right_le_veblenWith (o a : Ordinal) : a ≤ veblenWith f o a :=
-  (veblenWith_right_strictMono hf a).le_apply
+  (veblenWith_right_strictMono hf o).le_apply
 
 theorem veblenWith_left_monotone (o : Ordinal) : Monotone (veblenWith f · o) := by
   rw [monotone_iff_forall_lt]
@@ -125,8 +125,8 @@ theorem veblenWith_pos (hp : 0 < f 0) (o a : Ordinal) : 0 < veblenWith f o a := 
   have H (b) : 0 < veblenWith f 0 b := by
     rw [veblenWith_zero]
     exact hp.trans_le (hf.monotone (Ordinal.zero_le _))
-  obtain rfl | h := Ordinal.eq_zero_or_pos a
-  · exact H b
+  obtain rfl | h := Ordinal.eq_zero_or_pos o
+  · exact H a
   · rw [← veblenWith_veblenWith_of_lt hf h]
     exact H _
 
@@ -170,47 +170,46 @@ theorem IsNormal.veblenWith_zero (hp : 0 < f 0) : IsNormal (veblenWith f · 0) :
     rw [Order.lt_succ_iff]
     exact le_max_left _ b
 
-/-- `veblenWith f a b < veblenWith f c d` iff one of the following holds:
-* `a = c` and `b < d`
-* `a < c` and `b < veblenWith f c d`
-* `a > c` and `veblenWith f a b < d` -/
+theorem cmp_veblenWith_eq : cmp (veblenWith f o₁ a) (veblenWith f o₂ b) =
+  match cmp o₁ o₂ with
+    | .eq => cmp a b
+    | .lt => cmp a (veblenWith f o₂ b)
+    | .gt => cmp (veblenWith f o₁ a) b := by
+  obtain h | rfl | h := lt_trichotomy o₁ o₂
+  on_goal 2 => simp [(veblenWith_right_strictMono hf _).cmp_map_eq]
+  all_goals
+    conv_lhs => rw [← veblenWith_veblenWith_of_lt hf h]
+    simp [h.cmp_eq_lt, h.cmp_eq_gt, h.ne, h.ne', (veblenWith_right_strictMono hf _).cmp_map_eq]
+
+/-- `veblenWith f o₁ a < veblenWith f o₂ b` iff one of the following holds:
+* `o₁ = o₂` and `a < b`
+* `o₁ < o₂` and `a < veblenWith f o₂ b`
+* `o₁ > o₂` and `veblenWith f o₁ a < b` -/
 theorem veblenWith_lt_veblenWith_iff :
-    veblenWith f a b < veblenWith f c d ↔
-      a = c ∧ b < d ∨ a < c ∧ b < veblenWith f c d ∨ c < a ∧ veblenWith f a b < d := by
-  obtain h | rfl | h := lt_trichotomy a c
-  · simp_rw [h, h.ne, h.not_lt, false_and, false_or, or_false, true_and]
-    conv_lhs => rw [← veblenWith_veblenWith_of_lt hf h, veblenWith_lt_veblenWith_iff_right hf]
-  · simp [veblenWith_lt_veblenWith_iff_right hf]
-  · simp_rw [h, h.ne', h.not_lt, false_and, false_or, true_and]
-    conv_lhs => rw [← veblenWith_veblenWith_of_lt hf h, veblenWith_lt_veblenWith_iff_right hf]
+    veblenWith f o₁ a < veblenWith f o₂ b ↔
+      o₁ = o₂ ∧ a < b ∨ o₁ < o₂ ∧ a < veblenWith f o₂ b ∨ o₂ < o₁ ∧ veblenWith f o₁ a < b := by
+  rw [← cmp_eq_lt_iff, cmp_veblenWith_eq hf]
+  aesop (add simp lt_asymm)
 
 /-- `veblenWith f a b ≤ veblenWith f c d` iff one of the following holds:
-* `a = c` and `b ≤ d`
-* `a < c` and `b ≤ veblenWith f c d`
-* `a > c` and `veblenWith f a b ≤ d` -/
+* `o₁ = o₂` and `a ≤ b`
+* `o₁ < o₂` and `a ≤ veblenWith f o₂ b`
+* `o₁ > o₂` and `veblenWith f o₁ a ≤ b` -/
 theorem veblenWith_le_veblenWith_iff :
-    veblenWith f a b ≤ veblenWith f c d ↔
-      a = c ∧ b ≤ d ∨ a < c ∧ b ≤ veblenWith f c d ∨ c < a ∧ veblenWith f a b ≤ d := by
-  obtain h | rfl | h := lt_trichotomy a c
-  · simp_rw [h, h.ne, h.not_lt, false_and, false_or, or_false, true_and]
-    conv_lhs => rw [← veblenWith_veblenWith_of_lt hf h, veblenWith_le_veblenWith_iff_right hf]
-  · simp [veblenWith_le_veblenWith_iff_right hf]
-  · simp_rw [h, h.ne', h.not_lt, false_and, false_or, true_and]
-    conv_lhs => rw [← veblenWith_veblenWith_of_lt hf h, veblenWith_le_veblenWith_iff_right hf]
+    veblenWith f o₁ a ≤ veblenWith f o₂ b ↔
+      o₁ = o₂ ∧ a ≤ b ∨ o₁ < o₂ ∧ a ≤ veblenWith f o₂ b ∨ o₂ < o₁ ∧ veblenWith f o₁ a ≤ b := by
+  rw [← not_lt, ← cmp_eq_gt_iff, cmp_veblenWith_eq hf]
+  aesop (add simp [not_lt_of_le, lt_asymm])
 
-/-- `veblenWith f a b = veblenWith f c d` iff one of the following holds:
-* `a = c` and `b = d`
-* `a < c` and `b = veblenWith f c d`
-* `a > c` and `veblenWith f a b = d` -/
+/-- `veblenWith f o₁ a = veblenWith f o₂ b` iff one of the following holds:
+* `o₁ = o₂` and `a = b`
+* `o₁ < o₂` and `a = veblenWith f o₂ b`
+* `o₁ > o₂` and `veblenWith f o₁ a = b` -/
 theorem veblenWith_eq_veblenWith_iff :
-    veblenWith f a b = veblenWith f c d ↔
-      a = c ∧ b = d ∨ a < c ∧ b = veblenWith f c d ∨ c < a ∧ veblenWith f a b = d := by
-  obtain h | rfl | h := lt_trichotomy a c
-  · simp_rw [h, h.ne, h.not_lt, false_and, false_or, or_false, true_and]
-    conv_lhs => rw [← veblenWith_veblenWith_of_lt hf h, veblenWith_inj hf]
-  · simp [veblenWith_inj hf]
-  · simp_rw [h, h.ne', h.not_lt, false_and, false_or, true_and]
-    conv_lhs => rw [← veblenWith_veblenWith_of_lt hf h, veblenWith_inj hf]
+    veblenWith f o₁ a = veblenWith f o₂ b ↔
+      o₁ = o₂ ∧ a = b ∨ o₁ < o₂ ∧ a = veblenWith f o₂ b ∨ o₂ < o₁ ∧ veblenWith f o₁ a = b := by
+  rw [← cmp_eq_eq_iff, cmp_veblenWith_eq hf]
+  aesop (add simp lt_asymm)
 
 end veblenWith
 
@@ -231,7 +230,7 @@ def veblen : Ordinal.{u} → Ordinal.{u} → Ordinal.{u} :=
 theorem veblen_zero : veblen 0 = fun a ↦ ω ^ a := by
   rw [veblen, veblenWith_zero]
 
-theorem veblen_zero_apply (o : Ordinal) : veblen 0 o = ω ^ o := by
+theorem veblen_zero_apply (a : Ordinal) : veblen 0 a = ω ^ a := by
   rw [veblen_zero]
 
 theorem veblen_of_ne_zero (h : o ≠ 0) : veblen o = derivFamily fun x : Set.Iio o ↦ veblen x.1 :=
@@ -240,8 +239,8 @@ theorem veblen_of_ne_zero (h : o ≠ 0) : veblen o = derivFamily fun x : Set.Iio
 theorem isNormal_veblen (o : Ordinal) : IsNormal (veblen o) :=
   (isNormal_opow one_lt_omega0).veblenWith o
 
-theorem veblen_veblen_of_lt (h : a < b) (c : Ordinal) : veblen a (veblen b c) = veblen b c :=
-  veblenWith_veblenWith_of_lt (isNormal_opow one_lt_omega0) h c
+theorem veblen_veblen_of_lt (h : o₁ < o₂) (a : Ordinal) : veblen o₁ (veblen o₂ a) = veblen o₂ a :=
+  veblenWith_veblenWith_of_lt (isNormal_opow one_lt_omega0) h a
 
 theorem veblen_succ (o : Ordinal) : veblen (Order.succ o) = deriv (veblen o) :=
   veblenWith_succ (isNormal_opow one_lt_omega0) o
@@ -295,28 +294,31 @@ theorem left_le_veblen (a b : Ordinal) : a ≤ veblen a b :=
 theorem isNormal_veblen_zero : IsNormal (veblen · 0) :=
   (isNormal_opow one_lt_omega0).veblenWith_zero (by simp)
 
-/-- `veblen a b < veblen c d` iff one of the following holds:
-* `a = c` and `b < d`
-* `a < c` and `b < veblen c d`
-* `a > c` and `veblen a b < d` -/
+/-- `veblen o₁ a < veblen o₂ b` iff one of the following holds:
+* `o₁ = o₂` and `a < b`
+* `o₁ < o₂` and `a < veblen o₂ b`
+* `o₁ > o₂` and `veblen o₁ a < b` -/
 theorem veblen_lt_veblen_iff :
-    veblen a b < veblen c d ↔ a = c ∧ b < d ∨ a < c ∧ b < veblen c d ∨ c < a ∧ veblen a b < d :=
+    veblen o₁ a < veblen o₂ b ↔
+      o₁ = o₂ ∧ a < b ∨ o₁ < o₂ ∧ a < veblen o₂ b ∨ o₂ < o₁ ∧ veblen o₁ a < b :=
   veblenWith_lt_veblenWith_iff (isNormal_opow one_lt_omega0)
 
-/-- `veblen a b ≤ veblen c d` iff one of the following holds:
-* `a = c` and `b ≤ d`
-* `a < c` and `b ≤ veblen c d`
-* `a > c` and `veblen a b ≤ d` -/
+/-- `veblen o₁ a ≤ veblen o₂ b` iff one of the following holds:
+* `o₁ = o₂` and `a ≤ b`
+* `o₁ < o₂` and `a ≤ veblen o₂ b`
+* `o₁ > o₂` and `veblen o₁ a ≤ b` -/
 theorem veblen_le_veblen_iff :
-    veblen a b ≤ veblen c d ↔ a = c ∧ b ≤ d ∨ a < c ∧ b ≤ veblen c d ∨ c < a ∧ veblen a b ≤ d :=
+    veblen o₁ a ≤ veblen o₂ b ↔
+      o₁ = o₂ ∧ a ≤ b ∨ o₁ < o₂ ∧ a ≤ veblen o₂ b ∨ o₂ < o₁ ∧ veblen o₁ a ≤ b :=
   veblenWith_le_veblenWith_iff (isNormal_opow one_lt_omega0)
 
-/-- `veblen a b = veblen c d` iff one of the following holds:
-* `a = c` and `b = d`
-* `a < c` and `b = veblen c d`
-* `a > c` and `veblen a b = d` -/
+/-- `veblen o₁ a ≤ veblen o₂ b` iff one of the following holds:
+* `o₁ = o₂` and `a = b`
+* `o₁ < o₂` and `a = veblen o₂ b`
+* `o₁ > o₂` and `veblen o₁ a = b` -/
 theorem veblen_eq_veblen_iff :
-    veblen a b = veblen c d ↔ a = c ∧ b = d ∨ a < c ∧ b = veblen c d ∨ c < a ∧ veblen a b = d :=
+    veblen o₁ a = veblen o₂ b ↔
+      o₁ = o₂ ∧ a = b ∨ o₁ < o₂ ∧ a = veblen o₂ b ∨ o₂ < o₁ ∧ veblen o₁ a = b :=
  veblenWith_eq_veblenWith_iff (isNormal_opow one_lt_omega0)
 
 end veblen
