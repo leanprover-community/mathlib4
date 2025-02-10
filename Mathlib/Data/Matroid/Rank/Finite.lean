@@ -27,7 +27,7 @@ open Set
 namespace Matroid
 
 /-- a `RkFin` set in `M` is one whose bases are all finite. -/
-def RkFin (M : Matroid α) (X : Set α) := (M ↾ X).RankFinite
+def RkFin (M : Matroid α) (X : Set α) : Prop := (M ↾ X).RankFinite
 
 lemma RkFin.rankFinite (hX : M.RkFin X) : (M ↾ X).RankFinite :=
   hX
