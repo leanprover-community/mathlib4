@@ -162,12 +162,11 @@ instance : HImp (Nucleus X) where
   himp m n :=
   { toFun x := ⨅ y ≥ x, m y ⇨ n y
     idempotent' i := by
-      refine le_iInf₂ ?_
-      intro j hj
+      refine le_iInf₂ (fun j hj ↦ ?_)
       have h : (m (m j ⇨ n j)) ⇨ (n (m j ⇨ n j)) = m j ⇨ n j := by
         rw [map_himp_apply, himp_himp, ← map_inf, inf_of_le_right (le_trans n.le_apply le_himp)]
       rw [← h]
-      exact iInf₂_le (m j ⇨ n j) (biInf_le (fun i ↦ m i ⇨ n i) hj)
+      exact iInf₂_le (m j ⇨ n j) <| biInf_le (fun i ↦ m i ⇨ n i) hj
     map_inf' x y := by
       simp only [and_assoc, le_antisymm_iff, le_inf_iff, le_iInf_iff]
       refine ⟨fun z hxz ↦ iInf₂_le _ <| inf_le_of_left_le hxz,
@@ -184,8 +183,7 @@ instance : HImp (Nucleus X) where
           gcongr; exacts [hlx (x ⊔ k) le_sup_left, hly (y ⊔ k) le_sup_left]
         _ = n k := by rw [← map_inf, ← sup_inf_right, sup_eq_right.2 hxyk]
     le_apply' := by
-      simp only [le_iInf_iff, le_himp_iff]
-      exact fun _ _ h ↦ inf_le_of_left_le <| h.trans n.le_apply }
+      simpa using fun _ _ h ↦ inf_le_of_left_le <| h.trans n.le_apply }
 
 @[simp] theorem himp_apply (m n : Nucleus X) (x : X) : (m ⇨ n) x = ⨅ y ≥ x, m y ⇨ n y := rfl
 
