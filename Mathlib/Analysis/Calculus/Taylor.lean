@@ -212,7 +212,7 @@ theorem hasDerivWithinAt_taylorWithinEval_at_Icc {f : ℝ → E} {a b t : ℝ} (
   hasDerivWithinAt_taylorWithinEval (uniqueDiffOn_Icc hx t ht) (uniqueDiffOn_Icc hx)
     self_mem_nhdsWithin ht rfl.subset hf (hf' t ht)
 
-/-- Calculate the derivative of the Taylor polynomial with respect to `x`. --/
+/-- Calculate the derivative of the Taylor polynomial with respect to `x`. -/
 theorem hasDerivAt_taylorWithinEval_succ {x₀ x : ℝ} {s : Set ℝ}
     (hs : UniqueDiffOn ℝ s) (hx₀ : x₀ ∈ s) (f : ℝ → E) (n : ℕ) :
     HasDerivAt (taylorWithinEval f (n + 1) s x₀)
