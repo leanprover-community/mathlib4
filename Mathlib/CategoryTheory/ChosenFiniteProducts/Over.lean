@@ -127,17 +127,44 @@ lemma rightUnitor_inv_left_snd (Y : Over X) :
     (ρ_ Y).inv.left ≫ pullback.snd _ (𝟙 X) = Y.hom :=
   pullback.lift_snd _ _ _
 
-@[simp]
 lemma whiskerLeft_left {R S T : Over X} (f : S ⟶ T) :
     (R ◁ f).left = pullback.map _ _ _ _ (𝟙 _) f.left (𝟙 _) (by simp) (by simp) := rfl
 
-@[simp]
+@[reassoc (attr := simp)]
+lemma whiskerLeft_left_fst {R S T : Over X} (f : S ⟶ T) :
+    (R ◁ f).left ≫ pullback.fst _ _ = pullback.fst _ _ :=
+  (pullback.lift_fst _ _ _).trans (Category.comp_id _)
+
+@[reassoc (attr := simp)]
+lemma whiskerLeft_left_snd {R S T : Over X} (f : S ⟶ T) :
+    (R ◁ f).left ≫ pullback.snd _ _ = pullback.snd _ _ ≫ f.left :=
+  pullback.lift_snd _ _ _
+
 lemma whiskerRight_left {R S T : Over X} (f : S ⟶ T) :
     (f ▷ R).left = pullback.map _ _ _ _ f.left (𝟙 _) (𝟙 _) (by simp) (by simp) := rfl
 
-@[simp]
+@[reassoc (attr := simp)]
+lemma whiskerRight_left_fst {R S T : Over X} (f : S ⟶ T) :
+    (f ▷ R).left ≫ pullback.fst _ _ = pullback.fst _ _ ≫ f.left :=
+  pullback.lift_fst _ _ _
+
+@[reassoc (attr := simp)]
+lemma whiskerRight_left_snd {R S T : Over X} (f : S ⟶ T) :
+    (f ▷ R).left ≫ pullback.snd _ _ = pullback.snd _ _ :=
+  (pullback.lift_snd _ _ _).trans (Category.comp_id _)
+
 lemma tensorHom_left {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
     (f ⊗ g).left = pullback.map _ _ _ _ f.left g.left (𝟙 _) (by simp) (by simp) := rfl
+
+@[reassoc (attr := simp)]
+lemma tensorHom_left_fst {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
+    (f ⊗ g).left ≫ pullback.fst _ _ = pullback.fst _ _ ≫ f.left :=
+  pullback.lift_fst _ _ _
+
+@[reassoc (attr := simp)]
+lemma tensorHom_left_snd {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
+    (f ⊗ g).left ≫ pullback.snd _ _ = pullback.snd _ _ ≫ g.left :=
+  pullback.lift_snd _ _ _
 
 @[simp]
 lemma braiding_hom_left {R S : Over X} :
