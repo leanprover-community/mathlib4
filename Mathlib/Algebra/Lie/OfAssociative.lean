@@ -221,6 +221,11 @@ lemma toEnd_eq_iff [IsFaithful R L M] {x y : L} :
     toEnd R L M x = toEnd R L M y ↔ x = y :=
   IsFaithful.injective_toEnd.eq_iff
 
+variable {R L} in
+lemma ext_of_isFaithful [IsFaithful R L M] {x y : L} (h : ∀ m : M, ⁅x, m⁆ = ⁅y, m⁆) :
+    x = y :=
+  (toEnd_eq_iff R L M).mp <| LinearMap.ext h
+
 @[simp]
 lemma toEnd_eq_zero_iff [IsFaithful R L M] {x : L} :
     toEnd R L M x = 0 ↔ x = 0 := by
