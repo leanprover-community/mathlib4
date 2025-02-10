@@ -99,6 +99,15 @@ section Instances
 instance SeminormedGroup.toContinuousENorm [SeminormedGroup E] : ContinuousENorm E where
   continuous_enorm := ENNReal.isOpenEmbedding_coe.continuous.comp continuous_nnnorm'
 
+@[to_additive]
+instance NormedGroup.toENormedMonoid {F : Type*} [NormedGroup F] : ENormedMonoid F where
+  enorm_eq_zero := by simp [enorm_eq_nnnorm]
+  enorm_mul_le :=  by simp [enorm_eq_nnnorm, ← coe_add, nnnorm_mul_le']
+
+@[to_additive]
+instance NormedCommGroup.toENormedCommMonoid [NormedCommGroup E] : ENormedCommMonoid E where
+  mul_comm := by simp [mul_comm]
+
 end Instances
 
 set_option linter.docPrime false in
