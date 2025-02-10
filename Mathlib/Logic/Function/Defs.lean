@@ -85,7 +85,7 @@ def Bijective (f : α → β) :=
 theorem Bijective.comp {g : β → φ} {f : α → β} : Bijective g → Bijective f → Bijective (g ∘ f)
   | ⟨h_ginj, h_gsurj⟩, ⟨h_finj, h_fsurj⟩ => ⟨h_ginj.comp h_finj, h_gsurj.comp h_fsurj⟩
 
-/-- `LeftInverse g f` means that g is a left inverse to f. That is, `g ∘ f = id`. -/
+/-- `LeftInverse g f` means that `g` is a left inverse to `f`. That is, `g ∘ f = id`. -/
 def LeftInverse (g : β → α) (f : α → β) : Prop :=
   ∀ x, g (f x) = x
 
@@ -93,7 +93,7 @@ def LeftInverse (g : β → α) (f : α → β) : Prop :=
 def HasLeftInverse (f : α → β) : Prop :=
   ∃ finv : β → α, LeftInverse finv f
 
-/-- `RightInverse g f` means that g is a right inverse to f. That is, `f ∘ g = id`. -/
+/-- `RightInverse g f` means that `g` is a right inverse to `f`. That is, `f ∘ g = id`. -/
 def RightInverse (g : β → α) (f : α → β) : Prop :=
   LeftInverse f g
 
