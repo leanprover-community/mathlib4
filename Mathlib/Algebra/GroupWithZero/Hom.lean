@@ -3,7 +3,8 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.NeZero
 
@@ -39,13 +40,6 @@ open Function
 namespace NeZero
 variable {F α β : Type*} [Zero α] [Zero β] [FunLike F α β] [ZeroHomClass F α β] {a : α}
 
-#adaptation_note
-/--
-We name `neZero` so it can be used as a named argument,
-but since https://github.com/leanprover/lean4/pull/5338, this is considered unused,
-so we need to disable the linter.
--/
-set_option linter.unusedVariables false in
 lemma of_map (f : F) [neZero : NeZero (f a)] : NeZero a :=
   ⟨fun h ↦ ne (f a) <| by rw [h]; exact ZeroHomClass.map_zero f⟩
 

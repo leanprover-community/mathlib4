@@ -39,7 +39,8 @@ open Function
 
 variable {F α β γ δ : Type*}
 
-/-- `OrderRingHom α β` is the type of monotone semiring homomorphisms from `α` to `β`.
+/-- `OrderRingHom α β`, denoted `α →+*o β`,
+is the type of monotone semiring homomorphisms from `α` to `β`.
 
 When possible, instead of parametrizing results over `(f : OrderRingHom α β)`,
 you should parametrize over `(F : Type*) [OrderRingHomClass F α β] (f : F)`.
@@ -63,7 +64,8 @@ to
 otherwise the [refl] attribute on `OrderRingIso.refl` complains.
 TODO: change back when `refl` attribute is fixed, github issue https://github.com/leanprover-community/mathlib4/issues/2505 -/
 
-/-- `OrderRingHom α β` is the type of order-preserving semiring isomorphisms between `α` and `β`.
+/-- `OrderRingIso α β`, denoted as `α ≃+*o β`,
+is the type of order-preserving semiring isomorphisms between `α` and `β`.
 
 When possible, instead of parametrizing results over `(f : OrderRingIso α β)`,
 you should parametrize over `(F : Type*) [OrderRingIsoClass F α β] (f : F)`.
@@ -389,6 +391,9 @@ def Simps.symm_apply (e : α ≃+*o β) : β → α :=
 @[simp]
 theorem symm_symm (e : α ≃+*o β) : e.symm.symm = e := rfl
 
+theorem symm_bijective : Bijective (OrderRingIso.symm : (α ≃+*o β) → β ≃+*o α) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 /-- Composition of `OrderRingIso`s as an `OrderRingIso`. -/
 @[trans]
 protected def trans (f : α ≃+*o β) (g : β ≃+*o γ) : α ≃+*o γ :=
@@ -418,9 +423,6 @@ theorem self_trans_symm (e : α ≃+*o β) : e.trans e.symm = OrderRingIso.refl 
 @[simp]
 theorem symm_trans_self (e : α ≃+*o β) : e.symm.trans e = OrderRingIso.refl β :=
   ext e.right_inv
-
-theorem symm_bijective : Bijective (OrderRingIso.symm : (α ≃+*o β) → β ≃+*o α) :=
-  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 end LE
 

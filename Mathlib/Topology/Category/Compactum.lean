@@ -101,15 +101,17 @@ def free : Type* ⥤ Compactum :=
 def adj : free ⊣ forget :=
   Monad.adj _
 
--- Basic instances
-instance : ConcreteCategory Compactum where forget := forget
-
--- Porting note: changed from forget to X.A
 instance : CoeSort Compactum Type* :=
   ⟨fun X => X.A⟩
 
-instance {X Y : Compactum} : CoeFun (X ⟶ Y) fun _ => X → Y :=
-  ⟨fun f => f.f⟩
+instance {X Y : Compactum} : FunLike (X ⟶ Y) X Y where
+  coe f := f.f
+  coe_injective' _ _ h := (Monad.forget_faithful β).map_injective h
+
+-- Basic instances
+instance : ConcreteCategory Compactum (· ⟶ ·) where
+  hom f := f
+  ofHom f := f
 
 instance : HasLimits Compactum :=
   hasLimits_of_hasLimits_createsLimits forget
@@ -407,8 +409,8 @@ end Compactum
 
 /-- The functor functor from Compactum to CompHaus. -/
 def compactumToCompHaus : Compactum ⥤ CompHaus where
-  obj X := { toTop := { α := X }, prop := trivial }
-  map := fun f =>
+  obj X := { toTop := TopCat.of X, prop := trivial }
+  map := fun f => CompHausLike.ofHom _
     { toFun := f
       continuous_toFun := Compactum.continuous_of_hom _ }
 
@@ -416,7 +418,7 @@ namespace compactumToCompHaus
 
 /-- The functor `compactumToCompHaus` is full. -/
 instance full : compactumToCompHaus.{u}.Full where
-  map_surjective f := ⟨Compactum.homOfContinuous f.1 f.2, rfl⟩
+  map_surjective f := ⟨Compactum.homOfContinuous f.1 f.hom.2, rfl⟩
 
 /-- The functor `compactumToCompHaus` is faithful. -/
 instance faithful : compactumToCompHaus.Faithful where
@@ -425,18 +427,18 @@ instance faithful : compactumToCompHaus.Faithful where
     intro _ _ _ _ h
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` gets confused by coercion using forget.
     apply Monad.Algebra.Hom.ext
-    apply congrArg (fun f => f.toFun) h
+    apply congrArg (fun f => f.hom.toFun) h
 
 /-- This definition is used to prove essential surjectivity of `compactumToCompHaus`. -/
 def isoOfTopologicalSpace {D : CompHaus} :
     compactumToCompHaus.obj (Compactum.ofTopologicalSpace D) ≅ D where
-  hom :=
+  hom := CompHausLike.ofHom _
     { toFun := id
       continuous_toFun :=
         continuous_def.2 fun _ h => by
           rw [isOpen_iff_ultrafilter'] at h
           exact h }
-  inv :=
+  inv := CompHausLike.ofHom _
     { toFun := id
       continuous_toFun :=
         continuous_def.2 fun _ h1 => by

@@ -270,7 +270,7 @@ open scoped Multiplicative
 theorem algebraMap' (k : K) : (_root_.algebraMap K (K_hat R K) k).IsFiniteAdele := by
   rw [IsFiniteAdele, Filter.eventually_cofinite]
   simp_rw [mem_adicCompletionIntegers, ProdAdicCompletions.algebraMap_apply',
-    Valued.valuedCompletion_apply, not_le]
+    adicCompletion, Valued.valuedCompletion_apply, not_le]
   change {v : HeightOneSpectrum R | 1 < v.valuation k}.Finite
   -- The goal currently: if k ∈ K = field of fractions of a Dedekind domain R,
   -- then v(k)>1 for only finitely many v.
@@ -343,19 +343,23 @@ instance : Coe (FiniteAdeleRing R K) (K_hat R K) where
 theorem coe_one : (1 : FiniteAdeleRing R K) = (1 : K_hat R K) := rfl
 
 @[simp, norm_cast]
-theorem coe_zero: (0 : FiniteAdeleRing R K) = (0 : K_hat R K) := rfl
+theorem coe_zero : (0 : FiniteAdeleRing R K) = (0 : K_hat R K) := rfl
 
 @[simp, norm_cast]
-theorem coe_add (x y : FiniteAdeleRing R K) : (x + y : FiniteAdeleRing R K) =
-  (x : K_hat R K) + (y : K_hat R K) := rfl
+theorem coe_add (x y : FiniteAdeleRing R K) :
+    (x + y : FiniteAdeleRing R K) = (x : K_hat R K) + (y : K_hat R K) :=
+  rfl
 
 @[simp, norm_cast]
-theorem coe_mul (x y : FiniteAdeleRing R K) : (x * y : FiniteAdeleRing R K) =
-  (x : K_hat R K) * (y : K_hat R K) := rfl
+theorem coe_mul (x y : FiniteAdeleRing R K) :
+    (x * y : FiniteAdeleRing R K) = (x : K_hat R K) * (y : K_hat R K) :=
+  rfl
 
 @[simp, norm_cast]
-theorem coe_algebraMap (x : K) : (((algebraMap K (FiniteAdeleRing R K)) x) : K_hat R K) =
-      (algebraMap K (ProdAdicCompletions R K)) x := rfl
+theorem coe_algebraMap (x : K) :
+    (((algebraMap K (FiniteAdeleRing R K)) x) : K_hat R K) =
+      (algebraMap K (ProdAdicCompletions R K)) x :=
+  rfl
 
 @[ext]
 lemma ext {a₁ a₂ : FiniteAdeleRing R K} (h : (a₁ : K_hat R K) = a₂) : a₁ = a₂ :=

@@ -3,8 +3,9 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.Order.DenselyOrdered
 import Mathlib.Topology.MetricSpace.Pseudo.Constructions
+import Mathlib.Topology.Order.DenselyOrdered
+import Mathlib.Topology.UniformSpace.Compact
 
 /-!
 # Extra lemmas about pseudo-metric spaces
@@ -91,7 +92,7 @@ lemma exists_isCompact_closedBall [WeaklyLocallyCompactSpace α] (x : α) :
 
 theorem biInter_gt_closedBall (x : α) (r : ℝ) : ⋂ r' > r, closedBall x r' = closedBall x r := by
   ext
-  simp [forall_gt_ge_iff]
+  simp [forall_gt_imp_ge_iff_le_of_dense]
 
 theorem biInter_gt_ball (x : α) (r : ℝ) : ⋂ r' > r, ball x r' = closedBall x r := by
   ext
@@ -100,7 +101,7 @@ theorem biInter_gt_ball (x : α) (r : ℝ) : ⋂ r' > r, ball x r' = closedBall 
 theorem biUnion_lt_ball (x : α) (r : ℝ) : ⋃ r' < r, ball x r' = ball x r := by
   ext
   rw [← not_iff_not]
-  simp [forall_lt_le_iff]
+  simp [forall_lt_imp_le_iff_le_of_dense]
 
 theorem biUnion_lt_closedBall (x : α) (r : ℝ) : ⋃ r' < r, closedBall x r' = ball x r := by
   ext
@@ -108,3 +109,12 @@ theorem biUnion_lt_closedBall (x : α) (r : ℝ) : ⋃ r' < r, closedBall x r' =
   simp [forall_lt_iff_le]
 
 end Metric
+
+theorem lebesgue_number_lemma_of_metric {s : Set α} {ι : Sort*} {c : ι → Set α} (hs : IsCompact s)
+    (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i, c i) : ∃ δ > 0, ∀ x ∈ s, ∃ i, ball x δ ⊆ c i := by
+  simpa only [ball, UniformSpace.ball, preimage_setOf_eq, dist_comm]
+    using uniformity_basis_dist.lebesgue_number_lemma hs hc₁ hc₂
+
+theorem lebesgue_number_lemma_of_metric_sUnion {s : Set α} {c : Set (Set α)} (hs : IsCompact s)
+    (hc₁ : ∀ t ∈ c, IsOpen t) (hc₂ : s ⊆ ⋃₀ c) : ∃ δ > 0, ∀ x ∈ s, ∃ t ∈ c, ball x δ ⊆ t := by
+  rw [sUnion_eq_iUnion] at hc₂; simpa using lebesgue_number_lemma_of_metric hs (by simpa) hc₂
