@@ -55,7 +55,7 @@ def HashMemo.filterByFilePaths (hashMemo : HashMemo) (filePaths : List FilePath)
 abbrev HashM := StateT HashMemo CacheM
 
 /--
-Read the imports from the raw file `content`.
+Read the imports from the raw file `source`.
 -/
 def getFileImports (source : String) (pkgDirs : PackageDirs) : Array FilePath :=
   let s := Lean.ParseImports.main source (Lean.ParseImports.whitespace source {})
