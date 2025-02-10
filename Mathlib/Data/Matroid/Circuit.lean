@@ -33,6 +33,8 @@ In matroids arising from graphs, circuits correspond to graphical cycles.
   or equivalently that `M.E \ C` is a hyperplane of `M`.
 * `Matroid.fundCocircuit M B e` is the unique cocircuit that intersects the base `B` precisely
   in the element `e`.
+* `Base.mem_fundCocircuit_iff_mem_fundCircuit` : `e` is in the fundamental circuit for `B` and `f`
+  iff `f` is in the fundamental cocircuit for `B` and `e`.
 
 # Implementation Details
 
