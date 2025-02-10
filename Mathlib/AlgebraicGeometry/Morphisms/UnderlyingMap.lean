@@ -111,8 +111,7 @@ instance : (topologically IsOpenMap).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isOpenMap) (fun _ _ hf hg ↦ hg.comp hf)
 
 instance isOpenMap_isLocalAtTarget : IsLocalAtTarget (topologically IsOpenMap) :=
-  topologically_isLocalAtTarget' _ fun _ _ _ hU _ ↦
-    (IsOpenCover.mk hU).isOpenMap_iff_restrictPreimage
+  topologically_isLocalAtTarget' _ fun _ _ _ hU _ ↦ hU.isOpenMap_iff_restrictPreimage
 
 end IsOpenMap
 
@@ -122,8 +121,7 @@ instance : (topologically IsClosedMap).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isClosedMap) (fun _ _ hf hg ↦ hg.comp hf)
 
 instance isClosedMap_isLocalAtTarget : IsLocalAtTarget (topologically IsClosedMap) :=
-  topologically_isLocalAtTarget' _ fun _ _ _ hU _ ↦
-    (IsOpenCover.mk hU).isClosedMap_iff_restrictPreimage
+  topologically_isLocalAtTarget' _ fun _ _ _ hU _ ↦ hU.isClosedMap_iff_restrictPreimage
 
 end IsClosedMap
 
@@ -133,8 +131,7 @@ instance : (topologically IsEmbedding).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isEmbedding) (fun _ _ hf hg ↦ hg.comp hf)
 
 instance isEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically IsEmbedding) :=
-  topologically_isLocalAtTarget' _ fun _ _ _ hU ↦
-    (IsOpenCover.mk hU).isEmbedding_iff_restrictPreimage
+  topologically_isLocalAtTarget' _ fun _ _ _ hU ↦ hU.isEmbedding_iff_restrictPreimage
 
 end IsEmbedding
 
@@ -144,8 +141,7 @@ instance : (topologically IsOpenEmbedding).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isOpenEmbedding) (fun _ _ hf hg ↦ hg.comp hf)
 
 instance isOpenEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically IsOpenEmbedding) :=
-  topologically_isLocalAtTarget' _ fun _ _ _ hU ↦
-    (IsOpenCover.mk hU).isOpenEmbedding_iff_restrictPreimage
+  topologically_isLocalAtTarget' _ fun _ _ _ hU ↦ hU.isOpenEmbedding_iff_restrictPreimage
 
 end IsOpenEmbedding
 
@@ -155,8 +151,7 @@ instance : (topologically IsClosedEmbedding).RespectsIso :=
   topologically_respectsIso _ (fun e ↦ e.isClosedEmbedding) (fun _ _ hf hg ↦ hg.comp hf)
 
 instance isClosedEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically IsClosedEmbedding) :=
-  topologically_isLocalAtTarget' _ fun _ _ _ hU ↦
-    (IsOpenCover.mk hU).isClosedEmbedding_iff_restrictPreimage
+  topologically_isLocalAtTarget' _ fun _ _ _ hU ↦ hU.isClosedEmbedding_iff_restrictPreimage
 
 end IsClosedEmbedding
 
@@ -198,7 +193,7 @@ instance IsDominant.isLocalAtTarget : IsLocalAtTarget @IsDominant :=
   have : MorphismProperty.RespectsIso (topologically DenseRange) :=
     dominant_eq_topologically ▸ IsDominant.respectsIso
   dominant_eq_topologically ▸ topologically_isLocalAtTarget' DenseRange
-    fun _ _ _ hU _ ↦ (IsOpenCover.mk hU).denseRange_iff_restrictPreimage
+    fun _ _ _ hU _ ↦ hU.denseRange_iff_restrictPreimage
 
 lemma surjective_of_isDominant_of_isClosed_range (f : X ⟶ Y) [IsDominant f]
     (hf : IsClosed (Set.range f.base)) :
