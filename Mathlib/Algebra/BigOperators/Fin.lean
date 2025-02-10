@@ -23,6 +23,8 @@ constant function. These results have variants for sums instead of products.
 * `finFunctionFinEquiv`: An explicit equivalence between `Fin n → Fin m` and `Fin (m ^ n)`.
 -/
 
+assert_not_exists Field
+
 open Finset
 
 variable {α : Type*} {β : Type*}

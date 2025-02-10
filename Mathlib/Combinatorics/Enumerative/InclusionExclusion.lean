@@ -40,6 +40,8 @@ Per the above explanation, this file contains the following variants of inclusio
 * Prove that truncating the series alternatively gives an upper/lower bound to the true value.
 -/
 
+assert_not_exists Field
+
 namespace Finset
 variable {ι α G : Type*} [DecidableEq α] [AddCommGroup G] {s : Finset ι}
 

@@ -28,6 +28,7 @@ and `t`.
 * `card_mul_eq_card_mul`: Equality combination of the previous.
 -/
 
+assert_not_exists Field
 
 open Finset Function Relator
 

@@ -46,7 +46,7 @@ Under various conditions, multiplication of infinite matrices makes sense.
 These have not yet been implemented.
 -/
 
-assert_not_exists Algebra Star
+assert_not_exists Algebra Field Star
 
 universe u u' v w
 
