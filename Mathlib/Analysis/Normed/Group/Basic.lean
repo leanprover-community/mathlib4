@@ -105,7 +105,7 @@ class ENormedAddMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm 
 @[to_additive]
 class ENormedMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, Monoid E where
   enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 1
-  enorm_mul_le : ∀ x y : E, ‖x * y‖ₑ ≤ ‖x‖ₑ * ‖y‖ₑ
+  enorm_mul_le : ∀ x y : E, ‖x * y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
 
 /-- An enormed commutative monoid is an additive commutative monoid
 endowed with a continuous enorm.
