@@ -19,7 +19,7 @@ open CategoryTheory
 
 namespace TopCat
 
--- Note: no `@[simps!]` attribute here in order to get good simplifications lemmas
+-- Note: no `@[simps!]` attribute here in order to get good simplification lemmas
 -- like `uliftFunctorObjHomeo_naturality_apply` below. We should access
 -- `uliftFunctor.obj X` via the homeomorphism `X.uliftFunctorObjHomeo`.
 /-- The functor which sends a topological space in `Type u` to a homeomorphic
