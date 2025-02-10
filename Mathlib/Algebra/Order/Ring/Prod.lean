@@ -25,10 +25,8 @@ instance [OrderedSemiring α] [OrderedSemiring β] : OrderedSemiring (α × β) 
 instance [OrderedCommSemiring α] [OrderedCommSemiring β] : OrderedCommSemiring (α × β) :=
   { inferInstanceAs (OrderedSemiring (α × β)), inferInstanceAs (CommSemiring (α × β)) with }
 
--- Porting note: compile fails with `inferInstanceAs (OrderedSemiring (α × β))`
 instance [OrderedRing α] [OrderedRing β] : OrderedRing (α × β) :=
-  { inferInstanceAs (Ring (α × β)), inferInstanceAs (OrderedAddCommGroup (α × β)) with
-    zero_le_one := ⟨zero_le_one, zero_le_one⟩
+  { inferInstanceAs (Ring (α × β)), inferInstanceAs (OrderedSemiring (α × β)) with
     mul_nonneg := fun _ _ ha hb => ⟨mul_nonneg ha.1 hb.1, mul_nonneg ha.2 hb.2⟩ }
 
 instance [OrderedCommRing α] [OrderedCommRing β] : OrderedCommRing (α × β) :=
