@@ -520,6 +520,40 @@ alias integral_log_of_pos := integral_log
 @[deprecated (since := "2025-01-12")]
 alias integral_log_of_neg := integral_log
 
+lemma Real.lt_log_add_one_of_pos {x : ℝ} (hx : 0 < x) : 2 * x / (x + 2) < log (x + 1) :=
+  have : ∀ {t}, 0 < t → (4 : ℝ) / (t + 2) ^ 2 < 1 / (t + 1) := fun ht => by
+    apply lt_of_sub_pos
+    rw [div_sub_div _ _ (by positivity) (by positivity)]
+    conv_rhs => enter [1]; ring_nf
+    positivity
+  have : ∫ (t : ℝ) in (0)..x, 4 / (t + 2) ^ 2 < ∫ (t : ℝ) in (0)..x, 1 / (t + 1) :=
+    intervalIntegral.integral_lt_integral_of_continuousOn_of_le_of_exists_lt hx
+      (continuousOn_const.div₀ ((continuousOn_id.add continuousOn_const).pow 2)
+        fun _ ⟨_, _⟩ => (by positivity))
+      (continuousOn_const.div₀ (continuousOn_id.add continuousOn_const)
+        fun _ ht => by rcases ht; positivity)
+      (fun _ ht => le_of_lt (this ht.1)) ⟨x, by simp_all [le_of_lt hx], this hx⟩
+  calc 2 * x / (x + 2) = ∫ t in (0).. x, 4 / (t + 2) ^ (2 : ℕ) := by {
+      rw [intervalIntegral.integral_comp_add_right (fun t => 4 / t ^ (2 : ℕ))]
+      simp only [← mul_one_div (4 : ℝ), one_div]
+      rw [intervalIntegral.integral_const_mul,
+        intervalIntegral.integral_congr_ae (g := (· ^ (- (2 : ℝ)))) <|
+        MeasureTheory.ae_of_all _ fun t ⟨ht, ht'⟩ => by
+          simp only [zero_add, inf_lt_iff, le_sup_iff, rpow_two] at ht ht' ⊢
+          rw [← rpow_two, rpow_neg]
+          rcases ht with ht|ht <;> rcases ht' with ht'|ht' <;> linarith,
+        integral_rpow
+          (.inr ⟨by norm_num, Set.not_mem_Icc_of_lt (lt_min (by norm_num) (by positivity))⟩)]
+      norm_num
+      rw [div_neg, div_one, neg_sub, rpow_neg_one, mul_sub, div_eq_of_eq_mul (by positivity)]
+      rw [sub_mul, inv_mul_cancel_right₀ (by positivity)]
+      ring_nf }
+    _ < ∫ t in (0)..x, 1 / (t + 1) := this
+    _ = log (x + 1) := by
+      rw [intervalIntegral.integral_comp_add_right,
+        integral_one_div (Set.not_mem_Icc_of_lt (lt_min (by norm_num) (by positivity)))]
+      simp
+
 @[simp]
 theorem integral_sin : ∫ x in a..b, sin x = cos a - cos b := by
   rw [integral_deriv_eq_sub' fun x => -cos x]
