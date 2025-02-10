@@ -66,9 +66,10 @@ def skyscraperPresheaf : Presheaf C X where
 theorem skyscraperPresheaf_eq_pushforward
     [hd : ∀ U : Opens (TopCat.of PUnit.{u + 1}), Decidable (PUnit.unit ∈ U)] :
     skyscraperPresheaf p₀ A =
-      ContinuousMap.const (TopCat.of PUnit) p₀ _*
+      (ofHom (ContinuousMap.const (TopCat.of PUnit) p₀)) _*
         skyscraperPresheaf (X := TopCat.of PUnit) PUnit.unit A := by
-  convert_to @skyscraperPresheaf X p₀ (fun U => hd <| (Opens.map <| ContinuousMap.const _ p₀).obj U)
+  convert_to @skyscraperPresheaf X p₀ (fun U => hd <| (Opens.map <| ofHom <|
+      ContinuousMap.const _ p₀).obj U)
     C _ _ A = _ <;> congr
 
 /-- Taking skyscraper presheaf at a point is functorial: `c ↦ skyscraper p₀ c` defines a functor by

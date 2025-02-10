@@ -95,6 +95,10 @@ theorem zero_eq_top {n : ℕ} [NeZero n] : (0 : Fin n) = ⊤ ↔ n = 1 := by
 theorem top_eq_zero {n : ℕ} [NeZero n] : (⊤ : Fin n) = 0 ↔ n = 1 :=
   eq_comm.trans zero_eq_top
 
+@[simp]
+theorem cast_top {m n : ℕ} [NeZero m] [NeZero n] (h : m = n) : (⊤ : Fin m).cast h = ⊤ := by
+  simp [← val_inj, h]
+
 section ToFin
 variable {α : Type*} [Preorder α] {f : α → Fin (n + 1)}
 
@@ -132,6 +136,16 @@ lemma strictAnti_iff_succ_lt : StrictAnti f ↔ ∀ i : Fin n, f i.succ < f (cas
 /-- A function `f` on `Fin (n + 1)` is antitone if and only if `f (i + 1) ≤ f i` for all `i`. -/
 lemma antitone_iff_succ_le : Antitone f ↔ ∀ i : Fin n, f i.succ ≤ f (castSucc i) :=
   antitone_iff_forall_lt.trans <| liftFun_iff_succ (· ≥ ·)
+
+lemma orderHom_injective_iff {α : Type*} [PartialOrder α] {n : ℕ} (f : Fin (n + 1) →o α) :
+    Function.Injective f ↔ ∀ (i : Fin n), f i.castSucc ≠ f i.succ := by
+  constructor
+  · intro hf i hi
+    have := hf hi
+    simp [Fin.ext_iff] at this
+  · intro hf
+    refine (strictMono_iff_lt_succ (f := f).2 fun i ↦ ?_).injective
+    exact lt_of_le_of_ne (f.monotone (Fin.castSucc_le_succ i)) (hf i)
 
 end FromFin
 
@@ -201,24 +215,16 @@ def castOrderIso (eq : n = m) : Fin n ≃o Fin m where
   toEquiv := ⟨Fin.cast eq, Fin.cast eq.symm, leftInverse_cast eq, rightInverse_cast eq⟩
   map_rel_iff' := cast_le_cast eq
 
-@[deprecated (since := "2024-05-23")] alias castIso := castOrderIso
-
 @[simp]
 lemma symm_castOrderIso (h : n = m) : (castOrderIso h).symm = castOrderIso h.symm := by subst h; rfl
 
-@[deprecated (since := "2024-05-23")] alias symm_castIso := symm_castOrderIso
-
 @[simp]
 lemma castOrderIso_refl (h : n = n := rfl) : castOrderIso h = OrderIso.refl (Fin n) := by ext; simp
-
-@[deprecated (since := "2024-05-23")] alias castIso_refl := castOrderIso_refl
 
 /-- While in many cases `Fin.castOrderIso` is better than `Equiv.cast`/`cast`, sometimes we want to
 apply a generic lemma about `cast`. -/
 lemma castOrderIso_toEquiv (h : n = m) : (castOrderIso h).toEquiv = Equiv.cast (h ▸ rfl) := by
   subst h; rfl
-
-@[deprecated (since := "2024-05-23")] alias castIso_to_equiv := castOrderIso_toEquiv
 
 /-- `Fin.rev n` as an order-reversing isomorphism. -/
 @[simps! apply toEquiv]

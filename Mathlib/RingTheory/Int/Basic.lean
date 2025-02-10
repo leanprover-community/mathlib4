@@ -127,20 +127,12 @@ theorem eq_pow_of_mul_eq_pow_odd_left {a b c : ℤ} (hab : IsCoprime a b) {k : �
   rw [associated_iff_natAbs, natAbs_eq_natAbs_iff, ← hk.neg_pow] at hd
   obtain rfl | rfl := hd <;> exact ⟨_, rfl⟩
 
-@[deprecated (since := "2024-07-12")]
-alias eq_pow_of_mul_eq_pow_bit1_left := eq_pow_of_mul_eq_pow_odd_left
-
 theorem eq_pow_of_mul_eq_pow_odd_right {a b c : ℤ} (hab : IsCoprime a b) {k : ℕ} (hk : Odd k)
     (h : a * b = c ^ k) : ∃ d, b = d ^ k :=
   eq_pow_of_mul_eq_pow_odd_left (c := c) hab.symm hk (by rwa [mul_comm] at h)
 
-@[deprecated (since := "2024-07-12")]
-alias eq_pow_of_mul_eq_pow_bit1_right := eq_pow_of_mul_eq_pow_odd_right
-
 theorem eq_pow_of_mul_eq_pow_odd {a b c : ℤ} (hab : IsCoprime a b) {k : ℕ} (hk : Odd k)
     (h : a * b = c ^ k) : (∃ d, a = d ^ k) ∧ ∃ e, b = e ^ k :=
   ⟨eq_pow_of_mul_eq_pow_odd_left hab hk h, eq_pow_of_mul_eq_pow_odd_right hab hk h⟩
-
-@[deprecated (since := "2024-07-12")] alias eq_pow_of_mul_eq_pow_bit1 := eq_pow_of_mul_eq_pow_odd
 
 end Int

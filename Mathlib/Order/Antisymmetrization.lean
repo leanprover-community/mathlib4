@@ -96,7 +96,7 @@ variable (α) (r : α → α → Prop) [IsPreorder α r]
 /-- The antisymmetrization relation as an equivalence relation. -/
 @[simps]
 def AntisymmRel.setoid : Setoid α :=
-  ⟨AntisymmRel r, AntisymmRel.refl r, AntisymmRel.symm, AntisymmRel.trans⟩
+  ⟨AntisymmRel r, .refl r, .symm, .trans⟩
 
 /-- The partial order derived from a preorder by making pairwise comparable elements equal. This is
 the quotient by `fun a b => a ≤ b ∧ b ≤ a`. -/
@@ -181,7 +181,7 @@ theorem AntisymmRel.le_congr (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : Antisy
   mpr h := (h₁.trans_le h).trans_antisymmRel h₂.symm
 
 theorem AntisymmRel.le_congr_left (h : AntisymmRel (· ≤ ·) a b) : a ≤ c ↔ b ≤ c :=
-  h.le_congr AntisymmRel.rfl
+  h.le_congr .rfl
 
 theorem AntisymmRel.le_congr_right (h : AntisymmRel (· ≤ ·) b c) : a ≤ b ↔ a ≤ c :=
   AntisymmRel.rfl.le_congr h
@@ -192,7 +192,7 @@ theorem AntisymmRel.lt_congr (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : Antisy
   mpr h := (h₁.trans_lt h).trans_antisymmRel h₂.symm
 
 theorem AntisymmRel.lt_congr_left (h : AntisymmRel (· ≤ ·) a b) : a < c ↔ b < c :=
-  h.lt_congr AntisymmRel.rfl
+  h.lt_congr .rfl
 
 theorem AntisymmRel.lt_congr_right (h : AntisymmRel (· ≤ ·) b c) : a < b ↔ a < c :=
   AntisymmRel.rfl.lt_congr h

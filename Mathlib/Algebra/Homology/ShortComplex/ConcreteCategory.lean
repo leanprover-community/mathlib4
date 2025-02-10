@@ -32,7 +32,7 @@ lemma ShortComplex.zero_apply
     [Limits.HasZeroMorphisms C] [(forget₂ C Ab).PreservesZeroMorphisms]
     (S : ShortComplex C) (x : (forget₂ C Ab).obj S.X₁) :
     ((forget₂ C Ab).map S.g) (((forget₂ C Ab).map S.f) x) = 0 := by
-  rw [← CategoryTheory.comp_apply, ← Functor.map_comp, S.zero, Functor.map_zero]
+  rw [← ConcreteCategory.comp_apply, ← Functor.map_comp, S.zero, Functor.map_zero]
   rfl
 
 section preadditive
@@ -112,8 +112,8 @@ lemma i_cyclesMk [S.HasHomology] (x₂ : (forget₂ C Ab).obj S.X₂)
     (hx₂ : ((forget₂ C Ab).map S.g) x₂ = 0) :
     (forget₂ C Ab).map S.iCycles (S.cyclesMk x₂ hx₂) = x₂ := by
   dsimp [cyclesMk]
-  erw [← CategoryTheory.comp_apply, S.mapCyclesIso_hom_iCycles (forget₂ C Ab),
-    ← CategoryTheory.comp_apply, abCyclesIso_inv_apply_iCycles ]
+  erw [← ConcreteCategory.comp_apply, S.mapCyclesIso_hom_iCycles (forget₂ C Ab),
+    ← ConcreteCategory.comp_apply, abCyclesIso_inv_apply_iCycles]
 
 end ShortComplex
 
