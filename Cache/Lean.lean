@@ -28,22 +28,22 @@ def Nat.toHexDigits (n : Nat) : Nat → (res : String := "") → String
 def UInt64.asLTar (n : UInt64) : String :=
   s!"{Nat.toHexDigits n.toNat 8}.ltar"
 
-namespace Lean
-
 -- copied from Mathlib
 /-- Create a `Name` from a list of components. -/
-def Name.fromComponents : List Name → Name := go .anonymous where
+def Lean.Name.fromComponents : List Name → Name := go .anonymous where
   go : Name → List Name → Name
   | n, []        => n
   | n, s :: rest => go (s.updatePrefix n) rest
 
-end Lean
-
 namespace System.FilePath
 
-/-- Cleanup path with respect to components "", ".", and ".." -/
+/--
+Normalize path and cleanup path with respect to components "", ".", and "..".
+
+Note: `System.FilePath.normalize` would be expected to do most of this, but it doesn't yet.
+-/
 def clean (path : FilePath) : FilePath :=
-  mkFilePath <| go path.components
+  mkFilePath <| go path.normalize.components
 where
   go : List String → List String
   | [] => []
@@ -55,23 +55,16 @@ where
 
 /--
 Test if the `target` path lies inside `parent`.
-
 This is purely done by comparing the paths' components.
 It does not have access to `IO` so it does not check if any paths actually exist.
-
 The paths can contain arbitrary amounts of `"."`, `""` or `".."`.
 However, if the paths do not contain the same amount of leading `".."`, it
 will return `false`.
 -/
 def contains (parent target : FilePath) : Bool :=
-  go parent.components target.components
+  go parent.clean.components target.clean.components
 where
   go : List String → List String → Bool
-  -- ignore leading "." or ""
-  | "." :: parent, target => go parent target
-  | parent, "." :: target => go parent target
-  | "" :: parent, target => go parent target
-  | parent, "" :: target => go parent target
   -- must not start with unequal quantity of ".."
   | ".." :: parent, ".." :: target => go parent target
   | ".." :: _, _ => false
