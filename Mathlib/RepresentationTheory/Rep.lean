@@ -73,9 +73,6 @@ theorem coe_of {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[
   rfl
 
 @[simp]
-lemma coe_V {V : Rep k G} : (V.V : Type u) = V := rfl
-
-@[simp]
 theorem of_ρ {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) : (of ρ).ρ = ρ :=
   rfl
 
@@ -112,7 +109,7 @@ instance {V : Type u} [AddCommGroup V] [Module k V] :
     IsTrivial (Rep.trivial k G V) where
 
 instance {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V) [ρ.IsTrivial] :
-    IsTrivial (Rep.of ρ) where
+    IsTrivial (Rep.of ρ) := ‹_›
 
 -- Porting note: the two following instances were found automatically in mathlib3
 noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
@@ -136,18 +133,12 @@ section
 open MonoidalCategory
 
 @[simp]
-theorem coe_tensor {A B : Rep k G} : (A ⊗ B : Rep k G) = TensorProduct k A B := rfl
-
-@[simp]
 theorem tensor_ρ {A B : Rep k G} : (A ⊗ B).ρ = A.ρ.tprod B.ρ := rfl
 
 end
 section Res
 
 variable {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H)
-
-@[simp]
-lemma coe_res_obj : ((Action.res _ f).obj A : Type u) = A := rfl
 
 @[simp]
 lemma coe_res_obj_ρ (g : G) :
