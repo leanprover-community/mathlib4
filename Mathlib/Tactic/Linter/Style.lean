@@ -8,6 +8,7 @@ import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 import Mathlib.Tactic.Linter.Header
+import Mathlib.Tactic.DeclarationNames
 
 /-!
 ## Style linters
@@ -17,7 +18,7 @@ but do not affect correctness nor global coherence of mathlib.
 Historically, some of these were ported from the `lint-style.py` Python script.
 
 This file defines the following linters:
-- the `set_option` linter checks for the presence of `set_option` commands activating
+- the `setOption` linter checks for the presence of `set_option` commands activating
 options disallowed in mathlib: these are meant to be temporary, and not for polished code
 - the `missingEnd` linter checks for sections or namespaces which are not closed by the end
 of the file: enforcing this invariant makes minimising files or moving code between files easier
@@ -26,18 +27,16 @@ this is allowed Lean syntax, but it is nicer to be uniform
 - the `dollarSyntax` linter checks for use of the dollar sign `$` instead of the `<|` pipe operator:
 similarly, both symbols have the same meaning, but mathlib prefers `<|` for the symmetry with
 the `|>` symbol
-- the `lambdaSyntax` linter checks for uses of the `λ` symbol for ananomous functions,
+- the `lambdaSyntax` linter checks for uses of the `λ` symbol for anonymous functions,
 instead of the `fun` keyword: mathlib prefers the latter for reasons of readability
-(This linter is still under review in PR #15896.)
+- the `longFile` linter checks for files which have more than 1500 lines
 - the `longLine` linter checks for lines which have more than 100 characters
-- the `longFile` linter checks for files which have more than 1500 lines:
-this linter is still under development in PR #15610.
 
 All of these linters are enabled in mathlib by default, but disabled globally
 since they enforce conventions which are inherently subjective.
 -/
 
-open Lean Elab Command
+open Lean Parser Elab Command Meta
 
 namespace Mathlib.Linter
 
@@ -427,5 +426,44 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
 initialize addLinter longLineLinter
 
 end Style.longLine
+
+/-- The `nameCheck` linter emits a warning on declarations whose name is non-standard style.
+(Currently, this only includes declarations whose name includes a double underscore.)
+
+**Why is this bad?** Double underscores in theorem names can be considered non-standard style and
+probably have been introduced by accident.
+**How to fix this?** Use single underscores to separate parts of a name, following standard naming
+conventions.
+-/
+register_option linter.style.nameCheck : Bool := {
+  defValue := true
+  descr := "enable the `nameCheck` linter"
+}
+
+namespace Style.nameCheck
+
+@[inherit_doc linter.style.nameCheck]
+def doubleUnderscore: Linter where run := withSetOptionIn fun stx => do
+    unless Linter.getLinterValue linter.style.nameCheck (← getOptions) do
+      return
+    if (← get).messages.hasErrors then
+      return
+    let mut aliases := #[]
+    if let some exp := stx.find? (·.isOfKind `Lean.Parser.Command.export) then
+      aliases ← getAliasSyntax exp
+    for id in aliases.push ((stx.find? (·.isOfKind ``declId)).getD default)[0] do
+      let declName := id.getId
+      if id.getPos? == some default then continue
+      if declName.hasMacroScopes then continue
+      if id.getKind == `ident then
+        -- Check whether the declaration name contains "__".
+        if 1 < (declName.toString.splitOn "__").length then
+          Linter.logLint linter.style.nameCheck id
+            m!"The declaration '{id}' contains '__', which does not follow the mathlib naming \
+              conventions. Consider using single underscores instead."
+
+initialize addLinter doubleUnderscore
+
+end Style.nameCheck
 
 end Mathlib.Linter

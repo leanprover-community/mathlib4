@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz, Yongle Hu, Jingting Wang
 -/
 import Mathlib.FieldTheory.Fixed
-import Mathlib.FieldTheory.NormalClosure
+import Mathlib.FieldTheory.Normal.Closure
 import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 
@@ -220,17 +220,17 @@ theorem fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixe
   refine (algEquivEquivAlgHom (fixedField H) E).toEquiv.symm.trans ?_
   exact (fixingSubgroupEquiv (fixedField H)).toEquiv.symm
 
--- Porting note: added `fixedField.smul` for `fixedField.isScalarTower`
 instance fixedField.smul : SMul K (fixedField (fixingSubgroup K)) where
   smul x y := ⟨x * y, fun ϕ => by
     rw [smul_mul', show ϕ • (x : E) = ↑x from ϕ.2 x, show ϕ • (y : E) = ↑y from y.2 ϕ]⟩
 
 instance fixedField.algebra : Algebra K (fixedField (fixingSubgroup K)) where
-  toFun x := ⟨x, fun ϕ => Subtype.mem ϕ x⟩
-  map_zero' := rfl
-  map_add' _ _ := rfl
-  map_one' := rfl
-  map_mul' _ _ := rfl
+  algebraMap :=
+  { toFun x := ⟨x, fun ϕ => Subtype.mem ϕ x⟩
+    map_zero' := rfl
+    map_add' _ _ := rfl
+    map_one' := rfl
+    map_mul' _ _ := rfl }
   commutes' _ _ := mul_comm _ _
   smul_def' _ _ := rfl
 
@@ -286,11 +286,8 @@ def galoisCoinsertionIntermediateFieldSubgroup [FiniteDimensional F E] [IsGalois
     GaloisCoinsertion (OrderDual.toDual ∘
       (IntermediateField.fixingSubgroup : IntermediateField F E → Subgroup (E ≃ₐ[F] E)))
       ((IntermediateField.fixedField : Subgroup (E ≃ₐ[F] E) → IntermediateField F E) ∘
-        OrderDual.toDual) where
-  choice H _ := IntermediateField.fixedField H
-  gc K H := (IntermediateField.le_iff_le H K).symm
-  u_l_le K := le_of_eq (fixedField_fixingSubgroup K)
-  choice_eq _ _ := rfl
+        OrderDual.toDual) :=
+  OrderIso.toGaloisCoinsertion intermediateFieldEquivSubgroup
 
 end IsGalois
 

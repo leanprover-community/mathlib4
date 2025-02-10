@@ -11,6 +11,7 @@ import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.Module
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Mul
 
 /-!
@@ -39,6 +40,13 @@ def conjTranspose [Star α] (M : Matrix m n α) : Matrix n m α :=
 
 @[inherit_doc]
 scoped postfix:1024 "ᴴ" => Matrix.conjTranspose
+
+@[simp]
+lemma conjTranspose_stdBasisMatrix [DecidableEq n] [DecidableEq m] [AddMonoid α]
+    [StarAddMonoid α] (i : m) (j : n) (a : α) :
+    (stdBasisMatrix i j a)ᴴ = stdBasisMatrix j i (star a) := by
+  show (stdBasisMatrix i j a).transpose.map starAddEquiv = stdBasisMatrix j i (star a)
+  simp
 
 section Diagonal
 
@@ -163,17 +171,15 @@ theorem conjTranspose_eq_natCast [DecidableEq n] [Semiring α] [StarRing α]
   (Function.Involutive.eq_iff conjTranspose_conjTranspose).trans <|
     by rw [conjTranspose_natCast]
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem conjTranspose_ofNat [DecidableEq n] [Semiring α] [StarRing α] (d : ℕ) [d.AtLeastTwo] :
-    (no_index (OfNat.ofNat d) : Matrix n n α)ᴴ = OfNat.ofNat d :=
+    (ofNat(d) : Matrix n n α)ᴴ = OfNat.ofNat d :=
   conjTranspose_natCast _
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem conjTranspose_eq_ofNat [DecidableEq n] [Semiring α] [StarRing α]
     {M : Matrix n n α} {d : ℕ} [d.AtLeastTwo] :
-    Mᴴ = no_index (OfNat.ofNat d) ↔ M = OfNat.ofNat d :=
+    Mᴴ = ofNat(d) ↔ M = OfNat.ofNat d :=
   conjTranspose_eq_natCast
 
 @[simp]
@@ -239,11 +245,10 @@ theorem conjTranspose_natCast_smul [Semiring R] [AddCommMonoid α] [StarAddMonoi
     (c : ℕ) (M : Matrix m n α) : ((c : R) • M)ᴴ = (c : R) • Mᴴ :=
   Matrix.ext <| by simp
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem conjTranspose_ofNat_smul [Semiring R] [AddCommMonoid α] [StarAddMonoid α] [Module R α]
     (c : ℕ) [c.AtLeastTwo] (M : Matrix m n α) :
-    ((no_index (OfNat.ofNat c : R)) • M)ᴴ = (OfNat.ofNat c : R) • Mᴴ :=
+    ((ofNat(c) : R) • M)ᴴ = (OfNat.ofNat c : R) • Mᴴ :=
   conjTranspose_natCast_smul c M
 
 @[simp]
@@ -256,11 +261,10 @@ theorem conjTranspose_inv_natCast_smul [DivisionSemiring R] [AddCommMonoid α] [
     [Module R α] (c : ℕ) (M : Matrix m n α) : ((c : R)⁻¹ • M)ᴴ = (c : R)⁻¹ • Mᴴ :=
   Matrix.ext <| by simp
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem conjTranspose_inv_ofNat_smul [DivisionSemiring R] [AddCommMonoid α] [StarAddMonoid α]
     [Module R α] (c : ℕ) [c.AtLeastTwo] (M : Matrix m n α) :
-    ((no_index (OfNat.ofNat c : R))⁻¹ • M)ᴴ = (OfNat.ofNat c : R)⁻¹ • Mᴴ :=
+    ((ofNat(c) : R)⁻¹ • M)ᴴ = (OfNat.ofNat c : R)⁻¹ • Mᴴ :=
   conjTranspose_inv_natCast_smul c M
 
 @[simp]

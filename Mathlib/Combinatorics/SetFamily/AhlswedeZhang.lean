@@ -140,10 +140,7 @@ lemma map_truncatedSup [DecidableRel (α := β) (· ≤ ·)] (e : α ≃o β) (s
   simp_rw [truncatedSup, apply_dite e, map_finset_sup', map_top, this]
   congr with h
   simp only [filter_map, Function.comp_def, Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv,
-    OrderIso.le_iff_le, id]
-  rw [sup'_map]
-  -- TODO: Why can't `simp` use `Finset.sup'_map`?
-  simp only [sup'_map, Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv, Function.comp_apply]
+    OrderIso.le_iff_le, id, sup'_map]
 
 lemma truncatedSup_of_isAntichain (hs : IsAntichain (· ≤ ·) (s : Set α)) (ha : a ∈ s) :
     truncatedSup s a = a := by
@@ -376,7 +373,7 @@ variable [Nonempty α]
     if t ⊆ s then (card α - #s : ℚ) / ((card α - #t) * (card α).choose #t) else 0 := by
     rintro t
     simp_rw [truncatedSup_singleton, le_iff_subset]
-    split_ifs <;> simp [card_univ]
+    split_ifs <;> simp
   simp_rw [← sub_eq_of_eq_add (Fintype.sum_div_mul_card_choose_card α), eq_sub_iff_add_eq,
     ← eq_sub_iff_add_eq', supSum, ← sum_sub_distrib, ← sub_div]
   rw [sum_congr rfl fun t _ ↦ this t, sum_ite, sum_const_zero, add_zero, filter_subset_univ,

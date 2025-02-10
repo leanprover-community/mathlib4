@@ -3,13 +3,13 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.BigOperators.Group.List
+import Mathlib.Algebra.BigOperators.Group.List.Lemmas
 import Mathlib.Algebra.Group.Action.End
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Sigma.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Lean.Elab.Tactic
 
 /-!
@@ -403,11 +403,11 @@ theorem List.dProd_nil (fι : α → ι) (fA : ∀ a, A (fι a)) :
     (List.nil : List α).dProd fι fA = GradedMonoid.GOne.one :=
   rfl
 
--- the `( : _)` in this lemma statement results in the type on the RHS not being unfolded, which
+-- the `( :)` in this lemma statement results in the type on the RHS not being unfolded, which
 -- is nicer in the goal view.
 @[simp]
 theorem List.dProd_cons (fι : α → ι) (fA : ∀ a, A (fι a)) (a : α) (l : List α) :
-    (a :: l).dProd fι fA = (GradedMonoid.GMul.mul (fA a) (l.dProd fι fA) : _) :=
+    (a :: l).dProd fι fA = (GradedMonoid.GMul.mul (fA a) (l.dProd fι fA) :) :=
   rfl
 
 theorem GradedMonoid.mk_list_dProd (l : List α) (fι : α → ι) (fA : ∀ a, A (fι a)) :

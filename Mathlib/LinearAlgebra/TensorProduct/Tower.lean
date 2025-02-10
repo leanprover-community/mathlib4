@@ -94,7 +94,7 @@ See note [partially-applied ext lemmas]. -/
 nonrec theorem curry_injective : Function.Injective (curry : (M ⊗ N →ₗ[A] P) → M →ₗ[A] N →ₗ[R] P) :=
   fun _ _ h =>
   LinearMap.restrictScalars_injective R <|
-    curry_injective <| (congr_arg (LinearMap.restrictScalars R) h : _)
+    curry_injective <| (congr_arg (LinearMap.restrictScalars R) h :)
 
 theorem ext {g h : M ⊗[R] N →ₗ[A] P} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
   curry_injective <| LinearMap.ext₂ H
@@ -436,6 +436,11 @@ theorem cancelBaseChange_tmul (m : M) (n : N) (a : A) :
 theorem cancelBaseChange_symm_tmul (m : M) (n : N) :
     (cancelBaseChange R A B M N).symm (m ⊗ₜ n) = m ⊗ₜ (1 ⊗ₜ n) :=
   rfl
+
+theorem lTensor_comp_cancelBaseChange (f : N →ₗ[R] Q) :
+    lTensor _ _ f ∘ₗ cancelBaseChange R A B M N =
+      (cancelBaseChange R A B M Q).toLinearMap ∘ₗ lTensor _ _ (lTensor _ _ f) := by
+  ext; simp
 
 end cancelBaseChange
 

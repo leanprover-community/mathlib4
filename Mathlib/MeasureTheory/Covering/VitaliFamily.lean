@@ -3,7 +3,7 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
 
 /-!
 # Vitali families
@@ -61,8 +61,6 @@ Vitali families are provided by covering theorems such as the Besicovitch coveri
 Vitali covering theorem. They make it possible to formulate general versions of theorems on
 differentiations of measure that apply in both contexts.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure VitaliFamily {m : MeasurableSpace X} (μ : Measure X) where
   /-- Sets of the family "centered" at a given point. -/
   setsAt :  X → Set (Set X)
@@ -131,6 +129,7 @@ theorem index_subset : ∀ p : X × Set X, p ∈ h.index → p.1 ∈ s :=
 theorem covering_disjoint : h.index.PairwiseDisjoint h.covering :=
   h.exists_disjoint_covering_ae.choose_spec.2.1
 
+open scoped Function in -- required for scoped `on` notation
 theorem covering_disjoint_subtype : Pairwise (Disjoint on fun x : h.index => h.covering x) :=
   (pairwise_subtype_iff_pairwise_set _ _).2 h.covering_disjoint
 

@@ -100,7 +100,7 @@ where
   goArray (as bs : Array DTExpr) : StateM (Std.HashMap MVarId MVarId) Bool := do
     if h : as.size = bs.size then
       for g : i in [:as.size] do
-        unless ← go as[i] (bs[i]'(h ▸ g.2)) do
+        unless ← go as[i] (bs[i]'(h ▸ g.2.1)) do
           return false
       return true
     else

@@ -5,7 +5,7 @@ Authors: Patrick Massot, Kim Morrison
 -/
 import Mathlib.Algebra.Order.Interval.Set.Instances
 import Mathlib.Order.Interval.Set.ProjIcc
-import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.Instances.Real.Defs
 
 /-!
 # The unit interval, as a topological space
@@ -122,8 +122,6 @@ def symmHomeomorph : I ≃ₜ I where
 
 theorem strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := ℝ) h _
 
-@[deprecated (since := "2024-02-27")] alias involutive_symm := symm_involutive
-@[deprecated (since := "2024-02-27")] alias bijective_symm := symm_bijective
 
 @[simp]
 theorem symm_inj {i j : I} : σ i = σ j ↔ i = j := symm_bijective.injective.eq_iff
@@ -375,3 +373,20 @@ theorem iccHomeoI_symm_apply_coe (a b : 𝕜) (h : a < b) (x : Set.Icc (0 : 𝕜
   rfl
 
 end
+
+section NNReal
+
+open unitInterval NNReal
+
+/-- The coercion from `I` to `ℝ≥0`. -/
+def unitInterval.toNNReal : I → ℝ≥0 := fun i ↦ ⟨i.1, i.2.1⟩
+
+@[fun_prop]
+lemma unitInterval.toNNReal_continuous : Continuous toNNReal := by
+  delta toNNReal
+  fun_prop
+
+@[simp]
+lemma unitInterval.coe_toNNReal (x : I) : ((toNNReal x) : ℝ) = x := rfl
+
+end NNReal

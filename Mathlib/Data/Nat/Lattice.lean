@@ -3,6 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Gabriel Ebner, Yury Kudryashov
 -/
+import Mathlib.Data.Set.Accumulate
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
 import Mathlib.Order.Interval.Finset.Nat
 
@@ -21,17 +22,19 @@ open Set
 
 namespace Nat
 
-open scoped Classical
-
+open scoped Classical in
 noncomputable instance : InfSet ℕ :=
   ⟨fun s ↦ if h : ∃ n, n ∈ s then @Nat.find (fun n ↦ n ∈ s) _ h else 0⟩
 
+open scoped Classical in
 noncomputable instance : SupSet ℕ :=
   ⟨fun s ↦ if h : ∃ n, ∀ a ∈ s, a ≤ n then @Nat.find (fun n ↦ ∀ a ∈ s, a ≤ n) _ h else 0⟩
 
+open scoped Classical in
 theorem sInf_def {s : Set ℕ} (h : s.Nonempty) : sInf s = @Nat.find (fun n ↦ n ∈ s) _ h :=
   dif_pos _
 
+open scoped Classical in
 theorem sSup_def {s : Set ℕ} (h : ∃ n, ∀ a ∈ s, a ≤ n) :
     sSup s = @Nat.find (fun n ↦ ∀ a ∈ s, a ≤ n) _ h :=
   dif_pos _
@@ -65,15 +68,18 @@ lemma iInf_const_zero {ι : Sort*} : ⨅ _ : ι, 0 = 0 :=
   (isEmpty_or_nonempty ι).elim (fun h ↦ by simp) fun h ↦ sInf_eq_zero.2 <| by simp
 
 theorem sInf_mem {s : Set ℕ} (h : s.Nonempty) : sInf s ∈ s := by
+  classical
   rw [Nat.sInf_def h]
   exact Nat.find_spec h
 
 theorem not_mem_of_lt_sInf {s : Set ℕ} {m : ℕ} (hm : m < sInf s) : m ∉ s := by
+  classical
   cases eq_empty_or_nonempty s with
   | inl h => subst h; apply not_mem_empty
   | inr h => rw [Nat.sInf_def h] at hm; exact Nat.find_min h hm
 
 protected theorem sInf_le {s : Set ℕ} {m : ℕ} (hm : m ∈ s) : sInf s ≤ m := by
+  classical
   rw [Nat.sInf_def ⟨m, hm⟩]
   exact Nat.find_min' ⟨m, hm⟩ hm
 
@@ -95,6 +101,7 @@ theorem eq_Ici_of_nonempty_of_upward_closed {s : Set ℕ} (hs : s.Nonempty)
 
 theorem sInf_upward_closed_eq_succ_iff {s : Set ℕ} (hs : ∀ k₁ k₂ : ℕ, k₁ ≤ k₂ → k₁ ∈ s → k₂ ∈ s)
     (k : ℕ) : sInf s = k + 1 ↔ k + 1 ∈ s ∧ k ∉ s := by
+  classical
   constructor
   · intro H
     rw [eq_Ici_of_nonempty_of_upward_closed (nonempty_of_sInf_eq_succ _) hs, H, mem_Ici, mem_Ici]
@@ -110,6 +117,7 @@ theorem sInf_upward_closed_eq_succ_iff {s : Set ℕ} (hs : ∀ k₁ k₂ : ℕ, 
 instance : Lattice ℕ :=
   LinearOrder.toLattice
 
+open scoped Classical in
 noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
   { (inferInstance : OrderBot ℕ), (LinearOrder.toLattice : Lattice ℕ),
     (inferInstance : LinearOrder ℕ) with
@@ -140,6 +148,7 @@ theorem sSup_mem {s : Set ℕ} (h₁ : s.Nonempty) (h₂ : BddAbove s) : sSup s 
 
 theorem sInf_add {n : ℕ} {p : ℕ → Prop} (hn : n ≤ sInf { m | p m }) :
     sInf { m | p (m + n) } + n = sInf { m | p m } := by
+  classical
   obtain h | ⟨m, hm⟩ := { m | p (m + n) }.eq_empty_or_nonempty
   · rw [h, Nat.sInf_empty, zero_add]
     obtain hnp | hnp := hn.eq_or_lt
@@ -226,5 +235,8 @@ theorem biInter_le_succ (u : ℕ → Set α) (n : ℕ) : ⋂ k ≤ n + 1, u k = 
 
 theorem biInter_le_succ' (u : ℕ → Set α) (n : ℕ) : ⋂ k ≤ n + 1, u k = u 0 ∩ ⋂ k ≤ n, u (k + 1) :=
   Nat.iInf_le_succ' u n
+
+theorem accumulate_succ (u : ℕ → Set α) (n : ℕ) :
+    Accumulate u (n + 1) = Accumulate u n ∪ u (n + 1) := biUnion_le_succ u n
 
 end Set

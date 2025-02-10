@@ -40,6 +40,8 @@ We only directly define a matroid for `Matroid.sigma`. All other versions of sum
 defined indirectly, using `Matroid.sigma` and the API in `Matroid.map`.
 -/
 
+assert_not_exists Field
+
 universe u v
 
 open Set
@@ -184,6 +186,8 @@ lemma Finitary.sum' (h : ∀ i, (M i).Finitary) : (Matroid.sum' M).Finitary := b
 end sum'
 
 section disjointSigma
+
+open scoped Function -- required for scoped `on` notation
 
 variable {α ι : Type*} {M : ι → Matroid α}
 
