@@ -109,11 +109,11 @@ namespace PseudoFlow
 
 variable [Preorder R] [AddCommMonoid R] {N : Network V R} (f : N.PseudoFlow) (v : V)
 
-/-- The incoming flow of a vertex. --/
+/-- The incoming flow of a vertex. -/
 def incoming := ∑ u, f u v
-/-- The outgoing flow of a vertex. --/
+/-- The outgoing flow of a vertex. -/
 def outgoing := ∑ w, f v w
-/-- The excess flow of a vertex (the incoming flow minus the outgoing flow). --/
+/-- The excess flow of a vertex (the incoming flow minus the outgoing flow). -/
 def excess [Sub R] := f.incoming v - f.outgoing v
 
 end PseudoFlow
