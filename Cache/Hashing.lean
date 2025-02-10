@@ -14,11 +14,7 @@ open Lean IO
 open System hiding SearchPath
 
 /--
-The `HashMemo` contains all information `Cache` needs about the modules:
-* the name
-* the file's hash (in `hashMap` and `cache`)
-additionally, it contains the `rootHash` which reflects changes to Mathlib's
-Lake project settings.
+The `HashMemo` contains all information `Cache` needs about the modules.
 -/
 structure HashMemo where
   /-- Hash of mathlib's lake project settings. -/
