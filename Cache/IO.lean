@@ -102,11 +102,11 @@ def getLeanTar : IO String := do
   of a package should then be in a `.lake`-folder inside this root directory
   (see `LIBDIR` and `IRDIR`).
 * the build directory for proofwidgets
- -/
+-/
 structure CacheM.Context where
   /-- root directory for mathlib files -/
   mathlibDepPath : FilePath
-  /-- lean search path -/
+  /-- the Lean search path -/
   searchPath : SearchPath
   proofWidgetsBuildDir : FilePath
 
