@@ -77,8 +77,7 @@ instance {R : CommRingCat} [IsJacobsonRing R] : JacobsonSpace (Spec R) :=
 nonrec lemma LocallyOfFiniteType.jacobsonSpace
   (f : X ⟶ Y) [LocallyOfFiniteType f] [JacobsonSpace Y] : JacobsonSpace X := by
   wlog hY : ∃ S, Y = Spec S
-  · rw [(IsOpenCover.mk <| Scheme.OpenCover.iSup_opensRange
-      (Y.affineCover.pullbackCover f)).jacobsonSpace_iff]
+  · rw [(Scheme.OpenCover.isOpenCover_opensRange (Y.affineCover.pullbackCover f)).jacobsonSpace_iff]
     intro i
     have inst : LocallyOfFiniteType (Y.affineCover.pullbackHom f i) :=
       MorphismProperty.pullback_snd _ _ inferInstance
@@ -92,7 +91,7 @@ nonrec lemma LocallyOfFiniteType.jacobsonSpace
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
   · have inst : JacobsonSpace (Spec R) := ‹_› -- TC gets stuck on the WLOG hypothesis without it.
-    rw [(IsOpenCover.mk <| (Scheme.OpenCover.iSup_opensRange X.affineCover)).jacobsonSpace_iff]
+    rw [X.affineCover.isOpenCover_opensRange.jacobsonSpace_iff]
     intro i
     have := this _ (X.affineCover.map i ≫ f) ⟨_, rfl⟩
     let e := Homeomorph.ofIsEmbedding _ (X.affineCover.map i).isOpenEmbedding.isEmbedding
