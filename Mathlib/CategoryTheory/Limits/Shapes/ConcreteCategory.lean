@@ -241,7 +241,7 @@ theorem widePullback_ext' {B : C} {ι : Type w} [Nonempty ι] {X : ι → C}
     (h : ∀ j, π f j x = π f j y) : x = y := by
   apply Concrete.widePullback_ext _ _ _ _ h
   inhabit ι
-  simp only [← π_arrow f default, comp_apply, h]
+  simp only [← π_arrow f default, CategoryTheory.comp_apply, h]
 
 end WidePullback
 
@@ -249,19 +249,21 @@ section Multiequalizer
 
 variable [HasForget.{max w w' v} C]
 
-theorem multiequalizer_ext {I : MulticospanIndex.{w, w'} C} [HasMultiequalizer I]
+theorem multiequalizer_ext {J : MulticospanShape.{w, w'}}
+    {I : MulticospanIndex J C} [HasMultiequalizer I]
     [PreservesLimit I.multicospan (forget C)] (x y : ↑(multiequalizer I))
-    (h : ∀ t : I.L, Multiequalizer.ι I t x = Multiequalizer.ι I t y) : x = y := by
+    (h : ∀ t : J.L, Multiequalizer.ι I t x = Multiequalizer.ι I t y) : x = y := by
   apply Concrete.limit_ext
   rintro (a | b)
   · apply h
-  · rw [← limit.w I.multicospan (WalkingMulticospan.Hom.fst b), comp_apply, comp_apply]
+  · rw [← limit.w I.multicospan (WalkingMulticospan.Hom.fst b), CategoryTheory.comp_apply,
+      CategoryTheory.comp_apply]
     simp [h]
 
 /-- An auxiliary equivalence to be used in `multiequalizerEquiv` below. -/
-def multiequalizerEquivAux (I : MulticospanIndex.{w, w'} C) :
+def multiequalizerEquivAux {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C) :
     (I.multicospan ⋙ forget C).sections ≃
-    { x : ∀ i : I.L, I.left i // ∀ i : I.R, I.fst i (x _) = I.snd i (x _) } where
+    { x : ∀ i : J.L, I.left i // ∀ i : J.R, I.fst i (x _) = I.snd i (x _) } where
   toFun x :=
     ⟨fun _ => x.1 (WalkingMulticospan.left _), fun i => by
       have a := x.2 (WalkingMulticospan.Hom.fst i)
@@ -292,19 +294,21 @@ def multiequalizerEquivAux (I : MulticospanIndex.{w, w'} C) :
 
 /-- The equivalence between the noncomputable multiequalizer and
 the concrete multiequalizer. -/
-noncomputable def multiequalizerEquiv (I : MulticospanIndex.{w, w'} C) [HasMultiequalizer I]
+noncomputable def multiequalizerEquiv {J : MulticospanShape.{w, w'}}
+    (I : MulticospanIndex J C) [HasMultiequalizer I]
     [PreservesLimit I.multicospan (forget C)] :
     (multiequalizer I : C) ≃
-      { x : ∀ i : I.L, I.left i // ∀ i : I.R, I.fst i (x _) = I.snd i (x _) } :=
+      { x : ∀ i : J.L, I.left i // ∀ i : J.R, I.fst i (x _) = I.snd i (x _) } :=
   letI h1 := limit.isLimit I.multicospan
   letI h2 := isLimitOfPreserves (forget C) h1
   letI E := h2.conePointUniqueUpToIso (Types.limitConeIsLimit.{max w w', v} _)
   Equiv.trans E.toEquiv (Concrete.multiequalizerEquivAux I)
 
 @[simp]
-theorem multiequalizerEquiv_apply (I : MulticospanIndex.{w, w'} C) [HasMultiequalizer I]
-    [PreservesLimit I.multicospan (forget C)] (x : ↑(multiequalizer I)) (i : I.L) :
-    ((Concrete.multiequalizerEquiv I) x : ∀ i : I.L, I.left i) i = Multiequalizer.ι I i x :=
+theorem multiequalizerEquiv_apply {J : MulticospanShape.{w, w'}}
+    (I : MulticospanIndex J C) [HasMultiequalizer I]
+    [PreservesLimit I.multicospan (forget C)] (x : ↑(multiequalizer I)) (i : J.L) :
+    ((Concrete.multiequalizerEquiv I) x : ∀ i : J.L, I.left i) i = Multiequalizer.ι I i x :=
   rfl
 
 end Multiequalizer
@@ -334,7 +338,7 @@ theorem widePushout_exists_rep' {B : C} {α : Type _} [Nonempty α] {X : α → 
   rcases Concrete.widePushout_exists_rep f x with (⟨y, rfl⟩ | ⟨i, y, rfl⟩)
   · inhabit α
     use default, f _ y
-    simp only [← arrow_ι _ default, comp_apply]
+    simp only [← arrow_ι _ default, CategoryTheory.comp_apply]
   · use i, y
 
 end WidePushout

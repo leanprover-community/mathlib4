@@ -3,7 +3,7 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Function.L1Space
+import Mathlib.MeasureTheory.Function.L1Space.Integrable
 import Mathlib.Analysis.NormedSpace.IndicatorFunction
 
 /-! # Functions integrable on a set and at a filter
@@ -341,9 +341,6 @@ theorem Integrable.lintegral_lt_top {f : α → ℝ} (hf : Integrable f μ) :
 theorem IntegrableOn.setLIntegral_lt_top {f : α → ℝ} {s : Set α} (hf : IntegrableOn f s μ) :
     (∫⁻ x in s, ENNReal.ofReal (f x) ∂μ) < ∞ :=
   Integrable.lintegral_lt_top hf
-
-@[deprecated (since := "2024-06-29")]
-alias IntegrableOn.set_lintegral_lt_top := IntegrableOn.setLIntegral_lt_top
 
 /-- We say that a function `f` is *integrable at filter* `l` if it is integrable on some
 set `s ∈ l`. Equivalently, it is eventually integrable on `s` in `l.smallSets`. -/

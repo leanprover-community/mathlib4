@@ -30,19 +30,6 @@ def UInt64.asLTar (n : UInt64) : String :=
 
 namespace Lean
 
-/--
-TODO: This is copied (without modification) from the Lean source. It should
-be available in v4.17.0-rc1.
--/
-partial def findLean (sp : SearchPath) (mod : Name) : IO System.FilePath := do
-  if let some fname ← sp.findWithExt "lean" mod then
-    return fname
-  else
-    let pkg := System.FilePath.mk <| mod.getRoot.toString (escape := false)
-    throw <| IO.userError s!"unknown module prefix '{pkg}'\n\n\
-      No directory '{pkg}' or file '{pkg}.lean' in the search path entries:\n\
-      {"\n".intercalate <| sp.map (·.toString)}"
-
 -- copied from Mathlib
 /-- Create a `Name` from a list of components. -/
 def Name.fromComponents : List Name → Name := go .anonymous where

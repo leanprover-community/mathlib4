@@ -63,7 +63,7 @@ General algebra:
 
   Ideals and quotients:
     ideal of a commutative ring: 'Ideal'
-    quotient ring: 'Ideal.instHasQuotient'
+    quotient ring: 'Ideal.Quotient.ring'
     prime ideal: 'Ideal.IsPrime'
     maximal ideal: 'Ideal.IsMaximal'
     Chinese remainder theorem: 'Ideal.quotientInfRingEquivPiQuotient'

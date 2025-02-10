@@ -118,6 +118,7 @@ partial def getHash (mod : Name) (sourceFile : FilePath) (visited : Std.HashSet 
     HashM <| Option UInt64 := do
   if visited.contains mod then
     throw <| IO.userError s!"dependency loop found involving {mod}!"
+  let visitedNew := visited.insert mod
   match (← get).cache[mod]? with
   | some hash? => return hash?
   | none =>
@@ -128,7 +129,7 @@ partial def getHash (mod : Name) (sourceFile : FilePath) (visited : Std.HashSet 
     let content ← IO.FS.readFile sourceFile
     let fileImports ← getFileImports content mod
     let mut importHashes := #[]
-    for importHash? in ← fileImports.mapM (fun imp => getHash imp.1 imp.2 (visited.insert mod)) do
+    for importHash? in ← fileImports.mapM (fun imp => getHash imp.1 imp.2 visitedNew) do
       match importHash? with
       | some importHash => importHashes := importHashes.push importHash
       | none =>
