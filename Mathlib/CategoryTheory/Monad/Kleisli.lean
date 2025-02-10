@@ -132,7 +132,7 @@ namespace Adjunction
 @[simps]
 def toCokleisli : C ⥤ Cokleisli U where
   obj X := (X : Cokleisli U)
-  map {X} {_} f := (U.ε.app X ≫ f : _)
+  map {X} {_} f := (U.ε.app X ≫ f :)
   map_comp {X} {Y} {_} f g := by
     -- Porting note: working around lack of unfold_projs
     change U.ε.app X ≫ f ≫ g = U.δ.app X ≫ U.map (U.ε.app X ≫ f) ≫ U.ε.app Y ≫ g

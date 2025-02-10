@@ -21,11 +21,7 @@ For the bundled `LinearOrderedCommRing` instance on `ℚ`, see `Algebra.Order.Ri
 rat, rationals, field, ℚ, numerator, denominator, num, denom, order, ordering
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists Field
-assert_not_exists Finset
-assert_not_exists Set.Icc
-assert_not_exists GaloisConnection
+assert_not_exists OrderedCommMonoid Field Finset Set.Icc GaloisConnection
 
 namespace Rat
 
@@ -196,9 +192,6 @@ instance : AddLeftMono ℚ where
   simp [Int.le_iff_lt_or_eq, instLE, Rat.blt, Int.not_lt]
 @[simp] lemma num_pos {a : ℚ} : 0 < a.num ↔ 0 < a := lt_iff_lt_of_le_iff_le num_nonpos
 @[simp] lemma num_neg {a : ℚ} : a.num < 0 ↔ a < 0 := lt_iff_lt_of_le_iff_le num_nonneg
-
-@[deprecated (since := "2024-02-16")] alias num_nonneg_iff_zero_le := num_nonneg
-@[deprecated (since := "2024-02-16")] alias num_pos_iff_pos := num_pos
 
 theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d) :
     (a : ℚ) / b < c / d ↔ a * d < c * b := by

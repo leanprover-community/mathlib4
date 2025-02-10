@@ -26,8 +26,8 @@ import Mathlib.RingTheory.Nakayama
 - `LocalizedModule.exists_subsingleton_away`:
   If `M` is `R`-finite and `Mₚ = 0`, then `M[1/f] = 0` for some `p ∈ D(f)`.
 
-Also see `AlgebraicGeometry/PrimeSpectrum/Module` for other results
-depending on the zariski topology.
+Also see `Mathlib.RingTheory.Spectrum.Prime.Module` for other results
+depending on the Zariski topology.
 
 ## TODO
 - Connect to associated primes once we have them in mathlib.
@@ -36,7 +36,7 @@ depending on the zariski topology.
 -/
 
 -- Basic files in `RingTheory` should avoid depending on the Zariski topology
--- See `AlgebraicGeometry/PrimeSpectrum/Module`
+-- See `Mathlib.RingTheory.Spectrum.Prime.Module`
 assert_not_exists TopologicalSpace
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {p : PrimeSpectrum R}
@@ -56,8 +56,8 @@ lemma Module.not_mem_support_iff :
 
 lemma Module.not_mem_support_iff' :
     p ∉ Module.support R M ↔ ∀ m : M, ∃ r ∉ p.asIdeal, r • m = 0 := by
-  rw [not_mem_support_iff, LocalizedModule.subsingleton_iff]
-  rfl
+  simp only [not_mem_support_iff, Ideal.primeCompl, LocalizedModule.subsingleton_iff,
+    Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_compl_iff, SetLike.mem_coe]
 
 lemma Module.mem_support_iff' :
     p ∈ Module.support R M ↔ ∃ m : M, ∀ r ∉ p.asIdeal, r • m ≠ 0 := by

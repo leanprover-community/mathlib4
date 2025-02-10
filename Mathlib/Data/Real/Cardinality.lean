@@ -34,7 +34,7 @@ We conclude that all intervals with distinct endpoints have cardinality continuu
 
 ## Notation
 
-* `𝔠` : notation for `Cardinal.Continuum` in locale `Cardinal`, defined in `SetTheory.Continuum`.
+* `𝔠` : notation for `Cardinal.continuum` in locale `Cardinal`, defined in `SetTheory.Continuum`.
 
 ## Tags
 continuum, cardinality, reals, cardinality of the reals

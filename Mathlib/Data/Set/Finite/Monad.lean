@@ -15,8 +15,7 @@ import Mathlib.Data.Set.Functor
 finite sets
 -/
 
-assert_not_exists OrderedRing
-assert_not_exists MonoidWithZero
+assert_not_exists OrderedRing MonoidWithZero
 
 open Set Function
 
@@ -77,8 +76,6 @@ Some set instances do not appear here since they are consequences of others, for
 
 
 namespace Finite.Set
-
-open scoped Classical
 
 theorem finite_pure (a : α) : (pure a : Set α).Finite :=
   toFinite _

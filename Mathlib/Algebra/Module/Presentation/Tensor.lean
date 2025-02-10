@@ -32,7 +32,7 @@ noncomputable def tensor :
     Relations A where
   G := relations₁.G × relations₂.G
   R := Sum (relations₁.R × relations₂.G) (relations₁.G × relations₂.R)
-  relation r := match r with
+  relation
     | .inl ⟨r₁, g₂⟩ => Finsupp.embDomain (Function.Embedding.sectL relations₁.G g₂)
         (relations₁.relation r₁)
     | .inr ⟨g₁, r₂⟩ => Finsupp.embDomain (Function.Embedding.sectR g₁ relations₂.G)
