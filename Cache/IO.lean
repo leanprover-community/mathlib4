@@ -279,14 +279,14 @@ def mkBuildPaths (mod : Name) (sourceFile : FilePath) : CacheM <| List (FilePath
   let path := (System.mkFilePath <| mod.components.map toString)
   return [
     -- Note that `packCache` below requires that the `.trace` file is first in this list.
-    (packageDir / LIBDIR / sourceFile.withExtension "trace", true),
-    (packageDir / LIBDIR / sourceFile.withExtension "olean", true),
-    (packageDir / LIBDIR / sourceFile.withExtension "olean.hash", true),
-    (packageDir / LIBDIR / sourceFile.withExtension "ilean", true),
-    (packageDir / LIBDIR / sourceFile.withExtension "ilean.hash", true),
-    (packageDir / IRDIR  / sourceFile.withExtension "c", true),
-    (packageDir / IRDIR  / sourceFile.withExtension "c.hash", true),
-    (packageDir / LIBDIR / sourceFile.withExtension "extra", false)]
+    (packageDir / LIBDIR / path.withExtension "trace", true),
+    (packageDir / LIBDIR / path.withExtension "olean", true),
+    (packageDir / LIBDIR / path.withExtension "olean.hash", true),
+    (packageDir / LIBDIR / path.withExtension "ilean", true),
+    (packageDir / LIBDIR / path.withExtension "ilean.hash", true),
+    (packageDir / IRDIR  / path.withExtension "c", true),
+    (packageDir / IRDIR  / path.withExtension "c.hash", true),
+    (packageDir / LIBDIR / path.withExtension "extra", false)]
 
 /-- Check that all required build files exist. -/
 def allExist (paths : List (FilePath × Bool)) : IO Bool := do

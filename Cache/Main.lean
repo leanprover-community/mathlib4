@@ -115,8 +115,11 @@ def main (args : List String) : IO Unit := do
   | "put!" :: _ => put (overwrite := true)
   | "put-unpacked" :: _ => put (unpackedOnly := true)
   | ["commit"] =>
+    if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
     commit hashMemo.hashMap false (← getToken)
   | ["commit!"] =>
+    if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
     commit hashMemo.hashMap true (← getToken)
+  | ["collect"] => IO.println "TODO"
   | "lookup" :: _ => lookup hashMemo.hashMap (roots.keys)
   | _ => println help
