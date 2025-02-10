@@ -88,9 +88,10 @@ theorem continuous_norm' : Continuous fun a : E => ‖a‖ := by
 theorem continuous_nnnorm' : Continuous fun a : E => ‖a‖₊ :=
   continuous_norm'.subtype_mk _
 
-@[to_additive (attr := continuity) continuous_enorm]
-lemma continuous_enorm' : Continuous fun a : E ↦ ‖a‖ₑ :=
-  ENNReal.isOpenEmbedding_coe.continuous.comp continuous_nnnorm'
+@[continuity, fun_prop]
+lemma continuous_enorm {E : Type*} [TopologicalSpace E] [ContinuousENorm E] :
+    Continuous fun a : E ↦ ‖a‖ₑ :=
+  ContinuousENorm.continuous_enorm
 
 set_option linter.docPrime false in
 @[to_additive Inseparable.norm_eq_norm]
@@ -101,6 +102,11 @@ set_option linter.docPrime false in
 @[to_additive Inseparable.nnnorm_eq_nnnorm]
 theorem Inseparable.nnnorm_eq_nnnorm' {u v : E} (h : Inseparable u v) : ‖u‖₊ = ‖v‖₊ :=
   h.map continuous_nnnorm' |>.eq
+
+@[to_additive Inseparable.enorm_eq_enorm]
+theorem Inseparable.enorm_eq_enorm' {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
+    {u v : E} (h : Inseparable u v) : ‖u‖ₑ = ‖v‖ₑ :=
+  h.map continuous_enorm |>.eq
 
 @[to_additive]
 theorem mem_closure_one_iff_norm {x : E} : x ∈ closure ({1} : Set E) ↔ ‖x‖ = 0 := by
@@ -124,7 +130,7 @@ theorem Filter.Tendsto.nnnorm' (h : Tendsto f l (𝓝 a)) : Tendsto (fun x => �
 
 @[to_additive Filter.Tendsto.enorm]
 lemma Filter.Tendsto.enorm' (h : Tendsto f l (𝓝 a)) : Tendsto (‖f ·‖ₑ) l (𝓝 ‖a‖ₑ) :=
-  .comp continuous_enorm'.continuousAt h
+  .comp continuous_enorm.continuousAt h
 
 end
 
@@ -140,8 +146,9 @@ theorem Continuous.norm' : Continuous f → Continuous fun x => ‖f x‖ :=
 theorem Continuous.nnnorm' : Continuous f → Continuous fun x => ‖f x‖₊ :=
   continuous_nnnorm'.comp
 
-@[to_additive (attr := fun_prop) Continuous.enorm]
-lemma Continuous.enorm' : Continuous f → Continuous (‖f ·‖ₑ) := continuous_enorm'.comp
+@[fun_prop]
+lemma Continuous.enorm {E : Type*} [TopologicalSpace E] [ContinuousENorm E] :
+  Continuous f → Continuous (‖f ·‖ₑ) := continuous_enorm.comp
 
 @[to_additive (attr := fun_prop) ContinuousAt.norm]
 theorem ContinuousAt.norm' {a : α} (h : ContinuousAt f a) : ContinuousAt (fun x => ‖f x‖) a :=
@@ -151,8 +158,9 @@ theorem ContinuousAt.norm' {a : α} (h : ContinuousAt f a) : ContinuousAt (fun x
 theorem ContinuousAt.nnnorm' {a : α} (h : ContinuousAt f a) : ContinuousAt (fun x => ‖f x‖₊) a :=
   Tendsto.nnnorm' h
 
-@[to_additive (attr := fun_prop) ContinuousAt.enorm]
-lemma ContinuousAt.enorm' (h : ContinuousAt f a) : ContinuousAt (‖f ·‖ₑ) a := Tendsto.enorm' h
+@[fun_prop]
+lemma ContinuousAt.enorm {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
+  (h : ContinuousAt f a) : ContinuousAt (‖f ·‖ₑ) a := Tendsto.enorm' h
 
 @[to_additive ContinuousWithinAt.norm]
 theorem ContinuousWithinAt.norm' {s : Set α} {a : α} (h : ContinuousWithinAt f s a) :
