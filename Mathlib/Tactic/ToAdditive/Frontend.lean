@@ -449,21 +449,23 @@ initialize changeNumeralAttr : NameMapExtension (List Nat) ←
     | _, _ => throwUnsupportedSyntax }
 
 /-- Maps multiplicative names to their additive counterparts. -/
-initialize translations : NameMapExtension Name ← registerNameMapExtension _
+initialize additiveTranslations : NameMapExtension Name ← registerNameMapExtension _
 
 /-- Get the multiplicative → additive translation for the given name. -/
-def findTranslation? (env : Environment) : Name → Option Name :=
-  (ToAdditive.translations.getState env).find?
+def findTranslation? (env : Environment) (translations : NameMapExtension Name) :
+    Name → Option Name :=
+  (translations.getState env).find?
 
 /-- Add a (multiplicative → additive) name translation to the translations map. -/
-def insertTranslation (src tgt : Name) (failIfExists := true) : CoreM Unit := do
-  if let some tgt' := findTranslation? (← getEnv) src then
+def insertTranslation (translations : NameMapExtension Name)
+    (src tgt : Name) (failIfExists := true) : CoreM Unit := do
+  if let some tgt' := findTranslation? (← getEnv) translations src then
     if failIfExists then
       throwError "The translation {src} ↦ {tgt'} already exists"
     else
       trace[to_additive] "The translation {src} ↦ {tgt'} already exists"
       return
-  modifyEnv (ToAdditive.translations.addEntry · (src, tgt))
+  modifyEnv (translations.addEntry · (src, tgt))
   trace[to_additive] "Added translation {src} ↦ {tgt}"
 
 /-- `Config` is the type of the arguments that can be provided to `to_additive`. -/
@@ -504,11 +506,12 @@ cache constant expressions, so that's why the `if`s in the implementation are in
 
 Note that this function is still called many times by `applyReplacementFun`
 and we're not remembering the cache between these calls. -/
-unsafe def additiveTestUnsafe (env : Environment) (e : Expr) : Option Name :=
+unsafe def additiveTestUnsafe (env : Environment) (translations : NameMapExtension Name)
+    (e : Expr) : Option Name :=
   let rec visit (e : Expr) (inApp := false) : OptionT (StateM (PtrSet Expr)) Name := do
     if e.isConst then
       if (dontTranslateAttr.find? env e.constName).isNone &&
-        (inApp || (findTranslation? env e.constName).isSome) then
+        (inApp || (findTranslation? env translations e.constName).isSome) then
         failure
       else
         return e.constName
@@ -540,8 +543,9 @@ constants if `additiveTest` applied to their relevant argument returns `true`.
 This means we will replace expression applied to e.g. `α` or `α × β`, but not when applied to
 e.g. `ℕ` or `ℝ × α`.
 We ignore all arguments specified by the `ignore` `NameMap`. -/
-def additiveTest (env : Environment) (e : Expr) : Option Name :=
-  unsafe additiveTestUnsafe env e
+def additiveTest (env : Environment) (translations : NameMapExtension Name) (e : Expr) :
+    Option Name :=
+  unsafe additiveTestUnsafe env translations e
 
 /-- Swap the first two elements of a list -/
 def _root_.List.swapFirstTwo {α : Type _} : List α → List α
@@ -566,7 +570,7 @@ is tested, instead of the first argument.
 It will also reorder arguments of certain functions, using `reorderFn`:
 e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorderFn g = some [1]`.
 -/
-def applyReplacementFun (e : Expr) : MetaM Expr :=
+def applyReplacementFun (translations : NameMapExtension Name) (e : Expr) : MetaM Expr :=
   return aux (← getEnv) (← getBoolOption `trace.to_additive_detail) e
 where /-- Implementation of `applyReplacementFun`. -/
   aux (env : Environment) (trace : Bool) : Expr → Expr :=
@@ -577,7 +581,7 @@ where /-- Implementation of `applyReplacementFun`. -/
       dbg_trace s!"replacing at {e}"
     match e with
     | .const n₀ ls₀ => do
-      let n₁ := n₀.mapPrefix <| findTranslation? env
+      let n₁ := n₀.mapPrefix <| findTranslation? env translations
       let ls₁ : List Level := if 0 ∈ (reorderFn n₀).flatten then ls₀.swapFirstTwo else ls₀
       if trace then
         if n₀ != n₁ then
@@ -601,7 +605,7 @@ where /-- Implementation of `applyReplacementFun`. -/
           let gfAdditive :=
             if relevantArgId < gAllArgs.size && gf.isConst then
               if let some fxd :=
-                additiveTest env gAllArgs[relevantArgId]! then
+                additiveTest env translations gAllArgs[relevantArgId]! then
                 Id.run <| do
                   if trace then
                     dbg_trace s!"The application of {nm} contains the fixed type \
@@ -614,14 +618,14 @@ where /-- Implementation of `applyReplacementFun`. -/
           /- Test if arguments should be reordered. -/
           let reorder := reorderFn nm
           if !reorder.isEmpty && relevantArgId < gAllArgs.size &&
-            (additiveTest env gAllArgs[relevantArgId]!).isNone then
+            (additiveTest env translations gAllArgs[relevantArgId]!).isNone then
             gAllArgs := gAllArgs.permute! reorder
             if trace then
               dbg_trace s!"reordering the arguments of {nm} using the cyclic permutations {reorder}"
           /- Do not replace numerals in specific types. -/
           let firstArg := gAllArgs[0]!
           if let some changedArgNrs := changeNumeralAttr.find? env nm then
-            if additiveTest env firstArg |>.isNone then
+            if additiveTest env translations firstArg |>.isNone then
               if trace then
                 dbg_trace s!"applyReplacementFun: We change the numerals in this expression. \
                   However, we will still recurse into all the non-numeral arguments."
@@ -638,7 +642,7 @@ where /-- Implementation of `applyReplacementFun`. -/
           pure (← r gf, ← gAllArgs.mapM r)
       return some <| mkAppN gfAdditive gAllArgsAdditive
     | .proj n₀ idx e => do
-      let n₁ := n₀.mapPrefix <| findTranslation? env
+      let n₁ := n₀.mapPrefix <| findTranslation? env translations
       if trace then
         dbg_trace s!"applyReplacementFun: in projection {e}.{idx} of type {n₀}, \
           replace type with {n₁}"
@@ -693,30 +697,32 @@ def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr :=
     mkLambdaFVars (xs.permute! reorder) e
 
 /-- Run applyReplacementFun on the given `srcDecl` to make a new declaration with name `tgt` -/
-def updateDecl (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) := []) :
+def updateDecl (translations : NameMapExtension Name)
+    (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) := []) :
     MetaM ConstantInfo := do
   let mut decl := srcDecl.updateName tgt
   if 0 ∈ reorder.flatten then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
-  decl := decl.updateType <| ← applyReplacementFun <| ← reorderForall reorder <| ← expand
-    <| ← unfoldAuxLemmas decl.type
+  decl := decl.updateType <| ← applyReplacementFun translations <| ← reorderForall reorder
+    <| ← expand <| ← unfoldAuxLemmas decl.type
   if let some v := decl.value? then
-    decl := decl.updateValue <| ← applyReplacementFun <| ← reorderLambda reorder <| ← expand
-      <| ← unfoldAuxLemmas v
+    decl := decl.updateValue <| ← applyReplacementFun translations <| ← reorderLambda reorder
+      <| ← expand <| ← unfoldAuxLemmas v
   else if let .opaqueInfo info := decl then -- not covered by `value?`
     decl := .opaqueInfo { info with
-      value := ← applyReplacementFun <| ← reorderLambda reorder <| ← expand
+      value := ← applyReplacementFun translations <| ← reorderLambda reorder <| ← expand
         <| ← unfoldAuxLemmas info.value }
   return decl
 
 /-- Find the target name of `pre` and all created auxiliary declarations. -/
-def findTargetName (env : Environment) (src pre tgt_pre : Name) : CoreM Name :=
+def findTargetName (env : Environment) (translations : NameMapExtension Name)
+    (src pre tgt_pre : Name) : CoreM Name :=
   /- This covers auxiliary declarations like `match_i` and `proof_i`. -/
   if let some post := pre.isPrefixOf? src then
     return tgt_pre ++ post
   /- This covers equation lemmas (for other declarations). -/
   else if let some post := privateToUserName? src then
-    match findTranslation? env post.getPrefix with
+    match findTranslation? env translations post.getPrefix with
     -- this is an equation lemma for a declaration without `to_additive`. We will skip this.
     | none => return src
     -- this is an equation lemma for a declaration with `to_additive`. We will additivize this.
@@ -757,12 +763,12 @@ using the transforms dictionary.
 `replace_all`, `trace`, `ignore` and `reorder` are configuration options.
 `pre` is the declaration that got the `@[to_additive]` attribute and `tgt_pre` is the target of this
 declaration. -/
-partial def transformDeclAux
+partial def transformDeclAux (translations : NameMapExtension Name)
     (cfg : Config) (pre tgt_pre : Name) : Name → CoreM Unit := fun src ↦ do
   let env ← getEnv
   trace[to_additive_detail] "visiting {src}"
   -- if we have already translated this declaration, we do nothing.
-  if (findTranslation? env src).isSome && src != pre then
+  if (findTranslation? env translations src).isSome && src != pre then
       return
   -- if this declaration is not `pre` and not an internal declaration, we return an error,
   -- since we should have already translated this declaration.
@@ -771,7 +777,7 @@ partial def transformDeclAux
       {pre}, but does not have the `@[to_additive]` attribute. This is not supported.\n\
       Workaround: move {src} to a different namespace."
   -- we find the additive name of `src`
-  let tgt ← findTargetName env src pre tgt_pre
+  let tgt ← findTargetName env translations src pre tgt_pre
   -- we skip if we already transformed this declaration before.
   if env.contains tgt then
     if tgt == src then
@@ -783,20 +789,20 @@ partial def transformDeclAux
   let srcDecl ← getConstInfo src
   -- we first transform all auxiliary declarations generated when elaborating `pre`
   for n in findAuxDecls srcDecl.type pre do
-    transformDeclAux cfg pre tgt_pre n
+    transformDeclAux translations cfg pre tgt_pre n
   if let some value := srcDecl.value? then
     for n in findAuxDecls value pre do
-      transformDeclAux cfg pre tgt_pre n
+      transformDeclAux translations cfg pre tgt_pre n
   if let .opaqueInfo {value, ..} := srcDecl then
     for n in findAuxDecls value pre do
-      transformDeclAux cfg pre tgt_pre n
+      transformDeclAux translations cfg pre tgt_pre n
   -- if the auxiliary declaration doesn't have prefix `pre`, then we have to add this declaration
   -- to the translation dictionary, since otherwise we cannot find the additive name.
   if !pre.isPrefixOf src then
-    insertTranslation src tgt
+    insertTranslation translations src tgt
   -- now transform the source declaration
   let trgDecl : ConstantInfo ←
-    MetaM.run' <| updateDecl tgt srcDecl <| if src == pre then cfg.reorder else []
+    MetaM.run' <| updateDecl translations tgt srcDecl <| if src == pre then cfg.reorder else []
   let value ← match trgDecl with
     | .thmInfo { value, .. } | .defnInfo { value, .. } | .opaqueInfo { value, .. } => pure value
     | _ => throwError "Expected {tgt} to have a value."
@@ -872,6 +878,7 @@ warnExt stx attr.ext (·.contains ·) thisAttr attrName src tgt
 and adds translations between the generated lemmas (the output of `t`).
 `names` must be non-empty. -/
 def additivizeLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT CoreM m]
+    (translations : NameMapExtension Name)
     (names : Array Name) (desc : String) (t : Name → m (Array Name)) : m Unit := do
   let auxLemmas ← names.mapM t
   let nLemmas := auxLemmas[0]!.size
@@ -880,7 +887,7 @@ def additivizeLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Co
       throwError "{names[0]!} and {nm} do not generate the same number of {desc}."
   for (srcLemmas, tgtLemmas) in auxLemmas.zip <| auxLemmas.eraseIdx! 0 do
     for (srcLemma, tgtLemma) in srcLemmas.zip tgtLemmas do
-      insertTranslation srcLemma tgtLemma
+      insertTranslation translations srcLemma tgtLemma
 
 /--
 Find the first argument of `nm` that has a multiplicative type-class on it.
@@ -889,7 +896,7 @@ E.g. `Prod.Group` returns 1, and `Pi.One` returns 2.
 Note: we only consider the first argument of each type-class.
 E.g. `[Pow A N]` is a multiplicative type-class on `A`, not on `N`.
 -/
-def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
+def firstMultiplicativeArg (translations : NameMapExtension Name) (nm : Name) : MetaM Nat := do
   forallTelescopeReducing (← getConstInfo nm).type fun xs _ ↦ do
     -- xs are the arguments to the constant
     let xs := xs.toList
@@ -899,7 +906,7 @@ def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
       forallTelescopeReducing (← inferType x) fun _ys tgt ↦ do
         let (_tgt_fn, tgt_args) := tgt.getAppFnArgs
         if let some c := tgt.getAppFn.constName? then
-          if findTranslation? (← getEnv) c |>.isNone then
+          if findTranslation? (← getEnv) translations c |>.isNone then
             return none
         return tgt_args[0]?.bind fun tgtArg ↦
           xs.findIdx? fun x ↦ Expr.containsFVar tgtArg x.fvarId!
@@ -939,7 +946,7 @@ Note: `guessName` capitalizes first element of the output according to
 capitalization of the input. Input and first element should therefore be lower-case,
 2nd element should be capitalized properly.
 -/
-def nameDict : String → List String
+def additiveNameDict : String → List String
   | "one"         => ["zero"]
   | "mul"         => ["add"]
   | "smul"        => ["vadd"]
@@ -984,8 +991,8 @@ def nameDict : String → List String
 Turn each element to lower-case, apply the `nameDict` and
 capitalize the output like the input.
 -/
-def applyNameDict : List String → List String
-  | x :: s => (capitalizeFirstLike x (nameDict x.toLower)) ++ applyNameDict s
+def applyNameDict (nameDict : String → List String) : List String → List String
+  | x :: s => (capitalizeFirstLike x (nameDict x.toLower)) ++ applyNameDict nameDict s
   | [] => []
 
 /--
@@ -993,84 +1000,88 @@ There are a few abbreviations we use. For example "Nonneg" instead of "ZeroLE"
 or "addComm" instead of "commAdd".
 Note: The input to this function is case sensitive!
 Todo: A lot of abbreviations here are manual fixes and there might be room to
-      improve the naming logic to reduce the size of `fixAbbreviation`.
+      improve the naming logic to reduce the size of `additiveFixAbbreviation`.
 -/
-def fixAbbreviation : List String → List String
-  | "cancel" :: "Add" :: s            => "addCancel" :: fixAbbreviation s
-  | "Cancel" :: "Add" :: s            => "AddCancel" :: fixAbbreviation s
-  | "left" :: "Cancel" :: "Add" :: s  => "addLeftCancel" :: fixAbbreviation s
-  | "Left" :: "Cancel" :: "Add" :: s  => "AddLeftCancel" :: fixAbbreviation s
-  | "right" :: "Cancel" :: "Add" :: s => "addRightCancel" :: fixAbbreviation s
-  | "Right" :: "Cancel" :: "Add" :: s => "AddRightCancel" :: fixAbbreviation s
-  | "cancel" :: "Comm" :: "Add" :: s  => "addCancelComm" :: fixAbbreviation s
-  | "Cancel" :: "Comm" :: "Add" :: s  => "AddCancelComm" :: fixAbbreviation s
-  | "comm" :: "Add" :: s              => "addComm" :: fixAbbreviation s
-  | "Comm" :: "Add" :: s              => "AddComm" :: fixAbbreviation s
-  | "Zero" :: "LE" :: s               => "Nonneg" :: fixAbbreviation s
-  | "zero" :: "_" :: "le" :: s        => "nonneg" :: fixAbbreviation s
-  | "zero" :: "LE" :: s               => "nonneg" :: fixAbbreviation s
-  | "Zero" :: "LT" :: s               => "Pos" :: fixAbbreviation s
-  | "zero" :: "_" :: "lt" :: s        => "pos" :: fixAbbreviation s
-  | "zero" :: "LT" :: s               => "pos" :: fixAbbreviation s
-  | "LE" :: "Zero" :: s               => "Nonpos" :: fixAbbreviation s
-  | "le" :: "_" :: "zero" :: s        => "nonpos" :: fixAbbreviation s
-  | "LT" :: "Zero" :: s               => "Neg" :: fixAbbreviation s
-  | "lt" :: "_" :: "zero" :: s        => "neg" :: fixAbbreviation s
-  | "Add" :: "Single" :: s            => "Single" :: fixAbbreviation s
-  | "add" :: "Single" :: s            => "single" :: fixAbbreviation s
-  | "add" :: "_" :: "single" :: s     => "single" :: fixAbbreviation s
-  | "Add" :: "Support" :: s           => "Support" :: fixAbbreviation s
-  | "add" :: "Support" :: s           => "support" :: fixAbbreviation s
-  | "add" :: "_" :: "support" :: s    => "support" :: fixAbbreviation s
-  | "Add" :: "TSupport" :: s          => "TSupport" :: fixAbbreviation s
-  | "add" :: "TSupport" :: s          => "tsupport" :: fixAbbreviation s
-  | "add" :: "_" :: "tsupport" :: s   => "tsupport" :: fixAbbreviation s
-  | "Add" :: "Indicator" :: s         => "Indicator" :: fixAbbreviation s
-  | "add" :: "Indicator" :: s         => "indicator" :: fixAbbreviation s
-  | "add" :: "_" :: "indicator" :: s  => "indicator" :: fixAbbreviation s
-  | "is" :: "Even" :: s             => "even" :: fixAbbreviation s
-  | "Is" :: "Even" :: s             => "Even" :: fixAbbreviation s
+def additiveFixAbbreviation : List String → List String
+  | "cancel" :: "Add" :: s            => "addCancel" :: additiveFixAbbreviation s
+  | "Cancel" :: "Add" :: s            => "AddCancel" :: additiveFixAbbreviation s
+  | "left" :: "Cancel" :: "Add" :: s  => "addLeftCancel" :: additiveFixAbbreviation s
+  | "Left" :: "Cancel" :: "Add" :: s  => "AddLeftCancel" :: additiveFixAbbreviation s
+  | "right" :: "Cancel" :: "Add" :: s => "addRightCancel" :: additiveFixAbbreviation s
+  | "Right" :: "Cancel" :: "Add" :: s => "AddRightCancel" :: additiveFixAbbreviation s
+  | "cancel" :: "Comm" :: "Add" :: s  => "addCancelComm" :: additiveFixAbbreviation s
+  | "Cancel" :: "Comm" :: "Add" :: s  => "AddCancelComm" :: additiveFixAbbreviation s
+  | "comm" :: "Add" :: s              => "addComm" :: additiveFixAbbreviation s
+  | "Comm" :: "Add" :: s              => "AddComm" :: additiveFixAbbreviation s
+  | "Zero" :: "LE" :: s               => "Nonneg" :: additiveFixAbbreviation s
+  | "zero" :: "_" :: "le" :: s        => "nonneg" :: additiveFixAbbreviation s
+  | "zero" :: "LE" :: s               => "nonneg" :: additiveFixAbbreviation s
+  | "Zero" :: "LT" :: s               => "Pos" :: additiveFixAbbreviation s
+  | "zero" :: "_" :: "lt" :: s        => "pos" :: additiveFixAbbreviation s
+  | "zero" :: "LT" :: s               => "pos" :: additiveFixAbbreviation s
+  | "LE" :: "Zero" :: s               => "Nonpos" :: additiveFixAbbreviation s
+  | "le" :: "_" :: "zero" :: s        => "nonpos" :: additiveFixAbbreviation s
+  | "LT" :: "Zero" :: s               => "Neg" :: additiveFixAbbreviation s
+  | "lt" :: "_" :: "zero" :: s        => "neg" :: additiveFixAbbreviation s
+  | "Add" :: "Single" :: s            => "Single" :: additiveFixAbbreviation s
+  | "add" :: "Single" :: s            => "single" :: additiveFixAbbreviation s
+  | "add" :: "_" :: "single" :: s     => "single" :: additiveFixAbbreviation s
+  | "Add" :: "Support" :: s           => "Support" :: additiveFixAbbreviation s
+  | "add" :: "Support" :: s           => "support" :: additiveFixAbbreviation s
+  | "add" :: "_" :: "support" :: s    => "support" :: additiveFixAbbreviation s
+  | "Add" :: "TSupport" :: s          => "TSupport" :: additiveFixAbbreviation s
+  | "add" :: "TSupport" :: s          => "tsupport" :: additiveFixAbbreviation s
+  | "add" :: "_" :: "tsupport" :: s   => "tsupport" :: additiveFixAbbreviation s
+  | "Add" :: "Indicator" :: s         => "Indicator" :: additiveFixAbbreviation s
+  | "add" :: "Indicator" :: s         => "indicator" :: additiveFixAbbreviation s
+  | "add" :: "_" :: "indicator" :: s  => "indicator" :: additiveFixAbbreviation s
+  | "is" :: "Even" :: s               => "even" :: additiveFixAbbreviation s
+  | "Is" :: "Even" :: s               => "Even" :: additiveFixAbbreviation s
   -- "Regular" is well-used in mathlib with various meanings (e.g. in
   -- measure theory) and a direct translation
-  -- "regular" --> ["add", "Regular"] in `nameDict` above seems error-prone.
-  | "is" :: "Regular" :: s            => "isAddRegular" :: fixAbbreviation s
-  | "Is" :: "Regular" :: s            => "IsAddRegular" :: fixAbbreviation s
-  | "is" :: "Left" :: "Regular" :: s  => "isAddLeftRegular" :: fixAbbreviation s
-  | "Is" :: "Left" :: "Regular" :: s  => "IsAddLeftRegular" :: fixAbbreviation s
-  | "is" :: "Right" :: "Regular" :: s => "isAddRightRegular" :: fixAbbreviation s
-  | "Is" :: "Right" :: "Regular" :: s => "IsAddRightRegular" :: fixAbbreviation s
-  | "Has" :: "Fundamental" :: "Domain" :: s => "HasAddFundamentalDomain" :: fixAbbreviation s
-  | "has" :: "Fundamental" :: "Domain" :: s => "hasAddFundamentalDomain" :: fixAbbreviation s
-  | "Quotient" :: "Measure" :: s => "AddQuotientMeasure" :: fixAbbreviation s
-  | "quotient" :: "Measure" :: s => "addQuotientMeasure" :: fixAbbreviation s
+  -- "regular" --> ["add", "Regular"] in `additiveNameDict` above seems error-prone.
+  | "is" :: "Regular" :: s            => "isAddRegular" :: additiveFixAbbreviation s
+  | "Is" :: "Regular" :: s            => "IsAddRegular" :: additiveFixAbbreviation s
+  | "is" :: "Left" :: "Regular" :: s  => "isAddLeftRegular" :: additiveFixAbbreviation s
+  | "Is" :: "Left" :: "Regular" :: s  => "IsAddLeftRegular" :: additiveFixAbbreviation s
+  | "is" :: "Right" :: "Regular" :: s => "isAddRightRegular" :: additiveFixAbbreviation s
+  | "Is" :: "Right" :: "Regular" :: s => "IsAddRightRegular" :: additiveFixAbbreviation s
+  | "Has" :: "Fundamental" :: "Domain" :: s
+                                      => "HasAddFundamentalDomain" :: additiveFixAbbreviation s
+  | "has" :: "Fundamental" :: "Domain" :: s
+                                      => "hasAddFundamentalDomain" :: additiveFixAbbreviation s
+  | "Quotient" :: "Measure" :: s => "AddQuotientMeasure" :: additiveFixAbbreviation s
+  | "quotient" :: "Measure" :: s => "addQuotientMeasure" :: additiveFixAbbreviation s
   -- the capitalization heuristic of `applyNameDict` doesn't work in the following cases
-  | "HSmul" :: s                      => "HSMul" :: fixAbbreviation s -- from `HPow`
-  | "NSmul" :: s                      => "NSMul" :: fixAbbreviation s -- from `NPow`
-  | "Nsmul" :: s                      => "NSMul" :: fixAbbreviation s -- from `Pow`
-  | "ZSmul" :: s                      => "ZSMul" :: fixAbbreviation s -- from `ZPow`
-  | "neg" :: "Fun" :: s               => "invFun" :: fixAbbreviation s
-  | "Neg" :: "Fun" :: s               => "InvFun" :: fixAbbreviation s
-  | "unique" :: "Prods" :: s          => "uniqueSums" :: fixAbbreviation s
-  | "Unique" :: "Prods" :: s          => "UniqueSums" :: fixAbbreviation s
-  | "order" :: "Of" :: s              => "addOrderOf" :: fixAbbreviation s
-  | "Order" :: "Of" :: s              => "AddOrderOf" :: fixAbbreviation s
-  | "is"::"Of"::"Fin"::"Order"::s     => "isOfFinAddOrder" :: fixAbbreviation s
-  | "Is"::"Of"::"Fin"::"Order"::s     => "IsOfFinAddOrder" :: fixAbbreviation s
-  | "is" :: "Central" :: "Scalar" :: s  => "isCentralVAdd" :: fixAbbreviation s
-  | "Is" :: "Central" :: "Scalar" :: s  => "IsCentralVAdd" :: fixAbbreviation s
+  | "HSmul" :: s                      => "HSMul" :: additiveFixAbbreviation s -- from `HPow`
+  | "NSmul" :: s                      => "NSMul" :: additiveFixAbbreviation s -- from `NPow`
+  | "Nsmul" :: s                      => "NSMul" :: additiveFixAbbreviation s -- from `Pow`
+  | "ZSmul" :: s                      => "ZSMul" :: additiveFixAbbreviation s -- from `ZPow`
+  | "neg" :: "Fun" :: s               => "invFun" :: additiveFixAbbreviation s
+  | "Neg" :: "Fun" :: s               => "InvFun" :: additiveFixAbbreviation s
+  | "unique" :: "Prods" :: s          => "uniqueSums" :: additiveFixAbbreviation s
+  | "Unique" :: "Prods" :: s          => "UniqueSums" :: additiveFixAbbreviation s
+  | "order" :: "Of" :: s              => "addOrderOf" :: additiveFixAbbreviation s
+  | "Order" :: "Of" :: s              => "AddOrderOf" :: additiveFixAbbreviation s
+  | "is"::"Of"::"Fin"::"Order"::s     => "isOfFinAddOrder" :: additiveFixAbbreviation s
+  | "Is"::"Of"::"Fin"::"Order"::s     => "IsOfFinAddOrder" :: additiveFixAbbreviation s
+  | "is" :: "Central" :: "Scalar" :: s  => "isCentralVAdd" :: additiveFixAbbreviation s
+  | "Is" :: "Central" :: "Scalar" :: s  => "IsCentralVAdd" :: additiveFixAbbreviation s
   | "function" :: "_" :: "add" :: "Semiconj" :: s
-                                      => "function" :: "_" :: "semiconj" :: fixAbbreviation s
+                                    => "function" :: "_" :: "semiconj" :: additiveFixAbbreviation s
   | "function" :: "_" :: "add" :: "Commute" :: s
-                                      => "function" :: "_" :: "commute" :: fixAbbreviation s
-  | "Zero" :: "Le" :: "Part" :: s         => "PosPart" :: fixAbbreviation s
-  | "Le" :: "Zero" :: "Part" :: s         => "NegPart" :: fixAbbreviation s
-  | "zero" :: "Le" :: "Part" :: s         => "posPart" :: fixAbbreviation s
-  | "le" :: "Zero" :: "Part" :: s         => "negPart" :: fixAbbreviation s
-  | "Division" :: "Add" :: "Monoid" :: s => "SubtractionMonoid" :: fixAbbreviation s
-  | "division" :: "Add" :: "Monoid" :: s => "subtractionMonoid" :: fixAbbreviation s
-  | "Sub" :: "Neg" :: "Zero" :: "Add" :: "Monoid" :: s => "SubNegZeroMonoid" :: fixAbbreviation s
-  | "sub" :: "Neg" :: "Zero" :: "Add" :: "Monoid" :: s => "subNegZeroMonoid" :: fixAbbreviation s
-  | x :: s                            => x :: fixAbbreviation s
+                                    => "function" :: "_" :: "commute" :: additiveFixAbbreviation s
+  | "Zero" :: "Le" :: "Part" :: s         => "PosPart" :: additiveFixAbbreviation s
+  | "Le" :: "Zero" :: "Part" :: s         => "NegPart" :: additiveFixAbbreviation s
+  | "zero" :: "Le" :: "Part" :: s         => "posPart" :: additiveFixAbbreviation s
+  | "le" :: "Zero" :: "Part" :: s         => "negPart" :: additiveFixAbbreviation s
+  | "Division" :: "Add" :: "Monoid" :: s => "SubtractionMonoid" :: additiveFixAbbreviation s
+  | "division" :: "Add" :: "Monoid" :: s => "subtractionMonoid" :: additiveFixAbbreviation s
+  | "Sub" :: "Neg" :: "Zero" :: "Add" :: "Monoid" :: s
+                                      => "SubNegZeroMonoid" :: additiveFixAbbreviation s
+  | "sub" :: "Neg" :: "Zero" :: "Add" :: "Monoid" :: s
+                                      => "subNegZeroMonoid" :: additiveFixAbbreviation s
+  | x :: s                            => x :: additiveFixAbbreviation s
   | []                                => []
 
 /--
@@ -1080,21 +1091,24 @@ This runs in several steps:
 2) Apply word-by-word translation rules.
 3) Fix up abbreviations that are not word-by-word translations, like "addComm" or "Nonneg".
 -/
-def guessName : String → String :=
+def guessName (nameDict : String → List String) (fixAbbreviation : List String → List String) :
+    String → String :=
   String.mapTokens '\'' <|
   fun s =>
     String.join <|
     fixAbbreviation <|
-    applyNameDict <|
+    applyNameDict nameDict <|
     s.splitCase
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
-def targetName (cfg : Config) (src : Name) : CoreM Name := do
+def targetName (translations : NameMapExtension Name)
+    (nameDict : String → List String) (fixAbbreviation : List String → List String)
+    (cfg : Config) (src : Name) : CoreM Name := do
   let .str pre s := src | throwError "to_additive: can't transport {src}"
   trace[to_additive_detail] "The name {s} splits as {s.splitCase}"
-  let tgt_auto := guessName s
+  let tgt_auto := guessName nameDict fixAbbreviation s
   let depth := cfg.tgt.getNumParts
-  let pre := pre.mapPrefix <| findTranslation? (← getEnv)
+  let pre := pre.mapPrefix <| findTranslation? (← getEnv) translations
   let (pre1, pre2) := pre.splitAt (depth - 1)
   if cfg.tgt == pre2.str tgt_auto && !cfg.allowAutoName && cfg.tgt != src then
     Linter.logLintIf linter.toAdditiveGenerateName cfg.ref m!"\
@@ -1111,7 +1125,8 @@ def targetName (cfg : Config) (src : Name) : CoreM Name := do
 /-- if `f src = #[a_1, ..., a_n]` and `f tgt = #[b_1, ... b_n]` then `proceedFieldsAux src tgt f`
 will insert translations from `src.a_i` to `tgt.b_i`
 (or from `a_i` to `b_i` if `prependName` is false). -/
-def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (Array Name))
+def proceedFieldsAux (translations : NameMapExtension Name)
+    (src tgt : Name) (f : Name → CoreM (Array Name))
     (prependName := true) : CoreM Unit := do
   let srcFields ← f src
   let tgtFields ← f tgt
@@ -1122,14 +1137,14 @@ def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (Array Name))
     let srcName := if prependName then src ++ srcField else srcField
     let tgtName := if prependName then tgt ++ tgtField else tgtField
     if srcField != tgtField then
-      insertTranslation srcName tgtName
+      insertTranslation translations srcName tgtName
     else
       trace[to_additive] "Translation {srcName} ↦ {tgtName} is automatic."
 
 /-- Add the structure fields of `src` to the translations dictionary
 so that future uses of `to_additive` will map them to the corresponding `tgt` fields. -/
-def proceedFields (src tgt : Name) : CoreM Unit := do
-  let aux := @proceedFieldsAux src tgt
+def proceedFields (translations : NameMapExtension Name) (src tgt : Name) : CoreM Unit := do
+  let aux := @proceedFieldsAux translations src tgt
   -- add translations for the structure fields
   aux fun declName ↦ do
     if isStructure (← getEnv) declName then
@@ -1178,7 +1193,9 @@ def elabToAdditive : Syntax → CoreM Config
 
 mutual
 /-- Apply attributes to the multiplicative and additive declarations. -/
-partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr src tgt : Name) :
+partial def applyAttributes (translations : NameMapExtension Name) (attrName : Name)
+    (nameDict : String → List String) (fixAbbreviation : List String → List String)
+    (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr src tgt : Name) :
   TermElabM (Array Name) := do
   -- we only copy the `instance` attribute, since `@[to_additive] instance` is nice to allow
   copyInstanceAttribute src tgt
@@ -1211,7 +1228,8 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
   let nestedDecls ←
     match additiveAttrs.size with
       | 0 => pure #[]
-      | 1 => addToAdditiveAttr tgt (← elabToAdditive additiveAttrs[0]!.stx) additiveAttrs[0]!.kind
+      | 1 => (addToAdditiveAttr translations attrName nameDict fixAbbreviation tgt
+          (← elabToAdditive additiveAttrs[0]!.stx) additiveAttrs[0]!.kind)
       | _ => throwError "cannot apply {thisAttr} multiple times."
   let allDecls := #[src, tgt] ++ nestedDecls
   if attrs.size > 0 then
@@ -1219,7 +1237,7 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
   for attr in attrs do
     withRef attr.stx do withLogging do
     if attr.name == `simps then
-      additivizeLemmas allDecls "simps lemmas" (simpsTacFromSyntax · attr.stx)
+      additivizeLemmas translations allDecls "simps lemmas" (simpsTacFromSyntax · attr.stx)
       return
     let env ← getEnv
     match getAttributeImpl env attr.name with
@@ -1245,39 +1263,47 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
 /--
 Copies equation lemmas and attributes from `src` to `tgt`
 -/
-partial def copyMetaData (cfg : Config) (src tgt : Name) : CoreM (Array Name) := do
+partial def copyMetaData (translations : NameMapExtension Name) (attrName : Name)
+    (nameDict : String → List String) (fixAbbreviation : List String → List String)
+    (cfg : Config) (src tgt : Name) : CoreM (Array Name) := do
   if let some eqns := eqnsAttribute.find? (← getEnv) src then
     unless (eqnsAttribute.find? (← getEnv) tgt).isSome do
-      for eqn in eqns do _ ← addToAdditiveAttr eqn cfg
-      eqnsAttribute.add tgt (eqns.map (findTranslation? (← getEnv) · |>.get!))
+      for eqn in eqns
+        do _ ← addToAdditiveAttr translations attrName nameDict fixAbbreviation eqn cfg
+      eqnsAttribute.add tgt (eqns.map (findTranslation? (← getEnv) translations · |>.get!))
   else
     /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
     definitions. If we don't do that, the equation lemma for `src` might be generated later
     when doing a `rw`, but it won't be generated for `tgt`. -/
-    additivizeLemmas #[src, tgt] "equation lemmas" fun nm ↦
+    additivizeLemmas translations #[src, tgt] "equation lemmas" fun nm ↦
       (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm)
   MetaM.run' <| Elab.Term.TermElabM.run' <|
-    applyAttributes cfg.ref cfg.attrs `to_additive src tgt
+    (applyAttributes translations attrName nameDict fixAbbreviation
+      cfg.ref cfg.attrs attrName src tgt)
 
 /--
 Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
 the body using the `translations` dictionary.
 This is used to implement `@[to_additive]`.
 -/
-partial def transformDecl (cfg : Config) (src tgt : Name) : CoreM (Array Name) := do
-  transformDeclAux cfg src tgt src
-  copyMetaData cfg src tgt
+partial def transformDecl (translations : NameMapExtension Name) (attrName : Name)
+    (nameDict : String → List String) (fixAbbreviation : List String → List String)
+    (cfg : Config) (src tgt : Name) : CoreM (Array Name) := do
+  transformDeclAux translations cfg src tgt src
+  copyMetaData translations attrName nameDict fixAbbreviation cfg src tgt
 
 /-- `addToAdditiveAttr src cfg` adds a `@[to_additive]` attribute to `src` with configuration `cfg`.
 See the attribute implementation for more details.
 It returns an array with names of additive declarations (usually 1, but more if there are nested
 `to_additive` calls. -/
-partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind.global) :
+partial def addToAdditiveAttr (translations : NameMapExtension Name) (attrName : Name)
+    (nameDict : String → List String) (fixAbbreviation : List String → List String)
+    (src : Name) (cfg : Config) (kind := AttributeKind.global) :
   AttrM (Array Name) := do
   if (kind != AttributeKind.global) then
     throwError "`to_additive` can only be used as a global attribute"
   withOptions (· |>.updateBool `trace.to_additive (cfg.trace || ·)) <| do
-  let tgt ← targetName cfg src
+  let tgt ← targetName translations nameDict fixAbbreviation cfg src
   let alreadyExists := (← getEnv).contains tgt
   if cfg.existing == some !alreadyExists && !(← isInductive src) then
     Linter.logLintIf linter.toAdditiveExisting cfg.ref <|
@@ -1290,23 +1316,23 @@ partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind
     trace[to_additive] "@[to_additive] will reorder the arguments of {tgt}."
     reorderAttr.add src cfg.reorder
     -- we allow using this attribute if it's only to add the reorder configuration
-    if findTranslation? (← getEnv) src |>.isSome then
+    if findTranslation? (← getEnv) translations src |>.isSome then
       return #[tgt]
-  let firstMultArg ← MetaM.run' <| firstMultiplicativeArg src
+  let firstMultArg ← MetaM.run' <| firstMultiplicativeArg translations src
   if firstMultArg != 0 then
     trace[to_additive_detail] "Setting relevant_arg for {src} to be {firstMultArg}."
     relevantArgAttr.add src firstMultArg
-  insertTranslation src tgt alreadyExists
+  insertTranslation translations src tgt alreadyExists
   let nestedNames ←
     if alreadyExists then
       -- since `tgt` already exists, we just need to copy metadata and
       -- add translations `src.x ↦ tgt.x'` for any subfields.
       trace[to_additive_detail] "declaration {tgt} already exists."
-      proceedFields src tgt
-      copyMetaData cfg src tgt
+      proceedFields translations src tgt
+      copyMetaData translations attrName nameDict fixAbbreviation cfg src tgt
     else
       -- tgt doesn't exist, so let's make it
-      transformDecl cfg src tgt
+      transformDecl translations attrName nameDict fixAbbreviation cfg src tgt
   -- add pop-up information when mousing over `additive_name` of `@[to_additive additive_name]`
   -- (the information will be over the attribute of no additive name is given)
   pushInfoLeaf <| .ofTermInfo {
@@ -1321,7 +1347,9 @@ end
 initialize registerBuiltinAttribute {
     name := `to_additive
     descr := "Transport multiplicative to additive"
-    add := fun src stx kind ↦ do _ ← addToAdditiveAttr src (← elabToAdditive stx) kind
+    add := fun src stx kind ↦
+      do _ ← (addToAdditiveAttr additiveTranslations `toAdditive
+        additiveNameDict additiveFixAbbreviation src (← elabToAdditive stx) kind)
     -- we (presumably) need to run after compilation to properly add the `simp` attribute
     applicationTime := .afterCompilation
   }
