@@ -178,19 +178,19 @@ theorem div_comp [Div γ] [ContinuousDiv γ] (f g : C(β, γ)) (h : C(α, β)) :
 
 /-! ### `zpow` and `zsmul` -/
 
-instance instZSMul [AddGroup β] [TopologicalAddGroup β] : SMul ℤ C(α, β) where
+instance instZSMul [AddGroup β] [IsTopologicalAddGroup β] : SMul ℤ C(α, β) where
   smul z f := ⟨z • ⇑f, f.continuous.zsmul z⟩
 
 @[to_additive existing]
-instance instZPow [Group β] [TopologicalGroup β] : Pow C(α, β) ℤ where
+instance instZPow [Group β] [IsTopologicalGroup β] : Pow C(α, β) ℤ where
   pow f z := ⟨(⇑f) ^ z, f.continuous.zpow z⟩
 
 @[to_additive (attr := norm_cast) (reorder := 7 8)]
-theorem coe_zpow [Group β] [TopologicalGroup β] (f : C(α, β)) (z : ℤ) : ⇑(f ^ z) = (⇑f) ^ z :=
+theorem coe_zpow [Group β] [IsTopologicalGroup β] (f : C(α, β)) (z : ℤ) : ⇑(f ^ z) = (⇑f) ^ z :=
   rfl
 
 @[to_additive]
-theorem zpow_apply [Group β] [TopologicalGroup β] (f : C(α, β)) (z : ℤ) (x : α) :
+theorem zpow_apply [Group β] [IsTopologicalGroup β] (f : C(α, β)) (z : ℤ) (x : α) :
     (f ^ z) x = f x ^ z :=
   rfl
 
@@ -199,7 +199,7 @@ theorem zpow_apply [Group β] [TopologicalGroup β] (f : C(α, β)) (z : ℤ) (x
 attribute [simp] coe_zpow zpow_apply
 
 @[to_additive]
-theorem zpow_comp [Group γ] [TopologicalGroup γ] (f : C(β, γ)) (z : ℤ) (g : C(α, β)) :
+theorem zpow_comp [Group γ] [IsTopologicalGroup γ] (f : C(β, γ)) (z : ℤ) (g : C(α, β)) :
     (f ^ z).comp g = f.comp g ^ z :=
   rfl
 
@@ -231,7 +231,7 @@ def continuousSubmonoid (α : Type*) (β : Type*) [TopologicalSpace α] [Topolog
 /-- The subgroup of continuous maps `α → β`. -/
 @[to_additive "The `AddSubgroup` of continuous maps `α → β`. "]
 def continuousSubgroup (α : Type*) (β : Type*) [TopologicalSpace α] [TopologicalSpace β] [Group β]
-    [TopologicalGroup β] : Subgroup (α → β) :=
+    [IsTopologicalGroup β] : Subgroup (α → β) :=
   { continuousSubmonoid α β with inv_mem' := fun fc => Continuous.inv fc }
 
 end Subtype
@@ -325,17 +325,17 @@ theorem prod_apply [CommMonoid β] [ContinuousMul β] {ι : Type*} (s : Finset �
     (a : α) : (∏ i ∈ s, f i) a = ∏ i ∈ s, f i a := by simp
 
 @[to_additive]
-instance [Group β] [TopologicalGroup β] : Group C(α, β) :=
+instance [Group β] [IsTopologicalGroup β] : Group C(α, β) :=
   coe_injective.group _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
 @[to_additive]
-instance instCommGroupContinuousMap [CommGroup β] [TopologicalGroup β] : CommGroup C(α, β) :=
+instance instCommGroupContinuousMap [CommGroup β] [IsTopologicalGroup β] : CommGroup C(α, β) :=
   coe_injective.commGroup _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
 @[to_additive]
-instance [CommGroup β] [TopologicalGroup β] : TopologicalGroup C(α, β) where
+instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) where
   continuous_mul := by
-    letI : UniformSpace β := TopologicalGroup.toUniformSpace β
+    letI : UniformSpace β := IsTopologicalGroup.toUniformSpace β
     have : UniformGroup β := comm_topologicalGroup_is_uniform
     rw [continuous_iff_continuousAt]
     rintro ⟨f, g⟩
@@ -345,7 +345,7 @@ instance [CommGroup β] [TopologicalGroup β] : TopologicalGroup C(α, β) where
         ((tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK).prod
           (tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK))
   continuous_inv := by
-    letI : UniformSpace β := TopologicalGroup.toUniformSpace β
+    letI : UniformSpace β := IsTopologicalGroup.toUniformSpace β
     have : UniformGroup β := comm_topologicalGroup_is_uniform
     rw [continuous_iff_continuousAt]
     intro f
@@ -504,7 +504,7 @@ section Subtype
 variable (α : Type*) [TopologicalSpace α]
 variable (R : Type*) [Semiring R]
 variable (M : Type*) [TopologicalSpace M] [AddCommGroup M]
-variable [Module R M] [ContinuousConstSMul R M] [TopologicalAddGroup M]
+variable [Module R M] [ContinuousConstSMul R M] [IsTopologicalAddGroup M]
 
 /-- The `R`-submodule of continuous maps `α → M`. -/
 def continuousSubmodule : Submodule R (α → M) :=

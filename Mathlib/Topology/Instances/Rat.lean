@@ -101,7 +101,7 @@ theorem uniformContinuous_neg : UniformContinuous (@Neg.neg ℚ _) :=
 instance : UniformAddGroup ℚ :=
   UniformAddGroup.mk' Rat.uniformContinuous_add Rat.uniformContinuous_neg
 
-instance : TopologicalAddGroup ℚ := inferInstance
+instance : IsTopologicalAddGroup ℚ := inferInstance
 
 instance : OrderTopology ℚ := induced_orderTopology _ Rat.cast_lt exists_rat_btwn
 

@@ -27,7 +27,7 @@ open scoped Pointwise
 
 variable (F A B C D E : Type*) [Monoid A] [Monoid B] [Monoid C] [Monoid D] [CommGroup E]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C] [TopologicalSpace D]
-  [TopologicalSpace E] [TopologicalGroup E]
+  [TopologicalSpace E] [IsTopologicalGroup E]
 
 /-- The type of continuous additive monoid homomorphisms from `A` to `B`.
 

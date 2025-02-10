@@ -179,22 +179,22 @@ theorem mk_div [Div G] [ContinuousDiv G] (x y : G) : mk (x / y) = mk x / mk y :=
 instance instContinuousDiv [Div G] [ContinuousDiv G] : ContinuousDiv (SeparationQuotient G) where
   continuous_div' := isQuotientMap_prodMap_mk.continuous_iff.2 <| continuous_mk.comp continuous_div'
 
-instance instZSMul [AddGroup G] [TopologicalAddGroup G] : SMul ℤ (SeparationQuotient G) :=
+instance instZSMul [AddGroup G] [IsTopologicalAddGroup G] : SMul ℤ (SeparationQuotient G) :=
   inferInstance
 
 @[to_additive existing]
-instance instZPow [Group G] [TopologicalGroup G] : Pow (SeparationQuotient G) ℤ where
+instance instZPow [Group G] [IsTopologicalGroup G] : Pow (SeparationQuotient G) ℤ where
   pow x n := Quotient.map' (s₁ := inseparableSetoid G) (· ^ n) (fun _ _ h ↦ Inseparable.zpow h n) x
 
 @[to_additive, simp] -- `mk_zsmul` is not a `simp` lemma because we have `mk_smul`
-theorem mk_zpow [Group G] [TopologicalGroup G] (x : G) (n : ℤ) : mk (x ^ n) = (mk x) ^ n := rfl
+theorem mk_zpow [Group G] [IsTopologicalGroup G] (x : G) (n : ℤ) : mk (x ^ n) = (mk x) ^ n := rfl
 
 @[to_additive]
-instance instGroup [Group G] [TopologicalGroup G] : Group (SeparationQuotient G) :=
+instance instGroup [Group G] [IsTopologicalGroup G] : Group (SeparationQuotient G) :=
   surjective_mk.group mk mk_one mk_mul mk_inv mk_div mk_pow mk_zpow
 
 @[to_additive]
-instance instCommGroup [CommGroup G] [TopologicalGroup G] : CommGroup (SeparationQuotient G) :=
+instance instCommGroup [CommGroup G] [IsTopologicalGroup G] : CommGroup (SeparationQuotient G) :=
   surjective_mk.commGroup mk mk_one mk_mul mk_inv mk_div mk_pow mk_zpow
 
 /-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/

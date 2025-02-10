@@ -269,7 +269,7 @@ theorem WithSeminorms.withSeminorms_eq {p : SeminormFamily 𝕜 E ι} [t : Topol
 variable [TopologicalSpace E]
 variable {p : SeminormFamily 𝕜 E ι}
 
-theorem WithSeminorms.topologicalAddGroup (hp : WithSeminorms p) : TopologicalAddGroup E := by
+theorem WithSeminorms.topologicalAddGroup (hp : WithSeminorms p) : IsTopologicalAddGroup E := by
   rw [hp.withSeminorms_eq]
   exact AddGroupFilterBasis.isTopologicalAddGroup _
 
@@ -296,7 +296,7 @@ theorem WithSeminorms.hasBasis_zero_ball (hp : WithSeminorms p) :
 theorem WithSeminorms.hasBasis_ball (hp : WithSeminorms p) {x : E} :
     (𝓝 (x : E)).HasBasis
     (fun sr : Finset ι × ℝ => 0 < sr.2) fun sr => (sr.1.sup p).ball x sr.2 := by
-  have : TopologicalAddGroup E := hp.topologicalAddGroup
+  have : IsTopologicalAddGroup E := hp.topologicalAddGroup
   rw [← map_add_left_nhds_zero]
   convert hp.hasBasis_zero_ball.map (x + ·) using 1
   ext sr : 1
@@ -318,13 +318,13 @@ theorem WithSeminorms.isOpen_iff_mem_balls (hp : WithSeminorms p) (U : Set E) :
   simp_rw [← WithSeminorms.mem_nhds_iff hp _ U, isOpen_iff_mem_nhds]
 
 /- Note that through the following lemmas, one also immediately has that separating families
-of seminorms induce T₂ and T₃ topologies by `TopologicalAddGroup.t2Space`
-and `TopologicalAddGroup.t3Space` -/
+of seminorms induce T₂ and T₃ topologies by `IsTopologicalAddGroup.t2Space`
+and `IsTopologicalAddGroup.t3Space` -/
 /-- A separating family of seminorms induces a T₁ topology. -/
 theorem WithSeminorms.T1_of_separating (hp : WithSeminorms p)
     (h : ∀ x, x ≠ 0 → ∃ i, p i x ≠ 0) : T1Space E := by
   have := hp.topologicalAddGroup
-  refine TopologicalAddGroup.t1Space _ ?_
+  refine IsTopologicalAddGroup.t1Space _ ?_
   rw [← isOpen_compl_iff, hp.isOpen_iff_mem_balls]
   rintro x (hx : x ≠ 0)
   cases' h x hx with i pi_nonzero
@@ -382,7 +382,7 @@ theorem WithSeminorms.tendsto_nhds_atTop (hp : WithSeminorms p) (u : F → E) (y
 
 end Tendsto
 
-section TopologicalAddGroup
+section IsTopologicalAddGroup
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [Nonempty ι]
@@ -391,19 +391,19 @@ section TopologicalSpace
 
 variable [t : TopologicalSpace E]
 
-theorem SeminormFamily.withSeminorms_of_nhds [TopologicalAddGroup E] (p : SeminormFamily 𝕜 E ι)
+theorem SeminormFamily.withSeminorms_of_nhds [IsTopologicalAddGroup E] (p : SeminormFamily 𝕜 E ι)
     (h : 𝓝 (0 : E) = p.moduleFilterBasis.toFilterBasis.filter) : WithSeminorms p := by
   refine
-    ⟨TopologicalAddGroup.ext inferInstance p.addGroupFilterBasis.isTopologicalAddGroup ?_⟩
+    ⟨IsTopologicalAddGroup.ext inferInstance p.addGroupFilterBasis.isTopologicalAddGroup ?_⟩
   rw [AddGroupFilterBasis.nhds_zero_eq]
   exact h
 
-theorem SeminormFamily.withSeminorms_of_hasBasis [TopologicalAddGroup E] (p : SeminormFamily 𝕜 E ι)
+theorem SeminormFamily.withSeminorms_of_hasBasis [IsTopologicalAddGroup E] (p : SeminormFamily 𝕜 E ι)
     (h : (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ p.basisSets) id) : WithSeminorms p :=
   p.withSeminorms_of_nhds <|
     Filter.HasBasis.eq_of_same_basis h p.addGroupFilterBasis.toFilterBasis.hasBasis
 
-theorem SeminormFamily.withSeminorms_iff_nhds_eq_iInf [TopologicalAddGroup E]
+theorem SeminormFamily.withSeminorms_iff_nhds_eq_iInf [IsTopologicalAddGroup E]
     (p : SeminormFamily 𝕜 E ι) : WithSeminorms p ↔ (𝓝 (0 : E)) = ⨅ i, (𝓝 0).comap (p i) := by
   rw [← p.filter_eq_iInf]
   refine ⟨fun h => ?_, p.withSeminorms_of_nhds⟩
@@ -412,12 +412,12 @@ theorem SeminormFamily.withSeminorms_iff_nhds_eq_iInf [TopologicalAddGroup E]
 
 /-- The topology induced by a family of seminorms is exactly the infimum of the ones induced by
 each seminorm individually. We express this as a characterization of `WithSeminorms p`. -/
-theorem SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf [TopologicalAddGroup E]
+theorem SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf [IsTopologicalAddGroup E]
     (p : SeminormFamily 𝕜 E ι) :
     WithSeminorms p ↔
       t = ⨅ i, (p i).toSeminormedAddCommGroup.toUniformSpace.toTopologicalSpace := by
   rw [p.withSeminorms_iff_nhds_eq_iInf,
-    TopologicalAddGroup.ext_iff inferInstance (topologicalAddGroup_iInf fun i => inferInstance),
+    IsTopologicalAddGroup.ext_iff inferInstance (topologicalAddGroup_iInf fun i => inferInstance),
     nhds_iInf]
   congrm _ = ⨅ i, ?_
   exact @comap_norm_nhds_zero _ (p i).toSeminormedAddGroup
@@ -442,7 +442,7 @@ theorem SeminormFamily.withSeminorms_iff_uniformSpace_eq_iInf [u : UniformSpace 
   congrm _ = ⨅ i, ?_
   exact @comap_norm_nhds_zero _ (p i).toAddGroupSeminorm.toSeminormedAddGroup
 
-end TopologicalAddGroup
+end IsTopologicalAddGroup
 
 section NormedSpace
 
@@ -546,9 +546,9 @@ variable {τ₁₂ : 𝕝 →+* 𝕝₂} [RingHomIsometric τ₁₂]
 variable [Nonempty ι] [Nonempty ι']
 
 theorem continuous_of_continuous_comp {q : SeminormFamily 𝕝₂ F ι'} [TopologicalSpace E]
-    [TopologicalAddGroup E] [TopologicalSpace F] (hq : WithSeminorms q)
+    [IsTopologicalAddGroup E] [TopologicalSpace F] (hq : WithSeminorms q)
     (f : E →ₛₗ[τ₁₂] F) (hf : ∀ i, Continuous ((q i).comp f)) : Continuous f := by
-  have : TopologicalAddGroup F := hq.topologicalAddGroup
+  have : IsTopologicalAddGroup F := hq.topologicalAddGroup
   refine continuous_of_continuousAt_zero f ?_
   simp_rw [ContinuousAt, f.map_zero, q.withSeminorms_iff_nhds_eq_iInf.mp hq, Filter.tendsto_iInf,
     Filter.tendsto_comap_iff]
@@ -557,7 +557,7 @@ theorem continuous_of_continuous_comp {q : SeminormFamily 𝕝₂ F ι'} [Topolo
   exact (map_zero _).symm
 
 theorem continuous_iff_continuous_comp {q : SeminormFamily 𝕜₂ F ι'} [TopologicalSpace E]
-    [TopologicalAddGroup E] [TopologicalSpace F] (hq : WithSeminorms q) (f : E →ₛₗ[σ₁₂] F) :
+    [IsTopologicalAddGroup E] [TopologicalSpace F] (hq : WithSeminorms q) (f : E →ₛₗ[σ₁₂] F) :
     Continuous f ↔ ∀ i, Continuous ((q i).comp f) :=
     -- Porting note: if we *don't* use dot notation for `Continuous.comp`, Lean tries to show
     -- continuity of `((q i).comp f) ∘ id` because it doesn't see that `((q i).comp f)` is
@@ -567,7 +567,7 @@ theorem continuous_iff_continuous_comp {q : SeminormFamily 𝕜₂ F ι'} [Topol
 theorem continuous_from_bounded {p : SeminormFamily 𝕝 E ι} {q : SeminormFamily 𝕝₂ F ι'}
     {_ : TopologicalSpace E} (hp : WithSeminorms p) {_ : TopologicalSpace F} (hq : WithSeminorms q)
     (f : E →ₛₗ[τ₁₂] F) (hf : Seminorm.IsBounded p q f) : Continuous f := by
-  have : TopologicalAddGroup E := hp.topologicalAddGroup
+  have : IsTopologicalAddGroup E := hp.topologicalAddGroup
   refine continuous_of_continuous_comp hq _ fun i => ?_
   rcases hf i with ⟨s, C, hC⟩
   rw [← Seminorm.finset_sup_smul] at hC
@@ -859,7 +859,7 @@ theorem LinearMap.withSeminorms_induced [hι : Nonempty ι] {q : SeminormFamily 
     WithSeminorms (topology := induced f inferInstance) (q.comp f) := by
   have := hq.topologicalAddGroup
   let _ : TopologicalSpace E := induced f inferInstance
-  have : TopologicalAddGroup E := topologicalAddGroup_induced f
+  have : IsTopologicalAddGroup E := topologicalAddGroup_induced f
   rw [(q.comp f).withSeminorms_iff_nhds_eq_iInf, nhds_induced, map_zero,
     q.withSeminorms_iff_nhds_eq_iInf.mp hq, Filter.comap_iInf]
   refine iInf_congr fun i => ?_
@@ -882,9 +882,9 @@ theorem withSeminorms_iInf {κ : ι → Type*} [Nonempty ((i : ι) × κ i)] [�
     {p : (i : ι) → SeminormFamily 𝕜 E (κ i)} {t : ι → TopologicalSpace E}
     (hp : ∀ i, WithSeminorms (topology := t i) (p i)) :
     WithSeminorms (topology := ⨅ i, t i) (SeminormFamily.sigma p) := by
-  have : ∀ i, @TopologicalAddGroup E (t i) _ :=
+  have : ∀ i, @IsTopologicalAddGroup E (t i) _ :=
     fun i ↦ @WithSeminorms.topologicalAddGroup _ _ _ _ _ _ _ (t i) _ (hp i)
-  have : @TopologicalAddGroup E (⨅ i, t i) _ := topologicalAddGroup_iInf inferInstance
+  have : @IsTopologicalAddGroup E (⨅ i, t i) _ := topologicalAddGroup_iInf inferInstance
   simp_rw [@SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf _ _ _ _ _ _ _ (_)] at hp ⊢
   rw [iInf_sigma]
   exact iInf_congr hp
@@ -909,7 +909,7 @@ is first countable. -/
 theorem WithSeminorms.firstCountableTopology (hp : WithSeminorms p) :
     FirstCountableTopology E := by
   have := hp.topologicalAddGroup
-  let _ : UniformSpace E := TopologicalAddGroup.toUniformSpace E
+  let _ : UniformSpace E := IsTopologicalAddGroup.toUniformSpace E
   have : UniformAddGroup E := comm_topologicalAddGroup_is_uniform
   have : (𝓝 (0 : E)).IsCountablyGenerated := by
     rw [p.withSeminorms_iff_nhds_eq_iInf.mp hp]

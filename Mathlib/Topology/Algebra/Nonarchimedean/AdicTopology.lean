@@ -43,7 +43,7 @@ to make sure it is definitionally equal to the `I`-topology on `R` seen as an `R
 
 variable {R : Type*} [CommRing R]
 
-open Set TopologicalAddGroup Submodule Filter
+open Set IsTopologicalAddGroup Submodule Filter
 
 open Topology Pointwise
 
@@ -158,7 +158,7 @@ theorem isAdic_iff [top : TopologicalSpace R] [IsTopologicalRing R] {J : Ideal R
     · intro s hs
       simpa using J.hasBasis_nhds_zero_adic.mem_iff.mp hs
   · rintro ⟨H₁, H₂⟩
-    apply TopologicalAddGroup.ext
+    apply IsTopologicalAddGroup.ext
     · apply @IsTopologicalRing.to_topologicalAddGroup
     · apply (RingSubgroupsBasis.toRingFilterBasis _).toAddGroupFilterBasis.isTopologicalAddGroup
     · ext s
@@ -222,7 +222,7 @@ instance (priority := 100) : NonarchimedeanRing R :=
   RingSubgroupsBasis.nonarchimedean _
 
 instance (priority := 100) : UniformSpace R :=
-  TopologicalAddGroup.toUniformSpace R
+  IsTopologicalAddGroup.toUniformSpace R
 
 instance (priority := 100) : UniformAddGroup R :=
   comm_topologicalAddGroup_is_uniform
@@ -241,7 +241,7 @@ example : NonarchimedeanRing R := by infer_instance
 example : IsTopologicalRing (UniformSpace.Completion R) := by infer_instance
 
 example (M : Type*) [AddCommGroup M] [Module R M] :
-    @TopologicalAddGroup M (WithIdeal.topologicalSpaceModule R M) _ := by infer_instance
+    @IsTopologicalAddGroup M (WithIdeal.topologicalSpaceModule R M) _ := by infer_instance
 
 example (M : Type*) [AddCommGroup M] [Module R M] :
     @ContinuousSMul R M _ _ (WithIdeal.topologicalSpaceModule R M) := by infer_instance

@@ -59,7 +59,7 @@ instance [Add R] [ContinuousAdd R] : ContinuousAdd (Matrix m n R) :=
 instance [Neg R] [ContinuousNeg R] : ContinuousNeg (Matrix m n R) :=
   Pi.continuousNeg
 
-instance [AddGroup R] [TopologicalAddGroup R] : TopologicalAddGroup (Matrix m n R) :=
+instance [AddGroup R] [IsTopologicalAddGroup R] : IsTopologicalAddGroup (Matrix m n R) :=
   Pi.topologicalAddGroup
 
 /-- To show a function into matrices is continuous it suffices to show the coefficients of the

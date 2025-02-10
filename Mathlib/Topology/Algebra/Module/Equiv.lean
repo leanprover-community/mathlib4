@@ -642,7 +642,7 @@ variable {R : Type*} [Semiring R] {M : Type*} [TopologicalSpace M] [AddCommGroup
   {M₄ : Type*} [TopologicalSpace M₄] [AddCommGroup M₄] [Module R M] [Module R M₂] [Module R M₃]
   [Module R M₄]
 
-variable [TopologicalAddGroup M₄]
+variable [IsTopologicalAddGroup M₄]
 
 /-- Equivalence given by a block lower diagonal matrix. `e` and `e'` are diagonal square blocks,
   and `f` is a rectangular block below the diagonal. -/
@@ -793,7 +793,7 @@ theorem unitsEquivAut_symm_apply (e : R ≃L[R] R) : ↑((unitsEquivAut R).symm 
 
 end
 
-variable [Module R M₂] [TopologicalAddGroup M]
+variable [Module R M₂] [IsTopologicalAddGroup M]
 
 /-- A pair of continuous linear maps such that `f₁ ∘ f₂ = id` generates a continuous
 linear equivalence `e` between `M` and `M₂ × f₁.ker` such that `(e x).2 = x` for `x ∈ f₁.ker`,
@@ -1067,7 +1067,7 @@ then there exists a submodule `q` and a continuous linear equivalence `M ≃L[R]
 
 In fact, the properties of `e` imply the properties of `e.symm` and vice versa,
 but we provide both for convenience. -/
-lemma ClosedComplemented.exists_submodule_equiv_prod [TopologicalAddGroup M]
+lemma ClosedComplemented.exists_submodule_equiv_prod [IsTopologicalAddGroup M]
     {p : Submodule R M} (hp : p.ClosedComplemented) :
     ∃ (q : Submodule R M) (e : M ≃L[R] (p × q)),
       (∀ x : p, e x = (x, 0)) ∧ (∀ y : q, e y = (0, y)) ∧ (∀ x, e.symm x = x.1 + x.2) :=

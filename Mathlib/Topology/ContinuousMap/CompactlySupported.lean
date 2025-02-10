@@ -261,7 +261,7 @@ theorem sum_apply [AddCommMonoid β] [ContinuousAdd β] {ι : Type*} (s : Finset
 
 section AddGroup
 
-variable [AddGroup β] [TopologicalAddGroup β] (f g : C_c(α, β))
+variable [AddGroup β] [IsTopologicalAddGroup β] (f g : C_c(α, β))
 
 instance : Neg C_c(α, β) where
   neg f := { toFun := -f.1
@@ -293,7 +293,7 @@ instance : AddGroup C_c(α, β) :=
 
 end AddGroup
 
-instance [AddCommGroup β] [TopologicalAddGroup β] : AddCommGroup C_c(α, β) :=
+instance [AddCommGroup β] [IsTopologicalAddGroup β] : AddCommGroup C_c(α, β) :=
   DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ =>
     rfl
 

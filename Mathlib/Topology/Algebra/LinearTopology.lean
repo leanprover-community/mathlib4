@@ -61,7 +61,7 @@ by homeomorphisms. Similarly, `IsLinearTopology R R` and `ContinuousConstVAdd R 
 `R` is a topological ring. All of this will follow from PR#18437.
 
 Nevertheless, we don't plan on adding those facts as instances: one should use directly
-results from PR#18437 to get `TopologicalAddGroup` and `IsTopologicalRing` instances.
+results from PR#18437 to get `IsTopologicalAddGroup` and `IsTopologicalRing` instances.
 
 * The main constructor for `IsLinearTopology`, `IsLinearTopology.mk_of_hasBasis`
 is formulated in terms of the subobject classes `AddSubmonoidClass` and `SMulMemClass`

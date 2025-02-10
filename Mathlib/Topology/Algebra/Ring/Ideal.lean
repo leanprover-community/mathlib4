@@ -66,7 +66,7 @@ theorem QuotientRing.isQuotientMap_coe_coe : IsQuotientMap fun p : R × R => (mk
 alias QuotientRing.quotientMap_coe_coe := QuotientRing.isQuotientMap_coe_coe
 
 instance topologicalRing_quotient : IsTopologicalRing (R ⧸ N) where
-  __ := QuotientAddGroup.instTopologicalAddGroup _
+  __ := QuotientAddGroup.instIsTopologicalAddGroup _
   continuous_mul := (QuotientRing.isQuotientMap_coe_coe N).continuous_iff.2 <|
     continuous_quot_mk.comp continuous_mul
 

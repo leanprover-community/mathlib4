@@ -120,7 +120,7 @@ theorem topologicalSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module 
     IsTopologicalSemiring (tsze R M) := { }
 
 instance [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [IsTopologicalRing R]
-    [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] :
+    [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] :
     IsTopologicalRing (tsze R M) where
 
 instance [SMul S R] [SMul S M] [ContinuousConstSMul S R] [ContinuousConstSMul S M] :

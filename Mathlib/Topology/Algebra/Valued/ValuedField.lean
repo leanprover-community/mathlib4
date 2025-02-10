@@ -95,7 +95,7 @@ instance (priority := 100) Valued.topologicalDivisionRing [Valued K Γ₀] :
 /-- A valued division ring is separated. -/
 instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := by
   suffices T2Space K by infer_instance
-  apply TopologicalAddGroup.t2Space_of_zero_sep
+  apply IsTopologicalAddGroup.t2Space_of_zero_sep
   intro x x_ne
   refine ⟨{ k | v k < v x }, ?_, fun h => lt_irrefl _ h⟩
   rw [Valued.mem_nhds]

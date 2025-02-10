@@ -234,7 +234,7 @@ instance instAddCommMonoid [AddCommMonoid β] [ContinuousAdd β] : AddCommMonoid
 
 section AddGroup
 
-variable [AddGroup β] [TopologicalAddGroup β] (f g : C₀(α, β))
+variable [AddGroup β] [IsTopologicalAddGroup β] (f g : C₀(α, β))
 
 instance instNeg : Neg C₀(α, β) :=
   ⟨fun f => ⟨-f, by simpa only [neg_zero] using (zero_at_infty f).neg⟩⟩
@@ -261,7 +261,7 @@ instance instAddGroup : AddGroup C₀(α, β) :=
 
 end AddGroup
 
-instance instAddCommGroup [AddCommGroup β] [TopologicalAddGroup β] : AddCommGroup C₀(α, β) :=
+instance instAddCommGroup [AddCommGroup β] [IsTopologicalAddGroup β] : AddCommGroup C₀(α, β) :=
   DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ =>
     rfl
 

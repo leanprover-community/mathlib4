@@ -71,7 +71,7 @@ theorem IsTopologicalSemiring.toIsTopologicalRing [TopologicalSpace α] [NonAsso
 
 -- See note [lower instance priority]
 instance (priority := 100) IsTopologicalRing.to_topologicalAddGroup [NonUnitalNonAssocRing α]
-    [TopologicalSpace α] [IsTopologicalRing α] : TopologicalAddGroup α := ⟨⟩
+    [TopologicalSpace α] [IsTopologicalRing α] : IsTopologicalAddGroup α := ⟨⟩
 
 instance (priority := 50) DiscreteTopology.topologicalSemiring [TopologicalSpace α]
     [NonUnitalNonAssocSemiring α] [DiscreteTopology α] : IsTopologicalSemiring α := ⟨⟩
@@ -237,7 +237,7 @@ section
 
 variable {R : Type*} [NonUnitalNonAssocRing R] [TopologicalSpace R]
 
-theorem IsTopologicalRing.of_addGroup_of_nhds_zero [TopologicalAddGroup R]
+theorem IsTopologicalRing.of_addGroup_of_nhds_zero [IsTopologicalAddGroup R]
     (hmul : Tendsto (uncurry ((· * ·) : R → R → R)) (𝓝 0 ×ˢ 𝓝 0) <| 𝓝 0)
     (hmul_left : ∀ x₀ : R, Tendsto (fun x : R => x₀ * x) (𝓝 0) <| 𝓝 0)
     (hmul_right : ∀ x₀ : R, Tendsto (fun x : R => x * x₀) (𝓝 0) <| 𝓝 0) : IsTopologicalRing R where
@@ -252,7 +252,7 @@ theorem IsTopologicalRing.of_nhds_zero
     (hmul_left : ∀ x₀ : R, Tendsto (fun x : R => x₀ * x) (𝓝 0) <| 𝓝 0)
     (hmul_right : ∀ x₀ : R, Tendsto (fun x : R => x * x₀) (𝓝 0) <| 𝓝 0)
     (hleft : ∀ x₀ : R, 𝓝 x₀ = map (fun x => x₀ + x) (𝓝 0)) : IsTopologicalRing R :=
-  have := TopologicalAddGroup.of_comm_of_nhds_zero hadd hneg hleft
+  have := IsTopologicalAddGroup.of_comm_of_nhds_zero hadd hneg hleft
   IsTopologicalRing.of_addGroup_of_nhds_zero hmul hmul_left hmul_right
 
 end
@@ -280,7 +280,7 @@ namespace NonUnitalSubring
 variable [NonUnitalRing α] [IsTopologicalRing α]
 
 instance instIsTopologicalRing (S : NonUnitalSubring α) : IsTopologicalRing S :=
-  { S.toSubsemigroup.continuousMul, inferInstanceAs (TopologicalAddGroup S.toAddSubgroup) with }
+  { S.toSubsemigroup.continuousMul, inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup) with }
 
 /-- The (topological) closure of a non-unital subring of a non-unital topological ring is
 itself a non-unital subring. -/
@@ -311,7 +311,7 @@ end NonUnitalSubring
 variable [Ring α] [IsTopologicalRing α]
 
 instance Subring.instIsTopologicalRing (S : Subring α) : IsTopologicalRing S :=
-  { S.toSubmonoid.continuousMul, inferInstanceAs (TopologicalAddGroup S.toAddSubgroup) with }
+  { S.toSubmonoid.continuousMul, inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup) with }
 
 instance Subring.continuousSMul (s : Subring α) (X) [TopologicalSpace X] [MulAction α X]
     [ContinuousSMul α X] : ContinuousSMul s X :=

@@ -308,7 +308,7 @@ theorem continuousNeg (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpac
 
 variable (R) in
 theorem topologicalAddGroup (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
-    [IsModuleTopology R C] : TopologicalAddGroup C where
+    [IsModuleTopology R C] : IsTopologicalAddGroup C where
   continuous_add := (IsModuleTopology.toContinuousAdd R C).1
   continuous_neg := continuous_neg R C
 
