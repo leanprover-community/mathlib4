@@ -251,7 +251,7 @@ multiplication in `G`. -/
 def diagonalOneIsoLeftRegular [Monoid G] :
     diagonal k G 1 ≅ leftRegular k G :=
   Action.mkIso (Finsupp.domLCongr <| Equiv.funUnique (Fin 1) G).toModuleIso fun _ =>
-    ModuleCat.hom_ext <| Finsupp.lhom_ext fun _ _ => by simp [diagonal]
+    ModuleCat.hom_ext <| Finsupp.lhom_ext fun _ _ => by simp [diagonal, ModuleCat.endRingEquiv]
 
 /-- When `H = {1}`, the `G`-representation on `k[H]` induced by an action of `G` on `H` is
 isomorphic to the trivial representation on `k`. -/
@@ -261,7 +261,8 @@ def ofMulActionSubsingletonIsoTrivial
     ofMulAction k G H ≅ trivial k G k :=
   letI : Unique H := uniqueOfSubsingleton 1
   Action.mkIso (Finsupp.LinearEquiv.finsuppUnique _ _ _).toModuleIso fun _ =>
-    ModuleCat.hom_ext <| Finsupp.lhom_ext fun _ _ => by simp [Subsingleton.elim _ (1 : H)]
+    ModuleCat.hom_ext <| Finsupp.lhom_ext fun _ _ => by
+      simp [Subsingleton.elim _ (1 : H), ModuleCat.endRingEquiv]
 
 /-- The linearization of a type `H` with a `G`-action is definitionally isomorphic to the
 `k`-linear `G`-representation on `k[H]` induced by the `G`-action on `H`. -/
@@ -311,7 +312,8 @@ variable {k G}
 @[simps]
 def leftRegularHom (A : Rep k G) (x : A) : leftRegular k G ⟶ A where
   hom := ModuleCat.ofHom <| Finsupp.lift A k G fun g => A.ρ g x
-  comm _ := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext_ring <| by simp
+  comm _ := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext_ring <| by
+    simp [ModuleCat.endRingEquiv]
 
 theorem leftRegularHom_hom_single {A : Rep k G} (g : G) (x : A) (r : k) :
     (leftRegularHom A x).hom (Finsupp.single g r) = r • A.ρ g x := by
@@ -369,7 +371,9 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
   toFun f :=
     { hom := ModuleCat.ofHom <| (TensorProduct.curry f.hom.hom).flip
       comm := fun g => ModuleCat.hom_ext <| LinearMap.ext fun x => LinearMap.ext fun y => by
-        simpa using hom_comm_apply (A := A ⊗ B) f g (A.ρ g⁻¹ y ⊗ₜ[k] x)  }
+        simpa [ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorObj,
+          ModuleCat.MonoidalCategory.tensorObj, ModuleCat.endRingEquiv] using
+          hom_comm_apply f g (A.ρ g⁻¹ y ⊗ₜ[k] x) }
   invFun f :=
     { hom := ModuleCat.ofHom <| TensorProduct.uncurry k _ _ _ f.hom.hom.flip
       comm := fun g => ModuleCat.hom_ext <| TensorProduct.ext' fun x y => by
