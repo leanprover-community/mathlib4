@@ -228,8 +228,6 @@ namespace Set
 
 /-! ### Infinite sets -/
 
-variable {s t : Set α}
-
 theorem infinite_coe_iff {s : Set α} : Infinite s ↔ s.Infinite :=
   not_finite_iff_infinite.symm.trans finite_coe_iff.not
 
