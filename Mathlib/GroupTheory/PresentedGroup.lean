@@ -60,12 +60,12 @@ lemma one_of_mem {rels : Set (FreeGroup α)} {x : FreeGroup α} (hx : x ∈ rels
     mk rels x = 1 :=
   mk_eq_one_iff.mpr <| Subgroup.subset_normalClosure hx
 
-lemma mk_eq_mk_of_mul_inv_mem {rels : Set (FreeGroup α)} {x y : FreeGroup α} (hx : x*y⁻¹ ∈ rels) :
-    mk rels x = mk rels y :=
+lemma mk_eq_mk_of_mul_inv_mem {rels : Set (FreeGroup α)} {x y : FreeGroup α}
+    (hx : x * y⁻¹ ∈ rels) : mk rels x = mk rels y :=
   eq_of_mul_inv_eq_one <| one_of_mem hx
 
-lemma mk_eq_mk_of_inv_mul_mem {rels : Set (FreeGroup α)} {x y : FreeGroup α} (hx : x⁻¹*y ∈ rels) :
-    mk rels x = mk rels y :=
+lemma mk_eq_mk_of_inv_mul_mem {rels : Set (FreeGroup α)} {x y : FreeGroup α}
+    (hx : x⁻¹ * y ∈ rels) : mk rels x = mk rels y :=
   eq_of_inv_mul_eq_one <| one_of_mem hx
 
 /-- The generators of a presented group generate the presented group. That is, the subgroup closure
