@@ -152,18 +152,13 @@ instance : OrderBot YoungDiagram where
 theorem cells_bot : (⊥ : YoungDiagram).cells = ∅ :=
   rfl
 
--- Porting note: removed `↑`, added `.cells` and changed proof
-@[norm_cast]
-theorem coe_bot : (⊥ : YoungDiagram).cells = (∅ : Set (ℕ × ℕ)) := by
-  refine Set.eq_of_subset_of_subset ?_ ?_
-  · intros x h
-    simp? [mem_mk, Finset.coe_empty, Set.mem_empty_iff_false] at h says
-      simp only [cells_bot, Finset.coe_empty, Set.mem_empty_iff_false] at h
-  · simp only [cells_bot, Finset.coe_empty, Set.empty_subset]
-
 @[simp]
 theorem not_mem_bot (x : ℕ × ℕ) : x ∉ (⊥ : YoungDiagram) :=
   Finset.not_mem_empty x
+
+@[norm_cast]
+theorem coe_bot : (⊥ : YoungDiagram) = (∅ : Set (ℕ × ℕ)) := by
+  ext; simp
 
 instance : Inhabited YoungDiagram :=
   ⟨⊥⟩
@@ -405,10 +400,7 @@ protected theorem mem_cellsOfRowLens {w : List ℕ} {c : ℕ × ℕ} :
     c ∈ YoungDiagram.cellsOfRowLens w ↔ ∃ h : c.fst < w.length, c.snd < w[c.fst] := by
   induction' w with w_hd w_tl w_ih generalizing c <;> rw [YoungDiagram.cellsOfRowLens]
   · simp [YoungDiagram.cellsOfRowLens]
-  · rcases c with ⟨⟨_, _⟩, _⟩
-    · simp
-    -- Porting note: was `simpa`
-    · simp [w_ih, -Finset.singleton_product, Nat.succ_lt_succ_iff]
+  · rcases c with ⟨⟨_, _⟩, _⟩ <;> simp_all
 
 /-- Young diagram from a sorted list -/
 def ofRowLens (w : List ℕ) (hw : w.Sorted (· ≥ ·)) : YoungDiagram where

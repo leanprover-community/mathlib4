@@ -178,15 +178,15 @@ theorem prod_add (f g : ι → α) (s : Finset ι) :
           simp only [mem_filter, mem_sdiff, not_and, not_exists, and_congr_right_iff]
           tauto)
 
+end DecidableEq
+
 theorem prod_one_add {f : ι → α} (s : Finset ι) :
     ∏ i ∈ s, (1 + f i) = ∑ t ∈ s.powerset, ∏ i ∈ t, f i := by
-  simp only [add_comm (1 : α), prod_add, prod_const_one, mul_one]
+  classical simp only [add_comm (1 : α), prod_add, prod_const_one, mul_one]
 
 theorem prod_add_one {f : ι → α} (s : Finset ι) :
     ∏ i ∈ s, (f i + 1) = ∑ t ∈ s.powerset, ∏ i ∈ t, f i := by
-  simp only [prod_add, prod_const_one, mul_one]
-
-end DecidableEq
+  classical simp only [prod_add, prod_const_one, mul_one]
 
 /-- `∏ i, (f i + g i) = (∏ i, f i) + ∑ i, g i * (∏ j < i, f j + g j) * (∏ j > i, f j)`. -/
 theorem prod_add_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → α) :
@@ -265,8 +265,6 @@ theorem prod_range_natCast_sub (n k : ℕ) :
   · exact prod_congr rfl fun i hi => (Nat.cast_sub <| (mem_range.1 hi).le.trans hkn).symm
   · rw [← mem_range] at hnk
     rw [prod_eq_zero hnk, prod_eq_zero hnk] <;> simp
-
-@[deprecated (since := "2024-05-27")] alias prod_range_cast_nat_sub := prod_range_natCast_sub
 
 
 end CommRing

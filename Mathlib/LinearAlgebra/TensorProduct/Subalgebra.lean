@@ -38,15 +38,13 @@ open Module
 
 noncomputable section
 
-universe u v w
-
-namespace Subalgebra
-
-variable {R : Type u} {S : Type v}
+variable {R S T : Type*}
 
 section Semiring
 
-variable [CommSemiring R] [Semiring S] [Algebra R S]
+variable [CommSemiring R] [Semiring S] [Algebra R S] [Semiring T] [Algebra R T]
+
+namespace Subalgebra
 
 variable (A : Subalgebra R S)
 
@@ -128,21 +126,103 @@ theorem comm_trans_rTensorBot :
     (Algebra.TensorProduct.comm R _ _).trans A.rTensorBot = A.lTensorBot :=
   AlgEquiv.toLinearEquiv_injective (toSubmodule A).comm_trans_rTensorOne
 
+end Subalgebra
+
+namespace Algebra.TensorProduct
+
+variable (R S T)
+
+/-- Given `R`-algebras `S,T`, there is a natural `R`-linear isomorphism from `S ⊗[R] T` to
+`S' ⊗[R] T'` where `S',T'` are the images of `S,T` in `S ⊗[R] T` respectively.
+This is promoted to an `R`-algebra isomorphism `Algebra.TensorProduct.algEquivIncludeRange`. -/
+def linearEquivIncludeRange :
+    S ⊗[R] T ≃ₗ[R] (includeLeft : S →ₐ[R] S ⊗[R] T).range ⊗[R]
+      (includeRight : T →ₐ[R] S ⊗[R] T).range := .ofLinear
+  (_root_.TensorProduct.map
+    includeLeft.toLinearMap.rangeRestrict includeRight.toLinearMap.rangeRestrict)
+  ((LinearMap.range includeLeft).mulMap (LinearMap.range includeRight))
+  (_root_.TensorProduct.ext' <| by
+    rintro ⟨x', x, rfl : x ⊗ₜ 1 = x'⟩ ⟨y', y, rfl : 1 ⊗ₜ y = y'⟩
+    rw [LinearMap.comp_apply, LinearMap.id_apply]
+    erw [Submodule.mulMap_tmul]
+    rw [tmul_mul_tmul, mul_one, one_mul, _root_.TensorProduct.map_tmul]
+    rfl)
+  (_root_.TensorProduct.ext' fun x y ↦ by
+    rw [LinearMap.comp_apply, LinearMap.id_apply, _root_.TensorProduct.map_tmul]
+    erw [Submodule.mulMap_tmul]
+    change (x ⊗ₜ 1) * (1 ⊗ₜ y) = _
+    rw [tmul_mul_tmul, mul_one, one_mul])
+
+theorem linearEquivIncludeRange_toLinearMap :
+    (linearEquivIncludeRange R S T).toLinearMap =
+      _root_.TensorProduct.map includeLeft.toLinearMap.rangeRestrict
+        includeRight.toLinearMap.rangeRestrict := rfl
+
+theorem linearEquivIncludeRange_symm_toLinearMap :
+    (linearEquivIncludeRange R S T).symm.toLinearMap =
+      (LinearMap.range includeLeft).mulMap (LinearMap.range includeRight) := rfl
+
+@[simp]
+theorem linearEquivIncludeRange_tmul (x y) :
+    linearEquivIncludeRange R S T (x ⊗ₜ[R] y) =
+      ((includeLeft : S →ₐ[R] S ⊗[R] T).rangeRestrict x) ⊗ₜ[R]
+        ((includeRight : T →ₐ[R] S ⊗[R] T).rangeRestrict y) := rfl
+
+@[simp]
+theorem linearEquivIncludeRange_symm_tmul (x y) :
+    (linearEquivIncludeRange R S T).symm (x ⊗ₜ[R] y) = x.1 * y.1 := rfl
+
+/-- Given `R`-algebras `S,T`, there is a natural `R`-algebra isomorphism from `S ⊗[R] T` to
+`S' ⊗[R] T'` where `S',T'` are the images of `S,T` in `S ⊗[R] T` respectively. -/
+def algEquivIncludeRange :
+    S ⊗[R] T ≃ₐ[R] (includeLeft : S →ₐ[R] S ⊗[R] T).range ⊗[R]
+      (includeRight : T →ₐ[R] S ⊗[R] T).range :=
+  algEquivOfLinearEquivTensorProduct (linearEquivIncludeRange R S T) (by simp) rfl
+
+theorem algEquivIncludeRange_toAlgHom :
+    (algEquivIncludeRange R S T).toAlgHom =
+      map includeLeft.rangeRestrict includeRight.rangeRestrict := rfl
+
+@[simp]
+theorem algEquivIncludeRange_tmul (x y) :
+    algEquivIncludeRange R S T (x ⊗ₜ[R] y) =
+      ((includeLeft : S →ₐ[R] S ⊗[R] T).rangeRestrict x) ⊗ₜ[R]
+        ((includeRight : T →ₐ[R] S ⊗[R] T).rangeRestrict y) := rfl
+
+@[simp]
+theorem algEquivIncludeRange_symm_tmul (x y) :
+    (algEquivIncludeRange R S T).symm (x ⊗ₜ[R] y) = x.1 * y.1 := rfl
+
+end Algebra.TensorProduct
+
 end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable [CommSemiring R] [CommSemiring S] [Algebra R S] [CommSemiring T] [Algebra R T]
 
 variable (A B : Subalgebra R S)
 
 /-- If `A` and `B` are subalgebras in a commutative algebra `S` over `R`,
 there is the natural `R`-algebra homomorphism
 `A ⊗[R] B →ₐ[R] S` induced by multiplication in `S`. -/
-def mulMap : A ⊗[R] B →ₐ[R] S := Algebra.TensorProduct.productMap A.val B.val
+def Subalgebra.mulMap : A ⊗[R] B →ₐ[R] S := Algebra.TensorProduct.productMap A.val B.val
+
+variable (R S T) in
+theorem Algebra.TensorProduct.algEquivIncludeRange_symm_toAlgHom :
+    (algEquivIncludeRange R S T).symm.toAlgHom =
+      (includeLeft : S →ₐ[R] S ⊗[R] T).range.mulMap includeRight.range := rfl
+
+namespace Subalgebra
 
 @[simp]
 theorem mulMap_tmul (a : A) (b : B) : mulMap A B (a ⊗ₜ[R] b) = a.1 * b.1 := rfl
+
+theorem mulMap_map_comp_eq (f : S →ₐ[R] T) :
+    (mulMap (A.map f) (B.map f)).comp
+      (Algebra.TensorProduct.map (f.subalgebraMap A) (f.subalgebraMap B))
+        = f.comp (mulMap A B) := by
+  ext <;> simp
 
 theorem mulMap_toLinearMap : (A.mulMap B).toLinearMap = (toSubmodule A).mulMap (toSubmodule B) :=
   rfl
@@ -174,6 +254,6 @@ theorem mulMap'_surjective : Function.Surjective (mulMap' A B) := by
   simp_rw [mulMap', AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
     EquivLike.comp_surjective, AlgHom.rangeRestrict_surjective]
 
-end CommSemiring
-
 end Subalgebra
+
+end CommSemiring

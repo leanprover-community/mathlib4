@@ -22,10 +22,10 @@ variable {α β γ : Sort*}
 class IsEmpty (α : Sort*) : Prop where
   protected false : α → False
 
-instance instIsEmptyEmpty : IsEmpty Empty :=
+instance Empty.instIsEmpty : IsEmpty Empty :=
   ⟨Empty.elim⟩
 
-instance instIsEmptyPEmpty : IsEmpty PEmpty :=
+instance PEmpty.instIsEmpty : IsEmpty PEmpty :=
   ⟨PEmpty.elim⟩
 
 instance : IsEmpty False :=
@@ -213,10 +213,22 @@ variable {α β : Type*} (R : α → β → Prop)
 theorem leftTotal_empty [IsEmpty α] : LeftTotal R := by
   simp only [LeftTotal, IsEmpty.forall_iff]
 
+theorem leftTotal_iff_isEmpty_left [IsEmpty β] : LeftTotal R ↔ IsEmpty α := by
+  simp only [LeftTotal, IsEmpty.exists_iff, isEmpty_iff]
+
 @[simp]
 theorem rightTotal_empty [IsEmpty β] : RightTotal R := by
   simp only [RightTotal, IsEmpty.forall_iff]
 
+theorem rightTotal_iff_isEmpty_right [IsEmpty α] : RightTotal R ↔ IsEmpty β := by
+  simp only [RightTotal, IsEmpty.exists_iff, isEmpty_iff, imp_self]
+
 @[simp]
 theorem biTotal_empty [IsEmpty α] [IsEmpty β] : BiTotal R :=
   ⟨leftTotal_empty R, rightTotal_empty R⟩
+
+theorem biTotal_iff_isEmpty_right [IsEmpty α] : BiTotal R ↔ IsEmpty β := by
+  simp only [BiTotal, leftTotal_empty, rightTotal_iff_isEmpty_right, true_and]
+
+theorem biTotal_iff_isEmpty_left [IsEmpty β] : BiTotal R ↔ IsEmpty α := by
+  simp only [BiTotal, leftTotal_iff_isEmpty_left, rightTotal_empty, and_true]

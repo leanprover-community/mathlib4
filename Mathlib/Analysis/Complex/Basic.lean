@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Data.Complex.Module
 import Mathlib.Data.Complex.Order
-import Mathlib.Data.Complex.Exponential
+import Mathlib.Data.Complex.Trigonometric
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Field
 import Mathlib.Topology.Algebra.InfiniteSum.Module
@@ -154,10 +154,10 @@ theorem comap_abs_nhds_zero : comap abs (𝓝 0) = 𝓝 0 :=
 @[simp 1100, norm_cast] lemma nnnorm_ratCast (q : ℚ) : ‖(q : ℂ)‖₊ = ‖(q : ℝ)‖₊ := nnnorm_real q
 
 @[simp 1100] lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ‖(no_index (OfNat.ofNat n) : ℂ)‖ = OfNat.ofNat n := norm_natCast n
+    ‖(ofNat(n) : ℂ)‖ = OfNat.ofNat n := norm_natCast n
 
 @[simp 1100] lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ‖(no_index (OfNat.ofNat n) : ℂ)‖₊ = OfNat.ofNat n := nnnorm_natCast n
+    ‖(ofNat(n) : ℂ)‖₊ = OfNat.ofNat n := nnnorm_natCast n
 
 @[deprecated (since := "2024-08-25")] alias norm_nat := norm_natCast
 @[deprecated (since := "2024-08-25")] alias norm_int := norm_intCast
@@ -166,22 +166,22 @@ theorem comap_abs_nhds_zero : comap abs (𝓝 0) = 𝓝 0 :=
 @[deprecated (since := "2024-08-25")] alias nnnorm_int := nnnorm_intCast
 
 @[simp 1100, norm_cast]
-lemma norm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖ = q := abs_of_nonneg q.cast_nonneg
+lemma norm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖ = q := Complex.abs_of_nonneg q.cast_nonneg
 
 @[simp 1100, norm_cast]
 lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖₊ = q := by simp [nnnorm, -norm_eq_abs]
 
 theorem norm_int_of_nonneg {n : ℤ} (hn : 0 ≤ n) : ‖(n : ℂ)‖ = n := by
-  rw [norm_intCast, ← Int.cast_abs, _root_.abs_of_nonneg hn]
+  rw [norm_intCast, ← Int.cast_abs, abs_of_nonneg hn]
 
 lemma normSq_eq_norm_sq (z : ℂ) : normSq z = ‖z‖ ^ 2 := by
   rw [normSq_eq_abs, norm_eq_abs]
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_abs : Continuous abs :=
   continuous_norm
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_normSq : Continuous normSq := by
   simpa [← normSq_eq_abs] using continuous_abs.pow 2
 
@@ -475,7 +475,7 @@ open ComplexOrder
 
 theorem eq_coe_norm_of_nonneg {z : ℂ} (hz : 0 ≤ z) : z = ↑‖z‖ := by
   lift z to ℝ using hz.2.symm
-  rw [norm_eq_abs, abs_ofReal, _root_.abs_of_nonneg (id hz.1 : 0 ≤ z)]
+  rw [norm_eq_abs, abs_ofReal, abs_of_nonneg (id hz.1 : 0 ≤ z)]
 
 /-- We show that the partial order and the topology on `ℂ` are compatible.
 We turn this into an instance scoped to `ComplexOrder`. -/
@@ -689,11 +689,8 @@ lemma zero_not_mem_slitPlane : 0 ∉ slitPlane := mt ofReal_mem_slitPlane.1 (lt_
 lemma natCast_mem_slitPlane {n : ℕ} : ↑n ∈ slitPlane ↔ n ≠ 0 := by
   simpa [pos_iff_ne_zero] using @ofReal_mem_slitPlane n
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_mem_slitPlane := natCast_mem_slitPlane
-
 @[simp]
-lemma ofNat_mem_slitPlane (n : ℕ) [n.AtLeastTwo] : no_index (OfNat.ofNat n) ∈ slitPlane :=
+lemma ofNat_mem_slitPlane (n : ℕ) [n.AtLeastTwo] : ofNat(n) ∈ slitPlane :=
   natCast_mem_slitPlane.2 (NeZero.ne n)
 
 lemma mem_slitPlane_iff_not_le_zero {z : ℂ} : z ∈ slitPlane ↔ ¬z ≤ 0 :=
@@ -715,5 +712,9 @@ lemma mem_slitPlane_of_norm_lt_one {z : ℂ} (hz : ‖z‖ < 1) : 1 + z ∈ slit
   ball_one_subset_slitPlane <| by simpa
 
 end slitPlane
+
+lemma _root_.IsCompact.reProdIm {s t : Set ℝ} (hs : IsCompact s) (ht : IsCompact t) :
+    IsCompact (s ×ℂ t) :=
+  equivRealProdCLM.toHomeomorph.isCompact_preimage.2 (hs.prod ht)
 
 end Complex

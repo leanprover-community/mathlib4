@@ -217,7 +217,7 @@ private lemma summable_F'' : Summable F'' := by
         show (1 : ℝ) - 2⁻¹ = 2⁻¹ by norm_num, inv_le_inv₀ (mod_cast p.prop.pos) zero_lt_two]
       exact Nat.ofNat_le_cast.mpr p.prop.two_le
 
-/-- The function `n ↦ Λ n / n`, restriced to non-primes in a residue class, is summable.
+/-- The function `n ↦ Λ n / n`, restricted to non-primes in a residue class, is summable.
 This is used to convert results on `ArithmeticFunction.vonMangoldt.residueClass` to results
 on primes in an arithmetic progression. -/
 lemma summable_residueClass_non_primes_div :
@@ -257,7 +257,7 @@ lemma summable_residueClass_non_primes_div :
 variable [NeZero q] {a}
 
 /-- We can express `ArithmeticFunction.vonMangoldt.residueClass` as a linear combination
-of twists of the von Mangoldt function by Dirichlet charaters. -/
+of twists of the von Mangoldt function by Dirichlet characters. -/
 lemma residueClass_apply (ha : IsUnit a) (n : ℕ) :
     residueClass a n =
       (q.totient : ℂ)⁻¹ * ∑ χ : DirichletCharacter ℂ q, χ a⁻¹ * χ n * vonMangoldt n := by
@@ -267,7 +267,7 @@ lemma residueClass_apply (ha : IsUnit a) (n : ℕ) :
     ite_mul, zero_mul, ↓reduceIte, ite_self]
 
 /-- We can express `ArithmeticFunction.vonMangoldt.residueClass` as a linear combination
-of twists of the von Mangoldt function by Dirichlet charaters. -/
+of twists of the von Mangoldt function by Dirichlet characters. -/
 lemma residueClass_eq (ha : IsUnit a) :
     ↗(residueClass a) = (q.totient : ℂ)⁻¹ •
       ∑ χ : DirichletCharacter ℂ q, χ a⁻¹ • (fun n : ℕ ↦ χ n * vonMangoldt n) := by
@@ -363,7 +363,7 @@ lemma eqOn_LFunctionResidueClassAux (ha : IsUnit a) :
   congrm (?_ + _)
   have hs₁ : s ≠ 1 := fun h ↦ ((h ▸ hs).trans_eq one_re).false
   rw [deriv_LFunctionTrivChar₁_apply_of_ne_one _ hs₁, LFunctionTrivChar₁,
-    Function.update_noteq hs₁, LFunctionTrivChar, add_div,
+    Function.update_of_ne hs₁, LFunctionTrivChar, add_div,
     mul_div_mul_left _ _ (sub_ne_zero_of_ne hs₁)]
   conv_lhs => enter [2, 1]; rw [← mul_one (LFunction ..)]
   rw [mul_comm _ 1, mul_div_mul_right _ _ <| LFunction_ne_zero_of_one_le_re 1 (.inr hs₁) hs.le]

@@ -73,7 +73,7 @@ end Semiring
 
 section Ring
 
-variable [Ring R] [AddCommGroup M] [Nontrivial R] [Module R M]
+variable [Semiring R] [AddCommMonoid M] [Nontrivial R] [Module R M]
 
 -- From [Les familles libres maximales d'un module ont-elles le meme cardinal?][lazarus1973]
 /-- Over any ring `R`, if `b` is a basis for a module `M`,
@@ -81,63 +81,43 @@ and `s` is a maximal linearly independent set,
 then the union of the supports of `x ∈ s` (when written out in the basis `b`) is all of `b`.
 -/
 theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b : Basis ι R M)
-    {κ : Type w'} (v : κ → M) (i : LinearIndependent R v) (m : i.Maximal) :
+    {κ : Type w'} (v : κ → M) (ind : LinearIndependent R v) (m : ind.Maximal) :
     ⋃ k, ((b.repr (v k)).support : Set ι) = Set.univ := by
   -- If that's not the case,
   by_contra h
   simp only [← Ne.eq_def, ne_univ_iff_exists_not_mem, mem_iUnion, not_exists_not,
     Finsupp.mem_support_iff, Finset.mem_coe] at h
-  -- We have some basis element `b b'` which is not in the support of any of the `v i`.
-  obtain ⟨b', w⟩ := h
+  -- We have some basis element `b i` which is not in the support of any of the `v k`.
+  obtain ⟨i, w⟩ := h
+  have repr_eq_zero (l) : b.repr (linearCombination R v l) i = 0 := by
+    simp [linearCombination_apply, Finsupp.sum, w]
   -- Using this, we'll construct a linearly independent family strictly larger than `v`,
-  -- by also using this `b b'`.
-  let v' : Option κ → M := fun o => o.elim (b b') v
-  have r : range v ⊆ range v' := by
-    rintro - ⟨k, rfl⟩
-    use some k
-    simp only [v', Option.elim_some]
-  have r' : b b' ∉ range v := by
-    rintro ⟨k, p⟩
-    simpa [w] using congr_arg (fun m => (b.repr m) b') p
-  have r'' : range v ≠ range v' := by
-    intro e
-    have p : b b' ∈ range v' := by
-      use none
-      simp only [v', Option.elim_none]
-    rw [← e] at p
-    exact r' p
+  -- by also using this `b i`.
+  let v' (o : Option κ) : M := o.elim (b i) v
+  have r : range v ⊆ range v' := by rintro - ⟨k, rfl⟩; exact ⟨some k, rfl⟩
+  have r' : b i ∉ range v := fun ⟨k, p⟩ ↦ by simpa [w] using congr(b.repr $p i)
+  have r'' : range v ≠ range v' := (r' <| · ▸ ⟨none, rfl⟩)
   -- The key step in the proof is checking that this strictly larger family is linearly independent.
   have i' : LinearIndependent R ((↑) : range v' → M) := by
     apply LinearIndependent.to_subtype_range
-    rw [linearIndependent_iff]
-    intro l z
-    rw [Finsupp.linearCombination_option] at z
-    simp only [v', Option.elim'] at z
-    change _ + Finsupp.linearCombination R v l.some = 0 at z
-    -- We have some linear combination of `b b'` and the `v i`, which we want to show is trivial.
-    -- We'll first show the coefficient of `b b'` is zero,
-    -- by expressing the `v i` in the basis `b`, and using that the `v i` have no `b b'` term.
-    have l₀ : l none = 0 := by
-      rw [← eq_neg_iff_add_eq_zero] at z
-      replace z := neg_eq_iff_eq_neg.mpr z
-      apply_fun fun x => b.repr x b' at z
-      simp only [repr_self, map_smul, mul_one, Finsupp.single_eq_same, Pi.neg_apply,
-        Finsupp.smul_single', map_neg, Finsupp.coe_neg] at z
-      erw [DFunLike.congr_fun (apply_linearCombination R (b.repr : M →ₗ[R] ι →₀ R) v l.some) b']
-        at z
-      simpa [Finsupp.linearCombination_apply, w] using z
-    -- Then all the other coefficients are zero, because `v` is linear independent.
-    have l₁ : l.some = 0 := by
-      rw [l₀, zero_smul, zero_add] at z
-      exact linearIndependent_iff.mp i _ z
-    -- Finally we put those facts together to show the linear combination is trivial.
+    rw [linearIndependent_iffₛ]
+    intro l l' z
+    simp_rw [linearCombination_option, v', Option.elim'] at z
+    change _ + linearCombination R v l.some = _ + linearCombination R v l'.some at z
+    -- We have some equality between linear combinations of `b i` and the `v k`,
+    -- and want to show the coefficients are equal.
     ext (_ | a)
-    · simp only [l₀, Finsupp.coe_zero, Pi.zero_apply]
-    · erw [DFunLike.congr_fun l₁ a]
-      simp only [Finsupp.coe_zero, Pi.zero_apply]
-  rw [LinearIndependent.Maximal] at m
-  specialize m (range v') i' r
-  exact r'' m
+    -- We'll first show the coefficient of `b i` is zero,
+    -- by expressing the `v k` in the basis `b`, and using that the `v k` have no `b i` term.
+    · simpa [repr_eq_zero] using congr(b.repr $z i)
+    -- All the other coefficients are also equal, because `v` is linear independent,
+    -- by comparing the coefficients in the basis `b`.
+    have l₁ : l.some = l'.some := ind <| b.repr.injective <| ext fun j ↦ by
+      obtain rfl | ne := eq_or_ne i j
+      · simp_rw [repr_eq_zero]
+      classical simpa [single_apply, ne] using congr(b.repr $z j)
+    exact DFunLike.congr_fun l₁ a
+  exact r'' (m (range v') i' r)
 
 /-- Over any ring `R`, if `b` is an infinite basis for a module `M`,
 and `s` is a maximal linearly independent set,

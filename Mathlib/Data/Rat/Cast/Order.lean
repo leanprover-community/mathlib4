@@ -174,16 +174,16 @@ def castOrderEmbedding : ℚ≥0 ↪o K :=
 section ofNat
 variable {n : ℕ} [n.AtLeastTwo]
 
-@[simp] lemma cast_le_ofNat : (p : K) ≤ no_index (OfNat.ofNat n) ↔ p ≤ OfNat.ofNat n := by
+@[simp] lemma cast_le_ofNat : (p : K) ≤ ofNat(n) ↔ p ≤ OfNat.ofNat n := by
   simp [← cast_le (K := K)]
 
-@[simp] lemma ofNat_le_cast : no_index (OfNat.ofNat n) ≤ (p : K) ↔ OfNat.ofNat n ≤ p := by
+@[simp] lemma ofNat_le_cast : ofNat(n) ≤ (p : K) ↔ OfNat.ofNat n ≤ p := by
   simp [← cast_le (K := K)]
 
-@[simp] lemma cast_lt_ofNat : (p : K) < no_index (OfNat.ofNat n) ↔ p < OfNat.ofNat n := by
+@[simp] lemma cast_lt_ofNat : (p : K) < ofNat(n) ↔ p < OfNat.ofNat n := by
   simp [← cast_lt (K := K)]
 
-@[simp] lemma ofNat_lt_cast : no_index (OfNat.ofNat n) < (p : K) ↔ OfNat.ofNat n < p := by
+@[simp] lemma ofNat_lt_cast : ofNat(n) < (p : K) ↔ OfNat.ofNat n < p := by
   simp [← cast_lt (K := K)]
 
 end ofNat

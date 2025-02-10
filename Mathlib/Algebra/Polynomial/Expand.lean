@@ -202,6 +202,34 @@ theorem contract_expand {f : R[X]} (hp : p ≠ 0) : contract p (expand R p f) = 
 theorem contract_one {f : R[X]} : contract 1 f = f :=
   ext fun n ↦ by rw [coeff_contract one_ne_zero, mul_one]
 
+@[simp] theorem contract_C (r : R) : contract p (C r) = C r := by simp [contract]
+
+theorem contract_add {p : ℕ} (hp : p ≠ 0) (f g : R[X]) :
+    contract p (f + g) = contract p f + contract p g := by
+  ext; simp_rw [coeff_add, coeff_contract hp, coeff_add]
+
+theorem contract_mul_expand {p : ℕ} (hp : p ≠ 0) (f g : R[X]) :
+    contract p (f * expand R p g) = contract p f * g := by
+  ext n
+  rw [coeff_contract hp, coeff_mul, coeff_mul, ← sum_subset
+    (s₁ := (antidiagonal n).image fun x ↦ (x.1 * p, x.2 * p)), sum_image]
+  · simp_rw [coeff_expand_mul hp.bot_lt, coeff_contract hp]
+  · intro x hx y hy eq; simpa only [Prod.ext_iff, Nat.mul_right_cancel_iff hp.bot_lt] using eq
+  · simp_rw [subset_iff, mem_image, mem_antidiagonal]; rintro _ ⟨x, rfl, rfl⟩; simp_rw [add_mul]
+  simp_rw [mem_image, mem_antidiagonal]
+  intro ⟨x, y⟩ eq nex
+  by_cases h : p ∣ y
+  · obtain ⟨x, rfl⟩ : p ∣ x := (Nat.dvd_add_iff_left h).mpr (eq ▸ dvd_mul_left p n)
+    obtain ⟨y, rfl⟩ := h
+    refine (nex ⟨⟨x, y⟩, (Nat.mul_right_cancel_iff hp.bot_lt).mp ?_, by simp_rw [mul_comm]⟩).elim
+    rw [← eq, mul_comm, mul_add]
+  · rw [coeff_expand hp.bot_lt, if_neg h, mul_zero]
+
+@[simp] theorem isCoprime_expand {f g : R[X]} {p : ℕ} (hp : p ≠ 0) :
+    IsCoprime (expand R p f) (expand R p g) ↔ IsCoprime f g :=
+  ⟨fun ⟨a, b, eq⟩ ↦ ⟨contract p a, contract p b, by
+    simp_rw [← contract_mul_expand hp, ← contract_add hp, eq, ← C_1, contract_C]⟩, (·.map _)⟩
+
 section ExpChar
 
 theorem expand_contract [CharP R p] [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivative f = 0)

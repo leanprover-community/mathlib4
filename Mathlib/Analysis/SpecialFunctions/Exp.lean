@@ -187,25 +187,17 @@ nonrec
 theorem ContinuousWithinAt.rexp (h : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun y ↦ exp (f y)) s x :=
   h.rexp
-@[deprecated (since := "2024-05-09")] alias ContinuousWithinAt.exp := ContinuousWithinAt.rexp
-
 @[fun_prop]
 nonrec
 theorem ContinuousAt.rexp (h : ContinuousAt f x) : ContinuousAt (fun y ↦ exp (f y)) x :=
   h.rexp
-@[deprecated (since := "2024-05-09")] alias ContinuousAt.exp := ContinuousAt.rexp
-
 @[fun_prop]
 theorem ContinuousOn.rexp (h : ContinuousOn f s) :
     ContinuousOn (fun y ↦ exp (f y)) s :=
   fun x hx ↦ (h x hx).rexp
-@[deprecated (since := "2024-05-09")] alias ContinuousOn.exp := ContinuousOn.rexp
-
 @[fun_prop]
 theorem Continuous.rexp (h : Continuous f) : Continuous fun y ↦ exp (f y) :=
   continuous_iff_continuousAt.2 fun _ ↦ h.continuousAt.rexp
-@[deprecated (since := "2024-05-09")] alias Continuous.exp := Continuous.rexp
-
 end RealContinuousExpComp
 
 namespace Real
@@ -236,8 +228,11 @@ theorem tendsto_exp_atBot : Tendsto exp atBot (𝓝 0) :=
   (tendsto_exp_neg_atTop_nhds_zero.comp tendsto_neg_atBot_atTop).congr fun x =>
     congr_arg exp <| neg_neg x
 
-theorem tendsto_exp_atBot_nhdsWithin : Tendsto exp atBot (𝓝[>] 0) :=
+theorem tendsto_exp_atBot_nhdsGT : Tendsto exp atBot (𝓝[>] 0) :=
   tendsto_inf.2 ⟨tendsto_exp_atBot, tendsto_principal.2 <| Eventually.of_forall exp_pos⟩
+
+@[deprecated (since := "2024-12-22")]
+alias tendsto_exp_atBot_nhdsWithin := tendsto_exp_atBot_nhdsGT
 
 @[simp]
 theorem isBoundedUnder_ge_exp_comp (l : Filter α) (f : α → ℝ) :
@@ -309,7 +304,7 @@ def expOrderIso : ℝ ≃o Ioi (0 : ℝ) :=
   StrictMono.orderIsoOfSurjective _ (exp_strictMono.codRestrict exp_pos) <|
     (continuous_exp.subtype_mk _).surjective
       (by rw [tendsto_Ioi_atTop]; simp only [tendsto_exp_atTop])
-      (by rw [tendsto_Ioi_atBot]; simp only [tendsto_exp_atBot_nhdsWithin])
+      (by rw [tendsto_Ioi_atBot]; simp only [tendsto_exp_atBot_nhdsGT])
 
 @[simp]
 theorem coe_expOrderIso_apply (x : ℝ) : (expOrderIso x : ℝ) = exp x :=
@@ -345,8 +340,11 @@ theorem map_exp_atBot : map exp atBot = 𝓝[>] 0 := by
   rw [← coe_comp_expOrderIso, ← Filter.map_map, expOrderIso.map_atBot, ← map_coe_Ioi_atBot]
 
 @[simp]
-theorem comap_exp_nhdsWithin_Ioi_zero : comap exp (𝓝[>] 0) = atBot := by
+theorem comap_exp_nhdsGT_zero : comap exp (𝓝[>] 0) = atBot := by
   rw [← map_exp_atBot, comap_map exp_injective]
+
+@[deprecated (since := "2024-12-22")]
+alias comap_exp_nhdsWithin_Ioi_zero := comap_exp_nhdsGT_zero
 
 theorem tendsto_comp_exp_atBot {f : ℝ → α} :
     Tendsto (fun x => f (exp x)) atBot l ↔ Tendsto f (𝓝[>] 0) l := by
@@ -460,9 +458,12 @@ theorem comap_exp_nhds_zero : comap exp (𝓝 0) = comap re atBot :=
       simp only [comap_comap, ← comap_abs_nhds_zero, Function.comp_def, abs_exp]
     _ = comap re atBot := by rw [Real.comap_exp_nhds_zero]
 
-theorem comap_exp_nhdsWithin_zero : comap exp (𝓝[≠] 0) = comap re atBot := by
+theorem comap_exp_nhdsNE : comap exp (𝓝[≠] 0) = comap re atBot := by
   have : (exp ⁻¹' {0})ᶜ = Set.univ := eq_univ_of_forall exp_ne_zero
   simp [nhdsWithin, comap_exp_nhds_zero, this]
+
+@[deprecated (since := "2024-12-22")]
+alias comap_exp_nhdsWithin_zero := comap_exp_nhdsNE
 
 theorem tendsto_exp_nhds_zero_iff {α : Type*} {l : Filter α} {f : α → ℂ} :
     Tendsto (fun x => exp (f x)) l (𝓝 0) ↔ Tendsto (fun x => re (f x)) l atBot := by
@@ -477,8 +478,11 @@ theorem tendsto_exp_comap_re_atTop : Tendsto exp (comap re atTop) (cobounded ℂ
 theorem tendsto_exp_comap_re_atBot : Tendsto exp (comap re atBot) (𝓝 0) :=
   comap_exp_nhds_zero ▸ tendsto_comap
 
-theorem tendsto_exp_comap_re_atBot_nhdsWithin : Tendsto exp (comap re atBot) (𝓝[≠] 0) :=
-  comap_exp_nhdsWithin_zero ▸ tendsto_comap
+theorem tendsto_exp_comap_re_atBot_nhdsNE : Tendsto exp (comap re atBot) (𝓝[≠] 0) :=
+  comap_exp_nhdsNE ▸ tendsto_comap
+
+@[deprecated (since := "2024-12-22")]
+alias tendsto_exp_comap_re_atBot_nhdsWithin := tendsto_exp_comap_re_atBot_nhdsNE
 
 end Complex
 

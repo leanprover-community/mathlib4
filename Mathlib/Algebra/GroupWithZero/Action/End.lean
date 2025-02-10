@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.End
-import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.Action.Units
 
@@ -12,9 +12,7 @@ import Mathlib.Algebra.GroupWithZero.Action.Units
 # Group actions and (endo)morphisms
 -/
 
-assert_not_exists Equiv.Perm.equivUnitsEnd
-assert_not_exists Prod.fst_mul
-assert_not_exists Ring
+assert_not_exists Equiv.Perm.equivUnitsEnd Prod.fst_mul Ring
 
 open Function
 

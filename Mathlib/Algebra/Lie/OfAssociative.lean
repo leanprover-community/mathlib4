@@ -135,12 +135,6 @@ def toLieHom : A →ₗ⁅R⁆ B :=
 instance : Coe (A →ₐ[R] B) (A →ₗ⁅R⁆ B) :=
   ⟨toLieHom⟩
 
-/- Porting note: is a syntactic tautology
-@[simp]
-theorem toLieHom_coe : f.toLieHom = ↑f :=
-  rfl
--/
-
 @[simp]
 theorem coe_toLieHom : ((f : A →ₗ⁅R⁆ B) : A → B) = f :=
   rfl
@@ -398,7 +392,7 @@ of the endomorphism `ad(x)` of `L` by `e` is the endomorphism `ad(e x)` of `L'`.
 @[simp]
 lemma conj_ad_apply (e : L ≃ₗ⁅R⁆ L') (x : L) : LinearEquiv.conj e (ad R L x) = ad R L' (e x) := by
   ext y'
-  rw [LinearEquiv.conj_apply_apply, ad_apply, ad_apply, coe_to_linearEquiv, map_lie,
-    ← coe_to_linearEquiv, LinearEquiv.apply_symm_apply]
+  rw [LinearEquiv.conj_apply_apply, ad_apply, ad_apply, coe_toLinearEquiv, map_lie,
+    ← coe_toLinearEquiv, LinearEquiv.apply_symm_apply]
 
 end LieAlgebra

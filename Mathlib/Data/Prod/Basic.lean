@@ -17,8 +17,6 @@ It also defines better delaborators for product projections.
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
-@[deprecated (since := "2024-05-08")] alias Prod_map := Prod.map_apply
-
 namespace Prod
 
 lemma swap_eq_iff_eq_swap {x : α × β} {y : β × α} : x.swap = y ↔ x = y.swap := by aesop
@@ -87,8 +85,6 @@ theorem id_prod : (fun p : α × β ↦ (p.1, p.2)) = id :=
 @[simp]
 theorem map_iterate (f : α → α) (g : β → β) (n : ℕ) :
     (Prod.map f g)^[n] = Prod.map f^[n] g^[n] := by induction n <;> simp [*, Prod.map_comp_map]
-
-@[deprecated (since := "2024-07-03")] alias iterate_prod_map := Prod.map_iterate
 
 theorem fst_surjective [h : Nonempty β] : Function.Surjective (@fst α β) :=
   fun x ↦ h.elim fun y ↦ ⟨⟨x, y⟩, rfl⟩
@@ -231,13 +227,6 @@ theorem Involutive.prodMap {f : α → α} {g : β → β} :
     Involutive f → Involutive g → Involutive (map f g) :=
   LeftInverse.prodMap
 
-@[deprecated (since := "2024-05-08")] alias Injective.Prod_map := Injective.prodMap
-@[deprecated (since := "2024-05-08")] alias Surjective.Prod_map := Surjective.prodMap
-@[deprecated (since := "2024-05-08")] alias Bijective.Prod_map := Bijective.prodMap
-@[deprecated (since := "2024-05-08")] alias LeftInverse.Prod_map := LeftInverse.prodMap
-@[deprecated (since := "2024-05-08")] alias RightInverse.Prod_map := RightInverse.prodMap
-@[deprecated (since := "2024-05-08")] alias Involutive.Prod_map := Involutive.prodMap
-
 end Function
 
 namespace Prod
@@ -251,10 +240,10 @@ theorem map_injective [Nonempty α] [Nonempty β] {f : α → γ} {g : β → δ
     ⟨fun a₁ a₂ ha => by
       inhabit β
       injection
-        @h (a₁, default) (a₂, default) (congr_arg (fun c : γ => Prod.mk c (g default)) ha : _),
+        @h (a₁, default) (a₂, default) (congr_arg (fun c : γ => Prod.mk c (g default)) ha :),
       fun b₁ b₂ hb => by
       inhabit α
-      injection @h (default, b₁) (default, b₂) (congr_arg (Prod.mk (f default)) hb : _)⟩,
+      injection @h (default, b₁) (default, b₂) (congr_arg (Prod.mk (f default)) hb :)⟩,
     fun h => h.1.prodMap h.2⟩
 
 @[simp]
@@ -300,21 +289,43 @@ theorem map_involutive [Nonempty α] [Nonempty β] {f : α → α} {g : β → �
     Involutive (map f g) ↔ Involutive f ∧ Involutive g :=
   map_leftInverse
 
-section delaborators
+namespace PrettyPrinting
 open Lean PrettyPrinter Delaborator
 
+/--
+When true, then `Prod.fst x` and `Prod.snd x` pretty print as `x.1` and `x.2`
+rather than as `x.fst` and `x.snd`.
+-/
+register_option pp.numericProj.prod : Bool := {
+  defValue := true
+  descr := "enable pretty printing `Prod.fst x` as `x.1` and `Prod.snd x` as `x.2`."
+}
+
+/-- Tell whether pretty-printing should use numeric projection notations `.1`
+and `.2` for `Prod.fst` and `Prod.snd`. -/
+def getPPNumericProjProd (o : Options) : Bool :=
+  o.get pp.numericProj.prod.name pp.numericProj.prod.defValue
+
 /-- Delaborator for `Prod.fst x` as `x.1`. -/
-@[delab app.Prod.fst]
-def delabProdFst : Delab := withOverApp 3 do
-  let x ← SubExpr.withAppArg delab
-  `($(x).1)
+@[app_delab Prod.fst]
+def delabProdFst : Delab :=
+  whenPPOption getPPNumericProjProd <|
+  whenPPOption getPPFieldNotation <|
+  whenNotPPOption getPPExplicit <|
+  withOverApp 3 do
+    let x ← SubExpr.withAppArg delab
+    `($(x).1)
 
 /-- Delaborator for `Prod.snd x` as `x.2`. -/
-@[delab app.Prod.snd]
-def delabProdSnd : Delab := withOverApp 3 do
-  let x ← SubExpr.withAppArg delab
-  `($(x).2)
+@[app_delab Prod.snd]
+def delabProdSnd : Delab :=
+  whenPPOption getPPNumericProjProd <|
+  whenPPOption getPPFieldNotation <|
+  whenNotPPOption getPPExplicit <|
+  withOverApp 3 do
+    let x ← SubExpr.withAppArg delab
+    `($(x).2)
 
-end delaborators
+end PrettyPrinting
 
 end Prod

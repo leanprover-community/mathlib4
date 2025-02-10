@@ -83,10 +83,6 @@ theorem integrableOn_peak_smul_of_integrableOn_of_tendsto
   convert A.union B
   simp only [diff_union_inter]
 
-@[deprecated (since := "2024-02-20")]
-alias integrableOn_peak_smul_of_integrableOn_of_continuousWithinAt :=
-  integrableOn_peak_smul_of_integrableOn_of_tendsto
-
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀` and its
 integral on some finite-measure neighborhood of `x₀` converges to `1`, and `g` is integrable and
 has a limit `a` at `x₀`, then `∫ φᵢ • g` converges to `a`.
@@ -107,7 +103,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
       apply Tendsto.mono_left _ nhdsWithin_le_nhds
       exact (tendsto_id.mul tendsto_const_nhds).add (tendsto_id.const_mul _)
     rw [zero_mul, zero_add, mul_zero] at A
-    have : Ioo (0 : ℝ) 1 ∈ 𝓝[>] 0 := Ioo_mem_nhdsWithin_Ioi ⟨le_rfl, zero_lt_one⟩
+    have : Ioo (0 : ℝ) 1 ∈ 𝓝[>] 0 := Ioo_mem_nhdsGT zero_lt_one
     rcases (((tendsto_order.1 A).2 ε εpos).and this).exists with ⟨δ, hδ, h'δ⟩
     exact ⟨δ, hδ, h'δ.1, h'δ.2⟩
   suffices ∀ᶠ i in l, ‖∫ x in s, φ i x • g x ∂μ‖ ≤ (δ * ∫ x in s, ‖g x‖ ∂μ) + 2 * δ by
@@ -176,10 +172,6 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
     _ ≤ ‖∫ x in s \ u, φ i x • g x ∂μ‖ + ‖∫ x in s ∩ u, φ i x • g x ∂μ‖ := norm_add_le _ _
     _ ≤ (δ * ∫ x in s, ‖g x‖ ∂μ) + 2 * δ := add_le_add C B
 
-@[deprecated (since := "2024-02-20")]
-alias tendsto_setIntegral_peak_smul_of_integrableOn_of_continuousWithinAt_aux :=
-  tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
-
 variable [CompleteSpace E]
 
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀` and its
@@ -219,10 +211,6 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto
   apply Integrable.smul_const
   rw [restrict_restrict ht, inter_eq_left.mpr hts]
   exact .of_integral_ne_zero (fun h ↦ by simp [h] at h'i)
-
-@[deprecated (since := "2024-02-20")]
-alias tendsto_setIntegral_peak_smul_of_integrableOn_of_continuousWithinAt :=
-  tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto
 
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀` and its
 integral on some finite-measure neighborhood of `x₀` converges to `1`, and `g` is integrable and

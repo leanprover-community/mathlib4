@@ -151,6 +151,23 @@ instance (P) [IsLocalAtTarget P] : IsLocalAtTarget P.diagonal :=
   letI := HasAffineProperty.of_isLocalAtTarget P
   inferInstance
 
+open MorphismProperty in
+instance (P : MorphismProperty Scheme)
+    [P.HasOfPostcompProperty @IsOpenImmersion] [P.RespectsRight @IsOpenImmersion]
+    [IsLocalAtSource P] : IsLocalAtSource P.diagonal := by
+  let g {X Y : Scheme} (f : X ⟶ Y) (U : X.Opens) :=
+    pullback.map (U.ι ≫ f) (U.ι ≫ f) f f U.ι U.ι (𝟙 Y) (by simp) (by simp)
+  refine IsLocalAtSource.mk' (fun {X Y} f U hf ↦ ?_) (fun {X Y} f {ι} U hU hf ↦ ?_)
+  · show P _
+    apply P.of_postcomp (W' := @IsOpenImmersion) (pullback.diagonal (U.ι ≫ f)) (g f U) inferInstance
+    rw [← pullback.comp_diagonal]
+    apply IsLocalAtSource.comp
+    exact hf
+  · show P _
+    refine IsLocalAtSource.of_iSup_eq_top U hU fun i ↦ ?_
+    rw [pullback.comp_diagonal]
+    exact RespectsRight.postcomp (P := P) (Q := @IsOpenImmersion) (g _ _) inferInstance _ (hf i)
+
 end Diagonal
 
 section Universally
@@ -229,9 +246,9 @@ lemma topologically_isLocalAtTarget
   apply IsLocalAtTarget.mk'
   · intro X Y f U hf
     simp_rw [topologically, morphismRestrict_base]
-    exact hP₂ f.base U.carrier f.base.2 U.2 hf
+    exact hP₂ f.base U.carrier f.base.hom.2 U.2 hf
   · intro X Y f ι U hU hf
-    apply hP₃ f.base U hU f.base.continuous fun i ↦ ?_
+    apply hP₃ f.base U hU f.base.hom.continuous fun i ↦ ?_
     rw [← morphismRestrict_base]
     exact hf i
 
@@ -255,7 +272,7 @@ end Topologically
 /-- `stalkwise P` holds for a morphism if all stalks satisfy `P`. -/
 def stalkwise (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop) :
     MorphismProperty Scheme.{u} :=
-  fun _ _ f => ∀ x, P (f.stalkMap x)
+  fun _ _ f => ∀ x, P (f.stalkMap x).hom
 
 section Stalkwise
 
@@ -297,7 +314,7 @@ lemma stalkwise_isLocalAtSource_of_respectsIso (hP : RingHom.RespectsIso P) :
   letI := stalkwise_respectsIso hP
   apply IsLocalAtSource.mk'
   · intro X Y f U hf x
-    rw [Scheme.stalkMap_comp, hP.cancel_right_isIso]
+    rw [Scheme.stalkMap_comp, CommRingCat.hom_comp, hP.cancel_right_isIso]
     exact hf _
   · intro X Y f ι U hU hf x
     have hy : x ∈ iSup U := by rw [hU]; trivial
@@ -307,10 +324,10 @@ lemma stalkwise_isLocalAtSource_of_respectsIso (hP : RingHom.RespectsIso P) :
 
 lemma stalkwise_Spec_map_iff (hP : RingHom.RespectsIso P) {R S : CommRingCat} (φ : R ⟶ S) :
     stalkwise P (Spec.map φ) ↔ ∀ (p : Ideal S) (_ : p.IsPrime),
-      P (Localization.localRingHom _ p φ rfl) := by
+      P (Localization.localRingHom _ p φ.hom rfl) := by
   have hP' : (RingHom.toMorphismProperty P).RespectsIso :=
     RingHom.toMorphismProperty_respectsIso_iff.mp hP
-  trans ∀ (p : PrimeSpectrum S), P (Localization.localRingHom _ p.asIdeal φ rfl)
+  trans ∀ (p : PrimeSpectrum S), P (Localization.localRingHom _ p.asIdeal φ.hom rfl)
   · exact forall_congr' fun p ↦
       (RingHom.toMorphismProperty P).arrow_mk_iso_iff (Scheme.arrowStalkMapSpecIso _ _)
   · exact ⟨fun H p hp ↦ H ⟨p, hp⟩, fun H p ↦ H p.1 p.2⟩
@@ -329,19 +346,5 @@ lemma isStableUnderBaseChange_of_isStableUnderBaseChangeOnAffine_of_isLocalAtTar
   HasAffineProperty.isStableUnderBaseChange hP₂
 
 end AffineTargetMorphismProperty
-
-@[deprecated (since := "2024-06-22")]
-alias diagonalTargetAffineLocallyOfOpenCover := HasAffineProperty.diagonal_of_openCover
-
-@[deprecated (since := "2024-06-22")]
-alias AffineTargetMorphismProperty.diagonalOfTargetAffineLocally :=
-  HasAffineProperty.diagonal_of_diagonal_of_isPullback
-
-@[deprecated (since := "2024-06-22")]
-alias universallyIsLocalAtTarget := universally_isLocalAtTarget
-
-@[deprecated (since := "2024-06-22")]
-alias universallyIsLocalAtTargetOfMorphismRestrict :=
-  universally_isLocalAtTarget
 
 end AlgebraicGeometry

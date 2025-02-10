@@ -185,8 +185,6 @@ theorem index_top : (⊤ : Subgroup G).index = 1 :=
 theorem index_bot : (⊥ : Subgroup G).index = Nat.card G :=
   Cardinal.toNat_congr QuotientGroup.quotientBot.toEquiv
 
-@[deprecated (since := "2024-06-15")] alias index_bot_eq_card := index_bot
-
 @[to_additive (attr := simp)]
 theorem relindex_top_left : (⊤ : Subgroup G).relindex H = 1 :=
   index_top
@@ -198,8 +196,6 @@ theorem relindex_top_right : H.relindex ⊤ = H.index := by
 @[to_additive (attr := simp)]
 theorem relindex_bot_left : (⊥ : Subgroup G).relindex H = Nat.card H := by
   rw [relindex, bot_subgroupOf, index_bot]
-
-@[deprecated (since := "2024-06-15")] alias relindex_bot_left_eq_card := relindex_bot_left
 
 @[to_additive (attr := simp)]
 theorem relindex_bot_right : H.relindex ⊥ = 1 := by rw [relindex, subgroupOf_bot_eq_top, index_top]
@@ -220,17 +216,19 @@ theorem card_mul_index : Nat.card H * H.index = Nat.card G := by
   rw [← relindex_bot_left, ← index_bot]
   exact relindex_mul_index bot_le
 
-@[deprecated (since := "2024-06-15")] alias nat_card_dvd_of_injective := card_dvd_of_injective
-
-@[deprecated (since := "2024-06-15")] alias nat_card_dvd_of_le := card_dvd_of_le
-
 @[to_additive]
 theorem card_dvd_of_surjective (f : G →* G') (hf : Function.Surjective f) :
     Nat.card G' ∣ Nat.card G := by
   rw [← Nat.card_congr (QuotientGroup.quotientKerEquivOfSurjective f hf).toEquiv]
   exact Dvd.intro_left (Nat.card f.ker) f.ker.card_mul_index
 
-@[deprecated (since := "2024-06-15")] alias nat_card_dvd_of_surjective := card_dvd_of_surjective
+@[to_additive]
+theorem card_range_dvd (f : G →* G') : Nat.card f.range ∣ Nat.card G :=
+  card_dvd_of_surjective f.rangeRestrict f.rangeRestrict_surjective
+
+@[to_additive]
+theorem card_map_dvd (f : G →* G') : Nat.card (H.map f) ∣ Nat.card H :=
+  card_dvd_of_surjective (f.subgroupMap H) (f.subgroupMap_surjective H)
 
 @[to_additive]
 theorem index_map (f : G →* G') :
@@ -275,6 +273,10 @@ theorem index_mul_card : H.index * Nat.card H = Nat.card G := by
 @[to_additive]
 theorem index_dvd_card : H.index ∣ Nat.card G :=
   ⟨Nat.card H, H.index_mul_card.symm⟩
+
+@[to_additive]
+theorem relindex_dvd_card : H.relindex K ∣ Nat.card K :=
+  (H.subgroupOf K).index_dvd_card
 
 variable {H K L}
 
@@ -372,6 +374,14 @@ theorem relindex_eq_one : H.relindex K = 1 ↔ K ≤ H :=
 @[to_additive (attr := simp) card_eq_one]
 theorem card_eq_one : Nat.card H = 1 ↔ H = ⊥ :=
   H.relindex_bot_left ▸ relindex_eq_one.trans le_bot_iff
+
+@[to_additive]
+lemma inf_eq_bot_of_coprime (h : Nat.Coprime (Nat.card H) (Nat.card K)) : H ⊓ K = ⊥ :=
+  card_eq_one.1 <| Nat.eq_one_of_dvd_coprimes h
+    (card_dvd_of_le inf_le_left) (card_dvd_of_le inf_le_right)
+
+@[deprecated (since := "2024-12-18")]
+alias _root_.add_inf_eq_bot_of_coprime := AddSubgroup.inf_eq_bot_of_coprime
 
 @[to_additive]
 theorem index_ne_zero_of_finite [hH : Finite (G ⧸ H)] : H.index ≠ 0 := by
@@ -597,12 +607,12 @@ namespace MulAction
 
 variable (G : Type*) {X : Type*} [Group G] [MulAction G X] (x : X)
 
-theorem index_stabilizer :
+@[to_additive] theorem index_stabilizer :
     (stabilizer G x).index = (orbit G x).ncard :=
   (Nat.card_congr (MulAction.orbitEquivQuotientStabilizer G x)).symm.trans
     (Set.Nat.card_coe_set_eq (orbit G x))
 
-theorem index_stabilizer_of_transitive [IsPretransitive G X] :
+@[to_additive] theorem index_stabilizer_of_transitive [IsPretransitive G X] :
     (stabilizer G x).index = Nat.card X := by
   rw [index_stabilizer, orbit_eq_univ, Set.ncard_univ]
 

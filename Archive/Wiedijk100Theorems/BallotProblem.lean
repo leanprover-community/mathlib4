@@ -130,14 +130,12 @@ theorem counted_succ_succ (p q : ℕ) :
       · rw [List.count_cons, beq_self_eq_true, if_pos rfl, ht₀]
       · rw [List.count_cons, if_neg, ht₁]
         norm_num
-      · rintro x (_ | _)
-        exacts [Or.inl rfl, ht₂ x (by tauto)]
+      · simpa
     · refine ⟨?_, ?_, ?_⟩
       · rw [List.count_cons, if_neg, ht₀]
         norm_num
       · rw [List.count_cons, beq_self_eq_true, if_pos rfl, ht₁]
-      · rintro x (_ | _)
-        exacts [Or.inr rfl, ht₂ x (by tauto)]
+      · simpa
 
 theorem countedSequence_finite : ∀ p q : ℕ, (countedSequence p q).Finite
   | 0, q => by simp
@@ -165,9 +163,9 @@ theorem disjoint_bits (p q : ℕ) :
 
 open MeasureTheory.Measure
 
-private def measureableSpace_list_int : MeasurableSpace (List ℤ) := ⊤
+private def measurableSpace_list_int : MeasurableSpace (List ℤ) := ⊤
 
-attribute [local instance] measureableSpace_list_int
+attribute [local instance] measurableSpace_list_int
 
 private theorem measurableSingletonClass_list_int : MeasurableSingletonClass (List ℤ) :=
   { measurableSet_singleton := fun _ => trivial }
@@ -236,7 +234,7 @@ theorem first_vote_neg (p q : ℕ) (h : 0 < p + q) :
     {l : List ℤ | l.headI = 1}ᶜ (countedSequence_finite p q) (countedSequence_nonempty p q)
   rw [compl_compl, first_vote_pos _ _ h] at this
   rw [ENNReal.eq_sub_of_add_eq _ this, ENNReal.eq_div_iff, ENNReal.mul_sub, mul_one,
-    ENNReal.mul_div_cancel', ENNReal.add_sub_cancel_left]
+    ENNReal.mul_div_cancel, ENNReal.add_sub_cancel_left]
   all_goals simp_all [ENNReal.div_eq_top]
 
 theorem ballot_same (p : ℕ) : uniformOn (countedSequence (p + 1) (p + 1)) staysPositive = 0 := by

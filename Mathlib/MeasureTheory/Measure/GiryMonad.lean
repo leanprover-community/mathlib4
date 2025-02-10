@@ -69,11 +69,14 @@ theorem _root_.Measurable.measure_of_isPiSystem {μ : α → Measure β} [∀ a,
     (h_basic : ∀ s ∈ S, Measurable fun a ↦ μ a s) (h_univ : Measurable fun a ↦ μ a univ) :
     Measurable μ := by
   rw [measurable_measure]
-  refine MeasurableSpace.induction_on_inter hgen hpi (by simp) h_basic ?_ ?_
-  · intro s hsm ihs
+  intro s hs
+  induction s, hs using MeasurableSpace.induction_on_inter hgen hpi with
+  | empty => simp
+  | basic s hs => exact h_basic s hs
+  | compl s hsm ihs =>
     simp only [measure_compl hsm (measure_ne_top _ _)]
     exact h_univ.sub ihs
-  · intro f hfd hfm ihf
+  | iUnion f hfd hfm ihf =>
     simpa only [measure_iUnion hfd hfm] using .ennreal_tsum ihf
 
 theorem _root_.Measurable.measure_of_isPiSystem_of_isProbabilityMeasure {μ : α → Measure β}

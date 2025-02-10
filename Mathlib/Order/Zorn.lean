@@ -132,7 +132,7 @@ theorem zorn_le_nonempty₀ (s : Set α)
 
 theorem zorn_le_nonempty_Ici₀ (a : α)
     (ih : ∀ c ⊆ Ici a, IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub, ∀ z ∈ c, z ≤ ub) (x : α) (hax : a ≤ x) :
-    ∃ m, x ≤ m ∧ IsMax m   := by
+    ∃ m, x ≤ m ∧ IsMax m := by
   let ⟨m, hxm, ham, hm⟩ := zorn_le_nonempty₀ (Ici a) (fun c hca hc y hy ↦ ?_) x hax
   · exact ⟨m, hxm, fun z hmz => hm (ham.trans hmz) hmz⟩
   · have ⟨ub, hub⟩ := ih c hca hc y hy
