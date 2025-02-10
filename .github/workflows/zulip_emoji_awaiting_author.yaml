@@ -32,3 +32,57 @@ jobs:
       run: |
         printf $'Running the python script with pr "%s"\n' "$PR_NUMBER"
         python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "$LABEL_STATUS" "$PR_NUMBER"
+
+    - name: post Zulip message to channel if labeled "infinity-cosmos"
+      env:
+        ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
+        ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
+        ZULIP_SITE: https://leanprover.zulipchat.com
+        PR_NUMBER: ${{ github.event.number}}
+        LABEL_STATUS: ${{ github.event.action }}
+      run: |
+        printf $'Running the python script with pr "%s"\n' "$PR_NUMBER"
+        python scripts/zulip_post_labeled_pr_update.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "$LABEL_STATUS" "$PR_NUMBER"
+
+  infinity_cosmos:
+    # post Zulip message if the infinity-cosmos label is added / removed (?) from a PR
+    if: github.event.label.name == 'infinity-cosmos'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout mathlib repository
+      uses: actions/checkout@v4
+      with:
+          sparse-checkout: |
+            scripts/zulip_post_labeled_pr_update.py
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install zulip
+
+    - name: Add or remove emoji
+      env:
+        ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
+        ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
+        ZULIP_SITE: https://leanprover.zulipchat.com
+        PR_NUMBER: ${{ github.event.number}}
+        LABEL_STATUS: ${{ github.event.action }}
+      run: |
+        printf $'Running the python script with pr "%s"\n' "$PR_NUMBER"
+        python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "$LABEL_STATUS" "$PR_NUMBER"
+
+    - name: post Zulip message to channel if labeled "infinity-cosmos"
+      env:
+        ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
+        ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
+        ZULIP_SITE: https://leanprover.zulipchat.com
+        PR_NUMBER: ${{ github.event.number}}
+        LABEL_STATUS: ${{ github.event.action }}
+      run: |
+        printf $'Running the python script with pr "%s"\n' "$PR_NUMBER"
+        python scripts/zulip_post_labeled_pr_update.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "$LABEL_STATUS" "$PR_NUMBER"
