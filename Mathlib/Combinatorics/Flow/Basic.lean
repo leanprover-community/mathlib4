@@ -219,7 +219,7 @@ namespace PseudoFlow
 variable [PartialOrder R] [AddCommGroup R] {N : Network V R}
 
 @[simp]
-instance : PartialOrder (N.PseudoFlow) := PartialOrder.lift toFun instFunLike.coe_injective'
+instance : PartialOrder (N.PseudoFlow) := .lift toFun instFunLike.coe_injective'
 
 instance : OrderBot (N.PseudoFlow) where
   bot := 0
