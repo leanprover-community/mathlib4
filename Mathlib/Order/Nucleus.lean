@@ -64,7 +64,7 @@ instance : NucleusClass (Nucleus X) X where
 
 /-- Every `Nucleus` is a `ClosureOperator`. -/
 def toClosureOperator (n : Nucleus X) : ClosureOperator X :=
-   ClosureOperator.mk' n (OrderHomClass.mono n) n.le_apply' n.idempotent'
+  ClosureOperator.mk' n (OrderHomClass.mono n) n.le_apply' n.idempotent'
 
 lemma idempotent : n (n x) = n x :=
   n.toClosureOperator.idempotent x

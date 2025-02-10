@@ -550,6 +550,7 @@ import Mathlib.Algebra.Lie.Quotient
 import Mathlib.Algebra.Lie.Rank
 import Mathlib.Algebra.Lie.Semisimple.Basic
 import Mathlib.Algebra.Lie.Semisimple.Defs
+import Mathlib.Algebra.Lie.Semisimple.Lemmas
 import Mathlib.Algebra.Lie.SkewAdjoint
 import Mathlib.Algebra.Lie.Sl2
 import Mathlib.Algebra.Lie.Solvable
@@ -1143,6 +1144,7 @@ import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 import Mathlib.AlgebraicTopology.SimplicialSet.Path
 import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
+import Mathlib.AlgebraicTopology.SingularHomology.Basic
 import Mathlib.AlgebraicTopology.SingularSet
 import Mathlib.AlgebraicTopology.TopologicalSimplex
 import Mathlib.Analysis.Analytic.Basic
@@ -1487,6 +1489,7 @@ import Mathlib.Analysis.Normed.Group.CocompactMap
 import Mathlib.Analysis.Normed.Group.Completeness
 import Mathlib.Analysis.Normed.Group.Completion
 import Mathlib.Analysis.Normed.Group.Constructions
+import Mathlib.Analysis.Normed.Group.Continuity
 import Mathlib.Analysis.Normed.Group.ControlledClosure
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.Normed.Group.HomCompletion
@@ -1502,6 +1505,7 @@ import Mathlib.Analysis.Normed.Group.SemiNormedGrp.Completion
 import Mathlib.Analysis.Normed.Group.SemiNormedGrp.Kernels
 import Mathlib.Analysis.Normed.Group.Seminorm
 import Mathlib.Analysis.Normed.Group.SeparationQuotient
+import Mathlib.Analysis.Normed.Group.Subgroup
 import Mathlib.Analysis.Normed.Group.Submodule
 import Mathlib.Analysis.Normed.Group.Tannery
 import Mathlib.Analysis.Normed.Group.Ultra
@@ -1586,6 +1590,7 @@ import Mathlib.Analysis.Seminorm
 import Mathlib.Analysis.SpecialFunctions.Arsinh
 import Mathlib.Analysis.SpecialFunctions.Bernstein
 import Mathlib.Analysis.SpecialFunctions.BinaryEntropy
+import Mathlib.Analysis.SpecialFunctions.Choose
 import Mathlib.Analysis.SpecialFunctions.CompareExp
 import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 import Mathlib.Analysis.SpecialFunctions.Complex.Arctan
@@ -1984,6 +1989,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Preorder
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
@@ -2016,8 +2022,10 @@ import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.PiProd
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Fin
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder.TransfiniteCompositionOfShape
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Assoc
@@ -2101,6 +2109,7 @@ import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
 import Mathlib.CategoryTheory.Monoidal.Braided.Reflection
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Comon_
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.Center
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
@@ -2113,6 +2122,7 @@ import Mathlib.CategoryTheory.Monoidal.Free.Basic
 import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+import Mathlib.CategoryTheory.Monoidal.Grp_
 import Mathlib.CategoryTheory.Monoidal.Hopf_
 import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Internal.Limits
@@ -2257,6 +2267,7 @@ import Mathlib.CategoryTheory.Sites.LocallyFullyFaithful
 import Mathlib.CategoryTheory.Sites.LocallyInjective
 import Mathlib.CategoryTheory.Sites.LocallySurjective
 import Mathlib.CategoryTheory.Sites.MayerVietorisSquare
+import Mathlib.CategoryTheory.Sites.Monoidal
 import Mathlib.CategoryTheory.Sites.MorphismProperty
 import Mathlib.CategoryTheory.Sites.NonabelianCohomology.H1
 import Mathlib.CategoryTheory.Sites.OneHypercover
@@ -2396,6 +2407,7 @@ import Mathlib.Combinatorics.SimpleGraph.Circulant
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Represents
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 import Mathlib.Combinatorics.SimpleGraph.Dart
@@ -3038,6 +3050,7 @@ import Mathlib.Data.Set.Finite.Range
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Functor
 import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Insert
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Set.List
 import Mathlib.Data.Set.MemPartition
@@ -3857,6 +3870,7 @@ import Mathlib.MeasureTheory.Group.Prod
 import Mathlib.MeasureTheory.Integral.Asymptotics
 import Mathlib.MeasureTheory.Integral.Average
 import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.MeasureTheory.Integral.BochnerL1
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 import Mathlib.MeasureTheory.Integral.CircleIntegral
 import Mathlib.MeasureTheory.Integral.CircleTransform
@@ -3879,7 +3893,7 @@ import Mathlib.MeasureTheory.Integral.PeakFunction
 import Mathlib.MeasureTheory.Integral.Periodic
 import Mathlib.MeasureTheory.Integral.Pi
 import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani
+import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Integral.SetToL1
 import Mathlib.MeasureTheory.Integral.TorusIntegral
@@ -3958,6 +3972,7 @@ import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
 import Mathlib.MeasureTheory.OuterMeasure.Caratheodory
 import Mathlib.MeasureTheory.OuterMeasure.Defs
 import Mathlib.MeasureTheory.OuterMeasure.Induced
+import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
 import Mathlib.MeasureTheory.OuterMeasure.OfFunction
 import Mathlib.MeasureTheory.OuterMeasure.Operations
 import Mathlib.MeasureTheory.PiSystem
@@ -5358,7 +5373,8 @@ import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.Bornology.BoundedOperation
 import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Topology.Bornology.Hom
-import Mathlib.Topology.CWComplex
+import Mathlib.Topology.CWComplex.Abstract.Basic
+import Mathlib.Topology.CWComplex.Classical.Basic
 import Mathlib.Topology.Category.Born
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.Category.CompHaus.EffectiveEpi
@@ -5426,6 +5442,7 @@ import Mathlib.Topology.Compactness.PseudometrizableLindelof
 import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.Connected.Basic
 import Mathlib.Topology.Connected.Clopen
+import Mathlib.Topology.Connected.LocPathConnected
 import Mathlib.Topology.Connected.LocallyConnected
 import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Connected.Separation
@@ -5634,6 +5651,7 @@ import Mathlib.Topology.Order.UpperLowerSetTopology
 import Mathlib.Topology.Partial
 import Mathlib.Topology.PartialHomeomorph
 import Mathlib.Topology.PartitionOfUnity
+import Mathlib.Topology.Path
 import Mathlib.Topology.Perfect
 import Mathlib.Topology.PreorderRestrict
 import Mathlib.Topology.QuasiSeparated

@@ -128,10 +128,11 @@ theorem chromaticNumber_le_sum_right : H.chromaticNumber ≤ (G ⊕g H).chromati
 @[simp]
 theorem chromaticNumber_sum :
     (G ⊕g H).chromaticNumber = max G.chromaticNumber H.chromaticNumber := by
-  refine eq_max chromaticNumber_le_sum_left chromaticNumber_le_sum_right ?_
-  rintro (n | n) hG hH
-  · simp [show (none : ℕ∞) = (⊤ : ℕ∞) from rfl]
-  · let cG : G.Coloring (Fin n) := (chromaticNumber_le_iff_colorable.mp hG).some
+  refine eq_max chromaticNumber_le_sum_left chromaticNumber_le_sum_right fun {d} hG hH => ?_
+  cases d with
+  | top => simp
+  | coe n =>
+    let cG : G.Coloring (Fin n) := (chromaticNumber_le_iff_colorable.mp hG).some
     let cH : H.Coloring (Fin n) := (chromaticNumber_le_iff_colorable.mp hH).some
     exact chromaticNumber_le_iff_colorable.mpr (Nonempty.intro (cG.sum cH))
 
