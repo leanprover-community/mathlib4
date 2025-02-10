@@ -207,7 +207,7 @@ lemma excess_source_eq_neg_excess_sink : f.excess s = -f.excess t := by
 lemma excess_sink_eq_neg_excess_source : f.excess t = -f.excess s := by
   rw [excess_source_eq_neg_excess_sink, neg_neg]
 
-lemma value_eq_outgoing_minus_incoming_source : f.value = f.outgoing s - f.incoming s := by
+lemma value_eq_outgoing_sub_incoming_source : f.value = f.outgoing s - f.incoming s := by
   rw [PreFlow.value, excess_sink_eq_neg_excess_source, PseudoFlow.excess, neg_sub]
 
 end Flow
