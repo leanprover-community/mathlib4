@@ -970,11 +970,9 @@ theorem closure_one_eq : closure ({1} : Set E) = { x | ‖x‖ = 0 } :=
 
 section Instances
 
-instance [SeminormedGroup E] : ContinuousENorm E where
+@[to_additive]
+instance SeminormedGroup.toContinuousENorm [SeminormedGroup E] : ContinuousENorm E where
   continuous_enorm := continuous_enorm'--ENNReal.continuous_coe.comp continuous_nnnorm'
-
-instance [SeminormedAddGroup E] : ContinuousENorm E where
-  continuous_enorm := ENNReal.continuous_coe.comp continuous_nnnorm'
 
 end Instances
 
