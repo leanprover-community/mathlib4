@@ -98,8 +98,8 @@ variable {F} in
 /-- This is an auxiliary definition which is only meant to be used in `isLimit` below. -/
 @[simps]
 def lowerCone
-  {α : Type v} (Us : α → Opens X)
-  (S : Cone ((fullSubcategoryInclusion fun V => ∃ i, V ≤ Us i).op ⋙ principalsKanExtension F)) :
+    {α : Type v} (Us : α → Opens X)
+    (S : Cone ((fullSubcategoryInclusion fun V => ∃ i, V ≤ Us i).op ⋙ principalsKanExtension F)) :
     Cone (generator (iSup Us) ⋙ F) where
   pt := S.pt
   π := {
@@ -132,7 +132,7 @@ This is the main construction in this file showing that the right Kan extension
 of `F : X ⥤ C` along `principals : X ⥤ (Opens X)ᵒᵖ` is a sheaf, by showing that a certain
 cone is a limit cone.
 
-See `is_sheaf_principalsKanExtension` for the main application.
+See `isSheaf_principalsKanExtension` for the main application.
 -/
 def isLimit {X : TopCat.{v}} [Preorder X] [Topology.IsUpperSet X]
     (F : X ⥤ C)
