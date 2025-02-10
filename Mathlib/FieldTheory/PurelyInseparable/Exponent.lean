@@ -41,8 +41,14 @@ variable [CommRing K] [Ring L] [Algebra K L]
 
 /-- A predicate class on a ring extension saying that there is a natural number `e`
 such that `a ^ ringExpChar K ^ e ∈ K` for all `a ∈ L`. -/
+@[mk_iff]
 class HasExponent : Prop where
   has_exponent : ∃ e, ∀ a, a ^ ringExpChar K ^ e ∈ (algebraMap K L).range
+
+/-- Version of `hasExponent_iff` using `ExpChar`. -/
+theorem hasExponent_iff' (p : ℕ) [ExpChar K p] :
+    HasExponent K L ↔ ∃ e, ∀ (a : L), a ^ p ^ e ∈ (algebraMap K L).range :=
+  ringExpChar.eq K p ▸ hasExponent_iff K L
 
 open scoped Classical in
 /-- The *exponent* of a purely inseparable extension is the smallest
@@ -57,12 +63,22 @@ theorem exponent_def [HasExponent K L] (a : L) :
     a ^ ringExpChar K ^ exponent K L ∈ (algebraMap K L).range :=
   Nat.find_spec ‹HasExponent K L›.has_exponent a
 
+/-- Version of `exponent_def` using `ExpChar`. -/
+theorem exponent_def' [HasExponent K L] (p : ℕ) [ExpChar K p] (a : L) :
+    a ^ p ^ exponent K L ∈ (algebraMap K L).range :=
+  ringExpChar.eq K p ▸ exponent_def K a
+
 variable {K}
 
 open Classical in
 theorem exponent_min [HasExponent K L] {e : ℕ} (h : e < exponent K L) :
     ∃ a, a ^ ringExpChar K ^ e ∉ (algebraMap K L).range :=
   not_forall.mp <| Nat.find_min ‹HasExponent K L›.has_exponent h
+
+/-- Version of `exponent_min` using `ExpChar`. -/
+theorem exponent_min' [HasExponent K L] (p : ℕ) [ExpChar K p] {e : ℕ} (h : e < exponent K L) :
+    ∃ a, a ^ p ^ e ∉ (algebraMap K L).range :=
+  ringExpChar.eq K p ▸ exponent_min h
 
 end Ring
 
@@ -113,6 +129,12 @@ open Classical in
 theorem minpoly_eq (a : L) :
     minpoly K a = X ^ ringExpChar K ^ elemExponent K a - C (elemReduct K a) :=
   Classical.choose_spec <| Nat.find_spec <| minpoly_eq_X_pow_sub_C K (ringExpChar K) a
+
+open Classical in
+/-- Version of `minpoly_eq` using `ExpChar`. -/
+theorem minpoly_eq' (p : ℕ) [ExpChar K p] (a : L) :
+    minpoly K a = X ^ p ^ elemExponent K a - C (elemReduct K a) :=
+  ringExpChar.eq K p ▸ minpoly_eq K a
 
 /-- The degree of the minimal polynomial of an element `a ∈ L` equals
 `ringExpChar K ^ elemExponent K a`. -/
