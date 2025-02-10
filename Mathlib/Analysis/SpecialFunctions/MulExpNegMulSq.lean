@@ -66,6 +66,11 @@ variable {ε : ℝ}
 theorem continuous_mulExpNegMulSq : Continuous (fun x => mulExpNegMulSq ε x) :=
   Continuous.mul continuous_id (by fun_prop)
 
+@[continuity, fun_prop]
+theorem _root_.Continuous.mulExpNegMulSq {α : Type*} [TopologicalSpace α] {f : α → ℝ}
+    (hf : Continuous f) : Continuous (fun x => mulExpNegMulSq ε (f x)) :=
+  continuous_mulExpNegMulSq.comp hf
+
 theorem differentiableAt_mulExpNegMulSq (y : ℝ) :
     DifferentiableAt ℝ (mulExpNegMulSq ε) y :=
   DifferentiableAt.mul differentiableAt_id' (by fun_prop)
@@ -150,10 +155,8 @@ theorem tendsto_mulExpNegMulSq {x : ℝ} :
   nth_rw 2 [this]
   apply Continuous.tendsto (Continuous.mul continuous_const (by fun_prop))
 
-/--
-For a fixed bounded function `g`, `mulExpNegMulSq ε ∘ g` is bounded by `norm g`, uniformly in
-`ε ≥ 0`.
--/
+/-- For a fixed bounded function `g`, `mulExpNegMulSq ε ∘ g` is bounded by `norm g`,
+uniformly in `ε ≥ 0`. -/
 theorem abs_mulExpNegMulSq_comp_le_norm {E : Type*} [TopologicalSpace E] {x : E}
     (g : BoundedContinuousFunction E ℝ) (hε : 0 ≤ ε) :
     |(mulExpNegMulSq ε ∘ g) x| ≤ ‖g‖ := by
