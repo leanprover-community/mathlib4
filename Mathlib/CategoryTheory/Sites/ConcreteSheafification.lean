@@ -61,7 +61,7 @@ theorem ext {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x y : Meq P S) (h : ∀ I :
   Subtype.ext <| funext <| h
 
 theorem condition {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (I : S.Relation) :
-    P.map I.r.g₁.op (x ((S.index P).fstTo I)) = P.map I.r.g₂.op (x ((S.index P).sndTo I)) :=
+    P.map I.r.g₁.op (x (S.shape.fst I)) = P.map I.r.g₂.op (x (S.shape.snd I)) :=
   x.2 _
 
 /-- Refine a term of `Meq P T` with respect to a refinement `S ⟶ T` of covers. -/
@@ -231,14 +231,11 @@ theorem eq_mk_iff_exists {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq 
     apply Concrete.multiequalizer_ext
     intro i
     apply_fun fun ee => ee i at e
-    -- Without the next line, `convert e` gives an error:
-    -- tactic 'assumption' failed, metavariable has already been assigned
-    show (Multiequalizer.ι _ i) (((J.diagram P X).map h1.op) _) =
-      (Multiequalizer.ι _ i) (((J.diagram P X).map h2.op) _)
-    convert e
+    convert e using 1
     all_goals
-      dsimp
-      rw [← ConcreteCategory.comp_apply, Multiequalizer.lift_ι]
+      dsimp [diagram]
+      erw [← ConcreteCategory.comp_apply]
+      rw [Multiequalizer.lift_ι]
       erw [Meq.equiv_symm_eq_apply]
       cases i; rfl
 
