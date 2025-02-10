@@ -37,7 +37,7 @@ jobs:
             sed -n 's=^bors  *\(merge\|r+\) *$=ready-to-merge=p; s=^bors  *d.*=delegated=p' | head -1)"
 
           remove_labels="$(printf '%s' "${COMMENT}" |
-            sed -n 's=^bors  *\(r\|d\)- *$=remove-labels' | head -1)"
+            sed -n 's=^bors  *\(merge\|r\|d\)- *$=remove-labels' | head -1)"
 
           printf $'"bors delegate" or "bors merge" found? \'%s\'\n' "${m_or_d}"
           printf $'"bors r-" or "bors d-" found? \'%s\'\n' "${remove_labels}"
