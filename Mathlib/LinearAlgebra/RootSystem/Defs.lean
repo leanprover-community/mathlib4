@@ -90,7 +90,7 @@ structure RootPairing extends PerfectPairing R M N where
       `RootPairing.reflection`) leave the whole set of roots stable: as explained above, we
       formalize this stability by fixing the image of the roots through each reflection (whence the
       permutation); and similarly for coroots. -/
-  reflection_perm : ι → (ι ≃ ι)
+  reflection_perm : ι → (ι ≃ ι) -- TODO rename
   reflection_perm_root : ∀ i j,
     root j - toPerfectPairing (root j) (coroot i) • root i = root (reflection_perm i j)
   reflection_perm_coroot : ∀ i j,
