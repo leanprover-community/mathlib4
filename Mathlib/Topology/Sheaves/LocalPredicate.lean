@@ -161,6 +161,7 @@ def subtype : subpresheafToTypes P ⟶ presheafToTypes X T where app _ f := f.1
 
 open TopCat.Presheaf
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- The functions satisfying a local predicate satisfy the sheaf condition.
 -/
 theorem isSheaf (P : LocalPredicate T) : (subpresheafToTypes P.toPrelocalPredicate).IsSheaf :=
@@ -173,7 +174,9 @@ theorem isSheaf (P : LocalPredicate T) : (subpresheafToTypes P.toPrelocalPredica
     have sf'_comp : (presheafToTypes X T).IsCompatible U sf' := fun i j =>
       congr_arg Subtype.val (sf_comp i j)
     -- So, we can obtain a unique gluing
-    obtain ⟨gl, gl_spec, gl_uniq⟩ := (sheafToTypes X T).existsUnique_gluing U sf' sf'_comp
+    obtain ⟨gl, gl_spec, gl_uniq⟩ := (sheafToTypes X T).existsUnique_gluing U sf'
+      -- `by exact` to help Lean infer the `ConcreteCategory` instance
+      (by exact sf'_comp)
     refine ⟨⟨gl, ?_⟩, ?_, ?_⟩
     · -- Our first goal is to show that this chosen gluing satisfies the
       -- predicate. Of course, we use locality of the predicate.

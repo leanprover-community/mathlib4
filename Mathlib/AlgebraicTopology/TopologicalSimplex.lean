@@ -6,11 +6,12 @@ Authors: Johan Commelin, Adam Topaz
 import Mathlib.AlgebraicTopology.SimplexCategory
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Instances.NNReal.Defs
+import Mathlib.Topology.Connected.PathConnected
 
 /-!
 # Topological simplices
 
-We define the natural functor from `SimplexCategory` to `TopCat` sending `[n]` to the
+We define the natural functor from `SimplexCategory` to `TopCat` sending `⦋n⦌` to the
 topological `n`-simplex.
 This is used to define `TopCat.toSSet` in `AlgebraicTopology.SingularSet`.
 -/
@@ -24,10 +25,6 @@ open Simplicial NNReal CategoryTheory
 
 attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike
 
--- Porting note: added, should be moved
-instance (x : SimplexCategory) : Fintype (HasForget.forget.obj x) :=
-  inferInstanceAs (Fintype (Fin _))
-
 /-- The topological simplex associated to `x : SimplexCategory`.
   This is the object part of the functor `SimplexCategory.toTop`. -/
 def toTopObj (x : SimplexCategory) := { f : x → ℝ≥0 | ∑ i, f i = 1 }
@@ -38,6 +35,46 @@ instance (x : SimplexCategory) : CoeFun x.toTopObj fun _ => x → ℝ≥0 :=
 @[ext]
 theorem toTopObj.ext {x : SimplexCategory} (f g : x.toTopObj) : (f : x → ℝ≥0) = g → f = g :=
   Subtype.ext
+
+@[simp]
+lemma toTopObj_zero_apply_zero (f : ⦋0⦌.toTopObj) : f 0 = 1 := by
+  simpa [instHasForget] using show ∑ _, _ = _ from f.2
+
+lemma toTopObj_one_add_eq_one (f : ⦋1⦌.toTopObj) : f 0 + f 1 = 1 := by
+  simpa [instHasForget, Finset.sum] using show ∑ _, _ = _ from f.2
+
+lemma toTopObj_one_coe_add_coe_eq_one (f : ⦋1⦌.toTopObj) : (f 0 : ℝ) + f 1 = 1 := by
+  norm_cast
+  rw [toTopObj_one_add_eq_one]
+
+instance (x : SimplexCategory) : Nonempty x.toTopObj :=
+  ⟨⟨Pi.single (I := Fin _) 0 1, (show ∑ _, _ = _ by simp)⟩⟩
+
+instance : Unique ⦋0⦌.toTopObj :=
+  ⟨⟨1, show ∑ _, _ = _ by simp [instHasForget]⟩, fun f ↦ by ext i; fin_cases i; simp⟩
+
+open unitInterval in
+/-- The one-dimensional topological simplex is homeomorphic to the unit interval. -/
+def toTopObjOneHomeo : ⦋1⦌.toTopObj ≃ₜ I where
+  toFun f := ⟨f 0, (f 0).2, toTopObj_one_coe_add_coe_eq_one f ▸ le_add_of_nonneg_right (f 1).2⟩
+  invFun x := ⟨![toNNReal x, toNNReal (σ x)],
+    show ∑ _, _ = _ by ext; simp [instHasForget, Finset.sum]⟩
+  left_inv f := by ext i; fin_cases i <;> simp [← toTopObj_one_coe_add_coe_eq_one f]
+  right_inv x := by simp
+  continuous_toFun := .subtype_mk (continuous_subtype_val.comp
+    ((continuous_apply _).comp continuous_subtype_val)) _
+  continuous_invFun := .subtype_mk (continuous_pi fun i ↦ by fin_cases i <;> dsimp <;> fun_prop) _
+
+open unitInterval in
+instance (x : SimplexCategory) : PathConnectedSpace x.toTopObj := by
+  refine ⟨inferInstance, ?_⟩
+  intros f g
+  dsimp [toTopObj, instHasForget] at f g ⊢
+  refine ⟨⟨fun j ↦ ⟨toNNReal (symm j) • f.1 + toNNReal j • g.1, ?_⟩, ?_⟩, ?_, ?_⟩
+  · ext; simp [Finset.sum_add_distrib, ← Finset.mul_sum, f.2, g.2]
+  · fun_prop
+  · ext; simp
+  · ext; simp
 
 open Classical in
 /-- A morphism in `SimplexCategory` induces a map on the associated topological spaces. -/
@@ -62,7 +99,7 @@ theorem continuous_toTopMap {x y : SimplexCategory} (f : x ⟶ y) : Continuous (
   dsimp only [coe_toTopMap]
   exact continuous_finset_sum _ (fun j _ => (continuous_apply _).comp continuous_subtype_val)
 
-/-- The functor associating the topological `n`-simplex to `[n] : SimplexCategory`. -/
+/-- The functor associating the topological `n`-simplex to `⦋n⦌ : SimplexCategory`. -/
 @[simps obj map]
 def toTop : SimplexCategory ⥤ TopCat where
   obj x := TopCat.of x.toTopObj
