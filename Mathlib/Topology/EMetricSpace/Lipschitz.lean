@@ -84,8 +84,6 @@ lemma LocallyLipschitzOn.mono (hf : LocallyLipschitzOn t f) (h : s ⊆ t) : Loca
 @[simp] lemma lipschitzOnWith_univ : LipschitzOnWith K f univ ↔ LipschitzWith K f := by
   simp [LipschitzOnWith, LipschitzWith]
 
-@[deprecated (since := "2024-07-17")] alias lipschitzOn_univ := lipschitzOnWith_univ
-
 @[simp] lemma locallyLipschitzOn_univ : LocallyLipschitzOn univ f ↔ LocallyLipschitz f := by
   simp [LocallyLipschitzOn, LocallyLipschitz]
 
@@ -486,7 +484,7 @@ theorem continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith' [Topol
     (hb : ∀ b ∈ t', ContinuousOn (fun x => f (x, b)) s) : ContinuousOn f (s ×ˢ t) :=
   have : ContinuousOn (f ∘ Prod.swap) (t ×ˢ s) :=
     continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith _ ht' htt' K hb ha
-  this.comp continuous_swap.continuousOn mapsTo_swap_prod
+  this.comp continuous_swap.continuousOn (mapsTo_swap_prod _ _)
 
 theorem continuousOn_prod_of_continuousOn_lipschitzOnWith' [TopologicalSpace α]
     [PseudoEMetricSpace β] [PseudoEMetricSpace γ] (f : α × β → γ) {s : Set α} {t : Set β} (K : ℝ≥0)
@@ -494,7 +492,7 @@ theorem continuousOn_prod_of_continuousOn_lipschitzOnWith' [TopologicalSpace α]
     (hb : ∀ b ∈ t, ContinuousOn (fun x => f (x, b)) s) : ContinuousOn f (s ×ˢ t) :=
   have : ContinuousOn (f ∘ Prod.swap) (t ×ˢ s) :=
     continuousOn_prod_of_continuousOn_lipschitzOnWith _ K hb ha
-  this.comp continuous_swap.continuousOn mapsTo_swap_prod
+  this.comp continuous_swap.continuousOn (mapsTo_swap_prod _ _)
 
 theorem continuous_prod_of_dense_continuous_lipschitzWith' [TopologicalSpace α]
     [PseudoEMetricSpace β] [PseudoEMetricSpace γ] (f : α × β → γ) (K : ℝ≥0) {t : Set β}
@@ -506,7 +504,7 @@ theorem continuous_prod_of_dense_continuous_lipschitzWith' [TopologicalSpace α]
 
 theorem continuous_prod_of_continuous_lipschitzWith' [TopologicalSpace α] [PseudoEMetricSpace β]
     [PseudoEMetricSpace γ] (f : α × β → γ) (K : ℝ≥0) (ha : ∀ a, LipschitzWith K fun y => f (a, y))
-    (hb : ∀ b, Continuous fun x => f (x, b)): Continuous f :=
+    (hb : ∀ b, Continuous fun x => f (x, b)) : Continuous f :=
   have : Continuous (f ∘ Prod.swap) :=
     continuous_prod_of_continuous_lipschitzWith _ K hb ha
   this.comp continuous_swap

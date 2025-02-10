@@ -35,13 +35,11 @@ section Nat
 
 section Monoid
 
-namespace HasProd
-
 /-- If `f : ℕ → M` has product `m`, then the partial products `∏ i ∈ range n, f i` converge
 to `m`. -/
 @[to_additive "If `f : ℕ → M` has sum `m`, then the partial sums `∑ i ∈ range n, f i` converge
 to `m`."]
-theorem tendsto_prod_nat {f : ℕ → M} (h : HasProd f m) :
+theorem HasProd.tendsto_prod_nat {f : ℕ → M} (h : HasProd f m) :
     Tendsto (fun n ↦ ∏ i ∈ range n, f i) atTop (𝓝 m) :=
   h.comp tendsto_finset_range
 
@@ -51,7 +49,15 @@ to `∏' i, f i`. -/
 to `∑' i, f i`."]
 theorem Multipliable.tendsto_prod_tprod_nat {f : ℕ → M} (h : Multipliable f) :
     Tendsto (fun n ↦ ∏ i ∈ range n, f i) atTop (𝓝 (∏' i, f i)) :=
-  tendsto_prod_nat h.hasProd
+  h.hasProd.tendsto_prod_nat
+
+@[deprecated (since := "2025-02-02")]
+alias HasProd.Multipliable.tendsto_prod_tprod_nat := Multipliable.tendsto_prod_tprod_nat
+
+@[deprecated (since := "2025-02-02")]
+alias HasSum.Multipliable.tendsto_sum_tsum_nat := Summable.tendsto_sum_tsum_nat
+
+namespace HasProd
 
 section ContinuousMul
 

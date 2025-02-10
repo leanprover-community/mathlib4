@@ -339,6 +339,15 @@ jobs:
           # Only return if PR is still open
           filterOutClosed: true
 
+      - if: contains(steps.PR.outputs.pr_labels, 'bench-after-CI')
+        name: If `bench-after-CI` is present, add a `!bench` comment.
+        uses: GrantBirki/comment@v2
+        with:
+          token: ${{ secrets.AUTO_MERGE_TOKEN }}
+          issue-number: ${{ steps.PR.outputs.number }}
+          body: |
+            !bench
+
       - id: remove_labels
         name: Remove "awaiting-CI"
         # we use curl rather than octokit/request-action so that the job won't fail

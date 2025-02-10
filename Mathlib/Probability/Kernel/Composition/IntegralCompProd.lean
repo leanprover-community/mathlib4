@@ -251,23 +251,14 @@ theorem setIntegral_compProd {f : β × γ → E} {s : Set β} {t : Set γ} (hs 
   · simp_rw [Kernel.restrict_apply]
   · rw [compProd_restrict, Kernel.restrict_apply]; exact hf
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_compProd := setIntegral_compProd
-
 theorem setIntegral_compProd_univ_right (f : β × γ → E) {s : Set β} (hs : MeasurableSet s)
     (hf : IntegrableOn f (s ×ˢ univ) ((κ ⊗ₖ η) a)) :
     ∫ z in s ×ˢ univ, f z ∂(κ ⊗ₖ η) a = ∫ x in s, ∫ y, f (x, y) ∂η (a, x) ∂κ a := by
   simp_rw [setIntegral_compProd hs MeasurableSet.univ hf, Measure.restrict_univ]
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_compProd_univ_right := setIntegral_compProd_univ_right
-
 theorem setIntegral_compProd_univ_left (f : β × γ → E) {t : Set γ} (ht : MeasurableSet t)
     (hf : IntegrableOn f (univ ×ˢ t) ((κ ⊗ₖ η) a)) :
     ∫ z in univ ×ˢ t, f z ∂(κ ⊗ₖ η) a = ∫ x, ∫ y in t, f (x, y) ∂η (a, x) ∂κ a := by
   simp_rw [setIntegral_compProd MeasurableSet.univ ht hf, Measure.restrict_univ]
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_compProd_univ_left := setIntegral_compProd_univ_left
 
 end ProbabilityTheory
