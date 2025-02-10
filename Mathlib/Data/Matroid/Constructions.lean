@@ -105,7 +105,7 @@ theorem eq_loopyOn_iff : M = loopyOn E ↔ M.E = E ∧ ∀ X ⊆ M.E, M.Indep X 
   ⟨fun h ↦ ⟨loopyOn_indep_iff.mp h.indep, h.subset_ground⟩,
     by rintro ⟨rfl, hX⟩; rw [basis_iff]; simp⟩
 
-instance : FiniteRk (loopyOn E) :=
+instance : RankFinite (loopyOn E) :=
   ⟨⟨∅, loopyOn_base_iff.2 rfl, finite_empty⟩⟩
 
 theorem Finite.loopyOn_finite (hE : E.Finite) : Matroid.Finite (loopyOn E) :=
@@ -122,13 +122,13 @@ theorem empty_base_iff : M.Base ∅ ↔ M = loopyOn M.E := by
     loopyOn_indep_iff]
   exact ⟨fun h I _ ↦ ⟨@h _, fun hI ↦ by simp [hI]⟩, fun h I hI ↦ (h hI.subset_ground).1 hI⟩
 
-theorem eq_loopyOn_or_rkPos (M : Matroid α) : M = loopyOn M.E ∨ RkPos M := by
-  rw [← empty_base_iff, rkPos_iff]; apply em
+theorem eq_loopyOn_or_rankPos (M : Matroid α) : M = loopyOn M.E ∨ RankPos M := by
+  rw [← empty_base_iff, rankPos_iff]; apply em
 
-theorem not_rkPos_iff : ¬RkPos M ↔ M = loopyOn M.E := by
-  rw [rkPos_iff, not_iff_comm, empty_base_iff]
+theorem not_rankPos_iff : ¬RankPos M ↔ M = loopyOn M.E := by
+  rw [rankPos_iff, not_iff_comm, empty_base_iff]
 
-instance loopyOn_finiteRk : FiniteRk (loopyOn E) :=
+instance loopyOn_rankFinite : RankFinite (loopyOn E) :=
   ⟨∅, by simp⟩
 
 end LoopyOn
@@ -190,8 +190,8 @@ instance freeOn_finitary : Finitary (freeOn E) := by
   simp only [finitary_iff, freeOn_indep_iff]
   exact fun I h e heI ↦ by simpa using h {e} (by simpa)
 
-lemma freeOn_rkPos (hE : E.Nonempty) : RkPos (freeOn E) := by
-  simp [rkPos_iff, hE.ne_empty.symm]
+lemma freeOn_rankPos (hE : E.Nonempty) : RankPos (freeOn E) := by
+  simp [rankPos_iff, hE.ne_empty.symm]
 
 end FreeOn
 
@@ -253,7 +253,7 @@ theorem uniqueBaseOn_restrict (h : I ⊆ E) (R : Set α) :
     (uniqueBaseOn I E) ↾ R = uniqueBaseOn (I ∩ R) R := by
   rw [uniqueBaseOn_restrict', inter_right_comm, inter_eq_self_of_subset_left h]
 
-lemma uniqueBaseOn_finiteRk (hI : I.Finite) : FiniteRk (uniqueBaseOn I E) := by
+lemma uniqueBaseOn_rankFinite (hI : I.Finite) : RankFinite (uniqueBaseOn I E) := by
   rw [← uniqueBaseOn_inter_ground_eq]
   refine ⟨I ∩ E, ?_⟩
   rw [uniqueBaseOn_base_iff inter_subset_right, and_iff_right rfl]
@@ -264,7 +264,7 @@ instance uniqueBaseOn_finitary : Finitary (uniqueBaseOn I E) := by
   simp only [uniqueBaseOn_indep_iff'] at hK ⊢
   exact fun e heK ↦ singleton_subset_iff.1 <| hK _ (by simpa) (by simp)
 
-lemma uniqueBaseOn_rkPos (hIE : I ⊆ E) (hI : I.Nonempty) : RkPos (uniqueBaseOn I E) where
+lemma uniqueBaseOn_rankPos (hIE : I ⊆ E) (hI : I.Nonempty) : RankPos (uniqueBaseOn I E) where
   empty_not_base := by simpa [uniqueBaseOn_base_iff hIE] using Ne.symm <| hI.ne_empty
 
 end uniqueBaseOn

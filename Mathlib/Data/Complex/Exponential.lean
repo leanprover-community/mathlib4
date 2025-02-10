@@ -29,8 +29,8 @@ theorem isCauSeq_abs_exp (z : ℂ) :
   have hn0 : (0 : ℝ) < n := lt_of_le_of_lt (abs.nonneg _) hn
   IsCauSeq.series_ratio_test n (abs z / n) (div_nonneg (abs.nonneg _) (le_of_lt hn0))
     (by rwa [div_lt_iff₀ hn0, one_mul]) fun m hm => by
-      rw [abs_abs, abs_abs, Nat.factorial_succ, pow_succ', mul_comm m.succ, Nat.cast_mul, ← div_div,
-        mul_div_assoc, mul_div_right_comm, map_mul, map_div₀, abs_natCast]
+      rw [Complex.abs_abs, Complex.abs_abs, Nat.factorial_succ, pow_succ', mul_comm m.succ,
+        Nat.cast_mul, ← div_div, mul_div_assoc, mul_div_right_comm, map_mul, map_div₀, abs_natCast]
       gcongr
       exact le_trans hm (Nat.le_succ _)
 
@@ -276,7 +276,7 @@ theorem abs_exp (x : ℝ) : |exp x| = exp x :=
   abs_of_pos (exp_pos _)
 
 lemma exp_abs_le (x : ℝ) : exp |x| ≤ exp x + exp (-x) := by
-  cases le_total x 0 <;> simp [abs_of_nonpos, _root_.abs_of_nonneg, exp_nonneg, *]
+  cases le_total x 0 <;> simp [abs_of_nonpos, abs_of_nonneg, exp_nonneg, *]
 
 @[mono]
 theorem exp_strictMono : StrictMono exp := fun x y h => by
@@ -538,7 +538,7 @@ theorem abs_exp_sub_one_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1| ≤ 2 * |x| 
   exact this
 
 theorem abs_exp_sub_one_sub_id_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1 - x| ≤ x ^ 2 := by
-  rw [← _root_.sq_abs]
+  rw [← sq_abs]
   -- Porting note: was
   -- exact_mod_cast Complex.abs_exp_sub_one_sub_id_le this
   have : Complex.abs x ≤ 1 := mod_cast hx
@@ -656,10 +656,10 @@ theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t 
     _ = rexp (-t) := by rw [← Real.exp_nat_mul, mul_neg, mul_comm, div_mul_cancel₀]; positivity
 
 lemma le_inv_mul_exp (x : ℝ) {c : ℝ} (hc : 0 < c) : x ≤ c⁻¹ * exp (c * x) := by
-    rw [le_inv_mul_iff₀ hc]
-    calc c * x
-    _ ≤ c * x + 1 := le_add_of_nonneg_right zero_le_one
-    _ ≤ _ := Real.add_one_le_exp (c * x)
+  rw [le_inv_mul_iff₀ hc]
+  calc c * x
+  _ ≤ c * x + 1 := le_add_of_nonneg_right zero_le_one
+  _ ≤ _ := Real.add_one_le_exp (c * x)
 
 end Real
 
@@ -682,6 +682,6 @@ namespace Complex
 @[simp]
 theorem abs_exp_ofReal (x : ℝ) : abs (exp x) = Real.exp x := by
   rw [← ofReal_exp]
-  exact abs_of_nonneg (le_of_lt (Real.exp_pos _))
+  exact Complex.abs_of_nonneg (le_of_lt (Real.exp_pos _))
 
 end Complex

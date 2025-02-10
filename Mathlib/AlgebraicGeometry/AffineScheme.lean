@@ -321,7 +321,7 @@ lemma isoSpec_hom : hU.isoSpec.hom = U.toSpecΓ := rfl
 lemma toSpecΓ_isoSpec_inv : U.toSpecΓ ≫ hU.isoSpec.inv = 𝟙 _ := hU.isoSpec.hom_inv_id
 
 @[reassoc (attr := simp)]
-lemma isoSpec_inv_toSpecΓ :  hU.isoSpec.inv ≫ U.toSpecΓ = 𝟙 _ := hU.isoSpec.inv_hom_id
+lemma isoSpec_inv_toSpecΓ : hU.isoSpec.inv ≫ U.toSpecΓ = 𝟙 _ := hU.isoSpec.inv_hom_id
 
 open IsLocalRing in
 lemma isoSpec_hom_base_apply (x : U) :
@@ -758,11 +758,45 @@ lemma stalkMap_injective (f : X ⟶ Y) {U : Opens Y} (hU : IsAffineOpen U) (x : 
   apply (hU.isLocalization_stalk ⟨f.base x, hx⟩).injective_of_map_algebraMap_zero
   exact h
 
+include hU in
+lemma mem_ideal_iff {s : Γ(X, U)} {I : Ideal Γ(X, U)} :
+    s ∈ I ↔ ∀ (x : X) (h : x ∈ U), X.presheaf.germ U x h s ∈ I.map (X.presheaf.germ U x h).hom := by
+  refine ⟨fun hs x hxU ↦ Ideal.mem_map_of_mem _ hs, fun H ↦ ?_⟩
+  letI (x) : Algebra Γ(X, U) (X.presheaf.stalk (hU.fromSpec.base x)) :=
+    TopCat.Presheaf.algebra_section_stalk X.presheaf _
+  have (P : Ideal Γ(X, U)) [hP : P.IsPrime] : IsLocalization.AtPrime _ P :=
+      hU.isLocalization_stalk' ⟨P, hP⟩ (hU.isoSpec.inv.base _).2
+  have (P : Ideal Γ(X, U)) [hP : P.IsPrime] : IsLocalizedModule P.primeCompl _ :=
+    (@isLocalizedModule_iff_isLocalization' ..).mpr (this P)
+  refine Submodule.mem_of_localization_maximal
+      (fun P hP ↦ X.presheaf.stalk (hU.fromSpec.base ⟨P, hP.isPrime⟩))
+      (fun P hP ↦ Algebra.linearMap _ _) _ _ ?_
+  intro P hP
+  rw [Ideal.localized₀_eq_restrictScalars_map]
+  exact H _ _
+
+include hU in
+lemma ideal_le_iff {I J : Ideal Γ(X, U)} :
+    I ≤ J ↔ ∀ (x : X) (h : x ∈ U),
+      I.map (X.presheaf.germ U x h).hom ≤ J.map (X.presheaf.germ U x h).hom :=
+  ⟨fun h _ _ ↦ Ideal.map_mono h,
+    fun H _ hs ↦ hU.mem_ideal_iff.mpr fun x hx ↦ H x hx (Ideal.mem_map_of_mem _ hs)⟩
+
+include hU in
+lemma ideal_ext_iff {I J : Ideal Γ(X, U)} :
+    I = J ↔ ∀ (x : X) (h : x ∈ U),
+      I.map (X.presheaf.germ U x h).hom = J.map (X.presheaf.germ U x h).hom := by
+  simp_rw [le_antisymm_iff, hU.ideal_le_iff, forall_and]
+
 /-- The basic open set of a section `f` on an affine open as an `X.affineOpens`. -/
 @[simps]
 def _root_.AlgebraicGeometry.Scheme.affineBasicOpen
     (X : Scheme) {U : X.affineOpens} (f : Γ(X, U)) : X.affineOpens :=
   ⟨X.basicOpen f, U.prop.basicOpen f⟩
+
+lemma _root_.AlgebraicGeometry.Scheme.affineBasicOpen_le
+    (X : Scheme) {V : X.affineOpens} (f : Γ(X, V.1)) : X.affineBasicOpen f ≤ V :=
+  X.basicOpen_le f
 
 include hU in
 /--
@@ -1056,6 +1090,24 @@ section Factorization
 
 variable {X : Scheme.{u}} {A : CommRingCat}
 
+/-- Given `f : X ⟶ Spec A` and some ideal `I ≤ ker(A ⟶ Γ(X, ⊤))`,
+this is the lift to `X ⟶ Spec (A ⧸ I)`. -/
+def Scheme.Hom.liftQuotient (f : X.Hom (Spec A)) (I : Ideal A)
+    (hI : I ≤ RingHom.ker ((Scheme.ΓSpecIso A).inv ≫ f.appTop).hom) :
+    X ⟶ Spec (.of (A ⧸ I)) :=
+  X.toSpecΓ ≫ Spec.map (CommRingCat.ofHom
+    (Ideal.Quotient.lift _ ((Scheme.ΓSpecIso _).inv ≫ f.appTop).hom hI))
+
+@[reassoc]
+lemma Scheme.Hom.liftQuotient_comp (f : X.Hom (Spec A)) (I : Ideal A)
+    (hI : I ≤ RingHom.ker ((Scheme.ΓSpecIso A).inv ≫ f.appTop).hom) :
+    f.liftQuotient I hI ≫ Spec.map (CommRingCat.ofHom (Ideal.Quotient.mk _)) = f := by
+  rw [Scheme.Hom.liftQuotient, Category.assoc, ← Spec.map_comp, ← CommRingCat.ofHom_comp,
+    Ideal.Quotient.lift_comp_mk]
+  simp only [CommRingCat.hom_comp, CommRingCat.ofHom_comp, CommRingCat.ofHom_hom, Spec.map_comp, ←
+    Scheme.toSpecΓ_naturality_assoc, ← SpecMap_ΓSpecIso_hom]
+  simp only [← Spec.map_comp, Iso.inv_hom_id, Spec.map_id, Category.comp_id]
+
 /-- If `X ⟶ Spec A` is a morphism of schemes, then `Spec` of `A ⧸ specTargetImage f`
 is the scheme-theoretic image of `f`. For this quotient as an object of `CommRingCat` see
 `specTargetImage` below. -/
@@ -1072,8 +1124,7 @@ def specTargetImage (f : X ⟶ Spec A) : CommRingCat :=
 /-- If `f : X ⟶ Spec A` is a morphism of schemes, then `f` factors via
 the inclusion of `Spec (specTargetImage f)` into `X`. -/
 def specTargetImageFactorization (f : X ⟶ Spec A) : X ⟶ Spec (specTargetImage f) :=
-  (ΓSpec.adjunction).homEquiv X (op <| specTargetImage f) (Opposite.op
-    (CommRingCat.ofHom (RingHom.kerLift _)))
+  f.liftQuotient _ le_rfl
 
 /-- If `f : X ⟶ Spec A` is a morphism of schemes, the induced morphism on spectra of
 `specTargetImageRingHom f` is the inclusion of the scheme-theoretic image of `f` into `Spec A`. -/
@@ -1096,18 +1147,8 @@ lemma specTargetImageFactorization_app_injective :
 
 @[reassoc (attr := simp)]
 lemma specTargetImageFactorization_comp :
-    specTargetImageFactorization f ≫ Spec.map (specTargetImageRingHom f) = f := by
-  let φ : A ⟶ Γ(X, ⊤) := (((ΓSpec.adjunction).homEquiv X (op A)).symm f).unop
-  let φ' : specTargetImage f ⟶ Scheme.Γ.obj (op X) := CommRingCat.ofHom (RingHom.kerLift φ.hom)
-  apply ((ΓSpec.adjunction).homEquiv X (op A)).symm.injective
-  apply Opposite.unop_injective
-  rw [Adjunction.homEquiv_naturality_left_symm, Adjunction.homEquiv_counit]
-  change (_ ≫ _) ≫ _ = φ
-  erw [← Spec_Γ_naturality]
-  rw [Category.assoc]
-  erw [ΓSpecIso_inv_ΓSpec_adjunction_homEquiv φ']
-  ext a
-  apply RingHom.kerLift_mk
+    specTargetImageFactorization f ≫ Spec.map (specTargetImageRingHom f) = f :=
+  f.liftQuotient_comp _ _
 
 open RingHom
 

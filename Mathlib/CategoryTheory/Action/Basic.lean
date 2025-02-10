@@ -43,7 +43,6 @@ namespace Action
 
 variable {V}
 
-@[simp 1100]
 theorem ρ_one {G : Type u} [Monoid G] (A : Action V G) : A.ρ 1 = 𝟙 A.V := by
   rw [MonoidHom.map_one]; rfl
 
@@ -57,11 +56,6 @@ def ρAut {G : Type u} [Group G] (A : Action V G) : G →* Aut A.V where
       inv_hom_id := (A.ρ.map_mul g (g⁻¹ : G)).symm.trans (by rw [mul_inv_cancel, ρ_one]) }
   map_one' := Aut.ext A.ρ.map_one
   map_mul' x y := Aut.ext (A.ρ.map_mul x y)
-
--- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657),
--- but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
--- It would be worth fixing these, as `ρAut_apply_inv` is used in `erw` later.
-attribute [nolint simpNF] Action.ρAut_apply_inv Action.ρAut_apply_hom
 
 variable (G : Type u) [Monoid G]
 
@@ -245,6 +239,30 @@ instance : (forget V G).Faithful where map_injective w := Hom.ext w
 
 instance [HasForget V] : HasForget (Action V G) where
   forget := forget V G ⋙ HasForget.forget
+
+/-- The type of `V`-morphisms that can be lifted back to morphisms in the category `Action`. -/
+abbrev HomSubtype {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
+    [ConcreteCategory V FV] (M N : Action V G) :=
+  { f : FV M.V N.V // ∀ g : G,
+      f ∘ ConcreteCategory.hom (M.ρ g) = ConcreteCategory.hom (N.ρ g) ∘ f }
+
+instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
+    [ConcreteCategory V FV] (M N : Action V G) :
+    FunLike (HomSubtype V G M N) (CV M.V) (CV N.V) where
+  coe f := f.1
+  coe_injective' _ _ h := Subtype.ext (DFunLike.coe_injective h)
+
+instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
+    [ConcreteCategory V FV] : ConcreteCategory (Action V G) (HomSubtype V G) where
+  hom f := ⟨ConcreteCategory.hom (C := V) f.1, fun g => by
+    ext
+    simpa using CategoryTheory.congr_fun (f.2 g) _⟩
+  ofHom f := ⟨ConcreteCategory.ofHom (C := V) f, fun g => ConcreteCategory.ext_apply fun x => by
+    simpa [ConcreteCategory.hom_ofHom] using congr_fun (f.2 g) x⟩
+  hom_ofHom _ := by dsimp; ext; simp [ConcreteCategory.hom_ofHom]
+  ofHom_hom _ := by ext; simp [ConcreteCategory.ofHom_hom]
+  id_apply := ConcreteCategory.id_apply (C := V)
+  comp_apply _ _ := ConcreteCategory.comp_apply (C := V) _ _
 
 instance hasForgetToV [HasForget V] : HasForget₂ (Action V G) V where forget₂ := forget V G
 
