@@ -138,6 +138,8 @@ lemma closure_def' (M : Matroid α) (X : Set α) (hX : X ⊆ M.E := by aesop_mat
 
 instance : Nonempty {F | M.Flat F ∧ X ∩ M.E ⊆ F} := ⟨M.E, M.ground_flat, inter_subset_right⟩
 
+instance : Nonempty {F | M.Flat F ∧ X ∩ M.E ⊆ F} := ⟨M.E, M.ground_flat, inter_subset_right⟩
+
 lemma closure_eq_subtypeClosure (M : Matroid α) (X : Set α) :
     M.closure X = M.subtypeClosure ⟨X ∩ M.E, inter_subset_right⟩  := by
   suffices ∀ (x : α), (∀ (t : Set α), M.Flat t → X ∩ M.E ⊆ t → x ∈ t) ↔
