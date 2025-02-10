@@ -88,7 +88,7 @@ theorem coe_restrictScalars {U : Subalgebra S A} : (restrictScalars R U : Set A)
 
 @[simp]
 theorem restrictScalars_top : restrictScalars R (⊤ : Subalgebra S A) = ⊤ :=
-  SetLike.coe_injective <| by dsimp
+  SetLike.coe_injective <| by dsimp -- Porting note: why does `rfl` not work instead of `by dsimp`?
 
 @[simp]
 theorem restrictScalars_toSubmodule {U : Subalgebra S A} :
