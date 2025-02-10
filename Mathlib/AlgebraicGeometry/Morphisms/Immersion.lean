@@ -103,7 +103,8 @@ instance : IsLocalAtTarget @IsImmersion := by
       rw [Set.range_eq_univ.mpr i.surjective]
       exact isOpen_univ.isLocallyClosed
   · simp_rw [Set.range_restrictPreimage]
-    exact fun _ _ _ e _ ↦ isLocallyClosed_iff_coe_preimage_of_iSup_eq_top e _
+    intro _ _ _ _ _ _ _ hU _
+    apply (TopologicalSpace.IsOpenCover.mk hU).isLocallyClosed_iff_coe_preimage
 
 instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f] : IsImmersion f where
   isLocallyClosed_range := f.isOpenEmbedding.2.isLocallyClosed
