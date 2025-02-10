@@ -214,12 +214,10 @@ theorem integralPowerBasis_gen [hcycl : IsCyclotomicExtension {p ^ k} ℚ K]
     simp only [adjoinEquivRingOfIntegers_apply, IsIntegralClosure.algebraMap_lift]
     rfl
 
-#adaptation_note
-/--
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
 We name `hcycl` so it can be used as a named argument,
 but since https://github.com/leanprover/lean4/pull/5338, this is considered unused,
-so we need to disable the linter.
--/
+so we need to disable the linter. -/
 set_option linter.unusedVariables false in
 @[simp]
 theorem integralPowerBasis_dim [hcycl : IsCyclotomicExtension {p ^ k} ℚ K]

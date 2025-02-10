@@ -1457,7 +1457,7 @@ injective. Rather, we assume that the image of `f` on `I` only overlaps where `g
 The conclusion is the same as in `sum_image`."]
 lemma prod_image_of_pairwise_eq_one [CommMonoid β] {f : ι → α} {g : α → β} {I : Finset ι}
     (hf : (I : Set ι).Pairwise fun i j ↦ f i = f j → g (f i) = 1) :
-    ∏ s in I.image f, g s = ∏ i in I, g (f i) := by
+    ∏ s ∈ I.image f, g s = ∏ i ∈ I, g (f i) := by
   rw [prod_image']
   exact fun n hnI => (prod_filter_of_pairwise_eq_one hnI hf).symm
 
@@ -1471,7 +1471,7 @@ conclusion is the same as in `sum_image`."
 ]
 lemma prod_image_of_disjoint [CommMonoid β] [PartialOrder α] [OrderBot α] {f : ι → α} {g : α → β}
     (hg_bot : g ⊥ = 1) {I : Finset ι} (hf_disj : (I : Set ι).PairwiseDisjoint f) :
-    ∏ s in I.image f, g s = ∏ i in I, g (f i) := by
+    ∏ s ∈ I.image f, g s = ∏ i ∈ I, g (f i) := by
   refine prod_image_of_pairwise_eq_one <| hf_disj.imp fun i j (hdisj : Disjoint _ _) hfij ↦ ?_
   rw [← hfij, disjoint_self] at hdisj
   rw [hdisj, hg_bot]
@@ -1590,7 +1590,7 @@ theorem prod_toFinset {M : Type*} [DecidableEq α] [CommMonoid M] (f : α → M)
 
 @[simp]
 theorem sum_toFinset_count_eq_length [DecidableEq α] (l : List α) :
-    ∑ a in l.toFinset, l.count a = l.length := by
+    ∑ a ∈ l.toFinset, l.count a = l.length := by
   simpa [List.map_const'] using (Finset.sum_list_map_count l fun _ => (1 : ℕ)).symm
 
 end List
@@ -1603,7 +1603,7 @@ lemma mem_sum {s : Finset ι} {m : ι → Multiset α} : a ∈ ∑ i ∈ s, m i 
 
 variable [DecidableEq α]
 
-theorem toFinset_sum_count_eq (s : Multiset α) : ∑ a in s.toFinset, s.count a = card s := by
+theorem toFinset_sum_count_eq (s : Multiset α) : ∑ a ∈ s.toFinset, s.count a = card s := by
   simpa using (Finset.sum_multiset_map_count s (fun _ => (1 : ℕ))).symm
 
 @[simp] lemma sum_count_eq_card {s : Finset α} {m : Multiset α} (hms : ∀ a ∈ m, a ∈ s) :
@@ -1611,9 +1611,6 @@ theorem toFinset_sum_count_eq (s : Multiset α) : ∑ a in s.toFinset, s.count a
   rw [← toFinset_sum_count_eq, ← Finset.sum_filter_ne_zero]
   congr with a
   simpa using hms a
-
-@[deprecated sum_count_eq_card (since := "2024-07-21")]
-theorem sum_count_eq [Fintype α] (s : Multiset α) : ∑ a, s.count a = Multiset.card s := by simp
 
 @[simp]
 theorem toFinset_sum_count_nsmul_eq (s : Multiset α) :

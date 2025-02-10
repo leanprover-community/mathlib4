@@ -3,11 +3,12 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.Normed.Group.Submodule
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 import Mathlib.Topology.MetricSpace.IsometricSMul
+import Mathlib.Topology.Metrizable.Uniformity
+import Mathlib.Topology.Sequences
 
 /-!
 # Torsors of additive normed group actions.

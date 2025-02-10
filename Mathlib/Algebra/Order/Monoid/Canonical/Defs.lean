@@ -179,8 +179,8 @@ variable [Preorder α] [CanonicallyOrderedMul α] {a b : α}
 theorem one_lt_of_gt (h : a < b) : 1 < b :=
   h.bot_lt
 
-alias LT.lt.one_lt := one_lt_of_gt
 alias LT.lt.pos := pos_of_gt
+@[to_additive existing] alias LT.lt.one_lt := one_lt_of_gt
 
 end Preorder
 
@@ -194,8 +194,8 @@ variable [PartialOrder α] [CanonicallyOrderedMul α] {a b c : α}
 @[to_additive] theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := eq_bot_or_bot_lt a
 @[to_additive] lemma one_not_mem_iff {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x := bot_not_mem_iff
 
-alias NE.ne.one_lt := one_lt_of_ne_one
 alias NE.ne.pos := pos_of_ne_zero
+@[to_additive existing] alias NE.ne.one_lt := one_lt_of_ne_one
 
 @[to_additive]
 theorem exists_one_lt_mul_of_lt (h : a < b) : ∃ (c : _) (_ : 1 < c), a * c = b := by
@@ -268,9 +268,6 @@ theorem one_lt_mul_iff : 1 < a * b ↔ 1 < a ∨ 1 < b := by
 end PartialOrder
 
 end CommMonoid
-
-@[deprecated (since := "2024-07-24")] alias mul_eq_one_iff := mul_eq_one
-@[deprecated (since := "2024-07-24")] alias add_eq_zero_iff := add_eq_zero
 
 namespace NeZero
 
