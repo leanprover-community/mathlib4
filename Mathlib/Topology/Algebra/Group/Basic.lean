@@ -692,7 +692,8 @@ theorem DenseRange.topologicalClosure_map_subgroup [Group H] [TopologicalSpace H
 /-- The topological closure of a normal subgroup is normal. -/
 @[to_additive "The topological closure of a normal additive subgroup is normal."]
 theorem Subgroup.is_normal_topologicalClosure {G : Type*} [TopologicalSpace G] [Group G]
-    [IsTopologicalGroup G] (N : Subgroup G) [N.Normal] : (Subgroup.topologicalClosure N).Normal where
+    [IsTopologicalGroup G] (N : Subgroup G) [N.Normal] :
+    (Subgroup.topologicalClosure N).Normal where
   conj_mem n hn g := by
     apply map_mem_closure (IsTopologicalGroup.continuous_conj g) hn
     exact fun m hm => Subgroup.Normal.conj_mem inferInstance m hm g
@@ -1724,7 +1725,7 @@ theorem continuous_mul' (g : GroupTopology α) :
     haveI := g.toTopologicalSpace
     Continuous fun p : α × α => p.1 * p.2 := by
   letI := g.toTopologicalSpace
-  haveI := g.toTopologicalGroup
+  haveI := g.toIsTopologicalGroup
   exact continuous_mul
 
 /-- A version of the global `continuous_inv` suitable for dot notation. -/
@@ -1733,7 +1734,7 @@ theorem continuous_inv' (g : GroupTopology α) :
     haveI := g.toTopologicalSpace
     Continuous (Inv.inv : α → α) := by
   letI := g.toTopologicalSpace
-  haveI := g.toTopologicalGroup
+  haveI := g.toIsTopologicalGroup
   exact continuous_inv
 
 @[to_additive]

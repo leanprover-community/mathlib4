@@ -420,7 +420,7 @@ theorem coinduced_continuous {α β : Type*} [t : TopologicalSpace α] [Ring β]
 /-- The forgetful functor from ring topologies on `a` to additive group topologies on `a`. -/
 def toAddGroupTopology (t : RingTopology α) : AddGroupTopology α where
   toTopologicalSpace := t.toTopologicalSpace
-  toTopologicalAddGroup :=
+  toIsTopologicalAddGroup :=
     @IsTopologicalRing.to_topologicalAddGroup _ _ t.toTopologicalSpace t.toIsTopologicalRing
 
 /-- The order embedding from ring topologies on `a` to additive group topologies on `a`. -/

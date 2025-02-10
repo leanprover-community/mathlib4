@@ -451,7 +451,7 @@ theorem norm_withSeminorms (𝕜 E) [NormedField 𝕜] [SeminormedAddCommGroup E
     WithSeminorms fun _ : Fin 1 => normSeminorm 𝕜 E := by
   let p : SeminormFamily 𝕜 E (Fin 1) := fun _ => normSeminorm 𝕜 E
   refine
-    ⟨SeminormedAddCommGroup.toTopologicalAddGroup.ext
+    ⟨SeminormedAddCommGroup.toIsTopologicalAddGroup.ext
         p.addGroupFilterBasis.isTopologicalAddGroup ?_⟩
   refine Filter.HasBasis.eq_of_same_basis Metric.nhds_basis_ball ?_
   rw [← ball_normSeminorm 𝕜 E]
