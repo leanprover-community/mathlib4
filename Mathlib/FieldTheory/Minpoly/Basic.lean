@@ -15,7 +15,6 @@ such as irreducibility under the assumption `B` is a domain.
 -/
 
 
-open scoped Classical
 open Polynomial Set Function
 
 variable {A B B' : Type*}
@@ -24,6 +23,7 @@ section MinPolyDef
 
 variable (A) [CommRing A] [Ring B] [Algebra A B]
 
+open scoped Classical in
 /-- Suppose `x : B`, where `B` is an `A`-algebra.
 
 The minimal polynomial `minpoly A x` of `x`
@@ -64,6 +64,7 @@ theorem ne_zero_iff [Nontrivial A] : minpoly A x ≠ 0 ↔ IsIntegral A x :=
 
 theorem algHom_eq (f : B →ₐ[A] B') (hf : Function.Injective f) (x : B) :
     minpoly A (f x) = minpoly A x := by
+  classical
   simp_rw [minpoly, isIntegral_algHom_iff _ hf, ← Polynomial.aeval_def, aeval_algHom,
     AlgHom.comp_apply, _root_.map_eq_zero_iff f hf]
 

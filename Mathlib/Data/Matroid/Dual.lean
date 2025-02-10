@@ -205,13 +205,13 @@ theorem base_iff_dual_base_compl (hB : B ⊆ M.E := by aesop_mat) :
     M.Base B ↔ M✶.Base (M.E \ B) := by
   rw [dual_base_iff, diff_diff_cancel_left hB]
 
-theorem ground_not_base (M : Matroid α) [h : RkPos M✶] : ¬M.Base M.E := by
-  rwa [rkPos_iff_empty_not_base, dual_base_iff, diff_empty] at h
+theorem ground_not_base (M : Matroid α) [h : RankPos M✶] : ¬M.Base M.E := by
+  rwa [rankPos_iff, dual_base_iff, diff_empty] at h
 
-theorem Base.ssubset_ground [h : RkPos M✶] (hB : M.Base B) : B ⊂ M.E :=
+theorem Base.ssubset_ground [h : RankPos M✶] (hB : M.Base B) : B ⊂ M.E :=
   hB.subset_ground.ssubset_of_ne (by rintro rfl; exact M.ground_not_base hB)
 
-theorem Indep.ssubset_ground [h : RkPos M✶] (hI : M.Indep I) : I ⊂ M.E := by
+theorem Indep.ssubset_ground [h : RankPos M✶] (hI : M.Indep I) : I ⊂ M.E := by
   obtain ⟨B, hB⟩ := hI.exists_base_superset; exact hB.2.trans_ssubset hB.1.ssubset_ground
 
 /-- A coindependent set of `M` is an independent set of the dual of `M✶`. we give it a separate

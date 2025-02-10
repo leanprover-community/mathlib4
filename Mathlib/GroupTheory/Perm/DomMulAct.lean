@@ -120,7 +120,7 @@ variable [DecidableEq α] [DecidableEq ι]
   (without the finiteness assumption on target)-/
 theorem stabilizer_card':
     Fintype.card {g : Perm α // f ∘ g = f} =
-      ∏ i in Finset.univ.image f, (Fintype.card ({a // f a = i}))! := by
+      ∏ i ∈ Finset.univ.image f, (Fintype.card ({a // f a = i}))! := by
   set φ : α → Finset.univ.image f :=
     Set.codRestrict f (Finset.univ.image f) (fun a => by simp)
   suffices ∀ g : Perm α, f ∘ g = f ↔ φ ∘ g = φ by

@@ -72,7 +72,6 @@ example {R} [CommSemiring R] (S : Submonoid R) : ⇑(Localization.r' S) = Locali
 /-- If `S` is a multiplicative subset of a ring `R` and `M` an `R`-module, then
 we can localize `M` by `S`.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): @[nolint has_nonempty_instance]
 def _root_.LocalizedModule : Type max u v :=
   Quotient (r.setoid S M)
 
@@ -1271,7 +1270,7 @@ lemma LocalizedModule.subsingleton_iff_ker_eq_top {S : Submonoid R} :
   rw [← top_le_iff]
   refine ⟨fun H m _ ↦ Subsingleton.elim _ _, fun H ↦ (subsingleton_iff_forall_eq 0).mpr fun x ↦ ?_⟩
   obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S (LocalizedModule.mkLinearMap S M) x
-  simpa using @H x trivial
+  simpa using @H x Submodule.mem_top
 
 lemma LocalizedModule.subsingleton_iff {S : Submonoid R} :
     Subsingleton (LocalizedModule S M) ↔ ∀ m : M, ∃ r ∈ S, r • m = 0 := by

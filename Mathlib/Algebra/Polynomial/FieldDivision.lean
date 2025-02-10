@@ -187,11 +187,7 @@ theorem isRoot_of_isRoot_of_dvd_derivative_mul [CharZero R] {f g : R[X]} (hf0 : 
   rw [rootMultiplicity_mul hdfg0, derivative_rootMultiplicity_of_root haf,
     rootMultiplicity_eq_zero hg, add_zero, rootMultiplicity_mul (hr ▸ hdfg0), add_comm,
     Nat.sub_eq_iff_eq_add (Nat.succ_le_iff.2 ((rootMultiplicity_pos hf0).2 haf))] at hr'
-  refine lt_irrefl (rootMultiplicity a f) ?_
-  refine lt_of_lt_of_le (Nat.lt_succ_self _)
-    (le_trans (le_add_of_nonneg_left (Nat.zero_le (rootMultiplicity a r))) ?_)
-  conv_rhs => rw [hr']
-  simp [add_assoc]
+  omega
 
 section NormalizationMonoid
 
