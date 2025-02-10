@@ -654,6 +654,10 @@ theorem coe_affineSpan_singleton (p : P) : (affineSpan k ({p} : Set P) : Set P) 
 theorem mem_affineSpan_singleton : p₁ ∈ affineSpan k ({p₂} : Set P) ↔ p₁ = p₂ := by
   simp [← mem_coe]
 
+instance unique_affineSpan_singleton (p : P) : Unique (affineSpan k {p}) where
+  default := ⟨p, mem_affineSpan _ (Set.mem_singleton _)⟩
+  uniq := fun x ↦ Subtype.ext ((mem_affineSpan_singleton _ _).1 x.property)
+
 @[simp]
 theorem preimage_coe_affineSpan_singleton (x : P) :
     ((↑) : affineSpan k ({x} : Set P) → P) ⁻¹' {x} = univ :=
@@ -758,6 +762,9 @@ variable {P}
 /-- No points are in `⊥`. -/
 theorem not_mem_bot (p : P) : p ∉ (⊥ : AffineSubspace k P) :=
   Set.not_mem_empty p
+
+instance isEmpty_bot : IsEmpty (⊥ : AffineSubspace k P) :=
+  Subtype.isEmpty_of_false fun _ ↦ not_mem_bot _ _ _
 
 variable (P)
 
