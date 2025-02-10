@@ -2591,4 +2591,4 @@ alias ord_isLimit := isLimit_ord
 end deprecated
 end Ordinal
 
-set_option linter.style.longFile 2800
+set_option linter.style.longFile 2700

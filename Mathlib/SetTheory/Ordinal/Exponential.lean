@@ -65,11 +65,6 @@ theorem opow_le_of_isSuccLimit {a b c : Ordinal} (a0 : a ≠ 0) (h : IsSuccLimit
   rw [opow_limit a0 h, Ordinal.iSup_le_iff, Subtype.forall]
   rfl
 
-@[deprecated opow_le_of_isSuccLimit (since := "2025-02-08")]
-theorem opow_le_of_limit {a b c : Ordinal} (a0 : a ≠ 0) (h : IsLimit b) :
-    a ^ b ≤ c ↔ ∀ b' < b, a ^ b' ≤ c :=
-  opow_le_of_isSuccLimit a0 h
-
 theorem lt_opow_of_isSuccLimit {a b c : Ordinal} (b0 : b ≠ 0) (h : IsSuccLimit c) :
     a < b ^ c ↔ ∃ c' < c, a < b ^ c' := by
   simpa using (opow_le_of_isSuccLimit b0 h).not
