@@ -37,8 +37,9 @@ def Scalene (s : Simplex R P n) : Prop :=
     dist (s.points i.val.1) (s.points i.val.2)
 
 lemma Scalene.dist_ne {s : Simplex R P n} (hs : s.Scalene) {i₁ i₂ i₃ i₄ : Fin (n + 1)}
-    (h₁₂ : i₁ ≠ i₂) (h₃₄ : i₃ ≠ i₄) (h₁₂₃₄ : i₁ ≠ i₃ ∨ i₂ ≠ i₄) (h₁₂₄₃ : i₁ ≠ i₄ ∨ i₂ ≠ i₃) :
+    (h₁₂ : i₁ ≠ i₂) (h₃₄ : i₃ ≠ i₄) (h₁₂₃₄ : ¬(i₁ = i₃ ∧ i₂ = i₄)) (h₁₂₄₃ : ¬(i₁ = i₄ ∧ i₂ = i₃)) :
     dist (s.points i₁) (s.points i₂) ≠ dist (s.points i₃) (s.points i₄) := by
+  rw [Classical.not_and_iff_or_not_not] at h₁₂₃₄ h₁₂₄₃
   rcases h₁₂.lt_or_lt with h₁₂lt | h₂₁lt <;> rcases h₃₄.lt_or_lt with h₃₄lt | h₄₃lt
   · apply hs.ne (a₁ := ⟨(i₁, i₂), h₁₂lt⟩) (a₂ := ⟨(i₃, i₄), h₃₄lt⟩)
     cases h₁₂₃₄ <;> simp [*]
@@ -177,6 +178,11 @@ lemma equilateral_iff_dist_eq_and_dist_eq {t : Triangle R P} {i₁ i₂ i₃ : F
     · rw [h₁, dist_comm]
     · rw [h₂, dist_comm]
     · rw [h₂, dist_comm]
+
+lemma equilateral_iff_dist_01_eq_02_and_dist_01_eq_12 {t : Triangle R P} :
+    t.Equilateral ↔ dist (t.points 0) (t.points 1) = dist (t.points 0) (t.points 2) ∧
+      dist (t.points 0) (t.points 1) = dist (t.points 1) (t.points 2) :=
+  equilateral_iff_dist_eq_and_dist_eq (by decide) (by decide) (by decide)
 
 end Triangle
 
