@@ -328,6 +328,6 @@ def evalTsum : PositivityExt where eval {u α} zα pα e := do
     let instOrderClosed ← synthInstanceQ q(OrderClosedTopology $α)
     assertInstancesCommute
     return .nonnegative q(@tsum_nonneg $ι $α $pα' $instTopSpace $instOrderClosed $f fun i ↦ $pr i)
-  | _ => throwError "not Finset.sum"
+  | _ => throwError "not tsum"
 
 end Mathlib.Meta.Positivity

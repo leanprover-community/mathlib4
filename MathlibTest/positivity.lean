@@ -381,12 +381,18 @@ example (f : D → E) (c : ℝ) (hc : 0 < c): 0 ≤ ∫ x, c * ‖f x‖ ∂μ :
 
 end Integral
 
-/-! ## Infinte Sums -/
+/-! ## Infinite Sums -/
 
 example (f : ℕ → ℝ) : 0 ≤ ∑' n, (f n)^2 := by positivity
-example [LinearOrderedField α] [TopologicalSpace α] [OrderClosedTopology α] (f : ℚ → α) :
-    0 ≤ ∑' q, (f q)^2 := by positivity
 example  (f : ℕ → ℝ≥0) (c : ℝ) (hc : 0 < c) : 0 ≤ ∑' n, c * f n := by positivity
+example [LinearOrderedField α] [TopologicalSpace α] [OrderClosedTopology α] (f : ℚ → α) :
+    0 ≤ ∑' q, (f q)^2 := by
+  positivity
+
+-- Make sure that the extension doesn't produce an invalid term by accidentally unifying `?n` with
+-- `0` because of the `hf` assumption
+set_option linter.unusedVariables false in
+example (f : ℕ → ℕ) (hf : 0 ≤ f 0) : 0 ≤ ∑' n, f n := by positivity
 
 /-! ## Big operators -/
 
