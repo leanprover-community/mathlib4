@@ -105,8 +105,7 @@ private theorem coe_lowerCentralSeries_eq_int_aux (R₁ R₂ L M : Type*)
 
 theorem coe_lowerCentralSeries_eq_int [LieModule R L M] (k : ℕ) :
     (lowerCentralSeries R L M k : Set M) = (lowerCentralSeries ℤ L M k : Set M) := by
-  show ((lowerCentralSeries R L M k).toSubmodule : Set M) =
-       ((lowerCentralSeries ℤ L M k).toSubmodule : Set M)
+  rw [← LieSubmodule.coe_toSubmodule, ← LieSubmodule.coe_toSubmodule]
   induction k with
   | zero => rfl
   | succ k ih =>
@@ -172,7 +171,7 @@ theorem eventually_iInf_lowerCentralSeries_eq [IsArtinian R M] :
   have h_wf : WellFoundedGT (LieSubmodule R L M)ᵒᵈ :=
     LieSubmodule.wellFoundedLT_of_isArtinian R L M
   obtain ⟨n, hn : ∀ m, n ≤ m → lowerCentralSeries R L M n = lowerCentralSeries R L M m⟩ :=
-    WellFounded.monotone_chain_condition.mp h_wf.wf ⟨_, antitone_lowerCentralSeries R L M⟩
+    h_wf.monotone_chain_condition ⟨_, antitone_lowerCentralSeries R L M⟩
   refine Filter.eventually_atTop.mpr ⟨n, fun l hl ↦ le_antisymm (iInf_le _ _) (le_iInf fun m ↦ ?_)⟩
   rcases le_or_lt l m with h | h
   · rw [← hn _ hl, ← hn _ (hl.trans h)]
@@ -183,7 +182,6 @@ theorem trivial_iff_lower_central_eq_bot : IsTrivial L M ↔ lowerCentralSeries 
   · simp
   · rw [LieSubmodule.eq_bot_iff] at h; apply IsTrivial.mk; intro x m; apply h
     apply LieSubmodule.subset_lieSpan
-    -- Porting note: was `use x, m; rfl`
     simp only [LieSubmodule.top_coe, Subtype.exists, LieSubmodule.mem_top, exists_prop, true_and,
       Set.mem_setOf]
     exact ⟨x, m, rfl⟩
@@ -561,7 +559,6 @@ theorem lcs_add_le_iff (l k : ℕ) : N₁.lcs (l + k) ≤ N₂ ↔ N₁.lcs l �
     rw [(by abel : l + (k + 1) = l + 1 + k), ih, ucs_succ, lcs_succ, top_lie_le_iff_le_normalizer]
 
 theorem lcs_le_iff (k : ℕ) : N₁.lcs k ≤ N₂ ↔ N₁ ≤ N₂.ucs k := by
-  -- Porting note: `convert` needed type annotations
   convert lcs_add_le_iff (R := R) (L := L) (M := M) 0 k
   rw [zero_add]
 
@@ -613,10 +610,6 @@ theorem Function.Surjective.lieModule_lcs_map_eq (k : ℕ) :
       g '' {m | ∃ (x : L) (n : _), n ∈ lowerCentralSeries R L M k ∧ ⁅x, n⁆ = m} =
         {m | ∃ (x : L₂) (n : _), n ∈ lowerCentralSeries R L M k ∧ ⁅x, g n⁆ = m} by
       simp only [← LieSubmodule.mem_toSubmodule] at this
-      -- Porting note: was
-      -- simp [← LieSubmodule.mem_toSubmodule, ← ih, LieSubmodule.lieIdeal_oper_eq_linear_span',
-      --   Submodule.map_span, -Submodule.span_image, this,
-      --   -LieSubmodule.mem_toSubmodule]
       simp_rw [lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span',
         Submodule.map_span, LieSubmodule.mem_top, true_and, ← LieSubmodule.mem_toSubmodule, this,
         ← ih, Submodule.mem_map, exists_exists_and_eq_and]

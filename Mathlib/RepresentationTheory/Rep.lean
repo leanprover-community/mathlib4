@@ -50,7 +50,7 @@ section
 variable [Monoid G]
 
 instance : CoeSort (Rep k G) (Type u) :=
-  HasForget.hasCoeToSort _
+  ⟨fun V => V.V⟩
 
 instance (V : Rep k G) : AddCommGroup V := by
   change AddCommGroup ((forget₂ (Rep k G) (ModuleCat k)).obj V); infer_instance
@@ -69,7 +69,6 @@ def ρ (V : Rep k G) : Representation k G V :=
 def of {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) : Rep k G :=
   ⟨ModuleCat.of k V, (ModuleCat.endRingEquiv _).symm.toMonoidHom.comp ρ⟩
 
-@[simp]
 theorem coe_of {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) :
     (of ρ : Type u) = V :=
   rfl
@@ -557,6 +556,8 @@ protected def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
   map_comp := fun _ _ => by ext; rfl
 
 @[simp] theorem ihom_obj_ρ_apply {A B : Rep k G} (g : G) (x : A →ₗ[k] B) :
+  -- Hint to put this lemma into `simp`-normal form.
+  DFunLike.coe (F := (Representation k G (↑A.V →ₗ[k] ↑B.V)))
     ((Rep.ihom A).obj B).ρ g x = B.ρ g ∘ₗ x ∘ₗ A.ρ g⁻¹ :=
   rfl
 
