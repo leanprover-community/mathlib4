@@ -33,7 +33,7 @@ Commands:
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands ending with '!' should be used manually, when hot-fixes are needed
 
-# The arguments for 'get', 'get!', 'get-'
+# The arguments for 'get', 'get!' and 'get-'
 
 'get', 'get!', 'get-' can process a list of module names or file names.
 'get [ARGS]' will only get the cache for the specified Lean files and all files imported by one.
@@ -70,9 +70,7 @@ def curlArgs : List String :=
 def leanTarArgs : List String :=
   ["get", "get!", "pack", "pack!", "unpack", "lookup"]
 
-open Lean System in
-
-open Cache IO Hashing Requests System in
+open Lean Cache IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
   if Lean.versionString == "4.8.0-rc1" && Lean.githash == "b470eb522bfd68ca96938c23f6a1bce79da8a99f" then do
     println "Unfortunately, you have a broken Lean v4.8.0-rc1 installation."
