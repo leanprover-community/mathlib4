@@ -43,7 +43,6 @@ is simplified to `f ≫ g`.
 additive, preadditive, Hom group, Ab-category, Ab-enriched
 -/
 
-
 universe v u
 
 open CategoryTheory.Limits
