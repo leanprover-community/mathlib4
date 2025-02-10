@@ -279,14 +279,14 @@ def mkBuildPaths (mod : Name) (sourceFile : FilePath) : CacheM <| List (FilePath
   let path := (System.mkFilePath <| mod.components.map toString)
   return [
     -- Note that `packCache` below requires that the `.trace` file is first in this list.
-    (packageDir / LIBDIR / path.withExtension "trace", true),
-    (packageDir / LIBDIR / path.withExtension "olean", true),
-    (packageDir / LIBDIR / path.withExtension "olean.hash", true),
-    (packageDir / LIBDIR / path.withExtension "ilean", true),
-    (packageDir / LIBDIR / path.withExtension "ilean.hash", true),
-    (packageDir / IRDIR  / path.withExtension "c", true),
-    (packageDir / IRDIR  / path.withExtension "c.hash", true),
-    (packageDir / LIBDIR / path.withExtension "extra", false)]
+    (packageDir / LIBDIR / sourceFile.withExtension "trace", true),
+    (packageDir / LIBDIR / sourceFile.withExtension "olean", true),
+    (packageDir / LIBDIR / sourceFile.withExtension "olean.hash", true),
+    (packageDir / LIBDIR / sourceFile.withExtension "ilean", true),
+    (packageDir / LIBDIR / sourceFile.withExtension "ilean.hash", true),
+    (packageDir / IRDIR  / sourceFile.withExtension "c", true),
+    (packageDir / IRDIR  / sourceFile.withExtension "c.hash", true),
+    (packageDir / LIBDIR / sourceFile.withExtension "extra", false)]
 
 /-- Check that all required build files exist. -/
 def allExist (paths : List (FilePath × Bool)) : IO Bool := do
@@ -370,7 +370,7 @@ instance : Ord FilePath where
   compare x y := compare x.toString y.toString
 
 /-- Removes all cache files except for what's in the `keep` set -/
-def cleanCache (keep : Lean.RBTree FilePath compare := default) : IO Unit := do
+def cleanCache (keep : Lean.RBTree FilePath compare := ∅) : IO Unit := do
   for path in ← getFilesWithExtension CACHEDIR "ltar" do
     if !keep.contains path then IO.FS.removeFile path
 
