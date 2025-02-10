@@ -98,20 +98,20 @@ then the class of morphism that have the left lifting property with respect to
 the maps that have the right lifting property with respect to `I` are
 exactly the retracts of transfinite compositions (indexed by `I.smallObjectκ.ord.toType`)
 of pushouts of coproducts of morphisms in `C`. -/
-lemma rlp_llp_of_hasSmallObjectArgument' :
+lemma llp_rlp_of_hasSmallObjectArgument' :
     I.rlp.llp = (transfiniteCompositionsOfShape (coproducts.{w} I).pushouts
         I.smallObjectκ.ord.toType).retracts :=
-  rlp_llp_of_isCardinalForSmallObjectArgument' I I.smallObjectκ
+  llp_rlp_of_isCardinalForSmallObjectArgument' I I.smallObjectκ
 
 /-- If `I : MorphismProperty C` permits the small object argument,
 then the class of morphism that have the left lifting property with respect to
 the maps that have the right lifting property with respect to `I` are
 exactly the retracts of transfinite compositions
 of pushouts of coproducts of morphisms in `C`. -/
-lemma rlp_llp_of_hasSmallObjectArgument :
+lemma llp_rlp_of_hasSmallObjectArgument :
     I.rlp.llp =
       (transfiniteCompositions.{w} (coproducts.{w} I).pushouts).retracts :=
-  rlp_llp_of_isCardinalForSmallObjectArgument I I.smallObjectκ
+  llp_rlp_of_isCardinalForSmallObjectArgument I I.smallObjectκ
 
 end MorphismProperty
 

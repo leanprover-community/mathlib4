@@ -241,18 +241,18 @@ instance llp_isStableUnderTransfiniteCompositionOfShape :
   exact (MorphismProperty.arrow_mk_iso_iff _
     (Arrow.isoMk h.isoBot.symm (Iso.refl _))).2 this
 
-lemma transfiniteCompositionsOfShape_le_rlp_llp :
+lemma transfiniteCompositionsOfShape_le_llp_rlp :
     W.transfiniteCompositionsOfShape J ≤ W.rlp.llp := by
   have := W.rlp.llp_isStableUnderTransfiniteCompositionOfShape J
   rw [isStableUnderTransfiniteCompositionOfShape_iff] at this
-  exact le_trans (monotone_transfiniteCompositionsOfShape J W.le_rlp_llp) this
+  exact le_trans (monotone_transfiniteCompositionsOfShape J W.le_llp_rlp) this
 
-lemma transfiniteCompositions_le_rlp_llp :
+lemma transfiniteCompositions_le_llp_rlp :
     transfiniteCompositions.{w} W ≤ W.rlp.llp := by
   intro _ _ f hf
   rw [transfiniteCompositions_iff] at hf
   obtain ⟨_, _, _, _, _, hf⟩ := hf
-  exact W.transfiniteCompositionsOfShape_le_rlp_llp _ _ hf
+  exact W.transfiniteCompositionsOfShape_le_llp_rlp _ _ hf
 
 end MorphismProperty
 

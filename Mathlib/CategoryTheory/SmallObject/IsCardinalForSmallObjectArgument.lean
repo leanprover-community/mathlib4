@@ -55,25 +55,25 @@ section
 
 variable (J : Type u') [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
 
-lemma transfiniteCompositionsOfShape_pushouts_coproducts_le_rlp_llp :
+lemma transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp :
     (coproducts.{w} I).pushouts.transfiniteCompositionsOfShape J ≤ I.rlp.llp := by
-  simpa using transfiniteCompositionsOfShape_le_rlp_llp (coproducts.{w} I).pushouts J
+  simpa using transfiniteCompositionsOfShape_le_llp_rlp (coproducts.{w} I).pushouts J
 
-lemma retracts_transfiniteCompositionsOfShape_pushouts_coproducts_le_rlp_llp :
+lemma retracts_transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp :
     ((coproducts.{w} I).pushouts.transfiniteCompositionsOfShape J).retracts ≤ I.rlp.llp := by
-  rw [le_llp_iff_le_rlp, retracts_rlp, ← le_llp_iff_le_rlp]
-  apply transfiniteCompositionsOfShape_pushouts_coproducts_le_rlp_llp
+  rw [le_llp_iff_le_rlp, rlp_retracts, ← le_llp_iff_le_rlp]
+  apply transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp
 
 end
 
-lemma transfiniteCompositions_pushouts_coproducts_le_rlp_llp :
+lemma transfiniteCompositions_pushouts_coproducts_le_llp_rlp :
     (transfiniteCompositions.{w} (coproducts.{w} I).pushouts) ≤ I.rlp.llp := by
-  simpa using transfiniteCompositions_le_rlp_llp (coproducts.{w} I).pushouts
+  simpa using transfiniteCompositions_le_llp_rlp (coproducts.{w} I).pushouts
 
-lemma retracts_transfiniteComposition_pushouts_coproducts_le_rlp_llp :
+lemma retracts_transfiniteComposition_pushouts_coproducts_le_llp_rlp :
     (transfiniteCompositions.{w} (coproducts.{w} I).pushouts).retracts ≤ I.rlp.llp := by
-  rw [le_llp_iff_le_rlp, retracts_rlp, ← le_llp_iff_le_rlp]
-  apply transfiniteCompositions_pushouts_coproducts_le_rlp_llp
+  rw [le_llp_iff_le_rlp, rlp_retracts, ← le_llp_iff_le_rlp]
+  apply transfiniteCompositions_pushouts_coproducts_le_llp_rlp
 
 class IsCardinalForSmallObjectArgument (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [OrderBot κ.ord.toType] : Prop where
@@ -378,8 +378,8 @@ lemma transfiniteCompositionsOfShape_ιObj :
   intro _ _ _ h
   exact (h f).1
 
-lemma rlp_llp_ιObj : I.rlp.llp (ιObj I κ f) := by
-  apply I.transfiniteCompositionsOfShape_pushouts_coproducts_le_rlp_llp κ.ord.toType
+lemma llp_rlp_ιObj : I.rlp.llp (ιObj I κ f) := by
+  apply I.transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp κ.ord.toType
   apply transfiniteCompositionsOfShape_ιObj
 
 lemma hasRightLiftingProperty_πObj {A B : C} (i : A ⟶ B) (hi : I i) (f : X ⟶ Y) :
@@ -442,7 +442,7 @@ noncomputable def functorialFactorizationData :
       map_comp := by aesop_cat }
   i := { app f := ιObj I κ f.hom }
   p := { app f := πObj I κ f.hom }
-  hi f := rlp_llp_ιObj I κ f.hom
+  hi f := llp_rlp_ιObj I κ f.hom
   hp f := rlp_πObj I κ f.hom
 
 lemma hasFunctorialFactorization :
@@ -454,11 +454,11 @@ lemma hasFunctorialFactorization :
 then the class `I.rlp.llp` is exactly the class of morphisms that are retracts
 of transfinite compositions (of shape `κ.ord.toType`) of pushouts of coproducts
 of maps in `I`.  -/
-lemma rlp_llp_of_isCardinalForSmallObjectArgument' :
+lemma llp_rlp_of_isCardinalForSmallObjectArgument' :
     I.rlp.llp = (transfiniteCompositionsOfShape
       (coproducts.{w} I).pushouts κ.ord.toType).retracts := by
   refine le_antisymm ?_
-    (retracts_transfiniteCompositionsOfShape_pushouts_coproducts_le_rlp_llp I κ.ord.toType)
+    (retracts_transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp I κ.ord.toType)
   intro X Y f hf
   have sq : CommSq (ιObj I κ f) f (πObj I κ f) (𝟙 _) := ⟨by simp⟩
   have := hf _ (rlp_πObj I κ f)
@@ -470,13 +470,13 @@ lemma rlp_llp_of_isCardinalForSmallObjectArgument' :
 /-- If `κ` is a suitable cardinal for the small object argument for `I : MorphismProperty C`,
 then the class `I.rlp.llp` is exactly the class of morphisms that are retracts
 of transfinite compositions of pushouts of coproducts of maps in `I`.  -/
-lemma rlp_llp_of_isCardinalForSmallObjectArgument :
+lemma llp_rlp_of_isCardinalForSmallObjectArgument :
     I.rlp.llp =
       (transfiniteCompositions.{w} (coproducts.{w} I).pushouts).retracts := by
   refine le_antisymm ?_
-    (retracts_transfiniteComposition_pushouts_coproducts_le_rlp_llp I)
-  rw [rlp_llp_of_isCardinalForSmallObjectArgument' I κ]
-  apply monotone_retracts
+    (retracts_transfiniteComposition_pushouts_coproducts_le_llp_rlp I)
+  rw [llp_rlp_of_isCardinalForSmallObjectArgument' I κ]
+  apply retracts_monotone
   apply transfiniteCompositionsOfShape_le_transfiniteCompositions
 
 end
