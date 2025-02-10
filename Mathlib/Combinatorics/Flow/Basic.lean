@@ -87,7 +87,7 @@ variable {N : Network V R}
 
 instance instFunLike : FunLike N.PseudoFlow V (V → R) where
   coe := PseudoFlow.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective' _ _ := PseudoFlow.ext
 
 variable (f : N.PseudoFlow)
 
