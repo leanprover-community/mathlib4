@@ -14,6 +14,8 @@ import Mathlib.Data.Rat.Cast.CharZero
 This file could usefully be split further.
 -/
 
+assert_not_exists Subgroup
+
 variable {F R S : Type*}
 
 namespace RingHom
