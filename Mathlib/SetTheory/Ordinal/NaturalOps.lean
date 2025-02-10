@@ -237,7 +237,7 @@ theorem nadd_comm (a b) : a ♯ b = b ♯ a := by
   congr <;> ext x <;> cases x <;> apply congr_arg _ (nadd_comm _ _)
 termination_by (a, b)
 
-@[deprecated "blsub will soon be deprecated" (since := "2024-11-18")]
+@[deprecated "blsub will soon be deprecated" (since := "2024-02-09")]
 theorem blsub_nadd_of_mono {f : ∀ c < a ♯ b, Ordinal.{max u v}}
     (hf : ∀ {i j} (hi hj), i ≤ j → f i hi ≤ f j hj) :
     blsub.{u,v} _ f =
