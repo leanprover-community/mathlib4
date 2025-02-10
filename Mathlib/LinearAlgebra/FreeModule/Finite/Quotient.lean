@@ -89,6 +89,7 @@ noncomputable def quotientEquivPiZMod (N : Submodule ℤ M) (b : Basis ι ℤ M)
 A submodule of full rank of a free finite `ℤ`-module has a finite quotient.
 It can't be an instance because of the side condition `Module.finrank ℤ N = Module.finrank ℤ M`.
 -/
+-- TODO rename snake_case
 theorem finiteQuotientOfFreeOfRankEq [Module.Free ℤ M] [Module.Finite ℤ M]
     (N : Submodule ℤ M) (h : Module.finrank ℤ N = Module.finrank ℤ M) : Finite (M ⧸ N) := by
   let b := Module.Free.chooseBasis ℤ M

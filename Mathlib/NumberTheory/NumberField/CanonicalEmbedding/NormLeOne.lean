@@ -207,6 +207,7 @@ variable {K}
 /--
 The component of `expMap` at the place `w`.
 -/
+-- TODO rename camelCase
 @[simps]
 def expMap_single (w : InfinitePlace K) : PartialHomeomorph ℝ ℝ where
   toFun := fun x ↦ Real.exp ((w.mult : ℝ)⁻¹ * x)
@@ -225,6 +226,7 @@ def expMap_single (w : InfinitePlace K) : PartialHomeomorph ℝ ℝ where
 /--
 The derivative of `expMap_single`, see `hasDerivAt_expMap_single`.
 -/
+-- TODO rename camelCase
 abbrev deriv_expMap_single (w : InfinitePlace K) (x : ℝ) : ℝ :=
   (expMap_single w x) * (w.mult : ℝ)⁻¹
 
@@ -245,15 +247,18 @@ def expMap : PartialHomeomorph (realSpace K) (realSpace K) :=
 
 variable (K)
 
+-- TODO rename source_expMap
 theorem expMap_source :
     expMap.source = (Set.univ : Set (realSpace K)) := by
   simp_rw [expMap, PartialHomeomorph.pi_toPartialEquiv, PartialEquiv.pi_source, expMap_single,
     Set.pi_univ Set.univ]
 
+-- TODO rename target_expMap
 theorem expMap_target :
     expMap.target = Set.univ.pi fun (_ : InfinitePlace K) ↦ Set.Ioi 0 := by
   simp_rw [expMap, PartialHomeomorph.pi_toPartialEquiv, PartialEquiv.pi_target, expMap_single]
 
+-- TODO rename injective suffix
 theorem injective_expMap :
     Function.Injective (expMap : realSpace K → realSpace K) :=
   Set.injective_iff_injOn_univ.mpr ((expMap_source K) ▸ expMap.injOn)
@@ -306,6 +311,7 @@ theorem sum_expMap_symm_apply {x : K} (hx : x ≠ 0) :
 /--
 The derivative of `expMap`, see `hasFDerivAt_expMap`.
 -/
+-- TODO rename camelCase
 abbrev fderiv_expMap (x : realSpace K) : realSpace K →L[ℝ] realSpace K :=
   .pi fun w ↦ (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (deriv_expMap_single w (x w))).comp
     (.proj w)
@@ -469,6 +475,7 @@ theorem expMapBasis_source :
     expMapBasis.source = (Set.univ : Set (realSpace K)) := by
   simp [expMapBasis, expMap_source]
 
+-- TODO rename injective suffix
 theorem injective_expMapBasis :
     Function.Injective (expMapBasis : realSpace K → realSpace K) :=
   (injective_expMap K).comp (completeBasis K).equivFun.symm.injective
