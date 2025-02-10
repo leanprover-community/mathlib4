@@ -340,7 +340,7 @@ lemma idemFst_compl : (1 : AddMonoid.End (WithLp p (α × β))) - idemFst = idem
       sub_eq_iff_eq_add, add_comm, ← WithLp.equiv_symm_add, Prod.mk_add_mk, zero_add, add_zero]; rfl
 
 theorem prod_norm_eq_sup_idemFst (x : WithLp ∞ (α × β)) :
-    ‖x‖ = ‖idemFst x‖ ⊔ ‖(1 - idemFst) x‖ := by
+    ‖x‖ = ‖idemFst x‖ ⊔ ‖idemSnd x‖ := by
   rw [WithLp.prod_norm_eq_sup, ← WithLp.norm_equiv_symm_fst ∞ α β x.1,
     ← WithLp.norm_equiv_symm_snd ∞ α β x.2, idemFst_compl]
   rfl
