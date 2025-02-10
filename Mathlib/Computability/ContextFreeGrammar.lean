@@ -11,9 +11,9 @@ import Mathlib.Computability.Language
 This file contains the definition of a context-free grammar, which is a grammar that has a single
 nonterminal symbol on the left-hand side of each rule.
 
-We restrict nonterminals to `Type` because universe-polymorphism would be unnecessary;
-we can always restrict a context-free grammar to the finitely many nonterminal symbols that are
-referred to by its finitely many rules.
+We restrict nonterminals of a context-free grammar to `Type` because universe polymorphism would be
+cumbersome and unnecessary; we can always restrict a context-free grammar to the finitely many
+nonterminal symbols that are referred to by its finitely many rules.
 
 ## Main definitions
 * `ContextFreeGrammar`: A context-free grammar.
