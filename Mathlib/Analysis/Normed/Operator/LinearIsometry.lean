@@ -645,6 +645,9 @@ theorem map_eq_zero_iff {x : E} : e x = 0 ↔ x = 0 :=
 @[simp]
 theorem symm_symm : e.symm.symm = e := rfl
 
+theorem symm_bijective : Function.Bijective (symm : (E₂ ≃ₛₗᵢ[σ₂₁] E) → _) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 @[simp]
 theorem toLinearEquiv_symm : e.toLinearEquiv.symm = e.symm.toLinearEquiv :=
   rfl
