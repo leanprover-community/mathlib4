@@ -88,6 +88,8 @@ theorem continuous_norm' : Continuous fun a : E => ‖a‖ := by
 theorem continuous_nnnorm' : Continuous fun a : E => ‖a‖₊ :=
   continuous_norm'.subtype_mk _
 
+end SeminormedGroup
+
 @[continuity, fun_prop]
 lemma continuous_enorm {E : Type*} [TopologicalSpace E] [ContinuousENorm E] :
     Continuous fun a : E ↦ ‖a‖ₑ :=
@@ -109,6 +111,10 @@ instance NormedCommGroup.toENormedCommMonoid [NormedCommGroup E] : ENormedCommMo
   mul_comm := by simp [mul_comm]
 
 end Instances
+
+section SeminormedGroup
+
+variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E} {a : E}
 
 set_option linter.docPrime false in
 @[to_additive Inseparable.norm_eq_norm]
@@ -163,9 +169,27 @@ theorem Continuous.norm' : Continuous f → Continuous fun x => ‖f x‖ :=
 theorem Continuous.nnnorm' : Continuous f → Continuous fun x => ‖f x‖₊ :=
   continuous_nnnorm'.comp
 
+end
+end SeminormedGroup
+
+section
+
+variable [TopologicalSpace α] {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
+  {f : α → E} {s : Set α} {a : α}
+
 @[fun_prop]
-lemma Continuous.enorm {E : Type*} [TopologicalSpace E] [ContinuousENorm E] :
-  Continuous f → Continuous (‖f ·‖ₑ) := continuous_enorm.comp
+lemma Continuous.enorm : Continuous f → Continuous (‖f ·‖ₑ) := continuous_enorm.comp
+
+end
+
+section SeminormedGroup
+
+variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E} {a : E}
+
+
+section
+
+variable [TopologicalSpace α] {f : α → E} {s : Set α} {a : α}
 
 @[to_additive (attr := fun_prop) ContinuousAt.norm]
 theorem ContinuousAt.norm' {a : α} (h : ContinuousAt f a) : ContinuousAt (fun x => ‖f x‖) a :=
@@ -176,8 +200,7 @@ theorem ContinuousAt.nnnorm' {a : α} (h : ContinuousAt f a) : ContinuousAt (fun
   Tendsto.nnnorm' h
 
 @[fun_prop]
-lemma ContinuousAt.enorm {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
-  (h : ContinuousAt f a) : ContinuousAt (‖f ·‖ₑ) a := Tendsto.enorm' h
+lemma ContinuousAt.enorm (h : ContinuousAt f a) : ContinuousAt (‖f ·‖ₑ) a := Tendsto.enorm' h
 
 @[to_additive ContinuousWithinAt.norm]
 theorem ContinuousWithinAt.norm' {s : Set α} {a : α} (h : ContinuousWithinAt f s a) :
