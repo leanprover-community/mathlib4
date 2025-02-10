@@ -2116,6 +2116,7 @@ import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.Center
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+import Mathlib.CategoryTheory.Monoidal.CommGrp_
 import Mathlib.CategoryTheory.Monoidal.CommMon_
 import Mathlib.CategoryTheory.Monoidal.Comon_
 import Mathlib.CategoryTheory.Monoidal.Conv
@@ -2130,7 +2131,9 @@ import Mathlib.CategoryTheory.Monoidal.Hopf_
 import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Internal.Limits
 import Mathlib.CategoryTheory.Monoidal.Internal.Module
-import Mathlib.CategoryTheory.Monoidal.Internal.Types
+import Mathlib.CategoryTheory.Monoidal.Internal.Types.Basic
+import Mathlib.CategoryTheory.Monoidal.Internal.Types.CommGrp_
+import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp_
 import Mathlib.CategoryTheory.Monoidal.Limits
 import Mathlib.CategoryTheory.Monoidal.Linear
 import Mathlib.CategoryTheory.Monoidal.Mod_
