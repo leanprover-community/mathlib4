@@ -517,8 +517,7 @@ lemma isSubGaussianWith_add_of_isCondSubGaussianWith [StandardBorelSpace Ω] [Is
       · have h := condExp_mono (f := 0) (g := fun ω ↦ exp (t * Y ω)) (μ := μ) (m := m)
           (integrable_const 0) (hY.integrable_exp_mul m hm t) (ae_of_all _ fun ω ↦ by positivity)
         simp only [condExp_zero] at h
-        filter_upwards [h] with ω hω
-        refine mul_nonneg (by positivity) hω
+        filter_upwards [h] with ω hω using mul_nonneg (by positivity) hω
       · filter_upwards [hY.condExp_le m hm t] with ω hω
         gcongr
     _ = mgf X μ t * exp (cY * t^2 / 2) := by rw [integral_mul_right, mgf]
