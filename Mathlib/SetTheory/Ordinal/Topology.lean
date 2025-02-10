@@ -323,10 +323,10 @@ theorem IsAcc.inter_Ioo_nonempty {o : Ordinal} {S : Set Ordinal} (hS : o.IsAcc S
 theorem accPt_subtype {p o : Ordinal} (S : Set Ordinal) (hpo : p < o) :
     AccPt p (𝓟 S) ↔ AccPt ⟨p, hpo⟩ (𝓟 (Iio o ↓∩ S)) := by
   constructor <;> intro h
-  · rw [accPt_iff_nhds] at *
+  · have plim : IsSuccLimit p := IsAcc.isSuccLimit h
+    rw [accPt_iff_nhds] at *
     intro u hu
-    obtain ⟨l, hl⟩ := exists_Ioc_subset_of_mem_nhds hu
-      ⟨⟨0, hpo.bot_lt⟩, (IsAcc.isSuccLimit h).bot_lt⟩
+    obtain ⟨l, hl⟩ := exists_Ioc_subset_of_mem_nhds hu ⟨⟨0, hpo.bot_lt⟩, plim.bot_lt⟩
     obtain ⟨x, hx⟩ := h (Ioo l (p + 1)) (Ioo_mem_nhds hl.1 (lt_add_one _))
     use ⟨x, lt_of_le_of_lt (lt_succ_iff.mp hx.1.1.2) hpo⟩
     refine ⟨?_, Subtype.coe_ne_coe.mp hx.2⟩
