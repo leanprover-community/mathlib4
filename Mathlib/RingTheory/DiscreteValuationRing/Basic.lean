@@ -451,6 +451,7 @@ theorem addVal_le_iff_dvd {a b : R} : addVal R a ≤ addVal R b ↔ a ∣ b := b
 theorem addVal_add {a b : R} : min (addVal R a) (addVal R b) ≤ addVal R (a + b) :=
   (addVal R).map_add _ _
 
+-- TODO addVal_unit_eq_zero
 @[simp]
 lemma addVal_eq_zero_of_unit (u : Rˣ) :
     addVal R u = 0 := by
