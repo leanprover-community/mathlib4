@@ -670,9 +670,25 @@ number. -/
 noncomputable def vertexChromaticNumber : ℕ∞ := ⨅ n ∈ setOf G.VertexColorable, (n : ℕ∞)
 
 instance : Insert  (Finset V) (HyperGraph r V) where
-  insert := fun e G => (fromSet r {e}) ⊔ G
-
+  insert := fun e G => G ⊔ (fromSet r {e})
 end Maps
+
+lemma insert_def (e : Finset V) : insert e G = G ⊔ (fromSet r {e}) := rfl
+
+@[simp]
+lemma insert_eq {e : Finset V} (h : e ∈ G) : insert e G = G :=by
+  rw [insert_def, sup_eq_left]
+  intro f hf; simp at hf;  exact hf.1 ▸ h
+
+lemma mem_insert {e : Finset V} (hr : e.card = r) : e ∈ insert e G := by
+  rw [insert_def, mem_sup_iff]
+  right; simpa
+
+lemma mem_insert_iff {e f : Finset V} : e ∈ insert f G ↔ e ∈ G ∨ e.card = r ∧ e = f := by
+  rw [insert_def, mem_sup_iff]
+  aesop
+
+def fromList (r : ℕ) (l : List (Finset V)) : HyperGraph r V := l.foldr insert (⊥ : HyperGraph r V)
 
 end HyperGraph
 
