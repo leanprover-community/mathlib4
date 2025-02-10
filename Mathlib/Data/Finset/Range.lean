@@ -95,6 +95,7 @@ theorem range_mono : Monotone range := fun _ _ => range_subset_range.2
 
 @[gcongr] alias ⟨_, _root_.GCongr.finset_range_subset_of_le⟩ := range_subset_range
 
+-- TODO rename drop succ
 theorem mem_range_succ_iff {a b : ℕ} : a ∈ Finset.range b.succ ↔ a ≤ b :=
   Finset.mem_range.trans Nat.lt_succ_iff
 

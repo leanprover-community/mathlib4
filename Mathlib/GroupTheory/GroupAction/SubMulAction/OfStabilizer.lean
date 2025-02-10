@@ -73,6 +73,7 @@ theorem ofStabilizer_carrier (a : α) : (ofStabilizer G a).carrier = {a}ᶜ :=
 theorem mem_ofStabilizer_iff (a : α) {x : α} : x ∈ ofStabilizer G a ↔ x ≠ a :=
   Iff.rfl
 
+-- TODO rename
 @[to_additive]
 theorem notMem_val_image {a : α} (t : Set (ofStabilizer G a)) :
     a ∉ Subtype.val '' t := by
@@ -83,6 +84,7 @@ theorem notMem_val_image {a : α} (t : Set (ofStabilizer G a)) :
 theorem neq_of_mem_ofStabilizer (a : α) {x : ofStabilizer G a} : ↑x ≠ a :=
   x.prop
 
+-- TODO rename
 @[to_additive]
 lemma Enat_card_ofStabilizer_eq_add_one (a : α) :
     ENat.card (ofStabilizer G a) + 1 = ENat.card α := by
@@ -91,6 +93,7 @@ lemma Enat_card_ofStabilizer_eq_add_one (a : α) :
   congr
   simp
 
+-- TODO rename
 @[to_additive]
 lemma nat_card_ofStabilizer_eq [Finite α] (a : α) :
     Nat.card (ofStabilizer G a) = Nat.card α - 1 := by

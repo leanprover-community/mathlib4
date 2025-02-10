@@ -75,6 +75,7 @@ noncomputable def infLELeft (U V : Opens X) : U ⊓ V ⟶ U :=
 noncomputable def infLERight (U V : Opens X) : U ⊓ V ⟶ V :=
   inf_le_right.hom
 
+-- TODO rename
 /-- The inclusion `U i ⟶ iSup U` as a morphism in the category of open sets.
 -/
 noncomputable def leSupr {ι : Type*} (U : ι → Opens X) (i : ι) : U i ⟶ iSup U :=
@@ -101,6 +102,7 @@ theorem infLELeft_apply_mk (U V : Opens X) (x) (m) :
     (infLELeft U V) ⟨x, m⟩ = ⟨x, (@inf_le_left _ _ U V : _ ≤ _) m⟩ :=
   rfl
 
+-- TODO rename
 @[simp]
 theorem leSupr_apply_mk {ι : Type*} (U : ι → Opens X) (i : ι) (x) (m) :
     (leSupr U i) ⟨x, m⟩ = ⟨x, (le_iSup U i :) m⟩ :=
