@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Order.Filter.Tendsto
 import Mathlib.Tactic.Monotonicity.Basic
 import Mathlib.Topology.NhdsSet
-import Mathlib.Topology.Constructions
+import Mathlib.Topology.Order
 
 /-!
 # Uniform spaces
@@ -698,61 +698,6 @@ theorem nhds_nhds_eq_uniformity_uniformity_prod {a b : α} :
       (𝓤 α).lift' fun t => { y : α | (y, a) ∈ s } ×ˢ { y : α | (b, y) ∈ t } := by
   rw [nhds_eq_uniformity', nhds_eq_uniformity, prod_lift'_lift']
   exacts [rfl, monotone_preimage, monotone_preimage]
-
-theorem nhds_eq_uniformity_prod {a b : α} :
-    𝓝 (a, b) =
-      (𝓤 α).lift' fun s : Set (α × α) => { y : α | (y, a) ∈ s } ×ˢ { y : α | (b, y) ∈ s } := by
-  rw [nhds_prod_eq, nhds_nhds_eq_uniformity_uniformity_prod, lift_lift'_same_eq_lift']
-  · exact fun s => monotone_const.set_prod monotone_preimage
-  · refine fun t => Monotone.set_prod ?_ monotone_const
-    exact monotone_preimage (f := fun y => (y, a))
-
-theorem nhdset_of_mem_uniformity {d : Set (α × α)} (s : Set (α × α)) (hd : d ∈ 𝓤 α) :
-    ∃ t : Set (α × α), IsOpen t ∧ s ⊆ t ∧
-      t ⊆ { p | ∃ x y, (p.1, x) ∈ d ∧ (x, y) ∈ s ∧ (y, p.2) ∈ d } := by
-  let cl_d := { p : α × α | ∃ x y, (p.1, x) ∈ d ∧ (x, y) ∈ s ∧ (y, p.2) ∈ d }
-  have : ∀ p ∈ s, ∃ t, t ⊆ cl_d ∧ IsOpen t ∧ p ∈ t := fun ⟨x, y⟩ hp =>
-    mem_nhds_iff.mp <|
-      show cl_d ∈ 𝓝 (x, y) by
-        rw [nhds_eq_uniformity_prod, mem_lift'_sets]
-        · exact ⟨d, hd, fun ⟨a, b⟩ ⟨ha, hb⟩ => ⟨x, y, ha, hp, hb⟩⟩
-        · exact fun _ _ h _ h' => ⟨h h'.1, h h'.2⟩
-  choose t ht using this
-  exact ⟨(⋃ p : α × α, ⋃ h : p ∈ s, t p h : Set (α × α)),
-    isOpen_iUnion fun p : α × α => isOpen_iUnion fun hp => (ht p hp).right.left,
-    fun ⟨a, b⟩ hp => by
-      simp only [mem_iUnion, Prod.exists]; exact ⟨a, b, hp, (ht (a, b) hp).right.right⟩,
-    iUnion_subset fun p => iUnion_subset fun hp => (ht p hp).left⟩
-
-/-- Entourages are neighborhoods of the diagonal. -/
-theorem nhds_le_uniformity (x : α) : 𝓝 (x, x) ≤ 𝓤 α := by
-  intro V V_in
-  rcases comp_symm_mem_uniformity_sets V_in with ⟨w, w_in, w_symm, w_sub⟩
-  have : ball x w ×ˢ ball x w ∈ 𝓝 (x, x) := by
-    rw [nhds_prod_eq]
-    exact prod_mem_prod (ball_mem_nhds x w_in) (ball_mem_nhds x w_in)
-  apply mem_of_superset this
-  rintro ⟨u, v⟩ ⟨u_in, v_in⟩
-  exact w_sub (mem_comp_of_mem_ball w_symm u_in v_in)
-
-/-- Entourages are neighborhoods of the diagonal. -/
-theorem iSup_nhds_le_uniformity : ⨆ x : α, 𝓝 (x, x) ≤ 𝓤 α :=
-  iSup_le nhds_le_uniformity
-
-/-- Entourages are neighborhoods of the diagonal. -/
-theorem nhdsSet_diagonal_le_uniformity : 𝓝ˢ (diagonal α) ≤ 𝓤 α :=
-  (nhdsSet_diagonal α).trans_le iSup_nhds_le_uniformity
-
-section
-
-variable (α)
-
-theorem UniformSpace.has_seq_basis [IsCountablyGenerated <| 𝓤 α] :
-    ∃ V : ℕ → Set (α × α), HasAntitoneBasis (𝓤 α) V ∧ ∀ n, SymmetricRel (V n) :=
-  let ⟨U, hsym, hbasis⟩ := (@UniformSpace.hasBasis_symmetric α _).exists_antitone_subbasis
-  ⟨U, hbasis, fun n => (hsym n).2⟩
-
-end
 
 theorem Filter.HasBasis.biInter_biUnion_ball {p : ι → Prop} {U : ι → Set (α × α)}
     (h : HasBasis (𝓤 α) p U) (s : Set α) :
