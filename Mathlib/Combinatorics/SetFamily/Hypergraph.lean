@@ -690,6 +690,65 @@ lemma mem_insert_iff {e f : Finset V} : e ∈ insert f G ↔ e ∈ G ∨ e.card 
 
 def fromList (r : ℕ) (l : List (Finset V)) : HyperGraph r V := l.foldr insert (⊥ : HyperGraph r V)
 
+open List
+
+variable [DecidableEq V]
+
+@[simp]
+abbrev TreeLike (l : List (Finset V)) : Prop :=
+  match l with
+| List.nil => True
+| [_]      => True
+| e :: f :: l   => TreeLike (f :: l) ∧ ∃ g ∈ f :: l, (e ∩ g).card = 1 ∧ ∀ h ∈ f :: l, h ≠ g →
+  Disjoint e g
+
+lemma TreeLike_nil : TreeLike ( [] : List (Finset V)) := trivial
+
+lemma TreeLike_singleton : TreeLike ([e] : List (Finset V)) := trivial
+
+
+
+lemma TreeLike_cons_cons_iff {e f : Finset V} {l : List (Finset V)} : TreeLike (e :: f :: l) ↔
+    (TreeLike (f :: l) ∧ ∃ g ∈ f :: l, (e ∩ g).card = 1 ∧ ∀ h ∈ f :: l, h ≠ g → Disjoint e g) := by
+  constructor <;> intro h <;> trivial
+#check List.mem_cons
+noncomputable def TreeLike_root {l : List (Finset V)} (h : TreeLike l) (he : e ∈ l) (hne : e.Nonempty): V := by
+  induction l generalizing e with
+  | nil => exfalso; simp_all;
+  | cons e' l' ih =>
+    cases l' with
+    | nil => simp_all; exact hne.choose
+    | cons head tail =>
+      rw [List.mem_cons] at he
+      classical
+
+      cases he with
+      | inl h => sorry
+      | inr h => sorry
+
+
+def TreeLike.Coloring {l : List (Finset V)} (h : TreeLike l) :
+  VertexColoring (fromList (r + 2) l) (Fin ((length l) + 1)) where
+  toFun := fun v => v.val
+  map_mem' := by
+    intro e he
+    induction l with e' l ih generalizing e
+    · simp only [length_eq_zero] at he
+      rw [eq_nil_iff_forall_not_mem] at he
+      rw [he]
+      simp
+    · cases l with f l
+      · simp only [length_eq_one] at he
+        rw [eq_singleton_iff_unique_mem] at he
+        rw [he]
+        simp
+      · rw [TreeLike_cons_cons_iff] at h
+        obtain ⟨g,hg,hg2,hg3⟩ := h.2
+        rw [mem_insert_iff] at he
+        cases he
+        · exact ih he
+        · rw [he.2.2]
+          exact ⟨hg, hg2⟩
 end HyperGraph
 
 
