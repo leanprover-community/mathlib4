@@ -54,7 +54,7 @@ forgetful functor preserves finite products.
 -/
 noncomputable def ofSheafForgetStonean
     [∀ X, HasLimitsOfShape (StructuredArrow X Stonean.toCompHaus.op) A]
-    [ConcreteCategory A] [ReflectsFiniteProducts (CategoryTheory.forget A)]
+    [HasForget A] [ReflectsFiniteProducts (CategoryTheory.forget A)]
     (F : Stonean.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts (F ⋙ CategoryTheory.forget A)] :
     Condensed A :=
   StoneanCompHaus.equivalence A |>.functor.obj {
@@ -84,7 +84,7 @@ forgetful functor preserves finite products and satisfies the equalizer conditio
 -/
 noncomputable def ofSheafForgetProfinite
     [∀ X, HasLimitsOfShape (StructuredArrow X profiniteToCompHaus.op) A]
-    [ConcreteCategory A] [ReflectsFiniteLimits (CategoryTheory.forget A)]
+    [HasForget A] [ReflectsFiniteLimits (CategoryTheory.forget A)]
     (F : Profinite.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts (F ⋙ CategoryTheory.forget A)]
     (hF : EqualizerCondition (F ⋙ CategoryTheory.forget A)) :
     Condensed A :=
@@ -112,7 +112,7 @@ The condensed object associated to a presheaf on `CompHaus` whose postcompositio
 forgetful functor preserves finite products and satisfies the equalizer condition.
 -/
 noncomputable def ofSheafForgetCompHaus
-    [ConcreteCategory A] [ReflectsFiniteLimits (CategoryTheory.forget A)]
+    [HasForget A] [ReflectsFiniteLimits (CategoryTheory.forget A)]
     (F : CompHaus.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts (F ⋙ CategoryTheory.forget A)]
     (hF : EqualizerCondition (F ⋙ CategoryTheory.forget A)) : Condensed A where
   val := F

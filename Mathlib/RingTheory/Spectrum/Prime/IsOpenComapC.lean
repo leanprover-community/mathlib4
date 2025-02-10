@@ -59,11 +59,8 @@ theorem imageOfDf_eq_comap_C_compl_zeroLocus :
   · rintro ⟨xli, complement, rfl⟩
     exact comap_C_mem_imageOfDf complement
 
-/-- The morphism `C⁺ : Spec R[x] → Spec R` is open.
-Stacks Project "Lemma 00FB", first part.
-
-https://stacks.math.columbia.edu/tag/00FB
--/
+/-- The morphism `C⁺ : Spec R[x] → Spec R` is open. -/
+@[stacks 00FB "First part"]
 theorem isOpenMap_comap_C : IsOpenMap (PrimeSpectrum.comap (C : R →+* R[X])) := by
   rintro U ⟨s, z⟩
   rw [← compl_compl U, ← z, ← iUnion_of_singleton_coe s, zeroLocus_iUnion, compl_iInter,

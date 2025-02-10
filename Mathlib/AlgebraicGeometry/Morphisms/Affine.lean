@@ -168,7 +168,7 @@ instance : HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X where
       Subtype.forall, isAffineHom_iff]
     rfl
 
-lemma isAffineHom_isStableUnderBaseChange :
+instance isAffineHom_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @IsAffineHom := by
   apply HasAffineProperty.isStableUnderBaseChange
   letI := HasAffineProperty.isLocal_affineProperty

@@ -75,6 +75,9 @@ def symm (f : M ≃ₚ[L] N) : N ≃ₚ[L] M where
 theorem symm_symm (f : M ≃ₚ[L] N) : f.symm.symm = f :=
   rfl
 
+theorem symm_bijective : Function.Bijective (symm : (M ≃ₚ[L] N) → _) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 @[simp]
 theorem symm_apply (f : M ≃ₚ[L] N) (x : f.cod) : f.symm.toEquiv x = f.toEquiv.symm x :=
   rfl
@@ -347,7 +350,8 @@ lemma partialEquivLimit_comp_inclusion {i : ι} :
 
 theorem le_partialEquivLimit (i : ι) : S i ≤ partialEquivLimit S :=
   ⟨le_iSup (f := fun i ↦ (S i).dom) _, by
-    #adaptation_note /-- After https://github.com/leanprover/lean4/pull/5020, these two `simp` calls cannot be combined. -/
+    #adaptation_note /-- https://github.com/leanprover/lean4/pull/5020
+    these two `simp` calls cannot be combined. -/
     simp only [partialEquivLimit_comp_inclusion]
     simp only [cod_partialEquivLimit, dom_partialEquivLimit, ← Embedding.comp_assoc,
       subtype_comp_inclusion]⟩
