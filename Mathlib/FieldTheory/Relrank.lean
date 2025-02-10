@@ -40,6 +40,8 @@ when `A ≤ B` it is `[B : A]`, the degree of the field extension `B / A`.
 This is similar to `Subgroup.relindex` but it is `Cardinal` valued. -/
 noncomputable def relrank := Module.rank ↥(A ⊓ B) (extendScalars (inf_le_right : A ⊓ B ≤ B))
 
+/-- The `Nat` version of `Subfield.relrank`.
+If `B / A ⊓ B` is an infinite extension, then it is zero. -/
 noncomputable def relfinrank := finrank ↥(A ⊓ B) (extendScalars (inf_le_right : A ⊓ B ≤ B))
 
 theorem relfinrank_eq_toNat_relrank : relfinrank A B = toNat (relrank A B) := rfl
