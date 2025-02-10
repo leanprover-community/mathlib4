@@ -1025,9 +1025,6 @@ theorem mul_eq_one_iff_of_one_le [MulLeftMono α]
       And.intro ‹a = 1› ‹b = 1›)
     (by rintro ⟨rfl, rfl⟩; rw [mul_one])
 
-@[deprecated (since := "2024-07-24")] alias mul_eq_one_iff' := mul_eq_one_iff_of_one_le
-@[deprecated (since := "2024-07-24")] alias add_eq_zero_iff' := add_eq_zero_iff_of_nonneg
-
 section Left
 
 variable [MulLeftMono α] {a b : α}

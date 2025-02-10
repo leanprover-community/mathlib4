@@ -20,7 +20,6 @@ generate the σ-algebra on the indexed product of `α i`s.
 noncomputable section
 
 open Function Set Filter MeasurableSpace Encodable
-open scoped Classical
 
 variable {ι : Type*} {α : ι → Type*}
 
@@ -63,6 +62,7 @@ theorem IsCountablySpanning.pi {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCoun
 theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountablySpanning (C i)) :
     (@MeasurableSpace.pi _ _ fun i => generateFrom (C i)) =
     generateFrom (pi univ '' pi univ C) := by
+  classical
   cases nonempty_encodable ι
   apply le_antisymm
   · refine iSup_le ?_; intro i; rw [comap_generateFrom]
