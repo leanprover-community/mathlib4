@@ -239,7 +239,6 @@ lemma transfiniteCompositionsOfShape_le_transfiniteCompositions
   rw [transfiniteCompositions_iff]
   exact ⟨_, _, _, _, _, hf⟩
 
-
 end MorphismProperty
 
 end CategoryTheory
