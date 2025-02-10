@@ -246,4 +246,20 @@ notation3 "δNat" => (default : Nat)
 /-- info: δNat : ℕ -/
 #guard_msgs in #check @default Nat (Inhabited.mk 5)
 
+
+notation3 "(" "ignorez " "SVP" ")" => Sort _
+notation3 "Objet " "mathématique " "supérieur" => Type _
+notation3 "Énoncé" => Prop
+notation3 "Objet " "mathématique" => Type
+/-- info: 1 = 1 : Énoncé -/
+#guard_msgs in #check 1 = 1
+/-- info: Énoncé : Objet mathématique -/
+#guard_msgs in #check Prop
+/-- info: Nat : Objet mathématique -/
+#guard_msgs in #check Nat
+/-- info: Objet mathématique : Objet mathématique supérieur -/
+#guard_msgs in #check Type
+/-- info: PSum.{u, v} (α : (ignorez SVP)) (β : (ignorez SVP)) : (ignorez SVP) -/
+#guard_msgs in #check PSum
+
 end Test

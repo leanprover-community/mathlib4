@@ -278,7 +278,7 @@ open groupCohomology.resolution
 /-- Given a `k`-linear `G`-representation `A`, the set of representation morphisms
 `Hom(k[Gⁿ⁺¹], A)` is `k`-linearly isomorphic to the set of functions `Gⁿ → A`. -/
 noncomputable def diagonalHomEquiv :
-    (Rep.ofMulAction k G (Fin (n + 1) → G) ⟶ A) ≃ₗ[k] (Fin n → G) → A :=
+    (Rep.diagonal k G (n + 1) ⟶ A) ≃ₗ[k] (Fin n → G) → A :=
   Linear.homCongr k
         ((diagonalSucc k G n).trans ((Representation.ofMulAction k G G).repOfTprodIso 1))
         (Iso.refl _) ≪≫ₗ
@@ -291,7 +291,7 @@ variable {n A}
 the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. This lemma says that this
 sends a morphism of representations `f : k[Gⁿ⁺¹] ⟶ A` to the function
 `(g₁, ..., gₙ) ↦ f(1, g₁, g₁g₂, ..., g₁g₂...gₙ).` -/
-theorem diagonalHomEquiv_apply (f : Rep.ofMulAction k G (Fin (n + 1) → G) ⟶ A) (x : Fin n → G) :
+theorem diagonalHomEquiv_apply (f : Rep.diagonal k G (n + 1) ⟶ A) (x : Fin n → G) :
     diagonalHomEquiv n A f x = f.hom (Finsupp.single (Fin.partialProd x) 1) := by
 /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
   unfold diagonalHomEquiv
@@ -324,8 +324,7 @@ theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) �
     leftRegularHomEquiv_symm_apply, Linear.homCongr_symm_apply, Iso.trans_hom, Iso.refl_inv,
     Category.comp_id, Action.comp_hom, MonoidalClosed.linearHomEquivComm_symm_hom,
     ModuleCat.hom_comp, LinearMap.comp_apply]
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [diagonalSucc_hom_single]
+  rw [diagonalSucc_hom_single]
   -- The prototype linter that checks if `erw` could be replaced with `rw` would time out
   -- if it replaces the next `erw`s with `rw`s. So we focus down on the relevant part.
   conv_lhs =>

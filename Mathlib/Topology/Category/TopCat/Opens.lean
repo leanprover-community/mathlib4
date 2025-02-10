@@ -98,8 +98,9 @@ theorem leSupr_apply_mk {ι : Type*} (U : ι → Opens X) (i : ι) (x) (m) :
 realising each open set as a topological space itself.
 -/
 def toTopCat (X : TopCat.{u}) : Opens X ⥤ TopCat where
-  obj U := ⟨U, inferInstance⟩
-  map i := ⟨fun x ↦ ⟨x.1, i.le x.2⟩, IsEmbedding.subtypeVal.continuous_iff.2 continuous_induced_dom⟩
+  obj U := TopCat.of U
+  map i := TopCat.ofHom ⟨fun x ↦ ⟨x.1, i.le x.2⟩,
+    IsEmbedding.subtypeVal.continuous_iff.2 continuous_induced_dom⟩
 
 @[simp]
 theorem toTopCat_map (X : TopCat.{u}) {U V : Opens X} {f : U ⟶ V} {x} {h} :
@@ -108,10 +109,11 @@ theorem toTopCat_map (X : TopCat.{u}) {U V : Opens X} {f : U ⟶ V} {x} {h} :
 
 /-- The inclusion map from an open subset to the whole space, as a morphism in `TopCat`.
 -/
-@[simps (config := .asFn)]
-def inclusion' {X : TopCat.{u}} (U : Opens X) : (toTopCat X).obj U ⟶ X where
-  toFun := _
-  continuous_toFun := continuous_subtype_val
+@[simps! (config := .asFn)]
+def inclusion' {X : TopCat.{u}} (U : Opens X) : (toTopCat X).obj U ⟶ X :=
+  TopCat.ofHom
+  { toFun := _
+    continuous_toFun := continuous_subtype_val }
 
 @[simp]
 theorem coe_inclusion' {X : TopCat} {U : Opens X} :
@@ -127,12 +129,12 @@ alias openEmbedding := isOpenEmbedding
 -/
 def inclusionTopIso (X : TopCat.{u}) : (toTopCat X).obj ⊤ ≅ X where
   hom := inclusion' ⊤
-  inv := ⟨fun x => ⟨x, trivial⟩, continuous_def.2 fun _ ⟨_, hS, hSU⟩ => hSU ▸ hS⟩
+  inv := TopCat.ofHom ⟨fun x => ⟨x, trivial⟩, continuous_def.2 fun _ ⟨_, hS, hSU⟩ => hSU ▸ hS⟩
 
 /-- `Opens.map f` gives the functor from open sets in Y to open set in X,
     given by taking preimages under f. -/
 def map (f : X ⟶ Y) : Opens Y ⥤ Opens X where
-  obj U := ⟨f ⁻¹' (U : Set Y), U.isOpen.preimage f.continuous⟩
+  obj U := ⟨f ⁻¹' (U : Set Y), U.isOpen.preimage f.hom.continuous⟩
   map i := ⟨⟨fun _ h => i.le h⟩⟩
 
 @[simp]
@@ -140,7 +142,7 @@ theorem map_coe (f : X ⟶ Y) (U : Opens Y) : ((map f).obj U : Set X) = f ⁻¹'
   rfl
 
 @[simp]
-theorem map_obj (f : X ⟶ Y) (U) (p) : (map f).obj ⟨U, p⟩ = ⟨f ⁻¹' U, p.preimage f.continuous⟩ :=
+theorem map_obj (f : X ⟶ Y) (U) (p) : (map f).obj ⟨U, p⟩ = ⟨f ⁻¹' U, p.preimage f.hom.continuous⟩ :=
   rfl
 
 @[simp]

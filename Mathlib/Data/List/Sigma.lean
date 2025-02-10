@@ -128,7 +128,10 @@ theorem nodupKeys_flatten {L : List (List (Sigma β))} :
 
 @[deprecated (since := "2024-10-15")] alias nodupKeys_join := nodupKeys_flatten
 
-theorem nodup_enum_map_fst (l : List α) : (l.enum.map Prod.fst).Nodup := by simp [List.nodup_range]
+theorem nodup_zipIdx_map_snd (l : List α) : (l.zipIdx.map Prod.snd).Nodup := by
+  simp [List.nodup_range']
+
+@[deprecated (since := "2025-01-28")] alias nodup_enum_map_fst := nodup_zipIdx_map_snd
 
 theorem mem_ext {l₀ l₁ : List (Sigma β)} (nd₀ : l₀.Nodup) (nd₁ : l₁.Nodup)
     (h : ∀ x, x ∈ l₀ ↔ x ∈ l₁) : l₀ ~ l₁ :=

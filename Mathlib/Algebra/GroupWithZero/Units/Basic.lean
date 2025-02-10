@@ -365,9 +365,6 @@ lemma zpow_ne_zero {a : G₀} : ∀ n : ℤ, a ≠ 0 → a ^ n ≠ 0
 
 lemma eq_zero_of_zpow_eq_zero {n : ℤ} : a ^ n = 0 → a = 0 := not_imp_not.1 (zpow_ne_zero _)
 
-@[deprecated (since := "2024-05-07")] alias zpow_ne_zero_of_ne_zero := zpow_ne_zero
-@[deprecated (since := "2024-05-07")] alias zpow_eq_zero := eq_zero_of_zpow_eq_zero
-
 lemma zpow_eq_zero_iff {n : ℤ} (hn : n ≠ 0) : a ^ n = 0 ↔ a = 0 :=
   ⟨eq_zero_of_zpow_eq_zero, fun ha => ha.symm ▸ zero_zpow _ hn⟩
 
