@@ -739,6 +739,7 @@ instance : Algebra R (MvPowerSeries σ A) where
     ext n
     simp [(coeff A n).map_smul_of_tower a, Algebra.smul_def]
 
+-- TODO rename C_*?
 theorem c_eq_algebraMap : C σ R = algebraMap R (MvPowerSeries σ R) :=
   rfl
 

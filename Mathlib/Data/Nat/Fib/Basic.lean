@@ -181,6 +181,7 @@ Proved to be equal to `Nat.fib` in `Nat.fast_fib_eq`. -/
 def fastFib (n : ℕ) : ℕ :=
   (fastFibAux n).1
 
+-- TODO rename and following
 theorem fast_fib_aux_bit_ff (n : ℕ) :
     fastFibAux (bit false n) =
       let p := fastFibAux n

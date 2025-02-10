@@ -129,6 +129,7 @@ variable {α}
 @[simp]
 lemma complexBasis_apply (ψ : AddChar α ℂ) : complexBasis α ψ = ψ := by rw [coe_complexBasis]
 
+-- TODO rename
 lemma exists_apply_ne_zero : (∃ ψ : AddChar α ℂ, ψ a ≠ 1) ↔ a ≠ 0 := by
   refine ⟨?_, fun ha ↦ ?_⟩
   · rintro ⟨ψ, hψ⟩ rfl
@@ -142,6 +143,7 @@ lemma exists_apply_ne_zero : (∃ ψ : AddChar α ℂ, ψ a ≠ 1) ↔ a ≠ 0 :
     map_zero_eq_one, if_pos rfl, if_neg ha, f] at h₀ h₁
   exact one_ne_zero (h₁.symm.trans h₀)
 
+-- TODO rename
 lemma forall_apply_eq_zero : (∀ ψ : AddChar α ℂ, ψ a = 1) ↔ a = 0 := by
   simpa using exists_apply_ne_zero.not
 
