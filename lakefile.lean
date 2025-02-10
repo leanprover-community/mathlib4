@@ -168,22 +168,8 @@ post_update pkg do
   let rootPkg ← getRootPackage
   if rootPkg.name = pkg.name then
     return -- do not run in Mathlib itself
-  /-
-  Once Lake updates the toolchains,
-  this toolchain copy will be unnecessary.
-  https://github.com/leanprover/lean4/issues/2752
-  -/
-  let wsToolchainFile := rootPkg.dir / "lean-toolchain"
-  let mathlibToolchain := ← IO.FS.readFile <| pkg.dir / "lean-toolchain"
-  IO.FS.writeFile wsToolchainFile mathlibToolchain
   if (← IO.getEnv "MATHLIB_NO_CACHE_ON_UPDATE") != some "1" then
-    /-
-    Instead of building and running cache via the Lake API,
-    spawn a new `lake` since the toolchain may have changed.
-    -/
-    let exitCode ← IO.Process.spawn {
-      cmd := "elan"
-      args := #["run", "--install", mathlibToolchain.trim, "lake", "exe", "cache", "get"]
-    } >>= (·.wait)
+    let exeFile ← runBuild cache.fetch
+    let exitCode ← env exeFile.toString #["get"]
     if exitCode ≠ 0 then
-      logError s!"{pkg.name}: failed to fetch cache"
+      error s!"{pkg.name}: failed to fetch cache"
