@@ -76,17 +76,7 @@ as a `Cardinal`. -/
 noncomputable def cRk (M : Matroid α) (X : Set α) := (M ↾ X).cRank
 
 theorem Base.cardinalMk_le_cRank (hB : M.Base B) : #B ≤ M.cRank :=
-  le_ciSup (f := fun B : {B // M.Base B} ↦ #B.1) (bddAbove_range _) ⟨B, hB⟩
-
-theorem Indep.cardinalMk_le_cRank (ind : M.Indep I) : #I ≤ M.cRank :=
-  have ⟨B, base, hIB⟩ := ind.exists_base_superset
-  le_ciSup_of_le (bddAbove_range _) ⟨B, base⟩ (mk_le_mk_of_subset hIB)
-
-theorem cRank_eq_iSup_cardinalMk_indep : M.cRank = ⨆ I : {I // M.Indep I}, #I :=
-  (ciSup_le' fun B ↦ le_ciSup_of_le (bddAbove_range _) ⟨B, B.2.indep⟩ <| by rfl).antisymm <|
-    ciSup_le' fun I ↦
-      have ⟨B, base, hIB⟩ := I.2.exists_base_superset
-      le_ciSup_of_le (bddAbove_range _) ⟨B, base⟩ (mk_le_mk_of_subset hIB)
+  le_ciSup (f := fun (B : {B // M.Base B}) ↦ #(B.1)) (bddAbove_range _) ⟨B, hB⟩
 
 theorem Basis'.cardinalMk_le_cRk (hIX : M.Basis' I X) : #I ≤ M.cRk X :=
   (base_restrict_iff'.2 hIX).cardinalMk_le_cRank
