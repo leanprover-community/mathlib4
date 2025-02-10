@@ -56,10 +56,8 @@ theorem normalizedTraceAux_eq_of_fininteDimensional [FiniteDimensional F K] (a :
   have h := (Nat.cast_ne_zero (R := F)).mpr <|
     Nat.pos_iff_ne_zero.mp <| Module.finrank_pos (R := F⟮a⟯) (M := K)
   rw [smul_eq_mul, mul_comm, ← div_eq_mul_inv, trace_eq_trace_adjoin F a,
-   ← Module.finrank_mul_finrank F F⟮a⟯ K,
-    nsmul_eq_mul, Nat.cast_mul,
-    mul_comm, mul_div_mul_right _ _ h,
-    div_eq_mul_inv, mul_comm, ← smul_eq_mul]
+    ← Module.finrank_mul_finrank F F⟮a⟯ K, nsmul_eq_mul, Nat.cast_mul, mul_comm,
+    mul_div_mul_right _ _ h, div_eq_mul_inv, mul_comm, ← smul_eq_mul]
   rfl
 
 variable [Algebra.IsIntegral F K]
@@ -103,7 +101,7 @@ noncomputable def normalizedTrace : K →ₗ[F] F where
 
 theorem normalizedTrace_def (a : K) :
     normalizedTrace F K a =
-    (Module.finrank F F⟮a⟯ : F )⁻¹ • Algebra.trace F F⟮a⟯ (AdjoinSimple.gen F a) :=
+    (Module.finrank F F⟮a⟯ : F)⁻¹ • Algebra.trace F F⟮a⟯ (AdjoinSimple.gen F a) :=
   rfl
 
 variable {F} in
