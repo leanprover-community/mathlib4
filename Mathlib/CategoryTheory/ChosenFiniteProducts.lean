@@ -619,11 +619,11 @@ def inr (X Y : C) : Y ⟶ X ⊕ₒ Y :=
   letI F : Limits.BinaryCofan X Y := (coproduct X Y).cocone
   F.inr
 
-@[reassoc (attr := simp)]
+@[simp, reassoc]
 lemma inl_desc {T X Y : C} (f : X ⟶ T) (g : Y ⟶ T) : inl X Y ≫ desc f g = f := by
   simp [inl, desc]
 
-@[reassoc (attr := simp)]
+@[simp, reassoc]
 lemma inr_desc {T X Y : C} (f : X ⟶ T) (g : Y ⟶ T) : inr X Y ≫ desc f g = g := by
   simp [inr, desc]
 
@@ -665,20 +665,17 @@ abbrev addHom {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') : X ⊕ₒ X' ⟶ Y 
 /-- Notation for the chosen coproduct of two morphisms -/
 scoped infixr:70 " ⊕ₕ " => addHom
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma inl_addHom {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
-    inl X X' ≫ (f ⊕ₕ g) = f ≫ inl Y Y' := by
-  simp [addHom]
+    inl X X' ≫ (f ⊕ₕ g) = f ≫ inl Y Y' := by simp
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma inr_addHom {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
-    inr X X' ≫ (f ⊕ₕ g) = g ≫ inr Y Y' := by
-  simp [addHom]
+    inr X X' ≫ (f ⊕ₕ g) = g ≫ inr Y Y' := by simp
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma map_desc {S T U V W : C} (f : U ⟶ S) (g : W ⟶ S) (h : T ⟶ U) (k : V ⟶ W) :
-    (h ⊕ₕ k) ≫ desc f g = desc (h ≫ f) (k ≫ g) := by
-  simp [addHom]
+    (h ⊕ₕ k) ≫ desc f g = desc (h ≫ f) (k ≫ g) := by simp
 
 @[simp]
 lemma desc_comp_inl_inr {W X Y Z : C} (g : X ⟶ W) (g' : Z ⟶ Y) :
