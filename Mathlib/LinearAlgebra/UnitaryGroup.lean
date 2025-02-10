@@ -126,6 +126,7 @@ theorem ext (A B : unitaryGroup n α) : (∀ i j, A i j = B i j) → A = B :=
 theorem star_mul_self (A : unitaryGroup n α) : star A.1 * A.1 = 1 :=
   A.2.1
 
+-- TODO rename isUnit_det
 @[simp]
 theorem det_isUnit (A : unitaryGroup n α) : IsUnit (A : Matrix n n α).det :=
   isUnit_iff_isUnit_det _ |>.mp <| (unitary.toUnits A).isUnit
