@@ -747,7 +747,7 @@ theorem lift_typein_top {r : α → α → Prop} {s : β → β → Prop}
 def liftInitialSeg : Ordinal.{v} ≤i Ordinal.{max u v} := by
   refine ⟨RelEmbedding.ofMonotone lift.{u} (by simp),
     fun a b ↦ Ordinal.inductionOn₂ a b fun α r _ β s _ h ↦ ?_⟩
-  rw [RelEmbedding.ofMonotone_coe, ← lift_id'.{max u v} (type s),
+  rw [RelEmbedding.ofMonotone_coe, ← lift_id'.{v, u} (type s),
     ← lift_umax.{v, u}, lift_type_lt] at h
   obtain ⟨f⟩ := h
   use typein r f.top
