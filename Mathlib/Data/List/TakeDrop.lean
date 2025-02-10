@@ -144,16 +144,19 @@ section Filter
 
 variable (p)
 
-/- Porting note: need a helper theorem for span.loop. -/
-theorem span.loop_eq_take_drop :
+variable (p : α → Bool)
+
+private theorem span.loop_eq_take_drop :
     ∀ l₁ l₂ : List α, span.loop p l₁ l₂ = (l₂.reverse ++ takeWhile p l₁, dropWhile p l₁)
   | [], l₂ => by simp [span.loop, takeWhile, dropWhile]
   | (a :: l), l₂ => by
     cases hp : p a <;> simp [hp, span.loop, span.loop_eq_take_drop, takeWhile, dropWhile]
 
 @[simp]
-theorem span_eq_take_drop (l : List α) : span p l = (takeWhile p l, dropWhile p l) := by
+theorem span_eq_takeWhile_dropWhile (l : List α) : span p l = (takeWhile p l, dropWhile p l) := by
   simpa using span.loop_eq_take_drop p l []
+
+@[deprecated (since := "2025-02-07")] alias span_eq_take_drop := span_eq_takeWhile_dropWhile
 
 theorem dropWhile_get_zero_not (l : List α) (hl : 0 < (l.dropWhile p).length) :
     ¬p ((l.dropWhile p).get ⟨0, hl⟩) := by

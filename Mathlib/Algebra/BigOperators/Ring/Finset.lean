@@ -5,7 +5,8 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.BigOperators.Ring.Multiset
-import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Ring.Defs
+import Mathlib.Data.Rat.Init
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Int.Cast.Lemmas
@@ -16,6 +17,8 @@ import Mathlib.Data.Int.Cast.Lemmas
 We prove results about big operators that involve some interaction between
 multiplicative and additive structures on the values being combined.
 -/
+
+assert_not_exists Field
 
 open Fintype
 
@@ -266,20 +269,7 @@ theorem prod_range_natCast_sub (n k : ℕ) :
   · rw [← mem_range] at hnk
     rw [prod_eq_zero hnk, prod_eq_zero hnk] <;> simp
 
-
 end CommRing
-
-section DivisionSemiring
-variable [DivisionSemiring α]
-
-lemma _root_.Multiset.sum_map_div {s : Multiset ι} {f : ι → α} {a : α} :
-    (s.map (fun x ↦ f x / a)).sum = (s.map f).sum / a := by
-  simp only [div_eq_mul_inv, Multiset.sum_map_mul_right]
-
-lemma sum_div (s : Finset ι) (f : ι → α) (a : α) :
-    (∑ i ∈ s, f i) / a = ∑ i ∈ s, f i / a := by simp only [div_eq_mul_inv, sum_mul]
-
-end DivisionSemiring
 end Finset
 
 open Finset
