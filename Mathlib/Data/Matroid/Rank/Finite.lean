@@ -8,9 +8,9 @@ import Mathlib.Data.Matroid.Closure
 /-!
 # Finite-rank sets
 
-We define a predicate `RkFin` on sets in a matroid:
-`M.RkFin X` means that every basis of `X` in `M` is finite,
-or equivalently that the restriction to `X` is a `RankFinite` matroid.
+For `M : Matroid α` and `X : Set α`,
+`Matroid.RkFin M X`  means that every basis of `X` in `M` is finite,
+or equivalently that the restriction to `X` is `Matroid.RankFinite`.
 `RkFin` sets in a matroid are the largest class of sets for which one can do nontrivial
 integer arithmetic involving the rank function.
 
@@ -32,6 +32,7 @@ def RkFin (M : Matroid α) (X : Set α) := (M ↾ X).RankFinite
 lemma RkFin.rankFinite (hX : M.RkFin X) : (M ↾ X).RankFinite :=
   hX
 
+/-- A `Basis'` of a `RkFin` set is finite. -/
 lemma RkFin.finite_of_basis' (h : M.RkFin X) (hI : M.Basis' I X) : I.Finite :=
   have := h.rankFinite
   (base_restrict_iff'.2 hI).finite
@@ -57,13 +58,16 @@ lemma Basis'.finite_iff_rkFin (hI : M.Basis' I X) : I.Finite ↔ M.RkFin X :=
 lemma Basis.finite_iff_rkFin (hI : M.Basis I X) : I.Finite ↔ M.RkFin X :=
   hI.basis'.finite_iff_rkFin
 
+/-- A `RkFin` set has a finite `Basis'`-/
 lemma RkFin.exists_finite_basis' (h : M.RkFin X) : ∃ I, M.Basis' I X ∧ I.Finite :=
   h.exists_finite_base
 
-lemma RkFin.exists_finset_basis' (h : M.RkFin X) : ∃ (I : Finset α), M.Basis' I X := by
-  obtain ⟨I, hI⟩ := h.exists_finite_basis'
-  exact ⟨hI.2.toFinset, by simpa using hI.1⟩
+/-- A `RkFin` set has a finset `Basis'` -/
+lemma RkFin.exists_finset_basis' (h : M.RkFin X) : ∃ (I : Finset α), M.Basis' I X :=
+  let ⟨I, hI, hIfin⟩ := h.exists_finite_basis'
+  ⟨hIfin.toFinset, by simpa⟩
 
+/-- A set is `RkFin` iff it has a finite `Basis'` -/
 lemma rkFin_iff_exists_basis' : M.RkFin X ↔ ∃ I, M.Basis' I X ∧ I.Finite :=
   ⟨RkFin.exists_finite_basis', fun ⟨_, hIX, hI⟩ ↦ hIX.rkFin_of_finite hI⟩
 
@@ -113,7 +117,7 @@ lemma not_rkFin_superset (h : ¬M.RkFin X) (hXY : X ⊆ Y) : ¬M.RkFin Y :=
   fun h' ↦ h (h'.subset hXY)
 
 lemma RkFin.finite_of_indep_subset (hX : M.RkFin X) (hI : M.Indep I) (hIX : I ⊆ X) : I.Finite :=
-  hI.finite_of_rkFin (hX.to_inter_ground.subset (subset_inter hIX hI.subset_ground))
+  hI.finite_of_rkFin (hX.subset hIX)
 
 @[simp]
 lemma rkFin_ground_iff_rankFinite : M.RkFin M.E ↔ M.RankFinite := by
@@ -130,7 +134,7 @@ lemma RkFin.closure (h : M.RkFin X) : M.RkFin (M.closure X) :=
   hI.basis_closure_right.rkFin_of_finite <| hI.finite_of_rkFin h
 
 @[simp]
-lemma RkFin.closure_iff : M.RkFin (M.closure X) ↔ M.RkFin X := by
+lemma rkFin_closure_iff : M.RkFin (M.closure X) ↔ M.RkFin X := by
   rw [← rkFin_inter_ground_iff (X := X)]
   exact ⟨fun h ↦ h.subset <| M.inter_ground_subset_closure X, fun h ↦ by simpa using h.closure⟩
 
@@ -173,7 +177,7 @@ lemma to_rkFin (M : Matroid α) [RankFinite M] (X : Set α) : M.RkFin X :=
   let ⟨_, hI⟩ := M.exists_basis' X
   hI.rkFin_of_finite hI.indep.finite
 
-/-- A union of finitely many finite-rank sets has finite rank. -/
+/-- A union of finitely many `RkFin` sets is `RkFin`. -/
 lemma RkFin.iUnion {ι : Type*} [Fintype ι] {Xs : ι → Set α} (h : ∀ i, M.RkFin (Xs i)) :
     M.RkFin (⋃ i, Xs i) := by
   choose Is hIs using fun i ↦ M.exists_basis' (Xs i)
