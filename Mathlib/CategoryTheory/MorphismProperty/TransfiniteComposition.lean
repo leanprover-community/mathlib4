@@ -37,58 +37,6 @@ open Category Limits
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
-namespace Functor
-
-variable {J : Type w} [PartialOrder J]
-
-/-- Given a functor `F : J ⥤ C` and `m : J`, this is the induced
-functor `Set.Iio j ⥤ C`. -/
-@[simps!]
-def restrictionLT (F : J ⥤ C) (j : J) : Set.Iio j ⥤ C :=
-  Monotone.functor (f := fun k ↦ k.1) (fun _ _ ↦ id) ⋙ F
-
-/-- Given a functor `F : J ⥤ C` and `m : J`, this is the cocone with point `F.obj m`
-for the restriction of `F` to `Set.Iio m`. -/
-@[simps]
-def coconeLT (F : J ⥤ C) (m : J) :
-    Cocone (F.restrictionLT m) where
-  pt := F.obj m
-  ι :=
-    { app := fun ⟨i, hi⟩ ↦ F.map (homOfLE hi.le)
-      naturality := fun ⟨i₁, hi₁⟩ ⟨i₂, hi₂⟩ f ↦ by
-        dsimp
-        rw [← F.map_comp, comp_id]
-        rfl }
-
-/-- Given a functor `F : J ⥤ C` and `j : J`, this is the induced
-functor `Set.Iic j ⥤ C`. -/
-abbrev restrictionLE (F : J ⥤ C) (j : J) : Set.Iic j ⥤ C :=
-  (Set.initialSegIic j).monotone.functor ⋙ F
-
-/-- Given a functor `F : J ⥤ C` and `j : J`, this is the (colimit) cocone
-with point `F.obj j` for the restriction of `F` to `Set.Iic m`. -/
-@[simps!]
-def coconeLE (F : J ⥤ C) (j : J) :
-    Cocone (F.restrictionLE j) where
-  pt := F.obj j
-  ι :=
-    { app x := F.map (homOfLE x.2)
-      naturality _ _ f := by
-        dsimp
-        simp only [homOfLE_leOfHom, ← Functor.map_comp, comp_id]
-        rfl }
-
-/-- The colimit of `F.coconeLE j` is `F.obj j`. -/
-def isColimitCoconeLE (F : J ⥤ C) (j : J) :
-    IsColimit (F.coconeLE j) where
-  desc s := s.ι.app ⟨j, by simp⟩
-  fac s k := by
-    simpa only [Functor.const_obj_obj, Functor.const_obj_map, comp_id]
-      using s.ι.naturality (homOfLE k.2 : k ⟶ ⟨j, by simp⟩)
-  uniq s m hm := by simp [← hm]
-
-end Functor
-
 namespace MorphismProperty
 
 variable (W : MorphismProperty C)

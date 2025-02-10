@@ -251,7 +251,7 @@ lemma isEventuallyConstantFrom_bot_iterationFunctor_evaluation_right (f : Arrow 
       ((iterationFunctor I κ).map φ)) from
     (isomorphisms C).transfiniteCompositionsOfShape_le _ _ this
   apply transfiniteCompositionsOfShape_map_of_preserves
-  exact monotone_transfiniteCompositionsOfShape _
+  exact transfiniteCompositionsOfShape_monotone _
     (propArrow_functorCategory_arrow_le I f) _
     ((transfiniteCompositionOfShapePropArrowιIteration I κ).iic j).mem
 
@@ -262,7 +262,7 @@ instance isIso_ιIteration_app_right (f : Arrow C) :
       (((evaluation _ (Arrow C)).obj f ⋙ Arrow.rightFunc).map (ιIteration I κ)) from
     (isomorphisms C).transfiniteCompositionsOfShape_le κ.ord.toType _ this
   apply transfiniteCompositionsOfShape_map_of_preserves
-  exact monotone_transfiniteCompositionsOfShape _
+  exact transfiniteCompositionsOfShape_monotone _
     (propArrow_functorCategory_arrow_le I f) _
     (transfiniteCompositionOfShapePropArrowιIteration I κ).mem
 
@@ -373,7 +373,7 @@ lemma transfiniteCompositionsOfShape_ιObj :
   change (coproducts.{w} I).pushouts.transfiniteCompositionsOfShape κ.ord.toType
     (((evaluation _ (Arrow C)).obj (Arrow.mk f) ⋙ Arrow.leftFunc).map (ιIteration I κ))
   apply transfiniteCompositionsOfShape_map_of_preserves
-  apply monotone_transfiniteCompositionsOfShape _ _ _
+  apply transfiniteCompositionsOfShape_monotone _ _ _
     (transfiniteCompositionOfShapePropArrowιIteration I κ).mem
   intro _ _ _ h
   exact (h f).1

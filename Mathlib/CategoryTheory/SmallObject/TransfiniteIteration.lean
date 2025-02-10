@@ -81,7 +81,8 @@ lemma prop_iterationFunctor_map_succ (j : J) (hj : ¬ IsMax j) :
 /-- For any `i : J`, the restriction to `Set.Iio i` of `Φ.iterationFunctor J`
 is isomorphic to the restriction of `(Φ.iter i).F : Set.Iic i ⥤ C`. -/
 noncomputable def restrictionLTiterationFunctorIso (i : J) :
-    (Φ.iterationFunctor J).restrictionLT i ≅ restrictionLT (Φ.iter i).F (by simp) :=
+    (Set.principalSegIio i).monotone.functor ⋙
+      (Φ.iterationFunctor J) ≅ restrictionLT (Φ.iter i).F (by simp) :=
   NatIso.ofComponents (fun _ ↦ eqToIso (Φ.iterationFunctor_obj _ _ _)) (by
     rintro ⟨k₁, h₁⟩ ⟨k₂, h₂⟩ f
     apply Arrow.mk_injective
