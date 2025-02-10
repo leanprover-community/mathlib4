@@ -640,7 +640,7 @@ lemma hom_ext {T X Y : C} (f g : X ⊕ₒ Y ⟶ T)
 -- lemma
 @[reassoc, simp]
 lemma desc_comp {V W X Y : C} (f : V ⟶ W) (g : X ⟶ V) (h : Y ⟶ V) :
-    desc g h ≫ f = desc (g ≫ f) (h ≫ f) := by ext <;> simp
+    desc g h ≫ f = desc (g ≫ f) (h ≫ f) := by ext <;> simp [inl_desc_assoc, inr_desc_assoc]
 
 @[simp]
 lemma desc_inl_inr {X Y : C} : desc (inl X Y) (inr X Y) = 𝟙 (X ⊕ₒ Y) := by ext <;> simp
