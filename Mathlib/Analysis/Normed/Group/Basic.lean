@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Group.Seminorm
+import Mathlib.Topology.Instances.ENNReal.Defs
 import Mathlib.Topology.MetricSpace.Basic
+
 
 /-!
 # Normed (semi)groups
@@ -88,6 +90,34 @@ lemma enorm_eq_nnnorm (x : E) : ‖x‖ₑ = ‖x‖₊ := rfl
 @[simp] lemma enorm_lt_top : ‖x‖ₑ < ∞ := by simp [enorm]
 
 end ENorm
+
+/-- A type `E` equipped with a continuous map `‖·‖ₑ : E → ℝ≥0∞`. -/
+class ContinuousENorm (E : Type*) [TopologicalSpace E] extends ENorm E where
+  continuous_enorm : Continuous enorm
+  -- the topology is somehow defined by the enorm.
+
+/-- An enormed monoid is an additive monoid endowed with a continuous enorm. -/
+class ENormedAddMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, AddMonoid E where
+  enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 0
+  enorm_add_le : ∀ x y : E, ‖x + y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
+
+/-- An enormed monoid is a monoid endowed with a continuous enorm. -/
+@[to_additive]
+class ENormedMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, Monoid E where
+  enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 1
+  enorm_mul_le : ∀ x y : E, ‖x * y‖ₑ ≤ ‖x‖ₑ * ‖y‖ₑ
+
+/-- An enormed commutative monoid is an additive commutative monoid
+endowed with a continuous enorm.
+We don't have `ENormedAddCommGroup` extend `EMetricSpace`, since the canonical instance `ℝ≥0∞`
+is not an `EMetricSpace`. This is because ℝ≥0∞ carries the order topology, which is distinct from
+the topology coming from `edist`. -/
+class ENormedAddCommMonoid (E : Type*) [TopologicalSpace E]
+  extends ENormedAddMonoid E, AddCommMonoid E where
+
+/-- An enormed commutative monoid is a commutative monoid endowed with a continuous enorm. -/
+@[to_additive]
+class ENormedCommMonoid (E : Type*) [TopologicalSpace E] extends ENormedMonoid E, CommMonoid E where
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
@@ -714,9 +744,6 @@ lemma nnnorm_pow_le_mul_norm {n : ℕ} : ‖a ^ n‖₊ ≤ n * ‖a‖₊ := by
 theorem nnnorm_inv' (a : E) : ‖a⁻¹‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_inv' a
 
-@[to_additive (attr := simp) enorm_neg]
-lemma enorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [enorm]
-
 @[to_additive (attr := simp) nnnorm_abs_zsmul]
 theorem nnnorm_zpow_abs (a : E) (n : ℤ) : ‖a ^ |n|‖₊ = ‖a ^ n‖₊ :=
   NNReal.eq <| norm_zpow_abs a n
@@ -810,7 +837,14 @@ end NNNorm
 
 section ENorm
 
+export ENormedAddMonoid (enorm_eq_zero enorm_add_le)
+
+attribute [simp] enorm_eq_zero
+
 @[to_additive (attr := simp) enorm_zero] lemma enorm_one' : ‖(1 : E)‖ₑ = 0 := by simp [enorm]
+
+@[to_additive (attr := simp) enorm_neg]
+lemma enorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [enorm]
 
 @[to_additive ofReal_norm_eq_enorm]
 lemma ofReal_norm_eq_enorm' (a : E) : .ofReal ‖a‖ = ‖a‖ₑ := ENNReal.ofReal_eq_coe_nnreal _
