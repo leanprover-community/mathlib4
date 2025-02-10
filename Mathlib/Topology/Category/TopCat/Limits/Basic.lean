@@ -167,7 +167,6 @@ def isColimitCoconeOfForget (c : Cocone (F ⋙ forget)) (hc : IsColimit c) :
 
 end
 
-
 @[deprecated (since := "2024-12-31")] alias colimitCocone := coconeOfCoconeForget
 @[deprecated (since := "2024-12-31")] alias colimitCoconeIsColimit := isColimitCoconeOfForget
 
