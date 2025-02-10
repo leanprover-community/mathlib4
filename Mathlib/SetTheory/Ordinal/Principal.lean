@@ -167,7 +167,7 @@ theorem isSuccLimit_of_principal_add (ho₁ : 1 < o) (ho : Principal (· + ·) o
   exact ⟨ho₁.ne_bot, fun _ ha ↦ ho ha ho₁⟩
 
 set_option linter.deprecated false in
-@[deprecated isSuccLimit_of_principal_add (since := "2024-12-12")]
+@[deprecated isSuccLimit_of_principal_add (since := "2025-02-09")]
 theorem isLimit_of_principal_add (ho₁ : 1 < o) (ho : Principal (· + ·) o) : o.IsLimit :=
   isSuccLimit_of_principal_add ho₁ ho
 
@@ -333,7 +333,7 @@ theorem isSuccLimit_of_principal_mul (ho₂ : 2 < o) (ho : Principal (· * ·) o
     (principal_add_of_principal_mul ho (ne_of_gt ho₂))
 
 set_option linter.deprecated false in
-@[deprecated isSuccLimit_of_principal_mul (since := "2024-12-12")]
+@[deprecated isSuccLimit_of_principal_mul (since := "2025-02-09")]
 theorem isLimit_of_principal_mul (ho₂ : 2 < o) (ho : Principal (· * ·) o) : o.IsLimit :=
   isSuccLimit_of_principal_mul ho₂ ho
 

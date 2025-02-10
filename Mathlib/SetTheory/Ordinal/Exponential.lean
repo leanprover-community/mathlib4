@@ -279,21 +279,21 @@ section deprecated
 
 set_option linter.deprecated false
 
-@[deprecated opow_le_of_isSuccLimit (since := "2024-12-12")]
+@[deprecated opow_le_of_isSuccLimit (since := "2025-02-09")]
 theorem opow_le_of_limit {a b c : Ordinal} (a0 : a ≠ 0) (h : IsLimit b) :
     a ^ b ≤ c ↔ ∀ b' < b, a ^ b' ≤ c :=
   opow_le_of_isSuccLimit a0 h
 
-@[deprecated lt_opow_of_isSuccLimit (since := "2024-12-12")]
+@[deprecated lt_opow_of_isSuccLimit (since := "2025-02-09")]
 theorem lt_opow_of_limit {a b c : Ordinal} (b0 : b ≠ 0) (h : IsLimit c) :
     a < b ^ c ↔ ∃ c' < c, a < b ^ c' :=
   lt_opow_of_isSuccLimit b0 h
 
-@[deprecated isSuccLimit_opow (since := "2024-12-12")]
+@[deprecated isSuccLimit_opow (since := "2025-02-09")]
 theorem isLimit_opow {a b : Ordinal} (a1 : 1 < a) : IsLimit b → IsLimit (a ^ b) :=
   isSuccLimit_opow a1
 
-@[deprecated isSuccLimit_opow (since := "2024-12-12")]
+@[deprecated isSuccLimit_opow (since := "2025-02-09")]
 theorem isLimit_opow_left {a b : Ordinal} (l : IsLimit a) (hb : b ≠ 0) : IsLimit (a ^ b) :=
   isSuccLimit_opow_left l hb
 

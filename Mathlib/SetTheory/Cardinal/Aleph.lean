@@ -589,7 +589,7 @@ theorem aleph'_nat : ∀ n : ℕ, aleph' n = n :=
 theorem lift_aleph' (o : Ordinal.{u}) : lift.{v} (aleph' o) = aleph' (Ordinal.lift.{v} o) :=
   lift_preAleph o
 
-@[deprecated preAleph_le_of_isSuccPrelimit (since := "2024-12-12")]
+@[deprecated preAleph_le_of_isSuccPrelimit (since := "2025-02-09")]
 theorem preAleph_le_of_isLimit {o : Ordinal} (l : o.IsLimit) {c} :
     preAleph o ≤ c ↔ ∀ o' < o, preAleph o' ≤ c :=
   preAleph_le_of_isSuccPrelimit l.isSuccPrelimit
@@ -662,7 +662,7 @@ theorem eq_aleph_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) (ho' : ω �
   rwa [aleph_eq_aleph', Ordinal.add_sub_cancel_of_le]
   rwa [← aleph0_le_aleph', ← ord_le_ord, ha, ord_aleph0]
 
-@[deprecated isSuccLimit_omega (since := "2024-12-12")]
+@[deprecated isSuccLimit_omega (since := "2025-02-09")]
 theorem isLimit_omega (o : Ordinal) : Ordinal.IsLimit (ω_ o) :=
   isSuccLimit_omega o
 

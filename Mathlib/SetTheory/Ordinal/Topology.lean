@@ -205,7 +205,7 @@ theorem isSuccLimit_of_mem_frontier (ha : a ∈ frontier s) : IsSuccLimit a := b
   exact hc' hb'
 
 set_option linter.deprecated false in
-@[deprecated isSuccLimit_of_mem_frontier (since := "2024-12-12")]
+@[deprecated isSuccLimit_of_mem_frontier (since := "2025-02-09")]
 theorem isLimit_of_mem_frontier (ha : a ∈ frontier s) : IsLimit a :=
   isSuccLimit_of_mem_frontier ha
 
