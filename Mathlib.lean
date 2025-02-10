@@ -5723,6 +5723,7 @@ import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.UniformSpace.CompactConvergence
 import Mathlib.Topology.UniformSpace.CompareReals
 import Mathlib.Topology.UniformSpace.CompleteSeparated
+import Mathlib.Topology.UniformSpace.CompletelyRegular
 import Mathlib.Topology.UniformSpace.Completion
 import Mathlib.Topology.UniformSpace.Dini
 import Mathlib.Topology.UniformSpace.Equicontinuity
