@@ -45,7 +45,7 @@ structure ContextFreeGrammar (T : Type*) where
 variable {T : Type*}
 
 namespace ContextFreeRule
-variable {N : Type} {r : ContextFreeRule T N} {u v : List (Symbol T N)}
+variable {N : Type*} {r : ContextFreeRule T N} {u v : List (Symbol T N)}
 
 /-- Inductive definition of a single application of a given context-free rule `r` to a string `u`;
 `r.Rewrites u v` means that the `r` sends `u` to `v` (there may be multiple such strings `v`). -/
@@ -205,7 +205,7 @@ def Language.IsContextFree (L : Language T) : Prop :=
 section closure_reversal
 
 namespace ContextFreeRule
-variable {N : Type} {r : ContextFreeRule T N} {u v : List (Symbol T N)}
+variable {N : Type*} {r : ContextFreeRule T N} {u v : List (Symbol T N)}
 
 /-- Rules for a grammar for a reversed language. -/
 def reverse (r : ContextFreeRule T N) : ContextFreeRule T N := ⟨r.input, r.output.reverse⟩
