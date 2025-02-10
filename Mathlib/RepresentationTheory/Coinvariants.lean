@@ -297,8 +297,9 @@ variable {A α}
 lemma coinvariantsTensorFreeToFinsupp_mk_tmul_single (x : A) (i : α) (g : G) (r : k) :
     coinvariantsTensorFreeToFinsupp A α (Submodule.Quotient.mk (x ⊗ₜ single i (single g r))) =
       single i (r • A.ρ g⁻¹ x) := by
-  simp [coinvariantsTensorFreeToFinsupp, coinvariantsMap,
-    finsuppTensorRight, TensorProduct.finsuppRight]
+  simp [coinvariantsTensorFreeToFinsupp, coinvariantsMap, finsuppTensorRight,
+    TensorProduct.finsuppRight, coe_of, ModuleCat.MonoidalCategory.tensorObj,
+    ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorObj, tensor_ρ]
 
 variable (A α)
 
@@ -316,7 +317,7 @@ lemma finsuppToCoinvariantsTensorFree_single (i : α) (x : A) :
     finsuppToCoinvariantsTensorFree A α (single i x) =
       Submodule.Quotient.mk (x ⊗ₜ single i (single (1 : G) (1 : k))) := by
   simp_all [finsuppToCoinvariantsTensorFree, coinvariantsMap, ModuleCat.MonoidalCategory.tensorObj,
-    ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorObj]
+    ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorObj, coe_of, tensor_ρ]
 
 variable (A α)
 
@@ -334,7 +335,7 @@ noncomputable abbrev coinvariantsTensorFreeLEquiv :
       lhom_ext fun g r => by
         have := coinvariantsTensorFreeToFinsupp_mk_tmul_single a i g r
         have := finsuppToCoinvariantsTensorFree_single (A := A) i
-        simp_all [Submodule.Quotient.eq, TensorProduct.smul_tmul]
+        simp_all [Submodule.Quotient.eq, TensorProduct.smul_tmul, coe_of, tensor_ρ]
 
 end Finsupp
 end Rep

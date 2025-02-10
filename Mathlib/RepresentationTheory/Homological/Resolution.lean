@@ -202,7 +202,7 @@ instance x_projective [Group G] :
 theorem d_eq [Monoid G] : ((standardComplex k G).d (n + 1) n).hom.hom = d k G (n + 1) := by
   refine Finsupp.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
   simp [standardComplex, SimplicialObject.δ, ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ),
-    SimplexCategory.δ, Fin.succAboveOrderEmb]
+    SimplexCategory.δ, Fin.succAboveOrderEmb, Action.ofMulAction_V]
 
 end Differentials
 
@@ -243,7 +243,7 @@ def forget₂ToModuleCatHomotopyEquiv :
 /-- The hom of `k`-linear `G`-representations `k[G¹] → k` sending `∑ nᵢgᵢ ↦ ∑ nᵢ`. -/
 def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k where
   hom := ModuleCat.ofHom <| Finsupp.linearCombination _ fun _ => (1 : k)
-  comm _ := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext_ring (by simp)
+  comm _ := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext_ring (by simp [coe_of])
 
 /-- The homotopy equivalence of complexes of `k`-modules between the standard resolution of `k` as
 a trivial `G`-representation, and the complex which is `k` at 0 and 0 everywhere else, acts as
@@ -330,7 +330,7 @@ lemma d_single (x : Gⁿ⁺¹) :
     (d k G n).hom (single x (single 1 1)) = single (fun i => x i.succ) (Finsupp.single (x 0) 1) +
       Finset.univ.sum fun j : Fin (n + 1) =>
         single (Fin.contractNth j (· * ·) x)  (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1))) := by
-  simp [d]
+  simp [d, coe_of]
 
 lemma d_comp_diagonalSuccIsoFree_inv_eq :
     d k G n ≫ (diagonalSuccIsoFree k G n).inv =
@@ -341,7 +341,7 @@ lemma d_comp_diagonalSuccIsoFree_inv_eq :
     simp_all only [ModuleCat.hom_comp, Action.comp_hom, LinearMap.coe_comp, Function.comp_apply,
       map_add, map_sum]
     simpa [standardComplex.d_eq, standardComplex.d_of (k := k) (Fin.partialProd i),
-      Fin.sum_univ_succ, Fin.partialProd_contractNth]
+      Fin.sum_univ_succ, Fin.partialProd_contractNth, coe_of]
       using congr(single $(by ext j; exact (Fin.partialProd_succ' i j).symm) 1)
 
 end barComplex

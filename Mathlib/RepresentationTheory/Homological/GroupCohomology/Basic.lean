@@ -101,7 +101,7 @@ theorem d_eq :
           (freeLiftLEquiv (Fin (n + 1) → G) A).toModuleIso.hom := by
   ext f g
   have h := barComplex.d_single (k := k) _ g
-  simp_all [d_apply]
+  simp_all [d_apply, coe_of]
 
 end inhomogeneousCochains
 

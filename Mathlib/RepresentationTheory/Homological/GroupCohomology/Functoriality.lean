@@ -168,9 +168,9 @@ open ShortComplex
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is induced map `Aᴴ ⟶ Bᴳ`. -/
-def H0Map : ModuleCat.of k (H0 A) ⟶ ModuleCat.of k (H0 B) :=
+def H0Map : H0 A ⟶ H0 B :=
   ModuleCat.ofHom <| LinearMap.codRestrict _ (φ.hom.hom ∘ₗ A.ρ.invariants.subtype)
-    fun ⟨c, hc⟩ g => by simpa [hc (f g)] using (hom_comm_apply φ g c).symm
+    fun ⟨c, hc⟩ g => by simpa [hc (f g), coe_res_obj_ρ] using (hom_comm_apply φ g c).symm
 
 @[simp]
 theorem H0Map_id : H0Map (MonoidHom.id _) (𝟙 A) = 𝟙 _ := by
