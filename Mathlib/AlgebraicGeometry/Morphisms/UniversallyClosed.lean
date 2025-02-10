@@ -95,7 +95,7 @@ instance universallyClosed_isLocalAtTarget : IsLocalAtTarget @UniversallyClosed 
   apply universally_isLocalAtTarget
   intro X Y f ι U hU H
   simp_rw [topologically, morphismRestrict_base] at H
-  exact (isClosedMap_iff_isClosedMap_of_iSup_eq_top hU).mpr H
+  exact hU.isClosedMap_iff_restrictPreimage.mpr H
 
 open Scheme.Pullback _root_.PrimeSpectrum MvPolynomial in
 /-- If `X` is universally closed over a field, then `X` is quasi-compact. -/
