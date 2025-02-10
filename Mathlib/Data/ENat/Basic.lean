@@ -319,7 +319,7 @@ protected lemma le_sub_of_add_le_left (ha : a ≠ ⊤) : a + b ≤ c → b ≤ c
 protected lemma sub_sub_cancel (h : a ≠ ⊤) (h2 : b ≤ a) : a - (a - b) = b :=
   (addLECancellable_of_ne_top <| ne_top_of_le_ne_top h tsub_le_self).tsub_tsub_cancel_of_le h2
 
-lemma add_inj_of_ne_top {n : ℕ∞} (hn : n ≠ ⊤) : Function.Injective (fun a => a + n) := by
+lemma add_left_injective_of_ne_top {n : ℕ∞} (hn : n ≠ ⊤) : Function.Injective (· + n) := by
   intro a b e
   exact le_antisymm
     ((WithTop.add_le_add_iff_right hn).mp e.le)
