@@ -407,7 +407,8 @@ theorem inf_sdiff : (x ⊓ y) \ z = x \ z ⊓ y \ z :=
       x ⊓ y ⊓ z ⊓ (x \ z ⊓ y \ z) = x ⊓ y ⊓ (z ⊓ x \ z) ⊓ y \ z := by ac_rfl
       _ = ⊥ := by rw [inf_sdiff_self_right, inf_bot_eq, bot_inf_eq])
 
-theorem inf_sdiff_assoc : (x ⊓ y) \ z = x ⊓ y \ z :=
+/-- See also `sdiff_inf_right_comm`. -/
+theorem inf_sdiff_assoc (x y z : α) : (x ⊓ y) \ z = x ⊓ y \ z :=
   sdiff_unique
     (calc
       x ⊓ y ⊓ z ⊔ x ⊓ y \ z = x ⊓ (y ⊓ z) ⊔ x ⊓ y \ z := by rw [inf_assoc]
@@ -417,8 +418,14 @@ theorem inf_sdiff_assoc : (x ⊓ y) \ z = x ⊓ y \ z :=
       x ⊓ y ⊓ z ⊓ (x ⊓ y \ z) = x ⊓ x ⊓ (y ⊓ z ⊓ y \ z) := by ac_rfl
       _ = ⊥ := by rw [inf_inf_sdiff, inf_bot_eq])
 
-theorem inf_sdiff_right_comm : x \ z ⊓ y = (x ⊓ y) \ z := by
+/-- See also `inf_sdiff_assoc`. -/
+theorem sdiff_inf_right_comm (x y z : α) : x \ z ⊓ y = (x ⊓ y) \ z := by
   rw [inf_comm x, inf_comm, inf_sdiff_assoc]
+
+lemma inf_sdiff_left_comm (a b c : α) : a ⊓ (b \ c) = b ⊓ (a \ c) := by
+  simp_rw [← inf_sdiff_assoc, inf_comm]
+
+@[deprecated (since := "2025-01-08")] alias inf_sdiff_right_comm := sdiff_inf_right_comm
 
 theorem inf_sdiff_distrib_left (a b c : α) : a ⊓ b \ c = (a ⊓ b) \ (a ⊓ c) := by
   rw [sdiff_inf, sdiff_eq_bot_iff.2 inf_le_left, bot_sup_eq, inf_sdiff_assoc]
@@ -427,7 +434,7 @@ theorem inf_sdiff_distrib_right (a b c : α) : a \ b ⊓ c = (a ⊓ c) \ (b ⊓ 
   simp_rw [inf_comm _ c, inf_sdiff_distrib_left]
 
 theorem disjoint_sdiff_comm : Disjoint (x \ z) y ↔ Disjoint x (y \ z) := by
-  simp_rw [disjoint_iff, inf_sdiff_right_comm, inf_sdiff_assoc]
+  simp_rw [disjoint_iff, sdiff_inf_right_comm, inf_sdiff_assoc]
 
 theorem sup_eq_sdiff_sup_sdiff_sup_inf : x ⊔ y = x \ y ⊔ y \ x ⊔ x ⊓ y :=
   Eq.symm <|
@@ -512,10 +519,9 @@ abbrev GeneralizedBooleanAlgebra.toBooleanAlgebra [GeneralizedBooleanAlgebra α]
   compl a := ⊤ \ a
   inf_compl_le_bot _ := disjoint_sdiff_self_right.le_bot
   top_le_sup_compl _ := le_sup_sdiff
-  sdiff_eq _ _ := by
-      -- Porting note: changed `rw` to `erw` here.
-      -- https://github.com/leanprover-community/mathlib4/issues/5164
-      erw [← inf_sdiff_assoc, inf_top_eq]
+  sdiff_eq a b := by
+    change _ = a ⊓ (⊤ \ b)
+    rw [← inf_sdiff_assoc, inf_top_eq]
 
 section BooleanAlgebra
 
@@ -690,6 +696,12 @@ theorem himp_le : x ⇨ y ≤ z ↔ y ≤ z ∧ Codisjoint x z :=
   rw [codisjoint_himp_self_left.eq_iff]; aesop
 
 lemma himp_ne_right : x ⇨ y ≠ x ↔ x ≠ ⊤ ∨ y ≠ ⊤ := himp_eq_left.not.trans not_and_or
+
+lemma codisjoint_iff_compl_le_left : Codisjoint x y ↔ yᶜ ≤ x :=
+  hnot_le_iff_codisjoint_left.symm
+
+lemma codisjoint_iff_compl_le_right : Codisjoint x y ↔ xᶜ ≤ y :=
+  hnot_le_iff_codisjoint_right.symm
 
 end BooleanAlgebra
 

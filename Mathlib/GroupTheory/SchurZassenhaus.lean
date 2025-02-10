@@ -12,10 +12,10 @@ In this file we prove the Schur-Zassenhaus theorem.
 
 ## Main results
 
-- `exists_right_complement'_of_coprime`: The **Schur-Zassenhaus** theorem:
+- `Subgroup.exists_right_complement'_of_coprime`: The **Schur-Zassenhaus** theorem:
   If `H : Subgroup G` is normal and has order coprime to its index,
   then there exists a subgroup `K` which is a (right) complement of `H`.
-- `exists_left_complement'_of_coprime`: The **Schur-Zassenhaus** theorem:
+- `Subgroup.exists_left_complement'_of_coprime`: The **Schur-Zassenhaus** theorem:
   If `H : Subgroup G` is normal and has order coprime to its index,
   then there exists a subgroup `K` which is a (left) complement of `H`.
 -/
@@ -28,7 +28,7 @@ section SchurZassenhausAbelian
 open MulOpposite MulAction Subgroup.leftTransversals MemLeftTransversals
 
 variable {G : Type*} [Group G] (H : Subgroup G) [IsCommutative H] [FiniteIndex H]
-  (α β : leftTransversals (H : Set G))
+  (α β : H.LeftTransversal)
 
 /-- The quotient of the transversals of an abelian normal `N` by the `diff` relation. -/
 def QuotientDiff :=
@@ -116,8 +116,6 @@ private theorem exists_right_complement'_of_coprime_aux (hH : Nat.Coprime (Nat.c
   ne.elim fun α => ⟨stabilizer G α, isComplement'_stabilizer_of_coprime hH⟩
 
 end SchurZassenhausAbelian
-
-open scoped Classical
 
 universe u
 

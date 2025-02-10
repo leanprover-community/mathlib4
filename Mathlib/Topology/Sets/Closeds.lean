@@ -76,7 +76,7 @@ def gi : GaloisInsertion (@Closeds.closure α _) (↑) where
   le_l_u _ := subset_closure
   choice_eq _s hs := SetLike.coe_injective <| subset_closure.antisymm hs
 
-instance completeLattice : CompleteLattice (Closeds α) :=
+instance instCompleteLattice : CompleteLattice (Closeds α) :=
   CompleteLattice.copy
     (GaloisInsertion.liftCompleteLattice gi)
     -- le
@@ -274,7 +274,7 @@ theorem isClopen (s : Clopens α) : IsClopen (s : Set α) :=
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Clopens α) : Set α := s
 
-initialize_simps_projections Clopens (carrier → coe)
+initialize_simps_projections Clopens (carrier → coe, as_prefix coe)
 
 /-- Reinterpret a clopen as an open. -/
 @[simps]

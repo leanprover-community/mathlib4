@@ -228,7 +228,7 @@ structure Transversal : Type _ where
   compl : ∀ i, IsComplement (φ i).range (set i)
 
 theorem transversal_nonempty (hφ : ∀ i, Injective (φ i)) : Nonempty (Transversal φ) := by
-  choose t ht using fun i => (φ i).range.exists_right_transversal 1
+  choose t ht using fun i => (φ i).range.exists_isComplement_right 1
   apply Nonempty.intro
   exact
     { injective := hφ

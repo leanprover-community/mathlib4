@@ -42,7 +42,7 @@ open ENNReal
 /-- Extended norm on a vector space. As in the case of normed spaces, we require only
 `‖c • x‖ ≤ ‖c‖ * ‖x‖` in the definition, then prove an equality in `map_smul`. -/
 structure ENormedSpace (𝕜 : Type*) (V : Type*) [NormedField 𝕜] [AddCommGroup V] [Module 𝕜 V] where
-  /-- The norm of an ENormedspace, taking values into `ℝ≥0∞`. -/
+  /-- the norm of an ENormedSpace, taking values into `ℝ≥0∞` -/
   toFun : V → ℝ≥0∞
   eq_zero' : ∀ x, toFun x = 0 → x = 0
   map_add_le' : ∀ x y : V, toFun (x + y) ≤ toFun x + toFun y

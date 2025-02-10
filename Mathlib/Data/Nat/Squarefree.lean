@@ -29,16 +29,10 @@ theorem squarefree_iff_nodup_primeFactorsList {n : ℕ} (h0 : n ≠ 0) :
   rw [UniqueFactorizationMonoid.squarefree_iff_nodup_normalizedFactors h0, Nat.factors_eq]
   simp
 
-@[deprecated (since := "2024-07-17")]
-alias squarefree_iff_nodup_factors := squarefree_iff_nodup_primeFactorsList
-
 end Nat
 
 theorem Squarefree.nodup_primeFactorsList {n : ℕ} (hn : Squarefree n) : n.primeFactorsList.Nodup :=
   (Nat.squarefree_iff_nodup_primeFactorsList hn.ne_zero).mp hn
-
-@[deprecated (since := "2024-07-17")]
-alias Squarefree.nodup_factors := Squarefree.nodup_primeFactorsList
 
 namespace Nat
 variable {s : Finset ℕ} {m n p : ℕ}
@@ -83,12 +77,7 @@ theorem Squarefree.ext_iff {n m : ℕ} (hn : Squarefree n) (hm : Squarefree m) :
       hp.dvd_iff_one_le_factorization hm.ne_zero, not_le, lt_one_iff] at h₁
     have h₂ := hn.natFactorization_le_one p
     have h₃ := hm.natFactorization_le_one p
-    rw [Nat.le_add_one_iff, Nat.le_zero] at h₂ h₃
-    cases' h₂ with h₂ h₂
-    · rwa [h₂, eq_comm, ← h₁]
-    · rw [h₂, h₃.resolve_left]
-      rw [← h₁, h₂]
-      simp only [Nat.one_ne_zero, not_false_iff, reduceCtorEq]
+    omega
   rw [factorization_eq_zero_of_non_prime _ hp, factorization_eq_zero_of_non_prime _ hp]
 
 theorem squarefree_pow_iff {n k : ℕ} (hn : n ≠ 1) (hk : k ≠ 0) :
@@ -323,7 +312,7 @@ theorem sq_mul_squarefree_of_pos {n : ℕ} (hn : 0 < n) :
   simp only [S, Finset.mem_filter, Finset.mem_range] at hs
   obtain ⟨-, ⟨a, hsa⟩, ⟨b, hsb⟩⟩ := hs
   rw [hsa] at hn
-  obtain ⟨hlts, hlta⟩ := CanonicallyOrderedCommSemiring.mul_pos.mp hn
+  obtain ⟨hlts, hlta⟩ := CanonicallyOrderedAdd.mul_pos.mp hn
   rw [hsb] at hsa hn hlts
   refine ⟨a, b, hlta, (pow_pos_iff two_ne_zero).mp hlts, hsa.symm, ?_⟩
   rintro x ⟨y, hy⟩

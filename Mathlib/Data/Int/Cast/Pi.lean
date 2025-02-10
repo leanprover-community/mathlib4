@@ -18,8 +18,7 @@ This file provides a (pointwise) cast from `ℤ` to function types.
 * `Pi.instIntCast`: map `n : ℤ` to the constant function `n : ∀ i, π i`
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists RingHom
+assert_not_exists OrderedCommMonoid RingHom
 
 namespace Pi
 
@@ -33,9 +32,6 @@ theorem intCast_apply (n : ℤ) (i : ι) : (n : ∀ i, π i) i = n :=
 @[simp]
 theorem intCast_def (n : ℤ) : (n : ∀ i, π i) = fun _ => ↑n :=
   rfl
-
-@[deprecated (since := "2024-04-05")] alias int_apply := intCast_apply
-@[deprecated (since := "2024-04-05")] alias coe_int := intCast_def
 
 end Pi
 

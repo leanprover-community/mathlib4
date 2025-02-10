@@ -100,6 +100,9 @@ instance IsGrothendieckAbelian.hasLimits : HasLimitsOfSize.{w, w} C :=
   have : HasLimits.{w, u} (ShrinkHoms C) := hasLimits_of_hasColimits_of_hasSeparator
   Adjunction.has_limits_of_equivalence (ShrinkHoms.equivalence C |>.functor)
 
+instance IsGrothendieckAbelian.wellPowered : WellPowered.{w} C :=
+  wellPowered_of_equiv.{w} (ShrinkHoms.equivalence.{w} C).symm
+
 end Instances
 
 end CategoryTheory

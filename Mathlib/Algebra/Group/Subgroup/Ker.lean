@@ -42,9 +42,7 @@ membership of a subgroup's underlying set.
 subgroup, subgroups
 -/
 
-assert_not_exists OrderedAddCommMonoid
-assert_not_exists Multiset
-assert_not_exists Ring
+assert_not_exists OrderedAddCommMonoid Multiset Ring
 
 open Function
 open scoped Int
@@ -482,6 +480,10 @@ theorem map_injective_of_ker_le {H K : Subgroup G} (hH : f.ker ≤ H) (hK : f.ke
     (hf : map f H = map f K) : H = K := by
   apply_fun comap f at hf
   rwa [comap_map_eq, comap_map_eq, sup_of_le_left hH, sup_of_le_left hK] at hf
+
+@[to_additive]
+theorem ker_subgroupMap : (f.subgroupMap H).ker = f.ker.subgroupOf H :=
+  ext fun _ ↦ Subtype.ext_iff
 
 @[to_additive]
 theorem closure_preimage_eq_top (s : Set G) : closure ((closure s).subtype ⁻¹' s) = ⊤ := by

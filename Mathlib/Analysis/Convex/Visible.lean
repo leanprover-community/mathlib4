@@ -3,6 +3,7 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Algebra.Group.Pointwise.Set.Card
 import Mathlib.Analysis.Convex.Between
 import Mathlib.Analysis.Convex.Combination
@@ -117,8 +118,7 @@ lemma IsVisible.eq_of_mem_interior (hsxy : IsVisible 𝕜 s x y) (hy : y ∈ int
   have hmem : ∀ᶠ (δ : 𝕜) in 𝓝[>] 0, lineMap y x δ ∈ s :=
     lineMap_continuous.continuousWithinAt.eventually_mem
       (by simpa using mem_interior_iff_mem_nhds.1 hy)
-  filter_upwards [hmem, Ioo_mem_nhdsWithin_Ioi' zero_lt_one] with δ hmem hsbt
-    using hsxy.symm hmem (by aesop)
+  filter_upwards [hmem, Ioo_mem_nhdsGT zero_lt_one] with δ hmem hsbt using hsxy.symm hmem (by aesop)
 
 /-- One cannot see any point of an open set. -/
 lemma IsOpen.eq_of_isVisible_of_left_mem (hs : IsOpen s) (hsxy : IsVisible 𝕜 s x y) (hy : y ∈ s) :

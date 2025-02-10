@@ -81,7 +81,7 @@ protected theorem induct (motive : ℤ → Prop)
     (add_two : ∀ (n : ℕ), motive (↑n + 1) → motive ↑n → motive (↑n + 2))
     (neg_add_one : ∀ (n : ℕ), motive (-↑n) → motive (-↑n + 1) → motive (-↑n - 1)) :
     ∀ (a : ℤ), motive a :=
-  T.induct Unit motive zero one add_two fun n hn hnm => by
+  T.induct motive zero one add_two fun n hn hnm => by
     simpa only [Int.negSucc_eq, neg_add] using neg_add_one n hn hnm
 
 @[simp]

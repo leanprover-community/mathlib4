@@ -7,7 +7,7 @@ import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Localization.AsSubring
 import Mathlib.Algebra.Ring.Subring.Pointwise
 import Mathlib.Algebra.Ring.Action.Field
-import Mathlib.RingTheory.PrimeSpectrum
+import Mathlib.RingTheory.Spectrum.Prime.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
@@ -23,8 +23,6 @@ The order structure on `ValuationSubring K`.
 
 universe u
 
-open scoped Classical
-
 noncomputable section
 
 variable (K : Type u) [Field K]
@@ -32,7 +30,7 @@ variable (K : Type u) [Field K]
 /-- A valuation subring of a field `K` is a subring `A` such that for every `x : K`,
 either `x ∈ A` or `x⁻¹ ∈ A`.
 
-This is equvalent to being maximal in the domination order
+This is equivalent to being maximal in the domination order
 of local subrings (the stacks project definition). See `LocalSubring.isMax_iff`.
 -/
 structure ValuationSubring extends Subring K where
@@ -349,10 +347,12 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
         all_goals exact le_ofPrime A (PrimeSpectrum.asIdeal _),
       fun h => by apply ofPrime_le_of_le; exact h⟩ }
 
-instance le_total_ideal : IsTotal {S // A ≤ S} LE.le :=
+instance le_total_ideal : IsTotal {S // A ≤ S} LE.le := by
+  classical
   let _ : IsTotal (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.isTotal.total x y⟩
-  ⟨(primeSpectrumOrderEquiv A).symm.toRelEmbedding.isTotal.total⟩
+  exact ⟨(primeSpectrumOrderEquiv A).symm.toRelEmbedding.isTotal.total⟩
 
+open scoped Classical in
 instance linearOrderOverring : LinearOrder {S // A ≤ S} where
   le_total := (le_total_ideal A).1
   max_def a b := congr_fun₂ sup_eq_maxDefault a b
@@ -754,13 +754,13 @@ theorem mem_inv_pointwise_smul_iff {g : G} {S : ValuationSubring K} {x : K} :
 
 @[simp]
 theorem pointwise_smul_le_pointwise_smul_iff {g : G} {S T : ValuationSubring K} :
-    g • S ≤ g • T ↔ S ≤ T := Set.set_smul_subset_set_smul_iff
+    g • S ≤ g • T ↔ S ≤ T := Set.smul_set_subset_smul_set_iff
 
 theorem pointwise_smul_subset_iff {g : G} {S T : ValuationSubring K} : g • S ≤ T ↔ S ≤ g⁻¹ • T :=
-  Set.set_smul_subset_iff
+  Set.smul_set_subset_iff_subset_inv_smul_set
 
 theorem subset_pointwise_smul_iff {g : G} {S T : ValuationSubring K} : S ≤ g • T ↔ g⁻¹ • S ≤ T :=
-  Set.subset_set_smul_iff
+  Set.subset_smul_set_iff
 
 end PointwiseActions
 

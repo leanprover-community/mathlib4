@@ -50,7 +50,7 @@ the forgetful functor preserves finite products and satisfies the equalizer cond
 -/
 @[simps]
 noncomputable def ofSheafForgetLightProfinite
-    [ConcreteCategory A] [ReflectsFiniteLimits (CategoryTheory.forget A)]
+    [HasForget A] [ReflectsFiniteLimits (CategoryTheory.forget A)]
     (F : LightProfinite.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts (F ⋙ CategoryTheory.forget A)]
     (hF : EqualizerCondition (F ⋙ CategoryTheory.forget A)) : LightCondensed A where
   val := F

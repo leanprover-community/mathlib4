@@ -41,6 +41,8 @@ for good definitional properties of the default term.
 
 universe u v w
 
+-- Don't generate injectivity lemmas, which the `simpNF` linter will complain about.
+set_option genInjectivity false in
 /-- `Unique α` expresses that `α` is a type with a unique term `default`.
 
 This is implemented as a type, rather than a `Prop`-valued predicate,
@@ -51,8 +53,6 @@ structure Unique (α : Sort u) extends Inhabited α where
   uniq : ∀ a : α, a = default
 
 attribute [class] Unique
--- The simplifier can already prove this using `eq_iff_true_of_subsingleton`
-attribute [nolint simpNF] Unique.mk.injEq
 
 theorem unique_iff_existsUnique (α : Sort u) : Nonempty (Unique α) ↔ ∃! _ : α, True :=
   ⟨fun ⟨u⟩ ↦ ⟨u.default, trivial, fun a _ ↦ u.uniq a⟩,
@@ -80,15 +80,11 @@ abbrev uniqueOfSubsingleton {α : Sort*} [Subsingleton α] (a : α) : Unique α 
   default := a
   uniq _ := Subsingleton.elim _ _
 
-instance PUnit.unique : Unique PUnit.{u} where
+instance PUnit.instUnique : Unique PUnit.{u} where
   default := PUnit.unit
   uniq x := subsingleton x _
 
--- Porting note:
--- This should not require a nolint,
--- but it is currently failing due to a problem in the linter discussed at
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.60simpNF.60.20error.20.22unknown.20metavariable.22
-@[simp, nolint simpNF]
+@[simp]
 theorem PUnit.default_eq_unit : (default : PUnit) = PUnit.unit :=
   rfl
 

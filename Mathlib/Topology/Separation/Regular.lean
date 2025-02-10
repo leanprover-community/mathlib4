@@ -3,8 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Tactic.StacksAttribute
 import Mathlib.Topology.Compactness.Lindelof
+import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Regular, normal, T₃, T₄ and T₅ spaces
@@ -113,23 +114,14 @@ theorem RegularSpace.of_lift'_closure_le (h : ∀ x : X, (𝓝 x).lift' closure 
 theorem RegularSpace.of_lift'_closure (h : ∀ x : X, (𝓝 x).lift' closure = 𝓝 x) : RegularSpace X :=
   Iff.mpr ((regularSpace_TFAE X).out 0 5) h
 
-@[deprecated (since := "2024-02-28")]
-alias RegularSpace.ofLift'_closure := RegularSpace.of_lift'_closure
-
 theorem RegularSpace.of_hasBasis {ι : X → Sort*} {p : ∀ a, ι a → Prop} {s : ∀ a, ι a → Set X}
     (h₁ : ∀ a, (𝓝 a).HasBasis (p a) (s a)) (h₂ : ∀ a i, p a i → IsClosed (s a i)) :
     RegularSpace X :=
   .of_lift'_closure fun a => (h₁ a).lift'_closure_eq_self (h₂ a)
 
-@[deprecated (since := "2024-02-28")]
-alias RegularSpace.ofBasis := RegularSpace.of_hasBasis
-
 theorem RegularSpace.of_exists_mem_nhds_isClosed_subset
     (h : ∀ (x : X), ∀ s ∈ 𝓝 x, ∃ t ∈ 𝓝 x, IsClosed t ∧ t ⊆ s) : RegularSpace X :=
   Iff.mpr ((regularSpace_TFAE X).out 0 3) h
-
-@[deprecated (since := "2024-02-28")]
-alias RegularSpace.ofExistsMemNhdsIsClosedSubset := RegularSpace.of_exists_mem_nhds_isClosed_subset
 
 /-- A weakly locally compact R₁ space is regular. -/
 instance (priority := 100) [WeaklyLocallyCompactSpace X] [R1Space X] : RegularSpace X :=
@@ -646,8 +638,8 @@ theorem connectedComponent_eq_iInter_isClopen [T2Space X] [CompactSpace X] (x : 
           ⟨s ∩ v, H2, mem_inter H.2.1 h1⟩
 
 /-- `ConnectedComponents X` is Hausdorff when `X` is Hausdorff and compact -/
+@[stacks 0900 "The Stacks entry proves profiniteness."]
 instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (ConnectedComponents X) := by
-  -- Proof follows that of: https://stacks.math.columbia.edu/tag/0900
   -- Fix 2 distinct connected components, with points a and b
   refine ⟨ConnectedComponents.surjective_coe.forall₂.2 fun a b ne => ?_⟩
   rw [ConnectedComponents.coe_ne_coe] at ne

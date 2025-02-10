@@ -98,6 +98,6 @@ lemma odd_add_one_iff_even {n : ℕ} [NeZero n] {k : Fin n} : Odd (k + 1) ↔ Ev
   ⟨fun ⟨k, hk⟩ ↦ add_right_cancel hk ▸ even_two_mul k, Even.add_one⟩
 
 lemma even_add_one_iff_odd {n : ℕ} [NeZero n] {k : Fin n} : Even (k + 1) ↔ Odd k :=
-  ⟨fun ⟨k, hk⟩ ↦ eq_sub_iff_add_eq.mpr hk ▸ (even_add_self k).sub_odd odd_one, Odd.add_one⟩
+  ⟨fun ⟨k, hk⟩ ↦ eq_sub_iff_add_eq.mpr hk ▸ (Even.add_self k).sub_odd odd_one, Odd.add_one⟩
 
 end Fin

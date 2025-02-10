@@ -262,8 +262,7 @@ theorem ruzsaSzemerediNumberNat_asymptotic_lower_bound :
       · simp
         omega
       · omega
-  · refine .of_bound 1 ?_
-    simp only [neg_mul, norm_eq_abs, norm_natCast, one_mul, eventually_atTop]
-    refine ⟨6, fun n hn ↦ ?_⟩
+  · refine .of_norm_eventuallyLE ?_
+    filter_upwards [eventually_ge_atTop 6] with n hn
     have : (0 : ℝ) ≤ n / 3 - 2 := by rify at hn; linarith
-    simpa using abs_le_abs_of_nonneg (by positivity) (ruzsaSzemerediNumberNat_lower_bound n)
+    simpa [neg_mul, abs_mul, abs_of_nonneg this] using ruzsaSzemerediNumberNat_lower_bound n

@@ -17,6 +17,8 @@ property of being corner-free.
 * [Wikipedia, *Corners theorem*](https://en.wikipedia.org/wiki/Corners_theorem)
 -/
 
+assert_not_exists Field Ideal TwoSidedIdeal
+
 open Set
 
 variable {G H : Type*}

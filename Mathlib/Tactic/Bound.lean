@@ -27,7 +27,7 @@ uses specialized lemmas for goals of the form `1 ≤ x, 1 < x, x ≤ 1, x < 1`.
 Additional hypotheses can be passed as `bound [h0, h1 n, ...]`.  This is equivalent to declaring
 them via `have` before calling `bound`.
 
-See `test/Bound.lean` for tests.
+See `MathlibTest/Bound/bound.lean` for tests.
 
 ### Calc usage
 

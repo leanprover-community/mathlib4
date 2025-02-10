@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.Multiset.OrderedMonoid
@@ -207,6 +207,17 @@ theorem prod_le_prod_fiberwise_of_prod_fiber_le_one' {t : Finset ι'} {g : ι �
     ∏ x ∈ s, f x ≤ ∏ y ∈ t, ∏ x ∈ s with g x = y, f x :=
   @prod_fiberwise_le_prod_of_one_le_prod_fiber' _ Nᵒᵈ _ _ _ _ _ _ _ h
 
+@[to_additive]
+lemma prod_image_le_of_one_le
+    {g : ι → ι'} {f : ι' → N} (hf : ∀ u ∈ s.image g, 1 ≤ f u) :
+    ∏ u ∈ s.image g, f u ≤ ∏ u ∈ s, f (g u) := by
+  rw [prod_comp f g]
+  refine prod_le_prod' fun a hag ↦ ?_
+  obtain ⟨i, hi, hig⟩ := Finset.mem_image.mp hag
+  apply le_self_pow (hf a hag)
+  rw [← Nat.pos_iff_ne_zero, card_pos]
+  exact ⟨i, mem_filter.mpr ⟨hi, hig⟩⟩
+
 end OrderedCommMonoid
 
 @[to_additive]
@@ -337,9 +348,9 @@ theorem card_le_card_biUnion_add_one {s : Finset ι} {f : ι → Finset α} (hf 
 
 end DoubleCounting
 
-section CanonicallyOrderedCommMonoid
+section CanonicallyOrderedMul
 
-variable [CanonicallyOrderedCommMonoid M] {f : ι → M} {s t : Finset ι}
+variable [OrderedCommMonoid M] [CanonicallyOrderedMul M] {f : ι → M} {s t : Finset ι}
 
 /-- In a canonically-ordered monoid, a product bounds each of its terms.
 
@@ -375,7 +386,7 @@ theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
         (prod_le_one' <| by simp only [mem_filter, and_imp]; exact fun _ _ ↦ le_of_eq)
         (prod_le_prod_of_subset' <| by simpa only [subset_iff, mem_filter, and_imp] )
 
-end CanonicallyOrderedCommMonoid
+end CanonicallyOrderedMul
 
 section OrderedCancelCommMonoid
 

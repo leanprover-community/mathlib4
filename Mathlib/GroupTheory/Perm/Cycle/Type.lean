@@ -406,8 +406,8 @@ theorem zero_eq : vectorsProdEqOne G 0 = {Vector.nil} :=
   Set.eq_singleton_iff_unique_mem.mpr ⟨Eq.refl (1 : G), fun v _ => v.eq_nil⟩
 
 theorem one_eq : vectorsProdEqOne G 1 = {Vector.nil.cons 1} := by
-  simp_rw [Set.eq_singleton_iff_unique_mem, mem_iff, Vector.toList_singleton, List.prod_singleton,
-    Vector.head_cons, true_and]
+  simp_rw [Set.eq_singleton_iff_unique_mem, mem_iff, List.Vector.toList_singleton,
+    List.prod_singleton, List.Vector.head_cons, true_and]
   exact fun v hv => v.cons_head_tail.symm.trans (congr_arg₂ Vector.cons hv v.tail.eq_nil)
 
 instance zeroUnique : Unique (vectorsProdEqOne G 0) := by
@@ -437,7 +437,7 @@ def vectorEquiv : List.Vector G n ≃ vectorsProdEqOne G (n + 1) where
 /-- Given a vector `v` of length `n` whose product is 1, make a vector of length `n - 1`,
 by deleting the last entry of `v`. -/
 def equivVector : ∀ n, vectorsProdEqOne G n ≃ List.Vector G (n - 1)
-  | 0 => (equivOfUnique (vectorsProdEqOne G 0) (vectorsProdEqOne G 1)).trans (vectorEquiv G 0).symm
+  | 0 => (ofUnique (vectorsProdEqOne G 0) (vectorsProdEqOne G 1)).trans (vectorEquiv G 0).symm
   | (n + 1) => (vectorEquiv G n).symm
 
 instance [Fintype G] : Fintype (vectorsProdEqOne G n) :=

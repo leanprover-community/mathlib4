@@ -32,7 +32,7 @@ This file defines the determinant of a matrix, `Matrix.det`, and its essential p
 ## Implementation notes
 
 It is possible to configure `simp` to compute determinants. See the file
-`test/matrix.lean` for some examples.
+`MathlibTest/matrix.lean` for some examples.
 
 -/
 
@@ -252,7 +252,7 @@ theorem det_smul (A : Matrix n n R) (c : R) : det (c • A) = c ^ Fintype.card n
   calc
     det (c • A) = det ((diagonal fun _ => c) * A) := by rw [smul_eq_diagonal_mul]
     _ = det (diagonal fun _ => c) * det A := det_mul _ _
-    _ = c ^ Fintype.card n * det A := by simp [card_univ]
+    _ = c ^ Fintype.card n * det A := by simp
 
 @[simp]
 theorem det_smul_of_tower {α} [Monoid α] [DistribMulAction α R] [IsScalarTower α R R]
@@ -644,10 +644,7 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
     · simp_rw [sum_mul_sum, ← sum_product', univ_product_univ]
       refine sum_nbij (fun σ ↦ σ.fst.sumCongr σ.snd) ?_ ?_ ?_ ?_
       · intro σ₁₂ _
-        simp only
-        erw [Set.mem_toFinset, MonoidHom.mem_range]
-        use σ₁₂
-        simp only [sumCongrHom_apply]
+        simp
       · intro σ₁ _ σ₂ _
         dsimp only
         intro h

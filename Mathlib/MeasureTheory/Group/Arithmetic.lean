@@ -310,7 +310,8 @@ theorem measurableSet_eq_fun {m : MeasurableSpace α} {E} [MeasurableSpace E] [A
   simp_rw [Set.mem_setOf_eq, Pi.sub_apply, sub_eq_zero]
 
 @[measurability]
-lemma measurableSet_eq_fun' {β : Type*} [CanonicallyOrderedAddCommMonoid β] [Sub β] [OrderedSub β]
+lemma measurableSet_eq_fun' {β : Type*} [AddCommMonoid β] [PartialOrder β]
+    [CanonicallyOrderedAdd β] [Sub β] [OrderedSub β]
     {_ : MeasurableSpace β} [MeasurableSub₂ β] [MeasurableSingletonClass β]
     {f g : α → β} (hf : Measurable f) (hg : Measurable g) :
     MeasurableSet {x | f x = g x} := by
@@ -662,7 +663,7 @@ instance Units.instMeasurableSpace : MeasurableSpace Mˣ := MeasurableSpace.coma
 
 @[to_additive]
 instance Units.measurableSMul : MeasurableSMul Mˣ β where
-  measurable_const_smul c := (measurable_const_smul (c : M) : _)
+  measurable_const_smul c := measurable_const_smul (c : M)
   measurable_smul_const x :=
     (measurable_smul_const x : Measurable fun c : M => c • x).comp MeasurableSpace.le_map_comap
 
