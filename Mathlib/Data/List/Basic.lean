@@ -1089,11 +1089,11 @@ theorem foldl_fixed {a : α} : ∀ l : List β, foldl (fun a _ => a) a l = a :=
 theorem foldr_fixed {b : β} : ∀ l : List α, foldr (fun _ b => b) b l = b :=
   foldr_fixed' fun _ => rfl
 
-theorem foldr_eta : ∀ l : List α, foldr cons [] l = l := by
-  simp only [foldr_cons_eq_append, append_nil, forall_const]
+@[deprecated foldr_cons_nil (since := "2025-02-10")]
+theorem foldr_eta (l : List α) : foldr cons [] l = l := foldr_cons_nil l
 
 theorem reverse_foldl {l : List α} : reverse (foldl (fun t h => h :: t) [] l) = l := by
-  rw [← foldr_reverse]; simp only [foldr_cons_eq_append, append_nil, reverse_reverse]
+  simp
 
 theorem foldl_hom₂ (l : List ι) (f : α → β → γ) (op₁ : α → ι → α) (op₂ : β → ι → β)
     (op₃ : γ → ι → γ) (a : α) (b : β) (h : ∀ a b i, f (op₁ a i) (op₂ b i) = op₃ (f a b) i) :
