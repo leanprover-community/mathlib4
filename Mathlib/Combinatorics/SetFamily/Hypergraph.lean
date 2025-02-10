@@ -720,35 +720,12 @@ noncomputable def TreeLike_root {l : List (Finset V)} (h : TreeLike l) (he : e �
     | nil => simp_all; exact hne.choose
     | cons head tail =>
       rw [List.mem_cons] at he
-      classical
-
-      cases he with
-      | inl h => sorry
-      | inr h => sorry
+      sorry
 
 
 def TreeLike.Coloring {l : List (Finset V)} (h : TreeLike l) :
-  VertexColoring (fromList (r + 2) l) (Fin ((length l) + 1)) where
-  toFun := fun v => v.val
-  map_mem' := by
-    intro e he
-    induction l with e' l ih generalizing e
-    · simp only [length_eq_zero] at he
-      rw [eq_nil_iff_forall_not_mem] at he
-      rw [he]
-      simp
-    · cases l with f l
-      · simp only [length_eq_one] at he
-        rw [eq_singleton_iff_unique_mem] at he
-        rw [he]
-        simp
-      · rw [TreeLike_cons_cons_iff] at h
-        obtain ⟨g,hg,hg2,hg3⟩ := h.2
-        rw [mem_insert_iff] at he
-        cases he
-        · exact ih he
-        · rw [he.2.2]
-          exact ⟨hg, hg2⟩
+  VertexColoring (fromList (r + 2) l) (Fin ((length l) + 1)) := sorry
+
 end HyperGraph
 
 
