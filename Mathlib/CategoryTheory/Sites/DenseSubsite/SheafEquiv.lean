@@ -134,10 +134,4 @@ abbrev sheafEquivSheafificationCompatibility :
 
 end IsDenseSubsite
 
-@[deprecated (since := "2024-07-23")]
-alias IsCoverDense.sheafEquivOfCoverPreservingCoverLifting := IsDenseSubsite.sheafEquiv
-@[deprecated (since := "2024-07-23")]
-alias IsCoverDense.sheafEquivOfCoverPreservingCoverLiftingSheafificationCompatibility :=
-  IsDenseSubsite.sheafEquivSheafificationCompatibility
-
 end CategoryTheory.Functor

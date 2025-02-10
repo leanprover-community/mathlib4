@@ -89,8 +89,8 @@ variable [Ring R] [IsDomain R] [Fintype R]
 `Mathlib.RingTheory.LittleWedderburn`. -/
 def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableEq R] [Fintype R] :
     DivisionRing R where
+  __ := (‹Ring R›:) -- this also works without the `( :)`, but it's slightly slow
   __ := Fintype.groupWithZeroOfCancel R
-  __ := ‹Ring R›
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl
   qsmul := _
@@ -169,9 +169,6 @@ end Polynomial
 end EuclideanDivision
 
 variable [Fintype G]
-
-@[deprecated (since := "2024-06-10")]
-alias card_fiber_eq_of_mem_range := MonoidHom.card_fiber_eq_of_mem_range
 
 /-- In an integral domain, a sum indexed by a nontrivial homomorphism from a finite group is zero.
 -/

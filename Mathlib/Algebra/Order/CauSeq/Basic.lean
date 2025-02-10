@@ -404,7 +404,7 @@ theorem zero_limZero : LimZero (0 : CauSeq β abv)
 theorem const_limZero {x : β} : LimZero (const x) ↔ x = 0 :=
   ⟨fun H =>
     (abv_eq_zero abv).1 <|
-      (eq_of_le_of_forall_le_of_dense (abv_nonneg abv _)) fun _ ε0 =>
+      (eq_of_le_of_forall_lt_imp_le_of_dense (abv_nonneg abv _)) fun _ ε0 =>
         let ⟨_, hi⟩ := H _ ε0
         le_of_lt <| hi _ le_rfl,
     fun e => e.symm ▸ zero_limZero⟩
