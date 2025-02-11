@@ -3,7 +3,7 @@ Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
-import Lean.Data.Json.Parser
+
 import Cache.Hashing
 
 namespace Cache.Requests
@@ -142,7 +142,7 @@ def downloadFiles (hashMap : IO.ModuleHashMap) (forceDownload : Bool) (parallel 
 /-- Check if the project's `lean-toolchain` file matches mathlib's.
 Print and error and exit the process with error code 1 otherwise. -/
 def checkForToolchainMismatch : IO.CacheM Unit := do
-  let mathlibToolchainFile := (← IO.mathlibDepPath) / "lean-toolchain"
+  let mathlibToolchainFile := (← read).mathlibDepPath / "lean-toolchain"
   let downstreamToolchain ← IO.FS.readFile "lean-toolchain"
   let mathlibToolchain ← IO.FS.readFile mathlibToolchainFile
   if !(mathlibToolchain.trim = downstreamToolchain.trim) then
