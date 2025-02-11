@@ -653,7 +653,6 @@ set_option linter.deprecated false in
 theorem aleph'_isNormal : IsNormal (ord ∘ aleph') :=
   preAleph_isNormal
 
-set_option linter.deprecated false in
 /-- Ordinals that are cardinals are unbounded. -/
 @[deprecated "No deprecation message was provided."  (since := "2024-09-24")]
 theorem ord_card_unbounded : Unbounded (· < ·) { b : Ordinal | b.card.ord = b } :=
