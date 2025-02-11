@@ -24,7 +24,7 @@ typeclass arguments, one can declare the ultrametricity at the same time.
 For example, one could say `[Norm K] [Fact (IsNonarchimedean (norm : K → ℝ))]`,
 
 The file imports a later file in the hierarchy of pseudometric spaces, since
-`Metric.isClosed_ball` and `Metric.isClosed_sphere` is proven in a later file
+`Metric.isClosed_closedBall` and `Metric.isClosed_sphere` is proven in a later file
 using more conceptual results.
 
 TODO: Generalize to ultrametric uniformities
@@ -124,7 +124,7 @@ lemma closedBall_subset_trichotomy :
     have hx := closedBall_subset_closedBall hrs (x := x)
     rwa [closedBall_eq_of_mem hyz |>.trans (closedBall_eq_of_mem <| hx hxz).symm]
 
-lemma isClosed_ball (x : X) (r : ℝ) : IsClosed (ball x r) := by
+lemma isClosed_closedBall (x : X) (r : ℝ) : IsClosed (ball x r) := by
   cases le_or_lt r 0 with
   | inl hr =>
     simp [ball_eq_empty.mpr hr]
@@ -140,7 +140,7 @@ lemma isClosed_ball (x : X) (r : ℝ) : IsClosed (ball x r) := by
       use r
       simp [h, hy, ← Set.le_iff_subset, le_compl_iff_disjoint_left, hd]
 
-lemma isClopen_ball : IsClopen (ball x r) := ⟨isClosed_ball x r, isOpen_ball⟩
+lemma isClopen_ball : IsClopen (ball x r) := ⟨isClosed_closedBall x r, isOpen_ball⟩
 
 lemma frontier_ball_eq_empty : frontier (ball x r) = ∅ :=
   isClopen_iff_frontier_eq_empty.mp (isClopen_ball x r)
@@ -169,14 +169,14 @@ lemma isOpen_closedBall {r : ℝ} (hr : r ≠ 0) : IsOpen (closedBall x r) := by
       simp [closedBall_eq_of_mem hy, h.not_lt] at hd
 
 lemma isClopen_closedBall {r : ℝ} (hr : r ≠ 0) : IsClopen (closedBall x r) :=
-  ⟨Metric.isClosed_ball, isOpen_closedBall x hr⟩
+  ⟨Metric.isClosed_closedBall, isOpen_closedBall x hr⟩
 
 lemma frontier_closedBall_eq_empty {r : ℝ} (hr : r ≠ 0) : frontier (closedBall x r) = ∅ :=
   isClopen_iff_frontier_eq_empty.mp (isClopen_closedBall x hr)
 
 lemma isOpen_sphere {r : ℝ} (hr : r ≠ 0) : IsOpen (sphere x r) := by
   rw [← closedBall_diff_ball, sdiff_eq]
-  exact (isOpen_closedBall x hr).inter (isClosed_ball x r).isOpen_compl
+  exact (isOpen_closedBall x hr).inter (isClosed_closedBall x r).isOpen_compl
 
 lemma isClopen_sphere {r : ℝ} (hr : r ≠ 0) : IsClopen (sphere x r) :=
   ⟨Metric.isClosed_sphere, isOpen_sphere x hr⟩

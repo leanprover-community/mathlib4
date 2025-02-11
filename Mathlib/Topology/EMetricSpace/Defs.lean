@@ -469,7 +469,7 @@ theorem isOpen_iff : IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, ball x ε ⊆ s := by
 theorem isOpen_ball : IsOpen (ball x ε) :=
   isOpen_iff.2 fun _ => exists_ball_subset_ball
 
-theorem isClosed_ball_top : IsClosed (ball x ⊤) :=
+theorem isClosed_closedBall_top : IsClosed (ball x ⊤) :=
   isOpen_compl_iff.1 <| isOpen_iff.2 fun _y hy =>
     ⟨⊤, ENNReal.coe_lt_top, fun _z hzy hzx =>
       hy (edistLtTopSetoid.trans (edistLtTopSetoid.symm hzy) hzx)⟩

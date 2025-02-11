@@ -119,7 +119,7 @@ theorem tendsto_iff_forall_isCompact_tendstoUniformlyOn
     have hnhds : s ∈ 𝓝[K] x := inter_mem_nhdsWithin _ <| f.continuousAt _ (ball_mem_nhds _ hW)
     -- This set is compact because it is an intersection of `K`
     -- with a closed set `{y | (f x, f y) ∈ W} = f ⁻¹' UniformSpace.ball (f x) W`
-    have hcomp : IsCompact s := hK.inter_right <| (isClosed_ball _ hWc).preimage f.continuous
+    have hcomp : IsCompact s := hK.inter_right <| (isClosed_closedBall _ hWc).preimage f.continuous
     -- `f` maps `s` to the open set `ball (f x) V = {z | (f x, z) ∈ V}`
     have hmaps : MapsTo f s (ball (f x) V) := fun x hx ↦ hWU hx.2
     use s, hnhds

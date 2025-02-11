@@ -600,7 +600,7 @@ theorem mem_comp_of_mem_ball {V W : Set (β × β)} {x y z : β} (hV : Symmetric
 lemma isOpen_ball (x : α) {V : Set (α × α)} (hV : IsOpen V) : IsOpen (ball x V) :=
   hV.preimage <| continuous_const.prod_mk continuous_id
 
-lemma isClosed_ball (x : α) {V : Set (α × α)} (hV : IsClosed V) : IsClosed (ball x V) :=
+lemma isClosed_closedBall (x : α) {V : Set (α × α)} (hV : IsClosed V) : IsClosed (ball x V) :=
   hV.preimage <| continuous_const.prod_mk continuous_id
 
 theorem mem_comp_comp {V W M : Set (β × β)} (hW' : SymmetricRel W) {p : β × β} :
