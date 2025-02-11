@@ -1205,8 +1205,7 @@ theorem floor_lt_ceil_of_lt {a b : α} (h : a < b) : ⌊a⌋ < ⌈b⌉ :=
 lemma ceil_eq_floor_add_one_iff_not_mem (a : α) : ⌈a⌉ = ⌊a⌋ + 1 ↔ a ∉ Set.range Int.cast := by
   refine ⟨fun h ht => ?_, fun h => ?_⟩
   · have := ((floor_eq_self_iff_mem _).mpr ht).trans ((ceil_eq_self_iff_mem _).mpr ht).symm
-    rw [Int.cast_inj] at this
-    linarith
+    linarith [Int.cast_inj.mp this]
   · apply le_antisymm (Int.ceil_le_floor_add_one _)
     rw [Int.add_one_le_ceil_iff]
     exact lt_of_le_of_ne (Int.floor_le a) ((iff_false_right h).mp (floor_eq_self_iff_mem a))
