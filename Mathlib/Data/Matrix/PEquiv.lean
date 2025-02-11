@@ -200,12 +200,6 @@ lemma map_toMatrix [DecidableEq n] [NonAssocSemiring α] [NonAssocSemiring β]
   ext i j
   simp
 
-@[simp]
-lemma map_toMatrix [DecidableEq n] [NonAssocSemiring α] [NonAssocSemiring β]
-    (f : α →+* β) (σ : m ≃. n) : σ.toMatrix.map f = σ.toMatrix := by
-  ext i j
-  simp
-
 end PEquiv
 
 namespace Equiv
