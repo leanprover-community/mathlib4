@@ -799,30 +799,29 @@ private theorem eLpNorm_smul_measure_of_ne_zero_of_ne_top {p : ℝ≥0∞} (hp_n
   simp_rw [one_div]
   rw [ENNReal.toReal_inv]
 
-#exit
 /-- See `eLpNorm_smul_measure_of_ne_zero'` for a version with scalar multiplication by `ℝ≥0`. -/
-theorem eLpNorm_smul_measure_of_ne_zero {c : ℝ≥0∞} (hc : c ≠ 0) (f : α → F) (p : ℝ≥0∞)
+theorem eLpNorm_smul_measure_of_ne_zero {c : ℝ≥0∞} (hc : c ≠ 0) (f : α → ε) (p : ℝ≥0∞)
     (μ : Measure α) : eLpNorm f p (c • μ) = c ^ (1 / p).toReal • eLpNorm f p μ := by
   by_cases hp0 : p = 0
   · simp [hp0]
   by_cases hp_top : p = ∞
-  · sorry --simp [hp_top, eLpNormEssSup_smul_measure hc]
+  · simp [hp_top, eLpNormEssSup_smul_measure hc]
   exact eLpNorm_smul_measure_of_ne_zero_of_ne_top hp0 hp_top c
 
 /-- See `eLpNorm_smul_measure_of_ne_zero` for a version with scalar multiplication by `ℝ≥0∞`. -/
-lemma eLpNorm_smul_measure_of_ne_zero' {c : ℝ≥0} (hc : c ≠ 0) (f : α → F) (p : ℝ≥0∞)
+lemma eLpNorm_smul_measure_of_ne_zero' {c : ℝ≥0} (hc : c ≠ 0) (f : α → ε) (p : ℝ≥0∞)
     (μ : Measure α) : eLpNorm f p (c • μ) = c ^ p.toReal⁻¹ • eLpNorm f p μ :=
   (eLpNorm_smul_measure_of_ne_zero (ENNReal.coe_ne_zero.2 hc) ..).trans (by simp; norm_cast)
 
 /-- See `eLpNorm_smul_measure_of_ne_top'` for a version with scalar multiplication by `ℝ≥0`. -/
-theorem eLpNorm_smul_measure_of_ne_top {p : ℝ≥0∞} (hp_ne_top : p ≠ ∞) (f : α → F) (c : ℝ≥0∞) :
+theorem eLpNorm_smul_measure_of_ne_top {p : ℝ≥0∞} (hp_ne_top : p ≠ ∞) (f : α → ε) (c : ℝ≥0∞) :
     eLpNorm f p (c • μ) = c ^ (1 / p).toReal • eLpNorm f p μ := by
   by_cases hp0 : p = 0
   · simp [hp0]
   · exact eLpNorm_smul_measure_of_ne_zero_of_ne_top hp0 hp_ne_top c
 
 /-- See `eLpNorm_smul_measure_of_ne_top'` for a version with scalar multiplication by `ℝ≥0∞`. -/
-lemma eLpNorm_smul_measure_of_ne_top' (hp : p ≠ ∞) (c : ℝ≥0) (f : α → F) :
+lemma eLpNorm_smul_measure_of_ne_top' (hp : p ≠ ∞) (c : ℝ≥0) (f : α → ε) :
     eLpNorm f p (c • μ) = c ^ p.toReal⁻¹ • eLpNorm f p μ := by
   have : 0 ≤ p.toReal⁻¹ := by positivity
   refine (eLpNorm_smul_measure_of_ne_top hp ..).trans ?_
@@ -832,8 +831,8 @@ theorem eLpNorm_one_smul_measure {f : α → F} (c : ℝ≥0∞) :
   rw [@eLpNorm_smul_measure_of_ne_top _ _ _ μ _ 1 (@ENNReal.coe_ne_top 1) f c]
   simp
 
-theorem Memℒp.of_measure_le_smul {μ' : Measure α} (c : ℝ≥0∞) (hc : c ≠ ∞) (hμ'_le : μ' ≤ c • μ)
-    {f : α → E} (hf : Memℒp f p μ) : Memℒp f p μ' := by
+theorem Memℒp.of_measure_le_smul [TopologicalSpace ε] {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠ ∞)
+    (hμ'_le : μ' ≤ c • μ) {f : α → ε} (hf : Memℒp f p μ) : Memℒp f p μ' := by
   refine ⟨hf.1.mono_ac (Measure.absolutelyContinuous_of_le_smul hμ'_le), ?_⟩
   refine (eLpNorm_mono_measure f hμ'_le).trans_lt ?_
   by_cases hc0 : c = 0
@@ -842,33 +841,35 @@ theorem Memℒp.of_measure_le_smul {μ' : Measure α} (c : ℝ≥0∞) (hc : c �
   refine ENNReal.mul_lt_top (Ne.lt_top ?_) hf.2
   simp [hc, hc0]
 
-theorem Memℒp.smul_measure {f : α → E} {c : ℝ≥0∞} (hf : Memℒp f p μ) (hc : c ≠ ∞) :
-    Memℒp f p (c • μ) :=
-  hf.of_measure_le_smul c hc le_rfl
+theorem Memℒp.smul_measure [TopologicalSpace ε] {f : α → ε} {c : ℝ≥0∞}
+    (hf : Memℒp f p μ) (hc : c ≠ ∞) : Memℒp f p (c • μ) :=
+  hf.of_measure_le_smul hc le_rfl
 
-theorem eLpNorm_one_add_measure (f : α → F) (μ ν : Measure α) :
+theorem eLpNorm_one_add_measure (f : α → ε) (μ ν : Measure α) :
     eLpNorm f 1 (μ + ν) = eLpNorm f 1 μ + eLpNorm f 1 ν := by
   simp_rw [eLpNorm_one_eq_lintegral_enorm]
   rw [lintegral_add_measure _ μ ν]
 
-theorem eLpNorm_le_add_measure_right (f : α → F) (μ ν : Measure α) {p : ℝ≥0∞} :
+theorem eLpNorm_le_add_measure_right (f : α → ε) (μ ν : Measure α) {p : ℝ≥0∞} :
     eLpNorm f p μ ≤ eLpNorm f p (μ + ν) :=
   eLpNorm_mono_measure f <| Measure.le_add_right <| le_refl _
 
-theorem eLpNorm_le_add_measure_left (f : α → F) (μ ν : Measure α) {p : ℝ≥0∞} :
+theorem eLpNorm_le_add_measure_left (f : α → ε) (μ ν : Measure α) {p : ℝ≥0∞} :
     eLpNorm f p ν ≤ eLpNorm f p (μ + ν) :=
   eLpNorm_mono_measure f <| Measure.le_add_left <| le_refl _
 
-lemma eLpNormEssSup_eq_iSup (hμ : ∀ a, μ {a} ≠ 0) (f : α → E) : eLpNormEssSup f μ = ⨆ a, ‖f a‖ₑ :=
+lemma eLpNormEssSup_eq_iSup (hμ : ∀ a, μ {a} ≠ 0) (f : α → ε) : eLpNormEssSup f μ = ⨆ a, ‖f a‖ₑ :=
   essSup_eq_iSup hμ _
 
-@[simp] lemma eLpNormEssSup_count [MeasurableSingletonClass α] (f : α → E) :
+@[simp] lemma eLpNormEssSup_count [MeasurableSingletonClass α] (f : α → ε) :
     eLpNormEssSup f .count = ⨆ a, ‖f a‖ₑ := essSup_count _
 
-theorem Memℒp.left_of_add_measure {f : α → E} (h : Memℒp f p (μ + ν)) : Memℒp f p μ :=
+theorem Memℒp.left_of_add_measure [TopologicalSpace ε] {f : α → ε} (h : Memℒp f p (μ + ν)) :
+    Memℒp f p μ :=
   h.mono_measure <| Measure.le_add_right <| le_refl _
 
-theorem Memℒp.right_of_add_measure {f : α → E} (h : Memℒp f p (μ + ν)) : Memℒp f p ν :=
+theorem Memℒp.right_of_add_measure [TopologicalSpace ε] {f : α → ε} (h : Memℒp f p (μ + ν)) :
+    Memℒp f p ν :=
   h.mono_measure <| Measure.le_add_left <| le_refl _
 
 theorem Memℒp.norm {f : α → E} (h : Memℒp f p μ) : Memℒp (fun x => ‖f x‖) p μ :=
