@@ -1223,7 +1223,7 @@ instance (priority := 100) : NormalizedGCDMonoid G₀ where
   lcm a b := if a = 0 ∨ b = 0 then 0 else 1
   gcd_dvd_left a b := by simp +contextual
   gcd_dvd_right a b := by simp +contextual
-  dvd_gcd := fun {a b c} hac hab => by simp_all
+  dvd_gcd {a b c} hac hab := by simp_all
   gcd_mul_lcm a b := by
     beta_reduce
     split_ifs <;> simp_all [Associated.comm]
