@@ -31,7 +31,8 @@ structure HashMemo where
   pathMap  : Std.HashMap Name FilePath := ∅
   /--
   For modules in Mathlib or upstream, this contains the same information
-  as `hashMap`. Downstream modules have `none` here and do not appear in `hashMap`.
+  as `hashMap`. Contains `none` if a source file couldn't be found.
+  Downstream modules have `none` here and do not appear in `hashMap`.
   -/
   cache    : Std.HashMap Name (Option UInt64) := ∅
   /-- Stores the hash of the module's content for modules in Mathlib or upstream. -/
