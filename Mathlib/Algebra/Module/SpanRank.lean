@@ -155,7 +155,7 @@ lemma FG.span_range_generators {p : Submodule R M} (h : p.FG) :
 /-- The elements of the generators are in the submodule -/
 lemma FG.generators_mem {p : Submodule R M} (h : p.FG) (i : Fin p.spanFinrank) :
     generators h i ∈ p := by
-  simp_rw [← (span_range_generators h)]
+  simp_rw [← span_range_generators h]
   exact subset_span (Set.mem_range_self i)
 
 @[simp]
