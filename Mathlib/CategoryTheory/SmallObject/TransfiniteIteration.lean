@@ -78,13 +78,13 @@ instance : (Φ.iterationFunctor J).IsWellOrderContinuous where
       NatIso.ofComponents (fun _ ↦ eqToIso (Φ.iterationFunctor_obj _ _ _)) (by
         rintro ⟨k₁, h₁⟩ ⟨k₂, h₂⟩ f
         apply Arrow.mk_injective
-        simpa using Φ.arrow_mk_iterationFunctor_map k₁ k₂ (leOfHom f) (Φ.iter i) h₂.le)
+        simpa using Φ.arrowMk_iterationFunctor_map k₁ k₂ (leOfHom f) (Φ.iter i) h₂.le)
     refine (IsColimit.precomposeInvEquiv e _).1 ?_
     refine IsColimit.ofIsoColimit ((Φ.iter i).isColimit i hi (by simp)) ?_
     refine Cocones.ext (eqToIso (Φ.iterationFunctor_obj i (Φ.iter i) (by simp)).symm) ?_
     rintro ⟨k, hk⟩
     apply Arrow.mk_injective
-    simp [Φ.arrow_mk_iterationFunctor_map k i hk.le (Φ.iter i) (by simp), e]⟩
+    simp [Φ.arrowMk_iterationFunctor_map k i hk.le (Φ.iter i) (by simp), e]⟩
 
 /-- The isomorphism `(Φ.iterationFunctor J).obj ⊥ ≅ Φ.X₀`. -/
 noncomputable def iterationFunctorObjBotIso : (Φ.iterationFunctor J).obj ⊥ ≅ Φ.X₀ :=
@@ -116,7 +116,7 @@ noncomputable def transfiniteCompositionOfShapeιIteration :
     have := (Φ.iter (Order.succ j)).prop_map_succ j (Order.lt_succ_of_not_isMax hj)
     rw [prop_iff] at this ⊢
     simp only [Φ.iterationFunctor_obj j (Φ.iter (Order.succ j)) (Order.le_succ j),
-      Φ.arrow_mk_iterationFunctor_map _ _ (Order.le_succ j) (Φ.iter (Order.succ j)) (by simp),
+      Φ.arrowMk_iterationFunctor_map _ _ (Order.le_succ j) (Φ.iter (Order.succ j)) (by simp),
       this]
   F := Φ.iterationFunctor J
   incl := (Φ.iterationCocone J).ι
