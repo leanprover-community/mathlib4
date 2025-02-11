@@ -19,7 +19,7 @@ namespace CategoryTheory
 
 open CategoryTheory.Limits
 
-universe v₁ v₂ u₁ u₂
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
@@ -67,13 +67,13 @@ def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluatio
           right_inv := fun f => by
             dsimp
             simp }
-      -- This used to be automatic before leanprover/lean4#2644
+      -- This used to be automatic before https://github.com/leanprover/lean4/pull/2644
       homEquiv_naturality_right := by intros; dsimp; simp }
 
 instance evaluationIsRightAdjoint (c : C) : ((evaluation _ D).obj c).IsRightAdjoint  :=
   ⟨_, ⟨evaluationAdjunctionRight _ _⟩⟩
 
-/-- See also the file `CategoryTheory.Limits.FunctorCategoryEpiMono`
+/-- See also the file `CategoryTheory.Limits.FunctorCategory.EpiMono`
 for a similar result under a `HasPullbacks` assumption. -/
 theorem NatTrans.mono_iff_mono_app' {F G : C ⥤ D} (η : F ⟶ G) : Mono η ↔ ∀ c, Mono (η.app c) := by
   constructor
@@ -130,8 +130,7 @@ def evaluationAdjunctionLeft (c : C) : (evaluation _ _).obj c ⊣ evaluationRigh
 instance evaluationIsLeftAdjoint (c : C) : ((evaluation _ D).obj c).IsLeftAdjoint :=
   ⟨_, ⟨evaluationAdjunctionLeft _ _⟩⟩
 
-
-/-- See also the file `CategoryTheory.Limits.FunctorCategoryEpiMono`
+/-- See also the file `CategoryTheory.Limits.FunctorCategory.EpiMono`
 for a similar result under a `HasPushouts` assumption. -/
 theorem NatTrans.epi_iff_epi_app' {F G : C ⥤ D} (η : F ⟶ G) : Epi η ↔ ∀ c, Epi (η.app c) := by
   constructor

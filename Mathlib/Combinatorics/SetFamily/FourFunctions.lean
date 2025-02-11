@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Pi
-import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Data.Finset.Sups
 import Mathlib.Order.Birkhoff
 import Mathlib.Order.Booleanisation
@@ -58,8 +57,8 @@ open scoped FinsetFamily
 variable {α β : Type*}
 
 section Finset
-variable [DecidableEq α] [LinearOrderedCommSemiring β] {𝒜 ℬ : Finset (Finset α)}
-  {a : α} {f f₁ f₂ f₃ f₄ g μ : Finset α → β} {s t u : Finset α}
+variable [DecidableEq α] [LinearOrderedCommSemiring β] {𝒜 : Finset (Finset α)}
+  {a : α} {f f₁ f₂ f₃ f₄ : Finset α → β} {s t u : Finset α}
 
 /-- The `n = 1` case of the Ahlswede-Daykin inequality. Note that we can't just expand everything
 out and bound termwise since `c₀ * d₁` appears twice on the RHS of the assumptions while `c₁ * d₀`
@@ -365,5 +364,5 @@ lemma Finset.le_card_diffs_mul_card_diffs (s t : Finset α) :
 
 /-- The **Marica-Schönheim Inequality**. -/
 lemma Finset.card_le_card_diffs (s : Finset α) : #s ≤ #(s \\ s) :=
-  le_of_pow_le_pow_left two_ne_zero (zero_le _) <| by
+  le_of_pow_le_pow_left₀ two_ne_zero (zero_le _) <| by
     simpa [← sq] using s.le_card_diffs_mul_card_diffs s

@@ -15,14 +15,14 @@ any connected limit which `C` has.
 -/
 
 
-universe v u
+universe v' u' v u
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
 noncomputable section
 
 open CategoryTheory CategoryTheory.Limits
 
-variable {J : Type v} [SmallCategory J]
+variable {J : Type u'} [Category.{v'} J]
 variable {C : Type u} [Category.{v} C]
 variable {X : C}
 

@@ -46,8 +46,8 @@ lemma star_apply [StarRing R'] (χ : MulChar R R') (a : R) : (star χ) a = star 
 
 /-- The values of a multiplicative character on `R` are `n`th roots of unity, where `n = #Rˣ`. -/
 lemma apply_mem_rootsOfUnity [Fintype Rˣ] (a : Rˣ) {χ : MulChar R R'} :
-    equivToUnitHom χ a ∈ rootsOfUnity ⟨Fintype.card Rˣ, Fintype.card_pos⟩ R' := by
-  rw [mem_rootsOfUnity, ← map_pow, ← (equivToUnitHom χ).map_one, PNat.mk_coe, pow_card_eq_one]
+    equivToUnitHom χ a ∈ rootsOfUnity (Fintype.card Rˣ) R' := by
+  rw [mem_rootsOfUnity, ← map_pow, ← (equivToUnitHom χ).map_one, pow_card_eq_one]
 
 variable [Finite Rˣ]
 
@@ -73,23 +73,18 @@ section IsCyclic
 variable {M : Type*} [CommMonoid M] [Fintype M] [DecidableEq M]
 variable {R : Type*} [CommMonoidWithZero R]
 
-
-variable (M) in
-/-- The order of the unit group of a finite monoid as a `PNat` (for use in `rootsOfUnity`). -/
-abbrev Monoid.orderUnits : ℕ+ := ⟨Fintype.card Mˣ, Fintype.card_pos⟩
-
 /-- Given a finite monoid `M` with unit group `Mˣ` cyclic of order `n` and an `n`th root of
 unity `ζ` in `R`, there is a multiplicative character `M → R` that sends a given generator
 of `Mˣ` to `ζ`. -/
-noncomputable def ofRootOfUnity {ζ : Rˣ} (hζ : ζ ∈ rootsOfUnity (Monoid.orderUnits M) R)
+noncomputable def ofRootOfUnity {ζ : Rˣ} (hζ : ζ ∈ rootsOfUnity (Fintype.card Mˣ) R)
     {g : Mˣ} (hg : ∀ x, x ∈ Subgroup.zpowers g) :
     MulChar M R := by
-  have : orderOf ζ ∣ Monoid.orderUnits M :=
+  have : orderOf ζ ∣ Fintype.card Mˣ :=
     orderOf_dvd_iff_pow_eq_one.mpr <| (mem_rootsOfUnity _ ζ).mp hζ
   refine ofUnitHom <| monoidHomOfForallMemZpowers hg <| this.trans <| dvd_of_eq ?_
-  rw [orderOf_generator_eq_natCard hg, Nat.card_eq_fintype_card, PNat.mk_coe]
+  rw [orderOf_eq_card_of_forall_mem_zpowers hg, Nat.card_eq_fintype_card]
 
-lemma ofRootOfUnity_spec {ζ : Rˣ} (hζ : ζ ∈ rootsOfUnity (Monoid.orderUnits M) R)
+lemma ofRootOfUnity_spec {ζ : Rˣ} (hζ : ζ ∈ rootsOfUnity (Fintype.card Mˣ) R)
     {g : Mˣ} (hg : ∀ x, x ∈ Subgroup.zpowers g) :
     ofRootOfUnity hζ hg g = ζ := by
   simp only [ofRootOfUnity, ofUnitHom_eq, equivToUnitHom_symm_coe,
@@ -99,10 +94,10 @@ variable (M R) in
 /-- The group of multiplicative characters on a finite monoid `M` with cyclic unit group `Mˣ`
 of order `n` is isomorphic to the group of `n`th roots of unity in the target `R`. -/
 noncomputable def equiv_rootsOfUnity [inst_cyc : IsCyclic Mˣ] :
-    MulChar M R ≃* rootsOfUnity (Monoid.orderUnits M) R where
+    MulChar M R ≃* rootsOfUnity (Fintype.card Mˣ) R where
   toFun χ :=
     ⟨χ.toUnitHom <| Classical.choose inst_cyc.exists_generator, by
-      simp only [toUnitHom_eq, mem_rootsOfUnity, PNat.mk_coe, ← map_pow, pow_card_eq_one, map_one]⟩
+      simp only [toUnitHom_eq, mem_rootsOfUnity, ← map_pow, pow_card_eq_one, map_one]⟩
   invFun ζ := ofRootOfUnity ζ.prop <| Classical.choose_spec inst_cyc.exists_generator
   left_inv χ := by
     simp only [toUnitHom_eq, eq_iff <| Classical.choose_spec inst_cyc.exists_generator,
@@ -138,11 +133,9 @@ lemma exists_mulChar_orderOf {n : ℕ} (h : n ∣ Fintype.card F - 1) {ζ : R}
     exact (Fintype.one_lt_card.trans_le h).false
   let e := MulChar.equiv_rootsOfUnity F R
   let ζ' : Rˣ := (hζ.isUnit hn₀).unit
-  have h' : ζ' ^ (Monoid.orderUnits F : ℕ) = 1 := by
-    have hn : n ∣ Monoid.orderUnits F := by
-      rwa [Monoid.orderUnits, PNat.mk_coe, Fintype.card_units]
-    exact Units.ext_iff.mpr <| (IsPrimitiveRoot.pow_eq_one_iff_dvd hζ _).mpr hn
-  use e.symm ⟨ζ', (mem_rootsOfUnity (Monoid.orderUnits F) ζ').mpr h'⟩
+  have h' : ζ' ^ (Fintype.card Fˣ : ℕ) = 1 :=
+    Units.ext_iff.mpr <| (hζ.pow_eq_one_iff_dvd _).mpr <| Fintype.card_units (α := F) ▸ h
+  use e.symm ⟨ζ', (mem_rootsOfUnity (Fintype.card Fˣ) ζ').mpr h'⟩
   rw [e.symm.orderOf_eq, orderOf_eq_iff hn₀]
   refine ⟨?_, fun m hm hm₀ h ↦ ?_⟩
   · ext
@@ -161,7 +154,7 @@ lemma orderOf_dvd_card_sub_one (χ : MulChar F R) : orderOf χ ∣ Fintype.card 
 /-- There is always a character on `F` of order `#F-1` with values in a ring that has
 a primitive `(#F-1)`th root of unity. -/
 lemma exists_mulChar_orderOf_eq_card_units [DecidableEq F]
-    {ζ : R} (hζ : IsPrimitiveRoot ζ (Monoid.orderUnits F)) :
+    {ζ : R} (hζ : IsPrimitiveRoot ζ (Fintype.card Fˣ)) :
     ∃ χ : MulChar F R, orderOf χ = Fintype.card Fˣ :=
   exists_mulChar_orderOf F (by rw [Fintype.card_units]) hζ
 
@@ -172,48 +165,45 @@ variable {R : Type*} [CommRing R]
 
 /- The non-zero values of a multiplicative character of order `n` are `n`th roots of unity. -/
 lemma apply_mem_rootsOfUnity_orderOf (χ : MulChar F R) {a : F} (ha : a ≠ 0) :
-    ∃ ζ ∈ rootsOfUnity ⟨orderOf χ, χ.orderOf_pos⟩ R, ζ = χ a := by
+    ∃ ζ ∈ rootsOfUnity (orderOf χ) R, ζ = χ a := by
   have hu : IsUnit (χ a) := ha.isUnit.map χ
-  refine ⟨hu.unit, ?_, IsUnit.unit_spec hu⟩
-  rw [mem_rootsOfUnity, PNat.mk_coe, Units.ext_iff, Units.val_pow_eq_pow_val, Units.val_one,
+  refine ⟨hu.unit, ?_, hu.unit_spec⟩
+  rw [mem_rootsOfUnity, Units.ext_iff, Units.val_pow_eq_pow_val, Units.val_one,
     IsUnit.unit_spec, ← χ.pow_apply' χ.orderOf_pos.ne', pow_orderOf_eq_one,
     show a = (isUnit_iff_ne_zero.mpr ha).unit by simp only [IsUnit.unit_spec],
     MulChar.one_apply_coe]
 
 /-- The non-zero values of a multiplicative character `χ` such that `χ^n = 1`
 are `n`th roots of unity. -/
-lemma apply_mem_rootsOfUnity_of_pow_eq_one {χ : MulChar F R} {n : ℕ} (hn : n ≠ 0) (hχ : χ ^ n = 1)
+lemma apply_mem_rootsOfUnity_of_pow_eq_one {χ : MulChar F R} {n : ℕ} (hχ : χ ^ n = 1)
     {a : F} (ha : a ≠ 0) :
-    ∃ ζ ∈ rootsOfUnity ⟨n, Nat.pos_of_ne_zero hn⟩ R, ζ = χ a := by
+    ∃ ζ ∈ rootsOfUnity n R, ζ = χ a := by
   obtain ⟨μ, hμ₁, hμ₂⟩ := χ.apply_mem_rootsOfUnity_orderOf ha
-  have hχ' : PNat.val ⟨orderOf χ, χ.orderOf_pos⟩ ∣ PNat.val ⟨n, Nat.pos_of_ne_zero hn⟩ :=
-    orderOf_dvd_of_pow_eq_one hχ
-  exact ⟨μ, rootsOfUnity_le_of_dvd (PNat.dvd_iff.mpr hχ') hμ₁, hμ₂⟩
+  exact ⟨μ, rootsOfUnity_le_of_dvd (orderOf_dvd_of_pow_eq_one hχ) hμ₁, hμ₂⟩
 
 -- Results involving primitive roots of unity require `R` to be an integral domain.
 variable [IsDomain R]
 
 /-- If `χ` is a multiplicative character with `χ^n = 1` and `μ` is a primitive `n`th root
 of unity, then, for `a ≠ 0`, there is some `k` such that `χ a = μ^k`. -/
-lemma exists_apply_eq_pow {χ : MulChar F R} {n : ℕ} (hn : n ≠ 0) (hχ : χ ^ n = 1) {μ : R}
+lemma exists_apply_eq_pow {χ : MulChar F R} {n : ℕ} [NeZero n] (hχ : χ ^ n = 1) {μ : R}
     (hμ : IsPrimitiveRoot μ n) {a : F} (ha : a ≠ 0) :
     ∃ k < n, χ a = μ ^ k := by
-  have hn' := Nat.pos_of_ne_zero hn
-  obtain ⟨ζ, hζ₁, hζ₂⟩ := apply_mem_rootsOfUnity_of_pow_eq_one hn hχ ha
-  have hζ' : ζ.val ^ n = 1 := (mem_rootsOfUnity' ⟨n, hn'⟩ ↑ζ).mp hζ₁
-  obtain ⟨k, hk₁, hk₂⟩ := hμ.eq_pow_of_pow_eq_one hζ' hn'
+  obtain ⟨ζ, hζ₁, hζ₂⟩ := apply_mem_rootsOfUnity_of_pow_eq_one hχ ha
+  have hζ' : ζ.val ^ n = 1 := (mem_rootsOfUnity' n ↑ζ).mp hζ₁
+  obtain ⟨k, hk₁, hk₂⟩ := hμ.eq_pow_of_pow_eq_one hζ'
   exact ⟨k, hk₁, (hζ₂ ▸ hk₂).symm⟩
 
 /-- The values of a multiplicative character `χ` such that `χ^n = 1` are contained in `ℤ[μ]` when
 `μ` is a primitive `n`th root of unity. -/
-lemma apply_mem_algebraAdjoin_of_pow_eq_one {χ : MulChar F R} {n : ℕ} (hn : n ≠ 0) (hχ : χ ^ n = 1)
+lemma apply_mem_algebraAdjoin_of_pow_eq_one {χ : MulChar F R} {n : ℕ} [NeZero n] (hχ : χ ^ n = 1)
     {μ : R} (hμ : IsPrimitiveRoot μ n) (a : F) :
     χ a ∈ Algebra.adjoin ℤ {μ} := by
   rcases eq_or_ne a 0 with rfl | h
   · exact χ.map_zero ▸ Subalgebra.zero_mem _
-  · obtain ⟨ζ, hζ₁, hζ₂⟩ := apply_mem_rootsOfUnity_of_pow_eq_one hn hχ h
+  · obtain ⟨ζ, hζ₁, hζ₂⟩ := apply_mem_rootsOfUnity_of_pow_eq_one hχ h
     rw [mem_rootsOfUnity, Units.ext_iff, Units.val_pow_eq_pow_val] at hζ₁
-    obtain ⟨k, _, hk⟩ := IsPrimitiveRoot.eq_pow_of_pow_eq_one hμ hζ₁ (Nat.pos_of_ne_zero hn)
+    obtain ⟨k, _, hk⟩ := IsPrimitiveRoot.eq_pow_of_pow_eq_one hμ hζ₁
     exact hζ₂ ▸ hk ▸ Subalgebra.pow_mem _ (Algebra.self_mem_adjoin_singleton ℤ μ) k
 
 /-- The values of a multiplicative character of order `n` are contained in `ℤ[μ]` when
@@ -221,7 +211,8 @@ lemma apply_mem_algebraAdjoin_of_pow_eq_one {χ : MulChar F R} {n : ℕ} (hn : n
 lemma apply_mem_algebraAdjoin {χ : MulChar F R} {μ : R} (hμ : IsPrimitiveRoot μ (orderOf χ))
     (a : F) :
     χ a ∈ Algebra.adjoin ℤ {μ} :=
-  apply_mem_algebraAdjoin_of_pow_eq_one χ.orderOf_pos.ne' (pow_orderOf_eq_one χ) hμ a
+  have : NeZero (orderOf χ) := ⟨χ.orderOf_pos.ne'⟩
+  apply_mem_algebraAdjoin_of_pow_eq_one (pow_orderOf_eq_one χ) hμ a
 
 end FiniteField
 

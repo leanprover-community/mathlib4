@@ -55,6 +55,17 @@ lemma isUltrametricDist_of_isNonarchimedean_norm {S' : Type*} [SeminormedAddGrou
     (h : IsNonarchimedean (norm : S' → ℝ)) : IsUltrametricDist S' :=
   isUltrametricDist_of_forall_norm_add_le_max_norm h
 
+lemma isNonarchimedean_norm {R} [SeminormedAddCommGroup R] [IsUltrametricDist R] :
+    IsNonarchimedean (‖·‖ : R → ℝ) := by
+  intro x y
+  convert dist_triangle_max 0 x (x + y) using 1
+  · simp
+  · congr <;> simp [SeminormedAddGroup.dist_eq]
+
+lemma isUltrametricDist_iff_isNonarchimedean_norm {R} [SeminormedAddCommGroup R] :
+    IsUltrametricDist R ↔ IsNonarchimedean (‖·‖ : R → ℝ) :=
+  ⟨fun h => h.isNonarchimedean_norm, IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_norm⟩
+
 @[to_additive]
 lemma nnnorm_mul_le_max (x y : S) :
     ‖x * y‖₊ ≤ max ‖x‖₊ ‖y‖₊ :=
@@ -68,6 +79,17 @@ lemma isUltrametricDist_of_forall_nnnorm_mul_le_max_nnnorm
 lemma isUltrametricDist_of_isNonarchimedean_nnnorm {S' : Type*} [SeminormedAddGroup S']
     (h : IsNonarchimedean ((↑) ∘ (nnnorm : S' → ℝ≥0))) : IsUltrametricDist S' :=
   isUltrametricDist_of_forall_nnnorm_add_le_max_nnnorm h
+
+lemma isNonarchimedean_nnnorm {R} [SeminormedAddCommGroup R] [IsUltrametricDist R] :
+    IsNonarchimedean (‖·‖₊ : R → ℝ) := by
+  intro x y
+  convert dist_triangle_max 0 x (x + y) using 1
+  · simp
+  · congr <;> simp [SeminormedAddGroup.dist_eq]
+
+lemma isUltrametricDist_iff_isNonarchimedean_nnnorm {R} [SeminormedAddCommGroup R] :
+    IsUltrametricDist R ↔ IsNonarchimedean (‖·‖₊ : R → ℝ) :=
+  ⟨fun h => h.isNonarchimedean_norm, IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_norm⟩
 
 /-- All triangles are isosceles in an ultrametric normed group. -/
 @[to_additive "All triangles are isosceles in an ultrametric normed additive group."]
@@ -242,20 +264,20 @@ Given a function `f : ι → M` and a nonempty finite set `t ⊆ ι`, we can alw
 `‖∏ j in t, f j‖ ≤ ‖f i‖`.
 -/
 @[to_additive "Given a function `f : ι → M` and a nonempty finite set `t ⊆ ι`, we can always find
-`i ∈ t` such that `‖∑ j in t, f j‖ ≤ ‖f i‖`."]
+`i ∈ t` such that `‖∑ j ∈ t, f j‖ ≤ ‖f i‖`."]
 theorem exists_norm_finset_prod_le_of_nonempty {t : Finset ι} (ht : t.Nonempty) (f : ι → M) :
-    ∃ i ∈ t, ‖∏ j in t, f j‖ ≤ ‖f i‖ :=
+    ∃ i ∈ t, ‖∏ j ∈ t, f j‖ ≤ ‖f i‖ :=
   match t.exists_mem_eq_sup' ht (‖f ·‖) with
   |⟨j, hj, hj'⟩ => ⟨j, hj, (ht.norm_prod_le_sup'_norm f).trans (le_of_eq hj')⟩
 
 /--
 Given a function `f : ι → M` and a finite set `t ⊆ ι`, we can always find `i : ι`, belonging to `t`
-if `t` is nonempty, such that `‖∏ j in t, f j‖ ≤ ‖f i‖`.
+if `t` is nonempty, such that `‖∏ j ∈ t, f j‖ ≤ ‖f i‖`.
 -/
 @[to_additive "Given a function `f : ι → M` and a finite set `t ⊆ ι`, we can always find `i : ι`,
-belonging to `t` if `t` is nonempty, such that `‖∑ j in t, f j‖ ≤ ‖f i‖`."]
+belonging to `t` if `t` is nonempty, such that `‖∑ j ∈ t, f j‖ ≤ ‖f i‖`."]
 theorem exists_norm_finset_prod_le (t : Finset ι) [Nonempty ι] (f : ι → M) :
-    ∃ i : ι, (t.Nonempty → i ∈ t) ∧ ‖∏ j in t, f j‖ ≤ ‖f i‖ := by
+    ∃ i : ι, (t.Nonempty → i ∈ t) ∧ ‖∏ j ∈ t, f j‖ ≤ ‖f i‖ := by
   rcases t.eq_empty_or_nonempty with rfl | ht
   · simp
   exact (fun ⟨i, h, h'⟩ => ⟨i, fun _ ↦ h, h'⟩) <| exists_norm_finset_prod_le_of_nonempty ht f

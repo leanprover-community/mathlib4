@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Group.Measure
+import Mathlib.Tactic.Group
 import Mathlib.Topology.UrysohnsLemma
 
 /-!
@@ -48,7 +49,7 @@ of points of `s` satisfy `μ (s ∩ n) > 0`. -/
 def IsEverywherePos (μ : Measure α) (s : Set α) : Prop :=
   ∀ x ∈ s, ∀ n ∈ 𝓝[s] x, 0 < μ n
 
-/-- * The everywhere positive subset of a set is the subset made of those points all of whose
+/-- The everywhere positive subset of a set is the subset made of those points all of whose
 neighborhoods have positive measure inside the set. -/
 def everywherePosSubset (μ : Measure α) (s : Set α) : Set α :=
   {x | x ∈ s ∧ ∀ n ∈ 𝓝[s] x, 0 < μ n}

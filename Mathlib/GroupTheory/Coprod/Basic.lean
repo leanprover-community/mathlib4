@@ -3,7 +3,7 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.PUnitInstances.Algebra
 import Mathlib.GroupTheory.Congruence.Basic
@@ -157,7 +157,7 @@ def mk : FreeMonoid (M ⊕ N) →* M ∗ N := Con.mk' _
 theorem con_ker_mk : Con.ker mk = coprodCon M N := Con.mk'_ker _
 
 @[to_additive]
-theorem mk_surjective : Surjective (@mk M N _ _) := surjective_quot_mk _
+theorem mk_surjective : Surjective (@mk M N _ _) := Quot.mk_surjective
 
 @[to_additive (attr := simp)]
 theorem mrange_mk : MonoidHom.mrange (@mk M N _ _) = ⊤ := Con.mrange_mk'
@@ -384,7 +384,7 @@ theorem mker_swap : MonoidHom.mker (swap M N) = ⊥ := Submonoid.ext fun _ ↦ s
 
 @[to_additive (attr := simp)]
 theorem mrange_swap : MonoidHom.mrange (swap M N) = ⊤ :=
-  MonoidHom.mrange_top_of_surjective _ swap_surjective
+  MonoidHom.mrange_eq_top_of_surjective _ swap_surjective
 
 end MulOneClass
 
@@ -609,7 +609,7 @@ theorem codisjoint_range_inl_range_inr :
   codisjoint_iff.2 range_inl_sup_range_inr
 
 @[to_additive (attr := simp)] theorem range_swap : MonoidHom.range (swap G H) = ⊤ :=
-  MonoidHom.range_top_of_surjective _ swap_surjective
+  MonoidHom.range_eq_top.2 swap_surjective
 
 variable {K : Type*} [Group K]
 

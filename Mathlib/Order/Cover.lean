@@ -223,9 +223,6 @@ theorem denselyOrdered_iff_forall_not_covBy : DenselyOrdered α ↔ ∀ a b : α
   ⟨fun h _ _ => @not_covBy _ _ _ _ h, fun h =>
     ⟨fun _ _ hab => exists_lt_lt_of_not_covBy hab <| h _ _⟩⟩
 
-@[deprecated (since := "2024-04-04")]
-alias densely_ordered_iff_forall_not_covBy := denselyOrdered_iff_forall_not_covBy
-
 @[simp]
 theorem toDual_covBy_toDual_iff : toDual b ⋖ toDual a ↔ a ⋖ b :=
   and_congr_right' <| forall_congr' fun _ => forall_swap
@@ -411,6 +408,26 @@ theorem CovBy.unique_right (hb : a ⋖ b) (hc : a ⋖ c) : b = c :=
 theorem CovBy.eq_of_between {x : α} (hab : a ⋖ b) (hbc : b ⋖ c) (hax : a < x) (hxc : x < c) :
     x = b :=
   le_antisymm (le_of_not_lt fun h => hbc.2 h hxc) (le_of_not_lt <| hab.2 hax)
+
+theorem covBy_iff_lt_iff_le_left {x y : α} : x ⋖ y ↔ ∀ {z}, z < y ↔ z ≤ x where
+  mp := fun hx _z ↦ ⟨hx.le_of_lt, fun hz ↦ hz.trans_lt hx.lt⟩
+  mpr := fun H ↦ ⟨H.2 le_rfl, fun _z hx hz ↦ (H.1 hz).not_lt hx⟩
+
+theorem covBy_iff_le_iff_lt_left {x y : α} : x ⋖ y ↔ ∀ {z}, z ≤ x ↔ z < y := by
+  simp_rw [covBy_iff_lt_iff_le_left, iff_comm]
+
+theorem covBy_iff_lt_iff_le_right {x y : α} : x ⋖ y ↔ ∀ {z}, x < z ↔ y ≤ z := by
+  trans ∀ {z}, ¬ z ≤ x ↔ ¬ z < y
+  · simp_rw [covBy_iff_le_iff_lt_left, not_iff_not]
+  · simp
+
+theorem covBy_iff_le_iff_lt_right {x y : α} : x ⋖ y ↔ ∀ {z}, y ≤ z ↔ x < z := by
+  simp_rw [covBy_iff_lt_iff_le_right, iff_comm]
+
+alias ⟨CovBy.lt_iff_le_left, _⟩ := covBy_iff_lt_iff_le_left
+alias ⟨CovBy.le_iff_lt_left, _⟩ := covBy_iff_le_iff_lt_left
+alias ⟨CovBy.lt_iff_le_right, _⟩ := covBy_iff_lt_iff_le_right
+alias ⟨CovBy.le_iff_lt_right, _⟩ := covBy_iff_le_iff_lt_right
 
 /-- If `a < b` then there exist `a' > a` and `b' < b` such that `Set.Iio a'` is strictly to the left
 of `Set.Ioi b'`. -/

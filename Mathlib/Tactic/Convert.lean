@@ -126,7 +126,8 @@ Returns stuck metavariables as additional goals.
 -/
 def elabTermForConvert (term : Syntax) (expectedType? : Option Expr) :
     TacticM (Expr × List MVarId) := do
-  withCollectingNewGoalsFrom (allowNaturalHoles := true) (tagSuffix := `convert) do
+  withCollectingNewGoalsFrom (parentTag := ← getMainTag) (tagSuffix := `convert)
+      (allowNaturalHoles := true) do
     -- Allow typeclass inference failures since these will be inferred by unification
     -- or else become new goals
     withTheReader Term.Context (fun ctx => { ctx with ignoreTCFailures := true }) do

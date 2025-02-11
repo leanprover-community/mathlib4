@@ -3,8 +3,8 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Algebra.Order.AbsoluteValue
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.BigOperators.Ring.Multiset
 import Mathlib.Tactic.Ring
@@ -14,9 +14,12 @@ import Mathlib.Tactic.Ring
 
 This file contains the results concerning the interaction of finset big operators with ordered
 rings.
+
+In particular, this file contains the standard form of the Cauchy-Schwarz inequality, as well as
+some of its immediate consequences.
 -/
 
-variable {ι R : Type*}
+variable {ι R S : Type*}
 
 namespace Finset
 
@@ -35,15 +38,13 @@ the case of an ordered commutative multiplicative monoid. -/
 @[gcongr]
 lemma prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g i) :
     ∏ i ∈ s, f i ≤ ∏ i ∈ s, g i := by
-  induction' s using Finset.cons_induction with a s has ih h
-  · simp
-  · simp only [prod_cons]
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s has ih =>
+    simp only [prod_cons, forall_mem_cons] at h0 h1 ⊢
     have := posMulMono_iff_mulPosMono.1 ‹PosMulMono R›
-    apply mul_le_mul
-    · exact h1 a (mem_cons_self a s)
-    · refine ih (fun x H ↦ h0 _ ?_) (fun x H ↦ h1 _ ?_) <;> exact subset_cons _ H
-    · apply prod_nonneg fun x H ↦ h0 x (subset_cons _ H)
-    · apply le_trans (h0 a (mem_cons_self a s)) (h1 a (mem_cons_self a s))
+    gcongr
+    exacts [prod_nonneg h0.2, h0.1.trans h1.1, h1.1, ih h0.2 h1.2]
 
 /-- If each `f i`, `i ∈ s` belongs to `[0, 1]`, then their product is less than or equal to one.
 See also `Finset.prod_le_one'` for the case of an ordered commutative multiplicative monoid. -/
@@ -95,7 +96,6 @@ lemma sum_sq_le_sq_sum_of_nonneg (hf : ∀ i ∈ s, 0 ≤ f i) :
   · exact hf i hi
   · exact single_le_sum hf hi
 
-
 end OrderedSemiring
 
 section OrderedCommSemiring
@@ -110,73 +110,106 @@ lemma prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h
   simp_rw [prod_eq_mul_prod_diff_singleton hi]
   refine le_trans ?_ (mul_le_mul_of_nonneg_right h2i ?_)
   · rw [right_distrib]
-    refine add_le_add ?_ ?_ <;>
-    · refine mul_le_mul_of_nonneg_left ?_ ?_
-      · refine prod_le_prod ?_ ?_ <;> simp (config := { contextual := true }) [*]
-      · try apply_assumption
-        try assumption
+    gcongr with j hj <;> aesop
   · apply prod_nonneg
     simp only [and_imp, mem_sdiff, mem_singleton]
     exact fun j hj hji ↦ le_trans (hg j hj) (hgf j hj hji)
 
 end OrderedCommSemiring
 
-section LinearOrderedCommSemiring
-variable [LinearOrderedCommSemiring R] [ExistsAddOfLE R]
-
-/-- **Cauchy-Schwarz inequality** for finsets. -/
-lemma sum_mul_sq_le_sq_mul_sq (s : Finset ι) (f g : ι → R) :
-    (∑ i ∈ s, f i * g i) ^ 2 ≤ (∑ i ∈ s, f i ^ 2) * ∑ i ∈ s, g i ^ 2 := by
-  nontriviality R
-  obtain h' | h' := (sum_nonneg fun _ _ ↦ sq_nonneg <| g _).eq_or_lt
-  · have h'' : ∀ i ∈ s, g i = 0 := fun i hi ↦ by
-      simpa using (sum_eq_zero_iff_of_nonneg fun i _ ↦ sq_nonneg (g i)).1 h'.symm i hi
-    rw [← h', sum_congr rfl (show ∀ i ∈ s, f i * g i = 0 from fun i hi ↦ by simp [h'' i hi])]
-    simp
-  refine le_of_mul_le_mul_of_pos_left
-    (le_of_add_le_add_left (a := (∑ i ∈ s, g i ^ 2) * (∑ j ∈ s, f j * g j) ^ 2) ?_) h'
-  calc
-    _ = ∑ i ∈ s, 2 * (f i * ∑ j ∈ s, g j ^ 2) * (g i * ∑ j ∈ s, f j * g j) := by
-        simp_rw [mul_assoc (2 : R), mul_mul_mul_comm, ← mul_sum, ← sum_mul]; ring
-    _ ≤ ∑ i ∈ s, ((f i * ∑ j ∈ s, g j ^ 2) ^ 2 + (g i * ∑ j ∈ s, f j * g j) ^ 2) :=
-        sum_le_sum fun i _ ↦ two_mul_le_add_sq (f i * ∑ j ∈ s, g j ^ 2) (g i * ∑ j ∈ s, f j * g j)
-    _ = _ := by simp_rw [sum_add_distrib, mul_pow, ← sum_mul]; ring
-
-end LinearOrderedCommSemiring
+theorem sum_mul_self_eq_zero_iff [LinearOrderedSemiring R] [ExistsAddOfLE R] (s : Finset ι)
+    (f : ι → R) : ∑ i ∈ s, f i * f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
+  rw [sum_eq_zero_iff_of_nonneg fun _ _ ↦ mul_self_nonneg _]
+  simp
 
 lemma abs_prod [LinearOrderedCommRing R] (s : Finset ι) (f : ι → R) :
     |∏ x ∈ s, f x| = ∏ x ∈ s, |f x| :=
   map_prod absHom _ _
 
-section CanonicallyOrderedCommSemiring
-variable [CanonicallyOrderedCommSemiring R] {f g h : ι → R} {s : Finset ι} {i : ι}
+@[simp, norm_cast]
+theorem PNat.coe_prod {ι : Type*} (f : ι → ℕ+) (s : Finset ι) :
+    ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : ℕ) :=
+  map_prod PNat.coeMonoidHom _ _
 
-/-- Note that the name is to match `CanonicallyOrderedCommSemiring.mul_pos`. -/
-@[simp] lemma _root_.CanonicallyOrderedCommSemiring.prod_pos [Nontrivial R] :
+section CanonicallyOrderedAdd
+variable [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
+  {f g h : ι → R} {s : Finset ι} {i : ι}
+
+/-- Note that the name is to match `CanonicallyOrderedAdd.mul_pos`. -/
+@[simp] lemma _root_.CanonicallyOrderedAdd.prod_pos [NoZeroDivisors R] [Nontrivial R] :
     0 < ∏ i ∈ s, f i ↔ (∀ i ∈ s, (0 : R) < f i) :=
-  CanonicallyOrderedCommSemiring.multiset_prod_pos.trans Multiset.forall_mem_map_iff
+  CanonicallyOrderedAdd.multiset_prod_pos.trans Multiset.forall_mem_map_iff
 
+attribute [local instance] CanonicallyOrderedAdd.toOrderedCommMonoid in
 /-- If `g, h ≤ f` and `g i + h i ≤ f i`, then the product of `f` over `s` is at least the
-  sum of the products of `g` and `h`. This is the version for `CanonicallyOrderedCommSemiring`.
+  sum of the products of `g` and `h`. This is the version for `CanonicallyOrderedAdd`.
 -/
 lemma prod_add_prod_le' (hi : i ∈ s) (h2i : g i + h i ≤ f i) (hgf : ∀ j ∈ s, j ≠ i → g j ≤ f j)
     (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) : ((∏ i ∈ s, g i) + ∏ i ∈ s, h i) ≤ ∏ i ∈ s, f i := by
   classical
-    simp_rw [prod_eq_mul_prod_diff_singleton hi]
-    refine le_trans ?_ (mul_le_mul_right' h2i _)
-    rw [right_distrib]
-    apply add_le_add <;> apply mul_le_mul_left' <;> apply prod_le_prod' <;>
-            simp only [and_imp, mem_sdiff, mem_singleton] <;>
-          intros <;>
-        apply_assumption <;>
-      assumption
+  simp_rw [prod_eq_mul_prod_diff_singleton hi]
+  refine le_trans ?_ (mul_le_mul_right' h2i _)
+  rw [right_distrib]
+  gcongr with j hj j hj <;> simp_all
 
-end CanonicallyOrderedCommSemiring
+end CanonicallyOrderedAdd
+
+/-! ### Named inequalities -/
+
+/-- **Cauchy-Schwarz inequality** for finsets.
+
+This is written in terms of sequences `f`, `g`, and `r`, where `r` is a stand-in for
+`√(f i * g i)`. See `sum_mul_sq_le_sq_mul_sq` for the more usual form in terms of squared
+sequences. -/
+lemma sum_sq_le_sum_mul_sum_of_sq_eq_mul [LinearOrderedCommSemiring R] [ExistsAddOfLE R]
+    (s : Finset ι) {r f g : ι → R} (hf : ∀ i ∈ s, 0 ≤ f i) (hg : ∀ i ∈ s, 0 ≤ g i)
+    (ht : ∀ i ∈ s, r i ^ 2 = f i * g i) : (∑ i ∈ s, r i) ^ 2 ≤ (∑ i ∈ s, f i) * ∑ i ∈ s, g i := by
+  obtain h | h := (sum_nonneg hg).eq_or_gt
+  · have ht' : ∑ i ∈ s, r i = 0 := sum_eq_zero fun i hi ↦ by
+      simpa [(sum_eq_zero_iff_of_nonneg hg).1 h i hi] using ht i hi
+    rw [h, ht']
+    simp
+  · refine le_of_mul_le_mul_of_pos_left
+      (le_of_add_le_add_left (a := (∑ i ∈ s, g i) * (∑ i ∈ s, r i) ^ 2) ?_) h
+    calc
+      _ = ∑ i ∈ s, 2 * r i * (∑ j ∈ s, g j) * (∑ j ∈ s, r j) := by
+          simp_rw [mul_assoc, ← mul_sum, ← sum_mul]; ring
+      _ ≤ ∑ i ∈ s, (f i * (∑ j ∈ s, g j) ^ 2 + g i * (∑ j ∈ s, r j) ^ 2) := by
+          gcongr with i hi
+          have ht : (r i * (∑ j ∈ s, g j) * (∑ j ∈ s, r j)) ^ 2 =
+              (f i * (∑ j ∈ s, g j) ^ 2) * (g i * (∑ j ∈ s, r j) ^ 2) := by
+            conv_rhs => rw [mul_mul_mul_comm, ← ht i hi]
+            ring
+          refine le_of_eq_of_le ?_ (two_mul_le_add_of_sq_eq_mul
+            (mul_nonneg (hf i hi) (sq_nonneg _)) (mul_nonneg (hg i hi) (sq_nonneg _)) ht)
+          repeat rw [mul_assoc]
+      _ = _ := by simp_rw [sum_add_distrib, ← sum_mul]; ring
+
+/-- **Cauchy-Schwarz inequality** for finsets, squared version. -/
+lemma sum_mul_sq_le_sq_mul_sq [LinearOrderedCommSemiring R] [ExistsAddOfLE R] (s : Finset ι)
+    (f g : ι → R) : (∑ i ∈ s, f i * g i) ^ 2 ≤ (∑ i ∈ s, f i ^ 2) * ∑ i ∈ s, g i ^ 2 :=
+  sum_sq_le_sum_mul_sum_of_sq_eq_mul s
+    (fun _ _ ↦ sq_nonneg _) (fun _ _ ↦ sq_nonneg _) (fun _ _ ↦ mul_pow ..)
+
+/-- **Sedrakyan's lemma**, aka **Titu's lemma** or **Engel's form**.
+
+This is a specialization of the Cauchy-Schwarz inequality with the sequences `f n / √(g n)` and
+`√(g n)`, though here it is proven without relying on square roots. -/
+theorem sq_sum_div_le_sum_sq_div [LinearOrderedSemifield R] [ExistsAddOfLE R] (s : Finset ι)
+    (f : ι → R) {g : ι → R} (hg : ∀ i ∈ s, 0 < g i) :
+    (∑ i ∈ s, f i) ^ 2 / ∑ i ∈ s, g i ≤ ∑ i ∈ s, f i ^ 2 / g i := by
+  have hg' : ∀ i ∈ s, 0 ≤ g i := fun i hi ↦ (hg i hi).le
+  have H : ∀ i ∈ s, 0 ≤ f i ^ 2 / g i := fun i hi ↦ div_nonneg (sq_nonneg _) (hg' i hi)
+  refine div_le_of_le_mul₀ (sum_nonneg hg') (sum_nonneg H)
+    (sum_sq_le_sum_mul_sum_of_sq_eq_mul _ H hg' fun i hi ↦ ?_)
+  rw [div_mul_cancel₀]
+  exact (hg i hi).ne'
+
 end Finset
 
-section AbsoluteValue
+/-! ### Absolute values -/
 
-variable {S : Type*}
+section AbsoluteValue
 
 lemma AbsoluteValue.sum_le [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
     (s : Finset ι) (f : ι → R) : abv (∑ i ∈ s, f i) ≤ ∑ i ∈ s, abv (f i) :=
@@ -185,8 +218,6 @@ lemma AbsoluteValue.sum_le [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue
 lemma IsAbsoluteValue.abv_sum [Semiring R] [OrderedSemiring S] (abv : R → S) [IsAbsoluteValue abv]
     (f : ι → R) (s : Finset ι) : abv (∑ i ∈ s, f i) ≤ ∑ i ∈ s, abv (f i) :=
   (IsAbsoluteValue.toAbsoluteValue abv).sum_le _ _
-
-@[deprecated (since := "2024-02-14")] alias abv_sum_le_sum_abv := IsAbsoluteValue.abv_sum
 
 nonrec lemma AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
     (abv : AbsoluteValue R S) (f : ι → R) (s : Finset ι) :
@@ -200,11 +231,14 @@ lemma IsAbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCom
 
 end AbsoluteValue
 
+/-! ### Positivity extension -/
+
 namespace Mathlib.Meta.Positivity
 open Qq Lean Meta Finset
 
 private alias ⟨_, prod_ne_zero⟩ := prod_ne_zero_iff
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `positivity` extension which proves that `∏ i ∈ s, f i` is nonnegative if `f` is, and
 positive if each `f i` is.
 

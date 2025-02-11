@@ -235,10 +235,10 @@ theorem Ioo_cons_left (h : a < b) : a ::ₘ Ioo a b = Ico a b := by
     rw [Ioo, ← Finset.insert_val_of_not_mem left_not_mem_Ioo, Finset.Ioo_insert_left h]
     rfl
 
-theorem Ico_disjoint_Ico {a b c d : α} (h : b ≤ c) : (Ico a b).Disjoint (Ico c d) :=
-  fun x hab hbc => by
-  rw [mem_Ico] at hab hbc
-  exact hab.2.not_le (h.trans hbc.1)
+theorem Ico_disjoint_Ico {a b c d : α} (h : b ≤ c) : Disjoint (Ico a b) (Ico c d) :=
+  disjoint_left.mpr fun hab hbc => by
+    rw [mem_Ico] at hab hbc
+    exact hab.2.not_le (h.trans hbc.1)
 
 @[simp]
 theorem Ico_inter_Ico_of_le [DecidableEq α] {a b c d : α} (h : b ≤ c) : Ico a b ∩ Ico c d = 0 :=

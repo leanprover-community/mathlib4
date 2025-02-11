@@ -41,7 +41,7 @@ structure εNFA (α : Type u) (σ : Type v) where
   /-- Set of acceptance states. -/
   accept : Set σ
 
-variable {α : Type u} {σ σ' : Type v} (M : εNFA α σ) {S : Set σ} {x : List α} {s : σ} {a : α}
+variable {α : Type u} {σ : Type v} (M : εNFA α σ) {S : Set σ} {s : σ} {a : α}
 
 namespace εNFA
 
@@ -200,8 +200,6 @@ instance : One (εNFA α σ) :=
 
 instance : Inhabited (εNFA α σ) :=
   ⟨0⟩
-
-variable (P : εNFA α σ) (Q : εNFA α σ')
 
 @[simp]
 theorem step_zero (s a) : (0 : εNFA α σ).step s a = ∅ :=

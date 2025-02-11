@@ -106,7 +106,7 @@ theorem notBelow_isOpen : IsOpen (notBelow y) := by
 
 end notBelow
 
-open Scott hiding IsOpen
+open Scott hiding IsOpen IsOpen.isUpperSet
 
 open OmegaCompletePartialOrder
 

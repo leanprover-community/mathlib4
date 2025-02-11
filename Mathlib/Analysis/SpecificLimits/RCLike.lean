@@ -20,8 +20,6 @@ theorem RCLike.tendsto_inverse_atTop_nhds_zero_nat :
     Tendsto (fun n : ℕ => (n : 𝕜)⁻¹) atTop (𝓝 0) := by
   convert tendsto_algebraMap_inverse_atTop_nhds_zero_nat 𝕜
   simp
-@[deprecated (since := "2024-01-16")]
-alias RCLike.tendsto_inverse_atTop_nhds_0_nat := RCLike.tendsto_inverse_atTop_nhds_zero_nat
 
 variable {𝕜}
 

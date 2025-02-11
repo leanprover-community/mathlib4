@@ -21,60 +21,48 @@ universe u v
 
 variable {α : Type u} {β : Type v}
 
-attribute [simp] max_eq_left max_eq_right min_eq_left min_eq_right
-
 section
 
 variable [LinearOrder α] [LinearOrder β] {f : α → β} {s : Set α} {a b c d : α}
 
 -- translate from lattices to linear orders (sup → max, inf → min)
-@[simp]
 theorem le_min_iff : c ≤ min a b ↔ c ≤ a ∧ c ≤ b :=
   le_inf_iff
 
-@[simp]
 theorem le_max_iff : a ≤ max b c ↔ a ≤ b ∨ a ≤ c :=
   le_sup_iff
 
-@[simp]
 theorem min_le_iff : min a b ≤ c ↔ a ≤ c ∨ b ≤ c :=
   inf_le_iff
 
-@[simp]
 theorem max_le_iff : max a b ≤ c ↔ a ≤ c ∧ b ≤ c :=
   sup_le_iff
 
-@[simp]
 theorem lt_min_iff : a < min b c ↔ a < b ∧ a < c :=
   lt_inf_iff
 
-@[simp]
 theorem lt_max_iff : a < max b c ↔ a < b ∨ a < c :=
   lt_sup_iff
 
-@[simp]
 theorem min_lt_iff : min a b < c ↔ a < c ∨ b < c :=
   inf_lt_iff
 
-@[simp]
 theorem max_lt_iff : max a b < c ↔ a < c ∧ b < c :=
   sup_lt_iff
 
-@[gcongr]
 theorem max_le_max : a ≤ c → b ≤ d → max a b ≤ max c d :=
   sup_le_sup
 
-@[gcongr] theorem max_le_max_left (c) (h : a ≤ b) : max c a ≤ max c b := sup_le_sup_left h c
+theorem max_le_max_left (c) (h : a ≤ b) : max c a ≤ max c b := sup_le_sup_left h c
 
-@[gcongr] theorem max_le_max_right (c) (h : a ≤ b) : max a c ≤ max b c := sup_le_sup_right h c
+theorem max_le_max_right (c) (h : a ≤ b) : max a c ≤ max b c := sup_le_sup_right h c
 
-@[gcongr]
 theorem min_le_min : a ≤ c → b ≤ d → min a b ≤ min c d :=
   inf_le_inf
 
-@[gcongr] theorem min_le_min_left (c) (h : a ≤ b) : min c a ≤ min c b := inf_le_inf_left c h
+theorem min_le_min_left (c) (h : a ≤ b) : min c a ≤ min c b := inf_le_inf_left c h
 
-@[gcongr] theorem min_le_min_right (c) (h : a ≤ b) : min a c ≤ min b c := inf_le_inf_right c h
+theorem min_le_min_right (c) (h : a ≤ b) : min a c ≤ min b c := inf_le_inf_right c h
 
 theorem le_max_of_le_left : a ≤ b → a ≤ max b c :=
   le_sup_of_le_left
@@ -115,19 +103,15 @@ lemma min_max_distrib_right (a b c : α) : min (max a b) c = max (min a c) (min 
 theorem min_le_max : min a b ≤ max a b :=
   le_trans (min_le_left a b) (le_max_left a b)
 
-@[simp]
 theorem min_eq_left_iff : min a b = a ↔ a ≤ b :=
   inf_eq_left
 
-@[simp]
 theorem min_eq_right_iff : min a b = b ↔ b ≤ a :=
   inf_eq_right
 
-@[simp]
 theorem max_eq_left_iff : max a b = a ↔ b ≤ a :=
   sup_eq_left
 
-@[simp]
 theorem max_eq_right_iff : max a b = b ↔ a ≤ b :=
   sup_eq_right
 

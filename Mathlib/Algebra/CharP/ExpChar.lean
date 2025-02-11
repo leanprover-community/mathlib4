@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Scholbach
 -/
 import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.Lemmas
 
 /-!
 # Exponential characteristic
@@ -67,9 +67,6 @@ theorem frobenius_add : frobenius R p (x + y) = frobenius R p x + frobenius R p 
 
 theorem frobenius_natCast (n : ℕ) : frobenius R p n = n :=
   map_natCast (frobenius R p) n
-
-@[deprecated (since := "2024-04-17")]
-alias frobenius_nat_cast := frobenius_natCast
 
 end CommSemiring
 end frobenius

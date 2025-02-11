@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.MkIffOfInductiveProp
-import Batteries.Data.Sum.Lemmas
 
 /-!
 # Additional lemmas about sum types
@@ -18,7 +17,12 @@ universe u v w x
 
 variable {α : Type u} {α' : Type w} {β : Type v} {β' : Type x} {γ δ : Type*}
 
+lemma not_isLeft_and_isRight {x : α ⊕ β} : ¬(x.isLeft ∧ x.isRight) := by simp
+
 namespace Sum
+
+-- Lean has removed the `@[simp]` attribute on these. For now Mathlib adds it back.
+attribute [simp] Sum.forall Sum.exists
 
 theorem exists_sum {γ : α ⊕ β → Sort*} (p : (∀ ab, γ ab) → Prop) :
     (∃ fab, p fab) ↔ (∃ fa fb, p (Sum.rec fa fb)) := by
@@ -62,12 +66,12 @@ open Function (update update_eq_iff update_comp_eq_of_injective update_comp_eq_o
 @[simp]
 theorem update_elim_inl [DecidableEq α] [DecidableEq (α ⊕ β)] {f : α → γ} {g : β → γ} {i : α}
     {x : γ} : update (Sum.elim f g) (inl i) x = Sum.elim (update f i x) g :=
-  update_eq_iff.2 ⟨by simp, by simp (config := { contextual := true })⟩
+  update_eq_iff.2 ⟨by simp, by simp +contextual⟩
 
 @[simp]
 theorem update_elim_inr [DecidableEq β] [DecidableEq (α ⊕ β)] {f : α → γ} {g : β → γ} {i : β}
     {x : γ} : update (Sum.elim f g) (inr i) x = Sum.elim f (update g i x) :=
-  update_eq_iff.2 ⟨by simp, by simp (config := { contextual := true })⟩
+  update_eq_iff.2 ⟨by simp, by simp +contextual⟩
 
 @[simp]
 theorem update_inl_comp_inl [DecidableEq α] [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : α}
@@ -86,7 +90,7 @@ theorem update_inl_comp_inr [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i 
 
 theorem update_inl_apply_inr [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : α} {j : β} {x : γ} :
     update f (inl i) x (inr j) = f (inr j) :=
-  Function.update_noteq inr_ne_inl _ _
+  Function.update_of_ne inr_ne_inl ..
 
 @[simp]
 theorem update_inr_comp_inl [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : β} {x : γ} :
@@ -95,7 +99,7 @@ theorem update_inr_comp_inl [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i 
 
 theorem update_inr_apply_inl [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : α} {j : β} {x : γ} :
     update f (inr j) x (inl i) = f (inl i) :=
-  Function.update_noteq inl_ne_inr _ _
+  Function.update_of_ne inl_ne_inr ..
 
 @[simp]
 theorem update_inr_comp_inr [DecidableEq β] [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : β}
@@ -196,8 +200,8 @@ open Function
 theorem map_injective {f : α → γ} {g : β → δ} :
     Injective (Sum.map f g) ↔ Injective f ∧ Injective g :=
   ⟨fun h =>
-    ⟨fun a₁ a₂ ha => inl_injective <| @h (inl a₁) (inl a₂) (congr_arg inl ha : _), fun b₁ b₂ hb =>
-      inr_injective <| @h (inr b₁) (inr b₂) (congr_arg inr hb : _)⟩,
+    ⟨fun a₁ a₂ ha => inl_injective <| @h (inl a₁) (inl a₂) (congr_arg inl ha :), fun b₁ b₂ hb =>
+      inr_injective <| @h (inr b₁) (inr b₂) (congr_arg inr hb :)⟩,
     fun h => h.1.sum_map h.2⟩
 
 @[simp]
@@ -265,3 +269,17 @@ def in₂ (c : γ) : α ⊕ (β ⊕ γ) :=
   inr <| inr c
 
 end Sum3
+
+/-!
+### PSum
+-/
+
+namespace PSum
+
+variable {α β : Sort*}
+
+theorem inl_injective : Function.Injective (PSum.inl : α → α ⊕' β) := fun _ _ ↦ inl.inj
+
+theorem inr_injective : Function.Injective (PSum.inr : β → α ⊕' β) := fun _ _ ↦ inr.inj
+
+end PSum

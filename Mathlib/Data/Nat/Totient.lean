@@ -7,8 +7,6 @@ import Mathlib.Algebra.CharP.Two
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Factorization.Induction
 import Mathlib.Data.Nat.Periodic
-import Mathlib.Data.ZMod.Basic
-import Mathlib.NumberTheory.Divisors
 
 /-!
 # Euler's totient function
@@ -20,8 +18,7 @@ We prove the divisor sum formula, namely that `n` equals `φ` summed over the di
 `totient_prime_pow`.
 -/
 
-assert_not_exists Algebra
-assert_not_exists LinearMap
+assert_not_exists Algebra LinearMap
 
 open Finset
 
@@ -66,6 +63,9 @@ theorem totient_eq_zero : ∀ {n : ℕ}, φ n = 0 ↔ n = 0
     ⟨1 % (n + 1), mod_lt _ n.succ_pos, by rw [gcd_comm, ← gcd_rec, gcd_one_right]⟩
 
 @[simp] theorem totient_pos {n : ℕ} : 0 < φ n ↔ 0 < n := by simp [pos_iff_ne_zero]
+
+instance neZero_totient {n : ℕ} [NeZero n] : NeZero n.totient :=
+  ⟨(totient_pos.mpr <| NeZero.pos n).ne'⟩
 
 theorem filter_coprime_Ico_eq_totient (a n : ℕ) :
     #{x ∈ Ico n (n + a) | a.Coprime x} = totient a := by
