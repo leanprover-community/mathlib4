@@ -334,6 +334,7 @@ lemma idemFst_apply (x : WithLp p (α × β)) : idemFst x = (WithLp.equiv _ _).s
 
 lemma idemSnd_apply (x : WithLp p (α × β)) : idemSnd x = (WithLp.equiv _ _).symm (0, x.2) := rfl
 
+@[simp]
 lemma idemFst_add_idemSnd :
     idemFst + idemSnd = (1 : AddMonoid.End (WithLp p (α × β))) := AddMonoidHom.ext
   fun x => by
