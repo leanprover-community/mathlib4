@@ -126,10 +126,11 @@ instance : InfSet (Nucleus X) where
     idempotent' x := iInf₂_mono fun f hf ↦ (f.monotone <| iInf₂_le f hf).trans_eq f.idempotent
     le_apply' x := by simp [le_apply] }
 
-@[simp] theorem sInf_apply (s : Set (Nucleus X)) (x : X) : sInf s x = ⨅ j ∈ s, j x := rfl
+variable (s : Set (Nucleus X)) {ι : Type*} (f : ι → (Nucleus X))  (x : X)
 
-@[simp] theorem iInf_apply {ι : Type*} (f : ι → (Nucleus X)) (x : X) : iInf f x = ⨅ j, f j x := by
-  rw [iInf, sInf_apply, iInf_range]
+@[simp] theorem sInf_apply : sInf s x = ⨅ j ∈ s, j x := rfl
+
+@[simp] theorem iInf_apply : iInf f x = ⨅ j, f j x := by rw [iInf, sInf_apply, iInf_range]
 
 instance : CompleteSemilatticeInf (Nucleus X) where
   sInf_le := by simp +contextual [← coe_le_coe, Pi.le_def, iInf_le_iff]
@@ -137,8 +138,14 @@ instance : CompleteSemilatticeInf (Nucleus X) where
 
 instance : CompleteLattice (Nucleus X) := completeLatticeOfCompleteSemilatticeInf (Nucleus X)
 
-@[simp] theorem inf_apply (m n : Nucleus X) (x : X) : (m ⊓ n) x = m x ⊓ n x := by
-  rw [← sInf_pair, sInf_apply, iInf_pair]
+@[simp] theorem inf_apply : (m ⊓ n) x = m x ⊓ n x := by rw [← sInf_pair, sInf_apply, iInf_pair]
+
+@[simp] theorem sSup_apply : sSup s x = ⨅ j ∈ upperBounds s, j x := rfl
+
+@[simp] theorem iSup_apply : iSup f x = ⨅ j ∈ upperBounds (Set.range f), j x := rfl
+
+@[simp] theorem sup_apply : (m ⊔ n) x = ⨅ j ∈ upperBounds {m, n}, j x := by
+  rw [← sSup_pair, sSup_apply]
 
 end CompleteLattice
 section Frame
