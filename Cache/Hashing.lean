@@ -17,6 +17,7 @@ The `HashMemo` contains all information `Cache` needs about the modules:
 * the name
 * its imports
 * the file's hash (in `hashMap` and `cache`)
+
 additionally, it contains the `rootHash` which reflects changes to Mathlib's
 Lake project settings.
 -/
