@@ -5,7 +5,7 @@ Authors: Christian Merten
 -/
 import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.CategoryTheory.Over.Pullback
+import Mathlib.CategoryTheory.Comma.Over.Pullback
 
 /-!
 # Under `CommRingCat`
