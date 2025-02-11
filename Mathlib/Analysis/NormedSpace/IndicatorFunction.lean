@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Group.Indicator
-import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.Normed.Group.Continuity
 
 /-!
 # Indicator function and (e)norm
@@ -29,7 +29,9 @@ theorem nnnorm_indicator_eq_indicator_nnnorm :
 
 lemma enorm_indicator_eq_indicator_enorm :
     ‖indicator s f a‖ₑ = indicator s (fun a => ‖f a‖ₑ) a :=
-  flip congr_fun a (indicator_comp_of_zero enorm_zero).symm
+  -- TODO: enorm_zero became *less* general, at the moment: my proof required a *normed* (add)
+  -- (comm) group, whereas this file only required seminormed things.
+  sorry -- flip congr_fun a (indicator_comp_of_zero (enorm_zero (E := E))).symm
 
 theorem norm_indicator_le_of_subset (h : s ⊆ t) (f : α → E) (a : α) :
     ‖indicator s f a‖ ≤ ‖indicator t f a‖ := by
