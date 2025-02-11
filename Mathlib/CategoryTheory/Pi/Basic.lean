@@ -153,22 +153,12 @@ end
 
 variable {C}
 
-/-- A family of isomorphisms gives rise to an isomorphism of families. -/
-@[simps]
-def isoMk {X Y : ∀ i, C i} (iso : ∀ i, X i ≅ Y i) :
-    X ≅ Y where
-  hom := fun i => (iso i).hom
-  inv := fun i => (iso i).inv
-
 /-- An isomorphism between `I`-indexed objects gives an isomorphism between each
 pair of corresponding components. -/
 @[simps]
 def isoApp {X Y : ∀ i, C i} (f : X ≅ Y) (i : I) : X i ≅ Y i :=
   ⟨f.hom i, f.inv i,
     by rw [← comp_apply, Iso.hom_inv_id, id_apply], by rw [← comp_apply, Iso.inv_hom_id, id_apply]⟩
-
-lemma isoMk_app {X Y : ∀ i, C i} {iso : ∀ i, X i ≅ Y i} {i : I} :
-    (isoMk iso).hom i = (iso i).hom := by rfl
 
 @[simp]
 theorem isoApp_refl (X : ∀ i, C i) (i : I) : isoApp (Iso.refl X) i = Iso.refl (X i) :=
