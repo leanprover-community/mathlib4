@@ -1141,12 +1141,6 @@ theorem dense_iff_iUnion_ball (s : Set α) : Dense s ↔ ∀ r > 0, ⋃ c ∈ s,
 theorem denseRange_iff {f : β → α} : DenseRange f ↔ ∀ x, ∀ r > 0, ∃ y, dist x (f y) < r :=
   forall_congr' fun x => by simp only [mem_closure_iff, exists_range_iff]
 
-/-- If a map is continuous on a separable set `s`, then the image of `s` is also separable. -/
-theorem _root_.ContinuousOn.isSeparable_image [TopologicalSpace β] {f : α → β} {s : Set α}
-    (hf : ContinuousOn f s) (hs : IsSeparable s) : IsSeparable (f '' s) := by
-  rw [image_eq_range, ← image_univ]
-  exact (isSeparable_univ_iff.2 hs.separableSpace).image hf.restrict
-
 end Metric
 
 instance : PseudoMetricSpace (Additive α) := ‹_›
