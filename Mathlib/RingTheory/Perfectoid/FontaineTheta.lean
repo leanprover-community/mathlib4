@@ -96,15 +96,38 @@ namespace WittVector
 
 -- New file Mathlib.RingTheory.WittVector.TeichmullerExpansion
 -- import Mathlib.RingTheory.WittVector.Teichmuller
--- import Mathlib.RingTheory.WittVector.Identities
+-- import Mathlib.RingTheory.WittVector.Complete
+
+
+def teichmullerSeries {R : Type*} [CommRing R] [ExpChar R p] [PerfectRing R p] (x : 𝕎 R) (n : ℕ) : R :=
+  ((iterateFrobeniusEquiv R p n).symm  (x.coeff n))
+
+theorem teichmullerSeries_def {R : Type*} [CommRing R] [ExpChar R p] [PerfectRing R p] (x : 𝕎 R) (n : ℕ) :
+    teichmullerSeries x n =  ((iterateFrobeniusEquiv R p n).symm  (x.coeff n)) := by
+  sorry
 
 /--
 The Teichmüller expansion.
 -/
-theorem dvd_sub_sum_teichmuller_iterateFrobeniusEquiv_coeff {R : Type*} [CommRing R] [ExpChar R p] [PerfectRing R p] (x : 𝕎 R) (n : ℕ) :
+theorem dvd_sub_sum_teichmuller_iterateFrobeniusEquiv_coeff
+    {R : Type*} [CommRing R] [ExpChar R p] [PerfectRing R p] (x : 𝕎 R) (n : ℕ) :
     (p : 𝕎 R) ^ (n + 1) ∣ x - ∑ (i ≤ n), p ^ i * teichmuller p
         ((iterateFrobeniusEquiv R p n).symm  (x.coeff i)) := by
   sorry
+
+theorem eq_of_apply_teichmuller_eq {R S : Type*} [CommRing R] [CommRing S] [ExpChar R p]
+    [PerfectRing R p] (f g : 𝕎 R →+* S) (hp : IsNilpotent (p : S))
+    (h : ∀ (x : R), f (teichmuller p x) = g (teichmuller p x)) : f = g := by
+  obtain ⟨n, hn⟩ := hp
+  ext x
+  calc
+  f x = f (x - ∑ (i ≤ n), p ^ i * teichmuller p ((iterateFrobeniusEquiv R p n).symm  (x.coeff i))) + f (∑ (i ≤ n), p ^ i * teichmuller p ((iterateFrobeniusEquiv R p n).symm  (x.coeff i))) := by sorry
+  _ = ∑ (i ≤ n), p ^ i * f (teichmuller p ((iterateFrobeniusEquiv R p n).symm  (x.coeff i))) := by sorry
+  _ = ∑ (i ≤ n), p ^ i * g (teichmuller p ((iterateFrobeniusEquiv R p n).symm  (x.coeff i))) := by sorry
+  _ = g (x - ∑ (i ≤ n), p ^ i * teichmuller p ((iterateFrobeniusEquiv R p n).symm  (x.coeff i))) + g (∑ (i ≤ n), p ^ i * teichmuller p ((iterateFrobeniusEquiv R p n).symm  (x.coeff i))) := by sorry
+  _ = g x := by sorry
+
+
 
 variable (O p) in
 def mkCompGhostComponent (n : ℕ) : 𝕎 O →+* O ⧸ span {(p : O)} ^ (n + 1) :=
