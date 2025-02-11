@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
 -/
 import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.Ideal.Over
+import Mathlib.RingTheory.Ideal.GoingUp
 import Mathlib.RingTheory.Jacobson.Polynomial
 import Mathlib.RingTheory.Artinian.Module
 
@@ -93,8 +93,7 @@ theorem Ideal.radical_eq_jacobson [H : IsJacobsonRing R] (I : Ideal R) : I.radic
     (H.out (radical_isRadical I) ▸ jacobson_mono le_radical)
 
 instance (priority := 100) [IsArtinianRing R] : IsJacobsonRing R :=
-  isJacobsonRing_iff_prime_eq.mpr fun P _ ↦
-    jacobson_eq_self_of_isMaximal (H := IsArtinianRing.isMaximal_of_isPrime P)
+  isJacobsonRing_iff_prime_eq.mpr fun _ _ ↦ jacobson_eq_self_of_isMaximal
 
 theorem isJacobsonRing_of_surjective [H : IsJacobsonRing R] :
     (∃ f : R →+* S, Function.Surjective ↑f) → IsJacobsonRing S := by
@@ -548,7 +547,8 @@ theorem quotient_mk_comp_C_isIntegral_of_isJacobsonRing :
     refine fun p hp =>
       polynomial_mem_ideal_of_coeff_mem_ideal P p fun n => Quotient.eq_zero_iff_mem.mp ?_
     simpa only [f, coeff_map, coe_mapRingHom] using (Polynomial.ext_iff.mp hp) n
-  refine RingHom.IsIntegral.tower_bot _ _ (injective_quotient_le_comap_map P) ?_
+  refine RingHom.IsIntegral.tower_bot
+    (T := (R ⧸ comap C P)[X] ⧸ _) _ _ (injective_quotient_le_comap_map P) ?_
   rw [← quotient_mk_maps_eq]
   refine ((Ideal.Quotient.mk P').isIntegral_of_surjective Quotient.mk_surjective).trans _ _ ?_
   have : IsMaximal (Ideal.map (mapRingHom (Ideal.Quotient.mk (comap C P))) P) :=
