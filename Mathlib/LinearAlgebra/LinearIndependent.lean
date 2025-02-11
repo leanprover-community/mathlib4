@@ -1431,10 +1431,8 @@ theorem linearIndependent_insert' {ι} {s : Set ι} {a : ι} {f : ι → V} (has
   classical
   rw [← linearIndependent_equiv ((Equiv.optionEquivSumPUnit _).trans (Equiv.Set.insert has).symm),
     linearIndependent_option]
-  -- Porting note: `simp [(· ∘ ·), range_comp f]` → `simp [(· ∘ ·)]; erw [range_comp f ..]; simp`
-  -- https://github.com/leanprover-community/mathlib4/issues/5164
   simp only [comp_def]
-  erw [range_comp f ((↑) : s → ι)]
+  rw [range_comp']
   simp
 
 theorem linearIndependent_insert (hxs : x ∉ s) :
