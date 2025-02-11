@@ -32,7 +32,7 @@ register_option tactic.erw?.verbose : Bool := {
 `erw? [r]` calls `erw [r]` (note that only a single step is allowed),
 and then attempts to identify any subexpression which would block the use of `rw` instead.
 It does so by identifying subexpressions which are defeq, but not at reducible transparency.
- -/
+-/
 syntax (name := erw?) "erw? " "[" rwRule "]" : tactic
 
 /--
