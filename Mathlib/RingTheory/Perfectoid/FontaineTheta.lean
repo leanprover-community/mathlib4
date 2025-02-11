@@ -7,6 +7,7 @@ Authors: Jiedong Jiang
 import Mathlib.RingTheory.Perfectoid.Untilt
 import Mathlib.RingTheory.WittVector.Complete
 import Mathlib.LinearAlgebra.Quotient.Defs
+import Mathlib.RingTheory.WittVector.Teichmuller
 
 /-!
 # Fontaine's θ map
@@ -92,6 +93,18 @@ section RingHom
 #check WittVector.map_surjective
 
 namespace WittVector
+
+-- New file Mathlib.RingTheory.WittVector.TeichmullerExpansion
+-- import Mathlib.RingTheory.WittVector.Teichmuller
+-- import Mathlib.RingTheory.WittVector.Identities
+
+/--
+The Teichmüller expansion.
+-/
+theorem dvd_sub_sum_teichmuller_iterateFrobeniusEquiv_coeff {R : Type*} [CommRing R] [ExpChar R p] [PerfectRing R p] (x : 𝕎 R) (n : ℕ) :
+    (p : 𝕎 R) ^ (n + 1) ∣ x - ∑ (i ≤ n), p ^ i * teichmuller p
+        ((iterateFrobeniusEquiv R p n).symm  (x.coeff i)) := by
+  sorry
 
 variable (O p) in
 def mkCompGhostComponent (n : ℕ) : 𝕎 O →+* O ⧸ span {(p : O)} ^ (n + 1) :=
