@@ -417,7 +417,7 @@ theorem trdeg_le_cardinalMk [alg : Algebra.IsAlgebraic (adjoin R s) A] : trdeg R
   on_goal 2 => simp [trdeg_eq_zero_of_not_injective h]
   have := isDomain_of_adjoin_range R s
   rw [← matroid_spanning_iff h, ← matroid_cRank_eq h] at *
-  exact alg.cRank_le
+  exact alg.cRank_le_cardinalMk
 
 variable (inj : Injective (algebraMap R A))
 include inj
@@ -458,7 +458,7 @@ theorem isTranscendenceBasis_of_lift_trdeg_le (hx : AlgebraicIndependent R x)
     (fin : trdeg R A < ℵ₀) (le : lift.{u} (trdeg R A) ≤ lift.{w} #ι) :
     IsTranscendenceBasis R x := by
   have inj := hx.algebraMap_injective
-  rw [← matroid_cRank_eq inj, ← Matroid.finiteRk_iff_cRank_lt_aleph0] at fin
+  rw [← matroid_cRank_eq inj, ← Matroid.rankFinite_iff_cRank_lt_aleph0] at fin
   exact .of_subtype_range hx.injective <| (matroid_indep_iff inj).mpr hx.to_subtype_range
     |>.base_of_cRank_le <| lift_le.mp <| (matroid_cRank_eq inj ▸ le).trans_eq
       (mk_range_eq_of_injective hx.injective).symm
@@ -470,7 +470,7 @@ theorem isTranscendenceBasis_of_trdeg_le {ι : Type w} {x : ι → A} (hx : Alge
 theorem isTranscendenceBasis_of_lift_trdeg_le_of_finite [Finite ι] (hx : AlgebraicIndependent R x)
     (le : lift.{u} (trdeg R A) ≤ lift.{w} #ι) : IsTranscendenceBasis R x :=
   isTranscendenceBasis_of_lift_trdeg_le hx
-    (lift_lt.mp <| le.trans_lt <| by simpa using mk_lt_aleph0_iff.mpr ‹_›) le
+    (lift_lt.mp <| le.trans_lt <| by simp [mk_lt_aleph0_iff]) le
 
 theorem isTranscendenceBasis_of_trdeg_le_of_finite {ι : Type w} [Finite ι] {x : ι → A}
     (hx : AlgebraicIndependent R x) (le : trdeg R A ≤ #ι) : IsTranscendenceBasis R x :=
