@@ -8,7 +8,7 @@ import Cache.Hashing
 
 namespace Cache.Requests
 
--- FRO cache is flaky so disable until we work out the kinks: https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/The.20cache.20doesn't.20work/near/411058849
+-- FRO cache is flaky so disable until we work out the kinks: https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/The.20cache.20doesn't.20work/near/411058849
 def useFROCache : Bool := false
 
 /-- Public URL for mathlib cache -/
