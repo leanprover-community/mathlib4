@@ -17,7 +17,7 @@ and hence has coefficients that are multivariate polynomials.
 It is universal in the sense that one obtains the characteristic polynomial of a matrix `M`
 by evaluating the coefficients of `univ` at the entries of `M`.
 
-We use it to show that the coeffients of the characteristic polynomial
+We use it to show that the coefficients of the characteristic polynomial
 of a matrix are homogeneous polynomials in the matrix entries.
 
 ## Main results
@@ -28,8 +28,6 @@ of a matrix are homogeneous polynomials in the matrix entries.
 * `Matrix.charpoly.univ_coeff_isHomogeneous`:
   the `i`-th coefficient of `univ` is a homogeneous polynomial of degree `n - i`.
 -/
-
-open BigOperators
 
 namespace Matrix.charpoly
 
@@ -56,7 +54,8 @@ open MvPolynomial RingHomClass in
 @[simp]
 lemma univ_map_eval₂Hom (M : n × n → S) :
     (univ R n).map (eval₂Hom f M) = charpoly (Matrix.of M.curry) := by
-  erw [univ, ← charpoly_map, mvPolynomialX_map_eval₂ _ (Matrix.of M.curry)]
+  rw [univ, ← charpoly_map, coe_eval₂Hom, ← mvPolynomialX_map_eval₂ f (Matrix.of M.curry)]
+  simp only [of_apply, Function.curry_apply, Prod.mk.eta]
 
 lemma univ_map_map :
     (univ R n).map (MvPolynomial.map f) = univ S n := by
@@ -72,7 +71,6 @@ variable (R)
 
 lemma univ_monic : (univ R n).Monic := charpoly_monic (mvPolynomialX n n R)
 
--- Porting note (#10618): no @[simp], since simp can prove this
 lemma univ_natDegree [Nontrivial R] : (univ R n).natDegree = Fintype.card n :=
   charpoly_natDegree_eq_dim (mvPolynomialX n n R)
 

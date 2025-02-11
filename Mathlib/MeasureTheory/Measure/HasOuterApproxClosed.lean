@@ -59,11 +59,10 @@ theorem tendsto_lintegral_nn_filter_of_le_const {ι : Type*} {L : Filter ι} [L.
     (fs_lim : ∀ᵐ ω : Ω ∂μ, Tendsto (fun i ↦ fs i ω) L (𝓝 (f ω))) :
     Tendsto (fun i ↦ ∫⁻ ω, fs i ω ∂μ) L (𝓝 (∫⁻ ω, f ω ∂μ)) := by
   refine tendsto_lintegral_filter_of_dominated_convergence (fun _ ↦ c)
-    (eventually_of_forall fun i ↦ (ENNReal.continuous_coe.comp (fs i).continuous).measurable) ?_
+    (Eventually.of_forall fun i ↦ (ENNReal.continuous_coe.comp (fs i).continuous).measurable) ?_
     (@lintegral_const_lt_top _ _ μ _ _ (@ENNReal.coe_ne_top c)).ne ?_
   · simpa only [Function.comp_apply, ENNReal.coe_le_coe] using fs_le_const
   · simpa only [Function.comp_apply, ENNReal.tendsto_coe] using fs_lim
-#align measure_theory.finite_measure.tendsto_lintegral_nn_filter_of_le_const MeasureTheory.tendsto_lintegral_nn_filter_of_le_const
 
 /-- If bounded continuous functions tend to the indicator of a measurable set and are
 uniformly bounded, then their integrals against a finite measure tend to the measure of the set.
@@ -73,7 +72,7 @@ This formulation assumes:
  * boundedness holds almost everywhere.
 -/
 theorem measure_of_cont_bdd_of_tendsto_filter_indicator {ι : Type*} {L : Filter ι}
-    [L.IsCountablyGenerated] [TopologicalSpace Ω] [OpensMeasurableSpace Ω] (μ : Measure Ω)
+    [L.IsCountablyGenerated] (μ : Measure Ω)
     [IsFiniteMeasure μ] {c : ℝ≥0} {E : Set Ω} (E_mble : MeasurableSet E) (fs : ι → Ω →ᵇ ℝ≥0)
     (fs_bdd : ∀ᶠ i in L, ∀ᵐ ω : Ω ∂μ, fs i ω ≤ c)
     (fs_lim : ∀ᵐ ω ∂μ, Tendsto (fun i ↦ fs i ω) L (𝓝 (indicator E (fun _ ↦ (1 : ℝ≥0)) ω))) :
@@ -81,9 +80,8 @@ theorem measure_of_cont_bdd_of_tendsto_filter_indicator {ι : Type*} {L : Filter
   convert tendsto_lintegral_nn_filter_of_le_const μ fs_bdd fs_lim
   have aux : ∀ ω, indicator E (fun _ ↦ (1 : ℝ≥0∞)) ω = ↑(indicator E (fun _ ↦ (1 : ℝ≥0)) ω) :=
     fun ω ↦ by simp only [ENNReal.coe_indicator, ENNReal.coe_one]
-  simp_rw [← aux, lintegral_indicator _ E_mble]
+  simp_rw [← aux, lintegral_indicator E_mble]
   simp only [lintegral_one, Measure.restrict_apply, MeasurableSet.univ, univ_inter]
-#align measure_theory.measure_of_cont_bdd_of_tendsto_filter_indicator MeasureTheory.measure_of_cont_bdd_of_tendsto_filter_indicator
 
 /-- If a sequence of bounded continuous functions tends to the indicator of a measurable set and
 the functions are uniformly bounded, then their integrals against a finite measure tend to the
@@ -92,7 +90,7 @@ measure of the set.
 A similar result with more general assumptions is
 `MeasureTheory.measure_of_cont_bdd_of_tendsto_filter_indicator`.
 -/
-theorem measure_of_cont_bdd_of_tendsto_indicator [OpensMeasurableSpace Ω]
+theorem measure_of_cont_bdd_of_tendsto_indicator
     (μ : Measure Ω) [IsFiniteMeasure μ] {c : ℝ≥0} {E : Set Ω} (E_mble : MeasurableSet E)
     (fs : ℕ → Ω →ᵇ ℝ≥0) (fs_bdd : ∀ n ω, fs n ω ≤ c)
     (fs_lim : Tendsto (fun n ω ↦ fs n ω) atTop (𝓝 (indicator E fun _ ↦ (1 : ℝ≥0)))) :
@@ -102,8 +100,7 @@ theorem measure_of_cont_bdd_of_tendsto_indicator [OpensMeasurableSpace Ω]
     rw [tendsto_pi_nhds] at fs_lim
     exact fun ω ↦ fs_lim ω
   apply measure_of_cont_bdd_of_tendsto_filter_indicator μ E_mble fs
-    (eventually_of_forall fun n ↦ eventually_of_forall (fs_bdd n)) (eventually_of_forall fs_lim')
-#align measure_theory.measure_of_cont_bdd_of_tendsto_indicator MeasureTheory.measure_of_cont_bdd_of_tendsto_indicator
+    (Eventually.of_forall fun n ↦ Eventually.of_forall (fs_bdd n)) (Eventually.of_forall fs_lim')
 
 /-- The integrals of thickened indicators of a closed set against a finite measure tend to the
 measure of the closed set if the thickening radii tend to zero. -/
@@ -117,7 +114,6 @@ theorem tendsto_lintegral_thickenedIndicator_of_isClosed {Ω : Type*} [Measurabl
     (fun n ↦ thickenedIndicator (δs_pos n) F) fun n ω ↦ thickenedIndicator_le_one (δs_pos n) F ω
   have key := thickenedIndicator_tendsto_indicator_closure δs_pos δs_lim F
   rwa [F_closed.closure_eq] at key
-#align measure_theory.tendsto_lintegral_thickened_indicator_of_is_closed MeasureTheory.tendsto_lintegral_thickenedIndicator_of_isClosed
 
 end MeasureTheory -- namespace
 
@@ -166,7 +162,7 @@ approximating sequence to the indicator of the set. -/
 theorem measure_le_lintegral [MeasurableSpace X] [OpensMeasurableSpace X] (μ : Measure X) (n : ℕ) :
     μ F ≤ ∫⁻ x, (hF.apprSeq n x : ℝ≥0∞) ∂μ := by
   convert_to ∫⁻ x, (F.indicator (fun _ ↦ (1 : ℝ≥0∞))) x ∂μ ≤ ∫⁻ x, hF.apprSeq n x ∂μ
-  · rw [lintegral_indicator _ hF.measurableSet]
+  · rw [lintegral_indicator hF.measurableSet]
     simp only [lintegral_one, MeasurableSet.univ, Measure.restrict_apply, univ_inter]
   · apply lintegral_mono
     intro x
@@ -188,17 +184,17 @@ noncomputable instance (X : Type*) [TopologicalSpace X]
     [TopologicalSpace.PseudoMetrizableSpace X] : HasOuterApproxClosed X := by
   letI : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
   refine ⟨fun F hF ↦ ?_⟩
-  · use fun n ↦ thickenedIndicator (δ := (1 : ℝ) / (n + 1)) Nat.one_div_pos_of_nat F
-    refine ⟨?_, ⟨?_, ?_⟩⟩
-    · exact fun n x ↦ thickenedIndicator_le_one Nat.one_div_pos_of_nat F x
-    · exact fun n x hxF ↦ one_le_thickenedIndicator_apply X Nat.one_div_pos_of_nat hxF
-    · have key := thickenedIndicator_tendsto_indicator_closure
-                (δseq := fun (n : ℕ) ↦ (1 : ℝ) / (n + 1))
-                (fun _ ↦ Nat.one_div_pos_of_nat) tendsto_one_div_add_atTop_nhds_zero_nat F
-      rw [tendsto_pi_nhds] at *
-      intro x
-      nth_rw 2 [← IsClosed.closure_eq hF]
-      exact key x
+  use fun n ↦ thickenedIndicator (δ := (1 : ℝ) / (n + 1)) Nat.one_div_pos_of_nat F
+  refine ⟨?_, ⟨?_, ?_⟩⟩
+  · exact fun n x ↦ thickenedIndicator_le_one Nat.one_div_pos_of_nat F x
+  · exact fun n x hxF ↦ one_le_thickenedIndicator_apply X Nat.one_div_pos_of_nat hxF
+  · have key := thickenedIndicator_tendsto_indicator_closure
+              (δseq := fun (n : ℕ) ↦ (1 : ℝ) / (n + 1))
+              (fun _ ↦ Nat.one_div_pos_of_nat) tendsto_one_div_add_atTop_nhds_zero_nat F
+    rw [tendsto_pi_nhds] at *
+    intro x
+    nth_rw 2 [← IsClosed.closure_eq hF]
+    exact key x
 
 namespace MeasureTheory
 
@@ -214,7 +210,7 @@ theorem measure_isClosed_eq_of_forall_lintegral_eq_of_isFiniteMeasure {Ω : Type
     have whole := h 1
     simp only [BoundedContinuousFunction.coe_one, Pi.one_apply, ENNReal.coe_one, lintegral_const,
       one_mul] at whole
-    simpa [← whole] using IsFiniteMeasure.measure_univ_lt_top
+    simp [← whole]
   have obs_μ := HasOuterApproxClosed.tendsto_lintegral_apprSeq F_closed μ
   have obs_ν := HasOuterApproxClosed.tendsto_lintegral_apprSeq F_closed ν
   simp_rw [h] at obs_μ

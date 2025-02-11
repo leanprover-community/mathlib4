@@ -1,9 +1,9 @@
 /-
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Filipo A. E. Nuccio, Sam van Gool
+Authors: Yaël Dillies, Filippo A. E. Nuccio, Sam van Gool
 -/
-import Mathlib.Data.Finset.LocallyFinite.Basic
+import Mathlib.Order.Interval.Finset.Basic
 import Mathlib.Data.Fintype.Order
 import Mathlib.Order.Irreducible
 import Mathlib.Order.UpperLower.Basic
@@ -68,7 +68,7 @@ variable {s : UpperSet α}
 variable [Finite α]
 
 @[simp] lemma infIrred_iff_of_finite : InfIrred s ↔ ∃ a, Ici a = s := by
-  refine' ⟨fun hs ↦ _, _⟩
+  refine ⟨fun hs ↦ ?_, ?_⟩
   · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_minimal_wrt id _ (coe_nonempty.2 hs.ne_top)
     exact ⟨a, (hs.2 <| erase_inf_Ici ha <| by simpa [eq_comm] using has).resolve_left
       (lt_erase.2 ha).ne'⟩
@@ -81,7 +81,7 @@ namespace LowerSet
 variable {s : LowerSet α}
 
 @[simp] lemma supIrred_Iic (a : α) : SupIrred (Iic a) := by
-  refine' ⟨fun h ↦ Iic_ne_bot h.eq_bot, fun s t hst ↦ _⟩
+  refine ⟨fun h ↦ Iic_ne_bot h.eq_bot, fun s t hst ↦ ?_⟩
   have := mem_Iic_iff.2 (le_refl a)
   rw [← hst] at this
   exact this.imp (fun ha ↦ (le_sup_left.trans_eq hst).antisymm <| Iic_le.2 ha) fun ha ↦
@@ -90,7 +90,7 @@ variable {s : LowerSet α}
 variable [Finite α]
 
 @[simp] lemma supIrred_iff_of_finite : SupIrred s ↔ ∃ a, Iic a = s := by
-  refine' ⟨fun hs ↦ _, _⟩
+  refine ⟨fun hs ↦ ?_, ?_⟩
   · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_maximal_wrt id _ (coe_nonempty.2 hs.ne_bot)
     exact ⟨a, (hs.2 <| erase_sup_Iic ha <| by simpa [eq_comm] using has).resolve_left
       (erase_lt.2 ha).ne⟩
@@ -178,30 +178,29 @@ end SemilatticeInf
 end OrderIso
 
 section DistribLattice
-variable [DistribLattice α] [OrderBot α] [Fintype α] [@DecidablePred α SupIrred]
+variable [DistribLattice α] [Fintype α] [@DecidablePred α SupIrred]
 
-open scoped Classical
-
+open Classical in
 /-- **Birkhoff Representation for finite distributive lattices**. Any nonempty finite distributive
 lattice is isomorphic to the lattice of lower sets of its sup-irreducible elements. -/
-noncomputable def OrderIso.lowerSetSupIrred : α ≃o LowerSet {a : α // SupIrred a} :=
+noncomputable def OrderIso.lowerSetSupIrred [OrderBot α] : α ≃o LowerSet {a : α // SupIrred a} :=
   Equiv.toOrderIso
-    { toFun := fun a ↦ ⟨{b | ↑b ≤ a}, fun b c hcb hba ↦ hba.trans' hcb⟩
+    { toFun := fun a ↦ ⟨{b | ↑b ≤ a}, fun _ _ hcb hba ↦ hba.trans' hcb⟩
       invFun := fun s ↦ (s : Set {a : α // SupIrred a}).toFinset.sup (↑)
       left_inv := fun a ↦ by
-        refine' le_antisymm (Finset.sup_le fun b ↦ Set.mem_toFinset.1) _
+        refine le_antisymm (Finset.sup_le fun b ↦ Set.mem_toFinset.1) ?_
         obtain ⟨s, rfl, hs⟩ := exists_supIrred_decomposition a
         exact Finset.sup_le fun i hi ↦
           le_sup_of_le (b := ⟨i, hs hi⟩) (Set.mem_toFinset.2 <| le_sup (f := id) hi) le_rfl
       right_inv := fun s ↦ by
         ext a
         dsimp
-        refine' ⟨fun ha ↦ _, fun ha ↦ _⟩
+        refine ⟨fun ha ↦ ?_, fun ha ↦ ?_⟩
         · obtain ⟨i, hi, ha⟩ := a.2.supPrime.le_finset_sup.1 ha
           exact s.lower ha (Set.mem_toFinset.1 hi)
         · dsimp
           exact le_sup (Set.mem_toFinset.2 ha) }
-    (fun b c hbc d ↦ le_trans' hbc) fun s t hst ↦ Finset.sup_mono <| Set.toFinset_mono hst
+    (fun _ _ hbc _ ↦ le_trans' hbc) fun _ _ hst ↦ Finset.sup_mono <| Set.toFinset_mono hst
 
 namespace OrderEmbedding
 
@@ -233,23 +232,25 @@ noncomputable def birkhoffFinset : α ↪o Finset {a : α // SupIrred a} := by
 @[simp] lemma birkhoffSet_inf (a b : α) : birkhoffSet (a ⊓ b) = birkhoffSet a ∩ birkhoffSet b := by
   unfold OrderEmbedding.birkhoffSet; split <;> simp [eq_iff_true_of_subsingleton]
 
+@[simp] lemma birkhoffSet_apply [OrderBot α] (a : α) :
+    birkhoffSet a = OrderIso.lowerSetSupIrred a := by
+  simp [birkhoffSet]; have : Subsingleton (OrderBot α) := inferInstance; convert rfl
+
 variable [DecidableEq α]
 
 @[simp] lemma birkhoffFinset_sup (a b : α) :
     birkhoffFinset (a ⊔ b) = birkhoffFinset a ∪ birkhoffFinset b := by
+  classical
   dsimp [OrderEmbedding.birkhoffFinset]
   rw [birkhoffSet_sup, OrderIso.coe_toOrderEmbedding]
-  simpa using OrderIso.map_sup _ _ _
+  simp
 
 @[simp] lemma birkhoffFinset_inf (a b : α) :
     birkhoffFinset (a ⊓ b) = birkhoffFinset a ∩ birkhoffFinset b := by
+  classical
   dsimp [OrderEmbedding.birkhoffFinset]
   rw [birkhoffSet_inf, OrderIso.coe_toOrderEmbedding]
-  simpa using OrderIso.map_inf _ _ _
-
-@[simp] lemma birkhoffSet_apply (a : α) :
-    birkhoffSet a = OrderIso.lowerSetSupIrred a := by
-  simp [birkhoffSet]; convert rfl
+  simp
 
 end OrderEmbedding
 
@@ -262,6 +263,7 @@ noncomputable def birkhoffSet : LatticeHom α (Set {a : α // SupIrred a}) where
   map_sup' := OrderEmbedding.birkhoffSet_sup
   map_inf' := OrderEmbedding.birkhoffSet_inf
 
+open Classical in
 /-- **Birkhoff's Representation Theorem**. Any finite distributive lattice can be embedded in a
 powerset lattice. -/
 noncomputable def birkhoffFinset : LatticeHom α (Finset {a : α // SupIrred a}) where

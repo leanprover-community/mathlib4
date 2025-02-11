@@ -3,9 +3,8 @@ Copyright (c) 2023 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.GroupPower.Basic
-import Mathlib.GroupTheory.GroupAction.Prod
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Group.Action.Prod
+import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Nat.Cast.Basic
 
 /-!
@@ -29,18 +28,20 @@ We also produce the following instances:
 
 - `NatPowAssoc` for Monoids, Pi types and products.
 
-## Todo
+## TODO
 
 * to_additive?
 
 -/
+
+assert_not_exists DenselyOrdered
 
 variable {M : Type*}
 
 /-- A mixin for power-associative multiplication. -/
 class NatPowAssoc (M : Type*) [MulOneClass M] [Pow M ℕ] : Prop where
   /-- Multiplication is power-associative. -/
-  protected npow_add : ∀ (k n: ℕ) (x : M), x ^ (k + n) = x ^ k * x ^ n
+  protected npow_add : ∀ (k n : ℕ) (x : M), x ^ (k + n) = x ^ k * x ^ n
   /-- Exponent zero is one. -/
   protected npow_zero : ∀ (x : M), x ^ 0 = 1
   /-- Exponent one is identity. -/
@@ -71,13 +72,25 @@ theorem npow_mul_comm (m n : ℕ) (x : M) :
 theorem npow_mul (x : M) (m n : ℕ) : x ^ (m * n) = (x ^ m) ^ n := by
   induction n with
   | zero => rw [npow_zero, Nat.mul_zero, npow_zero]
-  | succ n ih => rw [← Nat.add_one, mul_add, npow_add, ih, mul_one, npow_add, npow_one]
+  | succ n ih => rw [mul_add, npow_add, ih, mul_one, npow_add, npow_one]
 
 theorem npow_mul' (x : M) (m n : ℕ) : x ^ (m * n) = (x ^ n) ^ m := by
   rw [mul_comm]
   exact npow_mul x n m
 
 end MulOneClass
+
+section Neg
+
+theorem neg_npow_assoc {R : Type*} [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] (a b : R) (k : ℕ) :
+    (-1)^k * a * b = (-1)^k * (a * b) := by
+  induction k with
+  | zero => simp only [npow_zero, one_mul]
+  | succ k ih =>
+    rw [npow_add, npow_one, ← neg_mul_comm, mul_one]
+    simp only [neg_mul, ih]
+
+end Neg
 
 instance Pi.instNatPowAssoc {ι : Type*} {α : ι → Type*} [∀ i, MulOneClass <| α i] [∀ i, Pow (α i) ℕ]
     [∀ i, NatPowAssoc <| α i] : NatPowAssoc (∀ i, α i) where
@@ -103,9 +116,9 @@ instance Monoid.PowAssoc : NatPowAssoc M where
 @[simp, norm_cast]
 theorem Nat.cast_npow (R : Type*) [NonAssocSemiring R] [Pow R ℕ] [NatPowAssoc R] (n m : ℕ) :
     (↑(n ^ m) : R) = (↑n : R) ^ m := by
-  induction' m with m ih
-  · simp only [pow_zero, Nat.cast_one, npow_zero]
-  · rw [← Nat.add_one, npow_add, npow_add, Nat.cast_mul, ih, npow_one, npow_one]
+  induction m with
+  | zero => simp only [pow_zero, Nat.cast_one, npow_zero]
+  | succ m ih => rw [npow_add, npow_add, Nat.cast_mul, ih, npow_one, npow_one]
 
 @[simp, norm_cast]
 theorem Int.cast_npow (R : Type*) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R]

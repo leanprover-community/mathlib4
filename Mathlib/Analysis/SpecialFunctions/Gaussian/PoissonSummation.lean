@@ -21,15 +21,13 @@ for positive real `a`, or complex `a` with positive real part. (See also
 
 open Real Set MeasureTheory Filter Asymptotics intervalIntegral
 
-open scoped Real Topology FourierTransform RealInnerProductSpace BigOperators
+open scoped Real Topology FourierTransform RealInnerProductSpace
 
 open Complex hiding exp continuous_exp abs_of_nonneg sq_abs
 
 noncomputable section
 
 section GaussianPoisson
-
-variable {E : Type*} [NormedAddCommGroup E]
 
 /-! First we show that Gaussian-type functions have rapid decay along `cocompact ℝ`. -/
 
@@ -57,12 +55,12 @@ lemma cexp_neg_quadratic_isLittleO_abs_rpow_cocompact {a : ℂ} (ha : a.re < 0) 
   rw [cocompact_eq_atBot_atTop, isLittleO_sup]
   constructor
   · refine ((cexp_neg_quadratic_isLittleO_rpow_atTop ha (-b) s).comp_tendsto
-      Filter.tendsto_neg_atBot_atTop).congr' (eventually_of_forall fun x ↦ ?_) ?_
+      Filter.tendsto_neg_atBot_atTop).congr' (Eventually.of_forall fun x ↦ ?_) ?_
     · simp only [neg_mul, Function.comp_apply, ofReal_neg, neg_sq, mul_neg, neg_neg]
-    · refine (eventually_lt_atBot 0).mp (eventually_of_forall fun x hx ↦ ?_)
+    · refine (eventually_lt_atBot 0).mp (Eventually.of_forall fun x hx ↦ ?_)
       simp only [Function.comp_apply, abs_of_neg hx]
   · refine (cexp_neg_quadratic_isLittleO_rpow_atTop ha b s).congr' EventuallyEq.rfl ?_
-    refine (eventually_gt_atTop 0).mp (eventually_of_forall fun x hx ↦ ?_)
+    refine (eventually_gt_atTop 0).mp (Eventually.of_forall fun x hx ↦ ?_)
     simp_rw [abs_of_pos hx]
 
 theorem tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact {a : ℝ} (ha : 0 < a) (s : ℝ) :
@@ -73,15 +71,13 @@ theorem tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact {a : ℝ} (ha : 0 < a) (s 
       (mem_atTop_sets.mpr ⟨0, fun b hb => ⟨b, abs_of_nonneg hb⟩⟩)]
   exact
     (rpow_mul_exp_neg_mul_sq_isLittleO_exp_neg ha s).tendsto_zero_of_tendsto
-      (tendsto_exp_atBot.comp <| tendsto_id.neg_const_mul_atTop (neg_lt_zero.mpr one_half_pos))
-#align tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact
+      (tendsto_exp_atBot.comp <| tendsto_id.const_mul_atTop_of_neg (neg_lt_zero.mpr one_half_pos))
 
 theorem isLittleO_exp_neg_mul_sq_cocompact {a : ℂ} (ha : 0 < a.re) (s : ℝ) :
     (fun x : ℝ => Complex.exp (-a * x ^ 2)) =o[cocompact ℝ] fun x : ℝ => |x| ^ s := by
   convert cexp_neg_quadratic_isLittleO_abs_rpow_cocompact (?_ : (-a).re < 0) 0 s using 1
   · simp_rw [zero_mul, add_zero]
   · rwa [neg_re, neg_lt_zero]
-#align is_o_exp_neg_mul_sq_cocompact isLittleO_exp_neg_mul_sq_cocompact
 
 /-- Jacobi's theta-function transformation formula for the sum of `exp -Q(x)`, where `Q` is a
 negative definite quadratic form. -/
@@ -100,7 +96,7 @@ theorem Complex.tsum_exp_neg_quadratic {a : ℂ} (ha : 0 < a.re) (b : ℂ) :
     exact mul_pos pi_pos ha
   have h2 : 0 < (↑π / a).re := by
     rw [div_eq_mul_inv, re_ofReal_mul, inv_re]
-    refine' mul_pos pi_pos (div_pos ha <| normSq_pos.mpr _)
+    refine mul_pos pi_pos (div_pos ha <| normSq_pos.mpr ?_)
     contrapose! ha
     rw [ha, zero_re]
   have f_bd : f =O[cocompact ℝ] (fun x => |x| ^ (-2 : ℝ)) := by
@@ -125,7 +121,6 @@ theorem Complex.tsum_exp_neg_mul_int_sq {a : ℂ} (ha : 0 < a.re) :
     (∑' n : ℤ, cexp (-π * a * (n : ℂ) ^ 2)) =
       1 / a ^ (1 / 2 : ℂ) * ∑' n : ℤ, cexp (-π / a * (n : ℂ) ^ 2) := by
   simpa only [mul_zero, zero_mul, add_zero] using Complex.tsum_exp_neg_quadratic ha 0
-#align complex.tsum_exp_neg_mul_int_sq Complex.tsum_exp_neg_mul_int_sq
 
 theorem Real.tsum_exp_neg_mul_int_sq {a : ℝ} (ha : 0 < a) :
     (∑' n : ℤ, exp (-π * a * (n : ℝ) ^ 2)) =
@@ -133,6 +128,5 @@ theorem Real.tsum_exp_neg_mul_int_sq {a : ℝ} (ha : 0 < a) :
   simpa only [← ofReal_inj, ofReal_tsum, ofReal_exp, ofReal_mul, ofReal_neg, ofReal_pow,
     ofReal_intCast, ofReal_div, ofReal_one, ofReal_cpow ha.le, ofReal_ofNat, mul_zero, zero_mul,
     add_zero] using Complex.tsum_exp_neg_quadratic (by rwa [ofReal_re] : 0 < (a : ℂ).re) 0
-#align real.tsum_exp_neg_mul_int_sq Real.tsum_exp_neg_mul_int_sq
 
 end GaussianPoisson

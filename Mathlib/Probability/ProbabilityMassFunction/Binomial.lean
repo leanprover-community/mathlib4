@@ -3,6 +3,7 @@ Copyright (c) 2023 Joachim Breitner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joachim Breitner
 -/
+import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Probability.ProbabilityMassFunction.Constructions
 import Mathlib.Tactic.FinCases
 
@@ -49,7 +50,7 @@ theorem binomial_apply_last (p : ℝ≥0∞) (h : p ≤ 1) (n : ℕ) :
 theorem binomial_apply_self (p : ℝ≥0∞) (h : p ≤ 1) (n : ℕ) :
     binomial p h n n = p^n := by simp
 
-/-- The binomial distribution on one coin is the bernoully distribution. -/
+/-- The binomial distribution on one coin is the Bernoulli distribution. -/
 theorem binomial_one_eq_bernoulli (p : ℝ≥0∞) (h : p ≤ 1) :
     binomial p h 1 = (bernoulli p h).map (cond · 1 0) := by
   ext i; fin_cases i <;> simp [tsum_bool, binomial_apply]

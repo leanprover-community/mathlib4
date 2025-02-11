@@ -6,8 +6,6 @@ Authors: David Renshaw
 import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.Linarith
 
-#align_import imo.imo2011_q3 from "leanprover-community/mathlib"@"5f25c089cb34db4db112556f23c50d12da81b297"
-
 /-!
 # IMO 2011 Q3
 
@@ -57,4 +55,3 @@ theorem imo2011_q3 (f : ℝ → ℝ) (hf : ∀ x y, f (x + y) ≤ y * f x + f (f
     have hp := hxt (-1) (-1)
     rw [hno] at hp
     linarith
-#align imo2011_q3 imo2011_q3
