@@ -17,8 +17,10 @@ has the subspace topology (i.e. inverse is continuous).
 Typical examples include monoids with discrete topology, topological groups (or fields),
 and rings `R` equipped with the `I`-adic topology where `I ≤ J(R)` (`IsOpenUnits.of_isAdic`).
 
-This condition is needed so that for an affine scheme `X` over `R` and `U ⊆ X` an affine subscheme,
-`U(R)` is an open subspace of `X(R)`.
+A typical non-example is `𝔸ₖ` because the topology on ideles is not the induced topology from adeles.
+
+This condition is necessary and sufficient for `U(R)` to be an open subspace of `X(R)`
+for all affine scheme `X` over `R` and all affine open subscheme `U ⊆ X`.
 -/
 
 open Topology
