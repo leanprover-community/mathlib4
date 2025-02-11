@@ -35,6 +35,9 @@ It does so by identifying subexpressions which are defeq, but not at reducible t
 -/
 syntax (name := erw?) "erw? " "[" rwRule "]" : tactic
 
+local macro_rules
+  | `(term| verbose $e) => `(term| modify (·.push fun _ => $e))
+
 /--
 Check if two expressions are different at reducible transparency.
 Attempt to log an info message for the first subexpressions which are different
@@ -45,13 +48,11 @@ Also returns an array of messages for the `verbose` report.
 def logDiffs (tk : Syntax) (e₁ e₂ : Expr) : StateT (Array (Unit → MessageData)) MetaM Bool := do
   withOptions (fun opts => opts.setBool `pp.analyze true) do
   if ← withReducible (isDefEq e₁ e₂) then
-    modify fun verbMsgs => verbMsgs.push
-      fun _ => m!"{checkEmoji}\n{e₁}\n  and\n{e₂}\nare defeq at reducible transparency."
+    verbose m!"{checkEmoji}\n{e₁}\n  and\n{e₂}\nare defeq at reducible transparency."
     -- They agree at reducible transparency, we're done.
     return false
   else
-    modify fun verbMsgs => verbMsgs.push
-      fun _ => m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare not defeq at reducible transparency."
+    verbose m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare not defeq at reducible transparency."
     if ← isDefEq e₁ e₂ then
       match e₁, e₂ with
       | Expr.app f₁ a₁, Expr.app f₂ a₂ =>
@@ -69,12 +70,10 @@ def logDiffs (tk : Syntax) (e₁ e₂ : Expr) : StateT (Array (Unit → MessageD
             but not at reducible transparency."
         return true
       | _, _ =>
-        modify fun verbMsgs => verbMsgs.push
-          fun _ => m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare not both applications or constants."
+        verbose m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare not both applications or constants."
         return false
     else
-        modify fun verbMsgs => verbMsgs.push
-          fun _ => m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare not defeq at default transparency."
+        verbose m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare not defeq at default transparency."
       return false
 
 elab_rules : tactic
