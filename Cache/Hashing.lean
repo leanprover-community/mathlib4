@@ -25,14 +25,14 @@ structure HashMemo where
   /-- Hash of mathlib's lake project settings. -/
   rootHash : UInt64
   /-- Stores the imports of a module -/
-  depsMap  : Std.HashMap FilePath (Array FilePath) := {}
+  depsMap  : Std.HashMap FilePath (Array FilePath) := ∅
   /--
   For modules in Mathlib or upstream, this contains the same information
   as `hashMap`. Contains `none` if a source file couldn't be found.
   -/
-  cache    : Std.HashMap FilePath (Option UInt64) := {}
+  cache    : Std.HashMap FilePath (Option UInt64) := ∅
   /-- Stores the hash of the module's content for modules in Mathlib or upstream. -/
-  hashMap  : ModuleHashMap := {}
+  hashMap  : ModuleHashMap := ∅
   deriving Inhabited
 
 partial def insertDeps (hashMap : ModuleHashMap) (path : FilePath) (hashMemo : HashMemo) :
@@ -49,7 +49,7 @@ Filters the `hashMap` of a `HashMemo` so that it only contains key/value pairs s
 -/
 def HashMemo.filterByFilePaths (hashMemo : HashMemo) (filePaths : List FilePath) :
     IO ModuleHashMap := do
-  let mut hashMap := default
+  let mut hashMap := ∅
   for filePath in filePaths do
     if hashMemo.hashMap.contains filePath then
       hashMap := insertDeps hashMap filePath hashMemo
