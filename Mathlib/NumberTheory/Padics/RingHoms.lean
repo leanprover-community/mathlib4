@@ -288,9 +288,9 @@ theorem ker_toZMod : RingHom.ker (toZMod : ℤ_[p] →+* ZMod p) = maximalIdeal 
     · apply sub_zmodRepr_mem
 
 /-- The equivalence between the residue field of the `p`-adic integers and `ℤ/pℤ` -/
-def residueField : IsLocalRing.ResidueField ℤ_[p] ≃+* ZMod p := by
-  exact_mod_cast (@PadicInt.ker_toZMod p _) ▸ RingHom.quotientKerEquivOfSurjective
-    (ZMod.ringHom_surjective PadicInt.toZMod)
+def residueField : IsLocalRing.ResidueField ℤ_[p] ≃+* ZMod p :=
+  (Ideal.quotEquivOfEq PadicInt.ker_toZMod.symm).trans <|
+    RingHom.quotientKerEquivOfSurjective (ZMod.ringHom_surjective PadicInt.toZMod)
 
 open scoped Classical in
 /-- `appr n x` gives a value `v : ℕ` such that `x` and `↑v : ℤ_p` are congruent mod `p^n`.

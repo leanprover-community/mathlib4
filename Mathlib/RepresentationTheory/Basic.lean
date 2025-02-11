@@ -55,12 +55,12 @@ variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k 
   (ρ : Representation k G V)
 
 @[simp]
-theorem ρ_inv_self_apply (g : G) (x : V) :
+theorem inv_self_apply (g : G) (x : V) :
     ρ g⁻¹ (ρ g x) = x := by
   simp [← LinearMap.mul_apply, ← map_mul]
 
 @[simp]
-theorem ρ_self_inv_apply (g : G) (x : V) :
+theorem self_inv_apply (g : G) (x : V) :
     ρ g (ρ g⁻¹ x) = x := by
   simp [← LinearMap.mul_apply, ← map_mul]
 

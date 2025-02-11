@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.ModuleCat.Adjunctions
-import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
@@ -50,7 +49,7 @@ section
 variable [Monoid G]
 
 instance : CoeSort (Rep k G) (Type u) :=
-  HasForget.hasCoeToSort _
+  ⟨fun V => V.V⟩
 
 instance (V : Rep k G) : AddCommGroup V := by
   change AddCommGroup ((forget₂ (Rep k G) (ModuleCat k)).obj V); infer_instance
@@ -66,16 +65,12 @@ def ρ (V : Rep k G) : Representation k G V :=
   (ModuleCat.endRingEquiv V.V).toMonoidHom.comp (Action.ρ V)
 
 /-- Lift an unbundled representation to `Rep`. -/
-def of {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) : Rep k G :=
+abbrev of {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) : Rep k G :=
   ⟨ModuleCat.of k V, (ModuleCat.endRingEquiv _).symm.toMonoidHom.comp ρ⟩
 
-@[simp]
 theorem coe_of {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) :
     (of ρ : Type u) = V :=
   rfl
-
-@[simp]
-lemma coe_V {V : Rep k G} : (V.V : Type u) = V := rfl
 
 @[simp]
 theorem of_ρ {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) : (of ρ).ρ = ρ :=
@@ -123,7 +118,7 @@ instance {V : Type u} [AddCommGroup V] [Module k V] :
     IsTrivial (Rep.trivial k G V) where
 
 instance {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V) [ρ.IsTrivial] :
-    IsTrivial (Rep.of ρ) where
+    IsTrivial (Rep.of ρ) := ‹_›
 
 -- Porting note: the two following instances were found automatically in mathlib3
 noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
@@ -132,40 +127,27 @@ noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k))
 noncomputable instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
   Action.preservesColimits_forget.{u} _ _
 
-theorem epi_iff_surjective {A B : Rep k G} (f : A ⟶ B) : Epi f ↔ Function.Surjective f.hom :=
-  ⟨fun _ => (ModuleCat.epi_iff_surjective ((forget₂ _ _).map f)).1 inferInstance,
-  fun h => (forget₂ _ _).epi_of_epi_map ((ModuleCat.epi_iff_surjective <|
-    ((forget₂ _ _).map f)).2 h)⟩
-
-theorem mono_iff_injective {A B : Rep k G} (f : A ⟶ B) : Mono f ↔ Function.Injective f.hom :=
-  ⟨fun _ => (ModuleCat.mono_iff_injective ((forget₂ _ _).map f)).1 inferInstance,
-  fun h => (forget₂ _ _).mono_of_mono_map ((ModuleCat.mono_iff_injective <|
-    ((forget₂ _ _).map f)).2 h)⟩
-
 section
 
 open MonoidalCategory
 
-@[simp]
-theorem coe_tensor {A B : Rep k G} : (A ⊗ B : Rep k G) = TensorProduct k A B := rfl
+/- Porting note: linter complains `simp` unfolds some types in the LHS, so
+have removed `@[simp]`. -/
+theorem MonoidalCategory.braiding_hom_apply {A B : Rep k G} (x : A) (y : B) :
+    Action.Hom.hom (β_ A B).hom (TensorProduct.tmul k x y) = TensorProduct.tmul k y x :=
+  rfl
+
+/- Porting note: linter complains `simp` unfolds some types in the LHS, so
+have removed `@[simp]`. -/
+theorem MonoidalCategory.braiding_inv_apply {A B : Rep k G} (x : A) (y : B) :
+    Action.Hom.hom (β_ A B).inv (TensorProduct.tmul k y x) = TensorProduct.tmul k x y :=
+  rfl
 
 @[simp]
 theorem tensor_ρ {A B : Rep k G} : (A ⊗ B).ρ = A.ρ.tprod B.ρ := rfl
 
 end
-section Res
 
-variable {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H)
-
-@[simp]
-lemma coe_res_obj : ((Action.res _ f).obj A : Type u) = A := rfl
-
-@[simp]
-lemma coe_res_obj_ρ (g : G) :
-    @DFunLike.coe (no_index G →* (A →ₗ[k] A)) _ _ _
-      (Rep.ρ ((Action.res _ f).obj A)) g = A.ρ (f g) := rfl
-
-end Res
 section Linearization
 
 variable (k G)
@@ -195,6 +177,7 @@ theorem coe_linearization_obj_ρ (X : Action (Type u) G) (g : G) :
       (fun _ => (X.V →₀ k) →ₗ[k] (X.V →₀ k)) _
       ((linearization k G).obj X).ρ g = Finsupp.lmapDomain k k (X.ρ g) := rfl
 
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): helps fixing `linearizationTrivialIso` since change in behaviour of `ext`.
 theorem linearization_single (X : Action (Type u) G) (g : G) (x : X.V) (r : k) :
     ((linearization k G).obj X).ρ g (Finsupp.single x r) = Finsupp.single (X.ρ g x) r := by
   simp
@@ -259,10 +242,10 @@ noncomputable abbrev diagonal (n : ℕ) : Rep k G :=
 /-- The natural isomorphism between the representations on `k[G¹]` and `k[G]` induced by left
 multiplication in `G`. -/
 @[simps! hom_hom inv_hom]
-def diagonalOneIsoLeftRegular [Monoid G] :
+def diagonalOneIsoLeftRegular :
     diagonal k G 1 ≅ leftRegular k G :=
   Action.mkIso (Finsupp.domLCongr <| Equiv.funUnique (Fin 1) G).toModuleIso fun _ =>
-    ModuleCat.hom_ext <| Finsupp.lhom_ext fun _ _ => by simp [diagonal]
+    ModuleCat.hom_ext <| Finsupp.lhom_ext fun _ _ => by simp [diagonal, ModuleCat.endRingEquiv]
 
 /-- When `H = {1}`, the `G`-representation on `k[H]` induced by an action of `G` on `H` is
 isomorphic to the trivial representation on `k`. -/
@@ -272,7 +255,8 @@ def ofMulActionSubsingletonIsoTrivial
     ofMulAction k G H ≅ trivial k G k :=
   letI : Unique H := uniqueOfSubsingleton 1
   Action.mkIso (Finsupp.LinearEquiv.finsuppUnique _ _ _).toModuleIso fun _ =>
-    ModuleCat.hom_ext <| Finsupp.lhom_ext fun _ _ => by simp [Subsingleton.elim _ (1 : H)]
+    ModuleCat.hom_ext <| Finsupp.lhom_ext fun _ _ => by
+      simp [Subsingleton.elim _ (1 : H), ModuleCat.endRingEquiv]
 
 /-- The linearization of a type `H` with a `G`-action is definitionally isomorphic to the
 `k`-linear `G`-representation on `k[H]` induced by the `G`-action on `H`. -/
@@ -322,7 +306,8 @@ variable {k G}
 @[simps]
 def leftRegularHom (A : Rep k G) (x : A) : leftRegular k G ⟶ A where
   hom := ModuleCat.ofHom <| Finsupp.lift A k G fun g => A.ρ g x
-  comm _ := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext_ring <| by simp
+  comm _ := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext_ring <| by
+    simp [ModuleCat.endRingEquiv]
 
 theorem leftRegularHom_hom_single {A : Rep k G} (g : G) (x : A) (r : k) :
     (leftRegularHom A x).hom (Finsupp.single g r) = r • A.ρ g x := by
@@ -366,7 +351,8 @@ def freeLift {α : Type u} (A : Rep k G) (f : α → A) :
     free k G α ⟶ A where
   hom := ModuleCat.ofHom <| linearCombination k (fun x => A.ρ x.2 (f x.1)) ∘ₗ
     (finsuppProdLEquiv k).symm.toLinearMap
-  comm _ := ModuleCat.hom_ext <| lhom_ext' fun _ => lhom_ext fun _ _ => by simp
+  comm _ := ModuleCat.hom_ext <| lhom_ext' fun _ => lhom_ext fun _ _ => by
+    simp [ModuleCat.endRingEquiv]
 
 lemma freeLift_hom_single_single {α : Type u} (A : Rep k G)
     (f : α → A) (i : α) (g : G) (r : k) :
@@ -408,9 +394,9 @@ def finsuppTensorLeft [DecidableEq α] :
   Action.mkIso (TensorProduct.finsuppLeft k A B α).toModuleIso
     fun _ => ModuleCat.hom_ext <| TensorProduct.ext <| lhom_ext fun _ _ => by
       ext
-      simp only [Action.instMonoidalCategory_tensorObj_V, Action.tensor_ρ']
-      simp [TensorProduct.finsuppLeft_apply_tmul, instMonoidalCategoryStruct_tensorObj,
-        instMonoidalCategoryStruct_tensorHom, ModuleCat.MonoidalCategory.tensorObj]
+      simp [Action_ρ_eq_ρ, TensorProduct.finsuppLeft_apply_tmul,
+        instMonoidalCategoryStruct_tensorObj, instMonoidalCategoryStruct_tensorHom,
+        ModuleCat.MonoidalCategory.tensorObj, ModuleCat.endRingEquiv]
 
 /-- Given representations `A, B` and a type `α`, this is the natural representation isomorphism
 `A ⊗ (α →₀ B) ≅ (A ⊗ B) →₀ α` sending `a ⊗ₜ single x b ↦ single x (a ⊗ₜ b)`. -/
@@ -419,8 +405,7 @@ def finsuppTensorRight [DecidableEq α] :
     A ⊗ B.finsupp α ≅ (A ⊗ B).finsupp α :=
   Action.mkIso (TensorProduct.finsuppRight k A B α).toModuleIso fun _ => ModuleCat.hom_ext <|
     TensorProduct.ext <| LinearMap.ext fun _ => lhom_ext fun _ _ => by
-      simp only [Action.instMonoidalCategory_tensorObj_V, Action.tensor_ρ']
-      simp [TensorProduct.finsuppRight_apply_tmul, instMonoidalCategoryStruct_tensorHom,
+      simp [Action_ρ_eq_ρ, TensorProduct.finsuppRight_apply_tmul, ModuleCat.endRingEquiv,
         instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj]
 
 variable (k G) in
@@ -431,23 +416,21 @@ def leftRegularTensorTrivialIsoFree (α : Type u) :
   Action.mkIso (finsuppTensorFinsupp' k G α ≪≫ₗ Finsupp.domLCongr (Equiv.prodComm G α) ≪≫ₗ
     finsuppProdLEquiv k).toModuleIso fun _ =>
       ModuleCat.hom_ext <| TensorProduct.ext <| lhom_ext fun _ _ => lhom_ext fun _ _ => by
-        simp only [Action.instMonoidalCategory_tensorObj_V, Action.tensor_ρ']
-        simp [instMonoidalCategoryStruct_tensorObj,
-          instMonoidalCategoryStruct_tensorHom, ModuleCat.MonoidalCategory.tensorObj]
+        simp [Action_ρ_eq_ρ, instMonoidalCategoryStruct_tensorObj, ModuleCat.endRingEquiv,
+          instMonoidalCategoryStruct_whiskerRight, ModuleCat.MonoidalCategory.whiskerRight,
+          ModuleCat.MonoidalCategory.tensorObj]
 
 variable {α : Type u} (i : α)
 
 lemma leftRegularTensorTrivialIsoFree_hom_hom_single_tmul_single (i : α) (g : G) (r s : k) :
     (leftRegularTensorTrivialIsoFree k G α).hom.hom (single g r ⊗ₜ single i s) =
       single i (single g (r * s)) := by
-  simp only [Action.instMonoidalCategory_tensorObj_V, Action.tensor_ρ']
   simp [leftRegularTensorTrivialIsoFree, instMonoidalCategoryStruct_tensorObj,
     ModuleCat.MonoidalCategory.tensorObj]
 
 lemma leftRegularTensorTrivialIsoFree_inv_hom_single_single (i : α) (g : G) (r : k) :
     (leftRegularTensorTrivialIsoFree k G α).inv.hom (single i (single g r)) =
       single g r ⊗ₜ[k] single i 1 := by
-  simp only [Action.instMonoidalCategory_tensorObj_V, Action.tensor_ρ']
   simp [leftRegularTensorTrivialIsoFree, finsuppTensorFinsupp'_symm_single_eq_tmul_single_one,
     instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj]
 
@@ -479,7 +462,7 @@ theorem diagonalSuccIsoTensorTrivial_hom_hom_single (f : Fin (n + 1) → G) (a :
   simp [diagonalSuccIsoTensorTrivial, instMonoidalCategoryStruct_whiskerLeft, tensorObj_def,
     ModuleCat.MonoidalCategory.whiskerLeft, instMonoidalCategoryStruct_tensorObj,
     ModuleCat.MonoidalCategory.tensorObj, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul,
-    ModuleCat.hom_id (M := ((linearization k G).obj _).V)]
+    ModuleCat.hom_id (M := ((linearization k G).obj _).V), Action.ofMulAction_V]
 
 theorem diagonalSuccIsoTensorTrivial_inv_hom_single_single (g : G) (f : Fin n → G) (a b : k) :
     (diagonalSuccIsoTensorTrivial k G n).inv.hom (single g a ⊗ₜ single f b) =
@@ -487,7 +470,7 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom_single_single (g : G) (f : Fin n �
   have := Action.diagonalSuccIsoTensorTrivial_inv_hom (G := G) (n := n)
   simp_all [diagonalSuccIsoTensorTrivial, instMonoidalCategoryStruct_tensorHom,
     instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj, tensorObj_def,
-    ModuleCat.hom_id (M := ((linearization k G).obj _).V)]
+    ModuleCat.hom_id (M := ((linearization k G).obj _).V), Action.ofMulAction_V]
 
 theorem diagonalSuccIsoTensorTrivial_inv_hom_single_left (g : G) (f : (Fin n → G) →₀ k) (r : k) :
     (diagonalSuccIsoTensorTrivial k G n).inv.hom (single g r ⊗ₜ f) =
@@ -496,8 +479,8 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom_single_left (g : G) (f : (Fin n →
   refine f.induction ?_ ?_
   · simp only [TensorProduct.tmul_zero, map_zero]
   · intro a b x _ _ hx
-    simp only [lift_apply, smul_single', mul_one, TensorProduct.tmul_add, map_add, mul_comm b, hx,
-      diagonalSuccIsoTensorTrivial_inv_hom_single_single, sum_single_index, zero_mul, single_zero]
+    simpa [-Action.instMonoidalCategory_tensorObj_V, TensorProduct.tmul_add, map_add, mul_comm b,
+      hx] using diagonalSuccIsoTensorTrivial_inv_hom_single_single ..
 
 theorem diagonalSuccIsoTensorTrivial_inv_hom_single_right (g : G →₀ k) (f : Fin n → G) (r : k) :
     (diagonalSuccIsoTensorTrivial k G n).inv.hom (g ⊗ₜ single f r) =
@@ -505,8 +488,8 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom_single_right (g : G →₀ k) (f : 
   refine g.induction ?_ ?_
   · simp only [TensorProduct.zero_tmul, map_zero]
   · intro a b x _ _ hx
-    simp only [lift_apply, smul_single', map_add, hx, TensorProduct.add_tmul, single_zero,
-      diagonalSuccIsoTensorTrivial_inv_hom_single_single, sum_single_index, zero_mul]
+    simpa [-Action.instMonoidalCategory_tensorObj_V, map_add, hx, TensorProduct.add_tmul] using
+      diagonalSuccIsoTensorTrivial_inv_hom_single_single ..
 
 variable (k G n) in
 /-- Representation isomorphism `k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])`, where the righthand representation is
@@ -515,6 +498,7 @@ defined pointwise by the left regular representation on `k[G]`. The map sends
 def diagonalSuccIsoFree : diagonal k G (n + 1) ≅ free k G (Fin n → G) :=
   diagonalSuccIsoTensorTrivial k G n ≪≫ leftRegularTensorTrivialIsoFree k G (Fin n → G)
 
+@[simp]
 theorem diagonalSuccIsoFree_hom_hom_single (f : Fin (n + 1) → G) (a : k) :
     (diagonalSuccIsoFree k G n).hom.hom (single f a) =
       single (fun i => (f i.castSucc)⁻¹ * f i.succ) (single (f 0) a) := by
@@ -523,6 +507,7 @@ theorem diagonalSuccIsoFree_hom_hom_single (f : Fin (n + 1) → G) (a : k) :
     (k := k) (G := G) (α := Fin n → G)
   simp_all [diagonalSuccIsoFree]
 
+@[simp]
 theorem diagonalSuccIsoFree_inv_hom_single_single (g : G) (f : Fin n → G) (a : k) :
     (diagonalSuccIsoFree k G n).inv.hom (single f (single g a)) =
       single (g • Fin.partialProd f) a := by
@@ -534,8 +519,8 @@ theorem diagonalSuccIsoFree_inv_hom_single (g : G →₀ k) (f : Fin n → G) :
     (diagonalSuccIsoFree k G n).inv.hom (single f g) =
       lift _ k G (fun a => single (a • Fin.partialProd f) 1) g :=
   g.induction (by simp) fun _ _ _ _ _ _ => by
-    simp only [single_add, map_add, diagonalSuccIsoFree_inv_hom_single_single]
-    simp_all
+    rw [single_add, map_add, diagonalSuccIsoFree_inv_hom_single_single]
+    simp_all [sum_add_index']
 
 section MonoidalClosed
 open MonoidalCategory Action
@@ -557,6 +542,8 @@ protected def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
   map_comp := fun _ _ => by ext; rfl
 
 @[simp] theorem ihom_obj_ρ_apply {A B : Rep k G} (g : G) (x : A →ₗ[k] B) :
+  -- Hint to put this lemma into `simp`-normal form.
+  DFunLike.coe (F := (Representation k G (↑A.V →ₗ[k] ↑B.V)))
     ((Rep.ihom A).obj B).ρ g x = B.ρ g ∘ₗ x ∘ₗ A.ρ g⁻¹ :=
   rfl
 
@@ -567,7 +554,9 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
   toFun f :=
     { hom := ModuleCat.ofHom <| (TensorProduct.curry f.hom.hom).flip
       comm := fun g => ModuleCat.hom_ext <| LinearMap.ext fun x => LinearMap.ext fun y => by
-        simpa using hom_comm_apply (A := A ⊗ B) f g (A.ρ g⁻¹ y ⊗ₜ[k] x)  }
+        simpa [ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorObj,
+          ModuleCat.MonoidalCategory.tensorObj, ModuleCat.endRingEquiv] using
+          hom_comm_apply f g (A.ρ g⁻¹ y ⊗ₜ[k] x) }
   invFun f :=
     { hom := ModuleCat.ofHom <| TensorProduct.uncurry k _ _ _ f.hom.hom.flip
       comm := fun g => ModuleCat.hom_ext <| TensorProduct.ext' fun x y => by
