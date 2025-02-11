@@ -79,8 +79,9 @@ def logDiffs (tk : Syntax) (e₁ e₂ : Expr) : StateT (Array (Unit → MessageD
         verbose
           m!"{crossEmoji}{indentD e₁}\nand{indentD e₂}\nare not defeq at default transparency."
       return false
+
 /--
-Checks that the input `Expr` represents an equality and returns the types of the two sides,
+Checks that the input `Expr` represents a proof produced by `(e)rw` and returns the types of the LHS of the equality being written (one from the target, the other from the lemma used). These will be defeq, but not necessarily reducibly so.
 so that they can be compared at various transparency levels.
 -/
 def extractRewriteEq (e : Expr) : MetaM (Expr × Expr) := do
