@@ -290,8 +290,9 @@ variable {A α}
 lemma coinvariantsTensorFreeToFinsupp_mk_tmul_single (x : A) (i : α) (g : G) (r : k) :
     coinvariantsTensorFreeToFinsupp A α (Submodule.Quotient.mk (x ⊗ₜ single i (single g r))) =
       single i (r • A.ρ g⁻¹ x) := by
-  simp [coinvariantsTensorFreeToFinsupp, coinvariantsMap,
-    finsuppTensorRight, TensorProduct.finsuppRight]
+  simp [coinvariantsTensorFreeToFinsupp, coinvariantsMap, finsuppTensorRight,
+    TensorProduct.finsuppRight, ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorObj,
+    ModuleCat.MonoidalCategory.tensorObj]
 
 variable (A α)
 
