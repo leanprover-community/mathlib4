@@ -139,10 +139,16 @@ def downloadFiles (hashMap : IO.ModuleHashMap) (forceDownload : Bool) (parallel 
       IO.Process.exit 1
   else IO.println "No files to download"
 
-/-- Check if the project's `lean-toolchain` file matches mathlib's.
-Print and error and exit the process with error code 1 otherwise. -/
+/--
+Check if the project's `lean-toolchain` file matches mathlib's.
+Print and error and exit the process with error code 1 otherwise.
+Does nothing if the current project is mathlib.
+-/
 def checkForToolchainMismatch : IO.CacheM Unit := do
   let mathlibToolchainFile := (← read).mathlibDepPath / "lean-toolchain"
+  if mathlibToolchainFile.clean == ("lean-toolchain" : FilePath) then
+    -- we are in mathlib, nothing to check
+    return ()
   let downstreamToolchain ← IO.FS.readFile "lean-toolchain"
   let mathlibToolchain ← IO.FS.readFile mathlibToolchainFile
   if !(mathlibToolchain.trim = downstreamToolchain.trim) then
@@ -187,8 +193,7 @@ def getProofWidgets (buildDir : FilePath) : IO Unit := do
 /-- Downloads missing files, and unpacks files. -/
 def getFiles (hashMap : IO.ModuleHashMap) (forceDownload forceUnpack parallel decompress : Bool) :
     IO.CacheM Unit := do
-  let isMathlibRoot ← IO.isMathlibRoot
-  unless isMathlibRoot do checkForToolchainMismatch
+  checkForToolchainMismatch
   getProofWidgets (← read).proofWidgetsBuildDir
   downloadFiles hashMap forceDownload parallel
   if decompress then
