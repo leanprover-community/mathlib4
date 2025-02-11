@@ -380,7 +380,7 @@ def lookup (hashMap : ModuleHashMap) (modules : List Name) : IO Unit := do
 
 /--
 Parse command line arguments.
-Position `0`, the command like [`get`, `clean`, etc.] is ignored.
+Position `0` (i.e. the command `get`, `clean`, etc.) is ignored.
 The remaining arguments take one of the following forms:
 1. `Mathlib.Algebra.Fields.Basic`: there exists such a Lean file
 2. `Mathlib.Algebra.Fields`: no Lean file exists but a folder
