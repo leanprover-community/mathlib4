@@ -39,37 +39,53 @@ syntax (name := erw?) "erw? " "[" rwRule "]" : tactic
 Check if two expressions are different at reducible transparency.
 Attempt to log an info message for the first subexpressions which are different
 (but agree at default transparency).
+
+Also returns an array of messages for the `verbose` report.
 -/
-def logDiffs (tk : Syntax) (e₁ e₂ : Expr) : MetaM Bool := do
+def logDiffs (tk : Syntax) (e₁ e₂ : Expr) : MetaM (Bool × Array MessageData) := do
   withOptions (fun opts => opts.setBool `pp.analyze true) do
   let verbose := (← getOptions).get `tactic.erw?.verbose (defVal := false)
+  let mut verbMsgs := #[]
   if ← withReducible (isDefEq e₁ e₂) then
-    if verbose then logInfoAt tk m!"{e₁}\n  and\n{e₂}\n  are defeq at reducible transparency."
+    if verbose then
+      verbMsgs := verbMsgs.push
+        m!"{checkEmoji}\n{e₁}\n  and\n{e₂}\nare defeq at reducible transparency."
     -- They agree at reducible transparency, we're done.
-    return false
+    return (false, verbMsgs)
   else
-    if verbose then logInfoAt tk m!"{e₁}\n  and\n{e₂}\n  are not defeq at reducible transparency."
+    if verbose then
+      verbMsgs := verbMsgs.push
+        m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare not defeq at reducible transparency."
     if ← isDefEq e₁ e₂ then
       match e₁, e₂ with
       | Expr.app f₁ a₁, Expr.app f₂ a₂ =>
-        if ← logDiffs tk a₁ a₂ then
-          return true
-        else if ← logDiffs tk f₁ f₂ then
-          return true
+        let (newDiff, newMsgs) ← logDiffs tk a₁ a₂
+        verbMsgs := verbMsgs ++ newMsgs
+        if newDiff then
+          return (true, verbMsgs)
         else
-          logInfoAt tk m!"{e₁}\n  and\n{e₂}\n  \
-            are defeq at default transparency, but not at reducible transparency."
-          return true
+          let (newDiff, newMsgs) ← logDiffs tk f₁ f₂
+          verbMsgs := verbMsgs ++ newMsgs
+          if newDiff then
+            return (true, verbMsgs)
+          else
+            logInfoAt tk m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare defeq at default transparency, \
+              but not at reducible transparency."
+            return (true, verbMsgs)
       | Expr.const _ _, Expr.const _ _ =>
-        logInfoAt tk m!"{e₁}\n  and\n{e₂}\n  \
-            are defeq at default transparency, but not at reducible transparency."
-        return true
+        logInfoAt tk m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare defeq at default transparency, \
+            but not at reducible transparency."
+        return (true, verbMsgs)
       | _, _ =>
-        if verbose then logInfoAt tk m!"{e₁}\n  and\n{e₂}\n  are not both applications."
-        return false
+        if verbose then
+          verbMsgs := verbMsgs.push
+            m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare not both applications or constants."
+        return (false, verbMsgs)
     else
-      if verbose then logInfoAt tk m!"{e₁}\n  and\n{e₂}\n  are not defeq at default transparency."
-      return false
+      if verbose then
+        verbMsgs := verbMsgs.push
+          m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare not defeq at default transparency."
+      return (false, verbMsgs)
 
 elab_rules : tactic
   | `(tactic| erw?%$tk [$r]) => withMainContext do
@@ -83,13 +99,15 @@ elab_rules : tactic
       | (``id, #[ty, e]) =>
         match ty.eq? with
         | some (_, tgt, _) =>
-          if verbose then logInfoAt tk m!"Expression appearing in target: {tgt}"
           match (← inferType e).eq? with
           | some (_, inferred, _) =>
-            if verbose then logInfoAt tk m!"Expression from `erw`: {inferred}"
-            _ ← logDiffs tk tgt inferred
+            let (_, msgs) ← logDiffs tk tgt inferred
+            if verbose then
+              logInfoAt tk <| .joinSep
+                (m!"Expression appearing in target: {tgt}" ::
+                  m!"Expression from `erw`: {inferred}" :: msgs.toList) "\n\n"
           | _ => logErrorAt tk "Unexpected term produced by `erw`, \
-                   inferred type is not an equality."
+                  inferred type is not an equality."
         | _ => logErrorAt tk "Unexpected term produced by `erw`, type hint is not an equality."
       | _ => logErrorAt tk "Unexpected term produced by `erw`, not of the form: `Eq.mpr (id _) _`."
     | _ => logErrorAt tk "Unexpected term produced by `erw`, head is not an `Eq.mpr`."
