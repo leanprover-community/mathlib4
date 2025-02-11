@@ -8,6 +8,7 @@ import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.TypeStar
+import Mathlib.Tactic.ToAdditive
 
 /-!
 # Orders
@@ -23,6 +24,9 @@ section Preorder
 /-!
 ### Definition of `Preorder` and lemmas about types with a `Preorder`
 -/
+
+attribute [order_dual existing (reorder := 3 4) LE.le] LE.le
+attribute [order_dual existing (reorder := 3 4) LT.lt] LT.lt
 
 /-- A preorder is a reflexive, transitive relation `≤` with `a < b` defined in the obvious way. -/
 class Preorder (α : Type*) extends LE α, LT α where

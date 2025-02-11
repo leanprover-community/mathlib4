@@ -1010,6 +1010,8 @@ def orderDualDict : String → List String
   | "bot"         => ["top"]
   | "inf"         => ["sup"]
   | "sup"         => ["inf"]
+  | "min"         => ["max"]
+  | "max"         => ["min"]
   | x             => [x]
 
 /--

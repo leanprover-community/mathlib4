@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.Simps.NotationClass
+import Mathlib.Tactic.ToAdditive
 
 /-!
 # Notation classes for lattice operations
@@ -66,6 +67,10 @@ class HImp (α : Type*) where
   /-- Heyting implication `⇨` -/
   himp : α → α → α
 
+attribute [order_dual existing (reorder := 3 4) HImp.himp] HImp.himp
+
+attribute [order_dual existing (reorder := 3 4) SDiff.sdiff] SDiff.sdiff
+
 /-- Syntax typeclass for Heyting negation `￢`.
 
 The difference between `HasCompl` and `HNot` is that the former belongs to Heyting algebras,
@@ -101,16 +106,16 @@ class Bot (α : Type*) where
   /-- The bot (`⊥`, `\bot`) element -/
   bot : α
 
+attribute [order_dual existing] Top Bot
+
 /-- The top (`⊤`, `\top`) element -/
 notation "⊤" => Top.top
 
 /-- The bot (`⊥`, `\bot`) element -/
 notation "⊥" => Bot.bot
 
+@[order_dual]
 instance (priority := 100) top_nonempty (α : Type*) [Top α] : Nonempty α :=
   ⟨⊤⟩
-
-instance (priority := 100) bot_nonempty (α : Type*) [Bot α] : Nonempty α :=
-  ⟨⊥⟩
 
 attribute [match_pattern] Bot.bot Top.top

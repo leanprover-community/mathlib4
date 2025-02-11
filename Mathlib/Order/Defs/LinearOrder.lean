@@ -26,6 +26,10 @@ section LinearOrder
 ### Definition of `LinearOrder` and lemmas about types with a linear order
 -/
 
+set_option trace.to_additive_detail true
+
+attribute [order_dual existing] Min Max
+
 /-- Default definition of `max`. -/
 def maxDefault [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
   if a ≤ b then b else a
@@ -33,6 +37,8 @@ def maxDefault [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : 
 /-- Default definition of `min`. -/
 def minDefault [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
   if a ≤ b then a else b
+
+attribute [order_dual existing] maxDefault minDefault
 
 /-- This attempts to prove that a given instance of `compare` is equal to `compareOfLessAndEq` by
 introducing the arguments and trying the following approaches in order:
@@ -70,6 +76,12 @@ class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α w
   /-- Comparison via `compare` is equal to the canonical comparison given decidable `<` and `=`. -/
   compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by
     compareOfLessAndEq_rfl
+
+
+attribute [order_dual existing] LinearOrder.toMax LinearOrder.toMin
+attribute [order_dual existing] LinearOrder.min_def LinearOrder.max_def
+attribute [order_dual? existing LinearOrder.decidableLE] LinearOrder.decidableLE
+attribute [order_dual existing LinearOrder.decidableLT] LinearOrder.decidableLT
 
 variable [LinearOrder α] {a b c : α}
 
@@ -146,11 +158,12 @@ theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α}
     (H : d < c → b < a) (h : a ≤ b) : c ≤ d :=
   le_of_not_lt fun h' => not_le_of_gt (H h') h
 
+@[order_dual?]
 lemma min_def (a b : α) : min a b = if a ≤ b then a else b := by rw [LinearOrder.min_def a]
 lemma max_def (a b : α) : max a b = if a ≤ b then b else a := by rw [LinearOrder.max_def a]
 
 -- Porting note: no `min_tac` tactic in the following series of lemmas
-
+@[order_dual?]
 lemma min_le_left (a b : α) : min a b ≤ a := by
   if h : a ≤ b
   then simp [min_def, if_pos h, le_refl]
