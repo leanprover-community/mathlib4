@@ -49,6 +49,15 @@ theorem IsBigO.integrableAtFilter [IsMeasurablyGenerated l]
   refine (ae_restrict_mem hsm).mono fun x hx ↦ ?_
   exact (hfg x hx).trans (le_abs_self _)
 
+theorem IsBigO.integrableOn (s : Set α) (hs : MeasurableSet s) (hf : f =O[𝓟 s] g)
+    (hfm : AEStronglyMeasurable f (μ.restrict s)) (hg : IntegrableOn g s μ) :
+    IntegrableOn f s μ := by
+  rw [← integrableAtFilter_principal_iff] at hg ⊢
+  rw [← principal_isMeasurablyGenerated_iff] at hs
+  apply hf.integrableAtFilter _ hg
+  apply AeStronglyMeasurable.stronglyMeasurableAtFilter_of_mem hfm
+  exact fun ⦃a⦄ a ↦ a
+
 /-- Variant of `MeasureTheory.Integrable.mono` taking `f =O[⊤] (g)` instead of `‖f(x)‖ ≤ ‖g(x)‖` -/
 theorem IsBigO.integrable (hfm : AEStronglyMeasurable f μ)
     (hf : f =O[⊤] g) (hg : Integrable g μ) : Integrable f μ := by

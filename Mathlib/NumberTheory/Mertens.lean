@@ -11,8 +11,7 @@ open MeasureTheory
 
 set_option linter.style.longLine false
 
-attribute [bound] tsum_nonneg ArithmeticFunction.vonMangoldt_nonneg sum_nonneg
-
+attribute [bound] tsum_nonneg ArithmeticFunction.vonMangoldt_nonneg sum_nonneg integral_nonneg
 section fun_prop
 attribute [fun_prop] measurable_log Measurable.aestronglyMeasurable
 end fun_prop
@@ -52,9 +51,9 @@ example (f : α → E) (g : α → F) (l : Filter α) (h : f =O[cocompact α] g)
   sorry
 
 
-
 open Bornology
 
+@[simp]
 theorem integrableAtFilter_principal_iff
   {α : Type*} {E : Type*} [MeasurableSpace α] [NormedAddCommGroup E] {f : α → E} {S : Set α} {mu : Measure α}  :
   IntegrableAtFilter f (𝓟 S) mu ↔ IntegrableOn f S mu := by
@@ -553,7 +552,7 @@ theorem extracted_1 (a b : ℝ) (ha : 1 < a):
 
 section IntegralLogInv
 
-/-- Computing the integral of $(log x)^{-1}$-/
+/-- Computing the integral of $(x log^2 x)^{-1}$-/
 
 theorem hasDerivAt_log_inv (x : ℝ) (hx : 1 < x): HasDerivAt (fun x ↦ (Real.log x)⁻¹) (- x⁻¹ * (Real.log x)⁻¹^2) x := by
   have hlog :
@@ -569,14 +568,9 @@ theorem integrable_inv_mul_log_inv_sq (x : ℝ) (hx : 1 < x) :
     simp only [Set.mem_Ioi] at ht
     convert (hasDerivAt_log_inv t (hx.trans ht)).neg using 1
     ring
-
   apply MeasureTheory.integrableOn_Ioi_deriv_of_nonneg _ this (l := 0)
   · simp only [Set.mem_Ioi]
     bound
-    -- intro t hxt
-    -- have : 0 < t := by linarith
-    -- have := Real.log_pos (hx.trans hxt)
-    -- positivity
   · rw [← neg_zero]
     apply (tendsto_inv_atTop_zero.comp tendsto_log_atTop).neg
   · refine ((continuousAt_log (by linarith)).continuousWithinAt).inv₀ (Real.log_pos hx).ne.symm |>.neg
@@ -584,7 +578,7 @@ theorem integrable_inv_mul_log_inv_sq (x : ℝ) (hx : 1 < x) :
 theorem setIntegral_Ioi_inv_mul_inv_log_sq (a : ℝ) (ha : 1 < a) :
     ∫ t in Set.Ioi a, t⁻¹ * (Real.log t)⁻¹ ^ 2 = (Real.log a)⁻¹ := by
   rw [show (Real.log a)⁻¹ = 0 - -(Real.log a)⁻¹ by ring]
-  apply integral_Ioi_of_hasDerivAt_of_tendsto
+  apply integral_Ioi_of_hasDerivAt_of_nonneg
   · apply ContinuousAt.continuousWithinAt
     apply ContinuousAt.neg
     refine ContinuousAt.comp' ?_ ?_
@@ -595,8 +589,8 @@ theorem setIntegral_Ioi_inv_mul_inv_log_sq (a : ℝ) (ha : 1 < a) :
     convert (hasDerivAt_log_inv _ _).neg using 1
     · ring
     · linarith
-  · rw [← integrableOn_Ici_iff_integrableOn_Ioi]
-    apply integrable_inv_mul_log_inv_sq a ha
+  · simp only [Set.mem_Ioi, inv_pow]
+    bound
   · rw [← neg_zero]
     apply Tendsto.neg
     apply Tendsto.comp tendsto_inv_atTop_zero tendsto_log_atTop
@@ -622,7 +616,8 @@ theorem integrableOn_Ici_fun_mul_E₁ (t : ℝ) (ht : 1 < t) :
 
 theorem integral_mul_E₁_eq_const_sub_integral (x a : ℝ) (ha : 1 < a) (hx : a ≤ x) :
     ∫ (t : ℝ) in Set.Icc a x, t⁻¹ * (Real.log t)⁻¹ ^ 2 * E₁ t =
-    (∫ (t : ℝ) in Set.Ioi a, t⁻¹ * (Real.log t)⁻¹ ^ 2 * E₁ t) - ∫ (t : ℝ) in Set.Ioi x, t⁻¹ * (Real.log t)⁻¹ ^ 2 * E₁ t := by
+    (∫ (t : ℝ) in Set.Ioi a, t⁻¹ * (Real.log t)⁻¹ ^ 2 * E₁ t)
+    - ∫ (t : ℝ) in Set.Ioi x, t⁻¹ * (Real.log t)⁻¹ ^ 2 * E₁ t := by
   rw [eq_sub_iff_add_eq, ← setIntegral_union]
   · rw [← integral_Ici_eq_integral_Ioi]
     congr
@@ -634,8 +629,48 @@ theorem integral_mul_E₁_eq_const_sub_integral (x a : ℝ) (ha : 1 < a) (hx : a
   · apply (integrableOn_Ici_fun_mul_E₁ a ha).mono Set.Icc_subset_Ici_self le_rfl
   · apply (integrableOn_Ici_fun_mul_E₁ a ha).mono (Set.Ioi_subset_Ici hx) le_rfl
 
-/-- Let `f : X x Y → Z`. If as `y` tends to `l`, `f(x, y) = O(g(y))` uniformly on `s : Set X`
-of finite measure, then the integral of `f` along `s` is `O(g(y))`. -/
+example {ι : Type*} {f g : ℝ → ℝ} (a : ℝ) (hg : ∀ x, 0 ≤ g x) (hfg : f =O[𝓟 (Set.Ioi a)] g) :
+    (fun x ↦ ∫ t in Set.Ioi x, f t) =O[𝓟 (Set.Ioi a)] (fun x ↦ ∫ t in Set.Ioi x, g t) := by
+  rw [isBigO_iff]
+  obtain ⟨C, _, hC⟩ := hfg.exists_pos
+  rw [isBigOWith_iff] at hC
+  use C
+  simp only [norm_eq_abs, eventually_principal, Set.mem_Ioi] at hC ⊢
+  intro x hx
+  -- filter_upwards [hC] with x hC'
+  rw [abs_of_nonneg (a := ∫ x in _, g x) (by bound), ← integral_mul_left]
+  apply abs_integral_le_integral_abs.trans
+  have hg_integ : IntegrableOn g (Set.Ioi a) volume := by
+    sorry
+  apply setIntegral_mono_on
+  · apply (hfg.abs_left.integrableOn (Set.Ioi a) ..).mono_set
+    · refine Set.Ioi_subset_Ioi hx.le
+    · exact measurableSet_Ioi
+    · sorry
+    · apply hg_integ
+  · apply Integrable.const_mul
+    rw [← IntegrableOn]
+    apply hg_integ.mono _ le_rfl
+    refine Set.Ioi_subset_Ioi hx.le
+  · exact measurableSet_Ioi
+  · simp only [Set.mem_Ioi]
+    intro y hy
+    convert hC _ (by linarith) using 2
+    rw [abs_of_nonneg (hg _)]
+
+
+example {ι : Type*} {f g : ℝ → ℝ} (s : ι → Set ℝ) (l : Filter ℝ) (l' : Filter ι) (hl : ∀ i, ∀ᶠ x in l, x ∈ s i)
+    (hf : Measurable f)
+    (hg : g =O[l] (fun _ ↦ (1:ℝ))) :
+    (fun i ↦ ∫ x in (s i), f x * g x) =O[l'] (fun i ↦ ∫ x in (s i), f x) := by
+  rw [isBigO_iff] at hg
+  obtain ⟨C, hC⟩ := hg
+  rw [isBigO_iff]; use C
+  filter_upwards with i
+  simp only [norm_eq_abs]
+  simp only [eventually_mem_set] at hl
+  sorry
+
 
 theorem integral_mul_E₁_tail_isBigO (a : ℝ) (ha : 1 < a) :
     (fun x ↦ ∫ (t : ℝ) in Set.Ioi x, t⁻¹ * (Real.log t)⁻¹ ^ 2 * E₁ t)

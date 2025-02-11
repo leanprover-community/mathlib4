@@ -434,6 +434,13 @@ theorem integrableAtFilter_top : IntegrableAtFilter f ⊤ μ ↔ Integrable f μ
   obtain ⟨s, hsf, hs⟩ := h
   exact (integrableOn_iff_integrable_of_support_subset fun _ _ ↦ hsf _).mp hs
 
+@[simp]
+theorem integrableAtFilter_principal_iff {S : Set α} :
+  IntegrableAtFilter f (𝓟 S) μ ↔ IntegrableOn f S μ := by
+  rw [IntegrableAtFilter]
+  simp only [mem_principal]
+  refine ⟨fun ⟨s, hsS, hfs⟩ ↦ hfs.mono hsS le_rfl, fun h ↦ ⟨S, le_rfl, h⟩⟩
+
 theorem IntegrableAtFilter.sup_iff {l l' : Filter α} :
     IntegrableAtFilter f (l ⊔ l') μ ↔ IntegrableAtFilter f l μ ∧ IntegrableAtFilter f l' μ := by
   constructor
