@@ -362,12 +362,12 @@ theorem pred_lt_iff_not_isSuccPrelimit {o} : pred o < o ↔ ¬ IsSuccPrelimit o 
   rw [(pred_le_self o).lt_iff_ne]
   exact pred_eq_iff_isSuccPrelimit.not
 
-theorem succ_pred_eq_iff_mem_range_succ {o} : succ (pred o) = o ↔ ¬ IsSuccPrelimit o := by
+theorem succ_pred_eq_iff_not_isSuccPrelimit {o} : succ (pred o) = o ↔ ¬ IsSuccPrelimit o := by
   rw [← (self_le_succ_pred o).le_iff_eq, succ_le_iff, pred_lt_iff_not_isSuccPrelimit]
 
 @[deprecated succ_pred_iff_is_succ (since := "2025-02-11")]
 theorem succ_pred_iff_is_succ {o} : succ (pred o) = o ↔ ∃ a, o = succ a := by
-  simpa [eq_comm, isSuccPrelimit_iff_succ_ne] using succ_pred_eq_iff_mem_range_succ
+  simpa [eq_comm, isSuccPrelimit_iff_succ_ne] using succ_pred_eq_iff_not_isSuccPrelimit
 
 @[deprecated IsSuccPrelimit.succ_lt_iff (since := "2025-02-11")]
 theorem succ_lt_of_not_succ {o b : Ordinal} (h : ¬∃ a, o = succ a) : succ b < o ↔ b < o := by
