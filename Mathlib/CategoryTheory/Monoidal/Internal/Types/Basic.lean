@@ -16,6 +16,7 @@ is equivalent to the category of "native" bundled monoids.
 Moreover, this equivalence is compatible with the forgetful functors to `Type`.
 -/
 
+assert_not_exists MonoidWithZero
 
 universe v u
 
@@ -61,24 +62,10 @@ is equivalent to the category of "native" bundled monoids.
 noncomputable def monTypeEquivalenceMon : Mon_ (Type u) ≌ MonCat.{u} where
   functor := functor
   inverse := inverse
-  unitIso :=
-    NatIso.ofComponents
-      (fun A =>
-        { hom := { hom := 𝟙 _ }
-          inv := { hom := 𝟙 _ } })
-      (by aesop_cat)
-  counitIso :=
-    NatIso.ofComponents
-      (fun A =>
-        { hom := MonCat.ofHom
-            { toFun := id
-              map_one' := rfl
-              map_mul' := fun _ _ => rfl }
-          inv := MonCat.ofHom
-            { toFun := id
-              map_one' := rfl
-              map_mul' := fun _ _ => rfl } })
-      (by aesop_cat)
+  unitIso := Iso.refl _
+  counitIso := NatIso.ofComponents
+    (fun A => MulEquiv.toMonCatIso { Equiv.refl _ with map_mul' := fun _ _ => rfl })
+    (by aesop_cat)
 
 /-- The equivalence `Mon_ (Type u) ≌ MonCat.{u}`
 is naturally compatible with the forgetful functors to `Type u`.
@@ -122,24 +109,10 @@ is equivalent to the category of "native" bundled commutative monoids.
 noncomputable def commMonTypeEquivalenceCommMon : CommMon_ (Type u) ≌ CommMonCat.{u} where
   functor := functor
   inverse := inverse
-  unitIso :=
-    NatIso.ofComponents
-      (fun A =>
-        { hom := { hom := 𝟙 _ }
-          inv := { hom := 𝟙 _ } })
-      (by aesop_cat)
-  counitIso :=
-    NatIso.ofComponents
-      (fun A =>
-        { hom := CommMonCat.ofHom
-            { toFun := id
-              map_one' := rfl
-              map_mul' := fun _ _ => rfl }
-          inv := CommMonCat.ofHom
-            { toFun := id
-              map_one' := rfl
-              map_mul' := fun _ _ => rfl } })
-      (by aesop_cat)
+  unitIso := Iso.refl _
+  counitIso := NatIso.ofComponents
+    (fun A => MulEquiv.toCommMonCatIso { Equiv.refl _ with map_mul' := fun _ _ => rfl })
+    (by aesop_cat)
 
 /-- The equivalences `Mon_ (Type u) ≌ MonCat.{u}` and `CommMon_ (Type u) ≌ CommMonCat.{u}`
 are naturally compatible with the forgetful functors to `MonCat` and `Mon_ (Type u)`.
@@ -147,7 +120,4 @@ are naturally compatible with the forgetful functors to `MonCat` and `Mon_ (Type
 noncomputable def commMonTypeEquivalenceCommMonForget :
     CommMonTypeEquivalenceCommMon.functor ⋙ forget₂ CommMonCat MonCat ≅
       CommMon_.forget₂Mon_ (Type u) ⋙ MonTypeEquivalenceMon.functor :=
-  NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
-
-noncomputable instance commMonTypeInhabited : Inhabited (CommMon_ (Type u)) :=
-  ⟨CommMonTypeEquivalenceCommMon.inverse.obj (CommMonCat.of PUnit)⟩
+  Iso.refl _

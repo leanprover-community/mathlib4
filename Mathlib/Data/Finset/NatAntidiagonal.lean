@@ -21,6 +21,8 @@ This refines files `Data.List.NatAntidiagonal` and `Data.Multiset.NatAntidiagona
 instance enabling `Finset.antidiagonal` on `Nat`.
 -/
 
+assert_not_exists Field
+
 open Function
 
 namespace Finset
