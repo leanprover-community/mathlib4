@@ -18,9 +18,9 @@ The difference between these two definitions is only that when no finite generat
 ## Main Definitions
 
 * `spanFinrank`: The minimum cardinality of a generating set of a submodule as a natural
-  number. If no finite generating set exists, the span rank is defined to be `0`.
+  number. If no finite generating set exists, it is defined to be `0`.
 * `spanRank`: The minimum cardinality of a generating set of a submodule, possibly infinite, with
-  type `ℕ∞`. If no finite generating set exists, the span rank is defined to be `⊤`.
+  type `ℕ∞`. If no finite generating set exists, it is defined to be `⊤`.
 * `FG.generators`: For a finitely generated submodule, get a set of minimum generating elements
   indexed by `Fin (p.spanFinrank)`
 
@@ -89,12 +89,9 @@ theorem FG.exists_fun_spanFinrank_span_range_eq {p : Submodule R M} (h : p.FG) :
   obtain ⟨⟨s, h₁, h₂⟩, h₃ : h₁.toFinset.card = _⟩ :
     p.spanFinrank ∈ _ := by rw [spanFinrank_eq_iInf]; exact Nat.sInf_mem (Set.range_nonempty _)
   rw [← h₃]
-  let f := ((@Fintype.ofFinite s h₁).equivFin).invFun
   letI : Fintype (@Set.Elem M s) := h₁.fintype
   have temp : h₁.toFinset.card = @Fintype.card (@Set.Elem M s)
-    (Fintype.ofFinite (@Set.Elem M s)) := by
-      rw [Set.Finite.card_toFinset h₁]
-  let f' := temp ▸ f
+    (Fintype.ofFinite (@Set.Elem M s)) := by rw [Set.Finite.card_toFinset h₁]
   let f' :=  Fintype.equivFinOfCardEq temp.symm
   use Subtype.val ∘ f'.symm
   rw [Set.range_comp, Set.range_eq_univ.mpr]
@@ -130,8 +127,7 @@ lemma FG.spanRank_le_iff_exists_span_range_eq {p : Submodule R M} {n : ℕ} :
       simp_all only [Fin.coe_castLE, Fin.is_lt, dite_true]
       rfl
   · rintro ⟨f, hf⟩
-    let s : { s : Set M // s.Finite ∧ span R s = p} :=
-      ⟨Set.range f, Set.finite_range f, hf⟩
+    let s : { s : Set M // s.Finite ∧ span R s = p} := ⟨Set.range f, Set.finite_range f, hf⟩
     calc
       p.spanRank
       ≤ s.2.1.toFinset.card := by
@@ -151,16 +147,15 @@ lemma FG.spanRank_le_iff_exists_span_range_eq {p : Submodule R M} {n : ℕ} :
 noncomputable def FG.generators {p : Submodule R M} (h : p.FG) : Fin p.spanFinrank → M :=
   Classical.choose (exists_fun_spanFinrank_span_range_eq h)
 
-/-- The span of the spanBasis equals the submodule -/
-lemma FG.span_range_spanBasis {p : Submodule R M} (h : p.FG) :
+/-- The span of the generators equals the submodule -/
+lemma FG.span_range_generators {p : Submodule R M} (h : p.FG) :
     span R (Set.range (generators h)) = p :=
   Classical.choose_spec (exists_fun_spanFinrank_span_range_eq h)
 
-/-- The elements of the spanBasis are in the submodule -/
-lemma FG.spanBasis_mem {p : Submodule R M} (h : p.FG) (i : Fin p.spanFinrank) :
+/-- The elements of the generators are in the submodule -/
+lemma FG.generators_mem {p : Submodule R M} (h : p.FG) (i : Fin p.spanFinrank) :
     generators h i ∈ p := by
-  have := span_range_spanBasis h
-  simp_rw [← this]
+  simp_rw [← (span_range_generators h)]
   exact subset_span (Set.mem_range_self i)
 
 @[simp]
@@ -196,8 +191,8 @@ lemma spanRank_sup_le_sum_spanRank {p q : Submodule R M} :
   obtain ⟨f, hf⟩ := hp.exists_fun_spanFinrank_span_range_eq
   obtain ⟨g, hg⟩ := hq.exists_fun_spanFinrank_span_range_eq
   rw [Submodule.fg_iff_spanRank_eq_spanFinrank] at hp hq
-  rw [hp, hq]
-  norm_cast
+  rw [hp, hq,
+      show ((p.spanFinrank : ℕ∞) + q.spanFinrank = ((p.spanFinrank + q.spanFinrank) : ℕ)) from rfl]
   rw [FG.spanRank_le_iff_exists_span_range_eq]
   refine ⟨(Sum.elim f g) ∘ finSumFinEquiv.symm, ?_⟩
   rw [Set.range_comp, Set.range_eq_univ.mpr (Equiv.surjective _), Set.image_univ,
