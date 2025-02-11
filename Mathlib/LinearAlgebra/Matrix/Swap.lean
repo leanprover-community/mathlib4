@@ -79,35 +79,37 @@ lemma vecMul_swap_apply (i j : n) (a : n → R) :
     (a ᵥ* swap R i j) i = a j := by
   simp [swap, PEquiv.vecMul_toMatrix_toPEquiv]
 
+variable {m : Type*}
+
 /-- Multiplying with `swap R i j` on the left swaps the `i`-th row with the `j`-th row. -/
 @[simp]
-lemma swap_mul_apply_left (a i j : n) (g : Matrix n n R) :
+lemma swap_mul_apply_left (i j : n) (a : m) (g : Matrix n m R) :
     (swap R i j * g) i a = g j a := by
   simp [swap, PEquiv.toMatrix_toPEquiv_mul]
 
 /-- Multiplying with `swap R i j` on the left swaps the `j`-th row with the `i`-th row. -/
 @[simp]
-lemma swap_mul_apply_right (a i j : n) (g : Matrix n n R) :
+lemma swap_mul_apply_right (i j : n) (a : m) (g : Matrix n m R) :
     (swap R i j * g) j a = g i a := by
   rw [swap_comm, swap_mul_apply_left]
 
-lemma swap_mul_of_ne {a b i j : n} (hai : a ≠ i) (haj : a ≠ j) (g : Matrix n n R) :
+lemma swap_mul_of_ne {i j a : n} {b : m} (hai : a ≠ i) (haj : a ≠ j) (g : Matrix n m R) :
     (swap R i j * g) a b = g a b := by
   simp [swap, PEquiv.toMatrix_toPEquiv_mul, Equiv.swap_apply_of_ne_of_ne hai haj]
 
 /-- Multiplying with `swap R i j` on the right swaps the `i`-th column with the `j`-th column. -/
 @[simp]
-lemma mul_swap_apply_left (a i j : n) (g : Matrix n n R) :
+lemma mul_swap_apply_left (i j : n) (a : m) (g : Matrix m n R) :
     (g * swap R i j) a i = g a j := by
   simp [swap, PEquiv.mul_toMatrix_toPEquiv]
 
 /-- Multiplying with `swap R i j` on the right swaps the `j`-th column with the `i`-th column. -/
 @[simp]
-lemma mul_swap_apply_right (a i j : n) (g : Matrix n n R) :
+lemma mul_swap_apply_right (i j : n) (a : m) (g : Matrix m n R) :
     (g * swap R i j) a j = g a i := by
   rw [swap_comm, mul_swap_apply_left]
 
-lemma mul_swap_of_ne {a b : n} {i j : n} (hbi : b ≠ i) (hbj : b ≠ j) (g : Matrix n n R) :
+lemma mul_swap_of_ne {i j b : n} {a : m} (hbi : b ≠ i) (hbj : b ≠ j) (g : Matrix m n R) :
     (g * swap R i j) a b = g a b := by
   simp [swap, PEquiv.mul_toMatrix_toPEquiv, Equiv.swap_apply_of_ne_of_ne hbi hbj]
 
