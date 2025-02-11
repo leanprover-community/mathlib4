@@ -135,8 +135,7 @@ lemma aevalMultiset_sumPolynomial
     conv_lhs => rw [← m.coe_toList]
     refine congr_arg _ (List.ext_get ?_ (fun n h₁ h₂ ↦ ?_))
     · rw [List.length_map, List.length_finRange]
-    set_option linter.deprecated false in
-    rw [List.get_map, List.get_finRange]
+    simp only [List.get_eq_getElem, List.getElem_map, List.getElem_finRange, Fin.cast_mk]
   conv_lhs => rw [eq_univ_map]
   rw [aevalMultiset_map_of_card_eq]
   swap
