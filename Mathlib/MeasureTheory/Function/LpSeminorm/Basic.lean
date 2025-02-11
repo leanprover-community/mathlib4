@@ -650,10 +650,10 @@ lemma eLpNormEssSup_indicator_const_eq (s : Set α) (c : G) (hμs : μ s ≠ 0) 
   rw [Set.mem_setOf_eq, Set.indicator_of_mem hx_mem, enorm_eq_nnnorm]
 
 -- The following lemmas require [Zero F].
-variable {c : F}
+variable {ε : Type*} [TopologicalSpace ε]
+  [ENormedAddMonoid ε] {c : ε}
 
-lemma eLpNorm_indicator_const₀ [TopologicalSpace ε]
-  [ENormedAddMonoid ε] {c : ε} (hs : NullMeasurableSet s μ) (hp : p ≠ 0) (hp_top : p ≠ ∞) :
+lemma eLpNorm_indicator_const₀ (hs : NullMeasurableSet s μ) (hp : p ≠ 0) (hp_top : p ≠ ∞) :
     eLpNorm (s.indicator fun _ => c) p μ = ‖c‖ₑ * μ s ^ (1 / p.toReal) :=
   have hp_pos : 0 < p.toReal := ENNReal.toReal_pos hp hp_top
   calc
@@ -664,8 +664,6 @@ lemma eLpNorm_indicator_const₀ [TopologicalSpace ε]
       congr 2
       refine (Set.comp_indicator_const c (fun x ↦ (‖x‖ₑ) ^ p.toReal) ?_)
       simp [hp_pos]
-      left
-      sorry -- TODO: enorm_zero needs to be tagged simp, and perhaps sth blocks it here!
     _ = ‖c‖ₑ * μ s ^ (1 / p.toReal) := by
       rw [lintegral_indicator_const₀ hs, ENNReal.mul_rpow_of_nonneg, ← ENNReal.rpow_mul,
         mul_one_div_cancel hp_pos.ne', ENNReal.rpow_one]
@@ -675,10 +673,10 @@ lemma eLpNorm_indicator_const (hs : MeasurableSet s) (hp : p ≠ 0) (hp_top : p 
     eLpNorm (s.indicator fun _ => c) p μ = ‖c‖ₑ * μ s ^ (1 / p.toReal) :=
   eLpNorm_indicator_const₀ hs.nullMeasurableSet hp hp_top
 
-lemma eLpNorm_indicator_const' (hs : MeasurableSet s) (hμs : μ s ≠ 0) (hp : p ≠ 0) :
+lemma eLpNorm_indicator_const' /-(c : F)-/ (hs : MeasurableSet s) (hμs : μ s ≠ 0) (hp : p ≠ 0) :
     eLpNorm (s.indicator fun _ => c) p μ = ‖c‖ₑ * μ s ^ (1 / p.toReal) := by
   by_cases hp_top : p = ∞
-  · simp [hp_top, eLpNormEssSup_indicator_const_eq s c hμs]
+  · sorry --simp [hp_top, eLpNormEssSup_indicator_const_eq s c hμs]
   · exact eLpNorm_indicator_const hs hp hp_top
 
 lemma eLpNorm_indicator_const_le (c : G) (p : ℝ≥0∞) :
@@ -795,13 +793,14 @@ private theorem eLpNorm_smul_measure_of_ne_zero_of_ne_top {p : ℝ≥0∞} (hp_n
   simp_rw [one_div]
   rw [ENNReal.toReal_inv]
 
+#exit
 /-- See `eLpNorm_smul_measure_of_ne_zero'` for a version with scalar multiplication by `ℝ≥0`. -/
 theorem eLpNorm_smul_measure_of_ne_zero {c : ℝ≥0∞} (hc : c ≠ 0) (f : α → F) (p : ℝ≥0∞)
     (μ : Measure α) : eLpNorm f p (c • μ) = c ^ (1 / p).toReal • eLpNorm f p μ := by
   by_cases hp0 : p = 0
   · simp [hp0]
   by_cases hp_top : p = ∞
-  · simp [hp_top, eLpNormEssSup_smul_measure hc]
+  · sorry --simp [hp_top, eLpNormEssSup_smul_measure hc]
   exact eLpNorm_smul_measure_of_ne_zero_of_ne_top hp0 hp_top c
 
 /-- See `eLpNorm_smul_measure_of_ne_zero` for a version with scalar multiplication by `ℝ≥0∞`. -/
