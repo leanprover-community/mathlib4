@@ -3,6 +3,7 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
+import Mathlib.Analysis.InnerProductSpace.Convex
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Combinatorics.Additive.AP.Three.Defs
 import Mathlib.Combinatorics.Pigeonhole
@@ -69,7 +70,7 @@ lemma threeAPFree_sphere {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   obtain rfl | hr := eq_or_ne r 0
   · rw [sphere_zero]
     exact threeAPFree_singleton _
-  · convert threeAPFree_frontier isClosed_ball (strictConvex_closedBall ℝ x r)
+  · convert threeAPFree_frontier isClosed_closedBall (strictConvex_closedBall ℝ x r)
     exact (frontier_closedBall _ hr).symm
 
 namespace Behrend
