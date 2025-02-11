@@ -669,7 +669,7 @@ theorem disjoint_toFinset [Fintype s] [Fintype t] :
     Disjoint s.toFinset t.toFinset ↔ Disjoint s t := by simp only [← disjoint_coe, coe_toFinset]
 
 @[simp]
-theorem toFinset_nontrivial {s : Set α} [Fintype s] : s.toFinset.Nontrivial ↔ s.Nontrivial := by
+theorem toFinset_nontrivial [Fintype s] : s.toFinset.Nontrivial ↔ s.Nontrivial := by
   rw [Finset.Nontrivial, coe_toFinset]
 
 section DecidableEq
