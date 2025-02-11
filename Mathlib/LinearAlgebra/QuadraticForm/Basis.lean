@@ -22,6 +22,20 @@ namespace QuadraticMap
 
 section
 
+variable {α R}
+
+def Sym2.mul [CommMagma R] (f : α → R) : Sym2 α → R :=
+  Sym2.lift ⟨fun i j => (f i * f j), fun _ _ => mul_comm _ _⟩
+
+@[simp]
+lemma Sym2.mul_sym2Mk [CommMagma R] (f : α → R) (xy : α × α) :
+    mul f (.mk xy) = f xy.1 * f xy.2 := rfl
+
+end
+
+
+section
+
 variable {ι R M N}
 
 variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
@@ -55,6 +69,15 @@ lemma partial_result2 (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) 
   simp_all only [Sym2.lift_mk, Pi.smul_apply']
   rw [← smul_assoc]
 
+lemma partial_result2a (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
+    Sym2.lift ⟨fun i j => l j • l i • polar (⇑Q) (g i) (g j),
+      fun _ _ => by simp_rw [polar_comm]; rw [smul_comm]⟩ =
+      Sym2.mul l • (polarSym2 Q) ∘ Sym2.map g := by
+  rw [partial_result2]
+  ext ⟨i,j⟩
+  simp only [smul_eq_mul, Pi.smul_apply', Sym2.lift_mk, Sym2.mul, Function.comp_apply,
+    Sym2.map_pair_eq, polarSym2_sym2Mk, mul_comm]
+
 variable [DecidableEq ι]
 
 /--
@@ -62,12 +85,12 @@ Lift `i j => (l i * l j)` to `Sym2 ι`
 -/
 noncomputable def scalar (l : ι →₀ R) : Sym2 ι →₀ R := Finsupp.onFinset
     ((l.support.product l.support).image Sym2.mk)
-    (Sym2.lift ⟨fun i j => (l i * l j), fun _ _ => mul_comm _ _⟩) (fun p hp => by
+    (Sym2.mul l) (fun p hp => by
       simp only [Finset.product_eq_sprod, Finset.mem_image, Finset.mem_product,
         Finsupp.mem_support_iff, ne_eq, Prod.exists]
       simp only [ne_eq] at hp
       obtain ⟨a,b⟩ := p
-      simp only [Sym2.lift_mk] at hp
+      simp only [Sym2.mul_sym2Mk] at hp
       use a
       use b
       constructor
@@ -91,6 +114,7 @@ lemma partial_result3 (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) 
   rw [Finsupp.ofSupportFinite]
   simp_all only [Finsupp.coe_mk, Sym2.lift_mk]
   rw [mul_comm]
+  simp_all only [Sym2.mul_sym2Mk]
 
 lemma test (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
     (polarSym2 Q) ∘ Sym2.map (l * g)  = (scalar l) * (polarSym2 Q) ∘ (Sym2.map g) := by
@@ -123,7 +147,7 @@ theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι
       rcases eq_or_ne (l j) 0 with hz | hz
       · exact mul_eq_zero_of_left hz (l k)
       · exact mul_eq_zero_of_right _ (H hz)
-    simp_all only [Sym2.lift_mk, not_true_eq_false]
+    simp_all only [Sym2.mul_sym2Mk, not_true_eq_false]
   rw [Finsupp.sum_of_support_subset (scalar l) e3]
   · have d1 (x : Sym2 ι) :
     (polarSym2 Q) (Sym2.map (fun i ↦ l i • g i) x) =
