@@ -33,9 +33,9 @@ noncomputable def Sym2.mul_finsupp (f : α →₀ R) :
       simp only [Finset.product_eq_sprod, Finset.mem_image, Finset.mem_product,
         Finsupp.mem_support_iff, ne_eq, Sym2.eq, rel_iff', Prod.swap_prod_mk, Prod.exists,
         Prod.mk.injEq]
-      simp only [ne_eq, Sym2.mul_sym2Mk] at hp
+      simp only [mul_sym2Mk, ne_eq] at hp
       exact ⟨a, ⟨b, ⟨⟨fun _ => by simp_all only [mul_sym2Mk, zero_mul, not_true_eq_false],
-          fun _ => by simp_all only [mul_sym2Mk, mul_zero, not_true_eq_false]⟩, by simp only⟩⟩⟩)
+          fun _ => by simp_all only [mul_sym2Mk, mul_zero, not_true_eq_false]⟩, Or.inl ⟨rfl,rfl⟩⟩⟩⟩)
 
 lemma Sym2.mul_finsupp_support (f : α →₀ R) : (Sym2.mul_finsupp f).support ⊆ f.support.sym2 := by
   intro p hp
@@ -44,8 +44,8 @@ lemma Sym2.mul_finsupp_support (f : α →₀ R) : (Sym2.mul_finsupp f).support 
   obtain ⟨j,k⟩ := p
   simp only [Finset.mem_sym2_iff, Sym2.mem_iff, Finsupp.mem_support_iff, ne_eq, forall_eq_or_imp,
     forall_eq]
-  exact ⟨fun h => by simp_all only [Sym2.mul_sym2Mk, zero_mul, not_true_eq_false],
-    fun h => by simp_all only [Sym2.mul_sym2Mk, mul_zero, not_true_eq_false]⟩
+  exact ⟨fun _ => by simp_all only [Sym2.mul_sym2Mk, zero_mul, not_true_eq_false],
+    fun _ => by simp_all only [Sym2.mul_sym2Mk, mul_zero, not_true_eq_false]⟩
 
 end
 
