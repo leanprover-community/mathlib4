@@ -347,6 +347,8 @@ theorem Fintype.card_lex (α : Type*) [Fintype α] : Fintype.card (Lex α) = Fin
 @[simp] lemma Fintype.card_additive (α : Type*) [Fintype α] : card (Additive α) = card α :=
   Finset.card_map _
 
+-- Note: The extra hypothesis `h` is there so that the rewrite lemma applies,
+-- no matter what instance of `Fintype (Set.univ : Set α)` is used.
 @[simp]
 theorem Fintype.card_setUniv [Fintype α] {h : Fintype (Set.univ : Set α)} :
     Fintype.card (Set.univ : Set α) = Fintype.card α := by
