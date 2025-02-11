@@ -1713,7 +1713,6 @@ import Mathlib.CategoryTheory.Adjunction.Lifting.Right
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.Adjunction.Opposites
-import Mathlib.CategoryTheory.Adjunction.Over
 import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Restrict
@@ -1789,8 +1788,9 @@ import Mathlib.CategoryTheory.Comma.Basic
 import Mathlib.CategoryTheory.Comma.CardinalArrow
 import Mathlib.CategoryTheory.Comma.Final
 import Mathlib.CategoryTheory.Comma.LocallySmall
-import Mathlib.CategoryTheory.Comma.Over
-import Mathlib.CategoryTheory.Comma.OverClass
+import Mathlib.CategoryTheory.Comma.Over.Basic
+import Mathlib.CategoryTheory.Comma.Over.OverClass
+import Mathlib.CategoryTheory.Comma.Over.Pullback
 import Mathlib.CategoryTheory.Comma.Presheaf.Basic
 import Mathlib.CategoryTheory.Comma.Presheaf.Colimit
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
