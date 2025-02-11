@@ -42,9 +42,8 @@ squares to zero and that `Rep.diagonalSuccIsoFree` defines an isomorphism betwee
 complexes. We carry the exactness properties across this isomorphism to conclude the bar resolution
 is a projective resolution too, in `Rep.barResolution`.
 
-In `RepresentationTheory.Homological.GroupCohomology.Basic` and
-`RepresentationTheory.Homological.GroupHomology.Basic`, we then use `Rep.barResolution` to define
-the inhomogeneous (co)chains of a representation, useful for computing group (co)homology.
+In `RepresentationTheory.GroupCohomology.Basic`, we then use `Rep.barResolution` to define the
+inhomogeneous cochains of a representation, useful for computing group cohomology.
 
 ## Main definitions
 
@@ -212,8 +211,7 @@ variable [Monoid G]
 
 /-- The standard resolution of `k` as a trivial representation as a complex of `k`-modules. -/
 def forget₂ToModuleCat :=
-  ((forget₂ (Rep k G) (ModuleCat.{u} k)).mapHomologicalComplex _).obj
-    (standardComplex k G)
+  ((forget₂ (Rep k G) (ModuleCat.{u} k)).mapHomologicalComplex _).obj (standardComplex k G)
 
 /-- If we apply the free functor `Type u ⥤ ModuleCat.{u} k` to the universal cover of the
 classifying space of `G` as a simplicial set, then take the alternating face map complex, the result
