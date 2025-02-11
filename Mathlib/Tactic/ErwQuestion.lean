@@ -42,45 +42,40 @@ Attempt to log an info message for the first subexpressions which are different
 
 Also returns an array of messages for the `verbose` report.
 -/
-def logDiffs (tk : Syntax) (e₁ e₂ : Expr) : MetaM (Bool × Array (Unit → MessageData)) := do
+def logDiffs (tk : Syntax) (e₁ e₂ : Expr) : StateT (Array (Unit → MessageData)) MetaM Bool := do
   withOptions (fun opts => opts.setBool `pp.analyze true) do
-  let mut verbMsgs := #[]
   if ← withReducible (isDefEq e₁ e₂) then
-    verbMsgs := verbMsgs.push
+    modify fun verbMsgs => verbMsgs.push
       fun _ => m!"{checkEmoji}\n{e₁}\n  and\n{e₂}\nare defeq at reducible transparency."
     -- They agree at reducible transparency, we're done.
-    return (false, verbMsgs)
+    return false
   else
-    verbMsgs := verbMsgs.push
+    modify fun verbMsgs => verbMsgs.push
       fun _ => m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare not defeq at reducible transparency."
     if ← isDefEq e₁ e₂ then
       match e₁, e₂ with
       | Expr.app f₁ a₁, Expr.app f₂ a₂ =>
-        let (newDiff, newMsgs) ← logDiffs tk a₁ a₂
-        verbMsgs := verbMsgs ++ newMsgs
-        if newDiff then
-          return (true, verbMsgs)
+        if ← logDiffs tk a₁ a₂ then
+          return true
         else
-          let (newDiff, newMsgs) ← logDiffs tk f₁ f₂
-          verbMsgs := verbMsgs ++ newMsgs
-          if newDiff then
-            return (true, verbMsgs)
+          if ← logDiffs tk f₁ f₂ then
+            return true
           else
             logInfoAt tk m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare defeq at default transparency, \
               but not at reducible transparency."
-            return (true, verbMsgs)
+            return true
       | Expr.const _ _, Expr.const _ _ =>
         logInfoAt tk m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare defeq at default transparency, \
             but not at reducible transparency."
-        return (true, verbMsgs)
+        return true
       | _, _ =>
-          verbMsgs := verbMsgs.push
-            fun _ => m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare not both applications or constants."
-        return (false, verbMsgs)
+        modify fun verbMsgs => verbMsgs.push
+          fun _ => m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare not both applications or constants."
+        return false
     else
-        verbMsgs := verbMsgs.push
+        modify fun verbMsgs => verbMsgs.push
           fun _ => m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare not defeq at default transparency."
-      return (false, verbMsgs)
+      return false
 
 elab_rules : tactic
   | `(tactic| erw?%$tk [$r]) => withMainContext do
@@ -96,7 +91,7 @@ elab_rules : tactic
         | some (_, tgt, _) =>
           match (← inferType e).eq? with
           | some (_, inferred, _) =>
-            let (_, msgs) ← logDiffs tk tgt inferred
+            let (_, msgs) ← (logDiffs tk tgt inferred).run #[]
             if verbose then
               logInfoAt tk <| .joinSep
                 (m!"Expression appearing in target: {tgt}" ::
