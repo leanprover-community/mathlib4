@@ -50,31 +50,19 @@ theorem map_finsuppSum' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R
         - ∑ i ∈ f.support, Q (g i (f i)) := by
   exact Q.map_sum' _ (fun i => g i (f i))
 
-lemma partial_result1 (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
-    (polarSym2 Q) ∘ Sym2.map (l * g) = Sym2.lift ⟨fun i j => l j • l i • polar (⇑Q) (g i) (g j),
-      fun _ _ => by simp_rw [polar_comm]; rw [smul_comm]⟩ := by
+lemma partial_result12 (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
+    (polarSym2 Q) ∘ Sym2.map (l * g) = Sym2.mul l • (polarSym2 Q) ∘ Sym2.map g := by
   rw [polarSym2, Sym2.lift_comp_map]
-  simp_all only [Finset.product_eq_sprod]
+  simp_all only
   ext ⟨i,j⟩
-  simp_all only [Sym2.lift_mk]
+  simp_all only [Sym2.lift_mk, Pi.smul_apply', Sym2.mul_sym2Mk, Function.comp_apply,
+    Sym2.map_pair_eq]
   have e1 (k : ι): (l * g) k = (l k) • (g k) := rfl
   rw [e1, e1]
   simp_rw [polar_smul_right, polar_smul_left]
-
-lemma partial_result2a (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
-    Sym2.lift ⟨fun i j => l j • l i • polar (⇑Q) (g i) (g j),
-      fun _ _ => by simp_rw [polar_comm]; rw [smul_comm]⟩ =
-      Sym2.mul l • (polarSym2 Q) ∘ Sym2.map g := by
-  ext ⟨i,j⟩
-  simp_all only [Sym2.lift_mk, Pi.smul_apply']
   rw [← smul_assoc]
   simp only [smul_eq_mul, Pi.smul_apply', Sym2.lift_mk, Sym2.mul, Function.comp_apply,
     Sym2.map_pair_eq, polarSym2_sym2Mk, mul_comm]
-
-lemma partial_result12 (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
-    (polarSym2 Q) ∘ Sym2.map (l * g) = Sym2.mul l • (polarSym2 Q) ∘ Sym2.map g := by
-  rw [partial_result1, partial_result2a]
-
 
 variable [DecidableEq ι]
 
