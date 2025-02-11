@@ -16,6 +16,8 @@ and `MonCat`.
 
 -/
 
+assert_not_exists MonoidWithZero
+
 universe u
 
 open CategoryTheory Opposite

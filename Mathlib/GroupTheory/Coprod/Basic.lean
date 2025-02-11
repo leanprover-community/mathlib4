@@ -117,7 +117,7 @@ There are several reasons to build an API from scratch.
 group, monoid, coproduct, free product
 -/
 
-assert_not_exists Ring
+assert_not_exists MonoidWithZero
 
 open FreeMonoid Function List Set
 

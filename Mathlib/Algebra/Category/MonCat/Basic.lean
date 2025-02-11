@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.PUnit
+import Mathlib.Algebra.Group.TypeTags.Hom
 import Mathlib.Algebra.Group.ULift
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Functor.ReflectsIso
@@ -18,6 +19,8 @@ We introduce the bundled categories:
 * `AddCommMonCat`
 along with the relevant forgetful functors between them.
 -/
+
+assert_not_exists MonoidWithZero
 
 universe u v
 

@@ -13,6 +13,8 @@ import Mathlib.CategoryTheory.Category.Bipointed
 This file defines `GrpWithZero`, the category of groups with zero.
 -/
 
+assert_not_exists Ring
+
 universe u
 
 open CategoryTheory
