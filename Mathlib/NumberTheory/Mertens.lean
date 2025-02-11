@@ -611,7 +611,7 @@ theorem integrableOn_Ici_fun_mul_E₁ (t : ℝ) (ht : 1 < t) :
     measurableSet_Ici
   have := isBigO.integrableAtFilter («μ» := volume) (mul_E₁_measurable.stronglyMeasurable.stronglyMeasurableAtFilter)
     (integrable_inv_mul_log_inv_sq t ht).integrableAtFilter
-  rw [integrableAtFilter_principal_iff] at this
+  rw [_root_.integrableAtFilter_principal_iff] at this
   exact this
 
 theorem integral_mul_E₁_eq_const_sub_integral (x a : ℝ) (ha : 1 < a) (hx : a ≤ x) :
