@@ -28,84 +28,47 @@ end
 
 section Equalizer
 
-def LinearMap.toEqLocus {R M N : Type*} [Semiring R] [AddCommMonoid M] [AddCommMonoid N]
-    [Module R M] [Module R N] (f g : M →ₗ[R] N)
-    {P : Type*} [AddCommMonoid P] [Module R P] (u : P →ₗ[R] M) (hu : f ∘ₗ u = g ∘ₗ u) :
-    P →ₗ[R] eqLocus f g :=
-  sorry
-
-def AlgHom.toEqualizer {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
-    [Algebra R A] [Algebra R B] (f g : A →ₐ[R] B)
-    {C : Type*} [Semiring C] [Algebra R C] (u : C →ₐ[R] A)
-    (hu : f.comp u = g.comp u) :
-    C →ₐ[R] equalizer f g :=
-  AlgHom.codRestrict u (equalizer f g) (fun c ↦ DFunLike.congr_fun hu c)
-
 def AlgHom.equalizerCongr {R A A' B B' : Type*} [CommSemiring R]
     [Semiring A] [Semiring A'] [Semiring B] [Semiring B']
     [Algebra R A] [Algebra R A'] [Algebra R B] [Algebra R B']
     (eA : A ≃ₐ[R] A') (eB : B ≃ₐ[R] B')
-    (f g : A →ₐ[R] B) (f' g' : A' →ₐ[R] B')
-    (H : eB.toAlgHom.comp f = f'.comp eA) :
+    {f g : A →ₐ[R] B} {f' g' : A' →ₐ[R] B'}
+    (hf : eB.toAlgHom.comp f = f'.comp eA) (hg : eB.toAlgHom.comp g = g'.comp eA) :
     AlgHom.equalizer f g ≃ₐ[R] AlgHom.equalizer f' g' :=
-  sorry
+  AlgEquiv.ofAlgHom
+    (AlgHom.codRestrict (eA.toAlgHom.comp (equalizer f g).val) _ <| by
+      intro x
+      simp only [AlgEquiv.toAlgHom_eq_coe, coe_comp, AlgHom.coe_coe, Subalgebra.coe_val,
+        Function.comp_apply, mem_equalizer]
+      rw [← hf', x.2, hg'])
+    (AlgHom.codRestrict (eA.symm.toAlgHom.comp (equalizer f' g').val) _ <| by
+      intro x
+      simp only [AlgEquiv.toAlgHom_eq_coe, coe_comp, AlgHom.coe_coe, Subalgebra.coe_val,
+        Function.comp_apply, mem_equalizer]
+      apply eB.injective
+      rw [hf', hg', AlgEquiv.apply_symm_apply, x.2])
+    (by ext; simp)
+    (by ext; simp)
+   where
+    hf' (x) : eB (f x) = f' (eA x) := DFunLike.congr_fun hf x
+    hg' (x) : eB (g x) = g' (eA x) := DFunLike.congr_fun hg x
 
 def AlgHom.equalizerCongrOfEq {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] {f g f' g' : A →ₐ[R] B}
     (hf : f = f') (hg : g = g') :
     AlgHom.equalizer f g ≃ₐ[R] AlgHom.equalizer f' g' :=
-  sorry
+  AlgHom.equalizerCongr AlgEquiv.refl AlgEquiv.refl
+    (by subst hf; simp) (by subst hg; simp)
 
 end Equalizer
 
 section
-
-lemma Algebra.IsSplitOfRank.rankAtStalk_eq {R S : Type*} [CommRing R] [CommRing S]
-    [Algebra R S] (n : ℕ) [Algebra.IsSplitOfRank n R S] :
-    Module.rankAtStalk (R := R) S = n :=
-  sorry
 
 lemma Algebra.Etale.of_etale_tensorProduct_of_faithfullyFlat {R S : Type u}
     [CommRing R] [CommRing S] [Algebra R S]
     (T : Type u) [CommRing T] [Algebra R T] [Module.FaithfullyFlat R T]
     [Algebra.Etale T (T ⊗[R] S)] :
     Algebra.Etale R S :=
-  sorry
-
-instance Algebra.IsSplitOfRank.baseChange (R S T : Type*) [CommRing R]
-    [CommRing S] [Algebra R S] [CommRing T] [Algebra R T]
-    (n : ℕ) [Algebra.IsSplitOfRank n R S] :
-    Algebra.IsSplitOfRank n T (T ⊗[R] S) :=
-  sorry
-
-end
-
-section
-
-def AlgHom.extendScalarsOfIsLocalization  {R : Type*}
-    [CommSemiring R] (S : Submonoid R) (R' : Type*) {A B : Type*}
-    [CommSemiring R'] [Algebra R R'] [IsLocalization S R']
-    [CommSemiring A] [CommSemiring B] [Algebra R A] [Algebra R B] [Algebra R' A] [Algebra R' B]
-    [IsScalarTower R R' A] [IsScalarTower R R' B]
-    (f : A →ₐ[R] B) : A →ₐ[R'] B :=
-  sorry
-
-@[simp]
-lemma AlgHom.restrictScalars_extendScalarsOfIsLocalization {R : Type*}
-    [CommSemiring R] (S : Submonoid R) (R' : Type*) {A B : Type*}
-    [CommSemiring R'] [Algebra R R'] [IsLocalization S R']
-    [CommSemiring A] [CommSemiring B] [Algebra R A] [Algebra R B] [Algebra R' A] [Algebra R' B]
-    [IsScalarTower R R' A] [IsScalarTower R R' B]
-    (f : A →ₐ[R] B) : (f.extendScalarsOfIsLocalization S R').restrictScalars R = f :=
-  sorry
-
-@[simp]
-lemma AlgHom.extendScalarsOfIsLocalization_apply {R : Type*}
-    [CommSemiring R] (S : Submonoid R) (R' : Type*) {A B : Type*}
-    [CommSemiring R'] [Algebra R R'] [IsLocalization S R']
-    [CommSemiring A] [CommSemiring B] [Algebra R A] [Algebra R B] [Algebra R' A] [Algebra R' B]
-    [IsScalarTower R R' A] [IsScalarTower R R' B]
-    (f : A →ₐ[R] B) (a : A) : f.extendScalarsOfIsLocalization S R' a = f a :=
   sorry
 
 end

@@ -7,6 +7,7 @@ import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 import Mathlib.RingTheory.Support
 import Mathlib.RingTheory.TensorProduct.Pi
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 
 open TensorProduct
 
@@ -25,6 +26,11 @@ instance (priority := 900) {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 end Hard
 
 section
+
+lemma Module.FinitePresentation.of_equiv {R M N : Type*} [Ring R] [AddCommGroup M]
+    [Module R M] [AddCommGroup N] [Module R N] (e : M ≃ₗ[R] N) [Module.FinitePresentation R M] :
+    Module.FinitePresentation R N := by
+  simp [← Module.FinitePresentation.fg_ker_iff e.toLinearMap e.surjective, Submodule.fg_bot]
 
 variable {R : Type*} [CommSemiring R] (S : Submonoid R) {M M' M'' : Type*}
   [AddCommMonoid M] [AddCommMonoid M']
@@ -182,17 +188,6 @@ instance (R S : Type u) [CommRing R] [CommRing S] [Algebra R S] [Algebra.Smooth 
   -- done, but needs to be PRed
   sorry
 
-lemma Algebra.specComap_surjective_of_rankAtStalk_gt_zero (R S : Type*) [CommRing R] [CommRing S]
-    [Algebra R S] (h : ∀ p, Module.rankAtStalk (R := R) S p > 0) :
-    Function.Surjective (algebraMap R S).specComap :=
-  sorry
-
--- use that it is flat and that the map on prime spectra is surjective (in PR)
-lemma Algebra.Etale.faithfullyFlat_of_rankAtStalk_gt_zero (R S : Type u) [CommRing R] [CommRing S]
-    [Algebra R S] [Algebra.Etale R S] (h : ∀ p, Module.rankAtStalk (R := R) S p > 0) :
-    Module.FaithfullyFlat R S :=
-  sorry
-
 instance (R S : Type u) [CommRing R] [CommRing S] :
     letI : Algebra (R × S) S := (RingHom.snd R S).toAlgebra
     Algebra.Etale (R × S) S := by
@@ -335,6 +330,59 @@ lemma exists_split_of_formallyUnramified (R S : Type u) [CommRing R] [CommRing S
   exact eq.trans (AlgEquiv.prodCongr eq2 AlgEquiv.refl)
 
 end
+
+open IsLocalRing
+
+lemma Module.rankAtStalk_eq {R M : Type*} [CommRing R] [Nontrivial R] [AddCommGroup M] [Module R M]
+    [Module.FinitePresentation R M] [Module.Flat R M] (p : PrimeSpectrum R) :
+    Module.rankAtStalk M p = Module.finrank p.asIdeal.ResidueField
+        (p.asIdeal.ResidueField ⊗[R] M) := by
+  let k := p.asIdeal.ResidueField
+  have : Free (Localization.AtPrime p.asIdeal) (Localization.AtPrime p.asIdeal ⊗[R] M) :=
+    free_of_flat_of_isLocalRing
+  let e₁ : LocalizedModule p.asIdeal.primeCompl M ≃ₗ[Localization.AtPrime p.asIdeal]
+      Localization.AtPrime p.asIdeal ⊗[R] M :=
+    (IsLocalizedModule.isBaseChange p.asIdeal.primeCompl (Localization.AtPrime p.asIdeal)
+      (LocalizedModule.mkLinearMap p.asIdeal.primeCompl M)).equiv.symm
+  let e₂ : k ⊗[Localization.AtPrime p.asIdeal] (Localization.AtPrime p.asIdeal ⊗[R] M) ≃ₗ[k]
+      k ⊗[R] M :=
+    TensorProduct.AlgebraTensorModule.cancelBaseChange _ _ _ _ _
+  simp only [rankAtStalk]
+  rw [← e₂.finrank_eq, finrank_baseChange, e₁.finrank_eq]
+
+lemma Algebra.specComap_surjective_of_rankAtStalk_pos {R S : Type*} [CommRing R] [CommRing S]
+    [Algebra R S] [Module.Flat R S] [Module.FinitePresentation R S]
+    (h : ∀ p, 0 < Module.rankAtStalk (R := R) S p) :
+    Function.Surjective (algebraMap R S).specComap := by
+  intro p
+  let k := p.asIdeal.ResidueField
+  have : Nontrivial R := by
+    refine ⟨0, 1, fun h ↦ p.2.ne_top ?_⟩
+    simp [Ideal.eq_top_iff_one p.asIdeal, ← h]
+  have : Nontrivial (k ⊗[R] S) := by
+    apply Module.nontrivial_of_finrank_pos (R := k)
+    rw [← Module.rankAtStalk_eq]
+    apply h
+  obtain ⟨m, hm⟩ := Ideal.exists_maximal (k ⊗[R] S)
+  use (TensorProduct.includeRight).specComap ⟨m, hm.isPrime⟩
+  rw [← PrimeSpectrum.specComap_comp_apply, ← TensorProduct.includeLeftRingHom_comp_algebraMap,
+    PrimeSpectrum.specComap_comp_apply]
+  ext : 1
+  simp [Ideal.eq_bot_of_prime, k, ← RingHom.ker_eq_comap_bot]
+
+-- in PR
+lemma Module.FaithfullyFlat.of_flat_of_specComap_surjective {R S : Type*} [CommRing R]
+    [CommRing S] [Algebra R S] [Module.Flat R S]
+    (h : Function.Surjective (algebraMap R S).specComap) :
+    Module.FaithfullyFlat R S :=
+  sorry
+
+lemma Algebra.Etale.faithfullyFlat_of_rankAtStalk_pos (R S : Type u) [CommRing R] [CommRing S]
+    [Algebra R S] [Algebra.Etale R S] [Module.Finite R S]
+    (h : ∀ p, 0 < Module.rankAtStalk (R := R) S p) :
+    Module.FaithfullyFlat R S := by
+  apply Module.FaithfullyFlat.of_flat_of_specComap_surjective
+  exact Algebra.specComap_surjective_of_rankAtStalk_pos h
 
 section rankAtStalk
 
@@ -532,6 +580,22 @@ lemma of_subsingleton [Subsingleton R] : IsSplitOfRank n R S := by
   have : Subsingleton S := RingHom.codomain_trivial (algebraMap R S)
   exact ⟨⟨default⟩⟩
 
+instance [Algebra.IsSplitOfRank n R S] : Module.Free R S := by
+  obtain ⟨e⟩ := nonempty_algEquiv_fun n R S
+  exact Module.Free.of_equiv e.symm.toLinearEquiv
+
+lemma finrank_eq [Nontrivial R] [Algebra.IsSplitOfRank n R S] : Module.finrank R S = n := by
+  obtain ⟨e⟩ := nonempty_algEquiv_fun n R S
+  simp [e.toLinearEquiv.finrank_eq]
+
+lemma rankAtStalk_eq [Nontrivial R] [Algebra.IsSplitOfRank n R S] :
+    Module.rankAtStalk (R := R) S = n := by
+  rw [Module.rankAtStalk_eq_finrank_of_free, finrank_eq]
+
+instance [Algebra.IsSplitOfRank n R S] : Module.FinitePresentation R S := by
+  obtain ⟨e⟩ := nonempty_algEquiv_fun n R S
+  apply Module.FinitePresentation.of_equiv e.symm.toLinearEquiv
+
 end
 
 section
@@ -601,7 +665,7 @@ lemma exists_isSplitOfRank_tensorProduct [Etale R S] [Module.Finite R S] {n : �
       let e := e₁.trans <| e₂.trans <| e₃.trans <| e₄.trans e₅
       refine ⟨V, inferInstance, inferInstance, ?_, ?_⟩
       · have : Module.FaithfullyFlat R S := by
-          apply Algebra.Etale.faithfullyFlat_of_rankAtStalk_gt_zero
+          apply Algebra.Etale.faithfullyFlat_of_rankAtStalk_pos
           intro p
           simp [hn]
         exact Module.FaithfullyFlat.trans R S V
