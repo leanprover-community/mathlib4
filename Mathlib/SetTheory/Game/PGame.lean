@@ -28,7 +28,7 @@ We may denote a game as $\{L | R\}$, where $L$ and $R$ stand for the collections
 moves. This notation is not currently used in Mathlib.
 
 Combinatorial games themselves, as a quotient of pregames, are constructed in
-`SetTheory.Game.Basic`.
+`Mathlib.SetTheory.Game.Basic`.
 
 ## Conway induction
 
@@ -840,7 +840,7 @@ theorem Equiv.le {x y : PGame} (h : x ≈ y) : x ≤ y := h.le
 @[deprecated AntisymmRel.ge (since := "2025-01-26")]
 theorem Equiv.ge {x y : PGame} (h : x ≈ y) : y ≤ x := h.ge
 
-@[deprecated antisymmRel_rfl (since := "2025-01-26")]
+@[deprecated AntisymmRel.rfl (since := "2025-01-26")]
 theorem equiv_rfl {x : PGame} : x ≈ x := by rfl
 
 @[deprecated antisymmRel_refl (since := "2025-01-26")]
@@ -903,20 +903,20 @@ theorem lf_congr_imp {x₁ y₁ x₂ y₂ : PGame} (hx : x₁ ≈ x₂) (hy : y�
   (lf_congr hx hy).1
 
 theorem lf_congr_left {x₁ x₂ y : PGame} (hx : x₁ ≈ x₂) : x₁ ⧏ y ↔ x₂ ⧏ y :=
-  lf_congr hx antisymmRel_rfl
+  lf_congr hx AntisymmRel.rfl
 
 theorem lf_congr_right {x y₁ y₂ : PGame} (hy : y₁ ≈ y₂) : x ⧏ y₁ ↔ x ⧏ y₂ :=
-  lf_congr antisymmRel_rfl hy
+  lf_congr AntisymmRel.rfl hy
 
 @[trans]
 theorem lf_of_lf_of_equiv {x y z : PGame} (h₁ : x ⧏ y) (h₂ : y ≈ z) : x ⧏ z :=
-  lf_congr_imp antisymmRel_rfl h₂ h₁
+  lf_congr_imp AntisymmRel.rfl h₂ h₁
 
 instance : Trans (· ⧏ ·) (· ≈ ·) (· ⧏ ·) := ⟨lf_of_lf_of_equiv⟩
 
 @[trans]
 theorem lf_of_equiv_of_lf {x y z : PGame} (h₁ : x ≈ y) : y ⧏ z → x ⧏ z :=
-  lf_congr_imp h₁.symm antisymmRel_rfl
+  lf_congr_imp h₁.symm AntisymmRel.rfl
 
 instance : Trans (· ≈ ·) (· ⧏ ·) (· ⧏ ·) := ⟨lf_of_equiv_of_lf⟩
 
@@ -961,12 +961,12 @@ theorem lf_or_equiv_or_gf (x y : PGame) : x ⧏ y ∨ (x ≈ y) ∨ y ⧏ x := b
 @[deprecated AntisymmRel.antisymmRel_congr_right (since := "2025-01-26")]
 theorem equiv_congr_left {y₁ y₂ : PGame} : y₁ ≈ y₂ ↔ ∀ x₁, x₁ ≈ y₁ ↔ x₁ ≈ y₂ where
   mp h _ := h.antisymmRel_congr_right
-  mpr h := (h y₁).1 antisymmRel_rfl
+  mpr h := (h y₁).1 AntisymmRel.rfl
 
 @[deprecated AntisymmRel.antisymmRel_congr_left (since := "2025-01-26")]
 theorem equiv_congr_right {x₁ x₂ : PGame} : (x₁ ≈ x₂) ↔ ∀ y₁, x₁ ≈ y₁ ↔ x₂ ≈ y₁ where
   mp h _ := h.antisymmRel_congr_left
-  mpr h := (h x₂).2 antisymmRel_rfl
+  mpr h := (h x₂).2 AntisymmRel.rfl
 
 theorem equiv_of_exists {x y : PGame}
     (hl₁ : ∀ i, ∃ j, x.moveLeft i ≈ y.moveLeft j) (hr₁ : ∀ i, ∃ j, x.moveRight i ≈ y.moveRight j)
@@ -1050,10 +1050,10 @@ theorem fuzzy_congr_imp {x₁ y₁ x₂ y₂ : PGame} (hx : x₁ ≈ x₂) (hy :
   (fuzzy_congr hx hy).1
 
 theorem fuzzy_congr_left {x₁ x₂ y : PGame} (hx : x₁ ≈ x₂) : x₁ ‖ y ↔ x₂ ‖ y :=
-  fuzzy_congr hx antisymmRel_rfl
+  fuzzy_congr hx AntisymmRel.rfl
 
 theorem fuzzy_congr_right {x y₁ y₂ : PGame} (hy : y₁ ≈ y₂) : x ‖ y₁ ↔ x ‖ y₂ :=
-  fuzzy_congr antisymmRel_rfl hy
+  fuzzy_congr AntisymmRel.rfl hy
 
 @[trans]
 theorem fuzzy_of_fuzzy_of_equiv {x y z : PGame} (h₁ : x ‖ y) (h₂ : y ≈ z) : x ‖ z :=
@@ -1939,19 +1939,19 @@ theorem add_congr {w x y z : PGame} (h₁ : w ≈ x) (h₂ : y ≈ z) : w + y �
     (add_le_add_left h₂.2 x).trans (add_le_add_right h₁.2 y)⟩
 
 theorem add_congr_left {x y z : PGame} (h : x ≈ y) : x + z ≈ y + z :=
-  add_congr h antisymmRel_rfl
+  add_congr h AntisymmRel.rfl
 
 theorem add_congr_right {x y z : PGame} : (y ≈ z) → (x + y ≈ x + z) :=
-  add_congr antisymmRel_rfl
+  add_congr AntisymmRel.rfl
 
 theorem sub_congr {w x y z : PGame} (h₁ : w ≈ x) (h₂ : y ≈ z) : w - y ≈ x - z :=
   add_congr h₁ (neg_equiv_neg_iff.2 h₂)
 
 theorem sub_congr_left {x y z : PGame} (h : x ≈ y) : x - z ≈ y - z :=
-  sub_congr h antisymmRel_rfl
+  sub_congr h AntisymmRel.rfl
 
 theorem sub_congr_right {x y z : PGame} : (y ≈ z) → (x - y ≈ x - z) :=
-  sub_congr antisymmRel_rfl
+  sub_congr AntisymmRel.rfl
 
 theorem le_iff_sub_nonneg {x y : PGame} : x ≤ y ↔ 0 ≤ y - x :=
   ⟨fun h => (zero_le_add_neg_cancel x).trans (add_le_add_right h _), fun h =>
