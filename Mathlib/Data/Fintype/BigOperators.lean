@@ -144,7 +144,7 @@ This version is useful to rewrite from right to left. -/
 @[to_additive "Sum over a sigma type equals the repeated sum, curried version.
 This version is useful to rewrite from right to left."]
 theorem prod_sigma' {ι} {α : ι → Type*} {M : Type*} [Fintype ι] [∀ i, Fintype (α i)] [CommMonoid M]
-    (f : (i : ι) → α i → M) : ∏ x : (i : ι) × α i, f x.1 x.2 = ∏ x, ∏ y, f x y :=
+    (f : (i : ι) → α i → M) : ∏ x : Sigma α, f x.1 x.2 = ∏ x, ∏ y, f x y :=
   prod_sigma ..
 
 @[simp] nonrec lemma card_sigma {ι} {α : ι → Type*} [Fintype ι] [∀ i, Fintype (α i)] :
