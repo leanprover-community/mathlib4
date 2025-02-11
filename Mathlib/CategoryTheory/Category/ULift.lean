@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Equivalence
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.Data.ULift
