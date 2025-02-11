@@ -182,10 +182,9 @@ variable {l : Line α ι} {i : ι} {a x : α}
 @[coe] def toFun (l : Line α ι) (x : α) (i : ι) : α := (l.idxFun i).getD x
 
 -- This lets us treat a line `l : Line α ι` as a function `α → ι → α`.
-instance instCoeFun : CoeFun (Line α ι) fun _ => α → ι → α :=
-  ⟨fun l x i => (l.idxFun i).getD x⟩
+instance instCoeFun : CoeFun (Line α ι) fun _ => α → ι → α := ⟨toFun⟩
 
-lemma coe_apply (l : Line α ι) (x : α) (i : ι) : l x i = (l.idxFun i).getD x := rfl
+@[simp] lemma coe_apply (l : Line α ι) (x : α) (i : ι) : l x i = (l.idxFun i).getD x := rfl
 
 -- Note: This is not made a `FunLike` instance to avoid having two syntactically different coercions
 lemma coe_injective [Nontrivial α] : Injective ((⇑) : Line α ι → α → ι → α) := by
@@ -325,8 +324,8 @@ theorem prod_apply {α ι ι'} (l : Line α ι) (l' : Line α ι') (x : α) :
   cases i <;> rfl
 
 @[simp]
-theorem diagonal_apply {α ι} [Nonempty ι] (x : α) : Line.diagonal α ι x = fun _ => x := by
-  simp_rw [Line.diagonal, Option.getD_none]
+theorem diagonal_apply {α ι} [Nonempty ι] (x : α) : diagonal α ι x = fun _ => x := by
+  ext; simp [diagonal]
 
 /-- The **Hales-Jewett theorem**. This version has a restriction on universe levels which is
 necessary for the proof. See `exists_mono_in_high_dimension` for a fully universe-polymorphic
@@ -477,7 +476,7 @@ theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset
     intro i hi
     rw [hs, Finset.compl_filter, Finset.mem_filter] at hi
     obtain ⟨y, hy⟩ := Option.ne_none_iff_exists.mp hi.right
-    simp_rw [← hy, Option.map_some', Option.getD]
+    simp [← hy, Option.map_some', Option.getD]
 
 namespace Subspace
 
