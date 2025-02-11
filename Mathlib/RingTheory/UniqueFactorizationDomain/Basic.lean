@@ -28,6 +28,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
   to get relatively prime elements.
 -/
 
+assert_not_exists Field
 
 variable {α : Type*}
 

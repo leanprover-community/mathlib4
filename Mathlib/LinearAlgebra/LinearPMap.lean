@@ -58,18 +58,31 @@ theorem toFun_eq_coe (f : E →ₗ.[R] F) (x : f.domain) : f.toFun x = f x :=
 
 @[ext (iff := false)]
 theorem ext {f g : E →ₗ.[R] F} (h : f.domain = g.domain)
-    (h' : ∀ ⦃x : f.domain⦄ ⦃y : g.domain⦄ (_h : (x : E) = y), f x = g y) : f = g := by
+    (h' : ∀ ⦃x : E⦄ ⦃hf : x ∈ f.domain⦄ ⦃hg : x ∈ g.domain⦄, f ⟨x, hf⟩ = g ⟨x, hg⟩) : f = g := by
   rcases f with ⟨f_dom, f⟩
   rcases g with ⟨g_dom, g⟩
   obtain rfl : f_dom = g_dom := h
-  obtain rfl : f = g := LinearMap.ext fun x => h' rfl
-  rfl
+  congr
+  apply LinearMap.ext
+  intro x
+  apply h'
+
+/-- A dependent version of `ext`. -/
+theorem dExt {f g : E →ₗ.[R] F} (h : f.domain = g.domain)
+    (h' : ∀ ⦃x : f.domain⦄ ⦃y : g.domain⦄ (_h : (x : E) = y), f x = g y) : f = g :=
+  ext h fun _ _ _ ↦ h' rfl
 
 @[simp]
 theorem map_zero (f : E →ₗ.[R] F) : f 0 = 0 :=
   f.toFun.map_zero
 
 theorem ext_iff {f g : E →ₗ.[R] F} :
+    f = g ↔
+      f.domain = g.domain ∧
+        ∀ ⦃x : E⦄ ⦃hf : x ∈ f.domain⦄ ⦃hg : x ∈ g.domain⦄, f ⟨x, hf⟩ = g ⟨x, hg⟩ :=
+  ⟨by rintro rfl; simp, fun ⟨deq, feq⟩ ↦ ext deq feq⟩
+
+theorem dExt_iff {f g : E →ₗ.[R] F} :
     f = g ↔
       ∃ _domain_eq : f.domain = g.domain,
         ∀ ⦃x : f.domain⦄ ⦃y : g.domain⦄ (_h : (x : E) = y), f x = g y :=
@@ -78,7 +91,7 @@ theorem ext_iff {f g : E →ₗ.[R] F} :
       ⟨rfl, fun x y h => by
         congr
         exact mod_cast h⟩,
-    fun ⟨deq, feq⟩ => ext deq feq⟩
+    fun ⟨deq, feq⟩ => dExt deq feq⟩
 
 theorem ext' {s : Submodule R E} {f g : s →ₗ[R] F} (h : f = g) : mk s f = mk s g :=
   h ▸ rfl
@@ -194,7 +207,7 @@ theorem exists_of_le {T S : E →ₗ.[R] F} (h : T ≤ S) (x : T.domain) :
 
 theorem eq_of_le_of_domain_eq {f g : E →ₗ.[R] F} (hle : f ≤ g) (heq : f.domain = g.domain) :
     f = g :=
-  ext heq hle.2
+  dExt heq hle.2
 
 /-- Given two partial linear maps `f`, `g`, the set of points `x` such that
 both `f` and `g` are defined at `x` and `f x = g x` form a submodule. -/
@@ -392,9 +405,7 @@ instance instInvolutiveNeg : InvolutiveNeg (E →ₗ.[R] F) :=
   ⟨fun f => by
     ext x y hxy
     · rfl
-    · simp only [neg_apply, neg_neg]
-      cases x
-      congr⟩
+    · simp only [neg_apply, neg_neg]⟩
 
 section Add
 
@@ -482,29 +493,25 @@ theorem sub_apply (f g : E →ₗ.[R] F) (x : (f.domain ⊓ g.domain : Submodule
 instance instSubtractionCommMonoid : SubtractionCommMonoid (E →ₗ.[R] F) where
   add_comm := add_comm
   sub_eq_add_neg f g := by
-    ext x y h
+    ext x _ h
     · rfl
     simp [sub_apply, add_apply, neg_apply, ← sub_eq_add_neg, h]
   neg_neg := neg_neg
   neg_add_rev f g := by
-    ext x y h
+    ext x _ h
     · simp [add_domain, sub_domain, neg_domain, And.comm]
     simp [sub_apply, add_apply, neg_apply, ← sub_eq_add_neg, h]
   neg_eq_of_add f g h' := by
-    ext x y h
+    ext x hf hg
     · have : (0 : E →ₗ.[R] F).domain = ⊤ := zero_domain
       simp only [← h', add_domain, inf_eq_top_iff] at this
       rw [neg_domain, this.1, this.2]
-    simp only [inf_coe, neg_domain, Eq.ndrec, Int.ofNat_eq_coe, neg_apply]
+    simp only [neg_domain, neg_apply, neg_eq_iff_add_eq_zero]
     rw [ext_iff] at h'
     rcases h' with ⟨hdom, h'⟩
     rw [zero_domain] at hdom
-    simp only [inf_coe, neg_domain, Eq.ndrec, Int.ofNat_eq_coe, zero_domain, top_coe, zero_apply,
-      Subtype.forall, mem_top, forall_true_left, forall_eq'] at h'
-    specialize h' x.1 (by simp [hdom])
-    simp only [inf_coe, neg_domain, Eq.ndrec, Int.ofNat_eq_coe, add_apply, Subtype.coe_eta,
-      ← neg_eq_iff_add_eq_zero] at h'
-    rw [h', h]
+    simp only [hdom, neg_domain, zero_domain, mem_top, zero_apply, forall_true_left] at h'
+    apply h'
   zsmul := zsmulRec
 
 end Sub
@@ -851,10 +858,10 @@ theorem le_graph_iff {f g : E →ₗ.[R] F} : f.graph ≤ g.graph ↔ f ≤ g :=
   ⟨le_of_le_graph, le_graph_of_le⟩
 
 theorem eq_of_eq_graph {f g : E →ₗ.[R] F} (h : f.graph = g.graph) : f = g := by
-  ext
-  · exact mem_domain_iff_of_eq_graph h
+  apply dExt
+  · ext
+    exact mem_domain_iff_of_eq_graph h
   · apply (le_of_le_graph h.le).2
-    assumption
 
 end Graph
 
