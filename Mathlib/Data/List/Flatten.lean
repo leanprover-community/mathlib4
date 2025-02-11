@@ -19,6 +19,16 @@ variable {α β : Type*}
 
 namespace List
 
+@[gcongr]
+protected theorem Sublist.flatten {l₁ l₂ : List (List α)} (h : l₁ <+ l₂) :
+    l₁.flatten <+ l₂.flatten := by
+  induction h with
+  | slnil => simp
+  | cons _ _ ih =>
+    rw [flatten_cons]
+    exact ih.trans (sublist_append_right _ _)
+  | cons₂ _ _ ih => simpa
+
 set_option linter.deprecated false in
 /-- See `List.length_flatten` for the corresponding statement using `List.sum`. -/
 @[deprecated length_flatten (since := "2024-10-17")]

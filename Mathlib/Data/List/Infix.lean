@@ -66,6 +66,24 @@ lemma isPrefix_append_of_length (h : l₁.length ≤ l₂.length) : l₁ <+: l�
 @[simp] lemma take_isPrefix_take {m n : ℕ} : l.take m <+: l.take n ↔ m ≤ n ∨ l.length ≤ n := by
   simp [prefix_take_iff, take_prefix]; omega
 
+@[gcongr]
+protected theorem IsPrefix.flatten {l₁ l₂ : List (List α)} (h : l₁ <+: l₂) :
+    l₁.flatten <+: l₂.flatten := by
+  rcases h with ⟨l, rfl⟩
+  simp
+
+@[gcongr]
+protected theorem IsSuffix.flatten {l₁ l₂ : List (List α)} (h : l₁ <:+ l₂) :
+    l₁.flatten <:+ l₂.flatten := by
+  rcases h with ⟨l, rfl⟩
+  simp
+
+@[gcongr]
+protected theorem IsInfix.flatten {l₁ l₂ : List (List α)} (h : l₁ <:+: l₂) :
+    l₁.flatten <:+: l₂.flatten := by
+  rcases h with ⟨l, l', rfl⟩
+  simp
+
 lemma dropSlice_sublist (n m : ℕ) (l : List α) : l.dropSlice n m <+ l :=
   calc
     l.dropSlice n m = take n l ++ drop m (drop n l) := by rw [dropSlice_eq, drop_drop, Nat.add_comm]
