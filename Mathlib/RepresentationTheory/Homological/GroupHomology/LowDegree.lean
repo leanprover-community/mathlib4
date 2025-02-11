@@ -267,7 +267,7 @@ theorem mem_oneCycles_iff (x : G →₀ A) :
 
 theorem single_mem_oneCycles_iff (g : G) (a : A) :
     single g a ∈ oneCycles A ↔ A.ρ g a = a := by
-  simp [mem_oneCycles_iff, ← (A.ρ.ρ_apply_bijective g).1.eq_iff (a := A.ρ g⁻¹ a), eq_comm]
+  simp [mem_oneCycles_iff, ← (A.ρ.apply_bijective g).1.eq_iff (a := A.ρ g⁻¹ a), eq_comm]
 
 theorem single_mem_oneCycles_of_mem_invariants (g : G) (a : A) (ha : a ∈ A.ρ.invariants) :
     single g a ∈ oneCycles A :=
@@ -301,7 +301,7 @@ theorem single_mem_twoCycles_iff_inv (g : G × G) (a : A) :
 theorem single_mem_twoCycles_iff (g : G × G) (a : A) :
     single g a ∈ twoCycles A ↔
       single (g.1 * g.2) (A.ρ g.1 a) = single g.2 a + single g.1 (A.ρ g.1 a) := by
-  rw [← (mapRange_injective (α := G) _ (map_zero _) (A.ρ.ρ_apply_bijective g.1⁻¹).1).eq_iff]
+  rw [← (mapRange_injective (α := G) _ (map_zero _) (A.ρ.apply_bijective g.1⁻¹).1).eq_iff]
   simp [mem_twoCycles_iff, mapRange_add, eq_comm]
 
 theorem dTwo_apply_mem_twoCycles [DecidableEq G] (x : G × G × G →₀ A) :
