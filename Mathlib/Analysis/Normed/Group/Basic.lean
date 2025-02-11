@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Group.Seminorm
-import Mathlib.Topology.Instances.ENNReal.Defs
 import Mathlib.Data.NNReal.Basic
+import Mathlib.Topology.Instances.ENNReal.Defs
 import Mathlib.Topology.MetricSpace.Basic
-
 
 /-!
 # Normed (semi)groups
