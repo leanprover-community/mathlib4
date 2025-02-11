@@ -54,14 +54,14 @@ variable {k G : Type u} [Field k] [Monoid G]
 
 -- Porting note: `@[derive]` didn't work for `FDRep`. Add the 4 instances here.
 instance : LargeCategory (FDRep k G) := inferInstance
-instance : HasForget (FDRep k G) := inferInstance
+instance : ConcreteCategory (FDRep k G) (Action.HomSubtype _ _) := inferInstance
 instance : Preadditive (FDRep k G) := inferInstance
 instance : HasFiniteLimits (FDRep k G) := inferInstance
 
 instance : Linear k (FDRep k G) := by infer_instance
 
 instance : CoeSort (FDRep k G) (Type u) :=
-  HasForget.hasCoeToSort _
+  ⟨fun V => V.V⟩
 
 instance (V : FDRep k G) : AddCommGroup V := by
   change AddCommGroup ((forget₂ (FDRep k G) (FGModuleCat k)).obj V).obj; infer_instance
@@ -100,15 +100,14 @@ def isoToLinearEquiv {V W : FDRep k G} (i : V ≅ W) : V ≃ₗ[k] W :=
 
 theorem Iso.conj_ρ {V W : FDRep k G} (i : V ≅ W) (g : G) :
     W.ρ g = (FDRep.isoToLinearEquiv i).conj (V.ρ g) := by
-  -- Porting note: Changed `rw` to `erw`
-  erw [FDRep.isoToLinearEquiv, ← hom_action_ρ V, ← FGModuleCat.Iso.conj_hom_eq_conj, Iso.conj_apply]
-  rw [← ModuleCat.hom_ofHom (W.ρ g), ← ModuleCat.hom_ext_iff,
+  rw [FDRep.isoToLinearEquiv, ← hom_action_ρ V, ← FGModuleCat.Iso.conj_hom_eq_conj, Iso.conj_apply,
+      ← ModuleCat.hom_ofHom (W.ρ g), ← ModuleCat.hom_ext_iff,
       Iso.eq_inv_comp ((Action.forget (FGModuleCat k) G).mapIso i)]
   exact (i.hom.comm g).symm
 
 /-- Lift an unbundled representation to `FDRep`. -/
 @[simps ρ]
-def of {V : Type u} [AddCommGroup V] [Module k V] [FiniteDimensional k V]
+abbrev of {V : Type u} [AddCommGroup V] [Module k V] [FiniteDimensional k V]
     (ρ : Representation k G V) : FDRep k G :=
   ⟨FGModuleCat.of k V, (ModuleCat.endRingEquiv _).symm.toMonoidHom.comp ρ⟩
 
@@ -182,9 +181,8 @@ open scoped MonoidalCategory
 /-- Auxiliary definition for `FDRep.dualTensorIsoLinHom`. -/
 noncomputable def dualTensorIsoLinHomAux :
     (FDRep.of ρV.dual ⊗ W).V ≅ (FDRep.of (linHom ρV W.ρ)).V :=
-  -- Porting note: had to make all types explicit arguments
-  @LinearEquiv.toFGModuleCatIso k _ (FDRep.of ρV.dual ⊗ W).V (V →ₗ[k] W)
-    _ _ _ _ _ _ (dualTensorHomEquiv k V W)
+  -- Porting note: had to make `V` explicit
+  LinearEquiv.toFGModuleCatIso (V := (FDRep.of ρV.dual ⊗ W).V) (dualTensorHomEquiv k V W)
 
 /-- When `V` and `W` are finite dimensional representations of a group `G`, the isomorphism
 `dualTensorHomEquiv k V W` of vector spaces induces an isomorphism of representations. -/
