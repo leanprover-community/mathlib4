@@ -19,7 +19,7 @@ Swap matrices are a special case of *elementary matrices*. For transvections see
 
 ## Implementation detail
 
-This is a thin wrapper around `(Equiv.swap i j).toPEquiv.toMatrix`.
+This is a thin wrapper around `(Equiv.swap i j).permMatrix`.
 -/
 
 namespace Matrix
