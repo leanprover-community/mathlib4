@@ -48,11 +48,13 @@ Also returns an array of messages for the `verbose` report.
 def logDiffs (tk : Syntax) (e₁ e₂ : Expr) : StateT (Array (Unit → MessageData)) MetaM Bool := do
   withOptions (fun opts => opts.setBool `pp.analyze true) do
   if ← withReducible (isDefEq e₁ e₂) then
-    verbose m!"{checkEmoji}\n{e₁}\n  and\n{e₂}\nare defeq at reducible transparency."
+    verbose m!"{checkEmoji} at reducible transparency,\
+      {indentD e₁}\nand{indentD e₂}\nare defeq."
     -- They agree at reducible transparency, we're done.
     return false
   else
-    verbose m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare not defeq at reducible transparency."
+    verbose m!"{crossEmoji} at reducible transparency,\
+      {indentD e₁}\nand\n{indentD e₂}\nare not defeq."
     if ← isDefEq e₁ e₂ then
       match e₁, e₂ with
       | Expr.app f₁ a₁, Expr.app f₂ a₂ =>
@@ -62,22 +64,25 @@ def logDiffs (tk : Syntax) (e₁ e₂ : Expr) : StateT (Array (Unit → MessageD
           if ← logDiffs tk f₁ f₂ then
             return true
           else
-            logInfoAt tk m!"{crossEmoji} at default transparency,{indentD e₁}\n  and{indentD e₂}\nare defeq, \
-              but not at reducible transparency."
+            logInfoAt tk m!"{crossEmoji} at reducible transparency,\
+              {indentD e₁}\nand{indentD e₂}\nare not defeq, but they are at default transparency."
             return true
       | Expr.const _ _, Expr.const _ _ =>
-        logInfoAt tk m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare defeq at default transparency, \
-            but not at reducible transparency."
+        logInfoAt tk m!"{crossEmoji} at reducible transparency,\
+          {indentD e₁}\nand{indentD e₂}\nare not defeq, but they are at default transparency."
         return true
       | _, _ =>
-        verbose m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare not both applications or constants."
+        verbose
+          m!"{crossEmoji}{indentD e₁}\nand{indentD e₂}\nare not both applications or constants."
         return false
     else
-        verbose m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare not defeq at default transparency."
+        verbose
+          m!"{crossEmoji}{indentD e₁}\nand{indentD e₂}\nare not defeq at default transparency."
       return false
 
 elab_rules : tactic
   | `(tactic| erw?%$tk [$r]) => withMainContext do
+    logInfoAt r "Debugging `erw?`"
     let verbose := (← getOptions).get `tactic.erw?.verbose (defVal := false)
     let g ← getMainGoal
     evalTactic (← `(tactic| erw [$r]))
