@@ -237,8 +237,8 @@ end Fintype
 
 lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents [Finite V] {G'}
     (h : G ≤ G') (c' : ConnectedComponent G') :
-    Odd c'.supp.ncard ↔ Odd
-    {c : ConnectedComponent G | c.supp ⊆ c'.supp ∧ Odd c.supp.ncard}.ncard := by
+    Odd c'.supp.ncard ↔
+      Odd {c : ConnectedComponent G | c.supp ⊆ c'.supp ∧ Odd c.supp.ncard}.ncard := by
   simp_rw [← Set.Nat.card_coe_set_eq]
   classical
   cases nonempty_fintype V
