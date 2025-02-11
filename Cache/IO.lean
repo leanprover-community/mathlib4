@@ -8,7 +8,7 @@ import Std.Data.HashMap
 import Lean.Data.RBMap
 import Lean.Data.RBTree
 import Lean.Data.Json.Printer
-import Lean.Util.Path
+import Lean.Util.Paths
 
 variable {α : Type}
 
@@ -35,15 +35,6 @@ open Lean
 namespace Cache.IO
 
 open System (FilePath)
-
-/--
-Read the search path from `LEAN_PATH` and drop all trailing `/.lake/build/lib/`
-as the `.lean`-files are located outside the `.lake/` folders.
--/
-def getCleanSearchPath : IO SearchPath := do
-  let sp ← addSearchPathFromEnv {}
-  return sp.map fun path =>
-    System.mkFilePath (path.components |> fun p => p.take (p.length - 3))
 
 /-- Target directory for build files -/
 def LIBDIR : FilePath :=
@@ -127,7 +118,7 @@ private def CacheM.mathlibDepPath (sp : SearchPath) : IO FilePath := do
 
 -- TODO this should be generated automatically from the information in `lakefile.lean`.
 private def CacheM.getContext : IO CacheM.Context := do
-  let sp ← getCleanSearchPath
+  let sp ← initSrcSearchPath
   let mathlibRoot ← CacheM.mathlibDepPath sp
   return {
     mathlibDepPath := mathlibRoot,
