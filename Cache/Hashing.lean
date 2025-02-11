@@ -32,21 +32,23 @@ structure HashMemo where
   -/
   cache    : Std.HashMap FilePath (Option UInt64) := {}
   /-- Stores the hash of the module's content for modules in Mathlib or upstream. -/
-  hashMap  : HashMap := {}
+  hashMap  : ModuleHashMap := {}
   deriving Inhabited
 
-partial def insertDeps (hashMap : HashMap) (path : FilePath) (hashMemo : HashMemo) : HashMap :=
+partial def insertDeps (hashMap : ModuleHashMap) (path : FilePath) (hashMemo : HashMemo) :
+    ModuleHashMap :=
   if hashMap.contains path then hashMap else
   match (hashMemo.depsMap[path]?, hashMemo.hashMap[path]?) with
   | (some deps, some hash) => deps.foldl (insertDeps · · hashMemo) (hashMap.insert path hash)
   | _ => hashMap
 
 /--
-Filters the `HashMap` of a `HashMemo` so that it only contains key/value pairs such that every key:
+Filters the `hashMap` of a `HashMemo` so that it only contains key/value pairs such that every key:
 * Belongs to the given list of file paths or
 * Corresponds to a file that's imported (transitively of not) by some file in the list of file paths
 -/
-def HashMemo.filterByFilePaths (hashMemo : HashMemo) (filePaths : List FilePath) : IO HashMap := do
+def HashMemo.filterByFilePaths (hashMemo : HashMemo) (filePaths : List FilePath) :
+    IO ModuleHashMap := do
   let mut hashMap := default
   for filePath in filePaths do
     if hashMemo.hashMap.contains filePath then
@@ -76,9 +78,9 @@ Computes the root hash, which mixes the hashes of the content of:
 * `lakefile.lean`
 * `lean-toolchain`
 * `lake-manifest.json`
-and the hash of `Lean.versionString`.
+and the hash of `Lean.gitHash`.
 
-(We hash `Lean.versionString` in case the toolchain changes even though `lean-toolchain` hasn't.
+(We hash `Lean.gitHash` in case the toolchain changes even though `lean-toolchain` hasn't.
 This happens with the `lean-pr-testing-NNNN` toolchains when Lean 4 PRs are updated.)
 -/
 def getRootHash : CacheM UInt64 := do
