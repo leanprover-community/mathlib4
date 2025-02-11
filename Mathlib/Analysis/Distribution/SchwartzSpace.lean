@@ -1258,16 +1258,12 @@ variable [NormedAddCommGroup D] [MeasurableSpace D] [MeasurableSpace E] [OpensMe
 -- none of hint, norm_cast, simp, rw? or apply? return anything
 lemma Real.toNNReal_mul (R S : ℝ) : R.toNNReal * S.toNNReal = (R * S).toNNReal := sorry
 
--- This looks like the wrong statement to try to prove...
-lemma baz (R : ℝ) (N : ℕ) : N * R.toNNReal = (N * R).toNNReal := by
-  rw [← ENNReal.toNNReal_nat, ← Real.toNNReal_mul]
-  congr
-  -- goal: about toNNReal applied to Nat.cast into ℝ≥0∞ and ℝ, commuting
-  sorry
+-- XXX: is this a sufficiently good name?
+lemma Nat.cast_toNNReal (N : ℕ) : (Nat.cast N : ℝ≥0∞).toNNReal = (Nat.cast N : ℝ).toNNReal := sorry
 
 lemma bar (R : ℝ) (k : ℕ) : 2 ^ k * R.toNNReal = (2 ^ k * R).toNNReal := by
   norm_cast
-  exact baz R _
+  rw [← ENNReal.toNNReal_nat, ← Real.toNNReal_mul, Nat.cast_toNNReal]
 
 variable (𝕜 F) in
 /-- The `L^p` norm of a Schwartz function is controlled by a finite family of Schwartz seminorms.
