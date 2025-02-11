@@ -60,7 +60,7 @@ lemma iterationFunctor_obj (i : J) {j : J} (iter : Φ.Iteration j) (hi : i ≤ j
     (Φ.iterationFunctor J).obj i = iter.F.obj ⟨i, hi⟩ :=
   Iteration.congr_obj (Φ.iter i) iter i (by simp) hi
 
-lemma arrow_mk_iterationFunctor_map (i₁ i₂ : J) (h₁₂ : i₁ ≤ i₂)
+lemma arrowMk_iterationFunctor_map (i₁ i₂ : J) (h₁₂ : i₁ ≤ i₂)
     {j : J} (iter : Φ.Iteration j) (hj : i₂ ≤ j) :
     Arrow.mk ((Φ.iterationFunctor J).map (homOfLE h₁₂)) =
       Arrow.mk (iter.F.map (homOfLE h₁₂ : ⟨i₁, h₁₂.trans hj⟩ ⟶ ⟨i₂, hj⟩)) := by
