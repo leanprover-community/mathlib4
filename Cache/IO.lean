@@ -11,8 +11,6 @@ variable {α : Type}
 
 open Lean
 
-open Lean
-
 namespace Cache.IO
 
 open System (FilePath)
