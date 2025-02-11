@@ -44,17 +44,20 @@ def IRDIR : FilePath :=
 
 /-- Target directory for caching -/
 initialize CACHEDIR : FilePath ← do
-  match ← IO.getEnv "XDG_CACHE_HOME" with
-  | some path => return path / "mathlib"
+  match ← IO.getEnv "MATHLIB_CACHE_DIR" with
+  | some path => return path
   | none =>
-    let home ← if System.Platform.isWindows then
-      let drive ← IO.getEnv "HOMEDRIVE"
-      let path ← IO.getEnv "HOMEPATH"
-      pure <| return (← drive) ++ (← path)
-    else IO.getEnv "HOME"
-    match home with
-    | some path => return path / ".cache" / "mathlib"
-    | none => pure ⟨".cache"⟩
+    match ← IO.getEnv "XDG_CACHE_HOME" with
+    | some path => return path / "mathlib"
+    | none =>
+      let home ← if System.Platform.isWindows then
+        let drive ← IO.getEnv "HOMEDRIVE"
+        let path ← IO.getEnv "HOMEPATH"
+        pure <| return (← drive) ++ (← path)
+      else IO.getEnv "HOME"
+      match home with
+      | some path => return path / ".cache" / "mathlib"
+      | none => pure ⟨".cache"⟩
 
 /-- Target file path for `curl` configurations -/
 def CURLCFG :=
@@ -260,25 +263,28 @@ partial def getFilesWithExtension
     (← fp.readDir).foldlM (fun acc dir => getFilesWithExtension dir.path extension acc) acc
   else return if fp.extension == some extension then acc.push fp else acc
 
-abbrev HashMap := Std.HashMap FilePath UInt64
+/--
+The Hash map of the cache.
+-/
+abbrev ModuleHashMap := Std.HashMap FilePath UInt64
 
-namespace HashMap
+namespace ModuleHashMap
 
 /-- Filter the hashmap by whether the entries exist as files in the cache directory.
 
 If `keep` is true, the result will contain the entries that do exist;
 if `keep` is false, the result will contain the entries that do not exist.
 -/
-def filterExists (hashMap : HashMap) (keep : Bool) : IO HashMap :=
-  hashMap.foldM (init := default) fun acc path hash => do
+def filterExists (hashMap : ModuleHashMap) (keep : Bool) : IO ModuleHashMap :=
+  hashMap.foldM (init := ∅) fun acc path hash => do
     let exist ← (CACHEDIR / hash.asLTar).pathExists
     let add := if keep then exist else !exist
     if add then return acc.insert path hash else return acc
 
-def hashes (hashMap : HashMap) : Lean.RBTree UInt64 compare :=
-  hashMap.fold (init := default) fun acc _ hash => acc.insert hash
+def hashes (hashMap : ModuleHashMap) : Lean.RBTree UInt64 compare :=
+  hashMap.fold (init := ∅) fun acc _ hash => acc.insert hash
 
-end HashMap
+end ModuleHashMap
 
 def mkDir (path : FilePath) : IO Unit := do
   if !(← path.pathExists) then IO.FS.createDirAll path
@@ -307,7 +313,7 @@ def allExist (paths : List (FilePath × Bool)) : IO Bool := do
   pure true
 
 /-- Compresses build files into the local cache and returns an array with the compressed files -/
-def packCache (hashMap : HashMap) (overwrite verbose unpackedOnly : Bool)
+def packCache (hashMap : ModuleHashMap) (overwrite verbose unpackedOnly : Bool)
     (comment : Option String := none) :
     CacheM <| Array String := do
   mkDir CACHEDIR
@@ -350,7 +356,7 @@ def isPathFromMathlib (path : FilePath) : Bool :=
   | _ => false
 
 /-- Decompresses build files into their respective folders -/
-def unpackCache (hashMap : HashMap) (force : Bool) : CacheM Unit := do
+def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
   let hashMap ← hashMap.filterExists true
   let size := hashMap.size
   if size > 0 then
@@ -378,13 +384,13 @@ instance : Ord FilePath where
   compare x y := compare x.toString y.toString
 
 /-- Removes all cache files except for what's in the `keep` set -/
-def cleanCache (keep : Lean.RBTree FilePath compare := default) : IO Unit := do
+def cleanCache (keep : Lean.RBTree FilePath compare := ∅) : IO Unit := do
   for path in ← getFilesWithExtension CACHEDIR "ltar" do
     if !keep.contains path then IO.FS.removeFile path
 
 /-- Prints the LTAR file and embedded comments (in particular, the mathlib commit that built the
 file) regarding the files with specified paths. -/
-def lookup (hashMap : HashMap) (paths : List FilePath) : IO Unit := do
+def lookup (hashMap : ModuleHashMap) (paths : List FilePath) : IO Unit := do
   let mut err := false
   for path in paths do
     let some hash := hashMap[path]? | err := true

@@ -16,13 +16,13 @@ This file contains some alternative statements of Nakayama's Lemma as found in
 ## Main statements
 
 * `Submodule.eq_smul_of_le_smul_of_le_jacobson` - A version of (2) in
-  [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV).,
+  [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV),
   generalising to the Jacobson of any ideal.
 * `Submodule.eq_bot_of_le_smul_of_le_jacobson_bot` - Statement (2) in
   [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV).
 
 * `Submodule.sup_smul_eq_sup_smul_of_le_smul_of_le_jacobson` - A version of (4) in
-  [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV).,
+  [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV),
   generalising to the Jacobson of any ideal.
 * `Submodule.smul_le_of_le_smul_of_le_jacobson_bot` - Statement (4) in
   [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV).

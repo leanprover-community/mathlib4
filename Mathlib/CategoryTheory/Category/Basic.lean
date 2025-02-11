@@ -23,7 +23,7 @@ Introduces notations in the `CategoryTheory` scope
 
 Users may like to add `g ⊚ f` for composition in the standard convention, using
 ```lean
-local notation g ` ⊚ `:80 f:80 := category.comp f g    -- type as \oo
+local notation:80 g " ⊚ " f:80 => CategoryTheory.CategoryStruct.comp f g    -- type as \oo
 ```
 
 ## Porting note
