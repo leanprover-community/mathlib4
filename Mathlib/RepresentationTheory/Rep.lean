@@ -164,17 +164,17 @@ instance : (linearization k G).Monoidal := by
 variable {k G}
 
 @[simp]
-theorem linearization_obj_ρ (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.V →₀ k) :
+theorem linearization_obj_ρ (X : Action (Type u) G) (g : G) (x : X.V →₀ k) :
     ((linearization k G).obj X).ρ g x = Finsupp.lmapDomain k k (X.ρ g) x :=
   rfl
 
-theorem linearization_of (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.V) :
+theorem linearization_of (X : Action (Type u) G) (g : G) (x : X.V) :
     ((linearization k G).obj X).ρ g (Finsupp.single x (1 : k))
       = Finsupp.single (X.ρ g x) (1 : k) := by
   rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): helps fixing `linearizationTrivialIso` since change in behaviour of `ext`.
-theorem linearization_single (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.V) (r : k) :
+theorem linearization_single (X : Action (Type u) G) (g : G) (x : X.V) (r : k) :
     ((linearization k G).obj X).ρ g (Finsupp.single x r) = Finsupp.single (X.ρ g x) r := by
   rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
 

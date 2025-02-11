@@ -358,7 +358,6 @@ end Rep
 variable (G)
 
 /-- The simplicial `G`-set sending `[n]` to `Gⁿ⁺¹` equipped with the diagonal action of `G`. -/
-@[simps (config := .lemmasOnly) obj map]
 def classifyingSpaceUniversalCover [Monoid G] :
     SimplicialObject (Action (Type u) G) where
   obj n := Action.ofMulAction G (Fin (n.unop.len + 1) → G)
