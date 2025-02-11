@@ -87,18 +87,19 @@ def getLeanTar : IO String := do
 
 /--
 `CacheM` stores the following information:
-* the root directory where `Mathlib.lean` lies
-* the Lean search path from the env variable `LEAN_PATH`. This contains
-  paths to the root directory of each imported package. The build files (e.g. `.olean`)
+* the source directory where `Mathlib.lean` lies
+* the Lean search path. This contains
+  paths to the source directory of each imported package. The build files (e.g. `.olean`)
   of a package should then be in a `.lake`-folder inside this root directory
   (see `LIBDIR` and `IRDIR`).
 * the build directory for proofwidgets
 -/
 structure CacheM.Context where
-  /-- root directory for mathlib files -/
+  /-- source directory for mathlib files -/
   mathlibDepPath : FilePath
   /-- the Lean search path -/
   searchPath : SearchPath
+  /-- build directory for proofwidgets -/
   proofWidgetsBuildDir : FilePath
 
 @[inherit_doc CacheM.Context]
@@ -108,7 +109,7 @@ section
 
 @[inherit_doc CacheM.Context]
 private def CacheM.getContext : IO CacheM.Context := do
-  let sp ← initSrcSearchPath -- getCleanSearchPath
+  let sp ← initSrcSearchPath
   let mathlibSourceFile ← Lean.findLean sp `Mathlib
   let some mathlibSource ← pure mathlibSourceFile.parent
     | throw <| IO.userError s!"Mathlib not found in dependencies"
