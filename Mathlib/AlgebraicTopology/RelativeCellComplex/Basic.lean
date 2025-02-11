@@ -9,6 +9,21 @@ import Mathlib.CategoryTheory.Limits.Shapes.Preorder.TransfiniteCompositionOfSha
 /-!
 # Relative cell complexes
 
+In this file, we define a structure `RelativeCellComplex` which expresses
+that a morphism `f : X ⟶ Y` is a transfinite composition of morphisms,
+all of which consists in attaching cells. Here, we allow a different
+family of authorized cells at each step. For example, (relative)
+CW-complexes are defined in the file `Topology.CWComplex.Abstract.Basic`
+by requiring that at the `n`th step, we attach `n`-disks along their
+boundaries.
+
+This structure `RelativeCellComplex` shall also be used in the
+formalization of the small object argument (TODO).
+
+## References
+* https://ncatlab.org/nlab/show/small+object+argument
+
+
 -/
 
 universe w w' t v u
@@ -22,7 +37,7 @@ variable {C : Type u} [Category.{v} C]
   {α : J → Type t} {A B : (j : J) → α j → C}
   (basicCell : (j : J) → (i : α j) → A j i ⟶ B j i) {X Y : C} (f : X ⟶ Y)
 
-/-- Let `J` be a well order type. Assume that for each `j : J`, we
+/-- Let `J` be a well ordered type. Assume that for each `j : J`, we
 have a family `basicCell j` of morphisms. A relative cell complex
 is a morphism `f : X ⟶ Y` which is a transfinite composition of morphisms
 in such a way that at the step `j : J`, we attach cells in the family `basicCell j`. -/
