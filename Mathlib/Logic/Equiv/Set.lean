@@ -29,11 +29,20 @@ universe u v w z
 
 variable {α : Sort u} {β : Sort v} {γ : Sort w}
 
-namespace Equiv
+namespace EquivLike
 
 @[simp]
-theorem range_eq_univ {α : Type*} {β : Type*} (e : α ≃ β) : range e = univ :=
-  eq_univ_of_forall e.surjective
+theorem range_eq_univ {α : Type*} {β : Type*} {E : Type*} [EquivLike E α β] (e : E) :
+    range e = univ :=
+  eq_univ_of_forall (EquivLike.toEquiv e).surjective
+
+end EquivLike
+
+namespace Equiv
+
+theorem range_eq_univ {α : Type*} {β : Type*} (e : α ≃ β) :
+    range e = univ :=
+  EquivLike.range_eq_univ e
 
 protected theorem image_eq_preimage {α β} (e : α ≃ β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
   Set.ext fun _ => mem_image_iff_of_inverse e.left_inv e.right_inv
