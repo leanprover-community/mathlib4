@@ -46,9 +46,8 @@ theorem cosh_half_dist (z w : ℍ) :
     cosh (dist z w / 2) = dist (z : ℂ) (conj (w : ℂ)) / (2 * √(z.im * w.im)) := by
   rw [← sq_eq_sq₀, cosh_sq', sinh_half_dist, div_pow, div_pow, one_add_div, mul_pow, sq_sqrt]
   · congr 1
-    simp only [Complex.dist_eq, Complex.norm_eq_abs, Complex.sq_abs, Complex.normSq_sub,
-      Complex.normSq_conj, Complex.conj_conj, Complex.mul_re, Complex.conj_re, Complex.conj_im,
-      coe_im]
+    simp only [Complex.dist_eq, Complex.sq_abs, Complex.normSq_sub, Complex.normSq_conj,
+      Complex.conj_conj, Complex.mul_re, Complex.conj_re, Complex.conj_im, coe_im]
     ring
   all_goals positivity
 
@@ -140,9 +139,9 @@ theorem center_zero (z : ℍ) : center z 0 = z :=
 theorem dist_coe_center_sq (z w : ℍ) (r : ℝ) : dist (z : ℂ) (w.center r) ^ 2 =
     2 * z.im * w.im * (Real.cosh (dist z w) - Real.cosh r) + (w.im * Real.sinh r) ^ 2 := by
   have H : 2 * z.im * w.im ≠ 0 := by positivity
-  simp only [Complex.dist_eq, Complex.norm_eq_abs, Complex.sq_abs, normSq_apply, coe_re, coe_im,
-    center_re, center_im, cosh_dist', mul_div_cancel₀ _ H, sub_sq z.im, mul_pow, Real.cosh_sq,
-    sub_re, sub_im, mul_sub, ← sq]
+  simp only [Complex.dist_eq, Complex.sq_abs, normSq_apply, coe_re, coe_im, center_re, center_im,
+    cosh_dist', mul_div_cancel₀ _ H, sub_sq z.im, mul_pow, Real.cosh_sq, sub_re, sub_im, mul_sub, ←
+    sq]
   ring
 
 theorem dist_coe_center (z w : ℍ) (r : ℝ) : dist (z : ℂ) (w.center r) =
