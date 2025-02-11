@@ -246,6 +246,9 @@ partial def getFilesWithExtension
     (← fp.readDir).foldlM (fun acc dir => getFilesWithExtension dir.path extension acc) acc
   else return if fp.extension == some extension then acc.push fp else acc
 
+/--
+The Hash map of the cache.
+-/
 abbrev ModuleHashMap := Std.HashMap FilePath UInt64
 
 namespace ModuleHashMap
