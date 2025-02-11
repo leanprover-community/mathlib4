@@ -118,7 +118,7 @@ private def CacheM.getContext : IO CacheM.Context := do
     srcSearchPath := sp
     proofWidgetsBuildDir := LAKEPACKAGESDIR / "proofwidgets" / ".lake" / "build" }
 
-@[inherit_doc CacheM.Context]
+/-- Run a `CacheM` in `IO` by loading the context from `LEAN_SRC_PATH`. -/
 def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
 
 end
