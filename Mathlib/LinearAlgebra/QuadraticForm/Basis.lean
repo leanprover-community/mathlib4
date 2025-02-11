@@ -29,12 +29,23 @@ noncomputable def Sym2.mul_finsupp (f : α →₀ R) :
     Sym2 α →₀ R := Finsupp.onFinset
       ((f.support.product f.support).image Sym2.mk)
     (Sym2.mul f) (fun p hp => by
-      simp only [Finset.product_eq_sprod, Finset.mem_image, Finset.mem_product,
-        Finsupp.mem_support_iff, ne_eq, Prod.exists]
       obtain ⟨a,b⟩ := p
+      simp only [Finset.product_eq_sprod, Finset.mem_image, Finset.mem_product,
+        Finsupp.mem_support_iff, ne_eq, Sym2.eq, rel_iff', Prod.swap_prod_mk, Prod.exists,
+        Prod.mk.injEq]
       simp only [ne_eq, Sym2.mul_sym2Mk] at hp
       exact ⟨a, ⟨b, ⟨⟨fun _ => by simp_all only [mul_sym2Mk, zero_mul, not_true_eq_false],
           fun _ => by simp_all only [mul_sym2Mk, mul_zero, not_true_eq_false]⟩, by simp only⟩⟩⟩)
+
+lemma Sym2.mul_finsupp_support (f : α →₀ R) : (Sym2.mul_finsupp f).support ⊆ f.support.sym2 := by
+  intro p hp
+  simp only [Sym2.mul_finsupp, Finset.product_eq_sprod, Finsupp.mem_support_iff,
+    Finsupp.onFinset_apply, ne_eq] at hp
+  obtain ⟨j,k⟩ := p
+  simp only [Finset.mem_sym2_iff, Sym2.mem_iff, Finsupp.mem_support_iff, ne_eq, forall_eq_or_imp,
+    forall_eq]
+  exact ⟨fun h => by simp_all only [Sym2.mul_sym2Mk, zero_mul, not_true_eq_false],
+    fun h => by simp_all only [Sym2.mul_sym2Mk, mul_zero, not_true_eq_false]⟩
 
 end
 
@@ -86,20 +97,8 @@ theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι
   have e2 (p : Sym2 ι) :
       (Sym2.mul_finsupp l * (polarSym2 Q) ∘ Sym2.map g) p =
         (Sym2.mul_finsupp l) p • (polarSym2 Q) (Sym2.map g p) :=
-    rfl
-  have e3 : (Sym2.mul_finsupp l).support ⊆  l.support.sym2 := by
-    intro p hp
-    simp [Sym2.mul_finsupp] at hp
-    obtain ⟨j,k⟩ := p
-    simp
-    by_contra H
-    simp at H
-    have c1 : l j * l k = 0 := by
-      rcases eq_or_ne (l j) 0 with hz | hz
-      · exact mul_eq_zero_of_left hz (l k)
-      · exact mul_eq_zero_of_right _ (H hz)
-    simp_all only [Sym2.mul_sym2Mk, not_true_eq_false]
-  rw [Finsupp.sum_of_support_subset (Sym2.mul_finsupp l) e3]
+    Finsupp.coe_pointwise_module_smul (Sym2.mul_finsupp l) ((polarSym2 Q) ∘ Sym2.map g) p
+  rw [Finsupp.sum_of_support_subset (Sym2.mul_finsupp l) (Sym2.mul_finsupp_support l)]
   · have d1 (x : Sym2 ι) :
     (polarSym2 Q) (Sym2.map (fun i ↦ l i • g i) x) =
       (Sym2.mul_finsupp l) x • (polarSym2 Q) (Sym2.map g x) := by
