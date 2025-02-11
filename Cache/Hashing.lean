@@ -11,10 +11,25 @@ namespace Cache.Hashing
 
 open System IO
 
+/--
+The `HashMemo` contains all information `Cache` needs about the modules:
+* the name
+* its imports
+* the file's hash (in `hashMap` and `cache`)
+additionally, it contains the `rootHash` which reflects changes to Mathlib's
+Lake project settings.
+-/
 structure HashMemo where
+  /-- Hash of mathlib's lake project settings. -/
   rootHash : UInt64
+  /-- Stores the imports of a module -/
   depsMap  : Std.HashMap FilePath (Array FilePath) := ∅
+  /--
+  For modules in Mathlib or upstream, this contains the same information
+  as `hashMap`. Contains `none` if a source file couldn't be found.
+  -/
   cache    : Std.HashMap FilePath (Option UInt64) := ∅
+  /-- Stores the hash of the module's content for modules in Mathlib or upstream. -/
   hashMap  : ModuleHashMap := ∅
   deriving Inhabited
 
