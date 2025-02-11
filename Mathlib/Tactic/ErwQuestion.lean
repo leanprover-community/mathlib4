@@ -86,7 +86,7 @@ elab_rules : tactic
     let verbose := (← getOptions).get `tactic.erw?.verbose (defVal := false)
     let g ← getMainGoal
     evalTactic (← `(tactic| erw [$r]))
-    let e := (← instantiateMVars (mkMVar g)).headBeta
+    let e := (← instantiateMVars (.mvar g)).headBeta
     let (``Eq.mpr, #[_, _, e, _]) := e.getAppFnArgs |
       logErrorAt tk "Unexpected term produced by `erw`, head is not an `Eq.mpr`."
     let (``id, #[ty, e]) := e.getAppFnArgs |
