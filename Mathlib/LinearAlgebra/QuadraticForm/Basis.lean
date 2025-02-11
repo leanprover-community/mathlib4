@@ -20,12 +20,12 @@ open LinearMap (BilinMap)
 
 section
 
-variable {α R}
+variable {α R M N} [DecidableEq α] [CommSemiring R]
 
 /--
 `Sym2.mul` as a `Finsupp`
 -/
-noncomputable def Sym2.mul_finsupp [DecidableEq α] [CommSemiring R] (f : α →₀ R) :
+noncomputable def Sym2.mul_finsupp (f : α →₀ R) :
     Sym2 α →₀ R := Finsupp.onFinset
       ((f.support.product f.support).image Sym2.mk)
     (Sym2.mul f) (fun p hp => by
@@ -62,23 +62,13 @@ lemma polarSym2_map_mul (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R
 
 variable [DecidableEq ι]
 
-lemma partial_result3a (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
-    Sym2.mul l • (polarSym2 Q) ∘ Sym2.map g =
-        Sym2.mul_finsupp l * (polarSym2 Q) ∘ Sym2.map g := by
-  rw [polarSym2]
-  rw [Sym2.lift_comp_map]
-  rw [Sym2.mul_finsupp]
-  simp_all only [Finset.product_eq_sprod]
-  simp_rw [Finsupp.pointwiseModuleScalar]
-  simp_all only [Finsupp.onFinset_apply]
-  ext ⟨i,j⟩
-  simp_all only [smul_eq_mul, Pi.smul_apply', Sym2.lift_mk]
-  rw [Finsupp.ofSupportFinite]
-  simp_all only [Finsupp.coe_mk, Sym2.lift_mk]
-
 lemma test (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
     (polarSym2 Q) ∘ Sym2.map (l * g)  = (Sym2.mul_finsupp l) * (polarSym2 Q) ∘ (Sym2.map g) := by
-  rw [polarSym2_map_mul, partial_result3a]
+  rw [polarSym2_map_mul, polarSym2]
+  ext ⟨a,b⟩
+  simp_all only [Pi.smul_apply', Sym2.mul_sym2Mk, Function.comp_apply, Sym2.map_pair_eq,
+    Sym2.lift_mk]
+  rfl
 
 open Finsupp in
 theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
