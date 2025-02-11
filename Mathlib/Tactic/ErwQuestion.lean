@@ -62,7 +62,7 @@ def logDiffs (tk : Syntax) (e₁ e₂ : Expr) : StateT (Array (Unit → MessageD
           if ← logDiffs tk f₁ f₂ then
             return true
           else
-            logInfoAt tk m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare defeq at default transparency, \
+            logInfoAt tk m!"{crossEmoji} at default transparency,{indentD e₁}\n  and{indentD e₂}\nare defeq, \
               but not at reducible transparency."
             return true
       | Expr.const _ _, Expr.const _ _ =>
@@ -93,7 +93,7 @@ elab_rules : tactic
     let (_, msgs) ← (logDiffs tk tgt inferred).run #[]
     if verbose then
       logInfoAt tk <| .joinSep
-        (m!"Expression appearing in target: {tgt}" ::
+        (m!"Expression appearing in target:{indentD tgt}" ::
           m!"Expression from `erw`: {inferred}" :: msgs.toList.map (· ())) "\n\n"
 
 end Mathlib.Tactic.Erw?
