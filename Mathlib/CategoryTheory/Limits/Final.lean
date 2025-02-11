@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
+Authors: Kim Morrison, Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Category.Cat.AsSmall
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
@@ -44,6 +44,9 @@ From 3., we prove 1. directly in `final_of_colimit_comp_coyoneda_iso_pUnit`.
 Dually, we prove that if a functor `F : C ⥤ D` is initial, then any functor `G : D ⥤ E` has a
 limit if and only if `F ⋙ G` does, and these limits are isomorphic via `limit.pre G F`.
 
+In the end of the file, we characterize the finality of some important induced functors on the
+(co)structured arrow category (`StructuredArrow.pre` and `CostructuredArrow.pre`) and on the
+Grothendieck construction (`Grothendieck.pre` and `Grothendieck.map`).
 
 ## Naming
 There is some discrepancy in the literature about naming; some say 'cofinal' instead of 'final'.
@@ -1021,6 +1024,7 @@ instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final :=
 
 open Limits
 
+/-- This is the small version of the more general lemma `Grothendieck.final_map` below. -/
 private lemma Grothendieck.final_map_small {C : Type u₁} [Category.{u₁} C] {F G : C ⥤ Cat.{u₁, u₁}}
     (α : F ⟶ G) [hα : ∀ X, Final (α.app X)] : Final (map α) := by
   rw [final_iff_isIso_colimit_pre]
