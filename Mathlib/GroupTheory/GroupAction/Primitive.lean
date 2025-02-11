@@ -69,8 +69,8 @@ class _root_.AddAction.IsPreprimitive [VAdd G X] extends AddAction.IsPretransiti
 the only blocks are the trivial ones -/
 @[to_additive]
 class IsPreprimitive [SMul G X] extends IsPretransitive G X : Prop where
-/-- An action is preprimitive if it is pretransitive and
-the only blocks are the trivial ones -/
+  /-- An action is preprimitive if it is pretransitive and
+  the only blocks are the trivial ones -/
   isTrivialBlock_of_isBlock : ∀ {B : Set X}, IsBlock G B → IsTrivialBlock B
 
 open IsPreprimitive
