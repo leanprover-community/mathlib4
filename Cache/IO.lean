@@ -92,11 +92,18 @@ def getLeanTar : IO String := do
 
 abbrev PackageDirs := Lean.RBMap String FilePath compare
 
+/--
+`CacheM` stores the following information:
+* the root directory where `Mathlib.lean` lies
+* package directories
+* the build directory for proofwidgets
+-/
 structure CacheM.Context where
   mathlibDepPath : FilePath
   packageDirs : PackageDirs
   proofWidgetsBuildDir : FilePath
 
+@[inherit_doc CacheM.Context]
 abbrev CacheM := ReaderT CacheM.Context IO
 
 /-- Whether this is running on Mathlib repo or not -/
@@ -130,6 +137,7 @@ private def CacheM.mathlibDepPath : IO FilePath := do
   | .error e => throw <| IO.userError s!"Cannot parse lake-manifest.json: {e}"
 
 -- TODO this should be generated automatically from the information in `lakefile.lean`.
+@[inherit_doc CacheM.Context]
 private def CacheM.getContext : IO CacheM.Context := do
   let root ← CacheM.mathlibDepPath
   return ⟨root, .ofList [
@@ -147,6 +155,7 @@ private def CacheM.getContext : IO CacheM.Context := do
     ("Plausible", LAKEPACKAGESDIR / "plausible")
   ], LAKEPACKAGESDIR / "proofwidgets" / ".lake" / "build"⟩
 
+@[inherit_doc CacheM.Context]
 def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
 
 end
