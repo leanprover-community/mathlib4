@@ -45,9 +45,7 @@ membership of a subgroup's underlying set.
 subgroup, subgroups
 -/
 
-assert_not_exists OrderedAddCommMonoid
-assert_not_exists Multiset
-assert_not_exists Ring
+assert_not_exists OrderedAddCommMonoid Multiset Ring
 
 open Function
 open scoped Int
@@ -414,7 +412,8 @@ def conjugatesOfSet (s : Set G) : Set G :=
   ⋃ a ∈ s, conjugatesOf a
 
 theorem mem_conjugatesOfSet_iff {x : G} : x ∈ conjugatesOfSet s ↔ ∃ a ∈ s, IsConj a x := by
-  erw [Set.mem_iUnion₂]; simp only [conjugatesOf, isConj_iff, Set.mem_setOf_eq, exists_prop]
+  rw [conjugatesOfSet, Set.mem_iUnion₂]
+  simp only [conjugatesOf, isConj_iff, Set.mem_setOf_eq, exists_prop]
 
 theorem subset_conjugatesOfSet : s ⊆ conjugatesOfSet s := fun (x : G) (h : x ∈ s) =>
   mem_conjugatesOfSet_iff.2 ⟨x, h, IsConj.refl _⟩
@@ -642,9 +641,7 @@ theorem map_equiv_normalizer_eq (H : Subgroup G) (f : G ≃* N) :
   simp only [mem_normalizer_iff, mem_map_equiv]
   rw [f.toEquiv.forall_congr]
   intro
-  erw [f.toEquiv.symm_apply_apply]
-  simp only [map_mul, map_inv]
-  erw [f.toEquiv.symm_apply_apply]
+  simp
 
 /-- The image of the normalizer is equal to the normalizer of the image of a bijective
   function. -/
@@ -853,6 +850,15 @@ instance normal_inf_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : 
   ⟨fun n hmem g => ⟨hH.conj_mem n hmem.1 g, hK.conj_mem n hmem.2 g⟩⟩
 
 @[to_additive]
+theorem normal_iInf_normal {ι : Type*} {a : ι → Subgroup G}
+    (norm : ∀ i : ι, (a i).Normal) : (iInf a).Normal := by
+  constructor
+  intro g g_in_iInf h
+  rw [Subgroup.mem_iInf] at g_in_iInf ⊢
+  intro i
+  exact (norm i).conj_mem g (g_in_iInf i) h
+
+@[to_additive]
 theorem SubgroupNormal.mem_comm {H K : Subgroup G} (hK : H ≤ K) [hN : (H.subgroupOf K).Normal]
     {a b : G} (hb : b ∈ K) (h : a * b ∈ H) : b * a ∈ H := by
   have := (normal_subgroupOf_iff hK).mp hN (a * b) b h hb
@@ -865,9 +871,7 @@ theorem commute_of_normal_of_disjoint (H₁ H₂ : Subgroup G) (hH₁ : H₁.Nor
   suffices x * y * x⁻¹ * y⁻¹ = 1 by
     show x * y = y * x
     · rw [mul_assoc, mul_eq_one_iff_eq_inv] at this
-      -- Porting note: Previous code was:
-      -- simpa
-      simp only [this, mul_inv_rev, inv_inv]
+      simpa
   apply hdis.le_bot
   constructor
   · suffices x * (y * x⁻¹ * y⁻¹) ∈ H₁ by simpa [mul_assoc]

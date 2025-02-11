@@ -140,7 +140,7 @@ protected theorem cfc (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S))
       obtain ⟨r, rfl⟩ := hs
       simp [((h a).mp ha).2.left_inv _]
 
-variable [ContinuousFunctionalCalculus R p] [UniqueContinuousFunctionalCalculus R A]
+variable [ContinuousFunctionalCalculus R p] [ContinuousMap.UniqueHom R A]
 
 lemma cfcHom_eq_restrict (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S))
     {a : A} (hpa : p a) (hqa : q a) (h : SpectrumRestricts a f) :
@@ -289,7 +289,7 @@ protected theorem cfc (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S))
       simp [((h a).mp ha).2.left_inv _]
 
 variable [NonUnitalContinuousFunctionalCalculus R p]
-variable [UniqueNonUnitalContinuousFunctionalCalculus R A]
+variable [ContinuousMapZero.UniqueHom R A]
 
 lemma cfcₙHom_eq_restrict (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S)) {a : A}
     (hpa : p a) (hqa : q a) (h : QuasispectrumRestricts a f) :

@@ -3,7 +3,7 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Combinatorics.SimpleGraph.Dart
 import Mathlib.Combinatorics.SimpleGraph.Finite
 import Mathlib.Data.ZMod.Basic
@@ -35,6 +35,7 @@ of the corresponding vertex and that (2) the map from darts to edges is 2-to-1.
 simple graphs, sums, degree-sum formula, handshaking lemma
 -/
 
+assert_not_exists TwoSidedIdeal
 
 open Finset
 

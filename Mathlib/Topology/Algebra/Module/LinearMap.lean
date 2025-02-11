@@ -5,6 +5,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
   Heather Macbeth
 -/
 import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.Topology.Algebra.UniformGroup.Defs
 
@@ -116,6 +117,15 @@ theorem coe_inj {f g : M₁ →SL[σ₁₂] M₂} : (f : M₁ →ₛₗ[σ₁₂
 
 theorem coeFn_injective : @Function.Injective (M₁ →SL[σ₁₂] M₂) (M₁ → M₂) (↑) :=
   DFunLike.coe_injective
+
+theorem toContinuousAddMonoidHom_injective :
+    Function.Injective ((↑) : (M₁ →SL[σ₁₂] M₂) → ContinuousAddMonoidHom M₁ M₂) :=
+  (DFunLike.coe_injective.of_comp_iff _).1 DFunLike.coe_injective
+
+@[simp, norm_cast]
+theorem toContinuousAddMonoidHom_inj {f g : M₁ →SL[σ₁₂] M₂} :
+    (f : ContinuousAddMonoidHom M₁ M₂) = g ↔ f = g :=
+  toContinuousAddMonoidHom_injective.eq_iff
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
@@ -277,6 +287,10 @@ and this is the most important property we care about. -/
 theorem coe_zero' : ⇑(0 : M₁ →SL[σ₁₂] M₂) = 0 :=
   rfl
 
+@[simp, norm_cast]
+theorem toContinuousAddMonoidHom_zero :
+    ((0 : M₁ →SL[σ₁₂] M₂) : ContinuousAddMonoidHom M₁ M₂) = 0 := rfl
+
 instance uniqueOfLeft [Subsingleton M₁] : Unique (M₁ →SL[σ₁₂] M₂) :=
   coe_injective.unique
 
@@ -315,6 +329,10 @@ theorem coe_id' : ⇑(id R₁ M₁) = _root_.id :=
   rfl
 
 @[simp, norm_cast]
+theorem toContinuousAddMonoidHom_id :
+    (id R₁ M₁ : ContinuousAddMonoidHom M₁ M₁) = .id _ := rfl
+
+@[simp, norm_cast]
 theorem coe_eq_id {f : M₁ →L[R₁] M₁} : (f : M₁ →ₗ[R₁] M₁) = LinearMap.id ↔ f = id _ _ := by
   rw [← coe_id, coe_inj]
 
@@ -344,6 +362,10 @@ theorem coe_add (f g : M₁ →SL[σ₁₂] M₂) : (↑(f + g) : M₁ →ₛₗ
 @[norm_cast]
 theorem coe_add' (f g : M₁ →SL[σ₁₂] M₂) : ⇑(f + g) = f + g :=
   rfl
+
+@[simp, norm_cast]
+theorem toContinuousAddMonoidHom_add (f g : M₁ →SL[σ₁₂] M₂) :
+    ↑(f + g) = (f + g : ContinuousAddMonoidHom M₁ M₂) := rfl
 
 instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
   zero_add := by
@@ -403,6 +425,10 @@ theorem coe_comp (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂)
 @[simp, norm_cast]
 theorem coe_comp' (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) : ⇑(h.comp f) = h ∘ f :=
   rfl
+
+@[simp, norm_cast]
+theorem toContinuousAddMonoidHom_comp (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) :
+    (↑(h.comp f) : ContinuousAddMonoidHom M₁ M₃) = (h : ContinuousAddMonoidHom M₂ M₃).comp f := rfl
 
 theorem comp_apply (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) (x : M₁) : (g.comp f) x = g (f x) :=
   rfl
@@ -505,7 +531,7 @@ theorem natCast_apply [ContinuousAdd M₁] (n : ℕ) (m : M₁) : (↑n : M₁ �
 
 @[simp]
 theorem ofNat_apply [ContinuousAdd M₁] (n : ℕ) [n.AtLeastTwo] (m : M₁) :
-    ((no_index (OfNat.ofNat n) : M₁ →L[R₁] M₁)) m = OfNat.ofNat n • m :=
+    (ofNat(n) : M₁ →L[R₁] M₁) m = OfNat.ofNat n • m :=
   rfl
 
 section ApplyAction
@@ -728,6 +754,10 @@ theorem coe_neg (f : M →SL[σ₁₂] M₂) : (↑(-f) : M →ₛₗ[σ₁₂] 
 theorem coe_neg' (f : M →SL[σ₁₂] M₂) : ⇑(-f) = -f :=
   rfl
 
+@[simp, norm_cast]
+theorem toContinuousAddMonoidHom_neg (f : M →SL[σ₁₂] M₂) :
+    ↑(-f) = -(f : ContinuousAddMonoidHom M M₂) := rfl
+
 instance sub : Sub (M →SL[σ₁₂] M₂) :=
   ⟨fun f g => ⟨f - g, f.2.sub g.2⟩⟩
 
@@ -753,6 +783,10 @@ theorem coe_sub (f g : M →SL[σ₁₂] M₂) : (↑(f - g) : M →ₛₗ[σ₁
 @[simp, norm_cast]
 theorem coe_sub' (f g : M →SL[σ₁₂] M₂) : ⇑(f - g) = f - g :=
   rfl
+
+@[simp, norm_cast]
+theorem toContinuousAddMonoidHom_sub (f g : M →SL[σ₁₂] M₂) :
+    ↑(f - g) = (f - g : ContinuousAddMonoidHom M M₂) := rfl
 
 end
 
@@ -993,6 +1027,10 @@ theorem coe_restrictScalars (f : M →L[A] M₂) :
 @[simp]
 theorem coe_restrictScalars' (f : M →L[A] M₂) : ⇑(f.restrictScalars R) = f :=
   rfl
+
+@[simp]
+theorem toContinuousAddMonoidHom_restrictScalars (f : M →L[A] M₂) :
+    ↑(f.restrictScalars R) = (f : ContinuousAddMonoidHom M M₂) := rfl
 
 @[simp]
 theorem restrictScalars_zero : (0 : M →L[A] M₂).restrictScalars R = 0 :=

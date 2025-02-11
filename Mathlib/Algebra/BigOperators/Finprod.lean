@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Group.FiniteSupport
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
@@ -319,12 +320,16 @@ theorem finprod_eq_mulIndicator_apply (s : Set α) (f : α → M) (a : α) :
   classical convert finprod_eq_if (M := M) (p := a ∈ s) (x := f a)
 
 @[to_additive (attr := simp)]
-theorem finprod_mem_mulSupport (f : α → M) (a : α) : ∏ᶠ _ : f a ≠ 1, f a = f a := by
+theorem finprod_apply_ne_one (f : α → M) (a : α) : ∏ᶠ _ : f a ≠ 1, f a = f a := by
   rw [← mem_mulSupport, finprod_eq_mulIndicator_apply, mulIndicator_mulSupport]
 
 @[to_additive]
 theorem finprod_mem_def (s : Set α) (f : α → M) : ∏ᶠ a ∈ s, f a = ∏ᶠ a, mulIndicator s f a :=
   finprod_congr <| finprod_eq_mulIndicator_apply s f
+
+@[to_additive]
+lemma finprod_mem_mulSupport (f : α → M) : ∏ᶠ a ∈ mulSupport f, f a = ∏ᶠ a, f a := by
+  rw [finprod_mem_def, mulIndicator_mulSupport]
 
 @[to_additive]
 theorem finprod_eq_prod_of_mulSupport_subset (f : α → M) {s : Finset α} (h : mulSupport f ⊆ s) :
@@ -376,11 +381,12 @@ theorem finprod_eq_prod_of_fintype [Fintype α] (f : α → M) : ∏ᶠ i : α, 
 theorem finprod_cond_eq_prod_of_cond_iff (f : α → M) {p : α → Prop} {t : Finset α}
     (h : ∀ {x}, f x ≠ 1 → (p x ↔ x ∈ t)) : (∏ᶠ (i) (_ : p i), f i) = ∏ i ∈ t, f i := by
   set s := { x | p x }
+  change ∏ᶠ (i : α) (_ : i ∈ s), f i = ∏ i ∈ t, f i
   have : mulSupport (s.mulIndicator f) ⊆ t := by
     rw [Set.mulSupport_mulIndicator]
     intro x hx
     exact (h hx.2).1 hx.1
-  erw [finprod_mem_def, finprod_eq_prod_of_mulSupport_subset _ this]
+  rw [finprod_mem_def, finprod_eq_prod_of_mulSupport_subset _ this]
   refine Finset.prod_congr rfl fun x hx => mulIndicator_apply_eq_self.2 fun hxs => ?_
   contrapose! hxs
   exact (h hxs).2 hx
@@ -921,6 +927,16 @@ theorem finprod_mem_sUnion {t : Set (Set α)} (h : t.PairwiseDisjoint id) (ht₀
   exact finprod_mem_biUnion h ht₀ ht₁
 
 @[to_additive]
+lemma finprod_option {f : Option α → M} (hf : (mulSupport (f ∘ some)).Finite) :
+    ∏ᶠ o, f o = f none * ∏ᶠ a, f (some a) := by
+  replace hf : (mulSupport f).Finite := by simpa [finite_option]
+  convert finprod_mem_insert' f (show none ∉ Set.range Option.some by aesop)
+    (hf.subset inter_subset_right)
+  · aesop
+  · rw [finprod_mem_range]
+    exact Option.some_injective _
+
+@[to_additive]
 theorem mul_finprod_cond_ne (a : α) (hf : (mulSupport f).Finite) :
     (f a * ∏ᶠ (i) (_ : i ≠ a), f i) = ∏ᶠ i, f i := by
   classical
@@ -1006,6 +1022,15 @@ theorem mul_finsum {R : Type*} [Semiring R] (f : α → R) (r : R) (h : (support
 theorem finsum_mul {R : Type*} [Semiring R] (f : α → R) (r : R) (h : (support f).Finite) :
     (∑ᶠ a : α, f a) * r = ∑ᶠ a : α, f a * r :=
   (AddMonoidHom.mulRight r).map_finsum h
+
+@[to_additive (attr := simp)]
+lemma finprod_apply {α ι : Type*} {f : ι → α → N} (hf : (mulSupport f).Finite) (a : α) :
+    (∏ᶠ i, f i) a = ∏ᶠ i, f i a := by
+  classical
+  have hf' : (mulSupport fun i ↦ f i a).Finite := hf.subset (by aesop)
+  simp only [finprod_def, dif_pos, hf, hf', Finset.prod_apply]
+  symm
+  apply Finset.prod_subset <;> aesop
 
 @[to_additive]
 theorem Finset.mulSupport_of_fiberwise_prod_subset_image [DecidableEq β] (s : Finset α) (f : α → M)

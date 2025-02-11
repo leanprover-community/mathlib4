@@ -48,7 +48,7 @@ theorem RespectsIso.cancel_left_isIso (hP : RespectsIso @P) {R S T : CommRingCat
     (g : S ⟶ T) [IsIso f] : P (g.hom.comp f.hom) ↔ P g.hom :=
   ⟨fun H => by
     convert hP.2 (f ≫ g).hom (asIso f).symm.commRingCatIsoToRingEquiv H
-    exact (IsIso.inv_hom_id_assoc _ _).symm, hP.2 g.hom (asIso f).commRingCatIsoToRingEquiv⟩
+    simp [← CommRingCat.hom_comp], hP.2 g.hom (asIso f).commRingCatIsoToRingEquiv⟩
 
 theorem RespectsIso.cancel_right_isIso (hP : RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S)
     (g : S ⟶ T) [IsIso g] : P (g.hom.comp f.hom) ↔ P f.hom :=
@@ -190,6 +190,16 @@ lemma toMorphismProperty_respectsIso_iff :
   · intro X Y Z _ _ _ f e
     exact MorphismProperty.RespectsIso.precomp (toMorphismProperty P)
       e.toCommRingCatIso.hom (CommRingCat.ofHom f)
+
+/-- Variant of `MorphismProperty.arrow_mk_iso_iff` specialized to morphism properties in
+`CommRingCat` given by ring hom properties. -/
+lemma RespectsIso.arrow_mk_iso_iff (hQ : RingHom.RespectsIso P) {A B A' B' : CommRingCat}
+    {f : A ⟶ B} {g : A' ⟶ B'} (e : Arrow.mk f ≅ Arrow.mk g) :
+    P f.hom ↔ P g.hom := by
+  have : (toMorphismProperty P).RespectsIso := by
+    rwa [← toMorphismProperty_respectsIso_iff]
+  change toMorphismProperty P _ ↔ toMorphismProperty P _
+  rw [MorphismProperty.arrow_mk_iso_iff (toMorphismProperty P) e]
 
 end ToMorphismProperty
 

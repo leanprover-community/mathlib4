@@ -10,7 +10,7 @@ import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.GroupTheory.Congruence.Hom
 import Mathlib.GroupTheory.Coset.Basic
 import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Quotients of groups by normal subgroups
@@ -27,6 +27,9 @@ proves Noether's first and second isomorphism theorems.
   `N` of a group `G`.
 * `QuotientGroup.quotientQuotientEquivQuotient`: Noether's third isomorphism theorem,
   the canonical isomorphism between `(G / N) / (M / N)` and `G / M`, where `N ≤ M`.
+* `QuotientGroup.comapMk'OrderIso`: The correspondence theorem, a lattice
+  isomorphism between the lattice of subgroups of `G ⧸ N` and the sublattice
+  of subgroups of `G` containing `N`.
 
 ## Tags
 
@@ -320,6 +323,35 @@ def quotientQuotientEquivQuotient : (G ⧸ N) ⧸ M.map (QuotientGroup.mk' N) �
     (by ext; simp)
 
 end ThirdIsoThm
+
+section CorrespTheorem
+
+-- All these theorems are primed because `QuotientGroup.mk'` is.
+set_option linter.docPrime false
+
+@[to_additive]
+theorem le_comap_mk' (N : Subgroup G) [N.Normal] (H : Subgroup (G ⧸ N)) :
+    N ≤ Subgroup.comap (QuotientGroup.mk' N) H := by
+  simpa using Subgroup.comap_mono (f := mk' N) bot_le
+
+@[to_additive (attr := simp)]
+theorem comap_map_mk' (N H : Subgroup G) [N.Normal] :
+    Subgroup.comap (mk' N) (Subgroup.map (mk' N) H) = N ⊔ H := by
+  simp [Subgroup.comap_map_eq, sup_comm]
+
+/-- The **correspondence theorem**, or lattice theorem,
+  or fourth isomorphism theorem for multiplicative groups-/
+@[to_additive "The **correspondence theorem**, or lattice theorem,
+  or fourth isomorphism theorem for additive groups"]
+def comapMk'OrderIso (N : Subgroup G) [hn : N.Normal] :
+    Subgroup (G ⧸ N) ≃o { H : Subgroup G // N ≤ H } where
+  toFun H' := ⟨Subgroup.comap (mk' N) H', le_comap_mk' N _⟩
+  invFun H := Subgroup.map (mk' N) H
+  left_inv H' := Subgroup.map_comap_eq_self <| by simp
+  right_inv := fun ⟨H, hH⟩ => Subtype.ext_val <| by simpa
+  map_rel_iff' := Subgroup.comap_le_comap_of_surjective <| mk'_surjective _
+
+end CorrespTheorem
 
 section trivial
 

@@ -681,7 +681,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
   let s : Set (ℕ → ℕ) := { x | (⋂ n : ℕ, closedBall (u (x n)) ((1 / 2) ^ n)).Nonempty }
   let g : s → α := fun x => x.2.some
   have A : ∀ (x : s) (n : ℕ), dist (g x) (u ((x : ℕ → ℕ) n)) ≤ (1 / 2) ^ n := fun x n =>
-    (mem_iInter.1 x.2.some_mem n : _)
+    (mem_iInter.1 x.2.some_mem n :)
   have g_cont : Continuous g := by
     refine continuous_iff_continuousAt.2 fun y => ?_
     refine continuousAt_of_locally_lipschitz zero_lt_one 4 fun x hxy => ?_
@@ -732,7 +732,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
       rw [mul_zero] at this
       exact
         squeeze_zero (fun n => diam_nonneg) (fun n => diam_closedBall (pow_nonneg I0.le _)) this
-    refine nonempty_iInter_of_nonempty_biInter (fun n => isClosed_ball)
+    refine nonempty_iInter_of_nonempty_biInter (fun n => isClosed_closedBall)
       (fun n => isBounded_closedBall) (fun N ↦ ?_) L
     obtain ⟨y, hxy, ys⟩ : ∃ y, y ∈ ball x ((1 / 2) ^ N) ∩ s :=
       clusterPt_principal_iff.1 hx _ (ball_mem_nhds x (pow_pos I0 N))

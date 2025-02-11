@@ -82,6 +82,11 @@ theorem ofScalars_apply_zero (n : ℕ) :
   rw [ofScalars]
   cases n <;> simp
 
+@[simp]
+lemma coeff_ofScalars {𝕜 : Type*} [NontriviallyNormedField 𝕜] {p : ℕ → 𝕜} {n : ℕ} :
+    (FormalMultilinearSeries.ofScalars 𝕜 p).coeff n = p n := by
+  simp [FormalMultilinearSeries.coeff, FormalMultilinearSeries.ofScalars, List.prod_ofFn]
+
 theorem ofScalars_add (c' : ℕ → 𝕜) : ofScalars E (c + c') = ofScalars E c + ofScalars E c' := by
   unfold ofScalars
   simp_rw [Pi.add_apply, Pi.add_def _ _]
@@ -139,12 +144,12 @@ theorem ofScalarsSum_unop [T2Space E] (x : Eᵐᵒᵖ) :
 
 end Field
 
-section Normed
+section Seminormed
 
 open Filter ENNReal
 open scoped Topology NNReal
 
-variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [NormedRing E]
+variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [SeminormedRing E]
     [NormedAlgebra 𝕜 E] (c : ℕ → 𝕜) (n : ℕ)
 
 -- Also works:
@@ -152,7 +157,8 @@ variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [NormedRing E
 set_option maxSynthPendingDepth 2 in
 theorem ofScalars_norm_eq_mul :
     ‖ofScalars E c n‖ = ‖c n‖ * ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E‖ := by
-  rw [ofScalars, norm_smul (c n) (ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E)]
+  set_option maxSynthPendingDepth 2 in
+  rw [ofScalars, norm_smul]
 
 theorem ofScalars_norm_le (hn : n > 0) : ‖ofScalars E c n‖ ≤ ‖c n‖ := by
   simp only [ofScalars_norm_eq_mul]
@@ -162,6 +168,16 @@ theorem ofScalars_norm_le (hn : n > 0) : ‖ofScalars E c n‖ ≤ ‖c n‖ := 
 @[simp]
 theorem ofScalars_norm [NormOneClass E] : ‖ofScalars E c n‖ = ‖c n‖ := by
   simp [ofScalars_norm_eq_mul]
+
+end Seminormed
+
+section Normed
+
+open Filter ENNReal
+open scoped Topology NNReal
+
+variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [NormedRing E]
+    [NormedAlgebra 𝕜 E] (c : ℕ → 𝕜) (n : ℕ)
 
 private theorem tendsto_succ_norm_div_norm {r r' : ℝ≥0} (hr' : r' ≠ 0)
     (hc : Tendsto (fun n ↦ ‖c n.succ‖ / ‖c n‖) atTop (𝓝 r)) :
