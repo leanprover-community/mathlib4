@@ -122,25 +122,25 @@ lemma dOne_single_one_snd (g : G) (a : A) :
 lemma dOne_single_inv_self_ρ_sub_self_inv (g : G) (a : A) :
     dOne A (single (g⁻¹, g) (A.ρ g⁻¹ a) - single (g, g⁻¹) a) =
       single 1 a - single 1 (A.ρ g⁻¹ a) := by
-  simp only [map_sub, dOne_single, inv_inv, ρ_self_inv_apply, inv_mul_cancel, mul_inv_cancel]
+  simp only [map_sub, dOne_single, inv_inv, self_inv_apply, inv_mul_cancel, mul_inv_cancel]
   abel
 
 lemma dOne_single_self_inv_ρ_sub_inv_self (g : G) (a : A) :
     dOne A (single (g, g⁻¹) (A.ρ g a) - single (g⁻¹, g) a) =
       single 1 a - single 1 (A.ρ g a) := by
-  simp only [map_sub, dOne_single, ρ_inv_self_apply, mul_inv_cancel, inv_inv, inv_mul_cancel]
+  simp only [map_sub, dOne_single, inv_self_apply, mul_inv_cancel, inv_inv, inv_mul_cancel]
   abel
 
 lemma dOne_single_ρ_add_single_inv_mul (g h : G) (a : A) :
     dOne A (single (g, h) (A.ρ g a) + single (g⁻¹, g * h) a) =
       single g (A.ρ g a) + single g⁻¹ a := by
-  simp only [map_add, dOne_single, ρ_inv_self_apply, inv_inv, inv_mul_cancel_left]
+  simp only [map_add, dOne_single, inv_self_apply, inv_inv, inv_mul_cancel_left]
   abel
 
 lemma dOne_single_inv_mul_ρ_add_single (g h : G) (a : A) :
     dOne A (single (g⁻¹, g * h) (A.ρ g⁻¹ a) + single (g, h) a) =
       single g⁻¹ (A.ρ g⁻¹ a) + single g a := by
-  simp only [map_add, dOne_single, inv_inv, ρ_self_inv_apply, inv_mul_cancel_left]
+  simp only [map_add, dOne_single, inv_inv, self_inv_apply, inv_mul_cancel_left]
   abel
 
 variable (A) in
