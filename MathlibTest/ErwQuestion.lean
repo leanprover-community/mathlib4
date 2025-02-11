@@ -51,7 +51,6 @@ Expression from `erw`: f a = 38
 ❌️ at reducible transparency,
   f b = 38
 and
-
   f a = 38
 are not defeq.
 
@@ -64,18 +63,16 @@ are defeq.
 ❌️ at reducible transparency,
   Eq (f b)
 and
-
   Eq (f a)
 are not defeq.
 
 ❌️ at reducible transparency,
   f b
 and
-
   f a
 are not defeq.
 
-❌️ at reducible transparency, b and  a are not defeq.
+❌️ at reducible transparency, b and a are not defeq.
 -/
 #guard_msgs in
 example : f b = 38 := by erw? [f_a]

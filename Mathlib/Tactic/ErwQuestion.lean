@@ -54,7 +54,7 @@ def logDiffs (tk : Syntax) (e₁ e₂ : Expr) : StateT (Array (Unit → MessageD
     return false
   else
     verbose m!"{crossEmoji} at reducible transparency,\
-      {indentD e₁}\nand\n{indentD e₂}\nare not defeq."
+      {indentD e₁}\nand{indentD e₂}\nare not defeq."
     if ← isDefEq e₁ e₂ then
       match e₁, e₂ with
       | Expr.app f₁ a₁, Expr.app f₂ a₂ =>
