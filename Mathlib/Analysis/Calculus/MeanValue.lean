@@ -596,31 +596,51 @@ theorem eqOn_of_fderivWithin_eq (hs : Convex ℝ s) (hf : DifferentiableOn 𝕜 
   refine hs.is_const_of_fderivWithin_eq_zero (hf.sub hg) (fun z hz => ?_) hx hy
   rw [fderivWithin_sub (hs' _ hz) (hf _ hz) (hg _ hz), sub_eq_zero, hf' _ hz]
 
+/-- If `f` has zero derivative on an open set, then `f` is locally constant on `s`. -/
+theorem _root_.IsOpen.isOpen_inter_preimage_of_fderiv_eq_zero
+    (hs : IsOpen s) (hf : DifferentiableOn 𝕜 f s)
+    (hf' : ∀ x ∈ s, fderiv 𝕜 f x = 0) (t : Set G) : IsOpen (s ∩ f ⁻¹' t) := by
+  refine Metric.isOpen_iff.mpr fun y ⟨hy, hy'⟩ ↦ ?_
+  obtain ⟨r, hr, h⟩ := Metric.isOpen_iff.mp hs y hy
+  refine ⟨r, hr, Set.subset_inter h fun x hx ↦ ?_⟩
+  have := (convex_ball y r).is_const_of_fderivWithin_eq_zero (hf.mono h) ?_ hx (mem_ball_self hr)
+  · simpa [this]
+  · intro z hz
+    simpa only [fderivWithin_of_isOpen Metric.isOpen_ball hz] using hf' z (h hz)
+
+/-- If `f` has zero derivative on a connected open set, then `f` is constant on `s`. -/
+theorem _root_.IsOpen.is_const_of_fderiv_eq_zero
+    (hs : IsOpen s) (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s)
+    (hf' : ∀ x ∈ s, fderiv 𝕜 f x = 0) : ∃ a, ∀ x ∈ s, f x = a := by
+  obtain (rfl|⟨y, hy⟩) := s.eq_empty_or_nonempty
+  · exact ⟨0, by simp⟩
+  · refine ⟨f y, fun x hx ↦ ?_⟩
+    have h₁ := hs.isOpen_inter_preimage_of_fderiv_eq_zero hf hf' {f y}
+    have h₂ := hf.continuousOn.comp_continuous continuous_subtype_val (fun x ↦ x.2)
+    by_contra h₃
+    obtain ⟨t, ht, ht'⟩ := (isClosed_singleton (x := f y)).preimage h₂
+    have ht'' : ∀ a ∈ s, a ∈ t ↔ f a ≠ f y := by simpa [Set.ext_iff] using ht'
+    obtain ⟨z, H₁, H₂, H₃⟩ := hs' _ _ h₁ ht (fun x h ↦ by simp [h, ht'', eq_or_ne]) ⟨y, by simpa⟩
+      ⟨x, by simp [ht'' _ hx, hx, h₃]⟩
+    exact (ht'' _ H₁).mp H₃ H₂.2
+
+theorem _root_.IsOpen.exists_eq_add_of_fderiv_eq (hs : IsOpen s) (hs' : IsPreconnected s)
+    (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)
+    (hf' : ∀ x ∈ s, fderiv 𝕜 f x = fderiv 𝕜 g x) : ∃ a, ∀ x ∈ s, f x = g x + a := by
+  simp_rw [← sub_eq_iff_eq_add']
+  refine hs.is_const_of_fderiv_eq_zero hs' (hf.sub hg) fun x hx ↦ ?_
+  rw [fderiv_sub (hf.differentiableAt (hs.mem_nhds hx)) (hg.differentiableAt (hs.mem_nhds hx)),
+    hf' x hx, sub_self]
+
 /-- If two functions have equal Fréchet derivatives at every point of a connected open set,
 and are equal at one point in that set, then they are equal on that set. -/
 theorem _root_.IsOpen.eqOn_of_fderiv_eq (hs : IsOpen s) (hs' : IsPreconnected s)
     (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)
     (hf' : ∀ x ∈ s, fderiv 𝕜 f x = fderiv 𝕜 g x) (hx : x ∈ s) (hfgx : f x = g x) :
     s.EqOn f g := by
-  suffices IsOpen (s ∩ { a | f a = g a }) by
-    delta Set.EqOn
-    by_contra! H
-    obtain ⟨x', hx', hfgx'⟩ := H
-    have hf' := hf.continuousOn.comp_continuous continuous_subtype_val (fun x ↦ x.2)
-    have hg' := hg.continuousOn.comp_continuous continuous_subtype_val (fun x ↦ x.2)
-    obtain ⟨t, ht, ht'⟩ := Topology.IsInducing.subtypeVal.isClosed_iff.mp (isClosed_eq hf' hg')
-    have ht'' : ∀ a ∈ s, a ∈ t ↔ f a = g a := by simpa [Set.ext_iff] using ht'
-    obtain ⟨y, h₁, h₂, h₃⟩ := hs' _ _ this ht.isOpen_compl (fun x hx ↦
-      (by simp [ht'' x hx, hx, eq_or_ne])) ⟨x, hx, hx, hfgx⟩ ⟨x', hx', (ht'' _ hx').not.mpr hfgx'⟩
-    cases h₃ ((ht'' _ h₁).mpr h₂.2)
-  refine Metric.isOpen_iff.mpr fun y ⟨hy, hy'⟩ ↦ ?_
-  obtain ⟨r, hr, h⟩ := Metric.isOpen_iff.mp hs y hy
-  refine ⟨r, hr, Set.subset_inter h ?_⟩
-  refine (convex_ball y r).eqOn_of_fderivWithin_eq (hf.mono h) (hg.mono h) ?_ ?_ ?_ hy'
-  · exact Metric.isOpen_ball.uniqueDiffOn
-  · intro z hz
-    simpa only [fderivWithin_of_isOpen Metric.isOpen_ball hz] using hf' z (h hz)
-  · exact Metric.mem_ball_self hr
+  obtain ⟨a, ha⟩ := hs.exists_eq_add_of_fderiv_eq hs' hf hg hf'
+  obtain rfl := self_eq_add_right.mp (hfgx.symm.trans (ha x hx))
+  simpa using ha
 
 theorem _root_.eq_of_fderiv_eq
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f g : E → G}
@@ -700,6 +720,23 @@ then it is a constant function. -/
 theorem _root_.is_const_of_deriv_eq_zero (hf : Differentiable 𝕜 f) (hf' : ∀ x, deriv f x = 0)
     (x y : 𝕜) : f x = f y :=
   is_const_of_fderiv_eq_zero hf (fun z => by ext; simp [← deriv_fderiv, hf']) _ _
+
+theorem _root_.IsOpen.isOpen_inter_preimage_of_deriv_eq_zero
+    (hs : IsOpen s) (hf : DifferentiableOn 𝕜 f s)
+    (hf' : ∀ x ∈ s, deriv f x = 0) (t : Set G) : IsOpen (s ∩ f ⁻¹' t) :=
+  hs.isOpen_inter_preimage_of_fderiv_eq_zero hf
+    (fun x hx ↦ by ext; simp [← deriv_fderiv, hf' x hx]) t
+
+theorem _root_.IsOpen.is_const_of_deriv_eq_zero
+    (hs : IsOpen s) (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s)
+    (hf' : ∀ x ∈ s, deriv f x = 0) : ∃ a, ∀ x ∈ s, f x = a :=
+  hs.is_const_of_fderiv_eq_zero hs' hf (fun x hx ↦ by ext; simp [← deriv_fderiv, hf' x hx])
+
+theorem _root_.IsOpen.exists_eq_add_of_deriv_eq {f g : 𝕜 → G} (hs : IsOpen s)
+    (hs' : IsPreconnected s)
+    (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)
+    (hf' : ∀ x ∈ s, deriv f x = deriv g x) : ∃ a, ∀ x ∈ s, f x = g x + a :=
+  hs.exists_eq_add_of_fderiv_eq hs' hf hg (fun x hx ↦ by ext; simp [← deriv_fderiv, hf' x hx])
 
 theorem _root_.IsOpen.eqOn_of_deriv_eq {f g : 𝕜 → G} (hs : IsOpen s)
     (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)
