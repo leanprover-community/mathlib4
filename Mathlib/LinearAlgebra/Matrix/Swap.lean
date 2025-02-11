@@ -32,7 +32,7 @@ variable (R) in
 `i`-th and `j`-th rows modified such that multiplying by it on the
 left (resp. right) corresponds to swapping the `i`-th and `j`-th row (resp. column). -/
 def swap (i j : n) : Matrix n n R :=
-  (Equiv.swap i j).permMatrix
+  (Equiv.swap i j).toPEquiv.toMatrix
 
 lemma swap_comm (i j : n) :
     swap R i j = swap R j i := by
