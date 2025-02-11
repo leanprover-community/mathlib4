@@ -96,8 +96,8 @@ abbrev PackageDirs := Lean.RBMap String FilePath compare
 
 structure CacheM.Context where
   mathlibDepPath : FilePath
-  /-- the Lean search path -/
-  searchPath : SearchPath
+  /-- the Lean source search path -/
+  srcSearchPath : SearchPath
   packageDirs : PackageDirs
   proofWidgetsBuildDir : FilePath
 
@@ -122,7 +122,7 @@ private def CacheM.getContext : IO CacheM.Context := do
   let mathlibSource ← CacheM.mathlibDepPath sp
   return {
     mathlibDepPath := mathlibSource,
-    searchPath := sp,
+    srcSearchPath := sp,
     packageDirs := .ofList [
       ("Mathlib", mathlibSource),
       ("Archive", mathlibSource),
