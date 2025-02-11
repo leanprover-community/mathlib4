@@ -76,6 +76,7 @@ jobs:
       run: |
         PR="${{ github.event.pull_request.number }}"
         title="### PR summary"
+        echo "GITHUB_SHA: '${GITHUB_SHA}'"
 
         graphAndHighPercentReports=$(python ./scripts/import-graph-report.py base.json head.json changed_files.txt)
 
