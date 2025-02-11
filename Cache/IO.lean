@@ -127,7 +127,6 @@ private def CacheM.mathlibDepPath (sp : SearchPath) : IO FilePath := do
   return mathlibSource
 
 -- TODO this should be generated automatically from the information in `lakefile.lean`.
-@[inherit_doc CacheM.Context]
 private def CacheM.getContext : IO CacheM.Context := do
   let sp ← initSrcSearchPath
   let mathlibSource ← CacheM.mathlibDepPath sp
@@ -149,7 +148,7 @@ private def CacheM.getContext : IO CacheM.Context := do
       ("Plausible", LAKEPACKAGESDIR / "plausible")],
     proofWidgetsBuildDir := LAKEPACKAGESDIR / "proofwidgets" / ".lake" / "build"}
 
-@[inherit_doc CacheM.Context]
+/-- Run a `CacheM` in `IO` by loading the context from `LEAN_SRC_PATH`. -/
 def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
 
 end
