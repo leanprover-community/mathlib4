@@ -49,22 +49,24 @@ lemma tendsto_closedBall_smallSets (x : α) : Tendsto (closedBall x) (𝓝 0) (�
 namespace Metric
 variable {x y z : α} {ε ε₁ ε₂ : ℝ} {s : Set α}
 
-lemma isClosed_ball : IsClosed (closedBall x ε) :=
+lemma isClosed_closedBall : IsClosed (closedBall x ε) :=
   isClosed_le (continuous_id.dist continuous_const) continuous_const
+
+@[deprecated (since := "2025-02-11")] alias isClosed_ball := isClosed_closedBall
 
 lemma isClosed_sphere : IsClosed (sphere x ε) :=
   isClosed_eq (continuous_id.dist continuous_const) continuous_const
 
 @[simp]
 lemma closure_closedBall : closure (closedBall x ε) = closedBall x ε :=
-  isClosed_ball.closure_eq
+  isClosed_closedBall.closure_eq
 
 @[simp]
 lemma closure_sphere : closure (sphere x ε) = sphere x ε :=
   isClosed_sphere.closure_eq
 
 lemma closure_ball_subset_closedBall : closure (ball x ε) ⊆ closedBall x ε :=
-  closure_minimal ball_subset_closedBall isClosed_ball
+  closure_minimal ball_subset_closedBall isClosed_closedBall
 
 lemma frontier_ball_subset_sphere : frontier (ball x ε) ⊆ sphere x ε :=
   frontier_lt_subset_eq (continuous_id.dist continuous_const) continuous_const
@@ -76,13 +78,13 @@ lemma closedBall_zero' (x : α) : closedBall x 0 = closure {x} :=
   Subset.antisymm
     (fun _y hy =>
       mem_closure_iff.2 fun _ε ε0 => ⟨x, mem_singleton x, (mem_closedBall.1 hy).trans_lt ε0⟩)
-    (closure_minimal (singleton_subset_iff.2 (dist_self x).le) isClosed_ball)
+    (closure_minimal (singleton_subset_iff.2 (dist_self x).le) isClosed_closedBall)
 
 lemma eventually_isCompact_closedBall [WeaklyLocallyCompactSpace α] (x : α) :
     ∀ᶠ r in 𝓝 (0 : ℝ), IsCompact (closedBall x r) := by
   rcases exists_compact_mem_nhds x with ⟨s, s_compact, hs⟩
   filter_upwards [eventually_closedBall_subset hs] with r hr
-  exact IsCompact.of_isClosed_subset s_compact isClosed_ball hr
+  exact IsCompact.of_isClosed_subset s_compact isClosed_closedBall hr
 
 lemma exists_isCompact_closedBall [WeaklyLocallyCompactSpace α] (x : α) :
     ∃ r, 0 < r ∧ IsCompact (closedBall x r) := by
