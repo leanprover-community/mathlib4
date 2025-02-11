@@ -19,7 +19,7 @@ theorem exists_sum_map_aroot_smul_eq {R S : Type*} [CommRing R] [Field S] [Algeb
   obtain ⟨k', rfl⟩ := hk; let k := p.leadingCoeff * k'
   have :
     (fun x : S => k ^ e • aeval x q) =
-      (fun x => aeval x (∑ i in range (e + 1), monomial i (k' ^ i * k ^ (e - i) * q.coeff i))) ∘
+      (fun x => aeval x (∑ i ∈ range (e + 1), monomial i (k' ^ i * k ^ (e - i) * q.coeff i))) ∘
         fun x => p.leadingCoeff • x := by
     funext x; rw [Function.comp_apply]
     simp_rw [map_sum, aeval_eq_sum_range' (Nat.lt_add_one_iff.mpr he), aeval_monomial, smul_sum]
