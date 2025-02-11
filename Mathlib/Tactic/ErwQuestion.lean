@@ -42,20 +42,17 @@ Attempt to log an info message for the first subexpressions which are different
 
 Also returns an array of messages for the `verbose` report.
 -/
-def logDiffs (tk : Syntax) (e₁ e₂ : Expr) : MetaM (Bool × Array MessageData) := do
+def logDiffs (tk : Syntax) (e₁ e₂ : Expr) : MetaM (Bool × Array (Unit → MessageData)) := do
   withOptions (fun opts => opts.setBool `pp.analyze true) do
-  let verbose := (← getOptions).get `tactic.erw?.verbose (defVal := false)
   let mut verbMsgs := #[]
   if ← withReducible (isDefEq e₁ e₂) then
-    if verbose then
-      verbMsgs := verbMsgs.push
-        m!"{checkEmoji}\n{e₁}\n  and\n{e₂}\nare defeq at reducible transparency."
+    verbMsgs := verbMsgs.push
+      fun _ => m!"{checkEmoji}\n{e₁}\n  and\n{e₂}\nare defeq at reducible transparency."
     -- They agree at reducible transparency, we're done.
     return (false, verbMsgs)
   else
-    if verbose then
-      verbMsgs := verbMsgs.push
-        m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare not defeq at reducible transparency."
+    verbMsgs := verbMsgs.push
+      fun _ => m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare not defeq at reducible transparency."
     if ← isDefEq e₁ e₂ then
       match e₁, e₂ with
       | Expr.app f₁ a₁, Expr.app f₂ a₂ =>
@@ -77,14 +74,12 @@ def logDiffs (tk : Syntax) (e₁ e₂ : Expr) : MetaM (Bool × Array MessageData
             but not at reducible transparency."
         return (true, verbMsgs)
       | _, _ =>
-        if verbose then
           verbMsgs := verbMsgs.push
-            m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare not both applications or constants."
+            fun _ => m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare not both applications or constants."
         return (false, verbMsgs)
     else
-      if verbose then
         verbMsgs := verbMsgs.push
-          m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare not defeq at default transparency."
+          fun _ => m!"{crossEmoji}\n{e₁}\n  and\n{e₂}\nare not defeq at default transparency."
       return (false, verbMsgs)
 
 elab_rules : tactic
@@ -105,7 +100,7 @@ elab_rules : tactic
             if verbose then
               logInfoAt tk <| .joinSep
                 (m!"Expression appearing in target: {tgt}" ::
-                  m!"Expression from `erw`: {inferred}" :: msgs.toList) "\n\n"
+                  m!"Expression from `erw`: {inferred}" :: msgs.toList.map (· ())) "\n\n"
           | _ => logErrorAt tk "Unexpected term produced by `erw`, \
                   inferred type is not an equality."
         | _ => logErrorAt tk "Unexpected term produced by `erw`, type hint is not an equality."
