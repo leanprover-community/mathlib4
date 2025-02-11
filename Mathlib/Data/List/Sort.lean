@@ -6,7 +6,6 @@ Authors: Jeremy Avigad
 import Batteries.Data.List.Pairwise
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.TakeDrop
 import Mathlib.Data.List.TakeWhile
 import Mathlib.Order.Fin.Basic
 

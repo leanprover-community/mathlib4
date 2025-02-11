@@ -5,7 +5,6 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 import Mathlib.Data.List.Defs
 import Mathlib.Data.Nat.Defs
-import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
 
 /-!
