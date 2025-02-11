@@ -3,8 +3,8 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.PathCategory.MorphismProperty
 import Mathlib.AlgebraicTopology.SimplexCategory
+import Mathlib.CategoryTheory.PathCategory.Basic
 /-! # Presentation of the simplex category by generator and relations.
 
 We introduce `SimplexCategoryGenRel` as a the category presented by generating
