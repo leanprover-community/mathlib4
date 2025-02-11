@@ -128,6 +128,9 @@ lemma prop_iterationFunctor_map_succ (j : J) (hj : ¬ IsMax j) :
     Φ.prop ((Φ.iterationFunctor J).map (homOfLE (Order.le_succ j))) :=
   (Φ.transfiniteCompositionOfShapeιIteration J).map_mem j hj
 
+/-- When `j` is not a maximal element, then
+`(Φ.iterationFunctor J).obj (Order.succ j)` is isomorphic to
+`Φ.succ ((Φ.iterationFunctor J).obj j)`. -/
 noncomputable def iterationFunctorObjSuccIso (j : J) (hj : ¬ IsMax j) :
     (Φ.iterationFunctor J).obj (Order.succ j) ≅
       Φ.succ ((Φ.iterationFunctor J).obj j) :=
