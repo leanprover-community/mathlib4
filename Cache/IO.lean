@@ -15,15 +15,6 @@ namespace Cache.IO
 
 open System (FilePath)
 
-/--
-Read the search path from `LEAN_PATH` and drop all trailing `/.lake/build/lib/`
-as the `.lean`-files are located outside the `.lake/` folders.
--/
-def getCleanSearchPath : IO SearchPath := do
-  let sp ← addSearchPathFromEnv {}
-  return sp.map fun path =>
-    System.mkFilePath (path.components |> fun p => p.take (p.length - 3))
-
 /-- Target directory for build files -/
 def LIBDIR : FilePath :=
   ".lake" / "build" / "lib"
@@ -117,7 +108,7 @@ section
 
 @[inherit_doc CacheM.Context]
 private def CacheM.getContext : IO CacheM.Context := do
-  let sp ← getCleanSearchPath
+  let sp ← initSrcSearchPath -- getCleanSearchPath
   let mathlibRootFile ← Lean.findLean sp `Mathlib
   let some mathlibRoot ← pure mathlibRootFile.parent
     | throw <| IO.userError s!"Mathlib not found in dependencies"

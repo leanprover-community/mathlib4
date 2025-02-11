@@ -5,7 +5,7 @@ Authors: Jon Eugster, Arthur Paulino
 -/
 
 import Lean.Data.Name
-import Lean.Util.Path
+import Lean.Util.Paths
 
 /-!
 # Helper Functions
