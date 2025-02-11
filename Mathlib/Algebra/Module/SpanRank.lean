@@ -155,7 +155,7 @@ lemma FG.span_range_generators {p : Submodule R M} (h : p.FG) :
 /-- The elements of the generators are in the submodule -/
 lemma FG.generators_mem {p : Submodule R M} (h : p.FG) (i : Fin p.spanFinrank) :
     generators h i ∈ p := by
-  simp_rw [← (span_range_generators h)]
+  simp_rw [← span_range_generators h]
   exact subset_span (Set.mem_range_self i)
 
 @[simp]
@@ -191,8 +191,7 @@ lemma spanRank_sup_le_sum_spanRank {p q : Submodule R M} :
   obtain ⟨f, hf⟩ := hp.exists_fun_spanFinrank_span_range_eq
   obtain ⟨g, hg⟩ := hq.exists_fun_spanFinrank_span_range_eq
   rw [Submodule.fg_iff_spanRank_eq_spanFinrank] at hp hq
-  rw [hp, hq,
-      show ((p.spanFinrank : ℕ∞) + q.spanFinrank = ((p.spanFinrank + q.spanFinrank) : ℕ)) from rfl]
+  rw [hp, hq, ← Nat.cast_add]
   rw [FG.spanRank_le_iff_exists_span_range_eq]
   refine ⟨(Sum.elim f g) ∘ finSumFinEquiv.symm, ?_⟩
   rw [Set.range_comp, Set.range_eq_univ.mpr (Equiv.surjective _), Set.image_univ,
