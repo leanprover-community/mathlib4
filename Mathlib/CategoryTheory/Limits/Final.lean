@@ -3,6 +3,7 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.CategoryTheory.Category.Cat.AsSmall
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
@@ -1048,24 +1049,23 @@ private lemma Grothendieck.final_map_small {C : Type u₁} [Category.{u₁} C] {
   intro X
   simp [i, fi]
 
-variable {F G : C ⥤ Cat.{v₂, u₂}} (α : F ⟶ G)
-
-lemma Grothendieck.final_map [hα : ∀ X, Final (α.app X)] : Final (map α) := by
+/-- The functor `Grothendieck.map α` for a natural transformation `α : F ⟶ G`, with
+`F G : C ⥤ Cat`, is final if for each `X : C`, the functor `α.app X` is final. -/
+lemma Grothendieck.final_map {F G : C ⥤ Cat.{v₂, u₂}} (α : F ⟶ G) [hα : ∀ X, Final (α.app X)] :
+    Final (map α) := by
   let sC : C ≌ AsSmall.{max u₁ u₂ v₁ v₂} C := AsSmall.equiv
-  let F' : AsSmall.{max u₁ u₂ v₁ v₂} C ⥤ Cat := sC.inverse ⋙ F ⋙ asSmall.{max v₁ u₁ v₂ u₂}
-  let G' : AsSmall.{max u₁ u₂ v₁ v₂} C ⥤ Cat := sC.inverse ⋙ G ⋙ asSmall.{max v₁ u₁ v₂ u₂}
+  let F' : AsSmall C ⥤ Cat := sC.inverse ⋙ F ⋙ Cat.asSmallFunctor.{max v₁ u₁ v₂ u₂}
+  let G' : AsSmall C ⥤ Cat := sC.inverse ⋙ G ⋙ Cat.asSmallFunctor.{max v₁ u₁ v₂ u₂}
   let α' : F' ⟶ G' := whiskerLeft _ (whiskerRight α _)
-  have : ∀ (X : AsSmall C), Final (α'.app X) := sorry
+  have : ∀ X, Final (α'.app X) := fun X =>
+    inferInstanceAs (AsSmall.equiv.inverse ⋙ _ ⋙ AsSmall.equiv.functor).Final
   have hα' : (map α').Final := final_map_small _
-  simp only [α'] at hα'
-  have := mapWhiskerLeftIsoConjPreMap sC.symm (whiskerRight α asSmall.{max v₁ u₁ v₂ u₂})
-  have := mapWhiskerRightAsSmallFunctor
-  have := final_of_natIso sorry
-  sorry
-
-#check Grothendieck.mapWhiskerRightAsSmallFunctor
-#check whiskerLeft
-#exit
+  dsimp only [α', ← Equivalence.symm_functor] at hα'
+  have i := mapWhiskerLeftIsoConjPreMap sC.symm (whiskerRight α Cat.asSmallFunctor)
+    ≪≫ isoWhiskerLeft _ (isoWhiskerRight (mapWhiskerRightAsSmallFunctor α) _)
+  have := final_of_natIso i
+  rwa [← final_iff_equivalence_comp, ← final_iff_comp_equivalence,
+    ← final_iff_equivalence_comp, ← final_iff_comp_equivalence] at this
 
 end Grothendieck
 
