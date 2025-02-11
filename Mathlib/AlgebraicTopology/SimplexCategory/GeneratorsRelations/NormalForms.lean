@@ -36,6 +36,8 @@ namespace SimplexCategoryGenRel
 
 open CategoryTheory
 
+open CategoryTheory
+
 section AdmissibleLists
 -- Impl. note: We are not bundling admissible lists as a subtype of `List ℕ` so that it remains
 -- easier to perform inductive constructions and proofs on such lists, and we instead bundle
