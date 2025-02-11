@@ -17,9 +17,7 @@ namespace Complex
 /-! ### Absolute value -/
 
 /-- The complex absolute value function, defined as the Complex norm. -/
-noncomputable abbrev abs : ℂ → ℝ := norm
-
-instance : IsAbsoluteValue abs := instIsAbsoluteValueNorm
+noncomputable abbrev abs (z : ℂ) : ℝ := ‖z‖
 
 theorem norm_eq_abs (z : ℂ) : ‖z‖ = abs z := rfl
 

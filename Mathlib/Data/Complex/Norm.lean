@@ -18,7 +18,8 @@ open ComplexConjugate Topology Filter Set
 namespace Complex
 variable {z : ℂ}
 
-instance : Norm ℂ := ⟨fun z ↦ Real.sqrt (normSq z)⟩
+instance instNorm : Norm ℂ where
+  norm z := Real.sqrt (normSq z)
 
 theorem norm_def (z : ℂ) : ‖z‖ = Real.sqrt (normSq z) := rfl
 
@@ -56,7 +57,7 @@ private theorem norm_neg' (z : ℂ) : ‖-z‖ = ‖z‖ := by
 
 instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
   AddGroupNorm.toNormedAddCommGroup
-  { toFun := norm
+  { toFun := Complex.instNorm.norm
     map_zero' := norm_map_zero'
     add_le' := norm_add_le'
     neg' := norm_neg'
@@ -66,7 +67,7 @@ instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
 protected theorem norm_mul (z w : ℂ) : ‖z * w‖ = ‖z‖ * ‖w‖ := by
   rw [norm_def, norm_def, norm_def, normSq_mul, Real.sqrt_mul (normSq_nonneg _)]
 
-instance instIsAbsoluteValueNorm : IsAbsoluteValue (norm : ℂ → ℝ) where
+instance isAbsoluteValueNorm : IsAbsoluteValue (‖·‖ : ℂ → ℝ) where
   abv_nonneg' := norm_nonneg
   abv_eq_zero' := norm_eq_zero_iff
   abv_add' := norm_add_le
@@ -130,14 +131,14 @@ theorem range_normSq : range normSq = Ici 0 :=
 theorem norm_conj (z : ℂ) : ‖conj z‖ = ‖z‖ := by simp [norm_def]
 
 protected theorem norm_prod {ι : Type*} (s : Finset ι) (f : ι → ℂ) :
-    norm (s.prod f) = s.prod fun i ↦ ‖f i‖ :=
-  map_prod (IsAbsoluteValue.abvHom (norm : ℂ → ℝ)) _ _
+    ‖s.prod f‖ = s.prod fun i ↦ ‖f i‖ :=
+  map_prod isAbsoluteValueNorm.abvHom _ _
 
 protected theorem norm_pow (z : ℂ) (n : ℕ) : ‖z ^ n‖ = ‖z‖ ^ n :=
-  map_pow (IsAbsoluteValue.abvHom (norm : ℂ → ℝ)) _ _
+  map_pow isAbsoluteValueNorm.abvHom _ _
 
 protected theorem norm_zpow (z : ℂ) (n : ℤ) :  ‖z ^ n‖ = ‖z‖ ^ n :=
-  map_zpow₀ (IsAbsoluteValue.abvHom (norm : ℂ → ℝ)) _ _
+  map_zpow₀ isAbsoluteValueNorm.abvHom _ _
 
 theorem norm_le_abs_re_add_abs_im (z : ℂ) : ‖z‖ ≤ |z.re| + |z.im| := by
     simpa [re_add_im] using norm_add_le (z.re : ℂ) (z.im * I)
@@ -238,33 +239,33 @@ theorem nndist_self_conj (z : ℂ) : nndist z (conj z) = 2 * Real.nnabs z.im := 
 
 /-! ### Cauchy sequences -/
 
-theorem isCauSeq_re' (f : CauSeq ℂ norm) : IsCauSeq abs fun n ↦ (f n).re := fun _ ε0 ↦
+theorem isCauSeq_re' (f : CauSeq ℂ (‖·‖)) : IsCauSeq abs fun n ↦ (f n).re := fun _ ε0 ↦
   (f.cauchy ε0).imp fun i H j ij ↦
     lt_of_le_of_lt (by simpa using abs_re_le_norm (f j - f i)) (H _ ij)
 
-theorem isCauSeq_im' (f : CauSeq ℂ norm) : IsCauSeq abs fun n ↦ (f n).im := fun ε ε0 ↦
+theorem isCauSeq_im' (f : CauSeq ℂ (‖·‖)) : IsCauSeq abs fun n ↦ (f n).im := fun ε ε0 ↦
   (f.cauchy ε0).imp fun i H j ij ↦ by
     simpa only [← ofReal_sub, norm_real, sub_re] using (abs_im_le_norm _).trans_lt <| H _ ij
 
 /-- The real part of a complex Cauchy sequence, as a real Cauchy sequence. -/
-noncomputable def cauSeqRe' (f : CauSeq ℂ norm) : CauSeq ℝ abs :=
+noncomputable def cauSeqRe' (f : CauSeq ℂ (‖·‖)) : CauSeq ℝ abs :=
   ⟨_, isCauSeq_re' f⟩
 
 /-- The imaginary part of a complex Cauchy sequence, as a real Cauchy sequence. -/
-noncomputable def cauSeqIm' (f : CauSeq ℂ norm) : CauSeq ℝ abs :=
+noncomputable def cauSeqIm' (f : CauSeq ℂ (‖·‖)) : CauSeq ℝ abs :=
   ⟨_, isCauSeq_im' f⟩
 
-theorem isCauSeq_norm {f : ℕ → ℂ} (hf : IsCauSeq norm f) :
-    IsCauSeq abs (norm ∘ f) := fun ε ε0 ↦
+theorem isCauSeq_norm {f : ℕ → ℂ} (hf : IsCauSeq (‖·‖) f) :
+    IsCauSeq abs ((‖·‖) ∘ f) := fun ε ε0 ↦
   let ⟨i, hi⟩ := hf ε ε0
   ⟨i, fun j hj ↦  lt_of_le_of_lt (abs_norm_sub_norm_le _ _) (hi j hj)⟩
 
 /-- The limit of a Cauchy sequence of complex numbers. -/
-noncomputable def limAux' (f : CauSeq ℂ norm) : ℂ :=
+noncomputable def limAux' (f : CauSeq ℂ (‖·‖)) : ℂ :=
   ⟨CauSeq.lim (cauSeqRe' f), CauSeq.lim (cauSeqIm' f)⟩
 
-theorem equiv_limAux' (f : CauSeq ℂ norm) :
-    f ≈ CauSeq.const norm (limAux' f) := fun ε ε0 ↦
+theorem equiv_limAux' (f : CauSeq ℂ (‖·‖)) :
+    f ≈ CauSeq.const (‖·‖) (limAux' f) := fun ε ε0 ↦
   (exists_forall_ge_and
   (CauSeq.equiv_lim ⟨_, isCauSeq_re' f⟩ _ (half_pos ε0))
         (CauSeq.equiv_lim ⟨_, isCauSeq_im' f⟩ _ (half_pos ε0))).imp
@@ -275,45 +276,46 @@ theorem equiv_limAux' (f : CauSeq ℂ norm) :
     have := add_lt_add H₁ H₂
     rwa [add_halves] at this
 
-instance instIsComplete' : CauSeq.IsComplete ℂ norm :=
+instance instIsComplete' : CauSeq.IsComplete ℂ (‖·‖) :=
   ⟨fun f ↦ ⟨limAux' f, equiv_limAux' f⟩⟩
 
 open CauSeq
 
-theorem lim_eq_lim_im_add_lim_re' (f : CauSeq ℂ norm) :
+theorem lim_eq_lim_im_add_lim_re' (f : CauSeq ℂ (‖·‖)) :
     lim f = ↑(lim (cauSeqRe' f)) + ↑(lim (cauSeqIm' f)) * I :=
   lim_eq_of_equiv_const <|
+    letI : IsAbsoluteValue (‖·‖ : ℂ → ℝ) := inferInstance
     calc
       f ≈ _ := equiv_limAux' f
-      _ = CauSeq.const norm (↑(lim (cauSeqRe' f)) + ↑(lim (cauSeqIm' f)) * I) :=
+      _ = CauSeq.const (‖·‖) (↑(lim (cauSeqRe' f)) + ↑(lim (cauSeqIm' f)) * I) :=
         CauSeq.ext fun _ ↦
           Complex.ext (by simp [limAux', cauSeqRe', ofReal]) (by simp [limAux', cauSeqIm', ofReal])
 
-theorem lim_re' (f : CauSeq ℂ norm) : lim (cauSeqRe' f) = (lim f).re := by
+theorem lim_re' (f : CauSeq ℂ (‖·‖)) : lim (cauSeqRe' f) = (lim f).re := by
   rw [lim_eq_lim_im_add_lim_re']; simp [ofReal]
 
-theorem lim_im' (f : CauSeq ℂ norm) : lim (cauSeqIm' f) = (lim f).im := by
+theorem lim_im' (f : CauSeq ℂ (‖·‖)) : lim (cauSeqIm' f) = (lim f).im := by
   rw [lim_eq_lim_im_add_lim_re']; simp [ofReal]
 
-theorem isCauSeq_conj' (f : CauSeq ℂ norm) :
-    IsCauSeq norm fun n ↦ conj (f n) := fun ε ε0 ↦
+theorem isCauSeq_conj' (f : CauSeq ℂ (‖·‖)) :
+    IsCauSeq (‖·‖) fun n ↦ conj (f n) := fun ε ε0 ↦
   let ⟨i, hi⟩ := f.2 ε ε0
   ⟨i, fun j hj => by
-    rw [← RingHom.map_sub, norm_conj]; exact hi j hj⟩
+    simp_rw [← RingHom.map_sub, norm_conj]; exact hi j hj⟩
 
 /-- The complex conjugate of a complex Cauchy sequence, as a complex Cauchy sequence. -/
-noncomputable def cauSeqConj' (f : CauSeq ℂ norm) : CauSeq ℂ norm :=
+noncomputable def cauSeqConj' (f : CauSeq ℂ (‖·‖)) : CauSeq ℂ (‖·‖) :=
   ⟨_, isCauSeq_conj' f⟩
 
-theorem lim_conj' (f : CauSeq ℂ norm) : lim (cauSeqConj' f) = conj (lim f) :=
+theorem lim_conj' (f : CauSeq ℂ (‖·‖)) : lim (cauSeqConj' f) = conj (lim f) :=
   Complex.ext (by simp [cauSeqConj', (lim_re' _).symm, cauSeqRe'])
     (by simp [cauSeqConj', (lim_im' _).symm, cauSeqIm', (lim_neg _).symm]; rfl)
 
 /-- The absolute value of a complex Cauchy sequence, as a real Cauchy sequence. -/
-noncomputable def cauSeqNorm (f : CauSeq ℂ norm) : CauSeq ℝ abs :=
+noncomputable def cauSeqNorm (f : CauSeq ℂ (‖·‖)) : CauSeq ℝ abs :=
   ⟨_, isCauSeq_norm f.2⟩
 
-theorem lim_norm (f : CauSeq ℂ norm) : lim (cauSeqNorm f) = ‖lim f‖ :=
+theorem lim_norm (f : CauSeq ℂ (‖·‖)) : lim (cauSeqNorm f) = ‖lim f‖ :=
   lim_eq_of_equiv_const fun ε ε0 ↦
     let ⟨i, hi⟩ := equiv_lim f ε ε0
     ⟨i, fun j hj => lt_of_le_of_lt (abs_norm_sub_norm_le _ _) (hi j hj)⟩
