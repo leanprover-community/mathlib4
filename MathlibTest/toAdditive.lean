@@ -437,10 +437,9 @@ lemma one_eq_one' {α : Type*} [One α] : (1 : α) = 1 := rfl
 /--
 warning: declaration uses 'sorry'
 ---
-error: to_additive: the generated additivised name equals the original name foo.
-Usually, this means you need to name your declaration correctly
-(e.g., name instances with a name that can be additivised).
-Sometimes, this means you need to extend to_additive to handle the new names.
+error: to_additive: the generated additivised name equals the original name foo, meaning that no part of the name was additivised.
+Check that your declaration name is correct (if your declaration is an instance, try naming it)
+or provide an additivised name using the 'to_additive my_add_name' syntax.
 -/
 #guard_msgs in
 @[to_additive]
