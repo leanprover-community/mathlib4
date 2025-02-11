@@ -240,6 +240,25 @@ noncomputable abbrev leftRegular : Rep k G :=
 noncomputable abbrev diagonal (n : ℕ) : Rep k G :=
   ofMulAction k G (Fin n → G)
 
+/-- The natural isomorphism between the representations on `k[G¹]` and `k[G]` induced by left
+multiplication in `G`. -/
+@[simps! hom_hom inv_hom]
+def diagonalOneIsoLeftRegular :
+    diagonal k G 1 ≅ leftRegular k G :=
+  Action.mkIso (Finsupp.domLCongr <| Equiv.funUnique (Fin 1) G).toModuleIso fun _ =>
+    ModuleCat.hom_ext <| Finsupp.lhom_ext fun _ _ => by simp [diagonal, ModuleCat.endRingEquiv]
+
+/-- When `H = {1}`, the `G`-representation on `k[H]` induced by an action of `G` on `H` is
+isomorphic to the trivial representation on `k`. -/
+@[simps! hom_hom inv_hom]
+def ofMulActionSubsingletonIsoTrivial
+    (H : Type u) [Subsingleton H] [MulOneClass H] [MulAction G H] :
+    ofMulAction k G H ≅ trivial k G k :=
+  letI : Unique H := uniqueOfSubsingleton 1
+  Action.mkIso (Finsupp.LinearEquiv.finsuppUnique _ _ _).toModuleIso fun _ =>
+    ModuleCat.hom_ext <| Finsupp.lhom_ext fun _ _ => by
+      simp [Subsingleton.elim _ (1 : H), ModuleCat.endRingEquiv]
+
 /-- The linearization of a type `H` with a `G`-action is definitionally isomorphic to the
 `k`-linear `G`-representation on `k[H]` induced by the `G`-action on `H`. -/
 noncomputable def linearizationOfMulActionIso (H : Type u) [MulAction G H] :
