@@ -32,10 +32,6 @@ Hence our $d_n$ squares to zero, and we get
 $\mathrm{H}_n(G, A) \cong \mathrm{Tor}_n(A, k),$ where $\mathrm{Tor}$ is defined by deriving the
 second argument of the functor $(A, B) \mapsto (A \otimes_k B)_G.$
 
-To talk about homology in low degree, please see the file
-`Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree`, which gives simpler expressions
-for `H₀`, `H₁`, `H₂` than the definition `groupHomology` in this file.
-
 ## Main definitions
 
 * `Rep.Tor k G n`: the left-derived functors given by deriving the second argument of
@@ -187,12 +183,12 @@ abbrev cycles (n : ℕ) : ModuleCat k := (inhomogeneousChains A).cycles n
 open HomologicalComplex
 
 /-- The natural inclusion of the `n`-cycles `Zₙ(G, A)` into the `n`-chains `Cₙ(G, A).` -/
-abbrev iCycles (n : ℕ) : cycles A n ⟶ ModuleCat.of k ((inhomogeneousChains A).X n) :=
+abbrev iCycles (n : ℕ) : cycles A n ⟶ (inhomogeneousChains A).X n :=
   (inhomogeneousChains A).iCycles n
 
 /-- This is the map from `i`-chains to `j`-cycles induced by the differential in the complex of
 inhomogeneous chains. -/
-abbrev toCycles (i j : ℕ) : ModuleCat.of k ((inhomogeneousChains A).X i) ⟶ cycles A j :=
+abbrev toCycles (i j : ℕ) : (inhomogeneousChains A).X i ⟶ cycles A j :=
   (inhomogeneousChains A).toCycles i j
 
 end groupHomology

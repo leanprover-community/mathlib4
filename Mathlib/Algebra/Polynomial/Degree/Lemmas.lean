@@ -116,8 +116,8 @@ theorem natDegree_mul_C_eq_of_mul_eq_one {ai : R} (au : a * ai = 1) :
       _ = (p * C a * C ai).natDegree := by rw [← C_1, ← au, RingHom.map_mul, ← mul_assoc]
       _ ≤ (p * C a).natDegree := natDegree_mul_C_le (p * C a) ai)
 
-/-- Although not explicitly stated, the assumptions of lemma `nat_degree_mul_C_eq_of_mul_ne_zero`
-force the polynomial `p` to be non-zero, via `p.leading_coeff ≠ 0`.
+/-- Although not explicitly stated, the assumptions of lemma `natDegree_mul_C_eq_of_mul_ne_zero`
+force the polynomial `p` to be non-zero, via `p.leadingCoeff ≠ 0`.
 -/
 theorem natDegree_mul_C_eq_of_mul_ne_zero (h : p.leadingCoeff * a ≠ 0) :
     (p * C a).natDegree = p.natDegree := by
@@ -125,8 +125,8 @@ theorem natDegree_mul_C_eq_of_mul_ne_zero (h : p.leadingCoeff * a ≠ 0) :
   refine mem_support_iff.mpr ?_
   rwa [coeff_mul_C]
 
-/-- Although not explicitly stated, the assumptions of lemma `nat_degree_C_mul_eq_of_mul_ne_zero`
-force the polynomial `p` to be non-zero, via `p.leading_coeff ≠ 0`.
+/-- Although not explicitly stated, the assumptions of lemma `natDegree_C_mul_of_mul_ne_zero`
+force the polynomial `p` to be non-zero, via `p.leadingCoeff ≠ 0`.
 -/
 theorem natDegree_C_mul_of_mul_ne_zero (h : a * p.leadingCoeff ≠ 0) :
     (C a * p).natDegree = p.natDegree := by
