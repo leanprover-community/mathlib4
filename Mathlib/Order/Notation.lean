@@ -106,7 +106,7 @@ class Bot (α : Type*) where
   /-- The bot (`⊥`, `\bot`) element -/
   bot : α
 
-attribute [order_dual existing] Top Bot
+attribute [order_dual existing] Top
 
 /-- The top (`⊤`, `\top`) element -/
 notation "⊤" => Top.top

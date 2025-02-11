@@ -468,7 +468,7 @@ def findTranslation? (env : Environment) (translations : NameMapExtension Name) 
   (translations.getState env).find?
 
 /-- Add a (multiplicative → additive) name translation to the translations map. -/
-def insertTranslation (translations : NameMapExtension Name)
+def insertTranslation (translations : NameMapExtension Name) (attrName : Name)
     (src tgt : Name) (failIfExists := true) : CoreM Unit := do
   if let some tgt' := findTranslation? (← getEnv) translations src then
     if failIfExists then
@@ -478,6 +478,10 @@ def insertTranslation (translations : NameMapExtension Name)
       return
   modifyEnv (translations.addEntry · (src, tgt))
   trace[to_additive] "Added translation {src} ↦ {tgt}"
+  -- HACK: special case order_dual
+  if attrName = `order_dual then
+    modifyEnv (translations.addEntry · (tgt, src))
+    trace[to_additive] "Added translation {tgt} ↦ {src}"
 
 /-- `Config` is the type of the arguments that can be provided to `to_additive`. -/
 structure Config : Type where
@@ -774,7 +778,7 @@ using the transforms dictionary.
 `replace_all`, `trace`, `ignore` and `reorder` are configuration options.
 `pre` is the declaration that got the `@[to_additive]` attribute and `tgt_pre` is the target of this
 declaration. -/
-partial def transformDeclAux (translations : NameMapExtension Name)
+partial def transformDeclAux (translations : NameMapExtension Name) (attrName : Name)
     (cfg : Config) (pre tgt_pre : Name) : Name → CoreM Unit := fun src ↦ do
   let env ← getEnv
   trace[to_additive_detail] "visiting {src}"
@@ -800,17 +804,17 @@ partial def transformDeclAux (translations : NameMapExtension Name)
   let srcDecl ← getConstInfo src
   -- we first transform all auxiliary declarations generated when elaborating `pre`
   for n in findAuxDecls srcDecl.type pre do
-    transformDeclAux translations cfg pre tgt_pre n
+    transformDeclAux translations attrName cfg pre tgt_pre n
   if let some value := srcDecl.value? then
     for n in findAuxDecls value pre do
-      transformDeclAux translations cfg pre tgt_pre n
+      transformDeclAux translations attrName cfg pre tgt_pre n
   if let .opaqueInfo {value, ..} := srcDecl then
     for n in findAuxDecls value pre do
-      transformDeclAux translations cfg pre tgt_pre n
+      transformDeclAux translations attrName cfg pre tgt_pre n
   -- if the auxiliary declaration doesn't have prefix `pre`, then we have to add this declaration
   -- to the translation dictionary, since otherwise we cannot find the additive name.
   if !pre.isPrefixOf src then
-    insertTranslation translations src tgt
+    insertTranslation translations attrName src tgt
   -- now transform the source declaration
   let trgDecl : ConstantInfo ←
     MetaM.run' <| updateDecl translations tgt srcDecl <| if src == pre then cfg.reorder else []
@@ -889,7 +893,7 @@ warnExt stx attr.ext (·.contains ·) thisAttr attrName src tgt
 and adds translations between the generated lemmas (the output of `t`).
 `names` must be non-empty. -/
 def additivizeLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT CoreM m]
-    (translations : NameMapExtension Name)
+    (translations : NameMapExtension Name) (attrName : Name)
     (names : Array Name) (desc : String) (t : Name → m (Array Name)) : m Unit := do
   let auxLemmas ← names.mapM t
   let nLemmas := auxLemmas[0]!.size
@@ -898,7 +902,7 @@ def additivizeLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Co
       throwError "{names[0]!} and {nm} do not generate the same number of {desc}."
   for (srcLemmas, tgtLemmas) in auxLemmas.zip <| auxLemmas.eraseIdx! 0 do
     for (srcLemma, tgtLemma) in srcLemmas.zip tgtLemmas do
-      insertTranslation translations srcLemma tgtLemma
+      insertTranslation translations attrName srcLemma tgtLemma
 
 /--
 Find the first argument of `nm` that has a multiplicative type-class on it.
@@ -1162,7 +1166,7 @@ def targetName (translations : NameMapExtension Name)
 /-- if `f src = #[a_1, ..., a_n]` and `f tgt = #[b_1, ... b_n]` then `proceedFieldsAux src tgt f`
 will insert translations from `src.a_i` to `tgt.b_i`
 (or from `a_i` to `b_i` if `prependName` is false). -/
-def proceedFieldsAux (translations : NameMapExtension Name)
+def proceedFieldsAux (translations : NameMapExtension Name) (attrName : Name)
     (src tgt : Name) (f : Name → CoreM (Array Name))
     (prependName := true) : CoreM Unit := do
   let srcFields ← f src
@@ -1174,14 +1178,15 @@ def proceedFieldsAux (translations : NameMapExtension Name)
     let srcName := if prependName then src ++ srcField else srcField
     let tgtName := if prependName then tgt ++ tgtField else tgtField
     if srcField != tgtField then
-      insertTranslation translations srcName tgtName
+      insertTranslation translations attrName srcName tgtName
     else
       trace[to_additive] "Translation {srcName} ↦ {tgtName} is automatic."
 
 /-- Add the structure fields of `src` to the translations dictionary
 so that future uses of `to_additive` will map them to the corresponding `tgt` fields. -/
-def proceedFields (translations : NameMapExtension Name) (src tgt : Name) : CoreM Unit := do
-  let aux := @proceedFieldsAux translations src tgt
+def proceedFields (translations : NameMapExtension Name) (attrName : Name)
+    (src tgt : Name) : CoreM Unit := do
+  let aux := @proceedFieldsAux translations attrName src tgt
   -- add translations for the structure fields
   aux fun declName ↦ do
     if isStructure (← getEnv) declName then
@@ -1275,7 +1280,7 @@ partial def applyAttributes (translations : NameMapExtension Name) (attrName : N
   for attr in attrs do
     withRef attr.stx do withLogging do
     if attr.name == `simps then
-      additivizeLemmas translations allDecls "simps lemmas" (simpsTacFromSyntax · attr.stx)
+      additivizeLemmas translations attrName allDecls "simps lemmas" (simpsTacFromSyntax · attr.stx)
       return
     let env ← getEnv
     match getAttributeImpl env attr.name with
@@ -1313,7 +1318,7 @@ partial def copyMetaData (translations : NameMapExtension Name) (attrName : Name
     /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
     definitions. If we don't do that, the equation lemma for `src` might be generated later
     when doing a `rw`, but it won't be generated for `tgt`. -/
-    additivizeLemmas translations #[src, tgt] "equation lemmas" fun nm ↦
+    additivizeLemmas translations attrName #[src, tgt] "equation lemmas" fun nm ↦
       (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm)
   MetaM.run' <| Elab.Term.TermElabM.run' <|
     (applyAttributes translations attrName nameDict fixAbbreviation
@@ -1327,7 +1332,7 @@ This is used to implement `@[to_additive]`.
 partial def transformDecl (translations : NameMapExtension Name) (attrName : Name)
     (nameDict : String → List String) (fixAbbreviation : List String → List String)
     (cfg : Config) (src tgt : Name) : CoreM (Array Name) := do
-  transformDeclAux translations cfg src tgt src
+  transformDeclAux translations attrName cfg src tgt src
   copyMetaData translations attrName nameDict fixAbbreviation cfg src tgt
 
 /-- `addToAdditiveAttr src cfg` adds a `@[to_additive]` attribute to `src` with configuration `cfg`.
@@ -1360,13 +1365,13 @@ partial def addToAdditiveAttr (translations : NameMapExtension Name) (attrName :
   if firstMultArg != 0 then
     trace[to_additive_detail] "Setting relevant_arg for {src} to be {firstMultArg}."
     relevantArgAttr.add src firstMultArg
-  insertTranslation translations src tgt alreadyExists
+  insertTranslation translations attrName src tgt alreadyExists
   let nestedNames ←
     if alreadyExists then
       -- since `tgt` already exists, we just need to copy metadata and
       -- add translations `src.x ↦ tgt.x'` for any subfields.
       trace[to_additive_detail] "declaration {tgt} already exists."
-      proceedFields translations src tgt
+      proceedFields translations attrName src tgt
       copyMetaData translations attrName nameDict fixAbbreviation cfg src tgt
     else
       -- tgt doesn't exist, so let's make it

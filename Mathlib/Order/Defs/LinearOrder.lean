@@ -28,17 +28,21 @@ section LinearOrder
 
 set_option trace.to_additive_detail true
 
-attribute [order_dual existing] Min Max
+attribute [order_dual existing] Min
 
-/-- Default definition of `max`. -/
+-- /-- Default definition of `max`. -/
+
 def maxDefault [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
   if a ≤ b then b else a
 
 /-- Default definition of `min`. -/
+-- @[order_dual "Default definition of `max`."]
 def minDefault [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
   if a ≤ b then a else b
 
-attribute [order_dual existing] maxDefault minDefault
+-- #print maxDefault
+
+-- attribute [order_dual existing] maxDefault minDefault
 
 /-- This attempts to prove that a given instance of `compare` is equal to `compareOfLessAndEq` by
 introducing the arguments and trying the following approaches in order:
@@ -78,10 +82,14 @@ class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α w
     compareOfLessAndEq_rfl
 
 
-attribute [order_dual existing] LinearOrder.toMax LinearOrder.toMin
-attribute [order_dual existing] LinearOrder.min_def LinearOrder.max_def
-attribute [order_dual? existing LinearOrder.decidableLE] LinearOrder.decidableLE
-attribute [order_dual existing LinearOrder.decidableLT] LinearOrder.decidableLT
+attribute [order_dual existing] LinearOrder.toMax
+attribute [order_dual existing] LinearOrder.min_def
+-- attribute [order_dual? existing LinearOrder.decidableLE] LinearOrder.decidableLE
+-- attribute [order_dual existing LinearOrder.decidableLT] LinearOrder.decidableLT
+
+-- run_cmd do
+--   unless ToAdditive.findTranslation? (← Lean.getEnv) ToAdditive.orderDualTranslations `Test.MulInd.one == some `Test.AddInd.zero do throwError "1"
+
 
 variable [LinearOrder α] {a b c : α}
 
@@ -158,12 +166,12 @@ theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α}
     (H : d < c → b < a) (h : a ≤ b) : c ≤ d :=
   le_of_not_lt fun h' => not_le_of_gt (H h') h
 
-@[order_dual?]
+-- @[order_dual?]
 lemma min_def (a b : α) : min a b = if a ≤ b then a else b := by rw [LinearOrder.min_def a]
 lemma max_def (a b : α) : max a b = if a ≤ b then b else a := by rw [LinearOrder.max_def a]
 
 -- Porting note: no `min_tac` tactic in the following series of lemmas
-@[order_dual?]
+-- @[order_dual?]
 lemma min_le_left (a b : α) : min a b ≤ a := by
   if h : a ≤ b
   then simp [min_def, if_pos h, le_refl]
