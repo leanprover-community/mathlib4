@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Category.Grp.Basic
-import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 import Mathlib.Algebra.Ring.Equiv
+import Mathlib.Algebra.Ring.PUnit
+import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 
 /-!
 # Category instances for `Semiring`, `Ring`, `CommSemiring`, and `CommRing`.
@@ -640,6 +641,11 @@ instance hasForgetToAddCommMonCat : HasForget₂ CommRingCat CommSemiRingCat whe
   forget₂ :=
     { obj := fun R ↦ CommSemiRingCat.of R
       map := fun f ↦ CommSemiRingCat.ofHom f.hom }
+
+@[simps]
+instance : HasForget₂ CommRingCat CommMonCat where
+  forget₂ := { obj M := .of M, map f := CommMonCat.ofHom f.hom }
+  forget_comp := rfl
 
 /-- Ring equivalence are isomorphisms in category of semirings -/
 @[simps]

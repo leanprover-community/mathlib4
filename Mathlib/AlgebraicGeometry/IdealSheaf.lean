@@ -22,6 +22,12 @@ We define ideal sheaves of schemes and provide various constructors for it.
   Over affine schemes, ideal sheaves are in bijection with ideals of the global sections.
 * `AlgebraicGeometry.Scheme.IdealSheafData.support`:
   The support of an ideal sheaf.
+* `AlgebraicGeometry.Scheme.IdealSheafData.vanishingIdeal`:
+  The vanishing ideal of a set.
+
+## Main result
+* `AlgebraicGeometry.Scheme.IdealSheafData.gc`:
+  `support` and `vanishingIdeal` forms a galois connection.
 
 ## Implementation detail
 
@@ -296,5 +302,127 @@ lemma support_eq_empty_iff : support I = ∅ ↔ I = ⊤ := by
   simp [PrimeSpectrum.zeroLocus_empty_iff_eq_top.mp this]
 
 end support
+
+section ofIsClosed
+
+open _root_.PrimeSpectrum TopologicalSpace
+
+/-- The radical of a ideal sheaf. -/
+@[simps]
+def radical (I : IdealSheafData X) : IdealSheafData X where
+  ideal U := (I.ideal U).radical
+  map_ideal_basicOpen U f :=
+    letI : Algebra Γ(X, U) Γ(X, X.affineBasicOpen f) :=
+      (X.presheaf.map (homOfLE (X.basicOpen_le f)).op).hom.toAlgebra
+    have : IsLocalization.Away f Γ(X, X.basicOpen f) := U.2.isLocalization_of_eq_basicOpen _ _ rfl
+    (IsLocalization.map_radical (.powers f) Γ(X, X.basicOpen f) (I.ideal U)).trans
+      congr($(I.map_ideal_basicOpen U f).radical)
+
+/-- The nilradical of a scheme. -/
+def _root_.AlgebraicGeometry.Scheme.nilradical (X : Scheme.{u}) : IdealSheafData X :=
+  .radical ⊥
+
+lemma le_radical : I ≤ I.radical := fun _ ↦ Ideal.le_radical
+
+@[simp]
+lemma radical_top : radical (X := X) ⊤ = ⊤ := top_le_iff.mp (le_radical _)
+
+lemma radical_bot : radical ⊥ = nilradical X := rfl
+
+lemma radical_sup {I J : IdealSheafData X} :
+    radical (I ⊔ J) = radical (radical I ⊔ radical J) := by
+  ext U : 2
+  exact (Ideal.radical_sup (I.ideal U) (J.ideal U))
+
+@[simp]
+lemma radical_inf {I J : IdealSheafData X} :
+    radical (I ⊓ J) = (radical I ⊓ radical J) := by
+  ext U : 2
+  simp only [radical_ideal, ideal_inf, Pi.inf_apply, Ideal.radical_inf]
+
+/-- The vanishing ideal sheaf of a set,
+which is the largest ideal sheaf whose support contains a subset.
+When the set `Z` is closed, the reduced induced scheme structure is the quotient of this ideal. -/
+@[simps]
+nonrec def vanishingIdeal (Z : Set X) : IdealSheafData X where
+  ideal U := vanishingIdeal (U.2.fromSpec.base ⁻¹' Z)
+  map_ideal_basicOpen U f := by
+    let F := X.presheaf.map (homOfLE (X.basicOpen_le f)).op
+    apply le_antisymm
+    · rw [Ideal.map_le_iff_le_comap]
+      intro x hx
+      suffices ∀ p, (X.affineBasicOpen f).2.fromSpec.base p ∈ Z → F.hom x ∈ p.asIdeal by
+        simpa [PrimeSpectrum.mem_vanishingIdeal] using this
+      intro x hxZ
+      refine (PrimeSpectrum.mem_vanishingIdeal _ _).mp hx
+        ((Spec.map (X.presheaf.map (homOfLE _).op)).base x) ?_
+      rwa [Set.mem_preimage, ← Scheme.comp_base_apply,
+        IsAffineOpen.map_fromSpec _ (X.affineBasicOpen f).2]
+    · letI : Algebra Γ(X, U) Γ(X, X.affineBasicOpen f) := F.hom.toAlgebra
+      have : IsLocalization.Away f Γ(X, X.basicOpen f) :=
+        U.2.isLocalization_of_eq_basicOpen _ _ rfl
+      intro x hx
+      dsimp only at hx ⊢
+      have : Topology.IsOpenEmbedding (Spec.map F).base :=
+        localization_away_isOpenEmbedding Γ(X, X.basicOpen f) f
+      rw [← U.2.map_fromSpec (X.affineBasicOpen f).2 (homOfLE (X.basicOpen_le f)).op,
+        Scheme.comp_base, TopCat.coe_comp, Set.preimage_comp] at hx
+      generalize U.2.fromSpec.base ⁻¹' Z = Z' at hx ⊢
+      replace hx : x ∈ vanishingIdeal ((Spec.map F).base ⁻¹' Z') := hx
+      obtain ⟨I, hI, e⟩ := (isClosed_iff_zeroLocus_radical_ideal _).mp (isClosed_closure (s := Z'))
+      rw [← vanishingIdeal_closure,
+        ← this.isOpenMap.preimage_closure_eq_closure_preimage this.continuous, e] at hx
+      rw [← vanishingIdeal_closure, e]
+      erw [preimage_comap_zeroLocus] at hx
+      rwa [← PrimeSpectrum.zeroLocus_span, ← Ideal.map, vanishingIdeal_zeroLocus_eq_radical,
+        ← RingHom.algebraMap_toAlgebra (X.presheaf.map _).hom,
+        ← IsLocalization.map_radical (.powers f), ← vanishingIdeal_zeroLocus_eq_radical] at hx
+
+lemma subset_support_iff_le_vanishingIdeal {I : X.IdealSheafData} {Z : Set X} :
+    Z ⊆ I.support ↔ I ≤ vanishingIdeal Z := by
+  simp only [le_def, vanishingIdeal_ideal, ← PrimeSpectrum.subset_zeroLocus_iff_le_vanishingIdeal]
+  trans ∀ U : X.affineOpens, Z ∩ U ⊆ I.support ∩ U
+  · refine ⟨fun H U x hx ↦ ⟨H hx.1, hx.2⟩, fun H x hx ↦ ?_⟩
+    obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
+      (isBasis_affine_open X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
+    exact (H ⟨U, hU⟩ ⟨hx, hxU⟩).1
+  refine forall_congr' fun U ↦ ?_
+  rw [support_inter, ← Set.image_subset_image_iff U.2.fromSpec.isOpenEmbedding.injective,
+    Set.image_preimage_eq_inter_range, IsAffineOpen.fromSpec_image_zeroLocus,
+    IsAffineOpen.range_fromSpec]
+
+/-- `support` and `vanishingIdeal` forms a galois connection.
+This is the global version of `PrimeSpectrum.gc`. -/
+lemma gc : @GaloisConnection X.IdealSheafData (Set X)ᵒᵈ _ _ (support ·) (vanishingIdeal ·) :=
+  fun _ _ ↦ subset_support_iff_le_vanishingIdeal
+
+lemma vanishingIdeal_antimono {S T : Set X} (h : S ⊆ T) : vanishingIdeal T ≤ vanishingIdeal S :=
+  gc.monotone_u h
+
+lemma support_vanishingIdeal {Z : Set X} :
+    (vanishingIdeal Z).support = closure Z := by
+  ext x
+  obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
+    (isBasis_affine_open X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
+  trans x ∈ (vanishingIdeal Z).support ∩ U
+  · simp [hxU]
+  rw [(vanishingIdeal Z).support_inter ⟨U, hU⟩, ← hU.fromSpec_image_zeroLocus,
+    vanishingIdeal, zeroLocus_vanishingIdeal_eq_closure,
+      ← hU.fromSpec.isOpenEmbedding.isOpenMap.preimage_closure_eq_closure_preimage
+        hU.fromSpec.base.1.2,
+      Set.image_preimage_eq_inter_range]
+  simp [hxU]
+
+lemma vanishingIdeal_support {I : IdealSheafData X} :
+    vanishingIdeal I.support = I.radical := by
+  ext U : 2
+  dsimp
+  rw [← vanishingIdeal_zeroLocus_eq_radical]
+  congr 1
+  apply U.2.fromSpec.isOpenEmbedding.injective.image_injective
+  rw [Set.image_preimage_eq_inter_range, IsAffineOpen.range_fromSpec,
+    IsAffineOpen.fromSpec_image_zeroLocus, support_inter]
+
+end ofIsClosed
 
 end AlgebraicGeometry.Scheme.IdealSheafData
