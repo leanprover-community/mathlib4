@@ -190,7 +190,7 @@ theorem exists_right_move_equiv_iff_fuzzy_zero : (∃ j, G.moveRight j ≈ 0) �
 have also been reached in the first turn, then `G` is won by the first player.
 
 This version of the theorem is stated exclusively in terms of left moves; see
-`fuzzy_zero_of_forall_moveRight` for a version stated with right moves. -/
+`fuzzy_zero_of_forall_exists_moveRight` for a version stated with right moves. -/
 theorem fuzzy_zero_of_forall_exists_moveLeft (i : G.LeftMoves)
     (H : ∀ j, ∃ k, (G.moveLeft i).moveLeft j ≈ G.moveLeft k) : G ‖ 0 := by
   apply (equiv_or_fuzzy_zero _).resolve_left fun hG ↦ ?_
@@ -203,7 +203,7 @@ theorem fuzzy_zero_of_forall_exists_moveLeft (i : G.LeftMoves)
 have also been reached in the first turn, then `G` is won by the first player.
 
 This version of the theorem is stated exclusively in terms of right moves; see
-`fuzzy_zero_of_forall_moveLeft` for a version stated with left moves. -/
+`fuzzy_zero_of_forall_exists_moveLeft` for a version stated with left moves. -/
 theorem fuzzy_zero_of_forall_exists_moveRight (i : G.RightMoves)
     (H : ∀ j, ∃ k, (G.moveRight i).moveRight j ≈ G.moveRight k) : G ‖ 0 := by
   rw [← neg_fuzzy_zero_iff]
