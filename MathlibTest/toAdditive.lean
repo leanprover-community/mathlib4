@@ -141,7 +141,7 @@ example {x} (h : 1 = x) : baz20 = x := by simp; guard_target = 1 = x; exact h
 @[to_additive bar21]
 def foo21 {N} {A} [Pow A N] (a : A) (n : N) : A := a ^ n
 
-run_cmd liftCoreM <| MetaM.run' <| guard <| relevantArgAttr.find? (← getEnv) `Test.foo21 == some 1
+run_cmd liftCoreM <| MetaM.run' <| guard <| toAdditiveRelevantArgAttr.find? (← getEnv) `Test.foo21 == some 1
 
 @[to_additive bar22]
 abbrev foo22 {α} [Monoid α] (a : α) : ℕ → α
@@ -160,12 +160,12 @@ run_cmd liftCoreM <| MetaM.run' <| do
 /- test the eta-expansion applied on `foo6`. -/
 run_cmd do
   let c ← getConstInfo `Test.foo6
-  let e : Expr ← liftCoreM <| MetaM.run' <| expand c.value!
-  let t ← liftCoreM <| MetaM.run' <| expand c.type
+  let e : Expr ← liftCoreM <| MetaM.run' <| expand toAdditiveBundle c.value!
+  let t ← liftCoreM <| MetaM.run' <| expand toAdditiveBundle c.type
   let decl := c |>.updateName `Test.barr6 |>.updateType t |>.updateValue e |>.toDeclaration!
   liftCoreM <| addAndCompile decl
   -- test that we cannot transport a declaration to itself
-  successIfFail <| liftCoreM <| addToAdditiveAttr additiveTranslations `to_additive additiveNameDict additiveFixAbbreviation `bar11_works { ref := ← getRef }
+  successIfFail <| liftCoreM <| addToAdditiveAttr toAdditiveBundle additiveNameDict additiveFixAbbreviation `bar11_works { ref := ← getRef }
 
 /- Test on inductive types -/
 inductive AddInd : ℕ → Prop where
@@ -178,9 +178,9 @@ inductive MulInd : ℕ → Prop where
   | one : MulInd 1
 
 run_cmd do
-  unless findTranslation? (← getEnv) additiveTranslations `Test.MulInd.one == some `Test.AddInd.zero do throwError "1"
-  unless findTranslation? (← getEnv) additiveTranslations `Test.MulInd.basic == none do throwError "2"
-  unless findTranslation? (← getEnv) additiveTranslations `Test.MulInd == some `Test.AddInd do throwError "3"
+  unless findTranslation? (← getEnv) toAdditiveBundle `Test.MulInd.one == some `Test.AddInd.zero do throwError "1"
+  unless findTranslation? (← getEnv) toAdditiveBundle `Test.MulInd.basic == none do throwError "2"
+  unless findTranslation? (← getEnv) toAdditiveBundle `Test.MulInd == some `Test.AddInd do throwError "3"
 
 @[to_additive addFixedNumeralTest]
 def fixedNumeralTest {α} [One α] :=
@@ -216,7 +216,7 @@ def mul_foo {α} [Monoid α] (a : α) : ℕ → α
 
 -- cannot apply `@[to_additive]` to `some_def` if `some_def.in_namespace` doesn't have the attribute
 run_cmd liftCoreM <| successIfFail <|
-    transformDecl additiveTranslations `to_additive additiveNameDict additiveFixAbbreviation { ref := ← getRef} `Test.some_def `Test.add_some_def
+    transformDecl toAdditiveBundle additiveNameDict additiveFixAbbreviation { ref := ← getRef} `Test.some_def `Test.add_some_def
 
 
 attribute [to_additive some_other_name] some_def.in_namespace
@@ -236,9 +236,9 @@ instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One <| f i] : One (
   ⟨fun _ => 1⟩
 
 run_cmd do
-  let n ← liftCoreM <| MetaM.run' <| firstMultiplicativeArg additiveTranslations `Test.pi.has_one
+  let n ← liftCoreM <| MetaM.run' <| firstMultiplicativeArg toAdditiveBundle `Test.pi.has_one
   if n != 1 then throwError "{n} != 1"
-  let n ← liftCoreM <| MetaM.run' <| firstMultiplicativeArg additiveTranslations `Test.foo_mul
+  let n ← liftCoreM <| MetaM.run' <| firstMultiplicativeArg toAdditiveBundle `Test.foo_mul
   if n != 4 then throwError "{n} != 4"
 
 end
@@ -326,7 +326,7 @@ def Ones : ℕ → Q(Nat)
 -- #time
 run_cmd do
   let e : Expr := Ones 300
-  let _ ← liftCoreM <| MetaM.run' <| applyReplacementFun additiveTranslations e
+  let _ ← liftCoreM <| MetaM.run' <| applyReplacementFun toAdditiveBundle e
 
 -- testing `isConstantApplication`
 run_cmd do
@@ -342,7 +342,7 @@ run_cmd do
   let stx ← `(Semigroup MonoidEnd)
   liftTermElabM do
     let e ← Term.elabTerm stx none
-    guard <| additiveTest (← getEnv) additiveTranslations e == some `Test.MonoidEnd
+    guard <| additiveTest (← getEnv) toAdditiveBundle e == some `Test.MonoidEnd
 
 
 @[to_additive instSemiGroupAddMonoidEnd]
@@ -410,16 +410,16 @@ end guessName
 
 end Test
 
-run_cmd Elab.Command.liftCoreM <| insertTranslation additiveTranslations `localize `add_localize
+run_cmd Elab.Command.liftCoreM <| insertTranslation toAdditiveBundle `localize `add_localize
 
 @[to_additive] def localize.r := Nat
 @[to_additive add_localize] def localize := Nat
 @[to_additive] def localize.s := Nat
 
 run_cmd do
-  unless findTranslation? (← getEnv) additiveTranslations `localize.r == some `add_localize.r do throwError "1"
-  unless findTranslation? (← getEnv) additiveTranslations `localize   == some `add_localize   do throwError "2"
-  unless findTranslation? (← getEnv) additiveTranslations `localize.s == some `add_localize.s do throwError "3"
+  unless findTranslation? (← getEnv) toAdditiveBundle `localize.r == some `add_localize.r do throwError "1"
+  unless findTranslation? (← getEnv) toAdditiveBundle `localize   == some `add_localize   do throwError "2"
+  unless findTranslation? (← getEnv) toAdditiveBundle `localize.s == some `add_localize.s do throwError "3"
 
 /--
 warning: The source declaration one_eq_one was given the simp-attribute(s) simp, reduce_mod_char before calling @[to_additive]. The preferred method is to use something like `@[to_additive (attr := simp, reduce_mod_char)]` to apply the attribute to both one_eq_one and the target declaration zero_eq_zero.
