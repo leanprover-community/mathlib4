@@ -79,6 +79,20 @@ def logDiffs (tk : Syntax) (e₁ e₂ : Expr) : StateT (Array (Unit → MessageD
         verbose
           m!"{crossEmoji}{indentD e₁}\nand{indentD e₂}\nare not defeq at default transparency."
       return false
+/--
+Checks that the input `Expr` represents an equality and returns the types of the two sides,
+so that they can be compared at various transparency levels.
+-/
+def extractRewriteEq (e : Expr) : MetaM (Expr × Expr) := do
+  let (``Eq.mpr, #[_, _, e, _]) := e.getAppFnArgs |
+    throwError "Unexpected term produced by `erw`, head is not an `Eq.mpr`."
+  let (``id, #[ty, e]) := e.getAppFnArgs |
+    throwError "Unexpected term produced by `erw`, not of the form: `Eq.mpr (id _) _`."
+  let some (_, tgt, _) := ty.eq? |
+    throwError "Unexpected term produced by `erw`, type hint is not an equality."
+  let some (_, inferred, _) := (← inferType e).eq? |
+    throwError "Unexpected term produced by `erw`, inferred type is not an equality."
+  return (tgt, inferred)
 
 elab_rules : tactic
   | `(tactic| erw?%$tk [$r]) => withMainContext do
@@ -87,14 +101,7 @@ elab_rules : tactic
     let g ← getMainGoal
     evalTactic (← `(tactic| erw [$r]))
     let e := (← instantiateMVars (mkMVar g)).headBeta
-    let (``Eq.mpr, #[_, _, e, _]) := e.getAppFnArgs |
-      logErrorAt tk "Unexpected term produced by `erw`, head is not an `Eq.mpr`."
-    let (``id, #[ty, e]) := e.getAppFnArgs |
-      logErrorAt tk "Unexpected term produced by `erw`, not of the form: `Eq.mpr (id _) _`."
-    let some (_, tgt, _) := ty.eq? |
-      logErrorAt tk "Unexpected term produced by `erw`, type hint is not an equality."
-    let some (_, inferred, _) := (← inferType e).eq? |
-      logErrorAt tk "Unexpected term produced by `erw`, inferred type is not an equality."
+    let (tgt, inferred) ← withRef tk do extractRewriteEq e
     let (_, msgs) ← (logDiffs tk tgt inferred).run #[]
     if verbose then
       logInfoAt tk <| .joinSep
