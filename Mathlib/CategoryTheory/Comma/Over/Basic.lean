@@ -15,10 +15,6 @@ Over (and under) categories are special cases of comma categories.
 * Conversely, if `L` is a constant functor and `R` is the identity functor, then `Comma L R` is the
   "coslice" or "under" category under the object `L` maps to.
 
-## Notation
-
-- `Σ_ X Y` : is notation for `Sigma` defined by `(Over.map X.hom).obj Y
-
 ## Tags
 
 Comma, Slice, Coslice, Over, Under
