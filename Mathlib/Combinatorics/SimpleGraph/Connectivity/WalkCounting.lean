@@ -249,7 +249,7 @@ lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents [Finite V] {G'}
   rfl
 
 lemma odd_card_iff_odd_components [Finite V] : Odd (Nat.card V) ↔
-    Odd {(c : ConnectedComponent G) | Odd c.supp.ncard}.ncard := by
+    Odd {c : ConnectedComponent G | Odd c.supp.ncard}.ncard := by
   classical
   cases nonempty_fintype V
   rw [Nat.card_eq_fintype_card]
@@ -286,7 +286,7 @@ lemma ncard_odd_components_deleteVerts_mono [Fintype V] [DecidableEq V] (G G' : 
       Odd c.supp.ncard}.ncard ≤ {c :
         ConnectedComponent ((⊤ : Subgraph G).deleteVerts u).coe | Odd c.supp.ncard}.ncard := by
   have : Fintype ((⊤ : Subgraph G').deleteVerts u).verts := by
-    have : Fintype u := Fintype.ofFinite _
+    have : Fintype u := .ofFinite _
     simp only [Subgraph.induce_verts, Subgraph.verts_top]
     infer_instance
   apply ncard_odd_components_mono
