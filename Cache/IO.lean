@@ -11,6 +11,8 @@ variable {α : Type}
 
 open Lean
 
+open Lean
+
 namespace Cache.IO
 
 open System (FilePath)
@@ -109,11 +111,11 @@ section
 @[inherit_doc CacheM.Context]
 private def CacheM.getContext : IO CacheM.Context := do
   let sp ← initSrcSearchPath -- getCleanSearchPath
-  let mathlibRootFile ← Lean.findLean sp `Mathlib
-  let some mathlibRoot ← pure mathlibRootFile.parent
+  let mathlibSourceFile ← Lean.findLean sp `Mathlib
+  let some mathlibSource ← pure mathlibSourceFile.parent
     | throw <| IO.userError s!"Mathlib not found in dependencies"
   return {
-    mathlibDepPath := mathlibRoot
+    mathlibDepPath := mathlibSource
     searchPath := sp
     proofWidgetsBuildDir := LAKEPACKAGESDIR / "proofwidgets" / ".lake" / "build" }
 
