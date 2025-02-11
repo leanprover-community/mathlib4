@@ -37,6 +37,12 @@ This helps the heuristic of `@[to_additive]` by also transforming definitions if
 fixed type occurs as one of these arguments. -/
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" (ppSpace num)* : attr
 
+/-- An attribute that tells `@[order_dual]` that certain arguments of this definition are not
+involved when using `@[order_dual]`.
+This helps the heuristic of `@[order_dual]` by also transforming definitions if `ℕ` or another
+fixed type occurs as one of these arguments. -/
+syntax (name := order_dual_ignore_args) "order_dual_ignore_args" (ppSpace num)* : attr
+
 /-- An attribute that is automatically added to declarations tagged with `@[to_additive]`,
 if needed.
 
@@ -58,10 +64,36 @@ anyway.
 Warning: interactions between this and the `(reorder := ...)` argument are not well-tested. -/
 syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg " num : attr
 
+/-- An attribute that is automatically added to declarations tagged with `@[order_dual]`,
+if needed.
+
+This attribute tells which argument is the type where this declaration uses the multiplicative
+structure. If there are multiple argument, we typically tag the first one.
+If this argument contains a fixed type, this declaration will note be additivized.
+See the Heuristics section of `order_dual.attr` for more details.
+
+If a declaration is not tagged, it is presumed that the first argument is relevant.
+`@[order_dual]` uses the function `order_dual.first_multiplicative_arg` to automatically tag
+declarations. It is ok to update it manually if the automatic tagging made an error.
+
+Implementation note: we only allow exactly 1 relevant argument, even though some declarations
+(like `prod.group`) have multiple arguments with a multiplicative structure on it.
+The reason is that whether we additivize a declaration is an all-or-nothing decision, and if
+we will not be able to additivize declarations that (e.g.) talk about multiplication on `ℕ × α`
+anyway.
+
+Warning: interactions between this and the `(reorder := ...)` argument are not well-tested. -/
+syntax (name := order_dual_relevant_arg) "order_dual_relevant_arg " num : attr
+
 /-- An attribute that stores all the declarations that needs their arguments reordered when
 applying `@[to_additive]`. It is applied automatically by the `(reorder := ...)` syntax of
 `to_additive`, and should not usually be added manually. -/
 syntax (name := to_additive_reorder) "to_additive_reorder " (num+),+ : attr
+
+/-- An attribute that stores all the declarations that needs their arguments reordered when
+applying `@[order_dual]`. It is applied automatically by the `(reorder := ...)` syntax of
+`order_dual`, and should not usually be added manually. -/
+syntax (name := order_dual_reorder) "order_dual_reorder " (num+),+ : attr
 
 /-- An attribute that stores all the declarations that deal with numeric literals on variable types.
 
@@ -78,6 +110,21 @@ i.e. when the numeral is only translated if the first argument is a variable
 The arguments `n₁ ...` are the positions of the numeral arguments (starting counting from 1). -/
 syntax (name := to_additive_change_numeral) "to_additive_change_numeral" (ppSpace num)* : attr
 
+/-- An attribute that stores all the declarations that deal with numeric literals on variable types.
+
+Numeral literals occur in expressions without type information, so in order to decide whether `1`
+needs to be changed to `0`, the context around the numeral is relevant.
+Most numerals will be in an `OfNat.ofNat` application, though tactics can add numeral literals
+inside arbitrary functions. By default we assume that we do not change numerals, unless it is
+in a function application with the `order_dual_change_numeral` attribute.
+
+`@[order_dual_change_numeral n₁ ...]` should be added to all functions that take one or more
+numerals as argument that should be changed if `additiveTest` succeeds on the first argument,
+i.e. when the numeral is only translated if the first argument is a variable
+(or consists of variables).
+The arguments `n₁ ...` are the positions of the numeral arguments (starting counting from 1). -/
+syntax (name := order_dual_change_numeral) "order_dual_change_numeral" (ppSpace num)* : attr
+
 /-- The `to_additive_dont_translate` attribute, used to specify types that should be translated by
 `to_additive`, but its operations should remain multiplicative.
 
@@ -88,6 +135,17 @@ Usage notes:
   multiplicative.
 -/
 syntax (name := to_additive_dont_translate) "to_additive_dont_translate" : attr
+
+/-- The `order_dual_dont_translate` attribute, used to specify types that should be translated by
+`order_dual`, but its operations should remain multiplicative.
+
+Usage notes:
+* Apply this together with the `order_dual` attribute.
+* The name generation of `order_dual` is not aware that the operations on this type should not be
+  translated, so you generally have to specify the name itself, if the name should remain
+  multiplicative.
+-/
+syntax (name := order_dual_dont_translate) "order_dual_dont_translate" : attr
 
 /-- An `attr := ...` option for `to_additive`. -/
 syntax toAdditiveAttrOption := &"attr" " := " Parser.Term.attrInstance,*
@@ -407,6 +465,18 @@ initialize toAdditiveIgnoreArgsAttr : NameMapExtension (List Nat) ←
           | _ => throwUnsupportedSyntax
         return ids.toList }
 
+@[inherit_doc order_dual_ignore_args]
+initialize orderDualIgnoreArgsAttr : NameMapExtension (List Nat) ←
+  registerNameMapAttribute {
+    name  := `order_dual_ignore_args
+    descr :=
+      "Auxiliary attribute for `order_dual` stating that certain arguments are not additivized."
+    add   := fun _ stx ↦ do
+        let ids ← match stx with
+          | `(attr| order_dual_ignore_args $[$ids:num]*) => pure <| ids.map (·.1.isNatLit?.get!)
+          | _ => throwUnsupportedSyntax
+        return ids.toList }
+
 @[inherit_doc to_additive_reorder]
 initialize toAdditiveReorderAttr : NameMapExtension (List <| List Nat) ←
   registerNameMapAttribute {
@@ -425,6 +495,24 @@ initialize toAdditiveReorderAttr : NameMapExtension (List <| List Nat) ←
       pure <| reorders.toList.map (·.toList.map (·.raw.isNatLit?.get! - 1))
     | _, _ => throwUnsupportedSyntax }
 
+@[inherit_doc order_dual_reorder]
+initialize orderDualReorderAttr : NameMapExtension (List <| List Nat) ←
+  registerNameMapAttribute {
+    name := `order_dual_reorder
+    descr := "\
+      Auxiliary attribute for `order_dual` that stores arguments that need to be reordered. \
+      This should not appear in any file. \
+      We keep it as an attribute for now so that mathport can still use it, and it can generate a \
+      warning."
+    add := fun
+    | _, stx@`(attr| order_dual_reorder $[$[$reorders:num]*],*) => do
+      Linter.logLintIf linter.toAdditiveReorder stx m!"\
+        Using this attribute is deprecated. Use `@[order_dual (reorder := <num>)]` instead.\n\n\
+        That will also generate the additive version with the arguments swapped, \
+        so you are probably able to remove the manually written additive declaration."
+      pure <| reorders.toList.map (·.toList.map (·.raw.isNatLit?.get! - 1))
+    | _, _ => throwUnsupportedSyntax }
+
 @[inherit_doc to_additive_relevant_arg]
 initialize toAdditiveRelevantArgAttr : NameMapExtension Nat ←
   registerNameMapAttribute {
@@ -433,6 +521,16 @@ initialize toAdditiveRelevantArgAttr : NameMapExtension Nat ←
       which arguments are the types with a multiplicative structure."
     add := fun
     | _, `(attr| to_additive_relevant_arg $id) => pure <| id.1.isNatLit?.get!.pred
+    | _, _ => throwUnsupportedSyntax }
+
+@[inherit_doc order_dual_relevant_arg]
+initialize orderDualRelevantArgAttr : NameMapExtension Nat ←
+  registerNameMapAttribute {
+    name := `order_dual_relevant_arg
+    descr := "Auxiliary attribute for `order_dual` stating \
+      which arguments are the types with a multiplicative structure."
+    add := fun
+    | _, `(attr| order_dual_relevant_arg $id) => pure <| id.1.isNatLit?.get!.pred
     | _, _ => throwUnsupportedSyntax }
 
 @[inherit_doc to_additive_dont_translate]
@@ -445,6 +543,16 @@ initialize toAdditiveDontTranslateAttr : NameMapExtension Unit ←
     | _, `(attr| to_additive_dont_translate) => return
     | _, _ => throwUnsupportedSyntax }
 
+@[inherit_doc order_dual_dont_translate]
+initialize orderDualDontTranslateAttr : NameMapExtension Unit ←
+  registerNameMapAttribute {
+    name := `order_dual_dont_translate
+    descr := "Auxiliary attribute for `order_dual` stating \
+      that the operations on this type should not be translated."
+    add := fun
+    | _, `(attr| order_dual_dont_translate) => return
+    | _, _ => throwUnsupportedSyntax }
+
 @[inherit_doc to_additive_change_numeral]
 initialize toAdditiveChangeNumeralAttr : NameMapExtension (List Nat) ←
   registerNameMapAttribute {
@@ -453,6 +561,17 @@ initialize toAdditiveChangeNumeralAttr : NameMapExtension (List Nat) ←
       "Auxiliary attribute for `to_additive` that stores functions that have numerals as argument."
     add := fun
     | _, `(attr| to_additive_change_numeral $[$arg]*) =>
+      pure <| arg.map (·.1.isNatLit?.get!.pred) |>.toList
+    | _, _ => throwUnsupportedSyntax }
+
+@[inherit_doc order_dual_change_numeral]
+initialize orderDualChangeNumeralAttr : NameMapExtension (List Nat) ←
+  registerNameMapAttribute {
+    name := `order_dual_change_numeral
+    descr :=
+      "Auxiliary attribute for `to_additive` that stores functions that have numerals as argument."
+    add := fun
+    | _, `(attr| order_dual_change_numeral $[$arg]*) =>
       pure <| arg.map (·.1.isNatLit?.get!.pred) |>.toList
     | _, _ => throwUnsupportedSyntax }
 
@@ -479,6 +598,15 @@ def toAdditiveBundle : BundledExtensions where
   changeNumeralAttr := toAdditiveChangeNumeralAttr
   translations := additiveTranslations
   attrName := `to_additive
+
+def orderDualBundle : BundledExtensions where
+  ignoreArgsAttr := orderDualIgnoreArgsAttr
+  reorderAttr := orderDualReorderAttr
+  relevantArgAttr := orderDualRelevantArgAttr
+  dontTranslateAttr := orderDualDontTranslateAttr
+  changeNumeralAttr := orderDualChangeNumeralAttr
+  translations := orderDualTranslations
+  attrName := `order_dual
 
 /-- Get the multiplicative → additive translation for the given name. -/
 def findTranslation? (env : Environment) (b : BundledExtensions) :
@@ -1423,7 +1551,7 @@ initialize registerBuiltinAttribute {
     name := `order_dual
     descr := "Transport order dual"
     add := fun src stx kind ↦
-      do _ ← (addToAdditiveAttr orderDualTranslations `order_dual
+      do _ ← (addToAdditiveAttr orderDualBundle
         orderDualDict orderDualFixAbbreviation src (← elabToAdditive stx) kind)
     -- we (presumably) need to run after compilation to properly add the `simp` attribute
     applicationTime := .afterCompilation
