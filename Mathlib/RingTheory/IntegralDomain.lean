@@ -6,6 +6,7 @@ Authors: Johan Commelin, Chris Hughes
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Integral domains

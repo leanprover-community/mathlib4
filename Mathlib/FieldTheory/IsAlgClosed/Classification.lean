@@ -6,7 +6,6 @@ Authors: Chris Hughes
 import Mathlib.Algebra.Algebra.ZMod
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.MvPolynomial.Cardinal
-import Mathlib.Algebra.Polynomial.Cardinal
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.RingTheory.Algebraic.Cardinality
 import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis

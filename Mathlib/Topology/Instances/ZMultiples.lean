@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 import Mathlib.Algebra.Module.Rat
 import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Topology.Algebra.UniformGroup.Basic
