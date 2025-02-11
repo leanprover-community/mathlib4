@@ -38,33 +38,17 @@ def Lean.Name.fromComponents : List Name → Name := go .anonymous where
 namespace System.FilePath
 
 /--
-Normalize path and cleanup path with respect to components `""`, `"."`, and `".."`.
-The result will not contain any `""` or `"."` and will only contain leading `".."`.
-
-Note: `System.FilePath.normalize` might be expected to do most of this, but it doesn't currently.
+Normalize path and cleanup path with respect to components `""` and `"."`.
+Note: `System.FilePath.normalize` might be expected to do this, but it doesn't currently.
 -/
 def clean (path : FilePath) : FilePath :=
-  mkFilePath <| (goReversed path.normalize.components.reverse).reverse
+  mkFilePath <| go path.normalize.components
 where
-  /--
-  iterate backwards over the components and keep track of the number of `".."`
-  that still need to be processed.
-  -/
-  goReversed (path : List String) (unprocessedParent : Nat := 0) : List String :=
-    match path, unprocessedParent with
-    -- add correct number of leading ".."
-    -- note we should add them at the end, but since the `path` is guaranteed to be `[]`,
-    -- it's equivalent - but faster - to add them in the front.
-    | [], 0 => []
-    | [], n+1 => ".." :: (goReversed [] n)
-    -- found current directory reference, drop it
-    | "." :: path, n => goReversed path n
-    | "" :: path, n => goReversed path n
-    -- found parent directory reference: increase counter
-    | ".." :: path, n => goReversed path (n+1)
-    -- found other component: decrease counter or add component to result
-    | _ :: path, n+1 => goReversed path n
-    | c :: path, 0 => c :: goReversed path 0
+  go : List String → List String
+    | [] => []
+    | "." :: path => go path
+    | "" :: path => go path
+    | c :: path => c :: go path
 
 -- unit tests for `System.FilePath.clean`
 #guard FilePath.clean "" == ""
@@ -73,13 +57,11 @@ where
 #guard FilePath.clean ("." / "") == ""
 #guard FilePath.clean ("." / "A") == "A"
 #guard FilePath.clean ("." / "..") == ".."
+#guard FilePath.clean (".." / "." /"..") == (".." / "..")
 #guard FilePath.clean (".." / "..") == (".." / "..")
-#guard FilePath.clean ("A" / ".." / "B") == "B"
+#guard FilePath.clean ("A" / ".." / "B") == ("A" / ".." / "B")
+#guard FilePath.clean ("." / "" / "A" / "" / ".." / "." / "B") == ("A" / ".." / "B")
 #guard FilePath.clean ("A" / "." / "B") == ("A" / "B")
-#guard FilePath.clean ("A" / "B" / "C" / ".." / ".." / ".." / "..") == ".."
-#guard FilePath.clean ("A" / "B" / "C" / ".." / ".." / "." / ".." / "..") == ".."
-#guard FilePath.clean ("A" / "B" / "C" / ".." / ".." / ".." / "D") == "D"
-
 
 /-- Removes a parent path from the beginning of a path -/
 def withoutParent (path parent : FilePath) : FilePath :=
