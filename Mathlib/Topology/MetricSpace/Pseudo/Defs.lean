@@ -5,8 +5,9 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 import Mathlib.Data.ENNReal.Real
 import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.EMetricSpace.Defs
-import Mathlib.Topology.UniformSpace.Compact
+import Mathlib.Topology.UniformSpace.Basic
 
 /-!
 ## Pseudo-metric spaces
@@ -38,6 +39,8 @@ TODO (anyone): Add "Main results" section.
 
 pseudo_metric, dist
 -/
+
+assert_not_exists compactSpace_uniformity
 
 open Set Filter TopologicalSpace Bornology
 open scoped ENNReal NNReal Uniformity Topology
@@ -1145,29 +1148,6 @@ theorem _root_.ContinuousOn.isSeparable_image [TopologicalSpace β] {f : α → 
   exact (isSeparable_univ_iff.2 hs.separableSpace).image hf.restrict
 
 end Metric
-
-section Compact
-
-/-- Any compact set in a pseudometric space can be covered by finitely many balls of a given
-positive radius -/
-theorem finite_cover_balls_of_compact {α : Type u} [PseudoMetricSpace α] {s : Set α}
-    (hs : IsCompact s) {e : ℝ} (he : 0 < e) :
-    ∃ t, t ⊆ s ∧ Set.Finite t ∧ s ⊆ ⋃ x ∈ t, ball x e :=
-  let ⟨t, hts, ht⟩ := hs.elim_nhds_subcover _ (fun x _ => ball_mem_nhds x he)
-  ⟨t, hts, t.finite_toSet, ht⟩
-
-alias IsCompact.finite_cover_balls := finite_cover_balls_of_compact
-
-end Compact
-
-theorem lebesgue_number_lemma_of_metric {s : Set α} {ι : Sort*} {c : ι → Set α} (hs : IsCompact s)
-    (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i, c i) : ∃ δ > 0, ∀ x ∈ s, ∃ i, ball x δ ⊆ c i := by
-  simpa only [ball, UniformSpace.ball, preimage_setOf_eq, dist_comm]
-    using uniformity_basis_dist.lebesgue_number_lemma hs hc₁ hc₂
-
-theorem lebesgue_number_lemma_of_metric_sUnion {s : Set α} {c : Set (Set α)} (hs : IsCompact s)
-    (hc₁ : ∀ t ∈ c, IsOpen t) (hc₂ : s ⊆ ⋃₀ c) : ∃ δ > 0, ∀ x ∈ s, ∃ t ∈ c, ball x δ ⊆ t := by
-  rw [sUnion_eq_iUnion] at hc₂; simpa using lebesgue_number_lemma_of_metric hs (by simpa) hc₂
 
 instance : PseudoMetricSpace (Additive α) := ‹_›
 instance : PseudoMetricSpace (Multiplicative α) := ‹_›

@@ -186,7 +186,7 @@ protected theorem Inseparable.zpow {G : Type*} [DivInvMonoid G] [TopologicalSpac
 
 @[to_additive]
 instance : ContinuousInv (ULift G) :=
-  ⟨continuous_uLift_up.comp (continuous_inv.comp continuous_uLift_down)⟩
+  ⟨continuous_uliftUp.comp (continuous_inv.comp continuous_uliftDown)⟩
 
 @[to_additive]
 theorem continuousOn_inv {s : Set G} : ContinuousOn Inv.inv s :=
