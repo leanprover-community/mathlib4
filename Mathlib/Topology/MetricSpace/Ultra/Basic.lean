@@ -124,7 +124,7 @@ lemma closedBall_subset_trichotomy :
     have hx := closedBall_subset_closedBall hrs (x := x)
     rwa [closedBall_eq_of_mem hyz |>.trans (closedBall_eq_of_mem <| hx hxz).symm]
 
-lemma isClosed_closedBall (x : X) (r : ℝ) : IsClosed (ball x r) := by
+lemma isClosed_ball (x : X) (r : ℝ) : IsClosed (ball x r) := by
   cases le_or_lt r 0 with
   | inl hr =>
     simp [ball_eq_empty.mpr hr]
@@ -139,8 +139,6 @@ lemma isClosed_closedBall (x : X) (r : ℝ) : IsClosed (ball x r) := by
     | inr hd =>
       use r
       simp [h, hy, ← Set.le_iff_subset, le_compl_iff_disjoint_left, hd]
-
-@[deprecated (since := "2025-02-11")] alias isClosed_ball := isClosed_closedBall
 
 lemma isClopen_ball : IsClopen (ball x r) := ⟨isClosed_closedBall x r, isOpen_ball⟩
 

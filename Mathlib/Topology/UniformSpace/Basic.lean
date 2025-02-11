@@ -80,10 +80,8 @@ open UniformSpace (ball)
 lemma isOpen_ball (x : α) {V : Set (α × α)} (hV : IsOpen V) : IsOpen (ball x V) :=
   hV.preimage <| continuous_const.prod_mk continuous_id
 
-lemma isClosed_closedBall (x : α) {V : Set (α × α)} (hV : IsClosed V) : IsClosed (ball x V) :=
+lemma isClosed_ball (x : α) {V : Set (α × α)} (hV : IsClosed V) : IsClosed (ball x V) :=
   hV.preimage <| continuous_const.prod_mk continuous_id
-
-@[deprecated (since := "2025-02-11")] alias isClosed_ball := isClosed_closedBall
 
 /-!
 ### Neighborhoods in uniform spaces
