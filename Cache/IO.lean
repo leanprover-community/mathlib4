@@ -242,25 +242,25 @@ partial def getFilesWithExtension
 /--
 The Hash map of the cache.
 -/
-abbrev NameHashMap := Std.HashMap Name UInt64
+abbrev ModuleHashMap := Std.HashMap Name UInt64
 
-namespace NameHashMap
+namespace ModuleHashMap
 
 /-- Filter the hashmap by whether the entries exist as files in the cache directory.
 
 If `keep` is true, the result will contain the entries that do exist;
 if `keep` is false, the result will contain the entries that do not exist.
 -/
-def filterExists (hashMap : NameHashMap) (keep : Bool) : IO NameHashMap :=
+def filterExists (hashMap : ModuleHashMap) (keep : Bool) : IO ModuleHashMap :=
   hashMap.foldM (init := ∅) fun acc mod hash => do
     let exist ← (CACHEDIR / hash.asLTar).pathExists
     let add := if keep then exist else !exist
     if add then return acc.insert mod hash else return acc
 
-def hashes (hashMap : NameHashMap) : Lean.RBTree UInt64 compare :=
+def hashes (hashMap : ModuleHashMap) : Lean.RBTree UInt64 compare :=
   hashMap.fold (init := ∅) fun acc _ hash => acc.insert hash
 
-end NameHashMap
+end ModuleHashMap
 
 /--
 Given a path to a Lean file, concatenates the paths to its build files.
@@ -287,7 +287,7 @@ def allExist (paths : List (FilePath × Bool)) : IO Bool := do
   pure true
 
 /-- Compresses build files into the local cache and returns an array with the compressed files -/
-def packCache (hashMap : NameHashMap) (pathMap : Std.HashMap Name FilePath)
+def packCache (hashMap : ModuleHashMap) (pathMap : Std.HashMap Name FilePath)
     (overwrite verbose unpackedOnly : Bool) (comment : Option String := none) :
     CacheM <| Array String := do
   IO.FS.createDirAll CACHEDIR
@@ -325,7 +325,7 @@ def getLocalCacheSet : IO <| Lean.RBTree String compare := do
   return .fromList (paths.toList.map (·.withoutParent CACHEDIR |>.toString)) _
 
 /-- Decompresses build files into their respective folders -/
-def unpackCache (hashMap : NameHashMap) (pathMap : Std.HashMap Name FilePath) (force : Bool) : CacheM Unit := do
+def unpackCache (hashMap : ModuleHashMap) (pathMap : Std.HashMap Name FilePath) (force : Bool) : CacheM Unit := do
   let hashMap ← hashMap.filterExists true
   let size := hashMap.size
   if size > 0 then
@@ -368,7 +368,7 @@ def cleanCache (keep : Lean.RBTree FilePath compare := ∅) : IO Unit := do
 
 /-- Prints the LTAR file and embedded comments (in particular, the mathlib commit that built the
 file) regarding the files with specified paths. -/
-def lookup (hashMap : NameHashMap) (modules : List Name) : IO Unit := do
+def lookup (hashMap : ModuleHashMap) (modules : List Name) : IO Unit := do
   let mut err := false
   for mod in modules do
     let some hash := hashMap[mod]? | err := true

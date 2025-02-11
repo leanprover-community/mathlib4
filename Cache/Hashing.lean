@@ -35,22 +35,22 @@ structure HashMemo where
   -/
   cache    : Std.HashMap Name (Option UInt64) := ∅
   /-- Stores the hash of the module's content for modules in Mathlib or upstream. -/
-  hashMap  : NameHashMap := ∅
+  hashMap  : ModuleHashMap := ∅
   deriving Inhabited
 
-partial def insertDeps (hashMap : NameHashMap) (mod : Name) (hashMemo : HashMemo) : NameHashMap :=
+partial def insertDeps (hashMap : ModuleHashMap) (mod : Name) (hashMemo : HashMemo) : ModuleHashMap :=
   if hashMap.contains mod then hashMap else
   match (hashMemo.depsMap[mod]?, hashMemo.hashMap[mod]?) with
   | (some deps, some hash) => deps.foldl (insertDeps · · hashMemo) (hashMap.insert mod hash)
   | _ => hashMap
 
 /--
-Filters the `HashMap` of a `HashMemo` so that it only contains key/value pairs such that every key:
+Filters the `hashMap` of a `HashMemo` so that it only contains key/value pairs such that every key:
 * Belongs to the given list of module names or
 * Corresponds to a module that's imported (transitively or not) by
   some module in the list module names
 -/
-def HashMemo.filterByNames (hashMemo : HashMemo) (mods : List Name) : IO NameHashMap := do
+def HashMemo.filterByNames (hashMemo : HashMemo) (mods : List Name) : IO ModuleHashMap := do
   let mut hashMap := ∅
   for mod in mods do
     if hashMemo.hashMap.contains mod then
