@@ -575,6 +575,16 @@ lemma chart_mem_atlas (H : Type*) {M : Type*} [TopologicalSpace H] [TopologicalS
     [ChartedSpace H M] (x : M) : chartAt H x ∈ atlas H M :=
   ChartedSpace.chart_mem_atlas x
 
+lemma nonempty_of_chartedSpace {H : Type*} {M : Type*} [TopologicalSpace H] [TopologicalSpace M]
+    [ChartedSpace H M] (x : M) : Nonempty H :=
+  ⟨chartAt H x x⟩
+
+lemma isEmpty_of_chartedSpace (H : Type*) {M : Type*} [TopologicalSpace H] [TopologicalSpace M]
+    [ChartedSpace H M] [IsEmpty H] : IsEmpty M := by
+  rcases isEmpty_or_nonempty M with hM | ⟨⟨x⟩⟩
+  · exact hM
+  · exact (IsEmpty.false (chartAt H x x)).elim
+
 section ChartedSpace
 
 /-- An empty type is a charted space over any topological space. -/
@@ -882,15 +892,6 @@ def ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
       right
       use ChartedSpace.chartAt x, cm'.chart_mem_atlas x
 
-variable (H) in
-lemma isEmpty_of_chartedSpace [IsEmpty H] : IsEmpty M := by
-  rcases isEmpty_or_nonempty M with hM | ⟨⟨x⟩⟩
-  · exact hM
-  · exact (IsEmpty.false (chartAt H x x)).elim
-
-lemma nonempty_of_chartedSpace (x : M) : Nonempty H :=
-  ⟨chartAt H x x⟩
-
 open scoped Classical in
 instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') :=
   if h : Nonempty H then ChartedSpace.sum_of_nonempty else by
@@ -903,26 +904,24 @@ lemma ChartedSpace.sum_chartAt_inl (x : M) :
     haveI : Nonempty H := nonempty_of_chartedSpace x
     chartAt H (Sum.inl x)
       = (chartAt H x).lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inl := by
-  have h : Nonempty H := nonempty_of_chartedSpace x
-  simp only [chartAt, sum, h, ↓reduceDIte]
+  simp only [chartAt, sum, nonempty_of_chartedSpace x, ↓reduceDIte]
   rfl
 
 lemma ChartedSpace.sum_chartAt_inr (x' : M') :
     haveI : Nonempty H := nonempty_of_chartedSpace x'
     chartAt H (Sum.inr x')
       = (chartAt H x').lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inr := by
-  have h : Nonempty H := nonempty_of_chartedSpace x'
-  simp only [chartAt, sum, h, ↓reduceDIte]
+  simp only [chartAt, sum, nonempty_of_chartedSpace x', ↓reduceDIte]
   rfl
 
-lemma sum_chartAt_inl_apply {x : M} :
-    (chartAt H (.inl x : M ⊕ M')) (Sum.inl x) = (chartAt H x) x := by
+@[simp] lemma sum_chartAt_inl_apply {x y : M} :
+    (chartAt H (.inl x : M ⊕ M')) (Sum.inl y) = (chartAt H x) y := by
   haveI : Nonempty H := nonempty_of_chartedSpace x
   rw [ChartedSpace.sum_chartAt_inl]
   exact PartialHomeomorph.lift_openEmbedding_apply _ _
 
-lemma sum_chartAt_inr_apply {x : M'} :
-    (chartAt H (.inr x : M ⊕ M')) (Sum.inr x) = (chartAt H x) x := by
+@[simp] lemma sum_chartAt_inr_apply {x y : M'} :
+    (chartAt H (.inr x : M ⊕ M')) (Sum.inr y) = (chartAt H x) y := by
   haveI : Nonempty H := nonempty_of_chartedSpace x
   rw [ChartedSpace.sum_chartAt_inr]
   exact PartialHomeomorph.lift_openEmbedding_apply _ _
