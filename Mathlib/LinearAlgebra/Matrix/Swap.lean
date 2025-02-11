@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+import Mathlib.LinearAlgebra.Matrix.Permutation
 import Mathlib.Data.Matrix.PEquiv
 
 /-!
@@ -32,7 +33,7 @@ variable (R) in
 `i`-th and `j`-th rows modified such that multiplying by it on the
 left (resp. right) corresponds to swapping the `i`-th and `j`-th row (resp. column). -/
 def swap (i j : n) : Matrix n n R :=
-  (Equiv.swap i j).toPEquiv.toMatrix
+  (Equiv.swap i j).permMatrix R
 
 lemma swap_comm (i j : n) :
     swap R i j = swap R j i := by
@@ -40,14 +41,12 @@ lemma swap_comm (i j : n) :
 
 @[simp]
 lemma transpose_swap (i j : n) : (swap R i j).transpose = swap R i j := by
-  simp only [swap]
-  rw [← PEquiv.toMatrix_symm, ← Equiv.toPEquiv_symm, ← Equiv.Perm.inv_def, Equiv.swap_inv]
+  simp [swap]
 
 @[simp]
 lemma conjTranspose_swap {R : Type*} [Semiring R] [StarRing R] (i j : n) :
     (swap R i j).conjTranspose = swap R i j := by
-  simp only [conjTranspose, transpose_swap, map, swap]
-  aesop
+  simp [swap]
 
 end Def
 
