@@ -1103,11 +1103,11 @@ def targetName (cfg : Config) (src : Name) : CoreM Name := do
   let res := if cfg.tgt == .anonymous then pre.str tgt_auto else pre1 ++ cfg.tgt
   -- we allow translating to itself if `tgt == src`, which is occasionally useful for `additiveTest`
   if res == src && cfg.tgt != src then
-    throwError "to_additive: the generated additivised name equals the original name {src}, \
+    throwError "to_additive: the generated additivised name equals the original name '{src}', \
     meaning that no part of the name was additivised.\n\
     Check that your declaration name is correct \
     (if your declaration is an instance, try naming it)\n\
-    or provide an additivised name using the 'to_additive my_add_name' syntax."
+    or provide an additivised name using the '@[to_additive my_add_name]' syntax."
   if cfg.tgt != .anonymous then
     trace[to_additive_detail] "The automatically generated name would be {pre.str tgt_auto}"
   return res
