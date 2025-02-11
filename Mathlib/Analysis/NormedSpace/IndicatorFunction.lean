@@ -16,42 +16,43 @@ indicator, norm
 -/
 
 
-variable {α E : Type*} [SeminormedAddCommGroup E] {s t : Set α} (f : α → E) (a : α)
+variable {α E : Type*} [TopologicalSpace E] [ENormedAddMonoid E] {s t : Set α} (f : α → E) (a : α)
 
 open Set
 
-theorem norm_indicator_eq_indicator_norm : ‖indicator s f a‖ = indicator s (fun a => ‖f a‖) a :=
-  flip congr_fun a (indicator_comp_of_zero norm_zero).symm
+-- theorem norm_indicator_eq_indicator_norm : ‖indicator s f a‖ = indicator s (fun a => ‖f a‖) a :=
+--   flip congr_fun a (indicator_comp_of_zero norm_zero).symm
 
-theorem nnnorm_indicator_eq_indicator_nnnorm :
-    ‖indicator s f a‖₊ = indicator s (fun a => ‖f a‖₊) a :=
-  flip congr_fun a (indicator_comp_of_zero nnnorm_zero).symm
+-- theorem nnnorm_indicator_eq_indicator_nnnorm :
+--     ‖indicator s f a‖₊ = indicator s (fun a => ‖f a‖₊) a :=
+--   flip congr_fun a (indicator_comp_of_zero nnnorm_zero).symm
 
 lemma enorm_indicator_eq_indicator_enorm :
     ‖indicator s f a‖ₑ = indicator s (fun a => ‖f a‖ₑ) a :=
   -- TODO: enorm_zero became *less* general, at the moment: my proof required a *normed* (add)
   -- (comm) group, whereas this file only required seminormed things.
-  sorry -- flip congr_fun a (indicator_comp_of_zero (enorm_zero (E := E))).symm
+  --sorry --
+  flip congr_fun a (indicator_comp_of_zero (enorm_zero (E := E))).symm
 
-theorem norm_indicator_le_of_subset (h : s ⊆ t) (f : α → E) (a : α) :
-    ‖indicator s f a‖ ≤ ‖indicator t f a‖ := by
-  simp only [norm_indicator_eq_indicator_norm]
-  exact indicator_le_indicator_of_subset ‹_› (fun _ => norm_nonneg _) _
+-- theorem norm_indicator_le_of_subset (h : s ⊆ t) (f : α → E) (a : α) :
+--     ‖indicator s f a‖ ≤ ‖indicator t f a‖ := by
+--   simp only [norm_indicator_eq_indicator_norm]
+--   exact indicator_le_indicator_of_subset ‹_› (fun _ => norm_nonneg _) _
 
 theorem enorm_indicator_le_of_subset (h : s ⊆ t) (f : α → E) (a : α) :
     ‖indicator s f a‖ₑ ≤ ‖indicator t f a‖ₑ := by
   simp only [enorm_indicator_eq_indicator_enorm]
   apply indicator_le_indicator_of_subset ‹_› (zero_le _)
 
-theorem indicator_norm_le_norm_self : indicator s (fun a => ‖f a‖) a ≤ ‖f a‖ :=
-  indicator_le_self' (fun _ _ => norm_nonneg _) a
+-- theorem indicator_norm_le_norm_self : indicator s (fun a => ‖f a‖) a ≤ ‖f a‖ :=
+--   indicator_le_self' (fun _ _ => norm_nonneg _) a
 
 theorem indicator_enorm_le_enorm_self : indicator s (fun a => ‖f a‖ₑ) a ≤ ‖f a‖ₑ :=
   indicator_le_self' (fun _ _ ↦ zero_le _) a
 
-theorem norm_indicator_le_norm_self : ‖indicator s f a‖ ≤ ‖f a‖ := by
-  rw [norm_indicator_eq_indicator_norm]
-  apply indicator_norm_le_norm_self
+-- theorem norm_indicator_le_norm_self : ‖indicator s f a‖ ≤ ‖f a‖ := by
+--   rw [norm_indicator_eq_indicator_norm]
+--   apply indicator_norm_le_norm_self
 
 theorem enorm_indicator_le_enorm_self : ‖indicator s f a‖ₑ ≤ ‖f a‖ₑ := by
   rw [enorm_indicator_eq_indicator_enorm]

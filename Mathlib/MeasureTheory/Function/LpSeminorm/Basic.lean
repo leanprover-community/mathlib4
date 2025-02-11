@@ -197,22 +197,15 @@ theorem eLpNorm_exponent_zero {f : α → ε} : eLpNorm f 0 μ = 0 := by simp [e
 
 section
 
-variable [TopologicalSpace ε]
-
 @[simp]
-theorem memℒp_zero_iff_aestronglyMeasurable {f : α → ε} :
+theorem memℒp_zero_iff_aestronglyMeasurable [TopologicalSpace ε] {f : α → ε} :
     Memℒp f 0 μ ↔ AEStronglyMeasurable f μ := by simp [Memℒp, eLpNorm_exponent_zero]
 
-variable [ENormedAddMonoid ε]
+variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
 
 @[simp]
 theorem eLpNorm'_zero (hp0_lt : 0 < q) : eLpNorm' (0 : α → ε) q μ = 0 := by
-  simp only [eLpNorm'_eq_lintegral_enorm, Pi.zero_apply, enorm_zero]
-  simp only [hp0_lt]
-  simp only [
-    ENNReal.zero_rpow_of_pos, lintegral_const, zero_mul, one_div, inv_pos]
-  -- was: simp [eLpNorm'_eq_lintegral_enorm, hp0_lt]
-  sorry -- TODO: fix proof!
+  simp [eLpNorm'_eq_lintegral_enorm, hp0_lt]
 
 @[simp]
 theorem eLpNorm'_zero' (hq0_ne : q ≠ 0) (hμ : μ ≠ 0) : eLpNorm' (0 : α → F) q μ = 0 := by
@@ -223,9 +216,7 @@ theorem eLpNorm'_zero' (hq0_ne : q ≠ 0) (hμ : μ ≠ 0) : eLpNorm' (0 : α �
 @[simp]
 theorem eLpNormEssSup_zero : eLpNormEssSup (0 : α → ε) μ = 0 := by
   simp [eLpNormEssSup, ← bot_eq_zero', essSup_const_bot]
-  sorry -- TODO: fix proof!
 
-#exit
 @[simp]
 theorem eLpNorm_zero : eLpNorm (0 : α → ε) p μ = 0 := by
   by_cases h0 : p = 0
@@ -422,6 +413,12 @@ theorem eLpNorm_mono_ae {f : α → F} {g : α → G} (h : ∀ᵐ x ∂μ, ‖f 
     eLpNorm f p μ ≤ eLpNorm g p μ :=
   eLpNorm_mono_nnnorm_ae h
 
+-- TODO: prove and rename!
+theorem eLpNorm_mono_aeENORM {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε']
+    {f : α → ε} {g : α → ε'} (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
+    eLpNorm f p μ ≤ eLpNorm g p μ :=
+  sorry -- eLpNorm_mono_nnnorm_ae h
+
 theorem eLpNorm_mono_ae_real {f : α → F} {g : α → ℝ} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ g x) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
   eLpNorm_mono_ae <| h.mono fun _x hx =>
@@ -598,7 +595,8 @@ theorem Memℒp.mono_measure [TopologicalSpace ε] {f : α → ε} (hμν : ν �
 section Indicator
 variable {c : ε} {hf : AEStronglyMeasurable f μ} {s : Set α}
 
-lemma eLpNorm_indicator_eq_eLpNorm_restrict (hs : MeasurableSet s) :
+lemma eLpNorm_indicator_eq_eLpNorm_restrict {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+    {f : α → ε} {s : Set α} (hs : MeasurableSet s) :
     eLpNorm (s.indicator f) p μ = eLpNorm f p (μ.restrict s) := by
   by_cases hp_zero : p = 0
   · simp only [hp_zero, eLpNorm_exponent_zero]
@@ -622,37 +620,39 @@ lemma eLpNormEssSup_indicator_eq_eLpNormEssSup_restrict (hs : MeasurableSet s) :
     eLpNormEssSup (s.indicator f) μ = eLpNormEssSup f (μ.restrict s) := by
   simp_rw [← eLpNorm_exponent_top, eLpNorm_indicator_eq_eLpNorm_restrict hs]
 
-lemma eLpNorm_restrict_le (f : α → F) (p : ℝ≥0∞) (μ : Measure α) (s : Set α) :
+lemma eLpNorm_restrict_le (f : α → ε) (p : ℝ≥0∞) (μ : Measure α) (s : Set α) :
     eLpNorm f p (μ.restrict s) ≤ eLpNorm f p μ :=
   eLpNorm_mono_measure f Measure.restrict_le_self
 
-lemma eLpNorm_indicator_le (f : α → E) : eLpNorm (s.indicator f) p μ ≤ eLpNorm f p μ := by
-  refine eLpNorm_mono_ae <| .of_forall fun x ↦ ?_
-  suffices ‖s.indicator f x‖₊ ≤ ‖f x‖₊ from NNReal.coe_mono this
-  rw [nnnorm_indicator_eq_indicator_nnnorm]
+lemma eLpNorm_indicator_le {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε] (f : α → ε) :
+    eLpNorm (s.indicator f) p μ ≤ eLpNorm f p μ := by
+  refine eLpNorm_mono_aeENORM <| .of_forall fun x ↦ ?_
+  rw [enorm_indicator_eq_indicator_enorm]
   exact s.indicator_le_self _ x
 
-lemma eLpNormEssSup_indicator_le (s : Set α) (f : α → G) :
+lemma eLpNormEssSup_indicator_le {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+    (s : Set α) (f : α → ε) :
     eLpNormEssSup (s.indicator f) μ ≤ eLpNormEssSup f μ := by
   refine essSup_mono_ae (Eventually.of_forall fun x => ?_)
-  simp_rw [enorm_eq_nnnorm, ENNReal.coe_le_coe, nnnorm_indicator_eq_indicator_nnnorm]
+  simp_rw [enorm_indicator_eq_indicator_enorm]
   exact Set.indicator_le_self s _ x
 
-lemma eLpNormEssSup_indicator_const_le (s : Set α) (c : G) :
-    eLpNormEssSup (s.indicator fun _ : α => c) μ ≤ ‖c‖ₑ := by
+lemma eLpNormEssSup_indicator_const_le {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+    (s : Set α) (c : ε) : eLpNormEssSup (s.indicator fun _ : α => c) μ ≤ ‖c‖ₑ := by
   by_cases hμ0 : μ = 0
   · rw [hμ0, eLpNormEssSup_measure_zero]
     exact zero_le _
   · exact (eLpNormEssSup_indicator_le s fun _ => c).trans (eLpNormEssSup_const c hμ0).le
 
-lemma eLpNormEssSup_indicator_const_eq (s : Set α) (c : G) (hμs : μ s ≠ 0) :
+lemma eLpNormEssSup_indicator_const_eq {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+    (s : Set α) (c : ε) (hμs : μ s ≠ 0) :
     eLpNormEssSup (s.indicator fun _ : α => c) μ = ‖c‖ₑ := by
   refine le_antisymm (eLpNormEssSup_indicator_const_le s c) ?_
   by_contra! h
   have h' := ae_iff.mp (ae_lt_of_essSup_lt h)
   push_neg at h'
   refine hμs (measure_mono_null (fun x hx_mem => ?_) h')
-  rw [Set.mem_setOf_eq, Set.indicator_of_mem hx_mem, enorm_eq_nnnorm]
+  rw [Set.mem_setOf_eq, Set.indicator_of_mem hx_mem]
 
 -- The following lemmas require [Zero F].
 variable {ε : Type*} [TopologicalSpace ε]
@@ -678,13 +678,15 @@ lemma eLpNorm_indicator_const (hs : MeasurableSet s) (hp : p ≠ 0) (hp_top : p 
     eLpNorm (s.indicator fun _ => c) p μ = ‖c‖ₑ * μ s ^ (1 / p.toReal) :=
   eLpNorm_indicator_const₀ hs.nullMeasurableSet hp hp_top
 
-lemma eLpNorm_indicator_const' /-(c : F)-/ (hs : MeasurableSet s) (hμs : μ s ≠ 0) (hp : p ≠ 0) :
+lemma eLpNorm_indicator_const' (hs : MeasurableSet s) (hμs : μ s ≠ 0) (hp : p ≠ 0) :
     eLpNorm (s.indicator fun _ => c) p μ = ‖c‖ₑ * μ s ^ (1 / p.toReal) := by
   by_cases hp_top : p = ∞
-  · sorry --simp [hp_top, eLpNormEssSup_indicator_const_eq s c hμs]
+  · simp [hp_top, eLpNormEssSup_indicator_const_eq s c hμs]
   · exact eLpNorm_indicator_const hs hp hp_top
 
-lemma eLpNorm_indicator_const_le (c : G) (p : ℝ≥0∞) :
+#exit
+
+lemma eLpNorm_indicator_const_le (c : ε) (p : ℝ≥0∞) :
     eLpNorm (s.indicator fun _ => c) p μ ≤ ‖c‖ₑ * μ s ^ (1 / p.toReal) := by
   obtain rfl | hp := eq_or_ne p 0
   · simp only [eLpNorm_exponent_zero, zero_le']
