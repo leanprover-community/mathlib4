@@ -60,9 +60,9 @@ Computes the root hash, which mixes the hashes of the content of:
 * `lakefile.lean`
 * `lean-toolchain`
 * `lake-manifest.json`
-and the hash of `Lean.versionString`.
+and the hash of `Lean.gitHash`.
 
-(We hash `Lean.versionString` in case the toolchain changes even though `lean-toolchain` hasn't.
+(We hash `Lean.gitHash` in case the toolchain changes even though `lean-toolchain` hasn't.
 This happens with the `lean-pr-testing-NNNN` toolchains when Lean 4 PRs are updated.)
 -/
 def getRootHash : CacheM UInt64 := do
