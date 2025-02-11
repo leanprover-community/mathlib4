@@ -76,13 +76,23 @@ def getLeanTar : IO String := do
 
 abbrev PackageDirs := Lean.RBMap String FilePath compare
 
+/--
+`CacheM` stores the following information:
+* the source directory where `Mathlib.lean` lies
+* package directories
+* the build directory for proofwidgets
+-/
 structure CacheM.Context where
+  /-- source directory for mathlib files -/
   mathlibDepPath : FilePath
   /-- the Lean search path -/
   searchPath : SearchPath
+  /-- TODO: use search path instead -/
   packageDirs : PackageDirs
+  /-- build directory for proofwidgets -/
   proofWidgetsBuildDir : FilePath
 
+@[inherit_doc CacheM.Context]
 abbrev CacheM := ReaderT CacheM.Context IO
 
 /-- Whether this is running on Mathlib repo or not -/
@@ -99,6 +109,7 @@ private def CacheM.mathlibDepPath (sp : SearchPath) : IO FilePath := do
   return mathlibSource
 
 -- TODO this should be generated automatically from the information in `lakefile.lean`.
+@[inherit_doc CacheM.Context]
 private def CacheM.getContext : IO CacheM.Context := do
   let sp ← initSrcSearchPath
   let mathlibSource ← CacheM.mathlibDepPath sp
@@ -120,6 +131,7 @@ private def CacheM.getContext : IO CacheM.Context := do
       ("Plausible", LAKEPACKAGESDIR / "plausible")],
     proofWidgetsBuildDir := LAKEPACKAGESDIR / "proofwidgets" / ".lake" / "build"}
 
+@[inherit_doc CacheM.Context]
 def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
 
 end
