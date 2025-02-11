@@ -93,12 +93,6 @@ instance : BraidedCategory (Action V G) :=
   braidedCategoryOfFaithful (Action.forget V G) (fun X Y => mkIso (β_ _ _)
     (fun g => by simp [FunctorCategoryEquivalence.inverse])) (by simp)
 
-@[simp]
-theorem β_hom {X Y : Action V G} : (β_ X Y).hom.hom = (β_ X.V Y.V).hom := rfl
-
-@[simp]
-theorem β_inv {X Y : Action V G} : (β_ X Y).inv.hom = (β_ X.V Y.V).inv := rfl
-
 /-- When `V` is braided the forgetful functor `Action V G` to `V` is braided. -/
 instance : (Action.forget V G).Braided where
 
@@ -222,9 +216,7 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
       comm := fun (g : G) => by
         funext ⟨(x₁ : G), (x₂ : X.V)⟩
         refine Prod.ext rfl ?_
-        show X.ρ (g * x₁) _ = _
-        rw [map_mul]
-        rfl }
+        simp [leftRegular] }
   hom_inv_id := by
     apply Hom.ext
     funext x
