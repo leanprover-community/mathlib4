@@ -82,23 +82,18 @@ elab_rules : tactic
     let g ← getMainGoal
     evalTactic (← `(tactic| erw [$r]))
     let e := (← instantiateMVars (mkMVar g)).headBeta
-    match e.getAppFnArgs with
-    | (``Eq.mpr, #[_, _, e, _]) =>
-      match e.getAppFnArgs with
-      | (``id, #[ty, e]) =>
-        match ty.eq? with
-        | some (_, tgt, _) =>
-          match (← inferType e).eq? with
-          | some (_, inferred, _) =>
-            let (_, msgs) ← (logDiffs tk tgt inferred).run #[]
-            if verbose then
-              logInfoAt tk <| .joinSep
-                (m!"Expression appearing in target: {tgt}" ::
-                  m!"Expression from `erw`: {inferred}" :: msgs.toList.map (· ())) "\n\n"
-          | _ => logErrorAt tk "Unexpected term produced by `erw`, \
-                  inferred type is not an equality."
-        | _ => logErrorAt tk "Unexpected term produced by `erw`, type hint is not an equality."
-      | _ => logErrorAt tk "Unexpected term produced by `erw`, not of the form: `Eq.mpr (id _) _`."
-    | _ => logErrorAt tk "Unexpected term produced by `erw`, head is not an `Eq.mpr`."
+    let (``Eq.mpr, #[_, _, e, _]) := e.getAppFnArgs |
+      logErrorAt tk "Unexpected term produced by `erw`, head is not an `Eq.mpr`."
+    let (``id, #[ty, e]) := e.getAppFnArgs |
+      logErrorAt tk "Unexpected term produced by `erw`, not of the form: `Eq.mpr (id _) _`."
+    let some (_, tgt, _) := ty.eq? |
+      logErrorAt tk "Unexpected term produced by `erw`, type hint is not an equality."
+    let some (_, inferred, _) := (← inferType e).eq? |
+      logErrorAt tk "Unexpected term produced by `erw`, inferred type is not an equality."
+    let (_, msgs) ← (logDiffs tk tgt inferred).run #[]
+    if verbose then
+      logInfoAt tk <| .joinSep
+        (m!"Expression appearing in target: {tgt}" ::
+          m!"Expression from `erw`: {inferred}" :: msgs.toList.map (· ())) "\n\n"
 
 end Mathlib.Tactic.Erw?
