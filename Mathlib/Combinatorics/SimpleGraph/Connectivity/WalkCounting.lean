@@ -280,19 +280,6 @@ lemma ncard_odd_components_mono [Fintype V] [DecidableEq V] {G' : SimpleGraph V}
     ((fcc' ▸ (aux c.1 c.2).choose_spec.1) (ConnectedComponent.nonempty_supp _).some_mem)
       ((aux c'.1 c'.2).choose_spec.1 (ConnectedComponent.nonempty_supp _).some_mem))
 
-lemma ncard_odd_components_deleteVerts_mono [Fintype V] [DecidableEq V] (G G' : SimpleGraph V)
-    [DecidableRel G.Adj] (h : G ≤ G') (u : Set V) :
-    {c : ConnectedComponent ((⊤ : Subgraph G').deleteVerts u).coe |
-      Odd c.supp.ncard}.ncard ≤ {c :
-        ConnectedComponent ((⊤ : Subgraph G).deleteVerts u).coe | Odd c.supp.ncard}.ncard := by
-  have : Fintype ((⊤ : Subgraph G').deleteVerts u).verts := by
-    have : Fintype u := .ofFinite _
-    simp only [Subgraph.induce_verts, Subgraph.verts_top]
-    infer_instance
-  apply ncard_odd_components_mono
-  intro v w hvw
-  aesop
-
 end WalkCounting
 
 end SimpleGraph
