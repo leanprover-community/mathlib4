@@ -362,6 +362,19 @@ theorem coe_toHasForget_instFunLike {C : Type*} [Category C] {FC : C → C → T
     (f : X ⟶ Y) :
     @DFunLike.coe (X ⟶ Y) (ToType X) (fun _ => ToType Y) HasForget.instFunLike f = f := rfl
 
+lemma ConcreteCategory.forget₂_comp_apply {C : Type u} {D : Type u'} [Category.{v} C]
+    {FC : C → C → Type*} {CC : C → Type w} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+    [ConcreteCategory.{w} C FC] [Category.{v'} D] {FD : D → D → Type*} {CD : D → Type w}
+    [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory.{w} D FD] [HasForget₂ C D] {X Y Z : C}
+    (f : X ⟶ Y) (g : Y ⟶ Z) (x : ToType ((forget₂ C D).obj X)) :
+    ((forget₂ C D).map (f ≫ g) x) =
+      (forget₂ C D).map g ((forget₂ C D).map f x) := by
+  rw [Functor.map_comp, ConcreteCategory.comp_apply]
+
+instance hom_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
+    IsIso (C := Type _) ⇑(ConcreteCategory.hom f) :=
+  ((forget C).mapIso (asIso f)).isIso_hom
+
 section
 
 variable (C)

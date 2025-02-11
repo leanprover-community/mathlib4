@@ -176,7 +176,7 @@ lemma Flat.closure (hF : M.Flat F) : M.closure F = F :=
   (sInter_subset_of_mem (by simpa)).antisymm (M.subset_closure F)
 
 variable (X) in
-lemma flat_closure : M.Flat (M.closure X) := by
+@[simp] lemma flat_closure : M.Flat (M.closure X) := by
   rw [closure, sInter_eq_iInter]; exact .iInter (·.2.1)
 
 lemma flat_iff_closure_eq : M.Flat F ↔ M.closure F = F := ⟨(·.closure), (· ▸ flat_closure F)⟩
