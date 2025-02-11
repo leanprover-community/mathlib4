@@ -110,20 +110,17 @@ theorem dvd_add_right (h : a ∣ b) : a ∣ b + c ↔ a ∣ c := by rw [add_comm
 /-- If an element `a` divides another element `c` in a ring, `a` divides the difference of another
 element `b` with `c` iff `a` divides `b`. -/
 theorem dvd_sub_left (h : a ∣ c) : a ∣ b - c ↔ a ∣ b := by
-  -- Porting note: Needed to give `α` explicitly
-  simpa only [← sub_eq_add_neg] using dvd_add_left ((dvd_neg (α := α)).2 h)
+  simpa only [← sub_eq_add_neg] using dvd_add_left (dvd_neg.2 h)
 
 /-- If an element `a` divides another element `b` in a ring, `a` divides the difference of `b` and
 another element `c` iff `a` divides `c`. -/
 theorem dvd_sub_right (h : a ∣ b) : a ∣ b - c ↔ a ∣ c := by
-  -- Porting note: Needed to give `α` explicitly
-  rw [sub_eq_add_neg, dvd_add_right h, dvd_neg (α := α)]
+  rw [sub_eq_add_neg, dvd_add_right h, dvd_neg]
 
 theorem dvd_iff_dvd_of_dvd_sub (h : a ∣ b - c) : a ∣ b ↔ a ∣ c := by
   rw [← sub_add_cancel b c, dvd_add_right h]
 
--- Porting note: Needed to give `α` explicitly
-theorem dvd_sub_comm : a ∣ b - c ↔ a ∣ c - b := by rw [← dvd_neg (α := α), neg_sub]
+theorem dvd_sub_comm : a ∣ b - c ↔ a ∣ c - b := by rw [← dvd_neg, neg_sub]
 
 end NonUnitalRing
 
