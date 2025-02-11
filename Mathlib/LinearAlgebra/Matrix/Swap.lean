@@ -5,7 +5,6 @@ Authors: Judith Ludwig, Christian Merten
 -/
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 import Mathlib.Data.Matrix.PEquiv
-import Mathlib.LinearAlgebra.Matrix.Permutation
 
 /-!
 # Swap matrices
@@ -33,7 +32,7 @@ variable (R) in
 `i`-th and `j`-th rows modified such that multiplying by it on the
 left (resp. right) corresponds to swapping the `i`-th and `j`-th row (resp. column). -/
 def swap (i j : n) : Matrix n n R :=
-  (Equiv.swap i j).permMatrix R
+  (Equiv.swap i j).toPEquiv.toMatrix
 
 lemma swap_comm (i j : n) :
     swap R i j = swap R j i := by
@@ -70,35 +69,6 @@ lemma swap_mulVec (i j : n) (a : n → R) :
 lemma vecMul_swap (i j : n) (a : n → R) :
     a ᵥ* swap R i j = a ∘ Equiv.swap i j := by
   simp [swap, PEquiv.vecMul_toMatrix_toPEquiv]
-
-lemma swap_mulVec_single_left (i j : n) (r : R) :
-    swap R i j *ᵥ Pi.single i r = Pi.single j r := by
-  simp only [swap, PEquiv.toMatrix_toPEquiv_mulVec_single, Equiv.symm_swap]
-  rw [Equiv.swap_apply_left]
-
-lemma swap_mulVec_single_right (i j : n) (r : R) :
-    swap R i j *ᵥ Pi.single j r = Pi.single i r := by
-  rw [swap_comm, swap_mulVec_single_left]
-
-lemma swap_mulVec_single_of_ne {i j k : n} (hik : k ≠ i) (hjk : k ≠ j) (r : R) :
-    swap R i j *ᵥ Pi.single k r = Pi.single k r := by
-  simp only [swap, PEquiv.toMatrix_toPEquiv_mulVec_single, Equiv.symm_swap,
-    Equiv.swap_apply_of_ne_of_ne hik hjk]
-
-lemma single_vecMul_swap_left (i j : n) (r : R) :
-    Pi.single i r ᵥ* swap R i j = Pi.single j r := by
-  simp only [swap, PEquiv.single_vecMul_toMatrix_toPEquiv, Equiv.symm_swap]
-  rw [Equiv.swap_apply_left]
-
-lemma single_vecMul_swap_right (i j : n) (r : R) :
-    Pi.single j r ᵥ* swap R i j = Pi.single i r := by
-  rw [swap_comm, single_vecMul_swap_left]
-
-lemma single_vecMul_swap_of_ne {i j k : n} (hik : k ≠ i) (hjk : k ≠ j) (r : R) :
-    Pi.single k r ᵥ* swap R i j = Pi.single k r := by
-  ext
-  simp [swap, PEquiv.single_vecMul_toMatrix_toPEquiv, Equiv.symm_swap, Pi.single_apply,
-    Equiv.swap_apply_of_ne_of_ne hik hjk]
 
 @[simp]
 lemma swap_mulVec_apply (i j : n) (a : n → R) :
