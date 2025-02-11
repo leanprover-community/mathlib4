@@ -52,6 +52,38 @@ variable
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M]
   {γ γ' : ℝ → M} {v : (x : M) → TangentSpace I x} {s s' : Set ℝ} (t₀ : ℝ) {x₀ : M}
 
+-- ∃ r > (0 : ℝ), ∃ ε > (0 : ℝ), ∀ x ∈ closedBall x₀ r, ∃ α : ℝ → E, α t₀ = x ∧
+      -- ∀ t ∈ Ioo (t₀ - ε) (t₀ + ε), HasDerivAt α (f (α t)) t
+
+-- ∀ x ∈ (extChartAt I x₀).source ∩ (extChartAt I x₀).symm '' Metric.ball (extChartAt I x₀ x₀) r,
+--         I.IsInteriorPoint x
+
+/-
+prove the existence of flows, or at least integral curves with starting points different from x₀
+
+need continuity in the initial condition
+-/
+theorem exists_isIntegralCurveAt_of_contMDiffAt' [CompleteSpace E]
+    (hv : ContMDiffAt I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)) x₀)
+    (hx : I.IsInteriorPoint x₀) :
+    ∃ u ∈ 𝓝 x₀, ∃ ε > (0 : ℝ), ∀ x ∈ u ∩ I.interior M, ∃ γ : ℝ → M, γ t₀ = x ∧
+      IsIntegralCurveOn γ v (Ioo (t₀ - ε) (t₀ + ε)) := by
+  -- express the differentiability of the vector field `v` in the local chart
+  rw [contMDiffAt_iff] at hv
+  have ⟨_, hv⟩ := hv
+  -- use Picard-Lindelöf theorem to extract a solution to the ODE in the local chart
+  have ⟨r, hr, hf⟩ := hv.contDiffAt (range_mem_nhds_isInteriorPoint hx)
+    |>.snd.exists_forall_mem_closedBall_eq_hasDerivAt_Ioo' t₀
+  simp_rw [← exists_and_left] at hf
+  rw [exists_swap] at hf
+  simp_rw [← Real.ball_eq_Ioo, ← Metric.eventually_nhds_iff_ball] at hf
+  have ⟨α, hf⟩ := hf
+  have ⟨hf1, hf2⟩ := Filter.eventually_and.mp hf
+
+
+
+  sorry
+
 /-- Existence of local integral curves for a $C^1$ vector field at interior points of a `C^1`
 manifold. -/
 theorem exists_isIntegralCurveAt_of_contMDiffAt [CompleteSpace E]
