@@ -755,4 +755,20 @@ theorem exists_forall_mem_closedBall_eq_hasDerivAt_Ioo
   · simp_rw [hα', dif_pos hx, h1]
   · simp_rw [hα', dif_pos hx, h2 t ht]
 
+/-- Temporary lemma before we have smoothness with respect to initial condition -/
+theorem exists_forall_mem_closedBall_eq_hasDerivAt_Ioo'
+    (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
+    ∃ r > (0 : ℝ), ∃ ε > (0 : ℝ), ∃ α : E → ℝ → E, ∀ t ∈ Ioo (t₀ - ε) (t₀ + ε),
+      (∀ x ∈ closedBall x₀ r, α x t₀ = x ∧ HasDerivAt (α x) (f (α x t)) t) ∧
+      UniformContinuousOn (α · t) (closedBall x₀ r) := by
+  have ⟨ε, hε, a, r, _, _, hr, hpl⟩ := IsPicardLindelof.of_contDiffAt_one hf t₀
+  refine ⟨r, hr, ε, hε, ?_⟩
+  have ⟨α, hα1, L, hα2⟩ := hpl.exists_forall_mem_closedBall_eq_hasDerivWithinAt_lipschitzOnWith
+  refine ⟨α, fun t ht ↦ ⟨?_, ?_⟩⟩
+  · intro x hx
+    refine ⟨(hα1 x hx).1, ?_⟩
+    apply HasDerivWithinAt.hasDerivAt (s := Ioo (t₀ - ε) (t₀ + ε)) _ (Ioo_mem_nhds ht.1 ht.2)
+    exact hα1 x hx |>.2 t (Ioo_subset_Icc_self ht) |>.mono Ioo_subset_Icc_self
+  · exact hα2 t (Ioo_subset_Icc_self ht) |>.uniformContinuousOn
+
 end ContDiffAt
