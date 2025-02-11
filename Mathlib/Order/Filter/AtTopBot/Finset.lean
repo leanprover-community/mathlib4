@@ -66,22 +66,4 @@ lemma tendsto_toRight_atTop :
   obtain ⟨t, H⟩ := hs
   exact ⟨.disjSum ∅ t, fun b hb ↦ H _ (by simpa [← Finset.coe_subset, Set.subset_def] using hb)⟩
 
-lemma tendsto_sumEquiv_atTop :
-    Tendsto (Finset.sumEquiv (α := α) (β := β)) atTop atTop := by
-  simp only [Finset.sumEquiv, Equiv.coe_fn_mk, le_prod, Tendsto,
-    Filter.map_map, Function.comp_def, ← prod_atTop_atTop_eq]
-  exact ⟨tendsto_toLeft_atTop, tendsto_toRight_atTop⟩
-
-lemma tendsto_sumEquiv_symm_atTop :
-    Tendsto (Finset.sumEquiv (α := α) (β := β)).symm atTop atTop := by
-  rw [Tendsto, ← prod_atTop_atTop_eq,
-    ((atTop_basis.prod atTop_basis).map _).le_basis_iff atTop_basis]
-  rintro s -
-  refine ⟨(s.toLeft, s.toRight), ?_⟩
-  simp +contextual [Set.subset_def, forall_comm (α := Finset (α ⊕ β)), ← Finset.coe_subset]
-
-lemma atTop_map_sumEquiv : atTop.map (Finset.sumEquiv (α := α) (β := β)) = atTop :=
-  tendsto_sumEquiv_atTop.antisymm
-    (by rw [← comap_equiv_symm, ← tendsto_iff_comap]; exact tendsto_sumEquiv_symm_atTop)
-
 end Filter
