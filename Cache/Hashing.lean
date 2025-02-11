@@ -25,7 +25,7 @@ Lake project settings.
 structure HashMemo where
   /-- Hash of mathlib's lake project settings. -/
   rootHash : UInt64
-  /-- Stores the imports of a module -/
+  /-- Stores the imports of a module, obtained from the `.lean` source files -/
   depsMap  : Std.HashMap Name (Array Name) := ∅
   /-- Stores the location of the source file of a module -/
   pathMap  : Std.HashMap Name FilePath := ∅
@@ -72,7 +72,7 @@ message if the parsing fails.
 -/
 def getFileImports (content : String) (mod : Name := default) :
     CacheM <| Array (Name × FilePath) := do
-  let sp := (← read).searchPath
+  let sp := (← read).srcSearchPath
   let fileImports : Array Import ← Lean.parseImports' content mod.toString
   let out ← fileImports
     -- Lean core files can never be modified and therefore we do not need to process these
@@ -93,9 +93,9 @@ Computes the root hash, which mixes the hashes of the content of:
 * `lakefile.lean`
 * `lean-toolchain`
 * `lake-manifest.json`
-and the hash of `Lean.githash`.
+and the hash of `Lean.gitHash`.
 
-(We hash `Lean.githash` in case the toolchain changes even though `lean-toolchain` hasn't.
+(We hash `Lean.gitHash` in case the toolchain changes even though `lean-toolchain` hasn't.
 This happens with the `lean-pr-testing-NNNN` toolchains when Lean 4 PRs are updated.)
 -/
 def getRootHash : CacheM UInt64 := do

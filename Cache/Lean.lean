@@ -80,60 +80,6 @@ where
 #guard FilePath.clean ("A" / "B" / "C" / ".." / ".." / "." / ".." / "..") == ".."
 #guard FilePath.clean ("A" / "B" / "C" / ".." / ".." / ".." / "D") == "D"
 
-/--
-Test if the `target` path lies inside `parent`.
-This is purely done by comparing the paths' components.
-It does not have access to `IO` so it does not check if any paths actually exist.
-The paths can contain arbitrary amounts of `"."`, `""` or `".."`.
-However, if the paths do not contain the same amount of leading `".."`, it
-will return `false`.
--/
-def contains (parent target : FilePath) : Bool :=
-  go parent.clean.components target.clean.components
-where
-  go : List String → List String → Bool
-  -- must start with equal quantity of ".."
-  | ".." :: parent, ".." :: target => go parent target
-  | ".." :: _, _ => false
-  | _, ".." :: _ => false
-  -- base cases
-  -- cleaned paths do not contain `"."` anymore, but `[""]` is a valid path
-  | [], _ => true
-  | "" :: [], _ => true
-  | _ :: _, [] => false
-  | _ :: _, "" :: [] => false
-  -- recursion
-  | p :: arent, t :: arget => if p == t then go arent arget else false
-
--- unit tests for `System.FilePath.contains`
-/-- info: true -/ #guard_msgs in #eval FilePath.contains "." "."
-/-- info: true -/ #guard_msgs in #eval FilePath.contains "" ""
-/-- info: true -/ #guard_msgs in #eval FilePath.contains ".." ".."
-/-- info: true -/ #guard_msgs in #eval FilePath.contains (".."/ "..") (".." / "..")
-/-- info: true -/ #guard_msgs in #eval FilePath.contains "" "."
-/-- info: true -/ #guard_msgs in #eval FilePath.contains "." ""
-/-- info: true -/ #guard_msgs in #eval FilePath.contains "" "A"
-/-- info: true -/ #guard_msgs in #eval FilePath.contains "A" ("A" / ".." / "A")
-/-- info: true -/ #guard_msgs in #eval FilePath.contains "A" ("B" / ".." / "A")
-/-- info: true -/ #guard_msgs in #eval FilePath.contains ("A" / ".." / "A") ("A" / "C")
-/-- info: true -/ #guard_msgs in #eval FilePath.contains ("B" / ".." / "A") ("A" / "C")
-/-- info: true -/ #guard_msgs in #eval FilePath.contains ("A" / "B" / ".." / ".."/ "C") ("C" / "D")
-/-- info: true -/ #guard_msgs in #eval FilePath.contains "C" ("A" / "B" / ".." / ".."/ "C")
-/-- info: true -/ #guard_msgs in #eval FilePath.contains "A" ("A" / "B")
-/-- info: false -/ #guard_msgs in #eval FilePath.contains "." ".."
-/-- info: false -/ #guard_msgs in #eval FilePath.contains "" ".."
-/-- info: false -/ #guard_msgs in #eval FilePath.contains ".." "." -- false by convention
-/-- info: false -/ #guard_msgs in #eval FilePath.contains ".." ""
-/-- info: false -/ #guard_msgs in #eval FilePath.contains (".."/ "..") ".."
-/-- info: false -/ #guard_msgs in #eval FilePath.contains ".." (".." / "..")
-/-- info: false -/ #guard_msgs in #eval FilePath.contains (".." / "A" / "..") "."
-/-- info: false -/ #guard_msgs in #eval FilePath.contains (".." / "A" / "..") "A"
-/-- info: false -/ #guard_msgs in #eval FilePath.contains "A" (".." / ".."/ "A")
-/-- info: false -/ #guard_msgs in #eval FilePath.contains ("A" / "B" / ".." / ".." / ".."/ "C") ("C" / "D")
-/-- info: false -/ #guard_msgs in #eval FilePath.contains ("A" / "B") "A"
-/-- info: false -/ #guard_msgs in #eval FilePath.contains "A" ("B" / "A")
-/-- info: false -/ #guard_msgs in #eval FilePath.contains ("A" / "B") ("A" / "C" / "B")
-/-- info: false -/ #guard_msgs in #eval FilePath.contains "." ("A" / "B" / "C" / ".." / ".." / ".." / ".." / "D")
 
 /-- Removes a parent path from the beginning of a path -/
 def withoutParent (path parent : FilePath) : FilePath :=

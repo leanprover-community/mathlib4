@@ -139,7 +139,8 @@ def downloadFiles (hashMap : IO.ModuleHashMap) (forceDownload : Bool) (parallel 
       IO.Process.exit 1
   else IO.println "No files to download"
 
-/-- Check if the project's `lean-toolchain` file matches mathlib's.
+/--
+Check if the project's `lean-toolchain` file matches mathlib's.
 Print and error and exit the process with error code 1 otherwise.
 Does nothing if the current project is mathlib.
 -/
