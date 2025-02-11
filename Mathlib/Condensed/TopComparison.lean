@@ -25,8 +25,6 @@ universe w w' v u
 
 open CategoryTheory Opposite Limits regularTopology ContinuousMap Topology
 
-attribute [local instance] ConcreteCategory.instFunLike
-
 variable {C : Type u} [Category.{v} C] (G : C ⥤ TopCat.{w})
   (X : Type w') [TopologicalSpace X]
 
@@ -113,7 +111,7 @@ def TopCat.toSheafCompHausLike :
     apply (config := { allowSynthFailures := true }) equalizerCondition_yonedaPresheaf
       (CompHausLike.compHausLikeToTop.{u} P) X
     intro Z B π he
-    apply IsQuotientMap.of_surjective_continuous (hs _ he) π.continuous
+    apply IsQuotientMap.of_surjective_continuous (hs _ he) π.hom.continuous
 
 /--
 `TopCat.toSheafCompHausLike` yields a functor from `TopCat.{max u w}` to
@@ -124,7 +122,7 @@ noncomputable def topCatToSheafCompHausLike :
     have := CompHausLike.preregular hs
     TopCat.{max u w} ⥤ Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w)) where
   obj X := X.toSheafCompHausLike P hs
-  map f := ⟨⟨fun _ g ↦ f.comp g, by aesop⟩⟩
+  map f := ⟨⟨fun _ g ↦ f.hom.comp g, by aesop⟩⟩
 
 end
 

@@ -277,7 +277,7 @@ theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
   have h2i : i ∈ bcubes cs c :=
     ⟨hi.1.symm, v.2.1 i hi.1.symm ⟨tail c.b, hi.2, fun j => c.b_mem_side j.succ⟩⟩
   let j : Fin (n + 1) := ⟨2, h.three_le⟩
-  have hj : 0 ≠ j := by simp only [Fin.ext_iff, Ne]; norm_num
+  have hj : 0 ≠ j := by simp only [j, Fin.ext_iff, Ne]; norm_num
   let p : Fin (n + 1) → ℝ := fun j' => if j' = j then c.b j + (cs i).w else c.b j'
   have hp : p ∈ c.bottom := by
     constructor
@@ -343,13 +343,13 @@ theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) 
   let i := mi h v; have hi : i ∈ bcubes cs c := mi_mem_bcubes
   cases' bi with bi bi
   · refine ⟨(cs i).b j.succ + (cs i).w, ⟨?_, ?_⟩, ?_⟩
-    · simp [side, bi, hw', w_lt_w h v hi]
-    · intro h'; simpa [lt_irrefl] using h'.2
+    · simp [i, side, bi, hw', w_lt_w h v hi]
+    · intro h'; simpa [i, lt_irrefl] using h'.2
     intro i' hi' i'_i h2i'; constructor
     · apply le_trans h2i'.1
-      simp [hw']
+      simp [i, hw']
     apply lt_of_lt_of_le (add_lt_add_left (mi_strict_minimal i'_i.symm hi') _)
-    simp [bi.symm, b_le_b hi']
+    simp [i, bi.symm, b_le_b hi']
   let s := bcubes cs c \ {i}
   have hs : s.Nonempty := by
     rcases (nontrivial_bcubes h v).exists_ne i with ⟨i', hi', h2i'⟩
@@ -368,7 +368,7 @@ theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) 
   intro i'' hi'' h2i'' h3i''; constructor; swap; · apply lt_trans hx h3i''.2
   rw [le_sub_iff_add_le]
   refine le_trans ?_ (t_le_t hi'' j); rw [add_le_add_iff_left]; apply h3i' i'' ⟨hi'', _⟩
-  simp [mem_singleton, h2i'']
+  simp [i, mem_singleton, h2i'']
 
 variable (h v)
 
@@ -390,7 +390,7 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
     simp only [hj₂, if_false]; apply tail_sub hi; apply b_mem_side
   rcases v.1 hp with ⟨_, ⟨i', rfl⟩, hi'⟩
   have h2i' : i' ∈ bcubes cs c := ⟨hi'.1.symm, v.2.1 i' hi'.1.symm ⟨tail p, hi'.2, hp.2⟩⟩
-  have i_i' : i ≠ i' := by rintro rfl; simpa [p, side_tail, h2x] using hi'.2 j
+  have i_i' : i ≠ i' := by rintro rfl; simpa [i, p, side_tail, h2x] using hi'.2 j
   have : Nonempty (↥((cs i').tail.side j' \ (cs i).tail.side j')) := by
     apply nonempty_Ico_sdiff
     · apply mi_strict_minimal i_i' h2i'
@@ -420,8 +420,8 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
   intro j₂
   by_cases hj₂ : j₂ = j
   · cases hj₂; refine ⟨x, ?_, ?_⟩
-    · convert hi'.2 j using 1; simp [p]
-    apply h3x h2i'' i_i''.symm; convert hi''.2 j using 1; simp [p', hj'.symm]
+    · convert hi'.2 j using 1; simp [i, p]
+    apply h3x h2i'' i_i''.symm; convert hi''.2 j using 1; simp [i, p', hj'.symm]
   by_cases h2j₂ : j₂ = j'
   · cases h2j₂; refine ⟨x', hx'.1, ?_⟩; convert hi''.2 j' using 1; simp [p']
   refine ⟨(cs i).b j₂.succ, ?_, ?_⟩
@@ -480,7 +480,7 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
     have h3i'' : (cs i).w < (cs i'').w := by
       apply mi_strict_minimal _ h2i''; rintro rfl; apply h2p3; convert hi''.2
     let p' := @cons n (fun _ => ℝ) (cs i).xm p3
-    have hp' : p' ∈ (cs i').toSet := by simpa [p', toSet, forall_iff_succ, hi'.symm] using h1p3
+    have hp' : p' ∈ (cs i').toSet := by simpa [i, p', toSet, forall_iff_succ, hi'.symm] using h1p3
     have h2p' : p' ∈ (cs i'').toSet := by
       simp only [p', toSet, forall_iff_succ, cons_succ, cons_zero, mem_setOf_eq]
       refine ⟨?_, by simpa [toSet] using hi''.2⟩

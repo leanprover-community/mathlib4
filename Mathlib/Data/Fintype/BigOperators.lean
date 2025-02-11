@@ -173,7 +173,7 @@ theorem Fintype.card_fun [DecidableEq α] [Fintype α] [Fintype β] :
 
 @[simp]
 theorem card_vector [Fintype α] (n : ℕ) :
-    Fintype.card (Mathlib.Vector α n) = Fintype.card α ^ n := by
+    Fintype.card (List.Vector α n) = Fintype.card α ^ n := by
   rw [Fintype.ofEquiv_card]; simp
 
 /-- It is equivalent to compute the product of a function over `Fin n` or `Finset.range n`. -/

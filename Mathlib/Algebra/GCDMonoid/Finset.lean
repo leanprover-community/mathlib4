@@ -76,8 +76,7 @@ theorem lcm_insert [DecidableEq β] {b : β} :
 theorem lcm_singleton {b : β} : ({b} : Finset β).lcm f = normalize (f b) :=
   Multiset.lcm_singleton
 
--- Porting note: Priority changed for `simpNF`
-@[simp 1100]
+@[local simp] -- This will later be provable by other `simp` lemmas.
 theorem normalize_lcm : normalize (s.lcm f) = s.lcm f := by simp [lcm_def]
 
 theorem lcm_union [DecidableEq β] : (s₁ ∪ s₂).lcm f = GCDMonoid.lcm (s₁.lcm f) (s₂.lcm f) :=
@@ -149,8 +148,7 @@ theorem gcd_insert [DecidableEq β] {b : β} :
 theorem gcd_singleton {b : β} : ({b} : Finset β).gcd f = normalize (f b) :=
   Multiset.gcd_singleton
 
--- Porting note: Priority changed for `simpNF`
-@[simp 1100]
+@[local simp] -- This will later be provable by other `simp` lemmas.
 theorem normalize_gcd : normalize (s.gcd f) = s.gcd f := by simp [gcd_def]
 
 theorem gcd_union [DecidableEq β] : (s₁ ∪ s₂).gcd f = GCDMonoid.gcd (s₁.gcd f) (s₂.gcd f) :=

@@ -122,7 +122,7 @@ theorem mul_adjp_apply_ne (h : i ≠ j) : (A * adjp 1 A) i j = (A * adjp (-1) A)
     have key : ({j}ᶜ : Finset n) = disjUnion ({i} : Finset n) ({i, j} : Finset n)ᶜ (by simp) := by
       rw [singleton_disjUnion, cons_eq_insert, compl_insert, insert_erase]
       rwa [mem_compl, mem_singleton]
-    simp_rw [key, prod_disjUnion, prod_singleton, Perm.mul_apply, swap_apply_left, ← mul_assoc]
+    simp_rw [key, prod_disjUnion, prod_singleton, f, Perm.mul_apply, swap_apply_left, ← mul_assoc]
     rw [mul_comm (A i x) (A i (σ i)), hp.2.2]
     refine congr_arg _ (prod_congr rfl fun x hx ↦ ?_)
     rw [mem_compl, mem_insert, mem_singleton, not_or] at hx
@@ -179,7 +179,7 @@ theorem isAddUnit_detp_smul_mul_adjp (hAB : A * B = 1) :
   rw [← prod_mul_prod_compl {τ⁻¹ j}, mul_mul_mul_comm, mul_comm, ← smul_eq_mul]
   apply IsAddUnit.smul_right
   have h0 : ∀ k, k ∈ ({τ⁻¹ j} : Finset n)ᶜ ↔ τ k ∈ ({j} : Finset n)ᶜ := by
-    simp [show τ⁻¹ = τ.symm from rfl, eq_symm_apply]
+    simp [inv_def, eq_symm_apply]
   rw [← prod_equiv τ h0 fun _ _ ↦ rfl, ← prod_mul_distrib, ← mul_prod_erase _ _ hl2, ← smul_eq_mul]
   exact (isAddUnit_mul hAB l (σ (τ l)) (τ l) hl1).smul_right _
 

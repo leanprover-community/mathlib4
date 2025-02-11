@@ -258,7 +258,7 @@ lemma continuousOn_term (n : ℕ) :
     · positivity
     · exact rpow_le_rpow_of_exponent_le (le_trans (by simp) hx.1.le) (by linarith)
   · rw [← IntegrableOn, ← intervalIntegrable_iff_integrableOn_Ioc_of_le (by linarith)]
-    exact_mod_cast term_welldef (by linarith : 0 < (n + 1)) zero_lt_one
+    exact_mod_cast term_welldef (by omega : 0 < (n + 1)) zero_lt_one
   · rw [ae_restrict_iff' measurableSet_Ioc]
     filter_upwards with x hx
     refine continuousOn_of_forall_continuousAt (fun s (hs : 1 ≤ s) ↦ continuousAt_const.div ?_ ?_)
@@ -368,8 +368,7 @@ lemma tendsto_Gamma_term_aux : Tendsto (fun s ↦ 1 / (s - 1) - 1 / Gammaℝ s /
     simp only [mem_preimage, one_re, mem_Ioi, zero_lt_one]
   rw [EventuallyEq, eventually_nhdsWithin_iff]
   filter_upwards [this] with a ha _
-  rw [Pi.div_apply, ← sub_div, div_right_comm, sub_div' _ _ _ (Gammaℝ_ne_zero_of_re_pos ha),
-    one_mul]
+  rw [Pi.div_apply, ← sub_div, div_right_comm, sub_div' (Gammaℝ_ne_zero_of_re_pos ha), one_mul]
 
 lemma tendsto_riemannZeta_sub_one_div_Gammaℝ :
     Tendsto (fun s ↦ riemannZeta s - 1 / Gammaℝ s / (s - 1)) (𝓝[≠] 1)

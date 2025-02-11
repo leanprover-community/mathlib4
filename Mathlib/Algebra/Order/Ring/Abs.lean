@@ -95,15 +95,13 @@ lemma abs_le_one_iff_mul_self_le_one : |a| ≤ 1 ↔ a * a ≤ 1 := by
 lemma abs_sq (x : α) : |x ^ 2| = x ^ 2 := by simpa only [sq] using abs_mul_self x
 
 lemma sq_lt_sq : a ^ 2 < b ^ 2 ↔ |a| < |b| := by
-  simpa only [sq_abs] using
-    (pow_left_strictMonoOn₀ two_ne_zero).lt_iff_lt (abs_nonneg a) (abs_nonneg b)
+  simpa only [sq_abs] using sq_lt_sq₀ (abs_nonneg a) (abs_nonneg b)
 
 lemma sq_lt_sq' (h1 : -b < a) (h2 : a < b) : a ^ 2 < b ^ 2 :=
   sq_lt_sq.2 (lt_of_lt_of_le (abs_lt.2 ⟨h1, h2⟩) (le_abs_self _))
 
 lemma sq_le_sq : a ^ 2 ≤ b ^ 2 ↔ |a| ≤ |b| := by
-  simpa only [sq_abs] using
-    (pow_left_strictMonoOn₀ two_ne_zero).le_iff_le (abs_nonneg a) (abs_nonneg b)
+  simpa only [sq_abs] using sq_le_sq₀ (abs_nonneg a) (abs_nonneg b)
 
 lemma sq_le_sq' (h1 : -b ≤ a) (h2 : a ≤ b) : a ^ 2 ≤ b ^ 2 :=
   sq_le_sq.2 (le_trans (abs_le.mpr ⟨h1, h2⟩) (le_abs_self _))
@@ -145,7 +143,7 @@ end LinearOrderedRing
 
 section LinearOrderedCommRing
 
-variable [LinearOrderedCommRing α]
+variable [LinearOrderedCommRing α] (a b : α) (n : ℕ)
 
 theorem abs_sub_sq (a b : α) : |a - b| * |a - b| = a * a + b * b - (1 + 1) * a * b := by
   rw [abs_mul_abs_self]
@@ -154,6 +152,30 @@ theorem abs_sub_sq (a b : α) : |a - b| * |a - b| = a * a + b * b - (1 + 1) * a 
 
 lemma abs_unit_intCast (a : ℤˣ) : |((a : ℤ) : α)| = 1 := by
   cases Int.units_eq_one_or a <;> simp_all
+
+private def geomSum : ℕ → α
+  | 0 => 1
+  | n + 1 => a * geomSum n + b ^ (n + 1)
+
+private theorem abs_geomSum_le : |geomSum a b n| ≤ (n + 1) * max |a| |b| ^ n := by
+  induction' n with n ih; · simp [geomSum]
+  refine (abs_add_le ..).trans ?_
+  rw [abs_mul, abs_pow, Nat.cast_succ, add_one_mul]
+  refine add_le_add ?_ (pow_le_pow_left₀ (abs_nonneg _) le_sup_right _)
+  rw [pow_succ, ← mul_assoc, mul_comm |a|]
+  exact mul_le_mul ih le_sup_left (abs_nonneg _) (mul_nonneg
+    (@Nat.cast_succ α .. ▸ Nat.cast_nonneg _) <| pow_nonneg ((abs_nonneg _).trans le_sup_left) _)
+
+private theorem pow_sub_pow_eq_sub_mul_geomSum :
+    a ^ (n + 1) - b ^ (n + 1) = (a - b) * geomSum a b n := by
+  induction' n with n ih; · simp [geomSum]
+  rw [geomSum, mul_add, mul_comm a, ← mul_assoc, ← ih,
+    sub_mul, sub_mul, ← pow_succ, ← pow_succ', mul_comm, sub_add_sub_cancel]
+
+theorem abs_pow_sub_pow_le : |a ^ n - b ^ n| ≤ |a - b| * n * max |a| |b| ^ (n - 1) := by
+  obtain _ | n := n; · simp
+  rw [Nat.add_sub_cancel, pow_sub_pow_eq_sub_mul_geomSum, abs_mul, mul_assoc, Nat.cast_succ]
+  exact mul_le_mul_of_nonneg_left (abs_geomSum_le ..) (abs_nonneg _)
 
 end LinearOrderedCommRing
 

@@ -8,7 +8,6 @@ import Mathlib.CategoryTheory.Groupoid.VertexGroup
 import Mathlib.CategoryTheory.Groupoid.Basic
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.Data.Set.Lattice
-import Mathlib.Order.GaloisConnection
 
 /-!
 # Subgroupoid

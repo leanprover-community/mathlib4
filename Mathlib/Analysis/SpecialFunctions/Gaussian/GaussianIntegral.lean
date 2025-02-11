@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 import Mathlib.Analysis.SpecialFunctions.PolarCoord
 import Mathlib.Analysis.Complex.Convex
+import Mathlib.Data.Nat.Factorial.DoubleFactorial
 
 /-!
 # Gaussian integral
@@ -351,3 +352,24 @@ theorem Complex.Gamma_one_half_eq : Complex.Gamma (1 / 2) = (π : ℂ) ^ (1 / 2 
   convert congr_arg ((↑) : ℝ → ℂ) Real.Gamma_one_half_eq
   · simpa only [one_div, ofReal_inv, ofReal_ofNat] using Gamma_ofReal (1 / 2)
   · rw [sqrt_eq_rpow, ofReal_cpow pi_pos.le, ofReal_div, ofReal_ofNat, ofReal_one]
+
+open scoped Nat in
+/-- The special-value formula `Γ(k + 1 + 1/2) = (2 * k + 1)‼ * √π / (2 ^ (k + 1))` for half-integer
+values of the gamma function in terms of `Nat.doubleFactorial`. -/
+lemma Real.Gamma_nat_add_one_add_half (k : ℕ) :
+    Gamma (k + 1 + 1 / 2) = (2 * k + 1 : ℕ)‼ * √π / (2 ^ (k + 1)) := by
+  induction k with
+  | zero => simp [-one_div, add_comm (1 : ℝ), Gamma_add_one, Gamma_one_half_eq]; ring
+  | succ k ih =>
+    rw [add_right_comm, Gamma_add_one (by positivity), Nat.cast_add, Nat.cast_one, ih, Nat.mul_add]
+    field_simp
+    ring
+
+open scoped Nat in
+/-- The special-value formula `Γ(k + 1/2) = (2 * k - 1)‼ * √π / (2 ^ k))` for half-integer
+values of the gamma function in terms of `Nat.doubleFactorial`. -/
+lemma Real.Gamma_nat_add_half (k : ℕ) :
+    Gamma (k + 1 / 2) = (2 * k - 1 : ℕ)‼ * √π / (2 ^ k) := by
+  cases k with
+  | zero => simp [- one_div, Gamma_one_half_eq]
+  | succ k => simpa [-one_div, mul_add] using Gamma_nat_add_one_add_half k

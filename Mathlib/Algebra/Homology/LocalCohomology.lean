@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Abelian.Ext
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.RingTheory.Finiteness.Ideal
 import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
@@ -86,9 +87,7 @@ section
 variable {R : Type max u v} [CommRing R] {D : Type v} [SmallCategory D]
 
 lemma hasColimitDiagram (I : D ⥤ Ideal R) (i : ℕ) :
-    HasColimit (diagram I i) := by
-  have : HasColimitsOfShape Dᵒᵖ (AddCommGrpMax.{u, v}) := inferInstance
-  infer_instance
+    HasColimit (diagram I i) := inferInstance
 
 /-
 In this definition we do not assume any special property of the diagram `I`, but the relevant case

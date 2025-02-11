@@ -283,10 +283,6 @@ theorem IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
   rcases htd i₀ i with ⟨j, hji₀, hji⟩
   exact (htn j).mono (subset_inter hji₀ hji)
 
-@[deprecated (since := "2024-02-28")]
-alias IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed :=
-  IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
-
 /-- Cantor's intersection theorem for `sInter`:
 the intersection of a directed family of nonempty compact closed sets is nonempty. -/
 theorem IsCompact.nonempty_sInter_of_directed_nonempty_isCompact_isClosed
@@ -306,10 +302,6 @@ theorem IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed (t : �
   have : ∀ i, t i ⊆ t 0 := fun i => tmono <| Nat.zero_le i
   have htc : ∀ i, IsCompact (t i) := fun i => ht0.of_isClosed_subset (htcl i) (this i)
   IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed t htd htn htc htcl
-
-@[deprecated (since := "2024-02-28")]
-alias IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed :=
-  IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed
 
 /-- For every open cover of a compact set, there exists a finite subcover. -/
 theorem IsCompact.elim_finite_subcover_image {b : Set ι} {c : ι → Set X} (hs : IsCompact s)
@@ -592,11 +584,6 @@ theorem disjoint_cocompact_right (f : Filter X) :
   simp_rw [hasBasis_cocompact.disjoint_iff_right, compl_compl]
   tauto
 
-@[deprecated "see `cocompact_eq_atTop` with `import Mathlib.Topology.Instances.Nat`"
-  (since := "2024-02-07")]
-theorem _root_.Nat.cocompact_eq : cocompact ℕ = atTop :=
-  (cocompact_eq_cofinite ℕ).trans Nat.cofinite_eq_atTop
-
 theorem Tendsto.isCompact_insert_range_of_cocompact {f : X → Y} {y}
     (hf : Tendsto f (cocompact X) (𝓝 y)) (hfc : Continuous f) : IsCompact (insert y (range f)) := by
   intro l hne hle
@@ -639,14 +626,6 @@ theorem mem_coclosedCompact_iff :
     exact htco.of_isClosed_subset isClosed_closure <|
       closure_minimal (compl_subset_comm.2 hst) htcl
   · exact ⟨closure sᶜ, ⟨isClosed_closure, h⟩, compl_subset_comm.2 subset_closure⟩
-
-@[deprecated mem_coclosedCompact_iff (since := "2024-02-16")]
-theorem mem_coclosedCompact : s ∈ coclosedCompact X ↔ ∃ t, IsClosed t ∧ IsCompact t ∧ tᶜ ⊆ s := by
-  simp only [hasBasis_coclosedCompact.mem_iff, and_assoc]
-
-@[deprecated mem_coclosedCompact_iff (since := "2024-02-16")]
-theorem mem_coclosed_compact' : s ∈ coclosedCompact X ↔ ∃ t, IsClosed t ∧ IsCompact t ∧ sᶜ ⊆ t := by
-  simp only [hasBasis_coclosedCompact.mem_iff, compl_subset_comm, and_assoc]
 
 /-- Complement of a set belongs to `coclosedCompact` if and only if its closure is compact. -/
 theorem compl_mem_coclosedCompact : sᶜ ∈ coclosedCompact X ↔ IsCompact (closure s) := by
@@ -927,8 +906,8 @@ theorem Topology.IsInducing.isCompact_iff {f : X → Y} (hf : IsInducing f) :
 
 @[deprecated (since := "2024-10-28")] alias Inducing.isCompact_iff := IsInducing.isCompact_iff
 
-/-- If `f : X → Y` is an `Embedding`, the image `f '' s` of a set `s` is compact
-  if and only if `s` is compact. -/
+/-- If `f : X → Y` is an embedding, the image `f '' s` of a set `s` is compact
+if and only if `s` is compact. -/
 theorem Topology.IsEmbedding.isCompact_iff {f : X → Y} (hf : IsEmbedding f) :
     IsCompact s ↔ IsCompact (f '' s) := hf.isInducing.isCompact_iff
 

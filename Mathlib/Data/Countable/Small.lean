@@ -21,9 +21,3 @@ instance (priority := 100) Countable.toSmall (α : Type v) [Countable α] : Smal
 theorem Uncountable.of_not_small {α : Type v} (h : ¬ Small.{w} α) : Uncountable α := by
   rw [uncountable_iff_not_countable]
   exact mt (@Countable.toSmall α) h
-
-@[deprecated (since := "2024-03-20"), nolint defLemma]
-alias small_of_countable := Countable.toSmall
-
-@[deprecated (since := "2024-03-20"), nolint defLemma]
-alias small_of_fintype := Countable.toSmall
