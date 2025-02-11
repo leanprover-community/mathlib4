@@ -1256,12 +1256,11 @@ variable [NormedAddCommGroup D] [MeasurableSpace D] [MeasurableSpace E] [OpensMe
   [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 -- none of hint, norm_cast, simp, rw? or apply? return anything
-lemma qux (R S : ℝ) : R.toNNReal * S.toNNReal = (R * S).toNNReal := sorry
+lemma Real.toNNReal_mul (R S : ℝ) : R.toNNReal * S.toNNReal = (R * S).toNNReal := sorry
 
 -- This looks like the wrong statement to try to prove...
 lemma baz (R : ℝ) (N : ℕ) : N * R.toNNReal = (N * R).toNNReal := by
-  rw [← ENNReal.toNNReal_nat]
-  rw [← qux]
+  rw [← ENNReal.toNNReal_nat, ← Real.toNNReal_mul]
   congr
   -- goal: about toNNReal applied to Nat.cast into ℝ≥0∞ and ℝ, commuting
   sorry
