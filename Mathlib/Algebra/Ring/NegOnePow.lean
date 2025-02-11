@@ -6,6 +6,7 @@ Authors: Joël Riou, Johan Commelin
 import Mathlib.Algebra.Ring.Int.Parity
 import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.Data.ZMod.IntUnitsPower
+import Mathlib.Tactic.NormNum
 
 /-!
 # Integer powers of (-1)

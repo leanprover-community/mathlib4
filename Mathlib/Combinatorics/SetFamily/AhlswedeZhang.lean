@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Ivanov
 -/
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Finset.Sups

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Data.ENNReal.Operations
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.Instances.ENNReal.Defs
 import Mathlib.Topology.Instances.NNReal.Lemmas
@@ -50,6 +51,10 @@ theorem coe_range_mem_nhds : range ((↑) : ℝ≥0 → ℝ≥0∞) ∈ 𝓝 (r 
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ≥0∞) :=
   isEmbedding_coe.continuous
 
+lemma tendsto_coe_toNNReal {a : ℝ≥0∞} (ha : a ≠ ⊤) : Tendsto (↑) (𝓝 a.toNNReal) (𝓝 a) := by
+  nth_rewrite 2 [← coe_toNNReal ha]
+  exact continuous_coe.tendsto _
+
 theorem continuous_coe_iff {α} [TopologicalSpace α] {f : α → ℝ≥0} :
     (Continuous fun a => (f a : ℝ≥0∞)) ↔ Continuous f :=
   isEmbedding_coe.continuous_iff.symm
@@ -77,6 +82,17 @@ theorem tendsto_toNNReal {a : ℝ≥0∞} (ha : a ≠ ∞) :
   lift a to ℝ≥0 using ha
   rw [nhds_coe, tendsto_map'_iff]
   exact tendsto_id
+
+theorem tendsto_toNNReal_iff {f : α → ℝ≥0∞} {u : Filter α} (ha : a ≠ ∞) (hf : ∀ x, f x ≠ ∞) :
+    Tendsto (ENNReal.toNNReal ∘ f) u (𝓝 (a.toNNReal)) ↔ Tendsto f u (𝓝 a) := by
+  refine ⟨fun h => ?_, fun h => (ENNReal.tendsto_toNNReal ha).comp h⟩
+  rw [← coe_comp_toNNReal_comp hf]
+  exact (tendsto_coe_toNNReal ha).comp h
+
+theorem tendsto_toNNReal_iff' {f : α → ℝ≥0∞} {u : Filter α} {a : ℝ≥0} (hf : ∀ x, f x ≠ ∞) :
+    Tendsto (ENNReal.toNNReal ∘ f) u (𝓝 a) ↔ Tendsto f u (𝓝 a) := by
+  rw [← toNNReal_coe a]
+  exact tendsto_toNNReal_iff coe_ne_top hf
 
 theorem eventuallyEq_of_toReal_eventuallyEq {l : Filter α} {f g : α → ℝ≥0∞}
     (hfi : ∀ᶠ x in l, f x ≠ ∞) (hgi : ∀ᶠ x in l, g x ≠ ∞)
@@ -1206,7 +1222,7 @@ theorem cauchySeq_of_edist_le_of_tsum_ne_top {f : ℕ → α} (d : ℕ → ℝ�
   rw [ENNReal.tsum_coe_ne_top_iff_summable] at hd
   exact cauchySeq_of_edist_le_of_summable d hf hd
 
-theorem EMetric.isClosed_ball {a : α} {r : ℝ≥0∞} : IsClosed (closedBall a r) :=
+theorem EMetric.isClosed_closedBall {a : α} {r : ℝ≥0∞} : IsClosed (closedBall a r) :=
   isClosed_le (continuous_id.edist continuous_const) continuous_const
 
 @[simp]
