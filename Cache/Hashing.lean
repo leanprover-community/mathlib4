@@ -61,21 +61,19 @@ Computes the root hash, which mixes the hashes of the content of:
 * `lakefile.lean`
 * `lean-toolchain`
 * `lake-manifest.json`
-and the hash of `Lean.gitHash`.
+and the hash of `Lean.githash`.
 
-(We hash `Lean.gitHash` in case the toolchain changes even though `lean-toolchain` hasn't.
+(We hash `Lean.githash` in case the toolchain changes even though `lean-toolchain` hasn't.
 This happens with the `lean-pr-testing-NNNN` toolchains when Lean 4 PRs are updated.)
 -/
 def getRootHash : CacheM UInt64 := do
-  let rootFiles : List FilePath := ["lakefile.lean", "lean-toolchain", "lake-manifest.json"]
-  let isMathlibRoot ← isMathlibRoot
-  let qualifyPath ←
-    if isMathlibRoot then
-      pure id
-    else
-      pure ((← read).mathlibDepPath / ·)
+  let mathlibDepPath := (← read).mathlibDepPath
+  let rootFiles : List FilePath := [
+    mathlibDepPath / "lakefile.lean",
+    mathlibDepPath / "lean-toolchain",
+    mathlibDepPath / "lake-manifest.json"]
   let hashes ← rootFiles.mapM fun path =>
-    hashFileContents <$> IO.FS.readFile (qualifyPath path)
+    hashFileContents <$> IO.FS.readFile path
   return hash (hash Lean.githash :: hashes)
 
 /--
