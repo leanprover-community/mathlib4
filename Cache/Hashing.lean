@@ -16,21 +16,23 @@ structure HashMemo where
   rootHash : UInt64
   depsMap  : Std.HashMap FilePath (Array FilePath) := {}
   cache    : Std.HashMap FilePath (Option UInt64) := {}
-  hashMap  : HashMap := {}
+  hashMap  : ModuleHashMap := {}
   deriving Inhabited
 
-partial def insertDeps (hashMap : HashMap) (path : FilePath) (hashMemo : HashMemo) : HashMap :=
+partial def insertDeps (hashMap : ModuleHashMap) (path : FilePath) (hashMemo : HashMemo) :
+    ModuleHashMap :=
   if hashMap.contains path then hashMap else
   match (hashMemo.depsMap[path]?, hashMemo.hashMap[path]?) with
   | (some deps, some hash) => deps.foldl (insertDeps · · hashMemo) (hashMap.insert path hash)
   | _ => hashMap
 
 /--
-Filters the `HashMap` of a `HashMemo` so that it only contains key/value pairs such that every key:
+Filters the `hashMap` of a `HashMemo` so that it only contains key/value pairs such that every key:
 * Belongs to the given list of file paths or
 * Corresponds to a file that's imported (transitively of not) by some file in the list of file paths
 -/
-def HashMemo.filterByFilePaths (hashMemo : HashMemo) (filePaths : List FilePath) : IO HashMap := do
+def HashMemo.filterByFilePaths (hashMemo : HashMemo) (filePaths : List FilePath) :
+    IO ModuleHashMap := do
   let mut hashMap := default
   for filePath in filePaths do
     if hashMemo.hashMap.contains filePath then

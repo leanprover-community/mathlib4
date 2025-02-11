@@ -38,7 +38,7 @@ def mkFileURL (URL fileName : String) : String :=
 section Get
 
 /-- Formats the config file for `curl`, containing the list of files to be downloaded -/
-def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
+def mkGetConfigContent (hashMap : IO.ModuleHashMap) : IO String := do
   hashMap.toArray.foldlM (init := "") fun acc ⟨_, hash⟩ => do
     let fileName := hash.asLTar
     -- Below we use `String.quote`, which is intended for quoting for use in Lean code
@@ -75,7 +75,8 @@ def downloadFile (hash : UInt64) : IO Bool := do
 
 /-- Call `curl` to download files from the server to `CACHEDIR` (`.cache`).
 Exit the process with exit code 1 if any files failed to download. -/
-def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool) : IO Unit := do
+def downloadFiles (hashMap : IO.ModuleHashMap) (forceDownload : Bool) (parallel : Bool) :
+    IO Unit := do
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
   let size := hashMap.size
   if size > 0 then
@@ -184,7 +185,7 @@ def getProofWidgets (buildDir : FilePath) : IO Unit := do
     throw <| IO.userError s!"Failed to prune ProofWidgets cloud release: {e}"
 
 /-- Downloads missing files, and unpacks files. -/
-def getFiles (hashMap : IO.HashMap) (forceDownload forceUnpack parallel decompress : Bool) :
+def getFiles (hashMap : IO.ModuleHashMap) (forceDownload forceUnpack parallel decompress : Bool) :
     IO.CacheM Unit := do
   let isMathlibRoot ← IO.isMathlibRoot
   unless isMathlibRoot do checkForToolchainMismatch
@@ -249,7 +250,7 @@ Sends a commit file to the server, containing the hashes of the respective commi
 
 The file name is the current Git hash and the `c/` prefix means that it's a commit file.
 -/
-def commit (hashMap : IO.HashMap) (overwrite : Bool) (token : String) : IO Unit := do
+def commit (hashMap : IO.ModuleHashMap) (overwrite : Bool) (token : String) : IO Unit := do
   let hash ← getGitCommitHash
   let path := IO.CACHEDIR / hash
   IO.mkDir IO.CACHEDIR
