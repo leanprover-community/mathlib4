@@ -109,7 +109,7 @@ def isMathlibRoot : IO Bool :=
 
 section
 
-/-- Find path to Mathlib root directory -/
+/-- Find path to `Mathlib` source directory -/
 private def CacheM.mathlibDepPath (sp : SearchPath) : IO FilePath := do
   let mathlibRootFile ← Lean.findLean sp `Mathlib
   let some mathlibRoot ← pure mathlibRootFile.parent
