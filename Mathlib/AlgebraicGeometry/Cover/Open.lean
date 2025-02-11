@@ -115,7 +115,7 @@ instance {X : Scheme.{u}} (𝒰 : X.AffineOpenCover) (j : 𝒰.J) : IsOpenImmers
   𝒰.map_prop j
 
 /-- The open cover associated to an affine open cover. -/
-@[simps! J obj map f covers]
+@[simps! J obj map f]
 def openCover {X : Scheme.{u}} (𝒰 : X.AffineOpenCover) : X.OpenCover :=
   AffineCover.cover 𝒰
 
