@@ -30,22 +30,20 @@ standard projective resolution of `k` as a trivial `k`-linear `G`-representation
 
 We then construct the bar resolution. The `n`th object in this complex is the representation on
 `Gⁿ →₀ k[G]` defined pointwise by the left regular representation on `k[G]`. The differentials are
-defined by sending `single (g₀, ..., gₙ) (single 1 1)` to
-`single (g₁, ..., gₙ) (single g₀ 1) + ∑ single (g₀, ..., gⱼgⱼ₊₁, ..., gₙ) (single 1 (-1)ʲ⁺¹)`
-` + single (g₀, ..., gₙ₋₁) (single 1 (-1)ⁿ⁺¹)` for `j = 0, ... , n - 1`.
+defined by sending `(g₀, ..., gₙ)` to
+`g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
+`j = 0, ... , n - 1`.
 
 In `RepresentationTheory.Rep` we define an isomorphism `Rep.diagonalSuccIsoFree` between
-`k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])` sending
-`(g₀, ..., gₙ) ↦ single (g₀, ..., gₙ) a ↦ single (g₀⁻¹g₁, ..., gₙ₋₁⁻¹gₙ) (single g₀ a)`.
+`k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])` sending `(g₀, ..., gₙ) ↦ g₀·(g₀⁻¹g₁, ..., gₙ₋₁⁻¹gₙ)`.
 We show that this isomorphism defines a commutative square with the bar resolution differential and
 the standard resolution differential, and thus conclude that the bar resolution differential
 squares to zero and that `Rep.diagonalSuccIsoFree` defines an isomorphism between the two
 complexes. We carry the exactness properties across this isomorphism to conclude the bar resolution
 is a projective resolution too, in `Rep.barResolution`.
 
-In `RepresentationTheory.Homological.GroupCohomology.Basic` and
-`RepresentationTheory.Homological.GroupHomology.Basic`, we then use `Rep.barResolution` to define
-the inhomogeneous (co)chains of a representation, useful for computing group (co)homology.
+In `RepresentationTheory.GroupCohomology.Basic`, we then use `Rep.barResolution` to define the
+inhomogeneous cochains of a representation, useful for computing group cohomology.
 
 ## Main definitions
 
@@ -202,8 +200,8 @@ instance x_projective [Group G] :
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
 theorem d_eq [Monoid G] : ((standardComplex k G).d (n + 1) n).hom.hom = d k G (n + 1) := by
   refine Finsupp.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
-  simp [standardComplex, SimplicialObject.δ, ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ),
-    SimplexCategory.δ, Fin.succAboveOrderEmb]
+  simp_all [standardComplex, SimplicialObject.δ, ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ),
+    SimplexCategory.δ, Fin.succAboveOrderEmb, Action.ofMulAction_V]
 
 end Differentials
 
@@ -213,8 +211,7 @@ variable [Monoid G]
 
 /-- The standard resolution of `k` as a trivial representation as a complex of `k`-modules. -/
 def forget₂ToModuleCat :=
-  ((forget₂ (Rep k G) (ModuleCat.{u} k)).mapHomologicalComplex _).obj
-    (standardComplex k G)
+  ((forget₂ (Rep k G) (ModuleCat.{u} k)).mapHomologicalComplex _).obj (standardComplex k G)
 
 /-- If we apply the free functor `Type u ⥤ ModuleCat.{u} k` to the universal cover of the
 classifying space of `G` as a simplicial set, then take the alternating face map complex, the result
@@ -244,7 +241,8 @@ def forget₂ToModuleCatHomotopyEquiv :
 /-- The hom of `k`-linear `G`-representations `k[G¹] → k` sending `∑ nᵢgᵢ ↦ ∑ nᵢ`. -/
 def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k where
   hom := ModuleCat.ofHom <| Finsupp.linearCombination _ fun _ => (1 : k)
-  comm _ := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext_ring (by simp)
+  comm _ := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext_ring
+    (by simp [ModuleCat.endRingEquiv])
 
 /-- The homotopy equivalence of complexes of `k`-modules between the standard resolution of `k` as
 a trivial `G`-representation, and the complex which is `k` at 0 and 0 everywhere else, acts as
@@ -319,7 +317,7 @@ variable (n)
 
 /-- The differential from `Gⁿ⁺¹ →₀ k[G]` to `Gⁿ →₀ k[G]` in the bar resolution of `k` as a trivial
 `k`-linear `G`-representation. It sends `(g₀, ..., gₙ)` to
-`g₀ • (g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹ • (g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹ • (g₀, ..., gₙ₋₁)` for
+`g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
 `j = 0, ... , n - 1`. -/
 def d : free k G Gⁿ⁺¹ ⟶ free k G Gⁿ :=
   freeLift _ fun g => single (fun i => g i.succ) (single (g 0) 1) +
@@ -351,7 +349,7 @@ open barComplex
 
 /-- The projective resolution of `k` as a trivial `k`-linear `G`-representation with `n`th
 differential `(Gⁿ⁺¹ →₀ k[G]) → (Gⁿ →₀ k[G])` sending `(g₀, ..., gₙ)` to
-`g₀ • (g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹ • (g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹ • (g₀, ..., gₙ₋₁)` for
+`g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
 `j = 0, ... , n - 1`. -/
 noncomputable abbrev barComplex : ChainComplex (Rep k G) ℕ :=
   ChainComplex.of (fun n => free k G (Fin n → G)) (fun n => d k G n) fun _ => by

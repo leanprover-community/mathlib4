@@ -104,9 +104,9 @@ theorem dZero_ker_eq_invariants : LinearMap.ker (dZero A) = invariants A.ρ := b
 lemma dZero_eq_zero_iff (x : A) : dZero A x = 0 ↔ x ∈ A.ρ.invariants :=
   dZero_ker_eq_invariants A ▸ Iff.rfl
 
-@[simp] theorem dZero_eq_zero [A.ρ.IsTrivial] : dZero A = 0 := by
+@[simp] theorem dZero_eq_zero [A.IsTrivial] : dZero A = 0 := by
   ext
-  simp only [dZero_apply, A.ρ.isTrivial_apply, sub_self, LinearMap.zero_apply, Pi.zero_apply]
+  simp only [dZero_apply, isTrivial_apply, sub_self, LinearMap.zero_apply, Pi.zero_apply]
 
 /-- The 1st differential in the complex of inhomogeneous cochains of `A : Rep k G`, as a
 `k`-linear map `Fun(G, A) → Fun(G × G, A)`. It sends
@@ -261,22 +261,22 @@ theorem dZero_apply_mem_oneCocycles (x : A) :
     dZero A x ∈ oneCocycles A :=
   congr($(dOne_comp_dZero A) x)
 
-theorem oneCocycles_map_mul_of_isTrivial [A.ρ.IsTrivial] (f : oneCocycles A) (g h : G) :
+theorem oneCocycles_map_mul_of_isTrivial [A.IsTrivial] (f : oneCocycles A) (g h : G) :
     f (g * h) = f g + f h := by
-  rw [(mem_oneCocycles_iff f).1 f.2, A.ρ.isTrivial_apply g (f h), add_comm]
+  rw [(mem_oneCocycles_iff f).1 f.2, isTrivial_apply A.ρ g (f h), add_comm]
 
-theorem mem_oneCocycles_of_addMonoidHom [A.ρ.IsTrivial] (f : Additive G →+ A) :
+theorem mem_oneCocycles_of_addMonoidHom [A.IsTrivial] (f : Additive G →+ A) :
     f ∘ Additive.ofMul ∈ oneCocycles A :=
   (mem_oneCocycles_iff _).2 fun g h => by
     simp only [Function.comp_apply, ofMul_mul, map_add,
-      oneCocycles_map_mul_of_isTrivial, A.ρ.isTrivial_apply g (f (Additive.ofMul h)),
+      oneCocycles_map_mul_of_isTrivial, isTrivial_apply A.ρ g (f (Additive.ofMul h)),
       add_comm (f (Additive.ofMul g))]
 
 variable (A)
 
 /-- When `A : Rep k G` is a trivial representation of `G`, `Z¹(G, A)` is isomorphic to the
 group homs `G → A`. -/
-@[simps] def oneCocyclesLequivOfIsTrivial [hA : A.ρ.IsTrivial] :
+@[simps] def oneCocyclesLequivOfIsTrivial [hA : A.IsTrivial] :
     oneCocycles A ≃ₗ[k] Additive G →+ A where
   toFun f :=
     { toFun := f ∘ Additive.toMul
@@ -378,7 +378,7 @@ abbrev oneCoboundariesToOneCocycles : oneCoboundaries A →ₗ[k] oneCocycles A 
 lemma oneCoboundariesToOneCocycles_apply (x : oneCoboundaries A) :
     oneCoboundariesToOneCocycles A x = x.1 := rfl
 
-theorem oneCoboundaries_eq_bot_of_isTrivial (A : Rep k G) [A.ρ.IsTrivial] :
+theorem oneCoboundaries_eq_bot_of_isTrivial (A : Rep k G) [A.IsTrivial] :
     oneCoboundaries A = ⊥ := by
   simp_rw [oneCoboundaries, dZero_eq_zero]
   exact LinearMap.range_eq_bot.2 rfl

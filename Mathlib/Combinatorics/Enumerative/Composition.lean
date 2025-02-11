@@ -86,6 +86,8 @@ Composition, partition
 <https://en.wikipedia.org/wiki/Composition_(combinatorics)>
 -/
 
+assert_not_exists Field
+
 open List
 
 variable {n : ℕ}

@@ -144,8 +144,6 @@ theorem val_eq_val (a b : Fin n) : (a : ℕ) = b ↔ a = b :=
 theorem ne_iff_vne (a b : Fin n) : a ≠ b ↔ a.1 ≠ b.1 :=
   Fin.ext_iff.not
 
--- Porting note: I'm not sure if this comment still applies.
--- built-in reduction doesn't always work
 @[simp, nolint simpNF]
 theorem mk_eq_mk {a h a' h'} : @mk n a h = @mk n a' h' ↔ a = a' :=
   Fin.ext_iff
@@ -635,8 +633,11 @@ theorem succ_le_or_le_castSucc (p : Fin (n + 1)) (i : Fin n) : succ i ≤ p ∨ 
   rw [le_castSucc_iff, ← castSucc_lt_iff_succ_le]
   exact p.castSucc_lt_or_lt_succ i
 
-theorem exists_castSucc_eq_of_ne_last {x : Fin (n + 1)} (h : x ≠ (last _)) :
+theorem eq_castSucc_of_ne_last {x : Fin (n + 1)} (h : x ≠ (last _)) :
     ∃ y, Fin.castSucc y = x := exists_castSucc_eq.mpr h
+
+@[deprecated (since := "2025-02-06")]
+alias exists_castSucc_eq_of_ne_last := eq_castSucc_of_ne_last
 
 theorem forall_fin_succ' {P : Fin (n + 1) → Prop} :
     (∀ i, P i) ↔ (∀ i : Fin n, P i.castSucc) ∧ P (.last _) :=

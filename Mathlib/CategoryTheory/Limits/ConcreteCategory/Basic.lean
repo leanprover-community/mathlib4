@@ -17,6 +17,46 @@ universe t w v u r
 
 open CategoryTheory
 
+namespace CategoryTheory.Types
+
+open Limits
+
+/-! The forgetful fuctor on `Type u` is the identity; copy the instances on `𝟭 (Type u)`
+over to `forget (Type u)`.
+
+We currently have two instances for `HasForget (Type u)`:
+
+* A global `HasForget` instance where `forget (Type u)` reduces to `𝟭 Type`
+* A locally enabled `ConcreteCategory` where `forget (Type u)` is only reducible-with-instances
+  equal to `𝟭 Type`.
+
+Since instance synthesis only looks through reducible definitions, we need to help it out by copying
+over the instances that wouldn't be found otherwise.
+-/
+
+attribute [local instance] Types.instFunLike Types.instConcreteCategory
+
+instance : (@forget (Type u) _ ConcreteCategory.toHasForget).Full :=
+  Functor.Full.id
+
+instance : PreservesLimitsOfSize (@forget (Type u) _ ConcreteCategory.toHasForget) :=
+  id_preservesLimitsOfSize
+instance : PreservesColimitsOfSize (@forget (Type u) _ ConcreteCategory.toHasForget) :=
+  id_preservesColimitsOfSize
+
+instance : ReflectsLimitsOfSize (@forget (Type u) _ ConcreteCategory.toHasForget) :=
+  id_reflectsLimits
+instance : ReflectsColimitsOfSize (@forget (Type u) _ ConcreteCategory.toHasForget) :=
+  id_reflectsColimits
+
+instance : (@forget (Type u) _ ConcreteCategory.toHasForget).IsEquivalence :=
+  Functor.isEquivalence_refl
+
+instance : (@forget (Type u) _ ConcreteCategory.toHasForget).IsCorepresentable :=
+  instIsCorepresentableIdType
+
+end CategoryTheory.Types
+
 namespace CategoryTheory.Limits.Concrete
 
 attribute [local instance] HasForget.instFunLike HasForget.hasCoeToSort

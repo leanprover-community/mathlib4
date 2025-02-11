@@ -43,7 +43,7 @@ lemma cartanMatrixIn_def (i j : b.support) :
     b.cartanMatrixIn S i j = P.pairingIn S i j :=
   rfl
 
-variable [Nontrivial R] [NoZeroSMulDivisors S R]
+variable [FaithfulSMul S R]
 
 @[simp]
 lemma cartanMatrixIn_apply_same (i : b.support) :
