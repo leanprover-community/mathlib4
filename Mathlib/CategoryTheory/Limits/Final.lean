@@ -1048,16 +1048,24 @@ private lemma Grothendieck.final_map_small {C : Type u₁} [Category.{u₁} C] {
   intro X
   simp [i, fi]
 
-variable {G : D ⥤ Cat.{v₂, u₂}} (α : F ⟶ G)
+variable {F G : C ⥤ Cat.{v₂, u₂}} (α : F ⟶ G)
 
-
-
-instance Grothendieck.final_map [hα : ∀ X, Final (α.app X)] : Final (map α) := by
-  let sD : D ≌ AsSmall.{max u₁ u₂ v₁ v₂} D := AsSmall.equiv
-  let F' := _
+lemma Grothendieck.final_map [hα : ∀ X, Final (α.app X)] : Final (map α) := by
+  let sC : C ≌ AsSmall.{max u₁ u₂ v₁ v₂} C := AsSmall.equiv
+  let F' : AsSmall.{max u₁ u₂ v₁ v₂} C ⥤ Cat := sC.inverse ⋙ F ⋙ asSmall.{max v₁ u₁ v₂ u₂}
+  let G' : AsSmall.{max u₁ u₂ v₁ v₂} C ⥤ Cat := sC.inverse ⋙ G ⋙ asSmall.{max v₁ u₁ v₂ u₂}
+  let α' : F' ⟶ G' := whiskerLeft _ (whiskerRight α _)
+  have : ∀ (X : AsSmall C), Final (α'.app X) := sorry
+  have hα' : (map α').Final := final_map_small _
+  simp only [α'] at hα'
+  have := mapWhiskerLeftIsoConjPreMap sC.symm (whiskerRight α asSmall.{max v₁ u₁ v₂ u₂})
+  have := mapWhiskerRightAsSmallFunctor
+  have := final_of_natIso sorry
   sorry
 
+#check Grothendieck.mapWhiskerRightAsSmallFunctor
 #check whiskerLeft
+#exit
 
 end Grothendieck
 
