@@ -58,8 +58,6 @@ theorem IsSemiprimaryRing.isNoetherian_iff_isArtinian [IsSemiprimaryRing R] :
 
 variable (R M)
 
-@[stacks 00JB "A ring is Artinian if and only if it has finite length as a module over itself.
-Any such ring is both Artinian and Noetherian."]
 theorem IsArtinianRing.tfae [IsArtinianRing R] :
     List.TFAE [Module.Finite R M, IsNoetherian R M, IsArtinian R M, IsFiniteLength R M] := by
   tfae_have 2 ↔ 3 := IsSemiprimaryRing.isNoetherian_iff_isArtinian
@@ -70,6 +68,13 @@ theorem IsArtinianRing.tfae [IsArtinianRing R] :
   tfae_have 2 → 4 := fun h ↦ ⟨h, tfae_2_iff_3.mp h⟩
   tfae_finish
 
+@[stacks 00JB "A ring is Artinian if and only if it has finite length as a module over itself."]
+theorem isArtinianRing_iff_isFiniteLength : IsArtinianRing R ↔ IsFiniteLength R R :=
+  ⟨fun h ↦ ((IsArtinianRing.tfae R R).out 2 3).mp h,
+    fun h ↦ (isFiniteLength_iff_isNoetherian_isArtinian.mp h).2⟩
+
+@[stacks 00JB "A ring is Artinian if and only if it has finite length as a module over itself.
+**Any such ring is both Artinian and Noetherian.**"]
 instance [IsArtinianRing R] : IsNoetherianRing R := ((IsArtinianRing.tfae R R).out 2 1).mp ‹_›
 
 /-- A finitely generated Artinian module over a commutative ring is Noetherian. This is not
