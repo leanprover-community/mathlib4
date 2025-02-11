@@ -86,7 +86,7 @@ def main (args : List String) : IO Unit := do
     -- No arguments means to start from `Mathlib.lean`
     -- TODO: could change this to the default-target of a downstream project
     let mod := `Mathlib
-    let sp := (← read).searchPath
+    let sp := (← read).srcSearchPath
     let sourceFile ← Lean.findLean sp mod
     roots := Std.HashMap.empty.insert mod sourceFile
   let hashMemo ← getHashMemo roots
