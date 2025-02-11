@@ -207,7 +207,11 @@ variable [ENormedAddMonoid ε]
 
 @[simp]
 theorem eLpNorm'_zero (hp0_lt : 0 < q) : eLpNorm' (0 : α → ε) q μ = 0 := by
-  simp [eLpNorm'_eq_lintegral_enorm, hp0_lt]
+  simp only [eLpNorm'_eq_lintegral_enorm, Pi.zero_apply, enorm_zero]
+  simp only [hp0_lt]
+  simp only [
+    ENNReal.zero_rpow_of_pos, lintegral_const, zero_mul, one_div, inv_pos]
+  -- was: simp [eLpNorm'_eq_lintegral_enorm, hp0_lt]
   sorry -- TODO: fix proof!
 
 @[simp]
@@ -221,6 +225,7 @@ theorem eLpNormEssSup_zero : eLpNormEssSup (0 : α → ε) μ = 0 := by
   simp [eLpNormEssSup, ← bot_eq_zero', essSup_const_bot]
   sorry -- TODO: fix proof!
 
+#exit
 @[simp]
 theorem eLpNorm_zero : eLpNorm (0 : α → ε) p μ = 0 := by
   by_cases h0 : p = 0
