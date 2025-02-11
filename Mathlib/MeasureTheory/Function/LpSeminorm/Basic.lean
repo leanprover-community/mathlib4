@@ -413,10 +413,9 @@ theorem eLpNorm_mono_ae {f : α → F} {g : α → G} (h : ∀ᵐ x ∂μ, ‖f 
     eLpNorm f p μ ≤ eLpNorm g p μ :=
   eLpNorm_mono_nnnorm_ae h
 
--- TODO: prove and rename!
+-- TODO: prove and rename! done in #21433
 theorem eLpNorm_mono_aeENORM {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε']
-    {f : α → ε} {g : α → ε'} (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
-    eLpNorm f p μ ≤ eLpNorm g p μ :=
+    {f : α → ε} {g : α → ε'} (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) : eLpNorm f p μ ≤ eLpNorm g p μ :=
   sorry -- eLpNorm_mono_nnnorm_ae h
 
 theorem eLpNorm_mono_ae_real {f : α → F} {g : α → ℝ} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ g x) :
@@ -654,9 +653,7 @@ lemma eLpNormEssSup_indicator_const_eq {ε : Type*} [TopologicalSpace ε] [ENorm
   refine hμs (measure_mono_null (fun x hx_mem => ?_) h')
   rw [Set.mem_setOf_eq, Set.indicator_of_mem hx_mem]
 
--- The following lemmas require [Zero F].
-variable {ε : Type*} [TopologicalSpace ε]
-  [ENormedAddMonoid ε] {c : ε}
+variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε] {c : ε}
 
 lemma eLpNorm_indicator_const₀ (hs : NullMeasurableSet s μ) (hp : p ≠ 0) (hp_top : p ≠ ∞) :
     eLpNorm (s.indicator fun _ => c) p μ = ‖c‖ₑ * μ s ^ (1 / p.toReal) :=
@@ -684,9 +681,8 @@ lemma eLpNorm_indicator_const' (hs : MeasurableSet s) (hμs : μ s ≠ 0) (hp : 
   · simp [hp_top, eLpNormEssSup_indicator_const_eq s c hμs]
   · exact eLpNorm_indicator_const hs hp hp_top
 
-#exit
-
-lemma eLpNorm_indicator_const_le (c : ε) (p : ℝ≥0∞) :
+variable (c) in
+lemma eLpNorm_indicator_const_le (p : ℝ≥0∞) :
     eLpNorm (s.indicator fun _ => c) p μ ≤ ‖c‖ₑ * μ s ^ (1 / p.toReal) := by
   obtain rfl | hp := eq_or_ne p 0
   · simp only [eLpNorm_exponent_zero, zero_le']
@@ -697,15 +693,17 @@ lemma eLpNorm_indicator_const_le (c : ε) (p : ℝ≥0∞) :
   let t := toMeasurable μ s
   calc
     eLpNorm (s.indicator fun _ => c) p μ ≤ eLpNorm (t.indicator fun _ => c) p μ :=
-      eLpNorm_mono (norm_indicator_le_of_subset (subset_toMeasurable _ _) _)
+      -- TODO: this requires a few generalised lemmas to prove, i.e. #21433
+      sorry -- was: eLpNorm_mono (norm_indicator_le_of_subset (subset_toMeasurable _ _) _)
     _ = ‖c‖ₑ * μ t ^ (1 / p.toReal) :=
       eLpNorm_indicator_const (measurableSet_toMeasurable ..) hp h'p
     _ = ‖c‖ₑ * μ s ^ (1 / p.toReal) := by rw [measure_toMeasurable]
 
-lemma Memℒp.indicator (hs : MeasurableSet s) (hf : Memℒp f p μ) : Memℒp (s.indicator f) p μ :=
+lemma Memℒp.indicator {f : α → ε} (hs : MeasurableSet s) (hf : Memℒp f p μ) :
+    Memℒp (s.indicator f) p μ :=
   ⟨hf.aestronglyMeasurable.indicator hs, lt_of_le_of_lt (eLpNorm_indicator_le f) hf.eLpNorm_lt_top⟩
 
-lemma memℒp_indicator_iff_restrict (hs : MeasurableSet s) :
+lemma memℒp_indicator_iff_restrict {f : α → ε} (hs : MeasurableSet s) :
     Memℒp (s.indicator f) p μ ↔ Memℒp f p (μ.restrict s) := by
   simp [Memℒp, aestronglyMeasurable_indicator_iff hs, eLpNorm_indicator_eq_eLpNorm_restrict hs]
 
@@ -729,7 +727,7 @@ lemma eLpNorm_top_piecewise (f g : α → ε) [DecidablePred (· ∈ s)] (hs : M
       = max (eLpNorm f ∞ (μ.restrict s)) (eLpNorm g ∞ (μ.restrict sᶜ)) :=
   eLpNormEssSup_piecewise f g hs
 
-protected lemma Memℒp.piecewise [DecidablePred (· ∈ s)] {g} (hs : MeasurableSet s)
+protected lemma Memℒp.piecewise {f : α → ε} [DecidablePred (· ∈ s)] {g} (hs : MeasurableSet s)
    (hf : Memℒp f p (μ.restrict s)) (hg : Memℒp g p (μ.restrict sᶜ)) :
     Memℒp (s.piecewise f g) p μ := by
   by_cases hp_zero : p = 0
@@ -757,7 +755,8 @@ end Indicator
 
 /-- For a function `f` with support in `s`, the Lᵖ norms of `f` with respect to `μ` and
 `μ.restrict s` are the same. -/
-theorem eLpNorm_restrict_eq_of_support_subset {s : Set α} {f : α → F} (hsf : f.support ⊆ s) :
+theorem eLpNorm_restrict_eq_of_support_subset {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+    {s : Set α} {f : α → ε} (hsf : f.support ⊆ s) :
     eLpNorm f p (μ.restrict s) = eLpNorm f p μ := by
   by_cases hp0 : p = 0
   · simp [hp0]
@@ -783,7 +782,7 @@ section SMul
 variable {R : Type*} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
   [NoZeroSMulDivisors R ℝ≥0∞] {c : R}
 
-@[simp] lemma eLpNormEssSup_smul_measure (hc : c ≠ 0) (f : α → F) :
+@[simp] lemma eLpNormEssSup_smul_measure (hc : c ≠ 0) (f : α → ε) :
     eLpNormEssSup f (c • μ) = eLpNormEssSup f μ := by
   simp_rw [eLpNormEssSup]
   exact essSup_smul_measure hc _
