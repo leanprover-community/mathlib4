@@ -728,8 +728,8 @@ theorem nnnorm_mul_le' (a b : E) : ‖a * b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
   NNReal.coe_le_coe.1 <| norm_mul_le' a b
 
 @[to_additive enorm_add_le]
-lemma enorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := by
-  simpa [enorm, ← ENNReal.coe_add] using nnnorm_mul_le' a b
+lemma enorm_mul_le' {E : Type*} [TopologicalSpace E] [ENormedMonoid E] (a b : E) :
+  ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := ENormedMonoid.enorm_mul_le a b
 
 @[to_additive norm_nsmul_le]
 lemma norm_pow_le_mul_norm : ∀ {n : ℕ}, ‖a ^ n‖ ≤ n * ‖a‖
@@ -836,8 +836,6 @@ theorem edist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
 end NNNorm
 
 section ENorm
-
-export ENormedAddMonoid (enorm_add_le)
 
 @[to_additive (attr := simp) enorm_zero] lemma enorm_one' : ‖(1 : E)‖ₑ = 0 := by simp [enorm]
 
