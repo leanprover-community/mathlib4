@@ -49,9 +49,6 @@ theorem AntisymmRel.refl [IsRefl α r] (a : α) : AntisymmRel r a a :=
 @[deprecated (since := "2025-01-28")]
 alias antisymmRel_refl := AntisymmRel.refl
 
-theorem antisymmRel_rfl {r} [IsRefl α r] {a : α} : AntisymmRel r a a :=
-  antisymmRel_refl r a
-
 variable {r} in
 lemma AntisymmRel.rfl [IsRefl α r] {a : α} : AntisymmRel r a a := .refl ..
 
