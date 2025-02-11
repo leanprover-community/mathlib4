@@ -96,7 +96,7 @@ theorem eq_toGHSpace_iff {X : Type u} [MetricSpace X] [CompactSpace X] [Nonempty
   · rcases Setoid.symm h with ⟨e⟩
     have f := (kuratowskiEmbedding.isometry X).isometryEquivOnRange.trans e
     use fun x => f x, isometry_subtype_coe.comp f.isometry
-    erw [range_comp, f.range_eq_univ, Set.image_univ, Subtype.range_coe]
+    rw [range_comp', f.range_eq_univ, Set.image_univ, Subtype.range_coe]
   · rintro ⟨Ψ, ⟨isomΨ, rangeΨ⟩⟩
     have f :=
       ((kuratowskiEmbedding.isometry X).isometryEquivOnRange.symm.trans
