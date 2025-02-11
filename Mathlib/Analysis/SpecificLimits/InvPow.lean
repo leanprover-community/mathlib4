@@ -17,6 +17,12 @@ lemma deriv_div_sub_pow {𝕜 : Type*} [NontriviallyNormedField 𝕜] (z w a : �
   norm_cast
   field_simp
 
+lemma hasDerivAt_div_sub_pow {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    (z w a : 𝕜) (r : ℕ) (hz : z ≠ w) :
+    HasDerivAt (fun z : 𝕜 ↦ a / (w - z) ^ r) (r * a / (w - z) ^ (r + 1)) z := by
+  rw [← deriv_div_sub_pow, hasDerivAt_deriv_iff]
+  refine .div (by fun_prop) (by fun_prop) (by simp [eq_comm, sub_eq_zero, hz])
+
 lemma iter_deriv_div_sub_pow {𝕜 : Type*} [NontriviallyNormedField 𝕜] (z w a : 𝕜) (r k : ℕ) :
     deriv^[k] (fun z : 𝕜 ↦ a / (w - z) ^ r) z = r.ascFactorial k * a / (w - z) ^ (r + k) := by
   revert z
@@ -38,6 +44,16 @@ lemma Complex.tsum_eq_one_div_sub_pow (w z : ℂ) (hz : z.abs < w.abs) (k : ℕ)
       ← Nat.cast_mul, Nat.ascFactorial_eq_factorial_mul_choose']
   · simp
   · exact .div (by fun_prop) (by fun_prop) (by simp [sub_eq_zero, imp_not_comm, hk])
+
+/-- Taylor expansion of `1 / z ^ k` at `w`. -/
+lemma Complex.hasSum_one_div_sub_pow (w z : ℂ) (hz : z.abs < w.abs) (k : ℕ) (hk : k ≠ 0) :
+    HasSum (fun i ↦ (Nat.choose (i + k - 1) i) * w ^ (- ↑(i + k) : ℤ) * z ^ i)
+      (1 / (w - z) ^ k) := by
+  rw [Summable.hasSum_iff, tsum_eq_one_div_sub_pow w z hz k hk]
+  by_contra H
+  obtain ⟨rfl, -⟩ : w = z ∧ k ≠ 0 := by simpa [sub_eq_zero] using
+    (tsum_eq_one_div_sub_pow w z hz k hk).symm.trans (tsum_eq_zero_of_not_summable H)
+  simp at hz
 
 /-- Taylor expansion of `1 / z` at `w`. -/
 lemma Complex.tsum_eq_one_div_sub (w z : ℂ) (hz : z.abs < w.abs) :
