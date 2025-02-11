@@ -100,7 +100,7 @@ elab_rules : tactic
     let verbose := (← getOptions).get `tactic.erw?.verbose (defVal := false)
     let g ← getMainGoal
     evalTactic (← `(tactic| erw [$r]))
-    let e := (← instantiateMVars (mkMVar g)).headBeta
+    let e := (← instantiateMVars (.mvar g)).headBeta
     let (tgt, inferred) ← withRef tk do extractRewriteEq e
     let (_, msgs) ← (logDiffs tk tgt inferred).run #[]
     if verbose then
