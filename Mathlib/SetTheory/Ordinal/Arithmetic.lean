@@ -381,8 +381,11 @@ theorem pred_succ_gc : GaloisConnection pred succ := by
   · rw [ha.pred_eq, ha.le_succ_iff]
 
 @[simp]
-theorem pred_le {a b} : pred a ≤ b ↔ a ≤ succ b :=
+theorem pred_le_iff {a b} : pred a ≤ b ↔ a ≤ succ b :=
   pred_succ_gc.le_iff_le
+
+@[deprecated pred_le_iff (since := "2025-02-11")]
+alias pred_le := pred_le_iff
 
 @[simp]
 theorem lt_pred_iff {a b} : a < pred b ↔ succ a < b :=
