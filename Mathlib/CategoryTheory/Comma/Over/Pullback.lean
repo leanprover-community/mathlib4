@@ -279,9 +279,8 @@ def Functor.toOverTerminal [HasTerminal C] : C ⥤ Over (⊤_ C) where
 
 /-- Functors `Over.forget` and `toOverTerminal` form an equivalence between
 `Over (⊤_ C)` and `C`. -/
-The slice category over the terminal object is equivalent to the original category. -/
 def equivOverTerminal [HasTerminal C] : Over (⊤_ C) ≌ C :=
-  CategoryTheory.Equivalence.mk (Over.forget _) (Functor.toOverTerminal C)
+  Equivalence.mk (Over.forget _) (Functor.toOverTerminal C)
     (NatIso.ofComponents (fun X => Over.isoMk (Iso.refl _)))
     (NatIso.ofComponents (fun X => Iso.refl _))
 
@@ -339,11 +338,10 @@ end forgetAdjStar
 /-- `star (⊤_ C) : C ⥤ Over (⊤_ C)` is naturally isomorphic to `Functor.toOverTerminal C`. -/
 def toOverTerminalStarIso [HasTerminal C] [HasBinaryProducts C] :
     star (⊤_ C) ≅ Functor.toOverTerminal C := by
-  have e : (Over.forget (⊤_ C)).IsEquivalence := (equivOverTerminal C).isEquivalence_functor
-  let adj := (Over.forget (⊤_ C)).asEquivalence.toAdjunction
-  let iso := conjugateIsoEquiv (Over.forgetAdjStar (⊤_ C)) adj (Iso.refl _) ≪≫
-    (Equivalence.asEquivalenceInverse (equivOverTerminal C))
-  exact iso
+  have e : (forget (⊤_ C)).IsEquivalence := (equivOverTerminal C).isEquivalence_functor
+  let adj := (forget (⊤_ C)).asEquivalence.toAdjunction
+  exact conjugateIsoEquiv (forgetAdjStar (⊤_ C)) adj (Iso.refl _) ≪≫
+  (Functor.asEquivalenceInverse (equivOverTerminal C))
 
 /-- A natural isomorphism between the functors `star X` and `star Y ⋙ pullback f`
 for any morphism `f : X ⟶ Y`. -/

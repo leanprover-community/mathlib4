@@ -534,9 +534,6 @@ noncomputable def asEquivalence (F : C ⥤ D) [F.IsEquivalence] : C ≌ D where
       (fun f => F.map_injective (by simp [inv]))
   counitIso := NatIso.ofComponents F.objObjPreimageIso (by simp [inv])
 
-lemma asEquivalence_inverse (F : C ⥤ D) [F.IsEquivalence] : (F.asEquivalence).inverse = F.inv := by
-  rfl
-
 instance isEquivalence_refl : IsEquivalence (𝟭 C) :=
   Equivalence.refl.isEquivalence_functor
 
@@ -553,6 +550,9 @@ instance (F : C ⥤ D) [IsEquivalence F] : IsEquivalence ((whiskeringLeft C D E)
 
 instance (F : C ⥤ D) [IsEquivalence F] : IsEquivalence ((whiskeringRight E C D).obj F) :=
   (inferInstance : IsEquivalence (Equivalence.congrRight F.asEquivalence).functor)
+
+lemma asEquivalence_inverse (F : C ⥤ D) [F.IsEquivalence] : (F.asEquivalence).inverse = F.inv := by
+  rfl
 
 /-- The inverse associated to `asEquivalence e.functor` of an equivalence `e` is naturally
 isomorphism to the original `e.inverse`. We use this to construct the natural isomorphism
