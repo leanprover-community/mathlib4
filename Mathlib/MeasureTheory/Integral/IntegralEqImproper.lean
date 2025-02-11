@@ -6,7 +6,6 @@ Authors: Anatole Dedecker, Bhavik Mehta
 import Mathlib.Analysis.Calculus.Deriv.Support
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 import Mathlib.MeasureTheory.Integral.FundThmCalculus
-import Mathlib.Order.Filter.AtTopBot
 import Mathlib.MeasureTheory.Function.Jacobian
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 import Mathlib.MeasureTheory.Measure.Haar.Unique
@@ -139,7 +138,7 @@ theorem aecover_ball {x : α} {r : ι → ℝ} (hr : Tendsto r l atTop) :
 
 theorem aecover_closedBall {x : α} {r : ι → ℝ} (hr : Tendsto r l atTop) :
     AECover μ l (fun i ↦ Metric.closedBall x (r i)) where
-  measurableSet _ := Metric.isClosed_ball.measurableSet
+  measurableSet _ := Metric.isClosed_closedBall.measurableSet
   ae_eventually_mem := by
     filter_upwards with y
     filter_upwards [hr (Ici_mem_atTop (dist x y))] with a ha using by simpa [dist_comm] using ha
