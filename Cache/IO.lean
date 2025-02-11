@@ -283,9 +283,6 @@ def hashes (hashMap : HashMap) : Lean.RBTree UInt64 compare :=
 
 end HashMap
 
-def mkDir (path : FilePath) : IO Unit := do
-  if !(← path.pathExists) then IO.FS.createDirAll path
-
 /--
 Given a path to a Lean file, concatenates the paths to its build files.
 Each build file also has a `Bool` indicating whether that file is required for caching to proceed.
@@ -313,7 +310,7 @@ def allExist (paths : List (FilePath × Bool)) : IO Bool := do
 def packCache (hashMap : HashMap) (overwrite verbose unpackedOnly : Bool)
     (comment : Option String := none) :
     CacheM <| Array String := do
-  mkDir CACHEDIR
+  IO.FS.createDirAll CACHEDIR
   IO.println "Compressing cache"
   let mut acc := #[]
   let mut tasks := #[]
