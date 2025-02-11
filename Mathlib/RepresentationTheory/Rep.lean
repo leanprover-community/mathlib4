@@ -164,19 +164,23 @@ instance : (linearization k G).Monoidal := by
 variable {k G}
 
 @[simp]
-theorem linearization_obj_ρ (X : Action (Type u) G) (g : G) (x : X.V →₀ k) :
-    ((linearization k G).obj X).ρ g x = Finsupp.lmapDomain k k (X.ρ g) x :=
+theorem coe_linearization_obj (X : Action (Type u) G) :
+    (linearization k G).obj X = (X.V →₀ k) := rfl
+
+theorem linearization_obj_ρ (X : Action (Type u) G) (g : G) :
+    ((linearization k G).obj X).ρ g = Finsupp.lmapDomain k k (X.ρ g) :=
   rfl
 
-theorem linearization_of (X : Action (Type u) G) (g : G) (x : X.V) :
-    ((linearization k G).obj X).ρ g (Finsupp.single x (1 : k))
-      = Finsupp.single (X.ρ g x) (1 : k) := by
-  rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
+@[simp]
+theorem coe_linearization_obj_ρ (X : Action (Type u) G) (g : G) :
+    @DFunLike.coe (no_index G →* ((X.V →₀ k) →ₗ[k] (X.V →₀ k))) _
+      (fun _ => (X.V →₀ k) →ₗ[k] (X.V →₀ k)) _
+      ((linearization k G).obj X).ρ g = Finsupp.lmapDomain k k (X.ρ g) := rfl
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): helps fixing `linearizationTrivialIso` since change in behaviour of `ext`.
 theorem linearization_single (X : Action (Type u) G) (g : G) (x : X.V) (r : k) :
     ((linearization k G).obj X).ρ g (Finsupp.single x r) = Finsupp.single (X.ρ g x) r := by
-  rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
+  simp
 
 variable {X Y : Action (Type u) G} (f : X ⟶ Y)
 
@@ -216,7 +220,7 @@ variable (k G)
 
 /-- The linearization of a type `X` on which `G` acts trivially is the trivial `G`-representation
 on `k[X]`. -/
-@[simps!]
+@[simps! hom_hom inv_hom]
 noncomputable def linearizationTrivialIso (X : Type u) :
     (linearization k G).obj (Action.mk X 1) ≅ trivial k G (X →₀ k) :=
   Action.mkIso (Iso.refl _) fun _ => ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext
@@ -439,7 +443,7 @@ theorem diagonalSuccIsoTensorTrivial_hom_hom_single (f : Fin (n + 1) → G) (a :
   simp [diagonalSuccIsoTensorTrivial, instMonoidalCategoryStruct_whiskerLeft, tensorObj_def,
     ModuleCat.MonoidalCategory.whiskerLeft, instMonoidalCategoryStruct_tensorObj,
     ModuleCat.MonoidalCategory.tensorObj, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul,
-    ModuleCat.hom_id (M := ((linearization k G).obj _).V)]
+    ModuleCat.hom_id (M := ((linearization k G).obj _).V), Action.ofMulAction_V]
 
 theorem diagonalSuccIsoTensorTrivial_inv_hom_single_single (g : G) (f : Fin n → G) (a b : k) :
     (diagonalSuccIsoTensorTrivial k G n).inv.hom (single g a ⊗ₜ single f b) =
@@ -447,7 +451,7 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom_single_single (g : G) (f : Fin n �
   have := Action.diagonalSuccIsoTensorTrivial_inv_hom (G := G) (n := n)
   simp_all [diagonalSuccIsoTensorTrivial, instMonoidalCategoryStruct_tensorHom,
     instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj, tensorObj_def,
-    ModuleCat.hom_id (M := ((linearization k G).obj _).V)]
+    ModuleCat.hom_id (M := ((linearization k G).obj _).V), Action.ofMulAction_V]
 
 theorem diagonalSuccIsoTensorTrivial_inv_hom_single_left (g : G) (f : (Fin n → G) →₀ k) (r : k) :
     (diagonalSuccIsoTensorTrivial k G n).inv.hom (single g r ⊗ₜ f) =
@@ -456,8 +460,8 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom_single_left (g : G) (f : (Fin n →
   refine f.induction ?_ ?_
   · simp only [TensorProduct.tmul_zero, map_zero]
   · intro a b x _ _ hx
-    simp only [lift_apply, smul_single', mul_one, TensorProduct.tmul_add, map_add, mul_comm b, hx,
-      diagonalSuccIsoTensorTrivial_inv_hom_single_single, sum_single_index, zero_mul, single_zero]
+    simpa [-Action.instMonoidalCategory_tensorObj_V, TensorProduct.tmul_add, map_add, mul_comm b,
+      hx] using diagonalSuccIsoTensorTrivial_inv_hom_single_single ..
 
 theorem diagonalSuccIsoTensorTrivial_inv_hom_single_right (g : G →₀ k) (f : Fin n → G) (r : k) :
     (diagonalSuccIsoTensorTrivial k G n).inv.hom (g ⊗ₜ single f r) =
@@ -465,8 +469,8 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom_single_right (g : G →₀ k) (f : 
   refine g.induction ?_ ?_
   · simp only [TensorProduct.zero_tmul, map_zero]
   · intro a b x _ _ hx
-    simp only [lift_apply, smul_single', map_add, hx, TensorProduct.add_tmul, single_zero,
-      diagonalSuccIsoTensorTrivial_inv_hom_single_single, sum_single_index, zero_mul]
+    simpa [-Action.instMonoidalCategory_tensorObj_V, map_add, hx, TensorProduct.add_tmul] using
+      diagonalSuccIsoTensorTrivial_inv_hom_single_single ..
 
 variable (k G n) in
 /-- Representation isomorphism `k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])`, where the righthand representation is
@@ -475,6 +479,7 @@ defined pointwise by the left regular representation on `k[G]`. The map sends
 def diagonalSuccIsoFree : diagonal k G (n + 1) ≅ free k G (Fin n → G) :=
   diagonalSuccIsoTensorTrivial k G n ≪≫ leftRegularTensorTrivialIsoFree k G (Fin n → G)
 
+@[simp]
 theorem diagonalSuccIsoFree_hom_hom_single (f : Fin (n + 1) → G) (a : k) :
     (diagonalSuccIsoFree k G n).hom.hom (single f a) =
       single (fun i => (f i.castSucc)⁻¹ * f i.succ) (single (f 0) a) := by
@@ -483,6 +488,7 @@ theorem diagonalSuccIsoFree_hom_hom_single (f : Fin (n + 1) → G) (a : k) :
     (k := k) (G := G) (α := Fin n → G)
   simp_all [diagonalSuccIsoFree]
 
+@[simp]
 theorem diagonalSuccIsoFree_inv_hom_single_single (g : G) (f : Fin n → G) (a : k) :
     (diagonalSuccIsoFree k G n).inv.hom (single f (single g a)) =
       single (g • Fin.partialProd f) a := by
@@ -494,8 +500,8 @@ theorem diagonalSuccIsoFree_inv_hom_single (g : G →₀ k) (f : Fin n → G) :
     (diagonalSuccIsoFree k G n).inv.hom (single f g) =
       lift _ k G (fun a => single (a • Fin.partialProd f) 1) g :=
   g.induction (by simp) fun _ _ _ _ _ _ => by
-    simp only [single_add, map_add, diagonalSuccIsoFree_inv_hom_single_single]
-    simp_all
+    rw [single_add, map_add, diagonalSuccIsoFree_inv_hom_single_single]
+    simp_all [sum_add_index']
 
 section MonoidalClosed
 open MonoidalCategory Action
