@@ -31,7 +31,7 @@ of `f` is nilpotent, or vanishes, then the powers of `f` converge to zero.
 converge to zero iff the constant coefficient of `f` is nilpotent.
 
 - `PowerSeries.WithPiTopology.hasSum_of_monomials_self` : viewed as an infinite sum, a power
-series coverges to itself.
+series converges to itself.
 
 TODO: add the similar result for the series of homogeneous components.
 

@@ -3,6 +3,7 @@ Copyright (c) 2018 Louis Carlin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
 -/
+import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.EuclideanDomain.Defs
 import Mathlib.Algebra.Order.Group.Unbundled.Int
 import Mathlib.Algebra.Ring.Int.Defs

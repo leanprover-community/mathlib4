@@ -52,7 +52,6 @@ section
 /-- A projective presentation of an object `X` consists of an epimorphism `f : P ⟶ X`
 from some projective object `P`.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 structure ProjectivePresentation (X : C) where
   p : C
   [projective : Projective p]

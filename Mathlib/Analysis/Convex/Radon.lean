@@ -6,7 +6,7 @@ Authors: Vasily Nesterov
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Data.Set.Card
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Radon's theorem on convex sets

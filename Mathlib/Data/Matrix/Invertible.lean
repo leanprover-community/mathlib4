@@ -17,8 +17,8 @@ in `LinearAlgebra/Matrix/NonsingularInverse.lean`.
 
 * `Matrix.invertibleConjTranspose`
 * `Matrix.invertibleTranspose`
-* `Matrix.isUnit_conjTranpose`
-* `Matrix.isUnit_tranpose`
+* `Matrix.isUnit_conjTranspose`
+* `Matrix.isUnit_transpose`
 -/
 
 

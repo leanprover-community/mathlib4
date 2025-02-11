@@ -175,9 +175,9 @@ lemma reflection_mul_reflection_pow_apply (m : ℕ) (z : M)
     simp only [reflection_apply, map_add, map_sub, map_smul, hf, hg]
     -- `m` can be written in the form `2 * k + e`, where `e` is `0` or `1`.
     push_cast
+    rw [← Int.ediv_add_emod m 2]
     set k : ℤ := m / 2
     set e : ℤ := m % 2
-    rw [show m = 2 * k + e from (Int.ediv_add_emod m 2).symm]
     simp_rw [add_assoc (2 * k), add_sub_assoc (2 * k), add_comm (2 * k),
       add_mul_ediv_left _ k (by norm_num : (2 : ℤ) ≠ 0)]
     have he : e = 0 ∨ e = 1 := by omega
@@ -224,14 +224,8 @@ lemma reflection_mul_reflection_zpow_apply (m : ℤ) (z : M)
     have ht' : t = g x * f y - 2 := by rwa [mul_comm (g x)]
     rw [zpow_neg, ← inv_zpow, mul_inv_rev, reflection_inv, reflection_inv, zpow_natCast,
       reflection_mul_reflection_pow_apply hg hf m z t ht', add_right_comm z]
-    have aux {a b : ℤ} (hab : a + b = -3) : a / 2 = -(b / 2) - 2 := by
-      rw [← mul_right_inj' (by norm_num : (2 : ℤ) ≠ 0), mul_sub, mul_neg,
-        eq_sub_of_add_eq (Int.ediv_add_emod _ _), eq_sub_of_add_eq (Int.ediv_add_emod _ _)]
-      omega
-    rw [aux (by omega : (-m - 3) + m = (-3 : ℤ)),
-      aux (by omega : (-m - 2) + (m - 1) = (-3 : ℤ)),
-      aux (by omega : (-m - 1) + (m - 2) = (-3 : ℤ)),
-      aux (by omega : -m + (m - 3) = (-3 : ℤ))]
+    have aux (a b : ℤ) (hab : a + b = -3 := by omega) : a / 2 = -(b / 2) - 2 := by omega
+    rw [aux (-m - 3) m, aux (-m - 2) (m - 1), aux (-m - 1) (m - 2), aux (-m) (m - 3)]
     simp only [S_neg_sub_two, Polynomial.eval_neg]
     ring_nf
 
@@ -317,10 +311,11 @@ This rather technical-looking lemma exists because it is exactly what is needed 
 uniqueness results for root data / systems. One might regard this lemma as lying at the boundary of
 linear algebra and combinatorics since the finiteness assumption is the key. -/
 lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
-    {x : M} (hx : x ≠ 0) {Φ : Set M} (hΦ₁ : Φ.Finite) (hΦ₂ : span R Φ = ⊤) {f g : Dual R M}
+    {x : M} {Φ : Set M} (hΦ₁ : Φ.Finite) (hΦ₂ : span R Φ = ⊤) {f g : Dual R M}
     (hf₁ : f x = 2) (hf₂ : MapsTo (preReflection x f) Φ Φ)
     (hg₁ : g x = 2) (hg₂ : MapsTo (preReflection x g) Φ Φ) :
     f = g := by
+  have hx : x ≠ 0 := by rintro rfl; simp at hf₁
   let u := reflection hg₁ * reflection hf₁
   have hu : u = LinearMap.id (R := R) (M := M) + (f - g).smulRight x := by
     ext y
@@ -350,7 +345,7 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
 uniqueness result for root data. See the doc string of `Module.Dual.eq_of_preReflection_mapsTo` for
 further remarks. -/
 lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [NoZeroSMulDivisors R M]
-    {x : M} (hx : x ≠ 0) {Φ : Set M} (hΦ₁ : Φ.Finite) (hx' : x ∈ span R Φ) {f g : Dual R M}
+    {x : M} {Φ : Set M} (hΦ₁ : Φ.Finite) (hx : x ∈ span R Φ) {f g : Dual R M}
     (hf₁ : f x = 2) (hf₂ : MapsTo (preReflection x f) Φ Φ)
     (hg₁ : g x = 2) (hg₂ : MapsTo (preReflection x g) Φ Φ) :
     (span R Φ).subtype.dualMap f = (span R Φ).subtype.dualMap g := by
@@ -361,8 +356,7 @@ lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [NoZeroSMulDivisors R M]
     simp only [Φ']
     rw [range_inclusion]
     simp
-  let x' : span R Φ := ⟨x, hx'⟩
-  have hx' : x' ≠ 0 := Subtype.coe_ne_coe.1 hx
+  let x' : span R Φ := ⟨x, hx⟩
   have this : ∀ {F : Dual R M}, MapsTo (preReflection x F) Φ Φ →
       MapsTo (preReflection x' ((span R Φ).subtype.dualMap F)) Φ' Φ' := by
     intro F hF ⟨y, hy⟩ hy'
@@ -371,7 +365,7 @@ lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [NoZeroSMulDivisors R M]
     simp only [SetLike.coe_sort_coe, mem_setOf_eq] at hy' ⊢
     rw [range_inclusion]
     exact hF hy'
-  exact eq_of_preReflection_mapsTo hx' hΦ'₁ hΦ'₂ hf₁ (this hf₂) hg₁ (this hg₂)
+  exact eq_of_preReflection_mapsTo hΦ'₁ hΦ'₂ hf₁ (this hf₂) hg₁ (this hg₂)
 
 variable {y}
 variable {g : Dual R M}
@@ -385,7 +379,8 @@ lemma reflection_reflection_iterate
   | succ n ih =>
     have hz : ∀ z : M, f y • g x • z = 2 • 2 • z := by
       intro z
-      rw [smul_smul, hgxfy, smul_smul, ← Nat.cast_smul_eq_nsmul R (2 * 2), Nat.cast_eq_ofNat]
+      rw [smul_smul, hgxfy, smul_smul, ← Nat.cast_smul_eq_nsmul R (2 * 2), show 2 * 2 = 4 from rfl,
+        Nat.cast_ofNat]
     simp only [iterate_succ', comp_apply, ih, two_smul, smul_sub, smul_add, map_add,
       LinearEquiv.trans_apply, reflection_apply_self, map_neg, reflection_apply, neg_sub, map_sub,
       map_nsmul, map_smul, smul_neg, hz, add_smul]

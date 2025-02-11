@@ -254,6 +254,12 @@ theorem mem_asymm {x y : PSet} : x ∈ y → y ∉ x :=
 theorem mem_irrefl (x : PSet) : x ∉ x :=
   irrefl_of (· ∈ ·) x
 
+theorem not_subset_of_mem {x y : PSet} (h : x ∈ y) : ¬ y ⊆ x :=
+  fun h' ↦ mem_irrefl _ <| mem_of_subset h' h
+
+theorem not_mem_of_subset {x y : PSet} (h : x ⊆ y) : y ∉ x :=
+  imp_not_comm.2 not_subset_of_mem h
+
 /-- Convert a pre-set to a `Set` of pre-sets. -/
 def toSet (u : PSet.{u}) : Set PSet.{u} :=
   { x | x ∈ u }
@@ -301,6 +307,9 @@ instance : Inhabited PSet :=
 
 instance : IsEmpty («Type» ∅) :=
   ⟨PEmpty.elim⟩
+
+theorem empty_def : (∅ : PSet) = ⟨_, PEmpty.elim⟩ := by
+  simp [EmptyCollection.emptyCollection, PSet.empty]
 
 @[simp]
 theorem not_mem_empty (x : PSet.{u}) : x ∉ (∅ : PSet.{u}) :=
@@ -1159,6 +1168,12 @@ theorem mem_asymm {x y : ZFSet} : x ∈ y → y ∉ x :=
 theorem mem_irrefl (x : ZFSet) : x ∉ x :=
   irrefl_of (· ∈ ·) x
 
+theorem not_subset_of_mem {x y : ZFSet} (h : x ∈ y) : ¬ y ⊆ x :=
+  fun h' ↦ mem_irrefl _ (h' h)
+
+theorem not_mem_of_subset {x y : ZFSet} (h : x ⊆ y) : y ∉ x :=
+  imp_not_comm.2 not_subset_of_mem h
+
 theorem regularity (x : ZFSet.{u}) (h : x ≠ ∅) : ∃ y ∈ x, x ∩ y = ∅ :=
   by_contradiction fun ne =>
     h <| (eq_empty x).2 fun y =>
@@ -1197,25 +1212,24 @@ theorem toSet_image (f : ZFSet → ZFSet) [Definable₁ f] (x : ZFSet) :
   ext
   simp
 
-/-- The range of an indexed family of sets. The universes allow for a more general index type
-  without manual use of `ULift`. -/
-noncomputable def range {α : Type u} (f : α → ZFSet.{max u v}) : ZFSet.{max u v} :=
-  ⟦⟨ULift.{v} α, Quotient.out ∘ f ∘ ULift.down⟩⟧
+/-- The range of a type-indexed family of sets. -/
+noncomputable def range {α} [Small.{u} α] (f : α → ZFSet.{u}) : ZFSet.{u} :=
+  ⟦⟨_, Quotient.out ∘ f ∘ (equivShrink α).symm⟩⟧
 
 @[simp]
-theorem mem_range {α : Type u} {f : α → ZFSet.{max u v}} {x : ZFSet.{max u v}} :
-    x ∈ range.{u, v} f ↔ x ∈ Set.range f :=
+theorem mem_range {α} [Small.{u} α] {f : α → ZFSet.{u}} {x : ZFSet.{u}} :
+    x ∈ range f ↔ x ∈ Set.range f :=
   Quotient.inductionOn x fun y => by
     constructor
     · rintro ⟨z, hz⟩
-      exact ⟨z.down, Quotient.eq_mk_iff_out.2 hz.symm⟩
+      exact ⟨(equivShrink α).symm z, Quotient.eq_mk_iff_out.2 hz.symm⟩
     · rintro ⟨z, hz⟩
-      use ULift.up z
+      use equivShrink α z
       simpa [hz] using PSet.Equiv.symm (Quotient.mk_out y)
 
 @[simp]
-theorem toSet_range {α : Type u} (f : α → ZFSet.{max u v}) :
-    (range.{u, v} f).toSet = Set.range f := by
+theorem toSet_range {α} [Small.{u} α] (f : α → ZFSet.{u}) :
+    (range f).toSet = Set.range f := by
   ext
   simp
 

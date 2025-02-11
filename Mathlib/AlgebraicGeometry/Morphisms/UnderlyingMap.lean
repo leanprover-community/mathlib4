@@ -174,7 +174,7 @@ lemma Scheme.Hom.denseRange (f : X.Hom Y) [IsDominant f] : DenseRange f.base :=
 instance (priority := 100) [Surjective f] : IsDominant f := ⟨f.surjective.denseRange⟩
 
 instance [IsDominant f] [IsDominant g] : IsDominant (f ≫ g) :=
-  ⟨g.denseRange.comp f.denseRange g.base.2⟩
+  ⟨g.denseRange.comp f.denseRange g.base.hom.2⟩
 
 instance : MorphismProperty.IsMultiplicative @IsDominant where
   id_mem := fun _ ↦ inferInstance
@@ -234,7 +234,7 @@ instance specializingMap_isLocalAtTarget : IsLocalAtTarget (topologically @Speci
   · introv hU _ hsp
     simp_rw [specializingMap_iff_closure_singleton_subset] at hsp ⊢
     intro x y hy
-    have : ∃ i, y ∈ U i := Opens.mem_iSup.mp (hU ▸ trivial)
+    have : ∃ i, y ∈ U i := Opens.mem_iSup.mp (hU ▸ Opens.mem_top _)
     obtain ⟨i, hi⟩ := this
     rw [← specializes_iff_mem_closure] at hy
     have hfx : f x ∈ U i := (U i).2.stableUnderGeneralization hy hi

@@ -137,14 +137,11 @@ theorem toKaroubi_comp_karoubiFunctorCategoryEmbedding :
   apply Functor.ext
   · intro X Y f
     ext j
-    dsimp [toKaroubi]
-    simp only [eqToHom_app, eqToHom_refl]
-    erw [comp_id, id_comp]
+    simp
   · intro X
     apply Functor.ext
     · intro j j' φ
       ext
-      dsimp
       simp
     · intro j
       rfl

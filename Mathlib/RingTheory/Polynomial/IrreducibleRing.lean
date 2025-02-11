@@ -25,8 +25,6 @@ polynomial, irreducible ring, nilradical, prime ideal
 
 -/
 
-open scoped Classical Polynomial
-
 open Polynomial
 
 noncomputable section

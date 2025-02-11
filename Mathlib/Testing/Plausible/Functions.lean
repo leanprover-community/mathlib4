@@ -194,8 +194,7 @@ theorem List.applyId_zip_eq [DecidableEq α] {xs ys : List α} (h₀ : List.Nodu
       subst h₂
       cases ys
       · cases h₁
-      · simp only [applyId, map, Prod.toSigma, dlookup_cons_eq, Option.getD_some,
-          getElem?_cons_zero, Option.some.injEq]
+      · simp
     · cases ys
       · cases h₁
       · cases' h₀ with _ _ h₀ h₁
@@ -312,10 +311,6 @@ protected def shrinkPerm {α : Type} [DecidableEq α] :
     let i ← List.finRange <| k / n
     pure <| Perm.slice (i * n) n xs
 
-
--- Porting note: removed, there is no `sizeof` in the new `Sampleable`
--- instance [SizeOf α] : SizeOf (InjectiveFunction α) :=
---   ⟨fun ⟨xs, _, _⟩ => SizeOf.sizeOf (xs.map Sigma.fst)⟩
 
 /-- Shrink an injective function slicing a segment in the middle of the domain and removing
 the corresponding elements in the codomain, hence maintaining the property that

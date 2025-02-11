@@ -148,7 +148,7 @@ instance IsSymm.decide [DecidableRel r] [IsSymm α r] :
 
 instance IsAntisymm.decide [DecidableRel r] [IsAntisymm α r] :
     IsAntisymm α (fun a b => decide (r a b) = true) where
-  antisymm := fun a b h₁ h₂ => antisymm _ _ (by simpa using h₁) (by simpa using h₂)
+  antisymm a b h₁ h₂ := antisymm (r := r) _ _ (by simpa using h₁) (by simpa using h₂)
 
 instance IsAsymm.decide [DecidableRel r] [IsAsymm α r] :
     IsAsymm α (fun a b => decide (r a b) = true) where
