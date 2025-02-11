@@ -20,32 +20,29 @@ open LinearMap (BilinMap)
 
 section
 
-variable {α R M N} [DecidableEq α] [CommSemiring R]
+variable {α R} [CommSemiring R]
+
+lemma Sym2.testB (f : α →₀ R) : ∀ (a : Sym2 α), mul (⇑f) a ≠ 0 → a ∈ f.support.sym2 :=
+    fun p hp => by
+  obtain ⟨a,b⟩ := p
+  simp only [Finset.mem_sym2_iff, mem_iff, Finsupp.mem_support_iff, ne_eq, forall_eq_or_imp,
+    forall_eq]
+  simp only [mul_sym2Mk, ne_eq] at hp
+  aesop
 
 /--
 `Sym2.mul` as a `Finsupp`
 -/
 noncomputable def Sym2.mul_finsupp (f : α →₀ R) :
     Sym2 α →₀ R := Finsupp.onFinset
-      ((f.support.product f.support).image Sym2.mk)
-    (Sym2.mul f) (fun p hp => by
-      obtain ⟨a,b⟩ := p
-      simp only [Finset.product_eq_sprod, Finset.mem_image, Finset.mem_product,
-        Finsupp.mem_support_iff, ne_eq, Sym2.eq, rel_iff', Prod.swap_prod_mk, Prod.exists,
-        Prod.mk.injEq]
-      simp only [mul_sym2Mk, ne_eq] at hp
-      exact ⟨a, ⟨b, ⟨⟨fun _ => by simp_all only [mul_sym2Mk, zero_mul, not_true_eq_false],
-          fun _ => by simp_all only [mul_sym2Mk, mul_zero, not_true_eq_false]⟩, Or.inl ⟨rfl,rfl⟩⟩⟩⟩)
+      f.support.sym2
+    (Sym2.mul f) (Sym2.testB f)
 
-lemma Sym2.mul_finsupp_support (f : α →₀ R) : (Sym2.mul_finsupp f).support ⊆ f.support.sym2 := by
-  intro p hp
-  simp only [Sym2.mul_finsupp, Finset.product_eq_sprod, Finsupp.mem_support_iff,
-    Finsupp.onFinset_apply, ne_eq] at hp
-  obtain ⟨j,k⟩ := p
-  simp only [Finset.mem_sym2_iff, Sym2.mem_iff, Finsupp.mem_support_iff, ne_eq, forall_eq_or_imp,
-    forall_eq]
-  exact ⟨fun _ => by simp_all only [Sym2.mul_sym2Mk, zero_mul, not_true_eq_false],
-    fun _ => by simp_all only [Sym2.mul_sym2Mk, mul_zero, not_true_eq_false]⟩
+lemma Sym2.mul_finsupp_support (f : α →₀ R) :
+    (Sym2.mul_finsupp f).support ⊆ f.support.sym2 := fun p hp => by
+  apply Sym2.testB
+  simp_all only [Finsupp.mem_support_iff, ne_eq]
+  exact hp
 
 end
 
@@ -71,8 +68,6 @@ lemma polarSym2_map_mul (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R
     polarSym2_sym2Mk, polar_smul_right, polar_smul_left, Pi.smul_apply', Sym2.mul_sym2Mk, mul_comm,
     ← smul_assoc, smul_eq_mul]
 
-variable [DecidableEq ι]
-
 lemma test (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
     (polarSym2 Q) ∘ Sym2.map (l * g)  = (Sym2.mul_finsupp l) * (polarSym2 Q) ∘ (Sym2.map g) := by
   rw [polarSym2_map_mul, polarSym2]
@@ -80,6 +75,8 @@ lemma test (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
   simp_all only [Pi.smul_apply', Sym2.mul_sym2Mk, Function.comp_apply, Sym2.map_pair_eq,
     Sym2.lift_mk]
   rfl
+
+variable [DecidableEq ι]
 
 open Finsupp in
 theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
