@@ -63,7 +63,6 @@ theorem round_add_int (x : α) (y : ℤ) : round (x + y) = round x + y := by
 
 @[simp]
 theorem round_add_one (a : α) : round (a + 1) = round a + 1 := by
-  -- Porting note: broken `convert round_add_int a 1`
   rw [← round_add_int a 1, cast_one]
 
 @[simp]
@@ -74,7 +73,6 @@ theorem round_sub_int (x : α) (y : ℤ) : round (x - y) = round x - y := by
 
 @[simp]
 theorem round_sub_one (a : α) : round (a - 1) = round a - 1 := by
-  -- Porting note: broken `convert round_sub_int a 1`
   rw [← round_sub_int a 1, cast_one]
 
 @[simp]
