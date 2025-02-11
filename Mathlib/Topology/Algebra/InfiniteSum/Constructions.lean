@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Order.Filter.AtTopBot.Finset
 import Mathlib.Topology.Algebra.InfiniteSum.Group
 import Mathlib.Topology.Algebra.Star
 
@@ -80,11 +79,11 @@ lemma HasProd.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [Continu
     {f : α ⊕ β → M} {a b : M}
     (h₁ : HasProd (f ∘ Sum.inl) a) (h₂ : HasProd (f ∘ Sum.inr) b) : HasProd f (a * b) := by
   have : Tendsto ((∏ b ∈ ·, f b) ∘ sumEquiv.symm) (atTop.map sumEquiv) (nhds (a * b)) := by
-    rw [atTop_map_sumEquiv, ← prod_atTop_atTop_eq]
+    rw [Finset.sumEquiv.map_atTop, ← prod_atTop_atTop_eq]
     convert (tendsto_mul.comp (nhds_prod_eq (x := a) (y := b) ▸ Tendsto.prod_map h₁ h₂))
-    ext
-    simp [sumEquiv]
-  simpa [Tendsto, Filter.map_map, Function.comp_assoc] using this
+    ext s
+    simp
+  simpa [Tendsto, ← Filter.map_map] using this
 
 @[to_additive]
 lemma Multipliable.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M]
