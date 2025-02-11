@@ -191,8 +191,7 @@ lemma spanRank_sup_le_sum_spanRank {p q : Submodule R M} :
   obtain ⟨f, hf⟩ := hp.exists_fun_spanFinrank_span_range_eq
   obtain ⟨g, hg⟩ := hq.exists_fun_spanFinrank_span_range_eq
   rw [Submodule.fg_iff_spanRank_eq_spanFinrank] at hp hq
-  rw [hp, hq,
-      show ((p.spanFinrank : ℕ∞) + q.spanFinrank = ((p.spanFinrank + q.spanFinrank) : ℕ)) from rfl]
+  rw [hp, hq, ← Nat.cast_add]
   rw [FG.spanRank_le_iff_exists_span_range_eq]
   refine ⟨(Sum.elim f g) ∘ finSumFinEquiv.symm, ?_⟩
   rw [Set.range_comp, Set.range_eq_univ.mpr (Equiv.surjective _), Set.image_univ,
