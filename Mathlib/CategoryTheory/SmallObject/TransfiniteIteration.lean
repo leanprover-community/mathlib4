@@ -70,95 +70,74 @@ lemma arrow_mk_iterationFunctor_map (i₁ i₂ : J) (h₁₂ : i₁ ≤ i₂)
   exact Arrow.ext (Iteration.congr_obj _ _ _ _ _)
     (Iteration.congr_obj _ _ _ _ _) (Iteration.congr_map _ _ _ _ _)
 
-lemma prop_iterationFunctor_map_succ (j : J) (hj : ¬ IsMax j) :
-    Φ.prop ((Φ.iterationFunctor J).map (homOfLE (Order.le_succ j))) := by
-  have := (Φ.iter (Order.succ j)).prop_map_succ j (Order.lt_succ_of_not_isMax hj)
-  rw [prop_iff] at this ⊢
-  simp only [Φ.iterationFunctor_obj j (Φ.iter (Order.succ j)) (Order.le_succ j),
-    Φ.arrow_mk_iterationFunctor_map _ _ (Order.le_succ j) (Φ.iter (Order.succ j)) (by simp),
-    this]
-
-/-- For any `i : J`, the restriction to `Set.Iio i` of `Φ.iterationFunctor J`
-is isomorphic to the restriction of `(Φ.iter i).F : Set.Iic i ⥤ C`. -/
-noncomputable def restrictionLTiterationFunctorIso (i : J) :
-    (Set.principalSegIio i).monotone.functor ⋙
-      (Φ.iterationFunctor J) ≅ restrictionLT (Φ.iter i).F (by simp) :=
-  NatIso.ofComponents (fun _ ↦ eqToIso (Φ.iterationFunctor_obj _ _ _)) (by
-    rintro ⟨k₁, h₁⟩ ⟨k₂, h₂⟩ f
-    apply Arrow.mk_injective
-    simpa using Φ.arrow_mk_iterationFunctor_map k₁ k₂ (leOfHom f) (Φ.iter i) h₂.le)
-
 variable (J)
 
-/-- The isomorphism `Φ.X₀ ≅ (Φ.iterationFunctor J).obj ⊥`. -/
-noncomputable def iterationFunctorObjBotIso : Φ.X₀ ≅ (Φ.iterationFunctor J).obj ⊥ :=
-  eqToIso (Φ.iter (⊥ : J)).obj_bot.symm
+instance : (Φ.iterationFunctor J).IsWellOrderContinuous where
+  nonempty_isColimit i hi := ⟨by
+    let e : (Set.principalSegIio i).monotone.functor ⋙
+      (Φ.iterationFunctor J) ≅ restrictionLT (Φ.iter i).F (by simp) :=
+      NatIso.ofComponents (fun _ ↦ eqToIso (Φ.iterationFunctor_obj _ _ _)) (by
+        rintro ⟨k₁, h₁⟩ ⟨k₂, h₂⟩ f
+        apply Arrow.mk_injective
+        simpa using Φ.arrow_mk_iterationFunctor_map k₁ k₂ (leOfHom f) (Φ.iter i) h₂.le)
+    refine (IsColimit.precomposeInvEquiv e _).1 ?_
+    refine IsColimit.ofIsoColimit ((Φ.iter i).isColimit i hi (by simp)) ?_
+    refine Cocones.ext (eqToIso (Φ.iterationFunctor_obj i (Φ.iter i) (by simp)).symm) ?_
+    rintro ⟨k, hk⟩
+    apply Arrow.mk_injective
+    simp [Φ.arrow_mk_iterationFunctor_map k i hk.le (Φ.iter i) (by simp), e]⟩
+
+/-- The isomorphism `(Φ.iterationFunctor J).obj ⊥ ≅ Φ.X₀`. -/
+noncomputable def iterationFunctorObjBotIso : (Φ.iterationFunctor J).obj ⊥ ≅ Φ.X₀ :=
+  eqToIso (Φ.iter ⊥).obj_bot
 
 /-- The natural map `Φ.X₀ ⟶ (Φ.iterationFunctor J).obj j`. -/
 noncomputable def ιIterationFunctor :
     (Functor.const _).obj Φ.X₀ ⟶ Φ.iterationFunctor J where
-  app j := (Φ.iterationFunctorObjBotIso J).hom ≫
+  app j := (Φ.iterationFunctorObjBotIso J).inv ≫
     (Φ.iterationFunctor J).map (homOfLE bot_le : ⊥ ⟶ j)
   naturality _ _ f := by
     dsimp
     rw [id_comp, assoc, ← Functor.map_comp]
     rfl
 
-lemma ιIterationFunctor_app_bot :
-    (Φ.ιIterationFunctor J).app ⊥ = (Φ.iterationFunctorObjBotIso J).hom := by
-  simp [ιIterationFunctor]
-
 /-- The canonical map `Φ.X₀ ⟶ Φ.iteration J` which is the `J`th-transfinite composition
 of maps `Φ.toSucc`. -/
 noncomputable def ιIteration : Φ.X₀ ⟶ Φ.iteration J :=
-  (Φ.iterationFunctorObjBotIso J).hom ≫ (Φ.iterationCocone J).ι.app ⊥
-
-@[reassoc]
-lemma iterationCoconeι_app :
-    (Φ.iterationCocone J).ι.app ⊥ =
-      (Φ.iterationFunctorObjBotIso J).inv ≫ Φ.ιIteration J := by
-  simp [ιIteration]
-
-lemma arrow_mk_ιIteration :
-    Arrow.mk (Φ.ιIteration J) = (Φ.iterationCocone J).ι.app ⊥ := by
-  simp [ιIteration, iterationFunctorObjBotIso]
-
-instance : (Φ.iterationFunctor J).IsWellOrderContinuous where
-  nonempty_isColimit i hi := ⟨by
-    refine (IsColimit.precomposeInvEquiv (Φ.restrictionLTiterationFunctorIso i) _).1 ?_
-    refine IsColimit.ofIsoColimit ((Φ.iter i).isColimit i hi (by simp)) ?_
-    refine Cocones.ext (eqToIso (Φ.iterationFunctor_obj i (Φ.iter i) (by simp)).symm) ?_
-    rintro ⟨k, hk⟩
-    apply Arrow.mk_injective
-    simp [Φ.arrow_mk_iterationFunctor_map k i hk.le (Φ.iter i) (by simp),
-      restrictionLTiterationFunctorIso]⟩
+  (Φ.iterationFunctorObjBotIso J).inv ≫ colimit.ι _ ⊥
 
 /-- The inclusion `Φ.ιIteration J` is a transfinite composition of
 shape `J` of morphisms in `Φ.prop`. -/
+@[simps]
 noncomputable def transfiniteCompositionOfShapeιIteration :
     Φ.prop.TransfiniteCompositionOfShape J (Φ.ιIteration J) where
-  isoBot := (Φ.iterationFunctorObjBotIso J).symm
-  map_mem := Φ.prop_iterationFunctor_map_succ
+  isoBot := Φ.iterationFunctorObjBotIso J
+  map_mem j hj := by
+    dsimp
+    have := (Φ.iter (Order.succ j)).prop_map_succ j (Order.lt_succ_of_not_isMax hj)
+    rw [prop_iff] at this ⊢
+    simp only [Φ.iterationFunctor_obj j (Φ.iter (Order.succ j)) (Order.le_succ j),
+      Φ.arrow_mk_iterationFunctor_map _ _ (Order.le_succ j) (Φ.iter (Order.succ j)) (by simp),
+      this]
   F := Φ.iterationFunctor J
   incl := (Φ.iterationCocone J).ι
   isColimit := Φ.isColimitIterationCocone J
 
 variable {J}
 
+lemma prop_iterationFunctor_map_succ (j : J) (hj : ¬ IsMax j) :
+    Φ.prop ((Φ.iterationFunctor J).map (homOfLE (Order.le_succ j))) :=
+  (Φ.transfiniteCompositionOfShapeιIteration J).map_mem j hj
+
 noncomputable def iterationFunctorObjSuccIso (j : J) (hj : ¬ IsMax j) :
     (Φ.iterationFunctor J).obj (Order.succ j) ≅
       Φ.succ ((Φ.iterationFunctor J).obj j) :=
-  eqToIso (by
-    rw [iterationFunctor, Iteration.obj_succ _ _ (Order.lt_succ_of_not_isMax hj),
-      Iteration.congr_obj])
+  eqToIso ((Φ.prop_iterationFunctor_map_succ j hj).succ_eq.symm)
 
 @[reassoc]
 lemma iterationFunctor_map_succ (j : J) (hj : ¬ IsMax j) :
     (Φ.iterationFunctor J).map (homOfLE (Order.le_succ j)) =
-      Φ.toSucc _ ≫ (Φ.iterationFunctorObjSuccIso j hj).inv := by
-  have := Φ.prop_iterationFunctor_map_succ j hj
-  rw [prop_iff, toSuccArrow, Arrow.mk_eq_mk_iff] at this
-  obtain ⟨h₁, h₂, h⟩ := this
-  simp [h, iterationFunctorObjSuccIso]
+      Φ.toSucc _ ≫ (Φ.iterationFunctorObjSuccIso j hj).inv :=
+  (Φ.prop_iterationFunctor_map_succ j hj).fac
 
 end CategoryTheory.SmallObject.SuccStruct
