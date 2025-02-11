@@ -141,8 +141,8 @@ theorem swapRowElemMat_eq_swapRow [Fintype m] [NonAssocSemiring α] (M : Matrix 
       simp_rw [one_apply]
       simp
     · rw [swapRow_other_rows_same, mul_apply, swapRow_other_rows_same]
-      simp_rw [one_apply]
-      simp only [ite_mul, one_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
+      · simp_rw [one_apply]
+        simp only [ite_mul, one_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
       repeat assumption
 
 /-! ### swapRow elementary matrix has a left inverse -/
@@ -213,8 +213,8 @@ theorem mulRowElemMat_eq_mulRow [Fintype m] [Monoid R] [NonAssocSemiring α]
     simp_rw [one_apply]
     simp
   · rw [mulRow_other_rows_same, mul_apply, mulRow_other_rows_same]
-    simp_rw [one_apply]
-    simp only [ite_mul, one_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
+    · simp_rw [one_apply]
+      simp only [ite_mul, one_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
     repeat exact h
 
 /-! ### mulRow elementary matrix has a left inverse -/
@@ -277,7 +277,7 @@ theorem addMulRow_addMulRow_neg_cancel_left [Ring R] [AddCommGroup α] [Module R
   · rw [h]
     repeat rw [updateRow_self]
     rw [updateRow_ne]
-    simp only [neg_smul, Pi.add_apply, Pi.smul_apply, Pi.neg_apply, add_neg_cancel_right]
+    · simp only [neg_smul, Pi.add_apply, Pi.smul_apply, Pi.neg_apply, add_neg_cancel_right]
     exact h₁
   · repeat rw [updateRow_ne h]
 
@@ -301,9 +301,10 @@ theorem addMulRowElemMat_eq_addMulRow [Fintype m] [NonAssocSemiring α] [SMulZer
     rw [Finset.sum_add_distrib]
     simp
   · rw [addMulRow_other_rows_same]
-    rw [mul_apply, addMulRow_other_rows_same]
-    simp_rw [one_apply]
-    simp only [ite_mul, one_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
+    · rw [mul_apply, addMulRow_other_rows_same]
+      · simp_rw [one_apply]
+        simp only [ite_mul, one_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
+      assumption
     repeat assumption
 
 /-! ### addMulRow elementary matrix has a left inverse -/
