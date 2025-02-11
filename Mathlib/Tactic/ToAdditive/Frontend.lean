@@ -1348,7 +1348,7 @@ initialize registerBuiltinAttribute {
     name := `to_additive
     descr := "Transport multiplicative to additive"
     add := fun src stx kind ↦
-      do _ ← (addToAdditiveAttr additiveTranslations `toAdditive
+      do _ ← (addToAdditiveAttr additiveTranslations `to_additive
         additiveNameDict additiveFixAbbreviation src (← elabToAdditive stx) kind)
     -- we (presumably) need to run after compilation to properly add the `simp` attribute
     applicationTime := .afterCompilation
