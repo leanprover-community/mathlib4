@@ -41,7 +41,8 @@ Attempt to log an info message for the first subexpressions which are different
 (but agree at default transparency).
 -/
 def logDiffs (tk : Syntax) (e₁ e₂ : Expr) : MetaM Bool := do
-  let verbose := (← getOptions).get ``tactic.erw?.verbose (defVal := false)
+  withOptions (fun opts => opts.setBool `pp.analyze true) do
+  let verbose := (← getOptions).get `tactic.erw?.verbose (defVal := false)
   if ← withReducible (isDefEq e₁ e₂) then
     if verbose then logInfoAt tk m!"{e₁}\n  and\n{e₂}\n  are defeq at reducible transparency."
     -- They agree at reducible transparency, we're done.
@@ -59,6 +60,10 @@ def logDiffs (tk : Syntax) (e₁ e₂ : Expr) : MetaM Bool := do
           logInfoAt tk m!"{e₁}\n  and\n{e₂}\n  \
             are defeq at default transparency, but not at reducible transparency."
           return true
+      | Expr.const _ _, Expr.const _ _ =>
+        logInfoAt tk m!"{e₁}\n  and\n{e₂}\n  \
+            are defeq at default transparency, but not at reducible transparency."
+        return true
       | _, _ =>
         if verbose then logInfoAt tk m!"{e₁}\n  and\n{e₂}\n  are not both applications."
         return false
@@ -68,7 +73,7 @@ def logDiffs (tk : Syntax) (e₁ e₂ : Expr) : MetaM Bool := do
 
 elab_rules : tactic
   | `(tactic| erw?%$tk [$r]) => withMainContext do
-    let verbose := (← getOptions).get ``tactic.erw?.verbose (defVal := false)
+    let verbose := (← getOptions).get `tactic.erw?.verbose (defVal := false)
     let g ← getMainGoal
     evalTactic (← `(tactic| erw [$r]))
     let e := (← instantiateMVars (mkMVar g)).headBeta
