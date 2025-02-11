@@ -274,7 +274,8 @@ theorem affineBasisCover_map_range (X : Scheme.{u}) (x : X)
     (r : (X.local_affine x).choose_spec.choose) :
     Set.range (X.affineBasisCover.map ⟨x, r⟩).base =
       (X.affineCover.map x).base '' (PrimeSpectrum.basicOpen r).1 := by
-  erw [TopCat.coe_comp, Set.range_comp]
+  erw [TopCat.coe_comp]
+  rw [Set.range_comp]
   -- Porting note: `congr` fails to see the goal is comparing image of the same function
   refine congr_arg (_ '' ·) ?_
   exact (PrimeSpectrum.localization_away_comap_range (Localization.Away r) r :)

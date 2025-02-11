@@ -97,8 +97,8 @@ def getLeanTar : IO String := do
 structure CacheM.Context where
   /-- source directory for mathlib files -/
   mathlibDepPath : FilePath
-  /-- the Lean search path -/
-  searchPath : SearchPath
+  /-- the Lean source search path -/
+  srcSearchPath : SearchPath
   /-- build directory for proofwidgets -/
   proofWidgetsBuildDir : FilePath
 
@@ -115,7 +115,7 @@ private def CacheM.getContext : IO CacheM.Context := do
     | throw <| IO.userError s!"Mathlib not found in dependencies"
   return {
     mathlibDepPath := mathlibSource
-    searchPath := sp
+    srcSearchPath := sp
     proofWidgetsBuildDir := LAKEPACKAGESDIR / "proofwidgets" / ".lake" / "build" }
 
 @[inherit_doc CacheM.Context]
@@ -130,7 +130,7 @@ Basically, this is just a parent of `sourceFile`, but this function determines h
 many components of the path `sourceFile` make up the package directory.
 -/
 def getPackageDir (sourceFile : FilePath) : CacheM FilePath := do
-  let sp := (← read).searchPath
+  let sp := (← read).srcSearchPath
   -- Note: This seems to work since the path `.` is listed last, so it will not be found unless
   -- no other search-path applies. Could be more robust.
   let packageDir? := sp.find? (·.contains sourceFile)
@@ -395,7 +395,7 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
   match args with
   | [] => pure ∅
   | _ :: args₀ =>
-    let sp := (← read).searchPath
+    let sp := (← read).srcSearchPath
     args₀.foldlM (init := ∅) fun acc (arg : String) => do
       let arg' : FilePath := arg
       let mod : Name := arg'.withExtension "" |>.components.foldl .str .anonymous
