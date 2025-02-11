@@ -780,6 +780,19 @@ lemma coheight_bot_eq_krullDim [OrderBot α] : coheight (⊥ : α) = krullDim α
 
 end krullDim
 
+section typeclass
+
+/-- Typeclass for orders with krull dimension at most `n`. -/
+@[mk_iff]
+class KrullDimLE (n : ℕ) (α : Type*) [Preorder α] : Prop where
+  krullDim_le : krullDim α ≤ n
+
+lemma KrullDimLE.mono {n m : ℕ} (e : n ≤ m) (α : Type*) [Preorder α] [KrullDimLE n α] :
+    KrullDimLE m α :=
+  ⟨KrullDimLE.krullDim_le (n := n).trans (Nat.cast_le.mpr e)⟩
+
+end typeclass
+
 /-!
 ## Concrete calculations
 -/
