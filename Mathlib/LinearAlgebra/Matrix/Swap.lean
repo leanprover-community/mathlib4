@@ -5,6 +5,7 @@ Authors: Judith Ludwig, Christian Merten
 -/
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 import Mathlib.Data.Matrix.PEquiv
+import Mathlib.LinearAlgebra.Matrix.Permutation
 
 /-!
 # Swap matrices
@@ -32,7 +33,7 @@ variable (R) in
 `i`-th and `j`-th rows modified such that multiplying by it on the
 left (resp. right) corresponds to swapping the `i`-th and `j`-th row (resp. column). -/
 def swap (i j : n) : Matrix n n R :=
-  (Equiv.swap i j).toPEquiv.toMatrix
+  (Equiv.swap i j).permMatrix R
 
 lemma swap_comm (i j : n) :
     swap R i j = swap R j i := by
@@ -72,11 +73,8 @@ lemma vecMul_swap (i j : n) (a : n → R) :
 
 lemma swap_mulVec_single_left (i j : n) (r : R) :
     swap R i j *ᵥ Pi.single i r = Pi.single j r := by
-  ext k
-  rw [swap_mulVec]
-  simp
-  simp [Pi.single_apply, Equiv.swap, Equiv.swapCore]
-  aesop
+  simp only [swap, PEquiv.toMatrix_toPEquiv_mulVec_single, Equiv.symm_swap]
+  rw [Equiv.swap_apply_left]
 
 lemma swap_mulVec_single_right (i j : n) (r : R) :
     swap R i j *ᵥ Pi.single j r = Pi.single i r := by
