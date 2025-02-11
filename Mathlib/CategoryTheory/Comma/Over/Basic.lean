@@ -15,6 +15,10 @@ Over (and under) categories are special cases of comma categories.
 * Conversely, if `L` is a constant functor and `R` is the identity functor, then `Comma L R` is the
   "coslice" or "under" category under the object `L` maps to.
 
+## Notation
+
+- `Σ_ X Y` : is notation for `Sigma` defined by `(Over.map X.hom).obj Y
+
 ## Tags
 
 Comma, Slice, Coslice, Over, Under
@@ -165,6 +169,50 @@ def mapIso {Y : T} (f : X ≅ Y) : Over X ≌ Over Y :=
 
 @[simp] lemma mapIso_functor {Y : T} (f : X ≅ Y) : (mapIso f).functor = map f.hom := rfl
 @[simp] lemma mapIso_inverse {Y : T} (f : X ≅ Y) : (mapIso f).inverse = map f.inv := rfl
+
+/-- `Sigma Y U`, a shorthand for `(Over.map Y.hom).obj U`, provides the dependent sum notation
+`Σ_ Y U`. The notations `Σ_`, `Δ_` and `Π_` are extensively used in
+locally cartesian closed categories. -/
+abbrev Sigma {X : T} (Y : Over X) (U : Over (Y.left)) : Over X :=
+  (map Y.hom).obj U
+
+namespace Sigma
+
+variable {X : T}
+
+set_option quotPrecheck false in
+/-- The notation for the dependent sum `Sigma`. -/
+scoped notation " Σ_ " => Sigma
+
+lemma hom {Y : Over X} (Z : Over (Y.left)) : (Σ_ Y Z).hom = Z.hom ≫ Y.hom := map_obj_hom
+
+/-- `Σ_ ` is functorial in the second argument. -/
+def map {Y : Over X} {Z Z' : Over (Y.left)} (g : Z ⟶ Z') : (Σ_ Y Z) ⟶ (Σ_ Y Z') :=
+  (Over.map Y.hom).map g
+
+lemma map_left {Y : Over X} {Z Z' : Over (Y.left)} {g : Z ⟶ Z'} :
+    ((Over.map Y.hom).map g).left = g.left := Over.map_map_left
+
+lemma map_homMk_left {Y : Over X} {Z Z' : Over (Y.left)} {g : Z ⟶ Z'} :
+    map g = (Over.homMk g.left : Σ_ Y Z ⟶ Σ_ Y Z') := by
+  rfl
+
+/-- The first projection of the sigma object. -/
+@[simps!]
+def fst {Y : Over X} (Z : Over (Y.left)) : (Σ_ Y Z) ⟶ Y := Over.homMk Z.hom
+
+lemma map_comp_fst {Y : Over X} {Z Z' : Over (Y.left)} (g : Z ⟶ Z') :
+    (Over.map Y.hom).map g ≫ fst Z' = fst Z := by
+  ext
+  simp [Sigma.fst, Over.w]
+
+/-- Promoting a morphism `g : Σ_Y Z ⟶ Σ_Y Z'` in `Over X` with `g ≫ fst Z' = fst Z`
+to a morphism `Z ⟶ Z'` in `Over (Y.left)`. -/
+def overHomMk {Y : Over X} {Z Z' : Over (Y.left)} (g : Σ_ Y Z ⟶ Σ_ Y Z')
+    (w : g ≫ fst Z' = fst Z := by aesop_cat) : Z ⟶ Z' :=
+  Over.homMk g.left (congr_arg CommaMorphism.left w)
+
+end Sigma
 
 section coherences
 /-!
