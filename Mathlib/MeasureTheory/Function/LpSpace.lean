@@ -1515,7 +1515,8 @@ theorem Lp_enorm_le (f : α →ᵇ E) :
   rw [enorm_eq_nnnorm, ENNReal.coe_le_coe, ← NNReal.coe_le_coe, coe_nnnorm, coe_nnnorm]
   convert f.norm_coe_le_norm x using 2
 
-theorem foo {M : ℝ≥0} {P : ℝ} : (ENNReal.ofNNReal M).rpow P = ENNReal.ofNNReal (M ^ P) := sorry
+theorem ENNReal.rpow_ofNNReal {M : ℝ≥0} {P : ℝ} :
+  (ENNReal.ofNNReal M).rpow P = ENNReal.ofNNReal (M ^ P) := sorry
 
 /-- The `Lp`-norm of a bounded continuous function is at most a constant (depending on the measure
 of the whole space) times its sup-norm. -/
@@ -1523,7 +1524,8 @@ theorem Lp_norm_le (f : α →ᵇ E) :
     ‖(⟨f.toContinuousMap.toAEEqFun μ, mem_Lp f⟩ : Lp E p μ)‖ ≤
       measureUnivNNReal μ ^ p.toReal⁻¹ * ‖f‖ := by
   have := Lp_enorm_le (p := p) (f := f) (μ := μ)
-  rw [enorm_eq_nnnorm, ← ENNReal.rpow_eq_pow, foo, ← ENNReal.coe_mul, ENNReal.coe_le_coe] at this
+  rw [enorm_eq_nnnorm, ← ENNReal.rpow_eq_pow, ENNReal.rpow_ofNNReal,
+    ← ENNReal.coe_mul, ENNReal.coe_le_coe] at this
   exact this
 
 variable (p μ)
