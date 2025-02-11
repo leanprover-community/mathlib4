@@ -25,7 +25,7 @@ All those (except `insert`) are defined in `Mathlib.Data.List.Defs`.
 * `l₁ <:+: l₂`: `l₁` is an infix of `l₂`.
 -/
 
-variable {α : Type*}
+variable {α β : Type*}
 
 namespace List
 
@@ -73,16 +73,31 @@ protected theorem IsPrefix.flatten {l₁ l₂ : List (List α)} (h : l₁ <+: l�
   simp
 
 @[gcongr]
+protected theorem IsPrefix.flatMap (h : l₁ <+: l₂) (f : α → List β) :
+    l₁.flatMap f <+: l₂.flatMap f :=
+  (h.map _).flatten
+
+@[gcongr]
 protected theorem IsSuffix.flatten {l₁ l₂ : List (List α)} (h : l₁ <:+ l₂) :
     l₁.flatten <:+ l₂.flatten := by
   rcases h with ⟨l, rfl⟩
   simp
 
 @[gcongr]
+protected theorem IsSuffix.flatMap (h : l₁ <:+ l₂) (f : α → List β) :
+    l₁.flatMap f <:+ l₂.flatMap f :=
+  (h.map _).flatten
+
+@[gcongr]
 protected theorem IsInfix.flatten {l₁ l₂ : List (List α)} (h : l₁ <:+: l₂) :
     l₁.flatten <:+: l₂.flatten := by
   rcases h with ⟨l, l', rfl⟩
   simp
+
+@[gcongr]
+protected theorem IsInfix.flatMap (h : l₁ <:+: l₂) (f : α → List β) :
+    l₁.flatMap f <:+: l₂.flatMap f :=
+  (h.map _).flatten
 
 lemma dropSlice_sublist (n m : ℕ) (l : List α) : l.dropSlice n m <+ l :=
   calc
