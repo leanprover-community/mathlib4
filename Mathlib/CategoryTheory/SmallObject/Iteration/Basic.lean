@@ -154,6 +154,19 @@ lemma prop_iff {X Y : C} (f : X ⟶ Y) :
     rw [← Φ.prop.arrow_mk_mem_toSet_iff, h]
     apply prop_toSucc
 
+variable {Φ} in
+lemma prop.succ_eq {X Y : C} {f : X ⟶ Y} (hf : Φ.prop f) :
+    Φ.succ X = Y := by
+  cases hf
+  rfl
+
+variable {Φ} in
+@[reassoc]
+lemma prop.fac {X Y : C} {f : X ⟶ Y} (hf : Φ.prop f) :
+    f = Φ.toSucc X ≫ eqToHom hf.succ_eq := by
+  cases hf
+  simp
+
 variable [LinearOrder J]
 
 /-- Given a functor `F : Set.Iic ⥤ C`, this is the morphism in `C`, as an element
