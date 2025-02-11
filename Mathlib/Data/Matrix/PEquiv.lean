@@ -133,14 +133,12 @@ lemma vecMul_toMatrix_toPEquiv [DecidableEq n] [Fintype m]
   ext j
   simp [toMatrix, σ.apply_eq_iff_eq_symm_apply, vecMul, dotProduct]
 
-@[simp]
 lemma toMatrix_toPEquiv_mulVec_single [DecidableEq n] [DecidableEq m] [Fintype n]
     [NonAssocSemiring α] (σ : m ≃ n) (i : n) (x : α) :
     σ.toPEquiv.toMatrix *ᵥ Pi.single i x = Pi.single (σ.symm i) x := by
   ext j
   simp [Pi.single_apply, Equiv.apply_eq_iff_eq_symm_apply σ]
 
-@[simp]
 lemma single_vecMul_toMatrix_toPEquiv [DecidableEq n] [DecidableEq m] [Fintype m]
     [NonAssocSemiring α] (σ : m ≃ n) (i : m) (x : α) :
     Pi.single i x ᵥ* σ.toPEquiv.toMatrix = Pi.single (σ i) x := by
