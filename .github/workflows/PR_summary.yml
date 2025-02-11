@@ -113,7 +113,7 @@ jobs:
         else
           declDiff="$(printf '#### Declarations diff\n\n%s\n' "${declDiff}")"
         fi
-        git checkout "${BRANCH_NAME}"
+        git checkout "${GITHUB_SHA}"
         currentHash="$(git rev-parse HEAD)"
         hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/commits/${currentHash}"
 
