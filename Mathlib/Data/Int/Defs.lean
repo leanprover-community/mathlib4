@@ -447,7 +447,7 @@ lemma exists_lt_and_lt_iff_not_dvd (m : ℤ) (hn : 0 < n) :
     exact ⟨a, h⟩
   mpr := by rintro ⟨a, rfl⟩; simp [Int.dvd_mul_right]
 
-@[norm_cast]theorem ofNat_dvd_natCast {x y : ℕ} : (ofNat(x) : ℤ) ∣ (y : ℕ) ↔ OfNat.ofNat x ∣ y :=
+@[norm_cast] theorem ofNat_dvd_natCast {x y : ℕ} : (ofNat(x) : ℤ) ∣ (y : ℕ) ↔ OfNat.ofNat x ∣ y :=
   natCast_dvd_natCast
 
 lemma natCast_dvd {m : ℕ} : (m : ℤ) ∣ n ↔ m ∣ n.natAbs := by
