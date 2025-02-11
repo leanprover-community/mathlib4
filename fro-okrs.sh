@@ -92,6 +92,7 @@ computeDiff () {
       # retrieve the description of the counter
       val=order[ind]
       progress=(initial[val] - curr[val]) / (initial[val] - goal[val])
+      progress=(progress > 1) ? 1 : progress
       contribution=weight[val] * progress
       total_progress+=contribution+0
       # print `|name|start|current|goal|difference|contribution|`
