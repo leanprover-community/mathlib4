@@ -314,6 +314,14 @@ syntax (name := to_additive) "to_additive" "?"? toAdditiveRest : attr
 @[inherit_doc to_additive]
 macro "to_additive?" rest:toAdditiveRest : attr => `(attr| to_additive ? $rest)
 
+/--
+order_dual syntax
+-/
+syntax (name := order_dual) "order_dual" "?"? toAdditiveRest : attr
+
+@[inherit_doc order_dual]
+macro "order_dual?" rest:toAdditiveRest : attr => `(attr| order_dual ? $rest)
+
 /-- A set of strings of names that end in a capital letter.
 * If the string contains a lowercase letter, the string should be split between the first occurrence
   of a lower-case letter followed by an upper-case letter.
@@ -450,6 +458,9 @@ initialize changeNumeralAttr : NameMapExtension (List Nat) ←
 
 /-- Maps multiplicative names to their additive counterparts. -/
 initialize additiveTranslations : NameMapExtension Name ← registerNameMapExtension _
+
+/-- Maps names to their order dual counterparts. -/
+initialize orderDualTranslations : NameMapExtension Name ← registerNameMapExtension _
 
 /-- Get the multiplicative → additive translation for the given name. -/
 def findTranslation? (env : Environment) (translations : NameMapExtension Name) :
@@ -988,6 +999,20 @@ def additiveNameDict : String → List String
   | x             => [x]
 
 /--
+Dictionary used by `guessName` to autogenerate names.
+
+Note: `guessName` capitalizes first element of the output according to
+capitalization of the input. Input and first element should therefore be lower-case,
+2nd element should be capitalized properly.
+-/
+def orderDualDict : String → List String
+  | "top"         => ["bot"]
+  | "bot"         => ["top"]
+  | "inf"         => ["sup"]
+  | "sup"         => ["inf"]
+  | x             => [x]
+
+/--
 Turn each element to lower-case, apply the `nameDict` and
 capitalize the output like the input.
 -/
@@ -1085,6 +1110,16 @@ def additiveFixAbbreviation : List String → List String
   | []                                => []
 
 /--
+There are a few abbreviations we use.
+Note: The input to this function is case sensitive!
+Todo: A lot of abbreviations here are manual fixes and there might be room to
+      improve the naming logic to reduce the size of `fixAbbreviation`.
+-/
+def orderDualFixAbbreviation : List String → List String
+  | x :: s                            => x :: additiveFixAbbreviation s
+  | []                                => []
+
+/--
 Autogenerate additive name.
 This runs in several steps:
 1) Split according to capitalisation rule and at `_`.
@@ -1166,6 +1201,7 @@ def proceedFields (translations : NameMapExtension Name) (src tgt : Name) : Core
 
 /-- Elaboration of the configuration options for `to_additive`. -/
 def elabToAdditive : Syntax → CoreM Config
+  | `(attr| order_dual%$tk $[?%$trace]? $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?)
   | `(attr| to_additive%$tk $[?%$trace]? $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
     let mut attrs := #[]
     let mut reorder := []
@@ -1350,6 +1386,16 @@ initialize registerBuiltinAttribute {
     add := fun src stx kind ↦
       do _ ← (addToAdditiveAttr additiveTranslations `to_additive
         additiveNameDict additiveFixAbbreviation src (← elabToAdditive stx) kind)
+    -- we (presumably) need to run after compilation to properly add the `simp` attribute
+    applicationTime := .afterCompilation
+  }
+
+initialize registerBuiltinAttribute {
+    name := `order_dual
+    descr := "Transport order dual"
+    add := fun src stx kind ↦
+      do _ ← (addToAdditiveAttr orderDualTranslations `order_dual
+        orderDualDict orderDualFixAbbreviation src (← elabToAdditive stx) kind)
     -- we (presumably) need to run after compilation to properly add the `simp` attribute
     applicationTime := .afterCompilation
   }
