@@ -33,8 +33,8 @@ We provide a solid API for strongly measurable functions, as a basis for the Boc
 
 ## References
 
-* Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
-  Springer, 2016.
+* [Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
+  Springer, 2016.][Hytönen_VanNeerven_Veraar_Wies_2016]
 
 -/
 
