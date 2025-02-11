@@ -111,7 +111,7 @@ variable [UniformSpace α] [UniformSpace β] [UniformSpace γ]
 instance (priority := 100) UniformSpace.to_regularSpace : RegularSpace α :=
   .of_hasBasis
     (fun _ ↦ nhds_basis_uniformity' uniformity_hasBasis_closed)
-    fun a _V hV ↦ isClosed_closedBall a hV.2
+    fun a _V hV ↦ isClosed_ball a hV.2
 
 theorem Filter.HasBasis.specializes_iff_uniformity {ι : Sort*} {p : ι → Prop} {s : ι → Set (α × α)}
     (h : (𝓤 α).HasBasis p s) {x y : α} : x ⤳ y ↔ ∀ i, p i → (x, y) ∈ s i :=

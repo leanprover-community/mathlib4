@@ -140,7 +140,7 @@ lemma isClosed_ball (x : X) (r : ℝ) : IsClosed (ball x r) := by
       use r
       simp [h, hy, ← Set.le_iff_subset, le_compl_iff_disjoint_left, hd]
 
-lemma isClopen_ball : IsClopen (ball x r) := ⟨isClosed_closedBall x r, isOpen_ball⟩
+lemma isClopen_ball : IsClopen (ball x r) := ⟨isClosed_ball x r, isOpen_ball⟩
 
 lemma frontier_ball_eq_empty : frontier (ball x r) = ∅ :=
   isClopen_iff_frontier_eq_empty.mp (isClopen_ball x r)
@@ -176,7 +176,7 @@ lemma frontier_closedBall_eq_empty {r : ℝ} (hr : r ≠ 0) : frontier (closedBa
 
 lemma isOpen_sphere {r : ℝ} (hr : r ≠ 0) : IsOpen (sphere x r) := by
   rw [← closedBall_diff_ball, sdiff_eq]
-  exact (isOpen_closedBall x hr).inter (isClosed_closedBall x r).isOpen_compl
+  exact (isOpen_closedBall x hr).inter (isClosed_ball x r).isOpen_compl
 
 lemma isClopen_sphere {r : ℝ} (hr : r ≠ 0) : IsClopen (sphere x r) :=
   ⟨Metric.isClosed_sphere, isOpen_sphere x hr⟩
