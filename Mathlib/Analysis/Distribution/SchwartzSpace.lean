@@ -1255,15 +1255,14 @@ open scoped NNReal ENNReal
 variable [NormedAddCommGroup D] [MeasurableSpace D] [MeasurableSpace E] [OpensMeasurableSpace E]
   [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
--- none of hint, norm_cast, simp, rw? or apply? return anything
-lemma Real.toNNReal_mul (R S : ℝ) : R.toNNReal * S.toNNReal = (R * S).toNNReal := sorry
-
 -- XXX: is this a sufficiently good name?
-lemma Nat.cast_toNNReal (N : ℕ) : (Nat.cast N : ℝ≥0∞).toNNReal = (Nat.cast N : ℝ).toNNReal := sorry
+lemma Nat.cast_toNNReal (N : ℕ) : (Nat.cast N : ℝ≥0∞).toNNReal = (Nat.cast N : ℝ).toNNReal := by
+  rw [Real.toNNReal_of_nonneg (by positivity), ENNReal.toNNReal_nat]
+  congr
 
 lemma bar (R : ℝ) (k : ℕ) : 2 ^ k * R.toNNReal = (2 ^ k * R).toNNReal := by
   norm_cast
-  rw [← ENNReal.toNNReal_nat, ← Real.toNNReal_mul, Nat.cast_toNNReal]
+  rw [← ENNReal.toNNReal_nat, Real.toNNReal_mul (by positivity), Nat.cast_toNNReal]
 
 variable (𝕜 F) in
 /-- The `L^p` norm of a Schwartz function is controlled by a finite family of Schwartz seminorms.
