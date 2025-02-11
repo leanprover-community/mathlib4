@@ -23,7 +23,7 @@ Lake project settings.
 structure HashMemo where
   /-- Hash of mathlib's lake project settings. -/
   rootHash : UInt64
-  /-- Stores the imports of a module -/
+  /-- Stores the imports of a module, obtained from the `.lean` source files -/
   depsMap  : Std.HashMap FilePath (Array FilePath) := ∅
   /--
   For modules in Mathlib or upstream, this contains the same information
