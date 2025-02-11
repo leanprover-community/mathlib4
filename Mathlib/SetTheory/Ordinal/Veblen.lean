@@ -171,7 +171,7 @@ theorem IsNormal.veblenWith_zero (hp : 0 < f 0) : IsNormal (veblenWith f · 0) :
     rw [Order.lt_succ_iff]
     exact le_max_left _ b
 
-theorem cmp_veblenWith_eq :
+theorem cmp_veblenWith :
   cmp (veblenWith f o₁ a) (veblenWith f o₂ b) =
     match cmp o₁ o₂ with
     | .eq => cmp a b
@@ -190,7 +190,7 @@ theorem cmp_veblenWith_eq :
 theorem veblenWith_lt_veblenWith_iff :
     veblenWith f o₁ a < veblenWith f o₂ b ↔
       o₁ = o₂ ∧ a < b ∨ o₁ < o₂ ∧ a < veblenWith f o₂ b ∨ o₂ < o₁ ∧ veblenWith f o₁ a < b := by
-  rw [← cmp_eq_lt_iff, cmp_veblenWith_eq hf]
+  rw [← cmp_eq_lt_iff, cmp_veblenWith hf]
   aesop (add simp lt_asymm)
 
 /-- `veblenWith f o₁ a ≤ veblenWith f o₂ b` iff one of the following holds:
@@ -200,7 +200,7 @@ theorem veblenWith_lt_veblenWith_iff :
 theorem veblenWith_le_veblenWith_iff :
     veblenWith f o₁ a ≤ veblenWith f o₂ b ↔
       o₁ = o₂ ∧ a ≤ b ∨ o₁ < o₂ ∧ a ≤ veblenWith f o₂ b ∨ o₂ < o₁ ∧ veblenWith f o₁ a ≤ b := by
-  rw [← not_lt, ← cmp_eq_gt_iff, cmp_veblenWith_eq hf]
+  rw [← not_lt, ← cmp_eq_gt_iff, cmp_veblenWith hf]
   aesop (add simp [not_lt_of_le, lt_asymm])
 
 /-- `veblenWith f o₁ a = veblenWith f o₂ b` iff one of the following holds:
@@ -210,7 +210,7 @@ theorem veblenWith_le_veblenWith_iff :
 theorem veblenWith_eq_veblenWith_iff :
     veblenWith f o₁ a = veblenWith f o₂ b ↔
       o₁ = o₂ ∧ a = b ∨ o₁ < o₂ ∧ a = veblenWith f o₂ b ∨ o₂ < o₁ ∧ veblenWith f o₁ a = b := by
-  rw [← cmp_eq_eq_iff, cmp_veblenWith_eq hf]
+  rw [← cmp_eq_eq_iff, cmp_veblenWith hf]
   aesop (add simp lt_asymm)
 
 end veblenWith
@@ -296,12 +296,12 @@ theorem left_le_veblen (o a : Ordinal) : o ≤ veblen o a :=
 theorem isNormal_veblen_zero : IsNormal (veblen · 0) :=
   (isNormal_opow one_lt_omega0).veblenWith_zero (by simp)
 
-theorem cmp_veblen_eq : cmp (veblen o₁ a) (veblen o₂ b) =
+theorem cmp_veblen : cmp (veblen o₁ a) (veblen o₂ b) =
   match cmp o₁ o₂ with
     | .eq => cmp a b
     | .lt => cmp a (veblen o₂ b)
     | .gt => cmp (veblen o₁ a) b :=
-  cmp_veblenWith_eq (isNormal_opow one_lt_omega0)
+  cmp_veblenWith (isNormal_opow one_lt_omega0)
 
 /-- `veblen o₁ a < veblen o₂ b` iff one of the following holds:
 * `o₁ = o₂` and `a < b`
