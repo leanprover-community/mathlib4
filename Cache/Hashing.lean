@@ -26,8 +26,9 @@ structure HashMemo where
   /-- Maps the `.lean` file of a module to the `.lean` files of its imports. -/
   depsMap  : Std.HashMap FilePath (Array FilePath) := ∅
   /--
-  For modules in Mathlib or upstream, this contains the same information
-  as `hashMap`. Contains `none` if a source file couldn't be found.
+  For files with a valid hash, this contains the same information as `hashMap`.
+  Other files have `none` here and do not appear in `hashMap`
+  (e.g. `.lean` source could not be found, imports a file without valid hash).
   -/
   cache    : Std.HashMap FilePath (Option UInt64) := ∅
   /-- Stores the hash of the module's content for modules in Mathlib or upstream. -/
