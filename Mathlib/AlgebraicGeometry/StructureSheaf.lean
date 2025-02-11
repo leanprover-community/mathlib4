@@ -418,8 +418,6 @@ theorem toOpen_Γgerm_apply (x : PrimeSpectrum.Top R) (f : R) :
     (structureSheaf R).presheaf.Γgerm x (toOpen R ⊤ f) = toStalk R x f :=
   rfl
 
-@[deprecated (since := "2024-07-30")] alias germ_to_top := toOpen_Γgerm_apply
-
 theorem isUnit_to_basicOpen_self (f : R) : IsUnit (toOpen R (PrimeSpectrum.basicOpen f) f) :=
   isUnit_of_mul_eq_one _ (const R 1 f (PrimeSpectrum.basicOpen f) fun _ => id) <| by
     rw [toOpen_eq_const, const_mul_rev]
@@ -499,8 +497,6 @@ theorem stalkToFiberRingHom_germ (U : Opens (PrimeSpectrum.Top R))
     stalkToFiberRingHom R x ((structureSheaf R).presheaf.germ U x hx s) = s.1 ⟨x, hx⟩ :=
   RingHom.ext_iff.mp (CommRingCat.hom_ext_iff.mp (germ_comp_stalkToFiberRingHom R U x hx)) s
 
-@[deprecated (since := "2024-07-30")] alias stalkToFiberRingHom_germ' := stalkToFiberRingHom_germ
-
 @[simp]
 theorem toStalk_comp_stalkToFiberRingHom (x : PrimeSpectrum.Top R) :
     toStalk R x ≫ stalkToFiberRingHom R x = CommRingCat.ofHom (algebraMap _ _) := by
@@ -529,9 +525,6 @@ def stalkIso (x : PrimeSpectrum.Top R) :
       exists_const _ _ s x hxU
     rw [← res_apply R U V iVU s ⟨x, hxV⟩, ← hs, const_apply, localizationToStalk_mk']
     refine (structureSheaf R).presheaf.germ_ext V hxV (homOfLE hg) iVU ?_
-    -- Replace the `HasForget.instFunLike` instance with `CommRingCat.hom`:
-    show (structureSheaf R).presheaf.map (homOfLE hg).op _ =
-      (structureSheaf R).presheaf.map iVU.op s
     rw [← hs, res_const']
   inv_hom_id := CommRingCat.hom_ext <|
     @IsLocalization.ringHom_ext R _ x.asIdeal.primeCompl (Localization.AtPrime x.asIdeal) _ _

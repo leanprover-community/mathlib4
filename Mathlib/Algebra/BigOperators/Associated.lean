@@ -15,6 +15,7 @@ and products of multisets, finsets, and finsupps.
 
 -/
 
+assert_not_exists Field
 
 variable {α β γ δ : Type*}
 
@@ -188,7 +189,7 @@ variable [CancelCommMonoidWithZero α]
 
 theorem exists_mem_multiset_le_of_prime {s : Multiset (Associates α)} {p : Associates α}
     (hp : Prime p) : p ≤ s.prod → ∃ a ∈ s, p ≤ a :=
-  Multiset.induction_on s (fun ⟨_, Eq⟩ => (hp.ne_one (mul_eq_one.1 Eq.symm).1).elim)
+  Multiset.induction_on s (fun ⟨_, eq⟩ => (hp.ne_one (mul_eq_one.1 eq.symm).1).elim)
     fun a s ih h =>
     have : p ≤ a * s.prod := by simpa using h
     match Prime.le_or_le hp this with

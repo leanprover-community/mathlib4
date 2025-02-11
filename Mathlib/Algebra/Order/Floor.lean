@@ -160,8 +160,6 @@ theorem floor_natCast (n : ℕ) : ⌊(n : α)⌋₊ = n :=
     rw [le_floor_iff, Nat.cast_le]
     exact n.cast_nonneg
 
-@[deprecated (since := "2024-06-08")] alias floor_coe := floor_natCast
-
 @[simp]
 theorem floor_zero : ⌊(0 : α)⌋₊ = 0 := by rw [← Nat.cast_zero, floor_natCast]
 
@@ -790,6 +788,9 @@ theorem floor_eq_on_Ico' (n : ℤ) : ∀ a ∈ Set.Ico (n : α) (n + 1), (⌊a�
 theorem preimage_floor_singleton (m : ℤ) : (floor : α → ℤ) ⁻¹' {m} = Ico (m : α) (m + 1) :=
   ext fun _ => floor_eq_iff
 
+lemma floor_eq_self_iff_mem (a : α) : ⌊a⌋ = a ↔ a ∈ Set.range Int.cast := by
+  aesop
+
 /-! #### Fractional part -/
 
 
@@ -1011,8 +1012,7 @@ theorem sub_floor_div_mul_nonneg (a : k) (hb : 0 < b) : 0 ≤ a - ⌊a / b⌋ * 
 
 theorem sub_floor_div_mul_lt (a : k) (hb : 0 < b) : a - ⌊a / b⌋ * b < b :=
   sub_lt_iff_lt_add.2 <| by
-    -- Porting note: `← one_add_mul` worked in mathlib3 without the argument
-    rw [← one_add_mul _ b, ← div_lt_iff₀ hb, add_comm]
+    rw [← one_add_mul, ← div_lt_iff₀ hb, add_comm]
     exact lt_floor_add_one _
 
 theorem fract_div_natCast_eq_div_natCast_mod {m n : ℕ} : fract ((m : k) / n) = ↑(m % n) / n := by
@@ -1057,7 +1057,7 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     -- Porting note: the `simp` was `push_cast`
     simp [m₁]
   · congr 2
-    change (q * ↑n - (↑m₀ : ℤ)) % ↑n = _
+    simp only [m₁]
     rw [sub_eq_add_neg, add_comm (q * ↑n), add_mul_emod_self]
 
 end LinearOrderedField
@@ -1191,6 +1191,9 @@ theorem ceil_eq_on_Ioc (z : ℤ) : ∀ a ∈ Set.Ioc (z - 1 : α) z, ⌈a⌉ = z
 theorem ceil_eq_on_Ioc' (z : ℤ) : ∀ a ∈ Set.Ioc (z - 1 : α) z, (⌈a⌉ : α) = z := fun a ha =>
   mod_cast ceil_eq_on_Ioc z a ha
 
+lemma ceil_eq_self_iff_mem (a : α) : ⌈a⌉ = a ↔ a ∈ Set.range Int.cast := by
+  aesop
+
 @[bound]
 theorem floor_le_ceil (a : α) : ⌊a⌋ ≤ ⌈a⌉ :=
   cast_le.1 <| (floor_le _).trans <| le_ceil _
@@ -1198,6 +1201,14 @@ theorem floor_le_ceil (a : α) : ⌊a⌋ ≤ ⌈a⌉ :=
 @[bound]
 theorem floor_lt_ceil_of_lt {a b : α} (h : a < b) : ⌊a⌋ < ⌈b⌉ :=
   cast_lt.1 <| (floor_le a).trans_lt <| h.trans_le <| le_ceil b
+
+lemma ceil_eq_floor_add_one_iff_not_mem (a : α) : ⌈a⌉ = ⌊a⌋ + 1 ↔ a ∉ Set.range Int.cast := by
+  refine ⟨fun h ht => ?_, fun h => ?_⟩
+  · have := ((floor_eq_self_iff_mem _).mpr ht).trans ((ceil_eq_self_iff_mem _).mpr ht).symm
+    linarith [Int.cast_inj.mp this]
+  · apply le_antisymm (Int.ceil_le_floor_add_one _)
+    rw [Int.add_one_le_ceil_iff]
+    exact lt_of_le_of_ne (Int.floor_le a) ((iff_false_right h).mp (floor_eq_self_iff_mem a))
 
 -- Porting note: in mathlib3 there was no need for the type annotation in `(m : α)`
 @[simp]
