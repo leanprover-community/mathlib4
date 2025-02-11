@@ -603,6 +603,8 @@ lemma isOpen_ball (x : α) {V : Set (α × α)} (hV : IsOpen V) : IsOpen (ball x
 lemma isClosed_closedBall (x : α) {V : Set (α × α)} (hV : IsClosed V) : IsClosed (ball x V) :=
   hV.preimage <| continuous_const.prod_mk continuous_id
 
+@[deprecated (since := "2025-02-11")] alias isClosed_ball := isClosed_closedBall
+
 theorem mem_comp_comp {V W M : Set (β × β)} (hW' : SymmetricRel W) {p : β × β} :
     p ∈ V ○ M ○ W ↔ (ball p.1 V ×ˢ ball p.2 W ∩ M).Nonempty := by
   cases' p with x y

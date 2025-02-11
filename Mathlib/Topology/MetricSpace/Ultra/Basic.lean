@@ -140,6 +140,8 @@ lemma isClosed_closedBall (x : X) (r : ℝ) : IsClosed (ball x r) := by
       use r
       simp [h, hy, ← Set.le_iff_subset, le_compl_iff_disjoint_left, hd]
 
+@[deprecated (since := "2025-02-11")] alias isClosed_ball := isClosed_closedBall
+
 lemma isClopen_ball : IsClopen (ball x r) := ⟨isClosed_closedBall x r, isOpen_ball⟩
 
 lemma frontier_ball_eq_empty : frontier (ball x r) = ∅ :=
