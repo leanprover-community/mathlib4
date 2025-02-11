@@ -276,7 +276,7 @@ inductive QueryType
 def QueryType.prefix : QueryType → String
   | files   => "&prefix=f/"
   | commits => "&prefix=c/"
-  | all     => default
+  | all     => ""
 
 def formatError {α : Type} : IO α :=
   throw <| IO.userError "Invalid format for curl return"
@@ -298,7 +298,7 @@ def getFilesInfo (q : QueryType) : IO <| List (String × String) := do
   let ret ← IO.runCurl #["-X", "GET", s!"{URL}?comp=list&restype=container{q.prefix}"]
   match ret.splitOn "<Name>" with
   | [] => formatError
-  | [_] => return default
+  | [_] => return []
   | _ :: parts =>
     parts.mapM fun part => match part.splitOn "</Name>" with
       | [name, rest] => match rest.splitOn "<Last-Modified>" with

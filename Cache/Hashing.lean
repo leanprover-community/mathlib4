@@ -14,9 +14,9 @@ open System IO
 
 structure HashMemo where
   rootHash : UInt64
-  depsMap  : Std.HashMap FilePath (Array FilePath) := {}
-  cache    : Std.HashMap FilePath (Option UInt64) := {}
-  hashMap  : HashMap := {}
+  depsMap  : Std.HashMap FilePath (Array FilePath) := ∅
+  cache    : Std.HashMap FilePath (Option UInt64) := ∅
+  hashMap  : HashMap := ∅
   deriving Inhabited
 
 partial def insertDeps (hashMap : HashMap) (path : FilePath) (hashMemo : HashMemo) : HashMap :=
@@ -31,7 +31,7 @@ Filters the `HashMap` of a `HashMemo` so that it only contains key/value pairs s
 * Corresponds to a file that's imported (transitively of not) by some file in the list of file paths
 -/
 def HashMemo.filterByFilePaths (hashMemo : HashMemo) (filePaths : List FilePath) : IO HashMap := do
-  let mut hashMap := default
+  let mut hashMap := ∅
   for filePath in filePaths do
     if hashMemo.hashMap.contains filePath then
       hashMap := insertDeps hashMap filePath hashMemo
