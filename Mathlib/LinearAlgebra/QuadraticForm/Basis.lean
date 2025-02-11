@@ -61,23 +61,13 @@ lemma partial_result1 (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) 
   rw [e1, e1]
   simp_rw [polar_smul_right, polar_smul_left]
 
-lemma partial_result2 (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
-    Sym2.lift ⟨fun i j => l j • l i • polar (⇑Q) (g i) (g j),
-      fun _ _ => by simp_rw [polar_comm]; rw [smul_comm]⟩ =
-      Sym2.lift ⟨fun i j => l j • l i, fun a b => by
-        simp only [smul_eq_mul, mul_comm]⟩ • Sym2.lift ⟨fun i j => polar (⇑Q) (g i) (g j),
-      fun _ _ => by simp_rw [polar_comm]⟩ := by
-  rw [Sym2.smul]
-  ext ⟨i,j⟩
-  simp_all only [Sym2.lift_mk, Pi.smul_apply']
-  rw [← smul_assoc]
-
 lemma partial_result2a (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
     Sym2.lift ⟨fun i j => l j • l i • polar (⇑Q) (g i) (g j),
       fun _ _ => by simp_rw [polar_comm]; rw [smul_comm]⟩ =
       Sym2.mul l • (polarSym2 Q) ∘ Sym2.map g := by
-  rw [partial_result2]
   ext ⟨i,j⟩
+  simp_all only [Sym2.lift_mk, Pi.smul_apply']
+  rw [← smul_assoc]
   simp only [smul_eq_mul, Pi.smul_apply', Sym2.lift_mk, Sym2.mul, Function.comp_apply,
     Sym2.map_pair_eq, polarSym2_sym2Mk, mul_comm]
 
@@ -101,10 +91,8 @@ noncomputable def scalar (l : ι →₀ R) : Sym2 ι →₀ R := Finsupp.onFinse
       · aesop
     )
 
-lemma partial_result3 (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
-  Sym2.lift ⟨fun i j => l j • l i, fun a b => by
-        simp only [smul_eq_mul, mul_comm]⟩ • Sym2.lift ⟨fun i j => polar (⇑Q) (g i) (g j),
-      fun _ _ => by simp_rw [polar_comm]⟩ =
+lemma partial_result3a (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
+    Sym2.mul l • (polarSym2 Q) ∘ Sym2.map g =
         scalar l * (polarSym2 Q) ∘ Sym2.map g := by
   rw [polarSym2]
   rw [Sym2.lift_comp_map]
@@ -116,12 +104,10 @@ lemma partial_result3 (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) 
   simp_all only [smul_eq_mul, Pi.smul_apply', Sym2.lift_mk]
   rw [Finsupp.ofSupportFinite]
   simp_all only [Finsupp.coe_mk, Sym2.lift_mk]
-  rw [mul_comm]
-  simp_all only [Sym2.mul_sym2Mk]
 
 lemma test (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
     (polarSym2 Q) ∘ Sym2.map (l * g)  = (scalar l) * (polarSym2 Q) ∘ (Sym2.map g) := by
-  rw [partial_result1, partial_result2, partial_result3]
+  rw [partial_result1, partial_result2a, partial_result3a]
 
 open Finsupp in
 theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
