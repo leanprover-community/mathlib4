@@ -111,23 +111,23 @@ section
 
 /-- Find path to `Mathlib` source directory -/
 private def CacheM.mathlibDepPath (sp : SearchPath) : IO FilePath := do
-  let mathlibRootFile ← Lean.findLean sp `Mathlib
-  let some mathlibRoot ← pure mathlibRootFile.parent
+  let mathlibSourceFile ← Lean.findLean sp `Mathlib
+  let some mathlibSource ← pure mathlibSourceFile.parent
     | throw <| IO.userError s!"Mathlib not found in dependencies"
-  return mathlibRoot
+  return mathlibSource
 
 -- TODO this should be generated automatically from the information in `lakefile.lean`.
 private def CacheM.getContext : IO CacheM.Context := do
   let sp ← initSrcSearchPath
-  let mathlibRoot ← CacheM.mathlibDepPath sp
+  let mathlibSource ← CacheM.mathlibDepPath sp
   return {
-    mathlibDepPath := mathlibRoot,
+    mathlibDepPath := mathlibSource,
     searchPath := sp,
     packageDirs := .ofList [
-      ("Mathlib", mathlibRoot),
-      ("Archive", mathlibRoot),
-      ("Counterexamples", mathlibRoot),
-      ("MathlibTest", mathlibRoot),
+      ("Mathlib", mathlibSource),
+      ("Archive", mathlibSource),
+      ("Counterexamples", mathlibSource),
+      ("MathlibTest", mathlibSource),
       ("Aesop", LAKEPACKAGESDIR / "aesop"),
       ("Batteries", LAKEPACKAGESDIR / "batteries"),
       ("Cli", LAKEPACKAGESDIR / "Cli"),
