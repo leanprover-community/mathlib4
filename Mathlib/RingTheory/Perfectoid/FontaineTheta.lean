@@ -25,12 +25,12 @@ to `A` itself. Our definition of `θ` does not require that `A` is perfectoid in
 Fontaine's theta map, period rings, perfectoid theory, p-adic Hodge theory
 
 ## TODO
-Currently, the period ring `B_{dR}^+` takes the integeral perfectoid ring `O` as the input.
+Currently, the period ring `B_{dR}^+` takes the ring of integers `O` as the input.
 After the perfectoid theory is developed, we should modify it to
 take a perfectoid field as the input.
 -/
 
-open Ideal PreTilt
+open Ideal Quotient PreTilt WittVector
 noncomputable section
 
 variable {O : Type*} [CommRing O]
@@ -80,21 +80,49 @@ decompose it as a composition of several ring homomorphisms as below.
 Here, the ring map `gh_n` fits in the following diagram.
 
 ```
-𝕎(A)--ghost_n-> A
-↓                ↓
-𝕎(A/p) --gh_n->A/p^(n+1)
+𝕎(A)  --ghost_n->   A
+|                   |
+v                   v
+𝕎(A/p) --gh_n-> A/p^(n+1)
 ```
 
 -/
 section RingHom
+#check WittVector.ghostComponent
+#check WittVector.map_surjective
 
-def ghostMapModP (n : ℕ): 𝕎 (O ⧸ span {(p : O)}) →+* O ⧸ span {(p : O)}^(n + 1) := sorry
+namespace WittVector
+
+variable (O p) in
+def mkCompGhostComponent (n : ℕ) : 𝕎 O →+* O ⧸ span {(p : O)} ^ (n + 1) :=
+  ((Ideal.Quotient.mk <| span {(p : O)} ^ (n + 1))).comp (WittVector.ghostComponent n)
+
+variable (n : ℕ)
+#check mkCompGhostComponent O p n
+theorem ker_map_le_ker_mkCompGhostComponent (n : ℕ) :
+    RingHom.ker (WittVector.map <| Ideal.Quotient.mk <| span {(p : O)}) ≤
+        RingHom.ker (mkCompGhostComponent O p n) := sorry
+
+
+def ghostComponentModPPow (n : ℕ): 𝕎 (O ⧸ span {(p : O)}) →+* O ⧸ span {(p : O)}^(n + 1) :=
+  RingHom.liftOfSurjective (WittVector.map <| Ideal.Quotient.mk <| span {(p : O)})
+    (map_surjective _ Ideal.Quotient.mk_surjective)
+    ⟨mkCompGhostComponent O p n, ker_map_le_ker_mkCompGhostComponent n⟩
+
 -- Quotient.lift
+#check RingHom.liftOfSurjective
+#check WittVector.map
 
-def fontaineThetaModP (n : ℕ): 𝕎 (O^♭) →+* O ⧸ span {(p : O)}^(n + 1) := sorry
+end WittVector
+
+variable (O p) in
+def fontaineThetaModPPow (n : ℕ): 𝕎 (O^♭) →+* O ⧸ span {(p : O)}^(n + 1) :=
+  (ghostComponentModPPow n).comp
+      (((WittVector.map (Perfection.coeff _ p 0))).comp
+          (WittVector.map ((iterateFrobeniusEquiv (O^♭) p n).symm : O^♭ →+* O^♭)))
 
 theorem fontaineThetaModP_eq_fontainThetaFun_mod_p (x : 𝕎 (O^♭)) (n : ℕ) :
-  fontaineThetaModP n x = fontaineThetaAux x n := sorry
+  fontaineThetaModPPow O p n x = fontaineThetaAux x n := sorry
 
 def fontaineTheta : 𝕎 (O^♭) →+* O where
   toFun := sorry
@@ -105,15 +133,23 @@ def fontaineTheta : 𝕎 (O^♭) →+* O where
 
 end RingHom
 
+-- theorem modPPow
+
+-- Teichmuller lifts
+
+
+
 theorem fontaineTheta_surjective : Function.Surjective (fontaineTheta : 𝕎 (O^♭) → O) := sorry
 
 
 section PeriodRing
 
-def BDeRhamPlus (O : Type*) [CommRing O] [Fact (Nat.Prime p)]
+def BDeRhamPlus (O : Type*) [CommRing O] (p : ℕ) [Fact (Nat.Prime p)]
   [Fact ¬IsUnit (p : O)] : Type* := sorry
 
-notation "𝔹_dR(" O ")" => BDeRhamPlus O
+def BDeRham (O : Type*) [CommRing O] [Fact (Nat.Prime p)]
+  [Fact ¬IsUnit (p : O)] : Type* := sorry -- FractionRing (BDeRhamPlus O p)
+notation "𝔹_dR^+(" O ")" => BDeRhamPlus O
 
 end PeriodRing
 
