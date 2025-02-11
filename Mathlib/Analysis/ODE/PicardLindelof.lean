@@ -719,20 +719,22 @@ theorem exists_eventually_eq_hasDerivAt
     · simp_rw [dif_pos hx, h1]
     · simp_rw [dif_pos hx, h2 t ht]
 
-/-- Temporary lemma before we have smoothness with respect to initial condition -/
-theorem exists_forall_mem_closedBall_eq_hasDerivAt_Ioo'
+theorem exists_eventually_eq_hasDerivAt_continuousAt
     (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
-    ∃ r > (0 : ℝ), ∃ ε > (0 : ℝ), ∃ α : E → ℝ → E, ∀ t ∈ Ioo (t₀ - ε) (t₀ + ε),
-      (∀ x ∈ closedBall x₀ r, α x t₀ = x ∧ HasDerivAt (α x) (f (α x t)) t) ∧
-      UniformContinuousOn (α · t) (closedBall x₀ r) := by
+    ∃ α : E × ℝ → E, ∀ᶠ xt in 𝓝 x₀ ×ˢ 𝓝 t₀,
+      α ⟨xt.1, t₀⟩ = xt.1 ∧ HasDerivAt (α ⟨xt.1, ·⟩) (f (α xt)) xt.2 ∧ ContinuousAt α xt := by
   have ⟨ε, hε, a, r, _, _, hr, hpl⟩ := IsPicardLindelof.of_contDiffAt_one hf t₀
-  refine ⟨r, hr, ε, hε, ?_⟩
-  have ⟨α, hα1, L, hα2⟩ := hpl.exists_forall_mem_closedBall_eq_hasDerivWithinAt_lipschitzOnWith
-  refine ⟨α, fun t ht ↦ ⟨?_, ?_⟩⟩
-  · intro x hx
-    refine ⟨(hα1 x hx).1, ?_⟩
-    apply HasDerivWithinAt.hasDerivAt (s := Ioo (t₀ - ε) (t₀ + ε)) _ (Ioo_mem_nhds ht.1 ht.2)
-    exact hα1 x hx |>.2 t (Ioo_subset_Icc_self ht) |>.mono Ioo_subset_Icc_self
-  · exact hα2 t (Ioo_subset_Icc_self ht) |>.uniformContinuousOn
+  have ⟨α, hα1, hα2⟩ := hpl.exists_forall_mem_closedBall_eq_hasDerivWithinAt_continuousOn
+  refine ⟨α, ?_⟩
+  rw [Filter.eventually_iff_exists_mem]
+  refine ⟨ball x₀ r ×ˢ Ioo (t₀ - ε) (t₀ + ε), ?_, ?_⟩
+  · rw [Filter.prod_mem_prod_iff]
+    exact ⟨ball_mem_nhds x₀ hr, Ioo_mem_nhds (by linarith) (by linarith)⟩
+  · intro ⟨x, t⟩ ⟨hx, ht⟩
+    have ⟨h1, h2⟩ := hα1 x (ball_subset_closedBall hx)
+    refine ⟨h1, h2 t (Ioo_subset_Icc_self ht) |>.hasDerivAt (Icc_mem_nhds ht.1 ht.2), ?_⟩
+    apply hα2.continuousAt (x := ⟨x, t⟩)
+    rw [nhds_prod_eq, Filter.prod_mem_prod_iff]
+    exact ⟨closedBall_mem_nhds_of_mem hx, Icc_mem_nhds ht.1 ht.2⟩
 
 end ContDiffAt
