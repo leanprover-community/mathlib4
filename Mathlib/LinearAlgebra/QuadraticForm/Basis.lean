@@ -24,6 +24,9 @@ section
 
 variable {α R}
 
+/--
+`CommMagma.mul` as a function from `Sym2`.
+-/
 def Sym2.mul [CommMagma R] (f : α → R) : Sym2 α → R :=
   Sym2.lift ⟨fun i j => (f i * f j), fun _ _ => mul_comm _ _⟩
 
