@@ -498,7 +498,6 @@ theorem lt_omega_iff_card_lt {x o : Ordinal} : x < ω_ o ↔ x.card < ℵ_ o := 
 section deprecated
 
 set_option linter.docPrime false
-set_option linter.deprecated false
 
 @[deprecated preAleph (since := "2024-10-22")]
 noncomputable alias aleph' := preAleph
@@ -515,6 +514,7 @@ noncomputable alias aleph' := preAleph
 def alephIdx.initialSeg : @InitialSeg Cardinal Ordinal (· < ·) (· < ·) :=
   @RelEmbedding.collapse Cardinal Ordinal (· < ·) (· < ·) _ Cardinal.ord.orderEmbedding.ltEmbedding
 
+set_option linter.deprecated false in
 /-- The `aleph'` index function, which gives the ordinal index of a cardinal.
   (The `aleph'` part is because unlike `aleph` this counts also the
   finite stages. So `alephIdx n = n`, `alephIdx ℵ₀ = ω`,
@@ -526,6 +526,7 @@ def alephIdx.initialSeg : @InitialSeg Cardinal Ordinal (· < ·) (· < ·) :=
 def alephIdx.relIso : @RelIso Cardinal.{u} Ordinal.{u} (· < ·) (· < ·) :=
   aleph'.symm.toRelIsoLT
 
+set_option linter.deprecated false in
 /-- The `aleph'` index function, which gives the ordinal index of a cardinal.
   (The `aleph'` part is because unlike `aleph` this counts also the
   finite stages. So `alephIdx n = n`, `alephIdx ω = ω`,
@@ -535,10 +536,12 @@ def alephIdx.relIso : @RelIso Cardinal.{u} Ordinal.{u} (· < ·) (· < ·) :=
 def alephIdx : Cardinal → Ordinal :=
   aleph'.symm
 
+set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided."  (since := "2024-08-28")]
 theorem alephIdx.relIso_coe : (alephIdx.relIso : Cardinal → Ordinal) = alephIdx :=
   rfl
 
+set_option linter.deprecated false in
 /-- The `aleph'` function gives the cardinals listed by their ordinal
   index, and is the inverse of `aleph_idx`.
   `aleph' n = n`, `aleph' ω = ω`, `aleph' (ω + 1) = succ ℵ₀`, etc.
@@ -549,60 +552,74 @@ theorem alephIdx.relIso_coe : (alephIdx.relIso : Cardinal → Ordinal) = alephId
 def Aleph'.relIso :=
   aleph'
 
+set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided."  (since := "2024-08-28")]
 theorem aleph'.relIso_coe : (Aleph'.relIso : Ordinal → Cardinal) = aleph' :=
   rfl
 
+set_option linter.deprecated false in
 @[deprecated preAleph_lt_preAleph (since := "2024-10-22")]
 theorem aleph'_lt {o₁ o₂ : Ordinal} : aleph' o₁ < aleph' o₂ ↔ o₁ < o₂ :=
   aleph'.lt_iff_lt
 
+set_option linter.deprecated false in
 @[deprecated preAleph_le_preAleph (since := "2024-10-22")]
 theorem aleph'_le {o₁ o₂ : Ordinal} : aleph' o₁ ≤ aleph' o₂ ↔ o₁ ≤ o₂ :=
   aleph'.le_iff_le
 
+set_option linter.deprecated false in
 @[deprecated preAleph_max (since := "2024-10-22")]
 theorem aleph'_max (o₁ o₂ : Ordinal) : aleph' (max o₁ o₂) = max (aleph' o₁) (aleph' o₂) :=
   aleph'.monotone.map_max
 
+set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided."  (since := "2024-08-28")]
 theorem aleph'_alephIdx (c : Cardinal) : aleph' c.alephIdx = c :=
   Cardinal.alephIdx.relIso.toEquiv.symm_apply_apply c
 
+set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided."  (since := "2024-08-28")]
 theorem alephIdx_aleph' (o : Ordinal) : (aleph' o).alephIdx = o :=
   Cardinal.alephIdx.relIso.toEquiv.apply_symm_apply o
 
+set_option linter.deprecated false in
 @[deprecated preAleph_zero (since := "2024-10-22")]
 theorem aleph'_zero : aleph' 0 = 0 :=
   aleph'.map_bot
 
+set_option linter.deprecated false in
 @[deprecated preAleph_succ (since := "2024-10-22")]
 theorem aleph'_succ (o : Ordinal) : aleph' (succ o) = succ (aleph' o) :=
   aleph'.map_succ o
 
+set_option linter.deprecated false in
 @[deprecated preAleph_nat (since := "2024-10-22")]
 theorem aleph'_nat : ∀ n : ℕ, aleph' n = n :=
   preAleph_nat
 
+set_option linter.deprecated false in
 @[deprecated lift_preAleph (since := "2024-10-22")]
 theorem lift_aleph' (o : Ordinal.{u}) : lift.{v} (aleph' o) = aleph' (Ordinal.lift.{v} o) :=
   lift_preAleph o
 
+set_option linter.deprecated false in
 @[deprecated preAleph_le_of_isSuccPrelimit (since := "2025-02-09")]
 theorem preAleph_le_of_isLimit {o : Ordinal} (l : o.IsLimit) {c} :
     preAleph o ≤ c ↔ ∀ o' < o, preAleph o' ≤ c :=
   preAleph_le_of_isSuccPrelimit l.isSuccPrelimit
 
+set_option linter.deprecated false in
 @[deprecated preAleph_le_of_isLimit (since := "2024-10-22")]
 theorem aleph'_le_of_limit {o : Ordinal} (l : o.IsLimit) {c} :
     aleph' o ≤ c ↔ ∀ o' < o, aleph' o' ≤ c :=
   preAleph_le_of_isLimit l
 
+set_option linter.deprecated false in
 @[deprecated preAleph_limit (since := "2024-10-22")]
 theorem aleph'_limit {o : Ordinal} (ho : o.IsLimit) : aleph' o = ⨆ a : Iio o, aleph' a :=
   preAleph_limit ho.isSuccPrelimit
 
+set_option linter.deprecated false in
 @[deprecated preAleph_omega0 (since := "2024-10-22")]
 theorem aleph'_omega0 : aleph' ω = ℵ₀ :=
   preAleph_omega0
@@ -610,32 +627,33 @@ theorem aleph'_omega0 : aleph' ω = ℵ₀ :=
 @[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias aleph'_omega := aleph'_omega0
 
+set_option linter.deprecated false in
 /-- `aleph'` and `aleph_idx` form an equivalence between `Ordinal` and `Cardinal` -/
 @[deprecated aleph' (since := "2024-08-28")]
 def aleph'Equiv : Ordinal ≃ Cardinal :=
   ⟨aleph', alephIdx, alephIdx_aleph', aleph'_alephIdx⟩
 
+set_option linter.deprecated false in
 @[deprecated aleph_eq_preAleph (since := "2024-10-22")]
 theorem aleph_eq_aleph' (o : Ordinal) : ℵ_ o = preAleph (ω + o) :=
   rfl
 
+set_option linter.deprecated false in
 @[deprecated aleph0_le_preAleph (since := "2024-10-22")]
 theorem aleph0_le_aleph' {o : Ordinal} : ℵ₀ ≤ aleph' o ↔ ω ≤ o := by
   rw [← aleph'_omega0, aleph'_le]
 
+set_option linter.deprecated false in
 @[deprecated preAleph_pos (since := "2024-10-22")]
 theorem aleph'_pos {o : Ordinal} (ho : 0 < o) : 0 < aleph' o := by
   rwa [← aleph'_zero, aleph'_lt]
 
+set_option linter.deprecated false in
 @[deprecated preAleph_isNormal (since := "2024-10-22")]
 theorem aleph'_isNormal : IsNormal (ord ∘ aleph') :=
   preAleph_isNormal
 
--- TODO: these lemmas should be stated in terms of the `ω` function and of an `IsInitial` predicate,
--- neither of which currently exist.
---
--- They should also use `¬ BddAbove` instead of `Unbounded (· < ·)`.
-
+set_option linter.deprecated false in
 /-- Ordinals that are cardinals are unbounded. -/
 @[deprecated "No deprecation message was provided."  (since := "2024-09-24")]
 theorem ord_card_unbounded : Unbounded (· < ·) { b : Ordinal | b.card.ord = b } :=
@@ -645,15 +663,18 @@ theorem ord_card_unbounded : Unbounded (· < ·) { b : Ordinal | b.card.ord = b 
         dsimp
         rw [card_ord], (lt_ord_succ_card a).le⟩⟩
 
+set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided."  (since := "2024-09-24")]
 theorem eq_aleph'_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) : ∃ a, (aleph' a).ord = o :=
   ⟨aleph'.symm o.card, by simpa using ho⟩
 
+set_option linter.deprecated false in
 /-- Infinite ordinals that are cardinals are unbounded. -/
 @[deprecated "No deprecation message was provided."  (since := "2024-09-24")]
 theorem ord_card_unbounded' : Unbounded (· < ·) { b : Ordinal | b.card.ord = b ∧ ω ≤ b } :=
   (unbounded_lt_inter_le ω).2 ord_card_unbounded
 
+set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided."  (since := "2024-09-24")]
 theorem eq_aleph_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) (ho' : ω ≤ o) :
     ∃ a, (ℵ_ a).ord = o := by
@@ -662,10 +683,12 @@ theorem eq_aleph_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) (ho' : ω �
   rwa [aleph_eq_aleph', Ordinal.add_sub_cancel_of_le]
   rwa [← aleph0_le_aleph', ← ord_le_ord, ha, ord_aleph0]
 
+set_option linter.deprecated false in
 @[deprecated isSuccLimit_omega (since := "2025-02-09")]
 theorem isLimit_omega (o : Ordinal) : Ordinal.IsLimit (ω_ o) :=
   isSuccLimit_omega o
 
+set_option linter.deprecated false in
 @[deprecated isLimit_omega (since := "2024-10-24")]
 theorem ord_aleph_isLimit (o : Ordinal) : (ℵ_ o).ord.IsLimit :=
   isLimit_ord <| aleph0_le_aleph _
