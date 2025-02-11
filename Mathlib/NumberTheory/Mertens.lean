@@ -12,22 +12,9 @@ open MeasureTheory
 set_option linter.style.longLine false
 
 attribute [bound] tsum_nonneg ArithmeticFunction.vonMangoldt_nonneg sum_nonneg
+
 section fun_prop
-
-@[fun_prop]
-theorem MeasureTheory.AEStronglyMeasurable.mul' {α : Type*} {β : Type*} [TopologicalSpace β] {m₀ : MeasurableSpace α} {mu : Measure α} {f g : α → β} [Mul β] [ContinuousMul β] (hf : AEStronglyMeasurable f mu) (hg : AEStronglyMeasurable g mu) :
-    AEStronglyMeasurable (fun x ↦ f x * g x) mu := hf.mul hg
-
-@[fun_prop]
-theorem MeasureTheory.AEStronglyMeasurable.inv' {α : Type*} {β : Type*} [TopologicalSpace β] {m m₀ : MeasurableSpace α} {μ : Measure α} {f : α → β} [Inv β] [ContinuousInv β] (hf : AEStronglyMeasurable f μ) :
-AEStronglyMeasurable (fun x ↦ (f x)⁻¹) μ := hf.inv
-
-@[fun_prop]
-theorem MeasureTheory.AEStronglyMeasurable.pow' {α : Type*} {β : Type*} [TopologicalSpace β] {m m₀ : MeasurableSpace α} {μ : Measure α} {f : α → β} [Monoid β] [ContinuousMul β] (hf : AEStronglyMeasurable f μ) (n : ℕ) :
-    AEStronglyMeasurable (fun x ↦ f x ^ n) μ := hf.pow n
-
 attribute [fun_prop] measurable_log Measurable.aestronglyMeasurable
-
 end fun_prop
 
 
