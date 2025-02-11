@@ -431,3 +431,17 @@ lemma one_eq_one {α : Type*} [One α] : (1 : α) = 1 := rfl
 
 @[to_additive (attr := reduce_mod_char, simp)]
 lemma one_eq_one' {α : Type*} [One α] : (1 : α) = 1 := rfl
+
+-- Test the error message for a name that cannot be additivised.
+
+/--
+warning: declaration uses 'sorry'
+---
+error: to_additive: the generated additivised name equals the original name foo.
+Usually, this means you need to name your declaration correctly
+(e.g., name instances with a name that can be additivised).
+Sometimes, this means you need to extend to_additive to handle the new names.
+-/
+#guard_msgs in
+@[to_additive]
+instance foo {α : Type*} [Semigroup α] : Monoid α := sorry
