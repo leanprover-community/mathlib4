@@ -54,11 +54,11 @@ theorem tendsto_integral_mulExpNegMulSq_comp (g : BoundedContinuousFunction E �
     use N; intro n hn
     exact Eventually.of_forall
       (fun _ => abs_mulExpNegMulSq_comp_le_norm g (le_of_lt (Set.mem_Ioi.mp (hupos n hn))))
-  have hlim : ∀ᵐ (x : E) ∂P, Filter.Tendsto (fun (n : ℕ) => (mulExpNegMulSq (u n)).comp g x)
+  have hlim : ∀ᵐ (x : E) ∂P, Filter.Tendsto (fun (n : ℕ) => (mulExpNegMulSq (u n) ∘ g) x)
       Filter.atTop (nhds (g x)) := Eventually.of_forall
         (fun _ => (tendsto_nhdsWithin_of_tendsto_nhds
-          tendsto_mulExpNegMulSq_comp).comp hu)
-  have hmeas : ∀ n, AEStronglyMeasurable (fun x => (mulExpNegMulSq (u n)).comp g x) P :=
+          tendsto_mulExpNegMulSq).comp hu)
+  have hmeas : ∀ n, AEStronglyMeasurable (fun x => (mulExpNegMulSq (u n) ∘ g) x) P :=
     fun n => StronglyMeasurable.aestronglyMeasurable (Continuous.stronglyMeasurable
       (by simp [mulExpNegMulSq]; continuity))
   exact FiniteMeasure.tendstoIntegral_of_eventually_boundedPointwise
@@ -128,11 +128,11 @@ theorem abs_integral_sub_setIntegral_mulExpNegMulSq_comp_lt (f : C(E, ℝ))
     |∫ (x : E), (mulExpNegMulSq ε).comp f x ∂P
     - ∫ x in K, (mulExpNegMulSq ε).comp f x ∂P| < ε.sqrt := by
   have hbound : ∀ᵐ (x : E) ∂P, ‖(mulExpNegMulSq ε).comp f x‖ ≤ ε.sqrt⁻¹ :=
-    Eventually.of_forall (fun _ => abs_mulExpNegMulSq_comp_le hε)
+    Eventually.of_forall (fun _ => abs_mulExpNegMulSq_le hε)
   have hint : Integrable ((mulExpNegMulSq ε).comp f) P := by
     apply BoundedContinuousFunction.integrable P
-      ⟨⟨(mulExpNegMulSq ε).comp f, continuous_mulExpNegMulSq_comp f.continuous⟩, ⟨2 * ε.sqrt⁻¹, _⟩⟩
-    exact dist_mulExpNegMulSq_comp_le_two_mul_sqrt hε
+      ⟨⟨(mulExpNegMulSq ε).comp f, continuous_mulExpNegMulSq.comp f.continuous⟩, ⟨2 * ε.sqrt⁻¹, _⟩⟩
+    exact fun x y => dist_mulExpNegMulSq_le_two_mul_sqrt hε (f x) (f y)
   apply lt_of_le_of_lt (norm_integral_sub_setIntegral_le hbound hK hint)
   rw [mul_inv_lt_iff₀ (Real.sqrt_pos_of_pos hε), mul_self_sqrt (le_of_lt hε)]
   exact (ENNReal.toReal_lt_of_lt_ofReal hKP)
@@ -145,11 +145,11 @@ theorem abs_setIntegral_mulExpNegMulSq_comp_sub_le_mul_measure {K : Set E} (hK :
   have integrable_mulExpNegMulSq (g : C(E, ℝ)) :
       Integrable (fun x ↦ (mulExpNegMulSq ε).comp g x) (P.restrict K) :=
     ContinuousOn.integrableOn_compact' hK hKmeas
-      (Continuous.continuousOn (continuous_mulExpNegMulSq_comp g.continuous))
+      (Continuous.continuousOn (continuous_mulExpNegMulSq.comp g.continuous))
   rw [← (integral_sub (integrable_mulExpNegMulSq g) (integrable_mulExpNegMulSq f))]
   have h_norm_le (x : E) (hxK : x ∈ K) :
       norm ((mulExpNegMulSq ε).comp g x - (mulExpNegMulSq ε).comp f x) ≤ δ :=
-    le_trans (dist_mulExpNegMulSq_comp_le_dist hε) (le_of_lt (hfg x hxK))
+    le_trans (dist_mulExpNegMulSq_le_dist hε) (le_of_lt (hfg x hxK))
   apply norm_setIntegral_le_of_norm_le_const (IsCompact.measure_lt_top hK) h_norm_le
     (StronglyMeasurable.aestronglyMeasurable (Continuous.stronglyMeasurable _))
   simp [mulExpNegMulSq]
