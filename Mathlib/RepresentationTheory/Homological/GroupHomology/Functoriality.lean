@@ -33,8 +33,7 @@ variable {k G H : Type u} [CommRing k] [Group G] [Group H]
   [DecidableEq G] [DecidableEq H]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
-this is the chain map sending `∑ aᵢ · gᵢ : Gⁿ →₀ A` to
-`∑ φ(aᵢ) · (f ∘ gᵢ) : Hⁿ →₀ B`. -/
+this is the chain map sending `∑ aᵢ·gᵢ : Gⁿ →₀ A` to `∑ φ(aᵢ)·(f ∘ gᵢ) : Hⁿ →₀ B`. -/
 @[simps! (config := .lemmasOnly) f f_hom]
 noncomputable def chainsMap :
     inhomogeneousChains A ⟶ inhomogeneousChains B where
@@ -62,7 +61,7 @@ lemma chainsMap_id :
     ModuleCat.hom_ext_iff.1 <| lsingle_comp_chainsMap_f (k := k) (MonoidHom.id G) ..
 
 @[simp]
-lemma chainsMap_f_id_eq_mapRange {A B : Rep k G} (i : ℕ) (φ : A ⟶ B) :
+lemma chainsMap_id_f_eq_mapRange {A B : Rep k G} (i : ℕ) (φ : A ⟶ B) :
     (chainsMap (MonoidHom.id G) φ).f i = ModuleCat.ofHom (mapRange.linearMap φ.hom.hom) := by
   refine ModuleCat.hom_ext <| lhom_ext fun _ _ => ?_
   simp [chainsMap_f, MonoidHom.coe_id]
@@ -106,8 +105,8 @@ instance chainsMap_id_f_map_epi {A B : Rep k G} (φ : A ⟶ B) [Epi φ] (i : ℕ
   chainsMap_f_map_epi _ _ (fun x => ⟨x, rfl⟩) _
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
-this is the induced map `Zₙ(G, A) ⟶ Zₙ(H, B)` sending `∑ aᵢ · gᵢ : Gⁿ →₀ A` to
-`∑ φ(aᵢ) · (f ∘ gᵢ) : Hⁿ →₀ B`. -/
+this is the induced map `Zₙ(G, A) ⟶ Zₙ(H, B)` sending `∑ aᵢ·gᵢ : Gⁿ →₀ A` to
+`∑ φ(aᵢ)·(f ∘ gᵢ) : Hⁿ →₀ B`. -/
 noncomputable abbrev cyclesMap (n : ℕ) :
     groupHomology.cycles A n ⟶ groupHomology.cycles B n :=
   HomologicalComplex.cyclesMap (chainsMap f φ) n
@@ -118,8 +117,8 @@ theorem cyclesMap_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : �
   simp [cyclesMap, chainsMap_id_comp, HomologicalComplex.cyclesMap_comp]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
-this is the induced map `Hₙ(G, A) ⟶ Hₙ(H, B)` sending `∑ aᵢ · gᵢ : Gⁿ →₀ A` to
-`∑ φ(aᵢ) · (f ∘ gᵢ) : Hⁿ →₀ B`. -/
+this is the induced map `Hₙ(G, A) ⟶ Hₙ(H, B)` sending `∑ aᵢ·gᵢ : Gⁿ →₀ A` to
+`∑ φ(aᵢ)·(f ∘ gᵢ) : Hⁿ →₀ B`. -/
 noncomputable abbrev map (n : ℕ) :
     groupHomology A n ⟶ groupHomology B n :=
   HomologicalComplex.homologyMap (chainsMap f φ) n
