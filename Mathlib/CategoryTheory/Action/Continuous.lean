@@ -29,7 +29,7 @@ universe u v
 open CategoryTheory Limits
 
 variable (V : Type (u + 1)) [LargeCategory V] [HasForget V] [HasForget₂ V TopCat]
-variable (G : MonCat.{u}) [TopologicalSpace G]
+variable (G : Type u) [Monoid G] [TopologicalSpace G]
 
 namespace Action
 
