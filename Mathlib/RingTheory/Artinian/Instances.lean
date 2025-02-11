@@ -6,7 +6,7 @@ Authors: Junyan Xu
 import Mathlib.Algebra.Divisibility.Prod
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.RingTheory.Artinian.Module
-import Mathlib.RingTheory.SimpleModule
+import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Instances related to Artinian rings
