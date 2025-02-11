@@ -18,21 +18,9 @@ a basis.
 
 open LinearMap (BilinMap)
 
-
-
 section
 
 variable {α R}
-
-/--
-`CommMagma.mul` as a function from `Sym2`.
--/
-def Sym2.mul [CommMagma R] (f : α → R) : Sym2 α → R :=
-  Sym2.lift ⟨fun i j => (f i * f j), fun _ _ => mul_comm _ _⟩
-
-@[simp]
-lemma Sym2.mul_sym2Mk [CommMagma R] (f : α → R) (xy : α × α) :
-    mul f (.mk xy) = f xy.1 * f xy.2 := rfl
 
 /--
 `Sym2.mul` as a `Finsupp`
