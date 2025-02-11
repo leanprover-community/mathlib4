@@ -101,7 +101,9 @@ abbrev PackageDirs := Lean.RBMap String FilePath compare
 structure CacheM.Context where
   /-- source directory for mathlib files -/
   mathlibDepPath : FilePath
+  /-- TODO: use search path instead -/
   packageDirs : PackageDirs
+  /-- build directory for proofwidgets -/
   proofWidgetsBuildDir : FilePath
 
 @[inherit_doc CacheM.Context]
