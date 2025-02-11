@@ -123,6 +123,8 @@ instance pi_properSpace {π : β → Type*} [Fintype β] [∀ b, PseudoMetricSpa
   rw [closedBall_pi _ hr]
   exact isCompact_univ_pi fun _ => isCompact_closedBall _ _
 
+/-- A closed subspace of a proper space is proper.
+This is true for any proper lipschitz map. See `LipschitzWith.properSpace`. -/
 lemma ProperSpace.of_isClosed {X : Type*} [PseudoMetricSpace X] [ProperSpace X]
     {s : Set X} (hs : IsClosed s) :
     ProperSpace s :=
