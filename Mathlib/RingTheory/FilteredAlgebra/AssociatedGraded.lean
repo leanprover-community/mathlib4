@@ -490,38 +490,30 @@ variable [IsRingFiltration F F_lt] (FM : ιM → σM) (FM_lt : outParam <| ιM �
 /--The scalar multiplication `F i → FM j → FM (i +ᵥ j)` defined as
 the scalar multiplication of its value. -/
 def IsModuleFiltration.hSMul [IsModuleFiltration F F_lt FM FM_lt] (i : ι) (j : ιM)
-    (x : (AddSubgroupClass.subtype (F i)).range) (y : (AddSubgroupClass.subtype (FM j)).range) :
-    (AddSubgroupClass.subtype (FM (i +ᵥ j))).range where
+    (x : F i) (y : FM j) : FM (i +ᵥ j) where
   val := x.1 • y
   property := by
-    rcases x.2 with ⟨x', hx'⟩
-    rcases y.2 with ⟨y', hy'⟩
-    simp [← hx', ← hy', IsModuleFiltration.smul_mem x'.2 y'.2]
+    simp [IsModuleFiltration.smul_mem x.2 y.2]
 
 instance (i : ι) (j : ιM) [IsModuleFiltration F F_lt FM FM_lt] :
-    HSMul (AddSubgroupClass.subtype (F i)).range (AddSubgroupClass.subtype (FM j)).range
-    (AddSubgroupClass.subtype (FM (i +ᵥ j))).range where
+    HSMul (F i) (FM j) (FM (i +ᵥ j)) where
   hSMul := IsModuleFiltration.hSMul F F_lt FM FM_lt i j
 
 variable [hasGSMul F F_lt FM FM_lt]
 
-theorem hasGSMul.mul_equiv_mul {i : ι} {j : ιM} ⦃x₁ x₂ : (AddSubgroupClass.subtype (F i)).range⦄
-    (hx : x₁ ≈ x₂) ⦃y₁ y₂ : (AddSubgroupClass.subtype (FM j)).range⦄ (hy : y₁ ≈ y₂) :
+theorem hasGSMul.mul_equiv_mul {i : ι} {j : ιM} ⦃x₁ x₂ : F i⦄
+    (hx : x₁ ≈ x₂) ⦃y₁ y₂ : FM j⦄ (hy : y₁ ≈ y₂) :
     x₁ • y₁ ≈ x₂ • y₂ := by
   simp only [HasEquiv.Equiv, QuotientAddGroup.leftRel_apply, AddSubgroup.mem_addSubgroupOf,
     AddSubgroup.coe_add, NegMemClass.coe_neg, AddMonoidHom.mem_range, AddSubgroupClass.coeSubtype,
     Subtype.exists, exists_prop, exists_eq_right] at hx hy ⊢
-  have eq : - ((x₁ • y₁) : (AddSubgroupClass.subtype (FM (i +ᵥ j))).range).1 +
-    ((x₂ • y₂) : (AddSubgroupClass.subtype (FM (i +ᵥ j))).range).1 =
-    ((- x₁ + x₂) : R) • y₁ + (x₂ : R) • (- y₁ + y₂) := by
-    show - (x₁.1 • y₁.1) + (x₂.1 • y₂.1) = (- x₁.1 + x₂.1) • y₁ + x₂.1 • (- y₁ + y₂)
+  show -(x₁ • y₁).1 + (x₂ • y₂).1 ∈ (FM_lt (i +ᵥ j))
+  have eq : - (x₁ • y₁).1 + (x₂ • y₂).1 = ((- x₁ + x₂) : R) • y₁ + (x₂ : R) • (- y₁ + y₂) := by
     simp only [add_smul, neg_smul, smul_add, smul_neg]
     abel
   rw [eq]
-  rcases y₁.2 with ⟨y₁', hy₁'⟩
-  rcases x₂.2 with ⟨x₂', hx₂'⟩
-  exact add_mem (hasGSMul.F_lt_smul_mem (F := F) (FM := FM) hx (by simp [← hy₁']))
-    (hasGSMul.smul_F_lt_mem (F := F) (FM := FM) (by simp [← hx₂']) hy)
+  exact add_mem (hasGSMul.F_lt_smul_mem (F := F) (FM := FM) hx y₁.2)
+    (hasGSMul.smul_F_lt_mem (F := F) (FM := FM) x₂.2 hy)
 
 /--The scalar multiplication
 `GradedPiece F F_lt i → GradedPiece FM FM_lt j → GradedPiece FM FM_lt (i +ᵥ j)`
@@ -536,12 +528,12 @@ instance hSMul {i : ι} {j : ιM}:
 
 section HEq
 
-lemma GradedPiece.mk_smul {i : ι} {j : ιM} (x : (AddSubgroupClass.subtype (F i)).range)
-    (y : (AddSubgroupClass.subtype (FM j)).range) :
+lemma GradedPiece.mk_smul {i : ι} {j : ιM} (x : F i)
+    (y : FM j) :
     mk F F_lt x • mk FM FM_lt y = mk FM FM_lt (x • y) := rfl
 
-lemma gradedSMul_def {i : ι} {j : ιM} (x : (AddSubgroupClass.subtype (F i)).range)
-    (y : (AddSubgroupClass.subtype (FM j)).range) :
+lemma gradedSMul_def {i : ι} {j : ιM} (x : F i)
+    (y : FM j) :
     GradedPiece.mk FM FM_lt (IsModuleFiltration.hSMul F F_lt FM FM_lt i j x y) =
     hasGSMul.gradedSMul F F_lt FM FM_lt (GradedPiece.mk F F_lt x) (GradedPiece.mk FM FM_lt y) := rfl
 
@@ -559,13 +551,13 @@ section
 lemma GradedPiece.HEq_one_smul {i : ιM} (x : GradedPiece FM FM_lt i) :
     HEq ((1 : GradedPiece F F_lt 0) • x) x := by
   let rx := Quotient.out x
-  let r1 : (AddSubgroupClass.subtype (F 0)).range := ⟨1, AddMonoidHom.mem_range.mpr (by use 1; rfl)⟩
+  let r1 : F 0 := ⟨1, IsRingFiltration.one_mem⟩
   have : r1.1 • rx.1 = rx.1 := MulAction.one_smul rx.1
   apply HEq_eq_mk_eq FM FM_lt (zero_vadd ι i) this
   · convert (gradedSMul_def F F_lt FM FM_lt r1 rx).symm
     exact (Quotient.out_eq' x).symm
   · exact (Quotient.out_eq' x).symm
-  · simpa [this] using rx.2.out
+  · simp [this]
 
 theorem GradedPiece.smul_add {i : ι} {j : ιM} (a : GradedPiece F F_lt i)
     (b c : GradedPiece FM FM_lt j) : a • (b + c) = a • b + a • c := by
@@ -610,9 +602,8 @@ theorem GradedPiece.smul_zero {i : ι} {j : ιM} (a : GradedPiece F F_lt i) :
   show Quotient.mk'' _ = Quotient.mk'' _
   rw [Quotient.eq'']
   simp only [ZeroMemClass.coe_zero, mul_zero, QuotientAddGroup.leftRel_apply, add_zero, neg_mem_iff]
-  use 0
-  simpa only [AddSubgroupClass.coeSubtype, ZeroMemClass.coe_zero, AddSubgroup.coeSubtype]
-    using (_root_.smul_zero _).symm
+  show (_ : R) • (0 : M) ∈ (FM_lt (i +ᵥ j))
+  simpa only [_root_.smul_zero] using zero_mem (FM_lt (i +ᵥ j))
 
 theorem GradedPiece.zero_smul  {i : ι} {j : ιM} (a : GradedPiece FM FM_lt j) :
     (0 : GradedPiece F F_lt i) • a = (0 : GradedPiece FM FM_lt (i +ᵥ j)) := by
@@ -621,9 +612,8 @@ theorem GradedPiece.zero_smul  {i : ι} {j : ιM} (a : GradedPiece FM FM_lt j) :
   change Quotient.mk'' _ = Quotient.mk'' _
   rw [Quotient.eq'']
   simp only [ZeroMemClass.coe_zero, zero_mul, QuotientAddGroup.leftRel_apply, add_zero, neg_mem_iff]
-  use 0
-  simpa only [AddSubgroupClass.coeSubtype, ZeroMemClass.coe_zero, AddSubgroup.coeSubtype]
-    using (_root_.zero_smul _ _).symm
+  show (0 : R) • (_ : M) ∈ (FM_lt (i +ᵥ j))
+  simpa only [_root_.zero_smul] using zero_mem (FM_lt (i +ᵥ j))
 
 lemma GradedPiece.HEq_mul_smul [hasGMul F F_lt] {i j : ι} {k : ιM}
     (a : GradedPiece F F_lt i) (b : GradedPiece F F_lt j) (c : GradedPiece FM FM_lt k) :
