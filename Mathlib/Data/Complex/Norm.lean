@@ -23,7 +23,6 @@ instance instNorm : Norm ℂ where
 
 theorem norm_def (z : ℂ) : ‖z‖ = Real.sqrt (normSq z) := rfl
 
-
 theorem norm_mul_self_eq_normSq (z : ℂ) : ‖z‖ * ‖z‖ = normSq z :=
   Real.mul_self_sqrt (normSq_nonneg _)
 
