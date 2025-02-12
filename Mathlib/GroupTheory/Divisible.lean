@@ -223,14 +223,12 @@ def rootableByNatOfRootableByInt [RootableBy A ℤ] : RootableBy A ℕ where
   root a n := RootableBy.root a (n : ℤ)
   root_zero a := RootableBy.root_zero a
   root_cancel {n} a hn := by
-    -- Porting note: replaced `norm_num`
     simpa only [zpow_natCast] using RootableBy.root_cancel a (show (n : ℤ) ≠ 0 from mod_cast hn)
 
 end Group
 
 section Hom
 
--- Porting note: reordered variables to fix `to_additive` on `QuotientGroup.rootableBy`
 variable {A B α : Type*}
 variable [Zero α] [Monoid A] [Monoid B] [Pow A α] [Pow B α] [RootableBy A α]
 variable (f : A → B)
