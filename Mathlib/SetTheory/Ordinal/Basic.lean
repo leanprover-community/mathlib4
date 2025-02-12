@@ -1364,18 +1364,10 @@ theorem small_iff_lift_mk_lt_univ {α : Type u} :
   · rintro ⟨c, hc⟩
     exact ⟨⟨c.out, lift_mk_eq.{u, _, v + 1}.1 (hc.trans (congr rfl c.mk_out.symm))⟩⟩
 
-lemma zero_lt_ord_iff (c : Cardinal) : 0 < c.ord ↔ c ≠ 0 := by
-  constructor
-  · intro h h'
-    simp only [h', ord_zero, lt_self_iff_false] at h
-  · intro h
-    by_contra!
-    exact h (ord_eq_zero.1 (le_antisymm this (Ordinal.zero_le _)))
-
 /-- If a cardinal `c` is non zero, then `c.ord.toType` has a least element. -/
 noncomputable def orderBotToType (c : Cardinal) (hc : c ≠ 0) :
     OrderBot c.ord.toType :=
-  Ordinal.toTypeOrderBotOfPos (by rwa [Cardinal.zero_lt_ord_iff])
+  Ordinal.toTypeOrderBotOfPos (by rwa [Cardinal.lt_ord, card_zero, pos_iff_ne_zero])
 
 end Cardinal
 
@@ -1500,5 +1492,3 @@ theorem List.Sorted.lt_ord_of_lt [LinearOrder α] [WellFoundedLT α] {l m : List
       | head as => exact List.head_le_of_lt hmltl
       | tail b hi => exact le_of_lt (lt_of_lt_of_le (List.rel_of_sorted_cons hm _ hi)
           (List.head_le_of_lt hmltl))
-
-set_option linter.style.longFile 1600
