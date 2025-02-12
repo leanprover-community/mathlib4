@@ -96,7 +96,7 @@ variable {α' : Type t'} {A' B' : α' → C} (g' : ∀ i', A' i' ⟶ B' i')
 
 /-- If a family of maps `g` is contained in another family `g'` (up to isomorphisms),
 if `f : X₁ ⟶ X₂` is a morphism, and `X₂` is obtained from `X₁` by attaching cells
-of the form `g`, then it is also obtained by attached cells of the form `g'`. -/
+of the form `g`, then it is also obtained by attaching cells of the form `g'`. -/
 def chg : AttachCells g' f where
   ι := c.ι
   π := a ∘ c.π
