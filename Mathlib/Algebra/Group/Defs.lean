@@ -590,6 +590,8 @@ lemma pow_mul_comm' (a : M) (n : ℕ) : a ^ n * a = a * a ^ n := by rw [← pow_
 -- TODO: Should `alias` automatically transfer `to_additive` statements?
 @[to_additive existing two_nsmul] alias sq := pow_two
 
+lemma mul_self (a : M) : a * a = a ^ 2 := (sq a).symm
+
 @[to_additive three'_nsmul]
 lemma pow_three' (a : M) : a ^ 3 = a * a * a := by rw [pow_succ, pow_two]
 
