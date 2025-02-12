@@ -326,10 +326,10 @@ theorem pred_succ (o) : pred (succ o) = o :=
 theorem pred_eq_of_isSuccPrelimit {o} : IsSuccPrelimit o → pred o = o :=
   isSuccPrelimitRecOn_of_isSuccPrelimit _ _
 
-alias _root_.Order.IsSuccPrelimit.pred_eq := pred_eq_of_isSuccPrelimit
+alias _root_.Order.IsSuccPrelimit.ordinalPred_eq := pred_eq_of_isSuccPrelimit
 
-theorem _root_.Order.IsSuccLimit.pred_eq {o} (ho : IsSuccLimit o) : pred o = o :=
-  ho.isSuccPrelimit.pred_eq
+theorem _root_.Order.IsSuccLimit.ordinalPred_eq {o} (ho : IsSuccLimit o) : pred o = o :=
+  ho.isSuccPrelimit.ordinalPred_eq
 
 @[simp]
 theorem pred_zero : pred 0 = 0 :=
@@ -343,12 +343,12 @@ theorem pred_le_self (o) : pred o ≤ o := by
 theorem self_le_succ_pred (o) : o ≤ succ (pred o) := by
   obtain ⟨a, rfl⟩ | ho := mem_range_succ_or_isSuccPrelimit o
   · simp
-  · simpa [ho.pred_eq] using le_succ o
+  · simpa [ho.ordinalPred_eq] using le_succ o
 
 theorem pred_eq_iff_isSuccPrelimit {o} : pred o = o ↔ IsSuccPrelimit o := by
   obtain ⟨a, rfl⟩ | ho := mem_range_succ_or_isSuccPrelimit o
   · simpa using (lt_succ a).ne
-  · simp_rw [ho.pred_eq, ho]
+  · simp_rw [ho.ordinalPred_eq, ho]
 
 @[deprecated pred_eq_iff_isSuccPrelimit (since := "2025-02-11")]
 theorem pred_eq_iff_not_succ {o} : pred o = o ↔ ¬∃ a, o = succ a := by
@@ -382,7 +382,7 @@ theorem pred_succ_gc : GaloisConnection pred succ := by
   intro a b
   obtain ⟨a, rfl⟩ | ha := mem_range_succ_or_isSuccPrelimit a
   · simp
-  · rw [ha.pred_eq, ha.le_succ_iff]
+  · rw [ha.ordinalPred_eq, ha.le_succ_iff]
 
 @[simp]
 theorem pred_le_iff {a b} : pred a ≤ b ↔ a ≤ succ b :=
@@ -407,7 +407,7 @@ theorem lift_is_succ {o : Ordinal.{v}} : (∃ a, lift.{u} o = succ a) ↔ ∃ a,
 theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) := by
   obtain ⟨a, rfl⟩ | ho := mem_range_succ_or_isSuccPrelimit o
   · simp
-  · rwa [ho.pred_eq, eq_comm, pred_eq_iff_isSuccPrelimit, isSuccPrelimit_lift_iff]
+  · rwa [ho.ordinalPred_eq, eq_comm, pred_eq_iff_isSuccPrelimit, isSuccPrelimit_lift_iff]
 
 /-! ### Normal ordinal functions -/
 
