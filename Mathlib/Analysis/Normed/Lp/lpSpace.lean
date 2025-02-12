@@ -288,7 +288,8 @@ instance : AddCommGroup (PreLp E) := by unfold PreLp; infer_instance
 instance PreLp.unique [IsEmpty α] : Unique (PreLp E) :=
   Pi.uniqueOfIsEmpty E
 
-/-- lp space -/
+/-- lp space
+The `p=∞` case has notation `ℓ^∞(ι, E)` resp. `ℓ^∞(ι)` (for `E = ℝ`) in the `lp` namespace. -/
 def lp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) : AddSubgroup (PreLp E) where
   carrier := { f | Memℓp f p }
   zero_mem' := zero_memℓp
@@ -801,14 +802,8 @@ theorem _root_.Memℓp.infty_pow {f : ∀ i, B i} (hf : Memℓp f ∞) (n : ℕ)
 theorem _root_.natCast_memℓp_infty (n : ℕ) : Memℓp (n : ∀ i, B i) ∞ :=
   natCast_mem (lpInftySubring B) n
 
-@[deprecated (since := "2024-04-17")]
-alias _root_.nat_cast_memℓp_infty := _root_.natCast_memℓp_infty
-
 theorem _root_.intCast_memℓp_infty (z : ℤ) : Memℓp (z : ∀ i, B i) ∞ :=
   intCast_mem (lpInftySubring B) z
-
-@[deprecated (since := "2024-04-17")]
-alias _root_.int_cast_memℓp_infty := _root_.intCast_memℓp_infty
 
 @[simp]
 theorem infty_coeFn_one : ⇑(1 : lp B ∞) = 1 :=
@@ -822,15 +817,9 @@ theorem infty_coeFn_pow (f : lp B ∞) (n : ℕ) : ⇑(f ^ n) = (⇑f) ^ n :=
 theorem infty_coeFn_natCast (n : ℕ) : ⇑(n : lp B ∞) = n :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias infty_coeFn_nat_cast := infty_coeFn_natCast
-
 @[simp]
 theorem infty_coeFn_intCast (z : ℤ) : ⇑(z : lp B ∞) = z :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias infty_coeFn_int_cast := infty_coeFn_intCast
 
 instance [Nonempty I] : NormOneClass (lp B ∞) where
   norm_one := by simp_rw [lp.norm_eq_ciSup, infty_coeFn_one, Pi.one_apply, norm_one, ciSup_const]

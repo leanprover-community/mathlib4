@@ -27,7 +27,10 @@ module filtration if `IsFiltration F F_lt` and the pointwise scalar multiplicati
 `F i` and `FM j` is in `F (i +ᵥ j)`
 
 -/
-variable {ι : Type*} [OrderedAddCommMonoid ι]
+
+section GeneralFiltration
+
+variable {ι : Type*} [Preorder ι]
 
 variable {A : Type*} {σ : Type*} [SetLike σ A]
 
@@ -49,7 +52,11 @@ lemma IsFiltration_int (F : ℤ → σ) (mono : ∀ {a b : ℤ}, a ≤ b → F a
   is_le lt := mono (Int.le_sub_one_of_lt lt)
   is_sup _ j hi := hi (j - 1) (sub_one_lt j)
 
+end GeneralFiltration
+
 section FilteredRing
+
+variable {ι : Type*} [OrderedAddCommMonoid ι]
 
 variable {R : Type*} [Semiring R] {σ : Type*} [SetLike σ R]
 
@@ -85,6 +92,8 @@ end FilteredRing
 
 
 section FilteredModule
+
+variable {ι : Type*} [OrderedAddCommMonoid ι]
 
 variable {R : Type*} [Semiring R] {σ : Type*} [SetLike σ R]
 

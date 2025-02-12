@@ -169,12 +169,12 @@ def sectionsSubring (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     rcases ha x with ⟨Va, ma, ia, ra, sa, wa⟩
     rcases hb x with ⟨Vb, mb, ib, rb, sb, wb⟩
     refine ⟨Va ⊓ Vb, ⟨ma, mb⟩, Opens.infLELeft _ _ ≫ ia, ra * sb + rb * sa, sa * sb, ?_⟩
-    intro y
-    rcases wa (Opens.infLELeft _ _ y) with ⟨nma, wa⟩
-    rcases wb (Opens.infLERight _ _ y) with ⟨nmb, wb⟩
+    intro ⟨y, hy⟩
+    rcases wa (Opens.infLELeft _ _ ⟨y, hy⟩) with ⟨nma, wa⟩
+    rcases wb (Opens.infLERight _ _ ⟨y, hy⟩) with ⟨nmb, wb⟩
     fconstructor
-    · intro H; cases y.1.isPrime.mem_or_mem H <;> contradiction
-    · simp only [add_mul, RingHom.map_add, Pi.add_apply, RingHom.map_mul]
+    · intro H; cases y.isPrime.mem_or_mem H <;> contradiction
+    · simp only [Opens.apply_mk, Pi.add_apply, RingHom.map_mul, add_mul, RingHom.map_add] at wa wb ⊢
       rw [← wa, ← wb]
       simp only [mul_assoc]
       congr 2
@@ -195,12 +195,12 @@ def sectionsSubring (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     rcases ha x with ⟨Va, ma, ia, ra, sa, wa⟩
     rcases hb x with ⟨Vb, mb, ib, rb, sb, wb⟩
     refine ⟨Va ⊓ Vb, ⟨ma, mb⟩, Opens.infLELeft _ _ ≫ ia, ra * rb, sa * sb, ?_⟩
-    intro y
-    rcases wa (Opens.infLELeft _ _ y) with ⟨nma, wa⟩
-    rcases wb (Opens.infLERight _ _ y) with ⟨nmb, wb⟩
+    intro ⟨y, hy⟩
+    rcases wa (Opens.infLELeft _ _ ⟨y, hy⟩) with ⟨nma, wa⟩
+    rcases wb (Opens.infLERight _ _ ⟨y, hy⟩) with ⟨nmb, wb⟩
     fconstructor
-    · intro H; cases y.1.isPrime.mem_or_mem H <;> contradiction
-    · simp only [Pi.mul_apply, RingHom.map_mul]
+    · intro H; cases y.isPrime.mem_or_mem H <;> contradiction
+    · simp only [Opens.apply_mk, Pi.mul_apply, RingHom.map_mul] at wa wb ⊢
       rw [← wa, ← wb]
       simp only [mul_left_comm, mul_assoc, mul_comm]
 
@@ -223,7 +223,7 @@ open PrimeSpectrum
 /-- The structure presheaf, valued in `CommRingCat`, constructed by dressing up the `Type` valued
 structure presheaf.
 -/
-@[simps]
+@[simps obj_carrier]
 def structurePresheafInCommRing : Presheaf CommRingCat (PrimeSpectrum.Top R) where
   obj U := CommRingCat.of ((structureSheafInType R).1.obj U)
   map {_ _} i := CommRingCat.ofHom
@@ -232,9 +232,6 @@ def structurePresheafInCommRing : Presheaf CommRingCat (PrimeSpectrum.Top R) whe
       map_add' := fun _ _ => rfl
       map_one' := rfl
       map_mul' := fun _ _ => rfl }
-
--- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-attribute [nolint simpNF] AlgebraicGeometry.structurePresheafInCommRing_map_hom_apply
 
 /-- Some glue, verifying that the structure presheaf valued in `CommRingCat` agrees
 with the `Type` valued structure presheaf.
@@ -381,7 +378,7 @@ def toOpen (U : Opens (PrimeSpectrum.Top R)) :
   { toFun f :=
       ⟨fun _ => algebraMap R _ f, fun x =>
         ⟨U, x.2, 𝟙 _, f, 1, fun y =>
-          ⟨(Ideal.ne_top_iff_one _).1 y.1.2.1, by rw [RingHom.map_one, mul_one]⟩⟩⟩
+          ⟨(Ideal.ne_top_iff_one _).1 y.1.2.1, by simp [RingHom.map_one, mul_one]⟩⟩⟩
     map_one' := Subtype.eq <| funext fun _ => RingHom.map_one _
     map_mul' _ _ := Subtype.eq <| funext fun _ => RingHom.map_mul _ _ _
     map_zero' := Subtype.eq <| funext fun _ => RingHom.map_zero _
@@ -420,8 +417,6 @@ theorem germ_toOpen
 theorem toOpen_Γgerm_apply (x : PrimeSpectrum.Top R) (f : R) :
     (structureSheaf R).presheaf.Γgerm x (toOpen R ⊤ f) = toStalk R x f :=
   rfl
-
-@[deprecated (since := "2024-07-30")] alias germ_to_top := toOpen_Γgerm_apply
 
 theorem isUnit_to_basicOpen_self (f : R) : IsUnit (toOpen R (PrimeSpectrum.basicOpen f) f) :=
   isUnit_of_mul_eq_one _ (const R 1 f (PrimeSpectrum.basicOpen f) fun _ => id) <| by
@@ -502,8 +497,6 @@ theorem stalkToFiberRingHom_germ (U : Opens (PrimeSpectrum.Top R))
     stalkToFiberRingHom R x ((structureSheaf R).presheaf.germ U x hx s) = s.1 ⟨x, hx⟩ :=
   RingHom.ext_iff.mp (CommRingCat.hom_ext_iff.mp (germ_comp_stalkToFiberRingHom R U x hx)) s
 
-@[deprecated (since := "2024-07-30")] alias stalkToFiberRingHom_germ' := stalkToFiberRingHom_germ
-
 @[simp]
 theorem toStalk_comp_stalkToFiberRingHom (x : PrimeSpectrum.Top R) :
     toStalk R x ≫ stalkToFiberRingHom R x = CommRingCat.ofHom (algebraMap _ _) := by
@@ -530,11 +523,10 @@ def stalkIso (x : PrimeSpectrum.Top R) :
     rw [stalkToFiberRingHom_germ]
     obtain ⟨V, hxV, iVU, f, g, (hg : V ≤ PrimeSpectrum.basicOpen _), hs⟩ :=
       exists_const _ _ s x hxU
-    rw [← res_apply R U V iVU s ⟨x, hxV⟩, ← hs, const_apply, localizationToStalk_mk']
+    have := res_apply R U V iVU s ⟨x, hxV⟩
+    dsimp only [isLocallyFraction_pred, Opens.apply_mk] at this
+    rw [← this, ← hs, const_apply, localizationToStalk_mk']
     refine (structureSheaf R).presheaf.germ_ext V hxV (homOfLE hg) iVU ?_
-    -- Replace the `HasForget.instFunLike` instance with `CommRingCat.hom`:
-    show (structureSheaf R).presheaf.map (homOfLE hg).op _ =
-      (structureSheaf R).presheaf.map iVU.op s
     rw [← hs, res_const']
   inv_hom_id := CommRingCat.hom_ext <|
     @IsLocalization.ringHom_ext R _ x.asIdeal.primeCompl (Localization.AtPrime x.asIdeal) _ _
@@ -929,12 +921,9 @@ instance isIso_to_global : IsIso (toOpen R ⊤) := by
   infer_instance
 
 /-- The ring isomorphism between the ring `R` and the global sections `Γ(X, 𝒪ₓ)`. -/
-@[simps!]
+@[simps! inv]
 def globalSectionsIso : CommRingCat.of R ≅ (structureSheaf R).1.obj (op ⊤) :=
   asIso (toOpen R ⊤)
-
--- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-attribute [nolint simpNF] AlgebraicGeometry.StructureSheaf.globalSectionsIso_hom_hom_apply_coe
 
 @[simp]
 theorem globalSectionsIso_hom (R : CommRingCat) : (globalSectionsIso R).hom = toOpen R ⊤ :=
@@ -953,9 +942,8 @@ theorem localizationToStalk_stalkSpecializes {R : Type*} [CommRing R] {x y : Pri
         StructureSheaf.localizationToStalk R x := by
   ext : 1
   apply IsLocalization.ringHom_ext (S := Localization.AtPrime y.asIdeal) y.asIdeal.primeCompl
-  erw [RingHom.comp_assoc]
-  conv_rhs => erw [RingHom.comp_assoc]
-  dsimp [CommRingCat.ofHom, localizationToStalk, PrimeSpectrum.localizationMapOfSpecializes]
+  rw [CommRingCat.hom_comp, RingHom.comp_assoc, CommRingCat.hom_comp, RingHom.comp_assoc]
+  dsimp [localizationToStalk, PrimeSpectrum.localizationMapOfSpecializes]
   rw [IsLocalization.lift_comp, IsLocalization.lift_comp, IsLocalization.lift_comp]
   exact CommRingCat.hom_ext_iff.mp (toStalk_stalkSpecializes h)
 

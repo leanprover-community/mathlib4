@@ -44,14 +44,7 @@ lemma le_def : f ≤ g ↔ ∀ i, f i ≤ g i := Iff.rfl
 def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i where
   toFun := DFunLike.coe
   inj' := DFunLike.coe_injective
-  map_rel_iff' :=
-    #adaptation_note
-    /--
-    This proof used to be `rfl`,
-    but has been temporarily broken by https://github.com/leanprover/lean4/pull/5329.
-    It can hopefully be restored after https://github.com/leanprover/lean4/pull/5359
-    -/
-    Iff.rfl
+  map_rel_iff' := Iff.rfl
 
 @[simp, norm_cast]
 lemma coe_orderEmbeddingToFun : ⇑(orderEmbeddingToFun (α := α)) = DFunLike.coe := rfl
