@@ -64,7 +64,7 @@ function coercion from the coercion to almost everywhere defined functions.
 noncomputable section
 
 open TopologicalSpace MeasureTheory Filter
-open scoped NNReal ENNReal Topology MeasureTheory Uniformity symmDiff
+open scoped NNReal ENNReal Topology symmDiff
 
 variable {α E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
   [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
