@@ -16,7 +16,7 @@ In this file we define `Bialgebra`s.
 * `Bialgebra R A`: the structure of a bialgebra on the `R`-algebra `A`;
 * `CommSemiring.toBialgebra`: a commutative semiring is a bialgebra over itself.
 * `(Add)MonoidAlgebra.instBialgebra`: the bialgebra structure on the monoid algebra `A[X]`
-when `A` is a bialgebra and `X` is a monoid.
+  when `A` is a bialgebra and `X` is a monoid.
 
 ## Implementation notes
 
