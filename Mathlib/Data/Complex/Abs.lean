@@ -21,7 +21,6 @@ noncomputable abbrev abs (z : ℂ) : ℝ := ‖z‖
 
 theorem norm_eq_abs (z : ℂ) : ‖z‖ = abs z := rfl
 
-@[simp]
 theorem abs_eq_norm (z : ℂ) : abs z = ‖z‖ := rfl
 
 theorem abs_apply {z : ℂ} : Complex.abs z = Real.sqrt (normSq z) :=
