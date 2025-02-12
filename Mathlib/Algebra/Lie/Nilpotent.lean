@@ -912,6 +912,9 @@ theorem LieIdeal.nilpotent_iff_le_nilradical [IsNoetherian R L] (I : LieIdeal R 
 theorem center_le_nilradical : center R L ≤ nilradical R L :=
   sorry
 
+theorem nilradical_le_radical : nilradical R L ≤ radical R L :=
+  sorry
+
 instance [LieRing.IsNilpotent L] : LieRing.IsNilpotent (⊤ : LieSubalgebra R L) := by
   sorry
 
