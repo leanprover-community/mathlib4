@@ -35,17 +35,17 @@ second argument of the functor $(A, B) \mapsto (A \otimes_k B)_G.$
 ## Main definitions
 
 * `Rep.Tor k G n`: the left-derived functors given by deriving the second argument of
-$(A, B) \mapsto (A \otimes_k B)_G$.
+  $(A, B) \mapsto (A \otimes_k B)_G$.
 * `Rep.coinvariantsTensorBarResolution A`: a complex whose objects are
-$(A \otimes_k \left(\bigoplus_{G^n} k[G]\right))_G$ and whose homology is the group
-homology $\mathrm{H}_n(G, A)$.
+  $(A \otimes_k \left(\bigoplus_{G^n} k[G]\right))_G$ and whose homology is the group
+  homology $\mathrm{H}_n(G, A)$.
 * `groupHomology.inhomogeneousChains A`: a complex whose objects are
-$\bigoplus_{G^n} A$ and whose homology is the group homology $\mathrm{H}_n(G, A).$
+  $\bigoplus_{G^n} A$ and whose homology is the group homology $\mathrm{H}_n(G, A).$
 * `groupHomology.inhomogeneousChainsIso A`: an isomorphism between the above two complexes.
 * `groupHomology A n`: this is $\mathrm{H}_n(G, A),$ defined as the $n$th homology of the
-second complex, `inhomogeneousChains A`.
+  second complex, `inhomogeneousChains A`.
 * `groupHomologyIsoTor A n`: an isomorphism $\mathrm{H}_n(G, A) \cong \mathrm{Tor}_n(A, k)$
-induced by `inhomogeneousChainsIso A`.
+  induced by `inhomogeneousChainsIso A`.
 
 ## Implementation notes
 

@@ -54,14 +54,15 @@ we have `t ○ t ○ ... ○ t ⊆ s` (`n` compositions). -/
 theorem eventually_uniformity_iterate_comp_subset {s : Set (α × α)} (hs : s ∈ 𝓤 α) (n : ℕ) :
     ∀ᶠ t in (𝓤 α).smallSets, (t ○ ·)^[n] t ⊆ s := by
   suffices ∀ᶠ t in (𝓤 α).smallSets, t ⊆ s ∧ (t ○ ·)^[n] t ⊆ s from (eventually_and.1 this).2
-  induction' n with n ihn generalizing s
-  · simpa
-  rcases comp_mem_uniformity_sets hs with ⟨t, htU, hts⟩
-  refine (ihn htU).mono fun U hU => ?_
-  rw [Function.iterate_succ_apply']
-  exact
-    ⟨hU.1.trans <| (subset_comp_self <| refl_le_uniformity htU).trans hts,
-      (compRel_mono hU.1 hU.2).trans hts⟩
+  induction n generalizing s with
+  | zero => simpa
+  | succ _ ihn =>
+    rcases comp_mem_uniformity_sets hs with ⟨t, htU, hts⟩
+    refine (ihn htU).mono fun U hU => ?_
+    rw [Function.iterate_succ_apply']
+    exact
+      ⟨hU.1.trans <| (subset_comp_self <| refl_le_uniformity htU).trans hts,
+        (compRel_mono hU.1 hU.2).trans hts⟩
 
 /-- If `s ∈ 𝓤 α`, then for a subset `t` of a sufficiently small set in `𝓤 α`,
 we have `t ○ t ⊆ s`. -/

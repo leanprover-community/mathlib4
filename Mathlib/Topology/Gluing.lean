@@ -264,10 +264,7 @@ theorem preimage_image_eq_image (i j : D.J) (U : Set (𝖣.U i)) :
 theorem preimage_image_eq_image' (i j : D.J) (U : Set (𝖣.U i)) :
     𝖣.ι j ⁻¹' (𝖣.ι i '' U) = (D.t i j ≫ D.f _ _) '' (D.f _ _ ⁻¹' U) := by
   convert D.preimage_image_eq_image i j U using 1
-  rw [coe_comp, coe_comp]
-  -- Porting note: `show` was not needed, since `rw [← Set.image_image]` worked.
-  show (fun x => ((forget TopCat).map _ ((forget TopCat).map _ x))) '' _ = _
-  rw [← Set.image_image]
+  rw [coe_comp, coe_comp, Set.image_comp]
   congr! 1
   rw [← Set.eq_preimage_iff_image_eq, Set.preimage_preimage]
   · change _ = (D.t i j ≫ D.t j i ≫ _) ⁻¹' _
