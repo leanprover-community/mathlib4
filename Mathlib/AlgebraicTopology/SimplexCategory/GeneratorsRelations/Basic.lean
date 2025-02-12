@@ -49,20 +49,20 @@ abbrev σ {n : ℕ} (i : Fin (n + 1)) : FreeSimplexQuiver.mk (n + 1) ⟶ .mk n :
 /-- `FreeSimplexQuiver.homRel` is the relation on morphisms freely generated on the
 five simplicial identities. -/
 inductive homRel : HomRel (Paths FreeSimplexQuiver)
-  | simplicial1 {n : ℕ} {i j : Fin (n + 2)} (H : i ≤ j) : homRel
+  | δ_comp_δ {n : ℕ} {i j : Fin (n + 2)} (H : i ≤ j) : homRel
     (Paths.of.map (δ i) ≫ Paths.of.map (δ j.succ))
     (Paths.of.map (δ j) ≫ Paths.of.map (δ i.castSucc))
-  | simplicial2 {n : ℕ} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ j.castSucc) : homRel
+  | δ_comp_σ_of_le {n : ℕ} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ j.castSucc) : homRel
     (Paths.of.map (δ i.castSucc) ≫ Paths.of.map (σ j.succ))
     (Paths.of.map (σ j) ≫ Paths.of.map (δ i))
-  | simplicial3₁ {n : ℕ} {i : Fin (n + 1)} : homRel
+  | δ_comp_σ_self {n : ℕ} {i : Fin (n + 1)} : homRel
     (Paths.of.map (δ i.castSucc) ≫ Paths.of.map (σ i)) (𝟙 _)
-  | simplicial3₂ {n : ℕ} {i : Fin (n + 1)} : homRel
+  | δ_comp_σ_succ {n : ℕ} {i : Fin (n + 1)} : homRel
     (Paths.of.map (δ i.succ) ≫ Paths.of.map (σ i)) (𝟙 _)
-  | simplicial4 {n : ℕ} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : j.castSucc < i) : homRel
+  | δ_comp_σ_of_gt {n : ℕ} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : j.castSucc < i) : homRel
     (Paths.of.map (δ i.succ) ≫ Paths.of.map (σ j.castSucc))
     (Paths.of.map (σ j) ≫ Paths.of.map (δ i))
-  | simplicial5 {n : ℕ} {i j : Fin (n + 1)} (H : i ≤ j) : homRel
+  | σ_comp_σ {n : ℕ} {i j : Fin (n + 1)} (H : i ≤ j) : homRel
     (Paths.of.map (σ i.castSucc) ≫ Paths.of.map (σ j))
     (Paths.of.map (σ j.succ) ≫ Paths.of.map (σ i))
 
@@ -176,36 +176,36 @@ section SimplicialIdentities
 theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
     δ i ≫ δ j.succ = δ j ≫ δ i.castSucc := by
   apply CategoryTheory.Quotient.sound
-  exact FreeSimplexQuiver.homRel.simplicial1 H
+  exact FreeSimplexQuiver.homRel.δ_comp_δ H
 
 @[reassoc]
 theorem δ_comp_σ_of_le {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ j.castSucc) :
     δ i.castSucc ≫ σ j.succ = σ j ≫ δ i := by
   apply CategoryTheory.Quotient.sound
-  exact FreeSimplexQuiver.homRel.simplicial2 H
+  exact FreeSimplexQuiver.homRel.δ_comp_σ_of_le H
 
 @[reassoc]
 theorem δ_comp_σ_self {n} {i : Fin (n + 1)} :
     δ i.castSucc ≫ σ i = 𝟙 (mk n) := by
   apply CategoryTheory.Quotient.sound
-  exact FreeSimplexQuiver.homRel.simplicial3₁
+  exact FreeSimplexQuiver.homRel.δ_comp_σ_self
 
 @[reassoc]
 theorem δ_comp_σ_succ {n} {i : Fin (n + 1)} : δ i.succ ≫ σ i = 𝟙 (mk n) := by
   apply CategoryTheory.Quotient.sound
-  exact FreeSimplexQuiver.homRel.simplicial3₂
+  exact FreeSimplexQuiver.homRel.δ_comp_σ_succ
 
 @[reassoc]
 theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : j.castSucc < i) :
     δ i.succ ≫ σ j.castSucc = σ j ≫ δ i := by
   apply CategoryTheory.Quotient.sound
-  exact FreeSimplexQuiver.homRel.simplicial4 H
+  exact FreeSimplexQuiver.homRel.δ_comp_σ_of_gt H
 
 @[reassoc]
 theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
     σ i.castSucc ≫ σ j = σ j.succ ≫ σ i := by
   apply CategoryTheory.Quotient.sound
-  exact FreeSimplexQuiver.homRel.simplicial5 H
+  exact FreeSimplexQuiver.homRel.σ_comp_σ H
 
 /-- A version of δ_comp_δ with indices in ℕ satisfying relevant inequalities. -/
 lemma δ_comp_δ_nat {n} (i j : ℕ) (hi : i < n + 2) (hj : j < n + 2) (H : i ≤ j) :
@@ -279,12 +279,12 @@ def toSimplexCategory : SimplexCategoryGenRel ⥤ SimplexCategory :=
           | FreeSimplexQuiver.Hom.σ i => SimplexCategory.σ i })
     (fun _ _ _ _ h ↦ by
       cases h with
-      | simplicial1 H => exact SimplexCategory.δ_comp_δ H
-      | simplicial2 H => exact SimplexCategory.δ_comp_σ_of_le H
-      | simplicial3₁ => exact SimplexCategory.δ_comp_σ_self
-      | simplicial3₂ => exact SimplexCategory.δ_comp_σ_succ
-      | simplicial4 H => exact SimplexCategory.δ_comp_σ_of_gt H
-      | simplicial5 H => exact SimplexCategory.σ_comp_σ H)
+      | δ_comp_δ H => exact SimplexCategory.δ_comp_δ H
+      | δ_comp_σ_of_le H => exact SimplexCategory.δ_comp_σ_of_le H
+      | δ_comp_σ_self => exact SimplexCategory.δ_comp_σ_self
+      | δ_comp_σ_succ => exact SimplexCategory.δ_comp_σ_succ
+      | δ_comp_σ_of_gt H => exact SimplexCategory.δ_comp_σ_of_gt H
+      | σ_comp_σ H => exact SimplexCategory.σ_comp_σ H)
 
 @[simp]
 lemma toSimplexCategory_obj_mk (n : ℕ) : toSimplexCategory.obj (mk n) = .mk n := rfl
