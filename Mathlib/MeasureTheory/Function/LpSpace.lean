@@ -1497,6 +1497,7 @@ theorem MeasureTheory.Lp.mem_boundedContinuousFunction_iff {f : Lp E p μ} :
       ∃ f₀ : α →ᵇ E, f₀.toContinuousMap.toAEEqFun μ = (f : α →ₘ[μ] E) :=
   AddSubgroup.mem_addSubgroupOf
 
+#exit
 namespace BoundedContinuousFunction
 
 variable [IsFiniteMeasure μ]
