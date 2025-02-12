@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Johan Commelin
 -/
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Parity
+import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.Data.ZMod.IntUnitsPower
+import Mathlib.Tactic.NormNum
 
 /-!
 # Integer powers of (-1)
@@ -15,6 +17,8 @@ The definition of `negOnePow` and some lemmas first appeared in contributions by
 Johan Commelin to the Liquid Tensor Experiment.
 
 -/
+
+assert_not_exists TwoSidedIdeal
 
 namespace Int
 

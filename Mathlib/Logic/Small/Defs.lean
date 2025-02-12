@@ -71,7 +71,9 @@ theorem small_lift (α : Type u) [hα : Small.{v} α] : Small.{max v w} α :=
   let ⟨⟨_, ⟨f⟩⟩⟩ := hα
   Small.mk' <| f.trans (Equiv.ulift.{w}).symm
 
-/- This was an instance but useless due to https://github.com/leanprover/lean4/issues/2297. -/
+/-- Due to https://github.com/leanprover/lean4/issues/2297, this is useless as an instance.
+
+See however `Logic.UnivLE`, whose API is able to indirectly provide this instance. -/
 lemma small_max (α : Type v) : Small.{max w v} α :=
   small_lift.{v, w} α
 

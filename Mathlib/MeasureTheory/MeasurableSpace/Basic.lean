@@ -4,13 +4,17 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Update
+import Mathlib.Data.Int.Cast.Pi
+import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Prod.TProd
-import Mathlib.Logic.Equiv.Fin
-import Mathlib.MeasureTheory.MeasurableSpace.Instances
-import Mathlib.Order.LiminfLimsup
 import Mathlib.Data.Set.UnionLift
+import Mathlib.GroupTheory.Coset.Defs
+import Mathlib.MeasureTheory.MeasurableSpace.Instances
 import Mathlib.Order.Filter.SmallSets
-import Mathlib.GroupTheory.Coset.Basic
+import Mathlib.Order.LiminfLimsup
+import Mathlib.Order.Filter.AtTopBot.CompleteLattice
+import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
+import Mathlib.Tactic.FinCases
 
 /-!
 # Measurable spaces and measurable functions
@@ -54,7 +58,7 @@ open Set Encodable Function Equiv Filter MeasureTheory
 
 universe uι
 
-variable {α β γ δ δ' : Type*} {ι : Sort uι} {s t u : Set α}
+variable {α β γ δ δ' : Type*} {ι : Sort uι} {s : Set α}
 
 namespace MeasurableSpace
 
@@ -211,7 +215,7 @@ lemma Measurable.sup_of_right {mα mα' : MeasurableSpace α} {_ : MeasurableSpa
 theorem measurable_id'' {m mα : MeasurableSpace α} (hm : m ≤ mα) : @Measurable α α mα m id :=
   measurable_id.mono le_rfl hm
 
--- Porting note (#11215): TODO: add TC `DiscreteMeasurable` + instances
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add TC `DiscreteMeasurable` + instances
 
 @[measurability]
 theorem measurable_from_top [MeasurableSpace β] {f : α → β} : Measurable[⊤] f := fun _ _ => trivial
@@ -224,7 +228,7 @@ variable {f g : α → β}
 
 section TypeclassMeasurableSpace
 
-variable [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
+variable [MeasurableSpace α] [MeasurableSpace β]
 
 @[nontriviality, measurability]
 theorem Subsingleton.measurable [Subsingleton α] : Measurable f := fun _ _ =>
@@ -333,7 +337,7 @@ theorem Measurable.measurable_of_countable_ne [MeasurableSingletonClass α] (hf 
   refine (h.mono inter_subset_right).measurableSet.union ?_
   have : g ⁻¹' t ∩ { x : α | f x = g x } = f ⁻¹' t ∩ { x : α | f x = g x } := by
     ext x
-    simp (config := { contextual := true })
+    simp +contextual
   rw [this]
   exact (hf ht).inter h.measurableSet.of_compl
 
@@ -599,7 +603,7 @@ def measurableAtom (x : β) : Set β :=
   ⋂ (s : Set β) (_h's : x ∈ s) (_hs : MeasurableSet s), s
 
 @[simp] lemma mem_measurableAtom_self (x : β) : x ∈ measurableAtom x := by
-  simp (config := {contextual := true}) [measurableAtom]
+  simp +contextual [measurableAtom]
 
 lemma mem_of_mem_measurableAtom {x y : β} (h : y ∈ measurableAtom x) {s : Set β}
     (hs : MeasurableSet s) (hxs : x ∈ s) : y ∈ s := by
@@ -624,7 +628,6 @@ lemma MeasurableSet.measurableAtom_of_countable [Countable β] (x : β) :
     · intro z hz
       simp only [mem_iInter, mem_compl_iff]
       intro i hi
-      show z ∈ s i
       exact mem_of_mem_measurableAtom hz (hs i hi).2.1 (hs i hi).1
     · apply compl_subset_compl.1
       intro z hz
@@ -758,7 +761,7 @@ theorem measurable_from_prod_countable' [Countable β]
 theorem measurable_from_prod_countable [Countable β] [MeasurableSingletonClass β]
     {_ : MeasurableSpace γ} {f : α × β → γ} (hf : ∀ y, Measurable fun x => f (x, y)) :
     Measurable f :=
-  measurable_from_prod_countable' hf (by simp (config := {contextual := true}))
+  measurable_from_prod_countable' hf (by simp +contextual)
 
 /-- A piecewise function on countably many pieces is measurable if all the data is measurable. -/
 @[measurability]
@@ -800,7 +803,7 @@ theorem exists_measurable_piecewise {ι} [Countable ι] [Nonempty ι] (t : ι �
     ∃ f : α → β, Measurable f ∧ ∀ n, EqOn f (g n) (t n) := by
   inhabit ι
   set g' : (i : ι) → t i → β := fun i => g i ∘ (↑)
-  -- see #2184
+  -- see https://github.com/leanprover-community/mathlib4/issues/2184
   have ht' : ∀ (i j) (x : α) (hxi : x ∈ t i) (hxj : x ∈ t j), g' i ⟨x, hxi⟩ = g' j ⟨x, hxj⟩ := by
     intro i j x hxi hxj
     rcases eq_or_ne i j with rfl | hij
@@ -845,6 +848,7 @@ theorem measurable_pi_lambda (f : α → ∀ a, π a) (hf : ∀ a, Measurable fu
   measurable_pi_iff.mpr hf
 
 /-- The function `(f, x) ↦ update f a x : (Π a, π a) × π a → Π a, π a` is measurable. -/
+@[measurability, fun_prop]
 theorem measurable_update'  {a : δ} [DecidableEq δ] :
     Measurable (fun p : (∀ i, π i) × π a ↦ update p.1 a p.2) := by
   rw [measurable_pi_iff]
@@ -856,10 +860,12 @@ theorem measurable_update'  {a : δ} [DecidableEq δ] :
     exact measurable_snd
   · exact measurable_pi_iff.1 measurable_fst _
 
+@[measurability, fun_prop]
 theorem measurable_uniqueElim [Unique δ] :
     Measurable (uniqueElim : π (default : δ) → ∀ i, π i) := by
   simp_rw [measurable_pi_iff, Unique.forall_iff, uniqueElim_default]; exact measurable_id
 
+@[measurability, fun_prop]
 theorem measurable_updateFinset [DecidableEq δ] {s : Finset δ} {x : ∀ i, π i} :
     Measurable (updateFinset x s) := by
   simp (config := { unfoldPartialApp := true }) only [updateFinset, measurable_pi_iff]
@@ -869,10 +875,11 @@ theorem measurable_updateFinset [DecidableEq δ] {s : Finset δ} {x : ∀ i, π 
 /-- The function `update f a : π a → Π a, π a` is always measurable.
   This doesn't require `f` to be measurable.
   This should not be confused with the statement that `update f a x` is measurable. -/
-@[measurability]
+@[measurability, fun_prop]
 theorem measurable_update (f : ∀ a : δ, π a) {a : δ} [DecidableEq δ] : Measurable (update f a) :=
   measurable_update'.comp measurable_prod_mk_left
 
+@[measurability, fun_prop]
 theorem measurable_update_left {a : δ} [DecidableEq δ] {x : π a} :
     Measurable (update · a x) :=
   measurable_update'.comp measurable_prod_mk_right
@@ -1181,7 +1188,66 @@ namespace MeasurableSpace
   rintro _ ⟨u, -, rfl⟩
   exact (show MeasurableSet s from GenerateMeasurable.basic _ <| mem_singleton s).mem trivial
 
+lemma generateFrom_singleton_le {m : MeasurableSpace α} {s : Set α} (hs : MeasurableSet s) :
+    MeasurableSpace.generateFrom {s} ≤ m :=
+  generateFrom_le (fun _ ht ↦ mem_singleton_iff.1 ht ▸ hs)
+
 end MeasurableSpace
+
+namespace MeasureTheory
+
+theorem measurableSet_generateFrom_singleton_iff {s t : Set α} :
+    MeasurableSet[MeasurableSpace.generateFrom {s}] t ↔ t = ∅ ∨ t = s ∨ t = sᶜ ∨ t = univ := by
+  simp_rw [MeasurableSpace.generateFrom_singleton]
+  change t ∈ {t | _} ↔ _
+  simp_rw [MeasurableSpace.measurableSet_top, true_and, mem_setOf_eq]
+  constructor
+  · rintro ⟨x, rfl⟩
+    by_cases hT : True ∈ x
+    · by_cases hF : False ∈ x
+      · refine Or.inr <| Or.inr <| Or.inr <| subset_antisymm (subset_univ _) ?_
+        suffices x = univ by simp only [this, preimage_univ, subset_refl]
+        refine subset_antisymm (subset_univ _) ?_
+        rw [univ_eq_true_false]
+        rintro - (rfl | rfl)
+        · assumption
+        · assumption
+      · have hx : x = {True} := by
+          ext p
+          refine ⟨fun hp ↦ mem_singleton_iff.2 ?_, fun hp ↦ hp ▸ hT⟩
+          by_contra hpneg
+          rw [eq_iff_iff, iff_true, ← false_iff] at hpneg
+          exact hF (by convert hp)
+        simp [hx]
+    · by_cases hF : False ∈ x
+      · have hx : x = {False} := by
+          ext p
+          refine ⟨fun hp ↦ mem_singleton_iff.2 ?_, fun hp ↦ hp ▸ hF⟩
+          by_contra hpneg
+          simp only [eq_iff_iff, iff_false, not_not] at hpneg
+          refine hT ?_
+          convert hp
+          simpa
+        refine Or.inr <| Or.inr <| Or.inl <| ?_
+        simp [hx]
+        rfl
+      · refine Or.inl <| subset_antisymm ?_ <| empty_subset _
+        suffices x ⊆ ∅ by
+          rw [subset_empty_iff] at this
+          simp only [this, preimage_empty, subset_refl]
+        intro p hp
+        fin_cases p
+        · contradiction
+        · contradiction
+  · rintro (rfl | rfl | rfl | rfl)
+    on_goal 1 => use ∅
+    on_goal 2 => use {True}
+    on_goal 3 => use {False}
+    on_goal 4 => use Set.univ
+    all_goals
+      simp [compl_def]
+
+end MeasureTheory
 
 namespace Filter
 
@@ -1268,13 +1334,46 @@ theorem isCountablySpanning_measurableSet [MeasurableSpace α] :
     IsCountablySpanning { s : Set α | MeasurableSet s } :=
   ⟨fun _ => univ, fun _ => MeasurableSet.univ, iUnion_const _⟩
 
+/-- Rectangles of countably spanning sets are countably spanning. -/
+lemma IsCountablySpanning.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsCountablySpanning C)
+    (hD : IsCountablySpanning D) : IsCountablySpanning (image2 (· ×ˢ ·) C D) := by
+  rcases hC, hD with ⟨⟨s, h1s, h2s⟩, t, h1t, h2t⟩
+  refine ⟨fun n => s n.unpair.1 ×ˢ t n.unpair.2, fun n => mem_image2_of_mem (h1s _) (h1t _), ?_⟩
+  rw [iUnion_unpair_prod, h2s, h2t, univ_prod_univ]
+
 namespace MeasurableSet
+
+variable [MeasurableSpace α]
+
+protected theorem iUnion_of_monotone_of_frequently
+    {ι : Type*} [Preorder ι] [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α}
+    (hsm : Monotone s) (hs : ∃ᶠ i in atTop, MeasurableSet (s i)) : MeasurableSet (⋃ i, s i) := by
+  rcases exists_seq_forall_of_frequently hs with ⟨x, hx, hxm⟩
+  rw [← hsm.iUnion_comp_tendsto_atTop hx]
+  exact .iUnion hxm
+
+protected theorem iInter_of_antitone_of_frequently
+    {ι : Type*} [Preorder ι] [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α}
+    (hsm : Antitone s) (hs : ∃ᶠ i in atTop, MeasurableSet (s i)) : MeasurableSet (⋂ i, s i) := by
+  rw [← compl_iff, compl_iInter]
+  exact .iUnion_of_monotone_of_frequently (compl_anti.comp hsm) <| hs.mono fun _ ↦ .compl
+
+protected theorem iUnion_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)]
+    [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α}
+    (hsm : Monotone s) (hs : ∀ i, MeasurableSet (s i)) : MeasurableSet (⋃ i, s i) := by
+  cases isEmpty_or_nonempty ι with
+  | inl _ => simp
+  | inr _ => exact .iUnion_of_monotone_of_frequently hsm <| .of_forall hs
+
+protected theorem iInter_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)]
+    [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α}
+    (hsm : Antitone s) (hs : ∀ i, MeasurableSet (s i)) : MeasurableSet (⋂ i, s i) := by
+  rw [← compl_iff, compl_iInter]
+  exact .iUnion_of_monotone (compl_anti.comp hsm) fun i ↦ (hs i).compl
 
 /-!
 ### Typeclasses on `Subtype MeasurableSet`
 -/
-
-variable [MeasurableSpace α]
 
 instance Subtype.instMembership : Membership α (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun s a => a ∈ (s : Set α)⟩
@@ -1326,7 +1425,7 @@ instance Subtype.instUnion : Union (Subtype (MeasurableSet : Set α → Prop)) :
 theorem coe_union (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∪ t) = (s ∪ t : Set α) :=
   rfl
 
-instance Subtype.instSup : Sup (Subtype (MeasurableSet : Set α → Prop)) :=
+instance Subtype.instSup : Max (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => x ∪ y⟩
 
 @[simp]
@@ -1339,7 +1438,7 @@ instance Subtype.instInter : Inter (Subtype (MeasurableSet : Set α → Prop)) :
 theorem coe_inter (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∩ t) = (s ∩ t : Set α) :=
   rfl
 
-instance Subtype.instInf : Inf (Subtype (MeasurableSet : Set α → Prop)) :=
+instance Subtype.instInf : Min (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => x ∩ y⟩
 
 @[simp]
@@ -1400,3 +1499,4 @@ theorem measurableSet_liminf {s : ℕ → Set α} (hs : ∀ n, MeasurableSet <| 
   simpa only [← bliminf_true] using measurableSet_bliminf fun n _ => hs n
 
 end MeasurableSet
+set_option linter.style.longFile 1700

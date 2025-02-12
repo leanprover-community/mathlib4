@@ -29,15 +29,15 @@ def Angle : Type :=
 
 namespace Angle
 
--- Porting note (#10754): added due to missing instances due to no deriving
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added due to missing instances due to no deriving
 instance : NormedAddCommGroup Angle :=
   inferInstanceAs (NormedAddCommGroup (AddCircle (2 * π)))
 
--- Porting note (#10754): added due to missing instances due to no deriving
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added due to missing instances due to no deriving
 instance : Inhabited Angle :=
   inferInstanceAs (Inhabited (AddCircle (2 * π)))
 
--- Porting note (#10754): added due to missing instances due to no deriving
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added due to missing instances due to no deriving
 -- also, without this, a plain `QuotientAddGroup.mk`
 -- causes coerced terms to be of type `ℝ ⧸ AddSubgroup.zmultiples (2 * π)`
 /-- The canonical map from `ℝ` to the quotient `Angle`. -/
@@ -97,9 +97,6 @@ theorem natCast_mul_eq_nsmul (x : ℝ) (n : ℕ) : ↑((n : ℝ) * x) = n • (�
 @[simp, norm_cast]
 theorem intCast_mul_eq_zsmul (x : ℝ) (n : ℤ) : ↑((n : ℝ) * x : ℝ) = n • (↑x : Angle) := by
   simpa only [zsmul_eq_mul] using coeHom.map_zsmul x n
-
-@[deprecated (since := "2024-05-25")] alias coe_nat_mul_eq_nsmul := natCast_mul_eq_nsmul
-@[deprecated (since := "2024-05-25")] alias coe_int_mul_eq_zsmul := intCast_mul_eq_zsmul
 
 theorem angle_eq_iff_two_pi_dvd_sub {ψ θ : ℝ} : (θ : Angle) = ψ ↔ ∃ k : ℤ, θ - ψ = 2 * π * k := by
   simp only [QuotientAddGroup.eq, AddSubgroup.zmultiples_eq_closure,
@@ -872,7 +869,7 @@ theorem continuousAt_sign {θ : Angle} (h0 : θ ≠ 0) (hpi : θ ≠ π) : Conti
 theorem _root_.ContinuousOn.angle_sign_comp {α : Type*} [TopologicalSpace α] {f : α → Angle}
     {s : Set α} (hf : ContinuousOn f s) (hs : ∀ z ∈ s, f z ≠ 0 ∧ f z ≠ π) :
     ContinuousOn (sign ∘ f) s := by
-  refine (ContinuousAt.continuousOn fun θ hθ => ?_).comp hf (Set.mapsTo_image f s)
+  refine (continuousOn_of_forall_continuousAt fun θ hθ => ?_).comp hf (Set.mapsTo_image f s)
   obtain ⟨z, hz, rfl⟩ := hθ
   exact continuousAt_sign (hs _ hz).1 (hs _ hz).2
 

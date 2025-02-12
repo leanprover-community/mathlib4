@@ -3,8 +3,8 @@ Copyright (c) 2022 Cuma Kökmen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Cuma Kökmen, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Integral.CircleIntegral
+import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.Order.Fin.Tuple
 
 /-!
@@ -100,7 +100,7 @@ def TorusIntegrable (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) : Prop :=
 
 namespace TorusIntegrable
 
--- Porting note (#11215): TODO: restore notation; `neg`, `add` etc fail if I use notation here
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: restore notation; `neg`, `add` etc fail if I use notation here
 variable {f g : (Fin n → ℂ) → E} {c : Fin n → ℂ} {R : Fin n → ℝ}
 
 /-- Constant functions are torus integrable -/

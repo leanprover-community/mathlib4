@@ -42,7 +42,7 @@ section Topology
 
 /-- The functor from `CompHaus` to `Condensed.{u} (Type u)` given by the Yoneda sheaf. -/
 def compHausToCondensed' : CompHaus.{u} ⥤ Condensed.{u} (Type u) :=
-  (coherentTopology.subcanonical CompHaus).yoneda
+  (coherentTopology CompHaus).yoneda
 
 /-- The yoneda presheaf as an actual condensed set. -/
 def compHausToCondensed : CompHaus.{u} ⥤ CondensedSet.{u} :=
@@ -66,13 +66,13 @@ def stoneanToCondensed : Stonean.{u} ⥤ CondensedSet.{u} :=
 abbrev Stonean.toCondensed (S : Stonean.{u}) : CondensedSet.{u} := stoneanToCondensed.obj S
 
 instance : compHausToCondensed'.Full :=
-  show (Sheaf.Subcanonical.yoneda _).Full from inferInstance
+  inferInstanceAs ((coherentTopology CompHaus).yoneda).Full
 
 instance : compHausToCondensed'.Faithful :=
-  show (Sheaf.Subcanonical.yoneda _).Faithful from inferInstance
+  inferInstanceAs ((coherentTopology CompHaus).yoneda).Faithful
 
-instance : compHausToCondensed.Full := show (_ ⋙ _).Full from inferInstance
+instance : compHausToCondensed.Full := inferInstanceAs (_ ⋙ _).Full
 
-instance : compHausToCondensed.Faithful := show (_ ⋙ _).Faithful from inferInstance
+instance : compHausToCondensed.Faithful := inferInstanceAs (_ ⋙ _).Faithful
 
 end Topology

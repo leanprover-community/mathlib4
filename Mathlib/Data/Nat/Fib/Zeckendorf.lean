@@ -118,7 +118,7 @@ Note: For unfolding, you should use the equational lemmas `Nat.zeckendorf_zero` 
 def zeckendorf : ℕ → List ℕ
   | 0 => []
   | m@(_ + 1) =>
-    let a := greatestFib m
+    letI a := greatestFib m
     a :: zeckendorf (m - fib a)
 decreasing_by simp_wf; subst_vars; apply zeckendorf_aux (zero_lt_succ _)
 

@@ -5,6 +5,7 @@ Authors: Calle Sönne
 -/
 
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
+import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
 # The Grothendieck construction

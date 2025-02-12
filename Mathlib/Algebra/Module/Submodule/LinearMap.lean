@@ -5,7 +5,8 @@ Authors: Mario Carneiro
 -/
 
 import Mathlib.Algebra.Module.LinearMap.End
-import Mathlib.Algebra.Module.Submodule.Basic
+import Mathlib.Algebra.Module.Submodule.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 
@@ -84,7 +85,6 @@ theorem injective_subtype : Injective p.subtype :=
   Subtype.coe_injective
 
 /-- Note the `AddSubmonoid` version of this lemma is called `AddSubmonoid.coe_finset_sum`. -/
--- Porting note: removing the `@[simp]` attribute since it's literally `AddSubmonoid.coe_finset_sum`
 theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i ∈ s, x i) = ∑ i ∈ s, (x i : M) :=
   map_sum p.subtype _ _
 

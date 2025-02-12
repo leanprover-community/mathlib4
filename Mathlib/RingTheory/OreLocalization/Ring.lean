@@ -19,6 +19,8 @@ The `Monoid` and `DistribMulAction` instances and additive versions are provided
 
 -/
 
+assert_not_exists Subgroup
+
 universe u
 
 namespace OreLocalization
@@ -114,7 +116,7 @@ def numeratorRingHom : R →+* R[S⁻¹] where
 
 instance {R₀} [CommSemiring R₀] [Algebra R₀ R] : Algebra R₀ R[S⁻¹] where
   __ := inferInstanceAs (Module R₀ R[S⁻¹])
-  __ := numeratorRingHom.comp (algebraMap R₀ R)
+  algebraMap := numeratorRingHom.comp (algebraMap R₀ R)
   commutes' r x := by
     induction' x using OreLocalization.ind with r₁ s₁
     dsimp

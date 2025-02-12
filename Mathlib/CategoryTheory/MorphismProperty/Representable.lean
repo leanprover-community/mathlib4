@@ -66,7 +66,7 @@ which is the preimage under `F` of `hf.fst g`.
 
 * `relativelyRepresentable.isMultiplicative`: The class of relatively representable morphisms is
   multiplicative.
-* `relativelyRepresentable.stableUnderBaseChange`: Being relatively representable is stable under
+* `relativelyRepresentable.isStableUnderBaseChange`: Being relatively representable is stable under
   base change.
 * `relativelyRepresentable.of_isIso`: Isomorphisms are relatively representable.
 
@@ -281,14 +281,14 @@ instance isMultiplicative : IsMultiplicative F.relativelyRepresentable where
     ⟨hf.pullback (hg.fst h), hf.snd (hg.fst h) ≫ hg.snd h, hf.fst (hg.fst h),
       by simpa using IsPullback.paste_vert (hf.isPullback (hg.fst h)) (hg.isPullback h)⟩
 
-lemma stableUnderBaseChange : StableUnderBaseChange F.relativelyRepresentable := by
-  intro X Y Y' X' f g f' g' P₁ hg a h
-  refine ⟨hg.pullback (h ≫ f), hg.snd (h ≫ f), ?_, ?_⟩
-  · apply P₁.lift (hg.fst (h ≫ f)) (F.map (hg.snd (h ≫ f)) ≫ h) (by simpa using hg.w (h ≫ f))
-  · apply IsPullback.of_right' (hg.isPullback (h ≫ f)) P₁
+instance isStableUnderBaseChange : IsStableUnderBaseChange F.relativelyRepresentable where
+  of_isPullback {X Y Y' X' f g f' g'} P₁ hg a h := by
+    refine ⟨hg.pullback (h ≫ f), hg.snd (h ≫ f), ?_, ?_⟩
+    · apply P₁.lift (hg.fst (h ≫ f)) (F.map (hg.snd (h ≫ f)) ≫ h) (by simpa using hg.w (h ≫ f))
+    · apply IsPullback.of_right' (hg.isPullback (h ≫ f)) P₁
 
 instance respectsIso : RespectsIso F.relativelyRepresentable :=
-  (stableUnderBaseChange F).respectsIso
+  (isStableUnderBaseChange F).respectsIso
 
 end Functor.relativelyRepresentable
 
@@ -355,22 +355,21 @@ lemma relative_of_snd [F.Faithful] [F.Full] [P.RespectsIso] {f : X ⟶ Y}
 /-- If `P : MorphismProperty C` is stable under base change, `F` is fully faithful and preserves
 pullbacks, and `C` has all pullbacks, then for any `f : a ⟶ b` in `C`, `F.map f` satisfies
 `P.relative` if `f` satisfies `P`. -/
-lemma relative_map [F.Faithful] [F.Full] [HasPullbacks C] (hP : StableUnderBaseChange P)
+lemma relative_map [F.Faithful] [F.Full] [HasPullbacks C] [IsStableUnderBaseChange P]
     {a b : C} {f : a ⟶ b} [∀ c (g : c ⟶ b), PreservesLimit (cospan f g) F]
     (hf : P f) : P.relative F (F.map f) := by
-  have := StableUnderBaseChange.respectsIso hP
   apply relative.of_exists
   intro Y' g
   obtain ⟨g, rfl⟩ := F.map_surjective g
-  exact ⟨_, _, _, (IsPullback.of_hasPullback f g).map F, hP.snd _ _ hf⟩
+  exact ⟨_, _, _, (IsPullback.of_hasPullback f g).map F, P.pullback_snd _ _ hf⟩
 
 lemma of_relative_map {a b : C} {f : a ⟶ b} (hf : P.relative F (F.map f)) : P f :=
   hf.property (𝟙 _) (𝟙 _) f (IsPullback.id_horiz (F.map f))
 
 lemma relative_map_iff [F.Faithful] [F.Full] [PreservesLimitsOfShape WalkingCospan F]
-    [HasPullbacks C] (hP : StableUnderBaseChange P) {X Y : C} {f : X ⟶ Y} :
+    [HasPullbacks C] [IsStableUnderBaseChange P] {X Y : C} {f : X ⟶ Y} :
     P.relative F (F.map f) ↔ P f :=
-  ⟨fun hf ↦ of_relative_map hf, fun hf ↦ relative_map hP hf⟩
+  ⟨fun hf ↦ of_relative_map hf, fun hf ↦ relative_map hf⟩
 
 /-- If `P' : MorphismProperty C` is satisfied whenever `P` is, then also `P'.relative` is
 satisfied whenever `P.relative` is. -/
@@ -382,10 +381,10 @@ section
 
 variable (P)
 
-lemma relative_stableUnderBaseChange : StableUnderBaseChange (P.relative F) :=
-  fun _ _ _ _ _ _ _ _ hfBC hg ↦
-  ⟨stableUnderBaseChange F hfBC hg.rep,
-    fun _ _ _ _ _ BC ↦ hg.property _ _ _ (IsPullback.paste_horiz BC hfBC)⟩
+lemma relative_isStableUnderBaseChange : IsStableUnderBaseChange (P.relative F) where
+  of_isPullback hfBC hg :=
+    ⟨of_isPullback hfBC hg.rep,
+      fun _ _ _ _ _ BC ↦ hg.property _ _ _ (IsPullback.paste_horiz BC hfBC)⟩
 
 instance relative_isStableUnderComposition [F.Faithful] [F.Full] [P.IsStableUnderComposition] :
     IsStableUnderComposition (P.relative F) where
@@ -400,7 +399,7 @@ instance relative_isStableUnderComposition [F.Faithful] [F.Full] [P.IsStableUnde
       apply hg.1.lift_fst
 
 instance relative_respectsIso : RespectsIso (P.relative F) :=
-  (relative_stableUnderBaseChange P).respectsIso
+  (relative_isStableUnderBaseChange P).respectsIso
 
 instance relative_isMultiplicative [F.Faithful] [F.Full] [P.IsMultiplicative] [P.RespectsIso] :
     IsMultiplicative (P.relative F) where

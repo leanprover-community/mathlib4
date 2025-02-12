@@ -3,7 +3,7 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.Nat.Prime.Infinite
 import Mathlib.Topology.Algebra.Order.Floor
 
 /-!
@@ -39,7 +39,7 @@ theorem exists_prime_mul_pow_div_factorial_lt_one [LinearOrderedField K] [FloorR
   letI := Preorder.topology K
   haveI : OrderTopology K := ⟨rfl⟩
   ((Filter.frequently_atTop.mpr Nat.exists_infinite_primes).and_eventually
-    (eventually_lt_of_tendsto_lt zero_lt_one
+    (Filter.Tendsto.eventually_lt_const zero_lt_one
       (FloorSemiring.tendsto_mul_pow_div_factorial_sub_atTop a c 1))).forall_exists_of_atTop
     (n + 1)
 

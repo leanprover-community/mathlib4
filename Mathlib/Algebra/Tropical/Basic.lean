@@ -6,8 +6,10 @@ Authors: Yakov Pechersky
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Order.Hom.Basic
-import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+import Mathlib.Algebra.Order.AddGroupWithTop
+import Mathlib.Algebra.Ring.Nat
+import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 
 /-!
 
@@ -291,7 +293,6 @@ theorem add_eq_left_iff {x y : Tropical R} : x + y = x ↔ x ≤ y := by
 theorem add_eq_right_iff {x y : Tropical R} : x + y = y ↔ y ≤ x := by
   rw [trop_add_def, trop_eq_iff_eq_untrop, ← untrop_le_iff, min_eq_right_iff]
 
--- Porting note (#10618): removing `simp`. `simp` can prove it
 theorem add_self (x : Tropical R) : x + x = x :=
   untrop_injective (min_eq_right le_rfl)
 
@@ -495,7 +496,6 @@ theorem succ_nsmul {R} [LinearOrder R] [OrderTop R] (x : Tropical R) (n : ℕ) :
 -- Requires `zero_eq_bot` to be true
 -- lemma add_eq_zero_iff {a b : tropical R} :
 --   a + b = 1 ↔ a = 1 ∨ b = 1 := sorry
--- Porting note (#10618): removing @[simp], `simp` can prove it
 theorem mul_eq_zero_iff {R : Type*} [LinearOrderedAddCommMonoid R] {a b : Tropical (WithTop R)} :
     a * b = 0 ↔ a = 0 ∨ b = 0 := by simp [← untrop_inj_iff, WithTop.add_eq_top]
 

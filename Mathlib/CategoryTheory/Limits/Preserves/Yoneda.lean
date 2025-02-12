@@ -23,7 +23,7 @@ pointwise.
 ## See also
 
 There is also a relative version of this statement where `F : J ⥤ Over A` for some presheaf
-`A`, see `CategoryTheory.Comma.Presheaf.Colimit`.
+`A`, see `Mathlib.CategoryTheory.Comma.Presheaf.Colimit`.
 
 -/
 
@@ -61,7 +61,7 @@ theorem yonedaYonedaColimit_app_inv {X : C} : ((yonedaYonedaColimit F).app (op X
   intro j
   rw [colimit.ι_post, ι_colimMap_assoc]
   simp only [← CategoryTheory.Functor.assoc, comp_evaluation]
-  rw [ι_preservesColimitsIso_inv_assoc, ← Functor.map_comp_assoc]
+  rw [ι_preservesColimitIso_inv_assoc, ← Functor.map_comp_assoc]
   simp only [← comp_evaluation]
   rw [colimitObjIsoColimitCompEvaluation_ι_inv, whiskerLeft_app]
   ext η Y f
@@ -70,7 +70,7 @@ theorem yonedaYonedaColimit_app_inv {X : C} : ((yonedaYonedaColimit F).app (op X
 
 noncomputable instance {X : C} : PreservesColimit F (coyoneda.obj (op (yoneda.obj X))) := by
   suffices IsIso (colimit.post F (coyoneda.obj (op (yoneda.obj X)))) from
-    preservesColimitOfIsIsoPost _ _
+    preservesColimit_of_isIso_post _ _
   suffices colimit.post F (coyoneda.obj (op (yoneda.obj X))) =
       (colimitObjIsoColimitCompEvaluation _ _).inv ≫ ((yonedaYonedaColimit F).app (op X)).inv from
     this ▸ inferInstance

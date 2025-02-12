@@ -3,8 +3,8 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.Group.Submonoid.Defs
+import Mathlib.Algebra.GroupWithZero.Action.End
 
 /-!
 # Distributive actions by submonoids

@@ -12,10 +12,9 @@ import Mathlib.Logic.Equiv.Set
 In particular we prove `small_of_injective` and `small_of_surjective`.
 -/
 
+assert_not_exists Countable
+
 universe u w v v'
-
-section
-
 
 -- TODO(timotree3): lower the priority on this instance?
 -- This instance applies to every synthesis problem of the form `Small ↥s` for some set `s`,
@@ -66,5 +65,3 @@ instance small_sum {α β} [Small.{w} α] [Small.{w} β] : Small.{w} (α ⊕ β)
 
 instance small_set {α} [Small.{w} α] : Small.{w} (Set α) :=
   ⟨⟨Set (Shrink α), ⟨Equiv.Set.congr (equivShrink α)⟩⟩⟩
-
-end
