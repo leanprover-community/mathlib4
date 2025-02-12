@@ -355,6 +355,7 @@
   "Mathlib.Order.Filter.ListTraverse":
   ["Mathlib.Control.Traversable.Instances"],
   "Mathlib.Order.Filter.Bases.Basic": ["Mathlib.Tactic.Subsingleton"],
+  "Mathlib.Order.Filter.AtTopBot.Basic": ["Mathlib.Tactic.Subsingleton"],
   "Mathlib.Order.Defs.PartialOrder": ["Batteries.Tactic.Trans"],
   "Mathlib.Order.Defs": ["Batteries.Tactic.Trans"],
   "Mathlib.Order.BoundedOrder.Basic": ["Mathlib.Tactic.Finiteness.Attr"],
