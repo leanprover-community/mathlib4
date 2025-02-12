@@ -72,17 +72,6 @@ lemma polarSym2_map_mul (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R
   rfl
 
 open Finsupp in
-lemma test (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
-    (polarSym2 Q) ∘ Sym2.map (hMul l g)
-      = hMul (Sym2.mul_finsupp l) ((polarSym2 Q) ∘ (Sym2.map g)) := by
-  rw [polarSym2_map_mul, polarSym2]
-  ext ⟨a,b⟩
-  simp_all only [Pi.smul_apply', Sym2.mul_sym2Mk, Function.comp_apply, Sym2.map_pair_eq,
-    Sym2.lift_mk]
-  rfl
-
-
-open Finsupp in
 theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
     Q (linearCombination R g l) =
       linearCombination R ((polarSym2 Q) ∘ Sym2.map g) (Sym2.mul_finsupp l) -
@@ -132,8 +121,9 @@ theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι 
   simp_rw [add_right_inj]
   apply Finset.sum_congr rfl
   intro p hp
-  rw [← test]
-  simp only [Function.comp_apply, coe_pointwise_module_smul]
+  simp only [coe_pointwise_module_smul, Function.comp_apply]
+  rw [← polarSym2_map_hMul]
+  simp only [coe_pointwise_module_smul]
 
 -- c.f. `LinearMap.sum_repr_mul_repr_mul`
 open Finsupp in
