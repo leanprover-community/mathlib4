@@ -18,9 +18,9 @@ Like groups, Lie algebras admit a natural concept of nilpotency. More generally,
 carries a natural concept of nilpotency. We define these here via the lower central series.
 
 ## Main definitions
-
   * `LieModule.lowerCentralSeries`
   * `LieModule.IsNilpotent`
+  * `LieAlgebra.nilradical`
 
 ## Tags
 
@@ -835,6 +835,8 @@ theorem coe_lcs_eq [LieModule R L M] :
     · rintro ⟨⟨x, hx⟩, m, hm, rfl⟩
       exact ⟨x, hx, m, hm, rfl⟩
 
+/-- We say an ideal of a Lie algebra is nilpotent when it is nilpotent as a Lie module over the Lie
+algebra via the adjoint representation. -/
 abbrev IsNilpotent : Prop :=
   LieModule.IsNilpotent L I
 
@@ -899,5 +901,22 @@ variable [CommRing R] [LieRing L] [LieAlgebra R L]
 /-- The nilradical of Lie algebra is the `sSup` of all nilpotent ideals. -/
 def nilradical :=
   sSup { I : LieIdeal R L | LieIdeal.IsNilpotent I}
+
+instance nilradicalIsNilpotent : LieIdeal.IsNilpotent (nilradical R L) := by
+  sorry
+
+theorem LieIdeal.nilpotent_iff_le_nilradical [IsNoetherian R L] (I : LieIdeal R L) :
+    LieIdeal.IsNilpotent I ↔ I ≤ nilradical R L :=
+  sorry
+
+theorem center_le_nilradical : center R L ≤ nilradical R L :=
+  sorry
+
+instance [LieRing.IsNilpotent L] : LieRing.IsNilpotent (⊤ : LieSubalgebra R L) := by
+  sorry
+
+@[simp] lemma nilradical_eq_top_of_isNilpotent [LieRing.IsNilpotent L] :
+    nilradical R L = ⊤ :=
+ sorry
 
 end LieAlgebra
