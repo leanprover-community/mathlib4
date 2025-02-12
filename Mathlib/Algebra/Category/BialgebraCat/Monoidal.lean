@@ -6,6 +6,7 @@ Authors: Amelia Livingston
 
 import Mathlib.Algebra.Category.AlgebraCat.Monoidal
 import Mathlib.Algebra.Category.BialgebraCat.Basic
+import Mathlib.Algebra.Category.CoalgebraCat.Monoidal
 import Mathlib.RingTheory.Bialgebra.TensorProduct
 
 /-!
@@ -50,12 +51,21 @@ noncomputable def MonoidalCategory.inducingFunctorData :
   whiskerRight_eq _ _ := by ext; rfl
   tensorHom_eq _ _ := by ext; rfl
   εIso := Iso.refl _
-  associator_eq _ _ _ := Algebra.TensorProduct.ext
-      (Algebra.TensorProduct.ext (by ext; rfl) (by ext; rfl)) (by ext; rfl)
-  leftUnitor_eq _ := Algebra.TensorProduct.ext rfl (by ext; rfl)
-  rightUnitor_eq _ := Algebra.TensorProduct.ext (by ext; rfl) rfl
+  associator_eq _ _ _ := AlgebraCat.hom_ext _ <| Algebra.TensorProduct.ext
+    (Algebra.TensorProduct.ext (by ext; rfl) (by ext; rfl)) (by ext; rfl)
+  leftUnitor_eq _ := AlgebraCat.hom_ext _ <| Algebra.TensorProduct.ext rfl (by ext; rfl)
+  rightUnitor_eq _ := AlgebraCat.hom_ext _ <| Algebra.TensorProduct.ext (by ext; rfl) rfl
 
 noncomputable instance instMonoidalCategory : MonoidalCategory (BialgebraCat R) :=
   Monoidal.induced (forget₂ _ (AlgebraCat R)) (MonoidalCategory.inducingFunctorData R)
 
-end BialgebraCat
+/-- `forget₂ (BialgebraCat R) (AlgebraCat R)` as a monoidal functor. -/
+noncomputable instance : (forget₂ (BialgebraCat R) (AlgebraCat R)).Monoidal where
+
+/-- `forget₂ (BialgebraCat R) (CoalgebraCat R)` as a monoidal functor. -/
+noncomputable instance : (forget₂ (BialgebraCat R) (CoalgebraCat R)).Monoidal :=
+  Functor.CoreMonoidal.toMonoidal {
+    εIso := Iso.refl _
+    μIso := fun _ _ => Iso.refl _ }
+
+ end BialgebraCat
