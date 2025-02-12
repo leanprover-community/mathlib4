@@ -21,16 +21,25 @@ to transfinite compositions of pushouts of coproducts of morphisms in `I`
 (this condition is automatically satisfied when `A` is a `κ`-presentable
 object of `C`).
 
-## Main reulsts
+## Main results
 
 Assuming `I` permits the small object argument, the two main results
 obtained in this file are:
 * the class `I.rlp.llp` of morphisms that have the left lifting property with
 respect to the maps that have the right lifting property with respect
-to `I` are exactly the retracts of transfinite compositions
-of pushouts of coproducts of morphisms in `I`;
+to `I` are exactly the retracts of transfinite compositions (indexed
+by a suitable well ordered type `J`) of pushouts of coproducts of
+morphisms in `I`;
 * morphisms in `C` have a functorial factorization as a morphism in
 `I.rlp.llp` followed by a morphism in `I.rlp`.
+
+In the context of model categories, these results are known as Quillen's small object
+argument (originally for `J := ℕ`). Actually, the more general construction by
+transfinite induction already appeared in the proof of the existence of enough
+injectives in abelian categories with AB5 and a generator by Grothendieck, who then
+wrote that the "proof was essentially known". Indeed, the argument appeared
+in *Homological algebra* by Cartan and Eilenberg (p. 9-10) in the case of modules,
+and they mention that the result was initially obtained by Baer.
 
 ## Structure of the proof
 
@@ -42,22 +51,14 @@ is done in the file `SmallObject.TransfiniteIteration`.
 The factorization of the small object argument is obtained by doing
 a transfinite of a specific functor `Arrow C ⥤ Arrow C` which
 is defined in the file `SmallObject.Construction` (this definition
-involves coproducts and pushout). These ingredients are combined
+involves coproducts and a pushout). These ingredients are combined
 in the file `SmallObject.IsCardinalForSmallObjectArgument`
-where the main results are obtaned under a `IsCardinalForSmallObjectArgument I κ`
+where the main results are obtained under a `IsCardinalForSmallObjectArgument I κ`
 assumption.
 
 
 ## References
 - https://ncatlab.org/nlab/show/small+object+argument
-
---In the context of model categories, this result is known as Quillen's small object
---argument (originally for `J := ℕ`). Actually, the more general construction by
---transfinite induction already appeared in the proof of the existence of enough
---injectives in abelian categories with AB5 and a generator by Grothendieck, who then
---wrote that the "proof was essentially known". Indeed, the argument appears
---in *Homological algebra* by Cartan and Eilenberg (p. 9-10) in the case of modules,
---and they mention that the result was initially obtained by Baer.
 
 -/
 
