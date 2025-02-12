@@ -551,7 +551,7 @@ theorem Algebra.IsIntegral.tower_bot [Algebra R S] [Algebra R T] [Algebra S T]
     [h : Algebra.IsIntegral R T] : Algebra.IsIntegral R S where
   isIntegral := by
     apply RingHom.IsIntegral.tower_bot (algebraMap R S) (algebraMap S T)
-      (NoZeroSMulDivisors.algebraMap_injective S T)
+      (FaithfulSMul.algebraMap_injective S T)
     rw [← IsScalarTower.algebraMap_eq R S T]
     exact h.isIntegral
 

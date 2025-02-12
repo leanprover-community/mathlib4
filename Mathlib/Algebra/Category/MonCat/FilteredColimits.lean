@@ -280,8 +280,7 @@ def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt :=
       rw [colimit_mul_mk_eq F ⟨i, x⟩ ⟨j, y⟩ (max' i j) (IsFiltered.leftToMax i j)
         (IsFiltered.rightToMax i j)]
       dsimp [Types.TypeMax.colimitCoconeIsColimit]
-      -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-      erw [MonoidHom.map_mul]
+      rw [MonoidHom.map_mul]
       -- Porting note: `rw` can't see through coercion is actually forgetful functor,
       -- so can't rewrite `t.w_apply`
       congr 1 <;>
@@ -295,7 +294,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
     (F ⋙ forget MonCat)).fac ((forget MonCat).mapCocone t) j) x
   uniq t m h := MonCat.ext fun y => congr_fun
       ((Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget MonCat)).uniq ((forget MonCat).mapCocone t)
-        ((forget MonCat).map m)
+        ⇑(ConcreteCategory.hom m)
         fun j => funext fun x => ConcreteCategory.congr_hom (h j) x) y
 
 @[to_additive]
@@ -371,7 +370,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
     ConcreteCategory.coe_ext <|
       (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommMonCat.{max v u})).uniq
         ((forget CommMonCat.{max v u}).mapCocone t)
-        ((forget CommMonCat.{max v u}).map m) fun j => funext fun x =>
+        ⇑(ConcreteCategory.hom m) fun j => funext fun x =>
           CategoryTheory.congr_fun (h j) x
 
 @[to_additive forget₂AddMonPreservesFilteredColimits]

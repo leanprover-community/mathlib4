@@ -167,19 +167,13 @@ theorem functor_obj {I : Type u₁} (F : I → C) (i : I) :
     (Discrete.functor F).obj (Discrete.mk i) = F i :=
   rfl
 
-@[simp]
 theorem functor_map {I : Type u₁} (F : I → C) {i : Discrete I} (f : i ⟶ i) :
     (Discrete.functor F).map f = 𝟙 (F i.as) := by aesop_cat
-@[deprecated (since := "2024-07-16")]
-alias CategoryTheory.FreeMonoidalCategory.discrete_functor_map_eq_id := functor_map
 
 @[simp]
 theorem functor_obj_eq_as {I : Type u₁} (F : I → C) (X : Discrete I) :
     (Discrete.functor F).obj X = F X.as :=
   rfl
-@[deprecated (since := "2024-07-16")]
-alias CategoryTheory.FreeMonoidalCategory.discrete_functor_obj_eq_as := functor_obj_eq_as
-
 /-- The discrete functor induced by a composition of maps can be written as a
 composition of two discrete functors.
 -/
