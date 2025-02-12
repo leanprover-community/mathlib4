@@ -757,12 +757,31 @@ theorem l (s : Set ι) (hs : s.Finite) (hC : ∀ i ∈ s, IsSetSemiring (C i)) :
         obtain ⟨K, ⟨hK1, hK2, hK3⟩⟩ :=
           (hC a ha).diff_eq_sUnion' (x a) (hx1 a (Or.inl rfl)) (y a) (hy1 a (Or.inl rfl))
         classical
-        let D : Finset (Set ((i : ι) → α i)):= ⋃ (j ∈ J), {j ∩ Function.eval a ⁻¹' (x a ∩ y a)}
+        let D := ⋃ (j ∈ J), {j ∩ Function.eval a ⁻¹' (x a ∩ y a)}
         let E := ⋃ (k ∈ K), {t.pi x ∩ Function.eval a ⁻¹' k}
-        use (D ∪ E)
+        haveI hD : Fintype D := by sorry
+        haveI hE : Fintype E := by sorry
+        use (D.toFinset ∪ E.toFinset)
+        simp only [coe_union, coe_toFinset, insert_pi, Set.union_subset_iff]
+        refine ⟨⟨?_, ?_⟩, ?_, ?_⟩
+        · simp [D]
+
+          intro j hj
+          use y
+          refine ⟨⟨?_, ?_⟩, ?_ ⟩
+          · exact hy1 a (Or.inl rfl)
+          · exact fun i hi ↦ hy1 i (Or.inr hi)
+          · nth_rewrite 1 [Set.inter_comm]
 
 
-        sorry
+
+            sorry
+
+
+        ·
+          sorry
+        · sorry
+        · sorry
       sorry
 /--        obtain ⟨x, ⟨⟨hx1, hx2⟩, hx3⟩⟩ := hu
         obtain ⟨y, ⟨⟨hy1, hy2⟩, hy3⟩⟩ := hv
