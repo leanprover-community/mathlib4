@@ -85,9 +85,10 @@ instance : CanLift (Submodule R M) (LieSubmodule R L M) (·)
 theorem coe_toSubmodule : ((N : Submodule R M) : Set M) = N :=
   rfl
 
--- `simp` can prove this after `mem_toSubmodule` is added to the simp set,
--- but `dsimp` can't.
-@[simp, nolint simpNF]
+-- In Lean 3, `dsimp` would use theorems proved by `Iff.rfl`.
+-- If that were still the case, this would useful as a `@[simp]` lemma,
+-- despite the fact that it is provable by `simp` (by not `dsimp`).
+@[simp, nolint simpNF] -- See https://github.com/leanprover-community/mathlib4/issues/10675
 theorem mem_carrier {x : M} : x ∈ N.carrier ↔ x ∈ (N : Set M) :=
   Iff.rfl
 
@@ -1453,7 +1454,8 @@ def LieModuleEquiv.ofTop : (⊤ : LieSubmodule R L M) ≃ₗ⁅R,L⁆ M :=
 variable {R L}
 
 -- This lemma has always been bad, but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-@[simp, nolint simpNF] lemma LieModuleEquiv.ofTop_apply (x : (⊤ : LieSubmodule R L M)) :
+@[simp, nolint simpNF]
+lemma LieModuleEquiv.ofTop_apply (x : (⊤ : LieSubmodule R L M)) :
     LieModuleEquiv.ofTop R L M x = x :=
   rfl
 

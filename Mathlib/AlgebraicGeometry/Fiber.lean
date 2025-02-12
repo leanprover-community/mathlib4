@@ -101,7 +101,7 @@ instance (f : X ⟶ Y) (y : Y) [LocallyOfFiniteType f] : JacobsonSpace (f.fiber 
 instance (f : X ⟶ Y) (y : Y) [IsFinite f] : Finite (f.fiber y) := by
   have H : IsFinite (f.fiberToSpecResidueField y) := MorphismProperty.pullback_snd _ _ inferInstance
   have : IsArtinianRing Γ(f.fiber y, ⊤) :=
-    @IsArtinianRing.of_finite (Y.residueField y) Γ(f.fiber y, ⊤) _ _ (show _ from _) _
+    @IsArtinianRing.of_finite (Y.residueField y) Γ(f.fiber y, ⊤) _ _ (show _ from _) _ _
       ((HasAffineProperty.iff_of_isAffine.mp H).2.comp (.of_surjective _ (Scheme.ΓSpecIso
         (Y.residueField y)).commRingCatIsoToRingEquiv.symm.surjective))
   exact .of_injective (β := PrimeSpectrum _) _ (f.fiber y).isoSpec.hom.homeomorph.injective
