@@ -8,7 +8,7 @@ import Std.Data.HashMap
 import Lean.Data.RBMap
 import Lean.Data.RBTree
 import Lean.Data.Json.Printer
-import Lean.Data.Json.Parser
+import Lean.Util.Paths
 
 variable {α : Type}
 
@@ -29,6 +29,8 @@ def Nat.toHexDigits (n : Nat) : Nat → (res : String := "") → String
 
 def UInt64.asLTar (n : UInt64) : String :=
   s!"{Nat.toHexDigits n.toNat 8}.ltar"
+
+open Lean
 
 namespace Cache.IO
 
@@ -92,11 +94,23 @@ def getLeanTar : IO String := do
 
 abbrev PackageDirs := Lean.RBMap String FilePath compare
 
+/--
+`CacheM` stores the following information:
+* the source directory where `Mathlib.lean` lies
+* package directories
+* the build directory for proofwidgets
+-/
 structure CacheM.Context where
+  /-- source directory for mathlib files -/
   mathlibDepPath : FilePath
+  /-- the Lean source search path -/
+  srcSearchPath : SearchPath
+  /-- TODO: use search path instead -/
   packageDirs : PackageDirs
+  /-- build directory for proofwidgets -/
   proofWidgetsBuildDir : FilePath
 
+@[inherit_doc CacheM.Context]
 abbrev CacheM := ReaderT CacheM.Context IO
 
 /-- Whether this is running on Mathlib repo or not -/
@@ -105,53 +119,39 @@ def isMathlibRoot : IO Bool :=
 
 section
 
-private def parseMathlibDepPath (json : Lean.Json) : Except String (Option FilePath) := do
-  let deps ← (← json.getObjVal? "packages").getArr?
-  for d in deps do
-    let n := ← (← d.getObjVal? "name").getStr?
-    if n != "mathlib" then
-      continue
-    let t := ← (← d.getObjVal? "type").getStr?
-    if t == "path" then
-      return some ⟨← (← d.getObjVal? "dir").getStr?⟩
-    else
-      return LAKEPACKAGESDIR / "mathlib"
-  return none
-
-private def CacheM.mathlibDepPath : IO FilePath := do
-  let raw ← IO.FS.readFile "lake-manifest.json"
-  match (Lean.Json.parse raw >>= parseMathlibDepPath) with
-  | .ok (some p) => return p
-  | .ok none =>
-      if ← isMathlibRoot then
-        return ⟨"."⟩
-      else
-        throw <| IO.userError s!"Mathlib not found in dependencies"
-  | .error e => throw <| IO.userError s!"Cannot parse lake-manifest.json: {e}"
+/-- Find path to `Mathlib` source directory -/
+private def CacheM.mathlibDepPath (sp : SearchPath) : IO FilePath := do
+  let mathlibSourceFile ← Lean.findLean sp `Mathlib
+  let some mathlibSource ← pure mathlibSourceFile.parent
+    | throw <| IO.userError s!"Mathlib not found in dependencies"
+  return mathlibSource
 
 -- TODO this should be generated automatically from the information in `lakefile.lean`.
 private def CacheM.getContext : IO CacheM.Context := do
-  let root ← CacheM.mathlibDepPath
-  return ⟨root, .ofList [
-    ("Mathlib", root),
-    ("Archive", root),
-    ("Counterexamples", root),
-    ("MathlibTest", root),
-    ("Aesop", LAKEPACKAGESDIR / "aesop"),
-    ("Batteries", LAKEPACKAGESDIR / "batteries"),
-    ("Cli", LAKEPACKAGESDIR / "Cli"),
-    ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
-    ("Qq", LAKEPACKAGESDIR / "Qq"),
-    ("ImportGraph", LAKEPACKAGESDIR / "importGraph"),
-    ("LeanSearchClient", LAKEPACKAGESDIR / "LeanSearchClient"),
-    ("Plausible", LAKEPACKAGESDIR / "plausible")
-  ], LAKEPACKAGESDIR / "proofwidgets" / ".lake" / "build"⟩
+  let sp ← initSrcSearchPath
+  let mathlibSource ← CacheM.mathlibDepPath sp
+  return {
+    mathlibDepPath := mathlibSource,
+    srcSearchPath := sp,
+    packageDirs := .ofList [
+      ("Mathlib", mathlibSource),
+      ("Archive", mathlibSource),
+      ("Counterexamples", mathlibSource),
+      ("MathlibTest", mathlibSource),
+      ("Aesop", LAKEPACKAGESDIR / "aesop"),
+      ("Batteries", LAKEPACKAGESDIR / "batteries"),
+      ("Cli", LAKEPACKAGESDIR / "Cli"),
+      ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
+      ("Qq", LAKEPACKAGESDIR / "Qq"),
+      ("ImportGraph", LAKEPACKAGESDIR / "importGraph"),
+      ("LeanSearchClient", LAKEPACKAGESDIR / "LeanSearchClient"),
+      ("Plausible", LAKEPACKAGESDIR / "plausible")],
+    proofWidgetsBuildDir := LAKEPACKAGESDIR / "proofwidgets" / ".lake" / "build"}
 
+/-- Run a `CacheM` in `IO` by loading the context from `LEAN_SRC_PATH`. -/
 def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
 
 end
-
-def mathlibDepPath : CacheM FilePath := return (← read).mathlibDepPath
 
 def getPackageDirs : CacheM PackageDirs := return (← read).packageDirs
 
@@ -276,18 +276,15 @@ If `keep` is true, the result will contain the entries that do exist;
 if `keep` is false, the result will contain the entries that do not exist.
 -/
 def filterExists (hashMap : ModuleHashMap) (keep : Bool) : IO ModuleHashMap :=
-  hashMap.foldM (init := default) fun acc path hash => do
+  hashMap.foldM (init := ∅) fun acc path hash => do
     let exist ← (CACHEDIR / hash.asLTar).pathExists
     let add := if keep then exist else !exist
     if add then return acc.insert path hash else return acc
 
 def hashes (hashMap : ModuleHashMap) : Lean.RBTree UInt64 compare :=
-  hashMap.fold (init := default) fun acc _ hash => acc.insert hash
+  hashMap.fold (init := ∅) fun acc _ hash => acc.insert hash
 
 end ModuleHashMap
-
-def mkDir (path : FilePath) : IO Unit := do
-  if !(← path.pathExists) then IO.FS.createDirAll path
 
 /--
 Given a path to a Lean file, concatenates the paths to its build files.
@@ -316,7 +313,7 @@ def allExist (paths : List (FilePath × Bool)) : IO Bool := do
 def packCache (hashMap : ModuleHashMap) (overwrite verbose unpackedOnly : Bool)
     (comment : Option String := none) :
     CacheM <| Array String := do
-  mkDir CACHEDIR
+  IO.FS.createDirAll CACHEDIR
   IO.println "Compressing cache"
   let mut acc := #[]
   let mut tasks := #[]
@@ -366,7 +363,7 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
     let args := (if force then #["-f"] else #[]) ++ #["-x", "--delete-corrupted", "-j", "-"]
     let child ← IO.Process.spawn { cmd := ← getLeanTar, args, stdin := .piped }
     let (stdin, child) ← child.takeStdin
-    let mathlibDepPath := (← mathlibDepPath).toString
+    let mathlibDepPath := (← read).mathlibDepPath.toString
     let config : Array Lean.Json := hashMap.fold (init := #[]) fun config path hash =>
       let pathStr := s!"{CACHEDIR / hash.asLTar}"
       if isMathlibRoot || !isPathFromMathlib path then
@@ -384,7 +381,7 @@ instance : Ord FilePath where
   compare x y := compare x.toString y.toString
 
 /-- Removes all cache files except for what's in the `keep` set -/
-def cleanCache (keep : Lean.RBTree FilePath compare := default) : IO Unit := do
+def cleanCache (keep : Lean.RBTree FilePath compare := ∅) : IO Unit := do
   for path in ← getFilesWithExtension CACHEDIR "ltar" do
     if !keep.contains path then IO.FS.removeFile path
 
