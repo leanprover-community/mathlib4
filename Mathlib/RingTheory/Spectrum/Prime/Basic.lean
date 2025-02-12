@@ -663,7 +663,7 @@ theorem range_specComap_of_surjective (hf : Surjective f) :
 variable {S} in
 /-- `p` is in the image of `Spec S → Spec R` if and only if `p` extended to `S` and
 restricted back to `R` is `p`. -/
-lemma PrimeSpectrum.mem_range_comap_iff (p : PrimeSpectrum R) :
+lemma PrimeSpectrum.mem_range_comap_iff {p : PrimeSpectrum R} :
     p ∈ Set.range f.specComap ↔ (p.asIdeal.map f).comap f = p.asIdeal := by
   refine ⟨fun ⟨q, hq⟩ ↦ by simp [← hq], ?_⟩
   rw [Ideal.comap_map_eq_self_iff_of_isPrime]

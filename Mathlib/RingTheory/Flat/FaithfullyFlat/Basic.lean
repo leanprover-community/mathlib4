@@ -347,13 +347,13 @@ lemma lTensor_reflects_exact [fl : FaithfullyFlat R M]
 
 lemma exact_iff_rTensor_exact [FaithfullyFlat R M] :
     Function.Exact l12 l23 ↔ Function.Exact (l12.rTensor M) (l23.rTensor M) :=
-  ⟨fun e => Module.Flat.rTensor_exact _ e,
-    fun ex => rTensor_reflects_exact R M l12 l23 ex⟩
+  ⟨fun e ↦ Module.Flat.rTensor_exact _ e,
+    fun ex ↦ rTensor_reflects_exact R M l12 l23 ex⟩
 
 lemma exact_iff_lTensor_exact [FaithfullyFlat R M] :
     Function.Exact l12 l23 ↔ Function.Exact (l12.lTensor M) (l23.lTensor M) :=
-  ⟨fun e => Module.Flat.lTensor_exact _ e,
-    fun ex => lTensor_reflects_exact R M l12 l23 ex⟩
+  ⟨fun e ↦ Module.Flat.lTensor_exact _ e,
+    fun ex ↦ lTensor_reflects_exact R M l12 l23 ex⟩
 
 section
 
