@@ -42,7 +42,9 @@ Normalize path and cleanup path with respect to components `""` and `"."`.
 Note: `System.FilePath.normalize` might be expected to do this, but it doesn't currently.
 -/
 def clean (path : FilePath) : FilePath :=
-  mkFilePath <| go path.normalize.components
+  mkFilePath <| match go path.normalize.components with
+    | [] => ["."]
+    | l => l
 where
   go : List String → List String
     | [] => []
@@ -51,11 +53,12 @@ where
     | c :: path => c :: go path
 
 -- unit tests for `System.FilePath.clean`
-#guard FilePath.clean "" == ""
-#guard FilePath.clean "." == ""
-#guard FilePath.clean ("." / ".") == ""
-#guard FilePath.clean ("." / "") == ""
+#guard FilePath.clean "" == "."
+#guard FilePath.clean "." == "."
+#guard FilePath.clean ("." / ".") == "."
+#guard FilePath.clean ("." / "") == "."
 #guard FilePath.clean ("." / "A") == "A"
+#guard FilePath.clean ("" / "..") == ".."
 #guard FilePath.clean ("." / "..") == ".."
 #guard FilePath.clean (".." / "." /"..") == (".." / "..")
 #guard FilePath.clean (".." / "..") == (".." / "..")
