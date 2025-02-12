@@ -67,12 +67,12 @@ def toΓSpecFun : X → PrimeSpectrum (Γ.obj (op X)) := fun x =>
 
 theorem not_mem_prime_iff_unit_in_stalk (r : Γ.obj (op X)) (x : X) :
     r ∉ (X.toΓSpecFun x).asIdeal ↔ IsUnit (X.presheaf.Γgerm x r) := by
-  erw [IsLocalRing.mem_maximalIdeal, Classical.not_not]
+  simp [toΓSpecFun, IsLocalRing.closedPoint]
 
 /-- The preimage of a basic open in `Spec Γ(X)` under the unit is the basic
 open in `X` defined by the same element (they are equal as sets). -/
 theorem toΓSpec_preimage_basicOpen_eq (r : Γ.obj (op X)) :
-    X.toΓSpecFun ⁻¹' (basicOpen r).1 = (X.toRingedSpace.basicOpen r).1 := by
+    X.toΓSpecFun ⁻¹' basicOpen r = SetLike.coe (X.toRingedSpace.basicOpen r) := by
       ext
       dsimp
       simp only [Set.mem_preimage, SetLike.mem_coe]
@@ -83,7 +83,7 @@ theorem toΓSpec_preimage_basicOpen_eq (r : Γ.obj (op X)) :
 theorem toΓSpec_continuous : Continuous X.toΓSpecFun := by
   rw [isTopologicalBasis_basic_opens.continuous_iff]
   rintro _ ⟨r, rfl⟩
-  erw [X.toΓSpec_preimage_basicOpen_eq r]
+  rw [X.toΓSpec_preimage_basicOpen_eq r]
   exact (X.toRingedSpace.basicOpen r).2
 
 /-- The canonical (bundled) continuous map from the underlying topological
