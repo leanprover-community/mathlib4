@@ -79,11 +79,11 @@ theorem toPGame_moveLeft {o : Ordinal} (i) :
     o.toPGame.moveLeft (toLeftMovesToPGame i) = i.val.toPGame := by simp
 
 /-- `0.toPGame` has the same moves as `0`. -/
-noncomputable def zeroToPGameRelabelling : toPGame 0 ≡r 0 :=
-  Relabelling.isEmpty _
+lemma zero_toPGame : toPGame 0 ≡ 0 :=
+  identical_zero _
 
 theorem toPGame_zero : toPGame 0 ≈ 0 :=
-  zeroToPGameRelabelling.equiv
+  zero_toPGame.equiv
 
 noncomputable instance uniqueOneToPGameLeftMoves : Unique (toPGame 1).LeftMoves :=
   (Equiv.cast <| toPGame_leftMoves 1).unique
@@ -101,12 +101,13 @@ theorem to_leftMoves_one_toPGame_symm (i) :
 theorem one_toPGame_moveLeft (x) : (toPGame 1).moveLeft x = toPGame 0 := by simp
 
 /-- `1.toPGame` has the same moves as `1`. -/
-noncomputable def oneToPGameRelabelling : toPGame 1 ≡r 1 :=
-  ⟨Equiv.ofUnique _ _, Equiv.equivOfIsEmpty _ _, fun i => by
-    simpa using zeroToPGameRelabelling, isEmptyElim⟩
+lemma one_toPGame : toPGame 1 ≡ (1 : PGame) := by
+  refine Identical.ext (fun z ↦ ?_) (fun z ↦ ?_)
+  · simpa [memₗ_def, Unique.exists_iff] using zero_toPGame.congr_right
+  · simp [memᵣ_def]
 
 theorem toPGame_one : toPGame 1 ≈ 1 :=
-  oneToPGameRelabelling.equiv
+  one_toPGame.equiv
 
 theorem toPGame_lf {a b : Ordinal} (h : a < b) : a.toPGame ⧏ b.toPGame := by
   convert moveLeft_lf (toLeftMovesToPGame ⟨a, h⟩); rw [toPGame_moveLeft]
@@ -120,7 +121,7 @@ theorem toPGame_lt {a b : Ordinal} (h : a < b) : a.toPGame < b.toPGame :=
   ⟨toPGame_le h.le, toPGame_lf h⟩
 
 theorem toPGame_nonneg (a : Ordinal) : 0 ≤ a.toPGame :=
-  zeroToPGameRelabelling.ge.trans <| toPGame_le <| Ordinal.zero_le a
+  zero_toPGame.ge.trans <| toPGame_le <| Ordinal.zero_le a
 
 @[simp]
 theorem toPGame_lf_iff {a b : Ordinal} : a.toPGame ⧏ b.toPGame ↔ a < b :=
@@ -247,9 +248,9 @@ theorem toGame_nmul (a b : Ordinal) : (a ⨳ b).toGame = ⟦a.toPGame * b.toPGam
 
 @[simp] -- used to be a norm_cast lemma
 theorem toGame_natCast : ∀ n : ℕ, toGame n = n
-  | 0 => Quot.sound (zeroToPGameRelabelling).equiv
+  | 0 => Quot.sound toPGame_zero
   | n + 1 => by
-    have : toGame 1 = 1 := Quot.sound oneToPGameRelabelling.equiv
+    have : toGame 1 = 1 := Quot.sound toPGame_one
     rw [Nat.cast_add, ← nadd_nat, toGame_nadd, toGame_natCast, Nat.cast_one, this]
     rfl
 
