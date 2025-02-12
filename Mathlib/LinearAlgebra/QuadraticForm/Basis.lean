@@ -125,12 +125,12 @@ theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι 
     (fun _ _=> by simp only [Function.comp_apply, zero_smul])]
   simp only [mul_apply, Function.comp_apply]
   simp only [←smul_eq_mul, smul_assoc]
-  have e1 : (l.sum fun i r ↦ r • r • Q (g i))  = ∑ x ∈ l.support, l x • l x • Q (g x) := rfl
-  rw [e1]
+  rw [Finsupp.sum]
   simp_rw [add_right_inj]
-  simp_rw [← test]
-  simp_all only [Function.comp_apply]
-  rfl
+  apply Finset.sum_congr rfl
+  intro p hp
+  rw [← test]
+  simp only [Function.comp_apply, coe_pointwise_module_smul]
 
 -- c.f. `LinearMap.sum_repr_mul_repr_mul`
 open Finsupp in
