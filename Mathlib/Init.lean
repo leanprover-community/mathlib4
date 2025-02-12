@@ -5,6 +5,9 @@ import Mathlib.Tactic.Linter.DocString
 import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.Header
+-- This linter is disabled by default: we import it here so downstream projects can enable it
+-- project-wide without having to wonder if that linter was imported.
+import Mathlib.Tactic.Linter.FlexibleLinter
 -- This file imports Batteries.Tactic.Lint, where the `env_linter` attribute is defined.
 import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.Linter.Multigoal
