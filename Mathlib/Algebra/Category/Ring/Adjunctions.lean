@@ -5,7 +5,7 @@ Authors: Kim Morrison, Johannes Hölzl, Andrew Yang
 -/
 import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.CategoryTheory.Adjunction.Over
+import Mathlib.CategoryTheory.Comma.Over.Pullback
 -- import Mathlib.Algebra.Category.Mon
 
 /-!
