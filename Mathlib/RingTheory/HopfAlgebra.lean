@@ -12,10 +12,10 @@ In this file we define `HopfAlgebra`, and provide instances for:
 
 * Commutative semirings: `CommSemiring.toHopfAlgebra`
 * The `R`-Hopf algebra instance on the group algebra `A[G]` where `G` is a group and `A` is an
-`R`-Hopf algebra: `(Add)MonoidAlgebra.instHopfAlgebra`.
+  `R`-Hopf algebra: `(Add)MonoidAlgebra.instHopfAlgebra`.
 * The `R`-Hopf algebra instance on `A[t, t⁻¹]` when `A` is an `R`-Hopf algebra:
-`LaurentPolynomial.instHopfAlgebra`. When `A = R` this corresponds to the fact that `𝔾ₘ/R` is a
-group scheme.
+  `LaurentPolynomial.instHopfAlgebra`. When `A = R` this corresponds to the fact that `𝔾ₘ/R` is a
+  group scheme.
 
 # Main definitions
 
