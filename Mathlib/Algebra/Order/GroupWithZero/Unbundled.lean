@@ -519,14 +519,10 @@ theorem mulPosReflectLT_iff_contravariant_pos :
       · simp [← ha] at h
       · exact @ContravariantClass.elim α>0 α (fun x y => y * x) (· < ·) _ ⟨_, ha⟩ _ _ h ⟩⟩
 
--- Porting note: mathlib3 proofs would look like `StrictMono.monotone <| @CovariantClass.elim ..`
--- but implicit argument handling causes that to break
 -- see Note [lower instance priority]
 instance (priority := 100) PosMulStrictMono.toPosMulMono [PosMulStrictMono α] : PosMulMono α :=
   posMulMono_iff_covariant_pos.2 (covariantClass_le_of_lt _ _ _)
 
--- Porting note: mathlib3 proofs would look like `StrictMono.monotone <| @CovariantClass.elim ..`
--- but implicit argument handling causes that to break
 -- see Note [lower instance priority]
 instance (priority := 100) MulPosStrictMono.toMulPosMono [MulPosStrictMono α] : MulPosMono α :=
   mulPosMono_iff_covariant_pos.2 (covariantClass_le_of_lt _ _ _)
@@ -950,7 +946,7 @@ lemma Monotone.mul [PosMulMono M₀] [MulPosMono M₀] (hf : Monotone f) (hg : M
     (hf₀ : ∀ x, 0 ≤ f x) (hg₀ : ∀ x, 0 ≤ g x) : Monotone (f * g) :=
   fun _ _ h ↦ mul_le_mul (hf h) (hg h) (hg₀ _) (hf₀ _)
 
-lemma MonotoneOn.mul [PosMulMono M₀] [MulPosMono M₀] {s : Set α } (hf : MonotoneOn f s)
+lemma MonotoneOn.mul [PosMulMono M₀] [MulPosMono M₀] {s : Set α} (hf : MonotoneOn f s)
     (hg : MonotoneOn g s) (hf₀ : ∀ x ∈ s, 0 ≤ f x) (hg₀ : ∀ x ∈ s, 0 ≤ g x) :
     MonotoneOn (f * g) s :=
   fun _ ha _ hb h ↦ mul_le_mul (hf ha hb h) (hg ha hb h) (hg₀ _ ha) (hf₀ _ hb)
