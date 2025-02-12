@@ -59,6 +59,23 @@ theorem pairwise_of_reflexive_of_forall_ne {l : List α} {r : α → α → Prop
     apply h <;> try (apply hab.subset; simp)
     exact heq
 
+theorem Pairwise.rel_head_tail {l : List α} {R : α → α → Prop} (h₁ : l.Pairwise R) {a : α}
+    (ha : a ∈ l.tail) : R (l.head <| ne_nil_of_mem <| mem_of_mem_tail ha) a := by
+  cases l with
+  | nil => simp at ha
+  | cons b l => exact (pairwise_cons.1 h₁).1 a ha
+
+theorem Pairwise.rel_head_of_rel_head_head {R : α → α → Prop} {l : List α} (h₁ : l.Pairwise R)
+    {a : α} (ha : a ∈ l) (hhead : R (l.head <| ne_nil_of_mem ha) (l.head <| ne_nil_of_mem ha)) :
+    R (l.head <| ne_nil_of_mem ha) a := by
+  cases l with
+  | nil => simp at ha
+  | cons b l => exact (mem_cons.mp ha).elim (· ▸ hhead) ((pairwise_cons.1 h₁).1 _)
+
+theorem Pairwise.rel_head {R : α → α → Prop} [IsRefl α R] {l : List α} (h₁ : l.Pairwise R)
+    {a : α} (ha : a ∈ l) : R (l.head <| ne_nil_of_mem ha) a :=
+  h₁.rel_head_of_rel_head_head ha (refl_of ..)
+
 /-! ### Pairwise filtering -/
 
 protected alias ⟨_, Pairwise.pwFilter⟩ := pwFilter_eq_self
