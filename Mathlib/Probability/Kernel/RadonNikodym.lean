@@ -606,4 +606,20 @@ lemma rnDeriv_withDensity [IsFiniteKernel κ] {f : α → γ → ℝ≥0∞} [Is
   filter_upwards [h_ae, (κ a).rnDeriv_withDensity (hf' a)] with x hx1 hx2
   rw [hx1, κ.withDensity_apply hf, hx2]
 
+lemma apply_eq_of_rnDeriv_eq_one [IsFiniteKernel κ] [IsFiniteKernel η] {a : α}
+    (h_ac : κ a ≪ η a) (h : ∀ᵐ b ∂(η a), κ.rnDeriv η a b = 1) :
+    κ a = η a := by
+  rw [← withDensity_rnDeriv_eq h_ac]
+  ext s hs
+  rw [Kernel.withDensity_apply, withDensity_apply _ hs, setLIntegral_congr_fun (g := 1) hs]
+  · simp
+  · filter_upwards [h] with b hb _ using hb
+  · fun_prop
+
+lemma ae_eq_of_rnDeriv_eq_one {μ : Measure α}
+    [IsFiniteMeasure μ] [IsFiniteKernel κ] [IsFiniteKernel η]
+    (h_ac : ∀ᵐ a ∂μ, κ a ≪ η a) (h : ∀ᵐ a ∂μ, ∀ᵐ b ∂(η a), κ.rnDeriv η a b = 1) :
+    κ =ᵐ[μ] η := by
+  filter_upwards [h_ac, h] with a h_ac h using apply_eq_of_rnDeriv_eq_one h_ac h
+
 end ProbabilityTheory.Kernel
