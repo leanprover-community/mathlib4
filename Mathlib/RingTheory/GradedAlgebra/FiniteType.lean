@@ -24,7 +24,8 @@ variable (𝒜 : ι → Submodule R₀ S) [GradedAlgebra 𝒜]
 variable [Algebra.FiniteType (𝒜 0) S]
 
 theorem GradedAlgebra.exists_finset_adjoin_eq_top_and_homogeneous :
-    ∃ s : Finset S, Algebra.adjoin (A := S) (𝒜 0) s = ⊤ ∧ ∀ i ∈ s, SetLike.Homogeneous 𝒜 i := by
+    ∃ s : Finset S, Algebra.adjoin (A := S) (𝒜 0) s = ⊤ ∧
+      ∀ i ∈ s, SetLike.IsHomogeneousElem 𝒜 i := by
   classical
   obtain ⟨F, hF⟩ := Algebra.FiniteType.out (R := 𝒜 0) (A := S)
   let ι₀ := Σ (x : F), (DirectSum.decompose 𝒜 x.1).support
