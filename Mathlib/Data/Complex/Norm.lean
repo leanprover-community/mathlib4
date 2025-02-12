@@ -23,6 +23,7 @@ instance instNorm : Norm ℂ where
 
 theorem norm_def (z : ℂ) : ‖z‖ = Real.sqrt (normSq z) := rfl
 
+
 theorem norm_mul_self_eq_normSq (z : ℂ) : ‖z‖ * ‖z‖ = normSq z :=
   Real.mul_self_sqrt (normSq_nonneg _)
 
@@ -63,7 +64,6 @@ instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
     neg' := norm_neg'
     eq_zero_of_map_eq_zero' := fun _ ↦ norm_eq_zero_iff.mp }
 
-
 @[simp]
 protected theorem norm_mul (z w : ℂ) : ‖z * w‖ = ‖z‖ * ‖w‖ := by
   rw [norm_def, norm_def, norm_def, normSq_mul, Real.sqrt_mul (normSq_nonneg _)]
@@ -84,7 +84,15 @@ protected theorem norm_pow (z : ℂ) (n : ℕ) : ‖z ^ n‖ = ‖z‖ ^ n :=
 protected theorem norm_zpow (z : ℂ) (n : ℤ) :  ‖z ^ n‖ = ‖z‖ ^ n :=
   map_zpow₀ isAbsoluteValueNorm.abvHom _ _
 
+protected theorem norm_prod {ι : Type*} (s : Finset ι) (f : ι → ℂ) :
+    ‖s.prod f‖ = s.prod fun i ↦ ‖f i‖ :=
+  map_prod isAbsoluteValueNorm.abvHom _ _
+
+@[simp]
+theorem norm_conj (z : ℂ) : ‖conj z‖ = ‖z‖ := by simp [norm_def]
+
 @[simp] lemma norm_I : ‖I‖ = 1 := by simp [norm]
+
 @[simp] lemma nnnorm_I : ‖I‖₊ = 1 := by simp [nnnorm]
 
 @[simp 1100, norm_cast]
@@ -94,47 +102,57 @@ lemma norm_real (r : ℝ) : ‖(r : ℂ)‖ = ‖r‖ := by
 protected theorem norm_of_nonneg {r : ℝ} (h : 0 ≤ r) : ‖(r : ℂ)‖ = r :=
   (norm_real _).trans (abs_of_nonneg h)
 
+@[simp, norm_cast]
+lemma nnnorm_real (r : ℝ) : ‖(r : ℂ)‖₊ = ‖r‖₊ := by ext; exact norm_real _
+
 @[simp 1100, norm_cast]
 lemma norm_natCast (n : ℕ) : ‖(n : ℂ)‖ = n := Complex.norm_of_nonneg n.cast_nonneg
+
+@[simp 1100]
+lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ‖(ofNat(n) : ℂ)‖ = OfNat.ofNat n := norm_natCast n
+
+@[simp 1100, norm_cast]
+lemma nnnorm_natCast (n : ℕ) : ‖(n : ℂ)‖₊ = n := Subtype.ext <| by simp
+
+@[simp 1100]
+lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ‖(ofNat(n) : ℂ)‖₊ = OfNat.ofNat n := nnnorm_natCast n
 
 @[simp 1100, norm_cast]
 lemma norm_intCast (n : ℤ) : ‖(n : ℂ)‖ = |(n : ℝ)| := by
   rw [← ofReal_intCast, norm_real, Real.norm_eq_abs]
 
-@[simp 1100, norm_cast] lemma norm_ratCast (q : ℚ) : ‖(q : ℂ)‖ = |(q : ℝ)| := norm_real _
+theorem norm_int_of_nonneg {n : ℤ} (hn : 0 ≤ n) : ‖(n : ℂ)‖ = n := by
+  rw [norm_intCast, ← Int.cast_abs, abs_of_nonneg hn]
 
-@[simp, norm_cast] lemma nnnorm_real (r : ℝ) : ‖(r : ℂ)‖₊ = ‖r‖₊ := by ext; exact norm_real _
-@[simp 1100, norm_cast] lemma nnnorm_natCast (n : ℕ) : ‖(n : ℂ)‖₊ = n := Subtype.ext <| by simp
-@[simp 1100, norm_cast] lemma nnnorm_ratCast (q : ℚ) : ‖(q : ℂ)‖₊ = ‖(q : ℝ)‖₊ := nnnorm_real q
+@[simp 1100, norm_cast]
+lemma norm_ratCast (q : ℚ) : ‖(q : ℂ)‖ = |(q : ℝ)| := norm_real _
 
-@[simp 1100] lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ‖(ofNat(n) : ℂ)‖ = OfNat.ofNat n := norm_natCast n
+@[simp 1100, norm_cast]
+lemma norm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖ = q := Complex.norm_of_nonneg q.cast_nonneg
 
-@[simp 1100] lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ‖(ofNat(n) : ℂ)‖₊ = OfNat.ofNat n := nnnorm_natCast n
+@[simp 1100, norm_cast]
+lemma nnnorm_ratCast (q : ℚ) : ‖(q : ℂ)‖₊ = ‖(q : ℝ)‖₊ := nnnorm_real q
+
+@[simp 1100, norm_cast]
+lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖₊ = q := by simp [nnnorm]
 
 @[deprecated (since := "2024-08-25")] alias norm_nat := norm_natCast
 @[deprecated (since := "2024-08-25")] alias norm_int := norm_intCast
 @[deprecated (since := "2024-08-25")] alias norm_rat := norm_ratCast
 @[deprecated (since := "2024-08-25")] alias nnnorm_nat := nnnorm_natCast
 
-@[simp 1100, norm_cast]
-lemma norm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖ = q := Complex.norm_of_nonneg q.cast_nonneg
-
-@[simp 1100, norm_cast]
-lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖₊ = q := by simp [nnnorm]
-
-theorem norm_int_of_nonneg {n : ℤ} (hn : 0 ≤ n) : ‖(n : ℂ)‖ = n := by
-  rw [norm_intCast, ← Int.cast_abs, abs_of_nonneg hn]
-
 lemma normSq_eq_norm_sq (z : ℂ) : normSq z = ‖z‖ ^ 2 := by
   simp [norm_def, sq, Real.mul_self_sqrt (normSq_nonneg _)]
 
 protected theorem sq_norm (z : ℂ) : ‖z‖ ^ 2 = normSq z := (normSq_eq_norm_sq z).symm
 
+@[simp]
 theorem sq_norm_sub_sq_re (z : ℂ) : ‖z‖ ^ 2 - z.re ^ 2 = z.im ^ 2 := by
    rw [Complex.sq_norm, normSq_apply, ← sq, ← sq, add_sub_cancel_left]
 
+@[simp]
 theorem sq_norm_sub_sq_im (z : ℂ) : ‖z‖ ^ 2 - z.im ^ 2 = z.re ^ 2 := by
   rw [← sq_norm_sub_sq_re, sub_sub_cancel]
 
@@ -152,12 +170,6 @@ protected theorem range_norm : range (‖·‖ : ℂ → ℝ) = Set.Ici 0 :=
 theorem range_normSq : range normSq = Ici 0 :=
   Subset.antisymm (range_subset_iff.2 normSq_nonneg) fun x hx =>
     ⟨Real.sqrt x, by rw [normSq_ofReal, Real.mul_self_sqrt hx]⟩
-
-theorem norm_conj (z : ℂ) : ‖conj z‖ = ‖z‖ := by simp [norm_def]
-
-protected theorem norm_prod {ι : Type*} (s : Finset ι) (f : ι → ℂ) :
-    ‖s.prod f‖ = s.prod fun i ↦ ‖f i‖ :=
-  map_prod isAbsoluteValueNorm.abvHom _ _
 
 theorem norm_le_abs_re_add_abs_im (z : ℂ) : ‖z‖ ≤ |z.re| + |z.im| := by
     simpa [re_add_im] using norm_add_le (z.re : ℂ) (z.im * I)

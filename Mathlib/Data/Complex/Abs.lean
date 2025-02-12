@@ -26,17 +26,14 @@ theorem abs_eq_norm (z : ℂ) : abs z = ‖z‖ := rfl
 theorem abs_apply {z : ℂ} : Complex.abs z = Real.sqrt (normSq z) :=
   rfl
 
-@[simp, norm_cast]
 theorem abs_ofReal (r : ℝ) : Complex.abs r = |r| := norm_real r
 
 protected theorem abs_of_nonneg {r : ℝ} (h : 0 ≤ r) : Complex.abs r = r :=
   Complex.norm_of_nonneg h
 
 -- Porting note: removed `norm_cast` attribute because the RHS can't start with `↑`
-@[simp]
 theorem abs_natCast (n : ℕ) : Complex.abs n = n := norm_natCast n
 
-@[simp]
 theorem abs_ofNat (n : ℕ) [n.AtLeastTwo] :
     Complex.abs ofNat(n) = ofNat(n) :=
   norm_ofNat n
@@ -46,10 +43,8 @@ theorem mul_self_abs (z : ℂ) : Complex.abs z * Complex.abs z = normSq z :=
 
 protected theorem sq_abs (z : ℂ) : Complex.abs z ^ 2 = normSq z := Complex.sq_norm _
 
-@[simp]
 theorem sq_abs_sub_sq_re (z : ℂ) : Complex.abs z ^ 2 - z.re ^ 2 = z.im ^ 2 := sq_norm_sub_sq_re _
 
-@[simp]
 theorem sq_abs_sub_sq_im (z : ℂ) : Complex.abs z ^ 2 - z.im ^ 2 = z.re ^ 2 := sq_norm_sub_sq_im _
 
 lemma abs_add_mul_I (x y : ℝ) : Complex.abs (x + y * I) = (x ^ 2 + y ^ 2).sqrt := norm_add_mul_I _ _
@@ -57,15 +52,12 @@ lemma abs_add_mul_I (x y : ℝ) : Complex.abs (x + y * I) = (x ^ 2 + y ^ 2).sqrt
 lemma abs_eq_sqrt_sq_add_sq (z : ℂ) : Complex.abs z = (z.re ^ 2 + z.im ^ 2).sqrt :=
   norm_eq_sqrt_sq_add_sq _
 
-@[simp]
 theorem abs_I : Complex.abs I = 1 := norm_I
 
 protected theorem abs_two : Complex.abs 2 = 2 := abs_ofNat 2
 
-@[simp]
 theorem range_abs : range Complex.abs = Ici 0 := Complex.range_norm
 
-@[simp]
 theorem abs_conj (z : ℂ) : Complex.abs (conj z) = Complex.abs z := norm_conj _
 
 theorem abs_prod {ι : Type*} (s : Finset ι) (f : ι → ℂ) :
@@ -88,19 +80,14 @@ theorem re_le_abs (z : ℂ) : z.re ≤ Complex.abs z := re_le_norm _
 
 theorem im_le_abs (z : ℂ) : z.im ≤ Complex.abs z := im_le_norm _
 
-@[simp]
 theorem abs_re_lt_abs {z : ℂ} : |z.re| < Complex.abs z ↔ z.im ≠ 0 := abs_re_lt_norm
 
-@[simp]
 theorem abs_im_lt_abs {z : ℂ} : |z.im| < Complex.abs z ↔ z.re ≠ 0 := abs_im_lt_norm
 
-@[simp]
 lemma abs_re_eq_abs {z : ℂ} : |z.re| = Complex.abs z ↔ z.im = 0 := abs_re_eq_norm
 
-@[simp]
 lemma abs_im_eq_abs {z : ℂ} : |z.im| = Complex.abs z ↔ z.re = 0 := abs_im_eq_norm
 
-@[simp]
 protected theorem abs_abs (z : ℂ) : |Complex.abs z| = Complex.abs z := abs_norm z
 
 theorem abs_le_abs_re_add_abs_im (z : ℂ) : Complex.abs z ≤ |z.re| + |z.im| :=
@@ -115,7 +102,7 @@ theorem abs_re_div_abs_le_one (z : ℂ) : |z.re / Complex.abs z| ≤ 1 :=
 theorem abs_im_div_abs_le_one (z : ℂ) : |z.im / Complex.abs z| ≤ 1 :=
   abs_im_div_norm_le_one _
 
-@[simp, norm_cast] lemma abs_intCast (n : ℤ) : Complex.abs n = |↑n| :=
+lemma abs_intCast (n : ℤ) : Complex.abs n = |↑n| :=
   norm_intCast _
 
 theorem normSq_eq_abs (x : ℂ) : normSq x = (Complex.abs x) ^ 2 :=
