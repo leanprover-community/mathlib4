@@ -3,6 +3,7 @@ Copyright (c) 2024 Sihan Su. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Sihan Su, Wan Lin, Xiaoyang Su
 -/
+import Mathlib.Data.List.Indexes
 import Mathlib.Algebra.MvPolynomial.Monad
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 /-!
@@ -24,27 +25,26 @@ variable {k : Type*} [Field k] {n : ℕ} (f : MvPolynomial (Fin (n + 1)) k)
 variable (v w : Fin (n + 1) →₀ ℕ)
 
 /-Suppose $f$ is a nonzero polynomial of $n+1$ variables : $X_0,...,X_n$.
-We construct a ring homomorphism $T$ which maps $X_i$ into $X_i + X_0^{r_i}$ when $i \neq 0$,
-and maps $f$ into some monic polynomial (regarded as a polynomial of $X_0$).-/
-private noncomputable abbrev up := (1 + ∑ i : Fin (n + 1), f.degreeOf i)
+`up` is a number which is big enough. -/
+private noncomputable abbrev up := 2 + f.totalDegree
 
 private lemma up_spec (hv : v ∈ f.support) : ∀ i, v i < up f := by
   intro i
-  have h : degreeOf i f ≤ ∑ i : Fin (n + 1), degreeOf i f := by
-    rw [← finsum_eq_sum_of_fintype fun i ↦ degreeOf i f]
-    exact single_le_finsum i (Set.toFinite _) (fun j ↦ Nat.zero_le (degreeOf j f))
-  exact lt_one_add_iff.mpr (le_trans (monomial_le_degreeOf i hv) h)
+  have := lt_one_add_iff.mpr <| le_trans (monomial_le_degreeOf i hv) <| degreeOf_le_totalDegree f i
+  linarith
 
-private noncomputable abbrev r : Fin (n + 1) → ℕ :=
-    fun i ↦ if i = 0 then 1 else ((n + 1) * (up f)) ^ (n + 1 - i)
+private lemma ltup : 1 < up f := Nat.lt_add_right f.totalDegree Nat.one_lt_two
 
-/-$T$ is an algebraic isomorphism.-/
+private noncomputable abbrev r : Fin (n + 1) → ℕ := fun i ↦ up f ^ i.1
+
+/-We construct a ring homomorphism $T$ which maps $X_i$ into $X_i + X_0^{r_i}$ when $i \neq 0$,
+and maps $f$ into some monic polynomial (regarded as a polynomial of $X_0$).-/
 private noncomputable abbrev T1 : MvPolynomial (Fin (n + 1)) k →ₐ[k] MvPolynomial (Fin (n + 1)) k :=
-  aeval (fun i ↦  if i = 0 then X 0 else X i + (X 0) ^ (r f i))
+  aeval fun i ↦  if i = 0 then X 0 else X i + X 0 ^ r f i
 
 private noncomputable abbrev T_inv :
     MvPolynomial (Fin (n + 1)) k →ₐ[k] MvPolynomial (Fin (n + 1)) k :=
-  aeval (fun i ↦  if i = 0 then X 0 else X i - (X 0) ^ (r f i))
+  aeval fun i ↦  if i = 0 then X 0 else X i - X 0 ^ r f i
 
 private lemma T_left_inv : (T_inv f).comp (T1 f) = AlgHom.id _ _ := by
   rw [comp_aeval, ← MvPolynomial.aeval_X_left]
@@ -66,126 +66,49 @@ private lemma T_right_inv : (T1 f).comp (T_inv f) = AlgHom.id _ _ := by
 
 private noncomputable abbrev T := AlgEquiv.ofAlgHom (T1 f) (T_inv f) (T_right_inv f) (T_left_inv f)
 
-/-$r_i$ satisfies that any two different monomial in $f$ have different degree of $X_0$
-after mapped by $T$.-/
-private lemma a_j (vlt : ∀ i, v i < up f) (wlt : ∀ i, w i < up f) (i : Fin n)
-  (pj : ∀ (j : Fin n), (v j.succ ≠ w j.succ) → i ≤ j) :  ∀ j : Fin n, (if j ≠ i then
-  |(((n + 1 : ℤ) * up f) ^ (n + 1 - j.succ) * ((v j.succ) - (w j.succ)))| else 0)
-  ≤ (n + 1 : ℤ) ^ (n - i.succ) * up f ^ (n + 1 - i.succ) := by
-intro j
-by_cases h : j < i
-· have : (((n + 1 : ℤ) * up f) ^ (n + 1 - j.succ) * ((v j.succ) - (w j.succ))) = 0 := by
-    simp only [sub_eq_zero.mpr <| cast_inj.mpr <| by_contra
-      <| fun ne ↦ Fin.not_lt.mpr (pj j ne) h, mul_zero]
-  simp only [if_pos (Fin.ne_of_lt h), this, abs_zero, Int.succ_ofNat_pos, pow_pos,
-    mul_pos_iff_of_pos_left, ← cast_pow]
-  have le := one_le_pow₀ (le_add_of_nonneg_left (Int.ofNat_zero_le n)) (n := n - i.succ)
-  exact Int.mul_nonneg (by linarith) (Int.ofNat_zero_le _)
-· by_cases heq : j = i
-  · replace heq : ¬ (j ≠ i) := by push_neg; exact heq
-    simp only [if_neg heq, ← cast_pow]
-    have le := one_le_pow₀ (le_add_of_nonneg_left (Int.ofNat_zero_le n)) (n := n - i.succ)
-    exact Int.mul_nonneg (by linarith) (Int.ofNat_zero_le _)
-  · push_neg at heq
-    have lt : i < j := lt_of_le_of_ne (not_lt.mp h) heq.symm
-    have le : n + 1 - j.succ ≤ n - i.succ := by
-      repeat rw [Fin.val_succ, Nat.succ_sub_succ]
-      exact Nat.sub_le_sub_left (Nat.add_one_le_iff.mpr lt) n
-    simp only [if_pos heq, mul_pow, abs_mul, abs_pow, abs_cast,
-      succ_sub (Fin.is_le i.succ), pow_succ, ← mul_assoc]
-    apply mul_le_mul
-    · apply mul_le_mul ?_ ?_ (pow_nonneg (Int.ofNat_zero_le _) _)
-        (pow_nonneg (Int.ofNat_zero_le _) _)
-      · have : |(n : ℤ) + 1| = (n : ℤ) + 1 := rfl
-        rw [this]
-        exact _root_.pow_le_pow_right₀ ((le_add_iff_nonneg_left _).mpr (cast_nonneg _)) le
-      · apply _root_.pow_le_pow_right₀ ?_ le
-        simp only [cast_add, cast_one, le_add_iff_nonneg_right]
-        exact Int.ofNat_zero_le _
-    · exact le_of_lt (abs_sub_lt_of_nonneg_of_lt (Int.ofNat_zero_le _)
-        (cast_lt.mpr (vlt j.succ)) (Int.ofNat_zero_le _) (cast_lt.mpr (wlt j.succ)))
-    · exact abs_nonneg _
-    · exact mul_nonneg (pow_nonneg (Int.ofNat_zero_le _) _) (pow_nonneg (Int.ofNat_zero_le _) _)
+lemma lt {f : MvPolynomial (Fin (n + 1)) k} {v : Fin (n + 1) →₀ ℕ}
+  (vlt : ∀ i, v i < up f) : ∀ l ∈ List.ofFn v, l < up f := by
+  intro l h
+  rw [List.mem_ofFn, Set.mem_range] at h
+  obtain ⟨y, hy⟩ := h
+  exact hy ▸ vlt y
 
-private lemma equal (h : v 0 + ∑ x : Fin n, ((n + 1) * up f) ^ (n + 1 - x.succ) * v x.succ =
-  w 0 + ∑ x : Fin n, ((n + 1) * up f) ^ (n + 1 - ↑x.succ) * w x.succ) : ((v 0 : ℤ) - w 0) +
-  ∑ j : Fin n, (((n + 1 : ℤ) * up f) ^ (n + 1 - j.succ) * ((v j.succ) - (w j.succ))) = 0 := by
-  simp only [mul_sub, Finset.sum_sub_distrib, sub_add_sub_comm, Int.sub_eq_zero]
-  calc
-    _ = (@Nat.cast ℤ) (v 0 + ∑ x : Fin n, ((n + 1) * up f) ^ (n + 1 - x.succ) * v x.succ) := by
-      simp only [cast_add, cast_sum, cast_mul, cast_pow, cast_one]
-    _ = (@Nat.cast ℤ) (w 0 + ∑ x : Fin n, ((n + 1) * up f) ^ (n + 1 - x.succ) * w x.succ) := by
-      rw [h]
-    _ = _ := by simp only [cast_add, cast_sum, cast_mul, cast_pow, cast_one]
+lemma dig (b : ℕ) (hb : 1 < b) (L1 : List ℕ) (L2 : List ℕ) (len : L1.length = L2.length)
+    (w1 : ∀ l ∈ L1, l < b) (w2 : ∀ l ∈ L2, l < b) (h : ofDigits b L1 = ofDigits b L2) :
+    L1 = L2 := by
+  induction' L1 with D L ih generalizing L2
+  · simp only [List.length_nil] at len
+    exact (List.length_eq_zero.mp len.symm).symm
+  obtain ⟨d, l, eq⟩ := List.exists_cons_of_length_eq_add_one len.symm
+  rw [eq]
+  simp only [eq, List.length_cons, add_left_inj] at len
+  simp only [eq, Nat.ofDigits_cons] at h
+  rw [eq] at w2
+  have eqd : D = d := by
+    have H : (D + b * ofDigits b L) % b = (d + b * ofDigits b l) % b := by rw [h]
+    simp only [Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt (w2 d <| List.mem_cons_self d l),
+    Nat.mod_eq_of_lt (w1 D <| List.mem_cons_self D L)] at H
+    exact H
+  simp only [eqd, add_right_inj, mul_left_cancel_iff_of_pos (zero_lt_of_lt hb)] at h
+  have := ih l len (fun a ha ↦ w1 a <| List.mem_cons_of_mem D ha)
+    (fun a ha ↦ w2 a <| List.mem_cons_of_mem d ha) h
+  rw [eqd, this]
 
 private lemma r_spec (vlt : ∀ i, v i < up f) (wlt : ∀ i, w i < up f) (neq : v ≠ w) :
     ∑ x : Fin (n + 1), r f x * v x ≠ ∑ x : Fin (n + 1), r f x * w x := by
   unfold r
-  simp only [Fin.sum_univ_succ, if_pos, one_mul, Fin.succ_ne_zero, ite_false]
   by_contra h
-  set p := fun (i : Fin n) ↦ v i.succ ≠ w i.succ
-  by_cases hp : Fin.find p = none
-  · rw [Fin.find_eq_none_iff] at hp
-    repeat push_neg at hp
-    rw [Finset.sum_congr rfl <| fun i _ ↦ by rw [hp i], add_left_inj] at h
-    exact neq <| Finsupp.ext <| fun i ↦ Fin.induction h (fun d _ ↦ (hp d)) i
-  · obtain ⟨i, hi⟩ := Option.ne_none_iff_exists'.mp hp
-    obtain ⟨pi, pj⟩ := Fin.find_eq_some_iff.mp hi
-    unfold p at pj
-    set a0 := ((v 0 : ℤ) - w 0)
-    set a :=
-      fun (j : Fin n) ↦ (((n + 1 : ℤ) * up f) ^ (n + 1 - j.succ) * ((v j.succ) - (w j.succ)))
-    have eq2 : - a i = a0 + ∑ j : Fin n with j ≠ i, a j := by
-      rw [← add_zero (- a i), ← equal f v w h, ← add_assoc]
-      nth_rw 2 [add_comm]
-      rw [add_assoc, add_left_cancel_iff]
-      have : a i = ∑ j : Fin n with j = i, a j := by
-        simp only [Finset.sum_filter, Finset.sum_ite_eq', Finset.mem_univ, if_pos]
-      simp only [this, ← Finset.sum_neg_distrib, Finset.sum_filter, ← Finset.sum_add_distrib]
-      apply Finset.sum_congr rfl
-      intro j _
-      by_cases hij : j = i
-      · simp only [if_pos hij, if_neg (fun (t : j ≠ i) ↦ (t hij)), neg_add_cancel]
-      · rw [if_pos hij, if_neg hij, neg_zero, zero_add]
-    have : |- a i| > |a0| + ∑ j : Fin n with j ≠ i, |a j| := by
-      rw [Finset.sum_filter]
-      set bi := (n + 1 : ℤ) ^ (n - i.succ) * up f ^ (n + 1 - i.succ)
-      have : |a0| < up f := by
-        unfold a0
-        exact abs_sub_lt_of_nonneg_of_lt (Int.ofNat_zero_le _) (cast_lt.mpr (vlt 0))
-          (Int.ofNat_zero_le _) (cast_lt.mpr (wlt 0))
-      have ai : |- a i| ≥ (n + 1) * bi * 1 := by
-        unfold a bi
-        simp only [abs_neg, abs_mul, mul_pow]
-        have : |v i.succ - (w i.succ : ℤ)| ≥ 1 := by apply Int.one_le_abs; omega
-        nth_rw 1 [Nat.sub_add_comm (Fin.is_le _), add_comm (n - i.succ), pow_add, pow_one]
-        have n1 : (n : ℤ) + 1 = (@Nat.cast ℤ) (n + 1) := rfl
-        simp only [abs_mul, abs_pow, n1, abs_cast, ← mul_assoc]
-        apply mul_le_mul (by rfl) (by linarith) Int.one_nonneg
-        apply Int.mul_nonneg (Int.mul_nonneg (Int.ofNat_zero_le _ ) (pow_nonneg
-          (Int.ofNat_zero_le _) (n - i.succ))) (pow_nonneg (Int.ofNat_zero_le _) (n + 1- ↑i.succ))
-      have aj := a_j _ _ _ vlt wlt i pj
-      rw [mul_one, add_mul, one_mul, add_comm] at ai
-      have : ∑ j : Fin n, (if j ≠ i then |a j| else 0) ≤ ∑ _ : Fin n, bi :=
-        Finset.sum_le_sum (fun i _ ↦ aj i)
-      rw [Fin.sum_const, nsmul_eq_mul] at this
-      have : bi ≥ up f := by
-        unfold bi
-        simp only [succ_eq_add_one, Fin.val_succ, reduceSubDiff, ge_iff_le]
-        nth_rw 1 [← one_mul (up f : ℤ)]
-        have le := one_le_pow₀ (le_add_of_nonneg_left (Int.ofNat_zero_le n)) (n := n - (i + 1))
-        apply Int.mul_le_mul le ?_ (Int.ofNat_zero_le _) (by linarith)
-        apply le_self_pow₀ ?_ (sub_ne_zero_of_lt i.isLt)
-        simp only [cast_add, cast_one, le_add_iff_nonneg_right]
-        exact Int.ofNat_zero_le _
-      linarith
-    rw [eq2] at this
-    have h2 := abs_add_le a0 (∑ j : Fin n with j ≠ i, a j)
-    have h3 := Finset.abs_sum_le_sum_abs a (Finset.filter (fun j ↦ j ≠ i) Finset.univ)
-    linarith
+  have : List.ofFn v = List.ofFn w := by
+    apply dig (up f) (ltup f) (List.ofFn v) (List.ofFn w)
+      (by simp only [List.length_ofFn]) (lt vlt) (lt wlt)
+    simp only [Nat.ofDigits_eq_sum_mapIdx, List.mapIdx_eq_ofFn, List.get_ofFn]
+    repeat rw [← List.sum_ofFn] at h
+    simp only [List.length_ofFn, Fin.cast_trans, Fin.cast_eq_self, Fin.coe_cast, mul_comm]
+    exact h
+  exact neq <| Finsupp.ext <| congrFun <| List.ofFn_inj.mp this
 
 private lemma T_spec_monomial (a : k) (ha : a ≠ 0) : ((T f) (monomial v a)).degreeOf 0 =
-    ∑ i : Fin (n + 1), (r f i) * ((monomial v a).degreeOf i) := by
+    ∑ i : Fin (n + 1), (r f i) * v i := by
   rw [← natDegree_finSuccEquiv]
   nth_rw 1 [monomial_eq]
   rw [Finsupp.prod_pow v fun a ↦ X a, Fin.prod_univ_succ]
@@ -202,17 +125,18 @@ private lemma T_spec_monomial (a : k) (ha : a ≠ 0) : ((T f) (monomial v a)).de
     apply pow_ne_zero (v i.succ) (leadingCoeff_ne_zero.mp ?_)
     rw [add_comm, leadingCoeff_X_pow_add_C]
     exact one_ne_zero
-    unfold r
-    simp only [Fin.succ_ne_zero, ite_false, Fin.val_succ, Nat.reduceSubDiff]
-    exact pow_pos (mul_pos (by omega) (by unfold up; omega)) (n - i.val)
+    simp only [add_pos_iff, ofNat_pos, true_or, pow_pos]
   rw [natDegree_mul h1 (mul_ne_zero h2 (Finset.prod_ne_zero_iff.mpr (fun i _ ↦ h3 i))),
     natDegree_mul h2 (Finset.prod_ne_zero_iff.mpr (fun i _ ↦ h3 i)),
     natDegree_prod _  _ (fun i _ ↦ h3 i), natDegree_finSuccEquiv, degreeOf_C]
   simp only [natDegree_pow, zero_add]
-  rw [one_mul, degreeOf_monomial_eq _ _ ha, natDegree_X, mul_one, add_left_cancel_iff]
+  have e1 : r f 0 = 1 := by
+    unfold r
+    simp only [Fin.val_zero, pow_zero]
+  rw [natDegree_X, mul_one, e1, one_mul, add_left_cancel_iff]
   apply Finset.sum_congr rfl
   intro i _
-  rw [add_comm (Polynomial.C (X i)), natDegree_X_pow_add_C, degreeOf_monomial_eq _ _ ha, mul_comm]
+  rw [add_comm (Polynomial.C (X i)), natDegree_X_pow_add_C, mul_comm]
 
 private lemma T_spec_degree (hv : v ∈ f.support) (hw : w ∈ f.support) (neq : v ≠ w) :
     (T f <| monomial v <| coeff v f).degreeOf 0 ≠
@@ -220,7 +144,6 @@ private lemma T_spec_degree (hv : v ∈ f.support) (hw : w ∈ f.support) (neq :
   have nv := mem_support_iff.mp hv
   have nw := mem_support_iff.mp hw
   rw [T_spec_monomial _ _ _ nv, T_spec_monomial _ _ _ nw]
-  simp only [degreeOf_monomial_eq _ _ nv, degreeOf_monomial_eq _ _ nw]
   exact r_spec f v w (up_spec f v hv) (up_spec f w hw) neq
 
 private lemma T_spec_coeff :
@@ -241,8 +164,7 @@ private lemma T_spec_coeff :
         obtain ⟨i, hi⟩ := Fin.exists_succ_eq.mpr h
         rw [← hi, finSuccEquiv_X_succ, finSuccEquiv_X_zero, add_comm]
         apply leadingCoeff_X_pow_add_C
-        simp only [Fin.succ_ne_zero, ite_false, Fin.val_succ, Nat.reduceSubDiff]
-        apply pow_pos (mul_pos (by omega) (by unfold up; omega)) _
+        simp only [add_pos_iff, ofNat_pos, true_or, pow_pos]
     · simp only [this, one_pow, Finset.prod_const_one, mul_one]
   · exact fun i ↦ pow_zero _
 
@@ -265,8 +187,7 @@ private lemma T_spec_leadingcoeff (fne : f ≠ 0) :
     simp only [map_add, map_sum]
     rw [add_comm]
     apply leadingCoeff_add_of_degree_lt
-    have := degree_sum_le (f.support \ {v}) (fun x ↦ ((finSuccEquiv k n) ((T f) (h x))))
-    apply lt_of_le_of_lt this
+    apply lt_of_le_of_lt <| degree_sum_le _ _
     set degv := (finSuccEquiv k n ((T f) (h v))).degree
     set els := ∑ x ∈ f.support \ {v}, (finSuccEquiv k n) ((T f) (h x))
     have h2 : h v ≠ 0 := by
@@ -390,7 +311,7 @@ theorem exists_integral_inj (I : Ideal (MvPolynomial (Fin n) k))
 
 theorem Noether_Normalization {R : Type*} [CommRing R] [Nontrivial R] [Algebra k R]
     [fin : Algebra.FiniteType k R] : ∃ r, ∃ g : (MvPolynomial (Fin r) k) →ₐ[k] R,
-    Function.Injective g ∧ IsIntegral g.toRingHom := by
+    Function.Injective g ∧ g.IsIntegral := by
   obtain ⟨n, f, fsurj⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp fin
   set ϕ := quotientKerAlgEquivOfSurjective fsurj
   have ne : RingHom.ker f ≠ ⊤ := fun h ↦ (h ▸ (not_one_mem_ker f)) trivial
