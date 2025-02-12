@@ -575,6 +575,16 @@ lemma chart_mem_atlas (H : Type*) {M : Type*} [TopologicalSpace H] [TopologicalS
     [ChartedSpace H M] (x : M) : chartAt H x ∈ atlas H M :=
   ChartedSpace.chart_mem_atlas x
 
+lemma nonempty_of_chartedSpace {H : Type*} {M : Type*} [TopologicalSpace H] [TopologicalSpace M]
+    [ChartedSpace H M] (x : M) : Nonempty H :=
+  ⟨chartAt H x x⟩
+
+lemma isEmpty_of_chartedSpace (H : Type*) {M : Type*} [TopologicalSpace H] [TopologicalSpace M]
+    [ChartedSpace H M] [IsEmpty H] : IsEmpty M := by
+  rcases isEmpty_or_nonempty M with hM | ⟨⟨x⟩⟩
+  · exact hM
+  · exact (IsEmpty.false (chartAt H x x)).elim
+
 section ChartedSpace
 
 /-- An empty type is a charted space over any topological space. -/
@@ -851,10 +861,11 @@ theorem piChartedSpace_chartAt {ι : Type*} [Finite ι] (H : ι → Type*)
 section sum
 
 variable [TopologicalSpace H] [TopologicalSpace M] [TopologicalSpace M']
-    [cm : ChartedSpace H M] [cm' : ChartedSpace H M'] [Nonempty H]
+    [cm : ChartedSpace H M] [cm' : ChartedSpace H M']
 
-/-- The disjoint union of two charted spaces on `H` is a charted space over `H`. -/
-instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') where
+/-- The disjoint union of two charted spaces modelled on a non-empty space `H`
+is a charted space over `H`. -/
+def ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
   atlas := ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inl) '' cm.atlas) ∪
     ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inr) '' cm'.atlas)
   -- At `x : M`, the chart is the chart in `M`; at `x' ∈ M'`, it is the chart in `M'`.
@@ -881,21 +892,49 @@ instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') where
       right
       use ChartedSpace.chartAt x, cm'.chart_mem_atlas x
 
+open scoped Classical in
+instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') :=
+  if h : Nonempty H then ChartedSpace.sum_of_nonempty else by
+  simp only [not_nonempty_iff] at h
+  have : IsEmpty M := isEmpty_of_chartedSpace H
+  have : IsEmpty M' := isEmpty_of_chartedSpace H
+  exact empty H (M ⊕ M')
+
 lemma ChartedSpace.sum_chartAt_inl (x : M) :
-    chartAt H (Sum.inl x) = (chartAt H x).lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inl :=
+    haveI : Nonempty H := nonempty_of_chartedSpace x
+    chartAt H (Sum.inl x)
+      = (chartAt H x).lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inl := by
+  simp only [chartAt, sum, nonempty_of_chartedSpace x, ↓reduceDIte]
   rfl
 
 lemma ChartedSpace.sum_chartAt_inr (x' : M') :
-    chartAt H (Sum.inr x') = (chartAt H x').lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inr :=
+    haveI : Nonempty H := nonempty_of_chartedSpace x'
+    chartAt H (Sum.inr x')
+      = (chartAt H x').lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inr := by
+  simp only [chartAt, sum, nonempty_of_chartedSpace x', ↓reduceDIte]
   rfl
 
-lemma ChartedSpace.mem_atlas_sum {e : PartialHomeomorph (M ⊕ M') H} (he : e ∈ atlas H (M ⊕ M')) :
+@[simp] lemma sum_chartAt_inl_apply {x y : M} :
+    (chartAt H (.inl x : M ⊕ M')) (Sum.inl y) = (chartAt H x) y := by
+  haveI : Nonempty H := nonempty_of_chartedSpace x
+  rw [ChartedSpace.sum_chartAt_inl]
+  exact PartialHomeomorph.lift_openEmbedding_apply _ _
+
+@[simp] lemma sum_chartAt_inr_apply {x y : M'} :
+    (chartAt H (.inr x : M ⊕ M')) (Sum.inr y) = (chartAt H x) y := by
+  haveI : Nonempty H := nonempty_of_chartedSpace x
+  rw [ChartedSpace.sum_chartAt_inr]
+  exact PartialHomeomorph.lift_openEmbedding_apply _ _
+
+lemma ChartedSpace.mem_atlas_sum [h : Nonempty H]
+    {e : PartialHomeomorph (M ⊕ M') H} (he : e ∈ atlas H (M ⊕ M')) :
     (∃ f : PartialHomeomorph M H, f ∈ (atlas H M) ∧ e = (f.lift_openEmbedding IsOpenEmbedding.inl))
     ∨ (∃ f' : PartialHomeomorph M' H, f' ∈ (atlas H M') ∧
       e = (f'.lift_openEmbedding IsOpenEmbedding.inr)) := by
-    obtain (⟨x, hx, hxe⟩ | ⟨x, hx, hxe⟩) := he
-    · rw [← hxe]; left; use x
-    · rw [← hxe]; right; use x
+  simp only [atlas, sum, h, ↓reduceDIte] at he
+  obtain (⟨x, hx, hxe⟩ | ⟨x, hx, hxe⟩) := he
+  · rw [← hxe]; left; use x
+  · rw [← hxe]; right; use x
 
 end sum
 
