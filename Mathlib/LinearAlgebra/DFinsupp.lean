@@ -642,24 +642,11 @@ variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
 variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
 variable {γ : ι → Type*} [DecidableEq ι]
 
-
 @[simp]
 theorem map_dfinsupp_sumAddHom [∀ i, AddZeroClass (γ i)] (f : M ≃ₛₗ[τ₁₂] M₂) (t : Π₀ i, γ i)
     (g : ∀ i, γ i →+ M) :
     f (sumAddHom g t) = sumAddHom (fun i => f.toAddEquiv.toAddMonoidHom.comp (g i)) t :=
   f.toAddEquiv.map_dfinsupp_sumAddHom _ _
-
-/-- Given a linear equivalence `f : M ≃ₛₗ[τ₁₂] M₂[σ] N` and a function `g : α → M`, we have
-`f ∑ᶠ g i = ∑ᶠ f (g i)`.  -/
-theorem map_finsum (f : M ≃ₛₗ[τ₁₂] M₂) (g : α → M) :
-    f (finsum fun i : α ↦ g i) = finsum fun i : α ↦ f (g i) :=
-  AddEquiv.map_finsum f.toAddEquiv g
-
-/-- Given a fintype `α`, a function `g : α → M` and a linear equivalence `f : M ≃ₛₗ[τ₁₂] M₂`, we
-have `f (∑ (i : α), g i) = ∑ (i : α), f (g i)`.  -/
-theorem map_finset_sum [Fintype α] (f : M ≃ₛₗ[τ₁₂] M₂) (g : α → M) :
-    f (∑ i : α, g i) = ∑ i : α, f (g i) := by
-  simp [← finsum_eq_sum_of_fintype, LinearEquiv.map_finsum]
 
 end DFinsupp
 
