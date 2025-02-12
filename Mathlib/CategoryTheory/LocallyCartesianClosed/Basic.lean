@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour, Emily Riehl
 -/
 
-import Mathlib.CategoryTheory.Adjunction.Over
+import Mathlib.CategoryTheory.Comma.Over.Pullback
 import Mathlib.CategoryTheory.Closed.Cartesian
 
 /-!

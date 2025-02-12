@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
 import Mathlib.CategoryTheory.Monad.Products
 import Mathlib.CategoryTheory.Equivalence
+import Mathlib.CategoryTheory.Closed.Cartesian
 
 /-!
 # Adjunctions related to the over category
@@ -40,9 +41,6 @@ In a category with binary products, for any object `X` the functor
 
 - `mapStarIso` constructs a natural isomorphism between the functors `star X` and
   `star Y ⋙ pullback f` for any morphism `f : X ⟶ Y`.
-
-## TODO
-Show `star X` itself has a right adjoint provided `C` is cartesian closed and has pullbacks.
 
 ## References
 
@@ -112,50 +110,6 @@ def pullbackComp [HasPullbacks C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
 instance pullbackIsRightAdjoint [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
     (pullback f).IsRightAdjoint  :=
   ⟨_, ⟨mapPullbackAdj f⟩⟩
-
-/-- `Sigma Y U` a shorthand for `(Over.map Y.hom).obj U` provides the dependent sum notation
-`Σ_ Y U`. -/
-abbrev Sigma {X : C} (Y : Over X) (U : Over (Y.left)) : Over X :=
-  (map Y.hom).obj U
-
-namespace Sigma
-
-variable {X : C}
-
-
-set_option quotPrecheck false in
-/-- The notation for the dependent sum `Sigma`. -/
-scoped notation " Σ_ " => Sigma
-
-lemma hom {Y : Over X} (Z : Over (Y.left)) : (Σ_ Y Z).hom = Z.hom ≫ Y.hom := map_obj_hom
-
-/-- `Σ_ ` is functorial in the second argument. -/
-def map {Y : Over X} {Z Z' : Over (Y.left)} (g : Z ⟶ Z') : (Σ_ Y Z) ⟶ (Σ_ Y Z') :=
-  (Over.map Y.hom).map g
-
-lemma map_left {Y : Over X} {Z Z' : Over (Y.left)} {g : Z ⟶ Z'} :
-    ((Over.map Y.hom).map g).left = g.left := Over.map_map_left
-
-lemma map_homMk_left {Y : Over X} {Z Z' : Over (Y.left)} {g : Z ⟶ Z'} :
-    map g = (Over.homMk g.left : Σ_ Y Z ⟶ Σ_ Y Z') := by
-  rfl
-
-/-- The first projection of the sigma object. -/
-@[simps!]
-def fst {Y : Over X} (Z : Over (Y.left)) : (Σ_ Y Z) ⟶ Y := Over.homMk Z.hom
-
-lemma map_comp_fst {Y : Over X} {Z Z' : Over (Y.left)} (g : Z ⟶ Z') :
-    (Over.map Y.hom).map g ≫ fst Z' = fst Z := by
-  ext
-  simp [Sigma.fst, Over.w]
-
-/-- Promoting a morphism `g : Σ_Y Z ⟶ Σ_Y Z'` in `Over X` with `g ≫ fst Z' = fst Z`
-to a morphism `Z ⟶ Z'` in `Over (Y.left)`. -/
-def overHomMk {Y : Over X} {Z Z' : Over (Y.left)} (g : Σ_ Y Z ⟶ Σ_ Y Z')
-    (w : g ≫ fst Z' = fst Z := by aesop_cat) : Z ⟶ Z' :=
-  Over.homMk g.left (congr_arg CommaMorphism.left w)
-
-end Sigma
 
 /-- `Reindex Y Z`, the reindexing of `Z` along `Y`, provides the notation `Δ_ Y Z`. -/
 abbrev Reindex [HasPullbacks C] {X : C} (Y : Over X) (Z : Over X) : Over Y.left :=
@@ -282,11 +236,11 @@ open MonoidalCategory Over Functor ChosenFiniteProducts
 attribute [local instance] ChosenFiniteProducts.ofFiniteProducts
 attribute [local instance] monoidalOfChosenFiniteProducts
 
-variable {X : C}
+variable [HasFiniteWidePullbacks C] {X : C}
 
 /-- The pull-push composition `(Over.pullback Y.hom) ⋙ (Over.map Y.hom)` is naturally isomorphic
 to the left tensor product functor `Y × _` in `Over X`-/
-def Over.sigmaReindexNatIsoTensorLeft [HasFiniteWidePullbacks C] (Y : Over X) :
+def Over.sigmaReindexNatIsoTensorLeft (Y : Over X) :
     (pullback Y.hom) ⋙ (map Y.hom) ≅ tensorLeft Y := by
   fapply NatIso.ofComponents
   · intro Z
@@ -304,7 +258,7 @@ def Over.sigmaReindexNatIsoTensorLeft [HasFiniteWidePullbacks C] (Y : Over X) :
       ext
       simp [Reindex.sndProj]
 
-lemma Over.sigmaReindexNatIsoTensorLeft_hom_app [HasFiniteWidePullbacks C]
+lemma Over.sigmaReindexNatIsoTensorLeft_hom_app
     {Y : Over X} (Z : Over X) :
     (Over.sigmaReindexNatIsoTensorLeft Y).hom.app Z = (sigmaReindexIsoProd Y Z).hom := by
   aesop
@@ -379,71 +333,24 @@ end forgetAdjStar
 
 end Over
 
-namespace Functor
-
-open Equivalence CategoryTheory
-
-variable (D : Type u₂) [Category.{v₂} D]
-
-lemma inv_obj (F : C ⥤ D) [F.IsEquivalence] (X : D) : (F.inv.obj X) = F.objPreimage X := by rfl
-
-lemma inv_map (F : C ⥤ D) [F.IsEquivalence] {X Y : D} (f : X ⟶ Y) :
-    F.inv.map f = F.preimage ((F.objObjPreimageIso X).hom ≫ f ≫ (F.objObjPreimageIso Y).inv) := by
-  rfl
-
-lemma asEquivalence_inverse (F : C ⥤ D) [F.IsEquivalence] : (F.asEquivalence).inverse = F.inv := by
-  rfl
-
-end Functor
-
-namespace Equivalence
-
-open CategoryTheory Functor
-
-variable {C} {D : Type u₂} [Category.{v₂} D]
-
-/-- The inverse associated to `asEquivalence e.functor` of an equivalence `e` is naturally
-isomorphism to the original `e.inverse`. We use this to construct the natural isomorphism
-`toOverTerminalStarIso` in below between the functors `star (⊤_ C)` and `Functor.toOverTerminal C`.
--/
-noncomputable def asEquivalenceInverse (e : C ≌ D) :
-    (e.functor).asEquivalence.inverse ≅ e.inverse := by
-  set F := e.functor
-  set G := e.inverse
-  refine NatIso.ofComponents ?_ ?_
-  · intro X
-    dsimp [Functor.asEquivalence]
-    exact (e.unitIso.app <| F.inv.obj X) ≪≫ (asIso <| G.map <| F.objObjPreimageIso X |>.hom)
-  · intros Y Y' g
-    dsimp
-    simp [asEquivalence_inverse, Functor.inv_map]
-    have :  G.map (F.objObjPreimageIso Y).hom ≫ G.map g =
-      G.map (F.map (e.functor.asEquivalence.inverse.map g)) ≫ G.map (F.objObjPreimageIso Y').hom :=
-    by
-      simp [asEquivalence_inverse, Functor.inv_map, ← Functor.map_comp]
-      congr 1
-      rw [Functor.map_preimage F]
-      aesop_cat
-    rw [this]
-    let t := e.unit.naturality
-    dsimp at t
-    rw [← assoc]
-    rw [t]
-    simp_all [asEquivalence_inverse, Functor.inv_obj, Functor.inv_map]
-    aesop
-
-end Equivalence
-
 namespace Over
+
+def functorRightAdjointIsoInverse {C D : Type*} [Category C] [Category D]
+    (e : D ≌ C) (R : C ⥤ D) (adj : e.functor ⊣ R) :
+    R ≅ e.inverse :=
+  conjugateIsoEquiv adj ((e.functor).asEquivalence.toAdjunction) (Iso.refl _) ≪≫
+    (Functor.asEquivalenceInverseNatIso e)
 
 /-- `star (⊤_ C) : C ⥤ Over (⊤_ C)` is naturally isomorphic to `Functor.toOverTerminal C`. -/
 def toOverTerminalStarIso [HasTerminal C] [HasBinaryProducts C] :
     star (⊤_ C) ≅ Functor.toOverTerminal C := by
-  have e : (Over.forget (⊤_ C)).IsEquivalence := (equivOverTerminal C).isEquivalence_functor
-  let adj := (Over.forget (⊤_ C)).asEquivalence.toAdjunction
-  let iso := conjugateIsoEquiv (Over.forgetAdjStar (⊤_ C)) adj (Iso.refl _) ≪≫
-    (Equivalence.asEquivalenceInverse (equivOverTerminal C))
-  exact iso
+  apply functorRightAdjointIsoInverse (equivOverTerminal C) (star (⊤_ C)) (forgetAdjStar (⊤_ C))
+
+  -- have e : (Over.forget (⊤_ C)).IsEquivalence := (equivOverTerminal C).isEquivalence_functor
+  -- let adj := (Over.forget (⊤_ C)).asEquivalence.toAdjunction
+  -- let iso := conjugateIsoEquiv (Over.forgetAdjStar (⊤_ C)) adj (Iso.refl _) ≪≫
+  --   (Functor.asEquivalenceInverseNatIso (equivOverTerminal C))
+  -- exact iso
 
 /-- A natural isomorphism between the functors `star X` and `star Y ⋙ pullback f`
 for any morphism `f : X ⟶ Y`. -/
@@ -457,7 +364,6 @@ end Over
 @[deprecated (since := "2024-05-18")] noncomputable alias star := Over.star
 
 @[deprecated (since := "2024-05-18")] noncomputable alias forgetAdjStar := Over.forgetAdjStar
-
 
 namespace Under
 
