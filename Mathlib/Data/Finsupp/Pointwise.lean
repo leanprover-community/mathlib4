@@ -61,6 +61,12 @@ theorem support_mul [DecidableEq α] {g₁ g₂ : α →₀ β} :
   apply h
   cases' w with w w <;> (rw [w]; simp)
 
+lemma support_mul_self (f : α →₀ β) :
+    (f*f).support ⊆ f.support := fun x hx => by
+  simp_all only [Finsupp.mem_support_iff, Finsupp.mul_apply, ne_eq]
+  intro h
+  simp_all only [mul_zero, not_true_eq_false]
+
 instance : MulZeroClass (α →₀ β) :=
   DFunLike.coe_injective.mulZeroClass _ coe_zero coe_mul
 
