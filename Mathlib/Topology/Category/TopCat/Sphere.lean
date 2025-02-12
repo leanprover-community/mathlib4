@@ -24,7 +24,7 @@ endowed with the subspace topology. -/
 noncomputable def disk (n : ℕ) : TopCat.{u} :=
   TopCat.of <| ULift <| Metric.closedBall (0 : EuclideanSpace ℝ (Fin n)) 1
 
-/-- The boundary of the `n`. -/
+/-- The boundary of the `n`-disk. -/
 noncomputable def diskBoundary (n : ℕ) : TopCat.{u} :=
   TopCat.of <| ULift <| Metric.sphere (0 : EuclideanSpace ℝ (Fin n)) 1
 
