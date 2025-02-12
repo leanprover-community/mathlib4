@@ -634,7 +634,6 @@ section DFinsupp
 
 open DFinsupp
 
-variable {α : Type*}
 variable [Semiring R] [Semiring R₂]
 variable [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Module R M] [Module R₂ M₂]
