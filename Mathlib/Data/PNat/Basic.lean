@@ -3,11 +3,11 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Ralf Stephan, Neil Strickland, Ruben Van de Velde
 -/
-import Mathlib.Data.PNat.Equiv
-import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.Positive.Ring
-import Mathlib.Order.Hom.Basic
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Data.PNat.Equiv
 
 /-!
 # The positive natural numbers
@@ -56,12 +56,12 @@ theorem natPred_inj {m n : ℕ+} : m.natPred = n.natPred ↔ m = n :=
 
 @[simp, norm_cast]
 lemma val_ofNat (n : ℕ) [NeZero n] :
-    ((no_index (OfNat.ofNat n) : ℕ+) : ℕ) = OfNat.ofNat n :=
+    ((ofNat(n) : ℕ+) : ℕ) = OfNat.ofNat n :=
   rfl
 
 @[simp]
 lemma mk_ofNat (n : ℕ) (h : 0 < n) :
-    @Eq ℕ+ (⟨no_index (OfNat.ofNat n), h⟩ : ℕ+) (haveI : NeZero n := ⟨h.ne'⟩; OfNat.ofNat n) :=
+    @Eq ℕ+ (⟨ofNat(n), h⟩ : ℕ+) (haveI : NeZero n := ⟨h.ne'⟩; OfNat.ofNat n) :=
   rfl
 
 end PNat
@@ -161,38 +161,38 @@ def caseStrongInductionOn {p : ℕ+ → Sort*} (a : ℕ+) (hz : p 1)
 
 /-- An induction principle for `ℕ+`: it takes values in `Sort*`, so it applies also to Types,
 not only to `Prop`. -/
-@[elab_as_elim]
-def recOn (n : ℕ+) {p : ℕ+ → Sort*} (p1 : p 1) (hp : ∀ n, p n → p (n + 1)) : p n := by
+@[elab_as_elim, induction_eliminator]
+def recOn (n : ℕ+) {p : ℕ+ → Sort*} (one : p 1) (succ : ∀ n, p n → p (n + 1)) : p n := by
   rcases n with ⟨n, h⟩
   induction' n with n IH
   · exact absurd h (by decide)
   · cases' n with n
-    · exact p1
-    · exact hp _ (IH n.succ_pos)
+    · exact one
+    · exact succ _ (IH n.succ_pos)
 
 @[simp]
-theorem recOn_one {p} (p1 hp) : @PNat.recOn 1 p p1 hp = p1 :=
+theorem recOn_one {p} (one succ) : @PNat.recOn 1 p one succ = one :=
   rfl
 
 @[simp]
-theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (p1 hp) :
-    @PNat.recOn (n + 1) p p1 hp = hp n (@PNat.recOn n p p1 hp) := by
+theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (one succ) :
+    @PNat.recOn (n + 1) p one succ = succ n (@PNat.recOn n p one succ) := by
   cases' n with n h
   cases n <;> [exact absurd h (by decide); rfl]
 
 @[simp]
 theorem ofNat_le_ofNat {m n : ℕ} [NeZero m] [NeZero n] :
-    (no_index (OfNat.ofNat m) : ℕ+) ≤ no_index (OfNat.ofNat n) ↔ OfNat.ofNat m ≤ OfNat.ofNat n :=
+    (ofNat(m) : ℕ+) ≤ ofNat(n) ↔ OfNat.ofNat m ≤ OfNat.ofNat n :=
   .rfl
 
 @[simp]
 theorem ofNat_lt_ofNat {m n : ℕ} [NeZero m] [NeZero n] :
-    (no_index (OfNat.ofNat m) : ℕ+) < no_index (OfNat.ofNat n) ↔ OfNat.ofNat m < OfNat.ofNat n :=
+    (ofNat(m) : ℕ+) < ofNat(n) ↔ OfNat.ofNat m < OfNat.ofNat n :=
   .rfl
 
 @[simp]
 theorem ofNat_inj {m n : ℕ} [NeZero m] [NeZero n] :
-    (no_index (OfNat.ofNat m) : ℕ+) = no_index (OfNat.ofNat n) ↔ OfNat.ofNat m = OfNat.ofNat n :=
+    (ofNat(m) : ℕ+) = ofNat(n) ↔ OfNat.ofNat m = OfNat.ofNat n :=
   Subtype.mk_eq_mk
 
 @[simp, norm_cast]

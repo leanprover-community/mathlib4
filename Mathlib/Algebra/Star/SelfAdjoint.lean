@@ -563,10 +563,10 @@ theorem isSelfAdjoint_smul_of_mem_skewAdjoint [Ring R] [AddCommGroup A] [Module 
     (ha : a ∈ skewAdjoint A) : IsSelfAdjoint (r • a) :=
   (star_smul _ _).trans <| (congr_arg₂ _ hr ha).trans <| neg_smul_neg _ _
 
-instance isStarNormal_zero [Semiring R] [StarRing R] : IsStarNormal (0 : R) :=
+protected instance IsStarNormal.zero [Semiring R] [StarRing R] : IsStarNormal (0 : R) :=
   ⟨by simp only [Commute.refl, star_comm_self, star_zero]⟩
 
-instance isStarNormal_one [MulOneClass R] [StarMul R] : IsStarNormal (1 : R) :=
+protected instance IsStarNormal.one [MulOneClass R] [StarMul R] : IsStarNormal (1 : R) :=
   ⟨by simp only [Commute.refl, star_comm_self, star_one]⟩
 
 protected instance IsStarNormal.star [Mul R] [StarMul R] {x : R} [IsStarNormal x] :
@@ -576,6 +576,10 @@ protected instance IsStarNormal.star [Mul R] [StarMul R] {x : R} [IsStarNormal x
 protected instance IsStarNormal.neg [Ring R] [StarAddMonoid R] {x : R} [IsStarNormal x] :
     IsStarNormal (-x) :=
   ⟨show star (-x) * -x = -x * star (-x) by simp_rw [star_neg, neg_mul_neg, star_comm_self']⟩
+
+protected instance IsStarNormal.val_inv [Monoid R] [StarMul R] {x : Rˣ} [IsStarNormal (x : R)] :
+    IsStarNormal (↑x⁻¹ : R) where
+  star_comm_self := by simpa [← Units.coe_star_inv, -Commute.units_val_iff] using star_comm_self
 
 protected instance IsStarNormal.map {F R S : Type*} [Mul R] [Star R] [Mul S] [Star S]
     [FunLike F R S] [MulHomClass F R S] [StarHomClass F R S] (f : F) (r : R) [hr : IsStarNormal r] :

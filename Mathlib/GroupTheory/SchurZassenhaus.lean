@@ -28,7 +28,7 @@ section SchurZassenhausAbelian
 open MulOpposite MulAction Subgroup.leftTransversals MemLeftTransversals
 
 variable {G : Type*} [Group G] (H : Subgroup G) [IsCommutative H] [FiniteIndex H]
-  (α β : leftTransversals (H : Set G))
+  (α β : H.LeftTransversal)
 
 /-- The quotient of the transversals of an abelian normal `N` by the `diff` relation. -/
 def QuotientDiff :=
@@ -116,8 +116,6 @@ private theorem exists_right_complement'_of_coprime_aux (hH : Nat.Coprime (Nat.c
   ne.elim fun α => ⟨stabilizer G α, isComplement'_stabilizer_of_coprime hH⟩
 
 end SchurZassenhausAbelian
-
-open scoped Classical
 
 universe u
 

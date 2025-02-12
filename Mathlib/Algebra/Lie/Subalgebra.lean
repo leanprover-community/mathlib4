@@ -218,17 +218,22 @@ section LieModule
 variable {M : Type w} [AddCommGroup M] [LieRingModule L M]
 variable {N : Type w₁} [AddCommGroup N] [LieRingModule L N] [Module R N]
 
-/-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie ring module
-`M` of `L`, we may regard `M` as a Lie ring module of `L'` by restriction. -/
-instance lieRingModule : LieRingModule L' M where
+instance : Bracket L' M where
   bracket x m := ⁅(x : L), m⁆
-  add_lie x y m := add_lie (x : L) y m
-  lie_add x y m := lie_add (x : L) y m
-  leibniz_lie x y m := leibniz_lie (x : L) y m
 
 @[simp]
 theorem coe_bracket_of_module (x : L') (m : M) : ⁅x, m⁆ = ⁅(x : L), m⁆ :=
   rfl
+
+instance : IsLieTower L' L M where
+  leibniz_lie x y m := leibniz_lie x.val y m
+
+/-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie ring module
+`M` of `L`, we may regard `M` as a Lie ring module of `L'` by restriction. -/
+instance lieRingModule : LieRingModule L' M where
+  add_lie x y m := add_lie (x : L) y m
+  lie_add x y m := lie_add (x : L) y m
+  leibniz_lie x y m := leibniz_lie x (y : L) m
 
 variable [Module R M]
 
@@ -497,12 +502,12 @@ instance addCommMonoid : AddCommMonoid (LieSubalgebra R L) where
   add_comm := sup_comm
   nsmul := nsmulRec
 
-instance : CanonicallyOrderedAddCommMonoid (LieSubalgebra R L) :=
-  { LieSubalgebra.addCommMonoid,
-    LieSubalgebra.completeLattice with
-    add_le_add_left := fun _a _b ↦ sup_le_sup_left
-    exists_add_of_le := @fun _a b h ↦ ⟨b, (sup_eq_right.2 h).symm⟩
-    le_self_add := fun _a _b ↦ le_sup_left }
+instance : OrderedAddCommMonoid (LieSubalgebra R L) where
+  add_le_add_left _ _ := sup_le_sup_left
+
+instance : CanonicallyOrderedAdd (LieSubalgebra R L) where
+  exists_add_of_le {_a b} h := ⟨b, (sup_eq_right.2 h).symm⟩
+  le_self_add _ _ := le_sup_left
 
 @[simp]
 theorem add_eq_sup : K + K' = K ⊔ K' :=

@@ -77,13 +77,18 @@ instance (priority := high) coeSort : CoeSort (LieSubmodule R L M) (Type w) wher
 instance (priority := mid) coeSubmodule : CoeOut (LieSubmodule R L M) (Submodule R M) :=
   ⟨toSubmodule⟩
 
+instance : CanLift (Submodule R M) (LieSubmodule R L M) (·)
+    (fun N ↦ ∀ {x : L} {m : M}, m ∈ N → ⁅x, m⁆ ∈ N) where
+  prf N hN := ⟨⟨N, hN⟩, rfl⟩
+
 @[norm_cast]
 theorem coe_toSubmodule : ((N : Submodule R M) : Set M) = N :=
   rfl
 
--- `simp` can prove this after `mem_toSubmodule` is added to the simp set,
--- but `dsimp` can't.
-@[simp, nolint simpNF]
+-- In Lean 3, `dsimp` would use theorems proved by `Iff.rfl`.
+-- If that were still the case, this would useful as a `@[simp]` lemma,
+-- despite the fact that it is provable by `simp` (by not `dsimp`).
+@[simp, nolint simpNF] -- See https://github.com/leanprover-community/mathlib4/issues/10675
 theorem mem_carrier {x : M} : x ∈ N.carrier ↔ x ∈ (N : Set M) :=
   Iff.rfl
 
@@ -145,8 +150,7 @@ theorem toSubmodule_inj : (N : Submodule R M) = (N' : Submodule R M) ↔ N = N' 
 equalities. -/
 protected def copy (s : Set M) (hs : s = ↑N) : LieSubmodule R L M where
   carrier := s
-  -- Porting note: all the proofs below were in term mode
-  zero_mem' := by exact hs.symm ▸ N.zero_mem'
+  zero_mem' := by simp [hs]
   add_mem' x y := by rw [hs] at x y ⊢; exact N.add_mem' x y
   smul_mem' := by exact hs.symm ▸ N.smul_mem'
   lie_mem := by exact hs.symm ▸ N.lie_mem
@@ -224,11 +228,13 @@ theorem lie_mem_left (I : LieIdeal R L) (x y : L) (h : x ∈ I) : ⁅x, y⁆ ∈
   rw [← lie_skew, ← neg_lie]; apply lie_mem_right; assumption
 
 /-- An ideal of a Lie algebra is a Lie subalgebra. -/
-def lieIdealSubalgebra (I : LieIdeal R L) : LieSubalgebra R L :=
+def LieIdeal.toLieSubalgebra (I : LieIdeal R L) : LieSubalgebra R L :=
   { I.toSubmodule with lie_mem' := by intro x y _ hy; apply lie_mem_right; exact hy }
 
+@[deprecated (since := "2025-01-02")] alias lieIdealSubalgebra := LieIdeal.toLieSubalgebra
+
 instance : Coe (LieIdeal R L) (LieSubalgebra R L) :=
-  ⟨lieIdealSubalgebra R L⟩
+  ⟨LieIdeal.toLieSubalgebra R L⟩
 
 @[simp]
 theorem LieIdeal.coe_toLieSubalgebra (I : LieIdeal R L) : ((I : LieSubalgebra R L) : Set L) = I :=
@@ -238,12 +244,15 @@ theorem LieIdeal.coe_toLieSubalgebra (I : LieIdeal R L) : ((I : LieSubalgebra R 
 alias LieIdeal.coe_toSubalgebra := LieIdeal.coe_toLieSubalgebra
 
 @[simp]
-theorem LieIdeal.coe_toLieSubalgebra_toSubmodule (I : LieIdeal R L) :
+theorem LieIdeal.toLieSubalgebra_toSubmodule (I : LieIdeal R L) :
     ((I : LieSubalgebra R L) : Submodule R L) = LieSubmodule.toSubmodule I :=
   rfl
 
+@[deprecated (since := "2025-01-02")]
+alias LieIdeal.coe_toLieSubalgebra_toSubmodule := LieIdeal.toLieSubalgebra_toSubmodule
+
 @[deprecated (since := "2024-12-30")]
-alias LieIdeal.coe_to_lieSubalgebra_to_submodule := LieIdeal.coe_toLieSubalgebra_toSubmodule
+alias LieIdeal.coe_to_lieSubalgebra_to_submodule := LieIdeal.toLieSubalgebra_toSubmodule
 
 /-- An ideal of `L` is a Lie subalgebra of `L`, so it is a Lie ring. -/
 instance LieIdeal.lieRing (I : LieIdeal R L) : LieRing I :=
@@ -267,6 +276,12 @@ theorem LieIdeal.coe_bracket_of_module {R L : Type*} [CommRing R] [LieRing L] [L
 /-- Transfer the `LieModule` instance from the coercion `LieIdeal → LieSubalgebra`. -/
 instance LieIdeal.lieModule (I : LieIdeal R L) : LieModule R I M :=
   LieSubalgebra.lieModule (I : LieSubalgebra R L)
+
+instance (I : LieIdeal R L) : IsLieTower I L M where
+  leibniz_lie x y m := leibniz_lie x.val y m
+
+instance (I : LieIdeal R L) : IsLieTower L I M where
+  leibniz_lie x y m := leibniz_lie x y.val m
 
 end LieIdeal
 
@@ -300,7 +315,7 @@ theorem mem_toLieSubmodule (x : L) : x ∈ K.toLieSubmodule ↔ x ∈ K :=
 
 theorem exists_lieIdeal_coe_eq_iff :
     (∃ I : LieIdeal R L, ↑I = K) ↔ ∀ x y : L, y ∈ K → ⁅x, y⁆ ∈ K := by
-  simp only [← toSubmodule_inj, LieIdeal.coe_toLieSubalgebra_toSubmodule,
+  simp only [← toSubmodule_inj, LieIdeal.toLieSubalgebra_toSubmodule,
     Submodule.exists_lieSubmodule_coe_eq_iff L]
   exact Iff.rfl
 
@@ -1099,7 +1114,7 @@ theorem IsIdealMorphism.eq (hf : f.IsIdealMorphism) : f.idealRange = f.range := 
 theorem isIdealMorphism_iff : f.IsIdealMorphism ↔ ∀ (x : L') (y : L), ∃ z : L, ⁅x, f y⁆ = f z := by
   simp only [isIdealMorphism_def, idealRange_eq_lieSpan_range, ←
     LieSubalgebra.toSubmodule_inj, ← f.range.coe_toSubmodule,
-    LieIdeal.coe_toLieSubalgebra_toSubmodule, LieSubmodule.coe_lieSpan_submodule_eq_iff,
+    LieIdeal.toLieSubalgebra_toSubmodule, LieSubmodule.coe_lieSpan_submodule_eq_iff,
     LieSubalgebra.mem_toSubmodule, mem_range, exists_imp,
     Submodule.exists_lieSubmodule_coe_eq_iff]
   constructor
@@ -1227,7 +1242,6 @@ theorem inclusion_injective {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) :
   fun x y ↦ by
   simp only [inclusion_apply, imp_self, Subtype.mk_eq_mk, SetLike.coe_eq_coe]
 
--- Porting note: LHS simplifies, so moved @[simp] to new theorem `map_sup_ker_eq_map'`
 theorem map_sup_ker_eq_map : LieIdeal.map f (I ⊔ f.ker) = LieIdeal.map f I := by
   suffices LieIdeal.map f (I ⊔ f.ker) ≤ LieIdeal.map f I by
     exact le_antisymm this (LieIdeal.map_mono le_sup_left)
@@ -1288,7 +1302,7 @@ theorem ker_incl : I.incl.ker = ⊥ := by ext; simp
 @[simp]
 theorem incl_idealRange : I.incl.idealRange = I := by
   rw [LieHom.idealRange_eq_lieSpan_range, ← LieSubalgebra.coe_toSubmodule, ←
-    LieSubmodule.toSubmodule_inj, incl_range, coe_toLieSubalgebra_toSubmodule,
+    LieSubmodule.toSubmodule_inj, incl_range, toLieSubalgebra_toSubmodule,
     LieSubmodule.coe_lieSpan_submodule_eq_iff]
   use I
 
@@ -1440,7 +1454,8 @@ def LieModuleEquiv.ofTop : (⊤ : LieSubmodule R L M) ≃ₗ⁅R,L⁆ M :=
 variable {R L}
 
 -- This lemma has always been bad, but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-@[simp, nolint simpNF] lemma LieModuleEquiv.ofTop_apply (x : (⊤ : LieSubmodule R L M)) :
+@[simp, nolint simpNF]
+lemma LieModuleEquiv.ofTop_apply (x : (⊤ : LieSubmodule R L M)) :
     LieModuleEquiv.ofTop R L M x = x :=
   rfl
 

@@ -38,7 +38,7 @@ include hW
 
 lemma inverts :
     (W.functorCategory (Discrete J)).IsInvertedBy (lim ⋙ L) :=
-  fun _ _ f hf => Localization.inverts L W _ (hW.lim_map f hf)
+  fun _ _ f hf => Localization.inverts L W _ (hW.limMap f hf)
 
 variable [W.ContainsIdentities] [Finite J]
 

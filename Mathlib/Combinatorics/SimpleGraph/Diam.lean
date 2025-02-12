@@ -24,6 +24,8 @@ vertices.
 
 -/
 
+assert_not_exists Field
+
 namespace SimpleGraph
 variable {α : Type*} {G G' : SimpleGraph α}
 

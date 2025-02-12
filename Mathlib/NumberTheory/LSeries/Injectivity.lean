@@ -64,7 +64,7 @@ lemma LSeries.tendsto_cpow_mul_atTop {f : ℕ → ℂ} {n : ℕ} (h : ∀ m ≤ 
     · exact (hm rfl).elim
     · simp [H, term, (n.zero_lt_succ.trans H).ne', F, cpow_mul_div_cpow_eq_div_div_cpow]
   have hs {x : ℝ} (hx : x ≥ y) : Summable fun m ↦ (n + 1) ^ (x : ℂ) * term f x m := by
-    refine (summable_mul_left_iff <| cpow_natCast_add_one_ne_zero n _).mpr <|
+    refine (summable_mul_left_iff <| natCast_add_one_cpow_ne_zero n _).mpr <|
        LSeriesSummable_of_abscissaOfAbsConv_lt_re ?_
     simpa only [ofReal_re] using hay.trans_le <| EReal.coe_le_coe_iff.mpr hx
   -- we can write `(n+1)^x * LSeries f x` as `f (n+1)` plus the series over `F x`
