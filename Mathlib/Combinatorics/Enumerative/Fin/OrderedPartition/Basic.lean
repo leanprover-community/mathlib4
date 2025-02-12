@@ -18,12 +18,6 @@ variable {α β γ : Type*}
 @[simp]
 theorem modify_id' (n : ℕ) (l : List α) : modify (·) n l = l := modify_id ..
 
-@[simp]
-theorem nodup_mergeSort {l : List α} {le : α → α → Bool} : (l.mergeSort le).Nodup ↔ l.Nodup :=
-  (mergeSort_perm l le).nodup_iff
-
-protected alias ⟨_, Nodup.mergeSort⟩ := nodup_mergeSort
-
 theorem subset_flatMap_of_mem {l : List α} {a : α} (ha : a ∈ l) (f : α → List β) :
     f a ⊆ l.flatMap f := fun _b hb ↦ mem_flatMap_of_mem ha hb
 
