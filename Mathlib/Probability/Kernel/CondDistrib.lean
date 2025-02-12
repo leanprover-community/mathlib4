@@ -100,10 +100,13 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_condDistrib (hX : AEM
     AEStronglyMeasurable (fun a => ∫ y, f (X a, y) ∂condDistrib Y X μ (X a)) μ :=
   (hf.integral_condDistrib_map hY).comp_aemeasurable hX
 
-theorem aestronglyMeasurable'_integral_condDistrib (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ)
+theorem aestronglyMeasurable_integral_condDistrib (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ)
     (hf : AEStronglyMeasurable f (μ.map fun a => (X a, Y a))) :
-    AEStronglyMeasurable' (mβ.comap X) (fun a => ∫ y, f (X a, y) ∂condDistrib Y X μ (X a)) μ :=
+    AEStronglyMeasurable[mβ.comap X] (fun a => ∫ y, f (X a, y) ∂condDistrib Y X μ (X a)) μ :=
   (hf.integral_condDistrib_map hY).comp_ae_measurable' hX
+
+@[deprecated (since := "2025-01-24")]
+alias aestronglyMeasurable'_integral_condDistrib := aestronglyMeasurable_integral_condDistrib
 
 end Measurability
 
@@ -188,17 +191,11 @@ theorem setLIntegral_preimage_condDistrib (hX : Measurable X) (hY : AEMeasurable
     Measure.fst_map_prod_mk₀ hY, Measure.setLIntegral_condKernel_eq_measure_prod ht hs,
     Measure.map_apply_of_aemeasurable (hX.aemeasurable.prod_mk hY) (ht.prod hs), mk_preimage_prod]
 
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_preimage_condDistrib := setLIntegral_preimage_condDistrib
-
 theorem setLIntegral_condDistrib_of_measurableSet (hX : Measurable X) (hY : AEMeasurable Y μ)
     (hs : MeasurableSet s) {t : Set α} (ht : MeasurableSet[mβ.comap X] t) :
     ∫⁻ a in t, condDistrib Y X μ (X a) s ∂μ = μ (t ∩ Y ⁻¹' s) := by
   obtain ⟨t', ht', rfl⟩ := ht
   rw [setLIntegral_preimage_condDistrib hX hY hs ht']
-
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_condDistrib_of_measurableSet := setLIntegral_condDistrib_of_measurableSet
 
 /-- For almost every `a : α`, the `condDistrib Y X μ` kernel applied to `X a` and a measurable set
 `s` is equal to the conditional expectation of the indicator of `Y ⁻¹' s`. -/
@@ -212,8 +209,7 @@ theorem condDistrib_ae_eq_condExp (hX : Measurable X) (hY : Measurable Y) (hs : 
       (Eventually.of_forall fun ω => measure_lt_top (condDistrib Y X μ (X ω)) _),
       integral_indicator_const _ (hY hs), Measure.restrict_apply (hY hs), smul_eq_mul, mul_one,
       inter_comm, setLIntegral_condDistrib_of_measurableSet hX hY.aemeasurable hs ht]
-  · refine (Measurable.stronglyMeasurable ?_).aeStronglyMeasurable'
-    exact @Measurable.ennreal_toReal _ (mβ.comap X) _ (measurable_condDistrib hs)
+  · exact (measurable_condDistrib hs).ennreal_toReal.aestronglyMeasurable
 
 @[deprecated (since := "2025-01-21")] alias condDistrib_ae_eq_condexp := condDistrib_ae_eq_condExp
 
@@ -239,7 +235,7 @@ theorem condExp_prod_ae_eq_integral_condDistrib' [NormedSpace ℝ F] [CompleteSp
       Measure.setIntegral_condKernel_univ_right ht hf_int.integrableOn,
       setIntegral_map (ht.prod MeasurableSet.univ) hf_int.1 (hX.aemeasurable.prod_mk hY),
       mk_preimage_prod, preimage_univ, inter_univ]
-  · exact aestronglyMeasurable'_integral_condDistrib hX.aemeasurable hY hf_int.1
+  · exact aestronglyMeasurable_integral_condDistrib hX.aemeasurable hY hf_int.1
 
 @[deprecated (since := "2025-01-21")]
 alias condexp_prod_ae_eq_integral_condDistrib' := condExp_prod_ae_eq_integral_condDistrib'
@@ -319,7 +315,7 @@ theorem _root_.MeasureTheory.Integrable.comp_snd_map_prod_mk
   by_cases hX : AEMeasurable X μ
   · have hf := hf_int.1.comp_snd_map_prod_mk X (mΩ := mΩ) (mβ := mβ)
     refine ⟨hf, ?_⟩
-    rw [hasFiniteIntegral_iff_nnnorm, lintegral_map' hf.ennnorm (hX.prod_mk aemeasurable_id)]
+    rw [hasFiniteIntegral_iff_enorm, lintegral_map' hf.enorm (hX.prod_mk aemeasurable_id)]
     exact hf_int.2
   · rw [Measure.map_of_not_aemeasurable]
     · simp
