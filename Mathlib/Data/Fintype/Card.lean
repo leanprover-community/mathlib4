@@ -1086,7 +1086,6 @@ theorem Finite.exists_infinite_fiber [Infinite α] [Finite β] (f : α → β) :
   classical
     by_contra! hf
     cases nonempty_fintype β
-    haveI := fun y => fintypeOfNotInfinite <| hf y
     let key : Fintype α :=
       { elems := univ.biUnion fun y : β => (f ⁻¹' {y}).toFinset
         complete := by simp }

@@ -18,8 +18,6 @@ In this file we define
 * `Ultrafilter.map`, `Ultrafilter.bind`, `Ultrafilter.comap` : operations on ultrafilters;
 -/
 
-assert_not_exists Set.Finite
-
 universe u v
 
 variable {α : Type u} {β : Type v} {γ : Type*}
