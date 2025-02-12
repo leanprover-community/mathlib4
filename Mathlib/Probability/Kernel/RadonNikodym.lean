@@ -61,12 +61,6 @@ is used.
 
 Theorem 1.28 in [O. Kallenberg, Random Measures, Theory and Applications][kallenberg2017].
 
-## TODO
-
-* prove uniqueness results.
-* link kernel Radon-Nikodym derivative and Radon-Nikodym derivative of measures, and similarly for
-  singular parts.
-
 -/
 
 open MeasureTheory Set Filter ENNReal
