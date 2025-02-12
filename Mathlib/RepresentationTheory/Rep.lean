@@ -406,16 +406,15 @@ def leftRegularTensorTrivialIsoFree (α : Type u) :
           instMonoidalCategoryStruct_whiskerRight, ModuleCat.MonoidalCategory.whiskerRight,
           ModuleCat.MonoidalCategory.tensorObj]
 
-variable {α : Type u} (i : α)
+variable {α : Type u}
 
-lemma leftRegularTensorTrivialIsoFree_hom_hom_single_tmul_single
-    {α : Type u} (i : α) (g : G) (r s : k) :
+lemma leftRegularTensorTrivialIsoFree_hom_hom_single_tmul_single (i : α) (g : G) (r s : k) :
     (leftRegularTensorTrivialIsoFree k G α).hom.hom (single g r ⊗ₜ single i s) =
       single i (single g (r * s)) := by
   simp [leftRegularTensorTrivialIsoFree, instMonoidalCategoryStruct_tensorObj,
     ModuleCat.MonoidalCategory.tensorObj]
 
-lemma leftRegularTensorTrivialIsoFree_inv_hom_single_single {α : Type u} (i : α) (g : G) (r : k) :
+lemma leftRegularTensorTrivialIsoFree_inv_hom_single_single (i : α) (g : G) (r : k) :
     (leftRegularTensorTrivialIsoFree k G α).inv.hom (single i (single g r)) =
       single g r ⊗ₜ[k] single i 1 := by
   simp [leftRegularTensorTrivialIsoFree, finsuppTensorFinsupp'_symm_single_eq_tmul_single_one,
