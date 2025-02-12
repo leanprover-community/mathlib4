@@ -137,12 +137,20 @@ end
 
 def getPackageDirs : CacheM PackageDirs := return (← read).packageDirs
 
-def getPackageDir (path : FilePath) : CacheM FilePath := do
-  match path.withExtension "" |>.components.head? with
-  | none => throw <| IO.userError "Can't find package directory for empty path"
-  | some pkg => match (← getPackageDirs).find? pkg with
-    | none => throw <| IO.userError s!"Unknown package directory for {pkg}"
-    | some path => return path
+/--
+Get the correct package directory the file `sourceFile`.
+
+Basically, this is just a parent of `sourceFile`, but this function determines how
+many components of the path `sourceFile` make up the package directory.
+-/
+def getPackageDir (sourceFile : FilePath) : CacheM FilePath := do
+  let sp := (← read).srcSearchPath
+  -- Note: This seems to work since the path `.` is listed last, so it will not be found unless
+  -- no other search-path applies. Should this be more robust?
+  let packageDir? := sp.find? (·.contains sourceFile)
+  match packageDir? with
+  | some dir => return dir
+  | none => throw <| IO.userError s!"Unknown package directory for {sourceFile}\nsearch paths: {sp}"
 
 /-- Runs a terminal command and retrieves its output, passing the lines to `processLine` -/
 partial def runCurlStreaming (args : Array String) (init : α)
