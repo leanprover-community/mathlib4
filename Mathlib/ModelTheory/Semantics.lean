@@ -846,27 +846,27 @@ theorem realize_toFormula (φ : L.BoundedFormula α n) (v : α ⊕ (Fin n) → M
     · exact Fin.elim0 x
 
 @[simp]
-theorem realize_iSup [Finite β] (f : β → L.BoundedFormula α n)
-    (v : α → M) (v' : Fin n → M) :
+theorem realize_iSup [Finite β] {f : β → L.BoundedFormula α n}
+    {v : α → M} {v' : Fin n → M} :
     (iSup f).Realize v v' ↔ ∃ b, (f b).Realize v v' := by
   simp only [iSup, realize_foldr_sup, List.mem_map, Finset.mem_toList, Finset.mem_univ, true_and,
     exists_exists_eq_and]
 
 @[simp]
-theorem realize_iInf [Finite β] (f : β → L.BoundedFormula α n)
-    (v : α → M) (v' : Fin n → M) :
+theorem realize_iInf [Finite β] {f : β → L.BoundedFormula α n}
+    {v : α → M} {v' : Fin n → M} :
     (iInf f).Realize v v' ↔ ∀ b, (f b).Realize v v' := by
   simp only [iInf, realize_foldr_inf, List.mem_map, Finset.mem_toList, Finset.mem_univ, true_and,
     forall_exists_index, forall_apply_eq_imp_iff]
 
 @[simp]
-theorem _root_.FirstOrder.Language.Formula.realize_iSup [Finite β] (f : β → L.Formula α)
-    (v : α → M) : (Formula.iSup f).Realize v ↔ ∃ b, (f b).Realize v  := by
+theorem _root_.FirstOrder.Language.Formula.realize_iSup [Finite β] {f : β → L.Formula α}
+    {v : α → M} : (Formula.iSup f).Realize v ↔ ∃ b, (f b).Realize v  := by
   simp [Formula.iSup, Formula.Realize]
 
 @[simp]
-theorem _root_.FirstOrder.Language.Formula.realize_iInf [Finite β] (f : β → L.Formula α)
-    (v : α → M) : (Formula.iInf f).Realize v ↔ ∀ b, (f b).Realize v  := by
+theorem _root_.FirstOrder.Language.Formula.realize_iInf [Finite β] {f : β → L.Formula α}
+    {v : α → M} : (Formula.iInf f).Realize v ↔ ∀ b, (f b).Realize v  := by
   simp [Formula.iInf, Formula.Realize]
 
 @[simp]
