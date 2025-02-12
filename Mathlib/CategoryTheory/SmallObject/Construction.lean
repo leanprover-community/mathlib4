@@ -148,7 +148,8 @@ lemma ιFunctorObj_πFunctorObj : ιFunctorObj f πX ≫ πFunctorObj f πX = π
 /-- The morphism `ιFunctorObj f πX : X ⟶ functorObj f πX` is obtained by
 attaching `f`-cells. -/
 @[simps]
-noncomputable def attachCellsιFunctorObj : AttachCells f (ιFunctorObj f πX) where
+noncomputable def attachCellsιFunctorObj :
+    AttachCells.{max v w} f (ιFunctorObj f πX) where
   ι := FunctorObjIndex f πX
   π x := x.i
   isColimit₁ := coproductIsCoproduct _
@@ -157,6 +158,37 @@ noncomputable def attachCellsιFunctorObj : AttachCells f (ιFunctorObj f πX) w
   g₁ := functorObjTop f πX
   g₂ := ρFunctorObj f πX
   isPushout := IsPushout.of_hasPushout (functorObjTop f πX) (functorObjLeft f πX)
+
+section Small
+
+variable [LocallySmall.{t} C] [Small.{t} I]
+
+instance : Small.{t} (FunctorObjIndex f πX) := by
+  let φ (x : FunctorObjIndex f πX) :
+    Σ (i : Shrink.{t} I),
+      Shrink.{t} ((A ((equivShrink _).symm i) ⟶ X) ×
+        (B ((equivShrink _).symm i) ⟶ S)) :=
+        ⟨equivShrink _ x.i, equivShrink _
+          ⟨eqToHom (by simp) ≫ x.t, eqToHom (by simp) ≫ x.b⟩⟩
+  have hφ : Function.Injective φ := by
+    rintro ⟨i₁, t₁, b₁, _⟩ ⟨i₂, t₂, b₂, _⟩ h
+    obtain rfl : i₁ = i₂ := by simpa [φ] using congr_arg Sigma.fst h
+    simpa [cancel_epi, φ] using h
+  exact small_of_injective hφ
+
+instance : Small.{t} (attachCellsιFunctorObj f πX).ι := by
+  dsimp
+  infer_instance
+
+/-- The morphism `ιFunctorObj f πX : X ⟶ functorObj f πX` is obtained by
+attaching `f`-cells, and the index type can be chosen to be in `Type t`
+if the category is `t`-locally small and the index type for `f`
+is `t`-small. -/
+noncomputable def attachCellsιFunctorObjOfSmall :
+    AttachCells.{t} f (ιFunctorObj f πX) :=
+  (attachCellsιFunctorObj f πX).ofEquiv (equivShrink.{t} _).symm
+
+end Small
 
 section
 

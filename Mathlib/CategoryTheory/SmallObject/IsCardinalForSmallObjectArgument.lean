@@ -92,26 +92,11 @@ lemma preservesColimit_coyoneda_obj
     PreservesColimit F (coyoneda.obj (Opposite.op A)) :=
   IsCardinalForSmallObjectArgument.preservesColimit' i hi F hF
 
-lemma small_functorObjIndex {X Y : C} (p : X ⟶ Y) :
-    Small.{w} (FunctorObjIndex I.homFamily p) := by
-  have := locallySmall I κ
-  have := isSmall I κ
-  let φ : FunctorObjIndex I.homFamily p →
-    Σ (i : Shrink.{w} I.toSet),
-      Shrink.{w} ((((equivShrink _).symm i).1.left ⟶ X) ×
-        (((equivShrink _).symm i).1.right ⟶ Y)) :=
-        fun x ↦ ⟨equivShrink _ x.i, equivShrink _
-          (⟨eqToHom (by simp) ≫ x.t, eqToHom (by simp) ≫ x.b⟩)⟩
-  have hφ : Function.Injective φ := by
-    rintro ⟨i₁, t₁, b₁, _⟩ ⟨i₂, t₂, b₂, _⟩ h
-    obtain rfl : i₁ = i₂ := by simpa [φ] using congr_arg Sigma.fst h
-    simpa [cancel_epi, φ] using h
-  exact small_of_injective hφ
-
 lemma hasColimitsOfShape_discrete (X Y : C) (p : X ⟶ Y) :
     HasColimitsOfShape
       (Discrete (FunctorObjIndex I.homFamily p)) C := by
-  have := small_functorObjIndex I κ p
+  have := locallySmall I κ
+  have := isSmall I κ
   have := hasCoproducts I κ
   exact hasColimitsOfShape_of_equivalence (Discrete.equivalence (equivShrink.{w} _)).symm
 
@@ -133,13 +118,13 @@ noncomputable def attachCellsOfSuccStructProp
     {F G : Arrow C ⥤ Arrow C} {φ : F ⟶ G}
     (h : (succStruct I κ).prop φ) (f : Arrow C) :
     AttachCells.{w} I.homFamily (φ.app f).left :=
+  have := locallySmall I κ
+  have := isSmall I κ
   have := hasColimitsOfShape_discrete I κ
   have := hasPushouts I κ
-  -- in order to get `AttachCells.{w}`, we need to shrink the index type
-  sorry
-  --AttachCells.ofArrowIso (attachCellsιFunctorObj _ _)
-  --  ((Functor.mapArrow ((evaluation _ _).obj f ⋙
-  --    Arrow.leftFunc)).mapIso h.arrowIso.symm)
+  AttachCells.ofArrowIso (attachCellsιFunctorObjOfSmall _ _)
+    ((Functor.mapArrow ((evaluation _ _).obj f ⋙
+      Arrow.leftFunc)).mapIso h.arrowIso.symm)
 
 instance (f : Arrow C) :
     (iterationFunctor I κ ⋙ (evaluation _ _).obj f).IsWellOrderContinuous := by
@@ -202,12 +187,13 @@ def propArrow : MorphismProperty (Arrow C) := fun _ _ f ↦
 
 lemma succStruct_prop_le_propArrow :
     (succStruct I κ).prop ≤ (propArrow.{w} I).functorCategory (Arrow C) := by
+  have := locallySmall I κ
+  have := isSmall I κ
   have := hasColimitsOfShape_discrete I κ
   have := hasPushouts I κ
   intro _ _ _ ⟨F⟩ f
   constructor
-  · have := small_functorObjIndex I κ (F.obj f).hom
-    nth_rw 1 [← I.ofHoms_homFamily]
+  · nth_rw 1 [← I.ofHoms_homFamily]
     apply pushouts_mk _ (functorObj_isPushout I.homFamily (F.obj f).hom)
     exact coproducts_of_small _ _
       (colimitsOfShape_colimMap _ _ (by rintro ⟨j⟩; constructor))
@@ -354,6 +340,7 @@ noncomputable def πObj : obj I κ f ⟶ Y :=
 lemma ιObj_πObj : ιObj I κ f ≫ πObj I κ f = f := by
   simp [ιObj, πObj]
 
+/-- The map `ιObj I κ f` is a relative `I`-cell complex. -/
 noncomputable def relativeCellComplexιObj :
     RelativeCellComplex.{w} (fun (_ : κ.ord.toType) ↦ I.homFamily)
       (ιObj I κ f) :=
@@ -361,16 +348,9 @@ noncomputable def relativeCellComplexιObj :
 
 lemma transfiniteCompositionsOfShape_ιObj :
     (coproducts.{w} I).pushouts.transfiniteCompositionsOfShape κ.ord.toType
-      (ιObj I κ f) := by
-  -- this should be a general lemma for `RelativeCellComplex`
-  have := hasIterationOfShape I κ
-  change (coproducts.{w} I).pushouts.transfiniteCompositionsOfShape κ.ord.toType
-    (((evaluation _ (Arrow C)).obj (Arrow.mk f) ⋙ Arrow.leftFunc).map (ιIteration I κ))
-  apply transfiniteCompositionsOfShape_map_of_preserves
-  apply transfiniteCompositionsOfShape_monotone _ _ _
-    (transfiniteCompositionOfShapePropArrowιIteration I κ).mem
-  intro _ _ _ h
-  exact (h f).1
+      (ιObj I κ f) :=
+  ⟨((relativeCellComplexιObj I κ f).transfiniteCompositionOfShape).ofLE
+    (by simp)⟩
 
 lemma llp_rlp_ιObj : I.rlp.llp (ιObj I κ f) := by
   apply I.transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp κ.ord.toType

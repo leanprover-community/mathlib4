@@ -26,7 +26,7 @@ of morphisms `f` with `AttachCells g f` structures.
 
 -/
 
-universe w t t' v u
+universe w' w t t' v u
 
 open CategoryTheory Limits
 
@@ -110,6 +110,23 @@ def ofArrowIso {Y₁ Y₂ : C} {f' : Y₁ ⟶ Y₂} (e : Arrow.mk f ≅ Arrow.mk
   isPushout :=
     c.isPushout.of_iso (Iso.refl _) (Arrow.leftFunc.mapIso e) (Iso.refl _)
       (Arrow.rightFunc.mapIso e) (by simp) (by simp) (by simp) (by simp)
+
+/-- This definition allows the replacement of the `ι` field of
+a `AttachCells g f` structure by an equivalent type. -/
+@[simps]
+def ofEquiv {ι' : Type w'} (e : ι' ≃ c.ι) :
+    AttachCells.{w'} g f where
+  ι := ι'
+  π i' := c.π (e i')
+  cofan₁ := Cofan.mk c.cofan₁.pt (fun i' ↦ c.cofan₁.inj (e i'))
+  cofan₂ := Cofan.mk c.cofan₂.pt (fun i' ↦ c.cofan₂.inj (e i'))
+  isColimit₁ := IsColimit.whiskerEquivalence (c.isColimit₁) (Discrete.equivalence e)
+  isColimit₂ := IsColimit.whiskerEquivalence (c.isColimit₂) (Discrete.equivalence e)
+  m := c.m
+  g₁ := c.g₁
+  g₂ := c.g₂
+  hm i' := c.hm (e i')
+  isPushout := c.isPushout
 
 section
 
