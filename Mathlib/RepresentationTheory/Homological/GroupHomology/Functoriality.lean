@@ -35,8 +35,7 @@ variable {k G H : Type u} [CommRing k] [Group G] [Group H]
   [DecidableEq G] [DecidableEq H]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
-this is the chain map sending `∑ aᵢ·gᵢ : Gⁿ →₀ A` to
-`∑ φ(aᵢ)·(f ∘ gᵢ) : Hⁿ →₀ B`. -/
+this is the chain map sending `∑ aᵢ·gᵢ : Gⁿ →₀ A` to `∑ φ(aᵢ)·(f ∘ gᵢ) : Hⁿ →₀ B`. -/
 @[simps! (config := .lemmasOnly) f f_hom]
 noncomputable def chainsMap :
     inhomogeneousChains A ⟶ inhomogeneousChains B where
@@ -64,7 +63,7 @@ lemma chainsMap_id :
     ModuleCat.hom_ext_iff.1 <| lsingle_comp_chainsMap_f (k := k) (MonoidHom.id G) ..
 
 @[simp]
-lemma chainsMap_f_id_eq_mapRange {A B : Rep k G} (i : ℕ) (φ : A ⟶ B) :
+lemma chainsMap_id_f_eq_mapRange {A B : Rep k G} (i : ℕ) (φ : A ⟶ B) :
     (chainsMap (MonoidHom.id G) φ).f i = ModuleCat.ofHom (mapRange.linearMap φ.hom.hom) := by
   refine ModuleCat.hom_ext <| lhom_ext fun _ _ => ?_
   simp [chainsMap_f, MonoidHom.coe_id]
