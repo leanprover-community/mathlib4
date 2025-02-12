@@ -60,10 +60,10 @@ theorem infinite_prod : Infinite (α × β) ↔ Infinite α ∧ Nonempty β ∨ 
   refine
     ⟨fun H => ?_, fun H =>
       H.elim (and_imp.2 <| @Prod.infinite_of_left α β) (and_imp.2 <| @Prod.infinite_of_right α β)⟩
-  rw [and_comm]; contrapose! H; intro H'
+  rw [and_comm]; by_contra! H'
   rcases Infinite.nonempty (α × β) with ⟨a, b⟩
-  haveI := fintypeOfNotInfinite (H.1 ⟨b⟩); haveI := fintypeOfNotInfinite (H.2 ⟨a⟩)
-  exact H'.false
+  haveI := @Fintype.ofFinite _ (H'.1 ⟨b⟩); haveI := @Fintype.ofFinite _ (H'.2 ⟨a⟩)
+  exact H.false
 
 instance Pi.infinite_of_left {ι : Sort*} {π : ι → Type*} [∀ i, Nontrivial <| π i] [Infinite ι] :
     Infinite (∀ i : ι, π i) := by
