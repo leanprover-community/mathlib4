@@ -154,7 +154,7 @@ are the algebraic numbers whose exponentials we want to prove to be linearly ind
 
 Note: Jacobson writes `Nₚ` for our `nₚ` and `M` for our `c` (modulo a constant factor).
 -/
-theorem exp_polynomial_approx' (f : ℤ[X]) (hf : f.eval 0 ≠ 0) :
+theorem exp_polynomial_approx (f : ℤ[X]) (hf : f.eval 0 ≠ 0) :
     ∃ c,
       ∀ p > (eval 0 f).natAbs, p.Prime →
         ∃ n : ℤ, ¬ ↑p ∣ n ∧ ∃ gp : ℤ[X], gp.natDegree ≤ p * f.natDegree - 1 ∧
@@ -204,14 +204,6 @@ theorem exp_polynomial_approx' (f : ℤ[X]) (hf : f.eval 0 ≠ 0) :
     simpa only [Multiset.mem_toFinset] using Multiset.mem_map_of_mem _ hr
   have h : ((f.aroots ℂ).map c').toFinset.Nonempty := ⟨c' r, aux⟩
   simpa only [h, ↓reduceDIte] using Finset.le_max' _ _ aux
-
-theorem exp_polynomial_approx (f : ℤ[X]) (hf : f.eval 0 ≠ 0) :
-    ∃ c,
-      ∀ p > (eval 0 f).natAbs, p.Prime →
-        ∃ n : ℤ, ¬ ↑p ∣ n ∧ ∃ gp : ℤ[X], gp.natDegree ≤ p * f.natDegree - 1 ∧
-          ∀ {r : ℂ}, r ∈ f.aroots ℂ →
-            Complex.abs (n • exp r - p • aeval r gp : ℂ) ≤ c ^ p / (p - 1)! :=
-  exp_polynomial_approx' _ hf
 
 end
 
