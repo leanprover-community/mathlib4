@@ -15,7 +15,7 @@ objects and morphisms in this category.
 This category admits a canonical functor `toSimplexCategory` to the usual simplex category.
 The fact that this functor is an equivalence will be recorded in a separate file.
 -/
-namespace AlgebraicTopology.SimplexCategory
+namespace AlgebraicTopology
 
 open CategoryTheory
 
@@ -303,4 +303,4 @@ lemma toSimplexCategory_len {x : SimplexCategoryGenRel} : (toSimplexCategory.obj
 
 end SimplexCategoryGenRel
 
-end AlgebraicTopology.SimplexCategory
+end AlgebraicTopology
