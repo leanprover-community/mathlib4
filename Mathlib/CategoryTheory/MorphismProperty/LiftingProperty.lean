@@ -6,6 +6,7 @@ Authors: Jack McKoen, Joël Riou
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.MorphismProperty.Retract
 import Mathlib.CategoryTheory.LiftingProperties.Limits
+import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Left and right lifting properties
