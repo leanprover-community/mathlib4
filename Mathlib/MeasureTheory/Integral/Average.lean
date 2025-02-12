@@ -214,7 +214,7 @@ theorem setLaverage_one (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) : ⨍⁻ _x in 
   setLaverage_const hs₀ hs _
 
 @[simp]
-theorem lintegral_mul_measure_univ (μ : Measure α) [IsFiniteMeasure μ] (f : α → ℝ≥0∞) :
+theorem laverage_mul_measure_univ (μ : Measure α) [IsFiniteMeasure μ] (f : α → ℝ≥0∞) :
     (⨍⁻ (a : α), f a ∂μ) * μ univ = ∫⁻ x, f x ∂μ := by
   obtain rfl | hμ := eq_or_ne μ 0
   · simp
