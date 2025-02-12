@@ -63,11 +63,11 @@ instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
     neg' := norm_neg'
     eq_zero_of_map_eq_zero' := fun _ ↦ norm_eq_zero_iff.mp }
 
-@[simp]
+@[simp 1100]
 protected theorem norm_mul (z w : ℂ) : ‖z * w‖ = ‖z‖ * ‖w‖ := by
   rw [norm_def, norm_def, norm_def, normSq_mul, Real.sqrt_mul (normSq_nonneg _)]
 
-@[simp]
+@[simp 1100]
 protected theorem norm_div (z w : ℂ) : ‖z / w‖ = ‖z‖ / ‖w‖ := by
   rw [norm_def, norm_def, norm_def, normSq_div, Real.sqrt_div (normSq_nonneg _)]
 
@@ -87,7 +87,7 @@ protected theorem norm_prod {ι : Type*} (s : Finset ι) (f : ι → ℂ) :
     ‖s.prod f‖ = s.prod fun i ↦ ‖f i‖ :=
   map_prod isAbsoluteValueNorm.abvHom _ _
 
-@[simp]
+@[simp 1100]
 theorem norm_conj (z : ℂ) : ‖conj z‖ = ‖z‖ := by simp [norm_def]
 
 @[simp] lemma norm_I : ‖I‖ = 1 := by simp [norm]
@@ -161,7 +161,7 @@ lemma norm_add_mul_I (x y : ℝ) : ‖x + y * I‖ = (x ^ 2 + y ^ 2).sqrt := by
 lemma norm_eq_sqrt_sq_add_sq (z : ℂ) : ‖z‖ = (z.re ^ 2 + z.im ^ 2).sqrt := by
   rw [norm_def, normSq_apply, sq, sq]
 
-@[simp]
+@[simp 1100]
 protected theorem range_norm : range (‖·‖ : ℂ → ℝ) = Set.Ici 0 :=
   Subset.antisymm (range_subset_iff.2 norm_nonneg) fun x hx ↦ ⟨x, Complex.norm_of_nonneg hx⟩
 
