@@ -38,16 +38,6 @@ example {c z : ℝ} (cz : ‖c‖ ≤ ‖z‖) (z3 : 3 ≤ ‖z‖) :
       rw [mul_comm, mul_sub_one, ← pow_two, ← norm_pow]
     _ ≥ 2 * ‖z‖ := by bound
 
--- Calc example: A weak lower bound for `z ← z^2 + c`
--- example {c z : ℂ} (cz : Complex.abs c ≤ Complex.abs z) (z3 : 3 ≤ Complex.abs z) :
---     2 * Complex.abs z ≤ Complex.abs (z^2 + c) := by
---   calc Complex.abs (z^2 + c)
---     _ ≥ Complex.abs (z^2) - Complex.abs c := by bound
---     _ ≥ Complex.abs (z^2) - Complex.abs z := by bound  -- gcongr works here, not for the other two
---     _ ≥ (Complex.abs z - 1) * Complex.abs z := by
---       rw [mul_comm, mul_sub_one, ← pow_two, ← Complex.abs.map_pow]
---     _ ≥ 2 * Complex.abs z := by bound
-
 -- Testing branching functionality. None of these tests work with `positivity` or `bound`.
 section guess_tests
 variable {a b c : ℝ} {n m : ℕ}
