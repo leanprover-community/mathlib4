@@ -19,17 +19,17 @@ of the form `ρ g x - x` for `x : V`, `g : G`. Then the coinvariants of `(V, ρ)
 
 * `Representation.coinvariants ρ`: the coinvariants of a representation `ρ`.
 * `Representation.coinvariantsFinsuppLEquiv ρ α`: given a type `α`, this is the `k`-linear
-equivalence between `(α →₀ V)_G` and `α →₀ V_G`.
+  equivalence between `(α →₀ V)_G` and `α →₀ V_G`.
 * `Representation.coinvariantsTprodLeftRegularLEquiv ρ`: the `k`-linear equivalence between
-`(V ⊗ k[G])_G` and `V` sending `⟦v ⊗ single g r⟧ ↦ r • ρ(g⁻¹)(v)`.
+  `(V ⊗ k[G])_G` and `V` sending `⟦v ⊗ single g r⟧ ↦ r • ρ(g⁻¹)(v)`.
 * `Rep.coinvariantsAdjunction k G`: the adjunction between the functor sending a representation to
-its coinvariants and the functor equipping a module with the trivial representation.
+  its coinvariants and the functor equipping a module with the trivial representation.
 * `Rep.coinvariantsTensor k G`: the functor sending representations `A, B` to `(A ⊗[k] B)_G`. This
-is naturally isomorphic to the functor sending `A, B` to `A ⊗[k[G]] B`, where we give `A` the
-`k[G]ᵐᵒᵖ`-module structure defined by `g • a := A.ρ g⁻¹ a`.
+  is naturally isomorphic to the functor sending `A, B` to `A ⊗[k[G]] B`, where we give `A` the
+  `k[G]ᵐᵒᵖ`-module structure defined by `g • a := A.ρ g⁻¹ a`.
 * `Rep.coinvariantsTensorFreeLEquiv A α`: given a representation `A` and a type `α`, this is the
-`k`-linear equivalence between `(A ⊗ (α →₀ k[G]))_G` and `α →₀ A` sending
-`⟦a ⊗ single x (single g r)⟧ ↦ single x (r • ρ(g⁻¹)(a))`. This is useful for group homology.
+  `k`-linear equivalence between `(A ⊗ (α →₀ k[G]))_G` and `α →₀ A` sending
+  `⟦a ⊗ single x (single g r)⟧ ↦ single x (r • ρ(g⁻¹)(a))`. This is useful for group homology.
 
 -/
 
