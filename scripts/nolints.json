@@ -171,8 +171,6 @@
  ["docBlame", "One.one"],
  ["docBlame", "OptionT.callCC"],
  ["docBlame", "OptionT.mkLabel"],
- ["docBlame", "Polynomial.quotientSpanXSubCAlgEquivAux1"],
- ["docBlame", "Polynomial.quotientSpanXSubCAlgEquivAux2"],
  ["docBlame", "Polynomial.toFinsupp"],
  ["docBlame", "PowerBasis.basis"],
  ["docBlame", "PowerBasis.dim"],
