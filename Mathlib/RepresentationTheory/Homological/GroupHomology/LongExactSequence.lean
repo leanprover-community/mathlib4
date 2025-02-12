@@ -94,8 +94,9 @@ theorem δ_apply (i j : ℕ) (hij : j + 1 = i)
     δ hX i j hij (groupHomologyπ X.X₃ i <|
       (moduleCatCyclesIso _).inv ⟨z, show ((inhomogeneousChains X.X₃).dFrom i).hom z = 0 by
         simp_all [(inhomogeneousChains X.X₃).dFrom_eq hij]⟩) = groupHomologyπ X.X₁ j
-      ((moduleCatCyclesIso _).inv ⟨x, (map_chainsFunctor_shortExact hX).δ_apply_aux i j y x
-        (by simpa [chainsMap_id_f_eq_mapRange] using hx) _⟩) := by
+      ((moduleCatCyclesIso _).inv ⟨x, by
+        convert (map_chainsFunctor_shortExact hX).δ_apply_aux i j y x
+          (by simpa [chainsMap_id_f_eq_mapRange] using hx) <| (ComplexShape.down ℕ).next j⟩) := by
   convert (map_chainsFunctor_shortExact hX).δ_apply i j hij z
     hz y hy x (by simpa [chainsMap_id_f_eq_mapRange] using hx) _ rfl
   <;> rw [moduleCatCyclesIso_inv_apply]
