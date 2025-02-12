@@ -257,13 +257,13 @@ theorem exists_integral_inj (I : Ideal (MvPolynomial (Fin n) k))
     exact ⟨d + 1, by rfl, q, bij.1, q.isIntegral_of_surjective bij.2⟩
   · obtain ⟨f, fi, fne⟩ := Submodule.exists_mem_ne_zero_of_ne_bot eqi
     set ϕ := kerLiftAlg <| hom2 f I
-    have ne : RingHom.ker (hom2 f I) ≠ ⊤ := by
+    have ne : ker (hom2 f I) ≠ ⊤ := by
       by_contra eq
       replace eq := (mem_ker (f := hom2 f I) (r := 1)).mp (eq ▸ trivial)
       simp only [AlgEquiv.toAlgHom_eq_coe, map_one] at eq
       exact hi <| Quotient.zero_eq_one_iff.mp eq.symm
-    obtain ⟨r, _, g, injg, intg⟩ := hd (RingHom.ker <| hom2 f I) ne
-    have comp : (kerLiftAlg (hom2 f I)).comp (Quotient.mkₐ k (RingHom.ker (hom2 f I)))
+    obtain ⟨r, _, g, injg, intg⟩ := hd (ker <| hom2 f I) ne
+    have comp : (kerLiftAlg (hom2 f I)).comp (Quotient.mkₐ k (ker (hom2 f I)))
         = (hom2 f I) := AlgHom.ext fun a ↦ by
       simp only [AlgHom.coe_comp, Quotient.mkₐ_eq_mk, Function.comp_apply, kerLiftAlg_mk]
     have : (hom2 f I).IsIntegral := IsIntegral.trans _ _ (IsIntegral.trans _ _
@@ -279,8 +279,8 @@ theorem Noether_Normalization {R : Type*} [CommRing R] [Nontrivial R] [Algebra k
     Function.Injective g ∧ g.IsIntegral := by
   obtain ⟨n, f, fsurj⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp fin
   set ϕ := quotientKerAlgEquivOfSurjective fsurj
-  have ne : RingHom.ker f ≠ ⊤ := fun h ↦ (h ▸ (not_one_mem_ker f)) trivial
-  obtain ⟨r, _, g, injg, intg⟩ := exists_integral_inj (RingHom.ker f) ne
+  have ne : ker f ≠ ⊤ := fun h ↦ (h ▸ (not_one_mem_ker f)) trivial
+  obtain ⟨r, _, g, injg, intg⟩ := exists_integral_inj (ker f) ne
   use r, ϕ.toAlgHom.comp g
   simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
     EmbeddingLike.comp_injective, AlgHom.toRingHom_eq_coe]
