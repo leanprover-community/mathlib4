@@ -134,8 +134,7 @@ lemma nonempty_attachCells_iff :
   · rintro ⟨c⟩
     exact c.pushouts_coproducts
   · rintro ⟨Y₁, Y₂, m, g₁, g₂, h, sq⟩
-    obtain ⟨m', hm'⟩ : ∃ m', m' = m := ⟨_, rfl⟩
-    rw [coproducts_iff, ← hm'] at h
+    rw [coproducts_iff] at h
     obtain ⟨ι, ⟨F₁, F₂, c₁, c₂, h₁, h₂, φ, hφ⟩⟩ := h
     let π (i : ι) : α := ((ofHoms_iff _ _).1 (hφ ⟨i⟩)).choose
     let e (i : ι) : Arrow.mk (φ.app ⟨i⟩) ≅ Arrow.mk (g (π i)) :=
@@ -153,12 +152,7 @@ lemma nonempty_attachCells_iff :
       isColimit₂ :=
         (IsColimit.precomposeHomEquiv (Discrete.natIso (fun ⟨i⟩ ↦ e₂ i)) _).1
           (IsColimit.ofIsoColimit h₂ (Cocones.ext (Iso.refl _) (by simp)))
-      hm i := by
-        have eq₁ := c₁.ι.app ⟨i⟩ ≫= hm'
-        have eq₂ := (e i).inv.w
-        rw [IsColimit.fac] at eq₁
-        dsimp [e₁, e₂] at eq₁ eq₂ ⊢
-        rw [Category.assoc, ← eq₁, reassoc_of% eq₂]
+      hm i := by simp [e₁, e₂]
       isPushout := sq }⟩
 
 end HomotopicalAlgebra
