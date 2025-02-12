@@ -569,14 +569,14 @@ variable [∀ i, BoundedSMul 𝕜 (E i)] [∀ i, BoundedSMul 𝕜' (E i)]
 theorem mem_lp_const_smul (c : 𝕜) (f : lp E p) : c • (f : PreLp E) ∈ lp E p :=
   (lp.memℓp f).const_smul c
 
-variable (E p 𝕜)
+variable (𝕜 E p)
 
 /-- The `𝕜`-submodule of elements of `∀ i : α, E i` whose `lp` norm is finite. This is `lp E p`,
 with extra structure. -/
 def _root_.lpSubmodule : Submodule 𝕜 (PreLp E) :=
   { lp E p with smul_mem' := fun c f hf => by simpa using mem_lp_const_smul c ⟨f, hf⟩ }
 
-variable {E p 𝕜}
+variable {𝕜 E p}
 
 theorem coe_lpSubmodule : (lpSubmodule 𝕜 E p).toAddSubgroup = lp E p :=
   rfl
