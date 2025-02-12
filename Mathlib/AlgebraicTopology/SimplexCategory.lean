@@ -10,6 +10,7 @@ import Mathlib.Data.Fintype.Sort
 import Mathlib.Order.Category.NonemptyFinLinOrd
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-! # The simplex category
 
@@ -1050,6 +1051,77 @@ theorem factorThruImage_eq {Δ Δ'' : SimplexCategory} {φ : Δ ⟶ Δ''} {e : �
   rw [← cancel_mono i, fac, ← image_ι_eq fac, image.fac]
 
 end EpiMono
+
+lemma morphismProperty_eq_top (W : MorphismProperty (SimplexCategory)) [W.IsMultiplicative]
+    (δ_mem : ∀ (n : ℕ) (i : Fin (n + 2)), W (SimplexCategory.δ (n := n) i))
+    (σ_mem :  ∀ (n : ℕ) (i : Fin (n + 1)), W (SimplexCategory.σ (n := n) i)) : W = ⊤ := by
+  ext Δ Δ' φ
+  simp only [MorphismProperty.top_apply, forall_const]
+  refine iff_true_intro ?_
+  have fac : factorThruImage φ  ≫ image.ι φ = φ := image.fac φ -- cut later
+  rw [← image.fac φ]
+  have comp : W.IsStableUnderComposition := by infer_instance
+  apply comp.comp_mem
+  · let epi := factorThruImage φ -- cut later
+    have : Epi (factorThruImage φ) := by infer_instance
+    have := len_le_of_epi this
+    sorry
+  · let mono := image.ι φ -- cut later
+    have : Mono (image.ι φ) := by infer_instance
+    have := len_le_of_mono this
+    sorry
+
+namespace Truncated
+
+noncomputable instance {d} : SplitEpiCategory (SimplexCategory.Truncated d) :=
+  sorry
+
+instance {d} : HasStrongEpiMonoFactorisations (SimplexCategory.Truncated d) :=
+  sorry
+
+instance {d} : HasStrongEpiImages (SimplexCategory.Truncated d) :=
+  Limits.hasStrongEpiImages_of_hasStrongEpiMonoFactorisations
+
+instance {d} (Δ Δ' : SimplexCategory.Truncated d) (θ : Δ ⟶ Δ') : Epi (factorThruImage θ) :=
+  StrongEpi.epi
+
+lemma twoTruncatedmorphismProperty_eq_top
+    (W : MorphismProperty (SimplexCategory.Truncated 2))
+    [W.IsMultiplicative]
+    (δ_mem : ∀ (n : ℕ) (hn : n + 1 ≤ 2) (i : Fin (n + 2)),
+      W (SimplexCategory.δ (n := n) i : ⟨.mk n, by dsimp; omega⟩ ⟶
+        ⟨.mk (n + 1), by dsimp; omega⟩))
+    (σ_mem : ∀ (n : ℕ) (hn : n + 1 ≤ 2) (i : Fin (n + 1)),
+      W (SimplexCategory.σ (n := n) i : ⟨.mk (n + 1), by dsimp; omega⟩ ⟶
+        ⟨.mk n, by dsimp; omega⟩)) : W = ⊤ := by
+  ext ⟨Δ, hΔ⟩ ⟨Δ', hΔ'⟩ φ
+  simp only [MorphismProperty.top_apply, forall_const]
+  refine iff_true_intro ?_
+  have fac : factorThruImage φ  ≫ image.ι φ = φ := image.fac φ -- cut later
+  rw [← image.fac φ]
+  have comp : W.IsStableUnderComposition := by infer_instance
+  apply comp.comp_mem
+  · let epi := factorThruImage φ -- cut later
+    have : Epi (factorThruImage φ) := by infer_instance
+--    have := len_le_of_epi this
+    sorry
+  · let mono := image.ι φ -- cut later
+    have : Mono (image.ι φ) := by infer_instance
+--    have := len_le_of_mono this
+    sorry
+
+lemma morphismProperty_eq_top
+    {d : ℕ} (W : MorphismProperty (SimplexCategory.Truncated d))
+    [W.IsMultiplicative]
+    (δ_mem : ∀ (n : ℕ) (hn : n + 1 ≤ d) (i : Fin (n + 2)),
+      W (SimplexCategory.δ (n := n) i : ⟨.mk n, by dsimp; omega⟩ ⟶
+        ⟨.mk (n + 1), by dsimp; omega⟩))
+    (σ_mem :  ∀ (n : ℕ) (hn : n + 1 ≤ d) (i : Fin (n + 1)),
+      W (SimplexCategory.σ (n := n) i : ⟨.mk (n + 1), by dsimp; omega⟩ ⟶
+        ⟨.mk n, by dsimp; omega⟩)) : W = ⊤ := by
+  sorry
+
+end Truncated
 
 /-- This functor `SimplexCategory ⥤ Cat` sends `⦋n⦌` (for `n : ℕ`)
 to the category attached to the ordered set `{0, 1, ..., n}` -/
