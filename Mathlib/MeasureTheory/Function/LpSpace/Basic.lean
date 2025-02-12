@@ -73,7 +73,6 @@ namespace MeasureTheory
 The space of equivalence classes of measurable functions for which `eLpNorm f p μ < ∞`.
 -/
 
-
 @[simp]
 theorem eLpNorm_aeeqFun {α E : Type*} [MeasurableSpace α] {μ : Measure α} [NormedAddCommGroup E]
     {p : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeasurable f μ) :
