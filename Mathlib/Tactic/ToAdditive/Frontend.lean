@@ -741,11 +741,13 @@ where /-- Implementation of `applyReplacementFun`. -/
   let reorderFn : Name → List (List ℕ) := fun nm ↦ (b.reorderAttr.find? env nm |>.getD [])
   let relevantArg : Name → ℕ := fun nm ↦ (b.relevantArgAttr.find? env nm).getD 0
   Lean.Expr.replaceRecM fun r e ↦ do
-    -- uncommenting this causes: PANIC at Lean.Meta.whnfEasyCases Lean.Meta.WHNF:338:22: loose bvar in expression
     if !e.hasLooseBVars then
       trace[to_additive_detail] "applyReplacementFun: replacing at {e}"
     else
-      trace[to_additive_detail] "applyReplacementFun: replacing at {e}"
+      -- the following causes: PANIC at Lean.Meta.whnfEasyCases Lean.Meta.WHNF:338:22: loose bvar in expression
+      -- trace[to_additive_detail] "applyReplacementFun: replacing at {e}"
+      -- Less informative, but doesn't panic
+      trace[to_additive_detail] "applyReplacementFun: replacing at {toString e}"
     match e with
     | .const n₀ ls₀ => do
       let n₁ := n₀.mapPrefix <| findTranslation? env b
