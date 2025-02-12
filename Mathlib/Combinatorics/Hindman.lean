@@ -248,7 +248,7 @@ theorem FP.finset_prod {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs :
     have : s.min' hs + 1 ≤ (s.erase (s.min' hs)).min' h :=
       Nat.succ_le_of_lt (Finset.min'_lt_of_mem_erase_min' _ _ <| Finset.min'_mem _ _)
     obtain ⟨d, hd⟩ := Nat.exists_eq_add_of_le this
-    rw [hd, add_comm, ← Stream'.drop_drop]
+    rw [hd, ← Stream'.drop_drop, add_comm]
     apply FP_drop_subset_FP
 
 end Hindman

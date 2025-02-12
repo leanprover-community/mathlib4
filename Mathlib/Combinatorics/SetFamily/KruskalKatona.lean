@@ -351,7 +351,7 @@ theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
     (h₃ : r ≤ n / 2) :
     #𝒜 ≤ (n - 1).choose (r - 1) := by
   -- Take care of the r=0 case first: it's not very interesting.
-  cases' Nat.eq_zero_or_pos r with b h1r
+  rcases Nat.eq_zero_or_pos r with b | h1r
   · convert Nat.zero_le _
     rw [Finset.card_eq_zero, eq_empty_iff_forall_not_mem]
     refine fun A HA ↦ h𝒜 HA HA ?_

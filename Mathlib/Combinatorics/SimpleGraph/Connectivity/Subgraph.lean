@@ -253,7 +253,7 @@ lemma neighborSet_toSubgraph_endpoint {u} {p : G.Walk u u} (hpc : p.IsCycle) :
   rintro ⟨i, (hl | hr)⟩
   · rw [hpc.getVert_endpoint_iff (by omega)] at hl
     cases hl.1 <;> aesop
-  · cases' (hpc.getVert_endpoint_iff (by omega)).mp hr.2 with h1 h2
+  · rcases (hpc.getVert_endpoint_iff (by omega)).mp hr.2 with h1 | h2
     · contradiction
     · simp only [penultimate, ← h2, add_tsub_cancel_right]
       aesop

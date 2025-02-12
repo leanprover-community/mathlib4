@@ -654,12 +654,14 @@ theorem getElem_splitWrtComposition (l : List α) (c : Composition n)
 
 theorem flatten_splitWrtCompositionAux {ns : List ℕ} :
     ∀ {l : List α}, ns.sum = l.length → (l.splitWrtCompositionAux ns).flatten = l := by
-  induction' ns with n ns IH <;> intro l h <;> simp at h
-  · exact (length_eq_zero.1 h.symm).symm
-  simp only [splitWrtCompositionAux_cons]; dsimp
-  rw [IH]
-  · simp
-  · rw [length_drop, ← h, add_tsub_cancel_left]
+  induction ns with
+  | nil => exact fun h ↦ (length_eq_zero.1 h.symm).symm
+  | cons n ns IH =>
+    intro l h; rw [sum_cons] at h
+    simp only [splitWrtCompositionAux_cons]; dsimp
+    rw [IH]
+    · simp
+    · rw [length_drop, ← h, add_tsub_cancel_left]
 
 @[deprecated (since := "2024-10-15")]
 alias join_splitWrtCompositionAux := flatten_splitWrtCompositionAux

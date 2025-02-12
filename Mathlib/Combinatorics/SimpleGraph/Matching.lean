@@ -158,7 +158,7 @@ lemma IsMatching.exists_of_disjoint_sets_of_equiv {s t : Set V} (h : Disjoint s 
 
   simp only [Subgraph.IsMatching, Set.mem_union, true_and]
   intro v hv
-  cases' hv with hl hr
+  rcases hv with hl | hr
   · use f ⟨v, hl⟩
     simp only [hl, exists_const, true_or, exists_true_left, true_and]
     rintro y (rfl | ⟨hys, rfl⟩)
