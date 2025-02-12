@@ -87,7 +87,6 @@ protected theorem norm_prod {ι : Type*} (s : Finset ι) (f : ι → ℂ) :
     ‖s.prod f‖ = s.prod fun i ↦ ‖f i‖ :=
   map_prod isAbsoluteValueNorm.abvHom _ _
 
-@[simp 1100]
 theorem norm_conj (z : ℂ) : ‖conj z‖ = ‖z‖ := by simp [norm_def]
 
 @[simp] lemma norm_I : ‖I‖ = 1 := by simp [norm]
