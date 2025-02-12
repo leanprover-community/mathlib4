@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.Data.Int.GCD
 
 /-!
@@ -62,7 +62,6 @@ instance normalizationMonoid : NormalizationMonoid ℤ where
     (units_eq_one_or u).elim (fun eq => eq.symm ▸ if_pos Int.one_nonneg) fun eq =>
       eq.symm ▸ if_neg (not_le_of_gt <| show (-1 : ℤ) < 0 by decide)
 
--- Porting note: added
 theorem normUnit_eq (z : ℤ) : normUnit z = if 0 ≤ z then 1 else -1 := rfl
 
 theorem normalize_of_nonneg {z : ℤ} (h : 0 ≤ z) : normalize z = z := by

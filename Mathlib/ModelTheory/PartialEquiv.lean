@@ -75,6 +75,9 @@ def symm (f : M ≃ₚ[L] N) : N ≃ₚ[L] M where
 theorem symm_symm (f : M ≃ₚ[L] N) : f.symm.symm = f :=
   rfl
 
+theorem symm_bijective : Function.Bijective (symm : (M ≃ₚ[L] N) → _) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 @[simp]
 theorem symm_apply (f : M ≃ₚ[L] N) (x : f.cod) : f.symm.toEquiv x = f.toEquiv.symm x :=
   rfl
@@ -236,11 +239,14 @@ def toEmbeddingOfEqTop {f : M ≃ₚ[L] N} (h : f.dom = ⊤) : M ↪[L] N :=
   (h ▸ f.toEmbedding).comp topEquiv.symm.toEmbedding
 
 @[simp]
-theorem toEmbeddingOfEqTop__apply {f : M ≃ₚ[L] N} (h : f.dom = ⊤) (m : M) :
+theorem toEmbeddingOfEqTop_apply {f : M ≃ₚ[L] N} (h : f.dom = ⊤) (m : M) :
     toEmbeddingOfEqTop h m = f.toEquiv ⟨m, h.symm ▸ mem_top m⟩ := by
   rcases f with ⟨dom, cod, g⟩
   cases h
   rfl
+
+set_option linter.style.nameCheck false in
+@[deprecated (since := "2024-11-30")] alias toEmbeddingOfEqTop__apply := toEmbeddingOfEqTop_apply
 
 /-- Given a partial equivalence which has the whole structure as domain and
   as codomain, returns the corresponding equivalence. -/
@@ -303,13 +309,13 @@ variable (S : ι →o M ≃ₚ[L] N)
 
 instance : DirectedSystem (fun i ↦ (S i).dom)
     (fun _ _ h ↦ Substructure.inclusion (dom_le_dom (S.monotone h))) where
-  map_self' := fun _ _ _ ↦ rfl
-  map_map' := fun _ _ _ ↦ rfl
+  map_self _ _ := rfl
+  map_map _ _ _ _ _ _ := rfl
 
 instance : DirectedSystem (fun i ↦ (S i).cod)
     (fun _ _ h ↦ Substructure.inclusion (cod_le_cod (S.monotone h))) where
-  map_self' := fun _ _ _ ↦ rfl
-  map_map' := fun _ _ _ ↦ rfl
+  map_self _ _ := rfl
+  map_map _ _ _ _ _ _ := rfl
 
 /-- The limit of a directed system of PartialEquivs. -/
 noncomputable def partialEquivLimit : M ≃ₚ[L] N where
@@ -347,7 +353,8 @@ lemma partialEquivLimit_comp_inclusion {i : ι} :
 
 theorem le_partialEquivLimit (i : ι) : S i ≤ partialEquivLimit S :=
   ⟨le_iSup (f := fun i ↦ (S i).dom) _, by
-    #adaptation_note /-- After lean4#5020, these two `simp` calls cannot be combined. -/
+    #adaptation_note /-- https://github.com/leanprover/lean4/pull/5020
+    these two `simp` calls cannot be combined. -/
     simp only [partialEquivLimit_comp_inclusion]
     simp only [cod_partialEquivLimit, dom_partialEquivLimit, ← Embedding.comp_assoc,
       subtype_comp_inclusion]⟩
@@ -451,13 +458,13 @@ protected alias ⟨cod, _⟩ := isExtensionPair_iff_cod
 def definedAtLeft
     (h : L.IsExtensionPair M N) (m : M) : Order.Cofinal (FGEquiv L M N) where
   carrier := {f | m ∈ f.val.dom}
-  mem_gt := fun f => h f m
+  isCofinal := fun f => h f m
 
 /-- The cofinal set of finite equivalences with a given element in their codomain. -/
 def definedAtRight
     (h : L.IsExtensionPair N M) (n : N) : Order.Cofinal (FGEquiv L M N) where
   carrier := {f | n ∈ f.val.cod}
-  mem_gt := fun f => h.cod f n
+  isCofinal := fun f => h.cod f n
 
 end IsExtensionPair
 

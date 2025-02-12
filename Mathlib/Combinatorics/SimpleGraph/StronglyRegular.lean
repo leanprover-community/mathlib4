@@ -6,7 +6,6 @@ Authors: Alena Gusakov, Jeremy Tan
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 import Mathlib.Combinatorics.SimpleGraph.Basic
-import Mathlib.Data.Set.Finite
 
 /-!
 # Strongly regular graphs
@@ -81,10 +80,7 @@ theorem IsSRGWith.card_neighborFinset_union_eq {v w : V} (h : G.IsSRGWith n k �
       2 * k - Fintype.card (G.commonNeighbors v w) := by
   apply Nat.add_right_cancel (m := Fintype.card (G.commonNeighbors v w))
   rw [Nat.sub_add_cancel, ← Set.toFinset_card]
-  -- Porting note: Set.toFinset_inter needs workaround to use unification to solve for one of the
-  -- instance arguments:
-  · simp [commonNeighbors, @Set.toFinset_inter _ _ _ _ _ _ (_),
-      ← neighborFinset_def, Finset.card_union_add_card_inter, card_neighborFinset_eq_degree,
+  · simp [commonNeighbors, ← neighborFinset_def, Finset.card_union_add_card_inter,
       h.regular.degree_eq, two_mul]
   · apply le_trans (card_commonNeighbors_le_degree_left _ _ _)
     simp [h.regular.degree_eq, two_mul]

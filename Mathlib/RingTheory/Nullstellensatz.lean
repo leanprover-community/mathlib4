@@ -3,10 +3,10 @@ Copyright (c) 2021 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
 -/
-import Mathlib.RingTheory.Jacobson
+import Mathlib.RingTheory.Jacobson.Ring
 import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.FieldTheory.MvPolynomial
-import Mathlib.RingTheory.PrimeSpectrum
+import Mathlib.RingTheory.MvPolynomial
+import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
 # Nullstellensatz
@@ -22,14 +22,11 @@ The machinery around `vanishingIdeal` and `zeroLocus` is also minimal, I only ad
   directly needed in this proof, since I'm not sure if they are the right approach.
 -/
 
-
 open Ideal
 
 noncomputable section
 
 namespace MvPolynomial
-
-open MvPolynomial
 
 variable {k : Type*} [Field k]
 variable {σ : Type*}
@@ -99,17 +96,14 @@ theorem mem_vanishingIdeal_singleton_iff (x : σ → k) (p : MvPolynomial σ k) 
 
 instance vanishingIdeal_singleton_isMaximal {x : σ → k} :
     (vanishingIdeal {x} : Ideal (MvPolynomial σ k)).IsMaximal := by
-  have : MvPolynomial σ k ⧸ vanishingIdeal {x} ≃+* k :=
-    RingEquiv.ofBijective
-      (Ideal.Quotient.lift _ (eval x) fun p h => (mem_vanishingIdeal_singleton_iff x p).mp h)
-      (by
-        refine
-          ⟨(injective_iff_map_eq_zero _).mpr fun p hp => ?_, fun z =>
-            ⟨(Ideal.Quotient.mk (vanishingIdeal {x} : Ideal (MvPolynomial σ k))) (C z), by simp⟩⟩
-        obtain ⟨q, rfl⟩ := Quotient.mk_surjective p
-        rwa [Ideal.Quotient.lift_mk, ← mem_vanishingIdeal_singleton_iff,
-          ← Quotient.eq_zero_iff_mem] at hp)
-  rw [← bot_quotient_isMaximal_iff, RingEquiv.bot_maximal_iff this]
+  have : Function.Bijective
+      (Ideal.Quotient.lift _ (eval x) fun p h ↦ (mem_vanishingIdeal_singleton_iff x p).mp h) := by
+    refine ⟨(injective_iff_map_eq_zero _).mpr fun p hp ↦ ?_, fun z ↦
+      ⟨(Ideal.Quotient.mk (vanishingIdeal {x} : Ideal (MvPolynomial σ k))) (C z), by simp⟩⟩
+    obtain ⟨q, rfl⟩ := Ideal.Quotient.mk_surjective p
+    rwa [Ideal.Quotient.lift_mk, ← mem_vanishingIdeal_singleton_iff,
+      ← Quotient.eq_zero_iff_mem] at hp
+  rw [← bot_quotient_isMaximal_iff, isMaximal_iff_of_bijective _ this]
   exact bot_isMaximal
 
 theorem radical_le_vanishingIdeal_zeroLocus (I : Ideal (MvPolynomial σ k)) :
@@ -162,7 +156,7 @@ theorem isMaximal_iff_eq_vanishingIdeal_singleton (I : Ideal (MvPolynomial σ k)
   have hϕ : Function.Bijective ϕ :=
     ⟨quotient_mk_comp_C_injective _ _ I hI.ne_top,
       IsAlgClosed.algebraMap_surjective_of_isIntegral' ϕ
-        (MvPolynomial.comp_C_integral_of_surjective_of_jacobson _ Quotient.mk_surjective)⟩
+        (MvPolynomial.comp_C_integral_of_surjective_of_isJacobsonRing _ Quotient.mk_surjective)⟩
   obtain ⟨φ, hφ⟩ := Function.Surjective.hasRightInverse hϕ.2
   let x : σ → k := fun s => φ ((Ideal.Quotient.mk I) (X s))
   have hx : ∀ s : σ, ϕ (x s) = (Ideal.Quotient.mk I) (X s) := fun s =>

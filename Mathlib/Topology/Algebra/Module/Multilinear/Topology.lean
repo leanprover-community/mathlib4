@@ -7,6 +7,7 @@ import Mathlib.Topology.Algebra.Module.Multilinear.Bounded
 import Mathlib.Topology.Algebra.Module.UniformConvergence
 import Mathlib.Topology.Algebra.SeparationQuotient.Section
 import Mathlib.Topology.Hom.ContinuousEvalConst
+import Mathlib.Topology.Algebra.InfiniteSum.Basic
 
 /-!
 # Topology on continuous multilinear maps
@@ -17,8 +18,8 @@ where `E i` is a family of vector spaces over `𝕜` with topologies
 and `F` is a topological vector space.
 -/
 
-open Bornology Function Set
-open scoped Topology UniformConvergence Filter
+open Bornology Function Set Topology
+open scoped UniformConvergence Filter
 
 namespace ContinuousMultilinearMap
 
@@ -44,7 +45,7 @@ lemma range_toUniformOnFun [DecidableEq ι] [TopologicalSpace F] :
   ext f
   constructor
   · rintro ⟨f, rfl⟩
-    exact ⟨f.cont, f.map_add, f.map_smul⟩
+    exact ⟨f.cont, f.map_update_add, f.map_update_smul⟩
   · rintro ⟨hcont, hadd, hsmul⟩
     exact ⟨⟨⟨f, by intro; convert hadd, by intro; convert hsmul⟩, hcont⟩, rfl⟩
 
@@ -224,7 +225,6 @@ instance : ContinuousEvalConst (ContinuousMultilinearMap 𝕜 E F) (Π i, E i) F
     (uniformContinuous_eval_const x).continuous
 
 @[deprecated (since := "2024-10-05")] protected alias continuous_eval_const := continuous_eval_const
-@[deprecated (since := "2024-04-10")] alias continuous_eval_left := continuous_eval_const
 @[deprecated (since := "2024-10-05")] protected alias continuous_coe_fun := continuous_coeFun
 
 instance instT2Space [T2Space F] : T2Space (ContinuousMultilinearMap 𝕜 E F) :=

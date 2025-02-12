@@ -106,14 +106,7 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleC
         rw [Category.id_comp, Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id,
           Category.id_comp] }
 
-
-variable (R) in
-/-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` as a monoidal functor. -/
-def toModuleCatMonoidalFunctor : MonoidalFunctor (QuadraticModuleCat.{u} R) (ModuleCat.{u} R) := by
-  unfold instMonoidalCategory
-  exact Monoidal.fromInduced (forget₂ (QuadraticModuleCat R) (ModuleCat R)) _
-
-instance : (toModuleCatMonoidalFunctor R).Faithful :=
-  forget₂_faithful _ _
+/-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` is a monoidal functor. -/
+example : (forget₂ (QuadraticModuleCat R) (ModuleCat R)).Monoidal := inferInstance
 
 end QuadraticModuleCat

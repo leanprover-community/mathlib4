@@ -5,6 +5,7 @@ Authors: Riccardo Brasca, Eric Rodriguez
 -/
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.RingTheory.Localization.NormTrace
+import Mathlib.RingTheory.Norm.Transitivity
 
 /-!
 # Norm in number fields
@@ -22,7 +23,7 @@ rings of integers.
 
 open scoped NumberField
 
-open Finset NumberField Algebra Module
+open Finset NumberField Algebra Module IntermediateField
 
 section Rat
 

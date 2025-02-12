@@ -54,22 +54,16 @@ def GradedAlgebra.liftι :
     ExteriorAlgebra R M →ₐ[R] ⨁ i : ℕ, ⋀[R]^i M :=
   lift R ⟨by apply GradedAlgebra.ι R M, GradedAlgebra.ι_sq_zero R M⟩
 
-set_option linter.deprecated false in
 theorem GradedAlgebra.liftι_eq (i : ℕ) (x : ⋀[R]^i M) :
     GradedAlgebra.liftι R M x = DirectSum.of (fun i => ⋀[R]^i M) i x := by
   cases' x with x hx
   dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
-  -- Porting note: original statement was
-  --  refine Submodule.pow_induction_on_left' _ (fun r => ?_) (fun x y i hx hy ihx ihy => ?_)
-  --    (fun m hm i x hx ih => ?_) hx
-  -- but it created invalid goals
   induction hx using Submodule.pow_induction_on_left' with
   | algebraMap => simp_rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
-  -- FIXME: specialized `map_add` to avoid a (whole-declaration) timeout
-  | add _ _ _ _ _ ihx ihy => simp_rw [AlgHom.map_add, ihx, ihy, ← AddMonoidHom.map_add]; rfl
+  | add _ _ _ _ _ ihx ihy => simp_rw [map_add, ihx, ihy, ← AddMonoidHom.map_add]; rfl
   | mem_mul _ hm _ _ _ ih =>
       obtain ⟨_, rfl⟩ := hm
-      simp_rw [AlgHom.map_mul, ih, GradedAlgebra.liftι, lift_ι_apply, GradedAlgebra.ι_apply R M,
+      simp_rw [map_mul, ih, GradedAlgebra.liftι, lift_ι_apply, GradedAlgebra.ι_apply R M,
         DirectSum.of_mul_of]
       exact DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext (add_comm _ _) rfl)
 

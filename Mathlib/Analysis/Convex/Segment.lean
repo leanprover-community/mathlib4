@@ -48,7 +48,8 @@ def segment (x y : E) : Set E :=
   { z : E | ∃ a b : 𝕜, 0 ≤ a ∧ 0 ≤ b ∧ a + b = 1 ∧ a • x + b • y = z }
 
 /-- Open segment in a vector space. Note that `openSegment 𝕜 x x = {x}` instead of being `∅` when
-the base semiring has some element between `0` and `1`. -/
+the base semiring has some element between `0` and `1`.
+Denoted as `[x -[𝕜] y]` within the `Convex` namespace. -/
 def openSegment (x y : E) : Set E :=
   { z : E | ∃ a b : 𝕜, 0 < a ∧ 0 < b ∧ a + b = 1 ∧ a • x + b • y = z }
 

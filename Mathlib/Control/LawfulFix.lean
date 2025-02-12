@@ -22,8 +22,6 @@ omega complete partial orders (ωCPO). Proofs of the lawfulness of all `Fix` ins
 
 universe u v
 
-open scoped Classical
-
 variable {α : Type*} {β : α → Type*}
 
 open OmegaCompletePartialOrder
@@ -63,6 +61,7 @@ theorem approx_mono ⦃i j : ℕ⦄ (hij : i ≤ j) : approx f i ≤ approx f j 
   exact le_trans (ih ‹_›) (approx_mono' f)
 
 theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx f i a := by
+  classical
   by_cases h₀ : ∃ i : ℕ, (approx f i a).Dom
   · simp only [Part.fix_def f h₀]
     constructor <;> intro hh
@@ -180,20 +179,7 @@ theorem fix_eq_of_ωScottContinuous (hc : ωScottContinuous g) :
 
 variable {f}
 
-set_option linter.deprecated false in
-@[deprecated fix_eq_of_ωScottContinuous (since := "2024-08-26")]
-theorem fix_eq (hc : Continuous f) : Part.fix f = f (Part.fix f) := by
-  rw [fix_eq_ωSup f, hc]
-  apply le_antisymm
-  · apply ωSup_le_ωSup_of_le _
-    intro i
-    exists i
-    intro x
-    -- intros x y hx,
-    apply le_f_of_mem_approx _ ⟨i, rfl⟩
-  · apply ωSup_le_ωSup_of_le _
-    intro i
-    exists i.succ
+@[deprecated (since := "2024-08-26")] alias fix_eq := fix_eq_of_ωScottContinuous
 
 end Part
 
@@ -211,13 +197,7 @@ theorem ωScottContinuous_toUnitMono (f : Part α → Part α) (hc : ωScottCont
   dsimp [OmegaCompletePartialOrder.ωSup]
   erw [hc.map_ωSup, Chain.map_comp]; rfl
 
-set_option linter.deprecated false in
-@[deprecated ωScottContinuous_toUnitMono (since := "2024-08-26")]
-theorem to_unit_cont (f : Part α →o Part α) (hc : Continuous f) : Continuous (toUnitMono f)
-  | _ => by
-    ext ⟨⟩ : 1
-    dsimp [OmegaCompletePartialOrder.ωSup]
-    erw [hc, Chain.map_comp]; rfl
+@[deprecated (since := "2024-08-26")] alias to_unit_cont := ωScottContinuous_toUnitMono
 
 instance lawfulFix : LawfulFix (Part α) :=
   ⟨fun {f : Part α → Part α} hc ↦ show Part.fix (toUnitMono ⟨f,hc.monotone⟩) () = _ by
@@ -264,13 +244,7 @@ theorem ωScottContinuous_curry :
     rw [map_comp, map_comp]
     rfl
 
-set_option linter.deprecated false in
-@[deprecated ωScottContinuous_curry (since := "2024-08-26")]
-theorem continuous_curry : Continuous <| monotoneCurry α β γ := fun c ↦ by
-  ext x y
-  dsimp [curry, ωSup]
-  rw [map_comp, map_comp]
-  rfl
+@[deprecated (since := "2024-08-26")] alias continuous_curry := ωScottContinuous_curry
 
 theorem ωScottContinuous_uncurry :
     ωScottContinuous (monotoneUncurry α β γ) :=
@@ -280,13 +254,7 @@ theorem ωScottContinuous_uncurry :
   rw [map_comp, map_comp]
   rfl
 
-set_option linter.deprecated false in
-@[deprecated ωScottContinuous_uncurry  (since := "2024-08-26")]
-theorem continuous_uncurry : Continuous <| monotoneUncurry α β γ := fun c ↦ by
-  ext ⟨x, y⟩
-  dsimp [uncurry, ωSup]
-  rw [map_comp, map_comp]
-  rfl
+@[deprecated (since := "2024-08-26")] alias continuous_uncurry := ωScottContinuous_uncurry
 
 end Monotone
 
@@ -307,12 +275,8 @@ theorem uncurry_curry_ωScottContinuous (hc : ωScottContinuous f) :
       monotoneCurry α β γ :=
   (ωScottContinuous_uncurry _ _ _).comp (hc.comp (ωScottContinuous_curry _ _ _))
 
-set_option linter.deprecated false in
-@[deprecated uncurry_curry_ωScottContinuous  (since := "2024-08-26")]
-theorem uncurry_curry_continuous {f : ((x : _) → (y : β x) → γ x y) →o (x : _) → (y : β x) → γ x y}
-    (hc : Continuous f) :
-    Continuous <| (monotoneUncurry α β γ).comp <| f.comp <| monotoneCurry α β γ :=
-  continuous_comp _ _ (continuous_comp _ _ (continuous_curry _ _ _) hc) (continuous_uncurry _ _ _)
+@[deprecated (since := "2024-08-26")]
+alias uncurry_curry_continuous := uncurry_curry_ωScottContinuous
 
 end Curry
 

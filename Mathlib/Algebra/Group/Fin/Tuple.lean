@@ -12,7 +12,7 @@ import Mathlib.Data.Fin.VecNotation
 -/
 
 namespace Fin
-variable {m n : ℕ} {α : Fin (n + 1) → Type*}
+variable {n : ℕ} {α : Fin (n + 1) → Type*}
 
 @[to_additive (attr := simp)]
 lemma insertNth_one_right [∀ j, One (α j)] (i : Fin (n + 1)) (x : α i) :

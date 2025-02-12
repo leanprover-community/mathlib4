@@ -177,7 +177,8 @@ variable {α D}
 
 lemma isOpen_iff [IsScottHausdorff α D] :
     IsOpen s ↔ ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
-      a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by rw [topology_eq_scottHausdorff (α := α) (D := D)]; rfl
+      a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by
+  simp [topology_eq_scottHausdorff (α := α) (D := D), IsOpen, scottHausdorff]
 
 lemma dirSupInaccOn_of_isOpen [IsScottHausdorff α D] (h : IsOpen s) : DirSupInaccOn D s :=
   fun d hd₀ hd₁ hd₂ a hda hd₃ ↦ by
@@ -307,7 +308,8 @@ lemma monotone_of_continuous [IsScott α D] (hf : Continuous f) : Monotone f := 
     have hu : IsOpen (f ⁻¹' u) := (isOpen_compl_iff.2 Topology.IsScott.isClosed_Iic).preimage hf
     rw [isOpen_iff_isUpperSet_and_dirSupInaccOn (D := D)] at hu
     obtain ⟨c, hcd, hfcb⟩ := hu.2 h₀ d₁ d₂ d₃ h
-    simp [upperBounds] at hb
+    simp only [upperBounds, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
+      mem_setOf] at hb
     exact hfcb <| hb _ hcd
 
 end Preorder
@@ -388,12 +390,9 @@ namespace WithScott
 @[simp] lemma toScott_ofScott (a : WithScott α) : toScott (ofScott a) = a := rfl
 @[simp] lemma ofScott_toScott (a : α) : ofScott (toScott a) = a := rfl
 
-@[simp, nolint simpNF]
 lemma toScott_inj {a b : α} : toScott a = toScott b ↔ a = b := Iff.rfl
 
-@[simp, nolint simpNF]
 lemma ofScott_inj {a b : WithScott α} : ofScott a = ofScott b ↔ a = b := Iff.rfl
-
 /-- A recursor for `WithScott`. Use as `induction x`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 protected def rec {β : WithScott α → Sort _}

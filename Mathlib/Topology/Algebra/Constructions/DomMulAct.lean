@@ -111,7 +111,7 @@ instance instNormalSpace [NormalSpace M] : NormalSpace Mᵈᵐᵃ := mkHomeomorp
 
 @[to_additive]
 instance instCompletelyNormalSpace [CompletelyNormalSpace M] : CompletelyNormalSpace Mᵈᵐᵃ :=
-  mkHomeomorph.symm.isEmbedding.completelyNormalSpace
+  isEmbedding_mk_symm.completelyNormalSpace
 
 @[to_additive]
 instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mᵈᵐᵃ :=

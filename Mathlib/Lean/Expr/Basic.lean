@@ -6,7 +6,6 @@ Floris van Doorn, Edward Ayers, Arthur Paulino
 -/
 import Mathlib.Init
 import Lean.Meta.Tactic.Rewrite
-import Batteries.Lean.Expr
 import Batteries.Tactic.Alias
 import Lean.Elab.Binders
 
@@ -66,8 +65,6 @@ def lastComponentAsString : Name → String
   | .str _ s => s
   | .num _ n => toString n
   | .anonymous => ""
-
-@[deprecated (since := "2024-05-14")] alias getString := lastComponentAsString
 
 /-- `nm.splitAt n` splits a name `nm` in two parts, such that the *second* part has depth `n`, i.e.
   `(nm.splitAt n).2.getNumParts = n` (assuming `nm.getNumParts ≥ n`).
@@ -200,7 +197,7 @@ def eraseProofs (e : Expr) : MetaM Expr :=
   Meta.transform (skipConstInApp := true) e
     (pre := fun e => do
       if (← Meta.isProof e) then
-        return .continue (← mkSyntheticSorry (← inferType e))
+        return .continue (← mkSorry (← inferType e) true)
       else
         return .continue)
 
@@ -263,6 +260,7 @@ section recognizers
 partial def numeral? (e : Expr) : Option Nat :=
   if let some n := e.rawNatLit? then n
   else
+    let e := e.consumeMData -- `OfNat` numerals may have `no_index` around them from `ofNat()`
     let f := e.getAppFn
     if !f.isConst then none
     else
@@ -359,6 +357,7 @@ def renameBVar (e : Expr) (old new : Name) : Expr :=
     lam (if n == old then new else n) (ty.renameBVar old new) (bd.renameBVar old new) bi
   | forallE n ty bd bi =>
     forallE (if n == old then new else n) (ty.renameBVar old new) (bd.renameBVar old new) bi
+  | mdata d e' => mdata d (e'.renameBVar old new)
   | e => e
 
 open Lean.Meta in

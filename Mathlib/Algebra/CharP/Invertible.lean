@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.GroupWithZero.Invertible
 
 /-!
 # Invertibility of elements given a characteristic

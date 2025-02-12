@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Logic.Function.Defs
 
 /-!
@@ -115,12 +114,6 @@ end
 
 section
 variable {α β : Type*} {γ : α → Type*}
-
-instance (priority := 20) Zero.instNonempty [Zero α] : Nonempty α :=
-  ⟨0⟩
-
-instance (priority := 20) One.instNonempty [One α] : Nonempty α :=
-  ⟨1⟩
 
 @[simp]
 theorem nonempty_sigma : Nonempty (Σa : α, γ a) ↔ ∃ a : α, Nonempty (γ a) :=

@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Zhouhang Zhou
 import Mathlib.MeasureTheory.Integral.Lebesgue
 import Mathlib.Order.Filter.Germ.Basic
 import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 
 /-!
 
@@ -124,7 +124,7 @@ then we choose that one. -/
 def cast (f : α →ₘ[μ] β) : α → β :=
   if h : ∃ (b : β), f = mk (const α b) aestronglyMeasurable_const then
     const α <| Classical.choose h else
-    AEStronglyMeasurable.mk _ (Quotient.out' f : { f : α → β // AEStronglyMeasurable f μ }).2
+    AEStronglyMeasurable.mk _ (Quotient.out f : { f : α → β // AEStronglyMeasurable f μ }).2
 
 /-- A measurable representative of an `AEEqFun` [f] -/
 instance instCoeFun : CoeFun (α →ₘ[μ] β) fun _ => α → β := ⟨cast⟩
@@ -493,7 +493,7 @@ section Sup
 
 variable [SemilatticeSup β] [ContinuousSup β]
 
-instance instSup : Sup (α →ₘ[μ] β) where sup f g := AEEqFun.comp₂ (· ⊔ ·) continuous_sup f g
+instance instSup : Max (α →ₘ[μ] β) where max f g := AEEqFun.comp₂ (· ⊔ ·) continuous_sup f g
 
 theorem coeFn_sup (f g : α →ₘ[μ] β) : ⇑(f ⊔ g) =ᵐ[μ] fun x => f x ⊔ g x :=
   coeFn_comp₂ _ _ _ _
@@ -522,7 +522,7 @@ section Inf
 
 variable [SemilatticeInf β] [ContinuousInf β]
 
-instance instInf : Inf (α →ₘ[μ] β) where inf f g := AEEqFun.comp₂ (· ⊓ ·) continuous_inf f g
+instance instInf : Min (α →ₘ[μ] β) where min f g := AEEqFun.comp₂ (· ⊓ ·) continuous_inf f g
 
 theorem coeFn_inf (f g : α →ₘ[μ] β) : ⇑(f ⊓ g) =ᵐ[μ] fun x => f x ⊓ g x :=
   coeFn_comp₂ _ _ _ _
@@ -549,11 +549,11 @@ end Inf
 
 instance instLattice [Lattice β] [TopologicalLattice β] : Lattice (α →ₘ[μ] β) :=
   { AEEqFun.instPartialOrder with
-    sup := Sup.sup
+    sup := max
     le_sup_left := AEEqFun.le_sup_left
     le_sup_right := AEEqFun.le_sup_right
     sup_le := AEEqFun.sup_le
-    inf := Inf.inf
+    inf := min
     inf_le_left := AEEqFun.inf_le_left
     inf_le_right := AEEqFun.inf_le_right
     le_inf := AEEqFun.le_inf }
@@ -862,6 +862,17 @@ theorem coeFn_posPart (f : α →ₘ[μ] γ) : ⇑(posPart f) =ᵐ[μ] fun a => 
   coeFn_comp _ _ _
 
 end PosPart
+
+section AELimit
+
+/-- The ae-limit is ae-unique. -/
+theorem tendsto_ae_unique {ι : Type*} [T2Space β]
+    {g h : α → β} {f : ι → α → β} {l : Filter ι} [l.NeBot]
+    (hg : ∀ᵐ ω ∂μ, Tendsto (fun i => f i ω) l (𝓝 (g ω)))
+    (hh : ∀ᵐ ω ∂μ, Tendsto (fun i => f i ω) l (𝓝 (h ω))) : g =ᵐ[μ] h := by
+  filter_upwards [hg, hh] with ω hg1 hh1 using tendsto_nhds_unique hg1 hh1
+
+end AELimit
 
 end AEEqFun
 

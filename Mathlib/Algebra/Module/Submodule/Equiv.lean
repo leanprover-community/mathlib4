@@ -124,7 +124,6 @@ theorem eq_bot_of_equiv [Module R₂ M₂] (e : p ≃ₛₗ[σ₁₂] (⊥ : Sub
   rw [← p.mk_eq_zero hb, ← e.map_eq_zero_iff]
   apply Submodule.eq_zero_of_bot_submodule
 
--- Porting note: `RingHomSurjective σ₁₂` is an unused argument.
 @[simp]
 theorem range_comp [RingHomSurjective σ₂₃] [RingHomSurjective σ₁₃] :
     LinearMap.range (h.comp (e : M →ₛₗ[σ₁₂] M₂) : M →ₛₗ[σ₁₃] M₃) = LinearMap.range h :=
@@ -170,7 +169,8 @@ noncomputable def ofInjective (h : Injective f) : M ≃ₛₗ[σ₁₂] LinearMa
 theorem ofInjective_apply {h} (x : M) : ↑(ofInjective f h x) = f x :=
   rfl
 
-theorem apply_ofInjective_symm {h} (x : LinearMap.range f) : f ((ofInjective f h).symm x) = x :=
+@[simp]
+theorem ofInjective_symm_apply {h} (x : LinearMap.range f) : f ((ofInjective f h).symm x) = x :=
   congr_arg (·.1) ((ofInjective f h).apply_symm_apply x)
 
 /-- A bijective linear map is a linear equivalence. -/
@@ -236,3 +236,49 @@ noncomputable def comap_equiv_self_of_inj_of_le {f : M →ₗ[R] N} {p : Submodu
 end Module
 
 end Submodule
+
+namespace LinearMap
+
+variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+  [Module R M] [Module R M₁] [Module R M₂] [Module R M₃]
+
+section
+
+variable (f : M₁ →ₗ[R] M₂) (i : M₃ →ₗ[R] M₂) (hi : Injective i)
+  (hf : ∀ x, f x ∈ LinearMap.range i)
+
+/-- The restriction of a linear map on the target to a submodule of the target given by
+an inclusion. -/
+noncomputable def codRestrictOfInjective : M₁ →ₗ[R] M₃ :=
+  (LinearEquiv.ofInjective i hi).symm ∘ₗ f.codRestrict (LinearMap.range i) hf
+
+@[simp]
+lemma codRestrictOfInjective_comp_apply (x : M₁) :
+    i (LinearMap.codRestrictOfInjective f i hi hf x) = f x := by
+  simp [LinearMap.codRestrictOfInjective]
+
+@[simp]
+lemma codRestrictOfInjective_comp :
+    i ∘ₗ LinearMap.codRestrictOfInjective f i hi hf = f := by
+  ext
+  simp
+
+end
+
+variable (f : M₁ →ₗ[R] M₂ →ₗ[R] M) (i : M₃ →ₗ[R] M) (hi : Injective i)
+  (hf : ∀ x y, f x y ∈ LinearMap.range i)
+
+/-- The restriction of a bilinear map to a submodule in which it takes values. -/
+noncomputable def codRestrict₂ :
+    M₁ →ₗ[R] M₂ →ₗ[R] M₃ :=
+  let e : LinearMap.range i ≃ₗ[R] M₃ := (LinearEquiv.ofInjective i hi).symm
+  { toFun := fun x ↦ e.comp <| (f x).codRestrict (p := LinearMap.range i) (hf x)
+    map_add' := by intro x₁ x₂; ext y; simp [f.map_add, ← e.map_add, codRestrict]
+    map_smul' := by intro t x; ext y; simp [f.map_smul, ← e.map_smul, codRestrict] }
+
+@[simp]
+lemma codRestrict₂_apply (x : M₁) (y : M₂) :
+    i (codRestrict₂ f i hi hf x y) = f x y := by
+  simp [codRestrict₂]
+
+end LinearMap

@@ -10,10 +10,10 @@ import Mathlib.Order.Sublattice
 # The lattice of invariant submodules
 
 In this file we defined the type `Module.End.invtSubmodule`, associated to a linear endomorphism of
-a module. Its utilty stems primarily from those occasions on which we wish to take advantage of the
+a module. Its utility stems primarily from those occasions on which we wish to take advantage of the
 lattice structure of invariant submodules.
 
-See also `Module.AEval`.
+See also `Mathlib.Algebra.Polynomial.Module.AEval`.
 
 -/
 
@@ -37,6 +37,18 @@ lemma mem_invtSubmodule {p : Submodule R M} :
   Iff.rfl
 
 namespace invtSubmodule
+
+variable {f}
+
+lemma inf_mem {p q : Submodule R M} (hp : p ∈ f.invtSubmodule) (hq : q ∈ f.invtSubmodule) :
+    p ⊓ q ∈ f.invtSubmodule :=
+  ((⟨p, hp⟩ : f.invtSubmodule) ⊓ (⟨q, hq⟩ : f.invtSubmodule)).property
+
+lemma sup_mem {p q : Submodule R M} (hp : p ∈ f.invtSubmodule) (hq : q ∈ f.invtSubmodule) :
+    p ⊔ q ∈ f.invtSubmodule :=
+  ((⟨p, hp⟩ : f.invtSubmodule) ⊔ (⟨q, hq⟩ : f.invtSubmodule)).property
+
+variable (f)
 
 @[simp]
 protected lemma top_mem : ⊤ ∈ f.invtSubmodule := by simp [invtSubmodule]

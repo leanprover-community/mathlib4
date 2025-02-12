@@ -3,9 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Logic.Relation
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Lex
+import Mathlib.Logic.Function.Iterate
+import Mathlib.Logic.Relation
 
 /-!
 # Relation chain
@@ -307,17 +308,19 @@ theorem Chain'.append_overlap {l₁ l₂ l₃ : List α} (h₁ : Chain' R (l₁ 
   h₁.append h₂.right_of_append <| by
     simpa only [getLast?_append_of_ne_nil _ hn] using (chain'_append.1 h₂).2.2
 
-lemma chain'_join : ∀ {L : List (List α)}, [] ∉ L →
-    (Chain' R L.join ↔ (∀ l ∈ L, Chain' R l) ∧
+lemma chain'_flatten : ∀ {L : List (List α)}, [] ∉ L →
+    (Chain' R L.flatten ↔ (∀ l ∈ L, Chain' R l) ∧
     L.Chain' (fun l₁ l₂ => ∀ᵉ (x ∈ l₁.getLast?) (y ∈ l₂.head?), R x y))
 | [], _ => by simp
-| [l], _ => by simp [join]
+| [l], _ => by simp [flatten]
 | (l₁ :: l₂ :: L), hL => by
     rw [mem_cons, not_or, ← Ne] at hL
-    rw [join, chain'_append, chain'_join hL.2, forall_mem_cons, chain'_cons]
+    rw [flatten, chain'_append, chain'_flatten hL.2, forall_mem_cons, chain'_cons]
     rw [mem_cons, not_or, ← Ne] at hL
-    simp only [forall_mem_cons, and_assoc, join, head?_append_of_ne_nil _ hL.2.1.symm]
+    simp only [forall_mem_cons, and_assoc, flatten, head?_append_of_ne_nil _ hL.2.1.symm]
     exact Iff.rfl.and (Iff.rfl.and <| Iff.rfl.and and_comm)
+
+@[deprecated (since := "2024-10-15")] alias chain'_join := chain'_flatten
 
 theorem chain'_attachWith {l : List α} {p : α → Prop} (h : ∀ x ∈ l, p x)
     {r : {a // p a} → {a // p a} → Prop} :
@@ -419,7 +422,7 @@ theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
     cases as with
     | nil =>
       simp only [le_iff_lt_or_eq, reduceCtorEq, or_false] at hmas
-      exact (List.Lex.not_nil_right (·<·) _ hmas).elim
+      exact (List.not_lt_nil _ hmas).elim
     | cons a' as =>
       rw [List.chain'_cons] at ha
       refine gt_of_gt_of_ge ha.1 ?_
@@ -429,7 +432,7 @@ theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
         rw [← not_le] at hmas
         apply hmas
         apply le_of_lt
-        exact (List.lt_iff_lex_lt _ _).mp (List.lt.head _ _ hh)
+        exact (List.lt_iff_lex_lt _ _).mp (List.Lex.rel hh)
       · simp_all only [List.cons.injEq, le_refl]
 
 lemma Chain'.chain {α : Type*} {R : α → α → Prop} {l : List α} {v : α}

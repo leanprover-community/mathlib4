@@ -5,7 +5,7 @@ Authors: Tian Chen, Mantas Bakšys
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Parity
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Prime.Int
 import Mathlib.NumberTheory.Padics.PadicVal.Defs
@@ -90,7 +90,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
     (Ideal.Quotient.mk (span {s})) (∑ i ∈ range p, (a + (p : R) * b) ^ i * a ^ (p - 1 - i)) =
         ∑ i ∈ Finset.range p,
         mk (span {s}) ((a ^ (i - 1) * (↑p * b) * ↑i + a ^ i) * a ^ (p - 1 - i)) := by
-      simp_rw [RingHom.map_geom_sum₂, ← map_pow, h1, ← _root_.map_mul]
+      simp_rw [s, RingHom.map_geom_sum₂, ← map_pow, h1, ← _root_.map_mul]
     _ =
         mk (span {s})
             (∑ x ∈ Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
@@ -139,23 +139,26 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
       rw [mul_assoc, mul_assoc]
       refine mul_eq_zero_of_left ?_ _
       refine Ideal.Quotient.eq_zero_iff_mem.mpr ?_
-      simp [mem_span_singleton]
-
-namespace multiplicity
+      simp [s, mem_span_singleton]
 
 section IntegralDomain
 
 variable [IsDomain R]
 
-theorem pow_sub_pow_of_prime {p : R} (hp : Prime p) {x y : R} (hxy : p ∣ x - y) (hx : ¬p ∣ x)
-    {n : ℕ} (hn : ¬p ∣ n) : emultiplicity p (x ^ n - y ^ n) = emultiplicity p (x - y) := by
+theorem emultiplicity_pow_sub_pow_of_prime {p : R} (hp : Prime p) {x y : R}
+    (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ} (hn : ¬p ∣ n) :
+    emultiplicity p (x ^ n - y ^ n) = emultiplicity p (x - y) := by
   rw [← geom_sum₂_mul, emultiplicity_mul hp,
     emultiplicity_eq_zero.2 (not_dvd_geom_sum₂ hp hxy hx hn), zero_add]
+
+@[deprecated (since := "2024-11-30")]
+alias multiplicity.pow_sub_pow_of_prime := emultiplicity_pow_sub_pow_of_prime
 
 variable (hp : Prime (p : R)) (hp1 : Odd p) (hxy : ↑p ∣ x - y) (hx : ¬↑p ∣ x)
 include hp hp1 hxy hx
 
-theorem geom_sum₂_eq_one : emultiplicity (↑p) (∑ i ∈ range p, x ^ i * y ^ (p - 1 - i)) = 1 := by
+theorem emultiplicity_geom_sum₂_eq_one :
+    emultiplicity (↑p) (∑ i ∈ range p, x ^ i * y ^ (p - 1 - i)) = 1 := by
   rw [← Nat.cast_one]
   refine emultiplicity_eq_coe.2 ⟨?_, ?_⟩
   · rw [pow_one]
@@ -167,19 +170,28 @@ theorem geom_sum₂_eq_one : emultiplicity (↑p) (∑ i ∈ range p, x ^ i * y 
   rw [pow_two, mul_dvd_mul_iff_left hp.ne_zero]
   exact mt hp.dvd_of_dvd_pow hx
 
-theorem pow_prime_sub_pow_prime :
-    emultiplicity (↑p) (x ^ p - y ^ p) = emultiplicity (↑p) (x - y) + 1 := by
-  rw [← geom_sum₂_mul, emultiplicity_mul hp, geom_sum₂_eq_one hp hp1 hxy hx, add_comm]
+@[deprecated (since := "2024-11-30")]
+alias multiplicity.geom_sum₂_eq_one := emultiplicity_geom_sum₂_eq_one
 
-theorem pow_prime_pow_sub_pow_prime_pow (a : ℕ) :
+theorem emultiplicity_pow_prime_sub_pow_prime :
+    emultiplicity (↑p) (x ^ p - y ^ p) = emultiplicity (↑p) (x - y) + 1 := by
+  rw [← geom_sum₂_mul, emultiplicity_mul hp, emultiplicity_geom_sum₂_eq_one hp hp1 hxy hx, add_comm]
+
+@[deprecated (since := "2024-11-30")]
+alias multiplicity.pow_prime_sub_pow_prime := emultiplicity_pow_prime_sub_pow_prime
+
+theorem emultiplicity_pow_prime_pow_sub_pow_prime_pow (a : ℕ) :
     emultiplicity (↑p) (x ^ p ^ a - y ^ p ^ a) = emultiplicity (↑p) (x - y) + a := by
   induction' a with a h_ind
   · rw [Nat.cast_zero, add_zero, pow_zero, pow_one, pow_one]
   rw [Nat.cast_add, Nat.cast_one, ← add_assoc, ← h_ind, pow_succ, pow_mul, pow_mul]
-  apply pow_prime_sub_pow_prime hp hp1
+  apply emultiplicity_pow_prime_sub_pow_prime hp hp1
   · rw [← geom_sum₂_mul]
     exact dvd_mul_of_dvd_right hxy _
   · exact fun h => hx (hp.dvd_of_dvd_pow h)
+
+@[deprecated (since := "2024-11-30")]
+alias multiplicity.pow_prime_pow_sub_pow_prime_pow := emultiplicity_pow_prime_pow_sub_pow_prime_pow
 
 end IntegralDomain
 
@@ -189,17 +201,17 @@ variable (hp : Nat.Prime p) (hp1 : Odd p)
 include hp hp1
 
 /-- **Lifting the exponent lemma** for odd primes. -/
-theorem Int.pow_sub_pow {x y : ℤ} (hxy : ↑p ∣ x - y) (hx : ¬↑p ∣ x) (n : ℕ) :
+theorem Int.emultiplicity_pow_sub_pow {x y : ℤ} (hxy : ↑p ∣ x - y) (hx : ¬↑p ∣ x) (n : ℕ) :
     emultiplicity (↑p) (x ^ n - y ^ n) = emultiplicity (↑p) (x - y) + emultiplicity p n := by
   cases' n with n
   · simp only [emultiplicity_zero, add_top, pow_zero, sub_self]
-  have h : Finite _ _ := Nat.multiplicity_finite_iff.mpr ⟨hp.ne_one, n.succ_pos⟩
+  have h : FiniteMultiplicity _ _ := Nat.finiteMultiplicity_iff.mpr ⟨hp.ne_one, n.succ_pos⟩
   simp only [Nat.succ_eq_add_one] at h
   rcases emultiplicity_eq_coe.mp h.emultiplicity_eq_multiplicity with ⟨⟨k, hk⟩, hpn⟩
   conv_lhs => rw [hk, pow_mul, pow_mul]
   rw [Nat.prime_iff_prime_int] at hp
-  rw [pow_sub_pow_of_prime hp, pow_prime_pow_sub_pow_prime_pow hp hp1 hxy hx,
-    h.emultiplicity_eq_multiplicity]
+  rw [emultiplicity_pow_sub_pow_of_prime hp,
+    emultiplicity_pow_prime_pow_sub_pow_prime_pow hp hp1 hxy hx, h.emultiplicity_eq_multiplicity]
   · rw [← geom_sum₂_mul]
     exact dvd_mul_of_dvd_right hxy _
   · exact fun h => hx (hp.dvd_of_dvd_pow h)
@@ -208,13 +220,20 @@ theorem Int.pow_sub_pow {x y : ℤ} (hxy : ↑p ∣ x - y) (hx : ¬↑p ∣ x) (
     refine hpn ⟨c, ?_⟩
     rwa [pow_succ, mul_assoc]
 
-theorem Int.pow_add_pow {x y : ℤ} (hxy : ↑p ∣ x + y) (hx : ¬↑p ∣ x) {n : ℕ} (hn : Odd n) :
+@[deprecated (since := "2024-11-30")]
+alias multiplicity.Int.pow_sub_pow := Int.emultiplicity_pow_sub_pow
+
+theorem Int.emultiplicity_pow_add_pow {x y : ℤ} (hxy : ↑p ∣ x + y) (hx : ¬↑p ∣ x)
+    {n : ℕ} (hn : Odd n) :
     emultiplicity (↑p) (x ^ n + y ^ n) = emultiplicity (↑p) (x + y) + emultiplicity p n := by
   rw [← sub_neg_eq_add] at hxy
   rw [← sub_neg_eq_add, ← sub_neg_eq_add, ← Odd.neg_pow hn]
-  exact Int.pow_sub_pow hp hp1 hxy hx n
+  exact Int.emultiplicity_pow_sub_pow hp hp1 hxy hx n
 
-theorem Nat.pow_sub_pow {x y : ℕ} (hxy : p ∣ x - y) (hx : ¬p ∣ x) (n : ℕ) :
+@[deprecated (since := "2024-11-30")]
+alias multiplicity.Int.pow_add_pow := Int.emultiplicity_pow_add_pow
+
+theorem Nat.emultiplicity_pow_sub_pow {x y : ℕ} (hxy : p ∣ x - y) (hx : ¬p ∣ x) (n : ℕ) :
     emultiplicity p (x ^ n - y ^ n) = emultiplicity p (x - y) + emultiplicity p n := by
   obtain hyx | hyx := le_total y x
   · iterate 2 rw [← Int.natCast_emultiplicity]
@@ -222,20 +241,25 @@ theorem Nat.pow_sub_pow {x y : ℕ} (hxy : p ∣ x - y) (hx : ¬p ∣ x) (n : �
     rw [← Int.natCast_dvd_natCast] at hxy hx
     rw [Int.natCast_sub hyx] at *
     push_cast at *
-    exact Int.pow_sub_pow hp hp1 hxy hx n
+    exact Int.emultiplicity_pow_sub_pow hp hp1 hxy hx n
   · simp only [Nat.sub_eq_zero_iff_le.mpr (Nat.pow_le_pow_left hyx n), emultiplicity_zero,
     Nat.sub_eq_zero_iff_le.mpr hyx, top_add]
 
-theorem Nat.pow_add_pow {x y : ℕ} (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) :
+@[deprecated (since := "2024-11-30")]
+alias multiplicity.Nat.pow_sub_pow := Nat.emultiplicity_pow_sub_pow
+
+theorem Nat.emultiplicity_pow_add_pow {x y : ℕ} (hxy : p ∣ x + y) (hx : ¬p ∣ x)
+    {n : ℕ} (hn : Odd n) :
     emultiplicity p (x ^ n + y ^ n) = emultiplicity p (x + y) + emultiplicity p n := by
   iterate 2 rw [← Int.natCast_emultiplicity]
   rw [← Int.natCast_dvd_natCast] at hxy hx
   push_cast at *
-  exact Int.pow_add_pow hp hp1 hxy hx hn
+  exact Int.emultiplicity_pow_add_pow hp hp1 hxy hx hn
+
+@[deprecated (since := "2024-11-30")]
+alias multiplicity.Nat.pow_add_pow := Nat.emultiplicity_pow_add_pow
 
 end LiftingTheExponent
-
-end multiplicity
 
 end CommRing
 
@@ -294,18 +318,17 @@ theorem Int.two_pow_sub_pow' {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2
   have hy_odd : Odd y := by simpa using hx_odd.sub_even hxy_even
   cases' n with n
   · simp only [pow_zero, sub_self, emultiplicity_zero, Int.ofNat_zero, add_top]
-  have h : multiplicity.Finite 2 n.succ := Nat.multiplicity_finite_iff.mpr ⟨by norm_num, n.succ_pos⟩
+  have h : FiniteMultiplicity 2 n.succ := Nat.finiteMultiplicity_iff.mpr ⟨by norm_num, n.succ_pos⟩
   simp only [Nat.succ_eq_add_one] at h
   rcases emultiplicity_eq_coe.mp h.emultiplicity_eq_multiplicity with ⟨⟨k, hk⟩, hpn⟩
-  rw [hk, pow_mul, pow_mul, multiplicity.pow_sub_pow_of_prime,
+  rw [hk, pow_mul, pow_mul, emultiplicity_pow_sub_pow_of_prime,
     Int.two_pow_two_pow_sub_pow_two_pow _ hxy hx, ← hk]
   · norm_cast
     rw [h.emultiplicity_eq_multiplicity]
   · exact Int.prime_two
   · simpa only [even_iff_two_dvd] using hx_odd.pow.sub_odd hy_odd.pow
   · simpa only [even_iff_two_dvd, ← Int.not_even_iff_odd] using hx_odd.pow
-  erw [Int.natCast_dvd_natCast]
-  -- `erw` to deal with `2 : ℤ` vs `(2 : ℕ) : ℤ`
+  norm_cast
   contrapose! hpn
   rw [pow_succ]
   conv_rhs => rw [hk]
@@ -332,8 +355,8 @@ theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 
     emultiplicity_mul Int.prime_two, emultiplicity_mul Int.prime_two]
   · suffices emultiplicity (2 : ℤ) ↑(2 : ℕ) = 1 by rw [this, add_comm 1, ← add_assoc]
     norm_cast
-    rw [multiplicity.Finite.emultiplicity_self]
-    rw [Nat.multiplicity_finite_iff]
+    rw [FiniteMultiplicity.emultiplicity_self]
+    rw [Nat.finiteMultiplicity_iff]
     decide
   · rw [← even_iff_two_dvd, Int.not_even_iff_odd]
     apply Odd.pow
@@ -369,7 +392,7 @@ theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : 
   · exact hn.bot_lt
   · exact Nat.sub_pos_of_lt hyx
   · omega
-  · simp only [tsub_pos_iff_lt, pow_lt_pow_left hyx zero_le' hn]
+  · simp only [tsub_pos_iff_lt, Nat.pow_lt_pow_left hyx hn]
 
 variable {p : ℕ} [hp : Fact p.Prime] (hp1 : Odd p)
 include hp hp1
@@ -378,7 +401,7 @@ theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ}
     padicValNat p (x ^ n - y ^ n) = padicValNat p (x - y) + padicValNat p n := by
   rw [← Nat.cast_inj (R := ℕ∞), Nat.cast_add]
   iterate 3 rw [padicValNat_eq_emultiplicity]
-  · exact multiplicity.Nat.pow_sub_pow hp.out hp1 hxy hx n
+  · exact Nat.emultiplicity_pow_sub_pow hp.out hp1 hxy hx n
   · exact hn.bot_lt
   · exact Nat.sub_pos_of_lt hyx
   · exact Nat.sub_pos_of_lt (Nat.pow_lt_pow_left hyx hn)
@@ -389,7 +412,7 @@ theorem pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) 
   · contradiction
   rw [← Nat.cast_inj (R := ℕ∞), Nat.cast_add]
   iterate 3 rw [padicValNat_eq_emultiplicity]
-  · exact multiplicity.Nat.pow_add_pow hp.out hp1 hxy hx hn
+  · exact Nat.emultiplicity_pow_add_pow hp.out hp1 hxy hx hn
   · exact Odd.pos hn
   · simp only [add_pos_iff, Nat.succ_pos', or_true]
   · exact Nat.lt_add_left _ (pow_pos y.succ_pos _)

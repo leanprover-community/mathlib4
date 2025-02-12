@@ -21,6 +21,7 @@ but not necessarily additive categories, as is assumed in some sources.
 TODO: generalise this to n-angulated categories as in https://arxiv.org/abs/1006.4592
 -/
 
+assert_not_exists TwoSidedIdeal
 
 noncomputable section
 
@@ -55,9 +56,8 @@ relative to that shift is called pretriangulated if the following hold:
   ```
   where the left square commutes, and whose rows are distinguished triangles,
   there exists a morphism `c : Z ⟶ Z'` such that `(a,b,c)` is a triangle morphism.
-
-See <https://stacks.math.columbia.edu/tag/0145>
 -/
+@[stacks 0145]
 class Pretriangulated [∀ n : ℤ, Functor.Additive (shiftFunctor C n)] where
   /-- a class of triangle which are called `distinguished` -/
   distinguishedTriangles : Set (Triangle C)
@@ -114,10 +114,8 @@ theorem inv_rot_of_distTriang (T : Triangle C) (H : T ∈ distTriang C) :
       f       g       h
   X  ───> Y  ───> Z  ───> X⟦1⟧
 ```
-the composition `f ≫ g = 0`.
-See <https://stacks.math.columbia.edu/tag/0146>
--/
-@[reassoc]
+the composition `f ≫ g = 0`. -/
+@[reassoc, stacks 0146]
 theorem comp_distTriang_mor_zero₁₂ (T) (H : T ∈ (distTriang C)) : T.mor₁ ≫ T.mor₂ = 0 := by
   obtain ⟨c, hc⟩ :=
     complete_distinguished_triangle_morphism _ _ (contractible_distinguished T.obj₁) H (𝟙 T.obj₁)
@@ -129,10 +127,8 @@ theorem comp_distTriang_mor_zero₁₂ (T) (H : T ∈ (distTriang C)) : T.mor₁
       f       g       h
   X  ───> Y  ───> Z  ───> X⟦1⟧
 ```
-the composition `g ≫ h = 0`.
-See <https://stacks.math.columbia.edu/tag/0146>
--/
-@[reassoc]
+the composition `g ≫ h = 0`. -/
+@[reassoc, stacks 0146]
 theorem comp_distTriang_mor_zero₂₃ (T : Triangle C) (H : T ∈ distTriang C) :
     T.mor₂ ≫ T.mor₃ = 0 :=
   comp_distTriang_mor_zero₁₂ T.rotate (rot_of_distTriang T H)
@@ -142,10 +138,8 @@ theorem comp_distTriang_mor_zero₂₃ (T : Triangle C) (H : T ∈ distTriang C)
       f       g       h
   X  ───> Y  ───> Z  ───> X⟦1⟧
 ```
-the composition `h ≫ f⟦1⟧ = 0`.
-See <https://stacks.math.columbia.edu/tag/0146>
--/
-@[reassoc]
+the composition `h ≫ f⟦1⟧ = 0`. -/
+@[reassoc, stacks 0146]
 theorem comp_distTriang_mor_zero₃₁ (T : Triangle C) (H : T ∈ distTriang C) :
     T.mor₃ ≫ T.mor₁⟦1⟧' = 0 := by
   have H₂ := rot_of_distTriang T.rotate (rot_of_distTriang T H)
@@ -219,7 +213,7 @@ lemma contractible_distinguished₁ (X : C) :
   refine isomorphic_distinguished _
     (inv_rot_of_distTriang _ (contractible_distinguished X)) _ ?_
   exact Triangle.isoMk _ _ (Functor.mapZeroObject _).symm (Iso.refl _) (Iso.refl _)
-    (by aesop_cat) (by aesop_cat) (by aesop_cat)
+    (by simp) (by simp) (by simp)
 
 /-- Obvious triangles `X ⟶ 0 ⟶ X⟦1⟧ ⟶ X⟦1⟧` are distinguished -/
 lemma contractible_distinguished₂ (X : C) :
@@ -227,7 +221,7 @@ lemma contractible_distinguished₂ (X : C) :
   refine isomorphic_distinguished _
     (inv_rot_of_distTriang _ (contractible_distinguished₁ (X⟦(1 : ℤ)⟧))) _ ?_
   exact Triangle.isoMk _ _ ((shiftEquiv C (1 : ℤ)).unitIso.app X) (Iso.refl _) (Iso.refl _)
-    (by aesop_cat) (by aesop_cat)
+    (by simp) (by simp)
     (by dsimp; simp only [shift_shiftFunctorCompIsoId_inv_app, id_comp])
 
 namespace Triangle
@@ -531,7 +525,7 @@ lemma binaryBiproductTriangle_distinguished (X₁ X₂ : C) :
   dsimp at he₁ he₂
   refine isomorphic_distinguished _ mem _ (Iso.symm ?_)
   refine Triangle.isoMk _ _ (Iso.refl _) e (Iso.refl _)
-    (by aesop_cat) (by aesop_cat) (by aesop_cat)
+    (by aesop_cat) (by aesop_cat) (by simp)
 
 lemma binaryProductTriangle_distinguished (X₁ X₂ : C) :
     binaryProductTriangle X₁ X₂ ∈ distTriang C :=
