@@ -1092,6 +1092,7 @@ theorem singleContinuousLinearMap_apply [Fact (1 ≤ p)] [DecidableEq α] (i : �
 /-- Two continuous additive maps from `lp E p` agree if they agree on `lp.single`.
 
 See note [partially-applied ext lemmas]. -/
+@[local ext] -- not globally `ext` due to `hp`
 theorem ext_continuousAddMonoidHom
     [DecidableEq α] {F} [AddCommMonoid F] [TopologicalSpace F] [T2Space F]
     [Fact (1 ≤ p)] (hp : p ≠ ⊤) ⦃f g : ContinuousAddMonoidHom (lp E p) F⦄
@@ -1108,6 +1109,7 @@ theorem ext_continuousAddMonoidHom
 /-- Two continuous linear maps from `lp E p` agree if they agree on `lp.single`.
 
 See note [partially-applied ext lemmas]. -/
+@[local ext] -- not globally `ext` due to `hp`
 theorem ext_continuousLinearMap
     [DecidableEq α] {F} [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F] [T2Space F]
     [Fact (1 ≤ p)] (hp : p ≠ ⊤) ⦃f g : lp E p →L[𝕜] F⦄
