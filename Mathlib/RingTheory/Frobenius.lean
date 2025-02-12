@@ -232,7 +232,7 @@ lemma exists_of_isInvariant [Q.IsPrime] [Finite (S ⧸ Q)] : ∃ σ : G, IsArith
   exact DFunLike.congr_fun hσ (Ideal.Quotient.mk Q x)
 
 variable (S G) in
-lemma exists_primesOver_isConj (P : Ideal R) [P.IsPrime]
+lemma exists_primesOver_isConj (P : Ideal R)
     (hP : ∃ Q : Ideal.primesOver P S, Finite (S ⧸ Q.1)) :
     ∃ σ : Ideal.primesOver P S → G, (∀ Q, IsArithFrobAt R (σ Q) Q.1) ∧
       (∀ Q₁ Q₂, IsConj (σ Q₁) (σ Q₂)) := by
