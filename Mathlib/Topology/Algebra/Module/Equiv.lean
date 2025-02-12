@@ -151,8 +151,8 @@ instance equivLike :
   coe f := f.toFun
   inv f := f.invFun
   coe_injective' f g h₁ h₂ := by
-    cases' f with f' _
-    cases' g with g' _
+    obtain ⟨f', _⟩ := f
+    obtain ⟨g', _⟩ := g
     rcases f' with ⟨⟨⟨_, _⟩, _⟩, _⟩
     rcases g' with ⟨⟨⟨_, _⟩, _⟩, _⟩
     congr
