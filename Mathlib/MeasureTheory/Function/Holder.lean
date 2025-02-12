@@ -1,10 +1,35 @@
+/-
+Copyright (c) 2025 Jireh Loreaux. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jireh Loreaux
+-/
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.Data.Real.StarOrdered
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.Order.CompletePartialOrder
 
+/-! # Hölder triples and actions on `MeasureTheory.Lp` spaces
+
+This file defines a new class: `ENNReal.HolderTriple` which takes arguments `p q r : ℝ≥0∞`,
+with `r` marked as a `semiOutParam`, and states that `p⁻¹ + q⁻¹ = r⁻¹`. This is exactly the
+condition for which **Hölder's inequality** is valid (see `MeasureTheory.Memℒp.smul`).
+This allows us to declare a heterogeneous scalar multiplication (`HSMul`) instance on
+`MeasureTheory.Lp` spaces.
+
+More generally, given a continuous bilinear map `B : E →L[𝕜] F →L[𝕜] G`, we define an
+associated map `MeasureTheory.Lp.ofBilin : Lp E p μ → Lp F q μ → Lp G r μ` where `p q r` are
+a Hölder triple. We bundle this into a bilinear map `ContinuousLinearMap.holderₗ` and a continuous
+bilinear map `ContinuousLinearMap.holderL`.
+
+When `p q : ℝ≥0∞` are Hölder conjugate (i.e., `HolderTriple p q 1`), we can construct the
+natural continuous linear map `Lp.toDualCLM : Lp (Dual 𝕜 E) p μ →L[𝕜] Dual 𝕜 (Lp E q μ)` given by
+`fun φ f ↦ ∫ x, (φ x) (f x) ∂μ`.
+ -/
+
 open ENNReal
+
+/-! ### Hölder triples -/
 
 namespace ENNReal
 
@@ -45,8 +70,6 @@ and a more canonical value of `r` can be used. -/
 lemma of (p q : ℝ≥0∞) : HolderTriple p q (p⁻¹ + q⁻¹)⁻¹ where
   inv_add_inv := inv_inv _ |>.symm
 
-#exit
-
 instance instTwoTwoOne : HolderTriple 2 2 1 where
   inv_add_inv := by
     rw [← two_mul, ENNReal.mul_inv_cancel]
@@ -70,6 +93,123 @@ noncomputable section
 
 namespace MeasureTheory
 namespace Lp
+
+/-! ### Induced bilinear maps -/
+
+section Bilinear
+
+open scoped NNReal
+
+variable {α 𝕜 E F G : Type*} {m : MeasurableSpace α} {μ : Measure α}
+    {p q r : ENNReal} [hpqr : HolderTriple p q r] [NontriviallyNormedField 𝕜]
+    [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
+
+theorem _root_.MeasureTheory.Memℒp.of_bilin (b : E → F → G) (c : ℝ≥0)
+    {f : α → E} {g : α → F} (hf : Memℒp f p μ) (hg : Memℒp g q μ)
+    (h : AEStronglyMeasurable (fun x ↦ b (f x) (g x)) μ)
+    (hb : ∀ᵐ (x : α) ∂μ, ‖b (f x) (g x)‖₊ ≤ c * ‖f x‖₊ * ‖g x‖₊) :
+    Memℒp (fun x ↦ b (f x) (g x)) r μ :=
+  .intro h <| (eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hf.1 hg.1 b c hb hpqr.div_eq').trans_lt <|
+    by have := hf.2; have := hg.2; finiteness
+
+variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
+    (B : E →L[𝕜] F →L[𝕜] G)
+
+/-- The map between `MeasuryTheory.Lp` spaces satisfying the `ENNReal.HolderTriple`
+condition induced by a continuous bilinear map on the underlying spaces. -/
+def ofBilin (f : Lp E p μ) (g : Lp F q μ) : Lp G r μ :=
+  Memℒp.toLp (fun x ↦ B (f x) (g x)) <| by
+    refine .of_bilin (B · ·) ‖B‖₊ (Lp.memℒp f) (Lp.memℒp g) ?_ <|
+      .of_forall fun _ ↦ B.le_opNorm₂ _ _
+    exact B.aestronglyMeasurable_comp₂ (Lp.memℒp f).1 (Lp.memℒp g).1
+
+lemma coeFn_ofBilin (f : Lp E p μ) (g : Lp F q μ) :
+    (ofBilin B f g : Lp G r μ) =ᵐ[μ] fun x ↦ B (f x) (g x) := by
+  rw [ofBilin]
+  exact Memℒp.coeFn_toLp _
+
+lemma nnnorm_ofBilin_apply_apply_le (f : Lp E p μ) (g : Lp F q μ) :
+    ‖(ofBilin B f g : Lp G r μ)‖₊ ≤ ‖B‖₊ * ‖f‖₊ * ‖g‖₊ := by
+  simp_rw [← ENNReal.coe_le_coe, ENNReal.coe_mul, ← enorm_eq_nnnorm, Lp.enorm_def]
+  apply eLpNorm_congr_ae (coeFn_ofBilin B f g) |>.trans_le
+  exact eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm (Lp.memℒp f).1 (Lp.memℒp g).1 (B · ·) ‖B‖₊
+    (.of_forall fun _ ↦ B.le_opNorm₂ _ _) hpqr.div_eq'
+
+lemma norm_ofBilin_apply_apply_le (f : Lp E p μ) (g : Lp F q μ) :
+    ‖(ofBilin B f g : Lp G r μ)‖ ≤ ‖B‖ * ‖f‖ * ‖g‖ :=
+  NNReal.coe_le_coe.mpr <| nnnorm_ofBilin_apply_apply_le B f g
+
+lemma ofBilin_add_left (f₁ f₂ : Lp E p μ) (g : Lp F q μ) :
+    (ofBilin B (f₁ + f₂) g : Lp G r μ) = ofBilin B f₁ g + ofBilin B f₂ g := by
+  simp only [ofBilin, ← Memℒp.toLp_add]
+  apply Memℒp.toLp_congr
+  filter_upwards [AEEqFun.coeFn_add f₁.val f₂.val] with x hx
+  simp [hx]
+
+lemma ofBilin_add_right (f : Lp E p μ) (g₁ g₂ : Lp F q μ) :
+    (ofBilin B f (g₁ + g₂) : Lp G r μ) = ofBilin B f g₁ + ofBilin B f g₂ := by
+  simp only [ofBilin, ← Memℒp.toLp_add]
+  apply Memℒp.toLp_congr
+  filter_upwards [AEEqFun.coeFn_add g₁.val g₂.val] with x hx
+  simp [hx]
+
+lemma ofBilin_smul_left (c : 𝕜) (f : Lp E p μ) (g : Lp F q μ) :
+    (ofBilin B (c • f) g : Lp G r μ) = c • ofBilin B f g := by
+  simp only [ofBilin, ← Memℒp.toLp_const_smul]
+  apply Memℒp.toLp_congr
+  filter_upwards [Lp.coeFn_smul c f] with x hx
+  simp [hx]
+
+lemma ofBilin_smul_right (c : 𝕜) (f : Lp E p μ) (g : Lp F q μ) :
+    (ofBilin B f (c • g) : Lp G r μ) = c • ofBilin B f g := by
+  simp only [ofBilin, ← Memℒp.toLp_const_smul]
+  apply Memℒp.toLp_congr
+  filter_upwards [Lp.coeFn_smul c g] with x hx
+  simp [hx]
+
+variable (μ p q r) in
+/-- `MeasureTheory.Lp.ofBilin` as a bilinear map. -/
+@[simps! apply_apply]
+def _root_.ContinuousLinearMap.holderₗ : Lp E p μ →ₗ[𝕜] Lp F q μ →ₗ[𝕜] Lp G r μ :=
+  .mk₂ 𝕜 (ofBilin B) (ofBilin_add_left B) (ofBilin_smul_left B)
+    (ofBilin_add_right B) (ofBilin_smul_right B)
+
+variable [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)]
+
+variable (μ p q r) in
+/-- `MeasureTheory.Lp.ofBilin` as a continuous bilinear map. -/
+@[simps! apply_apply]
+def _root_.ContinuousLinearMap.holderL : Lp E p μ →L[𝕜] Lp F q μ →L[𝕜] Lp G r μ :=
+  LinearMap.mkContinuous₂ (B.holderₗ μ p q r) ‖B‖ (norm_ofBilin_apply_apply_le B)
+
+lemma _root_.ContinuousLinearMap.norm_holderL_le : ‖(B.holderL μ p q r)‖ ≤ ‖B‖ :=
+  LinearMap.mkContinuous₂_norm_le _ (norm_nonneg B) _
+
+end Bilinear
+
+section Dual
+
+open NormedSpace
+
+variable {α 𝕜 E : Type*} {m : MeasurableSpace α} {μ : Measure α}
+    {p q : ENNReal} [hpqr : HolderTriple p q 1] [Fact (1 ≤ p)] [Fact (1 ≤ q)]
+    [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+
+variable (𝕜 μ p q E) in
+@[simps!]
+def toDualCLM : Lp (Dual 𝕜 E) p μ →L[𝕜] Dual 𝕜 (Lp E q μ) :=
+  (L1.integralCLM' 𝕜 |>.postcomp <| Lp E q μ) ∘L ((inclusionInDoubleDual 𝕜 E).flip.holderL μ p q 1)
+
+end Dual
+
+
+/-! ### Heterogeneous scalar multiplication
+
+While the previous section is *nominally* more general than this one, and indeed, we could
+use the constructions of the previous section to define the scalar multiplication herein,
+we would lose some slight generality as we would need to require that `𝕜` is a nontrivially
+normed field everywhere. Moreover, it would only simplify a few proofs.
+-/
 
 section SMul
 
@@ -175,209 +315,9 @@ protected lemma smul_comm [SMulCommClass 𝕜' 𝕜 E]
   filter_upwards [Lp.coeFn_smul c f, Lp.coeFn_smul c g] with x hfx hgx
   simp [smul_comm, hfx, hgx]
 
--- we have no instance `One (Lp 𝕜 p μ)` under the assumption
--- variable [IsFiniteMeasure μ]
-
-
 end Module
 
-section LinearMap
-
-variable {𝕜 𝕜' α E : Type*} {m : MeasurableSpace α} {μ : Measure α}
-    {p q r : ℝ≥0∞} [HolderTriple p q r]
-    [NormedField 𝕜'] [NormedRing 𝕜] [NormedAddCommGroup E]
-    [NormedSpace 𝕜' 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
-    [NormedSpace 𝕜' E] [IsScalarTower 𝕜' 𝕜 E] [SMulCommClass 𝕜' 𝕜 E]
-
-variable (𝕜' 𝕜 E μ p q r) in
-/-- Heterogeneous multiplication of `MeasureTheory.Lp` functions as a bilinear map. -/
-def lsmul : Lp 𝕜 p μ →ₗ[𝕜'] Lp E q μ →ₗ[𝕜'] Lp E r μ :=
-  .mk₂ 𝕜' (· • ·) Lp.smul_add Lp.smul_smul_assoc Lp.add_smul <| (Lp.smul_comm · · · |>.symm)
-
-end LinearMap
-
-section ContinuousLinearMap
-
-variable {𝕜 𝕜' α E : Type*} {m : MeasurableSpace α} {μ : Measure α}
-    {p q r : ℝ≥0∞} [HolderTriple p q r]
-    [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)]
-    [NontriviallyNormedField 𝕜'] [NormedRing 𝕜] [NormedAddCommGroup E]
-    [NormedSpace 𝕜' 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
-    [NormedSpace 𝕜' E] [IsScalarTower 𝕜' 𝕜 E] [SMulCommClass 𝕜' 𝕜 E]
-
-variable (𝕜' 𝕜 E μ p q r) in
-/-- Heterogeneous multiplication of `MeasureTheory.Lp` functions as a continuous bilinear map. -/
-def Lsmul : Lp 𝕜 p μ →L[𝕜'] Lp E q μ →L[𝕜'] Lp E r μ :=
-  LinearMap.mkContinuous₂ (lsmul 𝕜 𝕜' E μ p q r) 1 fun f g ↦
-    one_mul (_ : ℝ) ▸ MeasureTheory.Lp.norm_smul_le f g
-
-lemma norm_Lsmul : ‖Lsmul 𝕜 𝕜' E μ p q r‖ ≤ 1 :=
-  LinearMap.mkContinuous₂_norm_le _ zero_le_one _
-
-end ContinuousLinearMap
-
-section Dual
-
-open NormedSpace
-
-variable {𝕜 α E : Type*} {m : MeasurableSpace α} {μ : Measure α}
-    [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    {p q : ℝ≥0∞} [HolderTriple p q 1] [Fact (1 ≤ p)] [Fact (1 ≤ q)]
-
-def dualMap : Lp (Dual 𝕜 E) p μ →L[𝕜] Lp E q μ →L[𝕜] Lp 𝕜 1 μ := sorry
-
-
-#exit
-section Dual
-
-variable {𝕜 α A : Type*} {m : MeasurableSpace α} {μ : Measure α}
-    [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
-    {p q : ℝ≥0∞} [HolderTriple 1 p q] [Fact (1 ≤ p)] [Fact (1 ≤ q)]
-
-variable (𝕜 A μ p q) in
-/-- The integral of the product of Hölder conjugate functions.
-
-When `A := 𝕜`, this is the natural map `Lp 𝕜 q μ → NormedSpace.Dual 𝕜 (Lp 𝕜 r μ)`.
-See `MeasureTheory.Lp.toDual`. -/
-def integralLMul [NormedSpace ℝ A] [SMulCommClass ℝ 𝕜 A] [CompleteSpace A] :
-    Lp A p μ →L[𝕜] Lp A q μ →L[𝕜] A :=
-  (L1.integralCLM' 𝕜 |>.postcomp <| Lp A q μ) ∘L (Lmul 𝕜 A μ p q 1)
-
-#exit
-variable (𝕜 μ p q) in
-/-- The natural map from `Lp 𝕜 q μ` to `NormedSpace.Dual 𝕜 (Lp 𝕜 r μ)` for  a Hölder conjugate pair
-`q r : ℝ≥0∞` given by integrating the product of the two functions. This is a special case of
-`MeasureTheory.Lp.integralLMul`. -/
-def toDualCLM (𝕜 : Type*) [RCLike 𝕜]:
-    Lp 𝕜 p μ →L[𝕜] NormedSpace.Dual 𝕜 (Lp 𝕜 q μ) :=
-  integralLMul 𝕜 𝕜 μ p q
-
-end Dual
-#exit
 end SMul
-section NormedRing
-
-variable {α R : Type*} {m : MeasurableSpace α} [NormedRing R]
-    {p q r : ℝ≥0∞} {μ : Measure α} [hpqr : HolderTriple p q r]
-
-/-- Heterogeneous scalar multiplication of `MeasureTheory.Lp` functions. -/
-instance : HMul (Lp R p μ) (Lp R q μ) (Lp R r μ) where
-  hMul f g := (Lp.memℒp g).mul (Lp.memℒp f) (hpqr.div_eq (r := r)).symm |>.toLp (f * g)
-
-lemma mul_def {f : Lp R p μ} {g : Lp R q μ} :
-    f * g = ((Lp.memℒp g).mul (Lp.memℒp f) (hpqr.div_eq (r := r)).symm).toLp (⇑f * ⇑g) :=
-  rfl
-
-#exit
-lemma coeFn_mul (f : Lp R p μ) (g : Lp R q μ) :
-    (f * g : Lp R r μ) =ᵐ[μ] f * g := by
-  rw [mul_def]
-  exact MeasureTheory.Memℒp.coeFn_toLp _
-
-protected lemma norm_mul_le (f : Lp R p μ) (g : Lp R q μ) :
-    ‖f * g‖ ≤ ‖f‖ * ‖g‖ := by
-  simp only [Lp.norm_def, ← ENNReal.toReal_mul, coeFn_mul]
-  refine ENNReal.toReal_mono ?_ ?_
-  · exact ENNReal.mul_ne_top (eLpNorm_ne_top f) (eLpNorm_ne_top g)
-  · rw [eLpNorm_congr_ae (coeFn_mul f g), ← smul_eq_mul]
-    exact MeasureTheory.eLpNorm_smul_le_mul_eLpNorm (Lp.aestronglyMeasurable g)
-      (Lp.aestronglyMeasurable f) (by simpa using hpqr.eq.symm)
-
-protected lemma mul_add (f₁ f₂ : Lp R p μ) (g : Lp R q μ) :
-    (f₁ + f₂) * g = f₁ * g + f₂ * g := by
-  simp only [mul_def, ← Memℒp.toLp_add]
-  apply Memℒp.toLp_congr
-  filter_upwards [AEEqFun.coeFn_add f₁.val f₂.val] with x hx
-  simp [hx, add_mul]
-
-protected lemma add_mul (f : Lp R p μ) (g₁ g₂  : Lp R q μ) :
-    f * (g₁ + g₂) = f * g₁ + f * g₂ := by
-  simp only [mul_def, ← Memℒp.toLp_add]
-  apply Memℒp.toLp_congr _ _ ?_
-  filter_upwards [AEEqFun.coeFn_add g₁.val g₂.val] with x hx
-  simp [hx, mul_add]
-
-protected lemma mul_comm {R : Type*} [NormedCommRing R] (f : Lp R p μ) (g : Lp R q μ) :
-    f * g = g * f := by
-  ext1
-  -- the specification of `r` below is necessary because it is a `semiOutParam`.
-  filter_upwards [coeFn_mul (r := r) f g, coeFn_mul (r := r) g f] with x hx₁ hx₂
-  simp [hx₁, hx₂, mul_comm]
-
-end NormedRing
-
-section LinearMap
-
-variable {𝕜 α A : Type*} {m : MeasurableSpace α} {μ : Measure α}
-    [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
-    {p q r : ℝ≥0∞} [HolderTriple r p q]
-/-- Heterogeneous multiplication of `MeasureTheory.Lp` functions as a bilinear map. -/
-def lmul : Lp A p μ →ₗ[𝕜] Lp A q μ →ₗ[𝕜] Lp A r μ :=
-  LinearMap.mk₂ 𝕜 (· * ·) Lp.mul_add Lp.smul_mul_assoc Lp.add_mul Lp.mul_smul_comm
-
-protected lemma smul_mul_assoc (c : 𝕜) (f : Lp A p μ) (g : Lp A q μ) :
-    (c • f) * g = c • (f * g) := by
-  simp only [mul_def, ← Memℒp.toLp_const_smul]
-  apply Memℒp.toLp_congr
-  filter_upwards [Lp.coeFn_smul c f] with x hx
-  simp [hx]
-
-protected lemma mul_smul_comm (c : 𝕜) (f : Lp A p μ) (g : Lp A q μ) :
-    f * (c • g) = c • (f * g) := by
-  simp only [mul_def, ← Memℒp.toLp_const_smul]
-  apply Memℒp.toLp_congr
-  filter_upwards [Lp.coeFn_smul c g] with x hx
-  simp [hx]
-
-/-- Heterogeneous multiplication of `MeasureTheory.Lp` functions as a bilinear map. -/
-def lmul : Lp A p μ →ₗ[𝕜] Lp A q μ →ₗ[𝕜] Lp A r μ :=
-  LinearMap.mk₂ 𝕜 (· * ·) Lp.mul_add Lp.smul_mul_assoc Lp.add_mul Lp.mul_smul_comm
-
-end LinearMap
-
-section ContinuousLinearMap
-
-variable {𝕜 α A : Type*} {m : MeasurableSpace α} {μ : Measure α}
-    [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
-    {p q r : ℝ≥0∞} [HolderTriple r p q] [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)]
-
-variable (𝕜 A μ p q r) in
-/-- Heterogeneous multiplication of `MeasureTheory.Lp` functions as a continuous bilinear map. -/
-def Lmul : Lp A p μ →L[𝕜] Lp A q μ →L[𝕜] Lp A r μ :=
-  LinearMap.mkContinuous₂ lmul 1 fun f g ↦
-    one_mul (_ : ℝ) ▸ MeasureTheory.Lp.norm_mul_le f g
-
--- this is necessary :(
-set_option maxSynthPendingDepth 2 in
-lemma norm_Lmul : ‖Lmul 𝕜 A μ p q r‖ ≤ 1 :=
-  LinearMap.mkContinuous₂_norm_le _ zero_le_one _
-
-end ContinuousLinearMap
-
-section Dual
-
-variable {𝕜 α A : Type*} {m : MeasurableSpace α} {μ : Measure α}
-    [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
-    {p q : ℝ≥0∞} [HolderTriple 1 p q] [Fact (1 ≤ p)] [Fact (1 ≤ q)]
-
-variable (𝕜 A μ p q) in
-/-- The integral of the product of Hölder conjugate functions.
-
-When `A := 𝕜`, this is the natural map `Lp 𝕜 q μ → NormedSpace.Dual 𝕜 (Lp 𝕜 r μ)`.
-See `MeasureTheory.Lp.toDual`. -/
-def integralLMul [NormedSpace ℝ A] [SMulCommClass ℝ 𝕜 A] [CompleteSpace A] :
-    Lp A p μ →L[𝕜] Lp A q μ →L[𝕜] A :=
-  (L1.integralCLM' 𝕜 |>.postcomp <| Lp A q μ) ∘L (Lmul 𝕜 A μ p q 1)
-
-variable (𝕜 μ p q) in
-/-- The natural map from `Lp 𝕜 q μ` to `NormedSpace.Dual 𝕜 (Lp 𝕜 r μ)` for  a Hölder conjugate pair
-`q r : ℝ≥0∞` given by integrating the product of the two functions. This is a special case of
-`MeasureTheory.Lp.integralLMul`. -/
-def toDualCLM (𝕜 : Type*) [RCLike 𝕜]:
-    Lp 𝕜 p μ →L[𝕜] NormedSpace.Dual 𝕜 (Lp 𝕜 q μ) :=
-  integralLMul 𝕜 𝕜 μ p q
-
-end Dual
 
 end Lp
 end MeasureTheory
