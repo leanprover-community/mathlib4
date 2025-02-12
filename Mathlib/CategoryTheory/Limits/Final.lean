@@ -335,11 +335,8 @@ section
 variable (G)
 
 /-- When `F : C ⥤ D` is final, and `G : D ⥤ E` has a colimit, then `F ⋙ G` has a colimit also and
-`colimit (F ⋙ G) ≅ colimit G`
-
-https://stacks.math.columbia.edu/tag/04E7
--/
-@[simps! (config := .lemmasOnly)]
+`colimit (F ⋙ G) ≅ colimit G`. -/
+@[simps! (config := .lemmasOnly), stacks 04E7]
 def colimitIso [HasColimit G] : colimit (F ⋙ G) ≅ colimit G :=
   asIso (colimit.pre G F)
 
@@ -684,11 +681,8 @@ section
 variable (G)
 
 /-- When `F : C ⥤ D` is initial, and `G : D ⥤ E` has a limit, then `F ⋙ G` has a limit also and
-`limit (F ⋙ G) ≅ limit G`
-
-https://stacks.math.columbia.edu/tag/04E7
--/
-@[simps! (config := .lemmasOnly)]
+`limit (F ⋙ G) ≅ limit G`. -/
+@[simps! (config := .lemmasOnly), stacks 04E7]
 def limitIso [HasLimit G] : limit (F ⋙ G) ≅ limit G :=
   (asIso (limit.pre G F)).symm
 

@@ -384,6 +384,15 @@ theorem center_eq_top (R) [CommRing R] : center R = ⊤ :=
 instance : CommRing (center R) :=
   { inferInstanceAs (CommSemiring (Subsemiring.center R)), (center R).toRing with }
 
+/-- The center of isomorphic (not necessarily associative) rings are isomorphic. -/
+@[simps!] def centerCongr (e : R ≃+* S) : center R ≃+* center S :=
+  NonUnitalSubsemiring.centerCongr e
+
+/-- The center of a (not necessarily associative) ring
+is isomorphic to the center of its opposite. -/
+@[simps!] def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ :=
+  NonUnitalSubsemiring.centerToMulOpposite
+
 end
 
 section DivisionRing
