@@ -147,34 +147,33 @@ this is the induced map sending `∑ aᵢ·(gᵢ₁, gᵢ₂, gᵢ₃) : G × G 
 noncomputable abbrev fThree : (G × G × G →₀ A) →ₗ[k] H × H × H →₀ B :=
   mapRange.linearMap φ.hom.hom ∘ₗ lmapDomain A k (Prod.map f (Prod.map f f))
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma chainsMap_f_0_comp_zeroChainsLequiv :
-    (chainsMap f φ).f 0 ≫ ModuleCat.ofHom (X := (inhomogeneousChains B).X 0) (Y := B)
-      (zeroChainsLequiv B) = (zeroChainsLequiv A).toModuleIso.hom ≫ φ.hom := by
+    (chainsMap f φ).f 0 ≫ (zeroChainsLequiv B).toModuleIso.hom =
+      (zeroChainsLequiv A).toModuleIso.hom ≫ φ.hom := by
   refine ModuleCat.hom_ext <| lhom_ext' fun x => ModuleCat.homEquiv.symm.bijective.1 ?_
   ext y
   simp [ModuleCat.homEquiv, zeroChainsLequiv, Unique.eq_default]
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma chainsMap_f_1_comp_oneChainsLequiv :
-    (chainsMap f φ).f 1 ≫ ModuleCat.ofHom (X := (inhomogeneousChains B).X 1) (Y := H →₀ B)
-      (oneChainsLequiv B) = (oneChainsLequiv A).toModuleIso.hom ≫ ModuleCat.ofHom (fOne f φ) := by
+    (chainsMap f φ).f 1 ≫ (oneChainsLequiv B).toModuleIso.hom =
+      (oneChainsLequiv A).toModuleIso.hom ≫ ModuleCat.ofHom (fOne f φ) := by
   refine ModuleCat.hom_ext <| lhom_ext' fun x => ModuleCat.homEquiv.symm.bijective.1 ?_
   ext y
   simp [ModuleCat.homEquiv, oneChainsLequiv, fOne]
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma chainsMap_f_2_comp_twoChainsLequiv :
-    (chainsMap f φ).f 2 ≫ ModuleCat.ofHom (X := (inhomogeneousChains B).X 2) (Y := H × H →₀ B)
-      (twoChainsLequiv B) = (twoChainsLequiv A).toModuleIso.hom ≫ ModuleCat.ofHom (fTwo f φ) := by
+    (chainsMap f φ).f 2 ≫ (twoChainsLequiv B).toModuleIso.hom =
+      (twoChainsLequiv A).toModuleIso.hom ≫ ModuleCat.ofHom (fTwo f φ) := by
   refine ModuleCat.hom_ext <| lhom_ext' fun x => ModuleCat.homEquiv.symm.bijective.1 ?_
   ext y
   simp [ModuleCat.homEquiv, twoChainsLequiv, fTwo]
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma chainsMap_f_3_comp_threeChainsLequiv :
-    (chainsMap f φ).f 3 ≫ ModuleCat.ofHom
-      (X := (inhomogeneousChains B).X 3) (Y := H × H × H →₀ B) (threeChainsLequiv B) =
+    (chainsMap f φ).f 3 ≫ (threeChainsLequiv B).toModuleIso.hom =
       (threeChainsLequiv A).toModuleIso.hom ≫ ModuleCat.ofHom (fThree f φ) := by
   refine ModuleCat.hom_ext <| lhom_ext' fun x => ModuleCat.homEquiv.symm.bijective.1 ?_
   ext y
@@ -218,7 +217,7 @@ theorem H0π_comp_H0Map :
 theorem map_comp_isoH0_hom :
     map f φ 0 ≫ (isoH0 B).hom = (isoH0 A).hom ≫ H0Map f φ := by
   simp [isoZeroCycles, ← cancel_epi (groupHomologyπ _ _),
-    chainsMap_f_0_comp_zeroChainsLequiv_assoc f φ]
+    chainsMap_f_0_comp_zeroChainsLequiv_assoc f φ, ← LinearEquiv.toModuleIso_hom]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map from the short complex `(G × G →₀ A) --dOne--> (G →₀ A) --dZero--> A`
@@ -289,7 +288,7 @@ lemma cyclesMap_comp_isoOneCycles_hom :
       (isoOneCycles A).hom ≫ mapOneCycles f φ := by
   simp_rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i, mapOneCycles,
     Category.assoc, cyclesMap'_i, isoOneCycles, ← Category.assoc]
-  simp [chainsMap_f_1_comp_oneChainsLequiv f φ, mapShortComplexH1]
+  simp [chainsMap_f_1_comp_oneChainsLequiv f φ, mapShortComplexH1, ← LinearEquiv.toModuleIso_hom]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map `H₁(G, A) ⟶ H₁(H, B)`. -/
@@ -394,7 +393,7 @@ lemma cyclesMap_comp_isoTwoCycles_hom :
       (isoTwoCycles A).hom ≫ mapTwoCycles f φ := by
   simp_rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH2 B)).i, mapTwoCycles,
       Category.assoc, cyclesMap'_i, isoTwoCycles, ← Category.assoc]
-  simp [chainsMap_f_2_comp_twoChainsLequiv f φ, mapShortComplexH2]
+  simp [chainsMap_f_2_comp_twoChainsLequiv f φ, mapShortComplexH2, ← LinearEquiv.toModuleIso_hom]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map `H₂(G, A) ⟶ H₂(H, B)`. -/
