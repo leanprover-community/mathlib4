@@ -64,12 +64,13 @@ variable {c} in
 index in the family of morphisms `basicCell γ.j`. -/
 def Cells.i (γ : Cells c) : α γ.j := (c.attachCells γ.j γ.hj).π γ.k
 
+variable {c} in
 /-- The inclusion of a cell. -/
-def cell (γ : Cells c) : B γ.j γ.i ⟶ Y :=
+def Cells.ι (γ : Cells c) : B γ.j γ.i ⟶ Y :=
   (c.attachCells γ.j γ.hj).cell γ.k ≫ c.incl.app (Order.succ γ.j)
 
 lemma hom_ext {Z : C} {φ₁ φ₂ : Y ⟶ Z} (h₀ : f ≫ φ₁ = f ≫ φ₂)
-    (h : ∀ (γ : Cells c), c.cell γ ≫ φ₁ = c.cell γ ≫ φ₂) :
+    (h : ∀ (γ : Cells c), γ.ι ≫ φ₁ = γ.ι ≫ φ₂) :
     φ₁ = φ₂ := by
   refine c.isColimit.hom_ext (fun j ↦ ?_)
   dsimp
@@ -81,7 +82,7 @@ lemma hom_ext {Z : C} {φ₁ φ₂ : Y ⟶ Z} (h₀ : f ≫ φ₁ = f ≫ φ₂)
     apply (c.attachCells j hj).hom_ext
     · simpa using hj'
     · intro i
-      simpa only [Category.assoc, cell] using h ({ hj := hj, k := i })
+      simpa only [Category.assoc, Cells.ι] using h ({ hj := hj, k := i })
   | hl j hj hj' =>
     exact (c.F.isColimitOfIsWellOrderContinuous j hj).hom_ext
       (fun ⟨k, hk⟩ ↦ by simpa using hj' k hk)
