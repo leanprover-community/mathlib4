@@ -126,8 +126,10 @@ class PseudoMetricSpace (α : Type u) extends Dist α : Type u where
 @[ext]
 theorem PseudoMetricSpace.ext {α : Type*} {m m' : PseudoMetricSpace α}
     (h : m.toDist = m'.toDist) : m = m' := by
-  cases' m with d _ _ _ ed hed U hU B hB
-  cases' m' with d' _ _ _ ed' hed' U' hU' B' hB'
+  let d := m.toDist
+  obtain ⟨_, _, _, _, hed, _, hU, _, hB⟩ := m
+  let d' := m'.toDist
+  obtain ⟨_, _, _, _, hed', _, hU', _, hB'⟩ := m'
   obtain rfl : d = d' := h
   congr
   · ext x y : 2
