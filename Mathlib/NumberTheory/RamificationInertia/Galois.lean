@@ -119,8 +119,8 @@ include p in
   lying over `p`, then there exists `σ ∈ Aut (B / A)` such that `σ P = Q`. In other words,
   the Galois group `Gal(L / K)` acts transitively on the set of all prime ideals lying over `p`. -/
 theorem exists_map_eq_of_isGalois [IsGalois K L] : ∃ σ : B ≃ₐ[A] B, map σ P = Q := by
-  haveI : NoZeroSMulDivisors A B := NoZeroSMulDivisors.of_field_isFractionRing A B K L
-  haveI : IsInvariant A B (B ≃ₐ[A] B) := isInvariant_of_isGalois' A K L B
+  have : NoZeroSMulDivisors A B := NoZeroSMulDivisors.of_field_isFractionRing A B K L
+  have : IsInvariant A B (B ≃ₐ[A] B) := isInvariant_of_isGalois' A K L B
   rcases IsInvariant.exists_smul_of_under_eq A B (B ≃ₐ[A] B) P Q <|
     (over_def P p).symm.trans (over_def Q p) with ⟨σ, hs⟩
   exact ⟨σ, hs.symm⟩
