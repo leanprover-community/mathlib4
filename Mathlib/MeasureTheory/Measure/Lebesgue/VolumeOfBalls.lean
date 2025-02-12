@@ -342,11 +342,6 @@ theorem volume_closedBall (x : EuclideanSpace ℝ ι) (r : ℝ) :
       .ofReal (sqrt π ^ card ι / Gamma (card ι / 2 + 1)) := by
   rw [addHaar_closedBall_eq_addHaar_ball, EuclideanSpace.volume_ball]
 
-@[deprecated (since := "2024-04-06")]
-alias Euclidean_space.volume_ball := EuclideanSpace.volume_ball
-@[deprecated (since := "2024-04-06")]
-alias Euclidean_space.volume_closedBall := EuclideanSpace.volume_closedBall
-
 end EuclideanSpace
 
 namespace InnerProductSpace

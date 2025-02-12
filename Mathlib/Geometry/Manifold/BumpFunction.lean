@@ -207,7 +207,7 @@ theorem isClosed_image_of_isClosed {s : Set M} (hsc : IsClosed s) (hs : s ⊆ su
   rw [f.image_eq_inter_preimage_of_subset_support hs]
   refine ContinuousOn.preimage_isClosed_of_isClosed
     ((continuousOn_extChartAt_symm _).mono f.closedBall_subset) ?_ hsc
-  exact IsClosed.inter isClosed_ball I.isClosed_range
+  exact IsClosed.inter isClosed_closedBall I.isClosed_range
 
 /-- If `f` is a smooth bump function and `s` closed subset of the support of `f` (i.e., of the open
 ball of radius `f.rOut`), then there exists `0 < r < f.rOut` such that `s` is a subset of the open
