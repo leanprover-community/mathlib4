@@ -9,6 +9,7 @@ import Mathlib.Algebra.PUnitInstances.Module
 import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.Algebra.Algebra.Tower
 
 /-!
 # The category of `R`-modules
@@ -445,19 +446,14 @@ Let `S` be an `S₀`-algebra. Then `S`-modules are modules over `S₀`.
 -/
 scoped instance : Module S₀ M := Module.compHom _ (algebraMap S₀ S)
 
-scoped instance : SMulCommClass S S₀ M where
-  smul_comm s s₀ n :=
-    show s • algebraMap S₀ S s₀ • n = algebraMap S₀ S s₀ • s • n by
-    rw [← smul_assoc, smul_eq_mul, ← Algebra.commutes, mul_smul]
+scoped instance : IsScalarTower S₀ S M := by
+  exact IsScalarTower.of_algebraMap_smul <| fun _ _ ↦ rfl
 
 /--
 Let `S` be an `S₀`-algebra. Then the category of `S`-modules is `S₀`-linear.
 -/
 scoped instance instLinear : Linear S₀ (ModuleCat.{v} S) where
-  smul_comp _ M N s₀ f g := by
-    ext
-    simp [show ∀ (m : M), s₀ • m = algebraMap S₀ S s₀ • m by intros; rfl,
-      show ∀ (n : N), s₀ • n = algebraMap S₀ S s₀ • n by intros; rfl]
+  smul_comp _ M N s₀ f g := by ext; simp
 
 end Algebra
 
