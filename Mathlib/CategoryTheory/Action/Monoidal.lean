@@ -94,12 +94,6 @@ instance : BraidedCategory (Action V G) :=
   braidedCategoryOfFaithful (Action.forget V G) (fun X Y => mkIso (β_ _ _)
     (fun g => by simp [FunctorCategoryEquivalence.inverse])) (by simp)
 
-@[simp]
-theorem β_hom {X Y : Action V G} : (β_ X Y).hom.hom = (β_ X.V Y.V).hom := rfl
-
-@[simp]
-theorem β_inv {X Y : Action V G} : (β_ X Y).inv.hom = (β_ X.V Y.V).inv := rfl
-
 /-- When `V` is braided the forgetful functor `Action V G` to `V` is braided. -/
 instance : (Action.forget V G).Braided where
 
@@ -262,7 +256,7 @@ theorem diagonalSuccIsoTensorTrivial_hom_hom {n : ℕ} (f : Fin (n + 1) → G) :
         Iso.trans_hom, tensorIso_hom, Iso.refl_hom, id_tensorHom, comp_hom,
         instMonoidalCategory_whiskerLeft_hom, mkIso_hom_hom, tensor_ρ', tensor_apply,
         ofMulAction_apply, types_comp_apply, whiskerLeft_apply]
-    <;> simp [tensorObj_def, Fin.tail, Fin.castSucc_fin_succ]
+    <;> simp [tensorObj_def, Fin.tail, Fin.castSucc_fin_succ, ofMulAction_V]
 
 @[simp]
 theorem diagonalSuccIsoTensorTrivial_inv_hom {n : ℕ} (g : G) (f : Fin n → G) :
@@ -270,12 +264,13 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom {n : ℕ} (g : G) (f : Fin n → G)
       (g • Fin.partialProd f : Fin (n + 1) → G) := by
   induction' n with n hn generalizing g
   · funext (x : Fin 1)
-    simp [diagonalSuccIsoTensorTrivial, diagonalOneIsoLeftRegular, Subsingleton.elim x 0]
+    simp [diagonalSuccIsoTensorTrivial, diagonalOneIsoLeftRegular, Subsingleton.elim x 0,
+      ofMulAction_V]
   · funext x
     induction' x using Fin.cases
     <;> simp_all only [diagonalSuccIsoTensorTrivial, instMonoidalCategory_tensorObj_V,
         Iso.trans_inv, comp_hom, mkIso_inv_hom, tensor_ρ', tensor_apply, ofMulAction_apply]
-    <;> simp_all [tensorObj_def, mul_assoc, Fin.partialProd_succ']
+    <;> simp_all [tensorObj_def, mul_assoc, Fin.partialProd_succ', ofMulAction_V]
 
 end
 
