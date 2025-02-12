@@ -394,6 +394,7 @@ section Group
 variable [Group G] {μ : Measure G}
 
 section MeasurableMul
+
 variable [MeasurableMul G]
 
 @[to_additive]
