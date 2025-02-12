@@ -645,8 +645,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subsemiring R}
     Subsemiring.mk' (⋃ i, (S i : Set R))
       (⨆ i, (S i).toSubmonoid) (Submonoid.coe_iSup_of_directed hS)
       (⨆ i, (S i).toAddSubmonoid) (AddSubmonoid.coe_iSup_of_directed hS)
-  -- Porting note: gave the hypothesis an explicit name because `@this` doesn't work
-  suffices h : ⨆ i, S i ≤ U by simpa [U] using @h x
+  suffices ⨆ i, S i ≤ U by simpa [U] using @this x
   exact iSup_le fun i x hx ↦ Set.mem_iUnion.2 ⟨i, hx⟩
 
 theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subsemiring R}
@@ -901,8 +900,6 @@ instance mulActionWithZero [Zero α] [MulActionWithZero R' α] (S : Subsemiring 
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/
 instance module [AddCommMonoid α] [Module R' α] (S : Subsemiring R') : Module S α :=
-  -- Porting note: copying over the `smul` field causes a timeout
-  -- { Module.compHom _ S.subtype with smul := (· • ·) }
   Module.compHom _ S.subtype
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/

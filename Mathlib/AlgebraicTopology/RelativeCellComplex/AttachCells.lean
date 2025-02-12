@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.MorphismProperty.Limits
 # Attaching cells
 
 Given a family of morphisms `g a : A a ⟶ B a` and a morphism `f : X₁ ⟶ X₂`,
-we introduce a structure `AttachCells g f` whch expresses that `X₂`
+we introduce a structure `AttachCells g f` which expresses that `X₂`
 is obtained from `X₁` by attaching cells of the form `g a`. It means that
 there is a pushout diagram of the form
 ```
@@ -18,7 +18,7 @@ there is a pushout diagram of the form
   v                 v
 ⨿ i, B (π i) -----> X₂
 ```
-This means that the morphism `f` is a pushout of coproducts of morphisms
+In other words, the morphism `f` is a pushout of coproducts of morphisms
 of the form `g a : A a ⟶ B a`, see `nonempty_attachCells_iff`.
 
 See the file `RelativeCellComplex.Basic` for transfinite compositions
@@ -44,7 +44,7 @@ structure AttachCells where
   ι : Type w
   /-- for each `i : ι`, we shall attach a cell given by the morphism `g (π i)`. -/
   π : ι → α
-  /-- a colimit cofan which gives aj coproduct of the object `A (π i)` -/
+  /-- a colimit cofan which gives the coproduct of the object `A (π i)` -/
   cofan₁ : Cofan (fun i ↦ A (π i))
   /-- a colimit cofan which gives the coproduct of the object `B (π i)` -/
   cofan₂ : Cofan (fun i ↦ B (π i))
@@ -98,9 +98,9 @@ variable {α' : Type t'} {A' B' : α' → C} (g' : ∀ i', A' i' ⟶ B' i')
   (a : α → α') (ha : ∀ (i : α), Arrow.mk (g i) ≅ Arrow.mk (g' (a i)))
 
 /-- If a family of maps `g` is contained in another family `g'` (up to isomorphisms),
-if `f : X₁ ⟶ X₂` is a morphism, and `X₂` is obtained from `X₁` by attaching cels
-of the form `g`, then it is also obtained by attached cells of the form `g'`. -/
-def chg : AttachCells g' f where
+if `f : X₁ ⟶ X₂` is a morphism, and `X₂` is obtained from `X₁` by attaching cells
+of the form `g`, then it is also obtained by attaching cells of the form `g'`. -/
+def reindexCellTypes : AttachCells g' f where
   ι := c.ι
   π := a ∘ c.π
   cofan₁ := Cofan.mk c.cofan₁.pt
@@ -137,8 +137,7 @@ lemma nonempty_attachCells_iff :
   · rintro ⟨c⟩
     exact c.pushouts_coproducts
   · rintro ⟨Y₁, Y₂, m, g₁, g₂, h, sq⟩
-    obtain ⟨m', hm'⟩ : ∃ m', m' = m := ⟨_, rfl⟩
-    rw [coproducts_iff, ← hm'] at h
+    rw [coproducts_iff] at h
     obtain ⟨ι, ⟨F₁, F₂, c₁, c₂, h₁, h₂, φ, hφ⟩⟩ := h
     let π (i : ι) : α := ((ofHoms_iff _ _).1 (hφ ⟨i⟩)).choose
     let e (i : ι) : Arrow.mk (φ.app ⟨i⟩) ≅ Arrow.mk (g (π i)) :=
@@ -156,12 +155,7 @@ lemma nonempty_attachCells_iff :
       isColimit₂ :=
         (IsColimit.precomposeHomEquiv (Discrete.natIso (fun ⟨i⟩ ↦ e₂ i)) _).1
           (IsColimit.ofIsoColimit h₂ (Cocones.ext (Iso.refl _) (by simp)))
-      hm i := by
-        have eq₁ := c₁.ι.app ⟨i⟩ ≫= hm'
-        have eq₂ := (e i).inv.w
-        rw [IsColimit.fac] at eq₁
-        dsimp [e₁, e₂] at eq₁ eq₂ ⊢
-        rw [Category.assoc, ← eq₁, reassoc_of% eq₂]
+      hm i := by simp [e₁, e₂]
       isPushout := sq }⟩
 
 end HomotopicalAlgebra
