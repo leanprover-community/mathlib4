@@ -169,20 +169,15 @@ private lemma T_leadingcoeff (fne : f ≠ 0) :
       by_contra eq
       repeat rw [map_eq_zero_iff _ (AlgEquiv.injective _)] at eq
       exact h2 eq
-    apply (Finset.sup_lt_iff (Ne.bot_lt (fun x ↦ h2 (degree_eq_bot.mp x)))).mpr
-    exact vs
+    apply (Finset.sup_lt_iff (Ne.bot_lt (fun x ↦ h2 (degree_eq_bot.mp x)))).mpr vs
   nth_rw 2 [← support_sum_monomial_coeff f]
-  have := Finset.sum_eq_add_sum_diff_singleton vin h
-  rw [this]
+  rw [Finset.sum_eq_add_sum_diff_singleton vin h]
   rw [T_coeff] at coeff
-  have := mem_support_iff.mp vin
   have u : IsUnit (finSuccEquiv k n
       ((T f) (h v + ∑ x ∈ f.support \ {v}, h x))).leadingCoeff := by
-    rw [coeff]
-    simp only [algebraMap_eq]
-    refine IsUnit.map MvPolynomial.C <| Ne.isUnit this
-  use u.unit⁻¹
-  exact monic_of_isUnit_leadingCoeff_inv_smul u
+    rw [coeff, algebraMap_eq]
+    exact IsUnit.map MvPolynomial.C <| Ne.isUnit <| mem_support_iff.mp vin
+  exact ⟨u.unit⁻¹, monic_of_isUnit_leadingCoeff_inv_smul u⟩
 
 /-$I$ is an ideal containing $f$.-/
 variable (I : Ideal (MvPolynomial (Fin (n + 1)) k))
