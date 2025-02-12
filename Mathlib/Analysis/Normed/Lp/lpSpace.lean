@@ -917,6 +917,7 @@ protected theorem single_apply_ne (p) (i : α) (a : E i) {j : α} (hij : j ≠ i
 protected theorem single_zero (p) (i : α) :
     lp.single p i (0 : E i) = 0 :=
   ext <| Pi.single_zero _
+
 @[simp]
 protected theorem single_add (p) (i : α) (a b : E i) :
     lp.single p i (a + b) = lp.single p i a + lp.single p i b :=
