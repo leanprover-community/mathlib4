@@ -66,15 +66,15 @@ noncomputable section
 
 section normMap
 
-abbrev normMap (x : mixedSpace K) : (InfinitePlace K → ℝ) := fun w ↦ normAtPlace w x
+-- abbrev normMap (x : mixedSpace K) : (InfinitePlace K → ℝ) := fun w ↦ normAtPlace w x
 
-theorem normMap_mixedEmbedding (x : K) :
-    normMap (mixedEmbedding K x) = fun w ↦ w x := by
+theorem normAtAllPlaces_mixedEmbedding (x : K) :
+    normAtAllPlaces (mixedEmbedding K x) = fun w ↦ w x := by
   ext
-  rw [normMap, normAtPlace_apply]
+  rw [normAtAllPlaces_apply, normAtPlace_apply]
 
-theorem norm_eq_prod_normMap [NumberField K] (x : mixedSpace K) :
-    mixedEmbedding.norm x = ∏ w, (normMap x w) ^ w.mult := by
+theorem norm_eq_prod_normAtAllPlaces [NumberField K] (x : mixedSpace K) :
+    mixedEmbedding.norm x = ∏ w, (normAtAllPlaces x w) ^ w.mult := by
   simp_rw [mixedEmbedding.norm_apply]
 
 end normMap
@@ -84,7 +84,7 @@ section expMap
 variable [NumberField K]
 
 @[simps]
-def expMap : PartialHomeomorph (InfinitePlace K → ℝ) (InfinitePlace K → ℝ) where
+def expMap : PartialHomeomorph (realSpace K) (realSpace K) where
   toFun := fun x w ↦ Real.exp ((w.mult : ℝ)⁻¹ * x w)
   invFun := fun x w ↦ w.mult * Real.log (x w)
   source := Set.univ
@@ -102,33 +102,37 @@ def expMap : PartialHomeomorph (InfinitePlace K → ℝ) (InfinitePlace K → �
   left_inv' := fun _ _ ↦ by simp only [Real.log_exp, mul_inv_cancel_left₀ mult_coe_ne_zero]
   right_inv' := fun _ hx ↦ by simp only [inv_mul_cancel_left₀ mult_coe_ne_zero, Real.exp_log (hx _)]
 
-theorem expMap_apply' (x : InfinitePlace K → ℝ) :
+theorem expMap_apply' (x : realSpace K) :
     expMap x = fun w ↦ Real.exp ((w.mult : ℝ)⁻¹ * x w) := rfl
 
-theorem expMap_pos (x : InfinitePlace K → ℝ) (w : InfinitePlace K) :
+theorem expMap_pos (x : realSpace K) (w : InfinitePlace K) :
     0 < expMap x w :=
   Real.exp_pos _
 
+theorem injective_expMap :
+    Function.Injective (expMap : realSpace K → realSpace K) :=
+  Set.injective_iff_injOn_univ.mpr expMap.injOn
+
 @[simp]
 theorem expMap_zero :
-    expMap (0 : InfinitePlace K → ℝ) = 1 := by
+    expMap (0 : realSpace K) = 1 := by
   simp_rw [expMap_apply', Pi.zero_apply, mul_zero, Real.exp_zero, Pi.one_def]
 
-theorem expMap_add (x y : InfinitePlace K → ℝ) :
+theorem expMap_add (x y : realSpace K) :
     expMap (x + y) = expMap x * expMap y := by
   simp_rw [expMap_apply', Pi.add_apply, mul_add, Real.exp_add, Pi.mul_def]
 
-theorem expMap_sum {ι : Type*} (s : Finset ι) (f : ι → (InfinitePlace K → ℝ)) :
+theorem expMap_sum {ι : Type*} (s : Finset ι) (f : ι → realSpace K) :
     expMap (∑ i ∈ s, f i) = ∏ i ∈ s, expMap (f i) := by
   simp_rw [expMap_apply', prod_fn, ← Real.exp_sum, ← Finset.mul_sum, Finset.sum_apply]
 
-theorem expMap_smul (c : ℝ) (x : InfinitePlace K → ℝ) :
+theorem expMap_smul (c : ℝ) (x : realSpace K) :
     expMap (c • x) = (expMap x) ^ c := by
   simp_rw [expMap_apply', Pi.smul_apply, smul_eq_mul, mul_comm c _, ← mul_assoc, Real.exp_mul,
     Pi.pow_def]
 
 -- That's an awful name
-def restMap : (InfinitePlace K → ℝ) →ₗ[ℝ] ({w : InfinitePlace K // w ≠ w₀} → ℝ) where
+def restMap : realSpace K →ₗ[ℝ] ({w : InfinitePlace K // w ≠ w₀} → ℝ) where
   toFun := fun x w ↦ x w.1 - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹
   map_add' := fun _ _ ↦ funext fun _ ↦ by simpa [Finset.sum_add_distrib] using by ring
   map_smul' := fun _ _ ↦ funext fun _ ↦ by simpa [← Finset.mul_sum] using by ring
@@ -143,28 +147,29 @@ def restMap : (InfinitePlace K → ℝ) →ₗ[ℝ] ({w : InfinitePlace K // w �
 --   left_inv' := sorry
 --   right_inv' := sorry
 
-theorem restMap_apply (x : InfinitePlace K → ℝ) (w : {w : InfinitePlace K // w ≠ w₀}) :
+theorem restMap_apply (x :realSpace K) (w : {w : InfinitePlace K // w ≠ w₀}) :
     restMap x w = x w - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹ := rfl
 
 -- def logMap₀ (x : InfinitePlace K → ℝ) := restMap (expMap.symm x)
 
-theorem restMap_expMap_symm_apply (x : InfinitePlace K → ℝ) (w : {w : InfinitePlace K // w ≠ w₀})  :
+theorem restMap_expMap_symm_apply (x : realSpace K) (w : {w : InfinitePlace K // w ≠ w₀})  :
     restMap (expMap.symm x) w = w.1.mult * (Real.log (x w) -
       (∑ w', w'.mult * Real.log (x w')) * (Module.finrank ℚ K : ℝ)⁻¹) := by
   simp_rw [restMap_apply, expMap_symm_apply, mul_sub]
   rw [← mul_assoc, Finset.mul_sum]
 
-theorem restMap_expMap_symm_normMap {x : mixedSpace K} (hx : mixedEmbedding.norm x ≠ 0) :
-    restMap (expMap.symm (normMap x)) = logMap x := by
+theorem restMap_expMap_symm_normAtAllPlaces {x : mixedSpace K} (hx : mixedEmbedding.norm x ≠ 0) :
+    restMap (expMap.symm (normAtAllPlaces x)) = logMap x := by
   have h {w} : (normAtPlace w x) ^ w.mult ≠ 0 :=
     pow_ne_zero _ (mixedEmbedding.norm_ne_zero_iff.mp hx w)
   ext w
-  simp_rw [restMap_expMap_symm_apply, normMap, logMap_apply, mixedEmbedding.norm_apply,
-    Real.log_prod _ _ fun _ _ ↦ h,  Real.log_pow]
+  simp_rw [restMap_expMap_symm_apply, normAtAllPlaces_apply, logMap_apply,
+    mixedEmbedding.norm_apply, Real.log_prod _ _ fun _ _ ↦ h,  Real.log_pow]
 
 theorem restMap_expMap_symm_place_eval (x : K) (hx : x ≠ 0) :
     restMap (expMap.symm  (fun w ↦ w x)) = logMap (mixedEmbedding K x) := by
-  rw [← normMap_mixedEmbedding, restMap_expMap_symm_normMap (by simp [norm_eq_norm, hx])]
+  rw [← normAtAllPlaces_mixedEmbedding,
+    restMap_expMap_symm_normAtAllPlaces (by simp [norm_eq_norm, hx])]
 
 -- variable [NumberField K]
 
@@ -176,16 +181,20 @@ def equivFinRank : Fin (rank K) ≃ {w : InfinitePlace K // w ≠ w₀} :=
 
 open Classical in
 variable (K) in
-def completeBasis₀ : InfinitePlace K → InfinitePlace K → ℝ := by
+def completeBasis₀ : InfinitePlace K → realSpace K := by
   intro i
   by_cases hi : i = w₀
   · exact fun w ↦ mult w
   · exact expMap.symm (fun w ↦ w (fundSystem K (equivFinRank.symm ⟨i, hi⟩)))
 
+theorem sum_completeBasis₀_of_eq :
+    ∑ w : InfinitePlace K, completeBasis₀ K w₀ w = Module.finrank ℚ K := by
+  rw [completeBasis₀, dif_pos rfl, ← Nat.cast_sum, sum_mult_eq]
+
 theorem restMap_completeBasis₀_of_eq :
     restMap (completeBasis₀ K w₀) = 0 := by
   ext
-  rw [completeBasis₀, dif_pos rfl, restMap_apply, ← Nat.cast_sum, sum_mult_eq, mul_inv_cancel_right₀
+  rw [restMap_apply, sum_completeBasis₀_of_eq, completeBasis₀, dif_pos rfl, mul_inv_cancel_right₀
     (Nat.cast_ne_zero.mpr Module.finrank_pos.ne'), sub_self, Pi.zero_apply]
 
 theorem restMap_completeBasis₀_of_ne (i : {w : InfinitePlace K // w ≠ w₀}) :
@@ -194,21 +203,45 @@ theorem restMap_completeBasis₀_of_ne (i : {w : InfinitePlace K // w ≠ w₀})
   rw [← logMap_eq_logEmbedding, ← restMap_expMap_symm_place_eval, completeBasis₀, dif_neg]
   exact coe_ne_zero _
 
+theorem sum_completeBasis₀_of_ne_eq_zero (i : {w // w ≠ w₀}):
+    ∑ w : InfinitePlace K, completeBasis₀ K i.1 w = 0 := by
+  simp_rw [completeBasis₀, dif_neg i.prop, expMap_symm_apply, ← Real.log_pow]
+  rw [← Real.log_prod _ _ (fun _ _ ↦ by simp), prod_eq_abs_norm, Units.norm, Rat.cast_one,
+    Real.log_one]
+
+theorem sum_eq_zero_of_mem_span {x : realSpace K}
+    (hx : x ∈ Submodule.span ℝ (Set.range fun w : {w // w ≠ w₀} ↦ completeBasis₀ K w.1)) :
+    ∑ w, x w = 0 := by
+  induction hx using Submodule.span_induction with
+  | mem _ h =>
+      obtain ⟨w, rfl⟩ := h
+      exact sum_completeBasis₀_of_ne_eq_zero w
+  | zero => simp
+  | add _ _ _ _ hx hy => simp [Finset.sum_add_distrib, hx, hy]
+  | smul _ _ _ hx => simp [← Finset.mul_sum, hx]
+
 variable (K) in
 theorem linearIndependent_completeBasis₀ :
     LinearIndependent ℝ (completeBasis₀ K) := by
   classical
-  have : LinearIndependent ℝ (fun w : {w // w ≠ w₀} ↦ completeBasis₀ K w.1) := by
+  have h₁ : LinearIndependent ℝ (fun w : {w // w ≠ w₀} ↦ completeBasis₀ K w.1) := by
     refine LinearIndependent.of_comp restMap ?_
     simp_rw [Function.comp_def, restMap_completeBasis₀_of_ne, logEmbedding_fundSystem]
     have := (((basisUnitLattice K).ofZLatticeBasis ℝ _).reindex equivFinRank).linearIndependent
     convert this
     simp only [ne_eq, Basis.coe_reindex, Function.comp_apply, Basis.ofZLatticeBasis_apply]
-  -- Use linearIndependent_option and Equiv.optionSubtypeNe
-  sorry
+  have h₂ : completeBasis₀ K w₀ ∉ Submodule.span ℝ
+      (Set.range (fun w : {w // w ≠ w₀} ↦ completeBasis₀ K w.1)) := by
+    intro h
+    have := sum_eq_zero_of_mem_span h
+    rw [sum_completeBasis₀_of_eq, Nat.cast_eq_zero] at this
+    exact Module.finrank_pos.ne' this
+  rw [← linearIndependent_equiv (Equiv.optionSubtypeNe w₀)]
+  rw [linearIndependent_option]
+  exact ⟨h₁, h₂⟩
 
 variable (K) in
-def completeBasis : Basis (InfinitePlace K) ℝ (InfinitePlace K → ℝ) :=
+def completeBasis : Basis (InfinitePlace K) ℝ (realSpace K) :=
   basisOfLinearIndependentOfCardEqFinrank (linearIndependent_completeBasis₀ K)
     (Module.finrank_fintype_fun_eq_card _).symm
 
@@ -231,7 +264,7 @@ theorem restMap_completeBasis_of_ne (i : {w : InfinitePlace K // w ≠ w₀}) :
   rw [completeBasis, coe_basisOfLinearIndependentOfCardEqFinrank, restMap_completeBasis₀_of_ne]
 
 open Classical in
-theorem restMap_sum_smul_completeBasis (x : InfinitePlace K → ℝ) :
+theorem restMap_sum_smul_completeBasis (x : realSpace K) :
     restMap (∑ w, x w • completeBasis K w) =
       ∑ i, x (equivFinRank i) • ((basisUnitLattice K).ofZLatticeBasis ℝ _ i) := by
   simp_rw [map_sum, _root_.map_smul, Fintype.sum_eq_add_sum_fintype_ne _ w₀,
@@ -240,8 +273,7 @@ theorem restMap_sum_smul_completeBasis (x : InfinitePlace K → ℝ) :
     ← equivFinRank.sum_comp, Equiv.symm_apply_apply]
 
 open Classical in
-theorem completeBasis_repr_eq_unitLatticeBasis_repr (x : InfinitePlace K → ℝ)
-    (w : {w // w ≠ w₀}) :
+theorem completeBasis_repr_eq_unitLatticeBasis_repr (x : realSpace K) (w : {w // w ≠ w₀}) :
     (completeBasis K).repr x w.1 =
       ((basisUnitLattice K).ofZLatticeBasis ℝ _).repr (restMap x) (equivFinRank.symm w) := by
   have := restMap.congr_arg ((completeBasis K).sum_repr x)
@@ -257,22 +289,22 @@ theorem expMap_basis_of_ne (i : {w : InfinitePlace K // w ≠ w₀}) :
     expMap (completeBasis K i) = fun w ↦ w (fundSystem K (equivFinRank.symm i) : 𝓞 K) := by
   rw [completeBasis_apply_of_ne, PartialHomeomorph.right_inv _ (by simp)]
 
-def expMapBasis : PartialHomeomorph (InfinitePlace K → ℝ) (InfinitePlace K → ℝ) :=
+def expMapBasis : PartialHomeomorph (realSpace K) (realSpace K) :=
   (completeBasis K).equivFunL.symm.toHomeomorph.transPartialHomeomorph expMap
 
-theorem expMapBasis_apply (x : InfinitePlace K → ℝ) :
+theorem expMapBasis_apply (x : realSpace K) :
     expMapBasis x = expMap ((completeBasis K).equivFun.symm x) := rfl
 
 theorem expMapBasis_source :
-    expMapBasis.source = (Set.univ :  Set (InfinitePlace K → ℝ)) := rfl
+    expMapBasis.source = (Set.univ :  Set (realSpace K)) := rfl
 
 theorem expMapBasis_target :
-    expMapBasis.target =  {x : InfinitePlace K → ℝ | ∀ w, 0 < x w} := rfl
+    expMapBasis.target =  {x : realSpace K | ∀ w, 0 < x w} := rfl
 
-theorem expMapBasis_pos (x : InfinitePlace K → ℝ) (w : InfinitePlace K) :
+theorem expMapBasis_pos (x : realSpace K) (w : InfinitePlace K) :
     0 < expMapBasis x w := expMap_pos _ _
 
-theorem prod_expMapBasis_pow (x : InfinitePlace K → ℝ) :
+theorem prod_expMapBasis_pow (x : realSpace K) :
     ∏ w, (expMapBasis x w) ^ w.mult = Real.exp (x w₀) ^ Module.finrank ℚ K := by
   classical
   simp_rw [expMapBasis_apply]
@@ -298,24 +330,24 @@ theorem prod_expMapBasis_pow (x : InfinitePlace K → ℝ) :
   rw [← Nat.cast_sum]
   rw [sum_mult_eq]
 
-theorem norm_expMapBasis {x : mixedSpace K} (hx : mixedEmbedding.norm x ≠ 0) :
-    expMapBasis.symm (normMap x) w₀ =
+theorem normAtAllPlaces_expMapBasis {x : mixedSpace K} (hx : mixedEmbedding.norm x ≠ 0) :
+    expMapBasis.symm (normAtAllPlaces x) w₀ =
       (Module.finrank ℚ K : ℝ)⁻¹ * Real.log (mixedEmbedding.norm x) := by
-  rw [norm_eq_prod_normMap, ← expMapBasis.right_inv (x := normMap x), prod_expMapBasis_pow,
-    expMapBasis.left_inv, Real.log_pow, Real.log_exp, inv_mul_cancel_left₀]
+  rw [norm_eq_prod_normAtAllPlaces, ← expMapBasis.right_inv (x := normAtAllPlaces x),
+    prod_expMapBasis_pow, expMapBasis.left_inv, Real.log_pow, Real.log_exp, inv_mul_cancel_left₀]
   · rw [Nat.cast_ne_zero]
     exact Module.finrank_pos.ne'
   · rw [expMapBasis_source]
     trivial
   · rw [expMapBasis_target]
     intro w
-    rw [normMap]
+    rw [normAtAllPlaces]
     rw [mixedEmbedding.norm_ne_zero_iff] at hx
     specialize hx w
     refine lt_of_le_of_ne' (normAtPlace_nonneg w x) hx
 
 open Classical in
-theorem logMap₀_expMapBasis (x : InfinitePlace K → ℝ) :
+theorem logMap₀_expMapBasis (x : realSpace K) :
     restMap (expMap.symm (expMapBasis x)) =
       ((basisUnitLattice K).ofZLatticeBasis ℝ _).equivFun.symm (fun i ↦ x (equivFinRank i)) := by
   rw [expMapBasis_apply, expMap.left_inv trivial, Basis.equivFun_symm_apply,
@@ -353,55 +385,55 @@ theorem logMap₀_expMapBasis (x : InfinitePlace K → ℝ) :
 
 
 
-variable (K) in
-abbrev polarSpace := (InfinitePlace K → ℝ) × ({w : InfinitePlace K // w.IsComplex} → ℝ)
+-- variable (K) in
+-- abbrev polarSpace := (realSpace K) × ({w : InfinitePlace K // w.IsComplex} → ℝ)
 
-open Classical MeasurableEquiv in
-def measurableEquivRealMixedSpacePolarSpace : realMixedSpace K ≃ᵐ polarSpace K :=
-  MeasurableEquiv.trans (prodCongr (refl _)
-    (arrowProdEquivProdArrow ℝ ℝ _)) <|
-    MeasurableEquiv.trans prodAssoc.symm <|
-      MeasurableEquiv.trans
-        (prodCongr (prodCongr (refl _)
-          (arrowCongr' (Equiv.subtypeEquivRight (fun _ ↦ not_isReal_iff_isComplex.symm)) (refl _)))
-            (refl _))
-          (prodCongr (piEquivPiSubtypeProd (fun _ ↦ ℝ) _).symm (refl _))
+-- open Classical MeasurableEquiv in
+-- def measurableEquivRealMixedSpacePolarSpace : realMixedSpace K ≃ᵐ polarSpace K :=
+--   MeasurableEquiv.trans (prodCongr (refl _)
+--     (arrowProdEquivProdArrow ℝ ℝ _)) <|
+--     MeasurableEquiv.trans prodAssoc.symm <|
+--       MeasurableEquiv.trans
+--         (prodCongr (prodCongr (refl _)
+--           (arrowCongr' (Equiv.subtypeEquivRight (fun _ ↦ not_isReal_iff_isComplex.symm)) (refl _)))
+--             (refl _))
+--           (prodCongr (piEquivPiSubtypeProd (fun _ ↦ ℝ) _).symm (refl _))
 
-open Classical in
-def homeoRealMixedSpacePolarSpace : realMixedSpace K ≃ₜ polarSpace K :=
-{ measurableEquivRealMixedSpacePolarSpace with
-  continuous_toFun := by
-    change Continuous fun x : realMixedSpace K ↦  (fun w ↦ if hw : w.IsReal then x.1 ⟨w, hw⟩ else
-      (x.2 ⟨w, not_isReal_iff_isComplex.mp hw⟩).1, fun w ↦ (x.2 w).2)
-    refine continuous_prod_mk.mpr ⟨continuous_pi_iff.mpr fun w ↦ ?_, by fun_prop⟩
-    split_ifs <;> fun_prop
-  continuous_invFun := by
-    change Continuous fun x : polarSpace K ↦
-      (⟨fun w ↦ x.1 w.val, fun w ↦ ⟨x.1 w.val, x.2 w⟩⟩ : realMixedSpace K)
-    fun_prop }
+-- open Classical in
+-- def homeoRealMixedSpacePolarSpace : realMixedSpace K ≃ₜ polarSpace K :=
+-- { measurableEquivRealMixedSpacePolarSpace with
+--   continuous_toFun := by
+--     change Continuous fun x : realMixedSpace K ↦  (fun w ↦ if hw : w.IsReal then x.1 ⟨w, hw⟩ else
+--       (x.2 ⟨w, not_isReal_iff_isComplex.mp hw⟩).1, fun w ↦ (x.2 w).2)
+--     refine continuous_prod_mk.mpr ⟨continuous_pi_iff.mpr fun w ↦ ?_, by fun_prop⟩
+--     split_ifs <;> fun_prop
+--   continuous_invFun := by
+--     change Continuous fun x : polarSpace K ↦
+--       (⟨fun w ↦ x.1 w.val, fun w ↦ ⟨x.1 w.val, x.2 w⟩⟩ : realMixedSpace K)
+--     fun_prop }
 
-omit [NumberField K] in
-@[simp]
-theorem homeoRealMixedSpacePolarSpace_symm_apply (x : polarSpace K) :
-    homeoRealMixedSpacePolarSpace.symm x = ⟨fun w ↦ x.1 w, fun w ↦ (x.1 w, x.2 w)⟩ := rfl
+-- omit [NumberField K] in
+-- @[simp]
+-- theorem homeoRealMixedSpacePolarSpace_symm_apply (x : polarSpace K) :
+--     homeoRealMixedSpacePolarSpace.symm x = ⟨fun w ↦ x.1 w, fun w ↦ (x.1 w, x.2 w)⟩ := rfl
 
-open Classical in
-omit [NumberField K] in
-theorem homeoRealMixedSpacePolarSpace_apply (x : realMixedSpace K) :
-    homeoRealMixedSpacePolarSpace x =
-      ⟨fun w ↦ if hw : w.IsReal then x.1 ⟨w, hw⟩ else
-        (x.2 ⟨w, not_isReal_iff_isComplex.mp hw⟩).1, fun w ↦ (x.2 w).2⟩ := rfl
+-- open Classical in
+-- omit [NumberField K] in
+-- theorem homeoRealMixedSpacePolarSpace_apply (x : realMixedSpace K) :
+--     homeoRealMixedSpacePolarSpace x =
+--       ⟨fun w ↦ if hw : w.IsReal then x.1 ⟨w, hw⟩ else
+--         (x.2 ⟨w, not_isReal_iff_isComplex.mp hw⟩).1, fun w ↦ (x.2 w).2⟩ := rfl
 
-open Classical in
-theorem volume_preserving_homeoRealMixedSpacePolarSpace :
-    MeasurePreserving (homeoRealMixedSpacePolarSpace (K := K)) :=
-  ((MeasurePreserving.id volume).prod
-    (volume_measurePreserving_arrowProdEquivProdArrow ℝ ℝ _)).trans <|
-      (volume_preserving_prodAssoc.symm).trans <|
-        (((MeasurePreserving.id volume).prod (volume_preserving_arrowCongr' _
-          (MeasurableEquiv.refl ℝ) (.id volume))).prod (.id volume)).trans <|
-            ((volume_preserving_piEquivPiSubtypeProd
-              (fun _ : InfinitePlace K ↦ ℝ) (fun w ↦ IsReal w)).symm).prod (.id volume)
+-- open Classical in
+-- theorem volume_preserving_homeoRealMixedSpacePolarSpace :
+--     MeasurePreserving (homeoRealMixedSpacePolarSpace (K := K)) :=
+--   ((MeasurePreserving.id volume).prod
+--     (volume_measurePreserving_arrowProdEquivProdArrow ℝ ℝ _)).trans <|
+--       (volume_preserving_prodAssoc.symm).trans <|
+--         (((MeasurePreserving.id volume).prod (volume_preserving_arrowCongr' _
+--           (MeasurableEquiv.refl ℝ) (.id volume))).prod (.id volume)).trans <|
+--             ((volume_preserving_piEquivPiSubtypeProd
+--               (fun _ : InfinitePlace K ↦ ℝ) (fun w ↦ IsReal w)).symm).prod (.id volume)
 
 @[simps!]
 def expMapBasisFull₀ : PartialHomeomorph (mixedSpace K) (mixedSpace K) :=
@@ -411,12 +443,12 @@ def expMapBasisFull₀ : PartialHomeomorph (mixedSpace K) (mixedSpace K) :=
 def expMapBasisFull₁ : PartialHomeomorph (polarSpace K) (polarSpace K) :=
   expMapBasis.symm.prod (PartialHomeomorph.refl _)
 
-@[simps!]
-def polarCoord₀ : PartialHomeomorph (mixedSpace K) (polarSpace K) :=
-    (mixedEmbedding.polarCoord K).transHomeomorph homeoRealMixedSpacePolarSpace
+-- @[simps!]
+-- def polarCoord₀ : PartialHomeomorph (mixedSpace K) (polarSpace K) :=
+--     (mixedEmbedding.polarCoord K).transHomeomorph homeoRealMixedSpacePolarSpace
 
 def expMapBasisFull : PartialHomeomorph (mixedSpace K) (polarSpace K) :=
-  expMapBasisFull₀.trans <| polarCoord₀.trans expMapBasisFull₁
+  expMapBasisFull₀.trans <| (polarSpaceCoord K).trans expMapBasisFull₁
 
 theorem expMapBasisFull_source :
     expMapBasisFull.source =
@@ -536,7 +568,7 @@ section integrals
 
 open Real ENNReal Classical
 
-theorem setLIntegral_expMapBasis {s : Set (InfinitePlace K → ℝ)} (hs₀ : MeasurableSet s)
+theorem setLIntegral_expMapBasis {s : Set (realSpace K)} (hs₀ : MeasurableSet s)
     (hs₁ : s ⊆ {x | 0 ≤ x w₀}) (f : (InfinitePlace K → ℝ) → ℝ≥0∞) :
     ∫⁻ x in expMapBasis '' s, f x =
       (2 : ℝ≥0∞)⁻¹ ^ nrComplexPlaces K * ENNReal.ofReal (regulator K) * (Module.finrank ℚ K) *
@@ -560,7 +592,7 @@ theorem lintegral_eq_lintegral_polarCoord₀_symm (f : mixedSpace K → ℝ≥0�
         Homeomorph.symm_apply_apply]
 
 open Classical in
-theorem volume_expMapBasisFull_preimage_set_prod_set {s : Set (InfinitePlace K → ℝ)}
+theorem volume_expMapBasisFull_preimage_set_prod_set {s : Set (realSpace K)}
     {t : Set ({w : InfinitePlace K // IsComplex w} → ℝ)} :
     volume (expMapBasisFull⁻¹' (s ×ˢ t)) =
       volume ((Set.univ.pi fun _ ↦ Set.Ioo (-π) π) ∩ t) * ∫⁻ x in expMapBasis⁻¹' s,
@@ -919,3 +951,5 @@ end normLessThanOne
 end
 
 end NumberField.mixedEmbedding.NormLessThanOne
+
+
