@@ -130,14 +130,6 @@ theorem takeD_left' {l₁ l₂ : List α} {n} {a} (h : length l₁ = n) : takeD 
 
 end TakeD
 
-/-! ### splitAt and splitOn -/
-
-section SplitAtOn
-
-@[deprecated (since := "2024-08-17")] alias splitAt_eq_take_drop := splitAt_eq
-
-end SplitAtOn
-
 /-! ### filter -/
 
 section Filter
