@@ -135,12 +135,11 @@ section OrderedSemiring
 
 variable [Semiring α] [Preorder α] {a b c d : α}
 
--- Porting note: it's unfortunate we need to write `(@one_le_two α)` here.
 theorem add_le_mul_two_add [ZeroLEOneClass α] [MulPosMono α] [AddLeftMono α]
     (a2 : 2 ≤ a) (b0 : 0 ≤ b) : a + (2 + b) ≤ a * (2 + b) :=
   calc
     a + (2 + b) ≤ a + (a + a * b) :=
-      add_le_add_left (add_le_add a2 <| le_mul_of_one_le_left b0 <| (@one_le_two α).trans a2) a
+      add_le_add_left (add_le_add a2 <| le_mul_of_one_le_left b0 <| one_le_two.trans a2) a
     _ ≤ a * (2 + b) := by rw [mul_add, mul_two, add_assoc]
 
 theorem mul_le_mul_of_nonpos_left [ExistsAddOfLE α] [PosMulMono α]
@@ -460,12 +459,11 @@ theorem add_le_mul_of_left_le_right [ZeroLEOneClass α] [NeZero (R := α) 1]
     _ = 2 * b := (two_mul b).symm
     _ ≤ a * b := (mul_le_mul_right this).mpr a2
 
--- Porting note: we used to not need the type annotation on `(0 : α)` at the start of the `calc`.
 theorem add_le_mul_of_right_le_left [ZeroLEOneClass α] [NeZero (R := α) 1]
     [AddLeftMono α] [PosMulStrictMono α]
     (b2 : 2 ≤ b) (ba : b ≤ a) : a + b ≤ a * b :=
   have : 0 < a :=
-    calc (0 : α)
+    calc 0
       _ < 2 := zero_lt_two
       _ ≤ b := b2
       _ ≤ a := ba

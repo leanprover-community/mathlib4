@@ -44,8 +44,7 @@ open SheafedSpace
 
 @[simp]
 lemma res_zero {X : RingedSpace.{u}} {U V : TopologicalSpace.Opens X}
-    (hUV : U ≤ V) : (0 : X.presheaf.obj (op V)) |_ U =
-      (0 : (CategoryTheory.forget CommRingCat).obj (X.presheaf.obj (op U))) :=
+    (hUV : U ≤ V) : (0 : X.presheaf.obj (op V)) |_ U = (0 : X.presheaf.obj (op U)) :=
   RingHom.map_zero _
 
 variable (X : RingedSpace)
