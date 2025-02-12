@@ -18,9 +18,9 @@ We also provide extra API for these maps in degrees 0, 1, 2.
 ## Main definitions
 
 * `groupHomology.chainsMap f φ` is the map `inhomogeneousChains A ⟶ inhomogeneousChains B`
-induced by a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`.
+  induced by a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`.
 * `groupHomology.map f φ n` is the map `Hₙ(G, A) ⟶ Hₙ(H, B)` induced by a group homomorphism
-`f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`.
+  `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`.
 
 -/
 
