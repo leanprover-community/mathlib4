@@ -88,7 +88,7 @@ variable (𝕜 : Type*) [Fact (1 ≤ p)]
 as an element of `Lp`. -/
 def toLp [NormedField 𝕜] [NormedSpace 𝕜 E] : (α →ᵇ E) →L[𝕜] Lp E p μ :=
   LinearMap.mkContinuous
-    (LinearMap.codRestrict (Lp.LpSubmodule E p μ 𝕜)
+    (LinearMap.codRestrict (Lp.LpSubmodule 𝕜 E p μ)
       ((ContinuousMap.toAEEqFunLinearMap μ).comp (toContinuousMapLinearMap α E 𝕜)) mem_Lp)
     _ Lp_norm_le
 
