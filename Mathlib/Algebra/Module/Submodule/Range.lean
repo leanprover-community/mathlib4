@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
   Heather Macbeth
 -/
 import Mathlib.Algebra.Module.Submodule.Ker
+import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Data.Set.Finite.Range
 
 /-!
@@ -121,6 +122,11 @@ theorem _root_.AddMonoidHom.coe_toIntLinearMap_range {M M₂ : Type*} [AddCommGr
 lemma _root_.Submodule.map_comap_eq_of_le [RingHomSurjective τ₁₂] {f : F} {p : Submodule R₂ M₂}
     (h : p ≤ LinearMap.range f) : (p.comap f).map f = p :=
   SetLike.coe_injective <| Set.image_preimage_eq_of_subset h
+
+lemma range_restrictScalars {R S M N : Type*} [Semiring R] [Semiring S]
+    [AddCommMonoid M] [AddCommMonoid N] [SMul R S] [Module R M] [Module S M]
+    [Module R N] [Module S N] [CompatibleSMul M N R S] [IsScalarTower R S N] (f : M →ₗ[S] N) :
+  LinearMap.range (f.restrictScalars R) = f.range.restrictScalars R := rfl
 
 end
 
@@ -301,6 +307,12 @@ theorem range_inclusion (p q : Submodule R M) (h : p ≤ q) :
 @[simp]
 theorem map_subtype_range_inclusion {p p' : Submodule R M} (h : p ≤ p') :
     map p'.subtype (range <| inclusion h) = p := by simp [range_inclusion, map_comap_eq, h]
+
+lemma restrictScalars_map {R S M N : Type*} [Semiring R] [Semiring S]
+    [AddCommMonoid M] [AddCommMonoid N] [SMul R S] [Module R M] [Module S M]
+    [IsScalarTower R S M] [Module R N] [Module S N] [IsScalarTower R S N]
+    (f : M →ₗ[S] N) (M' : Submodule S M)  :
+  (M'.map f).restrictScalars R = (M'.restrictScalars R).map (f.restrictScalars R) := rfl
 
 /-- If `N ⊆ M` then submodules of `N` are the same as submodules of `M` contained in `N`.
 
