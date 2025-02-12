@@ -350,10 +350,8 @@ instance x_projective (G : Type u) [Group G] (n : ℕ) :
 theorem d_eq (n : ℕ) : ((groupCohomology.resolution k G).d (n + 1) n).hom =
     ModuleCat.ofHom (d k G (n + 1)) := by
   refine ModuleCat.hom_ext <| Finsupp.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
-  simp [classifyingSpaceUniversalCover_obj, Action.ofMulAction_V, groupCohomology.resolution,
-    Rep.coe_linearization_obj, d_of (k := k) x, SimplicialObject.δ,
-    ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), classifyingSpaceUniversalCover_map,
-    SimplexCategory.δ, Fin.succAboveOrderEmb]
+  simp [Action.ofMulAction_V, groupCohomology.resolution, SimplicialObject.δ,
+    ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), SimplexCategory.δ, Fin.succAboveOrderEmb]
 
 section Exactness
 
