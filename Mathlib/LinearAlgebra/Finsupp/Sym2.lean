@@ -6,8 +6,8 @@ Authors: Christopher Hoskin
 
 import Mathlib.Data.Sym.Sym2
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.LinearAlgebra.Finsupp.Defs
 import Mathlib.Data.Finset.Sym
+import Mathlib.Data.Finsupp.Defs
 
 /-!
 # Finitely Supported Commutative multiplication
