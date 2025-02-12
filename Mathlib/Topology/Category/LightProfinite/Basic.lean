@@ -151,7 +151,6 @@ def limitConeIsLimit {J : Type v} [SmallCategory J] [CountableCategory J]
 noncomputable instance createsCountableLimits {J : Type v} [SmallCategory J] [CountableCategory J] :
     CreatesLimitsOfShape J lightToProfinite.{max v u} where
   CreatesLimit {F} :=
-    have : HasLimitsOfSize Profinite := hasLimitsOfSizeShrink _
     createsLimitOfFullyFaithfulOfIso (limitCone.{v, u} F).pt <|
       (Profinite.limitConeIsLimit.{v, u} (F ⋙ lightToProfinite)).conePointUniqueUpToIso
         (limit.isLimit _)

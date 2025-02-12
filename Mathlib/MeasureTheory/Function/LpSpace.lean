@@ -70,7 +70,7 @@ noncomputable section
 open TopologicalSpace MeasureTheory Filter
 open scoped NNReal ENNReal Topology MeasureTheory Uniformity symmDiff
 
-variable {α E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
+variable {α 𝕜 𝕜' E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
   [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
 
 namespace MeasureTheory
@@ -411,7 +411,6 @@ example [Fact (1 ≤ p)] : SeminormedAddGroup.toNNNorm = (Lp.instNNNorm : NNNorm
 
 section BoundedSMul
 
-variable {𝕜 𝕜' : Type*}
 variable [NormedRing 𝕜] [NormedRing 𝕜'] [Module 𝕜 E] [Module 𝕜' E]
 variable [BoundedSMul 𝕜 E] [BoundedSMul 𝕜' E]
 
@@ -419,20 +418,20 @@ theorem const_smul_mem_Lp (c : 𝕜) (f : Lp E p μ) : c • (f : α →ₘ[μ] 
   rw [mem_Lp_iff_eLpNorm_lt_top, eLpNorm_congr_ae (AEEqFun.coeFn_smul _ _)]
   exact eLpNorm_const_smul_le.trans_lt <| ENNReal.mul_lt_top ENNReal.coe_lt_top f.prop
 
-variable (E p μ 𝕜)
+variable (𝕜 E p μ)
 
 /-- The `𝕜`-submodule of elements of `α →ₘ[μ] E` whose `Lp` norm is finite.  This is `Lp E p μ`,
 with extra structure. -/
 def LpSubmodule : Submodule 𝕜 (α →ₘ[μ] E) :=
   { Lp E p μ with smul_mem' := fun c f hf => by simpa using const_smul_mem_Lp c ⟨f, hf⟩ }
 
-variable {E p μ 𝕜}
+variable {𝕜 E p μ}
 
-theorem coe_LpSubmodule : (LpSubmodule E p μ 𝕜).toAddSubgroup = Lp E p μ :=
+theorem coe_LpSubmodule : (LpSubmodule 𝕜 E p μ).toAddSubgroup = Lp E p μ :=
   rfl
 
 instance instModule : Module 𝕜 (Lp E p μ) :=
-  { (LpSubmodule E p μ 𝕜).module with }
+  { (LpSubmodule 𝕜 E p μ).module with }
 
 theorem coeFn_smul (c : 𝕜) (f : Lp E p μ) : ⇑(c • f) =ᵐ[μ] c • ⇑f :=
   AEEqFun.coeFn_smul _ _
@@ -1548,7 +1547,7 @@ variable (𝕜 : Type*) [Fact (1 ≤ p)]
 as an element of `Lp`. -/
 def toLp [NormedField 𝕜] [NormedSpace 𝕜 E] : (α →ᵇ E) →L[𝕜] Lp E p μ :=
   LinearMap.mkContinuous
-    (LinearMap.codRestrict (Lp.LpSubmodule E p μ 𝕜)
+    (LinearMap.codRestrict (Lp.LpSubmodule 𝕜 E p μ)
       ((ContinuousMap.toAEEqFunLinearMap μ).comp (toContinuousMapLinearMap α E 𝕜)) mem_Lp)
     _ Lp_norm_le
 
