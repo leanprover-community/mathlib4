@@ -5,6 +5,7 @@ Authors: Minchao Wu, Chris Hughes, Mantas Bakšys
 -/
 import Mathlib.Data.List.Basic
 import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Data.List.Induction
 import Mathlib.Order.MinMax
 import Mathlib.Order.WithBot
 
