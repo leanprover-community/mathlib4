@@ -84,8 +84,8 @@ lemma δ_apply (x₃ : (forget₂ C Ab).obj (S.X₃.X i))
     (k : ι) (hk : c.next j = k) :
     (forget₂ C Ab).map (hS.δ i j hij)
       ((forget₂ C Ab).map (S.X₃.homologyπ i) (S.X₃.cyclesMk x₃ j (c.next_eq' hij) hx₃)) =
-        (forget₂ C Ab).map (S.X₁.homologyπ j)
-        (S.X₁.cyclesMk x₁ k hk (δ_apply_aux hS _ _ x₂ x₁ hx₁ _)) := by
+        (forget₂ C Ab).map (S.X₁.homologyπ j) (S.X₁.cyclesMk x₁ k hk
+          (δ_apply_aux hS _ _ x₂ x₁ hx₁ _)) := by
   refine hS.δ_apply' i j hij _ ((forget₂ C Ab).map (S.X₂.pOpcycles i) x₂) _ ?_ ?_
   · rw [← ConcreteCategory.forget₂_comp_apply, ← ConcreteCategory.forget₂_comp_apply,
       HomologicalComplex.p_opcyclesMap, Functor.map_comp, ConcreteCategory.comp_apply,
