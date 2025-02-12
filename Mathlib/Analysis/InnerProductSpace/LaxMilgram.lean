@@ -76,7 +76,6 @@ theorem isClosed_range (coercive : IsCoercive B) : IsClosed (range B♯ : Set V)
   rcases coercive.antilipschitz with ⟨_, _, antilipschitz⟩
   exact antilipschitz.isClosed_range B♯.uniformContinuous
 
-@[deprecated (since := "2024-03-19")] alias closed_range := isClosed_range
 
 theorem range_eq_top (coercive : IsCoercive B) : range B♯ = ⊤ := by
   haveI := coercive.isClosed_range.completeSpace_coe

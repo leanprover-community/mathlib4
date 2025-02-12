@@ -46,8 +46,8 @@ def oangle (p₁ p₂ p₃ : P) : Real.Angle :=
 theorem continuousAt_oangle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.2 ≠ x.2.1) :
     ContinuousAt (fun y : P × P × P => ∡ y.1 y.2.1 y.2.2) x := by
   let f : P × P × P → V × V := fun y => (y.1 -ᵥ y.2.1, y.2.2 -ᵥ y.2.1)
-  have hf1 : (f x).1 ≠ 0 := by simp [hx12]
-  have hf2 : (f x).2 ≠ 0 := by simp [hx32]
+  have hf1 : (f x).1 ≠ 0 := by simp [f, hx12]
+  have hf2 : (f x).2 ≠ 0 := by simp [f, hx32]
   exact (o.continuousAt_oangle hf1 hf2).comp ((continuous_fst.vsub continuous_snd.fst).prod_mk
     (continuous_snd.snd.vsub continuous_snd.fst)).continuousAt
 
@@ -620,7 +620,7 @@ theorem _root_.Collinear.oangle_sign_of_sameRay_vsub {p₁ p₂ p₃ p₄ : P} (
         (continuous_fst.subtype_val.prod_mk (continuous_const.prod_mk
           (continuous_snd.vadd continuous_fst.subtype_val))).continuousOn
     have hf : ContinuousOn (fun p : P × P × P => ∡ p.1 p.2.1 p.2.2) s := by
-      refine ContinuousAt.continuousOn fun p hp => continuousAt_oangle ?_ ?_
+      refine continuousOn_of_forall_continuousAt fun p hp => continuousAt_oangle ?_ ?_
       all_goals
         simp_rw [s, Set.mem_image, Set.mem_prod, Set.mem_univ, true_and, Prod.ext_iff] at hp
         obtain ⟨q₁, q₅, q₂⟩ := p
@@ -716,7 +716,7 @@ theorem _root_.AffineSubspace.SSameSide.oangle_sign_eq {s : AffineSubspace ℝ P
   have hc : IsConnected sp := (isConnected_setOf_sSameSide hp₃p₄.2.1 hp₃p₄.nonempty).image _
     (continuous_const.prod_mk (Continuous.Prod.mk_left _)).continuousOn
   have hf : ContinuousOn (fun p : P × P × P => ∡ p.1 p.2.1 p.2.2) sp := by
-    refine ContinuousAt.continuousOn fun p hp => continuousAt_oangle ?_ ?_
+    refine continuousOn_of_forall_continuousAt fun p hp => continuousAt_oangle ?_ ?_
     all_goals
       simp_rw [sp, Set.mem_image, Set.mem_setOf] at hp
       obtain ⟨p', hp', rfl⟩ := hp

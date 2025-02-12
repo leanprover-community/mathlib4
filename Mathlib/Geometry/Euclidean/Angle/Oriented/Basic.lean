@@ -421,7 +421,7 @@ theorem eq_iff_norm_eq_and_oangle_eq_zero (x y : V) : x = y ↔ ‖x‖ = ‖y�
     have : ‖y‖ ≠ 0 := by simpa using hy
     obtain rfl : r = 1 := by
       apply mul_right_cancel₀ this
-      simpa [norm_smul, _root_.abs_of_nonneg hr] using h₁
+      simpa [norm_smul, abs_of_nonneg hr] using h₁
     simp
 
 /-- Two vectors with equal norms are equal if and only if they have zero angle between them. -/
@@ -442,10 +442,7 @@ theorem oangle_add {x y z : V} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
   simp_rw [oangle]
   rw [← Complex.arg_mul_coe_angle, o.kahler_mul y x z]
   · congr 1
-    convert Complex.arg_real_mul _ (_ : 0 < ‖y‖ ^ 2) using 2
-    · norm_cast
-    · have : 0 < ‖y‖ := by simpa using hy
-      positivity
+    exact mod_cast Complex.arg_real_mul _ (by positivity : 0 < ‖y‖ ^ 2)
   · exact o.kahler_ne_zero hx hy
   · exact o.kahler_ne_zero hy hz
 
@@ -541,11 +538,9 @@ theorem inner_eq_norm_mul_norm_mul_cos_oangle (x y : V) :
     ⟪x, y⟫ = ‖x‖ * ‖y‖ * Real.Angle.cos (o.oangle x y) := by
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
-  have : ‖x‖ ≠ 0 := by simpa using hx
-  have : ‖y‖ ≠ 0 := by simpa using hy
   rw [oangle, Real.Angle.cos_coe, Complex.cos_arg, o.abs_kahler]
   · simp only [kahler_apply_apply, real_smul, add_re, ofReal_re, mul_re, I_re, ofReal_im]
-    -- TODO(#15486): used to be `field_simp`; replaced by `simp only ...` to speed up
+    -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp`; replaced by `simp only ...` to speed up
     -- Reinstate `field_simp` once it is faster.
     simp (disch := field_simp_discharge) only [mul_zero, I_im, mul_one, sub_self, add_zero,
       mul_div_assoc', mul_div_cancel_left₀]
@@ -794,7 +789,7 @@ theorem oangle_sign_smul_add_right (x y : V) (r : ℝ) :
   have hc : IsConnected s := isConnected_univ.image _ (continuous_const.prod_mk
     ((continuous_id.smul continuous_const).add continuous_const)).continuousOn
   have hf : ContinuousOn (fun z : V × V => o.oangle z.1 z.2) s := by
-    refine ContinuousAt.continuousOn fun z hz => o.continuousAt_oangle ?_ ?_
+    refine continuousOn_of_forall_continuousAt fun z hz => o.continuousAt_oangle ?_ ?_
     all_goals
       simp_rw [s, Set.mem_image] at hz
       obtain ⟨r', -, rfl⟩ := hz

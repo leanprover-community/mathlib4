@@ -24,7 +24,7 @@ assert_not_exists Monoid
 open Nat
 
 namespace List
-variable {α β : Type*} {l l₁ l₂ : List α} {a : α}
+variable {α β : Type*} {l : List α}
 
 instance : Trans (@List.Perm α) (@List.Perm α) List.Perm where
   trans := @List.Perm.trans α
@@ -149,57 +149,45 @@ theorem perm_replicate_append_replicate
     l ~ replicate m a ++ replicate n b ↔ count a l = m ∧ count b l = n ∧ l ⊆ [a, b] := by
   rw [perm_iff_count, ← Decidable.and_forall_ne a, ← Decidable.and_forall_ne b]
   suffices l ⊆ [a, b] ↔ ∀ c, c ≠ b → c ≠ a → c ∉ l by
-    simp (config := { contextual := true }) [count_replicate, h, this, count_eq_zero, Ne.symm]
+    simp +contextual [count_replicate, h, this, count_eq_zero, Ne.symm]
   trans ∀ c, c ∈ l → c = b ∨ c = a
   · simp [subset_def, or_comm]
   · exact forall_congr' fun _ => by rw [← and_imp, ← not_or, not_imp_not]
 
-theorem Perm.bind_left (l : List α) {f g : α → List β} (h : ∀ a ∈ l, f a ~ g a) :
-    l.bind f ~ l.bind g :=
-  Perm.join_congr <| by
+theorem Perm.flatMap_left (l : List α) {f g : α → List β} (h : ∀ a ∈ l, f a ~ g a) :
+    l.flatMap f ~ l.flatMap g :=
+  Perm.flatten_congr <| by
     rwa [List.forall₂_map_right_iff, List.forall₂_map_left_iff, List.forall₂_same]
 
-theorem bind_append_perm (l : List α) (f g : α → List β) :
-    l.bind f ++ l.bind g ~ l.bind fun x => f x ++ g x := by
+@[deprecated (since := "2024-10-16")] alias Perm.bind_left := Perm.flatMap_left
+
+theorem flatMap_append_perm (l : List α) (f g : α → List β) :
+    l.flatMap f ++ l.flatMap g ~ l.flatMap fun x => f x ++ g x := by
   induction' l with a l IH
   · simp
-  simp only [bind_cons, append_assoc]
+  simp only [flatMap_cons, append_assoc]
   refine (Perm.trans ?_ (IH.append_left _)).append_left _
   rw [← append_assoc, ← append_assoc]
   exact perm_append_comm.append_right _
 
-theorem map_append_bind_perm (l : List α) (f : α → β) (g : α → List β) :
-    l.map f ++ l.bind g ~ l.bind fun x => f x :: g x := by
-  simpa [← map_eq_bind] using bind_append_perm l (fun x => [f x]) g
+@[deprecated (since := "2024-10-16")] alias bind_append_perm := flatMap_append_perm
+
+theorem map_append_flatMap_perm (l : List α) (f : α → β) (g : α → List β) :
+    l.map f ++ l.flatMap g ~ l.flatMap fun x => f x :: g x := by
+  simpa [← map_eq_flatMap] using flatMap_append_perm l (fun x => [f x]) g
+
+@[deprecated (since := "2024-10-16")] alias map_append_bind_perm := map_append_flatMap_perm
 
 theorem Perm.product_right {l₁ l₂ : List α} (t₁ : List β) (p : l₁ ~ l₂) :
     product l₁ t₁ ~ product l₂ t₁ :=
-  p.bind_right _
+  p.flatMap_right _
 
 theorem Perm.product_left (l : List α) {t₁ t₂ : List β} (p : t₁ ~ t₂) :
     product l t₁ ~ product l t₂ :=
-  (Perm.bind_left _) fun _ _ => p.map _
+  (Perm.flatMap_left _) fun _ _ => p.map _
 
 theorem Perm.product {l₁ l₂ : List α} {t₁ t₂ : List β} (p₁ : l₁ ~ l₂) (p₂ : t₁ ~ t₂) :
     product l₁ t₁ ~ product l₂ t₂ :=
   (p₁.product_right t₁).trans (p₂.product_left l₂)
-
-theorem perm_lookmap (f : α → Option α) {l₁ l₂ : List α}
-    (H : Pairwise (fun a b => ∀ c ∈ f a, ∀ d ∈ f b, a = b ∧ c = d) l₁) (p : l₁ ~ l₂) :
-    lookmap f l₁ ~ lookmap f l₂ := by
-  induction' p with a l₁ l₂ p IH a b l l₁ l₂ l₃ p₁ _ IH₁ IH₂; · simp
-  · cases h : f a
-    · simpa [h] using IH (pairwise_cons.1 H).2
-    · simp [lookmap_cons_some _ _ h, p]
-  · cases' h₁ : f a with c <;> cases' h₂ : f b with d
-    · simpa [h₁, h₂] using swap _ _ _
-    · simpa [h₁, lookmap_cons_some _ _ h₂] using swap _ _ _
-    · simpa [lookmap_cons_some _ _ h₁, h₂] using swap _ _ _
-    · rcases (pairwise_cons.1 H).1 _ (mem_cons.2 (Or.inl rfl)) _ h₂ _ h₁ with ⟨rfl, rfl⟩
-      exact Perm.refl _
-  · refine (IH₁ H).trans (IH₂ ((p₁.pairwise_iff ?_).1 H))
-    intro x y h c hc d hd
-    rw [@eq_comm _ y, @eq_comm _ c]
-    apply h d hd c hc
 
 end List

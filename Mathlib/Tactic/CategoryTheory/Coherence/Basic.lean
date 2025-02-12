@@ -102,6 +102,6 @@ def main (ρ : Type) [Context ρ] [MonadMor₁ (CoherenceM ρ)] [MonadMor₂Iso 
         try
           pureCoherence ρ nm mvarId
         catch _ => return [mvarId]
-    return mvarIds''.join
+    return mvarIds''.flatten
 
 end Mathlib.Tactic.BicategoryLike

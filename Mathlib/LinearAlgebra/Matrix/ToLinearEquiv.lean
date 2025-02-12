@@ -50,7 +50,7 @@ See `Matrix.toLinearEquiv` for the same map on arbitrary modules.
 -/
 def toLinearEquiv' (P : Matrix n n R) (_ : Invertible P) : (n → R) ≃ₗ[R] n → R :=
   GeneralLinearGroup.generalLinearEquiv _ _ <|
-    Matrix.GeneralLinearGroup.toLinear <| unitOfInvertible P
+    Matrix.GeneralLinearGroup.toLin <| unitOfInvertible P
 
 @[simp]
 theorem toLinearEquiv'_apply (P : Matrix n n R) (h : Invertible P) :

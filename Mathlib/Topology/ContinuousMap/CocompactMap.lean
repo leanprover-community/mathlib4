@@ -121,7 +121,7 @@ variable (α)
 protected def id : CocompactMap α α :=
   ⟨ContinuousMap.id _, tendsto_id⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(CocompactMap.id α) = id :=
   rfl
 

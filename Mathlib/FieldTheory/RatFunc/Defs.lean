@@ -3,7 +3,8 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Polynomial.Degree.Definitions
+import Mathlib.Algebra.Polynomial.Degree.Domain
+import Mathlib.Algebra.Ring.NonZeroDivisors
 import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
@@ -48,8 +49,6 @@ the codomain is not a field or even an integral domain.
 
 noncomputable section
 
-open scoped Classical
-
 open scoped nonZeroDivisors Polynomial
 
 universe u v
@@ -81,8 +80,13 @@ theorem ofFractionRing_injective : Function.Injective (ofFractionRing : _ → Ra
   fun _ _ => ofFractionRing.inj
 
 theorem toFractionRing_injective : Function.Injective (toFractionRing : _ → FractionRing K[X])
-  -- Porting note: the `xy` input was `rfl` and then there was no need for the `subst`
   | ⟨x⟩, ⟨y⟩, xy => by subst xy; rfl
+
+@[simp] lemma toFractionRing_inj {x y : RatFunc K} :
+    toFractionRing x = toFractionRing y ↔ x = y :=
+  toFractionRing_injective.eq_iff
+
+@[deprecated (since := "2024-12-29")] alias toFractionRing_eq_iff := toFractionRing_inj
 
 /-- Non-dependent recursion principle for `RatFunc K`:
 To construct a term of `P : Sort*` out of `x : RatFunc K`,
@@ -99,18 +103,10 @@ of `∀ {p q a : K[X]} (hq : q ≠ 0) (ha : a ≠ 0), f (a * p) (a * q) = f p q)
 -/
 protected irreducible_def liftOn {P : Sort v} (x : RatFunc K) (f : K[X] → K[X] → P)
     (H : ∀ {p q p' q'} (_hq : q ∈ K[X]⁰) (_hq' : q' ∈ K[X]⁰), q' * p = q * p' → f p q = f p' q') :
-    P := by
-  refine Localization.liftOn (toFractionRing x) (fun p q => f p q) ?_
-  intros p p' q q' h
-  exact H q.2 q'.2 (let ⟨⟨c, hc⟩, mul_eq⟩ := Localization.r_iff_exists.mp h
-    mul_cancel_left_coe_nonZeroDivisors.mp mul_eq)
--- Porting note: the definition above was as follows
---    (-- Fix timeout by manipulating elaboration order
---    fun p q => f p q)
---    fun p p' q q' h => by
---    exact H q.2 q'.2
---      (let ⟨⟨c, hc⟩, mul_eq⟩ := Localization.r_iff_exists.mp h
---      mul_cancel_left_coe_nonZeroDivisors.mp mul_eq)
+    P :=
+  Localization.liftOn (toFractionRing x) (fun p q => f p q) fun {_ _ q q'} h =>
+    H q.2 q'.2 (let ⟨⟨_, _⟩, mul_eq⟩ := Localization.r_iff_exists.mp h
+      mul_cancel_left_coe_nonZeroDivisors.mp mul_eq)
 
 theorem liftOn_ofFractionRing_mk {P : Sort v} (n : K[X]) (d : K[X]⁰) (f : K[X] → K[X] → P)
     (H : ∀ {p q p' q'} (_hq : q ∈ K[X]⁰) (_hq' : q' ∈ K[X]⁰), q' * p = q * p' → f p q = f p' q') :
@@ -147,13 +143,11 @@ theorem mk_zero (p : K[X]) : RatFunc.mk p 0 = ofFractionRing (0 : FractionRing K
   rw [mk_eq_div', RingHom.map_zero, div_zero]
 
 theorem mk_coe_def (p : K[X]) (q : K[X]⁰) :
-    -- Porting note: filled in `(FractionRing K[X])` that was an underscore.
-    RatFunc.mk p q = ofFractionRing (IsLocalization.mk' (FractionRing K[X]) p q) := by
+    RatFunc.mk p q = ofFractionRing (IsLocalization.mk' _ p q) := by
   simp only [mk_eq_div', ← Localization.mk_eq_mk', FractionRing.mk_eq_div]
 
 theorem mk_def_of_mem (p : K[X]) {q} (hq : q ∈ K[X]⁰) :
     RatFunc.mk p q = ofFractionRing (IsLocalization.mk' (FractionRing K[X]) p ⟨q, hq⟩) := by
-  -- Porting note: there was an `[anonymous]` in the simp set
   simp only [← mk_coe_def]
 
 theorem mk_def_of_ne (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
@@ -165,19 +159,16 @@ theorem mk_def_of_ne (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
 theorem mk_eq_localization_mk (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
     RatFunc.mk p q =
       ofFractionRing (Localization.mk p ⟨q, mem_nonZeroDivisors_iff_ne_zero.mpr hq⟩) := by
-  -- Porting note: the original proof, did not need to pass `hq`
   rw [mk_def_of_ne _ hq, Localization.mk_eq_mk']
 
---  porting note: replaced `algebraMap _ _` with `algebraMap K[X] (FractionRing K[X])`
 theorem mk_one' (p : K[X]) :
-    RatFunc.mk p 1 = ofFractionRing (algebraMap K[X] (FractionRing K[X]) p) := by
-  -- Porting note: had to hint `M := K[X]⁰` below
+    RatFunc.mk p 1 = ofFractionRing (algebraMap _ _ p) := by
   rw [← IsLocalization.mk'_one (M := K[X]⁰) (FractionRing K[X]) p, ← mk_coe_def, Submonoid.coe_one]
 
 theorem mk_eq_mk {p q p' q' : K[X]} (hq : q ≠ 0) (hq' : q' ≠ 0) :
     RatFunc.mk p q = RatFunc.mk p' q' ↔ p * q' = p' * q := by
   rw [mk_def_of_ne _ hq, mk_def_of_ne _ hq', ofFractionRing_injective.eq_iff,
-    IsLocalization.mk'_eq_iff_eq', -- Porting note: removed `[anonymous], [anonymous]`
+    IsLocalization.mk'_eq_iff_eq',
     (IsFractionRing.injective K[X] (FractionRing K[X])).eq_iff]
 
 theorem liftOn_mk {P : Sort v} (p q : K[X]) (f : K[X] → K[X] → P) (f0 : ∀ p, f p 0 = f 0 1)

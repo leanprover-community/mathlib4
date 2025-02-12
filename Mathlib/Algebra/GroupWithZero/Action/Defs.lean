@@ -34,9 +34,7 @@ More sophisticated lemmas belong in `GroupTheory.GroupAction`.
 group action
 -/
 
-assert_not_exists Equiv.Perm.equivUnitsEnd
-assert_not_exists Prod.fst_mul
-assert_not_exists Ring
+assert_not_exists Equiv.Perm.equivUnitsEnd Prod.fst_mul Ring
 
 open Function
 
@@ -169,7 +167,7 @@ abbrev DistribSMul.compFun (f : N → M) : DistribSMul N A :=
 /-- Each element of the scalars defines an additive monoid homomorphism. -/
 @[simps]
 def DistribSMul.toAddMonoidHom (x : M) : A →+ A :=
-  { SMulZeroClass.toZeroHom A x with toFun := (· • ·) x, map_add' := smul_add x }
+  { SMulZeroClass.toZeroHom A x with toFun := (x • ·), map_add' := smul_add x }
 
 end DistribSMul
 

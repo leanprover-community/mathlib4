@@ -6,8 +6,9 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Polynomial.GroupRingAction
 import Mathlib.Algebra.Ring.Action.Field
 import Mathlib.Algebra.Ring.Action.Invariant
-import Mathlib.FieldTheory.Normal
+import Mathlib.FieldTheory.Normal.Defs
 import Mathlib.FieldTheory.Separable
+import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
@@ -188,11 +189,8 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
     (hf : Polynomial.eval₂ (Subfield.subtype <| FixedPoints.subfield G F) x f = 0) :
     minpoly G F x ∣ f := by
   classical
--- Porting note: the two `have` below were not needed.
+-- Porting note: the `have` below was not needed.
   have : (subfield G F).subtype = (subfield G F).toSubring.subtype := rfl
-  have h : Polynomial.map (MulSemiringActionHom.toRingHom (IsInvariantSubring.subtypeHom G
-    (subfield G F).toSubring)) f = Polynomial.map
-    ((IsInvariantSubring.subtypeHom G (subfield G F).toSubring)) f := rfl
   rw [← Polynomial.map_dvd_map' (Subfield.subtype <| FixedPoints.subfield G F), minpoly, this,
     Polynomial.map_toSubring _ _, prodXSubSMul]
   refine
@@ -201,9 +199,9 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
       QuotientGroup.induction_on y fun g => ?_
   rw [Polynomial.dvd_iff_isRoot, Polynomial.IsRoot.def, MulAction.ofQuotientStabilizer_mk,
     Polynomial.eval_smul', ← this, ← Subfield.toSubring_subtype_eq_subtype, ←
-    IsInvariantSubring.coe_subtypeHom' G (FixedPoints.subfield G F).toSubring, h,
+    IsInvariantSubring.coe_subtypeHom' G (FixedPoints.subfield G F).toSubring,
     ← MulSemiringActionHom.coe_polynomial, ← MulSemiringActionHom.map_smul, smul_polynomial,
-    MulSemiringActionHom.coe_polynomial, ← h, IsInvariantSubring.coe_subtypeHom',
+    MulSemiringActionHom.coe_polynomial, IsInvariantSubring.coe_subtypeHom',
     Polynomial.eval_map, Subfield.toSubring_subtype_eq_subtype, hf, smul_zero]
 
 -- Why is this so slow?
@@ -296,10 +294,12 @@ theorem linearIndependent_toLinearMap (R : Type u) (A : Type v) (B : Type w) [Co
       _)
   this.of_comp _
 
-theorem cardinal_mk_algHom (K : Type u) (V : Type v) (W : Type w) [Field K] [Field V] [Algebra K V]
+theorem cardinalMk_algHom (K : Type u) (V : Type v) (W : Type w) [Field K] [Field V] [Algebra K V]
     [FiniteDimensional K V] [Field W] [Algebra K W] :
     Cardinal.mk (V →ₐ[K] W) ≤ finrank W (V →ₗ[K] W) :=
-  (linearIndependent_toLinearMap K V W).cardinal_mk_le_finrank
+  (linearIndependent_toLinearMap K V W).cardinalMk_le_finrank
+
+@[deprecated (since := "2024-11-10")] alias cardinal_mk_algHom := cardinalMk_algHom
 
 noncomputable instance AlgEquiv.fintype (K : Type u) (V : Type v) [Field K] [Field V] [Algebra K V]
     [FiniteDimensional K V] : Fintype (V ≃ₐ[K] V) :=
@@ -313,6 +313,9 @@ namespace FixedPoints
 
 variable (G F : Type*) [Group G] [Field F] [MulSemiringAction G F]
 
+/-- Let $F$ be a field. Let $G$ be a finite group acting faithfully on $F$.
+Then $[F : F^G] = |G|$. -/
+@[stacks 09I3 "second part"]
 theorem finrank_eq_card [Fintype G] [FaithfulSMul G F] :
     finrank (FixedPoints.subfield G F) F = Fintype.card G :=
   le_antisymm (FixedPoints.finrank_le_card G F) <|
