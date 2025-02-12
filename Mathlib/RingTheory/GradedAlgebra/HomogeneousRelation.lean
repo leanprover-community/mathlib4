@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Jingting Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yiming Fu, Zhenyan Fu, Raphael Douglas Giles, Jingting Wang
+Authors: Yiming Fu, Zhenyan Fu, Raphael Douglas Giles, Jiedong Jiang, Jingting Wang
 -/
 import Mathlib.Algebra.RingQuot
 import Mathlib.RingTheory.GradedAlgebra.Basic
@@ -40,42 +40,27 @@ lemma eqvGen_ringQuot_of_eqvGen {a b : A} (h : EqvGen rel a b) :
 lemma eqvGen_ringQuot_add_right {a b c : A} (h : EqvGen (RingQuot.Rel rel) a b) :
     EqvGen (RingQuot.Rel rel) (a + c) (b + c) := by
   induction h with
-  | rel x y hxy =>
-  apply EqvGen.rel
-  exact RingQuot.Rel.add_left hxy
-  | refl x =>
-  exact Quot.eqvGen_exact rfl
-  | symm x y h1 h2 =>
-  exact EqvGen.symm (x + c) (y + c) h2
-  | trans x y z _ _ h1 h2 =>
-  exact EqvGen.trans (x + c) (y + c) (z + c) h1 h2
+  | rel x y hxy => apply EqvGen.rel; exact RingQuot.Rel.add_left hxy
+  | refl x => exact Quot.eqvGen_exact rfl
+  | symm x y h1 h2 => exact EqvGen.symm (x + c) (y + c) h2
+  | trans x y z _ _ h1 h2 => exact EqvGen.trans (x + c) (y + c) (z + c) h1 h2
 
 lemma eqvGen_ringQuot_mul_left {a b c : A} (h : EqvGen (RingQuot.Rel rel) a b) :
     EqvGen (RingQuot.Rel rel) (a * c) (b * c) := by
   induction h with
-  | rel x y hxy =>
-  apply EqvGen.rel
-  exact RingQuot.Rel.mul_left hxy
-  | refl x =>
-  exact Quot.eqvGen_exact rfl
-  | symm x y h1 h2 =>
-  exact EqvGen.symm (x * c) (y * c) h2
-  | trans x y z _ _ h1 h2 =>
-  exact EqvGen.trans (x * c) (y * c) (z * c) h1 h2
+  | rel x y hxy => apply EqvGen.rel; exact RingQuot.Rel.mul_left hxy
+  | refl x => exact Quot.eqvGen_exact rfl
+  | symm x y h1 h2 => exact EqvGen.symm (x * c) (y * c) h2
+  | trans x y z _ _ h1 h2 => exact EqvGen.trans (x * c) (y * c) (z * c) h1 h2
 
 
 lemma eqvGen_ringQuot_mul_right {a b c : A} (h : EqvGen (RingQuot.Rel rel) a b) :
     EqvGen (RingQuot.Rel rel) (c * a) (c * b) := by
   induction h with
-  | rel x y hxy =>
-  apply EqvGen.rel
-  exact RingQuot.Rel.mul_right hxy
-  | refl x =>
-  exact Quot.eqvGen_exact rfl
-  | symm x y h1 h2 =>
-  exact EqvGen.symm (c * x) (c * y) h2
-  | trans x y z _ _ h1 h2 =>
-  exact EqvGen.trans (c * x) (c * y) (c * z) h1 h2
+  | rel x y hxy => apply EqvGen.rel; exact RingQuot.Rel.mul_right hxy
+  | refl x => exact Quot.eqvGen_exact rfl
+  | symm x y h1 h2 => exact EqvGen.symm (c * x) (c * y) h2
+  | trans x y z _ _ h1 h2 => exact EqvGen.trans (c * x) (c * y) (c * z) h1 h2
 
 
 lemma Finset.relation_sum_induction {α : Type*} {s : Finset α} [DecidableEq α]
@@ -84,12 +69,8 @@ lemma Finset.relation_sum_induction {α : Type*} {s : Finset α} [DecidableEq α
     (base : ∀ x ∈ s, r (f x) (g x)) :
     r (∑ x ∈ s, f x) (∑ x ∈ s, g x) := by
   induction s using Finset.induction with
-  | empty =>
-    simpa only [Finset.sum_empty]
-  | insert _ _ =>
-    simp_all only [Finset.mem_insert, or_true, implies_true, forall_const, forall_eq_or_imp, not_false_eq_true,
-      Finset.sum_insert]
-
+  | empty => simpa
+  | insert _ _ => simp_all
 
 lemma coe_mul_sum_support_subset {ι : Type*} {σ : Type*} {R : Type*} [DecidableEq ι] [Semiring R]
     [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ) [AddMonoid ι] [SetLike.GradedMonoid A]
@@ -104,9 +85,9 @@ lemma coe_mul_sum_support_subset {ι : Type*} {σ : Type*} {R : Type*} [Decidabl
   simp only [Finset.mem_product, DFinsupp.mem_support_toFun, ne_eq, not_and, not_not] at hx
   have : ((r x.1) * (r' x.2) : R) = 0 := by
     by_cases h : r x.1 = 0
-    · simp only [h, ZeroMemClass.coe_zero, zero_mul]
-    · simp only [hx h, ZeroMemClass.coe_zero, mul_zero]
-  simp only [this, ite_self]
+    · simp [h]
+    · simp [hx h]
+  simp [this]
 
 
 
@@ -194,7 +175,7 @@ variable (𝒜 : ι → AddSubmonoid A) [inst : GradedRing 𝒜] (rel : A → A 
 
 #check DirectSum.decomposeRingEquiv
 #check DirectSum.coeAddMonoidHom
-#check MvPolynomial.weightedDecomposition
+-- #check MvPolynomial.weightedDecomposition
 
 
 local instance : (i : ι) → (x : ↥(𝒜 i)) → Decidable (x ≠ 0) :=
@@ -202,7 +183,7 @@ local instance : (i : ι) → (x : ↥(𝒜 i)) → Decidable (x ≠ 0) :=
 
 /-- The `decompose'` argument of `RingQuotGradedRing`. -/
 def decompose' := fun a : RingQuot rel =>
-  let b := Classical.choose $ (RingQuot.mkRingHom_surjective rel) a
+  let b := Classical.choose <| (RingQuot.mkRingHom_surjective rel) a
   let x := inst.decompose' b
   have : (i : x.support) → ((AddSubmonoid.map (RingQuot.mkRingHom rel) ∘ 𝒜) i) := by
     intro i
@@ -289,8 +270,8 @@ end GradedRing
 
 section GradedAlgebra
 
-variable {R : Type*} [CommRing R] [Algebra R A]
-variable (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜] (rel : A → A → Prop) [IsHomogeneousRelation 𝒜 rel]
+variable {R : Type*} [CommRing R] [Algebra R A] (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜]
+variable (rel : A → A → Prop) [IsHomogeneousRelation 𝒜 rel]
 
 instance RingQuotGradedAlgebra : GradedAlgebra ((Submodule.map (RingQuot.mkAlgHom R rel)).comp 𝒜) where
   one_mem := by
