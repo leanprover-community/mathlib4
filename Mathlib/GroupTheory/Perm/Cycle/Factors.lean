@@ -66,7 +66,7 @@ theorem cycleOf_pow_apply_self (f : Perm α) [DecidableRel f.SameCycle] (x : α)
 theorem cycleOf_zpow_apply_self (f : Perm α) [DecidableRel f.SameCycle] (x : α) :
     ∀ n : ℤ, (cycleOf f x ^ n) x = (f ^ n) x := by
   intro z
-  induction' z with z hz
+  cases' z with z hz
   · exact cycleOf_pow_apply_self f x z
   · rw [zpow_negSucc, ← inv_pow, cycleOf_inv, zpow_negSucc, ← inv_pow, cycleOf_pow_apply_self]
 

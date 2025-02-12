@@ -205,7 +205,7 @@ def rootableByIntOfRootableByNat [RootableBy A ℕ] : RootableBy A ℤ where
     | -[n+1] => (RootableBy.root a (n + 1))⁻¹
   root_zero a := RootableBy.root_zero a
   root_cancel {n} a hn := by
-    induction n
+    cases n
     · change RootableBy.root a _ ^ _ = a
       norm_num
       rw [RootableBy.root_cancel]
