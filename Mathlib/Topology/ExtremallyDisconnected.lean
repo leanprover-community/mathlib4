@@ -279,10 +279,6 @@ protected theorem CompactT2.projective_iff_extremallyDisconnected [CompactSpace 
     Projective A ↔ ExtremallyDisconnected A :=
   ⟨Projective.extremallyDisconnected, fun _ => ExtremallyDisconnected.projective⟩
 
-@[deprecated (since := "2024-05-26")]
-alias CompactT2.projective_iff_extremallyDisconnnected :=
-  CompactT2.projective_iff_extremallyDisconnected
-
 end
 
 -- Note: It might be possible to use Gleason for this instead
