@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
 import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
 import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
+import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 import Mathlib.SetTheory.Cardinal.Cofinality
 
 /-!
@@ -20,25 +21,9 @@ import Mathlib.SetTheory.Cardinal.Cofinality
 
 universe w v v' u u'
 
-lemma Cardinal.zero_lt_ord_iff (κ : Cardinal.{w}) : 0 < κ.ord ↔ κ ≠ 0 := by
-  constructor
-  · intro h h'
-    simp only [h', ord_zero, lt_self_iff_false] at h
-  · intro h
-    by_contra!
-    exact h (ord_eq_zero.1 (le_antisymm this (Ordinal.zero_le _)))
-
-noncomputable def Cardinal.IsRegular.orderBotOrdToType
-    {κ : Cardinal.{w}} (hκ : κ.IsRegular) : OrderBot κ.ord.toType :=
-  Ordinal.toTypeOrderBotOfPos (by
-    rw [Cardinal.zero_lt_ord_iff]
-    rintro rfl
-    apply Cardinal.aleph0_ne_zero.{w}
-    simpa using hκ.aleph0_le)
-
 namespace CategoryTheory
 
-open Category
+open Category HomotopicalAlgebra
 
 noncomputable instance (o : Ordinal.{w}) : SuccOrder o.toType :=
   SuccOrder.ofLinearWellFoundedLT o.toType
@@ -51,30 +36,6 @@ namespace MorphismProperty
 
 variable (I : MorphismProperty C)
 
-section
-
-variable (J : Type u') [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
-
-lemma transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp :
-    (coproducts.{w} I).pushouts.transfiniteCompositionsOfShape J ≤ I.rlp.llp := by
-  simpa using transfiniteCompositionsOfShape_le_llp_rlp (coproducts.{w} I).pushouts J
-
-lemma retracts_transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp :
-    ((coproducts.{w} I).pushouts.transfiniteCompositionsOfShape J).retracts ≤ I.rlp.llp := by
-  rw [le_llp_iff_le_rlp, rlp_retracts, ← le_llp_iff_le_rlp]
-  apply transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp
-
-end
-
-lemma transfiniteCompositions_pushouts_coproducts_le_llp_rlp :
-    (transfiniteCompositions.{w} (coproducts.{w} I).pushouts) ≤ I.rlp.llp := by
-  simpa using transfiniteCompositions_le_llp_rlp (coproducts.{w} I).pushouts
-
-lemma retracts_transfiniteComposition_pushouts_coproducts_le_llp_rlp :
-    (transfiniteCompositions.{w} (coproducts.{w} I).pushouts).retracts ≤ I.rlp.llp := by
-  rw [le_llp_iff_le_rlp, rlp_retracts, ← le_llp_iff_le_rlp]
-  apply transfiniteCompositions_pushouts_coproducts_le_llp_rlp
-
 class IsCardinalForSmallObjectArgument (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [OrderBot κ.ord.toType] : Prop where
   isSmall : IsSmall.{w} I := by infer_instance
@@ -82,7 +43,11 @@ class IsCardinalForSmallObjectArgument (κ : Cardinal.{w}) [Fact κ.IsRegular]
   hasPushouts : HasPushouts C := by infer_instance
   hasCoproducts : HasCoproducts.{w} C := by infer_instance
   hasIterationOfShape : HasIterationOfShape κ.ord.toType C
-  preservesColimit :
+  preservesColimit {A B X Y : C} (i : A ⟶ B) (_ : I i) (f : X ⟶ Y)
+    (hf : RelativeCellComplex.{w} (fun (_ : κ.ord.toType) ↦ I.homFamily) f) :
+    PreservesColimit hf.F (coyoneda.obj (Opposite.op A))
+  /-- TODO: replace `preservesColimits'` by `preservesColimit` -/
+  preservesColimit' :
       ∀ {A B : C} (i : A ⟶ B) (_ : I i)
       (F : κ.ord.toType ⥤ C) [F.IsWellOrderContinuous]
       (_ : ∀ (j : _) (_ : ¬IsMax j),
@@ -125,7 +90,7 @@ lemma preservesColimit_coyoneda_obj
     (hF : ∀ (j : κ.ord.toType) (_ : ¬IsMax j),
       (coproducts.{w} I).pushouts (F.map (homOfLE (Order.le_succ j)))) :
     PreservesColimit F (coyoneda.obj (Opposite.op A)) :=
-  IsCardinalForSmallObjectArgument.preservesColimit i hi F hF
+  IsCardinalForSmallObjectArgument.preservesColimit' i hi F hF
 
 lemma small_functorObjIndex {X Y : C} (p : X ⟶ Y) :
     Small.{w} (FunctorObjIndex I.homFamily p) := by
@@ -163,6 +128,18 @@ noncomputable def iterationFunctor : κ.ord.toType ⥤ Arrow C ⥤ Arrow C :=
 instance : (iterationFunctor I κ).IsWellOrderContinuous := by
   dsimp [iterationFunctor]
   infer_instance
+
+noncomputable def attachCellsOfSuccStructProp
+    {F G : Arrow C ⥤ Arrow C} {φ : F ⟶ G}
+    (h : (succStruct I κ).prop φ) (f : Arrow C) :
+    AttachCells.{w} I.homFamily (φ.app f).left :=
+  have := hasColimitsOfShape_discrete I κ
+  have := hasPushouts I κ
+  -- in order to get `AttachCells.{w}`, we need to shrink the index type
+  sorry
+  --AttachCells.ofArrowIso (attachCellsιFunctorObj _ _)
+  --  ((Functor.mapArrow ((evaluation _ _).obj f ⋙
+  --    Arrow.leftFunc)).mapIso h.arrowIso.symm)
 
 instance (f : Arrow C) :
     (iterationFunctor I κ ⋙ (evaluation _ _).obj f).IsWellOrderContinuous := by
@@ -204,6 +181,22 @@ noncomputable def ιIteration : 𝟭 _ ⟶ iteration I κ :=
   have := hasIterationOfShape I κ
   (succStruct I κ).ιIteration κ.ord.toType
 
+noncomputable def transfiniteCompositionOfShapeSuccStructPropιIteration :
+    (succStruct I κ).prop.TransfiniteCompositionOfShape κ.ord.toType (ιIteration I κ) :=
+  have := hasIterationOfShape I κ
+  (succStruct I κ).transfiniteCompositionOfShapeιIteration κ.ord.toType
+
+noncomputable def relativeCellComplexιIterationAppLeft (f : Arrow C) :
+    RelativeCellComplex.{w} (fun (_ : κ.ord.toType) ↦ I.homFamily)
+      ((ιIteration I κ).app f).left := by
+  have := hasIterationOfShape I κ
+  let h := transfiniteCompositionOfShapeSuccStructPropιIteration I κ
+  exact
+  { toTransfiniteCompositionOfShape :=
+      h.toTransfiniteCompositionOfShape.map ((evaluation _ _).obj f ⋙ Arrow.leftFunc)
+    attachCells j hj :=
+      attachCellsOfSuccStructProp I κ (h.map_mem j hj) f }
+
 def propArrow : MorphismProperty (Arrow C) := fun _ _ f ↦
   (coproducts.{w} I).pushouts f.left ∧ (isomorphisms C) f.right
 
@@ -221,11 +214,6 @@ lemma succStruct_prop_le_propArrow :
   · rw [MorphismProperty.isomorphisms.iff]
     dsimp [succStruct]
     infer_instance
-
-noncomputable def transfiniteCompositionOfShapeSuccStructPropιIteration :
-    (succStruct I κ).prop.TransfiniteCompositionOfShape κ.ord.toType (ιIteration I κ) :=
-  have := hasIterationOfShape I κ
-  (succStruct I κ).transfiniteCompositionOfShapeιIteration κ.ord.toType
 
 noncomputable def transfiniteCompositionOfShapePropArrowιIteration :
     ((propArrow.{w} I).functorCategory (Arrow C)).TransfiniteCompositionOfShape
@@ -366,9 +354,15 @@ noncomputable def πObj : obj I κ f ⟶ Y :=
 lemma ιObj_πObj : ιObj I κ f ≫ πObj I κ f = f := by
   simp [ιObj, πObj]
 
+noncomputable def relativeCellComplexιObj :
+    RelativeCellComplex.{w} (fun (_ : κ.ord.toType) ↦ I.homFamily)
+      (ιObj I κ f) :=
+  relativeCellComplexιIterationAppLeft I κ (Arrow.mk f)
+
 lemma transfiniteCompositionsOfShape_ιObj :
     (coproducts.{w} I).pushouts.transfiniteCompositionsOfShape κ.ord.toType
       (ιObj I κ f) := by
+  -- this should be a general lemma for `RelativeCellComplex`
   have := hasIterationOfShape I κ
   change (coproducts.{w} I).pushouts.transfiniteCompositionsOfShape κ.ord.toType
     (((evaluation _ (Arrow C)).obj (Arrow.mk f) ⋙ Arrow.leftFunc).map (ιIteration I κ))
@@ -437,9 +431,7 @@ noncomputable def functorialFactorizationData :
     FunctorialFactorizationData I.rlp.llp I.rlp where
   Z :=
     { obj f := obj I κ f.hom
-      map φ := objMap I κ φ
-      map_id := by aesop_cat
-      map_comp := by aesop_cat }
+      map φ := objMap I κ φ }
   i := { app f := ιObj I κ f.hom }
   p := { app f := πObj I κ f.hom }
   hi f := llp_rlp_ιObj I κ f.hom

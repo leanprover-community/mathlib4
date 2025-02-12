@@ -92,6 +92,25 @@ lemma hom_ext {Z : C} {φ φ' : X₂ ⟶ Z}
   apply Cofan.IsColimit.hom_ext c.isColimit₂
   simpa [cell_def] using h
 
+/-- If `f` and `f'` are isomorphic morphisms and the target of `f`
+is obtained by attaching cells to the source of `f`,
+then the same holds for `f'`. -/
+@[simps]
+def ofArrowIso {Y₁ Y₂ : C} {f' : Y₁ ⟶ Y₂} (e : Arrow.mk f ≅ Arrow.mk f') :
+   AttachCells.{w} g f' where
+  ι := c.ι
+  π := c.π
+  cofan₁ := c.cofan₁
+  cofan₂ := c.cofan₂
+  isColimit₁ := c.isColimit₁
+  isColimit₂ := c.isColimit₂
+  m := c.m
+  g₁ := c.g₁ ≫ Arrow.leftFunc.map e.hom
+  g₂ := c.g₂ ≫ Arrow.rightFunc.map e.hom
+  isPushout :=
+    c.isPushout.of_iso (Iso.refl _) (Arrow.leftFunc.mapIso e) (Iso.refl _)
+      (Arrow.rightFunc.mapIso e) (by simp) (by simp) (by simp) (by simp)
+
 section
 
 variable {α' : Type t'} {A' B' : α' → C} (g' : ∀ i', A' i' ⟶ B' i')
