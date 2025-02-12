@@ -5,15 +5,11 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.NormedSpace.IndicatorFunction
+import Mathlib.Analysis.NormedSpace.OperatorNorm.NNNorm
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.Data.Set.Image
 import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
 import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
 import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
-import Mathlib.MeasureTheory.Measure.OpenPos
-import Mathlib.MeasureTheory.Measure.Typeclasses
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
-import Mathlib.Topology.ContinuousMap.Compact
 import Mathlib.Order.Filter.IndicatorFunction
 
 /-!
@@ -33,10 +29,6 @@ that it is continuous. In particular,
 * `ContinuousLinearMap.compLp` defines the action on `Lp` of a continuous linear map.
 * `Lp.posPart` is the positive part of an `Lp` function.
 * `Lp.negPart` is the negative part of an `Lp` function.
-
-When `α` is a topological space equipped with a finite Borel measure, there is a bounded linear map
-from the normed space of bounded continuous functions (`α →ᵇ E`) to `Lp E p μ`.  We construct this
-as `BoundedContinuousFunction.toLp`.
 
 ## Notations
 
@@ -68,7 +60,7 @@ function coercion from the coercion to almost everywhere defined functions.
 noncomputable section
 
 open TopologicalSpace MeasureTheory Filter
-open scoped NNReal ENNReal Topology MeasureTheory Uniformity symmDiff
+open scoped NNReal ENNReal Topology symmDiff
 
 variable {α 𝕜 𝕜' E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
   [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
@@ -80,7 +72,6 @@ namespace MeasureTheory
 
 The space of equivalence classes of measurable functions for which `eLpNorm f p μ < ∞`.
 -/
-
 
 @[simp]
 theorem eLpNorm_aeeqFun {α E : Type*} [MeasurableSpace α] {μ : Measure α} [NormedAddCommGroup E]
@@ -1466,6 +1457,7 @@ end MeasureTheory
 
 end CompleteSpace
 
+<<<<<<< HEAD:Mathlib/MeasureTheory/Function/LpSpace.lean
 /-! ### Continuous functions in `Lp` -/
 
 
@@ -1662,6 +1654,8 @@ end ContinuousMap
 
 end
 
+=======
+>>>>>>> master:Mathlib/MeasureTheory/Function/LpSpace/Basic.lean
 namespace MeasureTheory
 
 namespace Lp
@@ -1698,5 +1692,3 @@ theorem meas_ge_le_mul_pow_enorm (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_t
 end Lp
 
 end MeasureTheory
-
-set_option linter.style.longFile 1800
