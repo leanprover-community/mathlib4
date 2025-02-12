@@ -1514,7 +1514,7 @@ theorem compact_covered_by_mul_left_translates {K V : Set G} (hK : IsCompact K)
   obtain ⟨t, ht⟩ : ∃ t : Finset G, K ⊆ ⋃ x ∈ t, interior ((x * ·) ⁻¹' V) := by
     refine
       hK.elim_finite_subcover (fun x => interior <| (x * ·) ⁻¹' V) (fun x => isOpen_interior) ?_
-    cases' hV with g₀ hg₀
+    obtain ⟨g₀, hg₀⟩ := hV
     refine fun g _ => mem_iUnion.2 ⟨g₀ * g⁻¹, ?_⟩
     refine preimage_interior_subset_interior_preimage (continuous_const.mul continuous_id) ?_
     rwa [mem_preimage, Function.id_def, inv_mul_cancel_right]
