@@ -553,7 +553,7 @@ theorem cos_neg : cos (-x) = cos x := by simp [cos, exp_neg]
 
 @[simp]
 theorem cos_abs : cos |x| = cos x := by
-  cases le_total x 0 <;> simp only [*, _root_.abs_of_nonneg, abs_of_nonpos, cos_neg]
+  cases le_total x 0 <;> simp only [*, abs_of_nonneg, abs_of_nonpos, cos_neg]
 
 nonrec theorem cos_add : cos (x + y) = cos x * cos y - sin x * sin y :=
   ofReal_injective <| by simp [cos_add]
@@ -707,7 +707,7 @@ theorem cosh_neg : cosh (-x) = cosh x :=
 
 @[simp]
 theorem cosh_abs : cosh |x| = cosh x := by
-  cases le_total x 0 <;> simp [*, _root_.abs_of_nonneg, abs_of_nonpos]
+  cases le_total x 0 <;> simp [*, abs_of_nonneg, abs_of_nonpos]
 
 nonrec theorem cosh_add : cosh (x + y) = cosh x * cosh y + sinh x * sinh y := by
   rw [← ofReal_inj]; simp [cosh_add]
@@ -878,21 +878,21 @@ theorem sin_pos_of_pos_of_le_one {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 1) : 0 < si
                 · calc
                     |x| ^ 4 ≤ |x| ^ 1 :=
                       pow_le_pow_of_le_one (abs_nonneg _)
-                        (by rwa [_root_.abs_of_nonneg (le_of_lt hx0)]) (by decide)
-                    _ = x := by simp [_root_.abs_of_nonneg (le_of_lt hx0)]
+                        (by rwa [abs_of_nonneg (le_of_lt hx0)]) (by decide)
+                    _ = x := by simp [abs_of_nonneg (le_of_lt hx0)]
                 · calc
                     x ^ 3 ≤ x ^ 1 := pow_le_pow_of_le_one (le_of_lt hx0) hx (by decide)
                     _ = x := pow_one _
             _ < x := by linarith)
     _ ≤ sin x :=
-      sub_le_comm.1 (abs_sub_le_iff.1 (sin_bound (by rwa [_root_.abs_of_nonneg (le_of_lt hx0)]))).2
+      sub_le_comm.1 (abs_sub_le_iff.1 (sin_bound (by rwa [abs_of_nonneg (le_of_lt hx0)]))).2
 
 theorem sin_pos_of_pos_of_le_two {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 2) : 0 < sin x :=
   have : x / 2 ≤ 1 := (div_le_iff₀ (by norm_num)).mpr (by simpa)
   calc
     0 < 2 * sin (x / 2) * cos (x / 2) :=
       mul_pos (mul_pos (by norm_num) (sin_pos_of_pos_of_le_one (half_pos hx0) this))
-        (cos_pos_of_le_one (by rwa [_root_.abs_of_nonneg (le_of_lt (half_pos hx0))]))
+        (cos_pos_of_le_one (by rwa [abs_of_nonneg (le_of_lt (half_pos hx0))]))
     _ = sin x := by rw [← sin_two_mul, two_mul, add_halves]
 
 theorem cos_one_le : cos 1 ≤ 2 / 3 :=

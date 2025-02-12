@@ -158,7 +158,7 @@ theorem IsPurelyInseparable.surjective_algebraMap_of_isSeparable
 theorem IsPurelyInseparable.bijective_algebraMap_of_isSeparable
     [Nontrivial E] [NoZeroSMulDivisors F E]
     [IsPurelyInseparable F E] [Algebra.IsSeparable F E] : Function.Bijective (algebraMap F E) :=
-  ⟨NoZeroSMulDivisors.algebraMap_injective F E, surjective_algebraMap_of_isSeparable F E⟩
+  ⟨FaithfulSMul.algebraMap_injective F E, surjective_algebraMap_of_isSeparable F E⟩
 
 variable {F E} in
 /-- If a subalgebra of `E / F` is both purely inseparable and separable, then it is equal
@@ -522,7 +522,7 @@ variable {F E} in
 then `E` is also separably closed. -/
 theorem Algebra.IsAlgebraic.isSepClosed [Algebra.IsAlgebraic F E]
     [IsSepClosed F] : IsSepClosed E :=
-  have : Algebra.IsAlgebraic F (AlgebraicClosure E) := Algebra.IsAlgebraic.trans (L := E)
+  have : Algebra.IsAlgebraic F (AlgebraicClosure E) := .trans F E _
   (isSepClosed_iff_isPurelyInseparable_algebraicClosure E _).mpr
     (IsPurelyInseparable.tower_top F E <| AlgebraicClosure E)
 
@@ -551,7 +551,7 @@ theorem finSepDegree_mul_finInsepDegree : finSepDegree F E * finInsepDegree F E 
   rw [finInsepDegree, finrank_of_infinite_dimensional (K := F) (V := E) fun _ ↦
       halg (Algebra.IsAlgebraic.of_finite F E),
     finrank_of_infinite_dimensional (K := separableClosure F E) (V := E) fun _ ↦
-      halg ((separableClosure.isAlgebraic F E).trans),
+      halg (.trans _ (separableClosure F E) _),
     mul_zero]
 
 end Field
@@ -573,7 +573,7 @@ lemma adjoin_eq_of_isAlgebraic_of_isSeparable [Algebra.IsAlgebraic F E]
     let _ : Algebra S L := i.toAlgebra
     let _ : SMul S L := Algebra.toSMul
     have : IsScalarTower S L K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
-    have : Algebra.IsAlgebraic F K := Algebra.IsAlgebraic.trans (L := E)
+    have := Algebra.IsAlgebraic.trans F E K
     have : IsPurelyInseparable S K := separableClosure.isPurelyInseparable F K
     have := IsPurelyInseparable.tower_top S L K
     obtain ⟨y, rfl⟩ := IsPurelyInseparable.surjective_algebraMap_of_isSeparable L K x
