@@ -54,13 +54,13 @@ def clean (path : FilePath) : FilePath :=
     -- invalid path
     | [] => []
     -- fix number of leading separators, then clean the tail of the path
-    | "" :: "" :: "" :: [] => "" :: "" :: "" :: []
-    | "" :: "" :: "" :: p  => "" :: cleanTail (takeLeadingSep p) true
-    | "" :: "" :: []       => "" :: "" :: []
-    | "" :: "" :: p        => "" :: "" :: cleanTail (takeLeadingSep p) true
-    | "" :: []             => "" :: []
-    | "" :: p              => "" :: cleanTail (takeLeadingSep p) true
-    | p                    => cleanTail p false
+    | "" :: "" :: "" :: [] => "" :: "" :: "" :: []                          -- case `//`
+    | "" :: "" :: "" :: p  => "" :: cleanTail (takeLeadingSep p) true       -- case `///A/B`
+    | "" :: "" :: []       => "" :: "" :: []                                -- case `/`
+    | "" :: "" :: p        => "" :: "" :: cleanTail (takeLeadingSep p) true -- case `//A/B`
+    | "" :: []             => "" :: []                                      -- invalid path
+    | "" :: p              => "" :: cleanTail (takeLeadingSep p) true       -- case `/A/B`
+    | p                    => cleanTail p false                             -- case `A/B`
 where
   /-- take any leading `""`. -/
   takeLeadingSep : List String → List String
