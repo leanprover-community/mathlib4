@@ -13,7 +13,7 @@ an equivalence of categories. We introduce `equivSimplexCategory` as this equiva
 * [Kerodon Tag 04FW](https://kerodon.net/tag/04FW)
 
 -/
-namespace AlgebraicTopology.SimplexCategory.SimplexCategoryGenRel
+namespace AlgebraicTopology.SimplexCategoryGenRel
 
 open CategoryTheory
 
@@ -190,8 +190,8 @@ theorem existsUnique_toSimplexCategory_map
   let epi₀ := strong_fac_f.toMonoFactorisation.e
   let mono₀ := strong_fac_f.toMonoFactorisation.m
   have fac := strong_fac_f.fac
-  induction' x using SimplexCategoryGenRel.obj_induction with n
-  induction' y using SimplexCategoryGenRel.obj_induction with m
+  induction' x with n
+  induction' y with m
   haveI := SimplexCategory.len_le_of_epi
     (Limits.HasStrongEpiMonoFactorisations.has_fac f).some.e_strong_epi.epi
   obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_le this
@@ -368,4 +368,4 @@ lemma equivSimplexCategory_inverse_δ (n : ℕ) (i : Fin (n + 2)):
 
 end EquivalenceWithSimplexCategory
 
-end AlgebraicTopology.SimplexCategory.SimplexCategoryGenRel
+end AlgebraicTopology.SimplexCategoryGenRel
