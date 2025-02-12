@@ -210,7 +210,7 @@ theorem antipode_C (a : A) :
 
 @[simp]
 theorem antipode_T (n : ℤ) :
-    HopfAlgebra.antipode (R := R) (T (R := A) n) = T (-n) := by
+    HopfAlgebra.antipode (R := R) (T n : A[T;T⁻¹]) = T (-n) := by
   unfold T
   rw [AddMonoidAlgebra.antipode_single]
   simp only [HopfAlgebra.antipode_one, single_eq_C_mul_T, map_one, one_mul]

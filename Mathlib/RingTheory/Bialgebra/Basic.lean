@@ -215,16 +215,16 @@ open AddMonoidAlgebra
 variable {R : Type u} [CommSemiring R] {A : Type v} [Semiring A] [Bialgebra R A]
 
 instance instBialgebra : Bialgebra R A[T;T⁻¹] :=
-  (inferInstance : Bialgebra R A[ℤ])
+  inferInstanceAs <| Bialgebra R A[ℤ]
 
 @[simp]
 theorem comul_T (n : ℤ) :
-    Coalgebra.comul (R := R) (T (R := A) n) = T n ⊗ₜ[R] T n := by
+    Coalgebra.comul (R := R) (T n : A[T;T⁻¹]) = T n ⊗ₜ[R] T n := by
   simp [T, -single_eq_C_mul_T, Algebra.TensorProduct.one_def]
 
 @[simp]
 theorem counit_T (n : ℤ) :
-    Coalgebra.counit (R := R) (T (R := A) n) = 1 := by
+    Coalgebra.counit (R := R) (T n : A[T;T⁻¹]) = 1 := by
   simp [T, -single_eq_C_mul_T]
 
 end LaurentPolynomial
