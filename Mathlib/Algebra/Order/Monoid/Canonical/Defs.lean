@@ -285,7 +285,6 @@ theorem of_gt {M} [AddZeroClass M] [Preorder M] [CanonicallyOrderedAdd M]
 -- metavariable and it will hugely slow down typeclass inference.
 instance (priority := 10) of_gt' {M : Type*} [AddZeroClass M] [Preorder M] [CanonicallyOrderedAdd M]
     [One M] {y : M}
-    -- Porting note: Fact.out has different type signature from mathlib3
     [Fact (1 < y)] : NeZero y := of_gt <| @Fact.out (1 < y) _
 
 end NeZero
