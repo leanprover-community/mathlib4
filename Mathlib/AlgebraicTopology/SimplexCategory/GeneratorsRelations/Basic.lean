@@ -7,7 +7,7 @@ import Mathlib.AlgebraicTopology.SimplexCategory
 import Mathlib.CategoryTheory.PathCategory.Basic
 /-! # Presentation of the simplex category by generator and relations.
 
-We introduce `SimplexCategoryGenRel` as a the category presented by generating
+We introduce `SimplexCategoryGenRel` as the category presented by generating
 morphisms `δ i : [n] ⟶ [n + 1]` and `σ i : [n + 1] ⟶ [n]` and subject to the
 simplicial identities, and we provide induction principles for reasoning about
 objects and morphisms in this category.
@@ -30,7 +30,7 @@ def FreeSimplexQuiver.len (x : FreeSimplexQuiver) : ℕ := x
 
 namespace FreeSimplexQuiver
 
-/-- A morphisms in `FreeSimplexQuiver` is either a face map (`δ`) or a degeneracy map (`σ`). -/
+/-- A morphism in `FreeSimplexQuiver` is either a face map (`δ`) or a degeneracy map (`σ`). -/
 inductive Hom : FreeSimplexQuiver → FreeSimplexQuiver → Type
   | δ {n : ℕ} (i : Fin (n + 2)) : Hom (.mk n) (.mk (n + 1))
   | σ {n : ℕ} (i : Fin (n + 1)) : Hom (.mk (n + 1)) (.mk n)
@@ -127,7 +127,7 @@ lemma hom_induction' (P : MorphismProperty SimplexCategoryGenRel)
     · exact hc₂ _ _
 
 /-- An induction principle for reasonning about morphisms properties in SimplexCategoryGenRel. -/
-lemma hom_induction_eq_top (P : MorphismProperty SimplexCategoryGenRel)
+lemma morphismProperty_eq_top (P : MorphismProperty SimplexCategoryGenRel)
     (hi : ∀ {n : ℕ}, P (𝟙 (.mk n)))
     (hc₁ : ∀ {n m : ℕ} (u : .mk n ⟶ .mk m) (i : Fin (m + 2)),
       P u → P (u ≫ δ i))
@@ -154,7 +154,7 @@ lemma hom_induction_eq_top' (P : MorphismProperty SimplexCategoryGenRel)
 /-- An induction principle for reasonning about objects in SimplexCategoryGenRel. This should be
 used instead of identifying an object with `mk` of its len.-/
 @[elab_as_elim]
-def obj_induction {P : SimplexCategoryGenRel → Sort*}
+protected def rec {P : SimplexCategoryGenRel → Sort*}
     (H : ∀ n : ℕ, P (.mk n)) :
     ∀ x : SimplexCategoryGenRel, P x := by
   intro x
@@ -162,7 +162,7 @@ def obj_induction {P : SimplexCategoryGenRel → Sort*}
 
 /-- A basic ext lemma for objects of SimplexCategoryGenRel --/
 @[ext]
-lemma obj_ext {x y : SimplexCategoryGenRel} (h : x.len = y.len) : x = y := by
+lemma ext {x y : SimplexCategoryGenRel} (h : x.len = y.len) : x = y := by
   cases x using obj_induction
   cases y using obj_induction
   simp only [mk_len] at h
@@ -270,21 +270,21 @@ end SimplicialIdentities
 
 /-- The canonical functor from `SimplexCategoryGenRel` to SimplexCategory, which exists as the
 simplicial identities hold in `SimplexCategory`. -/
-def toSimplexCategory : SimplexCategoryGenRel ⥤ SimplexCategory := by
-  fapply CategoryTheory.Quotient.lift
-  · fapply Paths.lift
-    exact { obj i := .mk i,
-            map f := match f with
-              | FreeSimplexQuiver.Hom.δ i => SimplexCategory.δ i
-              | FreeSimplexQuiver.Hom.σ i => SimplexCategory.σ i }
-  · intro x y f₁ f₂ h
-    cases h with
-    | simplicial1 H => exact SimplexCategory.δ_comp_δ H
-    | simplicial2 H => exact SimplexCategory.δ_comp_σ_of_le H
-    | simplicial3₁ => exact SimplexCategory.δ_comp_σ_self
-    | simplicial3₂ => exact SimplexCategory.δ_comp_σ_succ
-    | simplicial4 H => exact SimplexCategory.δ_comp_σ_of_gt H
-    | simplicial5 H => exact SimplexCategory.σ_comp_σ H
+def toSimplexCategory : SimplexCategoryGenRel ⥤ SimplexCategory :=
+  CategoryTheory.Quotient.lift _
+    (Paths.lift
+      { obj := .mk
+        map f := match f with
+          | FreeSimplexQuiver.Hom.δ i => SimplexCategory.δ i
+          | FreeSimplexQuiver.Hom.σ i => SimplexCategory.σ i })
+    (fun _ _ _ _ h ↦ by
+      cases h with
+      | simplicial1 H => exact SimplexCategory.δ_comp_δ H
+      | simplicial2 H => exact SimplexCategory.δ_comp_σ_of_le H
+      | simplicial3₁ => exact SimplexCategory.δ_comp_σ_self
+      | simplicial3₂ => exact SimplexCategory.δ_comp_σ_succ
+      | simplicial4 H => exact SimplexCategory.δ_comp_σ_of_gt H
+      | simplicial5 H => exact SimplexCategory.σ_comp_σ H)
 
 @[simp]
 lemma toSimplexCategory_obj_mk (n : ℕ) : toSimplexCategory.obj (mk n) = .mk n := rfl
