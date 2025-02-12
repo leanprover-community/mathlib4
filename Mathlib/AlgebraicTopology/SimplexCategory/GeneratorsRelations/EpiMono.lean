@@ -17,7 +17,7 @@ We only define these, and prove various lemmas to help reasoning about them.
 
 -/
 
-namespace AlgebraicTopology.SimplexCategory.SimplexCategoryGenRel
+namespace AlgebraicTopology.SimplexCategoryGenRel
 open CategoryTheory
 
 section EpiMono
@@ -183,4 +183,4 @@ lemma eq_or_len_le_of_P_δ {x y : SimplexCategoryGenRel} {f : x ⟶ y} (h_δ : P
 
 end EpiMono
 
-end AlgebraicTopology.SimplexCategory.SimplexCategoryGenRel
+end AlgebraicTopology.SimplexCategoryGenRel
