@@ -351,7 +351,7 @@ theorem Fintype.card_lex (α : Type*) [Fintype α] : Fintype.card (Lex α) = Fin
 -- no matter what instance of `Fintype (Set.univ : Set α)` is used.
 @[simp]
 theorem Fintype.card_setUniv [Fintype α] {h : Fintype (Set.univ : Set α)} :
-    @Fintype.card (Set.univ : Set α) h = Fintype.card α := by
+    Fintype.card (Set.univ : Set α) = Fintype.card α := by
   apply Fintype.card_of_finset'
   simp
 

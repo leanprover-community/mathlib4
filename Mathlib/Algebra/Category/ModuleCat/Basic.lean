@@ -5,7 +5,7 @@ Authors: Robert A. Spencer, Markus Himmel
 -/
 import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Algebra.PUnitInstances.Module
+import Mathlib.Algebra.Module.PUnit
 import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
@@ -206,19 +206,10 @@ instance : Inhabited (ModuleCat R) :=
 definitional equality issues. -/
 lemma forget_obj {M : ModuleCat.{v} R} : (forget (ModuleCat.{v} R)).obj M = M := rfl
 
-/- Not a `@[simp]` lemma since the LHS is a categorical arrow and the RHS is a plain function. -/
+@[simp]
 lemma forget_map {M N : ModuleCat.{v} R} (f : M ⟶ N) :
     (forget (ModuleCat.{v} R)).map f = f :=
   rfl
-
--- Porting note:
--- One might hope these two instances would not be needed,
--- as we already have `AddCommGroup M` and `Module R M`,
--- but sometimes we seem to need these when rewriting by lemmas about generic concrete categories.
-instance {M : ModuleCat.{v} R} : AddCommGroup ((forget (ModuleCat R)).obj M) :=
-  (inferInstance : AddCommGroup M)
-instance {M : ModuleCat.{v} R} : Module R ((forget (ModuleCat R)).obj M) :=
-  (inferInstance : Module R M)
 
 instance hasForgetToAddCommGroup : HasForget₂ (ModuleCat R) AddCommGrp where
   forget₂ :=
