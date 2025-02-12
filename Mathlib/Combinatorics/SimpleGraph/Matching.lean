@@ -72,8 +72,7 @@ theorem IsMatching.toEdge_eq_of_adj (h : M.IsMatching) (hv : v ∈ M.verts) (hvw
   exact ((h (M.edge_vert hvw)).choose_spec.2 w hvw).symm
 
 theorem IsMatching.toEdge.surjective (h : M.IsMatching) : Surjective h.toEdge := by
-  rintro ⟨e, he⟩
-  induction' e with x y
+  rintro ⟨⟨x, y⟩, he⟩
   exact ⟨⟨x, M.edge_vert he⟩, h.toEdge_eq_of_adj _ he⟩
 
 theorem IsMatching.toEdge_eq_toEdge_of_adj (h : M.IsMatching)
@@ -159,7 +158,7 @@ lemma IsMatching.exists_of_disjoint_sets_of_equiv {s t : Set V} (h : Disjoint s 
 
   simp only [Subgraph.IsMatching, Set.mem_union, true_and]
   intro v hv
-  cases' hv with hl hr
+  rcases hv with hl | hr
   · use f ⟨v, hl⟩
     simp only [hl, exists_const, true_or, exists_true_left, true_and]
     rintro y (rfl | ⟨hys, rfl⟩)

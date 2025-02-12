@@ -121,7 +121,7 @@ protected theorem Adj.ne {H : G.Subgraph} {u v : V} (h : H.Adj u v) : u ≠ v :=
 theorem adj_congr_of_sym2 {H : G.Subgraph} {u v w x : V} (h2 : s(u, v) = s(w, x)) :
     H.Adj u v ↔ H.Adj w x := by
   simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at h2
-  cases' h2 with hl hr
+  rcases h2 with hl | hr
   · rw [hl.1, hl.2]
   · rw [hr.1, hr.2, Subgraph.adj_comm]
 
@@ -227,12 +227,12 @@ theorem edgeSet_subset (G' : Subgraph G) : G'.edgeSet ⊆ G.edgeSet :=
 protected lemma mem_edgeSet {G' : Subgraph G} {v w : V} : s(v, w) ∈ G'.edgeSet ↔ G'.Adj v w := .rfl
 
 @[simp] lemma edgeSet_coe {G' : G.Subgraph} : G'.coe.edgeSet = Sym2.map (↑) ⁻¹' G'.edgeSet := by
-  ext e; induction' e using Sym2.ind with a b; simp
+  ext e; induction e using Sym2.ind; simp
 
 lemma image_coe_edgeSet_coe (G' : G.Subgraph) : Sym2.map (↑) '' G'.coe.edgeSet = G'.edgeSet := by
   rw [edgeSet_coe, Set.image_preimage_eq_iff]
   rintro e he
-  induction' e using Sym2.ind with a b
+  induction e using Sym2.ind with | h a b =>
   rw [Subgraph.mem_edgeSet] at he
   exact ⟨s(⟨a, edge_vert _ he⟩, ⟨b, edge_vert _ he.symm⟩), Sym2.map_pair_eq ..⟩
 

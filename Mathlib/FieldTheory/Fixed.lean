@@ -189,11 +189,8 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
     (hf : Polynomial.eval₂ (Subfield.subtype <| FixedPoints.subfield G F) x f = 0) :
     minpoly G F x ∣ f := by
   classical
--- Porting note: the two `have` below were not needed.
+-- Porting note: the `have` below was not needed.
   have : (subfield G F).subtype = (subfield G F).toSubring.subtype := rfl
-  have h : Polynomial.map (MulSemiringActionHom.toRingHom (IsInvariantSubring.subtypeHom G
-    (subfield G F).toSubring)) f = Polynomial.map
-    ((IsInvariantSubring.subtypeHom G (subfield G F).toSubring)) f := rfl
   rw [← Polynomial.map_dvd_map' (Subfield.subtype <| FixedPoints.subfield G F), minpoly, this,
     Polynomial.map_toSubring _ _, prodXSubSMul]
   refine
@@ -202,9 +199,9 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
       QuotientGroup.induction_on y fun g => ?_
   rw [Polynomial.dvd_iff_isRoot, Polynomial.IsRoot.def, MulAction.ofQuotientStabilizer_mk,
     Polynomial.eval_smul', ← this, ← Subfield.toSubring_subtype_eq_subtype, ←
-    IsInvariantSubring.coe_subtypeHom' G (FixedPoints.subfield G F).toSubring, h,
+    IsInvariantSubring.coe_subtypeHom' G (FixedPoints.subfield G F).toSubring,
     ← MulSemiringActionHom.coe_polynomial, ← MulSemiringActionHom.map_smul, smul_polynomial,
-    MulSemiringActionHom.coe_polynomial, ← h, IsInvariantSubring.coe_subtypeHom',
+    MulSemiringActionHom.coe_polynomial, IsInvariantSubring.coe_subtypeHom',
     Polynomial.eval_map, Subfield.toSubring_subtype_eq_subtype, hf, smul_zero]
 
 -- Why is this so slow?
