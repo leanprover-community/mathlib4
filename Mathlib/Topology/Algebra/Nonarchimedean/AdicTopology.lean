@@ -180,7 +180,7 @@ theorem is_ideal_adic_pow {J : Ideal R} (h : IsAdic J) {n : ℕ} (hn : 0 < n) : 
     rw [← pow_mul]
     apply h.left
   · intro V hV
-    cases' h.right V hV with m hm
+    obtain ⟨m, hm⟩ := h.right V hV
     use m
     refine Set.Subset.trans ?_ hm
     cases n
