@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Order.Filter.Bases.Finite
 import Mathlib.Topology.Algebra.Monoid
 
 /-!
