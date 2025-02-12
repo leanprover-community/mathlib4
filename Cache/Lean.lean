@@ -153,10 +153,18 @@ def contains (parent target : FilePath) : Bool :=
 where
   go : List String → List String → Bool
     | [], [] => true
-    -- cleaned paths do not contain `"."` anymore, but `[""]` is a valid path
-    | "" :: parent, target => go parent target
-    | parent, "" :: target => go parent target
-    -- must start with equal quantity of ".."
+    -- ignore leanding `"."`
+    | "." :: parent, target => go parent target
+    | parent, "." :: target => go parent target
+    -- special-case for `/` and `//`
+    | "" :: "" :: "" :: [], "" :: "" :: [] => false
+    | "" :: "" :: [], "" :: "" :: "" :: [] => false
+    | "" :: "" :: [], "" :: _ => true
+    -- must start with equal quantity of `""`
+    | "" :: parent, "" :: target => go parent target
+    | "" :: _, _ => false
+    | _, "" :: _ => false
+    -- must start with equal quantity of `".."`
     | ".." :: parent, ".." :: target => go parent target
     | ".." :: _, _ => false
     | _, ".." :: _ => false
@@ -169,44 +177,62 @@ where
 
 -- unit tests for `System.FilePath.contains`
 /-- info: true -/ #guard_msgs in #eval FilePath.contains "." "."
-/-- info: true -/ #guard_msgs in #eval FilePath.contains "" ""
-/-- info: true -/ #guard_msgs in #eval FilePath.contains "" "."
-/-- info: true -/ #guard_msgs in #eval FilePath.contains "." ""
-/-- info: true -/ #guard_msgs in #eval FilePath.contains "" "A"
+/-- info: true -/ #guard_msgs in #eval FilePath.contains "./." "."
+/-- info: true -/ #guard_msgs in #eval FilePath.contains "." "./."
 /-- info: true -/ #guard_msgs in #eval FilePath.contains "." "A"
-/-- info: true -/ #guard_msgs in #eval FilePath.contains "A" ("A" / "B")
+/-- info: true -/ #guard_msgs in #eval FilePath.contains "././." "A"
+/-- info: true -/ #guard_msgs in #eval FilePath.contains "././." "././A"
+/-- info: true -/ #guard_msgs in #eval FilePath.contains "A" "A/B"
+/-- info: true -/ #guard_msgs in #eval FilePath.contains "A" "A//B"
+/-- info: true -/ #guard_msgs in #eval FilePath.contains "A//B" "A/B///C//"
+/-- info: true -/ #guard_msgs in #eval FilePath.contains "/" "/"
+/-- info: true -/ #guard_msgs in #eval FilePath.contains "/" "/A"
+/-- info: true -/ #guard_msgs in #eval FilePath.contains "/A" "/A/B"
+/-- info: true -/ #guard_msgs in #eval FilePath.contains "//" "//A"
+/-- info: true -/ #guard_msgs in #eval FilePath.contains "//A" "//A/B"
+/-- info: true -/ #guard_msgs in #eval FilePath.contains "//" "//"
+/-- info: true -/ #guard_msgs in #eval FilePath.contains "/" "///"
+/-- info: true -/ #guard_msgs in #eval FilePath.contains "///" "/"
+/-- info: true -/ #guard_msgs in #eval FilePath.contains "///" "/A"
+/-- info: true -/ #guard_msgs in #eval FilePath.contains "/" "///A"
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "/" "//"
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "//" "/"
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "//A" "/A"
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "/" "."
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "." "/"
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "/" "A"
 /-- info: true -/ #guard_msgs in #eval FilePath.contains ".." ".."
-/-- info: true -/ #guard_msgs in #eval FilePath.contains (".."/ "..") (".." / "..")
-/-- info: true -/ #guard_msgs in #eval FilePath.contains ("A" / ".." / "B") ("A" / ".." / "B" / "C")
-/-- info: true -/ #guard_msgs in #eval FilePath.contains ("A" / "..") ("A" / ".." / "A")
-/-- info: true -/ #guard_msgs in #eval FilePath.contains (".." / "A" / "..") (".." / "A" / ".." / "B")
-/-- info: true -/ #guard_msgs in #eval FilePath.contains (".." / ".." / "A") (".." / ".." / "A" / "B")
-/-- info: true -/ #guard_msgs in #eval FilePath.contains (".." / "A" / "..") (".." / "A" / ".." / "B")
+/-- info: true -/ #guard_msgs in #eval FilePath.contains "../.." "../.."
+/-- info: true -/ #guard_msgs in #eval FilePath.contains "A/../B" "A/../B/C"
+/-- info: true -/ #guard_msgs in #eval FilePath.contains "A/.." "A/../A"
+/-- info: true -/ #guard_msgs in #eval FilePath.contains "../A/.." "../A/../B"
+/-- info: true -/ #guard_msgs in #eval FilePath.contains "../../A" "../../A/B"
+/-- info: true -/ #guard_msgs in #eval FilePath.contains "../A/.." "../A/../B"
 /-- info: false -/ #guard_msgs in #eval FilePath.contains "A" "."
-/-- info: false -/ #guard_msgs in #eval FilePath.contains "A" ""
-/-- info: false -/ #guard_msgs in #eval FilePath.contains "A" ("B" / "A")
-/-- info: false -/ #guard_msgs in #eval FilePath.contains ("A" / "B") "A"
-/-- info: false -/ #guard_msgs in #eval FilePath.contains ("A" / "B") ("A" / "C" / "B")
-/-- info: false -/ #guard_msgs in #eval FilePath.contains "A" ("A" / ".." / "A")
-/-- info: false -/ #guard_msgs in #eval FilePath.contains "A" ("A" / "B" / ".." / "B")
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "A" "/"
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "A" "B/A"
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "A/B" "A"
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "A/B" "A/C/B"
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "A" "A/../A"
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "A" "A/B/../B"
 /-- info: false -/ #guard_msgs in #eval FilePath.contains "." ".."
-/-- info: false -/ #guard_msgs in #eval FilePath.contains "" ".."
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "/" ".."
 /-- info: false -/ #guard_msgs in #eval FilePath.contains ".." "."
-/-- info: false -/ #guard_msgs in #eval FilePath.contains ".." ""
-/-- info: false -/ #guard_msgs in #eval FilePath.contains (".."/ "..") ".."
-/-- info: false -/ #guard_msgs in #eval FilePath.contains ".." (".." / "..")
-/-- info: false -/ #guard_msgs in #eval FilePath.contains (".." / "A" / "..") "."
-/-- info: false -/ #guard_msgs in #eval FilePath.contains (".." / "A" / "..") "A"
-/-- info: false -/ #guard_msgs in #eval FilePath.contains "A" ("A" / ".." / "A")
-/-- info: false -/ #guard_msgs in #eval FilePath.contains "A" ("B" / ".." / "A")
-/-- info: false -/ #guard_msgs in #eval FilePath.contains ("A" / ".." / "A") ("A" / "C")
-/-- info: false -/ #guard_msgs in #eval FilePath.contains ("B" / ".." / "A") ("A" / "C")
-/-- info: false -/ #guard_msgs in #eval FilePath.contains ("A" / "B" / ".." / ".."/ "C") ("C" / "D")
-/-- info: false -/ #guard_msgs in #eval FilePath.contains "C" ("A" / "B" / ".." / ".."/ "C")
-/-- info: false -/ #guard_msgs in #eval FilePath.contains "A" (".." / ".."/ "A")
-/-- info: false -/ #guard_msgs in #eval FilePath.contains ("A" / "B" / ".." / ".." / ".."/ "C") ("C" / "D")
-/-- info: false -/ #guard_msgs in #eval FilePath.contains "." ("A" / "B" / "C" / ".." / ".." / ".." / ".." / "D")
-/-- info: false -/ #guard_msgs in #eval FilePath.contains (".." / "A" / "..") (".." / "A" / ".." / "B" / ".." / "B")
+/-- info: false -/ #guard_msgs in #eval FilePath.contains ".." "/"
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "../.." ".."
+/-- info: false -/ #guard_msgs in #eval FilePath.contains ".." "../.."
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "../A/.." "."
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "../A/.." "A"
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "A" "A/../A"
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "A" "B/../A"
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "A/../A" "A/C"
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "B/../A" "A/C"
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "A/B/../../C" "C/D"
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "C" "A/B/../../C"
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "A" "../../A"
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "A/B/../../../C" "C/D"
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "." "A/B/C/../../../../D"
+/-- info: false -/ #guard_msgs in #eval FilePath.contains "../A/.." "../A/../B/../B"
 
 /-- Removes a parent path from the beginning of a path -/
 def withoutParent (path parent : FilePath) : FilePath :=
