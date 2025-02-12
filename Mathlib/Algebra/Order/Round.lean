@@ -63,7 +63,6 @@ theorem round_add_int (x : α) (y : ℤ) : round (x + y) = round x + y := by
 
 @[simp]
 theorem round_add_one (a : α) : round (a + 1) = round a + 1 := by
-  -- Porting note: broken `convert round_add_int a 1`
   rw [← round_add_int a 1, cast_one]
 
 @[simp]
@@ -74,7 +73,6 @@ theorem round_sub_int (x : α) (y : ℤ) : round (x - y) = round x - y := by
 
 @[simp]
 theorem round_sub_one (a : α) : round (a - 1) = round a - 1 := by
-  -- Porting note: broken `convert round_sub_int a 1`
   rw [← round_sub_int a 1, cast_one]
 
 @[simp]
@@ -205,10 +203,6 @@ variable [LinearOrderedField α] [LinearOrderedField β] [FloorRing α] [FloorRi
 variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
 
 theorem map_round (f : F) (hf : StrictMono f) (a : α) : round (f a) = round a := by
-  have H : f 2 = 2 := map_natCast f 2
-  simp_rw [round_eq, ← map_floor _ hf, map_add, one_div, map_inv₀, H]
-  -- Porting note: was
-  -- simp_rw [round_eq, ← map_floor _ hf, map_add, one_div, map_inv₀, map_bit0, map_one]
-  -- Would have thought that `map_natCast` would replace `map_bit0, map_one` but seems not
+  simp_rw [round_eq, ← map_floor _ hf, map_add, one_div, map_inv₀, map_ofNat]
 
 end Int

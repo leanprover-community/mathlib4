@@ -22,7 +22,8 @@ This file defines bundled isomorphisms of `R`-algebras.
 
 universe u v w u₁ v₁
 
-/-- An equivalence of algebras is an equivalence of rings commuting with the actions of scalars. -/
+/-- An equivalence of algebras (denoted as `A ≃ₐ[R] B`)
+is an equivalence of rings commuting with the actions of scalars. -/
 structure AlgEquiv (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] extends A ≃ B, A ≃* B, A ≃+ B, A ≃+* B where
   /-- An equivalence of algebras commutes with the action of scalars. -/
@@ -727,21 +728,6 @@ instance _root_.Finite.algEquiv [Finite (A₁ →ₐ[R] A₂)] : Finite (A₁ �
   Finite.of_injective _ AlgEquiv.coe_algHom_injective
 
 end Semiring
-
-section Ring
-
-variable [CommSemiring R] [Ring A₁] [Ring A₂]
-variable [Algebra R A₁] [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
-
-@[deprecated map_neg (since := "2024-06-20")]
-protected theorem map_neg (x) : e (-x) = -e x :=
-  map_neg e x
-
-@[deprecated map_sub (since := "2024-06-20")]
-protected theorem map_sub (x y) : e (x - y) = e x - e y :=
-  map_sub e x y
-
-end Ring
 
 end AlgEquiv
 
