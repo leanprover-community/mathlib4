@@ -863,6 +863,17 @@ theorem coeFn_posPart (f : α →ₘ[μ] γ) : ⇑(posPart f) =ᵐ[μ] fun a => 
 
 end PosPart
 
+section AELimit
+
+/-- The ae-limit is ae-unique. -/
+theorem tendsto_ae_unique {ι : Type*} [T2Space β]
+    {g h : α → β} {f : ι → α → β} {l : Filter ι} [l.NeBot]
+    (hg : ∀ᵐ ω ∂μ, Tendsto (fun i => f i ω) l (𝓝 (g ω)))
+    (hh : ∀ᵐ ω ∂μ, Tendsto (fun i => f i ω) l (𝓝 (h ω))) : g =ᵐ[μ] h := by
+  filter_upwards [hg, hh] with ω hg1 hh1 using tendsto_nhds_unique hg1 hh1
+
+end AELimit
+
 end AEEqFun
 
 end MeasureTheory

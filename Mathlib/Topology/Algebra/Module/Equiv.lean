@@ -151,8 +151,8 @@ instance equivLike :
   coe f := f.toFun
   inv f := f.invFun
   coe_injective' f g h₁ h₂ := by
-    cases' f with f' _
-    cases' g with g' _
+    obtain ⟨f', _⟩ := f
+    obtain ⟨g', _⟩ := g
     rcases f' with ⟨⟨⟨_, _⟩, _⟩, _⟩
     rcases g' with ⟨⟨⟨_, _⟩, _⟩, _⟩
     congr
@@ -552,8 +552,8 @@ variable {M₁} {R₄ : Type*} [Semiring R₄] [Module R₄ M₄] {σ₃₄ : R�
 This is a continuous version of `ULift.moduleEquiv`. -/
 def ulift : ULift M₁ ≃L[R₁] M₁ :=
   { ULift.moduleEquiv with
-    continuous_toFun := continuous_uLift_down
-    continuous_invFun := continuous_uLift_up }
+    continuous_toFun := continuous_uliftDown
+    continuous_invFun := continuous_uliftUp }
 
 /-- A pair of continuous (semi)linear equivalences generates an equivalence between the spaces of
 continuous linear maps. See also `ContinuousLinearEquiv.arrowCongr`. -/
