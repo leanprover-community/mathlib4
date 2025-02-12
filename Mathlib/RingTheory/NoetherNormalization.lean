@@ -24,7 +24,7 @@ open Polynomial MvPolynomial Ideal BigOperators Nat RingHom
 variable {k : Type*} [Field k] {n : ℕ} (f : MvPolynomial (Fin (n + 1)) k)
 variable (v w : Fin (n + 1) →₀ ℕ)
 
-/-Suppose $f$ is a nonzero polynomial of $n+1$ variables : $X_0,...,X_n$.
+/-- Suppose $f$ is a nonzero polynomial of $n+1$ variables : $X_0,...,X_n$.
 `up` is a number which is big enough. -/
 noncomputable abbrev up := 2 + f.totalDegree
 
@@ -35,46 +35,28 @@ private lemma up_lt (hv : v ∈ f.support) : ∀ i, v i < up f := by
 
 private lemma ltup : 1 < up f := Nat.lt_add_right f.totalDegree Nat.one_lt_two
 
+/-- `r` maps i to $up ^ i$-/
 noncomputable abbrev r : Fin (n + 1) → ℕ := fun i ↦ up f ^ i.1
 
-/-We construct a ring homomorphism $T$ which maps $X_i$ into $X_i + X_0^{r_i}$ when $i \neq 0$,
+/-- We construct an algebra map `T1` which maps $X_i$ into $X_i + X_0^{r_i}$ when $i \neq 0$,
 and maps $f$ into some monic polynomial (regarded as a polynomial of $X_0$).-/
-noncomputable abbrev T1 :
+noncomputable abbrev T1 (c : k) :
     MvPolynomial (Fin (n + 1)) k →ₐ[k] MvPolynomial (Fin (n + 1)) k :=
-  aeval fun i ↦ if i = 0 then X 0 else X i + X 0 ^ r f i
+  aeval fun i ↦ if i = 0 then X 0 else X i + c • X 0 ^ r f i
 
-noncomputable abbrev T_inv :
-    MvPolynomial (Fin (n + 1)) k →ₐ[k] MvPolynomial (Fin (n + 1)) k :=
-  aeval fun i ↦ if i = 0 then X 0 else X i - X 0 ^ r f i
-
-private lemma inv_pair : (T_inv f).comp (T1 f) = AlgHom.id _ _ := by
+private lemma inv_pair (c : k) :
+    (T1 f c).comp (T1 f (-c)) = AlgHom.id _ _ := by
   rw [comp_aeval, ← MvPolynomial.aeval_X_left]
   congr
   ext i v
   cases' i using Fin.cases with d
   · simp only [if_pos, MvPolynomial.aeval_X]
-  · simp only [Fin.succ_ne_zero, ite_false, map_add, map_pow,
-      MvPolynomial.aeval_X, if_pos, sub_add_cancel]
+  · simp only [Fin.succ_ne_zero, ite_false, map_add, map_smul, map_pow,
+      MvPolynomial.aeval_X, if_pos, add_assoc, ← add_smul c, add_neg_cancel, zero_smul, add_zero]
 
-private lemma T_left_inv : (T_inv f).comp (T1 f) = AlgHom.id _ _ := by
-  rw [comp_aeval, ← MvPolynomial.aeval_X_left]
-  congr
-  ext i v
-  cases' i using Fin.cases with d
-  · simp only [if_pos, MvPolynomial.aeval_X]
-  · simp only [Fin.succ_ne_zero, ite_false, map_add, map_pow,
-      MvPolynomial.aeval_X, if_pos, sub_add_cancel]
-
-private lemma T_right_inv : (T1 f).comp (T_inv f) = AlgHom.id _ _ := by
-  rw [comp_aeval, ← MvPolynomial.aeval_X_left]
-  congr
-  ext i v
-  cases' i using Fin.cases with d
-  · simp only [if_pos, MvPolynomial.aeval_X]
-  · simp only [Fin.succ_ne_zero, ite_false, map_sub, map_pow,
-      MvPolynomial.aeval_X, if_pos, add_sub_cancel_right]
-
-private noncomputable abbrev T := AlgEquiv.ofAlgHom (T1 f) (T_inv f) (T_right_inv f) (T_left_inv f)
+/-- `T1` leads to an algebra equiv `T`.-/
+private noncomputable abbrev T := AlgEquiv.ofAlgHom (T1 f 1) (T1 f (-1))
+  (inv_pair f 1) (by convert (inv_pair f (-1)); exact (InvolutiveNeg.neg_neg 1).symm)
 
 lemma lt {f : MvPolynomial (Fin (n + 1)) k} {v : Fin (n + 1) →₀ ℕ}
   (vlt : ∀ i, v i < up f) : ∀ l ∈ List.ofFn v, l < up f := by
@@ -103,7 +85,7 @@ private lemma T_monomial (a : k) (ha : a ≠ 0) : ((T f) (monomial v a)).degreeO
   rw [Finsupp.prod_pow v fun a ↦ X a, Fin.prod_univ_succ]
   simp only [Fin.sum_univ_succ, _root_.map_mul, map_prod, map_pow]
   simp only [AlgEquiv.ofAlgHom_apply, MvPolynomial.aeval_C, MvPolynomial.aeval_X, if_pos,
-    Fin.succ_ne_zero, ite_false, map_add, map_pow, finSuccEquiv_X_zero,
+    Fin.succ_ne_zero, ite_false, one_smul, map_add, map_pow, finSuccEquiv_X_zero,
     finSuccEquiv_X_succ, algebraMap_eq]
   have h1 : (finSuccEquiv k n) (C a) ≠ 0 :=
     (map_ne_zero_iff _ (AlgEquiv.injective _)).mpr ((map_ne_zero_iff _ (C_injective _ _)).mpr ha)
@@ -144,12 +126,12 @@ private lemma T_coeff :
       eval₂Hom_C, coe_comp]
     simp only[AlgEquiv.ofAlgHom_apply, Function.comp_apply, leadingCoeff_C, map_pow,
       leadingCoeff_pow, algebraMap_eq]
-    have : ∀ j, ((finSuccEquiv k n) ((T1 f) (X j))).leadingCoeff = 1 := by
+    have : ∀ j, ((finSuccEquiv k n) ((T1 f) 1 (X j))).leadingCoeff = 1 := by
       intro j
       by_cases h : j = 0
       · simp only [aeval_eq_bind₁, bind₁_X_right, if_pos h, finSuccEquiv_apply, eval₂Hom_X',
           Fin.cases_zero, monic_X, Monic.leadingCoeff]
-      · simp only [aeval_eq_bind₁, bind₁_X_right, if_neg h, map_add, map_pow]
+      · simp only [aeval_eq_bind₁, bind₁_X_right, if_neg h, one_smul, map_add, map_pow]
         obtain ⟨i, hi⟩ := Fin.exists_succ_eq.mpr h
         rw [← hi, finSuccEquiv_X_succ, finSuccEquiv_X_zero, add_comm]
         apply leadingCoeff_X_pow_add_C
