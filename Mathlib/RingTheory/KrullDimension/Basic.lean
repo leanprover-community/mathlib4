@@ -7,6 +7,7 @@ import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.RingTheory.Ideal.Quotient.Defs
 import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
+import Mathlib.RingTheory.Jacobson.Radical
 import Mathlib.RingTheory.Spectrum.Prime.Basic
 import Mathlib.Order.KrullDimension
 
@@ -99,6 +100,13 @@ lemma Ideal.mem_minimalPrimes_of_krullDimLE_zero [Ring.KrullDimLE 0 R]
 lemma Ideal.mem_minimalPrimes_iff_isPrime [Ring.KrullDimLE 0 R] {I : Ideal R} :
     I ∈ minimalPrimes R ↔ I.IsPrime :=
   ⟨(·.1.1), fun _ ↦ I.mem_minimalPrimes_of_krullDimLE_zero⟩
+
+theorem Ring.jacobson_eq_nilradical_of_krullDimLE_zero (R) [CommRing R] [KrullDimLE 0 R] :
+    jacobson R = nilradical R := by
+  refine nilradical_eq_sInf R ▸ (le_sInf fun I hI ↦ sInf_le ?_).antisymm
+    (le_sInf fun _I hI ↦ sInf_le <| Ideal.IsMaximal.isPrime ⟨hI⟩)
+  change I.IsPrime at hI
+  exact Ideal.IsMaximal.out
 
 end Zero
 
