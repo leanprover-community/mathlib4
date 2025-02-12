@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 import Mathlib.Algebra.PUnitInstances.Algebra
 import Mathlib.Algebra.Group.ULift
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.CategoryTheory.Elementwise
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.Algebra.Ring.Action.Group
 
@@ -168,14 +168,12 @@ lemma ofHom_comp {M N P : Type u} [Monoid M] [Monoid N] [Monoid P]
 lemma ofHom_apply {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma inv_hom_apply {M N : MonCat} (e : M ≅ N) (x : M) : e.inv (e.hom x) = x := by
-  rw [← comp_apply]
   simp
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma hom_inv_apply {M N : MonCat} (e : M ≅ N) (s : N) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 @[to_additive]
