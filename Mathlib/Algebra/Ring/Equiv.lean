@@ -157,8 +157,6 @@ protected theorem congr_fun {f g : R ≃+* S} (h : f = g) (x : R) : f x = g x :=
 theorem coe_mk (e h₃ h₄) : ⇑(⟨e, h₃, h₄⟩ : R ≃+* S) = e :=
   rfl
 
--- Porting note: `toEquiv_mk` no longer needed in Lean4
-
 @[simp]
 theorem mk_coe (e : R ≃+* S) (e' h₁ h₂ h₃ h₄) : (⟨⟨e, e', h₁, h₂⟩, h₃, h₄⟩ : R ≃+* S) = e :=
   ext fun _ => rfl
