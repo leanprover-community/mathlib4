@@ -38,7 +38,7 @@ The file also contains an identification between the definitions in
   2-boundaries (i.e. `B₁(G, A) := Im(d₂ : (G³ →₀ A) → (G² →₀ A))`).
 * `groupHomology.isoHn` for `n = 0, 1, 2`: an isomorphism `groupHomology A n ≅ groupHomology.Hn A`.
 * `groupHomology.H1LequivOfIsTrivial`: an isomorphism `H₁(G, A) ≃+ Gᵃᵇ ⊗[ℤ] A` when the
-representation on `A` is trivial.
+  representation on `A` is trivial.
 
 -/
 
