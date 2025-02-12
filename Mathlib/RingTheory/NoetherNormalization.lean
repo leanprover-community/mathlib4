@@ -3,8 +3,8 @@ Copyright (c) 2024 Sihan Su. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Sihan Su, Wan Lin, Xiaoyang Su
 -/
-import Mathlib.Data.List.Indexes
 import Mathlib.Algebra.MvPolynomial.Monad
+import Mathlib.Data.List.Indexes
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 /-!
 # Norther Normalizaton
@@ -26,7 +26,7 @@ variable (v w : Fin (n + 1) →₀ ℕ)
 
 /-Suppose $f$ is a nonzero polynomial of $n+1$ variables : $X_0,...,X_n$.
 `up` is a number which is big enough. -/
-private noncomputable abbrev up := 2 + f.totalDegree
+noncomputable abbrev up := 2 + f.totalDegree
 
 private lemma up_lt (hv : v ∈ f.support) : ∀ i, v i < up f := by
   intro i
@@ -35,16 +35,26 @@ private lemma up_lt (hv : v ∈ f.support) : ∀ i, v i < up f := by
 
 private lemma ltup : 1 < up f := Nat.lt_add_right f.totalDegree Nat.one_lt_two
 
-private noncomputable abbrev r : Fin (n + 1) → ℕ := fun i ↦ up f ^ i.1
+noncomputable abbrev r : Fin (n + 1) → ℕ := fun i ↦ up f ^ i.1
 
 /-We construct a ring homomorphism $T$ which maps $X_i$ into $X_i + X_0^{r_i}$ when $i \neq 0$,
 and maps $f$ into some monic polynomial (regarded as a polynomial of $X_0$).-/
-private noncomputable abbrev T1 : MvPolynomial (Fin (n + 1)) k →ₐ[k] MvPolynomial (Fin (n + 1)) k :=
-  aeval fun i ↦  if i = 0 then X 0 else X i + X 0 ^ r f i
-
-private noncomputable abbrev T_inv :
+noncomputable abbrev T1 :
     MvPolynomial (Fin (n + 1)) k →ₐ[k] MvPolynomial (Fin (n + 1)) k :=
-  aeval fun i ↦  if i = 0 then X 0 else X i - X 0 ^ r f i
+  aeval fun i ↦ if i = 0 then X 0 else X i + X 0 ^ r f i
+
+noncomputable abbrev T_inv :
+    MvPolynomial (Fin (n + 1)) k →ₐ[k] MvPolynomial (Fin (n + 1)) k :=
+  aeval fun i ↦ if i = 0 then X 0 else X i - X 0 ^ r f i
+
+private lemma inv_pair : (T_inv f).comp (T1 f) = AlgHom.id _ _ := by
+  rw [comp_aeval, ← MvPolynomial.aeval_X_left]
+  congr
+  ext i v
+  cases' i using Fin.cases with d
+  · simp only [if_pos, MvPolynomial.aeval_X]
+  · simp only [Fin.succ_ne_zero, ite_false, map_add, map_pow,
+      MvPolynomial.aeval_X, if_pos, sub_add_cancel]
 
 private lemma T_left_inv : (T_inv f).comp (T1 f) = AlgHom.id _ _ := by
   rw [comp_aeval, ← MvPolynomial.aeval_X_left]
@@ -73,33 +83,12 @@ lemma lt {f : MvPolynomial (Fin (n + 1)) k} {v : Fin (n + 1) →₀ ℕ}
   obtain ⟨y, hy⟩ := h
   exact hy ▸ vlt y
 
-lemma dig (b : ℕ) (hb : 1 < b) (L1 : List ℕ) (L2 : List ℕ) (len : L1.length = L2.length)
-    (w1 : ∀ l ∈ L1, l < b) (w2 : ∀ l ∈ L2, l < b) (h : ofDigits b L1 = ofDigits b L2) :
-    L1 = L2 := by
-  induction' L1 with D L ih generalizing L2
-  · simp only [List.length_nil] at len
-    exact (List.length_eq_zero.mp len.symm).symm
-  obtain ⟨d, l, eq⟩ := List.exists_cons_of_length_eq_add_one len.symm
-  rw [eq]
-  simp only [eq, List.length_cons, add_left_inj] at len
-  simp only [eq, Nat.ofDigits_cons] at h
-  rw [eq] at w2
-  have eqd : D = d := by
-    have H : (D + b * ofDigits b L) % b = (d + b * ofDigits b l) % b := by rw [h]
-    simp only [Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt (w2 d <| List.mem_cons_self d l),
-    Nat.mod_eq_of_lt (w1 D <| List.mem_cons_self D L)] at H
-    exact H
-  simp only [eqd, add_right_inj, mul_left_cancel_iff_of_pos (zero_lt_of_lt hb)] at h
-  have := ih l len (fun a ha ↦ w1 a <| List.mem_cons_of_mem D ha)
-    (fun a ha ↦ w2 a <| List.mem_cons_of_mem d ha) h
-  rw [eqd, this]
-
 private lemma r_ne (vlt : ∀ i, v i < up f) (wlt : ∀ i, w i < up f) (neq : v ≠ w) :
     ∑ x : Fin (n + 1), r f x * v x ≠ ∑ x : Fin (n + 1), r f x * w x := by
   unfold r
   by_contra h
   have : List.ofFn v = List.ofFn w := by
-    apply dig (up f) (ltup f) (List.ofFn v) (List.ofFn w)
+    apply list_eq_of_ofDigits_eq (up f) (ltup f) (List.ofFn v) (List.ofFn w)
       (by simp only [List.length_ofFn]) (lt vlt) (lt wlt)
     simp only [Nat.ofDigits_eq_sum_mapIdx, List.mapIdx_eq_ofFn, List.get_ofFn]
     repeat rw [← List.sum_ofFn] at h
