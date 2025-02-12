@@ -59,27 +59,27 @@ noncomputable def ofGeneratorsAndRelations: CosimplicialObject C :=
       (by
         intro x y f g hfg
         cases hfg with
-        | simplicial1 H =>
+        | δ_comp_δ H =>
           simp only [Paths.of_obj, Paths.of_map, Functor.map_comp,
             Paths.lift_toPath]
           exact s1 _ _ H
-        | simplicial2 H =>
+        | δ_comp_σ_of_le H =>
           simp only [Paths.of_obj, Paths.of_map, Functor.map_comp,
             Paths.lift_toPath]
           exact s2 _ _ H
-        | simplicial3₁ =>
+        | δ_comp_σ_self =>
           simp only [Paths.of_obj, Paths.of_map, Functor.map_comp,
             Paths.lift_toPath]
           exact s3₁ _
-        | simplicial3₂ =>
+        | δ_comp_σ_succ =>
           simp only [Paths.of_obj, Paths.of_map, Functor.map_comp,
             Paths.lift_toPath]
           exact s3₂ _
-        | simplicial4 H =>
+        | δ_comp_σ_of_gt H =>
           simp only [Paths.of_obj, Paths.of_map, Functor.map_comp,
             Paths.lift_toPath]
           exact s4 _ _ H
-        | simplicial5 H =>
+        | σ_comp_σ H =>
           simp only [Paths.of_obj, Paths.of_map, Functor.map_comp,
             Paths.lift_toPath]
           exact s5 _ _ H ))
