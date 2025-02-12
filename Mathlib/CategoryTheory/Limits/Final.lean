@@ -1024,12 +1024,13 @@ instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final :=
 
 open Limits
 
-/-- This is the small version of the more general lemma `Grothendieck.final_map` below. -/
-private lemma Grothendieck.final_map_small {C : Type u₁} [Category.{u₁} C] {F G : C ⥤ Cat.{u₁, u₁}}
-    (α : F ⟶ G) [hα : ∀ X, Final (α.app X)] : Final (map α) := by
-  rw [final_iff_isIso_colimit_pre]
-  intro H
-  let fi : fiberwiseColimit (map α ⋙ H) ≅ fiberwiseColimit H := NatIso.ofComponents
+/-- A natural transformation `α : F ⟶ G` between functors `F G : C ⥤ Cat` which is is final on each
+fiber `(α.app X)` induces an equivalence of fiberwise colimits of `map α ⋙ H` and `H` for each
+functor `H : Grothendieck G ⥤ Type`. -/
+def Grothendieck.fiberwiseColimitMapCompEquivalence {C : Type u₁} [Category.{v₁} C]
+    {F G : C ⥤ Cat.{v₂, u₂}} (α : F ⟶ G) [∀ X, Final (α.app X)] (H : Grothendieck G ⥤ Type u₂) :
+    fiberwiseColimit (map α ⋙ H) ≅ fiberwiseColimit H :=
+  NatIso.ofComponents
     (fun X =>
       HasColimit.isoOfNatIso ((Functor.associator _ _ _).symm ≪≫
         isoWhiskerRight (ιCompMap α X) H ≪≫  Functor.associator _ _ _) ≪≫
@@ -1045,13 +1046,18 @@ private lemma Grothendieck.final_map_small {C : Type u₁} [Category.{u₁} C] {
       dsimp at this
       congr
       apply eqToHom_heq_id_dom)
-  let i : colimit (map α ⋙ H) ≅ colimit H :=
-    (colimitFiberwiseColimitIso _).symm ≪≫ HasColimit.isoOfNatIso fi ≪≫
-    colimitFiberwiseColimitIso _
+
+/-- This is the small version of the more general lemma `Grothendieck.final_map` below. -/
+private lemma Grothendieck.final_map_small {C : Type u₁} [SmallCategory C] {F G : C ⥤ Cat.{u₁, u₁}}
+    (α : F ⟶ G) [hα : ∀ X, Final (α.app X)] : Final (map α) := by
+  rw [final_iff_isIso_colimit_pre]
+  intro H
+  let i := (colimitFiberwiseColimitIso _).symm ≪≫
+    HasColimit.isoOfNatIso (fiberwiseColimitMapCompEquivalence α H) ≪≫ colimitFiberwiseColimitIso _
   convert Iso.isIso_hom i
   apply colimit.hom_ext
   intro X
-  simp [i, fi]
+  simp [i, fiberwiseColimitMapCompEquivalence]
 
 /-- The functor `Grothendieck.map α` for a natural transformation `α : F ⟶ G`, with
 `F G : C ⥤ Cat`, is final if for each `X : C`, the functor `α.app X` is final. -/
