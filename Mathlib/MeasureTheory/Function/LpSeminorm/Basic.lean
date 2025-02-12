@@ -995,8 +995,8 @@ theorem eLpNorm_eq_zero_of_ae_zero {f : α → E} (hf : f =ᵐ[μ] 0) : eLpNorm 
 theorem ae_le_eLpNormEssSup {f : α → ε} : ∀ᵐ y ∂μ, ‖f y‖ₑ ≤ eLpNormEssSup f μ :=
   ae_le_essSup
 
--- more interesting lemma: changing the statement makes it false (as the enorm could be ∞)
--- direction => still holds; <= fails without additional hypotheses
+-- NB. Changing this lemma to use ‖‖ₑ makes it false (only => still holds);
+-- unlike a nnnorm, the enorm can be ∞.
 set_option linter.deprecated false in
 lemma eLpNormEssSup_lt_top_iff_isBoundedUnder :
     eLpNormEssSup f μ < ⊤ ↔ IsBoundedUnder (· ≤ ·) (ae μ) fun x ↦ ‖f x‖₊ where
