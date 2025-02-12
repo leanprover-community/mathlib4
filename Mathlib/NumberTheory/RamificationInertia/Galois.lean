@@ -183,7 +183,7 @@ include hpb in
 /-- The form of the **fundamental identity** in the case of Galois extension. -/
 theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn [IsGalois K L] :
     (primesOver p B).ncard * (ramificationIdxIn p B * inertiaDegIn p B) = Module.finrank K L := by
-  haveI : NoZeroSMulDivisors A B := NoZeroSMulDivisors.of_field_isFractionRing A B K L
+  have : NoZeroSMulDivisors A B := NoZeroSMulDivisors.of_field_isFractionRing A B K L
   rw [← smul_eq_mul, ← coe_primesOverFinset hpb B, Set.ncard_coe_Finset, ← Finset.sum_const]
   rw [← sum_ramification_inertia B p K L hpb]
   apply Finset.sum_congr rfl
