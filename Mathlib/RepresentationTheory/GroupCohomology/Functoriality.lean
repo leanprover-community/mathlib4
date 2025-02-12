@@ -168,7 +168,7 @@ open ShortComplex
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is induced map `Aᴴ ⟶ Bᴳ`. -/
-def H0Map : ModuleCat.of k (H0 A) ⟶ ModuleCat.of k (H0 B) :=
+def H0Map : H0 A ⟶ H0 B :=
   ModuleCat.ofHom <| LinearMap.codRestrict _ (φ.hom.hom ∘ₗ A.ρ.invariants.subtype)
     fun ⟨c, hc⟩ g => by simpa [hc (f g)] using (hom_comm_apply φ g c).symm
 
@@ -266,11 +266,11 @@ lemma cocyclesMap_comp_isoOneCocycles_hom :
       (isoOneCocycles A).hom ≫ mapOneCocycles f φ := by
   simp_rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i, mapOneCocycles,
       Category.assoc, cyclesMap'_i, isoOneCocycles, ← Category.assoc]
-  simp [cochainsMap_f_1_comp_oneCochainsLequiv f φ, mapShortComplexH1]
+  simp [cochainsMap_f_1_comp_oneCochainsLequiv f, mapShortComplexH1, ← LinearEquiv.toModuleIso_hom]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is induced map `H¹(H, A) ⟶ H¹(G, B)`. -/
-noncomputable abbrev H1Map : ModuleCat.of k (H1 A) ⟶ ModuleCat.of k (H1 B) :=
+noncomputable abbrev H1Map : H1 A ⟶ H1 B :=
   ShortComplex.leftHomologyMap' (mapShortComplexH1 f φ)
     (shortComplexH1 A).moduleCatLeftHomologyData (shortComplexH1 B).moduleCatLeftHomologyData
 
@@ -356,11 +356,11 @@ lemma cocyclesMap_comp_isoTwoCocycles_hom :
     cocyclesMap f φ 2 ≫ (isoTwoCocycles B).hom = (isoTwoCocycles A).hom ≫ mapTwoCocycles f φ := by
   simp_rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH2 B)).i, mapTwoCocycles,
       Category.assoc, cyclesMap'_i, isoTwoCocycles, ← Category.assoc]
-  simp [cochainsMap_f_2_comp_twoCochainsLequiv f φ, mapShortComplexH2]
+  simp [cochainsMap_f_2_comp_twoCochainsLequiv f, mapShortComplexH2, ← LinearEquiv.toModuleIso_hom]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is induced map `H²(H, A) ⟶ H²(G, B)`. -/
-noncomputable abbrev H2Map : ModuleCat.of k (H2 A) ⟶ ModuleCat.of k (H2 B) :=
+noncomputable abbrev H2Map : H2 A ⟶ H2 B :=
   ShortComplex.leftHomologyMap' (mapShortComplexH2 f φ)
     (shortComplexH2 A).moduleCatLeftHomologyData (shortComplexH2 B).moduleCatLeftHomologyData
 
