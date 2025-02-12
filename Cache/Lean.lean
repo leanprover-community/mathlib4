@@ -81,7 +81,6 @@ where
       | [], true => [""]
       | [], false => ["."]
       | l, _ => l
-
   /-- drop all `"."` and all `""`. -/
   go : List String → List String
     | [] => []
