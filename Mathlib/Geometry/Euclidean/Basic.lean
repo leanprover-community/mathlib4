@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
-import Mathlib.Analysis.Normed.Affine.DistPt
 import Mathlib.Geometry.Euclidean.PerpBisector
 import Mathlib.Algebra.QuadraticDiscriminant
 
@@ -438,15 +437,16 @@ theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
     (orthogonalProjection_vsub_mem_direction_orthogonal s p₂)
 
 /-- The distance between a point and its orthogonal projection to a subspace equals the distance
-to that subspace as given by `distPt`. This is not a `simp` lemma since the simplest form
+to that subspace as given by `Metric.infDist`. This is not a `simp` lemma since the simplest form
 depends on the context (if any calculations are to be done with the distance, the version with
 the orthogonal projection gives access to more lemmas about orthogonal projections that may be
 useful). -/
-lemma dist_orthogonalProjection_eq_distPt (s : AffineSubspace ℝ P) [Nonempty s]
+lemma dist_orthogonalProjection_eq_infDist (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) :
-    dist p (orthogonalProjection s p) = s.distPt p := by
-  refine le_antisymm (le_ciInf fun x ↦ le_of_sq_le_sq ?_ dist_nonneg)
-                     (distPt_le_dist_of_mem _ (orthogonalProjection_mem _))
+    dist p (orthogonalProjection s p) = Metric.infDist p s := by
+  refine le_antisymm ?_ (Metric.infDist_le_dist_of_mem (orthogonalProjection_mem _))
+  rw [Metric.infDist_eq_iInf]
+  refine le_ciInf fun x ↦ le_of_sq_le_sq ?_ dist_nonneg
   rw [dist_comm _ (x : P)]
   simp_rw [pow_two,
     dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p x.property]
