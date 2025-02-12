@@ -26,7 +26,7 @@ def binaryProductLimitCone (G H : Grp.{u}) : LimitCone (pair G H) where
 
 /-- We choose `Grp.of (G × H)` as the product of `G` and `H` and `Grp.of PUnit` as
 the terminal object. -/
-noncomputable instance : ChosenFiniteProducts Grp.{u} where
+noncomputable instance chosenFiniteProductsGrp : ChosenFiniteProducts Grp.{u} where
   product G H := binaryProductLimitCone G H
   terminal := ⟨_, (isZero_of_subsingleton (Grp.of PUnit.{u + 1})).isTerminal⟩
 
@@ -54,7 +54,7 @@ def binaryProductLimitCone (G H : AddGrp.{u}) : LimitCone (pair G H) where
 
 /-- We choose `AddGrp.of (G × H)` as the product of `G` and `H` and `AddGrp.of PUnit` as
 the terminal object. -/
-noncomputable instance : ChosenFiniteProducts AddGrp.{u} where
+noncomputable instance chosenFiniteProductsAddGrp : ChosenFiniteProducts AddGrp.{u} where
   product G H := binaryProductLimitCone G H
   terminal := ⟨_, (isZero_of_subsingleton (AddGrp.of PUnit.{u + 1})).isTerminal⟩
 
@@ -82,7 +82,7 @@ def binaryProductLimitCone (G H : CommGrp.{u}) : LimitCone (pair G H) where
 
 /-- We choose `CommGrp.of (G × H)` as the product of `G` and `H` and `CommGrp.of PUnit` as
 the terminal object. -/
-noncomputable instance : ChosenFiniteProducts CommGrp.{u} where
+noncomputable instance chosenFiniteProductsCommGrp : ChosenFiniteProducts CommGrp.{u} where
   product G H := binaryProductLimitCone G H
   terminal := ⟨_, (isZero_of_subsingleton (CommGrp.of PUnit.{u + 1})).isTerminal⟩
 
@@ -103,10 +103,11 @@ namespace AddCommGrp
 
 /-- We choose `AddCommGrp.of (G × H)` as the product of `G` and `H` and `AddGrp.of PUnit` as
 the terminal object. -/
-noncomputable instance : ChosenFiniteProducts AddCommGrp.{u} where
+noncomputable def chosenFiniteProductsAddCommGrp : ChosenFiniteProducts AddCommGrp.{u} where
   product G H := binaryProductLimitCone G H
   terminal := ⟨_, (isZero_of_subsingleton (AddCommGrp.of PUnit.{u + 1})).isTerminal⟩
 
+attribute [local instance] chosenFiniteProductsAddCommGrp
 attribute [local instance] Functor.monoidalOfChosenFiniteProducts
 
 theorem tensorObj_eq (G H : AddCommGrp.{u}) : (G ⊗ H) = of (G × H) := rfl
