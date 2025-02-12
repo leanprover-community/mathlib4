@@ -386,18 +386,28 @@ instance {ι : Type*} : Inhabited (HilbertBasis ι 𝕜 ℓ²(ι, 𝕜)) :=
 
 open Classical in
 /-- `b i` is the `i`th basis vector. -/
-instance instCoeFun : CoeFun (HilbertBasis ι 𝕜 E) fun _ => ι → E where
+instance instFunLike : FunLike (HilbertBasis ι 𝕜 E) ι E where
   coe b i := b.repr.symm (lp.single 2 i (1 : 𝕜))
+  coe_injective'
+  | ⟨b₁⟩, ⟨b₂⟩, h => by
+    congr
+    apply LinearIsometryEquiv.symm_bijective.injective
+    apply LinearIsometryEquiv.toContinuousLinearEquiv_injective
+    apply ContinuousLinearEquiv.coe_injective
+    refine lp.ext_continuousLinearMap ( ENNReal.ofNat_ne_top (n := nat_lit 2)) fun i => ?_
+    ext
+    exact congr_fun h i
 
--- This is a bad `@[simp]` lemma: the RHS is a coercion containing the LHS.
+@[simp]
 protected theorem repr_symm_single [DecidableEq ι] (b : HilbertBasis ι 𝕜 E) (i : ι) :
     b.repr.symm (lp.single 2 i (1 : 𝕜)) = b i := by
+  dsimp [instFunLike]
   convert rfl
+
 
 protected theorem repr_self [DecidableEq ι] (b : HilbertBasis ι 𝕜 E) (i : ι) :
     b.repr (b i) = lp.single 2 i (1 : 𝕜) := by
-  simp only [LinearIsometryEquiv.apply_symm_apply]
-  convert rfl
+  simp only [LinearIsometryEquiv.apply_symm_apply, ← b.repr_symm_single]
 
 protected theorem repr_apply_apply (b : HilbertBasis ι 𝕜 E) (v : E) (i : ι) :
     b.repr v i = ⟪b i, v⟫ := by
@@ -426,7 +436,7 @@ protected theorem hasSum_repr_symm (b : HilbertBasis ι 𝕜 E) (f : ℓ²(ι, �
   apply b.repr.injective
   letI : NormedSpace 𝕜 (lp (fun _i : ι => 𝕜) 2) := by infer_instance
   have : lp.single (E := (fun _ : ι => 𝕜)) 2 i (f i * 1) = f i • lp.single 2 i 1 :=
-    lp.single_smul (E := (fun _ : ι => 𝕜)) 2 i (1 : 𝕜) (f i)
+    lp.single_smul (E := (fun _ : ι => 𝕜)) 2 i (f i) (1 : 𝕜)
   rw [mul_one] at this
   rw [LinearIsometryEquiv.map_smul, b.repr_self, ← this,
     LinearIsometryEquiv.coe_toContinuousLinearEquiv]

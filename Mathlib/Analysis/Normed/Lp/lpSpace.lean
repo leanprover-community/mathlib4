@@ -59,7 +59,7 @@ noncomputable section
 
 open scoped NNReal ENNReal Function
 
-variable {α : Type*} {E : α → Type*} {p q : ℝ≥0∞} [∀ i, NormedAddCommGroup (E i)]
+variable {𝕜 𝕜' : Type*} {α : Type*} {E : α → Type*} {p q : ℝ≥0∞} [∀ i, NormedAddCommGroup (E i)]
 
 /-!
 ### `Memℓp` predicate
@@ -235,7 +235,7 @@ theorem finset_sum {ι} (s : Finset ι) {f : ι → ∀ i, E i} (hf : ∀ i ∈ 
 
 section BoundedSMul
 
-variable {𝕜 : Type*} [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
+variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
 
 theorem const_smul {f : ∀ i, E i} (hf : Memℓp f p) (c : 𝕜) : Memℓp (c • f) p := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -260,7 +260,7 @@ theorem const_smul {f : ∀ i, E i} (hf : Memℓp f p) (c : 𝕜) : Memℓp (c �
     apply nnnorm_smul_le
 
 theorem const_mul {f : α → 𝕜} (hf : Memℓp f p) (c : 𝕜) : Memℓp (fun x => c * f x) p :=
-  @Memℓp.const_smul α (fun _ => 𝕜) _ _ 𝕜 _ _ (fun i => by infer_instance) _ hf c
+  hf.const_smul c
 
 end BoundedSMul
 
@@ -549,7 +549,6 @@ end ComparePointwise
 
 section BoundedSMul
 
-variable {𝕜 : Type*} {𝕜' : Type*}
 variable [NormedRing 𝕜] [NormedRing 𝕜']
 variable [∀ i, Module 𝕜 (E i)] [∀ i, Module 𝕜' (E i)]
 
@@ -579,11 +578,11 @@ def _root_.lpSubmodule : Submodule 𝕜 (PreLp E) :=
 
 variable {E p 𝕜}
 
-theorem coe_lpSubmodule : (lpSubmodule E p 𝕜).toAddSubgroup = lp E p :=
+theorem coe_lpSubmodule : (lpSubmodule 𝕜 E p).toAddSubgroup = lp E p :=
   rfl
 
 instance : Module 𝕜 (lp E p) :=
-  { (lpSubmodule E p 𝕜).module with }
+  { (lpSubmodule 𝕜 E p).module with }
 
 @[simp]
 theorem coeFn_smul (c : 𝕜) (f : lp E p) : ⇑(c • f) = c • ⇑f :=
@@ -638,7 +637,6 @@ end BoundedSMul
 
 section DivisionRing
 
-variable {𝕜 : Type*}
 variable [NormedDivisionRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
 
 theorem norm_const_smul (hp : p ≠ 0) {c : 𝕜} (f : lp E p) : ‖c • f‖ = ‖c‖ * ‖f‖ := by
@@ -652,7 +650,7 @@ end DivisionRing
 
 section NormedSpace
 
-variable {𝕜 : Type*} [NormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
+variable [NormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
 
 instance instNormedSpace [Fact (1 ≤ p)] : NormedSpace 𝕜 (lp E p) where
   norm_smul_le c f := norm_smul_le c f
@@ -702,7 +700,7 @@ instance [hp : Fact (1 ≤ p)] : NormedStarGroup (lp E p) where
     · simp only [lp.norm_eq_ciSup, lp.star_apply, norm_star]
     · simp only [lp.norm_eq_tsum_rpow h, lp.star_apply, norm_star]
 
-variable {𝕜 : Type*} [Star 𝕜] [NormedRing 𝕜]
+variable [Star 𝕜] [NormedRing 𝕜]
 variable [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)] [∀ i, StarModule 𝕜 (E i)]
 
 instance : StarModule 𝕜 (lp E p) where
@@ -850,7 +848,7 @@ end NormedCommRing
 
 section Algebra
 
-variable {I : Type*} {𝕜 : Type*} {B : I → Type*}
+variable {I : Type*} {B : I → Type*}
 variable [NormedField 𝕜] [∀ i, NormedRing (B i)] [∀ i, NormedAlgebra 𝕜 (B i)]
 
 /-- A variant of `Pi.algebra` that lean can't find otherwise. -/
@@ -884,7 +882,7 @@ end Algebra
 
 section Single
 
-variable {𝕜 : Type*} [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
+variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
 variable [DecidableEq α]
 
 /-- The element of `lp E p` which is `a : E i` at the index `i`, and zero elsewhere. -/
@@ -941,9 +939,16 @@ protected theorem single_sub (p) (i : α) (a b : E i) :
   ext <| Pi.single_sub _ _ _
 
 @[simp]
-protected theorem single_smul (p) (i : α) (a : E i) (c : 𝕜) :
+protected theorem single_smul (p) (i : α) (c : 𝕜) (a : E i) :
     lp.single p i (c • a) = c • lp.single p i a :=
   ext <| Pi.single_smul _ _ _
+
+/-- `single` as a `LinearMap`. -/
+@[simps]
+def lsingle (p) (i : α) : E i →ₗ[𝕜] lp E p where
+  toFun := lp.single p i
+  __ := singleAddHom p i
+  map_smul' := lp.single_smul p i
 
 protected theorem norm_sum_single (hp : 0 < p.toReal) (f : ∀ i, E i) (s : Finset α) :
     ‖∑ i ∈ s, lp.single p i (f i)‖ ^ p.toReal = ∑ i ∈ s, ‖f i‖ ^ p.toReal := by
@@ -1057,6 +1062,8 @@ theorem uniformContinuous_single [Fact (1 ≤ p)] [DecidableEq α] (i : α) :
   simp_rw [← lp.single_sub, lp.norm_single (p := p) (hp := hp)]
   exact hxy
 
+variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
+
 variable (p E) in
 /-- `lp.single` as a continuous morphism of additive monoids. -/
 def singleContinuousAddMonoidHom [Fact (1 ≤ p)] [DecidableEq α] (i : α) :
@@ -1069,10 +1076,23 @@ theorem singleContinuousAddMonoidHom_apply [Fact (1 ≤ p)] [DecidableEq α] (i 
     singleContinuousAddMonoidHom E p i x = lp.single p i x :=
   rfl
 
+variable (𝕜 p E) in
+/-- `lp.single` as a continuous linear map. -/
+def singleContinuousLinearMap [Fact (1 ≤ p)] [DecidableEq α] (i : α) :
+    E i →L[𝕜] lp E p where
+  __ := lsingle p i
+  cont := uniformContinuous_single i |>.continuous
+
+@[simp]
+theorem singleContinuousLinearMap_apply [Fact (1 ≤ p)] [DecidableEq α] (i : α) (x : E i) :
+    singleContinuousLinearMap 𝕜 E p i x = lp.single p i x :=
+  rfl
+
 /-- Two continuous additive maps from `lp E p` agree if they agree on `lp.single`.
 
 See note [partially-applied ext lemmas]. -/
-theorem ext_addHom [DecidableEq α] {F} [AddCommMonoid F] [TopologicalSpace F] [T2Space F]
+theorem ext_continuousAddMonoidHom
+    [DecidableEq α] {F} [AddCommMonoid F] [TopologicalSpace F] [T2Space F]
     [Fact (1 ≤ p)] (hp : p ≠ ⊤) ⦃f g : ContinuousAddMonoidHom (lp E p) F⦄
     (h : ∀ i,
       f.comp (singleContinuousAddMonoidHom E p i) = g.comp (singleContinuousAddMonoidHom E p i)) :
@@ -1083,6 +1103,18 @@ theorem ext_addHom [DecidableEq α] {F} [AddCommMonoid F] [TopologicalSpace F] [
   rw [← (this.map f f.continuous).tsum_eq, ← (this.map g g.continuous).tsum_eq]
   congr! 2 with i
   exact DFunLike.congr_fun (h i) (x i)
+
+/-- Two continuous linear maps from `lp E p` agree if they agree on `lp.single`.
+
+See note [partially-applied ext lemmas]. -/
+theorem ext_continuousLinearMap
+    [DecidableEq α] {F} [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F] [T2Space F]
+    [Fact (1 ≤ p)] (hp : p ≠ ⊤) ⦃f g : lp E p →L[𝕜] F⦄
+    (h : ∀ i,
+      f.comp (singleContinuousLinearMap 𝕜 E p i) = g.comp (singleContinuousLinearMap 𝕜 E p i)) :
+    f = g :=
+  ContinuousLinearMap.toContinuousAddMonoidHom_injective <|
+    ext_continuousAddMonoidHom hp fun i => ContinuousLinearMap.toContinuousAddMonoidHom_inj.2 (h i)
 
 variable {ι : Type*} {l : Filter ι} [Filter.NeBot l]
 
