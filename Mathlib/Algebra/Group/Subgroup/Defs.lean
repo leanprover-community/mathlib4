@@ -84,6 +84,11 @@ attribute [to_additive] InvMemClass SubgroupClass
 
 attribute [aesop safe apply (rule_sets := [SetLike])] inv_mem neg_mem
 
+@[to_additive]
+instance (priority := 50) SubgroupClass.toSubgroup {A M : Type*} [Group M] [SetLike A M]
+    [SubgroupClass A M] : CoeOut A (Subgroup M) :=
+  ⟨fun S ↦ ⟨⟨⟨S, MulMemClass.mul_mem⟩, OneMemClass.one_mem S⟩, InvMemClass.inv_mem⟩⟩
+
 @[to_additive (attr := simp)]
 theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] {H : S}
     {x : G} : x⁻¹ ∈ H ↔ x ∈ H :=
