@@ -341,7 +341,7 @@ theorem mul_ofDigits (n : ℕ) {b : ℕ} {l : List ℕ} :
     rw [List.map_cons, ofDigits_cons, ofDigits_cons, ← ih]
     ring
 
-lemma list_eq_of_ofDigits_eq (b : ℕ) (hb : 1 < b) (L1 : List ℕ) (L2 : List ℕ)
+lemma list_eq_of_ofDigits_eq {b : ℕ} (hb : 1 < b) {L1 L2 : List ℕ}
     (len : L1.length = L2.length) (w1 : ∀ l ∈ L1, l < b) (w2 : ∀ l ∈ L2, l < b)
     (h : ofDigits b L1 = ofDigits b L2) : L1 = L2 := by
   induction' L1 with D L ih generalizing L2
