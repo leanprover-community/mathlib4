@@ -209,62 +209,13 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
 
 /-- A version of δ_comp_δ with indices in ℕ satisfying relevant inequalities. -/
 lemma δ_comp_δ_nat {n} (i j : ℕ) (hi : i < n + 2) (hj : j < n + 2) (H : i ≤ j) :
-    δ (i : Fin (n + 2)) ≫ δ ↑(j + 1) = δ ↑j ≫ δ ↑i := by
-  let i₁ : Fin (n + 2) := ⟨i, hi⟩
-  let j₁ : Fin (n + 2) := ⟨j, hj⟩
-  conv_lhs =>
-    congr
-    · right
-      equals i₁ =>
-        congr
-        ext
-        simp only [Fin.val_natCast, Nat.mod_eq_of_lt hi]
-        rfl
-    · right
-      equals j₁.succ =>
-        congr
-        ext
-        simp only [Fin.val_natCast]
-        rw [Nat.mod_eq_of_lt]
-        · rfl
-        · omega
-  rw [δ_comp_δ (by simpa)]
-  congr
-  · ext
-    simp only [Fin.val_succ, Fin.val_natCast, Nat.mod_eq_of_lt hj,
-      Nat.mod_eq_of_lt (Nat.succ_lt_succ hi), Nat.succ_eq_add_one, add_left_inj ]
-    rfl
-  · ext
-    simp only [Fin.val_succ, Fin.val_natCast, Nat.succ_eq_add_one, add_left_inj ]
-    rw [Nat.mod_eq_of_lt]
-    · rfl
-    · omega
+    δ ⟨i, hi⟩ ≫ δ ⟨j + 1, by omega⟩ = δ ⟨j, hj⟩ ≫ δ ⟨i, by omega⟩ :=
+  δ_comp_δ (n := n) (i := ⟨i, by omega⟩) (j := ⟨j, by omega⟩) (by simpa)
 
 /-- A version of σ_comp_σ with indices in ℕ satisfying relevant inequalities. -/
 lemma σ_comp_σ_nat {n} (i j : ℕ) (hi : i < n + 1) (hj : j < n + 1) (H : i ≤ j) :
-    σ (i : Fin (n + 1 + 1)) ≫ σ (j : Fin (n + 1)) = σ ↑(j + 1) ≫ σ ↑i := by
-  let i₁ : Fin (n + 1) := ⟨i, hi⟩
-  let j₁ : Fin (n + 1) := ⟨j, hj⟩
-  conv_lhs =>
-    congr
-    · right
-      equals i₁.castSucc =>
-        congr
-        ext
-        simp only [Fin.val_natCast, Nat.mod_eq_of_lt (Nat.lt_succ_of_lt hi), Fin.coe_castSucc]
-        rfl
-    · right
-      equals j₁ =>
-        congr
-        ext
-        simp only [Fin.val_natCast, Nat.mod_eq_of_lt hj]
-        rfl
-  rw [σ_comp_σ (by simpa)]
-  congr <;> {
-    ext
-    simp only [Fin.val_succ, Fin.val_natCast, Nat.mod_eq_of_lt hi,
-      Nat.mod_eq_of_lt (Nat.succ_lt_succ hj), Nat.succ_eq_add_one, add_left_inj ]
-    rfl }
+    σ ⟨i, by omega⟩ ≫ σ ⟨j, hj⟩ = σ ⟨j + 1, by omega⟩ ≫ σ ⟨i, hi⟩ :=
+  σ_comp_σ (n := n) (i := ⟨i, by omega⟩) (j := ⟨j, by omega⟩) (by simpa)
 
 end SimplicialIdentities
 
