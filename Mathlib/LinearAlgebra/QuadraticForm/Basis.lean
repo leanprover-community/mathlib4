@@ -44,6 +44,11 @@ lemma Sym2.mul_finsupp_support (f : α →₀ R) :
   simp_all only [Finsupp.mem_support_iff, ne_eq]
   exact hp
 
+lemma test_support (f : α →₀ R) : (f*f).support ⊆ f.support := fun x hx => by
+  simp_all only [Finsupp.mem_support_iff, Finsupp.mul_apply, ne_eq]
+  intro h
+  simp_all only [mul_zero, not_true_eq_false]
+
 end
 
 namespace QuadraticMap
@@ -76,8 +81,6 @@ lemma test (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
     Sym2.lift_mk]
   rfl
 
-variable [DecidableEq ι]
-
 open Finsupp in
 theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
     Q (linearCombination R g l) =
@@ -86,7 +89,8 @@ theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι
   simp_rw [linearCombination_apply, map_finsuppSum',
     map_smul, mul_smul]
   rw [Finsupp.sum_of_support_subset (l * l)
-    (subset_trans Finsupp.support_mul (by rw [Finset.inter_self])) (fun i a => a • (⇑Q ∘ g) i)
+    (test_support l)
+    (fun i a => a • (⇑Q ∘ g) i)
     (fun _ _=> by simp only [Function.comp_apply, zero_smul])]
   simp only [Finset.inter_self, mul_apply, Function.comp_apply]
   simp only [←smul_eq_mul, smul_assoc]
@@ -111,6 +115,8 @@ theorem sum_polar_sub_repr_sq (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : 
     linearCombination R ((polarSym2 Q) ∘ Sym2.map bm) (Sym2.mul_finsupp (bm.repr x)) -
       linearCombination R (Q ∘ bm) ((bm.repr x) * (bm.repr x)) = Q x := by
   rw [← apply_linearCombination', Basis.linearCombination_repr]
+
+variable [DecidableEq ι]
 
 -- c.f. `_root_.map_finsupp_sum`
 open Finsupp in
