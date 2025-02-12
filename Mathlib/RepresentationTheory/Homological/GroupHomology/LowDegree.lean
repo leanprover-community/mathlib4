@@ -22,6 +22,19 @@ for turning a finsupp `f : G →₀ A` satisfying the 1-cycle identity into an e
 `oneCycles` of the representation on `A` corresponding to the scalar action. We also do this for
 0-boundaries, 1-boundaries, 2-cycles and 2-boundaries.
 
+The file also contains an identification between the definitions in
+`RepresentationTheory.Homological.GroupHomology.Basic`, `groupHomology.cycles A n` and
+`groupHomology A n`, and the `nCycles` and `Hn A` in this file, for `n = 0, 1, 2`.
+
+## Main definitions
+
+* `groupHomology.H0 A`: the coinvariants `A_G` of the `G`-representation on `A`.
+* `groupHomology.H1 A`: 1-cycles (i.e. `Z₁(G, A) := Ker(d₀ : (G →₀ A) → A`) modulo
+1-boundaries (i.e. `B₁(G, A) := Im(d₁ : (G² →₀ A) → (G →₀ A))`).
+* `groupHomology.H2 A`: 2-cycles (i.e. `Z₁(G, A) := Ker(d₁ : (G² →₀ A) → (G →₀ A)`) modulo
+2-boundaries (i.e. `B₁(G, A) := Im(d₂ : (G³ →₀ A) → (G² →₀ A))`).
+* `groupHomology.isoHn` for `n = 0, 1, 2`: an isomorphism `groupHomology A n ≅ groupHomology.Hn A`.
+
 -/
 
 universe v u
@@ -684,7 +697,7 @@ lemma pOpcycles_comp_opcyclesIso_hom :
 
 /-- The 0th group homology of `A`, defined as the 0th homology of the complex of inhomogeneous
 chains, is isomorphic to the coinvariants of the representation on `A`. -/
-def isoH0 : groupHomology A 0 ≅ ModuleCat.of k (H0 A) :=
+def isoH0 : groupHomology A 0 ≅ H0 A :=
   ChainComplex.isoHomologyι₀ _ ≪≫ isoZeroOpcycles A
 
 @[reassoc (attr := simp)]
@@ -780,7 +793,7 @@ lemma toCycles_comp_isoOneCycles_hom :
 
 /-- The 1st group homology of `A`, defined as the 1st homology of the complex of inhomogeneous
 chains, is isomorphic to `oneCycles A ⧸ oneBoundaries A`, which is a simpler type. -/
-def isoH1 : groupHomology A 1 ≅ ModuleCat.of k (H1 A) :=
+def isoH1 : groupHomology A 1 ≅ H1 A :=
   (inhomogeneousChains A).homologyIsoSc' _ _ _ (by aesop) (by aesop) ≪≫
     homologyMapIso (shortComplexH1Iso A) ≪≫ (shortComplexH1 A).moduleCatHomologyIso
 
@@ -856,7 +869,7 @@ lemma toCycles_comp_isoTwoCycles_hom :
 
 /-- The 2nd group homology of `A`, defined as the 2nd homology of the complex of inhomogeneous
 chains, is isomorphic to `twoCycles A ⧸ twoBoundaries A`, which is a simpler type. -/
-def isoH2 : groupHomology A 2 ≅ ModuleCat.of k (H2 A) :=
+def isoH2 : groupHomology A 2 ≅ H2 A :=
   (inhomogeneousChains A).homologyIsoSc' _ _ _ (by aesop) (by aesop) ≪≫
     homologyMapIso (shortComplexH2Iso A) ≪≫ (shortComplexH2 A).moduleCatHomologyIso
 
