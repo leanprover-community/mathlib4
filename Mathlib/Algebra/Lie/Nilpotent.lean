@@ -668,6 +668,12 @@ adjoint representation. -/
 abbrev LieRing.IsNilpotent (L : Type v) [LieRing L] : Prop :=
   LieModule.IsNilpotent L L
 
+/-- We say an ideal of a Lie algebra is nilpotent when it is nilpotent as a Lie module over the Lie
+algebra via the adjoint representation. -/
+abbrev LieIdeal.IsNilpotent {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
+  (I : LieIdeal R L) : Prop :=
+    LieModule.IsNilpotent L I
+
 open LieRing
 
 theorem LieAlgebra.nilpotent_ad_of_nilpotent_algebra [IsNilpotent L] :
@@ -834,11 +840,6 @@ theorem coe_lcs_eq [LieModule R L M] :
       exact ⟨⟨x, hx⟩, m, hm, rfl⟩
     · rintro ⟨⟨x, hx⟩, m, hm, rfl⟩
       exact ⟨x, hx, m, hm, rfl⟩
-
-/-- We say an ideal of a Lie algebra is nilpotent when it is nilpotent as a Lie module over the Lie
-algebra via the adjoint representation. -/
-abbrev IsNilpotent : Prop :=
-  LieModule.IsNilpotent L I
 
 end LieIdeal
 
