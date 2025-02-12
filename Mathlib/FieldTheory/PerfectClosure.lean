@@ -232,7 +232,6 @@ theorem mk_zero : mk K p 0 = 0 :=
 
 @[deprecated (since := "2024-08-16")] alias mk_zero_zero := mk_zero
 
--- Porting note: improved proof structure
 @[simp]
 theorem mk_zero_right (n : ℕ) : mk K p (n, 0) = 0 := by
   induction' n with n ih
@@ -243,7 +242,6 @@ theorem mk_zero_right (n : ℕ) : mk K p (n, 0) = 0 := by
   have := R.intro (p := p) n (0 : K)
   rwa [frobenius_zero K p] at this
 
--- Porting note: improved proof structure
 theorem R.sound (m n : ℕ) (x y : K) (H : (frobenius K p)^[m] x = y) :
     mk K p (n, x) = mk K p (m + n, y) := by
   subst H
@@ -355,7 +353,6 @@ theorem natCast (n x : ℕ) : (x : PerfectClosure K p) = mk K p (n, x) := by
     rw [Nat.cast_succ, Nat.cast_succ, ih]
     rfl
   rw [ih]; apply Quot.sound
-  -- Porting note: was `conv`
   suffices R K p (n, (x : K)) (Nat.succ n, frobenius K p (x : K)) by
     rwa [frobenius_natCast K p x] at this
   apply R.intro
@@ -476,7 +473,6 @@ instance instInv : Inv (PerfectClosure K p) :=
 theorem mk_inv (x : ℕ × K) : (mk K p x)⁻¹ = mk K p (x.1, x.2⁻¹) :=
   rfl
 
--- Porting note: added to avoid "unknown free variable" error
 instance instDivisionRing : DivisionRing (PerfectClosure K p) where
   exists_pair_ne := ⟨0, 1, fun H => zero_ne_one ((eq_iff _ _ _ _).1 H)⟩
   mul_inv_cancel e := induction_on e fun ⟨m, x⟩ H ↦ by

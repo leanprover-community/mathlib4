@@ -35,10 +35,6 @@ instance involutiveInv [InvolutiveInv α] : InvolutiveInv (WithOne α) :=
 
 section
 
--- Porting note: the workaround described below doesn't seem to be a problem even with
--- semireducible transparency
--- workaround: we make `WithOne`/`WithZero` irreducible for this definition, otherwise `simps`
--- will unfold it in the statement of the lemma it generates.
 /-- `WithOne.coe` as a bundled morphism -/
 @[to_additive (attr := simps apply) "`WithZero.coe` as a bundled morphism"]
 def coeMulHom [Mul α] : α →ₙ* WithOne α where
@@ -48,9 +44,6 @@ def coeMulHom [Mul α] : α →ₙ* WithOne α where
 end
 
 section lift
-
--- Porting note: these were never marked with `irreducible` when they were defined.
--- attribute [local semireducible] WithOne WithZero
 
 variable [Mul α] [MulOneClass β]
 
