@@ -49,9 +49,10 @@ variable [DecidableEq V]
 
 theorem IsTrail.even_countP_edges_iff {u v : V} {p : G.Walk u v} (ht : p.IsTrail) (x : V) :
     Even (p.edges.countP fun e => x ∈ e) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by
-  induction' p with u u v w huv p ih
-  · simp
-  · rw [cons_isTrail_iff] at ht
+  induction p with
+  | nil => simp
+  | cons huv p ih =>
+    rw [cons_isTrail_iff] at ht
     specialize ih ht.1
     simp only [List.countP_cons, Ne, edges_cons, Sym2.mem_iff]
     split_ifs with h

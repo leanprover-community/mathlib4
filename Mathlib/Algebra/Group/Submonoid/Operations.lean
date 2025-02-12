@@ -484,7 +484,6 @@ theorem top_prod_top : (⊤ : Submonoid M).prod (⊤ : Submonoid N) = ⊤ :=
 @[to_additive bot_prod_bot]
 theorem bot_prod_bot : (⊥ : Submonoid M).prod (⊥ : Submonoid N) = ⊥ :=
   SetLike.coe_injective <| by simp [coe_prod]
--- Porting note: to_additive translated the name incorrectly in mathlib 3.
 
 /-- The product of submonoids is isomorphic to their product as monoids. -/
 @[to_additive prodEquiv
@@ -769,13 +768,11 @@ theorem prod_map_comap_prod' {M' : Type*} {N' : Type*} [MulOneClass M'] [MulOneC
     (f : M →* N) (g : M' →* N') (S : Submonoid N) (S' : Submonoid N') :
     (S.prod S').comap (prodMap f g) = (S.comap f).prod (S'.comap g) :=
   SetLike.coe_injective <| Set.preimage_prod_map_prod f g _ _
--- Porting note: to_additive translated the name incorrectly in mathlib 3.
 
 @[to_additive mker_prod_map]
 theorem mker_prod_map {M' : Type*} {N' : Type*} [MulOneClass M'] [MulOneClass N'] (f : M →* N)
     (g : M' →* N') : mker (prodMap f g) = f.mker.prod (mker g) := by
   rw [← comap_bot', ← comap_bot', ← comap_bot', ← prod_map_comap_prod', bot_prod_bot]
--- Porting note: to_additive translated the name incorrectly in mathlib 3.
 
 @[to_additive (attr := simp)]
 theorem mker_inl : mker (inl M N) = ⊥ := by
@@ -849,13 +846,11 @@ theorem mrange_snd : mrange (snd M N) = ⊤ :=
 @[to_additive prod_eq_bot_iff]
 theorem prod_eq_bot_iff {s : Submonoid M} {t : Submonoid N} : s.prod t = ⊥ ↔ s = ⊥ ∧ t = ⊥ := by
   simp only [eq_bot_iff, prod_le_iff, (gc_map_comap _).le_iff_le, comap_bot', mker_inl, mker_inr]
--- Porting note: to_additive translated the name incorrectly in mathlib 3.
 
 @[to_additive prod_eq_top_iff]
 theorem prod_eq_top_iff {s : Submonoid M} {t : Submonoid N} : s.prod t = ⊤ ↔ s = ⊤ ∧ t = ⊤ := by
   simp only [eq_top_iff, le_prod_iff, ← (gc_map_comap _).le_iff_le, ← mrange_eq_map, mrange_fst,
     mrange_snd]
--- Porting note: to_additive translated the name incorrectly in mathlib 3.
 
 @[to_additive (attr := simp)]
 theorem mrange_inl_sup_mrange_inr : mrange (inl M N) ⊔ mrange (inr M N) = ⊤ := by

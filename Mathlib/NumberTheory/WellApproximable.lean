@@ -322,7 +322,7 @@ lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type*}
     ∃ j ∈ Icc 1 n, ‖j • ξ‖ ≤ δ := by
   have : IsFiniteMeasure μ := CompactSpace.isFiniteMeasure
   let B : Icc 0 n → Set A := fun j ↦ closedBall ((j : ℕ) • ξ) (δ/2)
-  have hB : ∀ j, IsClosed (B j) := fun j ↦ isClosed_ball
+  have hB : ∀ j, IsClosed (B j) := fun j ↦ isClosed_closedBall
   suffices ¬ Pairwise (Disjoint on B) by
     obtain ⟨i, j, hij, x, hx⟩ := exists_lt_mem_inter_of_not_pairwise_disjoint this
     refine ⟨j - i, ⟨le_tsub_of_add_le_left hij, ?_⟩, ?_⟩
