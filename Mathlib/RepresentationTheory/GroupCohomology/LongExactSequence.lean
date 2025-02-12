@@ -3,6 +3,7 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
+import Mathlib.Algebra.Homology.ConcreteCategory
 import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 import Mathlib.RepresentationTheory.GroupCohomology.Functoriality
 
@@ -81,17 +82,18 @@ noncomputable abbrev δ (i j : ℕ) (hij : i + 1 = j) :
     groupCohomology X.X₃ i ⟶ groupCohomology X.X₁ j :=
   (map_cochainsFunctor_shortExact hX).δ i j hij
 
-theorem δ_apply (i j l : ℕ) (hij : i + 1 = j) (hjl : (ComplexShape.up ℕ).next j = l)
+theorem δ_apply (i j : ℕ) (hij : i + 1 = j)
     (z : (Fin i → G) → X.X₃) (hz : (inhomogeneousCochains X.X₃).d i j z = 0)
     (y : (Fin i → G) → X.X₂) (hy : (cochainsMap (MonoidHom.id G) X.g).f i y = z)
     (x : (Fin j → G) → X.X₁) (hx : X.f.hom ∘ x = (inhomogeneousCochains X.X₂).d i j y) :
     δ hX i j hij (groupCohomologyπ X.X₃ i <| (moduleCatCyclesIso _).inv
       ⟨z, show ((inhomogeneousCochains X.X₃).dFrom i).hom z = 0 by
-        simp_all [(inhomogeneousCochains X.X₃).dFrom_eq hij]⟩) = groupCohomologyπ X.X₁ j
-      ((moduleCatCyclesIso _).inv ⟨x, ((map_cochainsFunctor_shortExact hX).δ_apply_aux i j y x
-        (by simpa [cochainsMap_id_f_eq_compLeft] using hx) _)⟩) := by
+        simp_all [(inhomogeneousCochains X.X₃).dFrom_eq hij]⟩) =
+      groupCohomologyπ X.X₁ j ((moduleCatCyclesIso _).inv
+        ⟨x, by convert ((map_cochainsFunctor_shortExact hX).δ_apply_aux i j y x
+          (by simpa [cochainsMap_id_f_eq_compLeft] using hx) <| (ComplexShape.up ℕ).next j)⟩) := by
   convert (map_cochainsFunctor_shortExact hX).δ_apply i j hij z
-    hz y hy x (by simpa [cochainsMap_id_f_eq_compLeft] using hx) l hjl
+    hz y hy x (by simpa [cochainsMap_id_f_eq_compLeft] using hx) ((ComplexShape.up ℕ).next j) rfl
   <;> rw [moduleCatCyclesIso_inv_apply]
   <;> rfl
 
