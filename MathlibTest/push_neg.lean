@@ -176,6 +176,23 @@ example (s : Set α) (h : ∅ ≠ s) : s.Nonempty := by
   push_neg at h
   exact h
 
+example (h : ¬Finite α) : Infinite α := by
+  push_neg at h
+  exact h
+
+example (h : ¬Infinite α) : Finite α := by
+  push_neg at h
+  exact h
+
+example (s : Set α) (h : ¬s.Finite) : s.Infinite := by
+  push_neg at h
+  guard_hyp h :ₛ s.Infinite
+  exact h
+
+example (s : Set α) (h : ¬s.Infinite) : s.Finite := by
+  push_neg at h
+  exact h
+
 namespace no_proj
 
 structure G (V : Type) where

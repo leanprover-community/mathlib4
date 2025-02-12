@@ -4,11 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Simon Hudon, Alice Laroche, Frédéric Dupuis, Jireh Loreaux
 -/
 
-import Lean.Elab.Tactic.Location
-import Mathlib.Data.Set.Defs
-import Mathlib.Logic.Basic
-import Mathlib.Order.Defs.LinearOrder
-import Mathlib.Tactic.Conv
+import Mathlib.Data.Finite.Defs
 
 /-!
 # The `push_neg` tactic
@@ -54,6 +50,15 @@ theorem ne_empty_eq_nonempty (s : Set β) : (s ≠ ∅) = s.Nonempty := by
 
 theorem empty_ne_eq_nonempty (s : Set β) : (∅ ≠ s) = s.Nonempty := by
   rw [ne_comm, ne_empty_eq_nonempty]
+
+theorem not_finite_eq_infinite (α : Sort*) : (¬Finite α) = Infinite α :=
+  propext not_finite_iff_infinite
+theorem not_infinite_eq_finite (α : Sort*) : (¬Infinite α) = Finite α :=
+  propext not_infinite_iff_finite
+
+theorem Set.not_finite_eq_infinite (s : Set β) : (¬Set.Finite s) = Set.Infinite s := rfl
+theorem Set.not_infinite_eq_finite (s : Set β) : (¬Set.Infinite s) = Set.Finite s :=
+  propext Set.not_infinite
 
 /-- Make `push_neg` use `not_and_or` rather than the default `not_and`. -/
 register_option push_neg.use_distrib : Bool :=
@@ -121,6 +126,14 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
                         (← mkAppM ``not_exists_eq #[.lam n typ bo bi])
   | (``Exists, #[_, _]) =>
       return none
+  | (``Finite, #[e]) =>
+    return mkSimpStep (← mkAppM ``Infinite #[e]) (← mkAppM ``not_finite_eq_infinite #[e])
+  | (``Infinite, #[e]) =>
+    return mkSimpStep (← mkAppM ``Finite #[e]) (← mkAppM ``not_infinite_eq_finite #[e])
+  | (``Set.Finite, #[_ty, e]) =>
+    return mkSimpStep (← mkAppM ``Set.Infinite #[e]) (← mkAppM ``Set.not_finite_eq_infinite #[e])
+  | (``Set.Infinite, #[_ty, e]) =>
+    return mkSimpStep (← mkAppM ``Set.Finite #[e]) (← mkAppM ``Set.not_infinite_eq_finite #[e])
   | _ => match ex with
           | .forallE name ty body binfo => do
               if (← isProp ty) && !body.hasLooseBVars then
