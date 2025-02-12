@@ -111,24 +111,4 @@ theorem coe_pointwise_smul [Semiring β] (f : α → β) (g : α →₀ β) : �
 instance pointwiseModule [Semiring β] : Module (α → β) (α →₀ β) :=
   Function.Injective.module _ coeFnAddHom DFunLike.coe_injective coe_pointwise_smul
 
-section
-
-variable [Semiring β] [AddCommMonoid γ] [Module β γ]
-
-instance pointwiseModuleScalar : HMul (α →₀ β) (α → γ) (α →₀ γ) where
-  hMul f g :=
-    Finsupp.ofSupportFinite (fun a ↦ f a • g a) (by
-      apply Set.Finite.subset f.finite_support
-      simp only [Function.support_subset_iff, Finsupp.mem_support_iff, Ne,
-        Finsupp.fun_support_eq, Finset.mem_coe]
-      intro x hx h
-      apply hx
-      rw [h, zero_smul])
-
-@[simp]
-lemma coe_pointwise_module_smul (f : α →₀ β) (g : α → γ) (a : α) : (f * g) a = f a • g a := rfl
-
-end
-
-
 end Finsupp
