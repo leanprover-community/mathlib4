@@ -835,6 +835,9 @@ theorem coe_lcs_eq [LieModule R L M] :
     · rintro ⟨⟨x, hx⟩, m, hm, rfl⟩
       exact ⟨x, hx, m, hm, rfl⟩
 
+abbrev IsNilpotent : Prop :=
+  LieModule.IsNilpotent L I
+
 end LieIdeal
 
 section OfAssociative
@@ -887,3 +890,14 @@ instance LieModule.instIsNilpotentTensor [IsNilpotent L M] :
   exact ⟨k, by simp [hk]⟩
 
 end ExtendScalars
+
+namespace LieAlgebra
+
+variable (R : Type u) (L : Type v)
+variable [CommRing R] [LieRing L] [LieAlgebra R L]
+
+/-- The nilradical of Lie algebra is the `sSup` of all nilpotent ideals. -/
+def nilradical :=
+  sSup { I : LieIdeal R L | LieIdeal.IsNilpotent I}
+
+end LieAlgebra
