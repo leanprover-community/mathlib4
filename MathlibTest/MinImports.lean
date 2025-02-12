@@ -16,6 +16,12 @@ run_cmd
 #guard_msgs in
 #min_imports in (← `(declModifiers|@[fun_prop]))
 
+-- check that `scoped` attributes do not cause elaboration problems
+/-- info: import Lean.Parser.Command -/
+#guard_msgs in
+#min_imports in
+@[scoped simp] theorem XX.YY : 0 = 0 := rfl
+
 namespace X
 /-- info: import Mathlib.Algebra.Ring.Nat -/
 #guard_msgs in
