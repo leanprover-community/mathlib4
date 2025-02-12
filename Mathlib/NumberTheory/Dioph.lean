@@ -505,22 +505,28 @@ theorem diophFn_comp {f : Vector3 ℕ n → ℕ} (df : DiophFn f) (g : Vector3 (
     exact ⟨proj_dioph none, (vectorAllP_iff_forall _ _).2 fun i =>
           reindex_diophFn _ <| (vectorAllP_iff_forall _ _).1 dg _⟩
 
+/-- Diophantine sets are closed under intersection. -/
 scoped notation:35 x " D∧ " y => Dioph.inter x y
 
+/-- Diophantine sets are closed under union. -/
 scoped notation:35 x " D∨ " y => Dioph.union x y
 
+/-- Deleting the first component preserves Diophantine sets. -/
 scoped notation:30 "D∃" => Dioph.vec_ex1_dioph
 
+/-- Local abbreviation for `Fin2.ofNat'`. -/
 scoped prefix:arg "&" => Fin2.ofNat'
 
 theorem proj_dioph_of_nat {n : ℕ} (m : ℕ) [IsLT m n] : DiophFn fun v : Vector3 ℕ n => v &m :=
   proj_dioph &m
 
+/-- Projection preserves Diophantine functions. -/
 scoped prefix:100 "D&" => Dioph.proj_dioph_of_nat
 
 theorem const_dioph (n : ℕ) : DiophFn (const (α → ℕ) n) :=
   abs_poly_dioph (Poly.const n)
 
+/-- The constant function is Diophantine. -/
 scoped prefix:100 "D." => Dioph.const_dioph
 
 section
@@ -538,31 +544,37 @@ theorem eq_dioph : Dioph fun v => f v = g v :=
     of_no_dummies _ (Poly.proj &0 - Poly.proj &1) fun v => by
       exact Int.ofNat_inj.symm.trans ⟨@sub_eq_zero_of_eq ℤ _ (v &0) (v &1), eq_of_sub_eq_zero⟩
 
+/-- The set of places where two Diophantine functions are equal is Diophantine. -/
 scoped infixl:50 " D= " => Dioph.eq_dioph
 
 theorem add_dioph : DiophFn fun v => f v + g v :=
   diophFn_comp2 df dg <| abs_poly_dioph (@Poly.proj (Fin2 2) &0 + @Poly.proj (Fin2 2) &1)
 
+/-- Diophantine functions are closed under addition. -/
 scoped infixl:80 " D+ " => Dioph.add_dioph
 
 theorem mul_dioph : DiophFn fun v => f v * g v :=
   diophFn_comp2 df dg <| abs_poly_dioph (@Poly.proj (Fin2 2) &0 * @Poly.proj (Fin2 2) &1)
 
+/-- Diophantine functions are closed under multiplication. -/
 scoped infixl:90 " D* " => Dioph.mul_dioph
 
 theorem le_dioph : Dioph {v | f v ≤ g v} :=
   dioph_comp2 df dg <|
     ext ((D∃) 2 <| D&1 D+ D&0 D= D&2) fun _ => ⟨fun ⟨_, hx⟩ => le.intro hx, le.dest⟩
 
+/-- The set of places where one Diophantine function is at most another is Diophantine. -/
 scoped infixl:50 " D≤ " => Dioph.le_dioph
 
 theorem lt_dioph : Dioph {v | f v < g v} := df D+ D.1 D≤ dg
 
+/-- The set of places where one Diophantine function is less than another is Diophantine. -/
 scoped infixl:50 " D< " => Dioph.lt_dioph
 
 theorem ne_dioph : Dioph {v | f v ≠ g v} :=
   ext (df D< dg D∨ dg D< df) fun v => by dsimp; exact lt_or_lt_iff_ne (α := ℕ)
 
+/-- The set of places where two Diophantine functions are unequal is Diophantine. -/
 scoped infixl:50 " D≠ " => Dioph.ne_dioph
 
 theorem sub_dioph : DiophFn fun v => f v - g v :=
@@ -580,11 +592,13 @@ theorem sub_dioph : DiophFn fun v => f v - g v :=
               · exact Or.inr ⟨yz, tsub_eq_zero_iff_le.mpr yz⟩
               · exact Or.inl (tsub_add_cancel_of_le zy).symm⟩
 
+/-- Diophantine functions are closed under subtraction. -/
 scoped infixl:80 " D- " => Dioph.sub_dioph
 
 theorem dvd_dioph : Dioph fun v => f v ∣ g v :=
   dioph_comp ((D∃) 2 <| D&2 D= D&1 D* D&0) [f, g] ⟨df, dg⟩
 
+/-- The set of places where one Diophantine function divides another is Diophantine. -/
 scoped infixl:50 " D∣ " => Dioph.dvd_dioph
 
 theorem mod_dioph : DiophFn fun v => f v % g v :=
@@ -603,11 +617,14 @@ theorem mod_dioph : DiophFn fun v => f v % g v :=
                 exact ⟨or_iff_not_imp_left.2 fun h => mod_lt _ (Nat.pos_of_ne_zero h), x / y,
                   mod_add_div _ _⟩⟩
 
+/-- Diophantine functions are closed under modulo. -/
 scoped infixl:80 " D% " => Dioph.mod_dioph
 
 theorem modEq_dioph {h : (α → ℕ) → ℕ} (dh : DiophFn h) : Dioph fun v => f v ≡ g v [MOD h v] :=
   df D% dh D= dg D% dh
 
+/-- The set of places where two Diophantine functions are congruent modulo a third
+is Diophantine. -/
 scoped notation " D≡ " => Dioph.modEq_dioph
 
 theorem div_dioph : DiophFn fun v => f v / g v :=
@@ -633,6 +650,7 @@ theorem div_dioph : DiophFn fun v => f v / g v :=
 
 end
 
+/-- Diophantine functions are closed under integer division. -/
 scoped infixl:80 " D/ " => Dioph.div_dioph
 
 open Pell

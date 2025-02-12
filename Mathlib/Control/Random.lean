@@ -49,11 +49,13 @@ instance [MonadLift m n] : MonadLiftT (RandGT g m) (RandGT g n) where
 
 Note that `m` is a parameter as some types may only be sampleable with access to a certain monad. -/
 class Random (m) (α : Type u) where
+  /-- The random generator. -/
   random [RandomGen g] : RandGT g m α
 
 /-- `BoundedRandom m α` gives us machinery to generate values of type `α` between certain bounds in
 the monad `m`. -/
 class BoundedRandom (m) (α : Type u) [Preorder α] where
+  /-- The bounded random generator. -/
   randomR {g : Type} (lo hi : α) (h : lo ≤ hi) [RandomGen g] : RandGT g m {a // lo ≤ a ∧ a ≤ hi}
 
 namespace Rand
@@ -92,12 +94,14 @@ def randBound (α : Type u)
     RandGT g m {a // lo ≤ a ∧ a ≤ hi} :=
   (BoundedRandom.randomR lo hi h : RandGT g _ _)
 
+/-- Generate a random `Fin`. -/
 def randFin {n : Nat} [RandomGen g] : RandGT g m (Fin n.succ) :=
   fun ⟨g⟩ ↦ pure <| randNat g 0 n |>.map (Fin.ofNat' _) ULift.up
 
 instance {n : Nat} : Random m (Fin n.succ) where
   random := randFin
 
+/-- Generate a random `Bool`. -/
 def randBool [RandomGen g] : RandGT g m Bool :=
   return (← rand (Fin 2)) == 1
 
@@ -158,6 +162,7 @@ def runRand (cmd : RandT m α) : m α := do
   let _ ← ULiftable.up (stdGenRef.set new.down : m₀ _)
   pure res
 
+/-- Computes a `RandT m α` using the global `stdGenRef` as RNG and the given `seed`. -/
 def runRandWith (seed : Nat) (cmd : RandT m α) : m α := do
   pure <| (← cmd.run (ULift.up <| mkStdGen seed)).1
 

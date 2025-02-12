@@ -37,7 +37,14 @@ noncomputable section
 /-- The structure representing a cubic polynomial. -/
 @[ext]
 structure Cubic (R : Type*) where
-  (a b c d : R)
+  /-- `X ^ 3` term. -/
+  a : R
+  /-- `X ^ 2` term. -/
+  b : R
+  /-- `X ^ 1` term. -/
+  c : R
+  /-- `X ^ 0` term. -/
+  d : R
 
 namespace Cubic
 
