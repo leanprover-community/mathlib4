@@ -41,12 +41,9 @@ Let `G` be a finite group acting on a ring `S`, and `R` is the fixed subring of 
   Two frobenius elements at `Q` differ by an element in the inertia subgroup of `Q`.
 - `IsArithFrobAt.conj`: If `σ` is a frobenius at `Q`, then `τστ⁻¹` is the frobenius at `σ • Q`.
 - `IsArithFrobAt.exists_of_isInvariant`: Frobenius element exists.
-
-
-
 -/
 
-variable {R S} [CommRing R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
 /-- `φ : S →ₐ[R] S` is the (arithmetic) frobenius at `Q` if
 `φ x ≡ x ^ #(R/p) (mod Q)` for all `x : S` (`AlgHom.IsArithFrobAt`). -/
