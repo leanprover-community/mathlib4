@@ -253,7 +253,7 @@ noncomputable abbrev mapOneCocycles :
   ShortComplex.cyclesMap' (mapShortComplexH1 f φ) (shortComplexH1 A).moduleCatLeftHomologyData
     (shortComplexH1 B).moduleCatLeftHomologyData
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma mapOneCocycles_comp_subtype :
     mapOneCocycles f φ ≫ ModuleCat.ofHom (oneCocycles B).subtype =
       ModuleCat.ofHom (oneCocycles A).subtype ≫ ModuleCat.ofHom (fOne f φ) :=
@@ -290,7 +290,7 @@ theorem H1Map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     H1Map (MonoidHom.id G) (φ ≫ ψ) = H1Map (MonoidHom.id G) φ ≫ H1Map (MonoidHom.id G) ψ :=
   H1Map_comp (MonoidHom.id G) (MonoidHom.id G) _ _
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma H1π_comp_H1Map :
     H1π A ≫ H1Map f φ = mapOneCocycles f φ ≫ H1π B :=
   leftHomologyπ_naturality' (mapShortComplexH1 f φ) _ _

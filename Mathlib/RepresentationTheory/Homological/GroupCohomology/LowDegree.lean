@@ -214,7 +214,7 @@ section Cocycles
 
 /-- The 1-cocycles `Z¹(G, A)` of `A : Rep k G`, defined as the kernel of the map
 `Fun(G, A) → Fun(G × G, A)` sending `(f, (g₁, g₂)) ↦ ρ_A(g₁)(f(g₂)) - f(g₁g₂) + f(g₁).` -/
-def oneCocycles : Submodule k (G → A) := LinearMap.ker (dOne A)
+abbrev oneCocycles : Submodule k (G → A) := LinearMap.ker (dOne A)
 
 /-- The 2-cocycles `Z²(G, A)` of `A : Rep k G`, defined as the kernel of the map
 `Fun(G × G, A) → Fun(G × G × G, A)` sending
