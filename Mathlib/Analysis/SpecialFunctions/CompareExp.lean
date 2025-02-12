@@ -144,7 +144,8 @@ lemma isTheta_cpow_exp_re_mul_log (hl : IsExpCmpFilter l) (a : ℂ) :
     (fun z => z ^ a) =Θ[l] (fun z : ℂ => (abs z ^ re a)) :=
       isTheta_cpow_const_rpow fun _ _ => hl.eventually_ne
     _ =ᶠ[l] fun z => Real.exp (re a * Real.log (abs z)) :=
-      (hl.eventually_ne.mono fun z hz => by simp only [Real.rpow_def_of_pos, abs.pos hz, mul_comm])
+      (hl.eventually_ne.mono fun z hz => by simp
+        [Real.rpow_def_of_pos, norm_pos_iff.mpr hz, mul_comm])
 
 /-- If `l : Filter ℂ` is an "exponential comparison filter", then for any complex `a` and any
 positive real `b`, we have `(fun z ↦ z ^ a) =o[l] (fun z ↦ exp (b * z))`. -/
@@ -155,7 +156,7 @@ theorem isLittleO_cpow_exp (hl : IsExpCmpFilter l) (a : ℂ) {b : ℝ} (hb : 0 <
       hl.isTheta_cpow_exp_re_mul_log a
     _ =o[l] fun z => exp (b * z) :=
       IsLittleO.of_norm_right <| by
-        simp only [norm_eq_abs, abs_exp, re_ofReal_mul, Real.isLittleO_exp_comp_exp_comp]
+        simp only [norm_exp, re_ofReal_mul, Real.isLittleO_exp_comp_exp_comp]
         refine (IsEquivalent.refl.sub_isLittleO ?_).symm.tendsto_atTop
           (hl.tendsto_re.const_mul_atTop hb)
         exact (hl.isLittleO_log_abs_re.const_mul_left _).const_mul_right hb.ne'

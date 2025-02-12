@@ -47,12 +47,9 @@ variable {z : ℂ}
 
 open ComplexConjugate Topology Filter
 
-theorem norm_exp_ofReal_mul_I (t : ℝ) : ‖exp (t * I)‖ = 1 := by
-  simp only [norm_eq_abs, abs_exp_ofReal_mul_I]
-
 instance : NormedField ℂ where
   dist_eq _ _ := rfl
-  norm_mul' := map_mul abs
+  norm_mul' := Complex.norm_mul
 
 instance : DenselyNormedField ℂ where
   lt_norm_lt r₁ r₂ h₀ hr :=

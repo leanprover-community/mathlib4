@@ -814,7 +814,7 @@ theorem cos_bound {x : ℝ} (hx : |x| ≤ 1) : |cos x - (1 - x ^ 2 / 2)| ≤ |x|
             )))
     _ ≤ abs ((Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) / 2) +
           abs ((Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) / 2) := by
-      rw [add_div]; exact Complex.abs.add_le _ _
+      rw [add_div]; exact norm_add_le _ _
     _ = abs (Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) / 2 +
           abs (Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) / 2 := by
       simp [map_div₀]
@@ -845,7 +845,7 @@ theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x|
             apply Complex.ext <;> simp [div_eq_mul_inv, normSq]; ring)))
     _ ≤ abs ((Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) * I / 2) +
           abs (-((Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) * I) / 2) := by
-      rw [sub_mul, sub_eq_add_neg, add_div]; exact Complex.abs.add_le _ _
+      rw [sub_mul, sub_eq_add_neg, add_div]; exact norm_add_le _ _
     _ = abs (Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) / 2 +
           abs (Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) / 2 := by
       simp [add_comm, map_div₀]
@@ -933,19 +933,31 @@ end Mathlib.Meta.Positivity
 
 namespace Complex
 
-@[simp]
-theorem abs_cos_add_sin_mul_I (x : ℝ) : abs (cos x + sin x * I) = 1 := by
+theorem norm_cos_add_sin_mul_I (x : ℝ) : ‖cos x + sin x * I‖ = 1 := by
   have := Real.sin_sq_add_cos_sq x
-  simp_all [add_comm, abs, normSq, sq, sin_ofReal_re, cos_ofReal_re, mul_re]
+  simp_all [add_comm, norm_def, normSq, sq, sin_ofReal_re, cos_ofReal_re, mul_re]
 
 @[simp]
-theorem abs_exp_ofReal_mul_I (x : ℝ) : abs (exp (x * I)) = 1 := by
-  rw [exp_mul_I, abs_cos_add_sin_mul_I]
+theorem abs_cos_add_sin_mul_I (x : ℝ) : abs (cos x + sin x * I) = 1 :=
+  norm_cos_add_sin_mul_I _
 
-theorem abs_exp (z : ℂ) : abs (exp z) = Real.exp z.re := by
-  rw [exp_eq_exp_re_mul_sin_add_cos, map_mul, abs_exp_ofReal, abs_cos_add_sin_mul_I, mul_one]
+theorem norm_exp_ofReal_mul_I (x : ℝ) : ‖exp (x * I)‖ = 1 := by
+  rw [exp_mul_I, norm_cos_add_sin_mul_I]
 
-theorem abs_exp_eq_iff_re_eq {x y : ℂ} : abs (exp x) = abs (exp y) ↔ x.re = y.re := by
-  rw [abs_exp, abs_exp, Real.exp_eq_exp]
+@[simp]
+theorem abs_exp_ofReal_mul_I (x : ℝ) : abs (exp (x * I)) = 1 :=
+  norm_exp_ofReal_mul_I  _
+
+theorem norm_exp (z : ℂ) : ‖exp z‖ = Real.exp z.re := by
+  rw [exp_eq_exp_re_mul_sin_add_cos, Complex.norm_mul, norm_exp_ofReal, norm_cos_add_sin_mul_I,
+    mul_one]
+
+theorem abs_exp (z : ℂ) : abs (exp z) = Real.exp z.re := norm_exp _
+
+theorem norm_exp_eq_iff_re_eq {x y : ℂ} : ‖exp x‖ = ‖exp y‖ ↔ x.re = y.re := by
+  rw [norm_exp, norm_exp, Real.exp_eq_exp]
+
+theorem abs_exp_eq_iff_re_eq {x y : ℂ} : abs (exp x) = abs (exp y) ↔ x.re = y.re :=
+  norm_exp_eq_iff_re_eq 
 
 end Complex

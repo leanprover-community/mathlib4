@@ -98,19 +98,25 @@ theorem not_lt_zero_iff {z : ℂ} : ¬z < 0 ↔ 0 ≤ z.re ∨ z.im ≠ 0 :=
 theorem eq_re_of_ofReal_le {r : ℝ} {z : ℂ} (hz : (r : ℂ) ≤ z) : z = z.re := by
   rw [eq_comm, ← conj_eq_iff_re, conj_eq_iff_im, ← (Complex.le_def.1 hz).2, Complex.ofReal_im]
 
-@[simp]
-lemma re_eq_abs {z : ℂ} : z.re = abs z ↔ 0 ≤ z :=
+lemma re_eq_norm {z : ℂ} : z.re = ‖z‖ ↔ 0 ≤ z :=
   have : 0 ≤ abs z := norm_nonneg z
-  ⟨fun h ↦ ⟨h.symm ▸ this, (abs_re_eq_abs.1 <| h.symm ▸ abs_of_nonneg this).symm⟩,
-    fun ⟨h₁, h₂⟩ ↦ by rw [← abs_re_eq_abs.2 h₂.symm, abs_of_nonneg h₁]⟩
+  ⟨fun h ↦ ⟨h.symm ▸ this, (abs_re_eq_norm.1 <| h.symm ▸ abs_of_nonneg this).symm⟩,
+    fun ⟨h₁, h₂⟩ ↦ by rw [← abs_re_eq_norm.2 h₂.symm, abs_of_nonneg h₁]⟩
 
 @[simp]
-lemma neg_re_eq_abs {z : ℂ} : -z.re = abs z ↔ z ≤ 0 := by
-  rw [← neg_re, ← norm_neg, re_eq_abs]
+lemma re_eq_abs {z : ℂ} : z.re = abs z ↔ 0 ≤ z := re_eq_norm
+
+lemma neg_re_eq_norm {z : ℂ} : -z.re = ‖z‖ ↔ z ≤ 0 := by
+  rw [← neg_re, ← norm_neg z, re_eq_abs]
   exact neg_nonneg.and <| eq_comm.trans neg_eq_zero
 
 @[simp]
-lemma re_eq_neg_abs {z : ℂ} : z.re = -abs z ↔ z ≤ 0 := by rw [← neg_eq_iff_eq_neg, neg_re_eq_abs]
+lemma neg_re_eq_abs {z : ℂ} : -z.re = abs z ↔ z ≤ 0 := neg_re_eq_norm
+
+lemma re_eq_neg_norm {z : ℂ} : z.re = -‖z‖ ↔ z ≤ 0 := by rw [← neg_eq_iff_eq_neg, neg_re_eq_norm]
+
+@[simp]
+lemma re_eq_neg_abs {z : ℂ} : z.re = -abs z ↔ z ≤ 0 := re_eq_neg_norm 
 
 lemma monotone_ofReal : Monotone ofReal := by
   intro x y hxy

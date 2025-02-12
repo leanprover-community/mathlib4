@@ -43,24 +43,20 @@ theorem abs_ofNat (n : ℕ) [n.AtLeastTwo] :
   norm_ofNat n
 
 theorem mul_self_abs (z : ℂ) : Complex.abs z * Complex.abs z = normSq z :=
-  Real.mul_self_sqrt (normSq_nonneg _)
+  norm_mul_self_eq_normSq _
 
-protected theorem sq_abs (z : ℂ) : Complex.abs z ^ 2 = normSq z :=
-  Real.sq_sqrt (normSq_nonneg _)
-
-@[simp]
-theorem sq_abs_sub_sq_re (z : ℂ) : Complex.abs z ^ 2 - z.re ^ 2 = z.im ^ 2 := by
-  rw [Complex.sq_abs, normSq_apply, ← sq, ← sq, add_sub_cancel_left]
+protected theorem sq_abs (z : ℂ) : Complex.abs z ^ 2 = normSq z := Complex.sq_norm _
 
 @[simp]
-theorem sq_abs_sub_sq_im (z : ℂ) : Complex.abs z ^ 2 - z.im ^ 2 = z.re ^ 2 := by
-  rw [← sq_abs_sub_sq_re, sub_sub_cancel]
+theorem sq_abs_sub_sq_re (z : ℂ) : Complex.abs z ^ 2 - z.re ^ 2 = z.im ^ 2 := sq_norm_sub_sq_re _
 
-lemma abs_add_mul_I (x y : ℝ) : Complex.abs (x + y * I) = (x ^ 2 + y ^ 2).sqrt := by
-  rw [← normSq_add_mul_I]; rfl
+@[simp]
+theorem sq_abs_sub_sq_im (z : ℂ) : Complex.abs z ^ 2 - z.im ^ 2 = z.re ^ 2 := sq_norm_sub_sq_im _
 
-lemma abs_eq_sqrt_sq_add_sq (z : ℂ) : Complex.abs z = (z.re ^ 2 + z.im ^ 2).sqrt := by
-  rw [abs_apply, normSq_apply, sq, sq]
+lemma abs_add_mul_I (x y : ℝ) : Complex.abs (x + y * I) = (x ^ 2 + y ^ 2).sqrt := norm_add_mul_I _ _
+
+lemma abs_eq_sqrt_sq_add_sq (z : ℂ) : Complex.abs z = (z.re ^ 2 + z.im ^ 2).sqrt :=
+  norm_eq_sqrt_sq_add_sq _
 
 @[simp]
 theorem abs_I : Complex.abs I = 1 := norm_I

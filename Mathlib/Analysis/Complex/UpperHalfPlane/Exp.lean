@@ -23,11 +23,11 @@ theorem Function.Periodic.im_invQParam_pos_of_abs_lt_one
     0 < im (Periodic.invQParam h q) :=
   im_invQParam .. ▸ mul_pos_of_neg_of_neg
     (div_neg_of_neg_of_pos (neg_lt_zero.mpr hh) Real.two_pi_pos)
-    ((Real.log_neg_iff (abs.pos hq_ne)).mpr hq)
+    ((Real.log_neg_iff (norm_pos_iff.mpr hq_ne)).mpr hq)
 
 lemma Function.Periodic.abs_qParam_le_of_one_half_le_im {ξ : ℂ} (hξ : 1 / 2 ≤ ξ.im) :
     ‖𝕢 1 ξ‖ ≤ rexp (-π) := by
-  rwa [Periodic.qParam, ofReal_one, div_one, Complex.norm_eq_abs, Complex.abs_exp, Real.exp_le_exp,
+  rwa [Periodic.qParam, ofReal_one, div_one, Complex.norm_exp, Real.exp_le_exp,
     mul_right_comm, mul_I_re, neg_le_neg_iff, ← ofReal_ofNat, ← ofReal_mul, im_ofReal_mul,
     mul_comm _ π, mul_assoc, le_mul_iff_one_le_right Real.pi_pos, ← div_le_iff₀' two_pos]
 
@@ -38,4 +38,4 @@ theorem UpperHalfPlane.abs_qParam_lt_one (n : ℕ) [NeZero n] (τ : ℍ) : (𝕢
 
 theorem UpperHalfPlane.abs_exp_two_pi_I_lt_one (τ : ℍ) :
     ‖(Complex.exp (2 * π * Complex.I * τ))‖ < 1 := by
-  simpa [Function.Periodic.abs_qParam, Complex.abs_exp] using τ.abs_qParam_lt_one 1
+  simpa [Function.Periodic.abs_qParam, Complex.norm_exp] using τ.abs_qParam_lt_one 1

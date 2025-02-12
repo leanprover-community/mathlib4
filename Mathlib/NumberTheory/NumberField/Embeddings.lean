@@ -155,7 +155,7 @@ abbrev conjugate (φ : K →+* ℂ) : K →+* ℂ := star φ
 theorem conjugate_coe_eq (φ : K →+* ℂ) (x : K) : (conjugate φ) x = conj (φ x) := rfl
 
 theorem place_conjugate (φ : K →+* ℂ) : place (conjugate φ) = place φ := by
-  ext; simp only [place_apply, norm_eq_abs, abs_conj, conjugate_coe_eq]
+  ext; simp only [place_apply, norm_conj, conjugate_coe_eq]
 
 /-- An embedding into `ℂ` is real if it is fixed by complex conjugation. -/
 abbrev IsReal (φ : K →+* ℂ) : Prop := IsSelfAdjoint φ
@@ -496,14 +496,14 @@ variable [NumberField K]
 theorem prod_eq_abs_norm (x : K) :
     ∏ w : InfinitePlace K, w x ^ mult w = abs (Algebra.norm ℚ x) := by
   classical
-  convert (congr_arg Complex.abs (@Algebra.norm_eq_prod_embeddings ℚ _ _ _ _ ℂ _ _ _ _ _ x)).symm
-  · rw [map_prod, ← Fintype.prod_equiv RingHom.equivRatAlgHom (fun f => Complex.abs (f x))
-      (fun φ => Complex.abs (φ x)) fun _ => by simp [RingHom.equivRatAlgHom_apply]; rfl]
-    rw [← Finset.prod_fiberwise Finset.univ mk (fun φ => Complex.abs (φ x))]
+  convert (congr_arg (‖·‖) (@Algebra.norm_eq_prod_embeddings ℚ _ _ _ _ ℂ _ _ _ _ _ x)).symm
+  · rw [norm_prod, ← Fintype.prod_equiv RingHom.equivRatAlgHom (fun f => ‖f x‖)
+      (fun φ => ‖φ x‖) fun _ => by simp [RingHom.equivRatAlgHom_apply]; rfl]
+    rw [← Finset.prod_fiberwise Finset.univ mk (fun φ => ‖φ x‖)]
     have (w : InfinitePlace K) (φ) (hφ : φ ∈ ({φ | mk φ = w} : Finset _)) :
-        Complex.abs (φ x) = w x := by rw [← (Finset.mem_filter.mp hφ).2, apply]
+        ‖φ x‖ = w x := by rw [← (Finset.mem_filter.mp hφ).2, apply]
     simp_rw [Finset.prod_congr rfl (this _), Finset.prod_const, card_filter_mk_eq]
-  · rw [eq_ratCast, Rat.cast_abs, ← Complex.abs_ofReal, Complex.ofReal_ratCast]
+  · rw [eq_ratCast, Rat.cast_abs, ← Real.norm_eq_abs, ← Complex.norm_real, Complex.ofReal_ratCast]
 
 theorem one_le_of_lt_one {w : InfinitePlace K} {a : (𝓞 K)} (ha : a ≠ 0)
     (h : ∀ ⦃z⦄, z ≠ w → z a < 1) : 1 ≤ w a := by

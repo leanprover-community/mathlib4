@@ -23,7 +23,7 @@ instance instNorm : Norm ℂ where
 
 theorem norm_def (z : ℂ) : ‖z‖ = Real.sqrt (normSq z) := rfl
 
-private theorem norm_mul_self_eq_normSq (z : ℂ) : ‖z‖ * ‖z‖ = normSq z :=
+theorem norm_mul_self_eq_normSq (z : ℂ) : ‖z‖ * ‖z‖ = normSq z :=
   Real.mul_self_sqrt (normSq_nonneg _)
 
 private theorem norm_nonneg (z : ℂ) : 0 ≤ ‖z‖ :=
@@ -63,15 +63,26 @@ instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
     neg' := norm_neg'
     eq_zero_of_map_eq_zero' := fun _ ↦ norm_eq_zero_iff.mp }
 
+
 @[simp]
 protected theorem norm_mul (z w : ℂ) : ‖z * w‖ = ‖z‖ * ‖w‖ := by
   rw [norm_def, norm_def, norm_def, normSq_mul, Real.sqrt_mul (normSq_nonneg _)]
+
+@[simp]
+protected theorem norm_div (z w : ℂ) : ‖z / w‖ = ‖z‖ / ‖w‖ := by
+  rw [norm_def, norm_def, norm_def, normSq_div, Real.sqrt_div (normSq_nonneg _)]
 
 instance isAbsoluteValueNorm : IsAbsoluteValue (‖·‖ : ℂ → ℝ) where
   abv_nonneg' := norm_nonneg
   abv_eq_zero' := norm_eq_zero_iff
   abv_add' := norm_add_le
   abv_mul' := Complex.norm_mul
+
+protected theorem norm_pow (z : ℂ) (n : ℕ) : ‖z ^ n‖ = ‖z‖ ^ n :=
+  map_pow isAbsoluteValueNorm.abvHom _ _
+
+protected theorem norm_zpow (z : ℂ) (n : ℤ) :  ‖z ^ n‖ = ‖z‖ ^ n :=
+  map_zpow₀ isAbsoluteValueNorm.abvHom _ _
 
 @[simp] lemma norm_I : ‖I‖ = 1 := by simp [norm]
 @[simp] lemma nnnorm_I : ‖I‖₊ = 1 := by simp [nnnorm]
@@ -119,6 +130,20 @@ theorem norm_int_of_nonneg {n : ℤ} (hn : 0 ≤ n) : ‖(n : ℂ)‖ = n := by
 lemma normSq_eq_norm_sq (z : ℂ) : normSq z = ‖z‖ ^ 2 := by
   simp [norm_def, sq, Real.mul_self_sqrt (normSq_nonneg _)]
 
+protected theorem sq_norm (z : ℂ) : ‖z‖ ^ 2 = normSq z := (normSq_eq_norm_sq z).symm
+
+theorem sq_norm_sub_sq_re (z : ℂ) : ‖z‖ ^ 2 - z.re ^ 2 = z.im ^ 2 := by
+   rw [Complex.sq_norm, normSq_apply, ← sq, ← sq, add_sub_cancel_left]
+
+theorem sq_norm_sub_sq_im (z : ℂ) : ‖z‖ ^ 2 - z.im ^ 2 = z.re ^ 2 := by
+  rw [← sq_norm_sub_sq_re, sub_sub_cancel]
+
+lemma norm_add_mul_I (x y : ℝ) : ‖x + y * I‖ = (x ^ 2 + y ^ 2).sqrt := by
+  rw [← normSq_add_mul_I]; rfl
+
+lemma norm_eq_sqrt_sq_add_sq (z : ℂ) : ‖z‖ = (z.re ^ 2 + z.im ^ 2).sqrt := by
+  rw [norm_def, normSq_apply, sq, sq]
+
 @[simp]
 protected theorem range_norm : range (‖·‖ : ℂ → ℝ) = Set.Ici 0 :=
   Subset.antisymm (range_subset_iff.2 norm_nonneg) fun x hx ↦ ⟨x, Complex.norm_of_nonneg hx⟩
@@ -133,12 +158,6 @@ theorem norm_conj (z : ℂ) : ‖conj z‖ = ‖z‖ := by simp [norm_def]
 protected theorem norm_prod {ι : Type*} (s : Finset ι) (f : ι → ℂ) :
     ‖s.prod f‖ = s.prod fun i ↦ ‖f i‖ :=
   map_prod isAbsoluteValueNorm.abvHom _ _
-
-protected theorem norm_pow (z : ℂ) (n : ℕ) : ‖z ^ n‖ = ‖z‖ ^ n :=
-  map_pow isAbsoluteValueNorm.abvHom _ _
-
-protected theorem norm_zpow (z : ℂ) (n : ℤ) :  ‖z ^ n‖ = ‖z‖ ^ n :=
-  map_zpow₀ isAbsoluteValueNorm.abvHom _ _
 
 theorem norm_le_abs_re_add_abs_im (z : ℂ) : ‖z‖ ≤ |z.re| + |z.im| := by
     simpa [re_add_im] using norm_add_le (z.re : ℂ) (z.im * I)

@@ -37,9 +37,9 @@ theorem log_im_le_pi (x : ℂ) : (log x).im ≤ π := by simp only [log_im, arg_
 
 theorem exp_log {x : ℂ} (hx : x ≠ 0) : exp (log x) = x := by
   rw [log, exp_add_mul_I, ← ofReal_sin, sin_arg, ← ofReal_cos, cos_arg hx, ← ofReal_exp,
-    Real.exp_log (abs.pos hx), mul_add, ofReal_div, ofReal_div,
-    mul_div_cancel₀ _ (ofReal_ne_zero.2 <| abs.ne_zero hx), ← mul_assoc,
-    mul_div_cancel₀ _ (ofReal_ne_zero.2 <| abs.ne_zero hx), re_add_im]
+    Real.exp_log (norm_pos_iff.mpr hx), mul_add, ofReal_div, ofReal_div,
+    mul_div_cancel₀ _ (ofReal_ne_zero.2 <| norm_ne_zero_iff.mpr hx), ← mul_assoc,
+    mul_div_cancel₀ _ (ofReal_ne_zero.2 <| norm_ne_zero_iff.mpr hx), re_add_im]
 
 @[simp]
 theorem range_exp : Set.range exp = {0}ᶜ :=
@@ -72,8 +72,8 @@ theorem log_ofReal_re (x : ℝ) : (log (x : ℂ)).re = Real.log x := by simp [lo
 
 theorem log_ofReal_mul {r : ℝ} (hr : 0 < r) {x : ℂ} (hx : x ≠ 0) :
     log (r * x) = Real.log r + log x := by
-  replace hx := Complex.abs.ne_zero_iff.mpr hx
-  simp_rw [log, map_mul, abs_ofReal, arg_real_mul _ hr, abs_of_pos hr, Real.log_mul hr.ne' hx,
+  replace hx := norm_ne_zero_iff.mpr hx
+  simp_rw [log, norm_mul, abs_ofReal, arg_real_mul _ hr, abs_of_pos hr, Real.log_mul hr.ne' hx,
     ofReal_add, add_assoc]
 
 theorem log_mul_ofReal (r : ℝ) (hr : 0 < r) (x : ℂ) (hx : x ≠ 0) :
@@ -82,8 +82,8 @@ theorem log_mul_ofReal (r : ℝ) (hr : 0 < r) (x : ℂ) (hx : x ≠ 0) :
 lemma log_mul_eq_add_log_iff {x y : ℂ} (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) :
     log (x * y) = log x + log y ↔ arg x + arg y ∈ Set.Ioc (-π) π := by
   refine Complex.ext_iff.trans <| Iff.trans ?_ <| arg_mul_eq_add_arg_iff hx₀ hy₀
-  simp_rw [add_re, add_im, log_re, log_im, AbsoluteValue.map_mul,
-    Real.log_mul (abs.ne_zero hx₀) (abs.ne_zero hy₀), true_and]
+  simp_rw [add_re, add_im, log_re, log_im, norm_mul,
+    Real.log_mul (norm_ne_zero_iff.mpr hx₀) (norm_ne_zero_iff.mpr hy₀), true_and]
 
 alias ⟨_, log_mul⟩ := log_mul_eq_add_log_iff
 
@@ -218,7 +218,7 @@ theorem continuousAt_clog {x : ℂ} (h : x ∈ slitPlane) : ContinuousAt log x :
   refine ContinuousAt.add ?_ ?_
   · refine continuous_ofReal.continuousAt.comp ?_
     refine (Real.continuousAt_log ?_).comp Complex.continuous_abs.continuousAt
-    exact Complex.abs.ne_zero_iff.mpr <| slitPlane_ne_zero h
+    exact norm_ne_zero_iff.mpr <| slitPlane_ne_zero h
   · have h_cont_mul : Continuous fun x : ℂ => x * I := continuous_id'.mul continuous_const
     refine h_cont_mul.continuousAt.comp (continuous_ofReal.continuousAt.comp ?_)
     exact continuousAt_arg h

@@ -258,7 +258,7 @@ theorem ofReal_cpow_of_nonpos {x : ℝ} (hx : x ≤ 0) (y : ℂ) :
   · rcases eq_or_ne y 0 with (rfl | hy) <;> simp [*]
   have hne : (x : ℂ) ≠ 0 := ofReal_ne_zero.mpr hlt.ne
   rw [cpow_def_of_ne_zero hne, cpow_def_of_ne_zero (neg_ne_zero.2 hne), ← exp_add, ← add_mul, log,
-    log, abs.map_neg, arg_ofReal_of_neg hlt, ← ofReal_neg,
+    log, Complex.abs_eq_norm, Complex.abs_eq_norm, norm_neg, arg_ofReal_of_neg hlt, ← ofReal_neg,
     arg_ofReal_of_nonneg (neg_nonneg.2 hx), ofReal_zero, zero_mul, add_zero]
 
 lemma cpow_ofReal (x : ℂ) (y : ℝ) :
@@ -269,7 +269,7 @@ lemma cpow_ofReal (x : ℂ) (y : ℝ) :
     norm_cast
     rw [re_ofReal_mul, im_ofReal_mul, log_re, log_im, mul_comm y, mul_comm y, Real.exp_mul,
       Real.exp_log]
-    rwa [abs.pos_iff]
+    rwa [norm_pos_iff]
 
 lemma cpow_ofReal_re (x : ℂ) (y : ℝ) : (x ^ (y : ℂ)).re = (abs x) ^ y * Real.cos (arg x * y) := by
   rw [cpow_ofReal]; generalize arg x * y = z; simp [Real.cos]
@@ -277,40 +277,63 @@ lemma cpow_ofReal_re (x : ℂ) (y : ℝ) : (x ^ (y : ℂ)).re = (abs x) ^ y * Re
 lemma cpow_ofReal_im (x : ℂ) (y : ℝ) : (x ^ (y : ℂ)).im = (abs x) ^ y * Real.sin (arg x * y) := by
   rw [cpow_ofReal]; generalize arg x * y = z; simp [Real.sin]
 
-theorem abs_cpow_of_ne_zero {z : ℂ} (hz : z ≠ 0) (w : ℂ) :
-    abs (z ^ w) = abs z ^ w.re / Real.exp (arg z * im w) := by
-  rw [cpow_def_of_ne_zero hz, abs_exp, mul_re, log_re, log_im, Real.exp_sub,
-    Real.rpow_def_of_pos (abs.pos hz)]
+theorem norm_cpow_of_ne_zero {z : ℂ} (hz : z ≠ 0) (w : ℂ) :
+    ‖z ^ w‖ = ‖z‖ ^ w.re / Real.exp (arg z * im w) := by
+  rw [cpow_def_of_ne_zero hz, norm_exp, mul_re, log_re, log_im, Real.exp_sub,
+    Real.rpow_def_of_pos (norm_pos_iff.mpr hz)]
 
-theorem abs_cpow_of_imp {z w : ℂ} (h : z = 0 → w.re = 0 → w = 0) :
-    abs (z ^ w) = abs z ^ w.re / Real.exp (arg z * im w) := by
-  rcases ne_or_eq z 0 with (hz | rfl) <;> [exact abs_cpow_of_ne_zero hz w; rw [map_zero]]
+theorem abs_cpow_of_ne_zero {z : ℂ} (hz : z ≠ 0) (w : ℂ) :
+    abs (z ^ w) = abs z ^ w.re / Real.exp (arg z * im w) :=
+  norm_cpow_of_ne_zero hz _
+
+theorem norm_cpow_of_imp {z w : ℂ} (h : z = 0 → w.re = 0 → w = 0) :
+    ‖z ^ w‖ = ‖z‖ ^ w.re / Real.exp (arg z * im w) := by
+  rcases ne_or_eq z 0 with (hz | rfl) <;> [exact norm_cpow_of_ne_zero hz w; rw [norm_zero]]
   rcases eq_or_ne w.re 0 with hw | hw
   · simp [hw, h rfl hw]
-  · rw [Real.zero_rpow hw, zero_div, zero_cpow, map_zero]
+  · rw [Real.zero_rpow hw, zero_div, zero_cpow, norm_zero]
     exact ne_of_apply_ne re hw
 
-theorem abs_cpow_le (z w : ℂ) : abs (z ^ w) ≤ abs z ^ w.re / Real.exp (arg z * im w) := by
+theorem abs_cpow_of_imp {z w : ℂ} (h : z = 0 → w.re = 0 → w = 0) :
+    abs (z ^ w) = abs z ^ w.re / Real.exp (arg z * im w) :=
+  norm_cpow_of_imp h
+
+theorem norm_cpow_le (z w : ℂ) : ‖z ^ w‖ ≤ ‖z‖ ^ w.re / Real.exp (arg z * im w) := by
   by_cases h : z = 0 → w.re = 0 → w = 0
-  · exact (abs_cpow_of_imp h).le
+  · exact (norm_cpow_of_imp h).le
   · push_neg at h
     simp [h]
 
-@[simp]
-theorem abs_cpow_real (x : ℂ) (y : ℝ) : abs (x ^ (y : ℂ)) = Complex.abs x ^ y := by
-  rw [abs_cpow_of_imp] <;> simp
+theorem abs_cpow_le (z w : ℂ) : abs (z ^ w) ≤ abs z ^ w.re / Real.exp (arg z * im w) :=
+  norm_cpow_le _ _
+
+theorem norm_cpow_real (x : ℂ) (y : ℝ) : ‖x ^ (y : ℂ)‖ = ‖x‖ ^ y := by
+  rw [norm_cpow_of_imp] <;> simp
 
 @[simp]
-theorem abs_cpow_inv_nat (x : ℂ) (n : ℕ) : abs (x ^ (n⁻¹ : ℂ)) = Complex.abs x ^ (n⁻¹ : ℝ) := by
-  rw [← abs_cpow_real]; simp [-abs_cpow_real]
+theorem abs_cpow_real (x : ℂ) (y : ℝ) : abs (x ^ (y : ℂ)) = Complex.abs x ^ y :=
+  norm_cpow_real _ _
 
-theorem abs_cpow_eq_rpow_re_of_pos {x : ℝ} (hx : 0 < x) (y : ℂ) : abs (x ^ y) = x ^ y.re := by
-  rw [abs_cpow_of_ne_zero (ofReal_ne_zero.mpr hx.ne'), arg_ofReal_of_nonneg hx.le,
-    zero_mul, Real.exp_zero, div_one, Complex.abs_of_nonneg hx.le]
+theorem norm_cpow_inv_nat (x : ℂ) (n : ℕ) : ‖x ^ (n⁻¹ : ℂ)‖ = ‖x‖ ^ (n⁻¹ : ℝ) := by
+  rw [← norm_cpow_real]; simp [-abs_cpow_real]
+
+@[simp]
+theorem _cpow_inv_nat (x : ℂ) (n : ℕ) : abs (x ^ (n⁻¹ : ℂ)) = Complex.abs x ^ (n⁻¹ : ℝ) :=
+  norm_cpow_inv_nat _ _
+
+theorem norm_cpow_eq_rpow_re_of_pos {x : ℝ} (hx : 0 < x) (y : ℂ) : ‖(x : ℂ) ^ y‖ = x ^ y.re := by
+  rw [norm_cpow_of_ne_zero (ofReal_ne_zero.mpr hx.ne'), arg_ofReal_of_nonneg hx.le,
+    zero_mul, Real.exp_zero, div_one, Complex.norm_of_nonneg hx.le]
+
+theorem abs_cpow_eq_rpow_re_of_pos {x : ℝ} (hx : 0 < x) (y : ℂ) : abs (x ^ y) = x ^ y.re :=
+  norm_cpow_eq_rpow_re_of_pos hx _
+
+theorem norm_cpow_eq_rpow_re_of_nonneg {x : ℝ} (hx : 0 ≤ x) {y : ℂ} (hy : re y ≠ 0) :
+    ‖(x : ℂ) ^ y‖ = x ^ re y := by
+  rw [norm_cpow_of_imp] <;> simp [*, arg_ofReal_of_nonneg, abs_of_nonneg]
 
 theorem abs_cpow_eq_rpow_re_of_nonneg {x : ℝ} (hx : 0 ≤ x) {y : ℂ} (hy : re y ≠ 0) :
-    abs (x ^ y) = x ^ re y := by
-  rw [abs_cpow_of_imp] <;> simp [*, arg_ofReal_of_nonneg, abs_of_nonneg]
+    abs (x ^ y) = x ^ re y := norm_cpow_eq_rpow_re_of_nonneg hx hy
 
 open Filter in
 lemma norm_ofReal_cpow_eventually_eq_atTop (c : ℂ) :
@@ -996,28 +1019,31 @@ namespace Complex
 lemma cpow_inv_two_re (x : ℂ) : (x ^ (2⁻¹ : ℂ)).re = sqrt ((abs x + x.re) / 2) := by
   rw [← ofReal_ofNat, ← ofReal_inv, cpow_ofReal_re, ← div_eq_mul_inv, ← one_div,
     ← Real.sqrt_eq_rpow, cos_half, ← sqrt_mul, ← mul_div_assoc, mul_add, mul_one, abs_mul_cos_arg]
-  exacts [abs.nonneg _, (neg_pi_lt_arg _).le, arg_le_pi _]
+  exacts [norm_nonneg _, (neg_pi_lt_arg _).le, arg_le_pi _]
 
 lemma cpow_inv_two_im_eq_sqrt {x : ℂ} (hx : 0 ≤ x.im) :
     (x ^ (2⁻¹ : ℂ)).im = sqrt ((abs x - x.re) / 2) := by
   rw [← ofReal_ofNat, ← ofReal_inv, cpow_ofReal_im, ← div_eq_mul_inv, ← one_div,
-    ← Real.sqrt_eq_rpow, sin_half_eq_sqrt, ← sqrt_mul (abs.nonneg _), ← mul_div_assoc, mul_sub,
-    mul_one, abs_mul_cos_arg]
+    ← Real.sqrt_eq_rpow, sin_half_eq_sqrt, ← sqrt_mul (norm_nonneg _), ← mul_div_assoc, mul_sub,
+    mul_one, norm_mul_cos_arg]
   · rwa [arg_nonneg_iff]
   · linarith [pi_pos, arg_le_pi x]
 
 lemma cpow_inv_two_im_eq_neg_sqrt {x : ℂ} (hx : x.im < 0) :
     (x ^ (2⁻¹ : ℂ)).im = -sqrt ((abs x - x.re) / 2) := by
   rw [← ofReal_ofNat, ← ofReal_inv, cpow_ofReal_im, ← div_eq_mul_inv, ← one_div,
-    ← Real.sqrt_eq_rpow, sin_half_eq_neg_sqrt, mul_neg, ← sqrt_mul (abs.nonneg _),
-    ← mul_div_assoc, mul_sub, mul_one, abs_mul_cos_arg]
+    ← Real.sqrt_eq_rpow, sin_half_eq_neg_sqrt, mul_neg, ← sqrt_mul (norm_nonneg _),
+    ← mul_div_assoc, mul_sub, mul_one, norm_mul_cos_arg]
   · linarith [pi_pos, neg_pi_lt_arg x]
   · exact (arg_neg_iff.2 hx).le
 
-lemma abs_cpow_inv_two_im (x : ℂ) : |(x ^ (2⁻¹ : ℂ)).im| = sqrt ((abs x - x.re) / 2) := by
+lemma abs_cpow_inv_two_im' (x : ℂ) : |(x ^ (2⁻¹ : ℂ)).im| = sqrt ((‖x‖ - x.re) / 2) := by
   rw [← ofReal_ofNat, ← ofReal_inv, cpow_ofReal_im, ← div_eq_mul_inv, ← one_div,
-    ← Real.sqrt_eq_rpow, _root_.abs_mul, abs_of_nonneg (sqrt_nonneg _), abs_sin_half,
-    ← sqrt_mul (abs.nonneg _), ← mul_div_assoc, mul_sub, mul_one, abs_mul_cos_arg]
+    ← Real.sqrt_eq_rpow, abs_mul, abs_of_nonneg (sqrt_nonneg _), abs_sin_half,
+    ← sqrt_mul (norm_nonneg _), ← mul_div_assoc, mul_sub, mul_one, norm_mul_cos_arg]
+
+lemma abs_cpow_inv_two_im (x : ℂ) : |(x ^ (2⁻¹ : ℂ)).im| = sqrt ((abs x - x.re) / 2) :=
+  abs_cpow_inv_two_im' _
 
 open scoped ComplexOrder in
 lemma inv_natCast_cpow_ofReal_pos {n : ℕ} (hn : n ≠ 0) (x : ℝ) :

@@ -179,7 +179,7 @@ protected noncomputable def polarCoord : PartialHomeomorph ℂ (ℝ × ℝ) :=
 
 protected theorem polarCoord_apply (a : ℂ) :
     Complex.polarCoord a = (Complex.abs a, Complex.arg a) := by
-  simp_rw [Complex.abs_def, Complex.normSq_apply, ← pow_two]
+  simp_rw [Complex.abs_apply, Complex.normSq_apply, ← pow_two]
   rfl
 
 protected theorem polarCoord_source : Complex.polarCoord.source = slitPlane := rfl
@@ -195,8 +195,11 @@ protected theorem polarCoord_symm_apply (p : ℝ × ℝ) :
 theorem measurableEquivRealProd_symm_polarCoord_symm_apply (p : ℝ × ℝ) :
     (measurableEquivRealProd.symm (polarCoord.symm p)) = Complex.polarCoord.symm p := rfl
 
+theorem norm_polarCoord_symm (p : ℝ × ℝ) :
+    ‖Complex.polarCoord.symm p‖ = |p.1| := by simp
+
 theorem polarCoord_symm_abs (p : ℝ × ℝ) :
-    Complex.abs (Complex.polarCoord.symm p) = |p.1| := by simp
+    Complex.abs (Complex.polarCoord.symm p) = |p.1| := norm_polarCoord_symm _
 
 protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] (f : ℂ → E) :

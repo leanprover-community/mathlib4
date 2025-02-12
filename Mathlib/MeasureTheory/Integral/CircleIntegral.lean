@@ -103,8 +103,11 @@ theorem circleMap_sub_center (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ -
 theorem circleMap_zero (R θ : ℝ) : circleMap 0 R θ = R * exp (θ * I) :=
   zero_add _
 
+theorem norm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖= |R| := by simp [circleMap]
+
 @[simp]
-theorem abs_circleMap_zero (R : ℝ) (θ : ℝ) : abs (circleMap 0 R θ) = |R| := by simp [circleMap]
+theorem abs_circleMap_zero (R : ℝ) (θ : ℝ) : abs (circleMap 0 R θ) = |R| :=
+  norm_circleMap_zero _ _
 
 theorem circleMap_mem_sphere' (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∈ sphere c |R| := by simp
 
@@ -281,6 +284,8 @@ theorem circleIntegrable_sub_zpow_iff {c w : ℂ} {R : ℝ} {n : ℤ} :
     refine IsBigO.of_bound |R|⁻¹ (this.mono fun θ' hθ' => ?_)
     set x := abs (f θ')
     suffices x⁻¹ ≤ x ^ n by
+      simp only [inv_mul_cancel_left₀, abs_eq_zero.not.2 hR, Algebra.id.smul_eq_mul, norm_mul,
+        norm_inv, norm_I, mul_one]
       simpa only [inv_mul_cancel_left₀, abs_eq_zero.not.2 hR, norm_eq_abs, map_inv₀,
         Algebra.id.smul_eq_mul, map_mul, abs_circleMap_zero, abs_I, mul_one, abs_zpow, Ne,
         not_false_iff] using this
@@ -378,8 +383,8 @@ theorem norm_integral_lt_of_norm_le_const_of_lt {f : ℂ → E} {c : ℂ} {R C :
     ‖∮ z in C(c, R), f z‖ ≤ ∫ θ in (0)..2 * π, ‖deriv (circleMap c R) θ • f (circleMap c R θ)‖ :=
       intervalIntegral.norm_integral_le_integral_norm Real.two_pi_pos.le
     _ < ∫ _ in (0)..2 * π, R * C := by
-      simp only [norm_smul, deriv_circleMap, norm_eq_abs, map_mul, abs_I, mul_one,
-        abs_circleMap_zero, abs_of_pos hR]
+      simp only [deriv_circleMap, norm_smul, norm_mul, norm_circleMap_zero, abs_of_pos hR, norm_I,
+        mul_one]
       refine intervalIntegral.integral_lt_integral_of_continuousOn_of_le_of_exists_lt
           Real.two_pi_pos ?_ continuousOn_const (fun θ _ => ?_) ⟨θ₀, Ioc_subset_Icc_self hmem, ?_⟩
       · exact continuousOn_const.mul (hc.comp (continuous_circleMap _ _).continuousOn fun θ _ =>
@@ -522,9 +527,9 @@ theorem hasSum_two_pi_I_cauchyPowerSeries_integral {f : ℂ → E} {c : ℂ} {R 
     (hf : CircleIntegrable f c R) (hw : abs w < R) :
     HasSum (fun n : ℕ => ∮ z in C(c, R), (w / (z - c)) ^ n • (z - c)⁻¹ • f z)
       (∮ z in C(c, R), (z - (c + w))⁻¹ • f z) := by
-  have hR : 0 < R := (Complex.abs.nonneg w).trans_lt hw
+  have hR : 0 < R := (norm_nonneg w).trans_lt hw
   have hwR : abs w / R ∈ Ico (0 : ℝ) 1 :=
-    ⟨div_nonneg (Complex.abs.nonneg w) hR.le, (div_lt_one hR).2 hw⟩
+    ⟨div_nonneg (norm_nonneg w) hR.le, (div_lt_one hR).2 hw⟩
   refine intervalIntegral.hasSum_integral_of_dominated_convergence
       (fun n θ => ‖f (circleMap c R θ)‖ * (abs w / R) ^ n) (fun n => ?_) (fun n => ?_) ?_ ?_ ?_
   · simp only [deriv_circleMap]

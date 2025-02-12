@@ -57,7 +57,8 @@ lemma coe_injective : Injective ((↑) : Circle → ℂ) := fun _ _ ↦ ext
 -- Not simp because `SetLike.coe_eq_coe` already proves it
 lemma coe_inj : (x : ℂ) = y ↔ x = y := coe_injective.eq_iff
 
-@[simp] lemma abs_coe (z : Circle) : abs z = 1 := mem_sphere_zero_iff_norm.1 z.2
+lemma norm_coe (z : Circle) : ‖(z : ℂ)‖ = 1 := mem_sphere_zero_iff_norm.1 z.2
+@[simp] lemma abs_coe (z : Circle) : abs z = 1 := norm_coe _
 @[simp] lemma normSq_coe (z : Circle) : normSq z = 1 := by simp [normSq_eq_abs]
 @[simp] lemma coe_ne_zero (z : Circle) : (z : ℂ) ≠ 0 := ne_zero_of_mem_unit_sphere z
 @[simp, norm_cast] lemma coe_one : ↑(1 : Circle) = (1 : ℂ) := rfl
@@ -95,7 +96,7 @@ instance : UniformGroup Circle := by
 def ofConjDivSelf (z : ℂ) (hz : z ≠ 0) : Circle where
   val := conj z / z
   property := mem_sphere_zero_iff_norm.2 <| by
-    rw [norm_div, RCLike.norm_conj, div_self]; exact Complex.abs.ne_zero hz
+    rw [norm_div, RCLike.norm_conj, div_self]; exact norm_ne_zero_iff.mpr hz
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`. -/
 def exp : C(ℝ, Circle) where
