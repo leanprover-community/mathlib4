@@ -34,13 +34,14 @@ variable {m0 : MeasurableSpace α} [MeasurableSpace β] {μ ν ν₁ ν₂ : Mea
 section IsFiniteMeasure
 
 /-- A measure `μ` is called finite if `μ univ < ∞`. -/
+@[mk_iff]
 class IsFiniteMeasure (μ : Measure α) : Prop where
   measure_univ_lt_top : μ univ < ∞
 
-theorem not_isFiniteMeasure_iff : ¬IsFiniteMeasure μ ↔ μ Set.univ = ∞ := by
-  refine ⟨fun h => ?_, fun h => fun h' => h'.measure_univ_lt_top.ne h⟩
-  by_contra h'
-  exact h ⟨lt_top_iff_ne_top.mpr h'⟩
+lemma not_isFiniteMeasure_iff : ¬IsFiniteMeasure μ ↔ μ univ = ∞ := by simp [isFiniteMeasure_iff]
+
+lemma isFiniteMeasure_restrict : IsFiniteMeasure (μ.restrict s) ↔ μ s ≠ ∞ := by
+  simp [isFiniteMeasure_iff, lt_top_iff_ne_top]
 
 instance Restrict.isFiniteMeasure (μ : Measure α) [hs : Fact (μ s < ∞)] :
     IsFiniteMeasure (μ.restrict s) :=
@@ -1302,9 +1303,6 @@ theorem exists_pos_ball [PseudoMetricSpace α] (x : α) (hμ : μ ≠ 0) :
 
 /-- If a set has zero measure in a neighborhood of each of its points, then it has zero measure
 in a second-countable space. -/
-@[deprecated (since := "2024-05-14")]
-alias null_of_locally_null := measure_null_of_locally_null
-
 theorem exists_ne_forall_mem_nhds_pos_measure_preimage {β} [TopologicalSpace β] [T1Space β]
     [SecondCountableTopology β] [Nonempty β] {f : α → β} (h : ∀ b, ∃ᵐ x ∂μ, f x ≠ b) :
     ∃ a b : β, a ≠ b ∧ (∀ s ∈ 𝓝 a, 0 < μ (f ⁻¹' s)) ∧ ∀ t ∈ 𝓝 b, 0 < μ (f ⁻¹' t) := by

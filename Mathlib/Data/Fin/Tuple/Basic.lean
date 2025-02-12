@@ -3,7 +3,7 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 -/
-import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Fin.Rev
 import Mathlib.Data.Nat.Find
 
 /-!
@@ -165,7 +165,7 @@ theorem update_cons_zero : update (cons x p) 0 z = cons z p := by
     rw [← this, cons_succ, cons_succ]
 
 /-- Concatenating the first element of a tuple with its tail gives back the original tuple -/
-@[simp, nolint simpNF] -- Porting note: linter claims LHS doesn't simplify
+@[simp]
 theorem cons_self_tail : cons (q 0) (tail q) = q := by
   ext j
   by_cases h : j = 0
@@ -1012,13 +1012,6 @@ def insertNthEquiv (α : Fin (n + 1) → Type u) (p : Fin (n + 1)) :
 not a definitional equality. -/
 @[simp] lemma insertNthEquiv_last (n : ℕ) (α : Type*) :
     insertNthEquiv (fun _ ↦ α) (last n) = snocEquiv (fun _ ↦ α) := by ext; simp
-
-/-- Separates an `n+1`-tuple, returning a selected index and then the rest of the tuple.
-Functional form of `Equiv.piFinSuccAbove`. -/
-@[deprecated removeNth (since := "2024-06-19")]
-def extractNth {α : Fin (n + 1) → Type*} (i : Fin (n + 1)) (f : (∀ j, α j)) :
-    α i × ∀ j, α (i.succAbove j) :=
-  (f i, removeNth i f)
 
 end InsertNth
 
