@@ -347,7 +347,7 @@ theorem length_toList {xs : t α} : length xs = List.length (toList xs) := by
   generalize 0 = n
   induction ys generalizing n with
   | nil => simp
-  | cons _ _ ih => simp_arith [ih]
+  | cons _ _ ih => simp +arith [ih]
 
 variable {m : Type u → Type u} [Monad m] [LawfulMonad m]
 
