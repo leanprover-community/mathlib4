@@ -17,8 +17,9 @@ CW-complexes are defined in the file `Topology.CWComplex.Abstract.Basic`
 by requiring that at the `n`th step, we attach `n`-disks along their
 boundaries.
 
-This structure `RelativeCellComplex` shall also be used in the
-formalization of the small object argument (TODO).
+This structure `RelativeCellComplex` is also used in the
+formalization of the small object argument,
+see the file `CategoryTheory.SmallObject.IsCardinalForSmallObjectArgument`.
 
 ## References
 * https://ncatlab.org/nlab/show/small+object+argument
