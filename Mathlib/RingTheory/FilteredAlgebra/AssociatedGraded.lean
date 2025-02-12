@@ -416,3 +416,7 @@ instance [hasGMul F F_lt] [DecidableEq ι] : Ring (⨁ i, GradedPiece F F_lt i) 
   DirectSum.ring (GradedPiece F F_lt)
 
 end GradedMul
+
+end HasGMul
+
+end GradedRing
