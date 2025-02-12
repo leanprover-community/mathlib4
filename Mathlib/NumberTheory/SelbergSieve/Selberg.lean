@@ -3,6 +3,7 @@ Copyright (c) 2023 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Author: Arend Mellendijk
 -/
+import Mathlib.Algebra.Order.Antidiag.Nat
 import Mathlib.NumberTheory.SelbergSieve.Basic
 
 /-!
@@ -137,6 +138,34 @@ lemma sum_mul_subst (k n: ℕ) {f : ℕ → ℝ} (h : ∀ l, l ∣ n → ¬ k �
       simp only [mem_divisors, ne_eq] at hl
       exact hdvd hl.1
 
+theorem divisors_image_mul (n d : ℕ) (hd : d ≠ 0) :
+    n.divisors.image (d * ·) = (d*n).divisors.filter (fun k ↦ d ∣ k) := by
+  ext r
+  simp only [mem_image, mem_divisors, ne_eq, mem_filter, _root_.mul_eq_zero, not_or]
+  constructor
+  · rintro ⟨x, ⟨hx, hn⟩, rfl⟩
+    refine ⟨⟨Nat.mul_dvd_mul_left d hx, hd, hn⟩, d.dvd_mul_right x⟩
+  · rintro ⟨⟨hrdn, hd, hn⟩, hdr⟩
+    sorry
+
+theorem tmp (d : ℕ) :
+    ∑ l ∈ divisors P, (if d ∣ l ∧ ↑l ^ 2 ≤ y then g l else 0)
+    = g d * ∑ m ∈ divisors P, if (↑d * ↑m) ^ 2 ≤ y ∧ m.Coprime d then g m else 0 := by
+  by_cases hd : d = 0
+  · simp [hd]
+    sorry
+  calc
+    _ = ∑ l ∈ (divisors P).image (d * ·), if (↑l) ^ 2 ≤ y ∧ Squarefree (l) then g (l) else 0 := by
+      rw [divisors_image_mul]
+      -- have := Finset.sum_image (g := (fun k : ℕ ↦ d*k))
+      -- rw [Finset.sum_image]
+      ·
+        sorry
+      · sorry
+
+    _ = _ := by
+      sorry
+
 -- Important facts about the selberg weights
 theorem selbergWeights_eq_dvds_sum (d : ℕ) :
     ν d * γ d =
@@ -182,7 +211,7 @@ theorem selbergWeights_eq_dvds_sum (d : ℕ) :
 
 omit s in
 private theorem moebius_inv_dvd_lower_bound (l m : ℕ) (hm : Squarefree m) :
-    (∑ d in m.divisors, if l ∣ d then μ d else 0) = if l = m then μ l else 0 := by
+    (∑ d ∈ m.divisors, if l ∣ d then μ d else 0) = if l = m then μ l else 0 := by
   have hm_pos : 0 < m := Nat.pos_of_ne_zero <| Squarefree.ne_zero hm
   revert hm
   revert m
