@@ -23,6 +23,7 @@ variable (M : Type u) [Monoid M]
 
 namespace CategoryTheory
 
+set_option maxHeartbeats 500000 in
 @[to_additive (attr := simps tensorObj_as leftUnitor rightUnitor associator) Discrete.addMonoidal]
 instance Discrete.monoidal : MonoidalCategory (Discrete M) where
   tensorUnit := Discrete.mk 1
