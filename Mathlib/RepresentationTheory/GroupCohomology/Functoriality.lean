@@ -193,7 +193,7 @@ instance mono_H0Map_of_mono {A B : Rep k G} (f : A ⟶ B) [Mono f] :
     Mono (H0Map (MonoidHom.id G) f) :=
   inferInstanceAs (Mono <| (invariantsFunctor k G).map f)
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 theorem cocyclesMap_comp_isoZeroCocycles_hom :
     cocyclesMap f φ 0 ≫ (isoZeroCocycles B).hom = (isoZeroCocycles A).hom ≫ H0Map f φ := by
   rw [← Iso.eq_comp_inv, Category.assoc, ← Iso.inv_comp_eq,
@@ -203,7 +203,7 @@ theorem cocyclesMap_comp_isoZeroCocycles_hom :
     isoZeroCocycles_inv_comp_iCocycles]
   rfl
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 theorem map_comp_isoH0_hom :
     map f φ 0 ≫ (isoH0 B).hom = (isoH0 A).hom ≫ H0Map f φ := by
   simp [← cancel_epi (groupCohomologyπ _ _)]
@@ -253,17 +253,16 @@ noncomputable abbrev mapOneCocycles :
   ShortComplex.cyclesMap' (mapShortComplexH1 f φ) (shortComplexH1 A).moduleCatLeftHomologyData
     (shortComplexH1 B).moduleCatLeftHomologyData
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma mapOneCocycles_comp_subtype :
     mapOneCocycles f φ ≫ ModuleCat.ofHom (oneCocycles B).subtype =
       ModuleCat.ofHom (oneCocycles A).subtype ≫ ModuleCat.ofHom (fOne f φ) :=
   ShortComplex.cyclesMap'_i (mapShortComplexH1 f φ) (moduleCatLeftHomologyData _)
     (moduleCatLeftHomologyData _)
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesMap_comp_isoOneCocycles_hom :
-    cocyclesMap f φ 1 ≫ (isoOneCocycles B).hom =
-      (isoOneCocycles A).hom ≫ mapOneCocycles f φ := by
+    cocyclesMap f φ 1 ≫ (isoOneCocycles B).hom = (isoOneCocycles A).hom ≫ mapOneCocycles f φ := by
   simp_rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i, mapOneCocycles,
       Category.assoc, cyclesMap'_i, isoOneCocycles, ← Category.assoc]
   simp [cochainsMap_f_1_comp_oneCochainsLequiv f, mapShortComplexH1, ← LinearEquiv.toModuleIso_hom]
@@ -289,12 +288,12 @@ theorem H1Map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     H1Map (MonoidHom.id G) (φ ≫ ψ) = H1Map (MonoidHom.id G) φ ≫ H1Map (MonoidHom.id G) ψ :=
   H1Map_comp (MonoidHom.id G) (MonoidHom.id G) _ _
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma H1π_comp_H1Map :
     H1π A ≫ H1Map f φ = mapOneCocycles f φ ≫ H1π B :=
   leftHomologyπ_naturality' (mapShortComplexH1 f φ) _ _
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma map_comp_isoH1_hom :
     map f φ 1 ≫ (isoH1 B).hom = (isoH1 A).hom ≫ H1Map f φ := by
   simp [← cancel_epi (groupCohomologyπ _ _), H1Map, Category.assoc]
@@ -344,14 +343,14 @@ noncomputable abbrev mapTwoCocycles :
   ShortComplex.cyclesMap' (mapShortComplexH2 f φ) (shortComplexH2 A).moduleCatLeftHomologyData
     (shortComplexH2 B).moduleCatLeftHomologyData
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma mapTwoCocycles_comp_subtype :
     mapTwoCocycles f φ ≫ ModuleCat.ofHom (twoCocycles B).subtype =
       ModuleCat.ofHom (twoCocycles A).subtype ≫ ModuleCat.ofHom (fTwo f φ) :=
   ShortComplex.cyclesMap'_i (mapShortComplexH2 f φ) (moduleCatLeftHomologyData _)
     (moduleCatLeftHomologyData _)
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesMap_comp_isoTwoCocycles_hom :
     cocyclesMap f φ 2 ≫ (isoTwoCocycles B).hom = (isoTwoCocycles A).hom ≫ mapTwoCocycles f φ := by
   simp_rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH2 B)).i, mapTwoCocycles,
@@ -379,12 +378,12 @@ theorem H2Map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     H2Map (MonoidHom.id G) (φ ≫ ψ) = H2Map (MonoidHom.id G) φ ≫ H2Map (MonoidHom.id G) ψ :=
   H2Map_comp (MonoidHom.id G) (MonoidHom.id G) _ _
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma H2π_comp_H2Map :
     H2π A ≫ H2Map f φ = mapTwoCocycles f φ ≫ H2π B :=
   leftHomologyπ_naturality' (mapShortComplexH2 f φ) _ _
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma map_comp_isoH2_hom :
     map f φ 2 ≫ (isoH2 B).hom = (isoH2 A).hom ≫ H2Map f φ := by
   simp [← cancel_epi (groupCohomologyπ _ _), H2Map, Category.assoc]
