@@ -106,6 +106,7 @@ theorem δ_apply (i j : ℕ) (hij : j + 1 = i)
 general `δ`. -/
 noncomputable def δ₀ : H1 X.X₃ ⟶ H0 X.X₁ :=
   (isoH1 X.X₃).inv ≫ (map_chainsFunctor_shortExact hX).δ 1 0 rfl ≫ (isoH0 X.X₁).hom
+
 theorem δ₀_apply (z : G →₀ X.X₃) (hz : dZero X.X₃ z = 0) (y : G →₀ X.X₂)
     (hy : mapRange.linearMap X.g.hom.hom y = z) (x : X.X₁) (hx : X.f.hom x = dZero X.X₂ y) :
     δ₀ hX (H1π X.X₃ ⟨z, hz⟩) = H0π X.X₁ x := by
@@ -159,8 +160,7 @@ theorem δ₁_apply (z : G × G →₀ X.X₃) (hz : dOne X.X₃ z = 0) (y : G �
         (inhomogeneousChains X.X₂).d 2 1 ((twoChainsLequiv X.X₂).symm y) :=
     have := congr($((CommSq.horiz_inv ⟨dOne_comp_eq X.X₂⟩).w) y)
     Finsupp.ext fun _ => by simp_all [← hx, oneChainsLequiv]
-  have δ_2_1 := congr((isoH1 X.X₁).hom $(δ_apply hX _ _ 0 rfl (by simp)
-    ((twoChainsLequiv X.X₃).symm z)
+  have δ_2_1 := congr((isoH1 X.X₁).hom $(δ_apply hX _ _ rfl ((twoChainsLequiv X.X₃).symm z)
     (by simpa [hz] using congr($((CommSq.horiz_inv ⟨dOne_comp_eq X.X₃⟩).w) z))
     ((twoChainsLequiv X.X₂).symm y) (Finsupp.ext fun _ => by simp [← hy, twoChainsLequiv])
     ((oneChainsLequiv X.X₁).symm x) hxy))
@@ -199,6 +199,7 @@ noncomputable def isoH0ShortComplex₂ :
     mapShortComplex₂ X 0 ≅ H0ShortComplex₂ X :=
   isoMk (isoH0 _) (isoH0 _) (isoH0 _) (map_comp_isoH0_hom (MonoidHom.id G) X.f).symm
     (map_comp_isoH0_hom (MonoidHom.id G) X.g).symm
+
 theorem H0ShortComplex₂_exact :
     (H0ShortComplex₂ X).Exact :=
   exact_of_iso (isoH0ShortComplex₂ X) (mapShortComplex₂_exact hX _)
@@ -271,6 +272,7 @@ short exact sequence of representations agrees with our simpler expression for
 noncomputable def isoH1ShortComplex₁ :
     mapShortComplex₁ hX (i := 2) rfl ≅ H1ShortComplex₁ hX :=
   isoMk (isoH2 _) (isoH1 _) (isoH1 _) (by simp [δ₁]) (map_comp_isoH1_hom (MonoidHom.id G) _).symm
+
 theorem H1ShortComplex₁_exact :
     (H1ShortComplex₁ hX).Exact :=
   exact_of_iso (isoH1ShortComplex₁ hX) (mapShortComplex₁_exact _ _)
