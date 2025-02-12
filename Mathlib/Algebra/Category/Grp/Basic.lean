@@ -389,14 +389,12 @@ lemma ofHom_comp {X Y Z : Type u} [CommGroup X] [CommGroup Y] [CommGroup Z]
 lemma ofHom_apply {X Y : Type u} [CommGroup X] [CommGroup Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma inv_hom_apply {X Y : CommGrp} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by
-  rw [← comp_apply]
   simp
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma hom_inv_apply {X Y : CommGrp} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 @[to_additive (attr := deprecated "use `coe_comp` instead" (since := "2025-01-28"))]

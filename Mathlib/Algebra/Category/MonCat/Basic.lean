@@ -351,14 +351,12 @@ lemma ofHom_comp {M N P : Type u} [CommMonoid M] [CommMonoid N] [CommMonoid P]
 lemma ofHom_apply {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma inv_hom_apply {M N : CommMonCat} (e : M ≅ N) (x : M) : e.inv (e.hom x) = x := by
-  rw [← comp_apply]
   simp
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma hom_inv_apply {M N : CommMonCat} (e : M ≅ N) (s : N) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 @[to_additive]
