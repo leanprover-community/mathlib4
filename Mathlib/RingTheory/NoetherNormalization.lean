@@ -28,7 +28,7 @@ variable (v w : Fin (n + 1) →₀ ℕ)
 `up` is a number which is big enough. -/
 private noncomputable abbrev up := 2 + f.totalDegree
 
-private lemma up_spec (hv : v ∈ f.support) : ∀ i, v i < up f := by
+private lemma up_lt (hv : v ∈ f.support) : ∀ i, v i < up f := by
   intro i
   have := lt_one_add_iff.mpr <| le_trans (monomial_le_degreeOf i hv) <| degreeOf_le_totalDegree f i
   linarith
@@ -94,7 +94,7 @@ lemma dig (b : ℕ) (hb : 1 < b) (L1 : List ℕ) (L2 : List ℕ) (len : L1.lengt
     (fun a ha ↦ w2 a <| List.mem_cons_of_mem d ha) h
   rw [eqd, this]
 
-private lemma r_spec (vlt : ∀ i, v i < up f) (wlt : ∀ i, w i < up f) (neq : v ≠ w) :
+private lemma r_ne (vlt : ∀ i, v i < up f) (wlt : ∀ i, w i < up f) (neq : v ≠ w) :
     ∑ x : Fin (n + 1), r f x * v x ≠ ∑ x : Fin (n + 1), r f x * w x := by
   unfold r
   by_contra h
@@ -107,7 +107,7 @@ private lemma r_spec (vlt : ∀ i, v i < up f) (wlt : ∀ i, w i < up f) (neq : 
     exact h
   exact neq <| Finsupp.ext <| congrFun <| List.ofFn_inj.mp this
 
-private lemma T_spec_monomial (a : k) (ha : a ≠ 0) : ((T f) (monomial v a)).degreeOf 0 =
+private lemma T_monomial (a : k) (ha : a ≠ 0) : ((T f) (monomial v a)).degreeOf 0 =
     ∑ i : Fin (n + 1), (r f i) * v i := by
   rw [← natDegree_finSuccEquiv]
   nth_rw 1 [monomial_eq]
@@ -138,15 +138,15 @@ private lemma T_spec_monomial (a : k) (ha : a ≠ 0) : ((T f) (monomial v a)).de
   intro i _
   rw [add_comm (Polynomial.C (X i)), natDegree_X_pow_add_C, mul_comm]
 
-private lemma T_spec_degree (hv : v ∈ f.support) (hw : w ∈ f.support) (neq : v ≠ w) :
+private lemma T_degree (hv : v ∈ f.support) (hw : w ∈ f.support) (neq : v ≠ w) :
     (T f <| monomial v <| coeff v f).degreeOf 0 ≠
     (T f <| monomial w <| coeff w f).degreeOf 0 := by
   have nv := mem_support_iff.mp hv
   have nw := mem_support_iff.mp hw
-  rw [T_spec_monomial _ _ _ nv, T_spec_monomial _ _ _ nw]
-  exact r_spec f v w (up_spec f v hv) (up_spec f w hw) neq
+  rw [T_monomial _ _ _ nv, T_monomial _ _ _ nw]
+  exact r_ne f v w (up_lt f v hv) (up_lt f w hw) neq
 
-private lemma T_spec_coeff :
+private lemma T_coeff :
     (finSuccEquiv k n ((T f) ((monomial v) (coeff v f)))).leadingCoeff =
     algebraMap k _ (coeff v f) := by
   rw [monomial_eq, Finsupp.prod_fintype]
@@ -168,20 +168,20 @@ private lemma T_spec_coeff :
     · simp only [this, one_pow, Finset.prod_const_one, mul_one]
   · exact fun i ↦ pow_zero _
 
-private lemma T_spec_leadingcoeff (fne : f ≠ 0) :
+private lemma T_leadingcoeff (fne : f ≠ 0) :
     ∃ c : (MvPolynomial (Fin n) k)ˣ, (c.val • (finSuccEquiv k n (T f f))).Monic := by
-  obtain ⟨v, vin, vspec⟩ := Finset.exists_max_image f.support
+  obtain ⟨v, vin, vs⟩ := Finset.exists_max_image f.support
     (fun v ↦ (T f ((monomial v) (coeff v f))).degreeOf 0) (support_nonempty.mpr fne)
   set h := fun w ↦ (MvPolynomial.monomial w) (coeff w f)
-  simp only [← natDegree_finSuccEquiv] at vspec
-  replace vspec : ∀ x ∈ f.support \ {v}, (finSuccEquiv k n ((T f) (h x))).degree <
+  simp only [← natDegree_finSuccEquiv] at vs
+  replace vs : ∀ x ∈ f.support \ {v}, (finSuccEquiv k n ((T f) (h x))).degree <
       (finSuccEquiv k n ((T f) (h v))).degree := by
     intro x hx
     obtain ⟨h1, h2⟩ := Finset.mem_sdiff.mp hx
     apply degree_lt_degree
-    apply lt_of_le_of_ne (vspec x h1)
+    apply lt_of_le_of_ne (vs x h1)
     repeat rw [natDegree_finSuccEquiv]
-    apply T_spec_degree f _ _ h1 vin <| List.ne_of_not_mem_cons h2
+    apply T_degree f _ _ h1 vin <| List.ne_of_not_mem_cons h2
   have coeff : (finSuccEquiv k n ((T f) (h v + ∑ x ∈ f.support \ {v}, h x))).leadingCoeff =
       (finSuccEquiv k n ((T f) (h v))).leadingCoeff := by
     simp only [map_add, map_sum]
@@ -199,11 +199,11 @@ private lemma T_spec_leadingcoeff (fne : f ≠ 0) :
       repeat rw [map_eq_zero_iff _ (AlgEquiv.injective _)] at eq
       exact h2 eq
     apply (Finset.sup_lt_iff (Ne.bot_lt (fun x ↦ h2 (degree_eq_bot.mp x)))).mpr
-    exact vspec
+    exact vs
   nth_rw 2 [← support_sum_monomial_coeff f]
   have := Finset.sum_eq_add_sum_diff_singleton vin h
   rw [this]
-  rw [T_spec_coeff] at coeff
+  rw [T_coeff] at coeff
   have := mem_support_iff.mp vin
   have u : IsUnit (finSuccEquiv k n
       ((T f) (h v + ∑ x ∈ f.support \ {v}, h x))).leadingCoeff := by
@@ -225,7 +225,7 @@ private noncomputable abbrev hom1 :=
 
 set_option synthInstance.maxHeartbeats 40000
 private lemma hom1_int (fne : f ≠ 0) (fi : f ∈ I): (hom1 f I).IsIntegral := by
-  obtain ⟨c, eq⟩ := T_spec_leadingcoeff f fne
+  obtain ⟨c, eq⟩ := T_leadingcoeff f fne
   exact eq.quotient_isIntegral <| Submodule.smul_of_tower_mem _ c.val <|
     mem_map_of_mem _ <| mem_map_of_mem _ fi
 
