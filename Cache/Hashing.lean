@@ -6,16 +6,33 @@ Authors: Arthur Paulino
 
 import Cache.IO
 import Lean.Elab.ParseImportsFast
-import Lake.Build.Trace
 
 namespace Cache.Hashing
 
 open System IO
 
+/--
+The `HashMemo` contains all information `Cache` needs about the modules:
+* the name
+* its imports
+* the file's hash (in `hashMap` and `cache`)
+
+additionally, it contains the `rootHash` which reflects changes to Mathlib's
+Lake project settings.
+-/
 structure HashMemo where
+  /-- Hash of mathlib's lake project settings. -/
   rootHash : UInt64
+  /-- Maps the `.lean` file of a module to the `.lean` files of its imports. -/
   depsMap  : Std.HashMap FilePath (Array FilePath) := ∅
+  /--
+  For files with a valid hash (usually Mathlib and upstream),
+  this contains the same information as `hashMap`.
+  Other files have `none` here and do not appear in `hashMap`
+  (e.g. `.lean` source could not be found, imports a file without valid hash).
+  -/
   cache    : Std.HashMap FilePath (Option UInt64) := ∅
+  /-- Stores the hash of the module's content for modules in Mathlib or upstream. -/
   hashMap  : ModuleHashMap := ∅
   deriving Inhabited
 
@@ -62,21 +79,19 @@ Computes the root hash, which mixes the hashes of the content of:
 * `lakefile.lean`
 * `lean-toolchain`
 * `lake-manifest.json`
-and the hash of `Lean.gitHash`.
+and the hash of `Lean.githash`.
 
-(We hash `Lean.gitHash` in case the toolchain changes even though `lean-toolchain` hasn't.
+(We hash `Lean.githash` in case the toolchain changes even though `lean-toolchain` hasn't.
 This happens with the `lean-pr-testing-NNNN` toolchains when Lean 4 PRs are updated.)
 -/
 def getRootHash : CacheM UInt64 := do
-  let rootFiles : List FilePath := ["lakefile.lean", "lean-toolchain", "lake-manifest.json"]
-  let isMathlibRoot ← isMathlibRoot
-  let qualifyPath ←
-    if isMathlibRoot then
-      pure id
-    else
-      pure ((← mathlibDepPath) / ·)
+  let mathlibDepPath := (← read).mathlibDepPath
+  let rootFiles : List FilePath := [
+    mathlibDepPath / "lakefile.lean",
+    mathlibDepPath / "lean-toolchain",
+    mathlibDepPath / "lake-manifest.json"]
   let hashes ← rootFiles.mapM fun path =>
-    hashFileContents <$> IO.FS.readFile (qualifyPath path)
+    hashFileContents <$> IO.FS.readFile path
   return hash (hash Lean.githash :: hashes)
 
 /--
