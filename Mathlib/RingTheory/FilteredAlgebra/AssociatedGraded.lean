@@ -27,7 +27,8 @@ instance [Preorder ι] [IsFiltration F F_lt] (i : ι) :
   QuotientAddGroup.leftRel (((F_lt i) : AddSubgroup A).addSubgroupOf ((F i) : AddSubgroup A))
 
 /-- `GradedPiece i` of the associated graded ring is defined as `F i` quotient by `F_lt i`-/
-abbrev GradedPiece (i : ι) := ((F i) : AddSubgroup A) ⧸ ((F_lt i) : AddSubgroup A).addSubgroupOf ((F i) : AddSubgroup A)
+abbrev GradedPiece (i : ι) :=
+  ((F i) : AddSubgroup A) ⧸ ((F_lt i) : AddSubgroup A).addSubgroupOf ((F i) : AddSubgroup A)
 
 namespace GradedPiece
 
@@ -83,8 +84,8 @@ variable {ι : Type*}
 
 variable {R : Type*} [Ring R] {σ : Type*} [SetLike σ R]
 
-instance [OrderedAddCommMonoid ι] [AddSubgroupClass σ R] (F : ι → σ) (F_lt : outParam <| ι → σ) [IsRingFiltration F F_lt] :
-    One (GradedPiece F F_lt 0) where
+instance [OrderedAddCommMonoid ι] [AddSubgroupClass σ R] (F : ι → σ) (F_lt : outParam <| ι → σ)
+    [IsRingFiltration F F_lt] : One (GradedPiece F F_lt 0) where
   one := ⟦⟨1, IsRingFiltration.one_mem⟩⟧
 
 variable (F : ι → σ) (F_lt : outParam <| ι → σ)
@@ -150,7 +151,8 @@ lemma hasGMul.mul_equiv_mul [hasGMul F F_lt] {i j : ι}
     Subtype.exists, exists_prop, exists_eq_right] at hx hy ⊢
   have eq : - (x₁ * y₁ : R) + (x₂ * y₂ : R) = (- x₁ + x₂ : R) * y₁ + x₂ * (- y₁ + y₂ : R) := by
     noncomm_ring
-  have eq : - (x₁ * y₁) + (x₂ * y₂) = (- x₁ + x₂) * y₁ + x₂ * (- y₁ + y₂) := SetLike.coe_eq_coe.mp eq
+  have eq : - (x₁ * y₁) + (x₂ * y₂) = (- x₁ + x₂) * y₁ + x₂ * (- y₁ + y₂) :=
+    SetLike.coe_eq_coe.mp eq
   rw [eq]
   exact add_mem (hasGMul.F_lt_mul_mem (F := F) hx y₁.2) (hasGMul.mul_F_lt_mem (F := F) x₂.2 hy)
 
@@ -290,8 +292,10 @@ lemma GradedPiece.gnpow_succ' [hasGMul F F_lt] (n : ℕ) {i : ι} (x : GradedPie
   have mk_rx : mk F F_lt rx = x := by
     nth_rw 1 [← Quotient.out_eq x]
     rfl
-  have : rx.1 ^ n * rx.1 ∈ (F (n • i + i)) := IsRingFiltration.mul_mem (Filtration.pow_mem F F_lt n rx) rx.2
-  apply HEq_eq_mk_eq F F_lt (succ_nsmul i n) (pow_succ rx.1 n) (Filtration.pow_mem F F_lt (n + 1) rx) this
+  have : rx.1 ^ n * rx.1 ∈ (F (n • i + i)) :=
+    IsRingFiltration.mul_mem (Filtration.pow_mem F F_lt n rx) rx.2
+  apply HEq_eq_mk_eq F F_lt (succ_nsmul i n) (pow_succ rx.1 n)
+    (Filtration.pow_mem F F_lt (n + 1) rx) this
   · rw [gnpow_def, mk_rx]
   · rw [← mk_rx, ← gnpow_def]
     rfl
