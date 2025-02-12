@@ -186,7 +186,7 @@ protected theorem Inseparable.zpow {G : Type*} [DivInvMonoid G] [TopologicalSpac
 
 @[to_additive]
 instance : ContinuousInv (ULift G) :=
-  ⟨continuous_uLift_up.comp (continuous_inv.comp continuous_uLift_down)⟩
+  ⟨continuous_uliftUp.comp (continuous_inv.comp continuous_uliftDown)⟩
 
 @[to_additive]
 theorem continuousOn_inv {s : Set G} : ContinuousOn Inv.inv s :=
@@ -232,6 +232,9 @@ theorem ContinuousOn.inv (hf : ContinuousOn f s) : ContinuousOn (fun x => (f x)�
 theorem ContinuousWithinAt.inv (hf : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun x => (f x)⁻¹) s x :=
   Filter.Tendsto.inv hf
+
+@[to_additive]
+instance OrderDual.instContinuousInv : ContinuousInv Gᵒᵈ := ‹ContinuousInv G›
 
 @[to_additive]
 instance Prod.continuousInv [TopologicalSpace H] [Inv H] [ContinuousInv H] :
@@ -499,42 +502,85 @@ section OrderedCommGroup
 variable [TopologicalSpace H] [OrderedCommGroup H] [ContinuousInv H]
 
 @[to_additive]
-theorem tendsto_inv_nhdsWithin_Ioi {a : H} : Tendsto Inv.inv (𝓝[>] a) (𝓝[<] a⁻¹) :=
+theorem tendsto_inv_nhdsGT {a : H} : Tendsto Inv.inv (𝓝[>] a) (𝓝[<] a⁻¹) :=
   (continuous_inv.tendsto a).inf <| by simp [tendsto_principal_principal]
 
+@[deprecated (since := "2024-12-22")]
+alias tendsto_neg_nhdsWithin_Ioi := tendsto_neg_nhdsGT
+@[to_additive existing, deprecated (since := "2024-12-22")]
+alias tendsto_inv_nhdsWithin_Ioi := tendsto_inv_nhdsGT
+
 @[to_additive]
-theorem tendsto_inv_nhdsWithin_Iio {a : H} : Tendsto Inv.inv (𝓝[<] a) (𝓝[>] a⁻¹) :=
+theorem tendsto_inv_nhdsLT {a : H} : Tendsto Inv.inv (𝓝[<] a) (𝓝[>] a⁻¹) :=
   (continuous_inv.tendsto a).inf <| by simp [tendsto_principal_principal]
 
-@[to_additive]
-theorem tendsto_inv_nhdsWithin_Ioi_inv {a : H} : Tendsto Inv.inv (𝓝[>] a⁻¹) (𝓝[<] a) := by
-  simpa only [inv_inv] using @tendsto_inv_nhdsWithin_Ioi _ _ _ _ a⁻¹
+@[deprecated (since := "2024-12-22")]
+alias tendsto_neg_nhdsWithin_Iio := tendsto_neg_nhdsLT
+@[to_additive existing, deprecated (since := "2024-12-22")]
+alias tendsto_inv_nhdsWithin_Iio := tendsto_inv_nhdsLT
 
 @[to_additive]
-theorem tendsto_inv_nhdsWithin_Iio_inv {a : H} : Tendsto Inv.inv (𝓝[<] a⁻¹) (𝓝[>] a) := by
-  simpa only [inv_inv] using @tendsto_inv_nhdsWithin_Iio _ _ _ _ a⁻¹
+theorem tendsto_inv_nhdsGT_inv {a : H} : Tendsto Inv.inv (𝓝[>] a⁻¹) (𝓝[<] a) := by
+  simpa only [inv_inv] using @tendsto_inv_nhdsGT _ _ _ _ a⁻¹
+
+@[deprecated (since := "2024-12-22")]
+alias tendsto_neg_nhdsWithin_Ioi_neg := tendsto_neg_nhdsGT_neg
+@[to_additive existing, deprecated (since := "2024-12-22")]
+alias tendsto_inv_nhdsWithin_Ioi_inv := tendsto_inv_nhdsGT_inv
 
 @[to_additive]
-theorem tendsto_inv_nhdsWithin_Ici {a : H} : Tendsto Inv.inv (𝓝[≥] a) (𝓝[≤] a⁻¹) :=
+theorem tendsto_inv_nhdsLT_inv {a : H} : Tendsto Inv.inv (𝓝[<] a⁻¹) (𝓝[>] a) := by
+  simpa only [inv_inv] using @tendsto_inv_nhdsLT _ _ _ _ a⁻¹
+
+@[deprecated (since := "2024-12-22")]
+alias tendsto_neg_nhdsWithin_Iio_neg := tendsto_neg_nhdsLT_neg
+@[to_additive existing, deprecated (since := "2024-12-22")]
+alias tendsto_inv_nhdsWithin_Iio_inv := tendsto_inv_nhdsLT_inv
+
+@[to_additive]
+theorem tendsto_inv_nhdsGE {a : H} : Tendsto Inv.inv (𝓝[≥] a) (𝓝[≤] a⁻¹) :=
   (continuous_inv.tendsto a).inf <| by simp [tendsto_principal_principal]
 
+@[deprecated (since := "2024-12-22")]
+alias tendsto_neg_nhdsWithin_Ici := tendsto_neg_nhdsGE
+@[to_additive existing, deprecated (since := "2024-12-22")]
+alias tendsto_inv_nhdsWithin_Ici := tendsto_inv_nhdsGE
+
 @[to_additive]
-theorem tendsto_inv_nhdsWithin_Iic {a : H} : Tendsto Inv.inv (𝓝[≤] a) (𝓝[≥] a⁻¹) :=
+theorem tendsto_inv_nhdsLE {a : H} : Tendsto Inv.inv (𝓝[≤] a) (𝓝[≥] a⁻¹) :=
   (continuous_inv.tendsto a).inf <| by simp [tendsto_principal_principal]
 
-@[to_additive]
-theorem tendsto_inv_nhdsWithin_Ici_inv {a : H} : Tendsto Inv.inv (𝓝[≥] a⁻¹) (𝓝[≤] a) := by
-  simpa only [inv_inv] using @tendsto_inv_nhdsWithin_Ici _ _ _ _ a⁻¹
+@[deprecated (since := "2024-12-22")]
+alias tendsto_neg_nhdsWithin_Iic := tendsto_neg_nhdsLE
+@[to_additive existing, deprecated (since := "2024-12-22")]
+alias tendsto_inv_nhdsWithin_Iic := tendsto_inv_nhdsLE
 
 @[to_additive]
-theorem tendsto_inv_nhdsWithin_Iic_inv {a : H} : Tendsto Inv.inv (𝓝[≤] a⁻¹) (𝓝[≥] a) := by
-  simpa only [inv_inv] using @tendsto_inv_nhdsWithin_Iic _ _ _ _ a⁻¹
+theorem tendsto_inv_nhdsGE_inv {a : H} : Tendsto Inv.inv (𝓝[≥] a⁻¹) (𝓝[≤] a) := by
+  simpa only [inv_inv] using @tendsto_inv_nhdsGE _ _ _ _ a⁻¹
+
+@[deprecated (since := "2024-12-22")]
+alias tendsto_neg_nhdsWithin_Ici_neg := tendsto_neg_nhdsGE_neg
+@[to_additive existing, deprecated (since := "2024-12-22")]
+alias tendsto_inv_nhdsWithin_Ici_inv := tendsto_inv_nhdsGE_inv
+
+@[to_additive]
+theorem tendsto_inv_nhdsLE_inv {a : H} : Tendsto Inv.inv (𝓝[≤] a⁻¹) (𝓝[≥] a) := by
+  simpa only [inv_inv] using @tendsto_inv_nhdsLE _ _ _ _ a⁻¹
+
+@[deprecated (since := "2024-12-22")]
+alias tendsto_neg_nhdsWithin_Iic_neg := tendsto_neg_nhdsLE_neg
+@[to_additive existing, deprecated (since := "2024-12-22")]
+alias tendsto_inv_nhdsWithin_Iic_inv := tendsto_inv_nhdsLE_inv
 
 end OrderedCommGroup
 
 @[to_additive]
 instance [TopologicalSpace H] [Group H] [TopologicalGroup H] : TopologicalGroup (G × H) where
   continuous_inv := continuous_inv.prodMap continuous_inv
+
+@[to_additive]
+instance OrderDual.instTopologicalGroup : TopologicalGroup Gᵒᵈ where
 
 @[to_additive]
 instance Pi.topologicalGroup {C : β → Type*} [∀ b, TopologicalSpace (C b)] [∀ b, Group (C b)]
@@ -766,6 +812,64 @@ theorem continuous_of_continuousAt_one₂ {H M : Type*} [CommMonoid M] [Topologi
   simp only [map_one, mul_one, MonoidHom.one_apply]
 
 @[to_additive]
+lemma TopologicalGroup.isInducing_iff_nhds_one
+    {H : Type*} [Group H] [TopologicalSpace H] [TopologicalGroup H] {F : Type*}
+    [FunLike F G H] [MonoidHomClass F G H] {f : F} :
+    Topology.IsInducing f ↔ 𝓝 (1 : G) = (𝓝 (1 : H)).comap f := by
+  rw [Topology.isInducing_iff_nhds]
+  refine ⟨(map_one f ▸ · 1), fun hf x ↦ ?_⟩
+  rw [← nhds_translation_mul_inv, ← nhds_translation_mul_inv (f x), Filter.comap_comap, hf,
+    Filter.comap_comap]
+  congr 1
+  ext; simp
+
+@[to_additive]
+lemma TopologicalGroup.isOpenMap_iff_nhds_one
+    {H : Type*} [Monoid H] [TopologicalSpace H] [ContinuousConstSMul H H]
+    {F : Type*} [FunLike F G H] [MonoidHomClass F G H] {f : F} :
+    IsOpenMap f ↔ 𝓝 1 ≤ .map f (𝓝 1) := by
+  refine ⟨fun H ↦ map_one f ▸ H.nhds_le 1, fun h ↦ IsOpenMap.of_nhds_le fun x ↦ ?_⟩
+  have : Filter.map (f x * ·) (𝓝 1) = 𝓝 (f x) := by
+    simpa [-Homeomorph.map_nhds_eq, Units.smul_def] using
+      (Homeomorph.smul ((toUnits x).map (MonoidHomClass.toMonoidHom f))).map_nhds_eq (1 : H)
+  rw [← map_mul_left_nhds_one x, Filter.map_map, Function.comp_def, ← this]
+  refine (Filter.map_mono h).trans ?_
+  simp [Function.comp_def]
+
+-- TODO: unify with `QuotientGroup.isOpenQuotientMap_mk`
+/-- Let `A` and `B` be topological groups, and let `φ : A → B` be a continuous surjective group
+homomorphism. Assume furthermore that `φ` is a quotient map (i.e., `V ⊆ B`
+is open iff `φ⁻¹ V` is open). Then `φ` is an open quotient map, and in particular an open map. -/
+@[to_additive "Let `A` and `B` be topological additive groups, and let `φ : A → B` be a continuous
+surjective additive group homomorphism. Assume furthermore that `φ` is a quotient map (i.e., `V ⊆ B`
+is open iff `φ⁻¹ V` is open). Then `φ` is an open quotient map, and in particular an open map."]
+lemma MonoidHom.isOpenQuotientMap_of_isQuotientMap {A : Type*} [Group A]
+    [TopologicalSpace A] [TopologicalGroup A] {B : Type*} [Group B] [TopologicalSpace B]
+    {F : Type*} [FunLike F A B] [MonoidHomClass F A B] {φ : F}
+    (hφ : IsQuotientMap φ) : IsOpenQuotientMap φ where
+    surjective := hφ.surjective
+    continuous := hφ.continuous
+    isOpenMap := by
+      -- We need to check that if `U ⊆ A` is open then `φ⁻¹ (φ U)` is open.
+      intro U hU
+      rw [← hφ.isOpen_preimage]
+      -- It suffices to show that `φ⁻¹ (φ U) = ⋃ (U * k⁻¹)` as `k` runs through the kernel of `φ`,
+      -- as `U * k⁻¹` is open because `x ↦ x * k` is continuous.
+      -- Remark: here is where we use that we have groups not monoids (you cannot avoid
+      -- using both `k` and `k⁻¹` at this point).
+      suffices ⇑φ ⁻¹' (⇑φ '' U) = ⋃ k ∈ ker (φ : A →* B), (fun x ↦ x * k) ⁻¹' U by
+        exact this ▸ isOpen_biUnion (fun k _ ↦ Continuous.isOpen_preimage (by fun_prop) _ hU)
+      ext x
+      -- But this is an elementary calculation.
+      constructor
+      · rintro ⟨y, hyU, hyx⟩
+        apply Set.mem_iUnion_of_mem (x⁻¹ * y)
+        simp_all
+      · rintro ⟨_, ⟨k, rfl⟩, _, ⟨(hk : φ k = 1), rfl⟩, hx⟩
+        use x * k, hx
+        rw [map_mul, hk, mul_one]
+
+@[to_additive]
 theorem TopologicalGroup.ext {G : Type*} [Group G] {t t' : TopologicalSpace G}
     (tg : @TopologicalGroup G t _) (tg' : @TopologicalGroup G t' _)
     (h : @nhds G t 1 = @nhds G t' 1) : t = t' :=
@@ -918,7 +1022,7 @@ variable [TopologicalSpace α] {f g : α → G} {s : Set α} {x : α}
 
 @[to_additive (attr := continuity, fun_prop) sub]
 theorem Continuous.div' (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f x / g x :=
-  continuous_div'.comp (hf.prod_mk hg : _)
+  continuous_div'.comp (hf.prod_mk hg :)
 
 @[to_additive (attr := continuity) continuous_sub_left]
 lemma continuous_div_left' (a : G) : Continuous (a / ·) := continuous_const.div' continuous_id
@@ -1410,7 +1514,7 @@ theorem compact_covered_by_mul_left_translates {K V : Set G} (hK : IsCompact K)
   obtain ⟨t, ht⟩ : ∃ t : Finset G, K ⊆ ⋃ x ∈ t, interior ((x * ·) ⁻¹' V) := by
     refine
       hK.elim_finite_subcover (fun x => interior <| (x * ·) ⁻¹' V) (fun x => isOpen_interior) ?_
-    cases' hV with g₀ hg₀
+    obtain ⟨g₀, hg₀⟩ := hV
     refine fun g _ => mem_iUnion.2 ⟨g₀ * g⁻¹, ?_⟩
     refine preimage_interior_subset_interior_preimage (continuous_const.mul continuous_id) ?_
     rwa [mem_preimage, Function.id_def, inv_mul_cancel_right]

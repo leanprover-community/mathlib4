@@ -25,7 +25,7 @@ variable {α : Type u} {f g : Filter α} {s t : Set α}
 @[simp]
 theorem biInter_mem {β : Type v} {s : β → Set α} {is : Set β} (hf : is.Finite) :
     (⋂ i ∈ is, s i) ∈ f ↔ ∀ i ∈ is, s i ∈ f :=
-  Finite.induction_on hf (by simp) fun _ _ hs => by simp [hs]
+  Finite.induction_on _ hf (by simp) fun _ _ hs => by simp [hs]
 
 @[simp]
 theorem biInter_finset_mem {β : Type v} {s : β → Set α} (is : Finset β) :
@@ -262,23 +262,6 @@ alias _root_.Set.Finite.eventually_all := eventually_all_finite
 alias _root_.Finset.eventually_all := eventually_all_finset
 
 -- attribute [protected] Finset.eventually_all
-
-theorem eventually_imp_distrib_left {f : Filter α} {p : Prop} {q : α → Prop} :
-    (∀ᶠ x in f, p → q x) ↔ p → ∀ᶠ x in f, q x :=
-  eventually_all
-
-
-/-! ### Frequently -/
-
-@[simp]
-theorem frequently_and_distrib_left {f : Filter α} {p : Prop} {q : α → Prop} :
-    (∃ᶠ x in f, p ∧ q x) ↔ p ∧ ∃ᶠ x in f, q x := by
-  simp only [Filter.Frequently, not_and, eventually_imp_distrib_left, Classical.not_imp]
-
-@[simp]
-theorem frequently_and_distrib_right {f : Filter α} {p : α → Prop} {q : Prop} :
-    (∃ᶠ x in f, p x ∧ q) ↔ (∃ᶠ x in f, p x) ∧ q := by
-  simp only [@and_comm _ q, frequently_and_distrib_left]
 
 /-!
 ### Relation “eventually equal”

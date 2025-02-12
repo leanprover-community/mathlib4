@@ -134,7 +134,7 @@ lemma IsIntegralCurveAt.continuousAt (hγ : IsIntegralCurveAt γ v t₀) :
 lemma IsIntegralCurve.continuous (hγ : IsIntegralCurve γ v) : Continuous γ :=
   continuous_iff_continuousAt.mpr fun _ ↦ (hγ.isIntegralCurveOn univ).continuousAt (mem_univ _)
 
-variable [SmoothManifoldWithCorners I M]
+variable [IsManifold I 1 M]
 
 /-- If `γ` is an integral curve of a vector field `v`, then `γ t` is tangent to `v (γ t)` when
   expressed in the local chart around the initial point `γ t₀`. -/

@@ -37,11 +37,11 @@ instance : TopologicalSpace Ordinal.{u} := Preorder.topology Ordinal.{u}
 instance : OrderTopology Ordinal.{u} := ⟨rfl⟩
 
 theorem isOpen_singleton_iff : IsOpen ({a} : Set Ordinal) ↔ ¬IsLimit a := by
-  refine ⟨fun h ⟨h₀, hsucc⟩ => ?_, fun ha => ?_⟩
+  refine ⟨fun h ha => ?_, fun ha => ?_⟩
   · obtain ⟨b, c, hbc, hbc'⟩ :=
-      (mem_nhds_iff_exists_Ioo_subset' ⟨0, Ordinal.pos_iff_ne_zero.2 h₀⟩ ⟨_, lt_succ a⟩).1
+      (mem_nhds_iff_exists_Ioo_subset' ⟨0, ha.pos⟩ ⟨_, lt_succ a⟩).1
         (h.mem_nhds rfl)
-    have hba := hsucc b hbc.1
+    have hba := ha.succ_lt hbc.1
     exact hba.ne (hbc' ⟨lt_succ b, hba.trans hbc.2⟩)
   · rcases zero_or_succ_or_limit a with (rfl | ⟨b, rfl⟩ | ha')
     · rw [← bot_eq_zero, ← Set.Iic_bot, ← Iio_succ]
@@ -50,20 +50,27 @@ theorem isOpen_singleton_iff : IsOpen ({a} : Set Ordinal) ↔ ¬IsLimit a := by
       exact isOpen_Ioo
     · exact (ha ha').elim
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to a `SuccOrder`
-theorem nhds_right' (a : Ordinal) : 𝓝[>] a = ⊥ := (covBy_succ a).nhdsWithin_Ioi
+protected theorem nhdsGT (a : Ordinal) : 𝓝[>] a = ⊥ := SuccOrder.nhdsGT
+
+@[deprecated (since := "2024-12-22")] alias nhds_right' := Ordinal.nhdsGT
 
 -- todo: generalize to a `SuccOrder`
-theorem nhds_left'_eq_nhds_ne (a : Ordinal) : 𝓝[<] a = 𝓝[≠] a := by
-  rw [← nhds_left'_sup_nhds_right', nhds_right', sup_bot_eq]
+theorem nhdsLT_eq_nhdsNE (a : Ordinal) : 𝓝[<] a = 𝓝[≠] a := by
+  rw [← nhdsLT_sup_nhdsGT, Ordinal.nhdsGT, sup_bot_eq]
+
+@[deprecated (since := "2024-12-22")] alias nhds_left'_eq_nhds_ne := nhdsLT_eq_nhdsNE
 
 -- todo: generalize to a `SuccOrder`
-theorem nhds_left_eq_nhds (a : Ordinal) : 𝓝[≤] a = 𝓝 a := by
-  rw [← nhds_left_sup_nhds_right', nhds_right', sup_bot_eq]
+theorem nhdsLE_eq_nhds (a : Ordinal) : 𝓝[≤] a = 𝓝 a := by
+  rw [← nhdsLE_sup_nhdsGT, SuccOrder.nhdsGT, sup_bot_eq]
+
+@[deprecated (since := "2024-12-22")] alias nhds_left_eq_nhds := nhdsLE_eq_nhds
 
 -- todo: generalize to a `SuccOrder`
-theorem nhdsBasis_Ioc (h : a ≠ 0) : (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
-  nhds_left_eq_nhds a ▸ nhdsWithin_Iic_basis' ⟨0, h.bot_lt⟩
+theorem hasBasis_nhds_Ioc (h : a ≠ 0) : (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
+  nhdsLE_eq_nhds a ▸ nhdsLE_basis_of_exists_lt ⟨0, h.bot_lt⟩
+
+@[deprecated (since := "2024-12-22")] alias nhdsBasis_Ioc := hasBasis_nhds_Ioc
 
 -- todo: generalize to a `SuccOrder`
 theorem nhds_eq_pure : 𝓝 a = pure a ↔ ¬IsLimit a :=
@@ -73,7 +80,7 @@ theorem nhds_eq_pure : 𝓝 a = pure a ↔ ¬IsLimit a :=
 theorem isOpen_iff : IsOpen s ↔ ∀ o ∈ s, IsLimit o → ∃ a < o, Set.Ioo a o ⊆ s := by
   refine isOpen_iff_mem_nhds.trans <| forall₂_congr fun o ho => ?_
   by_cases ho' : IsLimit o
-  · simp only [(nhdsBasis_Ioc ho'.1).mem_iff, ho', true_implies]
+  · simp only [(hasBasis_nhds_Ioc ho'.ne_zero).mem_iff, ho', true_implies]
     refine exists_congr fun a => and_congr_right fun ha => ?_
     simp only [← Set.Ioo_insert_right ha, Set.insert_subset_iff, ho, true_and]
   · simp [nhds_eq_pure.2 ho', ho, ho']
@@ -88,7 +95,7 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
         (∀ x hx, f x hx ∈ s) ∧ bsup.{u, u} o f = a,
       ∃ (ι : Type u), Nonempty ι ∧ ∃ f : ι → Ordinal, (∀ i, f i ∈ s) ∧ ⨆ i, f i = a] := by
   tfae_have 1 → 2 := by
-    simp only [mem_closure_iff_nhdsWithin_neBot, inter_comm s, nhdsWithin_inter', nhds_left_eq_nhds]
+    simp only [mem_closure_iff_nhdsWithin_neBot, inter_comm s, nhdsWithin_inter', nhdsLE_eq_nhds]
     exact id
   tfae_have 2 → 3
   | h => by
@@ -216,8 +223,8 @@ theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u})
     suffices o ∈ f ⁻¹' Set.Iic a from Set.mem_preimage.1 this
     rw [mem_iff_iSup_of_isClosed (IsClosed.preimage h' (@isClosed_Iic _ _ _ _ a))]
     exact
-      ⟨_, toType_nonempty_iff_ne_zero.2 ho.1, typein (· < ·), fun i => h _ (typein_lt_self i),
-        sup_typein_limit ho.2⟩
+      ⟨_, toType_nonempty_iff_ne_zero.2 ho.ne_zero, typein (· < ·), fun i => h _ (typein_lt_self i),
+        sup_typein_limit fun _ ↦ ho.succ_lt⟩
 
 theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
     IsNormal (enumOrd s) ↔ IsClosed s := by
@@ -237,14 +244,14 @@ theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
   · rw [isClosed_iff_bsup] at h
     suffices enumOrd s a ≤ bsup.{u, u} a fun b (_ : b < a) => enumOrd s b from
       this.trans (bsup_le H)
-    obtain ⟨b, hb⟩ := enumOrd_surjective hs (h ha.1 (fun b _ => enumOrd s b)
+    obtain ⟨b, hb⟩ := enumOrd_surjective hs (h ha.ne_zero (fun b _ => enumOrd s b)
       fun b _ => enumOrd_mem hs b)
     rw [← hb]
     apply Hs.monotone
     by_contra! hba
     apply (Hs (lt_succ b)).not_le
     rw [hb]
-    exact le_bsup.{u, u} _ _ (ha.2 _ hba)
+    exact le_bsup.{u, u} _ _ (ha.succ_lt hba)
 
 open Set Filter Set.Notation
 

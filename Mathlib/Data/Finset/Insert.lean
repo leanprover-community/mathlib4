@@ -32,12 +32,7 @@ finite sets, finset
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
-assert_not_exists List.sublistsLen
-assert_not_exists Multiset.powerset
-
-assert_not_exists CompleteLattice
-
-assert_not_exists OrderedCommMonoid
+assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice OrderedCommMonoid
 
 open Multiset Subtype Function
 
@@ -202,6 +197,13 @@ theorem nontrivial_iff_ne_singleton (ha : a ∈ s) : s.Nontrivial ↔ s ≠ {a} 
 theorem Nonempty.exists_eq_singleton_or_nontrivial : s.Nonempty → (∃ a, s = {a}) ∨ s.Nontrivial :=
   fun ⟨a, ha⟩ => (eq_singleton_or_nontrivial ha).imp_left <| Exists.intro a
 
+@[simp, norm_cast] lemma nontrivial_coe : (s : Set α).Nontrivial ↔ s.Nontrivial := .rfl
+
+alias ⟨Nontrivial.of_coe, Nontrivial.coe⟩ := nontrivial_coe
+
+lemma Nontrivial.not_subset_singleton (hs : s.Nontrivial) : ¬s ⊆ {a} :=
+  mod_cast hs.coe.not_subset_singleton
+
 instance instNontrivial [Nonempty α] : Nontrivial (Finset α) :=
   ‹Nonempty α›.elim fun a => ⟨⟨{a}, ∅, singleton_ne_empty _⟩⟩
 
@@ -215,6 +217,10 @@ instance (i : α) : Unique ({i} : Finset α) where
 
 @[simp]
 lemma default_singleton (i : α) : ((default : ({i} : Finset α)) : α) = i := rfl
+
+instance Nontrivial.instDecidablePred [DecidableEq α] :
+    DecidablePred (Finset.Nontrivial (α := α)) :=
+  inferInstanceAs (DecidablePred fun s ↦ ∃ a ∈ s, ∃ b ∈ s, a ≠ b)
 
 end Singleton
 
@@ -411,8 +417,10 @@ theorem insert_ne_self : insert a s ≠ s ↔ a ∉ s :=
 theorem pair_eq_singleton (a : α) : ({a, a} : Finset α) = {a} :=
   insert_eq_of_mem <| mem_singleton_self _
 
-theorem Insert.comm (a b : α) (s : Finset α) : insert a (insert b s) = insert b (insert a s) :=
+theorem insert_comm (a b : α) (s : Finset α) : insert a (insert b s) = insert b (insert a s) :=
   ext fun x => by simp only [mem_insert, or_left_comm]
+
+@[deprecated (since := "2024-11-29")] alias Insert.comm := insert_comm
 
 @[norm_cast]
 theorem coe_pair {a b : α} : (({a, b} : Finset α) : Set α) = {a, b} := by
@@ -424,7 +432,7 @@ theorem coe_eq_pair {s : Finset α} {a b : α} : (s : Set α) = {a, b} ↔ s = {
   rw [← coe_pair, coe_inj]
 
 theorem pair_comm (a b : α) : ({a, b} : Finset α) = {b, a} :=
-  Insert.comm a b ∅
+  insert_comm a b ∅
 
 theorem insert_idem (a : α) (s : Finset α) : insert a (insert a s) = insert a s :=
   ext fun x => by simp only [mem_insert, ← or_assoc, or_self_iff]

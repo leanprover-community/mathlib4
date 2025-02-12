@@ -337,20 +337,6 @@ namespace IsPoly₂
 instance [Fact p.Prime] : Inhabited (IsPoly₂ p (fun _ _ => (· + ·))) :=
   ⟨addIsPoly₂⟩
 
--- Porting note: maybe just drop this now that it works by `inferInstance`
-/-- The composition of a binary polynomial function
- with a unary polynomial function in the first argument is polynomial. -/
-theorem compLeft {g f} [IsPoly₂ p g] [IsPoly p f] :
-    IsPoly₂ p fun _R _Rcr x y => g (f x) y :=
-  inferInstance
-
--- Porting note: maybe just drop this now that it works by `inferInstance`
-/-- The composition of a binary polynomial function
- with a unary polynomial function in the second argument is polynomial. -/
-theorem compRight {g f} [IsPoly₂ p g] [IsPoly p f] :
-    IsPoly₂ p fun _R _Rcr x y => g x (f y) :=
-  inferInstance
-
 theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
     (h : ∀ (R : Type u) [_Rcr : CommRing R] (x y : 𝕎 R) (n : ℕ),
         ghostComponent n (f x y) = ghostComponent n (g x y)) :
@@ -360,7 +346,6 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
   intros
   ext n
   rw [hf, hg, poly_eq_of_wittPolynomial_bind_eq' p φ ψ]
-  -- porting note: `clear x y` does not work, since `x, y` are now hygienic
   intro k
   apply MvPolynomial.funext
   intro x
@@ -392,8 +377,7 @@ theorem map [Fact p.Prime] {f} (hf : IsPoly₂ p f) (g : R →+* S) (x y : 𝕎 
 
 end IsPoly₂
 
-attribute [ghost_simps] AlgHom.map_zero AlgHom.map_one AlgHom.map_add AlgHom.map_mul AlgHom.map_sub
-  AlgHom.map_neg AlgHom.id_apply map_natCast RingHom.map_zero RingHom.map_one RingHom.map_mul
+attribute [ghost_simps] AlgHom.id_apply map_natCast RingHom.map_zero RingHom.map_one RingHom.map_mul
   RingHom.map_add RingHom.map_sub RingHom.map_neg RingHom.id_apply mul_add add_mul add_zero zero_add
   mul_one one_mul mul_zero zero_mul Nat.succ_ne_zero add_tsub_cancel_right
   Nat.succ_eq_add_one if_true eq_self_iff_true if_false forall_true_iff forall₂_true_iff

@@ -76,12 +76,12 @@ theorem toMatrix_self [DecidableEq ι] : e.toMatrix e = 1 := by
   simp [Basis.equivFun, Matrix.one_apply, Finsupp.single_apply, eq_comm]
 
 theorem toMatrix_update [DecidableEq ι'] (x : M) :
-    e.toMatrix (Function.update v j x) = Matrix.updateColumn (e.toMatrix v) j (e.repr x) := by
+    e.toMatrix (Function.update v j x) = Matrix.updateCol (e.toMatrix v) j (e.repr x) := by
   ext i' k
-  rw [Basis.toMatrix, Matrix.updateColumn_apply, e.toMatrix_apply]
+  rw [Basis.toMatrix, Matrix.updateCol_apply, e.toMatrix_apply]
   split_ifs with h
-  · rw [h, update_same j x v]
-  · rw [update_noteq h]
+  · rw [h, update_self j x v]
+  · rw [update_of_ne h]
 
 /-- The basis constructed by `unitsSMul` has vectors given by a diagonal matrix. -/
 @[simp]

@@ -43,7 +43,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
 variable {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℂ E H} [I.Boundaryless]
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  [SmoothManifoldWithCorners I M]
+  [IsManifold I 1 M]
 
 /-- **Maximum modulus principle**: if `f : M → F` is complex differentiable in a neighborhood of `c`
 and the norm `‖f z‖` has a local maximum at `c`, then `‖f z‖` is locally constant in a neighborhood

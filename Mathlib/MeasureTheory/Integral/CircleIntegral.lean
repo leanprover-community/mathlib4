@@ -110,7 +110,7 @@ theorem circleMap_mem_sphere' (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ 
 
 theorem circleMap_mem_sphere (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
     circleMap c R θ ∈ sphere c R := by
-  simpa only [_root_.abs_of_nonneg hR] using circleMap_mem_sphere' c R θ
+  simpa only [abs_of_nonneg hR] using circleMap_mem_sphere' c R θ
 
 theorem circleMap_mem_closedBall (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
     circleMap c R θ ∈ closedBall c R :=
@@ -256,7 +256,7 @@ theorem ContinuousOn.circleIntegrable' {f : ℂ → E} {c : ℂ} {R : ℝ}
 
 theorem ContinuousOn.circleIntegrable {f : ℂ → E} {c : ℂ} {R : ℝ} (hR : 0 ≤ R)
     (hf : ContinuousOn f (sphere c R)) : CircleIntegrable f c R :=
-  ContinuousOn.circleIntegrable' <| (_root_.abs_of_nonneg hR).symm ▸ hf
+  ContinuousOn.circleIntegrable' <| (abs_of_nonneg hR).symm ▸ hf
 
 /-- The function `fun z ↦ (z - w) ^ n`, `n : ℤ`, is circle integrable on the circle with center `c`
 and radius `|R|` if and only if `R = 0` or `0 ≤ n`, or `w` does not belong to this circle. -/
@@ -300,10 +300,11 @@ theorem circleIntegrable_sub_inv_iff {c w : ℂ} {R : ℝ} :
 
 variable [NormedSpace ℂ E]
 
-/-- Definition for $\oint_{|z-c|=R} f(z)\,dz$. -/
+/-- Definition for $\oint_{|z-c|=R} f(z)\,dz$ -/
 def circleIntegral (f : ℂ → E) (c : ℂ) (R : ℝ) : E :=
   ∫ θ : ℝ in (0)..2 * π, deriv (circleMap c R) θ • f (circleMap c R θ)
 
+/-- `∮ z in C(c, R), f z` is the circle integral $\oint_{|z-c|=R} f(z)\,dz$. -/
 notation3 "∮ "(...)" in ""C("c", "R")"", "r:(scoped f => circleIntegral f c R) => r
 
 theorem circleIntegral_def_Icc (f : ℂ → E) (c : ℂ) (R : ℝ) :
@@ -426,7 +427,7 @@ theorem integral_eq_zero_of_hasDerivWithinAt' [CompleteSpace E] {f f' : ℂ → 
 theorem integral_eq_zero_of_hasDerivWithinAt [CompleteSpace E]
     {f f' : ℂ → E} {c : ℂ} {R : ℝ} (hR : 0 ≤ R)
     (h : ∀ z ∈ sphere c R, HasDerivWithinAt f (f' z) (sphere c R) z) : (∮ z in C(c, R), f' z) = 0 :=
-  integral_eq_zero_of_hasDerivWithinAt' <| (_root_.abs_of_nonneg hR).symm ▸ h
+  integral_eq_zero_of_hasDerivWithinAt' <| (abs_of_nonneg hR).symm ▸ h
 
 /-- If `n < 0` and `|w - c| = |R|`, then `(z - w) ^ n` is not circle integrable on the circle with
 center `c` and radius `|R|`, so the integral `∮ z in C(c, R), (z - w) ^ n` is equal to zero. -/
@@ -505,7 +506,7 @@ theorem le_radius_cauchyPowerSeries (f : ℂ → E) (c : ℂ) (R : ℝ≥0) :
       ((2 * π)⁻¹ * ∫ θ : ℝ in (0)..2 * π, ‖f (circleMap c R θ)‖) fun n => ?_
   refine (mul_le_mul_of_nonneg_right (norm_cauchyPowerSeries_le _ _ _ _)
     (pow_nonneg R.coe_nonneg _)).trans ?_
-  rw [_root_.abs_of_nonneg R.coe_nonneg]
+  rw [abs_of_nonneg R.coe_nonneg]
   rcases eq_or_ne (R ^ n : ℝ) 0 with hR | hR
   · rw_mod_cast [hR, mul_zero]
     exact mul_nonneg (inv_nonneg.2 Real.two_pi_pos.le)

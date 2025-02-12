@@ -347,8 +347,7 @@ theorem interior_subset_gauge_lt_one (s : Set E) : interior s ⊆ { x | gauge s 
     ((tendsto_id.inv₀ one_ne_zero).smul tendsto_const_nhds).mono_left inf_le_left
   rw [inv_one, one_smul] at H₁
   have H₂ : ∀ᶠ r in 𝓝[<] (1 : ℝ), x ∈ r • s ∧ 0 < r ∧ r < 1 := by
-    filter_upwards [H₁ (mem_interior_iff_mem_nhds.1 hx), Ioo_mem_nhdsWithin_Iio' one_pos]
-    intro r h₁ h₂
+    filter_upwards [H₁ (mem_interior_iff_mem_nhds.1 hx), Ioo_mem_nhdsLT one_pos] with r h₁ h₂
     exact ⟨(mem_smul_set_iff_inv_smul_mem₀ h₂.1.ne' _ _).2 h₁, h₂⟩
   rcases H₂.exists with ⟨r, hxr, hr₀, hr₁⟩
   exact (gauge_le_of_mem hr₀.le hxr).trans_lt hr₁
@@ -359,12 +358,10 @@ theorem gauge_lt_one_eq_self_of_isOpen (hs₁ : Convex ℝ s) (hs₀ : (0 : E) �
   convert interior_subset_gauge_lt_one s
   exact hs₂.interior_eq.symm
 
--- Porting note: dropped unneeded assumptions
 theorem gauge_lt_one_of_mem_of_isOpen (hs₂ : IsOpen s) {x : E} (hx : x ∈ s) :
     gauge s x < 1 :=
   interior_subset_gauge_lt_one s <| by rwa [hs₂.interior_eq]
 
--- Porting note: dropped unneeded assumptions
 theorem gauge_lt_of_mem_smul (x : E) (ε : ℝ) (hε : 0 < ε) (hs₂ : IsOpen s) (hx : x ∈ ε • s) :
     gauge s x < ε := by
   have : ε⁻¹ • x ∈ s := by rwa [← mem_smul_set_iff_inv_smul_mem₀ hε.ne']
@@ -375,7 +372,7 @@ theorem gauge_lt_of_mem_smul (x : E) (ε : ℝ) (hε : 0 < ε) (hs₂ : IsOpen s
 theorem mem_closure_of_gauge_le_one (hc : Convex ℝ s) (hs₀ : 0 ∈ s) (ha : Absorbent ℝ s)
     (h : gauge s x ≤ 1) : x ∈ closure s := by
   have : ∀ᶠ r : ℝ in 𝓝[<] 1, r • x ∈ s := by
-    filter_upwards [Ico_mem_nhdsWithin_Iio' one_pos] with r ⟨hr₀, hr₁⟩
+    filter_upwards [Ico_mem_nhdsLT one_pos] with r ⟨hr₀, hr₁⟩
     apply gauge_lt_one_subset_self hc hs₀ ha
     rw [mem_setOf_eq, gauge_smul_of_nonneg hr₀]
     exact mul_lt_one_of_nonneg_of_lt_one_left hr₀ hr₁ h
@@ -389,7 +386,7 @@ theorem mem_frontier_of_gauge_eq_one (hc : Convex ℝ s) (hs₀ : 0 ∈ s) (ha :
     (interior_subset_gauge_lt_one s h').out.ne h⟩
 
 theorem tendsto_gauge_nhds_zero' (hs : s ∈ 𝓝 0) : Tendsto (gauge s) (𝓝 0) (𝓝[≥] 0) := by
-  refine nhdsWithin_Ici_basis_Icc.tendsto_right_iff.2 fun ε hε ↦ ?_
+  refine nhdsGE_basis_Icc.tendsto_right_iff.2 fun ε hε ↦ ?_
   rw [← set_smul_mem_nhds_zero_iff hε.ne'] at hs
   filter_upwards [hs] with x hx
   exact ⟨gauge_nonneg _, gauge_le_of_mem hε.le hx⟩

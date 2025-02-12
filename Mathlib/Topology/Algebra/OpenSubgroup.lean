@@ -1,17 +1,16 @@
 /-
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Nailin Guan
+Authors: Johan Commelin, Nailin Guan, Yi Song, Xuchun Li
 -/
 import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.RingTheory.Ideal.Defs
 import Mathlib.Topology.Algebra.Group.Quotient
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Sets.Opens
 
 /-!
-# Open subgroups of a topological groups
+# Open subgroups of a topological group
 
 This files builds the lattice `OpenSubgroup G` of open subgroups in a topological group `G`,
 and its additive version `OpenAddSubgroup`.  This lattice has a top element, the subgroup of all
@@ -285,7 +284,7 @@ lemma subgroupOf_isOpen (U K : Subgroup G) (h : IsOpen (K : Set G)) :
 lemma discreteTopology [ContinuousMul G] (U : Subgroup G) (h : IsOpen (U : Set G)) :
     DiscreteTopology (G ⧸ U) := by
   refine singletons_open_iff_discrete.mp (fun g ↦ ?_)
-  induction' g using Quotient.inductionOn with g
+  induction g using Quotient.inductionOn with | h g =>
   show IsOpen (QuotientGroup.mk ⁻¹' {QuotientGroup.mk g})
   convert_to IsOpen ((g * ·) '' U)
   · ext g'
@@ -549,9 +548,10 @@ theorem exist_openSubgroup_sub_clopen_nhd_of_one {G : Type*} [Group G] [Topologi
     exact hV.isOpen.mul_left
   use ⟨S, this⟩
   have mulVpow (n : ℕ) : W * V ^ (n + 1) ⊆ W := by
-    induction' n with n ih
-    · simp [hV.mul]
-    · rw [pow_succ, ← mul_assoc]
+    induction n with
+    | zero => simp [hV.mul]
+    | succ n ih =>
+      rw [pow_succ, ← mul_assoc]
       exact (Set.mul_subset_mul_right ih).trans hV.mul
   have (n : ℕ) : V ^ (n + 1) ⊆ W * V ^ (n + 1) := by
     intro x xin

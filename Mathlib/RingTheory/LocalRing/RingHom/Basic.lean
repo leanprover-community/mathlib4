@@ -6,7 +6,7 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.Algebra.Equiv.TransferInstance
 
 /-!
 
@@ -55,7 +55,7 @@ alias isLocalRingHom_of_comp := isLocalHom_of_comp
 /-- If `f : R →+* S` is a local ring hom, then `R` is a local ring if `S` is. -/
 theorem RingHom.domain_isLocalRing {R S : Type*} [CommSemiring R] [CommSemiring S] [IsLocalRing S]
     (f : R →+* S) [IsLocalHom f] : IsLocalRing R := by
-  haveI : Nontrivial R := pullback_nonzero f f.map_zero f.map_one
+  haveI : Nontrivial R := f.domain_nontrivial
   apply IsLocalRing.of_nonunits_add
   intro a b
   simp_rw [← map_mem_nonunits_iff f, f.map_add]
@@ -86,8 +86,8 @@ section
 variable [CommSemiring R] [IsLocalRing R] [CommSemiring S] [IsLocalRing S]
 
 /-- A ring homomorphism between local rings is a local ring hom iff it reflects units,
-i.e. any preimage of a unit is still a unit. https://stacks.math.columbia.edu/tag/07BJ
--/
+i.e. any preimage of a unit is still a unit. -/
+@[stacks 07BJ]
 theorem local_hom_TFAE (f : R →+* S) :
     List.TFAE
       [IsLocalHom f, f '' (maximalIdeal R).1 ⊆ maximalIdeal S,

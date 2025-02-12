@@ -126,7 +126,7 @@ section HelperLemmas
 private theorem a_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 ≤ b) : 2 ≤ (a ^ b - 1) / (a - 1) := by
   change 1 < _
   have h₁ : a - 1 ∣ a ^ b - 1 := by simpa only [one_pow] using nat_sub_dvd_pow_sub_pow a 1 b
-  rw [Nat.lt_div_iff_mul_lt h₁, mul_one, tsub_lt_tsub_iff_right (Nat.le_of_succ_le ha)]
+  rw [Nat.lt_div_iff_mul_lt' h₁, mul_one, tsub_lt_tsub_iff_right (Nat.le_of_succ_le ha)]
   exact lt_self_pow₀ (Nat.lt_of_succ_le ha) hb
 
 private theorem b_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 < b) : 2 ≤ (a ^ b + 1) / (a + 1) := by
@@ -306,15 +306,12 @@ private theorem psp_from_prime_gt_p {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_
     · exact tsub_le_tsub_left (one_le_of_lt p_gt_two) ((b ^ 2) ^ (p - 1) * b ^ 2)
     · have : p ≤ p * b ^ 2 := Nat.le_mul_of_pos_right _ (show 0 < b ^ 2 by positivity)
       exact tsub_lt_tsub_right_of_le this h
-  suffices h : p < (b ^ 2) ^ (p - 1) by
-    have : 4 ≤ b ^ 2 := by nlinarith
-    have : 0 < b ^ 2 := by omega
-    exact mul_lt_mul_of_pos_right h this
+  suffices h : p < (b ^ 2) ^ (p - 1) by gcongr
   rw [← pow_mul, Nat.mul_sub_left_distrib, mul_one]
   have : 2 ≤ 2 * p - 2 := le_tsub_of_add_le_left (show 4 ≤ 2 * p by omega)
   have : 2 + p ≤ 2 * p := by omega
   have : p ≤ 2 * p - 2 := le_tsub_of_add_le_left this
-  exact this.trans_lt (lt_pow_self b_ge_two _)
+  exact this.trans_lt (Nat.lt_pow_self b_ge_two)
 
 /-- For all positive bases, there exist infinite **Fermat pseudoprimes** to that base.
 Given in this form: for all numbers `b ≥ 1` and `m`, there exists a pseudoprime `n` to base `b` such

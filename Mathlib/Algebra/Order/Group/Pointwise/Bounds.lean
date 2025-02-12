@@ -26,7 +26,7 @@ variable [Mul M] [Preorder M] [MulLeftMono M]
 
 @[to_additive]
 lemma mul_mem_upperBounds_mul (ha : a ∈ upperBounds s) (hb : b ∈ upperBounds t) :
-    a * b ∈ upperBounds (s * t) := forall_image2_iff.2 fun _ hx _ hy => mul_le_mul' (ha hx) (hb hy)
+    a * b ∈ upperBounds (s * t) := forall_mem_image2.2 fun _ hx _ hy => mul_le_mul' (ha hx) (hb hy)
 
 @[to_additive]
 lemma subset_upperBounds_mul (s t : Set M) : upperBounds s * upperBounds t ⊆ upperBounds (s * t) :=

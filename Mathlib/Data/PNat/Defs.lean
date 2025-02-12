@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Neil Strickland
 -/
 import Mathlib.Data.Nat.Defs
+import Mathlib.Data.PNat.Notation
+import Mathlib.Data.One.Defs
 import Mathlib.Order.Basic
-import Mathlib.Order.TypeTags
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Lift
 import Mathlib.Data.Int.Order.Basic

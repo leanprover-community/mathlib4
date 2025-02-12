@@ -43,8 +43,6 @@ wish to enforce infiniteness. -/
 class Encodable (α : Type*) where
   /-- Encoding from Type α to ℕ -/
   encode : α → ℕ
-  -- Porting note: was `decode [] : ℕ → Option α`. This means that `decode` does not take the type
-  --explicitly in Lean4
   /-- Decoding from ℕ to Option α-/
   decode : ℕ → Option α
   /-- Invariant relationship between encoding and decoding -/
@@ -94,12 +92,10 @@ def ofLeftInverse [Encodable α] (f : β → α) (finv : α → β) (linv : ∀ 
 def ofEquiv (α) [Encodable α] (e : β ≃ α) : Encodable β :=
   ofLeftInverse e e.symm e.left_inv
 
--- Porting note: removing @[simp], too powerful
 theorem encode_ofEquiv {α β} [Encodable α] (e : β ≃ α) (b : β) :
     @encode _ (ofEquiv _ e) b = encode (e b) :=
   rfl
 
--- Porting note: removing @[simp], too powerful
 theorem decode_ofEquiv {α β} [Encodable α] (e : β ≃ α) (n : ℕ) :
     @decode _ (ofEquiv _ e) n = (decode n).map e.symm :=
   show Option.bind _ _ = Option.map _ _
@@ -224,7 +220,6 @@ section Sum
 
 variable [Encodable α] [Encodable β]
 
--- Porting note: removing bit0 and bit1
 /-- Explicit encoding function for the sum of two encodable types. -/
 def encodeSum : α ⊕ β → ℕ
   | Sum.inl a => 2 * encode a
@@ -240,12 +235,10 @@ def decodeSum (n : ℕ) : Option (α ⊕ β) :=
 instance _root_.Sum.encodable : Encodable (α ⊕ β) :=
   ⟨encodeSum, decodeSum, fun s => by cases s <;> simp [encodeSum, div2_val, decodeSum, encodek]⟩
 
--- Porting note: removing bit0 and bit1 from statement
 @[simp]
 theorem encode_inl (a : α) : @encode (α ⊕ β) _ (Sum.inl a) = 2 * (encode a) :=
   rfl
 
--- Porting note: removing bit0 and bit1 from statement
 @[simp]
 theorem encode_inr (b : β) : @encode (α ⊕ β) _ (Sum.inr b) = 2 * (encode b) + 1 :=
   rfl
@@ -592,7 +585,7 @@ section Quotient
 
 open Encodable Quotient
 
-variable {α : Type*} {s : Setoid α} [@DecidableRel α (· ≈ ·)] [Encodable α]
+variable {α : Type*} {s : Setoid α} [DecidableRel (α := α) (· ≈ ·)] [Encodable α]
 
 /-- Representative of an equivalence class. This is a computable version of `Quot.out` for a setoid
 on an encodable type. -/

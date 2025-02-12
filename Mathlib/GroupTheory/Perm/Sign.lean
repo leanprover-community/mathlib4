@@ -5,10 +5,11 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Conj
 import Mathlib.Algebra.Group.Subgroup.Lattice
-import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Finset.Sort
+import Mathlib.Data.Fintype.Perm
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Int.Order.Units
@@ -596,5 +597,30 @@ theorem sign_ofSubtype {p : α → Prop} [DecidablePred p] (f : Equiv.Perm (Subt
 end congr
 
 end SignType.sign
+
+section Finset
+
+variable [Fintype α]
+
+/-- Permutations of a given sign. -/
+def ofSign (s : ℤˣ) : Finset (Perm α) := univ.filter (sign · = s)
+
+@[simp]
+lemma mem_ofSign {s : ℤˣ} {σ : Perm α} : σ ∈ ofSign s ↔ σ.sign = s := by
+  rw [ofSign, mem_filter, and_iff_right (mem_univ σ)]
+
+lemma ofSign_disjoint : _root_.Disjoint (ofSign 1 : Finset (Perm α)) (ofSign (-1)) := by
+  rw [Finset.disjoint_iff_ne]
+  rintro σ hσ τ hτ rfl
+  rw [mem_ofSign] at hσ hτ
+  have := hσ.symm.trans hτ
+  contradiction
+
+lemma ofSign_disjUnion :
+    (ofSign 1).disjUnion (ofSign (-1)) ofSign_disjoint = (univ : Finset (Perm α)) := by
+  ext σ
+  simp_rw [mem_disjUnion, mem_ofSign, Int.units_eq_one_or, mem_univ]
+
+end Finset
 
 end Equiv.Perm
