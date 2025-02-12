@@ -82,7 +82,7 @@ theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι
   simp_rw [linearCombination_apply, map_finsuppSum', map_smul, mul_smul]
   rw [Finsupp.sum_of_support_subset (l * l) (support_mul_self l) (fun i a => a • (⇑Q ∘ g) i)
     (fun _ _=> by simp only [Function.comp_apply, zero_smul])]
-  simp only [Finset.inter_self, mul_apply, Function.comp_apply]
+  simp only [mul_apply, Function.comp_apply]
   simp only [←smul_eq_mul, smul_assoc]
   simp_all only [sub_left_inj]
   rw [Finsupp.sum_of_support_subset (Sym2.mul_finsupp l) (Sym2.mul_finsupp_support l) _
@@ -120,12 +120,10 @@ theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι 
     Q (linearCombination R g l) = linearCombination R (Q ∘ g) (l * l) +
       ∑ p ∈ l.support.sym2 with ¬ p.IsDiag,
         (hMul (Sym2.mul_finsupp l) ((polarSym2 Q) ∘ Sym2.map g)) p := by
-  simp_rw [linearCombination_apply, map_finsuppSum,
-    map_smul, mul_smul]
-  rw [Finsupp.sum_of_support_subset (l * l)
-    (support_mul_self l) (fun i a => a • (⇑Q ∘ g) i)
+  simp_rw [linearCombination_apply, map_finsuppSum, map_smul, mul_smul]
+  rw [Finsupp.sum_of_support_subset (l * l) (support_mul_self l) (fun i a => a • (⇑Q ∘ g) i)
     (fun _ _=> by simp only [Function.comp_apply, zero_smul])]
-  simp only [Finset.inter_self, mul_apply, Function.comp_apply]
+  simp only [mul_apply, Function.comp_apply]
   simp only [←smul_eq_mul, smul_assoc]
   have e1 : (l.sum fun i r ↦ r • r • Q (g i))  = ∑ x ∈ l.support, l x • l x • Q (g x) := rfl
   rw [e1]
