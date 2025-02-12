@@ -55,6 +55,10 @@ section
 
 variable {ι R M} [Semiring R] [AddCommMonoid M] [Module R M]
 
+/--
+Define the multiplication of a scalar-valued, finitely supported, function with a module-valued
+function as a finitely supported module-valued function.
+-/
 noncomputable def Finsupp.hMul (f : ι →₀ R) (g : ι → M) : (ι →₀ M) :=
     Finsupp.ofSupportFinite (fun a ↦ f a • g a) (by
       apply Set.Finite.subset f.finite_support
