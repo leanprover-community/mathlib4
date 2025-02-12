@@ -985,6 +985,16 @@ theorem SeminormedGroup.uniformCauchySeqOn_iff_tendstoUniformlyOn_one {f : ι �
     uniformCauchySeqOn_iff_uniformCauchySeqOnFilter,
     SeminormedGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_one]
 
+open Set in
+@[to_additive]
+lemma SeminormedGroup.disjoint_nhds (x : E) (f : Filter E) :
+    Disjoint (𝓝 x) f ↔ ∃ δ > 0, ∃ V ∈ f, ∀ y ∈ V, δ ≤ ‖y / x‖ := by
+  rw [NormedCommGroup.nhds_basis_norm_lt x |>.disjoint_iff_left]
+  simp_rw [compl_setOf, not_lt]
+  congr!
+  rw [← Filter.exists_mem_subset_iff]
+  rfl
+
 end SeminormedGroup
 
 section Induced
