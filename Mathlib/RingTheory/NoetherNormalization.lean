@@ -33,7 +33,7 @@ private lemma up_lt (hv : v ∈ f.support) : ∀ i, v i < up f := by
   have := lt_one_add_iff.mpr <| le_trans (monomial_le_degreeOf i hv) <| degreeOf_le_totalDegree f i
   linarith
 
-private lemma ltup : 1 < up f := Nat.lt_add_right f.totalDegree Nat.one_lt_two
+private lemma ltup : 1 < up f := Nat.lt_add_right f.totalDegree one_lt_two
 
 /-- `r` maps i to $up ^ i$-/
 noncomputable abbrev r : Fin (n + 1) → ℕ := fun i ↦ up f ^ i.1
@@ -70,9 +70,8 @@ private lemma r_ne (vlt : ∀ i, v i < up f) (wlt : ∀ i, w i < up f) (neq : v 
   unfold r
   by_contra h
   have : List.ofFn v = List.ofFn w := by
-    apply list_eq_of_ofDigits_eq (up f) (ltup f) (List.ofFn v) (List.ofFn w)
-      (by simp only [List.length_ofFn]) (lt vlt) (lt wlt)
-    simp only [Nat.ofDigits_eq_sum_mapIdx, List.mapIdx_eq_ofFn, List.get_ofFn]
+    apply list_eq_of_ofDigits_eq (ltup f) (by simp only [List.length_ofFn]) (lt vlt) (lt wlt)
+    simp only [ofDigits_eq_sum_mapIdx, List.mapIdx_eq_ofFn, List.get_ofFn]
     repeat rw [← List.sum_ofFn] at h
     simp only [List.length_ofFn, Fin.cast_trans, Fin.cast_eq_self, Fin.coe_cast, mul_comm]
     exact h

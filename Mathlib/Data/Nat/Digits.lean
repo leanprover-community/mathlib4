@@ -347,18 +347,15 @@ lemma list_eq_of_ofDigits_eq {b : ℕ} (hb : 1 < b) {L1 L2 : List ℕ}
   induction' L1 with D L ih generalizing L2
   · simp only [List.length_nil] at len
     exact (List.length_eq_zero.mp len.symm).symm
-  obtain ⟨d, l, eq⟩ := List.exists_cons_of_length_eq_add_one len.symm
-  rw [eq]
-  simp only [eq, List.length_cons, add_left_inj] at len
-  simp only [eq, Nat.ofDigits_cons] at h
-  rw [eq] at w2
+  obtain ⟨d, l, rfl⟩ := List.exists_cons_of_length_eq_add_one len.symm
+  simp only [List.length_cons, add_left_inj] at len
+  simp only [ofDigits_cons] at h
   have eqd : D = d := by
     have H : (D + b * ofDigits b L) % b = (d + b * ofDigits b l) % b := by rw [h]
-    simp only [Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt (w2 d <| List.mem_cons_self d l),
-    Nat.mod_eq_of_lt (w1 D <| List.mem_cons_self D L)] at H
-    exact H
+    simpa [mod_eq_of_lt (w2 d <| List.mem_cons_self d l),
+      mod_eq_of_lt (w1 D <| List.mem_cons_self D L)] using H
   simp only [eqd, add_right_inj, mul_left_cancel_iff_of_pos (zero_lt_of_lt hb)] at h
-  have := ih l len (fun a ha ↦ w1 a <| List.mem_cons_of_mem D ha)
+  have := ih len (fun a ha ↦ w1 a <| List.mem_cons_of_mem D ha)
     (fun a ha ↦ w2 a <| List.mem_cons_of_mem d ha) h
   rw [eqd, this]
 
