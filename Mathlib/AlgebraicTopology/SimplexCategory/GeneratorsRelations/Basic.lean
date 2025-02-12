@@ -153,7 +153,7 @@ lemma hom_induction_eq_top' (P : MorphismProperty SimplexCategoryGenRel)
 
 /-- An induction principle for reasonning about objects in SimplexCategoryGenRel. This should be
 used instead of identifying an object with `mk` of its len.-/
-@[elab_as_elim]
+@[elab_as_elim, cases_eliminator]
 protected def rec {P : SimplexCategoryGenRel → Sort*}
     (H : ∀ n : ℕ, P (.mk n)) :
     ∀ x : SimplexCategoryGenRel, P x := by
@@ -163,8 +163,8 @@ protected def rec {P : SimplexCategoryGenRel → Sort*}
 /-- A basic ext lemma for objects of SimplexCategoryGenRel --/
 @[ext]
 lemma ext {x y : SimplexCategoryGenRel} (h : x.len = y.len) : x = y := by
-  cases x using obj_induction
-  cases y using obj_induction
+  cases x
+  cases y
   simp only [mk_len] at h
   congr
 
