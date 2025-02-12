@@ -1128,6 +1128,8 @@ import Mathlib.AlgebraicTopology.MooreComplex
 import Mathlib.AlgebraicTopology.Quasicategory.Basic
 import Mathlib.AlgebraicTopology.Quasicategory.Nerve
 import Mathlib.AlgebraicTopology.Quasicategory.StrictSegal
+import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
+import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 import Mathlib.AlgebraicTopology.SimplexCategory
 import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
 import Mathlib.AlgebraicTopology.SimplicialCategory.SimplicialObject
@@ -4636,6 +4638,7 @@ import Mathlib.RingTheory.HahnSeries.Summable
 import Mathlib.RingTheory.HahnSeries.Valuation
 import Mathlib.RingTheory.Henselian
 import Mathlib.RingTheory.HopfAlgebra
+import Mathlib.RingTheory.HopkinsLevitzki
 import Mathlib.RingTheory.Ideal.AssociatedPrime
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.Basis
@@ -4686,7 +4689,9 @@ import Mathlib.RingTheory.IsPrimary
 import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.RingTheory.Jacobson.Ideal
 import Mathlib.RingTheory.Jacobson.Polynomial
+import Mathlib.RingTheory.Jacobson.Radical
 import Mathlib.RingTheory.Jacobson.Ring
+import Mathlib.RingTheory.Jacobson.Semiprimary
 import Mathlib.RingTheory.Kaehler.Basic
 import Mathlib.RingTheory.Kaehler.CotangentComplex
 import Mathlib.RingTheory.Kaehler.JacobiZariski
