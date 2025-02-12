@@ -958,6 +958,6 @@ theorem norm_exp_eq_iff_re_eq {x y : ℂ} : ‖exp x‖ = ‖exp y‖ ↔ x.re =
   rw [norm_exp, norm_exp, Real.exp_eq_exp]
 
 theorem abs_exp_eq_iff_re_eq {x y : ℂ} : abs (exp x) = abs (exp y) ↔ x.re = y.re :=
-  norm_exp_eq_iff_re_eq 
+  norm_exp_eq_iff_re_eq
 
 end Complex

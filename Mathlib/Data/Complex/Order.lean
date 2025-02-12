@@ -116,7 +116,7 @@ lemma neg_re_eq_abs {z : ℂ} : -z.re = abs z ↔ z ≤ 0 := neg_re_eq_norm
 lemma re_eq_neg_norm {z : ℂ} : z.re = -‖z‖ ↔ z ≤ 0 := by rw [← neg_eq_iff_eq_neg, neg_re_eq_norm]
 
 @[simp]
-lemma re_eq_neg_abs {z : ℂ} : z.re = -abs z ↔ z ≤ 0 := re_eq_neg_norm 
+lemma re_eq_neg_abs {z : ℂ} : z.re = -abs z ↔ z ≤ 0 := re_eq_neg_norm
 
 lemma monotone_ofReal : Monotone ofReal := by
   intro x y hxy
