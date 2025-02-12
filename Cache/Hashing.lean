@@ -6,7 +6,6 @@ Authors: Arthur Paulino
 
 import Cache.IO
 import Lean.Elab.ParseImportsFast
-import Lake.Build.Trace
 
 namespace Cache.Hashing
 
@@ -14,9 +13,9 @@ open System IO
 
 structure HashMemo where
   rootHash : UInt64
-  depsMap  : Std.HashMap FilePath (Array FilePath) := {}
-  cache    : Std.HashMap FilePath (Option UInt64) := {}
-  hashMap  : ModuleHashMap := {}
+  depsMap  : Std.HashMap FilePath (Array FilePath) := ∅
+  cache    : Std.HashMap FilePath (Option UInt64) := ∅
+  hashMap  : ModuleHashMap := ∅
   deriving Inhabited
 
 partial def insertDeps (hashMap : ModuleHashMap) (path : FilePath) (hashMemo : HashMemo) :
@@ -33,7 +32,7 @@ Filters the `hashMap` of a `HashMemo` so that it only contains key/value pairs s
 -/
 def HashMemo.filterByFilePaths (hashMemo : HashMemo) (filePaths : List FilePath) :
     IO ModuleHashMap := do
-  let mut hashMap := default
+  let mut hashMap := ∅
   for filePath in filePaths do
     if hashMemo.hashMap.contains filePath then
       hashMap := insertDeps hashMap filePath hashMemo
@@ -74,7 +73,7 @@ def getRootHash : CacheM UInt64 := do
     if isMathlibRoot then
       pure id
     else
-      pure ((← mathlibDepPath) / ·)
+      pure ((← read).mathlibDepPath / ·)
   let hashes ← rootFiles.mapM fun path =>
     hashFileContents <$> IO.FS.readFile (qualifyPath path)
   return hash (hash Lean.githash :: hashes)
