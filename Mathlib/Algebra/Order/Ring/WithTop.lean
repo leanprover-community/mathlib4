@@ -119,8 +119,7 @@ protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type*} [MulZeroOneClass
       induction' y with y
       · have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
         simp [mul_top hx, mul_top this]
-      · -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `simp [← coe_mul]` times out
-        simp only [map_coe, ← coe_mul, map_mul] }
+      · simp [← coe_mul] }
 
 instance instSemigroupWithZero [SemigroupWithZero α] [NoZeroDivisors α] :
     SemigroupWithZero (WithTop α) where
@@ -129,7 +128,6 @@ instance instSemigroupWithZero [SemigroupWithZero α] [NoZeroDivisors α] :
     rcases eq_or_ne a 0 with (rfl | ha); · simp only [zero_mul]
     rcases eq_or_ne b 0 with (rfl | hb); · simp only [zero_mul, mul_zero]
     rcases eq_or_ne c 0 with (rfl | hc); · simp only [mul_zero]
-  -- Porting note: below needed to be rewritten due to changed `simp` behaviour for `coe`
     induction' a with a; · simp [hb, hc]
     induction' b with b; · simp [mul_top ha, top_mul hc]
     induction' c with c

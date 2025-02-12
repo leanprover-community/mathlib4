@@ -328,8 +328,7 @@ theorem Int.two_pow_sub_pow' {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2
   · exact Int.prime_two
   · simpa only [even_iff_two_dvd] using hx_odd.pow.sub_odd hy_odd.pow
   · simpa only [even_iff_two_dvd, ← Int.not_even_iff_odd] using hx_odd.pow
-  erw [Int.natCast_dvd_natCast]
-  -- `erw` to deal with `2 : ℤ` vs `(2 : ℕ) : ℤ`
+  norm_cast
   contrapose! hpn
   rw [pow_succ]
   conv_rhs => rw [hk]
