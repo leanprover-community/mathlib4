@@ -97,7 +97,7 @@ class hasGMul [OrderedAddCommMonoid ι] extends IsRingFiltration F F_lt : Prop w
   F_lt_mul_mem {i j : ι} {x y} : x ∈ F_lt i → y ∈ F j → x * y ∈ F_lt (i + j)
   mul_F_lt_mem {i j : ι} {x y} : x ∈ F i → y ∈ F_lt j → x * y ∈ F_lt (i + j)
 
-lemma hasGMul_int (F : ℤ → σ) (mono : ∀ {a b : ℤ}, a ≤ b → F a ≤ F b) (one_mem : 1 ∈ F 0)
+lemma hasGMul_int (F : ℤ → σ) (mono : Monotone F) (one_mem : 1 ∈ F 0)
     (mul_mem : ∀ {i j x y}, x ∈ F i → y ∈ F j → x * y ∈ F (i + j)) :
     hasGMul F (fun n ↦ F (n - 1)) := {
     IsRingFiltration_int F mono one_mem mul_mem with
