@@ -35,20 +35,20 @@ variable {ι : Type*} [Preorder ι]
 variable {A : Type*} {σ : Type*} [SetLike σ A]
 
 /--For `σ` satisfying `SetLike σ A`, an increasing series of `F` in `σ` is filtration if
-there is another series `F_lt` equal to the supremum of `F` with smaller index-/
+there is another series `F_lt` equal to the supremum of `F` with smaller index.
+
+In fact `F_lt j = ⨆ i < j, F i`, the design of `F_lt` can handle different conditions in the
+same structure, it avoid adding `CompleteLattice` to `σ`, also providing convenience when the index
+is `ℤ` -/
 class IsFiltration (F : ι → σ) (F_lt : outParam <| ι → σ) : Prop where
-  mono {i j} : i ≤ j → F i ≤ F j
+  mono : Monotone F
   is_le {i j} : i < j → F i ≤ F_lt j
   is_sup (B : σ) (j : ι) : (∀ i < j, F i ≤ B) → F_lt j ≤ B
-
-/- In fact `F_lt j = ⨆ i < j, F i`, the design of `F_lt` can handle different conditions in the
-same structure, it avoid adding `CompleteLattice` to `σ`, also providing convenience when the index
-is `ℤ`-/
 
 /--A special case of `IsFiltration` when index is integer-/
 lemma IsFiltration_int (F : ℤ → σ) (mono : ∀ {a b : ℤ}, a ≤ b → F a ≤ F b) :
     IsFiltration F (fun n ↦ F (n - 1)) where
-  mono := mono
+  mono _ _ := mono
   is_le lt := mono (Int.le_sub_one_of_lt lt)
   is_sup _ j hi := hi (j - 1) (sub_one_lt j)
 
@@ -70,15 +70,15 @@ class IsRingFiltration (F : ι → σ) (F_lt : outParam <| ι → σ)
 
 instance [AddSubmonoidClass σ R] (F : ι → σ) (F_lt : outParam <| ι → σ) [IsRingFiltration F F_lt] :
     Semiring (F 0) where
-  mul := fun x y ↦ ⟨x.1 * y.1, by simpa using IsRingFiltration.mul_mem x.2 y.2⟩
-  left_distrib := fun a b c ↦ SetCoe.ext (mul_add a.1 b.1 c.1)
-  right_distrib := fun a b c ↦ SetCoe.ext (add_mul a.1 b.1 c.1)
-  zero_mul := fun a ↦ SetCoe.ext (zero_mul a.1)
-  mul_zero := fun a ↦ SetCoe.ext (mul_zero a.1)
-  mul_assoc := fun a b c ↦ SetCoe.ext (mul_assoc a.1 b.1 c.1)
+  mul x y :=  ⟨x.1 * y.1, by simpa using IsRingFiltration.mul_mem x.2 y.2⟩
+  left_distrib a b c := SetCoe.ext (mul_add a.1 b.1 c.1)
+  right_distrib a b c := SetCoe.ext (add_mul a.1 b.1 c.1)
+  zero_mul a := SetCoe.ext (zero_mul a.1)
+  mul_zero a := SetCoe.ext (mul_zero a.1)
+  mul_assoc a b c := SetCoe.ext (mul_assoc a.1 b.1 c.1)
   one := ⟨1, IsRingFiltration.one_mem⟩
-  one_mul := fun a ↦ SetCoe.ext (one_mul a.1)
-  mul_one := fun a ↦ SetCoe.ext (mul_one a.1)
+  one_mul a := SetCoe.ext (one_mul a.1)
+  mul_one a := SetCoe.ext (mul_one a.1)
 
 /--A special case of `IsRingFiltration` when index is integer-/
 lemma IsRingFiltration_int (F : ℤ → σ) (mono : ∀ {a b : ℤ}, a ≤ b → F a ≤ F b) (one_mem : 1 ∈ F 0)
