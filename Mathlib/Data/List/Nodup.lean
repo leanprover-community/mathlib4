@@ -59,6 +59,12 @@ theorem nodup_iff_sublist {l : List α} : Nodup l ↔ ∀ a, ¬[a, a] <+ l :=
       exact (IH fun a s => h a <| sublist_cons_of_sublist _ s).cons fun al =>
         h a <| (singleton_sublist.2 al).cons_cons _⟩
 
+@[simp]
+theorem nodup_mergeSort {l : List α} {le : α → α → Bool} : (l.mergeSort le).Nodup ↔ l.Nodup :=
+  (mergeSort_perm l le).nodup_iff
+
+protected alias ⟨_, Nodup.mergeSort⟩ := nodup_mergeSort
+
 theorem nodup_iff_injective_getElem {l : List α} :
     Nodup l ↔ Function.Injective (fun i : Fin l.length => l[i.1]) :=
   pairwise_iff_getElem.trans
