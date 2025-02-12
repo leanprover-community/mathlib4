@@ -24,6 +24,8 @@ open Polynomial MvPolynomial Ideal BigOperators Nat RingHom List
 variable {k : Type*} [Field k] {n : ℕ} (f : MvPolynomial (Fin (n + 1)) k)
 variable (v w : Fin (n + 1) →₀ ℕ)
 
+namespace NoetherNormalization
+
 /-- Suppose `f` is a nonzero polynomial of `n+1` variables : `X_0,...,X_n`.
 `up` is a number which is big enough. -/
 local notation3 "up" => 2 + f.totalDegree
@@ -56,7 +58,7 @@ private noncomputable abbrev T := AlgEquiv.ofAlgHom (T1 f 1) (T1 f (-1))
   (inv_pair f 1) (by convert (inv_pair f (-1)); exact (InvolutiveNeg.neg_neg 1).symm)
 
 variable {f v} in
-lemma lt (vlt : ∀ i, v i < up) : ∀ l ∈ ofFn v, l < up := by
+private lemma lt (vlt : ∀ i, v i < up) : ∀ l ∈ ofFn v, l < up := by
   intro l h
   rw [mem_ofFn, Set.mem_range] at h
   obtain ⟨y, hy⟩ := h
@@ -205,6 +207,10 @@ private noncomputable abbrev eqv2 := quotientEquivAlg (R₁ := k) (I.map (T f)) 
 and it's integral.-/
 private noncomputable def hom2 : MvPolynomial (Fin n) k →ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I :=
   (eqv2 f I).toAlgHom.comp ((eqv1 f I).toAlgHom.comp ((hom1 f I).restrictScalars k))
+
+end NoetherNormalization
+
+open NoetherNormalization
 
 /-Use induction to prove there is an injective map from `k[X_0,...X_{r-1}]` to `k[X_0,...X_n]/I`.-/
 theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) k))
