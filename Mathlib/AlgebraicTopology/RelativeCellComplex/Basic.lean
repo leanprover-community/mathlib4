@@ -23,7 +23,6 @@ formalization of the small object argument (TODO).
 ## References
 * https://ncatlab.org/nlab/show/small+object+argument
 
-
 -/
 
 universe w w' t v u
