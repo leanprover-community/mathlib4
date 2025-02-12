@@ -504,7 +504,7 @@ theorem coe_rpow_def (x : ℝ≥0) (y : ℝ) :
     (x : ℝ≥0∞) ^ y = if x = 0 ∧ y < 0 then ⊤ else ↑(x ^ y) :=
   rfl
 
-theorem ENNReal.rpow_ofNNReal {M : ℝ≥0} {P : ℝ} (hP : 0 ≤ P) :
+theorem rpow_ofNNReal {M : ℝ≥0} {P : ℝ} (hP : 0 ≤ P) :
     (ENNReal.ofNNReal M).rpow P = ENNReal.ofNNReal (M ^ P) := by
   rw [ENNReal.coe_rpow_of_nonneg _ hP, ← ENNReal.rpow_eq_pow]
 
