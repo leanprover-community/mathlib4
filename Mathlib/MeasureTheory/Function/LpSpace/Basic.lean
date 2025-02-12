@@ -373,6 +373,9 @@ theorem enorm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ≥0}
   rw [enorm_def]
   exact this
 
+@[deprecated (since := "2025-02-12")] alias nnnorm_le_of_ae_bound := enorm_le_of_ae_bound
+@[deprecated (since := "2025-02-12")] alias norm_le_of_ae_bound := enorm_le_of_ae_bound
+
 instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E p μ) :=
   { AddGroupNorm.toNormedAddCommGroup
       { toFun := (norm : Lp E p μ → ℝ)
