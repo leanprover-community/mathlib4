@@ -294,7 +294,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
     (F ⋙ forget MonCat)).fac ((forget MonCat).mapCocone t) j) x
   uniq t m h := MonCat.ext fun y => congr_fun
       ((Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget MonCat)).uniq ((forget MonCat).mapCocone t)
-        ((forget MonCat).map m)
+        ⇑(ConcreteCategory.hom m)
         fun j => funext fun x => ConcreteCategory.congr_hom (h j) x) y
 
 @[to_additive]
@@ -370,7 +370,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
     ConcreteCategory.coe_ext <|
       (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommMonCat.{max v u})).uniq
         ((forget CommMonCat.{max v u}).mapCocone t)
-        ((forget CommMonCat.{max v u}).map m) fun j => funext fun x =>
+        ⇑(ConcreteCategory.hom m) fun j => funext fun x =>
           CategoryTheory.congr_fun (h j) x
 
 @[to_additive forget₂AddMonPreservesFilteredColimits]

@@ -2169,6 +2169,7 @@ import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.MorphismProperty.OverAdjunction
 import Mathlib.CategoryTheory.MorphismProperty.Representable
 import Mathlib.CategoryTheory.MorphismProperty.Retract
+import Mathlib.CategoryTheory.MorphismProperty.RetractArgument
 import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
@@ -3854,8 +3855,9 @@ import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
 import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
 import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
 import Mathlib.MeasureTheory.Function.LpSeminorm.Trim
-import Mathlib.MeasureTheory.Function.LpSpace
+import Mathlib.MeasureTheory.Function.LpSpace.Basic
 import Mathlib.MeasureTheory.Function.LpSpace.ContinuousCompMeasurePreserving
+import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Basic
 import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Continuous
 import Mathlib.MeasureTheory.Function.SimpleFunc
@@ -4890,6 +4892,7 @@ import Mathlib.RingTheory.Spectrum.Prime.Jacobson
 import Mathlib.RingTheory.Spectrum.Prime.Module
 import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 import Mathlib.RingTheory.Spectrum.Prime.Polynomial
+import Mathlib.RingTheory.Spectrum.Prime.RingHom
 import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
 import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.RingTheory.Support
