@@ -369,16 +369,16 @@ lemma standardσ_simplicialInsert (hL : isAdmissible (m + 1) L) (j : ℕ)
       haveI := σ_comp_σ_nat a j ha hj (not_lt.mp h)
       generalize_proofs p p' at this
       -- We have to get rid of the natCasts...
-      have ha₁ : (⟨a, p⟩ : Fin (m + 1 + 1)) = ↑a := by 
+      have ha₁ : (⟨a, p⟩ : Fin (m + 1 + 1)) = ↑a := by
         ext
         simp [Nat.mod_eq_of_lt p]
-      have ha₂ : (⟨a, ha⟩ : Fin (m + 1)) = ↑a := by 
+      have ha₂ : (⟨a, ha⟩ : Fin (m + 1)) = ↑a := by
         ext
         simp [Nat.mod_eq_of_lt ha]
-      have hj₁ : (⟨j + 1, p'⟩ : Fin (m + 1 + 1)) = ↑(j + 1) := by 
+      have hj₁ : (⟨j + 1, p'⟩ : Fin (m + 1 + 1)) = ↑(j + 1) := by
         ext
         simp [Nat.mod_eq_of_lt p']
-      have hj₂ : (⟨j, hj⟩ : Fin (m + 1)) = ↑j := by 
+      have hj₂ : (⟨j, hj⟩ : Fin (m + 1)) = ↑j := by
         ext
         simp [Nat.mod_eq_of_lt hj]
       rwa [← ha₁, ← ha₂, ← hj₁, ← hj₂]
