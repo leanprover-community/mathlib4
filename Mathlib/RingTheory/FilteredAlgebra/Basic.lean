@@ -46,9 +46,9 @@ class IsFiltration (F : ι → σ) (F_lt : outParam <| ι → σ) : Prop where
   is_sup (B : σ) (j : ι) : (∀ i < j, F i ≤ B) → F_lt j ≤ B
 
 /--A special case of `IsFiltration` when index is integer-/
-lemma IsFiltration_int (F : ℤ → σ) (mono : ∀ {a b : ℤ}, a ≤ b → F a ≤ F b) :
+lemma IsFiltration_int (F : ℤ → σ) (mono : Monotone F) :
     IsFiltration F (fun n ↦ F (n - 1)) where
-  mono _ _ := mono
+  mono := mono
   is_le lt := mono (Int.le_sub_one_of_lt lt)
   is_sup _ j hi := hi (j - 1) (sub_one_lt j)
 
@@ -81,7 +81,7 @@ instance [AddSubmonoidClass σ R] (F : ι → σ) (F_lt : outParam <| ι → σ)
   mul_one a := SetCoe.ext (mul_one a.1)
 
 /--A special case of `IsRingFiltration` when index is integer-/
-lemma IsRingFiltration_int (F : ℤ → σ) (mono : ∀ {a b : ℤ}, a ≤ b → F a ≤ F b) (one_mem : 1 ∈ F 0)
+lemma IsRingFiltration_int (F : ℤ → σ) (mono : Monotone F) (one_mem : 1 ∈ F 0)
     (mul_mem : ∀ {i j x y}, x ∈ F i → y ∈ F j → x * y ∈ F (i + j)) :
     IsRingFiltration F (fun n ↦ F (n - 1)) :=
 { IsFiltration_int F mono with
@@ -111,9 +111,9 @@ class IsModuleFiltration (F : ι → σ) (F_lt : outParam <| ι → σ) [isfil :
   smul_mem : ∀ {i j x y}, x ∈ F i → y ∈ F' j → x • y ∈ F' (i +ᵥ j)
 
 /--A special case of `IsModuleFiltration` when index is both integer-/
-lemma IsModuleFiltration_int (F : ℤ → σ) (mono : ∀ {a b : ℤ}, a ≤ b → F a ≤ F b) (one_mem : 1 ∈ F 0)
+lemma IsModuleFiltration_int (F : ℤ → σ) (mono : Monotone F) (one_mem : 1 ∈ F 0)
     (mul_mem : ∀ {i j x y}, x ∈ F i → y ∈ F j → x * y ∈ F (i + j)) (F' : ℤ → σM)
-    (mono' : ∀ {a b : ℤ}, a ≤ b → F' a ≤ F' b)
+    (mono' : Monotone F')
     (smul_mem : ∀ {i j x y}, x ∈ F i → y ∈ F' j → x • y ∈ F' (i + j)):
     IsModuleFiltration (isfil := IsRingFiltration_int F mono one_mem mul_mem)
       F (fun n ↦ F (n - 1)) F' (fun n ↦ F' (n - 1)) :=
