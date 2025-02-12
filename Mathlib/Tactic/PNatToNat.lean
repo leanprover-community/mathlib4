@@ -14,11 +14,10 @@ This file implements the `pnat_to_nat` tactic that shifts `PNat`s in the context
 The implementation follows these steps:
 1. For each `x : PNat` in the context, add the hypothesis `0 < (↑x : ℕ)`.
 2. Translate arithmetic on `PNat` to `Nat` using the `pnat_to_nat_coe_simps` simp set.
-3. Finish the proof using `omega`.
 
 -/
 
-namespace OmegaExtensions.PNat
+namespace Mathlib.Tactic.PNatToNat
 
 open private getElimNameInfo generalizeTargets generalizeVars from Lean.Elab.Tactic.Induction
 
@@ -59,4 +58,4 @@ macro "pnat_to_nat" : tactic => `(tactic| focus (
   simp only [pnat_to_nat_coe_simps] at *)
 )
 
-end OmegaExtensions.PNat
+end Mathlib.Tactic.PNatToNat

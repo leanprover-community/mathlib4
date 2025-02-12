@@ -20,7 +20,7 @@ The implementation follows these steps:
 
 -/
 
-namespace OmegaExtensions.ENat
+namespace Mathlib.Tactic.ENatToNat
 
 attribute [enat_to_nat_top_simps] OfNat.ofNat_ne_zero ne_eq not_false_eq_true
 attribute [enat_to_nat_top_simps] ENat.coe_ne_top ENat.top_ne_coe ENat.coe_lt_top top_le_iff le_top
@@ -79,4 +79,4 @@ macro "enat_to_nat" : tactic => `(tactic| focus (
   )
 )
 
-end OmegaExtensions.ENat
+end Mathlib.Tactic.ENatToNat
