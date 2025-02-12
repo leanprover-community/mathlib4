@@ -85,20 +85,17 @@ theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι
   simp only [Finset.inter_self, mul_apply, Function.comp_apply]
   simp only [←smul_eq_mul, smul_assoc]
   simp_all only [sub_left_inj]
+  rw [Finsupp.sum_of_support_subset (Sym2.mul_finsupp l) (Sym2.mul_finsupp_support l) _
+    (fun p hp => zero_smul R ((polarSym2 Q) (Sym2.map g p)))]
+  apply Finset.sum_congr rfl
+  intro p _
   have e2 (p : Sym2 ι) :
-      (hMul (Sym2.mul_finsupp l) ((polarSym2 Q) ∘ Sym2.map g)) p =
-        (Sym2.mul_finsupp l) p • (polarSym2 Q) (Sym2.map g p) :=
+      (Sym2.mul_finsupp l) p • (polarSym2 Q) (Sym2.map g p) =
+        (hMul (Sym2.mul_finsupp l) ((polarSym2 Q) ∘ Sym2.map g)) p :=
     Finsupp.coe_pointwise_module_smul (Sym2.mul_finsupp l) ((polarSym2 Q) ∘ Sym2.map g) p
-  rw [Finsupp.sum_of_support_subset (Sym2.mul_finsupp l) (Sym2.mul_finsupp_support l)]
-  · have d1 (x : Sym2 ι) :
-    (polarSym2 Q) (Sym2.map (fun i ↦ l i • g i) x) =
-      (Sym2.mul_finsupp l) x • (polarSym2 Q) (Sym2.map g x) := by
-      rw [← e2]
-      rw [← test]
-      rfl
-    simp_rw [d1]
-  intro p hp
-  exact zero_smul R ((polarSym2 Q) (Sym2.map g p))
+  rw [e2]
+  rw [← test]
+  rfl
 
 open Finsupp in
 theorem sum_polar_sub_repr_sq (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
