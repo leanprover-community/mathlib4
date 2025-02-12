@@ -360,15 +360,18 @@ section
 variable {N N' : Type*} [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
   (f : N →ₗ[R] N')
 
+@[simp]
 lemma lTensor_injective_iff_injective [Module.FaithfullyFlat R M] :
     Function.Injective (f.lTensor M) ↔ Function.Injective f := by
-  rw [LinearMap.injective_iff_exact (M ⊗[R] Unit), LinearMap.injective_iff_exact Unit]
+  rw [← LinearMap.exact_zero_iff_injective (M ⊗[R] Unit), ← LinearMap.exact_zero_iff_injective Unit]
   conv_rhs => rw [exact_iff_lTensor_exact R M]
   simp
 
+@[simp]
 lemma lTensor_surjective_iff_surjective [Module.FaithfullyFlat R M] :
     Function.Surjective (f.lTensor M) ↔ Function.Surjective f := by
-  rw [LinearMap.surjective_iff_exact (M ⊗[R] Unit), LinearMap.surjective_iff_exact Unit]
+  rw [← LinearMap.exact_zero_iff_surjective (M ⊗[R] Unit),
+    ← LinearMap.exact_zero_iff_surjective Unit]
   conv_rhs => rw [exact_iff_lTensor_exact R M]
   simp
 
