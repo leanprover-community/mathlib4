@@ -147,25 +147,25 @@ lemma dOne_single_one_snd (g : G) (a : A) :
 lemma dOne_single_inv_self_ρ_sub_self_inv (g : G) (a : A) :
     dOne A (single (g⁻¹, g) (A.ρ g⁻¹ a) - single (g, g⁻¹) a) =
       single 1 a - single 1 (A.ρ g⁻¹ a) := by
-  simp only [map_sub, dOne_single, inv_inv, ρ_self_inv_apply, inv_mul_cancel, mul_inv_cancel]
+  simp only [map_sub, dOne_single, inv_inv, self_inv_apply, inv_mul_cancel, mul_inv_cancel]
   abel
 
 lemma dOne_single_self_inv_ρ_sub_inv_self (g : G) (a : A) :
     dOne A (single (g, g⁻¹) (A.ρ g a) - single (g⁻¹, g) a) =
       single 1 a - single 1 (A.ρ g a) := by
-  simp only [map_sub, dOne_single, ρ_inv_self_apply, mul_inv_cancel, inv_inv, inv_mul_cancel]
+  simp only [map_sub, dOne_single, inv_self_apply, mul_inv_cancel, inv_inv, inv_mul_cancel]
   abel
 
 lemma dOne_single_ρ_add_single_inv_mul (g h : G) (a : A) :
     dOne A (single (g, h) (A.ρ g a) + single (g⁻¹, g * h) a) =
       single g (A.ρ g a) + single g⁻¹ a := by
-  simp only [map_add, dOne_single, ρ_inv_self_apply, inv_inv, inv_mul_cancel_left]
+  simp only [map_add, dOne_single, inv_self_apply, inv_inv, inv_mul_cancel_left]
   abel
 
 lemma dOne_single_inv_mul_ρ_add_single (g h : G) (a : A) :
     dOne A (single (g⁻¹, g * h) (A.ρ g⁻¹ a) + single (g, h) a) =
       single g⁻¹ (A.ρ g⁻¹ a) + single g a := by
-  simp only [map_add, dOne_single, inv_inv, ρ_self_inv_apply, inv_mul_cancel_left]
+  simp only [map_add, dOne_single, inv_inv, self_inv_apply, inv_mul_cancel_left]
   abel
 
 variable (A) in
@@ -291,7 +291,7 @@ theorem mem_oneCycles_iff (x : G →₀ A) :
 
 theorem single_mem_oneCycles_iff (g : G) (a : A) :
     single g a ∈ oneCycles A ↔ A.ρ g a = a := by
-  simp [mem_oneCycles_iff, ← (A.ρ.ρ_apply_bijective g).1.eq_iff (a := A.ρ g⁻¹ a), eq_comm]
+  simp [mem_oneCycles_iff, ← (A.ρ.apply_bijective g).1.eq_iff (a := A.ρ g⁻¹ a), eq_comm]
 
 theorem single_mem_oneCycles_of_mem_invariants (g : G) (a : A) (ha : a ∈ A.ρ.invariants) :
     single g a ∈ oneCycles A :=
@@ -325,7 +325,7 @@ theorem single_mem_twoCycles_iff_inv (g : G × G) (a : A) :
 theorem single_mem_twoCycles_iff (g : G × G) (a : A) :
     single g a ∈ twoCycles A ↔
       single (g.1 * g.2) (A.ρ g.1 a) = single g.2 a + single g.1 (A.ρ g.1 a) := by
-  rw [← (mapRange_injective (α := G) _ (map_zero _) (A.ρ.ρ_apply_bijective g.1⁻¹).1).eq_iff]
+  rw [← (mapRange_injective (α := G) _ (map_zero _) (A.ρ.apply_bijective g.1⁻¹).1).eq_iff]
   simp [mem_twoCycles_iff, mapRange_add, eq_comm]
 
 theorem dTwo_apply_mem_twoCycles [DecidableEq G] (x : G × G × G →₀ A) :
@@ -702,7 +702,7 @@ lemma pOpcycles_comp_opcyclesIso_hom :
 
 /-- The 0th group homology of `A`, defined as the 0th homology of the complex of inhomogeneous
 chains, is isomorphic to the coinvariants of the representation on `A`. -/
-def isoH0 : groupHomology A 0 ≅ ModuleCat.of k (H0 A) :=
+def isoH0 : groupHomology A 0 ≅ H0 A :=
   ChainComplex.isoHomologyι₀ _ ≪≫ isoZeroOpcycles A
 
 @[reassoc (attr := simp)]
@@ -798,7 +798,7 @@ lemma toCycles_comp_isoOneCycles_hom :
 
 /-- The 1st group homology of `A`, defined as the 1st homology of the complex of inhomogeneous
 chains, is isomorphic to `oneCycles A ⧸ oneBoundaries A`, which is a simpler type. -/
-def isoH1 : groupHomology A 1 ≅ ModuleCat.of k (H1 A) :=
+def isoH1 : groupHomology A 1 ≅ H1 A :=
   (inhomogeneousChains A).homologyIsoSc' _ _ _ (by aesop) (by aesop) ≪≫
     homologyMapIso (shortComplexH1Iso A) ≪≫ (shortComplexH1 A).moduleCatHomologyIso
 
@@ -943,7 +943,7 @@ lemma toCycles_comp_isoTwoCycles_hom :
 
 /-- The 2nd group homology of `A`, defined as the 2nd homology of the complex of inhomogeneous
 chains, is isomorphic to `twoCycles A ⧸ twoBoundaries A`, which is a simpler type. -/
-def isoH2 : groupHomology A 2 ≅ ModuleCat.of k (H2 A) :=
+def isoH2 : groupHomology A 2 ≅ H2 A :=
   (inhomogeneousChains A).homologyIsoSc' _ _ _ (by aesop) (by aesop) ≪≫
     homologyMapIso (shortComplexH2Iso A) ≪≫ (shortComplexH2 A).moduleCatHomologyIso
 

@@ -5,7 +5,7 @@ Authors: Robert A. Spencer, Markus Himmel
 -/
 import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Algebra.PUnitInstances.Module
+import Mathlib.Algebra.Module.PUnit
 import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
@@ -201,12 +201,6 @@ end
 
 instance : Inhabited (ModuleCat R) :=
   ⟨of R R⟩
-
-instance moduleHasForget : HasForget.{v} (ModuleCat.{v} R) where
-  forget :=
-    { obj := fun R => R
-      map := fun f => f.hom }
-  forget_faithful := ⟨fun h => by ext x; simpa using congrFun h x⟩
 
 /- Not a `@[simp]` lemma since it will rewrite the (co)domain of maps and cause
 definitional equality issues. -/
