@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 import Mathlib.Topology.Compactness.Compact
+import Mathlib.MeasureTheory.PiSystem
 
-open Set
+open Set Finset Nat
 
 section definition
 
@@ -29,7 +30,15 @@ lemma IsCompactSystem.iInter_eq_empty (hp : IsCompactSystem p) (hC : ∀ i, p (C
   (hp C hC hC_empty).choose_spec
 
 
+example (i n : ℕ) : i < n+1 ↔ i ≤ n := by exact Nat.lt_add_one_iff
 
+lemma l1 (s : Finset ℕ) (hs : s.Nonempty) : s ⊆ Finset.range (s.max' hs + 1) := by
+  intro i hi
+  rw [Finset.mem_range, Nat.lt_add_one_iff]
+  exact s.le_max' i hi
+
+example (s : Finset ℕ) (hs : s.Nonempty) (i : ℕ) (hi : i ∈ s) : i ≤ s.max' hs := by
+  exact Finset.le_max' s i hi
 
 example (i n : ℕ) : i ∈ Finset.range (n + 1) ↔ i ≤ n := by exact Finset.mem_range_succ_iff
 
@@ -45,65 +54,122 @@ example (n : ℕ) : (Finset.range (n + 1)).Nonempty := by exact Finset.nonempty_
 
 example (C : ℕ → Set α) (s : Finset ℕ) (hs : s = ∅): ⋂ i ∈ s, C i = ∅ := by apply?
 
-lemma iInter_empty_iff (C : ℕ → Set α) : (∃ n : ℕ, ⋂ i ≤ n, C i = ∅) ↔
-    (∃ (s : Finset ℕ) (hs : s.Nonempty), ⋂ i ∈ s, C i = ∅) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨n, hn⟩ := h
-    use (Finset.range (n + 1)), Finset.nonempty_range_succ
+@[simp]
+lemma iInter_empty_iff [Inhabited α] {C : ℕ → Set α} : (∃ n : ℕ, ⋂ i ≤ n, C i = ∅) ↔
+    (∃ (s : Finset ℕ), ⋂ i ∈ s, C i = ∅) := by
+  refine ⟨fun ⟨n, hn⟩ ↦ ?_, fun ⟨s, hs⟩ ↦ ?_⟩
+  · use (Finset.range (n + 1))
     simp_rw [Finset.mem_range_succ_iff]
     exact hn
-  · obtain ⟨s, hs1, hs⟩ := h
-    use (s.max' hs1)
+  · have h2 : s.Nonempty := by
+      rw [s.nonempty_iff_ne_empty]
+      intro h
+      rw [h] at hs
+      simp only [Finset.not_mem_empty, iInter_of_empty, iInter_univ, Set.univ_eq_empty_iff,
+        not_isEmpty_of_nonempty] at hs
+    use (s.max' h2)
+    have h : ⋂ i, ⋂ (_ : i ≤ s.max' h2), C i ⊆ ⋂ i ∈ s, C i := by
+      simp_rw [← Finset.mem_range_succ_iff]
+      exact biInter_mono (l1 s h2) (fun _ _ ⦃a_1⦄ a ↦ a)
+    exact subset_empty_iff.mp <| le_trans h hs.le
+
+theorem IsCompactSystem.iff_le [Inhabited α] : (IsCompactSystem p) ↔
+    (∀ C : ℕ → Set α, (∀ i, p (C i)) → ⋂ i, C i = ∅ → ∃ (s : Finset ℕ), ⋂ i ∈ s, C i = ∅) := by
+  refine ⟨fun h C hp he ↦ ?_, fun h C hp he ↦ ?_ ⟩
+  · apply iInter_empty_iff.mp <| h C hp he
+  · apply iInter_empty_iff.mpr <| h C hp he
 
 
-    sorry
-
-    simp_rw [← Finset.mem_range_succ_iff]
-
-    sorry
-
-  sorry
 
 
-theorem IsCompactSystem.iff_le : (IsCompactSystem p) ↔ ∀ C : ℕ → Set α, (∀ i, p (C i)) ↔
-    ⋂ i, C i = ∅ → ∃ (s : Finset ℕ), ⋂ i ∈ s, C i = ∅ := by
-  sorry
+theorem biInter_decumulate (s : ℕ → Set α) (n : ℕ):
+    ⋂ x ≤ n, ⋂ y ≤ x, s y = ⋂ y ≤ n, s y := by
+  apply Set.Subset.antisymm
+  · apply iInter_mono
+    intro z x hx
+    simp at hx
+    simp only [mem_iInter]
+    exact fun h ↦ hx h z <| Nat.le_refl z
+  · simp only [subset_iInter_iff]
+    intro i hi x hx
+    refine biInter_subset_of_mem ?_
+    simp only [le_eq]
+    exact le_trans hx hi
 
-
-theorem IsCompactSystem.iff_mono : (IsCompactSystem p) ↔ ∀ (C : ℕ → Set α) (h : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C), (∀ i, p (C i)) → ⋂ i, C i = ∅ →
-      ∃ (s : Finset ℕ), ⋂ i ∈ s, C i = ∅ := by
-    rw [IsCompactSystem.iff_le]
-    refine ⟨fun h ↦ fun C _ i ↦ h C i, fun h C ↦ ?_⟩
-    let D := fun n ↦ ⋂ i ≤ n, C i
-    have h' := h C
-    have h1 : ∀ n, ⋂ i ≤ n, D i = ⋂ i ≤ n, C i := by sorry -- exact fun n ↦ Eq.symm biInter_le_eq_iInter
-    have h1' : ⋂ i, D i = ⋂ i, C i := by exact biInter_le_eq_iInter
-    have h2 : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) D := by
-      refine directed_of_isDirected_le ?_
-      intro i j hij
-      simp [D]
-      sorry
-    have h3 : ∀ (i : ℕ), p (D i) := by sorry
+theorem decumulate_succ (s : ℕ → Set α) (n : ℕ) :
+    ⋂ i ≤ n + 1, s i = (⋂ i ≤ n, s i) ∩ s (n + 1) := by
+  ext x
+  refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
+  · simp only [mem_inter_iff, mem_iInter] at *
+    exact ⟨fun i hi ↦ hx i <| le_trans hi <| le_add_right n 1, hx (n + 1) <| Nat.le_refl (n + 1)⟩
+  · simp only [mem_inter_iff, mem_iInter] at *
     intro i hi
-    obtain h5 := h D h2 h3 (h1' ▸  hi)
-    rcases h5 with ⟨s, hs⟩
-    use Finset.range (s.max' ?_)
+    by_cases h : i ≤ n
+    · exact hx.1 i h
+    · simp only [not_le] at h
+      exact Nat.le_antisymm hi h ▸ hx.2
 
-    sorry
+theorem iInter_decumulate (s : ℕ → Set α) (n : ℕ): ⋂ x, ⋂ y ≤ x, s y = ⋂ y, s y := by
+  apply Set.Subset.antisymm
+  · apply iInter_mono
+    intro z x hx
+    simp at hx
+    apply hx z <| Nat.le_refl z
+  · simp only [subset_iInter_iff]
+    intro i x hx
+    exact iInter_subset_of_subset x fun ⦃a⦄ a ↦ a
 
+def IsPiSystem' (C : Set (Set α)) := ∀ s ∈ C, ∀ t ∈ C, s ∩ t ∈ C
 
+lemma prime (C : Set (Set α)) (hC : ∅ ∈ C) : (IsPiSystem C) ↔ (IsPiSystem' C) := by
+  refine ⟨fun h s hs t ht ↦ ?_, fun h s hs t ht _ ↦ h s hs t ht⟩
+  by_cases h' : (s ∩ t).Nonempty
+  · exact h s hs t ht h'
+  · push_neg at h'
+    exact h' ▸ hC
 
-    refine ⟨h D h2 h3 hi (h1' ▸  hi)⟩
-    simp_rw [← h1]
-    -- have h3 :
-    sorry
-    apply fun C i ↦ h C _ i
+example (C D : ℕ → Set α) (n : ℕ) (hCD : C = D) : ⋂ i ≤ n, C i = ⋂ i ≤ n, D i := by
+  exact iInter₂_congr fun i j ↦ congrFun hCD i
 
-    · sorry
-    -- refine ⟨?_, fun h_↦ h ⟩
+lemma l2 (C : Set (Set α)) (hC : IsPiSystem' C) (s : ℕ → Set α) (hs : ∀ n, s n ∈ C) (n : ℕ) :
+    ⋂ i ≤ n, s i ∈ C :=  by
+  induction n with
+  | zero =>
+    simp only [le_zero_eq, iInter_iInter_eq_left]
+    exact hs 0
+  | succ n hn =>
+    rw [decumulate_succ s n]
+    exact hC (⋂ i, ⋂ (_ : i ≤ n), s i) hn (s (n + 1)) (hs (n + 1))
 
-    sorry
-≤
+theorem IsCompactSystem.iff_mono [Inhabited α] (hpi : IsPiSystem' p) : (IsCompactSystem p) ↔
+    (∀ (C : ℕ → Set α) (h : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C), (∀ i, p (C i)) →
+      ⋂ i, C i = ∅ → ∃ (s : Finset ℕ), ⋂ i ∈ s, C i = ∅) := by
+  rw [IsCompactSystem.iff_le]
+  refine ⟨fun h ↦ fun C _ i ↦ h C i, fun h C ↦ ?_⟩
+  let D := fun n ↦ ⋂ i ≤ n, C i
+  have h' := h C
+  have h1 (n : ℕ) : ⋂ i ≤ n, D i = ⋂ i ≤ n, C i := biInter_decumulate C n
+  have h1' : ⋂ i, D i = ⋂ i, C i := by exact biInter_le_eq_iInter
+  have h2 : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) D := by
+    refine directed_of_isDirected_le ?_
+    intro i j hij
+    simp [D]
+    intro k hk
+    refine biInter_subset_of_mem ?_
+    exact le_trans hk hij
+  intro hi hi'
+  have h3 (i : ℕ) : p (D i) := by
+    simp [D, hpi]
+    obtain h4 := l2 {s : Set α | p s} hpi C
+    obtain h5 := h4 hi i
+    exact h5
+  obtain h5 := h D h2 h3 (h1' ▸  hi')
+  obtain h6 := h D h2
+  rw [← iInter_empty_iff] at *
+  rcases h5 with ⟨n, hn⟩
+  use n
+  rwa [← h1 n]
+
 end definition
 
 /--
