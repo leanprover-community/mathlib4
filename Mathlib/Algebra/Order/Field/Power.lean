@@ -55,8 +55,6 @@ theorem zpow_strictAnti (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti (a ^ · : ℤ
 theorem zpow_lt_iff_lt (hx : 1 < a) : a ^ m < a ^ n ↔ m < n :=
   zpow_lt_zpow_iff_right₀ hx
 
-@[deprecated (since := "2024-02-10")] alias ⟨_, zpow_lt_of_lt⟩ := zpow_lt_iff_lt
-
 @[deprecated zpow_le_zpow_iff_right₀ (since := "2024-10-08")]
 theorem zpow_le_iff_le (hx : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
   zpow_le_zpow_iff_right₀ hx
@@ -161,7 +159,7 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
       have m : Q(ℕ) := mkRawNatLit (n / 2)
       haveI' : $b =Q $m + $m := ⟨⟩
       haveI' : $e =Q $a ^ $b := ⟨⟩
-      pure (.nonnegative q(Even.zpow_nonneg (even_add_self _) $a))
+      pure (.nonnegative q(Even.zpow_nonneg (Even.add_self _) $a))
     | .app (.app (.app (.const `Neg.neg _) _) _) b' =>
       let b' ← whnfR b'
       let .true := b'.isAppOfArity ``OfNat.ofNat 3 | throwError "not a ^ -n where n is a literal"
@@ -170,7 +168,7 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
       have m : Q(ℕ) := mkRawNatLit (n / 2)
       haveI' : $b =Q (-$m) + (-$m) := ⟨⟩
       haveI' : $e =Q $a ^ $b := ⟨⟩
-      pure (.nonnegative q(Even.zpow_nonneg (even_add_self _) $a))
+      pure (.nonnegative q(Even.zpow_nonneg (Even.add_self _) $a))
     | _ => throwError "not a ^ n where n is a literal or a negated literal"
   orElse result do
     let ra ← core zα pα a

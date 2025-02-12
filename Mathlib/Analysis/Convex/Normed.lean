@@ -111,10 +111,6 @@ theorem isBounded_convexHull {s : Set E} :
 instance (priority := 100) NormedSpace.instPathConnectedSpace : PathConnectedSpace E :=
   TopologicalAddGroup.pathConnectedSpace
 
-instance (priority := 100) NormedSpace.instLocPathConnectedSpace : LocPathConnectedSpace E :=
-  .of_bases (fun _ => Metric.nhds_basis_ball) fun x r r_pos =>
-    (convex_ball x r).isPathConnected <| by simp [r_pos]
-
 theorem Wbtw.dist_add_dist {x y z : P} (h : Wbtw ℝ x y z) :
     dist x y + dist y z = dist x z := by
   obtain ⟨a, ⟨ha₀, ha₁⟩, rfl⟩ := h

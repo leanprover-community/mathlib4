@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.NumberTheory.EulerProduct.Basic
 
 /-!

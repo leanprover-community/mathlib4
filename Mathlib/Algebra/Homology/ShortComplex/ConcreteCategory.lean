@@ -25,7 +25,7 @@ open Limits
 
 section
 
-variable {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C] [HasForget₂ C Ab]
+variable {C : Type u} [Category.{v} C] [HasForget.{w} C] [HasForget₂ C Ab]
 
 @[simp]
 lemma ShortComplex.zero_apply
@@ -81,7 +81,7 @@ lemma exact_iff_exact_map_forget₂ [S.HasHomology] :
     S.Exact ↔ (S.map (forget₂ C Ab)).Exact :=
   (S.exact_map_iff_of_faithful (forget₂ C Ab)).symm
 
-lemma exact_iff_of_concreteCategory [S.HasHomology] :
+lemma exact_iff_of_hasForget [S.HasHomology] :
     S.Exact ↔ ∀ (x₂ : (forget₂ C Ab).obj S.X₂) (_ : ((forget₂ C Ab).map S.g) x₂ = 0),
       ∃ (x₁ : (forget₂ C Ab).obj S.X₁), ((forget₂ C Ab).map S.f) x₁ = x₂ := by
   rw [S.exact_iff_exact_map_forget₂, ab_exact_iff]
@@ -123,10 +123,10 @@ end
 
 section abelian
 
-variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C] [HasForget₂ C Ab]
+variable {C : Type u} [Category.{v} C] [HasForget.{v} C] [HasForget₂ C Ab]
   [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
 
-attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
+attribute [local instance] HasForget.instFunLike HasForget.hasCoeToSort
 
 namespace ShortComplex
 

@@ -79,7 +79,7 @@ instance IsAffineOpen.fromSpecStalk_isPreimmersion {X : Scheme.{u}} {U : Opens X
     (hU : IsAffineOpen U) (x : X) (hx : x ∈ U) : IsPreimmersion (hU.fromSpecStalk hx) := by
   dsimp [IsAffineOpen.fromSpecStalk]
   haveI : IsPreimmersion (Spec.map (X.presheaf.germ U x hx)) :=
-    letI : Algebra Γ(X, U) (X.presheaf.stalk x) := (X.presheaf.germ U x hx).toAlgebra
+    letI : Algebra Γ(X, U) (X.presheaf.stalk x) := (X.presheaf.germ U x hx).hom.toAlgebra
     haveI := hU.isLocalization_stalk ⟨x, hx⟩
     IsPreimmersion.of_isLocalization (R := Γ(X, U)) (S := X.presheaf.stalk x)
       (hU.primeIdealOf ⟨x, hx⟩).asIdeal.primeCompl
@@ -262,8 +262,17 @@ def stalkClosedPointTo :
   f.stalkMap (closedPoint R) ≫ (stalkClosedPointIso R).hom
 
 instance isLocalHom_stalkClosedPointTo :
-    IsLocalHom (stalkClosedPointTo f) :=
-  inferInstanceAs <| IsLocalHom (f.stalkMap (closedPoint R) ≫ (stalkClosedPointIso R).hom)
+    IsLocalHom (stalkClosedPointTo f).hom :=
+  inferInstanceAs <| IsLocalHom (f.stalkMap (closedPoint R) ≫ (stalkClosedPointIso R).hom).hom
+
+/-- Copy of `isLocalHom_stalkClosedPointTo` which unbundles the comm ring.
+
+Useful for use in combination with `CommRingCat.of K` for a field `K`.
+-/
+instance isLocalHom_stalkClosedPointTo' {R : Type u} [CommRing R] [IsLocalRing R]
+    (f : Spec (.of R) ⟶ X) :
+    IsLocalHom (stalkClosedPointTo f).hom :=
+  isLocalHom_stalkClosedPointTo f
 
 lemma preimage_eq_top_of_closedPoint_mem
     {U : Opens X} (hU : f.base (closedPoint R) ∈ U) : f ⁻¹ᵁ U = ⊤ :=
@@ -295,7 +304,7 @@ lemma germ_stalkClosedPointTo (U : Opens X) (hU : f.base (closedPoint R) ∈ U) 
 
 @[reassoc]
 lemma germ_stalkClosedPointTo_Spec_fromSpecStalk
-    {x : X} (f : X.presheaf.stalk x ⟶ R) [IsLocalHom f] (U : Opens X) (hU) :
+    {x : X} (f : X.presheaf.stalk x ⟶ R) [IsLocalHom f.hom] (U : Opens X) (hU) :
     X.presheaf.germ U _ hU ≫ stalkClosedPointTo (Spec.map f ≫ X.fromSpecStalk x) =
       X.presheaf.germ U x (by simpa using hU) ≫ f := by
   have : (Spec.map f ≫ X.fromSpecStalk x).base (closedPoint R) = x := by
@@ -339,7 +348,7 @@ variable {R}
 omit [IsLocalRing R] in
 /-- useful lemma for applications of `SpecToEquivOfLocalRing` -/
 lemma SpecToEquivOfLocalRing_eq_iff
-    {f₁ f₂ : Σ x, { f : X.presheaf.stalk x ⟶ R // IsLocalHom f }} :
+    {f₁ f₂ : Σ x, { f : X.presheaf.stalk x ⟶ R // IsLocalHom f.hom }} :
     f₁ = f₂ ↔ ∃ h₁ : f₁.1 = f₂.1, f₁.2.1 =
       (X.presheaf.stalkCongr (by rw [h₁]; rfl)).hom ≫ f₂.2.1 := by
   constructor
@@ -358,7 +367,7 @@ Given a local ring `R` and scheme `X`, morphisms `Spec R ⟶ X` corresponds to p
 @[simps]
 noncomputable
 def SpecToEquivOfLocalRing :
-    (Spec R ⟶ X) ≃ Σ x, { f : X.presheaf.stalk x ⟶ R // IsLocalHom f } where
+    (Spec R ⟶ X) ≃ Σ x, { f : X.presheaf.stalk x ⟶ R // IsLocalHom f.hom } where
   toFun f := ⟨f.base (closedPoint R), Scheme.stalkClosedPointTo f, inferInstance⟩
   invFun xf := Spec.map xf.2.1 ≫ X.fromSpecStalk xf.1
   left_inv := Scheme.Spec_stalkClosedPointTo_fromSpecStalk

@@ -126,10 +126,7 @@ lemma IsInvertedBy.isoClosure_iff (W : MorphismProperty C) (F : C ⥤ D) :
   · intro h X Y f hf
     exact h _ (W.le_isoClosure _ hf)
   · intro h X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
-    have : f = e.inv.left ≫ f' ≫ e.hom.right := by
-      erw [← e.hom.w, ← Arrow.comp_left_assoc, e.inv_hom_id, Category.id_comp]
-      rfl
-    simp only [this, F.map_comp]
+    simp only [Arrow.iso_w' e, F.map_comp]
     have := h _ hf'
     infer_instance
 

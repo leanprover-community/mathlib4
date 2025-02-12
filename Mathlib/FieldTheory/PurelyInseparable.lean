@@ -959,7 +959,7 @@ theorem adjoin_eq_of_isAlgebraic [Algebra.IsAlgebraic F E] :
   rw [lift_top, lift_adjoin] at h
   haveI : IsScalarTower F S K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   rw [← h, ← map_eq_of_separableClosure_eq_bot F (separableClosure_eq_bot E K)]
-  simp only [coe_map, IsScalarTower.coe_toAlgHom', IntermediateField.algebraMap_apply]
+  simp only [S, coe_map, IsScalarTower.coe_toAlgHom', IntermediateField.algebraMap_apply]
 
 end separableClosure
 

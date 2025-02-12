@@ -94,9 +94,9 @@ instance impartial_neg (G : PGame) [G.Impartial] : (-G).Impartial := by
   refine ⟨?_, fun i => ?_, fun i => ?_⟩
   · rw [neg_neg]
     exact Equiv.symm (neg_equiv_self G)
-  · rw [moveLeft_neg']
+  · rw [moveLeft_neg]
     exact impartial_neg _
-  · rw [moveRight_neg']
+  · rw [moveRight_neg]
     exact impartial_neg _
 termination_by G
 

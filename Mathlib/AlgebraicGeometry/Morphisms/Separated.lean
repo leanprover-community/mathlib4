@@ -79,7 +79,7 @@ instance : IsLocalAtTarget @IsSeparated := by
 
 instance (R S : CommRingCat.{u}) (f : R ⟶ S) : IsSeparated (Spec.map f) := by
   constructor
-  letI := f.toAlgebra
+  letI := f.hom.toAlgebra
   show IsClosedImmersion (Limits.pullback.diagonal (Spec.map (CommRingCat.ofHom (algebraMap R S))))
   rw [diagonal_Spec_map, MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion]
   exact .spec_of_surjective _ fun x ↦ ⟨.tmul R 1 x,
@@ -126,7 +126,7 @@ lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
   rw [← top_le_iff]
   rintro x -
   simp only [diagonalCoverDiagonalRange, openCoverOfBase_J, openCoverOfBase_obj,
-    openCoverOfLeftRight_J, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.opensRange_coe, Opens.coe_mk,
+    openCoverOfLeftRight_J, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.coe_mk,
     Set.mem_iUnion, Set.mem_range, Sigma.exists]
   have H : (pullback.fst f f).base x = (pullback.snd f f).base x :=
     hf (by rw [← Scheme.comp_base_apply, ← Scheme.comp_base_apply, pullback.condition])
@@ -147,7 +147,7 @@ lemma Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange :
     Set.range (pullback.diagonal f).base ⊆ diagonalCoverDiagonalRange f 𝒰 𝒱 := by
   rintro _ ⟨x, rfl⟩
   simp only [diagonalCoverDiagonalRange, openCoverOfBase_J, openCoverOfBase_obj,
-    openCoverOfLeftRight_J, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.opensRange_coe, Opens.coe_mk,
+    openCoverOfLeftRight_J, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.coe_mk,
     Set.mem_iUnion, Set.mem_range, Sigma.exists]
   let i := 𝒰.f (f.base x)
   obtain ⟨y : 𝒰.obj i, hy : (𝒰.map i).base y = f.base x⟩ := 𝒰.covers (f.base x)

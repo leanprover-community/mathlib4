@@ -152,12 +152,12 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
       (ContinuousLinearMap.compL 𝕜 Fu G Gu (isoG.symm : G →L[𝕜] Gu)) Bu₀ := rfl
   have Bu_eq : (fun y => Bu (fu y) (gu y)) = isoG.symm ∘ (fun y => B (f y) (g y)) ∘ isoD := by
     ext1 y
-    simp [hBu, hBu₀, hfu, hgu]
+    simp [Du, Eu, Fu, Gu, hBu, hBu₀, hfu, hgu]
   -- All norms are preserved by the lifting process.
   have Bu_le : ‖Bu‖ ≤ ‖B‖ := by
     refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg B) fun y => ?_
     refine ContinuousLinearMap.opNorm_le_bound _ (by positivity) fun x => ?_
-    simp only [hBu, hBu₀, compL_apply, coe_comp', Function.comp_apply,
+    simp only [Du, Eu, Fu, Gu, hBu, hBu₀, compL_apply, coe_comp', Function.comp_apply,
       ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_coe, flip_apply,
       LinearIsometryEquiv.norm_map]
     calc
@@ -296,7 +296,7 @@ theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u 
   | empty =>
     cases n with
     | zero => simp [Sym.eq_nil_of_card_zero]
-    | succ n => simp [iteratedFDerivWithin_succ_const _ _ hs hx]
+    | succ n => simp [iteratedFDerivWithin_succ_const]
   | @insert i u hi IH =>
     conv => lhs; simp only [Finset.prod_insert hi]
     simp only [Finset.mem_insert, forall_eq_or_imp] at hf
@@ -546,7 +546,7 @@ theorem norm_iteratedFDeriv_clm_apply {f : E → F →L[𝕜] G} {g : E → F} {
     (Set.mem_univ x) hn
 
 theorem norm_iteratedFDerivWithin_clm_apply_const {f : E → F →L[𝕜] G} {c : F} {s : Set E} {x : E}
-    {N : WithTop ℕ∞} {n : ℕ} (hf : ContDiffOn 𝕜 N f s) (hs : UniqueDiffOn 𝕜 s)
+    {N : WithTop ℕ∞} {n : ℕ} (hf : ContDiffWithinAt 𝕜 N f s x) (hs : UniqueDiffOn 𝕜 s)
     (hx : x ∈ s) (hn : n ≤ N) :
     ‖iteratedFDerivWithin 𝕜 n (fun y : E => (f y) c) s x‖ ≤
       ‖c‖ * ‖iteratedFDerivWithin 𝕜 n f s x‖ := by
@@ -559,10 +559,10 @@ theorem norm_iteratedFDerivWithin_clm_apply_const {f : E → F →L[𝕜] G} {c 
   exact f.le_opNorm c
 
 theorem norm_iteratedFDeriv_clm_apply_const {f : E → F →L[𝕜] G} {c : F} {x : E}
-    {N : WithTop ℕ∞} {n : ℕ} (hf : ContDiff 𝕜 N f) (hn : n ≤ N) :
+    {N : WithTop ℕ∞} {n : ℕ} (hf : ContDiffAt 𝕜 N f x) (hn : n ≤ N) :
     ‖iteratedFDeriv 𝕜 n (fun y : E => (f y) c) x‖ ≤ ‖c‖ * ‖iteratedFDeriv 𝕜 n f x‖ := by
   simp only [← iteratedFDerivWithin_univ]
-  exact norm_iteratedFDerivWithin_clm_apply_const hf.contDiffOn uniqueDiffOn_univ
+  exact norm_iteratedFDerivWithin_clm_apply_const hf.contDiffWithinAt uniqueDiffOn_univ
     (Set.mem_univ x) hn
 
 end Apply

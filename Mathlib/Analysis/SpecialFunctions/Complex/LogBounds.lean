@@ -148,7 +148,8 @@ lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
   have H : f z = z * ∫ t in (0 : ℝ)..1, (-(t * z)) ^ n * (1 + t * z)⁻¹ := by
     convert (integral_unitInterval_deriv_eq_sub hcont hderiv).symm using 1
     · simp only [f, zero_add, add_zero, log_one, logTaylor_at_zero, sub_self, sub_zero]
-    · simp only [add_zero, log_one, logTaylor_at_zero, sub_self, real_smul, zero_add, smul_eq_mul]
+    · simp only [f', add_zero, log_one, logTaylor_at_zero, sub_self, real_smul, zero_add,
+        smul_eq_mul]
   unfold f at H
   simp only [H, norm_mul]
   simp_rw [neg_pow (_ * z) n, mul_assoc, intervalIntegral.integral_const_mul, mul_pow,
@@ -180,7 +181,7 @@ lemma norm_log_one_add_sub_self_le {z : ℂ} (hz : ‖z‖ < 1) :
 
 lemma norm_log_one_add_le {z : ℂ} (hz : ‖z‖ < 1) :
     ‖log (1 + z)‖ ≤ ‖z‖ ^ 2 * (1 - ‖z‖)⁻¹ / 2 + ‖z‖ := by
-  rw [Eq.symm (sub_add_cancel (log (1 + z)) z)]
+  rw [← sub_add_cancel (log (1 + z)) z]
   apply le_trans (norm_add_le _ _)
   exact add_le_add_right (Complex.norm_log_one_add_sub_self_le hz) ‖z‖
 

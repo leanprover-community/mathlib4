@@ -333,8 +333,7 @@ theorem colimitPresheafObjIsoComponentwiseLimit_inv_ι_app (F : J ⥤ Presheafed
   suffices f_eq : f = 𝟙 _ by rw [f_eq, comp_id]
   erw [← (F.obj j).presheaf.map_id]
   change (F.obj j).presheaf.map _ ≫ _ = _
-  erw [← (F.obj j).presheaf.map_comp, ← (F.obj j).presheaf.map_comp]
-  congr 1
+  simp
 
 @[simp]
 theorem colimitPresheafObjIsoComponentwiseLimit_hom_π (F : J ⥤ PresheafedSpace.{_, _, v} C)

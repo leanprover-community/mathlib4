@@ -385,7 +385,7 @@ theorem lintegral_withDensity_eq_lintegral_mul₀' {μ : Measure α} {f : α →
         rw [EventuallyEq, ae_withDensity_iff_ae_restrict hf.measurable_mk] at Z
         filter_upwards [Z]
         intro x hx
-        simp only [hx, Pi.mul_apply]
+        simp only [g', hx, Pi.mul_apply]
       · have M : MeasurableSet { x : α | f' x ≠ 0 }ᶜ :=
           (hf.measurable_mk (measurableSet_singleton 0).compl).compl
         filter_upwards [ae_restrict_mem M]
@@ -396,7 +396,7 @@ theorem lintegral_withDensity_eq_lintegral_mul₀' {μ : Measure α} {f : α →
       apply lintegral_congr_ae
       filter_upwards [hf.ae_eq_mk]
       intro x hx
-      simp only [hx, Pi.mul_apply]
+      simp only [f', hx, Pi.mul_apply]
 
 lemma setLIntegral_withDensity_eq_lintegral_mul₀' {μ : Measure α} {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) {g : α → ℝ≥0∞} (hg : AEMeasurable g (μ.withDensity f))
@@ -483,7 +483,7 @@ theorem lintegral_withDensity_eq_lintegral_mul_non_measurable₀ (μ : Measure �
       apply lintegral_congr_ae
       filter_upwards [hf.ae_eq_mk]
       intro x hx
-      simp only [hx, Pi.mul_apply]
+      simp only [f', hx, Pi.mul_apply]
 
 theorem setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀ (μ : Measure α)
     {f : α → ℝ≥0∞} {s : Set α} (hf : AEMeasurable f (μ.restrict s)) (g : α → ℝ≥0∞)

@@ -76,7 +76,7 @@ instance largeCategory : LargeCategory Bipointed where
   id := Hom.id
   comp := @Hom.comp
 
-instance concreteCategory : ConcreteCategory Bipointed where
+instance hasForget : HasForget Bipointed where
   forget :=
     { obj := Bipointed.X
       map := @Hom.toFun }

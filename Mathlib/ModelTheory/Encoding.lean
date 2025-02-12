@@ -234,7 +234,7 @@ theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
         Σn, L.Term (α ⊕ (Fin n)))) (finRange φ_l) ++ l)).get? ↑i).join = some ⟨_, ts i⟩ := by
       intro i
       simp only [Option.join, map_append, map_map, Option.bind_eq_some, id, exists_eq_right,
-        get?_eq_some, length_append, length_map, length_finRange]
+        get?_eq_some_iff, length_append, length_map, length_finRange]
       refine ⟨lt_of_lt_of_le i.2 le_self_add, ?_⟩
       rw [get_eq_getElem, getElem_append_left, getElem_map]
       · simp only [getElem_finRange, cast_mk, Fin.eta, Function.comp_apply, Sum.getLeft?_inl]

@@ -348,9 +348,6 @@ When you extend this structure, make sure to extend `MonoidHomClass`.
 @[to_additive]
 structure MonoidHom (M : Type*) (N : Type*) [MulOneClass M] [MulOneClass N] extends
   OneHom M N, M →ₙ* N
--- Porting note: remove once `to_additive` is updated
--- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
-attribute [to_additive existing] MonoidHom.toMulHom
 
 attribute [nolint docBlame] MonoidHom.toMulHom
 attribute [nolint docBlame] MonoidHom.toOneHom

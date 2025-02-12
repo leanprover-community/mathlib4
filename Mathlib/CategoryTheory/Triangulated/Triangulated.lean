@@ -13,6 +13,7 @@ pretriangulated categories which satisfy the octahedron axiom.
 
 -/
 
+assert_not_exists TwoSidedIdeal
 
 noncomputable section
 

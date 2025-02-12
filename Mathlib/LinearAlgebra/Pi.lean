@@ -217,8 +217,8 @@ theorem lsum_apply (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S]
     lsum R φ S f = ∑ i : ι, (f i).comp (proj i) := rfl
 
 @[simp high]
-theorem lsum_single {ι R : Type*} [Fintype ι] [DecidableEq ι] [CommRing R] {M : ι → Type*}
-    [(i : ι) → AddCommGroup (M i)] [(i : ι) → Module R (M i)] :
+theorem lsum_single {ι R : Type*} [Fintype ι] [DecidableEq ι] [CommSemiring R] {M : ι → Type*}
+    [(i : ι) → AddCommMonoid (M i)] [(i : ι) → Module R (M i)] :
     LinearMap.lsum R M R (LinearMap.single R M) = LinearMap.id :=
   LinearMap.ext fun x => by simp [Finset.univ_sum_single]
 
@@ -288,8 +288,8 @@ def diag (i j : ι) : φ i →ₗ[R] φ j :=
 theorem update_apply (f : (i : ι) → M₂ →ₗ[R] φ i) (c : M₂) (i j : ι) (b : M₂ →ₗ[R] φ i) :
     (update f i b j) c = update (fun i => f i c) i (b c) j := by
   by_cases h : j = i
-  · rw [h, update_same, update_same]
-  · rw [update_noteq h, update_noteq h]
+  · rw [h, update_self, update_self]
+  · rw [update_of_ne h, update_of_ne h]
 
 variable (R φ)
 
@@ -326,21 +326,20 @@ open LinearMap
 /-- A version of `Set.pi` for submodules. Given an index set `I` and a family of submodules
 `p : (i : ι) → Submodule R (φ i)`, `pi I s` is the submodule of dependent functions
 `f : (i : ι) → φ i` such that `f i` belongs to `p a` whenever `i ∈ I`. -/
+@[simps]
 def pi (I : Set ι) (p : (i : ι) → Submodule R (φ i)) : Submodule R ((i : ι) → φ i) where
   carrier := Set.pi I fun i => p i
   zero_mem' i _ := (p i).zero_mem
   add_mem' {_ _} hx hy i hi := (p i).add_mem (hx i hi) (hy i hi)
   smul_mem' c _ hx i hi := (p i).smul_mem c (hx i hi)
 
+attribute [norm_cast] coe_pi
+
 variable {I : Set ι} {p q : (i : ι) → Submodule R (φ i)} {x : (i : ι) → φ i}
 
 @[simp]
 theorem mem_pi : x ∈ pi I p ↔ ∀ i ∈ I, x i ∈ p i :=
   Iff.rfl
-
-@[simp, norm_cast]
-theorem coe_pi : (pi I p : Set ((i : ι) → φ i)) = Set.pi I fun i => p i :=
-  rfl
 
 @[simp]
 theorem pi_empty (p : (i : ι) → Submodule R (φ i)) : pi ∅ p = ⊤ :=
@@ -350,6 +349,7 @@ theorem pi_empty (p : (i : ι) → Submodule R (φ i)) : pi ∅ p = ⊤ :=
 theorem pi_top (s : Set ι) : (pi s fun i : ι => (⊤ : Submodule R (φ i))) = ⊤ :=
   SetLike.coe_injective <| Set.pi_univ _
 
+@[gcongr]
 theorem pi_mono {s : Set ι} (h : ∀ i ∈ s, p i ≤ q i) : pi s p ≤ pi s q :=
   Set.pi_mono h
 
@@ -458,7 +458,7 @@ def piCurry {ι : Type*} {κ : ι → Type*} (α : ∀ i, κ i → Type*)
   rfl
 
 /-- This is `Equiv.piOptionEquivProd` as a `LinearEquiv` -/
-def piOptionEquivProd {ι : Type*} {M : Option ι → Type*} [(i : Option ι) → AddCommGroup (M i)]
+def piOptionEquivProd {ι : Type*} {M : Option ι → Type*} [(i : Option ι) → AddCommMonoid (M i)]
     [(i : Option ι) → Module R (M i)] :
     ((i : Option ι) → M i) ≃ₗ[R] M none × ((i : ι) → M (some i)) :=
   { Equiv.piOptionEquivProd with

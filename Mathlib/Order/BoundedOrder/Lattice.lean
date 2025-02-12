@@ -7,19 +7,19 @@ import Mathlib.Order.BoundedOrder.Basic
 import Mathlib.Order.Lattice
 
 /-!
-# bounded lattices
+# Bounded lattices
 
 This file defines top and bottom elements (greatest and least elements) of a type, the bounded
-variants of different kinds of lattices, sets up the typeclass hierarchy between them and provides
+variants of different kinds of lattices, sets up the typeclass hierarchy between them, and provides
 instances for `Prop` and `fun`.
 
 ## Common lattices
 
-* Distributive lattices with a bottom element. Notated by `[DistribLattice α] [OrderBot α]`
+* Distributive lattices with a bottom element. Notated by `[DistribLattice α] [OrderBot α]`.
   It captures the properties of `Disjoint` that are common to `GeneralizedBooleanAlgebra` and
   `DistribLattice` when `OrderBot`.
 * Bounded and distributive lattice. Notated by `[DistribLattice α] [BoundedOrder α]`.
-  Typical examples include `Prop` and `Det α`.
+  Typical examples include `Prop` and `Set α`.
 -/
 
 open Function OrderDual
@@ -34,11 +34,9 @@ section SemilatticeSupTop
 
 variable [SemilatticeSup α] [OrderTop α]
 
--- Porting note: Not simp because simp can prove it
 theorem top_sup_eq (a : α) : ⊤ ⊔ a = ⊤ :=
   sup_of_le_left le_top
 
--- Porting note: Not simp because simp can prove it
 theorem sup_top_eq (a : α) : a ⊔ ⊤ = ⊤ :=
   sup_of_le_right le_top
 
@@ -48,11 +46,9 @@ section SemilatticeSupBot
 
 variable [SemilatticeSup α] [OrderBot α] {a b : α}
 
--- Porting note: Not simp because simp can prove it
 theorem bot_sup_eq (a : α) : ⊥ ⊔ a = a :=
   sup_of_le_right bot_le
 
--- Porting note: Not simp because simp can prove it
 theorem sup_bot_eq (a : α) : a ⊔ ⊥ = a :=
   sup_of_le_left bot_le
 
@@ -65,10 +61,8 @@ section SemilatticeInfTop
 
 variable [SemilatticeInf α] [OrderTop α] {a b : α}
 
--- Porting note: Not simp because simp can prove it
 lemma top_inf_eq (a : α) : ⊤ ⊓ a = a := inf_of_le_right le_top
 
--- Porting note: Not simp because simp can prove it
 lemma inf_top_eq (a : α) : a ⊓ ⊤ = a := inf_of_le_left le_top
 
 @[simp]
@@ -81,10 +75,8 @@ section SemilatticeInfBot
 
 variable [SemilatticeInf α] [OrderBot α]
 
--- Porting note: Not simp because simp can prove it
 lemma bot_inf_eq (a : α) : ⊥ ⊓ a = ⊥ := inf_of_le_left bot_le
 
--- Porting note: Not simp because simp can prove it
 lemma inf_bot_eq (a : α) : a ⊓ ⊥ = ⊥ := inf_of_le_right bot_le
 
 end SemilatticeInfBot

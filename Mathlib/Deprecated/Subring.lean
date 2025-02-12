@@ -179,6 +179,7 @@ theorem closure_subset_iff {s t : Set R} (ht : IsSubring t) : closure s ⊆ t �
   (AddGroup.closure_subset_iff ht.toIsAddSubgroup).trans
     ⟨Set.Subset.trans Monoid.subset_closure, Monoid.closure_subset ht.toIsSubmonoid⟩
 
+@[gcongr]
 theorem closure_mono {s t : Set R} (H : s ⊆ t) : closure s ⊆ closure t :=
   closure_subset closure.isSubring <| Set.Subset.trans H subset_closure
 

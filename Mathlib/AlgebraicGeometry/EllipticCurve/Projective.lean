@@ -15,7 +15,8 @@ import Mathlib.Tactic.LinearCombination'
 This file defines the type of points on a Weierstrass curve as a tuple, consisting of an equivalence
 class of triples up to scaling by a unit, satisfying a Weierstrass equation with a nonsingular
 condition. This file also defines the negation and addition operations of the group law for this
-type, and proves that they respect the Weierstrass equation and the nonsingular condition.
+type, and proves that they respect the Weierstrass equation and the nonsingular condition. The fact
+that they form an abelian group is proven in `Mathlib/AlgebraicGeometry/EllipticCurve/Group.lean`.
 
 ## Mathematical background
 
@@ -86,7 +87,7 @@ local macro "matrix_simp" : tactic =>
   `(tactic| simp only [Matrix.head_cons, Matrix.tail_cons, Matrix.smul_empty, Matrix.smul_cons,
     Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_two])
 
-universe u v
+universe r s u v w
 
 /-! ## Weierstrass curves -/
 
@@ -104,6 +105,10 @@ open MvPolynomial
 
 local macro "eval_simp" : tactic =>
   `(tactic| simp only [eval_C, eval_X, eval_add, eval_sub, eval_mul, eval_pow])
+
+local macro "map_simp" : tactic =>
+  `(tactic| simp only [map_ofNat, map_C, map_X, map_neg, map_add, map_sub, map_mul, map_pow,
+    map_div₀, WeierstrassCurve.map, Function.comp_apply])
 
 local macro "pderiv_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, pderiv_mul, pderiv_pow,
@@ -134,6 +139,10 @@ lemma smul_fin3 (P : Fin 3 → R) (u : R) : u • P = ![u * P x, u * P y, u * P 
 lemma smul_fin3_ext (P : Fin 3 → R) (u : R) :
     (u • P) x = u * P x ∧ (u • P) y = u * P y ∧ (u • P) z = u * P z :=
   ⟨rfl, rfl, rfl⟩
+
+lemma comp_smul {S : Type v} [CommRing S] (f : R →+* S) (P : Fin 3 → R) (u : R) :
+    f ∘ (u • P) = f u • f ∘ P := by
+  ext n; fin_cases n <;> simp only [smul_fin3, comp_fin3] <;> map_simp
 
 /-- The equivalence setoid for a point representative. -/
 scoped instance instSetoidPoint : Setoid <| Fin 3 → R :=
@@ -439,6 +448,19 @@ lemma equiv_of_Z_eq_zero {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nons
 lemma equiv_zero_of_Z_eq_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z = 0) :
     P ≈ ![0, 1, 0] :=
   equiv_of_Z_eq_zero hP nonsingular_zero hPz rfl
+
+lemma comp_equiv_comp {K : Type v} [Field K] (f : F →+* K) {P Q : Fin 3 → F} (hP : W.Nonsingular P)
+    (hQ : W.Nonsingular Q): f ∘ P ≈ f ∘ Q ↔ P ≈ Q := by
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · by_cases hz : f (P z) = 0
+    · exact equiv_of_Z_eq_zero hP hQ ((map_eq_zero_iff f f.injective).mp hz) <|
+        (map_eq_zero_iff f f.injective).mp <| (Z_eq_zero_of_equiv h).mp hz
+    · refine equiv_of_X_eq_of_Y_eq ((map_ne_zero_iff f f.injective).mp hz)
+        ((map_ne_zero_iff f f.injective).mp <| hz.comp (Z_eq_zero_of_equiv h).mpr) ?_ ?_
+      all_goals apply f.injective; map_simp
+      exacts [X_eq_of_equiv h, Y_eq_of_equiv h]
+  · rcases h with ⟨u, rfl⟩
+    exact ⟨Units.map f u, (comp_smul ..).symm⟩
 
 variable (W') in
 /-- The proposition that a point class on `W'` is nonsingular. If `P` is a point representative,
@@ -1672,6 +1694,231 @@ end Point
 
 end Affine
 
+section Map
+
+/-! ### Maps across ring homomorphisms -/
+
+variable {S : Type v} [CommRing S] (f : R →+* S)
+
+@[simp]
+lemma map_polynomial : (W'.map f).toProjective.polynomial = MvPolynomial.map f W'.polynomial := by
+  simp only [polynomial]
+  map_simp
+
+lemma Equation.map {P : Fin 3 → R} (h : W'.Equation P) :
+    (W'.map f).toProjective.Equation (f ∘ P) := by
+  rw [Equation, map_polynomial, eval_map, ← eval₂_comp, ← map_zero f]
+  exact congr_arg f h
+
+variable {f} in
+@[simp]
+lemma map_equation (hf : Function.Injective f) (P : Fin 3 → R) :
+    (W'.map f).toProjective.Equation (f ∘ P) ↔ W'.Equation P := by
+  simp only [Equation, map_polynomial, eval_map, ← eval₂_comp, map_eq_zero_iff f hf]
+
+@[simp]
+lemma map_polynomialX :
+    (W'.map f).toProjective.polynomialX = MvPolynomial.map f W'.polynomialX := by
+  simp only [polynomialX, map_polynomial, pderiv_map]
+
+@[simp]
+lemma map_polynomialY :
+    (W'.map f).toProjective.polynomialY = MvPolynomial.map f W'.polynomialY := by
+  simp only [polynomialY, map_polynomial, pderiv_map]
+
+@[simp]
+lemma map_polynomialZ :
+    (W'.map f).toProjective.polynomialZ = MvPolynomial.map f W'.polynomialZ := by
+  simp only [polynomialZ, map_polynomial, pderiv_map]
+
+variable {f} in
+@[simp]
+lemma map_nonsingular (hf : Function.Injective f) (P : Fin 3 → R) :
+    (W'.map f).toProjective.Nonsingular (f ∘ P) ↔ W'.Nonsingular P := by
+  simp only [Nonsingular, map_equation hf, map_polynomialX, map_polynomialY, map_polynomialZ,
+    eval_map, ← eval₂_comp, map_ne_zero_iff f hf]
+
+@[simp]
+lemma map_negY (P : Fin 3 → R) : (W'.map f).toProjective.negY (f ∘ P) = f (W'.negY P) := by
+  simp only [negY]
+  map_simp
+
+@[simp]
+protected lemma map_neg (P : Fin 3 → R) : (W'.map f).toProjective.neg (f ∘ P) = f ∘ W'.neg P := by
+  simp only [neg, map_negY, comp_fin3]
+  map_simp
+
+@[simp]
+lemma map_dblU {K : Type v} [Field K] (f : F →+* K) (P : Fin 3 → F) :
+    (W.map f).toProjective.dblU (f ∘ P) = f (W.dblU P) := by
+  simp only [dblU_eq]
+  map_simp
+
+@[simp]
+lemma map_dblZ (P : Fin 3 → R) : (W'.map f).toProjective.dblZ (f ∘ P) = f (W'.dblZ P) := by
+  simp only [dblZ, negY]
+  map_simp
+
+@[simp]
+lemma map_dblX (P : Fin 3 → R) : (W'.map f).toProjective.dblX (f ∘ P) = f (W'.dblX P) := by
+  simp only [dblX, map_dblU, map_negY]
+  map_simp
+
+@[simp]
+lemma map_negDblY (P : Fin 3 → R) : (W'.map f).toProjective.negDblY (f ∘ P) = f (W'.negDblY P) := by
+  simp only [negDblY, map_dblU, map_dblX, map_negY]
+  map_simp
+
+@[simp]
+lemma map_dblY (P : Fin 3 → R) : (W'.map f).toProjective.dblY (f ∘ P) = f (W'.dblY P) := by
+  simp only [dblY, negY_eq, map_negDblY, map_dblX, map_dblZ]
+  map_simp
+
+@[simp]
+lemma map_dblXYZ (P : Fin 3 → R) : (W'.map f).toProjective.dblXYZ (f ∘ P) = f ∘ dblXYZ W' P := by
+  simp only [dblXYZ, map_dblX, map_dblY, map_dblZ, comp_fin3]
+
+@[simp]
+lemma map_addU {K : Type v} [Field K] (f : F →+* K) (P Q : Fin 3 → F) :
+    addU (f ∘ P) (f ∘ Q) = f (addU P Q) := by
+  simp only [addU]
+  map_simp
+
+@[simp]
+lemma map_addZ (P Q : Fin 3 → R) :
+    (W'.map f).toProjective.addZ (f ∘ P) (f ∘ Q) = f (W'.addZ P Q) := by
+  simp only [addZ]
+  map_simp
+
+@[simp]
+lemma map_addX (P Q : Fin 3 → R) :
+    (W'.map f).toProjective.addX (f ∘ P) (f ∘ Q) = f (W'.addX P Q) := by
+  simp only [addX]
+  map_simp
+
+@[simp]
+lemma map_negAddY (P Q : Fin 3 → R) :
+    (W'.map f).toProjective.negAddY (f ∘ P) (f ∘ Q) = f (W'.negAddY P Q) := by
+  simp only [negAddY]
+  map_simp
+
+@[simp]
+lemma map_addY (P Q : Fin 3 → R) :
+    (W'.map f).toProjective.addY (f ∘ P) (f ∘ Q) = f (W'.addY P Q) := by
+  simp only [addY, negY_eq, map_negAddY, map_addX, map_addZ]
+  map_simp
+
+@[simp]
+lemma map_addXYZ (P Q : Fin 3 → R) :
+    (W'.map f).toProjective.addXYZ (f ∘ P) (f ∘ Q) = f ∘ addXYZ W' P Q := by
+  simp only [addXYZ, map_addX, map_addY, map_addZ, comp_fin3]
+
+@[simp]
+protected lemma map_add {K : Type v} [Field K] (f : F →+* K) {P Q : Fin 3 → F}
+    (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) :
+    (W.map f).toProjective.add (f ∘ P) (f ∘ Q) = f ∘ W.add P Q := by
+  by_cases h : P ≈ Q
+  · rw [add_of_equiv <| (comp_equiv_comp f hP hQ).mpr h, add_of_equiv h, map_dblXYZ]
+  · rw [add_of_not_equiv <| h.comp (comp_equiv_comp f hP hQ).mp, add_of_not_equiv h, map_addXYZ]
+
+end Map
+
+section BaseChange
+
+/-! ### Base changes across algebra homomorphisms -/
+
+variable {R : Type r} [CommRing R] (W' : Projective R) {S : Type s} [CommRing S] [Algebra R S]
+  {A : Type u} [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
+  {B : Type v} [CommRing B] [Algebra R B] [Algebra S B] [IsScalarTower R S B] (f : A →ₐ[S] B)
+
+lemma baseChange_polynomial : (W'.baseChange B).toProjective.polynomial =
+    MvPolynomial.map f (W'.baseChange A).toProjective.polynomial := by
+  rw [← map_polynomial, map_baseChange]
+
+variable {f} in
+lemma baseChange_equation (hf : Function.Injective f) (P : Fin 3 → A) :
+    (W'.baseChange B).toProjective.Equation (f ∘ P) ↔
+      (W'.baseChange A).toProjective.Equation P := by
+  rw [← RingHom.coe_coe, ← map_equation hf, AlgHom.toRingHom_eq_coe, map_baseChange]
+
+lemma baseChange_polynomialX : (W'.baseChange B).toProjective.polynomialX =
+    MvPolynomial.map f (W'.baseChange A).toProjective.polynomialX := by
+  rw [← map_polynomialX, map_baseChange]
+
+lemma baseChange_polynomialY : (W'.baseChange B).toProjective.polynomialY =
+    MvPolynomial.map f (W'.baseChange A).toProjective.polynomialY := by
+  rw [← map_polynomialY, map_baseChange]
+
+lemma baseChange_polynomialZ : (W'.baseChange B).toProjective.polynomialZ =
+    MvPolynomial.map f (W'.baseChange A).toProjective.polynomialZ := by
+  rw [← map_polynomialZ, map_baseChange]
+
+variable {f} in
+lemma baseChange_nonsingular (hf : Function.Injective f) (P : Fin 3 → A) :
+    (W'.baseChange B).toProjective.Nonsingular (f ∘ P) ↔
+      (W'.baseChange A).toProjective.Nonsingular P := by
+  rw [← RingHom.coe_coe, ← map_nonsingular hf, AlgHom.toRingHom_eq_coe, map_baseChange]
+
+lemma baseChange_negY (P : Fin 3 → A) :
+    (W'.baseChange B).toProjective.negY (f ∘ P) = f ((W'.baseChange A).toProjective.negY P) := by
+  rw [← RingHom.coe_coe, ← map_negY, map_baseChange]
+
+protected lemma baseChange_neg (P : Fin 3 → A) :
+    (W'.baseChange B).toProjective.neg (f ∘ P) = f ∘ (W'.baseChange A).toProjective.neg P := by
+  rw [← RingHom.coe_coe, ← WeierstrassCurve.Projective.map_neg, map_baseChange]
+
+lemma baseChange_dblZ (P : Fin 3 → A) : (W'.baseChange B).toProjective.dblZ (f ∘ P) =
+    f ((W'.baseChange A).toProjective.dblZ P) := by
+  rw [← RingHom.coe_coe, ← map_dblZ, map_baseChange]
+
+lemma baseChange_dblX (P : Fin 3 → A) : (W'.baseChange B).toProjective.dblX (f ∘ P) =
+    f ((W'.baseChange A).toProjective.dblX P) := by
+  rw [← RingHom.coe_coe, ← map_dblX, map_baseChange]
+
+lemma baseChange_negDblY (P : Fin 3 → A) : (W'.baseChange B).toProjective.negDblY (f ∘ P) =
+    f ((W'.baseChange A).toProjective.negDblY P) := by
+  rw [← RingHom.coe_coe, ← map_negDblY, map_baseChange]
+
+lemma baseChange_dblY (P : Fin 3 → A) : (W'.baseChange B).toProjective.dblY (f ∘ P) =
+    f ((W'.baseChange A).toProjective.dblY P) := by
+  rw [← RingHom.coe_coe, ← map_dblY, map_baseChange]
+
+lemma baseChange_dblXYZ (P : Fin 3 → A) : (W'.baseChange B).toProjective.dblXYZ (f ∘ P) =
+    f ∘ (W'.baseChange A).toProjective.dblXYZ P := by
+  rw [← RingHom.coe_coe, ← map_dblXYZ, map_baseChange]
+
+lemma baseChange_addX (P Q : Fin 3 → A) : (W'.baseChange B).toProjective.addX (f ∘ P) (f ∘ Q) =
+    f ((W'.baseChange A).toProjective.addX P Q) := by
+  rw [← RingHom.coe_coe, ← map_addX, map_baseChange]
+
+lemma baseChange_negAddY (P Q : Fin 3 → A) :
+    (W'.baseChange B).toProjective.negAddY (f ∘ P) (f ∘ Q) =
+      f ((W'.baseChange A).toProjective.negAddY P Q) := by
+  rw [← RingHom.coe_coe, ← map_negAddY, map_baseChange]
+
+lemma baseChange_addY (P Q : Fin 3 → A) : (W'.baseChange B).toProjective.addY (f ∘ P) (f ∘ Q) =
+    f ((W'.baseChange A).toProjective.addY P Q) := by
+  rw [← RingHom.coe_coe, ← map_addY, map_baseChange]
+
+lemma baseChange_addXYZ (P Q : Fin 3 → A) : (W'.baseChange B).toProjective.addXYZ (f ∘ P) (f ∘ Q) =
+    f ∘ (W'.baseChange A).toProjective.addXYZ P Q := by
+  rw [← RingHom.coe_coe, ← map_addXYZ, map_baseChange]
+
+variable [Algebra R F] [Algebra S F] [IsScalarTower R S F] {K : Type v} [Field K] [Algebra R K]
+  [Algebra S K] [IsScalarTower R S K] (f : F →ₐ[S] K)
+
+lemma baseChange_dblU (P : Fin 3 → F) : (W'.baseChange K).toProjective.dblU (f ∘ P) =
+    f ((W'.baseChange F).toProjective.dblU P) := by
+  rw [← RingHom.coe_coe, ← map_dblU, map_baseChange]
+
+lemma baseChange_add {P Q : Fin 3 → F} (hP : (W'.baseChange F).toProjective.Nonsingular P)
+    (hQ : (W'.baseChange F).toProjective.Nonsingular Q) :
+    (W'.baseChange K).toProjective.add (f ∘ P) (f ∘ Q) =
+      f ∘ (W'.baseChange F).toProjective.add P Q := by
+  rw [← RingHom.coe_coe, ← WeierstrassCurve.Projective.map_add f hP hQ (K := K), map_baseChange]
+
+end BaseChange
+
 end WeierstrassCurve.Projective
 
 /-- An abbreviation for `WeierstrassCurve.Projective.Point.fromAffine` for dot notation. -/
@@ -1679,4 +1926,4 @@ abbrev WeierstrassCurve.Affine.Point.toProjective {R : Type u} [CommRing R] [Non
     {W : Affine R} (P : W.Point) : W.toProjective.Point :=
   Projective.Point.fromAffine P
 
-set_option linter.style.longFile 1700
+set_option linter.style.longFile 2100

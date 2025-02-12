@@ -93,7 +93,8 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       rcases exists_smooth_tsupport_subset (hs.mem_nhds hx) with ⟨f, hf⟩
       let g : ι := ⟨f, (subset_tsupport f).trans hf.1, hf.2.1, hf.2.2.1, hf.2.2.2.1⟩
       have : x ∈ support (g : E → ℝ) := by
-        simp only [hf.2.2.2.2, Subtype.coe_mk, mem_support, Ne, one_ne_zero, not_false_iff]
+        simp only [g, hf.2.2.2.2, Subtype.coe_mk, mem_support, Ne, one_ne_zero,
+          not_false_iff]
       exact mem_iUnion_of_mem _ this
     simp_rw [← this]
     apply isOpen_iUnion_countable
@@ -149,10 +150,10 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
     calc
       ‖iteratedFDeriv ℝ i ((M⁻¹ * δ n) • g n) x‖ = ‖(M⁻¹ * δ n) • iteratedFDeriv ℝ i (g n) x‖ := by
         rw [iteratedFDeriv_const_smul_apply]
-        exact (g_smooth n).of_le (mod_cast le_top)
+        exact (g_smooth n).contDiffAt.of_le (mod_cast le_top)
       _ = M⁻¹ * δ n * ‖iteratedFDeriv ℝ i (g n) x‖ := by
         rw [norm_smul _ (iteratedFDeriv ℝ i (g n) x), Real.norm_of_nonneg]; positivity
-      _ ≤ M⁻¹ * δ n * M := (mul_le_mul_of_nonneg_left ((hR i x).trans (IR i hi)) (by positivity))
+      _ ≤ M⁻¹ * δ n * M := by gcongr; exact (hR i x).trans (IR i hi)
       _ = δ n := by field_simp
   choose r rpos hr using this
   have S : ∀ x, Summable fun n => (r n • g n) x := fun x ↦ by

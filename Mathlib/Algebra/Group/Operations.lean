@@ -27,8 +27,7 @@ See the module `Algebra.AddTorsor` for a motivating example for the name `VAdd` 
 
 -/
 
-assert_not_exists One
-assert_not_exists Function.Injective
+assert_not_exists One Function.Injective
 
 universe u v w
 
@@ -82,7 +81,7 @@ class SMul (M : Type u) (α : Type v) where
   but it is intended to be used for left actions. -/
   smul : M → α → α
 
-@[inherit_doc] infixl:65 " +ᵥ " => HVAdd.hVAdd
+@[inherit_doc] infixr:65 " +ᵥ " => HVAdd.hVAdd
 @[inherit_doc] infixl:65 " -ᵥ " => VSub.vsub
 @[inherit_doc] infixr:73 " • " => HSMul.hSMul
 

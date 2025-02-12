@@ -143,7 +143,8 @@ lemma toColex_compress_lt_toColex {hU : U.Nonempty} {hV : V.Nonempty} (h : max' 
 private def UsefulCompression (U V : Finset α) : Prop :=
   Disjoint U V ∧ #U = #V ∧ ∃ (HU : U.Nonempty) (HV : V.Nonempty), max' U HU < max' V HV
 
-private instance UsefulCompression.instDecidableRel : @DecidableRel (Finset α) UsefulCompression :=
+private instance UsefulCompression.instDecidableRel :
+    DecidableRel (α := Finset α) UsefulCompression :=
   fun _ _ ↦ inferInstanceAs (Decidable (_ ∧ _))
 
 /-- Applying a good compression will decrease measure, keep cardinality, keep sizes and decrease

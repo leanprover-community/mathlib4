@@ -144,10 +144,9 @@ partial def transformNegation (e : Expr) : SimpM Simp.Step := do
 
 /-- Common entry point to `push_neg` as a conv. -/
 def pushNegCore (tgt : Expr) : MetaM Simp.Result := do
-  let myctx : Simp.Context :=
-    { config := { eta := true, zeta := false, proj := false },
-      simpTheorems := #[ ]
-      congrTheorems := (← getSimpCongrTheorems) }
+  let myctx : Simp.Context ← Simp.mkContext { eta := true, zeta := false, proj := false }
+      (simpTheorems := #[ ])
+      (congrTheorems := (← getSimpCongrTheorems))
   (·.1) <$> Simp.main tgt myctx (methods := { pre := transformNegation })
 
 /--

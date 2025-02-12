@@ -123,7 +123,7 @@ theorem lt_pow_of_log_lt {b x y : ℕ} (hb : 1 < b) : log b y < x → y < b ^ x 
 lemma log_lt_self (b : ℕ) {x : ℕ} (hx : x ≠ 0) : log b x < x :=
   match le_or_lt b 1 with
   | .inl h => log_of_left_le_one h x ▸ Nat.pos_iff_ne_zero.2 hx
-  | .inr h => log_lt_of_lt_pow hx <| lt_pow_self h _
+  | .inr h => log_lt_of_lt_pow hx <| Nat.lt_pow_self h
 
 lemma log_le_self (b x : ℕ) : log b x ≤ x :=
   if hx : x = 0 then by simp [hx]

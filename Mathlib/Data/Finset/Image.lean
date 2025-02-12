@@ -31,11 +31,7 @@ choosing between `insert` and `Finset.cons`, or between `Finset.union` and `Fins
 Move the material about `Finset.range` so that the `Mathlib.Algebra.Group.Embedding` import can be
 removed.
 -/
-
--- TODO
--- assert_not_exists OrderedCommMonoid
-assert_not_exists MonoidWithZero
-assert_not_exists MulAction
+assert_not_exists OrderedCommMonoid MonoidWithZero MulAction
 
 variable {α β γ : Type*}
 
@@ -313,8 +309,10 @@ theorem mem_image : b ∈ s.image f ↔ ∃ a ∈ s, f a = b := by
 theorem mem_image_of_mem (f : α → β) {a} (h : a ∈ s) : f a ∈ s.image f :=
   mem_image.2 ⟨_, h, rfl⟩
 
-theorem forall_image {p : β → Prop} : (∀ b ∈ s.image f, p b) ↔ ∀ a ∈ s, p (f a) := by
-  simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+lemma forall_mem_image {p : β → Prop} : (∀ y ∈ s.image f, p y) ↔ ∀ ⦃x⦄, x ∈ s → p (f x) := by simp
+lemma exists_mem_image {p : β → Prop} : (∃ y ∈ s.image f, p y) ↔ ∃ x ∈ s, p (f x) := by simp
+
+@[deprecated (since := "2024-11-23")] alias forall_image := forall_mem_image
 
 theorem map_eq_image (f : α ↪ β) (s : Finset α) : s.map f = s.image f :=
   eq_of_veq (s.map f).2.dedup.symm
@@ -481,12 +479,15 @@ theorem image_sdiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : Inj
     (s \ t).image f = s.image f \ t.image f :=
   mod_cast Set.image_diff hf s t
 
+lemma image_sdiff_of_injOn [DecidableEq α] {t : Finset α} (hf : Set.InjOn f s) (hts : t ⊆ s) :
+    (s \ t).image f = s.image f \ t.image f :=
+  mod_cast Set.image_diff_of_injOn hf <| coe_subset.2 hts
+
 open scoped symmDiff in
 theorem image_symmDiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : Injective f) :
     (s ∆ t).image f = s.image f ∆ t.image f :=
   mod_cast Set.image_symmDiff hf s t
 
-@[simp]
 theorem _root_.Disjoint.of_image_finset {s t : Finset α} {f : α → β}
     (h : Disjoint (s.image f) (t.image f)) : Disjoint s t :=
   disjoint_iff_ne.2 fun _ ha _ hb =>

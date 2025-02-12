@@ -7,7 +7,6 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Nilpotent.Defs
-import Mathlib.Tactic.StacksAttribute
 
 /-!
 

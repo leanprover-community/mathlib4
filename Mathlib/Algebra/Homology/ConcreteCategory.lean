@@ -10,7 +10,7 @@ import Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
 # Homology of complexes in concrete categories
 
 The homology of short complexes in concrete categories was studied in
-`Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory`. In this file,
+`Mathlib.Algebra.Homology.ShortComplex.HasForget`. In this file,
 we introduce specific definitions and lemmas for the homology
 of homological complexes in concrete categories. In particular,
 we give a computation of the connecting homomorphism of
@@ -22,7 +22,7 @@ open CategoryTheory
 
 universe v u
 
-variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C] [HasForget₂ C Ab.{v}]
+variable {C : Type u} [Category.{v} C] [HasForget.{v} C] [HasForget₂ C Ab.{v}]
   [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
   {ι : Type*} {c : ComplexShape ι}
 

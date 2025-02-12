@@ -39,10 +39,7 @@ Prove lemmas relating extreme sets and points to the intrinsic frontier.
 -/
 
 
-open Function Set
-
-open scoped Classical
-open Affine
+open Function Set Affine
 
 variable {𝕜 E F ι : Type*} {π : ι → Type*}
 
@@ -187,17 +184,18 @@ theorem extremePoints_prod (s : Set E) (t : Set F) :
 @[simp]
 theorem extremePoints_pi (s : ∀ i, Set (π i)) :
     (univ.pi s).extremePoints 𝕜 = univ.pi fun i ↦ (s i).extremePoints 𝕜 := by
+  classical
   ext x
   simp only [mem_extremePoints, mem_pi, mem_univ, true_imp_iff, @forall_and ι]
   refine and_congr_right fun hx ↦ ⟨fun h i ↦ ?_, fun h ↦ ?_⟩
   · rintro x₁ hx₁ x₂ hx₂ hi
-    refine (h (update x i x₁) ?_ (update x i x₂) ?_ ?_).imp (fun h₁ ↦ by rw [← h₁, update_same])
-        fun h₂ ↦ by rw [← h₂, update_same]
+    refine (h (update x i x₁) ?_ (update x i x₂) ?_ ?_).imp (fun h₁ ↦ by rw [← h₁, update_self])
+        fun h₂ ↦ by rw [← h₂, update_self]
     iterate 2
       rintro j
       obtain rfl | hji := eq_or_ne j i
-      · rwa [update_same]
-      · rw [update_noteq hji]
+      · rwa [update_self]
+      · rw [update_of_ne hji]
         exact hx _
     rw [← Pi.image_update_openSegment]
     exact ⟨_, hi, update_eq_self _ _⟩

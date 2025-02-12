@@ -139,13 +139,15 @@ theorem le_log_iff_exp_le (hy : 0 < y) : x ≤ log y ↔ exp x ≤ y := by rw [�
 
 theorem lt_log_iff_exp_lt (hy : 0 < y) : x < log y ↔ exp x < y := by rw [← exp_lt_exp, exp_log hy]
 
-theorem log_pos_iff (hx : 0 < x) : 0 < log x ↔ 1 < x := by
+theorem log_pos_iff (hx : 0 ≤ x) : 0 < log x ↔ 1 < x := by
+  rcases hx.eq_or_lt with (rfl | hx)
+  · simp [le_refl, zero_le_one]
   rw [← log_one]
   exact log_lt_log_iff zero_lt_one hx
 
 @[bound]
 theorem log_pos (hx : 1 < x) : 0 < log x :=
-  (log_pos_iff (lt_trans zero_lt_one hx)).2 hx
+  (log_pos_iff (lt_trans zero_lt_one hx).le).2 hx
 
 theorem log_pos_of_lt_neg_one (hx : x < -1) : 0 < log x := by
   rw [← neg_neg x, log_neg_eq_log]
@@ -172,16 +174,17 @@ theorem log_nonneg_iff (hx : 0 < x) : 0 ≤ log x ↔ 1 ≤ x := by rw [← not_
 theorem log_nonneg (hx : 1 ≤ x) : 0 ≤ log x :=
   (log_nonneg_iff (zero_lt_one.trans_le hx)).2 hx
 
-theorem log_nonpos_iff (hx : 0 < x) : log x ≤ 0 ↔ x ≤ 1 := by rw [← not_lt, log_pos_iff hx, not_lt]
-
-theorem log_nonpos_iff' (hx : 0 ≤ x) : log x ≤ 0 ↔ x ≤ 1 := by
+theorem log_nonpos_iff (hx : 0 ≤ x) : log x ≤ 0 ↔ x ≤ 1 := by
   rcases hx.eq_or_lt with (rfl | hx)
   · simp [le_refl, zero_le_one]
-  exact log_nonpos_iff hx
+  rw [← not_lt, log_pos_iff hx.le, not_lt]
+
+@[deprecated (since := "2025-01-16")]
+alias log_nonpos_iff' := log_nonpos_iff
 
 @[bound]
 theorem log_nonpos (hx : 0 ≤ x) (h'x : x ≤ 1) : log x ≤ 0 :=
-  (log_nonpos_iff' hx).2 h'x
+  (log_nonpos_iff hx).2 h'x
 
 theorem log_natCast_nonneg (n : ℕ) : 0 ≤ log n := by
   if hn : n = 0 then
@@ -382,6 +385,21 @@ theorem isLittleO_const_log_atTop {c : ℝ} : (fun _ => c) =o[atTop] log := by
     <| Tendsto.div_atTop (a := c) (by simp) tendsto_log_atTop
   filter_upwards [eventually_gt_atTop 1] with x hx
   aesop (add safe forward log_pos)
+
+/-- `Real.exp` as a `PartialHomeomorph` with `source = univ` and `target = {z | 0 < z}`. -/
+@[simps] noncomputable def expPartialHomeomorph : PartialHomeomorph ℝ ℝ where
+  toFun := Real.exp
+  invFun := Real.log
+  source := univ
+  target := Ioi (0 : ℝ)
+  map_source' x _ := exp_pos x
+  map_target' _ _ := mem_univ _
+  left_inv' _ _ := by simp
+  right_inv' _ hx := exp_log hx
+  open_source := isOpen_univ
+  open_target := isOpen_Ioi
+  continuousOn_toFun := continuousOn_exp
+  continuousOn_invFun x hx := (continuousAt_log (ne_of_gt hx)).continuousWithinAt
 
 end Real
 

@@ -78,12 +78,12 @@ theorem aeStronglyMeasurable'_condexpL2 (hm : m ≤ m0) (f : α →₂[μ] E) :
   lpMeas.aeStronglyMeasurable' _
 
 theorem integrableOn_condexpL2_of_measure_ne_top (hm : m ≤ m0) (hμs : μ s ≠ ∞) (f : α →₂[μ] E) :
-    IntegrableOn (E := E) (condexpL2 E 𝕜 hm f) s μ :=
+    IntegrableOn (ε := E) (condexpL2 E 𝕜 hm f) s μ :=
   integrableOn_Lp_of_measure_ne_top (condexpL2 E 𝕜 hm f : α →₂[μ] E) fact_one_le_two_ennreal.elim
     hμs
 
 theorem integrable_condexpL2_of_isFiniteMeasure (hm : m ≤ m0) [IsFiniteMeasure μ] {f : α →₂[μ] E} :
-    Integrable (β := E) (condexpL2 E 𝕜 hm f) μ :=
+    Integrable (ε := E) (condexpL2 E 𝕜 hm f) μ :=
   integrableOn_univ.mp <| integrableOn_condexpL2_of_measure_ne_top hm (measure_ne_top _ _) f
 
 theorem norm_condexpL2_le_one (hm : m ≤ m0) : ‖@condexpL2 α E 𝕜 _ _ _ _ _ _ μ hm‖ ≤ 1 :=
@@ -95,7 +95,7 @@ theorem norm_condexpL2_le (hm : m ≤ m0) (f : α →₂[μ] E) : ‖condexpL2 E
     (mul_le_of_le_one_left (norm_nonneg _) (norm_condexpL2_le_one hm))
 
 theorem eLpNorm_condexpL2_le (hm : m ≤ m0) (f : α →₂[μ] E) :
-    eLpNorm (F := E) (condexpL2 E 𝕜 hm f) 2 μ ≤ eLpNorm f 2 μ := by
+    eLpNorm (ε := E) (condexpL2 E 𝕜 hm f) 2 μ ≤ eLpNorm f 2 μ := by
   rw [lpMeas_coe, ← ENNReal.toReal_le_toReal (Lp.eLpNorm_ne_top _) (Lp.eLpNorm_ne_top _), ←
     Lp.norm_def, ← Lp.norm_def, Submodule.norm_coe]
   exact norm_condexpL2_le hm f
@@ -344,7 +344,7 @@ theorem lintegral_nnnorm_condexpL2_indicator_le (hm : m ≤ m0) (hs : Measurable
 with finite measure is integrable. -/
 theorem integrable_condexpL2_indicator (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E') :
-    Integrable (β := E') (condexpL2 E' 𝕜 hm (indicatorConstLp 2 hs hμs x)) μ := by
+    Integrable (ε := E') (condexpL2 E' 𝕜 hm (indicatorConstLp 2 hs hμs x)) μ := by
   refine integrable_of_forall_fin_meas_le' hm (μ s * ‖x‖₊)
     (ENNReal.mul_lt_top hμs.lt_top ENNReal.coe_lt_top) ?_ ?_
   · rw [lpMeas_coe]; exact Lp.aestronglyMeasurable _

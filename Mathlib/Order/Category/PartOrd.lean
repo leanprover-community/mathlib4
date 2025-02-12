@@ -30,8 +30,8 @@ instance : BundledHom.ParentProjection @PartialOrder.toPreorder :=
 deriving instance LargeCategory for PartOrd
 
 -- Porting note: probably see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : ConcreteCategory PartOrd :=
-  BundledHom.concreteCategory _
+instance : HasForget PartOrd :=
+  BundledHom.hasForget _
 
 instance : CoeSort PartOrd Type* :=
   Bundled.coeSort

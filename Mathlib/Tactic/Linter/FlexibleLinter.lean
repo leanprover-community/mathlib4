@@ -295,7 +295,7 @@ def flexible : Std.HashSet Name :=
     `Mathlib.Tactic.normNum,
     `linarith,
     `nlinarith,
-    ``Lean.Parser.Tactic.tacticNorm_cast_,
+    ``Lean.Parser.Tactic.tacticNorm_cast__,
     `Aesop.Frontend.Parser.aesopTactic,
     `Mathlib.Tactic.Tauto.tauto,
     `Mathlib.Meta.FunProp.funPropTacStx,
@@ -343,8 +343,7 @@ Otherwise, if an `FVarId` with the same `userName` exists in the new context, us
 If both of these fail, return `default` (i.e. "fail"). -/
 def persistFVars (fv : FVarId) (before after : LocalContext) : FVarId :=
   let ldecl := (before.find? fv).getD default
-  let name := ldecl.userName
-  (getFVarIdCandidates fv name after).getD 0 default
+  (getFVarIdCandidates fv ldecl.userName after).getD 0 default
 
 /-- `reallyPersist` converts an array of pairs `(fvar, mvar)` to another array of the same type. -/
 def reallyPersist
@@ -376,11 +375,11 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
   if (← MonadState.get).messages.hasErrors then
     return
   let trees ← getInfoTrees
-  let x := trees.toList.map (extractCtxAndGoals (fun _ => true))
+  let x := trees.map (extractCtxAndGoals (fun _ => true))
   -- `stains` records pairs `(location, mvar)`, where
   -- * `location` is either a hypothesis or the main goal modified by a flexible tactic and
   -- * `mvar` is the metavariable containing the modified location
-  let mut stains : Array ((FVarId × MVarId) × (Stained × Syntax)) := .empty
+  let mut stains : Array ((FVarId × MVarId) × (Stained × Syntax)) := #[]
   let mut msgs : Array (Syntax × Syntax × Stained) := #[]
   for d in x do for (s, ctx0, ctx1, mvs0, mvs1) in d do
     let skind := s.getKind
@@ -389,17 +388,14 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
     for d in getStained! s do
       if shouldStain? then
         for currMVar1 in mvs1 do
-          let lctx1 := ((ctx1.decls.find? currMVar1).getD default).lctx
+          let lctx1 := (ctx1.decls.findD currMVar1 default).lctx
           let locsAfter := d.toFMVarId currMVar1 lctx1
-
-          for l in locsAfter do
-            stains := stains.push (l, (d, s))
-
+          stains := stains ++ locsAfter.map (fun l ↦ (l, (d, s)))
       else
         let stained_in_syntax := if usesGoal? skind then (toStained s).insert d else toStained s
         if !flexible.contains skind then
           for currMv0 in mvs0 do
-            let lctx0 := ((ctx0.decls.find? currMv0).getD default).lctx
+            let lctx0 := (ctx0.decls.findD currMv0 default).lctx
             let mut foundFvs : Std.HashSet (FVarId × MVarId):= {}
             for st in stained_in_syntax do
               for d in st.toFMVarId currMv0 lctx0 do

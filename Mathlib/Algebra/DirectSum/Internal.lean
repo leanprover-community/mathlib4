@@ -213,7 +213,7 @@ end coe
 section CanonicallyOrderedAddCommMonoid
 
 variable [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
-variable [CanonicallyOrderedAddCommMonoid ι] [SetLike.GradedMonoid A]
+variable [AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι] [SetLike.GradedMonoid A]
 
 theorem coe_of_mul_apply_of_not_le {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι) (h : ¬i ≤ n) :
     ((of (fun i => A i) i r * r') n : R) = 0 := by
@@ -240,7 +240,7 @@ theorem coe_mul_of_apply_of_not_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι)
 variable [Sub ι] [OrderedSub ι] [AddLeftReflectLE ι]
 
 /- The following two lemmas only require the same hypotheses as `eq_tsub_iff_add_eq_of_le`, but we
-  state them for `CanonicallyOrderedAddCommMonoid` + the above three typeclasses for convenience. -/
+  state them for the above typeclasses for convenience. -/
 theorem coe_mul_of_apply_of_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι) (h : i ≤ n) :
     ((r * of (fun i => A i) i r') n : R) = r (n - i) * r' :=
   coe_mul_of_apply_aux _ _ _ fun _x => (eq_tsub_iff_add_eq_of_le h).symm
@@ -337,7 +337,7 @@ instance instSemiring : Semiring (A 0) := (subsemiring A).toSemiring
 @[simp, norm_cast] theorem coe_natCast (n : ℕ) : (n : A 0) = (n : R) := rfl
 
 @[simp, norm_cast] theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : A 0) = (OfNat.ofNat n : R) := rfl
+    (ofNat(n) : A 0) = (ofNat(n) : R) := rfl
 
 end Semiring
 

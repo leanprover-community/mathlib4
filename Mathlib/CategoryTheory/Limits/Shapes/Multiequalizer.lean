@@ -586,8 +586,8 @@ noncomputable def ofSigmaCofork (c : Cofork I.fstSigmaMap I.sndSigmaMap) : Multi
   ι :=
     { app := fun x =>
         match x with
-        | WalkingMultispan.left a => (Sigma.ι I.left a : _) ≫ I.fstSigmaMap ≫ c.π
-        | WalkingMultispan.right b => (Sigma.ι I.right b : _) ≫ c.π
+        | WalkingMultispan.left a => (Sigma.ι I.left a :) ≫ I.fstSigmaMap ≫ c.π
+        | WalkingMultispan.right b => (Sigma.ι I.right b :) ≫ c.π
       naturality := by
         rintro (_ | _) (_ | _) (_ | _ | _)
         · simp
@@ -600,17 +600,17 @@ noncomputable def ofSigmaCofork (c : Cofork I.fstSigmaMap I.sndSigmaMap) : Multi
 @[simp]
 theorem ofSigmaCofork_ι_app_left (c : Cofork I.fstSigmaMap I.sndSigmaMap) (a) :
     (ofSigmaCofork I c).ι.app (WalkingMultispan.left a) =
-      (Sigma.ι I.left a : _) ≫ I.fstSigmaMap ≫ c.π :=
+      (Sigma.ι I.left a :) ≫ I.fstSigmaMap ≫ c.π :=
   rfl
 
 -- @[simp] -- Porting note: LHS simplifies to obtain the normal form below
 theorem ofSigmaCofork_ι_app_right (c : Cofork I.fstSigmaMap I.sndSigmaMap) (b) :
-    (ofSigmaCofork I c).ι.app (WalkingMultispan.right b) = (Sigma.ι I.right b : _) ≫ c.π :=
+    (ofSigmaCofork I c).ι.app (WalkingMultispan.right b) = (Sigma.ι I.right b :) ≫ c.π :=
   rfl
 
 @[simp]
 theorem ofSigmaCofork_ι_app_right' (c : Cofork I.fstSigmaMap I.sndSigmaMap) (b) :
-    π (ofSigmaCofork I c) b = (Sigma.ι I.right b : _) ≫ c.π :=
+    π (ofSigmaCofork I c) b = (Sigma.ι I.right b :) ≫ c.π :=
   rfl
 
 end Multicofork

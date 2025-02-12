@@ -71,7 +71,7 @@ instance instFunLike : FunLike (M ↪ₑ[L] N) M N where
 theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.BoundedFormula α n)
     (v : α → M) (xs : Fin n → M) : φ.Realize (f ∘ v) (f ∘ xs) ↔ φ.Realize v xs := by
   classical
-    rw [← BoundedFormula.realize_restrictFreeVar Set.Subset.rfl, Set.inclusion_eq_id, iff_eq_eq]
+    rw [← BoundedFormula.realize_restrictFreeVar' Set.Subset.rfl, Set.inclusion_eq_id, iff_eq_eq]
     have h :=
       f.map_formula' ((φ.restrictFreeVar id).toFormula.relabel (Fintype.equivFin _))
         (Sum.elim (v ∘ (↑)) xs ∘ (Fintype.equivFin _).symm)
@@ -84,7 +84,7 @@ theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.Bo
     erw [Function.comp_assoc _ _ (Fintype.equivFin _), _root_.Equiv.symm_comp_self,
       Function.comp_id, Sum.elim_comp_inl, Sum.elim_comp_inr (v ∘ Subtype.val) xs,
       ← Set.inclusion_eq_id (s := (BoundedFormula.freeVarFinset φ : Set α)) Set.Subset.rfl,
-      BoundedFormula.realize_restrictFreeVar Set.Subset.rfl]
+      BoundedFormula.realize_restrictFreeVar' Set.Subset.rfl]
 
 @[simp]
 theorem map_formula (f : M ↪ₑ[L] N) {α : Type*} (φ : L.Formula α) (x : α → M) :
@@ -138,14 +138,14 @@ theorem map_constants (φ : M ↪ₑ[L] N) (c : L.Constants) : φ c = c :=
 def toEmbedding (f : M ↪ₑ[L] N) : M ↪[L] N where
   toFun := f
   inj' := f.injective
-  map_fun' {_} f x := by aesop
-  map_rel' {_} R x := by aesop
+  map_fun' {_} f x := by simp
+  map_rel' {_} R x := by simp
 
 /-- An elementary embedding is also a first-order homomorphism. -/
 def toHom (f : M ↪ₑ[L] N) : M →[L] N where
   toFun := f
-  map_fun' {_} f x := by aesop
-  map_rel' {_} R x := by aesop
+  map_fun' {_} f x := by simp
+  map_rel' {_} R x := by simp
 
 @[simp]
 theorem toEmbedding_toHom (f : M ↪ₑ[L] N) : f.toEmbedding.toHom = f.toHom :=
@@ -281,7 +281,7 @@ namespace Equiv
 /-- A first-order equivalence is also an elementary embedding. -/
 def toElementaryEmbedding (f : M ≃[L] N) : M ↪ₑ[L] N where
   toFun := f
-  map_formula' n φ x := by aesop
+  map_formula' n φ x := by simp
 
 @[simp]
 theorem toElementaryEmbedding_toEmbedding (f : M ≃[L] N) :

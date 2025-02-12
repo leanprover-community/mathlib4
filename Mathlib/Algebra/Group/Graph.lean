@@ -163,7 +163,7 @@ set_option linter.existingAttributeWarning false in
 attribute [to_additive existing] coe_graph graph_toSubmonoid
 
 @[to_additive]
-lemma mem_graph {f : G →* H} {x : G × H} : x ∈ f.mgraph ↔ f x.1 = x.2 := .rfl
+lemma mem_graph {f : G →* H} {x : G × H} : x ∈ f.graph ↔ f x.1 = x.2 := .rfl
 
 @[to_additive]
 lemma graph_eq_range_prod (f : G →* H) : f.graph = range ((id _).prod f) := by aesop

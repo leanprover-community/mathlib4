@@ -17,7 +17,6 @@ located here.
 
 noncomputable section
 
-open scoped Classical
 open Real Topology NNReal ENNReal Filter ComplexConjugate Finset Set
 
 /-!
@@ -208,24 +207,18 @@ theorem isTheta_cpow_rpow (hl_im : IsBoundedUnder (· ≤ ·) l fun x => |(g x).
     (fun x => f x ^ g x) =Θ[l] fun x => abs (f x) ^ (g x).re :=
   calc
     (fun x => f x ^ g x) =Θ[l]
-        (show α → ℝ from fun x => abs (f x) ^ (g x).re / Real.exp (arg (f x) * im (g x))) :=
-      isTheta_of_norm_eventuallyEq' <| hl.mono fun _ => abs_cpow_of_imp
-    _ =Θ[l] (show α → ℝ from fun x => abs (f x) ^ (g x).re / (1 : ℝ)) :=
-      ((isTheta_refl _ _).div (isTheta_exp_arg_mul_im hl_im))
-    _ =ᶠ[l] (show α → ℝ from fun x => abs (f x) ^ (g x).re) := by
+        (fun x => abs (f x) ^ (g x).re / Real.exp (arg (f x) * im (g x))) :=
+      .of_norm_eventuallyEq <| hl.mono fun _ => abs_cpow_of_imp
+    _ =Θ[l] fun x => abs (f x) ^ (g x).re / (1 : ℝ) :=
+      (isTheta_refl _ _).div (isTheta_exp_arg_mul_im hl_im)
+    _ =ᶠ[l] (fun x => abs (f x) ^ (g x).re) := by
       simp only [ofReal_one, div_one]
       rfl
 
 theorem isTheta_cpow_const_rpow {b : ℂ} (hl : b.re = 0 → b ≠ 0 → ∀ᶠ x in l, f x ≠ 0) :
     (fun x => f x ^ b) =Θ[l] fun x => abs (f x) ^ b.re :=
   isTheta_cpow_rpow isBoundedUnder_const <| by
-    -- Porting note: was
-    -- simpa only [eventually_imp_distrib_right, Ne.def, ← not_frequently, not_imp_not, Imp.swap]
-    --   using hl
-    -- but including `Imp.swap` caused an infinite loop
-    convert hl
-    rw [eventually_imp_distrib_right]
-    tauto
+    simpa only [eventually_imp_distrib_right, not_imp_not, Imp.swap (a := b.re = 0)] using hl
 
 end
 
@@ -323,11 +316,11 @@ theorem isLittleO_log_rpow_rpow_atTop {s : ℝ} (r : ℝ) (hs : 0 < s) :
   have H : 0 < s / r' := div_pos hs hr
   calc
     (fun x => log x ^ r) =O[atTop] fun x => log x ^ r' :=
-      IsBigO.of_bound 1 <|
-        (tendsto_log_atTop.eventually_ge_atTop 1).mono fun x hx => by
-          have hx₀ : 0 ≤ log x := zero_le_one.trans hx
-          simp [r', norm_eq_abs, abs_rpow_of_nonneg, abs_rpow_of_nonneg hx₀,
-            rpow_le_rpow_of_exponent_le (hx.trans (le_abs_self _))]
+      .of_norm_eventuallyLE <| by
+        filter_upwards [tendsto_log_atTop.eventually_ge_atTop 1] with x hx
+        rw [Real.norm_of_nonneg (by positivity)]
+        gcongr
+        exacts [hx, le_max_left _ _]
     _ =o[atTop] fun x => (x ^ (s / r')) ^ r' :=
       ((isLittleO_log_rpow_atTop H).rpow hr <|
         (_root_.tendsto_rpow_atTop H).eventually <| eventually_ge_atTop 0)
@@ -336,17 +329,17 @@ theorem isLittleO_log_rpow_rpow_atTop {s : ℝ} (r : ℝ) (hs : 0 < s) :
 
 theorem isLittleO_abs_log_rpow_rpow_nhds_zero {s : ℝ} (r : ℝ) (hs : s < 0) :
     (fun x => |log x| ^ r) =o[𝓝[>] 0] fun x => x ^ s :=
-  ((isLittleO_log_rpow_rpow_atTop r (neg_pos.2 hs)).comp_tendsto tendsto_inv_zero_atTop).congr'
-    (mem_of_superset (Icc_mem_nhdsWithin_Ioi <| Set.left_mem_Ico.2 one_pos) fun x hx => by
+  ((isLittleO_log_rpow_rpow_atTop r (neg_pos.2 hs)).comp_tendsto tendsto_inv_nhdsGT_zero).congr'
+    (mem_of_superset (Icc_mem_nhdsGT one_pos) fun x hx => by
       simp [abs_of_nonpos, log_nonpos hx.1 hx.2])
     (eventually_mem_nhdsWithin.mono fun x hx => by
       rw [Function.comp_apply, inv_rpow hx.out.le, rpow_neg hx.out.le, inv_inv])
 
 theorem isLittleO_log_rpow_nhds_zero {r : ℝ} (hr : r < 0) : log =o[𝓝[>] 0] fun x => x ^ r :=
   (isLittleO_abs_log_rpow_rpow_nhds_zero 1 hr).neg_left.congr'
-    (mem_of_superset (Icc_mem_nhdsWithin_Ioi <| Set.left_mem_Ico.2 one_pos) fun x hx => by
+    (mem_of_superset (Icc_mem_nhdsGT one_pos) fun x hx => by
       simp [abs_of_nonpos (log_nonpos hx.1 hx.2)])
-    EventuallyEq.rfl
+    .rfl
 
 theorem tendsto_log_div_rpow_nhds_zero {r : ℝ} (hr : r < 0) :
     Tendsto (fun x => log x / x ^ r) (𝓝[>] 0) (𝓝 0) :=

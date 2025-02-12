@@ -10,9 +10,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 # Center of a group with zero
 -/
 
-assert_not_exists Finset
-assert_not_exists Ring
-assert_not_exists Subsemigroup
+assert_not_exists Finset Ring Subsemigroup
 
 variable {M₀ G₀ : Type*}
 

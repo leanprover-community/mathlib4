@@ -69,7 +69,7 @@ instance : UsableInSimplexAlgorithm DenseMatrix where
     for ⟨i, j, v⟩ in vals do
       data := data.modify i fun row => row.set! j v
     return ⟨data⟩
-  swapRows mat i j := ⟨mat.data.swap! i j⟩
+  swapRows mat i j := ⟨mat.data.swapIfInBounds i j⟩
   subtractRow mat i j coef :=
     let newData : Array (Array Rat) := mat.data.modify j fun row =>
       row.zipWith mat.data[i]! fun x y => x - coef * y
@@ -101,7 +101,7 @@ instance : UsableInSimplexAlgorithm SparseMatrix where
       if v != 0 then
         data := data.modify i fun row => row.insert j v
     return ⟨data⟩
-  swapRows mat i j := ⟨mat.data.swap! i j⟩
+  swapRows mat i j := ⟨mat.data.swapIfInBounds i j⟩
   subtractRow mat i j coef :=
     let newData := mat.data.modify j fun row =>
       mat.data[i]!.fold (fun cur k val =>

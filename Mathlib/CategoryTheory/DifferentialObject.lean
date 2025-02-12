@@ -208,10 +208,10 @@ end DifferentialObject
 namespace DifferentialObject
 
 variable (S : Type*) [AddMonoidWithOne S]
-variable (C : Type (u + 1)) [LargeCategory C] [ConcreteCategory C] [HasZeroMorphisms C]
+variable (C : Type (u + 1)) [LargeCategory C] [HasForget C] [HasZeroMorphisms C]
 variable [HasShift C S]
 
-instance concreteCategoryOfDifferentialObjects : ConcreteCategory (DifferentialObject S C) where
+instance hasForgetOfDifferentialObjects : HasForget (DifferentialObject S C) where
   forget := forget S C ⋙ CategoryTheory.forget C
 
 instance : HasForget₂ (DifferentialObject S C) C where

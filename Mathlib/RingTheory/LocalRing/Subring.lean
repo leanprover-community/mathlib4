@@ -18,9 +18,6 @@ import Mathlib.RingTheory.Localization.AtPrime
 
 open IsLocalRing Set
 
-open scoped Polynomial
-
-
 variable {R S : Type*} [CommRing R] [CommRing S]
 variable {K : Type*} [Field K]
 

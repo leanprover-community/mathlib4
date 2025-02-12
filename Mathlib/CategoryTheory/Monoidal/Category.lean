@@ -124,7 +124,7 @@ scoped notation "𝟙_ " C:max => (MonoidalCategoryStruct.tensorUnit : C)
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Used to ensure that `𝟙_` notation is used, as the ascription makes this not automatic. -/
-@[delab app.CategoryTheory.MonoidalCategoryStruct.tensorUnit]
+@[app_delab CategoryTheory.MonoidalCategoryStruct.tensorUnit]
 def delabTensorUnit : Delab := whenPPOption getPPNotation <| withOverApp 3 do
   let e ← getExpr
   guard <| e.isAppOfArity ``MonoidalCategoryStruct.tensorUnit 3
@@ -818,19 +818,16 @@ abbrev tensorUnitRight : C ⥤ C := tensorRight (𝟙_ C)
 
 -- We can express the associator and the unitors, given componentwise above,
 -- as natural isomorphisms.
--- Porting Note: Had to add a `simps!` because Lean was complaining this wasn't a constructor app.
 /-- The associator as a natural isomorphism. -/
 @[simps!]
 def associatorNatIso : leftAssocTensor C ≅ rightAssocTensor C :=
   NatIso.ofComponents (fun _ => MonoidalCategory.associator _ _ _)
 
--- Porting Note: same as above
 /-- The left unitor as a natural isomorphism. -/
 @[simps!]
 def leftUnitorNatIso : tensorUnitLeft C ≅ 𝟭 C :=
   NatIso.ofComponents MonoidalCategory.leftUnitor
 
--- Porting Note: same as above
 /-- The right unitor as a natural isomorphism. -/
 @[simps!]
 def rightUnitorNatIso : tensorUnitRight C ≅ 𝟭 C :=

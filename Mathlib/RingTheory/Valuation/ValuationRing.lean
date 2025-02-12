@@ -41,7 +41,7 @@ The `ValuationRing` class is kept to be in sync with the literature.
 
 -/
 
-assert_not_exists DiscreteValuationRing
+assert_not_exists IsDiscreteValuationRing
 
 universe u v w
 

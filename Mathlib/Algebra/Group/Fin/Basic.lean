@@ -17,8 +17,7 @@ This file contains the additive and multiplicative monoid instances on `Fin n`.
 See note [foundational algebra order theory].
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists MonoidWithZero
+assert_not_exists OrderedCommMonoid MonoidWithZero
 
 open Nat
 

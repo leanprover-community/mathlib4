@@ -106,16 +106,16 @@ section Algebra
 In particular this provides the instance `Algebra k (MonoidAlgebra k G)`.
 -/
 instance algebra {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Monoid G] :
-    Algebra k (MonoidAlgebra A G) :=
-  { singleOneRingHom.comp (algebraMap k A) with
-    smul_def' := fun r a => by
-      ext
-      -- Porting note: Newly required.
-      rw [Finsupp.coe_smul]
-      simp [single_one_mul_apply, Algebra.smul_def, Pi.smul_apply]
-    commutes' := fun r f => by
-      refine Finsupp.ext fun _ => ?_
-      simp [single_one_mul_apply, mul_single_one_apply, Algebra.commutes] }
+    Algebra k (MonoidAlgebra A G) where
+  algebraMap := singleOneRingHom.comp (algebraMap k A)
+  smul_def' := fun r a => by
+    ext
+    -- Porting note: Newly required.
+    rw [Finsupp.coe_smul]
+    simp [single_one_mul_apply, Algebra.smul_def, Pi.smul_apply]
+  commutes' := fun r f => by
+    refine Finsupp.ext fun _ => ?_
+    simp [single_one_mul_apply, mul_single_one_apply, Algebra.commutes]
 
 /-- `Finsupp.single 1` as an `AlgHom` -/
 @[simps! apply]
@@ -323,8 +323,8 @@ def equivariantOfLinearOfComm
     · intro g r c' _nm _nz w
       dsimp at *
       simp only [add_smul, f.map_add, w, add_left_inj, single_eq_algebraMap_mul_of, ← smul_smul]
-      erw [algebraMap_smul (MonoidAlgebra k G) r, algebraMap_smul (MonoidAlgebra k G) r, f.map_smul,
-        h g v, of_apply]
+      rw [algebraMap_smul (MonoidAlgebra k G) r, algebraMap_smul (MonoidAlgebra k G) r, f.map_smul,
+        of_apply, h g v]
 
 variable (h : ∀ (g : G) (v : V), f (single g (1 : k) • v) = single g (1 : k) • f v)
 
@@ -369,7 +369,7 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
     (Multiplicative G →ₙ* A) ≃ (k[G] →ₙₐ[k] A) :=
   { (MonoidAlgebra.liftMagma k : (Multiplicative G →ₙ* A) ≃ (_ →ₙₐ[k] A)) with
     toFun := fun f =>
-      { (MonoidAlgebra.liftMagma k f : _) with
+      { (MonoidAlgebra.liftMagma k f :) with
         toFun := fun a => sum a fun m t => t • f (Multiplicative.ofAdd m) }
     invFun := fun F => F.toMulHom.comp (ofMagma k G) }
 
@@ -385,16 +385,16 @@ section Algebra
 In particular this provides the instance `Algebra k k[G]`.
 -/
 instance algebra [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] :
-    Algebra R k[G] :=
-  { singleZeroRingHom.comp (algebraMap R k) with
-    smul_def' := fun r a => by
-      ext
-      -- Porting note: Newly required.
-      rw [Finsupp.coe_smul]
-      simp [single_zero_mul_apply, Algebra.smul_def, Pi.smul_apply]
-    commutes' := fun r f => by
-      refine Finsupp.ext fun _ => ?_
-      simp [single_zero_mul_apply, mul_single_zero_apply, Algebra.commutes] }
+    Algebra R k[G] where
+  algebraMap := singleZeroRingHom.comp (algebraMap R k)
+  smul_def' := fun r a => by
+    ext
+    -- Porting note: Newly required.
+    rw [Finsupp.coe_smul]
+    simp [single_zero_mul_apply, Algebra.smul_def, Pi.smul_apply]
+  commutes' := fun r f => by
+    refine Finsupp.ext fun _ => ?_
+    simp [single_zero_mul_apply, mul_single_zero_apply, Algebra.commutes]
 
 /-- `Finsupp.single 0` as an `AlgHom` -/
 @[simps! apply]

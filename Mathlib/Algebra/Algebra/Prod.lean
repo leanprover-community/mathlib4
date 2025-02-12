@@ -30,17 +30,16 @@ variable (R A B)
 
 open Algebra
 
-instance algebra : Algebra R (A × B) :=
-  { Prod.instModule,
-    RingHom.prod (algebraMap R A) (algebraMap R B) with
-    commutes' := by
-      rintro r ⟨a, b⟩
-      dsimp
-      rw [commutes r a, commutes r b]
-    smul_def' := by
-      rintro r ⟨a, b⟩
-      dsimp
-      rw [Algebra.smul_def r a, Algebra.smul_def r b] }
+instance algebra : Algebra R (A × B) where
+  algebraMap := RingHom.prod (algebraMap R A) (algebraMap R B)
+  commutes' := by
+    rintro r ⟨a, b⟩
+    dsimp
+    rw [commutes r a, commutes r b]
+  smul_def' := by
+    rintro r ⟨a, b⟩
+    dsimp
+    rw [Algebra.smul_def r a, Algebra.smul_def r b]
 
 variable {R A B}
 

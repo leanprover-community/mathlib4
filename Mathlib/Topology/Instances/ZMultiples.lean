@@ -6,8 +6,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Module.Rat
 import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Topology.Algebra.UniformGroup.Basic
-import Mathlib.Topology.Instances.Real
 import Mathlib.Topology.Metrizable.Basic
+import Mathlib.Topology.Instances.Real.Defs
 
 /-!
 The subgroup "multiples of `a`" (`zmultiples a`) is a discrete subgroup of `ℝ`, i.e. its

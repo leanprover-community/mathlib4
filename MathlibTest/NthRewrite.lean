@@ -16,7 +16,7 @@ example [AddZeroClass G] {a : G} : a + a = a + (a + 0) := by
 
 structure F where
   (a : ℕ)
-  (v : Vector ℕ a)
+  (v : List.Vector ℕ a)
   (p : v.val = [])
 
 example (f : F) : f.v.val = [] := by

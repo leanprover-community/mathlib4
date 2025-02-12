@@ -476,7 +476,7 @@ instance nsmul : SMul ℕ (NormedAddGroupHom V₁ V₂) where
         let ⟨b, hb⟩ := f.bound'
         ⟨n • b, fun v => by
           rw [Pi.smul_apply, nsmul_eq_mul, mul_assoc]
-          exact (norm_nsmul_le _ _).trans (by gcongr; apply hb)⟩ }
+          exact norm_nsmul_le.trans (by gcongr; apply hb)⟩ }
 
 @[simp]
 theorem coe_nsmul (r : ℕ) (f : NormedAddGroupHom V₁ V₂) : ⇑(r • f) = r • ⇑f :=

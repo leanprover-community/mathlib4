@@ -135,7 +135,7 @@ theorem tendsto_measure_cthickening {μ : Measure α} {s : Set α}
     filter_upwards [self_mem_nhdsWithin (α := ℝ)] with _ hr
     rw [cthickening_of_nonpos hr]
   convert B.sup A
-  exact (nhds_left_sup_nhds_right' 0).symm
+  exact (nhdsLE_sup_nhdsGT 0).symm
 
 /-- If a closed set has a closed thickening with finite measure, then the measure of its closed
 `r`-thickenings converge to its measure as `r` tends to `0`. -/

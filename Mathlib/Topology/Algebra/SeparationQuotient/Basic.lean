@@ -3,7 +3,7 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.LinearMap
 
 /-!
 # Algebraic operations on `SeparationQuotient`
@@ -85,7 +85,7 @@ variable {M : Type*} [TopologicalSpace M]
 
 @[to_additive]
 instance instMul [Mul M] [ContinuousMul M] : Mul (SeparationQuotient M) where
-  mul := Quotient.map₂' (· * ·) fun _ _ h₁ _ _ h₂ ↦ Inseparable.mul h₁ h₂
+  mul := Quotient.map₂ (· * ·) fun _ _ h₁ _ _ h₂ ↦ Inseparable.mul h₁ h₂
 
 @[to_additive (attr := simp)]
 theorem mk_mul [Mul M] [ContinuousMul M] (a b : M) : mk (a * b) = mk a * mk b := rfl
@@ -168,7 +168,7 @@ instance instInvOneClass [InvOneClass G] [ContinuousInv G] :
 
 @[to_additive]
 instance instDiv [Div G] [ContinuousDiv G] : Div (SeparationQuotient G) where
-  div := Quotient.map₂' (· / ·) fun _ _ h₁ _ _ h₂ ↦ (Inseparable.prod h₁ h₂).map continuous_div'
+  div := Quotient.map₂ (· / ·) fun _ _ h₁ _ _ h₂ ↦ (Inseparable.prod h₁ h₂).map continuous_div'
 
 @[to_additive (attr := simp)]
 theorem mk_div [Div G] [ContinuousDiv G] (x y : G) : mk (x / y) = mk x / mk y := rfl
@@ -268,7 +268,7 @@ theorem mk_natCast [NatCast R] (n : ℕ) : mk (n : R) = n := rfl
 
 @[simp]
 theorem mk_ofNat [NatCast R] (n : ℕ) [n.AtLeastTwo] :
-    mk (no_index (OfNat.ofNat n) : R) = OfNat.ofNat n :=
+    mk (ofNat(n) : R) = OfNat.ofNat n :=
   rfl
 
 instance instIntCast [IntCast R] : IntCast (SeparationQuotient R) where
@@ -386,7 +386,7 @@ variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     [TopologicalSpace A] [TopologicalSemiring A] [ContinuousConstSMul R A]
 
 instance instAlgebra : Algebra R (SeparationQuotient A) where
-  toRingHom := mkRingHom.comp (algebraMap R A)
+  algebraMap := mkRingHom.comp (algebraMap R A)
   commutes' r := Quotient.ind fun a => congrArg _ <| Algebra.commutes r a
   smul_def' r := Quotient.ind fun a => congrArg _ <| Algebra.smul_def r a
 

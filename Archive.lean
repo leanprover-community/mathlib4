@@ -20,6 +20,7 @@ import Archive.Imo.Imo1975Q1
 import Archive.Imo.Imo1977Q6
 import Archive.Imo.Imo1981Q3
 import Archive.Imo.Imo1982Q1
+import Archive.Imo.Imo1982Q3
 import Archive.Imo.Imo1986Q5
 import Archive.Imo.Imo1987Q1
 import Archive.Imo.Imo1988Q6

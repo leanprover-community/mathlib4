@@ -404,7 +404,7 @@ theorem of_apply (x : K) : of K p x = mk _ _ (0, x) :=
 instance instReduced : IsReduced (PerfectClosure K p) where
   eq_zero x := induction_on x fun x ⟨n, h⟩ ↦ by
     replace h : mk K p x ^ p ^ n = 0 := by
-      rw [← Nat.sub_add_cancel ((Nat.lt_pow_self (Fact.out : p.Prime).one_lt n).le),
+      rw [← Nat.sub_add_cancel ((n.lt_pow_self (Fact.out : p.Prime).one_lt).le),
         pow_add, h, mul_zero]
     simp only [zero_def, mk_pow, mk_eq_iff, zero_add, ← coe_iterateFrobenius, map_zero] at h ⊢
     obtain ⟨m, h⟩ := h

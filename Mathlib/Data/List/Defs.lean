@@ -504,8 +504,6 @@ alias ⟨eq_or_mem_of_mem_cons, _⟩ := mem_cons
 theorem not_exists_mem_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x :=
   fun ⟨_, hx, _⟩ => List.not_mem_nil _ hx
 
-@[deprecated (since := "2024-03-23")] alias not_bex_nil := not_exists_mem_nil
-@[deprecated (since := "2024-03-23")] alias bex_cons := exists_mem_cons
 
 @[deprecated (since := "2024-08-10")] alias length_le_of_sublist := Sublist.length_le
 

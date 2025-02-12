@@ -120,7 +120,7 @@ end
 
 /-- If `f` is an isomorphism, so is `f.op` -/
 instance isIso_op {X Y : C} (f : X ⟶ Y) [IsIso f] : IsIso f.op :=
-  ⟨⟨(inv f).op, ⟨Quiver.Hom.unop_inj (by aesop_cat), Quiver.Hom.unop_inj (by aesop_cat)⟩⟩⟩
+  ⟨⟨(inv f).op, ⟨Quiver.Hom.unop_inj (by simp), Quiver.Hom.unop_inj (by simp)⟩⟩⟩
 
 /-- If `f.op` is an isomorphism `f` must be too.
 (This cannot be an instance as it would immediately loop!)

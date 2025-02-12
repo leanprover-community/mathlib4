@@ -22,7 +22,7 @@ noncomputable section
 
 namespace TopCat
 
-variable {J : Type v} [SmallCategory J]
+variable {J : Type v} [Category.{w} J]
 
 /-- The projection from the product as a bundled continuous map. -/
 abbrev piπ {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : TopCat.of (∀ i, α i) ⟶ α i :=
@@ -58,12 +58,12 @@ theorem piIsoPi_inv_π {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) :
     (piIsoPi α).inv ≫ Pi.π α i = piπ α i := by simp [piIsoPi]
 
 theorem piIsoPi_inv_π_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) (x : ∀ i, α i) :
-    (Pi.π α i : _) ((piIsoPi α).inv x) = x i :=
+    (Pi.π α i :) ((piIsoPi α).inv x) = x i :=
   ConcreteCategory.congr_hom (piIsoPi_inv_π α i) x
 
 -- Porting note: needing the type ascription on `∏ᶜ α : TopCat.{max v u}` is unfortunate.
 theorem piIsoPi_hom_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι)
-    (x : (∏ᶜ α : TopCat.{max v u})) : (piIsoPi α).hom x i = (Pi.π α i : _) x := by
+    (x : (∏ᶜ α : TopCat.{max v u})) : (piIsoPi α).hom x i = (Pi.π α i :) x := by
   have := piIsoPi_inv_π α i
   rw [Iso.inv_comp_eq] at this
   exact ConcreteCategory.congr_hom this x
@@ -106,11 +106,11 @@ theorem sigmaIsoSigma_hom_ι {ι : Type v} (α : ι → TopCat.{max v u}) (i : �
     Sigma.ι α i ≫ (sigmaIsoSigma α).hom = sigmaι α i := by simp [sigmaIsoSigma]
 
 theorem sigmaIsoSigma_hom_ι_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) (x : α i) :
-    (sigmaIsoSigma α).hom ((Sigma.ι α i : _) x) = Sigma.mk i x :=
+    (sigmaIsoSigma α).hom ((Sigma.ι α i :) x) = Sigma.mk i x :=
   ConcreteCategory.congr_hom (sigmaIsoSigma_hom_ι α i) x
 
 theorem sigmaIsoSigma_inv_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) (x : α i) :
-    (sigmaIsoSigma α).inv ⟨i, x⟩ = (Sigma.ι α i : _) x := by
+    (sigmaIsoSigma α).inv ⟨i, x⟩ = (Sigma.ι α i :) x := by
   rw [← sigmaIsoSigma_hom_ι_apply, ← comp_app, ← comp_app, Iso.hom_inv_id,
     Category.comp_id]
 
@@ -277,7 +277,7 @@ def binaryCofanIsColimit (X Y : TopCat.{u}) : IsColimit (TopCat.binaryCofan X Y)
     rfl
   · intro s m h₁ h₂
     ext (x | x)
-    exacts [(ConcreteCategory.congr_hom h₁ x : _), (ConcreteCategory.congr_hom h₂ x : _)]
+    exacts [(ConcreteCategory.congr_hom h₁ x :), (ConcreteCategory.congr_hom h₂ x :)]
 
 theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
     Nonempty (IsColimit c) ↔

@@ -62,7 +62,7 @@ instance : LargeCategory.{u} BddLat where
 instance instFunLike (X Y : BddLat) : FunLike (X ⟶ Y) X Y :=
   show FunLike (BoundedLatticeHom X Y) X Y from inferInstance
 
-instance : ConcreteCategory BddLat where
+instance : HasForget BddLat where
   forget :=
   { obj := (↑)
     map := DFunLike.coe }

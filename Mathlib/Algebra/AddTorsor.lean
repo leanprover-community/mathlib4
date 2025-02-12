@@ -49,7 +49,7 @@ class AddTorsor (G : outParam Type*) (P : Type*) [AddGroup G] extends AddAction 
   /-- Torsor subtraction and addition with the same element cancels out. -/
   vsub_vadd' : ∀ p₁ p₂ : P, (p₁ -ᵥ p₂ : G) +ᵥ p₂ = p₁
   /-- Torsor addition and subtraction with the same element cancels out. -/
-  vadd_vsub' : ∀ (g : G) (p : P), g +ᵥ p -ᵥ p = g
+  vadd_vsub' : ∀ (g : G) (p : P), (g +ᵥ p) -ᵥ p = g
 
  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12096): removed `nolint instance_priority`; lint not ported yet
 attribute [instance 100] AddTorsor.nonempty
@@ -75,19 +75,18 @@ variable {G : Type*} {P : Type*} [AddGroup G] [T : AddTorsor G P]
 /-- Adding the result of subtracting from another point produces that
 point. -/
 @[simp]
-theorem vsub_vadd (p₁ p₂ : P) : p₁ -ᵥ p₂ +ᵥ p₂ = p₁ :=
+theorem vsub_vadd (p₁ p₂ : P) : (p₁ -ᵥ p₂) +ᵥ p₂ = p₁ :=
   AddTorsor.vsub_vadd' p₁ p₂
 
 /-- Adding a group element then subtracting the original point
 produces that group element. -/
 @[simp]
-theorem vadd_vsub (g : G) (p : P) : g +ᵥ p -ᵥ p = g :=
+theorem vadd_vsub (g : G) (p : P) : (g +ᵥ p) -ᵥ p = g :=
   AddTorsor.vadd_vsub' g p
 
 /-- If the same point added to two group elements produces equal
 results, those group elements are equal. -/
 theorem vadd_right_cancel {g₁ g₂ : G} (p : P) (h : g₁ +ᵥ p = g₂ +ᵥ p) : g₁ = g₂ := by
--- Porting note: vadd_vsub g₁ → vadd_vsub g₁ p
   rw [← vadd_vsub g₁ p, h, vadd_vsub]
 
 @[simp]
@@ -102,7 +101,7 @@ theorem vadd_right_injective (p : P) : Function.Injective ((· +ᵥ p) : G → P
 /-- Adding a group element to a point, then subtracting another point,
 produces the same result as subtracting the points then adding the
 group element. -/
-theorem vadd_vsub_assoc (g : G) (p₁ p₂ : P) : g +ᵥ p₁ -ᵥ p₂ = g + (p₁ -ᵥ p₂) := by
+theorem vadd_vsub_assoc (g : G) (p₁ p₂ : P) : (g +ᵥ p₁) -ᵥ p₂ = g + (p₁ -ᵥ p₂) := by
   apply vadd_right_cancel p₂
   rw [vsub_vadd, add_vadd, vsub_vadd]
 
@@ -137,7 +136,7 @@ theorem neg_vsub_eq_vsub_rev (p₁ p₂ : P) : -(p₁ -ᵥ p₂) = p₂ -ᵥ p�
   refine neg_eq_of_add_eq_zero_right (vadd_right_cancel p₁ ?_)
   rw [vsub_add_vsub_cancel, vsub_self]
 
-theorem vadd_vsub_eq_sub_vsub (g : G) (p q : P) : g +ᵥ p -ᵥ q = g - (q -ᵥ p) := by
+theorem vadd_vsub_eq_sub_vsub (g : G) (p q : P) : (g +ᵥ p) -ᵥ q = g - (q -ᵥ p) := by
   rw [vadd_vsub_assoc, sub_eq_add_neg, neg_vsub_eq_vsub_rev]
 
 /-- Subtracting the result of adding a group element produces the same result
@@ -171,7 +170,7 @@ theorem singleton_vsub_self (p : P) : ({p} : Set P) -ᵥ {p} = {(0 : G)} := by
 end Set
 
 @[simp]
-theorem vadd_vsub_vadd_cancel_right (v₁ v₂ : G) (p : P) : v₁ +ᵥ p -ᵥ (v₂ +ᵥ p) = v₁ - v₂ := by
+theorem vadd_vsub_vadd_cancel_right (v₁ v₂ : G) (p : P) : (v₁ +ᵥ p) -ᵥ (v₂ +ᵥ p) = v₁ - v₂ := by
   rw [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, vsub_self, add_zero]
 
 /-- If the same point subtracted from two points produces equal
@@ -218,10 +217,10 @@ theorem vsub_sub_vsub_cancel_left (p₁ p₂ p₃ : P) : p₃ -ᵥ p₂ - (p₃ 
   rw [sub_eq_add_neg, neg_vsub_eq_vsub_rev, add_comm, vsub_add_vsub_cancel]
 
 @[simp]
-theorem vadd_vsub_vadd_cancel_left (v : G) (p₁ p₂ : P) : v +ᵥ p₁ -ᵥ (v +ᵥ p₂) = p₁ -ᵥ p₂ := by
+theorem vadd_vsub_vadd_cancel_left (v : G) (p₁ p₂ : P) : (v +ᵥ p₁) -ᵥ (v +ᵥ p₂) = p₁ -ᵥ p₂ := by
   rw [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_sub_cancel_left]
 
-theorem vsub_vadd_comm (p₁ p₂ p₃ : P) : (p₁ -ᵥ p₂ : G) +ᵥ p₃ = p₃ -ᵥ p₂ +ᵥ p₁ := by
+theorem vsub_vadd_comm (p₁ p₂ p₃ : P) : (p₁ -ᵥ p₂ : G) +ᵥ p₃ = (p₃ -ᵥ p₂) +ᵥ p₁ := by
   rw [← @vsub_eq_zero_iff_eq G, vadd_vsub_assoc, vsub_vadd_eq_vsub_sub]
   simp
 
@@ -364,15 +363,13 @@ def constVAddHom : Multiplicative G →* Equiv.Perm P where
 
 variable {P}
 
--- Porting note: Previous code was:
--- open _Root_.Function
 open Function
 
 /-- Point reflection in `x` as a permutation. -/
 def pointReflection (x : P) : Perm P :=
   (constVSub x).trans (vaddConst x)
 
-theorem pointReflection_apply (x y : P) : pointReflection x y = x -ᵥ y +ᵥ x :=
+theorem pointReflection_apply (x y : P) : pointReflection x y = (x -ᵥ y) +ᵥ x :=
   rfl
 
 @[simp]
@@ -412,7 +409,6 @@ theorem pointReflection_fixed_iff_of_injective_two_nsmul {x y : P} (h : Injectiv
 @[deprecated (since := "2024-11-18")] alias pointReflection_fixed_iff_of_injective_bit0 :=
 pointReflection_fixed_iff_of_injective_two_nsmul
 
--- Porting note: need this to calm down CI
 theorem injective_pointReflection_left_of_injective_two_nsmul {G P : Type*} [AddCommGroup G]
     [AddTorsor G P] (h : Injective (2 • · : G → G)) (y : P) :
     Injective fun x : P => pointReflection x y :=

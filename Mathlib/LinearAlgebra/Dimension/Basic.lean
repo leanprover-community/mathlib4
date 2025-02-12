@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison
 -/
 import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Dimension of modules and vector spaces
@@ -67,7 +68,7 @@ end
 
 
 namespace LinearIndependent
-variable [Ring R] [AddCommGroup M] [Module R M]
+variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 variable [Nontrivial R]
 

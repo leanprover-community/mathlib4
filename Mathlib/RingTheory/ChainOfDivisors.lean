@@ -5,7 +5,7 @@ Authors: Anne Baanen, Paul Lezeau
 -/
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.IsPrimePow
-import Mathlib.Algebra.Squarefree.Basic
+import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Order.Atoms
 import Mathlib.Order.Hom.Bounded
@@ -58,7 +58,7 @@ theorem Associates.isAtom_iff {p : Associates M} (h₁ : p ≠ 0) : IsAtom p ↔
             ⟨(ha.unit⁻¹ : Units _), by rw [hab, mul_assoc, IsUnit.mul_val_inv ha, mul_one]⟩)
           hb⟩⟩
 
-open UniqueFactorizationMonoid multiplicity Irreducible Associates
+open UniqueFactorizationMonoid Irreducible Associates
 
 namespace DivisorChain
 
@@ -151,7 +151,7 @@ theorem element_of_chain_eq_pow_second_of_chain {q r : Associates M} {n : ℕ} (
         eq_second_of_chain_of_prime_dvd hn h₁ (@fun r' => h₂) (prime_of_normalized_factor b hb) hr
           (dvd_of_mem_normalizedFactors hb)
     have H : r = c 1 ^ i := by
-      have := UniqueFactorizationMonoid.normalizedFactors_prod (ne_zero_of_dvd_ne_zero hq hr)
+      have := UniqueFactorizationMonoid.prod_normalizedFactors (ne_zero_of_dvd_ne_zero hq hr)
       rw [associated_iff_eq, hi, Multiset.prod_replicate] at this
       rw [this]
     refine ⟨⟨i, ?_⟩, H⟩
@@ -311,8 +311,8 @@ theorem emultiplicity_prime_le_emultiplicity_image_by_factor_orderIso {m p : Ass
   · simp [hn]
   by_cases hm : m = 0
   · simp [hm] at hp
-  rw [(finite_prime_left (prime_of_normalized_factor p hp) hm).emultiplicity_eq_multiplicity,
-    ← pow_dvd_iff_le_emultiplicity]
+  rw [FiniteMultiplicity.of_prime_left (prime_of_normalized_factor p hp) hm
+    |>.emultiplicity_eq_multiplicity, ← pow_dvd_iff_le_emultiplicity]
   apply pow_image_of_prime_by_factor_orderIso_dvd hn hp d (pow_multiplicity_dvd ..)
 
 theorem emultiplicity_prime_eq_emultiplicity_image_by_factor_orderIso {m p : Associates M}

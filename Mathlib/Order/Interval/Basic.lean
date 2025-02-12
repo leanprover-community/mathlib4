@@ -451,7 +451,7 @@ instance semilatticeSup : SemilatticeSup (Interval α) :=
 
 section Decidable
 
-variable [@DecidableRel α (· ≤ ·)]
+variable [DecidableRel (α := α) (· ≤ ·)]
 
 instance lattice : Lattice (Interval α) :=
   { Interval.semilatticeSup with
@@ -574,7 +574,7 @@ section CompleteLattice
 
 variable [CompleteLattice α]
 
-noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
+noncomputable instance completeLattice [DecidableRel (α := α) (· ≤ ·)] :
     CompleteLattice (Interval α) := by
   classical
   exact
@@ -659,7 +659,7 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
   }
 
 @[simp, norm_cast]
-theorem coe_sInf [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
+theorem coe_sInf [DecidableRel (α := α) (· ≤ ·)] (S : Set (Interval α)) :
     ↑(sInf S) = ⋂ s ∈ S, (s : Set α) := by
   classical -- Porting note: added
   -- Porting note: this `change` was
@@ -678,12 +678,12 @@ theorem coe_sInf [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
     exact h fun s ha t hb => (hx _ ha).1.trans (hx _ hb).2
 
 @[simp, norm_cast]
-theorem coe_iInf [@DecidableRel α (· ≤ ·)] (f : ι → Interval α) :
+theorem coe_iInf [DecidableRel (α := α) (· ≤ ·)] (f : ι → Interval α) :
     ↑(⨅ i, f i) = ⋂ i, (f i : Set α) := by simp [iInf]
 
 -- @[simp] -- Porting note: not in simpNF
 @[norm_cast]
-theorem coe_iInf₂ [@DecidableRel α (· ≤ ·)] (f : ∀ i, κ i → Interval α) :
+theorem coe_iInf₂ [DecidableRel (α := α) (· ≤ ·)] (f : ∀ i, κ i → Interval α) :
     ↑(⨅ (i) (j), f i j) = ⋂ (i) (j), (f i j : Set α) := by simp_rw [coe_iInf]
 
 end CompleteLattice

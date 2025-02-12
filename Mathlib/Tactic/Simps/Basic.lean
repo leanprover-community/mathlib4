@@ -82,10 +82,9 @@ def mkSimpContextResult (cfg : Meta.Simp.Config := {}) (simpOnly := false) (kind
     getSimpTheorems
   let simprocs := #[← if simpOnly then pure {} else Simp.getSimprocs]
   let congrTheorems ← getSimpCongrTheorems
-  let ctx : Simp.Context := {
-    config       := cfg
-    simpTheorems := #[simpTheorems], congrTheorems
-  }
+  let ctx : Simp.Context ← Simp.mkContext cfg
+    (simpTheorems := #[simpTheorems])
+    (congrTheorems := congrTheorems)
   if !hasStar then
     return { ctx, simprocs, dischargeWrapper }
   else
@@ -94,7 +93,7 @@ def mkSimpContextResult (cfg : Meta.Simp.Config := {}) (simpOnly := false) (kind
     for h in hs do
       unless simpTheorems.isErased (.fvar h) do
         simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
-    let ctx := { ctx with simpTheorems }
+    let ctx := ctx.setSimpTheorems simpTheorems
     return { ctx, simprocs, dischargeWrapper }
 
 /-- Make `Simp.Context` giving data instead of Syntax. Doesn't support arguments.

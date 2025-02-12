@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Order.Filter.AtTopBot.Group
+import Mathlib.Order.Filter.CountablyGenerated
 import Mathlib.Tactic.GCongr
 
 /-!

@@ -3,8 +3,8 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Algebra.Group.Int
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
+import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # Facts about `ℤ` as an (unbundled) ordered group
@@ -22,8 +22,7 @@ See note [foundational algebra order theory].
 -/
 
 -- We should need only a minimal development of sets in order to get here.
-assert_not_exists Set.Subsingleton
-assert_not_exists Ring
+assert_not_exists Set.Subsingleton Ring
 
 open Function Nat
 
@@ -45,6 +44,9 @@ theorem natAbs_abs (a : ℤ) : natAbs |a| = natAbs a := by rw [abs_eq_natAbs]; r
 
 theorem sign_mul_abs (a : ℤ) : sign a * |a| = a := by
   rw [abs_eq_natAbs, sign_mul_natAbs a]
+
+theorem sign_mul_self_eq_abs (a : ℤ) : sign a * a = |a| := by
+  rw [abs_eq_natAbs, sign_mul_self_eq_natAbs]
 
 lemma natAbs_le_self_sq (a : ℤ) : (Int.natAbs a : ℤ) ≤ a ^ 2 := by
   rw [← Int.natAbs_sq a, sq]
@@ -128,6 +130,10 @@ theorem abs_sign_of_nonzero {z : ℤ} (hz : z ≠ 0) : |z.sign| = 1 := by
 protected theorem sign_eq_ediv_abs (a : ℤ) : sign a = a / |a| :=
   if az : a = 0 then by simp [az]
   else (Int.ediv_eq_of_eq_mul_left (mt abs_eq_zero.1 az) (sign_mul_abs _).symm).symm
+
+protected theorem sign_eq_abs_ediv (a : ℤ) : sign a = |a| / a :=
+  if az : a = 0 then by simp [az]
+  else (Int.ediv_eq_of_eq_mul_left az (sign_mul_self_eq_abs _).symm).symm
 
 end Int
 

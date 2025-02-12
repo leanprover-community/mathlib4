@@ -73,7 +73,7 @@ theorem quadraticCharFun_zero : quadraticCharFun F 0 = 0 := by
 
 @[simp]
 theorem quadraticCharFun_one : quadraticCharFun F 1 = 1 := by
-  simp only [quadraticCharFun, one_ne_zero, isSquare_one, if_true, if_false]
+  simp only [quadraticCharFun, one_ne_zero, IsSquare.one, if_true, if_false]
 
 /-- If `ringChar F = 2`, then `quadraticCharFun F` takes the value `1` on nonzero elements. -/
 theorem quadraticCharFun_eq_one_of_char_two (hF : ringChar F = 2) {a : F} (ha : a ≠ 0) :
@@ -140,7 +140,7 @@ theorem quadraticChar_one_iff_isSquare {a : F} (ha : a ≠ 0) :
 
 /-- The quadratic character takes the value `1` on nonzero squares. -/
 theorem quadraticChar_sq_one' {a : F} (ha : a ≠ 0) : quadraticChar F (a ^ 2) = 1 := by
-  simp only [quadraticChar_apply, quadraticCharFun, sq_eq_zero_iff, ha, IsSquare_sq, if_true,
+  simp only [quadraticChar_apply, quadraticCharFun, sq_eq_zero_iff, ha, IsSquare.sq, if_true,
     if_false]
 
 /-- The square of the quadratic character on nonzero arguments is `1`. -/
@@ -246,7 +246,7 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
       ext1
       -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026):
       -- added (Set.mem_toFinset), Set.mem_setOf
-      simp only [(Set.mem_toFinset), Set.mem_setOf, not_mem_empty, iff_false]
+      simp only [s, (Set.mem_toFinset), Set.mem_setOf, not_mem_empty, iff_false]
       rw [isSquare_iff_exists_sq] at h
       exact fun h' ↦ h ⟨_, h'.symm⟩
 
@@ -290,8 +290,6 @@ theorem FiniteField.isSquare_neg_one_iff : IsSquare (-1 : F) ↔ Fintype.card F 
   · have h₁ := FiniteField.odd_card_of_char_ne_two hF
     rw [← quadraticChar_one_iff_isSquare (neg_ne_zero.mpr (one_ne_zero' F)),
       quadraticChar_neg_one hF, χ₄_nat_eq_if_mod_four, h₁]
-    simp only [Nat.one_ne_zero, if_false, ite_eq_left_iff, (by omega : (-1 : ℤ) ≠ 1), imp_false,
-      not_not, Ne, reduceCtorEq]
-    exact ⟨fun h ↦ ne_of_eq_of_ne h (by omega), (Nat.odd_mod_four_iff.mp h₁).resolve_right⟩
+    omega
 
 end SpecialValues

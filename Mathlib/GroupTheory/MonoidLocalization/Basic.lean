@@ -73,8 +73,7 @@ localization, monoid localization, quotient monoid, congruence relation, charact
 commutative monoid, grothendieck group
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists Ring
+assert_not_exists MonoidWithZero Ring
 
 open Function
 namespace AddSubmonoid

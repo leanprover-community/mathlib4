@@ -73,7 +73,7 @@ instance [LocallyCompactSpace H] : LocallyCompactSpace (PontryaginDual H) := by
     refine lt_of_lt_of_le ht ?_
     rw [div_le_iff₀' (pow_pos two_pos _), ← div_le_iff₀ hx]
     refine (Nat.le_ceil (Real.pi / x)).trans ?_
-    exact_mod_cast (Nat.le_succ _).trans (Nat.lt_two_pow _).le
+    exact_mod_cast (Nat.le_succ _).trans Nat.lt_two_pow_self.le
 
 variable {A B C G}
 

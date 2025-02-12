@@ -154,10 +154,10 @@ theorem comap_abs_nhds_zero : comap abs (𝓝 0) = 𝓝 0 :=
 @[simp 1100, norm_cast] lemma nnnorm_ratCast (q : ℚ) : ‖(q : ℂ)‖₊ = ‖(q : ℝ)‖₊ := nnnorm_real q
 
 @[simp 1100] lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ‖(no_index (OfNat.ofNat n) : ℂ)‖ = OfNat.ofNat n := norm_natCast n
+    ‖(ofNat(n) : ℂ)‖ = OfNat.ofNat n := norm_natCast n
 
 @[simp 1100] lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ‖(no_index (OfNat.ofNat n) : ℂ)‖₊ = OfNat.ofNat n := nnnorm_natCast n
+    ‖(ofNat(n) : ℂ)‖₊ = OfNat.ofNat n := nnnorm_natCast n
 
 @[deprecated (since := "2024-08-25")] alias norm_nat := norm_natCast
 @[deprecated (since := "2024-08-25")] alias norm_int := norm_intCast
@@ -693,7 +693,7 @@ lemma natCast_mem_slitPlane {n : ℕ} : ↑n ∈ slitPlane ↔ n ≠ 0 := by
 alias nat_cast_mem_slitPlane := natCast_mem_slitPlane
 
 @[simp]
-lemma ofNat_mem_slitPlane (n : ℕ) [n.AtLeastTwo] : no_index (OfNat.ofNat n) ∈ slitPlane :=
+lemma ofNat_mem_slitPlane (n : ℕ) [n.AtLeastTwo] : ofNat(n) ∈ slitPlane :=
   natCast_mem_slitPlane.2 (NeZero.ne n)
 
 lemma mem_slitPlane_iff_not_le_zero {z : ℂ} : z ∈ slitPlane ↔ ¬z ≤ 0 :=
@@ -715,5 +715,9 @@ lemma mem_slitPlane_of_norm_lt_one {z : ℂ} (hz : ‖z‖ < 1) : 1 + z ∈ slit
   ball_one_subset_slitPlane <| by simpa
 
 end slitPlane
+
+lemma _root_.IsCompact.reProdIm {s t : Set ℝ} (hs : IsCompact s) (ht : IsCompact t) :
+    IsCompact (s ×ℂ t) :=
+  equivRealProdCLM.toHomeomorph.isCompact_preimage.2 (hs.prod ht)
 
 end Complex

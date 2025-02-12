@@ -62,11 +62,7 @@ attribute [simp] algebraMap_σ
 -- We want to make sure `R₀` acts compatibly on `R` and `S` to avoid unsensical instances
 @[nolint unusedArguments]
 noncomputable instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
-    Algebra R₀ P.Ring where
-  __ := Module.compHom P.Ring (algebraMap R₀ R)
-  __ := (algebraMap R P.Ring).comp (algebraMap R₀ R)
-  smul_def' _ _ := smul_def _ _
-  commutes' _ _ := commutes _ _
+    Algebra R₀ P.Ring := Algebra.compHom P.Ring (algebraMap R₀ R)
 
 instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
     IsScalarTower R₀ R P.Ring := IsScalarTower.of_algebraMap_eq' rfl
@@ -114,6 +110,9 @@ def self : Extension R S where
   Ring := S
   σ := _root_.id
   algebraMap_σ _ := rfl
+
+/-- The kernel of an extension. -/
+abbrev ker : Ideal P.Ring := RingHom.ker (algebraMap P.Ring S)
 
 section Localization
 
@@ -232,10 +231,30 @@ end
 
 end Hom
 
-section Cotangent
+section Infinitesimal
 
-/-- The kernel of an extension. -/
-abbrev ker : Ideal P.Ring := RingHom.ker (algebraMap P.Ring S)
+/-- Given an `R`-algebra extension `0 → I → P → S → 0` of `S`,
+the infinitesimal extension associated to it is `0 → I/I² → P/I² → S → 0`. -/
+noncomputable
+def infinitesimal (P : Extension R S) : Extension R S where
+  Ring := P.Ring ⧸ P.ker ^ 2
+  σ := Ideal.Quotient.mk _ ∘ P.σ
+  algebraMap_σ x := by dsimp; exact P.algebraMap_σ x
+
+/-- The canonical map `P → P/I²` as maps between extensions. -/
+noncomputable
+def toInfinitesimal (P : Extension R S) : P.Hom P.infinitesimal where
+  toRingHom := Ideal.Quotient.mk _
+  toRingHom_algebraMap _ := rfl
+  algebraMap_toRingHom _ := rfl
+
+lemma ker_infinitesimal (P : Extension R S) :
+    P.infinitesimal.ker = P.ker.cotangentIdeal :=
+  AlgHom.ker_kerSquareLift _
+
+end Infinitesimal
+
+section Cotangent
 
 /-- The cotangent space of an extension.
 This is a type synonym so that `P.Ring` can act on it through the action of `S` without creating
@@ -336,6 +355,10 @@ lemma Cotangent.val_mk (x : P.ker) : (mk x).val = Ideal.toCotangent _ x := rfl
 
 lemma Cotangent.mk_surjective : Function.Surjective (mk (P := P)) :=
   fun x ↦ Ideal.toCotangent_surjective P.ker x.val
+
+lemma Cotangent.mk_eq_zero_iff {P : Extension R S} (x : P.ker) :
+    Cotangent.mk x = 0 ↔ x.val ∈ P.ker ^ 2 := by
+  simp [Cotangent.ext_iff, Ideal.toCotangent_eq_zero]
 
 variable {P'}
 variable [Algebra R R'] [Algebra R' R''] [Algebra R' S'']

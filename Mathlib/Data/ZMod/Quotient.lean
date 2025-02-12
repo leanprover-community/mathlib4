@@ -3,9 +3,6 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Group.Equiv.TypeTags
-import Mathlib.Data.ZMod.Basic
-import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.ZMod
@@ -66,6 +63,7 @@ end Int
 noncomputable section ChineseRemainder
 open Ideal
 
+open scoped Function in -- required for scoped `on` notation
 /-- The **Chinese remainder theorem**, elementary version for `ZMod`. See also
 `Mathlib.Data.ZMod.Basic` for versions involving only two numbers. -/
 def ZMod.prodEquivPi {ι : Type*} [Fintype ι] (a : ι → ℕ)
@@ -145,9 +143,6 @@ theorem orbitZPowersEquiv_symm_apply (k : ZMod (minimalPeriod (a • ·) b)) :
       (⟨a, mem_zpowers a⟩ : zpowers a) ^ (cast k : ℤ) • ⟨b, mem_orbit_self b⟩ :=
   rfl
 
-@[deprecated (since := "2024-02-21")]
-alias _root_.AddAction.orbit_zmultiples_equiv_symm_apply := orbitZMultiplesEquiv_symm_apply
-
 theorem orbitZPowersEquiv_symm_apply' (k : ℤ) :
     (orbitZPowersEquiv a b).symm k =
       (⟨a, mem_zpowers a⟩ : zpowers a) ^ k • ⟨b, mem_orbit_self b⟩ := by
@@ -208,3 +203,25 @@ lemma infinite_zpowers : (zpowers a : Set α).Infinite ↔ ¬IsOfFinOrder a := f
 protected alias ⟨_, IsOfFinOrder.finite_zpowers⟩ := finite_zpowers
 
 end Group
+
+namespace Subgroup
+variable {G : Type*} [Group G] (H : Subgroup G) (g : G)
+
+open Equiv Function MulAction
+
+/-- Partition `G ⧸ H` into orbits of the action of `g : G`. -/
+noncomputable def quotientEquivSigmaZMod :
+    G ⧸ H ≃ Σq : orbitRel.Quotient (zpowers g) (G ⧸ H), ZMod (minimalPeriod (g • ·) q.out) :=
+  (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)).trans
+    (sigmaCongrRight fun q => orbitZPowersEquiv g q.out)
+
+lemma quotientEquivSigmaZMod_symm_apply (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
+    (k : ZMod (minimalPeriod (g • ·) q.out)) :
+    (quotientEquivSigmaZMod H g).symm ⟨q, k⟩ = g ^ (cast k : ℤ) • q.out := rfl
+
+lemma quotientEquivSigmaZMod_apply (q : orbitRel.Quotient (zpowers g) (G ⧸ H)) (k : ℤ) :
+    quotientEquivSigmaZMod H g (g ^ k • q.out) = ⟨q, k⟩ := by
+  rw [apply_eq_iff_eq_symm_apply, quotientEquivSigmaZMod_symm_apply, ZMod.coe_intCast,
+    zpow_smul_mod_minimalPeriod]
+
+end Subgroup

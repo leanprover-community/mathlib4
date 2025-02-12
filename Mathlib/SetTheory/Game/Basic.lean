@@ -790,10 +790,7 @@ def mulOption (x y : PGame) (i : LeftMoves x) (j : LeftMoves y) : PGame :=
   the first kind. -/
 lemma mulOption_neg_neg {x} (y) {i j} :
     mulOption x y i j = mulOption x (-(-y)) i (toLeftMovesNeg <| toRightMovesNeg j) := by
-  dsimp only [mulOption]
-  congr 2
-  · rw [neg_neg]
-  iterate 2 rw [moveLeft_neg, moveRight_neg, neg_neg]
+  simp [mulOption]
 
 /-- The left options of `x * y` agree with that of `y * x` up to equivalence. -/
 lemma mulOption_symm (x y) {i j} : ⟦mulOption x y i j⟧ = (⟦mulOption y x j i⟧ : Game) := by
@@ -915,7 +912,9 @@ def inv'Zero : inv' 0 ≡r 1 := by
   refine ⟨?_, ?_, fun i => ?_, IsEmpty.elim ?_⟩
   · apply Equiv.equivPUnit (InvTy _ _ _)
   · apply Equiv.equivPEmpty (InvTy _ _ _)
-  · -- Porting note: had to add `rfl`, because `simp` only uses the built-in `rfl`.
+  · -- Porting note: we added `rfl` after the `simp`
+    -- (because `simp` now uses `rfl` only at reducible transparency)
+    -- Can we improve the simp set so it is not needed?
     simp; rfl
   · dsimp
     infer_instance

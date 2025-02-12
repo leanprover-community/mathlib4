@@ -33,11 +33,12 @@ the preimage of any affine open subset of `Y` is affine and the induced ring
 hom is finite. -/
 @[mk_iff]
 class IsFinite {X Y : Scheme} (f : X ⟶ Y) extends IsAffineHom f : Prop where
-  finite_app (U : Y.Opens) (hU : IsAffineOpen U) : (f.app U).Finite
+  finite_app (U : Y.Opens) (hU : IsAffineOpen U) : (f.app U).hom.Finite
 
 namespace IsFinite
 
-instance : HasAffineProperty @IsFinite (fun X _ f _ ↦ IsAffine X ∧ RingHom.Finite (f.appTop)) := by
+instance : HasAffineProperty @IsFinite
+    (fun X _ f _ ↦ IsAffine X ∧ RingHom.Finite (f.appTop).hom) := by
   show HasAffineProperty @IsFinite (affineAnd RingHom.Finite)
   rw [HasAffineProperty.affineAnd_iff _ RingHom.finite_respectsIso
     RingHom.finite_localizationPreserves RingHom.finite_ofLocalizationSpan]
