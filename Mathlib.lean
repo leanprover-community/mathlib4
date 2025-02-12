@@ -2815,6 +2815,7 @@ import Mathlib.Data.List.SplitOn
 import Mathlib.Data.List.Sublists
 import Mathlib.Data.List.Sym
 import Mathlib.Data.List.TFAE
+import Mathlib.Data.List.TakeDrop
 import Mathlib.Data.List.TakeWhile
 import Mathlib.Data.List.ToFinsupp
 import Mathlib.Data.List.Zip
@@ -4641,7 +4642,8 @@ import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Summable
 import Mathlib.RingTheory.HahnSeries.Valuation
 import Mathlib.RingTheory.Henselian
-import Mathlib.RingTheory.HopfAlgebra
+import Mathlib.RingTheory.HopfAlgebra.Basic
+import Mathlib.RingTheory.HopfAlgebra.TensorProduct
 import Mathlib.RingTheory.HopkinsLevitzki
 import Mathlib.RingTheory.Ideal.AssociatedPrime
 import Mathlib.RingTheory.Ideal.Basic
