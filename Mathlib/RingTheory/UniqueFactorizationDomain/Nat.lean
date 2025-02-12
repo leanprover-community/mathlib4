@@ -15,6 +15,8 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 * `Nat.instUniqueFactorizationMonoid`: the natural numbers have unique factorization
 -/
 
+assert_not_exists Field
+
 namespace Nat
 
 instance instWfDvdMonoid : WfDvdMonoid ℕ where
