@@ -75,9 +75,34 @@ namespace Set
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
-@[simp, mfld_simps] theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
+-- TODO(Jeremy): write a tactic to unfold specific instances of generic notation?
+theorem subset_def {s t : Set α}: (s ⊆ t) = ∀ x, x ∈ s → x ∈ t := rfl
 
 @[simp, mfld_simps] theorem mem_univ (x : α) : x ∈ @univ α := trivial
+
+@[simp, mfld_simps] theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
+
+theorem nmem_setOf_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p a :=
+  Iff.rfl
+
+@[simp]
+theorem setOf_mem_eq {s : Set α} : { x | x ∈ s } = s :=
+  rfl
+
+theorem setOf_set {s : Set α} : setOf s = s :=
+  rfl
+
+theorem setOf_app_iff {p : α → Prop} {x : α} : { x | p x } x ↔ p x :=
+  Iff.rfl
+
+theorem mem_def {a : α} {s : Set α} : a ∈ s ↔ s a :=
+  Iff.rfl
+
+theorem subset_setOf {p : α → Prop} {s : Set α} : s ⊆ setOf p ↔ ∀ x, x ∈ s → p x :=
+  Iff.rfl
+
+theorem setOf_subset {p : α → Prop} {s : Set α} : setOf p ⊆ s ↔ ∀ x, p x → x ∈ s :=
+  Iff.rfl
 
 instance : HasCompl (Set α) := ⟨fun s ↦ {x | x ∉ s}⟩
 
