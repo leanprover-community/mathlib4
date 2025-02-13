@@ -169,15 +169,23 @@ protected theorem isSeparatedMap : IsSeparatedMap f :=
     refine Prod.ext ?_ (h₁.2.symm.trans h₂.2)
     rwa [t.proj_toFun e₁ he₁, t.proj_toFun e₂ he₂]
 
-variable {A} [TopologicalSpace A] {s : Set A} {g g₁ g₂ : A → E}
+variable {A} [TopologicalSpace A] {s : Set A} {g g₁ g₂ : A → E} {γ γ₁ γ₂ : C(A, E)}
 
 theorem eq_of_comp_eq [PreconnectedSpace A] (h₁ : Continuous g₁) (h₂ : Continuous g₂)
     (he : f ∘ g₁ = f ∘ g₂) (a : A) (ha : g₁ a = g₂ a) : g₁ = g₂ :=
   hf.isSeparatedMap.eq_of_comp_eq hf.isLocalHomeomorph.isLocallyInjective h₁ h₂ he a ha
 
+theorem eq_of_comp_eq_CM [PreconnectedSpace A] (h : f ∘ γ₁ = f ∘ γ₂) (a : A) (ha : γ₁ a = γ₂ a) :
+    γ₁ = γ₂ :=
+  DFunLike.coe_injective <| hf.eq_of_comp_eq γ₁.continuous γ₂.continuous h a ha
+
 theorem const_of_comp [PreconnectedSpace A] (cont : Continuous g)
     (he : ∀ a a', f (g a) = f (g a')) (a a') : g a = g a' :=
   hf.isSeparatedMap.const_of_comp hf.isLocalHomeomorph.isLocallyInjective cont he a a'
+
+theorem const_of_comp_CM [PreconnectedSpace A] (he : ∀ a a', f (γ a) = f (γ a')) (a a') :
+    γ a = γ a' :=
+  const_of_comp hf γ.continuous he _ _
 
 theorem eqOn_of_comp_eqOn (hs : IsPreconnected s) (h₁ : ContinuousOn g₁ s) (h₂ : ContinuousOn g₂ s)
     (he : s.EqOn (f ∘ g₁) (f ∘ g₂)) {a : A} (has : a ∈ s) (ha : g₁ a = g₂ a) : s.EqOn g₁ g₂ :=
