@@ -105,6 +105,10 @@ structure CacheM.Context where
 @[inherit_doc CacheM.Context]
 abbrev CacheM := ReaderT CacheM.Context IO
 
+/-- Whether this is running on Mathlib repo or not -/
+def isMathlibRoot : IO Bool :=
+  FilePath.mk "Mathlib" |>.pathExists
+
 section
 
 /-- Find path to `Mathlib` source directory -/
