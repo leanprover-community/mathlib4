@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Algebra.Group.TypeTags.Hom
-import Mathlib.Data.Finsupp.Defs
+import Mathlib.Data.Finsupp.Single
 
 /-!
 # Extensionality for maps on `Finsupp`

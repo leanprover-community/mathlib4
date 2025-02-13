@@ -111,8 +111,6 @@ measures (i.e., their total mass is finite). -/
 def _root_.MeasureTheory.FiniteMeasure (Ω : Type*) [MeasurableSpace Ω] : Type _ :=
   { μ : Measure Ω // IsFiniteMeasure μ }
 
--- Porting note: as with other subtype synonyms (e.g., `ℝ≥0`, we need a new function for the
--- coercion instead of relying on `Subtype.val`.
 /-- Coercion from `MeasureTheory.FiniteMeasure Ω` to `MeasureTheory.Measure Ω`. -/
 @[coe]
 def toMeasure : FiniteMeasure Ω → Measure Ω := Subtype.val
@@ -209,7 +207,6 @@ instance instSMul : SMul R (FiniteMeasure Ω) where
 @[simp, norm_cast]
 theorem toMeasure_zero : ((↑) : FiniteMeasure Ω → Measure Ω) 0 = 0 := rfl
 
--- Porting note: with `simp` here the `coeFn` lemmas below fall prey to `simpNF`: the LHS simplifies
 @[norm_cast]
 theorem toMeasure_add (μ ν : FiniteMeasure Ω) : ↑(μ + ν) = (↑μ + ↑ν : Measure Ω) := rfl
 

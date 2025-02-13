@@ -92,11 +92,11 @@ instance (priority := 100) instModule [Semiring R] [Module R ℝ] : Module R ℂ
   zero_smul r := by ext <;> simp [smul_re, smul_im, zero_smul]
 
 -- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980
-instance (priority := 95) instAlgebraOfReal [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ :=
-  { Complex.ofRealHom.comp (algebraMap R ℝ) with
-    smul := (· • ·)
-    smul_def' := fun r x => by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
-    commutes' := fun r ⟨xr, xi⟩ => by ext <;> simp [smul_re, smul_im, Algebra.commutes] }
+instance (priority := 95) instAlgebraOfReal [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ where
+  algebraMap := Complex.ofRealHom.comp (algebraMap R ℝ)
+  smul := (· • ·)
+  smul_def' := fun r x => by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
+  commutes' := fun r ⟨xr, xi⟩ => by ext <;> simp [smul_re, smul_im, Algebra.commutes]
 
 instance : StarModule ℝ ℂ :=
   ⟨fun r x => by simp only [star_def, star_trivial, real_smul, map_mul, conj_ofReal]⟩

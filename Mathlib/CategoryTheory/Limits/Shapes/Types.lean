@@ -55,6 +55,8 @@ example [UnivLE.{v, u}] : HasProducts.{v} (Type u) := inferInstance
 instance : HasProducts.{v} (Type v) := inferInstance
 
 /-- A restatement of `Types.Limit.lift_π_apply` that uses `Pi.π` and `Pi.lift`. -/
+-- The increased `@[simp]` priority here results in a minor speed up in
+-- `Mathlib.CategoryTheory.Sites.EqualizerSheafCondition`.
 @[simp 1001]
 theorem pi_lift_π_apply {β : Type v} [Small.{u} β] (f : β → Type u) {P : Type u}
     (s : ∀ b, P ⟶ f b) (b : β) (x : P) :
@@ -69,7 +71,7 @@ theorem pi_lift_π_apply' {β : Type v} (f : β → Type v) {P : Type v}
   simp
 
 /-- A restatement of `Types.Limit.map_π_apply` that uses `Pi.π` and `Pi.map`. -/
-@[simp 1001]
+@[simp]
 theorem pi_map_π_apply {β : Type v} [Small.{u} β] {f g : β → Type u}
     (α : ∀ j, f j ⟶ g j) (b : β) (x) :
     (Pi.π g b : ∏ᶜ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ᶜ f → f b) x) :=
@@ -208,9 +210,6 @@ theorem binaryProductIso_inv_comp_snd (X Y : Type u) :
     (binaryProductIso X Y).inv ≫ Limits.prod.snd = _root_.Prod.snd :=
   limit.isoLimitCone_inv_π (binaryProductLimitCone X Y) ⟨WalkingPair.right⟩
 
--- Porting note: it was originally @[simps (config := { typeMd := reducible })]
--- We add the option `type_md` to tell `@[simps]` to not treat homomorphisms `X ⟶ Y` in `Type*` as
--- a function type
 /-- The functor which sends `X, Y` to the product type `X × Y`. -/
 @[simps]
 def binaryProductFunctor : Type u ⥤ Type u ⥤ Type u where
@@ -295,8 +294,8 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
             Sum.inl_injective,
           (h.coconePointUniqueUpToIso (binaryCoproductColimit X Y)).symm.toEquiv.injective.comp
             Sum.inr_injective, ?_⟩
-      erw [Set.range_comp, ← eq_compl_iff_isCompl, Set.range_comp _ Sum.inr, ←
-        Set.image_compl_eq
+      rw [types_comp, Set.range_comp, ← eq_compl_iff_isCompl, types_comp, Set.range_comp _ Sum.inr]
+      erw [← Set.image_compl_eq
           (h.coconePointUniqueUpToIso (binaryCoproductColimit X Y)).symm.toEquiv.bijective]
       simp
     · rintro ⟨h₁, h₂, h₃⟩
@@ -588,7 +587,6 @@ instance : HasPushouts.{u} (Type u) :=
 variable {X Y Z : Type u} {X' Y' Z' : Type v}
 variable (f : X ⟶ Z) (g : Y ⟶ Z) (f' : X' ⟶ Z') (g' : Y' ⟶ Z')
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- The usual explicit pullback in the category of types, as a subtype of the product.
 The full `LimitCone` data is bundled as `pullbackLimitCone f g`.
 -/
@@ -934,15 +932,15 @@ end Types
 
 section Multiequalizer
 
-variable (I : MulticospanIndex (Type u))
+variable {J : MulticospanShape} (I : MulticospanIndex J (Type u))
 
-/-- Given `I : MulticospanIndex (Type u)`, this is a type which identifies
+/-- Given `I : MulticospanIndex J (Type u)`, this is a type which identifies
 to the sections of the functor `I.multicospan`. -/
 @[ext]
 structure MulticospanIndex.sections where
-  /-- The data of an element in `I.left i` for each `i : I.L`. -/
-  val (i : I.L) : I.left i
-  property (r : I.R) : I.fst r (val _) = I.snd r (val _)
+  /-- The data of an element in `I.left i` for each `i : J.L`. -/
+  val (i : J.L) : I.left i
+  property (r : J.R) : I.fst r (val _) = I.snd r (val _)
 
 /-- The bijection `I.sections ≃ I.multicospan.sections` when `I : MulticospanIndex (Type u)`
 is a multiequalizer diagram in the category of types. -/
@@ -988,8 +986,7 @@ lemma isLimit_types_iff : Nonempty (IsLimit c) ↔ Function.Bijective c.toSectio
 
 namespace IsLimit
 
-variable {c}
-variable (hc : IsLimit c)
+variable {c} (hc : IsLimit c)
 
 /-- The bijection `I.sections ≃ c.pt` when `c : Multifork I` is a limit multifork
 in the category of types. -/
@@ -997,11 +994,11 @@ noncomputable def sectionsEquiv : I.sections ≃ c.pt :=
   (Equiv.ofBijective _ (c.isLimit_types_iff.1 ⟨hc⟩)).symm
 
 @[simp]
-lemma sectionsEquiv_symm_apply_val (x : c.pt) (i : I.L) :
+lemma sectionsEquiv_symm_apply_val (x : c.pt) (i : J.L) :
     ((sectionsEquiv hc).symm x).val i = c.ι i x := rfl
 
 @[simp]
-lemma sectionsEquiv_apply_val (s : I.sections) (i : I.L) :
+lemma sectionsEquiv_apply_val (s : I.sections) (i : J.L) :
     c.ι i (sectionsEquiv hc s) = s.val i := by
   obtain ⟨x, rfl⟩ := (sectionsEquiv hc).symm.surjective s
   simp

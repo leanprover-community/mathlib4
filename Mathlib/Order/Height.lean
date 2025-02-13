@@ -40,6 +40,7 @@ This is defined as the maximum of the lengths of `Set.subchain`s, valued in `ℕ
 
 -/
 
+assert_not_exists Field
 
 open List hiding le_antisymm
 open OrderDual

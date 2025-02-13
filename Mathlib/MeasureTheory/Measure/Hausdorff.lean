@@ -191,7 +191,6 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
     for details. -/
   have : ∀ n, S n ⊆ S (n + 1) := fun n x hx =>
     ⟨hx.1, le_trans (ENNReal.inv_le_inv.2 <| Nat.cast_le.2 n.le_succ) hx.2⟩
-  classical -- Porting note: Added this to get the next tactic to work
   refine (μ.iUnion_nat_of_monotone_of_tsum_ne_top this ?_).le; clear this
   /- While the sets `S (k + 1) \ S k` are not pairwise metric separated, the sets in each
     subsequence `S (2 * k + 1) \ S (2 * k)` and `S (2 * k + 2) \ S (2 * k)` are metric separated,
@@ -470,7 +469,7 @@ theorem mkMetric_apply (m : ℝ≥0∞ → ℝ≥0∞) (s : Set X) :
   simp only [← OuterMeasure.coe_mkMetric, OuterMeasure.mkMetric, OuterMeasure.mkMetric',
     OuterMeasure.iSup_apply, OuterMeasure.mkMetric'.pre, OuterMeasure.boundedBy_apply, extend]
   refine
-    surjective_id.iSup_congr (id) fun r =>
+    surjective_id.iSup_congr id fun r =>
       iSup_congr_Prop Iff.rfl fun _ =>
         surjective_id.iInf_congr _ fun t => iInf_congr_Prop Iff.rfl fun ht => ?_
   dsimp
@@ -501,7 +500,7 @@ theorem mkMetric_le_liminf_tsum {β : Type*} {ι : β → Type*} [∀ n, Countab
   haveI : ∀ n, Encodable (ι n) := fun n => Encodable.ofCountable _
   simp only [mkMetric_apply]
   refine iSup₂_le fun ε hε => ?_
-  refine le_of_forall_le_of_dense fun c hc => ?_
+  refine le_of_forall_gt_imp_ge_of_dense fun c hc => ?_
   rcases ((frequently_lt_of_liminf_lt (by isBoundedDefault) hc).and_eventually
         ((hr.eventually (gt_mem_nhds hε)).and (ht.and hst))).exists with
     ⟨n, hn, hrn, htn, hstn⟩

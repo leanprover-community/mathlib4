@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Group.Arithmetic
 import Mathlib.Topology.GDelta.UniformSpace
-import Mathlib.Topology.Instances.EReal
+import Mathlib.Topology.Instances.EReal.Lemmas
 import Mathlib.Topology.Instances.Rat
 
 /-!

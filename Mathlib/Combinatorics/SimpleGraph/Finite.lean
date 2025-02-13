@@ -136,7 +136,6 @@ theorem edgeFinset_deleteEdges [DecidableEq V] [Fintype G.edgeSet] (s : Finset (
 
 section DeleteFar
 
--- Porting note: added `Fintype (Sym2 V)` argument.
 variable {𝕜 : Type*} [OrderedRing 𝕜]
   [Fintype G.edgeSet] {p : SimpleGraph V → Prop} {r r₁ r₂ : 𝕜}
 
@@ -205,10 +204,6 @@ theorem singleton_disjoint_neighborFinset : Disjoint {v} (G.neighborFinset v) :=
 /-- `G.degree v` is the number of vertices adjacent to `v`. -/
 def degree : ℕ := #(G.neighborFinset v)
 
--- Porting note: in Lean 3 we could do `simp [← degree]`, but that gives
--- "invalid '←' modifier, 'SimpleGraph.degree' is a declaration name to be unfolded".
--- In any case, having this lemma is good since there's no guarantee we won't still change
--- the definition of `degree`.
 @[simp]
 theorem card_neighborFinset_eq_degree : #(G.neighborFinset v) = G.degree v := rfl
 
@@ -317,7 +312,7 @@ theorem IsRegularOfDegree.top [DecidableEq V] :
 The key properties of this are given in `exists_minimal_degree_vertex`, `minDegree_le_degree`
 and `le_minDegree_of_forall_le_degree`. -/
 def minDegree [DecidableRel G.Adj] : ℕ :=
-  WithTop.untop' 0 (univ.image fun v => G.degree v).min
+  WithTop.untopD 0 (univ.image fun v => G.degree v).min
 
 /-- There exists a vertex of minimal degree. Note the assumption of being nonempty is necessary, as
 the lemma implies there exists a vertex. -/
@@ -391,7 +386,7 @@ that `V` is nonempty is necessary, as otherwise this would assert the existence 
 natural number less than zero. -/
 theorem maxDegree_lt_card_verts [DecidableRel G.Adj] [Nonempty V] :
     G.maxDegree < Fintype.card V := by
-  cases' G.exists_maximal_degree_vertex with v hv
+  obtain ⟨v, hv⟩ := G.exists_maximal_degree_vertex
   rw [hv]
   apply G.degree_lt_card_verts v
 
