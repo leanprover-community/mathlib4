@@ -78,38 +78,42 @@ instance : Inhabited (Content G) :=
       sup_disjoint' := by simp
       sup_le' := by simp }⟩
 
-/-- Although the `toFun` field of a content takes values in `ℝ≥0`, we register a coercion to
-functions taking values in `ℝ≥0∞` as most constructions below rely on taking iSups and iInfs, which
-is more convenient in a complete lattice, and aim at constructing a measure. -/
-instance : CoeFun (Content G) fun _ => Compacts G → ℝ≥0∞ :=
-  ⟨fun μ s => μ.toFun s⟩
-
 namespace Content
+
+instance : FunLike (Content G) (Compacts G) ℝ≥0∞ where
+  coe μ s := μ.toFun s
+  coe_injective' := by
+    rintro ⟨μ, _, _⟩ ⟨v, _, _⟩ h; congr!; ext s : 1; exact ENNReal.coe_injective <| congr_fun h s
 
 variable (μ : Content G)
 
+@[simp] lemma toFun_eq_toNNReal_apply (K : Compacts G) : μ.toFun K = (μ K).toNNReal := rfl
+
+@[simp]
+lemma mk_apply (toFun : Compacts G → ℝ≥0) (mono' sup_disjoint' sup_le') (K : Compacts G) :
+  mk toFun mono' sup_disjoint' sup_le' K = toFun K := rfl
+
+@[simp] lemma apply_ne_top {K : Compacts G} : μ K ≠ ∞ := coe_ne_top
+
+@[deprecated toFun_eq_toNNReal_apply (since := "2025-02-11")]
 theorem apply_eq_coe_toFun (K : Compacts G) : μ K = μ.toFun K :=
   rfl
 
 theorem mono (K₁ K₂ : Compacts G) (h : (K₁ : Set G) ⊆ K₂) : μ K₁ ≤ μ K₂ := by
-  simp [apply_eq_coe_toFun, μ.mono' _ _ h]
+  simpa using μ.mono' _ _ h
 
 theorem sup_disjoint (K₁ K₂ : Compacts G) (h : Disjoint (K₁ : Set G) K₂)
     (h₁ : IsClosed (K₁ : Set G)) (h₂ : IsClosed (K₂ : Set G)) :
     μ (K₁ ⊔ K₂) = μ K₁ + μ K₂ := by
-  simp [apply_eq_coe_toFun, μ.sup_disjoint' _ _ h]
+  simpa [toNNReal_eq_toNNReal_iff, ← toNNReal_add] using μ.sup_disjoint' _ _ h h₁ h₂
 
 theorem sup_le (K₁ K₂ : Compacts G) : μ (K₁ ⊔ K₂) ≤ μ K₁ + μ K₂ := by
-  simp only [apply_eq_coe_toFun]
-  norm_cast
-  exact μ.sup_le' _ _
+  simpa [← toNNReal_add] using μ.sup_le' _ _
 
 theorem lt_top (K : Compacts G) : μ K < ∞ :=
   ENNReal.coe_lt_top
 
-theorem empty : μ ⊥ = 0 := by
-  have := μ.sup_disjoint' ⊥ ⊥
-  simpa [apply_eq_coe_toFun] using this
+theorem empty : μ ⊥ = 0 := by simpa [toNNReal_eq_zero_iff] using μ.sup_disjoint' ⊥ ⊥
 
 /-- Constructing the inner content of a content. From a content defined on the compact sets, we
   obtain a function defined on all open sets, by taking the supremum of the content of all compact
