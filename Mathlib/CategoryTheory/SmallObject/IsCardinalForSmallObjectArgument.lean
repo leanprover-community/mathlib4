@@ -70,6 +70,10 @@ variable {C : Type u} [Category.{v} C] (I : MorphismProperty C)
 
 namespace MorphismProperty
 
+/-- Given `I : MorphismProperty C` and a regular cardinal `κ : Cardinal.{w}`,
+this property asserts the technical conditions which allow to proceed
+to the small object argument by doing a construction by transfinite
+induction indexed by the well ordered type `κ.ord.toType`. -/
 class IsCardinalForSmallObjectArgument (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [OrderBot κ.ord.toType] : Prop where
   isSmall : IsSmall.{w} I := by infer_instance
@@ -121,12 +125,34 @@ lemma hasColimitsOfShape_discrete (X Y : C) (p : X ⟶ Y) :
   exact hasColimitsOfShape_of_equivalence
     (Discrete.equivalence (equivShrink.{w} _)).symm
 
-@[simps! (config := .lemmasOnly)]
+/-- The successor structure on `Arrow C ⥤ Arrow C` corresponding
+to the iterations of the natural transformation
+`ε : 𝟭 (Arrow C) ⟶ SmallObject.functor I.homFamily`
+(see the file `SmallObject.Construction`). -/
 noncomputable def succStruct : SuccStruct (Arrow C ⥤ Arrow C) :=
   have := hasColimitsOfShape_discrete I κ
   have := hasPushouts I κ
   SuccStruct.ofNatTrans (ε I.homFamily)
 
+/-- For the successor structure `succStruct I κ` on `Arrow C ⥤ Arrow C`,
+the morphism from an object to its successor induces
+morphisms in `C` which consists in attaching `I`-cells. -/
+@[nolint unusedHavesSuffices]
+noncomputable def attachCellsOfSuccStructProp
+    {F G : Arrow C ⥤ Arrow C} {φ : F ⟶ G}
+    (h : (succStruct I κ).prop φ) (f : Arrow C) :
+    AttachCells.{w} I.homFamily (φ.app f).left :=
+  have := locallySmall I κ
+  have := isSmall I κ
+  have := hasColimitsOfShape_discrete I κ
+  have := hasPushouts I κ
+  AttachCells.ofArrowIso (attachCellsιFunctorObjOfSmall _ _)
+    ((Functor.mapArrow ((evaluation _ _).obj f ⋙
+      Arrow.leftFunc)).mapIso h.arrowIso.symm)
+
+/-- The class of morphisms in `Arrow C` which on the left side are
+pushouts of coproducts of morphisms in `I`, and which are
+isomorphisms on the right side. -/
 def propArrow : MorphismProperty (Arrow C) := fun _ _ f ↦
   (coproducts.{w} I).pushouts f.left ∧ (isomorphisms C) f.right
 
@@ -146,40 +172,24 @@ lemma succStruct_prop_le_propArrow :
     dsimp [succStruct]
     infer_instance
 
+/-- The functor `κ.ord.toType ⥤ Arrow C ⥤ Arrow C` corresponding to the
+iterations of the successor structure `succStruct I κ`. -/
 noncomputable def iterationFunctor : κ.ord.toType ⥤ Arrow C ⥤ Arrow C :=
   have := hasIterationOfShape I κ
   (succStruct I κ).iterationFunctor κ.ord.toType
 
-instance : (iterationFunctor I κ).IsWellOrderContinuous := by
-  dsimp [iterationFunctor]
-  infer_instance
-
-@[nolint unusedHavesSuffices]
-noncomputable def attachCellsOfSuccStructProp
-    {F G : Arrow C ⥤ Arrow C} {φ : F ⟶ G}
-    (h : (succStruct I κ).prop φ) (f : Arrow C) :
-    AttachCells.{w} I.homFamily (φ.app f).left :=
-  have := locallySmall I κ
-  have := isSmall I κ
-  have := hasColimitsOfShape_discrete I κ
-  have := hasPushouts I κ
-  AttachCells.ofArrowIso (attachCellsιFunctorObjOfSmall _ _)
-    ((Functor.mapArrow ((evaluation _ _).obj f ⋙
-      Arrow.leftFunc)).mapIso h.arrowIso.symm)
-
-instance (f : Arrow C) :
-    (iterationFunctor I κ ⋙ (evaluation _ _).obj f).IsWellOrderContinuous := by
-  have := hasIterationOfShape I κ
-  infer_instance
-
+/-- The colimit of `iterationFunctor I κ`. -/
 noncomputable def iteration : Arrow C ⥤ Arrow C :=
   have := hasIterationOfShape I κ
   (succStruct I κ).iteration κ.ord.toType
 
+/-- The natural "inclusion" `𝟭 (Arrow C) ⟶ iteration I κ`. -/
 noncomputable def ιIteration : 𝟭 _ ⟶ iteration I κ :=
   have := hasIterationOfShape I κ
   (succStruct I κ).ιIteration κ.ord.toType
 
+/-- The morphism `ιIteration I κ` is a transfinite composition of shape
+`κ.ord.toType` of morphisms satisfying `(succStruct I κ).prop`. -/
 noncomputable def transfiniteCompositionOfShapeSuccStructPropιIteration :
     (succStruct I κ).prop.TransfiniteCompositionOfShape κ.ord.toType (ιIteration I κ) :=
   have := hasIterationOfShape I κ
@@ -189,8 +199,10 @@ noncomputable def transfiniteCompositionOfShapeSuccStructPropιIteration :
 lemma transfiniteCompositionOfShapeSuccStructPropιIteration_F :
     (transfiniteCompositionOfShapeSuccStructPropιIteration I κ).F =
       iterationFunctor I κ :=
-        rfl
+  rfl
 
+/-- For any `f : Arrow C`, the map `((ιIteration I κ).app f).right` is
+a transfinite composition of isomorphisms. -/
 noncomputable def transfiniteCompositionOfShapeιIterationAppRight (f : Arrow C) :
     (isomorphisms C).TransfiniteCompositionOfShape κ.ord.toType
       ((ιIteration I κ).app f).right :=
@@ -200,19 +212,22 @@ noncomputable def transfiniteCompositionOfShapeιIterationAppRight (f : Arrow C)
       h.toTransfiniteCompositionOfShape.map ((evaluation _ _).obj f ⋙ Arrow.rightFunc)
     map_mem j hj := ((succStruct_prop_le_propArrow I κ _ (h.map_mem j hj)) f).2 }
 
-instance isIso_ιIteration_app_right (f : Arrow C) :
-    IsIso ((ιIteration I κ).app f).right :=
+instance (f : Arrow C) : IsIso ((ιIteration I κ).app f).right :=
   (transfiniteCompositionOfShapeιIterationAppRight I κ f).isIso
 
 instance {j₁ j₂ : κ.ord.toType} (φ : j₁ ⟶ j₂) (f : Arrow C) :
     IsIso (((iterationFunctor I κ).map φ).app f).right :=
   inferInstanceAs (IsIso ((transfiniteCompositionOfShapeιIterationAppRight I κ f).F.map φ))
 
+/-- For any `f : Arrow C`, the object `f.right` identifies
+to `((iteration I κ).obj f).right`.-/
 @[simps! hom]
 noncomputable def iterationAppRightIso (f : Arrow C) :
     f.right ≅ ((iteration I κ).obj f).right :=
   asIso ((ιIteration I κ).app f).right
 
+/-- For any `f : Arrow C` and `j : κ.ord.toType`, the object
+`(((iterationFunctor I κ).obj j).obj f).right` identifies to `f.right`. -/
 noncomputable def iterationFunctorObjObjRightIso (f : Arrow C) (j : κ.ord.toType) :
     (((iterationFunctor I κ).obj j).obj f).right ≅ f.right :=
   asIso ((transfiniteCompositionOfShapeιIterationAppRight I κ f).incl.app j) ≪≫
@@ -230,6 +245,9 @@ lemma prop_iterationFunctor_map_succ (j : κ.ord.toType) :
   have := Cardinal.noMaxOrder (Fact.elim inferInstance : κ.IsRegular).aleph0_le
   exact (succStruct I κ).prop_iterationFunctor_map_succ j (not_isMax j)
 
+/-- For any `f : Arrow C` and `j : κ.ord.toType`, the morphism
+`((iterationFunctor I κ).map (homOfLE (Order.le_succ j))).app f` identifies
+to a morphism given by `SmallObject.ε I.homFamily`. -/
 noncomputable def iterationFunctorMapSuccAppArrowIso (f : Arrow C) (j : κ.ord.toType) :
     letI := hasColimitsOfShape_discrete I κ
     letI := hasPushouts I κ
@@ -264,10 +282,14 @@ section
 
 variable {X Y : C} (f : X ⟶ Y)
 
+/-- The intermediate object in the factorization given by the
+small object argument. -/
 noncomputable def obj : C := ((iteration I κ).obj (Arrow.mk f)).left
 
+/-- The "inclusion" morphism given by the small object argument. -/
 noncomputable def ιObj : X ⟶ obj I κ f := ((ιIteration I κ).app (Arrow.mk f)).left
 
+/-- The "projection" morphism given by the small object argument. -/
 noncomputable def πObj : obj I κ f ⟶ Y :=
   ((iteration I κ).obj (Arrow.mk f)).hom ≫ inv ((ιIteration I κ).app f).right
 
@@ -302,6 +324,9 @@ lemma llp_rlp_ιObj : I.rlp.llp (ιObj I κ f) := by
   apply I.transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp κ.ord.toType
   apply transfiniteCompositionsOfShape_ιObj
 
+/-- When `ιObj I κ f` is considered as a relative `I`-cell complex,
+the object at the `j`th step is obtained by applying the construction
+`SmallObject.functorObj`. -/
 noncomputable def relativeCellComplexιObjFObjSuccIso (j : κ.ord.toType) :
     letI := hasColimitsOfShape_discrete I κ
     letI := hasPushouts I κ
@@ -382,8 +407,8 @@ lemma rlp_πObj : I.rlp (πObj I κ f) :=
 
 end
 
-section
-
+/-- The functoriality in the objects in `Arrow C` of the intermediate object
+in the factorization of the small object argument. -/
 noncomputable def objMap {f g : Arrow C} (φ : f ⟶ g) : obj I κ f.hom ⟶ obj I κ g.hom :=
   ((iteration I κ).map φ).left
 
@@ -419,8 +444,8 @@ lemma πObj_naturality {f g : Arrow C} (φ : f ⟶ g) :
   rw [← assoc]
   apply comp_id
 
-end
-
+/-- The functorial factorization `ιObj I κ f ≫ πObj I κ f.hom = f`
+with `ιObj I κ f` in `I.rlp.llp` and `πObj I κ f.hom` in `I.rlp`. -/
 @[simps]
 noncomputable def functorialFactorizationData :
     FunctorialFactorizationData I.rlp.llp I.rlp where

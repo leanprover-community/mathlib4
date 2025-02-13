@@ -77,12 +77,18 @@ namespace MorphismProperty
 
 variable {C : Type u} [Category.{v} C] (I : MorphismProperty C)
 
+/-- A class of morphisms `I : MorphismProperty C` satisfies the property
+`HasSmallObjectArgument.{w} I` if it permits the small object arguments,
+i.e. there exists a regular cardinal `κ : Cardinal.{w}` such that
+`IsCardinalForSmallObjectArgument I κ` holds. -/
 class HasSmallObjectArgument : Prop where
   exists_cardinal : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular) (_ : OrderBot κ.ord.toType),
     IsCardinalForSmallObjectArgument I κ
 
 variable [HasSmallObjectArgument.{w} I]
 
+/-- When `I : MorphismProperty C` permits the small object argument,
+this is a cardinal `κ` such that `IsCardinalForSmallObjectArgument I κ` holds. -/
 noncomputable def smallObjectκ : Cardinal.{w} :=
   (HasSmallObjectArgument.exists_cardinal (I := I)).choose
 
