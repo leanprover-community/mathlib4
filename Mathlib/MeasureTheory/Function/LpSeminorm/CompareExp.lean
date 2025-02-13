@@ -3,6 +3,7 @@ Copyright (c) 2020 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Eric Wieser
 -/
+import Mathlib.Data.ENNReal.Holder
 import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 import Mathlib.MeasureTheory.Integral.MeanInequalities
 import Mathlib.Tactic.Finiteness
@@ -263,6 +264,18 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm'_of_norm {p q r : ℝ≥0∞} (hf : AEStr
     (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖ ≤ c * ‖f x‖ * ‖g x‖) (hpqr : 1 / p = 1 / q + 1 / r) :
     eLpNorm (fun x => b (f x) (g x)) p μ ≤ c * eLpNorm f q μ * eLpNorm g r μ :=
   eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hf hg b c h hpqr
+
+open NNReal in
+theorem Memℒp.of_bilin {p q r : ℝ≥0∞} {f : α → E} {g : α → F} (b : E → F → G) (c : ℝ≥0)
+    (hf : Memℒp f p μ) (hg : Memℒp g q μ)
+    (h : AEStronglyMeasurable (fun x ↦ b (f x) (g x)) μ)
+    (hb : ∀ᵐ (x : α) ∂μ, ‖b (f x) (g x)‖₊ ≤ c * ‖f x‖₊ * ‖g x‖₊) (hpqr : 1 / r = 1 / p + 1 / q) :
+    Memℒp (fun x ↦ b (f x) (g x)) r μ := by
+  refine ⟨h, ?_⟩
+  apply (eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hf.1 hg.1 b c hb hpqr).trans_lt
+  have := hf.2
+  have := hg.2
+  finiteness
 
 end Bilinear
 
