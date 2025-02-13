@@ -152,11 +152,15 @@ end
 def getPackageDirs : CacheM PackageDirs := return (← read).packageDirs
 
 def getPackageDir (path : FilePath) : CacheM FilePath := do
-  match path.withExtension "" |>.components.head? with
-  | none => throw <| IO.userError "Can't find package directory for empty path"
-  | some pkg => match (← getPackageDirs).find? pkg with
-    | none => throw <| IO.userError s!"Unknown package directory for {pkg}"
-    | some path => return path
+  let sp := (← read).srcSearchPath
+
+  -- `path` is a unresolved file name like `Aesop/Build.lean`
+  let mod : Name := .fromComponents <| path.withExtension "" |>.components.map Name.mkSimple
+
+  let packageDir? ← sp.findWithExtBase "lean" mod
+  match packageDir? with
+  | some dir => return dir
+  | none => throw <| IO.userError s!"Unknown package directory for {mod}\nsearch paths: {sp}"
 
 /-- Runs a terminal command and retrieves its output, passing the lines to `processLine` -/
 partial def runCurlStreaming (args : Array String) (init : α)
