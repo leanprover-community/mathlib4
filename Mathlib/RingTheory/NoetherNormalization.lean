@@ -30,7 +30,7 @@ namespace NoetherNormalization
 `up` is a number which is big enough. -/
 local notation3 "up" => 2 + f.totalDegree
 
-/-- `r` maps i to `up ^ i`-/
+/-- `r` maps `(i : Fin (n + 1))` to `up ^ i`-/
 local notation3 "r" => fun (i : Fin (n + 1)) ↦ up ^ i.1
 
 /-- We construct an algebra map `T1` which maps `X_i` into `X_i + X_0 ^ r_i` when `i ≠ 0`,
