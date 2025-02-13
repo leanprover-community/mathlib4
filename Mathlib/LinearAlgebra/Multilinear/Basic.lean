@@ -1257,7 +1257,6 @@ instance : AddCommGroup (MultilinearMap R M₁ M₂) :=
       { toFun := fun m => n • f m
         map_update_add' := fun m i x y => by simp [smul_add]
         map_update_smul' := fun l i x d => by simp [← smul_comm x n (_ : M₂)] }
-    -- Porting note: changed from `AddCommGroup` to `SubNegMonoid`
     zsmul_zero' := fun _ => MultilinearMap.ext fun _ => SubNegMonoid.zsmul_zero' _
     zsmul_succ' := fun _ _ => MultilinearMap.ext fun _ => SubNegMonoid.zsmul_succ' _ _
     zsmul_neg' := fun _ _ => MultilinearMap.ext fun _ => SubNegMonoid.zsmul_neg' _ _ }
