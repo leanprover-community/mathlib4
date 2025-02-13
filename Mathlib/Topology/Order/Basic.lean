@@ -463,6 +463,20 @@ theorem mem_nhds_iff_exists_Ioo_subset [OrderTopology α] [NoMaxOrder α] [NoMin
     {s : Set α} : s ∈ 𝓝 a ↔ ∃ l u, a ∈ Ioo l u ∧ Ioo l u ⊆ s :=
   mem_nhds_iff_exists_Ioo_subset' (exists_lt a) (exists_gt a)
 
+theorem exists_lt_mem_of_mem_nhds [OrderTopology α] [NoMinOrder α] [DenselyOrdered α]
+    {a : α} {s : Set α} (hs : s ∈ 𝓝 a) :
+    ∃ y ∈ s, y < a := by
+  obtain ⟨b, hba, hbs⟩ := exists_Ioc_subset_of_mem_nhds hs (exists_lt a)
+  obtain ⟨y, hby, hya⟩ := exists_between hba
+  exact ⟨y, hbs ⟨hby, hya.le⟩, hya⟩
+
+theorem exists_gt_mem_of_mem_nhds [OrderTopology α] [NoMaxOrder α] [DenselyOrdered α]
+    {a : α} {s : Set α} (hs : s ∈ 𝓝 a) :
+    ∃ y ∈ s, a < y := by
+  obtain ⟨b, hab, hbs⟩ := exists_Ico_subset_of_mem_nhds hs (exists_gt a)
+  obtain ⟨y, hay, hyb⟩ := exists_between hab
+  exact ⟨y, hbs ⟨hay.le, hyb⟩, hay⟩
+
 theorem nhds_basis_Ioo' [OrderTopology α] {a : α} (hl : ∃ l, l < a) (hu : ∃ u, a < u) :
     (𝓝 a).HasBasis (fun b : α × α => b.1 < a ∧ a < b.2) fun b => Ioo b.1 b.2 :=
   ⟨fun s => (mem_nhds_iff_exists_Ioo_subset' hl hu).trans <| by simp⟩
