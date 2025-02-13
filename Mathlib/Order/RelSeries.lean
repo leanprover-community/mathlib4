@@ -652,6 +652,30 @@ lemma Rel.finiteDimensional_or_infiniteDimensional [Nonempty α] :
   rw [← not_finiteDimensional_iff]
   exact em r.FiniteDimensional
 
+variable {r} in
+lemma Rel.finiteDimensional_swap_iff :
+    FiniteDimensional r ↔ FiniteDimensional (Function.swap r) where
+  mp _ := ⟨.reverse (.longestOf r), fun s ↦ s.reverse.length_le_length_longestOf⟩
+  mpr _ := ⟨.reverse (.longestOf (Function.swap r)), fun s ↦ s.reverse.length_le_length_longestOf⟩
+
+variable {r} in
+lemma Rel.infiniteDimensional_swap_iff :
+    InfiniteDimensional r ↔ InfiniteDimensional (Function.swap r) where
+  mp _ := ⟨fun n ↦ ⟨.reverse (.withLength r n), RelSeries.length_withLength r n⟩⟩
+  mpr _ := ⟨fun n ↦ ⟨.reverse (.withLength (Function.swap r) n),
+    RelSeries.length_withLength (Function.swap r) n⟩⟩
+
+lemma Rel.wellFounded_swap_of_finiteDimensional [Rel.FiniteDimensional r] :
+    WellFounded (Function.swap r) := by
+  rw [WellFounded.wellFounded_iff_no_descending_seq]
+  refine ⟨fun ⟨f, hf⟩ ↦ ?_⟩
+  let s := RelSeries.mk (r := r) ((RelSeries.longestOf r).length + 1) (f ·) (hf ·)
+  exact (RelSeries.longestOf r).length.lt_succ_self.not_le s.length_le_length_longestOf
+
+lemma Rel.wellFounded_of_finiteDimensional [Rel.FiniteDimensional r] : WellFounded r :=
+  have : (Rel.FiniteDimensional (Function.swap r)) := Rel.finiteDimensional_swap_iff.mp ‹_›
+  wellFounded_swap_of_finiteDimensional (Function.swap r)
+
 /-- A type is finite dimensional if its `LTSeries` has bounded length. -/
 abbrev FiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
   Rel.FiniteDimensional ((· < ·) : γ → γ → Prop)
