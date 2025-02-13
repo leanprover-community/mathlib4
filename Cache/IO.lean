@@ -434,7 +434,7 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
           pure <| acc.insertMany leanModulesInFolder
       else
         -- provided a module
-        let mod : Name := argₛ.toName
+        let mod := argₛ.toName
         let packageDir ← getPackageDir mod
         let sourceFile ← Lean.findLean sp mod
 
