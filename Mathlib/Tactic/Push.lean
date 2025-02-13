@@ -25,6 +25,10 @@ variable (p q : Prop) {α : Sort u} (s : α → Prop)
 
 -- Note: the lemma `Classical.not_imp` is attempted before `not_forall_eq`
 attribute [push] not_not not_or Classical.not_imp
+  forall_const forall_and forall_or_left forall_or_right forall_eq forall_eq' forall_self_imp
+  exists_const exists_or exists_and_left exists_and_right exists_eq exists_eq'
+  and_or_left and_or_right and_true true_and and_false false_and
+  or_and_left or_and_right or_true true_or or_false false_or
 
 @[push] theorem not_iff : ¬(p ↔ q) ↔ (p ∧ ¬q) ∨ (¬p ∧ q) :=
   _root_.not_iff.trans <| iff_iff_and_or_not_and_not.trans <| by rw [not_not, or_comm]
