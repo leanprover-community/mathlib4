@@ -364,8 +364,8 @@ theorem rankFinite_iff_cRank_lt_aleph0 : M.RankFinite ↔ M.cRank < ℵ₀ := by
   simp_rw [← finite_coe_iff, ← lt_aleph0_iff_finite]
   exact ⟨B, hB, hB.cardinalMk_le_cRank.trans_lt h⟩
 
-theorem rkFin_iff_cRk_lt_aleph0 : M.RkFin X ↔ M.cRk X < ℵ₀ := by
-  rw [RkFin, rankFinite_iff_cRank_lt_aleph0, cRank_restrict]
+theorem isRkFinite_iff_cRk_lt_aleph0 : M.IsRkFinite X ↔ M.cRk X < ℵ₀ := by
+  rw [IsRkFinite, rankFinite_iff_cRank_lt_aleph0, cRank_restrict]
 
 theorem Indep.base_of_cRank_le [M.RankFinite] (ind : M.Indep I) (le : M.cRank ≤ #I) : M.Base I :=
   ind.base_of_maximal fun _J ind_J hIJ ↦ ind.finite.eq_of_subset_of_encard_le' hIJ <|
