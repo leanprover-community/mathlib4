@@ -2,10 +2,11 @@
 Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Patrick Massot, Simon Hudon, Alice Laroche, Frédéric Dupuis,
-  Jireh Loreaux
+Jireh Loreaux
 -/
-
-import Mathlib.Data.Finite.Defs
+import Lean.Elab.Tactic.Location
+import Mathlib.Logic.Basic
+import Mathlib.Tactic.Conv
 
 /-!
 # The `push` and `push_neg` tactics
@@ -17,8 +18,6 @@ as local hypotheses and also works as a `conv` tactic. `push_neg` is a macro for
 namespace Mathlib.Tactic.Push
 
 open Lean Meta Elab.Tactic Parser.Tactic
-
-initialize registerTraceClass `Tactic.push
 
 section Attr
 
@@ -52,8 +51,8 @@ initialize registerBuiltinAttribute {
 
 end Attr
 
-
-variable (p q : Prop) {α : Sort*} {β : Type*} (s : α → Prop)
+universe u v
+variable (p q : Prop) {α : Sort u} {β : Type v} (s : α → Prop)
 
 theorem not_and_eq : (¬ (p ∧ q)) = (p → ¬ q) := propext not_and
 theorem not_and_or_eq : (¬ (p ∧ q)) = (¬ p ∨ ¬ q) := propext not_and_or
