@@ -148,10 +148,10 @@ partial def getHash (mod : Name) (sourceFile : FilePath)
     We can change this at any time causing a one-time cache invalidation, just as
     a toolchain-bump would.
     -/
-    let filePath := mkFilePath (mod.components.map toString) |>.withExtension "lean"
+    let c := (mod.components.dropLast.map toString).append [sourceFile.components.getLast!]
 
     let rootHash := (← get).rootHash
-    let pathHash := hash filePath.components -- TODO: change to `hash mod`
+    let pathHash := hash c -- TODO: change to `hash mod`
     let fileHash := hash <| rootHash :: pathHash :: hashFileContents content :: importHashes.toList
     modifyGet fun stt =>
       (some fileHash, { stt with
