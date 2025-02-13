@@ -53,22 +53,15 @@ theorem single_mul (a : α) (b₁ b₂ : β) : single a (b₁ * b₂) = single a
 
 lemma support_mul_subset_left {g₁ g₂ : α →₀ β} :
     (g₁ * g₂).support ⊆ g₁.support := fun x hx => by
-  simp_all only [mem_support_iff, mul_apply, ne_eq]
-  intro a
-  simp_all only [zero_mul, not_true_eq_false]
+  aesop
 
 lemma support_mul_subset_right {g₁ g₂ : α →₀ β} :
     (g₁ * g₂).support ⊆ g₂.support := fun x hx => by
-  simp_all only [mem_support_iff, mul_apply, ne_eq]
-  intro a
-  simp_all only [mul_zero, not_true_eq_false]
+  aesop
 
 theorem support_mul [DecidableEq α] {g₁ g₂ : α →₀ β} :
     (g₁ * g₂).support ⊆ g₁.support ∩ g₂.support :=
   subset_inter support_mul_subset_left support_mul_subset_right
-
-lemma support_mul_self (f : α →₀ β) :
-    (f*f).support ⊆ f.support := support_mul_subset_left
 
 instance : MulZeroClass (α →₀ β) :=
   DFunLike.coe_injective.mulZeroClass _ coe_zero coe_mul
