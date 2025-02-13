@@ -63,7 +63,7 @@ lemma nnnorm_holder_apply_apply_le (f : Lp E p μ) (g : Lp F q μ) :
   simp_rw [← ENNReal.coe_le_coe, ENNReal.coe_mul, ← enorm_eq_nnnorm, Lp.enorm_def]
   apply eLpNorm_congr_ae (coeFn_holder B f g) |>.trans_le
   exact eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm (Lp.memℒp f).1 (Lp.memℒp g).1 (B · ·) ‖B‖₊
-    (.of_forall fun _ ↦ B.le_opNorm₂ _ _) hpqr.one_div_eq
+    (.of_forall fun _ ↦ B.le_opNorm₂ _ _)
 
 lemma norm_holder_apply_apply_le (f : Lp E p μ) (g : Lp F q μ) :
     ‖(B.holder f g : Lp G r μ)‖ ≤ ‖B‖ * ‖f‖ * ‖g‖ :=
@@ -167,10 +167,10 @@ variable [NormedRing 𝕜] [NormedAddCommGroup E] [MulActionWithZero 𝕜 E] [Bo
 /-- Heterogeneous scalar multiplication of `MeasureTheory.Lp` functions by `MeasureTheory.Lp`
 functions when the exponents satisfy `ENNReal.HolderTriple p q r`. -/
 instance : HSMul (Lp 𝕜 p μ) (Lp E q μ) (Lp E r μ) where
-  hSMul f g := (Lp.memℒp g).smul (Lp.memℒp f) hpqr.one_div_eq |>.toLp (⇑f • ⇑g)
+  hSMul f g := (Lp.memℒp g).smul (Lp.memℒp f) |>.toLp (⇑f • ⇑g)
 
 lemma smul_def {f : Lp 𝕜 p μ} {g : Lp E q μ} :
-    f • g = ((Lp.memℒp g).smul (Lp.memℒp f) hpqr.one_div_eq).toLp (⇑f • ⇑g) :=
+    f • g = ((Lp.memℒp g).smul (Lp.memℒp f)).toLp (⇑f • ⇑g) :=
   rfl
 
 lemma coeFn_lp_smul (f : Lp 𝕜 p μ) (g : Lp E q μ) :
@@ -184,8 +184,7 @@ protected lemma norm_smul_le (f : Lp 𝕜 p μ) (g : Lp E q μ) :
   refine ENNReal.toReal_mono ?_ ?_
   · exact ENNReal.mul_ne_top (eLpNorm_ne_top f) (eLpNorm_ne_top g)
   · rw [eLpNorm_congr_ae (coeFn_lp_smul f g)]
-    exact eLpNorm_smul_le_mul_eLpNorm (Lp.aestronglyMeasurable g)
-      (Lp.aestronglyMeasurable f) hpqr.one_div_eq
+    exact eLpNorm_smul_le_mul_eLpNorm (Lp.aestronglyMeasurable g) (Lp.aestronglyMeasurable f)
 
 end MulActionWithZero
 

@@ -442,7 +442,8 @@ theorem Integrable.essSup_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace �
   have hg' : eLpNorm g ∞ μ ≠ ∞ := by rwa [eLpNorm_exponent_top]
   calc
     eLpNorm (fun x : α => g x • f x) 1 μ ≤ _ := by
-      simpa using MeasureTheory.eLpNorm_smul_le_mul_eLpNorm hf.1 g_aestronglyMeasurable h
+      simpa using MeasureTheory.eLpNorm_smul_le_mul_eLpNorm hf.1 g_aestronglyMeasurable
+        (p := ∞) (q := 1)
     _ < ∞ := ENNReal.mul_lt_top hg'.lt_top hf.2
 
 /-- Hölder's inequality for integrable functions: the scalar multiplication of an integrable
@@ -457,7 +458,8 @@ theorem Integrable.smul_essSup {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β]
   have hg' : eLpNorm g ∞ μ ≠ ∞ := by rwa [eLpNorm_exponent_top]
   calc
     eLpNorm (fun x : α => f x • g x) 1 μ ≤ _ := by
-      simpa using MeasureTheory.eLpNorm_smul_le_mul_eLpNorm g_aestronglyMeasurable hf.1 h
+      simpa using MeasureTheory.eLpNorm_smul_le_mul_eLpNorm g_aestronglyMeasurable hf.1
+        (p := 1) (q := ∞)
     _ < ∞ := ENNReal.mul_lt_top hf.2 hg'.lt_top
 
 theorem integrable_norm_iff {f : α → β} (hf : AEStronglyMeasurable f μ) :
@@ -803,12 +805,12 @@ variable [NormedRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β]
 theorem Integrable.smul_of_top_right {f : α → β} {φ : α → 𝕜} (hf : Integrable f μ)
     (hφ : Memℒp φ ∞ μ) : Integrable (φ • f) μ := by
   rw [← memℒp_one_iff_integrable] at hf ⊢
-  exact Memℒp.smul_of_top_right hf hφ
+  exact Memℒp.smul hf hφ
 
 theorem Integrable.smul_of_top_left {f : α → β} {φ : α → 𝕜} (hφ : Integrable φ μ)
     (hf : Memℒp f ∞ μ) : Integrable (φ • f) μ := by
   rw [← memℒp_one_iff_integrable] at hφ ⊢
-  exact Memℒp.smul_of_top_left hf hφ
+  exact Memℒp.smul hf hφ
 
 @[fun_prop]
 theorem Integrable.smul_const {f : α → 𝕜} (hf : Integrable f μ) (c : β) :
