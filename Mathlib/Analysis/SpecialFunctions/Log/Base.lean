@@ -389,9 +389,8 @@ theorem ceil_logb_natCast {b : ℕ} {r : ℝ} (hr : 0 ≤ r) :
 
 @[norm_cast]
 theorem natFloor_logb_natCast (b : ℕ) (n : ℕ) : ⌊logb b n⌋₊ = Nat.log b n := by
-  cases' b with b
+  obtain _ | _ | b := b
   · simp [Real.logb]
-  cases' b with b
   · simp [Real.logb]
   have hb : 1 < b.succ.succ := Nat.succ_lt_succ (Nat.zero_lt_succ _)
   obtain rfl | hn := Decidable.eq_or_ne 0 n
@@ -405,9 +404,8 @@ theorem natFloor_logb_natCast (b : ℕ) (n : ℕ) : ⌊logb b n⌋₊ = Nat.log 
 
 @[norm_cast]
 theorem natCeil_logb_natCast (b : ℕ) (n : ℕ) : ⌈logb b n⌉₊ = Nat.clog b n := by
-  cases' b with b
+  obtain _ | _ | b := b
   · simp [Real.logb]
-  cases' b with b
   · simp [Real.logb]
   have hb : 1 < b.succ.succ := Nat.succ_lt_succ (Nat.zero_lt_succ _)
   obtain rfl | hn := Decidable.eq_or_ne 0 n
