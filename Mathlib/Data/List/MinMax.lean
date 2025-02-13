@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Minchao Wu, Chris Hughes, Mantas Bakšys
 -/
 import Mathlib.Data.List.Basic
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Data.List.Induction
 import Mathlib.Order.MinMax
 import Mathlib.Order.WithBot
-import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
 # Minimum and maximum of lists

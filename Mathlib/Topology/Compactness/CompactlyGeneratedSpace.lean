@@ -179,11 +179,11 @@ instance [UCompactlyGeneratedSpace.{u} X] [UCompactlyGeneratedSpace.{v} Y] :
   all_goals
     refine UCompactlyGeneratedSpace.isClosed fun S ⟨f, hf⟩ ↦ ?_
   · let g : ULift.{v} S → X ⊕ Y := Sum.inl ∘ f ∘ ULift.down
-    have hg : Continuous g := continuous_inl.comp <| hf.comp continuous_uLift_down
-    exact (h (CompHaus.of (ULift.{v} S)) ⟨g, hg⟩).preimage continuous_uLift_up
+    have hg : Continuous g := continuous_inl.comp <| hf.comp continuous_uliftDown
+    exact (h (CompHaus.of (ULift.{v} S)) ⟨g, hg⟩).preimage continuous_uliftUp
   · let g : ULift.{u} S → X ⊕ Y := Sum.inr ∘ f ∘ ULift.down
-    have hg : Continuous g := continuous_inr.comp <| hf.comp continuous_uLift_down
-    exact (h (CompHaus.of (ULift.{u} S)) ⟨g, hg⟩).preimage continuous_uLift_up
+    have hg : Continuous g := continuous_inr.comp <| hf.comp continuous_uliftDown
+    exact (h (CompHaus.of (ULift.{u} S)) ⟨g, hg⟩).preimage continuous_uliftUp
 
 /-- The sigma type associated to a family of compactly generated spaces is compactly generated. -/
 instance {ι : Type v} {X : ι → Type w} [∀ i, TopologicalSpace (X i)]
@@ -205,11 +205,11 @@ instance (priority := 100) [SequentialSpace X] : UCompactlyGeneratedSpace.{u} X 
   have : Filter.Tendsto (@OnePoint.some ℕ) Filter.atTop (𝓝 ∞) := by
     rw [← Nat.cofinite_eq_atTop, ← cocompact_eq_cofinite, ← coclosedCompact_eq_cocompact]
     exact tendsto_coe_infty
-  apply IsClosed.mem_of_tendsto _ ((continuous_uLift_up.tendsto ∞).comp this)
+  apply IsClosed.mem_of_tendsto _ ((continuous_uliftUp.tendsto ∞).comp this)
   · simp only [Function.comp_apply, mem_preimage, eventually_atTop, ge_iff_le]
     exact ⟨0, fun b _ ↦ hu b⟩
   · exact h (CompHaus.of (ULift.{u} (OnePoint ℕ)))
-      ⟨g, (continuousMapMkNat u p hup).continuous.comp continuous_uLift_down⟩
+      ⟨g, (continuousMapMkNat u p hup).continuous.comp continuous_uliftDown⟩
 
 end UCompactlyGeneratedSpace
 
@@ -308,8 +308,8 @@ instance {ι : Type u} {X : ι → Type v}
   refine compactlyGeneratedSpace_of_isClosed fun s h ↦ isClosed_sigma_iff.2 fun i ↦
     CompactlyGeneratedSpace.isClosed' fun K _ _ _ f hf ↦ ?_
   let g : ULift.{u} K → (Σ i, X i) := Sigma.mk i ∘ f ∘ ULift.down
-  have hg : Continuous g := continuous_sigmaMk.comp <| hf.comp continuous_uLift_down
-  exact (h _ g hg).preimage continuous_uLift_up
+  have hg : Continuous g := continuous_sigmaMk.comp <| hf.comp continuous_uliftDown
+  exact (h _ g hg).preimage continuous_uliftUp
 
 variable [T2Space X]
 
