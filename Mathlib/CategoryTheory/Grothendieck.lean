@@ -319,6 +319,7 @@ def compAsSmallFunctorEquivalence :
   counitIso := Iso.refl _
   unitIso := Iso.refl _
 
+variable {F} in
 /-- Mapping a Grothendieck construction along the whiskering of any natural transformation
 `α : F ⟶ G` with the functor `asSmallFunctor : Cat ⥤ Cat` is naturally isomorphic to conjugating
 `map α` with the equivalence between `Grothendieck (F ⋙ asSmallFunctor)` and `Grothendieck F`. -/
@@ -577,6 +578,11 @@ def ιCompFunctorFrom (c : C) : ι F c ⋙ (functorFrom fib hom hom_id hom_comp)
   NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp [hom_id])
 
 end FunctorFrom
+
+/-- The fiber inclusion `ι F c` composed with `map α` is isomorphic to `α.app c ⋙ ι F' c`. -/
+@[simps!]
+def ιCompMap {F' : C ⥤ Cat} (α : F ⟶ F') (c : C) : ι F c ⋙ map α ≅ α.app c ⋙ ι F' c :=
+  NatIso.ofComponents (fun X => Iso.refl _) (fun f => by simp [map])
 
 end Grothendieck
 
