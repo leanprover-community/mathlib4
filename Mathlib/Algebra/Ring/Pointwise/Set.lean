@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 -/
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Module.Defs
 
 /-!
 # Pointwise operations of sets in a ring
@@ -22,7 +22,7 @@ assert_not_exists OrderedAddCommMonoid
 open Function
 open scoped Pointwise
 
-variable {α : Type*}
+variable {α β : Type*}
 
 namespace Set
 
@@ -46,4 +46,41 @@ lemma mul_add_subset : s * (t + u) ⊆ s * t + s * u := image2_distrib_subset_le
 lemma add_mul_subset : (s + t) * u ⊆ s * u + t * u := image2_distrib_subset_right add_mul
 
 end Distrib
+
+section Monoid
+variable [Monoid α] [AddGroup β] [DistribMulAction α β] (a : α) (s : Set α) (t : Set β)
+
+@[simp]
+lemma smul_set_neg : a • -t = -(a • t) := by
+  simp_rw [← image_smul, ← image_neg_eq_neg, image_image, smul_neg]
+
+@[simp]
+protected lemma smul_neg : s • -t = -(s • t) := by
+  simp_rw [← image_neg_eq_neg]
+  exact image_image2_right_comm smul_neg
+
+end Monoid
+
+section Semiring
+variable [Semiring α] [AddCommMonoid β] [Module α β]
+
+lemma add_smul_subset (a b : α) (s : Set β) : (a + b) • s ⊆ a • s + b • s := by
+  rintro _ ⟨x, hx, rfl⟩
+  simpa only [add_smul] using add_mem_add (smul_mem_smul_set hx) (smul_mem_smul_set hx)
+
+end Semiring
+
+section Ring
+variable [Ring α] [AddCommGroup β] [Module α β] (a : α) (s : Set α) (t : Set β)
+
+@[simp]
+lemma neg_smul_set : -a • t = -(a • t) := by
+  simp_rw [← image_smul, ← image_neg_eq_neg, image_image, neg_smul]
+
+@[simp]
+protected lemma neg_smul : -s • t = -(s • t) := by
+  simp_rw [← image_neg_eq_neg]
+  exact image2_image_left_comm neg_smul
+
+end Ring
 end Set

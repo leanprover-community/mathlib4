@@ -6,7 +6,6 @@ Authors: Mitchell Rowett, Kim Morrison
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Quotient
 import Mathlib.Data.Fintype.Card
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.Coset.Defs
 

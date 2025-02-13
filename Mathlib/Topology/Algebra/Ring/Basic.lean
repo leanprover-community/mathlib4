@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.Topology.Algebra.Group.Basic

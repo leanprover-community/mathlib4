@@ -6,9 +6,10 @@ Authors: Eric Wieser
 import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.GroupWithZero.Action.End
+import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.BigOperators.Group.List
 import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Order.WellFoundedSet
 
 /-! # Pointwise instances on `Submonoid`s and `AddSubmonoid`s
