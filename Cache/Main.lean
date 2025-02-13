@@ -78,7 +78,6 @@ def main (args : List String) : IO Unit := do
     Process.exit 0
   CacheM.run do
 
-  -- Parse commandline arguments
   let mut roots : Std.HashMap Lean.Name FilePath ← parseArgs args
   if roots.isEmpty then do
     -- No arguments means to start from `Mathlib.lean`
