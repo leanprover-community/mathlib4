@@ -15,8 +15,8 @@ In this file we compare `MeasureTheory.eLpNorm'` and `MeasureTheory.eLpNorm` for
 exponents.
 -/
 
-open Filter
-open scoped ENNReal Topology
+open Filter ENNReal
+open scoped Topology
 
 namespace MeasureTheory
 
@@ -233,8 +233,9 @@ theorem eLpNorm'_le_eLpNorm'_mul_eLpNorm' {p q r : ℝ} (hf : AEStronglyMeasurab
 `fun x => b (f x) (g x)`. -/
 theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm {p q r : ℝ≥0∞}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) (b : E → F → G) (c : ℝ≥0)
-    (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖₊ ≤ c * ‖f x‖₊ * ‖g x‖₊) (hpqr : 1 / p = 1 / q + 1 / r) :
+    (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖₊ ≤ c * ‖f x‖₊ * ‖g x‖₊) [hpqr : HolderTriple q r p] :
     eLpNorm (fun x => b (f x) (g x)) p μ ≤ c * eLpNorm f q μ * eLpNorm g r μ := by
+  have hpqr := hpqr.one_div_eq
   obtain (rfl | rfl | hq) := ENNReal.trichotomy q
   · simp_all
   · have : p = r := by simpa using hpqr
@@ -261,18 +262,19 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm {p q r : ℝ≥0∞}
 `fun x => b (f x) (g x)`. -/
 theorem eLpNorm_le_eLpNorm_mul_eLpNorm'_of_norm {p q r : ℝ≥0∞} (hf : AEStronglyMeasurable f μ)
     (hg : AEStronglyMeasurable g μ) (b : E → F → G) (c : ℝ≥0)
-    (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖ ≤ c * ‖f x‖ * ‖g x‖) (hpqr : 1 / p = 1 / q + 1 / r) :
+    (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖ ≤ c * ‖f x‖ * ‖g x‖) [hpqr : HolderTriple q r p] :
     eLpNorm (fun x => b (f x) (g x)) p μ ≤ c * eLpNorm f q μ * eLpNorm g r μ :=
-  eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hf hg b c h hpqr
+  eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hf hg b c h
 
 open NNReal in
 theorem Memℒp.of_bilin {p q r : ℝ≥0∞} {f : α → E} {g : α → F} (b : E → F → G) (c : ℝ≥0)
     (hf : Memℒp f p μ) (hg : Memℒp g q μ)
     (h : AEStronglyMeasurable (fun x ↦ b (f x) (g x)) μ)
-    (hb : ∀ᵐ (x : α) ∂μ, ‖b (f x) (g x)‖₊ ≤ c * ‖f x‖₊ * ‖g x‖₊) (hpqr : 1 / r = 1 / p + 1 / q) :
+    (hb : ∀ᵐ (x : α) ∂μ, ‖b (f x) (g x)‖₊ ≤ c * ‖f x‖₊ * ‖g x‖₊)
+    [hpqr : HolderTriple p q r] :
     Memℒp (fun x ↦ b (f x) (g x)) r μ := by
   refine ⟨h, ?_⟩
-  apply (eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hf.1 hg.1 b c hb hpqr).trans_lt
+  apply (eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hf.1 hg.1 b c hb (hpqr := hpqr)).trans_lt
   have := hf.2
   have := hg.2
   finiteness
@@ -304,26 +306,19 @@ theorem eLpNorm'_smul_le_mul_eLpNorm' {p q r : ℝ} {f : α → E} (hf : AEStron
 
 /-- Hölder's inequality, as an inequality on the `ℒp` seminorm of a scalar product `φ • f`. -/
 theorem eLpNorm_smul_le_mul_eLpNorm {p q r : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeasurable f μ)
-    {φ : α → 𝕜} (hφ : AEStronglyMeasurable φ μ) (hpqr : 1 / p = 1 / q + 1 / r) :
+    {φ : α → 𝕜} (hφ : AEStronglyMeasurable φ μ) [hpqr : HolderTriple q r p] :
     eLpNorm (φ • f) p μ ≤ eLpNorm φ q μ * eLpNorm f r μ := by
   simpa using (eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hφ hf (· • ·) 1
-      (Eventually.of_forall fun _ => by simpa using nnnorm_smul_le _ _) hpqr : _)
+      (Eventually.of_forall fun _ => by simpa using nnnorm_smul_le _ _) : _)
 
 theorem Memℒp.smul {p q r : ℝ≥0∞} {f : α → E} {φ : α → 𝕜} (hf : Memℒp f r μ) (hφ : Memℒp φ q μ)
-    (hpqr : 1 / p = 1 / q + 1 / r) : Memℒp (φ • f) p μ :=
+    [hpqr : HolderTriple q r p] : Memℒp (φ • f) p μ :=
   ⟨hφ.1.smul hf.1,
-    (eLpNorm_smul_le_mul_eLpNorm hf.1 hφ.1 hpqr).trans_lt
-      (ENNReal.mul_lt_top hφ.eLpNorm_lt_top hf.eLpNorm_lt_top)⟩
+    eLpNorm_smul_le_mul_eLpNorm hf.1 hφ.1 |>.trans_lt <|
+      ENNReal.mul_lt_top hφ.eLpNorm_lt_top hf.eLpNorm_lt_top⟩
 
-theorem Memℒp.smul_of_top_right {p : ℝ≥0∞} {f : α → E} {φ : α → 𝕜} (hf : Memℒp f p μ)
-    (hφ : Memℒp φ ∞ μ) : Memℒp (φ • f) p μ := by
-  apply hf.smul hφ
-  simp only [ENNReal.div_top, zero_add]
-
-theorem Memℒp.smul_of_top_left {p : ℝ≥0∞} {f : α → E} {φ : α → 𝕜} (hf : Memℒp f ∞ μ)
-    (hφ : Memℒp φ p μ) : Memℒp (φ • f) p μ := by
-  apply hf.smul hφ
-  simp only [ENNReal.div_top, add_zero]
+@[deprecated (since := "2025-02-13")] alias Memℒp.smul_of_top_right := Memℒp.smul
+@[deprecated (since := "2025-02-13")] alias Memℒp.smul_of_top_left := Memℒp.smul
 
 end BoundedSMul
 
@@ -332,33 +327,20 @@ section Mul
 variable {α : Type*} {_ : MeasurableSpace α} {𝕜 : Type*} [NormedRing 𝕜] {μ : Measure α}
   {p q r : ℝ≥0∞} {f : α → 𝕜} {φ : α → 𝕜}
 
-theorem Memℒp.mul (hf : Memℒp f r μ) (hφ : Memℒp φ q μ) (hpqr : 1 / p = 1 / q + 1 / r) :
+theorem Memℒp.mul (hf : Memℒp f r μ) (hφ : Memℒp φ q μ) [hpqr : HolderTriple q r p] :
     Memℒp (φ * f) p μ :=
-  Memℒp.smul hf hφ hpqr
+  Memℒp.smul hf hφ
 
 /-- Variant of `Memℒp.mul` where the function is written as `fun x ↦ φ x * f x`
 instead of `φ * f`. -/
-theorem Memℒp.mul' (hf : Memℒp f r μ) (hφ : Memℒp φ q μ) (hpqr : 1 / p = 1 / q + 1 / r) :
+theorem Memℒp.mul' (hf : Memℒp f r μ) (hφ : Memℒp φ q μ) [hpqr : HolderTriple q r p] :
     Memℒp (fun x ↦ φ x * f x) p μ :=
-  Memℒp.smul hf hφ hpqr
+  Memℒp.smul hf hφ
 
-theorem Memℒp.mul_of_top_right (hf : Memℒp f p μ) (hφ : Memℒp φ ∞ μ) : Memℒp (φ * f) p μ :=
-  Memℒp.smul_of_top_right hf hφ
-
-/-- Variant of `Memℒp.mul_of_top_right` where the function is written as `fun x ↦ φ x * f x`
-instead of `φ * f`. -/
-theorem Memℒp.mul_of_top_right' (hf : Memℒp f p μ) (hφ : Memℒp φ ∞ μ) :
-    Memℒp (fun x ↦ φ x * f x) p μ :=
-  Memℒp.smul_of_top_right hf hφ
-
-theorem Memℒp.mul_of_top_left (hf : Memℒp f ∞ μ) (hφ : Memℒp φ p μ) : Memℒp (φ * f) p μ :=
-  Memℒp.smul_of_top_left hf hφ
-
-/-- Variant of `Memℒp.mul_of_top_left` where the function is written as `fun x ↦ φ x * f x`
-instead of `φ * f`. -/
-theorem Memℒp.mul_of_top_left' (hf : Memℒp f ∞ μ) (hφ : Memℒp φ p μ) :
-    Memℒp (fun x ↦ φ x * f x) p μ :=
-  Memℒp.smul_of_top_left hf hφ
+@[deprecated (since := "2025-02-13")] alias Memℒp.mul_of_top_right := Memℒp.mul
+@[deprecated (since := "2025-02-13")] alias Memℒp.mul_of_top_right' := Memℒp.mul'
+@[deprecated (since := "2025-02-13")] alias Memℒp.mul_of_top_left := Memℒp.mul
+@[deprecated (since := "2025-02-13")] alias Memℒp.mul_of_top_left' := Memℒp.mul'
 
 end Mul
 
@@ -376,7 +358,7 @@ protected lemma Memℒp.prod (hf : ∀ i ∈ s, Memℒp (f i) (p i) μ) :
       simp [Memℒp, eLpNormEssSup_const, hμ, aestronglyMeasurable_const, Pi.one_def]
   | cons i s hi ih =>
     rw [prod_cons]
-    exact (ih <| forall_of_forall_cons hf).mul (hf i <| mem_cons_self ..) (by simp)
+    exact (ih <| forall_of_forall_cons hf).mul (hf i <| mem_cons_self ..) (hpqr := ⟨by simp⟩)
 
 /-- See `Memℒp.prod` for the unapplied version. -/
 protected lemma Memℒp.prod' (hf : ∀ i ∈ s, Memℒp (f i) (p i) μ) :
