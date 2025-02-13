@@ -140,12 +140,18 @@ partial def getHash (mod : Name) (sourceFile : FilePath)
       | none =>
         modify fun stt => { stt with cache := stt.cache.insert mod none }
         return none
-    -- TODO: One might hash the modules name instead of this `c`,
-    -- which exists in order to not change any generated hashes compared to previous versions.
-    -- Changing this means the entire cache gets invalidated once and has to be rebuilt once.
-    let c := (mod.components.dropLast.map toString).append [sourceFile.components.getLast!]
+    /-
+    TODO: Currently, the cache uses the hash of the unresolved file name
+    (e.g. `Mathlib/Init.lean`) which is reconstructed from the module name
+    (e.g. `Mathlib.Init`) in `path`.
+
+    We can change this at any time causing a one-time cache invalidation, just as
+    a toolchain-bump would.
+    -/
+    let path := mkFilePath (mod.components.map toString) |>.withExtension "lean"
+
     let rootHash := (← get).rootHash
-    let modHash := hash c -- TODO: change to `hash mod`
+    let modHash := hash path -- TODO: change to `hash mod`
     let fileHash := hash <| rootHash :: modHash :: hashFileContents content :: importHashes.toList
     modifyGet fun stt =>
       (some fileHash, { stt with
