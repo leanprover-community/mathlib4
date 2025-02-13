@@ -2630,6 +2630,7 @@ import Mathlib.Data.Finmap
 import Mathlib.Data.Finset.Attach
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finset.BooleanAlgebra
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Dedup
 import Mathlib.Data.Finset.Defs
@@ -2707,9 +2708,13 @@ import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Fintype.CardEmbedding
+import Mathlib.Data.Fintype.Defs
 import Mathlib.Data.Fintype.Fin
+import Mathlib.Data.Fintype.Group
+import Mathlib.Data.Fintype.Inv
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Fintype.List
+import Mathlib.Data.Fintype.OfMap
 import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Fintype.Parity
@@ -2718,6 +2723,7 @@ import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Quotient
+import Mathlib.Data.Fintype.Sets
 import Mathlib.Data.Fintype.Shrink
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Fintype.Sort
