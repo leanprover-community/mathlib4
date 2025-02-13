@@ -643,11 +643,7 @@ theorem locally_const_basicOpen (U : Opens (PrimeSpectrum.Top R))
   have i_basic_open := eqToHom basic_opens_eq ≫ homOfLE hDhV
   -- We claim that `(f * c) / h ^ (n+1)` is our desired representation
   use f * c, h ^ (n + 1), i_basic_open ≫ iVU, (basic_opens_eq.symm.le :) hxDh
-  rw [op_comp, Functor.map_comp] --, comp_apply, ← s_eq, res_const]
-  -- Porting note: `comp_apply` can't be rewritten, so use a change
-  change const R _ _ _ _ = (structureSheaf R).1.map i_basic_open.op
-    ((structureSheaf R).1.map iVU.op s)
-  rw [← s_eq, res_const]
+  rw [op_comp, Functor.map_comp, ConcreteCategory.comp_apply, ← s_eq, res_const]
   -- Note that the last rewrite here generated an additional goal, which was a parameter
   -- of `res_const`. We prove this goal first
   swap
@@ -737,11 +733,7 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
       · simp only [n, mul_pow]; ring
   -- Lastly, we need to show that the new fractions still represent our original `s`
   intro i _
-  rw [op_comp, Functor.map_comp]
-  -- Porting note: `comp_apply` can't be rewritten, so use a change
-  change (structureSheaf R).1.map (eqToHom (basic_opens_eq _)).op
-    ((structureSheaf R).1.map (iDh i).op s) = _
-  rw [← hs, res_const]
+  rw [op_comp, Functor.map_comp, ConcreteCategory.comp_apply, ← hs, res_const]
   -- additional goal spit out by `res_const`
   swap
   · exact (basic_opens_eq i).le
