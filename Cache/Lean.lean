@@ -41,12 +41,12 @@ namespace Lean.SearchPath
 open System in
 
 /--
-Find the sourve directory of a module. This could be `.`
+Find the source directory for a module. This could be `.`
 (or in fact also something uncleaned like `./././.`) if the
 module is part of the current package, or something like `.lake/packages/mathlib` if the
 module is from a dependency.
 
-This is an exact copy of the first half of `Lean.SearchPath.findWithExt` which, in turn,
+This is an exact copy of the first part of `Lean.SearchPath.findWithExt` which, in turn,
 is used by `Lean.findLean sp mod`. In the future, `findWithExt` could be refactored to
 expose this base path.
 -/
