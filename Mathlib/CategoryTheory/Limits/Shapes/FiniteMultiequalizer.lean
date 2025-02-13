@@ -13,23 +13,21 @@ import Mathlib.Tactic.DeriveFintype
 
 namespace CategoryTheory.Limits
 
-variable {L R : Type*} [Fintype L] [Fintype R] [DecidableEq L] [DecidableEq R] {fst snd : R → L}
-
 namespace WalkingMulticospan
 
-deriving instance Fintype for WalkingMulticospan
+variable {J : MulticospanShape} [Fintype J.L] [Fintype J.R]
 
-attribute [nolint unusedArguments] WalkingMulticospan.proxyType
+instance : Fintype (WalkingMulticospan J) := .ofEquiv _ (proxy_equiv% (WalkingMulticospan J))
 
-instance : FinCategory (WalkingMulticospan fst snd) where
+instance [DecidableEq J.L] [DecidableEq J.R] : FinCategory (WalkingMulticospan J) where
   fintypeHom
     | .left a, .left b => ⟨if e : a = b then {eqToHom (e ▸ rfl)} else ∅, by rintro ⟨⟩; simp⟩
-    | .left a, .right b => ⟨⟨(if e : fst b = a then {eqToHom (e ▸ rfl) ≫ Hom.fst b} else 0) +
-        (if e : snd b = a then {eqToHom (e ▸ rfl) ≫ Hom.snd b} else 0), by
+    | .left a, .right b => ⟨⟨(if e : J.fst b = a then {eqToHom (e ▸ rfl) ≫ Hom.fst b} else 0) +
+        (if e : J.snd b = a then {eqToHom (e ▸ rfl) ≫ Hom.snd b} else 0), by
         split_ifs with h₁ h₂
         · simp only [Multiset.singleton_add, Multiset.nodup_cons, Multiset.mem_singleton,
             Multiset.nodup_singleton, and_true]
-          let f : ((left a : WalkingMulticospan fst snd) ⟶ right b) → Prop
+          let f : ((left a : WalkingMulticospan J) ⟶ right b) → Prop
             | .fst a => True
             | .snd a => False
           apply ne_of_apply_ne f
@@ -44,19 +42,19 @@ end WalkingMulticospan
 
 namespace WalkingMultispan
 
-deriving instance Fintype for WalkingMultispan
+variable {J : MultispanShape} [Fintype J.L] [Fintype J.R]
 
-attribute [nolint unusedArguments] WalkingMultispan.proxyType
+instance : Fintype (WalkingMultispan J) := .ofEquiv _ (proxy_equiv% (WalkingMultispan J))
 
-instance : FinCategory (WalkingMultispan fst snd) where
+instance [DecidableEq J.L] [DecidableEq J.R] : FinCategory (WalkingMultispan J) where
   fintypeHom
     | .left a, .left b => ⟨if e : a = b then {eqToHom (e ▸ rfl)} else ∅, by rintro ⟨⟩; simp⟩
-    | .left a, .right b => ⟨⟨(if e : fst a = b then {Hom.fst a ≫ eqToHom (e ▸ rfl)} else 0) +
-        (if e : snd a = b then {Hom.snd a ≫ eqToHom (e ▸ rfl)} else 0), by
+    | .left a, .right b => ⟨⟨(if e : J.fst a = b then {Hom.fst a ≫ eqToHom (e ▸ rfl)} else 0) +
+        (if e : J.snd a = b then {Hom.snd a ≫ eqToHom (e ▸ rfl)} else 0), by
         split_ifs with h₁ h₂
         · simp only [Multiset.singleton_add, Multiset.nodup_cons, Multiset.mem_singleton,
             Multiset.nodup_singleton, and_true]
-          let f : ((left a : WalkingMultispan fst snd) ⟶ right b) → Prop
+          let f : ((left a : WalkingMultispan J) ⟶ right b) → Prop
             | .fst a => True
             | .snd a => False
           apply ne_of_apply_ne f
