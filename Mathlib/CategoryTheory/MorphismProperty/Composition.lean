@@ -196,6 +196,10 @@ instance {P : MorphismProperty D} [P.IsMultiplicative] (F : C ⥤ D) :
 instance inf {P Q : MorphismProperty C} [P.IsMultiplicative] [Q.IsMultiplicative] :
     (P ⊓ Q).IsMultiplicative where
 
+instance naturalityProperty {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X ⟶ F₂.obj X) :
+    (naturalityProperty app).IsMultiplicative where
+  id_mem _ := by simp
+
 end IsMultiplicative
 
 /-- A class of morphisms `W` has the of-postcomp property wrt. `W'` if whenever
