@@ -475,10 +475,11 @@ theorem single_inv (d : ℤ) {α : F} (hα : α ≠ 0) :
 
 theorem single_zpow (n : ℤ) :
     single (n : ℤ) (1 : F) = single (1 : ℤ) 1 ^ n := by
-  cases' n with n_pos n_neg
-  · apply single_one_eq_pow
-  · rw [Int.negSucc_coe, Int.ofNat_add, Nat.cast_one, ← inv_one,
-      single_inv (n_neg + 1 : ℤ) one_ne_zero, zpow_neg, ← Nat.cast_one, ← Int.ofNat_add,
+  cases n with
+  | ofNat n => apply single_one_eq_pow
+  | negSucc n =>
+    rw [Int.negSucc_coe, Int.ofNat_add, Nat.cast_one, ← inv_one,
+      single_inv (n + 1 : ℤ) one_ne_zero, zpow_neg, ← Nat.cast_one, ← Int.ofNat_add,
       Nat.cast_one, inv_inj, zpow_natCast, single_one_eq_pow, inv_one]
 
 instance : Algebra (RatFunc F) F⸨X⸩ := RingHom.toAlgebra (coeAlgHom F).toRingHom
