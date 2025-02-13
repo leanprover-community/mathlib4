@@ -253,7 +253,6 @@ lemma isPrimePow_card : IsPrimePow (Fintype.card K) := by
   obtain ⟨p, n, hp, hn⟩ := card' K
   exact ⟨p, n, Nat.prime_iff.mp hp, n.prop, hn.symm⟩
 
--- Porting note: this was a `simp` lemma with a 5 lines proof.
 theorem cast_card_eq_zero : (q : K) = 0 := by
   simp
 
@@ -486,7 +485,7 @@ theorem frobenius_zmod (p : ℕ) [Fact p.Prime] : frobenius (ZMod p) p = RingHom
   ext a
   rw [frobenius_def, ZMod.pow_card, RingHom.id_apply]
 
--- Porting note: this was a `simp` lemma, but now the LHS simplify to `φ p`.
+-- This was a `simp` lemma, but now the LHS simplifies to `φ p`.
 theorem card_units (p : ℕ) [Fact p.Prime] : Fintype.card (ZMod p)ˣ = p - 1 := by
   rw [Fintype.card_units, card]
 

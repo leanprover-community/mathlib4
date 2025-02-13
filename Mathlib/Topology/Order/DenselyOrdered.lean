@@ -48,7 +48,7 @@ theorem closure_Iio (a : α) [NoMinOrder α] : closure (Iio a) = Iic a :=
 theorem closure_Ioo {a b : α} (hab : a ≠ b) : closure (Ioo a b) = Icc a b := by
   apply Subset.antisymm
   · exact closure_minimal Ioo_subset_Icc_self isClosed_Icc
-  · cases' hab.lt_or_lt with hab hab
+  · rcases hab.lt_or_lt with hab | hab
     · rw [← diff_subset_closure_iff, Icc_diff_Ioo_same hab.le]
       have hab' : (Ioo a b).Nonempty := nonempty_Ioo.2 hab
       simp only [insert_subset_iff, singleton_subset_iff]

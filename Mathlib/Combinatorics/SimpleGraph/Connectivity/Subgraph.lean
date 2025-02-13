@@ -121,10 +121,12 @@ theorem toSubgraph_cons_nil_eq_subgraphOfAdj (h : G.Adj u v) :
     (cons h nil).toSubgraph = G.subgraphOfAdj h := by simp
 
 theorem mem_verts_toSubgraph (p : G.Walk u v) : w ∈ p.toSubgraph.verts ↔ w ∈ p.support := by
-  induction' p with _ x y z h p' ih
-  · simp
-  · have : w = y ∨ w ∈ p'.support ↔ w ∈ p'.support :=
-      ⟨by rintro (rfl | h) <;> simp [*], by simp +contextual⟩
+  induction p with
+  | nil => simp
+  | cons h p' ih =>
+    rename_i x y z
+    have : w = y ∨ w ∈ p'.support ↔ w ∈ p'.support :=
+      ⟨by rintro (rfl | h) <;> simp [*], by simp (config := { contextual := true })⟩
     simp [ih, or_assoc, this]
 
 lemma start_mem_verts_toSubgraph (p : G.Walk u v) : u ∈ p.toSubgraph.verts := by
@@ -251,7 +253,7 @@ lemma neighborSet_toSubgraph_endpoint {u} {p : G.Walk u u} (hpc : p.IsCycle) :
   rintro ⟨i, (hl | hr)⟩
   · rw [hpc.getVert_endpoint_iff (by omega)] at hl
     cases hl.1 <;> aesop
-  · cases' (hpc.getVert_endpoint_iff (by omega)).mp hr.2 with h1 h2
+  · rcases (hpc.getVert_endpoint_iff (by omega)).mp hr.2 with h1 | h2
     · contradiction
     · simp only [penultimate, ← h2, add_tsub_cancel_right]
       aesop

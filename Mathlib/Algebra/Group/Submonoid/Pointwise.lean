@@ -556,8 +556,6 @@ protected theorem mul_induction_on {M N : AddSubmonoid R} {C : R → Prop} {r : 
     (hm : ∀ m ∈ M, ∀ n ∈ N, C (m * n)) (ha : ∀ x y, C x → C y → C (x + y)) : C r :=
   AddSubmonoid.smul_induction_on hr hm ha
 
--- this proof is copied directly from `Submodule.span_mul_span`
--- Porting note: proof rewritten
 -- need `add_smul` to generalize to `SMul`
 theorem closure_mul_closure (S T : Set R) : closure S * closure T = closure (S * T) := by
   apply le_antisymm

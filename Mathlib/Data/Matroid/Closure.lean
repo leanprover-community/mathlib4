@@ -136,6 +136,8 @@ lemma closure_def' (M : Matroid α) (X : Set α) (hX : X ⊆ M.E := by aesop_mat
     M.closure X = ⋂₀ {F | M.Flat F ∧ X ⊆ F} := by
   rw [closure, inter_eq_self_of_subset_left hX]
 
+instance : Nonempty {F | M.Flat F ∧ X ∩ M.E ⊆ F} := ⟨M.E, M.ground_flat, inter_subset_right⟩
+
 lemma closure_eq_subtypeClosure (M : Matroid α) (X : Set α) :
     M.closure X = M.subtypeClosure ⟨X ∩ M.E, inter_subset_right⟩  := by
   suffices ∀ (x : α), (∀ (t : Set α), M.Flat t → X ∩ M.E ⊆ t → x ∈ t) ↔
@@ -172,6 +174,12 @@ lemma subset_closure (M : Matroid α) (X : Set α) (hX : X ⊆ M.E := by aesop_m
 
 lemma Flat.closure (hF : M.Flat F) : M.closure F = F :=
   (sInter_subset_of_mem (by simpa)).antisymm (M.subset_closure F)
+
+variable (X) in
+@[simp] lemma flat_closure : M.Flat (M.closure X) := by
+  rw [closure, sInter_eq_iInter]; exact .iInter (·.2.1)
+
+lemma flat_iff_closure_eq : M.Flat F ↔ M.closure F = F := ⟨(·.closure), (· ▸ flat_closure F)⟩
 
 @[simp] lemma closure_ground (M : Matroid α) : M.closure M.E = M.E :=
   (M.closure_subset_ground M.E).antisymm (M.subset_closure M.E)
@@ -846,6 +854,20 @@ lemma ext_spanning {M M' : Matroid α} (h : M.E = M'.E)
   rw [← dual_inj, ext_iff_indep, dual_ground, dual_ground, and_iff_right h]
   intro I hIE
   rw [← coindep_def, ← coindep_def, coindep_iff_compl_spanning, coindep_iff_compl_spanning, hsp', h]
+
+lemma Base.eq_of_superset_spanning (hB : M.Base B) (hX : M.Spanning X) (hXB : X ⊆ B) : B = X :=
+  have ⟨B', hB', hB'X⟩ := hX.exists_base_subset
+  subset_antisymm (by rwa [← hB'.eq_of_subset_base hB (hB'X.trans hXB)]) hXB
+
+theorem base_iff_minimal_spanning : M.Base B ↔ Minimal M.Spanning B := by
+  rw [minimal_subset_iff]
+  refine ⟨fun h ↦ ⟨h.spanning, fun _ ↦ h.eq_of_superset_spanning⟩, fun ⟨h, h'⟩ ↦ ?_⟩
+  obtain ⟨B', hB', hBB'⟩ := h.exists_base_subset
+  rwa [h' hB'.spanning hBB']
+
+theorem Spanning.base_of_minimal (hX : M.Spanning X) (h : ∀ ⦃Y⦄, M.Spanning Y → Y ⊆ X → X = Y) :
+    M.Base X := by
+  rwa [base_iff_minimal_spanning, minimal_subset_iff, and_iff_right hX]
 
 end Spanning
 

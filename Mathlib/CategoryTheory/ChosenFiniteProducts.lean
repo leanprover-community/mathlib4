@@ -612,11 +612,11 @@ section
 attribute [local instance] oplaxMonoidalOfChosenFiniteProducts
 
 @[reassoc (attr := simp)]
-lemma δ_fst {X Y : C} : OplaxMonoidal.δ F X Y ≫ fst _ _ = F.map (fst _ _) := by
+lemma δ_fst (X Y : C) : OplaxMonoidal.δ F X Y ≫ fst _ _ = F.map (fst _ _) := by
   simp [δ_of_chosenFiniteProducts]
 
 @[reassoc (attr := simp)]
-lemma δ_snd {X Y : C} : OplaxMonoidal.δ F X Y ≫ snd _ _ = F.map (snd _ _) := by
+lemma δ_snd (X Y : C) : OplaxMonoidal.δ F X Y ≫ snd _ _ = F.map (snd _ _) := by
   simp [δ_of_chosenFiniteProducts]
 
 @[reassoc (attr := simp)]
@@ -644,11 +644,11 @@ lemma lift_μ {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
   (cancel_mono (μIso _ _ _).inv).1 (by simp)
 
 @[reassoc (attr := simp)]
-lemma μ_fst {X Y : C} : LaxMonoidal.μ F X Y ≫ F.map (fst X Y) = fst (F.obj X) (F.obj Y) :=
+lemma μ_fst (X Y : C) : LaxMonoidal.μ F X Y ≫ F.map (fst X Y) = fst (F.obj X) (F.obj Y) :=
   (cancel_epi (μIso _ _ _).inv).1 (by simp)
 
 @[reassoc (attr := simp)]
-lemma μ_snd {X Y : C} : LaxMonoidal.μ F X Y ≫ F.map (snd X Y) = snd (F.obj X) (F.obj Y) :=
+lemma μ_snd (X Y : C) : LaxMonoidal.μ F X Y ≫ F.map (snd X Y) = snd (F.obj X) (F.obj Y) :=
   (cancel_epi (μIso _ _ _).inv).1 (by simp)
 
 

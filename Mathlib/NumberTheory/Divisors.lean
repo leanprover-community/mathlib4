@@ -126,7 +126,7 @@ lemma right_ne_zero_of_mem_divisorsAntidiagonal {p : ℕ × ℕ} (hp : p ∈ n.d
   (ne_zero_of_mem_divisorsAntidiagonal hp).2
 
 theorem divisor_le {m : ℕ} : n ∈ divisors m → n ≤ m := by
-  cases' m with m
+  rcases m with - | m
   · simp
   · simp only [mem_divisors, Nat.succ_ne_zero m, and_true, Ne, not_false_iff]
     exact Nat.le_of_dvd (Nat.succ_pos m)
@@ -367,9 +367,9 @@ theorem eq_properDivisors_of_subset_of_sum_eq_sum {s : Finset ℕ} (hsub : s ⊆
 
 theorem sum_properDivisors_dvd (h : (∑ x ∈ n.properDivisors, x) ∣ n) :
     ∑ x ∈ n.properDivisors, x = 1 ∨ ∑ x ∈ n.properDivisors, x = n := by
-  cases' n with n
+  rcases n with - | n
   · simp
-  · cases' n with n
+  · rcases n with - | n
     · simp at h
     · rw [or_iff_not_imp_right]
       intro ne_n
@@ -406,7 +406,7 @@ theorem properDivisors_eq_singleton_one_iff_prime : n.properDivisors = {1} ↔ n
   · exact fun h => Prime.properDivisors h
 
 theorem sum_properDivisors_eq_one_iff_prime : ∑ x ∈ n.properDivisors, x = 1 ↔ n.Prime := by
-  cases' n with n
+  rcases n with - | n
   · simp [Nat.not_prime_zero]
   · cases n
     · simp [Nat.not_prime_one]

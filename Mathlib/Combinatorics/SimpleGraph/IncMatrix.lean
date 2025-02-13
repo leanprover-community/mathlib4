@@ -41,10 +41,9 @@ incidence matrix for each `SimpleGraph α` has the same type.
   arbitrary orientation of a simple graph.
 -/
 
+assert_not_exists Field
 
 open Finset Matrix SimpleGraph Sym2
-
-open Matrix
 
 namespace SimpleGraph
 

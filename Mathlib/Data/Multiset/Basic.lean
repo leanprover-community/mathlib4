@@ -1320,6 +1320,8 @@ def attach (s : Multiset α) : Multiset { x // x ∈ s } :=
 theorem coe_attach (l : List α) : @Eq (Multiset { x // x ∈ l }) (@attach α l) l.attach :=
   rfl
 
+set_option linter.deprecated false in
+@[deprecated "Deprecated without replacement." (since := "2025-02-07")]
 theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {s : Multiset α} (hx : x ∈ s) :
     SizeOf.sizeOf x < SizeOf.sizeOf s := by
   induction' s using Quot.inductionOn with l a b

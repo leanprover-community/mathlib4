@@ -173,6 +173,9 @@ theorem apply_eq_iff_eq (e : P₁ ≃ᵃL[k] P₂) {p₁ p₂ : P₁} : e p₁ =
 @[simp]
 theorem symm_symm (e : P₁ ≃ᵃL[k] P₂) : e.symm.symm = e := rfl
 
+theorem symm_bijective : Function.Bijective (symm : (P₁ ≃ᵃL[k] P₂) → _) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 theorem symm_symm_apply (e : P₁ ≃ᵃL[k] P₂) (x : P₁) : e.symm.symm x = e x :=
   rfl
 

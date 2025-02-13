@@ -61,8 +61,6 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 
 local notation "⟪" x ", " y "⟫₂" => @inner 𝕜 (α →₂[μ] E) _ x y
 
--- Porting note: the argument `E` of `condExpL2` is not automatically filled in Lean 4.
--- To avoid typing `(E := _)` every time it is made explicit.
 variable (E 𝕜)
 
 /-- Conditional expectation of a function in L2 with respect to a sigma-algebra -/

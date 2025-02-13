@@ -433,7 +433,7 @@ section Complete
 lemma NormedField.completeSpace_iff_isComplete_closedBall {K : Type*} [NormedField K] :
     CompleteSpace K ↔ IsComplete (Metric.closedBall 0 1 : Set K) := by
   constructor <;> intro h
-  · exact Metric.isClosed_ball.isComplete
+  · exact Metric.isClosed_closedBall.isComplete
   rcases NormedField.discreteTopology_or_nontriviallyNormedField K with _|⟨_, rfl⟩
   · rwa [completeSpace_iff_isComplete_univ,
          ← NormedDivisionRing.unitClosedBall_eq_univ_of_discrete]

@@ -37,6 +37,7 @@ An element `x : M` can be reinterpreted as an element of `End (SingleObj.star M)
   `CategoryTheory.SingleObj`, so we give all names explicitly.
 -/
 
+assert_not_exists MonoidWithZero
 
 universe u v w
 

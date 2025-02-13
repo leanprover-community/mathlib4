@@ -140,7 +140,7 @@ theorem eq_const [PreconnectedSpace X] {f : X → Y} (hf : IsLocallyConstant f) 
 
 theorem exists_eq_const [PreconnectedSpace X] [Nonempty Y] {f : X → Y} (hf : IsLocallyConstant f) :
     ∃ y, f = Function.const X y := by
-  cases' isEmpty_or_nonempty X with h h
+  rcases isEmpty_or_nonempty X with h | h
   · exact ⟨Classical.arbitrary Y, funext <| h.elim⟩
   · exact ⟨f (Classical.arbitrary X), hf.eq_const _⟩
 

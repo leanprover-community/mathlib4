@@ -674,8 +674,9 @@ theorem independent_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) (k : �
       Finset.supIndep_iff_disjoint_erase]
     exact fun s μ _ ↦ this _ _ (s.not_mem_erase μ)
   intro μ₁ s
-  induction' s using Finset.induction_on with μ₂ s _ ih
-  · simp
+  induction s using Finset.induction_on with
+  | empty => simp
+  | @insert μ₂ s _ ih =>
   intro hμ₁₂
   obtain ⟨hμ₁₂ : μ₁ ≠ μ₂, hμ₁ : μ₁ ∉ s⟩ := by rwa [Finset.mem_insert, not_or] at hμ₁₂
   specialize ih hμ₁
@@ -754,10 +755,12 @@ theorem genEigenspace_restrict (f : End R M) (p : Submodule R M) (k : ℕ∞) (�
       Submodule.mem_comap, mem_genEigenspace (k := k), mem_genEigenspace_nat]
   intro l
   simp only [genEigenspace_nat, OrderHom.coe_mk, ← LinearMap.ker_comp]
-  induction' l with l ih
-  · rw [pow_zero, pow_zero, LinearMap.one_eq_id]
+  induction l with
+  | zero =>
+    rw [pow_zero, pow_zero, LinearMap.one_eq_id]
     apply (Submodule.ker_subtype _).symm
-  · erw [pow_succ, pow_succ, LinearMap.ker_comp, LinearMap.ker_comp, ih, ← LinearMap.ker_comp,
+  | succ l ih =>
+    erw [pow_succ, pow_succ, LinearMap.ker_comp, LinearMap.ker_comp, ih, ← LinearMap.ker_comp,
       LinearMap.comp_assoc]
 
 lemma _root_.Submodule.inf_genEigenspace (f : End R M) (p : Submodule R M) {k : ℕ∞} {μ : R}

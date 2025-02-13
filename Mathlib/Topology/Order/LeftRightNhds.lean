@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Algebra.Ring.Pointwise.Set
+import Mathlib.Order.Filter.AtTopBot.CompleteLattice
 import Mathlib.Order.Filter.AtTopBot.Group
 import Mathlib.Topology.Order.Basic
 

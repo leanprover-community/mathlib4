@@ -62,11 +62,6 @@ variable {V : Type*} {P : Type*}
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
 variable [NormedAddTorsor V P]
 
-/-- The midpoint of the segment AB is the same distance from A as it is from B. -/
-theorem dist_left_midpoint_eq_dist_right_midpoint (p₁ p₂ : P) :
-    dist p₁ (midpoint ℝ p₁ p₂) = dist p₂ (midpoint ℝ p₁ p₂) := by
-  rw [dist_left_midpoint (𝕜 := ℝ) p₁ p₂, dist_right_midpoint (𝕜 := ℝ) p₁ p₂]
-
 /-- The inner product of two vectors given with `weightedVSub`, in
 terms of the pairwise distances. -/
 theorem inner_weightedVSub {ι₁ : Type*} {s₁ : Finset ι₁} {w₁ : ι₁ → ℝ} (p₁ : ι₁ → P)

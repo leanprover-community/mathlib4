@@ -69,7 +69,7 @@ theorem euler_criterion {a : ZMod p} (ha : a ≠ 0) : IsSquare (a : ZMod p) ↔ 
 /-- If `a : ZMod p` is nonzero, then `a^(p/2)` is either `1` or `-1`. -/
 theorem pow_div_two_eq_neg_one_or_one {a : ZMod p} (ha : a ≠ 0) :
     a ^ (p / 2) = 1 ∨ a ^ (p / 2) = -1 := by
-  cases' Prime.eq_two_or_odd (@Fact.out p.Prime _) with hp2 hp_odd
+  rcases Prime.eq_two_or_odd (@Fact.out p.Prime _) with hp2 | hp_odd
   · subst p; revert a ha; intro a; fin_cases a
     · tauto
     · simp
@@ -234,7 +234,7 @@ theorem eq_zero_mod_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legend
     rw [(eq_zero_iff p a).mpr hf] at h
     simp at h
   by_contra hf
-  cases' imp_iff_or_not.mp (not_and'.mp hf) with hx hy
+  rcases imp_iff_or_not.mp (not_and'.mp hf) with hx | hy
   · rw [eq_one_of_sq_sub_mul_sq_eq_zero' ha hx hxy, CharZero.eq_neg_self_iff] at h
     exact one_ne_zero h
   · rw [eq_one_of_sq_sub_mul_sq_eq_zero ha hy hxy, CharZero.eq_neg_self_iff] at h

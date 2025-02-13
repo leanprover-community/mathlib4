@@ -51,7 +51,7 @@ lemma IsLocalizedModule.linearIndependent_lift {ι} {v : ι → N} (hf : LinearI
 
 lemma IsLocalizedModule.lift_rank_eq :
     Cardinal.lift.{v} (Module.rank S N) = Cardinal.lift.{v'} (Module.rank R M) := by
-  cases' subsingleton_or_nontrivial R
+  cases subsingleton_or_nontrivial R
   · have := (algebraMap R S).codomain_trivial; simp only [rank_subsingleton, lift_one]
   have := (IsLocalization.injective S hp).nontrivial
   apply le_antisymm <;>
@@ -136,9 +136,10 @@ lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R�
     simpa only [dif_pos i.prop] using this (fun i ↦ if h : i < n then g ⟨i, h⟩ else 0) 0
       (by simp [← Fin.sum_univ_eq_sum_range, ← hg]) i i.prop
   intro g x hg i hin
-  induction' n with n IH generalizing g x i
-  · exact (hin.not_le (zero_le i)).elim
-  · rw [Finset.sum_range_succ'] at hg
+  induction n generalizing g x i with
+  | zero => exact (hin.not_le (zero_le i)).elim
+  | succ n IH =>
+    rw [Finset.sum_range_succ'] at hg
     by_cases hg0 : g 0 = 0
     · simp only [hg0, zero_smul, add_zero, add_assoc] at hg
       cases i; exacts [hg0, IH _ _ hg _ (Nat.succ_lt_succ_iff.mp hin)]

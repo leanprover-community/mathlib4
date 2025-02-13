@@ -256,6 +256,10 @@ lemma toENat_nat (n : ℕ) : toENat n = n := map_natCast _ n
 
 @[simp] lemma toENat_eq_top {a : Cardinal} : toENat a = ⊤ ↔ ℵ₀ ≤ a := enat_gc.u_eq_top
 
+lemma toENat_ne_top {a : Cardinal} : toENat a ≠ ⊤ ↔ a < ℵ₀ := by simp
+
+@[simp] lemma toENat_lt_top {a : Cardinal} : toENat a < ⊤ ↔ a < ℵ₀ := by simp [lt_top_iff_ne_top]
+
 @[simp]
 theorem toENat_lift {a : Cardinal.{v}} : toENat (lift.{u} a) = toENat a := by
   cases le_total a ℵ₀ with

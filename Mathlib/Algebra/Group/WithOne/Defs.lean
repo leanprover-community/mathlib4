@@ -20,13 +20,6 @@ Another result says that adjoining to a group an element `zero` gives a `GroupWi
 information about these structures (which are not that standard in informal mathematics, see
 `Mathlib.Algebra.GroupWithZero.Basic`)
 
-## Porting notes
-
-In Lean 3, we use `id` here and there to get correct types of proofs. This is required because
-`WithOne` and `WithZero` are marked as `irreducible` at the end of
-`Mathlib.Algebra.Group.WithOne.Defs`, so proofs that use `Option α` instead of `WithOne α` no
-longer typecheck. In Lean 4, both types are plain `def`s, so we don't need these `id`s.
-
 ## TODO
 
 `WithOne.coe_mul` and `WithZero.coe_mul` have inconsistent use of implicit parameters
@@ -88,9 +81,6 @@ instance inhabited : Inhabited (WithOne α) :=
 instance nontrivial [Nonempty α] : Nontrivial (WithOne α) :=
   Option.nontrivial
 
--- Porting note: this new declaration is here to make `((a : α): WithOne α)` have type `WithOne α`;
--- otherwise the coercion kicks in and it becomes `Option.some a : WithOne α` which
--- becomes `Option.some a : Option α`.
 /-- The canonical map from `α` into `WithOne α` -/
 @[to_additive (attr := coe) "The canonical map from `α` into `WithZero α`"]
 def coe : α → WithOne α :=
@@ -129,9 +119,6 @@ theorem unone_coe {x : α} (hx : (x : WithOne α) ≠ 1) : unone hx = x :=
 @[to_additive (attr := simp) coe_unzero]
 lemma coe_unone : ∀ {x : WithOne α} (hx : x ≠ 1), unone hx = x
   | (x : α), _ => rfl
-
--- Porting note: in Lean 4 the `some_eq_coe` lemmas present in the lean 3 version
--- of this file are syntactic tautologies
 
 @[to_additive (attr := simp)]
 theorem coe_ne_one {a : α} : (a : WithOne α) ≠ (1 : WithOne α) :=

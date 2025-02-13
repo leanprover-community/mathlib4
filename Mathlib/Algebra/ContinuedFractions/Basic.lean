@@ -43,7 +43,6 @@ variable (α : Type*)
 
 /-!### Definitions -/
 
--- Porting note: Originally `protected structure GenContFract.Pair`
 /-- We collect a partial numerator `aᵢ` and partial denominator `bᵢ` in a pair `⟨aᵢ, bᵢ⟩`. -/
 structure GenContFract.Pair where
   /-- Partial numerator -/
@@ -73,7 +72,6 @@ section coe
 -- Fix another type `β` which we will convert to.
 variable {β : Type*} [Coe α β]
 
--- Porting note: added so we can add the `@[coe]` attribute
 /-- The coercion between numerator-denominator pairs happens componentwise. -/
 @[coe]
 def coeFn : Pair α → Pair β := map (↑)
@@ -150,7 +148,6 @@ section coe
 -- Fix another type `β` which we will convert to.
 variable {β : Type*} [Coe α β]
 
--- Porting note: Added to put `@[coe]` attr on it.
 /-- The coercion between `GenContFract` happens on the head term
 and all numerator-denominator pairs componentwise. -/
 @[coe]
@@ -217,12 +214,7 @@ instance : Inhabited (SimpContFract α) :=
 
 /-- Lift a scf to a gcf using the inclusion map. -/
 instance : Coe (SimpContFract α) (GenContFract α) :=
-  -- Porting note: originally `by unfold SimpContFract; infer_instance`
   ⟨Subtype.val⟩
-
--- Porting note: Syntactic tautology due to change in `Coe` above.
--- theorem coe_toGenContFract {s : SimpContFract α} :
---     (↑s : GenContFract α) = s.val := rfl
 
 end SimpContFract
 
@@ -260,21 +252,11 @@ instance : Inhabited (ContFract α) :=
 
 /-- Lift a cf to a scf using the inclusion map. -/
 instance : Coe (ContFract α) (SimpContFract α) :=
-  -- Porting note: originally `by unfold ContFract; infer_instance`
   ⟨Subtype.val⟩
-
--- Porting note: Syntactic tautology due to change of `Coe` above.
--- theorem coe_to_simpleContFract {c : ContFract α} :
---     (↑c : SimpContFract α) = c.val := rfl
 
 /-- Lift a cf to a scf using the inclusion map. -/
 instance : Coe (ContFract α) (GenContFract α) :=
   ⟨fun c ↦ c.val⟩
-  -- Porting note: was `fun c ↦ ↑(↑c : SimpContFract α)`
-
--- Porting note: Syntactic tautology due to change of `Coe` above.
--- theorem coe_toGenContFract {c : ContFract α} :
---     (↑c : GenContFract α) = c.val := rfl
 
 end ContFract
 

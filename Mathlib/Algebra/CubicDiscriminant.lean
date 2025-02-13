@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
 import Mathlib.Algebra.Polynomial.Splits
+import Mathlib.Tactic.IntervalCases
 
 /-!
 # Cubics and discriminants
@@ -237,13 +238,11 @@ def equiv : Cubic R ≃ { p : R[X] // p.degree ≤ 3 } where
   invFun f := ⟨coeff f 3, coeff f 2, coeff f 1, coeff f 0⟩
   left_inv P := by ext <;> simp only [Subtype.coe_mk, coeffs]
   right_inv f := by
-    -- Porting note: Added `simp only [Nat.succ_eq_add_one] <;> ring_nf`
-    -- There's probably a better way to do this.
-    ext (_ | _ | _ | _ | n) <;> simp only [Nat.succ_eq_add_one] <;> ring_nf
-      <;> try simp only [coeffs]
-    have h3 : 3 < 4 + n := by linarith only
-    rw [coeff_eq_zero h3,
-      (degree_le_iff_coeff_zero (f : R[X]) 3).mp f.2 _ <| WithBot.coe_lt_coe.mpr (by exact h3)]
+    ext n
+    obtain hn | hn := le_or_lt n 3
+    · interval_cases n <;> simp only [Nat.succ_eq_add_one] <;> ring_nf <;> try simp only [coeffs]
+    · rw [coeff_eq_zero hn, (degree_le_iff_coeff_zero (f : R[X]) 3).mp f.2]
+      simpa using hn
 
 @[simp]
 theorem degree_of_a_ne_zero (ha : P.a ≠ 0) : P.toPoly.degree = 3 :=

@@ -5,7 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.Set.Pairwise.Basic
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.TakeDrop
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Nodup
 

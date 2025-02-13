@@ -80,7 +80,7 @@ instance (priority := 100) Valued.topologicalDivisionRing [Valued K Γ₀] :
   { (by infer_instance : TopologicalRing K) with
     continuousAt_inv₀ := by
       intro x x_ne s s_in
-      cases' Valued.mem_nhds.mp s_in with γ hs; clear s_in
+      obtain ⟨γ, hs⟩ := Valued.mem_nhds.mp s_in; clear s_in
       rw [mem_map, Valued.mem_nhds]
       change ∃ γ : Γ₀ˣ, { y : K | (v (y - x) : Γ₀) < γ } ⊆ { x : K | x⁻¹ ∈ s }
       have vx_ne := (Valuation.ne_zero_iff <| v).mpr x_ne

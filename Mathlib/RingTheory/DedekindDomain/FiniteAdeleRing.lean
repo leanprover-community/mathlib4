@@ -380,15 +380,15 @@ instance : Algebra (R_hat R K) (FiniteAdeleRing R K) where
   commutes' _ _ := mul_comm _ _
   smul_def' _ _ := rfl
 
-instance : CoeFun (FiniteAdeleRing R K)
-    (fun _ ↦ ∀ (v : HeightOneSpectrum R), adicCompletion K v) where
-  coe a v := a.1 v
+instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion K) where
+  coe a := a.1
+  coe_injective' _a _b := ext _ _
 
 open scoped algebraMap -- coercion from R to `FiniteAdeleRing R K`
 
 variable {R K} in
-lemma exists_finiteIntegralAdele_iff (a : FiniteAdeleRing R K) : (∃ c : R_hat R K,
-    a = c) ↔ ∀ (v : HeightOneSpectrum R), a v ∈ adicCompletionIntegers K v :=
+lemma exists_finiteIntegralAdele_iff (a : FiniteAdeleRing R K) :
+    (∃ c : R_hat R K, a = c) ↔ ∀ v : HeightOneSpectrum R, a v ∈ adicCompletionIntegers K v :=
   ⟨by rintro ⟨c, rfl⟩ v; exact (c v).2, fun h ↦ ⟨fun v ↦ ⟨a v, h v⟩, rfl⟩⟩
 
 section Topology

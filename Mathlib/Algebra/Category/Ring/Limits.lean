@@ -208,12 +208,8 @@ and then reuse the existing limit.
 -/
 instance :
     CreatesLimit F (forget₂ CommSemiRingCat.{u} SemiRingCat.{u}) :=
-  -- Porting note: `CommSemiRingCat ⥤ Type` reflecting isomorphism is needed to make Lean see that
-  -- `CommSemiRingCat ⥤ SemiRingCat` reflects isomorphism. `CommSemiRingCat ⥤ Type` reflecting
-  -- isomorphism is added manually since Lean can't see it, but even with this addition Lean can not
-  -- see `CommSemiRingCat ⥤ SemiRingCat` reflects isomorphism, so this instance is also added.
-  letI : (forget CommSemiRingCat.{u}).ReflectsIsomorphisms :=
-    CommSemiRingCat.forgetReflectIsos.{u}
+  -- Porting note: Lean can not see `CommSemiRingCat ⥤ SemiRingCat` reflects isomorphism, so this
+  -- instance is added.
   letI : (forget₂ CommSemiRingCat.{u} SemiRingCat.{u}).ReflectsIsomorphisms :=
     CategoryTheory.reflectsIsomorphisms_forget₂ CommSemiRingCat.{u} SemiRingCat.{u}
   letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=

@@ -46,7 +46,6 @@ namespace IsUnifLocDoublingMeasure
 variable {α : Type*} [PseudoMetricSpace α] [MeasurableSpace α] (μ : Measure α)
   [IsUnifLocDoublingMeasure μ]
 
--- Porting note: added for missing infer kinds
 theorem exists_measure_closedBall_le_mul :
     ∃ C : ℝ≥0, ∀ᶠ ε in 𝓝[>] 0, ∀ x, μ (closedBall x (2 * ε)) ≤ C * μ (closedBall x ε) :=
   exists_measure_closedBall_le_mul''

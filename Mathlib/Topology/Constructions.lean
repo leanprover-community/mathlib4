@@ -39,7 +39,7 @@ noncomputable section
 open Topology TopologicalSpace Set Filter Function
 open scoped Set.Notation
 
-universe u v
+universe u v u' v'
 
 variable {X : Type u} {Y : Type v} {Z W ε ζ : Type*}
 
@@ -1811,12 +1811,22 @@ theorem ULift.isClosed_iff [TopologicalSpace X] {s : Set (ULift.{v} X)} :
   rw [← isOpen_compl_iff, ← isOpen_compl_iff, isOpen_iff, preimage_compl]
 
 @[continuity]
-theorem continuous_uLift_down [TopologicalSpace X] : Continuous (ULift.down : ULift.{v, u} X → X) :=
+theorem continuous_uliftDown [TopologicalSpace X] : Continuous (ULift.down : ULift.{v, u} X → X) :=
   continuous_induced_dom
 
 @[continuity]
-theorem continuous_uLift_up [TopologicalSpace X] : Continuous (ULift.up : X → ULift.{v, u} X) :=
+theorem continuous_uliftUp [TopologicalSpace X] : Continuous (ULift.up : X → ULift.{v, u} X) :=
   continuous_induced_rng.2 continuous_id
+
+@[deprecated (since := "2025-02-10")] alias continuous_uLift_down := continuous_uliftDown
+@[deprecated (since := "2025-02-10")] alias continuous_uLift_up := continuous_uliftUp
+
+@[continuity]
+theorem continuous_uliftMap [TopologicalSpace X] [TopologicalSpace Y]
+    (f : X → Y) (hf : Continuous f) :
+    Continuous (ULift.map f : ULift.{u'} X → ULift.{v'} Y) := by
+  change Continuous (ULift.up ∘ f ∘ ULift.down)
+  continuity
 
 lemma Topology.IsEmbedding.uliftDown [TopologicalSpace X] :
     IsEmbedding (ULift.down : ULift.{v, u} X → X) := ⟨⟨rfl⟩, ULift.down_injective⟩

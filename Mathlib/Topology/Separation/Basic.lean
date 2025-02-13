@@ -160,7 +160,7 @@ theorem minimal_nonempty_closed_subsingleton [T0Space X] {s : Set X} (hs : IsClo
   rcases exists_isOpen_xor'_mem hxy with ⟨U, hUo, hU⟩
   wlog h : x ∈ U ∧ y ∉ U
   · refine this hs hmin y hy x hx (Ne.symm hxy) U hUo hU.symm (hU.resolve_left h)
-  cases' h with hxU hyU
+  obtain ⟨hxU, hyU⟩ := h
   have : s \ U = s := hmin (s \ U) diff_subset ⟨y, hy, hyU⟩ (hs.sdiff hUo)
   exact (this.symm.subset hx).2 hxU
 
@@ -183,7 +183,7 @@ theorem minimal_nonempty_open_subsingleton [T0Space X] {s : Set X} (hs : IsOpen 
   rcases exists_isOpen_xor'_mem hxy with ⟨U, hUo, hU⟩
   wlog h : x ∈ U ∧ y ∉ U
   · exact this hs hmin y hy x hx (Ne.symm hxy) U hUo hU.symm (hU.resolve_left h)
-  cases' h with hxU hyU
+  obtain ⟨hxU, hyU⟩ := h
   have : s ∩ U = s := hmin (s ∩ U) inter_subset_left ⟨x, hx, hxU⟩ (hs.inter hUo)
   exact hyU (this.symm.subset hy).2
 
@@ -195,7 +195,8 @@ theorem minimal_nonempty_open_eq_singleton [T0Space X] {s : Set X} (hs : IsOpen 
 theorem exists_isOpen_singleton_of_isOpen_finite [T0Space X] {s : Set X} (hfin : s.Finite)
     (hne : s.Nonempty) (ho : IsOpen s) : ∃ x ∈ s, IsOpen ({x} : Set X) := by
   lift s to Finset X using hfin
-  induction' s using Finset.strongInductionOn with s ihs
+  induction s using Finset.strongInductionOn
+  rename_i s ihs
   rcases em (∃ t, t ⊂ s ∧ t.Nonempty ∧ IsOpen (t : Set X)) with (⟨t, hts, htne, hto⟩ | ht)
   · rcases ihs t hts htne hto with ⟨x, hxt, hxo⟩
     exact ⟨x, hts.1 hxt, hxo⟩
@@ -964,25 +965,28 @@ theorem IsCompact.finite_compact_cover {s : Set X} (hs : IsCompact s) {ι : Type
     (t : Finset ι) (U : ι → Set X) (hU : ∀ i ∈ t, IsOpen (U i)) (hsC : s ⊆ ⋃ i ∈ t, U i) :
     ∃ K : ι → Set X, (∀ i, IsCompact (K i)) ∧ (∀ i, K i ⊆ U i) ∧ s = ⋃ i ∈ t, K i := by
   classical
-  induction' t using Finset.induction with x t hx ih generalizing U s
-  · refine ⟨fun _ => ∅, fun _ => isCompact_empty, fun i => empty_subset _, ?_⟩
+  induction t using Finset.induction generalizing U s with
+  | empty =>
+    refine ⟨fun _ => ∅, fun _ => isCompact_empty, fun i => empty_subset _, ?_⟩
     simpa only [subset_empty_iff, Finset.not_mem_empty, iUnion_false, iUnion_empty] using hsC
-  simp only [Finset.set_biUnion_insert] at hsC
-  simp only [Finset.forall_mem_insert] at hU
-  have hU' : ∀ i ∈ t, IsOpen (U i) := fun i hi => hU.2 i hi
-  rcases hs.binary_compact_cover hU.1 (isOpen_biUnion hU') hsC with
-    ⟨K₁, K₂, h1K₁, h1K₂, h2K₁, h2K₂, hK⟩
-  rcases ih h1K₂ U hU' h2K₂ with ⟨K, h1K, h2K, h3K⟩
-  refine ⟨update K x K₁, ?_, ?_, ?_⟩
-  · intro i
-    rcases eq_or_ne i x with rfl | hi
-    · simp only [update_self, h1K₁]
-    · simp only [update_of_ne hi, h1K]
-  · intro i
-    rcases eq_or_ne i x with rfl | hi
-    · simp only [update_self, h2K₁]
-    · simp only [update_of_ne hi, h2K]
-  · simp only [Finset.set_biUnion_insert_update _ hx, hK, h3K]
+  | insert hx ih =>
+    rename_i x t
+    simp only [Finset.set_biUnion_insert] at hsC
+    simp only [Finset.forall_mem_insert] at hU
+    have hU' : ∀ i ∈ t, IsOpen (U i) := fun i hi => hU.2 i hi
+    rcases hs.binary_compact_cover hU.1 (isOpen_biUnion hU') hsC with
+      ⟨K₁, K₂, h1K₁, h1K₂, h2K₁, h2K₂, hK⟩
+    rcases ih h1K₂ U hU' h2K₂ with ⟨K, h1K, h2K, h3K⟩
+    refine ⟨update K x K₁, ?_, ?_, ?_⟩
+    · intro i
+      rcases eq_or_ne i x with rfl | hi
+      · simp only [update_self, h1K₁]
+      · simp only [update_of_ne hi, h1K]
+    · intro i
+      rcases eq_or_ne i x with rfl | hi
+      · simp only [update_self, h2K₁]
+      · simp only [update_of_ne hi, h2K]
+    · simp only [Finset.set_biUnion_insert_update _ hx, hK, h3K]
 
 theorem R1Space.of_continuous_specializes_imp [TopologicalSpace Y] {f : Y → X} (hc : Continuous f)
     (hspec : ∀ x y, f x ⤳ f y → x ⤳ y) : R1Space Y where

@@ -3,7 +3,6 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Data.List.Defs
@@ -22,6 +21,8 @@ For example, we can more easily work with `Nat.bits` and `Nat.size`.
 See also: `Nat.bitwise`, `Nat.pow` (for various lemmas about `size` and `shiftLeft`/`shiftRight`),
 and `Nat.digits`.
 -/
+
+assert_not_exists Monoid
 
 -- Once we're in the `Nat` namespace, `xor` will inconveniently resolve to `Nat.xor`.
 /-- `bxor` denotes the `xor` function i.e. the exclusive-or function on type `Bool`. -/

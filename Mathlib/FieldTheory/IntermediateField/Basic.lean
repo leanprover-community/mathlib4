@@ -77,7 +77,6 @@ instance : SubfieldClass (IntermediateField K L) L where
   one_mem {s} := s.one_mem'
   inv_mem {s} := s.inv_mem' _
 
---@[simp] Porting note (https://github.com/leanprover-community/mathlib4/issues/10618): simp can prove it
 theorem mem_carrier {s : IntermediateField K L} {x : L} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
@@ -597,8 +596,7 @@ section Tower
 def lift {F : IntermediateField K L} (E : IntermediateField K F) : IntermediateField K L :=
   E.map (val F)
 
--- Porting note: change from `HasLiftT` to `CoeOut`
-instance hasLift {F : IntermediateField K L} :
+instance {F : IntermediateField K L} :
     CoeOut (IntermediateField K F) (IntermediateField K L) :=
   ⟨lift⟩
 

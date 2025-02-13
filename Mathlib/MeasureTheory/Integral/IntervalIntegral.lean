@@ -149,7 +149,7 @@ variable {f : ℝ → E} {a b c d : ℝ} {μ ν : Measure ℝ}
 nonrec theorem symm (h : IntervalIntegrable f μ a b) : IntervalIntegrable f μ b a :=
   h.symm
 
-@[refl, simp] -- Porting note: added `simp`
+@[refl, simp]
 theorem refl : IntervalIntegrable f μ a a := by constructor <;> simp
 
 @[trans]

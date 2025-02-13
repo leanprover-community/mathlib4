@@ -396,7 +396,7 @@ theorem tendsto_integral_comp_smul_smul_of_integrable
     Tendsto (fun (c : ℝ) ↦ ∫ x, (c ^ (finrank ℝ F) * φ (c • x)) • g x ∂μ) atTop (𝓝 (g 0)) := by
   have I : Integrable φ μ := integrable_of_integral_eq_one h'φ
   apply tendsto_integral_peak_smul_of_integrable_of_tendsto (t := closedBall 0 1) (x₀ := 0)
-  · exact isClosed_ball.measurableSet
+  · exact isClosed_closedBall.measurableSet
   · exact closedBall_mem_nhds _ zero_lt_one
   · exact (isCompact_closedBall 0 1).measure_ne_top
   · filter_upwards [Ici_mem_atTop 0] with c (hc : 0 ≤ c) x using mul_nonneg (by positivity) (hφ _)

@@ -185,12 +185,7 @@ def prodIso : CategoryTheory.Grpd.of (πₓ A × πₓ B) ≅ πₓ (TopCat.of (
     apply CategoryTheory.Functor.hext
     · intros; apply FundamentalGroupoid.ext; apply Prod.ext <;> simp <;> rfl
     rintro ⟨x₀, x₁⟩ ⟨y₀, y₁⟩ f
-    have := Path.Homotopic.prod_projLeft_projRight f
-    -- Porting note: was simpa but TopSpace instances might be getting in the way
-    simp only [CategoryTheory.Functor.comp_obj, CategoryTheory.Functor.prod'_obj, prodToProdTop_obj,
-      CategoryTheory.Functor.comp_map, CategoryTheory.Functor.prod'_map, projLeft_map,
-      projRight_map, CategoryTheory.Functor.id_obj, CategoryTheory.Functor.id_map, heq_eq_eq]
-    apply this
+    simpa [-Path.Homotopic.prod_projLeft_projRight] using Path.Homotopic.prod_projLeft_projRight f
 
 end Prod
 

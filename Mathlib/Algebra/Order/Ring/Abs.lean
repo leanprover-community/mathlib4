@@ -89,7 +89,6 @@ lemma abs_le_iff_mul_self_le : |a| ≤ |b| ↔ a * a ≤ b * b := by
 lemma abs_le_one_iff_mul_self_le_one : |a| ≤ 1 ↔ a * a ≤ 1 := by
   simpa only [abs_one, one_mul] using @abs_le_iff_mul_self_le α _ a 1
 
--- Porting note: added `simp` to replace `pow_bit0_abs`
 @[simp] lemma sq_abs (a : α) : |a| ^ 2 = a ^ 2 := by simpa only [sq] using abs_mul_abs_self a
 
 lemma abs_sq (x : α) : |x ^ 2| = x ^ 2 := by simpa only [sq] using abs_mul_self x

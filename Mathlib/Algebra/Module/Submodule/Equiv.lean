@@ -124,7 +124,6 @@ theorem eq_bot_of_equiv [Module R₂ M₂] (e : p ≃ₛₗ[σ₁₂] (⊥ : Sub
   rw [← p.mk_eq_zero hb, ← e.map_eq_zero_iff]
   apply Submodule.eq_zero_of_bot_submodule
 
--- Porting note: `RingHomSurjective σ₁₂` is an unused argument.
 @[simp]
 theorem range_comp [RingHomSurjective σ₂₃] [RingHomSurjective σ₁₃] :
     LinearMap.range (h.comp (e : M →ₛₗ[σ₁₂] M₂) : M →ₛₗ[σ₁₃] M₃) = LinearMap.range h :=

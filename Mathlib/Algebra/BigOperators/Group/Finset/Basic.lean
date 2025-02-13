@@ -285,10 +285,14 @@ theorem prod_biUnion [DecidableEq α] {s : Finset γ} {t : γ → Finset α}
     (hs : Set.PairwiseDisjoint (↑s) t) : ∏ x ∈ s.biUnion t, f x = ∏ x ∈ s, ∏ i ∈ t x, f i := by
   rw [← disjiUnion_eq_biUnion _ _ hs, prod_disjiUnion]
 
-/-- The product over a sigma type equals the product of the fiberwise products. For rewriting
-in the reverse direction, use `Finset.prod_sigma'`. -/
+/-- The product over a sigma type equals the product of the fiberwise products.
+For rewriting in the reverse direction, use `Finset.prod_sigma'`.
+
+See also `Fintype.prod_sigma` for the product over the whole type. -/
 @[to_additive "The sum over a sigma type equals the sum of the fiberwise sums. For rewriting
-in the reverse direction, use `Finset.sum_sigma'`"]
+in the reverse direction, use `Finset.sum_sigma'`.
+
+See also `Fintype.sum_sigma` for the sum over the whole type."]
 theorem prod_sigma {σ : α → Type*} (s : Finset α) (t : ∀ a, Finset (σ a)) (f : Sigma σ → β) :
     ∏ x ∈ s.sigma t, f x = ∏ a ∈ s, ∏ s ∈ t a, f ⟨a, s⟩ := by
   simp_rw [← disjiUnion_map_sigma_mk, prod_disjiUnion, prod_map, Function.Embedding.sigmaMk_apply]

@@ -5,6 +5,8 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Group.MinMax
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Order.Filter.AtTopBot.Map
 import Mathlib.Order.Filter.AtTopBot.Monoid
 
 /-!

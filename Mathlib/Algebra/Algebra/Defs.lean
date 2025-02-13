@@ -231,8 +231,6 @@ section Semiring
 variable [CommSemiring R] [CommSemiring S]
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
--- Porting note: deleted a private lemma
-
 -- We'll later use this to show `Algebra ℤ M` is a subsingleton.
 /-- To prove two algebra structures on a fixed `[CommSemiring R] [Semiring A]` agree,
 it suffices to check the `algebraMap`s agree.

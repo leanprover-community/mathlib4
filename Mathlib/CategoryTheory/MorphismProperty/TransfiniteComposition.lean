@@ -136,6 +136,11 @@ of morphisms in `W`. -/
 def transfiniteCompositionsOfShape : MorphismProperty C :=
   fun _ _ f ↦ Nonempty (W.TransfiniteCompositionOfShape J f)
 
+lemma transfiniteCompositionsOfShape_monotone :
+    Monotone (transfiniteCompositionsOfShape (C := C) (J := J)) := by
+  rintro _ _ h _ _ _ ⟨t⟩
+  exact ⟨t.ofLE h⟩
+
 variable {J} in
 lemma transfiniteCompositionsOfShape_eq_of_orderIso (e : J ≃o J') :
     W.transfiniteCompositionsOfShape J =
@@ -213,6 +218,26 @@ instance : W.IsMultiplicative where
       (TransfiniteCompositionOfShape.ofComp f g hf hg).mem
 
 end IsStableUnderTransfiniteComposition
+
+/-- The class of transfinite compositions (for arbitrary well-ordered types `J : Type w`)
+of a class of morphisms `W`. -/
+@[pp_with_univ]
+def transfiniteCompositions : MorphismProperty C :=
+  ⨆ (J : Type w) (_ : LinearOrder J) (_ : SuccOrder J) (_ : OrderBot J)
+    (_ : WellFoundedLT J), W.transfiniteCompositionsOfShape J
+
+lemma transfiniteCompositions_iff {X Y : C} (f : X ⟶ Y) :
+    transfiniteCompositions.{w} W f ↔
+      ∃ (J : Type w) (_ : LinearOrder J) (_ : SuccOrder J) (_ : OrderBot J)
+        (_ : WellFoundedLT J), W.transfiniteCompositionsOfShape J f := by
+  simp only [transfiniteCompositions, iSup_iff]
+
+lemma transfiniteCompositionsOfShape_le_transfiniteCompositions
+    (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J] :
+    W.transfiniteCompositionsOfShape J ≤ transfiniteCompositions.{w} W := by
+  intro A B f hf
+  rw [transfiniteCompositions_iff]
+  exact ⟨_, _, _, _, _, hf⟩
 
 end MorphismProperty
 

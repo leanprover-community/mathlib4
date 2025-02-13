@@ -62,6 +62,7 @@ def Action.imageComplementIncl {X Y : Action FintypeCat (MonCat.of G)} (f : X ‚ü
   hom := FintypeCat.imageComplementIncl f.hom
   comm _ := rfl
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance {X Y : Action FintypeCat (MonCat.of G)} (f : X ‚ü∂ Y) :
     Mono (Action.imageComplementIncl G f) := by
   apply Functor.mono_of_mono_map (forget _)

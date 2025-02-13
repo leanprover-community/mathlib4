@@ -145,7 +145,7 @@ lemma eHolderNorm_eq_zero {r : ℝ≥0} {f : X → Y} :
           (edist_lt_top x₁ x₂).ne).ne)
       exact lt_of_le_of_lt (hC x₁ x₂) <| ENNReal.mul_lt_of_lt_div hC'
   · intro h
-    cases' isEmpty_or_nonempty X with hX hX
+    rcases isEmpty_or_nonempty X with hX | hX
     · haveI := hX
       exact eHolderNorm_of_isEmpty
     · rw [← eHolderNorm_const X r (f hX.some)]

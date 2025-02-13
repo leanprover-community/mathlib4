@@ -168,17 +168,18 @@ end FintypeCat
 
 section ToMulAction
 
-variable {V : Type (u + 1)} [LargeCategory V] [HasForget V]
+variable {V : Type (u + 1)} [LargeCategory V] {FV : V → V → Type*} {CV : V → Type*}
+variable [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)] [ConcreteCategory V FV]
 
 instance instMulAction {G : MonCat.{u}} (X : Action V G) :
-    MulAction G ((CategoryTheory.forget _).obj X) where
-  smul g x := ((CategoryTheory.forget _).map (X.ρ g)) x
+    MulAction G (ToType X) where
+  smul g x := ConcreteCategory.hom (X.ρ g) x
   one_smul x := by
-    show ((CategoryTheory.forget _).map (X.ρ 1)) x = x
+    show ConcreteCategory.hom (X.ρ 1) x = x
     simp
   mul_smul g h x := by
-    show (CategoryTheory.forget V).map (X.ρ (g * h)) x =
-      ((CategoryTheory.forget V).map (X.ρ h) ≫ (CategoryTheory.forget V).map (X.ρ g)) x
+    show ConcreteCategory.hom (X.ρ (g * h)) x =
+      ConcreteCategory.hom (X.ρ g) ((ConcreteCategory.hom (X.ρ h)) x)
     simp
 
 /- Specialize `instMulAction` to assist typeclass inference. -/

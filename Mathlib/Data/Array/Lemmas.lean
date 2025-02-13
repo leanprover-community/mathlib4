@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Fin.Basic
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.TakeDrop
 
 /-!
 Porting note:

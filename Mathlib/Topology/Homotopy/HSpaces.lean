@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Junyan Xu
 -/
 import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Homotopy.Basic
+import Mathlib.Topology.Path
 
 /-!
 # H-spaces

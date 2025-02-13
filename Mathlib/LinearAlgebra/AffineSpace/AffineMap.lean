@@ -62,7 +62,7 @@ instance AffineMap.instFunLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*
     [AffineSpace V2 P2] : FunLike (P1 →ᵃ[k] P2) P1 P2 where
   coe := AffineMap.toFun
   coe_injective' := fun ⟨f, f_linear, f_add⟩ ⟨g, g_linear, g_add⟩ => fun (h : f = g) => by
-    cases' (AddTorsor.nonempty : Nonempty P1) with p
+    obtain ⟨p⟩ := (AddTorsor.nonempty : Nonempty P1)
     congr with v
     apply vadd_right_cancel (f p)
     rw [← f_add, h, ← g_add]

@@ -56,7 +56,6 @@ noncomputable def roots (p : R[X]) : Multiset R :=
 
 theorem roots_def [DecidableEq R] (p : R[X]) [Decidable (p = 0)] :
     p.roots = if h : p = 0 then ∅ else Classical.choose (exists_multiset_roots h) := by
-  -- porting noteL `‹_›` doesn't work for instance arguments
   rename_i iR ip0
   obtain rfl := Subsingleton.elim iR (Classical.decEq R)
   obtain rfl := Subsingleton.elim ip0 (Classical.dec (p = 0))

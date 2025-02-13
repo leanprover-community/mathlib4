@@ -31,6 +31,9 @@ namespace CategoryTheory
 def nerve (C : Type u) [Category.{v} C] : SSet.{max u v} where
   obj Δ := ComposableArrows C (Δ.unop.len)
   map f x := x.whiskerLeft (SimplexCategory.toCat.map f.unop)
+  -- `aesop` can prove these but is slow, help it out:
+  map_id _ := rfl
+  map_comp _ _ := rfl
 
 instance {C : Type*} [Category C] {Δ : SimplexCategoryᵒᵖ} : Category ((nerve C).obj Δ) :=
   (inferInstance : Category (ComposableArrows C (Δ.unop.len)))

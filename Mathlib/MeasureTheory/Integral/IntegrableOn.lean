@@ -53,9 +53,13 @@ protected theorem MeasureTheory.AEStronglyMeasurable.stronglyMeasurableAtFilter
     (h : AEStronglyMeasurable f μ) : StronglyMeasurableAtFilter f l μ :=
   ⟨univ, univ_mem, by rwa [Measure.restrict_univ]⟩
 
-theorem AeStronglyMeasurable.stronglyMeasurableAtFilter_of_mem {s}
+theorem AEStronglyMeasurable.stronglyMeasurableAtFilter_of_mem {s}
     (h : AEStronglyMeasurable f (μ.restrict s)) (hl : s ∈ l) : StronglyMeasurableAtFilter f l μ :=
   ⟨s, hl, h⟩
+
+@[deprecated (since := "2025-02-12")]
+alias AeStronglyMeasurable.stronglyMeasurableAtFilter_of_mem :=
+    AEStronglyMeasurable.stronglyMeasurableAtFilter_of_mem
 
 protected theorem MeasureTheory.StronglyMeasurable.stronglyMeasurableAtFilter
     (h : StronglyMeasurable f) : StronglyMeasurableAtFilter f l μ :=

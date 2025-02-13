@@ -360,7 +360,7 @@ theorem Basis.eq_bot_of_rank_eq_zero [NoZeroDivisors R] (b : Basis ι R M) (N : 
   refine ⟨1, fun _ => ⟨x, hx⟩, ?_, one_ne_zero⟩
   rw [Fintype.linearIndependent_iff]
   rintro g sum_eq i
-  cases' i with _ hi
+  obtain ⟨_, hi⟩ := i
   simp only [Function.const_apply, Fin.default_eq_zero, Submodule.coe_mk, Finset.univ_unique,
     Function.comp_const, Finset.sum_singleton] at sum_eq
   convert (b.smul_eq_zero.mp sum_eq).resolve_right x_ne
@@ -457,21 +457,23 @@ def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort*
     exfalso
     rw [mem_bot] at x_mem
     simpa [x_mem] using x_ortho 1 0 N.zero_mem
-  induction' n with n rank_ih generalizing N
-  · suffices N = ⊥ by rwa [this]
+  induction n generalizing N with
+  | zero =>
+    suffices N = ⊥ by rwa [this]
     apply Basis.eq_bot_of_rank_eq_zero b _ fun m hv => Nat.le_zero.mp (rank_le _ hv)
-  apply ih
-  intro N' N'_le x x_mem x_ortho
-  apply rank_ih
-  intro m v hli
-  refine Nat.succ_le_succ_iff.mp (rank_le (Fin.cons ⟨x, x_mem⟩ fun i => ⟨v i, N'_le (v i).2⟩) ?_)
-  convert hli.fin_cons' x _ ?_
-  · ext i
-    refine Fin.cases ?_ ?_ i <;> simp
-  · intro c y hcy
-    refine x_ortho c y (Submodule.span_le.mpr ?_ y.2) hcy
-    rintro _ ⟨z, rfl⟩
-    exact (v z).2
+  | succ n rank_ih =>
+    apply ih
+    intro N' N'_le x x_mem x_ortho
+    apply rank_ih
+    intro m v hli
+    refine Nat.succ_le_succ_iff.mp (rank_le (Fin.cons ⟨x, x_mem⟩ fun i => ⟨v i, N'_le (v i).2⟩) ?_)
+    convert hli.fin_cons' x _ ?_
+    · ext i
+      refine Fin.cases ?_ ?_ i <;> simp
+    · intro c y hcy
+      refine x_ortho c y (Submodule.span_le.mpr ?_ y.2) hcy
+      rintro _ ⟨z, rfl⟩
+      exact (v z).2
 
 end Induction
 

@@ -15,6 +15,7 @@ and products of multisets, finsets, and finsupps.
 
 -/
 
+assert_not_exists Field
 
 variable {α β γ δ : Type*}
 

@@ -61,8 +61,8 @@ theorem primorial_add_le {m n : ℕ} (h : n ≤ m) : (m + n)# ≤ m# * choose (m
   le_of_dvd (mul_pos (primorial_pos _) (choose_pos <| Nat.le_add_right _ _)) (primorial_add_dvd h)
 
 theorem primorial_le_4_pow (n : ℕ) : n# ≤ 4 ^ n := by
-  induction' n using Nat.strong_induction_on with n ihn
-  cases' n with n; · rfl
+  induction n using Nat.strong_induction_on with | h n ihn =>
+  rcases n with - | n; · rfl
   rcases n.even_or_odd with (⟨m, rfl⟩ | ho)
   · rcases m.eq_zero_or_pos with (rfl | hm)
     · decide

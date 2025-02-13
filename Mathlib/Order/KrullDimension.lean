@@ -698,8 +698,7 @@ lemma krullDim_eq_iSup_height_of_nonempty [Nonempty α] : krullDim α = ↑(⨆ 
   apply le_antisymm
   · apply iSup_le
     intro p
-    suffices p.length ≤ ⨆ (a : α), height a by
-      exact (WithBot.unbot'_le_iff fun _ => this).mp this
+    suffices p.length ≤ ⨆ (a : α), height a from (WithBot.unbotD_le_iff fun _ => this).mp this
     apply le_iSup_of_le p.last (length_le_height_last (p := p))
   · rw [WithBot.coe_iSup (by bddDefault)]
     apply iSup_le

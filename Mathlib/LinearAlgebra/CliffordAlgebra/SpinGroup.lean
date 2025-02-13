@@ -342,7 +342,7 @@ theorem mul_star_self_of_mem {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : 
 /-- See `star_mem_iff` for both directions. -/
 theorem star_mem {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : star x ∈ spinGroup Q := by
   rw [mem_iff] at hx ⊢
-  cases' hx with hx₁ hx₂
+  obtain ⟨hx₁, hx₂⟩ := hx
   refine ⟨pinGroup.star_mem hx₁, ?_⟩
   dsimp only [CliffordAlgebra.even] at hx₂ ⊢
   simp only [Submodule.mem_toSubalgebra] at hx₂ ⊢

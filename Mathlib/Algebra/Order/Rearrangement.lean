@@ -69,7 +69,6 @@ theorem MonovaryOn.sum_smul_comp_perm_le_sum_smul (hfg : MonovaryOn f g s)
     (hσ : {x | σ x ≠ x} ⊆ s) : ∑ i ∈ s, f i • g (σ i) ≤ ∑ i ∈ s, f i • g i := by
   classical
   revert hσ σ hfg
-  -- Porting note: Specify `p` to get around `∀ {σ}` in the current goal.
   apply Finset.induction_on_max_value (fun i ↦ toLex (g i, f i))
     (p := fun t ↦ ∀ {σ : Perm ι}, MonovaryOn f g t → {x | σ x ≠ x} ⊆ t →
       ∑ i ∈ t, f i • g (σ i) ≤ ∑ i ∈ t, f i • g i) s

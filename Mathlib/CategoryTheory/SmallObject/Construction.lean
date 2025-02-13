@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
 
 /-!
 # Construction for the small object argument
@@ -54,7 +55,7 @@ universe w v u
 
 namespace CategoryTheory
 
-open Category Limits
+open Category Limits HomotopicalAlgebra
 
 namespace SmallObject
 
@@ -138,6 +139,19 @@ lemma ρFunctorObj_π : ρFunctorObj f πX ≫ πFunctorObj f πX = π'FunctorOb
 @[reassoc (attr := simp)]
 lemma ιFunctorObj_πFunctorObj : ιFunctorObj f πX ≫ πFunctorObj f πX = πX := by
   simp [ιFunctorObj, πFunctorObj]
+
+/-- The morphism `ιFunctorObj f πX : X ⟶ functorObj f πX` is obtained by
+attaching `f`-cells. -/
+@[simps]
+noncomputable def attachCellsιFunctorObj : AttachCells f (ιFunctorObj f πX) where
+  ι := FunctorObjIndex f πX
+  π x := x.i
+  isColimit₁ := coproductIsCoproduct _
+  isColimit₂ := coproductIsCoproduct _
+  m := functorObjLeft f πX
+  g₁ := functorObjTop f πX
+  g₂ := ρFunctorObj f πX
+  isPushout := IsPushout.of_hasPushout (functorObjTop f πX) (functorObjLeft f πX)
 
 section
 

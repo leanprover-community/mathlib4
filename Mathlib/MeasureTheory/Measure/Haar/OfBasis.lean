@@ -205,11 +205,9 @@ theorem Basis.parallelepiped_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
 
 theorem Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
     (b.map e).parallelepiped = b.parallelepiped.map e
-    (have := FiniteDimensional.of_fintype_basis b
-    -- Porting note: Lean cannot infer the instance above
+    (haveI := FiniteDimensional.of_fintype_basis b
     LinearMap.continuous_of_finiteDimensional e.toLinearMap)
-    (have := FiniteDimensional.of_fintype_basis (b.map e)
-    -- Porting note: Lean cannot infer the instance above
+    (haveI := FiniteDimensional.of_fintype_basis (b.map e)
     LinearMap.isOpenMap_of_finiteDimensional _ e.surjective) :=
   PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
 

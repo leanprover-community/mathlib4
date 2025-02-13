@@ -258,14 +258,13 @@ theorem IsPreconnected.mem_intervals {s : Set α} (hs : IsPreconnected s) :
     simp only [insert_subset_iff, mem_insert_iff, mem_singleton_iff, true_or, or_true,
       singleton_subset_iff, and_self]
   · refine Or.inr <| Or.inr <| Or.inr <| Or.inr ?_
-    cases'
-      mem_Ici_Ioi_of_subset_of_subset (hs.Ioi_csInf_subset hb ha) fun x hx => csInf_le hb hx with
-      hs hs
+    rcases mem_Ici_Ioi_of_subset_of_subset (hs.Ioi_csInf_subset hb ha) fun x hx ↦
+      csInf_le hb hx with hs | hs
     · exact Or.inl hs
     · exact Or.inr (Or.inl hs)
   · iterate 6 apply Or.inr
-    cases' mem_Iic_Iio_of_subset_of_subset (hs.Iio_csSup_subset hb ha) fun x hx => le_csSup ha hx
-      with hs hs
+    rcases mem_Iic_Iio_of_subset_of_subset (hs.Iio_csSup_subset hb ha) fun x hx ↦
+      le_csSup ha hx with hs | hs
     · exact Or.inl hs
     · exact Or.inr (Or.inl hs)
   · iterate 8 apply Or.inr
@@ -304,7 +303,7 @@ theorem IsClosed.mem_of_ge_of_forall_exists_gt {a b : α} {s : Set α} (hs : IsC
   let c := sSup (s ∩ Icc a b)
   have c_mem : c ∈ S := hs.csSup_mem ⟨_, ha⟩ Sbd
   have c_le : c ≤ b := csSup_le ⟨_, ha⟩ fun x hx => hx.2.2
-  cases' eq_or_lt_of_le c_le with hc hc
+  rcases eq_or_lt_of_le c_le with hc | hc
   · exact hc ▸ c_mem.1
   exfalso
   rcases hgt c ⟨c_mem.1, c_mem.2.1, hc⟩ with ⟨x, xs, cx, xb⟩

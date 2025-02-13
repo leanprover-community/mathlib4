@@ -15,6 +15,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 * `UniqueFactorizationMonoid.normalizationMonoid`: choose a way of normalizing the elements of a UFM
 -/
 
+assert_not_exists Field
 
 variable {α : Type*}
 

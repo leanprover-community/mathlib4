@@ -20,10 +20,6 @@ which appear in the transfinite composition.
 See `MorphismProperty.TransfiniteCompositionOfShape` in the
 file `MorphismProperty.TransfiniteComposition`.
 
-## TODO (@joelriou)
-* define relative cell complexes by extending `TransfiniteCompositionOfShape`
-and refactor the definition of CW-complexes
-
 -/
 
 universe w w' v u

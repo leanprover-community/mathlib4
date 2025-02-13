@@ -207,10 +207,10 @@ lemma fwdDiff_iter_le_of_forall_le {f : C(ℤ_[p], E)} {s t : ℕ}
   -- We show the following more general statement by induction on `k`:
   suffices ∀ {k : ℕ}, k ≤ s → ‖Δ_[1]^[n + k * p ^ t] f 0‖ ≤ ‖f‖ / p ^ k from this le_rfl
   intro k hk
-  induction' k with k IH generalizing n
-  · -- base case just says that `‖Δ^[·] (⇑f) 0‖` is bounded by `‖f‖`
+  induction k generalizing n with
+  | zero => -- base case just says that `‖Δ^[·] (⇑f) 0‖` is bounded by `‖f‖`
     simpa only [zero_mul, pow_zero, add_zero, div_one] using norm_fwdDiff_iter_apply_le 1 f 0 n
-  · -- induction is the "step 2" lemma above
+  | succ k IH => -- induction is the "step 2" lemma above
     rw [add_mul, one_mul, ← add_assoc]
     refine (bojanic_mahler_step2 hst (n + k * p ^ t)).trans (max_le ?_ ?_)
     · rw [← coe_nnnorm, ← NNReal.coe_natCast, ← NNReal.coe_pow, ← NNReal.coe_div, NNReal.coe_le_coe]

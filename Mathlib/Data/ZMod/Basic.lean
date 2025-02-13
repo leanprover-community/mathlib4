@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Module.End
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Data.Fintype.Units
@@ -196,8 +197,8 @@ ring, see `ZMod.intCast_cast`. -/
 theorem intCast_zmod_cast (a : ZMod n) : ((cast a : ℤ) : ZMod n) = a := by
   cases n
   · simp [ZMod.cast, ZMod]
-  · dsimp [ZMod.cast, ZMod]
-    erw [Int.cast_natCast, Fin.cast_val_eq_self]
+  · dsimp [ZMod.cast]
+    rw [Int.cast_natCast, natCast_zmod_val]
 
 theorem intCast_rightInverse : Function.RightInverse (cast : ZMod n → ℤ) ((↑) : ℤ → ZMod n) :=
   intCast_zmod_cast
@@ -281,8 +282,8 @@ theorem cast_add (h : m ∣ n) (a b : ZMod n) : (cast (a + b : ZMod n) : R) = ca
   cases n
   · apply Int.cast_add
   symm
-  dsimp [ZMod, ZMod.cast]
-  erw [← Nat.cast_add, ← sub_eq_zero, ← Nat.cast_sub (Nat.mod_le _ _),
+  dsimp [ZMod, ZMod.cast, ZMod.val]
+  rw [← Nat.cast_add, Fin.val_add, ← sub_eq_zero, ← Nat.cast_sub (Nat.mod_le _ _),
     @CharP.cast_eq_zero_iff R _ m]
   exact h.trans (Nat.dvd_sub_mod _)
 
@@ -290,8 +291,8 @@ theorem cast_mul (h : m ∣ n) (a b : ZMod n) : (cast (a * b : ZMod n) : R) = ca
   cases n
   · apply Int.cast_mul
   symm
-  dsimp [ZMod, ZMod.cast]
-  erw [← Nat.cast_mul, ← sub_eq_zero, ← Nat.cast_sub (Nat.mod_le _ _),
+  dsimp [ZMod, ZMod.cast, ZMod.val]
+  rw [← Nat.cast_mul, Fin.val_mul, ← sub_eq_zero, ← Nat.cast_sub (Nat.mod_le _ _),
     @CharP.cast_eq_zero_iff R _ m]
   exact h.trans (Nat.dvd_sub_mod _)
 
@@ -1100,8 +1101,8 @@ instance subsingleton_ringEquiv [Semiring R] : Subsingleton (ZMod n ≃+* R) :=
 theorem ringHom_map_cast [Ring R] (f : R →+* ZMod n) (k : ZMod n) : f (cast k) = k := by
   cases n
   · dsimp [ZMod, ZMod.cast] at f k ⊢; simp
-  · dsimp [ZMod, ZMod.cast] at f k ⊢
-    erw [map_natCast, Fin.cast_val_eq_self]
+  · dsimp [ZMod.cast]
+    rw [map_natCast, natCast_zmod_val]
 
 /-- Any ring homomorphism into `ZMod n` has a right inverse. -/
 theorem ringHom_rightInverse [Ring R] (f : R →+* ZMod n) :

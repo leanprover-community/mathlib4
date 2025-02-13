@@ -35,6 +35,8 @@ The point of asking for an explicit partial inverse `decode : ℕ → Option α`
 to make the range of `encode` decidable even when the finiteness of `α` is not.
 -/
 
+assert_not_exists Monoid
+
 open Option List Nat Function
 
 /-- Constructively countable type. Made from an explicit injection `encode : α → ℕ` and a partial
@@ -550,7 +552,7 @@ theorem sequence_mono_nat {r : β → β → Prop} {f : α → β} (hf : Directe
 
 theorem rel_sequence {r : β → β → Prop} {f : α → β} (hf : Directed r f) (a : α) :
     r (f a) (f (hf.sequence f (encode a + 1))) := by
-  simp only [Directed.sequence, add_eq, add_zero, encodek, and_self]
+  simp only [Directed.sequence, add_eq, Nat.add_zero, encodek, and_self]
   exact (Classical.choose_spec (hf _ a)).2
 
 variable [Preorder β] {f : α → β}

@@ -227,7 +227,8 @@ section
 variable {D : Type w} [Category.{max v u} D]
 variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
-variable [HasForget.{max v u} D]
+variable {FD : D → D → Type*} {CD : D → Type (max v u)}
+variable [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory.{max v u} D FD]
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
 variable [PreservesLimits (forget D)]
 variable [(forget D).ReflectsIsomorphisms]

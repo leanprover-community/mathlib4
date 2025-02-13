@@ -128,9 +128,10 @@ lemma LSeries.absicssaOfAbsConv_logPowMul {f : ℕ → ℂ} {m : ℕ} :
 the `m`th derivative of this L-series is `(-1)^m` times the L-series of `log^m * f`. -/
 lemma LSeries_iteratedDeriv {f : ℕ → ℂ} (m : ℕ) {s : ℂ} (h : abscissaOfAbsConv f < s.re) :
     iteratedDeriv m (LSeries f) s = (-1) ^ m * LSeries (logMul^[m] f) s := by
-  induction' m with m ih generalizing s
-  · simp
-  · have ih' : {s | abscissaOfAbsConv f < re s}.EqOn (iteratedDeriv m (LSeries f))
+  induction m generalizing s with
+  | zero => simp
+  | succ m ih =>
+    have ih' : {s | abscissaOfAbsConv f < re s}.EqOn (iteratedDeriv m (LSeries f))
         ((-1) ^ m * LSeries (logMul^[m] f)) := fun _ hs ↦ ih hs
     have := derivWithin_congr ih' (ih h)
     simp_rw [derivWithin_of_isOpen (isOpen_re_gt_EReal _) h] at this

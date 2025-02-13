@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Sean Leather
 -/
 import Mathlib.Data.List.Pairwise
-import Mathlib.Data.List.Perm.Basic
 import Mathlib.Data.List.Nodup
+import Mathlib.Data.List.Lookmap
 
 /-!
 # Utilities for lists of sigmas

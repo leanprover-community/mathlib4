@@ -89,7 +89,7 @@ theorem algebraMap_ofSubsemiring_apply (S : Subsemiring R) (x : S) : algebraMap 
 
 /-- Algebra over a subring. This builds upon `Subring.module`. -/
 instance ofSubring {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (S : Subring R) :
-    Algebra S A where -- Porting note: don't use `toSubsemiring` because of a timeout
+    Algebra S A where
   algebraMap := (algebraMap R A).comp S.subtype
   smul := (· • ·)
   commutes' r x := Algebra.commutes (r : R) x

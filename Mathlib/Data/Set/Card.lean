@@ -410,6 +410,9 @@ theorem encard_preimage_of_injective_subset_range (hf : f.Injective) (ht : t ⊆
     (f ⁻¹' t).encard = t.encard := by
   rw [← hf.encard_image, image_preimage_eq_inter_range, inter_eq_self_of_subset_left ht]
 
+lemma encard_preimage_of_bijective (hf : f.Bijective) (t : Set β) : (f ⁻¹' t).encard = t.encard :=
+  encard_preimage_of_injective_subset_range hf.injective (by simp [hf.surjective.range_eq])
+
 theorem encard_le_encard_of_injOn (hf : MapsTo f s t) (f_inj : InjOn f s) :
     s.encard ≤ t.encard := by
   rw [← f_inj.encard_image]; apply encard_le_encard; rintro _ ⟨x, hx, rfl⟩; exact hf hx

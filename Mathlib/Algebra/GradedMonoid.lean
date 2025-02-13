@@ -80,7 +80,7 @@ in `Algebra.DirectSum.Internal`.
 
 This file also defines:
 
-* `SetLike.isHomogeneous A` (which says that `a` is homogeneous iff `a ∈ A i` for some `i : ι`)
+* `SetLike.IsHomogeneousElem A` (which says that `a` is homogeneous iff `a ∈ A i` for some `i : ι`)
 * `SetLike.homogeneousSubmonoid A`, which is, as the name suggests, the submonoid consisting of
   all the homogeneous elements.
 
@@ -649,27 +649,36 @@ section HomogeneousElements
 variable {R S : Type*} [SetLike S R]
 
 /-- An element `a : R` is said to be homogeneous if there is some `i : ι` such that `a ∈ A i`. -/
-def SetLike.Homogeneous (A : ι → S) (a : R) : Prop :=
+def SetLike.IsHomogeneousElem (A : ι → S) (a : R) : Prop :=
   ∃ i, a ∈ A i
 
 @[simp]
-theorem SetLike.homogeneous_coe {A : ι → S} {i} (x : A i) : SetLike.Homogeneous A (x : R) :=
+theorem SetLike.isHomogeneousElem_coe {A : ι → S} {i} (x : A i) :
+    SetLike.IsHomogeneousElem A (x : R) :=
   ⟨i, x.prop⟩
 
-theorem SetLike.homogeneous_one [Zero ι] [One R] (A : ι → S) [SetLike.GradedOne A] :
-    SetLike.Homogeneous A (1 : R) :=
+@[deprecated (since := "2025-01-31")] alias SetLike.homogeneous_coe :=
+  SetLike.isHomogeneousElem_coe
+
+theorem SetLike.isHomogeneousElem_one [Zero ι] [One R] (A : ι → S) [SetLike.GradedOne A] :
+    SetLike.IsHomogeneousElem A (1 : R) :=
   ⟨0, SetLike.one_mem_graded _⟩
 
-theorem SetLike.homogeneous_mul [Add ι] [Mul R] {A : ι → S} [SetLike.GradedMul A] {a b : R} :
-    SetLike.Homogeneous A a → SetLike.Homogeneous A b → SetLike.Homogeneous A (a * b)
+@[deprecated (since := "2025-01-31")] alias SetLike.homogeneous_one := SetLike.isHomogeneousElem_one
+
+theorem SetLike.IsHomogeneousElem.mul [Add ι] [Mul R] {A : ι → S} [SetLike.GradedMul A] {a b : R} :
+    SetLike.IsHomogeneousElem A a → SetLike.IsHomogeneousElem A b →
+    SetLike.IsHomogeneousElem A (a * b)
   | ⟨i, hi⟩, ⟨j, hj⟩ => ⟨i + j, SetLike.mul_mem_graded hi hj⟩
+
+@[deprecated (since := "2025-01-31")] alias SetLike.homogeneous_mul := SetLike.IsHomogeneousElem.mul
 
 /-- When `A` is a `SetLike.GradedMonoid A`, then the homogeneous elements forms a submonoid. -/
 def SetLike.homogeneousSubmonoid [AddMonoid ι] [Monoid R] (A : ι → S) [SetLike.GradedMonoid A] :
     Submonoid R where
-  carrier := { a | SetLike.Homogeneous A a }
-  one_mem' := SetLike.homogeneous_one A
-  mul_mem' a b := SetLike.homogeneous_mul a b
+  carrier := { a | SetLike.IsHomogeneousElem A a }
+  one_mem' := SetLike.isHomogeneousElem_one A
+  mul_mem' a b := SetLike.IsHomogeneousElem.mul a b
 
 end HomogeneousElements
 

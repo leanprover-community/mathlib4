@@ -682,7 +682,7 @@ theorem _root_.MeasureTheory.Measure.HasTemperateGrowth.exists_eLpNorm_lt_top (p
       use k
       suffices HasFiniteIntegral (fun x ↦ ((1 + ‖x‖) ^ (-(k * p) : ℝ))) μ by
         rw [hasFiniteIntegral_iff_enorm] at this
-        rw [eLpNorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top hp ENNReal.coe_ne_top]
+        rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp ENNReal.coe_ne_top]
         simp only [ENNReal.coe_toReal]
         refine Eq.subst (motive := (∫⁻ x, · x ∂μ < ⊤)) (funext fun x ↦ ?_) this
         rw [← neg_mul, Real.rpow_mul (h_one_add x).le]

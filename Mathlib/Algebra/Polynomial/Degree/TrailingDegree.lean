@@ -293,9 +293,7 @@ theorem le_natTrailingDegree_mul (h : p * q ≠ 0) :
     p.natTrailingDegree + q.natTrailingDegree ≤ (p * q).natTrailingDegree := by
   have hp : p ≠ 0 := fun hp => h (by rw [hp, zero_mul])
   have hq : q ≠ 0 := fun hq => h (by rw [hq, mul_zero])
-  -- Porting note: Needed to account for different coercion behaviour & add the lemma below
-  have : ∀ (p : R[X]), WithTop.some (natTrailingDegree p) = Nat.cast (natTrailingDegree p) :=
-    fun p ↦ rfl
+  have (p : R[X]) : WithTop.some (natTrailingDegree p) = Nat.cast (natTrailingDegree p) := rfl
   rw [← WithTop.coe_le_coe, WithTop.coe_add, this p, this q, this (p * q),
     ← trailingDegree_eq_natTrailingDegree hp, ← trailingDegree_eq_natTrailingDegree hq,
     ← trailingDegree_eq_natTrailingDegree h]
@@ -331,10 +329,8 @@ theorem natTrailingDegree_mul' (h : p.trailingCoeff * q.trailingCoeff ≠ 0) :
     (p * q).natTrailingDegree = p.natTrailingDegree + q.natTrailingDegree := by
   have hp : p ≠ 0 := fun hp => h (by rw [hp, trailingCoeff_zero, zero_mul])
   have hq : q ≠ 0 := fun hq => h (by rw [hq, trailingCoeff_zero, mul_zero])
-  -- Porting note: Needed to account for different coercion behaviour & add the lemmas below
-  have aux1 : ∀ n, Nat.cast n = WithTop.some (n) := fun n ↦ rfl
-  have aux2 : ∀ (p : R[X]), WithTop.some (natTrailingDegree p) = Nat.cast (natTrailingDegree p) :=
-    fun p ↦ rfl
+  have aux1 n : Nat.cast n = WithTop.some (n) := rfl
+  have aux2 (p : R[X]) : WithTop.some (natTrailingDegree p) = Nat.cast (natTrailingDegree p) := rfl
   apply natTrailingDegree_eq_of_trailingDegree_eq_some
   rw [trailingDegree_mul' h, aux1 (natTrailingDegree p + natTrailingDegree q),
     WithTop.coe_add, aux2 p, aux2 q, ← trailingDegree_eq_natTrailingDegree hp, ←

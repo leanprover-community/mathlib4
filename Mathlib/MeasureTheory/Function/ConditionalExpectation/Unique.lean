@@ -45,14 +45,11 @@ section UniquenessOfConditionalExpectation
 
 theorem lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero (hm : m ≤ m0) (f : lpMeas E' 𝕜 m p μ)
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
-    -- Porting note: needed to add explicit casts in the next two hypotheses
     (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn (f : Lp E' p μ) s μ)
     (hf_zero : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, (f : Lp E' p μ) x ∂μ = 0) :
     f =ᵐ[μ] (0 : α → E') := by
   obtain ⟨g, hg_sm, hfg⟩ := lpMeas.ae_fin_strongly_measurable' hm f hp_ne_zero hp_ne_top
   refine hfg.trans ?_
-  -- Porting note: added
-  unfold Filter.EventuallyEq at hfg
   refine ae_eq_zero_of_forall_setIntegral_eq_of_finStronglyMeasurable_trim hm ?_ ?_ hg_sm
   · intro s hs hμs
     have hfg_restrict : f =ᵐ[μ.restrict s] g := ae_restrict_of_ae hfg
@@ -72,8 +69,7 @@ theorem Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' (hm : m ≤ m0) (f : Lp E' 
     (hf_zero : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, f x ∂μ = 0)
     (hf_meas : AEStronglyMeasurable[m] f μ) : f =ᵐ[μ] 0 := by
   let f_meas : lpMeas E' 𝕜 m p μ := ⟨f, hf_meas⟩
-  -- Porting note: `simp only` does not call `rfl` to try to close the goal. See https://github.com/leanprover-community/mathlib4/issues/5025
-  have hf_f_meas : f =ᵐ[μ] f_meas := by simp only [f_meas, Subtype.coe_mk]; rfl
+  have hf_f_meas : f =ᵐ[μ] f_meas := by simp [f_meas, Subtype.coe_mk]
   refine hf_f_meas.trans ?_
   refine lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero hm f_meas hp_ne_zero hp_ne_top ?_ ?_
   · intro s hs hμs

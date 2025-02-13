@@ -607,7 +607,7 @@ nonrec theorem IsCompact.exists_mem_frontier_infDist_compl_eq_dist {E : Type*}
     rcases hx' with ⟨r, hr₀, hrK⟩
     have : FiniteDimensional ℝ E :=
       .of_isCompact_closedBall ℝ hr₀
-        (hK.of_isClosed_subset Metric.isClosed_ball hrK)
+        (hK.of_isClosed_subset Metric.isClosed_closedBall hrK)
     exact exists_mem_frontier_infDist_compl_eq_dist hx hK.ne_univ
   · refine ⟨x, hx', ?_⟩
     rw [frontier_eq_closure_inter_closure] at hx'

@@ -344,6 +344,8 @@ theorem coe_coeEmb : ⇑(coeEmb : Finset α ↪o Set α) = ((↑) : Finset α �
 These results can be defined using the current imports, but deserve to be given a nicer home.
 -/
 
+set_option linter.deprecated false in
+@[deprecated "Deprecated without replacement." (since := "2025-02-07")]
 theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {s : Finset α} (hx : x ∈ s) :
     SizeOf.sizeOf x < SizeOf.sizeOf s := by
   cases s
@@ -360,8 +362,6 @@ instance decidableDforallFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a �
     Decidable (∀ (a) (h : a ∈ s), p a h) :=
   Multiset.decidableDforallMultiset
 
--- Porting note: In lean3, `decidableDforallFinset` was picked up when decidability of `s ⊆ t` was
--- needed. In lean4 it seems this is not the case.
 instance instDecidableRelSubset [DecidableEq α] : DecidableRel (α := Finset α) (· ⊆ ·) :=
   fun _ _ ↦ decidableDforallFinset
 

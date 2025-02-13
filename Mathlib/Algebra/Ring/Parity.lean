@@ -306,7 +306,6 @@ end
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
   simp [*, two_ne_zero, parity_simps]
 
-/- Porting note: the `simp` lemmas about `bit*` no longer apply. -/
 example : ¬Even 25394535 := by decide
 
 end Nat

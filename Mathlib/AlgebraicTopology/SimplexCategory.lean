@@ -652,10 +652,10 @@ of `NonemptyFinLinOrd` -/
 @[simps obj map]
 def skeletalFunctor : SimplexCategory ⥤ NonemptyFinLinOrd where
   obj a := NonemptyFinLinOrd.of (Fin (a.len + 1))
-  map f := f.toOrderHom
+  map f := NonemptyFinLinOrd.ofHom f.toOrderHom
 
 theorem skeletalFunctor.coe_map {Δ₁ Δ₂ : SimplexCategory} (f : Δ₁ ⟶ Δ₂) :
-    ↑(skeletalFunctor.map f) = f.toOrderHom :=
+    ↑(skeletalFunctor.map f).hom = f.toOrderHom :=
   rfl
 
 theorem skeletal : Skeletal SimplexCategory := fun X Y ⟨I⟩ => by
@@ -668,12 +668,12 @@ theorem skeletal : Skeletal SimplexCategory := fun X Y ⟨I⟩ => by
 namespace SkeletalFunctor
 
 instance : skeletalFunctor.Full where
-  map_surjective f := ⟨SimplexCategory.Hom.mk f, rfl⟩
+  map_surjective f := ⟨SimplexCategory.Hom.mk f.hom, rfl⟩
 
 instance : skeletalFunctor.Faithful where
   map_injective {_ _ f g} h := by
-    ext1
-    exact h
+    ext : 3
+    exact CategoryTheory.congr_fun h _
 
 instance : skeletalFunctor.EssSurj where
   mem_essImage X :=
@@ -684,10 +684,10 @@ instance : skeletalFunctor.EssSurj where
         let f := monoEquivOfFin X aux
         have hf := (Finset.univ.orderEmbOfFin aux).strictMono
         refine
-          { hom := ⟨f, hf.monotone⟩
-            inv := ⟨f.symm, ?_⟩
-            hom_inv_id := by ext1; apply f.symm_apply_apply
-            inv_hom_id := by ext1; apply f.apply_symm_apply }
+          { hom := LinOrd.ofHom ⟨f, hf.monotone⟩
+            inv := LinOrd.ofHom ⟨f.symm, ?_⟩
+            hom_inv_id := by ext; apply f.symm_apply_apply
+            inv_hom_id := by ext; apply f.apply_symm_apply }
         intro i j h
         show f.symm i ≤ f.symm j
         rw [← hf.le_iff_le]
@@ -745,17 +745,17 @@ end Truncated
 
 section Concrete
 
-instance : HasForget.{0} SimplexCategory where
-  forget :=
-    { obj := fun i => Fin (i.len + 1)
-      map := fun f => f.toOrderHom }
-  forget_faithful := ⟨fun h => by ext : 2; exact h⟩
+instance : ConcreteCategory SimplexCategory (fun i j => Fin (i.len + 1) →o Fin (j.len + 1)) where
+  hom := Hom.toOrderHom
+  ofHom f := Hom.mk f
 
-instance (x : SimplexCategory) : Fintype (HasForget.forget.obj x) :=
+instance (x : SimplexCategory) : Fintype (ToType x) :=
   inferInstanceAs (Fintype (Fin _))
 
-instance (x : SimplexCategory) (n : ℕ) : OfNat (HasForget.forget.obj x) n :=
+instance (x : SimplexCategory) (n : ℕ) : OfNat (ToType x) n :=
   inferInstanceAs (OfNat (Fin _) n)
+
+lemma toType_apply (x : SimplexCategory) : ToType x = Fin (x.len + 1) := rfl
 
 end Concrete
 
@@ -768,7 +768,7 @@ theorem mono_iff_injective {n m : SimplexCategory} {f : n ⟶ m} :
   rw [← Functor.mono_map_iff_mono skeletalEquivalence.functor]
   dsimp only [skeletalEquivalence, Functor.asEquivalence_functor]
   simp only [skeletalFunctor_obj, skeletalFunctor_map,
-    NonemptyFinLinOrd.mono_iff_injective, NonemptyFinLinOrd.coe_of]
+    NonemptyFinLinOrd.mono_iff_injective, NonemptyFinLinOrd.coe_of, ConcreteCategory.hom_ofHom]
 
 /-- A morphism in `SimplexCategory` is an epimorphism if and only if it is a surjective function
 -/
@@ -777,7 +777,7 @@ theorem epi_iff_surjective {n m : SimplexCategory} {f : n ⟶ m} :
   rw [← Functor.epi_map_iff_epi skeletalEquivalence.functor]
   dsimp only [skeletalEquivalence, Functor.asEquivalence_functor]
   simp only [skeletalFunctor_obj, skeletalFunctor_map,
-    NonemptyFinLinOrd.epi_iff_surjective, NonemptyFinLinOrd.coe_of]
+    NonemptyFinLinOrd.epi_iff_surjective, NonemptyFinLinOrd.coe_of, ConcreteCategory.hom_ofHom]
 
 /-- A monomorphism in `SimplexCategory` must increase lengths -/
 theorem len_le_of_mono {x y : SimplexCategory} {f : x ⟶ y} : Mono f → x.len ≤ y.len := by
@@ -864,12 +864,10 @@ theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := 
   have eq₁ := Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso e) i)
   have eq₂ :=
     Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso (Iso.refl x)) i)
-  -- Porting note: the proof was rewritten from this point in https://github.com/leanprover-community/mathlib4/pull/3414 (reenableeta)
-  -- It could be investigated again to see if the original can be restored.
-  ext x
-  replace eq₁ := congr_arg (· x) eq₁
-  replace eq₂ := congr_arg (· x) eq₂.symm
-  simp_all
+  ext : 2
+  convert congr_arg (fun φ => (OrderEmbedding.toOrderHom φ)) (eq₁.trans eq₂.symm)
+  ext i : 2
+  rfl
 
 theorem eq_id_of_isIso {x : SimplexCategory} (f : x ⟶ x) [IsIso f] : f = 𝟙 _ :=
   congr_arg (fun φ : _ ≅ _ => φ.hom) (iso_eq_iso_refl (asIso f))
@@ -882,9 +880,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
   simp only [len_mk, σ, mkHom, comp_toOrderHom, Hom.toOrderHom_mk, OrderHom.comp_coe,
     OrderHom.coe_mk, Function.comp_apply]
   by_cases h' : x ≤ Fin.castSucc i
-  · -- This was not needed before https://github.com/leanprover/lean4/pull/2644
-    dsimp
-    rw [Fin.predAbove_of_le_castSucc i x h']
+  · rw [Fin.predAbove_of_le_castSucc i x h']
     dsimp [δ]
     rw [Fin.succAbove_of_castSucc_lt _ _ _]
     · rw [Fin.castSucc_castPred]
@@ -893,8 +889,6 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
     let y := x.pred <| by rintro (rfl : x = 0); simp at h'
     have hy : x = y.succ := (Fin.succ_pred x _).symm
     rw [hy] at h' ⊢
-    -- This was not needed before https://github.com/leanprover/lean4/pull/2644
-    conv_rhs => dsimp
     rw [Fin.predAbove_of_castSucc_lt i y.succ h', Fin.pred_succ]
     by_cases h'' : y = i
     · rw [h'']
@@ -936,9 +930,7 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
     (i : Fin (n + 2)) (hi : ∀ x, θ.toOrderHom x ≠ i) : ∃ θ' : Δ ⟶ mk n, θ = θ' ≫ δ i := by
   by_cases h : i < Fin.last (n + 1)
   · use θ ≫ σ (Fin.castPred i h.ne)
-    ext1
-    ext1
-    ext1 x
+    ext x : 3
     simp only [len_mk, Category.assoc, comp_toOrderHom, OrderHom.comp_coe, Function.comp_apply]
     by_cases h' : θ.toOrderHom x ≤ i
     · simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk]

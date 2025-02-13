@@ -175,7 +175,7 @@ theorem lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top {f : α → ε} (hp_ne_zer
 alias lintegral_rpow_nnnorm_lt_top_of_eLpNorm_lt_top :=
   lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top
 
-theorem eLpNorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top {f : α → ε} (hp_ne_zero : p ≠ 0)
+theorem eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top {f : α → ε} (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) : eLpNorm f p μ < ∞ ↔ ∫⁻ a, (‖f a‖ₑ) ^ p.toReal ∂μ < ∞ :=
   ⟨lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp_ne_zero hp_ne_top, by
     intro h
@@ -183,6 +183,9 @@ theorem eLpNorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top {f : α → ε} (hp_ne_z
     have : 0 < 1 / p.toReal := div_pos zero_lt_one hp'
     simpa [eLpNorm_eq_lintegral_rpow_enorm hp_ne_zero hp_ne_top] using
       ENNReal.rpow_lt_top_of_nonneg (le_of_lt this) (ne_of_lt h)⟩
+
+@[deprecated (since := "2025-02-04")] alias
+eLpNorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top := eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top
 
 end Top
 
@@ -721,7 +724,7 @@ protected lemma Memℒp.piecewise [DecidablePred (· ∈ s)] {g} (hs : Measurabl
   obtain rfl | hp_top := eq_or_ne p ∞
   · rw [eLpNorm_top_piecewise f g hs]
     exact max_lt hf.2 hg.2
-  rw [eLpNorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top hp_zero hp_top, ← lintegral_add_compl _ hs,
+  rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp_zero hp_top, ← lintegral_add_compl _ hs,
     ENNReal.add_lt_top]
   constructor
   · have h : ∀ᵐ x ∂μ, x ∈ s → ‖Set.piecewise s f g x‖ₑ ^ p.toReal = ‖f x‖ₑ ^ p.toReal := by
@@ -814,7 +817,7 @@ theorem eLpNorm_one_smul_measure {f : α → F} (c : ℝ≥0∞) :
   rw [@eLpNorm_smul_measure_of_ne_top _ _ _ μ _ 1 (@ENNReal.coe_ne_top 1) f c]
   simp
 
-theorem Memℒp.of_measure_le_smul {μ' : Measure α} (c : ℝ≥0∞) (hc : c ≠ ∞) (hμ'_le : μ' ≤ c • μ)
+theorem Memℒp.of_measure_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠ ∞) (hμ'_le : μ' ≤ c • μ)
     {f : α → E} (hf : Memℒp f p μ) : Memℒp f p μ' := by
   refine ⟨hf.1.mono_ac (Measure.absolutelyContinuous_of_le_smul hμ'_le), ?_⟩
   refine (eLpNorm_mono_measure f hμ'_le).trans_lt ?_
@@ -826,7 +829,7 @@ theorem Memℒp.of_measure_le_smul {μ' : Measure α} (c : ℝ≥0∞) (hc : c �
 
 theorem Memℒp.smul_measure {f : α → E} {c : ℝ≥0∞} (hf : Memℒp f p μ) (hc : c ≠ ∞) :
     Memℒp f p (c • μ) :=
-  hf.of_measure_le_smul c hc le_rfl
+  hf.of_measure_le_smul hc le_rfl
 
 theorem eLpNorm_one_add_measure (f : α → F) (μ ν : Measure α) :
     eLpNorm f 1 (μ + ν) = eLpNorm f 1 μ + eLpNorm f 1 ν := by
@@ -917,7 +920,7 @@ lemma eLpNorm_lt_top_of_finite [Finite α] [IsFiniteMeasure μ] : eLpNorm f p μ
   obtain rfl | hp := eq_or_ne p ∞
   · simp only [eLpNorm_exponent_top, eLpNormEssSup_lt_top_iff_isBoundedUnder]
     exact .le_of_finite
-  rw [eLpNorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top hp₀ hp]
+  rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp₀ hp]
   refine IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennreal μ ?_
   simp_rw [enorm, ← ENNReal.coe_rpow_of_nonneg _ ENNReal.toReal_nonneg]
   norm_cast
@@ -1256,7 +1259,7 @@ theorem Memℒp.exists_eLpNorm_indicator_compl_lt {β : Type*} [NormedAddCommGro
   · obtain ⟨s, hsm, hs, hε⟩ :
         ∃ s, MeasurableSet s ∧ μ s < ∞ ∧ ∫⁻ a in sᶜ, (‖f a‖ₑ) ^ p.toReal ∂μ < ε ^ p.toReal := by
       apply exists_setLintegral_compl_lt
-      · exact ((eLpNorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top hp₀ hp_top).1 hf.2).ne
+      · exact ((eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp₀ hp_top).1 hf.2).ne
       · simp [*]
     refine ⟨s, hsm, hs, ?_⟩
     rwa [eLpNorm_indicator_eq_eLpNorm_restrict hsm.compl,

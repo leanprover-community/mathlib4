@@ -3,8 +3,9 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.Antilipschitz
 import Mathlib.Data.Fintype.Lattice
+import Mathlib.Data.Fintype.Sum
+import Mathlib.Topology.MetricSpace.Antilipschitz
 
 /-!
 # Isometries

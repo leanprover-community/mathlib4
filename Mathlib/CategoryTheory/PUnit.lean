@@ -34,8 +34,6 @@ variable {C}
 @[simps!]
 def punitExt (F G : C ⥤ Discrete PUnit.{w + 1}) : F ≅ G :=
   NatIso.ofComponents fun X => eqToIso (by simp only [eq_iff_true_of_subsingleton])
--- Porting note: simp does indeed fire for these despite the linter warning
-attribute [nolint simpNF] punitExt_hom_app_down_down punitExt_inv_app_down_down
 
 /-- Any two functors to `Discrete PUnit` are *equal*.
 You probably want to use `punitExt` instead of this. -/

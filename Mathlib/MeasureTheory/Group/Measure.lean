@@ -3,6 +3,7 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
+import Mathlib.Algebra.Group.Pointwise.Set.Card
 import Mathlib.MeasureTheory.Group.Action
 import Mathlib.MeasureTheory.Measure.Prod
 import Mathlib.Topology.Algebra.Module.Equiv
@@ -390,7 +391,37 @@ end DivisionMonoid
 
 section Group
 
-variable [Group G] [MeasurableMul G] [MeasurableInv G] {μ : Measure G}
+variable [Group G] {μ : Measure G}
+
+section MeasurableMul
+
+variable [MeasurableMul G]
+
+@[to_additive]
+instance : (count : Measure G).IsMulLeftInvariant where
+  map_mul_left_eq_self g := by
+    ext s hs
+    rw [count_apply hs, map_apply (measurable_const_mul _) hs,
+      count_apply (measurable_const_mul _ hs),
+      encard_preimage_of_bijective (Group.mulLeft_bijective _)]
+
+@[to_additive]
+instance : (count : Measure G).IsMulRightInvariant where
+  map_mul_right_eq_self g := by
+    ext s hs
+    rw [count_apply hs, map_apply (measurable_mul_const _) hs,
+      count_apply (measurable_mul_const _ hs),
+      encard_preimage_of_bijective (Group.mulRight_bijective _)]
+
+end MeasurableMul
+
+variable [MeasurableInv G]
+
+@[to_additive]
+instance : (count : Measure G).IsInvInvariant where
+  inv_eq_self := by ext s hs; rw [count_apply hs, inv_apply, count_apply hs.inv, encard_inv]
+
+variable [MeasurableMul G]
 
 @[to_additive]
 theorem map_div_left_ae (μ : Measure G) [IsMulLeftInvariant μ] [IsInvInvariant μ] (x : G) :

@@ -58,7 +58,7 @@ noncomputable section
 
 open scoped NNReal ENNReal Function
 
-variable {α : Type*} {E : α → Type*} {p q : ℝ≥0∞} [∀ i, NormedAddCommGroup (E i)]
+variable {𝕜 𝕜' : Type*} {α : Type*} {E : α → Type*} {p q : ℝ≥0∞} [∀ i, NormedAddCommGroup (E i)]
 
 /-!
 ### `Memℓp` predicate
@@ -234,7 +234,7 @@ theorem finset_sum {ι} (s : Finset ι) {f : ι → ∀ i, E i} (hf : ∀ i ∈ 
 
 section BoundedSMul
 
-variable {𝕜 : Type*} [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
+variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
 
 theorem const_smul {f : ∀ i, E i} (hf : Memℓp f p) (c : 𝕜) : Memℓp (c • f) p := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -259,7 +259,7 @@ theorem const_smul {f : ∀ i, E i} (hf : Memℓp f p) (c : 𝕜) : Memℓp (c �
     apply nnnorm_smul_le
 
 theorem const_mul {f : α → 𝕜} (hf : Memℓp f p) (c : 𝕜) : Memℓp (fun x => c * f x) p :=
-  @Memℓp.const_smul α (fun _ => 𝕜) _ _ 𝕜 _ _ (fun i => by infer_instance) _ hf c
+  hf.const_smul c
 
 end BoundedSMul
 
@@ -539,7 +539,6 @@ end ComparePointwise
 
 section BoundedSMul
 
-variable {𝕜 : Type*} {𝕜' : Type*}
 variable [NormedRing 𝕜] [NormedRing 𝕜']
 variable [∀ i, Module 𝕜 (E i)] [∀ i, Module 𝕜' (E i)]
 
@@ -560,20 +559,20 @@ variable [∀ i, BoundedSMul 𝕜 (E i)] [∀ i, BoundedSMul 𝕜' (E i)]
 theorem mem_lp_const_smul (c : 𝕜) (f : lp E p) : c • (f : PreLp E) ∈ lp E p :=
   (lp.memℓp f).const_smul c
 
-variable (E p 𝕜)
+variable (𝕜 E p)
 
 /-- The `𝕜`-submodule of elements of `∀ i : α, E i` whose `lp` norm is finite. This is `lp E p`,
 with extra structure. -/
 def _root_.lpSubmodule : Submodule 𝕜 (PreLp E) :=
   { lp E p with smul_mem' := fun c f hf => by simpa using mem_lp_const_smul c ⟨f, hf⟩ }
 
-variable {E p 𝕜}
+variable {𝕜 E p}
 
-theorem coe_lpSubmodule : (lpSubmodule E p 𝕜).toAddSubgroup = lp E p :=
+theorem coe_lpSubmodule : (lpSubmodule 𝕜 E p).toAddSubgroup = lp E p :=
   rfl
 
 instance : Module 𝕜 (lp E p) :=
-  { (lpSubmodule E p 𝕜).module with }
+  { (lpSubmodule 𝕜 E p).module with }
 
 @[simp]
 theorem coeFn_smul (c : 𝕜) (f : lp E p) : ⇑(c • f) = c • ⇑f :=
@@ -628,7 +627,6 @@ end BoundedSMul
 
 section DivisionRing
 
-variable {𝕜 : Type*}
 variable [NormedDivisionRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
 
 theorem norm_const_smul (hp : p ≠ 0) {c : 𝕜} (f : lp E p) : ‖c • f‖ = ‖c‖ * ‖f‖ := by
@@ -642,7 +640,7 @@ end DivisionRing
 
 section NormedSpace
 
-variable {𝕜 : Type*} [NormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
+variable [NormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
 
 instance instNormedSpace [Fact (1 ≤ p)] : NormedSpace 𝕜 (lp E p) where
   norm_smul_le c f := norm_smul_le c f
@@ -692,7 +690,7 @@ instance [hp : Fact (1 ≤ p)] : NormedStarGroup (lp E p) where
     · simp only [lp.norm_eq_ciSup, lp.star_apply, norm_star]
     · simp only [lp.norm_eq_tsum_rpow h, lp.star_apply, norm_star]
 
-variable {𝕜 : Type*} [Star 𝕜] [NormedRing 𝕜]
+variable [Star 𝕜] [NormedRing 𝕜]
 variable [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)] [∀ i, StarModule 𝕜 (E i)]
 
 instance : StarModule 𝕜 (lp E p) where
@@ -840,7 +838,7 @@ end NormedCommRing
 
 section Algebra
 
-variable {I : Type*} {𝕜 : Type*} {B : I → Type*}
+variable {I : Type*} {B : I → Type*}
 variable [NormedField 𝕜] [∀ i, NormedRing (B i)] [∀ i, NormedAlgebra 𝕜 (B i)]
 
 /-- A variant of `Pi.algebra` that lean can't find otherwise. -/
@@ -874,7 +872,7 @@ end Algebra
 
 section Single
 
-variable {𝕜 : Type*} [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
+variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
 variable [DecidableEq α]
 
 /-- The element of `lp E p` which is `a : E i` at the index `i`, and zero elsewhere. -/

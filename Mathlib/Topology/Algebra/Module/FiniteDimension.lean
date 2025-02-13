@@ -194,10 +194,14 @@ private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Fintype
     (ξ : Basis ι 𝕜 E) : Continuous ξ.equivFun := by
   letI : UniformSpace E := TopologicalAddGroup.toUniformSpace E
   letI : UniformAddGroup E := comm_topologicalAddGroup_is_uniform
-  induction' hn : Fintype.card ι with n IH generalizing ι E
-  · rw [Fintype.card_eq_zero_iff] at hn
+  suffices ∀ n, Fintype.card ι = n → Continuous ξ.equivFun by exact this _ rfl
+  intro n hn
+  induction n generalizing ι E with
+  | zero =>
+    rw [Fintype.card_eq_zero_iff] at hn
     exact continuous_of_const fun x y => funext hn.elim
-  · haveI : FiniteDimensional 𝕜 E := .of_fintype_basis ξ
+  | succ n IH =>
+    haveI : FiniteDimensional 𝕜 E := .of_fintype_basis ξ
     -- first step: thanks to the induction hypothesis, any n-dimensional subspace is equivalent
     -- to a standard space of dimension n, hence it is complete and therefore closed.
     have H₁ : ∀ s : Submodule 𝕜 E, finrank 𝕜 s = n → IsClosed (s : Set E) := by

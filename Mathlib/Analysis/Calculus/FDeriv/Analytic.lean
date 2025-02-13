@@ -732,6 +732,11 @@ theorem derivSeries_apply_diag (n : ℕ) (x : E) :
   · rw [← card, card_subtype, ← Finset.powerset_univ, ← Finset.powersetCard_eq_filter,
       Finset.card_powersetCard, ← card, card_fin, eq_comm, add_comm, Nat.choose_succ_self_right]
 
+@[simp]
+lemma derivSeries_coeff_one (p : FormalMultilinearSeries 𝕜 𝕜 F) (n : ℕ) :
+    p.derivSeries.coeff n 1 = (n + 1) • p.coeff (n + 1) :=
+  p.derivSeries_apply_diag _ _
+
 end FormalMultilinearSeries
 
 namespace HasFPowerSeriesOnBall
