@@ -8,8 +8,6 @@ import Mathlib.Data.SetLike.Basic
 import Mathlib.Order.ModularLattice
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.WellFounded
-import Mathlib.Order.KrullDimension
-import Mathlib.Algebra.Order.SuccPred.WithBot
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
@@ -611,7 +609,6 @@ end CompleteAtomicBooleanAlgebra
 end Atomistic
 
 /-- An order is simple iff it has exactly two elements, `⊥` and `⊤`. -/
-@[mk_iff]
 class IsSimpleOrder (α : Type*) [LE α] [BoundedOrder α] extends Nontrivial α : Prop where
   /-- Every element is either `⊥` or `⊤` -/
   eq_bot_or_eq_top : ∀ a : α, a = ⊥ ∨ a = ⊤
@@ -632,12 +629,6 @@ theorem IsSimpleOrder.bot_ne_top [LE α] [BoundedOrder α] [IsSimpleOrder α] : 
   obtain ⟨a, b, h⟩ := exists_pair_ne α
   rcases eq_bot_or_eq_top a with (rfl | rfl) <;> rcases eq_bot_or_eq_top b with (rfl | rfl) <;>
     first |simpa|simpa using h.symm
-
-lemma Order.krullDim_eq_one_iff_isSimpleOrder {α : Type*} [PartialOrder α] [BoundedOrder α] :
-    krullDim α = 1 ↔ IsSimpleOrder α := by
-  rw [le_antisymm_iff, krullDim_le_one_iff, WithBot.one_le_iff_pos,
-    Order.krullDim_pos_iff_of_orderBot, isSimpleOrder_iff]
-  simp only [isMin_iff_eq_bot, isMax_iff_eq_top, and_comm]
 
 section IsSimpleOrder
 

@@ -417,6 +417,14 @@ def cons (p : RelSeries r) (newHead : α) (rel : r newHead p.head) : RelSeries r
   delta cons
   rw [last_append]
 
+lemma cons_cast_succ (s : RelSeries r) (a : α) (h : r a s.head) (i : Fin (s.length + 1)) :
+    (s.cons a h) (.cast (by simp) (.succ i)) = s i := by
+  dsimp [cons]
+  convert append_apply_right (singleton r a) s h i
+  ext
+  show i.1 + 1 = _ % _
+  simpa using(Nat.mod_eq_of_lt (by simp)).symm
+
 /--
 Given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `aₙ -r→ a` holds, there is
 a series of length `n+1`: `a₀ -r→ a₁ -r→ ... -r→ aₙ -r→ a`.
@@ -431,6 +439,10 @@ def snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) : RelSeries r
 
 @[simp] lemma last_snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) :
     (p.snoc newLast rel).last = newLast := last_append _ _ _
+
+lemma snoc_cast_castSucc (s : RelSeries r) (a : α) (h : r s.last a) (i : Fin (s.length + 1)) :
+    (s.snoc a h) (.cast (by simp) (.castSucc i)) = s i :=
+  append_apply_left s (singleton r a) h i
 
 -- This lemma is useful because `last_snoc` is about `Fin.last (p.snoc _ _).length`, but we often
 -- see `Fin.last (p.length + 1)` in practice. They are equal by definition, but sometimes simplifier
