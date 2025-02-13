@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Union
+import Mathlib.Data.Fintype.Group
 import Mathlib.Data.List.NodupEquivFin
 import Mathlib.Data.Set.Image
 import Mathlib.Order.WellFounded
