@@ -519,7 +519,7 @@ lemma nonempty_embedding_iff : Nonempty (Fin n ↪ Fin m) ↔ n ≤ m := by
   induction n generalizing m with
   | zero => exact m.zero_le
   | succ n ihn =>
-    cases' h with e
+    obtain ⟨e⟩ := h
     rcases exists_eq_succ_of_ne_zero (pos_iff_nonempty.2 (Nonempty.map e inferInstance)).ne'
       with ⟨m, rfl⟩
     refine Nat.succ_le_succ <| ihn ⟨?_⟩
@@ -756,9 +756,9 @@ theorem castSucc_pred_eq_pred_castSucc {a : Fin (n + 1)} (ha : a ≠ 0)
 
 theorem castSucc_pred_add_one_eq {a : Fin (n + 1)} (ha : a ≠ 0) :
     (a.pred ha).castSucc + 1 = a := by
-  cases' a using cases with a
-  · exact (ha rfl).elim
-  · rw [pred_succ, coeSucc_eq_succ]
+  induction a using cases with
+  | zero => exact (ha rfl).elim
+  | succ a => rw [pred_succ, coeSucc_eq_succ]
 
 theorem le_pred_castSucc_iff {a b : Fin (n + 1)} (ha : castSucc a ≠ 0) :
     b ≤ (castSucc a).pred ha ↔ b < a := by
@@ -860,9 +860,9 @@ theorem succ_castPred_eq_castPred_succ {a : Fin (n + 1)} (ha : a ≠ last n)
 
 theorem succ_castPred_eq_add_one {a : Fin (n + 1)} (ha : a ≠ last n) :
     (a.castPred ha).succ = a + 1 := by
-  cases' a using lastCases with a
-  · exact (ha rfl).elim
-  · rw [castPred_castSucc, coeSucc_eq_succ]
+  induction a using lastCases with
+  | last => exact (ha rfl).elim
+  | cast a => rw [castPred_castSucc, coeSucc_eq_succ]
 
 theorem castpred_succ_le_iff {a b : Fin (n + 1)} (ha : succ a ≠ last (n + 1)) :
     (succ a).castPred ha ≤ b ↔ a < b := by
@@ -1035,7 +1035,7 @@ lemma succAbove_last_apply (i : Fin n) : succAbove (last n) i = castSucc i := by
 results in a value that is less than `p`. -/
 lemma succAbove_lt_iff_castSucc_lt (p : Fin (n + 1)) (i : Fin n) :
     p.succAbove i < p ↔ castSucc i < p := by
-  cases' castSucc_lt_or_lt_succ p i with H H
+  rcases castSucc_lt_or_lt_succ p i with H | H
   · rwa [iff_true_right H, succAbove_of_castSucc_lt _ _ H]
   · rw [castSucc_lt_iff_succ_le, iff_false_right (Fin.not_le.2 H), succAbove_of_lt_succ _ _ H]
     exact Fin.not_lt.2 <| Fin.le_of_lt H
@@ -1048,7 +1048,7 @@ lemma succAbove_lt_iff_succ_le (p : Fin (n + 1)) (i : Fin n) :
 results in a value that is greater than `p`. -/
 lemma lt_succAbove_iff_le_castSucc (p : Fin (n + 1)) (i : Fin n) :
     p < p.succAbove i ↔ p ≤ castSucc i := by
-  cases' castSucc_lt_or_lt_succ p i with H H
+  rcases castSucc_lt_or_lt_succ p i with H | H
   · rw [iff_false_right (Fin.not_le.2 H), succAbove_of_castSucc_lt _ _ H]
     exact Fin.not_lt.2 <| Fin.le_of_lt H
   · rwa [succAbove_of_lt_succ _ _ H, iff_true_left H, le_castSucc_iff]
