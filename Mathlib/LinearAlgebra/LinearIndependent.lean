@@ -920,6 +920,15 @@ lemma LinearIndependent.pair_iff {x y : M} :
   fin_cases i
   exacts [(h _ _ hg).1, (h _ _ hg).2]
 
+lemma LinearIndependent.pair_symm_iff {x y : M} :
+    LinearIndependent R ![x, y] ↔ LinearIndependent R ![y, x] := by
+  suffices ∀ x y : M, LinearIndependent R ![x, y] → LinearIndependent R ![y, x] by tauto
+  simp only [LinearIndependent.pair_iff]
+  intro x y h s t
+  specialize h t s
+  rw [add_comm]
+  tauto
+
 /-- If the kernel of a linear map is disjoint from the span of a family of vectors,
 then the family is linearly independent iff it is linearly independent after composing with
 the linear map. -/
