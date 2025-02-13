@@ -109,8 +109,7 @@ lemma condVar_ae_eq_condExp_sq_sub_sq_condExp (hm : m ≤ m₀) [IsFiniteMeasure
       have aux₀ : Integrable (X ^ 2) μ := hX.integrable_sq
       have aux₁ : Integrable (2 * X * μ[X | m]) μ := by
         rw [mul_assoc]
-        refine (memℒp_one_iff_integrable.1 <| hX.condExp.mul hX ?_).const_mul _
-        simp [ENNReal.inv_two_add_inv_two]
+        exact (memℒp_one_iff_integrable.1 <| hX.condExp.mul hX).const_mul _
       have aux₂ : Integrable (μ[X | m] ^ 2) μ := hX.condExp.integrable_sq
       filter_upwards [condExp_add (m := m) (aux₀.sub aux₁) aux₂, condExp_sub (m := m) aux₀ aux₁,
         condExp_mul_of_stronglyMeasurable_right stronglyMeasurable_condExp aux₁
