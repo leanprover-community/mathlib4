@@ -100,8 +100,9 @@ theorem eqvGen_proj_mul_right {a b c : A} (n : ι)
     EqvGen (RingQuot.Rel rel) ((proj 𝒜 n) (a * c)) ((proj 𝒜 n) (b * c)) := by
   simp only [proj_apply] at h
   simp only [proj_apply, DirectSum.decompose_mul, DirectSum.coe_mul_apply]
-  rw [coe_mul_sum_support_subset 𝒜 ((DirectSum.decompose 𝒜) a) _ Finset.subset_union_left (Set.Subset.refl _),
-    coe_mul_sum_support_subset 𝒜 ((DirectSum.decompose 𝒜) b) _ Finset.subset_union_right (Set.Subset.refl _)]
+  rw [coe_mul_sum_support_subset 𝒜 ((DirectSum.decompose 𝒜) a) _ Finset.subset_union_left
+  (Set.Subset.refl _), coe_mul_sum_support_subset 𝒜 ((DirectSum.decompose 𝒜) b) _
+  Finset.subset_union_right (Set.Subset.refl _)]
   apply Finset.relation_sum_induction _ _ (EqvGen (RingQuot.Rel rel))
   · intro _ _ _ _ hab hcd
     rw [RingQuot.eqvGen_rel_eq] at hab hcd ⊢
@@ -116,8 +117,9 @@ theorem eqvGen_proj_mul_left {a b c : A} (n : ι)
     EqvGen (RingQuot.Rel rel) ((proj 𝒜 n) (c * a)) ((proj 𝒜 n) (c * b)) := by
   simp only [proj_apply] at h
   simp only [proj_apply, DirectSum.decompose_mul, DirectSum.coe_mul_apply]
-  rw [coe_mul_sum_support_subset 𝒜 _ ((DirectSum.decompose 𝒜) a) (Set.Subset.refl _) Finset.subset_union_left,
-    coe_mul_sum_support_subset 𝒜 _ ((DirectSum.decompose 𝒜) b) (Set.Subset.refl _) Finset.subset_union_right]
+  rw [coe_mul_sum_support_subset 𝒜 _ ((DirectSum.decompose 𝒜) a) (Set.Subset.refl _)
+  Finset.subset_union_left, coe_mul_sum_support_subset 𝒜 _ ((DirectSum.decompose 𝒜) b)
+  (Set.Subset.refl _) Finset.subset_union_right]
   apply Finset.relation_sum_induction _ _ (EqvGen (RingQuot.Rel rel))
   · intro _ _ _ _ hab hcd
     rw [RingQuot.eqvGen_rel_eq] at hab hcd ⊢
@@ -127,7 +129,6 @@ theorem eqvGen_proj_mul_left {a b c : A} (n : ι)
   · exact fun x _ => eqvGen_ringQuot_mul_right rel (h x.2)
 
 variable [inst : IsHomogeneousRelation 𝒜 rel]
-
 
 instance : IsHomogeneousRelation 𝒜 (RingQuot.Rel rel) := ⟨by
   intro x y h ; induction h
@@ -170,7 +171,7 @@ end RingCon
 
 noncomputable section GradedRing
 
-variable (𝒜 : ι → AddSubmonoid A) [inst : GradedRing 𝒜] (rel : A → A → Prop) [IsHomogeneousRelation 𝒜 rel]
+variable (𝒜 : ι → AddSubmonoid A) [GradedRing 𝒜] (rel : A → A → Prop) [IsHomogeneousRelation 𝒜 rel]
 
 
 #check DirectSum.decomposeRingEquiv
@@ -184,7 +185,7 @@ local instance : (i : ι) → (x : ↥(𝒜 i)) → Decidable (x ≠ 0) :=
 /-- The `decompose'` argument of `RingQuotGradedRing`. -/
 def decompose' := fun a : RingQuot rel =>
   let b := Classical.choose <| (RingQuot.mkRingHom_surjective rel) a
-  let x := inst.decompose' b
+  let x := ‹GradedRing 𝒜›.decompose' b
   have : (i : x.support) → ((AddSubmonoid.map (RingQuot.mkRingHom rel) ∘ 𝒜) i) := by
     intro i
     simp only [Function.comp_apply, AddSubmonoid.mem_map, x]
@@ -197,16 +198,16 @@ def decompose' := fun a : RingQuot rel =>
 
 
 lemma support_subset_decompose' (a : RingQuot rel) : DFinsupp.support (decompose' 𝒜 rel a) ⊆
-    DFinsupp.support (inst.decompose' (Classical.choose $ (RingQuot.mkRingHom_surjective rel) a)) := by
+    DFinsupp.support (‹GradedRing 𝒜›.decompose' (Classical.choose $ (RingQuot.mkRingHom_surjective rel) a)) := by
   unfold decompose' DirectSum.mk
   simp only [Function.comp_apply, DirectSum.Decomposition.decompose'_eq, Finset.coe_sort_coe,
   eq_mpr_eq_cast, cast_eq, AddMonoidHom.coe_mk, ZeroHom.coe_mk, DFinsupp.support_mk_subset]
 
 
 lemma decompose'_map_commute (a : RingQuot rel) :
-    ∀ x ∈ DFinsupp.support (inst.decompose' (Classical.choose $ (RingQuot.mkRingHom_surjective rel) a)),
+    ∀ x ∈ DFinsupp.support (‹GradedRing 𝒜›.decompose' (Classical.choose $ (RingQuot.mkRingHom_surjective rel) a)),
     ↑((decompose' 𝒜 rel a) x) =
-    (RingQuot.mkRingHom rel) ((inst.decompose' (Classical.choose $ (RingQuot.mkRingHom_surjective rel) a)) x) := by
+    (RingQuot.mkRingHom rel) ((‹GradedRing 𝒜›.decompose' (Classical.choose $ (RingQuot.mkRingHom_surjective rel) a)) x) := by
   intro x hx
   unfold decompose' DirectSum.mk
   simp only [Function.comp_apply, DirectSum.Decomposition.decompose'_eq, Finset.coe_sort_coe,
@@ -214,7 +215,7 @@ lemma decompose'_map_commute (a : RingQuot rel) :
   DFinsupp.mem_support_toFun, ne_eq, Classical.dite_not]
   sorry
 
-instance RingQuotGradedRing : GradedRing ((AddSubmonoid.map (RingQuot.mkRingHom rel)).comp 𝒜) where
+‹GradedRing 𝒜›ance RingQuotGradedRing : GradedRing ((AddSubmonoid.map (RingQuot.mkRingHom rel)).comp 𝒜) where
   one_mem := by
     use 1
     constructor
@@ -235,9 +236,9 @@ instance RingQuotGradedRing : GradedRing ((AddSubmonoid.map (RingQuot.mkRingHom 
     have hb : (RingQuot.mkRingHom rel) b = a :=
       Classical.choose_spec $ (RingQuot.mkRingHom_surjective rel) a
     have test := DirectSum.sum_support_of (decompose' 𝒜 rel a)
-    let t := inst.decompose' b
+    let t := ‹GradedRing 𝒜›.decompose' b
     have test3 := DirectSum.sum_support_of t
-    have eq := inst.left_inv b
+    have eq := ‹GradedRing 𝒜›.left_inv b
     rw [← test]
     apply_fun (DirectSum.coeAddMonoidHom 𝒜) at test3
     apply_fun (RingQuot.mkRingHom rel) at test3
