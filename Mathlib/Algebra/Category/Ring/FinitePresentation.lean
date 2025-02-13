@@ -46,12 +46,9 @@ lemma exists_comp_map_eq_of_isColimit (hf : f.hom.EssFiniteType)
   obtain ⟨hc'⟩ := PreservesColimit.preserves (F := forget _) hc
   choose k f₁ f₂ h using fun x : S ↦
     (Types.FilteredColimit.isColimit_eq_iff _ hc').mp congr(($hab).hom x)
-  let D : MulticospanIndex J :=
-  { L := Unit ⊕ Unit
-    R := hf.finset
-    fstTo _ := .inl .unit
-    sndTo _ := .inr .unit
-    left := Sum.elim (fun _ ↦ i) (fun _ ↦ j)
+  let J' : MulticospanShape := ⟨Unit ⊕ Unit, hf.finset, fun _ ↦ .inl .unit, fun _ ↦ .inr .unit⟩
+  let D : MulticospanIndex J' J :=
+  { left := Sum.elim (fun _ ↦ i) (fun _ ↦ j)
     right x := k x.1
     fst x := f₁ x
     snd x := f₂ x }
@@ -62,7 +59,7 @@ lemma exists_comp_map_eq_of_isColimit (hf : f.hom.EssFiniteType)
   · rw [← CommRingCat.hom_comp, ← CommRingCat.hom_comp, reassoc_of% ha, reassoc_of% hb]
     simp [← α.naturality]
   · intro x hx
-    rw [← c'.w (.fst ⟨x, hx⟩), ← c'.w (.snd ⟨x, hx⟩)]
+    rw [← c'.w (.fst (by exact ⟨x, hx⟩)), ← c'.w (.snd (by exact ⟨x, hx⟩))]
     have (x) : F.map (f₁ x) (a x) = F.map (f₂ x) (b x) := h x
     simp [D, this]
 
