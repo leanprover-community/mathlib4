@@ -6,6 +6,7 @@ Authors: Thomas Browning
 import Mathlib.Data.Fintype.Perm
 import Mathlib.Data.Matrix.Mul
 import Mathlib.GroupTheory.Perm.Sign
+import Mathlib.Algebra.Group.Embedding
 
 /-!
 # Nonsingular inverses over semirings

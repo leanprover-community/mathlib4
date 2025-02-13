@@ -114,6 +114,7 @@ lemma mem_shadow_iff_exists_mem_card_add_one : t ∈ ∂ 𝒜 ↔ ∃ s ∈ 𝒜
   rw [card_sdiff hst, tsub_eq_iff_eq_add_of_le, add_comm]
   exact card_mono hst
 
+set_option maxHeartbeats 400000 in
 lemma mem_shadow_iterate_iff_exists_card :
     t ∈ ∂^[k] 𝒜 ↔ ∃ u : Finset α, #u = k ∧ Disjoint t u ∧ t ∪ u ∈ 𝒜 := by
   induction k generalizing t with

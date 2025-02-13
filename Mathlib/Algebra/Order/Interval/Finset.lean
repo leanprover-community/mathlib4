@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Interval.Set.Monoid
 import Mathlib.Order.Interval.Finset.Defs
+import Mathlib.Algebra.Group.Embedding
 
 /-!
 # Algebraic properties of finset intervals

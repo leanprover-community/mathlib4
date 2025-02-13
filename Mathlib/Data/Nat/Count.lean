@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Kim Morrison, Eric Rodr
 -/
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Finset.Image.Range
 
 /-!
 # Counting on ℕ

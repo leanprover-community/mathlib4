@@ -3,10 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Image
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.Finite.Defs
 import Mathlib.Algebra.Group.TypeTags.Basic
+import Mathlib.Data.Finset.Image.Basic
+import Mathlib.Data.Finset.Subtype
+import Mathlib.Algebra.Group.Equiv.Defs
 
 /-!
 # Finite types
@@ -39,7 +41,11 @@ Types which have a surjection from/an injection to a `Fintype` are themselves fi
 See `Fintype.ofInjective` and `Fintype.ofSurjective`.
 -/
 
-assert_not_exists MonoidWithZero MulAction
+assert_not_exists MonoidWithZero
+assert_not_exists MulAction
+assert_not_exists Finset.disjiUnion
+assert_not_exists Multiset.bind
+assert_not_exists List.prod
 
 open Function
 
