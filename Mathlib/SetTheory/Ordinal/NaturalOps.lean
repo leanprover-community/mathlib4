@@ -59,6 +59,9 @@ instance NatOrdinal.instNoMaxOrder : NoMaxOrder NatOrdinal := Ordinal.instNoMaxO
 instance NatOrdinal.instZeroLEOneClass : ZeroLEOneClass NatOrdinal := Ordinal.instZeroLEOneClass
 instance NatOrdinal.instNeZeroOne : NeZero (1 : NatOrdinal) := Ordinal.instNeZeroOne
 
+instance NatOrdinal.uncountable : Uncountable NatOrdinal :=
+  Ordinal.uncountable
+
 /-- The identity function between `Ordinal` and `NatOrdinal`. -/
 @[match_pattern]
 def Ordinal.toNatOrdinal : Ordinal ≃o NatOrdinal :=
