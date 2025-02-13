@@ -210,7 +210,7 @@ theorem Antitone.map_min (hf : Antitone f) : f (min a b) = max (f a) (f b) :=
   hf.dual.map_max
 
 theorem min_choice (a b : α) : min a b = a ∨ min a b = b :=
-  (le_total a b).elim (fun h ↦ .inl (inf_of_le_left h)) (fun h ↦ .inr (inf_of_le_right h))
+  (le_total a b).elim (fun h ↦ .inl (inf_of_le_left h)) fun h ↦ .inr (inf_of_le_right h)
 
 theorem max_choice (a b : α) : max a b = a ∨ max a b = b :=
   @min_choice αᵒᵈ _ a b
