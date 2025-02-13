@@ -567,8 +567,7 @@ theorem eLpNorm_norm (f : α → F) : eLpNorm (fun x => ‖f x‖) p μ = eLpNor
 
 @[simp]
 theorem eLpNorm_enorm (f : α → ε) : eLpNorm (fun x => ‖f x‖ₑ) p μ = eLpNorm f p μ :=
-  eLpNorm_congr_enorm_ae <| Eventually.of_forall fun _ => rfl
-  -- TODO: add lemma enorm_enorm and use here, instead of `rfl`
+  eLpNorm_congr_enorm_ae <| Eventually.of_forall fun _ => enorm_enorm _
 
 theorem eLpNorm'_norm_rpow (f : α → F) (p q : ℝ) (hq_pos : 0 < q) :
     eLpNorm' (fun x => ‖f x‖ ^ q) p μ = eLpNorm' f (p * q) μ ^ q := by
