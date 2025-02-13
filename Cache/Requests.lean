@@ -139,11 +139,8 @@ def downloadFiles (hashMap : IO.ModuleHashMap) (forceDownload : Bool) (parallel 
       IO.Process.exit 1
   else IO.println "No files to download"
 
-/--
-Check if the project's `lean-toolchain` file matches mathlib's.
-Print and error and exit the process with error code 1 otherwise.
-Does nothing if the current project is mathlib.
--/
+/-- Check if the project's `lean-toolchain` file matches mathlib's.
+Print and error and exit the process with error code 1 otherwise. -/
 def checkForToolchainMismatch : IO.CacheM Unit := do
   let mathlibToolchainFile := (← read).mathlibDepPath / "lean-toolchain"
   let downstreamToolchain ← IO.FS.readFile "lean-toolchain"

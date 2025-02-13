@@ -78,7 +78,7 @@ def main (args : List String) : IO Unit := do
     println help
     Process.exit 0
   CacheM.run do
-  -- Hashing everything imported transitively by one of the root modules
+
   let mut roots : Std.HashMap Lean.Name FilePath ← parseArgs args
   if roots.isEmpty then do
     -- No arguments means to start from `Mathlib.lean`
@@ -87,6 +87,7 @@ def main (args : List String) : IO Unit := do
     let sp := (← read).srcSearchPath
     let sourceFile ← Lean.findLean sp mod
     roots := Std.HashMap.empty.insert mod sourceFile
+
   let hashMemo ← getHashMemo roots
 
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
