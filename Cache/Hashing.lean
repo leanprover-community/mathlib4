@@ -159,10 +159,15 @@ partial def getHash (mod : Name) (sourceFile : FilePath)
         cache   := stt.cache.insert   mod (some fileHash)
         depsMap := stt.depsMap.insert mod (fileImports.map (·.1)) })
 
+/-- Files to start hashing from. -/
+def roots : CacheM <| Array <| Name × FilePath := do
+  let mathlibDepPath := (← read).mathlibDepPath
+  return #[(`Mathlib, (mathlibDepPath / "Mathlib.lean"))]
+
 /-- Main API to retrieve the hashes of the Lean files -/
 def getHashMemo (extraRoots : Std.HashMap Name FilePath) : CacheM HashMemo :=
   -- TODO: `Std.HashMap.mapM` seems not to exist yet, so we go via `.toArray`.
-  return (← StateT.run ((extraRoots.insert `Mathlib "Mathlib.lean").toArray.mapM fun
+  return (← StateT.run ((extraRoots.insertMany (← roots)).toArray.mapM fun
     ⟨key, val⟩ => getHash key val) { rootHash := ← getRootHash }).2
 
 end Cache.Hashing
