@@ -471,14 +471,14 @@ theorem eLpNormEssSup_le_of_ae_nnnorm_bound {f : α → F} {C : ℝ≥0} (hfC : 
     eLpNormEssSup f μ ≤ C :=
   essSup_le_of_ae_le (C : ℝ≥0∞) <| hfC.mono fun _x hx => ENNReal.coe_le_coe.mpr hx
 
-theorem eLpNormEssSup_le_of_ae_bound {f : α → F} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) :
+theorem eLpNormEssSup_le_of_ae_bound {f : α → ε} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) :
     eLpNormEssSup f μ ≤ ENNReal.ofReal C := by
   apply eLpNormEssSup_le_of_ae_enorm_bound
   rw [Real.toNNReal_coe]
   exact hfC
 
 set_option linter.deprecated false in
--- @[deprecated eLpNormEssSup_le_of_ae_bound (since := "2025-02-04")]
+@[deprecated eLpNormEssSup_le_of_ae_bound (since := "2025-02-04")]
 theorem eLpNormEssSup_le_of_ae_bound' {f : α → F} {C : ℝ} (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) :
     eLpNormEssSup f μ ≤ ENNReal.ofReal C :=
   eLpNormEssSup_le_of_ae_nnnorm_bound <| hfC.mono fun _x hx => hx.trans C.le_coe_toNNReal
@@ -495,8 +495,12 @@ theorem eLpNormEssSup_lt_top_of_ae_nnnorm_bound {f : α → F} {C : ℝ≥0} (hf
   (eLpNormEssSup_le_of_ae_nnnorm_bound hfC).trans_lt ENNReal.coe_lt_top
 
 theorem eLpNormEssSup_lt_top_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) :
-    eLpNormEssSup f μ < ∞ :=
-  (eLpNormEssSup_le_of_ae_bound' hfC).trans_lt ENNReal.ofReal_lt_top
+    eLpNormEssSup f μ < ∞ := by
+  have : ∀ᵐ (x : α) ∂μ, ‖f x‖ₑ ≤ ENNReal.ofReal C := by
+    apply hfC.mono fun x hx ↦ ?_
+    rw [← ofReal_norm_eq_enorm]
+    exact ENNReal.ofReal_le_ofReal hx
+  exact (eLpNormEssSup_le_of_ae_bound this).trans_lt ENNReal.ofReal_lt_top
 
 theorem eLpNorm_le_of_ae_enorm_bound {f : α → ε} {C : ℝ≥0∞} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) :
     eLpNorm f p μ ≤ C • μ Set.univ ^ p.toReal⁻¹ := by
