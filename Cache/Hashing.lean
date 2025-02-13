@@ -16,7 +16,6 @@ open System hiding SearchPath
 The `HashMemo` contains all information `Cache` needs about the modules:
 * the name
 * its imports
-* the path to the `.lean` file
 * the file's hash (in `hashMap` and `cache`)
 
 additionally, it contains the `rootHash` which reflects changes to Mathlib's

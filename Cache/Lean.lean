@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster, Arthur Paulino
 -/
 
-import Lean.Data.Name
 import Lean.Util.Paths
 
 /-!
@@ -34,6 +33,7 @@ def Lean.Name.fromComponents : List Name → Name := go .anonymous where
   go : Name → List Name → Name
   | n, []        => n
   | n, s :: rest => go (s.updatePrefix n) rest
+
 namespace Lean.SearchPath
 
 open System in
