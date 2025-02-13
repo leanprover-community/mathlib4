@@ -49,7 +49,7 @@ private lemma lt (vlt : ∀ i, v i < up) : ∀ l ∈ ofFn v, l < up := by
 /-- `r` maps `(i : Fin (n + 1))` to `up ^ i`-/
 local notation3 "r" => fun (i : Fin (n + 1)) ↦ up ^ i.1
 
-/-- We construct an algebra map `T1` which maps `X_i` into `X_i + X_0 ^ r_i` when `i ≠ 0`,
+/-- We construct an algebra map `T1 f c` which maps `X_i` into `X_i + c • X_0 ^ r_i` when `i ≠ 0`
 and `X_0` to `X_0`. -/
 noncomputable abbrev T1 (c : k) :
     MvPolynomial (Fin (n + 1)) k →ₐ[k] MvPolynomial (Fin (n + 1)) k :=
