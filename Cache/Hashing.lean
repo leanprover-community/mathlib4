@@ -50,7 +50,7 @@ Filters the `hashMap` of a `HashMemo` so that it only contains key/value pairs s
 * Corresponds to a module that's imported (transitively or not) by
   some module in the list module names
 -/
-def HashMemo.filterByFilePaths (hashMemo : HashMemo) (modules : List Name) :
+def HashMemo.filterByRootModules (hashMemo : HashMemo) (modules : List Name) :
     IO ModuleHashMap := do
   let mut hashMap := ∅
   for mod in modules do

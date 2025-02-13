@@ -92,7 +92,7 @@ def main (args : List String) : IO Unit := do
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
   if leanTarArgs.contains (args.headD "") then validateLeanTar
   let get (args : List String) (force := false) (decompress := true) := do
-    let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByFilePaths roots.keys
+    let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByRootModules roots.keys
     getFiles hashMap force force goodCurl decompress
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
