@@ -3,10 +3,13 @@ Copyright (c) 2024 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Wanyi He, Jiedong Jiang
 -/
-import Mathlib.Algebra.DirectSum.Ring
+import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.DirectSum.Algebra
+import Mathlib.Algebra.Module.Submodule.Map
+import Mathlib.GroupTheory.QuotientGroup.Defs
+import Mathlib.LinearAlgebra.Quotient.Defs
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.NoncommRing
-import Mathlib.GroupTheory.QuotientGroup.Defs
 import Mathlib.RingTheory.FilteredAlgebra.Basic
 /-!
 
@@ -415,6 +418,88 @@ instance [hasGMul F F_lt] [DecidableEq ι] : Ring (⨁ i, GradedPiece F F_lt i) 
   DirectSum.ring (GradedPiece F F_lt)
 
 end GradedMul
+
+section GradedAlgebra
+
+open GradedPiece
+
+variable {R : Type*} [CommRing R] {A : Type*} [Ring A] [Algebra R A]
+
+variable {ι : Type*} [OrderedAddCommMonoid ι]
+
+variable (F : ι → Submodule R A) (F_lt : outParam <| ι → Submodule R A)
+
+instance (i : ι) : Module R (GradedPiece F F_lt i) :=
+  inferInstanceAs (Module R ((F i)⧸(Submodule.comap (F i).subtype (F_lt i))))
+
+/--The `algebraMap` for associated graded algebra. -/
+def GradedPiece.algebraMap [IsRingFiltration F F_lt] : R →+ GradedPiece F F_lt 0 where
+  toFun r := (mk F F_lt (r • (⟨1, IsRingFiltration.one_mem⟩ : F 0)))
+  map_zero' := by
+    simp
+  map_add' x y := by
+    simp [add_smul]
+    rfl
+
+lemma GradedPiece.algebraMap.map_mul [hasGMul F F_lt] (r s : R) : GradedMonoid.mk 0
+    ((GradedPiece.algebraMap F F_lt) (r * s)) = GradedMonoid.mk (0 + 0) (GradedMonoid.GMul.mul
+    ((GradedPiece.algebraMap F F_lt) r) ((GradedPiece.algebraMap F F_lt) s)) := by
+  congr
+  · rw [zero_add]
+  · show HEq (mk F F_lt ((r * s) • 1)) _
+    rw [mul_comm r s]
+    have : ((s * r) • (1 : F 0)).1 = (r • (1 : F 0)).1 * (s • (1 : F 0)).1 := by
+      simp only [SetLike.val_smul, Algebra.mul_smul_comm, Algebra.smul_mul_assoc]
+      show (s * r) • (1 : A) = s • r • ((1 : A) * (1 : A))
+      simpa using mul_smul s r (1 : A)
+    apply HEq_eq_mk_eq F F_lt (AddZeroClass.zero_add 0).symm this ((s * r) • (1 : F 0)).2
+      (IsRingFiltration.mul_mem (r • (1 : F 0)).2 (s • (1 : F 0)).2) rfl rfl
+
+lemma GradedPiece.algebraMap.commutes [hasGMul F F_lt] (r : R) (i : ι) (a : GradedPiece F F_lt i) :
+    HEq ((mk F F_lt (r • (⟨1, IsRingFiltration.one_mem⟩ : F 0))) * a)
+    (a * (mk F F_lt (r • (⟨1, IsRingFiltration.one_mem⟩ : F 0)))) := by
+  have : mk F F_lt a.out = a := by simp only [mk_eq, Quotient.out_eq]
+  have eq1 : (mk F F_lt (r • (⟨1, IsRingFiltration.one_mem⟩ : F 0))) * a =
+    (mk F F_lt ((r • (⟨1, IsRingFiltration.one_mem⟩ : F 0)) * a.out)) := by
+    nth_rw 1 [← this]
+    rfl
+  have eq2 : a * (mk F F_lt (r • (⟨1, IsRingFiltration.one_mem⟩ : F 0))) =
+    (mk F F_lt (a.out * (r • (⟨1, IsRingFiltration.one_mem⟩ : F 0)))) := by
+    nth_rw 1 [← this]
+    rfl
+  refine HEq_eq_mk_coe_eq F F_lt _ _ (add_comm 0 i) ?e eq1 eq2
+  show (r • (1 : A)) * a.out.val = a.out.val * (r • (1 : A))
+  simp
+
+lemma GradedPiece.algebraMap.smul_def [hasGMul F F_lt] (r : R) (i : ι) (a : GradedPiece F F_lt i) :
+    HEq (r • a) ((mk F F_lt (r • (⟨1, IsRingFiltration.one_mem⟩ : F 0))) * a) := by
+  have : mk F F_lt a.out = a := by simp only [mk_eq, Quotient.out_eq]
+  have eq1 : r • a = (mk F F_lt (r • (⟨a.out.1, a.out.2⟩ : F i))) := by
+    nth_rw 1 [← this]
+    rfl
+  have eq2 : (mk F F_lt (r • (⟨1, IsRingFiltration.one_mem⟩ : F 0))) * a =
+    (mk F F_lt ((r • (⟨1, IsRingFiltration.one_mem⟩ : F 0)) * a.out)) := by
+    nth_rw 1 [← this]
+    rfl
+  refine HEq_eq_mk_coe_eq F F_lt _ _ (zero_add i).symm ?e eq1 eq2
+  show r • a.out.val = (r • (1 : A)) * a.out.val
+  simp
+
+instance [hasGMul F F_lt] : DirectSum.GAlgebra R (GradedPiece F F_lt) where
+  toFun := GradedPiece.algebraMap F F_lt
+  map_one := by
+    simp only [GradedPiece.algebraMap, GradedPiece.mk_eq, AddMonoidHom.coe_mk,
+      ZeroHom.coe_mk, one_smul]
+    rfl
+  map_mul r s := GradedPiece.algebraMap.map_mul F F_lt r s
+  commutes r := fun ⟨i, a⟩ ↦ Sigma.ext (by simp [add_comm])
+    (GradedPiece.algebraMap.commutes F F_lt r i a)
+  smul_def r := fun ⟨i, a⟩ ↦ Sigma.ext (by
+    --missing simp lemma
+    have : (GradedMonoid.mk 0 ((GradedPiece.algebraMap F F_lt) r)).fst = 0 := rfl
+    simp [this]) (GradedPiece.algebraMap.smul_def F F_lt r i a)
+
+end GradedAlgebra
 
 end HasGMul
 
