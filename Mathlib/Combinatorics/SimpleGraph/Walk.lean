@@ -815,6 +815,17 @@ lemma not_nil_iff {p : G.Walk v w} :
     ¬ p.Nil ↔ ∃ (u : V) (h : G.Adj v u) (q : G.Walk u w), p = cons h q := by
   cases p <;> simp [*]
 
+@[simp]
+lemma nil_append_iff {p : G.Walk u v} {q : G.Walk v w} : (p.append q).Nil ↔ p.Nil ∧ q.Nil := by
+  cases p <;> cases q <;> simp
+
+lemma Nil.append {p : G.Walk u v} {q : G.Walk v w} (hp : p.Nil) (hq : q.Nil) : (p.append q).Nil :=
+  by simp [hp, hq]
+
+@[simp]
+lemma nil_reverse {p : G.Walk v w} : p.reverse.Nil ↔ p.Nil := by
+  cases p <;> simp
+
 /-- A walk with its endpoints defeq is `Nil` if and only if it is equal to `nil`. -/
 lemma nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil
   | .nil | .cons _ _ => by simp
@@ -837,6 +848,9 @@ lemma notNilRec_cons {motive : {u w : V} → (p : G.Walk u w) → ¬ p.Nil → S
     (cons : {u v w : V} → (h : G.Adj u v) → (q : G.Walk v w) →
     motive (q.cons h) Walk.not_nil_cons) (h' : G.Adj u v) (q' : G.Walk v w) :
     @Walk.notNilRec _ _ _ _ _ cons _ _ = cons h' q' := by rfl
+
+theorem end_mem_tail_support {u v : V} {p : G.Walk u v} (h : ¬ p.Nil) : v ∈ p.support.tail :=
+  p.notNilRec (by simp) h
 
 /-- The walk obtained by removing the first `n` darts of a walk. -/
 def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
@@ -1023,6 +1037,29 @@ def takeUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
         · exact (hx rfl).elim
         · assumption)
 
+lemma takeUntil_cons {v' : V} {p : G.Walk v' v} (hwp : w ∈ p.support) (h : u ≠ w)
+    (hadj : G.Adj u v') :
+    (p.cons hadj).takeUntil w (List.mem_of_mem_tail hwp) = (p.takeUntil w hwp).cons hadj := by
+  simp [Walk.takeUntil, h]
+
+@[simp]
+lemma takeUntil_first (p : G.Walk u v) :
+    p.takeUntil u p.start_mem_support = .nil := by cases p <;> simp [Walk.takeUntil]
+
+@[simp]
+lemma nil_takeUntil (p : G.Walk u v) (hwp : w ∈ p.support) :
+    (p.takeUntil w hwp).Nil ↔ u = w := by
+  refine ⟨?_, fun h => by subst h; simp⟩
+  intro hnil
+  cases p with
+  | nil => simp only [takeUntil, eq_mpr_eq_cast] at hnil; exact hnil.eq
+  | cons h q =>
+    simp only [support_cons, List.mem_cons, false_or] at hwp
+    cases' hwp with hl hr
+    · exact hl.symm
+    · by_contra! hc
+      simp [takeUntil_cons hr hc] at hnil
+
 /-- Given a vertex in the support of a path, give the path from (and including) that vertex to
 the end. In other words, drop vertices from the front of a path until (and not including)
 that vertex. -/
@@ -1146,6 +1183,57 @@ theorem length_dropUntil_le {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
   have := congr_arg Walk.length (p.take_spec h)
   rw [length_append, add_comm] at this
   exact Nat.le.intro this
+
+lemma getVert_takeUntil {u v : V} {n : ℕ} {p : G.Walk u v} (hw : w ∈ p.support)
+    (hn : n ≤ (p.takeUntil w hw).length) : (p.takeUntil w hw).getVert n = p.getVert n := by
+  cases p with
+  | nil => simp only [support_nil, List.mem_singleton] at hw; aesop
+  | cons h q =>
+    by_cases huw : w = u
+    · subst huw
+      simp_all
+    simp only [support_cons, List.mem_cons, huw, false_or] at hw
+    by_cases hn0 : n = 0
+    · aesop
+    simp only [takeUntil_cons hw ((Ne.eq_def _ _).mpr huw).symm, length_cons,
+      getVert_cons _ _ hn0] at hn ⊢
+    apply q.getVert_takeUntil hw
+    omega
+
+lemma snd_takeUntil (hsu : w ≠ u) (p : G.Walk u v) (h : w ∈ p.support) :
+    (p.takeUntil w h).snd = p.snd := by
+  apply p.getVert_takeUntil h
+  by_contra! hc
+  simp only [Nat.lt_one_iff, ← nil_iff_length_eq, nil_takeUntil] at hc
+  exact hsu hc.symm
+
+lemma length_takeUntil_lt {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (huw : u ≠ w) :
+    (p.takeUntil u h).length < p.length := by
+  rw [(p.length_takeUntil_le h).lt_iff_ne]
+  exact fun hl ↦ huw (by simpa using (hl ▸ getVert_takeUntil h (by rfl) :
+    (p.takeUntil u h).getVert (p.takeUntil u h).length = p.getVert p.length))
+
+lemma takeUntil_takeUntil (p : G.Walk u v) (w x : V) (hw : w ∈ p.support)
+    (hx : x ∈ (p.takeUntil w hw).support) :
+    (p.takeUntil w hw).takeUntil x hx = p.takeUntil x (p.support_takeUntil_subset hw hx) := by
+  induction p, w, hw using takeUntil.induct with
+  | case1 => aesop
+  | case2 _ _ q _ hadj hu' _ =>
+    simp only [takeUntil_first, support_nil, List.mem_singleton] at hx
+    subst hx
+    simp
+  | case3 a w' v' hadj q u' hu' hau' _ ih =>
+    rw [← Ne.eq_def] at hau'
+    simp only [support_cons, List.mem_cons, hau'.symm, false_or] at hu'
+    simp only [takeUntil_cons hu' hau' hadj, support_cons, List.mem_cons] at hx
+    by_cases hx' : x = a
+    · aesop
+    · simp [hx'] at hx
+      push_neg at hx'
+      conv_lhs =>
+        enter [1]
+        rw [takeUntil_cons hu' hau' hadj]
+      rw [takeUntil_cons hx hx'.symm hadj, ih _, takeUntil_cons _ hx'.symm]
 
 /-- Rotate a loop walk such that it is centered at the given vertex. -/
 def rotate {u v : V} (c : G.Walk v v) (h : u ∈ c.support) : G.Walk u u :=

@@ -240,6 +240,18 @@ theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
     rw [← Subgraph.mem_edgeSet, ← hi.1, Subgraph.mem_edgeSet]
     exact toSubgraph_adj_getVert _ hi.2
 
+lemma mem_support_of_adj_toSubgraph {u v u' v' : V} {p : G.Walk u v} (hp : p.toSubgraph.Adj u' v') :
+    u' ∈ p.support := by
+  obtain ⟨i, hi⟩ := p.toSubgraph_adj_iff.mp hp
+  simp only [mem_support_iff_exists_getVert, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq,
+    Prod.swap_prod_mk] at hi ⊢
+  cases' hi.1 with hl hr
+  · exact ⟨i, ⟨hl.1, by omega⟩⟩
+  · aesop
+
+lemma mem_support_of_adj_toSubgraph' {u v u' v' : V} (p : G.Walk u v)
+    (hp : p.toSubgraph.Adj u' v') : v' ∈ p.support := p.mem_support_of_adj_toSubgraph hp.symm
+
 namespace IsCycle
 
 lemma neighborSet_toSubgraph_endpoint {u} {p : G.Walk u u} (hpc : p.IsCycle) :
