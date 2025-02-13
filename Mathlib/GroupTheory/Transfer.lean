@@ -264,9 +264,9 @@ variable [FiniteIndex (P : Subgroup G)]
 
 theorem transferSylow_eq_pow (g : G) (hg : g ∈ P) :
     transferSylow P hP g =
-      ⟨g ^ (P : Subgroup G).index, transfer_eq_pow_aux g (transferSylow_eq_pow_aux P hP g hg)⟩ := by
-  have : P.IsCommutative := ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
-  exact transfer_eq_pow _ _ <| transferSylow_eq_pow_aux P hP g hg
+      ⟨g ^ (P : Subgroup G).index, transfer_eq_pow_aux g (transferSylow_eq_pow_aux P hP g hg)⟩ :=
+  haveI : P.IsCommutative := ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
+  transfer_eq_pow _ _ <| transferSylow_eq_pow_aux P hP g hg
 
 theorem transferSylow_restrict_eq_pow : ⇑((transferSylow P hP).restrict (P : Subgroup G)) =
     (fun x : P => x ^ (P : Subgroup G).index) :=
