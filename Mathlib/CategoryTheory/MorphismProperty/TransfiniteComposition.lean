@@ -113,7 +113,6 @@ def iic (j : J) :
       obtain ⟨i', hi'⟩ := hi
       exact ⟨j, lt_of_lt_of_le hi' i'.2⟩)
     rw [← W.arrow_mk_mem_toSet_iff] at this ⊢
-    have pif := (Subtype.mono_coe (Set.Iic j)).functor
     have eq : Arrow.mk ((Subtype.mono_coe _).functor.map (homOfLE (Order.le_succ i))) =
       Arrow.mk (homOfLE (Order.le_succ i.1)) :=
         Arrow.ext rfl (Set.Iic.succ_coe_of_not_isMax hi) rfl
@@ -231,9 +230,8 @@ lemma transfiniteCompositionsOfShape_map_of_preserves (G : C ⥤ D)
     {X Y : C} (f : X ⟶ Y) {P : MorphismProperty D}
     [PreservesColimitsOfShape J G]
     (h : (P.inverseImage G).transfiniteCompositionsOfShape J f) :
-    P.transfiniteCompositionsOfShape J (G.map f) := by
-  obtain ⟨h⟩ := h
-  exact ⟨h.map⟩
+    P.transfiniteCompositionsOfShape J (G.map f) :=
+  h.some.map.mem
 
 /-- A class of morphisms `W : MorphismProperty C` is stable under transfinite compositions
 of shape `J` if for any well-order-continuous functor `F : J ⥤ C` such that
