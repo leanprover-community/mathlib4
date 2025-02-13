@@ -14,8 +14,10 @@ import Cli.Basic
 
 This file defines the `lint-style` executable which runs all text-based style linters.
 The linters themselves are defined in `Mathlib.Tactic.Linter.TextBased`.
+This script can be run run in Mathlib (and is used in its CI), but also in projects depending
+on it: to do the latter, pass it the libraries to lint.
 
-In addition, this checks that
+When linting mathlib, this script additionally checks that
 - `Mathlib.Init` is (transitively) imported in all of mathlib, and
 - every file in `scripts` is documented in its top-level README.
 -/
@@ -109,10 +111,17 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
     | true => ErrorFormat.github
     | false => ErrorFormat.humanReadable
   let fix := args.hasFlag "fix"
+  if (args.variableArgsAs? String).isNone then
+    IO.println "error: invalid input, library arguments must be strings"
+    return 1
+  let libraries := match args.variableArgsAs! String with
+  | #[] => #["Archive", "Counterexamples", "Mathlib"]
+  | lib => lib
   -- Read all module names to lint.
   let mut allModuleNames := #[]
-  for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
-    allModuleNames := allModuleNames.append (← findImports s)
+  for s in libraries do
+    allModuleNames := allModuleNames.append
+      (← findImports <| (System.mkFilePath [s]).addExtension "lean")
   -- Note: since "Batteries" and "Std" are added explicitly to "Mathlib.lean", we remove them here
   -- manually.
   allModuleNames := eraseExplicitImports allModuleNames
@@ -125,8 +134,10 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   -- This script is re-run each time, hence is immune to such issues.
   let nolints ← IO.FS.lines ("scripts" / "nolints-style.txt")
   let mut numberErrors ← lintModules nolints allModuleNames style fix
-  if ← checkInitImports then numberErrors := numberErrors + 1
-  if !(← allScriptsDocumented) then numberErrors := numberErrors + 1
+  -- If we are linting mathlib, also check the init imports and for undocumented scripts.
+  if libraries.contains "Mathlib" then
+    if ← checkInitImports then numberErrors := numberErrors + 1
+    if !(← allScriptsDocumented) then numberErrors := numberErrors + 1
   -- If run with the `--fix` argument, return a zero exit code.
   -- Otherwise, make sure to return an exit code of at most 125,
   -- so this return value can be used further in shell scripts.
@@ -138,13 +149,19 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
 -- so far, no help options or so: perhaps that is fine?
 def lintStyle : Cmd := `[Cli|
   «lint-style» VIA lintStyleCli; ["0.0.1"]
-  "Run text-based style linters on every Lean file in Mathlib/, Archive/ and Counterexamples/.
+  "Run text-based style linters on every Lean file in a given set of libraries.
+  If no library is specified, this script assumes it runs in mathlib, and looks for
+  Mathlib/, Archive/ and Counterexamples/.
   Print errors about any unexpected style errors to standard output."
 
   FLAGS:
     github;     "Print errors in a format suitable for github problem matchers\n\
                  otherwise, produce human-readable output"
     fix;        "Automatically fix the style error, if possible"
+
+  ARGS:
+    ...libraries: String; "Run linters precisely in these libraries\
+      By default, these are Mathlib, Archive and Counterexamples"
 ]
 
 /-- The entry point to the `lake exe lint-style` command. -/
