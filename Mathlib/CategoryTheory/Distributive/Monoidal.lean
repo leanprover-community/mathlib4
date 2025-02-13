@@ -175,16 +175,8 @@ instance IsMonoidalRightDistrib.isIso_rightDistrib_hom [IsMonoidalRightDistrib C
 instance IsMonoidalRightDistrib.of_isIso_coprodComparisonTensorRight
     [i : ∀ {X Y Z : C}, IsIso (coprodComparison (tensorRight X) Y Z)] :
     IsMonoidalRightDistrib C where
-  preservesBinaryCoproducts_tensorRight X := by
-    refine {
-      preservesColimit := by
-        intro K
-        have : PreservesColimit
-          (pair (K.obj { as := WalkingPair.left }) (K.obj { as := WalkingPair.right }))
-          (tensorRight X) := by
-            apply PreservesColimitPair.of_iso_coprod_comparison (tensorRight X) _ _
-        apply preservesColimit_of_iso_diagram (tensorRight X) (diagramIsoPair K).symm
-    }
+  preservesBinaryCoproducts_tensorRight _ :=
+    ⟨preservesBinaryCoproducts_of_isIso_coprodComparison _ |>.preservesColimit⟩
 
 /-- The forward direction of the right distributivity isomorphism is equal to the cogap morphism
 `coprod.desc (coprod.inl ▷ _) (coprod.inr ▷ _) : (Y ⊗ X) ⨿ (Z ⊗ X) ⟶ (Y ⨿ Z) ⊗ X`. -/
