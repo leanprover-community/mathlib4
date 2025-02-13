@@ -88,6 +88,10 @@ theorem angle_nonneg (x y : V) : 0 ≤ angle x y :=
 theorem angle_le_pi (x y : V) : angle x y ≤ π :=
   Real.arccos_le_pi _
 
+/-- The sine of the angle between two vectors is nonnegative. -/
+theorem sin_angle_nonneg (x y : V) : 0 ≤ sin (angle x y) :=
+  sin_nonneg_of_nonneg_of_le_pi (angle_nonneg x y) (angle_le_pi x y)
+
 /-- The angle between a vector and the negation of another vector. -/
 theorem angle_neg_right (x y : V) : angle x (-y) = π - angle x y := by
   unfold angle

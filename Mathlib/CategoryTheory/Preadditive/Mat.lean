@@ -72,7 +72,6 @@ namespace Mat_
 
 variable {C}
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- A morphism in `Mat_ C` is a dependently typed matrix of morphisms. -/
 def Hom (M N : Mat_ C) : Type v₁ :=
   DMatrix M.ι N.ι fun i j => M.X i ⟶ N.X j
@@ -498,7 +497,7 @@ instance (R : Type u) : Inhabited (Mat R) := by
   infer_instance
 
 instance (R : Type u) : CoeSort (Mat R) (Type u) :=
-  Bundled.coeSort
+  FintypeCat.instCoeSort
 
 open Matrix
 
@@ -581,7 +580,7 @@ instance : (equivalenceSingleObjInverse R).Full where
 instance : (equivalenceSingleObjInverse R).EssSurj where
   mem_essImage X :=
     ⟨{  ι := X
-        X := fun _ => PUnit.unit }, ⟨eqToIso (by dsimp; cases X; congr)⟩⟩
+        X := fun _ => PUnit.unit }, ⟨eqToIso (by cases X; congr)⟩⟩
 
 instance : (equivalenceSingleObjInverse R).IsEquivalence where
 

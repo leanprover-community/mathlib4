@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yuyang Zhao
 -/
 
-import Mathlib.FieldTheory.NormalClosure
+import Mathlib.FieldTheory.Normal.Closure
 import Mathlib.FieldTheory.SeparableClosure
 
 /-!
@@ -24,6 +24,8 @@ In a field extension `K/k`
 * `FiniteGaloisIntermediateField` should be a `ConditionallyCompleteLattice` but isn't proved yet.
 
 -/
+
+open IntermediateField
 
 variable (k K : Type*) [Field k] [Field K] [Algebra k K]
 

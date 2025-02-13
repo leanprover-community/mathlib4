@@ -26,7 +26,6 @@ namespace Quiver
 
 /-- A type synonym for the symmetrized quiver (with an arrow both ways for each original arrow).
     NB: this does not work for `Prop`-valued quivers. It requires `[Quiver.{v+1} V]`. -/
--- Porting note: no hasNonemptyInstance linter yet https://github.com/leanprover-community/mathlib4/issues/5171
 def Symmetrify (V : Type*) := V
 
 instance symmetrifyQuiver (V : Type u) [Quiver V] : Quiver (Symmetrify V) :=
