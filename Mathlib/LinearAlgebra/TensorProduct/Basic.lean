@@ -446,16 +446,16 @@ section
 theorem sum_tmul {α : Type*} (s : Finset α) (m : α → M) (n : N) :
     (∑ a ∈ s, m a) ⊗ₜ[R] n = ∑ a ∈ s, m a ⊗ₜ[R] n := by
   classical
-    induction' s using Finset.induction with a s has ih h
-    · simp
-    · simp [Finset.sum_insert has, add_tmul, ih]
+    induction s using Finset.induction with
+    | empty => simp
+    | insert has ih => simp [Finset.sum_insert has, add_tmul, ih]
 
 theorem tmul_sum (m : M) {α : Type*} (s : Finset α) (n : α → N) :
     (m ⊗ₜ[R] ∑ a ∈ s, n a) = ∑ a ∈ s, m ⊗ₜ[R] n a := by
   classical
-    induction' s using Finset.induction with a s has ih h
-    · simp
-    · simp [Finset.sum_insert has, tmul_add, ih]
+    induction s using Finset.induction with
+    | empty => simp
+    | insert has ih => simp [Finset.sum_insert has, tmul_add, ih]
 
 end
 
@@ -1088,6 +1088,13 @@ theorem tensorTensorTensorComm_symm :
     (tensorTensorTensorComm R M N P Q).symm = tensorTensorTensorComm R M P N Q := by
   ext; rfl
 
+theorem tensorTensorTensorComm_comp_map {V W : Type*}
+    [AddCommMonoid V] [AddCommMonoid W] [Module R V] [Module R W]
+    (f : M →ₗ[R] S) (g : N →ₗ[R] T) (h : P →ₗ[R] V) (j : Q →ₗ[R] W) :
+    tensorTensorTensorComm R S T V W ∘ₗ map (map f g) (map h j) =
+      map (map f h) (map g j) ∘ₗ tensorTensorTensorComm R M N P Q :=
+  ext_fourfold' fun _ _ _ _ => rfl
+
 variable (M N P Q)
 
 /-- This special case is useful for describing the interplay between `dualTensorHomEquiv` and
@@ -1135,6 +1142,10 @@ def rTensor (f : N →ₗ[R] P) : N ⊗[R] M →ₗ[R] P ⊗[R] M :=
   TensorProduct.map f id
 
 variable (g : P →ₗ[R] Q) (f : N →ₗ[R] P)
+
+theorem lTensor_def : f.lTensor M = TensorProduct.map LinearMap.id f := rfl
+
+theorem rTensor_def : f.rTensor M = TensorProduct.map f LinearMap.id := rfl
 
 @[simp]
 theorem lTensor_tmul (m : M) (n : N) : f.lTensor M (m ⊗ₜ n) = m ⊗ₜ f n :=
