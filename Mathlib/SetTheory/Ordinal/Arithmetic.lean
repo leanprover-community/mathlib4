@@ -333,12 +333,7 @@ theorem _root_.Order.IsSuccLimit.ordinalPred_eq {o} (ho : IsSuccLimit o) : pred 
 
 @[simp]
 theorem pred_zero : pred 0 = 0 :=
-  pred_eq_of_isSuccPrelimit isSuccPrelimit_zero
-
-theorem pred_le_self (o) : pred o ≤ o := by
-  obtain ⟨a, rfl⟩ | ho := mem_range_succ_or_isSuccPrelimit o
-  · simpa using le_succ a
-  · rw [pred_eq_of_isSuccPrelimit ho]
+  isSuccPrelimit_zero.ordinalPred_eq
 
 @[simp]
 theorem pred_le_iff_le_succ {a b} : pred a ≤ b ↔ a ≤ succ b := by
@@ -356,6 +351,9 @@ theorem lt_pred_iff_succ_lt {a b} : a < pred b ↔ succ a < b :=
 @[deprecated lt_pred_iff_succ_lt (since := "2025-02-11")]
 alias lt_pred := lt_pred_iff_succ_lt
 
+theorem pred_le_self (o) : pred o ≤ o := by
+  simpa using le_succ o
+
 /-- `Ordinal.pred` and `Order.succ` form a Galois insertion. -/
 def pred_succ_gi : GaloisInsertion pred succ :=
   GaloisConnection.toGaloisInsertion @pred_le_iff_le_succ (by simp)
@@ -363,10 +361,8 @@ def pred_succ_gi : GaloisInsertion pred succ :=
 theorem pred_surjective : Function.Surjective pred :=
   pred_succ_gi.l_surjective
 
-theorem self_le_succ_pred (o) : o ≤ succ (pred o) := by
-  obtain ⟨a, rfl⟩ | ho := mem_range_succ_or_isSuccPrelimit o
-  · simp
-  · simpa [ho.ordinalPred_eq] using le_succ o
+theorem self_le_succ_pred (o) : o ≤ succ (pred o) :=
+  pred_succ_gi.gc.le_u_l o
 
 theorem pred_eq_iff_isSuccPrelimit {o} : pred o = o ↔ IsSuccPrelimit o := by
   obtain ⟨a, rfl⟩ | ho := mem_range_succ_or_isSuccPrelimit o
