@@ -76,10 +76,28 @@ where
     else
       return Simp.Step.continue
 
+/-- The type for a constant to be pushed by `push`. -/
+inductive Head where
+| name (const : Name)
+| lambda
+| Forall
+
+/--
+Check whether the expression is a target for pushing `head`.
+
+Note that for constants, we require `e` to be an application,
+because otherwise there is nothing to push.
+-/
+def Head.isHeadOf (head : Head) (e : Expr) : Bool :=
+  match head with
+  | .name const => e.isApp && e.isAppOf const
+  | .lambda => e.isLambda
+  | .Forall => e.isForall
+
 /-- Push at the top level of the current expression. -/
-def pushStep (const : Name) : Simp.Simproc := fun e => do
+def pushStep (head : Head) : Simp.Simproc := fun e => do
   let e_whnf ← whnfR e
-  unless e_whnf.isAppOf const do
+  unless head.isHeadOf e_whnf do
     return Simp.Step.continue
   let thms ← pushExt.getTheorems
   if let some r ← Simp.rewrite? e thms.pre {} (tag := "push") (rflOnly := false) then
@@ -95,7 +113,7 @@ def pushStep (const : Name) : Simp.Simproc := fun e => do
 A simproc variant of `push_neg` that can be used as `simp [↓pushNeg]`.
 Note that you should write `↓pushNeg` instead of `pushNeg`, so that negations are pushed greedily.
 -/
-simproc_decl _root_.pushNeg (Not _) := pushStep ``Not
+simproc_decl _root_.pushNeg (Not _) := pushStep (.name ``Not)
 
 /-- The `simp` configuration used in `push`. -/
 def PushSimpConfig : Simp.Config where
@@ -103,61 +121,78 @@ def PushSimpConfig : Simp.Config where
   proj := false
 
 /-- Common entry point to the implementation of `push`. -/
-def pushCore (const : Name) (tgt : Expr) (disch? : Option Simp.Discharge) : MetaM Simp.Result := do
+def pushCore (head : Head) (tgt : Expr) (disch? : Option Simp.Discharge) : MetaM Simp.Result := do
   let ctx : Simp.Context ← Simp.mkContext PushSimpConfig
       (simpTheorems := #[])
       (congrTheorems := ← getSimpCongrTheorems)
   let methods := match disch? with
-    | none => { pre := pushStep const }
-    | some disch => { pre := pushStep const, discharge? := disch, wellBehavedDischarge := false }
+    | none => { pre := pushStep head }
+    | some disch => { pre := pushStep head, discharge? := disch, wellBehavedDischarge := false }
   (·.1) <$> Simp.main tgt ctx (methods := methods)
 
 /-- Execute main loop of `push` at the main goal. -/
-def pushNegTarget (const : Name) (discharge? : Option Simp.Discharge) :
+def pushNegTarget (head : Head) (discharge? : Option Simp.Discharge) :
     TacticM Unit := do
   let mvarId ← getMainGoal
   let tgt ← instantiateMVars (← mvarId.getType)
-  let mvarIdNew ← applySimpResultToTarget mvarId tgt (← pushCore const tgt discharge?)
+  let mvarIdNew ← applySimpResultToTarget mvarId tgt (← pushCore head tgt discharge?)
   if mvarIdNew == mvarId then throwError "push made no progress"
   replaceMainGoal [mvarIdNew]
 
 /-- Execute main loop of `push` at a local hypothesis. -/
-def pushNegLocalDecl (const : Name) (discharge? : Option Simp.Discharge) (fvarId : FVarId) :
+def pushNegLocalDecl (head : Head) (discharge? : Option Simp.Discharge) (fvarId : FVarId) :
     TacticM Unit := do
   let ldecl ← fvarId.getDecl
   if ldecl.isAuxDecl then return
   let tgt ← instantiateMVars ldecl.type
   let mvarId ← getMainGoal
-  let result ← pushCore const tgt discharge?
+  let result ← pushCore head tgt discharge?
   let some (_, mvarIdNew) ← applySimpResultToLocalDecl mvarId fvarId result False | failure
   if mvarIdNew == mvarId then throwError "push made no progress"
   replaceMainGoal [mvarIdNew]
 
 open private Lean.Elab.Tactic.mkDischargeWrapper in mkSimpContext
 
+/-- Syntax for the head to be pushed by the `push` tactic. -/
+syntax push_head := ppSpace colGt ("lambda" <|> "Forall" <|> ident)
+
+/-- Elaborator for the `push_head` syntax category. -/
+def elabHead (stx : Syntax) : TacticM Head := withRef stx do
+  match stx with
+  | `(push_head| lambda)   => return .lambda
+  | `(push_head| Forall)   => return .Forall
+  | `(push_head| $n:ident) => .name <$> Elab.realizeGlobalConstNoOverloadWithInfo n
+  | _ => Elab.throwUnsupportedSyntax
+
 /--
 Push a given constant inside of an expression.
-For instance, `push Real.log` could turn `log (a * b ^ 2)` into `log a + 2 * log b`.
+For instance, `push (disch := positivity) Real.log` could turn
+`log (a * b ^ 2)` into `log a + 2 * log b`.
 
 The `push` tactic can be extended using the `@[push]` attribute.
 
 See also `push_neg`, which is a macro for `push Not`.
 
+In addition to constants, `push` can be used to push `∀` and `fun` binders:
+- `push Forall` can turn `∀ a, p a ∧ q a` into `(∀ a, p a) ∧ (∀ a, q a)`.
+- `push lambda` can turn `fun x => f x + g x` into `(fun x => f x) + (fun x => g x)`
+(or into `f + g`).
+
 One can use this tactic at the goal using `push_neg`,
 at every hypothesis and the goal using `push_neg at *` or at selected hypotheses and the goal
 using say `push_neg at h h' ⊢`, as usual.
 -/
-syntax (name := push) "push" (discharger)? (ppSpace colGt ident) (location)? : tactic
+syntax (name := push) "push" (discharger)? push_head (location)? : tactic
 
 @[tactic push, inherit_doc push]
 def elabPush : Tactic := fun stx => withMainContext do
   let dischargeWrapper ← Lean.Elab.Tactic.mkDischargeWrapper stx[1]
-  let const ← Elab.realizeGlobalConstNoOverloadWithInfo stx[2]
+  let heaed ← elabHead stx[2]
   let loc := expandOptLocation stx[3]
   dischargeWrapper.with fun discharge? => do
     withLocation loc
-      (pushNegLocalDecl const discharge?)
-      (pushNegTarget const discharge?)
+      (pushNegLocalDecl heaed discharge?)
+      (pushNegTarget heaed discharge?)
       (fun _ ↦ logInfo "push_neg couldn't find a negation to push")
 
 /--
@@ -166,7 +201,8 @@ For instance, a hypothesis `h : ¬ ∀ x, ∃ y, x ≤ y` will be transformed by
 `h : ∃ x, ∀ y, y < x`. Variable names are conserved.
 
 `push_neg` is a special case of the more general `push` tactic, applied to the constant `Not`.
-The `push` tactic can be extended using the `@[push]` attribute.
+The `push` tactic can be extended using the `@[push]` attribute. Additionally,
+there is a `pushNeg` simproc, which can be used as `simp [↓pushNeg]`.
 
 `push_neg` has two modes: in standard mode, it transforms `¬(p ∧ q)` into `p → ¬q`, whereas in
 distrib mode it produces `¬p ∨ ¬q`. To use distrib mode, use `set_option push_neg.use_distrib true`.
@@ -189,7 +225,7 @@ macro (name := push_neg) "push_neg" loc:(location)? : tactic => `(tactic| push N
 section Conv
 
 @[inherit_doc push]
-syntax (name := pushConv) "push" (discharger)? (ppSpace colGt ident) : conv
+syntax (name := pushConv) "push" (discharger)? push_head : conv
 
 @[inherit_doc push_neg]
 macro "push_neg" : conv => `(conv| push Not)
@@ -197,9 +233,9 @@ macro "push_neg" : conv => `(conv| push Not)
 /-- Execute `push` as a conv tactic. -/
 @[tactic pushConv] def elabPushConv : Tactic := fun stx ↦ withMainContext do
   let dischargeWrapper ← Lean.Elab.Tactic.mkDischargeWrapper stx[1]
-  let const ← Elab.realizeGlobalConstNoOverloadWithInfo stx[2]
+  let head ← elabHead stx[2]
   dischargeWrapper.with fun discharge? => do
-    Conv.applySimpResult (← pushCore const (← instantiateMVars (← Conv.getLhs)) discharge?)
+    Conv.applySimpResult (← pushCore head (← instantiateMVars (← Conv.getLhs)) discharge?)
 
 /--
 The syntax is `#push_neg e`, where `e` is an expression,
