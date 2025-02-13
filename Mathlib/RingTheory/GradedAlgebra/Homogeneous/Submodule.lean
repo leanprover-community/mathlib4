@@ -55,21 +55,20 @@ variable [Semiring A] [AddCommMonoid M] [Module A M]
 
 section HomogeneousDef
 
-/-- An `p : Submodule A M` is homogeneous if for every `m ∈ p`, all homogeneous components
-  of `m` are in `I`. -/
+/--
+An `A`-submodule `p ⊆ M` is homogeneous if for every `m ∈ p`, all homogeneous components of `m` are
+in `p`.
+-/
 def Submodule.IsHomogeneous (p : Submodule A M) (ℳ : ιM → σM)
     [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM M] [Decomposition ℳ] : Prop :=
-  ∀ (i : ιM) ⦃m : M⦄, m ∈ p → (DirectSum.decompose ℳ m i : M) ∈ p
+  SetLike.IsHomogeneous ℳ p
 
-theorem Submodule.IsHomogeneous.mem_iff {p}
+theorem Submodule.IsHomogeneous.mem_iff {p : Submodule A M}
     (ℳ : ιM → σM)
     [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM M] [Decomposition ℳ]
-    (hp : Submodule.IsHomogeneous (A := A) p ℳ) {x} :
-    x ∈ p ↔ ∀ i, (decompose ℳ x i : M) ∈ p := by
-  classical
-  refine ⟨fun hx i ↦ hp i hx, fun hx ↦ ?_⟩
-  rw [← DirectSum.sum_support_decompose ℳ x]
-  exact Submodule.sum_mem _ (fun i _ ↦ hx i)
+    (hp : p.IsHomogeneous ℳ) {x} :
+    x ∈ p ↔ ∀ i, (decompose ℳ x i : M) ∈ p :=
+  AddSubmonoidClass.IsHomogeneous.mem_iff ℳ _ hp
 
 /-- For any `Semiring A`, we collect the homogeneous submodule of `A`-modules into a type. -/
 structure HomogeneousSubmodule (𝒜 : ιA → σA) (ℳ : ιM → σM)
@@ -84,15 +83,30 @@ variable [DecidableEq ιA] [AddMonoid ιA] [SetLike σA A] [AddSubmonoidClass σ
 variable [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM M] [Decomposition ℳ]
 variable [VAdd ιA ιM] [GradedSMul 𝒜 ℳ]
 
+instance : SetLike (HomogeneousSubmodule 𝒜 ℳ) M where
+  coe X := X.toSubmodule
+  coe_injective' := by
+    rintro ⟨p, hp⟩ ⟨q, hq⟩ (h : (p : Set M) = q)
+    simpa using h
+
+instance : AddSubmonoidClass (HomogeneousSubmodule 𝒜 ℳ) M where
+  zero_mem p := p.toSubmodule.zero_mem
+  add_mem hx hy := Submodule.add_mem _ hx hy
+
+instance : SMulMemClass (HomogeneousSubmodule 𝒜 ℳ) A M where
+  smul_mem := by
+    intro x r m hm
+    exact Submodule.smul_mem x.toSubmodule r hm
+
 variable {𝒜 ℳ} in
-theorem HomogeneousSubmodule.isHomogeneous (I : HomogeneousSubmodule 𝒜 ℳ) :
-    I.toSubmodule.IsHomogeneous ℳ :=
-  I.is_homogeneous'
+theorem HomogeneousSubmodule.isHomogeneous (p : HomogeneousSubmodule 𝒜 ℳ) :
+    p.toSubmodule.IsHomogeneous ℳ :=
+  p.is_homogeneous'
 
 theorem HomogeneousSubmodule.toSubmodule_injective :
     Function.Injective
       (HomogeneousSubmodule.toSubmodule : HomogeneousSubmodule 𝒜 ℳ → Submodule A M) :=
-  fun ⟨x, hx⟩ ⟨y, hy⟩ => fun (h : x = y) => by simp [h]
+  fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ fun (h : x = y) ↦ by simp [h]
 
 instance HomogeneousSubmodule.setLike : SetLike (HomogeneousSubmodule 𝒜 ℳ) M where
   coe p := p.toSubmodule
