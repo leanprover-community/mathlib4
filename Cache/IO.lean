@@ -44,6 +44,12 @@ def LIBDIR : FilePath :=
 def IRDIR : FilePath :=
   ".lake" / "build" / "ir"
 
+/--
+TODO: is there a better test to see if a module is part of Lean core?
+-/
+def isInLeanCore (mod : Name) :=
+  #[`Init, `Lean, `Std, `Lake].contains mod.getRoot
+
 /-- Target directory for caching -/
 initialize CACHEDIR : FilePath ← do
   match ← IO.getEnv "MATHLIB_CACHE_DIR" with
