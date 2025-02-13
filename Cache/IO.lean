@@ -123,7 +123,6 @@ private def CacheM.mathlibDepPath (sp : SearchPath) : IO FilePath := do
     | throw <| IO.userError s!"Mathlib not found in dependencies"
   return mathlibSource
 
--- TODO this should be generated automatically from the information in `lakefile.lean`.
 private def CacheM.getContext : IO CacheM.Context := do
   let sp ← initSrcSearchPath
   let mathlibSource ← CacheM.mathlibDepPath sp
