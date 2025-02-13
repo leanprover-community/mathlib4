@@ -82,7 +82,7 @@ theorem WellQuasiOrdered.prod [IsPreorder α r] (hr : WellQuasiOrdered r) (hs : 
 /-- A typeclass for an order with a well quasi-ordered `≤` relation.
 
 Note that this is unlike `WellFoundedLT`, which instead takes a `<` relation. -/
-@[mk_iff wellQuasiOrderedLE_iff']
+@[mk_iff wellQuasiOrderedLE_def]
 class WellQuasiOrderedLE (α : Type*) [LE α] where
   wqo : @WellQuasiOrdered α (· ≤ ·)
 
