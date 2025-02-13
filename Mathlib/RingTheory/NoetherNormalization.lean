@@ -244,7 +244,7 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
       intg.trans _ _ <| (comp ▸ hom2_int f I fne fi).tower_top _ _⟩
 
 /-- **Noether Normalization** -/
-theorem exists_integral_inj_algHom_of_finite {R : Type*} [CommRing R] [Nontrivial R] [Algebra k R]
+theorem exists_integral_inj_algHom_of_fg {R : Type*} [CommRing R] [Nontrivial R] [Algebra k R]
     [fin : Algebra.FiniteType k R] : ∃ s, ∃ g : (MvPolynomial (Fin s) k) →ₐ[k] R,
     Function.Injective g ∧ g.IsIntegral := by
   obtain ⟨n, f, fsurj⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp fin
