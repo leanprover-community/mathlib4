@@ -13,6 +13,7 @@ This file defines some additional constructive equivalences using `Encodable` an
 function on `ℕ`.
 -/
 
+assert_not_exists Group
 
 open Nat Function
 
