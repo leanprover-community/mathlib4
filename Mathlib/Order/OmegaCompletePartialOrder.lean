@@ -304,8 +304,8 @@ namespace Part
 open OmegaCompletePartialOrder
 
 theorem eq_of_chain {c : Chain (Part α)} {a b : α} (ha : some a ∈ c) (hb : some b ∈ c) : a = b := by
-  cases' ha with i ha; replace ha := ha.symm
-  cases' hb with j hb; replace hb := hb.symm
+  obtain ⟨i, ha⟩ := ha; replace ha := ha.symm
+  obtain ⟨j, hb⟩ := hb; replace hb := hb.symm
   rw [eq_some_iff] at ha hb
   rcases le_total i j with hij | hji
   · have := c.monotone hij _ ha; apply mem_unique this hb
@@ -350,7 +350,7 @@ noncomputable instance omegaCompletePartialOrder :
   ωSup_le := by
     rintro c x hx a ha
     replace ha := mem_chain_of_mem_ωSup ha
-    cases' ha with i ha
+    obtain ⟨i, ha⟩ := ha
     apply hx i
     rw [← ha]
     apply mem_some

@@ -61,12 +61,12 @@ theorem perm_comp_forall₂ {l u v} (hlu : Perm l u) (huv : Forall₂ r u v) :
   induction hlu generalizing v with
   | nil => cases huv; exact ⟨[], Forall₂.nil, Perm.nil⟩
   | cons u _hlu ih =>
-    cases' huv with _ b _ v hab huv'
+    cases huv with | @cons _ b _ v hab huv' =>
     rcases ih huv' with ⟨l₂, h₁₂, h₂₃⟩
     exact ⟨b :: l₂, Forall₂.cons hab h₁₂, h₂₃.cons _⟩
   | swap a₁ a₂ h₂₃ =>
-    cases' huv with _ b₁ _ l₂ h₁ hr₂₃
-    cases' hr₂₃ with _ b₂ _ l₂ h₂ h₁₂
+    cases huv with | @cons _ b₁ _ l₂ h₁ hr₂₃ =>
+    cases hr₂₃ with | @cons _ b₂ _ l₂ h₂ h₁₂ =>
     exact ⟨b₂ :: b₁ :: l₂, Forall₂.cons h₂ (Forall₂.cons h₁ h₁₂), Perm.swap _ _ _⟩
   | trans _ _ ih₁ ih₂ =>
     rcases ih₂ huv with ⟨lb₂, hab₂, h₂₃⟩
@@ -137,7 +137,7 @@ end
 
 theorem perm_option_toList {o₁ o₂ : Option α} : o₁.toList ~ o₂.toList ↔ o₁ = o₂ := by
   refine ⟨fun p => ?_, fun e => e ▸ Perm.refl _⟩
-  cases' o₁ with a <;> cases' o₂ with b; · rfl
+  rcases o₁ with - | a <;> rcases o₂ with - | b; · rfl
   · cases p.length_eq
   · cases p.length_eq
   · exact Option.mem_toList.1 (p.symm.subset <| by simp)
@@ -163,8 +163,7 @@ theorem Perm.flatMap_left (l : List α) {f g : α → List β} (h : ∀ a ∈ l,
 
 theorem flatMap_append_perm (l : List α) (f g : α → List β) :
     l.flatMap f ++ l.flatMap g ~ l.flatMap fun x => f x ++ g x := by
-  induction' l with a l IH
-  · simp
+  induction l with | nil => simp | cons a l IH =>
   simp only [flatMap_cons, append_assoc]
   refine (Perm.trans ?_ (IH.append_left _)).append_left _
   rw [← append_assoc, ← append_assoc]

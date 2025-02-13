@@ -724,8 +724,7 @@ theorem subset_set_image_iff [DecidableEq β] {s : Set α} {t : Finset β} {f : 
   ext y; simp
 
 theorem range_sdiff_zero {n : ℕ} : range (n + 1) \ {0} = (range n).image Nat.succ := by
-  induction' n with k hk
-  · simp
+  induction n with | zero => simp | succ k hk =>
   conv_rhs => rw [range_succ]
   rw [range_succ, image_insert, ← hk, insert_sdiff_of_not_mem]
   simp

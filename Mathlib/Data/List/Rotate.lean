@@ -148,9 +148,10 @@ theorem rotate_length_mul (l : List α) (n : ℕ) : l.rotate (l.length * n) = l 
 
 theorem rotate_perm (l : List α) (n : ℕ) : l.rotate n ~ l := by
   rw [rotate_eq_rotate']
-  induction' n with n hn generalizing l
-  · simp
-  · cases' l with hd tl
+  induction n generalizing l with
+  | zero => simp
+  | succ n hn =>
+    rcases l with - | ⟨hd, tl⟩
     · simp
     · rw [rotate'_cons_succ]
       exact (hn _).trans (perm_append_singleton _ _)
@@ -161,9 +162,10 @@ theorem nodup_rotate {l : List α} {n : ℕ} : Nodup (l.rotate n) ↔ Nodup l :=
 
 @[simp]
 theorem rotate_eq_nil_iff {l : List α} {n : ℕ} : l.rotate n = [] ↔ l = [] := by
-  induction' n with n hn generalizing l
-  · simp
-  · cases' l with hd tl
+  induction n generalizing l with
+  | zero => simp
+  | succ n hn =>
+    rcases l with - | ⟨hd, tl⟩
     · simp
     · simp [rotate_cons_succ, hn]
 
@@ -290,9 +292,10 @@ theorem singleton_eq_rotate_iff {l : List α} {n : ℕ} {x : α} : [x] = l.rotat
 theorem reverse_rotate (l : List α) (n : ℕ) :
     (l.rotate n).reverse = l.reverse.rotate (l.length - n % l.length) := by
   rw [← length_reverse l, ← rotate_eq_iff]
-  induction' n with n hn generalizing l
-  · simp
-  · cases' l with hd tl
+  induction n generalizing l with
+  | zero => simp
+  | succ n hn =>
+    rcases l with - | ⟨hd, tl⟩
     · simp
     · rw [rotate_cons_succ, ← rotate_rotate, hn]
       simp
@@ -304,9 +307,9 @@ theorem rotate_reverse (l : List α) (n : ℕ) :
     length_reverse]
   rw [← length_reverse l]
   let k := n % l.reverse.length
-  cases' hk' : k with k'
+  rcases hk' : k with - | k'
   · simp_all! [k, length_reverse, ← rotate_rotate]
-  · cases' l with x l
+  · rcases l with - | ⟨x, l⟩
     · simp
     · rw [Nat.mod_eq_of_lt, Nat.sub_add_cancel, rotate_length]
       · exact Nat.sub_le _ _
@@ -314,9 +317,10 @@ theorem rotate_reverse (l : List α) (n : ℕ) :
 
 theorem map_rotate {β : Type*} (f : α → β) (l : List α) (n : ℕ) :
     map f (l.rotate n) = (map f l).rotate n := by
-  induction' n with n hn IH generalizing l
-  · simp
-  · cases' l with hd tl
+  induction n generalizing l with
+  | zero => simp
+  | succ n hn =>
+    rcases l with - | ⟨hd, tl⟩
     · simp
     · simp [hn]
 
@@ -360,7 +364,7 @@ theorem IsRotated.refl (l : List α) : l ~r l :=
 @[symm]
 theorem IsRotated.symm (h : l ~r l') : l' ~r l := by
   obtain ⟨n, rfl⟩ := h
-  cases' l with hd tl
+  rcases l with - | ⟨hd, tl⟩
   · exists 0
   · use (hd :: tl).length * n - n
     rw [rotate_rotate, Nat.add_sub_cancel', rotate_length_mul]
@@ -432,7 +436,7 @@ theorem isRotated_reverse_iff : l.reverse ~r l'.reverse ↔ l ~r l' := by
 theorem isRotated_iff_mod : l ~r l' ↔ ∃ n ≤ l.length, l.rotate n = l' := by
   refine ⟨fun h => ?_, fun ⟨n, _, h⟩ => ⟨n, h⟩⟩
   obtain ⟨n, rfl⟩ := h
-  cases' l with hd tl
+  rcases l with - | ⟨hd, tl⟩
   · simp
   · refine ⟨n % (hd :: tl).length, ?_, rotate_mod _ _⟩
     refine (Nat.mod_lt _ ?_).le

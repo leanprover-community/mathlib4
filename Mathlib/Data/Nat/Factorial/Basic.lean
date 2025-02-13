@@ -157,9 +157,9 @@ theorem add_factorial_succ_le_factorial_add_succ (i : ℕ) (n : ℕ) :
     | succ (succ n) => contradiction
 
 theorem add_factorial_le_factorial_add (i : ℕ) {n : ℕ} (n1 : 1 ≤ n) : i + n ! ≤ (i + n)! := by
-  cases' n1 with h
-  · exact self_le_factorial _
-  exact add_factorial_succ_le_factorial_add_succ i h
+  cases n1 with
+  | refl => exact self_le_factorial _
+  | @step h => exact add_factorial_succ_le_factorial_add_succ i h
 
 theorem factorial_mul_pow_sub_le_factorial {n m : ℕ} (hnm : n ≤ m) : n ! * n ^ (m - n) ≤ m ! := by
   calc

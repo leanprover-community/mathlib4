@@ -179,8 +179,7 @@ theorem powersetCardAux_cons (n : ℕ) (a : α) (l : List α) :
 
 theorem powersetCardAux_perm {n} {l₁ l₂ : List α} (p : l₁ ~ l₂) :
     powersetCardAux n l₁ ~ powersetCardAux n l₂ := by
-  induction' n with n IHn generalizing l₁ l₂
-  · simp
+  induction n generalizing l₁ l₂ with | zero => simp | succ n IHn =>
   induction p with
   | nil => rfl
   | cons _ p IH =>
@@ -257,9 +256,9 @@ theorem powersetCard_card_add (s : Multiset α) {i : ℕ} (hi : 0 < i) :
 
 theorem powersetCard_map {β : Type*} (f : α → β) (n : ℕ) (s : Multiset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (map f) := by
-  induction' s using Multiset.induction with t s ih generalizing n
-  · cases n <;> simp [powersetCard_zero_left, powersetCard_zero_right]
-  · cases n <;> simp [ih, map_comp_cons]
+  induction s using Multiset.induction generalizing n with
+  | empty => cases n <;> simp [powersetCard_zero_left, powersetCard_zero_right]
+  | cons t s ih => cases n <;> simp [ih, map_comp_cons]
 
 theorem pairwise_disjoint_powersetCard (s : Multiset α) :
     _root_.Pairwise fun i j => Disjoint (s.powersetCard i) (s.powersetCard j) :=

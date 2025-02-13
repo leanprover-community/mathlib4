@@ -50,7 +50,7 @@ theorem chain_singleton {a b : α} : Chain R a [b] ↔ R a b := by
 
 theorem chain_split {a b : α} {l₁ l₂ : List α} :
     Chain R a (l₁ ++ b :: l₂) ↔ Chain R a (l₁ ++ [b]) ∧ Chain R b l₂ := by
-  induction' l₁ with x l₁ IH generalizing a <;>
+  induction l₁ generalizing a <;>
     simp only [*, nil_append, cons_append, Chain.nil, chain_cons, and_true, and_assoc]
 
 @[simp]
@@ -83,16 +83,16 @@ theorem chain_map_of_chain {S : β → β → Prop} (f : α → β) (H : ∀ a b
 theorem chain_pmap_of_chain {S : β → β → Prop} {p : α → Prop} {f : ∀ a, p a → β}
     (H : ∀ a b ha hb, R a b → S (f a ha) (f b hb)) {a : α} {l : List α} (hl₁ : Chain R a l)
     (ha : p a) (hl₂ : ∀ a ∈ l, p a) : Chain S (f a ha) (List.pmap f l hl₂) := by
-  induction' l with lh lt l_ih generalizing a
-  · simp
-  · simp [H _ _ _ _ (rel_of_chain_cons hl₁), l_ih (chain_of_chain_cons hl₁)]
+  induction l generalizing a with
+  | nil => simp
+  | cons lh lt l_ih => simp [H _ _ _ _ (rel_of_chain_cons hl₁), l_ih (chain_of_chain_cons hl₁)]
 
 theorem chain_of_chain_pmap {S : β → β → Prop} {p : α → Prop} (f : ∀ a, p a → β) {l : List α}
     (hl₁ : ∀ a ∈ l, p a) {a : α} (ha : p a) (hl₂ : Chain S (f a ha) (List.pmap f l hl₁))
     (H : ∀ a b ha hb, S (f a ha) (f b hb) → R a b) : Chain R a l := by
-  induction' l with lh lt l_ih generalizing a
-  · simp
-  · simp [H _ _ _ _ (rel_of_chain_cons hl₂), l_ih _ _ (chain_of_chain_cons hl₂)]
+  induction l generalizing a with
+  | nil => simp
+  | cons lh lt l_ih => simp [H _ _ _ _ (rel_of_chain_cons hl₂), l_ih _ _ (chain_of_chain_cons hl₂)]
 
 protected theorem Chain.pairwise [IsTrans α R] :
     ∀ {a : α} {l : List α}, Chain R a l → Pairwise R (a :: l)
@@ -128,7 +128,7 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
       · intro _
         exact R
       intro i w
-      cases' i with i
+      rcases i with - | i
       · apply h0
       · exact h i (by simp only [length_cons] at w; omega)
     rintro ⟨h0, h⟩; constructor
@@ -427,7 +427,7 @@ theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
       rw [List.chain'_cons] at ha
       refine gt_of_gt_of_ge ha.1 ?_
       rw [le_iff_lt_or_eq] at hmas
-      cases' hmas with hmas hmas
+      rcases hmas with hmas | hmas
       · by_contra! hh
         rw [← not_le] at hmas
         apply hmas
@@ -447,9 +447,10 @@ lemma Chain'.chain {α : Type*} {R : α → α → Prop} {l : List α} {v : α}
 lemma Chain'.iterate_eq_of_apply_eq {α : Type*} {f : α → α} {l : List α}
     (hl : l.Chain' (fun x y ↦ f x = y)) (i : ℕ) (hi : i < l.length) :
     f^[i] l[0] = l[i] := by
-  induction' i with i h
-  · rfl
-  · rw [Function.iterate_succ', Function.comp_apply, h (by omega)]
+  induction i with
+  | zero => rfl
+  | succ i h =>
+    rw [Function.iterate_succ', Function.comp_apply, h (by omega)]
     rw [List.chain'_iff_get] at hl
     apply hl
     omega
@@ -496,10 +497,10 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
     have hl' := (List.chain'_cons'.1 hl).2
     let l' : List.chains r := ⟨l, hl'⟩
     have : Acc (List.lex_chains r) l' := by
-      cases' l with b l
-      · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
+      cases l with
+      | nil => apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
       /- l' is accessible by induction hypothesis -/
-      · apply ih b (List.chain'_cons.1 hl).1
+      | cons b l => apply ih b (List.chain'_cons.1 hl).1
     /- make l' a free variable and induct on l' -/
     revert hl
     rw [(by rfl : l = l'.1)]

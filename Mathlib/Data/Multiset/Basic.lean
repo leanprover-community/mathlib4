@@ -1153,28 +1153,32 @@ theorem map_subset_map {f : α → β} {s t : Multiset α} (H : s ⊆ t) : map f
 
 theorem map_erase [DecidableEq α] [DecidableEq β] (f : α → β) (hf : Function.Injective f) (x : α)
     (s : Multiset α) : (s.erase x).map f = (s.map f).erase (f x) := by
-  induction' s using Multiset.induction_on with y s ih
-  · simp
-  by_cases hxy : y = x
-  · cases hxy
-    simp
-  · rw [s.erase_cons_tail hxy, map_cons, map_cons, (s.map f).erase_cons_tail (hf.ne hxy), ih]
+  induction s using Multiset.induction_on with
+  | empty => simp
+  | cons y s ih =>
+    by_cases hxy : y = x
+    · cases hxy
+      simp
+    · rw [s.erase_cons_tail hxy, map_cons, map_cons, (s.map f).erase_cons_tail (hf.ne hxy), ih]
 
 theorem map_erase_of_mem [DecidableEq α] [DecidableEq β] (f : α → β)
     (s : Multiset α) {x : α} (h : x ∈ s) : (s.erase x).map f = (s.map f).erase (f x) := by
-  induction' s using Multiset.induction_on with y s ih
-  · simp
-  rcases eq_or_ne y x with rfl | hxy
-  · simp
-  replace h : x ∈ s := by simpa [hxy.symm] using h
-  rw [s.erase_cons_tail hxy, map_cons, map_cons, ih h, erase_cons_tail_of_mem (mem_map_of_mem f h)]
+  induction s using Multiset.induction_on with
+  | empty => simp
+  | cons y s ih =>
+    rcases eq_or_ne y x with rfl | hxy
+    · simp
+    replace h : x ∈ s := by simpa [hxy.symm] using h
+    rw [s.erase_cons_tail hxy, map_cons, map_cons, ih h,
+      erase_cons_tail_of_mem (mem_map_of_mem f h)]
 
 theorem map_surjective_of_surjective {f : α → β} (hf : Function.Surjective f) :
     Function.Surjective (map f) := by
   intro s
-  induction' s using Multiset.induction_on with x s ih
-  · exact ⟨0, map_zero _⟩
-  · obtain ⟨y, rfl⟩ := hf x
+  induction s using Multiset.induction_on with
+  | empty => exact ⟨0, map_zero _⟩
+  | cons x s ih =>
+    obtain ⟨y, rfl⟩ := hf x
     obtain ⟨t, rfl⟩ := ih
     exact ⟨y ::ₘ t, map_cons _ _ _⟩
 
@@ -1324,8 +1328,7 @@ set_option linter.deprecated false in
 @[deprecated "Deprecated without replacement." (since := "2025-02-07")]
 theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {s : Multiset α} (hx : x ∈ s) :
     SizeOf.sizeOf x < SizeOf.sizeOf s := by
-  induction' s using Quot.inductionOn with l a b
-  exact List.sizeOf_lt_sizeOf_of_mem hx
+  induction s using Quot.inductionOn with | h => exact List.sizeOf_lt_sizeOf_of_mem hx
 
 theorem pmap_eq_map (p : α → Prop) (f : α → β) (s : Multiset α) :
     ∀ H, @pmap _ _ p (fun a _ => f a) s H = map f s :=
@@ -2106,11 +2109,12 @@ lemma inter_le_left : s ∩ t ≤ s :=
   Quotient.inductionOn₂ s t fun _l₁ _l₂ => (bagInter_sublist_left _ _).subperm
 
 lemma inter_le_right : s ∩ t ≤ t := by
-  induction' s using Multiset.induction_on with a s IH generalizing t
-  · exact (zero_inter t).symm ▸ zero_le _
-  by_cases h : a ∈ t
-  · simpa [h] using cons_le_cons a (IH (t := t.erase a))
-  · simp [h, IH]
+  induction s using Multiset.induction_on generalizing t with
+  | empty => exact (zero_inter t).symm ▸ zero_le _
+  | cons a s IH =>
+    by_cases h : a ∈ t
+    · simpa [h] using cons_le_cons a (IH (t := t.erase a))
+    · simp [h, IH]
 
 lemma le_inter (h₁ : s ≤ t) (h₂ : s ≤ u) : s ≤ t ∩ u := by
   revert s u; refine @(Multiset.induction_on t ?_ fun a t IH => ?_) <;> intros s u h₁ h₂
@@ -2402,11 +2406,12 @@ theorem card_eq_card_of_rel {r : α → β → Prop} {s : Multiset α} {t : Mult
 
 theorem exists_mem_of_rel_of_mem {r : α → β → Prop} {s : Multiset α} {t : Multiset β}
     (h : Rel r s t) : ∀ {a : α}, a ∈ s → ∃ b ∈ t, r a b := by
-  induction' h with x y s t hxy _hst ih
-  · simp
-  · intro a ha
-    cases' mem_cons.1 ha with ha ha
-    · exact ⟨y, mem_cons_self _ _, ha.symm ▸ hxy⟩
+  induction h with
+  | zero => simp
+  | cons hxy _ ih =>
+    intro a ha
+    rcases mem_cons.1 ha with ha | ha
+    · exact ⟨_, mem_cons_self _ _, ha.symm ▸ hxy⟩
     · rcases ih ha with ⟨b, hbt, hab⟩
       exact ⟨b, mem_cons.2 (Or.inr hbt), hab⟩
 
@@ -2441,17 +2446,19 @@ theorem rel_replicate_right {m : Multiset α} {a : α} {r : α → α → Prop} 
 protected nonrec -- Porting note: added
 theorem Rel.trans (r : α → α → Prop) [IsTrans α r] {s t u : Multiset α} (r1 : Rel r s t)
     (r2 : Rel r t u) : Rel r s u := by
-  induction' t using Multiset.induction_on with x t ih generalizing s u
-  · rw [rel_zero_right.mp r1, rel_zero_left.mp r2, rel_zero_left]
-  · obtain ⟨a, as, ha1, ha2, rfl⟩ := rel_cons_right.mp r1
+  induction t using Multiset.induction_on generalizing s u with
+  | empty => rw [rel_zero_right.mp r1, rel_zero_left.mp r2, rel_zero_left]
+  | cons x t ih =>
+    obtain ⟨a, as, ha1, ha2, rfl⟩ := rel_cons_right.mp r1
     obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp r2
     exact Multiset.Rel.cons (_root_.trans ha1 hb1) (ih ha2 hb2)
 
 theorem Rel.countP_eq (r : α → α → Prop) [IsTrans α r] [IsSymm α r] {s t : Multiset α} (x : α)
     [DecidablePred (r x)] (h : Rel r s t) : countP (r x) s = countP (r x) t := by
-  induction' s using Multiset.induction_on with y s ih generalizing t
-  · rw [rel_zero_left.mp h]
-  · obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp h
+  induction s using Multiset.induction_on generalizing t with
+  | empty => rw [rel_zero_left.mp h]
+  | cons y s ih =>
+    obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp h
     rw [countP_cons, countP_cons, ih hb2]
     simp only [decide_eq_true_eq, Nat.add_right_inj]
     exact (if_congr ⟨fun h => _root_.trans h hb1, fun h => _root_.trans h (symm hb1)⟩ rfl rfl)

@@ -694,7 +694,7 @@ theorem append_cons {α : Sort*} (a : α) (as : Fin n → α) (bs : Fin m → α
   funext i
   rcases i with ⟨i, -⟩
   simp only [append, addCases, cons, castLT, cast, comp_apply]
-  cases' i with i
+  rcases i with - | i
   · simp
   · split_ifs with h
     · have : i < n := Nat.lt_of_succ_lt_succ h
@@ -789,9 +789,9 @@ lemma exists_iff_castSucc {P : Fin (n + 1) → Prop} :
     (∃ i, P i) ↔ P (last n) ∨ ∃ i : Fin n, P i.castSucc where
   mp := by
     rintro ⟨i, hi⟩
-    induction' i using lastCases
-    · exact .inl hi
-    · exact .inr ⟨_, hi⟩
+    induction i using lastCases with
+    | last => exact .inl hi
+    | cast => exact .inr ⟨_, hi⟩
   mpr := by rintro (h | ⟨i, hi⟩) <;> exact ⟨_, ‹_›⟩
 
 theorem forall_iff_succAbove {P : Fin (n + 1) → Prop} (p : Fin (n + 1)) :
@@ -802,9 +802,9 @@ lemma exists_iff_succAbove {P : Fin (n + 1) → Prop} (p : Fin (n + 1)) :
     (∃ i, P i) ↔ P p ∨ ∃ i, P (p.succAbove i) where
   mp := by
     rintro ⟨i, hi⟩
-    induction' i using p.succAboveCases
-    · exact .inl hi
-    · exact .inr ⟨_, hi⟩
+    induction i using p.succAboveCases with
+    | x => exact .inl hi
+    | p => exact .inr ⟨_, hi⟩
   mpr := by rintro (h | ⟨i, hi⟩) <;> exact ⟨_, ‹_›⟩
 
 /-- Analogue of `Fin.eq_zero_or_eq_succ` for `succAbove`. -/
@@ -1033,7 +1033,7 @@ theorem find_spec :
   | 0, _, _, _, hi => Option.noConfusion hi
   | n + 1, p, I, i, hi => by
     rw [find] at hi
-    cases' h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with j
+    rcases h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with - | j
     · rw [h] at hi
       dsimp at hi
       split_ifs at hi with hl
@@ -1052,10 +1052,10 @@ theorem isSome_find_iff :
   | n + 1, p, _ =>
     ⟨fun h ↦ by
       rw [Option.isSome_iff_exists] at h
-      cases' h with i hi
+      obtain ⟨i, hi⟩ := h
       exact ⟨i, find_spec _ hi⟩, fun ⟨⟨i, hin⟩, hi⟩ ↦ by
       dsimp [find]
-      cases' h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with j
+      rcases h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with - | j
       · split_ifs with hl
         · exact Option.isSome_some
         · have := (@isSome_find_iff n (fun x ↦ p (x.castLT (Nat.lt_succ_of_lt x.2))) _).2
@@ -1076,7 +1076,7 @@ theorem find_min :
   | 0, _, _, _, hi, _, _, _ => Option.noConfusion hi
   | n + 1, p, _, i, hi, ⟨j, hjn⟩, hj, hpj => by
     rw [find] at hi
-    cases' h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with k
+    rcases h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with - | k
     · simp only [h] at hi
       split_ifs at hi with hl
       · cases hi
@@ -1095,7 +1095,7 @@ theorem nat_find_mem_find {p : Fin n → Prop} [DecidablePred p]
     (h : ∃ i, ∃ hin : i < n, p ⟨i, hin⟩) :
     (⟨Nat.find h, (Nat.find_spec h).fst⟩ : Fin n) ∈ find p := by
   let ⟨i, hin, hi⟩ := h
-  cases' hf : find p with f
+  rcases hf : find p with - | f
   · rw [find_eq_none_iff] at hf
     exact (hf ⟨i, hin⟩ hi).elim
   · refine Option.some_inj.2 (Fin.le_antisymm ?_ ?_)
