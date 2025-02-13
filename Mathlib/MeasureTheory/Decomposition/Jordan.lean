@@ -53,9 +53,9 @@ namespace MeasureTheory
 finite measures. -/
 @[ext]
 structure JordanDecomposition (α : Type*) [MeasurableSpace α] where
-  /-- The positive part of the Jordan decomposition. -/
+  /-- Positive part of the Jordan decomposition -/
   posPart : Measure α
-  /-- The negative part of the Jordan decomposition. -/
+  /-- Negative part of the Jordan decomposition -/
   negPart : Measure α
   [posPart_finite : IsFiniteMeasure posPart]
   [negPart_finite : IsFiniteMeasure negPart]

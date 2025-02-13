@@ -70,7 +70,7 @@ instance : ToExpr Literal where
 /-- A clause is a list of literals, thought of as a disjunction like `a ∨ b ∨ ¬c`. -/
 def Clause := List Literal
 
-/-- The empty clause. -/
+/-- The empty clause -/
 def Clause.nil : Clause := []
 
 /-- Append a literal to a clause. -/

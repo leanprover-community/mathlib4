@@ -517,7 +517,7 @@ scoped notation:35 x " D∨ " y => Dioph.union x y
 @[inherit_doc]
 scoped notation:30 "D∃" => Dioph.vec_ex1_dioph
 
-/-- Local abbreviation for `Fin2.ofNat'`. -/
+/-- Local abbreviation for `Fin2.ofNat'` -/
 scoped prefix:arg "&" => Fin2.ofNat'
 
 theorem proj_dioph_of_nat {n : ℕ} (m : ℕ) [IsLT m n] : DiophFn fun v : Vector3 ℕ n => v &m :=

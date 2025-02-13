@@ -55,11 +55,11 @@ def drop : ∀ {ds₁ : List ℕ}, HolorIndex (ds₁ ++ ds₂) → HolorIndex ds
 theorem cast_type (is : List ℕ) (eq : ds₁ = ds₂) (h : Forall₂ (· < ·) is ds₁) :
     (cast (congr_arg HolorIndex eq) ⟨is, h⟩).val = is := by subst eq; rfl
 
-/-- Right associator for `HolorIndex`. -/
+/-- Right associator for `HolorIndex` -/
 def assocRight : HolorIndex (ds₁ ++ ds₂ ++ ds₃) → HolorIndex (ds₁ ++ (ds₂ ++ ds₃)) :=
   cast (congr_arg HolorIndex (append_assoc ds₁ ds₂ ds₃))
 
-/-- Left associator for `HolorIndex`. -/
+/-- Left associator for `HolorIndex` -/
 def assocLeft : HolorIndex (ds₁ ++ (ds₂ ++ ds₃)) → HolorIndex (ds₁ ++ ds₂ ++ ds₃) :=
   cast (congr_arg HolorIndex (append_assoc ds₁ ds₂ ds₃).symm)
 
@@ -124,11 +124,11 @@ theorem cast_type (eq : ds₁ = ds₂) (a : Holor α ds₁) :
     cast (congr_arg (Holor α) eq) a = fun t => a (cast (congr_arg HolorIndex eq.symm) t) := by
   subst eq; rfl
 
-/-- Right associator for `Holor`. -/
+/-- Right associator for `Holor` -/
 def assocRight : Holor α (ds₁ ++ ds₂ ++ ds₃) → Holor α (ds₁ ++ (ds₂ ++ ds₃)) :=
   cast (congr_arg (Holor α) (append_assoc ds₁ ds₂ ds₃))
 
-/-- Left associator for `Holor`. -/
+/-- Left associator for `Holor` -/
 def assocLeft : Holor α (ds₁ ++ (ds₂ ++ ds₃)) → Holor α (ds₁ ++ ds₂ ++ ds₃) :=
   cast (congr_arg (Holor α) (append_assoc ds₁ ds₂ ds₃).symm)
 

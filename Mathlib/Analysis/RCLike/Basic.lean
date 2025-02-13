@@ -54,9 +54,9 @@ This typeclass captures properties shared by ℝ and ℂ, with an API that close
 -/
 class RCLike (K : semiOutParam Type*) extends DenselyNormedField K, StarRing K,
     NormedAlgebra ℝ K, CompleteSpace K where
-  /-- Homomorphism giving the real part. -/
+  /-- Homomorphism giving the real part -/
   re : K →+ ℝ
-  /-- Homomorphism giving the imaginary part. -/
+  /-- Homomorphism giving the imaginary part -/
   im : K →+ ℝ
   /-- Imaginary unit in `K`. Meant to be set to `0` for `K = ℝ`. -/
   I : K

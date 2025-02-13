@@ -63,21 +63,21 @@ The similarly named `IsPicardLindelof` is a bundled `Prop` holding the long hypo
 Picard-Lindelöf theorem as named arguments. It is used as part of the public API.
 -/
 structure PicardLindelof (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E] where
-  /-- Function of the initial value problem. -/
+  /-- Function of the initial value problem -/
   toFun : ℝ → E → E
-  /-- Lower limit of `t`. -/
+  /-- Lower limit of `t` -/
   tMin : ℝ
-  /-- Upper limit of `t`. -/
+  /-- Upper limit of `t` -/
   tMax : ℝ
-  /-- Initial value of `t`. -/
+  /-- Initial value of `t` -/
   t₀ : Icc tMin tMax
-  /-- Initial value of `x`. -/
+  /-- Initial value of `x` -/
   x₀ : E
-  /-- Bound of the function over the region of interest. -/
+  /-- Bound of the function over the region of interest -/
   C : ℝ≥0
-  /-- Radius of closed ball in `x` over which the bound `C` holds. -/
+  /-- Radius of closed ball in `x` over which the bound `C` holds -/
   R : ℝ≥0
-  /-- Lipschitz constant of the function. -/
+  /-- Lipschitz constant of the function -/
   L : ℝ≥0
   isPicardLindelof : IsPicardLindelof toFun tMin t₀ tMax x₀ L R C
 

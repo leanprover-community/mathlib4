@@ -81,7 +81,7 @@ Here we adopt a constructive approach where we ask an explicit `div : A → α �
 * `n • div a n = a` for all `n ≠ 0 ∈ α` and `a ∈ A`.
 -/
 class DivisibleBy where
-  /-- The division function. -/
+  /-- The division function -/
   div : A → α → A
   div_zero : ∀ a, div a 0 = 0
   div_cancel : ∀ {n : α} (a : A), n ≠ 0 → n • div a n = a
@@ -99,7 +99,7 @@ Here we adopt a constructive approach where we ask an explicit `root : A → α 
 -/
 @[to_additive]
 class RootableBy where
-  /-- The root function. -/
+  /-- The root function -/
   root : A → α → A
   root_zero : ∀ a, root a 0 = 1
   root_cancel : ∀ {n : α} (a : A), n ≠ 0 → root a n ^ n = a

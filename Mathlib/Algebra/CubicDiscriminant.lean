@@ -37,13 +37,13 @@ noncomputable section
 /-- The structure representing a cubic polynomial. -/
 @[ext]
 structure Cubic (R : Type*) where
-  /-- The degree-3 coefficient of a cubic. -/
+  /-- The cubic's degree-3 coefficient -/
   a : R
-  /-- The degree-2 coefficient of a cubic. -/
+  /-- The cubic's degree-2 coefficient -/
   b : R
-  /-- The degree-1 coefficient of a cubic. -/
+  /-- The cubic's degree-1 coefficient -/
   c : R
-  /-- The degree-0 coefficient of a cubic. -/
+  /-- The cubic's degree-0 coefficient -/
   d : R
 
 namespace Cubic
