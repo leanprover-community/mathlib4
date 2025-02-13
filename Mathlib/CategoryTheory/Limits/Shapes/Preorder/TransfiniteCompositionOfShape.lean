@@ -9,7 +9,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Fin
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Preorder
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Order.Interval.Set.SuccOrder
-
 /-!
 # A structure to describe transfinite compositions
 
