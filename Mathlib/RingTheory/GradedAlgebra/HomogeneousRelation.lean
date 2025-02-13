@@ -215,7 +215,7 @@ lemma decompose'_map_commute (a : RingQuot rel) :
   DFinsupp.mem_support_toFun, ne_eq, Classical.dite_not]
   sorry
 
-‹GradedRing 𝒜›ance RingQuotGradedRing : GradedRing ((AddSubmonoid.map (RingQuot.mkRingHom rel)).comp 𝒜) where
+instance RingQuotGradedRing : GradedRing ((AddSubmonoid.map (RingQuot.mkRingHom rel)).comp 𝒜) where
   one_mem := by
     use 1
     constructor
