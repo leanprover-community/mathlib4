@@ -293,7 +293,7 @@ theorem add_eq_left_iff {x y : Tropical R} : x + y = x ↔ x ≤ y := by
 theorem add_eq_right_iff {x y : Tropical R} : x + y = y ↔ y ≤ x := by
   rw [trop_add_def, trop_eq_iff_eq_untrop, ← untrop_le_iff, min_eq_right_iff]
 
-theorem add_self (x : Tropical R) : x + x = x :=
+protected theorem add_self (x : Tropical R) : x + x = x :=
   untrop_injective (min_eq_right le_rfl)
 
 theorem add_eq_iff {x y z : Tropical R} : x + y = z ↔ x = z ∧ x ≤ y ∨ y = z ∧ y ≤ x := by
@@ -490,7 +490,7 @@ instance : CommSemiring (Tropical R) :=
 theorem succ_nsmul {R} [LinearOrder R] [OrderTop R] (x : Tropical R) (n : ℕ) : (n + 1) • x = x := by
   induction n with
   | zero => simp
-  | succ n IH => rw [add_nsmul, IH, one_nsmul, add_self]
+  | succ n IH => rw [add_nsmul, IH, one_nsmul, Tropical.add_self]
 
 -- TODO: find/create the right classes to make this hold (for enat, ennreal, etc)
 -- Requires `zero_eq_bot` to be true

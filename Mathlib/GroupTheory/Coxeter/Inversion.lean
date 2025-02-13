@@ -73,7 +73,7 @@ theorem pow_two : t ^ 2 = 1 := by
   rcases ht with ⟨w, i, rfl⟩
   simp
 
-theorem mul_self : t * t = 1 := by
+protected theorem mul_self : t * t = 1 := by
   rcases ht with ⟨w, i, rfl⟩
   simp
 
