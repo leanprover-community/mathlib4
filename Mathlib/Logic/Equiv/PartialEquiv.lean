@@ -525,9 +525,7 @@ theorem refl_symm : (PartialEquiv.refl α).symm = PartialEquiv.refl α :=
 theorem refl_restr_source (s : Set α) : ((PartialEquiv.refl α).restr s).source = s := by simp
 
 @[mfld_simps]
-theorem refl_restr_target (s : Set α) : ((PartialEquiv.refl α).restr s).target = s := by
-  change univ ∩ id ⁻¹' s = s
-  simp
+theorem refl_restr_target (s : Set α) : ((PartialEquiv.refl α).restr s).target = s := by simp
 
 /-- The identity partial equivalence on a set `s` -/
 def ofSet (s : Set α) : PartialEquiv α α where

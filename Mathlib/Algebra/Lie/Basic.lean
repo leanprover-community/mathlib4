@@ -400,8 +400,7 @@ def comp (f : L₂ →ₗ⁅R⁆ L₃) (g : L₁ →ₗ⁅R⁆ L₂) : L₁ →�
   { LinearMap.comp f.toLinearMap g.toLinearMap with
     map_lie' := by
       intros x y
-      change f (g ⁅x, y⁆) = ⁅f (g x), f (g y)⁆
-      rw [map_lie, map_lie] }
+      simp }
 
 theorem comp_apply (f : L₂ →ₗ⁅R⁆ L₃) (g : L₁ →ₗ⁅R⁆ L₂) (x : L₁) : f.comp g x = f (g x) :=
   rfl
@@ -758,8 +757,7 @@ def comp (f : N →ₗ⁅R,L⁆ P) (g : M →ₗ⁅R,L⁆ N) : M →ₗ⁅R,L⁆
   { LinearMap.comp f.toLinearMap g.toLinearMap with
     map_lie' := by
       intros x m
-      change f (g ⁅x, m⁆) = ⁅x, f (g m)⁆
-      rw [map_lie, map_lie] }
+      simp }
 
 theorem comp_apply (f : N →ₗ⁅R,L⁆ P) (g : M →ₗ⁅R,L⁆ N) (m : M) : f.comp g m = f (g m) :=
   rfl
