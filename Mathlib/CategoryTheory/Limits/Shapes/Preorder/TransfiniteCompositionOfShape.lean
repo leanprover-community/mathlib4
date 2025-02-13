@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Fin
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Preorder
 import Mathlib.Data.Fin.SuccPred
+import Mathlib.Order.Interval.Set.SuccOrder
 
 /-!
 # A structure to describe transfinite compositions
@@ -101,22 +102,6 @@ noncomputable def map (F : C ⥤ D) [PreservesWellOrderContinuousOfShape J F]
     IsColimit.ofIsoColimit (isColimitOfPreserves F c.isColimit)
       (Cocones.ext (Iso.refl _))
   fac := by simp [← Functor.map_comp]
-
--- to be moved
-instance (j : J) : OrderBot (Set.Iic j) where
-  bot := ⟨⊥, bot_le⟩
-  bot_le _ := bot_le
-
-instance (j : J) : OrderTop (Set.Iic j) where
-  top := ⟨j, by simp⟩
-  le_top i := i.2
-
-omit [OrderBot J] [WellFoundedLT J] in
-lemma _root_.Set.Iic.succ_coe_of_not_isMax {j : J} {i : Set.Iic j} (hi : ¬ IsMax i) :
-    (Order.succ i).1 = Order.succ i.1 := by
-  rw [coe_succ_of_mem]
-  apply Order.succ_le_of_lt
-  exact lt_of_le_of_ne (α := Set.Iic j) le_top (by simpa using hi)
 
 /-- A transfinite composition of shape `J` induces a transfinite composition
 of shape `Set.Iic j` for any `j : J`. -/
