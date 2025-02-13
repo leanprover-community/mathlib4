@@ -924,8 +924,8 @@ instance largestNilpotentIdealIsNilpotent [IsNoetherian R L] :
   apply largestNilpotentSubmoduleIsNilpotent
 
 theorem LieIdeal.nilpotent_iff_le_largest_nilpotent_ideal [IsNoetherian R L] (I : LieIdeal R L) :
-    IsNilpotent L I ↔ I ≤ largestNilpotentIdeal R L :=
-  sorry
+    IsNilpotent L I ↔ I ≤ largestNilpotentIdeal R L := by
+  apply nilpotent_iff_le_largest_nilpotent_submodule
 
 theorem center_le_largest_nilpotent_ideal : center R L ≤ largestNilpotentIdeal R L :=
   sorry
