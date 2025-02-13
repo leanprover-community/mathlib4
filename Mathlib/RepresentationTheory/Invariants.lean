@@ -81,7 +81,7 @@ theorem invariants_eq_inter : (invariants ρ).carrier = ⋂ g : G, Function.fixe
 
 theorem invariants_eq_top [ρ.IsTrivial] :
     invariants ρ = ⊤ :=
-eq_top_iff.2 (fun x _ g => ρ.apply_eq_self g x)
+eq_top_iff.2 (fun x _ g => ρ.isTrivial_apply g x)
 
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
@@ -116,15 +116,15 @@ open CategoryTheory Action
 
 section Rep
 
-variable {k : Type u} [CommRing k] {G : Grp.{u}}
+variable {k : Type u} [CommRing k] {G : Type u} [Group G]
 
 theorem mem_invariants_iff_comm {X Y : Rep k G} (f : X.V →ₗ[k] Y.V) (g : G) :
     (linHom X.ρ Y.ρ) g f = f ↔ f.comp (X.ρ g) = (Y.ρ g).comp f := by
   dsimp
   rw [← LinearMap.comp_assoc, ← ModuleCat.hom_ofHom (Y.ρ g), ← ModuleCat.hom_ofHom f,
       ← ModuleCat.hom_comp, ← ModuleCat.hom_ofHom (X.ρ g⁻¹), ← ModuleCat.hom_comp,
-      Rep.ofHom_ρ, ← ρAut_hom_apply_inv X g, Rep.ofHom_ρ, ← ρAut_hom_apply_hom Y g,
-      ← ModuleCat.hom_ext_iff, Iso.inv_comp_eq, ρAut_hom_apply_hom, ← ModuleCat.hom_ofHom (X.ρ g),
+      Rep.ofHom_ρ, ← ρAut_apply_inv X g, Rep.ofHom_ρ, ← ρAut_apply_hom Y g,
+      ← ModuleCat.hom_ext_iff, Iso.inv_comp_eq, ρAut_apply_hom, ← ModuleCat.hom_ofHom (X.ρ g),
       ← ModuleCat.hom_comp, ← ModuleCat.hom_ext_iff]
   exact comm
 
@@ -145,7 +145,7 @@ end Rep
 
 section FDRep
 
-variable {k : Type u} [Field k] {G : Grp.{u}}
+variable {k : Type u} [Field k] {G : Type u} [Group G]
 
 /-- The invariants of the representation `linHom X.ρ Y.ρ` correspond to the representation
 homomorphisms from `X` to `Y`. -/
