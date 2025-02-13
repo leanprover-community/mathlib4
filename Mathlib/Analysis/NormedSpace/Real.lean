@@ -98,7 +98,7 @@ theorem frontier_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
   rw [frontier, closure_closedBall, interior_closedBall x hr, closedBall_diff_ball]
 
 theorem interior_sphere (x : E) {r : ℝ} (hr : r ≠ 0) : interior (sphere x r) = ∅ := by
-  rw [← frontier_closedBall x hr, interior_frontier isClosed_ball]
+  rw [← frontier_closedBall x hr, interior_frontier isClosed_closedBall]
 
 theorem frontier_sphere (x : E) {r : ℝ} (hr : r ≠ 0) : frontier (sphere x r) = sphere x r := by
   rw [isClosed_sphere.frontier_eq, interior_sphere x hr, diff_empty]
@@ -142,7 +142,7 @@ theorem frontier_closedBall' (x : E) (r : ℝ) : frontier (closedBall x r) = sph
 
 @[simp]
 theorem interior_sphere' (x : E) (r : ℝ) : interior (sphere x r) = ∅ := by
-  rw [← frontier_closedBall' x, interior_frontier isClosed_ball]
+  rw [← frontier_closedBall' x, interior_frontier isClosed_closedBall]
 
 @[simp]
 theorem frontier_sphere' (x : E) (r : ℝ) : frontier (sphere x r) = sphere x r := by
