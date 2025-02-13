@@ -301,15 +301,16 @@ def allExist (paths : List (FilePath × Bool)) : IO Bool := do
   pure true
 
 /-- Compresses build files into the local cache and returns an array with the compressed files -/
-def packCache (hashMap : ModuleHashMap) (pathMap : Std.HashMap Name FilePath)
-    (overwrite verbose unpackedOnly : Bool) (comment : Option String := none) :
+def packCache (hashMap : ModuleHashMap) (overwrite verbose unpackedOnly : Bool)
+    (comment : Option String := none) :
     CacheM <| Array String := do
   IO.FS.createDirAll CACHEDIR
   IO.println "Compressing cache"
+  let sp := (← read).srcSearchPath
   let mut acc := #[]
   let mut tasks := #[]
   for (mod, hash) in hashMap.toList do
-    let sourceFile := pathMap.get! mod
+    let sourceFile ← Lean.findLean sp mod
     let zip := hash.asLTar
     let zipPath := CACHEDIR / zip
     let buildPaths ← mkBuildPaths mod

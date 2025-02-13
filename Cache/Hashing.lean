@@ -27,8 +27,6 @@ structure HashMemo where
   rootHash : UInt64
   /-- Maps the `.lean` file of a module to the `.lean` files of its imports. -/
   depsMap  : Std.HashMap Name (Array Name) := ∅
-  /-- Stores the location of the source file of a module -/
-  pathMap  : Std.HashMap Name FilePath := ∅
   /--
   For files with a valid hash (usually Mathlib and upstream),
   this contains the same information as `hashMap`.
@@ -149,7 +147,6 @@ partial def getHash (mod : Name) (sourceFile : FilePath) (visited : Std.HashSet 
       modifyGet fun stt =>
         (some fileHash, { stt with
           depsMap := stt.depsMap.insert mod (fileImports.map (·.1))
-          pathMap := stt.pathMap.insert mod sourceFile
           cache   := stt.cache.insert   mod (some fileHash)
           hashMap := stt.hashMap.insert mod fileHash })
     else
@@ -157,7 +154,6 @@ partial def getHash (mod : Name) (sourceFile : FilePath) (visited : Std.HashSet 
       modifyGet fun stt =>
         (none, { stt with
           depsMap := stt.depsMap.insert mod (fileImports.map (·.1))
-          pathMap := stt.pathMap.insert mod sourceFile
           cache   := stt.cache.insert   mod none
           hashMap := stt.hashMap })
 

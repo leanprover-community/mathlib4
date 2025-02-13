@@ -96,7 +96,7 @@ def main (args : List String) : IO Unit := do
   let get (force := false) (decompress := true) := do
     getFiles hashMemo.hashMap force force goodCurl decompress
   let pack (overwrite verbose unpackedOnly := false) := do
-    packCache hashMemo.hashMap hashMemo.pathMap overwrite verbose unpackedOnly (← getGitCommitHash)
+    packCache hashMemo.hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do
     putFiles (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getToken)
   match args with
