@@ -21,6 +21,9 @@ there is a pushout diagram of the form
 In other words, the morphism `f` is a pushout of coproducts of morphisms
 of the form `g a : A a ⟶ B a`, see `nonempty_attachCells_iff`.
 
+See the file `RelativeCellComplex.Basic` for transfinite compositions
+of morphisms `f` with `AttachCells g f` structures.
+
 -/
 
 universe w t t' v u
