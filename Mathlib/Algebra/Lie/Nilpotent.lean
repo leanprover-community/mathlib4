@@ -21,11 +21,11 @@ carries a natural concept of nilpotency. We define these here via the lower cent
 
   * `LieModule.lowerCentralSeries`
   * `LieModule.IsNilpotent`
-  * `LieAlgebra.nilradical`
+  * `LieAlgebra.largestNilpotentIdeal`
 
 ## Tags
 
-lie algebra, lower central series, nilpotent, nilradical
+lie algebra, lower central series, nilpotent, largest nilpotent ideal
 -/
 
 universe u v w w₁ w₂
@@ -921,7 +921,7 @@ theorem center_le_largest_nilpotent_ideal : center R L ≤ largestNilpotentIdeal
 theorem largest_nilpotent_ideal_le_radical : largestNilpotentIdeal R L ≤ radical R L :=
   sorry
 
-@[simp] lemma largest_nilpotent_ideal_eq_top_of_isNilpotent [LieRing.IsNilpotent L] :
+@[simp] lemma largest_nilpotent_ideal_eq_top_of_isNilpotent [IsNilpotent L L] :
     largestNilpotentIdeal R L = ⊤ :=
   sorry
 
