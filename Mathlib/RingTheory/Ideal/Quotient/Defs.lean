@@ -108,6 +108,10 @@ theorem eq_zero_iff_mem : mk I a = 0 ↔ a ∈ I :=
 theorem mk_eq_mk_iff_sub_mem (x y : R) : mk I x = mk I y ↔ x - y ∈ I := by
   rw [← eq_zero_iff_mem, map_sub, sub_eq_zero]
 
+@[simp]
+theorem mk_out (x : R ⧸ I) : Ideal.Quotient.mk I (Quotient.out x) = x :=
+  Quotient.out_eq x
+
 theorem mk_surjective : Function.Surjective (mk I) := fun y =>
   Quotient.inductionOn' y fun x => Exists.intro x rfl
 
