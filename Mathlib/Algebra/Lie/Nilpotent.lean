@@ -922,6 +922,6 @@ instance [LieRing.IsNilpotent L] : LieRing.IsNilpotent (⊤ : LieSubalgebra R L)
 
 @[simp] lemma nilradical_eq_top_of_isNilpotent [LieRing.IsNilpotent L] :
     nilradical R L = ⊤ :=
- sorry
+  sorry
 
 end LieAlgebra
