@@ -98,46 +98,6 @@ theorem selbergWeights_mul_mu_nonneg (d : ℕ) (hdP : d ∣ P) :
   · apply le_of_eq; ring
 
 omit s in
-lemma sum_mul_subst (k n: ℕ) {f : ℕ → ℝ} (h : ∀ l, l ∣ n → ¬ k ∣ l → f l = 0) :
-      ∑ l ∈ n.divisors, f l
-    = ∑ m ∈ n.divisors, if k*m ∣ n then f (k*m) else 0 := by
-  by_cases hn: n = 0
-  · simp [hn]
-  by_cases hkn : k ∣ n
-  swap
-  · rw [sum_eq_zero, sum_eq_zero]
-    · rintro m _
-      rw [if_neg]
-      rintro h
-      apply hkn
-      exact (Nat.dvd_mul_right k m).trans h
-    · intro l hl; apply h l (dvd_of_mem_divisors hl)
-      apply fun hkl => hkn <| hkl.trans (dvd_of_mem_divisors hl)
-  trans (∑ l ∈ n.divisors, ∑ m ∈ n.divisors, if l=k*m then f l else 0)
-  · rw [sum_congr rfl]; intro l hl
-    by_cases hkl : k ∣ l
-    swap
-    · rw [h l (dvd_of_mem_divisors hl) hkl, sum_eq_zero];
-      intro m _; rw [ite_id]
-    rw [sum_eq_single (l/k)]
-    · rw[if_pos]; rw [Nat.mul_div_cancel' hkl]
-    · intro m _ hmlk
-      apply if_neg; revert hmlk; contrapose!; intro hlkm
-      rw [hlkm, mul_comm, Nat.mul_div_cancel];
-      apply Nat.pos_of_dvd_of_pos hkn (Nat.pos_of_ne_zero hn)
-    · contrapose!; intro _
-      rw [mem_divisors]
-      exact ⟨(Nat.div_dvd_of_dvd hkl).trans (dvd_of_mem_divisors hl), hn⟩
-  · rw [sum_comm, sum_congr rfl]; intro m _
-    split_ifs with hdvd
-    · rw [sum_ite_eq_of_mem']
-      simp only [mem_divisors, hdvd, ne_eq, hn, not_false_eq_true, and_self]
-    · apply sum_eq_zero; intro l hl
-      apply if_neg;
-      rintro rfl
-      simp only [mem_divisors, ne_eq] at hl
-      exact hdvd hl.1
-
 theorem divisors_image_mul (n d : ℕ) (hd : d ≠ 0) :
     n.divisors.image (d * ·) = (d*n).divisors.filter (fun k ↦ d ∣ k) := by
   ext r
@@ -146,25 +106,52 @@ theorem divisors_image_mul (n d : ℕ) (hd : d ≠ 0) :
   · rintro ⟨x, ⟨hx, hn⟩, rfl⟩
     refine ⟨⟨Nat.mul_dvd_mul_left d hx, hd, hn⟩, d.dvd_mul_right x⟩
   · rintro ⟨⟨hrdn, hd, hn⟩, hdr⟩
-    sorry
+    exact ⟨r/d, ⟨(div_dvd_iff_dvd_mul hdr hd).mpr hrdn, hn⟩, Nat.mul_div_cancel' hdr⟩
 
-theorem tmp (d : ℕ) :
+omit s in
+lemma sum_mul_subst (k n: ℕ) {f : ℕ → ℝ} (h : ∀ l, l ∣ n → ¬ k ∣ l → f l = 0) :
+      ∑ l ∈ n.divisors, f l
+    = ∑ m ∈ n.divisors, if k*m ∣ n then f (k*m) else 0 := by
+  by_cases hn : n = 0
+  · simp [hn]
+  by_cases hk : k = 0
+  · simp [hk, hn] at h ⊢
+    apply sum_eq_zero
+    simp +contextual [mem_divisors, ne_eq, and_imp, ne_zero_of_dvd_ne_zero hn, h]
+  trans ∑ l ∈ image (fun x ↦ k * x) n.divisors, if l ∣ n then f l else 0
+  · rw [divisors_image_mul _ _ hk, ← sum_filter, filter_comm, divisors_filter_dvd_of_dvd, eq_comm]
+    · apply sum_subset
+      · exact filter_subset (fun k_1 ↦ k ∣ k_1) n.divisors
+      · simp only [mem_divisors, ne_eq, mem_filter, not_and, and_imp]
+        intro l hl hn h'
+        apply h l hl (h' hl hn)
+    · positivity
+    · exact Nat.dvd_mul_left n k
+  · rw [sum_image]
+    intro _ _ _ _ h;
+    exact (Nat.mul_right_inj hk).mp h
+
+theorem tmp (d : ℕ) (hd : d ∣ P) :
     ∑ l ∈ divisors P, (if d ∣ l ∧ ↑l ^ 2 ≤ y then g l else 0)
     = g d * ∑ m ∈ divisors P, if (↑d * ↑m) ^ 2 ≤ y ∧ m.Coprime d then g m else 0 := by
-  by_cases hd : d = 0
-  · simp [hd]
-    sorry
-  calc
-    _ = ∑ l ∈ (divisors P).image (d * ·), if (↑l) ^ 2 ≤ y ∧ Squarefree (l) then g (l) else 0 := by
-      rw [divisors_image_mul]
-      -- have := Finset.sum_image (g := (fun k : ℕ ↦ d*k))
-      -- rw [Finset.sum_image]
-      ·
-        sorry
-      · sorry
-
-    _ = _ := by
-      sorry
+  rw [sum_mul_subst d P (by simp +contextual)]
+  simp_rw [← sum_filter, mul_sum]
+  apply sum_congr _
+  · intro m
+    simp only [mem_filter, mem_divisors, ne_eq, and_imp]
+    intro x _ _ h
+    refine selbergTerms_mult.map_mul_of_coprime h.symm
+  · ext m
+    simp only [dvd_mul_right, cast_mul, true_and, mem_filter, mem_divisors, ne_eq, and_assoc,
+      and_congr_right_iff]
+    rw [and_comm, and_congr_right_iff]
+    intro hmP hP _
+    constructor
+    · intro h
+      apply Coprime.symm <| coprime_of_squarefree_mul _
+      apply prodPrimes_squarefree.squarefree_of_dvd h
+    · intro h
+      refine Coprime.mul_dvd_of_dvd_of_dvd h.symm hd hmP
 
 -- Important facts about the selberg weights
 theorem selbergWeights_eq_dvds_sum (d : ℕ) :
@@ -181,33 +168,11 @@ theorem selbergWeights_eq_dvds_sum (d : ℕ) :
     exfalso; exact h_dvd (dvd_trans h hl.left)
   dsimp only [selbergWeights]
   rw [if_pos h_dvd]
-  -- change of variables l=m*d
   repeat rw [mul_sum]
   apply symm
-  rw [sum_mul_subst d P]
-  · apply sum_congr rfl
-    intro m hm
-    rw [mul_ite_zero, ←ite_and, mul_ite_zero, mul_ite_zero]
-    apply if_ctx_congr _ _ fun _ => rfl
-    · rw [coprime_comm]
-      constructor
-      · intro h
-        push_cast at h
-        exact ⟨h.2.2, coprime_of_squarefree_mul <|
-          Squarefree.squarefree_of_dvd h.1 s.prodPrimes_squarefree⟩
-      · intro h
-        push_cast
-        exact ⟨Coprime.mul_dvd_of_dvd_of_dvd h.2 h_dvd (dvd_of_mem_divisors hm),
-          Nat.dvd_mul_right d m, h.1⟩
-    · intro h
-      trans ((ν d)⁻¹ * (ν d) * g d * μ d / S * g m)
-      · rw [inv_mul_cancel₀ (s.nu_ne_zero h_dvd), selbergTerms_mult.map_mul_of_coprime
-          <| coprime_comm.mp h.2]
-        ring
-      ring
-  · intro l _ hdl
-    rw [if_neg, mul_zero]
-    push_neg; intro h; contradiction
+  simp_rw [← mul_sum, tmp _ h_dvd, ← mul_assoc, ]
+  rw [mul_inv_cancel₀ (nu_ne_zero h_dvd)]
+  ring
 
 omit s in
 private theorem moebius_inv_dvd_lower_bound (l m : ℕ) (hm : Squarefree m) :
