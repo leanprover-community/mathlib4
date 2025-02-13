@@ -18,8 +18,8 @@ smallness conditions relative to `w`, the existence of certain colimits,
 and for each object `A` which is the source of a morphism in `I`,
 the `Hom(A, _)` functor (`coyoneda.obj (op A)`) should commute
 to transfinite compositions of pushouts of coproducts of morphisms in `I`
-(this condition is automatically satisfied when `A` is a `κ`-presentable
-object of `C`).
+(this condition is automatically satisfied for a suitable `κ` when `A` is a
+presentable object of `C`, see the file `Presentable.Basic`).
 
 ## Main results
 
@@ -54,10 +54,15 @@ is defined in the file `SmallObject.Construction` (this definition
 involves coproducts and a pushout). These ingredients are combined
 in the file `SmallObject.IsCardinalForSmallObjectArgument`
 where the main results are obtained under a `IsCardinalForSmallObjectArgument I κ`
-assumption.
-
+assumption. The fact that the left lifting property with respect to
+a class of morphisms is stable by transfinite compositions was obtained in
+the file `SmallObject.TransfiniteCompositionLifting`.
 
 ## References
+
+- [Henri Cartan and Samuel Eilenberg, *Homological algebra*][cartan-eilenberg-1956]
+- [Alexander Grothendieck, *Sur quelques points d'algèbre homologique*][grothendieck-1957]
+- [Daniel G. Quillen, *Homotopical algebra*][Quillen1967]
 - https://ncatlab.org/nlab/show/small+object+argument
 
 -/

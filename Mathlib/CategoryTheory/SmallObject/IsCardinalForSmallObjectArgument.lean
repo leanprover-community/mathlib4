@@ -14,6 +14,42 @@ import Mathlib.SetTheory.Cardinal.Cofinality
 /-!
 # Cardinals that are suitable for the small object argument
 
+In this file, given a class of morphisms `I : MorphismProperty C` and
+a regular cardinal `κ : Cardinal.{w}`, we define a typeclass
+`IsCardinalForSmallObjectArgument I κ` which requires certain
+smallness properties (`I` is `w`-small, `C` is locally `w`-small),
+the existence of certain colimits (pushouts, coproducts of size `w`,
+and the condition `HasIterationOfShape κ.ord.toType` about the
+existence of colimits indexed by limit ordinal smaller than of equal
+to `κ.ord`), and a kind "presentable" assumption on the domains
+of the morphisms in `I`: if `A` is the domain of such an object,
+the functor `Hom(A, _)` should commute with the filtering
+colimits corresponding to relative `I`-cell complexes. (This
+last condition shall hold when `κ` is the successor of
+a cardinal `c` such that all these objects `A` are `c`-presentable,
+see the file `Presentable.Basic`.)
+
+Given `I : MorphismProperty C`, we shall say that `I` permits
+the small object argument if there exists `κ` such that
+`IsCardinalForSmallObjectArgument I κ` hold. See the file
+`SmallObject.Basic` for the definition of this typeclass
+`HasSmallObjectArgument` and an outline of the proof.
+
+## Main results
+
+Assuming `IsCardinalForSmallObjectArgument I κ`, any morphism `f : X ⟶ Y`
+is factored as `ιObj I κ f ≫ πObj I κ f = f`. It is shown that `ιObj I κ f`
+is a relative `I`-cell complex (see `SmallObject.relativeCellComplexιObj`)
+and that `πObj I κ f` has the right lifting property with respect to `I`
+(see `SmallObject.rlp_πObj`). This construction is obtained by
+iterating to the power `κ.ord.toType` the functor `Arrow C ⥤ Arrow C` defined
+in the file `SmallObject.Construction`. This factorization is functorial in `f`
+and gives the property `HasFunctorialFactorization I.rlp.llp I.rlp`.
+Finally, the lemma `llp_rlp_of_isCardinalForSmallObjectArgument`
+(and its primed version) shows that the morphisms in `I.rlp.llp` are exactly
+the retracts of the transfinite compositions (of shape `κ.ord.toType`) of
+pushouts of coproducts of morphisms in `I`.
+
 ## References
 - https://ncatlab.org/nlab/show/small+object+argument
 
@@ -30,11 +66,9 @@ noncomputable instance (o : Ordinal.{w}) : SuccOrder o.toType :=
 
 open Limits SmallObject
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u} [Category.{v} C] (I : MorphismProperty C)
 
 namespace MorphismProperty
-
-variable (I : MorphismProperty C)
 
 class IsCardinalForSmallObjectArgument (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [OrderBot κ.ord.toType] : Prop where
@@ -52,10 +86,6 @@ end MorphismProperty
 namespace SmallObject
 
 open MorphismProperty
-
-variable (I : MorphismProperty C)
-
-section
 
 variable (κ : Cardinal.{w}) [Fact κ.IsRegular] [OrderBot κ.ord.toType]
   [I.IsCardinalForSmallObjectArgument κ]
@@ -124,6 +154,7 @@ instance : (iterationFunctor I κ).IsWellOrderContinuous := by
   dsimp [iterationFunctor]
   infer_instance
 
+@[nolint unusedHavesSuffices]
 noncomputable def attachCellsOfSuccStructProp
     {F G : Arrow C ⥤ Arrow C} {φ : F ⟶ G}
     (h : (succStruct I κ).prop φ) (f : Arrow C) :
@@ -310,6 +341,7 @@ lemma πFunctorObj_eq (j : κ.ord.toType) :
     NatTrans.comp_app, Arrow.comp_right,
     iterationFunctorMapSuccAppArrowIso_hom_right_right_comp_assoc]
 
+@[nolint unusedHavesSuffices]
 lemma hasRightLiftingProperty_πObj_aux
     {A B : C} (i : A ⟶ B) (hi : I i) {f : X ⟶ Y} {j : κ.ord.toType}
     (t : A ⟶ (relativeCellComplexιObj I κ f).F.obj j) (b : B ⟶ Y)
@@ -332,10 +364,6 @@ lemma hasRightLiftingProperty_πObj_aux
 
 lemma hasRightLiftingProperty_πObj {A B : C} (i : A ⟶ B) (hi : I i) (f : X ⟶ Y) :
     HasLiftingProperty i (πObj I κ f) := ⟨by
-  have := Cardinal.noMaxOrder (Fact.elim inferInstance : κ.IsRegular).aleph0_le
-  have := hasIterationOfShape I κ
-  have := hasColimitsOfShape_discrete I κ
-  have := hasPushouts I κ
   have := preservesColimit I κ i hi _ (relativeCellComplexιObj I κ f)
   intro g b sq
   obtain ⟨j, t, ht⟩ := Types.jointly_surjective _
@@ -437,8 +465,6 @@ lemma llp_rlp_of_isCardinalForSmallObjectArgument :
   rw [llp_rlp_of_isCardinalForSmallObjectArgument' I κ]
   apply retracts_monotone
   apply transfiniteCompositionsOfShape_le_transfiniteCompositions
-
-end
 
 end SmallObject
 
