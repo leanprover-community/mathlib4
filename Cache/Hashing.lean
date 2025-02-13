@@ -75,6 +75,7 @@ def getFileImports (content : String) (mod : Name := default) :
     -- Lean core files can never be modified and therefore we do not need to process these
     -- moreover, it seems that `Lean.findLean` fails on these.
     |>.filter (! isInLeanCore ·.module)
+    |>.filter (isPartOfMathlibCache ·.module)
     |>.mapM fun imp => do
       let impSourceFile ← Lean.findLean sp imp.module
       pure (imp.module, impSourceFile)
