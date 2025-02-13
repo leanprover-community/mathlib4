@@ -16,7 +16,7 @@ import Mathlib.Data.Fintype.Sets
 This file is a collection of basic `Fintype` instances for types such as `Fin`, `Prod` and pi types.
 -/
 
-assert_not_exists MonoidWithZero MulAction
+assert_not_exists Monoid MonoidWithZero MulAction
 
 open Function
 
