@@ -79,7 +79,7 @@ lemma domain_eq (f : R ⟶ S) (φ : a ⟶ b) [p.IsHomLift f φ] : p.obj a = R :=
 lemma codomain_eq (f : R ⟶ S) (φ : a ⟶ b) [p.IsHomLift f φ] : p.obj b = S := by
   subst_hom_lift p f φ; rfl
 
-variable (f : R ⟶ S) (φ : a ⟶ b) [p.IsHomLift f φ]
+variable (f : R ⟶ S) (φ : a ⟶ b) [l : p.IsHomLift f φ]
 
 lemma fac : f = eqToHom (domain_eq p f φ).symm ≫ p.map φ ≫ eqToHom (codomain_eq p f φ) := by
   subst_hom_lift p f φ; simp
