@@ -3,6 +3,7 @@ Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
+import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
@@ -625,12 +626,12 @@ theorem ncard_exchange' {a b : α} (ha : a ∉ s) (hb : b ∈ s) :
   rw [← ncard_exchange ha hb, ← singleton_union, ← singleton_union, union_diff_distrib,
     @diff_singleton_eq_self _ b {a} fun h ↦ ha (by rwa [← mem_singleton_iff.mp h])]
 
-lemma odd_card_insert_iff {a : α} (hs : s.Finite := by toFinite_tac) (ha : a ∉ s) :
+lemma odd_card_insert_iff {a : α} (ha : a ∉ s) (hs : s.Finite := by toFinite_tac) :
     Odd (insert a s).ncard ↔ Even s.ncard := by
   rw [ncard_insert_of_not_mem ha hs, Nat.odd_add]
   simp only [Nat.odd_add, ← Nat.not_even_iff_odd, Nat.not_even_one, iff_false, Decidable.not_not]
 
-lemma even_card_insert_iff {a : α} (hs : s.Finite := by toFinite_tac) (ha : a ∉ s) :
+lemma even_card_insert_iff {a : α} (ha : a ∉ s) (hs : s.Finite := by toFinite_tac) :
     Even (insert a s).ncard ↔ Odd s.ncard := by
   rw [ncard_insert_of_not_mem ha hs, Nat.even_add_one, Nat.not_even_iff_odd]
 
@@ -1058,6 +1059,46 @@ theorem ncard_eq_three : s.ncard = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y �
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rwa [ENat.coe_toNat] at h; rintro h'; simp [h'] at h
   simp [h]
+
+open Cardinal
+
+theorem exists_union_disjoint_cardinal_eq_of_infinite (h : s.Infinite) : ∃ (t u : Set α),
+    t ∪ u = s ∧ Disjoint t u ∧ #t = #u := by
+  have := h.to_subtype
+  have f : s ≃ s ⊕ s := by
+    apply Classical.choice
+    rw [← Cardinal.eq, ← add_def, add_mk_eq_self]
+  refine ⟨Subtype.val '' (f ⁻¹' (range .inl)), Subtype.val '' (f ⁻¹' (range .inr)), ?_, ?_, ?_⟩
+  · simp [← image_union, ← preimage_union]
+  · exact disjoint_image_of_injective Subtype.val_injective
+      (isCompl_range_inl_range_inr.disjoint.preimage f)
+  · simp [mk_image_eq Subtype.val_injective]
+
+theorem exists_union_disjoint_cardinal_eq_of_even (he : Even s.ncard) : ∃ (t u : Set α),
+    t ∪ u = s ∧ Disjoint t u ∧ #t = #u := by
+  obtain hs | hs := s.infinite_or_finite
+  · exact exists_union_disjoint_cardinal_eq_of_infinite hs
+  classical
+  rw [ncard_eq_toFinset_card s hs] at he
+  obtain ⟨t, u, hutu, hdtu, hctu⟩ := Finset.exists_disjoint_union_of_even_card he
+  use t.toSet, u.toSet
+  simp [← Finset.coe_union, *]
+
+theorem exists_union_disjoint_ncard_eq_of_even (he : Even s.ncard) : ∃ (t u : Set α),
+    t ∪ u = s ∧ Disjoint t u ∧ t.ncard = u.ncard := by
+  obtain ⟨t, u, hutu, hdtu, hctu⟩ := exists_union_disjoint_cardinal_eq_of_even he
+  exact ⟨t, u, hutu, hdtu, congrArg Cardinal.toNat hctu⟩
+
+theorem exists_union_disjoint_cardinal_eq_iff (s : Set α) :
+    Even (s.ncard) ↔ ∃ (t u : Set α), t ∪ u = s ∧ Disjoint t u ∧ #t = #u := by
+  use exists_union_disjoint_cardinal_eq_of_even
+  rintro ⟨t, u, rfl, hdtu, hctu⟩
+  obtain hfin | hnfin := (t ∪ u).finite_or_infinite
+  · rw [finite_union] at hfin
+    have hn : t.ncard = u.ncard := congrArg Cardinal.toNat hctu
+    rw [ncard_union_eq hdtu hfin.1 hfin.2, hn]
+    exact Even.add_self u.ncard
+  · simp [hnfin.ncard]
 
 end ncard
 end Set
