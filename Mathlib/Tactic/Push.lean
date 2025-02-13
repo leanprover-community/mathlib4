@@ -81,7 +81,8 @@ def pushStep (const : Name) : Simp.Simproc := fun e => do
   let e_whnf ← whnfR e
   unless e_whnf.isAppOf const do
     return Simp.Step.continue
-  if let Simp.Step.visit r ← (Simp.rewritePre) e then
+  let thms ← pushExt.getTheorems
+  if let some r ← Simp.rewrite? e thms.pre {} (tag := "push") (rflOnly := false) then
     -- We return `.visit r` instead of `.continue r`, because in the case of a triple negation,
     -- after rewriting `¬¬¬p` into `¬p`, we want to rewrite again at `¬p`.
     return Simp.Step.visit r
@@ -89,6 +90,12 @@ def pushStep (const : Name) : Simp.Simproc := fun e => do
     pushNegBuiltin ex
   else
     return Simp.Step.continue
+
+/--
+A simproc variant of `push_neg` that can be used as `simp [↓pushNeg]`.
+Note that you should write `↓pushNeg` instead of `pushNeg`, so that negations are pushed greedily.
+-/
+simproc_decl _root_.pushNeg (Not _) := pushStep ``Not
 
 /-- The `simp` configuration used in `push`. -/
 def PushSimpConfig : Simp.Config where
@@ -98,11 +105,11 @@ def PushSimpConfig : Simp.Config where
 /-- Common entry point to the implementation of `push`. -/
 def pushCore (const : Name) (tgt : Expr) (disch? : Option Simp.Discharge) : MetaM Simp.Result := do
   let ctx : Simp.Context ← Simp.mkContext PushSimpConfig
-      (simpTheorems := #[← pushExt.getTheorems])
-      (congrTheorems := (← getSimpCongrTheorems))
+      (simpTheorems := #[])
+      (congrTheorems := ← getSimpCongrTheorems)
   let methods := match disch? with
-    | none => { pre := (pushStep const) }
-    | some disch => { pre := (pushStep const), discharge? := disch, wellBehavedDischarge := false }
+    | none => { pre := pushStep const }
+    | some disch => { pre := pushStep const, discharge? := disch, wellBehavedDischarge := false }
   (·.1) <$> Simp.main tgt ctx (methods := methods)
 
 /-- Execute main loop of `push` at the main goal. -/

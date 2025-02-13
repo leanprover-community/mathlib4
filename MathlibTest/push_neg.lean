@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Alice Laroche. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alice Laroche, Frédéric Dupuis, Jireh Loreaux
+Authors: Alice Laroche, Frédéric Dupuis, Jireh Loreaux, Jovan Gerbscheid
 -/
 
 import Mathlib.Data.Finite.Defs
@@ -268,3 +268,19 @@ example (h : (¬ ∀ n > 0, n = 3 → n = 5) ∧ ¬ ∃ n, n = 0) :
   exact h
 
 end Conv
+
+section Simproc
+
+example (a : β) : ¬ ∀ x : β, x < a → ∃ y : β, (y < a) ∧ ∀ z : β, x = z := by
+  simp [↓pushNeg]
+  guard_target = ∃ x, x < a ∧ ∀ (y : β), y < a → ∃ z, x ≠ z
+  exact test_sorry
+
+attribute [local simp] Fin.forall_iff
+-- verify that `↓pushNeg` overrides `Fin.forall_iff`.
+example : ¬ ∀ i : Fin n, i ≠ i := by
+  simp [↓pushNeg]
+  guard_target = ∃ i : Fin n, True
+  exact test_sorry
+
+end Simproc
