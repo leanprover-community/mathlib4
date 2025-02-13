@@ -137,8 +137,6 @@ private lemma T_leadingcoeff (fne : f ≠ 0) :
     simp only [map_add, map_sum]
     rw [add_comm]
     apply leadingCoeff_add_of_degree_lt <| (lt_of_le_of_lt <| degree_sum_le _ _) ?_
-    set degv := (finSuccEquiv k n ((T f) (h v))).degree
-    set els := ∑ x ∈ f.support \ {v}, (finSuccEquiv k n) ((T f) (h x))
     have h2 : h v ≠ 0 := by simpa [h] using mem_support_iff.mp vin
     replace h2 : (finSuccEquiv k n ((T f) (h v))) ≠ 0 := fun eq ↦ h2 <|
       by simpa only [map_eq_zero_iff _ (AlgEquiv.injective _)] using eq
@@ -214,9 +212,8 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
     · intro a b hab
       rw [Quotient.mkₐ_eq_mk, Ideal.Quotient.eq] at hab
       by_contra neq
-      apply sub_ne_zero_of_ne at neq
       have eq := eq_C_of_isEmpty (a - b)
-      have ne : coeff 0 (a - b) ≠ 0 := fun h ↦ h ▸ eq ▸ neq <| map_zero _
+      have ne : coeff 0 (a - b) ≠ 0 := fun h ↦ h ▸ eq ▸ sub_ne_zero_of_ne neq <| map_zero _
       obtain ⟨c, _, eqr⟩ := isUnit_iff_exists.mp ne.isUnit
       have one : c • (a - b) = 1 := by
         rw [MvPolynomial.smul_eq_C_mul, eq, ← RingHom.map_mul, eqr, MvPolynomial.C_1]
@@ -235,11 +232,11 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
     exact ⟨d + 1, by rfl, q, bij.1, q.isIntegral_of_surjective bij.2⟩
   · obtain ⟨f, fi, fne⟩ := Submodule.exists_mem_ne_zero_of_ne_bot eqi
     set ϕ := kerLiftAlg <| hom2 f I
-    have ne : ker (hom2 f I) ≠ ⊤ := @ker_ne_top _ _ _ _ _ _ _ (Quotient.nontrivial hi) (hom2 f I)
-    obtain ⟨s, _, g, injg, intg⟩ := hd (ker <| hom2 f I) ne
-    have comp : (kerLiftAlg (hom2 f I)).comp (Quotient.mkₐ k (ker (hom2 f I)))
-        = (hom2 f I) := AlgHom.ext fun a ↦ by
-      simp only [AlgHom.coe_comp, Quotient.mkₐ_eq_mk, Function.comp_apply, kerLiftAlg_mk]
+    letI := Quotient.nontrivial hi
+    obtain ⟨s, _, g, injg, intg⟩ := hd (ker <| hom2 f I) (ker_ne_top <| hom2 f I)
+    have comp : (kerLiftAlg (hom2 f I)).comp (Quotient.mkₐ k <| ker <| hom2 f I) = (hom2 f I) :=
+      AlgHom.ext fun a ↦ by
+        simp only [AlgHom.coe_comp, Quotient.mkₐ_eq_mk, Function.comp_apply, kerLiftAlg_mk]
     exact ⟨s, by linarith, ϕ.comp g, (ϕ.coe_comp  g) ▸ (kerLiftAlg_injective _).comp injg,
       intg.trans _ _ <| (comp ▸ hom2_int f I fne fi).tower_top _ _⟩
 
@@ -249,8 +246,7 @@ theorem exists_integral_inj_algHom_of_fg {R : Type*} [CommRing R] [Nontrivial R]
     Function.Injective g ∧ g.IsIntegral := by
   obtain ⟨n, f, fsurj⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp fin
   set ϕ := quotientKerAlgEquivOfSurjective fsurj
-  have ne : ker f ≠ ⊤ := fun h ↦ (h ▸ (not_one_mem_ker f)) trivial
-  obtain ⟨s, _, g, injg, intg⟩ := exists_integral_inj_algHom_of_quotient (ker f) ne
+  obtain ⟨s, _, g, injg, intg⟩ := exists_integral_inj_algHom_of_quotient (ker f) (ker_ne_top _)
   use s, ϕ.toAlgHom.comp g
   simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
     EmbeddingLike.comp_injective, AlgHom.toRingHom_eq_coe]
