@@ -9,6 +9,9 @@ import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Rel
 import Mathlib.Data.Fin.VecNotation
+-- import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Order.OrderIsoNat
+
 
 /-!
 # Series of a relation
@@ -777,6 +780,52 @@ def range (n : ℕ) : LTSeries ℕ where
 @[simp] lemma head_range (n : ℕ) : (range n).head = 0 := rfl
 
 @[simp] lemma last_range (n : ℕ) : (range n).last = n := rfl
+
+/-- Any `LTSeries` can be extended to a `CovBy`-`RelSeries` in a well-founded order. -/
+theorem exists_relSeries_covBy
+    {α} [PartialOrder α] [WellFoundedLT α] [WellFoundedGT α] (s : LTSeries α) :
+    ∃ (t : RelSeries (α := α) (· ⋖ ·)) (i : Fin (s.length + 1) ↪ Fin (t.length + 1)),
+      t ∘ i = s ∧ i 0 = 0 ∧ i (.last _) = .last _ := by
+  obtain ⟨n, s, h⟩ := s
+  induction n with
+  | zero => exact ⟨⟨0, s, nofun⟩, (Equiv.refl _).toEmbedding, rfl, rfl, rfl⟩
+  | succ n IH =>
+    obtain ⟨t₁, i, ht, hi₁, hi₂⟩ := IH (s ∘ Fin.castSucc) (fun _ ↦ h _)
+    obtain ⟨t₂, h₁, m, h₂, ht₂⟩ :=
+      exists_covBy_seq_of_wellFoundedLT_wellFoundedGT_of_le (h (.last _)).le
+    let t₃ : RelSeries (α := α) (· ⋖ ·) := ⟨m, (t₂ ·), fun i ↦ by simpa using ht₂ i⟩
+    have H : t₁.last = t₂ 0 := (congr(t₁ $hi₂.symm).trans (congr_fun ht _)).trans h₁.symm
+    refine ⟨t₁.smash t₃ H, ⟨Fin.snoc (Fin.castLE (by simp) ∘ i) (.last _), ?_⟩, ?_, ?_, ?_⟩
+    · intro j k eq
+      dsimp [Fin.snoc] at eq
+      split_ifs at eq with H₁ H₂ H₃
+      · exact Fin.ext (congr_arg Fin.val (by simpa using eq) :)
+      · have : ↑(i (j.castLT H₁)) = t₁.length + t₃.length := by simpa using congr_arg Fin.val eq
+        obtain rfl : m = 0 := by simpa [t₃] using this.symm.trans_lt (i (j.castLT H₁)).2
+        cases (h (.last _)).ne' (h₂.symm.trans h₁)
+      · have : ↑(i (k.castLT H₃)) = t₁.length + t₃.length := by simpa using congr($(eq).1).symm
+        obtain rfl : m = 0 := by simpa [t₃] using this.symm.trans_lt (i (k.castLT H₃)).2
+        cases (h (.last _)).ne' (h₂.symm.trans h₁)
+      · have : (Fin.last (n + 1)) = j := Fin.ext ((le_of_not_lt H₁).antisymm (Nat.lt_succ.mp j.2))
+        have : (Fin.last (n + 1)) = k := Fin.ext ((le_of_not_lt H₃).antisymm (Nat.lt_succ.mp k.2))
+        rwa [← this, eq_comm]
+    · ext j
+      dsimp [Fin.snoc]
+      split_ifs with hj₁ hj₂ hj₃
+      · exact congr_fun ht ⟨j, hj₁⟩
+      · have := (le_of_not_lt hj₂).antisymm (Nat.lt_succ.mp (i (j.castLT hj₁)).2)
+        have hj₃ : j.castLT hj₁ = .last _ :=
+          i.2 (Fin.ext (this.symm.trans (congr_arg Fin.val hi₂.symm)))
+        simp_rw [← this, Nat.sub_self, t₃, ← H, RelSeries.last, ← hi₂, ← hj₃]
+        exact congr_fun ht ⟨j, hj₁⟩
+      · simp at hj₃
+      · have : (Fin.last (n + 1)) = j := Fin.ext ((le_of_not_lt hj₁).antisymm (Nat.lt_succ.mp j.2))
+        simp [t₃, h₂, this]
+    · ext
+      convert congr_arg Fin.val hi₁ using 1
+      simp [Fin.snoc]
+      rfl
+    · simp [Fin.snoc]
 
 /--
 In ℕ, two entries in an `LTSeries` differ by at least the difference of their indices.
