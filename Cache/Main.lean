@@ -87,17 +87,12 @@ def main (args : List String) : IO Unit := do
     let sourceFile ← Lean.findLean sp mod
     roots := Std.HashMap.empty.insert mod sourceFile
 
-  -- We pass any following arguments to `getHashMemo`,
-  -- so we can use the cache on `Archive` or `Counterexamples`.
-  let extraRoots : Array FilePath :=
-    roots.keys.toArray.map (·.components.map toString |> mkFilePath |>.withExtension "lean")
-
-  let hashMemo ← getHashMemo extraRoots
+  let hashMemo ← getHashMemo roots
   let hashMap := hashMemo.hashMap
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
   if leanTarArgs.contains (args.headD "") then validateLeanTar
   let get (args : List String) (force := false) (decompress := true) := do
-    let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByFilePaths (toPaths args)
+    let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByFilePaths roots.keys
     getFiles hashMap force force goodCurl decompress
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
@@ -125,5 +120,5 @@ def main (args : List String) : IO Unit := do
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
     commit hashMap true (← getToken)
   | ["collect"] => IO.println "TODO"
-  | "lookup" :: args => lookup hashMap (toPaths args)
+  | "lookup" :: _ => lookup hashMap roots.keys
   | _ => println help
