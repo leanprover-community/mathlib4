@@ -360,13 +360,10 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
 
       See https://github.com/leanprover-community/mathlib4/pull/8767#discussion_r1422077498
 
-      We could do this with `packageDir` for all modules, not only ones in mathlib.
-      This would be more flexible and allow cached dependencies to live somewhere else (locally).
-      However, this change invalidates existing .ltar files, so it needs
-      to be accompanied with some hash change.
-      In practice, cached local mathlib dependencies would lead to a new `rootHash` anyways
-      (mathllib lakefile/manifest would need to reflect this) and therefore would
-      invalidate cache anyways, so there is not much gained by making this change.
+      However, changing this causes changes to the generated .ltar files *WITHOUT* changing
+      the file hash! This means this change needs to be accompanied by a change which
+      changes the hash of *ALL* files
+      (e.g. any modification to `lakefile.lean` or see TODO in `Cache.Hashing`)
       -/
       if (← isMathlibRoot) || !isFromMathlib mod then
         pure <| config.push <| .str pathStr

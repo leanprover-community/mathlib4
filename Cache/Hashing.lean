@@ -174,7 +174,7 @@ def roots : CacheM <| Array <| Name × FilePath := do
 
 /-- Main API to retrieve the hashes of the Lean files -/
 def getHashMemo (roots : Std.HashMap Name FilePath) : CacheM HashMemo := do
-  -- TODO: `Std.HashMap.mapM` seems not to exist yet, so we got via `.toArray`.
+  -- TODO: `Std.HashMap.mapM` seems not to exist yet, so we go via `.toArray`.
   return (← StateT.run (roots.toArray.mapM fun ⟨key, val⟩ => getHash key val)
     {rootHash := ← getRootHash}).2
 
