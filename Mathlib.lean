@@ -2661,6 +2661,7 @@ import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Finset.Range
+import Mathlib.Data.Finset.RangeAdd
 import Mathlib.Data.Finset.SDiff
 import Mathlib.Data.Finset.SMulAntidiagonal
 import Mathlib.Data.Finset.Sigma
