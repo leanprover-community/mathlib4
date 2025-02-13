@@ -300,7 +300,7 @@ theorem log_zero_left : ∀ b, log 0 b = 0 :=
 @[simp]
 theorem log_zero_right (b : Ordinal) : log b 0 = 0 := by
   obtain hb | hb := lt_or_le 1 b
-  · rw [log_def hb, ← Ordinal.le_zero, pred_le_iff, succ_zero]
+  · rw [log_def hb, ← Ordinal.le_zero, pred_le_iff_le_succ, succ_zero]
     apply csInf_le'
     rw [mem_setOf, opow_one]
     exact bot_lt_of_lt hb
