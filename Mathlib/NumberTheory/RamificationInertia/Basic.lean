@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
 import Mathlib.RingTheory.DedekindDomain.Ideal
+import Mathlib.RingTheory.Finiteness.Quotient
 
 /-!
 # Ramification index and inertia degree
