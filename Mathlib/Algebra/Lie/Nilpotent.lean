@@ -256,9 +256,6 @@ section
 
 variable [LieModule R L M]
 
-def largestNilpotentModule :=
-  sSup { N : LieSubmodule R L M | IsNilpotent L N }
-
 /-- See also `LieModule.isNilpotent_iff_exists_ucs_eq_top`. -/
 lemma isNilpotent_iff :
     IsNilpotent L M ↔ ∃ k, lowerCentralSeries R L M k = ⊥ := by
@@ -281,6 +278,23 @@ theorem exists_lowerCentralSeries_eq_bot_of_isNilpotent [IsNilpotent L M] :
   obtain ⟨k, hk⟩ := IsNilpotent.nilpotent R L M
   rw [eq_bot_iff, ← hk]
   exact iInf_le _ _
+
+end
+
+section
+
+variable [LieModule R L M]
+
+def largestNilpotentSubmodule :=
+  sSup { N : LieSubmodule R L M | IsNilpotent L N }
+
+instance largestNilpotentSubmoduleIsNilpotent [IsNoetherian R L] :
+    IsNilpotent L (largestNilpotentSubmodule R L M) := by
+  sorry
+
+theorem nilpotent_iff_le_largest_nilpotent [IsNoetherian R L] (N : LieSubmodule R L M) :
+    IsNilpotent L N ↔ N ≤ largestNilpotentSubmodule R L M := by
+  sorry
 
 end
 
@@ -672,12 +686,6 @@ adjoint representation. -/
 abbrev LieRing.IsNilpotent (L : Type v) [LieRing L] : Prop :=
   LieModule.IsNilpotent L L
 
-/-- We say an ideal of a Lie algebra is nilpotent when it is nilpotent as a Lie module over the Lie
-algebra via the adjoint representation. -/
-abbrev LieIdeal.IsNilpotent {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
-  (I : LieIdeal R L) : Prop :=
-  LieModule.IsNilpotent L I
-
 open LieRing
 
 theorem LieAlgebra.nilpotent_ad_of_nilpotent_algebra [IsNilpotent L] :
@@ -905,26 +913,16 @@ open LieModule
 variable (R : Type u) (L : Type v)
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
 
-def nilradical := largestNilpotentModule R L L
+def largestNilpotentIdeal := largestNilpotentSubmodule R L L
 
-instance nilradicalIsNilpotent [IsNoetherian R L] : IsNilpotent L (nilradical R L) := by
+theorem center_le_largest_nilpotent_ideal : center R L ≤ largestNilpotentIdeal R L :=
   sorry
 
-theorem LieIdeal.nilpotent_iff_le_nilradical [IsNoetherian R L] (I : LieIdeal R L) :
-    LieIdeal.IsNilpotent I ↔ I ≤ nilradical R L :=
+theorem largest_nilpotent_ideal_le_radical : largestNilpotentIdeal R L ≤ radical R L :=
   sorry
 
-theorem center_le_nilradical : center R L ≤ nilradical R L :=
-  sorry
-
-theorem nilradical_le_radical : nilradical R L ≤ radical R L :=
-  sorry
-
-instance [LieRing.IsNilpotent L] : LieRing.IsNilpotent (⊤ : LieSubalgebra R L) := by
-  sorry
-
-@[simp] lemma nilradical_eq_top_of_isNilpotent [LieRing.IsNilpotent L] :
-    nilradical R L = ⊤ :=
+@[simp] lemma largest_nilpotent_ideal_eq_top_of_isNilpotent [LieRing.IsNilpotent L] :
+    largestNilpotentIdeal R L = ⊤ :=
   sorry
 
 end LieAlgebra
