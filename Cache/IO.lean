@@ -352,24 +352,25 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
     let args := (if force then #["-f"] else #[]) ++ #["-x", "--delete-corrupted", "-j", "-"]
     let child ← IO.Process.spawn { cmd := ← getLeanTar, args, stdin := .piped }
     let (stdin, child) ← child.takeStdin
-    let config : Array Lean.Json ← hashMap.foldM (init := #[]) fun config mod hash => do
-      let pathStr := s!"{CACHEDIR / hash.asLTar}"
-      /-
-      TODO: This case distinction could be avoided by making use of the `leantar` option `-C`
-      here and in `packCache`,
-      see https://github.com/leanprover-community/mathlib4/pull/8767#discussion_r1422077498
+    /-
+    TODO: This case distinction below could be avoided by making use of the `leantar` option `-C`
+    here and in `packCache`,
+    see https://github.com/leanprover-community/mathlib4/pull/8767#discussion_r1422077498
 
-      However, changing this causes changes to the generated .ltar files *WITHOUT* changing
-      the file hash! This means this change needs to be accompanied by a change which
-      changes the hash of *ALL* files
-      (e.g. any modification to `lakefile.lean` or see TODO in `Cache.Hashing`)
-      -/
-      if (← isMathlibRoot) || !isFromMathlib mod then
-        pure <| config.push <| .str pathStr
+    However, changing this causes changes to the generated .ltar files *WITHOUT* changing
+    the file hash! This means this change needs to be accompanied by a change which
+    changes the hash of *ALL* files
+    (e.g. any modification to `lakefile.lean` or see TODO in `Cache.Hashing`)
+    -/
+    let isMathlibRoot ← isMathlibRoot
+    let mathlibDepPath := (← read).mathlibDepPath.toString
+    let config : Array Lean.Json := hashMap.fold (init := #[]) fun config mod hash =>
+      let pathStr := s!"{CACHEDIR / hash.asLTar}"
+      if isMathlibRoot || !isFromMathlib mod then
+        config.push <| .str pathStr
       else
         -- only mathlib files, when not in the mathlib4 repo, need to be redirected
-        let packageDir := (← getPackageDir mod).toString
-        pure <| config.push <| .mkObj [("file", pathStr), ("base", packageDir)]
+        config.push <| .mkObj [("file", pathStr), ("base", mathlibDepPath)]
     stdin.putStr <| Lean.Json.compress <| .arr config
     let exitCode ← child.wait
     if exitCode != 0 then throw <| IO.userError s!"leantar failed with error code {exitCode}"
