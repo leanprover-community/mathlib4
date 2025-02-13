@@ -720,9 +720,10 @@ theorem monotoneOn_deriv (hfc : ConvexOn ℝ S f) (hfd : ∀ x ∈ S, Differenti
   · rfl
   exact (hfc.deriv_le_slope hx hy hxy' (hfd x hx)).trans (hfc.slope_le_deriv hx hy hxy' (hfd y hy))
 
-lemma ge_of_leftDeriv_nonpos_of_rightDeriv_nonneg (hf : ConvexOn ℝ S f) (hx : x ∈ interior S)
-    (hf_ld : derivWithin f (Iio x) x ≤ 0) (hf_rd : 0 ≤ derivWithin f (Ioi x) x) (hy : y ∈ S) :
-    f x ≤ f y := by
+lemma isMinOn_of_leftDeriv_nonpos_of_rightDeriv_nonneg (hf : ConvexOn ℝ S f) (hx : x ∈ interior S)
+    (hf_ld : derivWithin f (Iio x) x ≤ 0) (hf_rd : 0 ≤ derivWithin f (Ioi x) x) :
+    IsMinOn f S x := by
+  intro y hy
   rcases lt_trichotomy x y with hxy | h_eq | hyx
   · suffices 0 ≤ slope f x y by
       simp only [slope_def_field, div_nonneg_iff, sub_nonneg, tsub_le_iff_right, zero_add,
@@ -737,16 +738,16 @@ lemma ge_of_leftDeriv_nonpos_of_rightDeriv_nonneg (hf : ConvexOn ℝ S f) (hx : 
     rw [slope_comm]
     exact (slope_le_leftDeriv_of_mem_interior hf hy hx hyx).trans hf_ld
 
-lemma ge_of_rightDeriv_eq_zero (hf : ConvexOn ℝ S f) (hx : x ∈ interior S)
-    (hf_rd : derivWithin f (Ioi x) x = 0) (hy : y ∈ S) :
-    f x ≤ f y := by
-  refine hf.ge_of_leftDeriv_nonpos_of_rightDeriv_nonneg hx ?_ hf_rd.symm.le hy
+lemma isMinOn_of_rightDeriv_eq_zero (hf : ConvexOn ℝ S f) (hx : x ∈ interior S)
+    (hf_rd : derivWithin f (Ioi x) x = 0) :
+    IsMinOn f S x := by
+  refine hf.isMinOn_of_leftDeriv_nonpos_of_rightDeriv_nonneg hx ?_ hf_rd.symm.le
   exact (hf.leftDeriv_le_rightDeriv_of_mem_interior hx).trans_eq hf_rd
 
-lemma ge_of_leftDeriv_eq_zero (hf : ConvexOn ℝ S f) (hx : x ∈ interior S)
-    (hf_ld : derivWithin f (Iio x) x = 0) (hy : y ∈ S) :
-    f x ≤ f y := by
-  refine hf.ge_of_leftDeriv_nonpos_of_rightDeriv_nonneg hx hf_ld.le ?_ hy
+lemma isMinOn_of_leftDeriv_eq_zero (hf : ConvexOn ℝ S f) (hx : x ∈ interior S)
+    (hf_ld : derivWithin f (Iio x) x = 0) :
+    IsMinOn f S x := by
+  refine hf.isMinOn_of_leftDeriv_nonpos_of_rightDeriv_nonneg hx hf_ld.le ?_
   exact hf_ld.symm.le.trans (hf.leftDeriv_le_rightDeriv_of_mem_interior hx)
 
 end ConvexOn
