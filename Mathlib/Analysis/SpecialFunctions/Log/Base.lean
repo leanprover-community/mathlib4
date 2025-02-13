@@ -392,30 +392,22 @@ theorem natFloor_logb_natCast (b : ℕ) (n : ℕ) : ⌊logb b n⌋₊ = Nat.log 
   obtain _ | _ | b := b
   · simp [Real.logb]
   · simp [Real.logb]
-  have hb : 1 < b.succ.succ := Nat.succ_lt_succ (Nat.zero_lt_succ _)
-  obtain rfl | hn := Decidable.eq_or_ne 0 n
+  obtain rfl | hn := eq_or_ne n 0
   · simp
-  zify
-  simp_rw [←Nat.cast_succ]
-  rw [Int.natCast_floor_eq_floor
-      (Real.logb_nonneg (Nat.one_lt_cast.mpr hb) <|
-        Nat.one_le_cast.mpr <| Nat.succ_le_of_lt <| lt_of_le_of_ne (zero_le _) hn),
-    Real.floor_logb_natCast (Nat.cast_nonneg n), Int.log_natCast]
+  rw [← Nat.cast_inj (R := ℤ), Int.natCast_floor_eq_floor, floor_logb_natCast (by simp),
+    Int.log_natCast]
+  exact logb_nonneg (by simp [Nat.cast_add_one_pos]) (Nat.one_le_cast.2 (by omega))
 
 @[norm_cast]
 theorem natCeil_logb_natCast (b : ℕ) (n : ℕ) : ⌈logb b n⌉₊ = Nat.clog b n := by
   obtain _ | _ | b := b
   · simp [Real.logb]
   · simp [Real.logb]
-  have hb : 1 < b.succ.succ := Nat.succ_lt_succ (Nat.zero_lt_succ _)
-  obtain rfl | hn := Decidable.eq_or_ne 0 n
+  obtain rfl | hn := eq_or_ne n 0
   · simp
-  zify
-  simp_rw [←Nat.cast_succ]
-  rw [Int.natCast_ceil_eq_ceil
-      (Real.logb_nonneg (Nat.one_lt_cast.mpr hb) <|
-        Nat.one_le_cast.mpr <| Nat.succ_le_of_lt <| lt_of_le_of_ne (zero_le _) hn),
-    Real.ceil_logb_natCast (Nat.cast_nonneg n), Int.clog_natCast]
+  rw [← Nat.cast_inj (R := ℤ), Int.natCast_ceil_eq_ceil, ceil_logb_natCast (by simp),
+    Int.clog_natCast]
+  exact logb_nonneg (by simp [Nat.cast_add_one_pos]) (Nat.one_le_cast.2 (by omega))
 
 lemma natLog_le_logb (a b : ℕ) : Nat.log b a ≤ Real.logb b a := by
   apply le_trans _ (Int.floor_le ((b : ℝ).logb a))
