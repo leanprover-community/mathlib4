@@ -34,8 +34,11 @@ the states reachable by a move by Left or Right. `SetTheory.PGame.State.turnBoun
 gives an upper bound on the number of possible turns remaining from this state.
 -/
 class State (S : Type u) where
+  /-- Upper bound on the number of possible turns remaining from this state -/
   turnBound : S → ℕ
+  /-- States reachable by a Left move -/
   l : S → Finset S
+  /-- States reachable by a Right move -/
   r : S → Finset S
   left_bound : ∀ {s t : S}, t ∈ l s → turnBound t < turnBound s
   right_bound : ∀ {s t : S}, t ∈ r s → turnBound t < turnBound s

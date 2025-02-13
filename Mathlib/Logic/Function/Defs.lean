@@ -46,6 +46,8 @@ abbrev onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x 
 @[inherit_doc onFun]
 scoped infixl:2 " on " => onFun
 
+/-- For a two-argument function `f`, `swap f` is the same function but taking the arguments
+in the reverse order. `swap f y x = f x y`.-/
 abbrev swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
 
 theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl

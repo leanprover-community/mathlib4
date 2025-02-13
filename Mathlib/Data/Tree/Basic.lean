@@ -123,6 +123,7 @@ scoped infixr:65 " △ " => Tree.node ()
 -- Porting note: workaround for https://github.com/leanprover/lean4/issues/2049
 compile_inductive% Tree
 
+/-- Induction principle for `Tree Unit`s -/
 @[elab_as_elim]
 def unitRecOn {motive : Tree Unit → Sort*} (t : Tree Unit) (base : motive nil)
     (ind : ∀ x y, motive x → motive y → motive (x △ y)) : motive t :=
