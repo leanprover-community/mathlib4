@@ -225,14 +225,13 @@ def toSimplexCategory : SimplexCategoryGenRel ⥤ SimplexCategory :=
         map f := match f with
           | FreeSimplexQuiver.Hom.δ i => SimplexCategory.δ i
           | FreeSimplexQuiver.Hom.σ i => SimplexCategory.σ i })
-    (fun _ _ _ _ h ↦ by
-      cases h with
-      | δ_comp_δ H => exact SimplexCategory.δ_comp_δ H
-      | δ_comp_σ_of_le H => exact SimplexCategory.δ_comp_σ_of_le H
-      | δ_comp_σ_self => exact SimplexCategory.δ_comp_σ_self
-      | δ_comp_σ_succ => exact SimplexCategory.δ_comp_σ_succ
-      | δ_comp_σ_of_gt H => exact SimplexCategory.δ_comp_σ_of_gt H
-      | σ_comp_σ H => exact SimplexCategory.σ_comp_σ H)
+    (fun _ _ _ _ h ↦ match h with 
+      | .δ_comp_δ H => SimplexCategory.δ_comp_δ H
+      | .δ_comp_σ_of_le H => SimplexCategory.δ_comp_σ_of_le H
+      | .δ_comp_σ_self => SimplexCategory.δ_comp_σ_self
+      | .δ_comp_σ_succ => SimplexCategory.δ_comp_σ_succ
+      | .δ_comp_σ_of_gt H => SimplexCategory.δ_comp_σ_of_gt H
+      | .σ_comp_σ H => SimplexCategory.σ_comp_σ H)
 
 @[simp]
 lemma toSimplexCategory_obj_mk (n : ℕ) : toSimplexCategory.obj (mk n) = .mk n := rfl
