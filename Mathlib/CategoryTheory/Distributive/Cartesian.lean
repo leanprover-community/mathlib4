@@ -57,14 +57,17 @@ variable (C : Type u) [Category.{v} C] [ChosenFiniteProducts C] [HasBinaryCoprod
 /-- A category `C` with finite products is cartesian distributive if is monoidal distributive
 with respect to the cartesian monoidal structure. -/
 abbrev CartesianDistributive :=
-  IsMonoidalLeftDistrib C
+  IsMonoidalDistrib C
 
-/-- Every cartesian distributive category is both left and right distributive. -/
-instance [CartesianDistributive C] : IsMonoidalDistrib C :=
+namespace CartesianDistributive
+
+/-- To show a category is cartesian distributive it is enough to show it is left distributive.
+The right distributivity is inferred from symmetry of the cartesian monoidal structure. -/
+def mkOfIsMonoidalLeftDistrib [IsMonoidalLeftDistrib C] : CartesianDistributive C :=
   SymmetricCategory.isMonoidalDistrib_of_isMonoidalLeftDistrib
 
 /-- The coproduct coprojections are monic in a cartesian distributive category. -/
-instance [IsMonoidalLeftDistrib C] : MonoCoprod C :=
+instance monoCoprod [IsMonoidalLeftDistrib C] : MonoCoprod C :=
   MonoCoprod.mk' fun A B => by
     refine ⟨BinaryCofan.mk (coprod.inl : A ⟶ A ⨿ B) coprod.inr, ?_, ?_⟩
     · exact coprodIsCoprod A B
@@ -87,5 +90,7 @@ instance [IsMonoidalLeftDistrib C] : MonoCoprod C :=
       convert lift_snd (𝟙 Z) g
       rw [← this]
       simp only [lift_snd]
+
+end CartesianDistributive
 
 end CategoryTheory
