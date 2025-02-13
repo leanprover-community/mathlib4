@@ -3,17 +3,13 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.NoncommCoprod
-import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.GroupTheory.Perm.ConjAct
-import Mathlib.GroupTheory.Perm.Cycle.Factors
 import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
 import Mathlib.GroupTheory.Perm.DomMulAct
-import Mathlib.GroupTheory.Perm.Finite
 
 /-! # Centralizer of a permutation and cardinality of conjugacy classes
   # in the symmetric groups

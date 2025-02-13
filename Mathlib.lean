@@ -245,12 +245,15 @@ import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Field.Equiv
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.Field.MinimalAxioms
+import Mathlib.Algebra.Field.NegOnePow
 import Mathlib.Algebra.Field.Opposite
+import Mathlib.Algebra.Field.Periodic
 import Mathlib.Algebra.Field.Power
 import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Algebra.Field.Subfield.Defs
 import Mathlib.Algebra.Field.ULift
+import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Free
 import Mathlib.Algebra.FreeAlgebra
 import Mathlib.Algebra.FreeAlgebra.Cardinality
@@ -850,7 +853,6 @@ import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Algebra.Order.UpperLower
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Algebra.PEmptyInstances
-import Mathlib.Algebra.Periodic
 import Mathlib.Algebra.Pointwise.Stabilizer
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Basic
@@ -956,6 +958,7 @@ import Mathlib.Algebra.Ring.NonZeroDivisors
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Algebra.Ring.PUnit
 import Mathlib.Algebra.Ring.Parity
+import Mathlib.Algebra.Ring.Periodic
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Ring.Pointwise.Finset
 import Mathlib.Algebra.Ring.Pointwise.Set
