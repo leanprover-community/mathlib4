@@ -7,7 +7,7 @@ import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Order.CauSeq.BigOperators
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Data.Complex.BigOperators
-import Mathlib.Data.Complex.Norm
+import Mathlib.Data.Complex.Abs
 import Mathlib.Data.Nat.Choose.Sum
 
 /-!
@@ -25,11 +25,12 @@ namespace Complex
 theorem isCauSeq_abs_exp (z : ℂ) :
     IsCauSeq _root_.abs fun n => ∑ m ∈ range n, abs (z ^ m / m.factorial) :=
   let ⟨n, hn⟩ := exists_nat_gt (abs z)
-  have hn0 : (0 : ℝ) < n := lt_of_le_of_lt (abs.nonneg _) hn
-  IsCauSeq.series_ratio_test n (abs z / n) (div_nonneg (abs.nonneg _) (le_of_lt hn0))
+  have hn0 : (0 : ℝ) < n := lt_of_le_of_lt (norm_nonneg _) hn
+  IsCauSeq.series_ratio_test n (abs z / n) (div_nonneg (norm_nonneg _) (le_of_lt hn0))
     (by rwa [div_lt_iff₀ hn0, one_mul]) fun m hm => by
       rw [Complex.abs_abs, Complex.abs_abs, Nat.factorial_succ, pow_succ', mul_comm m.succ,
-        Nat.cast_mul, ← div_div, mul_div_assoc, mul_div_right_comm, map_mul, map_div₀, abs_natCast]
+        Nat.cast_mul, ← div_div, mul_div_assoc, mul_div_right_comm, abs_eq_norm, Complex.norm_mul,
+        Complex.norm_div, norm_natCast]
       gcongr
       exact le_trans hm (Nat.le_succ _)
 
@@ -377,10 +378,10 @@ theorem exp_bound {x : ℂ} (hx : abs x ≤ 1) {n : ℕ} (hn : 0 < n) :
     _ ≤ ∑ m ∈ range j with n ≤ m, abs (x ^ n * (x ^ (m - n) / m.factorial)) :=
       IsAbsoluteValue.abv_sum Complex.abs ..
     _ ≤ ∑ m ∈ range j with n ≤ m, abs x ^ n * (1 / m.factorial) := by
-      simp_rw [map_mul, map_pow, map_div₀, abs_natCast]
+      simp_rw [Complex.norm_mul, Complex.norm_pow, Complex.norm_div, norm_natCast]
       gcongr
-      rw [abv_pow abs]
-      exact pow_le_one₀ (abs.nonneg _) hx
+      rw [Complex.norm_pow]
+      exact pow_le_one₀ (norm_nonneg _) hx
     _ = abs x ^ n * ∑ m ∈ range j with n ≤ m, (1 / m.factorial : ℝ) := by
       simp [abs_mul, abv_pow abs, abs_div, ← mul_sum]
     _ ≤ abs x ^ n * (n.succ * (n.factorial * n : ℝ)⁻¹) := by
@@ -403,7 +404,7 @@ theorem exp_bound' {x : ℂ} {n : ℕ} (hx : abs x / n.succ ≤ 1 / 2) :
         ∑ i ∈ range k, abs (x ^ (n + i) / ((n + i).factorial : ℂ)) :=
       IsAbsoluteValue.abv_sum _ _ _
     _ ≤ ∑ i ∈ range k, abs x ^ (n + i) / (n + i).factorial := by
-      simp [Complex.abs_natCast, map_div₀, abv_pow abs]
+      simp [Complex.abs_natCast, Complex.norm_pow]
     _ ≤ ∑ i ∈ range k, abs x ^ (n + i) / ((n.factorial : ℝ) * (n.succ : ℝ) ^ i) := ?_
     _ = ∑ i ∈ range k, abs x ^ n / n.factorial * (abs x ^ i / (n.succ : ℝ) ^ i) := ?_
     _ ≤ abs x ^ n / ↑n.factorial * 2 := ?_
@@ -450,10 +451,10 @@ lemma abs_exp_sub_sum_le_exp_abs_sub_sum (x : ℂ) (n : ℕ) :
     rw [sum_range_sub_sum_range hj, sum_range_sub_sum_range hj]
     refine (IsAbsoluteValue.abv_sum Complex.abs ..).trans_eq ?_
     congr with i
-    simp
+    simp [Complex.norm_pow]
   _ ≤ Real.exp (abs x) - ∑ m ∈ range n, (abs x) ^ m / m.factorial := by
     gcongr
-    exact Real.sum_le_exp_of_nonneg (by exact AbsoluteValue.nonneg abs x) _
+    exact Real.sum_le_exp_of_nonneg (norm_nonneg _) _
 
 lemma abs_exp_le_exp_abs (x : ℂ) : abs (exp x) ≤ Real.exp (abs x) := by
   convert abs_exp_sub_sum_le_exp_abs_sub_sum x 0 using 1 <;> simp
@@ -475,9 +476,9 @@ lemma abs_exp_sub_sum_le_abs_mul_exp (x : ℂ) (n : ℕ) :
     _ ≤ ∑ m ∈ range j with n ≤ m, abs (x ^ n * (x ^ (m - n) / m.factorial)) :=
       IsAbsoluteValue.abv_sum Complex.abs ..
     _ ≤ ∑ m ∈ range j with n ≤ m, abs x ^ n * (abs x ^ (m - n) / (m - n).factorial) := by
-      simp_rw [map_mul, map_pow, map_div₀, abs_natCast]
+      simp_rw [Complex.norm_mul, Complex.norm_pow, Complex.norm_div, norm_natCast]
       gcongr with i hi
-      · rw [IsAbsoluteValue.abv_pow abs]
+      · rw [Complex.norm_pow]
       · simp
     _ = abs x ^ n * ∑ m ∈ range j with n ≤ m, (abs x ^ (m - n) / (m - n).factorial) := by
       rw [← mul_sum]
@@ -501,7 +502,7 @@ lemma abs_exp_sub_sum_le_abs_mul_exp (x : ℂ) (n : ℕ) :
     _ ≤ abs x ^ n * Real.exp (abs x) := by
       gcongr
       refine Real.sum_le_exp_of_nonneg ?_ _
-      exact AbsoluteValue.nonneg abs x
+      exact norm_nonneg _
 
 end Complex
 
@@ -678,9 +679,11 @@ end Mathlib.Meta.Positivity
 
 namespace Complex
 
-@[simp]
-theorem abs_exp_ofReal (x : ℝ) : abs (exp x) = Real.exp x := by
+theorem norm_exp_ofReal (x : ℝ) : ‖exp x‖ = Real.exp x := by
   rw [← ofReal_exp]
-  exact Complex.abs_of_nonneg (le_of_lt (Real.exp_pos _))
+  exact Complex.norm_of_nonneg (le_of_lt (Real.exp_pos _))
+
+@[simp]
+theorem abs_exp_ofReal (x : ℝ) : abs (exp x) = Real.exp x := norm_exp_ofReal _
 
 end Complex

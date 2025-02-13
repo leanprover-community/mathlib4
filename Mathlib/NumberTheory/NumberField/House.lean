@@ -78,27 +78,30 @@ private theorem c_nonneg : 0 ≤ c K := by
   rw [c, mul_nonneg_iff]; left
   exact ⟨by simp only [Nat.cast_nonneg], norm_nonneg ((basisMatrix K).transpose)⁻¹⟩
 
-theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
-    Complex.abs (((integralBasis K).reindex (equivReindex K).symm).repr α i) ≤
+theorem basis_repr_norm_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
+    ‖(((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ)‖  ≤
       (c K) * house (algebraMap (𝓞 K) K α) := by
   let σ := canonicalEmbedding K
   calc
-    _ ≤ ∑ j, ‖((basisMatrix K).transpose)⁻¹‖ * Complex.abs (σ (algebraMap (𝓞 K) K α) j) := ?_
+    _ ≤ ∑ j, ‖((basisMatrix K).transpose)⁻¹‖ * ‖σ (algebraMap (𝓞 K) K α) j‖  := ?_
     _ ≤ ∑ _ : K →+* ℂ, ‖fun i j => ((basisMatrix K).transpose)⁻¹ i j‖
         * house (algebraMap (𝓞 K) K α) := ?_
     _ = ↑(finrank ℚ K) * ‖((basisMatrix K).transpose)⁻¹‖ * house (algebraMap (𝓞 K) K α) := ?_
-
   · rw [← inverse_basisMatrix_mulVec_eq_repr]
     apply le_trans
-    · apply le_trans (AbsoluteValue.sum_le Complex.abs _ _)
-      · exact sum_le_sum (fun _ _ => (AbsoluteValue.map_mul Complex.abs _ _).le)
-    · apply sum_le_sum (fun _ _ => mul_le_mul_of_nonneg_right ?_
-        (AbsoluteValue.nonneg Complex.abs _))
+    · apply le_trans (norm_sum_le _ _)
+      · exact sum_le_sum fun _ _ => (norm_mul _ _).le
+    · apply sum_le_sum fun _ _ => mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
       · exact norm_entry_le_entrywise_sup_norm ((basisMatrix K).transpose)⁻¹
   · apply sum_le_sum; intros j _
     apply mul_le_mul_of_nonneg_left _ (norm_nonneg fun i j ↦ ((basisMatrix K).transpose)⁻¹ i j)
     · exact norm_le_pi_norm (σ ((algebraMap (𝓞 K) K) α)) j
   · rw [sum_const, card_univ, nsmul_eq_mul, Embeddings.card, mul_assoc]
+
+theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
+    Complex.abs (((integralBasis K).reindex (equivReindex K).symm).repr α i) ≤
+      (c K) * house (algebraMap (𝓞 K) K α) :=
+  basis_repr_norm_le_const_mul_house _ _ _
 
 /-- `newBasis K` defines a reindexed basis of the ring of integers of `K`,
   adjusted by the inverse of the equivalence `equivReindex`. -/
