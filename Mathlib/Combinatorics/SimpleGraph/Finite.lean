@@ -481,20 +481,28 @@ theorem card_edgeFinset_induce_support :
     #(G.induce G.support).edgeFinset = #G.edgeFinset :=
   card_edgeFinset_induce_of_support_subset subset_rfl
 
+theorem map_neighborFinset_induce (v : s) :
+    ((G.induce s).neighborFinset v).map (Embedding.subtype s)
+      = G.neighborFinset v ∩ s.toFinset := by
+  ext; simp [Set.mem_def]
+
+theorem map_neighborFinset_induce_of_neighborSet_subset {v : s} (h : G.neighborSet v ⊆ s) :
+    ((G.induce s).neighborFinset v).map (Embedding.subtype s) = G.neighborFinset v := by
+  rwa [← Set.toFinset_subset_toFinset, ← neighborFinset_def, ← inter_eq_left,
+    ← map_neighborFinset_induce v] at h
+
 /-- If the neighbor set of a vertex `v` is a subset of `s`, then the degree of the vertex in the
 induced subgraph of `s` is the same as in `G`. -/
 theorem degree_induce_of_neighborSet_subset {v : s} (h : G.neighborSet v ⊆ s) :
     (G.induce s).degree v = G.degree v := by
-  apply card_nbij (fun v ↦ ↑v) (by simp) (Set.injOn_of_injective Subtype.val_injective)
-  intro _ hadj
-  rw [neighborFinset_def, Set.coe_toFinset] at hadj
-  simp [show G.Adj v _ from hadj, h hadj]
+  simp_rw [← card_neighborFinset_eq_degree,
+    ← map_neighborFinset_induce_of_neighborSet_subset h, card_map]
 
 /-- If the support of the simple graph `G` is a subset of the set `s`, then the degree of vertices
 in the induced subgraph of `s` are the same as in `G`. -/
 theorem degree_induce_of_support_subset (h : G.support ⊆ s) (v : s) :
     (G.induce s).degree v = G.degree v :=
-  degree_induce_of_neighborSet_subset (fun _ hadj ↦ h ⟨v, hadj.symm⟩)
+  degree_induce_of_neighborSet_subset <| (G.neighborSet_subset_support v).trans h
 
 theorem degree_induce_support (v : G.support) :
     (G.induce G.support).degree v = G.degree v :=
