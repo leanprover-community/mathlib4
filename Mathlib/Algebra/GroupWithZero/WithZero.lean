@@ -71,7 +71,7 @@ instance mulZeroOneClass [MulOneClass α] : MulZeroOneClass (WithZero α) where
   mul_one := Option.map₂_right_identity mul_one
 
 /-- Coercion as a monoid hom. -/
-@[simps apply]
+@[simps (config := .asFn)]
 def coeMonoidHom : α →* WithZero α where
   toFun        := (↑)
   map_one'     := rfl
@@ -90,7 +90,7 @@ theorem monoidWithZeroHom_ext ⦃f g : WithZero α →*₀ β⦄
     | (g : α) => DFunLike.congr_fun h g
 
 /-- The (multiplicative) universal property of `WithZero`. -/
-@[simps! symm_apply_apply]
+@[simps! (config := .asFn)]
 noncomputable nonrec def lift' : (α →* β) ≃ (WithZero α →*₀ β) where
   toFun f :=
     { toFun := fun
