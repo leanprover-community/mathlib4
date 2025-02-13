@@ -28,6 +28,7 @@ variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 variable (F : C ⥤ Type max w v u)
 
+set_option pp.universes true in
 /-- When `F G H : C ⥤ Type max w v u`, we have `(G ⟶ F.functorHom H) ≃ (F ⊗ G ⟶ H)`. -/
 @[simps!]
 def functorHomEquiv (G H : C ⥤ Type max w v u) : (G ⟶ F.functorHom H) ≃ (F ⊗ G ⟶ H) :=
@@ -44,25 +45,27 @@ def rightAdj_map {F G H : C ⥤ Type max w v u} (f : G ⟶ H) (c : C) (a : (F.fu
     change (F.map g ≫ a.app _ (h ≫ g)) ≫ _ = _
     aesop
 
+set_option pp.universes true in
 /-- A right adjoint of `tensorLeft F`. -/
 @[simps!]
 def rightAdj : (C ⥤ Type max w v u) ⥤ C ⥤ Type max w v u where
   obj G := F.functorHom G
-  map f := { app := rightAdj_map f }
+  map f := { app := rightAdj_map.{w,v,u} f }
 
 /-- The adjunction `tensorLeft F ⊣ rightAdj F`. -/
-def adj : tensorLeft F ⊣ rightAdj F where
+def adj : tensorLeft.{max w v u} F ⊣ rightAdj.{w,v,u} F where
   unit := {
-    app := fun G ↦ (functorHomEquiv F G _).2 (𝟙 _)
+    app := fun G ↦ (functorHomEquiv.{w,v,u} F G _).2 (𝟙 _)
     naturality := fun G H f ↦ by
       dsimp [rightAdj]
       ext _
       simp [FunctorToTypes.naturality] }
-  counit := { app := fun G ↦ functorHomEquiv F _ G (𝟙 _) }
+  counit := { app := fun G ↦ functorHomEquiv.{w,v,u} F _ G (𝟙 _) }
 
 instance closed : Closed F where
-  adj := adj F
+  adj := adj.{w,v,u} F
 
 instance monoidalClosed : MonoidalClosed (C ⥤ Type max w v u) where
+  closed F := closed.{w,v,u} F
 
 end CategoryTheory.FunctorToTypes

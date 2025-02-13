@@ -65,7 +65,7 @@ def cartesianClosedFunctorToTypes {C : Type u₁} [Category.{v₁} C] :
 -- TODO: once we have `MonoidalClosed` instances for functor categories into general monoidal
 -- closed categories, replace this with that, as it will be a more explicit construction.
 instance {C : Type u₁} [Category.{v₁} C] : CartesianClosed (C ⥤ Type (max u₁ v₁)) :=
-  cartesianClosedFunctorToTypes
+  cartesianClosedFunctorToTypes.{v₁,u₁,u₁}
 
 -- TODO: once we have `MonoidalClosed` instances for functor categories into general monoidal
 -- closed categories, replace this with that, as it will be a more explicit construction.
