@@ -57,7 +57,7 @@ theorem iff {j : ℕ} {i : Fin (j + 2)} : Isδ₀ (SimplexCategory.δ i) ↔ i =
   · rintro rfl
     exact ⟨rfl, by dsimp; exact Fin.succ_ne_zero (0 : Fin (j + 1))⟩
 
-theorem eq_δ₀ {n : ℕ} {i : ([n] : SimplexCategory) ⟶ [n + 1]} [Mono i] (hi : Isδ₀ i) :
+theorem eq_δ₀ {n : ℕ} {i : ⦋n⦌ ⟶ ⦋n + 1⦌} [Mono i] (hi : Isδ₀ i) :
     i = SimplexCategory.δ 0 := by
   obtain ⟨j, rfl⟩ := SimplexCategory.eq_δ_of_mono i
   rw [iff] at hi
@@ -217,7 +217,7 @@ def obj (K : ChainComplex C ℕ) : SimplicialObject C where
 /-- By construction, the simplicial `Γ₀.obj K` is equipped with a splitting. -/
 def splitting (K : ChainComplex C ℕ) : SimplicialObject.Splitting (Γ₀.obj K) where
   N n := K.X n
-  ι n := Sigma.ι (Γ₀.Obj.summand K (op [n])) (Splitting.IndexSet.id (op [n]))
+  ι n := Sigma.ι (Γ₀.Obj.summand K (op ⦋n⦌)) (Splitting.IndexSet.id (op ⦋n⦌))
   isColimit' Δ := IsColimit.ofIsoColimit (colimit.isColimit _) (Cofan.ext (Iso.refl _) (by
       intro A
       dsimp [Splitting.cofan']
@@ -311,7 +311,7 @@ def Γ₂ : Karoubi (ChainComplex C ℕ) ⥤ Karoubi (SimplicialObject C) :=
 
 theorem HigherFacesVanish.on_Γ₀_summand_id (K : ChainComplex C ℕ) (n : ℕ) :
     @HigherFacesVanish C _ _ (Γ₀.obj K) _ n (n + 1)
-      (((Γ₀.splitting K).cofan _).inj (Splitting.IndexSet.id (op [n + 1]))) := by
+      (((Γ₀.splitting K).cofan _).inj (Splitting.IndexSet.id (op ⦋n + 1⦌))) := by
   intro j _
   have eq := Γ₀.Obj.mapMono_on_summand_id K (SimplexCategory.δ j.succ)
   rw [Γ₀.Obj.Termwise.mapMono_eq_zero K, zero_comp] at eq; rotate_left
@@ -322,9 +322,9 @@ theorem HigherFacesVanish.on_Γ₀_summand_id (K : ChainComplex C ℕ) (n : ℕ)
 
 @[reassoc (attr := simp)]
 theorem PInfty_on_Γ₀_splitting_summand_eq_self (K : ChainComplex C ℕ) {n : ℕ} :
-    ((Γ₀.splitting K).cofan _).inj (Splitting.IndexSet.id (op [n])) ≫
+    ((Γ₀.splitting K).cofan _).inj (Splitting.IndexSet.id (op ⦋n⦌)) ≫
       (PInfty : K[Γ₀.obj K] ⟶ _).f n =
-      ((Γ₀.splitting K).cofan _).inj (Splitting.IndexSet.id (op [n])) := by
+      ((Γ₀.splitting K).cofan _).inj (Splitting.IndexSet.id (op ⦋n⦌)) := by
   rw [PInfty_f]
   rcases n with _|n
   · simpa only [P_f_0_eq] using comp_id _

@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Julian Kuelshammer
 -/
 import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.Group.Pointwise.Set.Finite
+import Mathlib.Algebra.Group.Semiconj.Basic
 import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.Group.Action
@@ -12,7 +14,6 @@ import Mathlib.Dynamics.PeriodicPts.Lemmas
 import Mathlib.GroupTheory.Index
 import Mathlib.NumberTheory.Divisors
 import Mathlib.Order.Interval.Set.Infinite
-import Mathlib.Tactic.Positivity
 
 /-!
 # Order of an element
@@ -32,6 +33,8 @@ This file defines the order of an element of a finite group. For a finite group 
 ## Tags
 order of an element
 -/
+
+assert_not_exists Field
 
 open Function Fintype Nat Pointwise Subgroup Submonoid
 
@@ -109,7 +112,7 @@ lemma IsOfFinOrder.pow {n : ℕ} : IsOfFinOrder a → IsOfFinOrder (a ^ n) := by
 lemma IsOfFinOrder.of_pow {n : ℕ} (h : IsOfFinOrder (a ^ n)) (hn : n ≠ 0) : IsOfFinOrder a := by
   rw [isOfFinOrder_iff_pow_eq_one] at *
   rcases h with ⟨m, hm, ha⟩
-  exact ⟨n * m, by positivity, by rwa [pow_mul]⟩
+  exact ⟨n * m, mul_pos hn.bot_lt hm, by rwa [pow_mul]⟩
 
 @[to_additive (attr := simp)]
 lemma isOfFinOrder_pow {n : ℕ} : IsOfFinOrder (a ^ n) ↔ IsOfFinOrder a ∨ n = 0 := by
@@ -214,10 +217,6 @@ theorem IsOfFinOrder.mono [Monoid β] {y : β} (hx : IsOfFinOrder x) (h : orderO
 @[to_additive]
 theorem pow_ne_one_of_lt_orderOf (n0 : n ≠ 0) (h : n < orderOf x) : x ^ n ≠ 1 := fun j =>
   not_isPeriodicPt_of_pos_of_lt_minimalPeriod n0 h ((isPeriodicPt_mul_iff_pow_eq_one x).mpr j)
-@[deprecated (since := "2024-07-20")] alias pow_ne_one_of_lt_orderOf' := pow_ne_one_of_lt_orderOf
-@[deprecated (since := "2024-07-20")] alias
-  nsmul_ne_zero_of_lt_addOrderOf' := nsmul_ne_zero_of_lt_addOrderOf
-
 @[to_additive]
 theorem orderOf_le_of_pow_eq_one (hn : 0 < n) (h : x ^ n = 1) : orderOf x ≤ n :=
   IsPeriodicPt.minimalPeriod_le hn (by rwa [isPeriodicPt_mul_iff_pow_eq_one])
@@ -701,6 +700,11 @@ theorem sum_card_orderOf_eq_card_pow_eq_one [Fintype G] [DecidableEq G] (hn : n 
 theorem orderOf_le_card_univ [Fintype G] : orderOf x ≤ Fintype.card G :=
   Finset.le_card_of_inj_on_range (x ^ ·) (fun _ _ ↦ Finset.mem_univ _) pow_injOn_Iio_orderOf
 
+@[to_additive]
+theorem orderOf_le_card [Finite G] : orderOf x ≤ Nat.card G := by
+  obtain ⟨⟩ := nonempty_fintype G
+  simpa using orderOf_le_card_univ
+
 end FiniteMonoid
 
 section FiniteCancelMonoid
@@ -1059,7 +1063,7 @@ theorem LinearOrderedRing.orderOf_le_two : orderOf x ≤ 2 := by
   · simp [orderOf_abs_ne_one h]
   rcases eq_or_eq_neg_of_abs_eq h with (rfl | rfl)
   · simp
-  apply orderOf_le_of_pow_eq_one <;> norm_num
+  exact orderOf_le_of_pow_eq_one zero_lt_two (by simp)
 
 end LinearOrderedRing
 

@@ -8,6 +8,8 @@ import Mathlib.Algebra.Group.Subgroup.Lattice
 
 /-! # Connection between `Subgroup.closure` and `Finsupp.prod` -/
 
+assert_not_exists Field
+
 namespace Subgroup
 
 variable {M : Type*} [CommGroup M] {ι : Type*} (f : ι → M) (x : M)

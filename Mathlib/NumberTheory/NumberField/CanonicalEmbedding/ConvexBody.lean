@@ -479,7 +479,7 @@ theorem minkowskiBound_lt_top : minkowskiBound K I < ⊤ := by
   classical
   refine ENNReal.mul_lt_top ?_ ?_
   · exact (fundamentalDomain_isBounded _).measure_lt_top
-  · exact ENNReal.pow_lt_top (lt_top_iff_ne_top.mpr ENNReal.two_ne_top) _
+  · exact ENNReal.pow_lt_top (lt_top_iff_ne_top.mpr ENNReal.ofNat_ne_top) _
 
 theorem minkowskiBound_pos : 0 < minkowskiBound K I := by
   classical
