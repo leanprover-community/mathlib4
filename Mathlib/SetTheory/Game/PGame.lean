@@ -2079,6 +2079,46 @@ theorem insertRight_insertLeft {x x' x'' : PGame} :
   cases x; cases x'; cases x''
   dsimp [insertLeft, insertRight]
 
+/-! ### Removing an option -/
+
+/-- The PGame constructed by removing `'x` as a left option from `x`. -/
+def removeLeft (x : PGame.{u}) (i : x.LeftMoves) : PGame :=
+  match x with
+  | mk _ xr xL xR => mk { x // x ≠ i } xr (xL ·.val) xR
+
+/-- One less left option will not empower Left. -/
+theorem removeLeft_le (x : PGame) (i : x.LeftMoves) : x.removeLeft i ≤ x := by
+  rw [le_def]
+  constructor
+  · intro i
+    left
+    rcases x with ⟨xl, xr, xL, xR⟩
+    simp only [moveLeft_mk]
+    constructor
+    rfl
+  · intro j
+    right
+    rcases x with ⟨xl, xr, xL, xR⟩
+    simp only [moveRight_mk]
+    use j
+    rfl
+
+/-- The PGame constructed by removing `'x` as a right option from `x`. -/
+def removeRight (x : PGame.{u}) (i : x.RightMoves) : PGame :=
+  match x with
+  | mk xl _ xL xR => mk xl { x // x ≠ i } xL (xR ·.val)
+
+theorem neg_removeRight_neg (x : PGame.{u}) (i : x.RightMoves) :
+    (-x).removeLeft (toLeftMovesNeg i) = -x.removeRight i := by
+  cases x
+  dsimp [insertRight, insertLeft]
+  congr! with (i | j)
+
+/-- One less right option will not empower Right. -/
+theorem removeRight_le (x : PGame) (i : x.RightMoves) : x ≤ x.removeRight i := by
+  rw [← neg_le_neg_iff, ← neg_removeRight_neg]
+  simp only [removeLeft_le]
+
 /-! ### Special pre-games -/
 
 
