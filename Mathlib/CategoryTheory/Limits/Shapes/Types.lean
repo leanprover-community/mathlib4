@@ -549,7 +549,7 @@ theorem coequalizer_preimage_image_eq_of_preimage_eq (π : Y ⟶ Z) (e : f ≫ �
   · exact fun hx => ⟨_, hx, rfl⟩
 
 /-- The categorical coequalizer in `Type u` is the quotient by `f g ~ g x`. -/
-noncomputable def coequalizerIso : coequalizer f g ≅ Function.coequalizer f g :=
+noncomputable def coequalizerIso : coequalizer f g ≅ Function.Coequalizer f g :=
   colimit.isoColimitCocone (coequalizerColimit f g)
 
 @[elementwise (attr := simp)]

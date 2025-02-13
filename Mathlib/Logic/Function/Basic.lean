@@ -883,7 +883,7 @@ inductive Coequalizer.Rel {α β : Type*} (f g : α → β) : β → β → Prop
 /-- The coequalizer of two functions `f g : α → β` is the pair (`μ`, `p : β → μ`) that
 satisfies the following universal property: Every function `u : β → γ`
 with `u ∘ f = u ∘ g` factors uniquely via `p`. -/
-def coequalizer {α : Type*} {β : Type v} (f g : α → β) : Type v :=
+def Coequalizer {α : Type*} {β : Type v} (f g : α → β) : Type v :=
   Quot (Function.Coequalizer.Rel f g)
 
 namespace Coequalizer
@@ -891,7 +891,7 @@ namespace Coequalizer
 variable {α β : Type*} (f g : α → β)
 
 /-- The canonical projection to the coequalizer. -/
-def mk (x : β) : coequalizer f g :=
+def mk (x : β) : Coequalizer f g :=
   Quot.mk _ x
 
 lemma condition (x : α) : mk f g (f x) = mk f g (g x) :=
@@ -901,7 +901,7 @@ lemma mk_surjective : Function.Surjective (mk f g) :=
   Quot.exists_rep
 
 /-- Any map `u : β → γ` with `u ∘ f = u ∘ g` factors via `Function.Coequalizer.mk`. -/
-def desc {γ : Type*} (u : β → γ) (hu : u ∘ f = u ∘ g) : Function.coequalizer f g → γ :=
+def desc {γ : Type*} (u : β → γ) (hu : u ∘ f = u ∘ g) : Coequalizer f g → γ :=
   Quot.lift u (fun _ _ (.intro e) ↦ congrFun hu e)
 
 @[simp] lemma desc_mk {γ : Type*} (u : β → γ) (hu : u ∘ f = u ∘ g) (x : β) :
