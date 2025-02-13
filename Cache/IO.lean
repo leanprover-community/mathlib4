@@ -406,10 +406,10 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
     let sp := (← read).srcSearchPath
     args₀.foldlM (init := ∅) fun acc (argₛ : String) => do
       let arg : FilePath := argₛ
-      let mod : Name := arg.withExtension "" |>.components.foldl .str .anonymous
-      let packageDir ← getPackageDir mod
       if arg.components.length > 1 || arg.extension == "lean" then
         -- provided file name of a Lean file
+        let mod : Name := arg.withExtension "" |>.components.foldl .str .anonymous
+        let packageDir ← getPackageDir mod
         if !(← arg.pathExists) then
           IO.eprintln s!"Invalid argument: non-existing path {arg}"
           IO.Process.exit 1
@@ -436,7 +436,7 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
           let folder := sourceFile.withExtension ""
           IO.println s!"Searching directory {folder} for .lean files"
           if ← folder.pathExists then
-            -- case 2: "module name" of an existing folder: walk dir
+            -- provided "module name" of an existing folder: walk dir
             IO.eprintln <| "Entering a part of a module name " ++
             "(i.e. `Mathlib.Data` when only the fold `Mathlib/Data/` but no " ++
             "file `Mathlib/Data.lean` exists) is not supported yet!"

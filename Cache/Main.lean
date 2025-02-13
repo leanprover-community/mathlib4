@@ -48,17 +48,6 @@ Valid arguments are:
   'Mathlib/**/Order/*.lean'.
 "
 
-open Lean System in
-/-- Note that this normalizes the path strings, which is needed when running from a unix shell
-(which uses `/` in paths) on windows (which uses `\` in paths) as otherwise our filename keys won't
-match. -/
-def toPaths (args : List String) : List FilePath :=
-  args.map fun arg =>
-    if arg.endsWith ".lean" then
-      FilePath.mk arg |>.normalize
-    else
-      mkFilePath (arg.toName.components.map Name.toString) |>.withExtension "lean"
-
 /-- Commands which (potentially) call `curl` for downloading files -/
 def curlArgs : List String :=
   ["get", "get!", "get-", "put", "put!", "put-unpacked", "commit", "commit!"]
