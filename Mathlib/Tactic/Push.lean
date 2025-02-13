@@ -42,8 +42,8 @@ register_option push_neg.use_distrib : Bool :=
 
 /--
 Pushes a negation in ways that aren't possible with a lemma:
-- `¬(a ∧ b)` turns into `a → ¬b` or `¬a ∨ ¬b`, depending on the option `push_neg.use_distrib`.
-- `¬(a = b)` turns into `a ≠ b`, which would cause a loop if used as a `simp` lemma.
+- `¬(p ∧ q)` turns into `p → ¬q` or `¬a ∨ ¬q`, depending on the option `push_neg.use_distrib`.
+- `¬(p = q)` turns into `p ≠ q`, which would cause a loop if used as a `simp` lemma.
 - `¬∃ a, p` turns into `∀ a, ¬p`, where the binder name `a` is preserved.
 - `¬∀ a, p` turns into `∃ a, ¬p`, where the binder name `a` is preserved.
 -/
@@ -129,7 +129,7 @@ def pushNegLocalDecl (const : Name) (discharge? : Option Simp.Discharge) (fvarId
 open private Lean.Elab.Tactic.mkDischargeWrapper in mkSimpContext
 
 /--
-Push a given constant inside of an expression
+Push a given constant inside of an expression.
 For instance, `push Real.log` could turn `log (a * b ^ 2)` into `log a + 2 * log b`.
 
 The `push` tactic can be extended using the `@[push]` attribute.
