@@ -499,6 +499,10 @@ instance [hasGMul F F_lt] : DirectSum.GAlgebra R (GradedPiece F F_lt) where
     have : (GradedMonoid.mk 0 ((GradedPiece.algebraMap F F_lt) r)).fst = 0 := rfl
     simp [this]) (GradedPiece.algebraMap.smul_def F F_lt r i a)
 
+open DirectSum in
+instance [hasGMul F F_lt] [DecidableEq ι] : Algebra R (⨁ i, GradedPiece F F_lt i) :=
+  DirectSum.instAlgebra R (GradedPiece F F_lt)
+
 end GradedAlgebra
 
 end HasGMul
