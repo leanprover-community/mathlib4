@@ -1312,11 +1312,11 @@ lemma add_smul_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) {u v : R} (hu : IsUnit
     W'.add (u • P) (v • Q) = u ^ 4 • W'.add P Q := by
   rw [add_of_equiv <| (smul_equiv_smul P Q hu hv).mpr h, dblXYZ_smul, add_of_equiv h]
 
-lemma add_self (P : Fin 3 → R) : W'.add P P = W'.dblXYZ P :=
+protected lemma add_self (P : Fin 3 → R) : W'.add P P = W'.dblXYZ P :=
   add_of_equiv <| Setoid.refl _
 
 lemma add_of_eq {P Q : Fin 3 → R} (h : P = Q) : W'.add P Q = W'.dblXYZ P :=
-  h ▸ add_self P
+  h ▸ Projective.add_self P
 
 lemma add_of_not_equiv {P Q : Fin 3 → R} (h : ¬P ≈ Q) : W'.add P Q = W'.addXYZ P Q :=
   if_neg h

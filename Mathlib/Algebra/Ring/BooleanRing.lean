@@ -54,18 +54,18 @@ namespace BooleanRing
 variable [BooleanRing α] (a b : α)
 
 @[scoped simp]
-lemma mul_self : a * a = a := IsIdempotentElem.eq (isIdempotentElem a)
+protected lemma mul_self : a * a = a := IsIdempotentElem.eq (isIdempotentElem a)
 
 instance : Std.IdempotentOp (α := α) (· * ·) :=
   ⟨BooleanRing.mul_self⟩
 
 @[scoped simp]
-theorem add_self : a + a = 0 := by
+protected theorem add_self : a + a = 0 := by
   have : a + a = a + a + (a + a) :=
     calc
-      a + a = (a + a) * (a + a) := by rw [mul_self]
+      a + a = (a + a) * (a + a) := by rw [BooleanRing.mul_self]
       _ = a * a + a * a + (a * a + a * a) := by rw [add_mul, mul_add]
-      _ = a + a + (a + a) := by rw [mul_self]
+      _ = a + a + (a + a) := by rw [BooleanRing.mul_self]
   rwa [self_eq_add_left] at this
 
 @[scoped simp]
@@ -73,7 +73,7 @@ theorem neg_eq : -a = a :=
   calc
     -a = -a + 0 := by rw [add_zero]
     _ = -a + -a + a := by rw [← neg_add_cancel, add_assoc]
-    _ = a := by rw [add_self, zero_add]
+    _ = a := by rw [BooleanRing.add_self, zero_add]
 
 theorem add_eq_zero' : a + b = 0 ↔ a = b :=
   calc
@@ -84,9 +84,9 @@ theorem add_eq_zero' : a + b = 0 ↔ a = b :=
 theorem mul_add_mul : a * b + b * a = 0 := by
   have : a + b = a + b + (a * b + b * a) :=
     calc
-      a + b = (a + b) * (a + b) := by rw [mul_self]
+      a + b = (a + b) * (a + b) := by rw [BooleanRing.mul_self]
       _ = a * a + a * b + (b * a + b * b) := by rw [add_mul, mul_add, mul_add]
-      _ = a + a * b + (b * a + b) := by simp only [mul_self]
+      _ = a + a * b + (b * a + b) := by simp only [BooleanRing.mul_self]
       _ = a + b + (a * b + b * a) := by abel
   rwa [self_eq_add_right] at this
 
@@ -94,7 +94,8 @@ theorem mul_add_mul : a * b + b * a = 0 := by
 theorem sub_eq_add : a - b = a + b := by rw [sub_eq_add_neg, add_right_inj, neg_eq]
 
 @[simp]
-theorem mul_one_add_self : a * (1 + a) = 0 := by rw [mul_add, mul_one, mul_self, add_self]
+theorem mul_one_add_self : a * (1 + a) = 0 := by
+  rw [mul_add, mul_one, BooleanRing.mul_self, BooleanRing.add_self]
 
 -- Note [lower instance priority]
 instance (priority := 100) toCommRing : CommRing α :=
@@ -183,22 +184,23 @@ theorem inf_assoc (a b c : α) : a ⊓ b ⊓ c = a ⊓ (b ⊓ c) := by
 
 theorem sup_inf_self (a b : α) : a ⊔ a ⊓ b = a := by
   dsimp only [(· ⊔ ·), (· ⊓ ·)]
-  rw [← mul_assoc, mul_self, add_assoc, add_self, add_zero]
+  rw [← mul_assoc, BooleanRing.mul_self, add_assoc, BooleanRing.add_self, add_zero]
 
 theorem inf_sup_self (a b : α) : a ⊓ (a ⊔ b) = a := by
   dsimp only [(· ⊔ ·), (· ⊓ ·)]
-  rw [mul_add, mul_add, mul_self, ← mul_assoc, mul_self, add_assoc, add_self, add_zero]
+  rw [mul_add, mul_add, BooleanRing.mul_self, ← mul_assoc, BooleanRing.mul_self, add_assoc,
+    BooleanRing.add_self, add_zero]
 
 theorem le_sup_inf_aux (a b c : α) : (a + b + a * b) * (a + c + a * c) = a + b * c + a * (b * c) :=
   calc
     (a + b + a * b) * (a + c + a * c) =
         a * a + b * c + a * (b * c) + (a * b + a * a * b) + (a * c + a * a * c) +
           (a * b * c + a * a * b * c) := by ring
-    _ = a + b * c + a * (b * c) := by simp only [mul_self, add_self, add_zero]
+    _ = a + b * c + a * (b * c) := by simp only [BooleanRing.mul_self, BooleanRing.add_self, add_zero]
 
 theorem le_sup_inf (a b c : α) : (a ⊔ b) ⊓ (a ⊔ c) ⊔ (a ⊔ b ⊓ c) = a ⊔ b ⊓ c := by
   dsimp only [(· ⊔ ·), (· ⊓ ·)]
-  rw [le_sup_inf_aux, add_self, mul_self, zero_add]
+  rw [le_sup_inf_aux, BooleanRing.add_self, BooleanRing.mul_self, zero_add]
 
 /-- The Boolean algebra structure on a Boolean ring.
 
@@ -216,18 +218,19 @@ def toBooleanAlgebra : BooleanAlgebra α :=
     le_sup_inf := le_sup_inf
     top := 1
     le_top := fun a => show a + 1 + a * 1 = 1 by rw [mul_one, add_comm a 1,
-                                                     add_assoc, add_self, add_zero]
+                                                     add_assoc, BooleanRing.add_self, add_zero]
     bot := 0
     bot_le := fun a => show 0 + a + 0 * a = a by rw [zero_mul, zero_add, add_zero]
     compl := fun a => 1 + a
     inf_compl_le_bot := fun a =>
-      show a * (1 + a) + 0 + a * (1 + a) * 0 = 0 by norm_num [mul_add, mul_self, add_self]
+      show a * (1 + a) + 0 + a * (1 + a) * 0 = 0 by norm_num [mul_add, BooleanRing.mul_self,
+                                                              BooleanRing.add_self]
     top_le_sup_compl := fun a => by
       change
         1 + (a + (1 + a) + a * (1 + a)) + 1 * (a + (1 + a) + a * (1 + a)) =
           a + (1 + a) + a * (1 + a)
-      norm_num [mul_add, mul_self, add_self]
-      rw [← add_assoc, add_self] }
+      norm_num [mul_add, BooleanRing.mul_self, BooleanRing.add_self]
+      rw [← add_assoc, BooleanRing.add_self] }
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add priority 100. lower instance priority
 scoped[BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.toBooleanAlgebra

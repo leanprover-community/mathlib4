@@ -290,7 +290,7 @@ theorem add_ne_zero_iff : a + b ≠ 0 ↔ a ≠ b :=
   add_eq_zero.not
 
 @[simp]
-theorem add_self (a : Nimber) : a + a = 0 :=
+protected theorem add_self (a : Nimber) : a + a = 0 :=
   add_eq_zero.2 rfl
 
 protected theorem add_assoc (a b c : Nimber) : a + b + c = a + (b + c) := by
@@ -338,16 +338,16 @@ instance : AddCommGroupWithOne Nimber where
   zero_add := Nimber.zero_add
   nsmul := nsmulRec
   zsmul := zsmulRec
-  neg_add_cancel := add_self
+  neg_add_cancel := Nimber.add_self
   add_comm := Nimber.add_comm
 
 @[simp]
 theorem add_cancel_right (a b : Nimber) : a + b + b = a := by
-  rw [add_assoc, add_self, add_zero]
+  rw [add_assoc, Nimber.add_self, add_zero]
 
 @[simp]
 theorem add_cancel_left (a b : Nimber) : a + (a + b) = b := by
-  rw [← add_assoc, add_self, zero_add]
+  rw [← add_assoc, Nimber.add_self, zero_add]
 
 theorem add_trichotomy {a b c : Nimber} (h : a + b + c ≠ 0) :
     b + c < a ∨ c + a < b ∨ a + b < c := by

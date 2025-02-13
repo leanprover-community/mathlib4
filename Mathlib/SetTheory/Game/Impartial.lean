@@ -125,12 +125,12 @@ theorem not_equiv_zero_iff : ¬(G ≈ 0) ↔ G ‖ 0 :=
 theorem not_fuzzy_zero_iff : ¬G ‖ 0 ↔ (G ≈ 0) :=
   ⟨(equiv_or_fuzzy_zero G).resolve_right, Equiv.not_fuzzy⟩
 
-theorem add_self : G + G ≈ 0 :=
+protected theorem add_self : G + G ≈ 0 :=
   Equiv.trans (add_congr_left (neg_equiv_self G)) (neg_add_cancel_equiv G)
 
 @[simp]
 theorem mk'_add_self : (⟦G⟧ : Game) + ⟦G⟧ = 0 :=
-  game_eq (add_self G)
+  game_eq (Impartial.add_self G)
 
 /-- This lemma doesn't require `H` to be impartial. -/
 theorem equiv_iff_add_equiv_zero (H : PGame) : (H ≈ G) ↔ (H + G ≈ 0) := by

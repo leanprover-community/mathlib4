@@ -34,11 +34,11 @@ variable {a b c : Nimber.{u}}
 
 instance : CharP Nimber 2 := by
   apply CharTwo.of_one_ne_zero_of_two_eq_zero one_ne_zero
-  rw [← one_add_one_eq_two, add_self]
+  rw [← one_add_one_eq_two, Nimber.add_self]
 
 private theorem two_zsmul (x : Nimber) : (2 : ℤ) • x = 0 := by
   rw [_root_.two_zsmul]
-  exact add_self x
+  exact x.add_self
 
 private theorem add_eq_iff_eq_add : a + b = c ↔ a = c + b :=
   sub_eq_iff_eq_add

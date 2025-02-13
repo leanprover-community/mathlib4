@@ -133,7 +133,7 @@ instance instSemiring : Semiring (Language α) where
   nsmul := nsmulRec
 
 @[simp]
-theorem add_self (l : Language α) : l + l = l :=
+protected theorem add_self (l : Language α) : l + l = l :=
   sup_idem _
 
 /-- Maps the alphabet of a language. -/
