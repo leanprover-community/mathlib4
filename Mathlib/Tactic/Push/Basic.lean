@@ -90,6 +90,7 @@ def pushStep (const : Name) : Simp.Simproc := fun e => do
   else
     return Simp.Step.continue
 
+/-- The `simp` configuration used in `push`. -/
 def PushSimpConfig : Simp.Config where
   zeta := false
   proj := false
@@ -127,6 +128,7 @@ def pushNegLocalDecl (const : Name) (discharge? : Option Simp.Discharge) (fvarId
   replaceMainGoal [mvarIdNew]
 
 open private Lean.Elab.Tactic.mkDischargeWrapper in mkSimpContext
+
 /--
 Push a given constant inside of an expression
 For instance, `push Real.log` could turn `log (a * b ^ 2)` into `log a + 2 * log b`.
@@ -141,7 +143,7 @@ using say `push_neg at h h' ⊢`, as usual.
 -/
 syntax (name := push) "push" (discharger)? (ppSpace colGt ident) (location)? : tactic
 
-@[tactic push]
+@[tactic push, inherit_doc push]
 def elabPush : Tactic := fun stx => withMainContext do
   let dischargeWrapper ← Lean.Elab.Tactic.mkDischargeWrapper stx[1]
   let const ← Elab.realizeGlobalConstNoOverloadWithInfo stx[2]
