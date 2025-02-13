@@ -136,7 +136,7 @@ partial def getHash (mod : Name) (sourceFile : FilePath) (visited : Std.HashSet 
       match importHash? with
       | some importHash => importHashes := importHashes.push importHash
       | none =>
-        -- one import did not have a hash --> invalidate hash of this module
+        -- one import did not have a hash: invalidate hash of this module
         modify fun stt => { stt with cache := stt.cache.insert mod none }
         return none
     /-
