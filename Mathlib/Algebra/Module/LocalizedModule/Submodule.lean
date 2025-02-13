@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Module.Submodule.Pointwise
-import Mathlib.Algebra.Algebra.Operations
 import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.Algebra.Algebra.Operations
@@ -146,19 +145,6 @@ lemma localized'_smul (I : Submodule R R) :
     (I • M').localized' S p f = I.localized' S p (Algebra.linearMap R S) • M'.localized' S p f :=
   Submodule.restrictScalars_injective R _ _ <| by
     simp_rw [restrictScalars_localized'_smul, restrictScalars_localized', localized₀_smul]
-
-lemma localized₀_smul (I : Submodule R R) : (I • M').localized₀ p f = I • M'.localized₀ p f := by
-  apply le_antisymm
-  · rintro _ ⟨a, ha, s, rfl⟩
-    refine Submodule.smul_induction_on ha ?_ ?_
-    · intro r hr n hn
-      rw [IsLocalizedModule.mk'_smul]
-      exact Submodule.smul_mem_smul hr ⟨n, hn, s, rfl⟩
-    · simp +contextual only [IsLocalizedModule.mk'_add, add_mem, implies_true]
-  · refine Submodule.smul_le.mpr ?_
-    rintro r hr _ ⟨a, ha, s, rfl⟩
-    rw [← IsLocalizedModule.mk'_smul]
-    exact ⟨_, Submodule.smul_mem_smul hr ha, s, rfl⟩
 
 /-- The localization map of a submodule. -/
 @[simps!]
