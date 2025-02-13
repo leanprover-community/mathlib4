@@ -17,9 +17,8 @@ This file defines ordered first-order languages and structures, as well as their
 ## Main Definitions
 
 - `FirstOrder.Language.order` is the language consisting of a single relation representing `≤`.
-- `FirstOrder.Language.IsOrdered` points out a specific symbol in a language as representing `≤`.
-- `FirstOrder.Language.OrderedStructure` indicates that the `≤` symbol in an ordered language
-  is interpreted as the actual relation `≤` in a particular structure.
+- `FirstOrder.Language.OrderedStructure` indicates that the `≤` symbol in a language extending
+  `Language.order` is interpreted as the actual relation `≤` in a particular structure.
 - `FirstOrder.Language.linearOrderTheory` and similar define the theories of preorders,
   partial orders, and linear orders.
 - `FirstOrder.Language.dlo` defines the theory of dense linear orders without endpoints, a
@@ -98,22 +97,15 @@ lemma card_eq_one : Language.order.card = 1 := by simp [card]
 
 end order
 
-/-- A language is ordered if it has a symbol representing `≤`. -/
-class IsOrdered (L : Language.{u, v}) where
-  /-- The relation symbol representing `≤`. -/
-  leSymb : L.Relations 2
-
-export IsOrdered (leSymb)
-
-instance : IsOrdered Language.order :=
-  ⟨.le⟩
+/-- The symbol representing `≤` in a language extending `Language.order`. -/
+def leSymb [L.Expands Language.order] := (Language.order.inclusion L).onRelation .le
 
 lemma order.relation_eq_leSymb : (R : Language.order.Relations 2) → R = leSymb
   | .le => rfl
 
-section IsOrdered
+section Expands
 
-variable [IsOrdered L]
+variable [L.Expands Language.order]
 
 /-- Joins two terms `t₁, t₂` in a formula representing `t₁ ≤ t₂`. -/
 def Term.le (t₁ t₂ : L.Term (α ⊕ (Fin n))) : L.BoundedFormula α n :=
@@ -125,19 +117,10 @@ def Term.lt (t₁ t₂ : L.Term (α ⊕ (Fin n))) : L.BoundedFormula α n :=
 
 variable (L)
 
-/-- The language homomorphism sending the unique symbol `≤` of `Language.order` to `≤` in an ordered
- language. -/
-@[simps] def orderLHom : Language.order →ᴸ L where
-  onRelation | _, .le => leSymb
-
 @[simp]
-theorem orderLHom_leSymb :
-    (orderLHom L).onRelation leSymb = (leSymb : L.Relations 2) :=
+theorem inclusion_leSymb :
+    (Language.order.inclusion L).onRelation leSymb = (leSymb : L.Relations 2) :=
   rfl
-
-@[simp]
-theorem orderLHom_order : orderLHom Language.order = LHom.id Language.order :=
-  LHom.funext (Subsingleton.elim _ _) (Subsingleton.elim _ _)
 
 /-- The theory of preorders. -/
 def preorderTheory : L.Theory :=
@@ -191,10 +174,7 @@ instance [h : M ⊨ L.linearOrderTheory] : M ⊨ L.partialOrderTheory := h.mono 
 
 instance [h : M ⊨ L.partialOrderTheory] : M ⊨ L.preorderTheory := h.mono (Set.subset_insert _ _)
 
-end IsOrdered
-
-instance sum.instIsOrdered : IsOrdered (L.sum Language.order) :=
-  ⟨Sum.inr IsOrdered.leSymb⟩
+end Expands
 
 variable (L M)
 
@@ -204,7 +184,7 @@ def orderStructure [LE M] : Language.order.Structure M where
   RelMap | .le => (fun x => x 0 ≤ x 1)
 
 /-- A structure is ordered if its language has a `≤` symbol whose interpretation is `≤`. -/
-class OrderedStructure [L.IsOrdered] [LE M] [L.Structure M] : Prop where
+class OrderedStructure [L.Expands Language.order] [LE M] [L.Structure M] : Prop where
   relMap_leSymb : ∀ (x : Fin 2 → M), RelMap (leSymb : L.Relations 2) x ↔ (x 0 ≤ x 1)
 
 export OrderedStructure (relMap_leSymb)
@@ -215,21 +195,21 @@ variable {L M}
 
 section order_to_structure
 
-variable [IsOrdered L] [L.Structure M]
+variable [L.Expands Language.order] [L.Structure M]
 
 section LE
 
 variable [LE M]
 
 instance [Language.order.Structure M] [Language.order.OrderedStructure M]
-    [(orderLHom L).IsExpansionOn M] : L.OrderedStructure M where
+    [(Language.order.inclusion L).IsExpansionOn M] : L.OrderedStructure M where
   relMap_leSymb x := by
-    rw [← orderLHom_leSymb L, LHom.IsExpansionOn.map_onRelation, relMap_leSymb]
+    rw [← inclusion_leSymb L, LHom.IsExpansionOn.map_onRelation, relMap_leSymb]
 
 variable [L.OrderedStructure M]
 
 instance [Language.order.Structure M] [Language.order.OrderedStructure M] :
-    LHom.IsExpansionOn (orderLHom L) M where
+    LHom.IsExpansionOn (Language.order.inclusion L) M where
   map_onRelation := by simp [order.relation_eq_leSymb]
 
 instance (S : L.Substructure M) : L.OrderedStructure S := ⟨fun x => relMap_leSymb (S.subtype ∘ x)⟩
@@ -279,7 +259,7 @@ end LE
 @[simp]
 theorem orderedStructure_iff
     [LE M] [Language.order.Structure M] [Language.order.OrderedStructure M] :
-    L.OrderedStructure M ↔ LHom.IsExpansionOn (orderLHom L) M :=
+    L.OrderedStructure M ↔ LHom.IsExpansionOn (Language.order.inclusion L) M :=
   ⟨fun _ => inferInstance, fun _ => inferInstance⟩
 
 section Preorder
@@ -346,7 +326,7 @@ end order_to_structure
 
 section structure_to_order
 
-variable (L) [IsOrdered L] (M) [L.Structure M]
+variable (L) [L.Expands Language.order] (M) [L.Structure M]
 
 /-- Any structure in an ordered language can be ordered correspondingly. -/
 def leOfStructure : LE M where
@@ -408,19 +388,19 @@ instance [FunLike F M N] [OrderHomClass F M N] : Language.order.HomClass F M N :
 -- If `OrderEmbeddingClass` or `RelEmbeddingClass` is defined, this should be generalized.
 instance : Language.order.StrongHomClass (M ↪o N) M N :=
   ⟨fun _ => isEmptyElim,
-    by simp only [order.forall_relations, order.relation_eq_leSymb, relMap_leSymb, Fin.isValue,
+    by simp only [forall_relations, relation_eq_leSymb, relMap_leSymb, Fin.isValue,
     Function.comp_apply, RelEmbedding.map_rel_iff, implies_true]⟩
 
 instance [EquivLike F M N] [OrderIsoClass F M N] : Language.order.StrongHomClass F M N :=
   ⟨fun _ => isEmptyElim,
-    by simp only [order.forall_relations, order.relation_eq_leSymb, relMap_leSymb, Fin.isValue,
+    by simp only [forall_relations, relation_eq_leSymb, relMap_leSymb, Fin.isValue,
       Function.comp_apply, map_le_map_iff, implies_true]⟩
 
 end order
 
 namespace HomClass
 
-variable [L.IsOrdered] [L.Structure M] {N : Type*} [L.Structure N]
+variable [L.Expands Language.order] [L.Structure M] {N : Type*} [L.Structure N]
   {F : Type*} [FunLike F M N] [L.HomClass F M N]
 
 lemma monotone [Preorder M] [L.OrderedStructure M] [Preorder N] [L.OrderedStructure N] (f : F) :
@@ -440,8 +420,8 @@ end HomClass
 /-- This is not an instance because it would form a loop with
   `FirstOrder.Language.order.instStrongHomClassOfOrderIsoClass`.
   As both types are `Prop`s, it would only cause a slowdown.  -/
-lemma StrongHomClass.toOrderIsoClass
-    (L : Language) [L.IsOrdered] (M : Type*) [L.Structure M] [LE M] [L.OrderedStructure M]
+lemma StrongHomClass.toOrderIsoClass (L : Language) [L.Expands Language.order]
+    (M : Type*) [L.Structure M] [LE M] [L.OrderedStructure M]
     (N : Type*) [L.Structure N] [LE N] [L.OrderedStructure N]
     (F : Type*) [EquivLike F M N] [L.StrongHomClass F M N] :
     OrderIsoClass F M N where
