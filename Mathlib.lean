@@ -2615,7 +2615,6 @@ import Mathlib.Data.FinEnum.Option
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finite.Perm
-import Mathlib.Data.Finite.Powerset
 import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Finite.Set
 import Mathlib.Data.Finite.Sigma
