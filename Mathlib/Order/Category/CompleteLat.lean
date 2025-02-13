@@ -3,6 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.Order.Category.BddLat
 import Mathlib.Order.Hom.CompleteLattice
 
@@ -52,10 +53,8 @@ instance : HasForget CompleteLat := by
   dsimp [CompleteLat]; infer_instance
 
 instance hasForgetToBddLat : HasForget₂ CompleteLat BddLat where
-  forget₂ :=
-    { obj := fun X => BddLat.of X
-      map := fun {_ _} => CompleteLatticeHom.toBoundedLatticeHom }
-  forget_comp := rfl
+  forget₂.obj X := .of X
+  forget₂.map f := BddLat.ofHom (CompleteLatticeHom.toBoundedLatticeHom f)
 
 /-- Constructs an isomorphism of complete lattices from an order isomorphism between them. -/
 @[simps]
@@ -66,7 +65,7 @@ def Iso.mk {α β : CompleteLat.{u}} (e : α ≃o β) : α ≅ β where
   inv_hom_id := by ext; exact e.apply_symm_apply _
 
 /-- `OrderDual` as a functor. -/
-@[simps]
+@[simps map]
 def dual : CompleteLat ⥤ CompleteLat where
   obj X := of Xᵒᵈ
   map {_ _} := CompleteLatticeHom.dual

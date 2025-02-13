@@ -150,6 +150,11 @@ theorem LinearIndependent.ne_zero [Nontrivial R] (i : ι) (hv : LinearIndependen
 theorem linearIndependent_empty_type [IsEmpty ι] : LinearIndependent R v :=
   injective_of_subsingleton _
 
+@[simp]
+theorem linearIndependent_zero_iff [Nontrivial R] : LinearIndependent R (0 : ι → M) ↔ IsEmpty ι :=
+  ⟨fun h ↦ not_nonempty_iff.1 fun ⟨i⟩ ↦ (h.ne_zero i rfl).elim,
+    fun _ ↦ linearIndependent_empty_type⟩
+
 variable (R M) in
 theorem linearIndependent_empty : LinearIndependent R (fun x => x : (∅ : Set M) → M) :=
   linearIndependent_empty_type
@@ -1090,7 +1095,7 @@ theorem linearIndependent_sum {v : ι ⊕ ι' → M} :
     refine hlr _ (sum_mem fun i _ => ?_) _ (neg_mem <| sum_mem fun i _ => ?_) this
     · exact smul_mem _ _ (subset_span ⟨Sum.inl i, mem_range_self _, rfl⟩)
     · exact smul_mem _ _ (subset_span ⟨Sum.inr i, mem_range_self _, rfl⟩)
-  cases' i with i i
+  rcases i with i | i
   · exact hl _ _ A i (Finset.mem_preimage.2 hi)
   · rw [this, neg_eq_zero] at A
     exact hr _ _ A i (Finset.mem_preimage.2 hi)
@@ -1116,10 +1121,10 @@ theorem linearIndependent_iUnion_finite_subtype {ι : Type*} {f : ι → Set M}
   · apply directed_of_isDirected_le
     exact fun t₁ t₂ ht => iUnion_mono fun i => iUnion_subset_iUnion_const fun h => ht h
   intro t
-  induction' t using Finset.induction_on with i s his ih
-  · refine (linearIndependent_empty R M).mono ?_
-    simp
-  · rw [Finset.set_biUnion_insert]
+  induction t using Finset.induction_on with
+  | empty => exact (linearIndependent_empty R M).mono (by simp)
+  | @insert i s his ih =>
+    rw [Finset.set_biUnion_insert]
     refine (hl _).union ih ?_
     rw [span_iUnion₂]
     exact hd i s s.finite_toSet his
@@ -1338,6 +1343,22 @@ theorem linearIndependent_singleton {x : M} (hx : x ≠ 0) :
     LinearIndependent R (fun x => x : ({x} : Set M) → M) :=
   linearIndependent_unique ((↑) : ({x} : Set M) → M) hx
 
+@[simp]
+theorem linearIndependent_subsingleton_index_iff [Subsingleton ι] (f : ι → M) :
+    LinearIndependent R f ↔ ∀ i, f i ≠ 0 := by
+  obtain (he | he) := isEmpty_or_nonempty ι
+  · simp [linearIndependent_empty_type]
+  obtain ⟨_⟩ := (unique_iff_subsingleton_and_nonempty (α := ι)).2 ⟨by assumption, he⟩
+  rw [linearIndependent_unique_iff]
+  exact ⟨fun h i ↦ by rwa [Unique.eq_default i], fun h ↦ h _⟩
+
+@[simp]
+theorem linearIndependent_subsingleton_iff [Subsingleton M] (f : ι → M) :
+    LinearIndependent R f ↔ IsEmpty ι := by
+  obtain h | i := isEmpty_or_nonempty ι
+  · simpa
+  exact iff_of_false (fun hli ↦ hli.ne_zero i.some (Subsingleton.eq_zero (f i.some))) (by simp)
+
 end Nontrivial
 
 /-!
@@ -1410,10 +1431,8 @@ theorem linearIndependent_insert' {ι} {s : Set ι} {a : ι} {f : ι → V} (has
   classical
   rw [← linearIndependent_equiv ((Equiv.optionEquivSumPUnit _).trans (Equiv.Set.insert has).symm),
     linearIndependent_option]
-  -- Porting note: `simp [(· ∘ ·), range_comp f]` → `simp [(· ∘ ·)]; erw [range_comp f ..]; simp`
-  -- https://github.com/leanprover-community/mathlib4/issues/5164
   simp only [comp_def]
-  erw [range_comp f ((↑) : s → ι)]
+  rw [range_comp']
   simp
 
 theorem linearIndependent_insert (hxs : x ∉ s) :

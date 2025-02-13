@@ -125,7 +125,8 @@ def gluedScheme : Scheme := by
   refine ⟨_, ((D.U i).affineCover.map y).toLRSHom ≫
     D.toLocallyRingedSpaceGlueData.toGlueData.ι i, ?_⟩
   constructor
-  · erw [TopCat.coe_comp, Set.range_comp] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
+  · erw [TopCat.coe_comp] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
+    rw [Set.range_comp]
     refine Set.mem_image_of_mem _ ?_
     exact (D.U i).affineCover.covers y
   · infer_instance
