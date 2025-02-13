@@ -99,11 +99,13 @@ theorem adjointAux_norm (A : E →L[𝕜] F) : ‖adjointAux A‖ = ‖A‖ := b
     rw [adjointAux_apply, LinearIsometryEquiv.norm_map]
     exact toSesqForm_apply_norm_le
 
-/-- The adjoint of a bounded operator from Hilbert space `E` to Hilbert space `F`. -/
+/-- The adjoint of a bounded operator `A` from a Hilbert space `E` to another Hilbert space `F`,
+  denoted as `A†`. -/
 def adjoint : (E →L[𝕜] F) ≃ₗᵢ⋆[𝕜] F →L[𝕜] E :=
   LinearIsometryEquiv.ofSurjective { adjointAux with norm_map' := adjointAux_norm } fun A =>
     ⟨adjointAux A, adjointAux_adjointAux A⟩
 
+@[inherit_doc]
 scoped[InnerProduct] postfix:1000 "†" => ContinuousLinearMap.adjoint
 open InnerProduct
 
@@ -578,6 +580,20 @@ def LinearMap.toMatrixOrthonormal : (E →ₗ[𝕜] E) ≃⋆ₐ[𝕜] Matrix n 
   { LinearMap.toMatrix v₁.toBasis v₁.toBasis with
     map_mul' := LinearMap.toMatrix_mul v₁.toBasis
     map_star' := LinearMap.toMatrix_adjoint v₁ v₁ }
+
+lemma LinearMap.toMatrixOrthonormal_apply_apply (f : E →ₗ[𝕜] E) (i j : n) :
+    toMatrixOrthonormal v₁ f i j = ⟪v₁ i, f (v₁ j)⟫_𝕜 :=
+  calc
+    _ = v₁.repr (f (v₁ j)) i := f.toMatrix_apply ..
+    _ = ⟪v₁ i, f (v₁ j)⟫_𝕜 := v₁.repr_apply_apply ..
+
+lemma LinearMap.toMatrixOrthonormal_reindex (e : n ≃ m) (f : E →ₗ[𝕜] E) :
+    toMatrixOrthonormal (v₁.reindex e) f = (toMatrixOrthonormal v₁ f).reindex e e :=
+  Matrix.ext fun i j =>
+    calc toMatrixOrthonormal (v₁.reindex e) f i j
+      _ = (v₁.reindex e).repr (f (v₁.reindex e j)) i := f.toMatrix_apply ..
+      _ = v₁.repr (f (v₁ (e.symm j))) (e.symm i) := by simp
+      _ = toMatrixOrthonormal v₁ f (e.symm i) (e.symm j) := Eq.symm (f.toMatrix_apply ..)
 
 open scoped ComplexConjugate
 
