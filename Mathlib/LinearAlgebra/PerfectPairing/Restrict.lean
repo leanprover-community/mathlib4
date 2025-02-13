@@ -108,12 +108,13 @@ private lemma restrictScalarsAux_injective
   refine (Submodule.eq_bot_iff _).mpr fun x (hx : f x = 0) ↦ ?_
   replace hx (n : N) : p (i x) n = 0 := by
     have hn : n ∈ span R (LinearMap.range j : Set N) := hN ▸ Submodule.mem_top
-    induction' hn using Submodule.span_induction with z hz
-    · obtain ⟨n', rfl⟩ := hz
+    induction hn using Submodule.span_induction with
+    | mem z hz =>
+      obtain ⟨n', rfl⟩ := hz
       simpa [f] using LinearMap.congr_fun hx n'
-    · simp
-    · rw [← p.toLin_apply, map_add]; aesop
-    · rw [← p.toLin_apply, map_smul]; aesop
+    | zero => simp
+    | add => rw [← p.toLin_apply, map_add]; aesop
+    | smul => rw [← p.toLin_apply, map_smul]; aesop
   rw [← i.map_eq_zero_iff hi, ← p.toLin.map_eq_zero_iff p.bijectiveLeft.injective]
   ext n
   simpa using hx n
