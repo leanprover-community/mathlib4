@@ -94,7 +94,7 @@ family of morphisms `g`, then `f` is a transfinite composition
 of pushouts of coproducts of morphisms in the family `g`. -/
 @[simps toTransfiniteCompositionOfShape]
 def transfiniteCompositionOfShape
-  {α : Type*} {A B : α → C} (g : (i : α) → (A i ⟶ B i))
+    {α : Type*} {A B : α → C} (g : (i : α) → (A i ⟶ B i))
     (c : RelativeCellComplex.{w} (fun (_ : J) ↦ g) f) :
     (coproducts.{w} (ofHoms g)).pushouts.TransfiniteCompositionOfShape J f where
   toTransfiniteCompositionOfShape := c.toTransfiniteCompositionOfShape
