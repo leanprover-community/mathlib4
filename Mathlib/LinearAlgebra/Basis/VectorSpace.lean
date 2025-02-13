@@ -217,7 +217,7 @@ submodules equal to the span of a nonzero element of the module. -/
 theorem atom_iff_nonzero_span (W : Submodule K V) :
     IsAtom W ↔ ∃ v ≠ 0, W = span K {v} := by
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · cases' h with hbot h
+  · obtain ⟨hbot, h⟩ := h
     rcases (Submodule.ne_bot_iff W).1 hbot with ⟨v, ⟨hW, hv⟩⟩
     refine ⟨v, ⟨hv, ?_⟩⟩
     by_contra heq

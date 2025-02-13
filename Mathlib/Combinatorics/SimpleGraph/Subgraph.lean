@@ -1174,6 +1174,12 @@ theorem deleteVerts_mono {G' G'' : G.Subgraph} (h : G' ≤ G'') :
     G'.deleteVerts s ≤ G''.deleteVerts s :=
   induce_mono h (Set.diff_subset_diff_left h.1)
 
+@[mono]
+lemma deleteVerts_mono' {G' : SimpleGraph V} (u : Set V) (h : G ≤ G') :
+    ((⊤ : Subgraph G).deleteVerts u).coe ≤ ((⊤ : Subgraph G').deleteVerts u).coe := by
+  intro v w hvw
+  aesop
+
 @[gcongr, mono]
 theorem deleteVerts_anti {s s' : Set V} (h : s ⊆ s') : G'.deleteVerts s' ≤ G'.deleteVerts s :=
   induce_mono (le_refl _) (Set.diff_subset_diff_right h)
@@ -1186,6 +1192,16 @@ theorem deleteVerts_inter_verts_left_eq : G'.deleteVerts (G'.verts ∩ s) = G'.d
 theorem deleteVerts_inter_verts_set_right_eq :
     G'.deleteVerts (s ∩ G'.verts) = G'.deleteVerts s := by
   ext <;> simp +contextual [imp_false]
+
+instance instDecidableRel_deleteVerts_adj (u : Set V) [r : DecidableRel G.Adj] :
+    DecidableRel ((⊤ : G.Subgraph).deleteVerts u).coe.Adj :=
+  fun x y =>
+    if h : G.Adj x y
+    then
+      .isTrue <|  SimpleGraph.Subgraph.Adj.coe <| Subgraph.deleteVerts_adj.mpr
+        ⟨by trivial, x.2.2, by trivial, y.2.2, h⟩
+    else
+      .isFalse <| fun hadj ↦ h <| Subgraph.coe_adj_sub _ _ _ hadj
 
 end DeleteVerts
 
