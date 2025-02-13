@@ -21,6 +21,7 @@ carries a natural concept of nilpotency. We define these here via the lower cent
 
   * `LieModule.lowerCentralSeries`
   * `LieModule.IsNilpotent`
+  * `LieModule.largestNilpotentSubmodule`
   * `LieAlgebra.largestNilpotentIdeal`
 
 ## Tags
