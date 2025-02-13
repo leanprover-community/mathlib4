@@ -120,5 +120,5 @@ def main (args : List String) : IO Unit := do
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
     commit hashMemo.hashMap true (← getToken)
   | ["collect"] => IO.println "TODO"
-  | "lookup" :: _ => lookup hashMemo.hashMap (roots.keys)
+  | "lookup" :: _ => lookup hashMemo.hashMap roots.keys
   | _ => println help

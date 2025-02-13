@@ -388,7 +388,7 @@ def cleanCache (keep : Lean.RBTree FilePath compare := ∅) : IO Unit := do
     if !keep.contains path then IO.FS.removeFile path
 
 /-- Prints the LTAR file and embedded comments (in particular, the mathlib commit that built the
-file) regarding the files with specified paths. -/
+file) regarding the specified modules. -/
 def lookup (hashMap : ModuleHashMap) (modules : List Name) : IO Unit := do
   let mut err := false
   for mod in modules do

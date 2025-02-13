@@ -37,7 +37,8 @@ structure HashMemo where
   hashMap  : ModuleHashMap := ∅
   deriving Inhabited
 
-partial def insertDeps (hashMap : ModuleHashMap) (mod : Name) (hashMemo : HashMemo) : ModuleHashMap :=
+partial def insertDeps (hashMap : ModuleHashMap) (mod : Name) (hashMemo : HashMemo) :
+    ModuleHashMap :=
   if hashMap.contains mod then hashMap else
   match (hashMemo.depsMap[mod]?, hashMemo.hashMap[mod]?) with
   | (some deps, some hash) => deps.foldl (insertDeps · · hashMemo) (hashMap.insert mod hash)
@@ -49,13 +50,13 @@ Filters the `hashMap` of a `HashMemo` so that it only contains key/value pairs s
 * Corresponds to a module that's imported (transitively or not) by
   some module in the list module names
 -/
-def HashMemo.filterByNames (hashMemo : HashMemo) (mods : List Name) : IO ModuleHashMap := do
+def HashMemo.filterByRootModules (hashMemo : HashMemo) (modules : List Name) :
+    IO ModuleHashMap := do
   let mut hashMap := ∅
-  for mod in mods do
+  for mod in modules do
     if hashMemo.hashMap.contains mod then
       hashMap := insertDeps hashMap mod hashMemo
-    else
-      IO.println s!"{mod} is not covered by the olean cache."
+    else IO.println s!"{mod} is not covered by the olean cache."
   return hashMap
 
 /-- We cache the hash of each file and their dependencies for later lookup -/
@@ -112,12 +113,14 @@ Computes the hash of a file, which mixes:
 * The hash of its relative path (inside its package directory)
 * The hash of its content
 * The hashes of the imported files that are part of `Mathlib`
+
+Note: we pass `sourceFile` along to avoid searching for it twice
 -/
 partial def getHash (mod : Name) (sourceFile : FilePath) (visited : Std.HashSet Name := ∅) :
     HashM <| Option UInt64 := do
   if visited.contains mod then
     throw <| IO.userError s!"dependency loop found involving {mod}!"
-  let visitedNew := visited.insert mod
+  let visitedₙ := visited.insert mod
   match (← get).cache[mod]? with
   | some hash? => return hash?
   | none =>
@@ -128,20 +131,27 @@ partial def getHash (mod : Name) (sourceFile : FilePath) (visited : Std.HashSet 
     let content ← IO.FS.readFile sourceFile
     let fileImports ← getFileImports content mod.toString
     let mut importHashes := #[]
-    for importHash? in ← fileImports.mapM (fun imp => getHash imp.1 imp.2 visitedNew) do
+    for importHash? in
+        ← fileImports.mapM (fun (modₙ, sourceFileₙ) => getHash modₙ sourceFileₙ visitedₙ) do
       match importHash? with
       | some importHash => importHashes := importHashes.push importHash
       | none =>
         -- one import did not have a hash --> invalidate hash of this module
         modify fun stt => { stt with cache := stt.cache.insert mod none }
         return none
+    /-
+    TODO: Currently, the cache uses the hash of the unresolved file name
+    (e.g. `Mathlib/Init.lean`) which is reconstructed from the module name
+    (e.g. `Mathlib.Init`) in `path`. It could, however, directly use `hash mod` instead.
+
+    We can change this at any time causing a one-time cache invalidation, just as
+    a toolchain-bump would.
+    -/
+    let filePath := mkFilePath (mod.components.map toString) |>.withExtension "lean"
+
     let rootHash := (← get).rootHash
-    -- TODO: One might hash the modules name instead of this `c`,
-    -- which exists in order to not change any generated hashes compared to previous versions.
-    -- Changing this means the entire cache gets invalidated once and has to be rebuilt once.
-    let c := (mod.components.dropLast.map toString).append [sourceFile.components.getLast!]
-    let modHash := hash c -- TODO: change to `hash mod`
-    let fileHash := hash <| rootHash :: modHash :: hashFileContents content :: importHashes.toList
+    let pathHash := hash filePath.components -- TODO: change to `hash mod`
+    let fileHash := hash <| rootHash :: pathHash :: hashFileContents content :: importHashes.toList
     if isPartOfMathlibCache mod then
       -- mathlib/upstream: add hash to `hashMap`
       modifyGet fun stt =>
