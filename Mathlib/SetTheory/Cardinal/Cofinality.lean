@@ -920,8 +920,8 @@ theorem isRegular_cof {o : Ordinal} (h : o.IsLimit) : IsRegular o.cof :=
   ⟨aleph0_le_cof.2 h, (cof_cof o).ge⟩
 
 /-- If `c` is a regular cardinal, then `c.ord.toType` has a least element. -/
-noncomputable def IsRegular.ne_zero {c : Cardinal} (H : c.IsRegular) : c ≠ 0 :=
-  H.pos.ne.symm
+lemma IsRegular.ne_zero {c : Cardinal} (H : c.IsRegular) : c ≠ 0 :=
+  H.pos.ne'
 
 theorem isRegular_aleph0 : IsRegular ℵ₀ :=
   ⟨le_rfl, by simp⟩
