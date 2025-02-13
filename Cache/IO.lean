@@ -354,26 +354,8 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
     let (stdin, child) ← child.takeStdin
     let config : Array Lean.Json ← hashMap.foldM (init := #[]) fun config mod hash => do
       let pathStr := s!"{CACHEDIR / hash.asLTar}"
-      /-
-      TODO: we don't need the following `if-then-else`, it is only here
-      for backwards compatibility.
-
-      See https://github.com/leanprover-community/mathlib4/pull/8767#discussion_r1422077498
-
-      We could do this with `packageDir` for all modules, not only ones in mathlib.
-      This would be more flexible and allow cached dependencies to live somewhere else (locally).
-      However, this change invalidates existing .ltar files, so it needs
-      to be accompanied with some hash change.
-      In practice, cached local mathlib dependencies would lead to a new `rootHash` anyways
-      (mathllib lakefile/manifest would need to reflect this) and therefore would
-      invalidate cache anyways, so there is not much gained by making this change.
-      -/
-      if (← isMathlibRoot) || !isFromMathlib mod then
-        pure <| config.push <| .str pathStr
-      else
-        -- only mathlib files, when not in the mathlib4 repo, need to be redirected
-        let packageDir := (← getPackageDir mod).toString
-        pure <| config.push <| .mkObj [("file", pathStr), ("base", packageDir)]
+      let packageDir := (← getPackageDir mod).toString
+      pure <| config.push <| .mkObj [("file", pathStr), ("base", packageDir)]
     stdin.putStr <| Lean.Json.compress <| .arr config
     let exitCode ← child.wait
     if exitCode != 0 then throw <| IO.userError s!"leantar failed with error code {exitCode}"
