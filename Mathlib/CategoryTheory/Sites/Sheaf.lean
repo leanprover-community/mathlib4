@@ -447,7 +447,7 @@ instance sheafHomHasZSMul : SMul ℤ (P ⟶ Q) where
     Sheaf.Hom.mk
       { app := fun U => n • f.1.app U
         naturality := fun U V i => by
-          induction' n using Int.induction_on with n ih n ih
+          induction' n with n ih n ih
           · simp only [zero_smul, comp_zero, zero_comp]
           · simpa only [add_zsmul, one_zsmul, comp_add, NatTrans.naturality, add_comp,
               add_left_inj]

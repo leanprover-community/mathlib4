@@ -359,7 +359,7 @@ private theorem zpow_aux (hf : ∀ x, p x ↔ p (f x)) : ∀ {n : ℤ} (x), p x 
 @[simp]
 theorem subtypePerm_zpow (f : Perm α) (n : ℤ) (hf) :
     (f.subtypePerm hf ^ n : Perm { x // p x }) = (f ^ n).subtypePerm (zpow_aux hf) := by
-  induction n with
+  cases n with
   | ofNat n => exact subtypePerm_pow _ _ _
   | negSucc n => simp only [zpow_negSucc, subtypePerm_pow, subtypePerm_inv]
 
