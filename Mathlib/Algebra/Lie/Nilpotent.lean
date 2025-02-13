@@ -901,7 +901,7 @@ variable [CommRing R] [LieRing L] [LieAlgebra R L]
 
 /-- The nilradical of Lie algebra is the `sSup` of all nilpotent ideals. -/
 def nilradical :=
-  sSup { I : LieIdeal R L | LieIdeal.IsNilpotent I}
+  sSup { I : LieIdeal R L | LieIdeal.IsNilpotent I }
 
 instance nilradicalIsNilpotent : LieIdeal.IsNilpotent (nilradical R L) := by
   sorry
