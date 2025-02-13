@@ -20,7 +20,7 @@ variable {α R}
 
 variable [CommMonoidWithZero R]
 
-lemma Sym2.mem_support_sym2_of_mul_ne_zero {f : α →₀ R} (p : Sym2 α) (hp : mul f p ≠ 0) :
+lemma Sym2.mem_support_sym2_of_mul_ne_zero {f : α →₀ R} (p : Sym2 α) (hp : mul (p.map f) ≠ 0) :
     p ∈ f.support.sym2 := by
   obtain ⟨a,b⟩ := p
   simp only [Finset.mem_sym2_iff, mem_iff, Finsupp.mem_support_iff, ne_eq, forall_eq_or_imp,
@@ -34,7 +34,7 @@ lemma Sym2.mem_support_sym2_of_mul_ne_zero {f : α →₀ R} (p : Sym2 α) (hp :
 noncomputable def Sym2.mul_finsupp (f : α →₀ R) :
     Sym2 α →₀ R := Finsupp.onFinset
       f.support.sym2
-    (Sym2.mul f) Sym2.mem_support_sym2_of_mul_ne_zero
+    (fun p => Sym2.mul (p.map f)) Sym2.mem_support_sym2_of_mul_ne_zero
 
 lemma Sym2.mul_finsupp_support (f : α →₀ R) :
     (Sym2.mul_finsupp f).support ⊆ f.support.sym2 := fun p hp => by

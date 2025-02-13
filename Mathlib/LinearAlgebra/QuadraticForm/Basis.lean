@@ -65,7 +65,8 @@ lemma polarSym2_map_hMul (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ 
     mul_comm]
 
 lemma polarSym2_map_mul (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
-    (polarSym2 Q) ∘ Sym2.map (Finsupp.hMul l g) = Sym2.mul l • (polarSym2 Q) ∘ Sym2.map g := by
+    (polarSym2 Q) ∘ Sym2.map (Finsupp.hMul l g) =
+      (fun (p : Sym2 ι) => Sym2.mul (p.map l)) • (polarSym2 Q) ∘ Sym2.map g := by
   ext _
   rw [Function.comp_apply, polarSym2_map_hMul, Pi.smul_apply', Function.comp_apply]
   rfl

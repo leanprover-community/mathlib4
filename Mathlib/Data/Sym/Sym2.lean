@@ -3,11 +3,11 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Data.Finset.Prod
+import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Sym.Basic
 import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Algebra.Group.Action.Pi
 
 /-!
 # The symmetric square
@@ -780,19 +780,18 @@ unsafe instance [Repr α] : Repr (Sym2 α) where
 
 lemma smul {α R N} [SMul R N] (f : { f : α → α → R // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ })
     (g : { g : α → α → N // ∀ a₁ a₂, g a₁ a₂ = g a₂ a₁ }) :
-    Sym2.lift f • Sym2.lift g = Sym2.lift ⟨f.val • g.val, fun _ _ => by
+    lift f • lift g = lift ⟨f.val • g.val, fun _ _ => by
       rw [Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', f.prop, g.prop]⟩ := by
   ext ⟨i,j⟩
-  simp_all only [Pi.smul_apply', Sym2.lift_mk]
+  simp_all only [Pi.smul_apply', lift_mk]
 
 /--
-`CommMagma.mul` as a function from `Sym2`.
+`CommMagma.toMul.mul` as a function from `Sym2`.
 -/
-def mul {R} [CommMagma R] (f : α → R) : Sym2 α → R :=
-  Sym2.lift ⟨fun i j => (f i * f j), fun _ _ => mul_comm _ _⟩
+def mul {M} [CommMagma M] : Sym2 M → M := lift ⟨fun i j => (i * j), fun _ _ => mul_comm _ _⟩
 
 @[simp]
-lemma mul_sym2Mk {R} [CommMagma R] (f : α → R) (xy : α × α) :
-    mul f (.mk xy) = f xy.1 * f xy.2 := rfl
+lemma mul_sym2Mk {M} [CommMagma M] (xy : M × M) :
+    mul (.mk xy)   = xy.1 * xy.2 := rfl
 
 end Sym2
