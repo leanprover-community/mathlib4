@@ -183,15 +183,25 @@ lemma prop_iterationFunctor_map_succ (j : κ.ord.toType) :
   have := Cardinal.noMaxOrder (Fact.elim inferInstance : κ.IsRegular).aleph0_le
   exact (succStruct I κ).prop_iterationFunctor_map_succ j (not_isMax j)
 
-def iterationFunctorMapSuccAppArrowIso (f : Arrow C) (j : κ.ord.toType) :
+noncomputable def iterationFunctorMapSuccAppArrowIso (f : Arrow C) (j : κ.ord.toType) :
     letI := hasColimitsOfShape_discrete I κ
     letI := hasPushouts I κ
     Arrow.mk (((iterationFunctor I κ).map (homOfLE (Order.le_succ j))).app f) ≅
-      (ε I.homFamily).app (((iterationFunctor I κ).obj j).obj f) := sorry
+      (ε I.homFamily).app (((iterationFunctor I κ).obj j).obj f) :=
+  have := hasIterationOfShape I κ
+  have := Cardinal.noMaxOrder (Fact.elim inferInstance : κ.IsRegular).aleph0_le
+  Arrow.isoMk (Iso.refl _)
+    (((evaluation _ _).obj f).mapIso
+      ((succStruct I κ).iterationFunctorObjSuccIso j (not_isMax j))) (by
+    have this := NatTrans.congr_app ((succStruct I κ).iterationFunctor_map_succ j (not_isMax j)) f
+    dsimp at this
+    dsimp [iterationFunctor]
+    rw [id_comp, this, assoc, Iso.inv_hom_id_app, comp_id]
+    dsimp [succStruct])
 
 @[simp]
 lemma iterationFunctorMapSuccAppArrowIso_hom_left (f : Arrow C) (j : κ.ord.toType) :
-    (iterationFunctorMapSuccAppArrowIso I κ f j).hom.left = 𝟙 _ := sorry
+    (iterationFunctorMapSuccAppArrowIso I κ f j).hom.left = 𝟙 _ := rfl
 
 section
 
@@ -238,30 +248,13 @@ noncomputable def relativeCellComplexιObjFObjSuccIso (j : κ.ord.toType) :
   (Arrow.rightFunc ⋙ Arrow.leftFunc).mapIso
     (iterationFunctorMapSuccAppArrowIso I κ f j)
 
--- NEEDS CLEANUP
 lemma ιFunctorObj_eq (j : κ.ord.toType) :
     letI := hasColimitsOfShape_discrete I κ
     letI := hasPushouts I κ
     ιFunctorObj I.homFamily (((iterationFunctor I κ).obj j).obj (Arrow.mk f)).hom =
       (relativeCellComplexιObj I κ f).F.map (homOfLE (Order.le_succ j)) ≫
         (relativeCellComplexιObjFObjSuccIso I κ f j).hom := by
-  letI := hasColimitsOfShape_discrete I κ
-  letI := hasPushouts I κ
-  have := Arrow.leftFunc.congr_map (iterationFunctorMapSuccAppArrowIso I κ f j).hom.w
-  rw [← cancel_epi (iterationFunctorMapSuccAppArrowIso I κ (Arrow.mk f) j).hom.left.left]
-  dsimp at this ⊢
-  rw [this]
-  dsimp [relativeCellComplexιObjFObjSuccIso, relativeCellComplexιObj]
-  simp only [← assoc]
-  congr 1
-  simp only [← Arrow.comp_left]
-  congr 1
-  have := (iterationFunctorMapSuccAppArrowIso I κ (Arrow.mk f) j).hom.w
-  dsimp at this
-  dsimp [transfiniteCompositionOfShapeSuccStructPropιIteration]
-  rw [iterationFunctorMapSuccAppArrowIso_hom_left]
-  simp
-  rfl
+  simpa using Arrow.leftFunc.congr_map (iterationFunctorMapSuccAppArrowIso I κ f j).hom.w
 
 lemma πFunctorObj_eq (j : κ.ord.toType) :
     letI := hasColimitsOfShape_discrete I κ
