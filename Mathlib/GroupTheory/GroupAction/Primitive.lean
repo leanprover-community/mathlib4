@@ -3,7 +3,9 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Data.Setoid.Partition
+import Mathlib.Algebra.BigOperators.Finprod
+import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Data.Setoid.Partition.Card
 import Mathlib.GroupTheory.GroupAction.Blocks
 import Mathlib.GroupTheory.GroupAction.Transitive
 
@@ -48,6 +50,19 @@ import Mathlib.GroupTheory.GroupAction.Transitive
 
 - `MulAction.IsPreprimitive.isQuasipreprimitive`
   Preprimitive actions are quasipreprimitive.
+
+## Particular results for actions on finite types
+
+- `MulAction.isPreprimitive_of_primeCard` :
+  A pretransitive action on a finite type of prime cardinal is preprimitive.
+
+- `IsPreprimitive.of_card_lt`
+  Given an equivariant map from a preprimitive action,
+  if the image is at least twice the codomain, then the codomain is preprimitive.
+
+- `MulAction.IsPreprimitive.exists_mem_smul_and_not_mem_smul` : **Theorem of Rudio**.
+  For a preprimitive action, a subset which is neither empty nor full has a translate
+  which contains a given point and avoids another one.
 
 -/
 
@@ -274,5 +289,128 @@ instance (priority := 100) IsPreprimitive.isQuasiPreprimitive [IsPreprimitive M 
     rw [Set.Subsingleton.eq_singleton_of_mem h (MulAction.mem_orbit_self a)]
 
 end Normal
+
+section Finite
+
+namespace IsPreprimitive
+
+variable {M : Type*} [Group M] {α : Type*} [MulAction M α]
+variable {N β : Type*} [Group N] [MulAction N β]
+
+open scoped BigOperators Pointwise
+
+/-- A pretransitive action on a set of prime order is preprimitive -/
+@[to_additive "A pretransitive action on a set of prime order is preprimitive"]
+theorem of_prime_card [hGX : IsPretransitive M α] (hp : Nat.Prime (Nat.card α)) :
+    IsPreprimitive M α := by
+  classical
+  apply IsPreprimitive.mk
+  intro B hB
+  cases' Set.subsingleton_or_nontrivial B with hB' hB'
+  · apply Or.intro_left
+    exact hB'
+  · apply Or.intro_right
+    have : Finite α := (Nat.card_ne_zero.mp (Nat.Prime.ne_zero hp)).2
+    cases (Nat.dvd_prime hp).mp (hB.ncard_dvd_card hB'.nonempty) with
+    | inl h =>
+      exfalso
+      exact ((Set.one_lt_ncard B.toFinite).mpr hB').ne h.symm
+    | inr h =>
+      rwa [Set.eq_univ_iff_ncard]
+
+variable {φ : M → N} {f : α →ₑ[φ] β}
+
+/-- The target of an equivariant map of large image is preprimitive if the source is -/
+@[to_additive "The target of an equivariant map of large image is preprimitive if the source is"]
+theorem of_card_lt [Finite β] [IsPretransitive N β] [IsPreprimitive M α]
+    (hf' : Nat.card β < 2 * (Set.range f).ncard) :
+    IsPreprimitive N β :=  by
+  classical
+  apply IsPreprimitive.mk
+  intro B hB
+  cases' B.eq_empty_or_nonempty with hB' hB'
+  · left
+    rw [hB']
+    apply Set.subsingleton_empty
+  rw [IsTrivialBlock, or_iff_not_imp_right]
+  intro hB_ne_top
+  -- we need Set.Subsingleton B ↔ Set.ncard B ≤ 1
+  suffices Set.ncard B < 2 by
+    rw [Nat.lt_succ, Set.ncard_le_one_iff] at this
+    exact fun ⦃x⦄ x_1 ⦃y⦄ ↦ this x_1
+  -- We reduce to proving that (Set.range f).ncard ≤ (orbit N B).ncard
+  apply lt_of_mul_lt_mul_right (lt_of_le_of_lt _ hf') (Nat.zero_le _)
+  simp only [← Nat.card_eq_fintype_card, ← hB.ncard_block_mul_ncard_orbit_eq hB']
+  apply Nat.mul_le_mul_left
+  -- We reduce to proving that (Set.range f ∩ g • B).ncard ≤ 1 for every g
+  rw [(hB.isBlockSystem hB').left.ncard_eq_finsum]
+  rw [finsum_eq_finset_sum_of_support_subset]
+  · apply le_trans (Finset.sum_le_card_nsmul _ _ 1 _)
+    · simp only [smul_eq_mul, mul_one]
+      conv_rhs => rw [← Set.ncard_coe]
+      apply le_of_eq
+      rw [← Set.ncard_eq_toFinset_card]
+    · rintro ⟨x, ⟨g, hg⟩⟩ _
+      simp only [← hg]
+      suffices Set.Subsingleton (Set.range f ∩ g • B) by
+        rw [Set.ncard_le_one_iff]
+        exact fun {a b} a_1 a_2 ↦ this a_1 a_2
+    -- It suffices to prove that the preimage is subsingleton
+      rw [← Set.image_preimage_eq_range_inter]
+      apply Set.Subsingleton.image
+    -- Since the action of M on α is primitive, it suffices to prove that
+    -- the preimage is a block which is not ⊤
+      apply Or.resolve_right (isTrivialBlock_of_isBlock ((hB.translate g).preimage f))
+      intro h
+      simp only [Set.top_eq_univ, Set.preimage_eq_univ_iff] at h
+    -- We will prove that B is large, which will contradict the assumption that it is not ⊤
+      apply hB_ne_top
+      apply hB.eq_univ_of_card_lt
+    -- It remains to show that Nat.card β < Set.ncard B * 2
+      apply lt_of_lt_of_le hf'
+      rw [mul_comm, mul_le_mul_right Nat.succ_pos']
+      apply le_trans (Set.ncard_le_ncard h) (Set.ncard_image_le B.toFinite)
+  simp only [Set.Finite.coe_toFinset, Set.subset_univ]
+
+/- The finiteness assumption is necessary :
+  For G = ℤ acting on itself, no translate of ℕ contains 0 but not 1.
+  (See comment before `IsBlock.of_subset`.) -/
+/-- Theorem of Rudio (Wielandt, 1964, Th. 8.1)
+
+For a preprimitive action, a subset which is neither empty nor full has a translate
+which contains a given point and avoids another one. -/
+@[to_additive "Theorem of Rudio (Wielandt, 1964, Th. 8.1)
+
+For a preprimitive additive action, a subset which is neither empty nor full has a translate
+which contains a given point and avoids another one."]
+theorem exists_mem_smul_and_not_mem_smul [hpGX : IsPreprimitive M α]
+    {A : Set α} (hfA : A.Finite) (hA : A.Nonempty) (hA' : A ≠ .univ) {a b : α} (h : a ≠ b) :
+    ∃ g : M, a ∈ g • A ∧ b ∉ g • A := by
+  let B := ⋂ (g : M) (_ : a ∈ g • A), g • A
+  suffices b ∉ B by
+    rw [Set.mem_iInter] at this
+    simpa only [Set.mem_iInter, not_forall, exists_prop] using this
+  suffices B = {a} by rw [this]; rw [Set.mem_singleton_iff]; exact Ne.symm h
+  -- B is a block hence is a trivial block
+  cases' hpGX.isTrivialBlock_of_isBlock (IsBlock.of_subset a hfA) with hyp hyp
+  · -- B.subsingleton
+    apply Set.Subsingleton.eq_singleton_of_mem hyp
+    rw [Set.mem_iInter]; intro g; simp only [Set.mem_iInter, imp_self]
+  · -- B = ⊤ : contradiction
+    change B = ⊤ at hyp
+    exfalso; apply hA'
+    suffices ∃ g : M, a ∈ g • A by
+      obtain ⟨g, hg⟩ := this
+      have : B ≤ g • A := Set.biInter_subset_of_mem hg
+      rw [hyp, top_le_iff, ← eq_inv_smul_iff] at this
+      rw [this, Set.top_eq_univ, Set.smul_set_univ]
+    -- ∃ (g : M), a ∈ g • A
+    obtain ⟨x, hx⟩ := hA
+    obtain ⟨g, hg⟩ := MulAction.exists_smul_eq M x a
+    use g, x
+
+end IsPreprimitive
+
+end Finite
 
 end MulAction
