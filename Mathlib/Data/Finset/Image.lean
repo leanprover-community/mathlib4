@@ -24,11 +24,6 @@ choosing between `insert` and `Finset.cons`, or between `Finset.union` and `Fins
   image finset in `β`, filtering out `none`s.
 * `Finset.subtype`: `s.subtype p` is the finset of `Subtype p` whose elements belong to `s`.
 * `Finset.fin`:`s.fin n` is the finset of all elements of `s` less than `n`.
-
-## TODO
-
-Move the material about `Finset.range` so that the `Mathlib.Algebra.Group.Embedding` import can be
-removed.
 -/
 assert_not_exists MonoidWithZero MulAction OrderedCommMonoid
 
