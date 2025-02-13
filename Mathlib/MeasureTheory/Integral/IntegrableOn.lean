@@ -53,9 +53,13 @@ protected theorem MeasureTheory.AEStronglyMeasurable.stronglyMeasurableAtFilter
     (h : AEStronglyMeasurable f μ) : StronglyMeasurableAtFilter f l μ :=
   ⟨univ, univ_mem, by rwa [Measure.restrict_univ]⟩
 
-theorem AeStronglyMeasurable.stronglyMeasurableAtFilter_of_mem {s}
+theorem AEStronglyMeasurable.stronglyMeasurableAtFilter_of_mem {s}
     (h : AEStronglyMeasurable f (μ.restrict s)) (hl : s ∈ l) : StronglyMeasurableAtFilter f l μ :=
   ⟨s, hl, h⟩
+
+@[deprecated (since := "2025-02-12")]
+alias AeStronglyMeasurable.stronglyMeasurableAtFilter_of_mem :=
+    AEStronglyMeasurable.stronglyMeasurableAtFilter_of_mem
 
 protected theorem MeasureTheory.StronglyMeasurable.stronglyMeasurableAtFilter
     (h : StronglyMeasurable f) : StronglyMeasurableAtFilter f l μ :=
@@ -341,9 +345,6 @@ theorem Integrable.lintegral_lt_top {f : α → ℝ} (hf : Integrable f μ) :
 theorem IntegrableOn.setLIntegral_lt_top {f : α → ℝ} {s : Set α} (hf : IntegrableOn f s μ) :
     (∫⁻ x in s, ENNReal.ofReal (f x) ∂μ) < ∞ :=
   Integrable.lintegral_lt_top hf
-
-@[deprecated (since := "2024-06-29")]
-alias IntegrableOn.set_lintegral_lt_top := IntegrableOn.setLIntegral_lt_top
 
 /-- We say that a function `f` is *integrable at filter* `l` if it is integrable on some
 set `s ∈ l`. Equivalently, it is eventually integrable on `s` in `l.smallSets`. -/

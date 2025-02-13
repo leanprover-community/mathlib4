@@ -284,7 +284,7 @@ lemma subgroupOf_isOpen (U K : Subgroup G) (h : IsOpen (K : Set G)) :
 lemma discreteTopology [ContinuousMul G] (U : Subgroup G) (h : IsOpen (U : Set G)) :
     DiscreteTopology (G ⧸ U) := by
   refine singletons_open_iff_discrete.mp (fun g ↦ ?_)
-  induction' g using Quotient.inductionOn with g
+  induction g using Quotient.inductionOn with | h g =>
   show IsOpen (QuotientGroup.mk ⁻¹' {QuotientGroup.mk g})
   convert_to IsOpen ((g * ·) '' U)
   · ext g'
@@ -548,9 +548,10 @@ theorem exist_openSubgroup_sub_clopen_nhd_of_one {G : Type*} [Group G] [Topologi
     exact hV.isOpen.mul_left
   use ⟨S, this⟩
   have mulVpow (n : ℕ) : W * V ^ (n + 1) ⊆ W := by
-    induction' n with n ih
-    · simp [hV.mul]
-    · rw [pow_succ, ← mul_assoc]
+    induction n with
+    | zero => simp [hV.mul]
+    | succ n ih =>
+      rw [pow_succ, ← mul_assoc]
       exact (Set.mul_subset_mul_right ih).trans hV.mul
   have (n : ℕ) : V ^ (n + 1) ⊆ W * V ^ (n + 1) := by
     intro x xin

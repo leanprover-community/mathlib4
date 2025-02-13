@@ -30,7 +30,7 @@ reason about them using the existing `Setoid` and its infrastructure.
 setoid, equivalence, iseqv, relation, equivalence relation
 -/
 
-attribute [refl] Setoid.refl
+attribute [refl, simp] Setoid.refl
 attribute [symm] Setoid.symm
 attribute [trans] Setoid.trans
 
@@ -136,13 +136,13 @@ equivalence relations. -/
 @[simps]
 def prodQuotientEquiv (r : Setoid α) (s : Setoid β) :
     Quotient r × Quotient s ≃ Quotient (r.prod s) where
-  toFun := fun (x, y) ↦ Quotient.map₂ Prod.mk (fun _ _ hx _ _ hy ↦ ⟨hx, hy⟩) x y
-  invFun := fun q ↦ Quotient.liftOn' q (fun xy ↦ (Quotient.mk'' xy.1, Quotient.mk'' xy.2))
+  toFun | (x, y) => Quotient.map₂ Prod.mk (fun _ _ hx _ _ hy ↦ ⟨hx, hy⟩) x y
+  invFun q := Quotient.liftOn' q (fun xy ↦ (Quotient.mk'' xy.1, Quotient.mk'' xy.2))
     fun x y hxy ↦ Prod.ext (by simpa using hxy.1) (by simpa using hxy.2)
-  left_inv := fun q ↦ by
+  left_inv q := by
     rcases q with ⟨qa, qb⟩
     exact Quotient.inductionOn₂' qa qb fun _ _ ↦ rfl
-  right_inv := fun q ↦ by
+  right_inv q := by
     simp only
     refine Quotient.inductionOn' q fun _ ↦ rfl
 
@@ -151,14 +151,14 @@ equivalence relations. -/
 @[simps]
 noncomputable def piQuotientEquiv {ι : Sort*} {α : ι → Sort*} (r : ∀ i, Setoid (α i)) :
     (∀ i, Quotient (r i)) ≃ Quotient (@piSetoid _ _ r) where
-  toFun := fun x ↦ Quotient.mk'' fun i ↦ (x i).out
-  invFun := fun q ↦ Quotient.liftOn' q (fun x i ↦ Quotient.mk'' (x i)) fun x y hxy ↦ by
+  toFun x := Quotient.mk'' fun i ↦ (x i).out
+  invFun q := Quotient.liftOn' q (fun x i ↦ Quotient.mk'' (x i)) fun x y hxy ↦ by
     ext i
     simpa using hxy i
-  left_inv := fun q ↦ by
+  left_inv q := by
     ext i
     simp
-  right_inv := fun q ↦ by
+  right_inv q := by
     refine Quotient.inductionOn' q fun _ ↦ ?_
     simp only [Quotient.liftOn'_mk'', Quotient.eq'']
     intro i
@@ -346,8 +346,7 @@ def liftEquiv (r : Setoid α) : { f : α → β // r ≤ ker f } ≃ (Quotient r
 theorem lift_unique {r : Setoid α} {f : α → β} (H : r ≤ ker f) (g : Quotient r → β)
     (Hg : f = g ∘ Quotient.mk'') : Quotient.lift f H = g := by
   ext ⟨x⟩
-  erw [Quotient.lift_mk f H, Hg]
-  rfl
+  rw [← Quotient.mk, Quotient.lift_mk f H, Hg, Function.comp_apply, Quotient.mk''_eq_mk]
 
 /-- Given a map f from α to β, the natural map from the quotient of α by the kernel of f is
     injective. -/
@@ -464,8 +463,8 @@ def correspondence (r : Setoid α) : { s // r ≤ s } ≃o Setoid (Quotient r) w
   toFun s := ⟨Quotient.lift₂ s.1.1 fun _ _ _ _ h₁ h₂ ↦ Eq.propIntro
       (fun h ↦ s.1.trans' (s.1.trans' (s.1.symm' (s.2 h₁)) h) (s.2 h₂))
       (fun h ↦ s.1.trans' (s.1.trans' (s.2 h₁) h) (s.1.symm' (s.2 h₂))),
-    ⟨Quotient.ind s.1.2.1, @fun x y ↦ Quotient.inductionOn₂ x y fun _ _ ↦ s.1.2.2,
-      @fun x y z ↦ Quotient.inductionOn₃ x y z fun _ _ _ ↦ s.1.2.3⟩⟩
+    ⟨Quotient.ind s.1.2.1, fun {x y} ↦ Quotient.inductionOn₂ x y fun _ _ ↦ s.1.2.2,
+      fun {x y z} ↦ Quotient.inductionOn₃ x y z fun _ _ _ ↦ s.1.2.3⟩⟩
   invFun s := ⟨comap Quotient.mk' s, fun x y h => by rw [comap_rel, Quotient.eq'.2 h]⟩
   left_inv _ := rfl
   right_inv _ := ext fun x y ↦ Quotient.inductionOn₂ x y fun _ _ ↦ Iff.rfl

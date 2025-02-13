@@ -91,8 +91,8 @@ theorem centralMoment_one [IsZeroOrProbabilityMeasure μ] : centralMoment X 1 μ
       fun_prop
     rw [integral_undef this]
 
-theorem centralMoment_two_eq_variance [IsFiniteMeasure μ] (hX : Memℒp X 2 μ) :
-    centralMoment X 2 μ = variance X μ := by rw [hX.variance_eq]; rfl
+lemma centralMoment_two_eq_variance (hX : AEMeasurable X μ) : centralMoment X 2 μ = variance X μ :=
+  (variance_eq_integral hX).symm
 
 section MomentGeneratingFunction
 
@@ -114,11 +114,10 @@ theorem mgf_zero_fun : mgf 0 μ t = (μ Set.univ).toReal := by
 theorem cgf_zero_fun : cgf 0 μ t = log (μ Set.univ).toReal := by simp only [cgf, mgf_zero_fun]
 
 @[simp]
-theorem mgf_zero_measure : mgf X (0 : Measure Ω) t = 0 := by simp only [mgf, integral_zero_measure]
+theorem mgf_zero_measure : mgf X (0 : Measure Ω) = 0 := by ext; simp [mgf]
 
 @[simp]
-theorem cgf_zero_measure : cgf X (0 : Measure Ω) t = 0 := by
-  simp only [cgf, log_zero, mgf_zero_measure]
+theorem cgf_zero_measure : cgf X (0 : Measure Ω) = 0 := by ext; simp [cgf]
 
 @[simp]
 theorem mgf_const' (c : ℝ) : mgf (fun _ => c) μ t = (μ Set.univ).toReal * exp (t * c) := by

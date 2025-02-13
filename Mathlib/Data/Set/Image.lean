@@ -619,6 +619,12 @@ theorem Nonempty.preimage' {s : Set β} (hs : s.Nonempty) {f : α → β} (hf : 
 
 theorem range_comp (g : α → β) (f : ι → α) : range (g ∘ f) = g '' range f := by aesop
 
+/--
+Variant of `range_comp` using a lambda instead of function composition.
+-/
+theorem range_comp' (g : α → β) (f : ι → α) : range (fun x => g (f x)) = g '' range f :=
+  range_comp g f
+
 theorem range_subset_iff : range f ⊆ s ↔ ∀ y, f y ∈ s :=
   forall_mem_range
 
@@ -686,14 +692,10 @@ theorem exists_subset_range_and_iff {f : α → β} {p : Set β → Prop} :
     (∃ s, s ⊆ range f ∧ p s) ↔ ∃ s, p (f '' s) := by
   rw [← exists_range_iff, range_image]; rfl
 
-@[deprecated exists_subset_range_and_iff (since := "2024-06-06")]
-theorem exists_subset_range_iff {f : α → β} {p : Set β → Prop} :
-    (∃ (s : _) (_ : s ⊆ range f), p s) ↔ ∃ s, p (f '' s) := by simp
-
 @[simp]
 theorem forall_subset_range_iff {f : α → β} {p : Set β → Prop} :
     (∀ s, s ⊆ range f → p s) ↔ ∀ s, p (f '' s) := by
-  rw [← forall_mem_range, range_image]; rfl
+  rw [← forall_mem_range, range_image]; simp only [mem_powerset_iff]
 
 @[simp]
 theorem preimage_subset_preimage_iff {s t : Set α} {f : β → α} (hs : s ⊆ range f) :
