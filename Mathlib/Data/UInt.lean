@@ -32,16 +32,16 @@ run_cmd
     namespace $typeName
 
       instance : Neg $typeName where
-        neg a := mk ⟨-a.val⟩
+        neg a := ofBitVec ⟨-a.val⟩
 
       instance : Pow $typeName ℕ where
-        pow a n := mk ⟨a.val ^ n⟩
+        pow a n := ofBitVec ⟨a.val ^ n⟩
 
       instance : SMul ℕ $typeName where
-        smul n a := mk ⟨n • a.val⟩
+        smul n a := ofBitVec ⟨n • a.val⟩
 
       instance : SMul ℤ $typeName where
-        smul z a := mk ⟨z • a.val⟩
+        smul z a := ofBitVec ⟨z • a.val⟩
 
       lemma neg_def (a : $typeName) : -a = ⟨⟨-a.val⟩⟩ := rfl
 
@@ -67,10 +67,10 @@ run_cmd
           (fun _ _ => rfl) (fun _ _ => rfl)
 
       local instance instNatCast : NatCast $typeName where
-        natCast n := mk n
+        natCast n := ofBitVec n
 
       local instance instIntCast : IntCast $typeName where
-        intCast z := mk z
+        intCast z := ofBitVec z
 
       lemma natCast_def (n : ℕ) : (n : $typeName) = ⟨n⟩ := rfl
 
