@@ -151,8 +151,8 @@ partial def getHash (mod : Name) (sourceFile : FilePath)
     let path := mkFilePath (mod.components.map toString) |>.withExtension "lean"
 
     let rootHash := (← get).rootHash
-    let modHash := hash path -- TODO: change to `hash mod`
-    let fileHash := hash <| rootHash :: modHash :: hashFileContents content :: importHashes.toList
+    let pathHash := hash path -- TODO: change to `hash mod`
+    let fileHash := hash <| rootHash :: pathHash :: hashFileContents content :: importHashes.toList
     modifyGet fun stt =>
       (some fileHash, { stt with
         hashMap := stt.hashMap.insert mod fileHash
