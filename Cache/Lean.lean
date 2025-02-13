@@ -36,8 +36,6 @@ def Lean.Name.fromComponents : List Name → Name := go .anonymous where
 
 namespace Lean.SearchPath
 
-#check Lean.SearchPath.findWithExt
-
 open System in
 
 /--
