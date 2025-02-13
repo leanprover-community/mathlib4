@@ -1255,14 +1255,9 @@ open scoped NNReal ENNReal
 variable [NormedAddCommGroup D] [MeasurableSpace D] [MeasurableSpace E] [OpensMeasurableSpace E]
   [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
--- XXX: is this a sufficiently good name?
 lemma Nat.cast_toNNReal (N : ℕ) : (Nat.cast N : ℝ≥0∞).toNNReal = (Nat.cast N : ℝ).toNNReal := by
   rw [Real.toNNReal_of_nonneg (by positivity), ENNReal.toNNReal_nat]
   congr
-
-lemma bar (R : ℝ) (k : ℕ) : 2 ^ k * R.toNNReal = (2 ^ k * R).toNNReal := by
-  norm_cast
-  rw [← ENNReal.toNNReal_nat, Real.toNNReal_mul (by positivity), Nat.cast_toNNReal]
 
 variable (𝕜 F) in
 /-- The `L^p` norm of a Schwartz function is controlled by a finite family of Schwartz seminorms.
@@ -1292,7 +1287,7 @@ theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
     refine eLpNormEssSup_le_of_ae_enorm_bound (ae_of_all μ fun x ↦ ?_)
     rw [enorm_eq_nnnorm, ← norm_toNNReal, ENNReal.coe_le_coe]
     simp [norm_smul, abs_of_nonneg (h_one_add x).le]
-    rw [bar, Real.toNNReal_le_toNNReal_iff (by positivity)]
+    rw [Nat.rpow_mul_toNNReal, Real.toNNReal_le_toNNReal_iff (by positivity)]
     convert one_add_le_sup_seminorm_apply (m := (k, 0)) (le_refl k) (le_refl 0) f x
     exact norm_iteratedFDeriv_zero.symm
   _ = _ := by
