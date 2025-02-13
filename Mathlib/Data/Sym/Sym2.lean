@@ -786,13 +786,12 @@ lemma smul {α R N} [SMul R N] (f : { f : α → α → R // ∀ a₁ a₂, f a�
   simp_all only [Pi.smul_apply', Sym2.lift_mk]
 
 /--
-`CommMagma.mul` as a function from `Sym2`.
+`CommMagma.toMul.mul` as a function from `Sym2`.
 -/
-def mul {R} [CommMagma R] (f : α → R) : Sym2 α → R :=
-  Sym2.lift ⟨fun i j => (f i * f j), fun _ _ => mul_comm _ _⟩
+def mul {M} [CommMagma M] : Sym2 M → M := Sym2.lift ⟨fun i j => (i * j), fun _ _ => mul_comm _ _⟩
 
 @[simp]
-lemma mul_sym2Mk {R} [CommMagma R] (f : α → R) (xy : α × α) :
-    mul f (.mk xy) = f xy.1 * f xy.2 := rfl
+lemma mul_sym2Mk {M} [CommMagma M] (xy : M × M) :
+    mul (.mk xy)   = xy.1 * xy.2 := rfl
 
 end Sym2
