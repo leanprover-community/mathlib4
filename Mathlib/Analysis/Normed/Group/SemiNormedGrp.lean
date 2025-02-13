@@ -6,7 +6,7 @@ Authors: Johan Commelin, Riccardo Brasca
 import Mathlib.Analysis.Normed.Group.Constructions
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.CategoryTheory.Elementwise
 
 /-!
 # The category of seminormed groups
@@ -116,14 +116,10 @@ lemma ofHom_comp {M N O : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommG
 lemma ofHom_apply {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
     (f : NormedAddGroupHom M N) (r : M) : ofHom f r = f r := rfl
 
-@[simp]
 lemma inv_hom_apply {M N : SemiNormedGrp} (e : M ≅ N) (r : M) : e.inv (e.hom r) = r := by
-  rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {M N : SemiNormedGrp} (e : M ≅ N) (s : N) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGrp.of V : Type u) = V :=
