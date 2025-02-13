@@ -423,7 +423,7 @@ lemma cons_cast_succ (s : RelSeries r) (a : α) (h : r a s.head) (i : Fin (s.len
   convert append_apply_right (singleton r a) s h i
   ext
   show i.1 + 1 = _ % _
-  simpa using(Nat.mod_eq_of_lt (by simp)).symm
+  simpa using (Nat.mod_eq_of_lt (by simp)).symm
 
 /--
 Given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `aₙ -r→ a` holds, there is
