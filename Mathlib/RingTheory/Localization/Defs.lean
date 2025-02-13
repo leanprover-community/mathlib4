@@ -849,6 +849,14 @@ namespace IsLocalization
 
 variable {K : Type*} [IsLocalization M S]
 
+theorem mk'_neg (x : R) (y : M) :
+    mk' S (-x) y = - mk' S x y := by
+  rw [eq_comm, eq_mk'_iff_mul_eq, neg_mul, map_neg, mk'_spec]
+
+theorem mk'_sub (x₁ x₂ : R) (y₁ y₂ : M) :
+    mk' S (x₁ * y₂ - x₂ * y₁) (y₁ * y₂) = mk' S x₁ y₁ - mk' S x₂ y₂ := by
+  rw [sub_eq_add_neg, sub_eq_add_neg, ← mk'_neg, ← mk'_add, neg_mul]
+
 include M in
 lemma injective_of_map_algebraMap_zero {T} [CommRing T] (f : S →+* T)
     (h : ∀ x, f (algebraMap R S x) = 0 → algebraMap R S x = 0) :
