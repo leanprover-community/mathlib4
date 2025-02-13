@@ -93,7 +93,10 @@ abbrev PackageDirs := Lean.RBMap String FilePath compare
 /--
 `CacheM` stores the following information:
 * the source directory where `Mathlib.lean` lies
-* package directories
+* the Lean search path. This contains
+  paths to the source directory of each imported package. The build files (e.g. `.olean`)
+  of a package should then be in a `.lake`-folder inside this root directory
+  (see `LIBDIR` and `IRDIR`).
 * the build directory for proofwidgets
 -/
 structure CacheM.Context where
