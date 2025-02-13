@@ -47,8 +47,12 @@ variable [CommRing R] [CommRing A] [CommRing A'] [Algebra R A] [Algebra R A']
 /-- `AlgebraicIndependent R x` states the family of elements `x`
   is algebraically independent over `R`, meaning that the canonical
   map out of the multivariable polynomial ring is injective. -/
-def AlgebraicIndependent : Prop :=
+@[stacks 030E "(1)"] def AlgebraicIndependent : Prop :=
   Injective (MvPolynomial.aeval x : MvPolynomial ι R →ₐ[R] A)
+
+/-- `s : Set A` is algebraic independent over `R` if the family `(↑) : s → A` is algebraic
+independent over `R`. -/
+protected abbrev Set.AlgebraicIndependent (s : Set A) : Prop := AlgebraicIndependent R ((↑) : s → A)
 
 variable {R} {x}
 
@@ -80,7 +84,7 @@ theorem comp (f : ι' → ι) (hf : Function.Injective f) : AlgebraicIndependent
   intro p q
   simpa [aeval_rename, (rename_injective f hf).eq_iff] using @hx (rename f p) (rename f q)
 
-theorem coe_range : AlgebraicIndependent R ((↑) : range x → A) := by
+theorem coe_range : (range x).AlgebraicIndependent R := by
   simpa using hx.comp _ (rangeSplitting_injective x)
 
 end AlgebraicIndependent
@@ -97,19 +101,19 @@ theorem algebraicIndependent_equiv' (e : ι ≃ ι') {f : ι' → A} {g : ι →
   h ▸ algebraicIndependent_equiv e
 
 theorem algebraicIndependent_subtype_range {ι} {f : ι → A} (hf : Injective f) :
-    AlgebraicIndependent R ((↑) : range f → A) ↔ AlgebraicIndependent R f :=
+    (range f).AlgebraicIndependent R ↔ AlgebraicIndependent R f :=
   Iff.symm <| algebraicIndependent_equiv' (Equiv.ofInjective f hf) rfl
 
 alias ⟨AlgebraicIndependent.of_subtype_range, _⟩ := algebraicIndependent_subtype_range
 
 theorem algebraicIndependent_image {ι} {s : Set ι} {f : ι → A} (hf : Set.InjOn f s) :
-    (AlgebraicIndependent R fun x : s => f x) ↔ AlgebraicIndependent R fun x : f '' s => (x : A) :=
+    (AlgebraicIndependent R fun x : s => f x) ↔ (f '' s).AlgebraicIndependent R :=
   algebraicIndependent_equiv' (Equiv.Set.imageOfInjOn _ _ hf) rfl
 
 namespace AlgebraicIndependent
 
 theorem mono {t s : Set A} (h : t ⊆ s)
-    (hx : AlgebraicIndependent R ((↑) : s → A)) : AlgebraicIndependent R ((↑) : t → A) := by
+    (hx : s.AlgebraicIndependent R) : t.AlgebraicIndependent R := by
   simpa [Function.comp] using hx.comp (inclusion h) (inclusion_injective h)
 
 section repr
@@ -145,9 +149,30 @@ end repr
 
 end AlgebraicIndependent
 
-variable (R)
-
+variable (R) in
 /-- A family is a transcendence basis if it is a maximal algebraically independent subset. -/
-def IsTranscendenceBasis (x : ι → A) : Prop :=
+@[stacks 030E "(4)"] def IsTranscendenceBasis (x : ι → A) : Prop :=
   AlgebraicIndependent R x ∧
-    ∀ (s : Set A) (_ : AlgebraicIndependent R ((↑) : s → A)) (_ : range x ≤ s), range x = s
+    ∀ (s : Set A) (_ : s.AlgebraicIndependent R) (_ : range x ⊆ s), range x = s
+
+theorem isTranscendenceBasis_iff_maximal {s : Set A} :
+    IsTranscendenceBasis R ((↑) : s → A) ↔ Maximal (Set.AlgebraicIndependent R) s := by
+  rw [IsTranscendenceBasis, maximal_iff, Subtype.range_val]; rfl
+
+theorem isTranscendenceBasis_equiv (e : ι ≃ ι') {f : ι' → A} :
+    IsTranscendenceBasis R (f ∘ e) ↔ IsTranscendenceBasis R f := by
+  simp_rw [IsTranscendenceBasis, algebraicIndependent_equiv, EquivLike.range_comp]
+
+theorem isTranscendenceBasis_equiv' (e : ι ≃ ι') {f : ι' → A} {g : ι → A} (h : f ∘ e = g) :
+    IsTranscendenceBasis R g ↔ IsTranscendenceBasis R f :=
+  h ▸ isTranscendenceBasis_equiv e
+
+theorem isTranscendenceBasis_subtype_range {ι} {f : ι → A} (hf : Injective f) :
+    IsTranscendenceBasis R ((↑) : range f → A) ↔ IsTranscendenceBasis R f :=
+  .symm <| isTranscendenceBasis_equiv' (Equiv.ofInjective f hf) rfl
+
+alias ⟨IsTranscendenceBasis.of_subtype_range, _⟩ := isTranscendenceBasis_subtype_range
+
+theorem isTranscendenceBasis_image {ι} {s : Set ι} {f : ι → A} (hf : Set.InjOn f s) :
+    IsTranscendenceBasis R (fun x : s ↦ f x) ↔ IsTranscendenceBasis R fun x : f '' s ↦ (x : A) :=
+  isTranscendenceBasis_equiv' (Equiv.Set.imageOfInjOn _ _ hf) rfl
