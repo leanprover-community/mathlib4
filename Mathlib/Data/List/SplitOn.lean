@@ -85,8 +85,8 @@ theorem splitOnP_first (h : ∀ x ∈ xs, ¬p x) (sep : α) (hsep : p sep) (as :
 /-- `intercalate [x]` is the left inverse of `splitOn x`  -/
 theorem intercalate_splitOn (x : α) [DecidableEq α] : [x].intercalate (xs.splitOn x) = xs := by
   simp only [intercalate, splitOn]
-  induction' xs with hd tl ih; · simp [flatten]
-  cases' h' : splitOnP (· == x) tl with hd' tl'; · exact (splitOnP_ne_nil _ tl h').elim
+  induction xs with | nil => simp [flatten] | cons hd tl ih =>
+  rcases h' : splitOnP (· == x) tl with - | ⟨hd', tl'⟩; · exact (splitOnP_ne_nil _ tl h').elim
   rw [h'] at ih
   rw [splitOnP_cons]
   split_ifs with h
@@ -100,7 +100,7 @@ theorem intercalate_splitOn (x : α) [DecidableEq α] : [x].intercalate (xs.spli
 theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ l) (hls : ls ≠ []) :
     ([x].intercalate ls).splitOn x = ls := by
   simp only [intercalate]
-  induction' ls with hd tl ih; · contradiction
+  induction ls with | nil => contradiction | cons hd tl ih =>
   cases tl
   · suffices hd.splitOn x = [hd] by simpa [flatten]
     refine splitOnP_eq_single _ _ ?_

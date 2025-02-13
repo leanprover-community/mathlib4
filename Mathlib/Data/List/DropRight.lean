@@ -50,9 +50,10 @@ theorem rdrop_zero : rdrop l 0 = l := by simp [rdrop]
 
 theorem rdrop_eq_reverse_drop_reverse : l.rdrop n = reverse (l.reverse.drop n) := by
   rw [rdrop]
-  induction' l using List.reverseRecOn with xs x IH generalizing n
-  · simp
-  · cases n
+  induction l using List.reverseRecOn generalizing n with
+  | nil => simp
+  | append_singleton xs x IH =>
+    cases n
     · simp [take_append]
     · simp [take_append_eq_append_take, IH]
 
@@ -72,9 +73,10 @@ theorem rtake_zero : rtake l 0 = [] := by simp [rtake]
 
 theorem rtake_eq_reverse_take_reverse : l.rtake n = reverse (l.reverse.take n) := by
   rw [rtake]
-  induction' l using List.reverseRecOn with xs x IH generalizing n
-  · simp
-  · cases n
+  induction l using List.reverseRecOn generalizing n with
+  | nil => simp
+  | append_singleton xs x IH =>
+    cases n
     · exact drop_length _
     · simp [drop_append_eq_append_drop, IH]
 
@@ -123,7 +125,7 @@ theorem rdropWhile_eq_nil_iff : rdropWhile p l = [] ↔ ∀ x ∈ l, p x := by s
 -- it is in this file because it requires `List.Infix`
 @[simp]
 theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l.get ⟨0, hl⟩) := by
-  cases' l with hd tl
+  rcases l with - | ⟨hd, tl⟩
   · simp only [dropWhile, true_iff]
     intro h
     by_contra
@@ -187,10 +189,12 @@ theorem rtakeWhile_eq_self_iff : rtakeWhile p l = l ↔ ∀ x ∈ l, p x := by
 -- Porting note: This needed a lot of rewriting.
 @[simp]
 theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (l.getLast hl) := by
-  induction' l using List.reverseRecOn with l a
-  · simp only [rtakeWhile, takeWhile, reverse_nil, true_iff]
+  induction l using List.reverseRecOn with
+  | nil =>
+    simp only [rtakeWhile, takeWhile, reverse_nil, true_iff]
     intro f; contradiction
-  · simp only [rtakeWhile, reverse_append, reverse_cons, reverse_nil, nil_append, singleton_append,
+  | append_singleton l a =>
+    simp only [rtakeWhile, reverse_append, reverse_cons, reverse_nil, nil_append, singleton_append,
       takeWhile, ne_eq, cons_ne_self, not_false_eq_true, getLast_append_of_ne_nil,
       getLast_singleton]
     refine ⟨fun h => ?_ , fun h => ?_⟩

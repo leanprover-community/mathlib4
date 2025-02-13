@@ -108,7 +108,7 @@ fixed object.
 def wideCospan (B : C) (objs : J → C) (arrows : ∀ j : J, objs j ⟶ B) : WidePullbackShape J ⥤ C where
   obj j := Option.casesOn j B objs
   map f := by
-    cases' f with _ j
+    rcases f with _ | j
     · apply 𝟙 _
     · exact arrows j
 
@@ -206,7 +206,7 @@ fixed object.
 def wideSpan (B : C) (objs : J → C) (arrows : ∀ j : J, B ⟶ objs j) : WidePushoutShape J ⥤ C where
   obj j := Option.casesOn j B objs
   map f := by
-    cases' f with _ j
+    rcases f with _ | j
     · apply 𝟙 _
     · exact arrows j
   map_comp := fun f g => by

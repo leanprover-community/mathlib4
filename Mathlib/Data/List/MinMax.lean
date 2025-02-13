@@ -69,22 +69,23 @@ theorem argAux_self (hr₀ : Irreflexive r) (a : α) : argAux r (some a) a = a :
 
 theorem not_of_mem_foldl_argAux (hr₀ : Irreflexive r) (hr₁ : Transitive r) :
     ∀ {a m : α} {o : Option α}, a ∈ l → m ∈ foldl (argAux r) o l → ¬r a m := by
-  induction' l using List.reverseRecOn with tl a ih
-  · simp
-  intro b m o hb ho
-  rw [foldl_append, foldl_cons, foldl_nil, argAux] at ho
-  cases' hf : foldl (argAux r) o tl with c
-  · rw [hf] at ho
-    rw [foldl_argAux_eq_none] at hf
-    simp_all [hf.1, hf.2, hr₀ _]
-  rw [hf, Option.mem_def] at ho
-  dsimp only at ho
-  split_ifs at ho with hac <;> cases' mem_append.1 hb with h h <;>
-    injection ho with ho <;> subst ho
-  · exact fun hba => ih h hf (hr₁ hba hac)
-  · simp_all [hr₀ _]
-  · exact ih h hf
-  · simp_all
+  induction l using List.reverseRecOn with
+  | nil => simp
+  | append_singleton tl a ih =>
+    intro b m o hb ho
+    rw [foldl_append, foldl_cons, foldl_nil, argAux] at ho
+    rcases hf : foldl (argAux r) o tl with - | c
+    · rw [hf] at ho
+      rw [foldl_argAux_eq_none] at hf
+      simp_all [hf.1, hf.2, hr₀ _]
+    · rw [hf, Option.mem_def] at ho
+      dsimp only at ho
+      split_ifs at ho with hac <;> rcases mem_append.1 hb with h | h <;>
+        injection ho with ho <;> subst ho
+      · exact fun hba => ih h hf (hr₁ hba hac)
+      · simp_all [hr₀ _]
+      · exact ih h hf
+      · simp_all
 
 end ArgAux
 
@@ -169,7 +170,7 @@ theorem argmax_cons (f : α → β) (a : α) (l : List α) :
       Option.casesOn (argmax f l) (some a) fun c => if f a < f c then some c else some a :=
   List.reverseRecOn l rfl fun hd tl ih => by
     rw [← cons_append, argmax_concat, ih, argmax_concat]
-    cases' h : argmax f hd with m
+    rcases h : argmax f hd with - | m
     · simp [h]
     dsimp
     rw [← apply_ite, ← apply_ite]
@@ -216,7 +217,7 @@ theorem mem_argmax_iff :
   ⟨fun hm => ⟨argmax_mem hm, fun _ ha => le_of_mem_argmax ha hm, fun _ => index_of_argmax hm⟩,
     by
       rintro ⟨hml, ham, hma⟩
-      cases' harg : argmax f l with n
+      rcases harg : argmax f l with - | n
       · simp_all
       · have :=
           _root_.le_antisymm (hma n (argmax_mem harg) (le_of_mem_argmax hml harg))
@@ -362,10 +363,10 @@ theorem minimum_eq_coe_iff : minimum l = m ↔ m ∈ l ∧ ∀ a ∈ l, m ≤ a 
   @maximum_eq_coe_iff αᵒᵈ _ _ _
 
 theorem coe_le_maximum_iff : a ≤ l.maximum ↔ ∃ b, b ∈ l ∧ a ≤ b := by
-  induction' l <;> simp [maximum_cons, *]
+  induction l <;> simp [maximum_cons, *]
 
 theorem minimum_le_coe_iff : l.minimum ≤ a ↔ ∃ b, b ∈ l ∧ b ≤ a := by
-  induction' l <;> simp [minimum_cons, *]
+  induction l <;> simp [minimum_cons, *]
 
 theorem maximum_ne_bot_of_ne_nil (h : l ≠ []) : l.maximum ≠ ⊥ :=
   match l, h with | _ :: _, _ => by simp [maximum_cons]
@@ -474,22 +475,24 @@ variable [OrderBot α] {l : List α}
 
 @[simp]
 theorem foldr_max_of_ne_nil (h : l ≠ []) : ↑(l.foldr max ⊥) = l.maximum := by
-  induction' l with hd tl IH
-  · contradiction
-  · rw [maximum_cons, foldr, WithBot.coe_max]
+  induction l with
+  | nil => contradiction
+  | cons hd tl IH =>
+    rw [maximum_cons, foldr, WithBot.coe_max]
     by_cases h : tl = []
     · simp [h]
     · simp [IH h]
 
 theorem max_le_of_forall_le (l : List α) (a : α) (h : ∀ x ∈ l, x ≤ a) : l.foldr max ⊥ ≤ a := by
-  induction' l with y l IH
-  · simp
-  · simpa [h y (mem_cons_self _ _)] using IH fun x hx => h x <| mem_cons_of_mem _ hx
+  induction l with
+  | nil => simp
+  | cons y l IH => simpa [h y (mem_cons_self _ _)] using IH fun x hx => h x <| mem_cons_of_mem _ hx
 
 theorem le_max_of_le {l : List α} {a x : α} (hx : x ∈ l) (h : a ≤ x) : a ≤ l.foldr max ⊥ := by
-  induction' l with y l IH
-  · exact absurd hx (not_mem_nil _)
-  · obtain hl | hl := hx
+  induction l with
+  | nil => exact absurd hx (not_mem_nil _)
+  | cons y l IH =>
+    obtain hl | hl := hx
     · simp only [foldr, foldr_cons]
       exact le_max_of_le_left h
     · exact le_max_of_le_right (IH (by assumption))

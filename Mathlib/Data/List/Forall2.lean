@@ -158,11 +158,13 @@ theorem forall₂_zip : ∀ {l₁ l₂}, Forall₂ R l₁ l₂ → ∀ {a b}, (a
 theorem forall₂_iff_zip {l₁ l₂} :
     Forall₂ R l₁ l₂ ↔ length l₁ = length l₂ ∧ ∀ {a b}, (a, b) ∈ zip l₁ l₂ → R a b :=
   ⟨fun h => ⟨Forall₂.length_eq h, @forall₂_zip _ _ _ _ _ h⟩, fun h => by
-    cases' h with h₁ h₂
-    induction' l₁ with a l₁ IH generalizing l₂
-    · cases length_eq_zero.1 h₁.symm
+    obtain ⟨h₁, h₂⟩ := h
+    induction l₁ generalizing l₂ with
+    | nil =>
+      cases length_eq_zero.1 h₁.symm
       constructor
-    · cases' l₂ with b l₂
+    | cons a l₁ IH =>
+      rcases l₂ with - | ⟨b, l₂⟩
       · simp at h₁
       · simp only [length_cons, succ.injEq] at h₁
         exact Forall₂.cons (h₂ <| by simp [zip])
@@ -290,8 +292,7 @@ theorem sublistForall₂_iff {l₁ : List α} {l₂ : List β} :
     | cons _ _ ih => intro l₁ hl1; exact SublistForall₂.cons_right (ih hl1)
     | cons₂ _ _ ih =>
       intro l₁ hl1
-      cases' hl1 with _ _ _ _ hr hl _
-      exact SublistForall₂.cons hr (ih hl)
+      cases hl1 with | cons hr hl => exact SublistForall₂.cons hr (ih hl)
 
 instance SublistForall₂.is_refl [IsRefl α Rₐ] : IsRefl (List α) (SublistForall₂ Rₐ) :=
   ⟨fun l => sublistForall₂_iff.2 ⟨l, forall₂_refl l, Sublist.refl l⟩⟩
@@ -306,14 +307,14 @@ instance SublistForall₂.is_trans [IsTrans α Rₐ] : IsTrans (List α) (Sublis
       exact h1
     | cons _ _ ih =>
       rintro a b h1 h2
-      cases' h2 with _ _ _ _ _ hbc tbc _ _ y1 btc
-      · cases h1
-        exact SublistForall₂.nil
-      · cases' h1 with _ _ _ _ _ hab tab _ _ _ atb
-        · exact SublistForall₂.nil
-        · exact SublistForall₂.cons (_root_.trans hab hbc) (ih _ _ tab tbc)
-        · exact SublistForall₂.cons_right (ih _ _ atb tbc)
-      · exact SublistForall₂.cons_right (ih _ _ h1 btc)⟩
+      cases h2 with
+      | nil => cases h1; exact SublistForall₂.nil
+      | cons hbc tbc =>
+        cases h1 with
+        | nil => exact SublistForall₂.nil
+        | cons hab tab => exact SublistForall₂.cons (_root_.trans hab hbc) (ih _ _ tab tbc)
+        | cons_right atb => exact SublistForall₂.cons_right (ih _ _ atb tbc)
+      | cons_right btc => exact SublistForall₂.cons_right (ih _ _ h1 btc)⟩
 
 theorem Sublist.sublistForall₂ {l₁ l₂ : List α} (h : l₁ <+ l₂) [IsRefl α Rₐ] :
     SublistForall₂ Rₐ l₁ l₂ :=
