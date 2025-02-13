@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Adam Topaz, Johan Commelin
 -/
 import Mathlib.Algebra.Homology.Additive
-import Mathlib.Algebra.Homology.AlternatingConst
 import Mathlib.AlgebraicTopology.MooreComplex
-import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.CategoryTheory.Preadditive.Opposite
 import Mathlib.CategoryTheory.Idempotents.FunctorCategories
@@ -203,14 +201,6 @@ theorem karoubi_alternatingFaceMapComplex_d (P : Karoubi (SimplicialObject C)) (
   simp only [AlternatingFaceMapComplex.obj_d_eq, Karoubi.sum_hom, Preadditive.comp_sum,
     Karoubi.zsmul_hom, Preadditive.comp_zsmul]
   rfl
-
-/-- The alternating face complex of the constant complex is the alternating constant complex. -/
-def alternatingFaceMapComplexConst :
-    Functor.const _ ⋙ alternatingFaceMapComplex C ≅ ChainComplex.alternatingConst :=
-  NatIso.ofComponents (fun X ↦ HomologicalComplex.Hom.isoOfComponents (fun _ ↦ Iso.refl _) <| by
-    rintro _ i rfl
-    simp [SimplicialObject.δ, ← Finset.sum_smul, Fin.sum_neg_one_pow, Nat.even_add_one,
-      ← Nat.not_even_iff_odd]) (by intros; ext; simp)
 
 namespace AlternatingFaceMapComplex
 
