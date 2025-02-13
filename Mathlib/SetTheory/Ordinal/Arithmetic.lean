@@ -340,6 +340,29 @@ theorem pred_le_self (o) : pred o ≤ o := by
   · simpa using le_succ a
   · rw [pred_eq_of_isSuccPrelimit ho]
 
+@[simp]
+theorem pred_le_iff_le_succ {a b} : pred a ≤ b ↔ a ≤ succ b := by
+  obtain ⟨a, rfl⟩ | ha := mem_range_succ_or_isSuccPrelimit a
+  · simp
+  · rw [ha.ordinalPred_eq, ha.le_succ_iff]
+
+@[deprecated pred_le_iff_le_succ (since := "2025-02-11")]
+alias pred_le := pred_le_iff_le_succ
+
+@[simp]
+theorem lt_pred_iff_succ_lt {a b} : a < pred b ↔ succ a < b :=
+  le_iff_le_iff_lt_iff_lt.1 pred_le_iff_le_succ
+
+@[deprecated lt_pred_iff_succ_lt (since := "2025-02-11")]
+alias lt_pred := lt_pred_iff_succ_lt
+
+/-- `Ordinal.pred` and `Order.succ` form a Galois insertion. -/
+def pred_succ_gi : GaloisInsertion pred succ :=
+  GaloisConnection.toGaloisInsertion @pred_le_iff_le_succ (by simp)
+
+theorem pred_surjective : Function.Surjective pred :=
+  pred_succ_gi.l_surjective
+
 theorem self_le_succ_pred (o) : o ≤ succ (pred o) := by
   obtain ⟨a, rfl⟩ | ho := mem_range_succ_or_isSuccPrelimit o
   · simp
@@ -377,26 +400,6 @@ theorem succ_pred_iff_is_succ {o} : succ (pred o) = o ↔ ∃ a, o = succ a := b
 theorem succ_lt_of_not_succ {o b : Ordinal} (h : ¬∃ a, o = succ a) : succ b < o ↔ b < o := by
   apply (isSuccPrelimit_of_succ_ne _).succ_lt_iff
   simpa [eq_comm] using h
-
-theorem pred_succ_gc : GaloisConnection pred succ := by
-  intro a b
-  obtain ⟨a, rfl⟩ | ha := mem_range_succ_or_isSuccPrelimit a
-  · simp
-  · rw [ha.ordinalPred_eq, ha.le_succ_iff]
-
-@[simp]
-theorem pred_le_iff {a b} : pred a ≤ b ↔ a ≤ succ b :=
-  pred_succ_gc.le_iff_le
-
-@[deprecated pred_le_iff (since := "2025-02-11")]
-alias pred_le := pred_le_iff
-
-@[simp]
-theorem lt_pred_iff {a b} : a < pred b ↔ succ a < b :=
-  pred_succ_gc.lt_iff_lt
-
-@[deprecated lt_pred_iff (since := "2025-02-11")]
-alias lt_pred := lt_pred_iff
 
 @[deprecated isSuccPrelimit_lift_iff (since := "2025-02-11")]
 theorem lift_is_succ {o : Ordinal.{v}} : (∃ a, lift.{u} o = succ a) ↔ ∃ a, o = succ a := by
