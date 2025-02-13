@@ -46,6 +46,8 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
 variable {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R)
 
+attribute [local simp] homEquiv_unit homEquiv_counit
+
 /-- If the left adjoint is faithful, then each component of the unit is an monomorphism. -/
 instance unit_mono_of_L_faithful [L.Faithful] (X : C) : Mono (h.unit.app X) where
   right_cancellation {Y} f g hfg :=
@@ -222,9 +224,6 @@ lemma isIso_unit_app_iff_mem_essImage [R.Faithful] [R.Full] {Y : C} :
 theorem mem_essImage_of_unit_isIso (A : C)
     [IsIso (h.unit.app A)] : A ∈ R.essImage :=
   ⟨L.obj A, ⟨(asIso (h.unit.app A)).symm⟩⟩
-
-@[deprecated (since := "2024-06-19")] alias _root_.CategoryTheory.mem_essImage_of_unit_isIso :=
-  mem_essImage_of_unit_isIso
 
 lemma isIso_unit_app_of_iso [R.Faithful] [R.Full] {X : D} {Y : C} (e : Y ≅ R.obj X) :
     IsIso (h.unit.app Y) :=

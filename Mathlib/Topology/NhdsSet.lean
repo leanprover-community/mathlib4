@@ -122,7 +122,7 @@ theorem mem_nhdsSet_empty : s ∈ 𝓝ˢ (∅ : Set X) := by simp
 @[simp]
 theorem nhdsSet_univ : 𝓝ˢ (univ : Set X) = ⊤ := by rw [isOpen_univ.nhdsSet_eq, principal_univ]
 
-@[mono]
+@[gcongr, mono]
 theorem nhdsSet_mono (h : s ⊆ t) : 𝓝ˢ s ≤ 𝓝ˢ t :=
   sSup_le_sSup <| image_subset _ h
 
@@ -142,19 +142,6 @@ theorem union_mem_nhdsSet (h₁ : s₁ ∈ 𝓝ˢ t₁) (h₂ : s₂ ∈ 𝓝ˢ 
 @[simp]
 theorem nhdsSet_insert (x : X) (s : Set X) : 𝓝ˢ (insert x s) = 𝓝 x ⊔ 𝓝ˢ s := by
   rw [insert_eq, nhdsSet_union, nhdsSet_singleton]
-
-/-- Preimage of a set neighborhood of `t` under a continuous map `f` is a set neighborhood of `s`
-provided that `f` maps `s` to `t`. -/
-theorem Continuous.tendsto_nhdsSet {f : X → Y} {t : Set Y} (hf : Continuous f)
-    (hst : MapsTo f s t) : Tendsto f (𝓝ˢ s) (𝓝ˢ t) :=
-  ((hasBasis_nhdsSet s).tendsto_iff (hasBasis_nhdsSet t)).mpr fun U hU =>
-    ⟨f ⁻¹' U, ⟨hU.1.preimage hf, hst.mono Subset.rfl hU.2⟩, fun _ => id⟩
-
-lemma Continuous.tendsto_nhdsSet_nhds
-    {y : Y} {f : X → Y} (h : Continuous f) (h' : EqOn f (fun _ ↦ y) s) :
-    Tendsto f (𝓝ˢ s) (𝓝 y) := by
-  rw [← nhdsSet_singleton]
-  exact h.tendsto_nhdsSet h'
 
 /- This inequality cannot be improved to an equality. For instance,
 if `X` has two elements and the coarse topology and `s` and `t` are distinct singletons then

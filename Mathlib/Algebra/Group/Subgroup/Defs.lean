@@ -5,6 +5,7 @@ Authors: Kexing Ying
 -/
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Tactic.Common
+import Mathlib.Tactic.FastInstance
 
 /-!
 # Subgroups
@@ -47,15 +48,12 @@ membership of a subgroup's underlying set.
 subgroup, subgroups
 -/
 
-assert_not_exists OrderedAddCommMonoid
-assert_not_exists Multiset
-assert_not_exists Ring
+assert_not_exists OrderedAddCommMonoid Multiset Ring
 
 open Function
 open scoped Int
 
-variable {G G' G'' : Type*} [Group G] [Group G'] [Group G'']
-variable {A : Type*} [AddGroup A]
+variable {G : Type*} [Group G] {A : Type*} [AddGroup A]
 
 section SubgroupClass
 
@@ -110,7 +108,7 @@ theorem zpow_mem {x : M} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K
 
 variable [SetLike S G] [SubgroupClass S G]
 
-@[to_additive /-(attr := simp)-/] -- Porting note: `simp` cannot simplify LHS
+@[to_additive]
 theorem exists_inv_mem_iff_exists_mem {P : G → Prop} :
     (∃ x : G, x ∈ H ∧ P x⁻¹) ↔ ∃ x ∈ H, P x := by
   constructor <;>
@@ -140,8 +138,6 @@ theorem coe_inv (x : H) : (x⁻¹).1 = x.1⁻¹ :=
 end InvMemClass
 
 namespace SubgroupClass
-
-@[to_additive (attr := deprecated (since := "2024-01-15"))] alias coe_inv := InvMemClass.coe_inv
 
 -- Here we assume H, K, and L are subgroups, but in fact any one of them
 -- could be allowed to be a subsemigroup.
@@ -180,7 +176,7 @@ variable (H)
 -- Prefer subclasses of `Group` over subclasses of `SubgroupClass`.
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive "An additive subgroup of an `AddGroup` inherits an `AddGroup` structure."]
-instance (priority := 75) toGroup : Group H :=
+instance (priority := 75) toGroup : Group H := fast_instance%
   Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
@@ -188,7 +184,7 @@ instance (priority := 75) toGroup : Group H :=
 /-- A subgroup of a `CommGroup` is a `CommGroup`. -/
 @[to_additive "An additive subgroup of an `AddCommGroup` is an `AddCommGroup`."]
 instance (priority := 75) toCommGroup {G : Type*} [CommGroup G] [SetLike S G] [SubgroupClass S G] :
-    CommGroup H :=
+    CommGroup H := fast_instance%
   Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
@@ -266,9 +262,6 @@ structure AddSubgroup (G : Type*) [AddGroup G] extends AddSubmonoid G where
 
 attribute [to_additive] Subgroup
 
--- Porting note: Removed, translation already exists
--- attribute [to_additive AddSubgroup.toAddSubmonoid] Subgroup.toSubmonoid
-
 /-- Reinterpret a `Subgroup` as a `Submonoid`. -/
 add_decl_doc Subgroup.toSubmonoid
 
@@ -285,14 +278,16 @@ instance : SetLike (Subgroup G) G where
     obtain ⟨⟨⟨hq,_⟩,_⟩,_⟩ := q
     congr
 
--- Porting note: Below can probably be written more uniformly
+-- TODO: Below can probably be written more uniformly
 @[to_additive]
 instance : SubgroupClass (Subgroup G) G where
   inv_mem := Subgroup.inv_mem' _
   one_mem _ := (Subgroup.toSubmonoid _).one_mem'
   mul_mem := (Subgroup.toSubmonoid _).mul_mem'
 
-@[to_additive (attr := simp, nolint simpNF)] -- Porting note (#10675): dsimp can not prove this
+-- This is not a simp lemma,
+-- because the simp normal form left-hand side is given by `mem_toSubmonoid` below.
+@[to_additive]
 theorem mem_carrier {s : Subgroup G} {x : G} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
@@ -311,8 +306,8 @@ theorem mk_le_mk {s t : Set G} (h_one) (h_mul) (h_inv) (h_one') (h_mul') (h_inv'
     mk ⟨⟨s, h_one⟩, h_mul⟩ h_inv ≤ mk ⟨⟨t, h_one'⟩, h_mul'⟩ h_inv' ↔ s ⊆ t :=
   Iff.rfl
 
-initialize_simps_projections Subgroup (carrier → coe)
-initialize_simps_projections AddSubgroup (carrier → coe)
+initialize_simps_projections Subgroup (carrier → coe, as_prefix coe)
+initialize_simps_projections AddSubgroup (carrier → coe, as_prefix coe)
 
 @[to_additive (attr := simp)]
 theorem coe_toSubmonoid (K : Subgroup G) : (K.toSubmonoid : Set G) = K :=
@@ -331,8 +326,10 @@ theorem toSubmonoid_injective : Function.Injective (toSubmonoid : Subgroup G →
     exact SetLike.ext'_iff.2 this
 
 @[to_additive (attr := simp)]
-theorem toSubmonoid_eq {p q : Subgroup G} : p.toSubmonoid = q.toSubmonoid ↔ p = q :=
+theorem toSubmonoid_inj {p q : Subgroup G} : p.toSubmonoid = q.toSubmonoid ↔ p = q :=
   toSubmonoid_injective.eq_iff
+
+@[to_additive, deprecated (since := "2024-12-29")] alias toSubmonoid_eq := toSubmonoid_inj
 
 @[to_additive (attr := mono)]
 theorem toSubmonoid_strictMono : StrictMono (toSubmonoid : Subgroup G → Submonoid G) := fun _ _ =>
@@ -357,18 +354,14 @@ variable (H K : Subgroup G)
 
 /-- Copy of a subgroup with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. -/
-@[to_additive
+@[to_additive (attr := simps)
       "Copy of an additive subgroup with a new `carrier` equal to the old one.
       Useful to fix definitional equalities"]
 protected def copy (K : Subgroup G) (s : Set G) (hs : s = K) : Subgroup G where
   carrier := s
   one_mem' := hs.symm ▸ K.one_mem'
   mul_mem' := hs.symm ▸ K.mul_mem'
-  inv_mem' hx := by simpa [hs] using hx -- Porting note: `▸` didn't work here
-
-@[to_additive (attr := simp)]
-theorem coe_copy (K : Subgroup G) (s : Set G) (hs : s = ↑K) : (K.copy s hs : Set G) = s :=
-  rfl
+  inv_mem' hx := by simpa [hs] using hx
 
 @[to_additive]
 theorem copy_eq (K : Subgroup G) (s : Set G) (hs : s = ↑K) : K.copy s hs = K :=
@@ -491,7 +484,6 @@ theorem coe_inv (x : H) : ↑(x⁻¹ : H) = (x⁻¹ : G) :=
 theorem coe_div (x y : H) : (↑(x / y) : G) = ↑x / ↑y :=
   rfl
 
--- Porting note: removed simp, theorem has variable as head symbol
 @[to_additive (attr := norm_cast)]
 theorem coe_mk (x : G) (hx : x ∈ H) : ((⟨x, hx⟩ : H) : G) = x :=
   rfl
@@ -500,22 +492,22 @@ theorem coe_mk (x : G) (hx : x ∈ H) : ((⟨x, hx⟩ : H) : G) = x :=
 theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 
-@[to_additive (attr := norm_cast)] -- Porting note (#10685): dsimp can prove this
-theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
-  rfl
+@[to_additive (attr := norm_cast)]
+theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n := by
+  dsimp
 
 @[to_additive (attr := simp)]
 theorem mk_eq_one {g : G} {h} : (⟨g, h⟩ : H) = 1 ↔ g = 1 := Submonoid.mk_eq_one ..
 
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive "An `AddSubgroup` of an `AddGroup` inherits an `AddGroup` structure."]
-instance toGroup {G : Type*} [Group G] (H : Subgroup G) : Group H :=
+instance toGroup {G : Type*} [Group G] (H : Subgroup G) : Group H := fast_instance%
   Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
 /-- A subgroup of a `CommGroup` is a `CommGroup`. -/
 @[to_additive "An `AddSubgroup` of an `AddCommGroup` is an `AddCommGroup`."]
-instance toCommGroup {G : Type*} [CommGroup G] (H : Subgroup G) : CommGroup H :=
+instance toCommGroup {G : Type*} [CommGroup G] (H : Subgroup G) : CommGroup H := fast_instance%
   Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
@@ -556,11 +548,7 @@ theorem subtype_comp_inclusion {H K : Subgroup G} (hH : H ≤ K) :
     K.subtype.comp (inclusion hH) = H.subtype :=
   rfl
 
-variable {k : Set G}
-
 open Set
-
-variable {N : Type*} [Group N] {P : Type*} [Group P]
 
 /-- A subgroup is normal if whenever `n ∈ H`, then `g * n * g⁻¹ ∈ H` for every `g : G` -/
 structure Normal : Prop where
@@ -586,7 +574,7 @@ end AddSubgroup
 
 namespace Subgroup
 
-variable {H K : Subgroup G}
+variable {H : Subgroup G}
 
 @[to_additive]
 instance (priority := 100) normal_of_comm {G : Type*} [CommGroup G] (H : Subgroup G) : H.Normal :=
@@ -603,9 +591,7 @@ theorem conj_mem' (nH : H.Normal) (n : G) (hn : n ∈ H) (g : G) :
 @[to_additive]
 theorem mem_comm (nH : H.Normal) {a b : G} (h : a * b ∈ H) : b * a ∈ H := by
   have : a⁻¹ * (a * b) * a⁻¹⁻¹ ∈ H := nH.conj_mem (a * b) h a⁻¹
-  -- Porting note: Previous code was:
-  -- simpa
-  simp_all only [inv_mul_cancel_left, inv_inv]
+  simpa
 
 @[to_additive]
 theorem mem_comm_iff (nH : H.Normal) {a b : G} : a * b ∈ H ↔ b * a ∈ H :=
@@ -617,7 +603,7 @@ end Subgroup
 
 namespace Subgroup
 
-variable (H : Subgroup G) {K : Subgroup G}
+variable (H : Subgroup G)
 
 section Normalizer
 

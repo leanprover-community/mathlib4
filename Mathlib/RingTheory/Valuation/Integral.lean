@@ -37,7 +37,7 @@ theorem mem_of_integral {x : R} (hx : IsIntegral O x) : x ∈ v.integer :=
     rw [eval₂_mul, eval₂_pow, eval₂_C, eval₂_X, v.map_mul, v.map_pow, ←
       one_mul (v x ^ p.natDegree)]
     cases' (hv.2 <| p.coeff i).lt_or_eq with hvpi hvpi
-    · exact mul_lt_mul₀ hvpi (pow_lt_pow_right₀ hvx <| Finset.mem_range.1 hi)
+    · exact mul_lt_mul'' hvpi (pow_lt_pow_right₀ hvx <| Finset.mem_range.1 hi) zero_le' zero_le'
     · rw [hvpi, one_mul, one_mul]; exact pow_lt_pow_right₀ hvx (Finset.mem_range.1 hi)
 
 protected theorem integralClosure : integralClosure O R = ⊥ :=

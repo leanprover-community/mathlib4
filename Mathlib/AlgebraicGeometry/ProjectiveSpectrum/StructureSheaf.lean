@@ -113,12 +113,10 @@ theorem add_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x 
         add_mem (add_comm jb ja ▸ mul_mem_graded sb_mem ra_mem : sb * ra ∈ 𝒜 (ja + jb))
           (mul_mem_graded sa_mem rb_mem)⟩,
       ⟨sa * sb, mul_mem_graded sa_mem sb_mem⟩, fun y ↦
-        y.1.asHomogeneousIdeal.toIdeal.primeCompl.mul_mem (hwa ⟨y.1, y.2.1⟩) (hwb ⟨y.1, y.2.2⟩),
-      fun y => ?_⟩
-  simp only at wa wb
-  simp only [Pi.add_apply, wa ⟨y.1, y.2.1⟩, wb ⟨y.1, y.2.2⟩, ext_iff_val,
-    val_add, val_mk, add_mk, add_comm (sa * rb)]
-  rfl
+        y.1.asHomogeneousIdeal.toIdeal.primeCompl.mul_mem (hwa ⟨y.1, y.2.1⟩) (hwb ⟨y.1, y.2.2⟩), ?_⟩
+  rintro ⟨y, hy⟩
+  simp only [Subtype.forall, Opens.apply_mk] at wa wb
+  simp [wa y hy.1, wb y hy.2, ext_iff_val, add_mk, add_comm (sa * rb)]
 
 theorem neg_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a : ∀ x : U.unop, at x.1)
     (ha : (isLocallyFraction 𝒜).pred a) : (isLocallyFraction 𝒜).pred (-a) := fun x => by
@@ -136,11 +134,10 @@ theorem mul_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x 
     ⟨Va ⊓ Vb, ⟨ma, mb⟩, Opens.infLELeft _ _ ≫ ia, ja + jb,
       ⟨ra * rb, SetLike.mul_mem_graded ra_mem rb_mem⟩,
       ⟨sa * sb, SetLike.mul_mem_graded sa_mem sb_mem⟩, fun y =>
-      y.1.asHomogeneousIdeal.toIdeal.primeCompl.mul_mem (hwa ⟨y.1, y.2.1⟩) (hwb ⟨y.1, y.2.2⟩),
-      fun y ↦ ?_⟩
-  simp only [Pi.mul_apply, wa ⟨y.1, y.2.1⟩, wb ⟨y.1, y.2.2⟩, ext_iff_val, val_mul, val_mk,
-    Localization.mk_mul]
-  rfl
+      y.1.asHomogeneousIdeal.toIdeal.primeCompl.mul_mem (hwa ⟨y.1, y.2.1⟩) (hwb ⟨y.1, y.2.2⟩), ?_⟩
+  rintro ⟨y, hy⟩
+  simp only [Subtype.forall, Opens.apply_mk] at wa wb
+  simp [wa y hy.1, wb y hy.2, ext_iff_val, Localization.mk_mul]
 
 end SectionSubring
 
@@ -174,19 +171,15 @@ instance commRingStructureSheafInTypeObj (U : (Opens (ProjectiveSpectrum.top �
 
 /-- The structure presheaf, valued in `CommRing`, constructed by dressing up the `Type` valued
 structure presheaf. -/
-@[simps]
+@[simps obj_carrier]
 def structurePresheafInCommRing : Presheaf CommRingCat (ProjectiveSpectrum.top 𝒜) where
   obj U := CommRingCat.of ((structureSheafInType 𝒜).1.obj U)
-  map i :=
+  map i := CommRingCat.ofHom
     { toFun := (structureSheafInType 𝒜).1.map i
       map_zero' := rfl
       map_add' := fun _ _ => rfl
       map_one' := rfl
       map_mul' := fun _ _ => rfl }
-
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
-attribute [nolint simpNF]
-  AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.structurePresheafInCommRing_map_apply
 
 /-- Some glue, verifying that the structure presheaf valued in `CommRing` agrees with the `Type`
 valued structure presheaf. -/
@@ -241,12 +234,13 @@ def Proj.toSheafedSpace : SheafedSpace CommRingCat where
 implemented as a subtype of dependent functions to localizations at homogeneous prime ideals, and
 evaluates the section on the point corresponding to a given homogeneous prime ideal. -/
 def openToLocalization (U : Opens (ProjectiveSpectrum.top 𝒜)) (x : ProjectiveSpectrum.top 𝒜)
-    (hx : x ∈ U) : (Proj.structureSheaf 𝒜).1.obj (op U) ⟶ CommRingCat.of (at x) where
-  toFun s := (s.1 ⟨x, hx⟩ : _)
-  map_one' := rfl
-  map_mul' _ _ := rfl
-  map_zero' := rfl
-  map_add' _ _ := rfl
+    (hx : x ∈ U) : (Proj.structureSheaf 𝒜).1.obj (op U) ⟶ CommRingCat.of (at x) :=
+  CommRingCat.ofHom
+  { toFun s := (s.1 ⟨x, hx⟩ :)
+    map_one' := rfl
+    map_mul' _ _ := rfl
+    map_zero' := rfl
+    map_add' _ _ := rfl }
 
 /-- The ring homomorphism from the stalk of the structure sheaf of `Proj` at a point corresponding
 to a homogeneous prime ideal `x` to the *homogeneous localization* at `x`,
@@ -270,9 +264,7 @@ theorem germ_comp_stalkToFiberRingHom
 theorem stalkToFiberRingHom_germ (U : Opens (ProjectiveSpectrum.top 𝒜))
     (x : ProjectiveSpectrum.top 𝒜) (hx : x ∈ U) (s : (Proj.structureSheaf 𝒜).1.obj (op U)) :
     stalkToFiberRingHom 𝒜 x ((Proj.structureSheaf 𝒜).presheaf.germ _ x hx s) = s.1 ⟨x, hx⟩ :=
-  RingHom.ext_iff.1 (germ_comp_stalkToFiberRingHom 𝒜 U x hx) s
-
-@[deprecated (since := "2024-07-30")] alias stalkToFiberRingHom_germ' := stalkToFiberRingHom_germ
+  RingHom.ext_iff.1 (CommRingCat.hom_ext_iff.mp (germ_comp_stalkToFiberRingHom 𝒜 U x hx)) s
 
 theorem mem_basicOpen_den (x : ProjectiveSpectrum.top 𝒜)
     (f : HomogeneousLocalization.NumDenSameDeg 𝒜 x.asHomogeneousIdeal.toIdeal.primeCompl) :
@@ -320,15 +312,20 @@ def homogeneousLocalizationToStalk (x : ProjectiveSpectrum.top 𝒜) (y : at x) 
 lemma homogeneousLocalizationToStalk_stalkToFiberRingHom (x z) :
     homogeneousLocalizationToStalk 𝒜 x (stalkToFiberRingHom 𝒜 x z) = z := by
   obtain ⟨U, hxU, s, rfl⟩ := (Proj.structureSheaf 𝒜).presheaf.germ_exist x z
+  show homogeneousLocalizationToStalk 𝒜 x ((stalkToFiberRingHom 𝒜 x).hom
+      (((Proj.structureSheaf 𝒜).presheaf.germ U x hxU) s)) =
+    ((Proj.structureSheaf 𝒜).presheaf.germ U x hxU) s
   obtain ⟨V, hxV, i, n, a, b, h, e⟩ := s.2 ⟨x, hxU⟩
-  simp only at e
-  rw [stalkToFiberRingHom_germ, homogeneousLocalizationToStalk, e ⟨x, hxV⟩, Quotient.liftOn'_mk'']
-  refine Presheaf.germ_ext _ V hxV (by exact homOfLE <| fun _ h' ↦ h ⟨_, h'⟩) i ?_
+  simp only [Subtype.forall, apply_mk] at e
+  rw [stalkToFiberRingHom_germ, homogeneousLocalizationToStalk, e x hxV, Quotient.liftOn'_mk'']
+  refine Presheaf.germ_ext (C := CommRingCat) _ V hxV (homOfLE <| fun _ h' ↦ h ⟨_, h'⟩) i ?_
+  change ((Proj.structureSheaf 𝒜).presheaf.map (homOfLE <| fun _ h' ↦ h ⟨_, h'⟩).op) _ =
+    ((Proj.structureSheaf 𝒜).presheaf.map i.op) s
   apply Subtype.ext
   ext ⟨t, ht⟩
   rw [Proj.res_apply, Proj.res_apply]
-  simp only [sectionInBasicOpen, HomogeneousLocalization.val_mk, Localization.mk_eq_mk',
-    IsLocalization.mk'_eq_iff_eq, e ⟨t, ht⟩]
+  simp [sectionInBasicOpen, HomogeneousLocalization.val_mk, Localization.mk_eq_mk',
+    IsLocalization.mk'_eq_iff_eq, e t ht]
 
 lemma stalkToFiberRingHom_homogeneousLocalizationToStalk (x z) :
     stalkToFiberRingHom 𝒜 x (homogeneousLocalizationToStalk 𝒜 x z) = z := by
@@ -340,7 +337,7 @@ lemma stalkToFiberRingHom_homogeneousLocalizationToStalk (x z) :
 and homogeneous localization at `x` for any point `x` in `Proj`. -/
 def Proj.stalkIso' (x : ProjectiveSpectrum.top 𝒜) :
     (Proj.structureSheaf 𝒜).presheaf.stalk x ≃+* at x where
-  __ := stalkToFiberRingHom _ x
+  __ := (stalkToFiberRingHom _ x).hom
   invFun := homogeneousLocalizationToStalk 𝒜 x
   left_inv := homogeneousLocalizationToStalk_stalkToFiberRingHom 𝒜 x
   right_inv := stalkToFiberRingHom_homogeneousLocalizationToStalk 𝒜 x
@@ -351,8 +348,6 @@ theorem Proj.stalkIso'_germ (U : Opens (ProjectiveSpectrum.top 𝒜))
     Proj.stalkIso' 𝒜 x ((Proj.structureSheaf 𝒜).presheaf.germ _ x hx s) = s.1 ⟨x, hx⟩ :=
   stalkToFiberRingHom_germ 𝒜 U x hx s
 
-@[deprecated (since := "2024-07-30")] alias Proj.stalkIso'_germ' := Proj.stalkIso'_germ
-
 @[simp]
 theorem Proj.stalkIso'_symm_mk (x) (f) :
     (Proj.stalkIso' 𝒜 x).symm (.mk f) = (Proj.structureSheaf 𝒜).presheaf.germ _
@@ -361,8 +356,8 @@ theorem Proj.stalkIso'_symm_mk (x) (f) :
 /-- `Proj` of a graded ring as a `LocallyRingedSpace`-/
 def Proj.toLocallyRingedSpace : LocallyRingedSpace :=
   { Proj.toSheafedSpace 𝒜 with
-    localRing := fun x =>
-      @RingEquiv.localRing _ _ _ (show LocalRing (at x) from inferInstance) _
+    isLocalRing := fun x =>
+      @RingEquiv.isLocalRing _ _ _ (show IsLocalRing (at x) from inferInstance) _
         (Proj.stalkIso' 𝒜 x).symm }
 
 end

@@ -44,7 +44,6 @@ variable {R A : Type*}
 variable [CommSemiring R] [CommRing A] [Algebra R A]
 variable (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The projective spectrum of a graded commutative ring is the subtype of all homogeneous ideals
 that are prime and do not contain the irrelevant ideal. -/
 @[ext]
@@ -57,8 +56,9 @@ attribute [instance] ProjectiveSpectrum.isPrime
 
 namespace ProjectiveSpectrum
 
-instance (x : ProjectiveSpectrum 𝒜) : Ideal.IsPrime x.asHomogeneousIdeal.toSubmodule :=
-  x.isPrime
+instance (x : ProjectiveSpectrum 𝒜) : Ideal.IsPrime x.asHomogeneousIdeal.toIdeal := x.isPrime
+
+instance (x : ProjectiveSpectrum 𝒜) : Ideal.IsPrime x.asHomogeneousIdeal.toIdeal := x.isPrime
 
 /-- The zero locus of a set `s` of elements of a commutative ring `A` is the set of all relevant
 homogeneous prime ideals of the ring that contain the set `s`.

@@ -99,6 +99,23 @@ theorem piFamily_single [Fintype ι] [∀ i, DecidableEq (κ i)]
     apply (f q).map_coord_zero i
     simp_rw [Pi.single_eq_of_ne' hpqi]
 
+/-- When only one member of the family of multilinear maps is nonzero, the result consists only of
+the component from that member. -/
+@[simp]
+theorem piFamily_single_left_apply [Fintype ι] [∀ i, DecidableEq (κ i)]
+    (p : Π i, κ i) (f : MultilinearMap R (fun i ↦ M i (p i)) (N p)) (x : Π i j, M i j) :
+    piFamily (Pi.single p f) x = Pi.single p (f fun i => x i (p i)) := by
+  ext p'
+  obtain rfl | hp := eq_or_ne p p'
+  · simp
+  · simp [hp]
+
+theorem piFamily_single_left [Fintype ι] [∀ i, DecidableEq (κ i)]
+    (p : Π i, κ i) (f : MultilinearMap R (fun i ↦ M i (p i)) (N p)) :
+    piFamily (Pi.single p f) =
+      (LinearMap.single R _ p).compMultilinearMap (f.compLinearMap fun i => .proj (p i)) :=
+  ext <| piFamily_single_left_apply _ _
+
 @[simp]
 theorem piFamily_compLinearMap_lsingle [Fintype ι] [∀ i, DecidableEq (κ i)]
     (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p)) (p : ∀ i, κ i) :

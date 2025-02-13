@@ -5,7 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.Set.Pairwise.Basic
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.TakeDrop
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Nodup
 
@@ -21,7 +21,7 @@ assert_not_exists Monoid
 open Nat
 
 namespace List
-variable {α β : Type*} {l l₁ l₂ : List α} {a : α}
+variable {α : Type*}
 
 open Perm (swap)
 

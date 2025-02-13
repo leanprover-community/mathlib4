@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Anatole Dedecker
 -/
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
+import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.Topology.Algebra.Module.Simple
 import Mathlib.Topology.Algebra.Module.Determinant
@@ -42,12 +43,11 @@ result follows as `continuous_equivFun_basis`.
 
 -/
 
+open Filter Module Set TopologicalSpace Topology
 
 universe u v w x
 
 noncomputable section
-
-open Filter Module Set TopologicalSpace
 
 section Field
 
@@ -157,7 +157,7 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
     -- Hence, we know that it is equal to the topology induced by the norm.
     have : induced φ.toEquiv.symm inferInstance = hnorm.toUniformSpace.toTopologicalSpace := by
       refine unique_topology_of_t2 (topologicalAddGroup_induced φ.symm.toLinearMap)
-        (continuousSMul_induced φ.symm.toLinearMap) ?_
+        (continuousSMul_induced φ.symm.toMulActionHom) ?_
       -- Porting note: was `rw [t2Space_iff]`
       refine (@t2Space_iff 𝕜 (induced (↑(LinearEquiv.toEquiv φ).symm) inferInstance)).mpr ?_
       exact fun x y hxy =>
@@ -194,10 +194,14 @@ private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Fintype
     (ξ : Basis ι 𝕜 E) : Continuous ξ.equivFun := by
   letI : UniformSpace E := TopologicalAddGroup.toUniformSpace E
   letI : UniformAddGroup E := comm_topologicalAddGroup_is_uniform
-  induction' hn : Fintype.card ι with n IH generalizing ι E
-  · rw [Fintype.card_eq_zero_iff] at hn
+  suffices ∀ n, Fintype.card ι = n → Continuous ξ.equivFun by exact this _ rfl
+  intro n hn
+  induction n generalizing ι E with
+  | zero =>
+    rw [Fintype.card_eq_zero_iff] at hn
     exact continuous_of_const fun x y => funext hn.elim
-  · haveI : FiniteDimensional 𝕜 E := .of_fintype_basis ξ
+  | succ n IH =>
+    haveI : FiniteDimensional 𝕜 E := .of_fintype_basis ξ
     -- first step: thanks to the induction hypothesis, any n-dimensional subspace is equivalent
     -- to a standard space of dimension n, hence it is complete and therefore closed.
     have H₁ : ∀ s : Submodule 𝕜 E, finrank 𝕜 s = n → IsClosed (s : Set E) := by
@@ -321,7 +325,7 @@ theorem range_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
 /-- A surjective linear map `f` with finite dimensional codomain is an open map. -/
 theorem isOpenMap_of_finiteDimensional (f : F →ₗ[𝕜] E) (hf : Function.Surjective f) :
     IsOpenMap f := by
-  rcases f.exists_rightInverse_of_surjective (LinearMap.range_eq_top.2 hf) with ⟨g, hg⟩
+  obtain ⟨g, hg⟩ := f.exists_rightInverse_of_surjective (LinearMap.range_eq_top.2 hf)
   refine IsOpenMap.of_sections fun x => ⟨fun y => g (y - f x) + x, ?_, ?_, fun y => ?_⟩
   · exact
       ((g.continuous_of_finiteDimensional.comp <| continuous_id.sub continuous_const).add

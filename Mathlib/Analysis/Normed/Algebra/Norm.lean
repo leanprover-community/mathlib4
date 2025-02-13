@@ -56,7 +56,7 @@ instance : FunLike (AlgebraNorm R S) S ℝ where
   coe f := f.toFun
   coe_injective' f f' h := by
     simp only [AddGroupSeminorm.toFun_eq_coe, RingSeminorm.toFun_eq_coe] at h
-    cases f; cases f'; congr;
+    cases f; cases f'; congr
     simp only at h
     ext s
     erw [h]
@@ -86,7 +86,7 @@ theorem extends_norm (hf1 : f 1 = 1) (a : R) : f (algebraMap R S a) = ‖a‖ :=
 
 /-- The restriction of an algebra norm to a subalgebra. -/
 def restriction (A : Subalgebra R S) (f : AlgebraNorm R S) : AlgebraNorm R A where
-  toFun       := fun x : A => f x.val
+  toFun x     := f x.val
   map_zero'   := map_zero f
   add_le' x y := map_add_le_add _ _ _
   neg' x      := map_neg_eq_map _ _
@@ -99,7 +99,7 @@ def restriction (A : Subalgebra R S) (f : AlgebraNorm R S) : AlgebraNorm R A whe
 def isScalarTower_restriction {A : Type*} [CommRing A] [Algebra R A] [Algebra A S]
     [IsScalarTower R A S] (hinj : Function.Injective (algebraMap A S)) (f : AlgebraNorm R S) :
     AlgebraNorm R A where
-  toFun       := fun x : A => f (algebraMap A S x)
+  toFun x     := f (algebraMap A S x)
   map_zero'   := by simp only [map_zero]
   add_le' x y := by simp only [map_add, map_add_le_add]
   neg' x      := by simp only [map_neg, map_neg_eq_map]
@@ -145,7 +145,7 @@ instance : FunLike (MulAlgebraNorm R S) S ℝ where
   coe f := f.toFun
   coe_injective' f f' h:= by
     simp only [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe, DFunLike.coe_fn_eq] at h
-    obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := f'; congr;
+    obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := f'; congr
 
 instance mulAlgebraNormClass : MulAlgebraNormClass (MulAlgebraNorm R S) R S where
   map_zero f        := f.map_zero'
@@ -164,7 +164,7 @@ theorem ext {p q : MulAlgebraNorm R S} : (∀ x, p x = q x) → p = q :=
 
 /-- A multiplicative `R`-algebra norm extends the norm on `R`. -/
 theorem extends_norm' (f : MulAlgebraNorm R S) (a : R) : f (a • (1 : S)) = ‖a‖ := by
-  rw [← mul_one ‖a‖, ← f.map_one', ← f.smul']; rfl
+  rw [← mul_one ‖a‖, ← f.map_one', ← f.smul', toFun_eq_coe]
 
 /-- A multiplicative `R`-algebra norm extends the norm on `R`. -/
 theorem extends_norm (f : MulAlgebraNorm R S) (a : R) : f (algebraMap R S a) = ‖a‖ := by
@@ -188,7 +188,7 @@ def toRingNorm (f : MulRingNorm R) : RingNorm R where
 /-- A multiplicative ring norm is power-multiplicative. -/
 theorem isPowMul {A : Type*} [Ring A] (f : MulRingNorm A) : IsPowMul f := fun x n hn => by
   cases n
-  · exfalso; linarith
+  · omega
   · rw [map_pow]
 
 end MulRingNorm

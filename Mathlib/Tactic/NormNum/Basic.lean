@@ -25,16 +25,8 @@ See other files in this directory for many more plugins.
 
 universe u
 
-#adaptation_note
-/--
-Since https://github.com/leanprover/lean4/pull/5338,
-the unused variable linter can not see usages of variables in
-`haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives.
--/
-set_option linter.unusedVariables false
-
 namespace Mathlib
-open Lean hiding Rat mkRat
+open Lean
 open Meta
 
 namespace Meta.NormNum
@@ -112,9 +104,6 @@ theorem isNat_natAbs_neg : {n : ℤ} → {a : ℕ} → IsInt n (.negOfNat a) →
 theorem isNat_natCast {R} [AddMonoidWithOne R] (n m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
 
-@[deprecated (since := "2024-04-17")]
-alias isNat_cast := isNat_natCast
-
 /-- The `norm_num` extension which identifies an expression `Nat.cast n`, returning `n`. -/
 @[norm_num Nat.cast _, NatCast.natCast _] def evalNatCast : NormNumExt where eval {u α} e := do
   let sα ← inferAddMonoidWithOne α
@@ -127,14 +116,8 @@ alias isNat_cast := isNat_natCast
 theorem isNat_intCast {R} [Ring R] (n : ℤ) (m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-@[deprecated (since := "2024-04-17")]
-alias isNat_int_cast := isNat_intCast
-
 theorem isintCast {R} [Ring R] (n m : ℤ) :
     IsInt n m → IsInt (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
-
-@[deprecated (since := "2024-04-17")]
-alias isInt_cast := isintCast
 
 /-- The `norm_num` extension which identifies an expression `Int.cast n`, returning `n`. -/
 @[norm_num Int.cast _, IntCast.intCast _] def evalIntCast : NormNumExt where eval {u α} e := do
@@ -161,7 +144,7 @@ below. The reason for this is that when this is applied, to prove e.g. `100 + 20
 by the `AddMonoidWithOne` instance, and rather than attempting to prove the instances equal lean
 will sometimes decide to evaluate `100 + 200` directly (into whatever `+` is defined to do in this
 ring), which is definitely not what we want; if the subterms are expensive to kernel-reduce then
-this could cause a `(kernel) deep recursion detected` error (see lean4#2171, mathlib4#4048).
+this could cause a `(kernel) deep recursion detected` error (see https://github.com/leanprover/lean4/issues/2171, https://github.com/leanprover-community/mathlib4/pull/4048).
 
 By using an equality for the unapplied `+` function and proving it by `rfl` we take away the
 opportunity for lean to unfold the numerals (and the instance defeq problem is usually comparatively
