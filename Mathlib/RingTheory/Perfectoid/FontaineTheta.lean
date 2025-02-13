@@ -158,15 +158,19 @@ def fontaineThetaModPPow (n : ℕ): 𝕎 (O^♭) →+* O ⧸ span {(p : O)}^(n +
           (WittVector.map ((iterateFrobeniusEquiv (O^♭) p n).symm : O^♭ →+* O^♭)))
 
 theorem fontaineThetaModP_eq_fontainThetaFun_mod_p (x : 𝕎 (O^♭)) (n : ℕ) :
-  fontaineThetaModPPow O p n x = fontaineThetaAux x n := sorry
+  fontaineThetaModPPow O p n x = Ideal.Quotient.mk (span {(p : O)} ^ (n + 1)) (fontaineThetaAux x n) := sorry
 
-def fontaineTheta : 𝕎 (O^♭) →+* O where
-  toFun := sorry
-  map_one' := sorry
-  map_mul' := sorry
-  map_zero' := sorry
-  map_add' := sorry
+#check Ideal.Quotient.factorPowSucc
 
+theorem factorPowSucc_fontaineThetaModPPow_eq (x : 𝕎 (O^♭)) (n : ℕ) :
+  Ideal.Quotient.factorPowSucc _ (n + 1) (fontaineThetaModPPow O p (n + 1) x) = fontaineThetaModPPow O p n x:= sorry
+#check IsAdicComplete.limRingHom
+#synth IsAdicComplete (span {(p : 𝕎 (O^♭))}) (𝕎 (O^♭))
+def fontaineTheta : 𝕎 (O^♭) →+* O :=
+  IsAdicComplete.limRingHom (f := fun n ↦ fontaineThetaModPPow O p (n + 1))
+    (fun x => (factorPowSucc_fontaineThetaModPPow_eq x).symm)
+
+theorem fontaineTheta :
 end RingHom
 
 -- theorem modPPow
