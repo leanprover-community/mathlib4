@@ -625,9 +625,15 @@ def insertTranslation (b : BundledExtensions)
   modifyEnv (b.translations.addEntry · (src, tgt))
   trace[to_additive] "Added translation {src} ↦ {tgt}"
   -- HACK: special case order_dual
-  if b.attrName = `order_dual then
+  if b.attrName = `order_dual && src != tgt then
+    if let some src' := findTranslation? (← getEnv) b tgt then
+      if failIfExists then
+        throwError "The translation {tgt} ↦ {src'} already exists"
+      else
+        trace[to_additive] "The translation {tgt} ↦ {src'} already exists"
+        return
     modifyEnv (b.translations.addEntry · (tgt, src))
-    trace[to_additive] "Added translation {tgt} ↦ {src}"
+    trace[to_additive] "Also added translation {tgt} ↦ {src}"
 
 /-- `Config` is the type of the arguments that can be provided to `to_additive`. -/
 structure Config : Type where
@@ -756,6 +762,7 @@ where /-- Implementation of `applyReplacementFun`. -/
         trace[to_additive_detail] "applyReplacementFun: Variables applied to numerals are not changed {g.app x}"
         return some <| g.app x
       let gArgs := g.getAppArgs
+      trace[to_additive_detail] "applyReplacementFun: gf: {gf}, gArgs {gArgs}"
       let mut gAllArgs := gArgs.push x
       let (gfAdditive, gAllArgsAdditive) ←
         if let some nm := gf.constName? then
@@ -776,6 +783,7 @@ where /-- Implementation of `applyReplacementFun`. -/
               r gf
           /- Test if arguments should be reordered. -/
           let reorder := reorderFn nm
+          trace[to_additive_detail] "nm: {nm}, reorder: {reorder}"
           if !reorder.isEmpty && relevantArgId < gAllArgs.size &&
             (additiveTest env b gAllArgs[relevantArgId]!).isNone then
             -- TODO: warn user if permutation is trivial?
@@ -1598,6 +1606,11 @@ partial def addToAdditiveAttr (b : BundledExtensions)
   if cfg.reorder != [] then
     trace[to_additive] "@[to_additive] will reorder the arguments of {tgt}."
     b.reorderAttr.add src cfg.reorder
+    -- HACK: special case order_dual
+    if b.attrName = `order_dual && src != tgt then
+      trace[to_additive] "@[to_additive] will also reorder the arguments of {src}."
+      -- assume that the permutation provided is an involution...
+      b.reorderAttr.add tgt cfg.reorder
     -- we allow using this attribute if it's only to add the reorder configuration
     if findTranslation? (← getEnv) b src |>.isSome then
       return #[tgt]

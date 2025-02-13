@@ -26,12 +26,11 @@ section LinearOrder
 ### Definition of `LinearOrder` and lemmas about types with a linear order
 -/
 
-set_option trace.to_additive_detail true
+-- set_option trace.to_additive_detail true
 
 attribute [order_dual existing] Min
 
--- /-- Default definition of `max`. -/
-
+/-- Default definition of `max`. -/
 def maxDefault [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
   if a ≤ b then b else a
 
@@ -42,7 +41,7 @@ def minDefault [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : 
 
 -- #print maxDefault
 
--- attribute [order_dual existing] maxDefault minDefault
+attribute [order_dual existing] minDefault
 
 /-- This attempts to prove that a given instance of `compare` is equal to `compareOfLessAndEq` by
 introducing the arguments and trying the following approaches in order:
@@ -71,10 +70,12 @@ class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α w
   decidableLT : DecidableRel (· < · : α → α → Prop) :=
     @decidableLTOfDecidableLE _ _ decidableLE
   min := fun a b => if a ≤ b then a else b
+  -- max := fun a b => if b ≤ a then b else a
   max := fun a b => if a ≤ b then b else a
   /-- The minimum function is equivalent to the one you get from `minOfLe`. -/
   min_def : ∀ a b, min a b = if a ≤ b then a else b := by intros; rfl
   /-- The minimum function is equivalent to the one you get from `maxOfLe`. -/
+  -- max_def : ∀ a b, max a b = if b ≤ a then a else b := by intros; rfl
   max_def : ∀ a b, max a b = if a ≤ b then b else a := by intros; rfl
   compare a b := compareOfLessAndEq a b
   /-- Comparison via `compare` is equal to the canonical comparison given decidable `<` and `=`. -/
@@ -84,8 +85,8 @@ class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α w
 
 attribute [order_dual existing] LinearOrder.toMax
 attribute [order_dual existing] LinearOrder.min_def
--- attribute [order_dual? existing LinearOrder.decidableLE] LinearOrder.decidableLE
--- attribute [order_dual existing LinearOrder.decidableLT] LinearOrder.decidableLT
+attribute [order_dual existing (reorder := 3 4) LinearOrder.decidableLE] LinearOrder.decidableLE
+attribute [order_dual existing (reorder := 3 4) LinearOrder.decidableLT] LinearOrder.decidableLT
 
 -- run_cmd do
 --   unless ToAdditive.findTranslation? (← Lean.getEnv) ToAdditive.orderDualTranslations `Test.MulInd.one == some `Test.AddInd.zero do throwError "1"
@@ -98,6 +99,7 @@ attribute [local instance] LinearOrder.decidableLE
 lemma le_total : ∀ a b : α, a ≤ b ∨ b ≤ a := LinearOrder.le_total
 
 lemma le_of_not_ge : ¬a ≥ b → a ≤ b := (le_total b a).resolve_left
+@[order_dual existing (reorder := 3 4) le_of_not_le]
 lemma le_of_not_le : ¬a ≤ b → b ≤ a := (le_total a b).resolve_left
 lemma lt_of_not_ge (h : ¬a ≥ b) : a < b := lt_of_le_not_le (le_of_not_ge h) h
 
@@ -168,20 +170,25 @@ theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α}
 
 -- @[order_dual?]
 lemma min_def (a b : α) : min a b = if a ≤ b then a else b := by rw [LinearOrder.min_def a]
+-- lemma max_def (a b : α) : max a b = if b ≤ a then a else b := by? rw [LinearOrder.max_def a]
 lemma max_def (a b : α) : max a b = if a ≤ b then b else a := by rw [LinearOrder.max_def a]
 
+attribute [order_dual existing] min_def
+
 -- Porting note: no `min_tac` tactic in the following series of lemmas
--- @[order_dual?]
+-- @[order_dual? le_max_left]
 lemma min_le_left (a b : α) : min a b ≤ a := by
   if h : a ≤ b
   then simp [min_def, if_pos h, le_refl]
   else simpa [min_def, if_neg h] using le_of_not_le h
 
+-- @[order_dual le_max_right]
 lemma min_le_right (a b : α) : min a b ≤ b := by
   if h : a ≤ b
   then simpa [min_def, if_pos h] using h
   else simp [min_def, if_neg h, le_refl]
 
+-- @[order_dual max_le]
 lemma le_min (h₁ : c ≤ a) (h₂ : c ≤ b) : c ≤ min a b := by
   if h : a ≤ b
   then simpa [min_def, if_pos h] using h₁
@@ -192,16 +199,24 @@ lemma le_max_left (a b : α) : a ≤ max a b := by
   then simpa [max_def, if_pos h] using h
   else simp [max_def, if_neg h, le_refl]
 
+attribute [order_dual existing min_le_left] le_max_left
+
 lemma le_max_right (a b : α) : b ≤ max a b := by
   if h : a ≤ b
   then simp [max_def, if_pos h, le_refl]
   else simpa [max_def, if_neg h] using le_of_not_le h
+
+attribute [order_dual existing min_le_right] le_max_right
 
 lemma max_le (h₁ : a ≤ c) (h₂ : b ≤ c) : max a b ≤ c := by
   if h : a ≤ b
   then simpa [max_def, if_pos h] using h₂
   else simpa [max_def, if_neg h] using h₁
 
+attribute [order_dual existing le_min] max_le
+
+@[order_dual?]
+-- figure out what to do with le_antisymm?
 lemma eq_min (h₁ : c ≤ a) (h₂ : c ≤ b) (h₃ : ∀ {d}, d ≤ a → d ≤ b → d ≤ c) : c = min a b :=
   le_antisymm (le_min h₁ h₂) (h₃ (min_le_left a b) (min_le_right a b))
 
@@ -228,9 +243,9 @@ lemma min_eq_left (h : a ≤ b) : min a b = a := by
 
 lemma min_eq_right (h : b ≤ a) : min a b = b := min_comm b a ▸ min_eq_left h
 
-lemma eq_max (h₁ : a ≤ c) (h₂ : b ≤ c) (h₃ : ∀ {d}, a ≤ d → b ≤ d → c ≤ d) :
-    c = max a b :=
-  le_antisymm (h₃ (le_max_left a b) (le_max_right a b)) (max_le h₁ h₂)
+-- lemma eq_max (h₁ : a ≤ c) (h₂ : b ≤ c) (h₃ : ∀ {d}, a ≤ d → b ≤ d → c ≤ d) :
+--     c = max a b :=
+--   le_antisymm (h₃ (le_max_left a b) (le_max_right a b)) (max_le h₁ h₂)
 
 lemma max_comm (a b : α) : max a b = max b a :=
   eq_max (le_max_right a b) (le_max_left a b) fun h₁ h₂ => max_le h₂ h₁

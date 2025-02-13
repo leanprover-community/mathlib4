@@ -215,19 +215,28 @@ section LE
 
 variable [LE α]
 
+-- @[order_dual (reorder := 3 4)]
+-- abbrev le_impl (o₁ o₂ : WithBot α) := ∀ a : α, o₁ = ↑a → ∃ b : α, o₂ = ↑b ∧ a ≤ b
+
+-- @[order_dual]
+-- instance (priority := 10) le : LE (WithBot α) where
+--   le := le_impl
+
 @[order_dual]
 instance (priority := 10) le : LE (WithBot α) :=
   ⟨fun o₁ o₂ => ∀ a : α, o₁ = ↑a → ∃ b : α, o₂ = ↑b ∧ a ≤ b⟩
+
+-- @attribute [order_dual (reorder := )]
 
 -- doesn't generate the right thing here:
 -- should be:
 -- instance (priority := 10) le2 : LE (WithTop α) :=
 --   ⟨fun o₁ o₂ => ∀ a : α, o₂ = ↑a → ∃ b : α, o₁ = ↑b ∧ b ≤ a⟩
--- #print WithTop.le
--- def WithTop.le.{u_1} : {α : Type u_1} → [inst : LE α] → LE (WithTop α) :=
--- fun {α} [LE α] ↦ { le := fun o₁ o₂ ↦ ∀ (a : α), o₁ = ↑a → ∃ b, o₂ = ↑b ∧ b ≤ a }
+-- #print WithTop.le_impl
+-- def WithTop.le.{u_1} : {α : Type u_1} → [inst : LE α] → LE (WithTop α) := fun {α} [LE α] ↦ { le :=
+--    fun o₁ o₂ => ∀ a : α, o₁ = ↑a → ∃ b : α, o₂ = ↑b ∧ b ≤ a }
 
--- attribute [instance 10] WithTop.le
+-- want to reorder arguments of the thing inside... should we make an auxiliary definition?
 
 -- @[order_dual (attr := simp, norm_cast)]
 @[simp, norm_cast]
@@ -820,9 +829,6 @@ variable [LE α]
 -- order_dual seems to generate the wrong thing here
 instance (priority := 10) le2 : LE (WithTop α) :=
   ⟨fun o₁ o₂ => ∀ a : α, o₂ = ↑a → ∃ b : α, o₁ = ↑b ∧ b ≤ a⟩
-
--- example : le = le2 := by
---   convert le
 
 theorem toDual_le_iff {a : WithTop α} {b : WithBot αᵒᵈ} :
     WithTop.toDual a ≤ b ↔ WithBot.ofDual b ≤ a :=
