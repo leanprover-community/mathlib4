@@ -330,6 +330,8 @@ end ReflTransGen
 
 namespace TransGen
 
+theorem subrelation (r : α → α → Prop) : Subrelation r (TransGen r) := .single
+
 theorem to_reflTransGen {a b} (h : TransGen r a b) : ReflTransGen r a b := by
   induction h with
   | single h => exact ReflTransGen.single h
@@ -400,6 +402,17 @@ theorem head'_iff : TransGen r a c ↔ ∃ b, r a b ∧ ReflTransGen r b c := by
   | tail _ hbc IH =>
   rcases IH with ⟨d, had, hdb⟩
   exact ⟨_, had, hdb.tail hbc⟩
+
+theorem _root_.Subrelation.transGen {s : α → α → Prop} [IsTrans α s] (h : Subrelation r s) :
+    Subrelation (TransGen r) s := by
+  intro x y h
+  induction h with
+  | single x => exact h x
+  | tail x y IH => exact _root_.trans IH (h y)
+
+theorem wellFounded_iff : WellFounded (TransGen r) ↔ WellFounded r where
+  mp h := Subrelation.wf (subrelation r) h
+  mpr h := h.transGen
 
 end TransGen
 
