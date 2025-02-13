@@ -1194,15 +1194,14 @@ theorem deleteVerts_inter_verts_set_right_eq :
   ext <;> simp +contextual [imp_false]
 
 instance instDecidableRel_deleteVerts_adj (u : Set V) [r : DecidableRel G.Adj] :
-    DecidableRel (((⊤ : G.Subgraph).deleteVerts u).coe).Adj := by
-  intro x y
-  cases' r x y with hl hr
-  · left
-    intro hadj
-    exact hl (Subgraph.coe_adj_sub _ _ _ hadj)
-  · right
-    refine SimpleGraph.Subgraph.Adj.coe (Subgraph.deleteVerts_adj.mpr ?_)
-    exact ⟨by trivial, x.2.2, by trivial, y.2.2, hr⟩
+    DecidableRel ((⊤ : G.Subgraph).deleteVerts u).coe.Adj :=
+  fun x y =>
+    if h : G.Adj x y
+    then
+      .isTrue <|  SimpleGraph.Subgraph.Adj.coe <| Subgraph.deleteVerts_adj.mpr
+        ⟨by trivial, x.2.2, by trivial, y.2.2, h⟩
+    else
+      .isFalse <| fun hadj ↦ h <| Subgraph.coe_adj_sub _ _ _ hadj
 
 end DeleteVerts
 
