@@ -483,6 +483,10 @@ theorem abs_norm_sub_norm_le' (a b : E) : |‖a‖ - ‖b‖| ≤ ‖a / b‖ :=
 theorem norm_sub_norm_le' (a b : E) : ‖a‖ - ‖b‖ ≤ ‖a / b‖ :=
   (le_abs_self _).trans (abs_norm_sub_norm_le' a b)
 
+@[to_additive (attr := bound)]
+theorem norm_sub_le_norm_mul (a b : E) : ‖a‖ - ‖b‖ ≤ ‖a * b‖ := by
+  simpa using norm_mul_le' (a * b) (b⁻¹)
+
 @[to_additive dist_norm_norm_le]
 theorem dist_norm_norm_le' (a b : E) : dist ‖a‖ ‖b‖ ≤ ‖a / b‖ :=
   abs_norm_sub_norm_le' a b
