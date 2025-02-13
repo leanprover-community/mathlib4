@@ -470,9 +470,9 @@ instance [OrderTop β] : OrderTop (SupHom α β) :=
 instance [BoundedOrder β] : BoundedOrder (SupHom α β) :=
   BoundedOrder.lift ((↑) : _ → α → β) (fun _ _ => id) rfl rfl
 
-@[simp]
-theorem coe_sup (f g : SupHom α β) : DFunLike.coe (f ⊔ g) = f ⊔ g :=
-  rfl
+-- @[simp]
+-- theorem coe_sup (f g : SupHom α β) : DFunLike.coe (f ⊔ g) = f ⊔ g :=
+--   rfl
 
 @[simp]
 theorem coe_bot [Bot β] : ⇑(⊥ : SupHom α β) = ⊥ :=
@@ -646,9 +646,9 @@ instance [OrderTop β] : OrderTop (InfHom α β) :=
 instance [BoundedOrder β] : BoundedOrder (InfHom α β) :=
   BoundedOrder.lift ((↑) : _ → α → β) (fun _ _ => id) rfl rfl
 
-@[simp]
-theorem coe_inf (f g : InfHom α β) : DFunLike.coe (f ⊓ g) = f ⊓ g :=
-  rfl
+-- @[simp]
+-- theorem coe_inf (f g : InfHom α β) : DFunLike.coe (f ⊓ g) = f ⊓ g :=
+--   rfl
 
 @[simp]
 theorem coe_bot [Bot β] : ⇑(⊥ : InfHom α β) = ⊥ :=
@@ -802,9 +802,9 @@ instance : OrderBot (SupBotHom α β) where
   bot := ⟨⊥, rfl⟩
   bot_le _ _ := bot_le
 
-@[simp]
-theorem coe_sup (f g : SupBotHom α β) : DFunLike.coe (f ⊔ g) = f ⊔ g :=
-  rfl
+-- @[simp]
+-- theorem coe_sup (f g : SupBotHom α β) : DFunLike.coe (f ⊔ g) = f ⊔ g :=
+--   rfl
 
 @[simp]
 theorem coe_bot : ⇑(⊥ : SupBotHom α β) = ⊥ :=
@@ -953,9 +953,9 @@ instance : OrderTop (InfTopHom α β) where
   top := ⟨⊤, rfl⟩
   le_top _ _ := le_top
 
-@[simp]
-theorem coe_inf (f g : InfTopHom α β) : DFunLike.coe (f ⊓ g) = f ⊓ g :=
-  rfl
+-- @[simp]
+-- theorem coe_inf (f g : InfTopHom α β) : DFunLike.coe (f ⊓ g) = f ⊓ g :=
+--   rfl
 
 @[simp]
 theorem coe_top : ⇑(⊤ : InfTopHom α β) = ⊤ :=
