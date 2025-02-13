@@ -142,7 +142,7 @@ theorem adjoin_simple_map_algEquiv [IsGalois k K] (f : K ≃ₐ[k] K) (x : K) :
   adjoin_simple_map_algHom (f : K →ₐ[k] K) x
 
 nonrec lemma mem_fixingSubgroup_iff (α : K ≃ₐ[k] K) (L : FiniteGaloisIntermediateField k K) :
-    α ∈ L.fixingSubgroup ↔ (AlgEquiv.restrictNormalHom L.toIntermediateField) α = 1 := by
+    α ∈ L.fixingSubgroup ↔ α.restrictNormalHom L = 1 := by
   simp [IntermediateField.fixingSubgroup, mem_fixingSubgroup_iff, AlgEquiv.ext_iff, Subtype.ext_iff,
     AlgEquiv.restrictNormalHom_apply]
 
