@@ -1085,6 +1085,30 @@ instance {d} : HasStrongEpiImages (SimplexCategory.Truncated d) :=
 instance {d} (Δ Δ' : SimplexCategory.Truncated d) (θ : Δ ⟶ Δ') : Epi (factorThruImage θ) :=
   StrongEpi.epi
 
+lemma twoTruncatedmorphismProperty_eq_top_alt
+    (W : MorphismProperty SimplexCategory)
+    [W.IsMultiplicative]
+    (δ_mem : ∀ (n : ℕ) (hn : n + 1 ≤ 2) (i : Fin (n + 2)),
+      W (SimplexCategory.δ (n := n) i))
+    (σ_mem : ∀ (n : ℕ) (hn : n + 1 ≤ 2) (i : Fin (n + 1)),
+      W (SimplexCategory.σ (n := n) i))
+    (m k : ℕ) (hm : m ≤ 2) (hk : k ≤ 2) (φ : ⦋m⦌ ⟶ ⦋k⦌) : W φ := by
+  have fac : factorThruImage φ  ≫ image.ι φ = φ := image.fac φ -- cut later
+  rw [← image.fac φ]
+  have comp : W.IsStableUnderComposition := by infer_instance
+  apply comp.comp_mem
+  · have : Epi (factorThruImage φ) := by infer_instance
+    have : _ ≤ m := len_le_of_epi this
+    sorry
+  · have : Mono (image.ι φ) := by infer_instance
+    have : _ ≤ k := len_le_of_mono this
+    have : (image φ).len ≤ 2 := Nat.le_trans this hk
+    match (image φ).len with
+    | 0 => sorry
+    | 1 => sorry
+    | 2 => sorry
+    | Nat.succ (Nat.succ (Nat.succ t)) => sorry -- This case doesn't exist
+
 lemma twoTruncatedmorphismProperty_eq_top
     (W : MorphismProperty (SimplexCategory.Truncated 2))
     [W.IsMultiplicative]
