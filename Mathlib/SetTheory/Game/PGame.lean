@@ -6,6 +6,7 @@ Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Yuyang Zh
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Small.Defs
+import Mathlib.Order.Antisymmetrization
 import Mathlib.Order.GameAdd
 
 /-!
@@ -13,7 +14,8 @@ import Mathlib.Order.GameAdd
 
 The basic theory of combinatorial games, following Conway's book `On Numbers and Games`. We
 construct "pregames", define an ordering and arithmetic operations on them, then show that the
-operations descend to "games", defined via the equivalence relation `p ≈ q ↔ p ≤ q ∧ q ≤ p`.
+operations descend to "games", which are the quotient by the antisymmetrization relation
+`p ≈ q ↔ p ≤ q ∧ q ≤ p`.
 
 The surreal numbers will be built as a quotient of a subtype of pregames.
 
@@ -58,9 +60,6 @@ by the first player.
 Statements like `zero_le_lf`, `zero_lf_le`, etc. unfold these definitions. The theorems `le_def` and
 `lf_def` give a recursive characterisation of each relation in terms of themselves two moves later.
 The theorems `zero_le`, `zero_lf`, etc. also take into account that `0` has no moves.
-
-Later, games will be defined as the quotient by the `≈` relation; that is to say, the
-`Antisymmetrization` of `SetTheory.PGame`.
 
 ## Algebraic structures
 
@@ -826,70 +825,54 @@ lemma bddBelow_of_small (s : Set PGame.{u}) [Small.{u} s] : BddBelow s := by
 `y ≤ x`.
 
 If `x ≈ 0`, then the second player can always win `x`. -/
+@[deprecated AntisymmRel (since := "2025-01-26")]
 def Equiv (x y : PGame) : Prop :=
   x ≤ y ∧ y ≤ x
 
--- Porting note: deleted the scoped notation due to notation overloading with the setoid
--- instance and this causes the PGame.equiv docstring to not show up on hover.
-
-instance : IsEquiv _ PGame.Equiv where
-  refl _ := ⟨le_rfl, le_rfl⟩
-  trans := fun _ _ _ ⟨xy, yx⟩ ⟨yz, zy⟩ => ⟨xy.trans yz, zy.trans yx⟩
-  symm _ _ := And.symm
-
--- Porting note: moved the setoid instance from Basic.lean to here
-
 instance setoid : Setoid PGame :=
-  ⟨Equiv, refl, symm, Trans.trans⟩
+  AntisymmRel.setoid _ (· ≤ ·)
 
 theorem equiv_def {x y : PGame} : x ≈ y ↔ x ≤ y ∧ y ≤ x := Iff.rfl
 
-theorem Equiv.le {x y : PGame} (h : x ≈ y) : x ≤ y :=
-  h.1
+@[deprecated AntisymmRel.le (since := "2025-01-26")]
+theorem Equiv.le {x y : PGame} (h : x ≈ y) : x ≤ y := h.le
 
-theorem Equiv.ge {x y : PGame} (h : x ≈ y) : y ≤ x :=
-  h.2
+@[deprecated AntisymmRel.ge (since := "2025-01-26")]
+theorem Equiv.ge {x y : PGame} (h : x ≈ y) : y ≤ x := h.ge
 
-theorem equiv_rfl {x : PGame} : x ≈ x :=
-  refl x
+@[deprecated AntisymmRel.rfl (since := "2025-01-26")]
+theorem equiv_rfl {x : PGame} : x ≈ x := by rfl
 
-theorem equiv_refl (x : PGame) : x ≈ x :=
-  refl x
+@[deprecated antisymmRel_refl (since := "2025-01-26")]
+theorem equiv_refl (x : PGame) : x ≈ x := by rfl
 
-@[symm]
-protected theorem Equiv.symm {x y : PGame} : (x ≈ y) → (y ≈ x) :=
-  symm
+@[deprecated AntisymmRel.symm (since := "2025-01-26")]
+protected theorem Equiv.symm {x y : PGame} : (x ≈ y) → (y ≈ x) := symm
 
-@[trans]
-protected theorem Equiv.trans {x y z : PGame} : (x ≈ y) → (y ≈ z) → (x ≈ z) :=
-  _root_.trans
+@[deprecated AntisymmRel.trans (since := "2025-01-26")]
+protected theorem Equiv.trans {x y z : PGame} : (x ≈ y) → (y ≈ z) → (x ≈ z) := _root_.trans
 
-protected theorem equiv_comm {x y : PGame} : (x ≈ y) ↔ (y ≈ x) :=
-  comm
+@[deprecated antisymmRel_comm (since := "2025-01-26")]
+protected theorem equiv_comm {x y : PGame} : (x ≈ y) ↔ (y ≈ x) := comm
 
+@[deprecated antisymmRel_refl (since := "2025-01-26")]
 theorem equiv_of_eq {x y : PGame} (h : x = y) : x ≈ y := by subst h; rfl
 
 lemma Identical.equiv {x y} (h : x ≡ y) : x ≈ y := ⟨h.le, h.ge⟩
 
-@[trans]
+@[deprecated le_of_le_of_antisymmRel (since := "2025-01-26")]
 theorem le_of_le_of_equiv {x y z : PGame} (h₁ : x ≤ y) (h₂ : y ≈ z) : x ≤ z :=
-  h₁.trans h₂.1
+  h₁.trans_antisymmRel h₂
 
-instance : Trans
-    ((· ≤ ·) : PGame → PGame → Prop)
-    ((· ≈ ·) : PGame → PGame → Prop)
-    ((· ≤ ·) : PGame → PGame → Prop) where
-  trans := le_of_le_of_equiv
+instance : @Trans PGame PGame PGame (· ≤ ·) (· ≈ ·) (· ≤ ·) :=
+  inferInstanceAs (Trans (· ≤ ·) (AntisymmRel (· ≤ ·)) (· ≤ ·))
 
-@[trans]
+@[deprecated le_of_antisymmRel_of_le (since := "2025-01-26")]
 theorem le_of_equiv_of_le {x y z : PGame} (h₁ : x ≈ y) : y ≤ z → x ≤ z :=
-  h₁.1.trans
+  h₁.trans_le
 
-instance : Trans
-    ((· ≈ ·) : PGame → PGame → Prop)
-    ((· ≤ ·) : PGame → PGame → Prop)
-    ((· ≤ ·) : PGame → PGame → Prop) where
-  trans := le_of_equiv_of_le
+instance : @Trans PGame PGame PGame (· ≈ ·) (· ≤ ·) (· ≤ ·) :=
+  inferInstanceAs (Trans (AntisymmRel (· ≤ ·)) (· ≤ ·) (· ≤ ·))
 
 theorem LF.not_equiv {x y : PGame} (h : x ⧏ y) : ¬(x ≈ y) := fun h' => h.not_ge h'.2
 
@@ -897,114 +880,117 @@ theorem LF.not_equiv' {x y : PGame} (h : x ⧏ y) : ¬(y ≈ x) := fun h' => h.n
 
 theorem LF.not_gt {x y : PGame} (h : x ⧏ y) : ¬y < x := fun h' => h.not_ge h'.le
 
+@[deprecated AntisymmRel.le_congr (since := "2025-01-26")]
 theorem le_congr_imp {x₁ y₁ x₂ y₂ : PGame} (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) (h : x₁ ≤ y₁) : x₂ ≤ y₂ :=
-  hx.2.trans (h.trans hy.1)
+  (hx.le_congr hy).1 h
 
+@[deprecated AntisymmRel.le_congr (since := "2025-01-26")]
 theorem le_congr {x₁ y₁ x₂ y₂ : PGame} (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) : x₁ ≤ y₁ ↔ x₂ ≤ y₂ :=
-  ⟨le_congr_imp hx hy, le_congr_imp (Equiv.symm hx) (Equiv.symm hy)⟩
+  hx.le_congr hy
 
+@[deprecated AntisymmRel.le_congr_left (since := "2025-01-26")]
 theorem le_congr_left {x₁ x₂ y : PGame} (hx : x₁ ≈ x₂) : x₁ ≤ y ↔ x₂ ≤ y :=
-  le_congr hx equiv_rfl
+  hx.le_congr_left
 
+@[deprecated AntisymmRel.le_congr_right (since := "2025-01-26")]
 theorem le_congr_right {x y₁ y₂ : PGame} (hy : y₁ ≈ y₂) : x ≤ y₁ ↔ x ≤ y₂ :=
-  le_congr equiv_rfl hy
+  hy.le_congr_right
 
 theorem lf_congr {x₁ y₁ x₂ y₂ : PGame} (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) : x₁ ⧏ y₁ ↔ x₂ ⧏ y₂ :=
-  PGame.not_le.symm.trans <| (not_congr (le_congr hy hx)).trans PGame.not_le
+  PGame.not_le.symm.trans <| (not_congr (hy.le_congr hx)).trans PGame.not_le
 
 theorem lf_congr_imp {x₁ y₁ x₂ y₂ : PGame} (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) : x₁ ⧏ y₁ → x₂ ⧏ y₂ :=
   (lf_congr hx hy).1
 
 theorem lf_congr_left {x₁ x₂ y : PGame} (hx : x₁ ≈ x₂) : x₁ ⧏ y ↔ x₂ ⧏ y :=
-  lf_congr hx equiv_rfl
+  lf_congr hx AntisymmRel.rfl
 
 theorem lf_congr_right {x y₁ y₂ : PGame} (hy : y₁ ≈ y₂) : x ⧏ y₁ ↔ x ⧏ y₂ :=
-  lf_congr equiv_rfl hy
+  lf_congr AntisymmRel.rfl hy
 
 @[trans]
 theorem lf_of_lf_of_equiv {x y z : PGame} (h₁ : x ⧏ y) (h₂ : y ≈ z) : x ⧏ z :=
-  lf_congr_imp equiv_rfl h₂ h₁
+  lf_congr_imp AntisymmRel.rfl h₂ h₁
 
 instance : Trans (· ⧏ ·) (· ≈ ·) (· ⧏ ·) := ⟨lf_of_lf_of_equiv⟩
 
 @[trans]
 theorem lf_of_equiv_of_lf {x y z : PGame} (h₁ : x ≈ y) : y ⧏ z → x ⧏ z :=
-  lf_congr_imp (Equiv.symm h₁) equiv_rfl
+  lf_congr_imp h₁.symm AntisymmRel.rfl
 
 instance : Trans (· ≈ ·) (· ⧏ ·) (· ⧏ ·) := ⟨lf_of_equiv_of_lf⟩
 
-@[trans]
+@[deprecated lt_of_lt_of_antisymmRel (since := "2025-01-26")]
 theorem lt_of_lt_of_equiv {x y z : PGame} (h₁ : x < y) (h₂ : y ≈ z) : x < z :=
-  h₁.trans_le h₂.1
+  h₁.trans_antisymmRel h₂
 
-instance : Trans
-    ((· < ·) : PGame → PGame → Prop)
-    ((· ≈ ·) : PGame → PGame → Prop)
-    ((· < ·) : PGame → PGame → Prop) where
-  trans := lt_of_lt_of_equiv
+instance : @Trans PGame PGame PGame (· < ·) (· ≈ ·) (· < ·) :=
+  inferInstanceAs (Trans (· < ·) (AntisymmRel (· ≤ ·)) (· < ·))
 
-@[trans]
+@[deprecated lt_of_antisymmRel_of_lt (since := "2025-01-26")]
 theorem lt_of_equiv_of_lt {x y z : PGame} (h₁ : x ≈ y) : y < z → x < z :=
-  h₁.1.trans_lt
+  h₁.trans_lt
 
-instance : Trans
-    ((· ≈ ·) : PGame → PGame → Prop)
-    ((· < ·) : PGame → PGame → Prop)
-    ((· < ·) : PGame → PGame → Prop) where
-  trans := lt_of_equiv_of_lt
+instance : @Trans PGame PGame PGame (· ≈ ·) (· < ·) (· < ·) :=
+  inferInstanceAs (Trans (AntisymmRel (· ≤ ·)) (· < ·) (· < ·))
 
+@[deprecated AntisymmRel.lt_congr (since := "2025-01-26")]
 theorem lt_congr_imp {x₁ y₁ x₂ y₂ : PGame} (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) (h : x₁ < y₁) : x₂ < y₂ :=
-  hx.2.trans_lt (h.trans_le hy.1)
+  (hx.lt_congr hy).1 h
 
+@[deprecated AntisymmRel.lt_congr (since := "2025-01-26")]
 theorem lt_congr {x₁ y₁ x₂ y₂ : PGame} (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) : x₁ < y₁ ↔ x₂ < y₂ :=
-  ⟨lt_congr_imp hx hy, lt_congr_imp (Equiv.symm hx) (Equiv.symm hy)⟩
+  hx.lt_congr hy
 
+@[deprecated AntisymmRel.lt_congr_left (since := "2025-01-26")]
 theorem lt_congr_left {x₁ x₂ y : PGame} (hx : x₁ ≈ x₂) : x₁ < y ↔ x₂ < y :=
-  lt_congr hx equiv_rfl
+  hx.lt_congr_left
 
+@[deprecated AntisymmRel.lt_congr_right (since := "2025-01-26")]
 theorem lt_congr_right {x y₁ y₂ : PGame} (hy : y₁ ≈ y₂) : x < y₁ ↔ x < y₂ :=
-  lt_congr equiv_rfl hy
+  hy.lt_congr_right
 
+@[deprecated le_iff_lt_or_antisymmRel (since := "2025-01-26")]
 theorem lt_or_equiv_of_le {x y : PGame} (h : x ≤ y) : x < y ∨ (x ≈ y) :=
-  and_or_left.mp ⟨h, (em <| y ≤ x).symm.imp_left PGame.not_le.1⟩
+  le_iff_lt_or_antisymmRel.1 h
 
 theorem lf_or_equiv_or_gf (x y : PGame) : x ⧏ y ∨ (x ≈ y) ∨ y ⧏ x := by
-  by_cases h : x ⧏ y
-  · exact Or.inl h
-  · right
-    cases' lt_or_equiv_of_le (PGame.not_lf.1 h) with h' h'
-    · exact Or.inr h'.lf
-    · exact Or.inl (Equiv.symm h')
+  rw [← PGame.not_le]
+  tauto
 
-theorem equiv_congr_left {y₁ y₂ : PGame} : (y₁ ≈ y₂) ↔ ∀ x₁, (x₁ ≈ y₁) ↔ (x₁ ≈ y₂) :=
-  ⟨fun h _ => ⟨fun h' => Equiv.trans h' h, fun h' => Equiv.trans h' (Equiv.symm h)⟩,
-   fun h => (h y₁).1 <| equiv_rfl⟩
+@[deprecated AntisymmRel.antisymmRel_congr_right (since := "2025-01-26")]
+theorem equiv_congr_left {y₁ y₂ : PGame} : y₁ ≈ y₂ ↔ ∀ x₁, x₁ ≈ y₁ ↔ x₁ ≈ y₂ where
+  mp h _ := h.antisymmRel_congr_right
+  mpr h := (h y₁).1 AntisymmRel.rfl
 
-theorem equiv_congr_right {x₁ x₂ : PGame} : (x₁ ≈ x₂) ↔ ∀ y₁, (x₁ ≈ y₁) ↔ (x₂ ≈ y₁) :=
-  ⟨fun h _ => ⟨fun h' => Equiv.trans (Equiv.symm h) h', fun h' => Equiv.trans h h'⟩,
-   fun h => (h x₂).2 <| equiv_rfl⟩
+@[deprecated AntisymmRel.antisymmRel_congr_left (since := "2025-01-26")]
+theorem equiv_congr_right {x₁ x₂ : PGame} : (x₁ ≈ x₂) ↔ ∀ y₁, x₁ ≈ y₁ ↔ x₂ ≈ y₁ where
+  mp h _ := h.antisymmRel_congr_left
+  mpr h := (h x₂).2 AntisymmRel.rfl
 
-theorem Equiv.of_exists {x y : PGame}
+theorem equiv_of_exists {x y : PGame}
     (hl₁ : ∀ i, ∃ j, x.moveLeft i ≈ y.moveLeft j) (hr₁ : ∀ i, ∃ j, x.moveRight i ≈ y.moveRight j)
     (hl₂ : ∀ j, ∃ i, x.moveLeft i ≈ y.moveLeft j) (hr₂ : ∀ j, ∃ i, x.moveRight i ≈ y.moveRight j) :
     x ≈ y := by
   constructor <;> refine le_def.2 ⟨?_, ?_⟩ <;> intro i
   · obtain ⟨j, hj⟩ := hl₁ i
-    exact Or.inl ⟨j, Equiv.le hj⟩
+    exact Or.inl ⟨j, hj.le⟩
   · obtain ⟨j, hj⟩ := hr₂ i
-    exact Or.inr ⟨j, Equiv.le hj⟩
+    exact Or.inr ⟨j, hj.le⟩
   · obtain ⟨j, hj⟩ := hl₂ i
-    exact Or.inl ⟨j, Equiv.ge hj⟩
+    exact Or.inl ⟨j, hj.ge⟩
   · obtain ⟨j, hj⟩ := hr₁ i
-    exact Or.inr ⟨j, Equiv.ge hj⟩
+    exact Or.inr ⟨j, hj.ge⟩
 
-theorem Equiv.of_equiv {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
+theorem equiv_of_equiv {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
     (R : x.RightMoves ≃ y.RightMoves) (hl : ∀ i, x.moveLeft i ≈ y.moveLeft (L i))
     (hr : ∀ j, x.moveRight j ≈ y.moveRight (R j)) : x ≈ y := by
-  apply Equiv.of_exists <;> intro i
+  apply equiv_of_exists <;> intro i
   exacts [⟨_, hl i⟩, ⟨_, hr i⟩,
     ⟨_, by simpa using hl (L.symm i)⟩, ⟨_, by simpa using hr (R.symm i)⟩]
 
+@[deprecated (since := "2025-01-26")] alias Equiv.of_exists := equiv_of_exists
+@[deprecated (since := "2025-01-26")] alias Equiv.of_equiv := equiv_of_equiv
 @[deprecated (since := "2024-09-26")] alias equiv_of_mk_equiv := Equiv.of_equiv
 
 /-- The fuzzy, confused, or incomparable relation on pre-games.
@@ -1064,10 +1050,10 @@ theorem fuzzy_congr_imp {x₁ y₁ x₂ y₂ : PGame} (hx : x₁ ≈ x₂) (hy :
   (fuzzy_congr hx hy).1
 
 theorem fuzzy_congr_left {x₁ x₂ y : PGame} (hx : x₁ ≈ x₂) : x₁ ‖ y ↔ x₂ ‖ y :=
-  fuzzy_congr hx equiv_rfl
+  fuzzy_congr hx AntisymmRel.rfl
 
 theorem fuzzy_congr_right {x y₁ y₂ : PGame} (hy : y₁ ≈ y₂) : x ‖ y₁ ↔ x ‖ y₂ :=
-  fuzzy_congr equiv_rfl hy
+  fuzzy_congr AntisymmRel.rfl hy
 
 @[trans]
 theorem fuzzy_of_fuzzy_of_equiv {x y z : PGame} (h₁ : x ‖ y) (h₂ : y ≈ z) : x ‖ z :=
@@ -1448,8 +1434,7 @@ theorem neg_identical_neg {x y : PGame} : -x ≡ -y ↔ x ≡ y :=
 
 @[simp]
 theorem neg_equiv_neg_iff {x y : PGame} : -x ≈ -y ↔ x ≈ y := by
-  show Equiv (-x) (-y) ↔ Equiv x y
-  rw [Equiv, Equiv, neg_le_neg_iff, neg_le_neg_iff, and_comm]
+  simp_rw [equiv_def, neg_le_neg_iff, and_comm]
 
 @[simp]
 theorem neg_fuzzy_neg_iff {x y : PGame} : -x ‖ -y ↔ x ‖ y := by
@@ -1954,19 +1939,19 @@ theorem add_congr {w x y z : PGame} (h₁ : w ≈ x) (h₂ : y ≈ z) : w + y �
     (add_le_add_left h₂.2 x).trans (add_le_add_right h₁.2 y)⟩
 
 theorem add_congr_left {x y z : PGame} (h : x ≈ y) : x + z ≈ y + z :=
-  add_congr h equiv_rfl
+  add_congr h AntisymmRel.rfl
 
 theorem add_congr_right {x y z : PGame} : (y ≈ z) → (x + y ≈ x + z) :=
-  add_congr equiv_rfl
+  add_congr AntisymmRel.rfl
 
 theorem sub_congr {w x y z : PGame} (h₁ : w ≈ x) (h₂ : y ≈ z) : w - y ≈ x - z :=
   add_congr h₁ (neg_equiv_neg_iff.2 h₂)
 
 theorem sub_congr_left {x y z : PGame} (h : x ≈ y) : x - z ≈ y - z :=
-  sub_congr h equiv_rfl
+  sub_congr h AntisymmRel.rfl
 
 theorem sub_congr_right {x y z : PGame} : (y ≈ z) → (x - y ≈ x - z) :=
-  sub_congr equiv_rfl
+  sub_congr AntisymmRel.rfl
 
 theorem le_iff_sub_nonneg {x y : PGame} : x ≤ y ↔ 0 ≤ y - x :=
   ⟨fun h => (zero_le_add_neg_cancel x).trans (add_le_add_right h _), fun h =>
