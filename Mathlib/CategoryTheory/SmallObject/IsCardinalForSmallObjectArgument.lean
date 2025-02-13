@@ -154,6 +154,12 @@ noncomputable def transfiniteCompositionOfShapeSuccStructPropιIteration :
   have := hasIterationOfShape I κ
   (succStruct I κ).transfiniteCompositionOfShapeιIteration κ.ord.toType
 
+@[simp]
+lemma transfiniteCompositionOfShapeSuccStructPropιIteration_F :
+    (transfiniteCompositionOfShapeSuccStructPropιIteration I κ).F =
+      iterationFunctor I κ :=
+        rfl
+
 noncomputable def transfiniteCompositionOfShapeιIterationAppRight (f : Arrow C) :
     (isomorphisms C).TransfiniteCompositionOfShape κ.ord.toType
       ((ιIteration I κ).app f).right :=
@@ -167,6 +173,10 @@ instance isIso_ιIteration_app_right (f : Arrow C) :
     IsIso ((ιIteration I κ).app f).right :=
   (transfiniteCompositionOfShapeιIterationAppRight I κ f).isIso
 
+instance {j₁ j₂ : κ.ord.toType} (φ : j₁ ⟶ j₂) (f : Arrow C) :
+    IsIso (((iterationFunctor I κ).map φ).app f).right :=
+  inferInstanceAs (IsIso ((transfiniteCompositionOfShapeιIterationAppRight I κ f).F.map φ))
+
 @[simps! hom]
 noncomputable def iterationAppRightIso (f : Arrow C) :
     f.right ≅ ((iteration I κ).obj f).right :=
@@ -176,6 +186,12 @@ noncomputable def iterationFunctorObjObjRightIso (f : Arrow C) (j : κ.ord.toTyp
     (((iterationFunctor I κ).obj j).obj f).right ≅ f.right :=
   asIso ((transfiniteCompositionOfShapeιIterationAppRight I κ f).incl.app j) ≪≫
     (iterationAppRightIso I κ f).symm
+
+@[reassoc (attr := simp)]
+lemma iterationFunctorObjObjRightIso_ιIteration_app_right (f : Arrow C) (j : κ.ord.toType) :
+    (iterationFunctorObjObjRightIso I κ f j).hom ≫ ((ιIteration I κ).app f).right =
+      (transfiniteCompositionOfShapeιIterationAppRight I κ f).incl.app j := by
+  simp [iterationFunctorObjObjRightIso, iterationAppRightIso]
 
 lemma prop_iterationFunctor_map_succ (j : κ.ord.toType) :
     (succStruct I κ).prop ((iterationFunctor I κ).map (homOfLE (Order.le_succ j))) := by
@@ -203,6 +219,16 @@ noncomputable def iterationFunctorMapSuccAppArrowIso (f : Arrow C) (j : κ.ord.t
 lemma iterationFunctorMapSuccAppArrowIso_hom_left (f : Arrow C) (j : κ.ord.toType) :
     (iterationFunctorMapSuccAppArrowIso I κ f j).hom.left = 𝟙 _ := rfl
 
+@[reassoc (attr := simp)]
+lemma iterationFunctorMapSuccAppArrowIso_hom_right_right_comp
+    (f : Arrow C) (j : κ.ord.toType) :
+    (iterationFunctorMapSuccAppArrowIso I κ f j).hom.right.right ≫
+      (((iterationFunctor I κ).map (homOfLE (Order.le_succ j))).app f).right = 𝟙 _ := by
+  have := Arrow.rightFunc.congr_map ((iterationFunctorMapSuccAppArrowIso I κ f j).hom.w)
+  dsimp at this ⊢
+  rw [← cancel_epi (((iterationFunctor I κ).map (homOfLE (Order.le_succ j))).app f).right,
+    ← reassoc_of% this, comp_id]
+
 section
 
 variable {X Y : C} (f : X ⟶ Y)
@@ -213,6 +239,11 @@ noncomputable def ιObj : X ⟶ obj I κ f := ((ιIteration I κ).app (Arrow.mk 
 
 noncomputable def πObj : obj I κ f ⟶ Y :=
   ((iteration I κ).obj (Arrow.mk f)).hom ≫ inv ((ιIteration I κ).app f).right
+
+@[reassoc (attr := simp)]
+lemma πObj_ιIteration_app_right :
+    πObj I κ f ≫ ((ιIteration I κ).app f).right =
+      ((iteration I κ).obj (Arrow.mk f)).hom := by simp [πObj]
 
 @[reassoc (attr := simp)]
 lemma ιObj_πObj : ιObj I κ f ≫ πObj I κ f = f := by
@@ -263,7 +294,21 @@ lemma πFunctorObj_eq (j : κ.ord.toType) :
       (relativeCellComplexιObjFObjSuccIso I κ f j).inv ≫
       (relativeCellComplexιObj I κ f).incl.app (Order.succ j) ≫
       πObj I κ f ≫ (iterationFunctorObjObjRightIso I κ (Arrow.mk f) j).inv := by
-  sorry
+  have h₁ := (iterationFunctorMapSuccAppArrowIso I κ f j).hom.right.w
+  have h₂ := (transfiniteCompositionOfShapeSuccStructPropιIteration I κ).incl.naturality
+    (homOfLE (Order.le_succ j))
+  dsimp at h₁ h₂
+  rw [comp_id] at h₂
+  rw [← cancel_mono (iterationFunctorObjObjRightIso I κ (Arrow.mk f) j).hom,
+    ← cancel_mono ((ιIteration I κ).app f).right, assoc, assoc, assoc, assoc, assoc,
+    Iso.inv_hom_id_assoc, πObj_ιIteration_app_right,
+    iterationFunctorObjObjRightIso_ιIteration_app_right,
+    ← cancel_epi (relativeCellComplexιObjFObjSuccIso I κ f j).hom, Iso.hom_inv_id_assoc]
+  dsimp [relativeCellComplexιObjFObjSuccIso,
+    relativeCellComplexιObj, transfiniteCompositionOfShapeιIterationAppRight]
+  simp only [reassoc_of% h₁, comp_id, comp_id, Arrow.w_mk_right, ← h₂,
+    NatTrans.comp_app, Arrow.comp_right,
+    iterationFunctorMapSuccAppArrowIso_hom_right_right_comp_assoc]
 
 lemma hasRightLiftingProperty_πObj_aux
     {A B : C} (i : A ⟶ B) (hi : I i) {f : X ⟶ Y} {j : κ.ord.toType}
