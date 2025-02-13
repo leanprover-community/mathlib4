@@ -319,4 +319,18 @@ theorem hasSum_log_one_add_inv {a : ℝ} (h : 0 < a) :
     linarith
   · field_simp
 
+/-- Expansion of `log (a + 1)` as a series in powers of `a / (a + 2)`. -/
+theorem hasSum_log_one_add {a : ℝ} (h : 0 < a) :
+    HasSum (fun k : ℕ => (2 : ℝ) * (1 / (2 * k + 1)) * (a / (a + 2)) ^ (2 * k + 1))
+      (log (1 + a)) := by
+  have key := Real.hasSum_log_one_add_inv (inv_pos.mpr h)
+  rw [inv_inv, add_comm] at key
+  exact key.congr_fun fun k ↦ by field_simp
+
+lemma lt_log_add_one_of_pos {x : ℝ} (hx : 0 < x) : 2 * x / (x + 2) < log (1 + x) := by
+  have key := lt_hasSum (Real.hasSum_log_one_add hx) 0 (by intros; positivity)
+    1 (by positivity) (by positivity)
+  field_simp at key
+  exact key
+
 end Real
