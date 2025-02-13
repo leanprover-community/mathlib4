@@ -120,10 +120,8 @@ theorem max_eq_right_iff : max a b = b ↔ a ≤ b :=
     Use cases on this lemma to automate linarith in inequalities -/
 theorem min_cases (a b : α) : min a b = a ∧ a ≤ b ∨ min a b = b ∧ b < a := by
   by_cases h : a ≤ b
-  · left
-    exact ⟨min_eq_left h, h⟩
-  · right
-    exact ⟨min_eq_right (le_of_lt (not_le.mp h)), not_le.mp h⟩
+  · exact .inl ⟨min_eq_left h, h⟩
+  · exact .inr ⟨min_eq_right (le_of_lt (not_le.mp h)), not_le.mp h⟩
 
 /-- For elements `a` and `b` of a linear order, either `max a b = a` and `b ≤ a`,
     or `max a b = b` and `a < b`.
@@ -134,8 +132,9 @@ theorem max_cases (a b : α) : max a b = a ∧ b ≤ a ∨ max a b = b ∧ a < b
 theorem min_eq_iff : min a b = c ↔ a = c ∧ a ≤ b ∨ b = c ∧ b ≤ a := by
   constructor
   · intro h
-    refine Or.imp (fun h' => ?_) (fun h' => ?_) (le_total a b) <;> exact ⟨by simpa [h'] using h, h'⟩
-  · rintro (⟨rfl, h⟩ | ⟨rfl, h⟩) <;> simp [h]
+    refine Or.imp (fun h' => ?_) (fun h' => ?_) (le_total a b) <;>
+      exact ⟨by simpa only [h', inf_of_le_left, inf_of_le_right] using h, h'⟩
+  · rintro (⟨rfl, h⟩ | ⟨rfl, h⟩) <;> simp only [h, inf_of_le_left, inf_of_le_right]
 
 theorem max_eq_iff : max a b = c ↔ a = c ∧ b ≤ a ∨ b = c ∧ a ≤ b :=
   @min_eq_iff αᵒᵈ _ a b c
@@ -155,12 +154,12 @@ theorem max_lt_max_right_iff : max a b < max a c ↔ b < c ∧ a < c :=
 
 /-- An instance asserting that `max a a = a` -/
 instance max_idem : Std.IdempotentOp (α := α) max where
-  idempotent := by simp
+  idempotent _ := max_self _
 
 -- short-circuit type class inference
 /-- An instance asserting that `min a a = a` -/
 instance min_idem : Std.IdempotentOp (α := α) min where
-  idempotent := by simp
+  idempotent _ := min_self _
 
 -- short-circuit type class inference
 theorem min_lt_max : min a b < max a b ↔ a ≠ b :=
@@ -183,9 +182,9 @@ theorem Max.right_comm (a b c : α) : max (max a b) c = max (max a c) b := by
   rw [max_assoc, max_comm b, max_assoc]
 
 theorem MonotoneOn.map_max (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =
-    max (f a) (f b) := by
-  rcases le_total a b with h | h <;>
-    simp only [max_eq_right, max_eq_left, hf ha hb, hf hb ha, h]
+    max (f a) (f b) :=
+  (le_total a b).elim (fun h ↦ (max_eq_right h).symm ▸ (max_eq_right (hf ha hb h)).symm)
+    fun h ↦ (max_eq_left h).symm ▸ (max_eq_left (hf hb ha h)).symm
 
 theorem MonotoneOn.map_min (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (min a b) =
     min (f a) (f b) := hf.dual.map_max ha hb
@@ -196,19 +195,22 @@ theorem AntitoneOn.map_max (hf : AntitoneOn f s) (ha : a ∈ s) (hb : b ∈ s) :
 theorem AntitoneOn.map_min (hf : AntitoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (min a b) =
     max (f a) (f b) := hf.dual.map_max ha hb
 
-theorem Monotone.map_max (hf : Monotone f) : f (max a b) = max (f a) (f b) := by
-  rcases le_total a b with h | h <;> simp [h, hf h]
+theorem Monotone.map_max (hf : Monotone f) : f (max a b) = max (f a) (f b) :=
+  (le_total a b).elim (fun h ↦ (sup_of_le_right h).symm ▸ (sup_of_le_right (hf h)).symm)
+    fun h ↦ (sup_of_le_left h).symm ▸ (sup_of_le_left (hf h)).symm
 
 theorem Monotone.map_min (hf : Monotone f) : f (min a b) = min (f a) (f b) :=
   hf.dual.map_max
 
-theorem Antitone.map_max (hf : Antitone f) : f (max a b) = min (f a) (f b) := by
-  rcases le_total a b with h | h <;> simp [h, hf h]
+theorem Antitone.map_max (hf : Antitone f) : f (max a b) = min (f a) (f b) :=
+  (le_total a b).elim (fun h ↦ (sup_of_le_right h).symm ▸ (inf_of_le_right (hf h)).symm)
+    fun h ↦ (sup_of_le_left h).symm ▸ (inf_of_le_left (hf h)).symm
 
 theorem Antitone.map_min (hf : Antitone f) : f (min a b) = max (f a) (f b) :=
   hf.dual.map_max
 
-theorem min_choice (a b : α) : min a b = a ∨ min a b = b := by cases le_total a b <;> simp [*]
+theorem min_choice (a b : α) : min a b = a ∨ min a b = b :=
+  (le_total a b).elim (fun h ↦ .inl (inf_of_le_left h)) (fun h ↦ .inr (inf_of_le_right h))
 
 theorem max_choice (a b : α) : max a b = a ∨ max a b = b :=
   @min_choice αᵒᵈ _ a b
