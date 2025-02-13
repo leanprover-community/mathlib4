@@ -7,6 +7,7 @@ import Mathlib.Data.Set.CoeSort
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.Set
 import Mathlib.Util.AssertExists
+import Mathlib.Tactic.Push.Basic
 
 /-!
 # Definition of the `Finite` typeclass
@@ -132,11 +133,11 @@ class Infinite (α : Sort*) : Prop where
   /-- assertion that `α` is `¬Finite`-/
   not_finite : ¬Finite α
 
-@[simp]
+@[simp, push]
 theorem not_finite_iff_infinite : ¬Finite α ↔ Infinite α :=
   ⟨Infinite.mk, fun h => h.1⟩
 
-@[simp]
+@[simp, push]
 theorem not_infinite_iff_finite : ¬Infinite α ↔ Finite α :=
   not_finite_iff_infinite.not_right.symm
 
@@ -204,7 +205,10 @@ This is protected so that it does not conflict with global `Infinite`. -/
 protected def Infinite (s : Set α) : Prop :=
   ¬s.Finite
 
-@[simp]
+@[push]
+theorem not_finite {s : Set α} : ¬s.Finite ↔ s.Infinite := Iff.rfl
+
+@[simp, push]
 theorem not_infinite {s : Set α} : ¬s.Infinite ↔ s.Finite :=
   not_not
 

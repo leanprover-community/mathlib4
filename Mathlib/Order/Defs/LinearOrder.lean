@@ -8,6 +8,7 @@ import Batteries.Tactic.Trans
 import Mathlib.Data.Ordering.Basic
 import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.Push.Basic
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.TypeStar
 import Mathlib.Order.Defs.PartialOrder
@@ -111,8 +112,8 @@ lemma ne_iff_lt_or_gt : a ≠ b ↔ a < b ∨ a > b := ⟨lt_or_gt_of_ne, (Or.el
 
 lemma lt_iff_not_ge (x y : α) : x < y ↔ ¬x ≥ y := ⟨not_le_of_gt, lt_of_not_ge⟩
 
-@[simp] lemma not_lt : ¬a < b ↔ b ≤ a := ⟨le_of_not_gt, not_lt_of_ge⟩
-@[simp] lemma not_le : ¬a ≤ b ↔ b < a := (lt_iff_not_ge _ _).symm
+@[simp, push] lemma not_lt : ¬a < b ↔ b ≤ a := ⟨le_of_not_gt, not_lt_of_ge⟩
+@[simp, push] lemma not_le : ¬a ≤ b ↔ b < a := (lt_iff_not_ge _ _).symm
 
 instance (priority := 900) (a b : α) : Decidable (a < b) := LinearOrder.decidableLT a b
 instance (priority := 900) (a b : α) : Decidable (a ≤ b) := LinearOrder.decidableLE a b

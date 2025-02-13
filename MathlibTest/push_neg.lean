@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alice Laroche, Frédéric Dupuis, Jireh Loreaux
 -/
 
-import Mathlib.Order.Defs.LinearOrder
-import Mathlib.Tactic.Push.Attr
+import Mathlib.Data.Finite.Defs
+import Mathlib.Data.Finset.Empty
+import Mathlib.Tactic.Push
 
 private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
@@ -160,6 +161,16 @@ example (a : α) (o : Option α) (h : ¬∀ hs, o.get hs ≠ a) : ∃ hs, o.get 
   push_neg at h
   exact h
 
+section Empty
+
+example (h : ¬IsEmpty α) : Nonempty α := by
+  push_neg at h
+  exact h
+
+example (h : ¬Nonempty α) : IsEmpty α := by
+  push_neg at h
+  exact h
+
 example (s : Set α) (h : ¬s.Nonempty) : s = ∅ := by
   push_neg at h
   exact h
@@ -176,6 +187,38 @@ example (s : Set α) (h : ∅ ≠ s) : s.Nonempty := by
   push_neg at h
   exact h
 
+example (s : Finset α) (h : ¬s.Nonempty) : s = ∅ := by
+  push_neg at h
+  exact h
+
+example (s : Finset α) (h : ¬ s = ∅) : s.Nonempty := by
+  push_neg at h
+  exact h
+
+example (s : Finset α) (h : s ≠ ∅) : s.Nonempty := by
+  push_neg at h
+  exact h
+
+example (s : Finset α) (h : ∅ ≠ s) : s.Nonempty := by
+  push_neg at h
+  exact h
+
+end Empty
+
+section Subsingleton
+
+example (h : ¬Nontrivial α) : Subsingleton α := by
+  push_neg at h
+  exact h
+
+example (h : ¬Subsingleton α) : Nontrivial α := by
+  push_neg at h
+  exact h
+
+end Subsingleton
+
+section Finite
+
 example (h : ¬Finite α) : Infinite α := by
   push_neg at h
   exact h
@@ -186,12 +229,13 @@ example (h : ¬Infinite α) : Finite α := by
 
 example (s : Set α) (h : ¬s.Finite) : s.Infinite := by
   push_neg at h
-  guard_hyp h :ₛ s.Infinite
   exact h
 
 example (s : Set α) (h : ¬s.Infinite) : s.Finite := by
   push_neg at h
   exact h
+
+end Finite
 
 namespace no_proj
 
