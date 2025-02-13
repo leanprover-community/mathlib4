@@ -448,7 +448,7 @@ theorem digits_len_le_digits_len_succ (b n : ℕ) :
   rcases Decidable.eq_or_ne n 0 with (rfl | hn)
   · simp
   rcases le_or_lt b 1 with hb | hb
-  · interval_cases b <;> simp_arith [digits_zero_succ', hn]
+  · interval_cases b <;> simp +arith [digits_zero_succ', hn]
   simpa [digits_len, hb, hn] using log_mono_right (le_succ _)
 
 theorem le_digits_len_le (b n m : ℕ) (h : n ≤ m) : (digits b n).length ≤ (digits b m).length :=
