@@ -127,6 +127,8 @@ theorem integers_isClosed : IsClosed (𝒪[K] : Set K) := by
     subset_empty_iff.1 fun y ⟨hy₁, hy₂⟩ => ?_⟩
   exact (not_lt_of_le <| hy₂) <| hy₁.symm ▸ hx
 
+variable {K}
+
 /-- The ring of integers `𝒪[K]` of a complete `ℤₘ₀`-valued field `K` with finite residue
 field is compact, whenever `𝒪[K]` is a discrete valuation ring. -/
 theorem integers_compactSpace [CompleteSpace K] [IsDiscreteValuationRing 𝒪[K]] (h : Finite 𝓀[K]) :

@@ -59,7 +59,7 @@ dedekind domain, dedekind ring, adic valuation
 
 noncomputable section
 
-open scoped Multiplicative Topology
+open scoped Multiplicative Topology Valued
 
 open Multiplicative IsDedekindDomain
 
@@ -596,5 +596,18 @@ theorem AdicCompletion.dvd_of_valued_le
   have : Valued.v (x * y⁻¹) ≤ 1 := by
     rwa [Valued.v.map_mul, map_inv₀, mul_inv_le_iff₀ (Valued.v.pos_iff.2 hy), one_mul]
   exact ⟨⟨x * y⁻¹, this⟩, by rw [inv_mul_cancel_right₀ hy]⟩
+
+-- https://github.com/mariainesdff/LocalClassFieldTheory/blob/18114679e7125329fd801032423c4c95078cdc77/LocalClassFieldTheory/DiscreteValuationRing/Localization.lean#L61
+instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) := sorry
+
+variable (K v)
+
+-- TODO
+theorem adicCompletion.residueField_finite :
+    Finite 𝓀[v.adicCompletion K] :=
+  sorry
+
+instance : CompactSpace (v.adicCompletionIntegers K) :=
+  Valued.WithZeroMulInt.integers_compactSpace (finite_residueField K v)
 
 end IsDedekindDomain.HeightOneSpectrum
