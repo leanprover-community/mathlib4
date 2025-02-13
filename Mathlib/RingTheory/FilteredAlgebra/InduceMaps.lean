@@ -32,17 +32,20 @@ section HomtoFiltration
 
 variable {A : Type*} (σA : Type*) [SetLike σA A] {B : Type*} (σB : Type*) [SetLike σB B]
 
-/-- It add some necessary conditions to describe σA and σB,ensure f can induce a map from σA → σB.-/
+/-- There are various advantages of using σ-type such as `σA` and `σB`. They are structurally
+general and applicable to multiple algebraic structures, such as  `AddSubroup`, `module`, `Ideal`.
+However, their excessive structural freedom implies overly weak constraints, making it difficult to
+support meaningful conclusions (e.g. Without constraints, σ = { ⊥ } would be entirely possible).
+This class introduces the necessary conditions to describe `σA` and `σB`, ensure `f` can induce a
+map from σA → σB.-/
 class SetLikeHom (f : A → B) where
   /-- It is the corresponding map from σA → σB with `coe_map` property -/
   map : σA → σB
-  /-- It is a map from σB → σA with `galois` property-/
-  comap : σB → σA
   coe_map (x : σA) : f '' (x : Set A) = map x
-  /-- the design of `GaloisConnection` avoid adding `Preorder` to `σA` and `σB`, there are also
-  theorems such as `Subgroup.gc_map_comap` to handle different conditions in the similar structures.
-  -/
-  galois : GaloisConnection map comap
+  /-- `GaloisConnection` is a weakening of `LeftInverse comap map`, this design avoid adding
+  `Preorder` to `σA` and `σB`, there are also theorems such as `Subgroup.gc_map_comap` to handle
+  different conditions in the similar structures such as `AddSubroup`, `module`, `Ideal`. -/
+  galois : ∃ comap : σB → σA, GaloisConnection map comap
 
 
 
@@ -55,7 +58,7 @@ def FB_lt (FA_lt : ι → σA) (f : A → B) [SetLikeHom σA σB f] : outParam <
 
 /-- When FA and FA_lt is a filtration of A, then f: A → B induce a filtration of B which is called
 `FB` and `FB_lt`-/
-instance HomtoFiltration (FA FA_lt : ι → σA) (f : A → B) [fil : IsFiltration FA FA_lt]
+instance HomtoFil (FA FA_lt : ι → σA) (f : A → B) [fil : IsFiltration FA FA_lt]
 [SetLikeHom σA σB f] : IsFiltration (FB σA σB FA f) (FB_lt σA σB FA_lt f) (ι := ι) where
   mono {i j i_le_j}:= by
     show (((map f <| FA i) : σB) : Set B) ≤ (((map f <| FA j) : σB) : Set B)
@@ -66,9 +69,10 @@ instance HomtoFiltration (FA FA_lt : ι → σA) (f : A → B) [fil : IsFiltrati
     rw[← coe_map <| FA i, ← coe_map <| FA_lt j]
     exact le_iff_subset.mpr <| image_mono <| IsFiltration.is_le i_lt_j
   is_sup {Sup j h}:= by
+    obtain⟨comap, galois⟩ := galois (f := f) (σA := σA) (σB := σB)
     apply galois.l_le
-    have h : ∀ i < j, FA i ≤ comap f Sup := fun i i_lt_j ↦ galois.le_u <| h i i_lt_j
-    exact IsFiltration.is_sup (comap f Sup) j h
+    have h : ∀ i < j, FA i ≤ comap Sup := fun i i_lt_j ↦ galois.le_u <| h i i_lt_j
+    exact IsFiltration.is_sup (comap Sup) j h
 
 end HomtoFiltration
 
