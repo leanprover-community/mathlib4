@@ -158,12 +158,15 @@ theorem restrict_restrict_eq {R₁ R₂ : Set α} (M : Matroid α) (hR : R₂ �
 theorem base_restrict_iff' : (M ↾ X).Base I ↔ M.Basis' I X := by
   simp_rw [base_iff_maximal_indep, Basis', maximal_iff, restrict_indep_iff]
 
+theorem Basis'.base_restrict (hI : M.Basis' I X) : (M ↾ X).Base I :=
+  base_restrict_iff'.1 hI
+
 theorem Basis.restrict_base (h : M.Basis I X) : (M ↾ X).Base I :=
   (base_restrict_iff h.subset_ground).2 h
 
-instance restrict_finiteRk [M.FiniteRk] (R : Set α) : (M ↾ R).FiniteRk :=
+instance restrict_rankFinite [M.RankFinite] (R : Set α) : (M ↾ R).RankFinite :=
   let ⟨_, hB⟩ := (M ↾ R).exists_base
-  hB.finiteRk_of_finite (hB.indep.of_restrict.finite)
+  hB.rankFinite_of_finite (hB.indep.of_restrict.finite)
 
 instance restrict_finitary [Finitary M] (R : Set α) : Finitary (M ↾ R) := by
   refine ⟨fun I hI ↦ ?_⟩
@@ -339,7 +342,7 @@ theorem Restriction.finite {M : Matroid α} [M.Finite] (h : N ≤r M) : N.Finite
   obtain ⟨R, hR, rfl⟩ := h
   exact restrict_finite <| M.ground_finite.subset hR
 
-theorem Restriction.finiteRk {M : Matroid α} [FiniteRk M] (h : N ≤r M) : N.FiniteRk := by
+theorem Restriction.rankFinite {M : Matroid α} [RankFinite M] (h : N ≤r M) : N.RankFinite := by
   obtain ⟨R, -, rfl⟩ := h
   infer_instance
 

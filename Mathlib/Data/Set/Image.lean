@@ -619,6 +619,12 @@ theorem Nonempty.preimage' {s : Set β} (hs : s.Nonempty) {f : α → β} (hf : 
 
 theorem range_comp (g : α → β) (f : ι → α) : range (g ∘ f) = g '' range f := by aesop
 
+/--
+Variant of `range_comp` using a lambda instead of function composition.
+-/
+theorem range_comp' (g : α → β) (f : ι → α) : range (fun x => g (f x)) = g '' range f :=
+  range_comp g f
+
 theorem range_subset_iff : range f ⊆ s ↔ ∀ y, f y ∈ s :=
   forall_mem_range
 
@@ -799,6 +805,15 @@ theorem image_preimage_inl_union_image_preimage_inr (s : Set (α ⊕ β)) :
     Sum.inl '' (Sum.inl ⁻¹' s) ∪ Sum.inr '' (Sum.inr ⁻¹' s) = s := by
   rw [image_preimage_eq_inter_range, image_preimage_eq_inter_range, ← inter_union_distrib_left,
     range_inl_union_range_inr, inter_univ]
+
+open Sum in
+/-- Sets on sum types are equivalent to pairs of sets on each summand. -/
+def sumEquiv {α β : Type*} : Set (α ⊕ β) ≃o Set α × Set β where
+  toFun s := (inl ⁻¹' s, inr ⁻¹' s)
+  invFun s := inl '' s.1 ∪ inr '' s.2
+  left_inv s := image_preimage_inl_union_image_preimage_inr s
+  right_inv s := by simp [preimage_image_eq _ inl_injective, preimage_image_eq _ inr_injective]
+  map_rel_iff' := by simp [subset_def]
 
 @[simp]
 theorem range_quot_mk (r : α → α → Prop) : range (Quot.mk r) = univ :=
