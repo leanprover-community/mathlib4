@@ -200,15 +200,15 @@ def coneOfConeUncurryIsLimit {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j
 def isLimitOfConeOfConeUncurryIsLimit {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
     {c : Cone (uncurry.obj F)} (P : IsLimit (coneOfConeUncurry Q c)) : IsLimit c :=
   -- These constructions are used in various fields of the proof so we abstract them here.
-  letI E : (j : J) → (Prod.sectR j K ⋙ uncurry.obj F ≅ F.obj j) := fun j =>
+  letI E (j : J) : Prod.sectR j K ⋙ uncurry.obj F ≅ F.obj j :=
     NatIso.ofComponents (fun _ ↦ Iso.refl _)
-  letI S : Cone (uncurry.obj F) → Cone D.conePoints := fun s =>
+  letI S (s : Cone (uncurry.obj F)) : Cone D.conePoints :=
     { pt := s.pt
       π :=
-        { app := fun j =>
-            (Q j).lift <| (Cones.postcompose (E j).hom).obj <| s.whisker (Prod.sectR j K)
-          naturality := by
-            intro j' j f; symm
+        { app j := (Q j).lift <|
+            (Cones.postcompose (E j).hom).obj <| s.whisker (Prod.sectR j K)
+          naturality {j' j} f := by
+            symm
             simp only [Functor.const_obj_obj, DiagramOfCones.conePoints_obj, Functor.const_obj_map,
               Category.id_comp, DiagramOfCones.conePoints_map]
             apply (Q j).uniq (s := (Cones.postcompose _).obj <| s.whisker (Prod.sectR j K))
@@ -282,15 +282,14 @@ cocone. -/
 def isColimitOfCoconeUncurryIsColimit {D : DiagramOfCocones F} (Q : ∀ j, IsColimit (D.obj j))
     {c : Cocone (uncurry.obj F)} (P : IsColimit (coconeOfCoconeUncurry Q c)) : IsColimit c :=
   -- These constructions are used in various fields of the proof so we abstract them here.
-  letI E : (j : J) → (Prod.sectR j K ⋙ uncurry.obj F ≅ F.obj j) := fun j =>
+  letI E (j : J) : (Prod.sectR j K ⋙ uncurry.obj F ≅ F.obj j) :=
     NatIso.ofComponents (fun _ ↦ Iso.refl _)
-  letI S : Cocone (uncurry.obj F) → Cocone D.coconePoints := fun s =>
+  letI S (s : Cocone (uncurry.obj F)) : Cocone D.coconePoints :=
     { pt := s.pt
       ι :=
-        { app := fun j =>
-            (Q j).desc <| (Cocones.precompose (E j).inv).obj <| s.whisker (Prod.sectR j K)
-          naturality := by
-            intro j j' f
+        { app j := (Q j).desc <|
+            (Cocones.precompose (E j).inv).obj <| s.whisker (Prod.sectR j K)
+          naturality {j j'} f := by
             simp only [DiagramOfCocones.coconePoints_obj, Functor.const_obj_obj,
               DiagramOfCocones.coconePoints_map, Functor.comp_obj, Prod.sectR_obj, uncurry_obj_obj,
               NatTrans.id_app, Functor.const_obj_map, Category.comp_id]
