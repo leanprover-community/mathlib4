@@ -26,9 +26,11 @@ the intended way of using this equivalence.
 
 -/
 
-namespace AlgebraicTopology.CosimplicialObject
+namespace CategoryTheory
 
 open CategoryTheory SimplexCategory
+
+namespace CosimplicialObject
 
 variable {C : Type*} [Category C]
 
@@ -235,11 +237,9 @@ lemma mkNatIso_inv_app (Δ : SimplexCategory) :
 
 end MkNatIso
 
-end AlgebraicTopology.CosimplicialObject
+end CosimplicialObject
 
-namespace AlgebraicTopology.SimplicialObject
-
-open CategoryTheory SimplexCategory
+namespace SimplicialObject
 
 variable {C : Type*} [Category C]
 
@@ -419,4 +419,6 @@ lemma mkNatIso_inv_app (Δ : SimplexCategoryᵒᵖ) :
 
 end MkNatIso
 
-end AlgebraicTopology.SimplicialObject
+end SimplicialObject
+
+end CategoryTheory
