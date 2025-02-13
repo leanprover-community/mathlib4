@@ -32,8 +32,8 @@ end bound_only
 example {c z : ℝ} (cz : ‖c‖ ≤ ‖z‖) (z3 : 3 ≤ ‖z‖) :
     2 * ‖z‖ ≤ ‖z^2 + c‖ := by
   calc ‖z^2 + c‖
-    _ ≥ ‖z^2‖ - ‖c‖ := by bound -- AbsoluteValue.le_add does not work anymore
-    _ ≥ ‖z^2‖ - ‖z‖ := by bound  -- gcongr works here, not for the other two
+    _ ≥ ‖z^2‖ - ‖c‖ := by bound
+    _ ≥ ‖z^2‖ - ‖z‖ := by  bound  -- gcongr works here, not for the other two
     _ ≥ (‖z‖ - 1) * ‖z‖ := by
       rw [mul_comm, mul_sub_one, ← pow_two, ← norm_pow]
     _ ≥ 2 * ‖z‖ := by bound
