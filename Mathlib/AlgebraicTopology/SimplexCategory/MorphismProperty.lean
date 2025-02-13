@@ -13,15 +13,14 @@ import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 open CategoryTheory
 
-namespace SimplexCategory.Truncated
+namespace SimplexCategory
 
-variable {d : ℕ} (W : MorphismProperty (Truncated d)) [W.IsMultiplicative]
-
-lemma morphismProperty_eq_top
-    (δ_mem : ∀ (n : ℕ) (hn : n + 1 ≤ d) (i : Fin (n + 2)),
+lemma Truncated.morphismProperty_eq_top
+    {d : ℕ} (W : MorphismProperty (Truncated d)) [W.IsMultiplicative]
+    (δ_mem : ∀ (n : ℕ) (hn : n < d) (i : Fin (n + 2)),
     W (SimplexCategory.δ (n := n) i : ⟨.mk n, by dsimp; omega⟩ ⟶
       ⟨.mk (n + 1), by dsimp; omega⟩))
-    (σ_mem : ∀ (n : ℕ) (hn : n + 1 ≤ d) (i : Fin (n + 1)),
+    (σ_mem : ∀ (n : ℕ) (hn : n < d) (i : Fin (n + 1)),
     W (SimplexCategory.σ (n := n) i : ⟨.mk (n + 1), by dsimp; omega⟩ ⟶
       ⟨.mk n, by dsimp; omega⟩)) :
     W = ⊤ := by
@@ -60,4 +59,18 @@ lemma morphismProperty_eq_top
     obtain rfl : f = 𝟙 _ := eq_id_of_mono f'
     apply W.id_mem
 
-end SimplexCategory.Truncated
+lemma morphismProperty_eq_top
+    (W : MorphismProperty SimplexCategory) [W.IsMultiplicative]
+    (δ_mem : ∀ {n : ℕ} (i : Fin (n + 2)), W (SimplexCategory.δ i))
+    (σ_mem : ∀ {n : ℕ} (i : Fin (n + 1)), W (SimplexCategory.σ i)) :
+    W = ⊤ := by
+  have hW (d : ℕ) : W.inverseImage (Truncated.inclusion d) = ⊤ :=
+    Truncated.morphismProperty_eq_top _ (fun _ _ i ↦ δ_mem i)
+      (fun _ _ i ↦ σ_mem i)
+  ext a b f
+  simp only [MorphismProperty.top_apply, iff_true]
+  change W.inverseImage (Truncated.inclusion _)
+    (f : ⟨a, Nat.le_max_left _ _⟩ ⟶ ⟨b, Nat.le_max_right _ _⟩)
+  simp only [hW, MorphismProperty.top_apply]
+
+end SimplexCategory
