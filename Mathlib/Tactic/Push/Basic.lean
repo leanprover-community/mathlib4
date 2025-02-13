@@ -34,7 +34,6 @@ theorem not_and_or_eq : (¬ (p ∧ q)) = (¬ p ∨ ¬ q) := propext not_and_or
 theorem not_forall_eq : (¬ ∀ x, s x) = (∃ x, ¬ s x) := propext not_forall
 theorem not_exists_eq : (¬ ∃ x, s x) = (∀ x, ¬ s x) := propext not_exists
 
-
 /-- Make `push_neg` use `not_and_or` rather than the default `not_and`. -/
 register_option push_neg.use_distrib : Bool :=
   { defValue := false
@@ -56,10 +55,10 @@ private def pushNegBuiltin : Simp.Simproc := fun e => do
     | false => return mkSimpStep (.forallE `_ p (mkNot q) default) (← mkAppM ``not_and_eq #[p, q])
     | true  => return mkSimpStep (mkOr (mkNot p) (mkNot q)) (← mkAppM ``not_and_or_eq #[p, q])
   | (``Eq, #[_, e₁, e₂]) =>
+    -- To avoid a loop, it is crucial that this step returns `.continue _` instead of `.visit _`.
     return Simp.Step.continue (some { expr := ← mkAppM ``Ne #[e₁, e₂] })
   | (``Exists, #[_, .lam n typ bo bi]) =>
-    return mkSimpStep (.forallE n typ (mkNot bo) bi)
-      (← mkAppM ``not_exists_eq #[.lam n typ bo bi])
+    return mkSimpStep (.forallE n typ (mkNot bo) bi) (← mkAppM ``not_exists_eq #[.lam n typ bo bi])
   | _ =>
     pushNegForall e
 where
@@ -77,13 +76,14 @@ where
     else
       return Simp.Step.continue
 
-
 /-- Push at the top level of the current expression. -/
 def pushStep (const : Name) : Simp.Simproc := fun e => do
   let e_whnf ← whnfR e
   unless e_whnf.isAppOf const do
     return Simp.Step.continue
   if let Simp.Step.visit r ← (Simp.rewritePre) e then
+    -- We return `.visit r` instead of `.continue r`, because in the case of a triple negation,
+    -- after rewriting `¬¬¬p` into `¬p`, we want to rewrite again at `¬p`.
     return Simp.Step.visit r
   if let some ex := e_whnf.not? then
     pushNegBuiltin ex
@@ -113,7 +113,6 @@ def pushNegTarget (const : Name) (discharge? : Option Simp.Discharge) :
   let mvarIdNew ← applySimpResultToTarget mvarId tgt (← pushCore const tgt discharge?)
   if mvarIdNew == mvarId then throwError "push made no progress"
   replaceMainGoal [mvarIdNew]
-
 
 /-- Execute main loop of `push` at a local hypothesis. -/
 def pushNegLocalDecl (const : Name) (discharge? : Option Simp.Discharge) (fvarId : FVarId) :
