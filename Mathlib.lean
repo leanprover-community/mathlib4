@@ -3691,6 +3691,7 @@ import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
 import Mathlib.LinearAlgebra.RootSystem.Hom
 import Mathlib.LinearAlgebra.RootSystem.OfBilinear
+import Mathlib.LinearAlgebra.RootSystem.Reduced
 import Mathlib.LinearAlgebra.RootSystem.RootPairingCat
 import Mathlib.LinearAlgebra.RootSystem.RootPositive
 import Mathlib.LinearAlgebra.RootSystem.WeylGroup
