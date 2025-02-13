@@ -214,12 +214,9 @@ theorem integral_eq_sum_of_subset [DecidablePred fun x : F => x ≠ 0] {f : α �
     f.integral μ = ∑ x ∈ s, (μ (f ⁻¹' {x})).toReal • x := by
   rw [SimpleFunc.integral_eq_sum_filter, Finset.sum_subset hs]
   rintro x - hx; rw [Finset.mem_filter, not_and_or, Ne, Classical.not_not] at hx
-  -- Porting note: reordered for clarity
   rcases hx.symm with (rfl | hx)
   · simp
   rw [SimpleFunc.mem_range] at hx
-  -- Porting note: added
-  simp only [Set.mem_range, not_exists] at hx
   rw [preimage_eq_empty] <;> simp [Set.disjoint_singleton_left, hx]
 
 @[simp]
@@ -229,7 +226,7 @@ theorem integral_const {m : MeasurableSpace α} (μ : Measure α) (y : F) :
   calc
     (const α y).integral μ = ∑ z ∈ {y}, (μ (const α y ⁻¹' {z})).toReal • z :=
       integral_eq_sum_of_subset <| (filter_subset _ _).trans (range_const_subset _ _)
-    _ = (μ univ).toReal • y := by simp [Set.preimage] -- Porting note: added `Set.preimage`
+    _ = (μ univ).toReal • y := by simp [Set.preimage]
 
 @[simp]
 theorem integral_piecewise_zero {m : MeasurableSpace α} (f : α →ₛ F) (μ : Measure α) {s : Set α}
@@ -263,7 +260,6 @@ theorem integral_eq_lintegral' {f : α →ₛ E} {g : E → ℝ≥0∞} (hf : In
   simp only [← map_apply g f, lintegral_eq_lintegral]
   rw [map_integral f _ hf, map_lintegral, ENNReal.toReal_sum]
   · refine Finset.sum_congr rfl fun b _ => ?_
-    -- Porting note: added `Function.comp_apply`
     rw [smul_eq_mul, toReal_mul, mul_comm, Function.comp_apply]
   · rintro a -
     by_cases a0 : a = 0
@@ -346,10 +342,8 @@ nonrec def posPart (f : α →₁ₛ[μ] ℝ) : α →₁ₛ[μ] ℝ :=
   ⟨Lp.posPart (f : α →₁[μ] ℝ), by
     rcases f with ⟨f, s, hsf⟩
     use s.posPart
-    simp only [Subtype.coe_mk, Lp.coe_posPart, ← hsf, AEEqFun.posPart_mk,
-      SimpleFunc.coe_map, mk_eq_mk]
-    -- Porting note: added
-    simp [SimpleFunc.posPart, Function.comp_def, EventuallyEq.rfl] ⟩
+    simp only [SimpleFunc.posPart, SimpleFunc.coe_map, Function.comp_def, coe_posPart, ← hsf,
+      posPart_mk] ⟩
 
 /-- Negative part of a simple function in L1 space. -/
 def negPart (f : α →₁ₛ[μ] ℝ) : α →₁ₛ[μ] ℝ :=
@@ -420,10 +414,8 @@ local notation "Integral" => integralCLM α E μ
 open ContinuousLinearMap
 
 theorem norm_Integral_le_one : ‖Integral‖ ≤ 1 :=
-  -- Porting note: Old proof was `LinearMap.mkContinuous_norm_le _ zero_le_one _`
-  LinearMap.mkContinuous_norm_le _ zero_le_one (fun f => by
-    rw [one_mul]
-    exact norm_integral_le_norm f)
+  LinearMap.mkContinuous_norm_le _ zero_le_one fun f ↦ by
+    simpa [one_mul] using norm_integral_le_norm f
 
 section PosPart
 
@@ -434,7 +426,6 @@ theorem posPart_toSimpleFunc (f : α →₁ₛ[μ] ℝ) :
     filter_upwards [toSimpleFunc_eq_toFun (posPart f), Lp.coeFn_posPart (f : α →₁[μ] ℝ),
       toSimpleFunc_eq_toFun f] with _ _ h₂ h₃
     convert h₂ using 1
-    -- Porting note: added
     rw [h₃]
   refine ae_eq.mono fun a h => ?_
   rw [h, eq]
@@ -502,16 +493,15 @@ variable {𝕜}
 def integralCLM : (α →₁[μ] E) →L[ℝ] E :=
   integralCLM' ℝ
 
--- Porting note: added `(E := E)` in several places below.
 /-- The Bochner integral in L1 space -/
 irreducible_def integral : (α →₁[μ] E) → E :=
-  integralCLM (E := E)
+  integralCLM
 
-theorem integral_eq (f : α →₁[μ] E) : integral f = integralCLM (E := E) f := by
+theorem integral_eq (f : α →₁[μ] E) : integral f = integralCLM f := by
   simp only [integral]
 
 theorem integral_eq_setToL1 (f : α →₁[μ] E) :
-    integral f = setToL1 (E := E) (dominatedFinMeasAdditive_weightedSMul μ) f := by
+    integral f = setToL1 (dominatedFinMeasAdditive_weightedSMul μ) f := by
   simp only [integral]; rfl
 
 @[norm_cast]
@@ -547,8 +537,8 @@ theorem integral_sub (f g : α →₁[μ] E) : integral (f - g) = integral f - i
 @[integral_simps]
 theorem integral_smul (c : 𝕜) (f : α →₁[μ] E) : integral (c • f) = c • integral f := by
   simp only [integral]
-  show (integralCLM' (E := E) 𝕜) (c • f) = c • (integralCLM' (E := E) 𝕜) f
-  exact _root_.map_smul (integralCLM' (E := E) 𝕜) c f
+  show (integralCLM' 𝕜) (c • f) = c • (integralCLM' 𝕜) f
+  exact _root_.map_smul (integralCLM' 𝕜) c f
 
 local notation "Integral" => @integralCLM α E _ _ μ _ _
 
@@ -562,8 +552,8 @@ theorem nnnorm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)�
 
 theorem norm_integral_le (f : α →₁[μ] E) : ‖integral f‖ ≤ ‖f‖ :=
   calc
-    ‖integral f‖ = ‖integralCLM (E := E) f‖ := by simp only [integral]
-    _ ≤ ‖integralCLM (α := α) (E := E) (μ := μ)‖ * ‖f‖ := le_opNorm _ _
+    ‖integral f‖ = ‖integralCLM f‖ := by simp only [integral]
+    _ ≤ ‖integralCLM (α := α) (μ := μ)‖ * ‖f‖ := le_opNorm _ _
     _ ≤ 1 * ‖f‖ := mul_le_mul_of_nonneg_right norm_Integral_le_one <| norm_nonneg _
     _ = ‖f‖ := one_mul _
 
