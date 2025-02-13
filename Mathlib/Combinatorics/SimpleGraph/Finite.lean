@@ -437,11 +437,19 @@ end Finite
 
 section Support
 
-variable [DecidableEq V] {s : Set V} [DecidablePred (· ∈ s)]
-  [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj]
+variable {s : Set V} [DecidablePred (· ∈ s)] [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj]
+
+lemma edgeFinset_subset_sym2_of_support_subset (h : G.support ⊆ s) :
+    G.edgeFinset ⊆ s.toFinset.sym2 := by
+  simp_rw [subset_iff, Sym2.forall,
+    mem_edgeFinset, mem_edgeSet, mk_mem_sym2_iff, Set.mem_toFinset]
+  intro _ _ hadj
+  exact ⟨h ⟨_, hadj⟩, h ⟨_, hadj.symm⟩⟩
 
 instance : DecidablePred (· ∈ G.support) :=
   inferInstanceAs <| DecidablePred (· ∈ { v | ∃ w, G.Adj v w })
+
+variable [DecidableEq V]
 
 theorem map_edgeFinset_induce :
     (G.induce s).edgeFinset.map (Embedding.subtype s).sym2Map
@@ -458,14 +466,6 @@ theorem map_edgeFinset_induce :
   · intro ⟨hadj, hv, hw⟩
     use ⟨v, hv⟩, ⟨w, hw⟩, hadj
     tauto
-
-omit [DecidableEq V] in
-lemma edgeFinset_subset_sym2_of_support_subset (h : G.support ⊆ s) :
-    G.edgeFinset ⊆ s.toFinset.sym2 := by
-  simp_rw [subset_iff, Sym2.forall,
-    mem_edgeFinset, mem_edgeSet, mk_mem_sym2_iff, Set.mem_toFinset]
-  intro _ _ hadj
-  exact ⟨h ⟨_, hadj⟩, h ⟨_, hadj.symm⟩⟩
 
 theorem map_edgeFinset_induce_of_support_subset (h : G.support ⊆ s) :
     (G.induce s).edgeFinset.map (Embedding.subtype s).sym2Map = G.edgeFinset := by
