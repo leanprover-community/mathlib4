@@ -17,7 +17,8 @@ variable {F : Type*} [NormedField F]
 instance NormedField.instCompletableTopField : CompletableTopField F where
   t0 := (inferInstanceAs <| T0Space _).t0
   nice f hc hn := by
-    obtain ⟨δ, δ_pos, V, V_in, hδV⟩ := (disjoint_nhds ..).mp <| disjoint_iff.mpr hn
+    obtain ⟨δ, δ_pos, hδ⟩ := (disjoint_nhds_zero ..).mp <| disjoint_iff.mpr hn
+    obtain ⟨V, V_in, hδV⟩ := eventually_iff_exists_mem.mp hδ
     have hδV' {y} (hy : y⁻¹ ∈ V) : ‖y‖ ≤ δ⁻¹ := le_inv_of_le_inv₀ δ_pos (by simpa using hδV _ hy)
     have h₀ {y} (hy : y⁻¹ ∈ V) : y ≠ 0 := by simpa using δ_pos.trans_le (hδV _ hy)
     rw [uniformity_basis_dist.cauchy_iff] at hc ⊢
