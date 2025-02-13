@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
 
-import Mathlib.Algebra.Ring.Defs
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Sym.Sym2
+import Mathlib.Algebra.GroupWithZero.Defs
 
 /-!
 # Finitely Supported Commutative multiplication
