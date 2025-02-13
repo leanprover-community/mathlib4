@@ -147,10 +147,10 @@ Find the package directory of a module.
 -/
 def getPackageDir (mod : Name) : CacheM FilePath := do
   let sp := (← read).srcSearchPath
-  let packageDir? ← sp.findWithExtBase "lean" mod
-  match packageDir? with
-  | some dir => return dir
-  | none => throw <| IO.userError s!"Unknown package directory for {mod}\nsearch paths: {sp}"
+
+  let .some packageDir ← sp.findWithExtBase "lean" mod |
+    throw <| IO.userError s!"Unknown package directory for {mod}\nsearch paths: {sp}"
+  return packageDir
 
 /-- Runs a terminal command and retrieves its output, passing the lines to `processLine` -/
 partial def runCurlStreaming (args : Array String) (init : α)
