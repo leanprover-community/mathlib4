@@ -401,7 +401,6 @@ lemma eq_of_mapsTo_reflection_of_mem [NoZeroSMulDivisors ℤ M] {Φ : Set M} (h�
   suffices h : f y • x = (2 : R) • y by
     rw [hfy, two_smul R x, two_smul R y, ← two_zsmul, ← two_zsmul] at h
     exact smul_right_injective _ two_ne_zero h
-  rw [← not_infinite] at hΦ
   contrapose! hΦ
   apply ((infinite_range_reflection_reflection_iterate_iff hfx hgy
     (by rw [hfy, hgx]; norm_cast)).mpr hΦ).mono

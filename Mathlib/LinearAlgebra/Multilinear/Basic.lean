@@ -467,9 +467,9 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
   by_cases Ai_singleton : ∀ i, #(A i) ≤ 1
   · have Ai_card : ∀ i, #(A i) = 1 := by
       intro i
-      have pos : #(A i) ≠ 0 := by simp [Finset.card_eq_zero, Ai_empty i]
+      have pos : 1 ≤ #(A i) := by simp [Ai_empty i]
       have : #(A i) ≤ 1 := Ai_singleton i
-      exact le_antisymm this (Nat.succ_le_of_lt (_root_.pos_iff_ne_zero.mpr pos))
+      exact le_antisymm this pos
     have :
       ∀ r : ∀ i, α i, r ∈ piFinset A → (f fun i => g i (r i)) = f fun i => ∑ j ∈ A i, g i j := by
       intro r hr

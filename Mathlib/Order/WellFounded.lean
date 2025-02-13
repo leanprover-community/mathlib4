@@ -88,7 +88,6 @@ theorem wellFounded_iff_no_descending_seq :
   · obtain ⟨_, ⟨n, rfl⟩, hn⟩ := hr _ (Set.range_nonempty f)
     exact hn _ (Set.mem_range_self (n + 1)) (hf n)
   · contrapose!
-    rw [not_isEmpty_iff]
     rintro ⟨s, hs, hs'⟩
     let f : ℕ → s := Nat.rec (Classical.indefiniteDescription _ hs) fun n IH ↦
       ⟨(hs' _ IH.2).choose, (hs' _ IH.2).choose_spec.1⟩

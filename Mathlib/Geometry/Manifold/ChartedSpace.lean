@@ -895,7 +895,7 @@ def ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
 open scoped Classical in
 instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') :=
   if h : Nonempty H then ChartedSpace.sum_of_nonempty else by
-  simp only [not_nonempty_iff] at h
+  push_neg at h
   have : IsEmpty M := isEmpty_of_chartedSpace H
   have : IsEmpty M' := isEmpty_of_chartedSpace H
   exact empty H (M ⊕ M')
