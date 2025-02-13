@@ -323,7 +323,7 @@ theorem hasSum_log_one_add_inv {a : ℝ} (h : 0 < a) :
 theorem hasSum_log_one_add {a : ℝ} (h : 0 < a) :
     HasSum (fun k : ℕ => (2 : ℝ) * (1 / (2 * k + 1)) * (a / (a + 2)) ^ (2 * k + 1))
       (log (1 + a)) := by
-  have key := Real.hasSum_log_one_add_inv (inv_pos.mpr h)
+  have key := hasSum_log_one_add_inv (inv_pos.mpr h)
   rw [inv_inv, add_comm] at key
   exact key.congr_fun fun k ↦ by field_simp
 
@@ -332,5 +332,10 @@ lemma lt_log_add_one_of_pos {x : ℝ} (hx : 0 < x) : 2 * x / (x + 2) < log (1 + 
     1 (by positivity) (by positivity)
   field_simp at key
   exact key
+
+lemma le_log_add_one_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 2 * x / (x + 2) ≤ log (1 + x) := by
+  rcases lt_or_eq_of_le hx with hx | rfl
+  · exact le_of_lt (lt_log_add_one_of_pos hx)
+  · norm_num
 
 end Real
