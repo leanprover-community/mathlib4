@@ -417,6 +417,14 @@ def cons (p : RelSeries r) (newHead : α) (rel : r newHead p.head) : RelSeries r
   delta cons
   rw [last_append]
 
+lemma cons_cast_succ (s : RelSeries r) (a : α) (h : r a s.head) (i : Fin (s.length + 1)) :
+    (s.cons a h) (.cast (by simp) (.succ i)) = s i := by
+  dsimp [cons]
+  convert append_apply_right (singleton r a) s h i
+  ext
+  show i.1 + 1 = _ % _
+  simpa using (Nat.mod_eq_of_lt (by simp)).symm
+
 /--
 Given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `aₙ -r→ a` holds, there is
 a series of length `n+1`: `a₀ -r→ a₁ -r→ ... -r→ aₙ -r→ a`.
@@ -431,6 +439,10 @@ def snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) : RelSeries r
 
 @[simp] lemma last_snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) :
     (p.snoc newLast rel).last = newLast := last_append _ _ _
+
+lemma snoc_cast_castSucc (s : RelSeries r) (a : α) (h : r s.last a) (i : Fin (s.length + 1)) :
+    (s.snoc a h) (.cast (by simp) (.castSucc i)) = s i :=
+  append_apply_left s (singleton r a) h i
 
 -- This lemma is useful because `last_snoc` is about `Fin.last (p.snoc _ _).length`, but we often
 -- see `Fin.last (p.length + 1)` in practice. They are equal by definition, but sometimes simplifier
@@ -651,6 +663,30 @@ lemma Rel.finiteDimensional_or_infiniteDimensional [Nonempty α] :
     r.FiniteDimensional ∨ r.InfiniteDimensional := by
   rw [← not_finiteDimensional_iff]
   exact em r.FiniteDimensional
+
+variable {r} in
+lemma Rel.finiteDimensional_swap_iff :
+    FiniteDimensional r ↔ FiniteDimensional (Function.swap r) where
+  mp _ := ⟨.reverse (.longestOf r), fun s ↦ s.reverse.length_le_length_longestOf⟩
+  mpr _ := ⟨.reverse (.longestOf (Function.swap r)), fun s ↦ s.reverse.length_le_length_longestOf⟩
+
+variable {r} in
+lemma Rel.infiniteDimensional_swap_iff :
+    InfiniteDimensional r ↔ InfiniteDimensional (Function.swap r) where
+  mp _ := ⟨fun n ↦ ⟨.reverse (.withLength r n), RelSeries.length_withLength r n⟩⟩
+  mpr _ := ⟨fun n ↦ ⟨.reverse (.withLength (Function.swap r) n),
+    RelSeries.length_withLength (Function.swap r) n⟩⟩
+
+lemma Rel.wellFounded_swap_of_finiteDimensional [Rel.FiniteDimensional r] :
+    WellFounded (Function.swap r) := by
+  rw [WellFounded.wellFounded_iff_no_descending_seq]
+  refine ⟨fun ⟨f, hf⟩ ↦ ?_⟩
+  let s := RelSeries.mk (r := r) ((RelSeries.longestOf r).length + 1) (f ·) (hf ·)
+  exact (RelSeries.longestOf r).length.lt_succ_self.not_le s.length_le_length_longestOf
+
+lemma Rel.wellFounded_of_finiteDimensional [Rel.FiniteDimensional r] : WellFounded r :=
+  have : (Rel.FiniteDimensional (Function.swap r)) := Rel.finiteDimensional_swap_iff.mp ‹_›
+  wellFounded_swap_of_finiteDimensional (Function.swap r)
 
 /-- A type is finite dimensional if its `LTSeries` has bounded length. -/
 abbrev FiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
