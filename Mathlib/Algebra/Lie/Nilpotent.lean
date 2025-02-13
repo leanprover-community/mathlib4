@@ -292,7 +292,7 @@ instance largestNilpotentSubmoduleIsNilpotent [IsNoetherian R L] :
     IsNilpotent L (largestNilpotentSubmodule R L M) := by
   sorry
 
-theorem nilpotent_iff_le_largest_nilpotent [IsNoetherian R L] (N : LieSubmodule R L M) :
+theorem nilpotent_iff_le_largest_nilpotent_submodule [IsNoetherian R L] (N : LieSubmodule R L M) :
     IsNilpotent L N ↔ N ≤ largestNilpotentSubmodule R L M := by
   sorry
 
