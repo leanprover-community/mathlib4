@@ -435,7 +435,6 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
       else
         -- provided a module
         let mod : Name := argₛ.toName
-        dbg_trace s!"here: {argₛ} -- {mod.components}"
         let packageDir ← getPackageDir mod
         let sourceFile ← Lean.findLean sp mod
 
