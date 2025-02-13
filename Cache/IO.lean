@@ -107,12 +107,17 @@ abbrev CacheM := ReaderT CacheM.Context IO
 
 section
 
-@[inherit_doc CacheM.Context]
-private def CacheM.getContext : IO CacheM.Context := do
-  let sp ← initSrcSearchPath
+/-- Find path to `Mathlib` source directory -/
+private def CacheM.mathlibDepPath (sp : SearchPath) : IO FilePath := do
   let mathlibSourceFile ← Lean.findLean sp `Mathlib
   let some mathlibSource ← pure mathlibSourceFile.parent
     | throw <| IO.userError s!"Mathlib not found in dependencies"
+  return mathlibSource
+
+@[inherit_doc CacheM.Context]
+private def CacheM.getContext : IO CacheM.Context := do
+  let sp ← initSrcSearchPath
+  let mathlibSource ← CacheM.mathlibDepPath sp
   return {
     mathlibDepPath := mathlibSource
     srcSearchPath := sp
