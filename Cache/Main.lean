@@ -71,15 +71,26 @@ def main (args : List String) : IO Unit := do
     println "Unfortunately, you have a broken Lean v4.8.0-rc1 installation."
     println "Please run `elan toolchain uninstall leanprover/lean4:v4.8.0-rc1` and try again."
     Process.exit 1
-  -- We pass any following arguments to `getHashMemo`,
-  -- so we can use the cache on `Archive` or `Counterexamples`.
-  let extraRoots := match args with
-  | [] => #[]
-  | _ :: t => t.toArray.map FilePath.mk
   if args.isEmpty then
     println help
     Process.exit 0
   CacheM.run do
+
+  -- Parse commandline arguments
+  let mut roots : Std.HashMap Lean.Name FilePath ← parseArgs args
+  if roots.isEmpty then do
+    -- No arguments means to start from `Mathlib.lean`
+    -- TODO: could change this to the default-target of a downstream project
+    let mod := `Mathlib
+    let sp := (← read).srcSearchPath
+    let sourceFile ← Lean.findLean sp mod
+    roots := Std.HashMap.empty.insert mod sourceFile
+
+  -- We pass any following arguments to `getHashMemo`,
+  -- so we can use the cache on `Archive` or `Counterexamples`.
+  let extraRoots : Array FilePath :=
+    roots.keys.toArray.map (·.components.map toString |> mkFilePath |>.withExtension "lean")
+
   let hashMemo ← getHashMemo extraRoots
   let hashMap := hashMemo.hashMap
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
