@@ -324,17 +324,18 @@ theorem _root_.Ordinal.lift_preOmega (o : Ordinal.{u}) :
     Ordinal.lift.{v} (preOmega o) = preOmega (Ordinal.lift.{v} o) := by
   rw [← ord_preAleph, lift_ord, lift_preAleph, ord_preAleph]
 
-theorem preAleph_le_of_isLimit {o : Ordinal} (l : o.IsLimit) {c} :
+theorem preAleph_le_of_isSuccPrelimit {o : Ordinal} (l : IsSuccPrelimit o) {c} :
     preAleph o ≤ c ↔ ∀ o' < o, preAleph o' ≤ c :=
   ⟨fun h o' h' => (preAleph_le_preAleph.2 <| h'.le).trans h, fun h => by
-    rw [← preAleph.apply_symm_apply c, preAleph_le_preAleph, limit_le l]
+    rw [← preAleph.apply_symm_apply c, preAleph_le_preAleph, l.le_iff_forall_le]
     intro x h'
     rw [← preAleph_le_preAleph, preAleph.apply_symm_apply]
     exact h _ h'⟩
 
-theorem preAleph_limit {o : Ordinal} (ho : o.IsLimit) : preAleph o = ⨆ a : Iio o, preAleph a := by
+theorem preAleph_limit {o : Ordinal} (ho : IsSuccPrelimit o) :
+    preAleph o = ⨆ a : Iio o, preAleph a := by
   refine le_antisymm ?_ (ciSup_le' fun i => preAleph_le_preAleph.2 i.2.le)
-  rw [preAleph_le_of_isLimit ho]
+  rw [preAleph_le_of_isSuccPrelimit ho]
   exact fun a ha => le_ciSup (bddAbove_of_small _) (⟨a, ha⟩ : Iio o)
 
 /-- The `aleph` function gives the infinite cardinals listed by their ordinal index. `aleph 0 = ℵ₀`,
@@ -400,12 +401,12 @@ theorem _root_.Ordinal.lift_omega (o : Ordinal.{u}) :
     Ordinal.lift.{v} (ω_ o) = ω_ (Ordinal.lift.{v} o) := by
   simp [omega_eq_preOmega]
 
-theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : ℵ_ o = ⨆ a : Iio o, ℵ_ a := by
-  rw [aleph_eq_preAleph, preAleph_limit (isLimit_add ω ho)]
+theorem aleph_limit {o : Ordinal} (ho : IsSuccLimit o) : ℵ_ o = ⨆ a : Iio o, ℵ_ a := by
+  rw [aleph_eq_preAleph, preAleph_limit (isSuccLimit_add ω ho).isSuccPrelimit]
   apply le_antisymm <;>
     apply ciSup_mono' (bddAbove_of_small _) <;>
     intro i
-  · refine ⟨⟨_, sub_lt_of_lt_add i.2 ho.pos⟩, ?_⟩
+  · refine ⟨⟨_, sub_lt_of_lt_add i.2 ho.bot_lt⟩, ?_⟩
     simpa [aleph_eq_preAleph] using le_add_sub _ _
   · exact ⟨⟨_, add_lt_add_left i.2 ω⟩, le_rfl⟩
 
@@ -424,13 +425,9 @@ theorem aleph_toNat (o : Ordinal) : toNat (ℵ_ o) = 0 :=
 theorem aleph_toENat (o : Ordinal) : toENat (ℵ_ o) = ⊤ :=
   (toENat_eq_top.2 (aleph0_le_aleph o))
 
-theorem isLimit_omega (o : Ordinal) : Ordinal.IsLimit (ω_ o) := by
+theorem isSuccLimit_omega (o : Ordinal) : IsSuccLimit (ω_ o) := by
   rw [← ord_aleph]
-  exact isLimit_ord (aleph0_le_aleph _)
-
-@[deprecated isLimit_omega (since := "2024-10-24")]
-theorem ord_aleph_isLimit (o : Ordinal) : (ℵ_ o).ord.IsLimit :=
-  isLimit_ord <| aleph0_le_aleph _
+  exact isSuccLimit_ord (aleph0_le_aleph _)
 
 @[simp]
 theorem range_aleph : range aleph = Set.Ici ℵ₀ := by
@@ -606,6 +603,12 @@ theorem lift_aleph' (o : Ordinal.{u}) : lift.{v} (aleph' o) = aleph' (Ordinal.li
   lift_preAleph o
 
 set_option linter.deprecated false in
+@[deprecated preAleph_le_of_isSuccPrelimit (since := "2025-02-09")]
+theorem preAleph_le_of_isLimit {o : Ordinal} (l : o.IsLimit) {c} :
+    preAleph o ≤ c ↔ ∀ o' < o, preAleph o' ≤ c :=
+  preAleph_le_of_isSuccPrelimit l.isSuccPrelimit
+
+set_option linter.deprecated false in
 @[deprecated preAleph_le_of_isLimit (since := "2024-10-22")]
 theorem aleph'_le_of_limit {o : Ordinal} (l : o.IsLimit) {c} :
     aleph' o ≤ c ↔ ∀ o' < o, aleph' o' ≤ c :=
@@ -614,7 +617,7 @@ theorem aleph'_le_of_limit {o : Ordinal} (l : o.IsLimit) {c} :
 set_option linter.deprecated false in
 @[deprecated preAleph_limit (since := "2024-10-22")]
 theorem aleph'_limit {o : Ordinal} (ho : o.IsLimit) : aleph' o = ⨆ a : Iio o, aleph' a :=
-  preAleph_limit ho
+  preAleph_limit ho.isSuccPrelimit
 
 set_option linter.deprecated false in
 @[deprecated preAleph_omega0 (since := "2024-10-22")]
@@ -630,6 +633,7 @@ set_option linter.deprecated false in
 def aleph'Equiv : Ordinal ≃ Cardinal :=
   ⟨aleph', alephIdx, alephIdx_aleph', aleph'_alephIdx⟩
 
+set_option linter.deprecated false in
 @[deprecated aleph_eq_preAleph (since := "2024-10-22")]
 theorem aleph_eq_aleph' (o : Ordinal) : ℵ_ o = preAleph (ω + o) :=
   rfl
@@ -648,11 +652,6 @@ set_option linter.deprecated false in
 @[deprecated preAleph_isNormal (since := "2024-10-22")]
 theorem aleph'_isNormal : IsNormal (ord ∘ aleph') :=
   preAleph_isNormal
-
--- TODO: these lemmas should be stated in terms of the `ω` function and of an `IsInitial` predicate,
--- neither of which currently exist.
---
--- They should also use `¬ BddAbove` instead of `Unbounded (· < ·)`.
 
 /-- Ordinals that are cardinals are unbounded. -/
 @[deprecated "No deprecation message was provided."  (since := "2024-09-24")]
@@ -683,6 +682,16 @@ theorem eq_aleph_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) (ho' : ω �
   rwa [aleph_eq_aleph', Ordinal.add_sub_cancel_of_le]
   rwa [← aleph0_le_aleph', ← ord_le_ord, ha, ord_aleph0]
 
+set_option linter.deprecated false in
+@[deprecated isSuccLimit_omega (since := "2025-02-09")]
+theorem isLimit_omega (o : Ordinal) : Ordinal.IsLimit (ω_ o) :=
+  isSuccLimit_omega o
+
+set_option linter.deprecated false in
+@[deprecated isLimit_omega (since := "2024-10-24")]
+theorem ord_aleph_isLimit (o : Ordinal) : (ℵ_ o).ord.IsLimit :=
+  isLimit_ord <| aleph0_le_aleph _
+
 end deprecated
 
 /-! ### Beth cardinals -/
@@ -706,14 +715,14 @@ theorem beth_zero : ℶ_ 0 = ℵ₀ :=
 theorem beth_succ (o : Ordinal) : ℶ_ (succ o) = 2 ^ beth o :=
   limitRecOn_succ _ _ _ _
 
-theorem beth_limit {o : Ordinal} : o.IsLimit → ℶ_ o = ⨆ a : Iio o, ℶ_ a :=
+theorem beth_limit {o : Ordinal} : IsSuccLimit o → ℶ_ o = ⨆ a : Iio o, ℶ_ a :=
   limitRecOn_limit _ _ _ _
 
 theorem beth_strictMono : StrictMono beth := by
   intro a b
   induction' b using Ordinal.induction with b IH generalizing a
   intro h
-  rcases zero_or_succ_or_limit b with (rfl | ⟨c, rfl⟩ | hb)
+  rcases zero_or_succ_or_isSuccLimit b with (rfl | ⟨c, rfl⟩ | hb)
   · exact (Ordinal.not_lt_zero a h).elim
   · rw [lt_succ_iff] at h
     rw [beth_succ]
