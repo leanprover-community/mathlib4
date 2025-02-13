@@ -168,8 +168,8 @@ protected theorem diff (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t �
   MeasurableSet.diff hs ht
 
 @[simp]
-protected theorem symmDiff {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁)
-    (h₂ : MeasurableSet s₂) : MeasurableSet (symmDiff s₁ s₂) :=
+protected theorem symmDiff {s₁ s₂ : Set α} (h₁ : NullMeasurableSet s₁ μ)
+    (h₂ : NullMeasurableSet s₂ μ) : NullMeasurableSet (symmDiff s₁ s₂) μ :=
   (h₁.diff h₂).union (h₂.diff h₁)
 
 @[simp]
