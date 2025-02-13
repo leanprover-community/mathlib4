@@ -437,26 +437,45 @@ end Finite
 
 section Support
 
-lemma card_support_le [Fintype V] [Fintype G.support] :
-    Fintype.card G.support ≤ Fintype.card V :=
-  Fintype.card_le_of_injective Subtype.val Subtype.val_injective
-
-variable {s : Set V} [DecidablePred (· ∈ s)] [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj]
+variable [DecidableEq V] {s : Set V} [DecidablePred (· ∈ s)]
+  [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj]
 
 instance : DecidablePred (· ∈ G.support) :=
   inferInstanceAs <| DecidablePred (· ∈ { v | ∃ w, G.Adj v w })
+
+theorem map_edgeFinset_induce :
+    (G.induce s).edgeFinset.map (Embedding.subtype s).sym2Map
+      = G.edgeFinset ∩ s.toFinset.sym2 := by
+  simp_rw [Finset.ext_iff, Sym2.forall, mem_inter, mk_mem_sym2_iff, mem_map, Sym2.exists,
+    Set.mem_toFinset, mem_edgeSet, comap_adj, Embedding.sym2Map_apply, Embedding.coe_subtype,
+    Sym2.map_pair_eq, Sym2.eq_iff]
+  intro v w
+  constructor
+  · rintro ⟨x, y, hadj, ⟨hv, hw⟩ | ⟨hw, hv⟩⟩
+    all_goals rw [← hv, ← hw]
+    · exact ⟨hadj, x.prop, y.prop⟩
+    · exact ⟨hadj.symm, y.prop, x.prop⟩
+  · intro ⟨hadj, hv, hw⟩
+    use ⟨v, hv⟩, ⟨w, hw⟩, hadj
+    tauto
+
+omit [DecidableEq V] in
+lemma edgeFinset_subset_sym2_of_support_subset (h : G.support ⊆ s) :
+    G.edgeFinset ⊆ s.toFinset.sym2 := by
+  simp_rw [subset_iff, Sym2.forall,
+    mem_edgeFinset, mem_edgeSet, mk_mem_sym2_iff, Set.mem_toFinset]
+  intro _ _ hadj
+  exact ⟨h ⟨_, hadj⟩, h ⟨_, hadj.symm⟩⟩
+
+theorem map_edgeFinset_induce_of_support_subset (h : G.support ⊆ s) :
+    (G.induce s).edgeFinset.map (Embedding.subtype s).sym2Map = G.edgeFinset := by
+  simpa [map_edgeFinset_induce] using edgeFinset_subset_sym2_of_support_subset h
 
 /-- If the support of the simple graph `G` is a subset of the set `s`, then the induced subgraph of
 `s` has the same number of edges as `G`. -/
 theorem card_edgeFinset_induce_of_support_subset (h : G.support ⊆ s) :
     #(G.induce s).edgeFinset = #G.edgeFinset := by
-  apply card_nbij (fun e ↦ e.map (↑)) (by rintro ⟨_, _⟩; simp)
-  · rintro ⟨_, _⟩ _ ⟨_, _⟩ _
-    simp [Subtype.ext_iff_val]
-  · rintro ⟨v, w⟩ hadj
-    rw [Set.coe_toFinset, mem_edgeSet] at hadj
-    use s(⟨v, h ⟨w, hadj⟩⟩, ⟨w, h ⟨v, hadj.symm⟩⟩)
-    simp [hadj]
+  rw [← map_edgeFinset_induce_of_support_subset h, card_map]
 
 theorem card_edgeFinset_induce_support :
     #(G.induce G.support).edgeFinset = #G.edgeFinset :=
