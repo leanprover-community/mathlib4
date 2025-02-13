@@ -392,8 +392,8 @@ variable [TopologicalSpace 𝕜] [OrderTopology 𝕜]
 
 lemma bddBelow_slope_lt_of_mem_interior (hfc : ConvexOn 𝕜 s f) (hxs : x ∈ interior s) :
     BddBelow (slope f x '' {y ∈ s | x < y}) := by
-  obtain ⟨y, hys, hyx⟩ : ∃ y ∈ s, y < x :=
-    exists_lt_mem_of_mem_nhds (mem_interior_iff_mem_nhds.mp hxs)
+  obtain ⟨y, hyx, hys⟩ : ∃ y, y < x ∧ y ∈ s :=
+    Eventually.exists_lt (mem_interior_iff_mem_nhds.mp hxs)
   refine bddBelow_iff_subset_Ici.mpr ⟨slope f x y, fun y' ⟨z, hz, hz'⟩ ↦ ?_⟩
   simp_rw [mem_Ici, ← hz']
   refine hfc.slope_mono (interior_subset hxs) ?_ ?_ (hyx.trans hz.2).le
@@ -402,8 +402,8 @@ lemma bddBelow_slope_lt_of_mem_interior (hfc : ConvexOn 𝕜 s f) (hxs : x ∈ i
 
 lemma bddAbove_slope_gt_of_mem_interior (hfc : ConvexOn 𝕜 s f) (hxs : x ∈ interior s) :
     BddAbove (slope f x '' {y ∈ s | y < x}) := by
-  obtain ⟨y, hys, hyx⟩ : ∃ y ∈ s, x < y :=
-    exists_gt_mem_of_mem_nhds (mem_interior_iff_mem_nhds.mp hxs)
+  obtain ⟨y, hyx, hys⟩ : ∃ y, x < y ∧ y ∈ s :=
+    Eventually.exists_gt (mem_interior_iff_mem_nhds.mp hxs)
   refine bddAbove_iff_subset_Iic.mpr ⟨slope f x y, fun y' ⟨z, hz, hz'⟩ ↦ ?_⟩
   simp_rw [mem_Iic, ← hz']
   refine hfc.slope_mono (interior_subset hxs) ?_ ?_ (hz.2.trans hyx).le
