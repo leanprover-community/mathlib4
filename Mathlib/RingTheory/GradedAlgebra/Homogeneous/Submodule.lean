@@ -36,10 +36,10 @@ We introduce `Submodule.homogeneousCore'` earlier than might be expected so that
 to `Submodule.IsHomogeneous.iff_exists` as quickly as possible.
 
 The **notion** of homogeneous submodule does not rely on a graded ring, only a decomposition of the
-the module. However, most interesting properties of homogeneous submodules do reply on the base ring
-is a graded ring. For technical reasons, we make `HomogeneousSubmodule` depend on a graded ring.
+the module. However, most interesting properties of homogeneous submodules do rely on the base ring
+being a graded ring. For technical reasons, we make `HomogeneousSubmodule` depend on a graded ring.
 For example, if the definition of a homogeneous submodule does not depend on a graded ring, the
-instance that `HomogeneousSubmodule` is a complete lattice can not be synthesized due to
+instance that `HomogeneousSubmodule` is a complete lattice cannot be synthesized due to
 synthesation order.
 
 ## Tags
