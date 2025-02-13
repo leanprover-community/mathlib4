@@ -5,7 +5,7 @@ Authors: Alice Laroche, Frédéric Dupuis, Jireh Loreaux
 -/
 
 import Mathlib.Data.Finite.Defs
-import Mathlib.Data.Finset.Empty
+-- import Mathlib.Data.Finset.Empty
 import Mathlib.Tactic.Push
 
 private axiom test_sorry : ∀ {α}, α
@@ -257,3 +257,14 @@ example {p q : Nat} : ¬ g.Adj p q := by
   exact test_sorry
 
 end no_proj
+
+section Conv
+
+example (h : (¬ ∀ n > 0, n = 3 → n = 5) ∧ ¬ ∃ n, n = 0) :
+    (∃ n > 0, n = 3 ∧ n ≠ 5) ∧ ¬ ∃ n, n = 0 := by
+  conv at h =>
+    arg 1
+    push Not
+  exact h
+
+end Conv
