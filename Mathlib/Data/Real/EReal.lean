@@ -2061,13 +2061,13 @@ private lemma exists_lt_mul_left_of_nonneg (ha : 0 ≤ a) (hc : 0 ≤ c) (h : c 
   · rcases eq_or_lt_of_le ha with rfl | ha
     · rw [zero_mul] at h
       exact (not_le_of_lt h hc).rec
-    · obtain ⟨a', a_pos', a_a'⟩ := exists_between ha
-      use a', mem_Ico.2 ⟨a_pos'.le, a_a'⟩
+    · obtain ⟨a', a0', aa'⟩ := exists_between ha
+      use a', mem_Ico.2 ⟨a0'.le, aa'⟩
       rw [mul_top_of_pos ha] at h
-      rwa [mul_top_of_pos a_pos']
-  · have b_pos : 0 < b := pos_of_mul_pos_right (hc.trans_lt h) ha
-    obtain ⟨a', ha', a_a'⟩ := exists_between ((div_lt_iff b_pos b_top).2 h)
-    exact ⟨a', ⟨(div_nonneg hc b_pos.le).trans ha'.le, a_a'⟩, (div_lt_iff b_pos b_top).1 ha'⟩
+      rwa [mul_top_of_pos a0']
+  · have b0 : 0 < b := pos_of_mul_pos_right (hc.trans_lt h) ha
+    obtain ⟨a', ha', aa'⟩ := exists_between ((div_lt_iff b0 b_top).2 h)
+    exact ⟨a', ⟨(div_nonneg hc b0.le).trans ha'.le, aa'⟩, (div_lt_iff b0 b_top).1 ha'⟩
 
 private lemma exists_lt_mul_right_of_nonneg (ha : 0 ≤ a) (hc : 0 ≤ c) (h : c < a * b) :
     ∃ b' ∈ Ico 0 b, c < a * b' := by
@@ -2102,18 +2102,18 @@ lemma le_mul_of_forall_lt (h₁ : 0 < a ∨ b ≠ ⊤) (h₂ : a ≠ ⊤ ∨ 0 <
   refine le_of_forall_gt_imp_ge_of_dense fun d hd ↦ ?_
   obtain ⟨a', aa', hd⟩ := exists_mul_left_lt (h₁.imp_left ne_of_gt) h₂ hd
   replace h₁ : 0 < a' ∨ b ≠ ⊤ := h₁.imp_left fun a0 ↦ a0.trans (mem_Ioo.1 aa').1
-  replace h₂ : a' ≠ ⊤ ∨ b ≠ 0 := by exact Or.inl (mem_Ioo.1 aa').2.ne
+  replace h₂ : a' ≠ ⊤ ∨ b ≠ 0 := Or.inl (mem_Ioo.1 aa').2.ne
   obtain ⟨b', bb', hd⟩ := exists_mul_right_lt h₁ h₂ hd
   exact (h a' (mem_Ioo.1 aa').1 b' (mem_Ioo.1 bb').1).trans hd.le
 
 lemma mul_le_of_forall_lt_of_nonneg (ha : 0 ≤ a) (hc : 0 ≤ c)
     (h : ∀ a' ∈ Ico 0 a, ∀ b' ∈ Ico 0 b, a' * b' ≤ c) : a * b ≤ c := by
-  refine le_of_forall_lt_imp_le_of_dense fun d d_ab ↦ ?_
-  rcases lt_or_le d 0 with hd | hd
-  · exact hd.le.trans hc
-  obtain ⟨a', ha', d_ab⟩ := exists_lt_mul_left_of_nonneg ha hd d_ab
-  obtain ⟨b', hb', d_ab⟩ := exists_lt_mul_right_of_nonneg ha'.1 hd d_ab
-  exact d_ab.le.trans (h a' ha' b' hb')
+  refine le_of_forall_lt_imp_le_of_dense fun d dab ↦ ?_
+  rcases lt_or_le d 0 with d0 | d0
+  · exact d0.le.trans hc
+  obtain ⟨a', aa', dab⟩ := exists_lt_mul_left_of_nonneg ha d0 dab
+  obtain ⟨b', bb', dab⟩ := exists_lt_mul_right_of_nonneg aa'.1 d0 dab
+  exact dab.le.trans (h a' aa' b' bb')
 
 /-! #### Division Distributivity -/
 
