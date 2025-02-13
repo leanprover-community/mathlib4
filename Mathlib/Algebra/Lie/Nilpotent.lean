@@ -285,6 +285,7 @@ section
 
 variable [LieModule R L M]
 
+/-- The largest nilpotent submodule is the `sSup` of all nilpotent submodules. -/
 def largestNilpotentSubmodule :=
   sSup { N : LieSubmodule R L M | IsNilpotent L N }
 
@@ -913,7 +914,17 @@ open LieModule
 variable (R : Type u) (L : Type v)
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
 
+/-- The largest nilpotent ideal of a Lie algebra. It is defined as the largest nilpotent
+Lie submodule of `L` under the adjoint action. -/
 def largestNilpotentIdeal := largestNilpotentSubmodule R L L
+
+instance largestNilpotentIdealIsNilpotent [IsNoetherian R L] :
+    IsNilpotent L (largestNilpotentIdeal R L) := by
+  sorry
+
+theorem LieIdeal.nilpotent_iff_le_largest_nilpotent_ideal [IsNoetherian R L] (I : LieIdeal R L) :
+    IsNilpotent L I ↔ I ≤ largestNilpotentIdeal R L :=
+  sorry
 
 theorem center_le_largest_nilpotent_ideal : center R L ≤ largestNilpotentIdeal R L :=
   sorry
@@ -921,7 +932,7 @@ theorem center_le_largest_nilpotent_ideal : center R L ≤ largestNilpotentIdeal
 theorem largest_nilpotent_ideal_le_radical : largestNilpotentIdeal R L ≤ radical R L :=
   sorry
 
-@[simp] lemma largest_nilpotent_ideal_eq_top_of_isNilpotent [IsNilpotent L L] :
+@[simp] lemma largest_nilpotent_ideal_eq_top_of_isNilpotent [LieRing.IsNilpotent L] :
     largestNilpotentIdeal R L = ⊤ :=
   sorry
 
