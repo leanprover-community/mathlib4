@@ -122,7 +122,7 @@ partial def getHash (mod : Name) (sourceFile : FilePath)
     HashM <| Option UInt64 := do
   if visited.contains mod then
     throw <| IO.userError s!"dependency loop found involving {mod}!"
-  let visitedNew := visited.insert mod
+  let visitedₙ := visited.insert mod
   match (← get).cache[mod]? with
   | some hash? => return hash?
   | none =>
@@ -134,7 +134,7 @@ partial def getHash (mod : Name) (sourceFile : FilePath)
     let fileImports ← getFileImports content mod.toString
     let mut importHashes := #[]
     for importHash? in
-        ← fileImports.mapM (fun (modₙ, sourceFileₙ) => getHash modₙ sourceFileₙ visitedNew) do
+        ← fileImports.mapM (fun (modₙ, sourceFileₙ) => getHash modₙ sourceFileₙ visitedₙ) do
       match importHash? with
       | some importHash => importHashes := importHashes.push importHash
       | none =>
