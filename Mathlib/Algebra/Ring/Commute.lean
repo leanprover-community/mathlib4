@@ -125,13 +125,13 @@ lemma neg_one_pow_eq_or : ∀ n : ℕ, (-1 : R) ^ n = 1 ∨ (-1 : R) ^ n = -1
 
 variable {R}
 
-lemma neg_pow (a : R) (n : ℕ) : (-a) ^ n = (-1) ^ n * a ^ n :=
+@[push] lemma neg_pow (a : R) (n : ℕ) : (-a) ^ n = (-1) ^ n * a ^ n :=
   neg_one_mul a ▸ (Commute.neg_one_left a).mul_pow n
 
 lemma neg_pow' (a : R) (n : ℕ) : (-a) ^ n = a ^ n * (-1) ^ n :=
   mul_neg_one a ▸ (Commute.neg_one_right a).mul_pow n
 
-lemma neg_sq (a : R) : (-a) ^ 2 = a ^ 2 := by simp [sq]
+@[push] lemma neg_sq (a : R) : (-a) ^ 2 = a ^ 2 := by simp [sq]
 
 lemma neg_one_sq : (-1 : R) ^ 2 = 1 := by simp [neg_sq, one_pow]
 
@@ -184,7 +184,7 @@ lemma sq_sub_sq (a b : R) : a ^ 2 - b ^ 2 = (a + b) * (a - b) := (Commute.all a 
 
 alias pow_two_sub_pow_two := sq_sub_sq
 
-lemma sub_sq (a b : R) : (a - b) ^ 2 = a ^ 2 - 2 * a * b + b ^ 2 := by
+@[push] lemma sub_sq (a b : R) : (a - b) ^ 2 = a ^ 2 - 2 * a * b + b ^ 2 := by
   rw [sub_eq_add_neg, add_sq, neg_sq, mul_neg, ← sub_eq_add_neg]
 
 alias sub_pow_two := sub_sq

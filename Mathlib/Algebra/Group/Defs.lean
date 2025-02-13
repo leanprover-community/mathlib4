@@ -10,6 +10,7 @@ import Mathlib.Algebra.Group.Operations
 import Mathlib.Logic.Function.Defs
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.OfNat
+import Mathlib.Tactic.Push.Attr
 import Batteries.Logic
 
 /-!
@@ -597,7 +598,7 @@ lemma pow_three' (a : M) : a ^ 3 = a * a * a := by rw [pow_succ, pow_two]
 lemma pow_three (a : M) : a ^ 3 = a * (a * a) := by rw [pow_succ', pow_two]
 
 -- the attributes are intentionally out of order.
-@[to_additive nsmul_zero, simp] lemma one_pow : ∀ n, (1 : M) ^ n = 1
+@[to_additive (attr := push) nsmul_zero, simp] lemma one_pow : ∀ n, (1 : M) ^ n = 1
   | 0 => pow_zero _
   | n + 1 => by rw [pow_succ, one_pow, one_mul]
 
@@ -609,7 +610,8 @@ lemma pow_add (a : M) (m : ℕ) : ∀ n, a ^ (m + n) = a ^ m * a ^ n
 @[to_additive] lemma pow_mul_comm (a : M) (m n : ℕ) : a ^ m * a ^ n = a ^ n * a ^ m := by
   rw [← pow_add, ← pow_add, Nat.add_comm]
 
-@[to_additive mul_nsmul] lemma pow_mul (a : M) (m : ℕ) : ∀ n, a ^ (m * n) = (a ^ m) ^ n
+@[to_additive (attr := push ←) mul_nsmul]
+lemma pow_mul (a : M) (m : ℕ) : ∀ n, a ^ (m * n) = (a ^ m) ^ n
   | 0 => by rw [Nat.mul_zero, pow_zero, pow_zero]
   | n + 1 => by rw [Nat.mul_succ, pow_add, pow_succ, pow_mul]
 

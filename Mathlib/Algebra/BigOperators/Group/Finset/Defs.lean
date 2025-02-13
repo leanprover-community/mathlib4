@@ -544,7 +544,7 @@ theorem prod_induction_nonempty {M : Type*} [CommMonoid M] (f : α → M) (p : M
   Multiset.prod_induction_nonempty p hom (by simp [nonempty_iff_ne_empty.mp nonempty])
     (Multiset.forall_mem_map_iff.mpr base)
 
-@[to_additive]
+@[to_additive (attr := push ←)]
 theorem prod_pow (s : Finset α) (n : ℕ) (f : α → β) : ∏ x ∈ s, f x ^ n = (∏ x ∈ s, f x) ^ n :=
   Multiset.prod_map_pow
 

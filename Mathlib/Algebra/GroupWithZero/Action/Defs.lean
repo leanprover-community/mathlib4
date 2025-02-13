@@ -313,7 +313,7 @@ theorem MulDistribMulAction.toMonoidHom_apply (r : M) (x : A) :
     MulDistribMulAction.toMonoidHom A r x = r • x :=
   rfl
 
-@[simp] lemma smul_pow' (r : M) (x : A) (n : ℕ) : r • x ^ n = (r • x) ^ n :=
+@[simp, push ←] lemma smul_pow' (r : M) (x : A) (n : ℕ) : r • x ^ n = (r • x) ^ n :=
   (MulDistribMulAction.toMonoidHom _ _).map_pow _ _
 
 end
