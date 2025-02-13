@@ -37,8 +37,7 @@ The condition only asks for `<` which is easier to prove, use
 -/
 @[stacks 00HV "(2)"]
 class Algebra.HasGoingDown (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] : Prop where
-  exists_ideal_le_liesOver_of_lt {p : Ideal R} [p.IsPrime] (Q : Ideal S)
-      [Q.IsPrime] :
+  exists_ideal_le_liesOver_of_lt {p : Ideal R} [p.IsPrime] (Q : Ideal S) [Q.IsPrime] :
     p < Q.under R → ∃ P ≤ Q, P.IsPrime ∧ P.LiesOver p
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
