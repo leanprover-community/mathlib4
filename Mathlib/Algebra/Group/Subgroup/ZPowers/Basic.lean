@@ -3,6 +3,7 @@ Copyright (c) 2020 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Subgroup.Map
 import Mathlib.Algebra.Group.Int.Defs
 
@@ -145,6 +146,10 @@ theorem zpowers_inv : zpowers g⁻¹ = zpowers g :=
   eq_of_forall_ge_iff fun _ ↦ by simp only [zpowers_le, inv_mem_iff]
 
 end Subgroup
+
+theorem Int.zmultiples_natAbs (a : ℤ) :
+    AddSubgroup.zmultiples (a.natAbs : ℤ) = AddSubgroup.zmultiples a := by
+  simp [le_antisymm_iff, Int.mem_zmultiples_iff, Int.dvd_natAbs, Int.natAbs_dvd]
 
 lemma AddSubgroup.closure_singleton_int_one_eq_top : closure ({1} : Set ℤ) = ⊤ := by
   ext

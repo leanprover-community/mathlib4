@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Int.Basic
 
 /-!
 # `ZMod n` and quotient groups / rings
@@ -23,7 +22,7 @@ This file relates `ZMod n` to the quotient group `ℤ / AddSubgroup.zmultiples (
 zmod, quotient group
 -/
 
-assert_not_exists TwoSidedIdeal
+assert_not_exists Ideal TwoSidedIdeal
 
 open QuotientAddGroup Set ZMod
 
