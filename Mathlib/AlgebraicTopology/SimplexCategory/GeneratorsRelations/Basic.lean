@@ -33,7 +33,7 @@ inductive Hom : FreeSimplexQuiver → FreeSimplexQuiver → Type
   | δ {n : ℕ} (i : Fin (n + 2)) : Hom (.mk n) (.mk (n + 1))
   | σ {n : ℕ} (i : Fin (n + 1)) : Hom (.mk (n + 1)) (.mk n)
 
-instance Quiv : Quiver FreeSimplexQuiver where
+instance quiv : Quiver FreeSimplexQuiver where
   Hom := FreeSimplexQuiver.Hom
 
 /-- `FreeSimplexQuiver.δ i` represents the `i`-th face map `.mk n ⟶ .mk (n + 1)`. -/
@@ -78,27 +78,26 @@ def SimplexCategoryGenRel.mk (n : ℕ) : SimplexCategoryGenRel where
 namespace SimplexCategoryGenRel
 
 /-- `SimplexCategoryGenRel.δ i` is the `i`-th face map `.mk n ⟶ .mk (n + 1)`. -/
-abbrev δ {n : ℕ} (i : Fin (n + 2)) : (SimplexCategoryGenRel.mk n) ⟶ .mk (n + 1) :=
+abbrev δ {n : ℕ} (i : Fin (n + 2)) : mk n ⟶ mk (n + 1) :=
   (Quotient.functor FreeSimplexQuiver.homRel).map <| Paths.of.map (.δ i)
 
 /-- `SimplexCategoryGenRel.σ i` is the `i`-th degeneracy map `.mk (n + 1) ⟶ .mk n`. -/
-abbrev σ {n : ℕ} (i : Fin (n + 1)) :
-    (SimplexCategoryGenRel.mk (n + 1)) ⟶ (SimplexCategoryGenRel.mk n) :=
+abbrev σ {n : ℕ} (i : Fin (n + 1)) : mk (n + 1) ⟶ mk n :=
   (Quotient.functor FreeSimplexQuiver.homRel).map <| Paths.of.map (.σ i)
 
 /-- The length of an object of `SimplexCategoryGenRel`. -/
 def len (x : SimplexCategoryGenRel) : ℕ := by rcases x with ⟨n⟩; exact n
 
 @[simp]
-lemma mk_len (n : ℕ) : (len (mk n)) = n := rfl
+lemma mk_len (n : ℕ) : len (mk n) = n := rfl
 
 section InductionPrinciples
 
 /-- An induction principle for reasonning about morphisms properties in SimplexCategoryGenRel. -/
 lemma hom_induction (P : MorphismProperty SimplexCategoryGenRel)
-    (hi : ∀ {n : ℕ}, P (𝟙 (.mk n)))
-    (hc₁ : ∀ {n m : ℕ} (u : .mk n ⟶ .mk m) (i : Fin (m + 2)), P u → P (u ≫ δ i))
-    (hc₂ : ∀ {n m : ℕ} (u : .mk n ⟶ .mk (m + 1)) (i : Fin (m + 1)), P u → P (u ≫ σ i))
+    (hi : ∀ {n : ℕ}, P (𝟙 (mk n)))
+    (hc₁ : ∀ {n m : ℕ} (u : mk n ⟶ mk m) (i : Fin (m + 2)), P u → P (u ≫ δ i))
+    (hc₂ : ∀ {n m : ℕ} (u : mk n ⟶ mk (m + 1)) (i : Fin (m + 1)), P u → P (u ≫ σ i))
     {a b : SimplexCategoryGenRel} (f : a ⟶ b) :
     P f := by
   apply CategoryTheory.Quotient.induction (P := (fun f ↦ P f))
@@ -111,10 +110,10 @@ lemma hom_induction (P : MorphismProperty SimplexCategoryGenRel)
 /-- An induction principle for reasonning about morphisms in SimplexCategoryGenRel, where we compose
 with generators on the right. -/
 lemma hom_induction' (P : MorphismProperty SimplexCategoryGenRel)
-    (hi : ∀ {n : ℕ}, P (𝟙 (SimplexCategoryGenRel.mk n)))
-    (hc₁ : ∀ {n m : ℕ} (u : SimplexCategoryGenRel.mk (m + 1) ⟶ SimplexCategoryGenRel.mk n)
+    (hi : ∀ {n : ℕ}, P (𝟙 (mk n)))
+    (hc₁ : ∀ {n m : ℕ} (u : mk (m + 1) ⟶ mk n)
       (i : Fin (m + 2)), P u → P (δ i ≫ u))
-    (hc₂ : ∀ {n m : ℕ} (u : SimplexCategoryGenRel.mk m ⟶ SimplexCategoryGenRel.mk n)
+    (hc₂ : ∀ {n m : ℕ} (u : mk m ⟶ mk n)
       (i : Fin (m + 1)), P u → P (σ i ≫ u )) {a b : SimplexCategoryGenRel} (f : a ⟶ b) :
     P f := by
   apply CategoryTheory.Quotient.induction (P := (fun f ↦ P f))
@@ -139,7 +138,7 @@ lemma morphismProperty_eq_top (P : MorphismProperty SimplexCategoryGenRel)
 
 /-- An induction principle for reasonning about morphisms properties in SimplexCategoryGenRel,
 where we compose with generators on the right. -/
-lemma hom_induction_eq_top' (P : MorphismProperty SimplexCategoryGenRel)
+lemma morphismProperty_eq_top' (P : MorphismProperty SimplexCategoryGenRel)
     (hi : ∀ {n : ℕ}, P (𝟙 (.mk n)))
     (hc₁ : ∀ {n m : ℕ} (u : .mk (m + 1) ⟶ .mk n) (i : Fin (m + 2)), P u → (P (δ i ≫ u)))
     (hc₂ : ∀ {n m : ℕ} (u : .mk m ⟶ .mk n) (i : Fin (m + 1)), P u → (P (σ i ≫ u ))) :
@@ -239,12 +238,12 @@ def toSimplexCategory : SimplexCategoryGenRel ⥤ SimplexCategory :=
 lemma toSimplexCategory_obj_mk (n : ℕ) : toSimplexCategory.obj (mk n) = .mk n := rfl
 
 @[simp]
-lemma toSimplexCategory_map_δ {n : ℕ} (i : Fin (n + 2)) : toSimplexCategory.map (δ i) =
-    SimplexCategory.δ i := rfl
+lemma toSimplexCategory_map_δ {n : ℕ} (i : Fin (n + 2)) :
+    toSimplexCategory.map (δ i) = SimplexCategory.δ i := rfl
 
 @[simp]
-lemma toSimplexCategory_map_σ {n : ℕ} (i : Fin (n + 1)) : toSimplexCategory.map (σ i) =
-    SimplexCategory.σ i := rfl
+lemma toSimplexCategory_map_σ {n : ℕ} (i : Fin (n + 1)) :
+    toSimplexCategory.map (σ i) = SimplexCategory.σ i := rfl
 
 @[simp]
 lemma toSimplexCategory_len {x : SimplexCategoryGenRel} : (toSimplexCategory.obj x).len = x.len :=
