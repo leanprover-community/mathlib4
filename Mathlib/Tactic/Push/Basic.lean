@@ -117,32 +117,38 @@ def PushSimpConfig : Simp.Config where
   proj := false
 
 /-- Common entry point to the implementation of `push`. -/
-def pushCore (const : Name) (tgt : Expr) : MetaM Simp.Result := do
-  let myctx : Simp.Context ← Simp.mkContext PushSimpConfig
+def pushCore (const : Name) (tgt : Expr) (disch? : Option Simp.Discharge) : MetaM Simp.Result := do
+  let ctx : Simp.Context ← Simp.mkContext PushSimpConfig
       (simpTheorems := #[← pushExt.getTheorems])
       (congrTheorems := (← getSimpCongrTheorems))
-  (·.1) <$> Simp.main tgt myctx (methods := { pre := (pushStep const) })
+  let methods := match disch? with
+    | none => { pre := (pushStep const) }
+    | some disch => { pre := (pushStep const), discharge? := disch, wellBehavedDischarge := false }
+  (·.1) <$> Simp.main tgt ctx (methods := methods)
 
 /-- Execute main loop of `push` at the main goal. -/
-def pushNegTarget (const : Name) : TacticM Unit := withMainContext do
-  let goal ← getMainGoal
-  let tgt ← instantiateMVars (← goal.getType)
-  let newGoal ← applySimpResultToTarget goal tgt (← pushCore const tgt)
-  if newGoal == goal then throwError "push made no progress"
-  replaceMainGoal [newGoal]
+def pushNegTarget (const : Name) (discharge? : Option Simp.Discharge) :
+    TacticM Unit := do
+  let mvarId ← getMainGoal
+  let tgt ← instantiateMVars (← mvarId.getType)
+  let mvarIdNew ← applySimpResultToTarget mvarId tgt (← pushCore const tgt discharge?)
+  if mvarIdNew == mvarId then throwError "push made no progress"
+  replaceMainGoal [mvarIdNew]
 
 
 /-- Execute main loop of `push` at a local hypothesis. -/
-def pushNegLocalDecl (const : Name) (fvarId : FVarId) : TacticM Unit := withMainContext do
+def pushNegLocalDecl (const : Name) (discharge? : Option Simp.Discharge) (fvarId : FVarId) :
+    TacticM Unit := do
   let ldecl ← fvarId.getDecl
   if ldecl.isAuxDecl then return
   let tgt ← instantiateMVars ldecl.type
-  let goal ← getMainGoal
-  let myres ← pushCore const tgt
-  let some (_, newGoal) ← applySimpResultToLocalDecl goal fvarId myres False | failure
-  if newGoal == goal then throwError "push made no progress"
-  replaceMainGoal [newGoal]
+  let mvarId ← getMainGoal
+  let result ← pushCore const tgt discharge?
+  let some (_, mvarIdNew) ← applySimpResultToLocalDecl mvarId fvarId result False | failure
+  if mvarIdNew == mvarId then throwError "push made no progress"
+  replaceMainGoal [mvarIdNew]
 
+open private Lean.Elab.Tactic.mkDischargeWrapper in mkSimpContext
 /--
 Push a given constant inside of an expression
 For instance, `push Real.log` could turn `log (a * b ^ 2)` into `log a + 2 * log b`.
@@ -155,13 +161,18 @@ One can use this tactic at the goal using `push_neg`,
 at every hypothesis and the goal using `push_neg at *` or at selected hypotheses and the goal
 using say `push_neg at h h' ⊢`, as usual.
 -/
-elab (name := push) "push" nameId:(ppSpace colGt ident) loc:(location)? : tactic => do
-  let const ← Elab.realizeGlobalConstNoOverloadWithInfo nameId
-  let loc := (loc.map expandLocation).getD (.targets #[] true)
-  withLocation loc
-    (pushNegLocalDecl const)
-    (pushNegTarget const)
-    (fun _ ↦ logInfo "push_neg couldn't find a negation to push")
+syntax (name := push) "push" (discharger)? (ppSpace colGt ident) (location)? : tactic
+
+@[tactic push]
+def elabPush : Tactic := fun stx => withMainContext do
+  let dischargeWrapper ← Lean.Elab.Tactic.mkDischargeWrapper stx[1]
+  let const ← Elab.realizeGlobalConstNoOverloadWithInfo stx[2]
+  let loc := expandOptLocation stx[3]
+  dischargeWrapper.with fun discharge? => do
+    withLocation loc
+      (pushNegLocalDecl const discharge?)
+      (pushNegTarget const discharge?)
+      (fun _ ↦ logInfo "push_neg couldn't find a negation to push")
 
 /--
 Push negations into the conclusion of a hypothesis.
@@ -192,15 +203,17 @@ macro (name := push_neg) "push_neg" loc:(location)? : tactic => `(tactic| push N
 section Conv
 
 @[inherit_doc push]
-syntax (name := pushConv) "push" (ppSpace colGt ident) : conv
+syntax (name := pushConv) "push" (discharger)? (ppSpace colGt ident) : conv
 
 @[inherit_doc push_neg]
 macro "push_neg" : conv => `(conv| push Not)
 
 /-- Execute `push` as a conv tactic. -/
 @[tactic pushConv] def elabPushConv : Tactic := fun stx ↦ withMainContext do
-  let const ← Elab.realizeGlobalConstNoOverloadWithInfo stx[1]
-  Conv.applySimpResult (← pushCore const (← instantiateMVars (← Conv.getLhs)))
+  let dischargeWrapper ← Lean.Elab.Tactic.mkDischargeWrapper stx[1]
+  let const ← Elab.realizeGlobalConstNoOverloadWithInfo stx[2]
+  dischargeWrapper.with fun discharge? => do
+    Conv.applySimpResult (← pushCore const (← instantiateMVars (← Conv.getLhs)) discharge?)
 
 /--
 The syntax is `#push_neg e`, where `e` is an expression,
