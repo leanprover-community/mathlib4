@@ -385,6 +385,10 @@ instance [K.IsStrictlySupported e] : IsIso (K.πTruncGE e) := by
     all_goals
       apply (isZero_X_of_isStrictlySupported _ e i' hn).eq_of_src
 
+lemma isIso_πTruncGE_iff : IsIso (K.πTruncGE e) ↔ K.IsStrictlySupported e :=
+  ⟨fun _ ↦ isStrictlySupported_of_iso (asIso (K.πTruncGE e)).symm e,
+    fun _ ↦ inferInstance⟩
+
 end
 
 end HomologicalComplex
