@@ -417,10 +417,10 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
     let sp := (← read).srcSearchPath
     args₀.foldlM (init := ∅) fun acc (argₛ : String) => do
       let arg : FilePath := argₛ
-      let mod : Name := arg.withExtension "" |>.components.foldl .str .anonymous
-      let packageDir ← getPackageDir mod
       if arg.components.length > 1 || arg.extension == "lean" then
         -- provided file name of a Lean file
+        let mod : Name := arg.withExtension "" |>.components.foldl .str .anonymous
+        let packageDir ← getPackageDir mod
         if !(← arg.pathExists) then
           IO.eprintln s!"Invalid argument: non-existing path {arg}"
           IO.Process.exit 1
@@ -434,7 +434,9 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
           pure <| acc.insertMany leanModulesInFolder
       else
         -- provided a module
-        let mod := argₛ.toName
+        let mod : Name := argₛ.toName
+        dbg_trace s!"here: {argₛ} -- {mod.components}"
+        let packageDir ← getPackageDir mod
         let sourceFile ← Lean.findLean sp mod
 
         if ← sourceFile.pathExists then
@@ -447,7 +449,7 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
           let folder := sourceFile.withExtension ""
           IO.println s!"Searching directory {folder} for .lean files"
           if ← folder.pathExists then
-            -- case 2: "module name" of an existing folder: walk dir
+            -- provided "module name" of an existing folder: walk dir
             let leanModulesInFolder ← walkDir folder packageDir
             pure <| acc.insertMany leanModulesInFolder
           else
