@@ -23,8 +23,6 @@ nonterminal symbols that are referred to by its finitely many rules.
 * `Language.IsContextFree.reverse`: The class of context-free languages is closed under reversal.
 -/
 
-open Function
-
 /-- Rule that rewrites a single nonterminal to any string (a list of symbols). -/
 @[ext]
 structure ContextFreeRule (T N : Type*) where
@@ -215,16 +213,16 @@ def reverse (r : ContextFreeRule T N) : ContextFreeRule T N := ⟨r.input, r.out
 @[simp] lemma reverse_comp_reverse :
     reverse ∘ reverse = (id : ContextFreeRule T N → ContextFreeRule T N) := by ext : 1; simp
 
-lemma reverse_involutive : Involutive (reverse : ContextFreeRule T N → ContextFreeRule T N) :=
+lemma reverse_involutive : (reverse : _ → ContextFreeRule T N).Involutive :=
   reverse_reverse
 
-lemma reverse_bijective : Bijective (reverse : ContextFreeRule T N → ContextFreeRule T N) :=
+lemma reverse_bijective : (reverse : _ → ContextFreeRule T N).Bijective :=
   reverse_involutive.bijective
 
-lemma reverse_injective : Injective (reverse : ContextFreeRule T N → ContextFreeRule T N) :=
+lemma reverse_injective : (reverse : _ → ContextFreeRule T N).Injective :=
   reverse_bijective.injective
 
-lemma reverse_surjective : Surjective (reverse : ContextFreeRule T N → ContextFreeRule T N) :=
+lemma reverse_surjective : (reverse : _ → ContextFreeRule T N).Surjective :=
   reverse_bijective.surjective
 
 protected lemma Rewrites.reverse : ∀ {u v}, r.Rewrites u v → r.reverse.Rewrites u.reverse v.reverse
@@ -249,16 +247,16 @@ variable {g : ContextFreeGrammar T} {u v : List (Symbol T g.NT)} {w : List T}
 @[simp] lemma reverse_reverse (g : ContextFreeGrammar T) : g.reverse.reverse = g := by
   simp [reverse, Finset.map_map]
 
-lemma reverse_involutive : Involutive (reverse : ContextFreeGrammar T → ContextFreeGrammar T) :=
+lemma reverse_involutive : (reverse : _ → ContextFreeGrammar T).Involutive :=
   reverse_reverse
 
-lemma reverse_bijective : Bijective (reverse : ContextFreeGrammar T → ContextFreeGrammar T) :=
+lemma reverse_bijective : (reverse : _ → ContextFreeGrammar T).Bijective :=
   reverse_involutive.bijective
 
-lemma reverse_injective : Injective (reverse : ContextFreeGrammar T → ContextFreeGrammar T) :=
+lemma reverse_injective : (reverse : _ → ContextFreeGrammar T).Injective :=
   reverse_bijective.injective
 
-lemma reverse_surjective : Surjective (reverse : ContextFreeGrammar T → ContextFreeGrammar T) :=
+lemma reverse_surjective : (reverse : _ → ContextFreeGrammar T).Surjective :=
   reverse_bijective.surjective
 
 lemma produces_reverse : g.reverse.Produces u.reverse v.reverse ↔ g.Produces u v :=
