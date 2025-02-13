@@ -26,7 +26,7 @@ The following notation is scoped to the `Ordinal` namespace.
 - `ε_ o` is notation for `veblen 1 o`. `ε₀` is notation for `ε_ 0`.
 - `Γ_ o` is notation for `gamma o`. `Γ₀` is notation for `Γ_ 0`.
 
-## Todo
+## TODO
 
 - Prove that `ε₀` and `Γ₀` are countable.
 - Prove that the exponential principal ordinals are the epsilon ordinals (and 0, 1, 2, ω).
@@ -371,15 +371,6 @@ theorem omega0_opow_epsilon (o : Ordinal) : ω ^ ε_ o = ε_ o := by
 theorem lt_epsilon0 : o < ε₀ ↔ ∃ n : ℕ, o < (fun a ↦ ω ^ a)^[n] 0 := by
   rw [epsilon0_eq_nfp, lt_nfp]
 
-/-- `ε₀` is the limit of `ω`, `ω ^ ω`, `ω ^ ω ^ ω`, … -/
-theorem lt_epsilon0' : o < ε₀ ↔ ∃ n : ℕ, o < (fun a ↦ ω ^ a)^[n] ω := by
-  rw [lt_epsilon0]
-  constructor <;> rintro ⟨n, hn⟩
-  · exact ⟨n, hn.trans_le <|
-      Monotone.iterate (fun a b ↦ opow_le_opow_right omega0_pos) n (Ordinal.zero_le ω)⟩
-  · use n + 2
-    simpa
-
 /-- `ω ^ ω ^ … ^ 0 < ε₀` -/
 theorem iterate_omega0_opow_lt_epsilon0 (n : ℕ) : (fun a ↦ ω ^ a)^[n] 0 < ε₀ := by
   rw [lt_epsilon0]
@@ -389,13 +380,9 @@ theorem iterate_omega0_opow_lt_epsilon0 (n : ℕ) : (fun a ↦ ω ^ a)^[n] 0 < �
   | succ n IH => rwa [Function.iterate_succ_apply', Function.iterate_succ_apply',
       opow_lt_opow_iff_right one_lt_omega0]
 
-/-- `ω ^ ω ^ … ^ ω < ε₀` -/
-theorem iterate_omega0_opow_lt_epsilon0' (n : ℕ) : (fun a ↦ ω ^ a)^[n] ω < ε₀ := by
-  simpa using iterate_omega0_opow_lt_epsilon0 (n + 2)
-
-theorem omega0_lt_epsilon (o : Ordinal) : ω < ε_ o :=
-  (iterate_omega0_opow_lt_epsilon0' 0).trans_le <|
-    (veblen_right_strictMono _).monotone (Ordinal.zero_le o)
+theorem omega0_lt_epsilon (o : Ordinal) : ω < ε_ o := by
+  apply lt_of_lt_of_le _ <| (veblen_right_strictMono _).monotone (Ordinal.zero_le o)
+  simpa using iterate_omega0_opow_lt_epsilon0 2
 
 theorem nat_lt_epsilon (n : ℕ) (o : Ordinal) : n < ε_ o :=
   (nat_lt_omega0 n).trans <| omega0_lt_epsilon o
@@ -458,15 +445,6 @@ theorem gamma0_le_of_veblen_le (h : veblen o 0 ≤ o) : Γ₀ ≤ o := by
 theorem lt_gamma0 : o < Γ₀ ↔ ∃ n : ℕ, o < (fun a ↦ veblen a 0)^[n] 0 := by
   rw [gamma0_eq_nfp, lt_nfp]
 
-/-- `Γ₀` is the limit of `ε₀`, `veblen ε₀ 0`, `veblen (veblen ε₀ 0) 0`, … -/
-theorem lt_gamma0' : o < Γ₀ ↔ ∃ n : ℕ, o < (fun a ↦ veblen a 0)^[n] ε₀ := by
-  rw [lt_gamma0]
-  constructor <;> rintro ⟨n, hn⟩
-  · exact ⟨n, hn.trans_le <|
-      Monotone.iterate (fun a b h ↦ veblen_left_monotone 0 h) n (Ordinal.zero_le ε₀)⟩
-  · use n + 2
-    simpa
-
 /-- `veblen (veblen … (veblen 0 0) … 0) 0 < Γ₀` -/
 theorem iterate_veblen_lt_gamma0 (n : ℕ) : (fun a ↦ veblen a 0)^[n] 0 < Γ₀ := by
   rw [lt_gamma0]
@@ -476,12 +454,9 @@ theorem iterate_veblen_lt_gamma0 (n : ℕ) : (fun a ↦ veblen a 0)^[n] 0 < Γ�
   | succ n _ => rwa [Function.iterate_succ_apply', Function.iterate_succ_apply',
       veblen_zero_lt_veblen_zero]
 
-/-- `veblen (veblen … (veblen ε₀ 0) … 0) 0 < Γ₀` -/
-theorem iterate_veblen_lt_gamma0' (n : ℕ) : (fun a ↦ veblen a 0)^[n] ε₀ < Γ₀ := by
-  simpa using iterate_veblen_lt_gamma0 (n + 2)
-
-theorem epsilon0_lt_gamma (o : Ordinal) : ε₀ < Γ_ o :=
-  (iterate_veblen_lt_gamma0' 0).trans_le (gamma_le_gamma.2 (Ordinal.zero_le _))
+theorem epsilon0_lt_gamma (o : Ordinal) : ε₀ < Γ_ o := by
+  apply lt_of_lt_of_le _ <| (gamma_le_gamma.2 (Ordinal.zero_le _))
+  simpa using iterate_veblen_lt_gamma0 2
 
 theorem omega0_lt_gamma (o : Ordinal) : ω < Γ_ o :=
   (omega0_lt_epsilon 0).trans (epsilon0_lt_gamma o)
