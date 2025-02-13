@@ -152,7 +152,7 @@ def ghostComponentModPPow (n : ℕ): 𝕎 (O ⧸ span {(p : O)}) →+* O ⧸ spa
 end WittVector
 
 variable (O p) in
-def fontaineThetaModPPow (n : ℕ): 𝕎 (O^♭) →+* O ⧸ span {(p : O)}^(n + 1) :=
+def fontaineThetaModPPow (n : ℕ): 𝕎 (O^♭) →+* O ⧸ span {(p : O)} ^ (n + 1) :=
   (ghostComponentModPPow n).comp
       (((WittVector.map (Perfection.coeff _ p 0))).comp
           (WittVector.map ((iterateFrobeniusEquiv (O^♭) p n).symm : O^♭ →+* O^♭)))
@@ -160,17 +160,51 @@ def fontaineThetaModPPow (n : ℕ): 𝕎 (O^♭) →+* O ⧸ span {(p : O)}^(n +
 theorem fontaineThetaModP_eq_fontainThetaFun_mod_p (x : 𝕎 (O^♭)) (n : ℕ) :
   fontaineThetaModPPow O p n x = Ideal.Quotient.mk (span {(p : O)} ^ (n + 1)) (fontaineThetaAux x n) := sorry
 
-#check Ideal.Quotient.factorPowSucc
+variable (R S : Type*) [CommRing R] [CommRing S] [Unique S]
+#check R ⧸ (⊤ : Ideal R)
+#synth Unique (R ⧸ (⊤ : Ideal R))
+#synth Inhabited (R → S)
+#synth Subsingleton S
+#synth Unique (R → S)
+#synth Unique (R →+ S)
+#synth Subsingleton (R →+ S)
+
+-- Where to put this?
+instance (I : Ideal R) : Subsingleton (R ⧸ I ^ 0) :=
+  Ideal.Quotient.subsingleton_iff.mpr (Ideal.one_eq_top (R := R) ▸ pow_zero I)
+
+def RingHom.zero (R S : Type*) [CommRing R] [CommRing S] [Subsingleton S] :
+  R →+* S where
+    toFun _ := 0
+    map_one' := Subsingleton.allEq _ _
+    map_mul' _ _ := Subsingleton.allEq _ _
+    map_zero' := Subsingleton.allEq _ _
+    map_add' _ _ := Subsingleton.allEq _ _
+
+-- #check Ideal.Quotient.factorPowSucc
+-- instance
+variable (R : Type*) [CommRing R] (I : Ideal R)
+#synth Subsingleton (R ⧸ I ^ 0)
+
+private def fontaineThetaModPPow' (n : ℕ): 𝕎 (O^♭) →+* O ⧸ span {(p : O)} ^ n :=
+  if h : n = 0
+  then h ▸ RingHom.zero _ _
+  else Nat.sub_add_cancel (sorry  : 1 ≤ n) ▸ fontaineThetaModPPow O p (n - 1)
 
 theorem factorPowSucc_fontaineThetaModPPow_eq (x : 𝕎 (O^♭)) (n : ℕ) :
-  Ideal.Quotient.factorPowSucc _ (n + 1) (fontaineThetaModPPow O p (n + 1) x) = fontaineThetaModPPow O p n x:= sorry
+  Ideal.Quotient.factorPowSucc _ (n + 1) (fontaineThetaModPPow O p (n + 1) x) = fontaineThetaModPPow O p n x := sorry
+
 #check IsAdicComplete.limRingHom
 #synth IsAdicComplete (span {(p : 𝕎 (O^♭))}) (𝕎 (O^♭))
-def fontaineTheta : 𝕎 (O^♭) →+* O :=
-  IsAdicComplete.limRingHom (f := fun n ↦ fontaineThetaModPPow O p (n + 1))
-    (fun x => (factorPowSucc_fontaineThetaModPPow_eq x).symm)
 
-theorem fontaineTheta :
+#check fontaineThetaModPPow
+
+def fontaineTheta : 𝕎 (O^♭) →+* O :=
+  IsAdicComplete.limRingHom (S := 𝕎 (O^♭)) (R := O) (I := span {(p : O)}) -- (f := fun n ↦ fontaineThetaModPPow O p (n + 1))
+    sorry
+    -- (fun x => (factorPowSucc_fontaineThetaModPPow_eq x).symm)
+
+-- theorem fontaineTheta :
 end RingHom
 
 -- theorem modPPow
