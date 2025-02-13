@@ -151,7 +151,7 @@ protected theorem not_le : ¬f ≤ g ↔ ∃ s ∈ g, s ∉ f := by simp_rw [le_
 
 /-- `GenerateSets g s`: `s` is in the filter closure of `g`.
 Used to define `Filter.generate`. Use `⨅ s ∈ S, 𝓟 s` instead of `Filter.generate S`. -/
-@[deprecated (since := "2024-10-19")]
+@[deprecated "Use `⨅ s ∈ S, 𝓟 s` instead of `Filter.generate S`." (since := "2025-02-13")]
 inductive GenerateSets (g : Set (Set α)) : Set α → Prop
   | basic {s : Set α} : s ∈ g → GenerateSets g s
   | univ : GenerateSets g univ
@@ -161,7 +161,7 @@ inductive GenerateSets (g : Set (Set α)) : Set α → Prop
 set_option linter.deprecated false in
 /-- `generate g` is the largest filter containing the sets `g`.
 Deprecated. Use `⨅ s ∈ S, 𝓟 s` instead of `Filter.generate S`, see `generate_eq_biInf`. -/
-@[deprecated (since := "2024-10-19")]
+@[deprecated "Use `⨅ s ∈ S, 𝓟 s` instead of `Filter.generate S`." (since := "2025-02-13")]
 def generate (g : Set (Set α)) : Filter α where
   sets := {s | GenerateSets g s}
   univ_sets := GenerateSets.univ
@@ -169,25 +169,27 @@ def generate (g : Set (Set α)) : Filter α where
   inter_sets := GenerateSets.inter
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-10-19")]
+@[deprecated "Use `⨅ s ∈ S, 𝓟 s` instead of `Filter.generate S`." (since := "2025-02-13")]
 lemma mem_generate_of_mem {s : Set <| Set α} {U : Set α} (h : U ∈ s) :
     U ∈ generate s := GenerateSets.basic h
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-10-19")]
+@[deprecated "Use `⨅ s ∈ S, 𝓟 s` instead of `Filter.generate S`." (since := "2025-02-13")]
 theorem le_generate_iff {s : Set (Set α)} {f : Filter α} : f ≤ generate s ↔ s ⊆ f.sets :=
   Iff.intro (fun h _ hu => h <| GenerateSets.basic <| hu) fun h _ hu =>
     hu.recOn (fun h' => h h') univ_mem (fun _ hxy hx => mem_of_superset hx hxy) fun _ _ hx hy =>
       inter_mem hx hy
 
-@[simp] lemma generate_singleton (s : Set α) : generate {s} = 𝓟 s :=
+set_option linter.deprecated false in
+@[simp, deprecated "Use `⨅ s ∈ S, 𝓟 s` instead of `Filter.generate S`." (since := "2025-02-13")]
+lemma generate_singleton (s : Set α) : generate {s} = 𝓟 s :=
   le_antisymm (fun _t ht ↦ mem_of_superset (mem_generate_of_mem <| mem_singleton _) ht) <|
     le_generate_iff.2 <| singleton_subset_iff.2 Subset.rfl
 
 set_option linter.deprecated false in
 /-- `mkOfClosure s hs` constructs a filter on `α` whose elements set is exactly
 `s : Set (Set α)`, provided one gives the assumption `hs : (generate s).sets = s`. -/
-@[deprecated (since := "2024-10-19")]
+@[deprecated "Use `⨅ s ∈ S, 𝓟 s` instead of `Filter.generate S`." (since := "2025-02-13")]
 protected def mkOfClosure (s : Set (Set α)) (hs : (generate s).sets = s) : Filter α where
   sets := s
   univ_sets := hs ▸ univ_mem
@@ -195,7 +197,7 @@ protected def mkOfClosure (s : Set (Set α)) (hs : (generate s).sets = s) : Filt
   inter_sets := hs ▸ inter_mem
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-10-19")]
+@[deprecated "Use `⨅ s ∈ S, 𝓟 s` instead of `Filter.generate S`." (since := "2025-02-13")]
 theorem mkOfClosure_sets {s : Set (Set α)} {hs : (generate s).sets = s} :
     Filter.mkOfClosure s hs = generate s :=
   Filter.ext fun u =>
@@ -203,7 +205,7 @@ theorem mkOfClosure_sets {s : Set (Set α)} {hs : (generate s).sets = s} :
 
 set_option linter.deprecated false in
 /-- Galois insertion from sets of sets into filters. -/
-@[deprecated (since := "2024-10-19")]
+@[deprecated "Use `⨅ s ∈ S, 𝓟 s` instead of `Filter.generate S`." (since := "2025-02-13")]
 def giGenerate (α : Type*) :
     @GaloisInsertion (Set (Set α)) (Filter α)ᵒᵈ _ _ Filter.generate Filter.sets where
   gc _ _ := le_generate_iff
@@ -286,23 +288,23 @@ theorem iSup_sets_eq {f : ι → Filter α} : (iSup f).sets = ⋂ i, (f i).sets 
   simp [iSup, sSup_sets_eq]
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-10-19")]
+@[deprecated "Use `⨅ s ∈ S, 𝓟 s` instead of `Filter.generate S`." (since := "2025-02-13")]
 theorem generate_empty : Filter.generate ∅ = (⊤ : Filter α) :=
   (giGenerate α).gc.l_bot
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-10-19")]
+@[deprecated "Use `⨅ s ∈ S, 𝓟 s` instead of `Filter.generate S`." (since := "2025-02-13")]
 theorem generate_univ : Filter.generate univ = (⊥ : Filter α) :=
   bot_unique fun _ _ => GenerateSets.basic (mem_univ _)
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-10-19")]
+@[deprecated "Use `⨅ s ∈ S, 𝓟 s` instead of `Filter.generate S`." (since := "2025-02-13")]
 theorem generate_union {s t : Set (Set α)} :
     Filter.generate (s ∪ t) = Filter.generate s ⊓ Filter.generate t :=
   (giGenerate α).gc.l_sup
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-10-19")]
+@[deprecated "Use `⨅ s ∈ S, 𝓟 s` instead of `Filter.generate S`." (since := "2025-02-13")]
 theorem generate_iUnion {s : ι → Set (Set α)} :
     Filter.generate (⋃ i, s i) = ⨅ i, Filter.generate (s i) :=
   (giGenerate α).gc.l_iSup
@@ -323,7 +325,7 @@ theorem iSup_neBot {f : ι → Filter α} : (⨆ i, f i).NeBot ↔ ∃ i, (f i).
   simp [neBot_iff]
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-10-19")]
+@[deprecated "Use `⨅ s ∈ S, 𝓟 s` instead of `Filter.generate S`." (since := "2025-02-13")]
 theorem iInf_eq_generate (s : ι → Filter α) : iInf s = generate (⋃ i, (s i).sets) :=
   eq_of_forall_le_iff fun _ ↦ by simp [le_generate_iff]
 
@@ -358,7 +360,7 @@ theorem principal_empty : 𝓟 (∅ : Set α) = ⊥ :=
   bot_unique fun _ _ => empty_subset _
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-10-19")]
+@[deprecated "Use `⨅ s ∈ S, 𝓟 s` instead of `Filter.generate S`." (since := "2025-02-13")]
 theorem generate_eq_biInf (S : Set (Set α)) : generate S = ⨅ s ∈ S, 𝓟 s :=
   eq_of_forall_le_iff fun f => by simp [le_generate_iff, le_principal_iff, subset_def]
 
