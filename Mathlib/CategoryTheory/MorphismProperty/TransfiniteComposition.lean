@@ -230,9 +230,8 @@ lemma transfiniteCompositionsOfShape_map_of_preserves (G : C ⥤ D)
     {X Y : C} (f : X ⟶ Y) {P : MorphismProperty D}
     [PreservesColimitsOfShape J G]
     (h : (P.inverseImage G).transfiniteCompositionsOfShape J f) :
-    P.transfiniteCompositionsOfShape J (G.map f) := by
-  obtain ⟨h⟩ := h
-  exact ⟨h.map⟩
+    P.transfiniteCompositionsOfShape J (G.map f) :=
+  h.some.map.mem
 
 /-- A class of morphisms `W : MorphismProperty C` is stable under transfinite compositions
 of shape `J` if for any well-order-continuous functor `F : J ⥤ C` such that
