@@ -238,10 +238,8 @@ theorem condExp_stronglyMeasurable_simpleFunc_mul (hm : m ≤ m0) (f : @SimpleFu
     · simp only [hx, Pi.mul_apply, Set.indicator_of_not_mem, not_false_iff, zero_mul]
   apply @SimpleFunc.induction _ _ m _ (fun f => _)
     (fun c s hs => ?_) (fun g₁ g₂ _ h_eq₁ h_eq₂ => ?_) f
-  · -- Porting note: if not classical, `DecidablePred fun x ↦ x ∈ s` cannot be synthesised
-    -- for `Set.piecewise_eq_indicator`
-    classical simp only [@SimpleFunc.const_zero _ _ m, @SimpleFunc.coe_piecewise _ _ m,
-      @SimpleFunc.coe_const _ _ m, @SimpleFunc.coe_zero _ _ m, Set.piecewise_eq_indicator]
+  · simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise,
+      SimpleFunc.coe_const, SimpleFunc.coe_zero, Set.piecewise_eq_indicator]
     rw [this, this]
     refine (condExp_indicator (hg.smul c) hs).trans ?_
     filter_upwards [condExp_smul c g m] with x hx

@@ -3,8 +3,6 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 
 /-!
@@ -78,6 +76,11 @@ theorem Algebra.isInvariant_of_isGalois [FiniteDimensional K L] [h : IsGalois K 
   rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B L,
     (FaithfulSMul.algebraMap_injective B L).eq_iff] at hk
   exact ⟨a, hk⟩
+
+/-- A variant of `Algebra.isInvariant_of_isGalois`, replacing `Gal(L/K)` by `Aut(B/A)`. -/
+theorem Algebra.isInvariant_of_isGalois' [FiniteDimensional K L] [IsGalois K L] :
+    Algebra.IsInvariant A B (B ≃ₐ[A] B) :=
+  ⟨fun b h ↦ (isInvariant_of_isGalois A K L B).1 b (fun g ↦ h (galRestrict A K L B g))⟩
 
 end Galois
 

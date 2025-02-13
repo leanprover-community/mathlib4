@@ -272,8 +272,6 @@ alias condexpIndL1_disjoint_union := condExpIndL1_disjoint_union
 
 end CondexpIndL1
 
--- Porting note: `G` is not automatically inferred in `condExpInd` in Lean 4;
--- to avoid repeatedly typing `(G := ...)` it is made explicit.
 variable (G)
 
 /-- Conditional expectation of the indicator of a set, as a linear map from `G` to L1. -/
@@ -405,8 +403,6 @@ section CondexpL1
 variable {m m0 : MeasurableSpace α} {μ : Measure α} {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
   {f g : α → F'} {s : Set α}
 
--- Porting note: `F'` is not automatically inferred in `condExpL1CLM` in Lean 4;
--- to avoid repeatedly typing `(F' := ...)` it is made explicit.
 variable (F')
 
 /-- Conditional expectation of a function as a linear map from `α →₁[μ] F'` to itself. -/

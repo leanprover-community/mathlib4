@@ -1058,7 +1058,6 @@ theorem lintegral_iInf_directed_of_measurable {mα : MeasurableSpace α} [Counta
       le_antisymm (le_iInf fun n => iInf_le _ _)
         (le_iInf fun b => iInf_le_of_le (Encodable.encode b + 1) ?_)
     exact h_directed.sequence_le b a
-  -- Porting note: used `∘` below to deal with its reduced reducibility
   calc
     ∫⁻ a, ⨅ b, f b a ∂μ
     _ = ∫⁻ a, ⨅ n, (f ∘ h_directed.sequence f) n a ∂μ := by simp only [this, Function.comp_apply]
