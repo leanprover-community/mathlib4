@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.PartialHomeomorph
-import Mathlib.Topology.Connected.PathConnected
+import Mathlib.Topology.Connected.LocPathConnected
 
 /-!
 # Charted spaces
@@ -120,9 +120,9 @@ variable {H : Type u} {H' : Type*} {M : Type*} {M' : Type*} {M'' : Type*}
 `PartialHomeomorph.trans` and `PartialEquiv.trans`.
 Note that, as is usual for equivs, the composition is from left to right, hence the direction of
 the arrow. -/
-scoped[Manifold] infixr:100 " ≫ₕ " => PartialHomeomorph.trans
+@[inherit_doc] scoped[Manifold] infixr:100 " ≫ₕ " => PartialHomeomorph.trans
 
-scoped[Manifold] infixr:100 " ≫ " => PartialEquiv.trans
+@[inherit_doc] scoped[Manifold] infixr:100 " ≫ " => PartialEquiv.trans
 
 open Set PartialHomeomorph Manifold  -- Porting note: Added `Manifold`
 
@@ -575,6 +575,16 @@ lemma chart_mem_atlas (H : Type*) {M : Type*} [TopologicalSpace H] [TopologicalS
     [ChartedSpace H M] (x : M) : chartAt H x ∈ atlas H M :=
   ChartedSpace.chart_mem_atlas x
 
+lemma nonempty_of_chartedSpace {H : Type*} {M : Type*} [TopologicalSpace H] [TopologicalSpace M]
+    [ChartedSpace H M] (x : M) : Nonempty H :=
+  ⟨chartAt H x x⟩
+
+lemma isEmpty_of_chartedSpace (H : Type*) {M : Type*} [TopologicalSpace H] [TopologicalSpace M]
+    [ChartedSpace H M] [IsEmpty H] : IsEmpty M := by
+  rcases isEmpty_or_nonempty M with hM | ⟨⟨x⟩⟩
+  · exact hM
+  · exact (IsEmpty.false (chartAt H x x)).elim
+
 section ChartedSpace
 
 /-- An empty type is a charted space over any topological space. -/
@@ -777,9 +787,8 @@ instance (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalSpace H'] :
     TopologicalSpace (ModelProd H H') :=
   instTopologicalSpaceProd
 
--- Porting note: simpNF false positive
--- Next lemma shows up often when dealing with derivatives, register it as simp.
-@[simp, mfld_simps, nolint simpNF]
+-- Next lemma shows up often when dealing with derivatives, so we register it as simp lemma.
+@[simp, mfld_simps]
 theorem modelProd_range_prod_id {H : Type*} {H' : Type*} {α : Type*} (f : H → α) :
     (range fun p : ModelProd H H' ↦ (f p.1, p.2)) = range f ×ˢ (univ : Set H') := by
   rw [prod_range_univ_eq]
@@ -852,53 +861,80 @@ theorem piChartedSpace_chartAt {ι : Type*} [Finite ι] (H : ι → Type*)
 section sum
 
 variable [TopologicalSpace H] [TopologicalSpace M] [TopologicalSpace M']
-    [cm : ChartedSpace H M] [cm' : ChartedSpace H M'] [Nonempty H] [Nonempty M] [Nonempty M']
+    [cm : ChartedSpace H M] [cm' : ChartedSpace H M']
 
-/-- The disjoint union of two charted spaces on `H` is a charted space over `H`. -/
-instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') where
+/-- The disjoint union of two charted spaces modelled on a non-empty space `H`
+is a charted space over `H`. -/
+def ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
   atlas := ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inl) '' cm.atlas) ∪
     ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inr) '' cm'.atlas)
   -- At `x : M`, the chart is the chart in `M`; at `x' ∈ M'`, it is the chart in `M'`.
   chartAt := Sum.elim (fun x ↦ (cm.chartAt x).lift_openEmbedding IsOpenEmbedding.inl)
     (fun x ↦ (cm'.chartAt x).lift_openEmbedding IsOpenEmbedding.inr)
   mem_chart_source p := by
-    by_cases h : Sum.isLeft p
-    · let x := Sum.getLeft p h
-      rw [Sum.eq_left_getLeft_of_isLeft h, Sum.elim_inl, lift_openEmbedding_source,
+    cases p with
+    | inl x =>
+      rw [Sum.elim_inl, lift_openEmbedding_source,
         ← PartialHomeomorph.lift_openEmbedding_source _ IsOpenEmbedding.inl]
       use x, cm.mem_chart_source x
-    · have h' : Sum.isRight p := Sum.not_isLeft.mp h
-      let x := Sum.getRight p h'
-      rw [Sum.eq_right_getRight_of_isRight h', Sum.elim_inr, lift_openEmbedding_source,
+    | inr x =>
+      rw [Sum.elim_inr, lift_openEmbedding_source,
         ← PartialHomeomorph.lift_openEmbedding_source _ IsOpenEmbedding.inr]
       use x, cm'.mem_chart_source x
   chart_mem_atlas p := by
-    by_cases h : Sum.isLeft p
-    · rw [Sum.eq_left_getLeft_of_isLeft h, Sum.elim_inl]
+    cases p with
+    | inl x =>
+      rw [Sum.elim_inl]
       left
-      let x := Sum.getLeft p h
       use ChartedSpace.chartAt x, cm.chart_mem_atlas x
-    · have h' : Sum.isRight p := Sum.not_isLeft.mp h
-      rw [Sum.eq_right_getRight_of_isRight h', Sum.elim_inr]
+    | inr x =>
+      rw [Sum.elim_inr]
       right
-      let x := Sum.getRight p h'
       use ChartedSpace.chartAt x, cm'.chart_mem_atlas x
 
+open scoped Classical in
+instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') :=
+  if h : Nonempty H then ChartedSpace.sum_of_nonempty else by
+  simp only [not_nonempty_iff] at h
+  have : IsEmpty M := isEmpty_of_chartedSpace H
+  have : IsEmpty M' := isEmpty_of_chartedSpace H
+  exact empty H (M ⊕ M')
+
 lemma ChartedSpace.sum_chartAt_inl (x : M) :
-    chartAt H (Sum.inl x) = (chartAt H x).lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inl :=
+    haveI : Nonempty H := nonempty_of_chartedSpace x
+    chartAt H (Sum.inl x)
+      = (chartAt H x).lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inl := by
+  simp only [chartAt, sum, nonempty_of_chartedSpace x, ↓reduceDIte]
   rfl
 
 lemma ChartedSpace.sum_chartAt_inr (x' : M') :
-    chartAt H (Sum.inr x') = (chartAt H x').lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inr :=
+    haveI : Nonempty H := nonempty_of_chartedSpace x'
+    chartAt H (Sum.inr x')
+      = (chartAt H x').lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inr := by
+  simp only [chartAt, sum, nonempty_of_chartedSpace x', ↓reduceDIte]
   rfl
 
-lemma ChartedSpace.mem_atlas_sum {e : PartialHomeomorph (M ⊕ M') H} (he : e ∈ atlas H (M ⊕ M')) :
+@[simp] lemma sum_chartAt_inl_apply {x y : M} :
+    (chartAt H (.inl x : M ⊕ M')) (Sum.inl y) = (chartAt H x) y := by
+  haveI : Nonempty H := nonempty_of_chartedSpace x
+  rw [ChartedSpace.sum_chartAt_inl]
+  exact PartialHomeomorph.lift_openEmbedding_apply _ _
+
+@[simp] lemma sum_chartAt_inr_apply {x y : M'} :
+    (chartAt H (.inr x : M ⊕ M')) (Sum.inr y) = (chartAt H x) y := by
+  haveI : Nonempty H := nonempty_of_chartedSpace x
+  rw [ChartedSpace.sum_chartAt_inr]
+  exact PartialHomeomorph.lift_openEmbedding_apply _ _
+
+lemma ChartedSpace.mem_atlas_sum [h : Nonempty H]
+    {e : PartialHomeomorph (M ⊕ M') H} (he : e ∈ atlas H (M ⊕ M')) :
     (∃ f : PartialHomeomorph M H, f ∈ (atlas H M) ∧ e = (f.lift_openEmbedding IsOpenEmbedding.inl))
     ∨ (∃ f' : PartialHomeomorph M' H, f' ∈ (atlas H M') ∧
       e = (f'.lift_openEmbedding IsOpenEmbedding.inr)) := by
-    obtain (⟨x, hx, hxe⟩ | ⟨x, hx, hxe⟩) := he
-    · rw [← hxe]; left; use x
-    · rw [← hxe]; right; use x
+  simp only [atlas, sum, h, ↓reduceDIte] at he
+  obtain (⟨x, hx, hxe⟩ | ⟨x, hx, hxe⟩) := he
+  · rw [← hxe]; left; use x
+  · rw [← hxe]; right; use x
 
 end sum
 
@@ -911,8 +947,6 @@ end ChartedSpace
 have a topological structure, where the topology would come from the charts. For this, one needs
 charts that are only partial equivalences, and continuity properties for their composition.
 This is formalised in `ChartedSpaceCore`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure ChartedSpaceCore (H : Type*) [TopologicalSpace H] (M : Type*) where
   /-- An atlas of charts, which are only `PartialEquiv`s -/
   atlas : Set (PartialEquiv M H)
@@ -1283,8 +1317,6 @@ lemma StructureGroupoid.restriction_in_maximalAtlas {e : PartialHomeomorph M H}
 /-- A `G`-diffeomorphism between two charted spaces is a homeomorphism which, when read in the
 charts, belongs to `G`. We avoid the word diffeomorph as it is too related to the smooth category,
 and use structomorph instead. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure Structomorph (G : StructureGroupoid H) (M : Type*) (M' : Type*) [TopologicalSpace M]
   [TopologicalSpace M'] [ChartedSpace H M] [ChartedSpace H M'] extends Homeomorph M M' where
   mem_groupoid : ∀ c : PartialHomeomorph M H, ∀ c' : PartialHomeomorph M' H, c ∈ atlas H M →

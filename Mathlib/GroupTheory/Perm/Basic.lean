@@ -399,6 +399,13 @@ theorem mem_iff_ofSubtype_apply_mem (f : Perm (Subtype p)) (x : α) :
     simpa only [h, true_iff, MonoidHom.coe_mk, ofSubtype_apply_of_mem f h] using (f ⟨x, h⟩).2
   else by simp [h, ofSubtype_apply_of_not_mem f h]
 
+theorem ofSubtype_injective : Function.Injective (ofSubtype : Perm (Subtype p) → Perm α) := by
+  intro x y h
+  rw [Perm.ext_iff] at h ⊢
+  intro a
+  specialize h a
+  rwa [ofSubtype_apply_coe, ofSubtype_apply_coe, SetCoe.ext_iff] at h
+
 @[simp]
 theorem subtypePerm_ofSubtype (f : Perm (Subtype p)) :
     subtypePerm (ofSubtype f) (mem_iff_ofSubtype_apply_mem f) = f :=

@@ -46,7 +46,7 @@ variable (𝕜 : Type*) {V V₁ V₁' V₂ V₃ V₄ : Type*} {P₁ P₁' : Type
   [SeminormedAddCommGroup V₄] [NormedSpace 𝕜 V₄] [PseudoMetricSpace P₄] [NormedAddTorsor V₄ P₄]
 
 /-- A `𝕜`-affine isometric embedding of one normed add-torsor over a normed `𝕜`-space into
-another. -/
+another, denoted as `f : P →ᵃⁱ[𝕜] P₂`. -/
 structure AffineIsometry extends P →ᵃ[𝕜] P₂ where
   norm_map : ∀ x : V, ‖linear x‖ = ‖x‖
 
@@ -260,7 +260,8 @@ end AffineSubspace
 
 variable (𝕜 P P₂)
 
-/-- An affine isometric equivalence between two normed vector spaces. -/
+/-- An affine isometric equivalence between two normed vector spaces,
+denoted `f : P ≃ᵃⁱ[𝕜] P₂`. -/
 structure AffineIsometryEquiv extends P ≃ᵃ[𝕜] P₂ where
   norm_map : ∀ x, ‖linear x‖ = ‖x‖
 
@@ -448,6 +449,9 @@ theorem symm_apply_apply (x : P) : e.symm (e x) = x :=
 
 @[simp]
 theorem symm_symm : e.symm.symm = e := rfl
+
+theorem symm_bijective : Bijective (AffineIsometryEquiv.symm : (P₂ ≃ᵃⁱ[𝕜] P) → _) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
 theorem toAffineEquiv_symm : e.toAffineEquiv.symm = e.symm.toAffineEquiv :=

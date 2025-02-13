@@ -44,8 +44,6 @@ namespace OuterMeasure
 
 section OfFunction
 
--- Porting note: "set_option eqn_compiler.zeta true" removed
-
 variable {α : Type*}
 
 /-- Given any function `m` assigning measures to sets satisfying `m ∅ = 0`, there is

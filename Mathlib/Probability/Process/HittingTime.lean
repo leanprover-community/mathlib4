@@ -36,21 +36,24 @@ hitting times indexed by the natural numbers or the reals. By taking the bounds 
 
 open Filter Order TopologicalSpace
 
-open scoped Classical MeasureTheory NNReal ENNReal Topology
+open scoped MeasureTheory NNReal ENNReal Topology
 
 namespace MeasureTheory
 
 variable {Ω β ι : Type*} {m : MeasurableSpace Ω}
 
+open scoped Classical in
 /-- Hitting time: given a stochastic process `u` and a set `s`, `hitting u s n m` is the first time
 `u` is in `s` after time `n` and before time `m` (if `u` does not hit `s` after time `n` and
 before `m` then the hitting time is simply `m`).
 
 The hitting time is a stopping time if the process is adapted and discrete. -/
-noncomputable def hitting [Preorder ι] [InfSet ι] (u : ι → Ω → β) (s : Set β) (n m : ι) : Ω → ι :=
-  fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m
+noncomputable def hitting [Preorder ι] [InfSet ι] (u : ι → Ω → β)
+    (s : Set β) (n m : ι) : Ω → ι :=
+  fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s
+    then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m
 
-#adaptation_note /-- nightly-2024-03-16: added to replace simp [hitting] -/
+open scoped Classical in
 theorem hitting_def [Preorder ι] [InfSet ι] (u : ι → Ω → β) (s : Set β) (n m : ι) :
     hitting u s n m =
     fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m :=
@@ -90,11 +93,13 @@ theorem not_mem_of_lt_hitting {m k : ι} (hk₁ : k < hitting u s n m ω) (hk₂
 
 theorem hitting_eq_end_iff {m : ι} : hitting u s n m ω = m ↔
     (∃ j ∈ Set.Icc n m, u j ω ∈ s) → sInf (Set.Icc n m ∩ {i : ι | u i ω ∈ s}) = m := by
+  classical
   rw [hitting, ite_eq_right_iff]
 
 theorem hitting_of_le {m : ι} (hmn : m ≤ n) : hitting u s n m ω = m := by
   obtain rfl | h := le_iff_eq_or_lt.1 hmn
-  · rw [hitting, ite_eq_right_iff, forall_exists_index]
+  · classical
+    rw [hitting, ite_eq_right_iff, forall_exists_index]
     conv => intro; rw [Set.mem_Icc, Set.Icc_self, and_imp, and_imp]
     intro i hi₁ hi₂ hi
     rw [Set.inter_eq_left.2, csInf_singleton]

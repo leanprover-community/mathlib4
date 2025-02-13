@@ -51,7 +51,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
     exact fun x hx a ha =>
       ⟨{a}, mem_map_of_mem _ (P.le hx ha), singleton_subset_iff.2 ha, mem_singleton_self _⟩
   -- Prove the case `m > 0` by strong induction on `s`
-  induction' s using Finset.strongInduction with s ih generalizing a b
+  induction s using Finset.strongInduction generalizing a b with | H s ih => _
   -- If `a = b = 0`, then `s = ∅` and we can partition into zero parts
   by_cases hab : a = 0 ∧ b = 0
   · simp only [hab.1, hab.2, add_zero, zero_mul, eq_comm, card_eq_zero, Finset.bot_eq_empty] at hs
@@ -119,10 +119,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
       refine
         (card_le_card fun i => ?_).trans
           (hR₂ (u \ t) <| P.mem_avoid.2 ⟨u, hu₁, fun i => hut <| i.antisymm htu, rfl⟩)
-      -- Porting note: `not_and` required because `∃ x ∈ s, p x` is defined differently
-      simp only [not_exists, not_and, mem_biUnion, and_imp, mem_union, mem_filter, mem_sdiff,
-        id, not_or]
-      exact fun hi₁ hi₂ hi₃ =>
+      simpa using fun hi₁ hi₂ hi₃ =>
         ⟨⟨hi₁, hi₂⟩, fun x hx hx' => hi₃ _ hx <| hx'.trans sdiff_subset⟩
     · apply sdiff_subset_sdiff Subset.rfl (biUnion_subset_biUnion_of_subset_left _ _)
       exact filter_subset_filter _ (subset_insert _ _)

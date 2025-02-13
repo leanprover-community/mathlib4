@@ -8,6 +8,7 @@ import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.List.Count
 import Mathlib.Data.List.Duplicate
 import Mathlib.Data.List.InsertIdx
+import Mathlib.Data.List.Induction
 import Batteries.Data.List.Perm
 import Mathlib.Data.List.Perm.Basic
 
@@ -326,7 +327,7 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
           map (cons c) ((permutations'Aux a l).flatMap (permutations'Aux b)) := by
     intros a' b'
     simp only [flatMap_map, permutations'Aux]
-    show List.flatMap (permutations'Aux _ l) (fun a => ([b' :: c :: a] ++
+    show (permutations'Aux _ l).flatMap (fun a => ([b' :: c :: a] ++
       map (cons c) (permutations'Aux _ a))) ~ _
     refine (flatMap_append_perm _ (fun x => [b' :: c :: x]) _).symm.trans ?_
     rw [← map_eq_flatMap, ← map_flatMap]
@@ -416,12 +417,6 @@ theorem length_permutations'Aux (s : List α) (x : α) :
   induction' s with y s IH
   · simp
   · simpa using IH
-
-@[deprecated "No deprecation message was provided." (since := "2024-06-12")]
-theorem permutations'Aux_get_zero (s : List α) (x : α)
-    (hn : 0 < length (permutations'Aux x s) := (by simp)) :
-    (permutations'Aux x s).get ⟨0, hn⟩ = x :: s :=
-  get_permutations'Aux _ _ _ _
 
 theorem injective_permutations'Aux (x : α) : Function.Injective (permutations'Aux x) := by
   intro s t h
