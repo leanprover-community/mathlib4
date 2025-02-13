@@ -225,7 +225,7 @@ def toSimplexCategory : SimplexCategoryGenRel ⥤ SimplexCategory :=
         map f := match f with
           | FreeSimplexQuiver.Hom.δ i => SimplexCategory.δ i
           | FreeSimplexQuiver.Hom.σ i => SimplexCategory.σ i })
-    (fun _ _ _ _ h ↦ match h with 
+    (fun _ _ _ _ h ↦ match h with
       | .δ_comp_δ H => SimplexCategory.δ_comp_δ H
       | .δ_comp_σ_of_le H => SimplexCategory.δ_comp_σ_of_le H
       | .δ_comp_σ_self => SimplexCategory.δ_comp_σ_self
