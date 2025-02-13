@@ -5,7 +5,7 @@ Authors: Alice Laroche, Frédéric Dupuis, Jireh Loreaux
 -/
 
 import Mathlib.Data.Finite.Defs
--- import Mathlib.Data.Finset.Empty
+import Mathlib.Data.Finset.Empty
 import Mathlib.Tactic.Push
 
 private axiom test_sorry : ∀ {α}, α
