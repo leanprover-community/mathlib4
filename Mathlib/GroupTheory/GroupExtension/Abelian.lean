@@ -170,9 +170,6 @@ theorem conj_eq_of_rightHom_eq_one (σ' : S.Section) (g : G) {e : E} (he : S.rig
 
 end Section
 
-/-- `G` acts on `N` by conjugation. -/
-noncomputable def conjActSurjInvRightHom : G →* MulAut N := S.surjInvRightHom.conjAct
-
 end
 
 section
@@ -188,7 +185,7 @@ structure ofMulDistribMulAction where
   /-- The group extension -/
   extension : GroupExtension N E G
   /-- `G` acts on `N` by conjugation. -/
-  smul_eq_conjActSurjInvRightHom {g : G} {n : N} : g • n = extension.conjActSurjInvRightHom g n
+  smul_eq_conjAct {g : G} {n : N} (σ : extension.Section) : g • n = σ.conjAct g n
 
 /-- Group extensions with specific choices of sections -/
 structure ofMulDistribMulActionWithSection extends ofMulDistribMulAction N G where
@@ -226,10 +223,6 @@ namespace ofMulDistribMulActionWithSection
 variable (S S' : ofMulDistribMulActionWithSection N G)
 instance : Group S.E := S.GroupE
 instance : Group S'.E := S'.GroupE
-
-/-- `G` acts on `N` by conjugation defined using the chosen section. -/
-theorem smul_eq_conjAct {g : G} {n : N} : g • n = S.σ.conjAct g n :=
-  Section.conjAct_eq _ S.σ ▸ S.smul_eq_conjActSurjInvRightHom
 
 /-- Two terms of `GroupExtension.ofMulDistribMulActionWithSection` are equivalent iff their
   extensions are equivalent and the sections commute with the isomorphism. -/
@@ -279,7 +272,7 @@ noncomputable def toTwoCocycle :
     repeat rw [← ofMul_mul]
     rw [Equiv.apply_eq_iff_eq Additive.ofMul]
     apply S.extension.inl_injective
-    rw [S.smul_eq_conjAct]
+    rw [S.smul_eq_conjAct S.σ]
     simp only [map_mul, Section.inl_conjAct_comm,
       Function.invFun_eq <| Section.mul_mul_mul_inv_mem_range_inl _ _ _]
     rw [Subgroup.mul_comm_of_mem_isCommutative _ (Section.mul_mul_mul_inv_mem_range_inl _ _ _)
@@ -474,10 +467,9 @@ def ofTwoCocycle : ofMulDistribMulActionWithSection N G where
   GroupE := inferInstance
   extension := extensionOfTwoCocycle f
   σ := sectionOfTwoCocycle f
-  smul_eq_conjActSurjInvRightHom := by
-    intro g n
-    unfold conjActSurjInvRightHom
-    rw [Section.conjAct_eq _ (sectionOfTwoCocycle f)]
+  smul_eq_conjAct := by
+    intro g n σ
+    rw [σ.conjAct_eq (sectionOfTwoCocycle f)]
     simp only [Section.conjAct, MonoidHom.coe_mk, OneHom.coe_mk, sectionOfTwoCocycle]
     apply (extensionOfTwoCocycle f).inl_injective
     rw [inl_conjAct_comm, extensionOfTwoCocycle_inl, ← middleOfTwoCocycle.inl_smul_eq_conj_inl,
@@ -534,7 +526,7 @@ noncomputable def ofTwoCocycleToTwoCocycleEquiv (S : ofMulDistribMulActionWithSe
     intro ⟨n₁, g₁⟩ ⟨n₂, g₂⟩
     unfold ofTwoCocycle
     simp only [map_mul, inl_toTwoCocycle]
-    rw [S.smul_eq_conjAct, Section.inl_conjAct_comm]
+    rw [S.smul_eq_conjAct S.σ, Section.inl_conjAct_comm]
     simp only [← mul_assoc, inv_mul_cancel_right]
   inl_comm := by
     unfold ofTwoCocycle extensionOfTwoCocycle
@@ -583,7 +575,7 @@ theorem sub_mem_twoCoboundaries_of_toofMulDistribMulAction_equiv
     toMul_sub, toMul_sub]
   simp only [groupCohomology.twoCocycles.val_eq_coe, div_eq_mul_inv, toMul_ofMul, map_mul, map_inv,
     inl_toTwoCocycle, Function.invFun_eq ((S.σ.equivComp equiv).mul_inv_mem_range_inl S'.σ _),
-    S'.smul_eq_conjAct, Section.inl_conjAct_comm]
+    S'.smul_eq_conjAct S'.σ, Section.inl_conjAct_comm]
   calc
     _ = S'.σ g₁ * ((S.σ.equivComp equiv) g₂ * (S'.σ g₂)⁻¹ * (S'.σ g₁)⁻¹ * S'.σ (g₁ * g₂) *
         ((S.σ.equivComp equiv) (g₁ * g₂))⁻¹ * (S.σ.equivComp equiv) g₁) * (S'.σ g₁)⁻¹ := by
