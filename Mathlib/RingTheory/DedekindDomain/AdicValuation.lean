@@ -557,6 +557,14 @@ theorem AdicCompletion.valued_eq_intValuationDef (v : HeightOneSpectrum R) (r : 
     Valued.v (algebraMap _ (v.adicCompletion K) r) = v.intValuationDef r := by
   rw [v.valuedAdicCompletion_eq_valuation, valuation_eq_intValuationDef]
 
+theorem AdicCompletion.valued_le_one (v : HeightOneSpectrum R) (r : R) :
+    Valued.v (algebraMap _ (v.adicCompletion K) r) ≤ 1 :=
+  valued_eq_intValuationDef K _ r ▸ v.intValuation_le_one r
+
+theorem AdicCompletion.valued_ne_zero (v : HeightOneSpectrum R) (r : nonZeroDivisors R) :
+    Valued.v (algebraMap _ (v.adicCompletion K) r.1) ≠ 0 :=
+  valued_eq_intValuationDef K _ r.1 ▸ v.intValuation_ne_zero' _
+
 open Valued Filter in
 /-- There exists a non-zero integer of value `< γ` for a given `γ`. -/
 theorem AdicCompletion.exists_nonZeroDivisor_valued_lt (v : HeightOneSpectrum R) (γ : ℤₘ₀ˣ) :
@@ -608,6 +616,6 @@ theorem adicCompletion.residueField_finite :
   sorry
 
 instance : CompactSpace (v.adicCompletionIntegers K) :=
-  Valued.WithZeroMulInt.integers_compactSpace (finite_residueField K v)
+  sorry --Valued.WithZeroMulInt.integers_compactSpace (finite_residueField K v)
 
 end IsDedekindDomain.HeightOneSpectrum

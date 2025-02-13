@@ -576,7 +576,7 @@ theorem algebraMap_range_isCompact
   exact CompactSpace.isCompact_univ
 
 /-- The finite adele ring is locally compact if each `Oᵥ` is compact. -/
-theorem locallyCompactSpace
+instance instLocallyCompactSpace
     [(v : HeightOneSpectrum R) → CompactSpace (v.adicCompletionIntegers K)] :
     LocallyCompactSpace (FiniteAdeleRing R K) :=
   IsCompact.locallyCompactSpace_of_mem_nhds_of_addGroup (algebraMap_range_isCompact R K)
