@@ -57,11 +57,8 @@ variable (I : Ideal A)
 abbrev Ideal.IsHomogeneous : Prop := Submodule.IsHomogeneous I 𝒜
 
 theorem Ideal.IsHomogeneous.mem_iff {I} (hI : Ideal.IsHomogeneous 𝒜 I) {x} :
-    x ∈ I ↔ ∀ i, (decompose 𝒜 x i : A) ∈ I := by
-  classical
-  refine ⟨fun hx i ↦ hI i hx, fun hx ↦ ?_⟩
-  rw [← DirectSum.sum_support_decompose 𝒜 x]
-  exact Ideal.sum_mem _ (fun i _ ↦ hx i)
+    x ∈ I ↔ ∀ i, (decompose 𝒜 x i : A) ∈ I :=
+  AddSubmonoidClass.IsHomogeneous.mem_iff 𝒜 _ hI
 
 /-- For any `Semiring A`, we collect the homogeneous ideals of `A` into a type. -/
 abbrev HomogeneousIdeal := HomogeneousSubmodule 𝒜 𝒜
