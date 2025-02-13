@@ -467,7 +467,7 @@ lemma GradedPiece.algebraMap.commutes [hasGMul F F_lt] (r : R) (i : ι) (a : Gra
     (mk F F_lt (a.out * (r • (⟨1, IsRingFiltration.one_mem⟩ : F 0)))) := by
     nth_rw 1 [← this]
     rfl
-  refine HEq_eq_mk_coe_eq F F_lt _ _ (add_comm 0 i) ?e eq1 eq2
+  apply HEq_eq_mk_coe_eq F F_lt _ _ (add_comm 0 i) _ eq1 eq2
   show (r • (1 : A)) * a.out.val = a.out.val * (r • (1 : A))
   simp
 
@@ -481,7 +481,7 @@ lemma GradedPiece.algebraMap.smul_def [hasGMul F F_lt] (r : R) (i : ι) (a : Gra
     (mk F F_lt ((r • (⟨1, IsRingFiltration.one_mem⟩ : F 0)) * a.out)) := by
     nth_rw 1 [← this]
     rfl
-  refine HEq_eq_mk_coe_eq F F_lt _ _ (zero_add i).symm ?e eq1 eq2
+  apply HEq_eq_mk_coe_eq F F_lt _ _ (zero_add i).symm _ eq1 eq2
   show r • a.out.val = (r • (1 : A)) * a.out.val
   simp
 
