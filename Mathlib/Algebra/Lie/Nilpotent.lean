@@ -256,6 +256,9 @@ section
 
 variable [LieModule R L M]
 
+def largestNilpotentModule :=
+  sSup { N : LieSubmodule R L M | IsNilpotent L N }
+
 /-- See also `LieModule.isNilpotent_iff_exists_ucs_eq_top`. -/
 lemma isNilpotent_iff :
     IsNilpotent L M ↔ ∃ k, lowerCentralSeries R L M k = ⊥ := by
@@ -897,14 +900,14 @@ end ExtendScalars
 
 namespace LieAlgebra
 
+open LieModule
+
 variable (R : Type u) (L : Type v)
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
 
-/-- The nilradical of Lie algebra is the `sSup` of all nilpotent ideals. -/
-def nilradical :=
-  sSup { I : LieIdeal R L | LieIdeal.IsNilpotent I }
+def nilradical := largestNilpotentModule R L L
 
-instance nilradicalIsNilpotent [IsNoetherian R L] : LieIdeal.IsNilpotent (nilradical R L) := by
+instance nilradicalIsNilpotent [IsNoetherian R L] : IsNilpotent L (nilradical R L) := by
   sorry
 
 theorem LieIdeal.nilpotent_iff_le_nilradical [IsNoetherian R L] (I : LieIdeal R L) :
