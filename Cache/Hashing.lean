@@ -66,9 +66,8 @@ abbrev HashM := StateT HashMemo CacheM
 
 /--
 Read the imports from the raw file `content` and return an array of tuples
-`(module name, source file)`.
-
-Note: `mod` is the name of the parsed module and is only used for displaying an error
+`(module name, source file)`, one per import.
+Note: `mod` is the name of module the `content` comes from and is only used for displaying an error
 message if the parsing fails.
 -/
 def getFileImports (content : String) (mod : Name := default) :
