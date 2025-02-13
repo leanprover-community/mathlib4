@@ -32,6 +32,7 @@ structure ContextFreeRule (T N : Type*) where
   input : N
   /-- Output string a.k.a. right-hand side. -/
   output : List (Symbol T N)
+deriving DecidableEq, Repr
 
 /-- Context-free grammar that generates words over the alphabet `T` (a type of terminals). -/
 structure ContextFreeGrammar (T : Type*) where
