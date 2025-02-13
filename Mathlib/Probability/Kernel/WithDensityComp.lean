@@ -41,7 +41,7 @@ lemma compProd_withDensity_apply_prod [SFinite μ] [IsSFiniteKernel κ]
   simp_rw [h_indicator]
   rw [lintegral_indicator hs]
 
-lemma compProd_withDensity'' [IsFiniteMeasure μ] [IsSFiniteKernel κ]
+lemma compProd_withDensity_of_isFiniteMeasure [IsFiniteMeasure μ] [IsSFiniteKernel κ]
     [IsFiniteKernel (κ.withDensity f)] (hf : Measurable (Function.uncurry f)) :
     μ ⊗ₘ (κ.withDensity f) = (μ ⊗ₘ κ).withDensity (fun p ↦ f p.1 p.2) := by
   ext s hs
@@ -63,21 +63,11 @@ lemma compProd_withDensity'' [IsFiniteMeasure μ] [IsSFiniteKernel κ]
   · intro f h_disj hf h
     simp_rw [measure_iUnion h_disj hf, h]
 
-lemma compProd_sum_left {ι : Type*} [Countable ι] {μ : ι → Measure α}
-    [∀ i, SFinite (μ i)] [IsSFiniteKernel κ] :
-    (sum μ) ⊗ₘ κ = sum (fun i ↦ (μ i) ⊗ₘ κ) := by
-  ext s hs
-  rw [sum_apply _ hs, compProd_apply hs, lintegral_sum_measure]
-  congr with i
-  rw [compProd_apply hs]
-
-lemma compProd_withDensity' [SFinite μ] [IsSFiniteKernel κ] [IsFiniteKernel (κ.withDensity f)]
+lemma compProd_withDensity [SFinite μ] [IsSFiniteKernel κ] [IsFiniteKernel (κ.withDensity f)]
     (hf : Measurable (Function.uncurry f)) :
     μ ⊗ₘ (κ.withDensity f) = (μ ⊗ₘ κ).withDensity (fun p ↦ f p.1 p.2) := by
   rw [← sum_sfiniteSeq μ, compProd_sum_left, compProd_sum_left, withDensity_sum]
   congr with n : 1
-  exact compProd_withDensity'' hf
-
--- TODO: generalize to s-finite measure and kernel
+  exact compProd_withDensity_of_isFiniteMeasure hf
 
 end MeasureTheory.Measure
