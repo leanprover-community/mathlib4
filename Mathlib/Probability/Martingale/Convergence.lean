@@ -116,9 +116,10 @@ theorem not_frequently_of_upcrossings_lt_top (hab : a < b) (hω : upcrossings a 
   refine Classical.not_not.2 hω ?_
   push_neg
   intro k
-  induction' k with k ih
-  · simp only [zero_le, exists_const]
-  · obtain ⟨N, hN⟩ := ih
+  induction k with
+  | zero => simp only [zero_le, exists_const]
+  | succ k ih =>
+    obtain ⟨N, hN⟩ := ih
     obtain ⟨N₁, hN₁, hN₁'⟩ := h₁ N
     obtain ⟨N₂, hN₂, hN₂'⟩ := h₂ N₁
     exact ⟨N₂ + 1, Nat.succ_le_of_lt <|

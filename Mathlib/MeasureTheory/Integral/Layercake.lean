@@ -109,7 +109,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
       ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t) := by
   have g_intble' : ∀ t : ℝ, 0 ≤ t → IntervalIntegrable g volume 0 t := by
     intro t ht
-    cases' eq_or_lt_of_le ht with h h
+    rcases eq_or_lt_of_le ht with h | h
     · simp [← h]
     · exact g_intble t h
   have integrand_eq : ∀ ω,

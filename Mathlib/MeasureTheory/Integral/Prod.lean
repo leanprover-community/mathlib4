@@ -460,7 +460,7 @@ theorem integral_prod_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] (f 
   have H : ¬Integrable f μ ∨ ¬Integrable g ν := by
     contrapose! h
     exact h.1.prod_smul h.2
-  cases' H with H H <;> simp [integral_undef h, integral_undef H]
+  rcases H with H | H <;> simp [integral_undef h, integral_undef H]
 
 theorem integral_prod_mul {L : Type*} [RCLike L] (f : α → L) (g : β → L) :
     ∫ z, f z.1 * g z.2 ∂μ.prod ν = (∫ x, f x ∂μ) * ∫ y, g y ∂ν :=

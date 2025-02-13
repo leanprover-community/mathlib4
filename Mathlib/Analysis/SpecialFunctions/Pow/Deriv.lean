@@ -344,7 +344,7 @@ theorem hasStrictFDerivAt_rpow_of_neg (p : ℝ × ℝ) (hp : p.1 < 0) :
 /-- The function `fun (x, y) => x ^ y` is infinitely smooth at `(x, y)` unless `x = 0`. -/
 theorem contDiffAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) {n : WithTop ℕ∞} :
     ContDiffAt ℝ n (fun p : ℝ × ℝ => p.1 ^ p.2) p := by
-  cases' hp.lt_or_lt with hneg hpos
+  rcases hp.lt_or_lt with hneg | hpos
   exacts
     [(((contDiffAt_fst.log hneg.ne).mul contDiffAt_snd).exp.mul
           (contDiffAt_snd.mul contDiffAt_const).cos).congr_of_eventuallyEq
@@ -365,7 +365,7 @@ theorem _root_.HasStrictDerivAt.rpow {f g : ℝ → ℝ} {f' g' : ℝ} (hf : Has
 
 theorem hasStrictDerivAt_rpow_const_of_ne {x : ℝ} (hx : x ≠ 0) (p : ℝ) :
     HasStrictDerivAt (fun x => x ^ p) (p * x ^ (p - 1)) x := by
-  cases' hx.lt_or_lt with hx hx
+  rcases hx.lt_or_lt with hx | hx
   · have := (hasStrictFDerivAt_rpow_of_neg (x, p) hx).comp_hasStrictDerivAt x
       ((hasStrictDerivAt_id x).prod (hasStrictDerivAt_const x p))
     convert this using 1; simp
@@ -424,9 +424,10 @@ theorem contDiffAt_rpow_const_of_ne {x p : ℝ} {n : WithTop ℕ∞} (h : x ≠ 
 
 theorem contDiff_rpow_const_of_le {p : ℝ} {n : ℕ} (h : ↑n ≤ p) :
     ContDiff ℝ n fun x : ℝ => x ^ p := by
-  induction' n with n ihn generalizing p
-  · exact contDiff_zero.2 (continuous_id.rpow_const fun x => Or.inr <| by simpa using h)
-  · have h1 : 1 ≤ p := le_trans (by simp) h
+  induction n generalizing p with
+  | zero => exact contDiff_zero.2 (continuous_id.rpow_const fun x => Or.inr <| by simpa using h)
+  | succ n ihn =>
+    have h1 : 1 ≤ p := le_trans (by simp) h
     rw [Nat.cast_succ, ← le_sub_iff_add_le] at h
     rw [show ((n + 1 : ℕ) : WithTop ℕ∞) = n + 1 from rfl,
       contDiff_succ_iff_deriv, deriv_rpow_const' h1]
