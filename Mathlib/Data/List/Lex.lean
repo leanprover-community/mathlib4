@@ -33,7 +33,7 @@ universe u
 
 variable {α : Type u}
 
-/-! ### lexicographic ordering -/
+/-! ### Lexicographic ordering -/
 
 namespace Lex
 
@@ -138,22 +138,26 @@ theorem ne_iff {l₁ l₂ : List α} (H : length l₁ ≤ length l₂) : Lex (·
 
 end Lex
 
---Note: this overrides an instance in core lean
-instance LT' [LT α] : LT (List α) :=
-  ⟨Lex (· < ·)⟩
+-- TODO: we should unify the `Std` relation typeclasses with their Mathlib counterparts
+-- `IsIrrefl`, `IsAsymm`, etc.
+instance [Preorder α] : @Std.Irrefl α (· < ·) := ⟨lt_irrefl⟩
+instance [Preorder α] : @Std.Asymm α (· < ·) := ⟨fun _ _ ↦ lt_asymm⟩
+instance [LinearOrder α] : @Std.Antisymm α (¬ · < ·) :=
+  ⟨by simpa using fun _ _ ↦ ge_antisymm⟩
+instance [LinearOrder α] : @Trans α α α (¬ · < ·) (¬ · < ·) (¬ · < ·) :=
+  ⟨by simp; exact fun h₁ h₂ ↦ le_trans h₂ h₁⟩
+instance [LinearOrder α] : @Std.Total α (¬ · < ·) :=
+  ⟨by simpa using fun _ _ ↦ le_total _ _⟩
 
--- TODO: This deprecated instance is still used (by the instance just below)
-@[deprecated "No deprecation message was provided." (since := "2024-07-30")]
-instance isStrictTotalOrder (r : α → α → Prop) [IsStrictTotalOrder α r] :
-    IsStrictTotalOrder (List α) (Lex r) :=
-  { isStrictWeakOrder_of_isOrderConnected with }
-
-instance [LinearOrder α] : LinearOrder (List α) :=
-  linearOrderOfSTO (Lex (· < ·))
-
---Note: this overrides an instance in core lean
-instance LE' [LinearOrder α] : LE (List α) :=
-  Preorder.toLE
+-- Was `linearOrderOfSTO (Lex (· < ·))`, but the def-eq this sets does not match the `List.instLE`
+-- instance in core.
+instance [LinearOrder α] : LinearOrder (List α) where
+  le_refl := List.lex_irrefl lt_irrefl
+  le_trans _ _ _ := List.le_trans
+  le_total := List.le_total
+  le_antisymm _ _ := List.le_antisymm
+  decidableLE := inferInstanceAs (DecidableRel (¬ · > ·))
+  lt_iff_le_not_le a b := by simpa [← not_le] using List.le_of_lt
 
 theorem lt_iff_lex_lt [LinearOrder α] (l l' : List α) : List.lt l l' ↔ Lex (· < ·) l l' := by
   rw [List.lt]
