@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Module.FinitePresentation
+import Mathlib.Algebra.Module.Torsion
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Flat.Basic
+import Mathlib.RingTheory.Flat.EquationalCriterion
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.Nakayama
-import Mathlib.Algebra.Module.Torsion
 
 /-!
 # Finite modules over local rings
@@ -248,11 +248,48 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
   obtain ⟨_, _, b, _⟩ := exists_basis_of_span_of_maximalIdeal_rTensor_injective H id (by simp)
   exact Free.of_basis b
 
--- TODO: Generalise this to finite free modules.
-theorem free_of_flat_of_isLocalRing [Module.FinitePresentation R P] [Module.Flat R P] :
-    Module.Free R P :=
-  free_of_maximalIdeal_rTensor_injective
-    (Module.Flat.rTensor_preserves_injective_linearMap _ Subtype.val_injective)
+theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι → M)
+    (h : LinearIndependent k (TensorProduct.mk R k M 1 ∘ v)) : LinearIndependent R v := by
+  rw [linearIndependent_iff']; intro s; revert v
+  classical
+  refine s.induction (fun _ _ _ _ _ hi ↦ (Finset.not_mem_empty _ hi).elim)
+    fun n s hn ih x hx f hfx i hi ↦ ?_
+  rw [← Finset.sum_coe_sort] at hfx
+  have ⟨l, a, y, hay, hfa⟩ := Flat.isTrivialRelation_of_sum_smul_eq_zero hfx
+  have : x n ∉ 𝔪 • (⊤ : Submodule R M) := by
+    simpa only [← LinearMap.ker_tensorProductMk] using hx.ne_zero n
+  set n : ↥(insert n s) := ⟨n, Finset.mem_insert_self ..⟩ with n_def
+  obtain ⟨j, hj⟩ : ∃ j, IsUnit (a n j) := by
+    contrapose! this
+    rw [show x n = _ from hay n]
+    exact sum_mem fun _ _ ↦ Submodule.smul_mem_smul (this _) ⟨⟩
+  let a' (i : ι) : R := if hi : _ then a ⟨i, hi⟩ j else 0
+  have a_eq i : a i j = a' i.1 := by simp_rw [a', dif_pos i.2]
+  have hfn : f n = -(∑ i in s, f i * a' i) * hj.unit⁻¹ := by
+    rw [← hj.mul_left_inj, mul_assoc, hj.val_inv_mul, mul_one, eq_neg_iff_add_eq_zero]
+    convert hfa j
+    simp_rw [a_eq, Finset.sum_coe_sort _ (fun i ↦ f i * a' i), s.sum_insert hn, n_def]
+  let c (i : ι) : R := -(if i = n then 0 else a' i) * hj.unit⁻¹
+  specialize ih (x + (c · • x n)) ?_ f ?_
+  · convert (linearIndependent_add_smul_iff (c := Ideal.Quotient.mk _ ∘ c) (i := n.1) ?_).mpr hx
+    · ext; simp [tmul_add]; rfl
+    simp_rw [Function.comp_def, c, if_pos, neg_zero, zero_mul, map_zero]
+  · rw [Finset.sum_coe_sort _ (fun i ↦ f i • x i), s.sum_insert hn, add_comm, hfn] at hfx
+    simp_rw [Pi.add_apply, smul_add, s.sum_add_distrib, c, smul_smul, ← s.sum_smul, ← mul_assoc,
+      ← s.sum_mul, mul_neg, s.sum_neg_distrib, ← hfx]
+    congr 4
+    exact s.sum_congr rfl fun i hi ↦ by rw [if_neg (ne_of_mem_of_not_mem hi hn)]
+  obtain hi | hi := Finset.mem_insert.mp hi
+  · rw [hi, hfn, Finset.sum_eq_zero, neg_zero, zero_mul]
+    intro i hi; rw [ih i hi, zero_mul]
+  · exact ih i hi
+
+@[stacks 00NZ]
+theorem free_of_flat_of_isLocalRing [Module.Finite R P] [Flat R P] : Free R P :=
+  let w := Free.chooseBasis k (k ⊗[R] P)
+  have ⟨v, eq⟩ := (TensorProduct.mk_surjective R P k Quotient.mk_surjective).comp_left w
+  .of_basis <| .mk (IsLocalRing.linearIndependent_of_flat _ (eq ▸ w.linearIndependent)) <| by
+    exact (span_eq_top_of_tmul_eq_basis _ w <| congr_fun eq).ge
 
 @[deprecated (since := "2024-11-12")] alias free_of_flat_of_localRing := free_of_flat_of_isLocalRing
 
