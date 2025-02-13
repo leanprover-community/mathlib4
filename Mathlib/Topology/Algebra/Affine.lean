@@ -23,7 +23,7 @@ namespace AffineMap
 
 variable {R E F : Type*}
 variable [AddCommGroup E] [TopologicalSpace E]
-variable [AddCommGroup F] [TopologicalSpace F] [TopologicalAddGroup F]
+variable [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]
 
 section Ring
 

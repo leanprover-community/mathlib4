@@ -54,7 +54,7 @@ open Nat FormalMultilinearSeries
 section Field
 
 variable {𝕂 : Type*} (𝔸 : Type*) [Field 𝕂] [Ring 𝔸] [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸]
-  [TopologicalRing 𝔸]
+  [IsTopologicalRing 𝔸]
 
 /-- The coefficients in the ordinary hypergeometric sum. -/
 noncomputable abbrev ordinaryHypergeometricCoefficient (a b c : 𝕂) (n : ℕ) := ((n !⁻¹ : 𝕂) *

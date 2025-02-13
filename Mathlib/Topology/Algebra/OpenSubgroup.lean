@@ -308,7 +308,7 @@ instance [ContinuousMul G] [CompactSpace G] (U : OpenSubgroup G) : Finite (G ⧸
   quotient_finite_of_isOpen U.toSubgroup U.isOpen
 
 @[to_additive]
-lemma quotient_finite_of_isOpen' [TopologicalGroup G] [CompactSpace G] (U : Subgroup G)
+lemma quotient_finite_of_isOpen' [IsTopologicalGroup G] [CompactSpace G] (U : Subgroup G)
     (K : Subgroup U) (hUopen : IsOpen (U : Set G)) (hKopen : IsOpen (K : Set U)) :
     Finite (U ⧸ K) :=
   have : CompactSpace U := isCompact_iff_compactSpace.mp <| IsClosed.isCompact <|
@@ -316,7 +316,7 @@ lemma quotient_finite_of_isOpen' [TopologicalGroup G] [CompactSpace G] (U : Subg
   K.quotient_finite_of_isOpen hKopen
 
 @[to_additive]
-instance [TopologicalGroup G] [CompactSpace G] (U : OpenSubgroup G) (K : OpenSubgroup U) :
+instance [IsTopologicalGroup G] [CompactSpace G] (U : OpenSubgroup G) (K : OpenSubgroup U) :
     Finite (U ⧸ K.toSubgroup) :=
   quotient_finite_of_isOpen' U.toSubgroup K.toSubgroup U.isOpen K.isOpen
 
@@ -347,7 +347,7 @@ namespace Submodule
 open OpenAddSubgroup
 
 variable {R : Type*} {M : Type*} [CommRing R]
-variable [AddCommGroup M] [TopologicalSpace M] [TopologicalAddGroup M] [Module R M]
+variable [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M] [Module R M]
 
 theorem isOpen_mono {U P : Submodule R M} (h : U ≤ P) (hU : IsOpen (U : Set M)) :
     IsOpen (P : Set M) :=
@@ -358,7 +358,7 @@ end Submodule
 namespace Ideal
 
 variable {R : Type*} [CommRing R]
-variable [TopologicalSpace R] [TopologicalRing R]
+variable [TopologicalSpace R] [IsTopologicalRing R]
 
 theorem isOpen_of_isOpen_subideal {U I : Ideal R} (h : U ≤ I) (hU : IsOpen (U : Set R)) :
     IsOpen (I : Set R) :=
@@ -457,7 +457,7 @@ end
 /-!
 # Existence of an open subgroup in any clopen neighborhood of the neutral element
 
-This section proves the lemma `TopologicalGroup.exist_openSubgroup_sub_clopen_nhd_of_one`, which
+This section proves the lemma `IsTopologicalGroup.exist_openSubgroup_sub_clopen_nhd_of_one`, which
 states that in a compact topological group, for any clopen neighborhood of 1,
 there exists an open subgroup contained within it.
 -/
@@ -466,7 +466,7 @@ open scoped Pointwise
 
 variable {G : Type*} [TopologicalSpace G]
 
-structure TopologicalAddGroup.addNegClosureNhd (T W : Set G) [AddGroup G] : Prop where
+structure IsTopologicalAddGroup.addNegClosureNhd (T W : Set G) [AddGroup G] : Prop where
   nhd : T ∈ 𝓝 0
   neg : -T = T
   isOpen : IsOpen T
@@ -477,15 +477,15 @@ structure TopologicalAddGroup.addNegClosureNhd (T W : Set G) [AddGroup G] : Prop
 @[to_additive
 "For a set `W`, `T` is a neighborhood of `0` which is open, stable under negation and satisfies
 `T + W ⊆ W`. "]
-structure TopologicalGroup.mulInvClosureNhd (T W : Set G) [Group G] : Prop where
+structure IsTopologicalGroup.mulInvClosureNhd (T W : Set G) [Group G] : Prop where
   nhd : T ∈ 𝓝 1
   inv : T⁻¹ = T
   isOpen : IsOpen T
   mul : W * T ⊆ W
 
-namespace TopologicalGroup
+namespace IsTopologicalGroup
 
-variable [Group G] [TopologicalGroup G] [CompactSpace G]
+variable [Group G] [IsTopologicalGroup G] [CompactSpace G]
 
 open Set Filter
 
@@ -520,7 +520,7 @@ lemma exists_mulInvClosureNhd {W : Set G} (WClopen : IsClopen W) :
 
 @[to_additive]
 theorem exist_openSubgroup_sub_clopen_nhd_of_one {G : Type*} [Group G] [TopologicalSpace G]
-    [TopologicalGroup G] [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
+    [IsTopologicalGroup G] [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
     ∃ H : OpenSubgroup G, (H : Set G) ⊆ W := by
   rcases exists_mulInvClosureNhd WClopen with ⟨V, hV⟩
   let S : Subgroup G := {
@@ -560,4 +560,4 @@ theorem exist_openSubgroup_sub_clopen_nhd_of_one {G : Type*} [Group G] [Topologi
     rw [one_mul]
   apply iUnion_subset fun i _ a ↦ mulVpow i (this i a)
 
-end TopologicalGroup
+end IsTopologicalGroup

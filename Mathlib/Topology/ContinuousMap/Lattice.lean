@@ -37,7 +37,7 @@ instance instMulRightMono [PartialOrder β] [Mul β] [ContinuousMul β] [MulRigh
     MulRightMono C(α, β) :=
   ⟨fun _ _ _ hg₁₂ x => mul_le_mul_right' (hg₁₂ x) _⟩
 
-variable [Group β] [TopologicalGroup β] [Lattice β] [TopologicalLattice β]
+variable [Group β] [IsTopologicalGroup β] [Lattice β] [TopologicalLattice β]
 
 @[to_additive (attr := simp, norm_cast)]
 lemma coe_mabs (f : C(α, β)) : ⇑|f|ₘ = |⇑f|ₘ := rfl

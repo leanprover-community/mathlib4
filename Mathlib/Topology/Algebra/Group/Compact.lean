@@ -15,7 +15,7 @@ as it requires more substantial imports developing positive compacts.
 
 
 universe u
-variable {G : Type u} [TopologicalSpace G] [Group G] [TopologicalGroup G]
+variable {G : Type u} [TopologicalSpace G] [Group G] [IsTopologicalGroup G]
 
 /-- Every topological group in which there exists a compact set with nonempty interior
 is locally compact. -/
