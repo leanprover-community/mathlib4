@@ -227,6 +227,9 @@ theorem IsPath.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
   rw [reverse_append] at h
   apply h.of_append_left
 
+lemma IsPath.of_adj {G : SimpleGraph V} {u v : V} (h : G.Adj u v) : h.toWalk.IsPath := by
+  aesop
+
 @[simp]
 theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle := fun h => h.ne_nil rfl
 
@@ -799,6 +802,21 @@ theorem Iso.symm_apply_reachable {G : SimpleGraph V} {G' : SimpleGraph V'} {φ :
     {v : V'} : G.Reachable (φ.symm v) u ↔ G'.Reachable v (φ u) := by
   rw [← Iso.reachable_iff, RelIso.apply_symm_apply]
 
+lemma Reachable.mem_subgraphVerts {u v} {H : G.Subgraph} (hr : G.Reachable u v)
+    (h : ∀ v ∈ H.verts, ∀ w, G.Adj v w → H.Adj v w)
+    (hu : u ∈ H.verts) : v ∈ H.verts := by
+  let rec aux {v' : V} (hv' : v' ∈ H.verts) (p : G.Walk v' v) : v ∈ H.verts := by
+    by_cases hnp : p.Nil
+    · exact hnp.eq ▸ hv'
+    exact aux (H.edge_vert (h _ hv' _ (Walk.adj_snd hnp)).symm) p.tail
+  termination_by p.length
+  decreasing_by {
+    simp_wf
+    rw [← Walk.length_tail_add_one hnp]
+    omega
+  }
+  exact aux hu hr.some
+
 variable (G)
 
 theorem reachable_is_equivalence : Equivalence G.Reachable :=
@@ -1179,8 +1197,8 @@ def IsBridge (G : SimpleGraph V) (e : Sym2 V) : Prop :=
 theorem isBridge_iff {u v : V} :
     G.IsBridge s(u, v) ↔ G.Adj u v ∧ ¬(G \ fromEdgeSet {s(u, v)}).Reachable u v := Iff.rfl
 
-theorem reachable_delete_edges_iff_exists_walk {v w : V} :
-    (G \ fromEdgeSet {s(v, w)}).Reachable v w ↔ ∃ p : G.Walk v w, ¬s(v, w) ∈ p.edges := by
+theorem reachable_delete_edges_iff_exists_walk {v w v' w': V} :
+    (G \ fromEdgeSet {s(v, w)}).Reachable v' w' ↔ ∃ p : G.Walk v' w', ¬s(v, w) ∈ p.edges := by
   constructor
   · rintro ⟨p⟩
     use p.map (Hom.mapSpanningSubgraphs (by simp))

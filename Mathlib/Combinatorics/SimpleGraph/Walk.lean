@@ -890,6 +890,14 @@ lemma adj_penultimate {p : G.Walk v w} (hp : ¬ p.Nil) :
   rw [nil_iff_length_eq] at hp
   convert adj_getVert_succ _ _ <;> omega
 
+@[simp]
+lemma snd_reverse (p : G.Walk u v) : p.reverse.snd = p.penultimate := by
+  simpa using getVert_reverse p 1
+
+@[simp]
+lemma penultimate_reverse (p : G.Walk u v) : p.reverse.penultimate = p.snd := by
+  cases p <;> simp [snd, penultimate, getVert_append]
+
 /-- The walk obtained by removing the first dart of a walk. A nil walk stays nil. -/
 def tail (p : G.Walk u v) : G.Walk (p.snd) v := p.drop 1
 
