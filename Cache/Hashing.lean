@@ -64,13 +64,14 @@ abbrev HashM := StateT HashMemo CacheM
 /--
 Read the imports from the raw file `content` and return an array of tuples
 `(module name, source file)`, one per import.
-Note: `mod` is the name of module the `content` comes from and is only used for displaying an error
-message if the parsing fails.
+
+Note: `fileName` is a string which is purely used for displaying an error message if
+parsing imports from `content` should fail. It is intended to be the file's name.
 -/
-def getFileImports (content : String) (mod : Name := default) :
+def getFileImports (content : String) (fileName : String := "") :
     CacheM <| Array (Name × FilePath) := do
   let sp := (← read).srcSearchPath
-  let fileImports : Array Import ← Lean.parseImports' content mod.toString
+  let fileImports : Array Import ← Lean.parseImports' content fileName
   let out ← fileImports
     -- Lean core files can never be modified and therefore we do not need to process these
     -- moreover, it seems that `Lean.findLean` fails on these.
@@ -130,7 +131,7 @@ partial def getHash (filePath : FilePath) (visited : Std.HashSet FilePath := ∅
       modify fun stt => { stt with cache := stt.cache.insert filePath none }
       return none
     let content ← IO.FS.readFile fixedPath
-    let fileImports' ← getFileImports content -- TODO: add `mod` for better error message
+    let fileImports' ← getFileImports content filePath.toString
     -- TODO: This line is only here for backwards compatibility: cache still takes
     -- keys of the form `Mathlib/Init.lean`, `Aesop/Build.lean` instead of module
     -- names: `Mathlib.Init`, `Aesop.Build`, but `getFileImports` has been changed
