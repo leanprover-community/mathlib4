@@ -29,16 +29,28 @@ def IRDIR : FilePath :=
 /--
 TODO: is there a better test to see if a module is part of Lean core?
 -/
-def isInLeanCore (mod : Name) :=
-  #[`Init, `Lean, `Std, `Lake].contains mod.getRoot
+def isInLeanCore (mod : Name) := #[
+  `Init,
+  `Lean,
+  `Std,
+  `Lake ].contains mod.getRoot
 
 /--
 TODO: write a better test which modules are part of the mathlib cache
 -/
-def isPartOfMathlibCache (mod : Name) :=
-  #[`Mathlib, `Batteries, `Aesop, `Cli, `ImportGraph,
-    `LeanSearchClient, `Plausible, `Qq, `ProofWidgets,
-    `Archive, `Counterexamples, `MathlibTest].contains mod.getRoot
+def isPartOfMathlibCache (mod : Name) := #[
+  `Mathlib,
+  `Batteries,
+  `Aesop,
+  `Cli,
+  `ImportGraph,
+  `LeanSearchClient,
+  `Plausible,
+  `Qq,
+  `ProofWidgets,
+  `Archive,
+  `Counterexamples,
+  `MathlibTest ].contains mod.getRoot
 
 /-- Target directory for caching -/
 initialize CACHEDIR : FilePath ← do
