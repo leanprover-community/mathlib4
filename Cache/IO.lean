@@ -146,6 +146,9 @@ def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
 
 end
 
+/--
+Find the package directory of a module.
+-/
 def getPackageDir (mod : Name) : CacheM FilePath := do
   let sp := (← read).srcSearchPath
   let packageDir? ← sp.findWithExtBase "lean" mod

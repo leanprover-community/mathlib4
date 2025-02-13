@@ -117,8 +117,7 @@ Computes the hash of a file, which mixes:
 
 Note: we pass `sourceFile` along to avoid searching for it twice
 -/
-partial def getHash (mod : Name) (sourceFile : FilePath)
-    (visited : Std.HashSet Name := ∅) :
+partial def getHash (mod : Name) (sourceFile : FilePath) (visited : Std.HashSet Name := ∅) :
     HashM <| Option UInt64 := do
   if visited.contains mod then
     throw <| IO.userError s!"dependency loop found involving {mod}!"
@@ -138,6 +137,7 @@ partial def getHash (mod : Name) (sourceFile : FilePath)
       match importHash? with
       | some importHash => importHashes := importHashes.push importHash
       | none =>
+        -- one import did not have a hash: invalidate hash of this module
         modify fun stt => { stt with cache := stt.cache.insert mod none }
         return none
     /-
