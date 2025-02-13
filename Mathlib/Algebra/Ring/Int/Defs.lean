@@ -3,7 +3,6 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Tactic.Cases
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Group.Int.Defs
@@ -59,7 +58,7 @@ lemma cast_mul {α : Type*} [NonAssocRing α] : ∀ m n, ((m * n : ℤ) : α) = 
 
 @[simp, norm_cast] lemma cast_pow {R : Type*} [Ring R] (n : ℤ) (m : ℕ) :
     ↑(n ^ m) = (n ^ m : R) := by
-  induction' m with m ih <;> simp [_root_.pow_succ, *]
+  induction m <;> simp [_root_.pow_succ, *]
 
 /-!
 ### Extra instances to short-circuit type class resolution

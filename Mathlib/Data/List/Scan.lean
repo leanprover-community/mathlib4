@@ -6,7 +6,6 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 import Mathlib.Order.Basic
 import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Option.Basic
-import Mathlib.Tactic.Cases
 
 /-! ### List.scanl and List.scanr -/
 
@@ -44,11 +43,13 @@ theorem getElem_scanl_zero {h : 0 < (scanl f b l).length} : (scanl f b l)[0] = b
 
 theorem get?_succ_scanl {i : ℕ} : (scanl f b l).get? (i + 1) =
     ((scanl f b l).get? i).bind fun x => (l.get? i).map fun y => f x y := by
-  induction' l with hd tl hl generalizing b i
-  · symm
+  induction l generalizing b i with
+  | nil =>
+    symm
     simp only [Option.bind_eq_none', get?, forall₂_true_iff, not_false_iff, Option.map_none',
       scanl_nil, Option.not_mem_none, forall_true_iff]
-  · simp only [scanl_cons, singleton_append]
+  | cons hd tl hl =>
+    simp only [scanl_cons, singleton_append]
     cases i
     · simp
     · simp only [hl, get?]
