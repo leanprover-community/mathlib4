@@ -243,8 +243,7 @@ section
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
 
-noncomputable instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime]
-    [P.LiesOver p] :
+noncomputable instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
   Algebra (Localization.AtPrime p) (Localization.AtPrime P) :=
     (Localization.localRingHom p P (algebraMap A B) Ideal.LiesOver.over).toAlgebra
 
