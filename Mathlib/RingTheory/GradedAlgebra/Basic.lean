@@ -340,6 +340,25 @@ namespace DirectSum.IsInternal
 
 variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
 variable {ι : Type*} [DecidableEq ι] [AddMonoid ι]
+
+section GradedRing
+
+variable {σ : Type*} [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ)
+variable {M : ι → σ} [SetLike.GradedMonoid M]
+
+noncomputable def coeRingEquiv (hM : DirectSum.IsInternal M) :
+    (DirectSum ι fun i => ↥(M i)) ≃+* A := RingEquiv.ofBijective (DirectSum.coeRingHom M) hM
+
+noncomputable def gradedRing (hM : DirectSum.IsInternal M) : GradedRing M :=
+  { (inferInstance : SetLike.GradedMonoid M) with
+    decompose' := hM.coeRingEquiv.symm
+    left_inv := hM.coeRingEquiv.symm.left_inv
+    right_inv := hM.coeRingEquiv.left_inv }
+
+end GradedRing
+
+section GradedAlgebra
+
 variable {M : ι → Submodule R A} [SetLike.GradedMonoid M]
 
 -- The following lines were given on Zulip by Adam Topaz
@@ -359,5 +378,7 @@ noncomputable def gradedAlgebra (hM : DirectSum.IsInternal M) : GradedAlgebra M 
     decompose' := hM.coeAlgEquiv.symm
     left_inv := hM.coeAlgEquiv.symm.left_inv
     right_inv := hM.coeAlgEquiv.left_inv }
+
+end GradedAlgebra
 
 end DirectSum.IsInternal
