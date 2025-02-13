@@ -33,9 +33,10 @@ Commands:
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands ending with '!' should be used manually, when hot-fixes are needed
 
-# The arguments for 'get', 'get!' and 'get-'
+# The arguments for 'get', 'get!', 'get-' and 'lookup'
 
-'get', 'get!', 'get-' can process a list of module names or file names.
+'get', 'get!', 'get-' and 'lookup' can process a list of module names or file names.
+
 'get [ARGS]' will only get the cache for the specified Lean files and all files imported by one.
 
 Valid arguments are:
@@ -46,9 +47,6 @@ Valid arguments are:
 * Folder names like 'Mathlib/Data/' (find all Lean files inside `Mathlib/Data/`)
 * With bash's automatic glob expansion one can also write things like
   'Mathlib/**/Order/*.lean'.
-
-'lookup' takes the same arguments as 'get' but prints information about the corresponding
-hash files for debugging purposes.
 "
 
 open Lean System in
@@ -76,10 +74,10 @@ def main (args : List String) : IO Unit := do
     println "Unfortunately, you have a broken Lean v4.8.0-rc1 installation."
     println "Please run `elan toolchain uninstall leanprover/lean4:v4.8.0-rc1` and try again."
     Process.exit 1
-  CacheM.run do
   if args.isEmpty then
     println help
     Process.exit 0
+  CacheM.run do
   -- Hashing everything imported transitively by one of the root modules
   let mut roots : Std.HashMap Lean.Name FilePath ← parseArgs args
   if roots.isEmpty then do
