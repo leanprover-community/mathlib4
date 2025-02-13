@@ -904,7 +904,7 @@ variable [CommRing R] [LieRing L] [LieAlgebra R L]
 def nilradical :=
   sSup { I : LieIdeal R L | LieIdeal.IsNilpotent I }
 
-instance nilradicalIsNilpotent : LieIdeal.IsNilpotent (nilradical R L) := by
+instance nilradicalIsNilpotent [IsNoetherian R L] : LieIdeal.IsNilpotent (nilradical R L) := by
   sorry
 
 theorem LieIdeal.nilpotent_iff_le_nilradical [IsNoetherian R L] (I : LieIdeal R L) :
