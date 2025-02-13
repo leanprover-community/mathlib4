@@ -77,11 +77,9 @@ theorem perm_inv_mapsTo_iff_mapsTo {f : Perm α} {s : Set α} [Finite s] :
   ⟨perm_inv_mapsTo_of_mapsTo f⁻¹, perm_inv_mapsTo_of_mapsTo f⟩
 
 theorem perm_inv_on_of_perm_on_finite {f : Perm α} {p : α → Prop} [Finite { x // p x }]
-    (h : ∀ x, p x → p (f x)) {x : α} (hx : p x) : p (f⁻¹ x) :=
-  -- Porting note: relies heavily on the definitions of `Subtype` and `setOf` unfolding to their
-  -- underlying predicate.
-  have : Finite { x | p x } := ‹_›
-  perm_inv_mapsTo_of_mapsTo (s := {x | p x}) f h hx
+    (h : ∀ x, p x → p (f x)) {x : α} (hx : p x) : p (f⁻¹ x) := by
+  have : Finite { x | p x } := by simpa
+  simpa using perm_inv_mapsTo_of_mapsTo (s := {x | p x}) f h hx
 
 /-- If the permutation `f` maps `{x // p x}` into itself, then this returns the permutation
   on `{x // p x}` induced by `f`. Note that the `h` hypothesis is weaker than for

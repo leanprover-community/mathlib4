@@ -84,11 +84,11 @@ theorem CycleType.count_def {σ : Perm α} (n : ℕ) :
   intro d h
   simp only [Function.comp_apply, eq_comm, Finset.mem_val.mp h, exists_const]
 
-@[simp] -- Porting note: new attr
+@[simp]
 theorem cycleType_eq_zero {σ : Perm α} : σ.cycleType = 0 ↔ σ = 1 := by
   simp [cycleType_def, cycleFactorsFinset_eq_empty_iff]
 
-@[simp] -- Porting note: new attr
+@[simp]
 theorem cycleType_one : (1 : Perm α).cycleType = 0 := cycleType_eq_zero.2 rfl
 
 theorem card_cycleType_eq_zero {σ : Perm α} : Multiset.card σ.cycleType = 0 ↔ σ = 1 := by
@@ -127,7 +127,7 @@ theorem Disjoint.cycleType {σ τ : Perm α} (h : Disjoint σ τ) :
     Multiset.map_add, Finset.union_val, Multiset.add_eq_union_iff_disjoint.mpr _]
   exact Finset.disjoint_val.2 h.disjoint_cycleFactorsFinset
 
-@[simp] -- Porting note: new attr
+@[simp]
 theorem cycleType_inv (σ : Perm α) : σ⁻¹.cycleType = σ.cycleType :=
   cycle_induction_on (P := fun τ : Perm α => τ⁻¹.cycleType = τ.cycleType) σ rfl
     (fun σ hσ => by simp only [hσ.cycleType, hσ.inv.cycleType, support_inv])
@@ -135,7 +135,7 @@ theorem cycleType_inv (σ : Perm α) : σ⁻¹.cycleType = σ.cycleType :=
       simp only [mul_inv_rev, hστ.cycleType, hστ.symm.inv_left.inv_right.cycleType, hσ, hτ,
         add_comm]
 
-@[simp] -- Porting note: new attr
+@[simp]
 theorem cycleType_conj {σ τ : Perm α} : (τ * σ * τ⁻¹).cycleType = σ.cycleType := by
   induction σ using cycle_induction_on with
   | base_one => simp
@@ -169,7 +169,7 @@ theorem sign_of_cycleType (f : Perm α) :
   · rw [Multiset.map_cons, Multiset.prod_cons, Multiset.sum_cons, Multiset.card_cons, ihs]
     simp only [pow_add, pow_one, mul_neg_one, neg_mul, mul_neg, mul_assoc, mul_one]
 
-@[simp] -- Porting note: new attr
+@[simp]
 theorem lcm_cycleType (σ : Perm α) : σ.cycleType.lcm = orderOf σ := by
   induction σ using cycle_induction_on with
   | base_one => simp
