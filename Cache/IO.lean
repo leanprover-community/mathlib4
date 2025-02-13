@@ -101,8 +101,6 @@ structure CacheM.Context where
   mathlibDepPath : FilePath
   /-- the Lean source search path -/
   srcSearchPath : SearchPath
-  /-- TODO: use search path instead -/
-  packageDirs : PackageDirs
   /-- build directory for proofwidgets -/
   proofWidgetsBuildDir : FilePath
 
@@ -129,27 +127,12 @@ private def CacheM.getContext : IO CacheM.Context := do
   return {
     mathlibDepPath := mathlibSource,
     srcSearchPath := sp,
-    packageDirs := .ofList [
-      ("Mathlib", mathlibSource),
-      ("Archive", mathlibSource),
-      ("Counterexamples", mathlibSource),
-      ("MathlibTest", mathlibSource),
-      ("Aesop", LAKEPACKAGESDIR / "aesop"),
-      ("Batteries", LAKEPACKAGESDIR / "batteries"),
-      ("Cli", LAKEPACKAGESDIR / "Cli"),
-      ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
-      ("Qq", LAKEPACKAGESDIR / "Qq"),
-      ("ImportGraph", LAKEPACKAGESDIR / "importGraph"),
-      ("LeanSearchClient", LAKEPACKAGESDIR / "LeanSearchClient"),
-      ("Plausible", LAKEPACKAGESDIR / "plausible")],
     proofWidgetsBuildDir := LAKEPACKAGESDIR / "proofwidgets" / ".lake" / "build"}
 
 /-- Run a `CacheM` in `IO` by loading the context from `LEAN_SRC_PATH`. -/
 def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
 
 end
-
-def getPackageDirs : CacheM PackageDirs := return (← read).packageDirs
 
 def getPackageDir (path : FilePath) : CacheM FilePath := do
   let sp := (← read).srcSearchPath
