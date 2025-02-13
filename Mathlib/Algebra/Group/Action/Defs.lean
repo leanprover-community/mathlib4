@@ -57,8 +57,23 @@ variable {M N G H α β γ δ : Type*}
 @[to_additive "See also `AddMonoid.toAddAction`"]
 instance (priority := 910) Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
 
+/-- Like `Mul.toSMul`, but multiplies on the right.
+
+See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWithZero`. -/
+@[to_additive "Like `Add.toVAdd`, but adds on the right.
+
+  See also `AddMonoid.toOppositeAddAction`."]
+instance (priority := 910) Mul.toSMulMulOpposite (α : Type*) [Mul α] : SMul αᵐᵒᵖ α where
+  smul a b := b * a.unop
+
 @[to_additive (attr := simp)]
-lemma smul_eq_mul (α : Type*) [Mul α] {a a' : α} : a • a' = a * a' := rfl
+lemma smul_eq_mul {α : Type*} [Mul α] (a b : α) : a • b = a * b := rfl
+
+@[to_additive]
+lemma op_smul_eq_mul {α : Type*} [Mul α] (a b : α) : MulOpposite.op a • b = b * a := rfl
+
+@[to_additive (attr := simp)]
+lemma MulOpposite.smul_eq_mul_unop [Mul α] (a : αᵐᵒᵖ) (b : α) : a • b = b * a.unop := rfl
 
 /-- Type class for additive monoid actions. -/
 class AddAction (G : Type*) (P : Type*) [AddMonoid G] extends VAdd G P where
@@ -485,3 +500,22 @@ lemma SMulCommClass.of_mul_smul_one {M N} [Monoid N] [SMul M N]
   ⟨fun x y z ↦ by rw [← H x z, smul_eq_mul, ← H, smul_eq_mul, mul_assoc]⟩
 
 end CompatibleScalar
+
+/-- Typeclass for multiplicative actions on multiplicative structures. This generalizes
+conjugation actions. -/
+@[ext]
+class MulDistribMulAction (M N : Type*) [Monoid M] [Monoid N] extends MulAction M N where
+  /-- Distributivity of `•` across `*` -/
+  smul_mul : ∀ (r : M) (x y : N), r • (x * y) = r • x * r • y
+  /-- Multiplying `1` by a scalar gives `1` -/
+  smul_one : ∀ r : M, r • (1 : N) = 1
+
+export MulDistribMulAction (smul_one)
+
+section MulDistribMulAction
+variable [Monoid M] [Monoid N] [MulDistribMulAction M N]
+
+lemma smul_mul' (a : M) (b₁ b₂ : N) : a • (b₁ * b₂) = a • b₁ * a • b₂ :=
+  MulDistribMulAction.smul_mul ..
+
+end MulDistribMulAction

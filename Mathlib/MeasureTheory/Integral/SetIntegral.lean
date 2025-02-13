@@ -455,7 +455,7 @@ theorem integral_indicator_const [CompleteSpace E] (e : E) ⦃s : Set X⦄ (s_me
 @[simp]
 theorem integral_indicator_one ⦃s : Set X⦄ (hs : MeasurableSet s) :
     ∫ x, s.indicator 1 x ∂μ = (μ s).toReal :=
-  (integral_indicator_const 1 hs).trans ((smul_eq_mul _).trans (mul_one _))
+  (integral_indicator_const 1 hs).trans ((smul_eq_mul ..).trans (mul_one _))
 
 theorem setIntegral_indicatorConstLp [CompleteSpace E]
     {p : ℝ≥0∞} (hs : MeasurableSet s) (ht : MeasurableSet t) (hμt : μ t ≠ ∞) (e : E) :
