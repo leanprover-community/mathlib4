@@ -88,8 +88,6 @@ def getCurl : IO String := do
 def getLeanTar : IO String := do
   return if (← LEANTARBIN.pathExists) then LEANTARBIN.toString else "leantar"
 
-abbrev PackageDirs := Lean.RBMap String FilePath compare
-
 /--
 `CacheM` stores the following information:
 * the source directory where `Mathlib.lean` lies
