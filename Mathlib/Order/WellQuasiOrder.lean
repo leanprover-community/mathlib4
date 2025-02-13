@@ -24,6 +24,10 @@ with no infinite antichains.
 
 * Define `Set.PartiallyWellOrderedOn` and `Set.IsPWO` in terms of these predicates, and rename them
   to match.
+
+## Tags
+
+wqo, pwo, well quasi-order, partial well order, dickson order
 -/
 
 variable {α β : Type*} {r : α → α → Prop} {s : β → β → Prop}
