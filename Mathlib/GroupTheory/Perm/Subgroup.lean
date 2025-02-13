@@ -21,6 +21,7 @@ The presence of these instances induces a `Fintype` instance on the `QuotientGro
 these subgroups.
 -/
 
+assert_not_exists Field
 
 namespace Equiv
 
