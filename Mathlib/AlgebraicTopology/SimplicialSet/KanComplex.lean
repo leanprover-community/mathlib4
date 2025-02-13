@@ -29,7 +29,7 @@ open CategoryTheory Simplicial
 for every nonzero `n : ℕ` and `0 ≤ i ≤ n`,
 every map of simplicial sets `σ₀ : Λ[n, i] → S` can be extended to a map `σ : Δ[n] → S`. -/
 class KanComplex (S : SSet.{u}) : Prop where
-  hornFilling : ∀ ⦃n : ℕ⦄ ⦃i : Fin (n + 2)⦄ (σ₀ : Λ[n + 1, i] ⟶ S),
-    ∃ σ : Δ[n + 1] ⟶ S, σ₀ = hornInclusion (n + 1) i ≫ σ
+  hornFilling : ∀ ⦃n : ℕ⦄ ⦃i : Fin (n + 2)⦄ (σ₀ : (Λ[n + 1, i] : SSet) ⟶ S),
+    ∃ σ : Δ[n + 1] ⟶ S, σ₀ = Λ[n + 1, i].ι ≫ σ
 
 end SSet
