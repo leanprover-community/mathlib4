@@ -22,6 +22,11 @@ where `s` is the set of all `x` for which `r x x`.
 * For `[CompleteLattice α]` and `s : α`, a `Set.Partition s` is an independent collection of
   nontrivial elements whose supremum is `s`.
 
+## TODO
+
+* Link this to `Finpartition`.
+* Give API lemmas for the specialization to the `Set` case.
+
 -/
 variable {α : Type*} {s x y z : α}
 
@@ -35,9 +40,9 @@ structure Partition [CompleteLattice α] (s : α) where
   /-- The parts are `sSupIndep`-/
   indep : sSupIndep parts
   /-- The bottom element is not a part-/
-  bot_not_mem : ⊥ ∉ parts
+  bot_not_mem' : ⊥ ∉ parts
   /-- The supremum of all parts is `s`-/
-  sSup_parts_eq : sSup parts = s
+  sSup_eq' : sSup parts = s
 
 namespace Partition
 
@@ -59,15 +64,15 @@ lemma disjoint (hx : x ∈ P) (hy : y ∈ P) (hxy : x ≠ y) :
   P.indep.pairwiseDisjoint hx hy hxy
 
 lemma pairwiseDisjoint : Set.PairwiseDisjoint (P : Set α) id :=
-  fun _ hx _ hy hxy ↦ P.disjoint hx hy hxy
+  P.indep.pairwiseDisjoint
 
 @[simp]
 lemma sSup_eq (P : Partition s) : sSup P = s :=
-  P.sSup_parts_eq
+  P.sSup_eq'
 
 @[simp]
 lemma iSup_eq (P : Partition s) : ⨆ x ∈ P, x = s := by
-  simp_rw [← P.sSup_parts_eq, sSup_eq_iSup]
+  simp_rw [← P.sSup_eq', sSup_eq_iSup]
   rfl
 
 lemma le_of_mem (P : Partition s) (hx : x ∈ P) : x ≤ s :=
@@ -75,6 +80,10 @@ lemma le_of_mem (P : Partition s) (hx : x ∈ P) : x ≤ s :=
 
 lemma parts_nonempty (P : Partition s) (hs : s ≠ ⊥) : (P : Set α).Nonempty :=
   nonempty_iff_ne_empty.2 fun hP ↦ by simp [← P.sSup_eq, hP, sSup_empty] at hs
+
+@[simp]
+lemma bot_not_mem (P : Partition s) : ⊥ ∉ P :=
+  P.bot_not_mem'
 
 lemma ne_bot_of_mem (hx : x ∈ P) : x ≠ ⊥ :=
   fun h ↦ P.bot_not_mem <| h ▸ hx
@@ -87,8 +96,8 @@ lemma bot_lt_of_mem (hx : x ∈ P) : ⊥ < x :=
 protected def copy {t : α} (P : Partition s) (hst : s = t) : Partition t where
   parts := P.parts
   indep := P.indep
-  bot_not_mem := P.bot_not_mem
-  sSup_parts_eq := hst ▸ P.sSup_eq
+  bot_not_mem' := P.bot_not_mem
+  sSup_eq' := hst ▸ P.sSup_eq
 
 @[simp]
 lemma coe_copy_eq {t : α} {P : Partition s} (hst : s = t) : (P.copy hst : Set α) = P := rfl
@@ -98,7 +107,7 @@ lemma mem_copy_iff {t x : α} {P : Partition s} (hst : s = t) : x ∈ P.copy hst
 
 /-- The natural equivalence between the subtype of parts and the subtype of parts of a copy. -/
 @[simps!]
-def partscopyEquiv {t : α} (P : Partition s) (hst : s = t) : ↥P ≃ ↥(P.copy hst) :=
+def partscopyEquiv {t : α} (P : Partition s) (hst : s = t) : ↥(P.copy hst) ≃ ↥P :=
   Equiv.Set.ofEq rfl
 
 /-- A constructor for `Partition s` that removes `⊥` from the set of parts. -/
@@ -106,8 +115,8 @@ def partscopyEquiv {t : α} (P : Partition s) (hst : s = t) : ↥P ≃ ↥(P.cop
 def removeBot (P : Set α) (indep : sSupIndep P) (sSup_eq : sSup P = s) : Partition s where
   parts := P \ {⊥}
   indep := indep.mono diff_subset
-  bot_not_mem := by simp
-  sSup_parts_eq := by simp [← sSup_eq]
+  bot_not_mem' := by simp
+  sSup_eq' := by simp [← sSup_eq]
 
 @[simp]
 lemma coe_removeBot_eq (P : Set α) (indep) (sSup_eq : sSup P = s) :
