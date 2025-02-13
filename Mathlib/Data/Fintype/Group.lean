@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.TypeTags.Basic
-import Mathlib.Data.Fintype.OfMap
+import Mathlib.Data.Fintype.Card
 
 /-!
 # Finite types with addition/multiplications
@@ -50,3 +50,9 @@ instance Additive.fintype : ∀ [Fintype α], Fintype (Additive α) :=
 
 instance Multiplicative.fintype : ∀ [Fintype α], Fintype (Multiplicative α) :=
   Fintype.ofEquiv α Multiplicative.ofAdd
+
+@[simp] lemma Fintype.card_multiplicative (α : Type*) [Fintype α] :
+    card (Multiplicative α) = card α := Finset.card_map _
+
+@[simp] lemma Fintype.card_additive (α : Type*) [Fintype α] : card (Additive α) = card α :=
+  Finset.card_map _
