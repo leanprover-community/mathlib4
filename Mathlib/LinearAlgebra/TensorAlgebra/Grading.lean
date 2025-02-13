@@ -47,7 +47,7 @@ instance gradedAlgebra :
         AlgHom.id_apply]
       rw [lift_ι_apply, GradedAlgebra.ι_apply R M, DirectSum.coeAlgHom_of, Subtype.coe_mk])
     fun i x => by
-    cases' x with x hx
+    obtain ⟨x, hx⟩ := x
     dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
     -- Porting note: use new `induction using` support that failed in Lean 3
     induction hx using Submodule.pow_induction_on_left' with
