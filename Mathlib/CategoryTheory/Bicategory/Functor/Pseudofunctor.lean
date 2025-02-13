@@ -321,6 +321,18 @@ noncomputable def mkOfLax' (F : LaxFunctor B C) [∀ a, IsIso (F.mapId a)]
 
 end
 
+section
+
+variable {B : Type*} [Bicategory B] {C : Type*} [Bicategory C]
+variable (F : Pseudofunctor B C)
+
+lemma mapComp_congr {a b c : B} {f f' : a ⟶ b} {g g' : b ⟶ c}
+      (hff' : f = f') (hgg' : g = g') :
+    F.mapComp f g =
+      eqToIso (by rw [hgg', hff']) ≪≫ F.mapComp f' g' ≪≫ eqToIso (by rw [hgg', hff']) := by
+  aesop_cat
+end
+
 end Pseudofunctor
 
 end CategoryTheory

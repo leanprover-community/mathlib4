@@ -6,6 +6,7 @@ Authors: Calle Sönne
 
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+import Mathlib.CategoryTheory.FiberedCategory.Fibered
 
 /-!
 # The Grothendieck construction
@@ -117,6 +118,35 @@ factor. -/
 def forget : ∫ F ⥤ 𝒮 where
   obj X := X.base
   map f := f.base
+
+instance isPreFibered : IsPreFibered (forget F) := by
+  constructor; intro a b f
+  use ⟨b, (F.map f.op.toLoc).obj a.fiber⟩, ⟨f, 𝟙 _⟩
+  refine {universal_property := ?_, cond := ?_}
+  · apply IsHomLiftAux.map (p := forget F) (a := ⟨b, (F.map f.op.toLoc).obj a.fiber⟩)
+      ⟨ f, 𝟙 ((F.map f.op.toLoc).obj a.fiber) ⟩
+  · intro a' g hfg
+    let eq := IsHomLift.domain_eq (forget F) f g
+    refine ⟨⟨eqToHom <| eq, g.fiber ≫ ?_⟩, ?_⟩
+    · have : g.base = eqToHom eq ≫ f := by simpa using IsHomLift.fac' (forget F) f g
+      exact ((eqToIso (congrArg (fun u ↦ F.map u.op.toLoc) this)).app a.fiber).hom ≫
+       ((F.mapComp f.op.toLoc _).app _).hom
+    · simp; constructor
+      · constructor
+        · apply IsHomLift.of_fac' <;> simpa using eq
+        · apply Hom.ext <;> simpa using (IsHomLift.fac' (forget F) f g).symm
+      · rintro H K rfl
+        apply Hom.ext
+        · simp only [categoryStruct_comp_base, op_comp, Quiver.Hom.comp_toLoc,
+          categoryStruct_comp_fiber, forget_obj, forget_map, eqToHom_refl, id_eq, eq_mpr_eq_cast,
+          map_id, id_comp, assoc]
+          conv_lhs => rw [← Category.comp_id H.fiber]
+          congr!
+          have : H.base.op.toLoc = (eqToHom eq).op.toLoc := by
+            congr!
+            simpa using IsHomLift.fac' (forget F) (𝟙 b) H
+          simp [F.mapComp_congr rfl this]
+        · simpa using IsHomLift.fac' (forget F) (𝟙 b) H
 
 end Pseudofunctor.Grothendieck
 
