@@ -4,15 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
-import Mathlib.Algebra.Module.FiniteProjective
-import Mathlib.Algebra.Module.Submodule.Localization
+import Mathlib.Algebra.Module.FinitePresentation
+import Mathlib.Algebra.Module.LocalizedModule.Submodule
 import Mathlib.CategoryTheory.Monoidal.Skeleton
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.LinearAlgebra.TensorProduct.Submodule
 import Mathlib.RingTheory.ClassGroup
-import Mathlib.RingTheory.Flat.Basic
+import Mathlib.RingTheory.Flat.Localization
 import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.RingTheory.LocalRing.Module
 
@@ -77,7 +77,7 @@ theorem projective_unit (I : (Submodule R A)ˣ) : Module.Projective R I := by
   refine .of_split f g (LinearMap.ext fun x ↦ Subtype.ext ?_)
   simp only [f, g, lsum_apply, comp_apply, sum_apply, toSpanSingleton_apply, proj_apply, pi_apply]
   simp_rw [restrict_apply, mulRight_apply, id_apply, coe_sum, coe_smul, Algebra.smul_def,
-    ← Algebra.coe_linearMap, LinearEquiv.coe_toLinearMap, LinearEquiv.apply_ofInjective_symm,
+    ← Algebra.coe_linearMap, LinearEquiv.coe_toLinearMap, LinearEquiv.ofInjective_symm_apply,
     mul_assoc, Algebra.coe_linearMap, ← Algebra.smul_def, ← Finset.mul_sum, eq,
     (Finset.sum_coe_sort _ _).trans hr, mul_one]
 
@@ -97,7 +97,7 @@ noncomputable def linearEquivOfUnits (I : (Submodule R A)ˣ) : I ⊗[R] ↑I⁻�
       have := IsLocalization.flat A S
       simpa [mulMap', mulMap_eq_mul'_comp_mapIncl] using
         (IsLocalization.bijective_linearMap_mul' S A).1.comp
-          (Module.Flat.tensorProduct_mapIncl_injective' _ _),
+          (Module.Flat.tensorProduct_mapIncl_injective_of_left _ _),
     by simpa using mulMap'_surjective _ _⟩
 
 noncomputable def linearEquivOfUnitsMul (I J : (Submodule R A)ˣ) : I ⊗[R] J ≃ₗ[R] I * J :=
@@ -106,7 +106,7 @@ noncomputable def linearEquivOfUnitsMul (I J : (Submodule R A)ˣ) : I ⊗[R] J �
     have := IsLocalization.flat A S
     simpa [mulMap', mulMap_eq_mul'_comp_mapIncl] using
       (IsLocalization.bijective_linearMap_mul' S A).1.comp
-        (Module.Flat.tensorProduct_mapIncl_injective' _ _),
+        (Module.Flat.tensorProduct_mapIncl_injective_of_left _ _),
     mulMap'_surjective _ _⟩
 
 end Submodule
@@ -171,7 +171,7 @@ theorem rTensorInv_leftInverse : Function.LeftInverse (rTensorInv P Q e) (.rTens
   fun _ ↦ by
     simp_rw [rTensorInv, LinearEquiv.coe_trans, LinearMap.comp_apply, LinearEquiv.coe_toLinearMap]
     rw [← LinearEquiv.eq_symm_apply]
-    ext; simp [LinearEquiv.congrLeft, LinearEquiv.congrRight]
+    ext; simp [LinearEquiv.congrLeft, LinearEquiv.congrRight, LinearEquiv.arrowCongrAddEquiv]
 
 theorem rTensorInv_injective : Function.Injective (rTensorInv P Q e) := by
   simpa [rTensorInv] using (rTensorInv_leftInverse _ _ <| TensorProduct.comm R N M ≪≫ₗ e).injective
@@ -193,7 +193,7 @@ theorem bijective_curry : Function.Bijective (curry e.toLinearMap) := by
   have : curry e.toLinearMap = ((TensorProduct.lid R N).congrLeft _ R ≪≫ₗ e.congrRight) ∘ₗ
       rTensorHom N ∘ₗ (ringLmapEquivSelf R R M).symm.toLinearMap := by
     rw [← LinearEquiv.toLinearMap_symm_comp_eq]; ext
-    simp [LinearEquiv.congrLeft, LinearEquiv.congrRight]
+    simp [LinearEquiv.congrLeft, LinearEquiv.congrRight, LinearEquiv.arrowCongrAddEquiv]
   simpa [this] using (rTensorEquiv R M <| TensorProduct.comm R N M ≪≫ₗ e).bijective
 
 include e
@@ -239,7 +239,8 @@ private theorem finite_projective : Module.Finite R M ∧ Projective R M := by
     rw [← LinearMap.range_eq_top, eq_top_iff, ← Ideal.span_one, Ideal.span_le, ← Set.singleton_one,
       Set.singleton_subset_iff]
     use Finsupp.equivFunOnFinite.symm fun i ↦ i.1.2
-    simp_rw [f, Finsupp.coe_lsum, Finsupp.sum_fintype _ _ fun _ ↦ map_zero _]
+    simp_rw [f, Finsupp.coe_lsum]
+    rw [Finsupp.sum_fintype _ _ fun _ ↦ map_zero _]
     rwa [e.symm_apply_eq, map_sum, ← Finset.sum_coe_sort, eq_comm] at hS
   have ⟨g, hg⟩ := projective_lifting_property f .id this
   classical
@@ -322,7 +323,7 @@ variable {R M}
 theorem toPic'_eq_iff (N : Pic R) : toPic' R M = N ↔ Nonempty (M ≃ₗ[R] N) := by
   sorry
 
-theorem _root_.CommRing.Pic.one_eq : (1 : Pic R) = toPic' R R := _
+theorem _root_.CommRing.Pic.one_eq : (1 : Pic R) = toPic' R R := sorry
 
 theorem _root_.CommRing.Pic.inv_eq_dual (M : Pic R) :
     M⁻¹ = toPic' R (Dual R M):=
@@ -365,10 +366,10 @@ theorem toPic_tensor [Invertible R N] : toPic R (M ⊗[R] N) = toPic R M * toPic
 
 theorem toPic_dual : toPic R (Dual R M) = (toPic R M)⁻¹ := sorry
 
-instance [LocalRing R] : Subsingleton (Pic R) :=
+instance [IsLocalRing R] : Subsingleton (Pic R) :=
   subsingleton_Pic_iff.mpr fun M _ _ _ ↦
-    have := Projective.finite_iff_finitePresentation.mp (Invertible.instFinite R M)
-    free_of_flat_of_localRing
+    have := finitePresentation_of_projective R M
+    free_of_flat_of_isLocalRing
 
 /- TODO: show that all commutative semi-local rings,
   in particular Artinian rings, has trivial Picard group.
@@ -429,7 +430,7 @@ noncomputable def embFractionRing : M →ₗ[R] K :=
     (Algebra.ofId R K).toLinearMap.rTensor M ∘ₗ (TensorProduct.lid R M).symm
 
 theorem embFractionRing_injective : Function.Injective (embFractionRing K e) := by
-  have := left_projective e
+  have := Module.Invertible.left e
   simpa [embFractionRing] using
     Flat.rTensor_preserves_injective_linearMap (R := R) _ (IsFractionRing.injective R K)
 
@@ -515,9 +516,9 @@ def _root_.Submodule.unitsToPic : (Submodule R A)ˣ →* Pic R where
 variable (K) [CommRing K] [Algebra R K] [IsFractionRing R K]
 
 def toUnitsSubmodule : Pic R →* (Submodule R K)ˣ where
-  toFun := _
-  map_one' := _
-  map_mul' := _
+  toFun := sorry
+  map_one' := sorry
+  map_mul' := sorry
 
 
 variable [IsDomain R]
