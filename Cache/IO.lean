@@ -339,6 +339,9 @@ def getLocalCacheSet : IO <| Lean.RBTree String compare := do
   let paths ← getFilesWithExtension CACHEDIR "ltar"
   return .fromList (paths.toList.map (·.withoutParent CACHEDIR |>.toString)) _
 
+def isFromMathlib (mod : Name) : Bool :=
+  mod.getRoot == `Mathlib
+
 /-- Decompresses build files into their respective folders -/
 def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
   let hashMap ← hashMap.filterExists true
@@ -363,15 +366,14 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
       to be accompanied with some hash change.
       In practice, cached local mathlib dependencies would lead to a new `rootHash` anyways
       (mathllib lakefile/manifest would need to reflect this) and therefore would
-      invalidate cache anyways, therefore we leave it as is.
+      invalidate cache anyways, so there is not much gained by making this change.
       -/
-      -- TODO: does this mess with `lean-tar` as the base might not be cleaned?
-      if mod.getRoot == `Mathlib then
+      if (← isMathlibRoot) || !isFromMathlib mod then
+        pure <| config.push <| .str pathStr
+      else
         -- only mathlib files, when not in the mathlib4 repo, need to be redirected
         let packageDir := (← getPackageDir mod).toString
         pure <| config.push <| .mkObj [("file", pathStr), ("base", packageDir)]
-      else
-        pure <| config.push <| .str pathStr
     stdin.putStr <| Lean.Json.compress <| .arr config
     let exitCode ← child.wait
     if exitCode != 0 then throw <| IO.userError s!"leantar failed with error code {exitCode}"
