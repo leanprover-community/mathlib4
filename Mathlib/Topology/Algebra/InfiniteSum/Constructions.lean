@@ -87,6 +87,12 @@ lemma HasProd.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [Continu
   simpa [Tendsto, ← Filter.map_map] using this
 
 @[to_additive]
+lemma Sum.tprod {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M] [T2Space M]
+    {f : α ⊕ β → M} (h₁ : Multipliable (f ∘ .inl)) (h₂ : Multipliable (f ∘ .inr)) :
+    ∏' i, f i = (∏' i, f (.inl i)) * (∏' i, f (.inr i)) :=
+  (h₁.hasProd.sum h₂.hasProd).tprod_eq
+
+@[to_additive]
 lemma Multipliable.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M]
     (f : α ⊕ β → M) (h₁ : Multipliable (f ∘ Sum.inl)) (h₂ : Multipliable (f ∘ Sum.inr)) :
     Multipliable f :=
