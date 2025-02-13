@@ -137,6 +137,25 @@ lemma compProd_add_right (μ : Measure α) (κ η : Kernel α β)
   · simp_rw [Measure.compProd, Kernel.prodMkLeft_add, Kernel.compProd_add_right, Kernel.add_apply]
   · simp [compProd_of_not_sfinite _ _ hμ]
 
+lemma compProd_sum_left {ι : Type*} [Countable ι] {μ : ι → Measure α}
+    [∀ i, SFinite (μ i)] [IsSFiniteKernel κ] :
+    (sum μ) ⊗ₘ κ = sum (fun i ↦ (μ i) ⊗ₘ κ) := by
+  ext s hs
+  rw [sum_apply _ hs, compProd_apply hs, lintegral_sum_measure]
+  congr with i
+  rw [compProd_apply hs]
+
+lemma compProd_sum_right {ι : Type*} [Countable ι] {κ : ι → Kernel α β}
+    [SFinite μ] [h : ∀ i, IsSFiniteKernel (κ i)]:
+    μ ⊗ₘ (Kernel.sum κ) = sum (fun i ↦ μ ⊗ₘ (κ i)) := by
+  ext s hs
+  simp_rw [sum_apply _ hs, compProd_apply hs, Kernel.sum_apply]
+  rw [← lintegral_tsum]
+  · congr with i
+    rw [Measure.sum_apply]
+    exact measurable_prod_mk_left hs
+  · exact fun _ ↦ (Kernel.measurable_kernel_prod_mk_left hs).aemeasurable
+
 @[simp]
 lemma fst_compProd (μ : Measure α) [SFinite μ] (κ : Kernel α β) [IsMarkovKernel κ] :
     (μ ⊗ₘ κ).fst = μ := by
