@@ -186,7 +186,7 @@ protected theorem Inseparable.zpow {G : Type*} [DivInvMonoid G] [TopologicalSpac
 
 @[to_additive]
 instance : ContinuousInv (ULift G) :=
-  ⟨continuous_uLift_up.comp (continuous_inv.comp continuous_uLift_down)⟩
+  ⟨continuous_uliftUp.comp (continuous_inv.comp continuous_uliftDown)⟩
 
 @[to_additive]
 theorem continuousOn_inv {s : Set G} : ContinuousOn Inv.inv s :=
@@ -822,6 +822,19 @@ lemma TopologicalGroup.isInducing_iff_nhds_one
     Filter.comap_comap]
   congr 1
   ext; simp
+
+@[to_additive]
+lemma TopologicalGroup.isOpenMap_iff_nhds_one
+    {H : Type*} [Monoid H] [TopologicalSpace H] [ContinuousConstSMul H H]
+    {F : Type*} [FunLike F G H] [MonoidHomClass F G H] {f : F} :
+    IsOpenMap f ↔ 𝓝 1 ≤ .map f (𝓝 1) := by
+  refine ⟨fun H ↦ map_one f ▸ H.nhds_le 1, fun h ↦ IsOpenMap.of_nhds_le fun x ↦ ?_⟩
+  have : Filter.map (f x * ·) (𝓝 1) = 𝓝 (f x) := by
+    simpa [-Homeomorph.map_nhds_eq, Units.smul_def] using
+      (Homeomorph.smul ((toUnits x).map (MonoidHomClass.toMonoidHom f))).map_nhds_eq (1 : H)
+  rw [← map_mul_left_nhds_one x, Filter.map_map, Function.comp_def, ← this]
+  refine (Filter.map_mono h).trans ?_
+  simp [Function.comp_def]
 
 -- TODO: unify with `QuotientGroup.isOpenQuotientMap_mk`
 /-- Let `A` and `B` be topological groups, and let `φ : A → B` be a continuous surjective group

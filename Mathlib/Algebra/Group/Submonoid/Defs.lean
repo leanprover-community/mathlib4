@@ -111,8 +111,9 @@ class AddSubmonoidClass (S : Type*) (M : outParam Type*) [AddZeroClass M] [SetLi
 attribute [to_additive] Submonoid SubmonoidClass
 
 @[to_additive]
-instance (priority := 50) SubmonoidClass.toSubmonoid {A M} [Monoid M] [SetLike A M] [SubmonoidClass A M] :
-    CoeOut A (Submonoid M) := ⟨fun S ↦ ⟨⟨S, MulMemClass.mul_mem⟩, OneMemClass.one_mem S⟩⟩
+instance (priority := 50) SubmonoidClass.toSubmonoid {A M : Type*} [Monoid M] [SetLike A M]
+    [SubmonoidClass A M] : CoeOut A (Submonoid M) :=
+  ⟨fun S ↦ ⟨⟨S, MulMemClass.mul_mem⟩, OneMemClass.one_mem S⟩⟩
 
 @[to_additive (attr := aesop safe apply (rule_sets := [SetLike]))]
 theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x : M}
@@ -143,11 +144,10 @@ initialize_simps_projections AddSubmonoid (carrier → coe, as_prefix coe)
 theorem mem_toSubsemigroup {s : Submonoid M} {x : M} : x ∈ s.toSubsemigroup ↔ x ∈ s :=
   Iff.rfl
 
--- Porting note: `x ∈ s.carrier` is now syntactically `x ∈ s.toSubsemigroup.carrier`,
--- which `simp` already simplifies to `x ∈ s.toSubsemigroup`. So we remove the `@[simp]` attribute
--- here, and instead add the simp lemma `mem_toSubsemigroup` to allow `simp` to do this exact
--- simplification transitively.
-@[to_additive]
+-- In Lean 3, `dsimp` would use theorems proved by `Iff.rfl`.
+-- If that were still the case, this would useful as a `@[simp]` lemma,
+-- despite the fact that it is provable by `simp` (by not `dsimp`).
+@[to_additive (attr := simp, nolint simpNF)] -- See https://github.com/leanprover-community/mathlib4/issues/10675
 theorem mem_carrier {s : Submonoid M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
