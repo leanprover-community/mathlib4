@@ -9,9 +9,7 @@ import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Rel
 import Mathlib.Data.Fin.VecNotation
--- import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Order.OrderIsoNat
-
 
 /-!
 # Series of a relation
