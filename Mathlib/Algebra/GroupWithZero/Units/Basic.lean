@@ -18,7 +18,7 @@ We also define `Ring.inverse`, a globally defined function on any ring
 -/
 
 -- Guard against import creep
-assert_not_exists DenselyOrdered Subtype.restrict Multiplicative
+assert_not_exists DenselyOrdered Equiv Subtype.restrict Multiplicative
 
 
 variable {α M₀ G₀ : Type*}
