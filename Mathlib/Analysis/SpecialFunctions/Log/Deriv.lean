@@ -319,7 +319,7 @@ theorem hasSum_log_one_add_inv {a : ℝ} (h : 0 < a) :
     linarith
   · field_simp
 
-/-- Expansion of `log (a + 1)` as a series in powers of `a / (a + 2)`. -/
+/-- Expansion of `log (1 + a)` as a series in powers of `a / (a + 2)`. -/
 theorem hasSum_log_one_add {a : ℝ} (h : 0 ≤ a) :
     HasSum (fun k : ℕ => (2 : ℝ) * (1 / (2 * k + 1)) * (a / (a + 2)) ^ (2 * k + 1))
       (log (1 + a)) := by
