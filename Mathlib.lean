@@ -2816,6 +2816,7 @@ import Mathlib.Data.List.SplitOn
 import Mathlib.Data.List.Sublists
 import Mathlib.Data.List.Sym
 import Mathlib.Data.List.TFAE
+import Mathlib.Data.List.TakeDrop
 import Mathlib.Data.List.TakeWhile
 import Mathlib.Data.List.ToFinsupp
 import Mathlib.Data.List.Zip
@@ -3856,8 +3857,9 @@ import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
 import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
 import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
 import Mathlib.MeasureTheory.Function.LpSeminorm.Trim
-import Mathlib.MeasureTheory.Function.LpSpace
+import Mathlib.MeasureTheory.Function.LpSpace.Basic
 import Mathlib.MeasureTheory.Function.LpSpace.ContinuousCompMeasurePreserving
+import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Basic
 import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Continuous
 import Mathlib.MeasureTheory.Function.SimpleFunc
@@ -4616,6 +4618,7 @@ import Mathlib.RingTheory.Flat.Basic
 import Mathlib.RingTheory.Flat.CategoryTheory
 import Mathlib.RingTheory.Flat.Equalizer
 import Mathlib.RingTheory.Flat.EquationalCriterion
+import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 import Mathlib.RingTheory.Flat.Localization
 import Mathlib.RingTheory.Flat.Stability
@@ -4640,7 +4643,8 @@ import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Summable
 import Mathlib.RingTheory.HahnSeries.Valuation
 import Mathlib.RingTheory.Henselian
-import Mathlib.RingTheory.HopfAlgebra
+import Mathlib.RingTheory.HopfAlgebra.Basic
+import Mathlib.RingTheory.HopfAlgebra.TensorProduct
 import Mathlib.RingTheory.HopkinsLevitzki
 import Mathlib.RingTheory.Ideal.AssociatedPrime
 import Mathlib.RingTheory.Ideal.Basic
