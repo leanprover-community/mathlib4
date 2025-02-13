@@ -286,7 +286,8 @@ lemma preservesShape_fin_of_preserves_binary_and_initial (n : ℕ) :
     haveI := preserves_fin_of_preserves_binary_and_initial F n fun n => K.obj ⟨n⟩
     apply preservesColimit_of_iso_diagram F that
 
-/-- If `F` preserves the initial object and binary coproducts then it preserves finite products. -/
+/-- If `F` preserves the initial object and binary coproducts then it preserves finite
+coproducts. -/
 lemma preservesFiniteCoproductsOfPreservesBinaryAndInitial (J : Type*) [Fintype J] :
     PreservesColimitsOfShape (Discrete J) F := by
   classical
