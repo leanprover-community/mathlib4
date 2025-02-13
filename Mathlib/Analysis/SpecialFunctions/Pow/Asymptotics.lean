@@ -264,6 +264,37 @@ protected lemma IsTheta.sqrt (hfg : f =Θ[l] g) (hf : 0 ≤ᶠ[l] f) (hg : 0 ≤
     (Real.sqrt <| f ·) =Θ[l] (Real.sqrt <| g ·) :=
   ⟨hfg.1.sqrt hg, hfg.2.sqrt hf⟩
 
+theorem isBigO_atTop_natCast_rpow_of_tendsto_div_rpow {𝕜 : Type*} [RCLike 𝕜] {g : ℕ → 𝕜}
+    {a : 𝕜} {r : ℝ} (hlim : Tendsto (fun n ↦ g n / (n ^ r : ℝ)) atTop (𝓝 a)) :
+    g =O[atTop] fun n ↦ (n : ℝ) ^ r := by
+  refine (isBigO_of_div_tendsto_nhds ?_ ‖a‖ ?_).of_norm_left
+  · filter_upwards [eventually_ne_atTop 0] with _ h
+    simp [Real.rpow_eq_zero_iff_of_nonneg, h]
+  · exact hlim.norm.congr fun n ↦ by simp [abs_of_nonneg, show 0 ≤ (n : ℝ) ^ r by positivity]
+
+variable {E : Type*} [SeminormedRing E] (a b c : ℝ)
+
+theorem IsBigO.mul_atTop_rpow_of_isBigO_rpow {f g : ℝ → E}
+    (hf : f =O[atTop] fun t ↦ (t : ℝ) ^ a) (hg : g =O[atTop] fun t ↦ (t : ℝ) ^ b)
+    (h : a + b ≤ c) :
+    (f * g) =O[atTop] fun t ↦ (t : ℝ) ^ c := by
+  refine (hf.mul hg).trans (Eventually.isBigO ?_)
+  filter_upwards [eventually_ge_atTop 1] with t ht
+  rw [← Real.rpow_add (zero_lt_one.trans_le ht), Real.norm_of_nonneg (Real.rpow_nonneg
+    (zero_le_one.trans ht) (a + b))]
+  exact Real.rpow_le_rpow_of_exponent_le ht h
+
+theorem IsBigO.mul_atTop_rpow_natCast_of_isBigO_rpow {f g : ℕ → E}
+    (hf : f =O[atTop] fun n ↦ (n : ℝ) ^ a) (hg : g =O[atTop] fun n ↦ (n : ℝ) ^ b)
+    (h : a + b ≤ c) :
+    (f * g) =O[atTop] fun n ↦ (n : ℝ) ^ c := by
+  refine (hf.mul hg).trans (Eventually.isBigO ?_)
+  filter_upwards [eventually_ge_atTop 1] with t ht
+  replace ht : 1 ≤ (t : ℝ) := Nat.one_le_cast.mpr ht
+  rw [← Real.rpow_add (zero_lt_one.trans_le ht), Real.norm_of_nonneg (Real.rpow_nonneg
+    (zero_le_one.trans ht) (a + b))]
+  exact Real.rpow_le_rpow_of_exponent_le ht h
+
 end Asymptotics
 
 open Asymptotics
