@@ -59,7 +59,6 @@ lemma ediam_eq_zero_of_subsingleton [Subsingleton α] : G.ediam = 0 := by
 
 lemma nontrivial_of_ediam_ne_zero (h : G.ediam ≠ 0) : Nontrivial α := by
   contrapose! h
-  rw [not_nontrivial_iff_subsingleton] at h
   exact ediam_eq_zero_of_subsingleton
 
 lemma ediam_ne_zero [Nontrivial α] : G.ediam ≠ 0 := by
@@ -70,7 +69,6 @@ lemma ediam_ne_zero [Nontrivial α] : G.ediam ≠ 0 := by
 
 lemma subsingleton_of_ediam_eq_zero (h : G.ediam = 0) : Subsingleton α := by
   contrapose! h
-  apply not_subsingleton_iff_nontrivial.mp at h
   exact ediam_ne_zero
 
 lemma ediam_ne_zero_iff_nontrivial :

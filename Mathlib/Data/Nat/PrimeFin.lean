@@ -67,7 +67,7 @@ lemma le_of_mem_primeFactors (h : p ∈ n.primeFactors) : p ≤ n :=
   · contrapose!
     rintro hn
     obtain ⟨p, hp, hpn⟩ := exists_prime_and_dvd hn.2
-    exact Nonempty.ne_empty <| ⟨_, mem_primeFactors.2 ⟨hp, hpn, hn.1⟩⟩
+    exact ⟨_, mem_primeFactors.2 ⟨hp, hpn, hn.1⟩⟩
   · rintro (rfl | rfl) <;> simp
 
 @[simp]

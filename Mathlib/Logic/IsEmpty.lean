@@ -5,7 +5,7 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Relator
-import Mathlib.Tactic.Push.Basic
+import Mathlib.Tactic.Push
 
 /-!
 # Types that are empty
@@ -151,7 +151,7 @@ theorem isEmpty_fun : IsEmpty (α → β) ↔ Nonempty α ∧ IsEmpty β := by
 
 @[simp]
 theorem nonempty_fun : Nonempty (α → β) ↔ IsEmpty α ∨ Nonempty β :=
-  not_iff_not.mp <| by rw [not_or, not_nonempty_iff, not_nonempty_iff, isEmpty_fun, not_isEmpty_iff]
+  not_iff_not.mp <| by push_neg; exact isEmpty_fun
 
 @[simp]
 theorem isEmpty_sigma {α} {E : α → Type*} : IsEmpty (Sigma E) ↔ ∀ a, IsEmpty (E a) := by
