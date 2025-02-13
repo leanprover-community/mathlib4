@@ -130,15 +130,11 @@ def coneOfConeCurry {D : DiagramOfCones (curry.obj G)} (Q : ∀ j, IsLimit (D.ob
     (c : Cone G) : Cone D.conePoints where
   pt := c.pt
   π :=
-    { app := fun j =>
-        (Q j).lift
-          { pt := c.pt
-            π :=
-              { app := fun k => c.π.app (j, k)
-                naturality := fun k k' f => by
-                  simp } }
-      naturality := fun j j' f => (Q j').hom_ext (by simp) }
-
+    { app j := (Q j).lift
+        { pt := c.pt
+          π := { app k := c.π.app (j, k)
+                 naturality _ _ _ := by simp } }
+      naturality {_ j'} _ := (Q j').hom_ext (by simp) }
 
 /-- Given a diagram `D` of colimit cocones over the `F.obj j`, and a cocone over `uncurry.obj F`,
 we can construct a cocone over the diagram consisting of the cocone points from `D`.
@@ -182,13 +178,11 @@ def coconeOfCoconeCurry {D : DiagramOfCocones (curry.obj G)} (Q : ∀ j, IsColim
     (c : Cocone G) : Cocone D.coconePoints where
   pt := c.pt
   ι :=
-    { app := fun j =>
-        (Q j).desc
-          { pt := c.pt
-            ι :=
-              { app := fun k => c.ι.app (j, k)
-                naturality := fun k k' f => by simp } }
-      naturality := fun j j' f => (Q j).hom_ext (by simp) }
+    { app j := (Q j).desc
+        { pt := c.pt
+          ι := { app k := c.ι.app (j, k)
+                 naturality _ _ _ := by simp } }
+      naturality {j _} _ := (Q j).hom_ext (by simp) }
 
 /-- `coneOfConeUncurry Q c` is a limit cone when `c` is a limit cone.
 -/
@@ -302,8 +296,7 @@ noncomputable def coneOfHasLimitCurryCompLim : Cone G :=
   { pt := c.pt,
     π :=
     { app x := (c.π.app x.fst) ≫ (Q.obj x.fst).π.app x.snd
-      naturality := by
-        intro x y f
+      naturality {x y} f := by
         dsimp only [Functor.const_obj_obj, Functor.const_obj_map, Functor.comp_obj, lim_obj]
         simp only [limit.cone_x, limit.cone_π, ← limit.w (F := curry.obj G ⋙ lim) (f := f.1),
           Functor.comp_obj, lim_obj, Functor.comp_map, lim_map, Category.assoc, Category.id_comp, c]
@@ -408,8 +401,7 @@ noncomputable def coconeOfHasColimitCurryCompColim : Cocone G :=
   { pt := c.pt,
     ι :=
     { app x := (Q.obj x.fst).ι.app x.snd ≫ (c.ι.app x.fst)
-      naturality := by
-        intro x y f
+      naturality {x y} f := by
         dsimp only [Functor.const_obj_obj, Functor.const_obj_map, Functor.comp_obj, lim_obj]
         simp only [colimit.cocone_x, colimit.cocone_ι,
           ← colimit.w (F := curry.obj G ⋙ colim) (f := f.1), Functor.comp_obj, colim_obj,
