@@ -386,7 +386,7 @@ that `V` is nonempty is necessary, as otherwise this would assert the existence 
 natural number less than zero. -/
 theorem maxDegree_lt_card_verts [DecidableRel G.Adj] [Nonempty V] :
     G.maxDegree < Fintype.card V := by
-  cases' G.exists_maximal_degree_vertex with v hv
+  obtain ⟨v, hv⟩ := G.exists_maximal_degree_vertex
   rw [hv]
   apply G.degree_lt_card_verts v
 

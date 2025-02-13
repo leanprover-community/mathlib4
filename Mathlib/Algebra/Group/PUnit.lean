@@ -3,14 +3,17 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Group.Defs
+import Mathlib.Tactic.MinImports
 
 /-!
-# Instances on PUnit
+# `PUnit` is a commutative group
 
 This file collects facts about algebraic structures on the one-element type, e.g. that it is a
 commutative ring.
 -/
+
+assert_not_exists MonoidWithZero
 
 namespace PUnit
 
@@ -22,11 +25,11 @@ instance commGroup : CommGroup PUnit where
   div _ _ := unit
   npow _ _ := unit
   zpow _ _ := unit
-  mul_assoc := by intros; rfl
-  one_mul := by intros; rfl
-  mul_one := by intros; rfl
-  inv_mul_cancel := by intros; rfl
-  mul_comm := by intros; rfl
+  mul_assoc _ _ _ := rfl
+  one_mul _ := rfl
+  mul_one _ := rfl
+  inv_mul_cancel _ := rfl
+  mul_comm _ _ := rfl
 
 -- shortcut instances
 @[to_additive] instance : One PUnit where one := unit
@@ -36,32 +39,12 @@ instance commGroup : CommGroup PUnit where
 
 -- dsimp loops when applying this lemma to its LHS,
 -- probably https://github.com/leanprover/lean4/pull/2867
-@[to_additive (attr := simp, nolint simpNF)]
-theorem one_eq : (1 : PUnit) = unit :=
-  rfl
+@[to_additive (attr := simp, nolint simpNF)] lemma one_eq : (1 : PUnit) = unit := rfl
 
 -- note simp can prove this when the Boolean ring structure is introduced
-@[to_additive]
-theorem mul_eq {x y : PUnit} : x * y = unit :=
-  rfl
+@[to_additive] lemma mul_eq (x y : PUnit) : x * y = unit := rfl
 
-@[to_additive (attr := simp)]
-theorem div_eq {x y : PUnit} : x / y = unit :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem inv_eq {x : PUnit} : x⁻¹ = unit :=
-  rfl
-
-instance commRing : CommRing PUnit where
-  __ := PUnit.commGroup
-  __ := PUnit.addCommGroup
-  left_distrib := by intros; rfl
-  right_distrib := by intros; rfl
-  zero_mul := by intros; rfl
-  mul_zero := by intros; rfl
-  natCast _ := unit
-
-instance cancelCommMonoidWithZero : CancelCommMonoidWithZero PUnit where
+@[to_additive (attr := simp)] lemma div_eq (x y : PUnit) : x / y = unit := rfl
+@[to_additive (attr := simp)] lemma inv_eq (x : PUnit) : x⁻¹ = unit := rfl
 
 end PUnit
