@@ -345,7 +345,7 @@ theorem integral_cpow {r : ℂ} (h : -1 < r.re ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[
     (∫ x : ℝ in a..b, (x : ℂ) ^ r) = ((b : ℂ) ^ (r + 1) - (a : ℂ) ^ (r + 1)) / (r + 1) := by
   rw [sub_div]
   have hr : r + 1 ≠ 0 := by
-    cases' h with h h
+    rcases h with h | h
     · apply_fun Complex.re
       rw [Complex.add_re, Complex.one_re, Complex.zero_re, Ne, add_eq_zero_iff_eq_neg]
       exact h.ne'
@@ -388,7 +388,7 @@ theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, 
     rw [this, ← integral_re]
     · rfl
     refine intervalIntegrable_iff.mp ?_
-    cases' h' with h' h'
+    rcases h' with h' | h'
     · exact intervalIntegrable_cpow' h'
     · exact intervalIntegrable_cpow (Or.inr h'.2)
   · rw [(by push_cast; rfl : (r : ℂ) + 1 = ((r + 1 : ℝ) : ℂ))]
@@ -663,14 +663,14 @@ theorem integral_sin_sq : ∫ x in a..b, sin x ^ 2 = (sin a * cos a - sin b * co
 
 theorem integral_sin_pow_odd :
     (∫ x in (0)..π, sin x ^ (2 * n + 1)) = 2 * ∏ i ∈ range n, (2 * (i : ℝ) + 2) / (2 * i + 3) := by
-  induction' n with k ih; · norm_num
+  induction n with | zero => norm_num | succ k ih =>
   rw [prod_range_succ_comm, mul_left_comm, ← ih, mul_succ, integral_sin_pow]
   norm_cast
   simp [-cast_add, field_simps]
 
 theorem integral_sin_pow_even :
     (∫ x in (0)..π, sin x ^ (2 * n)) = π * ∏ i ∈ range n, (2 * (i : ℝ) + 1) / (2 * i + 2) := by
-  induction' n with k ih; · simp
+  induction n with | zero => simp | succ k ih =>
   rw [prod_range_succ_comm, mul_left_comm, ← ih, mul_succ, integral_sin_pow]
   norm_cast
   simp [-cast_add, field_simps]

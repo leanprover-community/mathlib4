@@ -1079,7 +1079,7 @@ theorem setIntegral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f 
 /-- **Markov's inequality** also known as **Chebyshev's first inequality**. -/
 theorem mul_meas_ge_le_integral_of_nonneg {f : α → ℝ} (hf_nonneg : 0 ≤ᵐ[μ] f)
     (hf_int : Integrable f μ) (ε : ℝ) : ε * (μ { x | ε ≤ f x }).toReal ≤ ∫ x, f x ∂μ := by
-  cases' eq_top_or_lt_top (μ {x | ε ≤ f x}) with hμ hμ
+  rcases eq_top_or_lt_top (μ {x | ε ≤ f x}) with hμ | hμ
   · simpa [hμ] using integral_nonneg_of_ae hf_nonneg
   · have := Fact.mk hμ
     calc
