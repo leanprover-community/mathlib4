@@ -355,10 +355,9 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
     let config : Array Lean.Json ← hashMap.foldM (init := #[]) fun config mod hash => do
       let pathStr := s!"{CACHEDIR / hash.asLTar}"
       /-
-      TODO: we don't need the following `if-then-else`, it is only here
-      for backwards compatibility.
-
-      See https://github.com/leanprover-community/mathlib4/pull/8767#discussion_r1422077498
+      TODO: This case distinction could be avoided by making use of the `leantar` option `-C`
+      here and in `packCache`,
+      see https://github.com/leanprover-community/mathlib4/pull/8767#discussion_r1422077498
 
       However, changing this causes changes to the generated .ltar files *WITHOUT* changing
       the file hash! This means this change needs to be accompanied by a change which
