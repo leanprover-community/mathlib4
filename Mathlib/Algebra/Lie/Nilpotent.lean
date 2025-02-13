@@ -18,13 +18,14 @@ Like groups, Lie algebras admit a natural concept of nilpotency. More generally,
 carries a natural concept of nilpotency. We define these here via the lower central series.
 
 ## Main definitions
+
   * `LieModule.lowerCentralSeries`
   * `LieModule.IsNilpotent`
   * `LieAlgebra.nilradical`
 
 ## Tags
 
-lie algebra, lower central series, nilpotent
+lie algebra, lower central series, nilpotent, nilradical
 -/
 
 universe u v w w₁ w₂
@@ -672,7 +673,7 @@ abbrev LieRing.IsNilpotent (L : Type v) [LieRing L] : Prop :=
 algebra via the adjoint representation. -/
 abbrev LieIdeal.IsNilpotent {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
   (I : LieIdeal R L) : Prop :=
-    LieModule.IsNilpotent L I
+  LieModule.IsNilpotent L I
 
 open LieRing
 
