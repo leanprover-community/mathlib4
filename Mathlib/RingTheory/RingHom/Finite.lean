@@ -236,3 +236,9 @@ theorem RingHom.finite_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.
   simp_rw [Submonoid.map_powers] at hn₂
   use n₂ + n₁
   exact le_iSup (fun x : s => Submodule.span R (sf x : Set S)) r hn₂
+
+instance {R S : Type*} [CommRing R] {P : Ideal R} [CommRing S] [Algebra R S]
+    [Module.Finite R S] [P.IsPrime] :
+    Module.Finite (Localization.AtPrime P)
+    (Localization (Algebra.algebraMapSubmonoid S P.primeCompl)) :=
+  Module.Finite_of_isLocalization R S _ _ P.primeCompl
