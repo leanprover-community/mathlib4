@@ -105,12 +105,12 @@ theorem quadraticCharFun_mul (a b : F) :
   · -- case of odd characteristic
     rw [quadraticCharFun_eq_pow_of_char_ne_two hF ha, quadraticCharFun_eq_pow_of_char_ne_two hF hb,
       quadraticCharFun_eq_pow_of_char_ne_two hF hab, mul_pow]
-    cases' FiniteField.pow_dichotomy hF hb with hb' hb'
+    rcases FiniteField.pow_dichotomy hF hb with hb' | hb'
     · simp only [hb', mul_one, if_true]
     · have h := Ring.neg_one_ne_one_of_char_ne_two hF
       -- `-1 ≠ 1`
       simp only [hb', mul_neg, mul_one, h, if_false]
-      cases' FiniteField.pow_dichotomy hF ha with ha' ha' <;>
+      rcases FiniteField.pow_dichotomy hF ha with ha' | ha' <;>
         simp only [ha', h, neg_neg, if_true, if_false]
 
 variable (F)
@@ -270,7 +270,7 @@ theorem quadraticChar_neg_one [DecidableEq F] (hF : ringChar F ≠ 2) :
   have h := quadraticChar_eq_pow_of_char_ne_two hF (neg_ne_zero.mpr one_ne_zero)
   rw [h, χ₄_eq_neg_one_pow (FiniteField.odd_card_of_char_ne_two hF)]
   generalize Fintype.card F / 2 = n
-  cases' Nat.even_or_odd n with h₂ h₂
+  rcases Nat.even_or_odd n with h₂ | h₂
   · simp only [Even.neg_one_pow h₂, if_true]
   · simp only [Odd.neg_one_pow h₂, Ring.neg_one_ne_one_of_char_ne_two hF, ite_false]
 
