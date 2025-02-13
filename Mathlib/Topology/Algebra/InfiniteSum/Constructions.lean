@@ -96,7 +96,7 @@ lemma Sum.tprod {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [Continuou
 lemma Multipliable.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M]
     (f : α ⊕ β → M) (h₁ : Multipliable (f ∘ Sum.inl)) (h₂ : Multipliable (f ∘ Sum.inr)) :
     Multipliable f :=
-  ⟨_, .sum h₁.choose_spec h₂.choose_spec⟩
+  ⟨_, .sum h₁.hasProd h₂.hasProd⟩
 
 end Sum
 
