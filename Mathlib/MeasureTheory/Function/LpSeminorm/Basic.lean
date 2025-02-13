@@ -416,10 +416,11 @@ theorem eLpNorm_mono_ae {f : α → F} {g : α → G} (h : ∀ᵐ x ∂μ, ‖f 
     eLpNorm f p μ ≤ eLpNorm g p μ :=
   eLpNorm_mono_nnnorm_ae h
 
--- TODO: prove and rename! done in #21433
-theorem eLpNorm_mono_aeENORM {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε']
-    {f : α → ε} {g : α → ε'} (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) : eLpNorm f p μ ≤ eLpNorm g p μ :=
-  sorry -- eLpNorm_mono_nnnorm_ae h
+theorem eLpNorm_mono_ae' {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε']
+    {f : α → ε} {g : α → ε'} (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
+    eLpNorm f p μ ≤ eLpNorm g p μ :=
+  -- TODO: uncomment once more of #21433 is added here
+  sorry -- eLpNorm_mono_enorm_ae (by simpa only [enorm_leq_iff_norm_leq] using h)
 
 theorem eLpNorm_mono_ae_real {f : α → F} {g : α → ℝ} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ g x) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
@@ -628,7 +629,7 @@ lemma eLpNorm_restrict_le (f : α → ε) (p : ℝ≥0∞) (μ : Measure α) (s 
 
 lemma eLpNorm_indicator_le {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε] (f : α → ε) :
     eLpNorm (s.indicator f) p μ ≤ eLpNorm f p μ := by
-  refine eLpNorm_mono_aeENORM <| .of_forall fun x ↦ ?_
+  refine eLpNorm_mono_ae' <| .of_forall fun x ↦ ?_
   rw [enorm_indicator_eq_indicator_enorm]
   exact s.indicator_le_self _ x
 
