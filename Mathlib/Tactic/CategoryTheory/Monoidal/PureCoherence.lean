@@ -17,7 +17,7 @@ are equal.
 -/
 
 open Lean Meta Elab Qq
-open CategoryTheory Mathlib.Tactic.BicategoryLike MonoidalCategory
+open CategoryTheory Mathlib.Tactic.BicategoryLike PremonoidalCategory MonoidalCategory
 
 namespace Mathlib.Tactic.Monoidal
 
@@ -25,10 +25,14 @@ section
 
 universe v u
 
-variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
+variable {C : Type u} [Category.{v} C]
 
 local infixr:81 " ◁ " => MonoidalCategory.whiskerLeftIso
 local infixl:81 " ▷ " => MonoidalCategory.whiskerRightIso
+
+section PremonoidalCategory
+
+variable [PremonoidalCategory C]
 
 /-- The composition of the normalizing isomorphisms `η_f : p ⊗ f ≅ pf` and `η_g : pf ⊗ g ≅ pfg`. -/
 abbrev normalizeIsoComp {p f g pf pfg : C} (η_f : p ⊗ f ≅ pf) (η_g : pf ⊗ g ≅ pfg) :=
@@ -59,12 +63,12 @@ theorem naturality_comp {p f g h pf : C} {η : f ≅ g} {θ : g ≅ h}
   simp_all
 
 theorem naturality_whiskerLeft {p f g h pf pfg : C} {η : g ≅ h}
-    (η_f : p ⊗ f ≅ pf) (η_fg : pf ⊗ g ≅ pfg) (η_fh : (pf ⊗ h) ≅ pfg)
+    (η_f : p ⊗ f ≅ pf) [Central η_f.hom] (η_fg : pf ⊗ g ≅ pfg) (η_fh : (pf ⊗ h) ≅ pfg)
     (ih_η : pf ◁ η ≪≫ η_fh = η_fg) :
     p ◁ (f ◁ η) ≪≫ normalizeIsoComp η_f η_fh = normalizeIsoComp η_f η_fg := by
   rw [← ih_η]
   apply Iso.ext
-  simp [← whisker_exchange_assoc]
+  simp [Central.left_exchange_assoc (f := η_f.hom)]
 
 theorem naturality_whiskerRight {p f g h pf pfh : C} {η : f ≅ g}
     (η_f : p ⊗ f ≅ pf) (η_g : p ⊗ g ≅ pf) (η_fh : (pf ⊗ h) ≅ pfh)
@@ -75,7 +79,8 @@ theorem naturality_whiskerRight {p f g h pf pfh : C} {η : f ≅ g}
   simp
 
 theorem naturality_tensorHom {p f₁ g₁ f₂ g₂ pf₁ pf₁f₂ : C} {η : f₁ ≅ g₁} {θ : f₂ ≅ g₂}
-    (η_f₁ : p ⊗ f₁ ≅ pf₁) (η_g₁ : p ⊗ g₁ ≅ pf₁) (η_f₂ : pf₁ ⊗ f₂ ≅ pf₁f₂) (η_g₂ : pf₁ ⊗ g₂ ≅ pf₁f₂)
+    (η_f₁ : p ⊗ f₁ ≅ pf₁) (η_g₁ : p ⊗ g₁ ≅ pf₁) [Central η_g₁.hom]
+    (η_f₂ : pf₁ ⊗ f₂ ≅ pf₁f₂) (η_g₂ : pf₁ ⊗ g₂ ≅ pf₁f₂)
     (ih_η : p ◁ η ≪≫ η_g₁ = η_f₁)
     (ih_θ : pf₁ ◁ θ ≪≫ η_g₂ = η_f₂) :
     p ◁ (η ⊗ θ) ≪≫ normalizeIsoComp η_g₁ η_g₂ = normalizeIsoComp η_f₁ η_f₂ := by
@@ -84,6 +89,8 @@ theorem naturality_tensorHom {p f₁ g₁ f₂ g₂ pf₁ pf₁f₂ : C} {η : f
   · apply naturality_whiskerRight _ _ _ ih_η
   · apply naturality_whiskerLeft _ _ _ ih_θ
 
+-- TODO: tensorHom
+
 theorem naturality_inv {p f g pf : C} {η : f ≅ g}
     (η_f : p ⊗ f ≅ pf) (η_g : p ⊗ g ≅ pf) (ih : p ◁ η ≪≫ η_g = η_f) :
     p ◁ η.symm ≪≫ η_f = η_g := by
@@ -91,10 +98,12 @@ theorem naturality_inv {p f g pf : C} {η : f ≅ g}
   apply Iso.ext
   simp
 
+end PremonoidalCategory
+
 instance : MonadNormalizeNaturality MonoidalM where
   mkNaturalityAssociator p pf pfg pfgh f g h η_f η_g η_h := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let .some _monoidal := ctx.instPremonoidal? | synthPremonoidalError
     have p : Q($ctx.C) := p.e.e
     have f : Q($ctx.C) := f.e
     have g : Q($ctx.C) := g.e
@@ -108,7 +117,7 @@ instance : MonadNormalizeNaturality MonoidalM where
     return q(naturality_associator $η_f $η_g $η_h)
   mkNaturalityLeftUnitor p pf f η_f := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let .some _monoidal := ctx.instPremonoidal? | synthPremonoidalError
     have p : Q($ctx.C) := p.e.e
     have f : Q($ctx.C) := f.e
     have pf : Q($ctx.C) := pf.e.e
@@ -116,7 +125,7 @@ instance : MonadNormalizeNaturality MonoidalM where
     return q(naturality_leftUnitor $η_f)
   mkNaturalityRightUnitor p pf f η_f := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let .some _monoidal := ctx.instPremonoidal? | synthPremonoidalError
     have p : Q($ctx.C) := p.e.e
     have f : Q($ctx.C) := f.e
     have pf : Q($ctx.C) := pf.e.e
@@ -124,7 +133,7 @@ instance : MonadNormalizeNaturality MonoidalM where
     return q(naturality_rightUnitor $η_f)
   mkNaturalityId p pf f η_f := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let .some _monoidal := ctx.instPremonoidal? | synthPremonoidalError
     have p : Q($ctx.C) := p.e.e
     have f : Q($ctx.C) := f.e
     have pf : Q($ctx.C) := pf.e.e
@@ -132,7 +141,7 @@ instance : MonadNormalizeNaturality MonoidalM where
     return q(naturality_id $η_f)
   mkNaturalityComp p pf f g h η θ η_f η_g η_h ih_η ih_θ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let .some _monoidal := ctx.instPremonoidal? | synthPremonoidalError
     have p : Q($ctx.C) := p.e.e
     have f : Q($ctx.C) := f.e
     have g : Q($ctx.C) := g.e
@@ -148,7 +157,7 @@ instance : MonadNormalizeNaturality MonoidalM where
     return q(naturality_comp $η_f $η_g $η_h $ih_η $ih_θ)
   mkNaturalityWhiskerLeft p pf pfg f g h η η_f η_fg η_fh ih_η := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let .some _monoidal := ctx.instPremonoidal? | synthPremonoidalError
     have p : Q($ctx.C) := p.e.e
     have f : Q($ctx.C) := f.e
     have g : Q($ctx.C) := g.e
@@ -157,13 +166,14 @@ instance : MonadNormalizeNaturality MonoidalM where
     have pfg : Q($ctx.C) := pfg.e.e
     have η : Q($g ≅ $h) := η.e
     have η_f : Q($p ⊗ $f ≅ $pf) := η_f.e
+    let _center ← Qq.synthInstanceQ q(Central ($η_f).hom)
     have η_fg : Q($pf ⊗ $g ≅ $pfg) := η_fg.e
     have η_fh : Q($pf ⊗ $h ≅ $pfg) := η_fh.e
     have ih_η : Q($pf ◁ $η ≪≫ $η_fh = $η_fg) := ih_η
     return q(naturality_whiskerLeft $η_f $η_fg $η_fh $ih_η)
   mkNaturalityWhiskerRight p pf pfh f g h η η_f η_g η_fh ih_η := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let .some _monoidal := ctx.instPremonoidal? | synthPremonoidalError
     have p : Q($ctx.C) := p.e.e
     have f : Q($ctx.C) := f.e
     have g : Q($ctx.C) := g.e
@@ -178,7 +188,7 @@ instance : MonadNormalizeNaturality MonoidalM where
     return q(naturality_whiskerRight $η_f $η_g $η_fh $ih_η)
   mkNaturalityHorizontalComp p pf₁ pf₁f₂ f₁ g₁ f₂ g₂ η θ η_f₁ η_g₁ η_f₂ η_g₂ ih_η ih_θ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let .some _monoidal := ctx.instPremonoidal? | synthPremonoidalError
     have p : Q($ctx.C) := p.e.e
     have f₁ : Q($ctx.C) := f₁.e
     have g₁ : Q($ctx.C) := g₁.e
@@ -190,6 +200,7 @@ instance : MonadNormalizeNaturality MonoidalM where
     have θ : Q($f₂ ≅ $g₂) := θ.e
     have η_f₁ : Q($p ⊗ $f₁ ≅ $pf₁) := η_f₁.e
     have η_g₁ : Q($p ⊗ $g₁ ≅ $pf₁) := η_g₁.e
+    let _central ← Qq.synthInstanceQ q(Central ($η_g₁).hom)
     have η_f₂ : Q($pf₁ ⊗ $f₂ ≅ $pf₁f₂) := η_f₂.e
     have η_g₂ : Q($pf₁ ⊗ $g₂ ≅ $pf₁f₂) := η_g₂.e
     have ih_η : Q($p ◁ $η ≪≫ $η_g₁ = $η_f₁) := ih_η
@@ -197,7 +208,7 @@ instance : MonadNormalizeNaturality MonoidalM where
     return q(naturality_tensorHom $η_f₁ $η_g₁ $η_f₂ $η_g₂ $ih_η $ih_θ)
   mkNaturalityInv p pf f g η η_f η_g ih := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let .some _monoidal := ctx.instPremonoidal? | synthPremonoidalError
     have p : Q($ctx.C) := p.e.e
     have f : Q($ctx.C) := f.e
     have g : Q($ctx.C) := g.e
@@ -207,6 +218,8 @@ instance : MonadNormalizeNaturality MonoidalM where
     have η_g : Q($p ⊗ $g ≅ $pf) := η_g.e
     have ih : Q($p ◁ $η ≪≫ $η_g = $η_f) := ih
     return q(naturality_inv $η_f $η_g $ih)
+
+variable [PremonoidalCategory C]
 
 theorem of_normalize_eq {f g f' : C} {η θ : f ≅ g} (η_f : 𝟙_ C ⊗ f ≅ f') (η_g : 𝟙_ C ⊗ g ≅ f')
     (h_η : 𝟙_ C ◁ η ≪≫ η_g = η_f)
@@ -236,7 +249,7 @@ end
 instance : MkEqOfNaturality MonoidalM where
   mkEqOfNaturality η θ ηIso θIso η_f η_g Hη Hθ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let .some _monoidal := ctx.instPremonoidal? | synthPremonoidalError
     let η' := ηIso.e
     let θ' := θIso.e
     let f ← η'.srcM
