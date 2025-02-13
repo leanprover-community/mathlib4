@@ -72,8 +72,7 @@ theorem IsMatching.toEdge_eq_of_adj (h : M.IsMatching) (hv : v ∈ M.verts) (hvw
   exact ((h (M.edge_vert hvw)).choose_spec.2 w hvw).symm
 
 theorem IsMatching.toEdge.surjective (h : M.IsMatching) : Surjective h.toEdge := by
-  rintro ⟨e, he⟩
-  induction' e with x y
+  rintro ⟨⟨x, y⟩, he⟩
   exact ⟨⟨x, M.edge_vert he⟩, h.toEdge_eq_of_adj _ he⟩
 
 theorem IsMatching.toEdge_eq_toEdge_of_adj (h : M.IsMatching)
@@ -159,7 +158,7 @@ lemma IsMatching.exists_of_disjoint_sets_of_equiv {s t : Set V} (h : Disjoint s 
 
   simp only [Subgraph.IsMatching, Set.mem_union, true_and]
   intro v hv
-  cases' hv with hl hr
+  rcases hv with hl | hr
   · use f ⟨v, hl⟩
     simp only [hl, exists_const, true_or, exists_true_left, true_and]
     rintro y (rfl | ⟨hys, rfl⟩)
@@ -256,19 +255,17 @@ section Finite
 lemma even_card_of_isPerfectMatching [Fintype V] [DecidableEq V] [DecidableRel G.Adj]
     (c : ConnectedComponent G) (hM : M.IsPerfectMatching) :
     Even (Fintype.card c.supp) := by
-  #adaptation_note
-  /--
-  After https://github.com/leanprover/lean4/pull/5020, some instances that use the chain of coercions
+  #adaptation_note /-- https://github.com/leanprover/lean4/pull/5020
+  some instances that use the chain of coercions
   `[SetLike X], X → Set α → Sort _` are
   blocked by the discrimination tree. This can be fixed by redeclaring the instance for `X`
-  using the double coercion but the proper fix seems to avoid the double coercion.
-  -/
+  using the double coercion but the proper fix seems to avoid the double coercion. -/
   letI : DecidablePred fun x ↦ x ∈ (M.induce c.supp).verts := fun a ↦ G.instDecidableMemSupp c a
   simpa using (hM.induce_connectedComponent_isMatching c).even_card
 
 lemma odd_matches_node_outside [Finite V] {u : Set V}
     {c : ConnectedComponent (Subgraph.deleteVerts ⊤ u).coe}
-    (hM : M.IsPerfectMatching) (codd : Odd (Nat.card c.supp)) :
+    (hM : M.IsPerfectMatching) (codd : Odd c.supp.ncard) :
     ∃ᵉ (w ∈ u) (v : ((⊤ : G.Subgraph).deleteVerts u).verts), M.Adj v w ∧ v ∈ c.supp := by
   by_contra! h
   have hMmatch : (M.induce c.supp).IsMatching := by
@@ -286,12 +283,10 @@ lemma odd_matches_node_outside [Finite V] {u : Set V}
   apply Nat.not_even_iff_odd.2 codd
   haveI : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c)).verts := Fintype.ofFinite _
   classical
-  have hMeven := Subgraph.IsMatching.even_card hMmatch
   haveI : Fintype (c.supp) := Fintype.ofFinite _
-  simp only [Subgraph.induce_verts, Subgraph.verts_top, Set.toFinset_image,
-    Nat.card_eq_fintype_card, Set.toFinset_image,
-    Finset.card_image_of_injective _ (Subtype.val_injective), Set.toFinset_card] at hMeven ⊢
-  exact hMeven
+  simpa [Subgraph.induce_verts, Subgraph.verts_top, Set.toFinset_image, Nat.card_eq_fintype_card,
+    Set.toFinset_image,Finset.card_image_of_injective _ (Subtype.val_injective), Set.toFinset_card,
+    ← Set.Nat.card_coe_set_eq] using hMmatch.even_card
 
 end Finite
 end ConnectedComponent

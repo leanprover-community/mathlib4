@@ -1,19 +1,10 @@
 /-
 Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Arthur Paulino
+Authors: Arthur Paulino, Jon Eugster
 -/
 
 import Cache.Requests
-
-/-!
-
-## Technical notes
-
-It looks like the Lean search-path `addSearchPathFromEnv {}` cannot be used
-because we might call `lake exe cache` before files are built.
--/
-
 
 def help : String := "Mathlib4 caching CLI
 Usage: cache [COMMAND]
@@ -42,28 +33,21 @@ Commands:
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands ending with '!' should be used manually, when hot-fixes are needed
 
-# The arguments for 'get', 'get!' and 'get-'
+# The arguments for 'get', 'get!', 'get-' and 'lookup'
 
-'get', 'get!' and 'get-' can process a list of module names, allowing the user to be more
-specific about what should be downloaded. For example, one can call:
+'get', 'get!', 'get-' and 'lookup' can process a list of module names or file names.
 
-$ lake exe cache get Mathlib.Algebra.Field.Basic Mathlib.Data
+'get [ARGS]' will only get the cache for the specified Lean files and all files imported by one.
 
-Which will download the cache for:
-* The file 'Mathlib/Algebra/Field/Basic.lean'
-* Every Lean file inside 'Mathlib/Data/'
-* Everything that's needed for the above"
+Valid arguments are:
 
-open Lean System in
-/-- Note that this normalizes the path strings, which is needed when running from a unix shell
-(which uses `/` in paths) on windows (which uses `\` in paths) as otherwise our filename keys won't
-match. -/
-def toPaths (args : List String) : List FilePath :=
-  args.map fun arg =>
-    if arg.endsWith ".lean" then
-      FilePath.mk arg |>.normalize
-    else
-      mkFilePath (arg.toName.components.map Name.toString) |>.withExtension "lean"
+* Module names like 'Mathlib.Init'
+* Pseudo-module-names like 'Mathlib.Data' (find all Lean files inside `Mathlib/Data/`)
+* File names like 'Mathlib/Init.lean'
+* Folder names like 'Mathlib/Data/' (find all Lean files inside `Mathlib/Data/`)
+* With bash's automatic glob expansion one can also write things like
+  'Mathlib/**/Order/*.lean'.
+"
 
 /-- Commands which (potentially) call `curl` for downloading files -/
 def curlArgs : List String :=
@@ -73,38 +57,34 @@ def curlArgs : List String :=
 def leanTarArgs : List String :=
   ["get", "get!", "pack", "pack!", "unpack", "lookup"]
 
-open Lean System in
-
 open Cache IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
   if Lean.versionString == "4.8.0-rc1" && Lean.githash == "b470eb522bfd68ca96938c23f6a1bce79da8a99f" then do
     println "Unfortunately, you have a broken Lean v4.8.0-rc1 installation."
     println "Please run `elan toolchain uninstall leanprover/lean4:v4.8.0-rc1` and try again."
     Process.exit 1
-  CacheM.run do
-  -- We pass any following arguments to `getHashMemo`,
-  -- so we can use the cache on `Archive` or `Counterexamples`.
-  let mut extraRoots : Std.HashMap Lean.Name FilePath ← parseArgs args
-  if extraRoots.isEmpty then do
-    -- No arguments means to start from `Mathlib.lean`
-    -- TODO: could change this to the default-target of a downstream project
-    let mod := `Mathlib
-    let sp := (← read).searchPath
-    let sourceFile ← Lean.findLean sp mod
-    extraRoots := Std.HashMap.empty.insert mod sourceFile
-
   if args.isEmpty then
     println help
     Process.exit 0
-  let hashMemo ← getHashMemo extraRoots
-  let hashMap := hashMemo.hashMap
-  let pathMap := hashMemo.pathMap
+  CacheM.run do
+
+  let mut roots : Std.HashMap Lean.Name FilePath ← parseArgs args
+  if roots.isEmpty then do
+    -- No arguments means to start from `Mathlib.lean`
+    -- TODO: could change this to the default-target of a downstream project
+    let mod := `Mathlib
+    let sp := (← read).srcSearchPath
+    let sourceFile ← Lean.findLean sp mod
+    roots := Std.HashMap.empty.insert mod sourceFile
+
+  let hashMemo ← getHashMemo roots
+
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
   if leanTarArgs.contains (args.headD "") then validateLeanTar
   let get (force := false) (decompress := true) := do
-    getFiles hashMap pathMap force goodCurl decompress
+    getFiles hashMemo.hashMap force force goodCurl decompress
   let pack (overwrite verbose unpackedOnly := false) := do
-    packCache hashMap pathMap overwrite verbose unpackedOnly (← getGitCommitHash)
+    packCache hashMemo.hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do
     putFiles (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getToken)
   match args with
@@ -113,10 +93,10 @@ def main (args : List String) : IO Unit := do
   | "get-" :: _ => get (decompress := false)
   | ["pack"] => discard <| pack
   | ["pack!"] => discard <| pack (overwrite := true)
-  | ["unpack"] => unpackCache hashMap pathMap false
-  | ["unpack!"] => unpackCache hashMap pathMap true
+  | ["unpack"] => unpackCache hashMemo.hashMap false
+  | ["unpack!"] => unpackCache hashMemo.hashMap true
   | ["clean"] =>
-    cleanCache <| hashMap.fold (fun acc _ hash => acc.insert <| CACHEDIR / hash.asLTar) .empty
+    cleanCache <| hashMemo.hashMap.fold (fun acc _ hash => acc.insert <| CACHEDIR / hash.asLTar) .empty
   | ["clean!"] => cleanCache
   -- We allow arguments for `put*` so they can be added to the `roots`.
   | "put" :: _ => put
@@ -124,10 +104,10 @@ def main (args : List String) : IO Unit := do
   | "put-unpacked" :: _ => put (unpackedOnly := true)
   | ["commit"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
-    commit hashMap false (← getToken)
+    commit hashMemo.hashMap false (← getToken)
   | ["commit!"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
-    commit hashMap true (← getToken)
+    commit hashMemo.hashMap true (← getToken)
   | ["collect"] => IO.println "TODO"
-  | "lookup" :: args => lookup hashMap (args.map String.toName)
+  | "lookup" :: _ => lookup hashMemo.hashMap roots.keys
   | _ => println help

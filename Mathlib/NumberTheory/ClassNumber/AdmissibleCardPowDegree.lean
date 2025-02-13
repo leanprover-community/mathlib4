@@ -175,8 +175,7 @@ theorem exists_partition_polynomial_aux (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b :
     rw [Algebra.smul_def, eq_intCast]
     exact mul_pos (Int.cast_pos.mpr (AbsoluteValue.pos _ hb)) hε
   -- We go by induction on the size `A`.
-  induction' n with n ih
-  · refine ⟨finZeroElim, finZeroElim⟩
+  induction n with | zero => refine ⟨finZeroElim, finZeroElim⟩ | succ n ih =>
   -- Show `anti_archimedean` also holds for real distances.
   have anti_archim' : ∀ {i j k} {ε : ℝ},
     (cardPowDegree (A i % b - A j % b) : ℝ) < ε →
