@@ -23,7 +23,7 @@ It has the advantage of being monotone in both directions and sending `⟦0, n^2
 `⟦0, n - 1⟧²`.
 -/
 
-assert_not_exists Monoid MonoidWithZero
+assert_not_exists Monoid
 
 open Prod Decidable Function
 
