@@ -1255,10 +1255,6 @@ open scoped NNReal ENNReal
 variable [NormedAddCommGroup D] [MeasurableSpace D] [MeasurableSpace E] [OpensMeasurableSpace E]
   [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
-lemma Nat.cast_toNNReal (N : ℕ) : (Nat.cast N : ℝ≥0∞).toNNReal = (Nat.cast N : ℝ).toNNReal := by
-  rw [Real.toNNReal_of_nonneg (by positivity), ENNReal.toNNReal_nat]
-  congr
-
 variable (𝕜 F) in
 /-- The `L^p` norm of a Schwartz function is controlled by a finite family of Schwartz seminorms.
 
