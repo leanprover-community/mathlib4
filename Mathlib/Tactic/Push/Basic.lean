@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2019 Patrick Massot. All rights reserved.
+Copyright (c) 2025 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Patrick Massot, Simon Hudon, Alice Laroche, Frédéric Dupuis,
 Jireh Loreaux
@@ -22,10 +22,7 @@ open Lean Meta Elab.Tactic Parser.Tactic
 section Attr
 
 /-- The `push` simp attribute. -/
-initialize pushExt : SimpExtension ←
-  registerSimpAttr `push "\
-    The `push` simp attribute uses `push` lemmas to move \
-    the given constants toward the leaf nodes of the expression."
+initialize pushExt : SimpExtension ← mkSimpExt
 
 /--
 The `push` attribute is used to tag lemmas that "push" a constant into an expression.
@@ -38,15 +35,15 @@ For example:
 should be given to lemmas that "push" a constant towards the leaf nodes of
 an expression. The main use case is for pushing negations.
 -/
-syntax (name := pushAttr) "push" (ppSpace num)? : attr
+syntax (name := pushAttr) "push" ("← " <|> "<- ")? (ppSpace prio)? : attr
 
 initialize registerBuiltinAttribute {
   name := `pushAttr
   descr := "attribute for push"
   add := fun decl stx kind => MetaM.run' do
-    let `(attr| push $[$prio]?) := stx | unreachable!
-    let prio := (prio.bind (·.1.isNatLit?)).getD (eval_prio default)
-    addSimpTheorem pushExt decl (post := false) (inv := false) kind prio
+    let inv := !stx[1].isNone
+    let prio ← getAttrParamOptPrio stx[2]
+    addSimpTheorem pushExt decl (post := false) (inv := inv) kind prio
 }
 
 end Attr
