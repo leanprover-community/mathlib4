@@ -70,11 +70,13 @@ theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
     ∀ {ε : ℝ} (_hε : 0 < ε) {b : R} (_hb : b ≠ 0) (A : Fin (h.card ε ^ n).succ → Fin n → R),
       ∃ i₀ i₁, i₀ ≠ i₁ ∧ ∀ k, (abv (A i₁ k % b - A i₀ k % b) : ℝ) < abv b • ε := by
   haveI := Classical.decEq R
-  induction' n with n ih
-  · intro ε _hε b _hb A
+  induction n with
+  | zero =>
+    intro ε _hε b _hb A
     refine ⟨0, 1, ?_, ?_⟩
     · simp
     rintro ⟨i, ⟨⟩⟩
+  | succ n ih =>
   intro ε hε b hb A
   let M := h.card ε
   -- By the "nicer" pigeonhole principle, we can find a collection `s`
