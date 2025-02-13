@@ -38,8 +38,6 @@ standard projective resolution of `k` as a trivial `k`-linear `G`-representation
 
 ## Main definitions
 
- * `groupCohomology.resolution.actionDiagonalSucc`
- * `groupCohomology.resolution.diagonalSucc`
  * `groupCohomology.resolution.ofMulActionBasis`
  * `classifyingSpaceUniversalCover`
  * `groupCohomology.resolution.forget₂ToModuleCatHomotopyEquiv`
@@ -87,141 +85,6 @@ section Basis
 
 variable (k G n) [Group G]
 
-section Action
-
-open Action
-
-/-- An isomorphism of `G`-sets `Gⁿ⁺¹ ≅ G × Gⁿ`, where `G` acts by left multiplication on `Gⁿ⁺¹` and
-`G` but trivially on `Gⁿ`. The map sends `(g₀, ..., gₙ) ↦ (g₀, (g₀⁻¹g₁, g₁⁻¹g₂, ..., gₙ₋₁⁻¹gₙ))`,
-and the inverse is `(g₀, (g₁, ..., gₙ)) ↦ (g₀, g₀g₁, g₀g₁g₂, ..., g₀g₁...gₙ).` -/
-def actionDiagonalSucc (G : Type u) [Group G] :
-    ∀ n : ℕ, diagonal G (n + 1) ≅ leftRegular G ⊗ Action.mk (Fin n → G) 1
-  | 0 =>
-    diagonalOneIsoLeftRegular G ≪≫
-      (ρ_ _).symm ≪≫ tensorIso (Iso.refl _) (tensorUnitIso (Equiv.ofUnique PUnit _).toIso)
-  | n + 1 =>
-    diagonalSucc _ _ ≪≫
-      tensorIso (Iso.refl _) (actionDiagonalSucc G n) ≪≫
-        leftRegularTensorIso _ _ ≪≫
-          tensorIso (Iso.refl _)
-            (mkIso (Fin.insertNthEquiv (fun _ => G) 0).toIso fun _ => rfl)
-
-theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (n + 1) → G) :
-    (actionDiagonalSucc G n).hom.hom f = (f 0, fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) := by
-  induction' n with n hn
-  · exact Prod.ext rfl (funext fun x => Fin.elim0 x)
-  · refine Prod.ext rfl (funext fun x => ?_)
-    /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
-    · dsimp only [actionDiagonalSucc]
-      simp only [Iso.trans_hom, comp_hom, types_comp_apply, diagonalSucc_hom_hom,
-        leftRegularTensorIso_hom_hom, tensorIso_hom, mkIso_hom_hom, Equiv.toIso_hom,
-        Action.tensorHom, Equiv.piFinSuccAbove_symm_apply, tensor_apply, types_id_apply,
-        tensor_rho, MonoidHom.one_apply, End.one_def, hn fun j : Fin (n + 1) => f j.succ,
-        Fin.insertNth_zero']
-      refine' Fin.cases (Fin.cons_zero _ _) (fun i => _) x
-      · simp only [Fin.cons_succ, mul_left_inj, inv_inj, Fin.castSucc_fin_succ] -/
-    dsimp [actionDiagonalSucc]
-    erw [hn (fun (j : Fin (n + 1)) => f j.succ)]
-    exact Fin.cases rfl (fun i => rfl) x
-
-theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f : Fin n → G) :
-    (actionDiagonalSucc G n).inv.hom (g, f) = (g • Fin.partialProd f : Fin (n + 1) → G) := by
-  revert g
-  induction' n with n hn
-  · intro g
-    funext (x : Fin 1)
-    simp only [Subsingleton.elim x 0, Pi.smul_apply, Fin.partialProd_zero, smul_eq_mul, mul_one]
-    rfl
-  · intro g
-    /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
-    ext
-    dsimp only [actionDiagonalSucc]
-    simp only [Iso.trans_inv, comp_hom, hn, diagonalSucc_inv_hom, types_comp_apply, tensorIso_inv,
-      Iso.refl_inv, Action.tensorHom, id_hom, tensor_apply, types_id_apply,
-      leftRegularTensorIso_inv_hom, tensor_ρ, leftRegular_ρ_apply, Pi.smul_apply, smul_eq_mul]
-    refine' Fin.cases _ _ x
-    · simp only [Fin.cons_zero, Fin.partialProd_zero, mul_one]
-    · intro i
-      simpa only [Fin.cons_succ, Pi.smul_apply, smul_eq_mul, Fin.partialProd_succ', mul_assoc] -/
-    funext x
-    dsimp [actionDiagonalSucc]
-    erw [hn, Fin.consEquiv_apply]
-    refine Fin.cases ?_ (fun i => ?_) x
-    · simp only [Fin.insertNth_zero, Fin.cons_zero, Fin.partialProd_zero, mul_one]
-    · simp only [Fin.cons_succ, Pi.smul_apply, smul_eq_mul, Fin.partialProd_succ', ← mul_assoc]
-      rfl
-
-end Action
-
-section Rep
-
-open Rep
-
-/-- An isomorphism of `k`-linear representations of `G` from `k[Gⁿ⁺¹]` to `k[G] ⊗ₖ k[Gⁿ]` (on
-which `G` acts by `ρ(g₁)(g₂ ⊗ x) = (g₁ * g₂) ⊗ x`) sending `(g₀, ..., gₙ)` to
-`g₀ ⊗ (g₀⁻¹g₁, g₁⁻¹g₂, ..., gₙ₋₁⁻¹gₙ)`. The inverse sends `g₀ ⊗ (g₁, ..., gₙ)` to
-`(g₀, g₀g₁, ..., g₀g₁...gₙ)`. -/
-def diagonalSucc (n : ℕ) :
-    diagonal k G (n + 1) ≅ leftRegular k G ⊗ trivial k G ((Fin n → G) →₀ k) :=
-  (linearization k G).mapIso (actionDiagonalSucc G n) ≪≫
-    (Functor.Monoidal.μIso (linearization k G) _ _).symm ≪≫
-      tensorIso (Iso.refl _) (linearizationTrivialIso k G (Fin n → G))
-
-variable {k G n}
-
-theorem diagonalSucc_hom_single (f : Gⁿ⁺¹) (a : k) :
-    (diagonalSucc k G n).hom.hom (single f a) =
-      single (f 0) 1 ⊗ₜ single (fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) a := by
-  dsimp [diagonalSucc]
-  erw [lmapDomain_apply, mapDomain_single, LinearEquiv.coe_toLinearMap, finsuppTensorFinsupp',
-    LinearEquiv.trans_symm, LinearEquiv.trans_apply, lcongr_symm, Equiv.refl_symm]
-  erw [lcongr_single]
-  rw [TensorProduct.lid_symm_apply, actionDiagonalSucc_hom_apply, finsuppTensorFinsupp_symm_single]
-  rfl
-
-theorem diagonalSucc_inv_single_single (g : G) (f : Gⁿ) (a b : k) :
-    (diagonalSucc k G n).inv.hom (Finsupp.single g a ⊗ₜ Finsupp.single f b) =
-      single (g • partialProd f) (a * b) := by
-/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
-  dsimp only [diagonalSucc]
-  simp only [Iso.trans_inv, Iso.symm_inv, Iso.refl_inv, tensorIso_inv, Action.tensorHom,
-    Action.comp_hom, ModuleCat.comp_def, LinearMap.comp_apply, asIso_hom, Functor.mapIso_inv,
-    ModuleCat.MonoidalCategory.hom_apply, linearizationTrivialIso_inv_hom_apply,
-    linearization_μ_hom, Action.id_hom ((linearization k G).obj _), actionDiagonalSucc_inv_apply,
-    ModuleCat.id_apply, LinearEquiv.coe_toLinearMap,
-    finsuppTensorFinsupp'_single_tmul_single k (Action.leftRegular G).V,
-    linearization_map_hom_single (actionDiagonalSucc G n).inv (g, f) (a * b)] -/
-  change mapDomain (actionDiagonalSucc G n).inv.hom
-    (lcongr (Equiv.refl (G × (Fin n → G))) (TensorProduct.lid k k)
-      (finsuppTensorFinsupp k k k k G (Fin n → G) (single g a ⊗ₜ[k] single f b)))
-    = single (g • partialProd f) (a * b)
-  rw [finsuppTensorFinsupp_single, lcongr_single, mapDomain_single, Equiv.refl_apply,
-    actionDiagonalSucc_inv_apply]
-  rfl
-
-theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
-    (diagonalSucc k G n).inv.hom (Finsupp.single g r ⊗ₜ f) =
-      Finsupp.lift (Gⁿ⁺¹ →₀ k) k Gⁿ (fun f => single (g • partialProd f) r) f := by
-  refine f.induction ?_ ?_
-  · simp only [TensorProduct.tmul_zero, map_zero]
-  · intro a b x _ _ hx
-    -- `simp` doesn't pick up on `diagonalSucc_inv_single_single` unless it has parentheses.
-    simp only [lift_apply, smul_single', mul_one, TensorProduct.tmul_add, map_add,
-      (diagonalSucc_inv_single_single), hx, Finsupp.sum_single_index, mul_comm b,
-      zero_mul, single_zero]
-
-theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
-    (diagonalSucc k G n).inv.hom (g ⊗ₜ Finsupp.single f r) =
-      Finsupp.lift _ k G (fun a => single (a • partialProd f) r) g := by
-  refine g.induction ?_ ?_
-  · simp only [TensorProduct.zero_tmul, map_zero]
-  · intro a b x _ _ hx
-    -- `simp` doesn't pick up on `diagonalSucc_inv_single_single` unless it has parentheses.
-    simp only [lift_apply, smul_single', map_add, hx, (diagonalSucc_inv_single_single),
-      TensorProduct.add_tmul, Finsupp.sum_single_index, zero_mul, single_zero]
-
-end Rep
-
 open scoped TensorProduct
 
 open Representation
@@ -233,7 +96,8 @@ of the righthand side. -/
 def ofMulActionBasisAux :
     MonoidAlgebra k G ⊗[k] ((Fin n → G) →₀ k) ≃ₗ[MonoidAlgebra k G]
       (ofMulAction k G (Fin (n + 1) → G)).asModule :=
-  { (Rep.equivalenceModuleMonoidAlgebra.1.mapIso (diagonalSucc k G n).symm).toLinearEquiv with
+  { (Rep.equivalenceModuleMonoidAlgebra.1.mapIso
+      (Rep.diagonalSuccIsoTensorTrivial k G n).symm).toLinearEquiv with
     map_smul' := fun r x => by
       rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul]
       congr 1
@@ -280,7 +144,8 @@ open groupCohomology.resolution
 noncomputable def diagonalHomEquiv :
     (Rep.diagonal k G (n + 1) ⟶ A) ≃ₗ[k] (Fin n → G) → A :=
   Linear.homCongr k
-        ((diagonalSucc k G n).trans ((Representation.ofMulAction k G G).repOfTprodIso 1))
+        ((diagonalSuccIsoTensorTrivial k G n).trans
+          ((Representation.ofMulAction k G G).repOfTprodIso 1))
         (Iso.refl _) ≪≫ₗ
       (Rep.MonoidalClosed.linearHomEquivComm _ _ _ ≪≫ₗ Rep.leftRegularHomEquiv _) ≪≫ₗ
     (Finsupp.llift A k k (Fin n → G)).symm
@@ -300,8 +165,9 @@ theorem diagonalHomEquiv_apply (f : Rep.diagonal k G (n + 1) ⟶ A) (x : Fin n �
     Linear.homCongr_apply, Iso.refl_hom, Iso.trans_inv, Action.comp_hom, ModuleCat.comp_def,
     LinearMap.comp_apply, Representation.repOfTprodIso_inv_apply,
     diagonalSucc_inv_single_single (1 : G) x, one_smul, one_mul] -/
-  change f.hom ((diagonalSucc k G n).inv.hom (Finsupp.single 1 1 ⊗ₜ[k] Finsupp.single x 1)) = _
-  rw [diagonalSucc_inv_single_single, one_smul, one_mul]
+  change f.hom ((diagonalSuccIsoTensorTrivial k G n).inv.hom
+    (Finsupp.single 1 1 ⊗ₜ[k] Finsupp.single x 1)) = _
+  rw [diagonalSuccIsoTensorTrivial_inv_hom_single_single, one_smul, one_mul]
 
 /-- Given a `k`-linear `G`-representation `A`, `diagonalHomEquiv` is a `k`-linear isomorphism of
 the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. This lemma says that the
@@ -324,7 +190,7 @@ theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) �
     leftRegularHomEquiv_symm_apply, Linear.homCongr_symm_apply, Iso.trans_hom, Iso.refl_inv,
     Category.comp_id, Action.comp_hom, MonoidalClosed.linearHomEquivComm_symm_hom,
     ModuleCat.hom_comp, LinearMap.comp_apply]
-  rw [diagonalSucc_hom_single]
+  rw [diagonalSuccIsoTensorTrivial_hom_hom_single]
   -- The prototype linter that checks if `erw` could be replaced with `rw` would time out
   -- if it replaces the next `erw`s with `rw`s. So we focus down on the relevant part.
   conv_lhs =>
@@ -346,10 +212,10 @@ theorem diagonalHomEquiv_symm_partialProd_succ (f : (Fin n → G) → A) (g : Fi
     (a : Fin (n + 1)) :
     ((diagonalHomEquiv n A).symm f).hom (Finsupp.single (Fin.partialProd g ∘ a.succ.succAbove) 1)
       = f (Fin.contractNth a (· * ·) g) := by
-  simp only [diagonalHomEquiv_symm_apply, Function.comp_apply, Fin.succ_succAbove_zero,
-    Fin.partialProd_zero, map_one, Fin.succ_succAbove_succ, LinearMap.one_apply,
-    Fin.partialProd_succ]
-  congr
+  rw [diagonalHomEquiv_symm_apply]
+  simp only [Function.comp_apply, Fin.succ_succAbove_zero, LinearMap.one_apply,
+    Fin.partialProd_zero, map_one, Fin.succ_succAbove_succ, Fin.partialProd_succ]
+  congr 1
   ext
   rw [← Fin.partialProd_succ, Fin.inv_partialProd_mul_eq_contractNth]
 
@@ -358,8 +224,9 @@ end Rep
 variable (G)
 
 /-- The simplicial `G`-set sending `[n]` to `Gⁿ⁺¹` equipped with the diagonal action of `G`. -/
+@[simps obj map]
 def classifyingSpaceUniversalCover [Monoid G] :
-    SimplicialObject (Action (Type u) <| MonCat.of G) where
+    SimplicialObject (Action (Type u) G) where
   obj n := Action.ofMulAction G (Fin (n.unop.len + 1) → G)
   map f :=
     { hom := fun x => x ∘ f.unop.toOrderHom
@@ -482,23 +349,9 @@ instance x_projective (G : Type u) [Group G] (n : ℕ) :
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
 theorem d_eq (n : ℕ) : ((groupCohomology.resolution k G).d (n + 1) n).hom =
     ModuleCat.ofHom (d k G (n + 1)) := by
-  ext : 1
-  refine Finsupp.lhom_ext' fun x => LinearMap.ext_ring ?_
-  dsimp [groupCohomology.resolution]
-/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
-  simpa [← @intCast_smul k, simplicial_object.δ] -/
-  simp_rw [alternatingFaceMapComplex_obj_d, AlternatingFaceMapComplex.objD, SimplicialObject.δ,
-    Functor.comp_map, ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), Int.cast_pow, Int.cast_neg,
-    Int.cast_one, Action.sum_hom, Action.smul_hom, Rep.linearization_map_hom]
-  rw [ModuleCat.hom_sum, LinearMap.coeFn_sum, Fintype.sum_apply]
-  erw [d_of (k := k) x]
-/- Porting note: want to rewrite `LinearMap.smul_apply` but simp/simp_rw won't do it; I need erw,
-so using Finset.sum_congr to get rid of the binder -/
-  refine Finset.sum_congr rfl fun _ _ => ?_
-  simp only [ModuleCat.hom_smul, SimplexCategory.len_mk, ModuleCat.hom_ofHom]
-  erw [LinearMap.smul_apply]
-  rw [Finsupp.lmapDomain_apply, Finsupp.mapDomain_single, Finsupp.smul_single', mul_one]
-  rfl
+  refine ModuleCat.hom_ext <| Finsupp.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
+  simp [Action.ofMulAction_V, groupCohomology.resolution, SimplicialObject.δ,
+    ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), SimplexCategory.δ, Fin.succAboveOrderEmb]
 
 section Exactness
 
