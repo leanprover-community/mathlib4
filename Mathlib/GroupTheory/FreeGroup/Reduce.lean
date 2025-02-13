@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.GroupTheory.FreeGroup.Basic
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Finset.Dedup
+import Mathlib.Data.Fintype.Defs
 import Mathlib.Data.List.Sublists
 
 /-!
