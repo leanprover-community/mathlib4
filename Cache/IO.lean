@@ -438,10 +438,8 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
           IO.println s!"Searching directory {folder} for .lean files"
           if ← folder.pathExists then
             -- case 2: "module name" of an existing folder: walk dir
-            IO.eprintln <| "Entering a part of a module name " ++
-            "(i.e. `Mathlib.Data` when only the fold `Mathlib/Data/` but no " ++
-            "file `Mathlib/Data.lean` exists) is not supported yet!"
-            IO.Process.exit 1
+            let leanModulesInFolder ← walkDir folder packageDir
+            pure <| acc.insertMany leanModulesInFolder
           else
             IO.eprintln s!"Invalid argument: non-existing module {mod}"
             IO.Process.exit 1
