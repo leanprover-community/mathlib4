@@ -409,6 +409,14 @@ theorem CompleteBipartiteGraph.chromaticNumber {V W : Type*} [Nonempty V] [Nonem
   · exact ⟨_, he'⟩
   · simpa using two_lt_card_iff.2 ⟨_, _, _, C.valid h, he, he'⟩
 
+/-- The canonical coloring of a completeMultiPartiteGraph. -/
+def CompleteMultipartiteGraph.coloring {ι : Type*} (V : ι → Type*) :
+    (completeMultipartiteGraph V).Coloring ι := Coloring.mk (fun v => v.1) (by simp)
+
+lemma CompleteMultipartiteGraph.colorable {ι : Type*} [Fintype ι] (V : ι → Type*) :
+    (completeMultipartiteGraph V).Colorable (Fintype.card ι) :=
+  (CompleteMultipartiteGraph.coloring V).colorable
+
 /-! ### Cliques -/
 
 
@@ -454,4 +462,24 @@ theorem cliqueFree_of_chromaticNumber_lt {n : ℕ} (hc : G.chromaticNumber < n) 
   rw [← hne] at hc
   simpa using hc
 
+theorem CompleteMultipartiteGraph.chromaticNumber {ι : Type*} [Fintype ι] (V : ι → Type*)
+    [∀ i, Nonempty (V i)] : (completeMultipartiteGraph V).chromaticNumber = Fintype.card ι := by
+  apply le_antisymm (CompleteMultipartiteGraph.colorable V).chromaticNumber_le
+  by_contra! h
+  apply notCliqueFree_le_card_completeMultipartiteGraph V le_rfl
+            <| cliqueFree_of_chromaticNumber_lt h
+
+theorem CompleteMultipartiteGraph.colorable_of_cliqueFree {ι : Type*} {V : ι → Type*}
+    [∀ i, Nonempty (V i)] (hc : (completeMultipartiteGraph V).CliqueFree n) :
+    (completeMultipartiteGraph V).Colorable (n - 1) := by
+  cases n with
+  | zero => apply absurd hc not_cliqueFree_zero
+  | succ n =>
+  have : Fintype ι := fintypeOfNotInfinite
+    fun hinf ↦ notCliqueFree_completeMultipartiteGraph_infinite V hc
+  apply (CompleteMultipartiteGraph.coloring V).colorable.mono
+  have := notCliqueFree_le_card_completeMultipartiteGraph V le_rfl
+  contrapose! this
+  apply hc.mono this
+  
 end SimpleGraph
