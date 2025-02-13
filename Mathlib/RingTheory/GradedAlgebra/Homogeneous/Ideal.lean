@@ -127,11 +127,12 @@ theorem Ideal.isHomogeneous_iff_subset_iInter :
     I.IsHomogeneous 𝒜 ↔ (I : Set A) ⊆ ⋂ i, GradedRing.proj 𝒜 i ⁻¹' ↑I :=
   subset_iInter_iff.symm
 
-theorem Ideal.mul_homogeneous_element_mem_of_mem {I : Ideal A} (r x : A) (hx₁ : Homogeneous 𝒜 x)
+theorem Ideal.mul_homogeneous_element_mem_of_mem
+    {I : Ideal A} (r x : A) (hx₁ : IsHomogeneousElem 𝒜 x)
     (hx₂ : x ∈ I) (j : ι) : GradedRing.proj 𝒜 j (r * x) ∈ I :=
   Submodule.smul_homogeneous_element_mem_of_mem 𝒜 𝒜 I r x hx₁ hx₂ j
 
-theorem Ideal.homogeneous_span (s : Set A) (h : ∀ x ∈ s, Homogeneous 𝒜 x) :
+theorem Ideal.homogeneous_span (s : Set A) (h : ∀ x ∈ s, IsHomogeneousElem 𝒜 x) :
     (Ideal.span s).IsHomogeneous 𝒜 :=
   Submodule.homogeneous_span 𝒜 𝒜 s h
 
@@ -148,7 +149,7 @@ theorem Ideal.toIdeal_homogeneousCore_le : (I.homogeneousCore 𝒜).toIdeal ≤ 
 
 variable {𝒜 I}
 
-theorem Ideal.mem_homogeneousCore_of_homogeneous_of_mem {x : A} (h : SetLike.Homogeneous 𝒜 x)
+theorem Ideal.mem_homogeneousCore_of_homogeneous_of_mem {x : A} (h : IsHomogeneousElem 𝒜 x)
     (hmem : x ∈ I) : x ∈ I.homogeneousCore 𝒜 :=
   Ideal.subset_span ⟨⟨x, h⟩, hmem, rfl⟩
 
@@ -410,7 +411,7 @@ theorem Ideal.homogeneousHull_eq_iSup :
     I.homogeneousHull 𝒜 =
       ⨆ i, ⟨Ideal.span (GradedRing.proj 𝒜 i '' I), Ideal.homogeneous_span 𝒜 _ (by
         rintro _ ⟨x, -, rfl⟩
-        apply SetLike.homogeneous_coe)⟩ :=
+        apply SetLike.isHomogeneousElem_coe)⟩ :=
   Submodule.homogeneousHull_eq_iSup I
 
 end HomogeneousHull
