@@ -138,6 +138,8 @@ lemma closure_def' (M : Matroid α) (X : Set α) (hX : X ⊆ M.E := by aesop_mat
 
 instance : Nonempty {F | M.Flat F ∧ X ∩ M.E ⊆ F} := ⟨M.E, M.ground_flat, inter_subset_right⟩
 
+instance : Nonempty {F | M.Flat F ∧ X ∩ M.E ⊆ F} := ⟨M.E, M.ground_flat, inter_subset_right⟩
+
 lemma closure_eq_subtypeClosure (M : Matroid α) (X : Set α) :
     M.closure X = M.subtypeClosure ⟨X ∩ M.E, inter_subset_right⟩  := by
   suffices ∀ (x : α), (∀ (t : Set α), M.Flat t → X ∩ M.E ⊆ t → x ∈ t) ↔
@@ -176,7 +178,7 @@ lemma Flat.closure (hF : M.Flat F) : M.closure F = F :=
   (sInter_subset_of_mem (by simpa)).antisymm (M.subset_closure F)
 
 variable (X) in
-@[simp] lemma flat_closure : M.Flat (M.closure X) := by
+lemma flat_closure : M.Flat (M.closure X) := by
   rw [closure, sInter_eq_iInter]; exact .iInter (·.2.1)
 
 lemma flat_iff_closure_eq : M.Flat F ↔ M.closure F = F := ⟨(·.closure), (· ▸ flat_closure F)⟩
@@ -430,6 +432,15 @@ lemma base_iff_indep_closure_eq : M.Base B ↔ M.Indep B ∧ M.closure B = M.E :
   rw [← basis_ground_iff, basis_iff_indep_subset_closure, and_congr_right_iff]
   exact fun hI ↦ ⟨fun h ↦ (M.closure_subset_ground _).antisymm h.2,
     fun h ↦ ⟨(M.subset_closure B).trans_eq h, h.symm.subset⟩⟩
+
+lemma Base.exchange_base_of_not_mem_closure (hB : M.Base B) (he : e ∈ B)
+    (hf : f ∉ M.closure (B \ {e})) (hfE : f ∈ M.E := by aesop_mat) :
+    M.Base (insert f (B \ {e})) := by
+  obtain rfl | hne := eq_or_ne f e
+  · simpa [he]
+  have ⟨hi, hfB⟩ : M.Indep (insert f (B \ {e})) ∧ f ∉ B := by
+    simpa [(hB.indep.diff _).not_mem_closure_iff, hne] using hf
+  exact hB.exchange_base_of_indep hfB hi
 
 lemma Indep.base_iff_ground_subset_closure (hI : M.Indep I) : M.Base I ↔ M.E ⊆ M.closure I :=
   ⟨fun h ↦ h.closure_eq.symm.subset, hI.base_of_ground_subset_closure⟩
