@@ -57,6 +57,11 @@ is used.
 * `ProbabilityTheory.Kernel.measurableSet_mutuallySingular` : the set `{a | κ a ⟂ₘ η a}`
   is Measurable
 
+Uniqueness results: if `κ = η.withDensity f + ξ` for measurable `f` and `ξ` is such that
+`ξ a ⟂ₘ η a` for some `a : α` then
+* `ProbabilityTheory.Kernel.eq_rnDeriv`: `f a =ᵐ[η a] Kernel.rnDeriv κ η a`
+* `ProbabilityTheory.Kernel.eq_singularPart`: `ξ a = Kernel.singularPart κ η a`
+
 ## References
 
 Theorem 1.28 in [O. Kallenberg, Random Measures, Theory and Applications][kallenberg2017].
