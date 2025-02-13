@@ -133,9 +133,9 @@ private def CacheM.getContext : IO CacheM.Context := do
   let sp ← initSrcSearchPath
   let mathlibSource ← CacheM.mathlibDepPath sp
   return {
-    mathlibDepPath := mathlibSource
-    srcSearchPath := sp
-    proofWidgetsBuildDir := LAKEPACKAGESDIR / "proofwidgets" / ".lake" / "build" }
+    mathlibDepPath := mathlibSource,
+    srcSearchPath := sp,
+    proofWidgetsBuildDir := LAKEPACKAGESDIR / "proofwidgets" / ".lake" / "build"}
 
 /-- Run a `CacheM` in `IO` by loading the context from `LEAN_SRC_PATH`. -/
 def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
@@ -409,7 +409,6 @@ The remaining arguments take one of the following forms:
 4. `Mathlib/Algebra/Fields/`: the folder exists
 5. (`Aesop/Builder.lean`: the file does not exist, it's
     actually somewhere in `.lake`. (not supported currently!))
-
 An argument like `Archive` is treated as module, not a path.
 -/
 def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
@@ -438,6 +437,7 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
         -- provided a module
         let mod := argₛ.toName
         let sourceFile ← Lean.findLean sp mod
+
         if ← sourceFile.pathExists then
           -- provided valid module
           pure <| acc.insert mod sourceFile
