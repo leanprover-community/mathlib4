@@ -928,7 +928,8 @@ theorem LieIdeal.nilpotent_iff_le_largest_nilpotent_ideal [IsNoetherian R L] (I 
   apply nilpotent_iff_le_largest_nilpotent_submodule
 
 theorem center_le_largest_nilpotent_ideal : center R L ≤ largestNilpotentIdeal R L :=
-  sorry
+  have h : IsNilpotent L (center R L) := inferInstance
+  le_sSup h
 
 theorem largest_nilpotent_ideal_le_radical : largestNilpotentIdeal R L ≤ radical R L :=
   sorry
