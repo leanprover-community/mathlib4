@@ -11,6 +11,28 @@ example : Nat → Nat → True := by
     trivial
   intros; trivial
 
+/--
+info: Update with tactic error message: "no goals to be solved"
+---
+error: tactic '
+  intro
+  intro
+  trivial
+  trivial' failed, but got different error message:
+
+no goals to be solved
+-/
+#guard_msgs in
+example : Nat → Nat → True := by
+  success_if_fail_with_msg "no goals"
+    intro
+    intro
+    trivial
+    trivial
+  intros; trivial
+
+
+
 def err (t : Bool) := if t then
   "tactic 'rewrite' failed, equality or iff proof expected
   n ≤ n.succ

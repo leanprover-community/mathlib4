@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Data.ENNReal.Action
 import Mathlib.MeasureTheory.OuterMeasure.Caratheodory
 
 /-!
@@ -305,14 +306,14 @@ theorem le_trim_iff {m₁ m₂ : OuterMeasure α} :
 
 theorem le_trim : m ≤ m.trim := le_trim_iff.2 fun _ _ ↦ le_rfl
 
-@[simp] -- Porting note: added `simp`
+@[simp]
 theorem trim_eq {s : Set α} (hs : MeasurableSet s) : m.trim s = m s :=
   inducedOuterMeasure_eq' MeasurableSet.iUnion (fun f _hf => measure_iUnion_le f)
     (fun _ _ _ _ h => measure_mono h) hs
 
 theorem trim_congr {m₁ m₂ : OuterMeasure α} (H : ∀ {s : Set α}, MeasurableSet s → m₁ s = m₂ s) :
     m₁.trim = m₂.trim := by
-  simp (config := { contextual := true }) only [trim, H]
+  simp +contextual only [trim, H]
 
 @[mono]
 theorem trim_mono : Monotone (trim : OuterMeasure α → OuterMeasure α) := fun _m₁ _m₂ H _s =>

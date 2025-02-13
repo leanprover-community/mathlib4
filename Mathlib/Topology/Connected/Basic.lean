@@ -84,7 +84,7 @@ theorem isPreconnected_of_forall {s : Set α} (x : α)
   have xs : x ∈ s := by
     rcases H y ys with ⟨t, ts, xt, -, -⟩
     exact ts xt
-  -- Porting note (#11215): TODO: use `wlog xu : x ∈ u := hs xs using u v y z, v u z y`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `wlog xu : x ∈ u := hs xs using u v y z, v u z y`
   cases hs xs with
   | inl xu =>
     rcases H y ys with ⟨t, ts, xt, yt, ht⟩
@@ -320,7 +320,7 @@ theorem isPreconnected_closed_iff {s : Set α} :
       rw [← compl_union] at this
       exact this.ne_empty huv.disjoint_compl_right.inter_eq⟩
 
-theorem IsInducing.isPreconnected_image [TopologicalSpace β] {s : Set α} {f : α → β}
+theorem Topology.IsInducing.isPreconnected_image [TopologicalSpace β] {s : Set α} {f : α → β}
     (hf : IsInducing f) : IsPreconnected (f '' s) ↔ IsPreconnected s := by
   refine ⟨fun h => ?_, fun h => h.image _ hf.continuous.continuousOn⟩
   rintro u v hu' hv' huv ⟨x, hxs, hxu⟩ ⟨y, hys, hyv⟩
@@ -428,10 +428,13 @@ theorem isPreconnected_univ_pi [∀ i, TopologicalSpace (π i)] {s : ∀ i, Set 
   rintro u v uo vo hsuv ⟨f, hfs, hfu⟩ ⟨g, hgs, hgv⟩
   classical
   rcases exists_finset_piecewise_mem_of_mem_nhds (uo.mem_nhds hfu) g with ⟨I, hI⟩
-  induction' I using Finset.induction_on with i I _ ihI
-  · refine ⟨g, hgs, ⟨?_, hgv⟩⟩
+  induction I using Finset.induction_on with
+  | empty =>
+    refine ⟨g, hgs, ⟨?_, hgv⟩⟩
     simpa using hI
-  · rw [Finset.piecewise_insert] at hI
+  | insert _ ihI =>
+    rename_i i I _
+    rw [Finset.piecewise_insert] at hI
     have := I.piecewise_mem_set_pi hfs hgs
     refine (hsuv this).elim ihI fun h => ?_
     set S := update (I.piecewise f g) i '' s i
@@ -668,7 +671,7 @@ theorem preconnectedSpace_iff_connectedComponent :
   · intro h x
     exact eq_univ_of_univ_subset <| isPreconnected_univ.subset_connectedComponent (mem_univ x)
   · intro h
-    cases' isEmpty_or_nonempty α with hα hα
+    rcases isEmpty_or_nonempty α with hα | hα
     · exact ⟨by rw [univ_eq_empty_iff.mpr hα]; exact isPreconnected_empty⟩
     · exact ⟨by rw [← h (Classical.choice hα)]; exact isPreconnected_connectedComponent⟩
 

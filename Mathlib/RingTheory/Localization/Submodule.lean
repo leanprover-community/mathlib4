@@ -5,14 +5,14 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Ideal
-import Mathlib.RingTheory.Noetherian
+import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 # Submodules in localizations of commutative rings
 
 ## Implementation notes
 
-See `RingTheory/Localization/Basic.lean` for a design overview.
+See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,
@@ -20,7 +20,7 @@ commutative ring, field of fractions
 -/
 
 
-variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S]
+variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
 variable [Algebra R S]
 
 namespace IsLocalization
@@ -59,7 +59,7 @@ theorem coeSubmodule_mul (I J : Ideal R) :
 
 theorem coeSubmodule_fg (hS : Function.Injective (algebraMap R S)) (I : Ideal R) :
     Submodule.FG (coeSubmodule S I) ↔ Submodule.FG I :=
-  ⟨Submodule.fg_of_fg_map _ (LinearMap.ker_eq_bot.mpr hS), Submodule.FG.map _⟩
+  ⟨Submodule.fg_of_fg_map_injective _ hS, Submodule.FG.map _⟩
 
 @[simp]
 theorem coeSubmodule_span (s : Set R) :
@@ -78,15 +78,17 @@ theorem isNoetherianRing (h : IsNoetherianRing R) : IsNoetherianRing S := by
   rw [isNoetherianRing_iff, isNoetherian_iff] at h ⊢
   exact OrderEmbedding.wellFounded (IsLocalization.orderEmbedding M S).dual h
 
-variable {S M}
+section NonZeroDivisors
+
+variable {R : Type*} [CommRing R] {M : Submonoid R}
+  {S : Type*} [CommRing S] [Algebra R S] [IsLocalization M S]
 
 @[mono]
 theorem coeSubmodule_le_coeSubmodule (h : M ≤ nonZeroDivisors R) {I J : Ideal R} :
     coeSubmodule S I ≤ coeSubmodule S J ↔ I ≤ J :=
-  -- Note: #8386 had to specify the value of `f` here:
+  -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify the value of `f` here:
   Submodule.map_le_map_iff_of_injective (f := Algebra.linearMap R S) (IsLocalization.injective _ h)
     _ _
-
 
 @[mono]
 theorem coeSubmodule_strictMono (h : M ≤ nonZeroDivisors R) :
@@ -109,9 +111,11 @@ theorem coeSubmodule_isPrincipal {I : Ideal R} (h : M ≤ nonZeroDivisors R) :
   · refine ⟨⟨algebraMap R S x, ?_⟩⟩
     rw [hx, Ideal.submodule_span_eq, coeSubmodule_span_singleton]
 
-variable {S} (M)
+end NonZeroDivisors
 
-theorem mem_span_iff {N : Type*} [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N]
+variable {S}
+
+theorem mem_span_iff {N : Type*} [AddCommMonoid N] [Module R N] [Module S N] [IsScalarTower R S N]
     {x : N} {a : Set N} :
     x ∈ Submodule.span S a ↔ ∃ y ∈ Submodule.span R a, ∃ z : M, x = mk' S 1 z • y := by
   constructor
@@ -155,11 +159,11 @@ namespace IsFractionRing
 
 open IsLocalization
 
-variable {K : Type*}
+variable {R K : Type*}
 
 section CommRing
 
-variable [CommRing K] [Algebra R K] [IsFractionRing R K]
+variable [CommRing R] [CommRing K] [Algebra R K] [IsFractionRing R K]
 
 @[simp, mono]
 theorem coeSubmodule_le_coeSubmodule {I J : Ideal R} :

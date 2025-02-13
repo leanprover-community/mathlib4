@@ -112,7 +112,7 @@ theorem convexJoin_assoc_aux (s t u : Set E) :
   rintro _ ⟨z, ⟨x, hx, y, hy, a₁, b₁, ha₁, hb₁, hab₁, rfl⟩, z, hz, a₂, b₂, ha₂, hb₂, hab₂, rfl⟩
   obtain rfl | hb₂ := hb₂.eq_or_lt
   · refine ⟨x, hx, y, ⟨y, hy, z, hz, left_mem_segment 𝕜 _ _⟩, a₁, b₁, ha₁, hb₁, hab₁, ?_⟩
-    linear_combination (norm := module) congr(-$hab₂ • (a₁ • x + b₁ • y))
+    linear_combination (norm := module) -hab₂ • (a₁ • x + b₁ • y)
   refine
     ⟨x, hx, (a₂ * b₁ / (a₂ * b₁ + b₂)) • y + (b₂ / (a₂ * b₁ + b₂)) • z,
       ⟨y, hy, z, hz, _, _, by positivity, by positivity, by field_simp, rfl⟩,

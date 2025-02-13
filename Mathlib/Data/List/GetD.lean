@@ -49,6 +49,11 @@ theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
     · simp at hn
     · exact ih (Nat.le_of_succ_le_succ hn)
 
+theorem getD_reverse {l : List α} (i) (h : i < length l) :
+    getD l.reverse i = getD l (l.length - 1 - i) := by
+  funext a
+  rwa [List.getD_eq_getElem?_getD, List.getElem?_reverse, ← List.getD_eq_getElem?_getD]
+
 /-- An empty list can always be decidably checked for the presence of an element.
 Not an instance because it would clash with `DecidableEq α`. -/
 def decidableGetDNilNe (a : α) : DecidablePred fun i : ℕ => getD ([] : List α) i a ≠ a :=
@@ -57,17 +62,16 @@ def decidableGetDNilNe (a : α) : DecidablePred fun i : ℕ => getD ([] : List �
 @[simp]
 theorem getElem?_getD_singleton_default_eq (n : ℕ) : [d][n]?.getD d = d := by cases n <;> simp
 
-@[deprecated (since := "2024-06-12")]
-alias getD_singleton_default_eq := getElem?_getD_singleton_default_eq
-
 @[simp]
 theorem getElem?_getD_replicate_default_eq (r n : ℕ) : (replicate r d)[n]?.getD d = d := by
   induction r generalizing n with
   | zero => simp
   | succ n ih => simp at ih; cases n <;> simp [ih, replicate_succ]
 
-@[deprecated (since := "2024-06-12")]
-alias getD_replicate_default_eq := getElem?_getD_replicate_default_eq
+theorem getD_replicate {y i n} (h : i < n) :
+    getD (replicate n x) i y = x := by
+  rw [getD_eq_getElem,  getElem_replicate]
+  rwa [length_replicate]
 
 theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length) :
     (l ++ l').getD n d = l.getD n d := by
@@ -86,7 +90,7 @@ theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ 
 theorem getD_eq_getD_get? (n : ℕ) : l.getD n d = (l.get? n).getD d := by
   cases Nat.lt_or_ge n l.length with
   | inl h => rw [getD_eq_getElem _ _ h, get?_eq_get h, get_eq_getElem, Option.getD_some]
-  | inr h => rw [getD_eq_default _ _ h, get?_eq_none.mpr h, Option.getD_none]
+  | inr h => rw [getD_eq_default _ _ h, get?_eq_none_iff.mpr h, Option.getD_none]
 
 end getD
 

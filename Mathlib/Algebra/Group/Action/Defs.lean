@@ -65,7 +65,7 @@ class AddAction (G : Type*) (P : Type*) [AddMonoid G] extends VAdd G P where
   /-- Zero is a neutral element for `+ᵥ` -/
   protected zero_vadd : ∀ p : P, (0 : G) +ᵥ p = p
   /-- Associativity of `+` and `+ᵥ` -/
-  add_vadd : ∀ (g₁ g₂ : G) (p : P), g₁ + g₂ +ᵥ p = g₁ +ᵥ (g₂ +ᵥ p)
+  add_vadd : ∀ (g₁ g₂ : G) (p : P), (g₁ + g₂) +ᵥ p = g₁ +ᵥ g₂ +ᵥ p
 
 /-- Typeclass for multiplicative actions by monoids. This generalizes group actions. -/
 @[to_additive (attr := ext)]
@@ -140,7 +140,7 @@ instance smulCommClass_self (M α : Type*) [CommMonoid M] [MulAction M α] : SMu
 determined by the additive actions of `M` on `N` and `N` on `α`. -/
 class VAddAssocClass (M N α : Type*) [VAdd M N] [VAdd N α] [VAdd M α] : Prop where
   /-- Associativity of `+ᵥ` -/
-  vadd_assoc : ∀ (x : M) (y : N) (z : α), x +ᵥ y +ᵥ z = x +ᵥ (y +ᵥ z)
+  vadd_assoc : ∀ (x : M) (y : N) (z : α), (x +ᵥ y) +ᵥ z = x +ᵥ y +ᵥ z
 
 /-- An instance of `IsScalarTower M N α` states that the multiplicative
 action of `M` on `α` is determined by the multiplicative actions of `M` on `N`
@@ -270,12 +270,12 @@ end SMul
 section
 
 /-- Note that the `SMulCommClass α β β` typeclass argument is usually satisfied by `Algebra α β`. -/
-@[to_additive] -- Porting note: nolint to_additive_doc
+@[to_additive]
 lemma mul_smul_comm [Mul β] [SMul α β] [SMulCommClass α β β] (s : α) (x y : β) :
     x * s • y = s • (x * y) := (smul_comm s x y).symm
 
 /-- Note that the `IsScalarTower α β β` typeclass argument is usually satisfied by `Algebra α β`. -/
-@[to_additive] -- Porting note: nolint to_additive_doc
+@[to_additive]
 lemma smul_mul_assoc [Mul β] [SMul α β] [IsScalarTower α β β] (r : α) (x y : β) :
     r • x * y = r • (x * y) := smul_assoc r x y
 
@@ -297,8 +297,14 @@ lemma smul_mul_smul_comm [Mul α] [Mul β] [SMul α β] [IsScalarTower α β β]
     (a • b) * (c • d) = (a * c) • (b * d) := by
   have : SMulCommClass β α β := .symm ..; exact smul_smul_smul_comm a b c d
 
-@[to_additive (attr := deprecated (since := "2024-08-29"))]
+@[to_additive]
 alias smul_mul_smul := smul_mul_smul_comm
+
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+attribute [deprecated smul_mul_smul_comm (since := "2024-08-29")] smul_mul_smul
+attribute [deprecated vadd_add_vadd_comm (since := "2024-08-29")] vadd_add_vadd
+
 
 /-- Note that the `IsScalarTower α β β` and `SMulCommClass α β β` typeclass arguments are usually
 satisfied by `Algebra α β`. -/

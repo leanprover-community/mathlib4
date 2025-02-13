@@ -48,7 +48,7 @@ theorem IsHermitian.eq {A : Matrix n n α} (h : A.IsHermitian) : Aᴴ = A := h
 protected theorem IsHermitian.isSelfAdjoint {A : Matrix n n α} (h : A.IsHermitian) :
     IsSelfAdjoint A := h
 
--- @[ext] -- Porting note (#11041): incorrect `ext`, not a structure or a lemma proving `x = y`.
+-- @[ext] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): incorrect `ext`, not a structure or a lemma proving `x = y`.
 theorem IsHermitian.ext {A : Matrix n n α} : (∀ i j, star (A j i) = A i j) → A.IsHermitian := by
   intro h; ext i j; exact h i j
 
@@ -279,7 +279,7 @@ theorem isHermitian_iff_isSymmetric [Fintype n] [DecidableEq n] {A : Matrix n n 
   · intro h
     ext i j
     simpa only [(Pi.single_star i 1).symm, ← star_mulVec, mul_one, dotProduct_single,
-      single_vecMul, star_one, one_mul] using h (Pi.single i 1) (Pi.single j 1)
+      single_one_vecMul, star_one] using h (Pi.single i 1) (Pi.single j 1)
 
 end RCLike
 

@@ -76,7 +76,7 @@ example : AEMeasurable T := by
   fun_prop
 
 
-private theorem t1 : (5: ℕ) + (1 : ℕ∞) ≤ (12 : ℕ∞) := by norm_cast
+private theorem t1 : (5: ℕ) + (1 : ℕ∞) ≤ (12 : WithTop ℕ∞) := by norm_cast
 
 example {f : ℝ → ℝ} (hf : ContDiff ℝ 12 f) :
     Differentiable ℝ (iteratedDeriv 5 (fun x => f (2*(f (x + x))) + x)) := by

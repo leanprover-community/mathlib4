@@ -78,7 +78,7 @@ instance : CStarModule A A where
   inner_smul_right_complex := mul_smul_comm ..
   star_inner x y := by simp
   norm_eq_sqrt_norm_inner_self {x} := by
-    rw [← sq_eq_sq (norm_nonneg _) (by positivity)]
+    rw [← sq_eq_sq₀ (norm_nonneg _) (by positivity)]
     simpa [sq] using Eq.symm <| CStarRing.norm_star_mul_self
 
 open scoped InnerProductSpace in
@@ -249,7 +249,7 @@ lemma inner_single_right [DecidableEq ι] (x : C⋆ᵐᵒᵈ (Π i, E i)) {i : �
 lemma norm_single [DecidableEq ι] (i : ι) (y : E i) :
     ‖equiv _ |>.symm <| Pi.single i y‖ = ‖y‖ := by
   let _ : NormedAddCommGroup (C⋆ᵐᵒᵈ (Π i, E i)) := normedAddCommGroup
-  rw [← sq_eq_sq (by positivity) (by positivity)]
+  rw [← sq_eq_sq₀ (by positivity) (by positivity)]
   simp [norm_sq_eq]
 
 lemma norm_apply_le_norm (x : C⋆ᵐᵒᵈ (Π i, E i)) (i : ι) : ‖x i‖ ≤ ‖x‖ := by
@@ -295,6 +295,13 @@ private lemma isBounded_pi_iff_aux (s : Set (C⋆ᵐᵒᵈ (Π i, E i))) :
   isBounded_iff_of_bilipschitz antilipschitzWith_card_equiv_pi_aux lipschitzWith_one_equiv_pi_aux s
 
 end Aux
+
+noncomputable instance : PseudoMetricSpace (C⋆ᵐᵒᵈ (Π i, E i)) :=
+  .ofSeminormedAddCommGroupCoreReplaceAll
+    normedSpaceCore.toCore uniformity_pi_eq_aux isBounded_pi_iff_aux
+
+noncomputable instance : SeminormedAddCommGroup (C⋆ᵐᵒᵈ (Π i, E i)) :=
+  .ofCoreReplaceAll normedSpaceCore.toCore uniformity_pi_eq_aux isBounded_pi_iff_aux
 
 noncomputable instance : NormedAddCommGroup (C⋆ᵐᵒᵈ (Π i, E i)) :=
   .ofCoreReplaceAll normedSpaceCore uniformity_pi_eq_aux isBounded_pi_iff_aux

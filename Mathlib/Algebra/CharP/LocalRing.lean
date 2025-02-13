@@ -3,6 +3,7 @@ Copyright (c) 2022 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster
 -/
+import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
@@ -19,12 +20,12 @@ import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 
 
 /-- In a local ring the characteristics is either zero or a prime power. -/
-theorem charP_zero_or_prime_power (R : Type*) [CommRing R] [LocalRing R] (q : ℕ)
+theorem charP_zero_or_prime_power (R : Type*) [CommRing R] [IsLocalRing R] (q : ℕ)
     [char_R_q : CharP R q] : q = 0 ∨ IsPrimePow q := by
   -- Assume `q := char(R)` is not zero.
   apply or_iff_not_imp_left.2
   intro q_pos
-  let K := LocalRing.ResidueField R
+  let K := IsLocalRing.ResidueField R
   haveI RM_char := ringChar.charP K
   let r := ringChar K
   let n := q.factorization r
@@ -40,7 +41,7 @@ theorem charP_zero_or_prime_power (R : Type*) [CommRing R] [LocalRing R] (q : �
     have a_unit : IsUnit (a : R) := by
       by_contra g
       rw [← mem_nonunits_iff] at g
-      rw [← LocalRing.mem_maximalIdeal] at g
+      rw [← IsLocalRing.mem_maximalIdeal] at g
       have a_cast_zero := Ideal.Quotient.eq_zero_iff_mem.2 g
       rw [map_natCast] at a_cast_zero
       have r_dvd_a := (ringChar.spec K a).1 a_cast_zero
@@ -57,7 +58,7 @@ theorem charP_zero_or_prime_power (R : Type*) [CommRing R] [LocalRing R] (q : �
     exact ⟨r, ⟨n, ⟨r_prime.prime, ⟨pos_iff_ne_zero.mpr n_pos, q_eq_rn.symm⟩⟩⟩⟩
   · haveI K_char_p_0 := ringChar.of_eq r_zero
     haveI K_char_zero : CharZero K := CharP.charP_to_charZero K
-    haveI R_char_zero := RingHom.charZero (LocalRing.residue R)
+    haveI R_char_zero := RingHom.charZero (IsLocalRing.residue R)
     -- Finally, `r = 0` would lead to a contradiction:
     have q_zero := CharP.eq R char_R_q (CharP.ofCharZero R)
     exact absurd q_zero q_pos

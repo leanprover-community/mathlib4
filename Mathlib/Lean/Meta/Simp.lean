@@ -72,10 +72,10 @@ def simpTheoremsOfNames (lemmas : List Name := []) (simpOnly : Bool := false) :
 
 /-- Construct a `Simp.Context` from a list of names. -/
 def Simp.Context.ofNames (lemmas : List Name := []) (simpOnly : Bool := false)
-    (config : Simp.Config := {}) : MetaM Simp.Context := do pure <|
-  { simpTheorems := #[← simpTheoremsOfNames lemmas simpOnly],
-    congrTheorems := ← Lean.Meta.getSimpCongrTheorems,
-    config := config }
+    (config : Simp.Config := {}) : MetaM Simp.Context := do
+  Simp.mkContext config
+    (simpTheorems := #[← simpTheoremsOfNames lemmas simpOnly])
+    (congrTheorems := ← Lean.Meta.getSimpCongrTheorems)
 
 /-- Simplify an expression using only a list of lemmas specified by name. -/
 def simpOnlyNames (lemmas : List Name) (e : Expr) (config : Simp.Config := {}) :

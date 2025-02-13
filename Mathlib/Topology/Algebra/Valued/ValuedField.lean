@@ -80,7 +80,7 @@ instance (priority := 100) Valued.topologicalDivisionRing [Valued K Γ₀] :
   { (by infer_instance : TopologicalRing K) with
     continuousAt_inv₀ := by
       intro x x_ne s s_in
-      cases' Valued.mem_nhds.mp s_in with γ hs; clear s_in
+      obtain ⟨γ, hs⟩ := Valued.mem_nhds.mp s_in; clear s_in
       rw [mem_map, Valued.mem_nhds]
       change ∃ γ : Γ₀ˣ, { y : K | (v (y - x) : Γ₀) < γ } ⊆ { x : K | x⁻¹ ∈ s }
       have vx_ne := (Valuation.ne_zero_iff <| v).mpr x_ne
@@ -364,18 +364,18 @@ def integer : Subring K := (vK.v).integer
 @[inherit_doc]
 scoped notation "𝒪[" K "]" => Valued.integer K
 
-/-- An abbreviation for `LocalRing.maximalIdeal 𝒪[K]` of a valued field `K`, enabling the notation
+/-- An abbreviation for `IsLocalRing.maximalIdeal 𝒪[K]` of a valued field `K`, enabling the notation
 `𝓂[K]` for the maximal ideal in `𝒪[K]` of a valued field `K`. -/
 @[reducible]
-def maximalIdeal : Ideal 𝒪[K] := LocalRing.maximalIdeal 𝒪[K]
+def maximalIdeal : Ideal 𝒪[K] := IsLocalRing.maximalIdeal 𝒪[K]
 
 @[inherit_doc]
 scoped notation "𝓂[" K "]" => maximalIdeal K
 
-/-- An abbreviation for `LocalRing.ResidueField 𝒪[K]` of a `Valued` instance, enabling the notation
-`𝓀[K]` for the residue field of a valued field `K`. -/
+/-- An abbreviation for `IsLocalRing.ResidueField 𝒪[K]` of a `Valued` instance, enabling the
+notation `𝓀[K]` for the residue field of a valued field `K`. -/
 @[reducible]
-def ResidueField := LocalRing.ResidueField (𝒪[K])
+def ResidueField := IsLocalRing.ResidueField (𝒪[K])
 
 @[inherit_doc]
 scoped notation "𝓀[" K "]" => ResidueField K
