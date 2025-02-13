@@ -351,6 +351,7 @@ theorem tendsto_logb_atTop_of_base_lt_one : Tendsto (logb b) atTop atBot := by
 
 end BPosAndBLtOne
 
+@[norm_cast]
 theorem floor_logb_natCast {b : ℕ} {r : ℝ} (hr : 0 ≤ r) :
     ⌊logb b r⌋ = Int.log b r := by
   obtain rfl | hr := hr.eq_or_lt
@@ -368,6 +369,7 @@ theorem floor_logb_natCast {b : ℕ} {r : ℝ} (hr : 0 ≤ r) :
     · simp_all only [CharP.cast_eq_zero, logb_zero_left, Int.floor_zero, Int.log_zero_left]
     · simp_all only [Nat.cast_one, logb_one_left, Int.floor_zero, Int.log_one_left]
 
+@[norm_cast]
 theorem ceil_logb_natCast {b : ℕ} {r : ℝ} (hr : 0 ≤ r) :
     ⌈logb b r⌉ = Int.clog b r := by
   obtain rfl | hr := hr.eq_or_lt
@@ -384,6 +386,38 @@ theorem ceil_logb_natCast {b : ℕ} {r : ℝ} (hr : 0 ≤ r) :
     cases hb
     · simp_all only [CharP.cast_eq_zero, logb_zero_left, Int.ceil_zero, Int.clog_zero_left]
     · simp_all only [Nat.cast_one, logb_one_left, Int.ceil_zero, Int.clog_one_left]
+
+@[norm_cast]
+theorem natFloor_logb_natCast (b : ℕ) (n : ℕ) : ⌊logb b n⌋₊ = Nat.log b n := by
+  cases' b with b
+  · simp [Real.logb]
+  cases' b with b
+  · simp [Real.logb]
+  have hb : 1 < b.succ.succ := Nat.succ_lt_succ (Nat.zero_lt_succ _)
+  obtain rfl | hn := Decidable.eq_or_ne 0 n
+  · simp
+  zify
+  simp_rw [←Nat.cast_succ]
+  rw [Int.natCast_floor_eq_floor
+      (Real.logb_nonneg (Nat.one_lt_cast.mpr hb) <|
+        Nat.one_le_cast.mpr <| Nat.succ_le_of_lt <| lt_of_le_of_ne (zero_le _) hn),
+    Real.floor_logb_natCast (Nat.cast_nonneg n), Int.log_natCast]
+
+@[norm_cast]
+theorem natCeil_logb_natCast (b : ℕ) (n : ℕ) : ⌈logb b n⌉₊ = Nat.clog b n := by
+  cases' b with b
+  · simp [Real.logb]
+  cases' b with b
+  · simp [Real.logb]
+  have hb : 1 < b.succ.succ := Nat.succ_lt_succ (Nat.zero_lt_succ _)
+  obtain rfl | hn := Decidable.eq_or_ne 0 n
+  · simp
+  zify
+  simp_rw [←Nat.cast_succ]
+  rw [Int.natCast_ceil_eq_ceil
+      (Real.logb_nonneg (Nat.one_lt_cast.mpr hb) <|
+        Nat.one_le_cast.mpr <| Nat.succ_le_of_lt <| lt_of_le_of_ne (zero_le _) hn),
+    Real.ceil_logb_natCast (Nat.cast_nonneg n), Int.clog_natCast]
 
 lemma natLog_le_logb (a b : ℕ) : Nat.log b a ≤ Real.logb b a := by
   apply le_trans _ (Int.floor_le ((b : ℝ).logb a))
