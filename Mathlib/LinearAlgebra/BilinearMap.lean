@@ -264,6 +264,24 @@ theorem lcomp_apply (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (x : M) : l
 
 theorem lcomp_apply' (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) : lcomp R Pₗ f g = g ∘ₗ f := rfl
 
+/-- A version of `Function.Injective.comp` for composition of two linear maps. -/
+theorem injective_comp_of_injective (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ)
+    (hf : Injective f) (hg : Injective g) : Injective (g ∘ₗ f) := hg.comp hf
+
+/-- A version of `Function.Surjective.comp` for composition of two linear maps. -/
+theorem surjective_comp_of_surjective (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (hf : Surjective f)
+    (hg : Surjective g) : Surjective (g ∘ₗ f) := by
+  intro p
+  obtain ⟨n, hn⟩ := hg p
+  obtain ⟨m, hm⟩ := hf n
+  use m
+  rw [LinearMap.comp_apply, hm, hn]
+
+/-- A version of `Function.Bijective.comp` for the composition of two linear maps. -/
+theorem bijective_comp_of_bijective (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (hf : Bijective f)
+    (hg : Bijective g) : Bijective (g ∘ₗ f) :=
+  ⟨injective_comp_of_injective f g hf.1 hg.1, surjective_comp_of_surjective f g hf.2 hg.2⟩
+
 variable (P σ₂₃)
 
 /-- Composing a semilinear map `M → N` and a semilinear map `N → P` to form a semilinear map
@@ -276,6 +294,24 @@ variable {P σ₂₃}
 @[simp]
 theorem lcompₛₗ_apply (f : M →ₛₗ[σ₁₂] N) (g : N →ₛₗ[σ₂₃] P) (x : M) :
     lcompₛₗ P σ₂₃ f g x = g (f x) := rfl
+
+/-- A version of `Function.Injective.comp` for composition of two semilinear maps. -/
+theorem injective_lcompₛₗ_of_injective (f : M →ₛₗ[σ₁₂] N) (g : N →ₛₗ[σ₂₃] P) (hf : Injective f)
+    (hg : Injective g) : Injective (lcompₛₗ _ _ f g) := hg.comp hf
+
+/-- A version of `Function.Surjective.comp` for composition of two semilinear maps. -/
+theorem surjective_lcompₛₗ_of_surjective (f : M →ₛₗ[σ₁₂] N) (g : N →ₛₗ[σ₂₃] P) (hf : Surjective f)
+    (hg : Surjective g) : Surjective (lcompₛₗ _ _ f g) := by
+  intro p
+  obtain ⟨n, hn⟩ := hg p
+  obtain ⟨m, hm⟩ := hf n
+  use m
+  rw [lcompₛₗ_apply, hm, hn]
+
+/-- A version of `Function.Bijective.comp` for the composition of two semilinear maps. -/
+theorem bijective_lcompₛₗ_of_bijective (f : M →ₛₗ[σ₁₂] N) (g : N →ₛₗ[σ₂₃] P) (hf : Bijective f)
+    (hg : Bijective g) : Bijective (lcompₛₗ _ _ f g) :=
+  ⟨injective_lcompₛₗ_of_injective f g hf.1 hg.1, surjective_lcompₛₗ_of_surjective f g hf.2 hg.2⟩
 
 variable (R M Nₗ Pₗ)
 
@@ -356,6 +392,31 @@ def compr₂ (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ) : M
 @[simp]
 theorem compr₂_apply (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ) (m : M) (n : Nₗ) :
     f.compr₂ g m n = g (f m n) := rfl
+
+/-- A version of `Function.Injective.comp` for composition of a bilinear map with a linear map. -/
+theorem injective_compr₂_of_injective (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ) (hf : Injective f)
+    (hg : Injective g) : Injective (f.compr₂ g) := by
+  intro m₁ m₂ h
+  apply hf
+  ext n
+  apply hg
+  rw [← compr₂_apply, ← compr₂_apply, h]
+
+/-- A version of `Function.Surjective.comp` for composition of a bilinear map with a linear map. -/
+theorem surjective_compr₂_of_equiv (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ ≃ₗ[R] Qₗ) (hf : Surjective f) :
+    Surjective (f.compr₂ g.toLinearMap) := by
+  intro h
+  obtain ⟨m, hm⟩ := hf (g.symm ∘ₗ h)
+  use m
+  ext n
+  rw [compr₂_apply, hm]
+  simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, LinearEquiv.apply_symm_apply]
+
+/-- A version of `Function.Bijective.comp` for composition of a bilinear map with a linear map. -/
+theorem bijective_compr₂_of_equiv (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ ≃ₗ[R] Qₗ) (hf : Bijective f) :
+    Bijective (f.compr₂ g.toLinearMap) :=
+  ⟨injective_compr₂_of_injective f g.toLinearMap hf.1 g.bijective.1,
+  surjective_compr₂_of_equiv f g hf.2⟩
 
 variable (R M)
 
