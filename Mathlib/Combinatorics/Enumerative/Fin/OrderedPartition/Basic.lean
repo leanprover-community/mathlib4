@@ -507,7 +507,20 @@ def ofUnsortedGetLast (L : List (List (Fin n))) (sorted : ∀ l ∈ L, l.Sorted 
 
 def bindRight (c : OrderedPartition n)
     (cs : ∀ i : Fin c.parts.length, OrderedPartition c.parts[i.1].length) :
-    OrderedPartition n :=
+    OrderedPartition n := by
+  -- TODO: use `mapFinIdx` here?
+  apply ofUnsortedGetLast
+    ((finRange c.parts.length).flatMap fun i ↦ (cs i).parts.map <| map (c.parts[i.1][·]))
+  · simp only [mem_flatMap, mem_map]
+    rintro _ ⟨i, -, l, hl, rfl⟩
+    simp only [Sorted, pairwise_map]
+    exact ((cs i).sorted_le_of_mem_parts hl).imp fun h ↦
+      (c.sorted_le_of_mem_parts (getElem_mem ..)).get_mono h
+  · simp
+  · sorry
+
+
+
 
 def ofNodup {m : ℕ} (L : List (List (Fin n))) (sorted₁ : ∀ l ∈ L, l.Sorted (· ≤ ·))
     (not_nil : [] ∉ L)
