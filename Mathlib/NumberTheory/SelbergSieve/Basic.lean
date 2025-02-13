@@ -137,24 +137,7 @@ def mainSum (μPlus : ℕ → ℝ) : ℝ :=
 def errSum (μPlus : ℕ → ℝ) : ℝ :=
   ∑ d ∈ divisors P, |μPlus d| * |R d|
 
-end SelbergSieve
-
-section UpperBoundSieve
-
-def UpperMoebius (μ_plus : ℕ → ℝ) : Prop :=
-  ∀ n : ℕ, (if n=1 then 1 else 0) ≤ ∑ d ∈ n.divisors, μ_plus d
-
-structure UpperBoundSieve where mk ::
-  μPlus : ℕ → ℝ
-  hμPlus : UpperMoebius μPlus
-
-instance ubToμPlus : CoeFun UpperBoundSieve fun _ => ℕ → ℝ where coe ub := ub.μPlus
-
-end UpperBoundSieve
-
-section SieveLemmas
-
-variable [s : SelbergSieve]
+/-! Lemmas aboud $P$. -/
 
 theorem prodPrimes_ne_zero : P ≠ 0 :=
   Squarefree.ne_zero prodPrimes_squarefree
@@ -165,6 +148,8 @@ theorem squarefree_of_dvd_prodPrimes {d : ℕ} (hd : d ∣ P) : Squarefree d :=
 theorem squarefree_of_mem_divisors_prodPrimes {d : ℕ} (hd : d ∈ divisors P) : Squarefree d := by
   simp only [Nat.mem_divisors] at hd
   exact Squarefree.squarefree_of_dvd hd.left prodPrimes_squarefree
+
+/-! Lemmas about $\nu$. -/
 
 theorem prod_primeFactors_nu {d : ℕ} (hd : d ∣ P) : ∏ p ∈ d.primeFactors, ν p = ν d := by
   rw [← nu_mult.map_prod_of_subset_primeFactors _ _ subset_rfl,
@@ -189,15 +174,6 @@ theorem nu_ne_zero_of_mem_divisors_prodPrimes {d : ℕ} (hd : d ∈ divisors P) 
   rw [mem_divisors] at hd
   apply nu_pos_of_dvd_prodPrimes hd.left
 
-theorem multSum_eq_main_err (d : ℕ) : multSum d = ν d * X + R d := by
-  dsimp [rem]
-  ring
-
-theorem siftedSum_as_delta : siftedSum = ∑ d ∈ support, a d * if Nat.gcd P d = 1 then 1 else 0 :=
-  by
-  dsimp only [siftedSum]
-  simp_rw [mul_ite, mul_one, mul_zero]
-
 theorem nu_lt_self_of_dvd_prodPrimes (d : ℕ) (hdP : d ∣ P) (hd_ne_one : d ≠ 1) : ν d < 1 := by
   have hd_sq : Squarefree d := Squarefree.squarefree_of_dvd hdP prodPrimes_squarefree
   have := hd_sq.ne_zero
@@ -213,6 +189,15 @@ theorem nu_lt_self_of_dvd_prodPrimes (d : ℕ) (hdP : d ∣ P) (hd_ne_one : d �
       · simp only [nonempty_primeFactors, show 1 < d by omega]
     _ = 1 := by
       simp
+
+theorem multSum_eq_main_err (d : ℕ) : multSum d = ν d * X + R d := by
+  dsimp [rem]
+  ring
+
+theorem siftedSum_as_delta : siftedSum = ∑ d ∈ support, a d * if Nat.gcd P d = 1 then 1 else 0 :=
+  by
+  dsimp only [siftedSum]
+  simp_rw [mul_ite, mul_one, mul_zero]
 
 section SelbergTerms
 /-!
@@ -283,13 +268,19 @@ theorem conv_selbergTerms_eq_selbergTerms_mul_nu {d : ℕ} (hd : d ∣ P) :
 
 end SelbergTerms
 
-theorem upper_bound_of_UpperBoundSieve (μPlus : UpperBoundSieve) :
-    siftedSum ≤ ∑ d ∈ divisors P, μPlus d * multSum d := by
-  have hμ : ∀ n, (if n = 1 then 1 else 0) ≤ ∑ d ∈ n.divisors, μPlus d := μPlus.hμPlus
+omit s in
+/-! A sequence of coefficients $\mu^{+}$ is upper Moebius if $\mu * \zeta ≤ \mu^{+} * \zeta$. These
+  coefficients then yield an upper bound on the sifted sum.-/
+def UpperMoebius (mu_plus : ℕ → ℝ) : Prop :=
+  ∀ n : ℕ, (if n=1 then 1 else 0) ≤ ∑ d ∈ n.divisors, mu_plus d
+
+theorem upper_bound_of_UpperMoebius (mu_plus : ℕ → ℝ) (h : UpperMoebius mu_plus) :
+    siftedSum ≤ ∑ d ∈ divisors P, mu_plus d * multSum d := by
+  have hμ : ∀ n, (if n = 1 then 1 else 0) ≤ ∑ d ∈ n.divisors, mu_plus d := h
   calc siftedSum ≤
-    ∑ n ∈ support, a n * ∑ d ∈ (Nat.gcd P n).divisors, μPlus d := ?caseA
-    _ = ∑ n ∈ support, ∑ d ∈ divisors P, if d ∣ n then a n * μPlus d else 0 := ?caseB
-    _ = ∑ d ∈ divisors P, μPlus d * multSum d := ?caseC
+    ∑ n ∈ support, a n * ∑ d ∈ (Nat.gcd P n).divisors, mu_plus d := ?caseA
+    _ = ∑ n ∈ support, ∑ d ∈ divisors P, if d ∣ n then a n * mu_plus d else 0 := ?caseB
+    _ = ∑ d ∈ divisors P, mu_plus d * multSum d := ?caseC
   case caseA =>
     rw [siftedSum_as_delta]
     apply Finset.sum_le_sum; intro n _
@@ -304,10 +295,11 @@ theorem upper_bound_of_UpperBoundSieve (μPlus : UpperBoundSieve) :
     rw [sum_comm]
     simp_rw [multSum, ← sum_filter, mul_sum, mul_comm]
 
-theorem siftedSum_le_mainSum_errSum_of_UpperBoundSieve (μPlus : UpperBoundSieve) :
-    siftedSum ≤ X * mainSum μPlus + errSum μPlus := by
-  calc siftedSum ≤ ∑ d ∈ divisors P, μPlus d * multSum d := by apply upper_bound_of_UpperBoundSieve
-   _ ≤ X * ∑ d ∈ divisors P, μPlus d * ν d + ∑ d ∈ divisors P, μPlus d * R d := ?caseA
+theorem siftedSum_le_mainSum_errSum_of_UpperMoebius (mu_plus : ℕ → ℝ)
+    (h : UpperMoebius mu_plus) :
+    siftedSum ≤ X * mainSum mu_plus + errSum mu_plus := by
+  calc siftedSum ≤ ∑ d ∈ divisors P, mu_plus d * multSum d := upper_bound_of_UpperMoebius _ h
+   _ ≤ X * ∑ d ∈ divisors P, mu_plus d * ν d + ∑ d ∈ divisors P, mu_plus d * R d := ?caseA
    _ ≤ _ := ?caseB
   case caseA =>
     apply le_of_eq
@@ -318,12 +310,16 @@ theorem siftedSum_le_mainSum_errSum_of_UpperBoundSieve (μPlus : UpperBoundSieve
     apply _root_.add_le_add (le_rfl)
     apply sum_le_sum; intro d _
     rw [←abs_mul]
-    exact le_abs_self (UpperBoundSieve.μPlus μPlus d * R d)
+    exact le_abs_self (mu_plus d * R d)
 
-end SieveLemmas
+end SelbergSieve
 
 section LambdaSquared
-
+/-!
+  We consider a special class of upper bound sieves called the Λ² sieve. This class is parameterised
+  by a sequence of real numbers. We will later choose a set of weights that minimises the main term,
+  under a constraint that lets us control the error term.
+-/
 def lambdaSquared (weights : ℕ → ℝ) : ℕ → ℝ := fun d =>
   ∑ d1 ∈ d.divisors, ∑ d2 ∈ d.divisors, if d = Nat.lcm d1 d2 then weights d1 * weights d2 else 0
 
@@ -404,6 +400,8 @@ theorem upperMoebius_lambdaSquared (weights : ℕ → ℝ) (hw : weights 1 = 1) 
 
 variable [s : SelbergSieve]
 
+/-! The main sum we get from Λ² coefficients is a quadratic form. We will later choose weights that
+  diagonalise this sum. -/
 theorem lambdaSquared_mainSum_eq_quad_form (w : ℕ → ℝ) :
     mainSum (lambdaSquared w) =
       ∑ d1 ∈ divisors P, ∑ d2 ∈ divisors P,

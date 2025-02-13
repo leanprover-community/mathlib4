@@ -16,7 +16,7 @@ noncomputable section
 
 open scoped BigOperators Classical SelbergSieve.Notation
 
-open Finset Real Nat SelbergSieve.UpperBoundSieve ArithmeticFunction
+open Finset Real Nat ArithmeticFunction
 
 namespace SelbergSieve
 
@@ -242,13 +242,13 @@ theorem weight_one_of_selberg : γ 1 = 1 := by
   rw [inv_mul_cancel₀]
   convert s.selbergBoundingSum_ne_zero
 
-theorem selbergμPlus_eq_zero (d : ℕ) (hd : ¬d ≤ y) : μ⁺ d = 0 :=
+theorem selbergMuPlus_eq_zero (d : ℕ) (hd : ¬d ≤ y) : μ⁺ d = 0 :=
   by
   apply lambdaSquared_eq_zero_of_not_le_height _ y _ d hd
   apply selbergWeights_eq_zero
 
-def selbergUbSieve : UpperBoundSieve :=
-  ⟨μ⁺, upperMoebius_lambdaSquared γ (s.weight_one_of_selberg)⟩
+def upperMoebius_selbergMuPlus : UpperMoebius selbergMuPlus :=
+  upperMoebius_lambdaSquared γ (s.weight_one_of_selberg)
 
 theorem mainSum_eq_diag_quad_form :
     s.mainSum μ⁺ =
@@ -424,17 +424,17 @@ theorem selberg_bound_simple_errSum :
   · apply mul_le_mul _ le_rfl (abs_nonneg <| R d) (pow_nonneg _ <| ω d)
     · exact s.selberg_bound_muPlus d hd
     linarith
-  · rw [s.selbergμPlus_eq_zero d h, abs_zero, zero_mul]
+  · rw [s.selbergMuPlus_eq_zero d h, abs_zero, zero_mul]
 
 omit s in
 theorem selberg_bound (s : SelbergSieve) :
     s.siftedSum ≤
       X / S +
         ∑ d ∈ divisors P, if (d : ℝ) ≤ y then (3:ℝ) ^ ω d * |R d| else 0 := by
-  let mu_plus := s.selbergUbSieve
+  let mu_plus := selbergMuPlus
   calc
     s.siftedSum ≤ X * s.mainSum μ⁺ + s.errSum μ⁺ :=
-      s.siftedSum_le_mainSum_errSum_of_UpperBoundSieve mu_plus
+      s.siftedSum_le_mainSum_errSum_of_UpperMoebius mu_plus upperMoebius_selbergMuPlus
     _ ≤ _ := ?_
   gcongr
   · rw [s.selberg_bound_simple_mainSum, div_eq_mul_inv]
