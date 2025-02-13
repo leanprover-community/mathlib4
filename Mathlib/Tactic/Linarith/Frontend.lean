@@ -131,7 +131,7 @@ linarith, nlinarith, lra, nra, Fourier-Motzkin, linear arithmetic, linear progra
 -/
 
 open Lean Elab Tactic Meta
-open Batteries Mathlib
+open Batteries Mathlib Qq
 
 
 namespace Linarith
@@ -251,7 +251,7 @@ prove `False` by calling `linarith` on each list in succession. It will stop at 
 `False`, and fail if no contradiction is found with any list.
 -/
 def findLinarithContradiction (cfg : LinarithConfig) (g : MVarId) (ls : List (Expr × List Expr)) :
-    MetaM Expr :=
+    MetaM Q(False) :=
   try
     ls.firstM (fun ⟨α, L⟩ =>
       withTraceNode `linarith (return m!"{exceptEmoji ·} running on type {α}") <|
@@ -271,7 +271,7 @@ If `prefType` is given, it will first use the class of proofs of comparisons ove
 -- If it succeeds, the passed metavariable should have been assigned.
 def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
     (hyps : List Expr) : MetaM Unit := do
-  let singleProcess (g : MVarId) (hyps : List Expr) : MetaM Expr := g.withContext do
+  let singleProcess (g : MVarId) (hyps : List Expr) : MetaM Q(False) := g.withContext do
     linarithTraceProofs s!"after preprocessing, linarith has {hyps.length} facts:" hyps
     let mut hyp_set ← partitionByType hyps
     trace[linarith] "hypotheses appear in {hyp_set.size} different types"
