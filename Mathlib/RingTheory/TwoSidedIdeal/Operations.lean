@@ -88,15 +88,49 @@ variable [NonUnitalRingHomClass F R S]
 
 /--
 Preimage of a two-sided ideal, as a two-sided ideal. -/
-def comap (I : TwoSidedIdeal S) : TwoSidedIdeal R where
-  ringCon := I.ringCon.comap f
+def comap : TwoSidedIdeal S →o TwoSidedIdeal R where
+  toFun I := ⟨I.ringCon.comap f⟩
+  monotone' := by
+    intro I J h
+    rw [le_iff] at h
+    intro x
+    specialize @h (f x)
+    simpa [mem_iff, RingCon.comap]
+
+lemma comap_le_comap {I J : TwoSidedIdeal S} (h : I ≤ J) :
+    comap f I ≤ comap f J :=
+  (comap f).monotone h
 
 lemma mem_comap {I : TwoSidedIdeal S} {x : R} :
     x ∈ I.comap f ↔ f x ∈ I := by
   simp [comap, RingCon.comap, mem_iff]
 
+/--
+If `R` and `S` are isomorphic as rings, then two-sided ideals of `R` and two-sided ideals of `S` are
+order isomorphic.
+-/
+def orderIsoOfRingEquiv (e : R ≃+* S) : TwoSidedIdeal R ≃o TwoSidedIdeal S :=
+  OrderIso.ofHomInv (comap e.symm) (comap e) (by ext; simp [mem_comap])
+    (by ext; simp [mem_comap])
+
+lemma orderIsoOfRingEquiv_apply (e : R ≃+* S) (I : TwoSidedIdeal R) :
+    orderIsoOfRingEquiv e I = I.comap e.symm := rfl
+
+lemma orderIsoOfRingEquiv_symm_apply (e : R ≃+* S) (I : TwoSidedIdeal S) :
+    (orderIsoOfRingEquiv e).symm I = I.comap e := rfl
 
 end NonUnitalNonAssocRing
+
+section NonAssocRing
+
+variable {R S T : Type*}
+variable [NonAssocRing R] [NonAssocRing S] [NonAssocRing T]
+
+lemma comap_comap (I : TwoSidedIdeal T) (f : R →+* S) (g : S →+* T) :
+    (I.comap g).comap f = I.comap (g.comp f) := by
+  ext; simp [mem_comap]
+
+end NonAssocRing
 
 section NonUnitalRing
 
