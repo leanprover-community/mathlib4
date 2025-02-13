@@ -15,8 +15,6 @@ objects and morphisms in this category.
 This category admits a canonical functor `toSimplexCategory` to the usual simplex category.
 The fact that this functor is an equivalence will be recorded in a separate file.
 -/
-namespace AlgebraicTopology
-
 open CategoryTheory
 
 /-- The objects of the free simplex quiver are the natural numbers. -/
@@ -253,5 +251,3 @@ lemma toSimplexCategory_len {x : SimplexCategoryGenRel} : (toSimplexCategory.obj
   rfl
 
 end SimplexCategoryGenRel
-
-end AlgebraicTopology

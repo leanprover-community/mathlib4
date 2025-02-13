@@ -30,7 +30,7 @@ stones towards proving that the canonical functor
 
 -/
 
-namespace AlgebraicTopology.SimplexCategoryGenRel
+namespace SimplexCategoryGenRel
 
 open CategoryTheory
 
@@ -843,4 +843,4 @@ lemma eq_of_simplicialEvalδ_eq
 
 end NormalFormsP_δ
 
-end AlgebraicTopology.SimplexCategoryGenRel
+end SimplexCategoryGenRel

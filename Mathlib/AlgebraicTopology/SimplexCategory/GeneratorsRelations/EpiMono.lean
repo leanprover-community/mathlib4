@@ -15,7 +15,7 @@ moprhism as a decomposition of a `P_σ` followed by a `P_δ`.
 
 -/
 
-namespace AlgebraicTopology.SimplexCategoryGenRel
+namespace SimplexCategoryGenRel
 open CategoryTheory
 
 section EpiMono
@@ -351,4 +351,4 @@ theorem exists_P_σ_P_δ_factorisation {x y : SimplexCategoryGenRel} (f : x ⟶ 
 
 end ExistenceOfFactorisations
 
-end AlgebraicTopology.SimplexCategoryGenRel
+end SimplexCategoryGenRel

@@ -13,7 +13,7 @@ an equivalence of categories. We introduce `equivSimplexCategory` as this equiva
 * [Kerodon Tag 04FW](https://kerodon.net/tag/04FW)
 
 -/
-namespace AlgebraicTopology.SimplexCategoryGenRel
+namespace SimplexCategoryGenRel
 
 open CategoryTheory
 
@@ -368,4 +368,4 @@ lemma equivSimplexCategory_inverse_δ (n : ℕ) (i : Fin (n + 2)):
 
 end EquivalenceWithSimplexCategory
 
-end AlgebraicTopology.SimplexCategoryGenRel
+end SimplexCategoryGenRel
