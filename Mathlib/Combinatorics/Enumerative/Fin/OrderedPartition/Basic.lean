@@ -14,6 +14,12 @@ namespace List
 
 variable {α β γ : Type*}
 
+attribute [gcongr] Perm.append_left Perm.append_right Perm.append Perm.map
+
+theorem mem_unattach {p : α → Prop} {l : List (Subtype p)} {x : α} :
+    x ∈ l.unattach ↔ ∃ y ∈ l, y.1 = x :=
+  mem_map
+
 /-- A version of `modify_id` that uses `fun x => x` instead of `id`. -/
 @[simp]
 theorem modify_id' (n : ℕ) (l : List α) : modify (·) n l = l := modify_id ..
@@ -23,10 +29,6 @@ theorem subset_flatMap_of_mem {l : List α} {a : α} (ha : a ∈ l) (f : α → 
 
 theorem subset_flatten_of_mem {L : List (List α)} {l : List α} (h : l ∈ L) : l ⊆ L.flatten :=
   fun _b hb ↦ mem_flatten_of_mem h hb
-
-theorem countP_lt_length {l : List α} {p : α → Bool} :
-    l.countP p < l.length ↔ ∃ a ∈ l, p a = false := by
-  simp [(l.countP_le_length _).lt_iff_ne]
 
 theorem perm_map_iff {f : α → β} (hf : f.Injective) {l₁ l₂ : List α} :
     l₁.map f ~ l₂.map f ↔ l₁ ~ l₂ := by
@@ -93,17 +95,6 @@ theorem modify_perm_cons_eraseIdx {l : List α} {n : ℕ} (h : n < l.length) (f 
     l.modify f n ~ f l[n] :: l.eraseIdx n := by
   rw [modify_eq_set_getElem h]
   exact set_perm_cons_eraseIdx h _
-
-theorem Pairwise.rel_head_tail {l : List α} {R : α → α → Prop} (h₁ : l.Pairwise R) {a : α}
-    (ha : a ∈ l.tail) : R (l.head fun hl ↦ by simp [hl] at ha) a := by
-  generalize_proofs hl
-  rw [← head_cons_tail l hl, pairwise_cons] at h₁
-  exact h₁.1 a ha
-
-theorem Pairwise.rel_head {R : α → α → Prop} [IsRefl α R] {l : List α} (h₁ : l.Pairwise R)
-    {a : α} (ha : a ∈ l) : R (l.head <| ne_nil_of_mem ha) a := by
-  rw [← head_cons_tail l (ne_nil_of_mem ha), mem_cons] at ha
-  exact ha.elim (fun h ↦ h ▸ refl_of ..) h₁.rel_head_tail
 
 end List
 
@@ -500,6 +491,24 @@ instance instUniqueOne : Unique (OrderedPartition 1) :=
     simp
   Unique.mk' _
 
+def ofUnsortedGetLast (L : List (List (Fin n))) (sorted : ∀ l ∈ L, l.Sorted (· ≤ ·))
+    (not_nil : [] ∉ L) (perm : L.flatten ~ finRange n) : OrderedPartition n where
+  parts := L.pmap Subtype.mk (fun _ h ↦ ne_of_mem_of_not_mem h not_nil)
+    |>.mergeSort (fun l₁ l₂ ↦ ((fun l : {l // l ≠ []} ↦ l.1.getLast l.2)  ⁻¹'o (· ≤ ·)) l₁ l₂)
+    |>.unattach
+  sorted_le_of_mem_parts := by simp +contextual [mem_unattach, sorted]
+  not_nil_mem_parts := by simp [mem_unattach]
+  sorted_getLast_le := by
+    simp only [unattach, pmap_map, Sorted, pairwise_pmap]
+    exact (sorted_mergeSort' _ _).imp fun h _ _ ↦ h
+  perm_finRange := by
+    refine ((mergeSort_perm _ _).map _).flatten.trans ?_
+    simpa [map_pmap]
+
+def bindRight (c : OrderedPartition n)
+    (cs : ∀ i : Fin c.parts.length, OrderedPartition c.parts[i.1].length) :
+    OrderedPartition n :=
+
 def ofNodup {m : ℕ} (L : List (List (Fin n))) (sorted₁ : ∀ l ∈ L, l.Sorted (· ≤ ·))
     (not_nil : [] ∉ L)
     (sorted₂ : (L.pmap getLast fun _l hl ↦ ne_of_mem_of_not_mem hl not_nil).Sorted (· ≤ ·))
@@ -535,26 +544,30 @@ def dropLast {m : ℕ} (c : OrderedPartition n) (hm : c.parts.dropLast.flatten.l
     hm
 
 def appendLast {m : ℕ} (c : OrderedPartition m) (l : List (Fin n)) (hl : l.Sorted (· < ·))
-    (hm : m + l.length = n) : OrderedPartition (n + 1) where
-  parts :=
-    let l' := l.map castSucc ++ [Fin.last n]
-    let s : Finset (Fin (n + 1)) := .mk l' <| by
-      simp [(castSucc_lt_last _).ne, nodup_map_iff (castSucc_injective _), hl.nodup, l',
-        nodup_append]
-    let e : Fin m ↪o Fin (n + 1) := sᶜ.orderEmbOfFin <| by simp [Finset.card_compl, s, l', ← hm]
-    c.parts.map (map e) ++ [l']
-  sorted_le_of_mem_parts := by
-    simp only [List.forall_mem_append, List.forall_mem_map, List.forall_mem_singleton,
-      Sorted, pairwise_map, OrderEmbedding.le_iff_le, List.pairwise_append]
+    (hm : m + l.length = n) : OrderedPartition (n + 1) := by
+  set l' := l.map castSucc ++ [Fin.last n]
+  set s : Finset (Fin (n + 1)) := .mk l' <| by
+    simp [(castSucc_lt_last _).ne, nodup_map_iff (castSucc_injective _), hl.nodup, l',
+      nodup_append]
+  set e : Fin m ↪o Fin (n + 1) := sᶜ.orderEmbOfFin <| by simp [Finset.card_compl, s, l', ← hm]
+  use c.parts.map (map e) ++ [l']
+  · simp only [List.forall_mem_append, List.forall_mem_map, List.forall_mem_singleton,
+      Sorted, pairwise_map, OrderEmbedding.le_iff_le, List.pairwise_append, l']
     simpa [le_last] using And.intro c.sorted_le_of_mem_parts hl.le_of_lt
-  not_nil_mem_parts := by simp
-  sorted_getLast_le := by
-    simpa [Sorted, pairwise_append, le_last, pairwise_pmap, pmap_map]
+  · simp [l']
+  · simpa [Sorted, pairwise_append, le_last, pairwise_pmap, pmap_map, l']
       using (pairwise_pmap _).1 c.sorted_getLast_le
-  perm_finRange := by
-    simp only [flatten_append, ← map_flatten, flatten_singleton]
-    refine ((c.perm_finRange.map _).append_right _).trans ?_
-    
+  · calc
+      (map (map ⇑e) c.parts ++ [l']).flatten ~ map e c.parts.flatten ++ l' := by
+        rw [flatten_append, map_flatten, flatten_singleton]
+      _ ~ map e (finRange m) ++ l' := by rel [c.perm_finRange]
+      _ ~ (finRange (n + 1)).diff l' ++ l' := by
+        gcongr
+        sorry
+      _ ~ finRange (n + 1) := by
+        rw [← Multiset.coe_eq_coe]
+        exact tsub_add_cancel_of_le (Finset.val_le_iff.mpr (le_top : s ≤ ⊤))
+
 
 end OrderedPartition
 
