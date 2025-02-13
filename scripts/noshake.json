@@ -245,6 +245,8 @@
   "Mathlib.Tactic.NoncommRing": ["Mathlib.Algebra.Group.Action.Defs"],
   "Mathlib.Tactic.MoveAdd":
   ["Mathlib.Algebra.Group.Basic", "Mathlib.Init.Order.LinearOrder"],
+  "Mathlib.Tactic.MetaTesting":
+  ["Batteries.Data.String.Basic", "Batteries.Lean.PersistentHashMap"],
   "Mathlib.Tactic.Measurability":
   ["Mathlib.Algebra.Group.Defs", "Mathlib.Tactic.Measurability.Init"],
   "Mathlib.Tactic.Linter.UnusedTactic":
