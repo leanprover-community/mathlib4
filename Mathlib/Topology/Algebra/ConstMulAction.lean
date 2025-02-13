@@ -180,6 +180,10 @@ theorem isClosed_setOf_map_smul {N : Type*} [Monoid N] (α β) [MulAction M α] 
   exact isClosed_iInter fun c => isClosed_iInter fun x =>
     isClosed_eq (continuous_apply _) ((continuous_apply _).const_smul _)
 
+@[to_additive]
+instance Submonoid.continuousConstSMul {S : Submonoid M} : ContinuousConstSMul S α :=
+  IsInducing.id.continuousConstSMul Subtype.val rfl
+
 end Monoid
 
 section Group
@@ -190,6 +194,10 @@ variable {G : Type*} [TopologicalSpace α] [Group G] [MulAction G α] [Continuou
 theorem tendsto_const_smul_iff {f : β → α} {l : Filter β} {a : α} (c : G) :
     Tendsto (fun x => c • f x) l (𝓝 <| c • a) ↔ Tendsto f l (𝓝 a) :=
   ⟨fun h => by simpa only [inv_smul_smul] using h.const_smul c⁻¹, fun h => h.const_smul _⟩
+
+@[to_additive]
+instance Subgroup.continuousConstSMul {S : Subgroup G} : ContinuousConstSMul S α :=
+  IsInducing.id.continuousConstSMul Subtype.val rfl
 
 variable [TopologicalSpace β] {f : β → α} {b : β} {s : Set β}
 
