@@ -37,7 +37,7 @@ stones towards proving that the canonical functor
  - Show that every `P_δ` admits a unique normal form.
 -/
 
-namespace AlgebraicTopology.SimplexCategoryGenRel
+namespace SimplexCategoryGenRel
 
 section AdmissibleLists
 -- Impl. note: We are not bundling admissible lists as a subtype of `List ℕ` so that it remains
@@ -224,4 +224,4 @@ theorem simplicialInsert_isAdmissible (L : List ℕ) (hL : isAdmissible (m + 1) 
 
 end AdmissibleLists
 
-end AlgebraicTopology.SimplexCategoryGenRel
+end SimplexCategoryGenRel
