@@ -1087,6 +1087,13 @@ theorem EventuallyLE.trans_eq (H₁ : f ≤ᶠ[l] g) (H₂ : g =ᶠ[l] h) : f �
 instance : Trans ((· ≤ᶠ[l] ·) : (α → β) → (α → β) → Prop) (· =ᶠ[l] ·) (· ≤ᶠ[l] ·) where
   trans := EventuallyLE.trans_eq
 
+theorem Eventually.of_eventuallyEq {α : Type*} {l : Filter α} {p q : α → Prop}
+    (hp : ∀ᶠ x in l, p x) (hqp : q =ᶠ[l] p) : ∀ᶠ x in l, q x := hqp.symm.rw (fun _ b => b) hp
+
+theorem Frequently.of_eventuallyEq {α : Type*} {l : Filter α} {p q : α → Prop}
+    (hp : ∃ᶠ x in l, p x) (hqp : q =ᶠ[l] p) : ∃ᶠ x in l, q x :=
+  fun h => hp <| h.of_eventuallyEq hqp.compl.symm
+
 end Preorder
 
 variable {l : Filter α}
