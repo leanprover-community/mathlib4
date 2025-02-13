@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov
 -/
 import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Combinatorics.SimpleGraph.Maps
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Sym.Card
 
@@ -213,6 +213,12 @@ theorem card_neighborSet_eq_degree : Fintype.card (G.neighborSet v) = G.degree v
 
 theorem degree_pos_iff_exists_adj : 0 < G.degree v ↔ ∃ w, G.Adj v w := by
   simp only [degree, card_pos, Finset.Nonempty, mem_neighborFinset]
+
+theorem degree_pos_iff_mem_support : 0 < G.degree v ↔ v ∈ G.support := by
+  rw [G.degree_pos_iff_exists_adj v, mem_support]
+
+theorem degree_eq_zero_iff_not_mem_support : G.degree v = 0 ↔ v ∉ G.support := by
+  rw [← G.degree_pos_iff_mem_support v, Nat.pos_iff_ne_zero, not_ne_iff]
 
 theorem degree_compl [Fintype (Gᶜ.neighborSet v)] [Fintype V] :
     Gᶜ.degree v = Fintype.card V - 1 - G.degree v := by
@@ -429,5 +435,53 @@ theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
   · simp only [Set.toFinset_subset_toFinset, Set.subset_univ]
 
 end Finite
+
+section Support
+
+lemma card_support_le [Fintype V] [Fintype G.support] :
+    Fintype.card G.support ≤ Fintype.card V :=
+  Fintype.card_le_of_injective Subtype.val Subtype.val_injective
+
+variable {s : Set V} [DecidablePred (· ∈ s)] [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj]
+
+instance : DecidablePred (· ∈ G.support) :=
+  inferInstanceAs <| DecidablePred (· ∈ { v | ∃ w, G.Adj v w })
+
+/-- If the support of the simple graph `G` is a subset of the set `s`, then the induced subgraph of
+`s` has the same number of edges as `G`. -/
+theorem card_edgeFinset_induce_of_support_subset (h : G.support ⊆ s) :
+    #(G.induce s).edgeFinset = #G.edgeFinset := by
+  apply card_nbij (fun e ↦ e.map (↑)) (by rintro ⟨_, _⟩; simp)
+  · rintro ⟨_, _⟩ _ ⟨_, _⟩ _
+    simp [Subtype.ext_iff_val]
+  · rintro ⟨v, w⟩ hadj
+    rw [Set.coe_toFinset, mem_edgeSet] at hadj
+    use s(⟨v, h ⟨w, hadj⟩⟩, ⟨w, h ⟨v, hadj.symm⟩⟩)
+    simp [hadj]
+
+theorem card_edgeFinset_induce_support :
+    #(G.induce G.support).edgeFinset = #G.edgeFinset :=
+  card_edgeFinset_induce_of_support_subset subset_rfl
+
+/-- If the neighbor set of a vertex `v` is a subset of `s`, then the degree of the vertex in the
+induced subgraph of `s` is the same as in `G`. -/
+theorem degree_induce_of_neighborSet_subset {v : s} (h : G.neighborSet v ⊆ s) :
+    (G.induce s).degree v = G.degree v := by
+  apply card_nbij (fun v ↦ ↑v) (by simp) (Set.injOn_of_injective Subtype.val_injective)
+  intro _ hadj
+  rw [neighborFinset_def, Set.coe_toFinset] at hadj
+  simp [show G.Adj v _ from hadj, h hadj]
+
+/-- If the support of the simple graph `G` is a subset of the set `s`, then the degree of vertices
+in the induced subgraph of `s` are the same as in `G`. -/
+theorem degree_induce_of_support_subset (h : G.support ⊆ s) (v : s) :
+    (G.induce s).degree v = G.degree v :=
+  degree_induce_of_neighborSet_subset (fun _ hadj ↦ h ⟨v, hadj.symm⟩)
+
+theorem degree_induce_support (v : G.support) :
+    (G.induce G.support).degree v = G.degree v :=
+  degree_induce_of_support_subset subset_rfl v
+
+end Support
 
 end SimpleGraph
