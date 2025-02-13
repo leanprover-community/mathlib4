@@ -29,6 +29,21 @@ lemma IsCompactSystem.iInter_eq_empty (hp : IsCompactSystem p) (hC : ∀ i, p (C
     ⋂ i ≤ hp.max_of_empty hC hC_empty, C i = ∅ :=
   (hp C hC hC_empty).choose_spec
 
+def IsCompactSystem' (p : Set α → Prop) : Prop :=
+  ∀ C : ℕ → Set α, (∀ i, p (C i)) → (∀ (n : ℕ), (⋂ i ≤ n, C i).Nonempty) → (⋂ i, C i).Nonempty
+
+theorem IsCompactSystem_iff_IsCompactSystem' (p : Set α → Prop) :
+    IsCompactSystem p ↔ IsCompactSystem' p := by
+  refine ⟨fun h C hC hn ↦ ?_, fun h C hC ↦ ?_⟩
+  · have h2 := h C hC
+    rw [← not_imp_not] at h2
+    push_neg at h2
+    simp_rw [Set.nonempty_iff_ne_empty] at *
+    exact h2 hn
+  · have h2 := h C hC
+    rw [← not_imp_not] at h2
+    push_neg at h2
+    exact h2
 
 example (i n : ℕ) : i < n+1 ↔ i ≤ n := by exact Nat.lt_add_one_iff
 
@@ -141,8 +156,11 @@ lemma l2 (C : Set (Set α)) (hC : IsPiSystem' C) (s : ℕ → Set α) (hs : ∀ 
     rw [decumulate_succ s n]
     exact hC (⋂ i, ⋂ (_ : i ≤ n), s i) hn (s (n + 1)) (hs (n + 1))
 
+lemma l3 (C : ℕ → Set α) (hC : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C) :
+  ∃ (s : Finset ℕ), ⋂ i ∈ s, C i = ∅ ↔ ∃ n, C n = ∅ := by sorry
+
 theorem IsCompactSystem.iff_mono [Inhabited α] (hpi : IsPiSystem' p) : (IsCompactSystem p) ↔
-    (∀ (C : ℕ → Set α) (h : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C), (∀ i, p (C i)) →
+    (∀ (C : ℕ → Set α) (_ : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C), (∀ i, p (C i)) →
       ⋂ i, C i = ∅ → ∃ (s : Finset ℕ), ⋂ i ∈ s, C i = ∅) := by
   rw [IsCompactSystem.iff_le]
   refine ⟨fun h ↦ fun C _ i ↦ h C i, fun h C ↦ ?_⟩
@@ -170,21 +188,46 @@ theorem IsCompactSystem.iff_mono [Inhabited α] (hpi : IsPiSystem' p) : (IsCompa
   use n
   rwa [← h1 n]
 
+lemma l4 : (∀ (n : ℕ), (C n).Nonempty →
+  (⋂ i, C i).Nonempty) ↔ ((⋂ i, C i) = ∅ → ∃ (n : ℕ), (C n) = ∅) := by
+
+  sorry
+
+theorem IsCompactSystem.iff_mono' [Inhabited α] (hpi : IsPiSystem' p) : (IsCompactSystem p) ↔
+  ∀ (C : ℕ → Set α), ∀ (_ : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C), (∀ i, p (C i)) →
+    ∀ (n : ℕ), (C n).Nonempty →
+      (⋂ i, C i).Nonempty  := by
+  rw [IsCompactSystem.iff_mono hpi]
+  refine ⟨fun h1 h2 ↦ ?_, fun h1 h2 h3 h4 h5 ↦ ?_⟩
+  · sorry
+  · sorry
+
+
+
 end definition
 
-/--
 section Compact
 
 variable {α : Type*} [TopologicalSpace α]
 
-theorem IsCompact.isCompactSystem : IsCompactSystem {s // IsCompact s} := by
+theorem IsCompact.isCompactSystem {α : Type*} [Inhabited α] [TopologicalSpace α] :
+    IsCompactSystem (⋃ (s : Set α) (_ : IsCompact s), {s}) := by
+  have h : IsPiSystem' (⋃ (s : Set α) (_ : IsCompact s), {s}) := by sorry
+  rw [IsCompactSystem.iff_mono' h]
+  apply IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
+  -- IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
+  sorry
+
   simp [IsCompactSystem]
+  intro C hC h_empty
 
   sorry
 
 
+
 end Compact
 
+/--
 section ClosedCompactCylinders
 
 /-! We prove that the `closedCompactCylinders` are a compact system. -/
