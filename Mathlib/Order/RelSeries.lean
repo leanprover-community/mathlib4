@@ -171,6 +171,10 @@ variable {r} {s : RelSeries r} {x : α}
 lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
   ⟨RelSeries.withLength r 0 0⟩
 
+lemma nonempty_of_finiteDimensional [r.FiniteDimensional] : Nonempty α := by
+  obtain ⟨p, _⟩ := (Rel.finiteDimensional_iff r).mp ‹r.FiniteDimensional›
+  exact ⟨p 0⟩
+
 instance membership : Membership α (RelSeries r) :=
   ⟨Function.swap (· ∈ Set.range ·)⟩
 
@@ -691,6 +695,10 @@ protected noncomputable def withLength [InfiniteDimensionalOrder α] (n : ℕ) :
 /-- if `α` is infinite dimensional, then `α` is nonempty. -/
 lemma nonempty_of_infiniteDimensionalType [InfiniteDimensionalOrder α] : Nonempty α :=
   ⟨LTSeries.withLength α 0 0⟩
+
+lemma nonempty_of_finiteDimensionalType [FiniteDimensionalOrder α] : Nonempty α := by
+  obtain ⟨p, _⟩ := (Rel.finiteDimensional_iff (· < ·)).mp ‹_›
+  exact ⟨p 0⟩
 
 variable {α}
 
