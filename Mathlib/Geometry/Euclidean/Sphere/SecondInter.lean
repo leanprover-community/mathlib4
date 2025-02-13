@@ -113,10 +113,8 @@ theorem Sphere.secondInter_secondInter (s : Sphere P) (p : P) (v : V) :
   have hv' : ⟪v, v⟫ ≠ 0 := inner_self_ne_zero.2 hv
   simp only [Sphere.secondInter, vadd_vsub_assoc, vadd_vadd, inner_add_right, inner_smul_right,
     div_mul_cancel₀ _ hv']
-  rw [← @vsub_eq_zero_iff_eq V, vadd_vsub, ← add_smul, ← add_div]
-  convert zero_smul ℝ (M := V) _
-  convert zero_div (G₀ := ℝ) _
-  ring
+  rw [← @vsub_eq_zero_iff_eq , vadd_vsub, ← add_smul, ← add_div]
+  module
 
 /-- If the vector passed to `secondInter` is given by a subtraction involving the point in
 `secondInter`, the result of `secondInter` may be expressed using `lineMap`. -/
