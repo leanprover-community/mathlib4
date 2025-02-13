@@ -119,7 +119,7 @@ include p in
   lying over `p`, then there exists `σ ∈ Aut (B / A)` such that `σ P = Q`. In other words,
   the Galois group `Gal(L / K)` acts transitively on the set of all prime ideals lying over `p`. -/
 theorem exists_map_eq_of_isGalois [IsGalois K L] : ∃ σ : B ≃ₐ[A] B, map σ P = Q := by
-  have : NoZeroSMulDivisors A B := NoZeroSMulDivisors.of_field_isFractionRing A B K L
+  have : FaithfulSMul A B := FaithfulSMul.of_field_isFractionRing A B K L
   have : IsInvariant A B (B ≃ₐ[A] B) := isInvariant_of_isGalois' A K L B
   rcases IsInvariant.exists_smul_of_under_eq A B (B ≃ₐ[A] B) P Q <|
     (over_def P p).symm.trans (over_def Q p) with ⟨σ, hs⟩
@@ -183,7 +183,7 @@ include hpb in
 /-- The form of the **fundamental identity** in the case of Galois extension. -/
 theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn [IsGalois K L] :
     (primesOver p B).ncard * (ramificationIdxIn p B * inertiaDegIn p B) = Module.finrank K L := by
-  have : NoZeroSMulDivisors A B := NoZeroSMulDivisors.of_field_isFractionRing A B K L
+  have : FaithfulSMul A B := FaithfulSMul.of_field_isFractionRing A B K L
   rw [← smul_eq_mul, ← coe_primesOverFinset hpb B, Set.ncard_coe_Finset, ← Finset.sum_const]
   rw [← sum_ramification_inertia B p K L hpb]
   apply Finset.sum_congr rfl
