@@ -11,7 +11,7 @@ import Mathlib.Topology.Algebra.UniformField
 # A normed field is a completable topological field
 -/
 
-open SeminormedAddGroup NormedAddCommGroup UniformAddGroup Filter
+open SeminormedAddGroup UniformAddGroup Filter
 
 variable {F : Type*} [NormedField F]
 
