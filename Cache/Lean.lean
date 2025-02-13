@@ -137,6 +137,32 @@ where
 #guard FilePath.clean ".lake/packages/mathlib/lean-toolchain" != "lean-toolchain"
 #guard FilePath.clean "./.lake/packages/mathlib/lean-toolchain" != "lean-toolchain"
 
+end System.FilePath
+
+namespace Lean.SearchPath
+
+open System in
+
+/--
+Find the source directory for a module. This could be `.`
+(or in fact also something uncleaned like `./././.`) if the
+module is part of the current package, or something like `.lake/packages/mathlib` if the
+module is from a dependency.
+
+This is an exact copy of the first part of `Lean.SearchPath.findWithExt` which, in turn,
+is used by `Lean.findLean sp mod`. In the future, `findWithExt` could be refactored to
+expose this base path.
+-/
+def findWithExtBase (sp : SearchPath) (ext : String) (mod : Name) : IO (Option FilePath) := do
+  let pkg := mod.getRoot.toString (escape := false)
+  let root? ← sp.findM? fun p =>
+    (p / pkg).isDir <||> ((p / pkg).addExtension ext).pathExists
+  return root?
+
+end Lean.SearchPath
+
+namespace System.FilePath
+
 /-- Removes a parent path from the beginning of a path -/
 def withoutParent (path parent : FilePath) : FilePath :=
   mkFilePath <| go path.components parent.components
@@ -145,5 +171,3 @@ where
   | path@(x :: xs), y :: ys => if x == y then go xs ys else path
   | [], _ => []
   | path, [] => path
-
-end System.FilePath

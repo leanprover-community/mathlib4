@@ -101,8 +101,6 @@ structure CacheM.Context where
   mathlibDepPath : FilePath
   /-- the Lean source search path -/
   srcSearchPath : SearchPath
-  /-- TODO: use search path instead -/
-  packageDirs : PackageDirs
   /-- build directory for proofwidgets -/
   proofWidgetsBuildDir : FilePath
 
@@ -129,19 +127,6 @@ private def CacheM.getContext : IO CacheM.Context := do
   return {
     mathlibDepPath := mathlibSource,
     srcSearchPath := sp,
-    packageDirs := .ofList [
-      ("Mathlib", mathlibSource),
-      ("Archive", mathlibSource),
-      ("Counterexamples", mathlibSource),
-      ("MathlibTest", mathlibSource),
-      ("Aesop", LAKEPACKAGESDIR / "aesop"),
-      ("Batteries", LAKEPACKAGESDIR / "batteries"),
-      ("Cli", LAKEPACKAGESDIR / "Cli"),
-      ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
-      ("Qq", LAKEPACKAGESDIR / "Qq"),
-      ("ImportGraph", LAKEPACKAGESDIR / "importGraph"),
-      ("LeanSearchClient", LAKEPACKAGESDIR / "LeanSearchClient"),
-      ("Plausible", LAKEPACKAGESDIR / "plausible")],
     proofWidgetsBuildDir := LAKEPACKAGESDIR / "proofwidgets" / ".lake" / "build"}
 
 /-- Run a `CacheM` in `IO` by loading the context from `LEAN_SRC_PATH`. -/
@@ -149,14 +134,16 @@ def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
 
 end
 
-def getPackageDirs : CacheM PackageDirs := return (← read).packageDirs
-
 def getPackageDir (path : FilePath) : CacheM FilePath := do
-  match path.withExtension "" |>.components.head? with
-  | none => throw <| IO.userError "Can't find package directory for empty path"
-  | some pkg => match (← getPackageDirs).find? pkg with
-    | none => throw <| IO.userError s!"Unknown package directory for {pkg}"
-    | some path => return path
+  let sp := (← read).srcSearchPath
+
+  -- `path` is a unresolved file name like `Aesop/Build.lean`
+  let mod : Name := .fromComponents <| path.withExtension "" |>.components.map Name.mkSimple
+
+  let packageDir? ← sp.findWithExtBase "lean" mod
+  match packageDir? with
+  | some dir => return dir
+  | none => throw <| IO.userError s!"Unknown package directory for {mod}\nsearch paths: {sp}"
 
 /-- Runs a terminal command and retrieves its output, passing the lines to `processLine` -/
 partial def runCurlStreaming (args : Array String) (init : α)
