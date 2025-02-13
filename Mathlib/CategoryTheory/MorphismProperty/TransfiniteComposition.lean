@@ -91,7 +91,7 @@ def ofOrderIso {J' : Type w'} [LinearOrder J'] [OrderBot J']
     convert this using 1
 
 /-- If `f` is a transfinite composition of shape `J` of morphisms
-in `W.preimage F`, then `F` is a transfinite composition of shape `J`
+in `W.inverseImage F`, then `F` is a transfinite composition of shape `J`
 of morphisms in `W` provided `F` preserves suitable colimits. -/
 @[simps toTransfiniteCompositionOfShape]
 noncomputable def map {W : MorphismProperty D} {F : C ⥤ D}
@@ -191,6 +191,7 @@ instance (j : J) : IsIso (h.incl.app j) :=
     (fun _ _  ↦ inferInstance) h.isColimit j (homOfLE bot_le)
 
 include h in
+/-- A transfinite composition of isomorphisms is an isomorphism. -/
 lemma isIso : IsIso f := by
   rw [← h.fac]
   infer_instance
