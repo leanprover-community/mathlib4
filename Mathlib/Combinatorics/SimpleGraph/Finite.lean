@@ -504,6 +504,7 @@ theorem degree_induce_of_support_subset (h : G.support ⊆ s) (v : s) :
     (G.induce s).degree v = G.degree v :=
   degree_induce_of_neighborSet_subset <| (G.neighborSet_subset_support v).trans h
 
+@[simp]
 theorem degree_induce_support (v : G.support) :
     (G.induce G.support).degree v = G.degree v :=
   degree_induce_of_support_subset subset_rfl v
