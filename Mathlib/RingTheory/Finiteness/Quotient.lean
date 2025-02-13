@@ -12,10 +12,8 @@ import Mathlib.RingTheory.Ideal.Over
 # Finiteness of quotient modules
 -/
 
-variable (R : Type*) [CommSemiring R] {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
-  [Algebra A B] [Algebra A C] [Algebra R A] [Algebra R B] [IsScalarTower R A B]
-  (P : Ideal B) {Q : Ideal C} (p : Ideal A) [Q.LiesOver p] [P.LiesOver p]
-  (G : Type*) [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
+variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+variable (P : Ideal B) (p : Ideal A) [P.LiesOver p]
 
 /-- `B ⧸ P` is a finite `A ⧸ p`-module if `B` is a finite `A`-module. -/
 instance module_finite_of_liesOver [Module.Finite A B] : Module.Finite (A ⧸ p) (B ⧸ P) :=
