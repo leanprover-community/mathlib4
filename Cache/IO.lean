@@ -346,7 +346,7 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
 
       See https://github.com/leanprover-community/mathlib4/pull/8767#discussion_r1422077498
 
-      We could do this with `pkgDir` for all modules, not only ones in mathlib.
+      We could do this with `packageDir` for all modules, not only ones in mathlib.
       This would be more flexible and allow cached dependencies to live somewhere else (locally).
       However, this change invalidates existing .ltar files, so it needs
       to be accompanied with some hash change.
@@ -357,8 +357,8 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
       -- TODO: does this mess with `lean-tar` as the base might not be cleaned?
       if mod.getRoot == `Mathlib then
         -- only mathlib files, when not in the mathlib4 repo, need to be redirected
-        let pkgDir := (← getPackageDir mod).toString
-        pure <| config.push <| .mkObj [("file", pathStr), ("base", pkgDir)]
+        let packageDir := (← getPackageDir mod).toString
+        pure <| config.push <| .mkObj [("file", pathStr), ("base", packageDir)]
       else
         pure <| config.push <| .str pathStr
     stdin.putStr <| Lean.Json.compress <| .arr config
@@ -409,7 +409,7 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
     args₀.foldlM (init := ∅) fun acc (argₛ : String) => do
       let arg : FilePath := argₛ
       let mod : Name := arg.withExtension "" |>.components.foldl .str .anonymous
-      let pkgDir ← getPackageDir mod
+      let packageDir ← getPackageDir mod
       if arg.components.length > 1 || arg.extension == "lean" then
         -- provided file name of a Lean file
         if !(← arg.pathExists) then
@@ -421,7 +421,7 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
         else
           -- provided existing directory: walk it
           IO.println s!"Searching directory {arg} for .lean files"
-          let leanModulesInFolder ← walkDir arg pkgDir
+          let leanModulesInFolder ← walkDir arg packageDir
           pure <| acc.insertMany leanModulesInFolder
       else
         -- provided a module
@@ -438,14 +438,14 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
           IO.println s!"Searching directory {folder} for .lean files"
           if ← folder.pathExists then
             -- case 2: "module name" of an existing folder: walk dir
-            let leanModulesInFolder ← walkDir folder pkgDir
+            let leanModulesInFolder ← walkDir folder packageDir
             pure <| acc.insertMany leanModulesInFolder
           else
             IO.eprintln s!"Invalid argument: non-existing module {mod}"
             IO.Process.exit 1
 where
   /-- assumes the folder exists -/
-  walkDir (folder : FilePath) (pkgDir : FilePath) : CacheM <| Array (Name × FilePath) := do
+  walkDir (folder : FilePath) (packageDir : FilePath) : CacheM <| Array (Name × FilePath) := do
     -- find all Lean files in the folder, skipping hidden folders/files
     let files ← folder.walkDir fun p => match p.fileName with
       | some s => pure <| !(s.startsWith ".")
@@ -453,7 +453,7 @@ where
     let leanFiles := files.filter (·.extension == some "lean")
     let mut leanModulesInFolder : Array (Name × FilePath) := #[]
     for file in leanFiles do
-      let path := file.withoutParent pkgDir
+      let path := file.withoutParent packageDir
       let mod : Name := path.withExtension "" |>.components.foldl .str .anonymous
       leanModulesInFolder := leanModulesInFolder.push (mod, file)
     pure leanModulesInFolder
