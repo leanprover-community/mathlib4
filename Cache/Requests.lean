@@ -191,13 +191,13 @@ def getProofWidgets (buildDir : FilePath) : IO Unit := do
     throw <| IO.userError s!"Failed to prune ProofWidgets cloud release: {e}"
 
 /-- Downloads missing files, and unpacks files. -/
-def getFiles (hashMap : IO.ModuleHashMap) (pathMap : Std.HashMap Lean.Name FilePath) (forceDownload forceUnpack parallel decompress : Bool) :
+def getFiles (hashMap : IO.ModuleHashMap) (forceDownload forceUnpack parallel decompress : Bool) :
     IO.CacheM Unit := do
   checkForToolchainMismatch
   getProofWidgets (← read).proofWidgetsBuildDir
   downloadFiles hashMap forceDownload parallel
   if decompress then
-    IO.unpackCache hashMap pathMap forceUnpack
+    IO.unpackCache hashMap forceUnpack
   else
     IO.println "Downloaded all files successfully!"
 

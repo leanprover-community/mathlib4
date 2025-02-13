@@ -94,7 +94,7 @@ def main (args : List String) : IO Unit := do
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
   if leanTarArgs.contains (args.headD "") then validateLeanTar
   let get (force := false) (decompress := true) := do
-    getFiles hashMemo.hashMap hashMemo.pathMap force force goodCurl decompress
+    getFiles hashMemo.hashMap force force goodCurl decompress
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMemo.hashMap hashMemo.pathMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do
@@ -105,8 +105,8 @@ def main (args : List String) : IO Unit := do
   | "get-" :: _ => get (decompress := false)
   | ["pack"] => discard <| pack
   | ["pack!"] => discard <| pack (overwrite := true)
-  | ["unpack"] => unpackCache hashMemo.hashMap hashMemo.pathMap false
-  | ["unpack!"] => unpackCache hashMemo.hashMap hashMemo.pathMap true
+  | ["unpack"] => unpackCache hashMemo.hashMap false
+  | ["unpack!"] => unpackCache hashMemo.hashMap true
   | ["clean"] =>
     cleanCache <| hashMemo.hashMap.fold (fun acc _ hash => acc.insert <| CACHEDIR / hash.asLTar) .empty
   | ["clean!"] => cleanCache

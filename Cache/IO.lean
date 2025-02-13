@@ -128,12 +128,22 @@ def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
 end
 
 /--
+Find the package directory of a module.
+-/
+def getPackageDir (mod : Name) : CacheM FilePath := do
+  let sp := (← read).srcSearchPath
+  let packageDir? ← sp.findWithExtBase "lean" mod
+  match packageDir? with
+  | some dir => return dir
+  | none => throw <| IO.userError s!"Unknown package directory for {mod}\nsearch paths: {sp}"
+
+/--
 Get the correct package directory the file `sourceFile`.
 
 Basically, this is just a parent of `sourceFile`, but this function determines how
 many components of the path `sourceFile` make up the package directory.
 -/
-def getPackageDir (sourceFile : FilePath) : CacheM FilePath := do
+def getPackageDir₂ (sourceFile : FilePath) : CacheM FilePath := do
   let sp := (← read).srcSearchPath
   -- Note: This seems to work since the path `.` is listed last, so it will not be found unless
   -- no other search-path applies. Could be more robust.
@@ -270,8 +280,8 @@ end ModuleHashMap
 Given a path to a Lean file, concatenates the paths to its build files.
 Each build file also has a `Bool` indicating whether that file is required for caching to proceed.
 -/
-def mkBuildPaths (mod : Name) (sourceFile : FilePath) : CacheM <| List (FilePath × Bool) := do
-  let packageDir ← getPackageDir sourceFile
+def mkBuildPaths (mod : Name) : CacheM <| List (FilePath × Bool) := do
+  let packageDir ← getPackageDir mod
   let path := (System.mkFilePath <| mod.components.map toString)
   return [
     -- Note that `packCache` below requires that the `.trace` file is first in this list.
@@ -302,7 +312,7 @@ def packCache (hashMap : ModuleHashMap) (pathMap : Std.HashMap Name FilePath)
     let sourceFile := pathMap.get! mod
     let zip := hash.asLTar
     let zipPath := CACHEDIR / zip
-    let buildPaths ← mkBuildPaths mod sourceFile
+    let buildPaths ← mkBuildPaths mod
     if ← allExist buildPaths then
       if overwrite || !(← zipPath.pathExists) then
         acc := acc.push (sourceFile, zip)
@@ -329,7 +339,7 @@ def getLocalCacheSet : IO <| Lean.RBTree String compare := do
   return .fromList (paths.toList.map (·.withoutParent CACHEDIR |>.toString)) _
 
 /-- Decompresses build files into their respective folders -/
-def unpackCache (hashMap : ModuleHashMap) (pathMap : Std.HashMap Name FilePath) (force : Bool) : CacheM Unit := do
+def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
   let hashMap ← hashMap.filterExists true
   let size := hashMap.size
   if size > 0 then
@@ -340,18 +350,24 @@ def unpackCache (hashMap : ModuleHashMap) (pathMap : Std.HashMap Name FilePath) 
     let (stdin, child) ← child.takeStdin
     let config : Array Lean.Json ← hashMap.foldM (init := #[]) fun config mod hash => do
       let pathStr := s!"{CACHEDIR / hash.asLTar}"
-      -- TODO: We could do this with `pkgDir` for all modules, not only ones in mathlib.
-      -- This would be more flexible and allow cached dependencies to live somewhere else (locally).
-      -- However, this change invalidates existing .ltar files, so it needs
-      -- to be accompanied with some hash change.
-      -- In practice, cached local mathlib dependencies would lead to a new `rootHash` anyways
-      -- (mathllib lakefile/manifest would need to reflect this) and therefore would
-      -- invalidate cache anyways, therefore we leave it as is.
-      -- see: https://github.com/leanprover-community/mathlib4/pull/8767#discussion_r1422077498
+      /-
+      TODO: we don't need the following `if-then-else`, it is only here
+      for backwards compatibility.
+
+      See https://github.com/leanprover-community/mathlib4/pull/8767#discussion_r1422077498
+
+      We could do this with `pkgDir` for all modules, not only ones in mathlib.
+      This would be more flexible and allow cached dependencies to live somewhere else (locally).
+      However, this change invalidates existing .ltar files, so it needs
+      to be accompanied with some hash change.
+      In practice, cached local mathlib dependencies would lead to a new `rootHash` anyways
+      (mathllib lakefile/manifest would need to reflect this) and therefore would
+      invalidate cache anyways, therefore we leave it as is.
+      -/
+      -- TODO: does this mess with `lean-tar` as the base might not be cleaned?
       if mod.getRoot == `Mathlib then
         -- only mathlib files, when not in the mathlib4 repo, need to be redirected
-        let sourceFile := pathMap[mod]!
-        let pkgDir := (← getPackageDir sourceFile).toString
+        let pkgDir := (← getPackageDir mod).toString
         pure <| config.push <| .mkObj [("file", pathStr), ("base", pkgDir)]
       else
         pure <| config.push <| .str pathStr
@@ -445,7 +461,7 @@ where
 
     let mut leanModulesInFolder : Array (Name × FilePath) := #[]
     for file in leanFiles do
-      let pkgDir ← getPackageDir file
+      let pkgDir ← getPackageDir₂ file
       let path := file.withoutParent pkgDir
       let mod : Name := path.withExtension "" |>.components.foldl .str .anonymous
       leanModulesInFolder := leanModulesInFolder.push (mod, file)
