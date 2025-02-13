@@ -8,6 +8,7 @@ import Mathlib.Analysis.MeanInequalitiesPow
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Data.Set.Image
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
+import Mathlib.Topology.Algebra.ContinuousMonoidHom
 
 /-!
 # ℓp space
@@ -336,6 +337,15 @@ theorem coeFn_neg (f : lp E p) : ⇑(-f) = -f :=
 @[simp]
 theorem coeFn_add (f g : lp E p) : ⇑(f + g) = f + g :=
   rfl
+
+variable (p E) in
+/-- Coercion to function as an `AddMonoidHom`. -/
+def coeFnAddMonoidHom : lp E p →+ (∀ i, E i) where
+  toFun := (⇑)
+  __ := AddSubgroup.subtype _
+
+@[simp]
+theorem coeFnAddHom_apply (x : lp E p) : coeFnAddMonoidHom E p x = ⇑x := rfl
 
 theorem coeFn_sum {ι : Type*} (f : ι → lp E p) (s : Finset ι) :
     ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, ⇑(f i) := by
@@ -877,49 +887,74 @@ variable [DecidableEq α]
 
 /-- The element of `lp E p` which is `a : E i` at the index `i`, and zero elsewhere. -/
 protected def single (p) (i : α) (a : E i) : lp E p :=
-  ⟨fun j => if h : j = i then Eq.ndrec a h.symm else 0, by
+  ⟨Pi.single i a, by
     refine (memℓp_zero ?_).of_exponent_ge (zero_le p)
     refine (Set.finite_singleton i).subset ?_
     intro j
     simp only [forall_exists_index, Set.mem_singleton_iff, Ne, dite_eq_right_iff,
       Set.mem_setOf_eq, not_forall]
-    rintro rfl
-    simp⟩
+    rw [not_imp_comm]
+    intro h
+    exact Pi.single_eq_of_ne h _⟩
 
+@[norm_cast]
+protected theorem coeFn_single (p) (i : α) (a : E i) :
+    ⇑(lp.single p i a) = Pi.single i a := rfl
+
+@[simp]
 protected theorem single_apply (p) (i : α) (a : E i) (j : α) :
-    lp.single p i a j = if h : j = i then Eq.ndrec a h.symm else 0 :=
+    lp.single p i a j = Pi.single i a j :=
   rfl
 
-protected theorem single_apply_self (p) (i : α) (a : E i) : lp.single p i a i = a := by
-  rw [lp.single_apply, dif_pos rfl]
+protected theorem single_apply_self (p) (i : α) (a : E i) : lp.single p i a i = a :=
+  Pi.single_eq_same _ _
 
 protected theorem single_apply_ne (p) (i : α) (a : E i) {j : α} (hij : j ≠ i) :
-    lp.single p i a j = 0 := by
-  rw [lp.single_apply, dif_neg hij]
+    lp.single p i a j = 0 :=
+  Pi.single_eq_of_ne hij _
 
 @[simp]
-protected theorem single_neg (p) (i : α) (a : E i) : lp.single p i (-a) = -lp.single p i a := by
-  refine ext (funext (fun (j : α) => ?_))
-  by_cases hi : j = i
-  · subst hi
-    simp [lp.single_apply_self]
-  · simp [lp.single_apply_ne p i _ hi]
+protected theorem single_zero (p) (i : α) :
+    lp.single p i (0 : E i) = 0 :=
+  ext <| Pi.single_zero _
 
 @[simp]
-protected theorem single_smul (p) (i : α) (a : E i) (c : 𝕜) :
-    lp.single p i (c • a) = c • lp.single p i a := by
-  refine ext (funext (fun (j : α) => ?_))
-  by_cases hi : j = i
-  · subst hi
-    dsimp
-    simp [lp.single_apply_self]
-  · dsimp
-    simp [lp.single_apply_ne p i _ hi]
+protected theorem single_add (p) (i : α) (a b : E i) :
+    lp.single p i (a + b) = lp.single p i a + lp.single p i b :=
+  ext <| Pi.single_add _ _ _
+
+/-- `single` as an `AddMonoidHom`. -/
+@[simps]
+def singleAddHom (p) (i : α) : E i →+ lp E p where
+  toFun := lp.single p i
+  map_zero' := lp.single_zero _ _
+  map_add' := lp.single_add _ _
+
+@[simp]
+protected theorem single_neg (p) (i : α) (a : E i) : lp.single p i (-a) = -lp.single p i a :=
+  ext <| Pi.single_neg _ _
+
+@[simp]
+protected theorem single_sub (p) (i : α) (a b : E i) :
+    lp.single p i (a - b) = lp.single p i a - lp.single p i b :=
+  ext <| Pi.single_sub _ _ _
+
+@[simp]
+protected theorem single_smul (p) (i : α) (c : 𝕜) (a : E i) :
+    lp.single p i (c • a) = c • lp.single p i a :=
+  ext <| Pi.single_smul _ _ _
+
+/-- `single` as a `LinearMap`. -/
+@[simps]
+def lsingle (p) (i : α) : E i →ₗ[𝕜] lp E p where
+  toFun := lp.single p i
+  __ := singleAddHom p i
+  map_smul' := lp.single_smul p i
 
 protected theorem norm_sum_single (hp : 0 < p.toReal) (f : ∀ i, E i) (s : Finset α) :
     ‖∑ i ∈ s, lp.single p i (f i)‖ ^ p.toReal = ∑ i ∈ s, ‖f i‖ ^ p.toReal := by
   refine (hasSum_norm hp (∑ i ∈ s, lp.single p i (f i))).unique ?_
-  simp only [lp.single_apply, coeFn_sum, Finset.sum_apply, Finset.sum_dite_eq]
+  simp only [lp.coeFn_single, coeFn_sum, Finset.sum_apply, Finset.sum_pi_single]
   have h : ∀ i ∉ s, ‖ite (i ∈ s) (f i) 0‖ ^ p.toReal = 0 := fun i hi ↦ by
     simp [if_neg hi, Real.zero_rpow hp.ne']
   have h' : ∀ i ∈ s, ‖f i‖ ^ p.toReal = ‖ite (i ∈ s) (f i) 0‖ ^ p.toReal := by
@@ -927,10 +962,26 @@ protected theorem norm_sum_single (hp : 0 < p.toReal) (f : ∀ i, E i) (s : Fins
     rw [if_pos hi]
   simpa [Finset.sum_congr rfl h'] using hasSum_sum_of_ne_finset_zero h
 
-protected theorem norm_single (hp : 0 < p.toReal) (f : ∀ i, E i) (i : α) :
-    ‖lp.single p i (f i)‖ = ‖f i‖ := by
-  refine Real.rpow_left_injOn hp.ne' (norm_nonneg' _) (norm_nonneg _) ?_
-  simpa using lp.norm_sum_single hp f {i}
+@[simp]
+protected theorem norm_single (hp : 0 < p) (i : α) (x : E i) : ‖lp.single p i x‖ = ‖x‖ := by
+  haveI : Nonempty α := ⟨i⟩
+  induction p with
+  | top =>
+    simp only [norm_eq_ciSup, lp.coeFn_single]
+    refine
+      ciSup_eq_of_forall_le_of_forall_lt_exists_gt (fun j => ?_) fun n hn => ⟨i, hn.trans_eq ?_⟩
+    · obtain rfl | hij := Decidable.eq_or_ne i j
+      · rw [Pi.single_eq_same]
+      · rw [Pi.single_eq_of_ne' hij, _root_.norm_zero]
+        exact norm_nonneg _
+    · rw [Pi.single_eq_same]
+  | coe p =>
+    have : 0 < (p : ℝ≥0∞).toReal := by simpa using hp
+    rw [norm_eq_tsum_rpow this, tsum_eq_single i, lp.coeFn_single, one_div,
+      Real.rpow_rpow_inv _ this.ne', Pi.single_eq_same]
+    · exact norm_nonneg _
+    · intro j hji
+      rw [lp.coeFn_single, Pi.single_eq_of_ne hji, _root_.norm_zero, Real.zero_rpow this.ne']
 
 protected theorem norm_sub_norm_compl_sub_single (hp : 0 < p.toReal) (f : lp E p) (s : Finset α) :
     ‖f‖ ^ p.toReal - ‖f - ∑ i ∈ s, lp.single p i (f i)‖ ^ p.toReal =
@@ -940,13 +991,13 @@ protected theorem norm_sub_norm_compl_sub_single (hp : 0 < p.toReal) (f : lp E p
   have hF : ∀ i ∉ s, F i = 0 := by
     intro i hi
     suffices ‖f i‖ ^ p.toReal - ‖f i - ite (i ∈ s) (f i) 0‖ ^ p.toReal = 0 by
-      simpa only [F, coeFn_sum, lp.single_apply, coeFn_sub, Pi.sub_apply, Finset.sum_apply,
-        Finset.sum_dite_eq] using this
+      simpa only [coeFn_sub, coeFn_sum, lp.coeFn_single, Pi.sub_apply, Finset.sum_apply,
+        Finset.sum_pi_single, F] using this
     simp only [if_neg hi, sub_zero, sub_self]
   have hF' : ∀ i ∈ s, F i = ‖f i‖ ^ p.toReal := by
     intro i hi
     simp only [F, coeFn_sum, lp.single_apply, if_pos hi, sub_self, eq_self_iff_true, coeFn_sub,
-      Pi.sub_apply, Finset.sum_apply, Finset.sum_dite_eq, sub_eq_self]
+      Pi.sub_apply, Finset.sum_apply, Finset.sum_pi_single, sub_eq_self]
     simp [Real.zero_rpow hp.ne']
   have : HasSum F (∑ i ∈ s, F i) := hasSum_sum_of_ne_finset_zero hF
   rwa [Finset.sum_congr rfl hF'] at this
@@ -1000,6 +1051,73 @@ theorem uniformContinuous_coe [_i : Fact (1 ≤ p)] :
   rintro f g (hfg : ‖f - g‖ < ε)
   have : ‖f i - g i‖ ≤ ‖f - g‖ := norm_apply_le_norm hp (f - g) i
   exact this.trans_lt hfg
+
+theorem uniformContinuous_single [Fact (1 ≤ p)] [DecidableEq α] (i : α) :
+    UniformContinuous (lp.single (E := E) p i) := by
+  have hp : 0 < p := zero_lt_one.trans_le Fact.out
+  rw [NormedAddCommGroup.uniformity_basis_dist.uniformContinuous_iff
+    NormedAddCommGroup.uniformity_basis_dist]
+  intro ε hε
+  refine ⟨ε, hε, fun x y hxy => ?_⟩
+  dsimp
+  simp_rw [← lp.single_sub, lp.norm_single (p := p) (hp := hp)]
+  exact hxy
+
+variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
+
+variable (p E) in
+/-- `lp.single` as a continuous morphism of additive monoids. -/
+def singleContinuousAddMonoidHom [Fact (1 ≤ p)] [DecidableEq α] (i : α) :
+    ContinuousAddMonoidHom (E i) (lp E p) where
+  __ := singleAddHom p i
+  continuous_toFun := uniformContinuous_single i |>.continuous
+
+@[simp]
+theorem singleContinuousAddMonoidHom_apply [Fact (1 ≤ p)] [DecidableEq α] (i : α) (x : E i) :
+    singleContinuousAddMonoidHom E p i x = lp.single p i x :=
+  rfl
+
+variable (𝕜 p E) in
+/-- `lp.single` as a continuous linear map. -/
+def singleContinuousLinearMap [Fact (1 ≤ p)] [DecidableEq α] (i : α) :
+    E i →L[𝕜] lp E p where
+  __ := lsingle p i
+  cont := uniformContinuous_single i |>.continuous
+
+@[simp]
+theorem singleContinuousLinearMap_apply [Fact (1 ≤ p)] [DecidableEq α] (i : α) (x : E i) :
+    singleContinuousLinearMap 𝕜 E p i x = lp.single p i x :=
+  rfl
+
+/-- Two continuous additive maps from `lp E p` agree if they agree on `lp.single`.
+
+See note [partially-applied ext lemmas]. -/
+@[local ext] -- not globally `ext` due to `hp`
+theorem ext_continuousAddMonoidHom
+    [DecidableEq α] {F} [AddCommMonoid F] [TopologicalSpace F] [T2Space F]
+    [Fact (1 ≤ p)] (hp : p ≠ ⊤) ⦃f g : ContinuousAddMonoidHom (lp E p) F⦄
+    (h : ∀ i,
+      f.comp (singleContinuousAddMonoidHom E p i) = g.comp (singleContinuousAddMonoidHom E p i)) :
+    f = g := by
+  ext x
+  classical
+  have := lp.hasSum_single hp x
+  rw [← (this.map f f.continuous).tsum_eq, ← (this.map g g.continuous).tsum_eq]
+  congr! 2 with i
+  exact DFunLike.congr_fun (h i) (x i)
+
+/-- Two continuous linear maps from `lp E p` agree if they agree on `lp.single`.
+
+See note [partially-applied ext lemmas]. -/
+@[local ext] -- not globally `ext` due to `hp`
+theorem ext_continuousLinearMap
+    [DecidableEq α] {F} [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F] [T2Space F]
+    [Fact (1 ≤ p)] (hp : p ≠ ⊤) ⦃f g : lp E p →L[𝕜] F⦄
+    (h : ∀ i,
+      f.comp (singleContinuousLinearMap 𝕜 E p i) = g.comp (singleContinuousLinearMap 𝕜 E p i)) :
+    f = g :=
+  ContinuousLinearMap.toContinuousAddMonoidHom_injective <|
+    ext_continuousAddMonoidHom hp fun i => ContinuousLinearMap.toContinuousAddMonoidHom_inj.2 (h i)
 
 variable {ι : Type*} {l : Filter ι} [Filter.NeBot l]
 
