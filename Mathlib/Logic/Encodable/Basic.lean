@@ -35,7 +35,7 @@ The point of asking for an explicit partial inverse `decode : ℕ → Option α`
 to make the range of `encode` decidable even when the finiteness of `α` is not.
 -/
 
-assert_not_exists Group
+assert_not_exists Monoid
 
 open Option List Nat Function
 

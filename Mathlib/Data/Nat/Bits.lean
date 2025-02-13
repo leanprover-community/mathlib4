@@ -22,7 +22,7 @@ See also: `Nat.bitwise`, `Nat.pow` (for various lemmas about `size` and `shiftLe
 and `Nat.digits`.
 -/
 
-assert_not_exists Group
+assert_not_exists Monoid
 
 -- Once we're in the `Nat` namespace, `xor` will inconveniently resolve to `Nat.xor`.
 /-- `bxor` denotes the `xor` function i.e. the exclusive-or function on type `Bool`. -/
