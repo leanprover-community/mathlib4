@@ -137,21 +137,6 @@ def getPackageDir (mod : Name) : CacheM FilePath := do
   | some dir => return dir
   | none => throw <| IO.userError s!"Unknown package directory for {mod}\nsearch paths: {sp}"
 
-/--
-Get the correct package directory the file `sourceFile`.
-
-Basically, this is just a parent of `sourceFile`, but this function determines how
-many components of the path `sourceFile` make up the package directory.
--/
-def getPackageDir₂ (sourceFile : FilePath) : CacheM FilePath := do
-  let sp := (← read).srcSearchPath
-  -- Note: This seems to work since the path `.` is listed last, so it will not be found unless
-  -- no other search-path applies. Could be more robust.
-  let packageDir? := sp.find? (·.contains sourceFile)
-  match packageDir? with
-  | some dir => return dir
-  | none => throw <| IO.userError s!"Unknown package directory for {sourceFile}\nsearch paths: {sp}"
-
 /-- Runs a terminal command and retrieves its output, passing the lines to `processLine` -/
 partial def runCurlStreaming (args : Array String) (init : α)
     (processLine : α → String → IO α) : IO α := do
@@ -417,24 +402,26 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
   | [] => pure ∅
   | _ :: args₀ =>
     let sp := (← read).srcSearchPath
-    args₀.foldlM (init := ∅) fun acc (arg : String) => do
-      let arg' : FilePath := arg
-      let mod : Name := arg'.withExtension "" |>.components.foldl .str .anonymous
-      if arg'.components.length > 1 || arg'.extension == "lean" then
+    args₀.foldlM (init := ∅) fun acc (argₛ : String) => do
+      let arg : FilePath := argₛ
+      let mod : Name := arg.withExtension "" |>.components.foldl .str .anonymous
+      let pkgDir ← getPackageDir mod
+      if arg.components.length > 1 || arg.extension == "lean" then
         -- provided file name of a Lean file
-        if !(← arg'.pathExists) then
-          IO.eprintln s!"Invalid argument: non-existing path {arg'}"
+        if !(← arg.pathExists) then
+          IO.eprintln s!"Invalid argument: non-existing path {arg}"
           IO.Process.exit 1
-        if arg'.extension == "lean" then
+        if arg.extension == "lean" then
           -- provided existing `.lean` file
-          pure <| acc.insert mod arg
+          pure <| acc.insert mod argₛ
         else
           -- provided existing directory: walk it
-          let leanModulesInFolder ← walkDir arg'
+          IO.println s!"Searching directory {arg} for .lean files"
+          let leanModulesInFolder ← walkDir arg pkgDir
           pure <| acc.insertMany leanModulesInFolder
       else
         -- provided a module
-        let mod := arg.toName
+        let mod := argₛ.toName
         let sourceFile ← Lean.findLean sp mod
         if ← sourceFile.pathExists then
           -- provided valid module
@@ -444,25 +431,24 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
           -- does not correspond to a Lean file, but to an existing folder
           -- `Mathlib/Data/`
           let folder := sourceFile.withExtension ""
+          IO.println s!"Searching directory {folder} for .lean files"
           if ← folder.pathExists then
             -- case 2: "module name" of an existing folder: walk dir
-            let leanModulesInFolder ← walkDir folder
+            let leanModulesInFolder ← walkDir folder pkgDir
             pure <| acc.insertMany leanModulesInFolder
           else
             IO.eprintln s!"Invalid argument: non-existing module {mod}"
             IO.Process.exit 1
 where
   /-- assumes the folder exists -/
-  walkDir (folder : FilePath) : CacheM <| Array (Name × FilePath) := do
+  walkDir (folder : FilePath) (pkgDir : FilePath) : CacheM <| Array (Name × FilePath) := do
     -- find all Lean files in the folder, skipping hidden folders/files
     let files ← folder.walkDir fun p => match p.fileName with
       | some s => pure <| !(s.startsWith ".")
       | none => pure false
     let leanFiles := files.filter (·.extension == some "lean")
-
     let mut leanModulesInFolder : Array (Name × FilePath) := #[]
     for file in leanFiles do
-      let pkgDir ← getPackageDir₂ file
       let path := file.withoutParent pkgDir
       let mod : Name := path.withExtension "" |>.components.foldl .str .anonymous
       leanModulesInFolder := leanModulesInFolder.push (mod, file)
