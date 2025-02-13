@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.BigOperators.Sym
-import Mathlib.LinearAlgebra.QuadraticForm.Basic
 import Mathlib.Data.Finsupp.Pointwise
 import Mathlib.LinearAlgebra.Finsupp.Sym2
-
+import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 /-!
 # Constructing a bilinear map from a quadratic map, given a basis
