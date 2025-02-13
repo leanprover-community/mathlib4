@@ -42,12 +42,6 @@ as above, there may not exist a lifting `B i ⟶ X`, but the construction
 provides a tautological morphism `B i ⟶ functorObj f πX`
 (see `SmallObject.ιFunctorObj_extension`).
 
-## TODO
-
-* Show that `ιFunctorObj f πX : X ⟶ functorObj f πX` has the
-left lifting property with respect to the class of morphisms that
-have the right lifting property with respect to the morphisms `f i`.
-
 ## References
 - https://ncatlab.org/nlab/show/small+object+argument
 
@@ -284,6 +278,22 @@ lemma ιFunctorObj_extension {i : I} (t : A i ⟶ X) (b : B i ⟶ S)
       l ≫ πFunctorObj f πX = b :=
   ⟨Sigma.ι (functorObjTgtFamily f πX) (FunctorObjIndex.mk i t b sq.w) ≫
     ρFunctorObj f πX, (FunctorObjIndex.mk i t b _).comm, by simp⟩
+
+/-- Variant of `ιFunctorObj_extension` where the diagram involving `functorObj f πX`
+is replaced by an isomorphic diagram. -/
+lemma ιFunctorObj_extension' {X' S' Z' : C} (πX' : X' ⟶ S') (ι' : X' ⟶ Z') (πZ' : Z' ⟶ S')
+    (fac' : ι' ≫ πZ' = πX') (eX : X' ≅ X) (eS : S' ≅ S) (eZ : Z' ≅ functorObj f πX)
+    (commι : ι' ≫ eZ.hom = eX.hom ≫ ιFunctorObj f πX)
+    (commπ : πZ' ≫ eS.hom = eZ.hom ≫ πFunctorObj f πX)
+    {i : I} (t : A i ⟶ X') (b : B i ⟶ S') (fac : t ≫ πX' = f i ≫ b) :
+    ∃ (l : B i ⟶ Z'), f i ≫ l = t ≫ ι' ∧ l ≫ πZ' = b := by
+  obtain ⟨l, hl₁, hl₂⟩ :=
+    ιFunctorObj_extension f (πX := πX) (i := i) (t ≫ eX.hom) (b ≫ eS.hom) ⟨by
+      rw [assoc, ← ιFunctorObj_πFunctorObj f πX, ← reassoc_of% commι, ← commπ,
+        reassoc_of% fac', reassoc_of% fac]⟩
+  refine ⟨l ≫ eZ.inv, ?_, ?_⟩
+  · rw [reassoc_of% hl₁, ← reassoc_of% commι, eZ.hom_inv_id, comp_id]
+  · rw [← cancel_mono eS.hom, assoc, assoc, commπ, eZ.inv_hom_id_assoc, hl₂]
 
 end
 
