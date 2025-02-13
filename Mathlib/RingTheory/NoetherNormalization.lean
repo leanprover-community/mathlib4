@@ -8,11 +8,11 @@ import Mathlib.Data.List.Indexes
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 /-!
 # Noether Normalizaton
-This file contains a proof of Noether normalization lemma by Nagata.
+This file contains a proof by Nagata of the Noether normalization lemma.
 
 ## Main Results
 Let `A` be a finitely generated algebra over a field `k`.
-Then there exists natural number `r` and an injective homomorphism
+Then there exists a natural number `r` and an injective homomorphism
 from `k[X_1, X_2, ..., X_r]` to `A` such that `A` is integral over `k[X_1, X_2, ..., X_r]`.
 
 ## Reference
@@ -33,7 +33,7 @@ First we construct an algebra equivalence `T` from `k[X_0,...,X_n]` to `k[X_0,..
   `f` is mapped to a polynomial of `X_0` with invertible leading coefficient.
 More precisely, `T` maps `X_i` to `X_i + X_0 ^ r_i` when `i ≠ 0`, and `X_0` to `X_0`.
 Here we choose `r_i` to be `up ^ i` where `up` is big enought, so that `T` maps
-  different monomials of `f` to mvpolynomials with different degrees of `X_0`. See `digits`.
+  different monomials of `f` to mvpolynomials with different degrees of `X_0`. See `Nat.ofDigits`.
 -/
 
 /-- `up` is defined as `2 + f.totalDegree`. Any big enough number would work. -/
@@ -49,7 +49,8 @@ private lemma lt (vlt : ∀ i, v i < up) : ∀ l ∈ ofFn v, l < up := by
 /-- `r` maps `(i : Fin (n + 1))` to `up ^ i`-/
 local notation3 "r" => fun (i : Fin (n + 1)) ↦ up ^ i.1
 
-/-- We construct an algebra map `T1` which maps `X_i` into `X_i + X_0 ^ r_i` when `i ≠ 0`. -/
+/-- We construct an algebra map `T1` which maps `X_i` into `X_i + X_0 ^ r_i` when `i ≠ 0`,
+and `X_0` to `X_0`. -/
 noncomputable abbrev T1 (c : k) :
     MvPolynomial (Fin (n + 1)) k →ₐ[k] MvPolynomial (Fin (n + 1)) k :=
   aeval fun i ↦ if i = 0 then X 0 else X i + c • X 0 ^ r i
@@ -61,7 +62,7 @@ private lemma inv_pair (c : k) :
   cases i using Fin.cases <;>
   simp [Fin.succ_ne_zero]
 
-/-- `T1 f 1` leads to an algebra equiv `T f`.-/
+/- `T1 f 1` leads to an algebra equiv `T f`.-/
 private noncomputable abbrev T := AlgEquiv.ofAlgHom (T1 f 1) (T1 f (-1))
   (inv_pair f 1) (by simpa using inv_pair f (-1))
 
@@ -69,7 +70,7 @@ private lemma r_ne (vlt : ∀ i, v i < up) (wlt : ∀ i, w i < up) (neq : v ≠ 
     ∑ x : Fin (n + 1), r x * v x ≠ ∑ x : Fin (n + 1), r x * w x := by
   intro h
   refine neq <| Finsupp.ext <| congrFun <| ofFn_inj.mp ?_
-  apply list_eq_of_ofDigits_eq (Nat.lt_add_right f.totalDegree one_lt_two)
+  apply ofDigits_inj_of_len_eq (Nat.lt_add_right f.totalDegree one_lt_two)
       (by simp) (lt vlt) (lt wlt)
   simpa only [ofDigits_eq_sum_mapIdx, mapIdx_eq_ofFn, get_ofFn, length_ofFn,
       Fin.coe_cast, mul_comm, sum_ofFn] using h
@@ -83,9 +84,8 @@ private lemma T_monomial {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).degreeO
   have h1 : (finSuccEquiv k n) (C a) ≠ 0 :=
     (map_ne_zero_iff _ (AlgEquiv.injective _)).mpr ((map_ne_zero_iff _ (C_injective _ _)).mpr ha)
   have h2 : Polynomial.X (R := (MvPolynomial (Fin n) k)) ^ v 0 ≠ 0 := pow_ne_zero (v 0) X_ne_zero
-  have h3 : ∀ i : Fin n,
+  have h3 (i : Fin n) :
       (Polynomial.C (X (R := k) i) + Polynomial.X ^ r i.succ) ^ v i.succ ≠ 0 := by
-    intro i
     apply pow_ne_zero (v i.succ) (leadingCoeff_ne_zero.mp ?_)
     rw [add_comm, leadingCoeff_X_pow_add_C (by simp)]
     exact one_ne_zero
@@ -96,7 +96,7 @@ private lemma T_monomial {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).degreeO
     add_right_inj] using Finset.sum_congr rfl (fun i _ ↦ by
     rw [add_comm (Polynomial.C _), natDegree_X_pow_add_C, mul_comm])
 
-/-- `T` maps different monomials of `f` to mvpolynomials with different degrees of `X_0`. -/
+/- `T` maps different monomials of `f` to mvpolynomials with different degrees of `X_0`. -/
 private lemma T_degree (hv : v ∈ f.support) (hw : w ∈ f.support) (neq : v ≠ w) :
     (T f <| monomial v <| coeff v f).degreeOf 0 ≠
     (T f <| monomial w <| coeff w f).degreeOf 0 := by
@@ -128,7 +128,7 @@ private lemma T_coeff :
     · simp only [this, one_pow, Finset.prod_const_one, mul_one]
   · exact fun i ↦ pow_zero _
 
-/-- `T` maps `f` into some polynomial of `X_0` such that the leading coeff is invertible. -/
+/- `T` maps `f` into some polynomial of `X_0` such that the leading coeff is invertible. -/
 private lemma T_leadingcoeff (fne : f ≠ 0) :
     ∃ c : (MvPolynomial (Fin n) k)ˣ, (c.val • (finSuccEquiv k n (T f f))).Monic := by
   obtain ⟨v, vin, vs⟩ := Finset.exists_max_image f.support
@@ -166,26 +166,26 @@ Second we construct the following maps: Let `I` be an ideal containing `f`.
   hom1 : k[X_0,...X_{n-1}] → k[X_1,...X_n][X]/φ(T(I));
   eqv1 : k[X_1,...X_n][X]/φ(T(I)) ≃ k[X_0,...,X_n]/T(I);
   eqv2 : k[X_0,...,X_n]/T(I) ≃ k[X_0,...,X_n]/I;
-  hom2 : k[X_1,...X_n] → k[X_0,...X_n]/I.
+  hom2 : k[X_0,...X_(n-1)] → k[X_0,...X_n]/I.
 hom1 is integral because φ(T(I)) contains a monic polynomial.
 hom2 is integral because it's the composition of integral maps.
 -/
 variable (I : Ideal (MvPolynomial (Fin (n + 1)) k))
 
-/-- `hom1` is a homomorphism from `k[X_0,...X_{n-1}]` to `k[X_1,...X_n][X]/φ(T(I))`,
+/- `hom1` is a homomorphism from `k[X_0,...X_{n-1}]` to `k[X_1,...X_n][X]/φ(T(I))`,
 where `φ` is the isomorphism from `k[X_0,...X_{n-1}]` to `k[X_1,...X_n][X]`. -/
 private noncomputable abbrev hom1 : MvPolynomial (Fin n) k →ₐ[MvPolynomial (Fin n) k]
     (MvPolynomial (Fin n) k)[X] ⧸ (I.map <| T f).map (finSuccEquiv k n) :=
   (Quotient.mkₐ (MvPolynomial (Fin n) k) (map (finSuccEquiv k n) (map (T f) I))).comp
   (Algebra.ofId (MvPolynomial (Fin n) k) ((MvPolynomial (Fin n) k)[X]))
 
-/-- `hom1 f I` is integral.-/
+/- `hom1 f I` is integral.-/
 private lemma hom1_int (fne : f ≠ 0) (fi : f ∈ I): (hom1 f I).IsIntegral := by
   obtain ⟨c, eq⟩ := T_leadingcoeff f fne
   exact eq.quotient_isIntegral <| Submodule.smul_of_tower_mem _ c.val <|
     mem_map_of_mem _ <| mem_map_of_mem _ fi
 
-/-- `eqv1` is the isomorphism from `k[X_1,...X_n][X]/φ(T(I))`
+/- `eqv1` is the isomorphism from `k[X_1,...X_n][X]/φ(T(I))`
 to `k[X_0,...,X_n]/T(I)`, induced by `φ`. -/
 private noncomputable abbrev eqv1 :
     ((MvPolynomial (Fin n) k)[X] ⧸ (I.map (T f)).map (finSuccEquiv k n)) ≃ₐ[k]
@@ -201,7 +201,7 @@ private noncomputable abbrev eqv1 :
     _ = Ideal.map ((RingHom.id _).comp <| T f) I := by rw [← Ideal.map_map]; rfl
     _ = _ := by rw [id_comp]; rfl)
 
-/-- `eqv2` is the isomorphism from `k[X_0,...,X_n]/T(I)` into `k[X_0,...,X_n]/I`,
+/- `eqv2` is the isomorphism from `k[X_0,...,X_n]/T(I)` into `k[X_0,...,X_n]/I`,
 induced by `T`. -/
 private noncomputable abbrev eqv2 :
     (MvPolynomial (Fin (n + 1)) k ⧸ I.map (T f)) ≃ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I
@@ -214,11 +214,11 @@ private noncomputable abbrev eqv2 :
         RingEquiv.symm_toRingHom_comp_toRingHom _
       rw [this, Ideal.map_id])
 
-/-- `hom2` is the composition of maps above, from `k[X_1,...X_n]` to `k[X_0,...X_n]/I`. -/
+/- `hom2` is the composition of maps above, from `k[X_0,...X_(n-1)]` to `k[X_0,...X_n]/I`. -/
 private noncomputable def hom2 : MvPolynomial (Fin n) k →ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I :=
   (eqv2 f I).toAlgHom.comp ((eqv1 f I).toAlgHom.comp ((hom1 f I).restrictScalars k))
 
-/-- `hom2 f I` is integral. -/
+/- `hom2 f I` is integral. -/
 private lemma hom2_int (fne : f ≠ 0) (fi : f ∈ I): (hom2 f I).IsIntegral :=
   ((hom1_int f I fne fi).trans _ _ <| isIntegral_of_surjective _ (eqv1 f I).surjective).trans _ _
     <| isIntegral_of_surjective _ (eqv2 f I).surjective
@@ -229,7 +229,10 @@ end NoetherNormalization
 section mainthm
 /-!
 We use induction to prove there is an injective map from `k[X_0,...,X_{r-1}]`
-to `k[X_0,...,X_(n-1)]/I`.
+  to `k[X_0,...,X_(n-1)]/I`.`n=0` is trivial.
+For `n+1`, I = 0 is trivial. Otherwise, `hom2` induces a map `φ` by quotient kernel.
+  We use the inductive hypothesis on k[X_1,...,X_n] and the kernel of `hom2` to get `s, g`.
+Compose `φ` and `g` and we get the desired map since both `φ` and `g` are injective and integral.
 -/
 open NoetherNormalization
 
@@ -239,7 +242,7 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
     (hi : I ≠ ⊤) : ∃ s ≤ n, ∃ g : (MvPolynomial (Fin s) k) →ₐ[k] ((MvPolynomial (Fin n) k) ⧸ I),
     Function.Injective g ∧ g.IsIntegral := by
   induction' n with d hd
-  · refine ⟨0, by rfl, Quotient.mkₐ k I, ?_⟩
+  · refine ⟨0, le_rfl, Quotient.mkₐ k I, ?_⟩
     constructor
     · intro a b hab
       rw [Quotient.mkₐ_eq_mk, Ideal.Quotient.eq] at hab
@@ -261,7 +264,7 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
         rw [Ideal.Quotient.eq, eqi, Submodule.zero_eq_bot, mem_bot] at hab
         rw [← add_zero b, ← hab, add_sub_cancel]
       · exact Quotient.mk_surjective
-    exact ⟨d + 1, by rfl, q, bij.1, q.isIntegral_of_surjective bij.2⟩
+    exact ⟨d + 1, le_rfl, q, bij.1, q.isIntegral_of_surjective bij.2⟩
   · obtain ⟨f, fi, fne⟩ := Submodule.exists_mem_ne_zero_of_ne_bot eqi
     set ϕ := kerLiftAlg <| hom2 f I
     letI := Quotient.nontrivial hi
