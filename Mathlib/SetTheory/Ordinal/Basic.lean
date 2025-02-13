@@ -143,7 +143,6 @@ instance one : One Ordinal :=
   (since := "2024-10-24")]
 theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.r := rfl
 
-
 @[deprecated "Avoid using `Quotient.mk` to construct an `Ordinal` directly."
   (since := "2024-10-24")]
 theorem type_def (r) [wo : IsWellOrder α r] : (⟦⟨α, r, wo⟩⟧ : Ordinal) = type r := rfl
@@ -570,7 +569,12 @@ instance small_Icc (a b : Ordinal.{u}) : Small.{u} (Icc a b) := small_subset Icc
 instance small_Ioo (a b : Ordinal.{u}) : Small.{u} (Ioo a b) := small_subset Ioo_subset_Iio_self
 instance small_Ioc (a b : Ordinal.{u}) : Small.{u} (Ioc a b) := small_subset Ioc_subset_Iic_self
 
+/-- `o.toType` is an `OrderBot` whenever `o ≠ 0`. -/
+def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.toType where
+  bot_le := enum_zero_le' (by rwa [Ordinal.pos_iff_ne_zero])
+
 /-- `o.toType` is an `OrderBot` whenever `0 < o`. -/
+@[deprecated "use toTypeOrderBot" (since := "2025-02-13")]
 def toTypeOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.toType where
   bot_le := enum_zero_le' ho
 
@@ -579,7 +583,7 @@ noncomputable alias outOrderBotOfPos := toTypeOrderBotOfPos
 
 theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
     enum (α := o.toType) (· < ·) ⟨0, by rwa [type_toType]⟩ =
-      have H := toTypeOrderBotOfPos ho
+      have H := toTypeOrderBot (o := o) (by rintro rfl; simp at ho)
       (⊥ : o.toType) :=
   rfl
 
@@ -1363,6 +1367,11 @@ theorem small_iff_lift_mk_lt_univ {α : Type u} :
     exact ⟨#β, lift_mk_eq.{u, _, v + 1}.2 e⟩
   · rintro ⟨c, hc⟩
     exact ⟨⟨c.out, lift_mk_eq.{u, _, v + 1}.1 (hc.trans (congr rfl c.mk_out.symm))⟩⟩
+
+/-- If a cardinal `c` is non zero, then `c.ord.toType` has a least element. -/
+noncomputable def toTypeOrderBot {c : Cardinal} (hc : c ≠ 0) :
+    OrderBot c.ord.toType :=
+  Ordinal.toTypeOrderBot (fun h ↦ hc (ord_injective (by simpa using h)))
 
 end Cardinal
 
