@@ -263,11 +263,10 @@ theorem separable_C_mul_X_pow_add_C_mul_X_add_C
     {n : ℕ} (a b c : R) (hn : (n : R) = 0) (hb : IsUnit b) :
     (C a * X ^ n + C b * X + C c).Separable := by
   set f := C a * X ^ n + C b * X + C c
-  have hderiv : derivative f = C b := by
-    simp_rw [f, map_add derivative, derivative_C]
-    simp [hn]
   obtain ⟨e, hb⟩ := hb.exists_left_inv
   refine ⟨-derivative f, f + C e, ?_⟩
+  have hderiv : derivative f = C b := by
+    simp [hn, f, map_add derivative, derivative_C, derivative_X_pow]
   rw [hderiv, right_distrib, ← add_assoc, neg_mul, mul_comm, neg_add_cancel, zero_add,
     ← map_mul, hb, map_one]
 
