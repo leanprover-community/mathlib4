@@ -259,12 +259,12 @@ theorem conj_apply [AddGroup G] (g h : G) : conj g h = g + h + -g :=
 theorem conj_symm_apply [AddGroup G] (g h : G) : (conj g).symm h = -g + h + g :=
   rfl
 
--- Porting note: the exact translation of this mathlib3 lemma would be`(-conj g) h = -g + h + g`,
--- but this no longer pass the simp_nf linter, as the LHS simplifies by `toMul_neg` to
--- `(conj g).toMul⁻¹`.
 @[simp]
 theorem conj_inv_apply [AddGroup G] (g h : G) : (conj g).toMul⁻¹ h = -g + h + g :=
   rfl
+
+theorem neg_conj_apply [AddGroup G] (g h : G) : (-conj g) h = -g + h + g := by
+  simp
 
 /-- Isomorphic additive groups have isomorphic automorphism groups. -/
 @[simps]

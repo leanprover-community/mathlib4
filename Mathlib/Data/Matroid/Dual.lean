@@ -119,7 +119,7 @@ theorem dual_indep_iff_exists' : (M✶.Indep I) ↔ I ⊆ M.E ∧ (∃ B, M.Base
 
 @[simp] theorem dual_ground : M✶.E = M.E := rfl
 
-@[simp] theorem dual_indep_iff_exists (hI : I ⊆ M.E := by aesop_mat) :
+theorem dual_indep_iff_exists (hI : I ⊆ M.E := by aesop_mat) :
     M✶.Indep I ↔ (∃ B, M.Base B ∧ Disjoint I B) := by
   rw [dual_indep_iff_exists', and_iff_right hI]
 

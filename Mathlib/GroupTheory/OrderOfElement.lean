@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Julian Kuelshammer
 -/
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
+import Mathlib.Algebra.Group.Semiconj.Basic
 import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.Group.Action
@@ -13,7 +14,6 @@ import Mathlib.Dynamics.PeriodicPts.Lemmas
 import Mathlib.GroupTheory.Index
 import Mathlib.NumberTheory.Divisors
 import Mathlib.Order.Interval.Set.Infinite
-import Mathlib.Tactic.Positivity
 
 /-!
 # Order of an element
@@ -33,6 +33,8 @@ This file defines the order of an element of a finite group. For a finite group 
 ## Tags
 order of an element
 -/
+
+assert_not_exists Field
 
 open Function Fintype Nat Pointwise Subgroup Submonoid
 
@@ -110,7 +112,7 @@ lemma IsOfFinOrder.pow {n : ℕ} : IsOfFinOrder a → IsOfFinOrder (a ^ n) := by
 lemma IsOfFinOrder.of_pow {n : ℕ} (h : IsOfFinOrder (a ^ n)) (hn : n ≠ 0) : IsOfFinOrder a := by
   rw [isOfFinOrder_iff_pow_eq_one] at *
   rcases h with ⟨m, hm, ha⟩
-  exact ⟨n * m, by positivity, by rwa [pow_mul]⟩
+  exact ⟨n * m, mul_pos hn.bot_lt hm, by rwa [pow_mul]⟩
 
 @[to_additive (attr := simp)]
 lemma isOfFinOrder_pow {n : ℕ} : IsOfFinOrder (a ^ n) ↔ IsOfFinOrder a ∨ n = 0 := by
@@ -1061,7 +1063,7 @@ theorem LinearOrderedRing.orderOf_le_two : orderOf x ≤ 2 := by
   · simp [orderOf_abs_ne_one h]
   rcases eq_or_eq_neg_of_abs_eq h with (rfl | rfl)
   · simp
-  apply orderOf_le_of_pow_eq_one <;> norm_num
+  exact orderOf_le_of_pow_eq_one zero_lt_two (by simp)
 
 end LinearOrderedRing
 
