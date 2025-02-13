@@ -5,6 +5,7 @@ Authors: Jovan Gerbscheid, Patrick Massot, Simon Hudon, Alice Laroche, Frédéri
 Jireh Loreaux
 -/
 import Lean.Elab.Tactic.Location
+import Mathlib.Tactic.Push.Attr
 import Mathlib.Logic.Basic
 import Mathlib.Tactic.Conv
 
@@ -19,37 +20,14 @@ namespace Mathlib.Tactic.Push
 
 open Lean Meta Elab.Tactic Parser.Tactic
 
-section Attr
-
-/-- The `push` simp attribute. -/
-initialize pushExt : SimpExtension ← mkSimpExt
-
-/--
-The `push` attribute is used to tag lemmas that "push" a constant into an expression.
-
-For example:
-```lean
-
-```
-
-should be given to lemmas that "push" a constant towards the leaf nodes of
-an expression. The main use case is for pushing negations.
--/
-syntax (name := pushAttr) "push" ("← " <|> "<- ")? (ppSpace prio)? : attr
-
-initialize registerBuiltinAttribute {
-  name := `pushAttr
-  descr := "attribute for push"
-  add := fun decl stx kind => MetaM.run' do
-    let inv := !stx[1].isNone
-    let prio ← getAttrParamOptPrio stx[2]
-    addSimpTheorem pushExt decl (post := false) (inv := inv) kind prio
-}
-
-end Attr
-
 universe u v
-variable (p q : Prop) {α : Sort u} {β : Type v} (s : α → Prop)
+variable (p q : Prop) {α : Sort u} (s : α → Prop)
+
+-- Note: the lemma `Classical.not_imp` is attempted before `not_forall_eq`
+attribute [push] not_not not_or Classical.not_imp
+
+@[push] theorem not_iff : ¬(p ↔ q) ↔ (p ∧ ¬q) ∨ (¬p ∧ q) :=
+  _root_.not_iff.trans <| iff_iff_and_or_not_and_not.trans <| by rw [not_not, or_comm]
 
 theorem not_and_eq : (¬ (p ∧ q)) = (p → ¬ q) := propext not_and
 theorem not_and_or_eq : (¬ (p ∧ q)) = (¬ p ∨ ¬ q) := propext not_and_or

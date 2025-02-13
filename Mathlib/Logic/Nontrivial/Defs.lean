@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Logic.Function.Defs
 import Mathlib.Tactic.TypeStar
-import Mathlib.Tactic.Push.Basic
+import Mathlib.Tactic.Push.Attr
 
 /-!
 # Nontrivial types

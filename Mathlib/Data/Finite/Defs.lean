@@ -7,7 +7,6 @@ import Mathlib.Data.Set.CoeSort
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.Set
 import Mathlib.Util.AssertExists
-import Mathlib.Tactic.Push.Basic
 
 /-!
 # Definition of the `Finite` typeclass
