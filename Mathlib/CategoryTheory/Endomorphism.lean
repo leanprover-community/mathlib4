@@ -179,7 +179,7 @@ namespace FullyFaithful
 variable {f}
 variable (hf : FullyFaithful f)
 
-/-- `mulEquivEnd` as an isomorphism between endomorphism monoids. -/
+/-- `homEquiv` as an isomorphism between endomorphism monoids. -/
 @[simps!]
 noncomputable def mulEquivEnd (X : C) :
     End X ≃* End (f.obj X) where
