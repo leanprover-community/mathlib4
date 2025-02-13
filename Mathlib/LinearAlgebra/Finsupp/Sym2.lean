@@ -18,14 +18,7 @@ section
 
 variable {α R}
 
-/-- A commutative magma with multiplicative zero. -/
-class CommMagmaMulZeroClass (R : Type*) extends CommMagma R, MulZeroClass R
-
-instance [CommSemiring R] : CommMagmaMulZeroClass R where
-  zero_mul _ := zero_mul _
-  mul_zero _ := mul_zero _
-
-variable [CommMagmaMulZeroClass R]
+variable [CommMonoidWithZero R]
 
 lemma Sym2.mem_support_sym2_of_mul_ne_zero {f : α →₀ R} (p : Sym2 α) (hp : mul f p ≠ 0) :
     p ∈ f.support.sym2 := by
