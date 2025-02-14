@@ -167,7 +167,7 @@ theorem linearIndependent_empty : LinearIndependent R (fun x => x : (∅ : Set M
   linearIndependent_empty_type
 
 variable (R v) in
-theorem linearIndepOn_empty : LinearIndepOn R v ∅ :=
+@[simp] theorem linearIndepOn_empty : LinearIndepOn R v ∅ :=
   linearIndependent_empty_type ..
 
 theorem linearIndependent_set_subtype {s : Set ι} :
