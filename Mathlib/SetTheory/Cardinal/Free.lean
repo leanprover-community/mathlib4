@@ -6,6 +6,7 @@ Authors: Eric Wieser, Daniel Weber
 import Mathlib.Data.Finsupp.Fintype
 import Mathlib.GroupTheory.FreeAbelianGroupFinsupp
 import Mathlib.GroupTheory.FreeGroup.Reduce
+import Mathlib.Data.Fintype.Group
 import Mathlib.RingTheory.FreeCommRing
 import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.SetTheory.Cardinal.Finsupp
