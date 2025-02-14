@@ -21,25 +21,29 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Category Limits Comonad
+open Category Limits MonoidalCategory CartesianClosed Adjunction Over
 
 variable {C : Type u₁} [Category.{v₁} C]
 
-open MonoidalCategory Over ChosenFiniteProducts CartesianClosed Adjunction
-
-variable [HasTerminal C] [HasPullbacks C]
+-- this lemma is already PR'd in #21574
+--https://github.com/leanprover-community/mathlib4/pull/21574/files
+lemma Over.homMk_comp {I : C} {U V W : Over I}
+    (f : U.left ⟶ V.left) (g : V.left ⟶ W.left) (w_f w_g) (w_fg := by aesop) :
+    homMk (f ≫ g) w_fg = homMk f w_f ≫ homMk g w_g := by
+  ext
+  simp
 
 attribute [local instance] hasBinaryProducts_of_hasTerminal_and_pullbacks
 attribute [local instance] hasFiniteProducts_of_has_binary_and_terminal
 attribute [local instance] ChosenFiniteProducts.ofFiniteProducts
 attribute [local instance] monoidalOfChosenFiniteProducts
 
-variable [CartesianClosed C]
+variable [HasTerminal C] [HasPullbacks C] [CartesianClosed C]
 
 /-- The first leg of a cospan constructing a pullback diagram in `C used to define
 the pushforward along `f`. -/
 def curryId (I : C) : ⊤_ C ⟶ (I ⟹ I) :=
-  CartesianClosed.curry (fst I (⊤_ C))
+  CartesianClosed.curry (ChosenFiniteProducts.fst I (⊤_ C))
 
 variable {I : C}
 
@@ -144,28 +148,39 @@ theorem sections_uncurry_curry {X : Over I} {A : C} (u : (star I).obj A ⟶ X) :
   ext
   simp
 
-#check Over.homMk
+-- Thanks to Andrew Yang this proof got 8 lines shorter!
+lemma whiskerLeft_prod_map {A A' : C} {g : A ⟶ A'} : I ◁ g = prod.map (𝟙 I) g := by
+  ext
+  · simp only [ChosenFiniteProducts.whiskerLeft_fst]
+    exact (Category.comp_id _).symm.trans (prod.map_fst (𝟙 I) g).symm
+  · simp only [ChosenFiniteProducts.whiskerLeft_snd]
+    exact (prod.map_snd (𝟙 I) g).symm
+
+def coreHomEquiv : CoreHomEquiv (star I)  (sectionsFunctor I) where
+  homEquiv A X := {
+    toFun := sectionsCurry
+    invFun := sectionsUncurry
+    left_inv := sections_uncurry_curry
+    right_inv := sections_curry_uncurry
+  }
+  homEquiv_naturality_left_symm := by
+    intro A' A X g v
+    dsimp [sectionsCurry, sectionsUncurry, curryId]
+    simp only [star_map]
+    rw [← Over.homMk_comp]
+    congr 1
+    simp only [CartesianClosed.uncurry_natural_left, MonoidalCategory.whiskerLeft_comp]
+    simp [whiskerLeft_prod_map]
+  homEquiv_naturality_right := by
+    intro A X' X u g
+    dsimp [sectionsCurry, sectionsUncurry, curryId]
+    apply pullback.hom_ext (IsTerminal.hom_ext terminalIsTerminal _ _)
+    simp [sectionsMap, curryId]
+    rw [← CartesianClosed.curry_natural_right]
 
 /-- The adjunction between the star functor and the sections functor. -/
-def starSectionAdjunction : (star I) ⊣ sectionsFunctor I :=
-  Adjunction.mkOfHomEquiv {
-    homEquiv A X := {
-      toFun := sectionsCurry
-      invFun := sectionsUncurry
-      left_inv := by aesop_cat
-      right_inv := by aesop_cat
-    }
-    homEquiv_naturality_left_symm := by
-      intro A' A X g v
-      dsimp [sectionsCurry, sectionsUncurry, curryId]
-      simp_rw [CartesianClosed.uncurry_natural_left, MonoidalCategory.whiskerLeft_comp]
-      simp [star]
-      sorry
-    homEquiv_naturality_right := _
-  }
-
-
-
+def starSectionAdjunction : (star I) ⊣ (sectionsFunctor I) :=
+  .mkOfHomEquiv coreHomEquiv
 
 end Over
 

@@ -281,17 +281,22 @@ def equivOverTerminal [HasTerminal C] : Over (⊤_ C) ≌ C :=
 
 namespace Over
 
-variable {C} (X : C)
+variable {C}
 
 /--
 The functor from `C` to `Over X` which sends `Y : C` to `π₁ : X ⨯ Y ⟶ X`, sometimes denoted `X*`.
 -/
 @[simps! obj_left obj_hom map_left]
-def star [HasBinaryProducts C] : C ⥤ Over X :=
+def star [HasBinaryProducts C] (X : C) : C ⥤ Over X :=
   cofree _ ⋙ coalgebraToOver X
 
-/-- The functor `Over.forget X : Over X ⥤ C` has a right adjoint given by `star X`.
+lemma star_map [HasBinaryProducts C] {X : C} {Y Z : C} (f : Y ⟶ Z) :
+    (star X).map f = Over.homMk (prod.map (𝟙 X) f) (by aesop) := by
+  simp [star]
 
+variable (X : C)
+
+/-- The functor `Over.forget X : Over X ⥤ C` has a right adjoint given by `star X`.
 Note that the binary products assumption is necessary: the existence of a right adjoint to
 `Over.forget X` is equivalent to the existence of each binary product `X ⨯ -`.
 -/
@@ -333,18 +338,24 @@ end forgetAdjStar
 
 end Over
 
-namespace Over
+namespace Adjunction
 
-def functorRightAdjointIsoInverse {C D : Type*} [Category C] [Category D]
-    (e : D ≌ C) (R : C ⥤ D) (adj : e.functor ⊣ R) :
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+
+def functorRightAdjointIsoInverse (e : D ≌ C) (R : C ⥤ D) (adj : e.functor ⊣ R) :
     R ≅ e.inverse :=
   conjugateIsoEquiv adj ((e.functor).asEquivalence.toAdjunction) (Iso.refl _) ≪≫
     (Functor.asEquivalenceInverseNatIso e)
 
+end Adjunction
+
+namespace Over
+
 /-- `star (⊤_ C) : C ⥤ Over (⊤_ C)` is naturally isomorphic to `Functor.toOverTerminal C`. -/
 def toOverTerminalStarIso [HasTerminal C] [HasBinaryProducts C] :
     star (⊤_ C) ≅ Functor.toOverTerminal C := by
-  apply functorRightAdjointIsoInverse (equivOverTerminal C) (star (⊤_ C)) (forgetAdjStar (⊤_ C))
+  apply Adjunction.functorRightAdjointIsoInverse
+    (equivOverTerminal C) (star (⊤_ C)) (forgetAdjStar (⊤_ C))
 
   -- have e : (Over.forget (⊤_ C)).IsEquivalence := (equivOverTerminal C).isEquivalence_functor
   -- let adj := (Over.forget (⊤_ C)).asEquivalence.toAdjunction
