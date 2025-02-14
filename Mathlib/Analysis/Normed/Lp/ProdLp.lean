@@ -793,14 +793,13 @@ def prodEquivₗᵢ : WithLp ∞ (α × β) ≃ₗᵢ[𝕜] α × β where
 
 end BoundedSMul
 
-section NormedAddCommGroup
+section SeminormedAddCommGroup
 
 open ENNReal
 
-variable (p : ℝ≥0∞) (α β : Type*)
+variable (p : ℝ≥0∞)
 
 variable {p α β}
-variable [NormedAddCommGroup α] [NormedAddCommGroup β]
 
 /-- Projection on `WithLp p (α × β)` with range `α` and kernel `β` -/
 def idemFst : AddMonoid.End (WithLp p (α × β)) := (AddMonoidHom.inl α β).comp (AddMonoidHom.fst α β)
@@ -842,8 +841,14 @@ lemma prod_norm_eq_idemFst_of_L1 (x : WithLp 1 (α × β)) : ‖x‖ = ‖idemFs
   rw [prod_norm_eq_add_idemFst (lt_of_lt_of_eq zero_lt_one one_toReal.symm)]
   simp only [one_toReal, Real.rpow_one, ne_eq, one_ne_zero, not_false_eq_true, div_self]
 
+end SeminormedAddCommGroup
+
+section NormedAddCommGroup
+
+variable {α₁ β₁ : Type*} [NormedAddCommGroup α₁] [NormedAddCommGroup β₁]
+
 lemma idemFst_Lprojection :
-    IsLprojection (WithLp 1 (α × β)) (idemFst : AddMonoid.End (WithLp 1 (α × β))) where
+    IsLprojection (WithLp 1 (α₁ × β₁)) (idemFst : AddMonoid.End (WithLp 1 (α₁ × β₁))) where
   proj := rfl
   Lnorm x := by
     rw [prod_norm_eq_idemFst_of_L1]
@@ -851,7 +856,7 @@ lemma idemFst_Lprojection :
       AddMonoid.End.smul_def, _root_.add_right_inj, idemFst_compl]
 
 lemma idemSnd_Lprojection :
-    IsLprojection (WithLp 1 (α × β)) (idemSnd : AddMonoid.End (WithLp 1 (α × β))) := by
+    IsLprojection (WithLp 1 (α₁ × β₁)) (idemSnd : AddMonoid.End (WithLp 1 (α₁ × β₁))) := by
   rw [← idemFst_compl]
   exact idemFst_Lprojection.Lcomplement
 
