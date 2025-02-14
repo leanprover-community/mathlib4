@@ -808,11 +808,15 @@ section IsBasis
 def IsBasis (M : Matroid α) (I X : Set α) : Prop :=
   Maximal (fun A ↦ M.Indep A ∧ A ⊆ X) I ∧ X ⊆ M.E
 
+@[deprecated (since := "2025-02-14")] alias Basis := IsBasis
+
 /-- `Matroid.IsBasis' I X` is the same as `Matroid.IsBasis I X`,
 without the requirement that `X ⊆ M.E`. This is convenient for some
 API building, especially when working with rank and closure. -/
 def IsBasis' (M : Matroid α) (I X : Set α) : Prop :=
   Maximal (fun A ↦ M.Indep A ∧ A ⊆ X) I
+
+@[deprecated (since := "2025-02-14")] alias Basis' := IsBasis'
 
 variable {B I J X Y : Set α} {e : α}
 

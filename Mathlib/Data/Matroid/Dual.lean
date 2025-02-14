@@ -70,7 +70,7 @@ section dual
     exact disjoint_of_subset_left hB''₂.2 disjoint_compl_left
   indep_maximal := by
     rintro X - I' ⟨hI'E, B, hB, hI'B⟩ hI'X
-    obtain ⟨I, hI⟩ := M.exists_basis (M.E \ X)
+    obtain ⟨I, hI⟩ := M.exists_isBasis (M.E \ X)
     obtain ⟨B', hB', hIB', hB'IB⟩ := hI.indep.exists_isBase_subset_union_isBase hB
 
     obtain rfl : I = B' \ X := hI.eq_of_subset_indep (hB'.indep.diff _)
@@ -176,9 +176,9 @@ theorem IsBase.compl_isBase_of_dual (h : M✶.IsBase B) : M.IsBase (M.E \ B) :=
 theorem IsBase.compl_isBase_dual (h : M.IsBase B) : M✶.IsBase (M.E \ B) := by
   rwa [dual_isBase_iff, diff_diff_cancel_left h.subset_ground]
 
-theorem IsBase.compl_inter_basis_of_inter_basis (hB : M.IsBase B) (hBX : M.Basis (B ∩ X) X) :
-    M✶.Basis ((M.E \ B) ∩ (M.E \ X)) (M.E \ X) := by
-  refine Indep.basis_of_forall_insert ?_ inter_subset_right (fun e he ↦ ?_)
+theorem IsBase.compl_inter_isBasis_of_inter_isBasis (hB : M.IsBase B) (hBX : M.IsBasis (B ∩ X) X) :
+    M✶.IsBasis ((M.E \ B) ∩ (M.E \ X)) (M.E \ X) := by
+  refine Indep.isBasis_of_forall_insert ?_ inter_subset_right (fun e he ↦ ?_)
   · rw [dual_indep_iff_exists]
     exact ⟨B, hB, disjoint_of_subset_left inter_subset_left disjoint_sdiff_left⟩
   simp only [diff_inter_self_eq_diff, mem_diff, not_and, not_not, imp_iff_right he.1.1] at he
@@ -197,12 +197,12 @@ theorem IsBase.compl_inter_basis_of_inter_basis (hB : M.IsBase B) (hBX : M.Basis
       mem_inter_iff, iff_false_intro he.1.2, and_false, not_false_iff]
   exact hfb.2 (hBX.mem_of_insert_indep (Or.elim (hem.1 hfb.1) (False.elim ∘ hfb.2) id) hi).1
 
-theorem IsBase.inter_basis_iff_compl_inter_basis_dual (hB : M.IsBase B)
+theorem IsBase.inter_isBasis_iff_compl_inter_isBasis_dual (hB : M.IsBase B)
     (hX : X ⊆ M.E := by aesop_mat) :
-    M.Basis (B ∩ X) X ↔ M✶.Basis ((M.E \ B) ∩ (M.E \ X)) (M.E \ X) := by
-  refine ⟨hB.compl_inter_basis_of_inter_basis, fun h ↦ ?_⟩
+    M.IsBasis (B ∩ X) X ↔ M✶.IsBasis ((M.E \ B) ∩ (M.E \ X)) (M.E \ X) := by
+  refine ⟨hB.compl_inter_isBasis_of_inter_isBasis, fun h ↦ ?_⟩
   simpa [inter_eq_self_of_subset_right hX, inter_eq_self_of_subset_right hB.subset_ground] using
-    hB.compl_isBase_dual.compl_inter_basis_of_inter_basis h
+    hB.compl_isBase_dual.compl_inter_isBasis_of_inter_isBasis h
 
 theorem base_iff_dual_isBase_compl (hB : B ⊆ M.E := by aesop_mat) :
     M.IsBase B ↔ M✶.IsBase (M.E \ B) := by

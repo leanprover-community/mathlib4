@@ -101,9 +101,9 @@ theorem eq_loopyOn_iff : M = loopyOn E ↔ M.E = E ∧ ∀ X ⊆ M.E, M.Indep X 
 @[simp] theorem loopyOn_isBase_iff : (loopyOn E).IsBase B ↔ B = ∅ := by
   simp [Maximal, isBase_iff_maximal_indep]
 
-@[simp] theorem loopyOn_basis_iff : (loopyOn E).Basis I X ↔ I = ∅ ∧ X ⊆ E :=
+@[simp] theorem loopyOn_isBasis_iff : (loopyOn E).IsBasis I X ↔ I = ∅ ∧ X ⊆ E :=
   ⟨fun h ↦ ⟨loopyOn_indep_iff.mp h.indep, h.subset_ground⟩,
-    by rintro ⟨rfl, hX⟩; rw [basis_iff]; simp⟩
+    by rintro ⟨rfl, hX⟩; rw [isBasis_iff]; simp⟩
 
 instance : RankFinite (loopyOn E) :=
   ⟨⟨∅, loopyOn_isBase_iff.2 rfl, finite_empty⟩⟩
@@ -158,13 +158,13 @@ def freeOn (E : Set α) : Matroid α := (loopyOn E)✶
 theorem freeOn_indep (hIE : I ⊆ E) : (freeOn E).Indep I :=
   freeOn_indep_iff.2 hIE
 
-@[simp] theorem freeOn_basis_iff : (freeOn E).Basis I X ↔ I = X ∧ X ⊆ E := by
-  use fun h ↦ ⟨(freeOn_indep h.subset_ground).eq_of_basis h ,h.subset_ground⟩
+@[simp] theorem freeOn_isBasis_iff : (freeOn E).IsBasis I X ↔ I = X ∧ X ⊆ E := by
+  use fun h ↦ ⟨(freeOn_indep h.subset_ground).eq_of_isBasis h ,h.subset_ground⟩
   rintro ⟨rfl, hIE⟩
-  exact (freeOn_indep hIE).basis_self
+  exact (freeOn_indep hIE).isBasis_self
 
-@[simp] theorem freeOn_basis'_iff : (freeOn E).Basis' I X ↔ I = X ∩ E := by
-  rw [basis'_iff_basis_inter_ground, freeOn_basis_iff, freeOn_ground,
+@[simp] theorem freeOn_isBasis'_iff : (freeOn E).IsBasis' I X ↔ I = X ∩ E := by
+  rw [isBasis'_iff_isBasis_inter_ground, freeOn_isBasis_iff, freeOn_ground,
     and_iff_left inter_subset_right]
 
 theorem eq_freeOn_iff : M = freeOn E ↔ M.E = E ∧ M.Indep E := by
@@ -205,7 +205,7 @@ def uniqueBaseOn (I E : Set α) : Matroid α := freeOn I ↾ E
   rfl
 
 theorem uniqueBaseOn_isBase_iff (hIE : I ⊆ E) : (uniqueBaseOn I E).IsBase B ↔ B = I := by
-  rw [uniqueBaseOn, isBase_restrict_iff', freeOn_basis'_iff, inter_eq_self_of_subset_right hIE]
+  rw [uniqueBaseOn, isBase_restrict_iff', freeOn_isBasis'_iff, inter_eq_self_of_subset_right hIE]
 
 theorem uniqueBaseOn_inter_ground_eq (I E : Set α) :
     uniqueBaseOn (I ∩ E) E = uniqueBaseOn I E := by
@@ -220,13 +220,13 @@ theorem uniqueBaseOn_indep_iff (hIE : I ⊆ E) : (uniqueBaseOn I E).Indep J ↔ 
   rw [uniqueBaseOn, restrict_indep_iff, freeOn_indep_iff, and_iff_left_iff_imp]
   exact fun h ↦ h.trans hIE
 
-theorem uniqueBaseOn_basis_iff (hX : X ⊆ E) : (uniqueBaseOn I E).Basis J X ↔ J = X ∩ I := by
-  rw [basis_iff_maximal]
+theorem uniqueBaseOn_isBasis_iff (hX : X ⊆ E) : (uniqueBaseOn I E).IsBasis J X ↔ J = X ∩ I := by
+  rw [isBasis_iff_maximal]
   exact maximal_iff_eq (by simp [inter_subset_left.trans hX])
     (by simp (config := {contextual := true}))
 
-theorem uniqueBaseOn_inter_basis (hX : X ⊆ E) : (uniqueBaseOn I E).Basis (X ∩ I) X := by
-  rw [uniqueBaseOn_basis_iff hX]
+theorem uniqueBaseOn_inter_isBasis (hX : X ⊆ E) : (uniqueBaseOn I E).IsBasis (X ∩ I) X := by
+  rw [uniqueBaseOn_isBasis_iff hX]
 
 @[simp] theorem uniqueBaseOn_dual_eq (I E : Set α) :
     (uniqueBaseOn I E)✶ = uniqueBaseOn (E \ I) E := by

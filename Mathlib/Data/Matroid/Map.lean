@@ -78,7 +78,7 @@ we define `mapEmbedding` and `mapEquiv` separately from `map`.
 For finite matroids, both maps and comaps are a special case of a construction of
 Perfect [perfect1969matroid] in which a matroid structure can be transported across an arbitrary
 bipartite graph that may not correspond to a function at all (See [oxley2011], Theorem 11.2.12).
-It would have been nice to use this more general construction as a basis for the definition
+It would have been nice to use this more general construction as a isBasis for the definition
 of both `Matroid.map` and `Matroid.comap`.
 
 Unfortunately, we can't do this, because the construction doesn't extend to infinite matroids.
@@ -190,11 +190,11 @@ lemma comap_indep_iff_of_injOn (hf : InjOn f (f ⁻¹' N.E)) :
 @[simp] lemma comap_loopyOn (f : α → β) (E : Set β) : comap (loopyOn E) f = loopyOn (f ⁻¹' E) := by
   rw [eq_loopyOn_iff]; aesop
 
-@[simp] lemma comap_basis_iff {I X : Set α} :
-    (N.comap f).Basis I X ↔ N.Basis (f '' I) (f '' X) ∧ I.InjOn f ∧ I ⊆ X  := by
+@[simp] lemma comap_isBasis_iff {I X : Set α} :
+    (N.comap f).IsBasis I X ↔ N.IsBasis (f '' I) (f '' X) ∧ I.InjOn f ∧ I ⊆ X  := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨hI, hinj⟩ := comap_indep_iff.1 h.indep
-    refine ⟨hI.basis_of_forall_insert (image_subset f h.subset) fun e he ↦ ?_, hinj, h.subset⟩
+    refine ⟨hI.isBasis_of_forall_insert (image_subset f h.subset) fun e he ↦ ?_, hinj, h.subset⟩
     simp only [mem_diff, mem_image, not_exists, not_and, and_imp, forall_exists_index,
       forall_apply_eq_imp_iff₂] at he
     obtain ⟨⟨e, heX, rfl⟩, he⟩ := he
@@ -203,7 +203,7 @@ lemma comap_indep_iff_of_injOn (hf : InjOn f (f ⁻¹' N.E)) :
     simp only [comap_dep_iff, image_insert_eq, or_iff_not_imp_right, injOn_insert heI,
       hinj, mem_image, not_exists, not_and, true_and, not_forall, Classical.not_imp, not_not] at h
     exact h (fun _ ↦ he)
-  refine Indep.basis_of_forall_insert ?_ h.2.2 fun e ⟨heX, heI⟩ ↦ ?_
+  refine Indep.isBasis_of_forall_insert ?_ h.2.2 fun e ⟨heX, heI⟩ ↦ ?_
   · simp [comap_indep_iff, h.1.indep, h.2]
   have hIE : insert e I ⊆ (N.comap f).E := by
       simp_rw [comap_ground_eq, ← image_subset_iff]
@@ -213,13 +213,14 @@ lemma comap_indep_iff_of_injOn (hf : InjOn f (f ⁻¹' N.E)) :
   exact h.1.mem_of_insert_indep (mem_image_of_mem f heX)
 
 @[simp] lemma comap_isBase_iff {B : Set α} :
-    (N.comap f).IsBase B ↔ N.Basis (f '' B) (f '' (f ⁻¹' N.E)) ∧ B.InjOn f ∧ B ⊆ f ⁻¹' N.E := by
-  rw [← basis_ground_iff, comap_basis_iff]; rfl
+    (N.comap f).IsBase B ↔ N.IsBasis (f '' B) (f '' (f ⁻¹' N.E)) ∧ B.InjOn f ∧ B ⊆ f ⁻¹' N.E := by
+  rw [← isBasis_ground_iff, comap_isBasis_iff]; rfl
 
-@[simp] lemma comap_basis'_iff {I X : Set α} :
-    (N.comap f).Basis' I X ↔ N.Basis' (f '' I) (f '' X) ∧ I.InjOn f ∧ I ⊆ X := by
-  simp only [basis'_iff_basis_inter_ground, comap_ground_eq, comap_basis_iff, image_inter_preimage,
-    subset_inter_iff, ← and_assoc, and_congr_left_iff, and_iff_left_iff_imp, and_imp]
+@[simp] lemma comap_isBasis'_iff {I X : Set α} :
+    (N.comap f).IsBasis' I X ↔ N.IsBasis' (f '' I) (f '' X) ∧ I.InjOn f ∧ I ⊆ X := by
+  simp only [isBasis'_iff_isBasis_inter_ground, comap_ground_eq, comap_isBasis_iff,
+    image_inter_preimage, subset_inter_iff, ← and_assoc, and_congr_left_iff, and_iff_left_iff_imp,
+    and_imp]
   exact fun h _ _ ↦ (image_subset_iff.1 h.indep.subset_ground)
 
 instance comap_finitary (N : Matroid β) [N.Finitary] (f : α → β) : (N.comap f).Finitary := by
@@ -260,13 +261,13 @@ lemma comapOn_preimage_eq (N : Matroid β) (f : α → β) : N.comapOn (f ⁻¹'
 @[simp] lemma comapOn_ground_eq : (N.comapOn E f).E = E := rfl
 
 lemma comapOn_isBase_iff :
-    (N.comapOn E f).IsBase B ↔ N.Basis' (f '' B) (f '' E) ∧ B.InjOn f ∧ B ⊆ E := by
-  rw [comapOn, isBase_restrict_iff', comap_basis'_iff]
+    (N.comapOn E f).IsBase B ↔ N.IsBasis' (f '' B) (f '' E) ∧ B.InjOn f ∧ B ⊆ E := by
+  rw [comapOn, isBase_restrict_iff', comap_isBasis'_iff]
 
 lemma comapOn_isBase_iff_of_surjOn (h : SurjOn f E N.E) :
     (N.comapOn E f).IsBase B ↔ (N.IsBase (f '' B) ∧ InjOn f B ∧ B ⊆ E) := by
-  simp_rw [comapOn_isBase_iff, and_congr_left_iff, and_imp,
-    basis'_iff_basis_inter_ground, inter_eq_self_of_subset_right h, basis_ground_iff, implies_true]
+  simp_rw [comapOn_isBase_iff, and_congr_left_iff, and_imp, isBasis'_iff_isBasis_inter_ground,
+    inter_eq_self_of_subset_right h, isBasis_ground_iff, implies_true]
 
 lemma comapOn_isBase_iff_of_bijOn (h : BijOn f E N.E) :
     (N.comapOn E f).IsBase B ↔ N.IsBase (f '' B) ∧ B ⊆ E := by
@@ -405,9 +406,9 @@ lemma map_image_isBase_iff {hf} {B : Set α} (hB : B ⊆ M.E) :
   refine ⟨fun ⟨J, hJ, hIJ⟩ ↦ ?_, fun h ↦ ⟨B, h, rfl⟩⟩
   rw [hf.image_eq_image_iff hB hJ.subset_ground] at hIJ; rwa [hIJ]
 
-lemma Basis.map {X : Set α} (hIX : M.Basis I X) {f : α → β} (hf) :
-    (M.map f hf).Basis (f '' I) (f '' X) := by
-  refine (hIX.indep.map f hf).basis_of_forall_insert (image_subset _ hIX.subset) ?_
+lemma IsBasis.map {X : Set α} (hIX : M.IsBasis I X) {f : α → β} (hf) :
+    (M.map f hf).IsBasis (f '' I) (f '' X) := by
+  refine (hIX.indep.map f hf).isBasis_of_forall_insert (image_subset _ hIX.subset) ?_
   rintro _ ⟨⟨e,he,rfl⟩, he'⟩
   have hss := insert_subset (hIX.subset_ground he) hIX.indep.subset_ground
   rw [← not_indep_iff (by simpa [← image_insert_eq] using image_subset f hss)]
@@ -417,24 +418,24 @@ lemma Basis.map {X : Set α} (hIX : M.Basis I X) {f : α → β} (hf) :
   obtain rfl := hins
   exact he' (mem_image_of_mem f (hIX.mem_of_insert_indep he hJ))
 
-lemma map_basis_iff {I X : Set α} (f : α → β) (hf) (hI : I ⊆ M.E) (hX : X ⊆ M.E) :
-    (M.map f hf).Basis (f '' I) (f '' X) ↔ M.Basis I X := by
+lemma map_isBasis_iff {I X : Set α} (f : α → β) (hf) (hI : I ⊆ M.E) (hX : X ⊆ M.E) :
+    (M.map f hf).IsBasis (f '' I) (f '' X) ↔ M.IsBasis I X := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.map hf⟩
   obtain ⟨I', hI', hII'⟩ := map_indep_iff.1 h.indep
   rw [hf.image_eq_image_iff hI hI'.subset_ground] at hII'
   obtain rfl := hII'
   have hss := (hf.image_subset_image_iff hI hX).1 h.subset
-  refine hI'.basis_of_maximal_subset hss (fun J hJ hIJ hJX ↦ ?_)
+  refine hI'.isBasis_of_maximal_subset hss (fun J hJ hIJ hJX ↦ ?_)
   have hIJ' := h.eq_of_subset_indep (hJ.map f hf) (image_subset f hIJ) (image_subset f hJX)
   rw [hf.image_eq_image_iff hI hJ.subset_ground] at hIJ'
   exact hIJ'.symm.subset
 
-lemma map_basis_iff' {I X : Set β} {hf} :
-    (M.map f hf).Basis I X ↔ ∃ I₀ X₀, M.Basis I₀ X₀ ∧ I = f '' I₀ ∧ X = f '' X₀ := by
+lemma map_isBasis_iff' {I X : Set β} {hf} :
+    (M.map f hf).IsBasis I X ↔ ∃ I₀ X₀, M.IsBasis I₀ X₀ ∧ I = f '' I₀ ∧ X = f '' X₀ := by
   refine ⟨fun h ↦ ?_, ?_⟩
   · obtain ⟨I, hI, rfl⟩ := subset_image_iff.1 h.indep.subset_ground
     obtain ⟨X, hX, rfl⟩ := subset_image_iff.1 h.subset_ground
-    rw [map_basis_iff _ _ hI hX] at h
+    rw [map_isBasis_iff _ _ hI hX] at h
     exact ⟨I, X, h, rfl, rfl⟩
   rintro ⟨I, X, hIX, rfl, rfl⟩
   exact hIX.map hf
@@ -541,8 +542,8 @@ lemma IsBase.mapEmbedding {B : Set α} (hB : M.IsBase B) (f : α ↪ β) :
   rw [Matroid.mapEmbedding, map_isBase_iff]
   exact ⟨B, hB, rfl⟩
 
-lemma Basis.mapEmbedding {X : Set α} (hIX : M.Basis I X) (f : α ↪ β) :
-    (M.mapEmbedding f).Basis (f '' I) (f '' X) := by
+lemma IsBasis.mapEmbedding {X : Set α} (hIX : M.IsBasis I X) (f : α ↪ β) :
+    (M.mapEmbedding f).IsBasis (f '' I) (f '' X) := by
   apply hIX.map
 
 @[simp] lemma mapEmbedding_isBase_iff {f : α ↪ β} {B : Set β} :
@@ -553,9 +554,9 @@ lemma Basis.mapEmbedding {X : Set α} (hIX : M.Basis I X) (f : α ↪ β) :
   rw [preimage_image_eq _ f.injective]
   exact ⟨hB, image_subset_range _ _⟩
 
-@[simp] lemma mapEmbedding_basis_iff {f : α ↪ β} {I X : Set β} :
-    (M.mapEmbedding f).Basis I X ↔ M.Basis (f ⁻¹' I) (f ⁻¹' X) ∧ I ⊆ X ∧ X ⊆ range f := by
-  rw [mapEmbedding, map_basis_iff']
+@[simp] lemma mapEmbedding_isBasis_iff {f : α ↪ β} {I X : Set β} :
+    (M.mapEmbedding f).IsBasis I X ↔ M.IsBasis (f ⁻¹' I) (f ⁻¹' X) ∧ I ⊆ X ∧ X ⊆ range f := by
+  rw [mapEmbedding, map_isBasis_iff']
   refine ⟨?_, fun ⟨hb, hIX, hX⟩ ↦ ?_⟩
   · rintro ⟨I, X, hIX, rfl, rfl⟩
     simp [preimage_image_eq _ f.injective, image_subset f hIX.subset, hIX]
@@ -605,9 +606,9 @@ lemma mapEquiv_eq_map (f : α ≃ β) : M.mapEquiv f = M.map f f.injective.injOn
   rw [mapEquiv_eq_map, map_isBase_iff]
   exact ⟨by rintro ⟨I, hI, rfl⟩; simpa, fun h ↦ ⟨_, h, by simp⟩⟩
 
-@[simp] lemma mapEquiv_basis_iff {α β : Type*} {M : Matroid α} (f : α ≃ β) {I X : Set β} :
-    (M.mapEquiv f).Basis I X ↔ M.Basis (f.symm '' I) (f.symm '' X) := by
-  rw [mapEquiv_eq_map, map_basis_iff']
+@[simp] lemma mapEquiv_isBasis_iff {α β : Type*} {M : Matroid α} (f : α ≃ β) {I X : Set β} :
+    (M.mapEquiv f).IsBasis I X ↔ M.IsBasis (f.symm '' I) (f.symm '' X) := by
+  rw [mapEquiv_eq_map, map_isBasis_iff']
   refine ⟨fun h ↦ ?_, fun h ↦ ⟨_, _, h, by simp, by simp⟩⟩
   obtain ⟨I, X, hIX, rfl, rfl⟩ := h
   simpa
@@ -653,24 +654,25 @@ lemma restrictSubtype_inter_indep_iff :
     (M.restrictSubtype X).Indep (X ↓∩ I) ↔ M.Indep (X ∩ I) := by
   simp [restrictSubtype, Subtype.val_injective.injOn]
 
-lemma restrictSubtype_basis_iff {Y : Set α} {I X : Set Y} :
-    (M.restrictSubtype Y).Basis I X ↔ M.Basis' I X := by
-  rw [restrictSubtype, comap_basis_iff, and_iff_right Subtype.val_injective.injOn,
-    and_iff_left_of_imp, basis_restrict_iff', basis'_iff_basis_inter_ground]
+lemma restrictSubtype_isBasis_iff {Y : Set α} {I X : Set Y} :
+    (M.restrictSubtype Y).IsBasis I X ↔ M.IsBasis' I X := by
+  rw [restrictSubtype, comap_isBasis_iff, and_iff_right Subtype.val_injective.injOn,
+    and_iff_left_of_imp, isBasis_restrict_iff', isBasis'_iff_isBasis_inter_ground]
   · simp
   exact fun h ↦ (image_subset_image_iff Subtype.val_injective).1 h.subset
 
-lemma restrictSubtype_isBase_iff {B : Set X} : (M.restrictSubtype X).IsBase B ↔ M.Basis' B X := by
+lemma restrictSubtype_isBase_iff {B : Set X} : (M.restrictSubtype X).IsBase B ↔ M.IsBasis' B X := by
   rw [restrictSubtype, comap_isBase_iff]
-  simp [Subtype.val_injective.injOn, Subset.rfl, basis_restrict_iff', basis'_iff_basis_inter_ground]
+  simp [Subtype.val_injective.injOn, Subset.rfl, isBasis_restrict_iff',
+    isBasis'_iff_isBasis_inter_ground]
 
 @[simp] lemma restrictSubtype_ground_isBase_iff {B : Set M.E} :
     (M.restrictSubtype M.E).IsBase B ↔ M.IsBase B := by
-  rw [restrictSubtype_isBase_iff, basis'_iff_basis, basis_ground_iff]
+  rw [restrictSubtype_isBase_iff, isBasis'_iff_isBasis, isBasis_ground_iff]
 
-@[simp] lemma restrictSubtype_ground_basis_iff {I X : Set M.E} :
-    (M.restrictSubtype M.E).Basis I X ↔ M.Basis I X := by
-  rw [restrictSubtype_basis_iff, basis'_iff_basis]
+@[simp] lemma restrictSubtype_ground_isBasis_iff {I X : Set M.E} :
+    (M.restrictSubtype M.E).IsBasis I X ↔ M.IsBasis I X := by
+  rw [restrictSubtype_isBasis_iff, isBasis'_iff_isBasis]
 
 lemma eq_of_restrictSubtype_eq {N : Matroid α} (hM : M.E = E) (hN : N.E = E)
     (h : M.restrictSubtype E = N.restrictSubtype E) : M = N := by
