@@ -110,12 +110,13 @@ alias LE.le.trans' := le_trans'
 alias LE.le.trans_lt := lt_of_le_of_lt
 
 alias LE.le.trans_lt' := lt_of_le_of_lt'
--- set_option trace.to_additive_detail true in
+set_option trace.to_additive_detail true in
 @[order_dual (reorder := 3 4) LE.le.antisymm']
 alias LE.le.antisymm := le_antisymm
 
 -- alias LE.le.antisymm' := ge_antisymm
 
+set_option trace.to_additive_detail true in
 @[order_dual (reorder := 3 4) LE.le.lt_of_ne']
 alias LE.le.lt_of_ne := lt_of_le_of_ne
 

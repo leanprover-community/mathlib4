@@ -22,10 +22,13 @@ variable {α : Type u}
   `(cyclicPermute! a l)[iₖ₊₁] = a[iₖ]` and `(cyclicPermute! a l)[i₀] = a[iₙ]` -/
 def cyclicPermute! [Inhabited α] : Array α → List Nat → Array α
   | a, []      => a
-  | a, i :: is => cyclicPermuteAux a is a[i]! i
+  | a, i :: is =>
+    dbg_trace "{a.size} {i}"
+    cyclicPermuteAux a is a[i]! i
 where cyclicPermuteAux : Array α → List Nat → α → Nat → Array α
 | a, [], x, i0 => a.set! i0 x
 | a, i :: is, x, i0 =>
+  dbg_trace "{a.size} {i}"
   let (y, a) := a.swapAt! i x
   cyclicPermuteAux a is y i0
 
