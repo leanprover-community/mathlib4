@@ -26,7 +26,7 @@ variable [s : SelbergSieve]
 def selbergBoundingSum : ℝ :=
   ∑ l ∈ divisors P, if l ^ 2 ≤ y then g l else 0
 
-scoped notation3 "S" => selbergBoundingSum
+scoped [SelbergSieve.Notation] notation3 "S" => selbergBoundingSum
 
 lemma selbergBoundingSum_def :
   S = ∑ l ∈ divisors P, if l ^ 2 ≤ y then g l else 0 := rfl
@@ -58,7 +58,7 @@ def selbergWeights : ℕ → ℝ := fun d =>
   else 0
 
 -- This notation traditionally uses λ, which is unavailable in lean
-scoped notation3 "γ" => SelbergSieve.selbergWeights
+scoped [SelbergSieve.Notation] notation3 "γ" => SelbergSieve.selbergWeights
 
 theorem selbergWeights_eq_zero_of_not_dvd {d : ℕ} (hd : ¬ d ∣ P) :
     γ d = 0 := by
@@ -231,7 +231,7 @@ theorem selbergWeights_diagonalisation (l : ℕ) (hl : l ∈ divisors P) :
 def selbergMuPlus : ℕ → ℝ :=
   lambdaSquared γ
 
-scoped notation3 "μ⁺" => SelbergSieve.selbergMuPlus
+scoped [SelbergSieve.Notation] notation3 "μ⁺" => SelbergSieve.selbergMuPlus
 
 theorem weight_one_of_selberg : γ 1 = 1 := by
   dsimp only [selbergWeights]
