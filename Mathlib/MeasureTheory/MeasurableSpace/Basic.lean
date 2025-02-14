@@ -10,10 +10,11 @@ import Mathlib.Data.Prod.TProd
 import Mathlib.Data.Set.UnionLift
 import Mathlib.GroupTheory.Coset.Defs
 import Mathlib.MeasureTheory.MeasurableSpace.Instances
-import Mathlib.Order.Filter.SmallSets
-import Mathlib.Order.LiminfLimsup
+import Mathlib.Order.Disjointed
 import Mathlib.Order.Filter.AtTopBot.CompleteLattice
 import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
+import Mathlib.Order.Filter.SmallSets
+import Mathlib.Order.LiminfLimsup
 import Mathlib.Tactic.FinCases
 
 /-!
@@ -52,7 +53,6 @@ defined in terms of the Galois connection induced by f.
 
 measurable space, σ-algebra, measurable function, dynkin system, π-λ theorem, π-system
 -/
-
 
 open Set Encodable Function Equiv Filter MeasureTheory
 
