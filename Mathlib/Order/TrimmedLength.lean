@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Raphael Douglas Giles
 -/
 
-import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Order.RelSeries
 import Mathlib.Data.Fintype.Sort
-import Mathlib.Order.Category.NonemptyFinLinOrd
-import Mathlib.Order.CompletePartialOrder
-import Mathlib.Order.KrullDimension
+
 
 /-!
 
