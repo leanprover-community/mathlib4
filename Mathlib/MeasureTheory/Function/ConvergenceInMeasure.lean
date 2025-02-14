@@ -6,7 +6,7 @@ Authors: Rémy Degenne, Kexing Ying
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Topology.MetricSpace.Pseudo.Defs
 import Mathlib.MeasureTheory.Function.Egorov
-import Mathlib.MeasureTheory.Function.LpSpace
+import Mathlib.MeasureTheory.Function.LpSpace.Basic
 
 /-!
 # Convergence in measure

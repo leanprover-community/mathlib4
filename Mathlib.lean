@@ -245,12 +245,14 @@ import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Field.Equiv
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.Field.MinimalAxioms
+import Mathlib.Algebra.Field.NegOnePow
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Field.Power
 import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Algebra.Field.Subfield.Defs
 import Mathlib.Algebra.Field.ULift
+import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Free
 import Mathlib.Algebra.FreeAlgebra
 import Mathlib.Algebra.FreeAlgebra.Cardinality
@@ -323,6 +325,7 @@ import Mathlib.Algebra.Group.MinimalAxioms
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Group.Nat.Even
 import Mathlib.Algebra.Group.Nat.Hom
+import Mathlib.Algebra.Group.Nat.Range
 import Mathlib.Algebra.Group.Nat.TypeTags
 import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.Group.NatPowAssoc
@@ -1017,6 +1020,7 @@ import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.Algebra.Vertex.HVertexOperator
 import Mathlib.Algebra.Vertex.VertexOperator
 import Mathlib.Algebra.ZeroOne.Lemmas
+import Mathlib.Algebra.ZeroOne.Prod
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.AffineSpace
 import Mathlib.AlgebraicGeometry.Cover.MorphismProperty
@@ -2584,6 +2588,7 @@ import Mathlib.Data.DFinsupp.WellFounded
 import Mathlib.Data.DList.Instances
 import Mathlib.Data.ENNReal.Action
 import Mathlib.Data.ENNReal.Basic
+import Mathlib.Data.ENNReal.Holder
 import Mathlib.Data.ENNReal.Inv
 import Mathlib.Data.ENNReal.Lemmas
 import Mathlib.Data.ENNReal.Operations
@@ -2615,7 +2620,6 @@ import Mathlib.Data.FinEnum.Option
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finite.Perm
-import Mathlib.Data.Finite.Powerset
 import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Finite.Set
 import Mathlib.Data.Finite.Sigma
@@ -2815,6 +2819,7 @@ import Mathlib.Data.List.SplitOn
 import Mathlib.Data.List.Sublists
 import Mathlib.Data.List.Sym
 import Mathlib.Data.List.TFAE
+import Mathlib.Data.List.TakeDrop
 import Mathlib.Data.List.TakeWhile
 import Mathlib.Data.List.ToFinsupp
 import Mathlib.Data.List.Zip
@@ -2855,6 +2860,7 @@ import Mathlib.Data.Matroid.IndepAxioms
 import Mathlib.Data.Matroid.Init
 import Mathlib.Data.Matroid.Map
 import Mathlib.Data.Matroid.Rank.Cardinal
+import Mathlib.Data.Matroid.Rank.Finite
 import Mathlib.Data.Matroid.Restrict
 import Mathlib.Data.Matroid.Sum
 import Mathlib.Data.Multiset.Antidiagonal
@@ -3766,6 +3772,7 @@ import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Logic.ExistsUnique
 import Mathlib.Logic.Function.Basic
+import Mathlib.Logic.Function.Coequalizer
 import Mathlib.Logic.Function.CompTypeclasses
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Logic.Function.Defs
@@ -3855,8 +3862,9 @@ import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
 import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
 import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
 import Mathlib.MeasureTheory.Function.LpSeminorm.Trim
-import Mathlib.MeasureTheory.Function.LpSpace
+import Mathlib.MeasureTheory.Function.LpSpace.Basic
 import Mathlib.MeasureTheory.Function.LpSpace.ContinuousCompMeasurePreserving
+import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Basic
 import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Continuous
 import Mathlib.MeasureTheory.Function.SimpleFunc
@@ -4170,6 +4178,7 @@ import Mathlib.NumberTheory.PrimesCongruentOne
 import Mathlib.NumberTheory.Primorial
 import Mathlib.NumberTheory.PythagoreanTriples
 import Mathlib.NumberTheory.RamificationInertia.Basic
+import Mathlib.NumberTheory.RamificationInertia.Galois
 import Mathlib.NumberTheory.Rayleigh
 import Mathlib.NumberTheory.SiegelsLemma
 import Mathlib.NumberTheory.SmoothNumbers
@@ -4385,6 +4394,7 @@ import Mathlib.Order.OrderIsoNat
 import Mathlib.Order.PFilter
 import Mathlib.Order.Part
 import Mathlib.Order.PartialSups
+import Mathlib.Order.Partition.Basic
 import Mathlib.Order.Partition.Equipartition
 import Mathlib.Order.Partition.Finpartition
 import Mathlib.Order.PiLex
@@ -4426,6 +4436,7 @@ import Mathlib.Order.UpperLower.Hom
 import Mathlib.Order.UpperLower.LocallyFinite
 import Mathlib.Order.WellFounded
 import Mathlib.Order.WellFoundedSet
+import Mathlib.Order.WellQuasiOrder
 import Mathlib.Order.WithBot
 import Mathlib.Order.Zorn
 import Mathlib.Order.ZornAtoms
@@ -4608,6 +4619,7 @@ import Mathlib.RingTheory.Finiteness.Nakayama
 import Mathlib.RingTheory.Finiteness.Nilpotent
 import Mathlib.RingTheory.Finiteness.Prod
 import Mathlib.RingTheory.Finiteness.Projective
+import Mathlib.RingTheory.Finiteness.Quotient
 import Mathlib.RingTheory.Finiteness.Subalgebra
 import Mathlib.RingTheory.Finiteness.TensorProduct
 import Mathlib.RingTheory.Fintype
@@ -4615,6 +4627,7 @@ import Mathlib.RingTheory.Flat.Basic
 import Mathlib.RingTheory.Flat.CategoryTheory
 import Mathlib.RingTheory.Flat.Equalizer
 import Mathlib.RingTheory.Flat.EquationalCriterion
+import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 import Mathlib.RingTheory.Flat.Localization
 import Mathlib.RingTheory.Flat.Stability
@@ -4639,7 +4652,8 @@ import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Summable
 import Mathlib.RingTheory.HahnSeries.Valuation
 import Mathlib.RingTheory.Henselian
-import Mathlib.RingTheory.HopfAlgebra
+import Mathlib.RingTheory.HopfAlgebra.Basic
+import Mathlib.RingTheory.HopfAlgebra.TensorProduct
 import Mathlib.RingTheory.HopkinsLevitzki
 import Mathlib.RingTheory.Ideal.AssociatedPrime
 import Mathlib.RingTheory.Ideal.Basic
@@ -4648,6 +4662,7 @@ import Mathlib.RingTheory.Ideal.BigOperators
 import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.Ideal.Defs
+import Mathlib.RingTheory.Ideal.GoingDown
 import Mathlib.RingTheory.Ideal.GoingUp
 import Mathlib.RingTheory.Ideal.Height
 import Mathlib.RingTheory.Ideal.IdempotentFG
@@ -4747,6 +4762,7 @@ import Mathlib.RingTheory.Localization.NumDen
 import Mathlib.RingTheory.Localization.Pi
 import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.RingTheory.MatrixAlgebra
+import Mathlib.RingTheory.Morita.Basic
 import Mathlib.RingTheory.Multiplicity
 import Mathlib.RingTheory.MvPolynomial
 import Mathlib.RingTheory.MvPolynomial.Basic
@@ -4891,6 +4907,7 @@ import Mathlib.RingTheory.Spectrum.Prime.Jacobson
 import Mathlib.RingTheory.Spectrum.Prime.Module
 import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 import Mathlib.RingTheory.Spectrum.Prime.Polynomial
+import Mathlib.RingTheory.Spectrum.Prime.RingHom
 import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
 import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.RingTheory.Support
@@ -5004,6 +5021,7 @@ import Mathlib.SetTheory.Ordinal.Notation
 import Mathlib.SetTheory.Ordinal.Principal
 import Mathlib.SetTheory.Ordinal.Rank
 import Mathlib.SetTheory.Ordinal.Topology
+import Mathlib.SetTheory.Ordinal.Veblen
 import Mathlib.SetTheory.Surreal.Basic
 import Mathlib.SetTheory.Surreal.Dyadic
 import Mathlib.SetTheory.Surreal.Multiplication
