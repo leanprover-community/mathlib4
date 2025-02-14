@@ -5,12 +5,14 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 -/
 import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
+import Mathlib.Tactic.Positivity.Core
 
 /-!
 # The real function `fun x ↦ x * log x + 1 - x`
 
 We define `klFun x = x * log x + 1 - x`. That function is notable because the Kullback-Leibler
-divergence is an f-divergence for `klFun`.
+divergence is an f-divergence for `klFun`. That is, the Kullback-Leibler divergence is an integral
+of `klFun` composed with a Radon-Nikodym derivative.
 
 ## Main definitions
 
@@ -21,8 +23,8 @@ This is a continuous nonnegative, strictly convex function on [0,∞), with mini
 ## Main statements
 
 * `integrable_klFun_rnDeriv_iff`: For two finite measures `μ ≪ ν`, the function
-  `x ↦ klFun (μ.rnDeriv ν x).toReal` is integrable with respect to `ν` iff `llr μ ν` is integrable
-  with respect to `μ`.
+  `x ↦ klFun (μ.rnDeriv ν x).toReal` is integrable with respect to `ν` iff the log-likelihood ratio
+  `llr μ ν` is integrable with respect to `μ`.
 * `integral_klFun_rnDeriv`: For two finite measures `μ ≪ ν` such that `llr μ ν` is integrable with
   respect to `μ`,
   `∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν = ∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal`.
@@ -123,20 +125,22 @@ lemma tendsto_klFun_atTop : Tendsto klFun atTop atTop := by
   refine tendsto_id.atTop_mul_atTop ?_
   exact tendsto_log_atTop.atTop_add tendsto_const_nhds
 
+section Integral
+
+variable [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+
 /-- For two finite measures `μ ≪ ν`, the function `x ↦ klFun (μ.rnDeriv ν x).toReal` is integrable
 with respect to `ν` iff `llr μ ν` is integrable with respect to `μ`. -/
-lemma integrable_klFun_rnDeriv_iff [IsFiniteMeasure μ] [IsFiniteMeasure ν] (hμν : μ ≪ ν) :
+lemma integrable_klFun_rnDeriv_iff (hμν : μ ≪ ν) :
     Integrable (fun x ↦ klFun (μ.rnDeriv ν x).toReal) ν ↔ Integrable (llr μ ν) μ := by
   suffices Integrable (fun x ↦ (μ.rnDeriv ν x).toReal * log (μ.rnDeriv ν x).toReal
       + (1 - (μ.rnDeriv ν x).toReal)) ν ↔ Integrable (llr μ ν) μ by
     convert this using 3 with x
     rw [klFun, add_sub_assoc]
-  rw [integrable_add_iff_integrable_left']
-  · rw [integrable_rnDeriv_mul_log_iff hμν]
-  · fun_prop
+  rw [integrable_add_iff_integrable_left', integrable_rnDeriv_mul_log_iff hμν]
+  fun_prop
 
-lemma integral_klFun_rnDeriv [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
+lemma integral_klFun_rnDeriv (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
     ∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν
       = ∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal := by
   rw [integral_sub, integral_add, integral_const, Measure.integral_toReal_rnDeriv hμν, smul_eq_mul,
@@ -148,5 +152,7 @@ lemma integral_klFun_rnDeriv [IsFiniteMeasure μ] [IsFiniteMeasure ν]
   · refine Integrable.add ?_ (integrable_const _)
     rwa [integrable_rnDeriv_mul_log_iff hμν]
   · fun_prop
+
+end Integral
 
 end ProbabilityTheory

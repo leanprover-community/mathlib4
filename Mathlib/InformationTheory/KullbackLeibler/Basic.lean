@@ -94,15 +94,17 @@ lemma kl_ne_top_iff : kl μ ν ≠ ∞ ↔ μ ≪ ν ∧ Integrable (llr μ ν) 
 
 section AlternativeFormulas
 
+variable [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+
 open Classical in
-lemma kl_eq_integral_klFun [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+lemma kl_eq_integral_klFun :
     kl μ ν = if μ ≪ ν ∧ Integrable (llr μ ν) μ
       then ENNReal.ofReal (∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν)
       else ∞ :=
   if_ctx_congr Iff.rfl (fun h ↦ by rw [integral_klFun_rnDeriv h.1 h.2]) fun _ ↦ rfl
 
 open Classical in
-lemma kl_eq_lintegral_klFun [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+lemma kl_eq_lintegral_klFun :
     kl μ ν = if μ ≪ ν then ∫⁻ x, ENNReal.ofReal (klFun (μ.rnDeriv ν x).toReal) ∂ν else ∞ := by
   rw [kl_eq_integral_klFun]
   by_cases hμν : μ ≪ ν
@@ -126,37 +128,43 @@ end AlternativeFormulas
 
 section Real
 
+variable [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+
 /-- **Gibbs' inequality**: the Kullback-Leibler divergence is nonnegative.
 Note that since `kl` takes value in `ℝ≥0∞` (defined when it is finite as `ENNReal.ofReal (...)`),
 it is nonnegative by definition. This lemma proves that the argument of `ENNReal.ofReal`
 is also nonnegative. -/
-lemma integral_llr_add_sub_measure_univ_nonneg [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
+lemma integral_llr_add_sub_measure_univ_nonneg (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
     0 ≤ ∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal := by
   rw [← integral_klFun_rnDeriv hμν h_int]
   exact integral_nonneg fun x ↦ klFun_nonneg ENNReal.toReal_nonneg
 
-lemma toReal_kl [IsFiniteMeasure μ] [IsFiniteMeasure ν] (h : μ ≪ ν)
-    (h_int : Integrable (llr μ ν) μ) :
+lemma toReal_kl (h : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
     (kl μ ν).toReal = ∫ a, llr μ ν a ∂μ + (ν univ).toReal - (μ univ).toReal := by
   rw [kl_of_ac_of_integrable h h_int, ENNReal.toReal_ofReal]
   exact integral_llr_add_sub_measure_univ_nonneg h h_int
 
 /-- If `μ ≪ ν` and `μ univ = ν univ`, then `toReal` of the Kullback-Leibler divergence is equal to
 an integral, without any integrability condition. -/
-lemma toReal_kl_of_ac [IsFiniteMeasure μ] [IsFiniteMeasure ν] (h : μ ≪ ν) (h_eq : μ univ = ν univ) :
+lemma toReal_kl_of_measure_eq (h : μ ≪ ν) (h_eq : μ univ = ν univ) :
     (kl μ ν).toReal = ∫ a, llr μ ν a ∂μ := by
   by_cases h_int : Integrable (llr μ ν) μ
   · simp [toReal_kl h h_int, h_eq]
   · rw [kl_of_not_integrable h_int, integral_undef h_int]
     simp [h_eq]
 
+lemma toReal_kl_eq_integral_klFun (h : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
+    (kl μ ν).toReal = ∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν := by
+  rw [kl_eq_integral_klFun, if_pos ⟨h, h_int⟩, ENNReal.toReal_ofReal]
+  exact integral_nonneg (fun _ ↦ klFun_nonneg ENNReal.toReal_nonneg)
+
 end Real
 
 section Inequalities
 
-lemma integral_llr_add_mul_log_nonneg [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
+variable [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+
+lemma integral_llr_add_mul_log_nonneg (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
     0 ≤ ∫ x, llr μ ν x ∂μ + (μ univ).toReal * log (ν univ).toReal + 1 - (μ univ).toReal := by
   by_cases hμ : μ = 0
   · simp [hμ]
@@ -175,27 +183,27 @@ lemma integral_llr_add_mul_log_nonneg [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     integral_sub h_int (integrable_const _), integral_const, smul_eq_mul] at h
   simpa using h
 
-lemma mul_log_le_toReal_kl [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
+lemma mul_klFun_le_toReal_kl (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
+    (ν univ).toReal * klFun ((μ univ).toReal / (ν univ).toReal) ≤ (kl μ ν).toReal := by
+  calc (ν univ).toReal * klFun ((μ univ).toReal / (ν univ).toReal)
+  _ ≤ ∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν := by
+    refine mul_le_integral_rnDeriv_of_ac convexOn_klFun continuous_klFun.continuousWithinAt ?_ hμν
+    rwa [integrable_klFun_rnDeriv_iff hμν]
+  _ = (kl μ ν).toReal := by rw [toReal_kl_eq_integral_klFun hμν h_int]
+
+lemma mul_log_le_toReal_kl (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
     (μ univ).toReal * log ((μ univ).toReal / (ν univ).toReal) + (ν univ).toReal - (μ univ).toReal
       ≤ (kl μ ν).toReal := by
-  rw [toReal_kl hμν h_int]
   by_cases hμ : μ = 0
   · simp [hμ]
   by_cases hν : ν = 0
   · refine absurd ?_ hμ
     rw [hν] at hμν
     exact Measure.absolutelyContinuous_zero_iff.mp hμν
-  simp only [tsub_le_iff_right, sub_add_cancel, add_le_add_iff_right]
-  rw [← integral_rnDeriv_mul_log hμν]
-  refine (le_of_eq ?_).trans
-    (mul_le_integral_rnDeriv_of_ac (f := fun x ↦ x * log x) convexOn_mul_log ?_ ?_ hμν)
-  · rw [← mul_assoc]
-    congr 1
-    rw [div_eq_inv_mul, ← mul_assoc, mul_inv_cancel₀, one_mul]
-    simp [ENNReal.toReal_eq_zero_iff, hν]
-  · exact (Continuous.continuousAt (by fun_prop)).continuousWithinAt
-  · rwa [integrable_rnDeriv_mul_log_iff hμν]
+  refine (le_of_eq ?_).trans (mul_klFun_le_toReal_kl hμν h_int)
+  have : (ν univ).toReal * ((μ univ).toReal / (ν univ).toReal) = (μ univ).toReal := by
+    rw [mul_div_cancel₀]; simp [ENNReal.toReal_eq_zero_iff, hν]
+  rw [klFun, mul_sub, mul_add, mul_one, ← mul_assoc, this]
 
 lemma mul_log_le_kl (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     ENNReal.ofReal ((μ univ).toReal * log ((μ univ).toReal / (ν univ).toReal)
