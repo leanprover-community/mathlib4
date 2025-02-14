@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Minchao Wu, Chris Hughes, Mantas Bakšys
 -/
 import Mathlib.Data.List.Basic
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Data.List.Induction
 import Mathlib.Order.MinMax
 import Mathlib.Order.WithBot
-import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
 # Minimum and maximum of lists
@@ -185,10 +186,10 @@ theorem argmin_cons (f : α → β) (a : α) (l : List α) :
 variable [DecidableEq α]
 
 theorem index_of_argmax :
-    ∀ {l : List α} {m : α}, m ∈ argmax f l → ∀ {a}, a ∈ l → f m ≤ f a → l.indexOf m ≤ l.indexOf a
+    ∀ {l : List α} {m : α}, m ∈ argmax f l → ∀ {a}, a ∈ l → f m ≤ f a → l.idxOf m ≤ l.idxOf a
   | [], m, _, _, _, _ => by simp
   | hd :: tl, m, hm, a, ha, ham => by
-    simp only [indexOf_cons, argmax_cons, Option.mem_def] at hm ⊢
+    simp only [idxOf_cons, argmax_cons, Option.mem_def] at hm ⊢
     cases h : argmax f tl
     · rw [h] at hm
       simp_all
@@ -206,12 +207,12 @@ theorem index_of_argmax :
       exact Nat.zero_le _
 
 theorem index_of_argmin :
-    ∀ {l : List α} {m : α}, m ∈ argmin f l → ∀ {a}, a ∈ l → f a ≤ f m → l.indexOf m ≤ l.indexOf a :=
+    ∀ {l : List α} {m : α}, m ∈ argmin f l → ∀ {a}, a ∈ l → f a ≤ f m → l.idxOf m ≤ l.idxOf a :=
   @index_of_argmax _ βᵒᵈ _ _ _
 
 theorem mem_argmax_iff :
     m ∈ argmax f l ↔
-      m ∈ l ∧ (∀ a ∈ l, f a ≤ f m) ∧ ∀ a ∈ l, f m ≤ f a → l.indexOf m ≤ l.indexOf a :=
+      m ∈ l ∧ (∀ a ∈ l, f a ≤ f m) ∧ ∀ a ∈ l, f m ≤ f a → l.idxOf m ≤ l.idxOf a :=
   ⟨fun hm => ⟨argmax_mem hm, fun _ ha => le_of_mem_argmax ha hm, fun _ => index_of_argmax hm⟩,
     by
       rintro ⟨hml, ham, hma⟩
@@ -220,21 +221,21 @@ theorem mem_argmax_iff :
       · have :=
           _root_.le_antisymm (hma n (argmax_mem harg) (le_of_mem_argmax hml harg))
             (index_of_argmax harg hml (ham _ (argmax_mem harg)))
-        rw [(indexOf_inj hml (argmax_mem harg)).1 this, Option.mem_def]⟩
+        rw [(idxOf_inj hml (argmax_mem harg)).1 this, Option.mem_def]⟩
 
 theorem argmax_eq_some_iff :
     argmax f l = some m ↔
-      m ∈ l ∧ (∀ a ∈ l, f a ≤ f m) ∧ ∀ a ∈ l, f m ≤ f a → l.indexOf m ≤ l.indexOf a :=
+      m ∈ l ∧ (∀ a ∈ l, f a ≤ f m) ∧ ∀ a ∈ l, f m ≤ f a → l.idxOf m ≤ l.idxOf a :=
   mem_argmax_iff
 
 theorem mem_argmin_iff :
     m ∈ argmin f l ↔
-      m ∈ l ∧ (∀ a ∈ l, f m ≤ f a) ∧ ∀ a ∈ l, f a ≤ f m → l.indexOf m ≤ l.indexOf a :=
+      m ∈ l ∧ (∀ a ∈ l, f m ≤ f a) ∧ ∀ a ∈ l, f a ≤ f m → l.idxOf m ≤ l.idxOf a :=
   @mem_argmax_iff _ βᵒᵈ _ _ _ _ _
 
 theorem argmin_eq_some_iff :
     argmin f l = some m ↔
-      m ∈ l ∧ (∀ a ∈ l, f m ≤ f a) ∧ ∀ a ∈ l, f a ≤ f m → l.indexOf m ≤ l.indexOf a :=
+      m ∈ l ∧ (∀ a ∈ l, f m ≤ f a) ∧ ∀ a ∈ l, f a ≤ f m → l.idxOf m ≤ l.idxOf a :=
   mem_argmin_iff
 
 end LinearOrder
@@ -433,13 +434,12 @@ theorem minimum_of_length_pos_le_getElem {i : ℕ} (w : i < l.length) (h := (Nat
     l.minimum_of_length_pos h ≤ l[i] :=
   getElem_le_maximum_of_length_pos (α := αᵒᵈ) w
 
-lemma getD_max?_eq_unbot'_maximum (l : List α) (d : α) :
-    l.max?.getD d = l.maximum.unbot' d := by
+lemma getD_max?_eq_unbotD_maximum (l : List α) (d : α) : l.max?.getD d = l.maximum.unbotD d := by
   cases hy : l.maximum with
   | bot => simp [List.maximum_eq_bot.mp hy]
   | coe y =>
     rw [List.maximum_eq_coe_iff] at hy
-    simp only [WithBot.unbot'_coe]
+    simp only [WithBot.unbotD_coe]
     cases hz : l.max? with
     | none => simp [List.max?_eq_none_iff.mp hz] at hy
     | some z =>
@@ -449,15 +449,20 @@ lemma getD_max?_eq_unbot'_maximum (l : List α) (d : α) :
         exact _root_.le_antisymm (hy.right _ hz.left) (hz.right _ hy.left)
       all_goals simp [le_total]
 
-@[deprecated (since := "2024-09-29")]
-alias getD_maximum?_eq_unbot'_maximum := getD_max?_eq_unbot'_maximum
-
-lemma getD_min?_eq_untop'_minimum (l : List α) (d : α) :
-    l.min?.getD d = l.minimum.untop' d :=
-  getD_max?_eq_unbot'_maximum (α := αᵒᵈ) _ _
+@[deprecated (since := "2025-02-06")]
+alias getD_max?_eq_unbot'_maximum := getD_max?_eq_unbotD_maximum
 
 @[deprecated (since := "2024-09-29")]
-alias getD_minimum?_eq_untop'_minimum := getD_min?_eq_untop'_minimum
+alias getD_maximum?_eq_unbot'_maximum := getD_max?_eq_unbotD_maximum
+
+lemma getD_min?_eq_untopD_minimum (l : List α) (d : α) : l.min?.getD d = l.minimum.untopD d :=
+  getD_max?_eq_unbotD_maximum (α := αᵒᵈ) _ _
+
+@[deprecated (since := "2025-02-06")]
+alias getD_min?_eq_untop'_minimum := getD_min?_eq_untopD_minimum
+
+@[deprecated (since := "2024-09-29")]
+alias getD_minimum?_eq_untop'_minimum := getD_min?_eq_untopD_minimum
 
 end LinearOrder
 

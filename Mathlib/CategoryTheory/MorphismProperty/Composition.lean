@@ -45,6 +45,12 @@ lemma of_op (W : MorphismProperty C) [W.op.ContainsIdentities] :
 lemma of_unop (W : MorphismProperty Cᵒᵖ) [W.unop.ContainsIdentities] :
     W.ContainsIdentities := (inferInstance : W.unop.op.ContainsIdentities)
 
+lemma eqToHom (W : MorphismProperty C) [W.ContainsIdentities] {x y : C} (h : x = y) :
+    W (eqToHom h) := by
+  subst h
+  rw [eqToHom_refl]
+  exact id_mem x
+
 instance inverseImage {P : MorphismProperty D} [P.ContainsIdentities] (F : C ⥤ D) :
     (P.inverseImage F).ContainsIdentities where
   id_mem X := by simpa only [← F.map_id] using P.id_mem (F.obj X)
@@ -234,6 +240,14 @@ lemma precomp_iff [W.RespectsLeft W'] [W.HasOfPrecompProperty W']
     {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hf : W' f) :
     W (f ≫ g) ↔ W g :=
   ⟨W.of_precomp f g hf, fun hg ↦ RespectsLeft.precomp _ hf _ hg⟩
+
+lemma HasOfPostcompProperty.of_le (Q : MorphismProperty C) [W.HasOfPostcompProperty Q]
+    (hle : W' ≤ Q) : W.HasOfPostcompProperty W' where
+  of_postcomp f g hg hfg := W.of_postcomp (W' := Q) f g (hle _ hg) hfg
+
+lemma HasOfPrecompProperty.of_le (Q : MorphismProperty C) [W.HasOfPrecompProperty Q]
+    (hle : W' ≤ Q) : W.HasOfPrecompProperty W' where
+  of_precomp f g hg hfg := W.of_precomp (W' := Q) f g (hle _ hg) hfg
 
 end
 

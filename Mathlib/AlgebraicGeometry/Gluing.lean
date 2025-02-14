@@ -125,7 +125,8 @@ def gluedScheme : Scheme := by
   refine ⟨_, ((D.U i).affineCover.map y).toLRSHom ≫
     D.toLocallyRingedSpaceGlueData.toGlueData.ι i, ?_⟩
   constructor
-  · erw [TopCat.coe_comp, Set.range_comp] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
+  · erw [TopCat.coe_comp] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
+    rw [Set.range_comp]
     refine Set.mem_image_of_mem _ ?_
     exact (D.U i).affineCover.covers y
   · infer_instance
@@ -226,7 +227,7 @@ theorem ι_eq_iff (i j : D.J) (x : (D.U i).carrier) (y : (D.U j).carrier) :
     (TopCat.GlueData.ι_eq_iff_rel
       D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toTopGlueData
       i j x y)
-  rw [← ((TopCat.mono_iff_injective D.isoCarrier.inv).mp _).eq_iff, ← CategoryTheory.comp_apply]
+  rw [← ((TopCat.mono_iff_injective D.isoCarrier.inv).mp _).eq_iff, ← ConcreteCategory.comp_apply]
   · simp_rw [← D.ι_isoCarrier_inv]
     rfl -- `rfl` was not needed before https://github.com/leanprover-community/mathlib4/pull/13170
   · infer_instance
@@ -338,7 +339,7 @@ theorem fromGlued_injective : Function.Injective 𝒰.fromGlued.base := by
   intro x y h
   obtain ⟨i, x, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective x
   obtain ⟨j, y, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective y
-  rw [← CategoryTheory.comp_apply, ← CategoryTheory.comp_apply] at h
+  rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply] at h
   simp_rw [← Scheme.comp_base] at h
   rw [ι_fromGlued, ι_fromGlued] at h
   let e :=
@@ -347,8 +348,10 @@ theorem fromGlued_injective : Function.Injective 𝒰.fromGlued.base := by
   rw [𝒰.gluedCover.ι_eq_iff]
   use e.hom ⟨⟨x, y⟩, h⟩
   constructor
-  · erw [← comp_apply e.hom, IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.left]; rfl
-  · erw [← comp_apply e.hom, pullbackSymmetry_hom_comp_fst,
+  · erw [← ConcreteCategory.comp_apply e.hom,
+      IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.left]
+    rfl
+  · erw [← ConcreteCategory.comp_apply e.hom, pullbackSymmetry_hom_comp_fst,
       IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.right]
     rfl
 
@@ -371,7 +374,7 @@ theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.base := by
   · rw [← Set.image_preimage_eq_inter_range]
     apply (show IsOpenImmersion (𝒰.map (𝒰.f x)) from inferInstance).base_open.isOpenMap
     convert hU (𝒰.f x) using 1
-    rw [← ι_fromGlued]; erw [coe_comp]; rw [Set.preimage_comp]
+    rw [← ι_fromGlued]; erw [TopCat.coe_comp]; rw [Set.preimage_comp]
     congr! 1
     exact Set.preimage_image_eq _ 𝒰.fromGlued_injective
   · exact ⟨hx, 𝒰.covers x⟩
@@ -387,7 +390,7 @@ instance : Epi 𝒰.fromGlued.base := by
   intro x
   obtain ⟨y, h⟩ := 𝒰.covers x
   use (𝒰.gluedCover.ι (𝒰.f x)).base y
-  rw [← CategoryTheory.comp_apply]
+  rw [← ConcreteCategory.comp_apply]
   rw [← 𝒰.ι_fromGlued (𝒰.f x)] at h
   exact h
 

@@ -33,8 +33,8 @@ We provide a solid API for strongly measurable functions, as a basis for the Boc
 
 ## References
 
-* Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
-  Springer, 2016.
+* [Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
+  Springer, 2016.][Hytönen_VanNeerven_Veraar_Wies_2016]
 
 -/
 
@@ -109,7 +109,6 @@ theorem stronglyMeasurable_const' (hf : ∀ x y, f x = f y) : StronglyMeasurable
   convert stronglyMeasurable_const (β := β) using 1
   exact funext fun x => hf x default
 
--- Porting note: changed binding type of `MeasurableSpace α`.
 @[simp]
 theorem Subsingleton.stronglyMeasurable' [Subsingleton α] (f : α → β) : StronglyMeasurable f :=
   stronglyMeasurable_const' fun x y => by rw [Subsingleton.elim x y]
@@ -775,7 +774,12 @@ protected theorem nnnorm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCom
     (hf : StronglyMeasurable f) : StronglyMeasurable fun x => ‖f x‖₊ :=
   continuous_nnnorm.comp_stronglyMeasurable hf
 
-@[measurability]
+/-- The `enorm` of a strongly measurable function is measurable.
+
+Unlike `StrongMeasurable.norm` and `StronglyMeasurable.nnnorm`, this lemma proves measurability,
+**not** strong measurability. This is an intentional decision: for functions taking values in
+ℝ≥0∞, measurability is much more useful than strong measurability. -/
+@[fun_prop, measurability]
 protected theorem enorm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCommGroup β]
     {f : α → β} (hf : StronglyMeasurable f) : Measurable (‖f ·‖ₑ) :=
   (ENNReal.continuous_coe.comp_stronglyMeasurable hf.nnnorm).measurable

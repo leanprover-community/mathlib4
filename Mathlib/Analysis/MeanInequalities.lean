@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
 import Mathlib.Algebra.BigOperators.Expect
+import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
@@ -14,7 +15,8 @@ import Mathlib.Data.Real.ConjExponents
 
 In this file we prove several inequalities for finite sums, including AM-GM inequality,
 HM-GM inequality, Young's inequality, Hölder inequality, and Minkowski inequality. Versions for
-integrals of some of these inequalities are available in `MeasureTheory.Integral.MeanInequalities`.
+integrals of some of these inequalities are available in
+`Mathlib.MeasureTheory.Integral.MeanInequalities`.
 
 ## Main theorems
 
