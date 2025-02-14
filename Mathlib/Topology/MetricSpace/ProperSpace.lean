@@ -130,7 +130,7 @@ lemma ProperSpace.of_isClosed {X : Type*} [PseudoMetricSpace X] [ProperSpace X]
     ProperSpace s :=
   ⟨fun x r ↦ Topology.IsEmbedding.subtypeVal.isCompact_iff.mpr
     ((isCompact_closedBall x.1 r).of_isClosed_subset
-    (hs.isClosedMap_subtype_val _ isClosed_ball) (Set.image_subset_iff.mpr subset_rfl))⟩
+    (hs.isClosedMap_subtype_val _ isClosed_closedBall) (Set.image_subset_iff.mpr subset_rfl))⟩
 
 end ProperSpace
 
