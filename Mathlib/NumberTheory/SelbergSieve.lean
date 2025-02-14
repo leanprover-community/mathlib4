@@ -124,11 +124,6 @@ theorem nu_ne_zero {d : ℕ} (hd : d ∣ P) : ν d ≠ 0 := by
   apply _root_.ne_of_gt
   exact nu_pos_of_dvd_prodPrimes hd
 
-theorem nu_ne_zero_of_mem_divisors_prodPrimes {d : ℕ} (hd : d ∈ divisors P) : ν d ≠ 0 := by
-  apply _root_.ne_of_gt
-  rw [mem_divisors] at hd
-  apply nu_pos_of_dvd_prodPrimes hd.left
-
 theorem nu_lt_self_of_dvd_prodPrimes (d : ℕ) (hdP : d ∣ P) (hd_ne_one : d ≠ 1) : ν d < 1 := by
   have hd_sq : Squarefree d := Squarefree.squarefree_of_dvd hdP prodPrimes_squarefree
   have := hd_sq.ne_zero
