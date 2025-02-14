@@ -45,117 +45,25 @@ def SplitEpiσ {n : ℕ} {i : Fin (n + 1)} : SplitEpi (σ i) where
 instance {n : ℕ} {i : Fin (n + 1)} : IsSplitEpi (σ i) := .mk' SplitEpiσ
 
 /-- Auxiliary predicate to express that a morphism is purely a composition of `σ i`s. -/
-inductive P_σ : MorphismProperty SimplexCategoryGenRel
-  | σ {n : ℕ} (i : Fin (n + 1)) : P_σ <| σ i
-  | id {n : ℕ} : P_σ <| 𝟙 (.mk n)
-  | comp {n : ℕ} (i : Fin (n + 1)) {a : SimplexCategoryGenRel} (g : a ⟶ .mk (n + 1))
-    (hg: P_σ g) : P_σ <| g ≫ σ i
-
-/-- A version of `P_σ` where composition is taken on the right instead. It is equivalent to `P_σ`
-(see `P_σ_eq_P_σ'`). -/
-inductive P_σ' : MorphismProperty SimplexCategoryGenRel
-  | σ {n : ℕ} (i : Fin (n + 1)) : P_σ' <| σ i
-  | id {n : ℕ} : P_σ' <| 𝟙 (.mk n)
-  | comp {n : ℕ} (i : Fin (n + 1)) {a : SimplexCategoryGenRel} (g :.mk n ⟶ a)
-    (hg: P_σ' g) : P_σ' <| σ i ≫ g
+abbrev P_σ := SimplexCategoryGenRel.IsDegeneracy.MultiplicativeClosure
 
 /-- Auxiliary predicate to express that a morphism is purely a composition of `δ i`s. -/
-inductive P_δ : MorphismProperty SimplexCategoryGenRel
-  | δ {n : ℕ} (i : Fin (n + 2)) : P_δ <| δ i
-  | id {n : ℕ} : P_δ <| 𝟙 (.mk n)
-  | comp {n : ℕ} (i : Fin (n + 2)) {a : SimplexCategoryGenRel} (g : a ⟶ .mk n )
-    (hg: P_δ g) : P_δ <| g ≫ δ i
-
-/-- A version of `P_δ` where composition is taken on the right instead. It is equivalent to `P_δ`
-(see `P_σ_eq_P_δ'`). -/
-inductive P_δ' : MorphismProperty SimplexCategoryGenRel
-  | δ {n : ℕ} (i : Fin (n + 2)) : P_δ' <| δ i
-  | id {n : ℕ} : P_δ' <| 𝟙 (.mk n)
-  | comp {a : SimplexCategoryGenRel} {n : ℕ} (i : Fin (n + 2)) (g : .mk (n + 1) ⟶ a)
-    (hg: P_δ' g) : P_δ' <| δ i ≫ g
-
-lemma P_σ_eqToHom {x y : SimplexCategoryGenRel} (h : x = y) : P_σ <| eqToHom h := by
-  subst h
-  rw [eqToHom_refl]
-  exact P_σ.id
-
-lemma P_δ_eqToHom {x y : SimplexCategoryGenRel} (h : x = y) : P_δ <| eqToHom h := by
-  subst h
-  rw [eqToHom_refl]
-  exact P_δ.id
-
-lemma P_δ_comp {x y z : SimplexCategoryGenRel} (f : x ⟶ y) (g : y ⟶ z) :
-    P_δ f → P_δ g → P_δ (f ≫ g) := by
-  intro hf hg
-  induction hg with
-  | δ i => exact P_δ.comp _ f hf
-  | id => rwa [Category.comp_id]
-  | comp i b _ h => specialize h f hf
-                    rw [← Category.assoc]
-                    exact P_δ.comp i (f ≫ b) h
-
-lemma P_σ_comp {x y z : SimplexCategoryGenRel} (f : x ⟶ y) (g : y ⟶ z) :
-    P_σ f → P_σ g → P_σ (f ≫ g) := by
-  intro hf hg
-  induction hg with
-  | σ i => exact P_σ.comp _ f hf
-  | id => rwa [Category.comp_id]
-  | comp i b _ h => specialize h f hf
-                    rw [← Category.assoc]
-                    exact P_σ.comp i (f ≫ b) h
-
-lemma P_σ'_comp {x y z : SimplexCategoryGenRel} (f : x ⟶ y) (g : y ⟶ z) :
-    P_σ' f → P_σ' g → P_σ' (f ≫ g) := by
-  intro hf hg
-  induction hf with
-  | σ i => exact P_σ'.comp _ g hg
-  | id => rwa [Category.id_comp]
-  | comp i b _ h => specialize h g hg
-                    rw [Category.assoc]
-                    exact P_σ'.comp i (b ≫ g) h
-
-lemma P_δ'_comp {x y z : SimplexCategoryGenRel} (f : x ⟶ y) (g : y ⟶ z) :
-    P_δ' f → P_δ' g → P_δ' (f ≫ g) := by
-  intro hf hg
-  induction hf with
-  | δ i => exact P_δ'.comp _ g hg
-  | id => rwa [Category.id_comp]
-  | comp i b _ h => specialize h g hg
-                    rw [Category.assoc]
-                    exact P_δ'.comp i (b ≫ g) h
-
-/-- The property `P_σ` is equivalent to `P_σ'`. -/
-lemma P_σ_eq_P_σ' : P_σ = P_σ' := by
-  apply le_antisymm <;> intro x y f h
-  · induction h with
-    | σ i => exact P_σ'.σ i
-    | id => exact P_σ'.id
-    | comp i f h h' => exact P_σ'_comp _ _ h' (P_σ'.σ _)
-  · induction h with
-    | σ i => exact P_σ.σ i
-    | id => exact P_σ.id
-    | comp i f h h' => exact P_σ_comp _ _ (P_σ.σ _) h'
-
-/-- The property `P_δ` is equivalent to `P_δ'`. -/
-lemma P_δ_eq_P_δ' : P_δ = P_δ' := by
-  apply le_antisymm <;> intro x y f h
-  · induction h with
-    | δ i => exact P_δ'.δ i
-    | id => exact P_δ'.id
-    | comp i f h h' => exact P_δ'_comp _ _ h' (P_δ'.δ _)
-  · induction h with
-    | δ i => exact P_δ.δ i
-    | id => exact P_δ.id
-    | comp i f h h' => exact P_δ_comp _ _ (P_δ.δ _) h'
+abbrev P_δ := SimplexCategoryGenRel.IsFace.MultiplicativeClosure
 
 /-- All `P_σ` are split epis as composition of such. -/
 lemma isSplitEpi_P_σ {x y : SimplexCategoryGenRel} {e : x ⟶ y} (he : P_σ e) : IsSplitEpi e := by
-  induction he <;> infer_instance
+  induction he with
+  | of x hx => cases hx; infer_instance
+  | id => infer_instance
+  | comp_of _ _ _ h => cases h ; infer_instance
 
 /-- All `P_δ` are split monos as composition of such. -/
 lemma isSplitMono_P_δ {x y : SimplexCategoryGenRel} {m : x ⟶ y} (hm : P_δ m) :
     IsSplitMono m := by
-  induction hm <;> infer_instance
+  induction hm with
+  | of x hx => cases hx; infer_instance
+  | id => infer_instance
+  | comp_of _ _ _ h => cases h ; infer_instance
 
 lemma isSplitEpi_P_σ_toSimplexCategory {x y : SimplexCategoryGenRel} {e : x ⟶ y} (he : P_σ e)
     : IsSplitEpi <| toSimplexCategory.map e := by
@@ -174,12 +82,15 @@ lemma isSplitMono_P_δ_toSimplexCategory {x y : SimplexCategoryGenRel} {m : x �
 lemma eq_or_len_le_of_P_δ {x y : SimplexCategoryGenRel} {f : x ⟶ y} (h_δ : P_δ f) :
     (∃ h : x = y, f = eqToHom h) ∨ x.len < y.len := by
   induction h_δ with
-  | δ i => right; simp
+  | of _ hx => cases hx; right; simp
   | id => left; use rfl; simp
-  | comp i u _ h' =>
+  | comp_of i u _ hg h' =>
     rcases h' with ⟨e, _⟩ | h'
-    · right; rw [e]; exact Nat.lt_add_one _
-    · right; exact Nat.lt_succ_of_lt h'
+    <;> apply Or.inr
+    <;> cases hg
+    · rw [e]
+      exact Nat.lt_add_one _
+    · exact Nat.lt_succ_of_lt h'
 
 end EpiMono
 
