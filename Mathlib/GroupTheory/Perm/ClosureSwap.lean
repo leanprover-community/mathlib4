@@ -111,7 +111,7 @@ theorem mem_closure_isSwap {S : Set (Perm α)} (hS : ∀ f ∈ S, f.IsSwap) {f :
     · rw [← orbit_eq_iff.mpr (hf b), h2]; apply hf
     · exact hf b
   · contrapose! hb
-    simp_rw [not_mem_compl_iff, mem_fixedBy, Perm.smul_def, Perm.mul_apply, swap_apply_def,
+    simp_rw [mem_fixedBy, Perm.smul_def, Perm.mul_apply, swap_apply_def,
       apply_eq_iff_eq]
     by_cases hb' : f b = b
     · rw [hb']; split_ifs with h <;> simp only [h]
