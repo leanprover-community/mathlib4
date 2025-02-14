@@ -121,6 +121,9 @@ instance wellFoundedLT_toType_lt (o : Ordinal) : WellFoundedLT o.toType :=
 
 namespace Ordinal
 
+noncomputable instance (o : Ordinal) : SuccOrder o.toType :=
+  SuccOrder.ofLinearWellFoundedLT o.toType
+
 /-! ### Basic properties of the order type -/
 
 /-- The order type of a well order is an ordinal. -/
