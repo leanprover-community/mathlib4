@@ -150,7 +150,7 @@ lemma integrable_norm_rpow_iff {f : α → β} {p : ℝ≥0∞}
 theorem Integrable.mono_measure {f : α → β} (h : Integrable f ν) (hμ : μ ≤ ν) : Integrable f μ :=
   ⟨h.aestronglyMeasurable.mono_measure hμ, h.hasFiniteIntegral.mono_measure hμ⟩
 
-theorem Integrable.of_measure_le_smul {μ' : Measure α} (c : ℝ≥0∞) (hc : c ≠ ∞) (hμ'_le : μ' ≤ c • μ)
+theorem Integrable.of_measure_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠ ∞) (hμ'_le : μ' ≤ c • μ)
     {f : α → β} (hf : Integrable f μ) : Integrable f μ' := by
   rw [← memℒp_one_iff_integrable] at hf ⊢
   exact hf.of_measure_le_smul hc hμ'_le
