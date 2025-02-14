@@ -68,7 +68,7 @@ lemma spanFinrank_eq_iInf (p : Submodule R M) :
     p.spanFinrank = ⨅ (s : {s : Set M // s.Finite ∧ span R s = p}), s.2.1.toFinset.card := by
   rw [spanFinrank, spanRank_eq_iInf, ENat.iInf_toNat]
 
-/-- A submodule's spanRank is not top if and only if it is finitely generated -/
+/-- A submodule's `spanRank` is not top if and only if it is finitely generated. -/
 @[simp]
 lemma spanRank_ne_top_iff_fg {p : Submodule R M} :
     p.spanRank ≠ ⊤ ↔ p.FG := by
