@@ -272,8 +272,6 @@ alias condexpIndL1_disjoint_union := condExpIndL1_disjoint_union
 
 end CondexpIndL1
 
--- Porting note: `G` is not automatically inferred in `condExpInd` in Lean 4;
--- to avoid repeatedly typing `(G := ...)` it is made explicit.
 variable (G)
 
 /-- Conditional expectation of the indicator of a set, as a linear map from `G` to L1. -/
@@ -375,11 +373,6 @@ theorem setIntegral_condExpInd (hs : MeasurableSet[m] s) (ht : MeasurableSet t) 
 
 @[deprecated (since := "2025-01-21")] alias setIntegral_condexpInd := setIntegral_condExpInd
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_condExpInd := setIntegral_condExpInd
-
-@[deprecated (since := "2025-01-21")] alias set_integral_condexpInd := set_integral_condExpInd
-
 theorem condExpInd_of_measurable (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) (c : G) :
     condExpInd G hm μ s c = indicatorConstLp 1 (hm s hs) hμs c := by
   ext1
@@ -410,8 +403,6 @@ section CondexpL1
 variable {m m0 : MeasurableSpace α} {μ : Measure α} {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
   {f g : α → F'} {s : Set α}
 
--- Porting note: `F'` is not automatically inferred in `condExpL1CLM` in Lean 4;
--- to avoid repeatedly typing `(F' := ...)` it is made explicit.
 variable (F')
 
 /-- Conditional expectation of a function as a linear map from `α →₁[μ] F'` to itself. -/
@@ -470,13 +461,6 @@ theorem setIntegral_condExpL1CLM_of_measure_ne_top (f : α →₁[μ] F') (hs : 
 @[deprecated (since := "2025-01-21")]
 alias setIntegral_condexpL1CLM_of_measure_ne_top := setIntegral_condExpL1CLM_of_measure_ne_top
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_condexpL1CLM_of_measure_ne_top :=
-  setIntegral_condExpL1CLM_of_measure_ne_top
-
-@[deprecated (since := "2025-01-21")]
-alias setIntegral_condexpL1CLM := set_integral_condexpL1CLM_of_measure_ne_top
-
 /-- The integral of the conditional expectation `condExpL1CLM` over an `m`-measurable set is equal
 to the integral of `f` on that set. See also `setIntegral_condExp`, the similar statement for
 `condExp`. -/
@@ -513,11 +497,6 @@ theorem setIntegral_condExpL1CLM (f : α →₁[μ] F') (hs : MeasurableSet[m] s
     rwa [← hs_eq] at h
   rw [h_eq_forall] at h_left
   exact tendsto_nhds_unique h_left h_right
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_condExpL1CLM := setIntegral_condExpL1CLM
-
-@[deprecated (since := "2025-01-21")] alias set_integral_condexpL1CLM := set_integral_condExpL1CLM
 
 theorem aestronglyMeasurable_condExpL1CLM (f : α →₁[μ] F') :
     AEStronglyMeasurable[m] (condExpL1CLM F' hm μ f) μ := by
@@ -643,11 +622,6 @@ theorem setIntegral_condExpL1 (hf : Integrable f μ) (hs : MeasurableSet[m] s) :
   exact setIntegral_congr_ae (hm s hs) (hf.coeFn_toL1.mono fun x hx _ => hx)
 
 @[deprecated (since := "2025-01-21")] alias setIntegral_condexpL1 := setIntegral_condExpL1
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_condExpL1 := setIntegral_condExpL1
-
-@[deprecated (since := "2025-01-21")] alias set_integral_condexpL1 := set_integral_condExpL1
 
 theorem condExpL1_add (hf : Integrable f μ) (hg : Integrable g μ) :
     condExpL1 hm μ (f + g) = condExpL1 hm μ f + condExpL1 hm μ g :=

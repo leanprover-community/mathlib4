@@ -600,11 +600,10 @@ protected theorem wellFoundedGT [WellFoundedGT β] (f : α ↪o β) : WellFounde
   @OrderEmbedding.wellFoundedLT αᵒᵈ _ _ _ _ f.dual
 
 /-- A version of `WithBot.map` for order embeddings. -/
-@[simps (config := .asFn)]
-protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β :=
-  { f.toEmbedding.optionMap with
-    toFun := WithBot.map f,
-    map_rel_iff' := @fun a b => WithBot.map_le_iff f f.map_rel_iff a b }
+@[simps! (config := .asFn)]
+protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β where
+  __ := f.toEmbedding.optionMap
+  map_rel_iff' := WithBot.map_le_iff f f.map_rel_iff
 
 /-- A version of `WithTop.map` for order embeddings. -/
 @[simps (config := .asFn)]
@@ -1038,6 +1037,15 @@ def funUnique (α β : Type*) [Unique α] [Preorder β] : (α → β) ≃o β wh
 theorem funUnique_symm_apply {α β : Type*} [Unique α] [Preorder β] :
     ((funUnique α β).symm : β → α → β) = Function.const α :=
   rfl
+
+/-- The order isomorphism `α ≃o β` when `α` and `β` are preordered types
+containing unique elements. -/
+@[simps!]
+noncomputable def ofUnique
+    (α β : Type*) [Unique α] [Unique β] [Preorder α] [Preorder β] :
+    α ≃o β where
+  toEquiv := Equiv.ofUnique α β
+  map_rel_iff' := by simp
 
 end OrderIso
 

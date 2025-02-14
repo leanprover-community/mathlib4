@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # Two lemmas about limit of `Π b ∈ s, f b` along

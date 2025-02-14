@@ -73,11 +73,11 @@ presheaf of types given by sending U : C to Hom_{A}(E, P U) is a sheaf of types.
 def IsSheaf (P : Cᵒᵖ ⥤ A) : Prop :=
   ∀ E : A, Presieve.IsSheaf J (P ⋙ coyoneda.obj (op E))
 
-attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike in
 /-- Condition that a presheaf with values in a concrete category is separated for
 a Grothendieck topology. -/
-def IsSeparated (P : Cᵒᵖ ⥤ A) [HasForget A] : Prop :=
-  ∀ (X : C) (S : Sieve X) (_ : S ∈ J X) (x y : P.obj (op X)),
+def IsSeparated (P : Cᵒᵖ ⥤ A) {FA : A → A → Type*} {CA : A → Type*}
+    [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA] : Prop :=
+  ∀ (X : C) (S : Sieve X) (_ : S ∈ J X) (x y : ToType (P.obj (op X))),
     (∀ (Y : C) (f : Y ⟶ X) (_ : S f), P.map f.op x = P.map f.op y) → x = y
 
 section LimitSheafCondition
