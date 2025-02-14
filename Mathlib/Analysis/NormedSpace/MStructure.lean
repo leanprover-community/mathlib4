@@ -349,7 +349,7 @@ lemma idemSnd_compl : (1 : AddMonoid.End (WithLp p (α × β))) - idemSnd = idem
   rw [← idemFst_add_idemSnd, add_sub_cancel_right]
 
 theorem prod_norm_eq_idemFst_sup_idemSnd (x : WithLp ∞ (α × β)) :
-    ‖x‖ = ‖idemFst x‖ ⊔ ‖idemSnd x‖ := by
+    ‖x‖ = max ‖idemFst x‖ ‖idemSnd x‖ := by
   rw [WithLp.prod_norm_eq_sup, ← WithLp.norm_equiv_symm_fst ∞ α β x.1,
     ← WithLp.norm_equiv_symm_snd ∞ α β x.2]
   rfl
