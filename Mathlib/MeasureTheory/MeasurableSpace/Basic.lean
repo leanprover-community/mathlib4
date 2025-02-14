@@ -425,6 +425,11 @@ theorem measurable_findGreatest {p : α → ℕ → Prop} [∀ x, DecidablePred 
   repeat' apply_rules [MeasurableSet.inter, MeasurableSet.const, MeasurableSet.iInter,
     MeasurableSet.compl, hN] <;> try intros
 
+@[simp, measurability]
+protected theorem MeasurableSet.disjointed {f : ℕ → Set α} (h : ∀ i, MeasurableSet (f i)) (n) :
+    MeasurableSet (disjointed f n) :=
+  disjointedRec (fun _ _ ht => MeasurableSet.diff ht <| h _) (h n)
+
 theorem measurable_find {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] (hp : ∀ x, ∃ N, p x N)
     (hm : ∀ k, MeasurableSet { x | p x k }) : Measurable fun x => Nat.find (hp x) := by
   refine measurable_to_nat fun x => ?_
