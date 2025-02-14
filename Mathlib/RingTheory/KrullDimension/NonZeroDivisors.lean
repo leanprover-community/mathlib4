@@ -5,6 +5,8 @@ Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.RingTheory.Polynomial.Quotient
+import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
+import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 
@@ -17,7 +19,9 @@ import Mathlib.RingTheory.Polynomial.Quotient
 - `ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial`: `dim R + #σ ≤ dim R[σ]`.
 -/
 
-variable {R : Type*} [CommRing R]
+open nonZeroDivisors
+
+variable {R S : Type*} [CommRing R] [CommRing S]
 
 lemma ringKrullDim_quotient (I : Ideal R) :
     ringKrullDim (R ⧸ I) = Order.krullDim (PrimeSpectrum.zeroLocus (R := R) I) := by
@@ -35,7 +39,7 @@ lemma ringKrullDim_quotient (I : Ideal R) :
   rw [ringKrullDim, Order.krullDim_eq_of_orderIso e']
 
 lemma ringKrullDim_quotient_succ_le_of_nonZeroDivisor
-    (r : R) (hr : r ∈ nonZeroDivisors R) :
+    {r : R} (hr : r ∈ R⁰) :
     ringKrullDim (R ⧸ Ideal.span {r}) + 1 ≤ ringKrullDim R := by
   by_cases hr' : Ideal.span {r} = ⊤
   · rw [hr', ringKrullDim_eq_bot_of_subsingleton]
@@ -58,11 +62,19 @@ lemma ringKrullDim_quotient_succ_le_of_nonZeroDivisor
   show (l.length + 1 : ℕ∞) ≤ ↑(0 + l.length + 1)
   simp
 
+/-- If `R →+* S` is surjective whose kernel contains a nonzerodivisor, then `dim S + 1 ≤ dim R`. -/
+lemma ringKrullDim_succ_le_of_surjective (f : R →+* S) (hf : Function.Surjective f)
+    {r : R} (hr : r ∈ R⁰) (hr' : f r = 0) : ringKrullDim S + 1 ≤ ringKrullDim R := by
+  refine le_trans ?_ (ringKrullDim_quotient_succ_le_of_nonZeroDivisor hr)
+  gcongr
+  exact ringKrullDim_le_of_surjective (Ideal.Quotient.lift _ f (RingHom.ker f
+    |>.span_singleton_le_iff_mem.mpr hr')) (Ideal.Quotient.lift_surjective_of_surjective _ _ hf)
+
 open Polynomial in
 lemma ringKrullDim_succ_le_ringKrullDim_polynomial :
-    ringKrullDim R + 1 ≤ ringKrullDim R[X] := by
-  convert ringKrullDim_quotient_succ_le_of_nonZeroDivisor (R := R[X]) X X_mem_nonzeroDivisors
-  convert ringKrullDim_eq_of_ringEquiv (quotientSpanXSubCAlgEquiv (0 : R)).toRingEquiv.symm <;> simp
+    ringKrullDim R + 1 ≤ ringKrullDim R[X] :=
+  ringKrullDim_succ_le_of_surjective constantCoeff (⟨C ·, coeff_C_zero⟩)
+    X_mem_nonzeroDivisors coeff_X_zero
 
 open MvPolynomial in
 @[simp]
@@ -107,3 +119,9 @@ lemma ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (σ : Type*) :
     trans n + 1
     · exact WithBot.coe_le_coe.mpr (by simp)
     · exact WithBot.le_add_self Order.bot_lt_krullDim.ne' _
+
+open PowerSeries in
+lemma ringKrullDim_succ_le_ringKrullDim_powerseries :
+    ringKrullDim R + 1 ≤ ringKrullDim (PowerSeries R) := by
+  refine ringKrullDim_succ_le_of_surjective (constantCoeff R) (⟨C R ·, rfl⟩)
+    MvPowerSeries.X_mem_nonzeroDivisors constantCoeff_X
