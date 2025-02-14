@@ -64,7 +64,7 @@ theorem polar_mem (s : Set E) (y : F) (hy : y ∈ B.polar s) : ∀ x ∈ s, ‖B
 theorem polar_eq_biInter_preimage (s : Set E) :
     B.polar s = ⋂ x ∈ s, ((B x) ⁻¹' Metric.closedBall (0 : 𝕜) 1) := by aesop
 
-theorem polar_closed (s : Set E) : IsClosed (X :=  WeakBilin B.flip) (B.polar s) := by
+theorem polar_isClosed (s : Set E) : IsClosed (X := WeakBilin B.flip) (B.polar s) := by
   rw [polar_preimage]
   exact isClosed_biInter
     (fun _ _ => IsClosed.preimage (WeakBilin.eval_continuous B.flip _) Metric.isClosed_ball)
