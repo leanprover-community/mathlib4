@@ -53,8 +53,7 @@ theorem odd_fermatNumber (n : ℕ) : Odd (fermatNumber n) :=
   (even_pow.mpr ⟨even_two, (pow_pos two_pos n).ne'⟩).add_one
 
 theorem prod_fermatNumber (n : ℕ) : ∏ k ∈ range n, fermatNumber k = fermatNumber n - 2 := by
-  induction' n with n hn
-  · rfl
+  induction n with | zero => rfl | succ n hn =>
   rw [prod_range_succ, hn, fermatNumber, fermatNumber, mul_comm,
     (show 2 ^ 2 ^ n + 1 - 2 = 2 ^ 2 ^ n - 1 by omega), ← sq_sub_sq]
   ring_nf
