@@ -25,7 +25,7 @@ lemma Sym2.mem_support_sym2_of_mul_ne_zero {f : α →₀ R} (p : Sym2 α) (hp :
   obtain ⟨a,b⟩ := p
   simp only [Finset.mem_sym2_iff, mem_iff, Finsupp.mem_support_iff, ne_eq, forall_eq_or_imp,
     forall_eq]
-  simp only [mul_sym2Mk, ne_eq] at hp
+  simp only [map_pair_eq, mul_mk, ne_eq] at hp
   aesop
 
 /--

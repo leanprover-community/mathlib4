@@ -60,9 +60,9 @@ open Finsupp in
 lemma polarSym2_map_hMul (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) (p : Sym2 ι) :
     (polarSym2 Q) (p.map (hMul l g)) = (Sym2.mul_finsupp l) p • ((polarSym2 Q) (p.map g)) := by
   obtain ⟨_,_⟩ := p
-  simp only [Sym2.mul_finsupp, coe_pointwise_module_smul, Sym2.map_pair_eq, polarSym2_sym2Mk,
-    polar_smul_right, polar_smul_left, onFinset_apply, Sym2.mul_sym2Mk, ← smul_assoc, smul_eq_mul,
-    mul_comm]
+  simp only [coe_pointwise_module_smul, Sym2.map_pair_eq, polarSym2_sym2Mk, polar_smul_right,
+    polar_smul_left, ← smul_assoc, smul_eq_mul, mul_comm, Sym2.mul_finsupp, onFinset_apply,
+    Sym2.mul_mk]
 
 lemma polarSym2_map_mul (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
     (polarSym2 Q) ∘ Sym2.map (Finsupp.hMul l g) =
