@@ -196,15 +196,16 @@ lemma proj_of_le (L : FiniteGaloisIntermediateField k K)
   rw [AlgEquiv.restrictNormal_commutes (proj (mk L') g) L]
   rfl
 
-lemma proj_adjoin_singleton_val [IsGalois k K] (g : limit (asProfiniteGaloisGroupFunctor k K)) (x : K)
-    (y : adjoin k {x}) (L : FiniteGaloisIntermediateField k K) (h : x ∈ L.toIntermediateField) :
+lemma proj_adjoin_singleton_val [IsGalois k K] (g : limit (asProfiniteGaloisGroupFunctor k K))
+    (x : K) (y : adjoin k {x}) (L : FiniteGaloisIntermediateField k K)
+    (h : x ∈ L.toIntermediateField) :
     (proj (adjoin k {x}) g y).val = (proj L g ⟨y, adjoin_simple_le_iff.mpr h y.2⟩).val :=
   proj_of_le _ g y _ _
 
 /--A function from `K` to `K` defined pointwise using a family of compatible elements of
   `Gal(L/k)` where `L` is a `FiniteGaloisIntermediateField`-/
-private noncomputable def toAlgEquivAux [IsGalois k K] (g : limit (asProfiniteGaloisGroupFunctor k K)) :
-    K → K :=
+private noncomputable def toAlgEquivAux [IsGalois k K]
+    (g : limit (asProfiniteGaloisGroupFunctor k K)) : K → K :=
   fun x ↦ (proj (adjoin k {x}) g ⟨x, subset_adjoin _ _ (by simp only [Set.mem_singleton_iff])⟩).val
 
 lemma toAlgEquivAux_eq_proj_of_mem [IsGalois k K] (g : limit (asProfiniteGaloisGroupFunctor k K))
