@@ -192,27 +192,28 @@ private noncomputable abbrev eqv1 :
     MvPolynomial (Fin (n + 1)) k ⧸ I.map (T f) := quotientEquivAlg
   ((I.map (T f)).map (finSuccEquiv k n)) (I.map (T f)) (finSuccEquiv k n).symm (by
   set g := (finSuccEquiv k n)
-  symm
   have : g.symm.toRingEquiv.toRingHom.comp g = RingHom.id _ :=
     g.toRingEquiv.symm_toRingHom_comp_toRingHom
   calc
-    _ = map (g.symm.toAlgHom.toRingHom.comp g) (map (T f) I) := by rw [← Ideal.map_map]; rfl
-    _ = map (RingHom.id _) (map (T f) I) := by congr
-    _ = Ideal.map ((RingHom.id _).comp <| T f) I := by rw [← Ideal.map_map]; rfl
-    _ = _ := by rw [id_comp]; rfl)
+    _ = Ideal.map ((RingHom.id _).comp <| T f) I := by rw [id_comp, Ideal.map_coe]
+    _ = (I.map (T f)).map (RingHom.id _)  := by simp only [← Ideal.map_map, Ideal.map_coe]
+    _ = (I.map (T f)).map (g.symm.toAlgHom.toRingHom.comp g) :=
+      congrFun (congrArg Ideal.map this.symm) (I.map (T f))
+    _ = _ := by simp [← Ideal.map_map, Ideal.map_coe])
 
 /- `eqv2` is the isomorphism from `k[X_0,...,X_n]/T(I)` into `k[X_0,...,X_n]/I`,
 induced by `T`. -/
 private noncomputable abbrev eqv2 :
     (MvPolynomial (Fin (n + 1)) k ⧸ I.map (T f)) ≃ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I
   := quotientEquivAlg (R₁ := k) (I.map (T f)) I (T f).symm (by
-  symm
   calc
-    _ = Ideal.map ((T f).symm.toRingEquiv.toRingHom.comp (T f)) I := by rw [← Ideal.map_map]; rfl
-    _ = _ := by
+    _ = I.map ((T f).symm.toRingEquiv.toRingHom.comp (T f)) := by
       have : (T f).symm.toRingEquiv.toRingHom.comp (T f) = RingHom.id _ :=
         RingEquiv.symm_toRingHom_comp_toRingHom _
-      rw [this, Ideal.map_id])
+      rw [this, Ideal.map_id]
+    _ = _ := by
+      rw [← Ideal.map_map, Ideal.map_coe, Ideal.map_coe]
+      exact congrArg _ rfl)
 
 /- `hom2` is the composition of maps above, from `k[X_0,...X_(n-1)]` to `k[X_0,...X_n]/I`. -/
 private noncomputable def hom2 : MvPolynomial (Fin n) k →ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I :=
