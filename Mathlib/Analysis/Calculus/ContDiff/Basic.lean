@@ -1498,7 +1498,8 @@ theorem iteratedFDeriv_sum {ι : Type*} {f : ι → E → F} {u : Finset ι} {i 
     (h : ∀ j ∈ u, ContDiff 𝕜 i (f j)) :
     iteratedFDeriv 𝕜 i (∑ j ∈ u, f j ·) = ∑ j ∈ u, iteratedFDeriv 𝕜 i (f j) :=
   funext fun x ↦ by simpa [iteratedFDerivWithin_univ] using
-    iteratedFDerivWithin_sum_apply uniqueDiffOn_univ trivial fun j hj ↦ (h j hj).contDiffWithinAt
+    iteratedFDerivWithin_sum_apply uniqueDiffOn_univ (mem_univ x)
+      fun j hj ↦ (h j hj).contDiffWithinAt
 
 /-! ### Product of two functions -/
 
