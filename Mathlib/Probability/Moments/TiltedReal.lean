@@ -109,7 +109,7 @@ lemma memℒp_tiltedReal (ht : t ∈ interior (integrableExpSet X μ)) (p : ℝ�
   · simp only [hp, ENNReal.coe_zero, memℒp_zero_iff_aestronglyMeasurable]
     exact hX.aestronglyMeasurable.mono_ac (tiltedReal_absolutelyContinuous _ _ _)
   refine ⟨hX.aestronglyMeasurable.mono_ac (tiltedReal_absolutelyContinuous _ _ _), ?_⟩
-  rw [eLpNorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top]
+  rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top]
   rotate_left
   · simp [hp]
   · simp
@@ -122,8 +122,8 @@ lemma memℒp_tiltedReal (ht : t ∈ interior (integrableExpSet X μ)) (p : ℝ�
 
 lemma variance_tiltedReal (ht : t ∈ interior (integrableExpSet X μ)) :
     variance X (μ.tiltedReal X t) = iteratedDeriv 2 (cgf X μ) t := by
-  rw [Memℒp.variance_eq]
-  swap; · exact memℒp_tiltedReal ht 2
+  rw [variance_eq_integral]
+  swap; · exact (memℒp_tiltedReal ht 1).aestronglyMeasurable.aemeasurable
   rw [integral_tiltedReal_self ht, iteratedDeriv_two_cgf_eq_integral ht, integral_tiltedReal_mgf,
     ← integral_div]
   simp only [Pi.pow_apply, Pi.sub_apply, smul_eq_mul]
