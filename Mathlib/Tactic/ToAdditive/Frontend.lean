@@ -788,7 +788,7 @@ where /-- Implementation of `applyReplacementFun`. -/
             (additiveTest env b gAllArgs[relevantArgId]!).isNone then
             -- TODO: warn user if permutation is trivial?
             -- this is panicking?
-            dbg_trace "applyReplacementFun': {nm} {gAllArgs} {reorder}"
+            -- dbg_trace "applyReplacementFun': {nm} {gAllArgs} {reorder}"
             gAllArgs := gAllArgs.permute! reorder
             trace[to_additive_detail] "applyReplacementFun: reordering the arguments of {nm}: {gAllArgs} using the cyclic permutations {reorder}"
           /- Do not replace numerals in specific types. -/
@@ -949,16 +949,22 @@ def reorderForall (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr :=
   if reorder == [] then
     return src
   forallTelescope src fun xs e => do
-    dbg_trace "reorderForall: {src} {xs} {reorder}"
-    mkForallFVars (xs.permute! reorder) e
+    if !xs.isEmpty then
+      mkLambdaFVars (xs.permute! reorder) e
+    else
+      dbg_trace "reorderForall tried to reorder an empty list: {src} {xs} {reorder}"
+      mkLambdaFVars xs e
 
 /-- Reorder lambda-binders. See doc of `reorderAttr` for the interpretation of the argument -/
 def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr := do
   if reorder == [] then
     return src
   lambdaTelescope src fun xs e => do
-    dbg_trace "reorderLambda: {src} {xs} {reorder}"
-    mkLambdaFVars (xs.permute! reorder) e
+    if !xs.isEmpty then
+      mkLambdaFVars (xs.permute! reorder) e
+    else
+      dbg_trace "reorderLambda tried to reorder an empty list: {src} {xs} {reorder}"
+      mkLambdaFVars xs e
 
 /-- Run applyReplacementFun on the given `srcDecl` to make a new declaration with name `tgt` -/
 def updateDecl (b : BundledExtensions)
