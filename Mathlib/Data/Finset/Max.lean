@@ -5,13 +5,12 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Data.Finset.Sort
 
 /-!
 # Maximum and minimum of finite sets
 -/
 
-assert_not_exists OrderedCommMonoid MonoidWithZero
+assert_not_exists Monoid OrderedCommMonoid MonoidWithZero
 
 open Function Multiset OrderDual
 
@@ -550,73 +549,5 @@ theorem isGLB_mem [LinearOrder α] {i : α} (s : Finset α) (his : IsGLB (s : Se
 theorem isLUB_mem [LinearOrder α] {i : α} (s : Finset α) (his : IsLUB (s : Set α) i)
     (hs : s.Nonempty) : i ∈ s :=
   @isGLB_mem αᵒᵈ _ i s his hs
-
-section SortLinearOrder
-
-variable [LinearOrder α]
-
-theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < (s.sort (· ≤ ·)).length) (H : s.Nonempty) :
-    (s.sort (· ≤ ·)).get ⟨0, h⟩ = s.min' H := by
-  let l := s.sort (· ≤ ·)
-  apply le_antisymm
-  · have : s.min' H ∈ l := (Finset.mem_sort (α := α) (· ≤ ·)).mpr (s.min'_mem H)
-    obtain ⟨i, hi⟩ : ∃ i, l.get i = s.min' H := List.mem_iff_get.1 this
-    rw [← hi]
-    exact (s.sort_sorted (· ≤ ·)).rel_get_of_le (Nat.zero_le i)
-  · have : l.get ⟨0, h⟩ ∈ s := (Finset.mem_sort (α := α) (· ≤ ·)).1 (List.get_mem l _)
-    exact s.min'_le _ this
-
-theorem sorted_zero_eq_min' {s : Finset α} {h : 0 < (s.sort (· ≤ ·)).length} :
-    (s.sort (· ≤ ·))[0] = s.min' (card_pos.1 <| by rwa [length_sort] at h) :=
-  sorted_zero_eq_min'_aux _ _ _
-
-theorem min'_eq_sorted_zero {s : Finset α} {h : s.Nonempty} :
-    s.min' h = (s.sort (· ≤ ·))[0]'(by rw [length_sort]; exact card_pos.2 h) :=
-  (sorted_zero_eq_min'_aux _ _ _).symm
-
-theorem sorted_last_eq_max'_aux (s : Finset α)
-    (h : (s.sort (· ≤ ·)).length - 1 < (s.sort (· ≤ ·)).length) (H : s.Nonempty) :
-    (s.sort (· ≤ ·))[(s.sort (· ≤ ·)).length - 1] = s.max' H := by
-  let l := s.sort (· ≤ ·)
-  apply le_antisymm
-  · have : l.get ⟨(s.sort (· ≤ ·)).length - 1, h⟩ ∈ s :=
-      (Finset.mem_sort (α := α) (· ≤ ·)).1 (List.get_mem l _)
-    exact s.le_max' _ this
-  · have : s.max' H ∈ l := (Finset.mem_sort (α := α) (· ≤ ·)).mpr (s.max'_mem H)
-    obtain ⟨i, hi⟩ : ∃ i, l.get i = s.max' H := List.mem_iff_get.1 this
-    rw [← hi]
-    exact (s.sort_sorted (· ≤ ·)).rel_get_of_le (Nat.le_sub_one_of_lt i.prop)
-
-theorem sorted_last_eq_max' {s : Finset α}
-    {h : (s.sort (· ≤ ·)).length - 1 < (s.sort (· ≤ ·)).length} :
-    (s.sort (· ≤ ·))[(s.sort (· ≤ ·)).length - 1] =
-      s.max' (by rw [length_sort] at h; exact card_pos.1 (lt_of_le_of_lt bot_le h)) :=
-  sorted_last_eq_max'_aux _ h _
-
-theorem max'_eq_sorted_last {s : Finset α} {h : s.Nonempty} :
-    s.max' h =
-      (s.sort (· ≤ ·))[(s.sort (· ≤ ·)).length - 1]'
-        (by simpa using Nat.sub_lt (card_pos.mpr h) Nat.zero_lt_one) :=
-  (sorted_last_eq_max'_aux _ (by simpa using Nat.sub_lt (card_pos.mpr h) Nat.zero_lt_one) _).symm
-
-/-- The bijection `orderEmbOfFin s h` sends `0` to the minimum of `s`. -/
-theorem orderEmbOfFin_zero {s : Finset α} {k : ℕ} (h : s.card = k) (hz : 0 < k) :
-    orderEmbOfFin s h ⟨0, hz⟩ = s.min' (card_pos.mp (h.symm ▸ hz)) := by
-  simp only [orderEmbOfFin_apply, Fin.getElem_fin, sorted_zero_eq_min']
-
-/-- The bijection `orderEmbOfFin s h` sends `k-1` to the maximum of `s`. -/
-theorem orderEmbOfFin_last {s : Finset α} {k : ℕ} (h : s.card = k) (hz : 0 < k) :
-    orderEmbOfFin s h ⟨k - 1, Nat.sub_lt hz (Nat.succ_pos 0)⟩ =
-      s.max' (card_pos.mp (h.symm ▸ hz)) := by
-  simp [orderEmbOfFin_apply, max'_eq_sorted_last, h]
-
-/-- `orderEmbOfFin {a} h` sends any argument to `a`. -/
-@[simp]
-theorem orderEmbOfFin_singleton (a : α) (i : Fin 1) :
-    orderEmbOfFin {a} (card_singleton a) i = a := by
-  rw [Subsingleton.elim i ⟨0, Nat.zero_lt_one⟩, orderEmbOfFin_zero _ Nat.zero_lt_one,
-    min'_singleton]
-
-end SortLinearOrder
 
 end Finset
