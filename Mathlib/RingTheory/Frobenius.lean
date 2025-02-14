@@ -24,28 +24,28 @@ there is a finite group `G` acting on a ring `S`, and `R` is the fixed subring o
 Let `S/R` be an extension of rings, `Q` be a prime of `S`,
 and `P := R ∩ Q` with finite residue field of cardinality `q`.
 
-- `AlgHom.IsArithFrobAt`: We say that a `φ : S →ₐ[R] S` is the (arithmetic) frobenius at `Q`
+- `AlgHom.IsArithFrobAt`: We say that a `φ : S →ₐ[R] S` is an (arithmetic) Frobenius at `Q`
   if `φ x ≡ x ^ q (mod Q)` for all `x : S`.
 - `AlgHom.IsArithFrobAt.apply_of_pow_eq_one`:
-  Suppose `S` is a domain and `φ` is a frobenius at `Q`,
+  Suppose `S` is a domain and `φ` is a Frobenius at `Q`,
   then `φ ζ = ζ ^ q` for any `m`-th root of unity `ζ` with `¬ q ∣ m`.
 - `AlgHom.IsArithFrobAt.eq_of_isUnramifiedAt`:
   Suppose `S` is noetherian, `Q` contains all zero-divisors, and the extension is unramified at `Q`.
-  Then the frobenius is unique (if exists).
+  Then the Frobenius is unique (if exists).
 
 Let `G` be a finite group acting on a ring `S`, and `R` is the fixed subring of `S`.
 
-- `IsArithFrobAt`: We say that a `σ : G` is the (arithmetic) frobenius at `Q`
+- `IsArithFrobAt`: We say that a `σ : G` is an (arithmetic) Frobenius at `Q`
   if `σ • x ≡ x ^ q (mod Q)` for all `x : S`.
 - `IsArithFrobAt.mul_inv_mem_inertia`:
-  Two frobenius elements at `Q` differ by an element in the inertia subgroup of `Q`.
-- `IsArithFrobAt.conj`: If `σ` is a frobenius at `Q`, then `τστ⁻¹` is the frobenius at `σ • Q`.
+  Two Frobenius elements at `Q` differ by an element in the inertia subgroup of `Q`.
+- `IsArithFrobAt.conj`: If `σ` is a Frobenius at `Q`, then `τστ⁻¹` is a Frobenius at `σ • Q`.
 - `IsArithFrobAt.exists_of_isInvariant`: Frobenius element exists.
 -/
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
-/-- `φ : S →ₐ[R] S` is the (arithmetic) frobenius at `Q` if
+/-- `φ : S →ₐ[R] S` is an (arithmetic) Frobenius at `Q` if
 `φ x ≡ x ^ #(R/p) (mod Q)` for all `x : S` (`AlgHom.IsArithFrobAt`). -/
 def AlgHom.IsArithFrobAt (φ : S →ₐ[R] S) (Q : Ideal S) : Prop :=
   ∀ x, φ x - x ^ Nat.card (R ⧸ Q.under R) ∈ Q
@@ -76,7 +76,7 @@ lemma le_comap : Q ≤ Q.comap φ := by
   simp_all only [Ideal.mem_comap, ← Ideal.Quotient.eq_zero_iff_mem (I := Q), H.mk_apply,
     zero_pow_eq, ite_eq_right_iff, H.card_pos.ne', false_implies]
 
-/-- The frobenius element at `Q` restricts to the frobenius map on `S ⧸ Q`. -/
+/-- A Frobenius element at `Q` restricts to the Frobenius map on `S ⧸ Q`. -/
 def restrict : S ⧸ Q →ₐ[R ⧸ Q.under R] S ⧸ Q where
   toRingHom := Ideal.quotientMap Q φ H.le_comap
   commutes' x := by
@@ -101,7 +101,7 @@ lemma comap_eq [Q.IsPrime] : Q.comap φ = Q := by
   rwa [← Ideal.Quotient.eq_zero_iff_mem, ← H.restrict_injective.eq_iff, map_zero, restrict_mk,
     Ideal.Quotient.eq_zero_iff_mem, ← Ideal.mem_comap]
 
-/-- Suppose `S` is a domain, and `φ : S →ₐ[R] S` is the frobenius at `Q : Ideal S`.
+/-- Suppose `S` is a domain, and `φ : S →ₐ[R] S` is a Frobenius at `Q : Ideal S`.
 Let `ζ` be a `m`-th root of unity with `¬ Q ∣ m`, then `φ` sends `ζ` to `ζ ^ q`. -/
 lemma apply_of_pow_eq_one [IsDomain S] {ζ : S} {m : ℕ} (hζ : ζ ^ m = 1) (hk' : ↑m ∉ Q) :
     φ ζ = ζ ^ Nat.card (R ⧸ Q.under R) := by
@@ -125,7 +125,7 @@ lemma apply_of_pow_eq_one [IsDomain S] {ζ : S} {m : ℕ} (hζ : ζ ^ m = 1) (hk
   rw [one_mul, ← pow_add, tsub_add_cancel_of_le (by linarith), pow_add, hζ.1, mul_one] at h₂
   rw [h₂, e]
 
-/-- The frobenius element at `Q` restricts an automorphism of `S_Q`. -/
+/-- A Frobenius element at `Q` restricts to an automorphism of `S_Q`. -/
 noncomputable
 def localize [Q.IsPrime] : Localization.AtPrime Q →ₐ[R] Localization.AtPrime Q where
   toRingHom := Localization.localRingHom _ _ φ H.comap_eq.symm
@@ -156,7 +156,7 @@ lemma isArithFrobAt_localize [Q.IsPrime] : H.localize.IsArithFrobAt (maximalIdea
   simp [H.mk_apply]
 
 /-- Suppose `S` is noetherian and `Q` is a prime of `S` containing all zero divisors.
-If `S/R` is unramified at `Q`, then the frobenius `φ : S →ₐ[R] S` over `Q` is unique. -/
+If `S/R` is unramified at `Q`, then the Frobenius `φ : S →ₐ[R] S` over `Q` is unique. -/
 lemma eq_of_isUnramifiedAt
     (H' : ψ.IsArithFrobAt Q) [Q.IsPrime] (hQ : Q.primeCompl ≤ S⁰)
     [Algebra.IsUnramifiedAt R Q] [IsNoetherianRing S] : φ = ψ := by
@@ -176,7 +176,7 @@ end AlgHom.IsArithFrobAt
 variable (R) in
 /--
 Suppose `S` is an `R` algebra, `M` is a monoid acting on `S` whose action is trivial on `R`
-`σ : M` is the (arithmetic) frobenius at an ideal `Q` of `S` if `σ • x ≡ x ^ q (mod Q)` for all `x`.
+`σ : M` is an (arithmetic) Frobenius at an ideal `Q` of `S` if `σ • x ≡ x ^ q (mod Q)` for all `x`.
 -/
 abbrev IsArithFrobAt {M : Type*} [Monoid M] [MulSemiringAction M S] [SMulCommClass M R S]
   (σ : M) (Q : Ideal S) : Prop :=
@@ -209,7 +209,7 @@ variable (R G Q) in
 attribute [local instance] Ideal.Quotient.field in
 /-- Let `G` be a finite group acting on `S`, and `R` be the fixed subring.
 If `Q` is a prime of `S` with finite residue field,
-then there exists a frobenius element `σ : G` at `Q`. -/
+then there exists a Frobenius element `σ : G` at `Q`. -/
 lemma exists_of_isInvariant [Q.IsPrime] [Finite (S ⧸ Q)] : ∃ σ : G, IsArithFrobAt R σ Q := by
   let P := Q.under R
   have := Algebra.IsInvariant.isIntegral R S G
@@ -247,8 +247,8 @@ lemma exists_primesOver_isConj (P : Ideal R)
 variable (R G Q)
 
 /-- Let `G` be a finite group acting on `S`, `R` be the fixed subring, and `Q` be a prime of `S`
-with finite residue field. This is an arbitrary choice of a frobenius over `Q`. It is chosen so that
-the frobenius elements of `Q₁` and `Q₂` are conjucate if they lie over the same prime. -/
+with finite residue field. This is an arbitrary choice of a Frobenius over `Q`. It is chosen so that
+the Frobenius elements of `Q₁` and `Q₂` are conjugate if they lie over the same prime. -/
 noncomputable
 def _root_.arithFrobAt [Q.IsPrime] [Finite (S ⧸ Q)] : G :=
   (exists_primesOver_isConj S G (Q.under R)
