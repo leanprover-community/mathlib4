@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.CategoryTheory.Monoidal.Category
 
 /-!
-# The pointwise monoidal strucutre on the product of families of monoidal categories
+# The pointwise monoidal structure on the product of families of monoidal categories
 
 Given a family of monoidal categories `C i`, we define a monoidal structure on
 `Π i, C i` where the tensor product is defined pointwise.
@@ -26,8 +26,8 @@ universe w₁ v₁ u₁
 variable {I : Type w₁} (C : I → Type u₁) [∀ i, Category.{v₁} (C i)]
 [∀ i, MonoidalCategory (C i)]
 
-/-- `Pi.monoidal C` equipps the product of an indexed family of categories with
-a pointwise monoidal structure. -/
+/-- `Pi.monoidal C` equips the product of an indexed family of categories with
+the pointwise monoidal structure. -/
 @[simps]
 instance monoidal : MonoidalCategory.{max w₁ v₁} (∀ i, C i) where
   tensorObj X Y := fun i ↦ X i ⊗ Y i
@@ -39,15 +39,6 @@ instance monoidal : MonoidalCategory.{max w₁ v₁} (∀ i, C i) where
   leftUnitor X := isoMk (fun i ↦ λ_ (X i))
   rightUnitor X := isoMk (fun i ↦ ρ_ (X i))
   tensorHom_def _ _ := by ext i; simp only [tensorHom, tensorHom_def, comp_apply]
-  tensor_id _ _ := by ext i; aesop
-  tensor_comp _ _ _ _ := by ext i; aesop
-  whiskerLeft_id _ _ := by ext i; aesop
-  id_whiskerRight _ _ := by ext i; aesop
-  associator_naturality _ _ _ := by ext i; aesop
-  leftUnitor_naturality _ := by ext i; aesop
-  rightUnitor_naturality _ := by ext i; aesop
-  pentagon _ _ _ _ := by ext i; aesop
-  triangle _ _ := by ext i; aesop
 
 end Pi
 
