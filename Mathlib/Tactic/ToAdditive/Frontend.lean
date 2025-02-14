@@ -950,10 +950,10 @@ def reorderForall (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr :=
     return src
   forallTelescope src fun xs e => do
     if !xs.isEmpty then
-      mkLambdaFVars (xs.permute! reorder) e
+      mkForallFVars (xs.permute! reorder) e
     else
       dbg_trace "reorderForall tried to reorder an empty list: {src} {xs} {reorder}"
-      mkLambdaFVars xs e
+      mkForallFVars xs e
 
 /-- Reorder lambda-binders. See doc of `reorderAttr` for the interpretation of the argument -/
 def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr := do
