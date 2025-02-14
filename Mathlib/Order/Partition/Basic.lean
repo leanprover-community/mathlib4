@@ -28,7 +28,7 @@ where `s` is the set of all `x` for which `r x x`.
 * Give API lemmas for the specialization to the `Set` case.
 
 -/
-variable {α : Type*} {s x y z : α}
+variable {α : Type*} {s x y : α}
 
 open Set
 
@@ -38,7 +38,7 @@ structure Partition [CompleteLattice α] (s : α) where
   /-- The collection of parts-/
   parts : Set α
   /-- The parts are `sSupIndep`-/
-  indep : sSupIndep parts
+  sSupIndep' : sSupIndep parts
   /-- The bottom element is not a part-/
   bot_not_mem' : ⊥ ∉ parts
   /-- The supremum of all parts is `s`-/
@@ -50,21 +50,26 @@ section Basic
 
 variable [CompleteLattice α] {P : Partition s}
 
-instance {α : Type*} [CompleteLattice α] {s : α} : SetLike (Partition s) α where
+instance {s : α} : SetLike (Partition s) α where
   coe := Partition.parts
   coe_injective' p p' h := by cases p; cases p'; simpa using h
 
-@[simp] lemma coe_parts : (P.parts : Set α) = P := rfl
+/-- See Note [custom simps projection]. -/
+def Simps.coe {s : α} (P : Partition s) : Set α := P
+
+initialize_simps_projections Partition (parts → coe, as_prefix coe)
+
+@[simp] lemma coe_parts : P.parts = P := rfl
 
 @[ext] lemma ext {P Q : Partition s} (hP : ∀ x, x ∈ P ↔ x ∈ Q) : P = Q :=
   SetLike.ext hP
 
 lemma disjoint (hx : x ∈ P) (hy : y ∈ P) (hxy : x ≠ y) :
     Disjoint x y :=
-  P.indep.pairwiseDisjoint hx hy hxy
+  P.sSupIndep'.pairwiseDisjoint hx hy hxy
 
 lemma pairwiseDisjoint : Set.PairwiseDisjoint (P : Set α) id :=
-  P.indep.pairwiseDisjoint
+  P.sSupIndep'.pairwiseDisjoint
 
 @[simp]
 lemma sSup_eq (P : Partition s) : sSup P = s :=
@@ -85,6 +90,10 @@ lemma parts_nonempty (P : Partition s) (hs : s ≠ ⊥) : (P : Set α).Nonempty 
 lemma bot_not_mem (P : Partition s) : ⊥ ∉ P :=
   P.bot_not_mem'
 
+@[simp]
+lemma sSupIndep (P : Partition s) : sSupIndep (P : Set α) :=
+  P.sSupIndep'
+
 lemma ne_bot_of_mem (hx : x ∈ P) : x ≠ ⊥ :=
   fun h ↦ P.bot_not_mem <| h ▸ hx
 
@@ -95,7 +104,7 @@ lemma bot_lt_of_mem (hx : x ∈ P) : ⊥ < x :=
 @[simps]
 protected def copy {t : α} (P : Partition s) (hst : s = t) : Partition t where
   parts := P.parts
-  indep := P.indep
+  sSupIndep' := P.sSupIndep
   bot_not_mem' := P.bot_not_mem
   sSup_eq' := hst ▸ P.sSup_eq
 
@@ -112,15 +121,11 @@ def partscopyEquiv {t : α} (P : Partition s) (hst : s = t) : ↥(P.copy hst) �
 
 /-- A constructor for `Partition s` that removes `⊥` from the set of parts. -/
 @[simps]
-def removeBot (P : Set α) (indep : sSupIndep P) (sSup_eq : sSup P = s) : Partition s where
+def removeBot (P : Set α) (indep : _root_.sSupIndep P) (sSup_eq : sSup P = s) : Partition s where
   parts := P \ {⊥}
-  indep := indep.mono diff_subset
+  sSupIndep' := indep.mono diff_subset
   bot_not_mem' := by simp
   sSup_eq' := by simp [← sSup_eq]
-
-@[simp]
-lemma coe_removeBot_eq (P : Set α) (indep) (sSup_eq : sSup P = s) :
-    (removeBot P indep sSup_eq : Set α) = P \ {⊥} := rfl
 
 end Basic
 
