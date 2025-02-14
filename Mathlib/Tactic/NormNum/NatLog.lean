@@ -15,27 +15,27 @@ namespace Mathlib.Meta.NormNum
 
 open Qq Lean Elab.Tactic
 
-lemma nat_log_zero (n : Nat) : Nat.log 0 n = 0 := by simp
-lemma nat_log_one (n : Nat) : Nat.log 1 n = 0 := by simp
+private lemma nat_log_zero (n : Nat) : Nat.log 0 n = 0 := Nat.log_zero_left n
+private lemma nat_log_one (n : Nat) : Nat.log 1 n = 0 := Nat.log_one_left n
 
-lemma nat_log_helper0 (b n : Nat) (hl : Nat.blt n b = true) :
+private lemma nat_log_helper0 (b n : Nat) (hl : Nat.blt n b = true) :
     Nat.log b n = 0 := by
   rw [Nat.blt_eq] at hl
   simp [hl]
 
-lemma nat_log_helper (b n k : Nat)
+private lemma nat_log_helper (b n k : Nat)
     (hl : Nat.ble (b ^ k) n = true) (hh : Nat.blt n (b ^ (k + 1)) = true) :
     Nat.log b n = k :=
   Nat.log_eq_of_pow_le_of_lt_pow (Nat.le_of_ble_eq_true hl) (Nat.le_of_ble_eq_true hh)
 
-theorem isNat_log : {b nb n nn k : ℕ} → IsNat b nb → IsNat n nn →
+private theorem isNat_log : {b nb n nn k : ℕ} → IsNat b nb → IsNat n nn →
     Nat.log nb nn = k → IsNat (Nat.log b n) k
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨rfl⟩
 
 /--
 Given the natural number literals `eb` and `en`, returns `Nat.log eb en`
 as a natural number literal and an equality proof.
-Panics if `ex` isn't a natural number literal.
+Panics if `ex` or `en` aren't natural number literals.
 -/
 def proveNatLog (eb en : Q(ℕ)) : (ek : Q(ℕ)) × Q(Nat.log $eb $en = $ek) :=
   match eb.natLit!, en.natLit! with
@@ -43,13 +43,13 @@ def proveNatLog (eb en : Q(ℕ)) : (ek : Q(ℕ)) × Q(Nat.log $eb $en = $ek) :=
   | 1, _ => show (ek : Q(ℕ)) × Q(Nat.log 1 $en = $ek) from ⟨mkRawNatLit 0, q(nat_log_one $en)⟩
   | b, n =>
     if n < b then
-      have hh : Q(Nat.blt $en $eb = true):= (q(Eq.refl true) : Expr)
+      have hh : Q(Nat.blt $en $eb = true) := (q(Eq.refl true) : Expr)
       ⟨mkRawNatLit 0, q(nat_log_helper0 $eb $en $hh)⟩
     else
       let k := Nat.log b n
       have ek : Q(ℕ) := mkRawNatLit k
       have hl : Q(Nat.ble ($eb ^ $ek) $en = true) := (q(Eq.refl true) : Expr)
-      have hh : Q(Nat.blt $en ($eb ^ ($ek + 1)) = true):= (q(Eq.refl true) : Expr)
+      have hh : Q(Nat.blt $en ($eb ^ ($ek + 1)) = true) := (q(Eq.refl true) : Expr)
       ⟨ek, q(nat_log_helper $eb $en $ek $hl $hh)⟩
 
 /--
