@@ -144,8 +144,6 @@ theorem val_eq_val (a b : Fin n) : (a : ℕ) = b ↔ a = b :=
 theorem ne_iff_vne (a b : Fin n) : a ≠ b ↔ a.1 ≠ b.1 :=
   Fin.ext_iff.not
 
--- Porting note: I'm not sure if this comment still applies.
--- built-in reduction doesn't always work
 @[simp, nolint simpNF]
 theorem mk_eq_mk {a h a' h'} : @mk n a h = @mk n a' h' ↔ a = a' :=
   Fin.ext_iff
@@ -371,7 +369,6 @@ theorem val_add_eq_ite {n : ℕ} (a b : Fin n) :
     (↑(a + b) : ℕ) = if n ≤ a + b then a + b - n else a + b := by
   rw [Fin.val_add, Nat.add_mod_eq_ite, Nat.mod_eq_of_lt (show ↑a < n from a.2),
     Nat.mod_eq_of_lt (show ↑b < n from b.2)]
---- Porting note: syntactically the same as the above
 
 theorem val_add_eq_of_add_lt {n : ℕ} {a b : Fin n} (huv : a.val + b.val < n) :
     (a + b).val = a.val + b.val := by
@@ -398,12 +395,8 @@ theorem val_cast_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : (a : Fin n).
 
 /-- If `n` is non-zero, converting the value of a `Fin n` to `Fin n` results
 in the same value. -/
-@[simp] theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a :=
+@[simp, norm_cast] theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a :=
   Fin.ext <| val_cast_of_lt a.isLt
-
--- Porting note: this is syntactically the same as `val_cast_of_lt`
-
--- Porting note: this is syntactically the same as `cast_val_of_lt`
 
 -- This is a special case of `CharP.cast_eq_zero` that doesn't require typeclass search
 @[simp high] lemma natCast_self (n : ℕ) [NeZero n] : (n : Fin n) = 0 := by ext; simp
@@ -635,8 +628,11 @@ theorem succ_le_or_le_castSucc (p : Fin (n + 1)) (i : Fin n) : succ i ≤ p ∨ 
   rw [le_castSucc_iff, ← castSucc_lt_iff_succ_le]
   exact p.castSucc_lt_or_lt_succ i
 
-theorem exists_castSucc_eq_of_ne_last {x : Fin (n + 1)} (h : x ≠ (last _)) :
+theorem eq_castSucc_of_ne_last {x : Fin (n + 1)} (h : x ≠ (last _)) :
     ∃ y, Fin.castSucc y = x := exists_castSucc_eq.mpr h
+
+@[deprecated (since := "2025-02-06")]
+alias exists_castSucc_eq_of_ne_last := eq_castSucc_of_ne_last
 
 theorem forall_fin_succ' {P : Fin (n + 1) → Prop} :
     (∀ i, P i) ↔ (∀ i : Fin n, P i.castSucc) ∧ P (.last _) :=
