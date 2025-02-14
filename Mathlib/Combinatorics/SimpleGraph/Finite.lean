@@ -249,11 +249,13 @@ theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype G.edgeSet] :
   induction e
   simp [mk'_mem_incidenceSet_iff]
 
-variable {G v} {H: SimpleGraph V} [Fintype (H.neighborSet v)]
+variable {G v}
+
 /-- If G ≤ H then d_G(v) ≤ d_H(v) for any vertex v -/
-lemma degree_le_of_le (hle : G ≤ H) : G.degree v ≤ H.degree v:=by
-  simp only [← card_neighborSet_eq_degree]
-  apply Set.card_le_card fun v hv  => by exact hle hv
+lemma degree_le_of_le {H : SimpleGraph V} [Fintype (H.neighborSet v)] (hle : G ≤ H) :
+    G.degree v ≤ H.degree v := by
+  simp_rw [← card_neighborSet_eq_degree]
+  exact Set.card_le_card fun v hv  => hle hv
 
 end FiniteAt
 
@@ -343,19 +345,19 @@ theorem le_minDegree_of_forall_le_degree [DecidableRel G.Adj] [Nonempty V] (k : 
   rw [hv]
   apply h
 
-/-- If there are no vertices then the minDegree is zero -/
+/-- If there are no vertices then the `minDegree` is zero -/
 @[simp]
-lemma minDegree_eq_zero [DecidableRel G.Adj] [IsEmpty V] : G.minDegree = 0:= by
-  rw [minDegree,WithTop.untop'_eq_self_iff]
-  right
+lemma minDegree_of_isEmpty [DecidableRel G.Adj] [IsEmpty V] : G.minDegree = 0:= by
+  rw [minDegree, WithTop.untop'_eq_self_iff]
   simp
 
-/--If G is a subgraph of H then δ(G) ≤ δ(H) -/
+variable {G} in
+/--If `G` is a subgraph of `H` then `δ(G) ≤ δ(H)`. -/
 lemma minDegree_le_minDegree {H : SimpleGraph V} [DecidableRel G.Adj] [DecidableRel H.Adj]
-    (hle : G ≤ H) : G.minDegree  ≤ H.minDegree := by
+    (hle : G ≤ H) : G.minDegree ≤ H.minDegree := by
   by_cases hne : Nonempty V
-  · apply le_minDegree_of_forall_le_degree;
-    intro v; apply (G.minDegree_le_degree v).trans (G.degree_le_of_le hle)
+  · apply le_minDegree_of_forall_le_degree
+    exact fun v ↦ (G.minDegree_le_degree v).trans (G.degree_le_of_le hle)
   · rw [not_nonempty_iff] at hne
     simp
 
