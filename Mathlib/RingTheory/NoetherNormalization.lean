@@ -20,7 +20,7 @@ Suppose `f` is a nonzero polynomial in `n+1` variables.
 First we construct an algebra equivalence `T` from `k[X_0,...,X_n]` to itself such that
   `f` is mapped to a polynomial in `X_0` with invertible leading coefficient.
 More precisely, `T` maps `X_i` to `X_i + X_0 ^ r_i` when `i ≠ 0`, and `X_0` to `X_0`.
-Here we choose `r_i` to be `up ^ i` where `up` is big enought, so that `T` maps
+Here we choose `r_i` to be `up ^ i` where `up` is big enough, so that `T` maps
   different monomials of `f` to polynomials with different degrees in `X_0`. See `T_degree_inj`.
 
 Second we construct the following maps: Let `I` be an ideal containing `f`.
