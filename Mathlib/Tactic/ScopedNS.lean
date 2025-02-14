@@ -91,7 +91,7 @@ macro_rules
       | none => Lean.mkNullNode
       | some attr => Lean.mkNullNode #[attr]
     -- set the `attrKind` to `scoped`
-    let attrKindNode ← `(Parser.Term.attrKind| scoped)
+    let attrKindNode := Unhygienic.run `(Parser.Term.attrKind| scoped)
 
     -- insert the optional arguments and `scoped` into the command.
     let cmdNew : TSyntax `command := ⟨cmd.raw
