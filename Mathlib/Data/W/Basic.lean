@@ -3,7 +3,8 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Logic.Equiv.List
+import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Logic.Encodable.Pi
 
 /-!
 # W types

@@ -5,7 +5,6 @@ Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
 -/
 import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Data.Finset.NoncommProd
-import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.Perm.Basic
 
 /-!

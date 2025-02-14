@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Sort
-import Mathlib.Data.Vector.Basic
+import Mathlib.Data.List.Chain
 import Mathlib.Logic.Denumerable
 
 /-!
@@ -14,7 +14,9 @@ This file defines some additional constructive equivalences using `Encodable` an
 function on `ℕ`.
 -/
 
-open List (Vector)
+assert_not_exists Monoid
+
+open List
 open Nat List
 
 namespace Encodable
@@ -126,21 +128,6 @@ This can be locally made into an instance with `attribute [local instance] Finty
 noncomputable def _root_.Fintype.toEncodable (α : Type*) [Fintype α] : Encodable α := by
   classical exact (Fintype.truncEncodable α).out
 
-/-- If `α` is encodable, then so is `Vector α n`. -/
-instance List.Vector.encodable [Encodable α] {n} : Encodable (List.Vector α n) :=
-  Subtype.encodable
-
-/-- If `α` is countable, then so is `Vector α n`. -/
-instance List.Vector.countable [Countable α] {n} : Countable (List.Vector α n) :=
-  Subtype.countable
-
-/-- If `α` is encodable, then so is `Fin n → α`. -/
-instance finArrow [Encodable α] {n} : Encodable (Fin n → α) :=
-  ofEquiv _ (Equiv.vectorEquivFin _ _).symm
-
-instance finPi (n) (π : Fin n → Type*) [∀ i, Encodable (π i)] : Encodable (∀ i, π i) :=
-  ofEquiv _ (Equiv.piEquivSubtypeSigma (Fin n) π)
-
 /-- If `α` is encodable, then so is `Finset α`. -/
 instance _root_.Finset.encodable [Encodable α] : Encodable (Finset α) :=
   haveI := decidableEqOfEncodable α
@@ -150,24 +137,6 @@ instance _root_.Finset.encodable [Encodable α] : Encodable (Finset α) :=
 /-- If `α` is countable, then so is `Finset α`. -/
 instance _root_.Finset.countable [Countable α] : Countable (Finset α) :=
   Finset.val_injective.countable
-
--- TODO: Unify with `fintypePi` and find a better name
-/-- When `α` is finite and `β` is encodable, `α → β` is encodable too. Because the encoding is not
-unique, we wrap it in `Trunc` to preserve computability. -/
-def fintypeArrow (α : Type*) (β : Type*) [DecidableEq α] [Fintype α] [Encodable β] :
-    Trunc (Encodable (α → β)) :=
-  (Fintype.truncEquivFin α).map fun f =>
-    Encodable.ofEquiv (Fin (Fintype.card α) → β) <| Equiv.arrowCongr f (Equiv.refl _)
-
-/-- When `α` is finite and all `π a` are encodable, `Π a, π a` is encodable too. Because the
-encoding is not unique, we wrap it in `Trunc` to preserve computability. -/
-def fintypePi (α : Type*) (π : α → Type*) [DecidableEq α] [Fintype α] [∀ a, Encodable (π a)] :
-    Trunc (Encodable (∀ a, π a)) :=
-  (Fintype.truncEncodable α).bind fun a =>
-    (@fintypeArrow α (Σa, π a) _ _ (@Sigma.encodable _ _ a _)).bind fun f =>
-      Trunc.mk <|
-        @Encodable.ofEquiv _ _ (@Subtype.encodable _ _ f _)
-          (Equiv.piEquivSubtypeSigma α π)
 
 /-- The elements of a `Fintype` as a sorted list. -/
 def sortedUniv (α) [Fintype α] [Encodable α] : List α :=
@@ -196,11 +165,6 @@ def fintypeEquivFin {α} [Fintype α] [Encodable α] : α ≃ Fin (Fintype.card 
   -- Porting note: used the `trans` tactic
   ((sortedUniv_nodup α).getEquivOfForallMemList _ mem_sortedUniv).symm.trans <|
     Equiv.cast (congr_arg _ (length_sortedUniv α))
-
-/-- If `α` and `β` are encodable and `α` is a fintype, then `α → β` is encodable as well. -/
-instance fintypeArrowOfEncodable {α β : Type*} [Encodable α] [Fintype α] [Encodable β] :
-    Encodable (α → β) :=
-  ofEquiv (Fin (Fintype.card α) → β) <| Equiv.arrowCongr fintypeEquivFin (Equiv.refl _)
 
 end Encodable
 
@@ -310,7 +274,7 @@ def raise' : List ℕ → ℕ → List ℕ
 
 theorem lower_raise' : ∀ l n, lower' (raise' l n) n = l
   | [], _ => rfl
-  | m :: l, n => by simp [raise', lower', add_tsub_cancel_right, lower_raise']
+  | m :: l, n => by simp [raise', lower', Nat.add_sub_cancel_right, lower_raise']
 
 theorem raise_lower' : ∀ {l n}, (∀ m ∈ l, n ≤ m) → List.Sorted (· < ·) l → raise' (lower' l n) n = l
   | [], _, _, _ => rfl

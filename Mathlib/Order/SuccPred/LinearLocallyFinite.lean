@@ -6,9 +6,10 @@ Authors: Rémy Degenne
 import Mathlib.Data.Countable.Basic
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Order.SuccPred.Archimedean
-import Mathlib.Order.Interval.Finset.Defs
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Finset.Max
+import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Order.Interval.Finset.Defs
 
 /-!
 # Linear locally finite orders
