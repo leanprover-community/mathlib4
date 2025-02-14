@@ -345,7 +345,7 @@ def coeFnAddMonoidHom : lp E p →+ (∀ i, E i) where
   __ := AddSubgroup.subtype _
 
 @[simp]
-theorem coeFnAddHom_apply (x : lp E p) : coeFnAddMonoidHom E p x = ⇑x := rfl
+theorem coeFnAddMonoidHom_apply (x : lp E p) : coeFnAddMonoidHom E p x = ⇑x := rfl
 
 theorem coeFn_sum {ι : Type*} (f : ι → lp E p) (s : Finset ι) :
     ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, ⇑(f i) := by
@@ -925,7 +925,7 @@ protected theorem single_add (p) (i : α) (a b : E i) :
 
 /-- `single` as an `AddMonoidHom`. -/
 @[simps]
-def singleAddHom (p) (i : α) : E i →+ lp E p where
+def singleAddMonoidHom (p) (i : α) : E i →+ lp E p where
   toFun := lp.single p i
   map_zero' := lp.single_zero _ _
   map_add' := lp.single_add _ _
@@ -1052,16 +1052,10 @@ theorem uniformContinuous_coe [_i : Fact (1 ≤ p)] :
   have : ‖f i - g i‖ ≤ ‖f - g‖ := norm_apply_le_norm hp (f - g) i
   exact this.trans_lt hfg
 
-theorem uniformContinuous_single [Fact (1 ≤ p)] [DecidableEq α] (i : α) :
-    UniformContinuous (lp.single (E := E) p i) := by
-  have hp : 0 < p := zero_lt_one.trans_le Fact.out
-  rw [NormedAddCommGroup.uniformity_basis_dist.uniformContinuous_iff
-    NormedAddCommGroup.uniformity_basis_dist]
-  intro ε hε
-  refine ⟨ε, hε, fun x y hxy => ?_⟩
-  dsimp
-  simp_rw [← lp.single_sub, lp.norm_single (p := p) (hp := hp)]
-  exact hxy
+theorem isometry_single [Fact (1 ≤ p)] [DecidableEq α] (i : α) :
+    Isometry (lp.single (E := E) p i) :=
+  AddMonoidHomClass.isometry_of_norm (lp.singleAddMonoidHom (E := E) p i) fun _ ↦
+    lp.norm_single (zero_lt_one.trans_le Fact.out) _ _
 
 variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
 
@@ -1070,7 +1064,7 @@ variable (p E) in
 def singleContinuousAddMonoidHom [Fact (1 ≤ p)] [DecidableEq α] (i : α) :
     ContinuousAddMonoidHom (E i) (lp E p) where
   __ := singleAddHom p i
-  continuous_toFun := uniformContinuous_single i |>.continuous
+  continuous_toFun := isometry_single i |>.continuous
 
 @[simp]
 theorem singleContinuousAddMonoidHom_apply [Fact (1 ≤ p)] [DecidableEq α] (i : α) (x : E i) :
@@ -1082,7 +1076,7 @@ variable (𝕜 p E) in
 def singleContinuousLinearMap [Fact (1 ≤ p)] [DecidableEq α] (i : α) :
     E i →L[𝕜] lp E p where
   __ := lsingle p i
-  cont := uniformContinuous_single i |>.continuous
+  cont := isometry_single i |>.continuous
 
 @[simp]
 theorem singleContinuousLinearMap_apply [Fact (1 ≤ p)] [DecidableEq α] (i : α) (x : E i) :
