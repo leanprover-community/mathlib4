@@ -109,7 +109,7 @@ lemma klFun_nonneg (hx : 0 ≤ x) : 0 ≤ klFun x := by
   rcases hx.eq_or_lt with rfl | hx
   · simp
   · rw [← klFun_one]
-    exact convexOn_Ioi_klFun.ge_of_rightDeriv_eq_zero (by simp) (by simp)  hx
+    exact convexOn_Ioi_klFun.isMinOn_of_rightDeriv_eq_zero (by simp) (by simp) hx
 
 lemma klFun_eq_zero_iff (hx : 0 ≤ x) : klFun x = 0 ↔ x = 1 := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
