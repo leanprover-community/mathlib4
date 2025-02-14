@@ -864,12 +864,10 @@ theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := 
   have eq₁ := Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso e) i)
   have eq₂ :=
     Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso (Iso.refl x)) i)
-  -- Porting note: the proof was rewritten from this point in https://github.com/leanprover-community/mathlib4/pull/3414 (reenableeta)
-  -- It could be investigated again to see if the original can be restored.
-  ext x
-  replace eq₁ := congr_arg (· x) eq₁
-  replace eq₂ := congr_arg (· x) eq₂.symm
-  simp_all
+  ext : 2
+  convert congr_arg (fun φ => (OrderEmbedding.toOrderHom φ)) (eq₁.trans eq₂.symm)
+  ext i : 2
+  rfl
 
 theorem eq_id_of_isIso {x : SimplexCategory} (f : x ⟶ x) [IsIso f] : f = 𝟙 _ :=
   congr_arg (fun φ : _ ≅ _ => φ.hom) (iso_eq_iso_refl (asIso f))
@@ -882,9 +880,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
   simp only [len_mk, σ, mkHom, comp_toOrderHom, Hom.toOrderHom_mk, OrderHom.comp_coe,
     OrderHom.coe_mk, Function.comp_apply]
   by_cases h' : x ≤ Fin.castSucc i
-  · -- This was not needed before https://github.com/leanprover/lean4/pull/2644
-    dsimp
-    rw [Fin.predAbove_of_le_castSucc i x h']
+  · rw [Fin.predAbove_of_le_castSucc i x h']
     dsimp [δ]
     rw [Fin.succAbove_of_castSucc_lt _ _ _]
     · rw [Fin.castSucc_castPred]
@@ -893,8 +889,6 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
     let y := x.pred <| by rintro (rfl : x = 0); simp at h'
     have hy : x = y.succ := (Fin.succ_pred x _).symm
     rw [hy] at h' ⊢
-    -- This was not needed before https://github.com/leanprover/lean4/pull/2644
-    conv_rhs => dsimp
     rw [Fin.predAbove_of_castSucc_lt i y.succ h', Fin.pred_succ]
     by_cases h'' : y = i
     · rw [h'']
@@ -936,9 +930,7 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
     (i : Fin (n + 2)) (hi : ∀ x, θ.toOrderHom x ≠ i) : ∃ θ' : Δ ⟶ mk n, θ = θ' ≫ δ i := by
   by_cases h : i < Fin.last (n + 1)
   · use θ ≫ σ (Fin.castPred i h.ne)
-    ext1
-    ext1
-    ext1 x
+    ext x : 3
     simp only [len_mk, Category.assoc, comp_toOrderHom, OrderHom.comp_coe, Function.comp_apply]
     by_cases h' : θ.toOrderHom x ≤ i
     · simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk]

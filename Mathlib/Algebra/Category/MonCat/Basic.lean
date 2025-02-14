@@ -490,9 +490,9 @@ instance CommMonCat.forget_reflects_isos : (forget CommMonCat.{u}).ReflectsIsomo
     let e : X ≃* Y := { f.hom, i.toEquiv with }
     exact e.toCommMonCatIso.isIso_hom
 
--- Porting note: this was added in order to ensure that `forget₂ CommMonCat MonCat`
--- automatically reflects isomorphisms
--- we could have used `CategoryTheory.HasForget.ReflectsIso` alternatively
+/-- Ensure that `forget₂ CommMonCat MonCat` automatically reflects isomorphisms.
+We could have used `CategoryTheory.HasForget.ReflectsIso` alternatively.
+-/
 @[to_additive]
 instance CommMonCat.forget₂_full : (forget₂ CommMonCat MonCat).Full where
   map_surjective f := ⟨ofHom f.hom, rfl⟩

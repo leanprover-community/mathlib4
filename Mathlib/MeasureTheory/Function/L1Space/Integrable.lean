@@ -718,9 +718,7 @@ noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f)
       simpa only [Ne, ENNReal.coe_eq_zero] using hx
   norm_map' := by
     intro u
-    -- Porting note: Lean can't infer types of `AddHom.coe_mk`.
-    simp only [eLpNorm, LinearMap.coe_mk,
-      AddHom.coe_mk (M := Lp E 1 (μ.withDensity fun x => f x)) (N := Lp E 1 μ), Lp.norm_toLp,
+    simp only [eLpNorm, LinearMap.coe_mk, AddHom.coe_mk, Lp.norm_toLp,
       one_ne_zero, ENNReal.one_ne_top, ENNReal.one_toReal, if_false, eLpNorm', ENNReal.rpow_one,
       _root_.div_one, Lp.norm_def]
     rw [lintegral_withDensity_eq_lintegral_mul_non_measurable _ f_meas.coe_nnreal_ennreal

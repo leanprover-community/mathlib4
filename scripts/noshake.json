@@ -396,6 +396,7 @@
   ["Batteries.Tactic.Init", "Mathlib.Logic.Function.Defs"],
   "Mathlib.Data.Nat.Find": ["Batteries.WF"],
   "Mathlib.Data.Multiset.Bind": ["Mathlib.Algebra.GroupWithZero.Action.Defs"],
+  "Mathlib.Data.List.TakeDrop": ["Mathlib.Tactic.Common"],
   "Mathlib.Data.List.Range": ["Batteries.Data.Nat.Lemmas"],
   "Mathlib.Data.List.ProdSigma":
   ["Batteries.Data.Nat.Lemmas", "Mathlib.Data.List.Basic"],

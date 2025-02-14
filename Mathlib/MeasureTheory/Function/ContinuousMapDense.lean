@@ -6,6 +6,7 @@ Authors: Heather Macbeth
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
 import Mathlib.Topology.UrysohnsLemma
+import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 import Mathlib.MeasureTheory.Integral.Bochner
 
 /-!
