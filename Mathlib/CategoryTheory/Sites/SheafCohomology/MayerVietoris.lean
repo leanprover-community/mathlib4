@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.Biprod
 import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 import Mathlib.CategoryTheory.Sites.MayerVietorisSquare
 
@@ -26,97 +27,54 @@ namespace CategoryTheory
 
 open Category Opposite Limits Abelian
 
--- to be moved
-namespace Limits
+-- to be generalized to concrete categories
+section
+variable {G H : AddCommGrp.{u}} (e : G ≅ H)
 
-variable {C : Type u} [Category.{v} C] [Preadditive C] (X Y : C)
-  [HasBinaryBiproduct X Y] [HasBinaryBiproduct (op X) (op Y)]
+def Iso.toEquivOfConcrete : G ≃ H where
+  toFun := e.hom
+  invFun := e.inv
+  left_inv _ := by simp
+  right_inv _ := by simp
 
-/-- Comparison of the binary biproduct in a category and its opposit category. -/
-noncomputable def biprodOpIso : op (X ⊞ Y) ≅ op X ⊞ op Y where
-  hom := biprod.lift biprod.inl.op biprod.inr.op
-  inv := biprod.desc biprod.fst.op biprod.snd.op
-  hom_inv_id := Quiver.Hom.unop_inj (by simp)
-  inv_hom_id := by ext <;> simp [← op_comp]
+lemma Iso.hom_bijective : Function.Bijective e.hom :=
+    e.toEquivOfConcrete.bijective
 
-@[reassoc (attr := simp)]
-lemma biprodOpIso_hom_fst :
-    (biprodOpIso X Y).hom ≫ biprod.fst = biprod.inl.op := by
-  simp [biprodOpIso]
+lemma Iso.inv_bijective : Function.Bijective e.inv :=
+    e.symm.hom_bijective
 
-@[reassoc (attr := simp)]
-lemma biprodOpIso_hom_snd :
-    (biprodOpIso X Y).hom ≫ biprod.snd = biprod.inr.op := by
-  simp [biprodOpIso]
+lemma Iso.hom_injective :
+    Function.Injective e.hom := e.hom_bijective.1
 
-@[reassoc (attr := simp)]
-lemma inl_biprodOpIso_inv :
-    biprod.inl ≫ (biprodOpIso X Y).inv = biprod.fst.op := by
-  simp [biprodOpIso]
+lemma Iso.inv_injective :
+    Function.Injective e.inv := e.inv_bijective.1
 
-@[reassoc (attr := simp)]
-lemma inr_biprodOpIso_inv :
-    biprod.inr ≫ (biprodOpIso X Y).inv = biprod.snd.op := by
-  simp [biprodOpIso]
+lemma Iso.hom_surjective :
+    Function.Surjective e.hom := e.hom_bijective.2
 
-end Limits
+lemma Iso.inv_surjective :
+    Function.Surjective e.inv := e.inv_bijective.2
 
-namespace Abelian
+end
 
--- to be moved
-namespace Ext
+lemma AddCommGrp.fst_biprodIsoProd_inv_apply
+    {G H : AddCommGrp.{u}} (g : G × H) :
+    (biprod.fst : G ⊞ H ⟶ G) ((AddCommGrp.biprodIsoProd G H).inv g) = g.1 :=
+  sorry
 
-variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
+lemma AddCommGrp.snd_biprodIsoProd_inv_apply
+    {G H : AddCommGrp.{u}} (g : G × H) :
+    (biprod.snd : G ⊞ H ⟶ H) ((AddCommGrp.biprodIsoProd G H).inv g) = g.2 :=
+  sorry
 
-attribute [local instance] preservesBinaryBiproducts_of_preservesBiproducts
-
-/-- Commutation of `Ext`-groups with the binary biproduct on
-the source. -/
-noncomputable def biprodIso (X₁ X₂ Y : C) (n : ℕ) :
-    AddCommGrp.of (Ext (X₁ ⊞ X₂) Y n) ≅
-      AddCommGrp.of (Ext X₁ Y n) ⊞ AddCommGrp.of (Ext X₂ Y n) :=
-  (((extFunctor n).flip.obj Y).mapIso (biprodOpIso _ _)).trans
-    (((extFunctor n).flip.obj Y).mapBiprod _ _)
-
-lemma biprodIso_hom_fst (X₁ X₂ Y : C) (n : ℕ) :
-    (biprodIso X₁ X₂ Y n).hom ≫ biprod.fst =
-      ((extFunctor n).flip.obj Y).map (biprod.inl : _ ⟶ _).op := by
-  dsimp only [biprodIso, Iso.trans, Functor.mapIso, Functor.mapBiprod_hom]
-  rw [assoc]
-  erw [biprod.lift_fst]
-  rw [← Functor.map_comp, biprodOpIso_hom_fst]
-
-lemma biprodIso_hom_snd (X₁ X₂ Y : C) (n : ℕ) :
-    (biprodIso X₁ X₂ Y n).hom ≫ biprod.snd =
-      ((extFunctor n).flip.obj Y).map (biprod.inr : _ ⟶ _).op := by
-  dsimp only [biprodIso, Iso.trans, Functor.mapIso, Functor.mapBiprod_hom]
-  rw [assoc]
-  erw [biprod.lift_snd]
-  rw [← Functor.map_comp, biprodOpIso_hom_snd]
-
-lemma biprod_inl_comp_biprodIso_inv_apply {X₁ X₂ Y : C} (n : ℕ)
-    (x : ((AddCommGrp.of (Ext X₁ Y n) ⊞ AddCommGrp.of (Ext X₂ Y n)) : AddCommGrp)) :
-    (mk₀ biprod.inl).comp ((biprodIso X₁ X₂ Y n).inv x) (zero_add n) =
-      (biprod.fst : AddCommGrp.of (Ext X₁ Y n) ⊞ AddCommGrp.of (Ext X₂ Y n) ⟶ _) x := by
-  obtain ⟨y, rfl⟩ : ∃ y, x = (biprodIso X₁ X₂ Y n).hom y :=
-    ⟨(biprodIso X₁ X₂ Y n).inv x, by erw [← comp_apply]; simp⟩
-  erw [← comp_apply]
-  rw [Iso.hom_inv_id, id_apply]
-  exact congr_fun ((forget _).congr_map (biprodIso_hom_fst X₁ X₂ Y n).symm) y
-
-lemma biprod_inr_comp_biprodIso_inv_apply {X₁ X₂ Y : C} (n : ℕ)
-    (x : ((AddCommGrp.of (Ext X₁ Y n) ⊞ AddCommGrp.of (Ext X₂ Y n)) : AddCommGrp)) :
-    (mk₀ biprod.inr).comp ((biprodIso X₁ X₂ Y n).inv x) (zero_add n) =
-      (biprod.snd : AddCommGrp.of (Ext X₁ Y n) ⊞ AddCommGrp.of (Ext X₂ Y n) ⟶ _) x := by
-  obtain ⟨y, rfl⟩ : ∃ y, x = (biprodIso X₁ X₂ Y n).hom y :=
-    ⟨(biprodIso X₁ X₂ Y n).inv x, by erw [← comp_apply]; simp⟩
-  erw [← comp_apply]
-  rw [Iso.hom_inv_id, id_apply]
-  exact congr_fun ((forget _).congr_map (biprodIso_hom_snd X₁ X₂ Y n).symm) y
-
-end Ext
-
-end Abelian
+lemma AddCommGrp.biprodIsoProd_inv_comp_apply
+    {G H K : AddCommGrp.{u}} (f : G ⊞ H ⟶ K) (g : G) (h : H) :
+    ((AddCommGrp.biprodIsoProd G H).inv ≫ f) ⟨g, h⟩ =
+    (biprod.inl ≫ f) g + (biprod.inr ≫ f) h := by
+  dsimp
+  rw [← map_add]
+  congr 1
+  sorry
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
   [HasWeakSheafify J (Type v)] [HasSheafify J AddCommGrp.{v}]
@@ -132,11 +90,38 @@ noncomputable def toBiprod (n : ℕ) :
   biprod.lift ((F.cohomologyPresheaf n).map S.f₂₄.op)
       ((F.cohomologyPresheaf n).map S.f₃₄.op)
 
+lemma toBiprod_apply {n : ℕ} (y : F.H' n S.X₄) :
+    S.toBiprod F n y = (AddCommGrp.biprodIsoProd _ _).inv
+      ⟨(F.cohomologyPresheaf n).map S.f₂₄.op y,
+        (F.cohomologyPresheaf n).map S.f₃₄.op y⟩ := by
+  apply (AddCommGrp.biprodIsoProd _ _).hom_injective
+  dsimp [toBiprod]
+  ext
+  · rw [← AddCommGrp.fst_biprodIsoProd_inv_apply, ← ConcreteCategory.comp_apply,
+      ← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply,
+      Iso.hom_inv_id_assoc, biprod.lift_fst,
+      ← ConcreteCategory.comp_apply, Iso.inv_hom_id]
+    dsimp
+  · rw [← AddCommGrp.snd_biprodIsoProd_inv_apply, ← ConcreteCategory.comp_apply,
+      ← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply,
+      Iso.hom_inv_id_assoc, biprod.lift_snd,
+      ← ConcreteCategory.comp_apply, Iso.inv_hom_id]
+    dsimp
+
 /-- The sum of two restriction maps in sheaf cohomology. -/
 noncomputable def fromBiprod (n : ℕ) :
     F.H' n S.X₂ ⊞ F.H' n S.X₃ ⟶ F.H' n S.X₁ :=
   biprod.desc ((F.cohomologyPresheaf n).map S.f₁₂.op)
       (-(F.cohomologyPresheaf n).map S.f₁₃.op)
+
+lemma fromBiprod_biprodIsoProd_inv_apply {n : ℕ}
+    (y₁ : F.H' n S.X₂) (y₂ : F.H' n S.X₃) :
+    S.fromBiprod F n ((AddCommGrp.biprodIsoProd _ _).inv ⟨y₁, y₂⟩) =
+      (F.cohomologyPresheaf n).map S.f₁₂.op y₁ - (F.cohomologyPresheaf n).map S.f₁₃.op y₂ := by
+  dsimp [fromBiprod]
+  rw [← ConcreteCategory.comp_apply, AddCommGrp.biprodIsoProd_inv_comp_apply,
+    biprod.inl_desc, biprod.inr_desc, sub_eq_add_neg]
+  dsimp
 
 variable (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁)
 
@@ -154,62 +139,44 @@ noncomputable def sequence : ComposableArrows AddCommGrp.{w} 5 :=
   mk₅ (S.toBiprod F n₀) (S.fromBiprod F n₀) (S.δ F n₀ n₁ h)
     (S.toBiprod F n₁) (S.fromBiprod F n₁)
 
-lemma biprodIso_inv_toBiprod_apply {n : ℕ} (x : F.H' n S.X₄) :
-    (Ext.biprodIso _ _ _ _).inv (S.toBiprod F n x) =
+lemma fromBiprodIso_inv_toBiprod_apply {n : ℕ} (x : F.H' n S.X₄) :
+    (Ext.fromBiprodIso _ _ _ _).inv (S.toBiprod F n x) =
       (Ext.mk₀ S.shortComplex.g).comp x (zero_add _) := by
   apply Ext.biprod_ext
   · dsimp
-    simp only [Ext.mk₀_comp_mk₀_assoc, biprod.inl_desc, toBiprod]
-    erw [Ext.biprod_inl_comp_biprodIso_inv_apply, ← comp_apply,
-      biprod.lift_fst]
-    rfl
+    rw [Ext.mk₀_comp_mk₀_assoc, biprod.inl_desc,
+      Ext.biprod_inl_comp_fromBiprodIso_inv_apply]
+    rw [toBiprod_apply]
+    apply AddCommGrp.fst_biprodIsoProd_inv_apply
   · dsimp
-    simp only [Ext.mk₀_comp_mk₀_assoc, biprod.inr_desc, toBiprod]
-    erw [Ext.biprod_inr_comp_biprodIso_inv_apply, ← comp_apply,
-      biprod.lift_snd]
-    rfl
+    rw [Ext.mk₀_comp_mk₀_assoc, biprod.inr_desc,
+      Ext.biprod_inr_comp_fromBiprodIso_inv_apply]
+    rw [toBiprod_apply]
+    apply AddCommGrp.snd_biprodIsoProd_inv_apply
 
-lemma biprodIso_hom_fromBiprod (n : ℕ) :
-    (Ext.biprodIso _ _ _ _).hom ≫ S.fromBiprod F n =
-      ((extFunctor n).flip.obj F).map S.shortComplex.f.op := by
-  dsimp only [Ext.biprodIso, fromBiprod, Functor.mapIso, Iso.trans,
-    Functor.mapBiprod_hom, shortComplex,
-    Sheaf.cohomologyPresheaf, Sheaf.cohomologyPresheafFunctor,
-    Functor.comp, Functor.flip, Functor.op]
-  simp only [assoc, biprod.lift_desc, Preadditive.comp_add,
-    ← Functor.map_comp_assoc, biprodOpIso_hom_fst, biprodOpIso_hom_snd,
-    Preadditive.comp_neg]
-  simp only [← sub_eq_add_neg, ← Functor.map_neg,
-    ← NatTrans.comp_app, ← Functor.map_comp]
-  rw [← NatTrans.app_sub, ← Functor.map_sub]
-  congr 2
-  apply Quiver.Hom.unop_inj
-  apply biprod.hom_ext
-  · erw [biprod.lift_fst]
-    simp
-  · erw [biprod.lift_snd]
-    simp
-
-lemma mk₀_f_comp_biprodIso_inv_apply
+lemma mk₀_f_comp_fromBiprodIso_inv_apply
     {n : ℕ} (x : (F.H' n S.X₂ ⊞ F.H' n S.X₃ : AddCommGrp)) :
-    (Ext.mk₀ S.shortComplex.f).comp ((Ext.biprodIso _ _ _ _).inv x) (zero_add _) =
+    (Ext.mk₀ S.shortComplex.f).comp ((Ext.fromBiprodIso _ _ _ _).inv x) (zero_add _) =
       S.fromBiprod F n x := by
-  obtain ⟨y, rfl⟩ : ∃ y, x = (Ext.biprodIso _ _ _ _).hom y :=
-    ⟨(Ext.biprodIso _ _ _ _).inv x, by erw [← comp_apply]; simp⟩
-  erw [← comp_apply, ← comp_apply, Iso.hom_inv_id, id_apply]
-  exact congr_fun ((forget _).congr_map (S.biprodIso_hom_fromBiprod F n)).symm y
+  obtain ⟨⟨y₁, y₂⟩, rfl⟩ := (AddCommGrp.biprodIsoProd _ _).inv_surjective x
+  erw [Ext.fromBiprodIso_inv_apply y₁ y₂]
+  rw [Ext.fromBiprodEquiv_symm_apply]
+  dsimp
+  simp only [Ext.comp_add, Ext.mk₀_comp_mk₀_assoc, biprod.lift_fst, biprod.lift_snd]
+  rw [fromBiprod_biprodIsoProd_inv_apply, Ext.mk₀_neg, Ext.neg_comp, sub_eq_add_neg]
+  rfl
 
 /-- Comparison isomorphism from the Mayer-Vietoris sequence and the
 contravariant sequence of `Ext`-groups. -/
 noncomputable def sequenceIso : S.sequence F n₀ n₁ h ≅
     Ext.contravariantSequence S.shortComplex_shortExact F n₀ n₁ (by omega) :=
-  isoMk₅ (Iso.refl _) (Ext.biprodIso _ _ _ _).symm
-    (Iso.refl _) (Iso.refl _) (Ext.biprodIso _ _ _ _).symm (Iso.refl _)
-    (by ext; apply biprodIso_inv_toBiprod_apply)
-    (by ext; symm; apply mk₀_f_comp_biprodIso_inv_apply)
+  isoMk₅ (Iso.refl _) (Ext.fromBiprodIso _ _ _ _).symm
+    (Iso.refl _) (Iso.refl _) (Ext.fromBiprodIso _ _ _ _).symm (Iso.refl _)
+    (by ext; apply fromBiprodIso_inv_toBiprod_apply)
+    (by ext; symm; apply mk₀_f_comp_fromBiprodIso_inv_apply)
     (by dsimp; rw [comp_id, id_comp]; rfl)
-    (by ext; apply biprodIso_inv_toBiprod_apply)
-    (by ext; symm; apply mk₀_f_comp_biprodIso_inv_apply)
+    (by ext; apply fromBiprodIso_inv_toBiprod_apply)
+    (by ext; symm; apply mk₀_f_comp_fromBiprodIso_inv_apply)
 
 lemma sequence_exact : (S.sequence F n₀ n₁ h).Exact :=
   exact_of_iso (S.sequenceIso F n₀ n₁ h).symm (Ext.contravariantSequence_exact _ _ _ _ _)

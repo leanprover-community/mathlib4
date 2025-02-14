@@ -260,6 +260,11 @@ lemma mk₀_add (f g : X ⟶ Y) :
     mk₀ (f + g) = mk₀ f + mk₀ g := by
   letI := HasDerivedCategory.standard C; ext; simp [add_hom']
 
+@[simp]
+lemma mk₀_neg (f : X ⟶ Y) :
+    mk₀ (-f) = -mk₀ f := by
+  letI := HasDerivedCategory.standard C; ext; simp [neg_hom']
+
 section
 
 attribute [local instance] preservesBinaryBiproducts_of_preservesBiproducts in
