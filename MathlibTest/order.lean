@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Order.LinearOrder
+import Mathlib.Tactic.Order
 import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Int.Order.Basic
 
