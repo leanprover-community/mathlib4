@@ -8,7 +8,7 @@ import Mathlib.Data.Fin.Tuple.Reflection
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Lean.Expr.ExtraRecognizers
 import Mathlib.LinearAlgebra.Finsupp.SumProd
-import Mathlib.LinearAlgebra.Prod
+import Mathlib.LinearAlgebra.Prodb
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Module
@@ -36,7 +36,7 @@ vector space and `ι : Type*` is an arbitrary indexing type.
 
 * `LinearIndependent R v` states that the elements of the family `v` are linearly independent.
 
-* `LinearIndependentOn R v s` states that the elements of the family `v` indexed by the members
+* `LinearIndepOn R v s` states that the elements of the family `v` indexed by the members
 of the set `s : Set ι` are linearly independent.
 
 * `LinearIndependent.repr hv x` returns the linear combination representing `x : span R (range v)`
@@ -128,9 +128,9 @@ def delabLinearIndependent : Delab :=
       withNaryArg 0 do return (← read).optionsPerPos.setBool (← getPos) `pp.analysis.namedArg true
     withTheReader Context ({· with optionsPerPos}) delab
 
-/-- `LinearIndependentOn R v s` states that the vectors in the family `v` that are indexed
+/-- `LinearIndepOn R v s` states that the vectors in the family `v` that are indexed
 by the elements of `s` are linearly independent over `R`. -/
-def LinearIndependentOn (s : Set ι) : Prop := LinearIndependent R (fun x : s ↦ v x)
+def LinearIndepOn (s : Set ι) : Prop := LinearIndependent R (fun x : s ↦ v x)
 
 variable {R v}
 
@@ -167,11 +167,11 @@ theorem linearIndependent_empty : LinearIndependent R (fun x => x : (∅ : Set M
   linearIndependent_empty_type
 
 variable (R v) in
-theorem linearIndependentOn_empty : LinearIndependentOn R v ∅ :=
+theorem linearIndepOn_empty : LinearIndepOn R v ∅ :=
   linearIndependent_empty_type ..
 
 theorem linearIndependent_set_subtype {s : Set ι} :
-    LinearIndependent R (fun x : s ↦ v x) ↔ LinearIndependentOn R v s := Iff.rfl
+    LinearIndependent R (fun x : s ↦ v x) ↔ LinearIndepOn R v s := Iff.rfl
 
 /-- A subfamily of a linearly independent family (i.e., a composition with an injective map) is a
 linearly independent family. -/
@@ -381,7 +381,7 @@ theorem linearIndependent_equiv' (e : ι ≃ ι') {f : ι' → M} {g : ι → M}
   h ▸ linearIndependent_equiv e
 
 @[simp]
-theorem linearIndependentOn_univ : LinearIndependentOn R v univ ↔ LinearIndependent R v :=
+theorem linearIndepOn_univ : LinearIndepOn R v univ ↔ LinearIndependent R v :=
   linearIndependent_equiv' (Equiv.Set.univ ι) rfl
 
 theorem linearIndependent_subtype_range {ι} {f : ι → M} (hf : Injective f) :
@@ -518,8 +518,8 @@ theorem LinearIndependent.mono {t s : Set M} (h : t ⊆ s)
     (hs : LinearIndependent R (fun x ↦ x : s → M)) : LinearIndependent R (fun x ↦ x : t → M) :=
   hs.comp _ (Set.inclusion_injective h)
 
-theorem LinearIndependentOn.mono {t s : Set ι} (hs : LinearIndependentOn R v s) (h : t ⊆ s) :
-    LinearIndependentOn R v t :=
+theorem LinearIndepOn.mono {t s : Set ι} (hs : LinearIndepOn R v s) (h : t ⊆ s) :
+    LinearIndepOn R v t :=
   hs.comp _ (Set.inclusion_injective h)
 
 theorem linearIndependent_of_finite (s : Set M)
