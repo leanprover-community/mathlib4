@@ -141,7 +141,7 @@ def evalPrimeFactorsList
     return ⟨_, q($hen ▸ Nat.primeFactorsList_one)⟩
   | _ => do
     have h2 : Q(IsNat 2 (nat_lit 2)) := q(⟨Eq.refl (nat_lit 2)⟩)
-    let ⟨l, p⟩ ← Mathlib.Meta.NormNum.evalPrimeFactorsListAux hn h2
+    let ⟨l, p⟩ ← evalPrimeFactorsListAux hn h2
     return ⟨l, q(($p).primeFactorsList_eq)⟩
 
 end Mathlib.Meta.NormNum
