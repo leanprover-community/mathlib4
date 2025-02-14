@@ -195,7 +195,7 @@ lemma krullTopology_mem_nhds_one_of_normal (K L : Type*) [Field K] [Field L] [Al
     FiniteDimensional K E ∧ Normal K E ∧ (E.fixingSubgroup : Set (L ≃ₐ[K] L)) ⊆ s := by
   rw [krullTopology_mem_nhds_one]
   refine ⟨fun ⟨E, _, hE⟩ ↦ ?_, fun ⟨E, hE⟩ ↦ ⟨E, hE.1, hE.2.2⟩⟩
-  use (normalClosure K E L)
+  use (IntermediateField.normalClosure K E L)
   simp only [normalClosure.is_finiteDimensional K E L, normalClosure.normal K E L, true_and]
   exact le_trans (E.fixingSubgroup_anti E.le_normalClosure) hE
 
