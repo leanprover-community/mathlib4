@@ -17,18 +17,18 @@ and extend it to get the filtration on ring and module.
 can induce a map from σA to σB. In this way, we can define `FB` and `FB_lt` under very weak
 conditions.
 
-* `HomtoFiltration` If `FA` and `FA_lt` is a filtration of A, then a map f: A → B induces a
+* `HomtoFil` If `FA` and `FA_lt` is a filtration of A, then a map f: A → B induces a
 filtration of B, which we call `FB` and `FB_lt`
 
-* `RingHomtoFiltration` If `FA` and `FA_lt` is a ring filtration of A, then a ring homomorphism
+* `RingHomtoFil` If `FA` and `FA_lt` is a ring filtration of A, then a ring homomorphism
  f: A →+* B induces a ring filtration of B, which we call `FB` and `FB_lt`
 
-* `ModuleHomtoFiltration` When FM and FM_lt is a filtration of M, then a module homomorphism
+* `ModuleHomtoFil` When FM and FM_lt is a filtration of M, then a module homomorphism
  f: M → N induces a module filtration of N, which we call `FB` and `FB_lt`-/
 
 variable {ι : Type*} [OrderedCancelAddCommMonoid ι]
 
-section HomtoFiltration
+section HomtoFil
 
 variable {A : Type*} (σA : Type*) [SetLike σA A] {B : Type*} (σB : Type*) [SetLike σB B]
 
@@ -74,11 +74,11 @@ instance HomtoFil (FA FA_lt : ι → σA) (f : A → B) [fil : IsFiltration FA F
     have h : ∀ i < j, FA i ≤ comap Sup := fun i i_lt_j ↦ galois.le_u <| h i i_lt_j
     exact IsFiltration.is_sup (comap Sup) j h
 
-end HomtoFiltration
+end HomtoFil
 
 
 
-section RingHomtoFiltration
+section RingHomtoFil
 
 variable {R : Type*} [Ring R] (σR : Type*) [SetLike σR R] [AddSubgroupClass σR R] {S : Type*}
  [Ring S] (σS : Type*) [SetLike σS S] [AddSubgroupClass σS S]
@@ -96,9 +96,9 @@ variable (FR : ι → σR) (FR_lt : outParam <| ι → σR) (f : R →+* S) [IsR
 open SetLikeHom Set
 /- When FA and FA_lt is a ring filtration of A, then ring hom f: A →+* B induce a ring filtration
  of B which is called `FB` and `FB_lt` -/
-instance RingHomtoFiltration (FR FR_lt: ι → σR) [fil : IsRingFiltration FR FR_lt] :
+instance RingHomtoFil (FR FR_lt: ι → σR) [fil : IsRingFiltration FR FR_lt] :
     IsRingFiltration (FS σR σS FR f) (FS_lt σR σS FR_lt f) where
-  __ := HomtoFiltration σR σS FR FR_lt f
+  __ := HomtoFil σR σS FR FR_lt f
   one_mem := by
     show 1 ∈ ((map f <| FR 0 : σS) : Set S)
     rw[← coe_map <| FR 0]
@@ -117,11 +117,11 @@ instance RingHomtoFiltration (FR FR_lt: ι → σR) [fil : IsRingFiltration FR F
     simp only [SetLike.mem_coe, IsRingFiltration.mul_mem x_in y_in, map_mul,
       Mathlib.Tactic.LinearCombination'.mul_pf x_eq y_eq, and_self]
 
-end RingHomtoFiltration
+end RingHomtoFil
 
 
 
-section ModuleHomtoFiltration
+section ModuleHomtoFil
 
 variable {R : Type*} [Ring R] (σR : Type*) [SetLike σR R] [AddSubgroupClass σR R]
 variable (FR : ι → σR) (FR_lt : outParam <| ι → σR) [fil : IsRingFiltration FR FR_lt]
@@ -144,9 +144,9 @@ def FN_lt (FM_lt : ι → σM) (f : M →ₗ[R] N) [SetLikeHom σM σN f] : outP
 /- When FM and FM_lt is a filtration of M, then module hom f: M → N induce a module filtration of B
  which is called `FB` and `FB_lt`-/
 open SetLikeHom
-instance ModuleHomtoFiltration [SetLikeHom σM σN f] :
+instance ModuleHomtoFil [SetLikeHom σM σN f] :
     IsModuleFiltration FR FR_lt (FN σM σN FM f) (FN_lt σM σN FM_lt f) where
-  __ := HomtoFiltration σM σN (f := f.toFun) (ι := ι) (FA := FM) (FA_lt := FM_lt)
+  __ := HomtoFil σM σN (f := f.toFun) (ι := ι) (FA := FM) (FA_lt := FM_lt)
   smul_mem {i j r n hr hn}:= by
     have hn : n ∈ ((map f <| FM j : σN) : Set N) := hn
     rw[← coe_map <| FM j] at hn
@@ -158,4 +158,4 @@ instance ModuleHomtoFiltration [SetLikeHom σM σN f] :
     rw[vadd_eq_add] at this
     simp only [SetLike.mem_coe, this, map_smul, and_self]
 
-end ModuleHomtoFiltration
+end ModuleHomtoFil
