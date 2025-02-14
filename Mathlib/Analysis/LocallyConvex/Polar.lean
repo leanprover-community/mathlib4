@@ -65,7 +65,7 @@ theorem polar_eq_biInter_preimage (s : Set E) :
     B.polar s = ⋂ x ∈ s, ((B x) ⁻¹' Metric.closedBall (0 : 𝕜) 1) := by aesop
 
 theorem polar_isClosed (s : Set E) : IsClosed (X := WeakBilin B.flip) (B.polar s) := by
-  rw [polar_preimage]
+  rw [polar_eq_biInter_preimage]
   exact isClosed_biInter
     (fun _ _ => IsClosed.preimage (WeakBilin.eval_continuous B.flip _) Metric.isClosed_ball)
 
@@ -186,7 +186,7 @@ variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
 variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F]
 
 theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
-  rw [polar_preimage]
+  rw [polar_eq_biInter_preimage]
   apply AbsConvex.iInter₂
   intro i hi
   constructor
@@ -203,7 +203,7 @@ TODO: prove the converse and upgrade this to the bipolar theorem
 -/
 example [Module ℝ E] [IsScalarTower ℝ 𝕜 E] :
     closedAbsConvexHull (E := WeakBilin B) 𝕜 s ⊆ B.flip.polar (B.polar s) :=
-  closedAbsConvexHull_min (subset_bipolar B s) (polar_AbsConvex _) (polar_closed B.flip _)
+  closedAbsConvexHull_min (subset_bipolar B s) (polar_AbsConvex _) (polar_isClosed B.flip _)
 
 end RCLike
 
