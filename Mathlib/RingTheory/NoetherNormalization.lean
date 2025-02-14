@@ -7,7 +7,7 @@ import Mathlib.Algebra.MvPolynomial.Monad
 import Mathlib.Data.List.Indexes
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 /-!
-# Noether Normalizaton
+# Noether normalizaton lemma
 This file contains a proof by Nagata of the Noether normalization lemma.
 
 ## Main Results
