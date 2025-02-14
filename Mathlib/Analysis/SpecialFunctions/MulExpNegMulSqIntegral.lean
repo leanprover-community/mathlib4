@@ -22,7 +22,7 @@ contains results on the integral of `mulExpNegMulSq g ε` with respect to a fini
 - `tendsto_integral_mulExpNegMulSq_comp`: By the dominated convergence theorem and
   `mulExpNegMulSq_abs_le_norm`, the integral of `mulExpNegMulSq ε ∘ g` with respect to a
   finite measure `P` converges to the integral of `g`, as `ε → 0`;
-- `tendsto_integral_mul_one_plus_inv_mul_sq`: The integral of `mulExpNegMulSq ε ∘ g` with
+- `tendsto_integral_mul_one_plus_inv_smul_sq_pow`: The integral of `mulExpNegMulSq ε ∘ g` with
   respect to a finite measure `P` can be approximated by the integral of the sequence approximating
   the exponential function, `fun x => (g * (1 + (n : ℝ)⁻¹ • -(ε • g * g)) ^ n) x`. This allows to
   transfer properties of a subalgebra of functions containing `g` to the function
@@ -75,7 +75,7 @@ theorem tendsto_integral_mulExpNegMulSq_comp (g : E →ᵇ ℝ) :
 
 /-- The integral of `mulExpNegMulSq ε ∘ g` with respect to a finite measure `P` can be
 approximated by the integral of the sequence approximating the exponential function. -/
-theorem tendsto_integral_mul_one_plus_inv_mul_sq (g : E →ᵇ ℝ) (hε : 0 < ε) :
+theorem tendsto_integral_mul_one_plus_inv_smul_sq_pow (g : E →ᵇ ℝ) (hε : 0 < ε) :
     Tendsto (fun (n : ℕ) => ∫ x, (g * (1 + (n : ℝ)⁻¹ • -(ε • g * g)) ^ n) x ∂ P)
     atTop (𝓝 (∫ x, mulExpNegMulSq ε (g x) ∂P)) := by
   apply tendsto_integral_filter_of_norm_le_const ?h_meas ?h_bound ?h_lim
@@ -125,13 +125,13 @@ theorem integral_mulExpNegMulSq_comp_eq {P' : Measure E} [IsFiniteMeasure P']
   have limP : Tendsto (fun n : ℕ => ∫ x, (g * (1 + (n : ℝ)⁻¹ • -(ε • g * g)) ^ n) x ∂P) atTop
       (𝓝 (∫ x, mulExpNegMulSq ε (g x) ∂P')) := by
     rw [funext fun n => heq _ (one_plus_inv_mul_mem n)]
-    exact tendsto_integral_mul_one_plus_inv_mul_sq (mkOfBound g C h) hε
-  apply tendsto_nhds_unique (tendsto_integral_mul_one_plus_inv_mul_sq (mkOfBound g C h) hε) limP
+    exact tendsto_integral_mul_one_plus_inv_smul_sq_pow (mkOfBound g C h) hε
+  exact tendsto_nhds_unique
+    (tendsto_integral_mul_one_plus_inv_smul_sq_pow (mkOfBound g C h) hε) limP
 
 theorem abs_integral_sub_setIntegral_mulExpNegMulSq_comp_lt (f : C(E, ℝ))
     {K : Set E} (hK : MeasurableSet K) (hε : 0 < ε) (hKP : P Kᶜ < ε.toNNReal) :
-    |∫ x, mulExpNegMulSq ε (f x) ∂P
-    - ∫ x in K, mulExpNegMulSq ε (f x) ∂P| < sqrt ε := by
+    |∫ x, mulExpNegMulSq ε (f x) ∂P - ∫ x in K, mulExpNegMulSq ε (f x) ∂P| < sqrt ε := by
   apply lt_of_le_of_lt (norm_integral_sub_setIntegral_le
     (Eventually.of_forall (fun _ => abs_mulExpNegMulSq_le hε)) hK
     (integrable_mulExpNegMulSq_comp f hε))
