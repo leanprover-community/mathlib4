@@ -114,5 +114,17 @@ noncomputable def WedgeDual {s : Finset I} (hs : s.card = k) : ⋀[F]^(Module.fi
 
 end overVectorSpace
 
+open Module
+
+variable {F V : Type*} [Field F] [AddCommGroup V] [Module F V] [FiniteDimensional F V]
+
+noncomputable def WedgeEquiv {k l : ℕ} (h : k + l = finrank F V) :
+    (⋀[F]^k V) ≃ₗ[F] (⋀[F]^l V → ⋀[F]^(finrank F V) V) where
+  toFun := sorry
+  map_add' := sorry
+  map_smul' := sorry
+  invFun := sorry
+  left_inv := sorry
+  right_inv := sorry
 
 end exteriorPower
