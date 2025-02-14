@@ -27,55 +27,6 @@ namespace CategoryTheory
 
 open Category Opposite Limits Abelian
 
--- to be generalized to concrete categories
-section
-variable {G H : AddCommGrp.{u}} (e : G ≅ H)
-
-def Iso.toEquivOfConcrete : G ≃ H where
-  toFun := e.hom
-  invFun := e.inv
-  left_inv _ := by simp
-  right_inv _ := by simp
-
-lemma Iso.hom_bijective : Function.Bijective e.hom :=
-    e.toEquivOfConcrete.bijective
-
-lemma Iso.inv_bijective : Function.Bijective e.inv :=
-    e.symm.hom_bijective
-
-lemma Iso.hom_injective :
-    Function.Injective e.hom := e.hom_bijective.1
-
-lemma Iso.inv_injective :
-    Function.Injective e.inv := e.inv_bijective.1
-
-lemma Iso.hom_surjective :
-    Function.Surjective e.hom := e.hom_bijective.2
-
-lemma Iso.inv_surjective :
-    Function.Surjective e.inv := e.inv_bijective.2
-
-end
-
-lemma AddCommGrp.fst_biprodIsoProd_inv_apply
-    {G H : AddCommGrp.{u}} (g : G × H) :
-    (biprod.fst : G ⊞ H ⟶ G) ((AddCommGrp.biprodIsoProd G H).inv g) = g.1 :=
-  sorry
-
-lemma AddCommGrp.snd_biprodIsoProd_inv_apply
-    {G H : AddCommGrp.{u}} (g : G × H) :
-    (biprod.snd : G ⊞ H ⟶ H) ((AddCommGrp.biprodIsoProd G H).inv g) = g.2 :=
-  sorry
-
-lemma AddCommGrp.biprodIsoProd_inv_comp_apply
-    {G H K : AddCommGrp.{u}} (f : G ⊞ H ⟶ K) (g : G) (h : H) :
-    ((AddCommGrp.biprodIsoProd G H).inv ≫ f) ⟨g, h⟩ =
-    (biprod.inl ≫ f) g + (biprod.inr ≫ f) h := by
-  dsimp
-  rw [← map_add]
-  congr 1
-  sorry
-
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
   [HasWeakSheafify J (Type v)] [HasSheafify J AddCommGrp.{v}]
   [HasExt.{w} (Sheaf J AddCommGrp.{v})]
@@ -97,12 +48,12 @@ lemma toBiprod_apply {n : ℕ} (y : F.H' n S.X₄) :
   apply (AddCommGrp.biprodIsoProd _ _).hom_injective
   dsimp [toBiprod]
   ext
-  · rw [← AddCommGrp.fst_biprodIsoProd_inv_apply, ← ConcreteCategory.comp_apply,
+  · rw [← AddCommGrp.biprodIsoProd_inv_comp_fst_apply, ← ConcreteCategory.comp_apply,
       ← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply,
       Iso.hom_inv_id_assoc, biprod.lift_fst,
       ← ConcreteCategory.comp_apply, Iso.inv_hom_id]
     dsimp
-  · rw [← AddCommGrp.snd_biprodIsoProd_inv_apply, ← ConcreteCategory.comp_apply,
+  · rw [← AddCommGrp.biprodIsoProd_inv_comp_snd_apply, ← ConcreteCategory.comp_apply,
       ← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply,
       Iso.hom_inv_id_assoc, biprod.lift_snd,
       ← ConcreteCategory.comp_apply, Iso.inv_hom_id]
@@ -147,12 +98,12 @@ lemma fromBiprodIso_inv_toBiprod_apply {n : ℕ} (x : F.H' n S.X₄) :
     rw [Ext.mk₀_comp_mk₀_assoc, biprod.inl_desc,
       Ext.biprod_inl_comp_fromBiprodIso_inv_apply]
     rw [toBiprod_apply]
-    apply AddCommGrp.fst_biprodIsoProd_inv_apply
+    apply AddCommGrp.biprodIsoProd_inv_comp_fst_apply
   · dsimp
     rw [Ext.mk₀_comp_mk₀_assoc, biprod.inr_desc,
       Ext.biprod_inr_comp_fromBiprodIso_inv_apply]
     rw [toBiprod_apply]
-    apply AddCommGrp.snd_biprodIsoProd_inv_apply
+    apply AddCommGrp.biprodIsoProd_inv_comp_snd_apply
 
 lemma mk₀_f_comp_fromBiprodIso_inv_apply
     {n : ℕ} (x : (F.H' n S.X₂ ⊞ F.H' n S.X₃ : AddCommGrp)) :
