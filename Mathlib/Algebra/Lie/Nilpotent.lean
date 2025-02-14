@@ -10,6 +10,7 @@ import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.RingTheory.Artinian.Module
 import Mathlib.RingTheory.Nilpotent.Lemmas
+import LeanCopilot
 
 /-!
 # Nilpotent Lie algebras
@@ -618,6 +619,7 @@ variable {L₂ M₂ : Type*} [LieRing L₂] [LieAlgebra R L₂]
 variable [AddCommGroup M₂] [Module R M₂] [LieRingModule L₂ M₂] [LieModule R L₂ M₂]
 variable {f : L →ₗ⁅R⁆ L₂} {g : M →ₗ[R] M₂}
 variable (hf : Surjective f) (hg : Surjective g) (hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆)
+variable (hf_inj : Injective f) (hg_inj : Injective g)
 
 include hf hg hfg in
 theorem Function.Surjective.lieModule_lcs_map_eq (k : ℕ) :
@@ -639,6 +641,35 @@ theorem Function.Surjective.lieModule_lcs_map_eq (k : ℕ) :
     · rintro ⟨x, n, hn, rfl⟩
       obtain ⟨y, rfl⟩ := hf x
       exact ⟨⁅y, n⁆, ⟨y, n, hn, rfl⟩, (hfg y n).symm⟩
+
+
+include hf_inj hg_inj hfg in
+theorem Function.Injective.lieModule_lcs_map_eq (k : ℕ) :
+    (lowerCentralSeries R L M k : Submodule R M).map g ≤ lowerCentralSeries R L₂ M₂ k := by
+  induction k with
+  | zero =>
+    -- Base case: The lower central series at `k = 0` is the entire module.
+    simp [LinearMap.range_eq_top, Submodule.map_top]
+  | succ k ih =>
+    -- Inductive step: Relate the lower central series at `k + 1` to the lower central series at `k`.
+    rw [lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span', Submodule.map_span]
+    -- Show that the image of the generating set is contained in the lower central series of `L₂` acting on `M₂`.
+    apply Submodule.span_le.mpr
+    rintro m₂ ⟨m, ⟨x, n, m_n, h⟩, rfl⟩
+    simp
+    have help : ∃ (y : L₂) (n : M₂), n ∈ lowerCentralSeries R L₂ M₂ k ∧ ⁅y, n⁆ = g m := by sorry
+    obtain ⟨y, n, hn⟩ := help
+
+include hf_inj hg_inj hfg in
+theorem Function.Injective.lieModuleIsNilpotent [IsNilpotent L₂ M₂] : IsNilpotent L M := by
+  obtain ⟨k, hk⟩ := IsNilpotent.nilpotent R L₂ M₂
+  rw [isNilpotent_iff R]
+  use k
+  rw [← LieSubmodule.toSubmodule_inj] at hk ⊢
+  have hh := hf_inj.lieModule_lcs_map_eq hfg hg_inj k
+  apply Submodule.map_injective_of_injective hg_inj
+  rw [hk] at hh
+  simp_all only [LieSubmodule.bot_toSubmodule, LieSubmodule.toSubmodule_eq_bot, le_bot_iff, Submodule.map_bot]
 
 include hf hg hfg in
 theorem Function.Surjective.lieModuleIsNilpotent [IsNilpotent L M] : IsNilpotent L₂ M₂ := by
@@ -931,11 +962,33 @@ theorem center_le_largest_nilpotent_ideal : center R L ≤ largestNilpotentIdeal
   have h : IsNilpotent L (center R L) := inferInstance
   le_sSup h
 
-theorem largest_nilpotent_ideal_le_radical : largestNilpotentIdeal R L ≤ radical R L :=
-  sorry
+lemma nilpotent_restricts_to_ideal {I : LieIdeal R L} (hI : IsNilpotent L I)
+    : LieRing.IsNilpotent I := by
+  let f : I →ₗ⁅R⁆ L := I.incl
+  let g : I →ₗ⁅R⁆ I := 1
+  have hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆ := by
+    intro x m
+    simp [f, g]
+  have hf_inj : Function.Injective f := by
+    exact I.incl_injective
+  have hg_inj : Function.Injective g := by
+    exact Function.injective_id
+  have h4 := Function.Injective.lieModuleIsNilpotent hfg hf_inj hg_inj
+  exact h4
+
+theorem largest_nilpotent_ideal_le_radical : largestNilpotentIdeal R L ≤ radical R L := by
+  apply sSup_le_sSup
+  intro I HI
+  have h0 : IsNilpotent L I := by exact HI
+  have h15 : IsNilpotent I I := by
+    exact nilpotent_restricts_to_ideal (R := R) (L := L) h0
+  have h1 : IsSolvable I := by
+    apply isSolvable_of_isNilpotent I
+  exact h1
 
 @[simp] lemma largest_nilpotent_ideal_eq_top_of_isNilpotent [LieRing.IsNilpotent L] :
-    largestNilpotentIdeal R L = ⊤ :=
+    largestNilpotentIdeal R L = ⊤ := by
+  rw [eq_top_iff]
+  have h : LieRing.IsNilpotent (⊤ : LieSubalgebra R L) := inferInstance
   sorry
-
 end LieAlgebra
