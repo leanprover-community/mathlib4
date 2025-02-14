@@ -438,7 +438,6 @@ theorem Integrable.essSup_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace �
     Integrable (fun x : α => g x • f x) μ := by
   rw [← memℒp_one_iff_integrable] at *
   refine ⟨g_aestronglyMeasurable.smul hf.1, ?_⟩
-  have h : (1 : ℝ≥0∞) / 1 = 1 / ∞ + 1 / 1 := by norm_num
   have hg' : eLpNorm g ∞ μ ≠ ∞ := by rwa [eLpNorm_exponent_top]
   calc
     eLpNorm (fun x : α => g x • f x) 1 μ ≤ _ := by
@@ -454,7 +453,6 @@ theorem Integrable.smul_essSup {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β]
     Integrable (fun x : α => f x • g x) μ := by
   rw [← memℒp_one_iff_integrable] at *
   refine ⟨hf.1.smul g_aestronglyMeasurable, ?_⟩
-  have h : (1 : ℝ≥0∞) / 1 = 1 / 1 + 1 / ∞ := by norm_num
   have hg' : eLpNorm g ∞ μ ≠ ∞ := by rwa [eLpNorm_exponent_top]
   calc
     eLpNorm (fun x : α => f x • g x) 1 μ ≤ _ := by
