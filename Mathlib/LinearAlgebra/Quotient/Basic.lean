@@ -217,9 +217,10 @@ theorem mapQ_id (h : p ≤ p.comap LinearMap.id := (by rw [comap_id])) :
 theorem mapQ_pow {f : M →ₗ[R] M} (h : p ≤ p.comap f) (k : ℕ)
     (h' : p ≤ p.comap (f ^ k) := p.le_comap_pow_of_le_comap h k) :
     p.mapQ p (f ^ k) h' = p.mapQ p f h ^ k := by
-  induction' k with k ih
-  · simp [LinearMap.one_eq_id]
-  · simp only [LinearMap.iterate_succ]
+  induction k with
+  | zero => simp [LinearMap.one_eq_id]
+  | succ k ih =>
+    simp only [LinearMap.iterate_succ]
     -- Porting note: why does any of these `optParams` need to be applied? Why didn't `simp` handle
     -- all of this for us?
     convert mapQ_comp p p p f (f ^ k) h (p.le_comap_pow_of_le_comap h k)

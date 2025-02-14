@@ -30,7 +30,7 @@ This is a ring hom if the ring has characteristic dividing `n`
 
 -/
 
-assert_not_exists Submodule TwoSidedIdeal
+assert_not_exists Field Submodule TwoSidedIdeal
 
 open Function ZMod
 
@@ -196,8 +196,8 @@ ring, see `ZMod.intCast_cast`. -/
 theorem intCast_zmod_cast (a : ZMod n) : ((cast a : ℤ) : ZMod n) = a := by
   cases n
   · simp [ZMod.cast, ZMod]
-  · dsimp [ZMod.cast, ZMod]
-    erw [Int.cast_natCast, Fin.cast_val_eq_self]
+  · dsimp [ZMod.cast]
+    rw [Int.cast_natCast, natCast_zmod_val]
 
 theorem intCast_rightInverse : Function.RightInverse (cast : ZMod n → ℤ) ((↑) : ℤ → ZMod n) :=
   intCast_zmod_cast
@@ -281,8 +281,8 @@ theorem cast_add (h : m ∣ n) (a b : ZMod n) : (cast (a + b : ZMod n) : R) = ca
   cases n
   · apply Int.cast_add
   symm
-  dsimp [ZMod, ZMod.cast]
-  erw [← Nat.cast_add, ← sub_eq_zero, ← Nat.cast_sub (Nat.mod_le _ _),
+  dsimp [ZMod, ZMod.cast, ZMod.val]
+  rw [← Nat.cast_add, Fin.val_add, ← sub_eq_zero, ← Nat.cast_sub (Nat.mod_le _ _),
     @CharP.cast_eq_zero_iff R _ m]
   exact h.trans (Nat.dvd_sub_mod _)
 
@@ -290,8 +290,8 @@ theorem cast_mul (h : m ∣ n) (a b : ZMod n) : (cast (a * b : ZMod n) : R) = ca
   cases n
   · apply Int.cast_mul
   symm
-  dsimp [ZMod, ZMod.cast]
-  erw [← Nat.cast_mul, ← sub_eq_zero, ← Nat.cast_sub (Nat.mod_le _ _),
+  dsimp [ZMod, ZMod.cast, ZMod.val]
+  rw [← Nat.cast_mul, Fin.val_mul, ← sub_eq_zero, ← Nat.cast_sub (Nat.mod_le _ _),
     @CharP.cast_eq_zero_iff R _ m]
   exact h.trans (Nat.dvd_sub_mod _)
 
@@ -1050,30 +1050,6 @@ theorem natAbs_min_of_le_div_two (n : ℕ) (x y : ℤ) (he : (x : ZMod n) = y) (
   refine le_trans ?_ (Nat.le_mul_of_pos_right _ <| Int.natAbs_pos.2 hm)
   rw [← mul_two]; apply Nat.div_mul_le_self
 
-variable (p : ℕ) [Fact p.Prime]
-
-private theorem mul_inv_cancel_aux (a : ZMod p) (h : a ≠ 0) : a * a⁻¹ = 1 := by
-  obtain ⟨k, rfl⟩ := natCast_zmod_surjective a
-  apply coe_mul_inv_eq_one
-  apply Nat.Coprime.symm
-  rwa [Nat.Prime.coprime_iff_not_dvd Fact.out, ← CharP.cast_eq_zero_iff (ZMod p)]
-
-/-- Field structure on `ZMod p` if `p` is prime. -/
-instance instField : Field (ZMod p) where
-  mul_inv_cancel := mul_inv_cancel_aux p
-  inv_zero := inv_zero p
-  nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
-  qsmul := _
-  qsmul_def := fun _ _ => rfl
-
-/-- `ZMod p` is an integral domain when `p` is prime. -/
-instance (p : ℕ) [hp : Fact p.Prime] : IsDomain (ZMod p) := by
-  -- We need `cases p` here in order to resolve which `CommRing` instance is being used.
-  cases p
-  · exact (Nat.not_prime_zero hp.out).elim
-  exact @Field.isDomain (ZMod _) (inferInstanceAs (Field (ZMod _)))
-
 end ZMod
 
 theorem RingHom.ext_zmod {n : ℕ} {R : Type*} [Semiring R] (f g : ZMod n →+* R) : f = g := by
@@ -1100,8 +1076,8 @@ instance subsingleton_ringEquiv [Semiring R] : Subsingleton (ZMod n ≃+* R) :=
 theorem ringHom_map_cast [Ring R] (f : R →+* ZMod n) (k : ZMod n) : f (cast k) = k := by
   cases n
   · dsimp [ZMod, ZMod.cast] at f k ⊢; simp
-  · dsimp [ZMod, ZMod.cast] at f k ⊢
-    erw [map_natCast, Fin.cast_val_eq_self]
+  · dsimp [ZMod.cast]
+    rw [map_natCast, natCast_zmod_val]
 
 /-- Any ring homomorphism into `ZMod n` has a right inverse. -/
 theorem ringHom_rightInverse [Ring R] (f : R →+* ZMod n) :

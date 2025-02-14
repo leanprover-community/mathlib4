@@ -553,6 +553,9 @@ theorem symm_symm (f : M ≃[L] N) :
     f.symm.symm = f :=
   rfl
 
+theorem symm_bijective : Function.Bijective (symm : (M ≃[L] N) → _) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 @[simp]
 theorem apply_symm_apply (f : M ≃[L] N) (a : N) : f (f.symm a) = a :=
   f.toEquiv.apply_symm_apply a
