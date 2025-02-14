@@ -160,6 +160,8 @@ lean_exe unused where
 lean_exe mathlib_test_executable where
   root := `MathlibTest.MathlibTestExecutable
 
+set_option maxSynthPendingDepth 2
+
 /-!
 ## Other configuration
 -/
