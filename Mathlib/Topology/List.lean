@@ -56,8 +56,6 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
     have : List.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) u v := by
       refine List.Forall₂.flip ?_
       replace hv := hv.flip
-      #adaptation_note /-- nightly-2024-03-16: simp was
-      simp only [List.forall₂_and_left, flip] at hv ⊢ -/
       simp only [List.forall₂_and_left, Function.flip_def] at hv ⊢
       exact ⟨hv.1, hu.flip⟩
     refine mem_of_superset ?_ hvs
@@ -155,12 +153,8 @@ theorem tendsto_eraseIdx :
     dsimp [eraseIdx]
     exact tendsto_fst.cons ((@tendsto_eraseIdx n l).comp tendsto_snd)
 
-@[deprecated (since := "2024-05-04")] alias tendsto_removeNth := tendsto_eraseIdx
-
 theorem continuous_eraseIdx {n : ℕ} : Continuous fun l : List α => eraseIdx l n :=
   continuous_iff_continuousAt.mpr fun _a => tendsto_eraseIdx
-
-@[deprecated (since := "2024-05-04")] alias continuous_removeNth := continuous_eraseIdx
 
 @[to_additive]
 theorem tendsto_prod [Monoid α] [ContinuousMul α] {l : List α} :
@@ -223,12 +217,8 @@ theorem continuousAt_eraseIdx {n : ℕ} {i : Fin (n + 1)} :
     simp only [Vector.eraseIdx_val]
     exact Tendsto.comp List.tendsto_eraseIdx continuousAt_subtype_val
 
-@[deprecated (since := "2024-05-04")] alias continuousAt_removeNth := continuousAt_eraseIdx
-
 theorem continuous_eraseIdx {n : ℕ} {i : Fin (n + 1)} :
     Continuous (List.Vector.eraseIdx i : List.Vector α (n + 1) → List.Vector α n) :=
   continuous_iff_continuousAt.mpr fun ⟨_a, _l⟩ => continuousAt_eraseIdx
-
-@[deprecated (since := "2024-05-04")] alias continuous_removeNth := continuous_eraseIdx
 
 end Vector

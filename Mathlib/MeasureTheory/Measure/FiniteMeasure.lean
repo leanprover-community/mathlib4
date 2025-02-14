@@ -286,16 +286,15 @@ theorem ext_of_forall_lintegral_eq [HasOuterApproxClosed Ω] [BorelSpace Ω]
 /-- Two finite Borel measures are equal if the integrals of all bounded continuous functions with
 respect to both agree. -/
 theorem ext_of_forall_integral_eq [HasOuterApproxClosed Ω] [BorelSpace Ω]
-    {P P' : FiniteMeasure Ω} (h : ∀ (f : Ω →ᵇ ℝ), ∫ x, f x ∂P = ∫ x, f x ∂P') :
-    P = P' := by
+    {μ ν : FiniteMeasure Ω} (h : ∀ (f : Ω →ᵇ ℝ), ∫ x, f x ∂μ = ∫ x, f x ∂ν) :
+    μ = ν := by
   apply ext_of_forall_lintegral_eq
   intro f
-  apply (ENNReal.toReal_eq_toReal_iff' (ne_of_lt (lintegral_lt_top_of_nnreal P f))
-      (ne_of_lt (lintegral_lt_top_of_nnreal P' f))).mp
-  rw [toReal_lintegral_coe_eq_integral f P, toReal_lintegral_coe_eq_integral f P']
+  apply (ENNReal.toReal_eq_toReal_iff' (lintegral_lt_top_of_nnreal μ f).ne
+      (lintegral_lt_top_of_nnreal ν f).ne).mp
+  rw [toReal_lintegral_coe_eq_integral f μ, toReal_lintegral_coe_eq_integral f ν]
   exact h ⟨⟨fun x => (f x).toReal, Continuous.comp' NNReal.continuous_coe f.continuous⟩,
       f.map_bounded'⟩
-
 
 /-- The pairing of a finite (Borel) measure `μ` with a nonnegative bounded continuous
 function is obtained by (Lebesgue) integrating the (test) function against the measure.

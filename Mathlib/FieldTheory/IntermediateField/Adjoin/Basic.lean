@@ -110,27 +110,22 @@ theorem toSubalgebra_iSup_of_directed (dir : Directed (· ≤ ·) t) :
 instance finiteDimensional_iSup_of_finite [h : Finite ι] [∀ i, FiniteDimensional K (t i)] :
     FiniteDimensional K (⨆ i, t i : IntermediateField K L) := by
   rw [← iSup_univ]
-  refine Set.Finite.induction_on
-    (motive := fun s _ => FiniteDimensional K (⨆ i ∈ s, t i : IntermediateField K L))
-    _ Set.finite_univ ?_ ?_
-  all_goals dsimp
-  · rw [iSup_emptyset]
+  induction Set.univ, Set.finite_univ (α := ι) using Set.Finite.induction_on with
+  | empty =>
+    rw [iSup_emptyset]
     exact (botEquiv K L).symm.toLinearEquiv.finiteDimensional
-  · intro _ s _ _ hs
+  | insert s hs =>
     rw [iSup_insert]
     exact IntermediateField.finiteDimensional_sup _ _
 
+/-- See `finiteDimensional_iSup_of_finset'` for a stronger version,
+that was the one used in mathlib3. -/
 instance finiteDimensional_iSup_of_finset
-    /- Porting note: changed `h` from `∀ i ∈ s, FiniteDimensional K (t i)` because this caused an
-      error. See `finiteDimensional_iSup_of_finset'` for a stronger version, that was the one
-      used in mathlib3. -/
     {s : Finset ι} [∀ i, FiniteDimensional K (t i)] :
     FiniteDimensional K (⨆ i ∈ s, t i : IntermediateField K L) :=
   iSup_subtype'' s t ▸ IntermediateField.finiteDimensional_iSup_of_finite
 
 theorem finiteDimensional_iSup_of_finset'
-    /- Porting note: this was the mathlib3 version. Using `[h : ...]`, as in mathlib3, causes the
-    error "invalid parametric local instance". -/
     {s : Finset ι} (h : ∀ i ∈ s, FiniteDimensional K (t i)) :
     FiniteDimensional K (⨆ i ∈ s, t i : IntermediateField K L) :=
   have := Subtype.forall'.mp h
@@ -192,7 +187,6 @@ theorem adjoin_simple_isCompactElement (x : E) : IsCompactElement F⟮x⟯ := by
   have := hne.to_subtype
   rwa [← SetLike.mem_coe, coe_iSup_of_directed hs.directed_val, mem_iUnion, Subtype.exists] at hx
 
--- Porting note: original proof times out.
 /-- Adjoining a finite subset is compact in the lattice of intermediate fields. -/
 theorem adjoin_finset_isCompactElement (S : Finset E) :
     IsCompactElement (adjoin F S : IntermediateField F E) := by
@@ -220,16 +214,13 @@ theorem exists_finset_of_mem_iSup {ι : Type*} {f : ι → IntermediateField F E
 
 theorem exists_finset_of_mem_supr' {ι : Type*} {f : ι → IntermediateField F E} {x : E}
     (hx : x ∈ ⨆ i, f i) : ∃ s : Finset (Σ i, f i), x ∈ ⨆ i ∈ s, F⟮(i.2 : E)⟯ := by
--- Porting note: writing `fun i x h => ...` does not work.
-  refine exists_finset_of_mem_iSup (SetLike.le_def.mp (iSup_le fun i ↦ ?_) hx)
-  exact fun x h ↦ SetLike.le_def.mp (le_iSup_of_le ⟨i, x, h⟩ (by simp)) (mem_adjoin_simple_self F x)
+  refine exists_finset_of_mem_iSup (SetLike.le_def.mp (iSup_le fun i x h ↦ ?_) hx)
+  exact SetLike.le_def.mp (le_iSup_of_le ⟨i, x, h⟩ (by simp)) (mem_adjoin_simple_self F x)
 
 theorem exists_finset_of_mem_supr'' {ι : Type*} {f : ι → IntermediateField F E}
     (h : ∀ i, Algebra.IsAlgebraic F (f i)) {x : E} (hx : x ∈ ⨆ i, f i) :
     ∃ s : Finset (Σ i, f i), x ∈ ⨆ i ∈ s, adjoin F ((minpoly F (i.2 :)).rootSet E) := by
--- Porting note: writing `fun i x1 hx1 => ...` does not work.
-  refine exists_finset_of_mem_iSup (SetLike.le_def.mp (iSup_le (fun i => ?_)) hx)
-  intro x1 hx1
+  refine exists_finset_of_mem_iSup (SetLike.le_def.mp (iSup_le (fun i x1 hx1 => ?_)) hx)
   refine SetLike.le_def.mp (le_iSup_of_le ⟨i, x1, hx1⟩ ?_)
     (subset_adjoin F (rootSet (minpoly F x1) E) ?_)
   · rw [IntermediateField.minpoly_eq, Subtype.coe_mk]
@@ -360,7 +351,6 @@ theorem aeval_gen_minpoly (α : E) : aeval (AdjoinSimple.gen F α) (minpoly F α
   conv in aeval α => rw [← AdjoinSimple.algebraMap_gen F α]
   exact (aeval_algebraMap_apply E (AdjoinSimple.gen F α) _).symm
 
--- Porting note: original proof used `Exists.cases_on`.
 /-- algebra isomorphism between `AdjoinRoot` and `F⟮α⟯` -/
 @[stacks 09G1 "Algebraic case"]
 noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
