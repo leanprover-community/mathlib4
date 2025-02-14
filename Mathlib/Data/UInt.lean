@@ -32,26 +32,6 @@ run_cmd
     namespace $typeName
 
       instance : Neg $typeName where
-<<<<<<< HEAD
-        neg a := ofBitVec ⟨-a.val⟩
-
-      instance : Pow $typeName ℕ where
-        pow a n := ofBitVec ⟨a.val ^ n⟩
-
-      instance : SMul ℕ $typeName where
-        smul n a := ofBitVec ⟨n • a.val⟩
-
-      instance : SMul ℤ $typeName where
-        smul z a := ofBitVec ⟨z • a.val⟩
-
-      lemma neg_def (a : $typeName) : -a = ofBitVec ⟨-a.val⟩ := rfl
-
-      lemma pow_def (a : $typeName) (n : ℕ) : a ^ n = ofBitVec ⟨a.val ^ n⟩ := rfl
-
-      lemma nsmul_def (n : ℕ) (a : $typeName) : n • a = ofBitVec ⟨n • a.val⟩ := rfl
-
-      lemma zsmul_def (z : ℤ) (a : $typeName) : z • a = ofBitVec ⟨z • a.val⟩ := rfl
-=======
         neg a := mk ⟨-a.toFin⟩
 
       instance : Pow $typeName ℕ where
@@ -70,7 +50,6 @@ run_cmd
       lemma nsmul_def (n : ℕ) (a : $typeName) : n • a = ⟨⟨n • a.toFin⟩⟩ := rfl
 
       lemma zsmul_def (z : ℤ) (a : $typeName) : z • a = ⟨⟨z • a.toFin⟩⟩ := rfl
->>>>>>> origin/lean-pr-testing-7050
 
       open $typeName (eq_of_toFin_eq) in
       lemma toFin_injective : Function.Injective toFin := @eq_of_toFin_eq
