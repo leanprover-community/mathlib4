@@ -10,7 +10,7 @@ import Mathlib.RingTheory.Finiteness.Defs
 /-!
 # Minimum Cardinality of generating set of a submodule
 
-In this file, we define the minimum cardinality of generating set for a submodule, which is
+In this file, we define the minimum cardinality of a generating set for a submodule, which is
 implemented as `spanFinrank` and `spanRank`.
 The difference between these two definitions is only that when no finite generating set exists,
 `spanFinrank` takes value `0` but `spanRank` takes value `⊤`.
