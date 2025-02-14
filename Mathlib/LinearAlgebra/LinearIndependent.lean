@@ -8,7 +8,7 @@ import Mathlib.Data.Fin.Tuple.Reflection
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Lean.Expr.ExtraRecognizers
 import Mathlib.LinearAlgebra.Finsupp.SumProd
-import Mathlib.LinearAlgebra.Prodb
+import Mathlib.LinearAlgebra.Prod
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Module
