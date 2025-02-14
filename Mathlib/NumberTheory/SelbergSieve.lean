@@ -141,34 +141,28 @@ theorem nu_lt_self_of_dvd_prodPrimes (d : ℕ) (hdP : d ∣ P) (hd_ne_one : d �
       simp
 
 @[simp]
-def multSum (d : ℕ) : ℝ :=
-  ∑ n ∈ A, if d ∣ n then a n else 0
+def multSum (d : ℕ) : ℝ := ∑ n ∈ A, if d ∣ n then a n else 0
 
 scoped [SelbergSieve.Notation] notation3 "𝒜" => multSum
 
 -- A_d = ν (d)/d X + R_d
 @[simp]
-def rem (d : ℕ) : ℝ :=
-  𝒜 d - ν d * X
+def rem (d : ℕ) : ℝ := 𝒜 d - ν d * X
 
 scoped [SelbergSieve.Notation] notation3 "R" => rem
 
-def siftedSum : ℝ :=
-  ∑ d ∈ A, if Coprime P d then a d else 0
+def siftedSum : ℝ := ∑ d ∈ A, if Coprime P d then a d else 0
 
-/-! We will write the sifted -/
-def mainSum (muPlus : ℕ → ℝ) : ℝ :=
-  ∑ d ∈ divisors P, muPlus d * ν d
+def mainSum (muPlus : ℕ → ℝ) : ℝ := ∑ d ∈ divisors P, muPlus d * ν d
 
-def errSum (muPlus : ℕ → ℝ) : ℝ :=
-  ∑ d ∈ divisors P, |muPlus d| * |R d|
+def errSum (muPlus : ℕ → ℝ) : ℝ := ∑ d ∈ divisors P, |muPlus d| * |R d|
 
 theorem multSum_eq_main_err (d : ℕ) : multSum d = ν d * X + R d := by
   dsimp [rem]
   ring
 
-theorem siftedSum_as_delta : siftedSum = ∑ d ∈ support, a d * if Nat.gcd P d = 1 then 1 else 0 :=
-  by
+theorem siftedsum_eq_sum_support_mul_ite :
+    siftedSum = ∑ d ∈ support, a d * if Nat.gcd P d = 1 then 1 else 0 := by
   dsimp only [siftedSum]
   simp_rw [mul_ite, mul_one, mul_zero]
 
@@ -186,7 +180,7 @@ theorem upper_bound_of_UpperMoebius (muPlus : ℕ → ℝ) (h : UpperMoebius muP
     _ = ∑ n ∈ support, ∑ d ∈ divisors P, if d ∣ n then a n * muPlus d else 0 := ?caseB
     _ = ∑ d ∈ divisors P, muPlus d * multSum d := ?caseC
   case caseA =>
-    rw [siftedSum_as_delta]
+    rw [siftedsum_eq_sum_support_mul_ite]
     apply Finset.sum_le_sum; intro n _
     exact mul_le_mul_of_nonneg_left (hμ (Nat.gcd P n)) (weights_nonneg n)
   case caseB =>
