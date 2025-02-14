@@ -3,7 +3,7 @@ Copyright (c) 2025 Peter Nelson and Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson, Junyan Xu
 -/
-import Mathlib.Data.Matroid.Closure
+import Mathlib.Data.Matroid.Rank.Finite
 import Mathlib.Data.Matroid.Map
 import Mathlib.SetTheory.Cardinal.Arithmetic
 
@@ -363,6 +363,9 @@ theorem rankFinite_iff_cRank_lt_aleph0 : M.RankFinite ↔ M.cRank < ℵ₀ := by
   have ⟨B, hB⟩ := M.exists_base
   simp_rw [← finite_coe_iff, ← lt_aleph0_iff_finite]
   exact ⟨B, hB, hB.cardinalMk_le_cRank.trans_lt h⟩
+
+theorem isRkFinite_iff_cRk_lt_aleph0 : M.IsRkFinite X ↔ M.cRk X < ℵ₀ := by
+  rw [IsRkFinite, rankFinite_iff_cRank_lt_aleph0, cRank_restrict]
 
 theorem Indep.base_of_cRank_le [M.RankFinite] (ind : M.Indep I) (le : M.cRank ≤ #I) : M.Base I :=
   ind.base_of_maximal fun _J ind_J hIJ ↦ ind.finite.eq_of_subset_of_encard_le' hIJ <|

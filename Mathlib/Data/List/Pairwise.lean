@@ -29,7 +29,7 @@ open Nat Function
 
 namespace List
 
-variable {α β : Type*} {R : α → α → Prop} {l : List α}
+variable {α β : Type*} {R : α → α → Prop} {l : List α} {a : α}
 
 mk_iff_of_inductive_prop List.Pairwise List.pairwise_iff
 
@@ -49,8 +49,8 @@ theorem Pairwise.forall (hR : Symmetric R) (hl : l.Pairwise R) :
 theorem Pairwise.set_pairwise (hl : Pairwise R l) (hr : Symmetric R) : { x | x ∈ l }.Pairwise R :=
   hl.forall hr
 
-theorem pairwise_of_reflexive_of_forall_ne {l : List α} {r : α → α → Prop} (hr : Reflexive r)
-    (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → r a b) : l.Pairwise r := by
+theorem pairwise_of_reflexive_of_forall_ne (hr : Reflexive R)
+    (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → R a b) : l.Pairwise R := by
   rw [pairwise_iff_forall_sublist]
   intro a b hab
   if heq : a = b then
@@ -58,6 +58,23 @@ theorem pairwise_of_reflexive_of_forall_ne {l : List α} {r : α → α → Prop
   else
     apply h <;> try (apply hab.subset; simp)
     exact heq
+
+theorem Pairwise.rel_head_tail (h₁ : l.Pairwise R) (ha : a ∈ l.tail) :
+    R (l.head <| ne_nil_of_mem <| mem_of_mem_tail ha) a := by
+  cases l with
+  | nil => simp at ha
+  | cons b l => exact (pairwise_cons.1 h₁).1 a ha
+
+theorem Pairwise.rel_head_of_rel_head_head (h₁ : l.Pairwise R) (ha : a ∈ l)
+    (hhead : R (l.head <| ne_nil_of_mem ha) (l.head <| ne_nil_of_mem ha)) :
+    R (l.head <| ne_nil_of_mem ha) a := by
+  cases l with
+  | nil => simp at ha
+  | cons b l => exact (mem_cons.mp ha).elim (· ▸ hhead) ((pairwise_cons.1 h₁).1 _)
+
+theorem Pairwise.rel_head [IsRefl α R] (h₁ : l.Pairwise R) (ha : a ∈ l) :
+    R (l.head <| ne_nil_of_mem ha) a :=
+  h₁.rel_head_of_rel_head_head ha (refl_of ..)
 
 /-! ### Pairwise filtering -/
 
