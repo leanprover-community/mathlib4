@@ -8,7 +8,7 @@ import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Algebra.Module.Submodule.Defs
 import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Algebra.PUnitInstances.Module
+import Mathlib.Algebra.Module.PUnit
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
@@ -201,6 +201,7 @@ instance completeLattice : CompleteLattice (Submodule R M) :=
     le_inf := fun _ _ _ ↦ Set.subset_inter
     inf_le_left := fun _ _ ↦ Set.inter_subset_left
     inf_le_right := fun _ _ ↦ Set.inter_subset_right
+    sSup S := sInf {sm | ∀ s ∈ S, s ≤ sm}
     le_sSup := fun _ _ hs ↦ le_sInf' fun _ hq ↦ by exact hq _ hs
     sSup_le := fun _ _ hs ↦ sInf_le' hs
     le_sInf := fun _ _ ↦ le_sInf'
@@ -366,7 +367,6 @@ section NatSubmodule
 ## ℕ-submodules
 -/
 
--- Porting note: `S.toNatSubmodule` doesn't work. I used `AddSubmonoid.toNatSubmodule S` instead.
 /-- An additive submonoid is equivalent to a ℕ-submodule. -/
 def AddSubmonoid.toNatSubmodule : AddSubmonoid M ≃o Submodule ℕ M where
   toFun S := { S with smul_mem' := fun r s hs ↦ show r • s ∈ S from nsmul_mem hs _ }
@@ -382,7 +382,7 @@ theorem AddSubmonoid.toNatSubmodule_symm :
 
 @[simp]
 theorem AddSubmonoid.coe_toNatSubmodule (S : AddSubmonoid M) :
-    (AddSubmonoid.toNatSubmodule S : Set M) = S :=
+    (S.toNatSubmodule : Set M) = S :=
   rfl
 
 @[simp]
@@ -392,7 +392,7 @@ theorem AddSubmonoid.toNatSubmodule_toAddSubmonoid (S : AddSubmonoid M) :
 
 @[simp]
 theorem Submodule.toAddSubmonoid_toNatSubmodule (S : Submodule ℕ M) :
-    AddSubmonoid.toNatSubmodule S.toAddSubmonoid = S :=
+    S.toAddSubmonoid.toNatSubmodule = S :=
   AddSubmonoid.toNatSubmodule.apply_symm_apply S
 
 end NatSubmodule
@@ -407,7 +407,6 @@ section IntSubmodule
 
 variable [AddCommGroup M]
 
--- Porting note: `S.toIntSubmodule` doesn't work. I used `AddSubgroup.toIntSubmodule S` instead.
 /-- An additive subgroup is equivalent to a ℤ-submodule. -/
 def AddSubgroup.toIntSubmodule : AddSubgroup M ≃o Submodule ℤ M where
   toFun S := { S with smul_mem' := fun _ _ hs ↦ S.zsmul_mem hs _ }
@@ -423,7 +422,7 @@ theorem AddSubgroup.toIntSubmodule_symm :
 
 @[simp]
 theorem AddSubgroup.coe_toIntSubmodule (S : AddSubgroup M) :
-    (AddSubgroup.toIntSubmodule S : Set M) = S :=
+    (S.toIntSubmodule : Set M) = S :=
   rfl
 
 @[simp]
@@ -433,7 +432,7 @@ theorem AddSubgroup.toIntSubmodule_toAddSubgroup (S : AddSubgroup M) :
 
 @[simp]
 theorem Submodule.toAddSubgroup_toIntSubmodule (S : Submodule ℤ M) :
-    AddSubgroup.toIntSubmodule S.toAddSubgroup = S :=
+    S.toAddSubgroup.toIntSubmodule = S :=
   AddSubgroup.toIntSubmodule.apply_symm_apply S
 
 end IntSubmodule

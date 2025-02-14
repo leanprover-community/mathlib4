@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
+import Mathlib.Topology.Algebra.Group.CompactOpen
 
 /-!
 # Pontryagin dual
@@ -101,7 +101,7 @@ theorem map_apply (f : ContinuousMonoidHom A B) (x : PontryaginDual B) (y : A) :
   rfl
 
 @[simp]
-theorem map_one : map (one A B) = one (PontryaginDual B) (PontryaginDual A) :=
+theorem map_one : map (1 : ContinuousMonoidHom A B) = 1 :=
   ext fun x => ext (fun _y => OneHomClass.map_one x)
 
 @[simp]

@@ -167,7 +167,7 @@ theorem eq_zero_iff_not_coprime {a : ℤ} {b : ℕ} [NeZero b] : J(a | b) = 0 �
 
 /-- The symbol `J(a | b)` is nonzero when `a` and `b` are coprime. -/
 protected theorem ne_zero {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a | b) ≠ 0 := by
-  cases' eq_zero_or_neZero b with hb
+  rcases eq_zero_or_neZero b with hb | _
   · rw [hb, zero_right]
     exact one_ne_zero
   · contrapose! h; exact eq_zero_iff_not_coprime.1 h
@@ -196,15 +196,16 @@ theorem pow_left (a : ℤ) (e b : ℕ) : J(a ^ e | b) = J(a | b) ^ e :=
 
 /-- We have that `J(a | b^e) = J(a | b)^e`. -/
 theorem pow_right (a : ℤ) (b e : ℕ) : J(a | b ^ e) = J(a | b) ^ e := by
-  induction' e with e ih
-  · rw [Nat.pow_zero, _root_.pow_zero, one_right]
-  · cases' eq_zero_or_neZero b with hb
+  induction e with
+  | zero => rw [Nat.pow_zero, _root_.pow_zero, one_right]
+  | succ e ih =>
+    rcases eq_zero_or_neZero b with hb | _
     · rw [hb, zero_pow e.succ_ne_zero, zero_right, one_pow]
     · rw [_root_.pow_succ, _root_.pow_succ, mul_right, ih]
 
 /-- The square of `J(a | b)` is `1` when `a` and `b` are coprime. -/
 theorem sq_one {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a | b) ^ 2 = 1 := by
-  cases' eq_one_or_neg_one h with h₁ h₁ <;> rw [h₁] <;> rfl
+  rcases eq_one_or_neg_one h with h₁ | h₁ <;> rw [h₁] <;> rfl
 
 /-- The symbol `J(a^2 | b)` is `1` when `a` and `b` are coprime. -/
 theorem sq_one' {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a ^ 2 | b) = 1 := by rw [pow_left, sq_one h]
@@ -236,16 +237,17 @@ theorem prime_dvd_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : J(a | p)
 
 /-- We can pull out a product over a list in the first argument of the Jacobi symbol. -/
 theorem list_prod_left {l : List ℤ} {n : ℕ} : J(l.prod | n) = (l.map fun a => J(a | n)).prod := by
-  induction' l with n l' ih
-  · simp only [List.prod_nil, List.map_nil, one_left]
-  · rw [List.map, List.prod_cons, List.prod_cons, mul_left, ih]
+  induction l with
+  | nil => simp only [List.prod_nil, List.map_nil, one_left]
+  | cons n l' ih => rw [List.map, List.prod_cons, List.prod_cons, mul_left, ih]
 
 /-- We can pull out a product over a list in the second argument of the Jacobi symbol. -/
 theorem list_prod_right {a : ℤ} {l : List ℕ} (hl : ∀ n ∈ l, n ≠ 0) :
     J(a | l.prod) = (l.map fun n => J(a | n)).prod := by
-  induction' l with n l' ih
-  · simp only [List.prod_nil, one_right, List.map_nil]
-  · have hn := hl n (List.mem_cons_self n l')
+  induction l with
+  | nil => simp only [List.prod_nil, one_right, List.map_nil]
+  | cons n l' ih =>
+    have hn := hl n (List.mem_cons_self n l')
     -- `n ≠ 0`
     have hl' := List.prod_ne_zero fun hf => hl 0 (List.mem_cons_of_mem _ hf) rfl
     -- `l'.prod ≠ 0`
@@ -365,7 +367,7 @@ namespace qrSign
 theorem neg_one_pow {m n : ℕ} (hm : Odd m) (hn : Odd n) :
     qrSign m n = (-1) ^ (m / 2 * (n / 2)) := by
   rw [qrSign, pow_mul, ← χ₄_eq_neg_one_pow (odd_iff.mp hm)]
-  cases' odd_mod_four_iff.mp (odd_iff.mp hm) with h h
+  rcases odd_mod_four_iff.mp (odd_iff.mp hm) with h | h
   · rw [χ₄_nat_one_mod_four h, jacobiSym.one_left, one_pow]
   · rw [χ₄_nat_three_mod_four h, ← χ₄_eq_neg_one_pow (odd_iff.mp hn), jacobiSym.at_neg_one hn]
 
@@ -476,13 +478,13 @@ theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * 
   -- Porting note: In mathlib3, it was written `cases' e`. In Lean 4, this resulted in the choice
   -- of a name other than e (for the case distinction of line 482) so we indicate the name
   -- to use explicitly.
-  cases' e with e; · rfl
+  rcases e with - | e; · rfl
   · rw [χ₈_nat_mod_eight, χ₈_nat_mod_eight (b % (4 * a)), mod_mod_of_dvd b]
     use 2 ^ e * a'; rw [ha₂, Nat.pow_succ]; ring
 
 /-- The Jacobi symbol `J(a | b)` depends only on `b` mod `4*a`. -/
 theorem mod_right (a : ℤ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * a.natAbs)) := by
-  cases' Int.natAbs_eq a with ha ha <;> nth_rw 2 [ha] <;> nth_rw 1 [ha]
+  rcases Int.natAbs_eq a with ha | ha <;> nth_rw 2 [ha] <;> nth_rw 1 [ha]
   · exact mod_right' a.natAbs hb
   · have hb' : Odd (b % (4 * a.natAbs)) := hb.mod_even (Even.mul_right (by decide) _)
     rw [jacobiSym.neg _ hb, jacobiSym.neg _ hb', mod_right' _ hb, χ₄_nat_mod_four,
@@ -527,7 +529,7 @@ decreasing_by
 private theorem fastJacobiSymAux.eq_jacobiSym {a b : ℕ} {flip : Bool} {ha0 : a > 0}
     (hb2 : b % 2 = 1) (hb1 : b > 1) :
     fastJacobiSymAux a b flip ha0 = if flip then -J(a | b) else J(a | b) := by
-  induction' a using Nat.strongRecOn with a IH generalizing b flip
+  induction a using Nat.strongRecOn generalizing b flip with | ind a IH =>
   unfold fastJacobiSymAux
   split <;> rename_i ha4
   · rw [IH (a / 4) (a.div_lt_self ha0 (by decide)) hb2 hb1]
@@ -567,7 +569,7 @@ private def fastJacobiSym (a : ℤ) (b : ℕ) : ℤ :=
 
 @[csimp] private theorem fastJacobiSym.eq : jacobiSym = fastJacobiSym := by
   ext a b
-  induction' b using Nat.strongRecOn with b IH
+  induction b using Nat.strongRecOn with | ind b IH =>
   unfold fastJacobiSym
   split_ifs with hb0 hb2 ha2 hb1 hab
   · rw [hb0, zero_right]
@@ -575,7 +577,8 @@ private def fastJacobiSym (a : ℤ) (b : ℕ) : ℤ :=
     refine Nat.le_of_dvd (Int.gcd_pos_iff.mpr (mod_cast .inr hb0)) ?_
     refine Nat.dvd_gcd (Int.ofNat_dvd_left.mp (Int.dvd_of_emod_eq_zero ha2)) ?_
     exact Int.ofNat_dvd_left.mp (Int.dvd_of_emod_eq_zero (mod_cast hb2))
-  · rw [← IH (b / 2) (b.div_lt_self (Nat.pos_of_ne_zero hb0) one_lt_two)]
+  · dsimp only
+    rw [← IH (b / 2) (b.div_lt_self (Nat.pos_of_ne_zero hb0) one_lt_two)]
     obtain ⟨b, rfl⟩ := Nat.dvd_of_mod_eq_zero hb2
     rw [mul_right' a (by decide) fun h ↦ hb0 (mul_eq_zero_of_right 2 h),
       b.mul_div_cancel_left (by decide), mod_left a 2, Nat.cast_ofNat,
