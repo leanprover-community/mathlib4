@@ -948,7 +948,7 @@ protected theorem single_smul (p) (i : α) (c : 𝕜) (a : E i) :
 @[simps]
 def lsingle (p) (i : α) : E i →ₗ[𝕜] lp E p where
   toFun := lp.single p i
-  __ := singleAddHom p i
+  __ := singleAddMonoidHom p i
   map_smul' := lp.single_smul p i
 
 protected theorem norm_sum_single (hp : 0 < p.toReal) (f : ∀ i, E i) (s : Finset α) :
@@ -982,6 +982,33 @@ protected theorem norm_single (hp : 0 < p) (i : α) (x : E i) : ‖lp.single p i
     · exact norm_nonneg _
     · intro j hji
       rw [lp.coeFn_single, Pi.single_eq_of_ne hji, _root_.norm_zero, Real.zero_rpow this.ne']
+
+theorem isometry_single [Fact (1 ≤ p)] (i : α) : Isometry (lp.single (E := E) p i) :=
+  AddMonoidHomClass.isometry_of_norm (lp.singleAddMonoidHom (E := E) p i) fun _ ↦
+    lp.norm_single (zero_lt_one.trans_le Fact.out) _ _
+
+variable (p E) in
+/-- `lp.single` as a continuous morphism of additive monoids. -/
+def singleContinuousAddMonoidHom [Fact (1 ≤ p)] (i : α) :
+    ContinuousAddMonoidHom (E i) (lp E p) where
+  __ := singleAddMonoidHom p i
+  continuous_toFun := isometry_single i |>.continuous
+
+@[simp]
+theorem singleContinuousAddMonoidHom_apply [Fact (1 ≤ p)] (i : α) (x : E i) :
+    singleContinuousAddMonoidHom E p i x = lp.single p i x :=
+  rfl
+
+variable (𝕜 p E) in
+/-- `lp.single` as a continuous linear map. -/
+def singleContinuousLinearMap [Fact (1 ≤ p)] (i : α) : E i →L[𝕜] lp E p where
+  __ := lsingle p i
+  cont := isometry_single i |>.continuous
+
+@[simp]
+theorem singleContinuousLinearMap_apply [Fact (1 ≤ p)](i : α) (x : E i) :
+    singleContinuousLinearMap 𝕜 E p i x = lp.single p i x :=
+  rfl
 
 protected theorem norm_sub_norm_compl_sub_single (hp : 0 < p.toReal) (f : lp E p) (s : Finset α) :
     ‖f‖ ^ p.toReal - ‖f - ∑ i ∈ s, lp.single p i (f i)‖ ^ p.toReal =
@@ -1030,6 +1057,36 @@ protected theorem hasSum_single [Fact (1 ≤ p)] (hp : p ≠ ⊤) (f : lp E p) :
     simp only [Real.abs_rpow_of_nonneg (norm_nonneg _), abs_norm]
   exact this ▸ hs
 
+/-- Two continuous additive maps from `lp E p` agree if they agree on `lp.single`.
+
+See note [partially-applied ext lemmas]. -/
+@[local ext] -- not globally `ext` due to `hp`
+theorem ext_continuousAddMonoidHom
+    {F : Type*} [AddCommMonoid F] [TopologicalSpace F] [T2Space F]
+    [Fact (1 ≤ p)] (hp : p ≠ ⊤) ⦃f g : ContinuousAddMonoidHom (lp E p) F⦄
+    (h : ∀ i,
+      f.comp (singleContinuousAddMonoidHom E p i) = g.comp (singleContinuousAddMonoidHom E p i)) :
+    f = g := by
+  ext x
+  classical
+  have := lp.hasSum_single hp x
+  rw [← (this.map f f.continuous).tsum_eq, ← (this.map g g.continuous).tsum_eq]
+  congr! 2 with i
+  exact DFunLike.congr_fun (h i) (x i)
+
+/-- Two continuous linear maps from `lp E p` agree if they agree on `lp.single`.
+
+See note [partially-applied ext lemmas]. -/
+@[local ext] -- not globally `ext` due to `hp`
+theorem ext_continuousLinearMap
+    {F : Type*} [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F] [T2Space F]
+    [Fact (1 ≤ p)] (hp : p ≠ ⊤) ⦃f g : lp E p →L[𝕜] F⦄
+    (h : ∀ i,
+      f.comp (singleContinuousLinearMap 𝕜 E p i) = g.comp (singleContinuousLinearMap 𝕜 E p i)) :
+    f = g :=
+  ContinuousLinearMap.toContinuousAddMonoidHom_injective <|
+    ext_continuousAddMonoidHom hp fun i => ContinuousLinearMap.toContinuousAddMonoidHom_inj.2 (h i)
+
 end Single
 
 section Topology
@@ -1052,66 +1109,7 @@ theorem uniformContinuous_coe [_i : Fact (1 ≤ p)] :
   have : ‖f i - g i‖ ≤ ‖f - g‖ := norm_apply_le_norm hp (f - g) i
   exact this.trans_lt hfg
 
-theorem isometry_single [Fact (1 ≤ p)] [DecidableEq α] (i : α) :
-    Isometry (lp.single (E := E) p i) :=
-  AddMonoidHomClass.isometry_of_norm (lp.singleAddMonoidHom (E := E) p i) fun _ ↦
-    lp.norm_single (zero_lt_one.trans_le Fact.out) _ _
-
 variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
-
-variable (p E) in
-/-- `lp.single` as a continuous morphism of additive monoids. -/
-def singleContinuousAddMonoidHom [Fact (1 ≤ p)] [DecidableEq α] (i : α) :
-    ContinuousAddMonoidHom (E i) (lp E p) where
-  __ := singleAddHom p i
-  continuous_toFun := isometry_single i |>.continuous
-
-@[simp]
-theorem singleContinuousAddMonoidHom_apply [Fact (1 ≤ p)] [DecidableEq α] (i : α) (x : E i) :
-    singleContinuousAddMonoidHom E p i x = lp.single p i x :=
-  rfl
-
-variable (𝕜 p E) in
-/-- `lp.single` as a continuous linear map. -/
-def singleContinuousLinearMap [Fact (1 ≤ p)] [DecidableEq α] (i : α) :
-    E i →L[𝕜] lp E p where
-  __ := lsingle p i
-  cont := isometry_single i |>.continuous
-
-@[simp]
-theorem singleContinuousLinearMap_apply [Fact (1 ≤ p)] [DecidableEq α] (i : α) (x : E i) :
-    singleContinuousLinearMap 𝕜 E p i x = lp.single p i x :=
-  rfl
-
-/-- Two continuous additive maps from `lp E p` agree if they agree on `lp.single`.
-
-See note [partially-applied ext lemmas]. -/
-@[local ext] -- not globally `ext` due to `hp`
-theorem ext_continuousAddMonoidHom
-    [DecidableEq α] {F} [AddCommMonoid F] [TopologicalSpace F] [T2Space F]
-    [Fact (1 ≤ p)] (hp : p ≠ ⊤) ⦃f g : ContinuousAddMonoidHom (lp E p) F⦄
-    (h : ∀ i,
-      f.comp (singleContinuousAddMonoidHom E p i) = g.comp (singleContinuousAddMonoidHom E p i)) :
-    f = g := by
-  ext x
-  classical
-  have := lp.hasSum_single hp x
-  rw [← (this.map f f.continuous).tsum_eq, ← (this.map g g.continuous).tsum_eq]
-  congr! 2 with i
-  exact DFunLike.congr_fun (h i) (x i)
-
-/-- Two continuous linear maps from `lp E p` agree if they agree on `lp.single`.
-
-See note [partially-applied ext lemmas]. -/
-@[local ext] -- not globally `ext` due to `hp`
-theorem ext_continuousLinearMap
-    [DecidableEq α] {F} [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F] [T2Space F]
-    [Fact (1 ≤ p)] (hp : p ≠ ⊤) ⦃f g : lp E p →L[𝕜] F⦄
-    (h : ∀ i,
-      f.comp (singleContinuousLinearMap 𝕜 E p i) = g.comp (singleContinuousLinearMap 𝕜 E p i)) :
-    f = g :=
-  ContinuousLinearMap.toContinuousAddMonoidHom_injective <|
-    ext_continuousAddMonoidHom hp fun i => ContinuousLinearMap.toContinuousAddMonoidHom_inj.2 (h i)
 
 variable {ι : Type*} {l : Filter ι} [Filter.NeBot l]
 
