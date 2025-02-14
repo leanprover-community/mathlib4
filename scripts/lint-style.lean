@@ -134,8 +134,13 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   -- file could re-use an outdated version of the nolints file.
   -- (For syntax linters, such a bug actually occurred in mathlib.)
   -- This script is re-run each time, hence is immune to such issues.
-  let nolints ← IO.FS.lines ("scripts" / "nolints-style.txt")
-  let mut numberErrors ← lintModules nolints allModuleNames style fix
+  let nolintsFile : System.FilePath := match args.positionalArg? "nolints-file" with
+  | some filename => filename.value
+  | none => "scripts" / "nolints-style.txt"
+  if !(← System.FilePath.pathExists nolintsFile) then
+    IO.eprintln s!"error: path {nolintsFile} does not exist"
+    return 1
+  let mut numberErrors ← lintModules (← IO.FS.lines nolintsFile) allModuleNames style fix
   -- If we are linting mathlib, also check the init imports and for undocumented scripts.
   if libraries.contains "Mathlib" then
     if ← checkInitImports then numberErrors := numberErrors + 1
@@ -158,11 +163,13 @@ def lintStyle : Cmd := `[Cli|
 
   FLAGS:
     github;     "Print errors in a format suitable for github problem matchers\n\
-                 otherwise, produce human-readable output"
+                otherwise, produce human-readable output"
     fix;        "Automatically fix the style error, if possible"
+    "nolints-file": String; "Path to a file with linter exceptions: \
+                if omitted, scripts/nolints-style.txt is assumed"
 
   ARGS:
-    ...libraries: String; "Run linters precisely in these libraries\
+    ...libraries: String; "Run linters precisely in these libraries\n\
       By default, these are Mathlib, Archive and Counterexamples"
 ]
 
