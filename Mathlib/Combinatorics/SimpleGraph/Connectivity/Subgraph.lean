@@ -257,16 +257,7 @@ theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
     exact toSubgraph_adj_getVert _ hi.2
 
 lemma mem_support_of_adj_toSubgraph {u v u' v' : V} {p : G.Walk u v} (hp : p.toSubgraph.Adj u' v') :
-    u' ∈ p.support := by
-  obtain ⟨i, hi⟩ := p.toSubgraph_adj_iff.mp hp
-  simp only [mem_support_iff_exists_getVert, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq,
-    Prod.swap_prod_mk] at hi ⊢
-  cases' hi.1 with hl hr
-  · exact ⟨i, ⟨hl.1, by omega⟩⟩
-  · aesop
-
-lemma mem_support_of_adj_toSubgraph' {u v u' v' : V} (p : G.Walk u v)
-    (hp : p.toSubgraph.Adj u' v') : v' ∈ p.support := p.mem_support_of_adj_toSubgraph hp.symm
+    u' ∈ p.support := p.mem_verts_toSubgraph.mp (p.toSubgraph.edge_vert hp)
 
 namespace IsPath
 
