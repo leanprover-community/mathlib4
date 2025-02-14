@@ -118,7 +118,7 @@ theorem disjiUnion_map {s : Finset α} {t : α → Finset β} {f : β ↪ γ} {h
       s.disjiUnion (fun a => (t a).map f) (h.mono' fun _ _ ↦ (disjoint_map _).2) :=
   eq_of_veq <| Multiset.map_bind _ _ _
 
-variable {f : α → β} (op : β → β → β) [hc : Std.Commutative op] [ha : Std.Associative op]
+variable {f : α → β} {op : β → β → β} [hc : Std.Commutative op] [ha : Std.Associative op]
 
 theorem fold_disjiUnion {ι : Type*} {s : Finset ι} {t : ι → Finset α} {b : ι → β} {b₀ : β} (h) :
     (s.disjiUnion t h).fold op (s.fold op b₀ b) f = s.fold op b₀ fun i => (t i).fold op (b i) f :=

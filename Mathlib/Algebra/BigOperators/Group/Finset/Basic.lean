@@ -9,6 +9,7 @@ import Mathlib.Algebra.Group.Even
 import Mathlib.Data.Finset.Piecewise
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Fintype.Pi
 
 /-!

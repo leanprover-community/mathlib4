@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.GCDMonoid.Basic
+import Mathlib.Algebra.Order.Group.Multiset
 import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Data.Multiset.Fold
 

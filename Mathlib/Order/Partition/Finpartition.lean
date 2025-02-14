@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Data.Finset.Lattice.Prod
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Order.Atoms
