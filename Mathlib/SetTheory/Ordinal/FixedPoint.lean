@@ -150,9 +150,7 @@ theorem not_bddAbove_fp_family [Small.{u} ι] (H : ∀ i, IsNormal (f i)) :
 def derivFamily (f : ι → Ordinal.{u} → Ordinal.{u}) : Ordinal.{u} → Ordinal.{u} :=
   enumOrd (⋂ i, Function.fixedPoints (f i))
 
-@[deprecated "this is a definitional equality" (since := "2025-02-13")]
-theorem derivFamily_eq_enumOrd [Small.{u} ι] (_H : ∀ i, IsNormal (f i)) :
-    derivFamily f = enumOrd (⋂ i, Function.fixedPoints (f i)) :=
+theorem derivFamily_eq_enumOrd : derivFamily f = enumOrd (⋂ i, Function.fixedPoints (f i)) :=
   rfl
 
 theorem derivFamily_fp [Small.{u} ι] {i} (H : ∀ i, IsNormal (f i)) (o : Ordinal) :
