@@ -59,7 +59,6 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
     map_smulₛₗ := fun f r x => by
       simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): A new definition underlying a coercion `↑`.
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
@@ -89,7 +88,6 @@ instance funLike : FunLike (A →ₐ[R] B) A B where
     rcases g with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
     congr
 
--- Porting note: This instance is moved.
 instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
   map_add f := f.map_add'
   map_zero f := f.map_zero'
@@ -112,14 +110,12 @@ protected theorem coe_coe {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f :
 theorem toFun_eq_coe (f : A →ₐ[R] B) : f.toFun = f :=
   rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): A new definition underlying a coercion `↑`.
 @[coe]
 def toMonoidHom' (f : A →ₐ[R] B) : A →* B := (f : A →+* B)
 
 instance coeOutMonoidHom : CoeOut (A →ₐ[R] B) (A →* B) :=
   ⟨AlgHom.toMonoidHom'⟩
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): A new definition underlying a coercion `↑`.
 @[coe]
 def toAddMonoidHom' (f : A →ₐ[R] B) : A →+ B := (f : A →+* B)
 
@@ -134,7 +130,6 @@ theorem coe_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A → B) = 
 theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅) : ⇑(⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₐ[R] B) = f :=
   rfl
 
--- Porting note: This theorem is new.
 @[simp, norm_cast]
 theorem coe_ringHom_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A →+* B) = f :=
   rfl

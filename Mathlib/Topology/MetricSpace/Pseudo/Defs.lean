@@ -5,8 +5,9 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 import Mathlib.Data.ENNReal.Real
 import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.EMetricSpace.Defs
-import Mathlib.Topology.UniformSpace.Compact
+import Mathlib.Topology.UniformSpace.Basic
 
 /-!
 ## Pseudo-metric spaces
@@ -38,6 +39,8 @@ TODO (anyone): Add "Main results" section.
 
 pseudo_metric, dist
 -/
+
+assert_not_exists compactSpace_uniformity
 
 open Set Filter TopologicalSpace Bornology
 open scoped ENNReal NNReal Uniformity Topology
@@ -123,8 +126,10 @@ class PseudoMetricSpace (α : Type u) extends Dist α : Type u where
 @[ext]
 theorem PseudoMetricSpace.ext {α : Type*} {m m' : PseudoMetricSpace α}
     (h : m.toDist = m'.toDist) : m = m' := by
-  cases' m with d _ _ _ ed hed U hU B hB
-  cases' m' with d' _ _ _ ed' hed' U' hU' B' hB'
+  let d := m.toDist
+  obtain ⟨_, _, _, _, hed, _, hU, _, hB⟩ := m
+  let d' := m'.toDist
+  obtain ⟨_, _, _, _, hed', _, hU', _, hB'⟩ := m'
   obtain rfl : d = d' := h
   congr
   · ext x y : 2
@@ -196,6 +201,14 @@ theorem dist_triangle4_right (x₁ y₁ x₂ y₂ : α) :
     dist x₁ y₁ ≤ dist x₁ x₂ + dist y₁ y₂ + dist x₂ y₂ := by
   rw [add_right_comm, dist_comm y₁]
   apply dist_triangle4
+
+theorem dist_triangle8 (a b c d e f g h : α) : dist a h ≤ dist a b + dist b c + dist c d
+    + dist d e + dist e f + dist f g + dist g h := by
+  apply le_trans (dist_triangle4 a f g h)
+  apply add_le_add_right (add_le_add_right _ (dist f g)) (dist g h)
+  apply le_trans (dist_triangle4 a d e f)
+  apply add_le_add_right (add_le_add_right _ (dist d e)) (dist e f)
+  exact dist_triangle4 a b c d
 
 theorem swap_dist : Function.swap (@dist α _) = dist := by funext x y; exact dist_comm _ _
 
@@ -1138,36 +1151,7 @@ theorem dense_iff_iUnion_ball (s : Set α) : Dense s ↔ ∀ r > 0, ⋃ c ∈ s,
 theorem denseRange_iff {f : β → α} : DenseRange f ↔ ∀ x, ∀ r > 0, ∃ y, dist x (f y) < r :=
   forall_congr' fun x => by simp only [mem_closure_iff, exists_range_iff]
 
-/-- If a map is continuous on a separable set `s`, then the image of `s` is also separable. -/
-theorem _root_.ContinuousOn.isSeparable_image [TopologicalSpace β] {f : α → β} {s : Set α}
-    (hf : ContinuousOn f s) (hs : IsSeparable s) : IsSeparable (f '' s) := by
-  rw [image_eq_range, ← image_univ]
-  exact (isSeparable_univ_iff.2 hs.separableSpace).image hf.restrict
-
 end Metric
-
-section Compact
-
-/-- Any compact set in a pseudometric space can be covered by finitely many balls of a given
-positive radius -/
-theorem finite_cover_balls_of_compact {α : Type u} [PseudoMetricSpace α] {s : Set α}
-    (hs : IsCompact s) {e : ℝ} (he : 0 < e) :
-    ∃ t, t ⊆ s ∧ Set.Finite t ∧ s ⊆ ⋃ x ∈ t, ball x e :=
-  let ⟨t, hts, ht⟩ := hs.elim_nhds_subcover _ (fun x _ => ball_mem_nhds x he)
-  ⟨t, hts, t.finite_toSet, ht⟩
-
-alias IsCompact.finite_cover_balls := finite_cover_balls_of_compact
-
-end Compact
-
-theorem lebesgue_number_lemma_of_metric {s : Set α} {ι : Sort*} {c : ι → Set α} (hs : IsCompact s)
-    (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i, c i) : ∃ δ > 0, ∀ x ∈ s, ∃ i, ball x δ ⊆ c i := by
-  simpa only [ball, UniformSpace.ball, preimage_setOf_eq, dist_comm]
-    using uniformity_basis_dist.lebesgue_number_lemma hs hc₁ hc₂
-
-theorem lebesgue_number_lemma_of_metric_sUnion {s : Set α} {c : Set (Set α)} (hs : IsCompact s)
-    (hc₁ : ∀ t ∈ c, IsOpen t) (hc₂ : s ⊆ ⋃₀ c) : ∃ δ > 0, ∀ x ∈ s, ∃ t ∈ c, ball x δ ⊆ t := by
-  rw [sUnion_eq_iUnion] at hc₂; simpa using lebesgue_number_lemma_of_metric hs (by simpa) hc₂
 
 instance : PseudoMetricSpace (Additive α) := ‹_›
 instance : PseudoMetricSpace (Multiplicative α) := ‹_›
