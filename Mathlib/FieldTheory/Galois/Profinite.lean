@@ -31,7 +31,7 @@ In a field extension `K/k`
   to `Gal (L/k)`.
 
 * `InfiniteGalois.algEquivToLimit` : The homomorphism from `K ≃ₐ[k] K` to
-  `limit (profinGaloisGroupFunctor k K)`, induced by the projections from `Gal(K/k)` to
+  `limit (asProfiniteGaloisGroupFunctor k K)`, induced by the projections from `Gal(K/k)` to
   any `Gal(L/k)` where `L` is a `FiniteGaloisIntermediateField`.
 
 * `InfiniteGalois.limitToAlgEquiv` : The inverse of `InfiniteGalois.algEquivToLimit`, in which
@@ -43,7 +43,7 @@ In a field extension `K/k`
   is continuous.
 
 * `InfiniteGalois.continuousMulEquivToLimit` ：The `ContinuousMulEquiv` between `Gal(K/k)` and
-  `limit (profinGaloisGroupFunctor k K)` given by `InfiniteGalois.mulEquivToLimit`
+  `limit (asProfiniteGaloisGroupFunctor k K)` given by `InfiniteGalois.mulEquivToLimit`
 
 * `InfiniteGalois.ProfiniteGalGrp` : `Gal(K/k)` as a profinite group as there is
   a `ContinuousMulEquiv` to a `ProfiniteGrp` given above.
@@ -117,7 +117,7 @@ namespace InfiniteGalois
 variable (k K) in
 /-- The composition of `finGaloisGroupFunctor` with
 the forgetful functor from `FiniteGrp` to `ProfiniteGrp`. -/
-noncomputable abbrev profinGaloisGroupFunctor :
+noncomputable abbrev asProfiniteGaloisGroupFunctor :
     (FiniteGaloisIntermediateField k K)ᵒᵖ ⥤ ProfiniteGrp :=
   (finGaloisGroupFunctor k K) ⋙ forget₂ FiniteGrp ProfiniteGrp
 
@@ -128,7 +128,7 @@ The homomorphism from `Gal(K/k)` to `lim Gal(L/k)` where `L` is a
 canonical projections from `Gal(K/k)` to `Gal(L/k)`.
 -/
 @[simps]
-noncomputable def algEquivToLimit : (K ≃ₐ[k] K) →* limit (profinGaloisGroupFunctor k K) where
+noncomputable def algEquivToLimit : (K ≃ₐ[k] K) →* limit (asProfiniteGaloisGroupFunctor k K) where
   toFun σ := {
     val := fun L ↦ σ.restrictNormalHom L.unop
     property := fun {L₁ L₂} π ↦ by
@@ -172,19 +172,19 @@ lemma algEquivToLimit_continuous : Continuous (algEquivToLimit k K) := by
 
 /-- The projection map from `lim Gal(L/k)` to a specific `Gal(L/k)`. -/
 noncomputable def proj (L : FiniteGaloisIntermediateField k K) :
-    limit (profinGaloisGroupFunctor k K) →* (L ≃ₐ[k] L) where
+    limit (asProfiniteGaloisGroupFunctor k K) →* (L ≃ₐ[k] L) where
   toFun g := g.val (op L)
   map_one' := rfl
   map_mul' _ _ := rfl
 
 @[simp]
-lemma finGaloisGroupFunctor_map_proj_eq_proj (g : limit (profinGaloisGroupFunctor k K))
+lemma finGaloisGroupFunctor_map_proj_eq_proj (g : limit (asProfiniteGaloisGroupFunctor k K))
     {L₁ L₂ : FiniteGaloisIntermediateField k K} (h : L₁ ⟶ L₂) :
     (finGaloisGroupFunctor k K).map h.op (proj L₂ g) = proj L₁ g :=
   g.prop h.op
 
 lemma proj_of_le (L : FiniteGaloisIntermediateField k K)
-    (g : limit (profinGaloisGroupFunctor k K)) (x : L)
+    (g : limit (asProfiniteGaloisGroupFunctor k K)) (x : L)
     (L' : FiniteGaloisIntermediateField k K) (h : L ≤ L') :
     (proj L g x).val = (proj L' g ⟨x, h x.2⟩).val := by
   induction L with | _ L => ?_
@@ -196,29 +196,29 @@ lemma proj_of_le (L : FiniteGaloisIntermediateField k K)
   rw [AlgEquiv.restrictNormal_commutes (proj (mk L') g) L]
   rfl
 
-lemma proj_adjoin_singleton_val [IsGalois k K] (g : limit (profinGaloisGroupFunctor k K)) (x : K)
+lemma proj_adjoin_singleton_val [IsGalois k K] (g : limit (asProfiniteGaloisGroupFunctor k K)) (x : K)
     (y : adjoin k {x}) (L : FiniteGaloisIntermediateField k K) (h : x ∈ L.toIntermediateField) :
     (proj (adjoin k {x}) g y).val = (proj L g ⟨y, adjoin_simple_le_iff.mpr h y.2⟩).val :=
   proj_of_le _ g y _ _
 
 /--A function from `K` to `K` defined pointwise using a family of compatible elements of
   `Gal(L/k)` where `L` is a `FiniteGaloisIntermediateField`-/
-private noncomputable def toAlgEquivAux [IsGalois k K] (g : limit (profinGaloisGroupFunctor k K)) :
+private noncomputable def toAlgEquivAux [IsGalois k K] (g : limit (asProfiniteGaloisGroupFunctor k K)) :
     K → K :=
   fun x ↦ (proj (adjoin k {x}) g ⟨x, subset_adjoin _ _ (by simp only [Set.mem_singleton_iff])⟩).val
 
-lemma toAlgEquivAux_eq_proj_of_mem [IsGalois k K] (g : limit (profinGaloisGroupFunctor k K))
+lemma toAlgEquivAux_eq_proj_of_mem [IsGalois k K] (g : limit (asProfiniteGaloisGroupFunctor k K))
     (x : K) (L : FiniteGaloisIntermediateField k K) (hx : x ∈ L.toIntermediateField) :
     toAlgEquivAux g x = (proj L g ⟨x, hx⟩).val :=
   proj_adjoin_singleton_val g _ _ L hx
 
-lemma mk_toAlgEquivAux [IsGalois k K] (g : limit (profinGaloisGroupFunctor k K)) (x : K)
+lemma mk_toAlgEquivAux [IsGalois k K] (g : limit (asProfiniteGaloisGroupFunctor k K)) (x : K)
     (L : FiniteGaloisIntermediateField k K) (hx' : toAlgEquivAux g x ∈ L.toIntermediateField)
     (hx : x ∈ L.toIntermediateField) :
     (⟨toAlgEquivAux g x, hx'⟩ : L.toIntermediateField) = proj L g ⟨x, hx⟩ := by
   rw [Subtype.eq_iff, Subtype.coe_mk, toAlgEquivAux_eq_proj_of_mem]
 
-lemma toAlgEquivAux_eq_liftNormal [IsGalois k K] (g : limit (profinGaloisGroupFunctor k K))
+lemma toAlgEquivAux_eq_liftNormal [IsGalois k K] (g : limit (asProfiniteGaloisGroupFunctor k K))
     (x : K) (L : FiniteGaloisIntermediateField k K) (hx : x ∈ L.toIntermediateField) :
     toAlgEquivAux g x = (proj L g).liftNormal K x := by
   rw [toAlgEquivAux_eq_proj_of_mem g x L hx]
@@ -228,7 +228,7 @@ lemma toAlgEquivAux_eq_liftNormal [IsGalois k K] (g : limit (profinGaloisGroupFu
 It is done by using above lifting lemmas on bigger `FiniteGaloisIntermediateField`. -/
 @[simps]
 noncomputable def limitToAlgEquiv [IsGalois k K]
-    (g : limit (profinGaloisGroupFunctor k K)) : K ≃ₐ[k] K where
+    (g : limit (asProfiniteGaloisGroupFunctor k K)) : K ≃ₐ[k] K where
   toFun := toAlgEquivAux g
   invFun := toAlgEquivAux g⁻¹
   left_inv x := by
@@ -262,7 +262,7 @@ noncomputable def limitToAlgEquiv [IsGalois k K]
 variable (k K) in
 /-- `algEquivToLimit` as a `MulEquiv`. -/
 noncomputable def mulEquivToLimit [IsGalois k K] :
-    (K ≃ₐ[k] K) ≃* limit (profinGaloisGroupFunctor k K) where
+    (K ≃ₐ[k] K) ≃* limit (asProfiniteGaloisGroupFunctor k K) where
   toFun := algEquivToLimit k K
   map_mul' := map_mul _
   invFun := limitToAlgEquiv
@@ -287,7 +287,7 @@ lemma krullTopology_mem_nhds_one_iff_of_isGalois [IsGalois k K] (A : Set (K ≃�
 
 lemma isOpen_mulEquivToLimit_image_fixingSubgroup [IsGalois k K]
     (L : FiniteGaloisIntermediateField k K) : IsOpen (mulEquivToLimit k K '' L.fixingSubgroup) := by
-  let fix1 : Set (Π L, (profinGaloisGroupFunctor k K).obj L) := {f | f (op L) = 1}
+  let fix1 : Set (Π L, (asProfiniteGaloisGroupFunctor k K).obj L) := {f | f (op L) = 1}
   suffices mulEquivToLimit k K '' L.1.fixingSubgroup = Set.preimage Subtype.val fix1 by
     rw [this]
     exact (isOpen_induced <| (continuous_apply (op L)).isOpen_preimage {1} trivial)
@@ -311,7 +311,7 @@ variable (k K)
   `FiniteGaloisIntermediateField` ordered by inverse inclusion, obtained
   from `InfiniteGalois.mulEquivToLimit`. -/
 noncomputable def continuousMulEquivToLimit [IsGalois k K] :
-    (K ≃ₐ[k] K) ≃ₜ* limit (profinGaloisGroupFunctor k K) where
+    (K ≃ₐ[k] K) ≃ₜ* limit (asProfiniteGaloisGroupFunctor k K) where
   toMulEquiv := mulEquivToLimit k K
   continuous_toFun := algEquivToLimit_continuous
   continuous_invFun := mulEquivToLimit_symm_continuous
@@ -327,7 +327,7 @@ noncomputable def profiniteGalGrp [IsGalois k K] : ProfiniteGrp :=
 /--The categorical isomorphism between `profiniteGalGrp` and `lim Gal(L/k)` where `L` is a
   `FiniteGaloisIntermediateField` ordered by inverse inclusion. -/
 noncomputable def profiniteGalGrpIsoLimit [IsGalois k K] :
-    profiniteGalGrp k K ≅ limit (profinGaloisGroupFunctor k K) :=
+    profiniteGalGrp k K ≅ limit (asProfiniteGaloisGroupFunctor k K) :=
   ContinuousMulEquiv.toProfiniteGrpIso (continuousMulEquivToLimit k K)
 
 end InfiniteGalois
