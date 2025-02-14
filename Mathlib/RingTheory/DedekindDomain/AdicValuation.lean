@@ -61,7 +61,7 @@ open scoped Multiplicative
 
 open Multiplicative IsDedekindDomain
 
-variable {R : Type*} [CommRing R] [IsDedekindDomain R] {K L : Type*} [Field K] [CommSemiring L]
+variable {R : Type*} [CommRing R] [IsDedekindDomain R] {K S : Type*} [Field K] [CommSemiring S]
   [Algebra R K] [IsFractionRing R K] (v : HeightOneSpectrum R)
 
 namespace IsDedekindDomain.HeightOneSpectrum
@@ -414,10 +414,10 @@ instance (priority := 100) adicValued.has_uniform_continuous_const_smul' :
   @uniformContinuousConstSMul_of_continuousConstSMul R K _ _ _ v.adicValued.toUniformSpace _ _
 
 section Algebra
-variable [Algebra L K]
+variable [Algebra S K]
 
 instance adicValued.uniformContinuousConstSMul :
-    @UniformContinuousConstSMul L K v.adicValued.toUniformSpace _ := by
+    @UniformContinuousConstSMul S K v.adicValued.toUniformSpace _ := by
   let _ : UniformSpace K := v.adicValued.toUniformSpace
   refine ⟨fun l ↦ ?_⟩
   simp_rw [Algebra.smul_def]
@@ -425,7 +425,7 @@ instance adicValued.uniformContinuousConstSMul :
     _ _).uniformContinuous_const_smul _
 
 open UniformSpace in
-instance : Algebra L (v.adicCompletion K) where
+instance : Algebra S (v.adicCompletion K) where
   toSMul := @Completion.instSMul _ _ v.adicValued.toUniformSpace _
   algebraMap :=
     (@Completion.coeRingHom K _ v.adicValued.toUniformSpace _ _).comp (algebraMap _ _)
@@ -435,8 +435,8 @@ instance : Algebra L (v.adicCompletion K) where
     | hp =>
       exact isClosed_eq (continuous_mul_left _) (continuous_mul_right _)
     | ih x =>
-      change (↑(algebraMap L K r) : Completion K) * x
-        = x * (↑(algebraMap L K r) : Completion K)
+      change (↑(algebraMap S K r) : Completion K) * x
+        = x * (↑(algebraMap S K r) : Completion K)
       norm_cast
       rw [Algebra.commutes]
   smul_def' r x := by
@@ -445,19 +445,19 @@ instance : Algebra L (v.adicCompletion K) where
     | hp =>
       exact isClosed_eq (continuous_const_smul _) (continuous_mul_left _)
     | ih x =>
-      change _ = (↑(algebraMap L K r) : @Completion K v.adicValued.toUniformSpace) * x
+      change _ = (↑(algebraMap S K r) : @Completion K v.adicValued.toUniformSpace) * x
       norm_cast
       rw [← Algebra.smul_def]
       exact (Completion.coe_smul _ _).symm
 
-theorem coe_smul_adicCompletion (r : L) (x : K) :
+theorem coe_smul_adicCompletion (r : S) (x : K) :
     (↑(r • x) : v.adicCompletion K) = r • (↑x : v.adicCompletion K) :=
   @UniformSpace.Completion.coe_smul _ K v.adicValued.toUniformSpace _ _ r x
 
-theorem algebraMap_adicCompletion : ⇑(algebraMap L <| v.adicCompletion K) = (↑) ∘ algebraMap L K :=
+theorem algebraMap_adicCompletion : ⇑(algebraMap S <| v.adicCompletion K) = (↑) ∘ algebraMap S K :=
   rfl
 
-instance : IsScalarTower L K (v.adicCompletion K) := inferInstanceAs <|
+instance : IsScalarTower S K (v.adicCompletion K) := inferInstanceAs <|
   IsScalarTower _ K (@UniformSpace.Completion K v.adicValued.toUniformSpace)
 
 end Algebra
