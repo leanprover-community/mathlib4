@@ -6,6 +6,7 @@ Authors: Johan Commelin, Kenny Lau
 
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.Data.Finsupp.Interval
+import Mathlib.Algebra.MvPolynomial.Eval
 
 /-!
 
@@ -23,15 +24,13 @@ so that `m < n` means that `m ≠ n` and `m s ≤ n s` for all `s : σ`.
 
 noncomputable section
 
-open BigOperators
-
 open Finset (antidiagonal mem_antidiagonal)
 
 namespace MvPowerSeries
 
 open Finsupp
 
-variable {σ R : Type*}
+variable {σ R S : Type*}
 
 section Trunc
 
@@ -39,14 +38,12 @@ variable [CommSemiring R] (n : σ →₀ ℕ)
 
 /-- Auxiliary definition for the truncation function. -/
 def truncFun (φ : MvPowerSeries σ R) : MvPolynomial σ R :=
-  ∑ m in Finset.Iio n, MvPolynomial.monomial m (coeff R m φ)
-#align mv_power_series.trunc_fun MvPowerSeries.truncFun
+  ∑ m ∈ Finset.Iio n, MvPolynomial.monomial m (coeff R m φ)
 
 theorem coeff_truncFun (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
     (truncFun n φ).coeff m = if m < n then coeff R m φ else 0 := by
   classical
   simp [truncFun, MvPolynomial.coeff_sum]
-#align mv_power_series.coeff_trunc_fun MvPowerSeries.coeff_truncFun
 
 variable (R)
 
@@ -66,14 +63,11 @@ def trunc : MvPowerSeries σ R →+ MvPolynomial σ R where
     · rw [map_add]
     · rw [zero_add]
 
-#align mv_power_series.trunc MvPowerSeries.trunc
-
 variable {R}
 
 theorem coeff_trunc (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
     (trunc R n φ).coeff m = if m < n then coeff R m φ else 0 := by
   classical simp [trunc, coeff_truncFun]
-#align mv_power_series.coeff_trunc MvPowerSeries.coeff_trunc
 
 @[simp]
 theorem trunc_one (n : σ →₀ ℕ) (hnn : n ≠ 0) : trunc R n 1 = 1 :=
@@ -88,21 +82,28 @@ theorem trunc_one (n : σ →₀ ℕ) (hnn : n ≠ 0) : trunc R n 1 = 1 :=
       exact if_neg (Ne.symm H')
     · symm
       rw [MvPolynomial.coeff_one]
-      refine' if_neg _
+      refine if_neg ?_
       rintro rfl
       apply H
       exact Ne.bot_lt hnn
-#align mv_power_series.trunc_one MvPowerSeries.trunc_one
 
 @[simp]
 theorem trunc_c (n : σ →₀ ℕ) (hnn : n ≠ 0) (a : R) : trunc R n (C σ R a) = MvPolynomial.C a :=
   MvPolynomial.ext _ _ fun m => by
     classical
     rw [coeff_trunc, coeff_C, MvPolynomial.coeff_C]
-    split_ifs with H <;> first |rfl|try simp_all
+    split_ifs with H <;> first |rfl|try simp_all only [ne_eq, not_true_eq_false]
     exfalso; apply H; subst m; exact Ne.bot_lt hnn
-set_option linter.uppercaseLean3 false in
-#align mv_power_series.trunc_C MvPowerSeries.trunc_c
+
+@[simp]
+theorem trunc_C_mul (n : σ →₀ ℕ) (a : R) (p : MvPowerSeries σ R) :
+    trunc R n (C σ R a * p) = MvPolynomial.C a * trunc R n p := by
+  ext m; simp [coeff_trunc]
+
+@[simp]
+theorem trunc_map [CommSemiring S] (n : σ →₀ ℕ) (f : R →+* S) (p : MvPowerSeries σ R) :
+    trunc S n (map σ f p) = MvPolynomial.map f (trunc R n p) := by
+  ext m; simp [coeff_trunc, MvPolynomial.coeff_map, apply_ite f]
 
 end Trunc
 

@@ -23,8 +23,8 @@ Let `α` be a `Type`, `A B : Set α` two sets in `α`, and `C : Set A` a set in 
 - `A ↓∩ B` denotes `(Subtype.val ⁻¹' B : Set A)` (that is, `{x : ↑A | ↑x ∈ B}`).
 - `↑C` denotes `Subtype.val '' C` (that is, `{x : α | ∃ y ∈ C, ↑y = x}`).
 
-This notation, (together with the `↑` notation for `Set.CoeHead` in `Mathlib.Data.Set.Functor`)
-is scoped to the `Set.Notation` namespace.
+This notation, (together with the `↑` notation for `Set.CoeHead`)
+is defined in `Mathlib.Data.Set.Notation` and is scoped to the `Set.Notation` namespace.
 To enable it, use `open Set.Notation`.
 
 
@@ -41,19 +41,6 @@ open Set
 
 variable {ι : Sort*} {α : Type*} {A B C : Set α} {D E : Set A}
 variable {S : Set (Set α)} {T : Set (Set A)} {s : ι → Set α} {t : ι → Set A}
-
-namespace Set.Notation
-
-/--
-Given two sets `A` and `B`, `A ↓∩ B` denotes the intersection of `A` and `B` as a set in `Set A`.
-
-The notation is short for `((↑) ⁻¹' B : Set A)`, while giving hints to the elaborator
-that both `A` and `B` are terms of `Set α` for the same `α`.
-This set is the same as `{x : ↑A | ↑x ∈ B}`.
--/
-scoped notation3 A:67 " ↓∩ " B:67 => (Subtype.val ⁻¹' (B : type_of% A) : Set (A : Set _))
-
-end Set.Notation
 
 namespace Set
 
@@ -102,9 +89,7 @@ lemma image_val_compl : ↑(Dᶜ) = A \ ↑D := by
 
 @[simp]
 lemma image_val_sUnion : ↑(⋃₀ T) = ⋃₀ { (B : Set α) | B ∈ T} := by
-  -- TODO: missing `image_sUnion` lemma
-  erw [sUnion_image]
-  simp_rw [sUnion_eq_biUnion, image_iUnion]
+  rw [image_sUnion, image]
 
 @[simp]
 lemma image_val_iUnion : ↑(⋃ i, t i) = ⋃ i, (t i : Set α) := image_iUnion
@@ -112,11 +97,11 @@ lemma image_val_iUnion : ↑(⋃ i, t i) = ⋃ i, (t i : Set α) := image_iUnion
 @[simp]
 lemma image_val_sInter (hT : T.Nonempty) : (↑(⋂₀ T) : Set α) = ⋂₀ { (↑B : Set α) | B ∈ T } := by
   erw [sInter_image]
-  rw [sInter_eq_biInter, (Subtype.val_injective.injOn _).image_biInter_eq hT]
+  rw [sInter_eq_biInter, Subtype.val_injective.injOn.image_biInter_eq hT]
 
 @[simp]
 lemma image_val_iInter [Nonempty ι] : (↑(⋂ i, t i) : Set α) = ⋂ i, (↑(t i) : Set α) :=
-  (Subtype.val_injective.injOn _).image_iInter_eq
+  Subtype.val_injective.injOn.image_iInter_eq
 
 @[simp]
 lemma image_val_union_self_right_eq : A ∪ ↑D = A :=
@@ -127,8 +112,10 @@ lemma image_val_union_self_left_eq : ↑D ∪ A = A :=
   union_eq_right.2 image_val_subset
 
 @[simp]
-lemma cou_inter_self_right_eq_coe : A ∩ ↑D = ↑D :=
+lemma image_val_inter_self_right_eq_coe : A ∩ ↑D = ↑D :=
   inter_eq_right.2 image_val_subset
+@[deprecated (since := "2024-10-25")]
+alias cou_inter_self_right_eq_coe := image_val_inter_self_right_eq_coe
 
 @[simp]
 lemma image_val_inter_self_left_eq_coe : ↑D ∩ A = ↑D :=
