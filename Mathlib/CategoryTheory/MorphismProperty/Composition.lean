@@ -45,6 +45,12 @@ lemma of_op (W : MorphismProperty C) [W.op.ContainsIdentities] :
 lemma of_unop (W : MorphismProperty Cᵒᵖ) [W.unop.ContainsIdentities] :
     W.ContainsIdentities := (inferInstance : W.unop.op.ContainsIdentities)
 
+lemma eqToHom (W : MorphismProperty C) [W.ContainsIdentities] {x y : C} (h : x = y) :
+    W (eqToHom h) := by
+  subst h
+  rw [eqToHom_refl]
+  exact id_mem x
+
 instance inverseImage {P : MorphismProperty D} [P.ContainsIdentities] (F : C ⥤ D) :
     (P.inverseImage F).ContainsIdentities where
   id_mem X := by simpa only [← F.map_id] using P.id_mem (F.obj X)
