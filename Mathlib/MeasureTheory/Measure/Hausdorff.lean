@@ -141,8 +141,7 @@ theorem finset_iUnion_of_pairwise_separated (hm : IsMetric μ) {I : Finset ι} {
     (hI : ∀ i ∈ I, ∀ j ∈ I, i ≠ j → IsMetricSeparated (s i) (s j)) :
     μ (⋃ i ∈ I, s i) = ∑ i ∈ I, μ (s i) := by
   classical
-  induction' I using Finset.induction_on with i I hiI ihI hI
-  · simp
+  induction I using Finset.induction_on with | empty => simp | @insert i I hiI ihI =>
   simp only [Finset.mem_insert] at hI
   rw [Finset.set_biUnion_insert, hm, ihI, Finset.sum_insert hiI]
   exacts [fun i hi j hj hij => hI i (Or.inr hi) j (Or.inr hj) hij,
@@ -594,7 +593,7 @@ theorem hausdorffMeasure_zero_or_top {d₁ d₂ : ℝ} (h : d₁ < d₂) (s : Se
 /-- Hausdorff measure `μH[d] s` is monotone in `d`. -/
 theorem hausdorffMeasure_mono {d₁ d₂ : ℝ} (h : d₁ ≤ d₂) (s : Set X) : μH[d₂] s ≤ μH[d₁] s := by
   rcases h.eq_or_lt with (rfl | h); · exact le_rfl
-  cases' hausdorffMeasure_zero_or_top h s with hs hs
+  rcases hausdorffMeasure_zero_or_top h s with hs | hs
   · rw [hs]; exact zero_le _
   · rw [hs]; exact le_top
 

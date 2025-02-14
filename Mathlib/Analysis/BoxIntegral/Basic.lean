@@ -301,9 +301,11 @@ theorem HasIntegral.sum {α : Type*} {s : Finset α} {f : α → ℝⁿ → E} {
     (h : ∀ i ∈ s, HasIntegral I l (f i) vol (g i)) :
     HasIntegral I l (fun x => ∑ i ∈ s, f i x) vol (∑ i ∈ s, g i) := by
   classical
-  induction' s using Finset.induction_on with a s ha ihs; · simp [hasIntegral_zero]
-  simp only [Finset.sum_insert ha]; rw [Finset.forall_mem_insert] at h
-  exact h.1.add (ihs h.2)
+  induction s using Finset.induction_on with
+  | empty => simp [hasIntegral_zero]
+  | insert ha ihs =>
+    simp only [Finset.sum_insert ha]; rw [Finset.forall_mem_insert] at h
+    exact h.1.add (ihs h.2)
 
 theorem HasIntegral.smul (hf : HasIntegral I l f vol y) (c : ℝ) :
     HasIntegral I l (c • f) vol (c • y) := by
@@ -797,7 +799,7 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
     specialize hlH hsne
     have : ∀ J ∈ {J ∈ π.boxes | π.tag J ∈ s},
         dist (vol J (f <| π.tag J)) (g J) ≤ εs (π.tag J) := fun J hJ ↦ by
-      rw [Finset.mem_filter] at hJ; cases' hJ with hJ hJs
+      rw [Finset.mem_filter] at hJ; obtain ⟨hJ, hJs⟩ := hJ
       refine Hδ₁ c _ ⟨π.tag_mem_Icc _, hJs⟩ _ (hεs0 _) _ (π.le_of_mem' _ hJ) ?_
         (hπδ.2 hlH J hJ) fun hD => (Finset.le_sup hJ).trans (hπδ.3 hD)
       convert hπδ.1 J hJ using 3; exact (if_pos hJs).symm
@@ -818,7 +820,7 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
     dist (∑ J ∈ π.boxes with ¬tag π J ∈ s, vol J (f (tag π J)))
       (∑ J ∈ π.boxes with ¬tag π J ∈ s, g J)
       ≤ ∑ J ∈ π.boxes with ¬tag π J ∈ s, ε' * B J := dist_sum_sum_le_of_le _ fun J hJ ↦ by
-      rw [Finset.mem_filter] at hJ; cases' hJ with hJ hJs
+      rw [Finset.mem_filter] at hJ; obtain ⟨hJ, hJs⟩ := hJ
       refine Hδ₂ c _ ⟨π.tag_mem_Icc _, hJs⟩ _ ε'0 _ (π.le_of_mem' _ hJ) ?_ (fun hH => hπδ.2 hH J hJ)
         fun hD => (Finset.le_sup hJ).trans (hπδ.3 hD)
       convert hπδ.1 J hJ using 3; exact (if_neg hJs).symm

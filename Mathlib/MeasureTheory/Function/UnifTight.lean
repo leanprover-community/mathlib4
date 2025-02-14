@@ -153,7 +153,7 @@ theorem unifTight_of_subsingleton [Subsingleton ι] (hp_top : p ≠ ∞)
   · exact ⟨∅, by measurability, fun _ => hε_top.symm ▸ le_top⟩
   by_cases hι : Nonempty ι
   case neg => exact ⟨∅, (by measurability), fun i => False.elim <| hι <| Nonempty.intro i⟩
-  cases' hι with i
+  obtain ⟨i⟩ := hι
   obtain ⟨s, _, hμs, hfε⟩ := (hf i).exists_eLpNorm_indicator_compl_lt hp_top (coe_ne_zero.2 hε.ne')
   refine ⟨s, ne_of_lt hμs, fun j => ?_⟩
   convert hfε.le
@@ -163,9 +163,11 @@ all sequences indexed by a finite type. -/
 private theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α → β}
     (hf : ∀ i, Memℒp (f i) p μ) : UnifTight f p μ := by
   revert f
-  induction' n with n h
-  · intro f hf
+  induction n with
+  | zero =>
+    intro f hf
     exact unifTight_of_subsingleton hp_top hf
+  | succ n h =>
   intro f hfLp ε hε
   by_cases hε_top : ε = ∞
   · exact ⟨∅, (by measurability), fun _ => hε_top.symm ▸ le_top⟩

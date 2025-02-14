@@ -65,7 +65,7 @@ def _root_.ConvexCone.toPointedCone {S : ConvexCone 𝕜 E} (hS : S.Pointed) : P
   zero_mem' := hS
   smul_mem' := fun ⟨c, hc⟩ x hx => by
     simp_rw [SetLike.mem_coe]
-    cases' eq_or_lt_of_le hc with hzero hpos
+    rcases eq_or_lt_of_le hc with hzero | hpos
     · unfold ConvexCone.Pointed at hS
       convert hS
       simp [← hzero]

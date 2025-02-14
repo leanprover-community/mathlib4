@@ -112,7 +112,7 @@ theorem eLpNorm'_lt_top_of_eLpNorm'_lt_top_of_exponent_le {p q : ℝ} [IsFiniteM
 
 theorem Memℒp.mono_exponent {p q : ℝ≥0∞} [IsFiniteMeasure μ] {f : α → E} (hfq : Memℒp f q μ)
     (hpq : p ≤ q) : Memℒp f p μ := by
-  cases' hfq with hfq_m hfq_lt_top
+  obtain ⟨hfq_m, hfq_lt_top⟩ := hfq
   by_cases hp0 : p = 0
   · rwa [hp0, memℒp_zero_iff_aestronglyMeasurable]
   rw [← Ne] at hp0
