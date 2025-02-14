@@ -1911,7 +1911,7 @@ theorem mk_iUnion_le_lift {α : Type u} {ι : Type v} (f : ι → Set α) :
     lift.{v} #(⋃ i, f i) ≤ lift.{u} #ι * ⨆ i, lift.{v} #(f i) := by
   apply mk_iUnion_le_sum_mk_lift.trans
   convert sum_le_iSup_lift fun i ↦ lift.{v} #(f i)
-  · rw [← lift_sum, lift_id'.{_,u}]
+  · rw [← lift_sum, lift_id']
   · exact lift_umax.symm
   · rw [lift_lift]
 
