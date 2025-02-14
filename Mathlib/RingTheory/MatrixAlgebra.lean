@@ -87,7 +87,7 @@ end Module
 
 variable [CommSemiring R]
 variable [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-variable (R A n)
+variable (n R A)
 
 namespace MatrixEquivTensor
 
