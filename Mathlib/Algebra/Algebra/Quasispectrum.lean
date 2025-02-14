@@ -3,8 +3,9 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Unitization
 import Mathlib.Algebra.Algebra.Spectrum
+import Mathlib.Algebra.Algebra.Tower
+import Mathlib.Algebra.Algebra.Unitization
 
 /-!
 # Quasiregularity and quasispectrum
@@ -586,11 +587,4 @@ lemma quasispectrumRestricts_iff_spectrumRestricts_inr'
 
 theorem quasispectrumRestricts_iff_spectrumRestricts {R S A : Type*} [Semifield R] [Semifield S]
     [Ring A] [Algebra R S] [Algebra R A] [Algebra S A] {a : A} {f : S → R} :
-    QuasispectrumRestricts a f ↔ SpectrumRestricts a f := by
-  rw [quasispectrumRestricts_iff, spectrumRestricts_iff, quasispectrum_eq_spectrum_union_zero]
-  refine and_congr_left fun h ↦ ?_
-  refine ⟨(Set.RightInvOn.mono · Set.subset_union_left), fun h' x hx ↦ ?_⟩
-  simp only [Set.union_singleton, Set.mem_insert_iff] at hx
-  obtain (rfl | hx) := hx
-  · simpa using h 0
-  · exact h' hx
+    QuasispectrumRestricts a f ↔ SpectrumRestricts a f := by rfl

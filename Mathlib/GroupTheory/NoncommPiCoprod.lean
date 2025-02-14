@@ -39,6 +39,7 @@ images of different morphisms commute, we obtain a canonical morphism
 
 -/
 
+assert_not_exists Field
 
 namespace Subgroup
 
