@@ -355,6 +355,77 @@ theorem disjoint_insert_left : Disjoint (insert a s) t ↔ a ∉ t ∧ Disjoint 
 theorem disjoint_insert_right : Disjoint s (insert a t) ↔ a ∉ s ∧ Disjoint s t := by
   rw [disjoint_comm, disjoint_insert_left, disjoint_comm]
 
+/-! ### Lemmas about complement -/
+
+@[simp] lemma nonempty_compl_of_nontrivial [Nontrivial α] (x : α) : Set.Nonempty {x}ᶜ := by
+  obtain ⟨y, hy⟩ := exists_ne x
+  exact ⟨y, by simp [hy]⟩
+
+theorem mem_compl_singleton_iff {a x : α} : x ∈ ({a} : Set α)ᶜ ↔ x ≠ a :=
+  Iff.rfl
+
+theorem compl_singleton_eq (a : α) : ({a} : Set α)ᶜ = { x | x ≠ a } :=
+  rfl
+
+@[simp]
+theorem compl_ne_eq_singleton (a : α) : ({ x | x ≠ a } : Set α)ᶜ = {a} :=
+  compl_compl _
+
+@[simp]
+theorem subset_compl_singleton_iff {a : α} {s : Set α} : s ⊆ {a}ᶜ ↔ a ∉ s :=
+  subset_compl_comm.trans singleton_subset_iff
+
+/-! ### Lemmas about set difference -/
+
+@[simp]
+theorem diff_singleton_subset_iff {x : α} {s t : Set α} : s \ {x} ⊆ t ↔ s ⊆ insert x t := by
+  rw [← union_singleton, union_comm]
+  apply diff_subset_iff
+
+theorem subset_diff_singleton {x : α} {s t : Set α} (h : s ⊆ t) (hx : x ∉ s) : s ⊆ t \ {x} :=
+  subset_inter h <| subset_compl_comm.1 <| singleton_subset_iff.2 hx
+
+theorem subset_insert_diff_singleton (x : α) (s : Set α) : s ⊆ insert x (s \ {x}) := by
+  rw [← diff_singleton_subset_iff]
+
+theorem diff_insert_of_notMem {x : α} (h : x ∉ s) : s \ insert x t = s \ t := by
+  refine Subset.antisymm (diff_subset_diff (refl _) (subset_insert ..)) fun y hy ↦ ?_
+  simp only [mem_diff, mem_insert_iff, not_or] at hy ⊢
+  exact ⟨hy.1, fun hxy ↦ h <| hxy ▸ hy.1, hy.2⟩
+
+@[deprecated (since := "2025-05-23")] alias diff_insert_of_not_mem := diff_insert_of_notMem
+
+@[simp]
+theorem insert_diff_of_mem (s) (h : a ∈ t) : insert a s \ t = s \ t := by
+  ext
+  constructor <;> simp +contextual [or_imp, h]
+
+theorem insert_diff_of_notMem (s) (h : a ∉ t) : insert a s \ t = insert a (s \ t) := by
+  classical
+    ext x
+    by_cases h' : x ∈ t
+    · simp [h, h', ne_of_mem_of_not_mem h' h]
+    · simp [h, h']
+
+@[deprecated (since := "2025-05-23")] alias insert_diff_of_not_mem := insert_diff_of_notMem
+
+theorem insert_diff_self_of_notMem {a : α} {s : Set α} (h : a ∉ s) : insert a s \ {a} = s := by
+  ext x
+  simp [and_iff_left_of_imp (ne_of_mem_of_not_mem · h)]
+
+@[deprecated (since := "2025-05-23")]
+alias insert_diff_self_of_not_mem := insert_diff_self_of_notMem
+
+lemma insert_diff_self_of_mem (ha : a ∈ s) : insert a (s \ {a}) = s := by
+  ext; simp +contextual [or_and_left, em, ha]
+
+lemma insert_diff_subset : insert a s \ t ⊆ insert a (s \ t) := by
+  rintro b ⟨rfl | hbs, hbt⟩ <;> simp [*]
+
+lemma insert_erase_invOn :
+    InvOn (insert a) (fun s ↦ s \ {a}) {s : Set α | a ∈ s} {s : Set α | a ∉ s} :=
+  ⟨fun _s ha ↦ insert_diff_self_of_mem ha, fun _s ↦ insert_diff_self_of_notMem⟩
+
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
   ⟨fun h => eq_of_mem_insert_of_notMem (h ▸ mem_insert a s) ha,
     congr_arg (fun x => insert x s)⟩
