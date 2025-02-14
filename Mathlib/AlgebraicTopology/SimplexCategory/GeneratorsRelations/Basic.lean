@@ -93,60 +93,85 @@ lemma mk_len (n : ℕ) : len (mk n) = n := rfl
 
 section InductionPrinciples
 
-/-- An induction principle for reasonning about morphisms properties in SimplexCategoryGenRel. -/
-lemma hom_induction (P : MorphismProperty SimplexCategoryGenRel)
-    (hi : ∀ {n : ℕ}, P (𝟙 (mk n)))
-    (hc₁ : ∀ {n m : ℕ} (u : mk n ⟶ mk m) (i : Fin (m + 2)), P u → P (u ≫ δ i))
-    (hc₂ : ∀ {n m : ℕ} (u : mk n ⟶ mk (m + 1)) (i : Fin (m + 1)), P u → P (u ≫ σ i))
-    {a b : SimplexCategoryGenRel} (f : a ⟶ b) :
-    P f := by
-  apply CategoryTheory.Quotient.induction (P := (fun f ↦ P f))
+/-- A morphism is called a face if it is a `δ i` for some `i : Fin (n + 2)`. -/
+inductive IsFace : MorphismProperty SimplexCategoryGenRel
+  | δ {n : ℕ} (i : Fin (n + 2)) : IsFace (δ i)
+
+/-- A morphism is called a degeneracy if it is a `σ i` for some `i : Fin (n + 1)`. -/
+inductive IsDegeneracy : MorphismProperty SimplexCategoryGenRel
+  | σ {n : ℕ} (i : Fin (n + 1)) : IsDegeneracy (σ i)
+
+abbrev IsGenerator := IsFace ⊔ IsDegeneracy
+
+namespace IsGenerator
+
+abbrev δ {n : ℕ} (i : Fin (n + 2)) : IsGenerator (δ i) := le_sup_left (a := IsFace) _ (.δ i)
+
+abbrev σ {n : ℕ} (i : Fin (n + 1)) : IsGenerator (σ i) := le_sup_right (a := IsFace) _ (.σ i)
+
+end IsGenerator
+
+/-- A property is true for every morphism iff it holds for generators and is multiplicative. -/
+lemma multiplicativeClosure_isGenerator_eq_top : IsGenerator.MultiplicativeClosure = ⊤ := by
+  apply le_antisymm (by simp)
+  intro x y f _
+  apply CategoryTheory.Quotient.induction
   apply Paths.induction
-  · exact hi
-  · rintro _ _ _ _ ⟨⟩
-    · exact hc₁ _ _
-    · exact hc₂ _ _
+  · exact IsGenerator.MultiplicativeClosure.id_mem _
+  · rintro _ _ _ _ ⟨⟩ h
+    · exact IsGenerator.MultiplicativeClosure.comp_mem _ _ h <| .of _ <| .δ _
+    · exact IsGenerator.MultiplicativeClosure.comp_mem _ _ h <| .of _ <| .σ _
+
+/-- An unrolled version of the induction principle obtained in the previous lemma. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
+lemma hom_induction (P : MorphismProperty SimplexCategoryGenRel)
+    (id : ∀ {n : ℕ}, P (𝟙 (mk n)))
+    (comp_δ : ∀ {n m : ℕ} (u : mk n ⟶ mk m) (i : Fin (m + 2)), P u → P (u ≫ δ i))
+    (comp_σ : ∀ {n m : ℕ} (u : mk n ⟶ mk (m + 1)) (i : Fin (m + 1)), P u → P (u ≫ σ i))
+    {a b : SimplexCategoryGenRel} (f : a ⟶ b) :
+    P f :=
+  by
+  suffices IsGenerator.MultiplicativeClosure ≤ P by
+    rw [multiplicativeClosure_isGenerator_eq_top, top_le_iff] at this
+    rw [this]
+    apply MorphismProperty.top_apply
+  intro _ _ f hf
+  induction hf with
+  | of f h =>
+    rcases h with ⟨⟨i⟩⟩ | ⟨⟨i⟩⟩
+    · simpa using (comp_δ (𝟙 _) i id)
+    · simpa using (comp_σ (𝟙 _) i id)
+  | id n => exact id
+  | comp_of f g hf hg hrec =>
+    rcases hg with ⟨⟨i⟩⟩ | ⟨⟨i⟩⟩
+    · simpa using (comp_δ f i hrec)
+    · simpa using (comp_σ f i hrec)
 
 /-- An induction principle for reasonning about morphisms in SimplexCategoryGenRel, where we compose
 with generators on the right. -/
 lemma hom_induction' (P : MorphismProperty SimplexCategoryGenRel)
-    (hi : ∀ {n : ℕ}, P (𝟙 (mk n)))
-    (hc₁ : ∀ {n m : ℕ} (u : mk (m + 1) ⟶ mk n)
+    (id : ∀ {n : ℕ}, P (𝟙 (mk n)))
+    (δ_comp : ∀ {n m : ℕ} (u : mk (m + 1) ⟶ mk n)
       (i : Fin (m + 2)), P u → P (δ i ≫ u))
-    (hc₂ : ∀ {n m : ℕ} (u : mk m ⟶ mk n)
+    (σ_comp : ∀ {n m : ℕ} (u : mk m ⟶ mk n)
       (i : Fin (m + 1)), P u → P (σ i ≫ u )) {a b : SimplexCategoryGenRel} (f : a ⟶ b) :
     P f := by
-  apply CategoryTheory.Quotient.induction (P := (fun f ↦ P f))
-  apply Paths.induction'
-  · exact hi
-  · rintro _ _ _ ⟨⟩ _
-    · exact hc₁ _ _
-    · exact hc₂ _ _
-
-/-- An induction principle for reasonning about morphisms properties in SimplexCategoryGenRel. -/
-lemma morphismProperty_eq_top (P : MorphismProperty SimplexCategoryGenRel)
-    (hi : ∀ {n : ℕ}, P (𝟙 (.mk n)))
-    (hc₁ : ∀ {n m : ℕ} (u : .mk n ⟶ .mk m) (i : Fin (m + 2)),
-      P u → P (u ≫ δ i))
-    (hc₂ : ∀ {n m : ℕ} (u : .mk n ⟶ .mk (m + 1))
-      (i : Fin (m + 1)), P u → P (u ≫ σ i)) :
-    P = ⊤ := by
-  ext; constructor
-  · simp
-  · intro _
-    apply hom_induction <;> assumption
-
-/-- An induction principle for reasonning about morphisms properties in SimplexCategoryGenRel,
-where we compose with generators on the right. -/
-lemma morphismProperty_eq_top' (P : MorphismProperty SimplexCategoryGenRel)
-    (hi : ∀ {n : ℕ}, P (𝟙 (.mk n)))
-    (hc₁ : ∀ {n m : ℕ} (u : .mk (m + 1) ⟶ .mk n) (i : Fin (m + 2)), P u → (P (δ i ≫ u)))
-    (hc₂ : ∀ {n m : ℕ} (u : .mk m ⟶ .mk n) (i : Fin (m + 1)), P u → (P (σ i ≫ u ))) :
-    P = ⊤ := by
-  ext; constructor
-  · simp
-  · intro _
-    apply hom_induction' <;> assumption
+  suffices IsGenerator.MultiplicativeClosure' ≤ P by
+    rw [← MorphismProperty.MultiplicativeClosure.eq_prime, multiplicativeClosure_isGenerator_eq_top
+      , top_le_iff] at this
+    rw [this]
+    apply MorphismProperty.top_apply
+  intro _ _ f hf
+  induction hf with
+  | of f h =>
+    rcases h with ⟨⟨i⟩⟩ | ⟨⟨i⟩⟩
+    · simpa using (δ_comp (𝟙 _) i id)
+    · simpa using (σ_comp (𝟙 _) i id)
+  | id n => exact id
+  | of_comp f g hf hg hrec =>
+    rcases hf with ⟨⟨i⟩⟩ | ⟨⟨i⟩⟩
+    · simpa using (δ_comp g i hrec)
+    · simpa using (σ_comp g i hrec)
 
 /-- An induction principle for reasonning about objects in SimplexCategoryGenRel. This should be
 used instead of identifying an object with `mk` of its len.-/
