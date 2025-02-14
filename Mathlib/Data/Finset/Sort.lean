@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.List.NodupEquivFin
 import Mathlib.Data.Multiset.Sort
 import Mathlib.Order.RelIso.Set
 
