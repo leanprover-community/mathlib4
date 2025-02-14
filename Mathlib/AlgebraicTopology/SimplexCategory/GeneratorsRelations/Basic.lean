@@ -101,13 +101,14 @@ inductive IsFace : MorphismProperty SimplexCategoryGenRel
 inductive IsDegeneracy : MorphismProperty SimplexCategoryGenRel
   | σ {n : ℕ} (i : Fin (n + 1)) : IsDegeneracy (σ i)
 
+/-- A morphism is a generator if it is either a face or a degeneracy. -/
 abbrev IsGenerator := IsFace ⊔ IsDegeneracy
 
 namespace IsGenerator
 
-abbrev δ {n : ℕ} (i : Fin (n + 2)) : IsGenerator (δ i) := le_sup_left (a := IsFace) _ (.δ i)
+lemma δ {n : ℕ} (i : Fin (n + 2)) : IsGenerator (δ i) := le_sup_left (a := IsFace) _ (.δ i)
 
-abbrev σ {n : ℕ} (i : Fin (n + 1)) : IsGenerator (σ i) := le_sup_right (a := IsFace) _ (.σ i)
+lemma σ {n : ℕ} (i : Fin (n + 1)) : IsGenerator (σ i) := le_sup_right (a := IsFace) _ (.σ i)
 
 end IsGenerator
 
