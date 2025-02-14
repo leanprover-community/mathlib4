@@ -225,7 +225,7 @@ theorem ext_fun (h : ∀ a f, Measurable f → ∫⁻ b, f b ∂κ a = ∫⁻ b,
 theorem ext_fun_iff : κ = η ↔ ∀ a f, Measurable f → ∫⁻ b, f b ∂κ a = ∫⁻ b, f b ∂η a :=
   ⟨fun h a f _ => by rw [h], ext_fun⟩
 
-@[fun_prop]
+-- could be @[fun_prop] if fun_prop could synthesize the `MeasurableSet s` argument
 protected theorem measurable_coe (κ : Kernel α β) {s : Set β} (hs : MeasurableSet s) :
     Measurable fun a => κ a s :=
   (Measure.measurable_coe hs).comp κ.measurable

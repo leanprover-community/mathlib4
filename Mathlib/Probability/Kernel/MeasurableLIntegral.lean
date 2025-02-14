@@ -73,7 +73,7 @@ theorem measurable_kernel_prod_mk_left_of_finite {t : Set (α × β)} (ht : Meas
       · exact fun i ↦ measurable_prod_mk_left (hf_meas i)
     simpa only [this] using Measurable.ennreal_tsum hf
 
-@[fun_prop]
+-- could be @[fun_prop] if fun_prop could synthesize the `MeasurableSet t` argument
 theorem measurable_kernel_prod_mk_left [IsSFiniteKernel κ] {t : Set (α × β)}
     (ht : MeasurableSet t) : Measurable fun a => κ a (Prod.mk a ⁻¹' t) := by
   rw [← Kernel.kernel_sum_seq κ]
@@ -84,7 +84,7 @@ theorem measurable_kernel_prod_mk_left [IsSFiniteKernel κ] {t : Set (α × β)}
   refine Measurable.ennreal_tsum fun n => ?_
   exact measurable_kernel_prod_mk_left_of_finite ht inferInstance
 
-@[fun_prop]
+-- could be @[fun_prop] if fun_prop could synthesize the `MeasurableSet s` argument
 theorem measurable_kernel_prod_mk_left' [IsSFiniteKernel η] {s : Set (β × γ)} (hs : MeasurableSet s)
     (a : α) : Measurable fun b => η (a, b) (Prod.mk b ⁻¹' s) := by
   have : ∀ b, Prod.mk b ⁻¹' s = {c | ((a, b), c) ∈ {p : (α × β) × γ | (p.1.2, p.2) ∈ s}} := by
@@ -93,7 +93,7 @@ theorem measurable_kernel_prod_mk_left' [IsSFiniteKernel η] {s : Set (β × γ)
   refine (measurable_kernel_prod_mk_left ?_).comp measurable_prod_mk_left
   exact (measurable_fst.snd.prod_mk measurable_snd) hs
 
-@[fun_prop]
+-- could be @[fun_prop] if fun_prop could synthesize the `MeasurableSet s` argument
 theorem measurable_kernel_prod_mk_right [IsSFiniteKernel κ] {s : Set (β × α)}
     (hs : MeasurableSet s) : Measurable fun y => κ y ((fun x => (x, y)) ⁻¹' s) :=
   measurable_kernel_prod_mk_left (measurableSet_swap_iff.mpr hs)
@@ -170,7 +170,7 @@ theorem _root_.Measurable.lintegral_kernel_prod_right'' {f : β × γ → ℝ≥
     (f := (fun u ↦ f (u.fst.snd, u.snd))) ?_).comp measurable_prod_mk_left
   fun_prop
 
-@[fun_prop]
+-- could be @[fun_prop] if fun_prop could synthesize the `MeasurableSet s` argument
 theorem _root_.Measurable.setLIntegral_kernel_prod_right {f : α → β → ℝ≥0∞}
     (hf : Measurable (uncurry f)) {s : Set β} (hs : MeasurableSet s) :
     Measurable fun a => ∫⁻ b in s, f a b ∂κ a := by
@@ -184,7 +184,7 @@ theorem _root_.Measurable.lintegral_kernel_prod_left' {f : β × α → ℝ≥0�
 theorem _root_.Measurable.lintegral_kernel_prod_left {f : β → α → ℝ≥0∞}
     (hf : Measurable (uncurry f)) : Measurable fun y => ∫⁻ x, f x y ∂κ y := by fun_prop
 
-@[fun_prop]
+-- could be @[fun_prop] if fun_prop could synthesize the `MeasurableSet s` argument
 theorem _root_.Measurable.setLIntegral_kernel_prod_left {f : β → α → ℝ≥0∞}
     (hf : Measurable (uncurry f)) {s : Set β} (hs : MeasurableSet s) :
     Measurable fun b => ∫⁻ a in s, f a b ∂κ b := by
@@ -194,7 +194,7 @@ theorem _root_.Measurable.setLIntegral_kernel_prod_left {f : β → α → ℝ�
 theorem _root_.Measurable.lintegral_kernel {f : β → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun a => ∫⁻ b, f b ∂κ a := by fun_prop
 
-@[fun_prop]
+-- could be @[fun_prop] if fun_prop could synthesize the `MeasurableSet s` argument
 theorem _root_.Measurable.setLIntegral_kernel {f : β → ℝ≥0∞} (hf : Measurable f) {s : Set β}
     (hs : MeasurableSet s) : Measurable fun a => ∫⁻ b in s, f b ∂κ a := by
   -- Porting note: was term mode proof (`Function.comp` reducibility)
