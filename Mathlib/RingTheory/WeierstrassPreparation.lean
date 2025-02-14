@@ -7,7 +7,6 @@ Authors: Nailin Guan
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Order.CompletePartialOrder
-import Mathlib.RingTheory.Henselian
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Trunc
 
