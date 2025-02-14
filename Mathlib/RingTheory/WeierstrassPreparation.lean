@@ -6,6 +6,7 @@ Authors: Nailin Guan
 
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Order.Star.Basic
+import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Trunc
@@ -17,55 +18,7 @@ import Mathlib.RingTheory.PowerSeries.Trunc
 open scoped Polynomial
 open PowerSeries
 
-lemma exist_special_lift {R S : Type*} [Ring R] [Ring S] [Nontrivial R] [Nontrivial S]
-    (hom : R →+* S) (surj : Function.Surjective ⇑hom) {f : S[X]} (mon : Polynomial.Monic f) :
-    ∃ g : R[X], g.map hom = f ∧ Polynomial.Monic g ∧ g.degree = f.degree := by
-  have fne0 : f ≠ 0 := Polynomial.Monic.ne_zero_of_ne (zero_ne_one' S) mon
-  let tofun : ℕ → R := fun i ↦ if i = f.natDegree then 1
-    else if i > f.natDegree then 0 else Classical.choose (surj (f.coeff i))
-  have lt {i : ℕ} : tofun i ≠ 0 → i < f.natDegree + 1 := fun hi ↦ by
-    by_contra gt
-    have gt : f.natDegree < i := Nat.lt_of_succ_le (Nat.le_of_not_lt gt)
-    simp only [Nat.ne_of_lt' gt, ↓reduceIte, gt, ne_eq, not_true_eq_false, tofun] at hi
-  let g : R[X] := {
-    toFinsupp := {
-      support :=
-        have : Fintype {i | tofun i ≠ 0} :=
-          Fintype.ofInjective (fun i ↦ (⟨i.1, lt i.2⟩ : Fin (f.natDegree + 1)))
-          (fun i j  hij ↦ Subtype.val_inj.mp <| Fin.mk.inj_iff.mp hij)
-        Set.toFinset {i | tofun i ≠ 0}
-      toFun := tofun
-      mem_support_toFun := by simp }}
-  use g
-  constructor
-  · apply Polynomial.ext
-    intro i
-    simp only [gt_iff_lt, ne_eq, Set.coe_setOf, Set.mem_setOf_eq, Polynomial.coeff_map,
-      Polynomial.coeff_ofFinsupp, Finsupp.coe_mk, g, tofun]
-    by_cases ne : i = f.natDegree
-    · simp only [ne, ↓reduceIte, map_one, Polynomial.coeff_natDegree,
-        ← Polynomial.Monic.leadingCoeff mon]
-    · rcases lt_or_gt_of_ne ne with lt|gt
-      · simp [ne, Nat.not_lt_of_gt lt, Classical.choose_spec (surj (f.coeff i))]
-      · simp [ne, gt, ← (Polynomial.coeff_eq_zero_of_natDegree_lt gt)]
-  · have gne0 : g ≠ 0 := by
-      have : g.coeff f.natDegree ≠ 0 := by simp [g, tofun]
-      by_contra h
-      simp [h] at this
-    have degeq : g.natDegree = f.natDegree := by
-      apply Polynomial.natDegree_eq_of_le_of_coeff_ne_zero
-      · apply Polynomial.natDegree_le_iff_degree_le.mpr
-        apply (Polynomial.degree_le_iff_coeff_zero g f.natDegree).mpr
-        intro m hm
-        have lt : f.natDegree < m := WithBot.coe_lt_coe.mp hm
-        simp [g, tofun, (Nat.ne_of_lt (lt)).symm, lt]
-      · simp [g, tofun]
-    constructor
-    · show g.coeff g.natDegree = 1
-      simp [degeq, g, tofun]
-    · rw [Polynomial.degree_eq_natDegree fne0, Polynomial.degree_eq_natDegree gne0, degeq]
-
-variable {R : Type*} [CommRing R] {m : Ideal R} (hmax : m.IsMaximal)
+variable {R : Type*} [CommRing R] {m : Ideal R}
 
 section
 
@@ -300,8 +253,8 @@ lemma preparation_lift {n : ℕ} (npos : n > 0) [hmax : m.IsMaximal] (f : PowerS
         have val : h'.1 = h'' := rfl
         let nontriv : Nontrivial (R ⧸ m ^ n) := nontriv_all (Nat.zero_lt_of_ne_zero neq0)
         let nontriv' : Nontrivial (R ⧸ m ^ (n + 1)) := nontriv_all npos
-        rcases exist_special_lift (TransitionMap m (Nat.le_add_right n 1))
-          (TransitionMap_surjective m (Nat.le_add_right n 1)) mon with ⟨g', hg', mon', deg'⟩
+        rcases Polynomial.lifts_and_degree_eq_and_monic (Polynomial.map_surjective _
+          (TransitionMap_surjective m (Nat.le_add_right n 1)) g) mon with ⟨g', hg', deg', mon'⟩
         rw [deg] at deg'
         have : (map (TransitionMap m (Nat.le_add_right n 1))) (f - g' * h') = 0 := by
           rw [map_sub, map_mul, ← Polynomial.polynomial_map_coe, hg', val, hh'',
@@ -699,16 +652,15 @@ theorem CompleteLocalRing.weierstrass_preparation [hmax : m.IsMaximal] [comp : I
       Ideal.Quotient.mk_surjective (h_series' ⟨k, kpos⟩)
   let g_series : ℕ → R[X] := fun k ↦ if h : k = 0 then 0 else
     let _ := R_ntriv' (Nat.zero_lt_of_ne_zero h)
-    Classical.choose <| exist_special_lift (Ideal.Quotient.mk (m ^ k)) Ideal.Quotient.mk_surjective
-      (series_mon ⟨k, Nat.zero_lt_of_ne_zero h⟩)
+    Classical.choose <| Polynomial.lifts_and_degree_eq_and_monic (Polynomial.map_surjective _
+      Ideal.Quotient.mk_surjective _) (series_mon ⟨k, Nat.zero_lt_of_ne_zero h⟩)
   have g_series_spec {k : ℕ} (kpos : k > 0) : Polynomial.map (Ideal.Quotient.mk (m ^ k))
-    (g_series k) = (g_series' ⟨k, kpos⟩) ∧ Polynomial.Monic (g_series k) ∧
-    (g_series k).degree = (g_series' ⟨k, kpos⟩).degree := by
+    (g_series k) = (g_series' ⟨k, kpos⟩) ∧ (g_series k).degree = (g_series' ⟨k, kpos⟩).degree
+      ∧ Polynomial.Monic (g_series k)  := by
     simp only [Nat.not_eq_zero_of_lt kpos, ↓reduceDIte, g_series]
     let _ := R_ntriv' kpos
-    refine Classical.choose_spec <| exist_special_lift (Ideal.Quotient.mk (m ^ k))
-      Ideal.Quotient.mk_surjective ?_
-    exact series_mon _
+    refine Classical.choose_spec <| Polynomial.lifts_and_degree_eq_and_monic
+      (Polynomial.map_surjective _ Ideal.Quotient.mk_surjective _) (series_mon ⟨k, kpos⟩)
   have h_series_mod {a b : ℕ} (apos : a > 0) (le : a ≤ b) : map
     (Ideal.Quotient.mk (m ^ a)) (h_series a) = map (Ideal.Quotient.mk (m ^ a))
     (h_series b) := by
@@ -800,13 +752,13 @@ theorem CompleteLocalRing.weierstrass_preparation [hmax : m.IsMaximal] [comp : I
   have g_spec' {n : ℕ} (npos : n > 0) : Polynomial.map (Ideal.Quotient.mk (m ^ n)) g =
     g_series' ⟨n, npos⟩ := by
     rw [← (g_series_spec npos).1]
-    have deg : (g_series n).degree = Nat.find ntriv := by rw [(g_series_spec npos).2.2, series_deg]
+    have deg : (g_series n).degree = Nat.find ntriv := by rw [(g_series_spec npos).2.1, series_deg]
     have ndeg : (g_series n).natDegree = Nat.find ntriv :=
       Polynomial.natDegree_eq_of_degree_eq_some deg
     ext i
     simp only [Polynomial.coeff_map]
     by_cases ne : i = Nat.find ntriv
-    · simp [ne, g, g_coeff, ← ndeg, (g_series_spec npos).2.1]
+    · simp [ne, g, g_coeff, ← ndeg, (g_series_spec npos).2.2]
     · rcases lt_or_gt_of_ne ne with lt|gt
       · apply (Ideal.Quotient.mk_eq_mk_iff_sub_mem _ _).mpr
         convert SModEq.sub_mem.mp (g_spec lt n).symm
