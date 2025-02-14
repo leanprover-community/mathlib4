@@ -74,9 +74,6 @@ def getFileImports (content : String) (fileName : String := "") :
   let sp := (← read).srcSearchPath
   let fileImports : Array Import ← Lean.parseImports' content fileName
   let out ← fileImports
-    -- Lean core files can never be modified and therefore we do not need to process these
-    -- moreover, it seems that `Lean.findLean` fails on these.
-    |>.filter (! isInLeanCore ·.module)
     |>.filter (isPartOfMathlibCache ·.module)
     |>.mapM fun imp => do
       let impSourceFile ← Lean.findLean sp imp.module
