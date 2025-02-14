@@ -85,7 +85,7 @@ titlesPathsAndRegexes=(
   "erw"                            "*"      "erw \["
   "maxHeartBeats modifications"    ":^MathlibTest" "^ *set_option .*maxHeartbeats"
   "cases'"                         "*"      " cases' "
-  "induction'"                     "*"      " induction' "
+  "induction'"                     "*"      " induction' (?!\w+\s*:)"
 )
 
 for i in ${!titlesPathsAndRegexes[@]}; do
