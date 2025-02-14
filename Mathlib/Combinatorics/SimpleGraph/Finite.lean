@@ -251,7 +251,7 @@ theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype G.edgeSet] :
 
 variable {G v}
 
-/-- If G ≤ H then d_G(v) ≤ d_H(v) for any vertex v -/
+/-- If `G ≤ H` then `d_G(v) ≤ d_H(v)` for any vertex v -/
 lemma degree_le_of_le {H : SimpleGraph V} [Fintype (H.neighborSet v)] (hle : G ≤ H) :
     G.degree v ≤ H.degree v := by
   simp_rw [← card_neighborSet_eq_degree]
