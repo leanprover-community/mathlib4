@@ -245,12 +245,14 @@ import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Field.Equiv
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.Field.MinimalAxioms
+import Mathlib.Algebra.Field.NegOnePow
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Field.Power
 import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Algebra.Field.Subfield.Defs
 import Mathlib.Algebra.Field.ULift
+import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Free
 import Mathlib.Algebra.FreeAlgebra
 import Mathlib.Algebra.FreeAlgebra.Cardinality
@@ -323,6 +325,7 @@ import Mathlib.Algebra.Group.MinimalAxioms
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Group.Nat.Even
 import Mathlib.Algebra.Group.Nat.Hom
+import Mathlib.Algebra.Group.Nat.Range
 import Mathlib.Algebra.Group.Nat.TypeTags
 import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.Group.NatPowAssoc
@@ -1017,6 +1020,7 @@ import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.Algebra.Vertex.HVertexOperator
 import Mathlib.Algebra.Vertex.VertexOperator
 import Mathlib.Algebra.ZeroOne.Lemmas
+import Mathlib.Algebra.ZeroOne.Prod
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.AffineSpace
 import Mathlib.AlgebraicGeometry.Cover.MorphismProperty
@@ -2584,6 +2588,7 @@ import Mathlib.Data.DFinsupp.WellFounded
 import Mathlib.Data.DList.Instances
 import Mathlib.Data.ENNReal.Action
 import Mathlib.Data.ENNReal.Basic
+import Mathlib.Data.ENNReal.Holder
 import Mathlib.Data.ENNReal.Inv
 import Mathlib.Data.ENNReal.Lemmas
 import Mathlib.Data.ENNReal.Operations
@@ -2615,7 +2620,6 @@ import Mathlib.Data.FinEnum.Option
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finite.Perm
-import Mathlib.Data.Finite.Powerset
 import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Finite.Set
 import Mathlib.Data.Finite.Sigma
@@ -2856,6 +2860,7 @@ import Mathlib.Data.Matroid.IndepAxioms
 import Mathlib.Data.Matroid.Init
 import Mathlib.Data.Matroid.Map
 import Mathlib.Data.Matroid.Rank.Cardinal
+import Mathlib.Data.Matroid.Rank.Finite
 import Mathlib.Data.Matroid.Restrict
 import Mathlib.Data.Matroid.Sum
 import Mathlib.Data.Multiset.Antidiagonal
@@ -3767,6 +3772,7 @@ import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Logic.ExistsUnique
 import Mathlib.Logic.Function.Basic
+import Mathlib.Logic.Function.Coequalizer
 import Mathlib.Logic.Function.CompTypeclasses
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Logic.Function.Defs
@@ -4172,6 +4178,7 @@ import Mathlib.NumberTheory.PrimesCongruentOne
 import Mathlib.NumberTheory.Primorial
 import Mathlib.NumberTheory.PythagoreanTriples
 import Mathlib.NumberTheory.RamificationInertia.Basic
+import Mathlib.NumberTheory.RamificationInertia.Galois
 import Mathlib.NumberTheory.Rayleigh
 import Mathlib.NumberTheory.SiegelsLemma
 import Mathlib.NumberTheory.SmoothNumbers
@@ -4387,6 +4394,7 @@ import Mathlib.Order.OrderIsoNat
 import Mathlib.Order.PFilter
 import Mathlib.Order.Part
 import Mathlib.Order.PartialSups
+import Mathlib.Order.Partition.Basic
 import Mathlib.Order.Partition.Equipartition
 import Mathlib.Order.Partition.Finpartition
 import Mathlib.Order.PiLex
@@ -4428,6 +4436,7 @@ import Mathlib.Order.UpperLower.Hom
 import Mathlib.Order.UpperLower.LocallyFinite
 import Mathlib.Order.WellFounded
 import Mathlib.Order.WellFoundedSet
+import Mathlib.Order.WellQuasiOrder
 import Mathlib.Order.WithBot
 import Mathlib.Order.Zorn
 import Mathlib.Order.ZornAtoms
@@ -4653,6 +4662,7 @@ import Mathlib.RingTheory.Ideal.BigOperators
 import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.Ideal.Defs
+import Mathlib.RingTheory.Ideal.GoingDown
 import Mathlib.RingTheory.Ideal.GoingUp
 import Mathlib.RingTheory.Ideal.Height
 import Mathlib.RingTheory.Ideal.IdempotentFG
@@ -4752,6 +4762,7 @@ import Mathlib.RingTheory.Localization.NumDen
 import Mathlib.RingTheory.Localization.Pi
 import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.RingTheory.MatrixAlgebra
+import Mathlib.RingTheory.Morita.Basic
 import Mathlib.RingTheory.Multiplicity
 import Mathlib.RingTheory.MvPolynomial
 import Mathlib.RingTheory.MvPolynomial.Basic

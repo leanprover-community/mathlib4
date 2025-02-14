@@ -46,7 +46,7 @@ one edge, and the edges of the subgraph represent the paired vertices.
 * Hall's Marriage Theorem (see `Mathlib.Combinatorics.Hall.Basic`)
 -/
 
-assert_not_exists TwoSidedIdeal
+assert_not_exists Field TwoSidedIdeal
 
 open Function
 
@@ -265,7 +265,7 @@ lemma even_card_of_isPerfectMatching [Fintype V] [DecidableEq V] [DecidableRel G
 
 lemma odd_matches_node_outside [Finite V] {u : Set V}
     {c : ConnectedComponent (Subgraph.deleteVerts ⊤ u).coe}
-    (hM : M.IsPerfectMatching) (codd : Odd (Nat.card c.supp)) :
+    (hM : M.IsPerfectMatching) (codd : Odd c.supp.ncard) :
     ∃ᵉ (w ∈ u) (v : ((⊤ : G.Subgraph).deleteVerts u).verts), M.Adj v w ∧ v ∈ c.supp := by
   by_contra! h
   have hMmatch : (M.induce c.supp).IsMatching := by
@@ -283,12 +283,10 @@ lemma odd_matches_node_outside [Finite V] {u : Set V}
   apply Nat.not_even_iff_odd.2 codd
   haveI : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c)).verts := Fintype.ofFinite _
   classical
-  have hMeven := Subgraph.IsMatching.even_card hMmatch
   haveI : Fintype (c.supp) := Fintype.ofFinite _
-  simp only [Subgraph.induce_verts, Subgraph.verts_top, Set.toFinset_image,
-    Nat.card_eq_fintype_card, Set.toFinset_image,
-    Finset.card_image_of_injective _ (Subtype.val_injective), Set.toFinset_card] at hMeven ⊢
-  exact hMeven
+  simpa [Subgraph.induce_verts, Subgraph.verts_top, Set.toFinset_image, Nat.card_eq_fintype_card,
+    Set.toFinset_image,Finset.card_image_of_injective _ (Subtype.val_injective), Set.toFinset_card,
+    ← Set.Nat.card_coe_set_eq] using hMmatch.even_card
 
 end Finite
 end ConnectedComponent
