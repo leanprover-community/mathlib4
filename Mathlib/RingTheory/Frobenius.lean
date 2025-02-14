@@ -28,7 +28,7 @@ and `P := R ∩ Q` with finite residue field of cardinality `q`.
   if `φ x ≡ x ^ q (mod Q)` for all `x : S`.
 - `AlgHom.IsArithFrobAt.apply_of_pow_eq_one`:
   Suppose `S` is a domain and `φ` is a Frobenius at `Q`,
-  then `φ ζ = ζ ^ q` for any `m`-th root of unity `ζ` with `¬ q ∣ m`.
+  then `φ ζ = ζ ^ q` for any `m`-th root of unity `ζ` with `q ∤ m`.
 - `AlgHom.IsArithFrobAt.eq_of_isUnramifiedAt`:
   Suppose `S` is noetherian, `Q` contains all zero-divisors, and the extension is unramified at `Q`.
   Then the Frobenius is unique (if exists).
@@ -102,7 +102,7 @@ lemma comap_eq [Q.IsPrime] : Q.comap φ = Q := by
     Ideal.Quotient.eq_zero_iff_mem, ← Ideal.mem_comap]
 
 /-- Suppose `S` is a domain, and `φ : S →ₐ[R] S` is a Frobenius at `Q : Ideal S`.
-Let `ζ` be a `m`-th root of unity with `¬ Q ∣ m`, then `φ` sends `ζ` to `ζ ^ q`. -/
+Let `ζ` be a `m`-th root of unity with `Q ∤ m`, then `φ` sends `ζ` to `ζ ^ q`. -/
 lemma apply_of_pow_eq_one [IsDomain S] {ζ : S} {m : ℕ} (hζ : ζ ^ m = 1) (hk' : ↑m ∉ Q) :
     φ ζ = ζ ^ Nat.card (R ⧸ Q.under R) := by
   set q := Nat.card (R ⧸ Q.under R)
