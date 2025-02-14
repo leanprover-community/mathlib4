@@ -8,6 +8,8 @@ import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Order.Basic
 import Qq
 
+set_option linter.style.longLine false
+
 /-!
 # `order` tactic
 
@@ -31,7 +33,7 @@ We replace some facts as follows:
 Note that the last two operations weaken the set of facts.
 4. **Building the `≤`-graph**.
 We construct a graph where vertices correspond to atoms, and an edge `(x, y)` exists if the fact
-`x ≤ y` is present in our set of facts.
+`x ≤ y` is present in our set of facts. We call this graph a `≤`-graph.
 5. **Growing the `≤`-graph with `≮`-facts**.
 In preorders, `¬(x < y)` is equivalent to `(x ≤ y) → (y ≤ x)`. Thus, if `y` is reachable from `x`
 in the `≤`-graph, we can derive the new fact `y ≤ x`. At this step, we add such edges to the graph
@@ -42,12 +44,27 @@ the desired contradiction.
 
 #### Why is this a decision procedure?
 Technically, it is not, because it cannot prove `(x = y) → (y ≠ z) → (x ≠ z)`. Goals involving
-only `=` and `≠` can be handled by the `cc` tactic. Assume that a set `T` of facts is contradictory
-and that no chain `x₁ = x₂ = ... = xₖ` exists in `T` along with the fact `x₁ ≠ xₖ`. Then we claim
-that the described algorithm is able to deduce a contradiction from `T`. Let `T'` be the set of
-facts after preprocessing. Then `T'` remains contradictory (TODO: explain why). If, at step 6, no
-contradictory `≰`-facts were found, we must show that a model satisfies `T'`. A suitable model can
-be constructed using the connected components of the `=`-graph (defined similarly to the `≤`-graph),
+only `=` and `≠` can be handled by the `cc` tactic. Assume, then, that a set `T` of facts is
+contradictory, but there is no chain `x₁ = x₂ = ... = xₖ` in `T` along with the fact `x₁ ≠ xₖ`. Then
+we claim that the described algorithm is able to deduce a contradiction from `T`. Let `T'` be the
+set of facts after preprocessing. Then `T'` remains contradictory.
+
+Indeed, suppose that `T'` is satisfiable, i.e., there exists a model `M` that satisfies `T'`.
+Consider a quotient `M'` of `M` by the equivalence relation `~`, where `a ~ b` holds for `a ≠ b` iff
+both `a` and `b` are values of some variables `x` and `y` from `T`, and there is
+a chain `x = ... = y` in `T`. Define the relation `R'` on `M'` as `α R' β` if and only if `a R b`
+in `M` for some `a ∈ α` and `b ∈ β`. Then `M'` is a model satisfying `T`:
+* For any fact `x = y` in `T`, we have `M'(x) = M'(y)` in `M'`.
+* For any fact `x ≠ y` in `T`, we have `M'(x) ≠ M'(y)`, since otherwise, there would exist a chain `x = ... = y` in `T`.
+* For any fact `x ≤ y` in `T`, and thus in `T'`, we have `M(x) R M(y)`, so `M'(x) R' M'(y)`.
+* For any fact `¬(x ≤ y)` in `T`, and thus in `T'`, we have `¬M(x) R M(y)`. Then, for any `x' ~ x`
+  and `y' ~ y`, we can deduce `x ≤ x'` and `y' ≤ y` from `T'`. If `M(x') R M(y')`, then
+  `M(x) R M(x') R M(y') R M(y)`, which contradicts the assumption that `M` is a model of `T'`.
+  This contradiction implies that `¬M'(x) R' M'(y)`, as required.
+
+If, at step 6, no contradictory `≰`-facts were found, we must show that a model satisfies `T'`.
+A suitable model can be constructed using the connected components of the `=`-graph (defined
+similarly to the `≤`-graph),
 with the relation `R` defined as `C₁ R C₂` iff `C₂` is reachable from `C₁` in the `≤`-graph. Each
 variable `x` is interpreted as its component `[x]`. This forms a preorder, and we verify that each
 fact in `T'` is satisfied:
@@ -79,8 +96,7 @@ we must show that a model satisfies `T'`. A suitable model consists of the stron
 components of the `≤`-graph, with the relation `R` defined as `C₁ R C₂` iff `C₂` is reachable
 from `C₁`. Each variable `x` is interpreted as its component `[x]`. This forms a partial order, and
 we verify that each fact in `T'` is satisfied:
-* `x = y` is satisfied because `x` and `y` must be in the same component in the `≤`-graph.
-* `x ≤ y` is satisfied by the construction of the `≤`-graph.
+* `x ≤ y` is satisfied because it directly implies `[x] R [y]`.
 * `x ≠ y` is satisfied because otherwise, `x` and `y` would belong to the same component, leading to
 a contradiction at step 6.
 * `¬(x < y)` is satisfied because otherwise `[x] ≠ [y]` and there is a path from `x` to `y`, which
@@ -97,10 +113,17 @@ We replace some facts as follows:
 5. **Finding contradictions using `≠`-facts**: Same as for partial orders.
 
 Note that the algorithm for linear orders is simply the algorithm for partial orders with an
-additional preprocessing step.
+additional preprocessing step. It also skips the growing step because there is no `≮`-facts.
 
 #### Why is this a decision procedure?
-TODO
+We need to slightly modify the proof for partial orders. In this case, `T` and `T'` are again
+equisatisfiable. Suppose the algorithm cannot find a contradiction, and construct the model of `T'`.
+The carrier of the model is once again the set of strongly connected components in the `≤`-graph,
+with variables interpreted as their respective components. Note that the reachability relation
+(used before) on components is acyclic. Therefore, it can be
+[topologically ordered](https://en.wikipedia.org/wiki/Topological_sorting), meaning it forms a
+linear order where `C₁ R C₂` whenever `C₂` is reachable from `C₁`. It is easy to see that all facts
+in `T'` are satisfied by the model.
 
 -/
 
