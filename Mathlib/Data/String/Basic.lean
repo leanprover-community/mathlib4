@@ -152,7 +152,7 @@ instance : LinearOrder String where
   compare_eq_compareOfLessAndEq a b := by
     simp only [compare, compareOfLessAndEq, instLT, List.instLT, lt_iff_toList_lt, toList]
     split_ifs <;>
-    simp only [List.lt_iff_lex_lt] at * <;>
+    simp only [List.lt_iff_lex_lt] at *
     contradiction
 
 end String
