@@ -222,116 +222,113 @@ theorem toNerve₂.mk_naturality {X : SSet.Truncated.{u} 2} {C : Cat}
       refine congrArg F.obj ?_
       refine eq_of_heq (congr_arg_heq (fun x => X.map (op x) f) (?_ : [0].const [2] 2 = ι2₂))
       ext i; match i with | 0 => rfl
-  have nat1m {m hm} (α : [1]₂ ⟶ ⟨[m], hm⟩) : OK α := by
-    match m with
-    | 0 => apply const10
-    | 1 =>
-      match α, eq_of_one_to_one α with
-      | _, .inr rfl =>
-        dsimp [OK, MorphismProperty.naturalityProperty]
-        rw [(_ : X.map _ = id), (_ : Prefunctor.map _ _ = id)]; rfl
-        all_goals apply map_id
-      | _, .inl ⟨i, rfl⟩ =>
-        exact const_fac_thru_zero .. ▸ OK.comp_mem _ _ (const10 ..) (const01 ..)
-    | 2 =>
-      match α, eq_of_one_to_two α with
-      | _, .inl rfl =>
-        ext x
-        simp only [types_comp_apply, mk.app_two, ComposableArrows.mk₂]
-        fapply ComposableArrows.ext₁
-        · simp only [mk.app_one, ComposableArrows.mk₁_obj, ComposableArrows.Mk₁.obj]
-          congr 1
-          refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
+  have nat11 (α : [1]₂ ⟶ [1]₂) : OK α := by
+    match α, eq_of_one_to_one α with
+    | _, .inr rfl =>
+      dsimp [OK, MorphismProperty.naturalityProperty]
+      rw [(_ : X.map _ = id), (_ : Prefunctor.map _ _ = id)]; rfl
+      all_goals apply map_id
+    | _, .inl ⟨i, rfl⟩ =>
+      exact const_fac_thru_zero .. ▸ OK.comp_mem _ _ (const10 ..) (const01 ..)
+  have nat12 (α : [1]₂ ⟶ [2]₂) : OK α := by
+    match α, eq_of_one_to_two α with
+    | _, .inl rfl =>
+      ext x
+      simp only [types_comp_apply, mk.app_two, ComposableArrows.mk₂]
+      fapply ComposableArrows.ext₁
+      · simp only [mk.app_one, ComposableArrows.mk₁_obj, ComposableArrows.Mk₁.obj]
+        congr 1
+        refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
+        rw [← map_comp, ← op_comp]; congr 2
+        ext ⟨i, hi⟩; match i with | 0 => rfl
+      · simp only [mk.app_one, ComposableArrows.mk₁_obj, ComposableArrows.Mk₁.obj]
+        congr 1
+        refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
+        rw [← map_comp]; rfl
+      · clear const01 const10 const02 nat11 OK
+        dsimp only [nerveFunctor₂, SimplicialObject.truncation,
+          SSet.truncation, comp_obj, nerveFunctor_obj,
+          whiskeringLeft_obj_obj, Functor.comp_map, nerve_map,
+          ComposableArrows.whiskerLeft_map, ComposableArrows.precomp_map]
+        show _ = _ ≫ ComposableArrows.Precomp.map _ _ ⟨1, _⟩ ⟨2, _⟩ _ ≫ _
+        rw [ComposableArrows.Precomp.map]; dsimp
+        apply (conj_eqToHom_iff_heq' ..).2
+        dsimp only [Fin.isValue, Nat.reduceAdd, δ₂, ev1₂, homOfLE_leOfHom]
+        have : ∀ {A B A' B' : OneTruncation₂ X} (x₁ : A ⟶ B) (x₂ : A' ⟶ B'),
+            A = A' → B = B' → x₁.1 = x₂.1 → HEq (F.map x₁) (F.map x₂) := by
+            rintro _ _ _ _ ⟨⟩ ⟨⟩ rfl rfl ⟨⟩; rfl
+        apply this
+        · refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
           rw [← map_comp, ← op_comp]; congr 2
-          ext ⟨i, hi⟩; match i with | 0 => rfl
-        · simp only [mk.app_one, ComposableArrows.mk₁_obj, ComposableArrows.Mk₁.obj]
-          congr 1
-          refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
+          ext (i : Fin 1); match i with | 0 => rfl
+        · refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
           rw [← map_comp]; rfl
-        · clear const01 const10 const02 OK
-          dsimp only [nerveFunctor₂, SimplicialObject.truncation,
-            SSet.truncation, comp_obj, nerveFunctor_obj,
-            whiskeringLeft_obj_obj, Functor.comp_map, nerve_map,
-            ComposableArrows.whiskerLeft_map, ComposableArrows.precomp_map]
-          show _ = _ ≫ ComposableArrows.Precomp.map _ _ ⟨1, _⟩ ⟨2, _⟩ _ ≫ _
-          rw [ComposableArrows.Precomp.map]; dsimp
-          apply (conj_eqToHom_iff_heq' ..).2
-          dsimp only [Fin.isValue, Nat.reduceAdd, δ₂, ev1₂, homOfLE_leOfHom]
-          have : ∀ {A B A' B' : OneTruncation₂ X} (x₁ : A ⟶ B) (x₂ : A' ⟶ B'),
-              A = A' → B = B' → x₁.1 = x₂.1 → HEq (F.map x₁) (F.map x₂) := by
-              rintro _ _ _ _ ⟨⟩ ⟨⟩ rfl rfl ⟨⟩; rfl
-          apply this
-          · refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
-            rw [← map_comp, ← op_comp]; congr 2
-            ext (i : Fin 1); match i with | 0 => rfl
-          · refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
-            rw [← map_comp]; rfl
-          · rfl
-      | _, .inr (.inl rfl) =>
-        ext x
-        simp only [types_comp_apply, mk.app_two, ComposableArrows.mk₂]
-        fapply ComposableArrows.ext₁
-        · simp only [mk.app_one, ComposableArrows.mk₁_obj, ComposableArrows.Mk₁.obj]
-          congr 1
-          refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
+        · rfl
+    | _, .inr (.inl rfl) =>
+      ext x
+      simp only [types_comp_apply, mk.app_two, ComposableArrows.mk₂]
+      fapply ComposableArrows.ext₁
+      · simp only [mk.app_one, ComposableArrows.mk₁_obj, ComposableArrows.Mk₁.obj]
+        congr 1
+        refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
+        rw [← map_comp]; rfl
+      · simp only [mk.app_one, ComposableArrows.mk₁_obj, ComposableArrows.Mk₁.obj]
+        congr 1
+        refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
+        rw [← map_comp]; rfl
+      · clear const01 const10 const02 nat11 OK
+        dsimp only [nerveFunctor₂, SimplicialObject.truncation,
+          SSet.truncation, comp_obj, nerveFunctor_obj,
+          whiskeringLeft_obj_obj, Functor.comp_map, nerve_map,
+          ComposableArrows.whiskerLeft_map, ComposableArrows.precomp_map]
+        show _ = _ ≫ ComposableArrows.Precomp.map _ _ ⟨0, _⟩ ⟨2, _⟩ _ ≫ _
+        rw [ComposableArrows.Precomp.map]; dsimp
+        apply (conj_eqToHom_iff_heq' ..).2
+        dsimp only [Fin.isValue, Nat.reduceAdd, δ₂, ev1₂]
+        have : ∀ {A B A' B' : OneTruncation₂ X} (x₁ : A ⟶ B) (x₂ : A' ⟶ B'),
+            A = A' → B = B' → x₁.1 = x₂.1 → HEq (F.map x₁) (F.map x₂) := by
+            rintro _ _ _ _ ⟨⟩ ⟨⟩ rfl rfl ⟨⟩; rfl
+        refine HEq.trans ?_ (heq_of_eq (hyp x))
+        apply this
+        · refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
           rw [← map_comp]; rfl
-        · simp only [mk.app_one, ComposableArrows.mk₁_obj, ComposableArrows.Mk₁.obj]
-          congr 1
-          refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
+        · refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
           rw [← map_comp]; rfl
-        · clear const01 const10 const02 OK
-          dsimp only [nerveFunctor₂, SimplicialObject.truncation,
-            SSet.truncation, comp_obj, nerveFunctor_obj,
-            whiskeringLeft_obj_obj, Functor.comp_map, nerve_map,
-            ComposableArrows.whiskerLeft_map, ComposableArrows.precomp_map]
-          show _ = _ ≫ ComposableArrows.Precomp.map _ _ ⟨0, _⟩ ⟨2, _⟩ _ ≫ _
-          rw [ComposableArrows.Precomp.map]; dsimp
-          apply (conj_eqToHom_iff_heq' ..).2
-          dsimp only [Fin.isValue, Nat.reduceAdd, δ₂, ev1₂]
-          have : ∀ {A B A' B' : OneTruncation₂ X} (x₁ : A ⟶ B) (x₂ : A' ⟶ B'),
-              A = A' → B = B' → x₁.1 = x₂.1 → HEq (F.map x₁) (F.map x₂) := by
-              rintro _ _ _ _ ⟨⟩ ⟨⟩ rfl rfl ⟨⟩; rfl
-          refine HEq.trans ?_ (heq_of_eq (hyp x))
-          apply this
-          · refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
-            rw [← map_comp]; rfl
-          · refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
-            rw [← map_comp]; rfl
-          · rfl
-      | _, .inr (.inr (.inl rfl)) =>
-        ext x
-        simp only [types_comp_apply, mk.app_two, ComposableArrows.mk₂]
-        fapply ComposableArrows.ext₁
-        · simp only [mk.app_one, ComposableArrows.mk₁_obj, ComposableArrows.Mk₁.obj]
-          congr 1
-          refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
+        · rfl
+    | _, .inr (.inr (.inl rfl)) =>
+      ext x
+      simp only [types_comp_apply, mk.app_two, ComposableArrows.mk₂]
+      fapply ComposableArrows.ext₁
+      · simp only [mk.app_one, ComposableArrows.mk₁_obj, ComposableArrows.Mk₁.obj]
+        congr 1
+        refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
+        rw [← map_comp, ← op_comp]; congr 2
+        ext ⟨i, hi⟩; match i with | 0 => rfl
+      · simp only [mk.app_one, ComposableArrows.mk₁_obj, ComposableArrows.Mk₁.obj]
+        congr 1
+        refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
+        rw [← map_comp]; rfl
+      · clear const01 const10 const02 nat11 OK
+        dsimp only [nerveFunctor₂, SimplicialObject.truncation,
+          SSet.truncation, comp_obj, nerveFunctor_obj,
+          whiskeringLeft_obj_obj, Functor.comp_map, nerve_map,
+          ComposableArrows.whiskerLeft_map, ComposableArrows.precomp_map]
+        show _ = _ ≫ ComposableArrows.Precomp.map _ _ ⟨0, _⟩ ⟨1, _⟩ _ ≫ _
+        rw [ComposableArrows.Precomp.map]; dsimp
+        apply (conj_eqToHom_iff_heq' ..).2
+        dsimp only [Fin.isValue, Nat.reduceAdd, δ₂, ev1₂]
+        have : ∀ {A B A' B' : OneTruncation₂ X} (x₁ : A ⟶ B) (x₂ : A' ⟶ B'),
+            A = A' → B = B' → x₁.1 = x₂.1 → HEq (F.map x₁) (F.map x₂) := by
+            rintro _ _ _ _ ⟨⟩ ⟨⟩ rfl rfl ⟨⟩; rfl
+        apply this
+        · refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
           rw [← map_comp, ← op_comp]; congr 2
-          ext ⟨i, hi⟩; match i with | 0 => rfl
-        · simp only [mk.app_one, ComposableArrows.mk₁_obj, ComposableArrows.Mk₁.obj]
-          congr 1
-          refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
+          ext (i : Fin 1); match i with | 0 => rfl
+        · refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
           rw [← map_comp]; rfl
-        · clear const01 const10 const02 OK
-          dsimp only [nerveFunctor₂, SimplicialObject.truncation,
-            SSet.truncation, comp_obj, nerveFunctor_obj,
-            whiskeringLeft_obj_obj, Functor.comp_map, nerve_map,
-            ComposableArrows.whiskerLeft_map, ComposableArrows.precomp_map]
-          show _ = _ ≫ ComposableArrows.Precomp.map _ _ ⟨0, _⟩ ⟨1, _⟩ _ ≫ _
-          rw [ComposableArrows.Precomp.map]; dsimp
-          apply (conj_eqToHom_iff_heq' ..).2
-          dsimp only [Fin.isValue, Nat.reduceAdd, δ₂, ev1₂]
-          have : ∀ {A B A' B' : OneTruncation₂ X} (x₁ : A ⟶ B) (x₂ : A' ⟶ B'),
-              A = A' → B = B' → x₁.1 = x₂.1 → HEq (F.map x₁) (F.map x₂) := by
-              rintro _ _ _ _ ⟨⟩ ⟨⟩ rfl rfl ⟨⟩; rfl
-          apply this
-          · refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
-            rw [← map_comp, ← op_comp]; congr 2
-            ext (i : Fin 1); match i with | 0 => rfl
-          · refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
-            rw [← map_comp]; rfl
-          · rfl
-      | _, .inr (.inr (.inr ⟨i, rfl⟩)) =>
-        exact const_fac_thru_zero .. ▸ OK.comp_mem _ _ (const10 ..) (const02 ..)
+        · rfl
+    | _, .inr (.inr (.inr ⟨i, rfl⟩)) =>
+      exact const_fac_thru_zero .. ▸ OK.comp_mem _ _ (const10 ..) (const02 ..)
   have σ00 : @OK [1]₂ [0]₂ (σ 0) := by
     ext x
     dsimp
@@ -367,14 +364,13 @@ theorem toNerve₂.mk_naturality {X : SSet.Truncated.{u} 2} {C : Cat}
           exact Quiver.Hom.unop_inj (SimplexCategory.hom_zero_zero _)
         · simp
       · simp; rfl
-  have nat2m {m hm} (α : [2]₂ ⟶ ⟨[m], hm⟩) : OK α := by
-    dsimp [OK]
+  have σ2i (i : Fin 2) : @OK [2]₂ [1]₂ (σ i) := by
     apply (cancel_mono (nerve₂.seagull _)).1
     simp [nerve₂.seagull]
-    congr 1 <;> rw [← map_comp, ← op_comp, ← nat1m, ← nat1m, op_comp, map_comp, assoc]
+    congr 1 <;> rw [← map_comp, ← op_comp, ← nat11, ← nat12, op_comp, map_comp, assoc]
   exact Truncated.morphismProperty_eq_top OK
-    (fun | 0, _, _ => const01 _ | 1, _, _ => nat1m _)
-    (fun | 0, _, 0 => σ00 | 1, _, _ => nat2m _)
+    (fun | 0, _, _ => const01 _ | 1, _, _ => nat12 _)
+    (fun | 0, _, 0 => σ00 | 1, _, i => σ2i _)
 
 /-- Because nerves are 2-coskeletal, a map of 2-truncated simplicial sets valued in a nerve can be
 recovered from the underlying ReflPrefunctor. -/
