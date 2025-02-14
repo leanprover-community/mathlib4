@@ -32,16 +32,16 @@ run_cmd
     namespace $typeName
 
       instance : Neg $typeName where
-        neg a := mk ⟨-a.toFin⟩
+        neg a := ofBitVec ⟨-a.toFin⟩
 
       instance : Pow $typeName ℕ where
-        pow a n := mk ⟨a.toFin ^ n⟩
+        pow a n := ofBitVec ⟨a.toFin ^ n⟩
 
       instance : SMul ℕ $typeName where
-        smul n a := mk ⟨n • a.toFin⟩
+        smul n a := ofBitVec ⟨n • a.toFin⟩
 
       instance : SMul ℤ $typeName where
-        smul z a := mk ⟨z • a.toFin⟩
+        smul z a := ofBitVec ⟨z • a.toFin⟩
 
       lemma neg_def (a : $typeName) : -a = ⟨⟨-a.toFin⟩⟩ := rfl
 
