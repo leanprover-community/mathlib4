@@ -654,7 +654,10 @@ theorem Function.Injective.lieModule_lcs_map_eq (k : ℕ) :
     apply Submodule.span_le.mpr
     rintro m₂ ⟨m, ⟨x, n, m_n, h⟩, rfl⟩
     simp
-    have help : ∃ y : L₂, ∃ n : lowerCentralSeries R L₂ M₂ k, ⁅y, n⁆ = g m := by sorry
+    have help : ∃ y : L₂, ∃ n : lowerCentralSeries R L₂ M₂ k, ⁅y, n⁆ = g m := by
+      use f x
+      use ⟨g m_n, ih (Submodule.mem_map_of_mem h.1)⟩
+      simp_all only [LieSubmodule.mem_top, LieSubmodule.coe_bracket]
     obtain ⟨y, n, hn⟩ := help
     rw [← hn]
     apply LieSubmodule.lie_mem_lie
