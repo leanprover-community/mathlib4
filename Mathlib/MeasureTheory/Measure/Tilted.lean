@@ -291,7 +291,7 @@ lemma absolutelyContinuous_tilted (hf : Integrable (fun x ↦ exp (f x)) μ) : �
       exact fun _ ↦ div_pos (exp_pos _) (integral_exp_pos hf)
 
 lemma integrable_tilted_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    {f : α → ℝ} (hf : Integrable (fun x ↦ rexp (f x)) μ) (g : α → E) :
+    {f : α → ℝ} (hf : Integrable (fun x ↦ exp (f x)) μ) (g : α → E) :
     Integrable g (μ.tilted f) ↔ Integrable (fun x ↦ exp (f x) • g x) μ := by
   by_cases hμ : μ = 0
   · simp [hμ]
