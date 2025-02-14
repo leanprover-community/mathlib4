@@ -226,7 +226,7 @@ variable [LE α]
 instance (priority := 10) le : LE (WithBot α) :=
   ⟨fun o₁ o₂ => ∀ a : α, o₁ = ↑a → ∃ b : α, o₂ = ↑b ∧ a ≤ b⟩
 
--- @attribute [order_dual (reorder := )]
+-- @attribute [order_dual (reorder := 3 4)]
 
 -- doesn't generate the right thing here:
 -- should be:
@@ -237,6 +237,8 @@ instance (priority := 10) le : LE (WithBot α) :=
 --    fun o₁ o₂ => ∀ a : α, o₁ = ↑a → ∃ b : α, o₂ = ↑b ∧ b ≤ a }
 
 -- want to reorder arguments of the thing inside... should we make an auxiliary definition?
+
+-- to_additive doesn't work with structures - we'll just have to do it manually until that's added...
 
 -- @[order_dual (attr := simp, norm_cast)]
 @[simp, norm_cast]
@@ -671,6 +673,10 @@ See `WithBot.ofDual_top_equiv` for the related order-iso.
 -/
 protected def _root_.WithBot.ofDual : WithBot αᵒᵈ ≃ WithTop α :=
   Equiv.refl _
+
+-- theorem impl_toDual_le_iff [LE α] {a : WithTop α} {b : WithBot αᵒᵈ} :
+--     WithTop.le_impl (WithTop.toDual a) b ↔ WithBot.le_impl (WithBot.ofDual b) a :=
+--   Iff.rfl
 
 @[simp]
 theorem toDual_symm_apply (a : WithBot αᵒᵈ) : WithTop.toDual.symm a = WithBot.ofDual a :=

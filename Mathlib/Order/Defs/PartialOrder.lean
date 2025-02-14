@@ -27,6 +27,8 @@ section Preorder
 
 attribute [order_dual existing (reorder := 3 4) LE.le] LE.le
 attribute [order_dual existing (reorder := 3 4) LT.lt] LT.lt
+attribute [order_dual existing (reorder := 3 4) GE.ge] GE.ge
+attribute [order_dual existing (reorder := 3 4) GT.gt] GT.gt
 
 /-- A preorder is a reflexive, transitive relation `≤` with `a < b` defined in the obvious way. -/
 class Preorder (α : Type*) extends LE α, LT α where
@@ -35,7 +37,12 @@ class Preorder (α : Type*) extends LE α, LT α where
   lt := fun a b => a ≤ b ∧ ¬b ≤ a
   lt_iff_le_not_le : ∀ a b : α, a < b ↔ a ≤ b ∧ ¬b ≤ a := by intros; rfl
 
+attribute [order_dual existing (reorder := 3 4) Preorder.lt_iff_le_not_le] Preorder.lt_iff_le_not_le
+
 variable [Preorder α] {a b c : α}
+
+@[order_dual existing Preorder.le_trans]
+lemma Preorder.le_trans' (h₁ : b ≤ a) (h₂ : c ≤ b) : c ≤ a := Preorder.le_trans c b a h₂ h₁
 
 /-- The relation `≤` on a preorder is reflexive. -/
 @[refl, simp] lemma le_refl : ∀ a : α, a ≤ a := Preorder.le_refl
@@ -44,47 +51,66 @@ variable [Preorder α] {a b c : α}
 lemma le_rfl : a ≤ a := le_refl a
 
 /-- The relation `≤` on a preorder is transitive. -/
-@[trans] lemma le_trans : a ≤ b → b ≤ c → a ≤ c := Preorder.le_trans _ _ _
+@[order_dual ge_trans]
+lemma le_trans : a ≤ b → b ≤ c → a ≤ c := Preorder.le_trans _ _ _
 
+-- lemma ge_trans' : a ≥ b → b ≥ c → a ≥ c := ge_trans
+
+-- attribute [order_dual existing (attr := trans) ge_trans] le_trans
+
+@[order_dual existing (reorder := 3 4) lt_iff_le_not_le]
 lemma lt_iff_le_not_le : a < b ↔ a ≤ b ∧ ¬b ≤ a := Preorder.lt_iff_le_not_le _ _
 
+@[order_dual existing (reorder := 3 4) lt_of_le_not_le]
 lemma lt_of_le_not_le (hab : a ≤ b) (hba : ¬ b ≤ a) : a < b := lt_iff_le_not_le.2 ⟨hab, hba⟩
 
+@[order_dual (reorder := 3 4) le_of_eq']
 lemma le_of_eq (hab : a = b) : a ≤ b := by rw [hab]
+@[order_dual existing (reorder := 3 4) le_of_lt]
 lemma le_of_lt (hab : a < b) : a ≤ b := (lt_iff_le_not_le.1 hab).1
+@[order_dual existing (reorder := 3 4) not_le_of_lt]
 lemma not_le_of_lt (hab : a < b) : ¬ b ≤ a := (lt_iff_le_not_le.1 hab).2
+@[order_dual existing (reorder := 3 4) not_le_of_gt]
 lemma not_le_of_gt (hab : a > b) : ¬a ≤ b := not_le_of_lt hab
+@[order_dual existing (reorder := 3 4) not_lt_of_le]
 lemma not_lt_of_le (hab : a ≤ b) : ¬ b < a := imp_not_comm.1 not_le_of_lt hab
+@[order_dual existing (reorder := 3 4) not_lt_of_ge]
 lemma not_lt_of_ge (hab : a ≥ b) : ¬a < b := not_lt_of_le hab
 
 alias LT.lt.not_le := not_le_of_lt
 alias LE.le.not_lt := not_lt_of_le
 
-@[trans] lemma ge_trans : a ≥ b → b ≥ c → a ≥ c := fun h₁ h₂ => le_trans h₂ h₁
-
 lemma lt_irrefl (a : α) : ¬a < a := fun h ↦ not_le_of_lt h le_rfl
 lemma gt_irrefl (a : α) : ¬a > a := lt_irrefl _
 
-@[trans] lemma lt_of_lt_of_le (hab : a < b) (hbc : b ≤ c) : a < c :=
+@[order_dual (attr := trans) gt_of_gt_of_ge]
+lemma lt_of_lt_of_le (hab : a < b) (hbc : b ≤ c) : a < c :=
   lt_of_le_not_le (le_trans (le_of_lt hab) hbc) fun hca ↦ not_le_of_lt hab (le_trans hbc hca)
 
-@[trans] lemma lt_of_le_of_lt (hab : a ≤ b) (hbc : b < c) : a < c :=
+@[order_dual (attr := trans) gt_of_ge_of_gt]
+lemma lt_of_le_of_lt (hab : a ≤ b) (hbc : b < c) : a < c :=
   lt_of_le_not_le (le_trans hab (le_of_lt hbc)) fun hca ↦ not_le_of_lt hbc (le_trans hca hab)
 
-@[trans] lemma gt_of_gt_of_ge (h₁ : a > b) (h₂ : b ≥ c) : a > c := lt_of_le_of_lt h₂ h₁
-@[trans] lemma gt_of_ge_of_gt (h₁ : a ≥ b) (h₂ : b > c) : a > c := lt_of_lt_of_le h₂ h₁
+-- @[trans] lemma gt_of_gt_of_ge (h₁ : a > b) (h₂ : b ≥ c) : a > c := lt_of_le_of_lt h₂ h₁
+-- @[trans] lemma gt_of_ge_of_gt (h₁ : a ≥ b) (h₂ : b > c) : a > c := lt_of_lt_of_le h₂ h₁
 
-@[trans] lemma lt_trans (hab : a < b) (hbc : b < c) : a < c := lt_of_lt_of_le hab (le_of_lt hbc)
-@[trans] lemma gt_trans : a > b → b > c → a > c := fun h₁ h₂ => lt_trans h₂ h₁
+@[order_dual (attr := trans) gt_trans]
+lemma lt_trans (hab : a < b) (hbc : b < c) : a < c := lt_of_lt_of_le hab (le_of_lt hbc)
+-- @[trans] lemma gt_trans : a > b → b > c → a > c := fun h₁ h₂ => lt_trans h₂ h₁
 
+@[order_dual existing (reorder := 3 4) ne_of_lt]
 lemma ne_of_lt (h : a < b) : a ≠ b := fun he => absurd h (he ▸ lt_irrefl a)
+@[order_dual existing (reorder := 3 4) ne_of_gt]
 lemma ne_of_gt (h : b < a) : a ≠ b := fun he => absurd h (he ▸ lt_irrefl a)
+@[order_dual existing (reorder := 3 4) lt_asymm]
 lemma lt_asymm (h : a < b) : ¬b < a := fun h1 : b < a => lt_irrefl a (lt_trans h h1)
 
 alias not_lt_of_gt := lt_asymm
 alias not_lt_of_lt := lt_asymm
 
+@[order_dual (reorder := 3 4) le_of_lt_or_eq']
 lemma le_of_lt_or_eq (h : a < b ∨ a = b) : a ≤ b := h.elim le_of_lt le_of_eq
+@[order_dual (reorder := 3 4) le_of_eq_or_lt']
 lemma le_of_eq_or_lt (h : a = b ∨ a < b) : a ≤ b := h.elim le_of_eq le_of_lt
 
 instance (priority := 900) : @Trans α α α LE.le LE.le LE.le := ⟨le_trans⟩
@@ -120,14 +146,17 @@ class PartialOrder (α : Type*) extends Preorder α where
 
 variable [PartialOrder α] {a b : α}
 
--- @[order_dual? ge_antisymm']
+lemma PartialOrder.le_antisymm' (h₁ : b ≤ a) (h₂ : a ≤ b) : b = a :=
+(PartialOrder.le_antisymm _ _ h₂ h₁).symm
+
+attribute [order_dual existing (reorder := 3 4,5 6) PartialOrder.le_antisymm']
+PartialOrder.le_antisymm
+
+@[order_dual (reorder := 3 4) ge_antisymm]
 lemma le_antisymm : a ≤ b → b ≤ a → a = b := PartialOrder.le_antisymm _ _
 
-theorem _root_.ge_antisymm : a ≤ b → b ≤ a → b = a :=
-  flip le_antisymm
-
-attribute [order_dual existing (reorder := 3 4) le_antisymm] ge_antisymm
-
+-- theorem _root_.ge_antisymm : a ≤ b → b ≤ a → b = a :=
+--   flip le_antisymm
 
 alias eq_of_le_of_le := le_antisymm
 

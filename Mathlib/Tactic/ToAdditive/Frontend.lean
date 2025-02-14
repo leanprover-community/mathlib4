@@ -1604,13 +1604,13 @@ partial def addToAdditiveAttr (b : BundledExtensions)
       else
         "The additive declaration doesn't exist. Please remove the option `existing`."
   if cfg.reorder != [] then
-    trace[to_additive] "@[to_additive] will reorder the arguments of {tgt}."
+    trace[to_additive] "@[to_additive] will reorder the arguments of {tgt} according to {cfg.reorder}."
     b.reorderAttr.add src cfg.reorder
     -- HACK: special case order_dual
     if b.attrName = `order_dual && src != tgt then
-      trace[to_additive] "@[to_additive] will also reorder the arguments of {src}."
-      -- assume that the permutation provided is an involution...
-      b.reorderAttr.add tgt cfg.reorder
+      let reorderInv := cfg.reorder.map .reverse
+      trace[to_additive] "@[to_additive] will also reorder the arguments of {src} according to {reorderInv}."
+      b.reorderAttr.add tgt reorderInv
     -- we allow using this attribute if it's only to add the reorder configuration
     if findTranslation? (← getEnv) b src |>.isSome then
       return #[tgt]

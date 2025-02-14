@@ -67,6 +67,7 @@ section Preorder
 
 variable [Preorder α] {a b c : α}
 
+-- @[order_dual ()]
 theorem le_trans' : b ≤ c → a ≤ b → a ≤ c :=
   flip le_trans
 
@@ -221,32 +222,41 @@ section PartialOrder
 
 variable [PartialOrder α] {a b : α}
 
+@[order_dual existing (reorder := 3 4) LE.le.lt_iff_ne]
 theorem lt_iff_ne (h : a ≤ b) : a < b ↔ a ≠ b :=
   ⟨fun h ↦ h.ne, h.lt_of_ne⟩
 
+@[order_dual existing (reorder := 3 4) LE.le.gt_iff_ne]
 theorem gt_iff_ne (h : a ≤ b) : a < b ↔ b ≠ a :=
   ⟨fun h ↦ h.ne.symm, h.lt_of_ne'⟩
 
+@[order_dual existing (reorder := 3 4) LE.le.not_lt_iff_eq]
 theorem not_lt_iff_eq (h : a ≤ b) : ¬a < b ↔ a = b :=
   h.lt_iff_ne.not_left
 
+@[order_dual existing (reorder := 3 4) LE.le.not_gt_iff_eq]
 theorem not_gt_iff_eq (h : a ≤ b) : ¬a < b ↔ b = a :=
   h.gt_iff_ne.not_left
 
+@[order_dual existing (reorder := 3 4) LE.le.le_iff_eq]
 theorem le_iff_eq (h : a ≤ b) : b ≤ a ↔ b = a :=
   ⟨fun h' ↦ h'.antisymm h, Eq.le⟩
 
+@[order_dual existing (reorder := 3 4) LE.le.ge_iff_eq]
 theorem ge_iff_eq (h : a ≤ b) : b ≤ a ↔ a = b :=
   ⟨h.antisymm, Eq.ge⟩
 
 end PartialOrder
 
+@[order_dual (reorder := 3 4) LE.le.lt_or_le']
 theorem lt_or_le [LinearOrder α] {a b : α} (h : a ≤ b) (c : α) : a < c ∨ c ≤ b :=
   ((lt_or_ge a c).imp id) fun hc ↦ le_trans hc h
 
+@[order_dual (reorder := 3 4) LE.le.le_or_lt']
 theorem le_or_lt [LinearOrder α] {a b : α} (h : a ≤ b) (c : α) : a ≤ c ∨ c < b :=
   ((le_or_gt a c).imp id) fun hc ↦ lt_of_lt_of_le hc h
 
+@[order_dual (reorder := 3 4) LE.le.le_or_le']
 theorem le_or_le [LinearOrder α] {a b : α} (h : a ≤ b) (c : α) : a ≤ c ∨ c ≤ b :=
   (h.le_or_lt c).elim Or.inl fun h ↦ Or.inr <| le_of_lt h
 
@@ -256,6 +266,7 @@ namespace LT.lt
 
 -- see Note [nolint_ge]
 -- Porting note: linter not found @[nolint ge_or_gt]
+@[order_dual existing (reorder := 3 4) LT.lt.gt]
 protected theorem gt [LT α] {x y : α} (h : x < y) : y > x :=
   h
 
@@ -363,6 +374,8 @@ theorem max_def' [LinearOrder α] (a b : α) : max a b = if b ≤ a then a else 
   · rw [if_pos lt.le, if_neg (not_le.mpr lt)]
   · rw [if_pos eq.le, if_pos eq.ge, eq]
   · rw [if_neg (not_le.mpr gt.gt), if_pos gt.le]
+
+attribute [order_dual existing] min_def'
 
 theorem lt_of_not_le [LinearOrder α] {a b : α} (h : ¬b ≤ a) : a < b :=
   ((le_total _ _).resolve_right h).lt_of_not_le h

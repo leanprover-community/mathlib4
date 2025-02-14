@@ -15,6 +15,9 @@ namespace Test
 -- set_option pp.explicit true
 -- set_option pp.notation false
 
+-- run_cmd do
+--   unless ToAdditive.findTranslation? (← Lean.getEnv) ToAdditive.orderDualTranslations `Test.MulInd.one == some `Test.AddInd.zero do throwError "1"
+
 section
 
 open Qq Lean Meta Elab Command ToAdditive
