@@ -8,7 +8,7 @@ import Mathlib.Data.Matroid.Closure
 /-!
 # Finite-rank sets
 
-`Matroid.IsRkFinite M X`  means that every isBasis of the set `X` in the matroid `M` is finite,
+`Matroid.IsRkFinite M X`  means that every basis of the set `X` in the matroid `M` is finite,
 or equivalently that the restriction of `M` to `X` is `Matroid.RankFinite`.
 Sets in a matroid with `IsRkFinite` are the largest class of sets for which one can do nontrivial
 integer arithmetic involving the rank function.
@@ -25,7 +25,7 @@ open Set
 
 namespace Matroid
 
-/-- `Matroid.IsRkFinite M X` means that every isBasis of `X` in `M` is finite. -/
+/-- `Matroid.IsRkFinite M X` means that every basis of `X` in `M` is finite. -/
 def IsRkFinite (M : Matroid α) (X : Set α) : Prop := (M ↾ X).RankFinite
 
 lemma IsRkFinite.rankFinite (hX : M.IsRkFinite X) : (M ↾ X).RankFinite :=
@@ -47,7 +47,7 @@ lemma IsBasis'.isRkFinite_of_finite (hI : M.IsBasis' I X) (hIfin : I.Finite) : M
 lemma IsBasis.isRkFinite_of_finite (hI : M.IsBasis I X) (hIfin : I.Finite) : M.IsRkFinite X :=
   ⟨I, hI.isBasis', hIfin⟩
 
-/-- A `IsBasis'` of an `IsRkFinite` set is finite. -/
+/-- A basis' of an `IsRkFinite` set is finite. -/
 lemma IsRkFinite.finite_of_isBasis' (h : M.IsRkFinite X) (hI : M.IsBasis' I X) : I.Finite :=
   have := h.rankFinite
   (isBase_restrict_iff'.2 hI).finite
@@ -55,16 +55,16 @@ lemma IsRkFinite.finite_of_isBasis' (h : M.IsRkFinite X) (hI : M.IsBasis' I X) :
 lemma IsRkFinite.finite_of_isBasis (h : M.IsRkFinite X) (hI : M.IsBasis I X) : I.Finite :=
   h.finite_of_isBasis' hI.isBasis'
 
-/-- An `IsRkFinite` set has a finite `IsBasis'`-/
+/-- An `IsRkFinite` set has a finite basis' -/
 lemma IsRkFinite.exists_finite_isBasis' (h : M.IsRkFinite X) : ∃ I, M.IsBasis' I X ∧ I.Finite :=
   h.exists_finite_isBase
 
-/-- An `IsRkFinite` set has a finset `IsBasis'` -/
+/-- An `IsRkFinite` set has a finset basis' -/
 lemma IsRkFinite.exists_finset_isBasis' (h : M.IsRkFinite X) : ∃ (I : Finset α), M.IsBasis' I X :=
   let ⟨I, hI, hIfin⟩ := h.exists_finite_isBasis'
   ⟨hIfin.toFinset, by simpa⟩
 
-/-- A set satisfies `IsRkFinite` iff it has a finite `IsBasis'` -/
+/-- A set satisfies `IsRkFinite` iff it has a finite basis' -/
 lemma isRkFinite_iff_exists_isBasis' : M.IsRkFinite X ↔ ∃ I, M.IsBasis' I X ∧ I.Finite :=
   ⟨IsRkFinite.exists_finite_isBasis', fun ⟨_, hIX, hI⟩ ↦ hIX.isRkFinite_of_finite hI⟩
 

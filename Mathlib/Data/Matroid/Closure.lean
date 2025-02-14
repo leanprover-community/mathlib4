@@ -85,7 +85,7 @@ variable {ι α : Type*} {M : Matroid α} {F X Y : Set α} {e f : α}
 
 section IsFlat
 
-/-- A isFlat is a maximal set having a given isBasis  -/
+/-- A flat is a maximal set having a given basis  -/
 @[mk_iff]
 structure IsFlat (M : Matroid α) (F : Set α) : Prop where
   subset_of_isBasis_of_isBasis : ∀ ⦃I X⦄, M.IsBasis I F → M.IsBasis I X → X ⊆ F
@@ -107,10 +107,10 @@ lemma IsFlat.iInter {ι : Type*} [Nonempty ι] {Fs : ι → Set α}
   convert hIJ.isBasis_union (hIX.isBasis_union_of_subset hIJ.indep hJ) using 1
   rw [← union_assoc, union_eq_self_of_subset_right hIJ.subset]
 
-/-- The property of being a isFlat gives rise to a `ClosureOperator` on the subsets of `M.E`,
-in which the `IsClosed` sets correspond to `IsFlat`s.
+/-- The property of being a flat gives rise to a `ClosureOperator` on the subsets of `M.E`,
+in which the `IsClosed` sets correspond to flats.
 (We can't define such an operator on all of `Set α`,
-since this would incorrectly force `univ` to always be a isFlat.) -/
+since this would incorrectly force `univ` to always be a flat.) -/
 def subtypeClosure (M : Matroid α) : ClosureOperator (Iic M.E) :=
   ClosureOperator.ofCompletePred (fun F ↦ M.IsFlat F.1) fun s hs ↦ by
     obtain (rfl | hne) := s.eq_empty_or_nonempty
@@ -128,7 +128,7 @@ lemma isClosed_iff_isFlat {F : Iic M.E} : M.subtypeClosure.IsClosed F ↔ M.IsFl
 
 end IsFlat
 
-/-- The closure of `X ⊆ M.E` is the intersection of all the isFlats of `M` containing `X`.
+/-- The closure of `X ⊆ M.E` is the intersection of all the flats of `M` containing `X`.
 A set `X` that doesn't satisfy `X ⊆ M.E` has the junk value `M.closure X := M.closure (X ∩ M.E)`. -/
 def closure (M : Matroid α) (X : Set α) : Set α := ⋂₀ {F | M.IsFlat F ∧ X ∩ M.E ⊆ F}
 
@@ -727,7 +727,7 @@ section Spanning
 variable {S T I B : Set α}
 
 /-- A set is `spanning` in `M` if its closure is equal to `M.E`, or equivalently if it contains
-  a isBase of `M`. -/
+a base of `M`. -/
 @[mk_iff]
 structure Spanning (M : Matroid α) (S : Set α) : Prop where
   closure_eq : M.closure S = M.E

@@ -8,8 +8,8 @@ import Mathlib.Data.Matroid.Closure
 /-!
 # Matroid IsCircuits
 
-A `Circuit` of a matroid `M` is a minimal set `C` that is dependent in `M`.
-A matroid is determined by its set of isCircuits, and often the circuits
+A 'Circuit' of a matroid `M` is a minimal set `C` that is dependent in `M`.
+A matroid is determined by its set of circuits, and often the circuits
 offer a more compact description of a matroid than the collection of independent sets or bases.
 In matroids arising from graphs, circuits correspond to graphical cycles.
 
@@ -360,7 +360,7 @@ lemma ext_isCircuit {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E)
     indep_iff_forall_subset_not_isCircuit (hI.trans_eq hE)]
 
 /-- A stronger version of `Matroid.ext_isCircuit`:
-two matroids on the same ground set are equal if no isCircuit of one is independent in the other. -/
+two matroids on the same ground set are equal if no circuit of one is independent in the other. -/
 lemma ext_isCircuit_not_indep {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E)
     (h₁ : ∀ C, M₁.IsCircuit C → ¬ M₂.Indep C) (h₂ : ∀ C, M₂.IsCircuit C → ¬ M₁.Indep C) :
     M₁ = M₂ := by
@@ -407,11 +407,11 @@ lemma IsCircuit.strong_multi_elimination_insert (x : ι → α) (I : ι → Set 
 /-- A generalization of the strong circuit elimination axiom `Matroid.IsCircuit.strong_elimination`
 to an infinite collection of isCircuits.
 
-It states that, given a isCircuit `C₀`, a arbitrary collection `C : ι → Set α` of isCircuits,
+It states that, given a circuit `C₀`, a arbitrary collection `C : ι → Set α` of circuits,
 an element `x i` of `C₀ ∩ C i` for each `i`, and an element `z ∈ C₀` outside all the `C i`,
-the union of `C₀` and the `C i` contains a isCircuit containing `z` but none of the `x i`.
+the union of `C₀` and the `C i` contains a circuit containing `z` but none of the `x i`.
 
-This is one of the axioms when defining infinite matroids via isCircuits.
+This is one of the axioms when defining infinite matroids via circuits.
 
 TODO : A similar statement will hold even when all mentions of `z` are removed. -/
 lemma IsCircuit.strong_multi_elimination (hC₀ : M.IsCircuit C₀) (x : ι → α) (C : ι → Set α) (z : α)
@@ -438,7 +438,7 @@ lemma IsCircuit.strong_multi_elimination (hC₀ : M.IsCircuit C₀) (x : ι → 
   simp only [mem_diff, mem_singleton_iff, not_and, not_not]
   exact fun i hzi ↦ (hzC i hzi).elim
 
-/-- A version of `Circuit.strong_multi_elimination` where the collection of isCircuits is
+/-- A version of `Circuit.strong_multi_elimination` where the collection of circuits is
 a `Set (Set α)` and the distinguished elements are a `Set α`, rather than both being indexed. -/
 lemma IsCircuit.strong_multi_elimination_set (hC₀ : M.IsCircuit C₀) (X : Set α) (S : Set (Set α))
     (z : α) (hCS : ∀ C ∈ S, M.IsCircuit C) (hXC₀ : X ⊆ C₀) (hX : ∀ x ∈ X, ∃ C ∈ S, C ∩ X = {x})
@@ -458,8 +458,8 @@ lemma IsCircuit.strong_multi_elimination_set (hC₀ : M.IsCircuit C₀) (X : Set
     simpa [hC.2 f hfX] using subset_inter (singleton_subset_iff.2 hef) (singleton_subset_iff.2 heX)
   simpa using fun e heX heC ↦ hz _ (hC.1 e heX) heC
 
-/-- The strong isCircuit elimination axiom. For any pair of distinct isCircuits `C₁, C₂` and all
-`e ∈ C₁ ∩ C₂` and `f ∈ C₁ \ C₂`, there is a isCircuit `C` with `f ∈ C ⊆ (C₁ ∪ C₂) \ {e}`. -/
+/-- The strong isCircuit elimination axiom. For any pair of distinct circuits `C₁, C₂` and all
+`e ∈ C₁ ∩ C₂` and `f ∈ C₁ \ C₂`, there is a circuit `C` with `f ∈ C ⊆ (C₁ ∪ C₂) \ {e}`. -/
 lemma IsCircuit.strong_elimination (hC₁ : M.IsCircuit C₁) (hC₂ : M.IsCircuit C₂) (heC₁ : e ∈ C₁)
     (heC₂ : e ∈ C₂) (hfC₁ : f ∈ C₁) (hfC₂ : f ∉ C₂) :
     ∃ C ⊆ (C₁ ∪ C₂) \ {e}, M.IsCircuit C ∧ f ∈ C := by
@@ -467,10 +467,10 @@ lemma IsCircuit.strong_elimination (hC₁ : M.IsCircuit C₁) (hC₂ : M.IsCircu
     (by simpa) (by simpa) (by simpa) (by simp) (by simpa) (by simpa)
   exact ⟨C, hCs.trans (diff_subset_diff (by simp) (by simp)), hC, hfC⟩
 
-/-- The isCircuit elimination axiom : for any pair of distinct isCircuits `C₁, C₂` and any `e`,
-some isCircuit is contained in `(C₁ ∪ C₂) \ {e}`.
+/-- The circuit elimination axiom : for any pair of distinct isCircuits `C₁, C₂` and any `e`,
+some circuit is contained in `(C₁ ∪ C₂) \ {e}`.
 
-This is one of the axioms when definining a finitary matroid via isCircuits;
+This is one of the axioms when definining a finitary matroid via circuits;
 as an axiom, it is usually stated with the extra assumption that `e ∈ C₁ ∩ C₂`. -/
 lemma IsCircuit.elimination (hC₁ : M.IsCircuit C₁) (hC₂ : M.IsCircuit C₂) (h : C₁ ≠ C₂) (e : α) :
     ∃ C ⊆ (C₁ ∪ C₂) \ {e}, M.IsCircuit C := by
