@@ -49,7 +49,8 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
 `Archive` and `Counterexamples`. (`tests` omits the first two options.) -/
 abbrev mathlibLeanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
-    ⟨`autoImplicit, false⟩
+    ⟨`autoImplicit, false⟩,
+    ⟨`maxSynthPendingDepth, .ofNat 2⟩
   ] ++ -- options that are used in `lake build`
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
 
@@ -159,8 +160,6 @@ lean_exe unused where
 
 lean_exe mathlib_test_executable where
   root := `MathlibTest.MathlibTestExecutable
-
-set_option maxSynthPendingDepth 2
 
 /-!
 ## Other configuration
