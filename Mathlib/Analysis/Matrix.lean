@@ -558,13 +558,13 @@ theorem frobenius_norm_diagonal [DecidableEq n] (v : n → α) :
 end SeminormedAddCommGroup
 
 theorem frobenius_nnnorm_one [DecidableEq n] [SeminormedAddCommGroup α] [One α] :
-    ‖(1 : Matrix n n α)‖₊ = NNReal.sqrt (Fintype.card n) * ‖(1 : α)‖₊ := by
-  refine (frobenius_nnnorm_diagonal _).trans ?_
-  -- Porting note: change to erw, since `fun x => 1` no longer matches `Function.const`
-  erw [PiLp.nnnorm_equiv_symm_const ENNReal.two_ne_top]
-  simp_rw [NNReal.sqrt_eq_rpow]
-  -- Porting note: added `ENNReal.toReal_ofNat`
-  simp only [ENNReal.toReal_div, ENNReal.one_toReal, ENNReal.toReal_ofNat]
+    ‖(1 : Matrix n n α)‖₊ = .sqrt (Fintype.card n) * ‖(1 : α)‖₊ := by
+  calc
+    ‖(diagonal 1 : Matrix n n α)‖₊
+    _ = ‖(WithLp.equiv 2 (n → α)).symm (Function.const _ 1)‖₊ := frobenius_nnnorm_diagonal _
+    _ = .sqrt (Fintype.card n) * ‖(1 : α)‖₊ := by
+      rw [PiLp.nnnorm_equiv_symm_const (ENNReal.ofNat_ne_top (n := 2))]
+      simp [NNReal.sqrt_eq_rpow]
 
 section RCLike
 

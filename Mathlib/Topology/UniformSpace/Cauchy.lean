@@ -303,9 +303,9 @@ theorem cauchySeq_of_controlled [SemilatticeSup β] [Nonempty β] (U : β → Se
     (by
       intro s hs
       rw [mem_map, mem_atTop_sets]
-      cases' hU s hs with N hN
+      obtain ⟨N, hN⟩ := hU s hs
       refine ⟨(N, N), fun mn hmn => ?_⟩
-      cases' mn with m n
+      obtain ⟨m, n⟩ := mn
       exact hN (hf hmn.1 hmn.2))
 
 theorem isComplete_iff_clusterPt {s : Set α} :
@@ -337,7 +337,7 @@ theorem isComplete_iUnion_separated {ι : Sort*} {s : ι → Set α} (hs : ∀ i
   set S := ⋃ i, s i
   intro l hl hls
   rw [le_principal_iff] at hls
-  cases' cauchy_iff.1 hl with hl_ne hl'
+  obtain ⟨hl_ne, hl'⟩ := cauchy_iff.1 hl
   obtain ⟨t, htS, htl, htU⟩ : ∃ t, t ⊆ S ∧ t ∈ l ∧ t ×ˢ t ⊆ U := by
     rcases hl' U hU with ⟨t, htl, htU⟩
     refine ⟨t ∩ S, inter_subset_right, inter_mem htl hls, Subset.trans ?_ htU⟩
@@ -479,9 +479,6 @@ theorem TotallyBounded.subset {s₁ s₂ : Set α} (hs : s₁ ⊆ s₂) (h : Tot
     TotallyBounded s₁ := fun d hd =>
   let ⟨t, ht₁, ht₂⟩ := h d hd
   ⟨t, ht₁, Subset.trans hs ht₂⟩
-
-@[deprecated (since := "2024-06-01")]
-alias totallyBounded_subset := TotallyBounded.subset
 
 /-- The closure of a totally bounded set is totally bounded. -/
 theorem TotallyBounded.closure {s : Set α} (h : TotallyBounded s) : TotallyBounded (closure s) :=
@@ -637,7 +634,7 @@ theorem isCompact_of_totallyBounded_isClosed [CompleteSpace α] {s : Set α} (ht
 theorem CauchySeq.totallyBounded_range {s : ℕ → α} (hs : CauchySeq s) :
     TotallyBounded (range s) := by
   intro a ha
-  cases' cauchySeq_iff.1 hs a ha with n hn
+  obtain ⟨n, hn⟩ := cauchySeq_iff.1 hs a ha
   refine ⟨s '' { k | k ≤ n }, (finite_le_nat _).image _, ?_⟩
   rw [range_subset_iff, biUnion_image]
   intro m
