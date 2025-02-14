@@ -241,7 +241,7 @@ lemma Indep.mem_fundCircuit_iff (hI : M.Indep I) (hecl : e ∈ M.closure I) (heI
   refine ⟨fun h hecl ↦ (h _ diff_subset hecl).2 rfl, fun h J hJ heJ ↦ by_contra fun hxJ ↦ h ?_⟩
   exact M.closure_subset_closure (subset_diff_singleton hJ hxJ) heJ
 
-lemma Base.fundCircuit_circuit {B : Set α} (hB : M.Base B) (hxE : x ∈ M.E) (hxB : x ∉ B) :
+lemma Base.fundCircuit_circuit {B : Set α} (hB : M.IsBase B) (hxE : x ∈ M.E) (hxB : x ∉ B) :
     M.Circuit (M.fundCircuit x B) :=
   hB.indep.fundCircuit_circuit (by rwa [hB.closure_eq]) hxB
 

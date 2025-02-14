@@ -32,7 +32,7 @@ lemma IsRkFinite.rankFinite (hX : M.IsRkFinite X) : (M ↾ X).RankFinite :=
   hX
 
 lemma Basis'.finite_iff_isRkFinite (hI : M.Basis' I X) : I.Finite ↔ M.IsRkFinite X :=
-  ⟨fun h ↦ ⟨I, hI, h⟩, fun (_ : (M ↾ X).RankFinite) ↦ hI.base_restrict.finite⟩
+  ⟨fun h ↦ ⟨I, hI, h⟩, fun (_ : (M ↾ X).RankFinite) ↦ hI.isBase_restrict.finite⟩
 
 alias ⟨_, Basis'.finite_of_isRkFinite⟩ := Basis'.finite_iff_isRkFinite
 
@@ -50,14 +50,14 @@ lemma Basis.isRkFinite_of_finite (hI : M.Basis I X) (hIfin : I.Finite) : M.IsRkF
 /-- A `Basis'` of an `IsRkFinite` set is finite. -/
 lemma IsRkFinite.finite_of_basis' (h : M.IsRkFinite X) (hI : M.Basis' I X) : I.Finite :=
   have := h.rankFinite
-  (base_restrict_iff'.2 hI).finite
+  (isBase_restrict_iff'.2 hI).finite
 
 lemma IsRkFinite.finite_of_basis (h : M.IsRkFinite X) (hI : M.Basis I X) : I.Finite :=
   h.finite_of_basis' hI.basis'
 
 /-- An `IsRkFinite` set has a finite `Basis'`-/
 lemma IsRkFinite.exists_finite_basis' (h : M.IsRkFinite X) : ∃ I, M.Basis' I X ∧ I.Finite :=
-  h.exists_finite_base
+  h.exists_finite_isBase
 
 /-- An `IsRkFinite` set has a finset `Basis'` -/
 lemma IsRkFinite.exists_finset_basis' (h : M.IsRkFinite X) : ∃ (I : Finset α), M.Basis' I X :=

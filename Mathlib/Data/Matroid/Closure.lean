@@ -32,7 +32,7 @@ We also define a predicate `Spanning`, to describe a set whose closure is the en
   `M.subtypeClosure X` is the closure of `X`, viewed as a term in `↑(Iic M.E)`.
   This is a `ClosureOperator` on `↑(Iic M.E)`.
 * For `M : Matroid α` and `S ⊆ M.E`, `M.Spanning S` means that `S` has closure equal to `M.E`,
-  or equivalently that `S` contains a base of `M`.
+  or equivalently that `S` contains a isBase of `M`.
 
 ## Implementation details
 
@@ -417,22 +417,23 @@ lemma basis_iff_indep_subset_closure : M.Basis I X ↔ M.Indep I ∧ I ⊆ X ∧
   ⟨fun h ↦ ⟨h.indep, h.subset, h.subset_closure⟩,
     fun h ↦ h.1.basis_of_subset_of_subset_closure h.2.1 h.2.2⟩
 
-lemma Indep.base_of_ground_subset_closure (hI : M.Indep I) (h : M.E ⊆ M.closure I) : M.Base I := by
+lemma Indep.isBase_of_ground_subset_closure (hI : M.Indep I) (h : M.E ⊆ M.closure I) :
+    M.IsBase I := by
   rw [← basis_ground_iff]; exact hI.basis_of_subset_of_subset_closure hI.subset_ground h
 
-lemma Base.closure_eq (hB : M.Base B) : M.closure B = M.E := by
+lemma IsBase.closure_eq (hB : M.IsBase B) : M.closure B = M.E := by
   rw [← basis_ground_iff] at hB; rw [hB.closure_eq_closure, closure_ground]
 
-lemma Base.closure_of_superset (hB : M.Base B) (hBX : B ⊆ X) : M.closure X = M.E :=
+lemma IsBase.closure_of_superset (hB : M.IsBase B) (hBX : B ⊆ X) : M.closure X = M.E :=
   (M.closure_subset_ground _).antisymm (hB.closure_eq ▸ M.closure_subset_closure hBX)
 
-lemma base_iff_indep_closure_eq : M.Base B ↔ M.Indep B ∧ M.closure B = M.E := by
+lemma isBase_iff_indep_closure_eq : M.IsBase B ↔ M.Indep B ∧ M.closure B = M.E := by
   rw [← basis_ground_iff, basis_iff_indep_subset_closure, and_congr_right_iff]
   exact fun hI ↦ ⟨fun h ↦ (M.closure_subset_ground _).antisymm h.2,
     fun h ↦ ⟨(M.subset_closure B).trans_eq h, h.symm.subset⟩⟩
 
-lemma Indep.base_iff_ground_subset_closure (hI : M.Indep I) : M.Base I ↔ M.E ⊆ M.closure I :=
-  ⟨fun h ↦ h.closure_eq.symm.subset, hI.base_of_ground_subset_closure⟩
+lemma Indep.isBase_iff_ground_subset_closure (hI : M.Indep I) : M.IsBase I ↔ M.E ⊆ M.closure I :=
+  ⟨fun h ↦ h.closure_eq.symm.subset, hI.isBase_of_ground_subset_closure⟩
 
 lemma Indep.closure_inter_eq_self_of_subset (hI : M.Indep I) (hJI : J ⊆ I) :
     M.closure J ∩ I = J := by
@@ -723,7 +724,7 @@ section Spanning
 variable {S T I B : Set α}
 
 /-- A set is `spanning` in `M` if its closure is equal to `M.E`, or equivalently if it contains
-  a base of `M`. -/
+  a isBase of `M`. -/
 @[mk_iff]
 structure Spanning (M : Matroid α) (S : Set α) : Prop where
   closure_eq : M.closure S = M.E
@@ -765,35 +766,35 @@ lemma Spanning.union_right (hS : M.Spanning S) (hX : X ⊆ M.E := by aesop_mat) 
     M.Spanning (X ∪ S) :=
   hS.superset subset_union_right
 
-lemma Base.spanning (hB : M.Base B) : M.Spanning B :=
+lemma IsBase.spanning (hB : M.IsBase B) : M.Spanning B :=
   ⟨hB.closure_eq, hB.subset_ground⟩
 
 lemma ground_spanning (M : Matroid α) : M.Spanning M.E :=
   ⟨M.closure_ground, rfl.subset⟩
 
-lemma Base.spanning_of_superset (hB : M.Base B) (hBX : B ⊆ X) (hX : X ⊆ M.E := by aesop_mat) :
+lemma IsBase.spanning_of_superset (hB : M.IsBase B) (hBX : B ⊆ X) (hX : X ⊆ M.E := by aesop_mat) :
     M.Spanning X :=
   hB.spanning.superset hBX
 
-/-- A version of `Matroid.spanning_iff_exists_base_subset` in which the `S ⊆ M.E` condition
+/-- A version of `Matroid.spanning_iff_exists_isBase_subset` in which the `S ⊆ M.E` condition
 appears in the RHS of the equivalence rather than as a hypothesis. -/
-lemma spanning_iff_exists_base_subset' : M.Spanning S ↔ (∃ B, M.Base B ∧ B ⊆ S) ∧ S ⊆ M.E := by
+lemma spanning_iff_exists_isBase_subset' : M.Spanning S ↔ (∃ B, M.IsBase B ∧ B ⊆ S) ∧ S ⊆ M.E := by
   refine ⟨fun h ↦ ⟨?_, h.subset_ground⟩, fun ⟨⟨B, hB, hBS⟩, hSE⟩ ↦ hB.spanning.superset hBS⟩
   obtain ⟨B, hB⟩ := M.exists_basis S
   have hB' := hB.basis_closure_right
   rw [h.closure_eq, basis_ground_iff] at hB'
   exact ⟨B, hB', hB.subset⟩
 
-lemma spanning_iff_exists_base_subset (hS : S ⊆ M.E := by aesop_mat) :
-    M.Spanning S ↔ ∃ B, M.Base B ∧ B ⊆ S := by
-  rw [spanning_iff_exists_base_subset', and_iff_left hS]
+lemma spanning_iff_exists_isBase_subset (hS : S ⊆ M.E := by aesop_mat) :
+    M.Spanning S ↔ ∃ B, M.IsBase B ∧ B ⊆ S := by
+  rw [spanning_iff_exists_isBase_subset', and_iff_left hS]
 
-lemma Spanning.exists_base_subset (hS : M.Spanning S) : ∃ B, M.Base B ∧ B ⊆ S := by
-  rwa [spanning_iff_exists_base_subset] at hS
+lemma Spanning.exists_isBase_subset (hS : M.Spanning S) : ∃ B, M.IsBase B ∧ B ⊆ S := by
+  rwa [spanning_iff_exists_isBase_subset] at hS
 
 lemma coindep_iff_compl_spanning (hI : I ⊆ M.E := by aesop_mat) :
     M.Coindep I ↔ M.Spanning (M.E \ I) := by
-  rw [coindep_iff_exists, spanning_iff_exists_base_subset]
+  rw [coindep_iff_exists, spanning_iff_exists_isBase_subset]
 
 lemma spanning_iff_compl_coindep (hS : S ⊆ M.E := by aesop_mat) :
     M.Spanning S ↔ M.Coindep (M.E \ S) := by
@@ -809,40 +810,40 @@ lemma coindep_iff_closure_compl_eq_ground (hK : X ⊆ M.E := by aesop_mat) :
 lemma Coindep.closure_compl (hX : M.Coindep X) : M.closure (M.E \ X) = M.E :=
   (coindep_iff_closure_compl_eq_ground hX.subset_ground).mp hX
 
-lemma Indep.base_of_spanning (hI : M.Indep I) (hIs : M.Spanning I) : M.Base I := by
-  obtain ⟨B, hB, hBI⟩ := hIs.exists_base_subset; rwa [← hB.eq_of_subset_indep hI hBI]
+lemma Indep.isBase_of_spanning (hI : M.Indep I) (hIs : M.Spanning I) : M.IsBase I := by
+  obtain ⟨B, hB, hBI⟩ := hIs.exists_isBase_subset; rwa [← hB.eq_of_subset_indep hI hBI]
 
-lemma Spanning.base_of_indep (hIs : M.Spanning I) (hI : M.Indep I) : M.Base I :=
-  hI.base_of_spanning hIs
+lemma Spanning.isBase_of_indep (hIs : M.Spanning I) (hI : M.Indep I) : M.IsBase I :=
+  hI.isBase_of_spanning hIs
 
 lemma Indep.eq_of_spanning_subset (hI : M.Indep I) (hS : M.Spanning S) (hSI : S ⊆ I) : S = I :=
-  ((hI.subset hSI).base_of_spanning hS).eq_of_subset_indep hI hSI
+  ((hI.subset hSI).isBase_of_spanning hS).eq_of_subset_indep hI hSI
 
 lemma Basis.spanning_iff_spanning (hIX : M.Basis I X) : M.Spanning I ↔ M.Spanning X := by
   rw [spanning_iff_closure_eq, spanning_iff_closure_eq, hIX.closure_eq_closure]
 
-lemma Spanning.base_restrict_iff (hS : M.Spanning S) : (M ↾ S).Base B ↔ M.Base B ∧ B ⊆ S := by
-  rw [base_restrict_iff', basis'_iff_basis]
+lemma Spanning.isBase_restrict_iff (hS : M.Spanning S) : (M ↾ S).IsBase B ↔ M.IsBase B ∧ B ⊆ S := by
+  rw [isBase_restrict_iff', basis'_iff_basis]
   refine ⟨fun h ↦ ⟨?_, h.subset⟩, fun h ↦ h.1.indep.basis_of_subset_of_subset_closure h.2 ?_⟩
-  · exact h.indep.base_of_spanning <| by rwa [h.spanning_iff_spanning]
+  · exact h.indep.isBase_of_spanning <| by rwa [h.spanning_iff_spanning]
   rw [h.1.closure_eq]
   exact hS.subset_ground
 
 lemma Spanning.compl_coindep (hS : M.Spanning S) : M.Coindep (M.E \ S) := by
   rwa [← spanning_iff_compl_coindep]
 
-lemma Basis.base_of_spanning (hIX : M.Basis I X) (hX : M.Spanning X) : M.Base I :=
-  hIX.indep.base_of_spanning <| by rwa [hIX.spanning_iff_spanning]
+lemma Basis.isBase_of_spanning (hIX : M.Basis I X) (hX : M.Spanning X) : M.IsBase I :=
+  hIX.indep.isBase_of_spanning <| by rwa [hIX.spanning_iff_spanning]
 
-lemma Indep.exists_base_subset_spanning (hI : M.Indep I) (hS : M.Spanning S) (hIS : I ⊆ S) :
-    ∃ B, M.Base B ∧ I ⊆ B ∧ B ⊆ S := by
+lemma Indep.exists_isBase_subset_spanning (hI : M.Indep I) (hS : M.Spanning S) (hIS : I ⊆ S) :
+    ∃ B, M.IsBase B ∧ I ⊆ B ∧ B ⊆ S := by
   obtain ⟨B, hB⟩ := hI.subset_basis_of_subset hIS
-  exact ⟨B, hB.1.base_of_spanning hS, hB.2, hB.1.subset⟩
+  exact ⟨B, hB.1.isBase_of_spanning hS, hB.2, hB.1.subset⟩
 
-lemma Restriction.base_iff_of_spanning {N : Matroid α} (hR : N ≤r M) (hN : M.Spanning N.E) :
-    N.Base B ↔ (M.Base B ∧ B ⊆ N.E) := by
+lemma Restriction.isBase_iff_of_spanning {N : Matroid α} (hR : N ≤r M) (hN : M.Spanning N.E) :
+    N.IsBase B ↔ (M.IsBase B ∧ B ⊆ N.E) := by
   obtain ⟨R, hR : R ⊆ M.E, rfl⟩ := hR
-  rw [Spanning.base_restrict_iff (show M.Spanning R from hN), restrict_ground_eq]
+  rw [Spanning.isBase_restrict_iff (show M.Spanning R from hN), restrict_ground_eq]
 
 lemma ext_spanning {M M' : Matroid α} (h : M.E = M'.E)
     (hsp : ∀ S, S ⊆ M.E → (M.Spanning S ↔ M'.Spanning S )) : M = M' := by
@@ -855,19 +856,19 @@ lemma ext_spanning {M M' : Matroid α} (h : M.E = M'.E)
   intro I hIE
   rw [← coindep_def, ← coindep_def, coindep_iff_compl_spanning, coindep_iff_compl_spanning, hsp', h]
 
-lemma Base.eq_of_superset_spanning (hB : M.Base B) (hX : M.Spanning X) (hXB : X ⊆ B) : B = X :=
-  have ⟨B', hB', hB'X⟩ := hX.exists_base_subset
-  subset_antisymm (by rwa [← hB'.eq_of_subset_base hB (hB'X.trans hXB)]) hXB
+lemma IsBase.eq_of_superset_spanning (hB : M.IsBase B) (hX : M.Spanning X) (hXB : X ⊆ B) : B = X :=
+  have ⟨B', hB', hB'X⟩ := hX.exists_isBase_subset
+  subset_antisymm (by rwa [← hB'.eq_of_subset_isBase hB (hB'X.trans hXB)]) hXB
 
-theorem base_iff_minimal_spanning : M.Base B ↔ Minimal M.Spanning B := by
+theorem isBase_iff_minimal_spanning : M.IsBase B ↔ Minimal M.Spanning B := by
   rw [minimal_subset_iff]
   refine ⟨fun h ↦ ⟨h.spanning, fun _ ↦ h.eq_of_superset_spanning⟩, fun ⟨h, h'⟩ ↦ ?_⟩
-  obtain ⟨B', hB', hBB'⟩ := h.exists_base_subset
+  obtain ⟨B', hB', hBB'⟩ := h.exists_isBase_subset
   rwa [h' hB'.spanning hBB']
 
-theorem Spanning.base_of_minimal (hX : M.Spanning X) (h : ∀ ⦃Y⦄, M.Spanning Y → Y ⊆ X → X = Y) :
-    M.Base X := by
-  rwa [base_iff_minimal_spanning, minimal_subset_iff, and_iff_right hX]
+theorem Spanning.isBase_of_minimal (hX : M.Spanning X) (h : ∀ ⦃Y⦄, M.Spanning Y → Y ⊆ X → X = Y) :
+    M.IsBase X := by
+  rwa [isBase_iff_minimal_spanning, minimal_subset_iff, and_iff_right hX]
 
 end Spanning
 

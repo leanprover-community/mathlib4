@@ -42,17 +42,17 @@ section EmptyOn
 /-- The `Matroid α` with empty ground set. -/
 def emptyOn (α : Type*) : Matroid α where
   E := ∅
-  Base := (· = ∅)
+  IsBase := (· = ∅)
   Indep := (· = ∅)
   indep_iff' := by simp [subset_empty_iff]
-  exists_base := ⟨∅, rfl⟩
-  base_exchange := by rintro _ _ rfl; simp
+  exists_isBase := ⟨∅, rfl⟩
+  isBase_exchange := by rintro _ _ rfl; simp
   maximality := by rintro _ _ _ rfl -; exact ⟨∅, by simp [Maximal]⟩
   subset_ground := by simp
 
 @[simp] theorem emptyOn_ground : (emptyOn α).E = ∅ := rfl
 
-@[simp] theorem emptyOn_base_iff : (emptyOn α).Base B ↔ B = ∅ := Iff.rfl
+@[simp] theorem emptyOn_isBase_iff : (emptyOn α).IsBase B ↔ B = ∅ := Iff.rfl
 
 @[simp] theorem emptyOn_indep_iff : (emptyOn α).Indep I ↔ I = ∅ := Iff.rfl
 
@@ -98,15 +98,15 @@ theorem eq_loopyOn_iff : M = loopyOn E ↔ M.E = E ∧ ∀ X ⊆ M.E, M.Indep X 
   rintro rfl
   refine ⟨fun h I hI ↦ (h hI).1, fun h I hIE ↦ ⟨h I hIE, by rintro rfl; simp⟩⟩
 
-@[simp] theorem loopyOn_base_iff : (loopyOn E).Base B ↔ B = ∅ := by
-  simp [Maximal, base_iff_maximal_indep]
+@[simp] theorem loopyOn_isBase_iff : (loopyOn E).IsBase B ↔ B = ∅ := by
+  simp [Maximal, isBase_iff_maximal_indep]
 
 @[simp] theorem loopyOn_basis_iff : (loopyOn E).Basis I X ↔ I = ∅ ∧ X ⊆ E :=
   ⟨fun h ↦ ⟨loopyOn_indep_iff.mp h.indep, h.subset_ground⟩,
     by rintro ⟨rfl, hX⟩; rw [basis_iff]; simp⟩
 
 instance : RankFinite (loopyOn E) :=
-  ⟨⟨∅, loopyOn_base_iff.2 rfl, finite_empty⟩⟩
+  ⟨⟨∅, loopyOn_isBase_iff.2 rfl, finite_empty⟩⟩
 
 theorem Finite.loopyOn_finite (hE : E.Finite) : Matroid.Finite (loopyOn E) :=
   ⟨hE⟩
@@ -116,17 +116,17 @@ theorem Finite.loopyOn_finite (hE : E.Finite) : Matroid.Finite (loopyOn E) :=
   simp only [restrict_ground_eq, restrict_indep_iff, loopyOn_indep_iff, and_iff_left_iff_imp]
   exact fun _ h _ ↦ h
 
-theorem empty_base_iff : M.Base ∅ ↔ M = loopyOn M.E := by
-  simp only [base_iff_maximal_indep, Maximal, empty_indep, le_eq_subset, empty_subset,
+theorem empty_isBase_iff : M.IsBase ∅ ↔ M = loopyOn M.E := by
+  simp only [isBase_iff_maximal_indep, Maximal, empty_indep, le_eq_subset, empty_subset,
     subset_empty_iff, true_implies, true_and, ext_iff_indep, loopyOn_ground,
     loopyOn_indep_iff]
   exact ⟨fun h I _ ↦ ⟨@h _, fun hI ↦ by simp [hI]⟩, fun h I hI ↦ (h hI.subset_ground).1 hI⟩
 
 theorem eq_loopyOn_or_rankPos (M : Matroid α) : M = loopyOn M.E ∨ RankPos M := by
-  rw [← empty_base_iff, rankPos_iff]; apply em
+  rw [← empty_isBase_iff, rankPos_iff]; apply em
 
 theorem not_rankPos_iff : ¬RankPos M ↔ M = loopyOn M.E := by
-  rw [rankPos_iff, not_iff_comm, empty_base_iff]
+  rw [rankPos_iff, not_iff_comm, empty_isBase_iff]
 
 instance loopyOn_rankFinite : RankFinite (loopyOn E) :=
   ⟨∅, by simp⟩
@@ -148,8 +148,8 @@ def freeOn (E : Set α) : Matroid α := (loopyOn E)✶
 @[simp] theorem freeOn_empty (α : Type*) : freeOn (∅ : Set α) = emptyOn α := by
   simp [freeOn]
 
-@[simp] theorem freeOn_base_iff : (freeOn E).Base B ↔ B = E := by
-  simp only [freeOn, loopyOn_ground, dual_base_iff', loopyOn_base_iff, diff_eq_empty,
+@[simp] theorem freeOn_isBase_iff : (freeOn E).IsBase B ↔ B = E := by
+  simp only [freeOn, loopyOn_ground, dual_isBase_iff', loopyOn_isBase_iff, diff_eq_empty,
     ← subset_antisymm_iff, eq_comm (a := E)]
 
 @[simp] theorem freeOn_indep_iff : (freeOn E).Indep I ↔ I ⊆ E := by
@@ -204,8 +204,8 @@ def uniqueBaseOn (I E : Set α) : Matroid α := freeOn I ↾ E
 @[simp] theorem uniqueBaseOn_ground : (uniqueBaseOn I E).E = E :=
   rfl
 
-theorem uniqueBaseOn_base_iff (hIE : I ⊆ E) : (uniqueBaseOn I E).Base B ↔ B = I := by
-  rw [uniqueBaseOn, base_restrict_iff', freeOn_basis'_iff, inter_eq_self_of_subset_right hIE]
+theorem uniqueBaseOn_isBase_iff (hIE : I ⊆ E) : (uniqueBaseOn I E).IsBase B ↔ B = I := by
+  rw [uniqueBaseOn, isBase_restrict_iff', freeOn_basis'_iff, inter_eq_self_of_subset_right hIE]
 
 theorem uniqueBaseOn_inter_ground_eq (I E : Set α) :
     uniqueBaseOn (I ∩ E) E = uniqueBaseOn I E := by
@@ -231,9 +231,9 @@ theorem uniqueBaseOn_inter_basis (hX : X ⊆ E) : (uniqueBaseOn I E).Basis (X �
 @[simp] theorem uniqueBaseOn_dual_eq (I E : Set α) :
     (uniqueBaseOn I E)✶ = uniqueBaseOn (E \ I) E := by
   rw [← uniqueBaseOn_inter_ground_eq]
-  refine ext_base rfl (fun B (hB : B ⊆ E) ↦ ?_)
-  rw [dual_base_iff, uniqueBaseOn_base_iff inter_subset_right, uniqueBaseOn_base_iff diff_subset,
-    uniqueBaseOn_ground]
+  refine ext_isBase rfl (fun B (hB : B ⊆ E) ↦ ?_)
+  rw [dual_isBase_iff, uniqueBaseOn_isBase_iff inter_subset_right,
+    uniqueBaseOn_isBase_iff diff_subset, uniqueBaseOn_ground]
   exact ⟨fun h ↦ by rw [← diff_diff_cancel_left hB, h, diff_inter_self_eq_diff],
     fun h ↦ by rw [h, inter_comm I]; simp⟩
 
@@ -256,7 +256,7 @@ theorem uniqueBaseOn_restrict (h : I ⊆ E) (R : Set α) :
 lemma uniqueBaseOn_rankFinite (hI : I.Finite) : RankFinite (uniqueBaseOn I E) := by
   rw [← uniqueBaseOn_inter_ground_eq]
   refine ⟨I ∩ E, ?_⟩
-  rw [uniqueBaseOn_base_iff inter_subset_right, and_iff_right rfl]
+  rw [uniqueBaseOn_isBase_iff inter_subset_right, and_iff_right rfl]
   exact hI.subset inter_subset_left
 
 instance uniqueBaseOn_finitary : Finitary (uniqueBaseOn I E) := by
@@ -265,7 +265,7 @@ instance uniqueBaseOn_finitary : Finitary (uniqueBaseOn I E) := by
   exact fun e heK ↦ singleton_subset_iff.1 <| hK _ (by simpa) (by simp)
 
 lemma uniqueBaseOn_rankPos (hIE : I ⊆ E) (hI : I.Nonempty) : RankPos (uniqueBaseOn I E) where
-  empty_not_base := by simpa [uniqueBaseOn_base_iff hIE] using Ne.symm <| hI.ne_empty
+  empty_not_isBase := by simpa [uniqueBaseOn_isBase_iff hIE] using Ne.symm <| hI.ne_empty
 
 end uniqueBaseOn
 
