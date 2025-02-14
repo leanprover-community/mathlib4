@@ -73,6 +73,10 @@ lemma rel_or_eq_of_le [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)
     r (x i) (x j) ∨ x i = x j :=
   (Fin.lt_or_eq_of_le h).imp (x.rel_of_lt ·) (by rw [·])
 
+lemma rel_of_le [IsTrans α r] [IsRefl α r] (x : RelSeries r)
+  {i j : Fin (x.length + 1)} (h : i ≤ j) : r (x i) (x j) :=
+  Or.casesOn (rel_or_eq_of_le x h) (by tauto) (by intro l; rw[l]; apply refl)
+
 /--
 Given two relations `r, s` on `α` such that `r ≤ s`, any relation series of `r` induces a relation
 series of `s`
