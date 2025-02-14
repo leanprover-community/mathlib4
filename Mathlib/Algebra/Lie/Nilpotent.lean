@@ -634,11 +634,11 @@ theorem lieModule_lcs_map_le (k : ℕ) :
     apply Submodule.span_le.mpr
     rintro m₂ ⟨m, ⟨x, n, m_n, h⟩, rfl⟩
     simp
-    have help : ∃ y : L₂, ∃ n : lowerCentralSeries R L₂ M₂ k, ⁅y, n⁆ = g m := by
+    have : ∃ y : L₂, ∃ n : lowerCentralSeries R L₂ M₂ k, ⁅y, n⁆ = g m := by
       use f x
       use ⟨g m_n, ih (Submodule.mem_map_of_mem h.1)⟩
       simp_all only [LieSubmodule.mem_top, LieSubmodule.coe_bracket]
-    obtain ⟨y, n, hn⟩ := help
+    obtain ⟨y, n, hn⟩ := this
     rw [← hn]
     apply LieSubmodule.lie_mem_lie
     · simp_all only [LieSubmodule.mem_top, LieSubmodule.coe_bracket]
@@ -654,11 +654,10 @@ theorem Function.Injective.lieModuleIsNilpotent [IsNilpotent L₂ M₂] : IsNilp
   rw [isNilpotent_iff R]
   use k
   rw [← LieSubmodule.toSubmodule_inj] at hk ⊢
-  have hh := lieModule_lcs_map_le hfg k
   apply Submodule.map_injective_of_injective hg_inj
-  rw [hk] at hh
-  simp_all only
-  [LieSubmodule.bot_toSubmodule, LieSubmodule.toSubmodule_eq_bot, le_bot_iff, Submodule.map_bot]
+  have := lieModule_lcs_map_le hfg k
+  rw [hk] at this
+  simp_all only [LieSubmodule.bot_toSubmodule, le_bot_iff, Submodule.map_bot]
 
 include hf hg hfg in
 theorem Function.Surjective.lieModule_lcs_map_eq (k : ℕ) :
@@ -905,8 +904,7 @@ lemma nilpotent_restricts_to_ideal {I : LieIdeal R L} (hI : IsNilpotent L I)
     simp [f, g]
   have hg_inj : Function.Injective g := by
     exact Function.injective_id
-  have h4 := Function.Injective.lieModuleIsNilpotent hfg hg_inj
-  exact h4
+  exact Function.Injective.lieModuleIsNilpotent hfg hg_inj
 
 end LieIdeal
 
@@ -984,15 +982,14 @@ theorem center_le_largest_nilpotent_ideal : center R L ≤ largestNilpotentIdeal
   have h : IsNilpotent L (center R L) := inferInstance
   le_sSup h
 
-theorem largest_nilpotent_ideal_le_radical : largestNilpotentIdeal R L ≤ radical R L := by
+/-- The largest nilpotent ideal is contained in the radical. -/
+theorem largest_nilpotent_ideal_le_radical :
+    largestNilpotentIdeal R L ≤ radical R L := by
   apply sSup_le_sSup
-  intro I HI
-  have h0 : IsNilpotent L I := by exact HI
-  have h15 : IsNilpotent I I := by
-    exact LieIdeal.nilpotent_restricts_to_ideal (R := R) (L := L) h0
-  have h1 : IsSolvable I := by
-    apply isSolvable_of_isNilpotent I
-  exact h1
+  intro I hI_nilpotent_module
+  have h: IsNilpotent I I :=
+    LieIdeal.nilpotent_restricts_to_ideal (R := R) (L := L) hI_nilpotent_module
+  exact isSolvable_of_isNilpotent I
 
 @[simp] lemma largest_nilpotent_ideal_eq_top_of_isNilpotent [LieRing.IsNilpotent L] :
     largestNilpotentIdeal R L = ⊤ :=
