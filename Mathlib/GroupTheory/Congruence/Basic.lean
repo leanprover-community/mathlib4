@@ -170,6 +170,7 @@ theorem le_iff {c d : Con M} : c ≤ d ↔ (c : Submonoid (M × M)) ≤ d :=
 variable (x y : M)
 
 @[to_additive (attr := simp)]
+-- Porting note: removed dot notation
 theorem mrange_mk' : MonoidHom.mrange c.mk' = ⊤ :=
   MonoidHom.mrange_eq_top.2 mk'_surjective
 

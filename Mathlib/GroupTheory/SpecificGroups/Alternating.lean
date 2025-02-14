@@ -257,6 +257,7 @@ theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
         (⟨finRotate 5, finRotate_bit1_mem_alternatingGroup (n := 2)⟩ : alternatingGroup (Fin 5)) ∈
           normalClosure _ :=
         SetLike.mem_coe.1 (subset_normalClosure (Set.mem_singleton _))
+      -- Porting note: added `:` to help the elaborator
       exact (mul_mem (Subgroup.normalClosure_normal.conj_mem _ h
         ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h) :))
 
