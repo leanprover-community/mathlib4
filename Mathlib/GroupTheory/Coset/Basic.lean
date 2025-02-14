@@ -318,8 +318,14 @@ lemma orbit_eq_out_smul (x : α ⧸ s) : MulAction.orbitRel.Quotient.orbit x = x
   induction x using QuotientGroup.induction_on
   simp only [orbit_mk_eq_smul, ← eq_class_eq_leftCoset, Quotient.out_eq']
 
-@[to_additive (attr := deprecated (since := "2024-10-19"))]
+@[to_additive]
 alias orbit_eq_out'_smul := orbit_eq_out_smul
+
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+attribute [deprecated orbit_eq_out_smul (since := "2024-10-19")] orbit_eq_out'_smul
+attribute [deprecated QuotientAddGroup.orbit_eq_out_vadd (since := "2024-10-19")]
+QuotientAddGroup.orbit_eq_out'_vadd
 
 end QuotientGroup
 
@@ -565,5 +571,17 @@ lemma univ_eq_iUnion_smul (H : Subgroup α) :
     (Set.univ (α := α)) = ⋃ x : α ⧸ H, x.out • (H : Set _) := by
   simp_rw [univ_eq_iUnion_orbit H.op, orbit_eq_out_smul]
   rfl
+
+variable (α) in
+/-- `α ⧸ ⊥` is in bijection with `α`. See `QuotientGroup.quotientBot` for a multiplicative
+version. -/
+@[to_additive "`α ⧸ ⊥` is in bijection with `α`. See `QuotientAddGroup.quotientBot` for an additive
+version."]
+def quotientEquivSelf : α ⧸ (⊥ : Subgroup α) ≃ α where
+  toFun := Quotient.lift id <| fun x y (h : leftRel ⊥ x y) ↦
+    eq_of_inv_mul_eq_one <| by rwa [leftRel_apply, Subgroup.mem_bot] at h
+  invFun := QuotientGroup.mk
+  left_inv x := by induction x using Quotient.inductionOn; simp
+  right_inv x := by simp
 
 end QuotientGroup

@@ -19,7 +19,7 @@ set_option linter.deprecated false
 namespace Nat
 
 /-- A well-ordered relation for "upwards" induction on the natural numbers up to some bound `ub`. -/
-@[deprecated (since := "2024-08-19")]
+@[deprecated "No deprecation message was provided." (since := "2024-08-19")]
 def Up (ub a i : Nat) := i < a ∧ i < ub
 
 theorem Up.next {ub i} (h : i < ub) : Up ub (i+1) i := ⟨Nat.lt_succ_self _, h⟩
@@ -28,13 +28,13 @@ theorem Up.WF (ub) : WellFounded (Up ub) :=
   Subrelation.wf (h₂ := (measure (ub - ·)).wf) fun ⟨ia, iu⟩ ↦ Nat.sub_lt_sub_left iu ia
 
 /-- A well-ordered relation for "upwards" induction on the natural numbers up to some bound `ub`. -/
-@[deprecated (since := "2024-08-19")]
+@[deprecated "No deprecation message was provided." (since := "2024-08-19")]
 def upRel (ub : Nat) : WellFoundedRelation Nat := ⟨Up ub, Up.WF ub⟩
 
 end Nat
 
 /-- A terminal byte slice, a suffix of a byte array. -/
-@[deprecated (since := "2024-08-19")]
+@[deprecated "No deprecation message was provided." (since := "2024-08-19")]
 structure ByteSliceT := (arr : ByteArray) (off : Nat)
 
 namespace ByteSliceT
@@ -66,7 +66,7 @@ def toArray : ByteSlice → ByteArray
 universe u v
 
 /-- The inner loop of the `forIn` implementation for byte slices. -/
-@[deprecated (since := "2024-08-19")]
+@[deprecated "No deprecation message was provided." (since := "2024-08-19")]
 def forIn.loop {m : Type u → Type v} {β : Type u} [Monad m] (f : UInt8 → β → m (ForInStep β))
     (arr : ByteArray) (off _end : Nat) (i : Nat) (b : β) : m β :=
   if h : i < _end then do
@@ -75,7 +75,7 @@ def forIn.loop {m : Type u → Type v} {β : Type u} [Monad m] (f : UInt8 → β
     | ForInStep.yield b => have := Nat.Up.next h; loop f arr off _end (i+1) b
   else pure b
 
-@[deprecated (since := "2024-08-19")]
+@[deprecated "No deprecation message was provided." (since := "2024-08-19")]
 instance {m : Type u → Type v} : ForIn m ByteSlice UInt8 :=
   ⟨fun ⟨arr, off, len⟩ b f ↦ forIn.loop f arr off (off + len) off b⟩
 

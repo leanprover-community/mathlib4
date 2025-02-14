@@ -76,10 +76,8 @@ class IsFilteredOrEmpty : Prop where
 1. for every pair of objects there exists another object "to the right",
 2. for every pair of parallel morphisms there exists a morphism to the right so the compositions
    are equal, and
-3. there exists some object.
-
-See <https://stacks.math.columbia.edu/tag/002V>. (They also define a diagram being filtered.)
--/
+3. there exists some object. -/
+@[stacks 002V "They also define a diagram being filtered."]
 class IsFiltered extends IsFilteredOrEmpty C : Prop where
   /-- a filtered category must be non empty -/
   [nonempty : Nonempty C]
@@ -504,10 +502,8 @@ class IsCofilteredOrEmpty : Prop where
 1. for every pair of objects there exists another object "to the left",
 2. for every pair of parallel morphisms there exists a morphism to the left so the compositions
    are equal, and
-3. there exists some object.
-
-See <https://stacks.math.columbia.edu/tag/04AZ>.
--/
+3. there exists some object. -/
+@[stacks 04AZ]
 class IsCofiltered extends IsCofilteredOrEmpty C : Prop where
   /-- a cofiltered category must be non empty -/
   [nonempty : Nonempty C]
@@ -615,6 +611,26 @@ theorem _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type*) (j : C) 
     Directed (· ⊇ ·) fun f : Σ'i, i ⟶ j => Set.range (F.map f.2) := fun ⟨i, ij⟩ ⟨k, kj⟩ => by
   let ⟨l, li, lk, e⟩ := cospan ij kj
   refine ⟨⟨l, lk ≫ kj⟩, e ▸ ?_, ?_⟩ <;> simp_rw [F.map_comp] <;> apply Set.range_comp_subset_range
+
+/-- Given a "bowtie" of morphisms
+```
+ k₁   k₂
+ |\  /|
+ | \/ |
+ | /\ |
+ |/  \∣
+ vv  vv
+ j₁  j₂
+```
+in a cofiltered category, we can construct an object `s` and two morphisms
+from `s` to `k₁` and `k₂`, making the resulting squares commute.
+-/
+theorem bowtie {j₁ j₂ k₁ k₂ : C} (f₁ : k₁ ⟶ j₁) (g₁ : k₂ ⟶ j₁) (f₂ : k₁ ⟶ j₂) (g₂ : k₂ ⟶ j₂) :
+    ∃ (s : C) (α : s ⟶ k₁) (β : s ⟶ k₂), α ≫ f₁ = β ≫ g₁ ∧ α ≫ f₂ = β ≫ g₂ := by
+  obtain ⟨t, k₁t, k₂t, ht⟩ := cospan f₁ g₁
+  obtain ⟨s, ts, hs⟩ := IsCofilteredOrEmpty.cone_maps (k₁t ≫ f₂) (k₂t ≫ g₂)
+  exact ⟨s, ts ≫ k₁t, ts ≫ k₂t, by simp only [Category.assoc, ht],
+    by simp only [Category.assoc, hs]⟩
 
 end AllowEmpty
 
@@ -808,9 +824,6 @@ theorem of_isInitial {X : C} (h : IsInitial X) : IsCofiltered C :=
 
 instance (priority := 100) of_hasInitial [HasInitial C] : IsCofiltered C :=
   of_isInitial _ initialIsInitial
-
-@[deprecated (since := "2024-03-11")]
-alias _root_.CategoryTheory.cofiltered_of_hasFiniteLimits := of_hasFiniteLimits
 
 /-- For every universe `w`, `C` is filtered if and only if every finite diagram in `C` with shape
     in `w` admits a cocone. -/

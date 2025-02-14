@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Data.List.Range
+import Mathlib.Data.List.FinRange
 import Mathlib.Data.List.Perm.Basic
+import Mathlib.Data.List.Lex
+import Mathlib.Data.List.Induction
 
 /-! # sublists
 
@@ -44,7 +46,7 @@ theorem sublists'Aux_eq_array_foldl (a : α) : ∀ (r₁ r₂ : List (List α)),
     sublists'Aux a r₁ r₂ = ((r₁.toArray).foldl (init := r₂.toArray)
       (fun r l => r.push (a :: l))).toList := by
   intro r₁ r₂
-  rw [sublists'Aux, Array.foldl_eq_foldl_toList]
+  rw [sublists'Aux, Array.foldl_toList]
   have := List.foldl_hom Array.toList (fun r l => r.push (a :: l))
     (fun r l => r ++ [a :: l]) r₁ r₂.toArray (by simp)
   simpa using this
@@ -106,7 +108,7 @@ theorem sublistsAux_eq_array_foldl :
       (r.toArray.foldl (init := #[])
         fun r l => (r.push l).push (a :: l)).toList := by
   funext a r
-  simp only [sublistsAux, Array.foldl_eq_foldl_toList, Array.mkEmpty]
+  simp only [sublistsAux, Array.foldl_toList, Array.mkEmpty]
   have := foldl_hom Array.toList (fun r l => (r.push l).push (a :: l))
     (fun (r : List (List α)) l => r ++ [l, a :: l]) r #[]
     (by simp)
@@ -127,7 +129,7 @@ theorem sublistsAux_eq_flatMap :
   ext α l : 2
   trans l.foldr sublistsAux [[]]
   · rw [sublistsAux_eq_flatMap, sublists]
-  · simp only [sublistsFast, sublistsAux_eq_array_foldl, Array.foldr_eq_foldr_toList]
+  · simp only [sublistsFast, sublistsAux_eq_array_foldl, Array.foldr_toList]
     rw [← foldr_hom Array.toList]
     · intros _ _; congr
 
@@ -182,11 +184,6 @@ theorem map_pure_sublist_sublists (l : List α) : map pure l <+ sublists l := by
   exact ((append_sublist_append_left _).2 <|
               singleton_sublist.2 <| mem_map.2 ⟨[], mem_sublists.2 (nil_sublist _), by rfl⟩).trans
           ((append_sublist_append_right _).2 ih)
-
-set_option linter.deprecated false in
-@[deprecated map_pure_sublist_sublists (since := "2024-03-24")]
-theorem map_ret_sublist_sublists (l : List α) : map List.ret l <+ sublists l :=
-  map_pure_sublist_sublists l
 
 /-! ### sublistsLen -/
 
@@ -371,9 +368,9 @@ theorem revzip_sublists (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip l
   rw [revzip]
   induction' l using List.reverseRecOn with l' a ih
   · intro l₁ l₂ h
-    simp? at h says
+    simp?  at h says
       simp only [sublists_nil, reverse_cons, reverse_nil, nil_append, zip_cons_cons, zip_nil_right,
-        mem_singleton, Prod.mk.injEq] at h
+        mem_cons, Prod.mk.injEq, not_mem_nil, or_false] at h
     simp [h]
   · intro l₁ l₂ h
     rw [sublists_concat, reverse_append, zip_append (by simp), ← map_reverse, zip_map_right,

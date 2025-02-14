@@ -34,8 +34,7 @@ open Fintype (card)
 
 namespace SimpleGraph
 
-variable {α β 𝕜 : Type*} [LinearOrderedField 𝕜] {G H : SimpleGraph α} {ε δ : 𝕜} {n : ℕ}
-  {s : Finset α}
+variable {α β 𝕜 : Type*} [LinearOrderedField 𝕜] {G H : SimpleGraph α} {ε δ : 𝕜}
 
 section LocallyLinear
 

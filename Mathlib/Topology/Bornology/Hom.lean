@@ -123,7 +123,7 @@ protected def id : LocallyBoundedMap α α :=
 instance : Inhabited (LocallyBoundedMap α α) :=
   ⟨LocallyBoundedMap.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(LocallyBoundedMap.id α) = id :=
   rfl
 

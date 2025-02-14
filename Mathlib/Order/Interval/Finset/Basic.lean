@@ -32,8 +32,7 @@ https://github.com/leanprover-community/mathlib/pull/14448#discussion_r906109235
 for some ideas.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists Finset.sum
+assert_not_exists MonoidWithZero Finset.sum
 
 open Function OrderDual
 
@@ -308,6 +307,17 @@ section LocallyFiniteOrderTop
 
 variable [LocallyFiniteOrderTop α]
 
+@[simp]
+theorem Ioi_eq_empty : Ioi a = ∅ ↔ IsMax a := by
+  rw [← coe_eq_empty, coe_Ioi, Set.Ioi_eq_empty_iff]
+
+@[simp]
+theorem Ioi_top [OrderTop α] : Ioi (⊤ : α) = ∅ := Ioi_eq_empty.mpr isMax_top
+
+@[simp]
+theorem Ici_bot [OrderBot α] [Fintype α] : Ici (⊥ : α) = univ := by
+  ext a; simp only [mem_Ici, bot_le, mem_univ]
+
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma nonempty_Ici : (Ici a).Nonempty := ⟨a, mem_Ici.2 le_rfl⟩
 @[simp]
@@ -347,6 +357,16 @@ end LocallyFiniteOrderTop
 section LocallyFiniteOrderBot
 
 variable [LocallyFiniteOrderBot α]
+
+@[simp]
+theorem Iio_eq_empty : Iio a = ∅ ↔ IsMin a := Ioi_eq_empty (α := αᵒᵈ)
+
+@[simp]
+theorem Iio_bot [OrderBot α] : Iio (⊥ : α) = ∅ := Iio_eq_empty.mpr isMin_bot
+
+@[simp]
+theorem Iic_top [OrderTop α] [Fintype α] : Iic (⊤ : α) = univ := by
+  ext a; simp only [mem_Iic, le_top, mem_univ]
 
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma nonempty_Iic : (Iic a).Nonempty := ⟨a, mem_Iic.2 le_rfl⟩
@@ -425,6 +445,27 @@ theorem filter_ge_eq_Iic [DecidablePred (· ≤ a)] : ({x | x ≤ a} : Finset _)
 
 end LocallyFiniteOrderBot
 
+section LocallyFiniteOrder
+
+variable [LocallyFiniteOrder α]
+
+@[simp]
+theorem Icc_bot [OrderBot α] : Icc (⊥ : α) a = Iic a := rfl
+
+@[simp]
+theorem Icc_top [OrderTop α] : Icc a (⊤ : α) = Ici a := rfl
+
+@[simp]
+theorem Ico_bot [OrderBot α] : Ico (⊥ : α) a = Iio a := rfl
+
+@[simp]
+theorem Ioc_top [OrderTop α] : Ioc a (⊤ : α) = Ioi a := rfl
+
+theorem Icc_bot_top [BoundedOrder α] [Fintype α] : Icc (⊥ : α) (⊤ : α) = univ := by
+  rw [Icc_bot, Iic_top]
+
+end LocallyFiniteOrder
+
 variable [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot α]
 
 theorem disjoint_Ioi_Iio (a : α) : Disjoint (Ioi a) (Iio a) :=
@@ -445,6 +486,12 @@ theorem Icc_eq_singleton_iff : Icc a b = {c} ↔ a = c ∧ b = c := by
 
 theorem Ico_disjoint_Ico_consecutive (a b c : α) : Disjoint (Ico a b) (Ico b c) :=
   disjoint_left.2 fun _ hab hbc => (mem_Ico.mp hab).2.not_le (mem_Ico.mp hbc).1
+
+@[simp]
+theorem Ici_top [OrderTop α] : Ici (⊤ : α) = {⊤} := Icc_eq_singleton_iff.2 ⟨rfl, rfl⟩
+
+@[simp]
+theorem Iic_bot [OrderBot α] : Iic (⊥ : α) = {⊥} := Icc_eq_singleton_iff.2 ⟨rfl, rfl⟩
 
 section DecidableEq
 
@@ -551,6 +598,60 @@ theorem card_Ioo_eq_card_Icc_sub_two (a b : α) : #(Ioo a b) = #(Icc a b) - 2 :=
   rfl
 
 end PartialOrder
+
+section Prod
+
+variable {β : Type*}
+
+section sectL
+
+lemma uIcc_map_sectL [Lattice α] [Lattice β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
+    [DecidableRel (α := α × β) (· ≤ ·)] (a b : α) (c : β) :
+    (uIcc a b).map (.sectL _ c) = uIcc (a, c) (b, c) := by
+  aesop (add safe forward [le_antisymm])
+
+variable [Preorder α] [PartialOrder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
+  [DecidableRel (α := α × β) (· ≤ ·)] (a b : α) (c : β)
+
+lemma Icc_map_sectL : (Icc a b).map (.sectL _ c) = Icc (a, c) (b, c) := by
+  aesop (add safe forward [le_antisymm])
+
+lemma Ioc_map_sectL : (Ioc a b).map (.sectL _ c) = Ioc (a, c) (b, c) := by
+  aesop (add safe forward [le_antisymm, le_of_lt])
+
+lemma Ico_map_sectL : (Ico a b).map (.sectL _ c) = Ico (a, c) (b, c) := by
+  aesop (add safe forward [le_antisymm, le_of_lt])
+
+lemma Ioo_map_sectL : (Ioo a b).map (.sectL _ c) = Ioo (a, c) (b, c) := by
+  aesop (add safe forward [le_antisymm, le_of_lt])
+
+end sectL
+
+section sectR
+
+lemma uIcc_map_sectR [Lattice α] [Lattice β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
+    [DecidableRel (α := α × β) (· ≤ ·)] (c : α) (a b : β) :
+    (uIcc a b).map (.sectR c _) = uIcc (c, a) (c, b) := by
+  aesop (add safe forward [le_antisymm])
+
+variable [PartialOrder α] [Preorder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
+  [DecidableRel (α := α × β) (· ≤ ·)] (c : α) (a b : β)
+
+lemma Icc_map_sectR : (Icc a b).map (.sectR c _) = Icc (c, a) (c, b) := by
+  aesop (add safe forward [le_antisymm])
+
+lemma Ioc_map_sectR : (Ioc a b).map (.sectR c _) = Ioc (c, a) (c, b) := by
+  aesop (add safe forward [le_antisymm, le_of_lt])
+
+lemma Ico_map_sectR : (Ico a b).map (.sectR c _) = Ico (c, a) (c, b) := by
+  aesop (add safe forward [le_antisymm, le_of_lt])
+
+lemma Ioo_map_sectR : (Ioo a b).map (.sectR c _) = Ioo (c, a) (c, b) := by
+  aesop (add safe forward [le_antisymm, le_of_lt])
+
+end sectR
+
+end Prod
 
 section BoundedPartialOrder
 

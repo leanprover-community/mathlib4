@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Order.Filter.AtTopBot.Finset
 import Mathlib.Topology.Algebra.InfiniteSum.Group
 import Mathlib.Topology.Algebra.Star
 
@@ -20,7 +21,7 @@ open Filter Finset Function
 
 open scoped Topology
 
-variable {α β γ δ : Type*}
+variable {α β γ : Type*}
 
 
 /-! ## Product, Sigma and Pi types -/
@@ -256,14 +257,14 @@ open MulOpposite
 variable [AddCommMonoid α] [TopologicalSpace α] {f : β → α} {a : α}
 
 theorem HasSum.op (hf : HasSum f a) : HasSum (fun a ↦ op (f a)) (op a) :=
-  (hf.map (@opAddEquiv α _) continuous_op : _)
+  (hf.map (@opAddEquiv α _) continuous_op :)
 
 theorem Summable.op (hf : Summable f) : Summable (op ∘ f) :=
   hf.hasSum.op.summable
 
 theorem HasSum.unop {f : β → αᵐᵒᵖ} {a : αᵐᵒᵖ} (hf : HasSum f a) :
     HasSum (fun a ↦ unop (f a)) (unop a) :=
-  (hf.map (@opAddEquiv α _).symm continuous_unop : _)
+  (hf.map (@opAddEquiv α _).symm continuous_unop :)
 
 theorem Summable.unop {f : β → αᵐᵒᵖ} (hf : Summable f) : Summable (unop ∘ f) :=
   hf.hasSum.unop.summable

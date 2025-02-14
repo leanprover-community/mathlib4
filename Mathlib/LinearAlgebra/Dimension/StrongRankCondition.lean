@@ -41,7 +41,7 @@ noncomputable section
 
 universe u v w w'
 
-variable {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
+variable {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
 variable {ι : Type w} {ι' : Type w'}
 
 open Cardinal Basis Submodule Function Set
@@ -181,8 +181,7 @@ theorem linearIndependent_le_span_aux' {ι : Type*} [Fintype ι] (v : ι → M)
     apply_fun linearCombination R ((↑) : w → M) at h
     simp only [linearCombination_linearCombination, Submodule.coe_mk,
                Span.finsupp_linearCombination_repr] at h
-    rw [← sub_eq_zero, ← LinearMap.map_sub] at h
-    exact sub_eq_zero.mp (linearIndependent_iff.mp i _ h)
+    exact i h
 
 /-- If `R` satisfies the strong rank condition,
 then any linearly independent family `v : ι → M`
@@ -320,12 +319,13 @@ theorem Basis.card_le_card_of_linearIndependent {ι : Type*} [Fintype ι] (b : B
 
 theorem Basis.card_le_card_of_submodule (N : Submodule R M) [Fintype ι] (b : Basis ι R M)
     [Fintype ι'] (b' : Basis ι' R N) : Fintype.card ι' ≤ Fintype.card ι :=
-  b.card_le_card_of_linearIndependent (b'.linearIndependent.map' N.subtype N.ker_subtype)
+  b.card_le_card_of_linearIndependent
+    (b'.linearIndependent.map_injOn N.subtype N.injective_subtype.injOn)
 
 theorem Basis.card_le_card_of_le {N O : Submodule R M} (hNO : N ≤ O) [Fintype ι] (b : Basis ι R O)
     [Fintype ι'] (b' : Basis ι' R N) : Fintype.card ι' ≤ Fintype.card ι :=
   b.card_le_card_of_linearIndependent
-    (b'.linearIndependent.map' (Submodule.inclusion hNO) (N.ker_inclusion O _))
+    (b'.linearIndependent.map_injOn (inclusion hNO) (N.inclusion_injective _).injOn)
 
 theorem Basis.mk_eq_rank (v : Basis ι R M) :
     Cardinal.lift.{v} #ι = Cardinal.lift.{w} (Module.rank R M) := by
@@ -351,9 +351,10 @@ theorem rank_span_set {s : Set M} (hs : LinearIndependent R (fun x => x : s → 
 finite free module `M`. A property is true for all submodules of `M` if it satisfies the following
 "inductive step": the property is true for a submodule `N` if it's true for all submodules `N'`
 of `N` with the property that there exists `0 ≠ x ∈ N` such that the sum `N' + Rx` is direct. -/
-def Submodule.inductionOnRank [IsDomain R] [Finite ι] (b : Basis ι R M)
-    (P : Submodule R M → Sort*) (ih : ∀ N : Submodule R M,
-    (∀ N' ≤ N, ∀ x ∈ N, (∀ (c : R), ∀ y ∈ N', c • x + y = (0 : M) → c = 0) → P N') → P N)
+def Submodule.inductionOnRank {R M} [Ring R] [StrongRankCondition R] [AddCommGroup M] [Module R M]
+    [IsDomain R] [Finite ι] (b : Basis ι R M) (P : Submodule R M → Sort*)
+    (ih : ∀ N : Submodule R M,
+      (∀ N' ≤ N, ∀ x ∈ N, (∀ (c : R), ∀ y ∈ N', c • x + y = (0 : M) → c = 0) → P N') → P N)
     (N : Submodule R M) : P N :=
   letI := Fintype.ofFinite ι
   Submodule.inductionOnRankAux b P ih (Fintype.card ι) N fun hs hli => by
@@ -455,7 +456,7 @@ end Module
 
 open Module
 
-variable {M'} [AddCommGroup M'] [Module R M']
+variable {M'} [AddCommMonoid M'] [Module R M']
 
 theorem LinearMap.finrank_le_finrank_of_injective [Module.Finite R M'] {f : M →ₗ[R] M'}
     (hf : Function.Injective f) : finrank R M ≤ finrank R M' :=
@@ -465,12 +466,15 @@ theorem LinearMap.finrank_range_le [Module.Finite R M] (f : M →ₗ[R] M') :
     finrank R (LinearMap.range f) ≤ finrank R M :=
   finrank_le_finrank_of_rank_le_rank (lift_rank_range_le f) (rank_lt_aleph0 _ _)
 
-theorem LinearMap.finrank_le_of_smul_regular {S : Type*} [CommSemiring S] [Algebra S R] [Module S M]
-    [IsScalarTower S R M] (L L' : Submodule R M) [Module.Finite R L'] {s : S}
+theorem LinearMap.finrank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Algebra S R]
+    [Module S M] [IsScalarTower S R M] (L L' : Submodule R M) [Module.Finite R L'] {s : S}
     (hr : IsSMulRegular M s) (h : ∀ x ∈ L, s • x ∈ L') :
     Module.finrank R L ≤ Module.finrank R L' := by
-  refine finrank_le_finrank_of_rank_le_rank (lift_le.mpr <| rank_le_of_smul_regular L L' hr h) ?_
+  refine finrank_le_finrank_of_rank_le_rank (lift_le.mpr <| rank_le_of_isSMulRegular L L' hr h) ?_
   rw [← Module.finrank_eq_rank R L']
   exact nat_lt_aleph0 (finrank R ↥L')
+
+@[deprecated (since := "2024-11-21")]
+alias LinearMap.finrank_le_of_smul_regular := LinearMap.finrank_le_of_isSMulRegular
 
 end StrongRankCondition

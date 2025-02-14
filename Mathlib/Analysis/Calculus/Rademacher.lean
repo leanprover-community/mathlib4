@@ -35,7 +35,7 @@ See `LipschitzWith.ae_lineDeriv_sum_eq`.
 is line-differentiable in all these directions and the line derivative is linear. Approximating
 any direction by a direction in `s` and using the fact that `f` is Lipschitz to control the error,
 it follows that `f` is Fréchet-differentiable at these points.
-See `LipschitzWith.hasFderivAt_of_hasLineDerivAt_of_closure`.
+See `LipschitzWith.hasFDerivAt_of_hasLineDerivAt_of_closure`.
 
 ## References
 
@@ -134,7 +134,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
     apply AEStronglyMeasurable.sub _ hf.continuous.measurable.aestronglyMeasurable
     apply AEMeasurable.aestronglyMeasurable
     exact hf.continuous.measurable.comp_aemeasurable' (aemeasurable_id'.add_const _)
-  · filter_upwards [Ioc_mem_nhdsWithin_Ioi' zero_lt_one] with t ht
+  · filter_upwards [Ioc_mem_nhdsGT zero_lt_one] with t ht
     have t_pos : 0 < t := ht.1
     filter_upwards with x
     by_cases hx : x ∈ K
@@ -221,9 +221,9 @@ theorem ae_lineDeriv_sum_eq
   suffices S2 : ∫ x, (∑ i ∈ s, a i * fderiv ℝ g x (v i)) * f x ∂μ =
                   ∑ i ∈ s, a i * ∫ x, fderiv ℝ g x (v i) * f x ∂μ by
     obtain ⟨D, g_lip⟩ : ∃ D, LipschitzWith D g :=
-      ContDiff.lipschitzWith_of_hasCompactSupport g_comp g_smooth le_top
+      ContDiff.lipschitzWith_of_hasCompactSupport g_comp g_smooth (mod_cast le_top)
     simp_rw [integral_lineDeriv_mul_eq hf g_lip g_comp]
-    simp_rw [(g_smooth.differentiable le_top).differentiableAt.lineDeriv_eq_fderiv]
+    simp_rw [(g_smooth.differentiable (mod_cast le_top)).differentiableAt.lineDeriv_eq_fderiv]
     simp only [map_neg, _root_.map_sum, _root_.map_smul, smul_eq_mul, neg_mul]
     simp only [integral_neg, mul_neg, Finset.sum_neg_distrib, neg_inj]
     exact S2
@@ -233,7 +233,8 @@ theorem ae_lineDeriv_sum_eq
   let L : (E →L[ℝ] ℝ) → ℝ := fun f ↦ f (v i)
   change Integrable (fun x ↦ a i * ((L ∘ (fderiv ℝ g)) x * f x)) μ
   refine (Continuous.integrable_of_hasCompactSupport ?_ ?_).const_mul _
-  · exact ((g_smooth.continuous_fderiv le_top).clm_apply continuous_const).mul hf.continuous
+  · exact ((g_smooth.continuous_fderiv (mod_cast le_top)).clm_apply continuous_const).mul
+      hf.continuous
   · exact ((g_comp.fderiv ℝ).comp_left rfl).mul_right
 
 /-!
@@ -256,13 +257,11 @@ theorem ae_exists_fderiv_of_countable
   have J : L v = lineDeriv ℝ f x v := by convert (hx v hv).symm <;> simp [L, B.sum_repr v]
   simpa [J] using (h'x v hv).hasLineDerivAt
 
+omit [MeasurableSpace E] in
 /-- If a Lipschitz functions has line derivatives in a dense set of directions, all of them given by
 a single continuous linear map `L`, then it admits `L` as Fréchet derivative. -/
--- We redeclare `E` here as we do not need the `[MeasurableSpace E]` instance
--- available in the rest of the file.
-theorem hasFderivAt_of_hasLineDerivAt_of_closure
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [ProperSpace E] {f : E → F}
-    (hf : LipschitzWith C f) {s : Set E} (hs : sphere 0 1 ⊆ closure s)
+theorem hasFDerivAt_of_hasLineDerivAt_of_closure
+    {f : E → F} (hf : LipschitzWith C f) {s : Set E} (hs : sphere 0 1 ⊆ closure s)
     {L : E →L[ℝ] F} {x : E} (hL : ∀ v ∈ s, HasLineDerivAt ℝ f (L v) x v) :
     HasFDerivAt f L x := by
   rw [hasFDerivAt_iff_isLittleO_nhds_zero, isLittleO_iff]
@@ -313,6 +312,9 @@ theorem hasFderivAt_of_hasLineDerivAt_of_closure
     _ = ((C + ‖L‖ + 1) * δ) * ρ := by ring
     _ = ε * ‖v‖ := by rw [hδ, hρ]
 
+@[deprecated (since := "2025-01-15")]
+alias hasFderivAt_of_hasLineDerivAt_of_closure := hasFDerivAt_of_hasLineDerivAt_of_closure
+
 /-- A real-valued function on a finite-dimensional space which is Lipschitz is
 differentiable almost everywere. Superseded by
 `LipschitzWith.ae_differentiableAt` which works for functions taking value in any
@@ -324,7 +326,7 @@ theorem ae_differentiableAt_of_real (hf : LipschitzWith C f) :
   have hs : sphere 0 1 ⊆ closure s := by rw [s_dense.closure_eq]; exact subset_univ _
   filter_upwards [hf.ae_exists_fderiv_of_countable s_count]
   rintro x ⟨L, hL⟩
-  exact (hf.hasFderivAt_of_hasLineDerivAt_of_closure hs hL).differentiableAt
+  exact (hf.hasFDerivAt_of_hasLineDerivAt_of_closure hs hL).differentiableAt
 
 end LipschitzWith
 

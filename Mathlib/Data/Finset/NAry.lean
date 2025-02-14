@@ -83,13 +83,19 @@ theorem image_subset_image₂_left (hb : b ∈ t) : s.image (fun a => f a b) ⊆
 theorem image_subset_image₂_right (ha : a ∈ s) : t.image (fun b => f a b) ⊆ image₂ f s t :=
   image_subset_iff.2 fun _ => mem_image₂_of_mem ha
 
-theorem forall_image₂_iff {p : γ → Prop} :
+lemma forall_mem_image₂ {p : γ → Prop} :
     (∀ z ∈ image₂ f s t, p z) ↔ ∀ x ∈ s, ∀ y ∈ t, p (f x y) := by
-  simp_rw [← mem_coe, coe_image₂, forall_image2_iff]
+  simp_rw [← mem_coe, coe_image₂, forall_mem_image2]
+
+lemma exists_mem_image₂ {p : γ → Prop} :
+    (∃ z ∈ image₂ f s t, p z) ↔ ∃ x ∈ s, ∃ y ∈ t, p (f x y) := by
+  simp_rw [← mem_coe, coe_image₂, exists_mem_image2]
+
+@[deprecated (since := "2024-11-23")] alias forall_image₂_iff := forall_mem_image₂
 
 @[simp]
 theorem image₂_subset_iff : image₂ f s t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, f x y ∈ u :=
-  forall_image₂_iff
+  forall_mem_image₂
 
 theorem image₂_subset_iff_left : image₂ f s t ⊆ u ↔ ∀ a ∈ s, (t.image fun b => f a b) ⊆ u := by
   simp_rw [image₂_subset_iff, image_subset_iff]
@@ -504,10 +510,10 @@ section SemilatticeSup
 
 variable [SemilatticeSup δ]
 
-@[simp (default + 1)] -- otherwise `simp` doesn't use `forall_image₂_iff`
+@[simp (default + 1)] -- otherwise `simp` doesn't use `forall_mem_image₂`
 lemma sup'_image₂_le {g : γ → δ} {a : δ} (h : (image₂ f s t).Nonempty) :
     sup' (image₂ f s t) h g ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, g (f x y) ≤ a := by
-  rw [sup'_le_iff, forall_image₂_iff]
+  rw [sup'_le_iff, forall_mem_image₂]
 
 lemma sup'_image₂_left (g : γ → δ) (h : (image₂ f s t).Nonempty) :
     sup' (image₂ f s t) h g =
@@ -521,10 +527,10 @@ lemma sup'_image₂_right (g : γ → δ) (h : (image₂ f s t).Nonempty) :
 
 variable [OrderBot δ]
 
-@[simp (default + 1)] -- otherwise `simp` doesn't use `forall_image₂_iff`
+@[simp (default + 1)] -- otherwise `simp` doesn't use `forall_mem_image₂`
 lemma sup_image₂_le {g : γ → δ} {a : δ} :
     sup (image₂ f s t) g ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, g (f x y) ≤ a := by
-  rw [Finset.sup_le_iff, forall_image₂_iff]
+  rw [Finset.sup_le_iff, forall_mem_image₂]
 
 variable (s t)
 
@@ -540,10 +546,10 @@ section SemilatticeInf
 
 variable [SemilatticeInf δ]
 
-@[simp (default + 1)] -- otherwise `simp` doesn't use `forall_image₂_iff`
+@[simp (default + 1)] -- otherwise `simp` doesn't use `forall_mem_image₂`
 lemma le_inf'_image₂ {g : γ → δ} {a : δ} (h : (image₂ f s t).Nonempty) :
     a ≤ inf' (image₂ f s t) h g ↔ ∀ x ∈ s, ∀ y ∈ t, a ≤ g (f x y) := by
-  rw [le_inf'_iff, forall_image₂_iff]
+  rw [le_inf'_iff, forall_mem_image₂]
 
 lemma inf'_image₂_left (g : γ → δ) (h : (image₂ f s t).Nonempty) :
     inf' (image₂ f s t) h g =
@@ -557,7 +563,7 @@ lemma inf'_image₂_right (g : γ → δ) (h : (image₂ f s t).Nonempty) :
 
 variable [OrderTop δ]
 
-@[simp (default + 1)] -- otherwise `simp` doesn't use `forall_image₂_iff`
+@[simp (default + 1)] -- otherwise `simp` doesn't use `forall_mem_image₂`
 lemma le_inf_image₂ {g : γ → δ} {a : δ} :
     a ≤ inf (image₂ f s t) g ↔ ∀ x ∈ s, ∀ y ∈ t, a ≤ g (f x y) :=
   sup_image₂_le (δ := δᵒᵈ)
