@@ -147,7 +147,7 @@ lemma FG.spanRank_le_iff_exists_span_range_eq {p : Submodule R M} {n : ℕ} :
 noncomputable def FG.generators {p : Submodule R M} (h : p.FG) : Fin p.spanFinrank → M :=
   Classical.choose (exists_fun_spanFinrank_span_range_eq h)
 
-/-- The span of the generators equals the submodule -/
+/-- The span of the generators equals the submodule. -/
 lemma FG.span_range_generators {p : Submodule R M} (h : p.FG) :
     span R (Set.range (generators h)) = p :=
   Classical.choose_spec (exists_fun_spanFinrank_span_range_eq h)
