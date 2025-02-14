@@ -167,7 +167,8 @@ theorem linearIndependent_empty : LinearIndependent R (fun x => x : (∅ : Set M
   linearIndependent_empty_type
 
 variable (R v) in
-@[simp] theorem linearIndepOn_empty : LinearIndepOn R v ∅ :=
+@[simp]
+theorem linearIndepOn_empty : LinearIndepOn R v ∅ :=
   linearIndependent_empty_type ..
 
 theorem linearIndependent_set_subtype {s : Set ι} :
@@ -520,7 +521,7 @@ theorem LinearIndependent.mono {t s : Set M} (h : t ⊆ s)
 
 theorem LinearIndepOn.mono {t s : Set ι} (hs : LinearIndepOn R v s) (h : t ⊆ s) :
     LinearIndepOn R v t :=
-  hs.comp _ (Set.inclusion_injective h)
+  hs.comp _ <| Set.inclusion_injective h
 
 theorem linearIndependent_of_finite (s : Set M)
     (H : ∀ t ⊆ s, Set.Finite t → LinearIndependent R (fun x ↦ x : t → M)) :
