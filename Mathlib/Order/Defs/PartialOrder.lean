@@ -98,9 +98,9 @@ lemma lt_of_le_of_lt (hab : a ≤ b) (hbc : b < c) : a < c :=
 lemma lt_trans (hab : a < b) (hbc : b < c) : a < c := lt_of_lt_of_le hab (le_of_lt hbc)
 -- @[trans] lemma gt_trans : a > b → b > c → a > c := fun h₁ h₂ => lt_trans h₂ h₁
 
-@[order_dual existing (reorder := 3 4) ne_of_lt]
+@[order_dual (reorder := 3 4) ne_of_lt']
 lemma ne_of_lt (h : a < b) : a ≠ b := fun he => absurd h (he ▸ lt_irrefl a)
-@[order_dual existing (reorder := 3 4) ne_of_gt]
+@[order_dual (reorder := 3 4) ne_of_gt']
 lemma ne_of_gt (h : b < a) : a ≠ b := fun he => absurd h (he ▸ lt_irrefl a)
 @[order_dual existing (reorder := 3 4) lt_asymm]
 lemma lt_asymm (h : a < b) : ¬b < a := fun h1 : b < a => lt_irrefl a (lt_trans h h1)
@@ -163,6 +163,7 @@ alias eq_of_le_of_le := le_antisymm
 lemma le_antisymm_iff : a = b ↔ a ≤ b ∧ b ≤ a :=
   ⟨fun e => ⟨le_of_eq e, le_of_eq e.symm⟩, fun ⟨h1, h2⟩ => le_antisymm h1 h2⟩
 
+@[order_dual (reorder := 3 4) lt_of_le_of_ne']
 lemma lt_of_le_of_ne : a ≤ b → a ≠ b → a < b := fun h₁ h₂ =>
   lt_of_le_not_le h₁ <| mt (le_antisymm h₁) h₂
 

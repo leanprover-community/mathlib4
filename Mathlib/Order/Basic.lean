@@ -91,7 +91,7 @@ variable [PartialOrder α] {a b : α}
 
 -- moved ge_antisymm to PartialOrder.lean
 
-theorem lt_of_le_of_ne' : a ≤ b → b ≠ a → a < b := fun h₁ h₂ ↦ lt_of_le_of_ne h₁ h₂.symm
+-- theorem lt_of_le_of_ne'' : a ≤ b → b ≠ a → a < b := fun h₁ h₂ ↦ lt_of_le_of_ne' h₁ h₂
 
 theorem Ne.lt_of_le : a ≠ b → a ≤ b → a < b :=
   flip lt_of_le_of_ne
@@ -110,14 +110,16 @@ alias LE.le.trans' := le_trans'
 alias LE.le.trans_lt := lt_of_le_of_lt
 
 alias LE.le.trans_lt' := lt_of_le_of_lt'
-
+-- set_option trace.to_additive_detail true in
+@[order_dual (reorder := 3 4) LE.le.antisymm']
 alias LE.le.antisymm := le_antisymm
 
-alias LE.le.antisymm' := ge_antisymm
+-- alias LE.le.antisymm' := ge_antisymm
 
+@[order_dual (reorder := 3 4) LE.le.lt_of_ne']
 alias LE.le.lt_of_ne := lt_of_le_of_ne
 
-alias LE.le.lt_of_ne' := lt_of_le_of_ne'
+-- alias LE.le.lt_of_ne' := lt_of_le_of_ne'
 
 alias LE.le.lt_of_not_le := lt_of_le_not_le
 
@@ -135,12 +137,14 @@ alias LT.lt.trans_le := lt_of_lt_of_le
 
 alias LT.lt.trans_le' := lt_of_lt_of_le'
 
+@[order_dual (reorder := 3 4) LT.lt.ne']
 alias LT.lt.ne := ne_of_lt
 
 alias LT.lt.asymm := lt_asymm
 
 alias LT.lt.not_lt := lt_asymm
 
+@[order_dual (reorder := 3 4) Eq.le']
 alias Eq.le := le_of_eq
 
 -- Porting note: no `decidable_classical` linter
@@ -222,23 +226,23 @@ section PartialOrder
 
 variable [PartialOrder α] {a b : α}
 
-@[order_dual existing (reorder := 3 4) LE.le.lt_iff_ne]
+@[order_dual (reorder := 3 4) LE.le.lt_iff_ne']
 theorem lt_iff_ne (h : a ≤ b) : a < b ↔ a ≠ b :=
   ⟨fun h ↦ h.ne, h.lt_of_ne⟩
 
-@[order_dual existing (reorder := 3 4) LE.le.gt_iff_ne]
+@[order_dual (reorder := 3 4) LE.le.gt_iff_ne']
 theorem gt_iff_ne (h : a ≤ b) : a < b ↔ b ≠ a :=
   ⟨fun h ↦ h.ne.symm, h.lt_of_ne'⟩
 
-@[order_dual existing (reorder := 3 4) LE.le.not_lt_iff_eq]
+@[order_dual (reorder := 3 4) LE.le.not_lt_iff_eq']
 theorem not_lt_iff_eq (h : a ≤ b) : ¬a < b ↔ a = b :=
   h.lt_iff_ne.not_left
 
-@[order_dual existing (reorder := 3 4) LE.le.not_gt_iff_eq]
+@[order_dual (reorder := 3 4) LE.le.not_gt_iff_eq']
 theorem not_gt_iff_eq (h : a ≤ b) : ¬a < b ↔ b = a :=
   h.gt_iff_ne.not_left
 
-@[order_dual existing (reorder := 3 4) LE.le.le_iff_eq]
+@[order_dual (reorder := 3 4) LE.le.le_iff_eq']
 theorem le_iff_eq (h : a ≤ b) : b ≤ a ↔ b = a :=
   ⟨fun h' ↦ h'.antisymm h, Eq.le⟩
 
@@ -273,8 +277,11 @@ protected theorem gt [LT α] {x y : α} (h : x < y) : y > x :=
 protected theorem false [Preorder α] {x : α} : x < x → False :=
   lt_irrefl x
 
-theorem ne' [Preorder α] {x y : α} (h : x < y) : y ≠ x :=
-  h.ne.symm
+-- #check LT.lt.ne'
+
+-- @[order_dual (reorder := 3 4) LT.lt.ne'']
+-- theorem ne' [Preorder α] {x y : α} (h : x < y) : y ≠ x :=
+--   h.ne.symm
 
 theorem lt_or_lt [LinearOrder α] {x y : α} (h : x < y) (z : α) : x < z ∨ z < y :=
   (lt_or_ge z y).elim Or.inr fun hz ↦ Or.inl <| h.trans_le hz
