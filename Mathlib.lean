@@ -1138,6 +1138,7 @@ import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
 import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 import Mathlib.AlgebraicTopology.SimplexCategory.Defs
+import Mathlib.AlgebraicTopology.SimplexCategory.MorphismProperty
 import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
 import Mathlib.AlgebraicTopology.SimplicialCategory.SimplicialObject
 import Mathlib.AlgebraicTopology.SimplicialNerve
@@ -4641,6 +4642,7 @@ import Mathlib.RingTheory.FractionalIdeal.Norm
 import Mathlib.RingTheory.FractionalIdeal.Operations
 import Mathlib.RingTheory.FreeCommRing
 import Mathlib.RingTheory.FreeRing
+import Mathlib.RingTheory.Frobenius
 import Mathlib.RingTheory.Generators
 import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
