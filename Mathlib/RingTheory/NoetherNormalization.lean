@@ -15,6 +15,29 @@ Let `A` be a finitely generated algebra over a field `k`.
 Then there exists a natural number `r` and an injective homomorphism
 from `k[X_1, X_2, ..., X_r]` to `A` such that `A` is integral over `k[X_1, X_2, ..., X_r]`.
 
+# Strategy of the proof
+Suppose `f` is a nonzero polynomial in `n+1` variables.
+First we construct an algebra equivalence `T` from `k[X_0,...,X_n]` to itself such that
+  `f` is mapped to a polynomial in `X_0` with invertible leading coefficient.
+More precisely, `T` maps `X_i` to `X_i + X_0 ^ r_i` when `i ≠ 0`, and `X_0` to `X_0`.
+Here we choose `r_i` to be `up ^ i` where `up` is big enought, so that `T` maps
+  different monomials of `f` to polynomials with different degrees in `X_0`. See `T_degree_inj`.
+
+Second we construct the following maps: Let `I` be an ideal containing `f`.
+  `φ : k[X_0,...X_{n-1}] ≃ₐ[k] k[X_1,...X_n][X]`
+  `hom1 : k[X_0,...X_{n-1}] →ₐ[k[X_0,...X_{n-1}]] k[X_1,...X_n][X]/φ(T(I))`
+  `eqv1 : k[X_1,...X_n][X]/φ(T(I)) ≃ₐ[k] k[X_0,...,X_n]/T(I)`
+  `eqv2 : k[X_0,...,X_n]/T(I) ≃ₐ[k] k[X_0,...,X_n]/I`
+  `hom2 : k[X_0,...X_(n-1)] →ₐ[k] k[X_0,...X_n]/I`
+`hom1` is integral because `φ(T(I))` contains a monic polynomial.
+`hom2` is integral because it's the composition of integral maps.
+
+Finially We use induction to prove there is an injective map from `k[X_0,...,X_{r-1}]`
+  to `k[X_0,...,X_(n-1)]/I`.`n=0` is trivial.
+For `n+1`, I = 0 is trivial. Otherwise, `hom2` induces a map `φ` by quotient kernel.
+  We use the inductive hypothesis on k[X_1,...,X_n] and the kernel of `hom2` to get `s, g`.
+Compose `φ` and `g` and we get the desired map since both `φ` and `g` are injective and integral.
+
 ## Reference
 * <https://stacks.math.columbia.edu/tag/00OW>
 
@@ -27,20 +50,12 @@ variable (v w : Fin (n + 1) →₀ ℕ)
 namespace NoetherNormalization
 
 section equivT
-/-!
-Suppose `f` is a nonzero polynomial of `n+1` variables : `X_0,...,X_n`.
-First we construct an algebra equivalence `T` from `k[X_0,...,X_n]` to `k[X_0,...,X_n]`, such that
-  `f` is mapped to a polynomial of `X_0` with invertible leading coefficient.
-More precisely, `T` maps `X_i` to `X_i + X_0 ^ r_i` when `i ≠ 0`, and `X_0` to `X_0`.
-Here we choose `r_i` to be `up ^ i` where `up` is big enought, so that `T` maps
-  different monomials of `f` to mvpolynomials with different degrees of `X_0`. See `Nat.ofDigits`.
--/
 
 /-- `up` is defined as `2 + f.totalDegree`. Any big enough number would work. -/
 local notation3 "up" => 2 + f.totalDegree
 
 variable {f v} in
-private lemma lt (vlt : ∀ i, v i < up) : ∀ l ∈ ofFn v, l < up := by
+private lemma lt_up (vlt : ∀ i, v i < up) : ∀ l ∈ ofFn v, l < up := by
   intro l h
   rw [mem_ofFn, Set.mem_range] at h
   obtain ⟨y, hy⟩ := h
@@ -66,16 +81,16 @@ private lemma inv_pair (c : k) :
 private noncomputable abbrev T := AlgEquiv.ofAlgHom (T1 f 1) (T1 f (-1))
   (inv_pair f 1) (by simpa using inv_pair f (-1))
 
-private lemma r_ne (vlt : ∀ i, v i < up) (wlt : ∀ i, w i < up) (neq : v ≠ w) :
+private lemma r_mul_inj (vlt : ∀ i, v i < up) (wlt : ∀ i, w i < up) (neq : v ≠ w) :
     ∑ x : Fin (n + 1), r x * v x ≠ ∑ x : Fin (n + 1), r x * w x := by
   intro h
   refine neq <| Finsupp.ext <| congrFun <| ofFn_inj.mp ?_
   apply ofDigits_inj_of_len_eq (Nat.lt_add_right f.totalDegree one_lt_two)
-      (by simp) (lt vlt) (lt wlt)
+      (by simp) (lt_up vlt) (lt_up wlt)
   simpa only [ofDigits_eq_sum_mapIdx, mapIdx_eq_ofFn, get_ofFn, length_ofFn,
       Fin.coe_cast, mul_comm, sum_ofFn] using h
 
-private lemma T_monomial {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).degreeOf 0 =
+private lemma T_monomial_deg {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).degreeOf 0 =
     ∑ i : Fin (n + 1), (r i) * v i := by
   rw [← natDegree_finSuccEquiv, monomial_eq, Finsupp.prod_pow v fun a ↦ X a]
   simp only [Fin.prod_univ_succ, Fin.sum_univ_succ, _root_.map_mul, map_prod, map_pow,
@@ -96,16 +111,16 @@ private lemma T_monomial {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).degreeO
     add_right_inj] using Finset.sum_congr rfl (fun i _ ↦ by
     rw [add_comm (Polynomial.C _), natDegree_X_pow_add_C, mul_comm])
 
-/- `T` maps different monomials of `f` to mvpolynomials with different degrees of `X_0`. -/
-private lemma T_degree (hv : v ∈ f.support) (hw : w ∈ f.support) (neq : v ≠ w) :
+/- `T` maps different monomials of `f` to polynomials with different degrees in `X_0`. -/
+private lemma T_degree_inj (hv : v ∈ f.support) (hw : w ∈ f.support) (neq : v ≠ w) :
     (T f <| monomial v <| coeff v f).degreeOf 0 ≠
     (T f <| monomial w <| coeff w f).degreeOf 0 := by
-  rw [T_monomial _ _ <| mem_support_iff.mp hv, T_monomial _ _ <| mem_support_iff.mp hw]
-  refine r_ne f v w (fun i ↦ ?_) (fun i ↦ ?_) neq <;>
+  rw [T_monomial_deg _ _ <| mem_support_iff.mp hv, T_monomial_deg _ _ <| mem_support_iff.mp hw]
+  refine r_mul_inj f v w (fun i ↦ ?_) (fun i ↦ ?_) neq <;>
   exact lt_of_le_of_lt ((monomial_le_degreeOf i ‹_›).trans (degreeOf_le_totalDegree f i))
     (by omega)
 
-private lemma T_coeff :
+private lemma T_monomial_coeff_eq_coeff :
     (finSuccEquiv k n ((T f) ((monomial v) (coeff v f)))).leadingCoeff =
     algebraMap k _ (coeff v f) := by
   rw [monomial_eq, Finsupp.prod_fintype]
@@ -128,8 +143,8 @@ private lemma T_coeff :
     · simp only [this, one_pow, Finset.prod_const_one, mul_one]
   · exact fun i ↦ pow_zero _
 
-/- `T` maps `f` into some polynomial of `X_0` such that the leading coeff is invertible. -/
-private lemma T_leadingcoeff (fne : f ≠ 0) :
+/- `T` maps `f` into some polynomial in `X_0` such that the leading coefficient is invertible. -/
+private lemma T_leadingcoeff_isUnit (fne : f ≠ 0) :
     ∃ c : (MvPolynomial (Fin n) k)ˣ, (c.val • (finSuccEquiv k n (T f f))).Monic := by
   obtain ⟨v, vin, vs⟩ := Finset.exists_max_image f.support
     (fun v ↦ (T f ((monomial v) (coeff v f))).degreeOf 0) (support_nonempty.mpr fne)
@@ -140,7 +155,7 @@ private lemma T_leadingcoeff (fne : f ≠ 0) :
     intro x hx
     obtain ⟨h1, h2⟩ := Finset.mem_sdiff.mp hx
     apply degree_lt_degree <| lt_of_le_of_ne (vs x h1) ?_
-    simpa only [natDegree_finSuccEquiv] using T_degree f _ _ h1 vin <| ne_of_not_mem_cons h2
+    simpa only [natDegree_finSuccEquiv] using T_degree_inj f _ _ h1 vin <| ne_of_not_mem_cons h2
   have coeff : (finSuccEquiv k n ((T f) (h v + ∑ x ∈ f.support \ {v}, h x))).leadingCoeff =
       (finSuccEquiv k n ((T f) (h v))).leadingCoeff := by
     simp only [map_add, map_sum]
@@ -152,7 +167,7 @@ private lemma T_leadingcoeff (fne : f ≠ 0) :
     exact (Finset.sup_lt_iff <| Ne.bot_lt (fun x ↦ h2 <| degree_eq_bot.mp x)).mpr vs
   nth_rw 2 [← f.support_sum_monomial_coeff]
   rw [Finset.sum_eq_add_sum_diff_singleton vin h]
-  rw [T_coeff] at coeff
+  rw [T_monomial_coeff_eq_coeff] at coeff
   have u : IsUnit (finSuccEquiv k n ((T f) (h v + ∑ x ∈ f.support \ {v}, h x))).leadingCoeff := by
     simpa only [coeff, algebraMap_eq] using (mem_support_iff.mp vin).isUnit.map MvPolynomial.C
   exact ⟨u.unit⁻¹, monic_of_isUnit_leadingCoeff_inv_smul u⟩
@@ -160,16 +175,7 @@ private lemma T_leadingcoeff (fne : f ≠ 0) :
 end equivT
 
 section intmaps
-/-!
-Second we construct the following maps: Let `I` be an ideal containing `f`.
-  φ : k[X_0,...X_{n-1}] ≃ k[X_1,...X_n][X];
-  hom1 : k[X_0,...X_{n-1}] → k[X_1,...X_n][X]/φ(T(I));
-  eqv1 : k[X_1,...X_n][X]/φ(T(I)) ≃ k[X_0,...,X_n]/T(I);
-  eqv2 : k[X_0,...,X_n]/T(I) ≃ k[X_0,...,X_n]/I;
-  hom2 : k[X_0,...X_(n-1)] → k[X_0,...X_n]/I.
-hom1 is integral because φ(T(I)) contains a monic polynomial.
-hom2 is integral because it's the composition of integral maps.
--/
+
 variable (I : Ideal (MvPolynomial (Fin (n + 1)) k))
 
 /- `hom1` is a homomorphism from `k[X_0,...X_{n-1}]` to `k[X_1,...X_n][X]/φ(T(I))`,
@@ -180,8 +186,8 @@ private noncomputable abbrev hom1 : MvPolynomial (Fin n) k →ₐ[MvPolynomial (
   (Algebra.ofId (MvPolynomial (Fin n) k) ((MvPolynomial (Fin n) k)[X]))
 
 /- `hom1 f I` is integral.-/
-private lemma hom1_int (fne : f ≠ 0) (fi : f ∈ I): (hom1 f I).IsIntegral := by
-  obtain ⟨c, eq⟩ := T_leadingcoeff f fne
+private lemma hom1_isIntegral (fne : f ≠ 0) (fi : f ∈ I): (hom1 f I).IsIntegral := by
+  obtain ⟨c, eq⟩ := T_leadingcoeff_isUnit f fne
   exact eq.quotient_isIntegral <| Submodule.smul_of_tower_mem _ c.val <|
     mem_map_of_mem _ <| mem_map_of_mem _ fi
 
@@ -220,21 +226,15 @@ private noncomputable def hom2 : MvPolynomial (Fin n) k →ₐ[k] MvPolynomial (
   (eqv2 f I).toAlgHom.comp ((eqv1 f I).toAlgHom.comp ((hom1 f I).restrictScalars k))
 
 /- `hom2 f I` is integral. -/
-private lemma hom2_int (fne : f ≠ 0) (fi : f ∈ I): (hom2 f I).IsIntegral :=
-  ((hom1_int f I fne fi).trans _ _ <| isIntegral_of_surjective _ (eqv1 f I).surjective).trans _ _
-    <| isIntegral_of_surjective _ (eqv2 f I).surjective
+private lemma hom2_isIntegral (fne : f ≠ 0) (fi : f ∈ I): (hom2 f I).IsIntegral :=
+  ((hom1_isIntegral f I fne fi).trans _ _ <| isIntegral_of_surjective _ (eqv1 f I).surjective).trans
+    _ _ <| isIntegral_of_surjective _ (eqv2 f I).surjective
 
 end intmaps
 end NoetherNormalization
 
 section mainthm
-/-!
-We use induction to prove there is an injective map from `k[X_0,...,X_{r-1}]`
-  to `k[X_0,...,X_(n-1)]/I`.`n=0` is trivial.
-For `n+1`, I = 0 is trivial. Otherwise, `hom2` induces a map `φ` by quotient kernel.
-  We use the inductive hypothesis on k[X_1,...,X_n] and the kernel of `hom2` to get `s, g`.
-Compose `φ` and `g` and we get the desired map since both `φ` and `g` are injective and integral.
--/
+
 open NoetherNormalization
 
 /-- There exists some `s ≤ n` and an integral injective algebra homomorphism
@@ -274,12 +274,12 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
       AlgHom.ext fun a ↦ by
         simp only [AlgHom.coe_comp, Quotient.mkₐ_eq_mk, Function.comp_apply, kerLiftAlg_mk]
     exact ⟨s, by linarith, ϕ.comp g, (ϕ.coe_comp  g) ▸ (kerLiftAlg_injective _).comp injg,
-      intg.trans _ _ <| (comp ▸ hom2_int f I fne fi).tower_top _ _⟩
+      intg.trans _ _ <| (comp ▸ hom2_isIntegral f I fne fi).tower_top _ _⟩
 
 variable (k R : Type*) [Field k] [CommRing R] [Nontrivial R] [a : Algebra k R]
   [fin : Algebra.FiniteType k R]
 
-/-- **Noether Normalization**
+/-- **Noether normalization lemma**
 Proved by the theorem above since finitely generated algebra
   is a quotient of a polynomial ring in n variables.-/
 theorem exists_integral_inj_algHom_of_fg : ∃ s, ∃ g : (MvPolynomial (Fin s) k) →ₐ[k] R,
@@ -301,7 +301,7 @@ theorem exists_finite_inj_algHom_of_fg : ∃ s, ∃ g : (MvPolynomial (Fin s) k)
     have : (Algebra.ofId k R).FiniteType := by
       unfold AlgHom.FiniteType RingHom.FiniteType
       convert fin
-      exact Algebra.algebra_ext (Algebra.ofId k R).toAlgebra a (congrFun rfl)
+      exact Algebra.algebra_ext _ a (congrFun rfl)
     have comp : Algebra.ofId k R = g.comp (Algebra.ofId k (MvPolynomial (Fin s) k)) :=
       Algebra.ext_id_iff.mpr trivial
     exact (comp ▸ this).of_comp_finiteType)⟩
