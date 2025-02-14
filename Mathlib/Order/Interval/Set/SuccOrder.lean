@@ -26,11 +26,27 @@ lemma Iic.succ_coe_of_not_isMax
   apply Order.succ_le_of_lt
   exact lt_of_le_of_ne (α := Set.Iic j) le_top (by simpa using hi)
 
+lemma Iic.succ_eq_of_not_isMax
+    [SuccOrder J] {j : J} {i : Set.Iic j} (hi : ¬ IsMax i) :
+    Order.succ i = ⟨Order.succ i.1, by
+      rw [← succ_coe_of_not_isMax hi]
+      apply Subtype.coe_prop⟩ := by
+  ext
+  simp only [succ_coe_of_not_isMax hi]
+
 lemma Ici.pred_coe_of_not_isMin
     [PredOrder J] {j : J} {i : Set.Ici j} (hi : ¬ IsMin i) :
     (Order.pred i).1 = Order.pred i.1 := by
   rw [coe_pred_of_mem]
   apply Order.le_pred_of_lt
   exact lt_of_le_of_ne (α := Set.Ici j) bot_le (Ne.symm (by simpa using hi))
+
+lemma Ici.pred_eq_of_not_isMin
+    [PredOrder J] {j : J} {i : Set.Ici j} (hi : ¬ IsMin i) :
+    Order.pred i = ⟨Order.pred i.1, by
+      rw [← pred_coe_of_not_isMin hi]
+      apply Subtype.coe_prop⟩ := by
+  ext
+  simp only [pred_coe_of_not_isMin hi]
 
 end Set
