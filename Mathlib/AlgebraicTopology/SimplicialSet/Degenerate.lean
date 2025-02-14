@@ -14,7 +14,7 @@ and `X.nonDegenerate n` of degenerate or non-degenerate simplices of dimension `
 ## TODO (@joelriou)
 
 * `SSet.exists_nonDegenerate` shows that any `n`-simplex can be written
-as `X.map f.op y` for some epimorphism `f : [n] ⟶ [m]` and some
+as `X.map f.op y` for some epimorphism `f : ⦋n⦌ ⟶ ⦋m⦌` and some
 non-degenerate simplex `y`. Show that `f` and `y` are unique.
 
 -/
@@ -29,13 +29,13 @@ variable (X : SSet.{u})
 
 /-- An `n`-simplex of a simplicial set `X` is degenerate if it is in the range
 of `X.map f.op` for some morphism `f : [n] ⟶ [m]` with `m < n`. -/
-def degenerate (n : ℕ) : Set (X _[n]) :=
+def degenerate (n : ℕ) : Set (X _⦋n⦌) :=
   setOf (fun x ↦ ∃ (m : ℕ) (_ : m < n) (f : ⦋n⦌ ⟶ ⦋m⦌),
     x ∈ Set.range (X.map f.op))
 
 /-- The set of `n`-dimensional non-degenerate simplices in a simplicial
 set `X` is the complement of `X.degenerate n`. -/
-def nonDegenerate (n : ℕ) : Set (X _[n]) := (X.degenerate n)ᶜ
+def nonDegenerate (n : ℕ) : Set (X _⦋n⦌) := (X.degenerate n)ᶜ
 
 @[simp]
 lemma degenerate_zero : X.degenerate 0 = ⊥ := by
@@ -50,18 +50,18 @@ lemma nondegenerate_zero : X.nonDegenerate 0 = ⊤ := by
 
 variable {n : ℕ}
 
-lemma mem_nonDegenerate_iff_not_mem_degenerate (x : X _[n]) :
+lemma mem_nonDegenerate_iff_not_mem_degenerate (x : X _⦋n⦌) :
     x ∈ X.nonDegenerate n ↔ x ∉ X.degenerate n := Iff.rfl
 
-lemma mem_degenerate_iff_not_mem_nonDegenerate (x : X _[n]) :
+lemma mem_degenerate_iff_not_mem_nonDegenerate (x : X _⦋n⦌) :
     x ∈ X.degenerate n ↔ x ∉ X.nonDegenerate n := by
   simp [nonDegenerate]
 
-lemma σ_mem_degenerate (i : Fin (n + 1)) (x : X _[n]) :
+lemma σ_mem_degenerate (i : Fin (n + 1)) (x : X _⦋n⦌) :
     X.σ i x ∈ X.degenerate (n + 1) :=
   ⟨n, by omega, SimplexCategory.σ i, Set.mem_range_self x⟩
 
-lemma mem_degenerate_iff (x : X _[n]) :
+lemma mem_degenerate_iff (x : X _⦋n⦌) :
     x ∈ X.degenerate n ↔ ∃ (m : ℕ) (_ : m < n) (f : ⦋n⦌ ⟶ ⦋m⦌) (_ : Epi f),
         x ∈ Set.range (X.map f.op) := by
   constructor
@@ -89,7 +89,7 @@ lemma degenerate_eq_iUnion_range_σ :
     obtain ⟨i, y, rfl⟩ := hx
     apply σ_mem_degenerate
 
-lemma exists_nonDegenerate (x : X _[n]) :
+lemma exists_nonDegenerate (x : X _⦋n⦌) :
     ∃ (m : ℕ) (f : ⦋n⦌ ⟶ ⦋m⦌) (_ : Epi f)
       (y : X.nonDegenerate m), x = X.map f.op y := by
   induction n with
