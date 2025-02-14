@@ -774,9 +774,10 @@ theorem degree_eq_one_iff_unique_adj {G' : Subgraph G} {v : V} [Fintype (G'.neig
   rw [← finset_card_neighborSet_eq_degree, Finset.card_eq_one, Finset.singleton_iff_unique_mem]
   simp only [Set.mem_toFinset, mem_neighborSet]
 
-lemma adj_iff_of_neighborSet_equiv {v : V} [DecidableEq V] {H : Subgraph G}
+lemma adj_iff_of_neighborSet_equiv {v : V} {H : Subgraph G}
     (h : G.neighborSet v ≃ H.neighborSet v) (hfin : Fintype (G.neighborSet v)) :
     ∀ {w}, H.Adj v w ↔ G.Adj v w := by
+  classical
   intro w
   refine ⟨fun a => a.adj_sub, ?_⟩
   have : Fintype (H.neighborSet v) := (h.set_finite_iff.mp hfin.finite).fintype

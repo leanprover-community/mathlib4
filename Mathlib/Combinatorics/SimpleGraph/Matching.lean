@@ -376,9 +376,10 @@ lemma Subgraph.IsPerfectMatching.symmDiff_isCycles
     use w, w'
     aesop
 
-lemma IsCycles.snd_of_mem_support_of_isPath_of_adj [Fintype V] [DecidableEq V] {v w w' : V}
+lemma IsCycles.snd_of_mem_support_of_isPath_of_adj [Finite V] {v w w' : V}
     (hcyc : G.IsCycles) (p : G.Walk v w) (hw : w ≠ w') (hw' : w' ∈ p.support) (hp : p.IsPath)
     (hadj : G.Adj v w') : p.snd = w' := by
+  classical
   apply hp.snd_of_toSubgraph_adj
   rw [Walk.mem_support_iff_exists_getVert] at hw'
   obtain ⟨n, ⟨rfl, hnl⟩⟩ := hw'
@@ -392,9 +393,10 @@ lemma IsCycles.snd_of_mem_support_of_isPath_of_adj [Fintype V] [DecidableEq V] {
   rw [Subgraph.adj_comm, Subgraph.adj_iff_of_neighborSet_equiv e (Set.toFinite _).fintype]
   exact hadj.symm
 
-lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe [Fintype V] [DecidableEq V] {v w : V}
+private lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe_aux [Fintype V] {v w : V}
     (hcyc : G.IsCycles) (p : G.Walk v w) (hp : p.IsPath) :
     (G \ p.toSubgraph.spanningCoe).Reachable w v := by
+  classical
   -- Consider the case when p is nil
   by_cases hvw : v = w
   · subst hvw
@@ -425,7 +427,7 @@ lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe [Fintype V] [DecidableEq V
     simp only [sdiff_adj, Subgraph.spanningCoe_adj]
     refine ⟨hw'2.symm, fun h ↦ ?_⟩
     exact hnpvw' h.symm
-  use (((hcyc.reachable_sdiff_toSubgraph_spanningCoe
+  use (((hcyc.reachable_sdiff_toSubgraph_spanningCoe_aux
     (p.cons hw'2.symm) hp'p).some).mapLe hle).append this.toWalk
 termination_by Fintype.card V + 1 - p.length
 decreasing_by
@@ -433,7 +435,12 @@ decreasing_by
   have := Walk.IsPath.length_lt hp
   omega
 
-lemma IsCycles.reachable_deleteEdges [Fintype V] [DecidableEq V] (hadj : G.Adj v w)
+lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe [Finite V] {v w : V} (hcyc : G.IsCycles)
+    (p : G.Walk v w) (hp : p.IsPath) : (G \ p.toSubgraph.spanningCoe).Reachable w v := by
+  have : Fintype V := Fintype.ofFinite V
+  exact reachable_sdiff_toSubgraph_spanningCoe_aux hcyc p hp
+
+lemma IsCycles.reachable_deleteEdges [Finite V] (hadj : G.Adj v w)
     (hcyc : G.IsCycles) : (G.deleteEdges {s(v, w)}).Reachable v w := by
   have : fromEdgeSet {s(v, w)} = hadj.toWalk.toSubgraph.spanningCoe := by
     simp only [Walk.toSubgraph, singletonSubgraph_le_iff, subgraphOfAdj_verts, Set.mem_insert_iff,
@@ -443,10 +450,11 @@ lemma IsCycles.reachable_deleteEdges [Fintype V] [DecidableEq V] (hadj : G.Adj v
   exact this ▸ (hcyc.reachable_sdiff_toSubgraph_spanningCoe hadj.toWalk
     (Walk.IsPath.of_adj hadj)).symm
 
-lemma IsCycles.exists_cycle_toSubgraph_verts_eq_connectedComponentSupp [Fintype V] [DecidableEq V]
+lemma IsCycles.exists_cycle_toSubgraph_verts_eq_connectedComponentSupp [Finite V]
     {c : G.ConnectedComponent} (h : G.IsCycles) (hv : v ∈ c.supp)
     (hn : (G.neighborSet v).Nonempty) :
     ∃ (p : G.Walk v v), p.IsCycle ∧ p.toSubgraph.verts = c.supp := by
+  classical
   obtain ⟨w, hw⟩ := hn
   obtain ⟨u, p, hp⟩ := SimpleGraph.adj_and_reachable_delete_edges_iff_exists_cycle.mp
     ⟨hw, h.reachable_deleteEdges hw⟩
