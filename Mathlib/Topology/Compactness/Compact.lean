@@ -906,8 +906,8 @@ theorem Topology.IsInducing.isCompact_iff {f : X → Y} (hf : IsInducing f) :
 
 @[deprecated (since := "2024-10-28")] alias Inducing.isCompact_iff := IsInducing.isCompact_iff
 
-/-- If `f : X → Y` is an `Embedding`, the image `f '' s` of a set `s` is compact
-  if and only if `s` is compact. -/
+/-- If `f : X → Y` is an embedding, the image `f '' s` of a set `s` is compact
+if and only if `s` is compact. -/
 theorem Topology.IsEmbedding.isCompact_iff {f : X → Y} (hf : IsEmbedding f) :
     IsCompact s ↔ IsCompact (f '' s) := hf.isInducing.isCompact_iff
 

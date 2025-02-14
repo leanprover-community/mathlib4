@@ -16,7 +16,7 @@ We build a function `density κ ν : α → γ → Set β → ℝ` jointly measu
 such that for all `a : α` and all measurable sets `s : Set β` and `A : Set γ`,
 `∫ x in A, density κ ν a x s ∂(ν a) = (κ a (A ×ˢ s)).toReal`.
 
-There are two main applications of this construction (still TODO, in other files).
+There are two main applications of this construction.
 * Disintegration of kernels: for `κ : Kernel α (γ × β)`, we want to build a kernel
   `η : Kernel (α × γ) β` such that `κ = fst κ ⊗ₖ η`. For `β = ℝ`, we can use the density of `κ`
   with respect to `fst κ` for intervals to build a kernel cumulative distribution function for `η`.
@@ -131,15 +131,16 @@ lemma measurable_densityProcess (κ : Kernel α (γ × β)) (ν : Kernel α γ) 
     Measurable (fun (p : α × γ) ↦ densityProcess κ ν n p.1 p.2 s) :=
   (measurable_densityProcess_aux κ ν n hs).ennreal_toReal
 
+-- The following two lemmas also work without the `( :)`, but they are slow.
 lemma measurable_densityProcess_left (κ : Kernel α (γ × β)) (ν : Kernel α γ) (n : ℕ)
     (x : γ) {s : Set β} (hs : MeasurableSet s) :
     Measurable (fun a ↦ densityProcess κ ν n a x s) :=
-  (measurable_densityProcess κ ν n hs).comp (measurable_id.prod_mk measurable_const)
+  ((measurable_densityProcess κ ν n hs).comp (measurable_id.prod_mk measurable_const):)
 
 lemma measurable_densityProcess_right (κ : Kernel α (γ × β)) (ν : Kernel α γ) (n : ℕ)
     {s : Set β} (a : α) (hs : MeasurableSet s) :
     Measurable (fun x ↦ densityProcess κ ν n a x s) :=
-  (measurable_densityProcess κ ν n hs).comp (measurable_const.prod_mk measurable_id)
+  ((measurable_densityProcess κ ν n hs).comp (measurable_const.prod_mk measurable_id):)
 
 lemma measurable_countableFiltration_densityProcess (κ : Kernel α (γ × β)) (ν : Kernel α γ) (n : ℕ)
     (a : α) {s : Set β} (hs : MeasurableSet s) :

@@ -422,8 +422,7 @@ theorem IsCycle.swap_mul {α : Type*} [DecidableEq α] {f : Perm α} (hf : IsCyc
   ⟨f x, by simp [swap_apply_def, mul_apply, if_neg hffx, f.injective.eq_iff, if_neg hx, hx],
     fun y hy =>
     let ⟨i, hi⟩ := hf.exists_zpow_eq hx (ne_and_ne_of_swap_mul_apply_ne_self hy).1
-    -- Porting note: Needed to add Perm α typehint, otherwise does not know how to coerce to fun
-    have hi : (f ^ (i - 1) : Perm α) (f x) = y :=
+    have hi : (f ^ (i - 1)) (f x) = y :=
       calc
         (f ^ (i - 1) : Perm α) (f x) = (f ^ (i - 1) * f ^ (1 : ℤ) : Perm α) x := by simp
         _ = y := by rwa [← zpow_add, sub_add_cancel]
@@ -858,9 +857,9 @@ variable [DecidableEq α] {l : List α}
 theorem Nodup.isCycleOn_formPerm (h : l.Nodup) :
     l.formPerm.IsCycleOn { a | a ∈ l } := by
   refine ⟨l.formPerm.bijOn fun _ => List.formPerm_mem_iff_mem, fun a ha b hb => ?_⟩
-  rw [Set.mem_setOf, ← List.indexOf_lt_length_iff] at ha hb
-  rw [← List.getElem_indexOf ha, ← List.getElem_indexOf hb]
-  refine ⟨l.indexOf b - l.indexOf a, ?_⟩
+  rw [Set.mem_setOf, ← List.idxOf_lt_length_iff] at ha hb
+  rw [← List.getElem_idxOf ha, ← List.getElem_idxOf hb]
+  refine ⟨l.idxOf b - l.idxOf a, ?_⟩
   simp only [sub_eq_neg_add, zpow_add, zpow_neg, Equiv.Perm.inv_eq_iff_eq, zpow_natCast,
     Equiv.Perm.coe_mul, List.formPerm_pow_apply_getElem _ h, Function.comp]
   rw [add_comm]

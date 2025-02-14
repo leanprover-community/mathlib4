@@ -263,6 +263,13 @@ def createsLimitOfReflectsIso' {K : J ⥤ C} {F : C ⥤ D} [F.ReflectsIsomorphis
       validLift := h.validLift ≪≫ IsLimit.uniqueUpToIso hc t
       makesLimit := h.makesLimit }
 
+/-- If `F` reflects isomorphisms, and we already know that the limit exists in the source and `F`
+preserves it, then `F` creates that limit. -/
+def createsLimitOfReflectsIsomorphismsOfPreserves {K : J ⥤ C} {F : C ⥤ D} [F.ReflectsIsomorphisms]
+    [HasLimit K] [PreservesLimit K F] : CreatesLimit K F :=
+  createsLimitOfReflectsIso' (isLimitOfPreserves F (limit.isLimit _))
+    ⟨⟨_, Iso.refl _⟩, limit.isLimit _⟩
+
 -- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cone maps,
 -- so the constructed limits may not be ideal, definitionally.
@@ -273,11 +280,7 @@ of a limit cone for `K ⋙ F`.
 def createsLimitOfFullyFaithfulOfLift' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
     {l : Cone (K ⋙ F)} (hl : IsLimit l) (c : Cone K) (i : F.mapCone c ≅ l) :
     CreatesLimit K F :=
-  createsLimitOfReflectsIso fun _ t =>
-    { liftedCone := c
-      validLift := i ≪≫ IsLimit.uniqueUpToIso hl t
-      makesLimit :=
-        IsLimit.ofFaithful F (IsLimit.ofIsoLimit hl i.symm) _ fun _ => F.map_preimage _ }
+  createsLimitOfReflectsIso' hl ⟨⟨c, i⟩, isLimitOfReflects F (IsLimit.ofIsoLimit hl i.symm)⟩
 
 -- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cone maps,
@@ -392,6 +395,17 @@ def createsColimitOfReflectsIso' {K : J ⥤ C} {F : C ⥤ D} [F.ReflectsIsomorph
       validLift := h.validLift ≪≫ IsColimit.uniqueUpToIso hc t
       makesColimit := h.makesColimit }
 
+/-- If `F` reflects isomorphisms, and we already know that the colimit exists in the source and `F`
+preserves it, then `F` creates that colimit. -/
+def createsColimitOfReflectsIsomorphismsOfPreserves {K : J ⥤ C} {F : C ⥤ D}
+    [F.ReflectsIsomorphisms] [HasColimit K] [PreservesColimit K F] : CreatesColimit K F :=
+  createsColimitOfReflectsIso' (isColimitOfPreserves F (colimit.isColimit _))
+    ⟨⟨_, Iso.refl _⟩, colimit.isColimit _⟩
+
+@[deprecated (since := "2025-02-01")]
+noncomputable alias createsColimitOfFullyFaithfulOfPreserves :=
+  createsColimitOfReflectsIsomorphismsOfPreserves
+
 -- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cocone maps,
 -- so the constructed colimits may not be ideal, definitionally.
@@ -402,11 +416,7 @@ lift of a colimit cocone for `K ⋙ F`.
 def createsColimitOfFullyFaithfulOfLift' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
     {l : Cocone (K ⋙ F)} (hl : IsColimit l) (c : Cocone K) (i : F.mapCocone c ≅ l) :
     CreatesColimit K F :=
-  createsColimitOfReflectsIso fun _ t =>
-    { liftedCocone := c
-      validLift := i ≪≫ IsColimit.uniqueUpToIso hl t
-      makesColimit :=
-        IsColimit.ofFaithful F (IsColimit.ofIsoColimit hl i.symm) _ fun _ => F.map_preimage _ }
+  createsColimitOfReflectsIso' hl ⟨⟨c, i⟩, isColimitOfReflects F (IsColimit.ofIsoColimit hl i.symm)⟩
 
 -- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cocone maps,
@@ -419,12 +429,6 @@ def createsColimitOfFullyFaithfulOfLift {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.
     [HasColimit (K ⋙ F)] (c : Cocone K) (i : F.mapCocone c ≅ colimit.cocone (K ⋙ F)) :
     CreatesColimit K F :=
   createsColimitOfFullyFaithfulOfLift' (colimit.isColimit _) c i
-
-/-- A fully faithful functor that preserves a colimit that exists also creates the colimit. -/
-def createsColimitOfFullyFaithfulOfPreserves {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
-    [HasColimit K] [PreservesColimit K F] : CreatesColimit K F :=
-  createsColimitOfFullyFaithfulOfLift' (isColimitOfPreserves _ (colimit.isColimit K)) _
-    (Iso.refl _)
 
 -- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cocone maps,
