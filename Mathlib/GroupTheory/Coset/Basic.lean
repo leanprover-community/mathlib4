@@ -419,11 +419,9 @@ def quotientSubgroupOfEmbeddingOfLE (H : Subgroup α) (h : s ≤ t) :
       intro a b h
       simpa only [Quotient.map'_mk'', QuotientGroup.eq] using h
 
--- Porting note: I had to add the type ascription to the right-hand side or else Lean times out.
 @[to_additive (attr := simp)]
 theorem quotientSubgroupOfEmbeddingOfLE_apply_mk (H : Subgroup α) (h : s ≤ t) (g : s) :
-    quotientSubgroupOfEmbeddingOfLE H h (QuotientGroup.mk g) =
-      (QuotientGroup.mk (inclusion h g) : (fun _ => { x // x ∈ t } ⧸ subgroupOf H t) ↑g) :=
+    quotientSubgroupOfEmbeddingOfLE H h (QuotientGroup.mk g) = QuotientGroup.mk (inclusion h g) :=
   rfl
 
 /-- If `s ≤ t`, then there is a map `H ⧸ s.subgroupOf H → H ⧸ t.subgroupOf H`. -/
@@ -434,11 +432,9 @@ def quotientSubgroupOfMapOfLE (H : Subgroup α) (h : s ≤ t) :
     simp_rw [leftRel_eq]
     apply h
 
--- Porting note: I had to add the type ascription to the right-hand side or else Lean times out.
 @[to_additive (attr := simp)]
 theorem quotientSubgroupOfMapOfLE_apply_mk (H : Subgroup α) (h : s ≤ t) (g : H) :
-    quotientSubgroupOfMapOfLE H h (QuotientGroup.mk g) =
-      (QuotientGroup.mk g : { x // x ∈ H } ⧸ subgroupOf t H) :=
+    quotientSubgroupOfMapOfLE H h (QuotientGroup.mk g) = QuotientGroup.mk g :=
   rfl
 
 /-- If `s ≤ t`, then there is a map `α ⧸ s → α ⧸ t`. -/
@@ -464,12 +460,10 @@ def quotientiInfSubgroupOfEmbedding {ι : Type*} (f : ι → Subgroup α) (H : S
       simp_rw [funext_iff, quotientSubgroupOfMapOfLE_apply_mk, QuotientGroup.eq, mem_subgroupOf,
         mem_iInf, imp_self, forall_const]
 
--- Porting note: I had to add the type ascription to the right-hand side or else Lean times out.
 @[to_additive (attr := simp)]
 theorem quotientiInfSubgroupOfEmbedding_apply_mk {ι : Type*} (f : ι → Subgroup α) (H : Subgroup α)
     (g : H) (i : ι) :
-    quotientiInfSubgroupOfEmbedding f H (QuotientGroup.mk g) i =
-      (QuotientGroup.mk g : { x // x ∈ H } ⧸ subgroupOf (f i) H) :=
+    quotientiInfSubgroupOfEmbedding f H (QuotientGroup.mk g) i = QuotientGroup.mk g :=
   rfl
 
 /-- The natural embedding `α ⧸ (⨅ i, f i) ↪ Π i, α ⧸ f i`. -/
