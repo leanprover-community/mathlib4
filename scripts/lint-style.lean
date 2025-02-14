@@ -123,7 +123,7 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   let mut allModuleNames := #[]
   for s in libraries do
     allModuleNames := allModuleNames.append
-      (← findImports <| (System.mkFilePath [s]).addExtension "lean")
+      (← findImports <| (System.FilePath.withExtension s "lean"))
   -- Note: since "Batteries" and "Std" are added explicitly to "Mathlib.lean", we remove them here
   -- manually.
   allModuleNames := eraseExplicitImports allModuleNames
