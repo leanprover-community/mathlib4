@@ -616,10 +616,50 @@ open LieModule Function
 
 variable [LieModule R L M]
 variable {L₂ M₂ : Type*} [LieRing L₂] [LieAlgebra R L₂]
-variable [AddCommGroup M₂] [Module R M₂] [LieRingModule L₂ M₂] [LieModule R L₂ M₂]
+variable [AddCommGroup M₂] [Module R M₂] [LieRingModule L₂ M₂]
 variable {f : L →ₗ⁅R⁆ L₂} {g : M →ₗ[R] M₂}
 variable (hf : Surjective f) (hg : Surjective g) (hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆)
-variable (hf_inj : Injective f) (hg_inj : Injective g)
+variable (hg_inj : Injective g)
+
+section
+
+include hfg in
+theorem lieModule_lcs_map_le (k : ℕ) :
+    (lowerCentralSeries R L M k : Submodule R M).map g ≤
+    (lowerCentralSeries R L₂ M₂ k : Submodule R M₂) := by
+  induction k with
+  | zero =>
+    simp [LinearMap.range_eq_top, Submodule.map_top]
+  | succ k ih =>
+    rw [lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span', Submodule.map_span]
+    apply Submodule.span_le.mpr
+    rintro m₂ ⟨m, ⟨x, n, m_n, h⟩, rfl⟩
+    simp
+    have help : ∃ y : L₂, ∃ n : lowerCentralSeries R L₂ M₂ k, ⁅y, n⁆ = g m := by
+      use f x
+      use ⟨g m_n, ih (Submodule.mem_map_of_mem h.1)⟩
+      simp_all only [LieSubmodule.mem_top, LieSubmodule.coe_bracket]
+    obtain ⟨y, n, hn⟩ := help
+    rw [← hn]
+    apply LieSubmodule.lie_mem_lie
+    · simp_all only [LieSubmodule.mem_top, LieSubmodule.coe_bracket]
+    · exact SetLike.coe_mem n
+
+end
+
+variable [LieModule R L₂ M₂]
+
+include hg_inj hfg in
+theorem Function.Injective.lieModuleIsNilpotent [IsNilpotent L₂ M₂] : IsNilpotent L M := by
+  obtain ⟨k, hk⟩ := IsNilpotent.nilpotent R L₂ M₂
+  rw [isNilpotent_iff R]
+  use k
+  rw [← LieSubmodule.toSubmodule_inj] at hk ⊢
+  have hh := lieModule_lcs_map_le hfg k
+  apply Submodule.map_injective_of_injective hg_inj
+  rw [hk] at hh
+  simp_all only
+  [LieSubmodule.bot_toSubmodule, LieSubmodule.toSubmodule_eq_bot, le_bot_iff, Submodule.map_bot]
 
 include hf hg hfg in
 theorem Function.Surjective.lieModule_lcs_map_eq (k : ℕ) :
@@ -641,40 +681,6 @@ theorem Function.Surjective.lieModule_lcs_map_eq (k : ℕ) :
     · rintro ⟨x, n, hn, rfl⟩
       obtain ⟨y, rfl⟩ := hf x
       exact ⟨⁅y, n⁆, ⟨y, n, hn, rfl⟩, (hfg y n).symm⟩
-
-
-include hf_inj hg_inj hfg in
-theorem Function.Injective.lieModule_lcs_map_eq (k : ℕ) :
-    (lowerCentralSeries R L M k : Submodule R M).map g ≤ lowerCentralSeries R L₂ M₂ k := by
-  induction k with
-  | zero =>
-    simp [LinearMap.range_eq_top, Submodule.map_top]
-  | succ k ih =>
-    rw [lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span', Submodule.map_span]
-    apply Submodule.span_le.mpr
-    rintro m₂ ⟨m, ⟨x, n, m_n, h⟩, rfl⟩
-    simp
-    have help : ∃ y : L₂, ∃ n : lowerCentralSeries R L₂ M₂ k, ⁅y, n⁆ = g m := by
-      use f x
-      use ⟨g m_n, ih (Submodule.mem_map_of_mem h.1)⟩
-      simp_all only [LieSubmodule.mem_top, LieSubmodule.coe_bracket]
-    obtain ⟨y, n, hn⟩ := help
-    rw [← hn]
-    apply LieSubmodule.lie_mem_lie
-    · simp_all only [LieSubmodule.mem_top, LieSubmodule.coe_bracket]
-    · exact SetLike.coe_mem n
-
-
-include hf_inj hg_inj hfg in
-theorem Function.Injective.lieModuleIsNilpotent [IsNilpotent L₂ M₂] : IsNilpotent L M := by
-  obtain ⟨k, hk⟩ := IsNilpotent.nilpotent R L₂ M₂
-  rw [isNilpotent_iff R]
-  use k
-  rw [← LieSubmodule.toSubmodule_inj] at hk ⊢
-  have hh := hf_inj.lieModule_lcs_map_eq hfg hg_inj k
-  apply Submodule.map_injective_of_injective hg_inj
-  rw [hk] at hh
-  simp_all only [LieSubmodule.bot_toSubmodule, LieSubmodule.toSubmodule_eq_bot, le_bot_iff, Submodule.map_bot]
 
 include hf hg hfg in
 theorem Function.Surjective.lieModuleIsNilpotent [IsNilpotent L M] : IsNilpotent L₂ M₂ := by
@@ -974,11 +980,9 @@ lemma nilpotent_restricts_to_ideal {I : LieIdeal R L} (hI : IsNilpotent L I)
   have hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆ := by
     intro x m
     simp [f, g]
-  have hf_inj : Function.Injective f := by
-    exact I.incl_injective
   have hg_inj : Function.Injective g := by
     exact Function.injective_id
-  have h4 := Function.Injective.lieModuleIsNilpotent hfg hf_inj hg_inj
+  have h4 := Function.Injective.lieModuleIsNilpotent hfg hg_inj
   exact h4
 
 theorem largest_nilpotent_ideal_le_radical : largestNilpotentIdeal R L ≤ radical R L := by
