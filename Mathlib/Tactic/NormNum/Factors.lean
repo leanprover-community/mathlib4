@@ -17,8 +17,7 @@ open Nat
 namespace Mathlib.Meta.NormNum
 
 /-- A partial proof of `primeFactorsList`.
-Asserts that `l` is a sorted list of primes, lower bounded by a prime `p`, which multiplies to
-`n`. -/
+Asserts that `l` is a sorted list of primes multiplying to `n` and lower bounded by a prime `p`. -/
 def FactorsHelper (n p : ℕ) (l : List ℕ) : Prop :=
   p.Prime → l.Chain (· ≤ ·) p ∧ (∀ a ∈ l, Nat.Prime a) ∧ l.prod = n
 
