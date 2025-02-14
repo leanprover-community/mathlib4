@@ -64,9 +64,13 @@ initialize_simps_projections Partition (parts → coe, as_prefix coe)
 @[ext] lemma ext {P Q : Partition s} (hP : ∀ x, x ∈ P ↔ x ∈ Q) : P = Q :=
   SetLike.ext hP
 
+@[simp]
+lemma sSupIndep (P : Partition s) : sSupIndep (P : Set α) :=
+  P.sSupIndep'
+
 lemma disjoint (hx : x ∈ P) (hy : y ∈ P) (hxy : x ≠ y) :
     Disjoint x y :=
-  P.sSupIndep'.pairwiseDisjoint hx hy hxy
+  P.sSupIndep.pairwiseDisjoint hx hy hxy
 
 lemma pairwiseDisjoint : Set.PairwiseDisjoint (P : Set α) id :=
   P.sSupIndep'.pairwiseDisjoint
@@ -77,7 +81,7 @@ lemma sSup_eq (P : Partition s) : sSup P = s :=
 
 @[simp]
 lemma iSup_eq (P : Partition s) : ⨆ x ∈ P, x = s := by
-  simp_rw [← P.sSup_eq', sSup_eq_iSup]
+  simp_rw [← P.sSup_eq, sSup_eq_iSup]
   rfl
 
 lemma le_of_mem (P : Partition s) (hx : x ∈ P) : x ≤ s :=
@@ -90,10 +94,6 @@ lemma parts_nonempty (P : Partition s) (hs : s ≠ ⊥) : (P : Set α).Nonempty 
 lemma bot_not_mem (P : Partition s) : ⊥ ∉ P :=
   P.bot_not_mem'
 
-@[simp]
-lemma sSupIndep (P : Partition s) : sSupIndep (P : Set α) :=
-  P.sSupIndep'
-
 lemma ne_bot_of_mem (hx : x ∈ P) : x ≠ ⊥ :=
   fun h ↦ P.bot_not_mem <| h ▸ hx
 
@@ -103,13 +103,10 @@ lemma bot_lt_of_mem (hx : x ∈ P) : ⊥ < x :=
 /-- Convert a `Partition s` into a `Partition t` via an equality `s = t`. -/
 @[simps]
 protected def copy {t : α} (P : Partition s) (hst : s = t) : Partition t where
-  parts := P.parts
+  parts := P
   sSupIndep' := P.sSupIndep
   bot_not_mem' := P.bot_not_mem
   sSup_eq' := hst ▸ P.sSup_eq
-
-@[simp]
-lemma coe_copy_eq {t : α} {P : Partition s} (hst : s = t) : (P.copy hst : Set α) = P := rfl
 
 @[simp]
 lemma mem_copy_iff {t x : α} {P : Partition s} (hst : s = t) : x ∈ P.copy hst ↔ x ∈ P := Iff.rfl
