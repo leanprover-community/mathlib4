@@ -114,7 +114,7 @@ def ofArrowIso {Y₁ Y₂ : C} {f' : Y₁ ⟶ Y₂} (e : Arrow.mk f ≅ Arrow.mk
 /-- This definition allows the replacement of the `ι` field of
 a `AttachCells g f` structure by an equivalent type. -/
 @[simps]
-def ofEquiv {ι' : Type w'} (e : ι' ≃ c.ι) :
+def reindex {ι' : Type w'} (e : ι' ≃ c.ι) :
     AttachCells.{w'} g f where
   ι := ι'
   π i' := c.π (e i')
