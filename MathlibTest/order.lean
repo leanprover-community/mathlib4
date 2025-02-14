@@ -32,6 +32,10 @@ example {α : Type} [PartialOrder α] (a b c d : α) (h1 : a ≤ b) (h2 : b ≤ 
     c ≤ d := by
   order
 
+example {α : Type} [PartialOrder α] (a : α) :
+    ¬ (a < a) := by
+  order
+
 example {α : Type} [Preorder α] (a b c d : α) (h1 : a ≤ b) (h2 : b ≤ c) (h3 : ¬(a < c))
     (h4 : a ≤ d)  :
     c ≤ d := by
