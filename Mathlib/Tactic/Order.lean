@@ -32,7 +32,7 @@ Note that the last two operations weaken the set of facts.
 4. **Building the `≤`-graph**.
 We construct a graph where vertices correspond to atoms, and an edge `(x, y)` exists if the fact
 `x ≤ y` is present in our set of facts.
-5. **Enhancing the `≤`-graph with `≮`-facts**.
+5. **Growing the `≤`-graph with `≮`-facts**.
 In preorders, `¬(x < y)` is equivalent to `(x ≤ y) → (y ≤ x)`. Thus, if `y` is reachable from `x`
 in the `≤`-graph, we can derive the new fact `y ≤ x`. At this step, we add such edges to the graph
 while possible.
@@ -65,7 +65,7 @@ We replace some facts as follows:
 * Replace `x = y` with `x ≤ y` and `y ≤ x`.
 * Replace `¬(x ≤ y)` with `x ≠ y` and `¬(x < y)`.
 4. **Building the `≤`-graph**: Same as for preorders.
-5. **Enhancing the `≤`-graph with `≮`-facts**: Same as for preorders.
+5. **Growing the `≤`-graph with `≮`-facts**: Same as for preorders.
 6. **Finding contradictions using `≠`-facts**.
 We identify strongly connected components in the `≤`-graph using a standard algorithm. For each
 fact `x ≠ y`, we check whether `x` and `y` belong to the same component. If they do, then `x = y` is
