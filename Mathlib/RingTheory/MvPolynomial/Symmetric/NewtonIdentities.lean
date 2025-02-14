@@ -6,7 +6,7 @@ Authors: Michael Lee
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Rename
-import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.CastCard
 import Mathlib.Data.Fintype.Basic
 import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 
