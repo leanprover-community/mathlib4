@@ -520,7 +520,7 @@ theorem LinearIndependent.mono {t s : Set M} (h : t ⊆ s)
 
 theorem LinearIndependentOn.mono {t s : Set ι} (hs : LinearIndependentOn R v s) (h : t ⊆ s) :
     LinearIndependentOn R v t :=
-  LinearIndependent.comp hs _ (Set.inclusion_injective h)
+  hs.comp _ (Set.inclusion_injective h)
 
 theorem linearIndependent_of_finite (s : Set M)
     (H : ∀ t ⊆ s, Set.Finite t → LinearIndependent R (fun x ↦ x : t → M)) :
