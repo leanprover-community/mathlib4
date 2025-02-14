@@ -27,7 +27,7 @@ section CommRing
 variable [CommRing R] [CommRing A]
 variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup N₁] [AddCommGroup N₂]
 variable [Algebra R A] [Module R M₁] [Module A M₁] [Module R N₁] [Module A N₁]
-variable [SMulCommClass R A M₁] [IsScalarTower R A M₁] [SMulCommClass R A N₁] [IsScalarTower R A N₁]
+variable [SMulCommClass R A M₁] [IsScalarTower R A M₁] [IsScalarTower R A N₁]
 variable [Module R M₂] [Module R N₂]
 
 section InvertibleTwo
@@ -144,13 +144,13 @@ end QuadraticForm
 
 end InvertibleTwo
 
-/-- If two quadratic forms from `A ⊗[R] M₂` agree on elements of the form `1 ⊗ m`, they are equal.
+/-- If two quadratic maps from `A ⊗[R] M₂` agree on elements of the form `1 ⊗ m`, they are equal.
 
-In other words, if a base change exists for a quadratic form, it is unique.
+In other words, if a base change exists for a quadratic map, it is unique.
 
 Note that unlike `QuadraticForm.baseChange`, this does not need `Invertible (2 : R)`. -/
 @[ext]
-theorem baseChange_ext ⦃Q₁ Q₂ : QuadraticForm A (A ⊗[R] M₂)⦄
+theorem baseChange_ext ⦃Q₁ Q₂ : QuadraticMap A (A ⊗[R] M₂) N₁⦄
     (h : ∀ m, Q₁ (1 ⊗ₜ m) = Q₂ (1 ⊗ₜ m)) :
     Q₁ = Q₂ := by
   replace h (a m) : Q₁ (a ⊗ₜ m) = Q₂ (a ⊗ₜ m) := by
@@ -166,6 +166,6 @@ theorem baseChange_ext ⦃Q₁ Q₂ : QuadraticForm A (A ⊗[R] M₂)⦄
       rw [← TensorProduct.tmul_add, h, h, h]
     replace := congr($this x y)
     dsimp [polar] at this
-    linear_combination this + hx + hy
+    linear_combination (norm := module) this + hx + hy
 
 end CommRing

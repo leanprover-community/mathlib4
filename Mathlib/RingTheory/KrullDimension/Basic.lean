@@ -6,6 +6,8 @@ Authors: Fangming Li, Jujian Zhang
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.RingTheory.Ideal.Quotient.Defs
+import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
+import Mathlib.RingTheory.Jacobson.Radical
 import Mathlib.RingTheory.Spectrum.Prime.Basic
 import Mathlib.Order.KrullDimension
 
@@ -22,10 +24,14 @@ open Order
 /--
 The ring theoretic Krull dimension is the Krull dimension of its spectrum ordered by inclusion.
 -/
-noncomputable def ringKrullDim (R : Type*) [CommRing R] : WithBot ℕ∞ :=
+noncomputable def ringKrullDim (R : Type*) [CommSemiring R] : WithBot ℕ∞ :=
   krullDim (PrimeSpectrum R)
 
-variable {R S : Type*} [CommRing R] [CommRing S]
+/-- Type class for rings with krull dimension at most `n`. -/
+abbrev Ring.KrullDimLE (n : ℕ) (R : Type*) [CommSemiring R] : Prop :=
+  Order.KrullDimLE n (PrimeSpectrum R)
+
+variable {R S : Type*} [CommSemiring R] [CommSemiring S]
 
 @[nontriviality]
 lemma ringKrullDim_eq_bot_of_subsingleton [Subsingleton R] :
@@ -45,7 +51,7 @@ theorem ringKrullDim_le_of_surjective (f : R →+* S) (hf : Function.Surjective 
         simpa using h))
 
 /-- If `I` is an ideal of `R`, then `ringKrullDim (R ⧸ I) ≤ ringKrullDim R`. -/
-theorem ringKrullDim_quotient_le (I : Ideal R) :
+theorem ringKrullDim_quotient_le {R : Type*} [CommRing R] (I : Ideal R) :
     ringKrullDim (R ⧸ I) ≤ ringKrullDim R :=
   ringKrullDim_le_of_surjective _ Ideal.Quotient.mk_surjective
 
@@ -63,3 +69,84 @@ proof_wanted Polynomial.ringKrullDim_le :
 proof_wanted MvPolynomial.fin_ringKrullDim_eq_add_of_isNoetherianRing
     [IsNoetherianRing R] (n : ℕ) :
     ringKrullDim (MvPolynomial (Fin n) R) = ringKrullDim R + n
+
+section Zero
+
+instance [Subsingleton R] : Ring.KrullDimLE 0 R := ⟨krullDim_eq_bot.trans_le bot_le⟩
+
+lemma Ring.krullDimLE_zero_iff : Ring.KrullDimLE 0 R ↔ ∀ I : Ideal R, I.IsPrime → I.IsMaximal := by
+  simp_rw [Ring.KrullDimLE, Order.krullDimLE_iff, Nat.cast_zero,
+    Order.krullDim_nonpos_iff_forall_isMax,
+    (PrimeSpectrum.equivSubtype R).forall_congr_left, Subtype.forall, PrimeSpectrum.isMax_iff]
+  rfl
+
+lemma Ring.KrullDimLE.mk₀ (H : ∀ I : Ideal R, I.IsPrime → I.IsMaximal) : Ring.KrullDimLE 0 R := by
+  rwa [Ring.krullDimLE_zero_iff]
+
+lemma Ideal.isMaximal_of_isPrime [Ring.KrullDimLE 0 R] (I : Ideal R) [I.IsPrime] : I.IsMaximal :=
+  Ring.krullDimLE_zero_iff.mp ‹_› I ‹_›
+
+instance (priority := 100) (I : Ideal R) [I.IsPrime] [Ring.KrullDimLE 0 R] : I.IsMaximal :=
+  I.isMaximal_of_isPrime
+
+lemma Ideal.isMaximal_iff_isPrime [Ring.KrullDimLE 0 R] {I : Ideal R} : I.IsMaximal ↔ I.IsPrime :=
+  ⟨IsMaximal.isPrime, fun _ ↦ inferInstance⟩
+
+lemma Ideal.mem_minimalPrimes_of_krullDimLE_zero [Ring.KrullDimLE 0 R]
+    (I : Ideal R) [I.IsPrime] : I ∈ minimalPrimes R :=
+  minimalPrimes_eq_minimals (R := R) ▸
+    ⟨‹_›, fun J hJ hJI ↦ (IsMaximal.eq_of_le inferInstance IsPrime.ne_top' hJI).ge⟩
+
+lemma Ideal.mem_minimalPrimes_iff_isPrime [Ring.KrullDimLE 0 R] {I : Ideal R} :
+    I ∈ minimalPrimes R ↔ I.IsPrime :=
+  ⟨(·.1.1), fun _ ↦ I.mem_minimalPrimes_of_krullDimLE_zero⟩
+
+theorem Ring.jacobson_eq_nilradical_of_krullDimLE_zero (R) [CommRing R] [KrullDimLE 0 R] :
+    jacobson R = nilradical R := by
+  refine nilradical_eq_sInf R ▸ (le_sInf fun I hI ↦ sInf_le ?_).antisymm
+    (le_sInf fun _I hI ↦ sInf_le <| Ideal.IsMaximal.isPrime ⟨hI⟩)
+  change I.IsPrime at hI
+  exact Ideal.IsMaximal.out
+
+end Zero
+
+section One
+
+instance [Ring.KrullDimLE 0 R] : Ring.KrullDimLE 1 R := .mono zero_le_one _
+
+lemma Ring.krullDimLE_one_iff : Ring.KrullDimLE 1 R ↔
+    ∀ I : Ideal R, I.IsPrime → I ∈ minimalPrimes R ∨ I.IsMaximal := by
+  simp_rw [Ring.KrullDimLE, Order.krullDimLE_iff, Nat.cast_one,
+    Order.krullDim_le_one_iff, (PrimeSpectrum.equivSubtype R).forall_congr_left,
+    Subtype.forall, PrimeSpectrum.isMax_iff, PrimeSpectrum.isMin_iff]
+  rfl
+
+lemma Ring.KrullDimLE.mk₁ (H : ∀ I : Ideal R, I.IsPrime → I ∈ minimalPrimes R ∨ I.IsMaximal) :
+    Ring.KrullDimLE 1 R := by
+  rwa [Ring.krullDimLE_one_iff]
+
+lemma Ring.krullDimLE_one_iff_of_isPrime_bot [(⊥ : Ideal R).IsPrime] :
+    Ring.KrullDimLE 1 R ↔ ∀ I : Ideal R, I ≠ ⊥ → I.IsPrime → I.IsMaximal := by
+  letI : OrderBot (PrimeSpectrum R) := { bot := ⟨⊥, ‹_›⟩, bot_le I := bot_le (a := I.1) }
+  simp_rw [Ring.KrullDimLE, Order.krullDimLE_iff, Nat.cast_one,
+    Order.krullDim_le_one_iff_forall_isMax, (PrimeSpectrum.equivSubtype R).forall_congr_left,
+    Subtype.forall, PrimeSpectrum.isMax_iff, forall_comm (α := _ ≠ ⊥),
+    ne_eq, PrimeSpectrum.ext_iff]
+  rfl
+
+lemma Ring.krullDimLE_one_iff_of_noZeroDivisors [NoZeroDivisors R] :
+    Ring.KrullDimLE 1 R ↔ ∀ I : Ideal R, I ≠ ⊥ → I.IsPrime → I.IsMaximal := by
+  cases subsingleton_or_nontrivial R
+  · exact iff_of_true inferInstance fun I h ↦ (h <| Subsingleton.elim ..).elim
+  have := Ideal.bot_prime (α := R)
+  exact Ring.krullDimLE_one_iff_of_isPrime_bot
+
+/-- Alternative constructor for `Ring.KrullDimLE 1`, convenient for domains. -/
+lemma Ring.KrullDimLE.mk₁' (H : ∀ I : Ideal R, I ≠ ⊥ → I.IsPrime → I.IsMaximal) :
+    Ring.KrullDimLE 1 R := by
+  by_cases hR : (⊥ : Ideal R).IsPrime
+  · rwa [Ring.krullDimLE_one_iff_of_isPrime_bot]
+  suffices Ring.KrullDimLE 0 R from inferInstance
+  exact .mk₀ fun I hI ↦ H I (fun e ↦ hR (e ▸ hI)) hI
+
+end One

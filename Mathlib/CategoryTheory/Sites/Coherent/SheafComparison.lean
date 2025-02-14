@@ -87,13 +87,7 @@ instance : haveI := F.reflects_precoherent;
     F.IsDenseSubsite (coherentTopology C) (coherentTopology D) where
   functorPushforward_mem_iff := by
     rw [eq_induced F]
-    #adaptation_note
-    /--
-    This proof used to be `rfl`,
-    but has been temporarily broken by https://github.com/leanprover/lean4/pull/5329.
-    It can hopefully be restored after https://github.com/leanprover/lean4/pull/5359
-    -/
-    exact Iff.rfl
+    rfl
 
 lemma coverPreserving : haveI := F.reflects_precoherent
     CoverPreserving (coherentTopology _) (coherentTopology _) F :=
@@ -191,13 +185,7 @@ instance : haveI := F.reflects_preregular;
     F.IsDenseSubsite (regularTopology C) (regularTopology D) where
   functorPushforward_mem_iff := by
     rw [eq_induced F]
-    #adaptation_note
-    /--
-    This proof used to be `rfl`,
-    but has been temporarily broken by https://github.com/leanprover/lean4/pull/5329.
-    It can hopefully be restored after https://github.com/leanprover/lean4/pull/5359
-    -/
-    exact Iff.rfl
+    rfl
 
 lemma coverPreserving : haveI := F.reflects_preregular
     CoverPreserving (regularTopology _) (regularTopology _) F :=

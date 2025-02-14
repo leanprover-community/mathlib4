@@ -55,6 +55,32 @@ theorem cauchySeq_prod_of_tendsto_cofinite_one {f : α → G} (hf : Tendsto f co
   intro i hi
   simpa using Finset.disjoint_left.mp ht hi
 
+/-- Let `G` be a nonarchimedean abelian group, and let `f : ℕ → G` be a function
+such that the quotients `f (n + 1) / f n` tend to one. Then the function is a Cauchy sequence. -/
+@[to_additive "Let `G` be a nonarchimedean additive abelian group, and let `f : ℕ → G` be a
+function such that the differences `f (n + 1) - f n` tend to zero.
+Then the function is a Cauchy sequence."]
+lemma cauchySeq_of_tendsto_div_nhds_one {f : ℕ → G}
+    (hf : Tendsto (fun n ↦ f (n + 1) / f n) atTop (𝓝 1)) :
+    CauchySeq f := by
+  suffices Tendsto (fun p : ℕ × ℕ ↦ f p.2 / f p.1) atTop (𝓝 1) by simpa [CauchySeq,
+      cauchy_map_iff, prod_atTop_atTop_eq, uniformity_eq_comap_nhds_one G, atTop_neBot]
+  rw [tendsto_atTop']
+  intro s hs
+  obtain ⟨t, ht⟩ := is_nonarchimedean s hs
+  obtain ⟨N, hN⟩ : ∃ N : ℕ, ∀ b, N ≤ b → f (b + 1) / f b ∈ t := by
+      simpa using tendsto_def.mp hf t t.mem_nhds_one
+  refine ⟨(N, N), ?_⟩
+  rintro ⟨M, M'⟩ ⟨(hMN : N ≤ M), (hMN' : N ≤ M')⟩
+  apply ht
+  wlog h : M ≤ M' generalizing M M'
+  · simpa [inv_div] using t.inv_mem <| this _ _ hMN' hMN (le_of_not_ge h)
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
+  clear h hMN'
+  induction k with
+  | zero => simpa using one_mem t
+  | succ k ih => simpa using t.mul_mem (hN _ (by omega : N ≤ M + k)) ih
+
 /-- Let `G` be a complete nonarchimedean multiplicative abelian group, and let `f : α → G` be a
 function that tends to one on the filter of cofinite sets. Then `f` is unconditionally
 multipliable. -/
