@@ -195,7 +195,7 @@ end SatelliteConfig
 
 /-- A ball package is a family of balls in a metric space with positive bounded radii. -/
 structure BallPackage (β : Type*) (α : Type*) where
-  /-- Centers of the balls -/
+  /-- Centres of the balls -/
   c : β → α
   /-- Radii of the balls -/
   r : β → ℝ

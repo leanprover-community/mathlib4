@@ -48,7 +48,7 @@ not find `i < l.length`, and so fell back to trying this notation as well. -/
 scoped macro:max P:term noWs "[" X:term "]" : term => `(∫ x, ↑($X x) ∂$P)
 end ProbabilityTheory
 
-/-- `𝔼[X]` is the expectation of `X`. -/
+/-- `𝔼[X]` is the expectation of `X`, defined as its Lebesgue integral. -/
 scoped[ProbabilityTheory] notation "𝔼[" X "]" => ∫ a, (X : _ → _) a
 
 /-- `P⟦s|m⟧` is the conditional expectation of `s` with respect to `m` under measure `P`. -/
