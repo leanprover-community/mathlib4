@@ -40,8 +40,6 @@ def ofMultiset [DecidableEq α] (s : Multiset α) (H : ∀ x : α, x ∈ s) : Fi
 def ofList [DecidableEq α] (l : List α) (H : ∀ x : α, x ∈ l) : Fintype α :=
   ⟨l.toFinset, by simpa using H⟩
 
-instance (α : Type*) : Lean.Meta.FastSubsingleton (Fintype α) := {}
-
 /-- If `f : α → β` is a bijection and `α` is a fintype, then `β` is also a fintype. -/
 def ofBijective [Fintype α] (f : α → β) (H : Function.Bijective f) : Fintype β :=
   ⟨univ.map ⟨f, H.1⟩, fun b =>
