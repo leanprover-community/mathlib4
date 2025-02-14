@@ -72,7 +72,7 @@ lemma sSup_iff (S : Set (MorphismProperty C)) {X Y : C} (f : X ⟶ Y) :
     exact ⟨_, ⟨⟨_, ⟨_, ⟨⟨W, hW⟩, rfl⟩⟩, rfl⟩, rfl⟩, hf⟩
 
 @[simp]
-lemma iSup_iff {ι : Type*} (W : ι → MorphismProperty C) {X Y : C} (f : X ⟶ Y) :
+lemma iSup_iff {ι : Sort*} (W : ι → MorphismProperty C) {X Y : C} (f : X ⟶ Y) :
     iSup W f ↔ ∃ i, W i f := by
   apply (sSup_iff (Set.range W) f).trans
   constructor

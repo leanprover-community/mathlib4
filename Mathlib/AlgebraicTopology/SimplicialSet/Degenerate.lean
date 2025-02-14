@@ -11,8 +11,8 @@ import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 Given a simplicial set `X` and `n : ℕ`, we define the sets `X.degenerate n`
 and `X.nonDegenerate n` of degenerate or non-degenerate simplices of dimension `n`.
 
-Any simplex `x : X _[n]` can be written in a unique way as `X.map f.op y`
-for an epimorphism `f : [n] ⟶ [m]` and a non-degenerate `m`-simplex `y`
+Any simplex `x : X _⦋n⦌` can be written in a unique way as `X.map f.op y`
+for an epimorphism `f : ⦋n⦌ ⟶ ⦋m⦌` and a non-degenerate `m`-simplex `y`
 (see lemmas `exists_nonDegenerate`, `unique_nonDegenerate₁`, `unique_nonDegenerate₂`
 and `unique_nonDegenerate₃`).
 
@@ -28,13 +28,13 @@ variable (X : SSet.{u})
 
 /-- An `n`-simplex of a simplicial set `X` is degenerate if it is in the range
 of `X.map f.op` for some morphism `f : [n] ⟶ [m]` with `m < n`. -/
-def degenerate (n : ℕ) : Set (X _[n]) :=
+def degenerate (n : ℕ) : Set (X _⦋n⦌) :=
   setOf (fun x ↦ ∃ (m : ℕ) (_ : m < n) (f : ⦋n⦌ ⟶ ⦋m⦌),
     x ∈ Set.range (X.map f.op))
 
 /-- The set of `n`-dimensional non-degenerate simplices in a simplicial
 set `X` is the complement of `X.degenerate n`. -/
-def nonDegenerate (n : ℕ) : Set (X _[n]) := (X.degenerate n)ᶜ
+def nonDegenerate (n : ℕ) : Set (X _⦋n⦌) := (X.degenerate n)ᶜ
 
 @[simp]
 lemma degenerate_zero : X.degenerate 0 = ⊥ := by
@@ -49,18 +49,18 @@ lemma nondegenerate_zero : X.nonDegenerate 0 = ⊤ := by
 
 variable {n : ℕ}
 
-lemma mem_nonDegenerate_iff_not_mem_degenerate (x : X _[n]) :
+lemma mem_nonDegenerate_iff_not_mem_degenerate (x : X _⦋n⦌) :
     x ∈ X.nonDegenerate n ↔ x ∉ X.degenerate n := Iff.rfl
 
-lemma mem_degenerate_iff_not_mem_nonDegenerate (x : X _[n]) :
+lemma mem_degenerate_iff_not_mem_nonDegenerate (x : X _⦋n⦌) :
     x ∈ X.degenerate n ↔ x ∉ X.nonDegenerate n := by
   simp [nonDegenerate]
 
-lemma σ_mem_degenerate (i : Fin (n + 1)) (x : X _[n]) :
+lemma σ_mem_degenerate (i : Fin (n + 1)) (x : X _⦋n⦌) :
     X.σ i x ∈ X.degenerate (n + 1) :=
   ⟨n, by omega, SimplexCategory.σ i, Set.mem_range_self x⟩
 
-lemma mem_degenerate_iff (x : X _[n]) :
+lemma mem_degenerate_iff (x : X _⦋n⦌) :
     x ∈ X.degenerate n ↔ ∃ (m : ℕ) (_ : m < n) (f : ⦋n⦌ ⟶ ⦋m⦌) (_ : Epi f),
         x ∈ Set.range (X.map f.op) := by
   constructor
@@ -88,7 +88,7 @@ lemma degenerate_eq_iUnion_range_σ :
     obtain ⟨i, y, rfl⟩ := hx
     apply σ_mem_degenerate
 
-lemma exists_nonDegenerate (x : X _[n]) :
+lemma exists_nonDegenerate (x : X _⦋n⦌) :
     ∃ (m : ℕ) (f : ⦋n⦌ ⟶ ⦋m⦌) (_ : Epi f)
       (y : X.nonDegenerate m), x = X.map f.op y := by
   induction n with
@@ -129,11 +129,11 @@ decomposition obtained in the lemma `exists_nonDegenerate`.
 
 section
 
-variable {X} {x : X _[n]}
+variable {X} {x : X _⦋n⦌}
   {m₁ m₂ : ℕ} {f₁ : ⦋n⦌ ⟶ ⦋m₁⦌} (hf₁ : SplitEpi f₁)
   (y₁ : X.nonDegenerate m₁) (hy₁ : x = X.map f₁.op y₁)
   (f₂ : ⦋n⦌ ⟶ ⦋m₂⦌)
-  (y₂ : X _[m₂]) (hy₂ : x = X.map f₂.op y₂)
+  (y₂ : X _⦋m₂⦌) (hy₂ : x = X.map f₂.op y₂)
 
 /-- The composition of a section of `f₁` and `f₂`. It is proven below that it
 is the identity, see `g_eq_id`. -/
@@ -168,9 +168,9 @@ end
 
 section
 
-variable {X} {x : X _[n]} {m : ℕ} {f₁ : ⦋n⦌ ⟶ ⦋m⦌}
+variable {X} {x : X _⦋n⦌} {m : ℕ} {f₁ : ⦋n⦌ ⟶ ⦋m⦌}
   {y₁ : X.nonDegenerate m} (hy₁ : x = X.map f₁.op y₁)
-  {f₂ : ⦋n⦌ ⟶ ⦋m⦌} {y₂ : X _[m]} (hy₂ : x = X.map f₂.op y₂)
+  {f₂ : ⦋n⦌ ⟶ ⦋m⦌} {y₂ : X _⦋m⦌} (hy₂ : x = X.map f₂.op y₂)
 
 include hy₁ hy₂
 
@@ -192,7 +192,7 @@ The following lemmas `unique_nonDegenerate₁`, `unique_nonDegenerate₂` and
 obtained in the lemma `exists_nonDegenerate`.
 -/
 
-lemma unique_nonDegenerate₁ (x : X _[n])
+lemma unique_nonDegenerate₁ (x : X _⦋n⦌)
     {m₁ m₂ : ℕ} (f₁ : ⦋n⦌ ⟶ ⦋m₁⦌) [Epi f₁]
     (y₁ : X.nonDegenerate m₁) (hy₁ : x = X.map f₁.op y₁)
     (f₂ : ⦋n⦌ ⟶ ⦋m₂⦌) [Epi f₂]
@@ -201,7 +201,7 @@ lemma unique_nonDegenerate₁ (x : X _[n])
   obtain ⟨⟨hf₂⟩⟩ := isSplitEpi_of_epi f₂
   exact le_antisymm (le hf₁ hy₁ hy₂) (le hf₂ hy₂ hy₁)
 
-lemma unique_nonDegenerate₂ (x : X _[n])
+lemma unique_nonDegenerate₂ (x : X _⦋n⦌)
     {m : ℕ} (f₁ : ⦋n⦌ ⟶ ⦋m⦌) [Epi f₁]
     (y₁ : X.nonDegenerate m) (hy₁ : x = X.map f₁.op y₁)
     (f₂ : ⦋n⦌ ⟶ ⦋m⦌)
@@ -210,7 +210,7 @@ lemma unique_nonDegenerate₂ (x : X _[n])
   ext
   simpa [g_eq_id hy₁ hy₂ hf₁] using (map_g_op_y₂ hf₁ hy₁ hy₂).symm
 
-lemma unique_nonDegenerate₃ (x : X _[n])
+lemma unique_nonDegenerate₃ (x : X _⦋n⦌)
     {m : ℕ} (f₁ : ⦋n⦌ ⟶ ⦋m⦌) [Epi f₁]
     (y₁ : X.nonDegenerate m) (hy₁ : x = X.map f₁.op y₁)
     (f₂ : ⦋n⦌ ⟶ ⦋m⦌)

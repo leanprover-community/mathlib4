@@ -162,27 +162,18 @@ def torsionBy (a : R) : Submodule R M :=
 def torsionBySet (s : Set R) : Submodule R M :=
   sInf (torsionBy R M '' s)
 
--- Porting note: torsion' had metavariables and factoring out this fixed it
--- perhaps there is a better fix
-/-- The additive submonoid of all elements `x` of `M` such that `a • x = 0`
-for some `a` in `S`. -/
+/-- The `S`-torsion submodule, containing all elements `x` of `M` such that `a • x = 0` for some
+`a` in `S`. -/
 @[simps!]
-def torsion'AddSubMonoid (S : Type*) [CommMonoid S] [DistribMulAction S M] :
-    AddSubmonoid M where
+def torsion' (S : Type*) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S R M] :
+    Submodule R M where
   carrier := { x | ∃ a : S, a • x = 0 }
   add_mem' := by
     intro x y ⟨a,hx⟩ ⟨b,hy⟩
     use b * a
     rw [smul_add, mul_smul, mul_comm, mul_smul, hx, hy, smul_zero, smul_zero, add_zero]
   zero_mem' := ⟨1, smul_zero 1⟩
-
-/-- The `S`-torsion submodule, containing all elements `x` of `M` such that `a • x = 0` for some
-`a` in `S`. -/
-@[simps!]
-def torsion' (S : Type*) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S R M] :
-    Submodule R M :=
-  { torsion'AddSubMonoid M S with
-    smul_mem' := fun a x ⟨b, h⟩ => ⟨b, by rw [smul_comm, h, smul_zero]⟩}
+  smul_mem' := fun a x ⟨b, h⟩ => ⟨b, by rw [smul_comm, h, smul_zero]⟩
 
 /-- The torsion submodule, containing all elements `x` of `M` such that `a • x = 0` for some
   non-zero-divisor `a` in `R`. -/
@@ -386,7 +377,6 @@ section Coprime
 
 variable {ι : Type*} {p : ι → Ideal R} {S : Finset ι}
 
--- Porting note: mem_iSup_finset_iff_exists_sum now requires DecidableEq ι
 theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf
     (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤) :
     ⨆ i ∈ S, torsionBySet R M (p i) = torsionBySet R M ↑(⨅ i ∈ S, p i) := by
@@ -421,7 +411,6 @@ theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf
         exact Ideal.mul_mem_left _ _ (this j hj ij)
     · rw [← Finset.sum_smul, hμ, one_smul]
 
--- Porting note: iSup_torsionBySet_ideal_eq_torsionBySet_iInf now requires DecidableEq ι
 theorem supIndep_torsionBySet_ideal (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤) :
     S.SupIndep fun i => torsionBySet R M <| p i :=
   fun T hT i hi hiT => by
@@ -642,11 +631,9 @@ instance instModuleQuotientTorsionBy (a : R) : Module (R ⧸ R ∙ a) (torsionBy
   Module.IsTorsionBySet.module <|
     (Module.isTorsionBySet_span_singleton_iff a).mpr <| torsionBy_isTorsionBy a
 
--- Porting note: added for torsionBy.mk_ideal_smul
 instance (a : R) : Module (R ⧸ Ideal.span {a}) (torsionBy R M a) :=
    inferInstanceAs <| Module (R ⧸ R ∙ a) (torsionBy R M a)
 
--- Porting note: added because torsionBy.mk_smul simplifies
 @[simp]
 theorem torsionBy.mk_ideal_smul (a b : R) (x : torsionBy R M a) :
     (Ideal.Quotient.mk (Ideal.span {a})) b • x = b • x :=
@@ -823,7 +810,6 @@ variable [Monoid R] [AddCommMonoid M] [DistribMulAction R M]
 
 theorem isTorsion'_powers_iff (p : R) :
     IsTorsion' M (Submonoid.powers p) ↔ ∀ x : M, ∃ n : ℕ, p ^ n • x = 0 := by
-  -- Porting note: previous term proof was having trouble elaborating
   constructor
   · intro h x
     let ⟨⟨a, ⟨n, hn⟩⟩, hx⟩ := @h x

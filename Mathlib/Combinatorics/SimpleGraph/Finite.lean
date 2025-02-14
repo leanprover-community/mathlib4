@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov
 -/
 import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Combinatorics.SimpleGraph.Maps
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Sym.Card
 
@@ -312,7 +312,7 @@ theorem IsRegularOfDegree.top [DecidableEq V] :
 The key properties of this are given in `exists_minimal_degree_vertex`, `minDegree_le_degree`
 and `le_minDegree_of_forall_le_degree`. -/
 def minDegree [DecidableRel G.Adj] : ℕ :=
-  WithTop.untop' 0 (univ.image fun v => G.degree v).min
+  WithTop.untopD 0 (univ.image fun v => G.degree v).min
 
 /-- There exists a vertex of minimal degree. Note the assumption of being nonempty is necessary, as
 the lemma implies there exists a vertex. -/
@@ -386,7 +386,7 @@ that `V` is nonempty is necessary, as otherwise this would assert the existence 
 natural number less than zero. -/
 theorem maxDegree_lt_card_verts [DecidableRel G.Adj] [Nonempty V] :
     G.maxDegree < Fintype.card V := by
-  cases' G.exists_maximal_degree_vertex with v hv
+  obtain ⟨v, hv⟩ := G.exists_maximal_degree_vertex
   rw [hv]
   apply G.degree_lt_card_verts v
 
@@ -429,5 +429,81 @@ theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
   · simp only [Set.toFinset_subset_toFinset, Set.subset_univ]
 
 end Finite
+
+section Support
+
+variable {s : Set V} [DecidablePred (· ∈ s)] [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj]
+
+lemma edgeFinset_subset_sym2_of_support_subset (h : G.support ⊆ s) :
+    G.edgeFinset ⊆ s.toFinset.sym2 := by
+  simp_rw [subset_iff, Sym2.forall,
+    mem_edgeFinset, mem_edgeSet, mk_mem_sym2_iff, Set.mem_toFinset]
+  intro _ _ hadj
+  exact ⟨h ⟨_, hadj⟩, h ⟨_, hadj.symm⟩⟩
+
+instance : DecidablePred (· ∈ G.support) :=
+  inferInstanceAs <| DecidablePred (· ∈ { v | ∃ w, G.Adj v w })
+
+variable [DecidableEq V]
+
+theorem map_edgeFinset_induce :
+    (G.induce s).edgeFinset.map (Embedding.subtype s).sym2Map
+      = G.edgeFinset ∩ s.toFinset.sym2 := by
+  simp_rw [Finset.ext_iff, Sym2.forall, mem_inter, mk_mem_sym2_iff, mem_map, Sym2.exists,
+    Set.mem_toFinset, mem_edgeSet, comap_adj, Embedding.sym2Map_apply, Embedding.coe_subtype,
+    Sym2.map_pair_eq, Sym2.eq_iff]
+  intro v w
+  constructor
+  · rintro ⟨x, y, hadj, ⟨hv, hw⟩ | ⟨hw, hv⟩⟩
+    all_goals rw [← hv, ← hw]
+    · exact ⟨hadj, x.prop, y.prop⟩
+    · exact ⟨hadj.symm, y.prop, x.prop⟩
+  · intro ⟨hadj, hv, hw⟩
+    use ⟨v, hv⟩, ⟨w, hw⟩, hadj
+    tauto
+
+theorem map_edgeFinset_induce_of_support_subset (h : G.support ⊆ s) :
+    (G.induce s).edgeFinset.map (Embedding.subtype s).sym2Map = G.edgeFinset := by
+  simpa [map_edgeFinset_induce] using edgeFinset_subset_sym2_of_support_subset h
+
+/-- If the support of the simple graph `G` is a subset of the set `s`, then the induced subgraph of
+`s` has the same number of edges as `G`. -/
+theorem card_edgeFinset_induce_of_support_subset (h : G.support ⊆ s) :
+    #(G.induce s).edgeFinset = #G.edgeFinset := by
+  rw [← map_edgeFinset_induce_of_support_subset h, card_map]
+
+theorem card_edgeFinset_induce_support :
+    #(G.induce G.support).edgeFinset = #G.edgeFinset :=
+  card_edgeFinset_induce_of_support_subset subset_rfl
+
+theorem map_neighborFinset_induce (v : s) :
+    ((G.induce s).neighborFinset v).map (.subtype s)
+      = G.neighborFinset v ∩ s.toFinset := by
+  ext; simp [Set.mem_def]
+
+theorem map_neighborFinset_induce_of_neighborSet_subset {v : s} (h : G.neighborSet v ⊆ s) :
+    ((G.induce s).neighborFinset v).map (.subtype s) = G.neighborFinset v := by
+  rwa [← Set.toFinset_subset_toFinset, ← neighborFinset_def, ← inter_eq_left,
+    ← map_neighborFinset_induce v] at h
+
+/-- If the neighbor set of a vertex `v` is a subset of `s`, then the degree of the vertex in the
+induced subgraph of `s` is the same as in `G`. -/
+theorem degree_induce_of_neighborSet_subset {v : s} (h : G.neighborSet v ⊆ s) :
+    (G.induce s).degree v = G.degree v := by
+  simp_rw [← card_neighborFinset_eq_degree,
+    ← map_neighborFinset_induce_of_neighborSet_subset h, card_map]
+
+/-- If the support of the simple graph `G` is a subset of the set `s`, then the degree of vertices
+in the induced subgraph of `s` are the same as in `G`. -/
+theorem degree_induce_of_support_subset (h : G.support ⊆ s) (v : s) :
+    (G.induce s).degree v = G.degree v :=
+  degree_induce_of_neighborSet_subset <| (G.neighborSet_subset_support v).trans h
+
+@[simp]
+theorem degree_induce_support (v : G.support) :
+    (G.induce G.support).degree v = G.degree v :=
+  degree_induce_of_support_subset subset_rfl v
+
+end Support
 
 end SimpleGraph
