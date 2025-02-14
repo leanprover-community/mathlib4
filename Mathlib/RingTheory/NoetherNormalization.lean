@@ -276,11 +276,13 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
     exact ⟨s, by linarith, ϕ.comp g, (ϕ.coe_comp  g) ▸ (kerLiftAlg_injective _).comp injg,
       intg.trans _ _ <| (comp ▸ hom2_int f I fne fi).tower_top _ _⟩
 
+variable (k R : Type*) [Field k] [CommRing R] [Nontrivial R] [a : Algebra k R]
+  [fin : Algebra.FiniteType k R]
+
 /-- **Noether Normalization**
 Proved by the theorem above since finitely generated algebra
   is a quotient of a polynomial ring in n variables.-/
-theorem exists_integral_inj_algHom_of_fg {R : Type*} [CommRing R] [Nontrivial R] [Algebra k R]
-    [fin : Algebra.FiniteType k R] : ∃ s, ∃ g : (MvPolynomial (Fin s) k) →ₐ[k] R,
+theorem exists_integral_inj_algHom_of_fg : ∃ s, ∃ g : (MvPolynomial (Fin s) k) →ₐ[k] R,
     Function.Injective g ∧ g.IsIntegral := by
   obtain ⟨n, f, fsurj⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp fin
   set ϕ := quotientKerAlgEquivOfSurjective fsurj
@@ -289,5 +291,19 @@ theorem exists_integral_inj_algHom_of_fg {R : Type*} [CommRing R] [Nontrivial R]
   simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
     EmbeddingLike.comp_injective, AlgHom.toRingHom_eq_coe]
   exact ⟨injg, intg.trans _ _ (isIntegral_of_surjective _ ϕ.surjective)⟩
+
+/-- Upgrade `IsIntegral` to `Finite`. -/
+theorem exists_finite_inj_algHom_of_fg : ∃ s, ∃ g : (MvPolynomial (Fin s) k) →ₐ[k] R,
+    Function.Injective g ∧ g.Finite := by
+  obtain ⟨s, g, ⟨inj, int⟩⟩ := exists_integral_inj_algHom_of_fg k R
+  use s, g
+  exact ⟨inj, int.to_finite (by
+    have : (Algebra.ofId k R).FiniteType := by
+      unfold AlgHom.FiniteType RingHom.FiniteType
+      convert fin
+      exact Algebra.algebra_ext (Algebra.ofId k R).toAlgebra a (congrFun rfl)
+    have comp : Algebra.ofId k R = g.comp (Algebra.ofId k (MvPolynomial (Fin s) k)) :=
+      Algebra.ext_id_iff.mpr trivial
+    exact (comp ▸ this).of_comp_finiteType)⟩
 
 end mainthm
