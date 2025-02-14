@@ -982,7 +982,6 @@ theorem center_le_largest_nilpotent_ideal : center R L ≤ largestNilpotentIdeal
   have h : IsNilpotent L (center R L) := inferInstance
   le_sSup h
 
-/-- The largest nilpotent ideal is contained in the radical. -/
 theorem largest_nilpotent_ideal_le_radical :
     largestNilpotentIdeal R L ≤ radical R L := by
   apply sSup_le_sSup
