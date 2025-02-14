@@ -63,7 +63,7 @@ theorem FactorsHelper.primeFactorsList_eq {n : ℕ} {l : List ℕ} (H : FactorsH
 
 open Lean Elab Tactic Qq
 
-/-- Given `n` and `a` (in expressions `en` and `ea`) corresponding to literals numerals
+/-- Given `n` and `a` (in expressions `en` and `ea`) corresponding to literal numerals
 (in `enl` and `eal`), returns `(l, ⊢ factorsHelper n a l)`. -/
 private partial def evalPrimeFactorsListAux
     {en enl : Q(ℕ)} {ea eal : Q(ℕ)} (hn : Q(IsNat $en $enl)) (ha : Q(IsNat $ea $eal)) :
