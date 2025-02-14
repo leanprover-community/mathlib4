@@ -374,7 +374,7 @@ lemma pairing_reflection_perm_self_right (i j : ι) :
 
 /-- The indexing set of a root pairing carries an involutive negation, corresponding to the negation
 of a root / coroot. -/
-def indexNeg : InvolutiveNeg ι where
+@[simps] def indexNeg : InvolutiveNeg ι where
   neg i := P.reflection_perm i i
   neg_neg i := by
     apply P.root.injective

@@ -926,8 +926,7 @@ lemma LinearIndependent.pair_symm_iff {x y : M} :
   simp only [LinearIndependent.pair_iff]
   intro x y h s t
   specialize h t s
-  rw [add_comm]
-  tauto
+  rwa [add_comm, and_comm]
 
 /-- If the kernel of a linear map is disjoint from the span of a family of vectors,
 then the family is linearly independent iff it is linearly independent after composing with
