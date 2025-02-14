@@ -84,7 +84,6 @@ noncomputable def HodgePairing {k : ℕ} (hk : k ≤ finrank F V) :
 variable {k : ℕ} (hk : k ≤ finrank F V) in
 #check WedgeProduct (R := F) (M := V) (Nat.add_sub_of_le hk)
 
-
 #check LinearEquiv.injective
 #check Function.Injective.comp
 #check Function.Injective.injective_linearMapComp_left

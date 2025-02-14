@@ -95,4 +95,24 @@ def WedgeProduct {k l m : ℕ} [Module.Finite R M] (h : k + l = m) :
     dsimp
     rw [Algebra.smul_mul_assoc]
 
+section overVectorSpace
+
+variable {F V : Type*} [Field F] [AddCommGroup V] [Module F V]
+variable {I : Type*} [Fintype I] [LinearOrder I] (b : Basis I F V) (k : ℕ)
+variable (s : Finset I) (hs : s.card = k)
+
+#check Finset.card_compl
+#check FiniteDimensional.fintypeBasisIndex
+#check Module.finrank_eq_card_basis
+
+theorem aux {s : Finset I} (hs : s.card = k) (b : Basis I F V) :
+    sᶜ.card = Module.finrank F V - k := by
+  rw [Finset.card_compl, hs, Module.finrank_eq_card_basis b]
+
+noncomputable def WedgeDual {s : Finset I} (hs : s.card = k) : ⋀[F]^(Module.finrank F V - k) V :=
+  Basis.exteriorPower F (Module.finrank F V - k) b ⟨sᶜ, aux k hs b⟩
+
+end overVectorSpace
+
+
 end exteriorPower
