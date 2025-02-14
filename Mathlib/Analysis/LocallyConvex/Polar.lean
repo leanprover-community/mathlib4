@@ -201,9 +201,9 @@ theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
 /-
 TODO: prove the converse and upgrade this to the bipolar theorem
 -/
-example [Module ℝ E] [IsScalarTower ℝ 𝕜 E] :
-    closedAbsConvexHull (E := WeakBilin B) 𝕜 s ⊆ B.flip.polar (B.polar s) :=
-  closedAbsConvexHull_min (subset_bipolar B s) (polar_AbsConvex _) (polar_isClosed B.flip _)
+set_option linter.unusedSectionVars false in
+proof_wanted bipolar_theorem [Module ℝ E] [IsScalarTower ℝ 𝕜 E] :
+    closedAbsConvexHull (E := WeakBilin B) 𝕜 s = B.flip.polar (B.polar s)
 
 end RCLike
 
