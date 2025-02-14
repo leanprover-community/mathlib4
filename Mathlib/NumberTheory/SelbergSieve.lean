@@ -89,12 +89,19 @@ namespace SelbergSieve
 
 namespace Notation
 
+@[inherit_doc nu]
 scoped notation3 "ν" => nu
+@[inherit_doc prodPrimes]
 scoped notation3 "P" => prodPrimes
+@[inherit_doc weights]
 scoped notation3 "a" => weights
+@[inherit_doc totalMass]
 scoped notation3 "X" => totalMass
+@[inherit_doc support]
 scoped notation3 "A" => support
+@[inherit_doc level]
 scoped notation3 "y" => level
+/-- `1 ≤ y`-/
 scoped notation3 "hy" => one_le_level
 
 end Notation
@@ -155,6 +162,7 @@ theorem nu_lt_self_of_dvd_prodPrimes (d : ℕ) (hdP : d ∣ P) (hd_ne_one : d �
 @[simp]
 def multSum (d : ℕ) : ℝ := ∑ n ∈ A, if d ∣ n then a n else 0
 
+@[inherit_doc multSum]
 scoped [SelbergSieve.Notation] notation3 "𝒜" => multSum
 
 /-- The remainder term in the approximation A_d = ν (d) X + R_d. This is the degree to which `nu`
@@ -162,6 +170,7 @@ scoped [SelbergSieve.Notation] notation3 "𝒜" => multSum
 @[simp]
 def rem (d : ℕ) : ℝ := 𝒜 d - ν d * X
 
+@[inherit_doc rem]
 scoped [SelbergSieve.Notation] notation3 "R" => rem
 
 /-- The weight of all the elements that are not a multiples of any of our finite set of primes. -/
