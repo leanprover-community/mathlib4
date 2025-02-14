@@ -3,10 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Image
+import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.Finite.Defs
-import Mathlib.Algebra.Group.TypeTags.Basic
+import Mathlib.Data.Finset.Image
 
 /-!
 # Finite types
@@ -668,6 +669,10 @@ alias ⟨_, toFinset_strict_mono⟩ := toFinset_ssubset_toFinset
 theorem disjoint_toFinset [Fintype s] [Fintype t] :
     Disjoint s.toFinset t.toFinset ↔ Disjoint s t := by simp only [← disjoint_coe, coe_toFinset]
 
+@[simp]
+theorem toFinset_nontrivial [Fintype s] : s.toFinset.Nontrivial ↔ s.Nontrivial := by
+  rw [Finset.Nontrivial, coe_toFinset]
+
 section DecidableEq
 
 variable [DecidableEq α] (s t) [Fintype s] [Fintype t]
@@ -1060,11 +1065,7 @@ variable [Fintype α] [DecidableEq β] {f : α → β}
 /-- `bijInv f` is the unique inverse to a bijection `f`. This acts
   as a computable alternative to `Function.invFun`. -/
 def bijInv (f_bij : Bijective f) (b : β) : α :=
-  Fintype.choose (fun a => f a = b)
-    (by
-      rcases f_bij.right b with ⟨a', fa_eq_b⟩
-      rw [← fa_eq_b]
-      exact ⟨a', ⟨rfl, fun a h => f_bij.left h⟩⟩)
+  Fintype.choose (fun a => f a = b) (f_bij.existsUnique b)
 
 theorem leftInverse_bijInv (f_bij : Bijective f) : LeftInverse (bijInv f_bij) f := fun a =>
   f_bij.left (choose_spec (fun a' => f a' = f a) _)
