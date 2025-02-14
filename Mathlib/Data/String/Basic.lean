@@ -150,10 +150,8 @@ instance : LinearOrder String where
     apply le_total
   decidableLE := String.decidableLE
   compare_eq_compareOfLessAndEq a b := by
-    simp only [compare, compareOfLessAndEq, instLT, List.instLT, lt_iff_toList_lt, toList]
-    split_ifs <;>
-    simp only [List.lt_iff_lex_lt] at *
-    contradiction
+    simp only [compare, compareOfLessAndEq, lt_iff_toList_lt]
+    convert rfl
 
 end String
 
