@@ -148,8 +148,10 @@ theorem toNerve₂.mk_naturality {X : SSet.Truncated.{u} 2} {C : Cat}
         CategoryStruct.comp (obj := C) (F.map (ev01₂ φ)) (F.map (ev12₂ φ))) :
     (MorphismProperty.naturalityProperty (fun n => toNerve₂.mk.app F n.unop)).unop = ⊤ := by
   set OK := (MorphismProperty.naturalityProperty (fun n => toNerve₂.mk.app F n.unop)).unop
+  -- CHECK LATER IF I CAN CUT THIS
   have const10 (α : [1]₂ ⟶ [0]₂) : OK α := by
     ext x
+    have : [1]₂ ⟶ [0]₂ := SimplexCategory.σ 0
     cases SimplexCategory.eq_const_to_zero α
     dsimp
     fapply ComposableArrows.ext₁
@@ -337,6 +339,41 @@ theorem toNerve₂.mk_naturality {X : SSet.Truncated.{u} 2} {C : Cat}
           · rfl
       | _, .inr (.inr (.inr ⟨i, rfl⟩)) =>
         exact fac 0 (by decide) (const_fac_thru_zero ..) (const10 ..) (const02 ..)
+  have σ00 : @OK [1]₂ [0]₂ (σ 0) := by
+    ext x
+    dsimp
+    fapply ComposableArrows.ext₁
+    · simp only [ComposableArrows.mk₁_obj, ComposableArrows.Mk₁.obj]
+      congr 1
+      refine congr_fun (?_ : X.map _ ≫ X.map _ = 𝟙 _) x
+      rw [← map_comp, ← map_id]; congr 1
+      apply Quiver.Hom.unop_inj
+      apply SimplexCategory.hom_zero_zero
+    · simp only [ComposableArrows.mk₁_obj, ComposableArrows.Mk₁.obj]
+      congr 1
+      refine congr_fun (?_ : X.map _ ≫ X.map _ = 𝟙 _) x
+      rw [← map_comp, ← map_id]; congr 1
+      apply Quiver.Hom.unop_inj
+      apply SimplexCategory.hom_zero_zero
+    · refine eq_of_heq <|
+        (?_ : HEq _ (ComposableArrows.mk₁ (C := C) (𝟙rq (F.obj x))).hom).trans ?_
+      · have : ∀ x' a b (h1 : X.map (δ₂ 1).op x' = a) (h2 : X.map (δ₂ 0).op x' = b),
+          x = a → x = b → x' = X.map (σ₂ (n := 0) 0).op x →
+          HEq (ComposableArrows.mk₁ (C := C) (F.map ⟨x', h1, h2⟩)).hom
+            (ComposableArrows.mk₁ (C := C) (𝟙rq (F.obj x))).hom := by
+          rintro _ _ _ _ _ rfl rfl rfl
+          exact congr_arg_heq (fun a => (ComposableArrows.mk₁ (C := C) a).hom) (F.map_id x)
+        apply this
+        · simp only [SimplexCategory.len_mk]
+          refine congr_fun (?_ : X.map _ ≫ X.map _ = 𝟙 _).symm x
+          rw [← map_comp, ← map_id]; congr 1
+          exact Quiver.Hom.unop_inj (SimplexCategory.hom_zero_zero _)
+        · simp only [SimplexCategory.len_mk]
+          refine congr_fun (?_ : X.map _ ≫ X.map _ = 𝟙 _).symm x
+          rw [← map_comp, ← map_id]; congr 1
+          exact Quiver.Hom.unop_inj (SimplexCategory.hom_zero_zero _)
+        · simp
+      · simp; rfl
   have nat2m {m hm} (α : [2]₂ ⟶ ⟨[m], hm⟩) : OK α := by
     dsimp [OK]
     apply (cancel_mono (nerve₂.seagull _)).1
@@ -344,7 +381,7 @@ theorem toNerve₂.mk_naturality {X : SSet.Truncated.{u} 2} {C : Cat}
     congr 1 <;> rw [← map_comp, ← op_comp, ← nat1m, ← nat1m, op_comp, map_comp, assoc]
   exact Truncated.morphismProperty_eq_top OK
     (fun | 0, _, _ => const01 _ | 1, _, _ => nat1m _)
-    (fun | 0, _, _ => const10 _ | 1, _, _ => nat2m _)
+    (fun | 0, _, 0 => σ00 | 1, _, _ => nat2m _)
 
 /-- Because nerves are 2-coskeletal, a map of 2-truncated simplicial sets valued in a nerve can be
 recovered from the underlying ReflPrefunctor. -/
