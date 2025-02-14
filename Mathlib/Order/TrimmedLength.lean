@@ -7,6 +7,7 @@ Authors: Raphael Douglas Giles
 import Mathlib
 
 /-!
+
 # Trimmed Length
 
 Given a relseries rs : RelSeries (· ≤ ·), we define the trimmed length of rs to be the cardinality
@@ -18,19 +19,7 @@ in rs. In this file we develop the main API for working with the trimmed length.
 open Order
 
 variable {α : Type*}
-/--
-Given a relseries rs : RelSeries (α := α) r with transitive and reflixive r, i ≤ j implies
-r (rs i) (rs j)
--/
-theorem RelSeries.map_le {r : Rel α α} [IsTrans α r] [IsRefl α r] (rs : RelSeries (α := α) r)
-  {i j : Fin (rs.length + 1)}
-  (hij : i ≤ j) : r (rs i) (rs j) := by
-    have := rel_or_eq_of_le rs hij
-    cases this
-    · assumption
-    · rename_i h
-      rw[h]
-      apply refl (r := r)
+
 
 variable [PartialOrder α] [DecidableEq α]
   (rs : RelSeries (α := α) (· ≤ ·))
@@ -150,7 +139,7 @@ theorem RelSeries.trimmedLength_eraseLast_of_lt
           suffices rs.toFun ⟨↑x, by omega⟩ < rs.toFun i.succ by exact ne_of_lt this
           apply LT.lt.trans_le' (b := rs.toFun i.castSucc)
           · exact hi1
-          · apply rs.map_le
+          · apply rs.rel_of_le
             apply Fin.mk_le_of_le_val
             simp only [Fin.coe_castSucc]; omega
       congr
@@ -224,7 +213,7 @@ instance (rs : RelSeries (α := α) (· ≤ ·)) :
       obtain ⟨i, rfl⟩ := ha
       obtain ⟨j, rfl⟩ := hb
       simp only [Subtype.mk_le_mk]
-      exact (le_total i j).imp (RelSeries.map_le rs) (RelSeries.map_le rs)
+      exact (le_total i j).imp (RelSeries.rel_of_le rs) (RelSeries.rel_of_le rs)
     decidableLE := inferInstance
 
 /--
