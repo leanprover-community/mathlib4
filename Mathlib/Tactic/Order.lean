@@ -8,8 +8,6 @@ import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Order.Basic
 import Qq
 
-set_option linter.style.longLine false
-
 /-!
 # `order` tactic
 
@@ -55,7 +53,8 @@ both `a` and `b` are values of some variables `x` and `y` from `T`, and there is
 a chain `x = ... = y` in `T`. Define the relation `R'` on `M'` as `α R' β` if and only if `a R b`
 in `M` for some `a ∈ α` and `b ∈ β`. Then `M'` is a model satisfying `T`:
 * For any fact `x = y` in `T`, we have `M'(x) = M'(y)` in `M'`.
-* For any fact `x ≠ y` in `T`, we have `M'(x) ≠ M'(y)`, since otherwise, there would exist a chain `x = ... = y` in `T`.
+* For any fact `x ≠ y` in `T`, we have `M'(x) ≠ M'(y)`, since otherwise, there would exist
+  a chain `x = ... = y` in `T`.
 * For any fact `x ≤ y` in `T`, and thus in `T'`, we have `M(x) R M(y)`, so `M'(x) R' M'(y)`.
 * For any fact `¬(x ≤ y)` in `T`, and thus in `T'`, we have `¬M(x) R M(y)`. Then, for any `x' ~ x`
   and `y' ~ y`, we can deduce `x ≤ x'` and `y' ≤ y` from `T'`. If `M(x') R M(y')`, then
