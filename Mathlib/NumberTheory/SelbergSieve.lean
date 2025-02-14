@@ -59,16 +59,27 @@ sifted sum `∑ n ∈ {k ∈ support | k.Coprime P}, a n`, obtained by removing 
 are a multiple of a prime in `P`.
 -/
 class SelbergSieve where
+  /-- The set of natural numbers that is to be sifted. The fundamental lemma yields an upper bound
+    on the size of this set after the multiples of small primes have been removed. -/
   support : Finset ℕ
+  /-- The finite set of prime numbers whose multiples are to be sifted from `support`. -/
   prodPrimes : ℕ
   prodPrimes_squarefree : Squarefree prodPrimes
+  /-- A sequence representing how much each element of `support` should be weighted. -/
   weights : ℕ → ℝ
   weights_nonneg : ∀ n : ℕ, 0 ≤ weights n
+  /-- An approximation to `∑ i in support, weights i`, i.e. the size of the unsifted set. A bad
+    approximation will yield a weak statement in the final theorem. -/
   totalMass : ℝ
+  /-- `nu d` is an approximation to the proportion of elements of `support` that are a multiple of
+    `d` -/
   nu : ArithmeticFunction ℝ
   nu_mult : nu.IsMultiplicative
   nu_pos_of_prime : ∀ p : ℕ, p.Prime → p ∣ prodPrimes → 0 < nu p
   nu_lt_one_of_prime : ∀ p : ℕ, p.Prime → p ∣ prodPrimes → nu p < 1
+  /-- The `level` of the sieve controls how many terms we include in the inclusion-exclusion type
+    sum. A higher level will yield a tighter bound for the main term, but will also increase the
+    size of the error term. -/
   level : ℝ
   one_le_level : 1 ≤ level
 
@@ -140,21 +151,26 @@ theorem nu_lt_self_of_dvd_prodPrimes (d : ℕ) (hdP : d ∣ P) (hd_ne_one : d �
     _ = 1 := by
       simp
 
+/-- The weight of all the elements that are a multiple of `d`. -/
 @[simp]
 def multSum (d : ℕ) : ℝ := ∑ n ∈ A, if d ∣ n then a n else 0
 
 scoped [SelbergSieve.Notation] notation3 "𝒜" => multSum
 
--- A_d = ν (d)/d X + R_d
+/-- The remainder term in the approximation A_d = ν (d) X + R_d. This is the degree to which `nu`
+  fails to approximate the proportion of the weight that is a multiple of `d`. -/
 @[simp]
 def rem (d : ℕ) : ℝ := 𝒜 d - ν d * X
 
 scoped [SelbergSieve.Notation] notation3 "R" => rem
 
+/-- The weight of all the elements that are not a multiples of any of our finite set of primes. -/
 def siftedSum : ℝ := ∑ d ∈ A, if Coprime P d then a d else 0
 
+/-- `X * mainSum μ⁺` is the main term in the upper bound on `sifted_sum`-/
 def mainSum (muPlus : ℕ → ℝ) : ℝ := ∑ d ∈ divisors P, muPlus d * ν d
 
+/-- `errSum μ⁺` is the error term in the upper bound on `sifted_sum`. -/
 def errSum (muPlus : ℕ → ℝ) : ℝ := ∑ d ∈ divisors P, |muPlus d| * |R d|
 
 theorem multSum_eq_main_err (d : ℕ) : multSum d = ν d * X + R d := by
@@ -167,7 +183,7 @@ theorem siftedsum_eq_sum_support_mul_ite :
   simp_rw [mul_ite, mul_one, mul_zero]
 
 omit s in
-/-! A sequence of coefficients $\mu^{+}$ is upper Moebius if $\mu * \zeta ≤ \mu^{+} * \zeta$. These
+/-- A sequence of coefficients $\mu^{+}$ is upper Moebius if $\mu * \zeta ≤ \mu^{+} * \zeta$. These
   coefficients then yield an upper bound on the sifted sum.-/
 def UpperMoebius (muPlus : ℕ → ℝ) : Prop :=
   ∀ n : ℕ, (if n=1 then 1 else 0) ≤ ∑ d ∈ n.divisors, muPlus d
