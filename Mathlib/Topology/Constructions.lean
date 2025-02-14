@@ -3,12 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Data.Finset.Piecewise
+import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.Finset.Piecewise
+import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Filter.Curry
 import Mathlib.Topology.Maps.Basic
 import Mathlib.Topology.NhdsSet
-import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Constructions of new topological spaces from old ones

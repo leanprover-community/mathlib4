@@ -6,10 +6,11 @@ Amelia Livingston, Yury Kudryashov
 -/
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.Idempotent
+import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
 import Mathlib.Algebra.Group.Nat.Hom
 import Mathlib.Algebra.Group.Submonoid.MulOpposite
 import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # Submonoids: membership criteria
