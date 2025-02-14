@@ -226,8 +226,6 @@ inductive multiplicativeClosure' (W : MorphismProperty C) : MorphismProperty C
   | of_comp {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (hf : W f) (hg : multiplicativeClosure' W g) :
     multiplicativeClosure' W (f ≫ g)
 
-namespace multiplicativeClosure
-
 variable {W : MorphismProperty C}
 
 /-- `multiplicativeClosure W` is multiplicative. -/
@@ -253,11 +251,11 @@ instance : IsMultiplicative W.multiplicativeClosure' where
       exact .of_comp g' (f ≫ g) hg' (h_rec g hg)
 
 /-- The multiplicative closure is greater or equal than the original property. -/
-lemma self_le : W ≤ W.multiplicativeClosure := fun {_ _} _ hf ↦ .of _ hf
+lemma self_le_multiplicativeClosure : W ≤ W.multiplicativeClosure := fun {_ _} _ hf ↦ .of _ hf
 
 /-- The multiplicative closure of a multiplicative property is equal to itself. -/
 lemma eq_self_of_isMultiplicative [W.IsMultiplicative] : W.multiplicativeClosure = W := by
-  apply le_antisymm _ self_le
+  apply le_antisymm _ self_le_multiplicativeClosure
   intro _ _ _ hf
   induction hf with
   | of _ hf₀ => exact hf₀
@@ -266,7 +264,7 @@ lemma eq_self_of_isMultiplicative [W.IsMultiplicative] : W.multiplicativeClosure
 
 /-- The multiplicative closure of `W` is the smallest multiplicative property greater or equal than
 `W`. -/
-lemma le_of_isMultiplicative_le
+lemma multiplicativeClosure_le_of_isMultiplicative_le
     (W' : MorphismProperty C) [W'.IsMultiplicative]
     (hWW' : W ≤ W') : W.multiplicativeClosure ≤ W' := by
   intro _ _ _ hf
@@ -275,24 +273,23 @@ lemma le_of_isMultiplicative_le
   | id x => exact W'.id_mem _
   | comp_of _ _ _ hg hf => exact W'.comp_mem _ _ hf (hWW' _ hg)
 
-lemma le_of_isMultiplicative_le_iff (W' : MorphismProperty C) [W'.IsMultiplicative] :
+lemma multiplicativeClosure_le_isMultiplicative (W' : MorphismProperty C) [W'.IsMultiplicative] :
     multiplicativeClosure W ≤ W' ↔ W ≤ W' where
-  mp h := self_le.trans h
-  mpr h := le_of_isMultiplicative_le W' h
+  mp h := self_le_multiplicativeClosure.trans h
+  mpr h := multiplicativeClosure_le_of_isMultiplicative_le W' h
 
 lemma multiplicativeClosure_monotone (W' : MorphismProperty C) (hWW' : W ≤ W') :
     W.multiplicativeClosure ≤ W'.multiplicativeClosure :=
-  le_of_isMultiplicative_le W'.multiplicativeClosure <| hWW'.trans self_le
+  multiplicativeClosure_le_of_isMultiplicative_le W'.multiplicativeClosure <|
+    hWW'.trans self_le_multiplicativeClosure
 
-lemma eq_prime : W.multiplicativeClosure = W.multiplicativeClosure' :=
+lemma multiplicativeClosur.eq_prime : W.multiplicativeClosure = W.multiplicativeClosure' :=
   le_antisymm
-    (le_of_isMultiplicative_le _ (fun _ _ f hf ↦ .of f hf)) <|
+    (multiplicativeClosure_le_of_isMultiplicative_le _ (fun _ _ f hf ↦ .of f hf)) <|
     fun x y f hf ↦ by induction hf with
       | of _ h => exact .of _ h
       | id x => exact .id x
       | of_comp f g hf hg hr => exact W.multiplicativeClosure.comp_mem f g (.of f hf) hr
-
-end multiplicativeClosure
 
 /-- A class of morphisms `W` has the of-postcomp property wrt. `W'` if whenever
 `g` is in `W'` and `f ≫ g` is in `W`, also `f` is in `W`. -/
