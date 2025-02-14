@@ -2,7 +2,7 @@ import Mathlib.Tactic.Order
 import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Int.Order.Basic
 
-example (a b c d e : Nat) (h1 : a ≤ b) (h2 : b ≤ c) : a ≤ c := by
+example (a b c : Nat) (h1 : a ≤ b) (h2 : b ≤ c) : a ≤ c := by
   order
 
 example (a b c d e : Nat) (h1 : a ≤ b) (h2 : b ≤ c) (h3 : c ≤ d) (h4 : d ≤ e) (h5 : b ≠ d) :

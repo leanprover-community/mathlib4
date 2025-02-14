@@ -11,40 +11,52 @@ import Qq
 /-!
 # `order` tactic
 
-This module defines the `order` tactic that is a decision procedure for `Preorder`, `PartialOrder`,
-and `LinearOrder` theories.
+This module defines the `order` tactic, a decision procedure for the theories of `Preorder`,
+`PartialOrder`, and `LinearOrder`.
 
-TODO: write more
+## Implementation details
+
+Below, we describe the algorithm for each type of order.
+
+### Linear order
+TODO
+
+### Partial order
+TODO
+
+### Preorder
+TODO
+
 -/
 
 namespace Mathlib.Tactic.Order
 
 open Lean Qq Elab Meta Tactic
 
-/-- Possible relations used in atomic formulas are `x = y`, `x ≠ y`, `x ≤ y`, `¬(x ≤ y)`, `x < y`,
-`¬(x < y)`. -/
+/-- The possible relations used in atomic formulas are `x = y`, `x ≠ y`, `x ≤ y`, `¬(x ≤ y)`,
+`x < y`, and `¬(x < y)`. -/
 inductive AtomicRel
 | eq | ne | le | nle | lt | nlt
 deriving Inhabited, BEq
 
-/-- Structure for storing facts about variables. -/
+/-- A structure for storing facts about variables. -/
 structure AtomicFact where
-  /-- Index of the variable in LHS. -/
+  /-- The index of the variable in the left-hand side. -/
   lhs : Nat
-  /-- Index of the variable in RHS. -/
+  /-- The index of the variable in the right-hand side. -/
   rhs : Nat
-  /-- Relation between LHS and RHS. -/
+  /-- The relation between the LHS and RHS. -/
   rel : AtomicRel
-  /-- Proof-term of the fact. -/
+  /-- The proof term of the fact. -/
   proof : Expr
 deriving Inhabited
 
-/-- If `g` is `Graph`, then for a vertex with an index `v`, `g[v]` is the array containing edges
-starting in this vertex. Edges are just `AtomicFact`s with `.lhs` and `.rhs` are interpreted as a
-source and destination. Some functions below may use `.rel` and `.proof` too. -/
+/-- If `g` is a `Graph`, then for a vertex with index `v`, `g[v]` is an array containing edges
+starting from this vertex. Edges are `AtomicFact`s which `.lhs` and `.rhs` represent the source
+and destination, respectively. Some functions below may also use `.rel` and `.proof`. -/
 abbrev Graph := Array (Array AtomicFact)
 
--- for debug
+-- For debugging purposes.
 instance : ToString AtomicFact where
   toString := fun fa => match fa.rel with
   | .eq => s!"{fa.lhs} = {fa.rhs}"
@@ -54,10 +66,11 @@ instance : ToString AtomicFact where
   | .nle => s!"¬ {fa.lhs} ≤ {fa.rhs}"
   | .nlt => s!"¬ {fa.lhs} < {fa.rhs}"
 
--- TODO: split conjuctions
-/-- Collects the facts from the local context. For each presented type `α` the returned map will
-contain a pair `(idxToAtom, facts)` where the map `idxToAtom` allows to convert indexes to found
-atomic expression of type `α`, and `facts` contains all collected `AtomicFact`s about them. -/
+-- TODO: Split conjunctions.
+-- TODO: Add an option for splitting disjunctions and implications.
+/-- Collects facts from the local context. For each occurring type `α`, the returned map contains
+a pair `(idxToAtom, facts)`, where the map `idxToAtom` converts indexes to found
+atomic expressions of type `α`, and `facts` contains all collected `AtomicFact`s about them. -/
 def collectFacts (g : MVarId) :
     MetaM <| Std.HashMap Expr <| Std.HashMap Nat Expr × Array AtomicFact := g.withContext do
   let ctx ← getLCtx
@@ -84,7 +97,9 @@ def collectFacts (g : MVarId) :
     let idxToAtom : Std.HashMap Nat Expr := atomToIdx.fold (init := .empty) fun acc key value =>
       acc.insert value key
     (idxToAtom, facts)
-where update (res : Std.HashMap Expr <| Std.HashMap Expr Nat × Array AtomicFact) (type x y : Expr)
+where
+  /-- Updates the map with a new fact. -/
+  update (res : Std.HashMap Expr <| Std.HashMap Expr Nat × Array AtomicFact) (type x y : Expr)
     (rel : AtomicRel) (expr : Expr) : Std.HashMap Expr <| Std.HashMap Expr Nat × Array AtomicFact :=
   let res := res.insertIfNew type (Std.HashMap.empty, #[])
   res.modify type fun (atomToIdx, facts) =>
@@ -109,8 +124,8 @@ private lemma le_of_not_lt_le {α : Type} [Preorder α] {x y : α} (h1 : ¬(x < 
   · exact False.elim (h1 h2)
   · assumption
 
-/-- Preprocess facts for preorders. Replace `x < y` with two equivalent facts: `x ≤ y` and
-`¬ (y ≤ x)`. Replace `x = y` with `x ≤ y`, `y ≤ x` and remove `x ≠ y`. -/
+/-- Preprocesses facts for preorders. Replaces `x < y` with two equivalent facts: `x ≤ y` and
+`¬ (y ≤ x)`. Replaces `x = y` with `x ≤ y`, `y ≤ x` and removes `x ≠ y`. -/
 def preprocessFactsPreorder (g : MVarId) (facts : Array AtomicFact) :
     MetaM <| Array AtomicFact := g.withContext do
   let mut res : Array AtomicFact := #[]
@@ -128,7 +143,7 @@ def preprocessFactsPreorder (g : MVarId) (facts : Array AtomicFact) :
       res := res.push fact
   return res
 
-/-- Preprocess facts for partial orders. Replace `x < y`, `¬ (x ≤ y)`, and `x = y` with
+/-- Preprocesses facts for partial orders. Replaces `x < y`, `¬ (x ≤ y)`, and `x = y` with
 equivalent facts involving only `≤`, `≠`, and `≮`. -/
 def preprocessFactsPartial (g : MVarId) (facts : Array AtomicFact) :
     MetaM <| Array AtomicFact := g.withContext do
@@ -148,8 +163,8 @@ def preprocessFactsPartial (g : MVarId) (facts : Array AtomicFact) :
       res := res.push fact
   return res
 
-/-- Preprocess facts for linear orders. Replace `x < y`, `¬ (x ≤ y)`, `¬ (x < y)` and `x = y` with
-equivalent facts involving only `≤` and `≠`. -/
+/-- Preprocesses facts for linear orders. Replaces `x < y`, `¬ (x ≤ y)`, `¬ (x < y)`, and `x = y`
+with equivalent facts involving only `≤` and `≠`. -/
 def preprocessFactsLinear (g : MVarId) (facts : Array AtomicFact) :
     MetaM <| Array AtomicFact := g.withContext do
   let mut res : Array AtomicFact := #[]
@@ -172,7 +187,7 @@ def preprocessFactsLinear (g : MVarId) (facts : Array AtomicFact) :
 
 end Preprocessing
 
-/-- Construct directed `Graph` using only `≤`-facts. -/
+/-- Constructs a directed `Graph` using only `≤` facts. -/
 def constructLeGraph (nVertexes : Nat) (facts : Array AtomicFact) :
     Graph := Id.run do
   let mut res : Graph := Array.mkArray nVertexes #[]
@@ -181,8 +196,8 @@ def constructLeGraph (nVertexes : Nat) (facts : Array AtomicFact) :
       res := res.modify fact.lhs fun edges => edges.push fact
   return res
 
-/-- Inverse the edges of `g`. It swaps `lhs` and `rhs` in each edge, and does nothing with `rel` and
-`proof` fields. -/
+/-- Inverts the edges of `g`. This swaps `lhs` and `rhs` in each edge and does nothing to the `rel`
+and `proof` fields. -/
 def inverseGraph (g : Graph) : Graph := Id.run do
   let mut res := Array.mkArray g.size #[]
   for v in [:g.size] do
@@ -192,15 +207,17 @@ def inverseGraph (g : Graph) : Graph := Id.run do
 
 /-- State for the DFS algorithm. -/
 structure DFSState where
-  /-- `visited[v] = true` iff the algorithm already entered the vertex `v`. -/
+  /-- `visited[v] = true` if and only if the algorithm has already entered vertex `v`. -/
   visited : Array Bool
 
-/-- State for the DFS algorithm for computing times of leaving each vertex (`tout`). -/
+/-- State for the DFS algorithm used to compute the exit times (`tout`) of each vertex. -/
 structure FindToutDFSState extends DFSState where
+  /-- When the algorithm completes, `tout[v]` stores the exit time of vertex `v`. -/
   tout : Array Nat
+  /-- Current time, incremented every time the DFS exits a vertex. -/
   time : Nat
 
-/-- DFS algorithm for computing times of leaving each vertex. -/
+/-- DFS algorithm for computing the exit times of each vertex. -/
 partial def findToutDFS (g : Graph) (v : Nat) : StateM FindToutDFSState Unit := do
   modify fun s => {s with visited := s.visited.set! v true}
   for edge in g[v]! do
@@ -210,12 +227,13 @@ partial def findToutDFS (g : Graph) (v : Nat) : StateM FindToutDFSState Unit := 
   modify fun s => {s with tout := s.tout.set! v s.time}
   modify fun s => {s with time := s.time + 1}
 
+/-- Implementation of `findTout`. -/
 def findToutImp (g : Graph) : StateM FindToutDFSState Unit := do
   for v in [:g.size] do
     if !(← get).visited[v]! then
       findToutDFS g v
 
-/-- Find times of leaving each vertex in DFS traversal starting at vertex `0`. -/
+/-- Computes the exit times of each vertex in a DFS traversal starting at vertex `0`. -/
 def findTout (g : Graph) : Array Nat :=
   let s : FindToutDFSState := {
     visited := mkArray g.size false
@@ -224,7 +242,7 @@ def findTout (g : Graph) : Array Nat :=
   }
   (findToutImp g).run s |>.snd.tout
 
-/-- Givin `tout` compute the topological sorting of a graph. -/
+/-- Given exit times `tout`, compute the topological ordering of the graph. -/
 def toutToTopSort (tout : Array Nat) : Array Nat := Id.run do
   let nVertexes := tout.size
   let mut res := mkArray nVertexes 0
@@ -232,13 +250,13 @@ def toutToTopSort (tout : Array Nat) : Array Nat := Id.run do
     res := res.set! (nVertexes - tout[v]! - 1) v
   return res
 
-/-- State for the DFS algorithm for computing condensation of the graph. -/
+/-- State for the DFS algorithm used to compute the condensation of the graph. -/
 structure CondenseDFSState extends DFSState where
-  /-- When the algorithm completes, `condensation[v]` is the index of a vertex that represents a
+  /-- When the algorithm completes, `condensation[v]` stores the index of a vertex representing the
   strongly connected component containing `v`. -/
   condensation : Array Nat
 
-/-- DFS algorithm for computing condensation of the graph. -/
+/-- DFS algorithm for computing the condensation of the graph. -/
 partial def condenseDFS (g : Graph) (c : Nat) (v : Nat) : StateM CondenseDFSState Unit := do
   modify fun s => {s with visited := s.visited.set! v true, condensation := s.condensation.set! v c}
   for edge in g[v]! do
@@ -246,13 +264,14 @@ partial def condenseDFS (g : Graph) (c : Nat) (v : Nat) : StateM CondenseDFSStat
     if !(← get).visited[u]! then
       condenseDFS g c u
 
+/-- Implementation of `condense`. -/
 def condenseImp (g : Graph) (order : Array Nat) : StateM CondenseDFSState Unit := do
   for v in order do
     if !(← get).visited[v]! then
       condenseDFS g v v
 
-/-- Find condensation of `graph`. The returned array at index `v` contains the number of strongly
-connected component that contains `v`. Numeration of components can be arbitrary. -/
+/-- Computes the condensation of the given graph. The returned array at index `v` contains the index
+of the strongly connected component that includes `v`. The numbering of components is arbitrary. -/
 def condense (graph : Graph) : Array Nat :=
   let tout := findTout graph
   let order := toutToTopSort tout
@@ -263,8 +282,8 @@ def condense (graph : Graph) : Array Nat :=
   let graphInv := inverseGraph graph
   (condenseImp graphInv order).run s |>.snd.condensation
 
-/-- Find the `≠`-fact which `lhs` and `rhs` are in the same strongly connected component of the
-`≤`-graph (and then must be equal). -/
+/-- Finds a contradictory `≠`-fact which `.lhs` and `.rhs` belong to the same strongly connected
+component in the `≤`-graph, implying they must be equal. -/
 def findContradictoryNe (graph : Graph) (facts : Array AtomicFact) : Option AtomicFact :=
   let condensation := condense graph
   facts.find? fun fact =>
@@ -272,7 +291,7 @@ def findContradictoryNe (graph : Graph) (facts : Array AtomicFact) : Option Atom
     | .ne => condensation[fact.lhs]! == condensation[fact.rhs]!
     | _ => false
 
-/-- DFS algorithm for finding the proof that `x ≤ y` by finding the path from `x` to `y` in
+/-- DFS algorithm for constructing a proof that `x ≤ y` by finding a path from `x` to `y` in the
 `≤`-graph. -/
 partial def buildTransitiveLeProofDFS (g : Graph) (v t : Nat) (tExpr : Expr) :
     StateT DFSState MetaM (Option Expr) := do
@@ -287,12 +306,13 @@ partial def buildTransitiveLeProofDFS (g : Graph) (v t : Nat) (tExpr : Expr) :
       | .none => continue
   return .none
 
-/-- Using `≤`-graph `g` find the proof of `s ≤ t` by transitivity. -/
+/-- Given a `≤`-graph `g`, finds a proof of `s ≤ t` using transitivity. -/
 def buildTransitiveLeProof (g : Graph) (s t : Nat) (tExpr : Expr) : MetaM (Option Expr) := do
   let state : DFSState := ⟨mkArray g.size false⟩
   (buildTransitiveLeProofDFS g s t tExpr).run' state
 
-/-- TODO -/
+/-- Using `<`-facts and the `le_of_not_lt_le` lemma, add edges to the `≤`-graph `g` as long as
+it remains possible. -/
 def updateGraphWithNlt (g : Graph) (idxToAtom : Std.HashMap Nat Expr) (facts : Array AtomicFact) :
     MetaM Graph := do
   let nltFacts := facts.filter fun fact => match fact.rel with | .nlt => true | _ => false
@@ -314,7 +334,7 @@ def updateGraphWithNlt (g : Graph) (idxToAtom : Std.HashMap Nat Expr) (facts : A
       break
   return g
 
-/-- Using `≤`-graph `g` finds the contradiction with some `≰`-fact. -/
+/-- Using the `≤`-graph `g`, find a contradiction with some `≰`-fact. -/
 def findContradictionWithNle (g : Graph) (idxToAtom : Std.HashMap ℕ Expr)
     (facts : Array AtomicFact) : MetaM <| Option Expr := do
   for fact in facts do
@@ -325,11 +345,13 @@ def findContradictionWithNle (g : Graph) (idxToAtom : Std.HashMap ℕ Expr)
     return .some <| mkApp fact.proof pf
   return .none
 
-/-- Types of supported orders: linear, partial, preorder. -/
+/-- Supported order types: linear, partial, and preorder. -/
 inductive OrderType
 | lin | part | pre
 deriving BEq
 
+/-- Find the "best" instance of an order on a given type. A linear order is preferred over a partial
+order, and a partial order is preferred over a preorder. -/
 def findBestInstance (type : Expr) : MetaM <| Option OrderType := do
   if (← synthInstance? (← mkAppM ``LinearOrder #[type])).isSome then
     return .some .lin
@@ -339,7 +361,8 @@ def findBestInstance (type : Expr) : MetaM <| Option OrderType := do
     return .some .pre
   return .none
 
-/-- Finishing tactic for solving goals in arbitrary `Preorder`, `PartialOrder` or `LinearOrder`. -/
+/-- A finishing tactic for solving goals in arbitrary `Preorder`, `PartialOrder`,
+or `LinearOrder`. -/
 elab "order" : tactic => focus do
   let g ← getMainGoal
   let .some g ← g.falseOrByContra | return
