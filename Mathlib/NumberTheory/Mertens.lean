@@ -17,6 +17,47 @@ attribute [fun_prop] measurable_log Measurable.aestronglyMeasurable
 end fun_prop
 
 
+section Asymptotics
+
+
+variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Type*}
+  {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*} {G'' : Type*} {E''' : Type*}
+  {R : Type*} {R' : Type*} {𝕜 : Type*} {𝕜' : Type*}
+
+variable [Norm E] [Norm F] [Norm G]
+variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddCommGroup G']
+  [NormedAddCommGroup E''] [NormedAddCommGroup F''] [NormedAddCommGroup G''] [SeminormedRing R]
+  [SeminormedAddGroup E''']
+  [SeminormedRing R']
+
+variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
+variable {f' : α → E'} {g' : α → F'} {k' : α → G'}
+variable {f'' : α → E''} {g'' : α → F''} {k'' : α → G''}
+variable {l l' : Filter α}
+
+variable {f₁ f₂ : α → E'} {g₁ g₂ : α → F'}
+namespace Asymptotics
+-- #check IsBigO.add
+
+theorem IsBigO.add_iff (h₂ : f₂ =O[l] g) : (fun x => f₁ x + f₂ x) =O[l] g ↔ (f₁ =O[l] g):= by
+  constructor
+  · intro h
+    convert h.sub h₂ with x
+    abel
+  · intro h
+    exact h.add h₂
+
+theorem IsBigO.sub_iff (h₂ : f₂ =O[l] g) : (fun x => f₁ x - f₂ x) =O[l] g ↔ (f₁ =O[l] g):= by
+  constructor
+  · intro h
+    convert h₂.add h with x
+    abel
+  · intro h
+    exact h.sub h₂
+
+end Asymptotics
+end Asymptotics
+
 section MeasureTheory
 variable {α : Type*} {E : Type*} {F : Type*} [TopologicalSpace α] [Norm E] [Norm F]
 
@@ -164,7 +205,6 @@ example : (fun _ ↦ 1 : ℝ → ℝ) =O[atTop] (fun x ↦ (x : ℝ)) := by
   convert isBigO_pow_right_of_le zero_le_one with x
   simp
 
-
 /- One pain point I'm running into here is finding the right theorems in the library - say I need a
 IsBigO statement but it's phrased as IsLittleO in the library. Things like natCast_atTop also make
 exact? and the like less useful.
@@ -179,15 +219,14 @@ theorem log_fac_sub_id_mul_log_isBigO_id :
   have const_isBigO (c : ℝ) : (fun (_ : ℕ) ↦ c) =O[atTop] (fun (n : ℕ) ↦ (n : ℝ)) := by
     convert (this.const_mul_left c).natCast_atTop
     simp only [mul_one]
-  have hlog : Real.log =O[atTop] id := by
-    exact Real.isLittleO_log_id_atTop.isBigO
   have hlarger := hstirling.isBigO.trans (const_isBigO 1).natCast_atTop
-  have hrfl : (fun (n : ℕ) ↦ (n : ℝ)) =O[atTop] (fun (n : ℕ) ↦ (n : ℝ)) :=
-    Asymptotics.isBigO_refl (α := ℕ) (fun n ↦ (n:ℝ)) atTop
-  convert ((hlarger.sub hrfl).add (const_isBigO (Real.log π / 2 + Real.log 2 / 2))).add
-    (hlog.const_mul_left (1/2) |>.natCast_atTop) using 1
-  ext x
-  ring
+  simp only [← sub_sub, ← sub_add, sub_add_eq_sub_sub] at hlarger
+  rw [IsBigO.sub_iff (by exact const_isBigO _), IsBigO.sub_iff (by exact const_isBigO _),
+    IsBigO.sub_iff, IsBigO.add_iff] at hlarger
+  · exact hlarger
+  · exact Asymptotics.isBigO_refl (α := ℕ) (fun n ↦ (n:ℝ)) atTop
+  · apply (Real.isLittleO_log_id_atTop.isBigO.const_mul_left (1/2:ℝ)).natCast_atTop.congr_left
+    bound
 
 theorem Real.log_factorial (n : ℕ) :
   Real.log (n)! = ∑ k ∈ Finset.range (n+1), Real.log k := by
