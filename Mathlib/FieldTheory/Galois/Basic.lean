@@ -35,7 +35,7 @@ Together, these two results prove the Galois correspondence.
 
 open scoped Polynomial IntermediateField
 
-open Module AlgEquiv
+open Module AlgEquiv IntermediateField
 
 section
 
@@ -199,6 +199,11 @@ nonrec def fixingSubgroup : Subgroup (E ≃ₐ[F] E) :=
 
 theorem le_iff_le : K ≤ fixedField H ↔ H ≤ fixingSubgroup K :=
   ⟨fun h g hg x => h (Subtype.mem x) ⟨g, hg⟩, fun h x hx g => h (Subtype.mem g) ⟨x, hx⟩⟩
+
+lemma fixingSubgroup_anti : Antitone (IntermediateField.fixingSubgroup (F := F) (E := E)) := by
+  intro K K' h
+  rw [← le_iff_le]
+  exact le_trans h ((le_iff_le _ _).mpr (le_refl K'.fixingSubgroup))
 
 /-- The fixing subgroup of `K : IntermediateField F E` is isomorphic to `E ≃ₐ[K] E` -/
 def fixingSubgroupEquiv : fixingSubgroup K ≃* E ≃ₐ[K] E where

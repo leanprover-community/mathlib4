@@ -271,11 +271,11 @@ noncomputable def rieszContent (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) : 
   sup_le' := rieszContentAux_sup_le Λ
 
 lemma rieszContent_ne_top {K : Compacts X} : rieszContent Λ K ≠ ⊤ := by
-  simp only [ne_eq, ENNReal.coe_ne_top, not_false_eq_true]
+  simp [rieszContent, ne_eq, ENNReal.coe_ne_top, not_false_eq_true]
 
 lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
   intro K
-  simp only [rieszContent, le_antisymm_iff, le_iInf_iff, ENNReal.coe_le_coe]
+  simp only [rieszContent, le_antisymm_iff, le_iInf_iff, ENNReal.coe_le_coe, Content.mk_apply]
   refine ⟨fun K' hK' ↦ rieszContentAux_mono Λ (hK'.trans interior_subset), ?_⟩
   rw [iInf_le_iff]
   intro b hb
@@ -319,7 +319,7 @@ lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : �
   rw [← TopologicalSpace.Compacts.coe_mk K hK]
   simp only [rieszMeasure, Content.measure_eq_content_of_regular (rieszContent Λ)
     (contentRegular_rieszContent Λ)]
-  simp only [rieszContent, ENNReal.ofReal_coe_nnreal, ENNReal.coe_le_coe]
+  simp only [rieszContent, ENNReal.ofReal_coe_nnreal, ENNReal.coe_le_coe, Content.mk_apply]
   apply le_iff_forall_pos_le_add.mpr
   intro ε hε
   obtain ⟨g, hg⟩ := exists_lt_rieszContentAux_add_pos Λ ⟨K, hK⟩ hε
