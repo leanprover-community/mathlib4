@@ -6,6 +6,7 @@ Authors: Amelia Livingston
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.GroupTheory.Congruence.Hom
 import Mathlib.GroupTheory.OreLocalization.Basic
+import Mathlib.Algebra.Group.Submonoid.Operations
 
 /-!
 # Localizations of commutative monoids
@@ -115,9 +116,6 @@ attribute [nolint docBlame] Submonoid.LocalizationMap.map_units' Submonoid.Local
   Submonoid.LocalizationMap.exists_of_eq
 
 attribute [to_additive] Submonoid.LocalizationMap
-
--- Porting note: this translation already exists
--- attribute [to_additive] Submonoid.LocalizationMap.toMonoidHom
 
 /-- The monoid hom underlying a `LocalizationMap`. -/
 add_decl_doc LocalizationMap.toMonoidHom
@@ -257,7 +255,6 @@ theorem mk_one : mk 1 (1 : S) = 1 := OreLocalization.one_def
 theorem mk_pow (n : ℕ) (a : M) (b : S) : mk a b ^ n = mk (a ^ n) (b ^ n) := by
   induction n <;> simp [pow_succ, *, ← mk_mul, ← mk_one]
 
--- Porting note: mathport translated `rec` to `ndrec` in the name of this lemma
 @[to_additive (attr := simp)]
 theorem ndrec_mk {p : Localization S → Sort u} (f : ∀ (a : M) (b : S), p (mk a b)) (H) (a : M)
     (b : S) : (rec f H (mk a b) : p (mk a b)) = f a b := rfl
@@ -948,11 +945,8 @@ of the induced maps equals the map of localizations induced by `l ∘ g`."]
 theorem map_map {A : Type*} [CommMonoid A] {U : Submonoid A} {R} [CommMonoid R]
     (j : LocalizationMap U R) {l : P →* A} (hl : ∀ w : T, l w ∈ U) (x) :
     k.map hl j (f.map hy k x) = f.map (fun x ↦ show l.comp g x ∈ U from hl ⟨g x, hy x⟩) j x := by
--- Porting note: Lean has a hard time figuring out what the implicit arguments should be
--- when calling `map_comp_map`. Hence the original line below has to be replaced by a much more
--- explicit one
---  rw [← f.map_comp_map hy j hl]
-  rw [← @map_comp_map M _ S N _ P _ f g T hy Q _ k A _ U R _ j l hl]
+  -- Porting note: need to specifiy `k` explicitly
+  rw [← f.map_comp_map (k := k) hy j hl]
   simp only [MonoidHom.coe_comp, comp_apply]
 
 /-- Given an injective `CommMonoid` homomorphism `g : M →* P`, and a submonoid `S ⊆ M`,

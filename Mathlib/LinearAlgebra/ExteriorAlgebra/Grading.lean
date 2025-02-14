@@ -56,7 +56,7 @@ def GradedAlgebra.liftι :
 
 theorem GradedAlgebra.liftι_eq (i : ℕ) (x : ⋀[R]^i M) :
     GradedAlgebra.liftι R M x = DirectSum.of (fun i => ⋀[R]^i M) i x := by
-  cases' x with x hx
+  obtain ⟨x, hx⟩ := x
   dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
   induction hx using Submodule.pow_induction_on_left' with
   | algebraMap => simp_rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl

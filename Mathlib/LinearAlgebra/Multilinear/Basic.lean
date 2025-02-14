@@ -455,7 +455,7 @@ coordinate. Here, we give an auxiliary statement tailored for an inductive proof
 theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, #(A i)) = n) :
     (f fun i => ∑ j ∈ A i, g i j) = ∑ r ∈ piFinset A, f fun i => g i (r i) := by
   letI := fun i => Classical.decEq (α i)
-  induction' n using Nat.strong_induction_on with n IH generalizing A
+  induction n using Nat.strong_induction_on generalizing A with | h n IH =>
   -- If one of the sets is empty, then all the sums are zero
   by_cases Ai_empty : ∃ i, A i = ∅
   · obtain ⟨i, hi⟩ : ∃ i, ∑ j ∈ A i, g i j = 0 := Ai_empty.imp fun i hi ↦ by simp [hi]
@@ -600,9 +600,9 @@ theorem map_sum [DecidableEq ι] [Fintype ι] [∀ i, Fintype (α i)] :
 theorem map_update_sum {α : Type*} [DecidableEq ι] (t : Finset α) (i : ι) (g : α → M₁ i)
     (m : ∀ i, M₁ i) : f (update m i (∑ a ∈ t, g a)) = ∑ a ∈ t, f (update m i (g a)) := by
   classical
-    induction' t using Finset.induction with a t has ih h
-    · simp
-    · simp [Finset.sum_insert has, ih]
+    induction t using Finset.induction with
+    | empty => simp
+    | insert has ih => simp [Finset.sum_insert has, ih]
 
 end ApplySum
 
@@ -1154,14 +1154,14 @@ protected def mkPiAlgebraFin : MultilinearMap R (fun _ : Fin n => A) A where
   toFun m := (List.ofFn m).prod
   map_update_add' {dec} m i x y := by
     rw [Subsingleton.elim dec (by infer_instance)]
-    have : (List.finRange n).indexOf i < n := by
-      simpa using List.indexOf_lt_length.2 (List.mem_finRange i)
+    have : (List.finRange n).idxOf i < n := by
+      simpa using List.idxOf_lt_length_iff.2 (List.mem_finRange i)
     simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set, add_mul, this,
       mul_add, add_mul]
   map_update_smul' {dec} m i c x := by
     rw [Subsingleton.elim dec (by infer_instance)]
-    have : (List.finRange n).indexOf i < n := by
-      simpa using List.indexOf_lt_length.2 (List.mem_finRange i)
+    have : (List.finRange n).idxOf i < n := by
+      simpa using List.idxOf_lt_length_iff.2 (List.mem_finRange i)
     simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set, this]
 
 variable {R A n}

@@ -33,7 +33,7 @@ variable [TopologicalSpace A] [Semiring A] [Algebra R A] [StarRing A] [StarModul
 instance [TopologicalSemiring A] (s : StarSubalgebra R A) : TopologicalSemiring s :=
   s.toSubalgebra.topologicalSemiring
 
-/-- The `StarSubalgebra.inclusion` of a star subalgebra is an `Embedding`. -/
+/-- The `StarSubalgebra.inclusion` of a star subalgebra is an embedding. -/
 lemma isEmbedding_inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂) :
     IsEmbedding (inclusion h) where
   eq_induced := Eq.symm induced_compose
