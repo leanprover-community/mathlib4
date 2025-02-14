@@ -788,7 +788,7 @@ lemma lift_smul_lift {α R N} [SMul R N] (f : { f : α → α → R // ∀ a₁ 
 /--
 Multiplication as a function from `Sym2`.
 -/
-def mul {M} [CommMagma M] : Sym2 M → M := lift ⟨fun i j => (i * j), fun _ _ => mul_comm _ _⟩
+def mul {M} [CommMagma M] : Sym2 M → M := lift ⟨(· * ·), mul_comm⟩
 
 @[simp]
 lemma mul_mk {M} [CommMagma M] (xy : M × M) :
