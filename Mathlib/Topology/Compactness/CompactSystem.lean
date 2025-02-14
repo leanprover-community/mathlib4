@@ -88,6 +88,9 @@ lemma iInter_empty_iff [Inhabited α] {C : ℕ → Set α} : (∃ n : ℕ, ⋂ i
       exact biInter_mono (l1 s h2) (fun _ _ ⦃a_1⦄ a ↦ a)
     exact subset_empty_iff.mp <| le_trans h hs.le
 
+
+
+
 theorem IsCompactSystem.iff_le [Inhabited α] : (IsCompactSystem p) ↔
     (∀ C : ℕ → Set α, (∀ i, p (C i)) → ⋂ i, C i = ∅ → ∃ (s : Finset ℕ), ⋂ i ∈ s, C i = ∅) := by
   refine ⟨fun h C hp he ↦ ?_, fun h C hp he ↦ ?_ ⟩
@@ -161,9 +164,44 @@ lemma l3 (C : ℕ → Set α) (hC : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2)
 
 theorem IsCompactSystem.iff_mono [Inhabited α] (hpi : IsPiSystem' p) : (IsCompactSystem p) ↔
     (∀ (C : ℕ → Set α) (_ : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C), (∀ i, p (C i)) →
-      ⋂ i, C i = ∅ → ∃ (s : Finset ℕ), ⋂ i ∈ s, C i = ∅) := by
-  rw [IsCompactSystem.iff_le]
-  refine ⟨fun h ↦ fun C _ i ↦ h C i, fun h C ↦ ?_⟩
+      ⋂ i, C i = ∅ → ∃ (n : ℕ), C n = ∅) := by
+  have hs (C : ℕ → Set α) (hd : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C) : (∃ n, C n = ∅) ↔ (∃ n, ⋂ i ≤ n, C i = ∅) := by
+    refine ⟨fun h ↦ ?_, ?_⟩
+    · obtain ⟨n, hn⟩ := h
+      use n
+      by_cases hn' : n = 0
+      · rw [hn']
+        simp only [le_zero_eq, iInter_iInter_eq_left]
+        exact hn' ▸ hn
+      · obtain ⟨k, hk⟩ := exists_eq_succ_of_ne_zero hn'
+        rw [hk, decumulate_succ, ← succ_eq_add_one, ← hk, hn, Set.inter_empty]
+    · have h3 (n : ℕ) : ∃ m, ⋂ i ≤ n, C i ⊇ C m := by
+        induction n with
+        | zero =>
+          use 0
+          simp
+        | succ n hn =>
+          obtain ⟨m, hm⟩ := hn
+          rw [decumulate_succ]
+          obtain ⟨k, hk⟩ := hd m (n+1)
+          simp at hk
+          use k
+          simp only [Set.subset_inter_iff]
+          exact ⟨le_trans hk.1 hm, hk.2⟩
+      rw [← not_imp_not]
+      push_neg
+      intro h n
+      obtain h2 := hd n (n + 1)
+      simp at h2
+      obtain ⟨m, hm⟩ := h3 n
+      exact Set.Nonempty.mono hm (h m)
+  -- rw [IsCompactSystem.iff_le]
+  refine ⟨fun h ↦ fun C hdi hi ↦ ?_, fun h C ↦ ?_⟩
+  · rw [hs C hdi]
+    exact h C hi
+  ·
+    sorry
+
   let D := fun n ↦ ⋂ i ≤ n, C i
   have h' := h C
   have h1 (n : ℕ) : ⋂ i ≤ n, D i = ⋂ i ≤ n, C i := biInter_decumulate C n
@@ -190,16 +228,23 @@ theorem IsCompactSystem.iff_mono [Inhabited α] (hpi : IsPiSystem' p) : (IsCompa
 
 lemma l4 : (∀ (n : ℕ), (C n).Nonempty →
   (⋂ i, C i).Nonempty) ↔ ((⋂ i, C i) = ∅ → ∃ (n : ℕ), (C n) = ∅) := by
-
   sorry
+
+example (P Q : Prop) : (P → Q) ↔ (¬ Q → ¬ P) := by exact Iff.symm not_imp_not
+
 
 theorem IsCompactSystem.iff_mono' [Inhabited α] (hpi : IsPiSystem' p) : (IsCompactSystem p) ↔
   ∀ (C : ℕ → Set α), ∀ (_ : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C), (∀ i, p (C i)) →
     (∀ (n : ℕ), (C n).Nonempty) →
       (⋂ i, C i).Nonempty  := by
-  rw [IsCompactSystem.iff_mono hpi]
-  refine ⟨fun h1 h2 ↦ ?_, fun h1 h2 h3 h4 h5 ↦ ?_⟩
-  · sorry
+  -- rw [IsCompactSystem.iff_mono hpi]
+  refine ⟨fun h1 C h3 h4 ↦ ?_, fun h1 h2 h3 h4 ↦ ?_⟩
+  · rw [← not_imp_not]
+    push_neg
+
+    refine h1 C h4
+    simp only [nonempty_iInter, not_exists, not_forall]
+    sorry
   · sorry
 
 
@@ -238,12 +283,16 @@ variable {α : Type*} [TopologicalSpace α]
 example (p : α → Prop) (s : α) : (⋃ (i : α) (_ : p i), {i}) s ↔ p s := by
   apply?
 
+example (x y : Set α) (hx : IsClosed x) (hy : IsClosed y) : IsClosed (x ∩ y) := by
+  exact IsClosed.inter hx hy
+
+
 theorem IsCompact.isCompactSystem {α : Type*} [Inhabited α] [TopologicalSpace α] :
     IsCompactSystem (⋃ (s : Set α) (_ : IsCompact s) (_ : IsClosed s), {s}) := by
   have h : IsPiSystem' (⋃ (s : Set α) (_ : IsCompact s) (_ : IsClosed s), {s}) := by
-
-    simp_rw [(l6 IsCompact IsClosed)]
-    sorry
+    intro x hx y hy
+    rw [← (l6 IsCompact IsClosed)] at *
+    exact ⟨IsCompact.inter_left hy.1 hx.2, IsClosed.inter hx.2 hy.2 ⟩
   rw [IsCompactSystem.iff_mono' h]
   intro C hC h1 hn
   have h1' (i : ℕ) : IsCompact (C i) ∧ IsClosed (C i):= by
@@ -251,6 +300,8 @@ theorem IsCompact.isCompactSystem {α : Type*} [Inhabited α] [TopologicalSpace 
     exact h1 i
   exact IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed C hC hn
     (fun i ↦ (h1' i).1) (fun i ↦ (h1' i).2)
+
+
 
 end Compact
 
