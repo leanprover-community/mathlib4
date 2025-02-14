@@ -195,7 +195,7 @@ lemma l4 : (∀ (n : ℕ), (C n).Nonempty →
 
 theorem IsCompactSystem.iff_mono' [Inhabited α] (hpi : IsPiSystem' p) : (IsCompactSystem p) ↔
   ∀ (C : ℕ → Set α), ∀ (_ : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C), (∀ i, p (C i)) →
-    ∀ (n : ℕ), (C n).Nonempty →
+    (∀ (n : ℕ), (C n).Nonempty) →
       (⋂ i, C i).Nonempty  := by
   rw [IsCompactSystem.iff_mono hpi]
   refine ⟨fun h1 h2 ↦ ?_, fun h1 h2 h3 h4 h5 ↦ ?_⟩
@@ -208,22 +208,49 @@ end definition
 
 section Compact
 
+variable {α : Type*}
+
+@[simp]
+lemma l5 (p : α → Prop) (s : α) : p s ↔ (s ∈ ⋃ (i : α) (_ : p i), {i}) := by
+  rw [Set.mem_iUnion₂]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_ ⟩
+  · use s, h
+    simp only [mem_singleton_iff]
+  · obtain ⟨i, hi, h⟩ := h
+    simp only [mem_singleton_iff] at h
+    exact h ▸ hi
+
+lemma l6 (p q : α → Prop) (s : α) : (p s ∧ q s) ↔ (s ∈ ⋃ (i : α) (_ : p i) (_ : q i), {i}) := by
+  rw [Set.mem_iUnion₂]
+  simp_rw [mem_iUnion]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_ ⟩
+  · use s, h.1, h.2
+    simp only [mem_singleton_iff]
+  · obtain ⟨i, hi, h1, h2⟩ := h
+    simp only [mem_singleton_iff] at h2
+    exact h2 ▸ ⟨hi, h1⟩
+
+lemma l7 (p : α → Prop) (s : α) : (s ∈ ⋃ (i : α) (_ : p i), {i}) ↔ (⋃ (i : α) (_ : p i), {i}) s:= by
+  rfl
+
 variable {α : Type*} [TopologicalSpace α]
 
+example (p : α → Prop) (s : α) : (⋃ (i : α) (_ : p i), {i}) s ↔ p s := by
+  apply?
+
 theorem IsCompact.isCompactSystem {α : Type*} [Inhabited α] [TopologicalSpace α] :
-    IsCompactSystem (⋃ (s : Set α) (_ : IsCompact s), {s}) := by
-  have h : IsPiSystem' (⋃ (s : Set α) (_ : IsCompact s), {s}) := by sorry
+    IsCompactSystem (⋃ (s : Set α) (_ : IsCompact s) (_ : IsClosed s), {s}) := by
+  have h : IsPiSystem' (⋃ (s : Set α) (_ : IsCompact s) (_ : IsClosed s), {s}) := by
+
+    simp_rw [(l6 IsCompact IsClosed)]
+    sorry
   rw [IsCompactSystem.iff_mono' h]
-  apply IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
-  -- IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
-  sorry
-
-  simp [IsCompactSystem]
-  intro C hC h_empty
-
-  sorry
-
-
+  intro C hC h1 hn
+  have h1' (i : ℕ) : IsCompact (C i) ∧ IsClosed (C i):= by
+    rw [(l6 IsCompact IsClosed (C i))]
+    exact h1 i
+  exact IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed C hC hn
+    (fun i ↦ (h1' i).1) (fun i ↦ (h1' i).2)
 
 end Compact
 
