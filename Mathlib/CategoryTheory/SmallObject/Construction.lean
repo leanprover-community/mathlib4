@@ -180,7 +180,7 @@ if the category is `t`-locally small and the index type for `f`
 is `t`-small. -/
 noncomputable def attachCellsιFunctorObjOfSmall :
     AttachCells.{t} f (ιFunctorObj f πX) :=
-  (attachCellsιFunctorObj f πX).ofEquiv (equivShrink.{t} _).symm
+  (attachCellsιFunctorObj f πX).reindex (equivShrink.{t} _).symm
 
 end Small
 
