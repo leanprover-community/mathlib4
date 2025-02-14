@@ -342,16 +342,9 @@ theorem toNerve₂.mk_naturality {X : SSet.Truncated.{u} 2} {C : Cat}
     apply (cancel_mono (nerve₂.seagull _)).1
     simp [nerve₂.seagull]
     congr 1 <;> rw [← map_comp, ← op_comp, ← nat1m, ← nat1m, op_comp, map_comp, assoc]
-  refine Truncated.morphismProperty_eq_top OK ?δ_mem ?σ_mem
-  case δ_mem => intro
-    | 0, _, _ => exact const01 _
-    | 1, _, 0 => exact nat1m _
-    | 1, _, 1 => exact nat1m _
-    | 1, _, 2 => exact nat1m _
-  case σ_mem => intro
-    | 0, _, 0 => exact const10 _
-    | 1, _, 0 => exact nat2m _
-    | 1, _, 1 => exact nat2m _
+  exact Truncated.morphismProperty_eq_top OK
+    (fun | 0, _, _ => const01 _ | 1, _, _ => nat1m _)
+    (fun | 0, _, _ => const10 _ | 1, _, _ => nat2m _)
 
 /-- Because nerves are 2-coskeletal, a map of 2-truncated simplicial sets valued in a nerve can be
 recovered from the underlying ReflPrefunctor. -/
