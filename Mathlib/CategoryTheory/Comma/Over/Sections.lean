@@ -38,6 +38,39 @@ attribute [local instance] hasFiniteProducts_of_has_binary_and_terminal
 attribute [local instance] ChosenFiniteProducts.ofFiniteProducts
 attribute [local instance] monoidalOfChosenFiniteProducts
 
+section
+
+variable [HasFiniteProducts C]
+
+def prodIsoTensorObj (X Y : C) : X ⨯ Y ≅ X ⊗ Y := Iso.refl _
+
+@[reassoc (attr := simp)]
+theorem prodIsoTensorObj_inv_fst {X Y : C} :
+    (prodIsoTensorObj X Y).inv ≫ prod.fst = ChosenFiniteProducts.fst X Y :=
+  Category.id_comp _
+
+@[reassoc (attr := simp)]
+theorem prodIsoTensorObj_inv_snd {X Y : C} :
+    (prodIsoTensorObj X Y).inv ≫ prod.snd = ChosenFiniteProducts.snd X Y :=
+  Category.id_comp _
+
+@[reassoc (attr := simp)]
+theorem prodIsoTensorObj_hom_fst {X Y : C} :
+    (prodIsoTensorObj X Y).hom ≫ ChosenFiniteProducts.fst X Y = prod.fst :=
+  Category.id_comp _
+
+@[reassoc (attr := simp)]
+theorem prodIsoTensorObj_hom_snd {X Y : C} :
+    (prodIsoTensorObj X Y).hom ≫ ChosenFiniteProducts.snd X Y = prod.snd :=
+  Category.id_comp _
+
+@[reassoc (attr := simp)]
+theorem prodMap_comp_prodIsoTensorObj_hom {X Y Z W : C} (f : X ⟶ Y) (g : Z ⟶ W) :
+    prod.map f g ≫ (prodIsoTensorObj _ _).hom = (prodIsoTensorObj _ _).hom ≫ (f ⊗ g) := by
+  apply ChosenFiniteProducts.hom_ext <;> simp
+
+end
+
 variable [HasTerminal C] [HasPullbacks C] [CartesianClosed C]
 
 /-- The first leg of a cospan constructing a pullback diagram in `C used to define
@@ -109,10 +142,10 @@ def sectionsCurryAux {X : Over I} {A : C} (u : (star I).obj A ⟶ X) :
 /-- The currying operation `Hom ((star I).obj A) X → Hom A (I ⟹ X.left)`. -/
 def sectionsCurry {X : Over I} {A : C} (u : (star I).obj A ⟶ X) :
     A ⟶ (sections X) := by
-  apply pullback.lift (terminal.from A) (CartesianClosed.curry (u.left)) (uncurry_injective _)
+  apply pullback.lift (terminal.from A)
+    (CartesianClosed.curry ((prodIsoTensorObj _ _).inv ≫ u.left)) (uncurry_injective _)
   rw [uncurry_natural_left]
   simp [curryId, uncurry_natural_right, uncurry_curry]
-  rfl
 
 /-- The uncurrying operation `Hom A (I ⟹ section X) → Hom ((star I).obj A) X`. -/
 def sectionsUncurry {X : Over I} {A : C} (v : A ⟶ (sections X)) :
@@ -125,11 +158,10 @@ def sectionsUncurry {X : Over I} {A : C} (v : A ⟶ (sections X)) :
   have w' := homEquiv_naturality_right_square (F := MonoidalCategory.tensorLeft I)
     (adj := exp.adjunction I) _ _ _ _ w
   simp [CartesianClosed.curry] at w'
-  refine Over.homMk (CartesianClosed.uncurry v₂) ?_
+  refine Over.homMk ((prodIsoTensorObj I A).hom ≫ CartesianClosed.uncurry v₂) ?_
   · dsimp [CartesianClosed.uncurry] at *
-    rw [← w']
+    rw [Category.assoc, ← w']
     simp [star_obj_hom]
-    rfl
 
 @[reassoc (attr := simp)]
 theorem sections_curry_uncurry {X : Over I} {A : C} (v : A ⟶ sections X) :
@@ -148,14 +180,6 @@ theorem sections_uncurry_curry {X : Over I} {A : C} (u : (star I).obj A ⟶ X) :
   ext
   simp
 
--- Thanks to Andrew Yang this proof got 8 lines shorter!
-lemma whiskerLeft_prod_map {A A' : C} {g : A ⟶ A'} : I ◁ g = prod.map (𝟙 I) g := by
-  ext
-  · simp only [ChosenFiniteProducts.whiskerLeft_fst]
-    exact (Category.comp_id _).symm.trans (prod.map_fst (𝟙 I) g).symm
-  · simp only [ChosenFiniteProducts.whiskerLeft_snd]
-    exact (prod.map_snd (𝟙 I) g).symm
-
 def coreHomEquiv : CoreHomEquiv (star I)  (sectionsFunctor I) where
   homEquiv A X := {
     toFun := sectionsCurry
@@ -169,14 +193,13 @@ def coreHomEquiv : CoreHomEquiv (star I)  (sectionsFunctor I) where
     simp only [star_map]
     rw [← Over.homMk_comp]
     congr 1
-    simp only [CartesianClosed.uncurry_natural_left, MonoidalCategory.whiskerLeft_comp]
-    simp [whiskerLeft_prod_map]
+    simp [CartesianClosed.uncurry_natural_left]
   homEquiv_naturality_right := by
     intro A X' X u g
     dsimp [sectionsCurry, sectionsUncurry, curryId]
     apply pullback.hom_ext (IsTerminal.hom_ext terminalIsTerminal _ _)
     simp [sectionsMap, curryId]
-    rw [← CartesianClosed.curry_natural_right]
+    rw [← CartesianClosed.curry_natural_right, Category.assoc]
 
 /-- The adjunction between the star functor and the sections functor. -/
 def starSectionAdjunction : (star I) ⊣ (sectionsFunctor I) :=
