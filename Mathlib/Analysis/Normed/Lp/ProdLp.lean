@@ -5,8 +5,8 @@ Authors: Moritz Doll, Sébastien Gouëzel, Jireh Loreaux
 -/
 
 import Mathlib.Analysis.MeanInequalities
-import Mathlib.Analysis.Normed.Lp.WithLp
 import Mathlib.Analysis.Normed.Lp.MStructure
+import Mathlib.Analysis.Normed.Lp.WithLp
 
 /-!
 # `L^p` distance on products of two metric spaces
