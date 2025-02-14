@@ -1602,6 +1602,7 @@ theorem exists_of_linearIndependent_of_finite_span {t : Finset V}
       have hb₁s' : b₁ ∉ s' := fun h => hb₁s <| hs' h
       have hst : s ∩ ↑t = ∅ :=
         eq_empty_of_subset_empty <|
+          -- Porting note: `-inter_subset_left, -subset_inter_iff` required.
           Subset.trans
             (by simp [inter_subset_inter, Subset.refl, -inter_subset_left, -subset_inter_iff])
             (le_of_eq hst)
