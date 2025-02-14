@@ -648,17 +648,19 @@ theorem Function.Injective.lieModule_lcs_map_eq (k : ℕ) :
     (lowerCentralSeries R L M k : Submodule R M).map g ≤ lowerCentralSeries R L₂ M₂ k := by
   induction k with
   | zero =>
-    -- Base case: The lower central series at `k = 0` is the entire module.
     simp [LinearMap.range_eq_top, Submodule.map_top]
   | succ k ih =>
-    -- Inductive step: Relate the lower central series at `k + 1` to the lower central series at `k`.
     rw [lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span', Submodule.map_span]
-    -- Show that the image of the generating set is contained in the lower central series of `L₂` acting on `M₂`.
     apply Submodule.span_le.mpr
     rintro m₂ ⟨m, ⟨x, n, m_n, h⟩, rfl⟩
     simp
-    have help : ∃ (y : L₂) (n : M₂), n ∈ lowerCentralSeries R L₂ M₂ k ∧ ⁅y, n⁆ = g m := by sorry
+    have help : ∃ y : L₂, ∃ n : lowerCentralSeries R L₂ M₂ k, ⁅y, n⁆ = g m := by sorry
     obtain ⟨y, n, hn⟩ := help
+    rw [← hn]
+    apply LieSubmodule.lie_mem_lie
+    · simp_all only [LieSubmodule.mem_top, LieSubmodule.coe_bracket]
+    · exact SetLike.coe_mem n
+
 
 include hf_inj hg_inj hfg in
 theorem Function.Injective.lieModuleIsNilpotent [IsNilpotent L₂ M₂] : IsNilpotent L M := by
