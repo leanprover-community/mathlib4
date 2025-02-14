@@ -3,17 +3,15 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Order.RelIso.Set
-import Mathlib.Data.Multiset.Sort
-import Mathlib.Data.List.NodupEquivFin
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Fintype.EquivFin
+import Mathlib.Data.Multiset.Sort
+import Mathlib.Order.RelIso.Set
 
 /-!
 # Construct a sorted list from a finset.
 -/
 
+assert_not_exists Monoid
 
 namespace Finset
 
@@ -106,50 +104,6 @@ theorem sort_sorted_lt (s : Finset α) : List.Sorted (· < ·) (sort (· ≤ ·)
 theorem sort_sorted_gt (s : Finset α) : List.Sorted (· > ·) (sort (· ≥ ·) s) :=
   (sort_sorted _ _).gt_of_ge (sort_nodup _ _)
 
-theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < (s.sort (· ≤ ·)).length) (H : s.Nonempty) :
-    (s.sort (· ≤ ·)).get ⟨0, h⟩ = s.min' H := by
-  let l := s.sort (· ≤ ·)
-  apply le_antisymm
-  · have : s.min' H ∈ l := (Finset.mem_sort (α := α) (· ≤ ·)).mpr (s.min'_mem H)
-    obtain ⟨i, hi⟩ : ∃ i, l.get i = s.min' H := List.mem_iff_get.1 this
-    rw [← hi]
-    exact (s.sort_sorted (· ≤ ·)).rel_get_of_le (Nat.zero_le i)
-  · have : l.get ⟨0, h⟩ ∈ s := (Finset.mem_sort (α := α) (· ≤ ·)).1 (List.get_mem l _)
-    exact s.min'_le _ this
-
-theorem sorted_zero_eq_min' {s : Finset α} {h : 0 < (s.sort (· ≤ ·)).length} :
-    (s.sort (· ≤ ·))[0] = s.min' (card_pos.1 <| by rwa [length_sort] at h) :=
-  sorted_zero_eq_min'_aux _ _ _
-
-theorem min'_eq_sorted_zero {s : Finset α} {h : s.Nonempty} :
-    s.min' h = (s.sort (· ≤ ·))[0]'(by rw [length_sort]; exact card_pos.2 h) :=
-  (sorted_zero_eq_min'_aux _ _ _).symm
-
-theorem sorted_last_eq_max'_aux (s : Finset α)
-    (h : (s.sort (· ≤ ·)).length - 1 < (s.sort (· ≤ ·)).length) (H : s.Nonempty) :
-    (s.sort (· ≤ ·))[(s.sort (· ≤ ·)).length - 1] = s.max' H := by
-  let l := s.sort (· ≤ ·)
-  apply le_antisymm
-  · have : l.get ⟨(s.sort (· ≤ ·)).length - 1, h⟩ ∈ s :=
-      (Finset.mem_sort (α := α) (· ≤ ·)).1 (List.get_mem l _)
-    exact s.le_max' _ this
-  · have : s.max' H ∈ l := (Finset.mem_sort (α := α) (· ≤ ·)).mpr (s.max'_mem H)
-    obtain ⟨i, hi⟩ : ∃ i, l.get i = s.max' H := List.mem_iff_get.1 this
-    rw [← hi]
-    exact (s.sort_sorted (· ≤ ·)).rel_get_of_le (Nat.le_sub_one_of_lt i.prop)
-
-theorem sorted_last_eq_max' {s : Finset α}
-    {h : (s.sort (· ≤ ·)).length - 1 < (s.sort (· ≤ ·)).length} :
-    (s.sort (· ≤ ·))[(s.sort (· ≤ ·)).length - 1] =
-      s.max' (by rw [length_sort] at h; exact card_pos.1 (lt_of_le_of_lt bot_le h)) :=
-  sorted_last_eq_max'_aux _ h _
-
-theorem max'_eq_sorted_last {s : Finset α} {h : s.Nonempty} :
-    s.max' h =
-      (s.sort (· ≤ ·))[(s.sort (· ≤ ·)).length - 1]'
-        (by simpa using Nat.sub_lt (card_pos.mpr h) Nat.zero_lt_one) :=
-  (sorted_last_eq_max'_aux _ (by simpa using Nat.sub_lt (card_pos.mpr h) Nat.zero_lt_one) _).symm
-
 /-- Given a finset `s` of cardinality `k` in a linear order `α`, the map `orderIsoOfFin s h`
 is the increasing bijection between `Fin k` and `s` as an `OrderIso`. Here, `h` is a proof that
 the cardinality of `s` is `k`. We use this instead of an iso `Fin s.card ≃o s` to avoid
@@ -190,24 +144,6 @@ theorem range_orderEmbOfFin (s : Finset α) {k : ℕ} (h : s.card = k) :
   RelEmbedding.coe_trans, Set.image_univ, Finset.orderEmbOfFin, RelIso.range_eq,
     OrderEmbedding.subtype_apply, OrderIso.coe_toOrderEmbedding, eq_self_iff_true,
     Subtype.range_coe_subtype, Finset.setOf_mem, Finset.coe_inj]
-
-/-- The bijection `orderEmbOfFin s h` sends `0` to the minimum of `s`. -/
-theorem orderEmbOfFin_zero {s : Finset α} {k : ℕ} (h : s.card = k) (hz : 0 < k) :
-    orderEmbOfFin s h ⟨0, hz⟩ = s.min' (card_pos.mp (h.symm ▸ hz)) := by
-  simp only [orderEmbOfFin_apply, Fin.getElem_fin, sorted_zero_eq_min']
-
-/-- The bijection `orderEmbOfFin s h` sends `k-1` to the maximum of `s`. -/
-theorem orderEmbOfFin_last {s : Finset α} {k : ℕ} (h : s.card = k) (hz : 0 < k) :
-    orderEmbOfFin s h ⟨k - 1, Nat.sub_lt hz (Nat.succ_pos 0)⟩ =
-      s.max' (card_pos.mp (h.symm ▸ hz)) := by
-  simp [orderEmbOfFin_apply, max'_eq_sorted_last, h]
-
-/-- `orderEmbOfFin {a} h` sends any argument to `a`. -/
-@[simp]
-theorem orderEmbOfFin_singleton (a : α) (i : Fin 1) :
-    orderEmbOfFin {a} (card_singleton a) i = a := by
-  rw [Subsingleton.elim i ⟨0, Nat.zero_lt_one⟩, orderEmbOfFin_zero _ Nat.zero_lt_one,
-    min'_singleton]
 
 /-- Any increasing map `f` from `Fin k` to a finset of cardinality `k` has to coincide with
 the increasing bijection `orderEmbOfFin s h`. -/
