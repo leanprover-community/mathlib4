@@ -157,17 +157,6 @@ def pushNegLocalDecl (head : Head) (discharge? : Option Simp.Discharge) (fvarId 
 
 open private Lean.Elab.Tactic.mkDischargeWrapper in mkSimpContext
 
-/-- Syntax for the head to be pushed by the `push` tactic. -/
-syntax push_head := ppSpace colGt ("lambda" <|> "Forall" <|> ident)
-
-/-- Elaborator for the `push_head` syntax category. -/
-def elabHead (stx : Syntax) : TacticM Head := withRef stx do
-  match stx with
-  | `(push_head| lambda)   => return .lambda
-  | `(push_head| Forall)   => return .Forall
-  | `(push_head| $n:ident) => .name <$> Elab.realizeGlobalConstNoOverloadWithInfo n
-  | _ => Elab.throwUnsupportedSyntax
-
 /--
 Push a given constant inside of an expression.
 For instance, `push (disch := positivity) Real.log` could turn
@@ -186,7 +175,20 @@ One can use this tactic at the goal using `push_neg`,
 at every hypothesis and the goal using `push_neg at *` or at selected hypotheses and the goal
 using say `push_neg at h h' ⊢`, as usual.
 -/
-syntax (name := push) "push" (discharger)? push_head (location)? : tactic
+syntax (name := push) "push" (discharger)? (ppSpace colGt ident) (location)? : tactic
+
+/--
+Elaborator for the "head" constant used by `push`.
+We check if the name refers to the `∀` or `fun` binder
+before interpreting the name as a constant.
+-/
+def elabHead (stx : Syntax) : CoreM Head := withRef stx do
+  match stx.getId with
+  | `Forall
+  | `forall => return .Forall
+  | `lambda
+  | `fun    => return .lambda
+  | _       => .name <$> Elab.realizeGlobalConstNoOverloadWithInfo stx
 
 @[tactic push, inherit_doc push]
 def elabPush : Tactic := fun stx => withMainContext do
@@ -229,7 +231,7 @@ macro (name := push_neg) "push_neg" loc:(location)? : tactic => `(tactic| push N
 section Conv
 
 @[inherit_doc push]
-syntax (name := pushConv) "push" (discharger)? push_head : conv
+syntax (name := pushConv) "push" (discharger)? (ppSpace colGt ident) : conv
 
 @[inherit_doc push_neg]
 macro "push_neg" : conv => `(conv| push Not)
