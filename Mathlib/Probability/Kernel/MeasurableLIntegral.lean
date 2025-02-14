@@ -191,7 +191,7 @@ theorem _root_.Measurable.setLIntegral_kernel_prod_left {f : β → α → ℝ�
   simp_rw [← lintegral_restrict κ hs]; fun_prop
 
 @[fun_prop]
-theorem _root_.Measurable.lintegral_kernel {f : β → ℝ≥0∞} (hf : Measurable f) :
+theorem _root_.Measurable.lintegral_kernel {κ : Kernel α β} {f : β → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun a => ∫⁻ b, f b ∂κ a := by fun_prop
 
 -- could be @[fun_prop] if fun_prop could synthesize the `MeasurableSet s` argument
