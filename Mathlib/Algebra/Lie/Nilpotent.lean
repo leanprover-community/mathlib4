@@ -985,9 +985,9 @@ theorem center_le_largest_nilpotent_ideal : center R L ≤ largestNilpotentIdeal
 theorem largest_nilpotent_ideal_le_radical :
     largestNilpotentIdeal R L ≤ radical R L := by
   apply sSup_le_sSup
-  intro I hI_nilpotent_module
-  have h: IsNilpotent I I :=
-    LieIdeal.nilpotent_restricts_to_ideal (R := R) (L := L) hI_nilpotent_module
+  intro I hI
+  have h : IsNilpotent I I :=
+    LieIdeal.nilpotent_restricts_to_ideal (R := R) (L := L) hI
   exact isSolvable_of_isNilpotent I
 
 @[simp] lemma largest_nilpotent_ideal_eq_top_of_isNilpotent [LieRing.IsNilpotent L] :
