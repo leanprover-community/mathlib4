@@ -202,13 +202,6 @@ theorem toNerve₂.mk_naturality {X : SSet.Truncated.{u} 2} {C : Cat}
       refine congrArg F.obj ?_
       refine eq_of_heq (congr_arg_heq (fun x => X.map (op x) f) (?_ : [0].const [1] 1 = δ₂ 0))
       ext i; match i with | 0 => rfl
-  have fac : ∀ {n m hn hm} {α : (⟨[n], hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[m], hm⟩} k hk
-      {β : (⟨[n], hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[k], hk⟩}
-      {γ : (⟨[k], hk⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[m], hm⟩},
-      α = β ≫ γ → OK β → OK γ → OK α := by
-    rintro _ _ _ _ _ k hk β γ rfl h1 h2
-    dsimp only [OK, MorphismProperty.naturalityProperty, MorphismProperty.unop] at h1 h2 ⊢
-    rw [op_comp, map_comp, map_comp, assoc, h1, ← assoc, h2, assoc]
   have const02 (α : [0]₂ ⟶ [2]₂) : OK α := by
     ext x
     apply ComposableArrows.ext₀
@@ -239,7 +232,7 @@ theorem toNerve₂.mk_naturality {X : SSet.Truncated.{u} 2} {C : Cat}
         rw [(_ : X.map _ = id), (_ : Prefunctor.map _ _ = id)]; rfl
         all_goals apply map_id
       | _, .inl ⟨i, rfl⟩ =>
-        exact fac 0 (by decide) (const_fac_thru_zero ..) (const10 ..) (const01 ..)
+        exact const_fac_thru_zero .. ▸ OK.comp_mem _ _ (const10 ..) (const01 ..)
     | 2 =>
       match α, eq_of_one_to_two α with
       | _, .inl rfl =>
@@ -255,7 +248,7 @@ theorem toNerve₂.mk_naturality {X : SSet.Truncated.{u} 2} {C : Cat}
           congr 1
           refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
           rw [← map_comp]; rfl
-        · clear fac const01 const10 const02 OK
+        · clear const01 const10 const02 OK
           dsimp only [nerveFunctor₂, SimplicialObject.truncation,
             SSet.truncation, comp_obj, nerveFunctor_obj,
             whiskeringLeft_obj_obj, Functor.comp_map, nerve_map,
@@ -286,7 +279,7 @@ theorem toNerve₂.mk_naturality {X : SSet.Truncated.{u} 2} {C : Cat}
           congr 1
           refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
           rw [← map_comp]; rfl
-        · clear fac const01 const10 const02 OK
+        · clear const01 const10 const02 OK
           dsimp only [nerveFunctor₂, SimplicialObject.truncation,
             SSet.truncation, comp_obj, nerveFunctor_obj,
             whiskeringLeft_obj_obj, Functor.comp_map, nerve_map,
@@ -318,7 +311,7 @@ theorem toNerve₂.mk_naturality {X : SSet.Truncated.{u} 2} {C : Cat}
           congr 1
           refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
           rw [← map_comp]; rfl
-        · clear fac const01 const10 const02 OK
+        · clear const01 const10 const02 OK
           dsimp only [nerveFunctor₂, SimplicialObject.truncation,
             SSet.truncation, comp_obj, nerveFunctor_obj,
             whiskeringLeft_obj_obj, Functor.comp_map, nerve_map,
@@ -338,7 +331,7 @@ theorem toNerve₂.mk_naturality {X : SSet.Truncated.{u} 2} {C : Cat}
             rw [← map_comp]; rfl
           · rfl
       | _, .inr (.inr (.inr ⟨i, rfl⟩)) =>
-        exact fac 0 (by decide) (const_fac_thru_zero ..) (const10 ..) (const02 ..)
+        exact const_fac_thru_zero .. ▸ OK.comp_mem _ _ (const10 ..) (const02 ..)
   have σ00 : @OK [1]₂ [0]₂ (σ 0) := by
     ext x
     dsimp
