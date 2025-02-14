@@ -1799,6 +1799,7 @@ variable [Module R M] [Module R N]
 -/
 noncomputable def dualDistribInvOfBasis (b : Basis ι R M) (c : Basis κ R N) :
     Dual R (M ⊗[R] N) →ₗ[R] Dual R M ⊗[R] Dual R N :=
+  -- Porting note: ∑ (i) (j) does not seem to work; applyₗ needs a little help to unify
   ∑ i, ∑ j,
     (ringLmapEquivSelf R ℕ _).symm (b.dualBasis i ⊗ₜ c.dualBasis j) ∘ₗ
       (applyₗ (c j)) ∘ₗ (applyₗ (b i)) ∘ₗ lcurry R M N R
