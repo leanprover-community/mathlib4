@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 import Mathlib.Topology.QuasiSeparated
 import Mathlib.Topology.Sheaves.CommRingCat
 
@@ -149,26 +150,33 @@ theorem quasiSeparatedSpace_of_quasiSeparated {X Y : Scheme} (f : X ⟶ Y)
   rw [← terminalIsTerminal.hom_ext (f ≫ terminal.from Y) (terminal.from X)]
   infer_instance
 
-instance quasiSeparatedSpace_of_isAffine (X : Scheme) [IsAffine X] :
-    QuasiSeparatedSpace X := by
-  constructor
-  intro U V hU hU' hV hV'
-  obtain ⟨s, hs, e⟩ := (isCompactOpen_iff_eq_basicOpen_union _).mp ⟨hU', hU⟩
-  obtain ⟨s', hs', e'⟩ := (isCompactOpen_iff_eq_basicOpen_union _).mp ⟨hV', hV⟩
-  rw [e, e', Set.iUnion₂_inter]
-  simp_rw [Set.inter_iUnion₂]
-  apply hs.isCompact_biUnion
-  intro i _
-  apply hs'.isCompact_biUnion
-  intro i' _
-  change IsCompact (X.basicOpen i ⊓ X.basicOpen i').1
-  rw [← Scheme.basicOpen_mul]
-  exact ((isAffineOpen_top _).basicOpen _).isCompact
+instance quasiSeparatedSpace_of_isAffine (X : Scheme) [IsAffine X] : QuasiSeparatedSpace X :=
+  (quasiSeparatedSpace_congr X.isoSpec.hom.homeomorph).2 PrimeSpectrum.instQuasiSeparatedSpace
 
 theorem IsAffineOpen.isQuasiSeparated {X : Scheme} {U : X.Opens} (hU : IsAffineOpen U) :
     IsQuasiSeparated (U : Set X) := by
   rw [isQuasiSeparated_iff_quasiSeparatedSpace]
   exacts [@AlgebraicGeometry.quasiSeparatedSpace_of_isAffine _ hU, U.isOpen]
+
+lemma quasiSeparatedSpace_iff_quasiCompact_prod_lift :
+    QuasiSeparatedSpace X ↔ QuasiCompact (prod.lift (𝟙 X) (𝟙 X)) := by
+  rw [← MorphismProperty.cancel_right_of_respectsIso @QuasiCompact _ (prodIsoPullback X X).hom,
+    ← HasAffineProperty.iff_of_isAffine (f := terminal.from X) (P := @QuasiSeparated),
+    quasiSeparated_iff]
+  congr!
+  ext : 1 <;> simp
+
+instance [QuasiSeparatedSpace X] : QuasiCompact (prod.lift (𝟙 X) (𝟙 X)) := by
+  rwa [← quasiSeparatedSpace_iff_quasiCompact_prod_lift]
+
+instance [QuasiSeparatedSpace Y] (f g : X ⟶ Y) : QuasiCompact (equalizer.ι f g) :=
+  MorphismProperty.of_isPullback (P := @QuasiCompact)
+    (isPullback_equalizer_prod f g).flip inferInstance
+
+instance [CompactSpace X] [QuasiSeparatedSpace Y] (f g : X ⟶ Y) :
+    CompactSpace (equalizer f g).carrier := by
+  constructor
+  simpa using QuasiCompact.isCompact_preimage (f := equalizer.ι f g) _ isOpen_univ isCompact_univ
 
 theorem QuasiSeparated.of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated (f ≫ g)] :
     QuasiSeparated f := by
