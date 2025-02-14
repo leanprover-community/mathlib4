@@ -230,7 +230,6 @@ end Group
 
 section Hom
 
--- Porting note: reordered variables to fix `to_additive` on `QuotientGroup.rootableBy`
 variable {A B α : Type*}
 variable [Zero α] [Monoid A] [Monoid B] [Pow A α] [Pow B α] [RootableBy A α]
 variable (f : A → B)
