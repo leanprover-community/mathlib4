@@ -13,7 +13,7 @@ This file implements the `pnat_to_nat` tactic that shifts `PNat`s in the context
 ## Implementation details
 The implementation follows these steps:
 1. For each `x : PNat` in the context, add the hypothesis `0 < (↑x : ℕ)`.
-2. Translate arithmetic on `PNat` to `Nat` using the `pnat_to_nat_coe_simps` simp set.
+2. Translate arithmetic on `PNat` to `Nat` using the `pnat_to_nat_coe` simp set.
 
 -/
 
@@ -29,22 +29,30 @@ elab "pnat_positivity" : tactic => withMainContext do
     let ⟨1, declType, declExpr⟩ ← inferTypeQ decl.toExpr | return g
     let ~q(PNat) := declType | return g
     let pf := q(PNat.pos $declExpr)
+    let ctx ← getLCtx
+    let alreadyDeclared := Option.isSome <| ← ctx.findDeclM? fun ldecl => do
+      if ← isDefEq ldecl.type q(0 < PNat.val $declExpr) then
+        pure <| .some ()
+      else
+        pure .none
+    if alreadyDeclared then
+      return g
     let (_, mvarIdNew) ← (← g.assert .anonymous q(0 < PNat.val $declExpr) pf).intro1P
     return mvarIdNew
   setGoals [result]
 
-@[pnat_to_nat_coe_simps]
+@[pnat_to_nat_coe]
 lemma coe_inj (m n : PNat) : m = n ↔ (m : ℕ) = (n : ℕ) := by simp
 
-@[pnat_to_nat_coe_simps]
+@[pnat_to_nat_coe]
 lemma coe_le_coe (m n : PNat) : m ≤ n ↔ (m : ℕ) ≤ (n : ℕ) := by simp
 
-@[pnat_to_nat_coe_simps]
+@[pnat_to_nat_coe]
 lemma coe_lt_coe (m n : PNat) : m < n ↔ (m : ℕ) < (n : ℕ) := by simp
 
-attribute [pnat_to_nat_coe_simps] PNat.add_coe PNat.mul_coe PNat.val_ofNat
+attribute [pnat_to_nat_coe] PNat.add_coe PNat.mul_coe PNat.val_ofNat
 
-@[pnat_to_nat_coe_simps]
+@[pnat_to_nat_coe]
 lemma sub_coe (a b : PNat) : ((a - b : PNat) : Nat) = a.val - 1 - b.val + 1 := by
   cases a
   cases b
@@ -55,7 +63,7 @@ lemma sub_coe (a b : PNat) : ((a - b : PNat) : Nat) = a.val - 1 - b.val + 1 := b
 A typical use case is `pnat_to_nat; omega`. -/
 macro "pnat_to_nat" : tactic => `(tactic| focus (
   pnat_positivity;
-  simp only [pnat_to_nat_coe_simps] at *)
+  simp only [pnat_to_nat_coe] at *)
 )
 
 end Mathlib.Tactic.PNatToNat
