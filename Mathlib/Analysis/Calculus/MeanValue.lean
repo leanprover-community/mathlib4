@@ -590,28 +590,28 @@ theorem _root_.is_const_of_fderiv_eq_zero
 one point in that set, then they are equal on that set. -/
 theorem eqOn_of_fderivWithin_eq (hs : Convex ℝ s) (hf : DifferentiableOn 𝕜 f s)
     (hg : DifferentiableOn 𝕜 g s) (hs' : UniqueDiffOn 𝕜 s)
-    (hf' : ∀ x ∈ s, fderivWithin 𝕜 f s x = fderivWithin 𝕜 g s x) (hx : x ∈ s) (hfgx : f x = g x) :
+    (hf' : s.EqOn (fderivWithin 𝕜 f s) (fderivWithin 𝕜 g s)) (hx : x ∈ s) (hfgx : f x = g x) :
     s.EqOn f g := fun y hy => by
   suffices f x - g x = f y - g y by rwa [hfgx, sub_self, eq_comm, sub_eq_zero] at this
   refine hs.is_const_of_fderivWithin_eq_zero (hf.sub hg) (fun z hz => ?_) hx hy
-  rw [fderivWithin_sub (hs' _ hz) (hf _ hz) (hg _ hz), sub_eq_zero, hf' _ hz]
+  rw [fderivWithin_sub (hs' _ hz) (hf _ hz) (hg _ hz), sub_eq_zero, hf' hz]
 
 /-- If `f` has zero derivative on an open set, then `f` is locally constant on `s`. -/
 theorem _root_.IsOpen.isOpen_inter_preimage_of_fderiv_eq_zero
     (hs : IsOpen s) (hf : DifferentiableOn 𝕜 f s)
-    (hf' : ∀ x ∈ s, fderiv 𝕜 f x = 0) (t : Set G) : IsOpen (s ∩ f ⁻¹' t) := by
+    (hf' : s.EqOn (fderiv 𝕜 f) 0) (t : Set G) : IsOpen (s ∩ f ⁻¹' t) := by
   refine Metric.isOpen_iff.mpr fun y ⟨hy, hy'⟩ ↦ ?_
   obtain ⟨r, hr, h⟩ := Metric.isOpen_iff.mp hs y hy
   refine ⟨r, hr, Set.subset_inter h fun x hx ↦ ?_⟩
   have := (convex_ball y r).is_const_of_fderivWithin_eq_zero (hf.mono h) ?_ hx (mem_ball_self hr)
   · simpa [this]
   · intro z hz
-    simpa only [fderivWithin_of_isOpen Metric.isOpen_ball hz] using hf' z (h hz)
+    simpa only [fderivWithin_of_isOpen Metric.isOpen_ball hz] using hf' (h hz)
 
 /-- If `f` has zero derivative on a connected open set, then `f` is constant on `s`. -/
-theorem _root_.IsOpen.is_const_of_fderiv_eq_zero
+theorem _root_.IsOpen.exists_is_const_of_fderiv_eq_zero
     (hs : IsOpen s) (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s)
-    (hf' : ∀ x ∈ s, fderiv 𝕜 f x = 0) : ∃ a, ∀ x ∈ s, f x = a := by
+    (hf' : s.EqOn (fderiv 𝕜 f) 0) : ∃ a, ∀ x ∈ s, f x = a := by
   obtain (rfl|⟨y, hy⟩) := s.eq_empty_or_nonempty
   · exact ⟨0, by simp⟩
   · refine ⟨f y, fun x hx ↦ ?_⟩
@@ -624,13 +624,19 @@ theorem _root_.IsOpen.is_const_of_fderiv_eq_zero
       ⟨x, by simp [ht'' _ hx, hx, h₃]⟩
     exact (ht'' _ H₁).mp H₃ H₂.2
 
+theorem _root_.IsOpen.is_const_of_fderiv_eq_zero
+    (hs : IsOpen s) (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s)
+    (hf' : s.EqOn (fderiv 𝕜 f) 0) {x y : E} (hx : x ∈ s) (hy : y ∈ s) : f x = f y := by
+  obtain ⟨a, ha⟩ := hs.exists_is_const_of_fderiv_eq_zero hs' hf hf'
+  rw [ha x hx, ha y hy]
+
 theorem _root_.IsOpen.exists_eq_add_of_fderiv_eq (hs : IsOpen s) (hs' : IsPreconnected s)
     (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)
-    (hf' : ∀ x ∈ s, fderiv 𝕜 f x = fderiv 𝕜 g x) : ∃ a, ∀ x ∈ s, f x = g x + a := by
-  simp_rw [← sub_eq_iff_eq_add']
-  refine hs.is_const_of_fderiv_eq_zero hs' (hf.sub hg) fun x hx ↦ ?_
+    (hf' : s.EqOn (fderiv 𝕜 f) (fderiv 𝕜 g)) : ∃ a, s.EqOn f (g · + a) := by
+  simp_rw [Set.EqOn, ← sub_eq_iff_eq_add']
+  refine hs.exists_is_const_of_fderiv_eq_zero hs' (hf.sub hg) fun x hx ↦ ?_
   rw [fderiv_sub (hf.differentiableAt (hs.mem_nhds hx)) (hg.differentiableAt (hs.mem_nhds hx)),
-    hf' x hx, sub_self]
+    hf' hx, sub_self, Pi.zero_apply]
 
 /-- If two functions have equal Fréchet derivatives at every point of a connected open set,
 and are equal at one point in that set, then they are equal on that set. -/
@@ -639,7 +645,7 @@ theorem _root_.IsOpen.eqOn_of_fderiv_eq (hs : IsOpen s) (hs' : IsPreconnected s)
     (hf' : ∀ x ∈ s, fderiv 𝕜 f x = fderiv 𝕜 g x) (hx : x ∈ s) (hfgx : f x = g x) :
     s.EqOn f g := by
   obtain ⟨a, ha⟩ := hs.exists_eq_add_of_fderiv_eq hs' hf hg hf'
-  obtain rfl := self_eq_add_right.mp (hfgx.symm.trans (ha x hx))
+  obtain rfl := self_eq_add_right.mp (hfgx.symm.trans (ha hx))
   simpa using ha
 
 theorem _root_.eq_of_fderiv_eq
@@ -723,26 +729,31 @@ theorem _root_.is_const_of_deriv_eq_zero (hf : Differentiable 𝕜 f) (hf' : ∀
 
 theorem _root_.IsOpen.isOpen_inter_preimage_of_deriv_eq_zero
     (hs : IsOpen s) (hf : DifferentiableOn 𝕜 f s)
-    (hf' : ∀ x ∈ s, deriv f x = 0) (t : Set G) : IsOpen (s ∩ f ⁻¹' t) :=
+    (hf' : s.EqOn (deriv f) 0) (t : Set G) : IsOpen (s ∩ f ⁻¹' t) :=
   hs.isOpen_inter_preimage_of_fderiv_eq_zero hf
-    (fun x hx ↦ by ext; simp [← deriv_fderiv, hf' x hx]) t
+    (fun x hx ↦ by ext; simp [← deriv_fderiv, hf' hx]) t
+
+theorem _root_.IsOpen.exists_is_const_of_deriv_eq_zero
+    (hs : IsOpen s) (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s)
+    (hf' : s.EqOn (deriv f) 0) : ∃ a, ∀ x ∈ s, f x = a :=
+  hs.exists_is_const_of_fderiv_eq_zero hs' hf (fun {x} hx ↦ by ext; simp [← deriv_fderiv, hf' hx])
 
 theorem _root_.IsOpen.is_const_of_deriv_eq_zero
     (hs : IsOpen s) (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s)
-    (hf' : ∀ x ∈ s, deriv f x = 0) : ∃ a, ∀ x ∈ s, f x = a :=
-  hs.is_const_of_fderiv_eq_zero hs' hf (fun x hx ↦ by ext; simp [← deriv_fderiv, hf' x hx])
+    (hf' : s.EqOn (deriv f) 0) {x y : 𝕜} (hx : x ∈ s) (hy : y ∈ s) : f x = f y :=
+  hs.is_const_of_fderiv_eq_zero hs' hf (fun a ha ↦ by ext; simp [← deriv_fderiv, hf' ha]) hx hy
 
 theorem _root_.IsOpen.exists_eq_add_of_deriv_eq {f g : 𝕜 → G} (hs : IsOpen s)
     (hs' : IsPreconnected s)
     (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)
-    (hf' : ∀ x ∈ s, deriv f x = deriv g x) : ∃ a, ∀ x ∈ s, f x = g x + a :=
-  hs.exists_eq_add_of_fderiv_eq hs' hf hg (fun x hx ↦ by ext; simp [← deriv_fderiv, hf' x hx])
+    (hf' : s.EqOn (deriv f) (deriv g)) : ∃ a, s.EqOn f (g · + a) :=
+  hs.exists_eq_add_of_fderiv_eq hs' hf hg (fun x hx ↦ by ext; simp [← deriv_fderiv, hf' hx])
 
 theorem _root_.IsOpen.eqOn_of_deriv_eq {f g : 𝕜 → G} (hs : IsOpen s)
     (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)
-    (hf' : ∀ x ∈ s, deriv f x = deriv g x) (hx : x ∈ s) (hfgx : f x = g x) :
+    (hf' : s.EqOn (deriv f) (deriv g)) (hx : x ∈ s) (hfgx : f x = g x) :
     s.EqOn f g :=
-  hs.eqOn_of_fderiv_eq hs' hf hg (fun x hx ↦ ContinuousLinearMap.ext_ring (hf' x hx)) hx hfgx
+  hs.eqOn_of_fderiv_eq hs' hf hg (fun _ hx ↦ ContinuousLinearMap.ext_ring (hf' hx)) hx hfgx
 
 end Convex
 
