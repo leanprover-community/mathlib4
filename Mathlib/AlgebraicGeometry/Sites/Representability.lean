@@ -20,9 +20,9 @@ locally representable.
 ## Main result
 - `AlgebraicGeometry.Scheme.LocalRepresentability.isRepresentable`:
   Suppose
-  * F is `Type u`-valued a sheaf on `Sch` with respect to the Zariski topology
+  * F is a `Type u`-valued sheaf on `Sch` with respect to the Zariski topology
   * X : ι → Sch is a family of schemes
-  * f : Π i, yoneda.obj (X i) ⟶ F is a family relatively representable open immersions
+  * f : Π i, yoneda.obj (X i) ⟶ F is a family of relatively representable open immersions
   * f is jointly surjective
 
   Then `F` is representable.
@@ -36,6 +36,8 @@ namespace AlgebraicGeometry
 
 open CategoryTheory Category Limits Opposite
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory
+
 universe u
 
 namespace Scheme
@@ -44,7 +46,7 @@ namespace Scheme
 Consider the following setup:
 * F is `Type u`-valued a sheaf on `Sch` with respect to the Zariski topology
 * X : ι → Sch is a family of schemes
-* f : Π i, yoneda.obj (X i) ⟶ F is a family relatively representable open immersions
+* f : Π i, yoneda.obj (X i) ⟶ F is a family of relatively representable open immersions
 
 Later, we will also assume:
 * The family f is locally surjective with respect to the Zariski topology
@@ -92,7 +94,7 @@ noncomputable def yonedaGluedToSheaf :
     zariskiTopology.yoneda.obj (glueData hf).glued ⟶ F :=
   -- The map is obtained by finding an object of `F((glueData hf).glued)`.
   Sheaf.homEquiv.symm (yonedaEquiv.symm
-  -- This section is obtained from gluing the section corresponding to `f i : X i ⟶ F`.
+  -- This section is obtained from gluing the section corresponding to `f i : Hom(-, X i) ⟶ F`.
     ((glueData hf).sheafValGluedMk (fun i ↦ yonedaEquiv (f i)) (by
       intro i j
       dsimp
@@ -112,8 +114,6 @@ lemma yoneda_toGlued_yonedaGluedToSheaf (i : ι) :
   simp only [comp_id]
   apply GlueData.sheafValGluedMk_val
 
-/-- Rephasing of `fac` as equalities of sections of the target sheaf `F` over
-any scheme `V` equipped with a morphism `V ⟶ X i`. -/
 @[simp]
 lemma yonedaGluedToSheaf_app_toGlued {i : ι}  :
     (yonedaGluedToSheaf hf).val.app _ (toGlued hf i) = yonedaEquiv (f i) := by
@@ -121,7 +121,7 @@ lemma yonedaGluedToSheaf_app_toGlued {i : ι}  :
   rfl
 
 @[simp]
-lemma yonedaGluedToSheaf_comp (V U) (γ) (α) :
+lemma yonedaGluedToSheaf_comp {V U : Scheme.{u}} (γ : V ⟶ U) (α : U ⟶ (glueData hf).glued) :
   (yonedaGluedToSheaf hf).val.app (op V) (γ ≫ α) =
     F.val.map γ.op ((yonedaGluedToSheaf hf).val.app (op U) α) :=
   congr_fun ((yonedaGluedToSheaf hf).val.naturality γ.op) α
@@ -138,7 +138,7 @@ lemma comp_toGlued_eq {U : Scheme} {i j : ι} (a : U ⟶ X i) (b : U ⟶ X j)
   rw [← (hf i).rep.lift'_fst a b h, assoc]
   conv_rhs => rw [← (hf i).rep.lift'_snd a b h, assoc]
   congr 1
-  exact ((glueData hf).glue_condition i j).symm.trans (by simp; rfl)
+  exact ((glueData hf).glue_condition i j).symm.trans (by simp [toGlued])
 
 @[simp]
 lemma glueData_openCover_map : (glueData hf).openCover.map j = toGlued hf j := rfl
@@ -174,9 +174,9 @@ noncomputable def yonedaIsoSheaf :
 
 /--
 Suppose
-* F is `Type u`-valued a sheaf on `Sch` with respect to the Zariski topology
+* F is a `Type u`-valued sheaf on `Sch` with respect to the Zariski topology
 * X : ι → Sch is a family of schemes
-* f : Π i, yoneda.obj (X i) ⟶ F is a family relatively representable open immersions
+* f : Π i, yoneda.obj (X i) ⟶ F is a family of relatively representable open immersions
 * f is jointly surjective
 
 Then `F` is representable, and the representing object is glued from the `X i`s
@@ -189,9 +189,9 @@ def representableBy : F.1.RepresentableBy (glueData hf).glued :=
 include hf in
 /--
 Suppose
-* F is `Type u`-valued a sheaf on `Sch` with respect to the Zariski topology
+* F is a `Type u`-valued sheaf on `Sch` with respect to the Zariski topology
 * X : ι → Sch is a family of schemes
-* f : Π i, yoneda.obj (X i) ⟶ F is a family relatively representable open immersions
+* f : Π i, yoneda.obj (X i) ⟶ F is a family of relatively representable open immersions
 * f is jointly surjective
 
 Then `F` is representable.
