@@ -101,7 +101,7 @@ def allScriptsDocumented : IO Bool := do
   let undocumented := fileNames.filter fun script ↦
     !readme.containsSubstr s!"`{script}`" && !dataFiles.contains script
   if undocumented.size > 0 then
-    IO.println s!"error: found {undocumented.size} undocumented script(s): \
+    IO.eprintln s!"error: found {undocumented.size} undocumented script(s): \
       please describe the script(s) in 'scripts/README.md'\n  \
       {String.intercalate "," undocumented.toList}"
   return undocumented.size == 0
@@ -114,7 +114,7 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
     | false => ErrorFormat.humanReadable
   let fix := args.hasFlag "fix"
   if (args.variableArgsAs? String).isNone then
-    IO.println "error: invalid input, library arguments must be strings"
+    IO.eprintln "error: invalid input, library arguments must be strings"
     return 1
   let libraries := match args.variableArgsAs! String with
   | #[] => #["Archive", "Counterexamples", "Mathlib"]
