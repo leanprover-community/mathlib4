@@ -40,7 +40,7 @@ monoidal distributive category with respect to this monoidal structure.
 
 ## References
 
-- [J.R.B.Cockett, Introduction to distributive categories, 1992][]
+- [J.R.B.Cockett, Introduction to distributive categories, 1992][cockett1993]
 - [Carboni et al, Introduction to extensive and distributive categories][CARBONI1993145]
 -/
 
