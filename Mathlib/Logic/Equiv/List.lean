@@ -353,6 +353,7 @@ end Denumerable
 namespace Equiv
 
 /-- The type lists on unit is canonically equivalent to the natural numbers. -/
+@[simps!]
 def listUnitEquiv : List Unit ≃ ℕ where
   toFun := List.length
   invFun n := List.replicate n ()
