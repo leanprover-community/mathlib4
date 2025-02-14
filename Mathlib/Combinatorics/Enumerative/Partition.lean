@@ -41,6 +41,8 @@ Partition
 <https://en.wikipedia.org/wiki/Partition_(number_theory)>
 -/
 
+assert_not_exists Field
+
 open Multiset
 
 namespace Nat

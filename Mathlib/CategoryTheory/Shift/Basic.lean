@@ -61,7 +61,6 @@ class HasShift (C : Type u) (A : Type*) [Category.{v} C] [AddMonoid A] where
   /-- `shift` is monoidal -/
   shiftMonoidal : shift.Monoidal := by infer_instance
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- A helper structure to construct the shift functor `(Discrete A) ⥤ (C ⥤ C)`. -/
 structure ShiftMkCore where
   /-- the family of shift functors -/

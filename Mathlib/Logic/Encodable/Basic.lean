@@ -36,6 +36,8 @@ The point of asking for an explicit partial inverse `decode : ℕ → Option α`
 to make the range of `encode` decidable even when the finiteness of `α` is not.
 -/
 
+assert_not_exists Monoid
+
 open Option List Nat Function
 
 /-- Constructively countable type. Made from an explicit injection `encode : α → ℕ` and a partial
@@ -44,8 +46,6 @@ wish to enforce infiniteness. -/
 class Encodable (α : Type*) where
   /-- Encoding from Type α to ℕ -/
   encode : α → ℕ
-  -- Porting note: was `decode [] : ℕ → Option α`. This means that `decode` does not take the type
-  --explicitly in Lean4
   /-- Decoding from ℕ to Option α-/
   decode : ℕ → Option α
   /-- Invariant relationship between encoding and decoding -/
@@ -95,12 +95,10 @@ def ofLeftInverse [Encodable α] (f : β → α) (finv : α → β) (linv : ∀ 
 def ofEquiv (α) [Encodable α] (e : β ≃ α) : Encodable β :=
   ofLeftInverse e e.symm e.left_inv
 
--- Porting note: removing @[simp], too powerful
 theorem encode_ofEquiv {α β} [Encodable α] (e : β ≃ α) (b : β) :
     @encode _ (ofEquiv _ e) b = encode (e b) :=
   rfl
 
--- Porting note: removing @[simp], too powerful
 theorem decode_ofEquiv {α β} [Encodable α] (e : β ≃ α) (n : ℕ) :
     @decode _ (ofEquiv _ e) n = (decode n).map e.symm :=
   show Option.bind _ _ = Option.map _ _
@@ -225,7 +223,6 @@ section Sum
 
 variable [Encodable α] [Encodable β]
 
--- Porting note: removing bit0 and bit1
 /-- Explicit encoding function for the sum of two encodable types. -/
 def encodeSum : α ⊕ β → ℕ
   | Sum.inl a => 2 * encode a
@@ -241,12 +238,10 @@ def decodeSum (n : ℕ) : Option (α ⊕ β) :=
 instance _root_.Sum.encodable : Encodable (α ⊕ β) :=
   ⟨encodeSum, decodeSum, fun s => by cases s <;> simp [encodeSum, div2_val, decodeSum, encodek]⟩
 
--- Porting note: removing bit0 and bit1 from statement
 @[simp]
 theorem encode_inl (a : α) : @encode (α ⊕ β) _ (Sum.inl a) = 2 * (encode a) :=
   rfl
 
--- Porting note: removing bit0 and bit1 from statement
 @[simp]
 theorem encode_inr (b : β) : @encode (α ⊕ β) _ (Sum.inr b) = 2 * (encode b) + 1 :=
   rfl
@@ -560,7 +555,7 @@ theorem sequence_mono_nat {r : β → β → Prop} {f : α → β} (hf : Directe
 
 theorem rel_sequence {r : β → β → Prop} {f : α → β} (hf : Directed r f) (a : α) :
     r (f a) (f (hf.sequence f (encode a + 1))) := by
-  simp only [Directed.sequence, add_eq, add_zero, encodek, and_self]
+  simp only [Directed.sequence, add_eq, Nat.add_zero, encodek, and_self]
   exact (Classical.choose_spec (hf _ a)).2
 
 variable [Preorder β] {f : α → β}

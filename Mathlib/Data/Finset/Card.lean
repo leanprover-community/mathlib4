@@ -3,7 +3,9 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
+import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Data.Finset.Image
+import Mathlib.Data.Int.Cast.Basic
 
 /-!
 # Cardinality of a finite set
@@ -350,8 +352,6 @@ lemma card_bij (i : ∀ a ∈ s, β) (hi : ∀ a ha, i a ha ∈ t)
     · obtain ⟨_, _, rfl⟩ := mem_image.1 h; apply hi
     · obtain ⟨a, ha, rfl⟩ := i_surj b h; exact mem_image.2 ⟨⟨a, ha⟩, by simp⟩
 
-@[deprecated (since := "2024-05-04")] alias card_congr := card_bij
-
 /-- Reorder a finset.
 
 The difference with `Finset.card_bij` is that the bijection is specified with an inverse, rather
@@ -409,7 +409,17 @@ lemma card_le_card_of_injOn (f : α → β) (hf : ∀ a ∈ s, f a ∈ t) (f_inj
   calc
     #s = #(s.image f) := (card_image_of_injOn f_inj).symm
     _  ≤ #t           := card_le_card <| image_subset_iff.2 hf
-@[deprecated (since := "2024-06-01")] alias card_le_card_of_inj_on := card_le_card_of_injOn
+lemma card_le_card_of_injective {f : s → t} (hf : f.Injective) : #s ≤ #t := by
+  rcases s.eq_empty_or_nonempty with rfl | ⟨a₀, ha₀⟩
+  · simp
+  · classical
+    let f' : α → β := fun a => f (if ha : a ∈ s then ⟨a, ha⟩ else ⟨a₀, ha₀⟩)
+    apply card_le_card_of_injOn f'
+    · aesop
+    · intro a₁ ha₁ a₂ ha₂ haa
+      rw [mem_coe] at ha₁ ha₂
+      simp only [f', ha₁, ha₂, ← Subtype.ext_iff] at haa
+      exact Subtype.ext_iff.mp (hf haa)
 
 lemma card_le_card_of_surjOn (f : α → β) (hf : Set.SurjOn f s t) : #t ≤ #s := by
   classical unfold Set.SurjOn at hf; exact (card_le_card (mod_cast hf)).trans card_image_le
@@ -576,18 +586,6 @@ lemma exists_subsuperset_card_eq (hst : s ⊆ t) (hsn : #s ≤ n) (hnt : n ≤ #
 /-- We can shrink a set to any smaller size. -/
 lemma exists_subset_card_eq (hns : n ≤ #s) : ∃ t ⊆ s, #t = n := by
   simpa using exists_subsuperset_card_eq s.empty_subset (by simp) hns
-
-/-- Given a set `A` and a set `B` inside it, we can shrink `A` to any appropriate size, and keep `B`
-inside it. -/
-@[deprecated exists_subsuperset_card_eq (since := "2024-06-23")]
-theorem exists_intermediate_set {A B : Finset α} (i : ℕ) (h₁ : i + #B ≤ #A) (h₂ : B ⊆ A) :
-    ∃ C : Finset α, B ⊆ C ∧ C ⊆ A ∧ #C = i + #B :=
-  exists_subsuperset_card_eq h₂ (Nat.le_add_left ..) h₁
-
-/-- We can shrink `A` to any smaller size. -/
-@[deprecated exists_subset_card_eq (since := "2024-06-23")]
-theorem exists_smaller_set (A : Finset α) (i : ℕ) (h₁ : i ≤ #A) :
-    ∃ B : Finset α, B ⊆ A ∧ #B = i := exists_subset_card_eq h₁
 
 theorem le_card_iff_exists_subset_card : n ≤ #s ↔ ∃ t ⊆ s, #t = n := by
   refine ⟨fun h => ?_, fun ⟨t, hst, ht⟩ => ht ▸ card_le_card hst⟩

@@ -5,9 +5,9 @@ Authors: Thomas Browning
 -/
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Data.Finite.Card
+import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Set.Card
 import Mathlib.GroupTheory.Coset.Card
-import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.QuotientGroup.Basic
 
@@ -35,6 +35,7 @@ Several theorems proved in this file are known as Lagrange's theorem.
 - `MulAction.index_stabilizer`: the index of the stabilizer is the cardinality of the orbit
 -/
 
+assert_not_exists Field
 
 namespace Subgroup
 
@@ -185,8 +186,6 @@ theorem index_top : (⊤ : Subgroup G).index = 1 :=
 theorem index_bot : (⊥ : Subgroup G).index = Nat.card G :=
   Cardinal.toNat_congr QuotientGroup.quotientBot.toEquiv
 
-@[deprecated (since := "2024-06-15")] alias index_bot_eq_card := index_bot
-
 @[to_additive (attr := simp)]
 theorem relindex_top_left : (⊤ : Subgroup G).relindex H = 1 :=
   index_top
@@ -198,8 +197,6 @@ theorem relindex_top_right : H.relindex ⊤ = H.index := by
 @[to_additive (attr := simp)]
 theorem relindex_bot_left : (⊥ : Subgroup G).relindex H = Nat.card H := by
   rw [relindex, bot_subgroupOf, index_bot]
-
-@[deprecated (since := "2024-06-15")] alias relindex_bot_left_eq_card := relindex_bot_left
 
 @[to_additive (attr := simp)]
 theorem relindex_bot_right : H.relindex ⊥ = 1 := by rw [relindex, subgroupOf_bot_eq_top, index_top]
@@ -220,17 +217,11 @@ theorem card_mul_index : Nat.card H * H.index = Nat.card G := by
   rw [← relindex_bot_left, ← index_bot]
   exact relindex_mul_index bot_le
 
-@[deprecated (since := "2024-06-15")] alias nat_card_dvd_of_injective := card_dvd_of_injective
-
-@[deprecated (since := "2024-06-15")] alias nat_card_dvd_of_le := card_dvd_of_le
-
 @[to_additive]
 theorem card_dvd_of_surjective (f : G →* G') (hf : Function.Surjective f) :
     Nat.card G' ∣ Nat.card G := by
   rw [← Nat.card_congr (QuotientGroup.quotientKerEquivOfSurjective f hf).toEquiv]
   exact Dvd.intro_left (Nat.card f.ker) f.ker.card_mul_index
-
-@[deprecated (since := "2024-06-15")] alias nat_card_dvd_of_surjective := card_dvd_of_surjective
 
 @[to_additive]
 theorem card_range_dvd (f : G →* G') : Nat.card f.range ∣ Nat.card G :=
@@ -596,18 +587,6 @@ instance finiteIndex_ker {G' : Type*} [Group G'] (f : G →* G') [Finite f.range
 instance finiteIndex_normalCore [H.FiniteIndex] : H.normalCore.FiniteIndex := by
   rw [normalCore_eq_ker]
   infer_instance
-
-variable (G)
-
-instance finiteIndex_center [Finite (commutatorSet G)] [Group.FG G] : FiniteIndex (center G) := by
-  obtain ⟨S, -, hS⟩ := Group.rank_spec G
-  exact ⟨mt (Finite.card_eq_zero_of_embedding (quotientCenterEmbedding hS)) Finite.card_pos.ne'⟩
-
-theorem index_center_le_pow [Finite (commutatorSet G)] [Group.FG G] :
-    (center G).index ≤ Nat.card (commutatorSet G) ^ Group.rank G := by
-  obtain ⟨S, hS1, hS2⟩ := Group.rank_spec G
-  rw [← hS1, ← Fintype.card_coe, ← Nat.card_eq_fintype_card, ← Finset.coe_sort_coe, ← Nat.card_fun]
-  exact Finite.card_le_of_embedding (quotientCenterEmbedding hS2)
 
 end FiniteIndex
 

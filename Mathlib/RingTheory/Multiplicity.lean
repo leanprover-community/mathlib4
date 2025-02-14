@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Chris Hughes, Daniel Weber
 -/
 import Batteries.Data.Nat.Gcd
-import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.GroupWithZero.Associated
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.ENat.Basic
@@ -46,7 +46,7 @@ noncomputable def emultiplicity [Monoid α] (a b : α) : ℕ∞ :=
 
 /-- A `ℕ`-valued version of `emultiplicity`, returning `1` instead of `⊤`. -/
 noncomputable def multiplicity [Monoid α] (a b : α) : ℕ :=
-  (emultiplicity a b).untop' 1
+  (emultiplicity a b).untopD 1
 
 section Monoid
 
@@ -115,7 +115,7 @@ theorem emultiplicity_eq_iff_multiplicity_eq_of_ne_one {n : ℕ} (h : n ≠ 1) :
   constructor
   · exact multiplicity_eq_of_emultiplicity_eq_some
   · intro h₂
-    simpa [multiplicity, WithTop.untop'_eq_iff, h] using h₂
+    simpa [multiplicity, WithTop.untopD_eq_iff, h] using h₂
 
 theorem emultiplicity_eq_zero_iff_multiplicity_eq_zero :
     emultiplicity a b = 0 ↔ multiplicity a b = 0 :=
@@ -219,8 +219,6 @@ theorem Int.natCast_emultiplicity (a b : ℕ) :
 @[norm_cast]
 theorem Int.natCast_multiplicity (a b : ℕ) : multiplicity (a : ℤ) (b : ℤ) = multiplicity a b :=
   multiplicity_eq_of_emultiplicity_eq (natCast_emultiplicity a b)
-
-@[deprecated (since := "2024-04-05")] alias Int.coe_nat_multiplicity := Int.natCast_multiplicity
 
 theorem FiniteMultiplicity.not_iff_forall : ¬FiniteMultiplicity a b ↔ ∀ n : ℕ, a ^ n ∣ b :=
   ⟨fun h n =>

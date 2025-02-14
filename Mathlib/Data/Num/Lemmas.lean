@@ -418,9 +418,6 @@ theorem to_of_nat : ∀ n : ℕ, ((n : Num) : ℕ) = n
 theorem of_natCast {α} [AddMonoidWithOne α] (n : ℕ) : ((n : Num) : α) = n := by
   rw [← cast_to_nat, to_of_nat]
 
-@[deprecated (since := "2024-04-17")]
-alias of_nat_cast := of_natCast
-
 @[norm_cast]
 theorem of_nat_inj {m n : ℕ} : (m : Num) = n ↔ m = n :=
   ⟨fun h => Function.LeftInverse.injective to_of_nat h, congr_arg _⟩
@@ -1355,15 +1352,9 @@ theorem of_nat_toZNumNeg (n : ℕ) : Num.toZNumNeg n = -n := by rw [← of_nat_t
 theorem of_intCast [AddGroupWithOne α] (n : ℤ) : ((n : ZNum) : α) = n := by
   rw [← cast_to_int, to_of_int]
 
-@[deprecated (since := "2024-04-17")]
-alias of_int_cast := of_intCast
-
 @[simp, norm_cast]
 theorem of_natCast [AddGroupWithOne α] (n : ℕ) : ((n : ZNum) : α) = n := by
   rw [← Int.cast_natCast, of_intCast, Int.cast_natCast]
-
-@[deprecated (since := "2024-04-17")]
-alias of_nat_cast := of_natCast
 
 @[simp, norm_cast]
 theorem dvd_to_int (m n : ZNum) : (m : ℤ) ∣ n ↔ m ∣ n :=
