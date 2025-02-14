@@ -179,7 +179,7 @@ instance (K L : Type*) [Field K] [Field L] [Algebra K L] : TopologicalGroup (L �
   GroupFilterBasis.isTopologicalGroup (galGroupBasis K L)
 
 open scoped Topology in
-lemma krullTopology_mem_nhds_one (K L : Type*) [Field K] [Field L] [Algebra K L]
+lemma krullTopology_mem_nhds_one_iff (K L : Type*) [Field K] [Field L] [Algebra K L]
     (s : Set (L ≃ₐ[K] L)) : s ∈ 𝓝 1 ↔ ∃ E : IntermediateField K L,
     FiniteDimensional K E ∧ (E.fixingSubgroup : Set (L ≃ₐ[K] L)) ⊆ s := by
   rw [GroupFilterBasis.nhds_one_eq]
@@ -190,10 +190,10 @@ lemma krullTopology_mem_nhds_one (K L : Type*) [Field K] [Field L] [Algebra K L]
     exact ⟨E.fixingSubgroup, ⟨E.fixingSubgroup, ⟨E, fin, rfl⟩, rfl⟩, hE⟩
 
 open scoped Topology in
-lemma krullTopology_mem_nhds_one_of_normal (K L : Type*) [Field K] [Field L] [Algebra K L]
+lemma krullTopology_mem_nhds_one_iff_of_normal (K L : Type*) [Field K] [Field L] [Algebra K L]
     [Normal K L] (s : Set (L ≃ₐ[K] L)) : s ∈ 𝓝 1 ↔ ∃ E : IntermediateField K L,
     FiniteDimensional K E ∧ Normal K E ∧ (E.fixingSubgroup : Set (L ≃ₐ[K] L)) ⊆ s := by
-  rw [krullTopology_mem_nhds_one]
+  rw [krullTopology_mem_nhds_one_iff]
   refine ⟨fun ⟨E, _, hE⟩ ↦ ?_, fun ⟨E, hE⟩ ↦ ⟨E, hE.1, hE.2.2⟩⟩
   use (IntermediateField.normalClosure K E L)
   simp only [normalClosure.is_finiteDimensional K E L, normalClosure.normal K E L, true_and]
