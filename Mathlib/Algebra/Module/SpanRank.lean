@@ -74,7 +74,7 @@ lemma spanRank_ne_top_iff_fg {p : Submodule R M} :
     p.spanRank ≠ ⊤ ↔ p.FG := by
   simp [spanRank, Submodule.fg_def, and_comm]
 
-/-- A submodule is finitely generated if and only if its spanRank is equal to its spanFinrank -/
+/-- A submodule is finitely generated if and only if its `spanRank` is equal to its `spanFinrank`. -/
 lemma fg_iff_spanRank_eq_spanFinrank {p : Submodule R M} :
     p.FG ↔ p.spanRank = p.spanFinrank := by
   rw [spanFinrank, ← spanRank_ne_top_iff_fg, ← ENat.coe_toNat_eq_self, eq_comm]
