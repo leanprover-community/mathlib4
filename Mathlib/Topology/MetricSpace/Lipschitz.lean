@@ -210,7 +210,7 @@ lemma LipschitzWith.properSpace {X Y : Type*} [PseudoMetricSpace X]
     [PseudoMetricSpace Y] [ProperSpace Y] {f : X → Y} (hf : IsProperMap f)
     {K : ℝ≥0} (hf' : LipschitzWith K f) : ProperSpace X :=
   ⟨fun x r ↦ (hf.isCompact_preimage (isCompact_closedBall (f x) (K * r))).of_isClosed_subset
-    Metric.isClosed_ball (hf'.mapsTo_closedBall x r).subset_preimage⟩
+    Metric.isClosed_closedBall (hf'.mapsTo_closedBall x r).subset_preimage⟩
 
 namespace Metric
 
