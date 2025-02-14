@@ -5,7 +5,7 @@ Authors: Chris Hughes
 -/
 
 import Mathlib.RingTheory.Algebraic.Basic
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
 import Mathlib.ModelTheory.Algebra.Ring.Definability
 import Mathlib.RingTheory.Polynomial.Basic

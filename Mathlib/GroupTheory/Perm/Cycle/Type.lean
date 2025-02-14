@@ -7,8 +7,9 @@ import Mathlib.Algebra.GCDMonoid.Multiset
 import Mathlib.Combinatorics.Enumerative.Partition
 import Mathlib.Data.List.Rotate
 import Mathlib.GroupTheory.Perm.Cycle.Factors
-import Mathlib.GroupTheory.Perm.Closure
 import Mathlib.Algebra.GCDMonoid.Nat
+import Mathlib.Data.Fintype.Group
+import Mathlib.GroupTheory.Perm.Closure
 import Mathlib.Tactic.NormNum.GCD
 
 /-!
