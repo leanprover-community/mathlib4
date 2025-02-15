@@ -240,7 +240,7 @@ instance smul : SMul (AdicCompletion I R) (AdicCompletion I M) where
       apply induction_on I R r (fun r ↦ ?_)
       apply induction_on I M x (fun x ↦ ?_)
       simp only [coe_eval, mk_apply_coe, mkQ_apply, Ideal.Quotient.mk_eq_mk,
-        mk_smul_mk, LinearMapClass.map_smul, transitionMap_mk]
+        mk_smul_mk, LinearMapClass.map_smul, mapQPow_mk]
       rw [smul_mk I hmn]
   }
 
