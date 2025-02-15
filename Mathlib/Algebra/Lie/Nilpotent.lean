@@ -266,8 +266,8 @@ lemma IsNilpotent.nilpotent [IsNilpotent L M] : ∃ k, lowerCentralSeries R L M 
   (isNilpotent_iff R L M).mp ‹_›
 
 variable {R L} in
-lemma IsNilpotent.mk {k : ℕ} (h : lowerCentralSeries R L M k = ⊥) : IsNilpotent L M :=
-  (isNilpotent_iff R L M).mpr ⟨k, h⟩
+lemma IsNilpotent.mk {k : ℕ} (h : lowerCentralSeries R L M k = ⊥) : IsNilpotent L M := by
+  have h := isNilpotent_iff R L M
 
 @[deprecated IsNilpotent.nilpotent (since := "2025-01-07")]
 theorem exists_lowerCentralSeries_eq_bot_of_isNilpotent [IsNilpotent L M] :
@@ -286,6 +286,11 @@ section
 
 variable [LieModule R L M]
 
+
+theorem nilpotent_submodule_nilpotent (M₁ M₂ : LieSubmodule R L M) :
+     (h₁ : M₁ ≤ M₂) →  (h₂ : IsNilpotent L M₂) → IsNilpotent L M₁ := by
+     sorry
+
 /-- The largest nilpotent submodule is the `sSup` of all nilpotent submodules. -/
 def largestNilpotentSubmodule :=
   sSup { N : LieSubmodule R L M | IsNilpotent L N }
@@ -296,8 +301,15 @@ instance largestNilpotentSubmoduleIsNilpotent [IsNoetherian R M] :
 
 theorem nilpotent_iff_le_largest_nilpotent_submodule [IsNoetherian R M] (N : LieSubmodule R L M) :
     IsNilpotent L N ↔ N ≤ largestNilpotentSubmodule R L M := by
-  sorry
-
+  constructor
+  · intro h
+    have h2 : N ∈ { N : LieSubmodule R L M | IsNilpotent L N } := by
+      exact h
+    dsimp[largestNilpotentSubmodule]
+    apply le_sSup (by exact h2)
+  intro h
+  have := largestNilpotentSubmoduleIsNilpotent R L M
+  exact nilpotent_submodule_nilpotent R L M N (largestNilpotentSubmodule R L M) h this
 end
 
 section
