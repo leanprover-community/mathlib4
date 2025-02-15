@@ -88,7 +88,6 @@ theorem continuous_norm' : Continuous fun a : E => ‖a‖ := by
 theorem continuous_nnnorm' : Continuous fun a : E => ‖a‖₊ :=
   continuous_norm'.subtype_mk _
 
-attribute [fun_prop] IsInducing.continuous IsEmbedding.continuous
 @[to_additive (attr := continuity, fun_prop) continuous_enorm]
 lemma continuous_enorm' : Continuous fun a : E ↦ ‖a‖ₑ :=
   ENNReal.isOpenEmbedding_coe.continuous.comp continuous_nnnorm'
