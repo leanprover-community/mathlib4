@@ -33,19 +33,13 @@ def IsCompactSystem' (p : Set α → Prop) : Prop :=
   ∀ C : ℕ → Set α, (∀ i, p (C i)) → (∀ (n : ℕ), (⋂ i ≤ n, C i).Nonempty) → (⋂ i, C i).Nonempty
 
 theorem IsCompactSystem_iff_IsCompactSystem' (p : Set α → Prop) :
-    IsCompactSystem p ↔ IsCompactSystem' p := by
-  refine ⟨fun h C hC hn ↦ ?_, fun h C hC ↦ ?_⟩
-  · have h2 := h C hC
-    rw [← not_imp_not] at h2
-    push_neg at h2
-    simp_rw [Set.nonempty_iff_ne_empty] at *
+    IsCompactSystem p ↔ (  ∀ C : ℕ → Set α, (∀ i, p (C i)) → (∀ (n : ℕ),
+      (⋂ i ≤ n, C i).Nonempty) → (⋂ i, C i).Nonempty) := by
+  refine ⟨fun h C hC hn ↦ ?_, fun h C hC ↦ ?_⟩ <;> have h2 := not_imp_not.mpr <| h C hC
+  · push_neg at h2
     exact h2 hn
-  · have h2 := h C hC
-    rw [← not_imp_not] at h2
-    push_neg at h2
+  · push_neg at h2
     exact h2
-
-example (i n : ℕ) : i < n+1 ↔ i ≤ n := by exact Nat.lt_add_one_iff
 
 lemma l1 (s : Finset ℕ) (hs : s.Nonempty) : s ⊆ Finset.range (s.max' hs + 1) := by
   intro i hi
@@ -249,18 +243,15 @@ lemma l5 (p : α → Prop) (s : α) : p s ↔ (s ∈ ⋃ (i : α) (_ : p i), {i}
     simp only [mem_singleton_iff] at h
     exact h ▸ hi
 
-lemma l6 (p q : α → Prop) (s : α) : (p s ∧ q s) ↔ (s ∈ ⋃ (i : α) (_ : p i) (_ : q i), {i}) := by
-  rw [Set.mem_iUnion₂]
-  simp_rw [mem_iUnion]
+@[simp]
+lemma l6 {p q : α → Prop} {s : α} : (p s ∧ q s) ↔ (s ∈ ⋃ (i : α) (_ : p i) (_ : q i), {i}) := by
+  simp_rw [Set.mem_iUnion₂, mem_iUnion]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_ ⟩
   · use s, h.1, h.2
     simp only [mem_singleton_iff]
   · obtain ⟨i, hi, h1, h2⟩ := h
     simp only [mem_singleton_iff] at h2
     exact h2 ▸ ⟨hi, h1⟩
-
-lemma l7 (p : α → Prop) (s : α) : (s ∈ ⋃ (i : α) (_ : p i), {i}) ↔ (⋃ (i : α) (_ : p i), {i}) s:= by
-  rfl
 
 variable {α : Type*} [TopologicalSpace α]
 
@@ -272,13 +263,11 @@ theorem IsCompact.isCompactSystem {α : Type*} [Inhabited α] [TopologicalSpace 
     IsCompactSystem (⋃ (s : Set α) (_ : IsCompact s) (_ : IsClosed s), {s}) := by
   have h : IsPiSystem' (⋃ (s : Set α) (_ : IsCompact s) (_ : IsClosed s), {s}) := by
     intro x hx y hy
-    rw [← (l6 IsCompact IsClosed)] at *
+    rw [← l6] at *
     exact ⟨IsCompact.inter_left hy.1 hx.2, IsClosed.inter hx.2 hy.2 ⟩
   rw [IsCompactSystem.iff_mono' h]
   intro C hC h1 hn
-  have h1' (i : ℕ) : IsCompact (C i) ∧ IsClosed (C i):= by
-    rw [(l6 IsCompact IsClosed (C i))]
-    exact h1 i
+  have h1' (i : ℕ) : IsCompact (C i) ∧ IsClosed (C i):= l6.mpr <| h1 i
   exact IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed C hC hn
     (fun i ↦ (h1' i).1) (fun i ↦ (h1' i).2)
 
