@@ -163,7 +163,7 @@ def sectionsUncurry {X : Over I} {A : C} (v : A ⟶ sections X) :
     rw [Category.assoc, ← w']
     simp [star_obj_hom]
 
-@[reassoc (attr := simp)]
+@[simp]
 theorem sections_curry_uncurry {X : Over I} {A : C} {v : A ⟶ sections X} :
     sectionsCurry (sectionsUncurry v) = v := by
   dsimp [sectionsCurry, sectionsUncurry]
@@ -173,7 +173,7 @@ theorem sections_curry_uncurry {X : Over I} {A : C} {v : A ⟶ sections X} :
     rw [IsTerminal.hom_ext terminalIsTerminal (terminal.from A ) (v ≫ (pullback.fst ..))]
   · simp
 
-@[reassoc (attr := simp)]
+@[simp]
 theorem sections_uncurry_curry {X : Over I} {A : C} {u : (star I).obj A ⟶ X} :
     sectionsUncurry (sectionsCurry u) = u := by
   dsimp [sectionsCurry, sectionsUncurry]
