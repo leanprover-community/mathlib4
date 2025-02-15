@@ -323,21 +323,18 @@ theorem hasSum_log_one_add_inv {a : ℝ} (h : 0 < a) :
 theorem hasSum_log_one_add {a : ℝ} (h : 0 ≤ a) :
     HasSum (fun k : ℕ => (2 : ℝ) * (1 / (2 * k + 1)) * (a / (a + 2)) ^ (2 * k + 1))
       (log (1 + a)) := by
-  by_cases ha0 : a = 0
-  · simp [ha0, hasSum_zero]
-  · have key := hasSum_log_one_add_inv (inv_pos.mpr (lt_of_le_of_ne h (Ne.symm ha0)))
-    rw [inv_inv, add_comm] at key
-    exact key.congr_fun fun k ↦ by field_simp
+  obtain (rfl | ha0) := eq_or_ne a 0
+  · simp [hasSum_zero]
+  · convert hasSum_log_one_add_inv (inv_pos.mpr (lt_of_le_of_ne h ha0.symm)) using 4
+    all_goals field_simp [add_comm]
 
 lemma le_log_one_add_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 2 * x / (x + 2) ≤ log (1 + x) := by
-  have key := le_hasSum (hasSum_log_one_add hx) 0 (by intros; positivity)
-  field_simp at key
-  exact key
+  convert le_hasSum (hasSum_log_one_add hx) 0 (by intros; positivity) using 1
+  field_simp
 
 lemma lt_log_one_add_of_pos {x : ℝ} (hx : 0 < x) : 2 * x / (x + 2) < log (1 + x) := by
-  have key := lt_hasSum (hasSum_log_one_add (le_of_lt hx)) 0 (by intros; positivity)
-    1 (by positivity) (by positivity)
-  field_simp at key
-  exact key
+  convert lt_hasSum (hasSum_log_one_add hx.le) 0 (by intros; positivity)
+    1 (by positivity) (by positivity) using 1
+  field_simp
 
 end Real
