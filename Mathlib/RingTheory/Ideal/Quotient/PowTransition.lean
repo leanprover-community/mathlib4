@@ -91,8 +91,9 @@ lemma mapQPow_surjective {m n : ℕ} (le : m ≤ n): Function.Surjective (mapQPo
   use Quotient.mk x.out
   exact Quotient.out_eq x
 
-abbrev mapQPowSucc (n : ℕ) : M ⧸ (I ^ (n + 1) • ⊤ : Submodule R M) →ₗ[R]
-    M ⧸ (I ^ n • ⊤ : Submodule R M) := mapQPow I M (Nat.le_succ n)
+/--`mapQPow` for `n = m + 1`-/
+abbrev mapQPowSucc (m : ℕ) : M ⧸ (I ^ (m + 1) • ⊤ : Submodule R M) →ₗ[R]
+    M ⧸ (I ^ m • ⊤ : Submodule R M) := mapQPow I M (Nat.le_succ m)
 
 end Submodule
 
@@ -155,9 +156,11 @@ lemma factorPow_ker {m n : ℕ} (le : m ≤ n) : RingHom.ker (factorPow I le) =
       Ideal.Quotient.mk_surjective h with ⟨r, hr, eq⟩
     simpa [factorPow, ← eq, Ideal.Quotient.eq_zero_iff_mem] using hr
 
+/--`factorPow` for `m = n + 1`-/
 abbrev factorPowSucc (n : ℕ) : R ⧸ I ^ (n + 1) →+* R ⧸ I ^ n :=
   factorPow I (Nat.le_succ n)
 
 end Quotient
 
 end Ideal
+#lint
