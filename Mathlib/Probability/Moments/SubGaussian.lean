@@ -556,39 +556,21 @@ lemma isSubGaussianWith_add_of_isCondSubGaussianWith' [StandardBorelSpace Ω] [I
   rw [Kernel.const_apply, ← Measure.compProd, compProd_trim_condExpKernel]
   rfl
 
+lemma IsSubGaussianWith.trim (hm : m ≤ mΩ) (hXm : Measurable[m] X) (hX : IsSubGaussianWith X c μ) :
+    IsSubGaussianWith X c (μ.trim hm) where
+  integrable_exp_mul t := by
+    refine (hX.integrable_exp_mul t).trim hm ?_
+    exact Measurable.stronglyMeasurable <| by fun_prop
+  mgf_le t := by
+    rw [mgf, ← integral_trim]
+    · exact hX.mgf_le t
+    · exact Measurable.stronglyMeasurable <| by fun_prop
+
 lemma isSubGaussianWith_add_of_isCondSubGaussianWith [StandardBorelSpace Ω] [IsFiniteMeasure μ]
     {Y : Ω → ℝ} {cY : ℝ≥0} (hm : m ≤ mΩ) (hXm : Measurable[m] X)
     (hX : IsSubGaussianWith X c μ) (hY : IsCondSubGaussianWith m hm Y cY μ) :
-    IsSubGaussianWith (X + Y) (c + cY) μ where
-  integrable_exp_mul t := by
-    simp_rw [Pi.add_apply, mul_add, exp_add]
-    exact Memℒp.integrable_mul (hX.memℒp t 2) (hY.memℒp m hm t 2)
-  mgf_le t := by
-    calc mgf (X + Y) μ t
-    _ = ∫ ω, exp (t * X ω) * exp (t * Y ω) ∂μ := by
-      simp only [mgf, Pi.add_apply, mul_add, exp_add]
-    _ = ∫ ω, (μ[fun ω ↦ exp (t * X ω) * exp (t * Y ω) | m]) ω ∂μ := by rw [integral_condExp hm]
-    _ = ∫ ω, exp (t * X ω) * (μ[fun ω ↦ exp (t * Y ω) | m]) ω ∂μ := by
-      refine integral_congr_ae ?_
-      refine condExp_mul_of_aestronglyMeasurable_left ?_ ?_ (hY.integrable_exp_mul m hm t)
-      · exact Measurable.aestronglyMeasurable <| by fun_prop
-      · exact Memℒp.integrable_mul (hX.memℒp t 2) (hY.memℒp m hm t 2)
-    _ ≤ ∫ ω, exp (t * X ω) * exp (cY * t^2 / 2) ∂μ := by
-      refine integral_mono_of_nonneg ?_ ((hX.integrable_exp_mul t).mul_const _) ?_
-      · have h := condExp_mono (f := 0) (g := fun ω ↦ exp (t * Y ω)) (μ := μ) (m := m)
-          (integrable_const 0) (hY.integrable_exp_mul m hm t) (ae_of_all _ fun ω ↦ by positivity)
-        simp only [condExp_zero] at h
-        filter_upwards [h] with ω hω using mul_nonneg (by positivity) hω
-      · filter_upwards [hY.condExp_le m hm t] with ω hω
-        gcongr
-    _ = mgf X μ t * exp (cY * t^2 / 2) := by rw [integral_mul_right, mgf]
-    _ ≤ exp (c * t^2 / 2) * exp (cY * t^2 / 2) := by
-      gcongr
-      exact hX.mgf_le t
-    _ = exp ((c + cY) * t ^ 2 / 2) := by
-      rw [← exp_add]
-      congr
-      ring
+    IsSubGaussianWith (X + Y) (c + cY) μ :=
+  isSubGaussianWith_add_of_isCondSubGaussianWith' m hm (hX.trim m hm hXm) hY
 
 variable {Y : ℕ → Ω → ℝ} {cY : ℕ → ℝ≥0} {ℱ : Filtration ℕ mΩ}
 
