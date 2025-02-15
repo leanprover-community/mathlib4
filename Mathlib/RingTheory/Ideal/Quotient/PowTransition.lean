@@ -23,10 +23,10 @@ which has already established the first isomophism theorem and Chinese remainder
 we put these pure
 technical lemmas that involves both `Submodule.mapQ` and `Ideal.Quotient.factor` in this file.
 ## Main definitions
-- `Submodule.mapQPow`: the linear map from `M ⧸ I ^ (n + 1) • ⊤` to `M ⧸ I ^ n • ⊤` induced by
-the natural inclusion `I ^ n • ⊤ → I ^ (n + 1) • ⊤`.
-- `Ideal.Quotient.factorPow`: the ring homomorphism from `R ⧸ I ^ (n + 1)`
-to `R ⧸ I ^ n` induced by the natural inclusion `I ^ n → I ^ (n + 1)`.
+- `Submodule.mapQPow`: the linear map from `M ⧸ I ^ m • ⊤` to `M ⧸ I ^ n • ⊤` induced by
+the natural inclusion `I ^ n • ⊤ → I ^ m • ⊤`.
+- `Ideal.Quotient.factorPow`: the ring homomorphism from `R ⧸ I ^ m`
+to `R ⧸ I ^ n` induced by the natural inclusion `I ^ n → I ^ m`.
 ## Main results
 -/
 
@@ -49,8 +49,8 @@ end
 
 variable (I M) in
 /--
-The linear map from `M ⧸ I ^ (n + 1) • ⊤` to `M ⧸ I ^ n • ⊤` induced by
-the natural inclusion `I ^ n • ⊤ → I ^ (n + 1) • ⊤`.
+The linear map from `M ⧸ I ^ m • ⊤` to `M ⧸ I ^ n • ⊤` induced by
+the natural inclusion `I ^ n • ⊤ → I ^ m • ⊤`.
 -/
 def mapQPow {m n : ℕ} (le : n ≤ m):
     M ⧸ (I ^ m • ⊤ : Submodule R M) →ₗ[R] M ⧸ (I ^ n • ⊤ : Submodule R M) :=
@@ -85,7 +85,7 @@ variable [I.IsTwoSided]
 variable (I) in
 /--
 The ring homomorphism from `R ⧸ I ^ m`
-to `R ⧸ I ^ n` induced by the natural inclusion `I ^ n → I ^ (n + 1)`.
+to `R ⧸ I ^ n` induced by the natural inclusion `I ^ n → I ^ m`.
 -/
 def factorPow {m n : ℕ} (le : n ≤ m) : R ⧸ I ^ m →+* R ⧸ I ^ n :=
   factor _ _ (pow_le_pow_right le)
