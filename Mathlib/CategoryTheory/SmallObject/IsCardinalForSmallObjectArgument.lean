@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.SmallObject.Construction
-import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
 import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
+import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
 import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 import Mathlib.SetTheory.Cardinal.Cofinality
@@ -437,35 +437,6 @@ lemma hasFunctorialFactorization :
     HasFunctorialFactorization I.rlp.llp I.rlp where
   nonempty_functorialFactorizationData :=
     ⟨functorialFactorizationData I κ⟩
-
-/-- If `κ` is a suitable cardinal for the small object argument for `I : MorphismProperty C`,
-then the class `I.rlp.llp` is exactly the class of morphisms that are retracts
-of transfinite compositions (of shape `κ.ord.toType`) of pushouts of coproducts
-of maps in `I`.  -/
-lemma llp_rlp_of_isCardinalForSmallObjectArgument' :
-    I.rlp.llp = (transfiniteCompositionsOfShape
-      (coproducts.{w} I).pushouts κ.ord.toType).retracts := by
-  refine le_antisymm ?_
-    (retracts_transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp I κ.ord.toType)
-  intro X Y f hf
-  have sq : CommSq (ιObj I κ f) f (πObj I κ f) (𝟙 _) := ⟨by simp⟩
-  have := hf _ (rlp_πObj I κ f)
-  refine ⟨_, _, _, ?_, transfiniteCompositionsOfShape_ιObj I κ f⟩
-  exact
-    { i := Arrow.homMk (𝟙 _) sq.lift
-      r := Arrow.homMk (𝟙 _) (πObj I κ f) }
-
-/-- If `κ` is a suitable cardinal for the small object argument for `I : MorphismProperty C`,
-then the class `I.rlp.llp` is exactly the class of morphisms that are retracts
-of transfinite compositions of pushouts of coproducts of maps in `I`.  -/
-lemma llp_rlp_of_isCardinalForSmallObjectArgument :
-    I.rlp.llp =
-      (transfiniteCompositions.{w} (coproducts.{w} I).pushouts).retracts := by
-  refine le_antisymm ?_
-    (retracts_transfiniteComposition_pushouts_coproducts_le_llp_rlp I)
-  rw [llp_rlp_of_isCardinalForSmallObjectArgument' I κ]
-  apply retracts_monotone
-  apply transfiniteCompositionsOfShape_le_transfiniteCompositions
 
 end SmallObject
 
