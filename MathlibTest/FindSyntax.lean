@@ -1,5 +1,4 @@
 import Mathlib.Tactic.FindSyntax
-import Mathlib.Util.WhatsNew
 
 infix:65 " #find_syntax_add " => Nat.add
 
@@ -51,9 +50,9 @@ In `Init.Notation`:
 info: Found 4 uses among over 500 syntax declarations
 In `Init.Tactics`:
   Lean.Parser.Tactic.refine: 'refine'
-  Lean.Parser.Tactic.tacticRefine_lift_: 'refine_lift'
-  Lean.Parser.Tactic.tacticRefine_lift'_: 'refine_lift''
   Lean.Parser.Tactic.refine': 'refine''
+  Lean.Parser.Tactic.tacticRefine_lift'_: 'refine_lift''
+  Lean.Parser.Tactic.tacticRefine_lift_: 'refine_lift'
 -/
 #guard_msgs in
 #find_syntax "refine" approx  -- a `nonReservedSymbol`

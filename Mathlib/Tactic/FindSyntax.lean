@@ -84,11 +84,15 @@ elab "#find_syntax " id:str d:(&" approx")? : command => do
       match_results := match_results.insert mod <| (match_results.findD mod #[]).push (nm, rem.trim)
   -- We sort the messages to produce a more stable output.
   -- let msgsToString ← msgs.mapM (·.toString)
-  let mods := (match_results.toList).map fun (mod, msgs) =>
+  let sorted_results := match_results.toArray.qsort fun (mod1, _) (mod2, _) =>
+    (mod1.toString < mod2.toString)
+  let sorted_results := sorted_results.map fun (mod, msgs) =>
+    (mod, msgs.qsort (·.1.toString < ·.1.toString))
+  let mods := (sorted_results.toList).map fun (mod, msgs) =>
     m!"In `{mod}`:" ++ (MessageData.nest 2 <|
       m!"".joinSep <| msgs.toList.map fun (decl, patt) =>
         m!"\n{MessageData.ofConstName decl}: '{patt}'")
-  let uses := (match_results.toList.map fun (_, msgs) => msgs.size).sum
+  let uses := (sorted_results.toList.map fun (_, msgs) => msgs.size).sum
   let numSymbs := if d.isSome then s!"over {(symbs.size / 100) * 100}" else s!"{symbs.size}"
   let head := m!"Found {uses} use{if uses == 1 then "" else "s"} \
                 among {numSymbs} syntax declarations"
