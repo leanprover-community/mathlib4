@@ -39,8 +39,7 @@ def maxDefault [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : 
 def minDefault [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
   if a ≤ b then a else b
 
--- #print maxDefault
-
+/- The definitions don't match up so we apply the attribute manually and hope for the best. -/
 attribute [order_dual existing] minDefault
 
 /-- This attempts to prove that a given instance of `compare` is equal to `compareOfLessAndEq` by
@@ -103,6 +102,7 @@ lemma le_of_not_le : ¬a ≤ b → b ≤ a := (le_total a b).resolve_left
 @[order_dual existing (reorder := 3 4) lt_of_not_ge]
 lemma lt_of_not_ge (h : ¬a ≥ b) : a < b := lt_of_le_not_le (le_of_not_ge h) h
 
+@[order_dual lt_trichotomyOD]
 lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a :=
   Or.elim (le_total a b)
     (fun h : a ≤ b =>
@@ -112,29 +112,31 @@ lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a :=
     Or.elim (Decidable.lt_or_eq_of_le h) (fun h : b < a => Or.inr (Or.inr h)) fun h : b = a =>
       Or.inr (Or.inl h.symm)
 
+@[order_dual existing (reorder := 3 4) le_of_not_lt]
 lemma le_of_not_lt (h : ¬b < a) : a ≤ b :=
   match lt_trichotomy a b with
   | Or.inl hlt => le_of_lt hlt
   | Or.inr (Or.inl HEq) => HEq ▸ le_refl a
   | Or.inr (Or.inr hgt) => absurd hgt h
 
+@[order_dual existing (reorder := 3 4) le_of_not_gt]
 lemma le_of_not_gt : ¬a > b → a ≤ b := le_of_not_lt
 
-@[order_dual (reorder := 3 4) lt_or_le']
+@[order_dual lt_or_leOD]
 lemma lt_or_le (a b : α) : a < b ∨ b ≤ a :=
   if hba : b ≤ a then Or.inr hba else Or.inl <| lt_of_not_ge hba
 
-@[order_dual (reorder := 3 4) le_or_lt']
+@[order_dual le_or_ltOD]
 lemma le_or_lt (a b : α) : a ≤ b ∨ b < a := (lt_or_le b a).symm
-@[order_dual (reorder := 3 4) lt_or_ge']
+@[order_dual lt_or_geOD]
 lemma lt_or_ge : ∀ a b : α, a < b ∨ a ≥ b := lt_or_le
-@[order_dual existing (reorder := 3 4) le_or_gt]
+@[order_dual le_or_gtOD]
 lemma le_or_gt : ∀ a b : α, a ≤ b ∨ a > b := le_or_lt
 
-@[order_dual existing (reorder := 3 4) lt_or_gt_of_ne]
+@[order_dual lt_or_gt_of_neOD]
 lemma lt_or_gt_of_ne (h : a ≠ b) : a < b ∨ a > b := by simpa [h] using lt_trichotomy a b
 
-@[order_dual existing (reorder := 3 4) ne_iff_lt_or_gt]
+@[order_dual ne_iff_lt_or_gtOD]
 lemma ne_iff_lt_or_gt : a ≠ b ↔ a < b ∨ a > b := ⟨lt_or_gt_of_ne, (Or.elim · ne_of_lt ne_of_gt)⟩
 
 @[order_dual existing (reorder := 3 4) lt_iff_not_ge]
@@ -145,16 +147,21 @@ lemma not_lt : ¬a < b ↔ b ≤ a := ⟨le_of_not_gt, not_lt_of_ge⟩
 @[order_dual existing (attr := simp) (reorder := 3 4) not_le]
 lemma not_le : ¬a ≤ b ↔ b < a := (lt_iff_not_ge _ _).symm
 
-instance (priority := 900) (a b : α) : Decidable (a < b) := LinearOrder.decidableLT a b
-instance (priority := 900) (a b : α) : Decidable (a ≤ b) := LinearOrder.decidableLE a b
+-- TODO: names??
+@[order_dual existing (reorder := 3 4) LOdecidableLT]
+instance (priority := 900) LOdecidableLT (a b : α) : Decidable (a < b) :=
+LinearOrder.decidableLT a b
+@[order_dual existing (reorder := 3 4) LOdecidableLE]
+instance (priority := 900) LOdecidableLE (a b : α) : Decidable (a ≤ b) :=
+LinearOrder.decidableLE a b
 instance (priority := 900) (a b : α) : Decidable (a = b) := LinearOrder.decidableEq a b
 
-@[order_dual existing (reorder := 3 4) eq_or_lt_of_not_lt]
+@[order_dual eq_or_lt_of_not_ltOD]
 lemma eq_or_lt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
   if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge => h (lt_of_le_of_ne hge h₁))
 
 /-- Perform a case-split on the ordering of `x` and `y` in a decidable linear order. -/
-@[order_dual existing (reorder := 3 4) ltByCases]
+@[order_dual ltByCasesOD]
 def ltByCases (x y : α) {P : Sort*} (h₁ : x < y → P) (h₂ : x = y → P) (h₃ : y < x → P) : P :=
   if h : x < y then h₁ h
   else if h' : y < x then h₃ h' else h₂ (le_antisymm (le_of_not_gt h') (le_of_not_gt h))
@@ -180,52 +187,47 @@ theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α}
     (H : d < c → b < a) (h : a ≤ b) : c ≤ d :=
   le_of_not_lt fun h' => not_le_of_gt (H h') h
 
--- @[order_dual?]
 lemma min_def (a b : α) : min a b = if a ≤ b then a else b := by rw [LinearOrder.min_def a]
--- lemma max_def (a b : α) : max a b = if b ≤ a then a else b := by? rw [LinearOrder.max_def a]
+
+-- fallout from mismatched max min defs above
+@[order_dual existing]
 lemma max_def (a b : α) : max a b = if a ≤ b then b else a := by rw [LinearOrder.max_def a]
 
-attribute [order_dual existing] min_def
-
 -- Porting note: no `min_tac` tactic in the following series of lemmas
--- @[order_dual? le_max_left]
 lemma min_le_left (a b : α) : min a b ≤ a := by
   if h : a ≤ b
   then simp [min_def, if_pos h, le_refl]
   else simpa [min_def, if_neg h] using le_of_not_le h
 
--- @[order_dual le_max_right]
-lemma min_le_right (a b : α) : min a b ≤ b := by
-  if h : a ≤ b
-  then simpa [min_def, if_pos h] using h
-  else simp [min_def, if_neg h, le_refl]
-
--- @[order_dual max_le]
-lemma le_min (h₁ : c ≤ a) (h₂ : c ≤ b) : c ≤ min a b := by
-  if h : a ≤ b
-  then simpa [min_def, if_pos h] using h₁
-  else simpa [min_def, if_neg h] using h₂
-
+@[order_dual existing min_le_left]
 lemma le_max_left (a b : α) : a ≤ max a b := by
   if h : a ≤ b
   then simpa [max_def, if_pos h] using h
   else simp [max_def, if_neg h, le_refl]
 
-attribute [order_dual existing min_le_left] le_max_left
+lemma min_le_right (a b : α) : min a b ≤ b := by
+  if h : a ≤ b
+  then simpa [min_def, if_pos h] using h
+  else simp [min_def, if_neg h, le_refl]
 
+@[order_dual existing min_le_right]
 lemma le_max_right (a b : α) : b ≤ max a b := by
   if h : a ≤ b
   then simp [max_def, if_pos h, le_refl]
   else simpa [max_def, if_neg h] using le_of_not_le h
 
-attribute [order_dual existing min_le_right] le_max_right
+lemma le_min (h₁ : c ≤ a) (h₂ : c ≤ b) : c ≤ min a b := by
+  if h : a ≤ b
+  then simpa [min_def, if_pos h] using h₁
+  else simpa [min_def, if_neg h] using h₂
 
+@[order_dual existing le_min]
 lemma max_le (h₁ : a ≤ c) (h₂ : b ≤ c) : max a b ≤ c := by
   if h : a ≤ b
   then simpa [max_def, if_pos h] using h₂
   else simpa [max_def, if_neg h] using h₁
 
-attribute [order_dual existing le_min] max_le
+/- `order_dual` seems to work from here on, the min / max API has been sealed? -/
 
 @[order_dual]
 lemma eq_min (h₁ : c ≤ a) (h₂ : c ≤ b) (h₃ : ∀ {d}, d ≤ a → d ≤ b → d ≤ c) : c = min a b :=

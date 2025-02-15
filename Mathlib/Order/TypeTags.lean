@@ -22,7 +22,7 @@ def WithBot (α : Type*) := Option α
 
 namespace WithBot
 
-@[order_dual?]
+@[order_dual]
 instance [Repr α] : Repr (WithBot α) :=
   ⟨fun o _ =>
     match o with

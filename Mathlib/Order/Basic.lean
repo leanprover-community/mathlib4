@@ -67,19 +67,23 @@ section Preorder
 
 variable [Preorder α] {a b c : α}
 
--- @[order_dual ()]
+@[order_dual le_transOD]
 theorem le_trans' : b ≤ c → a ≤ b → a ≤ c :=
   flip le_trans
 
+@[order_dual lt_transOD]
 theorem lt_trans' : b < c → a < b → a < c :=
   flip lt_trans
 
+@[order_dual lt_of_le_of_ltOD]
 theorem lt_of_le_of_lt' : b ≤ c → a < b → a < c :=
   flip lt_of_lt_of_le
 
+@[order_dual lt_of_lt_of_leOD]
 theorem lt_of_lt_of_le' : b < c → a ≤ b → a < c :=
   flip lt_of_le_of_lt
 
+@[order_dual existing (reorder := 3 4) not_lt_iff_not_le_or_ge]
 theorem not_lt_iff_not_le_or_ge : ¬a < b ↔ ¬a ≤ b ∨ b ≤ a := by
   rw [lt_iff_le_not_le, Classical.not_and_iff_or_not_not, Classical.not_not]
 
@@ -91,11 +95,14 @@ variable [PartialOrder α] {a b : α}
 
 -- moved ge_antisymm to PartialOrder.lean
 
--- theorem lt_of_le_of_ne'' : a ≤ b → b ≠ a → a < b := fun h₁ h₂ ↦ lt_of_le_of_ne' h₁ h₂
+-- see order_dual attribute of `lt_of_le_of_ne` in PartialOrder.lean
+-- theorem lt_of_le_of_ne' : a ≤ b → b ≠ a → a < b := fun h₁ h₂ ↦ lt_of_le_of_ne h₁ h₂.symm
 
+@[order_dual Ne.lt_of_leOD]
 theorem Ne.lt_of_le : a ≠ b → a ≤ b → a < b :=
   flip lt_of_le_of_ne
 
+@[order_dual Ne.lt_of_le'OD]
 theorem Ne.lt_of_le' : b ≠ a → a ≤ b → a < b :=
   flip lt_of_le_of_ne'
 
@@ -103,49 +110,59 @@ end PartialOrder
 
 attribute [ext] LE
 
+@[order_dual LE.le.transOD]
 alias LE.le.trans := le_trans
 
+@[order_dual LE.le.trans'OD]
 alias LE.le.trans' := le_trans'
 
+@[order_dual LE.le.trans_ltOD]
 alias LE.le.trans_lt := lt_of_le_of_lt
 
+@[order_dual LE.le.trans_lt'OD]
 alias LE.le.trans_lt' := lt_of_le_of_lt'
-set_option trace.to_additive_detail true in
-@[order_dual (reorder := 3 4) LE.le.antisymm']
+-- set_option trace.to_additive_detail true in
+@[order_dual LE.le.antisymm']
 alias LE.le.antisymm := le_antisymm
 
 -- alias LE.le.antisymm' := ge_antisymm
 
-set_option trace.to_additive_detail true in
-@[order_dual (reorder := 3 4) LE.le.lt_of_ne']
+-- set_option trace.to_additive_detail true in
+@[order_dual LE.le.lt_of_ne']
 alias LE.le.lt_of_ne := lt_of_le_of_ne
 
 -- alias LE.le.lt_of_ne' := lt_of_le_of_ne'
 
+@[order_dual existing (reorder := 3 4) LE.le.lt_of_not_le]
 alias LE.le.lt_of_not_le := lt_of_le_not_le
 
+@[order_dual LE.le.lt_or_eqOD]
 alias LE.le.lt_or_eq := lt_or_eq_of_le
 
+@[order_dual LE.le.lt_or_eq_decOD]
 alias LE.le.lt_or_eq_dec := Decidable.lt_or_eq_of_le
 
+@[order_dual existing (reorder := 3 4) LT.lt.le]
 alias LT.lt.le := le_of_lt
 
+@[order_dual LT.lt.transOD]
 alias LT.lt.trans := lt_trans
 
+@[order_dual LT.lt.trans'OD]
 alias LT.lt.trans' := lt_trans'
 
 alias LT.lt.trans_le := lt_of_lt_of_le
 
 alias LT.lt.trans_le' := lt_of_lt_of_le'
 
-@[order_dual (reorder := 3 4) LT.lt.ne']
+@[order_dual LT.lt.ne']
 alias LT.lt.ne := ne_of_lt
 
 alias LT.lt.asymm := lt_asymm
 
 alias LT.lt.not_lt := lt_asymm
 
-@[order_dual (reorder := 3 4) Eq.le']
+@[order_dual Eq.leOD]
 alias Eq.le := le_of_eq
 
 -- Porting note: no `decidable_classical` linter

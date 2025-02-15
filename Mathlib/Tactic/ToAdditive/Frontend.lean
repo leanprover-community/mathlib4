@@ -1660,6 +1660,8 @@ initialize registerBuiltinAttribute {
     applicationTime := .afterCompilation
   }
 
+-- TODO? add a `order_dual self ...` syntax which replaces `order_dual existing ... src_decl_name`
+-- and which checks that after reordering, the resulting declaration is actual defeq to the source
 initialize registerBuiltinAttribute {
     name := `order_dual
     descr := "Transport order dual"
