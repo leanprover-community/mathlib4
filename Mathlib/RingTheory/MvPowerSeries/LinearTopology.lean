@@ -32,26 +32,26 @@ open Set SetLike
 
 /-- The underlying family for the basis of ideals in a multivariate power series ring. -/
 def basis (σ : Type*) (R : Type*) [Ring R] (Jd : TwoSidedIdeal R × (σ →₀ ℕ)) :
-    TwoSidedIdeal (MvPowerSeries σ R) := by
-  apply TwoSidedIdeal.mk' {f | ∀ e ≤ Jd.2, coeff R e f ∈ Jd.1}
-  · simp [coeff_zero]
-  · exact fun hf hg e he ↦ by rw [map_add]; exact add_mem (hf e he) (hg e he)
-  · exact fun {f} hf e he ↦ by simp only [map_neg, neg_mem, hf e he]
-  · exact fun {f g} hg e he ↦ by
+    TwoSidedIdeal (MvPowerSeries σ R) :=
+  TwoSidedIdeal.mk' {f | ∀ e ≤ Jd.2, coeff R e f ∈ Jd.1}
+    (by simp [coeff_zero])
+    (fun hf hg e he ↦ by rw [map_add]; exact add_mem (hf e he) (hg e he))
+    (fun {f} hf e he ↦ by simp only [map_neg, neg_mem, hf e he])
+    (fun {f g} hg e he ↦ by
       classical
       rw [coeff_mul]
       apply sum_mem
       rintro uv huv
       apply TwoSidedIdeal.mul_mem_left
       exact hg _ (le_trans (le_iff_exists_add'.mpr
-        ⟨uv.fst, (Finset.mem_antidiagonal.mp huv).symm⟩) he)
-  · exact fun {f g} hf e he ↦ by
+        ⟨uv.fst, (Finset.mem_antidiagonal.mp huv).symm⟩) he))
+    (fun {f g} hf e he ↦ by
       classical
       rw [coeff_mul]
       apply sum_mem
       rintro uv huv
-      apply TwoSidedIdeal.mul_mem_right
-      exact hf _ (le_trans (le_iff_exists_add.mpr ⟨uv.2, (Finset.mem_antidiagonal.mp huv).symm⟩) he)
+      exact TwoSidedIdeal.mul_mem_right Jd.1 _ _
+        (hf _ (le_trans (le_iff_exists_add.mpr ⟨uv.2, (Finset.mem_antidiagonal.mp huv).symm⟩) he)))
 
 variable {σ : Type*} {R : Type*} [Ring R]
 
