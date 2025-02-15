@@ -810,9 +810,7 @@ def pow (k : ℕ) : ArithmeticFunction ℕ :=
 
 @[simp]
 theorem pow_apply {k n : ℕ} : pow k n = if k = 0 ∧ n = 0 then 0 else n ^ k := by
-  cases k
-  · simp [pow]
-  rfl
+  cases k <;> simp [pow]
 
 theorem pow_zero_eq_zeta : pow 0 = ζ := by
   ext n
