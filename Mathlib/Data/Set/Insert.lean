@@ -54,7 +54,7 @@ theorem mem_of_mem_insert_of_ne : b ∈ insert a s → b ≠ a → b ∈ s :=
 theorem eq_of_not_mem_of_mem_insert : b ∈ insert a s → b ∉ s → b = a :=
   Or.resolve_right
 
-@[simp]
+@[simp, push]
 theorem mem_insert_iff {x a : α} {s : Set α} : x ∈ insert a s ↔ x = a ∨ x ∈ s :=
   Iff.rfl
 
@@ -168,7 +168,7 @@ instance : LawfulSingleton α (Set α) :=
 theorem singleton_def (a : α) : ({a} : Set α) = insert a ∅ :=
   (insert_emptyc_eq a).symm
 
-@[simp]
+@[simp, push]
 theorem mem_singleton_iff {a b : α} : a ∈ ({b} : Set α) ↔ a = b :=
   Iff.rfl
 
