@@ -3,7 +3,8 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Algebra.Field.CharZero
+import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Data.Fintype.Units
 import Mathlib.GroupTheory.IndexNormal
 import Mathlib.GroupTheory.Perm.Fin
