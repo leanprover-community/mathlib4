@@ -3496,6 +3496,7 @@ import Mathlib.Lean.Exception
 import Mathlib.Lean.Expr
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Expr.ExtraRecognizers
+import Mathlib.Lean.Expr.Lit
 import Mathlib.Lean.Expr.Rat
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.GoalsLocation
