@@ -172,6 +172,8 @@ def collectFacts (g : MVarId) :
   let ctx ← getLCtx
   let res : (Std.HashMap Expr <| Std.HashMap Expr Nat × Array AtomicFact) ←
   ctx.foldlM (init := Std.HashMap.empty) fun res ldecl => do
+    if ldecl.isImplementationDetail then
+      return res
     let ⟨0, type, expr⟩ := ← inferTypeQ ldecl.toExpr | return res
     match type with
     | ~q(@Eq $α $x $y) =>
