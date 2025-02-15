@@ -59,7 +59,7 @@ theorem piComparison_fac {α : Type} (X : α → TopCat) :
 
 /-- The universe polymorphic Yoneda presheaf on `TopCat` preserves finite products. -/
 noncomputable instance : PreservesFiniteProducts (yonedaPresheaf'.{w, w'} Y) where
-  preserves _ _ :=
+  preserves _ :=
     { preservesLimit := fun {K} =>
       have : ∀ {α : Type} (X : α → TopCat), PreservesLimit (Discrete.functor (fun x ↦ op (X x)))
           (yonedaPresheaf'.{w, w'} Y) := fun X => @PreservesProduct.of_iso_comparison _ _ _ _
