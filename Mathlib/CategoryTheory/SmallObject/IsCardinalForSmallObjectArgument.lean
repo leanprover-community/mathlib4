@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.SmallObject.Construction
-import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
 import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
 import Mathlib.CategoryTheory.MorphismProperty.IsSmall
-import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 import Mathlib.SetTheory.Cardinal.Cofinality
 
@@ -114,9 +112,9 @@ lemma preservesColimit {A B X Y : C} (i : A ⟶ B) (hi : I i) (f : X ⟶ Y)
 lemma hasColimitsOfShape_discrete (X Y : C) (p : X ⟶ Y) :
     HasColimitsOfShape
       (Discrete (FunctorObjIndex I.homFamily p)) C := by
-  have := locallySmall I κ
-  have := isSmall I κ
-  have := hasCoproducts I κ
+  haveI := locallySmall I κ
+  haveI := isSmall I κ
+  haveI := hasCoproducts I κ
   exact hasColimitsOfShape_of_equivalence
     (Discrete.equivalence (equivShrink.{w} _)).symm
 
@@ -125,22 +123,21 @@ to the iterations of the natural transformation
 `ε : 𝟭 (Arrow C) ⟶ SmallObject.functor I.homFamily`
 (see the file `SmallObject.Construction`). -/
 noncomputable def succStruct : SuccStruct (Arrow C ⥤ Arrow C) :=
-  have := hasColimitsOfShape_discrete I κ
-  have := hasPushouts I κ
+  haveI := hasColimitsOfShape_discrete I κ
+  haveI := hasPushouts I κ
   SuccStruct.ofNatTrans (ε I.homFamily)
 
 /-- For the successor structure `succStruct I κ` on `Arrow C ⥤ Arrow C`,
 the morphism from an object to its successor induces
 morphisms in `C` which consists in attaching `I`-cells. -/
-@[nolint unusedHavesSuffices]
 noncomputable def attachCellsOfSuccStructProp
     {F G : Arrow C ⥤ Arrow C} {φ : F ⟶ G}
     (h : (succStruct I κ).prop φ) (f : Arrow C) :
     AttachCells.{w} I.homFamily (φ.app f).left :=
-  have := locallySmall I κ
-  have := isSmall I κ
-  have := hasColimitsOfShape_discrete I κ
-  have := hasPushouts I κ
+  haveI := locallySmall I κ
+  haveI := isSmall I κ
+  haveI := hasColimitsOfShape_discrete I κ
+  haveI := hasPushouts I κ
   AttachCells.ofArrowIso (attachCellsιFunctorObjOfSmall _ _)
     ((Functor.mapArrow ((evaluation _ _).obj f ⋙
       Arrow.leftFunc)).mapIso h.arrowIso.symm)
@@ -153,10 +150,10 @@ def propArrow : MorphismProperty (Arrow C) := fun _ _ f ↦
 
 lemma succStruct_prop_le_propArrow :
     (succStruct I κ).prop ≤ (propArrow.{w} I).functorCategory (Arrow C) := by
-  have := locallySmall I κ
-  have := isSmall I κ
-  have := hasColimitsOfShape_discrete I κ
-  have := hasPushouts I κ
+  haveI := locallySmall I κ
+  haveI := isSmall I κ
+  haveI := hasColimitsOfShape_discrete I κ
+  haveI := hasPushouts I κ
   intro _ _ _ ⟨F⟩ f
   constructor
   · nth_rw 1 [← I.ofHoms_homFamily]
@@ -170,24 +167,24 @@ lemma succStruct_prop_le_propArrow :
 /-- The functor `κ.ord.toType ⥤ Arrow C ⥤ Arrow C` corresponding to the
 iterations of the successor structure `succStruct I κ`. -/
 noncomputable def iterationFunctor : κ.ord.toType ⥤ Arrow C ⥤ Arrow C :=
-  have := hasIterationOfShape I κ
+  haveI := hasIterationOfShape I κ
   (succStruct I κ).iterationFunctor κ.ord.toType
 
 /-- The colimit of `iterationFunctor I κ`. -/
 noncomputable def iteration : Arrow C ⥤ Arrow C :=
-  have := hasIterationOfShape I κ
+  haveI := hasIterationOfShape I κ
   (succStruct I κ).iteration κ.ord.toType
 
 /-- The natural "inclusion" `𝟭 (Arrow C) ⟶ iteration I κ`. -/
 noncomputable def ιIteration : 𝟭 _ ⟶ iteration I κ :=
-  have := hasIterationOfShape I κ
+  haveI := hasIterationOfShape I κ
   (succStruct I κ).ιIteration κ.ord.toType
 
 /-- The morphism `ιIteration I κ` is a transfinite composition of shape
 `κ.ord.toType` of morphisms satisfying `(succStruct I κ).prop`. -/
 noncomputable def transfiniteCompositionOfShapeSuccStructPropιIteration :
     (succStruct I κ).prop.TransfiniteCompositionOfShape κ.ord.toType (ιIteration I κ) :=
-  have := hasIterationOfShape I κ
+  haveI := hasIterationOfShape I κ
   (succStruct I κ).transfiniteCompositionOfShapeιIteration κ.ord.toType
 
 @[simp]
@@ -201,7 +198,7 @@ a transfinite composition of isomorphisms. -/
 noncomputable def transfiniteCompositionOfShapeιIterationAppRight (f : Arrow C) :
     (isomorphisms C).TransfiniteCompositionOfShape κ.ord.toType
       ((ιIteration I κ).app f).right :=
-  have := hasIterationOfShape I κ
+  haveI := hasIterationOfShape I κ
   let h := transfiniteCompositionOfShapeSuccStructPropιIteration I κ
   { toTransfiniteCompositionOfShape :=
       h.toTransfiniteCompositionOfShape.map ((evaluation _ _).obj f ⋙ Arrow.rightFunc)
