@@ -9,7 +9,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.Preorder.TransfiniteCompositionOfSha
 import Mathlib.Order.Shrink
 import Mathlib.Order.Interval.Set.SuccOrder
 import Mathlib.Logic.UnivLE
-
 /-!
 # Classes of morphisms that are stable under transfinite composition
 
