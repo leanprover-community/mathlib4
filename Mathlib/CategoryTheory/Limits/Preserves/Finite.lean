@@ -43,9 +43,6 @@ class PreservesFiniteLimits (F : C ⥤ D) : Prop where
 
 attribute [instance] PreservesFiniteLimits.preservesFiniteLimits
 
-instance (F : C ⥤ D) : Subsingleton (PreservesFiniteLimits F) :=
-  ⟨fun ⟨a⟩ ⟨b⟩ => by congr⟩
-
 /-- Preserving finite limits also implies preserving limits over finite shapes in higher universes,
 though through a noncomputable instance. -/
 instance (priority := 100) preservesLimitsOfShapeOfPreservesFiniteLimits (F : C ⥤ D)
@@ -93,29 +90,25 @@ lemma preservesFiniteLimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [PreservesFi
 
 /- Porting note: adding this class because quantified classes don't behave well
 https://github.com/leanprover-community/mathlib4/pull/2764 -/
-/-- A functor `F` preserves finite products if it preserves all from `Discrete J`
-for `Fintype J` -/
+/-- A functor `F` preserves finite products if it preserves all from `Discrete J` for `Finite J`.
+We require this for `J = Fin n` in the definition,
+then generalize to `J : Type u` in the instance. -/
 class PreservesFiniteProducts (F : C ⥤ D) : Prop where
-  preserves : ∀ (J : Type) [Fintype J], PreservesLimitsOfShape (Discrete J) F
-
-attribute [instance] PreservesFiniteProducts.preserves
-
-instance (F : C ⥤ D) : Subsingleton (PreservesFiniteProducts F) :=
-  ⟨fun ⟨a⟩ ⟨b⟩ => by congr⟩
+  preserves : ∀ n, PreservesLimitsOfShape (Discrete (Fin n)) F
 
 instance (priority := 100) (F : C ⥤ D) (J : Type u) [Finite J]
     [PreservesFiniteProducts F] : PreservesLimitsOfShape (Discrete J) F := by
-  apply Nonempty.some
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin J
-  exact ⟨preservesLimitsOfShape_of_equiv (Discrete.equivalence e.symm) F⟩
+  have := PreservesFiniteProducts.preserves (F := F) n
+  exact preservesLimitsOfShape_of_equiv (Discrete.equivalence e.symm) F
 
 instance comp_preservesFiniteProducts (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteProducts F] [PreservesFiniteProducts G] :
     PreservesFiniteProducts (F ⋙ G) where
-  preserves _ _ := inferInstance
+  preserves _ := inferInstance
 
 instance (F : C ⥤ D) [PreservesFiniteLimits F] : PreservesFiniteProducts F where
-  preserves _ _ := inferInstance
+  preserves _ := inferInstance
 
 /--
 A functor is said to reflect finite limits, if it reflects all limits of shape `J`,
@@ -127,20 +120,20 @@ class ReflectsFiniteLimits (F : C ⥤ D) : Prop where
 
 attribute [instance] ReflectsFiniteLimits.reflects
 
-instance (F : C ⥤ D) : Subsingleton (ReflectsFiniteLimits F) :=
-  ⟨fun ⟨a⟩ ⟨b⟩ => by congr⟩
-
 /- Similarly to preserving finite products, quantified classes don't behave well. -/
 /--
-A functor `F` preserves finite products if it reflects limits of shape `Discrete J` for finite `J`
+A functor `F` preserves finite products if it reflects limits of shape `Discrete J` for finite `J`.
+We require this for `J = Fin n` in the definition,
+then generalize to `J : Type u` in the instance.
 -/
 class ReflectsFiniteProducts (F : C ⥤ D) : Prop where
-  reflects : ∀ (J : Type) [Fintype J], ReflectsLimitsOfShape (Discrete J) F
+  reflects : ∀ n, ReflectsLimitsOfShape (Discrete (Fin n)) F
 
-attribute [instance] ReflectsFiniteProducts.reflects
-
-instance (F : C ⥤ D) : Subsingleton (ReflectsFiniteProducts F) :=
-  ⟨fun ⟨a⟩ ⟨b⟩ => by congr⟩
+instance (priority := 100) (F : C ⥤ D) [ReflectsFiniteProducts F] (J : Type u) [Finite J] :
+    ReflectsLimitsOfShape (Discrete J) F :=
+  let ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin J
+  have := ReflectsFiniteProducts.reflects (F := F) n
+  reflectsLimitsOfShape_of_equiv (Discrete.equivalence e.symm) _
 
 -- This is a dangerous instance as it has unbound universe variables.
 /-- If we reflect limits of some arbitrary size, then we reflect all finite limits. -/
@@ -174,7 +167,7 @@ finite products.
 -/
 lemma preservesFiniteProducts_of_reflects_of_preserves (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteProducts (F ⋙ G)] [ReflectsFiniteProducts G] : PreservesFiniteProducts F where
-  preserves _ _ := preservesLimitsOfShape_of_reflects_of_preserves F G
+  preserves _ := preservesLimitsOfShape_of_reflects_of_preserves F G
 
 instance reflectsFiniteLimits_of_reflectsIsomorphisms (F : C ⥤ D)
     [F.ReflectsIsomorphisms] [HasFiniteLimits C] [PreservesFiniteLimits F] :
@@ -184,15 +177,15 @@ instance reflectsFiniteLimits_of_reflectsIsomorphisms (F : C ⥤ D)
 instance reflectsFiniteProducts_of_reflectsIsomorphisms (F : C ⥤ D)
     [F.ReflectsIsomorphisms] [HasFiniteProducts C] [PreservesFiniteProducts F] :
       ReflectsFiniteProducts F where
-  reflects _ _ := reflectsLimitsOfShape_of_reflectsIsomorphisms
+  reflects _ := reflectsLimitsOfShape_of_reflectsIsomorphisms
 
 instance comp_reflectsFiniteProducts (F : C ⥤ D) (G : D ⥤ E)
     [ReflectsFiniteProducts F] [ReflectsFiniteProducts G] :
     ReflectsFiniteProducts (F ⋙ G) where
-  reflects _ _ := inferInstance
+  reflects _ := inferInstance
 
 instance (F : C ⥤ D) [ReflectsFiniteLimits F] : ReflectsFiniteProducts F where
-  reflects _ _ := inferInstance
+  reflects _ := inferInstance
 
 /-- A functor is said to preserve finite colimits, if it preserves all colimits of
 shape `J`, where `J : Type` is a finite category.
@@ -203,9 +196,6 @@ class PreservesFiniteColimits (F : C ⥤ D) : Prop where
       infer_instance
 
 attribute [instance] PreservesFiniteColimits.preservesFiniteColimits
-
-instance (F : C ⥤ D) : Subsingleton (PreservesFiniteColimits F) :=
-  ⟨fun ⟨a⟩ ⟨b⟩ => by congr⟩
 
 /--
 Preserving finite colimits also implies preserving colimits over finite shapes in higher
@@ -257,43 +247,35 @@ lemma preservesFiniteColimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [Preserves
 
 /- Porting note: adding this class because quantified classes don't behave well
 https://github.com/leanprover-community/mathlib4/pull/2764 -/
-/-- A functor `F` preserves finite products if it preserves all from `Discrete J`
-for `Fintype J` -/
+/-- A functor `F` preserves finite products if it preserves all from `Discrete J` for `Fintype J`.
+We require this for `J = Fin n` in the definition,
+then generalize to `J : Type u` in the instance. -/
 class PreservesFiniteCoproducts (F : C ⥤ D) : Prop where
-  /-- preservation of colimits indexed by `Discrete J` when `[Fintype J]` -/
-  preserves : ∀ (J : Type) [Fintype J], PreservesColimitsOfShape (Discrete J) F
-
-attribute [instance] PreservesFiniteCoproducts.preserves
-
-instance (F : C ⥤ D) : Subsingleton (PreservesFiniteCoproducts F) :=
-  ⟨fun ⟨a⟩ ⟨b⟩ => by congr⟩
+  /-- preservation of colimits indexed by `Discrete (Fin n)`. -/
+  preserves : ∀ n, PreservesColimitsOfShape (Discrete (Fin n)) F
 
 instance (priority := 100) (F : C ⥤ D) (J : Type u) [Finite J]
-    [PreservesFiniteCoproducts F] : PreservesColimitsOfShape (Discrete J) F := by
-  apply Nonempty.some
-  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin J
-  exact ⟨preservesColimitsOfShape_of_equiv (Discrete.equivalence e.symm) F⟩
+    [PreservesFiniteCoproducts F] : PreservesColimitsOfShape (Discrete J) F :=
+  let ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin J
+  have := PreservesFiniteCoproducts.preserves (F := F) n
+  preservesColimitsOfShape_of_equiv (Discrete.equivalence e.symm) F
 
 instance comp_preservesFiniteCoproducts (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteCoproducts F] [PreservesFiniteCoproducts G] :
     PreservesFiniteCoproducts (F ⋙ G) where
-  preserves _ _ := inferInstance
+  preserves _ := inferInstance
 
 instance (F : C ⥤ D) [PreservesFiniteColimits F] : PreservesFiniteCoproducts F where
-  preserves _ _ := inferInstance
+  preserves _ := inferInstance
 
 /--
 A functor is said to reflect finite colimits, if it reflects all colimits of shape `J`,
 where `J : Type` is a finite category.
 -/
 class ReflectsFiniteColimits (F : C ⥤ D) : Prop where
-  reflects : ∀ (J : Type) [SmallCategory J] [FinCategory J], ReflectsColimitsOfShape J F := by
-    infer_instance
+  [reflects : ∀ (J : Type) [SmallCategory J] [FinCategory J], ReflectsColimitsOfShape J F]
 
 attribute [instance] ReflectsFiniteColimits.reflects
-
-instance (F : C ⥤ D) : Subsingleton (ReflectsFiniteColimits F) :=
-  ⟨fun ⟨a⟩ ⟨b⟩ => by congr⟩
 
 -- This is a dangerous instance as it has unbound universe variables.
 /-- If we reflect colimits of some arbitrary size, then we reflect all finite colimits. -/
@@ -315,16 +297,20 @@ instance (priority := 120) (F : C ⥤ D)
 
 /- Similarly to preserving finite coproducts, quantified classes don't behave well. -/
 /--
-A functor `F` preserves finite coproducts if it reflects colimits of shape `Discrete J` for
-finite `J`
+A functor `F` preserves finite coproducts if it reflects colimits of shape `Discrete J`
+for finite `J`.
+
+We require this for `J = Fin n` in the definition,
+then generalize to `J : Type u` in the instance.
 -/
 class ReflectsFiniteCoproducts (F : C ⥤ D) : Prop where
-  reflects : ∀ (J : Type) [Fintype J], ReflectsColimitsOfShape (Discrete J) F
+  reflects : ∀ n, ReflectsColimitsOfShape (Discrete (Fin n)) F
 
-attribute [instance] ReflectsFiniteCoproducts.reflects
-
-instance (F : C ⥤ D) : Subsingleton (ReflectsFiniteCoproducts F) :=
-  ⟨fun ⟨a⟩ ⟨b⟩ => by congr⟩
+instance (priority := 100) (F : C ⥤ D) [ReflectsFiniteCoproducts F] (J : Type u) [Finite J] :
+    ReflectsColimitsOfShape (Discrete J) F :=
+  let ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin J
+  have := ReflectsFiniteCoproducts.reflects (F := F) n
+  reflectsColimitsOfShape_of_equiv (Discrete.equivalence e.symm) _
 
 /--
 If `F ⋙ G` preserves finite colimits and `G` reflects finite colimits, then `F` preserves finite
@@ -341,7 +327,7 @@ finite coproducts.
 lemma preservesFiniteCoproducts_of_reflects_of_preserves (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteCoproducts (F ⋙ G)] [ReflectsFiniteCoproducts G] :
     PreservesFiniteCoproducts F where
-  preserves _ _ := preservesColimitsOfShape_of_reflects_of_preserves F G
+  preserves _ := preservesColimitsOfShape_of_reflects_of_preserves F G
 
 instance reflectsFiniteColimitsOfReflectsIsomorphisms (F : C ⥤ D)
     [F.ReflectsIsomorphisms] [HasFiniteColimits C] [PreservesFiniteColimits F] :
@@ -351,14 +337,14 @@ instance reflectsFiniteColimitsOfReflectsIsomorphisms (F : C ⥤ D)
 instance reflectsFiniteCoproductsOfReflectsIsomorphisms (F : C ⥤ D)
     [F.ReflectsIsomorphisms] [HasFiniteCoproducts C] [PreservesFiniteCoproducts F] :
       ReflectsFiniteCoproducts F where
-  reflects _ _ := reflectsColimitsOfShape_of_reflectsIsomorphisms
+  reflects _ := reflectsColimitsOfShape_of_reflectsIsomorphisms
 
 instance comp_reflectsFiniteCoproducts (F : C ⥤ D) (G : D ⥤ E)
     [ReflectsFiniteCoproducts F] [ReflectsFiniteCoproducts G] :
     ReflectsFiniteCoproducts (F ⋙ G) where
-  reflects _ _ := inferInstance
+  reflects _ := inferInstance
 
 instance (F : C ⥤ D) [ReflectsFiniteColimits F] : ReflectsFiniteCoproducts F where
-  reflects _ _ := inferInstance
+  reflects _ := inferInstance
 
 end CategoryTheory.Limits

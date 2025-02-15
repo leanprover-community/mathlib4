@@ -19,7 +19,7 @@ namespace Set
 
 variable {J : Type*} [PartialOrder J]
 
-lemma Iic.succ_coe_of_not_isMax
+lemma Iic.coe_succ_of_not_isMax
     [SuccOrder J] {j : J} {i : Set.Iic j} (hi : ¬ IsMax i) :
     (Order.succ i).1 = Order.succ i.1 := by
   rw [coe_succ_of_mem]
@@ -29,12 +29,12 @@ lemma Iic.succ_coe_of_not_isMax
 lemma Iic.succ_eq_of_not_isMax
     [SuccOrder J] {j : J} {i : Set.Iic j} (hi : ¬ IsMax i) :
     Order.succ i = ⟨Order.succ i.1, by
-      rw [← succ_coe_of_not_isMax hi]
+      rw [← coe_succ_of_not_isMax hi]
       apply Subtype.coe_prop⟩ := by
   ext
-  simp only [succ_coe_of_not_isMax hi]
+  simp only [coe_succ_of_not_isMax hi]
 
-lemma Ici.pred_coe_of_not_isMin
+lemma Ici.coe_pred_of_not_isMin
     [PredOrder J] {j : J} {i : Set.Ici j} (hi : ¬ IsMin i) :
     (Order.pred i).1 = Order.pred i.1 := by
   rw [coe_pred_of_mem]
@@ -44,9 +44,9 @@ lemma Ici.pred_coe_of_not_isMin
 lemma Ici.pred_eq_of_not_isMin
     [PredOrder J] {j : J} {i : Set.Ici j} (hi : ¬ IsMin i) :
     Order.pred i = ⟨Order.pred i.1, by
-      rw [← pred_coe_of_not_isMin hi]
+      rw [← coe_pred_of_not_isMin hi]
       apply Subtype.coe_prop⟩ := by
   ext
-  simp only [pred_coe_of_not_isMin hi]
+  simp only [coe_pred_of_not_isMin hi]
 
 end Set
