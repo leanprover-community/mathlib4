@@ -121,7 +121,7 @@ protected theorem Adj.ne {H : G.Subgraph} {u v : V} (h : H.Adj u v) : u ≠ v :=
 theorem adj_congr_of_sym2 {H : G.Subgraph} {u v w x : V} (h2 : s(u, v) = s(w, x)) :
     H.Adj u v ↔ H.Adj w x := by
   simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at h2
-  cases' h2 with hl hr
+  rcases h2 with hl | hr
   · rw [hl.1, hl.2]
   · rw [hr.1, hr.2, Subgraph.adj_comm]
 
@@ -173,6 +173,12 @@ theorem spanningCoe_inj : G₁.spanningCoe = G₂.spanningCoe ↔ G₁.Adj = G�
 
 lemma mem_of_adj_spanningCoe {v w : V} {s : Set V} (G : SimpleGraph s)
     (hadj : G.spanningCoe.Adj v w) : v ∈ s := by aesop
+
+@[simp]
+lemma spanningCoe_subgraphOfAdj {v w : V} (hadj : G.Adj v w) :
+    (G.subgraphOfAdj hadj).spanningCoe = fromEdgeSet {s(v, w)} := by
+  ext v w
+  aesop
 
 /-- `spanningCoe` is equivalent to `coe` for a subgraph that `IsSpanning`. -/
 @[simps]
@@ -227,12 +233,12 @@ theorem edgeSet_subset (G' : Subgraph G) : G'.edgeSet ⊆ G.edgeSet :=
 protected lemma mem_edgeSet {G' : Subgraph G} {v w : V} : s(v, w) ∈ G'.edgeSet ↔ G'.Adj v w := .rfl
 
 @[simp] lemma edgeSet_coe {G' : G.Subgraph} : G'.coe.edgeSet = Sym2.map (↑) ⁻¹' G'.edgeSet := by
-  ext e; induction' e using Sym2.ind with a b; simp
+  ext e; induction e using Sym2.ind; simp
 
 lemma image_coe_edgeSet_coe (G' : G.Subgraph) : Sym2.map (↑) '' G'.coe.edgeSet = G'.edgeSet := by
   rw [edgeSet_coe, Set.image_preimage_eq_iff]
   rintro e he
-  induction' e using Sym2.ind with a b
+  induction e using Sym2.ind with | h a b =>
   rw [Subgraph.mem_edgeSet] at he
   exact ⟨s(⟨a, edge_vert _ he⟩, ⟨b, edge_vert _ he.symm⟩), Sym2.map_pair_eq ..⟩
 
@@ -566,6 +572,10 @@ theorem _root_.SimpleGraph.toSubgraph.isSpanning (H : SimpleGraph V) (h : H ≤ 
 theorem spanningCoe_le_of_le {H H' : Subgraph G} (h : H ≤ H') : H.spanningCoe ≤ H'.spanningCoe :=
   h.2
 
+@[simp]
+lemma sup_spanningCoe (H H' : Subgraph G) :
+    (H ⊔ H').spanningCoe = H.spanningCoe ⊔ H'.spanningCoe := rfl
+
 /-- The top of the `Subgraph G` lattice is equivalent to the graph itself. -/
 def topEquiv : (⊤ : Subgraph G).coe ≃g G where
   toFun v := ↑v
@@ -763,6 +773,22 @@ theorem degree_eq_one_iff_unique_adj {G' : Subgraph G} {v : V} [Fintype (G'.neig
     G'.degree v = 1 ↔ ∃! w : V, G'.Adj v w := by
   rw [← finset_card_neighborSet_eq_degree, Finset.card_eq_one, Finset.singleton_iff_unique_mem]
   simp only [Set.mem_toFinset, mem_neighborSet]
+
+lemma adj_iff_of_neighborSet_equiv {v : V} {H : Subgraph G}
+    (h : G.neighborSet v ≃ H.neighborSet v) (hfin : Fintype (G.neighborSet v)) :
+    ∀ {w}, H.Adj v w ↔ G.Adj v w := by
+  classical
+  intro w
+  refine ⟨fun a => a.adj_sub, ?_⟩
+  have : Fintype (H.neighborSet v) := (h.set_finite_iff.mp hfin.finite).fintype
+  let f : H.neighborSet v → G.neighborSet v := fun a => ⟨a, a.coe_prop.adj_sub⟩
+  have hfinj : f.Injective := fun w w' hww' ↦ by aesop
+  have hfbij : f.Bijective := ⟨hfinj, hfinj.surjective_of_fintype h.symm⟩
+  intro h
+  have hv := (Fintype.bijInv hfbij ⟨w, h⟩).coe_prop
+  obtain ⟨v', hv'⟩ : ∃ v', f v' = ⟨w, h⟩ := hfbij.surjective ⟨w, h⟩
+  have : (f v') = w := by simpa using congrArg Subtype.val hv'
+  aesop
 
 end Subgraph
 
@@ -1174,6 +1200,12 @@ theorem deleteVerts_mono {G' G'' : G.Subgraph} (h : G' ≤ G'') :
     G'.deleteVerts s ≤ G''.deleteVerts s :=
   induce_mono h (Set.diff_subset_diff_left h.1)
 
+@[mono]
+lemma deleteVerts_mono' {G' : SimpleGraph V} (u : Set V) (h : G ≤ G') :
+    ((⊤ : Subgraph G).deleteVerts u).coe ≤ ((⊤ : Subgraph G').deleteVerts u).coe := by
+  intro v w hvw
+  aesop
+
 @[gcongr, mono]
 theorem deleteVerts_anti {s s' : Set V} (h : s ⊆ s') : G'.deleteVerts s' ≤ G'.deleteVerts s :=
   induce_mono (le_refl _) (Set.diff_subset_diff_right h)
@@ -1186,6 +1218,16 @@ theorem deleteVerts_inter_verts_left_eq : G'.deleteVerts (G'.verts ∩ s) = G'.d
 theorem deleteVerts_inter_verts_set_right_eq :
     G'.deleteVerts (s ∩ G'.verts) = G'.deleteVerts s := by
   ext <;> simp +contextual [imp_false]
+
+instance instDecidableRel_deleteVerts_adj (u : Set V) [r : DecidableRel G.Adj] :
+    DecidableRel ((⊤ : G.Subgraph).deleteVerts u).coe.Adj :=
+  fun x y =>
+    if h : G.Adj x y
+    then
+      .isTrue <|  SimpleGraph.Subgraph.Adj.coe <| Subgraph.deleteVerts_adj.mpr
+        ⟨by trivial, x.2.2, by trivial, y.2.2, h⟩
+    else
+      .isFalse <| fun hadj ↦ h <| Subgraph.coe_adj_sub _ _ _ hadj
 
 end DeleteVerts
 
