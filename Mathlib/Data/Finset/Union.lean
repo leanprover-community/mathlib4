@@ -3,7 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Image
+import Mathlib.Data.Finset.Fold
 import Mathlib.Data.Multiset.Bind
 import Mathlib.Order.SetNotation
 
@@ -88,6 +88,8 @@ lemma sUnion_disjiUnion {f : α → Finset (Set β)} (I : Finset α)
   simp only [coe_disjiUnion, Set.mem_sUnion, Set.mem_iUnion, mem_coe, exists_prop]
   tauto
 
+section DecidableEq
+
 variable [DecidableEq β] {s : Finset α} {t : Finset β} {f : α → β}
 
 private lemma pairwiseDisjoint_fibers : Set.PairwiseDisjoint ↑t fun a ↦ s.filter (f · = a) :=
@@ -103,18 +105,24 @@ lemma disjiUnion_filter_eq_of_maps_to (h : ∀ x ∈ s, f x ∈ t) :
     t.disjiUnion (fun a ↦ s.filter (f · = a)) pairwiseDisjoint_fibers = s := by
   simpa [filter_eq_self]
 
-omit [DecidableEq β] in
+end DecidableEq
+
 theorem map_disjiUnion {f : α ↪ β} {s : Finset α} {t : β → Finset γ} {h} :
     (s.map f).disjiUnion t h =
       s.disjiUnion (fun a => t (f a)) fun _ ha _ hb hab =>
         h (mem_map_of_mem _ ha) (mem_map_of_mem _ hb) (f.injective.ne hab) :=
   eq_of_veq <| Multiset.bind_map _ _ _
 
-omit [DecidableEq β] in
 theorem disjiUnion_map {s : Finset α} {t : α → Finset β} {f : β ↪ γ} {h} :
     (s.disjiUnion t h).map f =
       s.disjiUnion (fun a => (t a).map f) (h.mono' fun _ _ ↦ (disjoint_map _).2) :=
   eq_of_veq <| Multiset.map_bind _ _ _
+
+variable {f : α → β} {op : β → β → β} [hc : Std.Commutative op] [ha : Std.Associative op]
+
+theorem fold_disjiUnion {ι : Type*} {s : Finset ι} {t : ι → Finset α} {b : ι → β} {b₀ : β} (h) :
+    (s.disjiUnion t h).fold op (s.fold op b₀ b) f = s.fold op b₀ fun i => (t i).fold op (b i) f :=
+  (congr_arg _ <| Multiset.map_bind _ _ _).trans (Multiset.fold_bind _ _ _ _ _)
 
 end DisjiUnion
 

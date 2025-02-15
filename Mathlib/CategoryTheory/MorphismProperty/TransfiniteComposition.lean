@@ -115,7 +115,7 @@ def iic (j : J) :
     rw [← W.arrow_mk_mem_toSet_iff] at this ⊢
     have eq : Arrow.mk ((Subtype.mono_coe _).functor.map (homOfLE (Order.le_succ i))) =
       Arrow.mk (homOfLE (Order.le_succ i.1)) :=
-        Arrow.ext rfl (Set.Iic.succ_coe_of_not_isMax hi) rfl
+        Arrow.ext rfl (Set.Iic.coe_succ_of_not_isMax hi) rfl
     replace eq := congr_arg h.F.mapArrow.obj eq
     convert this using 1
 
