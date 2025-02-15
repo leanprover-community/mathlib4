@@ -40,8 +40,6 @@ of the `Units`), but lemmas like `IsPrimitiveRoot.isUnit` and
 `IsPrimitiveRoot.coe_units_iff` should provide the necessary glue.
 -/
 
-open scoped Classical
-
 noncomputable section
 
 open Polynomial Finset
@@ -66,6 +64,7 @@ section primitiveRoots
 
 variable {k : ℕ}
 
+open scoped Classical in
 /-- `primitiveRoots k R` is the finset of primitive `k`-th roots of unity
 in the integral domain `R`. -/
 def primitiveRoots (k : ℕ) (R : Type*) [CommRing R] [IsDomain R] : Finset R :=
@@ -76,11 +75,13 @@ variable [CommRing R] [IsDomain R]
 -- TODO?: replace `(h0 : 0 < k)` by `[NeZero k]`
 @[simp]
 theorem mem_primitiveRoots {ζ : R} (h0 : 0 < k) : ζ ∈ primitiveRoots k R ↔ IsPrimitiveRoot ζ k := by
+  classical
   rw [primitiveRoots, mem_filter, Multiset.mem_toFinset, mem_nthRoots h0, and_iff_right_iff_imp]
   exact IsPrimitiveRoot.pow_eq_one
 
 @[simp]
 theorem primitiveRoots_zero : primitiveRoots 0 R = ∅ := by
+  classical
   rw [primitiveRoots, nthRoots_zero, Multiset.toFinset_zero, Finset.filter_empty]
 
 theorem isPrimitiveRoot_of_mem_primitiveRoots {ζ : R} (h : ζ ∈ primitiveRoots k R) :
@@ -246,6 +247,38 @@ lemma injOn_pow {n : ℕ} {ζ : M} (hζ : IsPrimitiveRoot ζ n) :
   rw [Finset.coe_range, Set.mem_Iio] at hi hj
   exact hζ.pow_inj hi hj e
 
+lemma exists_pos {k : ℕ} (hζ : ζ ^ k = 1) (hk : k ≠ 0) :
+    ∃ k' > 0, IsPrimitiveRoot ζ k' := by
+  classical
+  have H : ∃ k ≠ 0, ζ ^ k = 1 := ⟨k, hk, hζ⟩
+  let k' := Nat.find H
+  have hk' : 0 < k' := Nat.pos_iff_ne_zero.mpr (Nat.find_spec H).1
+  refine ⟨k', hk', (Nat.find_spec H).2, ?_⟩
+  intro l hl
+  have := Nat.find_min' H (m := .gcd k' l) ⟨Nat.gcd_ne_zero_left hk'.ne', ?_⟩
+  · exact Nat.gcd_eq_left_iff_dvd.mpr ((Nat.gcd_le_left l hk').antisymm this)
+  · have : IsUnit ζ := by
+      refine isUnit_iff_exists_inv.mpr ⟨ζ ^ (k - 1), ?_⟩
+      rw [← pow_succ', tsub_add_cancel_of_le, hζ]
+      rwa [Nat.one_le_iff_ne_zero]
+    have h₁ : this.unit ^ k' = 1 := by ext; simpa using (Nat.find_spec H).2
+    have h₂ : this.unit ^ l = 1 := by ext; simpa
+    suffices this.unit ^ (k'.gcd l : ℤ) = 1 by simpa using congr($(this).1)
+    simp [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, zpow_natCast, h₁, h₂]
+
+variable (ζ) in
+lemma «exists» : ∃ k, IsPrimitiveRoot ζ k := by
+  by_cases hζ : ∃ k ≠ 0, ζ ^ k = 1
+  · obtain ⟨k, hk, hζ⟩ := hζ
+    obtain ⟨k', -, hk'⟩ := exists_pos hζ hk
+    exact ⟨k', hk'⟩
+  · simp only [ne_eq, not_exists, not_and, not_imp_not] at hζ
+    exact ⟨0, pow_zero _, fun l hl ↦ zero_dvd_iff.mpr (hζ l hl)⟩
+
+lemma existsUnique : ∃! k, IsPrimitiveRoot ζ k :=
+  let ⟨k, hk⟩ := IsPrimitiveRoot.exists ζ
+  ⟨k, hk, fun _ hl ↦ unique hl hk⟩
+
 section Maps
 
 open Function
@@ -363,7 +396,7 @@ theorem primitiveRoots_one : primitiveRoots 1 R = {(1 : R)} := by
 
 theorem neZero' {n : ℕ} [NeZero n] (hζ : IsPrimitiveRoot ζ n) : NeZero ((n : ℕ) : R) := by
   let p := ringChar R
-  have hfin := Nat.multiplicity_finite_iff.2 ⟨CharP.char_ne_one R p, NeZero.pos n⟩
+  have hfin := Nat.finiteMultiplicity_iff.2 ⟨CharP.char_ne_one R p, NeZero.pos n⟩
   obtain ⟨m, hm⟩ := hfin.exists_eq_pow_mul_and_not_dvd
   by_cases hp : p ∣ n
   · obtain ⟨k, hk⟩ := Nat.exists_eq_succ_of_ne_zero (multiplicity_pos_of_dvd hp).ne'
@@ -524,7 +557,7 @@ theorem eq_pow_of_pow_eq_one {k : ℕ} [NeZero k] {ζ ξ : R} (h : IsPrimitiveRo
     (hξ : ξ ^ k = 1) :
     ∃ i < k, ζ ^ i = ξ := by
   lift ζ to Rˣ using h.isUnit <| NeZero.pos k
-  lift ξ to Rˣ using isUnit_ofPowEqOne hξ <| NeZero.ne k
+  lift ξ to Rˣ using .of_pow_eq_one hξ <| NeZero.ne k
   simp only [← Units.val_pow_eq_pow_val, ← Units.ext_iff]
   rw [coe_units_iff] at h
   exact h.eq_pow_of_mem_rootsOfUnity <| (mem_rootsOfUnity' k ξ).mpr hξ
@@ -566,6 +599,7 @@ theorem nthRoots_eq {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n) {α a : R} (
       pow_mul, hζ.pow_eq_one, one_pow, one_mul]
   · simpa only [Multiset.card_map, Multiset.card_range] using card_nthRoots n a
 
+open scoped Classical in
 theorem card_nthRoots {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n) (a : R) :
     Multiset.card (nthRoots n a) = if ∃ α, α ^ n = a then n else 0 := by
   split_ifs with h
@@ -620,6 +654,7 @@ theorem nthRoots_one_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
 @[simp]
 theorem card_nthRootsFinset {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     #(nthRootsFinset n R) = n := by
+  classical
   rw [nthRootsFinset, ← Multiset.toFinset_eq (nthRoots_one_nodup h), card_mk, h.card_nthRoots_one]
 
 open scoped Nat
@@ -651,42 +686,29 @@ theorem disjoint {k l : ℕ} (h : k ≠ l) : Disjoint (primitiveRoots k R) (prim
     h <|
       (isPrimitiveRoot_of_mem_primitiveRoots hk).unique <| isPrimitiveRoot_of_mem_primitiveRoots hl
 
-/-- `nthRoots n` as a `Finset` is equal to the union of `primitiveRoots i R` for `i ∣ n`
-if there is a primitive `n`th root of unity in `R`. -/
+/-- `nthRoots n` as a `Finset` is equal to the union of `primitiveRoots i R` for `i ∣ n`. -/
 private -- marking as `private` since `nthRoots_one_eq_biUnion_primitiveRoots` can be used instead
-theorem nthRoots_one_eq_biUnion_primitiveRoots' {ζ : R} {n : ℕ} [NeZero n]
-    (h : IsPrimitiveRoot ζ n) :
+theorem nthRoots_one_eq_biUnion_primitiveRoots' [DecidableEq R] {n : ℕ} [NeZero n] :
     nthRootsFinset n R = (Nat.divisors n).biUnion fun i ↦ primitiveRoots i R := by
-  symm
-  apply Finset.eq_of_subset_of_card_le
-  · intro x
-    simp only [mem_biUnion, Nat.mem_divisors, Ne, nthRootsFinset,
-      ← Multiset.toFinset_eq (nthRoots_one_nodup h), mem_mk, forall_exists_index, and_imp]
-    rintro a ⟨d, hd⟩ hn ha
-    have hazero : 0 < a :=
-      Nat.pos_of_ne_zero fun ha₀ ↦ hn <| by rwa [ha₀, zero_mul] at hd
+  ext x
+  suffices x ^ n = 1 ↔ ∃ a, a ∣ n ∧ x ∈ primitiveRoots a R by
+    simpa [Polynomial.mem_nthRootsFinset (NeZero.pos n), (NeZero.ne n)]
+  constructor
+  · intro H
+    obtain ⟨k, hk, hx⟩ := exists_pos H (NeZero.ne n)
+    exact ⟨k, hx.2 _ H, (mem_primitiveRoots hk).mpr hx⟩
+  · rintro ⟨a, ⟨d, hd⟩, ha⟩
+    have hazero : 0 < a := Nat.pos_of_ne_zero fun ha₀ ↦ by simp_all
     rw [mem_primitiveRoots hazero] at ha
-    rw [mem_nthRoots <| NeZero.pos n, hd, pow_mul, ha.pow_eq_one, one_pow]
-  · apply le_of_eq
-    rw [h.card_nthRootsFinset, Finset.card_biUnion]
-    · nth_rw 1 [← Nat.sum_totient n]
-      refine sum_congr rfl ?_
-      simp only [Nat.mem_divisors]
-      rintro k ⟨⟨d, hd⟩, -⟩
-      rw [mul_comm] at hd
-      rw [(h.pow (NeZero.pos n) hd).card_primitiveRoots]
-    · intro i _ j _ hdiff
-      exact disjoint hdiff
+    rw [hd, pow_mul, ha.pow_eq_one, one_pow]
 
-/-- `nthRoots n` as a `Finset` is equal to the union of `primitiveRoots i R` for `i ∣ n`
-if there is a primitive `n`th root of unity in `R`. -/
-theorem nthRoots_one_eq_biUnion_primitiveRoots {ζ : R} {n : ℕ}
-    (h : IsPrimitiveRoot ζ n) :
+/-- `nthRoots n` as a `Finset` is equal to the union of `primitiveRoots i R` for `i ∣ n`. -/
+theorem nthRoots_one_eq_biUnion_primitiveRoots [DecidableEq R] {n : ℕ} :
     nthRootsFinset n R = (Nat.divisors n).biUnion fun i ↦ primitiveRoots i R := by
   by_cases hn : n = 0
   · simp only [hn, nthRootsFinset_zero, Nat.divisors_zero, biUnion_empty]
   have : NeZero n := ⟨hn⟩
-  exact nthRoots_one_eq_biUnion_primitiveRoots' h
+  exact nthRoots_one_eq_biUnion_primitiveRoots'
 
 end IsDomain
 

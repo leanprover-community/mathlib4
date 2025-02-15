@@ -211,15 +211,15 @@ noncomputable def homEquivOfIsLocallyBijective : (M₂ ⟶ N) ≃ (M₁ ⟶ N) w
           ((PresheafOfModules.toPresheaf R).map ψ)
         simp only [← hφ, Equiv.symm_apply_apply]
         replace hφ : ∀ (Z : Cᵒᵖ) (x : M₁.obj Z), φ.app Z (f.app Z x) = ψ.app Z x :=
-          fun Z x ↦ congr_fun ((forget _).congr_map (congr_app hφ Z)) x
+          fun Z x ↦ CategoryTheory.congr_fun (congr_app hφ Z) x
         intro X r y
         apply hN.isSeparated _ _
           (Presheaf.imageSieve_mem J ((toPresheaf R).map f) y)
         rintro Y p ⟨x : M₁.obj _, hx : f.app _ x = M₂.map p.op y⟩
         have hφ' : ∀ (z : M₂.obj X), φ.app _ (M₂.map p.op z) =
-            N.map p.op (φ.app _ z) := congr_fun ((forget _).congr_map (φ.naturality p.op))
+            N.map p.op (φ.app _ z) := CategoryTheory.congr_fun (φ.naturality p.op)
         change N.map p.op (φ.app X (r • y)) = N.map p.op (r • φ.app X y)
-        rw [← hφ', M₂.map_smul, ← hx, ← (f.app _).map_smul, hφ, (ψ.app _).map_smul,
+        rw [← hφ', M₂.map_smul, ← hx, ← (f.app _).hom.map_smul, hφ, (ψ.app _).hom.map_smul,
           ← hφ, hx, N.map_smul, hφ'])
   left_inv φ := (toPresheaf _).map_injective
     (((J.W_of_isLocallyBijective

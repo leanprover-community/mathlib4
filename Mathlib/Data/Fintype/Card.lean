@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Union
 import Mathlib.Data.List.NodupEquivFin
 import Mathlib.Data.Set.Image
 import Mathlib.Order.WellFounded
@@ -43,8 +44,7 @@ We provide `Infinite` instances for
 
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists MulAction
+assert_not_exists MonoidWithZero MulAction
 
 open Function
 
@@ -194,7 +194,6 @@ theorem card_eq {α β} [_F : Fintype α] [_G : Fintype β] : card α = card β 
 /-- Note: this lemma is specifically about `Fintype.ofSubsingleton`. For a statement about
 arbitrary `Fintype` instances, use either `Fintype.card_le_one_iff_subsingleton` or
 `Fintype.card_unique`. -/
-@[simp]
 theorem card_ofSubsingleton (a : α) [Subsingleton α] : @Fintype.card _ (ofSubsingleton a) = 1 :=
   rfl
 
@@ -204,7 +203,6 @@ theorem card_unique [Unique α] [h : Fintype α] : Fintype.card α = 1 :=
 
 /-- Note: this lemma is specifically about `Fintype.ofIsEmpty`. For a statement about
 arbitrary `Fintype` instances, use `Fintype.card_eq_zero`. -/
-@[simp]
 theorem card_ofIsEmpty [IsEmpty α] : @Fintype.card α Fintype.ofIsEmpty = 0 :=
   rfl
 
@@ -350,6 +348,20 @@ theorem Fintype.card_lex (α : Type*) [Fintype α] : Fintype.card (Lex α) = Fin
 @[simp] lemma Fintype.card_additive (α : Type*) [Fintype α] : card (Additive α) = card α :=
   Finset.card_map _
 
+-- Note: The extra hypothesis `h` is there so that the rewrite lemma applies,
+-- no matter what instance of `Fintype (Set.univ : Set α)` is used.
+@[simp]
+theorem Fintype.card_setUniv [Fintype α] {h : Fintype (Set.univ : Set α)} :
+    Fintype.card (Set.univ : Set α) = Fintype.card α := by
+  apply Fintype.card_of_finset'
+  simp
+
+@[simp]
+theorem Fintype.card_subtype_true [Fintype α] {h : Fintype {_a : α // True}} :
+    @Fintype.card {_a // True} h = Fintype.card α := by
+  apply Fintype.card_of_subtype
+  simp
+
 /-- Given that `α ⊕ β` is a fintype, `α` is also a fintype. This is non-computable as it uses
 that `Sum.inl` is an injection, but there's no clear inverse if `α` is empty. -/
 noncomputable def Fintype.sumLeft {α β} [Fintype (α ⊕ β)] : Fintype α :=
@@ -378,14 +390,7 @@ instance (priority := 900) Finite.of_fintype (α : Type*) [Fintype α] : Finite 
   Fintype.finite ‹_›
 
 theorem finite_iff_nonempty_fintype (α : Type*) : Finite α ↔ Nonempty (Fintype α) :=
-  ⟨fun h =>
-    let ⟨_k, ⟨e⟩⟩ := @Finite.exists_equiv_fin α h
-    ⟨Fintype.ofEquiv _ e.symm⟩,
-    fun ⟨_⟩ => inferInstance⟩
-
-/-- See also `nonempty_encodable`, `nonempty_denumerable`. -/
-theorem nonempty_fintype (α : Type*) [Finite α] : Nonempty (Fintype α) :=
-  (finite_iff_nonempty_fintype α).mp ‹_›
+  ⟨fun _ => nonempty_fintype α, fun ⟨_⟩ => inferInstance⟩
 
 /-- Noncomputably get a `Fintype` instance from a `Finite` instance. This is not an
 instance because we want `Fintype` instances to be useful for computations. -/
@@ -540,12 +545,14 @@ theorem exists_pair_of_one_lt_card (h : 1 < card α) : ∃ a b : α, a ≠ b :=
 theorem card_eq_one_of_forall_eq {i : α} (h : ∀ j, j = i) : card α = 1 :=
   Fintype.card_eq_one_iff.2 ⟨i, h⟩
 
-theorem exists_unique_iff_card_one {α} [Fintype α] (p : α → Prop) [DecidablePred p] :
+theorem existsUnique_iff_card_one {α} [Fintype α] (p : α → Prop) [DecidablePred p] :
     (∃! a : α, p a) ↔ #{x | p x} = 1 := by
   rw [Finset.card_eq_one]
   refine exists_congr fun x => ?_
   simp only [forall_true_left, Subset.antisymm_iff, subset_singleton_iff', singleton_subset_iff,
       true_and, and_comm, mem_univ, mem_filter]
+
+@[deprecated (since := "2024-12-17")] alias exists_unique_iff_card_one := existsUnique_iff_card_one
 
 theorem one_lt_card [h : Nontrivial α] : 1 < Fintype.card α :=
   Fintype.one_lt_card_iff_nontrivial.mpr h
@@ -706,14 +713,28 @@ theorem set_fintype_card_eq_univ_iff [Fintype α] (s : Set α) [Fintype s] :
 namespace Function.Embedding
 
 /-- An embedding from a `Fintype` to itself can be promoted to an equivalence. -/
-noncomputable def equivOfFintypeSelfEmbedding [Finite α] (e : α ↪ α) : α ≃ α :=
+noncomputable def equivOfFiniteSelfEmbedding [Finite α] (e : α ↪ α) : α ≃ α :=
   Equiv.ofBijective e e.2.bijective_of_finite
 
+@[deprecated (since := "2024-12-05")]
+alias equivOfFintypeSelfEmbedding := equivOfFiniteSelfEmbedding
+
 @[simp]
-theorem equiv_of_fintype_self_embedding_to_embedding [Finite α] (e : α ↪ α) :
-    e.equivOfFintypeSelfEmbedding.toEmbedding = e := by
+theorem toEmbedding_equivOfFiniteSelfEmbedding [Finite α] (e : α ↪ α) :
+    e.equivOfFiniteSelfEmbedding.toEmbedding = e := by
   ext
   rfl
+
+@[deprecated (since := "2024-12-05")]
+alias equiv_of_fintype_self_embedding_to_embedding := toEmbedding_equivOfFiniteSelfEmbedding
+
+/-- On a finite type, equivalence between the self-embeddings and the bijections. -/
+@[simps] noncomputable def _root_.Equiv.embeddingEquivOfFinite (α : Type*) [Finite α] :
+    (α ↪ α) ≃ (α ≃ α) where
+  toFun e := e.equivOfFiniteSelfEmbedding
+  invFun e := e.toEmbedding
+  left_inv e := rfl
+  right_inv e := by ext; rfl
 
 /-- If `‖β‖ < ‖α‖` there are no embeddings `α ↪ β`.
 This is a formulation of the pigeonhole principle.
@@ -750,7 +771,7 @@ end Function.Embedding
 
 @[simp]
 theorem Finset.univ_map_embedding {α : Type*} [Fintype α] (e : α ↪ α) : univ.map e = univ := by
-  rw [← e.equiv_of_fintype_self_embedding_to_embedding, univ_map_equiv_to_embedding]
+  rw [← e.toEmbedding_equivOfFiniteSelfEmbedding, univ_map_equiv_to_embedding]
 
 namespace Fintype
 
@@ -862,8 +883,7 @@ noncomputable def fintypeOfNotInfinite {α : Type*} (h : ¬Infinite α) : Fintyp
 
 section
 
-open scoped Classical
-
+open scoped Classical in
 /-- Any type is (classically) either a `Fintype`, or `Infinite`.
 
 One can obtain the relevant typeclasses via `cases fintypeOrInfinite α`.
@@ -1100,7 +1120,7 @@ theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
     intro a ha
     conv_rhs => rw [← List.map_id a]
     rw [List.map_pmap]
-    simp only [Fin.valEmbedding_apply, Fin.val_mk, List.pmap_eq_map, List.map_id', List.map_id]
+    simp [klift, Fin.valEmbedding_apply, Fin.val_mk, List.pmap_eq_map, List.map_id']
   use l.map (List.map (Fintype.equivFin α).symm)
   constructor
   · -- length
@@ -1154,7 +1174,7 @@ theorem Fintype.induction_subsingleton_or_nontrivial {P : ∀ (α) [Fintype α],
     P α := by
   obtain ⟨n, hn⟩ : ∃ n, Fintype.card α = n := ⟨Fintype.card α, rfl⟩
   induction' n using Nat.strong_induction_on with n ih generalizing α
-  cases' subsingleton_or_nontrivial α with hsing hnontriv
+  rcases subsingleton_or_nontrivial α with hsing | hnontriv
   · apply hbase
   · apply hstep
     intro β _ hlt

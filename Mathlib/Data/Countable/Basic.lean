@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Countable.Defs
 import Mathlib.Data.Fin.Tuple.Basic
+import Mathlib.Data.ENat.Defs
 import Mathlib.Logic.Equiv.Nat
 
 /-!
@@ -13,6 +14,7 @@ import Mathlib.Logic.Equiv.Nat
 In this file we provide basic instances of the `Countable` typeclass defined elsewhere.
 -/
 
+assert_not_exists Monoid
 
 universe u v w
 

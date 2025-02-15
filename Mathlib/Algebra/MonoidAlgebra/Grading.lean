@@ -110,8 +110,8 @@ variable [AddMonoid M] [DecidableEq ι] [AddMonoid ι] [CommSemiring R] (f : M �
 def decomposeAux : R[M] →ₐ[R] ⨁ i : ι, gradeBy R f i :=
   AddMonoidAlgebra.lift R M _
     { toFun := fun m =>
-        DirectSum.of (fun i : ι => gradeBy R f i) (f (Multiplicative.toAdd m))
-          ⟨Finsupp.single (Multiplicative.toAdd m) 1, single_mem_gradeBy _ _ _⟩
+        DirectSum.of (fun i : ι => gradeBy R f i) (f m.toAdd)
+          ⟨Finsupp.single m.toAdd 1, single_mem_gradeBy _ _ _⟩
       map_one' :=
         DirectSum.of_eq_of_gradedMonoid_eq
           (by congr 2 <;> simp)

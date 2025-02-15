@@ -52,7 +52,6 @@ noncomputable def mulIndicator (s : Set α) (f : α → M) (x : α) : M :=
 theorem piecewise_eq_mulIndicator [DecidablePred (· ∈ s)] : s.piecewise f 1 = s.mulIndicator f :=
   funext fun _ => @if_congr _ _ _ _ (id _) _ _ _ _ Iff.rfl rfl rfl
 
--- Porting note: needed unfold for mulIndicator
 @[to_additive]
 theorem mulIndicator_apply (s : Set α) (f : α → M) (a : α) [Decidable (a ∈ s)] :
     mulIndicator s f a = if a ∈ s then f a else 1 := by
@@ -120,8 +119,16 @@ set. -/
 theorem mem_of_mulIndicator_ne_one (h : mulIndicator s f a ≠ 1) : a ∈ s :=
   not_imp_comm.1 (fun hn => mulIndicator_of_not_mem hn f) h
 
-@[to_additive]
+/-- See `Set.eqOn_mulIndicator'` for the version with `sᶜ`. -/
+@[to_additive
+      "See `Set.eqOn_indicator'` for the version with `sᶜ`"]
 theorem eqOn_mulIndicator : EqOn (mulIndicator s f) f s := fun _ hx => mulIndicator_of_mem hx f
+
+/-- See `Set.eqOn_mulIndicator` for the version with `s`. -/
+@[to_additive
+      "See `Set.eqOn_indicator` for the version with `s`."]
+theorem eqOn_mulIndicator' : EqOn (mulIndicator s f) 1 sᶜ :=
+  fun _ hx => mulIndicator_of_not_mem hx f
 
 @[to_additive]
 theorem mulSupport_mulIndicator_subset : mulSupport (s.mulIndicator f) ⊆ s := fun _ hx =>

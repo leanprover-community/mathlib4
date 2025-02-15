@@ -18,6 +18,8 @@ Similarly, we define
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 universe v' u' v u
 
 open CategoryTheory Category Limits

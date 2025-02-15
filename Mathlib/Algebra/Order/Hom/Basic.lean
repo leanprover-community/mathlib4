@@ -206,11 +206,11 @@ export AddGroupNormClass (eq_zero_of_map_eq_zero)
 
 export GroupNormClass (eq_one_of_map_eq_zero)
 
-attribute [simp] map_one_eq_zero -- Porting note: `to_additive` translation already exists
+attribute [simp] map_one_eq_zero
 
 attribute [simp] map_neg_eq_map
 
-attribute [simp] map_inv_eq_map -- Porting note: `to_additive` translation already exists
+attribute [simp] map_inv_eq_map
 
 attribute [to_additive] GroupSeminormClass.toMulLEAddHomClass
 
@@ -260,7 +260,7 @@ section GroupNormClass
 
 variable [Group α] [OrderedAddCommMonoid β] [GroupNormClass F α β] (f : F) {x : α}
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem map_eq_zero_iff_eq_one : f x = 0 ↔ x = 1 :=
   ⟨eq_one_of_map_eq_zero _, by
     rintro rfl

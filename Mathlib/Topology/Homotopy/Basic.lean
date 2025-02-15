@@ -399,8 +399,7 @@ theorem ext {F G : HomotopyWith f₀ f₁ P} (h : ∀ x, F x = G x) : F = G := D
 because it is a composition of multiple projections. -/
 def Simps.apply (F : HomotopyWith f₀ f₁ P) : I × X → Y := F
 
-initialize_simps_projections HomotopyWith (toHomotopy_toContinuousMap_toFun → apply,
-  -toHomotopy_toContinuousMap)
+initialize_simps_projections HomotopyWith (toFun → apply, -toHomotopy_toContinuousMap)
 
 @[continuity]
 protected theorem continuous (F : HomotopyWith f₀ f₁ P) : Continuous F :=

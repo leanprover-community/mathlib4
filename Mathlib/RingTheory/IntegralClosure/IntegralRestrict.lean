@@ -28,22 +28,24 @@ open nonZeroDivisors
 variable (A K L B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Field K] [Field L]
     [Algebra A K] [IsFractionRing A K] [Algebra B L]
     [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
-    [IsIntegralClosure B A L] [FiniteDimensional K L]
+    [IsIntegralClosure B A L]
 
 section galois
+
+variable [Algebra.IsAlgebraic K L]
 
 /-- The lift `End(B/A) → End(L/K)` in an ALKB setup.
 This is inverse to the restriction. See `galRestrictHom`. -/
 noncomputable
 def galLift (σ : B →ₐ[A] B) : L →ₐ[K] L :=
   haveI := (IsFractionRing.injective A K).isDomain
-  haveI := NoZeroSMulDivisors.trans A K L
+  haveI := NoZeroSMulDivisors.trans_faithfulSMul A K L
   haveI := IsIntegralClosure.isLocalization A K L B
   haveI H : ∀ (y :  Algebra.algebraMapSubmonoid B A⁰),
       IsUnit (((algebraMap B L).comp σ) (y : B)) := by
     rintro ⟨_, x, hx, rfl⟩
     simpa only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, AlgHom.commutes,
-      isUnit_iff_ne_zero, ne_eq, map_eq_zero_iff _ (NoZeroSMulDivisors.algebraMap_injective _ _),
+      isUnit_iff_ne_zero, ne_eq, map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective _ _),
       ← IsScalarTower.algebraMap_apply] using nonZeroDivisors.ne_zero hx
   haveI H_eq : (IsLocalization.lift (S := L) H).comp (algebraMap K L) = (algebraMap K L) := by
     apply IsLocalization.ringHom_ext A⁰
@@ -114,7 +116,9 @@ lemma algebraMap_galRestrict_apply (σ : L ≃ₐ[K] L) (x : B) :
     algebraMap B L (galRestrict A K L B σ x) = σ (algebraMap B L x) :=
   algebraMap_galRestrictHom_apply A K L B σ.toAlgHom x
 
-variable (K L B)
+end galois
+
+variable [FiniteDimensional K L]
 
 lemma prod_galRestrict_eq_norm [IsGalois K L] [IsIntegrallyClosed A] (x : B) :
     (∏ σ : L ≃ₐ[K] L, galRestrict A K L B σ x) =
@@ -124,8 +128,6 @@ lemma prod_galRestrict_eq_norm [IsGalois K L] [IsIntegrallyClosed A] (x : B) :
   rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_eq A K L]
   simp only [map_prod, algebraMap_galRestrict_apply, IsIntegralClosure.algebraMap_mk',
     Algebra.norm_eq_prod_automorphisms, AlgHom.coe_coe, RingHom.coe_comp, Function.comp_apply]
-
-end galois
 
 attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_liftAlgebra
 

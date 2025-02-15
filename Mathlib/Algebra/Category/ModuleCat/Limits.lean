@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.Grp.Limits
-import Mathlib.Algebra.DirectLimit
+import Mathlib.Algebra.Colimit.Module
 
 /-!
 # The category of R-modules has all limits
@@ -45,9 +45,7 @@ def sectionsSubmodule : Submodule R (∀ j, F.obj j) :=
           forget₂ AddCommGrp AddGrp.{w}) with
     carrier := (F ⋙ forget (ModuleCat R)).sections
     smul_mem' := fun r s sh j j' f => by
-      simp only [forget_map, Functor.comp_map, Pi.smul_apply, map_smul]
-      dsimp [Functor.sections] at sh
-      rw [sh f] }
+      simpa [Functor.sections, forget_map] using congr_arg (r • ·) (sh f) }
 
 instance : AddCommMonoid (F ⋙ forget (ModuleCat R)).sections :=
   inferInstanceAs <| AddCommMonoid (sectionsSubmodule F)
@@ -101,16 +99,16 @@ namespace HasLimits
 def limitCone : Cone F where
   pt := ModuleCat.of R (Types.Small.limitCone.{v, w} (F ⋙ forget _)).pt
   π :=
-    { app := limitπLinearMap F
-      naturality := fun _ _ f =>
-        LinearMap.coe_injective ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) }
+    { app := fun j => ofHom (limitπLinearMap F j)
+      naturality := fun _ _ f => hom_ext <| LinearMap.coe_injective <|
+        ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) }
 
 /-- Witness that the limit cone in `ModuleCat R` is a limit cone.
 (Internal use only; use the limits API.)
 -/
 def limitConeIsLimit : IsLimit (limitCone.{t, v, w} F) := by
   refine IsLimit.ofFaithful (forget (ModuleCat R)) (Types.Small.limitConeIsLimit.{v, w} _)
-    (fun s => ⟨⟨(Types.Small.limitConeIsLimit.{v, w} _).lift
+    (fun s => ofHom ⟨⟨(Types.Small.limitConeIsLimit.{v, w} _).lift
                 ((forget (ModuleCat R)).mapCone s), ?_⟩, ?_⟩)
     (fun s => rfl)
   · intro x y
@@ -135,8 +133,6 @@ instance hasLimit : HasLimit F := HasLimit.mk {
 /-- If `J` is `u`-small, the category of `R`-modules has limits of shape `J`. -/
 lemma hasLimitsOfShape [Small.{w} J] : HasLimitsOfShape J (ModuleCat.{w} R) where
 
--- Porting note: mathport translated this as `irreducible_def`, but as `HasLimitsOfSize`
--- is a `Prop`, declaring this as `irreducible` should presumably have no effect
 /-- The category of R-modules has all limits. -/
 lemma hasLimitsOfSize [UnivLE.{v, w}] : HasLimitsOfSize.{t, v} (ModuleCat.{w} R) where
   has_limits_of_shape _ := hasLimitsOfShape
@@ -206,26 +202,24 @@ section DirectLimit
 open Module
 
 variable {ι : Type v}
-variable [dec_ι : DecidableEq ι] [Preorder ι]
+variable [DecidableEq ι] [Preorder ι]
 variable (G : ι → Type v)
 variable [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
-variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) [DirectedSystem G fun i j h => f i j h]
+variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) [DirectedSystem G fun i j h ↦ f i j h]
 
 /-- The diagram (in the sense of `CategoryTheory`)
  of an unbundled `directLimit` of modules. -/
 @[simps]
 def directLimitDiagram : ι ⥤ ModuleCat R where
   obj i := ModuleCat.of R (G i)
-  map hij := f _ _ hij.le
+  map hij := ofHom (f _ _ hij.le)
   map_id i := by
-    apply LinearMap.ext
-    intro x
+    ext
     apply Module.DirectedSystem.map_self
   map_comp hij hjk := by
-    apply LinearMap.ext
-    intro x
+    ext
     symm
-    apply Module.DirectedSystem.map_map
+    apply Module.DirectedSystem.map_map f
 
 variable [DecidableEq ι]
 
@@ -237,35 +231,32 @@ In `directLimitIsColimit` we show that it is a colimit cocone. -/
 def directLimitCocone : Cocone (directLimitDiagram G f) where
   pt := ModuleCat.of R <| DirectLimit G f
   ι :=
-    { app := Module.DirectLimit.of R ι G f
+    { app := fun x => ofHom (Module.DirectLimit.of R ι G f x)
       naturality := fun _ _ hij => by
-        apply LinearMap.ext
-        intro x
+        ext
         exact DirectLimit.of_f }
 
 /-- The unbundled `directLimit` of modules is a colimit
 in the sense of `CategoryTheory`. -/
 @[simps]
-def directLimitIsColimit [IsDirected ι (· ≤ ·)] : IsColimit (directLimitCocone G f) where
-  desc s :=
-    DirectLimit.lift R ι G f s.ι.app fun i j h x => by
+def directLimitIsColimit : IsColimit (directLimitCocone G f) where
+  desc s := ofHom <|
+    Module.DirectLimit.lift R ι G f (fun i => (s.ι.app i).hom) fun i j h x => by
+      simp only [Functor.const_obj_obj]
       rw [← s.w (homOfLE h)]
       rfl
   fac s i := by
-    apply LinearMap.ext
-    intro x
-    dsimp only [directLimitCocone, CategoryStruct.comp]
-    rw [LinearMap.comp_apply]
+    ext
+    dsimp only [hom_comp, directLimitCocone, hom_ofHom, LinearMap.comp_apply]
     apply DirectLimit.lift_of
   uniq s m h := by
     have :
       s.ι.app = fun i =>
-        LinearMap.comp m (DirectLimit.of R ι (fun i => G i) (fun i j H => f i j H) i) := by
+        (ofHom (DirectLimit.of R ι (fun i => G i) (fun i j H => f i j H) i)) ≫ m := by
       funext i
       rw [← h]
       rfl
-    apply LinearMap.ext
-    intro x
+    ext
     simp only [this]
     apply Module.DirectLimit.lift_unique
 

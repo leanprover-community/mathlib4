@@ -3,8 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Data.Nat.ModEq
+import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.NumberTheory.Zsqrtd.Basic
 
 /-!
@@ -264,7 +263,7 @@ theorem eq_pell_lem : ∀ (n) (b : ℤ√(d a1)), 1 ≤ b → IsPell b →
     else
       suffices ¬1 < b from ⟨0, show b = 1 from (Or.resolve_left (lt_or_eq_of_le h1) this).symm⟩
       fun h1l => by
-      cases' b with x y
+      obtain ⟨x, y⟩ := b
       exact by
         have bm : (_ * ⟨_, _⟩ : ℤ√d a1) = 1 := Pell.isPell_norm.1 hp
         have y0l : (0 : ℤ√d a1) < ⟨x - x, y - -y⟩ :=
@@ -423,7 +422,7 @@ theorem xy_modEq_yn (n) :
             rw [_root_.pow_succ]
             exact hx.mul_right' _) <| by
         have : k * xn a1 n ^ (k - 1) * yn a1 n * xn a1 n = k * xn a1 n ^ k * yn a1 n := by
-          cases' k with k <;> simp [_root_.pow_succ]; ring_nf
+          rcases k with - | k <;> simp [_root_.pow_succ]; ring_nf
         rw [← this]
         exact hy.mul_right _
     rw [add_tsub_cancel_right, Nat.mul_succ, xn_add, yn_add, pow_succ (xn _ n), Nat.succ_mul,
@@ -677,7 +676,7 @@ theorem eq_of_xn_modEq_le {i j n} (ij : i ≤ j) (j2n : j ≤ 2 * n)
         have x0 : 0 < xn a1 0 % xn a1 n := by
           rw [Nat.mod_eq_of_lt (strictMono_x a1 (Nat.pos_of_ne_zero npos))]
           exact Nat.succ_pos _
-        cases' i with i
+        rcases i with - | i
         · exact x0
         rw [jn] at ij'
         exact
@@ -710,10 +709,7 @@ theorem eq_of_xn_modEq' {i j n} (ipos : 0 < i) (hin : i ≤ n) (j4n : j ≤ 4 * 
       (h.symm.trans <| by
         let t := xn_modEq_x4n_sub a1 j42n
         rwa [tsub_tsub_cancel_of_le j4n] at t)
-      fun _ n1 =>
-      ⟨fun i0 => absurd i0 (_root_.ne_of_gt ipos), fun i2 => by
-        rw [n1, i2] at hin
-        exact absurd hin (by decide)⟩
+      (by omega)
 
 theorem modEq_of_xn_modEq {i j n} (ipos : 0 < i) (hin : i ≤ n)
     (h : xn a1 j ≡ xn a1 i [MOD xn a1 n]) :
@@ -723,10 +719,11 @@ theorem modEq_of_xn_modEq {i j n} (ipos : 0 < i) (hin : i ≤ n)
   have jl : j' < 4 * n := Nat.mod_lt _ n4
   have jj : j ≡ j' [MOD 4 * n] := by delta ModEq; rw [Nat.mod_eq_of_lt jl]
   have : ∀ j q, xn a1 (j + 4 * n * q) ≡ xn a1 j [MOD xn a1 n] := by
-    intro j q; induction' q with q IH
-    · simp [ModEq.refl]
-    rw [Nat.mul_succ, ← add_assoc, add_comm]
-    exact (xn_modEq_x4n_add _ _ _).trans IH
+    intro j q; induction q with
+    | zero => simp [ModEq.refl]
+    | succ q IH =>
+      rw [Nat.mul_succ, ← add_assoc, add_comm]
+      exact (xn_modEq_x4n_add _ _ _).trans IH
   Or.imp (fun ji : j' = i => by rwa [← ji])
     (fun ji : j' + i = 4 * n =>
       (jj.add_right _).trans <| by
@@ -890,8 +887,7 @@ theorem eq_pow_of_pell {m n k} :
       exact x_sub_y_dvd_pow a1 n k
     have ta : 2 * a * n = t + (n * n + 1) := by
       zify
-      rw [te]
-      ring_nf
+      omega
     have zp : a * a - ((w + 1) * (w + 1) - 1) * (w * z) * (w * z) = 1 := ze ▸ pell_eq w1 w
     exact ⟨w, a, t, z, a1, tm, ta, Nat.cast_lt.1 nt, nw, kw, zp⟩
   · rintro (⟨rfl, rfl⟩ | ⟨hk0, ⟨rfl, rfl⟩ | ⟨hn0, w, a, t, z, a1, tm, ta, mt, nw, kw, zp⟩⟩)

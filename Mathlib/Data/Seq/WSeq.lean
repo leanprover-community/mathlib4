@@ -454,7 +454,7 @@ theorem liftRel_destruct_iff {R : α → β → Prop} {s : WSeq α} {t : WSeq β
       apply Or.inl⟩⟩
 
 -- Porting note: To avoid ambiguous notation, `~` became `~ʷ`.
-infixl:50 " ~ʷ " => Equiv
+@[inherit_doc] infixl:50 " ~ʷ " => Equiv
 
 theorem destruct_congr {s t : WSeq α} :
     s ~ʷ t → Computation.LiftRel (BisimO (· ~ʷ ·)) (destruct s) (destruct t) :=
@@ -867,7 +867,7 @@ theorem get?_mem {s : WSeq α} {a n} : some a ∈ get? s n → a ∈ s := by
 theorem exists_get?_of_mem {s : WSeq α} {a} (h : a ∈ s) : ∃ n, some a ∈ get? s n := by
   apply mem_rec_on h
   · intro a' s' h
-    cases' h with h h
+    rcases h with h | h
     · exists 0
       simp only [get?, drop, head_cons]
       rw [h]
@@ -1263,9 +1263,9 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
       simp at this; cases this
     substs b' ss
     simp? at m ⊢ says simp only [cons_append, mem_cons_iff] at m ⊢
-    cases' o with e IH
+    rcases o with e | IH
     · simp [e]
-    cases' m with e m
+    rcases m with e | m
     · simp [e]
     exact Or.imp_left Or.inr (IH _ _ rfl m)
   · induction' s using WSeq.recOn with b' s s <;>
@@ -1275,7 +1275,7 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
     · apply Or.inr
       -- Porting note: `exists_eq_or_imp` should be excluded.
       simp [-exists_eq_or_imp] at m ⊢
-      cases' IH s S rfl m with as ex
+      rcases IH s S rfl m with as | ex
       · exact ⟨s, Or.inl rfl, as⟩
       · rcases ex with ⟨s', sS, as⟩
         exact ⟨s', Or.inr sS, as⟩
