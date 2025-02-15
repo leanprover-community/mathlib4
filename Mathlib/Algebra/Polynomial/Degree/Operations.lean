@@ -285,7 +285,7 @@ theorem coeff_mul_degree_add_degree (p q : R[X]) :
               (lt_of_le_of_lt degree_le_natDegree (WithBot.coe_lt_coe.2 H)),
             zero_mul]
         · rw [not_lt_iff_eq_or_lt] at H
-          cases' H with H H
+          rcases H with H | H
           · subst H
             rw [add_left_cancel_iff] at h₁
             dsimp at h₁

@@ -395,7 +395,7 @@ theorem hasSum_norm (hp : 0 < p.toReal) (f : lp E p) :
 theorem norm_nonneg' (f : lp E p) : 0 ≤ ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | hp)
   · simp [lp.norm_eq_card_dsupport f]
-  · cases' isEmpty_or_nonempty α with _i _i
+  · rcases isEmpty_or_nonempty α with _i | _i
     · rw [lp.norm_eq_ciSup]
       simp [Real.iSup_of_isEmpty]
     inhabit α
@@ -420,7 +420,7 @@ theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
     have : { i : α | ¬f i = 0 } = ∅ := by simpa [lp.norm_eq_card_dsupport f] using h
     have : (¬f i = 0) = False := congr_fun this i
     tauto
-  · cases' isEmpty_or_nonempty α with _i _i
+  · rcases isEmpty_or_nonempty α with _i | _i
     · simp [eq_iff_true_of_subsingleton]
     have H : IsLUB (Set.range fun i => ‖f i‖) 0 := by simpa [h] using lp.isLUB_norm f
     ext i
