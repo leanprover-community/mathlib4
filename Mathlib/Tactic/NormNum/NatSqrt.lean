@@ -19,7 +19,7 @@ open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
 lemma nat_sqrt_helper {x y r : ℕ} (hr : y * y + r = x) (hle : Nat.ble r (2 * y)) :
     Nat.sqrt x = y := by
-  rw [← hr, ← pow_two]
+  rw [← hr, mul_self]
   rw [two_mul] at hle
   exact Nat.sqrt_add_eq' _ (Nat.le_of_ble_eq_true hle)
 

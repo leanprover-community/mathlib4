@@ -145,7 +145,7 @@ theorem quadraticChar_sq_one' {a : F} (ha : a ≠ 0) : quadraticChar F (a ^ 2) =
 
 /-- The square of the quadratic character on nonzero arguments is `1`. -/
 theorem quadraticChar_sq_one {a : F} (ha : a ≠ 0) : quadraticChar F a ^ 2 = 1 := by
-  rwa [pow_two, ← map_mul, ← pow_two, quadraticChar_sq_one']
+  rwa [pow_two, ← map_mul, mul_self, quadraticChar_sq_one']
 
 /-- The quadratic character is `1` or `-1` on nonzero arguments. -/
 theorem quadraticChar_dichotomy {a : F} (ha : a ≠ 0) :
@@ -229,7 +229,7 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
       rw [h, mul_self_eq_zero] at h₀
       have h₁ : s = [b, -b].toFinset := by
         ext1
-        rw [← pow_two] at h
+        rw [mul_self] at h
         simp only [Set.toFinset_setOf, h, mem_filter, mem_univ, true_and, List.toFinset_cons,
           List.toFinset_nil, insert_emptyc_eq, mem_insert, mem_singleton, s]
         exact sq_eq_sq_iff_eq_or_eq_neg

@@ -192,7 +192,7 @@ theorem MulChar.IsQuadratic.gaussSum_frob (hp : IsUnit (p : R)) {χ : MulChar R 
     (hχ : IsQuadratic χ) (ψ : AddChar R R') :
     gaussSum χ ψ ^ p = χ p * gaussSum χ ψ := by
   rw [_root_.gaussSum_frob, pow_mulShift, hχ.pow_char p, ← gaussSum_mulShift χ ψ hp.unit,
-    ← mul_assoc, hp.unit_spec, ← pow_two, ← pow_apply' _ two_ne_zero, hχ.sq_eq_one, ← hp.unit_spec,
+    ← mul_assoc, hp.unit_spec, mul_self, ← pow_apply' _ two_ne_zero, hχ.sq_eq_one, ← hp.unit_spec,
     one_apply_coe, one_mul]
 
 /-- For a quadratic character `χ` and when the characteristic `p` of the target ring

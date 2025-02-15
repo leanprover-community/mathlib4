@@ -129,6 +129,6 @@ theorem eval_add_of_sq_eq_zero {A} [CommSemiring A] (p : Polynomial A) (x y : A)
   rw [add_comm, ← Polynomial.taylor_eval,
     Polynomial.eval_eq_sum_range' ((Nat.lt_succ_self _).trans (Nat.lt_succ_self _)),
     Finset.sum_range_succ', Finset.sum_range_succ']
-  simp [pow_succ, mul_assoc, ← pow_two, hy, add_comm (eval x p)]
+  simp [pow_succ, mul_assoc, mul_self, hy, add_comm (eval x p)]
 
 end Polynomial

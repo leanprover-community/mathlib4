@@ -448,7 +448,7 @@ lemma associated_of_dvd_a_add_b_of_dvd_a_add_eta_sq_mul_b {p : 𝓞 K} (hp : Pri
   have := dvd_mul_sub_mul_mul_gcd_of_dvd hpab hpaηsqb
   rw [one_mul, mul_one, IsUnit.dvd_mul_right <| (gcd_isUnit_iff _ _).2 S.coprime, ← dvd_neg] at this
   convert dvd_mul_of_dvd_left this η using 1
-  rw [eta_sq, neg_sub, sub_mul, sub_mul, neg_mul, ← pow_two, eta_sq, coe_eta]
+  rw [eta_sq, neg_sub, sub_mul, sub_mul, neg_mul, mul_self, eta_sq, coe_eta]
   ring
 
 /-- If `p : 𝓞 K` is a prime that divides both `S.a + η * S.b` and `S.a + η ^ 2 * S.b`, then `p`
@@ -462,7 +462,7 @@ lemma associated_of_dvd_a_add_eta_mul_b_of_dvd_a_add_eta_sq_mul_b {p : 𝓞 K} (
   rw [one_mul, mul_one, IsUnit.dvd_mul_right <| (gcd_isUnit_iff _ _).2 S.coprime] at this
   convert (dvd_mul_of_dvd_left (dvd_mul_of_dvd_left this η) η) using 1
   symm
-  calc _ = (-η.1 - 1 - η) * (-η - 1) := by rw [eta_sq, mul_assoc, ← pow_two, eta_sq]
+  calc _ = (-η.1 - 1 - η) * (-η - 1) := by rw [eta_sq, mul_assoc, mul_self, eta_sq]
   _ = 2 * η.1 ^ 2 + 3 * η + 1 := by ring
   _ = λ := by rw [eta_sq, coe_eta]; ring
 
@@ -482,12 +482,12 @@ variable [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 
 private lemma lambda_not_dvd_y : ¬ λ ∣ S.y := fun h ↦ by
   replace h := mul_dvd_mul_left ((η : 𝓞 K) - 1) h
-  rw [coe_eta, ← y_spec, ← pow_two] at h
+  rw [coe_eta, ← y_spec, mul_self] at h
   exact lambda_sq_not_dvd_a_add_eta_mul_b _ h
 
 private lemma lambda_not_dvd_z : ¬ λ ∣ S.z := fun h ↦ by
   replace h := mul_dvd_mul_left ((η : 𝓞 K) - 1) h
-  rw [coe_eta, ← z_spec, ← pow_two] at h
+  rw [coe_eta, ← z_spec, mul_self] at h
   exact lambda_sq_not_dvd_a_add_eta_sq_mul_b _ h
 
 section DecidableRel

@@ -621,7 +621,7 @@ theorem unit_isSquare_iff (hF : ringChar F ≠ 2) (a : Fˣ) :
     have hodd := Nat.two_mul_odd_div_two (FiniteField.odd_card_of_char_ne_two hF)
     constructor
     · rintro ⟨y, rfl⟩
-      rw [← pow_two, ← pow_mul, hodd]
+      rw [mul_self, ← pow_mul, hodd]
       apply_fun Units.val using Units.ext
       push_cast
       exact FiniteField.pow_card_sub_one_eq_one (y : F) (Units.ne_zero y)

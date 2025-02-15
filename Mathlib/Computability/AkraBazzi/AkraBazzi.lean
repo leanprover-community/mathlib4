@@ -486,7 +486,7 @@ lemma isEquivalent_smoothingFn_sub_self (i : α) :
             exact IsEquivalent.add_isLittleO IsEquivalent.refl
               <| IsLittleO.natCast_atTop (f := fun (_ : ℝ) => log (b i))
                 isLittleO_const_log_atTop
-      _ = (fun (n : ℕ) => -log (b i) / (log n)^2) := by ext; congr 1; rw [← pow_two]
+      _ = (fun (n : ℕ) => -log (b i) / (log n)^2) := by ext; congr 1; rw [mul_self]
 
 lemma isTheta_smoothingFn_sub_self (i : α) :
     (fun (n : ℕ) => ε (b i * n) - ε n) =Θ[atTop] fun n => 1 / (log n)^2 := by

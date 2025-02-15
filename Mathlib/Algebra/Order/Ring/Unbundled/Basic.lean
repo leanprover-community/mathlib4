@@ -768,9 +768,9 @@ lemma two_mul_le_add_of_sq_eq_mul [ExistsAddOfLE α] [MulPosStrictMono α] [PosM
     [AddLeftReflectLE α] [AddLeftMono α] {a b r : α}
     (ha : 0 ≤ a) (hb : 0 ≤ b) (ht : r ^ 2 = a * b) : 2 * r ≤ a + b := by
   apply nonneg_le_nonneg_of_sq_le_sq (Left.add_nonneg ha hb)
-  conv_rhs => rw [← pow_two]
+  conv_rhs => rw [mul_self]
   convert four_mul_le_sq_add a b using 1
-  rw [mul_mul_mul_comm, two_mul, two_add_two_eq_four, ← pow_two, ht, mul_assoc]
+  rw [mul_mul_mul_comm, two_mul, two_add_two_eq_four, mul_self, ht, mul_assoc]
 
 end LinearOrderedCommSemiring
 

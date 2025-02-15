@@ -202,11 +202,11 @@ lemma sq_sqrt : hA.sqrt ^ 2 = A := by
   have : E * E = diagonal ((↑) ∘ hA.1.eigenvalues) := by
     rw [diagonal_mul_diagonal]
     congr! with v
-    simp [← pow_two, ← RCLike.ofReal_pow, Real.sq_sqrt (hA.eigenvalues_nonneg v)]
+    simp [mul_self, ← RCLike.ofReal_pow, Real.sq_sqrt (hA.eigenvalues_nonneg v)]
   simpa [C, this] using hA.1.spectral_theorem.symm
 
 @[simp]
-lemma sqrt_mul_self : hA.sqrt * hA.sqrt = A := by rw [← pow_two, sq_sqrt]
+lemma sqrt_mul_self : hA.sqrt * hA.sqrt = A := by rw [mul_self, sq_sqrt]
 
 include hA in
 lemma eq_of_sq_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B ^ 2) : A = B := by

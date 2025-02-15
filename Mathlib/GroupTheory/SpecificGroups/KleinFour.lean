@@ -138,7 +138,7 @@ def mulEquiv' (e : G₁ ≃ G₂) (he : e 1 = 1) (h : Monoid.exponent G₂ = 2) 
     by_cases hx : x = 1 <;> by_cases hy : y = 1
     all_goals try simp only [hx, hy, mul_one, one_mul, Equiv.toFun_as_coe, he]
     by_cases hxy : x = y
-    · simp [hxy, IsKleinFour.mul_self, ← pow_two (e y), h ▸ Monoid.pow_exponent_eq_one (e y), he]
+    · simp [hxy, IsKleinFour.mul_self, mul_self (e y), h ▸ Monoid.pow_exponent_eq_one (e y), he]
     · classical
       have univ₂ : {e (x * y), e x, e y, (1 : G₂)} = Finset.univ := by
         simpa [map_univ_equiv e, map_insert, he]

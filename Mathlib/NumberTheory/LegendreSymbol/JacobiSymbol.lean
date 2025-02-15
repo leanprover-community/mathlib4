@@ -396,7 +396,7 @@ theorem eq_iff_eq {m n : ℕ} (hm : Odd m) (hn : Odd n) (x y : ℤ) :
         let h := h'.symm
         ?_,
         fun h => ?_⟩ <;>
-    rw [h, ← mul_assoc, ← pow_two, sq_eq_one hm hn, one_mul]
+    rw [h, ← mul_assoc, mul_self, sq_eq_one hm hn, one_mul]
 
 end qrSign
 

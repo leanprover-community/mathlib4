@@ -168,12 +168,12 @@ lemma IsSelfAdjoint.neg_algebraMap_norm_le_self {a : A} (ha : IsSelfAdjoint a :=
 lemma CStarAlgebra.mul_star_le_algebraMap_norm_sq {a : A} :
     a * star a ≤ algebraMap ℝ A (‖a‖ ^ 2) := by
   have : a * star a ≤ algebraMap ℝ A ‖a * star a‖ := IsSelfAdjoint.le_algebraMap_norm_self
-  rwa [CStarRing.norm_self_mul_star, ← pow_two] at this
+  rwa [CStarRing.norm_self_mul_star, mul_self] at this
 
 lemma CStarAlgebra.star_mul_le_algebraMap_norm_sq {a : A} :
     star a * a ≤ algebraMap ℝ A (‖a‖ ^ 2) := by
   have : star a * a ≤ algebraMap ℝ A ‖star a * a‖ := IsSelfAdjoint.le_algebraMap_norm_self
-  rwa [CStarRing.norm_star_mul_self, ← pow_two] at this
+  rwa [CStarRing.norm_star_mul_self, mul_self] at this
 
 end StarOrderedRing
 

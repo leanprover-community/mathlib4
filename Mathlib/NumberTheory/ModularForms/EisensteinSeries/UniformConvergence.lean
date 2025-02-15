@@ -87,13 +87,13 @@ lemma auxbound1 {c : ℝ} (d : ℝ) (hc : 1 ≤ c ^ 2) : r z ≤ Complex.abs (c 
   have H1 : z.im ≤ √((c * z.re + d) ^ 2 + (c * z).im ^ 2) := by
     rw [Real.le_sqrt' hz, im_ofReal_mul, mul_pow]
     exact (le_mul_of_one_le_left (sq_nonneg _) hc).trans <| le_add_of_nonneg_left (sq_nonneg _)
-  simpa only [r, abs_apply, normSq_apply, add_re, re_ofReal_mul, coe_re, ← pow_two, add_im, mul_im,
+  simpa only [r, abs_apply, normSq_apply, add_re, re_ofReal_mul, coe_re, mul_self, add_im, mul_im,
     coe_im, ofReal_im, zero_mul, add_zero, min_le_iff] using Or.inl H1
 
 lemma auxbound2 (c : ℝ) {d : ℝ} (hd : 1 ≤ d ^ 2) : r z ≤ Complex.abs (c * z + d) := by
   have H1 : √(r1 z) ≤ √((c * z.re + d) ^ 2 + (c * z.im) ^ 2) :=
     (Real.sqrt_le_sqrt_iff (by positivity)).mpr (r1_aux_bound _ _ hd)
-  simpa only [r, abs_apply, normSq_apply, add_re, re_ofReal_mul, coe_re, ofReal_re, ← pow_two,
+  simpa only [r, abs_apply, normSq_apply, add_re, re_ofReal_mul, coe_re, ofReal_re, mul_self,
     add_im, im_ofReal_mul, coe_im, ofReal_im, add_zero, min_le_iff] using Or.inr H1
 
 lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
