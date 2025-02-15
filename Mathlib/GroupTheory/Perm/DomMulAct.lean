@@ -11,7 +11,8 @@ import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 import Mathlib.SetTheory.Cardinal.Finite
 
-/-!  Subgroup of `Equiv.Perm α` preserving a function
+/-!
+# Subgroup of `Equiv.Perm α` preserving a function
 
 Let `α` and `ι` by types and let `f : α → ι`
 
@@ -33,9 +34,11 @@ Let `α` and `ι` by types and let `f : α → ι`
   formula, where the product is restricted to `Finset.univ.image f`.
 -/
 
-variable {α ι : Type*} {f : α → ι}
+assert_not_exists Field
 
 open Equiv MulAction
+
+variable {α ι : Type*} {f : α → ι}
 
 namespace DomMulAct
 

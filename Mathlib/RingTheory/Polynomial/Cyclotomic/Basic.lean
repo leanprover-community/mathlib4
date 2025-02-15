@@ -151,7 +151,7 @@ theorem prod_cyclotomic'_eq_X_pow_sub_one {K : Type*} [CommRing K] [IsDomain K] 
   have hd : (n.divisors : Set ℕ).PairwiseDisjoint fun k => primitiveRoots k K :=
     fun x _ y _ hne => IsPrimitiveRoot.disjoint hne
   simp only [X_pow_sub_one_eq_prod hpos h, cyclotomic', ← Finset.prod_biUnion hd,
-    h.nthRoots_one_eq_biUnion_primitiveRoots]
+    IsPrimitiveRoot.nthRoots_one_eq_biUnion_primitiveRoots]
 
 /-- If there is a primitive `n`-th root of unity in `K`, then
 `cyclotomic' n K = (X ^ k - 1) /ₘ (∏ i ∈ Nat.properDivisors k, cyclotomic' i K)`. -/

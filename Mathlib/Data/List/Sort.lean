@@ -427,7 +427,7 @@ theorem Sorted.orderedInsert (a : α) : ∀ l, Sorted r l → Sorted r (orderedI
     · suffices ∀ b' : α, b' ∈ List.orderedInsert r a l → r b b' by
         simpa [orderedInsert, h', h.of_cons.orderedInsert a l]
       intro b' bm
-      cases' (mem_orderedInsert r).mp bm with be bm
+      rcases (mem_orderedInsert r).mp bm with be | bm
       · subst b'
         exact (total_of r _ _).resolve_left h'
       · exact rel_of_sorted_cons h _ bm
