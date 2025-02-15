@@ -215,7 +215,7 @@ it's an algebra equivalence, and characterised extensionally by the lemma
 `matPolyEquiv_coeff_apply` below.)
 -/
 noncomputable def matPolyEquiv : Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X] :=
-  ((matrixEquivTensor R R[X] n).trans (Algebra.TensorProduct.comm R _ _)).trans
+  ((matrixEquivTensor n R R[X]).trans (Algebra.TensorProduct.comm R _ _)).trans
     (polyEquivTensor R (Matrix n n R)).symm
 
 @[simp] theorem matPolyEquiv_symm_C (M : Matrix n n R) : matPolyEquiv.symm (C M) = M.map C := by

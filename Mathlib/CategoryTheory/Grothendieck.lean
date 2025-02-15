@@ -181,7 +181,7 @@ def transport (x : Grothendieck F) {c : C} (t : x.base ⟶ c) : Grothendieck F :
 If `F : C ⥤ Cat` is a functor and `t : c ⟶ d` is a morphism in `C`, then `transport` maps each
 `c`-based element `x` of `Grothendieck F` to a `d`-based element `x.transport t`.
 
-`transport_hom` is the morphism `x ⟶ x.transport t` induced by `t` and the identity on fibers.
+`toTransport` is the morphism `x ⟶ x.transport t` induced by `t` and the identity on fibers.
 -/
 @[simps]
 def toTransport (x : Grothendieck F) {c : C} (t : x.base ⟶ c) : x ⟶ x.transport t :=
@@ -269,7 +269,7 @@ theorem map_id_eq : map (𝟙 F) = 𝟙 (Cat.of <| Grothendieck <| F) := by
     rfl
 
 /-- Making the equality of functors into an isomorphism. Note: we should avoid equality of functors
-if possible, and we should prefer `map_id_iso` to `map_id_eq` whenever we can. -/
+if possible, and we should prefer `mapIdIso` to `map_id_eq` whenever we can. -/
 def mapIdIso : map (𝟙 F) ≅ 𝟙 (Cat.of <| Grothendieck <| F) := eqToIso map_id_eq
 
 variable {H : C ⥤ Cat}
