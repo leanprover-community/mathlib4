@@ -201,8 +201,8 @@ instance {j₁ j₂ : κ.ord.toType} (φ : j₁ ⟶ j₂) (f : Arrow C) :
     IsIso (((iterationFunctor I κ).map φ).app f).right :=
   inferInstanceAs (IsIso ((transfiniteCompositionOfShapeιIterationAppRight I κ f).F.map φ))
 
-/-- For any `f : Arrow C`, the object `f.right` identifies
-to `((iteration I κ).obj f).right`.-/
+/-- For any `f : Arrow C`, the object `((iteration I κ).obj f).right`
+identifies to `f.right`. -/
 @[simps! hom]
 noncomputable def iterationAppRightIso (f : Arrow C) :
     f.right ≅ ((iteration I κ).obj f).right :=
