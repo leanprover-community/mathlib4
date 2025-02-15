@@ -46,7 +46,8 @@ def properDivisors : Finset ℕ := {d ∈ Ico 1 n | d ∣ n}
 /-- `divisorsAntidiagonal n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
   As a special case, `divisorsAntidiagonal 0 = ∅`. -/
 def divisorsAntidiagonal : Finset (ℕ × ℕ) :=
-  {x ∈ Ico 1 (n + 1) ×ˢ Ico 1 (n + 1) | x.fst * x.snd = n}
+  (Icc 1 n).filterMap (fun x ↦ let y := n / x; if x * y = n then some (x, y) else none)
+    fun x₁ x₂ (x, y) hx₁ hx₂ ↦ by aesop
 
 variable {n}
 
@@ -97,20 +98,16 @@ theorem dvd_of_mem_divisors {m : ℕ} (h : n ∈ divisors m) : n ∣ m := by
 @[simp]
 theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
     x ∈ divisorsAntidiagonal n ↔ x.fst * x.snd = n ∧ n ≠ 0 := by
-  simp only [divisorsAntidiagonal, Finset.mem_Ico, Ne, Finset.mem_filter, Finset.mem_product]
-  rw [and_comm]
-  apply and_congr_right
-  rintro rfl
-  constructor <;> intro h
-  · contrapose! h
-    simp [h]
-  · rw [Nat.lt_add_one_iff, Nat.lt_add_one_iff]
-    rw [mul_eq_zero, not_or] at h
-    simp only [succ_le_of_lt (Nat.pos_of_ne_zero h.1), succ_le_of_lt (Nat.pos_of_ne_zero h.2),
-      true_and]
-    exact
-      ⟨Nat.le_mul_of_pos_right _ (Nat.pos_of_ne_zero h.2),
-        Nat.le_mul_of_pos_left _ (Nat.pos_of_ne_zero h.1)⟩
+  obtain ⟨a, b⟩ := x
+  simp only [divisorsAntidiagonal, mul_div_eq_iff_dvd, mem_filterMap, mem_Icc, one_le_iff_ne_zero,
+    Option.ite_none_right_eq_some, Option.some.injEq, Prod.ext_iff, and_left_comm, exists_eq_left]
+  constructor
+  · rintro ⟨han, ⟨ha, han'⟩, rfl⟩
+    simp [Nat.mul_div_eq_iff_dvd, han]
+    omega
+  · rintro ⟨rfl, hab⟩
+    rw [mul_ne_zero_iff] at hab
+    simpa [hab.1, hab.2] using Nat.le_mul_of_pos_right _ hab.2.bot_lt
 
 lemma ne_zero_of_mem_divisorsAntidiagonal {p : ℕ × ℕ} (hp : p ∈ n.divisorsAntidiagonal) :
     p.1 ≠ 0 ∧ p.2 ≠ 0 := by
