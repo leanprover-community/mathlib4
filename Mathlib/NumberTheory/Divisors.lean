@@ -3,9 +3,11 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.IsPrimePow
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.Ring.CharZero
+import Mathlib.Data.Nat.Cast.Order.Ring
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Order.Interval.Finset.Nat
 
@@ -43,8 +45,12 @@ def divisors : Finset ℕ := {d ∈ Ico 1 (n + 1) | d ∣ n}
   As a special case, `properDivisors 0 = ∅`. -/
 def properDivisors : Finset ℕ := {d ∈ Ico 1 n | d ∣ n}
 
-/-- `divisorsAntidiagonal n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
-  As a special case, `divisorsAntidiagonal 0 = ∅`. -/
+/-- Pairs of divisors of a natural number as a finset.
+
+`n.divisorsAntidiagonal` is the finset of pairs `(a, b) : ℕ × ℕ` such that `a * b = n`.
+As a special case, `Nat.divisorsAntidiagonal 0 = ∅`.
+
+O(n). -/
 def divisorsAntidiagonal : Finset (ℕ × ℕ) :=
   (Icc 1 n).filterMap (fun x ↦ let y := n / x; if x * y = n then some (x, y) else none)
     fun x₁ x₂ (x, y) hx₁ hx₂ ↦ by aesop
@@ -242,10 +248,14 @@ theorem swap_mem_divisorsAntidiagonal {x : ℕ × ℕ} :
     x.swap ∈ divisorsAntidiagonal n ↔ x ∈ divisorsAntidiagonal n := by
   rw [mem_divisorsAntidiagonal, mem_divisorsAntidiagonal, mul_comm, Prod.swap]
 
+/-- Simp normal form of `Nat.swap_mem_divisorsAntidiagonal`. -/
 @[simp]
 theorem swap_mem_divisorsAntidiagonal_aux {x : ℕ × ℕ} :
     x.snd * x.fst = n ∧ ¬n = 0 ↔ x ∈ divisorsAntidiagonal n := by
   rw [mem_divisorsAntidiagonal, mul_comm]
+
+lemma prodMk_mem_divisorsAntidiag {x y : ℕ} (hn : n ≠ 0) :
+    (x, y) ∈ n.divisorsAntidiagonal ↔ x * y = n := by simp [hn]
 
 theorem fst_mem_divisors_of_mem_antidiagonal {x : ℕ × ℕ} (h : x ∈ divisorsAntidiagonal n) :
     x.fst ∈ divisors n := by
@@ -514,3 +524,113 @@ theorem disjoint_divisors_filter_isPrimePow {a b : ℕ} (hab : a.Coprime b) :
   exact hn.ne_one (Nat.eq_one_of_dvd_coprimes hab han hbn)
 
 end Nat
+
+namespace Int
+variable {xy : ℤ × ℤ} {x y z : ℤ}
+
+-- Local notation for the embeddings `n ↦ n, n ↦ -n : ℕ → ℤ`
+local notation "natCast" => Nat.castEmbedding (R := ℤ)
+local notation "negNatCast" =>
+  Function.Embedding.trans Nat.castEmbedding (Equiv.toEmbedding (Equiv.neg ℤ))
+
+/-- Pairs of divisors of an integer as a finset.
+
+`z.divisorsAntidiag` is the finset of pairs `(a, b) : ℤ × ℤ` such that `a * b = z`.
+As a special case, `Int.divisorsAntidiag 0 = ∅`.
+
+O(|z|). Computed from `Nat.divisorsAntidiagonal`. -/
+def divisorsAntidiag : (z : ℤ) → Finset (ℤ × ℤ)
+  | (n : ℕ) =>
+    let s : Finset (ℕ × ℕ) := n.divisorsAntidiagonal
+    (s.map <| .prodMap natCast natCast).disjUnion (s.map <| .prodMap negNatCast negNatCast) <| by
+      simp +contextual [s, disjoint_left, eq_comm]
+  | negSucc n =>
+    let s : Finset (ℕ × ℕ) := (n + 1).divisorsAntidiagonal
+    (s.map <| .prodMap natCast negNatCast).disjUnion (s.map <| .prodMap negNatCast natCast) <| by
+      simp +contextual [s, disjoint_left, eq_comm, forall_swap (α := _ * _ = _)]
+
+@[simp]
+lemma mem_divisorsAntidiag :
+    ∀ {z} {xy : ℤ × ℤ}, xy ∈ divisorsAntidiag z ↔ xy.fst * xy.snd = z ∧ z ≠ 0
+  | (n : ℕ), ((x : ℕ), (y : ℕ)) => by
+    simp [divisorsAntidiag]
+    norm_cast
+    simp +contextual [eq_comm]
+  | (n : ℕ), (negSucc x, negSucc y) => by
+    simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
+    norm_cast
+    simp +contextual [eq_comm]
+  | (n : ℕ), ((x : ℕ), negSucc y) => by
+    simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
+    norm_cast
+    aesop
+  | (n : ℕ), (negSucc x, (y : ℕ)) => by
+    simp [divisorsAntidiag]
+    norm_cast
+    aesop
+  | .negSucc n, ((x : ℕ), (y : ℕ)) => by
+    simp [divisorsAntidiag]
+    norm_cast
+    aesop
+  | .negSucc n, (negSucc x, negSucc y) => by
+    simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
+    norm_cast
+    simp +contextual [eq_comm]
+  | .negSucc n, ((x : ℕ), negSucc y) => by
+    simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
+    norm_cast
+    aesop
+  | .negSucc n, (negSucc x, (y : ℕ)) => by
+    simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
+    norm_cast
+    simp +contextual [eq_comm]
+
+@[simp] lemma divisorsAntidiag_zero : divisorsAntidiag 0 = ∅ := rfl
+
+lemma prodMk_mem_divisorsAntidiag (hz : z ≠ 0) : (x, y) ∈ z.divisorsAntidiag ↔ x * y = z := by
+  simp [hz]
+
+lemma swap_mem_divisorsAntidiag : xy.swap ∈ z.divisorsAntidiag ↔ xy ∈ z.divisorsAntidiag := by
+  simp [mul_comm]
+
+/-- Simp normal form of `Nat.swap_mem_divisorsAntidiagonal`. -/
+@[simp]
+lemma swap_mem_divisorsAntidiagonal_aux :
+    xy.snd * xy.fst = z ∧ ¬z = 0 ↔ xy ∈ z.divisorsAntidiag := by simp [mul_comm]
+
+lemma neg_mem_divisorsAntidiag : -xy ∈ z.divisorsAntidiag ↔ xy ∈ z.divisorsAntidiag := by simp
+
+@[simp]
+lemma map_prodComm_divisorsAntidiag :
+    z.divisorsAntidiag.map (Equiv.prodComm _ _).toEmbedding = z.divisorsAntidiag := by
+  ext; simp [mem_divisorsAntidiag, mul_comm]
+
+@[simp]
+lemma map_neg_divisorsAntidiag :
+    z.divisorsAntidiag.map (Equiv.neg _).toEmbedding = z.divisorsAntidiag := by
+  ext; simp [mem_divisorsAntidiag, mul_comm]
+
+lemma divisorsAntidiag_neg :
+    (-z).divisorsAntidiag =
+      z.divisorsAntidiag.map (.prodMap (.refl _) (Equiv.neg _).toEmbedding) := by
+  ext; simp [mem_divisorsAntidiag, Prod.ext_iff, neg_eq_iff_eq_neg]
+
+lemma divisorsAntidiag_natCast (n : ℕ) :
+    divisorsAntidiag n =
+      (n.divisorsAntidiagonal.map <| .prodMap natCast natCast).disjUnion
+        (n.divisorsAntidiagonal.map <| .prodMap negNatCast negNatCast) (by
+          simp +contextual [disjoint_left, eq_comm]) := rfl
+
+lemma divisorsAntidiag_neg_natCast (n : ℕ) :
+    divisorsAntidiag (-n) =
+      (n.divisorsAntidiagonal.map <| .prodMap natCast negNatCast).disjUnion
+        (n.divisorsAntidiagonal.map <| .prodMap negNatCast natCast) (by
+          simp +contextual [disjoint_left, eq_comm]) := by cases n <;> rfl
+
+lemma divisorsAntidiag_ofNat (n : ℕ) :
+    divisorsAntidiag ofNat(n) =
+      (n.divisorsAntidiagonal.map <| .prodMap natCast natCast).disjUnion
+        (n.divisorsAntidiagonal.map <| .prodMap negNatCast negNatCast) (by
+          simp +contextual [disjoint_left, eq_comm]) := rfl
+
+end Int
