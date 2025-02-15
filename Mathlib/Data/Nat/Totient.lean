@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.CharP.Two
+import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Factorization.Induction
 import Mathlib.Data.Nat.Periodic
-import Mathlib.Data.ZMod.Basic
-import Mathlib.NumberTheory.Divisors
 
 /-!
 # Euler's totient function
@@ -20,8 +19,7 @@ We prove the divisor sum formula, namely that `n` equals `φ` summed over the di
 `totient_prime_pow`.
 -/
 
-assert_not_exists Algebra
-assert_not_exists LinearMap
+assert_not_exists Algebra LinearMap
 
 open Finset
 

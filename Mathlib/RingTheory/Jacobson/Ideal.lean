@@ -6,6 +6,7 @@ Authors: Kenny Lau, Devon Tuma, Wojciech Nawrocki
 import Mathlib.RingTheory.Ideal.IsPrimary
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
+import Mathlib.RingTheory.Jacobson.Radical
 
 /-!
 # Jacobson radical
@@ -70,6 +71,9 @@ theorem jacobson_idem : jacobson (jacobson I) = jacobson I :=
 @[simp]
 theorem jacobson_top : jacobson (⊤ : Ideal R) = ⊤ :=
   eq_top_iff.2 le_jacobson
+
+theorem jacobson_bot : jacobson (⊥ : Ideal R) = Ring.jacobson R := by
+  simp_rw [jacobson, Ring.jacobson, Module.jacobson, bot_le, true_and, isMaximal_def]
 
 @[simp]
 theorem jacobson_eq_top_iff : jacobson I = ⊤ ↔ I = ⊤ :=
