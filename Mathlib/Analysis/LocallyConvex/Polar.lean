@@ -177,14 +177,14 @@ def polarSubmodule {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) : S
 
 end NontriviallyNormedField
 
-section RCLike
+section NormedAlgebra
 
-variable [RCLike 𝕜] [AddCommMonoid E] [AddCommMonoid F]
+variable [NormedField 𝕜] [NormedAlgebra ℝ 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 variable [Module 𝕜 E] [Module 𝕜 F]
 
 variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
 
-variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F]
+variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F] --[Module ℝ E] [IsScalarTower ℝ 𝕜 E]
 
 theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
   rw [polar_eq_biInter_preimage]
@@ -206,6 +206,6 @@ set_option linter.unusedSectionVars false in
 proof_wanted bipolar_theorem [Module ℝ E] [IsScalarTower ℝ 𝕜 E] :
     closedAbsConvexHull (E := WeakBilin B) 𝕜 s = B.flip.polar (B.polar s)
 
-end RCLike
+end NormedAlgebra
 
 end LinearMap
