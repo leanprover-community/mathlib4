@@ -53,6 +53,14 @@ lemma map_comp (μ : Measure α) (κ : Kernel α β) {f : β → γ} (hf : Measu
     Measure.bind_apply hs (Kernel.measurable _)]
   simp_rw [Kernel.map_apply' _ hf _ hs]
 
+-- todo: kernel version
+lemma _root_.MeasureTheory.Measure.ae_ae_of_ae_comp [SFinite μ] [IsSFiniteKernel κ]
+    {p : β → Prop} (h : ∀ᵐ ω ∂(κ ∘ₘ μ), p ω):
+    ∀ᵐ ω' ∂μ, ∀ᵐ ω ∂(κ ω'), p ω := by
+  have : κ ∘ₘ μ = (μ ⊗ₘ κ).map Prod.snd := by rw [← Measure.snd]; simp
+  simp_rw [this] at h
+  exact Measure.ae_ae_of_ae_compProd (ae_of_ae_map measurable_snd.aemeasurable h)
+
 section CompProd
 
 lemma compProd_eq_comp_prod (μ : Measure α) [SFinite μ] (κ : Kernel α β) [IsSFiniteKernel κ] :
@@ -63,7 +71,40 @@ lemma compProd_eq_comp_prod (μ : Measure α) [SFinite μ] (κ : Kernel α β) [
 lemma compProd_id_eq_copy_comp [SFinite μ] : μ ⊗ₘ Kernel.id = Kernel.copy α ∘ₘ μ := by
   rw [compProd_id, Kernel.copy, deterministic_comp_eq_map]
 
+lemma comp_compProd_comm {η : Kernel (α × β) γ}
+    [SFinite μ] [IsSFiniteKernel κ] [IsSFiniteKernel η] :
+    η ∘ₘ (μ ⊗ₘ κ) = ((κ ⊗ₖ η) ∘ₘ μ).snd := by
+  ext s hs
+  rw [Measure.bind_apply hs η.measurable, Measure.snd_apply hs,
+    Measure.bind_apply _ (Kernel.measurable _), Measure.lintegral_compProd (η.measurable_coe hs)]
+  swap; · exact measurable_snd hs
+  congr with a
+  rw [Kernel.compProd_apply]
+  · rfl
+  · exact measurable_snd hs
+
 end CompProd
+
+section Integrable
+
+variable {E : Type*} [NormedAddCommGroup E] {f : β → E} [SFinite μ] [IsSFiniteKernel κ]
+
+lemma integrable_compProd_snd_iff (hf : AEStronglyMeasurable f (κ ∘ₘ μ)) :
+    Integrable (fun p ↦ f p.2) (μ ⊗ₘ κ) ↔ Integrable f (κ ∘ₘ μ) := by
+  have : κ ∘ₘ μ = (μ ⊗ₘ κ).map Prod.snd := by rw [← Measure.snd]; simp
+  rw [this, integrable_map_measure _ measurable_snd.aemeasurable]
+  · rfl
+  · rwa [← this]
+
+lemma todo_of_integrable_comp (h_int : Integrable f (κ ∘ₘ μ)) :
+    (∀ᵐ x ∂μ, Integrable f (κ x)) ∧ Integrable (fun x ↦ ∫ y, ‖f y‖ ∂κ x) μ := by
+  rwa [← Measure.integrable_compProd_snd_iff h_int.1, Measure.integrable_compProd_iff h_int.1]
+    at h_int
+
+lemma ae_integrable_of_integrable_comp (h_int : Integrable f (κ ∘ₘ μ)) :
+    ∀ᵐ x ∂μ, Integrable f (κ x) := (todo_of_integrable_comp h_int).1
+
+end Integrable
 
 section AddSMul
 

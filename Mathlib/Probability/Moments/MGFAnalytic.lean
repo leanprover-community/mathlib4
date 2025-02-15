@@ -132,6 +132,16 @@ lemma differentiableOn_mgf : DifferentiableOn ℝ (mgf X μ) (interior (integrab
 lemma continuousOn_mgf : ContinuousOn (mgf X μ) (interior (integrableExpSet X μ)) :=
   differentiableOn_mgf.continuousOn
 
+lemma continuous_mgf (h : ∀ t, Integrable (fun ω ↦ exp (t * X ω)) μ) :
+    Continuous (mgf X μ) := by
+  rw [continuous_iff_continuousOn_univ]
+  convert continuousOn_mgf
+  symm
+  rw [interior_eq_univ]
+  ext t
+  simp only [Set.mem_univ, iff_true]
+  exact h t
+
 lemma analyticOnNhd_iteratedDeriv_mgf (n : ℕ) :
     AnalyticOnNhd ℝ (iteratedDeriv n (mgf X μ)) (interior (integrableExpSet X μ)) := by
   rw [iteratedDeriv_eq_iterate]
