@@ -140,7 +140,7 @@ instance (C : Cat) : Mono (nerve₂.seagull C) where
     · exact (conj_eqToHom_iff_heq' _ _ _ _).2 (congr_arg_heq (·.hom) <| eq1)
     · exact (conj_eqToHom_iff_heq' _ _ _ _).2 (congr_arg_heq (·.hom) <| eq2)
 
--- Truncated.morphismProperty_eq_top
+/-- A proof that the components defined by `toNerve₂.mk.app` are natural. -/
 theorem toNerve₂.mk_naturality {X : SSet.Truncated.{u} 2} {C : Cat}
     (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C)
     (hyp : (φ : X _[2]₂) →
@@ -275,8 +275,9 @@ def toNerve₂.mk {X : SSet.Truncated.{u} 2} {C : Cat}
   app := fun n => toNerve₂.mk.app F n.unop
   naturality _ _ f := MorphismProperty.of_eq_top (toNerve₂.mk_naturality F hyp) f.unop
 
-/-- We might prefer this version where we are using the analogue of the hypothesis hyp
-conjugated by the isomorphism nerve₂Adj.NatIso.app C -/
+/-- An alternate version of `toNerve₂.mk`, which constructs a map of 2-truncated simplicial sets
+valued in a nerve  from the underlying ReflPrefunctor, where the central hypothesis is conjugated
+by the isomorphism `nerve₂Adj.NatIso.app C`. -/
 @[simps!] def toNerve₂.mk' {X : SSet.Truncated.{u} 2} {C : Cat}
     (f : SSet.oneTruncation₂.obj X ⟶ SSet.oneTruncation₂.obj (nerveFunctor₂.obj C))
     (hyp : (φ : X _[2]₂) →
@@ -314,8 +315,8 @@ theorem oneTruncation₂_toNerve₂Mk' {X : SSet.Truncated 2} {C : Cat}
       obtain ⟨g, rfl, rfl⟩ := g
       rfl
 
-/-- Now do a case split. For n = 0 and n = 1 this is covered by the hypothesis.
-         For n = 2 this is covered by the new lemma above.-/
+/-- An equality between maps into the 2-truncated nerve is detected by an equality beteween their
+underlying refl prefunctors. -/
 theorem toNerve₂.ext {X : SSet.Truncated 2} {C : Cat} (f g : X ⟶ nerveFunctor₂.obj C)
     (hyp : SSet.oneTruncation₂.map f = SSet.oneTruncation₂.map g) : f = g := by
   have eq₀ x : f.app (op [0]₂) x = g.app (op [0]₂) x := congr(($hyp).obj x)
@@ -335,13 +336,6 @@ theorem toNerve₂.ext {X : SSet.Truncated 2} {C : Cat} (f g : X ⟶ nerveFuncto
       have h1 := congr_arg_heq (fun x => x.map' 0 1) (congr_fun (f.naturality (op ar)) x)
       have h2 := congr_arg_heq (fun x => x.map' 0 1) (congr_fun (g.naturality (op ar)) x)
       exact h1.symm.trans <| .trans (congr_arg_heq (fun x => x.map' 0 1) (eq₁ _)) h2
-
-/-- ER: This is dumb. -/
-theorem toNerve₂.ext' {X : SSet.Truncated 2} {C : Cat} (f g : X ⟶ nerveFunctor₂.obj C)
-    (hyp : SSet.oneTruncation₂.map f = SSet.oneTruncation₂.map g) : f = g := by
-  let f' : X ⟶ nerveFunctor₂.obj C := f
-  let g' : X ⟶ nerveFunctor₂.obj C := g
-  exact toNerve₂.ext f' g' hyp
 
 end
 end CategoryTheory
