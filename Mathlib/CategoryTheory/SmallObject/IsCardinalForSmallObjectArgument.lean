@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.SmallObject.Construction
-import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
 import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
+import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
 import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 import Mathlib.SetTheory.Cardinal.Cofinality
@@ -18,19 +18,18 @@ a regular cardinal `κ : Cardinal.{w}`, we define a typeclass
 `IsCardinalForSmallObjectArgument I κ` which requires certain
 smallness properties (`I` is `w`-small, `C` is locally `w`-small),
 the existence of certain colimits (pushouts, coproducts of size `w`,
-and the condition `HasIterationOfShape κ.ord.toType` about the
-existence of colimits indexed by limit ordinal smaller than of equal
-to `κ.ord`), and a kind "presentable" assumption on the domains
-of the morphisms in `I`: if `A` is the domain of such an object,
-the functor `Hom(A, _)` should commute with the filtering
-colimits corresponding to relative `I`-cell complexes. (This
-last condition shall hold when `κ` is the successor of
-a cardinal `c` such that all these objects `A` are `c`-presentable,
-see the file `Presentable.Basic`.)
+and the condition `HasIterationOfShape κ.ord.toType C` about the
+existence of colimits indexed by limit ordinal smaller than or equal
+to `κ.ord`), and the technical assumption that if `A` is the
+a morphism in `I`, then the functor `Hom(A, _)` should commute
+with the filtering colimits corresponding to relative
+`I`-cell complexes. (This last condition shall hold when `κ`
+is the successor of an infinite cardinal `c` such that all
+these objects `A` are `c`-presentable, see the file `Presentable.Basic`.)
 
 Given `I : MorphismProperty C`, we shall say that `I` permits
 the small object argument if there exists `κ` such that
-`IsCardinalForSmallObjectArgument I κ` hold. See the file
+`IsCardinalForSmallObjectArgument I κ` holds. See the file
 `SmallObject.Basic` for the definition of this typeclass
 `HasSmallObjectArgument` and an outline of the proof.
 
@@ -212,10 +211,10 @@ instance {j₁ j₂ : κ.ord.toType} (φ : j₁ ⟶ j₂) (f : Arrow C) :
     IsIso (((iterationFunctor I κ).map φ).app f).right :=
   inferInstanceAs (IsIso ((transfiniteCompositionOfShapeιIterationAppRight I κ f).F.map φ))
 
-/-- For any `f : Arrow C`, the object `f.right` identifies
-to `((iteration I κ).obj f).right`.-/
+/-- For any `f : Arrow C`, the object `((iteration I κ).obj f).right`
+identifies to `f.right`. -/
 @[simps! hom]
-noncomputable def iterationAppRightIso (f : Arrow C) :
+noncomputable def iterationObjRightIso (f : Arrow C) :
     f.right ≅ ((iteration I κ).obj f).right :=
   asIso ((ιIteration I κ).app f).right
 
@@ -224,13 +223,13 @@ noncomputable def iterationAppRightIso (f : Arrow C) :
 noncomputable def iterationFunctorObjObjRightIso (f : Arrow C) (j : κ.ord.toType) :
     (((iterationFunctor I κ).obj j).obj f).right ≅ f.right :=
   asIso ((transfiniteCompositionOfShapeιIterationAppRight I κ f).incl.app j) ≪≫
-    (iterationAppRightIso I κ f).symm
+    (iterationObjRightIso I κ f).symm
 
 @[reassoc (attr := simp)]
 lemma iterationFunctorObjObjRightIso_ιIteration_app_right (f : Arrow C) (j : κ.ord.toType) :
     (iterationFunctorObjObjRightIso I κ f j).hom ≫ ((ιIteration I κ).app f).right =
       (transfiniteCompositionOfShapeιIterationAppRight I κ f).incl.app j := by
-  simp [iterationFunctorObjObjRightIso, iterationAppRightIso]
+  simp [iterationFunctorObjObjRightIso, iterationObjRightIso]
 
 lemma prop_iterationFunctor_map_succ (j : κ.ord.toType) :
     (succStruct I κ).prop ((iterationFunctor I κ).map (homOfLE (Order.le_succ j))) := by
@@ -279,10 +278,12 @@ variable {X Y : C} (f : X ⟶ Y)
 small object argument. -/
 noncomputable def obj : C := ((iteration I κ).obj (Arrow.mk f)).left
 
-/-- The "inclusion" morphism given by the small object argument. -/
+/-- The "inclusion" morphism in the factorization given by
+the the small object argument. -/
 noncomputable def ιObj : X ⟶ obj I κ f := ((ιIteration I κ).app (Arrow.mk f)).left
 
-/-- The "projection" morphism given by the small object argument. -/
+/-- The "projection" morphism in the factorization given by
+the the small object argument. -/
 noncomputable def πObj : obj I κ f ⟶ Y :=
   ((iteration I κ).obj (Arrow.mk f)).hom ≫ inv ((ιIteration I κ).app f).right
 
@@ -295,7 +296,7 @@ lemma πObj_ιIteration_app_right :
 lemma ιObj_πObj : ιObj I κ f ≫ πObj I κ f = f := by
   simp [ιObj, πObj]
 
-/-- The map `ιObj I κ f` is a relative `I`-cell complex. -/
+/-- The morphism `ιObj I κ f` is a relative `I`-cell complex. -/
 noncomputable def relativeCellComplexιObj :
     RelativeCellComplex.{w} (fun (_ : κ.ord.toType) ↦ I.homFamily)
       (ιObj I κ f) := by
@@ -390,8 +391,8 @@ lemma rlp_πObj : I.rlp (πObj I κ f) :=
 
 end
 
-/-- The functoriality in the objects in `Arrow C` of the intermediate object
-in the factorization of the small object argument. -/
+/-- The functoriality of the intermediate object in the
+factorization of the small object argument. -/
 noncomputable def objMap {f g : Arrow C} (φ : f ⟶ g) : obj I κ f.hom ⟶ obj I κ g.hom :=
   ((iteration I κ).map φ).left
 
