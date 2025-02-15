@@ -18,7 +18,7 @@ all coefficients the exponent of which is smaller than some bound vanish.
 
 - `MvPowerSeries.isLinearTopology` : if `R` has a linear topology,
 then the product topology on `MvPowerSeries σ R` is a linear topology.
-This applies in particular when `R` has a discrete topology.
+This applies in particular when `R` has the discrete topology.
 
 -/
 
