@@ -49,7 +49,7 @@ procedure for constructions by transfinite
 induction in categories (including the iteration of a functor)
 is done in the file `SmallObject.TransfiniteIteration`.
 The factorization of the small object argument is obtained by doing
-a transfinite of a specific functor `Arrow C ⥤ Arrow C` which
+a transfinite iteration of a specific functor `Arrow C ⥤ Arrow C` which
 is defined in the file `SmallObject.Construction` (this definition
 involves coproducts and a pushout). These ingredients are combined
 in the file `SmallObject.IsCardinalForSmallObjectArgument`
