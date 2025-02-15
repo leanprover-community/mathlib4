@@ -674,7 +674,8 @@ theorem Complex.map_isometryOfOrthonormal (v : OrthonormalBasis (Fin 2) ℝ F) (
     Complex.isometryOfOrthonormal (v.map f) = (Complex.isometryOfOrthonormal v).trans f := by
   simp only [isometryOfOrthonormal, OrthonormalBasis.map, LinearIsometryEquiv.symm_trans,
     LinearIsometryEquiv.symm_symm]
-  rfl
+  -- Porting note: `LinearIsometryEquiv.trans_assoc` doesn't trigger in the `simp` above
+  rw [LinearIsometryEquiv.trans_assoc]
 
 theorem Complex.isometryOfOrthonormal_symm_apply (v : OrthonormalBasis (Fin 2) ℝ F) (f : F) :
     (Complex.isometryOfOrthonormal v).symm f =
