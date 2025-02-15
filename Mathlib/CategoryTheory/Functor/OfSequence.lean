@@ -48,7 +48,7 @@ def map : ∀ {X : ℕ → C} (_ : ∀ n, X n ⟶ X (n + 1)) (i j : ℕ), i ≤ 
   | _, _, _ + 1, 0 => nofun
   | _, f, k + 1, l + 1 => fun _ ↦ map (fun n ↦ f (n + 1)) k l (by omega)
 
-lemma map_id (i : ℕ) : map f i i (by omega) = 𝟙 _ := by
+lemma map_id (i : ℕ) : map f i i (by order) = 𝟙 _ := by
   revert X f
   induction i with
   | zero => intros; rfl
@@ -94,7 +94,7 @@ lemma map_comp (i j k : ℕ) (hij : i ≤ j) (hjk : j ≤ k) :
         exact hi _ j k (by omega) (by omega)
 
 -- `map` has good definitional properties when applied to explicit natural numbers
-example : map f 5 5 (by omega) = 𝟙 _ := rfl
+example : map f 5 5 (by order) = 𝟙 _ := rfl
 example : map f 0 3 (by omega) = f 0 ≫ f 1 ≫ f 2 := rfl
 example : map f 3 7 (by omega) = f 3 ≫ f 4 ≫ f 5 ≫ f 6 := rfl
 
@@ -156,7 +156,7 @@ morphisms `f : X (n + 1) ⟶ X n` for all `n : ℕ`. -/
 def ofOpSequence : ℕᵒᵖ ⥤ C := (ofSequence (fun n ↦ (f n).op)).leftOp
 
 -- `ofOpSequence` has good definitional properties when applied to explicit natural numbers
-example : (ofOpSequence f).map (homOfLE (show 5 ≤ 5 by omega)).op = 𝟙 _ := rfl
+example : (ofOpSequence f).map (homOfLE (show 5 ≤ 5 by order)).op = 𝟙 _ := rfl
 example : (ofOpSequence f).map (homOfLE (show 0 ≤ 3 by omega)).op = (f 2 ≫ f 1) ≫ f 0 := rfl
 example : (ofOpSequence f).map (homOfLE (show 3 ≤ 7 by omega)).op =
     ((f 6 ≫ f 5) ≫ f 4) ≫ f 3 := rfl

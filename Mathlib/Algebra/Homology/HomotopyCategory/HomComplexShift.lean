@@ -92,7 +92,7 @@ def leftUnshift {n' a : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn : n + 
 lemma leftUnshift_v {n' a : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn : n + a = n')
     (p q : ℤ) (hpq : p + n = q) (p' : ℤ) (hp' : p' + n' = q) :
     (γ.leftUnshift n hn).v p q hpq = (a * n' + ((a * (a-1))/2)).negOnePow •
-      (K.shiftFunctorObjXIso a p' p (by omega)).inv ≫ γ.v p' q (by omega) := by
+      (K.shiftFunctorObjXIso a p' p (by omega)).inv ≫ γ.v p' q (by order) := by
   obtain rfl : p' = p - a := by omega
   rfl
 
@@ -367,7 +367,7 @@ lemma rightUnshift_comp {m : ℤ} {a : ℤ} (γ' : Cochain L (M⟦a⟧) m) {nm :
   ext p q hpq
   rw [(γ.comp γ' hnm).rightUnshift_v nm' hnm' p q hpq (p + n + m) (by omega),
     γ.comp_v γ' hnm p (p + n) (p + n + m) rfl rfl,
-    comp_v _ _ (show n + m' = nm' by omega) p (p + n) q (by omega) (by omega),
+    comp_v _ _ (show n + m' = nm' by omega) p (p + n) q (by order) (by omega),
     γ'.rightUnshift_v m' hm' (p + n) q (by omega) (p + n + m) rfl, assoc]
 
 lemma leftShift_comp (a n' : ℤ) (hn' : n + a = n') {m t t' : ℤ} (γ' : Cochain L M m)
@@ -379,7 +379,7 @@ lemma leftShift_comp (a n' : ℤ) (hn' : n + a = n') {m t t' : ℤ} (γ' : Cocha
   dsimp
   simp only [Cochain.comp_v _ _ h' p (p + n') q rfl (by omega),
     γ.leftShift_v a n' hn' p (p + n') rfl (p + a) (by omega),
-    (γ.comp γ' h).leftShift_v a t' (by omega) p q hpq (p + a) (by omega),
+    (γ.comp γ' h).leftShift_v a t' (by order) p q hpq (p + a) (by omega),
     smul_smul, Linear.units_smul_comp, assoc, Int.negOnePow_add, ← mul_assoc, ← h',
     comp_v _ _ h (p + a) (p + n') q (by omega) (by omega)]
   congr 2

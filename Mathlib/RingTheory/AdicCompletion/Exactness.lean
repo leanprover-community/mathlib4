@@ -94,7 +94,7 @@ theorem map_injective {f : M →ₗ[R] N} (hf : Function.Injective f) :
   intro x
   apply AdicCompletion.induction_on I M x (fun a ↦ ?_)
   intro hx
-  refine AdicCompletion.mk_zero_of _ _ _ ⟨42, fun n _ ↦ ⟨n + k, by omega, n, by omega, ?_⟩⟩
+  refine AdicCompletion.mk_zero_of _ _ _ ⟨42, fun n _ ↦ ⟨n + k, by omega, n, by order, ?_⟩⟩
   rw [← Submodule.comap_map_eq_of_injective hf (I ^ n • ⊤ : Submodule R M),
     Submodule.map_smul'', Submodule.map_top]
   apply (smul_mono_right _ inf_le_right : I ^ n • (I ^ k • ⊤ ⊓ (range f)) ≤ _)

@@ -159,28 +159,28 @@ lemma isStrictlyLE_of_le (p q : ℤ) (hpq : p ≤ q) [K.IsStrictlyLE p] :
   rw [isStrictlyLE_iff]
   intro i hi
   apply K.isZero_of_isStrictlyLE p
-  omega
+  order
 
 lemma isStrictlyGE_of_ge (p q : ℤ) (hpq : p ≤ q) [K.IsStrictlyGE q] :
     K.IsStrictlyGE p := by
   rw [isStrictlyGE_iff]
   intro i hi
   apply K.isZero_of_isStrictlyGE q
-  omega
+  order
 
 lemma isLE_of_le (p q : ℤ) (hpq : p ≤ q) [K.IsLE p] :
     K.IsLE q := by
   rw [isLE_iff]
   intro i hi
   apply K.exactAt_of_isLE p
-  omega
+  order
 
 lemma isGE_of_ge (p q : ℤ) (hpq : p ≤ q) [K.IsGE q] :
     K.IsGE p := by
   rw [isGE_iff]
   intro i hi
   apply K.exactAt_of_isGE q
-  omega
+  order
 
 section
 
@@ -214,9 +214,9 @@ lemma exists_iso_single [HasZeroObject C] (n : ℤ) [K.IsStrictlyGE n] [K.IsStri
       hom_inv_id := by
         ext i
         obtain hi | rfl | hi := lt_trichotomy i n
-        · apply (K.isZero_of_isStrictlyGE n i (by omega)).eq_of_src
+        · apply (K.isZero_of_isStrictlyGE n i (by order)).eq_of_src
         · simp
-        · apply (K.isZero_of_isStrictlyLE n i (by omega)).eq_of_tgt
+        · apply (K.isZero_of_isStrictlyLE n i (by order)).eq_of_tgt
       inv_hom_id := by aesop }⟩⟩
 
 end HasZeroMorphisms

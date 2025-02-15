@@ -72,8 +72,8 @@ lemma spine_map_vertex {n : ℕ} (x : X _⦋n⦌) {m : ℕ} (φ : ⦋m⦌ ⟶ �
   rfl
 
 lemma spine_map_subinterval {n : ℕ} (j l : ℕ) (hjl : j + l ≤ n) (Δ : X _⦋n⦌) :
-    X.spine l (X.map (subinterval j l (by omega)).op Δ) =
-      (X.spine n Δ).interval j l (by omega) := by
+    X.spine l (X.map (subinterval j l (by order)).op Δ) =
+      (X.spine n Δ).interval j l (by order) := by
   ext i
   · simp only [spine_vertex, Path.interval, ← FunctorToTypes.map_comp_apply, ← op_comp,
       const_subinterval_eq]

@@ -116,7 +116,7 @@ variable (b_pos : 0 < b) (b_ne_one : b ≠ 1)
 include b_pos b_ne_one
 
 private theorem log_b_ne_zero : log b ≠ 0 := by
-  have b_ne_zero : b ≠ 0 := by linarith
+  have b_ne_zero : b ≠ 0 := by order
   have b_ne_minus_one : b ≠ -1 := by linarith
   simp [b_ne_one, b_ne_zero, b_ne_minus_one]
 
@@ -174,7 +174,7 @@ include hb
 private theorem b_pos : 0 < b := by linarith
 
 -- Porting note: prime added to avoid clashing with `b_ne_one` further down the file
-private theorem b_ne_one' : b ≠ 1 := by linarith
+private theorem b_ne_one' : b ≠ 1 := by order
 
 @[simp]
 theorem logb_le_logb (h : 0 < x) (h₁ : 0 < y) : logb b x ≤ logb b y ↔ x ≤ y := by
@@ -182,7 +182,7 @@ theorem logb_le_logb (h : 0 < x) (h₁ : 0 < y) : logb b x ≤ logb b y ↔ x �
 
 @[gcongr]
 theorem logb_le_logb_of_le (h : 0 < x) (hxy : x ≤ y) : logb b x ≤ logb b y :=
-  (logb_le_logb hb h (by linarith)).mpr hxy
+  (logb_le_logb hb h (by order)).mpr hxy
 
 @[gcongr]
 theorem logb_lt_logb (hx : 0 < x) (hxy : x < y) : logb b x < logb b y := by
@@ -266,7 +266,7 @@ section BPosAndBLtOne
 variable (b_pos : 0 < b) (b_lt_one : b < 1)
 include b_lt_one
 
-private theorem b_ne_one : b ≠ 1 := by linarith
+private theorem b_ne_one : b ≠ 1 := by order
 
 include b_pos
 

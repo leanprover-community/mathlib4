@@ -38,8 +38,8 @@ def cocycleOfDegreewiseSplit : Cocycle S.X₃ S.X₁ 1 :=
       have r_f := fun n => (σ n).r_f
       have s_g := fun n => (σ n).s_g
       dsimp at this r_f s_g ⊢
-      rw [δ_v 1 2 (by omega) _ p (p + 2) (by omega) (p + 1) (p + 1)
-        (by omega) (by omega), Cochain.mk_v, Cochain.mk_v,
+      rw [δ_v 1 2 (by omega) _ p (p + 2) (by order) (p + 1) (p + 1)
+        (by omega) (by order), Cochain.mk_v, Cochain.mk_v,
         show Int.negOnePow 2 = 1 by rfl, one_smul, assoc, assoc,
         ← cancel_mono (S.f.f (p + 2)), add_comp, assoc, assoc, assoc,
         assoc, assoc, assoc, zero_comp, ← S.f.comm, reassoc_of% (r_f (p + 1)),

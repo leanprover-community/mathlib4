@@ -25,11 +25,11 @@ namespace SimplexCategory
 lemma Truncated.morphismProperty_eq_top
     {d : ℕ} (W : MorphismProperty (Truncated d)) [W.IsMultiplicative]
     (δ_mem : ∀ (n : ℕ) (hn : n < d) (i : Fin (n + 2)),
-    W (SimplexCategory.δ (n := n) i : ⟨.mk n, by dsimp; omega⟩ ⟶
+    W (SimplexCategory.δ (n := n) i : ⟨.mk n, by dsimp; order⟩ ⟶
       ⟨.mk (n + 1), by dsimp; omega⟩))
     (σ_mem : ∀ (n : ℕ) (hn : n < d) (i : Fin (n + 1)),
     W (SimplexCategory.σ (n := n) i : ⟨.mk (n + 1), by dsimp; omega⟩ ⟶
-      ⟨.mk n, by dsimp; omega⟩)) :
+      ⟨.mk n, by dsimp; order⟩)) :
     W = ⊤ := by
   ext ⟨a, ha⟩ ⟨b, hb⟩ f
   simp only [MorphismProperty.top_apply, iff_true]

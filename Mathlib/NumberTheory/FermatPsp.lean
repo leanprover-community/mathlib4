@@ -349,7 +349,7 @@ theorem exists_infinite_pseudoprimes {b : ℕ} (h : 1 ≤ b) (m : ℕ) :
   · have h₁ : b = 1 := by omega
     rw [h₁]
     use 2 * (m + 2)
-    have : ¬Nat.Prime (2 * (m + 2)) := Nat.not_prime_mul (by omega) (by omega)
+    have : ¬Nat.Prime (2 * (m + 2)) := Nat.not_prime_mul (by order) (by omega)
     exact ⟨fermatPsp_base_one (by omega) this, by omega⟩
 
 theorem frequently_atTop_fermatPsp {b : ℕ} (h : 1 ≤ b) : ∃ᶠ n in Filter.atTop, FermatPsp n b := by

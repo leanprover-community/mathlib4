@@ -103,7 +103,7 @@ From a letter to Euler, see page 37 in [juskevic2022].
 theorem coprime_fermatNumber_fermatNumber {m n : ℕ} (hmn : m ≠ n) :
     Coprime (fermatNumber m) (fermatNumber n) := by
   wlog hmn' : m < n
-  · simpa only [coprime_comm] using this hmn.symm (by omega)
+  · simpa only [coprime_comm] using this hmn.symm (by order)
   let d := (fermatNumber m).gcd (fermatNumber n)
   have h_n : d ∣ fermatNumber n := gcd_dvd_right ..
   have h_m : d ∣ 2 := (Nat.dvd_add_right <| (gcd_dvd_left _ _).trans <| dvd_prod_of_mem _

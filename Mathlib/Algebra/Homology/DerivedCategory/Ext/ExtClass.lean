@@ -98,7 +98,7 @@ lemma comp_extClass : (Ext.mk₀ S.g).comp hS.extClass (zero_add 1) = 0 := by
 @[simp]
 lemma comp_extClass_assoc {Y : C} {n : ℕ} (γ : Ext S.X₁ Y n) {n' : ℕ} (h : 1 + n = n') :
     (Ext.mk₀ S.g).comp (hS.extClass.comp γ h) (zero_add n') = 0 := by
-  rw [← Ext.comp_assoc (a₁₂ := 1) _ _ _ (by omega) (by omega) (by omega),
+  rw [← Ext.comp_assoc (a₁₂ := 1) _ _ _ (by omega) (by order) (by omega),
     comp_extClass, Ext.zero_comp]
 
 @[simp]
