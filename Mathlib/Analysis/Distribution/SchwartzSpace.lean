@@ -173,7 +173,7 @@ theorem decay_add_le_aux (k n : ℕ) (f g : 𝓢(E, F)) (x : E) :
       ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ + ‖x‖ ^ k * ‖iteratedFDeriv ℝ n g x‖ := by
   rw [← mul_add]
   refine mul_le_mul_of_nonneg_left ?_ (by positivity)
-  rw [iteratedFDeriv_add_apply (f.smooth _) (g.smooth _)]
+  rw [iteratedFDeriv_add_apply (f.smooth _).contDiffAt (g.smooth _).contDiffAt]
   exact norm_add_le _ _
 
 theorem decay_neg_aux (k n : ℕ) (f : 𝓢(E, F)) (x : E) :

@@ -87,7 +87,7 @@ def _root_.ContinuousMap.coeNNRealReal : C(ℝ≥0, ℝ) :=
   ⟨(↑), continuous_coe⟩
 
 @[simp]
-lemma  coeNNRealReal_zero : ContinuousMap.coeNNRealReal 0 = 0 := rfl
+lemma coeNNRealReal_zero : ContinuousMap.coeNNRealReal 0 = 0 := rfl
 
 instance ContinuousMap.canLift {X : Type*} [TopologicalSpace X] :
     CanLift C(X, ℝ) C(X, ℝ≥0) ContinuousMap.coeNNRealReal.comp fun f => ∀ x, 0 ≤ f x where
