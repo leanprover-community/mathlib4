@@ -25,7 +25,7 @@ A Z-group is a group whose Sylow subgroups are all cyclic.
 * `IsZGroup.coprime_commutator_index`: the commutator subgroup of a finite Z-group is a
   Hall-subgroup (the commutator subgroup has cardinality coprime to its index).
 * `isZGroup_iff_mulEquiv`: a finite group `G` is a Z-group if and only if `G` is isomorphic to a
-  semidirect product of two cyclic groups of coprime order.
+  semidirect product of two cyclic subgroups of coprime order.
 
 -/
 
@@ -307,20 +307,19 @@ theorem isZGroup_of_coprime [Finite G] [IsZGroup G] [IsZGroup G'']
     rwa [← MonoidHom.ker_eq_bot_iff, P.ker_subgroupMap f', Subgroup.subgroupOf_eq_bot]
 
 /-- A finite group `G` is a Z-group if and only if `G` is isomorphic to a semidirect product of two
-  cyclic groups of coprime order. -/
-theorem isZGroup_iff_mulEquiv [Finite G] :
-    IsZGroup G ↔ ∃ (m n : ℕ) (φ : Multiplicative (ZMod m) →* MulAut (Multiplicative (ZMod n)))
-      (_ : G ≃* SemidirectProduct _ _ φ), Nat.Coprime m n := by
+  cyclic subgroups of coprime order. -/
+theorem isZGroup_iff_exists_mulEquiv [Finite G] :
+    IsZGroup G ↔ ∃ (N H : Subgroup G) (φ : H →* MulAut N) (_ : G ≃* N ⋊[φ] H),
+      IsCyclic H ∧ IsCyclic N ∧ (Nat.card N).Coprime (Nat.card H) := by
   refine ⟨fun hG ↦ ?_, ?_⟩
   · obtain ⟨H, hH⟩ := Subgroup.exists_right_complement'_of_coprime hG.coprime_commutator_index
-    exact ⟨_, _, _, (SemidirectProduct.mulEquivSubgroup hH).symm.trans (SemidirectProduct.congr'
-      (zmodCyclicMulEquiv hG.isCyclic_commutator).symm (hH.symm.QuotientMulEquiv.symm.trans
-      (zmodCyclicMulEquiv hG.isCyclic_abelianization).symm)), (hG.coprime_commutator_index).symm⟩
-  · rintro ⟨m, n, φ, e, h⟩
-    have := Finite.of_injective _ (e.symm.injective.comp SemidirectProduct.inl_injective)
-    rw [← m.card_zmod, ← n.card_zmod, Nat.coprime_comm] at h
-    have : IsZGroup (Multiplicative (ZMod n) ⋊[φ] Multiplicative (ZMod m)) :=
-      isZGroup_of_coprime SemidirectProduct.range_inl_eq_ker_rightHom.ge h
+    have h1 : Abelianization G ≃* H := hH.symm.QuotientMulEquiv
+    refine ⟨commutator G, H, _, (SemidirectProduct.mulEquivSubgroup hH).symm,
+      isCyclic_of_surjective _ h1.surjective, hG.isCyclic_commutator, ?_⟩
+    exact Nat.card_congr h1.toEquiv ▸ hG.coprime_commutator_index
+  · rintro ⟨N, H, φ, e, hH, hN, hHN⟩
+    have : IsZGroup (N ⋊[φ] H) :=
+      isZGroup_of_coprime SemidirectProduct.range_inl_eq_ker_rightHom.ge hHN
     exact IsZGroup.of_injective (f := e.toMonoidHom) e.injective
 
 end Classification
