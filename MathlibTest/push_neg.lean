@@ -10,6 +10,7 @@ import Mathlib.Tactic.Push
 
 private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
+-- set_option trace.Meta.Tactic.simp true
 variable {α β : Type} [LinearOrder β] {p q : Prop} {p' q' : α → Prop}
 
 example : (¬p ∧ ¬q) → ¬(p ∨ q) := by
@@ -158,6 +159,10 @@ example (h : x = 0 ∧ y ≠ 0) : ¬(x = 0 → y = 0) := by
 end use_distrib
 
 example (a : α) (o : Option α) (h : ¬∀ hs, o.get hs ≠ a) : ∃ hs, o.get hs = a := by
+  push_neg at h
+  exact h
+
+theorem mem_compl (s : Set α) (a : α) (h : a ∉ sᶜ) : a ∈ s := by
   push_neg at h
   exact h
 
