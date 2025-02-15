@@ -209,7 +209,7 @@ theorem irreducible_aux (f g : Polynomial (FixedPoints.subfield G F)) (hf : f.Mo
   have hg2 : g ∣ minpoly G F x := by rw [← hfg]; exact dvd_mul_left _ _
   have := eval₂ G F x
   rw [← hfg, Polynomial.eval₂_mul, mul_eq_zero] at this
-  cases' this with this this
+  rcases this with this | this
   · right
     have hf3 : f = minpoly G F x :=
       Polynomial.eq_of_monic_of_associated hf (monic G F x)
