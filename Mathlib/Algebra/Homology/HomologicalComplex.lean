@@ -469,7 +469,7 @@ theorem dFrom_comp_xNextIso {i j : ι} (r : c.Rel i j) :
 theorem dFrom_comp_xNextIsoSelf {i : ι} (h : ¬c.Rel i (c.next i)) :
     C.dFrom i ≫ (C.xNextIsoSelf h).hom = 0 := by simp [h]
 
-@[simp 1100]
+-- This is not a simp lemma; the LHS already simplifies.
 theorem dTo_comp_dFrom (j : ι) : C.dTo j ≫ C.dFrom j = 0 :=
   C.d_comp_d _ _ _
 
@@ -552,14 +552,12 @@ theorem next_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
 theorem comm_from (f : Hom C₁ C₂) (i : ι) : f.f i ≫ C₂.dFrom i = C₁.dFrom i ≫ f.next i :=
   f.comm _ _
 
-attribute [simp 1100] comm_from_assoc
 attribute [simp] comm_from_apply
 
 @[reassoc, elementwise]
 theorem comm_to (f : Hom C₁ C₂) (j : ι) : f.prev j ≫ C₂.dTo j = C₁.dTo j ≫ f.f j :=
   f.comm _ _
 
-attribute [simp 1100] comm_to_assoc
 attribute [simp] comm_to_apply
 
 /-- A morphism of chain complexes

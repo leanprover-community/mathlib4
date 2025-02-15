@@ -341,19 +341,23 @@ instance : Coe (FiniteAdeleRing R K) (K_hat R K) where
 theorem coe_one : (1 : FiniteAdeleRing R K) = (1 : K_hat R K) := rfl
 
 @[simp, norm_cast]
-theorem coe_zero: (0 : FiniteAdeleRing R K) = (0 : K_hat R K) := rfl
+theorem coe_zero : (0 : FiniteAdeleRing R K) = (0 : K_hat R K) := rfl
 
 @[simp, norm_cast]
-theorem coe_add (x y : FiniteAdeleRing R K) : (x + y : FiniteAdeleRing R K) =
-  (x : K_hat R K) + (y : K_hat R K) := rfl
+theorem coe_add (x y : FiniteAdeleRing R K) :
+    (x + y : FiniteAdeleRing R K) = (x : K_hat R K) + (y : K_hat R K) :=
+  rfl
 
 @[simp, norm_cast]
-theorem coe_mul (x y : FiniteAdeleRing R K) : (x * y : FiniteAdeleRing R K) =
-  (x : K_hat R K) * (y : K_hat R K) := rfl
+theorem coe_mul (x y : FiniteAdeleRing R K) :
+    (x * y : FiniteAdeleRing R K) = (x : K_hat R K) * (y : K_hat R K) :=
+  rfl
 
 @[simp, norm_cast]
-theorem coe_algebraMap (x : K) : (((algebraMap K (FiniteAdeleRing R K)) x) : K_hat R K) =
-      (algebraMap K (ProdAdicCompletions R K)) x := rfl
+theorem coe_algebraMap (x : K) :
+    (((algebraMap K (FiniteAdeleRing R K)) x) : K_hat R K) =
+      (algebraMap K (ProdAdicCompletions R K)) x :=
+  rfl
 
 @[ext]
 lemma ext {a₁ a₂ : FiniteAdeleRing R K} (h : (a₁ : K_hat R K) = a₂) : a₁ = a₂ :=
@@ -374,15 +378,15 @@ instance : Algebra (R_hat R K) (FiniteAdeleRing R K) where
   commutes' _ _ := mul_comm _ _
   smul_def' _ _ := rfl
 
-instance : CoeFun (FiniteAdeleRing R K)
-    (fun _ ↦ ∀ (v : HeightOneSpectrum R), adicCompletion K v) where
-  coe a v := a.1 v
+instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion K) where
+  coe a := a.1
+  coe_injective' _a _b := ext _ _
 
 open scoped algebraMap -- coercion from R to `FiniteAdeleRing R K`
 
 variable {R K} in
-lemma exists_finiteIntegralAdele_iff (a : FiniteAdeleRing R K) : (∃ c : R_hat R K,
-    a = c) ↔ ∀ (v : HeightOneSpectrum R), a v ∈ adicCompletionIntegers K v :=
+lemma exists_finiteIntegralAdele_iff (a : FiniteAdeleRing R K) :
+    (∃ c : R_hat R K, a = c) ↔ ∀ v : HeightOneSpectrum R, a v ∈ adicCompletionIntegers K v :=
   ⟨by rintro ⟨c, rfl⟩ v; exact (c v).2, fun h ↦ ⟨fun v ↦ ⟨a v, h v⟩, rfl⟩⟩
 
 section Topology

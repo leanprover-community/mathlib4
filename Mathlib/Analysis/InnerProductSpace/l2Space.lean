@@ -157,12 +157,12 @@ theorem hasSum_inner (f g : lp G 2) : HasSum (fun i => ⟪f i, g i⟫) ⟪f, g�
 theorem inner_single_left [DecidableEq ι] (i : ι) (a : G i) (f : lp G 2) :
     ⟪lp.single 2 i a, f⟫ = ⟪a, f i⟫ := by
   refine (hasSum_inner (lp.single 2 i a) f).unique ?_
+  simp_rw [lp.coeFn_single]
   convert hasSum_ite_eq i ⟪a, f i⟫ using 1
   ext j
-  rw [lp.single_apply]
   split_ifs with h
-  · subst h; rfl
-  · simp
+  · subst h; rw [Pi.single_eq_same]
+  · simp [Pi.single_eq_of_ne h]
 
 theorem inner_single_right [DecidableEq ι] (i : ι) (a : G i) (f : lp G 2) :
     ⟪f, lp.single 2 i a⟫ = ⟪f i, a⟫ := by
@@ -386,18 +386,28 @@ instance {ι : Type*} : Inhabited (HilbertBasis ι 𝕜 ℓ²(ι, 𝕜)) :=
 
 open Classical in
 /-- `b i` is the `i`th basis vector. -/
-instance instCoeFun : CoeFun (HilbertBasis ι 𝕜 E) fun _ => ι → E where
+instance instFunLike : FunLike (HilbertBasis ι 𝕜 E) ι E where
   coe b i := b.repr.symm (lp.single 2 i (1 : 𝕜))
+  coe_injective'
+  | ⟨b₁⟩, ⟨b₂⟩, h => by
+    congr
+    apply LinearIsometryEquiv.symm_bijective.injective
+    apply LinearIsometryEquiv.toContinuousLinearEquiv_injective
+    apply ContinuousLinearEquiv.coe_injective
+    refine lp.ext_continuousLinearMap ( ENNReal.ofNat_ne_top (n := nat_lit 2)) fun i => ?_
+    ext
+    exact congr_fun h i
 
--- This is a bad `@[simp]` lemma: the RHS is a coercion containing the LHS.
+@[simp]
 protected theorem repr_symm_single [DecidableEq ι] (b : HilbertBasis ι 𝕜 E) (i : ι) :
     b.repr.symm (lp.single 2 i (1 : 𝕜)) = b i := by
+  dsimp [instFunLike]
   convert rfl
+
 
 protected theorem repr_self [DecidableEq ι] (b : HilbertBasis ι 𝕜 E) (i : ι) :
     b.repr (b i) = lp.single 2 i (1 : 𝕜) := by
-  simp only [LinearIsometryEquiv.apply_symm_apply]
-  convert rfl
+  simp only [LinearIsometryEquiv.apply_symm_apply, ← b.repr_symm_single]
 
 protected theorem repr_apply_apply (b : HilbertBasis ι 𝕜 E) (v : E) (i : ι) :
     b.repr v i = ⟪b i, v⟫ := by
@@ -411,7 +421,7 @@ protected theorem orthonormal (b : HilbertBasis ι 𝕜 E) : Orthonormal 𝕜 b 
   rw [orthonormal_iff_ite]
   intro i j
   rw [← b.repr.inner_map_map (b i) (b j), b.repr_self, b.repr_self, lp.inner_single_left,
-    lp.single_apply]
+    lp.single_apply, Pi.single_apply]
   simp
 
 protected theorem hasSum_repr_symm (b : HilbertBasis ι 𝕜 E) (f : ℓ²(ι, 𝕜)) :
@@ -420,13 +430,13 @@ protected theorem hasSum_repr_symm (b : HilbertBasis ι 𝕜 E) (f : ℓ²(ι, �
   suffices H : (fun i : ι => f i • b i) = fun b_1 : ι => b.repr.symm.toContinuousLinearEquiv <|
       (fun i : ι => lp.single 2 i (f i) (E := (fun _ : ι => 𝕜))) b_1 by
     rw [H]
-    have : HasSum (fun i : ι => lp.single 2 i (f i)) f := lp.hasSum_single ENNReal.two_ne_top f
+    have : HasSum (fun i : ι => lp.single 2 i (f i)) f := lp.hasSum_single ENNReal.ofNat_ne_top f
     exact (↑b.repr.symm.toContinuousLinearEquiv : ℓ²(ι, 𝕜) →L[𝕜] E).hasSum this
   ext i
   apply b.repr.injective
   letI : NormedSpace 𝕜 (lp (fun _i : ι => 𝕜) 2) := by infer_instance
   have : lp.single (E := (fun _ : ι => 𝕜)) 2 i (f i * 1) = f i • lp.single 2 i 1 :=
-    lp.single_smul (E := (fun _ : ι => 𝕜)) 2 i (1 : 𝕜) (f i)
+    lp.single_smul (E := (fun _ : ι => 𝕜)) 2 i (f i) (1 : 𝕜)
   rw [mul_one] at this
   rw [LinearIsometryEquiv.map_smul, b.repr_self, ← this,
     LinearIsometryEquiv.coe_toContinuousLinearEquiv]
