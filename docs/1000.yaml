@@ -475,7 +475,6 @@ Q512897:
 Q513028:
   title: Bézout's identity
   decl: Nat.gcd_eq_gcd_ab
-  authors: mathlib
 
 Q523832:
   title: Carathéodory–Jacobi–Lie theorem
