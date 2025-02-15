@@ -479,10 +479,10 @@ elab "order" : tactic => focus do
       return
     else
       let .some contNe := findContradictoryNe graph facts | continue
-      let .some pf1 ← buildTransitiveLeProof graph contNe.lhs contNe.rhs
-        (idxToAtom.get! contNe.rhs) | throwError "bug"
-      let .some pf2 ← buildTransitiveLeProof graph contNe.rhs contNe.lhs
-        (idxToAtom.get! contNe.lhs) | throwError "bug"
+      let .some pf1 ← buildTransitiveLeProof graph contNe.lhs contNe.rhs (idxToAtom.get! contNe.rhs)
+        | throwError "Bug: Cannot find path in strongly connected component"
+      let .some pf2 ← buildTransitiveLeProof graph contNe.rhs contNe.lhs (idxToAtom.get! contNe.lhs)
+        | throwError "Bug: Cannot find path in strongly connected component"
       let pf3 ← mkAppM ``le_antisymm #[pf1, pf2]
       g.assign <| mkApp contNe.proof pf3
       return
