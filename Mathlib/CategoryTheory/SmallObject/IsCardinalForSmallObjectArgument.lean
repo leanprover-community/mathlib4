@@ -28,12 +28,6 @@ last condition shall hold when `κ` is the successor of
 a cardinal `c` such that all these objects `A` are `c`-presentable,
 see the file `Presentable.Basic`.)
 
-Given `I : MorphismProperty C`, we shall say that `I` permits
-the small object argument if there exists `κ` such that
-`IsCardinalForSmallObjectArgument I κ` hold. See the file
-`SmallObject.Basic` for the definition of this typeclass
-`HasSmallObjectArgument` and an outline of the proof.
-
 ## Main results
 
 Assuming `IsCardinalForSmallObjectArgument I κ`, any morphism `f : X ⟶ Y`
