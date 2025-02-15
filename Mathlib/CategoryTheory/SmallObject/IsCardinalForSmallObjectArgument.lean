@@ -268,10 +268,12 @@ variable {X Y : C} (f : X ⟶ Y)
 small object argument. -/
 noncomputable def obj : C := ((iteration I κ).obj (Arrow.mk f)).left
 
-/-- The "inclusion" morphism given by the small object argument. -/
+/-- The "inclusion" morphism in the factorization given by
+the the small object argument. -/
 noncomputable def ιObj : X ⟶ obj I κ f := ((ιIteration I κ).app (Arrow.mk f)).left
 
-/-- The "projection" morphism given by the small object argument. -/
+/-- The "projection" morphism in the factorization given by
+the the small object argument. -/
 noncomputable def πObj : obj I κ f ⟶ Y :=
   ((iteration I κ).obj (Arrow.mk f)).hom ≫ inv ((ιIteration I κ).app f).right
 
@@ -284,7 +286,7 @@ lemma πObj_ιIteration_app_right :
 lemma ιObj_πObj : ιObj I κ f ≫ πObj I κ f = f := by
   simp [ιObj, πObj]
 
-/-- The map `ιObj I κ f` is a relative `I`-cell complex. -/
+/-- The morphism `ιObj I κ f` is a relative `I`-cell complex. -/
 noncomputable def relativeCellComplexιObj :
     RelativeCellComplex.{w} (fun (_ : κ.ord.toType) ↦ I.homFamily)
       (ιObj I κ f) := by
@@ -379,8 +381,8 @@ lemma rlp_πObj : I.rlp (πObj I κ f) :=
 
 end
 
-/-- The functoriality in the objects in `Arrow C` of the intermediate object
-in the factorization of the small object argument. -/
+/-- The functoriality of the intermediate object in the
+factorization of the small object argument. -/
 noncomputable def objMap {f g : Arrow C} (φ : f ⟶ g) : obj I κ f.hom ⟶ obj I κ g.hom :=
   ((iteration I κ).map φ).left
 
