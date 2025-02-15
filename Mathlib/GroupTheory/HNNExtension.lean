@@ -31,6 +31,8 @@ and Hanna Neumann.
 
 -/
 
+assert_not_exists Field
+
 open Monoid Coprod Multiplicative Subgroup Function
 
 /-- The relation we quotient the coproduct by to form an `HNNExtension`. -/

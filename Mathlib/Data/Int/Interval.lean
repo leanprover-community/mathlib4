@@ -15,6 +15,7 @@ This file proves that `ℤ` is a `LocallyFiniteOrder` and calculates the cardina
 intervals as finsets and fintypes.
 -/
 
+assert_not_exists Field
 
 open Finset Int
 
