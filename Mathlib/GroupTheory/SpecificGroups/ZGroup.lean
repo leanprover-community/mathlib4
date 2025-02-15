@@ -92,7 +92,7 @@ theorem commutator_lt [Finite G] [IsZGroup G] [Nontrivial G] : commutator G < �
   refine lt_of_le_of_lt (Abelianization.commutator_subset_ker f) ?_
   have h := P.ne_bot_of_dvd_card (Nat.card G).minFac_dvd
   contrapose! h
-  rw [← Subgroup.isComplement'_top_left, ← (not_lt_top_iff.mp h)]
+  rw [← Subgroup.isComplement'_top_left, ← h]
   exact hP.isComplement' rfl
 
 instance [Finite G] [IsZGroup G] : IsSolvable G := by

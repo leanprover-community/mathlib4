@@ -149,7 +149,6 @@ theorem exists_mem_forall_mem_nhdsWithin_pos_measure [TopologicalSpace α]
     [SecondCountableTopology α] {s : Set α} (hs : μ s ≠ 0) :
     ∃ x ∈ s, ∀ t ∈ 𝓝[s] x, 0 < μ t := by
   contrapose! hs
-  simp only [nonpos_iff_eq_zero] at hs
   exact measure_null_of_locally_null s hs
 
 end OuterMeasureClass

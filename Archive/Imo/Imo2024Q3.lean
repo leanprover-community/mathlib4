@@ -642,11 +642,9 @@ lemma apply_add_one_eq_card_small_le_card_eq {i : ℕ} (hi : N' a N < i) (hib : 
     rw [← Small] at ht hu
     have ht0 : 0 < t := by
       by_contra! h0
-      simp only [nonpos_iff_eq_zero] at h0
       simp [h0, hc.apply_ne_zero] at ht
     have hu0 : 0 < u := by
       by_contra! h0
-      simp only [nonpos_iff_eq_zero] at h0
       simp [h0, hc.apply_ne_zero] at hu
     rw [← hc.infinite_setOf_apply_eq_iff_small ht0] at ht
     rw [← hc.infinite_setOf_apply_eq_iff_small hu0] at hu

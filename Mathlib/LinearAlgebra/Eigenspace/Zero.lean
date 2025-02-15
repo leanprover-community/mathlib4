@@ -102,7 +102,7 @@ lemma hasEigenvalue_zero_tfae (φ : Module.End K M) :
   tfae_have 4 → 5 := bot_lt_ker_of_det_eq_zero
   tfae_have 5 → 6 := by
     contrapose!
-    simp only [not_bot_lt_iff, eq_bot_iff]
+    simp only [eq_bot_iff]
     intro h x
     simp only [mem_ker, Submodule.mem_bot]
     contrapose!

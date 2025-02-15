@@ -1250,7 +1250,7 @@ theorem sum_eq_iff_sum_smul_moebius_eq_on' [AddCommGroup R] {f g : ℕ → R}
   have : ∀ P : ℕ → Prop, ((∀ n ∈ s, P n) ↔ (∀ n > 0, n ∈ s → P n)) := fun P ↦ by
     refine forall_congr' (fun n ↦ ⟨fun h _ ↦ h, fun h hn ↦ h ?_ hn⟩)
     contrapose! hs₀
-    simpa [nonpos_iff_eq_zero.mp hs₀] using hn
+    simpa [hs₀] using hn
   simpa only [this] using sum_eq_iff_sum_smul_moebius_eq_on s hs
 
 /-- Möbius inversion for functions to a `Ring`, where the equalities only hold on a well-behaved

@@ -749,8 +749,7 @@ theorem forall_measure_inter_spanningSets_eq_zero [MeasurableSpace α] {μ : Mea
 some member of the countable family of finite measure spanning sets has positive measure. -/
 theorem exists_measure_inter_spanningSets_pos [MeasurableSpace α] {μ : Measure α} [SigmaFinite μ]
     (s : Set α) : (∃ n, 0 < μ (s ∩ spanningSets μ n)) ↔ 0 < μ s := by
-  rw [← not_iff_not]
-  simp only [not_exists, not_lt, nonpos_iff_eq_zero]
+  rw [← not_iff_not]; push_neg
   exact forall_measure_inter_spanningSets_eq_zero s
 
 /-- If the union of a.e.-disjoint null-measurable sets has finite measure, then there are only
@@ -824,7 +823,8 @@ theorem countable_meas_pos_of_disjoint_iUnion₀ {ι : Type*} {_ : MeasurableSpa
       ⊆ ⋃ n, { i : ι | 0 < sfiniteSeq μ n (As i) } := by
     intro i hi
     by_contra con
-    simp only [mem_iUnion, mem_setOf_eq, not_exists, not_lt, nonpos_iff_eq_zero] at *
+    push _ ∈ _ at con hi
+    push_neg at con
     rw [sum_apply₀] at hi
     · simp_rw [con] at hi
       simp at hi
@@ -1291,7 +1291,7 @@ theorem exists_pos_measure_of_cover [Countable ι] {U : ι → Set α} (hU : ⋃
     (hμ : μ ≠ 0) : ∃ i, 0 < μ (U i) := by
   contrapose! hμ with H
   rw [← measure_univ_eq_zero, ← hU]
-  exact measure_iUnion_null fun i => nonpos_iff_eq_zero.1 (H i)
+  exact measure_iUnion_null H
 
 theorem exists_pos_preimage_ball [PseudoMetricSpace δ] (f : α → δ) (x : δ) (hμ : μ ≠ 0) :
     ∃ n : ℕ, 0 < μ (f ⁻¹' Metric.ball x n) :=

@@ -400,7 +400,7 @@ theorem properDivisors_eq_singleton_one_iff_prime : n.properDivisors = {1} ↔ n
       have := Nat.le_of_dvd ?_ hdvd
       · simpa [hdvd, this] using (le_iff_eq_or_lt.mp this).symm
       · by_contra!
-        simp only [nonpos_iff_eq_zero.mp this, this] at h
+        simp only [this] at h
         contradiction
   · exact fun h => Prime.properDivisors h
 

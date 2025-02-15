@@ -399,7 +399,6 @@ theorem exists_continuous_one_zero_of_isCompact [RegularSpace X] [LocallyCompact
     simp only [ContinuousMap.coe_mk, sub_eq_zero]
     apply (hft _).symm
     contrapose! hx
-    simp only [mem_compl_iff, not_not] at hx
     exact interior_subset hx
   · have : 0 ≤ f x ∧ f x ≤ 1 := by simpa using h'f x
     simp [this]

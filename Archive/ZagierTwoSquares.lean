@@ -41,8 +41,7 @@ lemma zagierSet_lower_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) : 0 < 
   rw [zagierSet, mem_setOf_eq] at h
   refine ⟨?_, ?_, ?_⟩
   all_goals
-    by_contra q
-    rw [not_lt, nonpos_iff_eq_zero] at q
+    by_contra! q
     simp only [q, mul_zero, zero_mul, zero_add, add_zero] at h
   · apply_fun (· % 4) at h
     simp [mul_assoc, Nat.add_mod] at h
