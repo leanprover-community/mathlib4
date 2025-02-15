@@ -16,12 +16,7 @@ In this file we define the canonical quotient linear map from
 `R ⧸ I ^ m` to `R ⧸ I ^ n`. These definitions will be used in theorems
 related to `IsAdicComplete` to find a lift element from compatible sequences in the quotients.
 We also include results about the relation between quotients of submodules and quotients of
-ideals here. Since `Mathlib.LinearAlgebra.Quotient.Basic` and
-`Mathlib.RingTheory.Ideal.Quotient.Defs` do not import each other, and the first file
-that imports both of them is `Mathlib.RingTheory.Ideal.Quotient.Operations`
-which has already established the first isomophism theorem and Chinese remainder theorem,
-we put these pure
-technical lemmas that involves both `Submodule.mapQ` and `Ideal.Quotient.factor` in this file.
+ideals here.
 ## Main definitions
 - `Submodule.mapQPow`: the linear map from `M ⧸ I ^ m • ⊤` to `M ⧸ I ^ n • ⊤` induced by
 the natural inclusion `I ^ n • ⊤ → I ^ m • ⊤`.
@@ -29,6 +24,12 @@ the natural inclusion `I ^ n • ⊤ → I ^ m • ⊤`.
 to `R ⧸ I ^ n` induced by the natural inclusion `I ^ n → I ^ m`.
 ## Main results
 -/
+
+--Since `Mathlib.LinearAlgebra.Quotient.Basic` and `Mathlib.RingTheory.Ideal.Quotient.Defs`
+--do not import each other, and the first file that imports both of them is
+--`Mathlib.RingTheory.Ideal.Quotient.Operations`,  which has already established
+--the first isomophism theorem and Chinese remainder theorem, we put these pure technical lemmas
+--that involves both `Submodule.mapQ` and `Ideal.Quotient.factor` in this file.
 
 open Submodule Ideal Quotient
 
@@ -63,7 +64,7 @@ theorem mapQPow_mk {m n : ℕ} (le : n ≤ m) (x : M) :
   simp [mapQPow]
 
 @[simp]
-theorem mk_out_eq_mapQPowSucc {m n : ℕ} (le : n ≤ m) (x : M ⧸ (I ^ m • ⊤ : Submodule R M)) :
+theorem mk_out_eq_mapQPow {m n : ℕ} (le : n ≤ m) (x : M ⧸ (I ^ m • ⊤ : Submodule R M)) :
     Quotient.mk x.out = mapQPow I M le x := by
   nth_rw 2 [← Quotient.out_eq x]
   rfl
