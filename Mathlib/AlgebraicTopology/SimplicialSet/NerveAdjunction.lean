@@ -337,8 +337,6 @@ theorem toNerve₂.ext {X : SSet.Truncated 2} {C : Cat} (f g : X ⟶ nerveFuncto
       have h2 := congr_arg_heq (fun x => x.map' 0 1) (congr_fun (g.naturality (op ar)) x)
       exact h1.symm.trans <| .trans (congr_arg_heq (fun x => x.map' 0 1) (eq₁ _)) h2
 
-
-
 /-- The components of the 2-truncated nerve adjunction unit. -/
 def nerve₂Adj.unit.component (X : SSet.Truncated.{u} 2) :
     X ⟶ nerveFunctor₂.obj (hoFunctor₂.obj X) := by
@@ -359,7 +357,7 @@ theorem nerve₂Adj.unit.component_eq (X : SSet.Truncated.{u} 2) :
 def nerve₂Adj.unit : 𝟭 (SSet.Truncated.{u} 2) ⟶ hoFunctor₂ ⋙ nerveFunctor₂ where
   app := nerve₂Adj.unit.component
   naturality := by
-    refine fun V W f ↦ toNerve₂.ext' (f ≫ nerve₂Adj.unit.component W)
+    refine fun V W f ↦ toNerve₂.ext (f ≫ nerve₂Adj.unit.component W)
       (nerve₂Adj.unit.component V ≫ nerveFunctor₂.map (hoFunctor₂.map f)) ?_
     rw [Functor.map_comp, Functor.map_comp, nerve₂Adj.unit.component_eq,
       nerve₂Adj.unit.component_eq]
@@ -520,7 +518,7 @@ instance nerveFunctor₂.full : nerveFunctor₂.{u, u}.Full where
         apply ComposableArrows.ext₀; rfl
     let fF : X ⥤ Y := ReflPrefunctor.toFunctor uF' this
     have eq : fF.toReflPrefunctor = uF' := rfl
-    refine ⟨fF, toNerve₂.ext' (nerveFunctor₂.map fF) F ?_⟩
+    refine ⟨fF, toNerve₂.ext (nerveFunctor₂.map fF) F ?_⟩
     · have nat := OneTruncation₂.ofNerve₂.natIso.hom.naturality fF
       simp at nat
       rw [eq] at nat
@@ -570,5 +568,4 @@ noncomputable instance : Reflective nerveFunctor where
   L := hoFunctor
   adj := nerveAdjunction
 
-end
 end CategoryTheory
