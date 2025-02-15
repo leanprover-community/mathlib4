@@ -896,6 +896,7 @@ theorem inverse_equiv (e : M ≃L[R] M₂) : inverse (e : M →L[R] M₂) = e.sy
 
 @[deprecated (since := "2024-10-29")] alias inverse_non_equiv := inverse_of_not_isInvertible
 
+@[simp]
 theorem isInvertible_zero_iff :
     IsInvertible (0 : M →L[R] M₂) ↔ Subsingleton M ∧ Subsingleton M₂ := by
   refine ⟨fun ⟨e, he⟩ ↦ ?_, ?_⟩

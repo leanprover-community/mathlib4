@@ -366,11 +366,12 @@ end MDifferentiability
 section ContMDiff
 
 variable [IsManifold I n M] [IsManifold I' n M'] [CompleteSpace E]
--- the next assumptions will usually follow from the previous ones, but they are needed for
--- the statements to make sense, so we add them here.
-[IsManifold I 1 M] [IsManifold I' 1 M']
+  -- If `1 < n` then `IsManifold.of_le` shows the following assumptions are redundant.
+  -- We include them since they are necessary to make the statement.
+  [IsManifold I 1 M] [IsManifold I' 1 M']
 
-/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
+/-- The pullback of a `C^m` vector field by a `C^n` function with invertible derivative and
+`m + 1 ≤ n` is `C^m`.
 Version within a set at a point. -/
 protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_inter
     (hV : ContMDiffWithinAt I' I'.tangent m
