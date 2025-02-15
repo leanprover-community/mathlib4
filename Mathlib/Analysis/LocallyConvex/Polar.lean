@@ -188,17 +188,9 @@ variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F] [IsScalarTower ℝ 𝕜 𝕜]
 
 theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
   rw [polar_eq_biInter_preimage]
-  apply AbsConvex.iInter₂
-  intro i hi
-  constructor
-  · have e1 : Balanced 𝕜 (Metric.closedBall (0 : 𝕜) 1) := fun _ hk _ ⟨y, hy1, hy2⟩ => by
-      simp only [smul_eq_mul] at hy2
-      subst hy2
-      simp_all only [Metric.mem_closedBall, dist_zero_right, norm_mul]
-      rw [← one_mul 1]
-      exact mul_le_mul hk hy1 (norm_nonneg y) (zero_le_one' ℝ)
-    exact Balanced.mulActionHom_preimage (E := F) e1 (B i)
-  · exact Convex.linear_preimage (convex_closedBall _ _) (B i)
+  exact AbsConvex.iInter₂ fun i hi =>
+    ⟨Balanced.mulActionHom_preimage (E := F) closedBall_Balanced (𝕜 := 𝕜) (B i),
+      Convex.linear_preimage (convex_closedBall _ _) (B i)⟩
 
 /-
 TODO: prove the converse and upgrade this to the bipolar theorem
