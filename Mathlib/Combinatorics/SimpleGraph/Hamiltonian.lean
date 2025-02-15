@@ -141,4 +141,12 @@ lemma IsHamiltonian.connected (hG : G.IsHamiltonian) : G.Connected where
     exact ((p.takeUntil a a_mem).reverse.append <| p.takeUntil b b_mem).reachable
   nonempty := not_isEmpty_iff.1 fun _ ↦ by simpa using hG <| by simp [@Fintype.card_eq_zero]
 
+/--
+# Ore's Theorem
+It is sufficient for a finite simple graph with 3 ≤ n vertices to have a hamiltonian cycle if
+deg v + deg w ≥ n for every pair of distinct non-adjacent vertices v and w of G.
+-/
+proof_wanted ores_theorem [DecidableRel G.Adj] [LocallyFinite G] (h₁ : 3 ≤ Fintype.card α)
+      (h₂ : ∀ v w, G.Adj v w ∨ Fintype.card α ≤ G.degree v + G.degree w) : G.IsHamiltonian
+
 end SimpleGraph
