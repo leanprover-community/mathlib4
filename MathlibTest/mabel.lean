@@ -59,19 +59,19 @@ example [CommGroup α] (a b : α) : a * b / b / id' a = 1 := by
     mabel1
   mabel1!
 
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Interaction.20of.20mabel.20with.20casting/near/319895001
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Interaction.20of.20abel.20with.20casting/near/319895001
 example [CommGroup α] : True := by
   have : ∀ (p q r s : α), s * p / q = s / r / (q / r / p) := by
     intro p q r s
     mabel
   trivial
 
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Interaction.20of.20mabel.20with.20casting/near/319897374
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Interaction.20of.20abel.20with.20casting/near/319897374
 example [CommGroup α] (x y z : α) : y = x * z / (x / y * z) := by
   have : True := trivial
   mabel
 
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/mabel.20bug.3F/near/368707560
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/abel.20bug.3F/near/368707560
 example [CommGroup α] (a b s : α) : b⁻¹ * (s / a) = s / b / a := by mabel_nf
 
 /--
