@@ -163,4 +163,3 @@ abbrev factorPowSucc (n : ℕ) : R ⧸ I ^ (n + 1) →+* R ⧸ I ^ n :=
 end Quotient
 
 end Ideal
-#lint
