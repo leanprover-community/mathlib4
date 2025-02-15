@@ -66,7 +66,7 @@ for the inverse of `e`).
 
 * `IndepMatroid.ofBdd` constructs an `IndepMatroid` in the case where there is some known
   absolute upper bound on the size of an independent set. This uses the infinite version of
-  the augmentation axiom; the corresponding `Matroid` is `FiniteRk`.
+  the augmentation axiom; the corresponding `Matroid` is `RankFinite`.
 
 * `IndepMatroid.ofBddAugment` is the same as the above, but with a finite augmentation axiom.
 
@@ -80,7 +80,7 @@ for the inverse of `e`).
   existentially, but whose independence predicate is known explicitly.
 
 * `Matroid.ofExistsFiniteBase` constructs a matroid from its bases, if it is known that one
-  of them is finite. This gives a `FiniteRk` matroid.
+  of them is finite. This gives a `RankFinite` matroid.
 
 * `Matroid.ofBaseOfFinite` constructs a `Finite` matroid from its bases.
 -/
@@ -93,10 +93,32 @@ variable {α : Type*}
 
 section IndepMatroid
 
-/-- A matroid as defined by the independence axioms. This is the same thing as a `Matroid`,
-  and so does not need its own API; it exists to make it easier to construct a matroid from its
-  independent sets. The constructed `IndepMatroid` can then be converted into a matroid
-  with `IndepMatroid.matroid`. -/
+/-- A matroid as defined by a ground set and an independence predicate.
+This definition is an implementation detail whose purpose is to organize the multiple
+different versions of the independence axioms;
+usually, terms of type `IndepMatroid` should either be directly piped into `IndepMatroid.matroid`,
+or should be constructed as a private definition
+which is then converted into a matroid via `IndepMatroid.matroid`.
+
+To define a `Matroid α` from a known independence predicate
+`MyIndep : Set α → Prop` and ground set `E : Set α`, one can either write
+```
+def myMatroid (…) : Matroid α :=
+  IndepMatroid.matroid <| IndepMatroid.ofFoo E MyIndep _ _ … _
+```
+or, slightly more indirectly,
+```
+private def myIndepMatroid (…) : IndepMatroid α := IndepMatroid.ofFoo E MyIndep _ _ … _
+
+def myMatroid (…) : Matroid α := (myIndepMatroid …).matroid
+```
+In both cases, `IndepMatroid.ofFoo` is either `IndepMatroid.mk`,
+or one of the several other available constructors for `IndepMatroid`,
+and the `_` represent the proofs that this constructor requires.
+
+After such a definition is made, the facts that `myMatroid.Indep = myIndep` and `myMatroid.E = E`
+are true by either `rfl` or `simp [myMatroid]`, and can be made directly into @[simp] lemmas.
+-/
 structure IndepMatroid (α : Type*) where
   /-- The ground set -/
   (E : Set α)
@@ -321,12 +343,12 @@ theorem _root_.Matroid.existsMaximalSubsetProperty_of_bdd {P : Set α → Prop}
     subset_ground h_bdd : (IndepMatroid.ofBdd
       E Indep indep_empty indep_subset indep_aug subset_ground h_bdd).Indep = Indep := rfl
 
-/-- `IndepMatroid.ofBdd` constructs a `FiniteRk` matroid. -/
+/-- `IndepMatroid.ofBdd` constructs a `RankFinite` matroid. -/
 instance (E : Set α) (Indep : Set α → Prop) indep_empty indep_subset indep_aug subset_ground h_bdd :
-    FiniteRk (IndepMatroid.ofBdd
+    RankFinite (IndepMatroid.ofBdd
       E Indep indep_empty indep_subset indep_aug subset_ground h_bdd).matroid := by
   obtain ⟨B, hB⟩ := (IndepMatroid.ofBdd E Indep _ _ _ _ _).matroid.exists_base
-  refine hB.finiteRk_of_finite ?_
+  refine hB.rankFinite_of_finite ?_
   obtain ⟨n, hn⟩ := h_bdd
   exact finite_of_encard_le_coe <| hn B (by simpa using hB.indep)
 
@@ -367,8 +389,8 @@ protected def ofBddAugment (E : Set α) (Indep : Set α → Prop)
     indep_bdd subset_ground : (IndepMatroid.ofBddAugment
       E Indep indep_empty indep_subset indep_aug indep_bdd subset_ground).Indep = Indep := rfl
 
-instance ofBddAugment_finiteRk (E : Set α) Indep indep_empty indep_subset indep_aug
-    indep_bdd subset_ground : FiniteRk (IndepMatroid.ofBddAugment
+instance ofBddAugment_rankFinite (E : Set α) Indep indep_empty indep_subset indep_aug
+    indep_bdd subset_ground : RankFinite (IndepMatroid.ofBddAugment
       E Indep indep_empty indep_subset indep_aug indep_bdd subset_ground).matroid := by
   rw [IndepMatroid.ofBddAugment]
   infer_instance
@@ -501,11 +523,11 @@ namespace Matroid
     base_exchange subset_ground : (Matroid.ofExistsFiniteBase
       E Base exists_finite_base base_exchange subset_ground).Base = Base := rfl
 
-instance ofExistsFiniteBase_finiteRk (E : Set α) Base exists_finite_base
-    base_exchange subset_ground : FiniteRk (Matroid.ofExistsFiniteBase
+instance ofExistsFiniteBase_rankFinite (E : Set α) Base exists_finite_base
+    base_exchange subset_ground : RankFinite (Matroid.ofExistsFiniteBase
       E Base exists_finite_base base_exchange subset_ground) := by
   obtain ⟨B, hB, hfin⟩ := exists_finite_base
-  exact Matroid.Base.finiteRk_of_finite (by simpa) hfin
+  exact Matroid.Base.rankFinite_of_finite (by simpa) hfin
 
 /-- If `E` is finite, then any nonempty collection of its subsets
   with the exchange property is the collection of bases of a matroid on `E`. -/

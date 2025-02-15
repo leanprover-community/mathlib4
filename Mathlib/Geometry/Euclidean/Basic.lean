@@ -62,11 +62,6 @@ variable {V : Type*} {P : Type*}
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
 variable [NormedAddTorsor V P]
 
-/-- The midpoint of the segment AB is the same distance from A as it is from B. -/
-theorem dist_left_midpoint_eq_dist_right_midpoint (p₁ p₂ : P) :
-    dist p₁ (midpoint ℝ p₁ p₂) = dist p₂ (midpoint ℝ p₁ p₂) := by
-  rw [dist_left_midpoint (𝕜 := ℝ) p₁ p₂, dist_right_midpoint (𝕜 := ℝ) p₁ p₂]
-
 /-- The inner product of two vectors given with `weightedVSub`, in
 terms of the pairwise distances. -/
 theorem inner_weightedVSub {ι₁ : Type*} {s₁ : Finset ι₁} {w₁ : ι₁ → ℝ} (p₁ : ι₁ → P)
@@ -180,7 +175,7 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace �
   rw [← hp₁c₁, dist_smul_vadd_eq_dist _ _ hp'] at hpc₁ hp₂
   simp only [one_ne_zero, false_or] at hp₂
   rw [hp₂.symm] at hpc₁
-  cases' hpc₁ with hpc₁ hpc₁ <;> simp [hpc₁]
+  rcases hpc₁ with hpc₁ | hpc₁ <;> simp [hpc₁]
 
 /-- Distances `r₁` `r₂` of `p` from two different points `c₁` `c₂` determine at
 most two points `p₁` `p₂` in two-dimensional space (two circles intersect in at
