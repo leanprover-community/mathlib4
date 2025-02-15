@@ -339,8 +339,8 @@ theorem isSFiniteKernel_sum_of_denumerable [Denumerable ι] {κs : ι → Kernel
   rw [e.tsum_eq (fun im : ι × ℕ => seq (κs im.fst) im.snd a s),
     tsum_prod' ENNReal.summable fun _ => ENNReal.summable]
 
-theorem isSFiniteKernel_sum [Countable ι] {κs : ι → Kernel α β}
-    (hκs : ∀ n, IsSFiniteKernel (κs n)) : IsSFiniteKernel (Kernel.sum κs) := by
+instance isSFiniteKernel_sum [Countable ι] {κs : ι → Kernel α β}
+    [hκs : ∀ n, IsSFiniteKernel (κs n)] : IsSFiniteKernel (Kernel.sum κs) := by
   cases fintypeOrInfinite ι
   · rw [sum_fintype]
     exact IsSFiniteKernel.finset_sum Finset.univ fun i _ => hκs i
