@@ -391,12 +391,14 @@ lemma ContMDiff.inr : ContMDiff I I n (@Sum.inr M M') := by
   simp [extChartAt, sum_chartAt_inr, ← hC, Sum.inr_injective.extend_apply C, C.right_inv hy.1,
     I.right_inv hy.2]
 
-lemma extChartAt_inl_apply {x : M} :
-    (extChartAt I (.inl x : M ⊕ M')) (Sum.inl x) = (extChartAt I x) x := by
+@[simp]
+lemma extChartAt_inl_apply {x y : M} :
+    (extChartAt I (.inl x : M ⊕ M')) (Sum.inl y) = (extChartAt I x) y := by
   simp [sum_chartAt_inl_apply]
 
-lemma extChartAt_inr_apply {x : M'} :
-    (extChartAt I (.inr x : M ⊕ M')) (Sum.inr x) = (extChartAt I x) x := by
+@[simp]
+lemma extChartAt_inr_apply {x y : M'} :
+    (extChartAt I (.inr x : M ⊕ M')) (Sum.inr y) = (extChartAt I x) y := by
   simp [sum_chartAt_inr_apply]
 
 lemma ContMDiff.sum_elim {f : M → N} {g : M' → N}
@@ -412,7 +414,7 @@ lemma ContMDiff.sum_elim {f : M → N} {g : M' → N}
         (range I) ((extChartAt I (.inl x : M ⊕ M')) (Sum.inl x)) := by
       let hf' := hf x
       rw [contMDiffAt_iff] at hf'
-      simpa only [extChartAt_inl_apply] using hf'.2
+      simpa using hf'.2
     apply this.congr_of_eventuallyEq
     · simp only [extChartAt, Sum.elim_inl, ChartedSpace.sum_chartAt_inl,
         Sum.inl_injective.extend_apply]
@@ -428,7 +430,7 @@ lemma ContMDiff.sum_elim {f : M → N} {g : M' → N}
         (range I) ((extChartAt I (.inr x : M ⊕ M')) (Sum.inr x)) := by
       let hg' := hg x
       rw [contMDiffAt_iff] at hg'
-      simpa only [extChartAt_inr_apply] using hg'.2
+      simpa using hg'.2
     apply this.congr_of_eventuallyEq
     · simp only [extChartAt, Sum.elim_inr, ChartedSpace.sum_chartAt_inr,
         Sum.inl_injective.extend_apply]
