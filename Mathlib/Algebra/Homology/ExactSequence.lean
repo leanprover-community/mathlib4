@@ -36,6 +36,7 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C]
 def ShortComplex.toComposableArrows (S : ShortComplex C) : ComposableArrows C 2 :=
   ComposableArrows.mk₂ S.f S.g
 
+/-- A map of short complexes induces a map of composable arrows with the same data. -/
 def ShortComplex.mapToComposableArrows {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂) :
     S₁.toComposableArrows ⟶ S₂.toComposableArrows :=
   ComposableArrows.homMk₂ φ.τ₁ φ.τ₂ φ.τ₃ φ.comm₁₂.symm φ.comm₂₃.symm
