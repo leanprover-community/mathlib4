@@ -411,7 +411,7 @@ theorem IsCycle.eq_swap_of_apply_apply_eq_self {α : Type*} [DecidableEq α] {f 
         refine by_contradiction fun hy => ?_
         cases' hz.2 hy with j hj
         rw [← sub_add_cancel j i, zpow_add, mul_apply, hi] at hj
-        cases' zpow_apply_eq_of_apply_apply_eq_self hffx (j - i) with hji hji
+        rcases zpow_apply_eq_of_apply_apply_eq_self hffx (j - i) with hji | hji
         · rw [← hj, hji] at hyx
           tauto
         · rw [← hj, hji] at hfyx
@@ -543,7 +543,7 @@ theorem IsCycle.pow_iff [Finite β] {f : Perm β} (hf : IsCycle f) {n : ℕ} :
         simp [pow_mul, pow_orderOf_eq_one]
       have : orderOf (f ^ n) = orderOf f := by rw [h.orderOf, hr, hf.orderOf]
       rw [orderOf_pow, Nat.div_eq_self] at this
-      cases' this with h
+      rcases this with h | _
       · exact absurd h (orderOf_pos _).ne'
       · rwa [Nat.coprime_iff_gcd_eq_one, Nat.gcd_comm]
     · intro h

@@ -797,9 +797,7 @@ section SeminormedAddCommGroup
 
 open ENNReal
 
-variable (p : ℝ≥0∞)
-
-variable {p α β}
+variable {p : ℝ≥0∞} {α β}
 
 /-- Projection on `WithLp p (α × β)` with range `α` and kernel `β` -/
 def idemFst : AddMonoid.End (WithLp p (α × β)) := (AddMonoidHom.inl α β).comp (AddMonoidHom.fst α β)

@@ -9,6 +9,7 @@ import Mathlib.Algebra.Group.Even
 import Mathlib.Data.Finset.Piecewise
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Fintype.Pi
 
 /-!
@@ -1449,12 +1450,13 @@ theorem prod_unique_nonempty {α β : Type*} [CommMonoid β] [Unique α] (s : Fi
 
 section Image_Overlap
 
-variable {α β ι : Type*} [DecidableEq ι] [DecidableEq α]
+variable {α β ι : Type*} [DecidableEq α]
 
 @[to_additive]
 lemma prod_filter_of_pairwise_eq_one [CommMonoid β] {f : ι → α} {g : α → β} {n : ι} {I : Finset ι}
     (hn : n ∈ I) (hf : (I : Set ι).Pairwise fun i j ↦ f i = f j → g (f i) = 1) :
     ∏ j ∈ filter (fun j ↦ f j = f n) I, g (f j) = g (f n) := by
+  classical
   have h j (hj : j ∈ (filter (fun i ↦ f i = f n) I).erase n) : g (f j) = 1 := by
     simp only [mem_erase, mem_filter] at hj
     exact hf hj.2.1 hn hj.1 hj.2.2

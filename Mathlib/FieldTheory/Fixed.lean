@@ -189,17 +189,15 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
     (hf : Polynomial.eval₂ (Subfield.subtype <| FixedPoints.subfield G F) x f = 0) :
     minpoly G F x ∣ f := by
   classical
--- Porting note: the `have` below was not needed.
-  have : (subfield G F).subtype = (subfield G F).toSubring.subtype := rfl
-  rw [← Polynomial.map_dvd_map' (Subfield.subtype <| FixedPoints.subfield G F), minpoly, this,
-    Polynomial.map_toSubring _ _, prodXSubSMul]
+  rw [← Polynomial.map_dvd_map' (Subfield.subtype <| FixedPoints.subfield G F), minpoly,
+    ← Subfield.toSubring_subtype_eq_subtype, Polynomial.map_toSubring _ _, prodXSubSMul]
   refine
     Fintype.prod_dvd_of_coprime
       (Polynomial.pairwise_coprime_X_sub_C <| MulAction.injective_ofQuotientStabilizer G x) fun y =>
       QuotientGroup.induction_on y fun g => ?_
   rw [Polynomial.dvd_iff_isRoot, Polynomial.IsRoot.def, MulAction.ofQuotientStabilizer_mk,
-    Polynomial.eval_smul', ← this, ← Subfield.toSubring_subtype_eq_subtype, ←
-    IsInvariantSubring.coe_subtypeHom' G (FixedPoints.subfield G F).toSubring,
+    Polynomial.eval_smul',
+    ← IsInvariantSubring.coe_subtypeHom' G (FixedPoints.subfield G F).toSubring,
     ← MulSemiringActionHom.coe_polynomial, ← MulSemiringActionHom.map_smul, smul_polynomial,
     MulSemiringActionHom.coe_polynomial, IsInvariantSubring.coe_subtypeHom',
     Polynomial.eval_map, Subfield.toSubring_subtype_eq_subtype, hf, smul_zero]
@@ -211,7 +209,7 @@ theorem irreducible_aux (f g : Polynomial (FixedPoints.subfield G F)) (hf : f.Mo
   have hg2 : g ∣ minpoly G F x := by rw [← hfg]; exact dvd_mul_left _ _
   have := eval₂ G F x
   rw [← hfg, Polynomial.eval₂_mul, mul_eq_zero] at this
-  cases' this with this this
+  rcases this with this | this
   · right
     have hf3 : f = minpoly G F x :=
       Polynomial.eq_of_monic_of_associated hf (monic G F x)

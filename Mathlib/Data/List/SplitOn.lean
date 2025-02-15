@@ -68,11 +68,10 @@ where
 /-- If no element satisfies `p` in the list `xs`, then `xs.splitOnP p = [xs]` -/
 theorem splitOnP_eq_single (h : ∀ x ∈ xs, ¬p x) : xs.splitOnP p = [xs] := by
   induction xs with
-  | nil => rfl
+  | nil => simp only [splitOnP_nil]
   | cons hd tl ih =>
-    simp only [splitOnP_cons, h hd (mem_cons_self hd tl), if_neg]
-    rw [ih <| forall_mem_of_forall_mem_cons h]
-    rfl
+    simp only [splitOnP_cons, h hd (mem_cons_self hd tl), if_false, Bool.false_eq_true,
+      modifyHead_cons, ih <| forall_mem_of_forall_mem_cons h]
 
 /-- When a list of the form `[...xs, sep, ...as]` is split on `p`, the first element is `xs`,
   assuming no element in `xs` satisfies `p` but `sep` does satisfy `p` -/
