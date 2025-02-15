@@ -10,6 +10,7 @@ import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Calculus.LocalExtr.Rolle
 import Mathlib.Analysis.Convex.Normed
 import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Topology.LocallyConstant.Basic
 
 /-!
 # The mean value inequality and equalities
@@ -597,6 +598,7 @@ theorem eqOn_of_fderivWithin_eq (hs : Convex ℝ s) (hf : DifferentiableOn 𝕜 
   rw [fderivWithin_sub (hs' _ hz) (hf _ hz) (hg _ hz), sub_eq_zero, hf' hz]
 
 /-- If `f` has zero derivative on an open set, then `f` is locally constant on `s`. -/
+-- TODO: change the spelling once we have `IsLocallyConstantOn`.
 theorem _root_.IsOpen.isOpen_inter_preimage_of_fderiv_eq_zero
     (hs : IsOpen s) (hf : DifferentiableOn 𝕜 f s)
     (hf' : s.EqOn (fderiv 𝕜 f) 0) (t : Set G) : IsOpen (s ∩ f ⁻¹' t) := by
@@ -607,6 +609,10 @@ theorem _root_.IsOpen.isOpen_inter_preimage_of_fderiv_eq_zero
   · simpa [this]
   · intro z hz
     simpa only [fderivWithin_of_isOpen Metric.isOpen_ball hz] using hf' (h hz)
+
+theorem _root_.isLocallyConstant_of_fderiv_eq_zero (h₁ : Differentiable 𝕜 f)
+    (h₂ : ∀ x, fderiv 𝕜 f x = 0) : IsLocallyConstant f := by
+  simpa using isOpen_univ.isOpen_inter_preimage_of_fderiv_eq_zero h₁.differentiableOn fun _ _ ↦ h₂ _
 
 /-- If `f` has zero derivative on a connected open set, then `f` is constant on `s`. -/
 theorem _root_.IsOpen.exists_is_const_of_fderiv_eq_zero
