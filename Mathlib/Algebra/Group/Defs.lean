@@ -729,7 +729,7 @@ class InvolutiveInv (G : Type*) extends Inv G where
 
 variable [InvolutiveInv G]
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, push)]
 theorem inv_inv (a : G) : a⁻¹⁻¹ = a :=
   InvolutiveInv.inv_inv _
 
@@ -983,7 +983,7 @@ section DivisionMonoid
 
 variable [DivisionMonoid G] {a b : G}
 
-@[to_additive (attr := simp) neg_add_rev]
+@[to_additive (attr := simp, push) neg_add_rev]
 theorem mul_inv_rev (a b : G) : (a * b)⁻¹ = b⁻¹ * a⁻¹ :=
   DivisionMonoid.mul_inv_rev _ _
 

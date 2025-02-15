@@ -101,7 +101,7 @@ theorem log_one : log 1 = 0 :=
   exp_injective <| by rw [exp_log zero_lt_one, exp_zero]
 
 /-- This holds true for all `x : ℝ` because of the junk values `0 / 0 = 0` and `log 0 = 0`. -/
-@[simp, push]
+@[simp]
 lemma log_div_self (x : ℝ) : log (x / x) = 0 := by
   obtain rfl | hx := eq_or_ne x 0 <;> simp [*]
 
