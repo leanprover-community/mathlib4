@@ -41,16 +41,16 @@ following conditions is true:
 - `m` is not a sub-σ-algebra of `m₀`,
 - `volume` is not σ-finite with respect to `m`,
 - `X - 𝔼[X | m]` is not square-integrable. -/
-scoped notation "Var[" f "|" m "]" => Var[f ; MeasureTheory.volume | m]
+scoped notation "Var[" f "|" m "]" => Var[f; MeasureTheory.volume | m]
 
-lemma condVar_of_not_le (hm : ¬m ≤ m₀) : Var[X ; μ | m] = 0 := by rw [condVar, condExp_of_not_le hm]
+lemma condVar_of_not_le (hm : ¬m ≤ m₀) : Var[X; μ | m] = 0 := by rw [condVar, condExp_of_not_le hm]
 
 lemma condVar_of_not_sigmaFinite (hμm : ¬SigmaFinite (μ.trim hm)) :
-    Var[X ; μ | m] = 0 := by rw [condVar, condExp_of_not_sigmaFinite hm hμm]
+    Var[X; μ | m] = 0 := by rw [condVar, condExp_of_not_sigmaFinite hm hμm]
 
 open scoped Classical in
 lemma condVar_of_sigmaFinite [SigmaFinite (μ.trim hm)] :
-    Var[X ; μ | m] =
+    Var[X; μ | m] =
       if Integrable (fun ω ↦ (X ω - (μ[X | m]) ω) ^ 2) μ then
         if StronglyMeasurable[m] (fun ω ↦ (X ω - (μ[X | m]) ω) ^ 2) then
           fun ω ↦ (X ω - (μ[X | m]) ω) ^ 2
@@ -59,7 +59,7 @@ lemma condVar_of_sigmaFinite [SigmaFinite (μ.trim hm)] :
 
 lemma condVar_of_stronglyMeasurable [SigmaFinite (μ.trim hm)]
     (hX : StronglyMeasurable[m] X) (hXint : Integrable ((X - μ[X | m]) ^ 2) μ) :
-    Var[X ; μ | m] = fun ω ↦ (X ω - (μ[X | m]) ω) ^ 2 :=
+    Var[X; μ | m] = fun ω ↦ (X ω - (μ[X | m]) ω) ^ 2 :=
   condExp_of_stronglyMeasurable _ ((hX.sub stronglyMeasurable_condExp).pow _) hXint
 
 lemma condVar_of_not_integrable (hXint : ¬ Integrable (fun ω ↦ (X ω - (μ[X | m]) ω) ^ 2) μ) :
