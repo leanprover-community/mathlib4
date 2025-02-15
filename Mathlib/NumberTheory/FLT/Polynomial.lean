@@ -148,7 +148,7 @@ private theorem Polynomial.flt_catalan_aux
     (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) (hab : IsCoprime a b)
     (hu : u ≠ 0) (hv : v ≠ 0) (hw : w ≠ 0) :
     a.natDegree = 0 := by
-  cases' eq_or_ne (ringChar k) 0 with ch0 chn0
+  rcases eq_or_ne (ringChar k) 0 with ch0 | chn0
   -- characteristic zero
   · obtain ⟨da, -, -⟩ := flt_catalan_deriv
       hp hq hr hineq chp chq chr ha hb hc hab hu hv hw heq
