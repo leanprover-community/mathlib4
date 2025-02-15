@@ -32,6 +32,95 @@ instance [Preorder ι] [IsFiltration F F_lt] (i : ι) :
 abbrev GradedPiece (i : ι) :=
   ((F i) : AddSubgroup A) ⧸ ((F_lt i) : AddSubgroup A).addSubgroupOf ((F i) : AddSubgroup A)
 
+/-- Direct sum of `GradedPiece`-/
+abbrev AssociatedGraded := DirectSum _ <| GradedPiece F F_lt
+
+namespace AssociatedGraded
+
+/-- `mk F F_lt s x` is the element of `Graded F F_lt` that is zero outside `s`
+and has coefficient `x i` for `i` in `s`. -/
+def mk [DecidableEq ι] (s : Finset ι) :
+    (∀ i : (s : Set ι), GradedPiece F F_lt i.val) →+ AssociatedGraded F F_lt :=
+  DirectSum.mk (GradedPiece F F_lt) s
+
+variable {F F_lt}
+
+/--Obtaining an associated graded ring from an element of `F i`-/
+def of [DecidableEq ι] {i : ι} (x : GradedPiece F F_lt i) : AssociatedGraded F F_lt :=
+  DirectSum.of (GradedPiece F F_lt) i x
+
+noncomputable instance : ∀ (i : ι) (x : GradedPiece F F_lt i), Decidable (x ≠ 0) :=
+  fun _ x ↦ Classical.propDecidable (x ≠ 0)
+
+@[simp]
+theorem sub_apply (g₁ g₂ : AssociatedGraded F F_lt) (i : ι) : (g₁ - g₂) i = g₁ i - g₂ i :=
+  rfl
+
+@[ext] theorem ext {x y : AssociatedGraded F F_lt} (w : ∀ i, x i = y i) : x = y := by
+  exact DirectSum.ext (GradedPiece F F_lt) w
+
+@[simp]
+theorem zero_apply (i : ι) : (0 : AssociatedGraded F F_lt) i = 0 :=
+  rfl
+
+variable [DecidableEq ι]
+
+@[simp]
+theorem of_eq_same (i : ι) (x : GradedPiece F F_lt i) : (of x) i = x :=
+  DFinsupp.single_eq_same
+
+theorem of_eq_of_ne (i j : ι) (x : GradedPiece F F_lt i) (h : i ≠ j) : (of x) j = 0 :=
+  DFinsupp.single_eq_of_ne h
+
+lemma of_apply {i : ι} (j : ι) (x : GradedPiece F F_lt i) :
+    of x j = if h : i = j then Eq.recOn h x else 0 :=
+  DFinsupp.single_apply
+
+theorem mk_apply_of_mem {s : Finset ι} {f : ∀ i : (s : Set ι), GradedPiece F F_lt i.val}
+  {n : ι} (hn : n ∈ s) :
+    mk F F_lt s f n = f ⟨n, hn⟩ := by
+  dsimp only [Finset.coe_sort_coe, mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
+    DFinsupp.mk_apply, DirectSum.mk]
+  rw [dif_pos hn]
+
+theorem mk_apply_of_not_mem {s : Finset ι} {f : ∀ i : (s : Set ι), GradedPiece F F_lt i.val}
+  {n : ι} (hn : n ∉ s) :
+    mk F F_lt s f n = 0 := by
+  dsimp only [Finset.coe_sort_coe, mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
+    DFinsupp.mk_apply, DirectSum.mk]
+  rw [dif_neg hn]
+
+@[simp]
+theorem support_zero : (0 : AssociatedGraded F F_lt).support = ∅ :=
+  DFinsupp.support_zero
+
+@[simp]
+theorem support_of (i : ι) (x : GradedPiece F F_lt i) (h : x ≠ 0) :
+    (of x).support = {i} :=
+  DFinsupp.support_single_ne_zero h
+
+theorem support_of_subset {i : ι} {b : GradedPiece F F_lt i} :
+    (of b).support ⊆ {i} :=
+  DFinsupp.support_single_subset
+
+theorem sum_support_of (x : AssociatedGraded F F_lt) :
+    (∑ i ∈ x.support, of (x i)) = x :=
+  DFinsupp.sum_single
+
+theorem sum_univ_of [Fintype ι] (x : AssociatedGraded F F_lt) :
+    ∑ i ∈ Finset.univ, of (x i) = x := by
+  apply DFinsupp.ext (fun i ↦ ?_)
+  rw [DFinsupp.finset_sum_apply]
+  simp [of_apply]
+
+theorem mk_injective (s : Finset ι) : Function.Injective (mk F F_lt s) :=
+  DFinsupp.mk_injective s
+
+theorem of_injective (i : ι) : Function.Injective (of (i := i) (F := F) (F_lt := F_lt)) :=
+  DFinsupp.single_injective
+
+end AssociatedGraded
+
 namespace GradedPiece
 
 /--Obtaining an element of `GradedPiece i` from an element of `F i`-/
@@ -414,7 +503,7 @@ instance [hasGMul F F_lt] : DirectSum.GRing (GradedPiece F F_lt) where
   intCast_negSucc_ofNat := GradedPiece.intCast_negSucc_ofNat F F_lt
 
 open DirectSum in
-instance [hasGMul F F_lt] [DecidableEq ι] : Ring (⨁ i, GradedPiece F F_lt i) :=
+instance [hasGMul F F_lt] [DecidableEq ι] : Ring (AssociatedGraded F F_lt) :=
   DirectSum.ring (GradedPiece F F_lt)
 
 end GradedMul
@@ -500,7 +589,7 @@ instance [hasGMul F F_lt] : DirectSum.GAlgebra R (GradedPiece F F_lt) where
     simp [this]) (GradedPiece.algebraMap.smul_def F F_lt r i a)
 
 open DirectSum in
-instance [hasGMul F F_lt] [DecidableEq ι] : Algebra R (⨁ i, GradedPiece F F_lt i) :=
+instance [hasGMul F F_lt] [DecidableEq ι] : Algebra R (AssociatedGraded F F_lt) :=
   DirectSum.instAlgebra R (GradedPiece F F_lt)
 
 end GradedAlgebra
