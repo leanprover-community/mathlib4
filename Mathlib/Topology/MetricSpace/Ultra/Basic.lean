@@ -24,7 +24,7 @@ typeclass arguments, one can declare the ultrametricity at the same time.
 For example, one could say `[Norm K] [Fact (IsNonarchimedean (norm : K → ℝ))]`,
 
 The file imports a later file in the hierarchy of pseudometric spaces, since
-`Metric.isClosed_ball` and `Metric.isClosed_sphere` is proven in a later file
+`Metric.isClosed_closedBall` and `Metric.isClosed_sphere` is proven in a later file
 using more conceptual results.
 
 TODO: Generalize to ultrametric uniformities
@@ -49,6 +49,18 @@ lemma dist_triangle_max : dist x z ≤ max (dist x y) (dist y z) :=
   IsUltrametricDist.dist_triangle_max x y z
 
 namespace IsUltrametricDist
+
+/-- All triangles are isosceles in an ultrametric space. -/
+lemma dist_eq_max_of_dist_ne_dist (h : dist x y ≠ dist y z) :
+    dist x z = max (dist x y) (dist y z) := by
+  apply le_antisymm (dist_triangle_max x y z)
+  rcases h.lt_or_lt with h | h
+  · rw [max_eq_right h.le]
+    apply (le_max_iff.mp <| dist_triangle_max y x z).resolve_left
+    simpa only [not_le, dist_comm x y] using h
+  · rw [max_eq_left h.le, dist_comm x y, dist_comm x z]
+    apply (le_max_iff.mp <| dist_triangle_max y z x).resolve_left
+    simpa only [not_le, dist_comm x y] using h
 
 instance subtype (p : X → Prop) : IsUltrametricDist (Subtype p) :=
   ⟨fun _ _ _ ↦ by simpa [Subtype.dist_eq] using dist_triangle_max _ _ _⟩
@@ -157,7 +169,7 @@ lemma isOpen_closedBall {r : ℝ} (hr : r ≠ 0) : IsOpen (closedBall x r) := by
       simp [closedBall_eq_of_mem hy, h.not_lt] at hd
 
 lemma isClopen_closedBall {r : ℝ} (hr : r ≠ 0) : IsClopen (closedBall x r) :=
-  ⟨Metric.isClosed_ball, isOpen_closedBall x hr⟩
+  ⟨Metric.isClosed_closedBall, isOpen_closedBall x hr⟩
 
 lemma frontier_closedBall_eq_empty {r : ℝ} (hr : r ≠ 0) : frontier (closedBall x r) = ∅ :=
   isClopen_iff_frontier_eq_empty.mp (isClopen_closedBall x hr)

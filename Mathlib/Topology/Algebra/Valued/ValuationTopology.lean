@@ -39,12 +39,13 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
       tauto
     mul := by
       rintro γ
-      cases' exists_square_le γ with γ₀ h
+      obtain ⟨γ₀, h⟩ := exists_square_le γ
       use γ₀
       rintro - ⟨r, r_in, s, s_in, rfl⟩
+      simp only [ltAddSubgroup, AddSubgroup.coe_set_mk, mem_setOf_eq] at r_in s_in
       calc
         (v (r * s) : Γ₀) = v r * v s := Valuation.map_mul _ _ _
-        _ < γ₀ * γ₀ := mul_lt_mul₀ r_in s_in
+        _ < γ₀ * γ₀ := by gcongr <;> exact zero_le'
         _ ≤ γ := mod_cast h
     leftMul := by
       rintro x γ
@@ -88,9 +89,6 @@ class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
   [LinearOrderedCommGroupWithZero Γ₀] extends UniformSpace R, UniformAddGroup R where
   v : Valuation R Γ₀
   is_topological_valuation : ∀ s, s ∈ 𝓝 (0 : R) ↔ ∃ γ : Γ₀ˣ, { x : R | v x < γ } ⊆ s
-
--- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
---attribute [nolint dangerous_instance] Valued.toUniformSpace
 
 namespace Valued
 

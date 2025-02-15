@@ -3,8 +3,10 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Star.Subalgebra
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Star.Pointwise
 import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.Ideal.Nonunits
 import Mathlib.Tactic.NoncommRing
 
 /-!
@@ -53,7 +55,7 @@ local notation "↑ₐ" => algebraMap R A
 -- definition and basic properties
 /-- Given a commutative ring `R` and an `R`-algebra `A`, the *resolvent set* of `a : A`
 is the `Set R` consisting of those `r : R` for which `r•1 - a` is a unit of the
-algebra `A`.  -/
+algebra `A`. -/
 def resolventSet (a : A) : Set R :=
   {r : R | IsUnit (↑ₐ r - a)}
 
@@ -61,7 +63,7 @@ def resolventSet (a : A) : Set R :=
 is the `Set R` consisting of those `r : R` for which `r•1 - a` is not a unit of the
 algebra `A`.
 
-The spectrum is simply the complement of the resolvent set.  -/
+The spectrum is simply the complement of the resolvent set. -/
 def spectrum (a : A) : Set R :=
   (resolventSet R a)ᶜ
 
@@ -112,6 +114,10 @@ theorem zero_not_mem_iff {a : A} : (0 : R) ∉ σ a ↔ IsUnit a := by
   rw [zero_mem_iff, Classical.not_not]
 
 alias ⟨isUnit_of_zero_not_mem, zero_not_mem⟩ := spectrum.zero_not_mem_iff
+
+@[simp]
+lemma _root_.Units.zero_not_mem_spectrum (a : Aˣ) : 0 ∉ spectrum R (a : A) :=
+  spectrum.zero_not_mem R a.isUnit
 
 lemma subset_singleton_zero_compl {a : A} (ha : IsUnit a) : spectrum R a ⊆ {0}ᶜ :=
   Set.subset_compl_singleton_iff.mpr <| spectrum.zero_not_mem R ha
@@ -268,11 +274,6 @@ theorem subset_subalgebra {S R A : Type*} [CommSemiring R] [Ring A] [Algebra R A
     spectrum R (a : A) ⊆ spectrum R a :=
   Set.compl_subset_compl.mpr fun _ ↦ IsUnit.map (SubalgebraClass.val s)
 
-@[deprecated subset_subalgebra (since := "2024-07-19")]
-theorem subset_starSubalgebra [StarRing R] [StarRing A] [StarModule R A] {S : StarSubalgebra R A}
-    (a : S) : spectrum R (a : A) ⊆ spectrum R a :=
-  subset_subalgebra a
-
 theorem singleton_add_eq (a : A) (r : R) : {r} + σ a = σ (↑ₐ r + a) :=
   ext fun x => by
     rw [singleton_add, image_add_left, mem_preimage, add_comm, add_mem_iff, map_neg, neg_neg]
@@ -396,7 +397,7 @@ end CommSemiring
 
 section CommRing
 
-variable {F R A B : Type*} [CommRing R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+variable {F R A : Type*} [CommRing R] [Ring A] [Algebra R A]
 variable [FunLike F A R] [AlgHomClass F R A R]
 
 local notation "σ" => spectrum R

@@ -10,8 +10,7 @@ import Mathlib.Data.Finset.Option
 # fintype instances for option
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists MulAction
+assert_not_exists MonoidWithZero MulAction
 
 open Function
 
@@ -19,7 +18,7 @@ open Nat
 
 universe u v
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 open Finset Function
 

@@ -3,7 +3,7 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.DFinsupp.Basic
+import Mathlib.Data.DFinsupp.Defs
 import Mathlib.Data.Finsupp.Notation
 
 /-!
@@ -44,13 +44,13 @@ def elabUpdate₀ : Elab.Term.TermElab
   | _ => fun _ => Elab.throwUnsupportedSyntax
 
 /-- Unexpander for the `fun₀ | i => x` notation. -/
-@[app_unexpander Finsupp.single]
+@[app_unexpander DFinsupp.single]
 def singleUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $pat $val) => `(fun₀ | $pat => $val)
   | _ => throw ()
 
 /-- Unexpander for the `fun₀ | i => x` notation. -/
-@[app_unexpander Finsupp.update]
+@[app_unexpander DFinsupp.update]
 def updateUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $f $pat $val) => match f with
     | `(fun₀ $xs:matchAlt*) => `(fun₀ $xs:matchAlt* | $pat => $val)
@@ -68,9 +68,9 @@ unsafe instance {α : Type*} {β : α → Type*} [Repr α] [∀ i, Repr (β i)] 
     if vals.length = 0 then
       "0"
     else
-      let ret := "fun₀" ++
-        Std.Format.join (vals_dedup.map <|
-          fun a => f!" | " ++ a.1 ++ f!" => " ++ a.2)
+      let ret : Std.Format := f!"fun₀" ++ .nest 2 (
+        .group (.join <| vals_dedup.map fun a =>
+          .line ++ .group (f!"| {a.1} =>" ++ .line ++ a.2)))
       if p ≥ leadPrec then Format.paren ret else ret
 
 end DFinsupp

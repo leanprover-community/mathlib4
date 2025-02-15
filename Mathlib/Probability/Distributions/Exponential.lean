@@ -73,7 +73,7 @@ lemma measurable_exponentialPDFReal (r : ℝ) : Measurable (exponentialPDFReal r
 lemma exponentialPDFReal_pos {x r : ℝ} (hr : 0 < r) (hx : 0 < x) :
     0 < exponentialPDFReal r x := gammaPDFReal_pos zero_lt_one hr hx
 
-/-- The exponential pdf is nonnegative-/
+/-- The exponential pdf is nonnegative -/
 lemma exponentialPDFReal_nonneg {r : ℝ} (hr : 0 < r) (x : ℝ) :
     0 ≤ exponentialPDFReal r x := gammaPDFReal_nonneg zero_lt_one hr x
 
@@ -154,7 +154,7 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
         exact Continuous.continuousOn (Continuous.comp' (continuous_mul_left (-1)) this)
       · simp only [neg_mul, one_mul]
         exact fun _ _ ↦ HasDerivAt.hasDerivWithinAt hasDerivAt_neg_exp_mul_exp
-    · apply Integrable.aestronglyMeasurable (Integrable.const_mul _ _)
+    · refine Integrable.aestronglyMeasurable (Integrable.const_mul ?_ _)
       rw [← IntegrableOn, integrableOn_Icc_iff_integrableOn_Ioc]
       exact exp_neg_integrableOn_Ioc hr
     · refine ne_of_lt (IntegrableOn.setLIntegral_lt_top ?_)

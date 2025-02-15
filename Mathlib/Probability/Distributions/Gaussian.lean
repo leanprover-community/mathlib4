@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lorenzo Luccioli, Rémy Degenne, Alexander Bentkamp
 -/
 import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
-import Mathlib.Probability.Notation
-import Mathlib.MeasureTheory.Decomposition.Lebesgue
+import Mathlib.Probability.Moments.Basic
 
 /-!
 # Gaussian distributions over ℝ
@@ -72,6 +71,7 @@ lemma stronglyMeasurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
     StronglyMeasurable (gaussianPDFReal μ v) :=
   (measurable_gaussianPDFReal μ v).stronglyMeasurable
 
+@[fun_prop]
 lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
     Integrable (gaussianPDFReal μ v) := by
   rw [gaussianPDFReal_def]
@@ -93,7 +93,7 @@ lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
     field_simp
   exact Integrable.comp_sub_right hg μ
 
-/-- The gaussian distribution pdf integrates to 1 when the variance is not zero.  -/
+/-- The gaussian distribution pdf integrates to 1 when the variance is not zero. -/
 lemma lintegral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
     ∫⁻ x, ENNReal.ofReal (gaussianPDFReal μ v x) = 1 := by
   rw [← ENNReal.toReal_eq_one_iff]
@@ -112,7 +112,7 @@ lemma lintegral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
     ring
   · positivity
 
-/-- The gaussian distribution pdf integrates to 1 when the variance is not zero.  -/
+/-- The gaussian distribution pdf integrates to 1 when the variance is not zero. -/
 lemma integral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
     ∫ x, gaussianPDFReal μ v x = 1 := by
   have h := lintegral_gaussianPDFReal_eq_one μ hv
@@ -283,8 +283,8 @@ lemma gaussianReal_map_const_mul (c : ℝ) :
     rw [Measure.map_const]
     simp only [ne_eq, measure_univ, one_smul, mul_eq_zero]
     convert (gaussianReal_zero_var 0).symm
-    simp only [ne_eq, zero_pow, mul_eq_zero, hv, or_false, not_false_eq_true]
-    rfl
+    simp only [ne_eq, zero_pow, mul_eq_zero, hv, or_false, not_false_eq_true, reduceCtorEq,
+      NNReal.mk_zero]
   let e : ℝ ≃ᵐ ℝ := (Homeomorph.mulLeft₀ c hc).symm.toMeasurableEquiv
   have he' : ∀ x, HasDerivAt e ((fun _ ↦ c⁻¹) x) x := by
     suffices ∀ x, HasDerivAt (fun x => c⁻¹ * x) (c⁻¹ * 1) x by rwa [mul_one] at this
@@ -346,6 +346,35 @@ lemma gaussianReal_mul_const {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussian
   exact gaussianReal_const_mul hX c
 
 end Transformations
+
+open Measurable Real
+
+variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {p : Measure Ω} {μ : ℝ} {v : ℝ≥0} {X : Ω → ℝ}
+
+theorem mgf_gaussianReal (hX : p.map X = gaussianReal μ v) (t : ℝ) :
+    mgf X p t = exp (μ * t + v * t ^ 2 / 2) := by
+  by_cases hv : v = 0
+  · simp only [gaussianReal, hv, ↓reduceIte] at hX
+    simp [mgf_dirac hX, hv]
+  calc
+  mgf X p t = (p.map X)[fun x => exp (t * x)] := by
+    rw [← mgf_id_map, mgf]
+    all_goals simp [AEMeasurable.of_map_ne_zero, hX, IsProbabilityMeasure.ne_zero]
+  _ = ∫ x, exp (t * x) * gaussianPDFReal μ v x := by
+    simp [hX, gaussianReal_of_var_ne_zero μ hv, gaussianPDF_def, ENNReal.ofReal,
+      integral_withDensity_eq_integral_smul (measurable_gaussianPDFReal μ v).real_toNNReal,
+      NNReal.smul_def, gaussianPDFReal_nonneg, mul_comm]
+  _ = ∫ x, exp (μ * t + v * t ^ 2 / 2) * gaussianPDFReal (μ + v * t) v x := by
+    simp only [gaussianPDFReal_def, mul_left_comm (exp _), mul_assoc, ← exp_add]
+    congr with x
+    field_simp only [mul_left_comm, ← exp_sub, ← exp_add]
+    ring_nf
+  _ = exp (μ * t + v * t ^ 2 / 2) := by
+    rw [integral_mul_left, integral_gaussianPDFReal_eq_one (μ + v * t) hv, mul_one]
+
+theorem cgf_gaussianReal (hX : p.map X = gaussianReal μ v) (t : ℝ) :
+    cgf X p t = μ * t + v * t ^ 2 / 2 := by
+  rw [cgf, mgf_gaussianReal hX t, log_exp]
 
 end GaussianReal
 

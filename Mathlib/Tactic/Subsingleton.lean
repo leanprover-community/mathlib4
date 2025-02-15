@@ -97,7 +97,8 @@ def Lean.MVarId.subsingleton (g : MVarId) (insts : Array (Term × AbstractMVarsR
         g.assign <| mkApp4 (.const ``proof_irrel_heq []) xTy yTy x y
         return
       throwError "tactic 'subsingleton' could not prove heterogeneous equality"
-    throwError "tactic 'subsingleton' failed, goal is neither an equality nor heterogeneous equality"
+    throwError "tactic 'subsingleton' failed, goal is neither an equality nor a \
+      heterogeneous equality"
 
 namespace Mathlib.Tactic
 

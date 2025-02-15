@@ -62,27 +62,32 @@ noncomputable def arborescenceMk {V : Type u} [Quiver V] (r : V) (height : V →
   uniquePath b :=
     ⟨Classical.inhabited_of_nonempty (by
       rcases show ∃ n, height b < n from ⟨_, Nat.lt.base _⟩ with ⟨n, hn⟩
-      induction' n with n ih generalizing b
-      · exact False.elim (Nat.not_lt_zero _ hn)
+      induction n generalizing b with
+      | zero => exact False.elim (Nat.not_lt_zero _ hn)
+      | succ n ih =>
       rcases root_or_arrow b with (⟨⟨⟩⟩ | ⟨a, ⟨e⟩⟩)
       · exact ⟨Path.nil⟩
       · rcases ih a (lt_of_lt_of_le (height_lt e) (Nat.lt_succ_iff.mp hn)) with ⟨p⟩
         exact ⟨p.cons e⟩), by
       have height_le : ∀ {a b}, Path a b → height a ≤ height b := by
         intro a b p
-        induction' p with b c _ e ih
-        · rfl
-        · exact le_of_lt (lt_of_le_of_lt ih (height_lt e))
+        induction p with
+        | nil => rfl
+        | cons _ e ih => exact le_of_lt (lt_of_le_of_lt ih (height_lt e))
       suffices ∀ p q : Path r b, p = q by
         intro p
         apply this
       intro p q
-      induction' p with a c p e ih <;> cases' q with b _ q f
-      · rfl
-      · exact False.elim (lt_irrefl _ (lt_of_le_of_lt (height_le q) (height_lt f)))
-      · exact False.elim (lt_irrefl _ (lt_of_le_of_lt (height_le p) (height_lt e)))
-      · rcases unique_arrow e f with ⟨⟨⟩, ⟨⟩⟩
-        rw [ih]⟩
+      induction p with
+      | nil =>
+        rcases q with _ | ⟨q, f⟩
+        · rfl
+        · exact False.elim (lt_irrefl _ (lt_of_le_of_lt (height_le q) (height_lt f)))
+      | cons p e ih =>
+        rcases q with _ | ⟨q, f⟩
+        · exact False.elim (lt_irrefl _ (lt_of_le_of_lt (height_le p) (height_lt e)))
+        · rcases unique_arrow e f with ⟨⟨⟩, ⟨⟩⟩
+          rw [ih]⟩
 
 /-- `RootedConnected r` means that there is a path from `r` to any other vertex. -/
 class RootedConnected {V : Type u} [Quiver V] (r : V) : Prop where

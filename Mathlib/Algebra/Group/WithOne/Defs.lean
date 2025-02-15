@@ -20,13 +20,6 @@ Another result says that adjoining to a group an element `zero` gives a `GroupWi
 information about these structures (which are not that standard in informal mathematics, see
 `Mathlib.Algebra.GroupWithZero.Basic`)
 
-## Porting notes
-
-In Lean 3, we use `id` here and there to get correct types of proofs. This is required because
-`WithOne` and `WithZero` are marked as `irreducible` at the end of
-`Mathlib.Algebra.Group.WithOne.Defs`, so proofs that use `Option α` instead of `WithOne α` no
-longer typecheck. In Lean 4, both types are plain `def`s, so we don't need these `id`s.
-
 ## TODO
 
 `WithOne.coe_mul` and `WithZero.coe_mul` have inconsistent use of implicit parameters
@@ -34,16 +27,11 @@ longer typecheck. In Lean 4, both types are plain `def`s, so we don't need these
 
 -- Check that we haven't needed to import all the basic lemmas about groups,
 -- by asserting a random sample don't exist here:
-assert_not_exists inv_involutive
-assert_not_exists div_right_inj
-assert_not_exists pow_ite
-
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists inv_involutive div_right_inj pow_ite MonoidWithZero DenselyOrdered
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {γ : Type w}
+variable {α : Type u}
 
 /-- Add an extra element `1` to a type -/
 @[to_additive "Add an extra element `0` to a type"]
@@ -93,9 +81,6 @@ instance inhabited : Inhabited (WithOne α) :=
 instance nontrivial [Nonempty α] : Nontrivial (WithOne α) :=
   Option.nontrivial
 
--- Porting note: this new declaration is here to make `((a : α): WithOne α)` have type `WithOne α`;
--- otherwise the coercion kicks in and it becomes `Option.some a : WithOne α` which
--- becomes `Option.some a : Option α`.
 /-- The canonical map from `α` into `WithOne α` -/
 @[to_additive (attr := coe) "The canonical map from `α` into `WithZero α`"]
 def coe : α → WithOne α :=
@@ -112,6 +97,16 @@ def recOneCoe {C : WithOne α → Sort*} (h₁ : C 1) (h₂ : ∀ a : α, C a) :
   | Option.none => h₁
   | Option.some x => h₂ x
 
+@[to_additive (attr := simp)]
+lemma recOneCoe_one {C : WithOne α → Sort*} (h₁ h₂) :
+    recOneCoe h₁ h₂ (1 : WithOne α) = (h₁ : C 1) :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma recOneCoe_coe {C : WithOne α → Sort*} (h₁ h₂) (a : α) :
+    recOneCoe h₁ h₂ (a : WithOne α) = (h₂ : ∀ a : α, C a) a :=
+  rfl
+
 /-- Deconstruct an `x : WithOne α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/
 @[to_additive unzero
       "Deconstruct an `x : WithZero α` to the underlying value in `α`, given a proof that `x ≠ 0`."]
@@ -124,9 +119,6 @@ theorem unone_coe {x : α} (hx : (x : WithOne α) ≠ 1) : unone hx = x :=
 @[to_additive (attr := simp) coe_unzero]
 lemma coe_unone : ∀ {x : WithOne α} (hx : x ≠ 1), unone hx = x
   | (x : α), _ => rfl
-
--- Porting note: in Lean 4 the `some_eq_coe` lemmas present in the lean 3 version
--- of this file are syntactic tautologies
 
 @[to_additive (attr := simp)]
 theorem coe_ne_one {a : α} : (a : WithOne α) ≠ (1 : WithOne α) :=
@@ -165,7 +157,7 @@ lemma coe_mul [Mul α] (a b : α) : (↑(a * b) : WithOne α) = a * b := rfl
 @[to_additive]
 instance monoid [Semigroup α] : Monoid (WithOne α) where
   __ := mulOneClass
-  mul_assoc a b c := match a, b, c with
+  mul_assoc
     | 1, b, c => by simp
     | (a : α), 1, c => by simp
     | (a : α), (b : α), 1 => by simp
@@ -173,7 +165,7 @@ instance monoid [Semigroup α] : Monoid (WithOne α) where
 
 @[to_additive]
 instance commMonoid [CommSemigroup α] : CommMonoid (WithOne α) where
-  mul_comm := fun a b => match a, b with
+  mul_comm
     | (a : α), (b : α) => congr_arg some (mul_comm a b)
     | (_ : α), 1 => rfl
     | 1, (_ : α) => rfl

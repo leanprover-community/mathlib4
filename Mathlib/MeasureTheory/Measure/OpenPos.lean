@@ -100,6 +100,11 @@ theorem _root_.IsClosed.measure_eq_one_iff_eq_univ [OpensMeasurableSpace X] [IsP
 theorem interior_eq_empty_of_null (hs : μ s = 0) : interior s = ∅ :=
   isOpen_interior.eq_empty_of_measure_zero <| measure_mono_null interior_subset hs
 
+/-- A property satisfied almost everywhere is satisfied on a dense subset. -/
+theorem dense_of_ae {p : X → Prop} (hp : ∀ᵐ x ∂μ, p x) : Dense {x | p x} := by
+  rw [dense_iff_closure_eq, closure_eq_compl_interior_compl, compl_univ_iff]
+  exact μ.interior_eq_empty_of_null hp
+
 /-- If two functions are a.e. equal on an open set and are continuous on this set, then they are
 equal on this set. -/
 theorem eqOn_open_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ.restrict U] g) (hU : IsOpen U)

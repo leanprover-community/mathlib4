@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 
 import Lean.Environment
+import Mathlib.Init
 
 /-!
 # Environment extension for tracking existence of declarations and imports
@@ -12,8 +13,7 @@ import Lean.Environment
 This is used by the `assert_not_exists` and `assert_not_imported` commands.
 -/
 
-section
-open Lean Elab Meta
+open Lean
 
 namespace Mathlib.AssertNotExist
 
@@ -30,9 +30,9 @@ structure AssertExists where
 
 /-- Defines the `assertExistsExt` extension for adding a `HashSet` of `AssertExists`s
 to the environment. -/
-initialize assertExistsExt : SimplePersistentEnvExtension AssertExists (HashSet AssertExists) ←
+initialize assertExistsExt : SimplePersistentEnvExtension AssertExists (Std.HashSet AssertExists) ←
   registerSimplePersistentEnvExtension {
-    addImportedFn := fun as => as.foldl HashSet.insertMany {}
+    addImportedFn := fun as => as.foldl Std.HashSet.insertMany {}
     addEntryFn := .insert
   }
 

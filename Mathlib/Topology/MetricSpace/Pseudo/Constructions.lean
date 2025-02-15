@@ -14,8 +14,8 @@ This file constructs the supremum distance on binary products of pseudometric sp
 instances for type synonyms.
 -/
 
-open Bornology Filter Metric Set
-open scoped NNReal Topology
+open Bornology Filter Metric Set Topology
+open scoped NNReal
 
 variable {α β : Type*} [PseudoMetricSpace α]
 
@@ -23,11 +23,11 @@ variable {α β : Type*} [PseudoMetricSpace α]
 abbrev PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace β) :
     PseudoMetricSpace α where
   dist x y := dist (f x) (f y)
-  dist_self x := dist_self _
-  dist_comm x y := dist_comm _ _
-  dist_triangle x y z := dist_triangle _ _ _
+  dist_self _ := dist_self _
+  dist_comm _ _ := dist_comm _ _
+  dist_triangle _ _ _ := dist_triangle _ _ _
   edist x y := edist (f x) (f y)
-  edist_dist x y := edist_dist _ _
+  edist_dist _ _ := edist_dist _ _
   toUniformSpace := UniformSpace.comap f m.toUniformSpace
   uniformity_dist := (uniformity_basis_dist.comap _).eq_biInf
   toBornology := Bornology.induced f
@@ -37,16 +37,22 @@ abbrev PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace 
 /-- Pull back a pseudometric space structure by an inducing map. This is a version of
 `PseudoMetricSpace.induced` useful in case if the domain already has a `TopologicalSpace`
 structure. -/
-def Inducing.comapPseudoMetricSpace {α β} [TopologicalSpace α] [m : PseudoMetricSpace β] {f : α → β}
-    (hf : Inducing f) : PseudoMetricSpace α :=
-  .replaceTopology (.induced f m) hf.induced
+def Topology.IsInducing.comapPseudoMetricSpace {α β : Type*} [TopologicalSpace α]
+    [m : PseudoMetricSpace β] {f : α → β} (hf : IsInducing f) : PseudoMetricSpace α :=
+  .replaceTopology (.induced f m) hf.eq_induced
+
+@[deprecated (since := "2024-10-28")]
+alias Inducing.comapPseudoMetricSpace := IsInducing.comapPseudoMetricSpace
 
 /-- Pull back a pseudometric space structure by a uniform inducing map. This is a version of
 `PseudoMetricSpace.induced` useful in case if the domain already has a `UniformSpace`
 structure. -/
-def UniformInducing.comapPseudoMetricSpace {α β} [UniformSpace α] [m : PseudoMetricSpace β]
-    (f : α → β) (h : UniformInducing f) : PseudoMetricSpace α :=
+def IsUniformInducing.comapPseudoMetricSpace {α β} [UniformSpace α] [m : PseudoMetricSpace β]
+    (f : α → β) (h : IsUniformInducing f) : PseudoMetricSpace α :=
   .replaceUniformity (.induced f m) h.comap_uniformity.symm
+
+@[deprecated (since := "2024-10-08")] alias UniformInducing.comapPseudoMetricSpace :=
+  IsUniformInducing.comapPseudoMetricSpace
 
 instance Subtype.pseudoMetricSpace {p : α → Prop} : PseudoMetricSpace (Subtype p) :=
   PseudoMetricSpace.induced Subtype.val ‹_›
@@ -144,8 +150,8 @@ variable [PseudoMetricSpace β]
 instance Prod.pseudoMetricSpaceMax : PseudoMetricSpace (α × β) :=
   let i := PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun x y : α × β => dist x.1 y.1 ⊔ dist x.2 y.2)
-    (fun x y => (max_lt (edist_lt_top _ _) (edist_lt_top _ _)).ne) fun x y => by
-      simp only [sup_eq_max, dist_edist, ← ENNReal.toReal_max (edist_ne_top _ _) (edist_ne_top _ _),
+    (fun _ _ => (max_lt (edist_lt_top _ _) (edist_lt_top _ _)).ne) fun x y => by
+      simp only [dist_edist, ← ENNReal.toReal_max (edist_ne_top _ _) (edist_ne_top _ _),
         Prod.edist_eq]
   i.replaceBornology fun s => by
     simp only [← isBounded_image_fst_and_snd, isBounded_iff_eventually, forall_mem_image, ←
@@ -201,7 +207,7 @@ lemma continuous_dist : Continuous fun p : α × α ↦ dist p.1 p.2 := uniformC
 @[continuity, fun_prop]
 protected lemma Continuous.dist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => dist (f b) (g b) :=
-  continuous_dist.comp (hf.prod_mk hg : _)
+  continuous_dist.comp (hf.prod_mk hg :)
 
 protected lemma Filter.Tendsto.dist {f g : β → α} {x : Filter β} {a b : α}
     (hf : Tendsto f x (𝓝 a)) (hg : Tendsto g x (𝓝 b)) :
@@ -227,7 +233,7 @@ lemma continuous_nndist : Continuous fun p : α × α => nndist p.1 p.2 :=
 @[fun_prop]
 protected lemma Continuous.nndist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => nndist (f b) (g b) :=
-  continuous_nndist.comp (hf.prod_mk hg : _)
+  continuous_nndist.comp (hf.prod_mk hg :)
 
 protected lemma Filter.Tendsto.nndist {f g : β → α} {x : Filter β} {a b : α}
     (hf : Tendsto f x (𝓝 a)) (hg : Tendsto g x (𝓝 b)) :

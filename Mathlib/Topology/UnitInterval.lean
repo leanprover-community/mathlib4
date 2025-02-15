@@ -1,11 +1,11 @@
 /-
 Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Scott Morrison
+Authors: Patrick Massot, Kim Morrison
 -/
 import Mathlib.Algebra.Order.Interval.Set.Instances
 import Mathlib.Order.Interval.Set.ProjIcc
-import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.Instances.Real.Defs
 
 /-!
 # The unit interval, as a topological space
@@ -40,10 +40,10 @@ theorem one_mem : (1 : ℝ) ∈ I :=
   ⟨zero_le_one, le_rfl⟩
 
 theorem mul_mem {x y : ℝ} (hx : x ∈ I) (hy : y ∈ I) : x * y ∈ I :=
-  ⟨mul_nonneg hx.1 hy.1, mul_le_one hx.2 hy.1 hy.2⟩
+  ⟨mul_nonneg hx.1 hy.1, mul_le_one₀ hx.2 hy.1 hy.2⟩
 
 theorem div_mem {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x ≤ y) : x / y ∈ I :=
-  ⟨div_nonneg hx hy, div_le_one_of_le hxy hy⟩
+  ⟨div_nonneg hx hy, div_le_one_of_le₀ hxy hy⟩
 
 theorem fract_mem (x : ℝ) : fract x ∈ I :=
   ⟨fract_nonneg _, (fract_lt_one _).le⟩
@@ -60,15 +60,14 @@ instance hasOne : One I :=
 
 instance : ZeroLEOneClass I := ⟨zero_le_one (α := ℝ)⟩
 
-instance : BoundedOrder I := Set.Icc.boundedOrder zero_le_one
+instance : BoundedOrder I := have : Fact ((0 : ℝ) ≤ 1) := ⟨zero_le_one⟩; inferInstance
 
 lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
-theorem coe_ne_zero {x : I} : (x : ℝ) ≠ 0 ↔ x ≠ 0 :=
-  not_iff_not.mpr coe_eq_zero
-
-theorem coe_ne_one {x : I} : (x : ℝ) ≠ 1 ↔ x ≠ 1 :=
-  not_iff_not.mpr coe_eq_one
+@[norm_cast] theorem coe_ne_zero {x : I} : (x : ℝ) ≠ 0 ↔ x ≠ 0 := coe_eq_zero.not
+@[norm_cast] theorem coe_ne_one {x : I} : (x : ℝ) ≠ 1 ↔ x ≠ 1 := coe_eq_one.not
+@[simp, norm_cast] theorem coe_pos {x : I} : (0 : ℝ) < x ↔ 0 < x := Iff.rfl
+@[simp, norm_cast] theorem coe_lt_one {x : I} : (x : ℝ) < 1 ↔ x < 1 := Iff.rfl
 
 instance : Nonempty I :=
   ⟨0⟩
@@ -76,7 +75,6 @@ instance : Nonempty I :=
 instance : Mul I :=
   ⟨fun x y => ⟨x * y, mul_mem x.2 y.2⟩⟩
 
--- todo: we could set up a `LinearOrderedCommMonoidWithZero I` instance
 theorem mul_le_left {x y : I} : x * y ≤ x :=
   Subtype.coe_le_coe.mp <| mul_le_of_le_one_right x.2.1 y.2.2
 
@@ -124,11 +122,40 @@ def symmHomeomorph : I ≃ₜ I where
 
 theorem strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := ℝ) h _
 
-@[deprecated (since := "2024-02-27")] alias involutive_symm := symm_involutive
-@[deprecated (since := "2024-02-27")] alias bijective_symm := symm_bijective
+
+@[simp]
+theorem symm_inj {i j : I} : σ i = σ j ↔ i = j := symm_bijective.injective.eq_iff
 
 theorem half_le_symm_iff (t : I) : 1 / 2 ≤ (σ t : ℝ) ↔ (t : ℝ) ≤ 1 / 2 := by
   rw [coe_symm_eq, le_sub_iff_add_le, add_comm, ← le_sub_iff_add_le, sub_half]
+
+@[simp]
+lemma symm_eq_one {i : I} : σ i = 1 ↔ i = 0 := by
+  rw [← symm_zero, symm_inj]
+
+@[simp]
+lemma symm_eq_zero {i : I} : σ i = 0 ↔ i = 1 := by
+  rw [← symm_one, symm_inj]
+
+@[simp]
+theorem symm_le_symm {i j : I} : σ i ≤ σ j ↔ j ≤ i := by
+  simp only [symm, Subtype.mk_le_mk, sub_le_sub_iff, add_le_add_iff_left, Subtype.coe_le_coe]
+
+theorem le_symm_comm {i j : I} : i ≤ σ j ↔ j ≤ σ i := by
+  rw [← symm_le_symm, symm_symm]
+
+theorem symm_le_comm {i j : I} : σ i ≤ j ↔ σ j ≤ i := by
+  rw [← symm_le_symm, symm_symm]
+
+@[simp]
+theorem symm_lt_symm {i j : I} : σ i < σ j ↔ j < i := by
+  simp only [symm, Subtype.mk_lt_mk, sub_lt_sub_iff_left, Subtype.coe_lt_coe]
+
+theorem lt_symm_comm {i j : I} : i < σ j ↔ j < σ i := by
+  rw [← symm_lt_symm, symm_symm]
+
+theorem symm_lt_comm {i j : I} : σ i < j ↔ σ j < i := by
+  rw [← symm_lt_symm, symm_symm]
 
 instance : ConnectedSpace I :=
   Subtype.connectedSpace ⟨nonempty_Icc.mpr zero_le_one, isPreconnected_Icc⟩
@@ -157,17 +184,52 @@ theorem nonneg' {t : I} : 0 ≤ t :=
 theorem le_one' {t : I} : t ≤ 1 :=
   t.2.2
 
+protected lemma pos_iff_ne_zero {x : I} : 0 < x ↔ x ≠ 0 := bot_lt_iff_ne_bot
+
+protected lemma lt_one_iff_ne_one {x : I} : x < 1 ↔ x ≠ 1 := lt_top_iff_ne_top
+
+lemma eq_one_or_eq_zero_of_le_mul {i j : I} (h : i ≤ j * i) : i = 0 ∨ j = 1 := by
+  contrapose! h
+  rw [← unitInterval.lt_one_iff_ne_one, ← coe_lt_one, ← unitInterval.pos_iff_ne_zero,
+    ← coe_pos] at h
+  rw [← Subtype.coe_lt_coe, coe_mul]
+  simpa using mul_lt_mul_of_pos_right h.right h.left
+
 instance : Nontrivial I := ⟨⟨1, 0, (one_ne_zero <| congrArg Subtype.val ·)⟩⟩
 
 theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc (0 : ℝ) (1 / a) := by
   constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor
   · exact nonneg_of_mul_nonneg_right h₁ ha
-  · rwa [le_div_iff ha, mul_comm]
+  · rwa [le_div_iff₀ ha, mul_comm]
   · exact mul_nonneg ha.le h₁
-  · rwa [le_div_iff ha, mul_comm] at h₂
+  · rwa [le_div_iff₀ ha, mul_comm] at h₂
 
 theorem two_mul_sub_one_mem_iff {t : ℝ} : 2 * t - 1 ∈ I ↔ t ∈ Set.Icc (1 / 2 : ℝ) 1 := by
   constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor <;> linarith
+
+/-- The unit interval as a submonoid of ℝ. -/
+def submonoid : Submonoid ℝ where
+  carrier := unitInterval
+  one_mem' := unitInterval.one_mem
+  mul_mem' := unitInterval.mul_mem
+
+@[simp] theorem coe_unitIntervalSubmonoid : submonoid = unitInterval := rfl
+@[simp] theorem mem_unitIntervalSubmonoid {x} : x ∈ submonoid ↔ x ∈ unitInterval :=
+  Iff.rfl
+
+protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → ℝ}
+    (h : ∀ c ∈ t, f c ∈ unitInterval) :
+    ∏ c ∈ t, f c ∈ unitInterval := _root_.prod_mem (S := unitInterval.submonoid) h
+
+instance : LinearOrderedCommMonoidWithZero I where
+  zero_mul i := zero_mul i
+  mul_zero i := mul_zero i
+  zero_le_one := nonneg'
+  mul_le_mul_left i j h_ij k := by
+    simp only [← Subtype.coe_le_coe, coe_mul]
+    apply mul_le_mul le_rfl ?_ (nonneg i) (nonneg k)
+    simp [h_ij]
+  __ := inferInstanceAs (LinearOrder I)
 
 end unitInterval
 
@@ -211,8 +273,7 @@ lemma abs_sub_addNSMul_le (hδ : 0 ≤ δ) {t : Icc a b} (n : ℕ)
     (|t - addNSMul h δ n| : α) ≤ δ :=
   calc
     (|t - addNSMul h δ n| : α) = t - addNSMul h δ n            := abs_eq_self.2 <| sub_nonneg.2 ht.1
-    _ ≤ projIcc a b h (a + (n+1) • δ) - addNSMul h δ n :=
-          sub_le_sub_right (b := (↑(projIcc a b h (a + (n + 1) • δ)))) (by exact ht.2) _
+    _ ≤ projIcc a b h (a + (n+1) • δ) - addNSMul h δ n := by apply sub_le_sub_right; exact ht.2
     _ ≤ (|projIcc a b h (a + (n+1) • δ) - addNSMul h δ n| : α) := le_abs_self _
     _ ≤ |a + (n+1) • δ - (a + n • δ)|                          := abs_projIcc_sub_projIcc h
     _ ≤ δ := by
@@ -312,3 +373,20 @@ theorem iccHomeoI_symm_apply_coe (a b : 𝕜) (h : a < b) (x : Set.Icc (0 : 𝕜
   rfl
 
 end
+
+section NNReal
+
+open unitInterval NNReal
+
+/-- The coercion from `I` to `ℝ≥0`. -/
+def unitInterval.toNNReal : I → ℝ≥0 := fun i ↦ ⟨i.1, i.2.1⟩
+
+@[fun_prop]
+lemma unitInterval.toNNReal_continuous : Continuous toNNReal := by
+  delta toNNReal
+  fun_prop
+
+@[simp]
+lemma unitInterval.coe_toNNReal (x : I) : ((toNNReal x) : ℝ) = x := rfl
+
+end NNReal

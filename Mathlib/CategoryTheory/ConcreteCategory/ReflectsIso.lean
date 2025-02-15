@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Functor.ReflectsIso
@@ -18,8 +18,8 @@ namespace CategoryTheory
 
 instance : (forget (Type u)).ReflectsIsomorphisms where reflects _ _ _ {i} := i
 
-variable (C : Type (u + 1)) [Category C] [ConcreteCategory.{u} C]
-variable (D : Type (u + 1)) [Category D] [ConcreteCategory.{u} D]
+variable (C : Type (u + 1)) [Category C] [HasForget.{u} C]
+variable (D : Type (u + 1)) [Category D] [HasForget.{u} D]
 
 -- This should not be an instance, as it causes a typeclass loop
 -- with `CategoryTheory.hasForgetToType`.

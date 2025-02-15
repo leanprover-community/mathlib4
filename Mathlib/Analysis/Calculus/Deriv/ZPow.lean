@@ -21,10 +21,7 @@ derivative, power
 
 universe u v w
 
-open scoped Classical
-open Topology Filter
-
-open Filter Asymptotics Set
+open Topology Filter Asymptotics Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {E : Type v} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -46,7 +43,7 @@ theorem hasStrictDerivAt_zpow (m : ℤ) (x : 𝕜) (h : x ≠ 0 ∨ 0 ≤ m) :
   · have hx : x ≠ 0 := h.resolve_right hm.not_le
     have := (hasStrictDerivAt_inv ?_).scomp _ (this (-m) (neg_pos.2 hm)) <;>
       [skip; exact zpow_ne_zero _ hx]
-    simp only [(· ∘ ·), zpow_neg, one_div, inv_inv, smul_eq_mul] at this
+    simp only [Function.comp_def, zpow_neg, one_div, inv_inv, smul_eq_mul] at this
     convert this using 1
     rw [sq, mul_inv, inv_inv, Int.cast_neg, neg_mul, neg_mul_neg, ← zpow_add₀ hx, mul_assoc, ←
       zpow_add₀ hx]

@@ -40,13 +40,12 @@ open LinearMap (BilinForm)
 variable {R : Type u} {M : Type v} [CommRing R] [AddCommGroup M] [Module R M]
 variable (B : BilinForm R M)
 
--- Porting note: Changed `(f g)` to `{f g}` for convenience in `skewAdjointLieSubalgebra`
 theorem LinearMap.BilinForm.isSkewAdjoint_bracket {f g : Module.End R M}
     (hf : f ∈ B.skewAdjointSubmodule) (hg : g ∈ B.skewAdjointSubmodule) :
     ⁅f, g⁆ ∈ B.skewAdjointSubmodule := by
   rw [mem_skewAdjointSubmodule] at *
-  have hfg : IsAdjointPair B B (f * g) (g * f) := by rw [← neg_mul_neg g f]; exact hf.mul hg
-  have hgf : IsAdjointPair B B (g * f) (f * g) := by rw [← neg_mul_neg f g]; exact hg.mul hf
+  have hfg : IsAdjointPair B B (f * g) (g * f) := by rw [← neg_mul_neg g f]; exact hg.comp hf
+  have hgf : IsAdjointPair B B (g * f) (f * g) := by rw [← neg_mul_neg f g]; exact hf.comp hg
   change IsAdjointPair B B (f * g - g * f) (-(f * g - g * f)); rw [neg_sub]
   exact hfg.sub hgf
 
@@ -61,7 +60,7 @@ variable {N : Type w} [AddCommGroup N] [Module R N] (e : N ≃ₗ[R] M)
 /-- An equivalence of modules with bilinear forms gives equivalence of Lie algebras of skew-adjoint
 endomorphisms. -/
 def skewAdjointLieSubalgebraEquiv :
-    skewAdjointLieSubalgebra (B.compl₁₂ (↑e : N →ₗ[R] M) ↑e) ≃ₗ⁅R⁆ skewAdjointLieSubalgebra B := by
+    skewAdjointLieSubalgebra (B.compl₁₂ (e : N →ₗ[R] M) e) ≃ₗ⁅R⁆ skewAdjointLieSubalgebra B := by
   apply LieEquiv.ofSubalgebras _ _ e.lieConj
   ext f
   simp only [LieSubalgebra.mem_coe, Submodule.mem_map_equiv, LieSubalgebra.mem_map_submodule,
@@ -91,7 +90,6 @@ variable (J : Matrix n n R)
 theorem Matrix.lie_transpose (A B : Matrix n n R) : ⁅A, B⁆ᵀ = ⁅Bᵀ, Aᵀ⁆ :=
   show (A * B - B * A)ᵀ = Bᵀ * Aᵀ - Aᵀ * Bᵀ by simp
 
--- Porting note: Changed `(A B)` to `{A B}` for convenience in `skewAdjointMatricesLieSubalgebra`
 theorem Matrix.isSkewAdjoint_bracket {A B : Matrix n n R} (hA : A ∈ skewAdjointMatricesSubmodule J)
     (hB : B ∈ skewAdjointMatricesSubmodule J) : ⁅A, B⁆ ∈ skewAdjointMatricesSubmodule J := by
   simp only [mem_skewAdjointMatricesSubmodule] at *
@@ -126,10 +124,9 @@ def skewAdjointMatricesLieSubalgebraEquiv (P : Matrix n n R) (h : Invertible P) 
       exact this
     simp [Matrix.IsSkewAdjoint, J.isAdjointPair_equiv _ _ P (isUnit_of_invertible P)]
 
--- TODO(mathlib4#6607): fix elaboration so annotation on `A` isn't needed
 theorem skewAdjointMatricesLieSubalgebraEquiv_apply (P : Matrix n n R) (h : Invertible P)
     (A : skewAdjointMatricesLieSubalgebra J) :
-    ↑(skewAdjointMatricesLieSubalgebraEquiv J P h A) = P⁻¹ * (A : Matrix n n R) * P := by
+    ↑(skewAdjointMatricesLieSubalgebraEquiv J P h A) = P⁻¹ * A * P := by
   simp [skewAdjointMatricesLieSubalgebraEquiv]
 
 /-- An equivalence of matrix algebras commuting with the transpose endomorphisms restricts to an
@@ -140,7 +137,6 @@ def skewAdjointMatricesLieSubalgebraEquivTranspose {m : Type w} [DecidableEq m] 
   LieEquiv.ofSubalgebras _ _ e.toLieEquiv <| by
     ext A
     suffices J.IsSkewAdjoint (e.symm A) ↔ (e J).IsSkewAdjoint A by
-      -- Porting note: Originally `simpa [this]`
       simpa [- LieSubalgebra.mem_map, LieSubalgebra.mem_map_submodule]
     simp only [Matrix.IsSkewAdjoint, Matrix.IsAdjointPair, ← h,
       ← Function.Injective.eq_iff e.injective, map_mul, AlgEquiv.apply_symm_apply, map_neg]

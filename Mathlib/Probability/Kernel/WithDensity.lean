@@ -3,7 +3,7 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.MeasurableIntegral
+import Mathlib.Probability.Kernel.MeasurableLIntegral
 import Mathlib.MeasureTheory.Integral.SetIntegral
 
 /-!
@@ -125,8 +125,7 @@ theorem withDensity_add_left (κ η : Kernel α β) [IsSFiniteKernel κ] [IsSFin
 
 theorem withDensity_kernel_sum [Countable ι] (κ : ι → Kernel α β) (hκ : ∀ i, IsSFiniteKernel (κ i))
     (f : α → β → ℝ≥0∞) :
-    @withDensity _ _ _ _ (Kernel.sum κ) (isSFiniteKernel_sum hκ) f =
-      Kernel.sum fun i => withDensity (κ i) f := by
+    withDensity (Kernel.sum κ) f = Kernel.sum fun i => withDensity (κ i) f := by
   by_cases hf : Measurable (Function.uncurry f)
   · ext1 a
     simp_rw [sum_apply, Kernel.withDensity_apply _ hf, sum_apply,
@@ -180,8 +179,8 @@ is finite. -/
 theorem isFiniteKernel_withDensity_of_bounded (κ : Kernel α β) [IsFiniteKernel κ] {B : ℝ≥0∞}
     (hB_top : B ≠ ∞) (hf_B : ∀ a b, f a b ≤ B) : IsFiniteKernel (withDensity κ f) := by
   by_cases hf : Measurable (Function.uncurry f)
-  · exact ⟨⟨B * IsFiniteKernel.bound κ, ENNReal.mul_lt_top hB_top (IsFiniteKernel.bound_ne_top κ),
-      fun a => by
+  · exact ⟨⟨B * IsFiniteKernel.bound κ, ENNReal.mul_lt_top hB_top.lt_top
+      (IsFiniteKernel.bound_lt_top κ), fun a => by
         rw [Kernel.withDensity_apply' κ hf a Set.univ]
         calc
           ∫⁻ b in Set.univ, f a b ∂κ a ≤ ∫⁻ _ in Set.univ, B ∂κ a := lintegral_mono (hf_B a)
@@ -240,10 +239,10 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : Kernel α β) [IsFin
     exact ⟨⌈(f a b).toReal⌉₊, fun n hn => (min_eq_left (h_le a b n hn)).symm⟩
   rw [hf_eq_tsum, withDensity_tsum _ fun n : ℕ => _]
   swap; · exact fun _ => (hf.min measurable_const).sub (hf.min measurable_const)
-  refine isSFiniteKernel_sum fun n => ?_
+  refine isSFiniteKernel_sum (hκs := fun n => ?_)
   suffices IsFiniteKernel (withDensity κ (fs n)) by haveI := this; infer_instance
   refine isFiniteKernel_withDensity_of_bounded _ (ENNReal.coe_ne_top : ↑n + 1 ≠ ∞) fun a b => ?_
-  -- After leanprover/lean4#2734, we need to do beta reduction before `norm_cast`
+  -- After https://github.com/leanprover/lean4/pull/2734, we need to do beta reduction before `norm_cast`
   beta_reduce
   norm_cast
   calc
@@ -260,8 +259,8 @@ nonrec theorem IsSFiniteKernel.withDensity (κ : Kernel α β) [IsSFiniteKernel 
     congr
     exact (kernel_sum_seq κ).symm
   rw [h_eq_sum]
-  exact isSFiniteKernel_sum fun n =>
-    isSFiniteKernel_withDensity_of_isFiniteKernel (seq κ n) hf_ne_top
+  exact isSFiniteKernel_sum (hκs := fun n =>
+    isSFiniteKernel_withDensity_of_isFiniteKernel (seq κ n) hf_ne_top)
 
 /-- For an s-finite kernel `κ` and a function `f : α → β → ℝ≥0`, `withDensity κ f` is s-finite. -/
 instance (κ : Kernel α β) [IsSFiniteKernel κ] (f : α → β → ℝ≥0) :

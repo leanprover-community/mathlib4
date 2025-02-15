@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lawrence Wu
 -/
 import Mathlib.Analysis.Fourier.Inversion
+import Mathlib.Analysis.MellinTransform
 
 /-!
 # Mellin inversion formula

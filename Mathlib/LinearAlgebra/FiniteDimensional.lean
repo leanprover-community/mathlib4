@@ -6,6 +6,7 @@ Authors: Chris Hughes
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
+import Mathlib.Tactic.IntervalCases
 
 /-!
 # Finite dimensional vector spaces
@@ -18,6 +19,8 @@ Definitions and results that require fewer imports are in
 
 -/
 
+assert_not_exists Monoid.exponent Module.IsTorsion
+
 
 universe u v v'
 
@@ -27,19 +30,11 @@ variable {K : Type u} {V : Type v}
 
 namespace Submodule
 
-open IsNoetherian FiniteDimensional
+open IsNoetherian Module
 
 section DivisionRing
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
-
-/-- In a finite-dimensional vector space, the dimensions of a submodule and of the corresponding
-quotient add up to the dimension of the space. -/
-theorem finrank_quotient_add_finrank [FiniteDimensional K V] (s : Submodule K V) :
-    finrank K (V ⧸ s) + finrank K s = finrank K V := by
-  have := rank_quotient_add_rank s
-  rw [← finrank_eq_rank, ← finrank_eq_rank, ← finrank_eq_rank] at this
-  exact mod_cast this
 
 /-- The dimension of a strict submodule is strictly bounded by the dimension of the ambient
 space. -/
@@ -62,22 +57,29 @@ theorem finrank_add_le_finrank_add_finrank (s t : Submodule K V) [FiniteDimensio
   rw [← finrank_sup_add_finrank_inf_eq]
   exact self_le_add_right _ _
 
-theorem eq_top_of_disjoint [FiniteDimensional K V] (s t : Submodule K V)
-    (hdim : finrank K s + finrank K t = finrank K V) (hdisjoint : Disjoint s t) : s ⊔ t = ⊤ := by
-  have h_finrank_inf : finrank K ↑(s ⊓ t) = 0 := by
-    rw [disjoint_iff_inf_le, le_bot_iff] at hdisjoint
-    rw [hdisjoint, finrank_bot]
-  apply eq_top_of_finrank_eq
-  rw [← hdim]
-  convert s.finrank_sup_add_finrank_inf_eq t
-  rw [h_finrank_inf]
-  rfl
-
 theorem finrank_add_finrank_le_of_disjoint [FiniteDimensional K V]
     {s t : Submodule K V} (hdisjoint : Disjoint s t) :
     finrank K s + finrank K t ≤ finrank K V := by
   rw [← Submodule.finrank_sup_add_finrank_inf_eq s t, hdisjoint.eq_bot, finrank_bot, add_zero]
   exact Submodule.finrank_le _
+
+theorem eq_top_of_disjoint [FiniteDimensional K V] (s t : Submodule K V)
+    (hdim : finrank K V ≤ finrank K s + finrank K t) (hdisjoint : Disjoint s t) : s ⊔ t = ⊤ := by
+  have h_finrank_inf : finrank K ↑(s ⊓ t) = 0 := by
+    rw [disjoint_iff_inf_le, le_bot_iff] at hdisjoint
+    rw [hdisjoint, finrank_bot]
+  apply eq_top_of_finrank_eq
+  replace hdim : finrank K V = finrank K s + finrank K t :=
+    le_antisymm hdim (finrank_add_finrank_le_of_disjoint hdisjoint)
+  rw [hdim]
+  convert s.finrank_sup_add_finrank_inf_eq t
+  rw [h_finrank_inf]
+  rfl
+
+theorem isCompl_iff_disjoint [FiniteDimensional K V] (s t : Submodule K V)
+    (hdim : finrank K V ≤ finrank K s + finrank K t) :
+    IsCompl s t ↔ Disjoint s t :=
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h, codisjoint_iff.mpr <| eq_top_of_disjoint s t hdim h⟩⟩
 
 end DivisionRing
 
@@ -116,7 +118,7 @@ end FiniteDimensional
 
 namespace LinearMap
 
-open FiniteDimensional
+open Module
 
 section DivisionRing
 
@@ -142,7 +144,7 @@ end DivisionRing
 
 end LinearMap
 
-open FiniteDimensional
+open Module
 
 namespace LinearMap
 
@@ -223,10 +225,6 @@ theorem LinearIndependent.span_eq_top_of_card_eq_finrank {ι : Type*} [Nonempty 
     (card_eq : Fintype.card ι = finrank K V) : span K (Set.range b) = ⊤ :=
   have : FiniteDimensional K V := .of_finrank_pos <| card_eq ▸ Fintype.card_pos
   lin_ind.span_eq_top_of_card_eq_finrank' card_eq
-
-@[deprecated (since := "2024-02-14")]
-alias span_eq_top_of_linearIndependent_of_card_eq_finrank :=
-  LinearIndependent.span_eq_top_of_card_eq_finrank
 
 /-- A linear independent family of `finrank K V` vectors forms a basis. -/
 @[simps! repr_apply]
@@ -335,9 +333,10 @@ theorem exists_ker_pow_eq_ker_pow_succ [FiniteDimensional K V] (f : End K V) :
     have h_le_ker_pow : ∀ n : ℕ, n ≤ (finrank K V).succ →
         n ≤ finrank K (LinearMap.ker (f ^ n)) := by
       intro n hn
-      induction' n with n ih
-      · exact zero_le (finrank _ _)
-      · have h_ker_lt_ker : LinearMap.ker (f ^ n) < LinearMap.ker (f ^ n.succ) := by
+      induction n with
+      | zero => exact zero_le (finrank _ _)
+      | succ n ih =>
+        have h_ker_lt_ker : LinearMap.ker (f ^ n) < LinearMap.ker (f ^ n.succ) := by
           refine lt_of_le_of_ne ?_ (h_contra n (Nat.le_of_succ_le_succ hn))
           rw [pow_succ']
           apply LinearMap.ker_le_ker_comp

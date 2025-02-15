@@ -6,7 +6,7 @@ Authors: Robert Y. Lewis
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Algebra.Polynomial.Splits
-import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.RingTheory.Polynomial.Vieta
 
 /-!
@@ -36,8 +36,6 @@ Polynomial, continuity
 open IsAbsoluteValue Filter
 
 namespace Polynomial
-
-open Polynomial
 
 section TopologicalSemiring
 
@@ -191,8 +189,7 @@ theorem coeff_bdd_of_roots_le {B : ℝ} {d : ℕ} (f : F →+* K) {p : F[X]} (h1
       _ ≤ max B 1 ^ d * d.choose (d / 2) := by
         gcongr; exact (i.choose_mono h3).trans (i.choose_le_middle d)
   · rw [eq_one_of_roots_le hB h1 h2 h4, Polynomial.map_one, coeff_one]
-    refine _root_.trans ?_
-      (one_le_mul_of_one_le_of_one_le (one_le_pow_of_one_le (le_max_right B 1) d) ?_)
+    refine le_trans ?_ (one_le_mul_of_one_le_of_one_le (one_le_pow₀ (le_max_right B 1)) ?_)
     · split_ifs <;> norm_num
     · exact mod_cast Nat.succ_le_iff.mpr (Nat.choose_pos (d.div_le_self 2))
 

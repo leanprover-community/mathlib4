@@ -10,6 +10,7 @@ import Mathlib.Util.CompileInductive
 import Batteries.Tactic.Lint.Basic
 import Batteries.Data.List.Lemmas
 import Batteries.Data.RBMap.Basic
+import Batteries.Logic
 
 /-!
 ## Definitions on lists
@@ -48,10 +49,6 @@ def getLastI [Inhabited α] : List α → α
   | [a] => a
   | [_, b] => b
   | _ :: _ :: l => getLastI l
-
-/-- List with a single given element. -/
-@[inline, deprecated List.pure (since := "2024-03-24")]
-protected def ret {α : Type u} (a : α) : List α := [a]
 
 /-- "Inhabited" `take` function: Take `n` elements from a list `l`. If `l` has less than `n`
   elements, append `n - length l` elements `default`. -/
@@ -209,7 +206,7 @@ but are equal up to permutation, as shown by `List.permutations_perm_permutation
 @[simp]
 def permutations' : List α → List (List α)
   | [] => [[]]
-  | t :: ts => (permutations' ts).bind <| permutations'Aux t
+  | t :: ts => (permutations' ts).flatMap <| permutations'Aux t
 
 end Permutations
 
@@ -383,7 +380,7 @@ def map₂Right (f : Option α → β → γ) (as : List α) (bs : List β) : Li
 /-- Asynchronous version of `List.map`.
 -/
 def mapAsyncChunked {α β} (f : α → β) (xs : List α) (chunk_size := 1024) : List β :=
-  ((xs.toChunks chunk_size).map fun xs => Task.spawn fun _ => List.map f xs).bind Task.get
+  ((xs.toChunks chunk_size).map fun xs => Task.spawn fun _ => List.map f xs).flatMap Task.get
 
 
 /-!
@@ -445,5 +442,63 @@ theorem iterateTR_loop_eq (f : α → α) (a : α) (n : ℕ) (l : List α) :
 theorem iterate_eq_iterateTR : @iterate = @iterateTR := by
   funext α f a n
   exact Eq.symm <| iterateTR_loop_eq f a n []
+
+section MapAccumr
+
+/-- Runs a function over a list returning the intermediate results and a final result. -/
+def mapAccumr (f : α → γ → γ × β) : List α → γ → γ × List β
+  | [], c => (c, [])
+  | y :: yr, c =>
+    let r := mapAccumr f yr c
+    let z := f y r.1
+    (z.1, z.2 :: r.2)
+
+/-- Length of the list obtained by `mapAccumr`. -/
+@[simp]
+theorem length_mapAccumr :
+    ∀ (f : α → γ → γ × β) (x : List α) (s : γ), length (mapAccumr f x s).2 = length x
+  | f, _ :: x, s => congr_arg succ (length_mapAccumr f x s)
+  | _, [], _ => rfl
+
+/-- Runs a function over two lists returning the intermediate results and a final result. -/
+def mapAccumr₂ (f : α → β → γ → γ × δ) : List α → List β → γ → γ × List δ
+  | [], _, c => (c, [])
+  | _, [], c => (c, [])
+  | x :: xr, y :: yr, c =>
+    let r := mapAccumr₂ f xr yr c
+    let q := f x y r.1
+    (q.1, q.2 :: r.2)
+
+/-- Length of a list obtained using `mapAccumr₂`. -/
+@[simp]
+theorem length_mapAccumr₂ :
+    ∀ (f : α → β → γ → γ × δ) (x y c), length (mapAccumr₂ f x y c).2 = min (length x) (length y)
+  | f, _ :: x, _ :: y, c =>
+    calc
+      succ (length (mapAccumr₂ f x y c).2) = succ (min (length x) (length y)) :=
+        congr_arg succ (length_mapAccumr₂ f x y c)
+      _ = min (succ (length x)) (succ (length y)) := Eq.symm (succ_min_succ (length x) (length y))
+  | _, _ :: _, [], _ => rfl
+  | _, [], _ :: _, _ => rfl
+  | _, [], [], _ => rfl
+
+end MapAccumr
+
+section Deprecated
+
+@[deprecated List.mem_cons (since := "2024-08-10")]
+theorem mem_cons_eq (a y : α) (l : List α) : (a ∈ y :: l) = (a = y ∨ a ∈ l) :=
+  propext List.mem_cons
+
+alias ⟨eq_or_mem_of_mem_cons, _⟩ := mem_cons
+
+@[deprecated List.not_mem_nil (since := "2024-08-10")]
+theorem not_exists_mem_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x :=
+  fun ⟨_, hx, _⟩ => List.not_mem_nil _ hx
+
+
+@[deprecated (since := "2024-08-10")] alias length_le_of_sublist := Sublist.length_le
+
+end Deprecated
 
 end List

@@ -62,7 +62,6 @@ variable {S : ι → Set α} {f : ∀ i, S i → β}
 theorem iUnionLift_mk {i : ι} (x : S i) (hx : (x : α) ∈ T) :
     iUnionLift S f hf T hT ⟨x, hx⟩ = f i x := hf _ i x _ _
 
-@[simp]
 theorem iUnionLift_inclusion {i : ι} (x : S i) (h : S i ⊆ T) :
     iUnionLift S f hf T hT (Set.inclusion h x) = f i x :=
   iUnionLift_mk x _
@@ -139,7 +138,6 @@ theorem iUnionLift_binary (dir : Directed (· ≤ ·) S) (op : T → T → T) (o
   have hxy : (Set.inclusion (Set.subset_iUnion S k) (opi k ⟨x, hik hi⟩ ⟨y, hjk hj⟩) : α) ∈ S k :=
     (opi k ⟨x, hik hi⟩ ⟨y, hjk hj⟩).prop
   conv_lhs => rw [hx, hy, ← hopi, iUnionLift_of_mem _ hxy]
-  rfl
 
 end UnionLift
 

@@ -90,7 +90,7 @@ variable {α : Type*}
 subtypes `{x // p x} ⊕ {x // q x}` such that `¬ p x` is sent to the right, when
 `Disjoint p q`.
 
-See also `Equiv.sumCompl`, for when `IsCompl p q`.  -/
+See also `Equiv.sumCompl`, for when `IsCompl p q`. -/
 @[simps apply]
 def subtypeOrEquiv (p q : α → Prop) [DecidablePred p] (h : Disjoint p q) :
     { x // p x ∨ q x } ≃ { x // p x } ⊕ { x // q x } where
@@ -107,17 +107,17 @@ def subtypeOrEquiv (p q : α → Prop) [DecidablePred p] (h : Disjoint p q) :
   right_inv x := by
     cases x with
     | inl x =>
-        simp only [Sum.elim_inl]
-        rw [subtypeOrLeftEmbedding_apply_left]
-        · simp
-        · simpa using x.prop
+      simp only [Sum.elim_inl]
+      rw [subtypeOrLeftEmbedding_apply_left]
+      · simp
+      · simpa using x.prop
     | inr x =>
-        simp only [Sum.elim_inr]
-        rw [subtypeOrLeftEmbedding_apply_right]
-        · simp
-        · suffices ¬p x by simpa
-          intro hp
-          simpa using h.le_bot x ⟨hp, x.prop⟩
+      simp only [Sum.elim_inr]
+      rw [subtypeOrLeftEmbedding_apply_right]
+      · simp
+      · suffices ¬p x by simpa
+        intro hp
+        simpa using h.le_bot x ⟨hp, x.prop⟩
 
 @[simp]
 theorem subtypeOrEquiv_symm_inl (p q : α → Prop) [DecidablePred p] (h : Disjoint p q)
@@ -159,6 +159,8 @@ variable {α ι : Type*} {s t r : Set α}
 @[simp] theorem Function.Embedding.sumSet_range {s t : Set α} (h : Disjoint s t) :
     range (Function.Embedding.sumSet h) = s ∪ t := by
   simp [Set.ext_iff]
+
+open scoped Function -- required for scoped `on` notation
 
 /-- For an indexed family `s : ι → Set α` of disjoint sets,
 the natural injection from the sigma-type `(i : ι) × ↑(s i)` to `α`. -/

@@ -3,7 +3,7 @@ Copyright (c) 2020 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Johan Commelin
 -/
-import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
+import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Sets.Opens
 import Mathlib.Data.Set.Subsingleton
@@ -11,7 +11,7 @@ import Mathlib.Data.Set.Subsingleton
 /-!
 # Projective spectrum of a graded ring
 
-The projective spectrum of a graded commutative ring is the subtype of all homogenous ideals that
+The projective spectrum of a graded commutative ring is the subtype of all homogeneous ideals that
 are prime and do not contain the irrelevant ideal.
 It is naturally endowed with a topology: the Zariski topology.
 
@@ -44,8 +44,7 @@ variable {R A : Type*}
 variable [CommSemiring R] [CommRing A] [Algebra R A]
 variable (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
-/-- The projective spectrum of a graded commutative ring is the subtype of all homogenous ideals
+/-- The projective spectrum of a graded commutative ring is the subtype of all homogeneous ideals
 that are prime and do not contain the irrelevant ideal. -/
 @[ext]
 structure ProjectiveSpectrum where
@@ -56,6 +55,8 @@ structure ProjectiveSpectrum where
 attribute [instance] ProjectiveSpectrum.isPrime
 
 namespace ProjectiveSpectrum
+
+instance (x : ProjectiveSpectrum 𝒜) : Ideal.IsPrime x.asHomogeneousIdeal.toIdeal := x.isPrime
 
 /-- The zero locus of a set `s` of elements of a commutative ring `A` is the set of all relevant
 homogeneous prime ideals of the ring that contain the set `s`.
@@ -126,7 +127,7 @@ theorem gc_set :
     @GaloisConnection (Set A) (Set (ProjectiveSpectrum 𝒜))ᵒᵈ _ _
       (fun s => zeroLocus 𝒜 s) fun t => vanishingIdeal t := by
   have ideal_gc : GaloisConnection Ideal.span _ := (Submodule.gi A _).gc
-  simpa [zeroLocus_span, Function.comp] using GaloisConnection.compose ideal_gc (gc_ideal 𝒜)
+  simpa [zeroLocus_span, Function.comp_def] using GaloisConnection.compose ideal_gc (gc_ideal 𝒜)
 
 theorem gc_homogeneousIdeal :
     @GaloisConnection (HomogeneousIdeal 𝒜) (Set (ProjectiveSpectrum 𝒜))ᵒᵈ _ _

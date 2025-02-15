@@ -309,13 +309,13 @@ def Fix.drec {β : Fix F α → Type u}
     rw [Fix.rec_eq]
     dsimp
     simp? [appendFun_id_id] at ih says
-      simp only [appendFun_id_id, MvFunctor.id_map] at ih
+      simp only [appendFun_id_id, MvFunctor.id_map, y] at ih
     congr
     conv =>
       rhs
       rw [← ih]
     rw [MvFunctor.map_map, ← appendFun_comp, id_comp]
-    simp only [Function.comp]
+    simp only [Function.comp_def]
   cast (by rw [this]) y.2
 
 end MvQPF

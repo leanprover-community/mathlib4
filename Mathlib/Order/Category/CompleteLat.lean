@@ -3,6 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.Order.Category.BddLat
 import Mathlib.Order.Hom.CompleteLattice
 
@@ -48,28 +49,26 @@ instance : BundledHom @CompleteLatticeHom where
 
 deriving instance LargeCategory for CompleteLat
 
-instance : ConcreteCategory CompleteLat := by
+instance : HasForget CompleteLat := by
   dsimp [CompleteLat]; infer_instance
 
 instance hasForgetToBddLat : HasForget₂ CompleteLat BddLat where
-  forget₂ :=
-    { obj := fun X => BddLat.of X
-      map := fun {X Y} => CompleteLatticeHom.toBoundedLatticeHom }
-  forget_comp := rfl
+  forget₂.obj X := .of X
+  forget₂.map f := BddLat.ofHom (CompleteLatticeHom.toBoundedLatticeHom f)
 
 /-- Constructs an isomorphism of complete lattices from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : CompleteLat.{u}} (e : α ≃o β) : α ≅ β where
-  hom := (e : CompleteLatticeHom _ _) -- Porting note (#11215): TODO, wrong?
+  hom := (e : CompleteLatticeHom _ _) -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO, wrong?
   inv := (e.symm : CompleteLatticeHom _ _)
   hom_inv_id := by ext; exact e.symm_apply_apply _
   inv_hom_id := by ext; exact e.apply_symm_apply _
 
 /-- `OrderDual` as a functor. -/
-@[simps]
+@[simps map]
 def dual : CompleteLat ⥤ CompleteLat where
   obj X := of Xᵒᵈ
-  map {X Y} := CompleteLatticeHom.dual
+  map {_ _} := CompleteLatticeHom.dual
 
 /-- The equivalence between `CompleteLat` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]

@@ -5,7 +5,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.GroupTheory.Submonoid.Inverses
 import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Localization.Basic
+import Mathlib.RingTheory.Localization.Defs
 
 /-!
 # Submonoid of inverses
@@ -26,7 +26,7 @@ commutative ring, field of fractions
 
 
 variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S]
-variable [Algebra R S] {P : Type*} [CommRing P]
+variable [Algebra R S]
 
 open Function
 

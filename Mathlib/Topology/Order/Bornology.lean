@@ -29,8 +29,8 @@ and below. -/
 def orderBornology : Bornology α := .ofBounded
   {s | BddBelow s ∧ BddAbove s}
   (by simp)
-  (fun s hs t hst ↦ ⟨hs.1.mono hst, hs.2.mono hst⟩)
-  (fun s hs t ht ↦ ⟨hs.1.union ht.1, hs.2.union ht.2⟩)
+  (fun _ hs _ hst ↦ ⟨hs.1.mono hst, hs.2.mono hst⟩)
+  (fun _ hs _ ht ↦ ⟨hs.1.union ht.1, hs.2.union ht.2⟩)
   (by simp)
 
 @[simp] lemma orderBornology_isBounded : orderBornology.IsBounded s ↔ BddBelow s ∧ BddAbove s := by

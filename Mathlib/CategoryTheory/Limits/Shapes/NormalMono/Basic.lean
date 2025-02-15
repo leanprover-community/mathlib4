@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Bhavik Mehta
+Authors: Kim Morrison, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
@@ -17,7 +17,7 @@ as well as the dual construction for normal epimorphisms. We show equivalences r
 monomorphisms (`CategoryTheory.equivalenceReflectsNormalMono`), and that the pullback of a
 normal monomorphism is normal (`CategoryTheory.normalOfIsPullbackSndOfNormal`).
 
-We also define classes `NormalMonoCategory` and `NormalEpiCategory` for classes in which
+We also define classes `IsNormalMonoCategory` and `IsNormalEpiCategory` for categories in which
 every monomorphism or epimorphism is normal, and deduce that these categories are
 `RegularMonoCategory`s resp. `RegularEpiCategory`s.
 
@@ -59,16 +59,11 @@ def equivalenceReflectsNormalMono {D : Type u₂} [Category.{v₁} D] [HasZeroMo
     have reassoc' {W : D} (h : hf.Z ⟶ W) : F.map f ≫ hf.g ≫ h = 0 ≫ h := by
       rw [← Category.assoc, eq_whisker hf.w]
     simp [reassoc']
-  isLimit :=
-    @ReflectsLimit.reflects C _ D _ _ _ _ F _ _ <|
-      IsLimit.ofConeEquiv (Cones.postcomposeEquivalence (@compNatIso C _ _ _ _ _ D _ _ F _)) <|
-        IsLimit.ofIsoLimit
-          (IsLimit.ofIsoLimit
-            (IsKernel.ofCompIso _ _ (F.objObjPreimageIso hf.Z) (by
-              simp only [Functor.map_preimage, Category.assoc, Iso.inv_hom_id, Category.comp_id])
-            hf.isLimit)
-            (ofιCongr (Category.comp_id _).symm))
-        <| by apply Iso.symm; apply isoOfι  -- Porting note: very fiddly unification here
+  isLimit := isLimitOfReflects F <|
+    IsLimit.ofConeEquiv (Cones.postcomposeEquivalence (compNatIso F)) <|
+      (IsLimit.ofIsoLimit (IsKernel.ofCompIso _ _ (F.objObjPreimageIso hf.Z) (by
+        simp only [Functor.map_preimage, Category.assoc, Iso.inv_hom_id, Category.comp_id])
+        hf.isLimit)) (Fork.ext (Iso.refl _) (by simp [compNatIso, Fork.ι]))
 
 end
 
@@ -119,23 +114,25 @@ section
 variable (C)
 
 /-- A normal mono category is a category in which every monomorphism is normal. -/
-class NormalMonoCategory where
-  normalMonoOfMono : ∀ {X Y : C} (f : X ⟶ Y) [Mono f], NormalMono f
+class IsNormalMonoCategory : Prop where
+  normalMonoOfMono : ∀ {X Y : C} (f : X ⟶ Y) [Mono f], Nonempty (NormalMono f)
 
-attribute [inherit_doc NormalMonoCategory] NormalMonoCategory.normalMonoOfMono
+attribute [inherit_doc IsNormalMonoCategory] IsNormalMonoCategory.normalMonoOfMono
+
+@[deprecated (since := "2024-11-27")] alias NormalMonoCategory := IsNormalMonoCategory
 
 end
 
 /-- In a category in which every monomorphism is normal, we can express every monomorphism as
     a kernel. This is not an instance because it would create an instance loop. -/
-def normalMonoOfMono [NormalMonoCategory C] (f : X ⟶ Y) [Mono f] : NormalMono f :=
-  NormalMonoCategory.normalMonoOfMono _
+def normalMonoOfMono [IsNormalMonoCategory C] (f : X ⟶ Y) [Mono f] : NormalMono f :=
+  (IsNormalMonoCategory.normalMonoOfMono _).some
 
-instance (priority := 100) regularMonoCategoryOfNormalMonoCategory [NormalMonoCategory C] :
-    RegularMonoCategory C where
-  regularMonoOfMono f _ := by
+instance (priority := 100) regularMonoCategoryOfNormalMonoCategory [IsNormalMonoCategory C] :
+    IsRegularMonoCategory C where
+  regularMonoOfMono f _ := ⟨by
     haveI := normalMonoOfMono f
-    infer_instance
+    infer_instance⟩
 
 end
 
@@ -160,14 +157,11 @@ def equivalenceReflectsNormalEpi {D : Type u₂} [Category.{v₁} D] [HasZeroMor
   W := F.objPreimage hf.W
   g := F.preimage ((F.objObjPreimageIso hf.W).hom ≫ hf.g)
   w := F.map_injective <| by simp [hf.w]
-  isColimit :=
-    ReflectsColimit.reflects <|
-      IsColimit.ofCoconeEquiv (Cocones.precomposeEquivalence (compNatIso F).symm) <|
-        IsColimit.ofIsoColimit
-          (IsColimit.ofIsoColimit
-            (IsCokernel.ofIsoComp _ _ (F.objObjPreimageIso hf.W).symm (by simp) hf.isColimit)
-            (ofπCongr (Category.id_comp _).symm))
-          <| by apply Iso.symm; apply isoOfπ
+  isColimit := isColimitOfReflects F <|
+    IsColimit.ofCoconeEquiv (Cocones.precomposeEquivalence (compNatIso F).symm) <|
+      (IsColimit.ofIsoColimit
+        (IsCokernel.ofIsoComp _ _ (F.objObjPreimageIso hf.W).symm (by simp) hf.isColimit)
+          (Cofork.ext (Iso.refl _) (by simp [compNatIso, Cofork.π])))
 
 end
 
@@ -260,22 +254,24 @@ section
 variable (C)
 
 /-- A normal epi category is a category in which every epimorphism is normal. -/
-class NormalEpiCategory where
-  normalEpiOfEpi : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], NormalEpi f
+class IsNormalEpiCategory : Prop where
+  normalEpiOfEpi : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], Nonempty (NormalEpi f)
 
-attribute [inherit_doc NormalEpiCategory] NormalEpiCategory.normalEpiOfEpi
+attribute [inherit_doc IsNormalEpiCategory] IsNormalEpiCategory.normalEpiOfEpi
+
+@[deprecated (since := "2024-11-27")] alias NormalEpiCategory := IsNormalEpiCategory
 
 end
 
 /-- In a category in which every epimorphism is normal, we can express every epimorphism as
     a kernel. This is not an instance because it would create an instance loop. -/
-def normalEpiOfEpi [NormalEpiCategory C] (f : X ⟶ Y) [Epi f] : NormalEpi f :=
-  NormalEpiCategory.normalEpiOfEpi _
+def normalEpiOfEpi [IsNormalEpiCategory C] (f : X ⟶ Y) [Epi f] : NormalEpi f :=
+  (IsNormalEpiCategory.normalEpiOfEpi _).some
 
-instance (priority := 100) regularEpiCategoryOfNormalEpiCategory [NormalEpiCategory C] :
-    RegularEpiCategory C where
-  regularEpiOfEpi f _ := by
+instance (priority := 100) regularEpiCategoryOfNormalEpiCategory [IsNormalEpiCategory C] :
+    IsRegularEpiCategory C where
+  regularEpiOfEpi f _ := ⟨by
     haveI := normalEpiOfEpi f
-    infer_instance
+    infer_instance⟩
 
 end CategoryTheory

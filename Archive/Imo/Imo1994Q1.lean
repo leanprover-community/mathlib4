@@ -43,7 +43,7 @@ end Imo1994Q1
 
 open Imo1994Q1
 
-theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
+theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : #A = m + 1)
     (hrange : ∀ a ∈ A, 0 < a ∧ a ≤ n)
     (hadd : ∀ a ∈ A, ∀ b ∈ A, a + b ≤ n → a + b ∈ A) :
     (m + 1) * (n + 1) ≤ 2 * ∑ x ∈ A, x := by
@@ -77,10 +77,10 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
   have hf : map f (Icc 0 k) ⊆ map a.toEmbedding (Ioc (rev k) (Fin.last m)) := by
     intro x hx
     simp only [Equiv.subLeft_apply, a, rev] at h
-    simp only [mem_map, mem_Icc, mem_Ioc, Fin.zero_le, true_and_iff, Equiv.subLeft_apply,
+    simp only [mem_map, mem_Icc, mem_Ioc, Fin.zero_le, true_and, Equiv.subLeft_apply,
       Function.Embedding.coeFn_mk, exists_prop, RelEmbedding.coe_toEmbedding, f, rev] at hx ⊢
     rcases hx with ⟨i, ⟨hi, rfl⟩⟩
-    have h1 : a i + a (Fin.last m - k) ≤ n := by unfold_let; linarith only [h, a.monotone hi]
+    have h1 : a i + a (Fin.last m - k) ≤ n := by unfold a; linarith only [h, a.monotone hi]
     have h2 : a i + a (Fin.last m - k) ∈ A := hadd _ (ha _) _ (ha _) h1
     rw [← mem_coe, ← range_orderEmbOfFin A hm, Set.mem_range] at h2
     cases' h2 with j hj

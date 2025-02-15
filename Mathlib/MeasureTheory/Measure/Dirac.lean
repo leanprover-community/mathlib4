@@ -54,6 +54,9 @@ theorem dirac_apply [MeasurableSingletonClass α] (a : α) (s : Set α) :
     dirac a s ≤ dirac a {a}ᶜ := measure_mono (subset_compl_comm.1 <| singleton_subset_iff.2 h)
     _ = 0 := by simp [dirac_apply' _ (measurableSet_singleton _).compl]
 
+@[simp] lemma dirac_ne_zero : dirac a ≠ 0 :=
+  fun h ↦ by simpa [h] using dirac_apply_of_mem (mem_univ a)
+
 theorem map_dirac {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map f = dirac (f a) := by
   classical
   exact ext fun s hs => by simp [hs, map_apply hf hs, hf hs, indicator_apply]
@@ -76,6 +79,14 @@ theorem restrict_singleton (μ : Measure α) (a : α) : μ.restrict {a} = μ {a}
     simp [*]
   · have : s ∩ {a} = ∅ := inter_singleton_eq_empty.2 ha
     simp [*]
+
+/-- Two measures on a countable space are equal if they agree on singletons. -/
+theorem ext_of_singleton [Countable α] {μ ν : Measure α} (h : ∀ a, μ {a} = ν {a}) : μ = ν :=
+  ext_of_sUnion_eq_univ (countable_range singleton) (by aesop) (by aesop)
+
+/-- Two measures on a countable space are equal if and only if they agree on singletons. -/
+theorem ext_iff_singleton [Countable α] {μ ν : Measure α} : μ = ν ↔ ∀ a, μ {a} = ν {a} :=
+  ⟨fun h _ ↦ h ▸ rfl, ext_of_singleton⟩
 
 /-- If `f` is a map with countable codomain, then `μ.map f` is a sum of Dirac measures. -/
 theorem map_eq_sum [Countable β] [MeasurableSingletonClass β] (μ : Measure α) (f : α → β)
