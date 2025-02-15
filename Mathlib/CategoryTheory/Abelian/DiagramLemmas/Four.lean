@@ -47,6 +47,28 @@ namespace CategoryTheory
 
 open Category Limits Preadditive
 
+section
+
+variable {C : Type*} [Category C] [HasZeroMorphisms C]
+
+def ShortComplex.mapToComposableArrows {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂) :
+    S₁.toComposableArrows ⟶ S₂.toComposableArrows :=
+  ComposableArrows.homMk₂ φ.τ₁ φ.τ₂ φ.τ₃ φ.comm₁₂.symm φ.comm₂₃.symm
+
+@[simp]
+theorem ShortComplex.mapToComposableArrow_app_0 {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂) :
+    (ShortComplex.mapToComposableArrows φ).app 0 = φ.τ₁ := rfl
+
+@[simp]
+theorem ShortComplex.mapToComposableArrow_app_1 {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂) :
+    (ShortComplex.mapToComposableArrows φ).app 1 = φ.τ₂ := rfl
+
+@[simp]
+theorem ShortComplex.mapToComposableArrow_app_2 {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂) :
+    (ShortComplex.mapToComposableArrows φ).app 2 = φ.τ₃ := rfl
+
+end
+
 namespace Abelian
 
 variable {C : Type*} [Category C] [Abelian C]
@@ -219,6 +241,18 @@ theorem epi_of_epi_of_epi_of_epi (hR₂ : R₂.Exact) (hR₁' : Epi (R₁.map' 1
   exact hR₁'
 
 end Three
+
+namespace ShortComplex
+
+variable {R₁ R₂ : ShortComplex C} (φ : R₁ ⟶ R₂)
+
+theorem epi_of_mono_of_epi_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
+    (hR₂' : Mono R₂.f) (h₀ : Epi φ.τ₂) (h₁ : Mono φ.τ₃) : Epi φ.τ₁ :=
+  Abelian.epi_of_mono_of_epi_of_mono (ShortComplex.mapToComposableArrows φ)
+    hR₁.exact_toComposableArrows hR₂.exact_toComposableArrows
+    hR₂' h₀ h₁
+
+end ShortComplex
 
 end Abelian
 
