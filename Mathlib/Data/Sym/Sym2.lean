@@ -792,6 +792,6 @@ def mul {M} [CommMagma M] : Sym2 M → M := lift ⟨(· * ·), mul_comm⟩
 
 @[simp]
 lemma mul_mk {M} [CommMagma M] (xy : M × M) :
-    mul (.mk xy)   = xy.1 * xy.2 := rfl
+    mul (.mk xy) = xy.1 * xy.2 := rfl
 
 end Sym2
