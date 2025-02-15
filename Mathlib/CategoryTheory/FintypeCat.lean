@@ -24,17 +24,21 @@ We prove that `FintypeCat.Skeleton` is a skeleton of `FintypeCat` in `FintypeCat
 open CategoryTheory
 
 /-- The category of finite types. -/
-def FintypeCat :=
-  Bundled Fintype
+structure FintypeCat where
+  /-- The underlying type. -/
+  carrier : Type*
+  [str : Fintype carrier]
+
+attribute [instance] FintypeCat.str
 
 namespace FintypeCat
 
-instance : CoeSort FintypeCat Type* :=
-  Bundled.coeSort
+instance instCoeSort : CoeSort FintypeCat Type* :=
+  ⟨carrier⟩
 
 /-- Construct a bundled `FintypeCat` from the underlying type and typeclass. -/
-def of (X : Type*) [Fintype X] : FintypeCat :=
-  Bundled.of X
+abbrev of (X : Type*) [Fintype X] : FintypeCat where
+  carrier := X
 
 instance : Inhabited FintypeCat :=
   ⟨of PEmpty⟩
@@ -43,7 +47,7 @@ instance {X : FintypeCat} : Fintype X :=
   X.2
 
 instance : Category FintypeCat :=
-  InducedCategory.category Bundled.α
+  InducedCategory.category carrier
 
 /-- The fully faithful embedding of `FintypeCat` into the category of types. -/
 @[simps!]
@@ -53,8 +57,13 @@ def incl : FintypeCat ⥤ Type* :=
 instance : incl.Full := InducedCategory.full _
 instance : incl.Faithful := InducedCategory.faithful _
 
-instance hasForgetFintype : HasForget FintypeCat :=
-  ⟨incl⟩
+instance (X Y : FintypeCat) : FunLike (X ⟶ Y) X Y where
+  coe f := f
+  coe_injective' _ _ h := h
+
+instance concreteCategoryFintype : ConcreteCategory FintypeCat (· ⟶ ·) where
+  hom f := f
+  ofHom f := f
 
 /- Help typeclass inference infer fullness of forgetful functor. -/
 instance : (forget FintypeCat).Full := inferInstanceAs <| FintypeCat.incl.Full
@@ -217,9 +226,7 @@ noncomputable def uSwitchEquiv (X : FintypeCat.{u}) :
 lemma uSwitchEquiv_naturality {X Y : FintypeCat.{u}} (f : X ⟶ Y)
     (x : uSwitch.{u, v}.obj X) :
     f (X.uSwitchEquiv x) = Y.uSwitchEquiv (uSwitch.map f x) := by
-  simp only [uSwitch, uSwitchEquiv, Equiv.trans_apply]
-  erw [Equiv.ulift_apply, Equiv.ulift_apply]
-  simp only [Equiv.symm_apply_apply]
+  simp only [uSwitch, uSwitchEquiv, Equiv.trans_apply, Equiv.ulift_apply, Equiv.symm_apply_apply]
 
 lemma uSwitchEquiv_symm_naturality {X Y : FintypeCat.{u}} (f : X ⟶ Y) (x : X) :
     uSwitch.map f (X.uSwitchEquiv.symm x) = Y.uSwitchEquiv.symm (f x) := by
