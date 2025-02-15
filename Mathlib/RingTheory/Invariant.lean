@@ -118,11 +118,10 @@ instance (H : Subgroup G) [H.Normal] :
     MulSemiringAction (G ⧸ H) (FixedPoints.subalgebra A B H) :=
   inferInstanceAs (MulSemiringAction (G ⧸ H) (FixedPoints.subring B H))
 
-instance (H : Subgroup G) [H.Normal] [Algebra.IsInvariant A B G] :
+instance (H : Subgroup G) [H.Normal] :
     SMulCommClass (G ⧸ H) A (FixedPoints.subalgebra A B H)  where
   smul_comm := Quotient.ind fun g r h ↦ Subtype.ext (smul_comm g r h.1)
 
-omit [SMulCommClass G A B] in
 instance (H : Subgroup G) [H.Normal] [Algebra.IsInvariant A B G] :
     Algebra.IsInvariant A (FixedPoints.subalgebra A B H) (G ⧸ H) where
   isInvariant x hx := by
@@ -545,7 +544,7 @@ omit
   [ContinuousSMul G B] in
 lemma Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor_aux
     (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
-    [Algebra.IsInvariant A B G] {N N' : OpenNormalSubgroup G} (e : N ≤ N')
+    {N N' : OpenNormalSubgroup G} (e : N ≤ N')
     (x : G ⧸ N.1.1)
     (hx : x ∈ MulAction.stabilizer (G ⧸ N.1.1) (Q.under (FixedPoints.subalgebra A B N.1.1))) :
     QuotientGroup.map _ _ (.id _) e x ∈
