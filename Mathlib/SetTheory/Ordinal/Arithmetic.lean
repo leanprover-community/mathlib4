@@ -184,7 +184,7 @@ theorem lift_isLimit (o : Ordinal.{v}) : IsLimit (lift.{u,v} o) ↔ IsLimit o :=
   liftInitialSeg.isSuccLimit_apply_iff
 
 @[simp]
-theorem isSuccPrelimit_lift_iff {o : Ordinal.{v}} :
+theorem isSuccPrelimit_lift {o : Ordinal.{v}} :
     IsSuccPrelimit (lift.{u} o) ↔ IsSuccPrelimit o :=
   liftInitialSeg.isSuccPrelimit_apply_iff
 
@@ -397,16 +397,16 @@ theorem succ_lt_of_not_succ {o b : Ordinal} (h : ¬∃ a, o = succ a) : succ b <
   apply (isSuccPrelimit_of_succ_ne _).succ_lt_iff
   simpa [eq_comm] using h
 
-@[deprecated isSuccPrelimit_lift_iff (since := "2025-02-11")]
+@[deprecated isSuccPrelimit_lift (since := "2025-02-11")]
 theorem lift_is_succ {o : Ordinal.{v}} : (∃ a, lift.{u} o = succ a) ↔ ∃ a, o = succ a := by
-  simpa [eq_comm, not_isSuccPrelimit_iff', - isSuccPrelimit_lift_iff] using
-    isSuccPrelimit_lift_iff.not
+  simpa [eq_comm, not_isSuccPrelimit_iff', - isSuccPrelimit_lift] using
+    isSuccPrelimit_lift.not
 
 @[simp]
 theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) := by
   obtain ⟨a, rfl⟩ | ho := mem_range_succ_or_isSuccPrelimit o
   · simp
-  · rwa [ho.ordinalPred_eq, eq_comm, pred_eq_iff_isSuccPrelimit, isSuccPrelimit_lift_iff]
+  · rwa [ho.ordinalPred_eq, eq_comm, pred_eq_iff_isSuccPrelimit, isSuccPrelimit_lift]
 
 /-! ### Normal ordinal functions -/
 
