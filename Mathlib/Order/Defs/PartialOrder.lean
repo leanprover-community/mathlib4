@@ -186,9 +186,6 @@ PartialOrder.le_antisymm _ _ h₂ h₁
 @[order_dual le_antisymmOD]
 lemma le_antisymm : a ≤ b → b ≤ a → a = b := PartialOrder.le_antisymm _ _
 
--- theorem _root_.ge_antisymm : a ≤ b → b ≤ a → b = a :=
---   flip le_antisymm
-
 alias eq_of_le_of_le := le_antisymm
 
 @[order_dual le_antisymm_iffOD]

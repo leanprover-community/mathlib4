@@ -93,7 +93,9 @@ section PartialOrder
 
 variable [PartialOrder α] {a b : α}
 
--- moved ge_antisymm to PartialOrder.lean
+@[order_dual ge_antisymmOD]
+theorem ge_antisymm : a ≤ b → b ≤ a → b = a :=
+  flip le_antisymm
 
 -- see order_dual attribute of `lt_of_le_of_ne` in PartialOrder.lean
 -- theorem lt_of_le_of_ne' : a ≤ b → b ≠ a → a < b := fun h₁ h₂ ↦ lt_of_le_of_ne h₁ h₂.symm
