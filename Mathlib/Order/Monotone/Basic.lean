@@ -1066,7 +1066,7 @@ lemma antitone_prod_iff {h : α × β → γ} :
     Antitone h ↔ (∀ a, Antitone (fun b => h (a, b))) ∧ (∀ b, Antitone (fun a => h (a, b))) where
   mp h := ⟨fun _ _ _ hab => h (Prod.mk_le_mk_iff_right.mpr hab),
     fun _ _ _ hab => h (Prod.mk_le_mk_iff_left.mpr hab)⟩
-  mpr h _ _ hab:= le_trans (h.1 _ (Prod.mk_le_mk.mp hab).2) (h.2 _ (Prod.mk_le_mk.mp hab).1)
+  mpr h _ _ hab := le_trans (h.1 _ (Prod.mk_le_mk.mp hab).2) (h.2 _ (Prod.mk_le_mk.mp hab).1)
 
 end Preorder
 

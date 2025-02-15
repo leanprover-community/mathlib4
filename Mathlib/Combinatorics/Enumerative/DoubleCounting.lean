@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Nat
 
@@ -28,6 +28,7 @@ and `t`.
 * `card_mul_eq_card_mul`: Equality combination of the previous.
 -/
 
+assert_not_exists Field
 
 open Finset Function Relator
 
