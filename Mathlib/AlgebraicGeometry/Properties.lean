@@ -223,7 +223,7 @@ instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := b
   · ext x
     constructor
     · rintro ⟨hS, hT⟩
-      cases' h₁ (show x ∈ ⊤ by trivial) with h h
+      obtain ⟨h, h⟩ := h₁ (show x ∈ ⊤ by trivial)
       exacts [hS h, hT h]
     · simp
 

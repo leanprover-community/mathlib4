@@ -212,7 +212,7 @@ def counterBasis : FilterBasis (ℕ × ℕ) where
     simp only [mem_range, subset_inter_iff, exists_exists_eq_and, fundamentalEntourage]
     use max t s
     refine ⟨fun ⟨P1, P2⟩ hP ↦ ?_, fun ⟨P1, P2⟩ hP ↦ ?_⟩ <;>
-    cases' hP with h h <;>
+    obtain ⟨h, h⟩ := hP <;>
     simp only [iUnion_singleton_eq_range, mem_range, Prod.mk.injEq, Subtype.exists, mem_Icc,
       zero_le, le_max_iff, true_and, exists_and_left, exists_prop', nonempty_prop,
       exists_eq_left] at h

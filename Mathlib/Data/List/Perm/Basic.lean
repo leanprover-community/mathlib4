@@ -137,7 +137,7 @@ end
 
 theorem perm_option_toList {o₁ o₂ : Option α} : o₁.toList ~ o₂.toList ↔ o₁ = o₂ := by
   refine ⟨fun p => ?_, fun e => e ▸ Perm.refl _⟩
-  cases' o₁ with a <;> cases' o₂ with b; · rfl
+  rcases o₁ with - | a <;> rcases o₂ with - | b; · rfl
   · cases p.length_eq
   · cases p.length_eq
   · exact Option.mem_toList.1 (p.symm.subset <| by simp)

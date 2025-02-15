@@ -252,7 +252,7 @@ theorem exists_cg_is_age_of (hn : K.Nonempty)
     have : Quotient.out (Quotient.mk' N) ≈ N := Quotient.eq_mk_iff_out.mp rfl
     obtain ⟨n, ⟨e⟩⟩ := (hF N).1 ⟨N, KN, this⟩
     refine mem_iUnion_of_mem n ⟨fg _ KN, ⟨Embedding.comp ?_ e.symm.toEmbedding⟩⟩
-    cases' n with n
+    rcases n with - | n
     · dsimp [G]; exact Embedding.refl _ _
     · dsimp [G]; exact (hFP _ n).some
 
