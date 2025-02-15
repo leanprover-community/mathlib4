@@ -468,7 +468,7 @@ def fromList {α : Type u}  (l : List α) (h : ¬l.isEmpty) : FreeSemigroup α :
   | a :: l => if h : l.isEmpty then of a else of a * fromList l h
 
 @[to_additive (attr := simp)]
-def fromList_head {α : Type u} (l : List α) (h : ¬l.isEmpty) :
+theorem fromList_head {α : Type u} {l : List α} (h : ¬l.isEmpty) :
     (fromList l h).head = l.head
       (Ne.symm (ne_of_apply_ne List.isEmpty fun a ↦ h (id (Eq.symm a)))
     ) := by
@@ -479,7 +479,7 @@ def fromList_head {α : Type u} (l : List α) (h : ¬l.isEmpty) :
     simp only [List.isEmpty_eq_true, of_head, head_mul, dite_eq_ite, ite_self]
 
 @[to_additive (attr := simp)]
-def fromList_tail {α : Type u} (l : List α) (h : ¬l.isEmpty) :
+theorem fromList_tail {α : Type u} {l : List α} (h : ¬l.isEmpty) :
     (fromList l h).tail = l.tail := by
   match l with
   | a :: l' =>
@@ -494,10 +494,7 @@ def fromList_tail {α : Type u} (l : List α) (h : ¬l.isEmpty) :
       simp only [List.head_cons_tail]
 
 @[to_additive (attr := simp)]
-theorem fromList_singleton {α : Type u} (a : α) {h : ¬[a].isEmpty} : fromList [a] h = of a := rfl
-
-@[to_additive (attr := simp)]
-theorem fromList_length {α : Type u} (l : List α) (h : ¬l.isEmpty) :
+theorem fromList_length {α : Type u} {l : List α} (h : ¬l.isEmpty) :
     (fromList l h).length = l.length :=
   match l with
   | a :: l => if h : l.isEmpty then (
@@ -508,7 +505,7 @@ theorem fromList_length {α : Type u} (l : List α) (h : ¬l.isEmpty) :
     simp only [fromList, h, Bool.false_eq_true,
     ↓reduceDIte, length_mul, length_of, List.length_cons]
     rw [Nat.add_comm]
-    exact congr_arg₂ _ (fromList_length l h) rfl
+    exact congr_arg₂ _ (fromList_length h) rfl
   )
 
 @[to_additive (attr := simp)]
@@ -516,11 +513,13 @@ theorem fromList_cons {α : Type u} (a : α) (l : List α) :
     fromList (a :: l) (ne_true_of_eq_false rfl)
       = if h : l.isEmpty then of a else of a * fromList l h := rfl
 
-@[to_additive (attr := simp)]
-theorem fromList_append {α : Type u} (l₁ l₂ : List α) (h₁ : ¬l₁.isEmpty) (h₂ : ¬l₂.isEmpty) :
+@[to_additive]
+theorem fromList_append {α : Type u} {l₁ l₂ : List α}
+  (h₁ : ¬l₁.isEmpty) (h₂ : ¬l₂.isEmpty) :
     fromList (l₁ ++ l₂) (by
-      simp_all only [List.isEmpty_eq_true, List.append_eq_nil_iff, and_self, not_false_eq_true]
-    ) = fromList l₁ h₁ * fromList l₂ h₂ := by
+      simp_all only [List.isEmpty_eq_true, List.append_eq_nil_iff, and_self,
+        not_false_eq_true])
+    = fromList l₁ h₁ * fromList l₂ h₂ := by
   match l₁ with
   | x :: xs =>
     simp only [List.cons_append, fromList_cons]
@@ -535,7 +534,7 @@ theorem fromList_append {α : Type u} (l₁ l₂ : List α) (h₁ : ¬l₁.isEmp
       simp only [h', List.nil_append]
     · rw [mul_assoc]
       apply congr_arg₂ _ rfl
-      exact fromList_append _ _ _ _
+      exact fromList_append _ _
 
 /--
   converts a free semigroup to a list.
