@@ -170,9 +170,7 @@ lemma l10 (C : ℕ → Set α) (hd : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2
       rw [hk, decumulate_succ, ← succ_eq_add_one, ← hk, hn, Set.inter_empty]
   · have h3 (n : ℕ) : ∃ m, ⋂ i ≤ n, C i ⊇ C m := by
       induction n with
-      | zero =>
-        use 0
-        simp
+      | zero => use 0; simp
       | succ n hn =>
         obtain ⟨m, hm⟩ := hn
         rw [decumulate_succ]
