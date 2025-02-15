@@ -3,6 +3,7 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
+import Mathlib.Probability.Kernel.Composition.MeasureComp
 import Mathlib.Probability.Kernel.CondDistrib
 import Mathlib.Probability.ConditionalProbability
 
@@ -109,6 +110,11 @@ lemma compProd_trim_condExpKernel (hm : m ≤ mΩ) :
   ext a s hs
   simp only [Kernel.coe_comap, Function.comp_apply, id_eq]
   congr
+
+lemma condExpKernel_comp_trim (hm : m ≤ mΩ) : (condExpKernel μ m) ∘ₘ (μ.trim hm) = μ := by
+  rw [← Measure.snd_compProd, compProd_trim_condExpKernel, @Measure.snd_map_prod_mk]
+  · simp
+  · exact measurable_id'' hm
 
 section Measurability
 
