@@ -80,7 +80,7 @@ theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
   · exact (mul_lt_aleph0 qo qo).trans_le ol
   · suffices (succ (typein LT.lt (g p))).card < #α from (IH _ this qo).trans_lt this
     rw [← lt_ord]
-    apply (isLimit_ord ol).succ_lt
+    apply (isSuccLimit_ord ol).succ_lt
     rw [e]
     apply typein_lt_type
 
@@ -892,8 +892,8 @@ theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) (b : Ordina
       apply ciSup_le'
       intro c
       exact (IH c.1 c.2).trans (max_le_max_left _ (card_le_card c.2.le))
-    · simpa using hb.pos.ne'
-    · refine le_ciSup_of_le ?_ ⟨1, one_lt_omega0.trans_le <| omega0_le_of_isLimit hb⟩ ?_
+    · simpa using hb.ne_bot
+    · refine le_ciSup_of_le ?_ ⟨1, one_lt_omega0.trans_le <| omega0_le_of_isSuccLimit hb⟩ ?_
       · exact Cardinal.bddAbove_of_small _
       · simpa
 
