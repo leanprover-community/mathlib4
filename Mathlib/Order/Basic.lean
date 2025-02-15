@@ -344,6 +344,7 @@ protected theorem GT.gt.lt [LT α] {x y : α} (h : x > y) : y < x :=
 
 -- see Note [nolint_ge]
 -- Porting note: linter not found @[nolint ge_or_gt]
+-- should this just be generated as order_dual of le_of_eq?
 @[order_dual ge_of_eqOD]
 theorem ge_of_eq [Preorder α] {a b : α} (h : a = b) : a ≥ b :=
   h.ge
