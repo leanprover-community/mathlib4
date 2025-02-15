@@ -11,13 +11,21 @@ import Mathlib.RingTheory.TwoSidedIdeal.Operations
 
 /-! # Linear topology on the ring of multivariate power series
 
-- `MvPowerSeries.basis`: the ideals of the ring of multivariate power series
+- `MvPowerSeries.LinearTopology.basis`: the ideals of the ring of multivariate power series
 all coefficients the exponent of which is smaller than some bound vanish.
+
+- `MvPowerSeries.LinearTopology.basis_mem_nhds_zero` :
+  the two-sided ideals from `MvPowerSeries.LinearTopology.basis` are neighborhoods of `0`.
+
+- `MvPowerSeries.LinearTopology.hasBasis_twoSidedIdeal` :
+  the two-sided ideals from `MvPowerSeries.LinearTopology.basis` form a basis
+  of neighborhoods of `0` if the topology of `R` is (left and right) linear.
 
 ## Instances :
 
-- `MvPowerSeries.isLinearTopology` : if `R` has a linear topology,
-then the product topology on `MvPowerSeries σ R` is a linear topology.
+If `R` has a linear topology, then the product topology on `MvPowerSeries σ R`
+is a linear topology.
+
 This applies in particular when `R` has the discrete topology.
 
 -/
@@ -131,7 +139,7 @@ theorem ringSubgroupsBasis :
     apply hg i (le_trans ?_ he)
     simp only [← Finset.mem_antidiagonal.mp h, le_self_add]⟩
 
-/-- If the coefficient ring `R` is endowed with the discrete topology, then for every `d : σ →₀ ℕ`,
+/-- If the coefficient ring `R` is endowed with a linear topology, then for every `d : σ →₀ ℕ`,
 `↑(basis σ R d) ∈ 𝓝 (0 : MvPowerSeries σ R)`. -/
 theorem basis_mem_nhds_zero (Jd : {J : TwoSidedIdeal R | (J : Set R) ∈ 𝓝 0} × (σ →₀ ℕ)) :
     (basis σ R ⟨Jd.1, Jd.2⟩ : Set (MvPowerSeries σ R)) ∈ 𝓝 0 := by
@@ -173,7 +181,7 @@ lemma mem_nhds_zero_iff [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R]
     exact Filter.sets_of_superset _ (basis_mem_nhds_zero ⟨⟨Jd.1, hJd_mem_nhds⟩,Jd.2⟩) hJd
 
 /-- The topology on `MvPowerSeries` is a (left and right) linear topology
-  when the ring of coefficients has the discrete topology. -/
+  when the ring of coefficients has a linear topology. -/
 theorem hasBasis_twoSidedIdeal [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
   (𝓝 0).HasBasis (fun I : TwoSidedIdeal (MvPowerSeries σ R) ↦ (I : Set (MvPowerSeries σ R)) ∈ 𝓝 0)
     fun I : TwoSidedIdeal (MvPowerSeries σ R) ↦ (I : Set (MvPowerSeries σ R)) := by
@@ -187,13 +195,13 @@ theorem hasBasis_twoSidedIdeal [IsLinearTopology R R] [IsLinearTopology Rᵐᵒ�
     exact ⟨Id, hI, fun ⦃a⦄ a_1 ↦ hU (hJ a_1)⟩
 
 /-- The topology on `MvPowerSeries` is a left linear topology
-  when the ring of coefficients has the discrete topology. -/
+  when the ring of coefficients has a linar topology. -/
 instance [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
     IsLinearTopology (MvPowerSeries σ R) (MvPowerSeries σ R) :=
   (isLinearTopology_iff_hasBasis_twoSidedIdeal.mpr (hasBasis_twoSidedIdeal)).1
 
 /-- The topology on `MvPowerSeries` is a right linear topology
-  when the ring of coefficients has the discrete topology. -/
+  when the ring of coefficients has a linear topology. -/
 instance [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
     IsLinearTopology (MvPowerSeries σ R)ᵐᵒᵖ (MvPowerSeries σ R) :=
   (isLinearTopology_iff_hasBasis_twoSidedIdeal.mpr (hasBasis_twoSidedIdeal)).2
