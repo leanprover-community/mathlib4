@@ -125,8 +125,7 @@ theorem withDensity_add_left (κ η : Kernel α β) [IsSFiniteKernel κ] [IsSFin
 
 theorem withDensity_kernel_sum [Countable ι] (κ : ι → Kernel α β) (hκ : ∀ i, IsSFiniteKernel (κ i))
     (f : α → β → ℝ≥0∞) :
-    @withDensity _ _ _ _ (Kernel.sum κ) (isSFiniteKernel_sum hκ) f =
-      Kernel.sum fun i => withDensity (κ i) f := by
+    withDensity (Kernel.sum κ) f = Kernel.sum fun i => withDensity (κ i) f := by
   by_cases hf : Measurable (Function.uncurry f)
   · ext1 a
     simp_rw [sum_apply, Kernel.withDensity_apply _ hf, sum_apply,
@@ -240,7 +239,7 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : Kernel α β) [IsFin
     exact ⟨⌈(f a b).toReal⌉₊, fun n hn => (min_eq_left (h_le a b n hn)).symm⟩
   rw [hf_eq_tsum, withDensity_tsum _ fun n : ℕ => _]
   swap; · fun_prop
-  refine isSFiniteKernel_sum fun n => ?_
+  refine isSFiniteKernel_sum (hκs := fun n => ?_)
   suffices IsFiniteKernel (withDensity κ (fs n)) by haveI := this; infer_instance
   refine isFiniteKernel_withDensity_of_bounded _ (ENNReal.coe_ne_top : ↑n + 1 ≠ ∞) fun a b => ?_
   -- After https://github.com/leanprover/lean4/pull/2734, we need to do beta reduction before `norm_cast`
@@ -260,8 +259,8 @@ nonrec theorem IsSFiniteKernel.withDensity (κ : Kernel α β) [IsSFiniteKernel 
     congr
     exact (kernel_sum_seq κ).symm
   rw [h_eq_sum]
-  exact isSFiniteKernel_sum fun n =>
-    isSFiniteKernel_withDensity_of_isFiniteKernel (seq κ n) hf_ne_top
+  exact isSFiniteKernel_sum (hκs := fun n =>
+    isSFiniteKernel_withDensity_of_isFiniteKernel (seq κ n) hf_ne_top)
 
 /-- For an s-finite kernel `κ` and a function `f : α → β → ℝ≥0`, `withDensity κ f` is s-finite. -/
 instance (κ : Kernel α β) [IsSFiniteKernel κ] (f : α → β → ℝ≥0) :
