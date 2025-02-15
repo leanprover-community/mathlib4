@@ -32,6 +32,7 @@ inverse of this map, sending anything not in the image to zero.
 This file uses `ᵀ` for `Matrix.transpose`.
 -/
 
+assert_not_exists Field
 
 namespace PEquiv
 

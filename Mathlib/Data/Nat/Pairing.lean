@@ -3,9 +3,9 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Data.Set.Lattice
+import Mathlib.Algebra.ZeroOne.Prod
 import Mathlib.Data.Nat.Sqrt
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Naturals pairing function
@@ -23,7 +23,7 @@ It has the advantage of being monotone in both directions and sending `⟦0, n^2
 `⟦0, n - 1⟧²`.
 -/
 
-assert_not_exists MonoidWithZero
+assert_not_exists Monoid
 
 open Prod Decidable Function
 
