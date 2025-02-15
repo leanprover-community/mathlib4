@@ -10,13 +10,13 @@ import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Trunc
-
+import Mathlib.RingTheory.Ideal.Quotient.PowTransition
 /-!
 
 -/
 
 open scoped Polynomial
-open PowerSeries
+open PowerSeries Ideal
 
 variable {R : Type*} [CommRing R] {m : Ideal R}
 
@@ -26,64 +26,34 @@ variable (m)
 
 open Set
 
-/--The canonical transition map from `R⧸m ^ b` to `R⧸m ^ a` when `a ≤ b`-/
-def TransitionMap {a b : ℕ} (le : a ≤ b) : R⧸m ^ b →+* R⧸m ^ a :=
-  Ideal.Quotient.lift (m ^ b) (Ideal.Quotient.mk (m ^ a))
-  (fun _ ha ↦ Ideal.Quotient.eq_zero_iff_mem.mpr ((Ideal.pow_le_pow_right le) ha))
-
-lemma TransitionMap_comm {a b : ℕ} (le : a ≤ b) (r : R) : (Ideal.Quotient.mk (m ^ a)) r =
-    (TransitionMap m le) ((Ideal.Quotient.mk (m ^ b)) r) := rfl
-
-lemma TransitionMap_surjective {a b : ℕ} (le : a ≤ b) :
-    Function.Surjective (TransitionMap m le) := by
-  apply Ideal.Quotient.lift_surjective_of_surjective
-  exact Ideal.Quotient.mk_surjective
-
-lemma TransitionMap_ker {a b : ℕ} (le : a ≤ b) : RingHom.ker (TransitionMap m le) =
-    (m ^ a).map (Ideal.Quotient.mk (m ^ b)) := by
+open Ideal Quotient in
+lemma Ideal.Quotient.factorPow_preimage {a b : ℕ} (apos : a > 0) (le : a ≤ b) : m.map
+    (mk (m ^ b)) = (factorPow m le)⁻¹' (m.map (mk (m ^ a))) := by
   ext x
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rcases Ideal.Quotient.mk_surjective x with ⟨r, hr⟩
-    rw [← hr] at h ⊢
-    simp only [TransitionMap, RingHom.mem_ker, Ideal.Quotient.lift_mk,
-      Ideal.Quotient.eq_zero_iff_mem] at h
-    exact Ideal.mem_map_of_mem _ h
-  · rcases Ideal.mem_image_of_mem_map_of_surjective (Ideal.Quotient.mk (m ^ b))
-      Ideal.Quotient.mk_surjective h with ⟨r, hr, eq⟩
-    simpa only [TransitionMap, ← eq, RingHom.mem_ker, Ideal.Quotient.lift_mk,
-      Ideal.Quotient.eq_zero_iff_mem] using hr
-
-lemma TransitionMap_preimage {a b : ℕ} (apos : a > 0) (le : a ≤ b) : m.map
-    (Ideal.Quotient.mk (m ^ b)) = (TransitionMap m le)⁻¹' (m.map (Ideal.Quotient.mk (m ^ a))) := by
-  ext x
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rcases Ideal.mem_image_of_mem_map_of_surjective (Ideal.Quotient.mk (m ^ b))
-      Ideal.Quotient.mk_surjective h with ⟨r, hr, eq⟩
-    simp [TransitionMap, ← eq, Submodule.mem_sup_left hr]
-  · rcases Ideal.mem_image_of_mem_map_of_surjective (Ideal.Quotient.mk (m ^ a))
-      Ideal.Quotient.mk_surjective h with ⟨r, hr, eq⟩
-    rw [TransitionMap_comm m le _] at eq
-    have : x - ((Ideal.Quotient.mk (m ^ b)) r) ∈ (m ^ a).map (Ideal.Quotient.mk (m ^ b)) := by
-      simp [← TransitionMap_ker m le, ← eq]
-    rcases Ideal.mem_image_of_mem_map_of_surjective (Ideal.Quotient.mk (m ^ b))
-      Ideal.Quotient.mk_surjective this with ⟨s, hs, eq'⟩
-    rw [← add_sub_cancel ((Ideal.Quotient.mk (m ^ b)) r) x, ← eq', ← map_add]
-    apply Ideal.mem_map_of_mem
+  · rcases mem_image_of_mem_map_of_surjective (mk (m ^ b))
+      mk_surjective h with ⟨r, hr, eq⟩
+    simp [factorPow, ← eq, Submodule.mem_sup_left hr]
+  · rcases mem_image_of_mem_map_of_surjective (mk (m ^ a))
+      mk_surjective h with ⟨r, hr, eq⟩
+    rw [← factorPow_mk le _] at eq
+    have : x - ((mk (m ^ b)) r) ∈ (m ^ a).map (mk (m ^ b)) := by
+      simp [← factorPow_ker (I := m) le, ← eq]
+    rcases mem_image_of_mem_map_of_surjective (mk (m ^ b))
+      mk_surjective this with ⟨s, hs, eq'⟩
+    rw [← add_sub_cancel ((mk (m ^ b)) r) x, ← eq', ← map_add]
+    apply mem_map_of_mem
     apply Submodule.add_mem _ hr
-    exact Ideal.pow_le_self (Nat.not_eq_zero_of_lt apos) hs
+    exact pow_le_self (Nat.not_eq_zero_of_lt apos) hs
 
-end
-
-section
-
-open Set in
+variable {m} in
 lemma IsUnit_of_IsUnit_image {n : ℕ} (npos : n > 0) {a : R ⧸ m ^ (n + 1)}
-    (h : IsUnit ((TransitionMap m (Nat.le_add_right n 1)) a)) : IsUnit a := by
+    (h : IsUnit ((Ideal.Quotient.factorPow m (Nat.le_add_right n 1)) a)) : IsUnit a := by
   rcases isUnit_iff_exists.mp h with ⟨b, hb, _⟩
-  rcases TransitionMap_surjective m (Nat.le_add_right n 1) b with ⟨b', hb'⟩
-  rw [← hb', ← map_one (TransitionMap m (Nat.le_add_right n 1)), ← map_mul] at hb
-  apply (RingHom.sub_mem_ker_iff (TransitionMap m (Nat.le_add_right n 1))).mpr at hb
-  rw [TransitionMap_ker m (Nat.le_add_right n 1)] at hb
+  rcases Ideal.Quotient.factorPow_surjective (I := m) (Nat.le_succ n) b with ⟨b', hb'⟩
+  rw [← hb', ← map_one (Ideal.Quotient.factorPow m (Nat.le_add_right n 1)), ← _root_.map_mul] at hb
+  apply (RingHom.sub_mem_ker_iff (Ideal.Quotient.factorPow m (Nat.le_add_right n 1))).mpr at hb
+  rw [Ideal.Quotient.factorPow_ker (I := m) (Nat.le_add_right n 1)] at hb
   rcases Ideal.mem_image_of_mem_map_of_surjective (Ideal.Quotient.mk (m ^ (n + 1)))
     Ideal.Quotient.mk_surjective hb with ⟨c, hc, eq⟩
   have : a * (b' * (1 - ((Ideal.Quotient.mk (m ^ (n + 1))) c))) = 1 := by
@@ -91,7 +61,7 @@ lemma IsUnit_of_IsUnit_image {n : ℕ} (npos : n > 0) {a : R ⧸ m ^ (n + 1)}
       _ = (a * b' - 1) * (1 - ((Ideal.Quotient.mk (m ^ (n + 1))) c)) +
           (1 - ((Ideal.Quotient.mk (m ^ (n + 1))) c)) := by ring
       _ = 1 := by
-        rw [← eq, mul_sub, mul_one, sub_add_sub_cancel', sub_eq_self, ← map_mul,
+        rw [← eq, mul_sub, mul_one, sub_add_sub_cancel', sub_eq_self, ← _root_.map_mul,
           Ideal.Quotient.eq_zero_iff_mem, pow_add]
         apply Ideal.mul_mem_mul hc (Ideal.mul_le_left (I := m ^ (n - 1)) _)
         simpa only [← pow_add, Nat.sub_add_cancel npos] using hc
@@ -109,14 +79,14 @@ lemma ne0 {n : ℕ} {f : PowerSeries (R ⧸ m ^ n)} (ntriv : ∃ (k : ℕ), f.co
 
 lemma map_ntriv {n : ℕ} (npos : n > 0) {f : PowerSeries (R ⧸ m ^ (n + 1))}
     (ntriv : ∃ (k : ℕ), f.coeff _ k ∉ m.map (Ideal.Quotient.mk (m ^ (n + 1)))) :
-    ∃ k, (map (TransitionMap m (Nat.le_add_right n 1)) f).coeff (R ⧸ m ^ n) k ∉
+    ∃ k, (map (Ideal.Quotient.factorPow m (Nat.le_add_right n 1)) f).coeff (R ⧸ m ^ n) k ∉
     Ideal.map (Ideal.Quotient.mk (m ^ n)) m := by
   rcases ntriv with ⟨k, hk⟩
   use k
   by_contra h
   absurd hk
   show _ ∈ (_ : Set _)
-  rw [TransitionMap_preimage m npos (Nat.le_add_right n 1)]
+  rw [Ideal.Quotient.factorPow_preimage m npos (Nat.le_add_right n 1)]
   exact h
 
 open Classical in
@@ -127,13 +97,13 @@ lemma map_ntriv_findeq {n : ℕ} (npos : n > 0) {f : PowerSeries (R ⧸ m ^ (n +
   simp only [coeff_map]
   constructor
   · show f.coeff (R ⧸ m ^ (n + 1)) (Nat.find ntriv) ∉
-      (TransitionMap m (Nat.le_add_right n 1))⁻¹' (m.map (Ideal.Quotient.mk (m ^ n)))
-    rw [← TransitionMap_preimage m npos (Nat.le_add_right n 1)]
+      (Ideal.Quotient.factorPow m (Nat.le_add_right n 1))⁻¹' (m.map (Ideal.Quotient.mk (m ^ n)))
+    rw [← Ideal.Quotient.factorPow_preimage m npos (Nat.le_add_right n 1)]
     exact Nat.find_spec ntriv
   · intro k hk
-    show ¬ f.coeff (R ⧸ m ^ (n + 1)) k ∉ (TransitionMap m (Nat.le_add_right n 1))⁻¹'
+    show ¬ f.coeff (R ⧸ m ^ (n + 1)) k ∉ (Ideal.Quotient.factorPow m (Nat.le_add_right n 1))⁻¹'
       (m.map (Ideal.Quotient.mk (m ^ n)))
-    rw [← TransitionMap_preimage m npos (Nat.le_add_right n 1)]
+    rw [← Ideal.Quotient.factorPow_preimage m npos (Nat.le_add_right n 1)]
     exact Nat.find_min ntriv hk
 
 open Classical in
@@ -153,14 +123,13 @@ lemma deg_eq_find [Nontrivial R] (ne_top : m ≠ ⊤)(f : PowerSeries R)
       · simp [ne, Polynomial.coeff_eq_zero_of_natDegree_lt gt]
   have mapf : map (Ideal.Quotient.mk m) f = (Polynomial.X ^ g.natDegree : (R⧸m)[X]) *
     (map (Ideal.Quotient.mk m) h) := by
-    rw [← mapg, Polynomial.polynomial_map_coe, eq, map_mul]
+    rw [← mapg, Polynomial.polynomial_map_coe, eq, _root_.map_mul]
   simp only [← Ideal.Quotient.eq_zero_iff_mem, Decidable.not_not, ← coeff_map]
   constructor
   · simp only [mapf, Polynomial.coe_pow, Polynomial.coe_X, coeff_X_pow_mul', le_refl,
       ↓reduceIte, tsub_self, coeff_map, coeff_zero_eq_constantCoeff]
     let _ : Nontrivial (R ⧸ m) := Ideal.Quotient.nontrivial ne_top
-    exact IsUnit.ne_zero (RingHom.isUnit_map (Ideal.Quotient.mk m)
-      (isUnit_constantCoeff h.1 (Units.isUnit h)))
+    exact IsUnit.ne_zero (RingHom.isUnit_map _ (isUnit_constantCoeff h.1 h.isUnit))
   · intro i hi
     simp [mapf, coeff_X_pow_mul', hi]
 
@@ -235,32 +204,34 @@ lemma preparation_lift {n : ℕ} (npos : n > 0) [hmax : m.IsMaximal] (f : PowerS
       exact Nat.not_lt_zero 0
     · by_cases neq0 : n = 0
       · exact preparation_lift_triv neq0 f ntriv
-      · rcases ih (Nat.zero_lt_of_ne_zero neq0) (map (TransitionMap m
+      · rcases ih (Nat.zero_lt_of_ne_zero neq0) (map (Ideal.Quotient.factorPow m
           (Nat.le_add_right n 1)) f) (map_ntriv (Nat.zero_lt_of_ne_zero neq0) ntriv) with
           ⟨h, ⟨g, mon, deg, hg, eq⟩, uniq⟩
         have findeq := map_ntriv_findeq (Nat.zero_lt_of_ne_zero neq0) ntriv
         rw [findeq] at deg
-        rcases map_surjective (TransitionMap m (Nat.le_add_right n 1))
-          (TransitionMap_surjective m (Nat.le_add_right n 1)) h.val with ⟨h'', hh''⟩
+        rcases map_surjective (Ideal.Quotient.factorPow m (Nat.le_add_right n 1))
+          (Ideal.Quotient.factorPow_surjective (I := m) (Nat.le_add_right n 1)) h.val with
+          ⟨h'', hh''⟩
         have : IsUnit h'' := by
           apply isUnit_iff_constantCoeff.mpr
-          have := isUnit_iff_constantCoeff.mp (Units.isUnit h)
+          have := isUnit_iff_constantCoeff.mp h.isUnit
           rw [← hh'', ← coeff_zero_eq_constantCoeff_apply] at this
           simp only [coeff_map, coeff_zero_eq_constantCoeff] at this
-          exact IsUnit_of_IsUnit_image (Nat.zero_lt_of_ne_zero neq0) this
+          exact IsUnit_of_IsUnit_image (R := R) (Nat.zero_lt_of_ne_zero neq0) this
         let h' : (R ⧸ m ^ (n + 1))⟦X⟧ˣ := IsUnit.unit this
         have val : h'.1 = h'' := rfl
         let nontriv : Nontrivial (R ⧸ m ^ n) := nontriv_all (Nat.zero_lt_of_ne_zero neq0)
         let nontriv' : Nontrivial (R ⧸ m ^ (n + 1)) := nontriv_all npos
         rcases Polynomial.lifts_and_degree_eq_and_monic (Polynomial.map_surjective _
-          (TransitionMap_surjective m (Nat.le_add_right n 1)) g) mon with ⟨g', hg', deg', mon'⟩
+          (Ideal.Quotient.factorPow_surjective (I := m) (Nat.le_add_right n 1)) g) mon with
+          ⟨g', hg', deg', mon'⟩
         rw [deg] at deg'
-        have : (map (TransitionMap m (Nat.le_add_right n 1))) (f - g' * h') = 0 := by
-          rw [map_sub, map_mul, ← Polynomial.polynomial_map_coe, hg', val, hh'',
+        have : (f - g' * h').map (Ideal.Quotient.factorPow m (Nat.le_add_right n 1)) = 0 := by
+          rw [map_sub, _root_.map_mul, ← Polynomial.polynomial_map_coe, hg', val, hh'',
             eq, sub_eq_zero_of_eq rfl]
         set c : (R ⧸ m ^ (n + 1))⟦X⟧ := h'.inv * (f - g' * h')
-        have map0 : (map (TransitionMap m (Nat.le_add_right n 1))) c = 0 := by
-          rw [map_mul, this, mul_zero]
+        have map0 : c.map (Ideal.Quotient.factorPow m (Nat.le_add_right n 1)) = 0 := by
+          rw [_root_.map_mul, this, mul_zero]
         let α := trunc (Nat.find ntriv) c
         let γ := (mk fun i ↦ coeff (R ⧸ m ^ (n + 1)) (i + (Nat.find ntriv)) c)
         have hu1 : IsUnit (1 + γ) := by
@@ -268,7 +239,7 @@ lemma preparation_lift {n : ℕ} (npos : n > 0) [hmax : m.IsMaximal] (f : PowerS
           apply IsUnit_of_IsUnit_image (Nat.zero_lt_of_ne_zero neq0)
           convert isUnit_one
           simp [γ, ← coeff_map, map0]
-        have hu2 : IsUnit (h'.1 * (1 + γ)) := IsUnit.mul (Units.isUnit h') hu1
+        have hu2 : IsUnit (h'.1 * (1 + γ)) := h'.isUnit.mul hu1
         have heq : (α : (R ⧸ m ^ (n + 1))⟦X⟧) + ((X) ^ (Nat.find ntriv)) * γ = c := by
           ext k
           simp only [coeff_trunc, ne_eq, Set.coe_setOf, Set.mem_setOf_eq, map_add,
@@ -282,7 +253,8 @@ lemma preparation_lift {n : ℕ} (npos : n > 0) [hmax : m.IsMaximal] (f : PowerS
           deg' ▸ Polynomial.degree_add_eq_left_of_degree_lt (deg' ▸ degree_trunc_lt c
             (Nat.find ntriv))
         have mon'' : (g' + α).Monic := mon'.add_of_left  (deg' ▸ degree_trunc_lt c (Nat.find ntriv))
-        have αcoeff (l : ℕ) : (TransitionMap m (Nat.le_add_right n 1)) (α.coeff l) = 0 := by
+        have αcoeff (l : ℕ) : (Ideal.Quotient.factorPow m (Nat.le_add_right n 1))
+          (α.coeff l) = 0 := by
             simp only [coeff_trunc, Set.coe_setOf, Set.mem_setOf_eq,
               Polynomial.coeff_ofFinsupp, Finsupp.coe_mk, α]
             by_cases lt : l < Nat.find ntriv
@@ -293,9 +265,10 @@ lemma preparation_lift {n : ℕ} (npos : n > 0) [hmax : m.IsMaximal] (f : PowerS
           (m ^ (n + 1))) := by
           intro i hi
           show _ ∈ (_ : Set _)
-          simp only [TransitionMap_preimage m (Nat.zero_lt_of_ne_zero neq0) (Nat.le_add_right n 1),
-            Polynomial.coeff_add, Set.mem_preimage, map_add, αcoeff, add_zero, SetLike.mem_coe]
-          rw [← (Polynomial.coeff_map (TransitionMap m (Nat.le_add_right n 1)) i), hg']
+          simp only [Ideal.Quotient.factorPow_preimage m (Nat.zero_lt_of_ne_zero neq0)
+            (Nat.le_add_right n 1), Polynomial.coeff_add, Set.mem_preimage, map_add, αcoeff,
+            add_zero, SetLike.mem_coe]
+          rw [← (Polynomial.coeff_map (Ideal.Quotient.factorPow m (Nat.le_add_right n 1)) i), hg']
           apply hg
           rw [deg, ← deg'']
           exact hi
@@ -316,10 +289,10 @@ lemma preparation_lift {n : ℕ} (npos : n > 0) [hmax : m.IsMaximal] (f : PowerS
           m.map (Ideal.Quotient.mk (m ^ (n + 1))) := by
           simp only [map_sub, map_add, Polynomial.coeff_coe]
           show _ ∈ (_ : Set _)
-          simp only [TransitionMap_preimage m (Nat.zero_lt_of_ne_zero neq0) (Nat.le_add_right n 1),
-            coeff_X_pow, Set.mem_preimage, map_sub, map_add, αcoeff, add_zero,
-            RingHom.map_ite_one_zero, SetLike.mem_coe,
-            ← (Polynomial.coeff_map (TransitionMap m (Nat.le_add_right n 1)) l), hg']
+          simp only [Ideal.Quotient.factorPow_preimage m (Nat.zero_lt_of_ne_zero neq0)
+            (Nat.le_add_right n 1), coeff_X_pow, Set.mem_preimage, map_sub, map_add, αcoeff,
+            add_zero, RingHom.map_ite_one_zero, SetLike.mem_coe,
+            ← (Polynomial.coeff_map (Ideal.Quotient.factorPow m (Nat.le_add_right n 1)) l), hg']
           exact hgcoeff l
         have mul0 :
           (((g' + α)  : (R ⧸ m ^ (n + 1))⟦X⟧) - ((X) ^ (Nat.find ntriv))) * γ = 0 := by
@@ -329,10 +302,11 @@ lemma preparation_lift {n : ℕ} (npos : n > 0) [hmax : m.IsMaximal] (f : PowerS
           rcases Ideal.mem_image_of_mem_map_of_surjective (Ideal.Quotient.mk (m ^ (n + 1)))
             Ideal.Quotient.mk_surjective (hcoeff x.1) with ⟨r, hr, eqr⟩
           have : γ.coeff _ x.2  ∈ (m ^ n).map (Ideal.Quotient.mk (m ^ (n + 1))) := by
-            simp [← TransitionMap_ker, RingHom.mem_ker, γ, ← coeff_map, map0]
+            simp [← Ideal.Quotient.factorPow_ker, RingHom.mem_ker, γ, ← coeff_map, map0]
           rcases Ideal.mem_image_of_mem_map_of_surjective (Ideal.Quotient.mk (m ^ (n + 1)))
             Ideal.Quotient.mk_surjective this with ⟨s, hs, eqs⟩
-          rw [← eqr, ← eqs, ← map_mul, Ideal.Quotient.eq_zero_iff_mem, add_comm, pow_add, pow_one]
+          rw [← eqr, ← eqs, ← _root_.map_mul, Ideal.Quotient.eq_zero_iff_mem, add_comm,
+            pow_add, pow_one]
           exact Submodule.mul_mem_mul hr hs
         have muleq : (g' + α) * (h'.1 * (1 + γ)) = f := by
           calc
@@ -345,15 +319,14 @@ lemma preparation_lift {n : ℕ} (npos : n > 0) [hmax : m.IsMaximal] (f : PowerS
         · use (g' + α)
           exact ⟨mon'', deg'', hgα, by simp [muleq]⟩
         · rintro H ⟨G, monG, degG, hG, muleq'⟩
-          have mapHu: IsUnit (map (TransitionMap m (Nat.le_add_right n 1)) H) := by
-            apply RingHom.isUnit_map
-            exact Units.isUnit H
+          have mapHu: IsUnit (map (Ideal.Quotient.factorPow m (Nat.le_add_right n 1)) H) :=
+            RingHom.isUnit_map _ H.isUnit
           have mapeq : mapHu.unit = h := by
             apply uniq
-            use Polynomial.map (TransitionMap m (Nat.le_add_right n 1)) G
+            use Polynomial.map (Ideal.Quotient.factorPow m (Nat.le_add_right n 1)) G
             constructor
             · apply monG.map
-            · have : (Polynomial.map (TransitionMap m (Nat.le_add_right n 1)) G).degree =
+            · have : (Polynomial.map (Ideal.Quotient.factorPow m (Nat.le_add_right n 1)) G).degree =
                 Nat.find ntriv := by
                 rw [← degG]
                 apply Polynomial.degree_map_eq_iff.mpr
@@ -363,36 +336,36 @@ lemma preparation_lift {n : ℕ} (npos : n > 0) [hmax : m.IsMaximal] (f : PowerS
               · constructor
                 · intro i hi
                   simp only [Polynomial.coeff_map]
-                  show G.coeff i ∈ (TransitionMap m (Nat.le_add_right n 1))⁻¹'
+                  show G.coeff i ∈ (Ideal.Quotient.factorPow m (Nat.le_add_right n 1))⁻¹'
                     (m.map (Ideal.Quotient.mk (m ^ n)))
-                  rw [← TransitionMap_preimage m (Nat.zero_lt_of_ne_zero neq0)
+                  rw [← Ideal.Quotient.factorPow_preimage m (Nat.zero_lt_of_ne_zero neq0)
                     (Nat.le_add_right n 1)]
                   apply hG
                   rw [degG, ← this]
                   exact hi
                 · simp [muleq', Polynomial.polynomial_map_coe]
-          have mapeq' : (Polynomial.map (TransitionMap m (Nat.le_add_right n 1)) G) = g := by
+          have mapeq' : (Polynomial.map (Ideal.Quotient.factorPow m (Nat.le_add_right n 1)) G) =
+            g := by
             apply Polynomial.coe_inj.mp
             calc
-            _= (Polynomial.map (TransitionMap m (Nat.le_add_right n 1)) G) * mapHu.unit.1 *
-              mapHu.unit.inv := by rw [mul_assoc, mapHu.unit.val_inv, mul_one]
-            _= (map (TransitionMap m (Nat.le_add_right n 1)) f) * mapHu.unit.inv := by
+            _= (Polynomial.map (Ideal.Quotient.factorPow m (Nat.le_add_right n 1)) G) *
+              mapHu.unit.1 * mapHu.unit.inv := by rw [mul_assoc, mapHu.unit.val_inv, mul_one]
+            _= (map (Ideal.Quotient.factorPow m (Nat.le_add_right n 1)) f) * mapHu.unit.inv := by
               simp [muleq', Polynomial.polynomial_map_coe]
             _= _ := by rw [congrArg Units.inv mapeq, eq, mul_assoc, h.val_inv, mul_one]
-          have : (map (TransitionMap m (Nat.le_add_right n 1))) H.1 = h.1 := by
+          have :  H.1.map (Ideal.Quotient.factorPow m (Nat.le_add_right n 1)) = h.1 := by
             simp [← mapeq]
-          have map0' : (map (TransitionMap m (Nat.le_add_right n 1)))
-            (H.1 - h'.1) = 0 := by
-            rw [map_sub, val, this, hh'', sub_eq_zero_of_eq rfl]
+          have map0' : (H.1 - h'.1).map (Ideal.Quotient.factorPow m (Nat.le_add_right n 1)) =
+            0 := by rw [map_sub, val, this, hh'', sub_eq_zero_of_eq rfl]
           have hcoeff' (l : ℕ): ((G  : (R ⧸ m ^ (n + 1))⟦X⟧) - X ^ Nat.find ntriv).coeff _ l ∈
             m.map (Ideal.Quotient.mk (m ^ (n + 1))) := by
             simp only [map_sub, Polynomial.coeff_coe]
             show _ ∈ (_ : Set _)
-            simp only [TransitionMap_preimage m (Nat.zero_lt_of_ne_zero neq0)
+            simp only [Ideal.Quotient.factorPow_preimage m (Nat.zero_lt_of_ne_zero neq0)
               (Nat.le_add_right n 1), Set.mem_preimage, map_sub, SetLike.mem_coe]
-            rw [← (Polynomial.coeff_map (TransitionMap m (Nat.le_add_right n 1)) l), mapeq']
-            simp only [coeff_X_pow, RingHom.map_ite_one_zero]
-            exact hgcoeff l
+            rw [← (Polynomial.coeff_map (Ideal.Quotient.factorPow m (Nat.le_add_right n 1)) l),
+              mapeq']
+            simpa only [coeff_X_pow, RingHom.map_ite_one_zero] using hgcoeff l
           have mul0' : ((G  : (R ⧸ m ^ (n + 1))⟦X⟧) - ((X) ^ (Nat.find ntriv))) *
             (H.1 - h'.1) = 0 := by
             ext
@@ -401,11 +374,12 @@ lemma preparation_lift {n : ℕ} (npos : n > 0) [hmax : m.IsMaximal] (f : PowerS
             rcases Ideal.mem_image_of_mem_map_of_surjective (Ideal.Quotient.mk (m ^ (n + 1)))
               Ideal.Quotient.mk_surjective (hcoeff' x.1) with ⟨r, hr, eqr⟩
             have : (H.1 - h'.1).coeff _ x.2  ∈ (m ^ n).map (Ideal.Quotient.mk (m ^ (n + 1))) := by
-              simp only [← TransitionMap_ker m (Nat.le_add_right n 1), RingHom.mem_ker,
-                ← coeff_map, map0', map_zero]
+              simp only [← Ideal.Quotient.factorPow_ker (I := m) (Nat.le_add_right n 1),
+                RingHom.mem_ker, ← coeff_map, map0', map_zero]
             rcases Ideal.mem_image_of_mem_map_of_surjective (Ideal.Quotient.mk (m ^ (n + 1)))
               Ideal.Quotient.mk_surjective this with ⟨s, hs, eqs⟩
-            rw [← eqr, ← eqs, ← map_mul, Ideal.Quotient.eq_zero_iff_mem, add_comm, pow_add, pow_one]
+            rw [← eqr, ← eqs, ← _root_.map_mul, Ideal.Quotient.eq_zero_iff_mem, add_comm,
+              pow_add, pow_one]
             exact Submodule.mul_mem_mul hr hs
           have eq' : f = (g'  : (R ⧸ m ^ (n + 1))⟦X⟧) * h'.1 + ((X) ^
             (Nat.find ntriv)) * (H.1 - h'.1) + ((G - g') : (R ⧸ m ^ (n + 1))⟦X⟧) * h'.1 := by
@@ -440,8 +414,7 @@ lemma preparation_lift {n : ℕ} (npos : n > 0) [hmax : m.IsMaximal] (f : PowerS
               simp [Polynomial.coeff_eq_zero_of_natDegree_lt (lt_of_eq_of_lt h1 lgt),
                 Polynomial.coeff_eq_zero_of_natDegree_lt (lt_of_eq_of_lt h2 lgt)]
           have eqγ : ((H.1 - h'.1) * h'.inv) = γ := by
-            apply ext
-            intro k
+            ext k
             rw [coeff_mk, c_decomp, map_add, coeff_X_pow_mul]
             simp [coeff_ge (Nat.le_add_left (Nat.find ntriv) k)]
           apply Units.eq_iff.mp
@@ -494,7 +467,7 @@ lemma isUnit_iff_nmem [hmax : m.IsMaximal] [comp : IsAdicComplete m R] (r : R) :
           let hField : Field (R ⧸ m ^ (n + 1)) := Ideal.Quotient.field (m ^ (n + 1))
           simpa [isUnit_iff_ne_zero, ne_eq, Ideal.Quotient.eq_zero_iff_mem.not, neq0] using h
         · apply IsUnit_of_IsUnit_image (Nat.zero_lt_of_ne_zero neq0)
-          simpa [TransitionMap] using (ih (Nat.zero_lt_of_ne_zero neq0))
+          simpa [Ideal.Quotient.factorPow] using (ih (Nat.zero_lt_of_ne_zero neq0))
     choose inv_series' inv_series_spec' using fun (n : {n : ℕ // n > 0}) ↦
       (IsUnit.exists_left_inv (mapu n.2))
     let inv_series : ℕ → R := fun n ↦ if h : n = 0 then 0 else Classical.choose <|
@@ -515,8 +488,8 @@ lemma isUnit_iff_nmem [hmax : m.IsMaximal] [comp : IsAdicComplete m R] (r : R) :
         rw [map_sub]
         apply (IsUnit.mul_right_inj (mapu apos)).mp
         simp only [mul_zero, mul_sub]
-        nth_rw 3 [TransitionMap_comm m le _, TransitionMap_comm m le _]
-        simp only [inv_series_spec apos, inv_series_spec bpos, ← map_mul]
+        nth_rw 3 [← Ideal.Quotient.factorPow_mk le _, ← Ideal.Quotient.factorPow_mk le _]
+        simp only [inv_series_spec apos, inv_series_spec bpos, ← _root_.map_mul]
         rw [mul_comm, inv_series_spec', mul_comm, inv_series_spec']
         simp only [map_one, sub_self]
       · simp [Nat.eq_zero_of_not_pos apos]
@@ -526,7 +499,7 @@ lemma isUnit_iff_nmem [hmax : m.IsMaximal] [comp : IsAdicComplete m R] (r : R) :
       · apply SModEq.sub_mem.mpr
         simp only [smul_eq_mul, Ideal.mul_top, sub_zero]
         apply Ideal.Quotient.eq_zero_iff_mem.mp
-        rw [map_sub, map_one, map_mul, ← sub_add_cancel inv (inv_series n), map_add]
+        rw [map_sub, map_one, _root_.map_mul, ← sub_add_cancel inv (inv_series n), map_add]
         have := SModEq.sub_mem.mp (hinv n).symm
         simp only [smul_eq_mul, Ideal.mul_top] at this
         rw [Ideal.Quotient.eq_zero_iff_mem.mpr this, inv_series_spec npos, zero_add,
@@ -583,22 +556,21 @@ theorem CompleteLocalRing.weierstrass_preparation [hmax : m.IsMaximal] [comp : I
     skip
   choose g_series' series_mon series_deg series_coeff series_eq using hh
   --induced by uniqueness
-  have TransitionMap_h_IsUnit {a b : ℕ} (bpos : b > 0) (le : a ≤ b) :
-    IsUnit ((map (TransitionMap m le)) (h_series' ⟨b, bpos⟩)) := by
-    apply RingHom.isUnit_map
-    exact Units.isUnit (h_series' ⟨b, bpos⟩)
-  have h_series_TransitionMapeq' {a b : ℕ} (apos : a > 0) (bpos : b > 0) (le : a ≤ b) :
-    (TransitionMap_h_IsUnit bpos le).unit = (h_series' ⟨a, apos⟩) := by
-    apply series_uniq ⟨a, apos⟩ (TransitionMap_h_IsUnit bpos le).unit
+  have Ideal.Quotient.factorPow_h_IsUnit {a b : ℕ} (bpos : b > 0) (le : a ≤ b) :
+    IsUnit ((PowerSeries.map (Ideal.Quotient.factorPow m le)) (h_series' ⟨b, bpos⟩)) :=
+    RingHom.isUnit_map _ (h_series' ⟨b, bpos⟩).isUnit
+  have h_series_Ideal.Quotient.factorPoweq' {a b : ℕ} (apos : a > 0) (bpos : b > 0) (le : a ≤ b) :
+    (Ideal.Quotient.factorPow_h_IsUnit bpos le).unit = (h_series' ⟨a, apos⟩) := by
+    apply series_uniq ⟨a, apos⟩ (Ideal.Quotient.factorPow_h_IsUnit bpos le).unit
     simp only [IsUnit.unit_spec]
-    use (Polynomial.map (TransitionMap m le)) (g_series' ⟨b, bpos⟩)
-    have degeq : (Polynomial.map (TransitionMap m le) (g_series' ⟨b, bpos⟩)).degree =
+    use (Polynomial.map (Ideal.Quotient.factorPow m le)) (g_series' ⟨b, bpos⟩)
+    have degeq : (Polynomial.map (Ideal.Quotient.factorPow m le) (g_series' ⟨b, bpos⟩)).degree =
       (Nat.find ntriv) := by
       rw [← series_deg ⟨b, bpos⟩]
       let _ : Nontrivial (R ⧸ m ^ a) := R_ntriv' apos
-      exact (series_mon ⟨b, bpos⟩).degree_map (TransitionMap m le)
+      exact (series_mon ⟨b, bpos⟩).degree_map (Ideal.Quotient.factorPow m le)
     constructor
-    · exact (series_mon ⟨b, bpos⟩).map (TransitionMap m le)
+    · exact (series_mon ⟨b, bpos⟩).map (Ideal.Quotient.factorPow m le)
     · constructor
       · exact degeq
       · constructor
@@ -607,50 +579,51 @@ theorem CompleteLocalRing.weierstrass_preparation [hmax : m.IsMaximal] [comp : I
           rw [← series_deg ⟨b, bpos⟩] at hi
           simp only [Polynomial.coeff_map]
           show (g_series' ⟨b, bpos⟩).coeff i ∈
-            (TransitionMap m le)⁻¹' (m.map (Ideal.Quotient.mk (m ^ a)))
-          rw [← TransitionMap_preimage m apos le]
+            (Ideal.Quotient.factorPow m le)⁻¹' (m.map (Ideal.Quotient.mk (m ^ a)))
+          rw [← Ideal.Quotient.factorPow_preimage m apos le]
           exact series_coeff ⟨b, bpos⟩ i hi
-        · rw [Polynomial.polynomial_map_coe, ← map_mul,← series_eq ⟨b, bpos⟩]
+        · rw [Polynomial.polynomial_map_coe, ← _root_.map_mul,← series_eq ⟨b, bpos⟩]
           ext
-          simp [TransitionMap]
-  have h_series_TransitionMapeq {a b : ℕ} (apos : a > 0) (bpos : b > 0) (le : a ≤ b) :
-    (map (TransitionMap m le)) (h_series' ⟨b, bpos⟩) = (h_series' ⟨a, apos⟩):= by
-    show (TransitionMap_h_IsUnit bpos le).unit.1 = (h_series' ⟨a, apos⟩).1
-    rw [h_series_TransitionMapeq' apos bpos le]
-  have g_series_TransitionMapeq {a b : ℕ} (apos : a > 0) (bpos : b > 0) (le : a ≤ b) :
-    (g_series' ⟨a, apos⟩) = (Polynomial.map (TransitionMap m le)) (g_series' ⟨b, bpos⟩) := by
+          simp [Ideal.Quotient.factorPow]
+  have h_series_Ideal.Quotient.factorPoweq {a b : ℕ} (apos : a > 0) (bpos : b > 0) (le : a ≤ b) :
+    (h_series' ⟨b, bpos⟩).1.map (Ideal.Quotient.factorPow m le) = (h_series' ⟨a, apos⟩) :=
+    Units.eq_iff.mpr <| h_series_Ideal.Quotient.factorPoweq' apos bpos le
+  have g_series_Ideal.Quotient.factorPoweq {a b : ℕ} (apos : a > 0) (bpos : b > 0) (le : a ≤ b) :
+    (g_series' ⟨a, apos⟩) = (Polynomial.map (Ideal.Quotient.factorPow m le))
+    (g_series' ⟨b, bpos⟩) := by
     apply Polynomial.coe_inj.mp
     calc
-      _= (map (Ideal.Quotient.mk (m ^ a))) f * (h_series' ⟨a, apos⟩).inv := by
+      _= f.map (Ideal.Quotient.mk (m ^ a)) * (h_series' ⟨a, apos⟩).inv := by
         simp only [series_eq ⟨a, apos⟩, Units.inv_eq_val_inv, Units.mul_inv_cancel_right]
-      _= (map (Ideal.Quotient.mk (m ^ a))) f *
-         (TransitionMap_h_IsUnit bpos le).unit.inv := by
-        rw [h_series_TransitionMapeq' apos bpos le]
-      _= ((Polynomial.map (TransitionMap m le)) (g_series' ⟨b, bpos⟩)) *
-         (TransitionMap_h_IsUnit bpos le).unit * (TransitionMap_h_IsUnit bpos le).unit.inv := by
+      _= f.map (Ideal.Quotient.mk (m ^ a)) *
+        (Ideal.Quotient.factorPow_h_IsUnit bpos le).unit.inv := by
+        rw [h_series_Ideal.Quotient.factorPoweq' apos bpos le]
+      _= ((Polynomial.map (Ideal.Quotient.factorPow m le)) (g_series' ⟨b, bpos⟩)) *
+         (Ideal.Quotient.factorPow_h_IsUnit bpos le).unit *
+         (Ideal.Quotient.factorPow_h_IsUnit bpos le).unit.inv := by
         simp only [IsUnit.unit_spec, Units.inv_eq_val_inv, Units.mul_left_inj]
-        rw [Polynomial.polynomial_map_coe, ← map_mul, ← series_eq ⟨b, bpos⟩]
+        rw [Polynomial.polynomial_map_coe, ← _root_.map_mul, ← series_eq ⟨b, bpos⟩]
         ext
-        simp [TransitionMap]
+        simp [Ideal.Quotient.factorPow]
       _= _ := by simp only [Units.inv_eq_val_inv, Units.mul_inv_cancel_right]
   let h_series : ℕ → R⟦X⟧ := fun k ↦ if h : k = 0 then 1 else
     Classical.choose <| map_surjective (Ideal.Quotient.mk (m ^ k))
     Ideal.Quotient.mk_surjective (h_series' ⟨k, Nat.zero_lt_of_ne_zero h⟩)
   have h_series_spec {k : ℕ} (kpos : k > 0) :
     map (Ideal.Quotient.mk (m ^ k)) (h_series k) = (h_series' ⟨k, kpos⟩) := by
-    simp only [Nat.not_eq_zero_of_lt kpos, ↓reduceDIte, h_series]
-    exact Classical.choose_spec <| map_surjective (Ideal.Quotient.mk (m ^ k))
+    simpa only [Nat.not_eq_zero_of_lt kpos, ↓reduceDIte, h_series]
+    using Classical.choose_spec <| map_surjective (Ideal.Quotient.mk (m ^ k))
       Ideal.Quotient.mk_surjective (h_series' ⟨k, kpos⟩)
   let g_series : ℕ → R[X] := fun k ↦ if h : k = 0 then 0 else
     let _ := R_ntriv' (Nat.zero_lt_of_ne_zero h)
     Classical.choose <| Polynomial.lifts_and_degree_eq_and_monic (Polynomial.map_surjective _
       Ideal.Quotient.mk_surjective _) (series_mon ⟨k, Nat.zero_lt_of_ne_zero h⟩)
   have g_series_spec {k : ℕ} (kpos : k > 0) : Polynomial.map (Ideal.Quotient.mk (m ^ k))
-    (g_series k) = (g_series' ⟨k, kpos⟩) ∧ (g_series k).degree = (g_series' ⟨k, kpos⟩).degree
-      ∧ (g_series k).Monic := by
+    (g_series k) = (g_series' ⟨k, kpos⟩) ∧ (g_series k).degree = (g_series' ⟨k, kpos⟩).degree ∧
+    (g_series k).Monic := by
     simp only [Nat.not_eq_zero_of_lt kpos, ↓reduceDIte, g_series]
     let _ := R_ntriv' kpos
-    refine Classical.choose_spec <| Polynomial.lifts_and_degree_eq_and_monic
+    exact Classical.choose_spec <| Polynomial.lifts_and_degree_eq_and_monic
       (Polynomial.map_surjective _ Ideal.Quotient.mk_surjective _) (series_mon ⟨k, kpos⟩)
   have h_series_mod {a b : ℕ} (apos : a > 0) (le : a ≤ b) : map
     (Ideal.Quotient.mk (m ^ a)) (h_series a) = map (Ideal.Quotient.mk (m ^ a))
@@ -658,20 +631,19 @@ theorem CompleteLocalRing.weierstrass_preparation [hmax : m.IsMaximal] [comp : I
     have bpos : b > 0 := Nat.lt_of_lt_of_le apos le
     ext t
     simp only [coeff_map]
-    nth_rw 2 [TransitionMap_comm m le _]
+    nth_rw 2 [← Ideal.Quotient.factorPow_mk le _]
     simp only [← coeff_map]
-    congr 1
-    rw [h_series_spec apos, h_series_spec bpos, h_series_TransitionMapeq apos bpos le]
-  have g_series_mod {a b : ℕ} (apos : a > 0) (le : a ≤ b) :
-    Polynomial.map (Ideal.Quotient.mk (m ^ a)) (g_series a) = Polynomial.map
-    (Ideal.Quotient.mk (m ^ a)) (g_series b) := by
+    rw [h_series_spec apos, h_series_spec bpos, h_series_Ideal.Quotient.factorPoweq apos bpos le]
+  have g_series_mod {a b : ℕ} (apos : a > 0) (le : a ≤ b) : (g_series a).map
+    (Ideal.Quotient.mk (m ^ a)) = (g_series b).map (Ideal.Quotient.mk (m ^ a)) := by
     have bpos : b > 0 := Nat.lt_of_lt_of_le apos le
     ext t
     simp only [Polynomial.coeff_map]
-    nth_rw 2 [TransitionMap_comm m le _]
+    nth_rw 2 [← Ideal.Quotient.factorPow_mk le _]
     simp only [← Polynomial.coeff_map]
     congr 1
-    rw [(g_series_spec apos).1, (g_series_spec bpos).1, g_series_TransitionMapeq apos bpos le]
+    rw [(g_series_spec apos).1, (g_series_spec bpos).1,
+      g_series_Ideal.Quotient.factorPoweq apos bpos le]
   have h_coeff_series_mod (i : ℕ): ∀ {a b : ℕ}, a ≤ b → (h_series a).coeff R i  ≡
     (h_series b).coeff R i [SMOD m ^ a • (⊤ : Submodule R R)] := by
     intro a b le
@@ -697,8 +669,7 @@ theorem CompleteLocalRing.weierstrass_preparation [hmax : m.IsMaximal] [comp : I
     convert SModEq.sub_mem.mp (h_spec i n).symm
     simp only [smul_eq_mul, Ideal.mul_top]
   have hu : IsUnit h := by
-    apply isUnit_iff_constantCoeff.mpr
-    apply (isUnit_iff_nmem m _).mpr
+    apply isUnit_iff_constantCoeff.mpr ((isUnit_iff_nmem m _).mpr _)
     by_contra mem
     rw [← pow_one m] at mem
     have := Ideal.Quotient.eq_zero_iff_mem.mpr mem
@@ -754,9 +725,8 @@ theorem CompleteLocalRing.weierstrass_preparation [hmax : m.IsMaximal] [comp : I
       · apply (Ideal.Quotient.mk_eq_mk_iff_sub_mem _ _).mpr
         convert SModEq.sub_mem.mp (g_spec lt n).symm
         simp only [smul_eq_mul, Ideal.mul_top]
-      · simp only [gt_iff_lt.mp gt, smul_eq_mul, Ideal.mul_top, ne_eq, Set.coe_setOf,
-          Set.mem_setOf_eq, Polynomial.coeff_ofFinsupp, Finsupp.coe_mk, ne, ↓reduceIte,
-          g, g_coeff, map_zero]
+      · simp only [gt_iff_lt.mp gt, smul_eq_mul, mul_top, ne_eq, Set.coe_setOf, Set.mem_setOf_eq,
+          Polynomial.coeff_ofFinsupp, Finsupp.coe_mk, ne, ↓reduceIte, g, g_coeff, map_zero]
         have : (g_series n).coeff i = 0 := by
           apply Polynomial.coeff_eq_zero_of_natDegree_lt
           exact ndeg ▸ gt
@@ -798,7 +768,7 @@ theorem CompleteLocalRing.weierstrass_preparation [hmax : m.IsMaximal] [comp : I
         · simp only [IsUnit.unit_spec]
           have {n : ℕ} (npos : n > 0): map (Ideal.Quotient.mk (m ^ n)) f =
             map (Ideal.Quotient.mk (m ^ n)) (g * h) := by
-            simp only [map_mul,← Polynomial.polynomial_map_coe, h_spec' npos, g_spec' npos,
+            simp only [_root_.map_mul,← Polynomial.polynomial_map_coe, h_spec' npos, g_spec' npos,
               ← series_eq]
           ext i
           have modeq (n : ℕ) : f.coeff R i - (g * h).coeff R i ≡ 0
@@ -813,9 +783,8 @@ theorem CompleteLocalRing.weierstrass_preparation [hmax : m.IsMaximal] [comp : I
           exact sub_eq_zero.mp <|  IsHausdorff.haus IsAdicComplete.toIsHausdorff
             (f.coeff R i - (g * h).coeff R i) modeq
   · rintro H ⟨G, monG, degG, hG, muleq⟩
-    have Hu (n : ℕ): IsUnit ((map (Ideal.Quotient.mk (m ^ n))) H) := by
-      apply RingHom.isUnit_map
-      exact Units.isUnit H
+    have Hu (n : ℕ): IsUnit (H.1.map (Ideal.Quotient.mk (m ^ n))) :=
+      RingHom.isUnit_map _ H.isUnit
     have modeq' {n : ℕ} (npos : n > 0) : (Hu n).unit = (h_series' ⟨n, npos⟩) := by
       apply series_uniq ⟨n, npos⟩
       use Polynomial.map (Ideal.Quotient.mk (m ^ n)) G
@@ -832,11 +801,10 @@ theorem CompleteLocalRing.weierstrass_preparation [hmax : m.IsMaximal] [comp : I
           · intro i hi
             rw [degmapeq, ← degG] at hi
             simp [Submodule.mem_sup_left (hG i hi)]
-          · simp [Polynomial.polynomial_map_coe, ← map_mul, muleq]
+          · simp [Polynomial.polynomial_map_coe, ← _root_.map_mul, muleq]
     have modeq {n : ℕ} (npos : n > 0) : map (Ideal.Quotient.mk (m ^ n)) H =
-      (map (Ideal.Quotient.mk (m ^ n))) (h_series n) := by
-      rw [h_series_spec npos, ← modeq' npos]
-      rfl
+      (h_series n).map (Ideal.Quotient.mk (m ^ n))  := by
+      simp [h_series_spec npos, ← modeq' npos]
     apply Units.eq_iff.mp
     ext i
     simp only [IsUnit.unit_spec]
@@ -928,12 +896,12 @@ lemma IsDiscreteValuationRing.weierstrass_preparation_aux [IsDomain R] [hmax : m
                 · simp only [Polynomial.coeff_map, Polynomial.coeff_X_pow, ne, ↓reduceIte]
                   exact Ideal.Quotient.eq_zero_iff_mem.mpr (hg' i (Polynomial.coe_lt_degree.mpr lt))
                 · simp [ne, Polynomial.coeff_eq_zero_of_natDegree_lt gt]
-            simp only [← coeff_map, map_mul, ← Polynomial.polynomial_map_coe, mapg,
+            simp only [← coeff_map, _root_.map_mul, ← Polynomial.polynomial_map_coe, mapg,
               Polynomial.coe_pow, Polynomial.coe_X, coeff_X_pow_mul', le_refl,
               ↓reduceIte, tsub_self]
             simp only [coeff_map, coeff_zero_eq_constantCoeff]
             exact IsUnit.ne_zero (RingHom.isUnit_map (Ideal.Quotient.mk m)
-              (isUnit_constantCoeff h'.1 (Units.isUnit h')))
+              (isUnit_constantCoeff h'.1 h'.isUnit))
           by_contra h
           rw [← prin, Ideal.span_singleton_pow] at h
           rcases Ideal.mem_span_singleton.mp h with ⟨r, hr⟩
@@ -946,8 +914,8 @@ lemma IsDiscreteValuationRing.weierstrass_preparation_aux [IsDomain R] [hmax : m
         · simp only [not_exists, Decidable.not_not]
           intro k hk i
           apply Ideal.pow_le_pow_right (Nat.le_of_lt_succ hk)
-          simp only [← prin, Ideal.span_singleton_pow, eq', map_smul, smul_eq_mul]
-          exact Ideal.mem_span_singleton.mpr (dvd_mul_right _ _)
+          simpa [← prin, Ideal.span_singleton_pow, eq']
+            using Ideal.mem_span_singleton.mpr (dvd_mul_right _ _)
       simp [k, this]
     rw [keq] at eq'
     have heq : h' = h := by
