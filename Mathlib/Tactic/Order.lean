@@ -208,9 +208,6 @@ where
 
 section Preprocessing
 
-private lemma le_of_eq_symm {α : Type} [Preorder α] {x y : α} (h : x = y) : y ≤ x :=
-  ge_of_eq h
-
 private lemma not_lt_of_not_le {α : Type} [Preorder α] {x y : α} (h : ¬(x ≤ y)) : ¬(x < y) := by
   intro h'
   exact h h'.le
@@ -234,7 +231,7 @@ def preprocessFactsPreorder (g : MVarId) (facts : Array AtomicFact) :
       res := res.push ⟨fact.rhs, fact.lhs, .nle, ← mkAppM ``not_le_of_lt #[fact.proof]⟩
     | .eq =>
       res := res.push ⟨fact.lhs, fact.rhs, .le, ← mkAppM ``le_of_eq #[fact.proof]⟩
-      res := res.push ⟨fact.rhs, fact.lhs, .le, ← mkAppM ``le_of_eq_symm #[fact.proof]⟩
+      res := res.push ⟨fact.rhs, fact.lhs, .le, ← mkAppM ``ge_of_eq #[fact.proof]⟩
     | .ne =>
       continue
     | _ =>
@@ -256,7 +253,7 @@ def preprocessFactsPartial (g : MVarId) (facts : Array AtomicFact) :
       res := res.push ⟨fact.lhs, fact.rhs, .nlt, ← mkAppM ``not_lt_of_not_le #[fact.proof]⟩
     | .eq =>
       res := res.push ⟨fact.lhs, fact.rhs, .le, ← mkAppM ``le_of_eq #[fact.proof]⟩
-      res := res.push ⟨fact.rhs, fact.lhs, .le, ← mkAppM ``le_of_eq_symm #[fact.proof]⟩
+      res := res.push ⟨fact.rhs, fact.lhs, .le, ← mkAppM ``ge_of_eq #[fact.proof]⟩
     | _ =>
       res := res.push fact
   return res
@@ -278,7 +275,7 @@ def preprocessFactsLinear (g : MVarId) (facts : Array AtomicFact) :
       res := res.push ⟨fact.rhs, fact.lhs, .le, ← mkAppM ``le_of_not_lt #[fact.proof]⟩
     | .eq =>
       res := res.push ⟨fact.lhs, fact.rhs, .le, ← mkAppM ``le_of_eq #[fact.proof]⟩
-      res := res.push ⟨fact.rhs, fact.lhs, .le, ← mkAppM ``le_of_eq_symm #[fact.proof]⟩
+      res := res.push ⟨fact.rhs, fact.lhs, .le, ← mkAppM ``ge_of_eq #[fact.proof]⟩
     | _ =>
       res := res.push fact
   return res
