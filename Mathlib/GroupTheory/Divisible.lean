@@ -206,15 +206,9 @@ def rootableByIntOfRootableByNat [RootableBy A ℕ] : RootableBy A ℤ where
   root_zero a := RootableBy.root_zero a
   root_cancel {n} a hn := by
     cases n
-    · change RootableBy.root a _ ^ _ = a
-      norm_num
-      rw [RootableBy.root_cancel]
-      rw [Int.ofNat_eq_coe] at hn
-      exact mod_cast hn
-    · change (RootableBy.root a _)⁻¹ ^ _ = a
-      norm_num
-      rw [RootableBy.root_cancel]
-      norm_num
+    · rw [Int.ofNat_eq_coe, Nat.cast_ne_zero] at hn
+      simp [RootableBy.root_cancel _ hn]
+    · simp [RootableBy.root_cancel _ (Nat.add_one_ne_zero _)]
 
 /-- A group is `ℕ`-rootable if it is `ℤ`-rootable
 -/
@@ -230,7 +224,6 @@ end Group
 
 section Hom
 
--- Porting note: reordered variables to fix `to_additive` on `QuotientGroup.rootableBy`
 variable {A B α : Type*}
 variable [Zero α] [Monoid A] [Monoid B] [Pow A α] [Pow B α] [RootableBy A α]
 variable (f : A → B)

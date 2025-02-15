@@ -377,10 +377,8 @@ theorem ofSubtype_subtypePerm {f : Perm α} (h₁ : ∀ x, p x ↔ p (f x)) (h�
   Equiv.ext fun x => by
     by_cases hx : p x
     · exact (subtypePerm f h₁).extendDomain_apply_subtype _ hx
-    · rw [ofSubtype, MonoidHom.coe_mk]
-      -- Porting note: added `dsimp`
-      dsimp only [OneHom.coe_mk]
-      rw [Equiv.Perm.extendDomain_apply_not_subtype _ _ hx]
+    · rw [ofSubtype, MonoidHom.coe_mk, OneHom.coe_mk,
+        Equiv.Perm.extendDomain_apply_not_subtype _ _ hx]
       exact not_not.mp fun h => hx (h₂ x (Ne.symm h))
 
 theorem ofSubtype_apply_of_mem (f : Perm (Subtype p)) (ha : p a) : ofSubtype f a = f ⟨a, ha⟩ :=
@@ -436,13 +434,11 @@ protected def subtypeEquivSubtypePerm (p : α → Prop) [DecidablePred p] :
     Subtype.ext ((Equiv.Perm.ofSubtype_subtypePerm _) fun a => Not.decidable_imp_symm <| f.prop a)
 
 theorem subtypeEquivSubtypePerm_apply_of_mem (f : Perm (Subtype p)) (h : p a) :
-    -- Porting note: was `Perm.subtypeEquivSubtypePerm p f a`
-    ((Perm.subtypeEquivSubtypePerm p).toFun f).1 a = f ⟨a, h⟩ :=
+    (Perm.subtypeEquivSubtypePerm p f).1 a = f ⟨a, h⟩ :=
   f.ofSubtype_apply_of_mem h
 
 theorem subtypeEquivSubtypePerm_apply_of_not_mem (f : Perm (Subtype p)) (h : ¬p a) :
-    -- Porting note: was `Perm.subtypeEquivSubtypePerm p f a`
-    ((Perm.subtypeEquivSubtypePerm p).toFun f).1 a = a :=
+    ((Perm.subtypeEquivSubtypePerm p) f).1 a = a :=
   f.ofSubtype_apply_of_not_mem h
 
 end Subtype
