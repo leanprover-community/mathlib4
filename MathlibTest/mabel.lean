@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Mabel
+import Mathlib.Tactic.MAbel
 
 variable {α : Type _} {a b : α}
 def id' (x : α) := x
