@@ -359,41 +359,31 @@ lemma πFunctorObj_eq (j : κ.ord.toType) :
     NatTrans.comp_app, Arrow.comp_right,
     iterationFunctorMapSuccAppArrowIso_hom_right_right_comp_assoc]
 
-@[nolint unusedHavesSuffices]
-lemma hasRightLiftingProperty_πObj_aux
-    {A B : C} (i : A ⟶ B) (hi : I i) {f : X ⟶ Y} {j : κ.ord.toType}
-    (t : A ⟶ (relativeCellComplexιObj I κ f).F.obj j) (b : B ⟶ Y)
-    (w : t ≫ (relativeCellComplexιObj I κ f).incl.app j ≫ πObj I κ f = i ≫ b) :
-    ∃ (l : B ⟶ (relativeCellComplexιObj I κ f).F.obj (Order.succ j)),
-      i ≫ l =
-        t ≫ (relativeCellComplexιObj I κ f).F.map (homOfLE (Order.le_succ j)) ∧
-          l ≫ (relativeCellComplexιObj I κ f).incl.app (Order.succ j) ≫ πObj I κ f = b := by
-  have := hasColimitsOfShape_discrete I κ
-  have := hasPushouts I κ
-  exact ιFunctorObj_extension' I.homFamily
-    ((relativeCellComplexιObj I κ f).incl.app j ≫ πObj I κ f)
-    ((relativeCellComplexιObj I κ f).F.map (homOfLE (Order.le_succ j)))
-    ((relativeCellComplexιObj I κ f).incl.app (Order.succ j) ≫ πObj I κ f) (by simp)
-    (Iso.refl _) (iterationFunctorObjObjRightIso I κ (Arrow.mk f) j).symm
-    (relativeCellComplexιObjFObjSuccIso I κ f j)
-    (by dsimp; rw [ιFunctorObj_eq, id_comp])
-    (by dsimp; rw [πFunctorObj_eq, assoc, Iso.hom_inv_id_assoc])
-    (i := ⟨i, hi⟩) t b w
-
 lemma hasRightLiftingProperty_πObj {A B : C} (i : A ⟶ B) (hi : I i) (f : X ⟶ Y) :
     HasLiftingProperty i (πObj I κ f) := ⟨by
-  have := preservesColimit I κ i hi _ (relativeCellComplexιObj I κ f)
+  haveI := hasColimitsOfShape_discrete I κ
+  haveI := hasPushouts I κ
+  haveI := preservesColimit I κ i hi _ (relativeCellComplexιObj I κ f)
   intro g b sq
   obtain ⟨j, t, ht⟩ := Types.jointly_surjective _
     (isColimitOfPreserves (coyoneda.obj (Opposite.op A))
       (relativeCellComplexιObj I κ f).isColimit) g
   dsimp at g b sq t ht
-  obtain ⟨l, hl₁, hl₂⟩ := hasRightLiftingProperty_πObj_aux I κ i hi t b
-    (by rw [reassoc_of% ht, sq.w])
+  obtain ⟨l, hl₁, hl₂⟩ := ιFunctorObj_extension' I.homFamily
+    ((relativeCellComplexιObj I κ f).incl.app j ≫ πObj I κ f)
+    ((relativeCellComplexιObj I κ f).F.map (homOfLE (Order.le_succ j)))
+    ((relativeCellComplexιObj I κ f).incl.app (Order.succ j) ≫ πObj I κ f) (by simp) (Iso.refl _)
+    (iterationFunctorObjObjRightIso I κ (Arrow.mk f) j).symm
+    (relativeCellComplexιObjFObjSuccIso I κ f j)
+    (by dsimp; rw [ιFunctorObj_eq, id_comp])
+    (by dsimp; rw [πFunctorObj_eq, assoc, Iso.hom_inv_id_assoc])
+    (i := ⟨i, hi⟩) t b (by rw [reassoc_of% ht, sq.w]; dsimp)
+  dsimp at hl₁
   exact ⟨⟨{
     l := l ≫ (relativeCellComplexιObj I κ f).incl.app (Order.succ j)
-    fac_left := by simp [reassoc_of% hl₁,  ← ht]
-    fac_right := by rw [assoc, hl₂] }⟩⟩⟩
+    fac_left := by simp [reassoc_of% hl₁, ← ht]
+    fac_right := by rw [assoc, hl₂]
+  }⟩⟩⟩
 
 lemma rlp_πObj : I.rlp (πObj I κ f) :=
   fun _ _ _ hi ↦ hasRightLiftingProperty_πObj _ _ _ hi _
