@@ -26,8 +26,7 @@ section LinearOrder
 ### Definition of `LinearOrder` and lemmas about types with a linear order
 -/
 
--- set_option trace.to_additive_detail true
-
+-- defined in core
 attribute [order_dual existing] Min
 
 /-- Default definition of `max`. -/
@@ -35,12 +34,10 @@ def maxDefault [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : 
   if a ≤ b then b else a
 
 /-- Default definition of `min`. -/
--- @[order_dual "Default definition of `max`."]
+/- The definitions don't match up so we apply the attribute manually and hope for the best. -/
+@[order_dual existing]
 def minDefault [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
   if a ≤ b then a else b
-
-/- The definitions don't match up so we apply the attribute manually and hope for the best. -/
-attribute [order_dual existing] minDefault
 
 /-- This attempts to prove that a given instance of `compare` is equal to `compareOfLessAndEq` by
 introducing the arguments and trying the following approaches in order:

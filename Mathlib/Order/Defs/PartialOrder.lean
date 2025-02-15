@@ -132,7 +132,9 @@ lemma ne_of_gt (h : b < a) : a ≠ b := fun he => absurd h (he ▸ lt_irrefl a)
 @[order_dual existing (reorder := 3 4) lt_asymm]
 lemma lt_asymm (h : a < b) : ¬b < a := fun h1 : b < a => lt_irrefl a (lt_trans h h1)
 
+@[order_dual existing (reorder := 3 4) not_lt_of_gt]
 alias not_lt_of_gt := lt_asymm
+@[order_dual existing (reorder := 3 4) not_lt_of_lt]
 alias not_lt_of_lt := lt_asymm
 
 @[order_dual le_of_lt_or_eqOD]
@@ -186,6 +188,7 @@ PartialOrder.le_antisymm _ _ h₂ h₁
 @[order_dual le_antisymmOD]
 lemma le_antisymm : a ≤ b → b ≤ a → a = b := PartialOrder.le_antisymm _ _
 
+@[order_dual eq_of_le_of_leOD]
 alias eq_of_le_of_le := le_antisymm
 
 @[order_dual le_antisymm_iffOD]
