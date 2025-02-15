@@ -11,7 +11,6 @@ import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.Order.Interval.Set.InitialSeg
-import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-! # Transfinite iterations of a successor structure
 

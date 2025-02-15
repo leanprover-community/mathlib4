@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.SmallObject.Construction
-import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
 import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
 import Mathlib.CategoryTheory.MorphismProperty.IsSmall
-import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 import Mathlib.SetTheory.Cardinal.Cofinality
 
