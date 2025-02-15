@@ -42,6 +42,10 @@ section
 
 variable [HasFiniteProducts C]
 
+/-- The isomorphism between `X ⨯ Y` and `X ⊗ Y` for objects `X` and `Y` in `C`.
+This is tautological by the definition of the cartesian monoidal structure on `C`.
+This isomorphism provides an interface between `prod.fst` and `ChosenFiniteProducts.fst`
+as well as between `prod.map` and `tensorHom`. -/
 def prodIsoTensorObj (X Y : C) : X ⨯ Y ≅ X ⊗ Y := Iso.refl _
 
 @[reassoc (attr := simp)]
@@ -80,15 +84,10 @@ def curryId (I : C) : ⊤_ C ⟶ (I ⟹ I) :=
 
 variable {I : C}
 
-/-- The second leg of a cospan constructing a pullback diagram in `Over J` used to define
-the pushforward along `f`. -/
-def expMapFstProj (X : Over I) :
-    (I ⟹ X.left) ⟶ (I ⟹ I) :=
-  (exp I).map X.hom
-
 namespace Over
 
-/-- The object of sections of `X` over `I` in `C` defined by the following pullback diagram:
+/-- Given `X : Over I`, `sections X` is the object of sections of `X` defined by the following
+pullback diagram:
 
 ```
  sections X -->  I ⟹ X
@@ -125,6 +124,7 @@ lemma sectionsMap_comp {X X' X'' : Over I} (u : X ⟶ X') (v : X' ⟶ X'') :
 
 variable (I)
 
+/-- The functor that sends an object `X` in `C` to the object of sections of `X` over `I`. -/
 @[simps]
 def sectionsFunctor :
     Over I ⥤ C where
@@ -134,21 +134,21 @@ def sectionsFunctor :
 variable {I}
 
 /-- An auxiliary morphism used to define the currying of a morphism in `Over I` to a morphism
-in `Over J`. See `pushforwardCurry`. -/
+in `C`. See `sectionsCurry`. -/
 def sectionsCurryAux {X : Over I} {A : C} (u : (star I).obj A ⟶ X) :
     A ⟶ (I ⟹ X.left) :=
   CartesianClosed.curry (u.left)
 
 /-- The currying operation `Hom ((star I).obj A) X → Hom A (I ⟹ X.left)`. -/
 def sectionsCurry {X : Over I} {A : C} (u : (star I).obj A ⟶ X) :
-    A ⟶ (sections X) := by
+    A ⟶ sections X := by
   apply pullback.lift (terminal.from A)
     (CartesianClosed.curry ((prodIsoTensorObj _ _).inv ≫ u.left)) (uncurry_injective _)
   rw [uncurry_natural_left]
   simp [curryId, uncurry_natural_right, uncurry_curry]
 
-/-- The uncurrying operation `Hom A (I ⟹ section X) → Hom ((star I).obj A) X`. -/
-def sectionsUncurry {X : Over I} {A : C} (v : A ⟶ (sections X)) :
+/-- The uncurrying operation `Hom A (section X) → Hom ((star I).obj A) X`. -/
+def sectionsUncurry {X : Over I} {A : C} (v : A ⟶ sections X) :
     (star I).obj A ⟶ X := by
   let v₂ : A ⟶ (I ⟹ X.left) := v ≫ pullback.snd ..
   have w : terminal.from A ≫ (curryId I) = v₂ ≫ (exp I).map X.hom := by
@@ -164,7 +164,7 @@ def sectionsUncurry {X : Over I} {A : C} (v : A ⟶ (sections X)) :
     simp [star_obj_hom]
 
 @[reassoc (attr := simp)]
-theorem sections_curry_uncurry {X : Over I} {A : C} (v : A ⟶ sections X) :
+theorem sections_curry_uncurry {X : Over I} {A : C} {v : A ⟶ sections X} :
     sectionsCurry (sectionsUncurry v) = v := by
   dsimp [sectionsCurry, sectionsUncurry]
   let v₂ : A ⟶ (I ⟹ X.left) := v ≫ pullback.snd _ _
@@ -174,18 +174,20 @@ theorem sections_curry_uncurry {X : Over I} {A : C} (v : A ⟶ sections X) :
   · simp
 
 @[reassoc (attr := simp)]
-theorem sections_uncurry_curry {X : Over I} {A : C} (u : (star I).obj A ⟶ X) :
+theorem sections_uncurry_curry {X : Over I} {A : C} {u : (star I).obj A ⟶ X} :
     sectionsUncurry (sectionsCurry u) = u := by
   dsimp [sectionsCurry, sectionsUncurry]
   ext
   simp
 
+/-- An auxiliary definition which is used to define the adjunction between the star functor
+and the sections functor. See starSectionsAdjunction`. -/
 def coreHomEquiv : CoreHomEquiv (star I)  (sectionsFunctor I) where
   homEquiv A X := {
     toFun := sectionsCurry
     invFun := sectionsUncurry
-    left_inv := sections_uncurry_curry
-    right_inv := sections_curry_uncurry
+    left_inv {u} := sections_uncurry_curry
+    right_inv {v} := sections_curry_uncurry
   }
   homEquiv_naturality_left_symm := by
     intro A' A X g v
@@ -202,7 +204,7 @@ def coreHomEquiv : CoreHomEquiv (star I)  (sectionsFunctor I) where
     rw [← CartesianClosed.curry_natural_right, Category.assoc]
 
 /-- The adjunction between the star functor and the sections functor. -/
-def starSectionAdjunction : (star I) ⊣ (sectionsFunctor I) :=
+def starSectionsAdjunction : (star I) ⊣ (sectionsFunctor I) :=
   .mkOfHomEquiv coreHomEquiv
 
 end Over

@@ -342,6 +342,8 @@ namespace Adjunction
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
+/-- A right adjoint to the forward functor of an equivalence is naturally isomorphic to the
+inverse functor of the equivalence. -/
 def functorRightAdjointIsoInverse (e : D ≌ C) (R : C ⥤ D) (adj : e.functor ⊣ R) :
     R ≅ e.inverse :=
   conjugateIsoEquiv adj ((e.functor).asEquivalence.toAdjunction) (Iso.refl _) ≪≫
@@ -356,12 +358,6 @@ def toOverTerminalStarIso [HasTerminal C] [HasBinaryProducts C] :
     star (⊤_ C) ≅ Functor.toOverTerminal C := by
   apply Adjunction.functorRightAdjointIsoInverse
     (equivOverTerminal C) (star (⊤_ C)) (forgetAdjStar (⊤_ C))
-
-  -- have e : (Over.forget (⊤_ C)).IsEquivalence := (equivOverTerminal C).isEquivalence_functor
-  -- let adj := (Over.forget (⊤_ C)).asEquivalence.toAdjunction
-  -- let iso := conjugateIsoEquiv (Over.forgetAdjStar (⊤_ C)) adj (Iso.refl _) ≪≫
-  --   (Functor.asEquivalenceInverseNatIso (equivOverTerminal C))
-  -- exact iso
 
 /-- A natural isomorphism between the functors `star X` and `star Y ⋙ pullback f`
 for any morphism `f : X ⟶ Y`. -/
