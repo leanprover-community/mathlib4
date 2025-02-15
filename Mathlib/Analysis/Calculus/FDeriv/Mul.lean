@@ -590,8 +590,7 @@ theorem hasStrictFDerivAt_list_prod_attach' {l : List ι} {x : {i // i ∈ l} �
       (∑ i : Fin l.length, ((l.attach.take i).map x).prod •
         smulRight (proj l.attach[i.cast List.length_attach.symm])
           ((l.attach.drop (.succ i)).map x).prod) x := by
-  classical
-  exact hasStrictFDerivAt_list_prod'.congr_fderiv <| Eq.symm <|
+  classical exact hasStrictFDerivAt_list_prod'.congr_fderiv <| Eq.symm <|
     Finset.sum_equiv (finCongr List.length_attach.symm) (by simp) (by simp)
 
 @[fun_prop]
@@ -614,8 +613,7 @@ theorem hasFDerivAt_list_prod_attach' {l : List ι} {x : {i // i ∈ l} → 𝔸
       (∑ i : Fin l.length, ((l.attach.take i).map x).prod •
         smulRight (proj l.attach[i.cast List.length_attach.symm])
           ((l.attach.drop (.succ i)).map x).prod) x := by
-  classical
-  exact hasStrictFDerivAt_list_prod_attach'.hasFDerivAt
+  classical exact hasStrictFDerivAt_list_prod_attach'.hasFDerivAt
 
 /--
 Auxiliary lemma for `hasStrictFDerivAt_multiset_prod`.
