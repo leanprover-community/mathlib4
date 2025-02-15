@@ -58,7 +58,7 @@ inductive StyleError where
   | windowsLineEnding
   /-- A line contains trailing whitespace. -/
   | trailingWhitespace
-  /-- A line contains the string " ;" -/
+  /-- A line contains a space before a semicolon -/
   | semicolon
 deriving BEq
 
@@ -225,7 +225,7 @@ def trailingWhitespaceLinter : TextbasedLinter := fun lines ↦ Id.run do
   return (errors, if errors.size > 0 then some fixedLines else none)
 
 
-/-- Lint a collection of input strings for the substring " ;". -/
+/-- Lint a collection of input strings for a semicolon preceded by a space. -/
 def semicolonLinter : TextbasedLinter := fun lines ↦ Id.run do
   let mut errors := Array.mkEmpty 0
   let mut fixedLines := lines
@@ -235,7 +235,8 @@ def semicolonLinter : TextbasedLinter := fun lines ↦ Id.run do
     -- Future: also lint for a semicolon *not* followed by a space or ⟩.
     if pos != line.endPos && line.get (line.prev pos) == ' ' then
       errors := errors.push (StyleError.semicolon, idx + 1)
-      fixedLines := fixedLines.set! idx (line.replace " ;" ";")
+      -- We spell the bad string pattern this way to avoid the linter firing on itself.
+      fixedLines := fixedLines.set! idx (line.replace (⟨[' ', ';']⟩ : String) ";")
    return (errors, if errors.size > 0 then some fixedLines else none)
 
 
