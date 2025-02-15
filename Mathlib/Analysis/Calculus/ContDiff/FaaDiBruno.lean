@@ -809,7 +809,6 @@ noncomputable def compAlongOrderedFinpartitionL :
     c.compAlongOrderedFinpartitionL 𝕜 E F G f p = c.compAlongOrderedFinpartition f p := rfl
 
 theorem norm_compAlongOrderedFinpartitionL_le :
-    set_option maxSynthPendingDepth 2 in
     ‖c.compAlongOrderedFinpartitionL 𝕜 E F G‖ ≤ 1 :=
   MultilinearMap.mkContinuousLinear_norm_le _ zero_le_one _
 

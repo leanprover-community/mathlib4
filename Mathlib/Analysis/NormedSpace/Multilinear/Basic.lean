@@ -814,7 +814,6 @@ def smulRightL : ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] Co
 @[simp] lemma smulRightL_apply (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
   smulRightL 𝕜 E G f z = f.smulRight z := rfl
 
-set_option maxSynthPendingDepth 2 in
 lemma norm_smulRightL_le : ‖smulRightL 𝕜 E G‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
 

@@ -88,7 +88,6 @@ theorem opNorm_mulLeftRight_apply_apply_le (x y : R) : ‖mulLeftRight 𝕜 R x 
 theorem opNorm_mulLeftRight_apply_le (x : R) : ‖mulLeftRight 𝕜 R x‖ ≤ ‖x‖ :=
   opNorm_le_bound _ (norm_nonneg x) (opNorm_mulLeftRight_apply_apply_le 𝕜 R x)
 
-set_option maxSynthPendingDepth 2 in
 theorem opNorm_mulLeftRight_le :
     ‖mulLeftRight 𝕜 R‖ ≤ 1 :=
   opNorm_le_bound _ zero_le_one fun x => (one_mul ‖x‖).symm ▸ opNorm_mulLeftRight_apply_le 𝕜 R x
