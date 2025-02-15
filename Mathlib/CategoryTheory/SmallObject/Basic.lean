@@ -93,14 +93,14 @@ noncomputable def smallObjectκ : Cardinal.{w} :=
   (HasSmallObjectArgument.exists_cardinal (I := I)).choose
 
 local instance smallObjectκ_isRegular : Fact I.smallObjectκ.IsRegular :=
-  (HasSmallObjectArgument.exists_cardinal (I := I)).choose_spec.choose
+  HasSmallObjectArgument.exists_cardinal.choose_spec.choose
 
 noncomputable instance : OrderBot I.smallObjectκ.ord.toType :=
-  (HasSmallObjectArgument.exists_cardinal (I := I)).choose_spec.choose_spec.choose
+  HasSmallObjectArgument.exists_cardinal.choose_spec.choose_spec.choose
 
 instance isCardinalForSmallObjectArgument_smallObjectκ :
     IsCardinalForSmallObjectArgument.{w} I I.smallObjectκ :=
-  (HasSmallObjectArgument.exists_cardinal (I := I)).choose_spec.choose_spec.choose_spec
+  HasSmallObjectArgument.exists_cardinal.choose_spec.choose_spec.choose_spec
 
 instance : HasFunctorialFactorization I.rlp.llp I.rlp :=
   hasFunctorialFactorization I I.smallObjectκ
