@@ -438,7 +438,7 @@ lemma zpow_neg (a : α) : ∀ n : ℤ, a ^ (-n) = (a ^ n)⁻¹
 lemma mul_zpow_neg_one (a b : α) : (a * b) ^ (-1 : ℤ) = b ^ (-1 : ℤ) * a ^ (-1 : ℤ) := by
   simp only [zpow_neg, zpow_one, mul_inv_rev]
 
-@[to_additive (attr := ← push) zsmul_neg]
+@[to_additive (attr := push ←) zsmul_neg]
 lemma inv_zpow (a : α) : ∀ n : ℤ, a⁻¹ ^ n = (a ^ n)⁻¹
   | (n : ℕ)    => by rw [zpow_natCast, zpow_natCast, inv_pow]
   | .negSucc n => by rw [zpow_negSucc, zpow_negSucc, inv_pow]
