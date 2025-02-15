@@ -543,7 +543,7 @@ omit
   [DiscreteTopology B]
   [ContinuousSMul G B] in
 lemma Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor_aux
-    (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
+    (Q : Ideal B)
     {N N' : OpenNormalSubgroup G} (e : N ≤ N')
     (x : G ⧸ N.1.1)
     (hx : x ∈ MulAction.stabilizer (G ⧸ N.1.1) (Q.under (FixedPoints.subalgebra A B N.1.1))) :
@@ -561,8 +561,7 @@ lemma Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor_aux
 The functor taking an open normal subgroup `N ≤ G` to the set of lifts of `σ` in `G ⧸ N`.
 We will show that its inverse limit is nonempty to conclude that there exists a lift in `G`. -/
 def Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor
-    (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
-    [Algebra.IsInvariant A B G] (σ : (B ⧸ Q) ≃ₐ[A ⧸ P] B ⧸ Q) :
+    (P : Ideal A) (Q : Ideal B) [Q.LiesOver P] (σ : (B ⧸ Q) ≃ₐ[A ⧸ P] B ⧸ Q) :
     OpenNormalSubgroup G ⥤ Type _ where
   obj N :=
     letI B' := FixedPoints.subalgebra A B N.1.1
@@ -572,8 +571,7 @@ def Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor
     { σ' // f.comp (Ideal.Quotient.stabilizerHom
       (Q.under B') P (G ⧸ N.1.1) σ') = σ.toAlgHom.comp f }
   map {N N'} i x := ⟨⟨(QuotientGroup.map _ _ (.id _) (leOfHom i)) x.1,
-    Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor_aux
-    P Q i.le x.1.1 x.1.2⟩, by
+    Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor_aux Q i.le x.1.1 x.1.2⟩, by
     have h : FixedPoints.subalgebra A B N'.1.1 ≤ FixedPoints.subalgebra A B N.1.1 :=
       fun x hx n ↦ hx ⟨_, i.le n.2⟩
     obtain ⟨⟨x, hx⟩, hx'⟩ := x
@@ -585,8 +583,8 @@ def Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor
   map_comp f g := by ext ⟨⟨⟨x⟩, hx⟩, hx'⟩; rfl
 
 open Ideal.Quotient in
-instance (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
-    [Algebra.IsInvariant A B G] (σ : (B ⧸ Q) ≃ₐ[A ⧸ P] B ⧸ Q) (N : OpenNormalSubgroup G) :
+instance (P : Ideal A) (Q : Ideal B) [Q.LiesOver P]
+    (σ : (B ⧸ Q) ≃ₐ[A ⧸ P] B ⧸ Q) (N : OpenNormalSubgroup G) :
     Finite ((stabilizerHomSurjectiveAuxFunctor P Q σ).obj N) := by
   dsimp [stabilizerHomSurjectiveAuxFunctor]
   infer_instance
