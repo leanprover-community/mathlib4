@@ -219,21 +219,19 @@ protected theorem IsNClique.insert (hs : G.IsNClique n s) (h : ∀ b ∈ s, G.Ad
   · push_cast
     exact hs.1.insert fun b hb _ => h _ hb
   · rw [card_insert_of_not_mem fun ha => (h _ ha).ne rfl, hs.2]
-
+    
 lemma IsNClique.erase_of_mem (hs : G.IsNClique n s) (ha : a ∈ s) :
-    G.IsNClique (n - 1) (s.erase a) := by
-  constructor
-  · apply hs.1.subset; simp
-  · rw [card_erase_of_mem ha, hs.2]
+    G.IsNClique (n - 1) (s.erase a) where
+  isClique := hs.isClique.subset <| by simp
+  card_eq := by rw [card_erase_of_mem ha, hs.2]
 
-lemma IsNClique.insert_erase (hs : G.IsNClique n s) (ha : ∀ w ∈ s, w ≠ b → G.Adj a w) (hb : b ∈ s) :
+protected lemma IsNClique.insert_erase
+    (hs : G.IsNClique n s) (ha : ∀ w ∈ s \ {b}, G.Adj a w) (hb : b ∈ s) :
     G.IsNClique n (insert a (erase s b)) := by
   cases n with
   | zero => exact False.elim <| not_mem_empty _ (isNClique_zero.1 hs ▸ hb)
-  | succ _ =>
-    apply (hs.erase_of_mem hb).insert
-    intro w h; rw [mem_erase] at h
-    exact ha w h.2 h.1
+  | succ _ => exact (hs.erase_of_mem hb).insert fun w h ↦ by aesop
+
 theorem is3Clique_triple_iff : G.IsNClique 3 {a, b, c} ↔ G.Adj a b ∧ G.Adj a c ∧ G.Adj b c := by
   simp only [isNClique_iff, isClique_iff, Set.pairwise_insert_of_symmetric G.symm, coe_insert]
   by_cases hab : a = b <;> by_cases hbc : b = c <;> by_cases hac : a = c <;> subst_vars <;>
