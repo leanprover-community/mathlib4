@@ -148,7 +148,7 @@ variable {m : Type* → Type*} {m₀ : Type → Type}
 variable [Monad m] [MonadLiftT (ST RealWorld) m₀] [ULiftable m₀ m]
 
 /--
-Compute a `RandT m α` using the global `stdGenRef` as RNG.
+Execute `RandT m α` using the global `stdGenRef` as RNG.
 
 Note that:
 - `stdGenRef` is not necessarily properly seeded on program startup
@@ -162,7 +162,7 @@ def runRand (cmd : RandT m α) : m α := do
   let _ ← ULiftable.up (stdGenRef.set new.down : m₀ _)
   pure res
 
-/-- Compute a `RandT m α` using the global `stdGenRef` as RNG and the given `seed`. -/
+/-- Execute `RandT m α` using the global `stdGenRef` as RNG and the given `seed`. -/
 def runRandWith (seed : Nat) (cmd : RandT m α) : m α := do
   pure <| (← cmd.run (ULift.up <| mkStdGen seed)).1
 
