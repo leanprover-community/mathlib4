@@ -121,6 +121,9 @@ instance wellFoundedLT_toType_lt (o : Ordinal) : WellFoundedLT o.toType :=
 
 namespace Ordinal
 
+noncomputable instance (o : Ordinal) : SuccOrder o.toType :=
+  SuccOrder.ofLinearWellFoundedLT o.toType
+
 /-! ### Basic properties of the order type -/
 
 /-- The order type of a well order is an ordinal. -/
@@ -1496,3 +1499,5 @@ theorem List.Sorted.lt_ord_of_lt [LinearOrder α] [WellFoundedLT α] {l m : List
       | head as => exact List.head_le_of_lt hmltl
       | tail b hi => exact le_of_lt (lt_of_lt_of_le (List.rel_of_sorted_cons hm _ hi)
           (List.head_le_of_lt hmltl))
+
+set_option linter.style.longFile 1700
