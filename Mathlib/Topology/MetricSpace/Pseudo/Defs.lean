@@ -126,8 +126,10 @@ class PseudoMetricSpace (α : Type u) extends Dist α : Type u where
 @[ext]
 theorem PseudoMetricSpace.ext {α : Type*} {m m' : PseudoMetricSpace α}
     (h : m.toDist = m'.toDist) : m = m' := by
-  cases' m with d _ _ _ ed hed U hU B hB
-  cases' m' with d' _ _ _ ed' hed' U' hU' B' hB'
+  let d := m.toDist
+  obtain ⟨_, _, _, _, hed, _, hU, _, hB⟩ := m
+  let d' := m'.toDist
+  obtain ⟨_, _, _, _, hed', _, hU', _, hB'⟩ := m'
   obtain rfl : d = d' := h
   congr
   · ext x y : 2
@@ -199,6 +201,14 @@ theorem dist_triangle4_right (x₁ y₁ x₂ y₂ : α) :
     dist x₁ y₁ ≤ dist x₁ x₂ + dist y₁ y₂ + dist x₂ y₂ := by
   rw [add_right_comm, dist_comm y₁]
   apply dist_triangle4
+
+theorem dist_triangle8 (a b c d e f g h : α) : dist a h ≤ dist a b + dist b c + dist c d
+    + dist d e + dist e f + dist f g + dist g h := by
+  apply le_trans (dist_triangle4 a f g h)
+  apply add_le_add_right (add_le_add_right _ (dist f g)) (dist g h)
+  apply le_trans (dist_triangle4 a d e f)
+  apply add_le_add_right (add_le_add_right _ (dist d e)) (dist e f)
+  exact dist_triangle4 a b c d
 
 theorem swap_dist : Function.swap (@dist α _) = dist := by funext x y; exact dist_comm _ _
 
