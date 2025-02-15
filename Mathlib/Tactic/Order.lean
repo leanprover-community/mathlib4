@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
 
-import Mathlib.Order.Basic
+import Mathlib.Order.BasicLemmas
 import Qq
 
 /-!
