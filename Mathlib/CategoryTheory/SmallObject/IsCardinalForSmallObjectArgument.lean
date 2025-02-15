@@ -18,15 +18,14 @@ a regular cardinal `κ : Cardinal.{w}`, we define a typeclass
 `IsCardinalForSmallObjectArgument I κ` which requires certain
 smallness properties (`I` is `w`-small, `C` is locally `w`-small),
 the existence of certain colimits (pushouts, coproducts of size `w`,
-and the condition `HasIterationOfShape κ.ord.toType` about the
-existence of colimits indexed by limit ordinal smaller than of equal
-to `κ.ord`), and a kind "presentable" assumption on the domains
-of the morphisms in `I`: if `A` is the domain of such an object,
-the functor `Hom(A, _)` should commute with the filtering
-colimits corresponding to relative `I`-cell complexes. (This
-last condition shall hold when `κ` is the successor of
-a cardinal `c` such that all these objects `A` are `c`-presentable,
-see the file `Presentable.Basic`.)
+and the condition `HasIterationOfShape κ.ord.toType C` about the
+existence of colimits indexed by limit ordinal smaller than or equal
+to `κ.ord`), and the technical assumption that if `A` is the
+a morphism in `I`, then the functor `Hom(A, _)` should commute
+with the filtering colimits corresponding to relative
+`I`-cell complexes. (This last condition shall hold when `κ`
+is the successor of an infinite cardinal `c` such that all
+these objects `A` are `c`-presentable, see the file `Presentable.Basic`.)
 
 ## Main results
 
