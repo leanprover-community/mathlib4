@@ -96,7 +96,7 @@ variable [NormedSpace ℝ F]
 
 theorem _root_.MeasureTheory.StronglyMeasurable.integral_condDistrib (hf : StronglyMeasurable f) :
     StronglyMeasurable (fun x ↦ ∫ y, f (x, y) ∂condDistrib Y X μ x) := by
-  rw [condDistrib]; exact hf.integral_condKernel
+  rw [condDistrib]; exact hf.integral_kernel_prod_right'
 
 theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_condDistrib_map
     (hY : AEMeasurable Y μ) (hf : AEStronglyMeasurable f (μ.map fun a => (X a, Y a))) :
