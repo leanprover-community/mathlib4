@@ -184,6 +184,11 @@ section Integral
 variable {ρ : Measure (β × Ω)} [IsFiniteMeasure ρ]
   {E : Type*} {f : β × Ω → E} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
+lemma _root_.MeasureTheory.StronglyMeasurable.integral_condKernel
+    (hf : StronglyMeasurable f) :
+    StronglyMeasurable (fun x ↦ ∫ y, f (x, y) ∂ρ.condKernel x) :=
+  hf.integral_kernel_prod_right'
+
 lemma _root_.MeasureTheory.AEStronglyMeasurable.integral_condKernel
     (hf : AEStronglyMeasurable f ρ) :
     AEStronglyMeasurable (fun x ↦ ∫ y, f (x, y) ∂ρ.condKernel x) ρ.fst := by

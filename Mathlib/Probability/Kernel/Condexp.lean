@@ -96,6 +96,20 @@ instance : IsMarkovKernel (condExpKernel μ m) := by
   · exact ⟨fun a ↦ (IsEmpty.false a).elim⟩
   · simp [condExpKernel, h]; infer_instance
 
+lemma compProd_trim_condExpKernel (hm : m ≤ mΩ) :
+    (μ.trim hm) ⊗ₘ condExpKernel μ m
+      = @Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) (fun ω ↦ (id ω, id ω)) μ := by
+  rcases isEmpty_or_nonempty Ω with h | h
+  · simp [Measure.eq_zero_of_isEmpty μ]
+  rw [condExpKernel_eq]
+  have : m ⊓ mΩ = m := inf_of_le_left hm
+  have h := compProd_map_condDistrib (mβ := m) (μ := μ) (X := id) measurable_id.aemeasurable
+  rw [← h, trim_eq_map hm]
+  congr 1
+  ext a s hs
+  simp only [Kernel.coe_comap, Function.comp_apply, id_eq]
+  congr
+
 section Measurability
 
 variable [NormedAddCommGroup F] {f : Ω → F}
@@ -116,6 +130,19 @@ theorem stronglyMeasurable_condExpKernel {s : Set Ω} (hs : MeasurableSet s) :
 
 @[deprecated (since := "2025-01-21")]
 alias stronglyMeasurable_condexpKernel := stronglyMeasurable_condExpKernel
+
+theorem _root_.MeasureTheory.StronglyMeasurable.integral_condExpKernel' [NormedSpace ℝ F]
+    (hf : StronglyMeasurable f) :
+    StronglyMeasurable[m ⊓ mΩ] (fun ω ↦ ∫ y, f y ∂condExpKernel μ m ω) := by
+  nontriviality Ω
+  simp_rw [condExpKernel_apply_eq_condDistrib]
+  refine StronglyMeasurable.integral_condDistrib (f := fun p ↦ f p.2) ?_
+  exact hf.comp_measurable measurable_snd
+
+theorem _root_.MeasureTheory.StronglyMeasurable.integral_condExpKernel [NormedSpace ℝ F]
+    (hf : StronglyMeasurable f) :
+    StronglyMeasurable[m] (fun ω ↦ ∫ y, f y ∂condExpKernel μ m ω) :=
+  hf.integral_condExpKernel'.mono inf_le_left
 
 theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_condExpKernel [NormedSpace ℝ F]
     (hf : AEStronglyMeasurable f μ) :
