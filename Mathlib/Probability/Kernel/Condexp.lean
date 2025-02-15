@@ -136,8 +136,7 @@ theorem _root_.MeasureTheory.StronglyMeasurable.integral_condExpKernel' [NormedS
     StronglyMeasurable[m ⊓ mΩ] (fun ω ↦ ∫ y, f y ∂condExpKernel μ m ω) := by
   nontriviality Ω
   simp_rw [condExpKernel_apply_eq_condDistrib]
-  refine StronglyMeasurable.integral_condDistrib (f := fun p ↦ f p.2) ?_
-  exact hf.comp_measurable measurable_snd
+  exact (hf.comp_measurable measurable_snd).integral_condDistrib
 
 theorem _root_.MeasureTheory.StronglyMeasurable.integral_condExpKernel [NormedSpace ℝ F]
     (hf : StronglyMeasurable f) :
