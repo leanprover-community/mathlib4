@@ -284,11 +284,11 @@ def lintFile (path : FilePath) (exceptions : Array ErrorContext) :
   for lint in allLinters do
     let (err, changes) := lint changed
     allOutput := allOutput.append (Array.map (fun (e, n) ↦ #[(ErrorContext.mk e n path)]) err)
+    -- TODO: auto-fixes do not take style exceptions into account
     if let some c := changes then
       changed := c
       changes_made := true
   -- This list is not sorted: for github, this is fine.
-  -- TODO: need to more the error comparison into the linter emissions, for auto-fixes!
   errors := errors.append
     (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
   return (errors, if changes_made then some changed else none)
