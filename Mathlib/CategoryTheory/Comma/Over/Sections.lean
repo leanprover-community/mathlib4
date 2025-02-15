@@ -77,8 +77,7 @@ end
 
 variable [HasTerminal C] [HasPullbacks C] [CartesianClosed C]
 
-/-- The first leg of a cospan constructing a pullback diagram in `C used to define
-the pushforward along `f`. -/
+/-- The first leg of a cospan constructing a pullback diagram in `C` used to define `sections` . -/
 def curryId (I : C) : ⊤_ C ⟶ (I ⟹ I) :=
   CartesianClosed.curry (ChosenFiniteProducts.fst I (⊤_ C))
 
@@ -99,7 +98,7 @@ pullback diagram:
 abbrev sections (X : Over I) : C :=
   Limits.pullback (curryId I) ((exp I).map X.hom)
 
-/-- The functoriality of `section`. -/
+/-- The functoriality of `sections`. -/
 def sectionsMap {X X' : Over I} (u : X ⟶ X') :
     sections X ⟶ sections X' := by
   fapply pullback.map

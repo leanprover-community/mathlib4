@@ -8,7 +8,6 @@ import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
 import Mathlib.CategoryTheory.Monad.Products
 import Mathlib.CategoryTheory.Equivalence
-import Mathlib.CategoryTheory.Closed.Cartesian
 
 /-!
 # Adjunctions related to the over category
