@@ -295,12 +295,13 @@ lemma min_eq_right_of_lt (h : b < a) : min a b = b := min_eq_right (le_of_lt h)
 -- lemma max_eq_left_of_lt (h : b < a) : max a b = a := max_eq_left (le_of_lt h)
 -- lemma max_eq_right_of_lt (h : a < b) : max a b = b := max_eq_right (le_of_lt h)
 
-@[order_dual (reorder := 4 5 3) max_lt]
+@[order_dual lt_minOD]
 lemma lt_min (h₁ : a < b) (h₂ : a < c) : a < min b c := by
   cases le_total b c <;> simp [min_eq_left, min_eq_right, *]
 
--- lemma max_lt (h₁ : a < c) (h₂ : b < c) : max a b < c := by
---   cases le_total a b <;> simp [max_eq_left, max_eq_right, *]
+@[order_dual max_ltOD]
+lemma max_lt (h₁ : a < c) (h₂ : b < c) : max a b < c := by
+  cases le_total a b <;> simp [max_eq_left, max_eq_right, *]
 
 section Ord
 

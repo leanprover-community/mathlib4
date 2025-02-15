@@ -98,11 +98,11 @@ variable [PartialOrder α] {a b : α}
 -- see order_dual attribute of `lt_of_le_of_ne` in PartialOrder.lean
 -- theorem lt_of_le_of_ne' : a ≤ b → b ≠ a → a < b := fun h₁ h₂ ↦ lt_of_le_of_ne h₁ h₂.symm
 
-@[order_dual Ne.lt_of_leOD]
+@[order_dual lt_of_leOD]
 theorem Ne.lt_of_le : a ≠ b → a ≤ b → a < b :=
   flip lt_of_le_of_ne
 
-@[order_dual Ne.lt_of_le'OD]
+@[order_dual lt_of_le'OD]
 theorem Ne.lt_of_le' : b ≠ a → a ≤ b → a < b :=
   flip lt_of_le_of_ne'
 
@@ -110,25 +110,25 @@ end PartialOrder
 
 attribute [ext] LE
 
-@[order_dual LE.le.transOD]
+@[order_dual transOD]
 alias LE.le.trans := le_trans
 
-@[order_dual LE.le.trans'OD]
+@[order_dual trans'OD]
 alias LE.le.trans' := le_trans'
 
-@[order_dual LE.le.trans_ltOD]
+@[order_dual trans_ltOD]
 alias LE.le.trans_lt := lt_of_le_of_lt
 
-@[order_dual LE.le.trans_lt'OD]
+@[order_dual trans_lt'OD]
 alias LE.le.trans_lt' := lt_of_le_of_lt'
 -- set_option trace.to_additive_detail true in
-@[order_dual LE.le.antisymm']
+@[order_dual antisymm']
 alias LE.le.antisymm := le_antisymm
 
 -- alias LE.le.antisymm' := ge_antisymm
 
 -- set_option trace.to_additive_detail true in
-@[order_dual LE.le.lt_of_ne']
+@[order_dual lt_of_ne']
 alias LE.le.lt_of_ne := lt_of_le_of_ne
 
 -- alias LE.le.lt_of_ne' := lt_of_le_of_ne'
@@ -136,30 +136,34 @@ alias LE.le.lt_of_ne := lt_of_le_of_ne
 @[order_dual existing (reorder := 3 4) LE.le.lt_of_not_le]
 alias LE.le.lt_of_not_le := lt_of_le_not_le
 
-@[order_dual LE.le.lt_or_eqOD]
+@[order_dual lt_or_eqOD]
 alias LE.le.lt_or_eq := lt_or_eq_of_le
 
-@[order_dual LE.le.lt_or_eq_decOD]
+@[order_dual lt_or_eq_decOD]
 alias LE.le.lt_or_eq_dec := Decidable.lt_or_eq_of_le
 
 @[order_dual existing (reorder := 3 4) LT.lt.le]
 alias LT.lt.le := le_of_lt
 
-@[order_dual LT.lt.transOD]
+@[order_dual transOD]
 alias LT.lt.trans := lt_trans
 
-@[order_dual LT.lt.trans'OD]
+@[order_dual trans'OD]
 alias LT.lt.trans' := lt_trans'
 
+@[order_dual trans_leOD]
 alias LT.lt.trans_le := lt_of_lt_of_le
 
+@[order_dual trans_le'OD]
 alias LT.lt.trans_le' := lt_of_lt_of_le'
 
-@[order_dual LT.lt.ne']
+@[order_dual ne']
 alias LT.lt.ne := ne_of_lt
 
+@[order_dual existing (reorder := 3 4) LT.lt.asymm]
 alias LT.lt.asymm := lt_asymm
 
+@[order_dual existing (reorder := 3 4) LT.lt.not_lt]
 alias LT.lt.not_lt := lt_asymm
 
 @[order_dual Eq.leOD]
@@ -176,32 +180,44 @@ variable [Preorder α] {a b c : α}
 theorem lt_self_iff_false (x : α) : x < x ↔ False :=
   ⟨lt_irrefl x, False.elim⟩
 
+@[order_dual le_of_le_of_eq'OD]
 theorem le_of_le_of_eq' : b ≤ c → a = b → a ≤ c :=
   flip le_of_eq_of_le
 
+@[order_dual le_of_eq_of_le'OD]
 theorem le_of_eq_of_le' : b = c → a ≤ b → a ≤ c :=
   flip le_of_le_of_eq
 
+@[order_dual lt_of_lt_of_eq'OD]
 theorem lt_of_lt_of_eq' : b < c → a = b → a < c :=
   flip lt_of_eq_of_lt
 
+@[order_dual lt_of_eq_of_lt'OD]
 theorem lt_of_eq_of_lt' : b = c → a < b → a < c :=
   flip lt_of_lt_of_eq
 
+@[order_dual trans_eqOD]
 alias LE.le.trans_eq := le_of_le_of_eq
 
+@[order_dual trans_eq'OD]
 alias LE.le.trans_eq' := le_of_le_of_eq'
 
+@[order_dual trans_eqOD]
 alias LT.lt.trans_eq := lt_of_lt_of_eq
 
+@[order_dual trans_eq'OD]
 alias LT.lt.trans_eq' := lt_of_lt_of_eq'
 
+@[order_dual trans_leOD]
 alias Eq.trans_le := le_of_eq_of_le
 
+@[order_dual trans_geOD]
 alias Eq.trans_ge := le_of_eq_of_le'
 
+@[order_dual trans_ltOD]
 alias Eq.trans_lt := lt_of_eq_of_lt
 
+@[order_dual trans_gtOD]
 alias Eq.trans_gt := lt_of_eq_of_lt'
 
 end
@@ -212,11 +228,14 @@ variable [Preorder α] {x y : α}
 
 /-- If `x = y` then `y ≤ x`. Note: this lemma uses `y ≤ x` instead of `x ≥ y`, because `le` is used
 almost exclusively in mathlib. -/
+@[order_dual geOD]
 protected theorem ge (h : x = y) : y ≤ x :=
   h.symm.le
 
+@[order_dual not_ltOD]
 theorem not_lt (h : x = y) : ¬x < y := fun h' ↦ h'.ne h
 
+@[order_dual not_gtOD]
 theorem not_gt (h : x = y) : ¬y < x :=
   h.symm.not_lt
 
@@ -225,10 +244,11 @@ end Eq
 section
 
 variable [Preorder α] {a b : α}
-
-@[simp] lemma le_of_subsingleton [Subsingleton α] : a ≤ b := (Subsingleton.elim a b).le
+@[order_dual existing (attr := simp) (reorder := 3 4) le_of_subsingleton]
+lemma le_of_subsingleton [Subsingleton α] : a ≤ b := (Subsingleton.elim a b).le
 
 -- Making this a @[simp] lemma causes confluences problems downstream.
+@[order_dual existing (reorder := 3 4) not_lt_of_subsingleton]
 lemma not_lt_of_subsingleton [Subsingleton α] : ¬a < b := (Subsingleton.elim a b).not_lt
 
 end
@@ -237,6 +257,7 @@ namespace LE.le
 
 -- see Note [nolint_ge]
 -- Porting note: linter not found @[nolint ge_or_gt]
+@[order_dual existing (reorder := 3 4) LE.le.ge]
 protected theorem ge [LE α] {x y : α} (h : x ≤ y) : y ≥ x :=
   h
 
@@ -244,41 +265,41 @@ section PartialOrder
 
 variable [PartialOrder α] {a b : α}
 
-@[order_dual (reorder := 3 4) LE.le.lt_iff_ne']
+@[order_dual lt_iff_neOD]
 theorem lt_iff_ne (h : a ≤ b) : a < b ↔ a ≠ b :=
   ⟨fun h ↦ h.ne, h.lt_of_ne⟩
 
-@[order_dual (reorder := 3 4) LE.le.gt_iff_ne']
+@[order_dual gt_iff_neOD]
 theorem gt_iff_ne (h : a ≤ b) : a < b ↔ b ≠ a :=
   ⟨fun h ↦ h.ne.symm, h.lt_of_ne'⟩
 
-@[order_dual (reorder := 3 4) LE.le.not_lt_iff_eq']
+@[order_dual not_lt_iff_eqOD]
 theorem not_lt_iff_eq (h : a ≤ b) : ¬a < b ↔ a = b :=
   h.lt_iff_ne.not_left
 
-@[order_dual (reorder := 3 4) LE.le.not_gt_iff_eq']
+@[order_dual not_gt_iff_eqOD]
 theorem not_gt_iff_eq (h : a ≤ b) : ¬a < b ↔ b = a :=
   h.gt_iff_ne.not_left
 
-@[order_dual (reorder := 3 4) LE.le.le_iff_eq']
+@[order_dual le_iff_eqOD]
 theorem le_iff_eq (h : a ≤ b) : b ≤ a ↔ b = a :=
   ⟨fun h' ↦ h'.antisymm h, Eq.le⟩
 
-@[order_dual existing (reorder := 3 4) LE.le.ge_iff_eq]
+@[order_dual ge_iff_eqOD]
 theorem ge_iff_eq (h : a ≤ b) : b ≤ a ↔ a = b :=
   ⟨h.antisymm, Eq.ge⟩
 
 end PartialOrder
 
-@[order_dual (reorder := 3 4) LE.le.lt_or_le']
+@[order_dual lt_or_leOD]
 theorem lt_or_le [LinearOrder α] {a b : α} (h : a ≤ b) (c : α) : a < c ∨ c ≤ b :=
   ((lt_or_ge a c).imp id) fun hc ↦ le_trans hc h
 
-@[order_dual (reorder := 3 4) LE.le.le_or_lt']
+@[order_dual le_or_ltOD]
 theorem le_or_lt [LinearOrder α] {a b : α} (h : a ≤ b) (c : α) : a ≤ c ∨ c < b :=
   ((le_or_gt a c).imp id) fun hc ↦ lt_of_lt_of_le hc h
 
-@[order_dual (reorder := 3 4) LE.le.le_or_le']
+@[order_dual le_or_leOD]
 theorem le_or_le [LinearOrder α] {a b : α} (h : a ≤ b) (c : α) : a ≤ c ∨ c ≤ b :=
   (h.le_or_lt c).elim Or.inl fun h ↦ Or.inr <| le_of_lt h
 
@@ -301,6 +322,7 @@ protected theorem false [Preorder α] {x : α} : x < x → False :=
 -- theorem ne' [Preorder α] {x y : α} (h : x < y) : y ≠ x :=
 --   h.ne.symm
 
+@[order_dual lt_or_ltOD]
 theorem lt_or_lt [LinearOrder α] {x y : α} (h : x < y) (z : α) : x < z ∨ z < y :=
   (lt_or_ge z y).elim Or.inr fun hz ↦ Or.inl <| h.trans_le hz
 
@@ -308,36 +330,45 @@ end LT.lt
 
 -- see Note [nolint_ge]
 -- Porting note: linter not found @[nolint ge_or_gt]
+@[order_dual existing (reorder := 3 4) GE.ge.le]
 protected theorem GE.ge.le [LE α] {x y : α} (h : x ≥ y) : y ≤ x :=
   h
 
 -- see Note [nolint_ge]
 -- Porting note: linter not found @[nolint ge_or_gt]
+@[order_dual existing (reorder := 3 4) GT.gt.lt]
 protected theorem GT.gt.lt [LT α] {x y : α} (h : x > y) : y < x :=
   h
 
 -- see Note [nolint_ge]
 -- Porting note: linter not found @[nolint ge_or_gt]
+@[order_dual ge_of_eqOD]
 theorem ge_of_eq [Preorder α] {a b : α} (h : a = b) : a ≥ b :=
   h.ge
 
+@[order_dual ne_of_not_leOD]
 theorem ne_of_not_le [Preorder α] {a b : α} (h : ¬a ≤ b) : a ≠ b := fun hab ↦ h (le_of_eq hab)
 
 section PartialOrder
 variable [PartialOrder α] {a b : α}
 
 -- See Note [decidable namespace]
+@[order_dual le_iff_eq_or_ltOD]
 protected theorem Decidable.le_iff_eq_or_lt [DecidableRel (α := α) (· ≤ ·)] :
     a ≤ b ↔ a = b ∨ a < b :=
   Decidable.le_iff_lt_or_eq.trans or_comm
 
+@[order_dual le_iff_eq_or_ltOD]
 theorem le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := le_iff_lt_or_eq.trans or_comm
 
+@[order_dual lt_iff_le_and_neOD]
 theorem lt_iff_le_and_ne : a < b ↔ a ≤ b ∧ a ≠ b :=
   ⟨fun h ↦ ⟨le_of_lt h, ne_of_lt h⟩, fun ⟨h1, h2⟩ ↦ h1.lt_of_ne h2⟩
 
+@[order_dual eq_iff_not_lt_of_leOD]
 lemma eq_iff_not_lt_of_le (hab : a ≤ b) : a = b ↔ ¬ a < b := by simp [hab, lt_iff_le_and_ne]
 
+@[order_dual eq_iff_not_ltOD]
 alias LE.le.eq_iff_not_lt := eq_iff_not_lt_of_le
 
 -- See Note [decidable namespace]
