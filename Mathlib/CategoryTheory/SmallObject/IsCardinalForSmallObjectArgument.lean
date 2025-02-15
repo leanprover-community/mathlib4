@@ -56,7 +56,7 @@ class IsCardinalForSmallObjectArgument (κ : Cardinal.{w}) [Fact κ.IsRegular]
   hasIterationOfShape : HasIterationOfShape κ.ord.toType C
   preservesColimit {A B X Y : C} (i : A ⟶ B) (_ : I i) (f : X ⟶ Y)
     (hf : RelativeCellComplex.{w} (fun (_ : κ.ord.toType) ↦ I.homFamily) f) :
-    PreservesColimit hf.F (coyoneda.obj (Opposite.op A)) := by infer_instance
+    PreservesColimit hf.F (coyoneda.obj (Opposite.op A))
 
 end MorphismProperty
 
