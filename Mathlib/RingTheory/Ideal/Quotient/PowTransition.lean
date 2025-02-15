@@ -52,7 +52,7 @@ variable (I M)
 The linear map from `M ⧸ I ^ m • ⊤` to `M ⧸ I ^ n • ⊤` induced by
 the natural inclusion `I ^ n • ⊤ → I ^ m • ⊤`.
 -/
-def mapQPow {m n : ℕ} (le : m ≤ n) :
+abbrev mapQPow {m n : ℕ} (le : m ≤ n) :
     M ⧸ (I ^ n • ⊤ : Submodule R M) →ₗ[R] M ⧸ (I ^ m • ⊤ : Submodule R M) :=
   liftQ (I ^ n • ⊤ : Submodule R M) (mkQ (I ^ m • ⊤ : Submodule R M))
     ((ker_mkQ (I ^ m • ⊤ : Submodule R M)).symm ▸ (smul_mono_left (pow_le_pow_right le)))
@@ -108,7 +108,7 @@ variable (I)
 The ring homomorphism from `R ⧸ I ^ m`
 to `R ⧸ I ^ n` induced by the natural inclusion `I ^ n → I ^ m`.
 -/
-def factorPow {m n : ℕ} (le : n ≤ m) : R ⧸ I ^ m →+* R ⧸ I ^ n :=
+abbrev factorPow {m n : ℕ} (le : n ≤ m) : R ⧸ I ^ m →+* R ⧸ I ^ n :=
   factor _ _ (pow_le_pow_right le)
 
 @[simp]
