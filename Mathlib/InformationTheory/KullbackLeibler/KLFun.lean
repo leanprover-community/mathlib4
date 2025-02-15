@@ -5,7 +5,6 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 -/
 import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
-import Mathlib.Tactic.Positivity.Core
 
 /-!
 # The real function `fun x ↦ x * log x + 1 - x`
