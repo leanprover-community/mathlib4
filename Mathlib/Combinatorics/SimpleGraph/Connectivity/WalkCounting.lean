@@ -267,7 +267,7 @@ lemma odd_card_iff_odd_components [Finite V] : Odd (Nat.card V) ↔
     Set.ncard_coe_Finset, Set.Nat.card_coe_set_eq]
   exact (Finset.odd_sum_iff_odd_card_odd (fun x : G.ConnectedComponent ↦ x.supp.ncard))
 
-lemma ncard_odd_components_mono [Finite V] {G' : SimpleGraph V} [DecidableRel G.Adj] (h : G ≤ G') :
+lemma ncard_odd_components_mono [Finite V] {G' : SimpleGraph V} (h : G ≤ G') :
      {c : ConnectedComponent G' | Odd c.supp.ncard}.ncard
       ≤ {c : ConnectedComponent G | Odd c.supp.ncard}.ncard := by
   have aux (c : G'.ConnectedComponent) (hc : Odd c.supp.ncard) :
