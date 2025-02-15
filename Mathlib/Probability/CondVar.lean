@@ -34,7 +34,7 @@ following conditions is true:
 - `X - μ[X | m]` is not square-integrable. -/
 noncomputable def condVar : Ω → ℝ := μ[(X - μ[X | m]) ^ 2 | m]
 
-@[inherit_doc] scoped notation "Var[" X " ; " μ " | " m "]" => condVar m X μ
+@[inherit_doc] scoped notation "Var[" X "; " μ " | " m "]" => condVar m X μ
 
 /-- Conditional variance of a real-valued random variable. It is defined as `0` if any one of the
 following conditions is true:

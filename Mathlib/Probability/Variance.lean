@@ -60,23 +60,23 @@ def variance : ℝ := (evariance X μ).toReal
 /-- The `ℝ≥0∞`-valued variance of the real-valued random variable `X` according to the measure `μ`.
 
 This is defined as the Lebesgue integral of `(X - 𝔼[X])^2`. -/
-scoped notation "eVar[" X " ; " μ "]" => ProbabilityTheory.evariance X μ
+scoped notation "eVar[" X "; " μ "]" => ProbabilityTheory.evariance X μ
 
 /-- The `ℝ≥0∞`-valued variance of the real-valued random variable `X` according to the volume
 measure.
 
 This is defined as the Lebesgue integral of `(X - 𝔼[X])^2`. -/
-scoped notation "eVar[" X "]" => eVar[X ; MeasureTheory.MeasureSpace.volume]
+scoped notation "eVar[" X "]" => eVar[X; MeasureTheory.MeasureSpace.volume]
 
 /-- The `ℝ`-valued variance of the real-valued random variable `X` according to the measure `μ`.
 
 It is set to `0` if `X` has infinite variance. -/
-scoped notation "Var[" X " ; " μ "]" => ProbabilityTheory.variance X μ
+scoped notation "Var[" X "; " μ "]" => ProbabilityTheory.variance X μ
 
 /-- The `ℝ`-valued variance of the real-valued random variable `X` according to the volume measure.
 
 It is set to `0` if `X` has infinite variance. -/
-scoped notation "Var[" X "]" => Var[X ; MeasureTheory.MeasureSpace.volume]
+scoped notation "Var[" X "]" => Var[X; MeasureTheory.MeasureSpace.volume]
 
 theorem evariance_lt_top [IsFiniteMeasure μ] (hX : Memℒp X 2 μ) : evariance X μ < ∞ := by
   have := ENNReal.pow_lt_top (hX.sub <| memℒp_const <| μ[X]).2 2
