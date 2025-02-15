@@ -37,10 +37,6 @@ and that `πObj I κ f` has the right lifting property with respect to `I`
 iterating to the power `κ.ord.toType` the functor `Arrow C ⥤ Arrow C` defined
 in the file `SmallObject.Construction`. This factorization is functorial in `f`
 and gives the property `HasFunctorialFactorization I.rlp.llp I.rlp`.
-Finally, the lemma `llp_rlp_of_isCardinalForSmallObjectArgument`
-(and its primed version) shows that the morphisms in `I.rlp.llp` are exactly
-the retracts of the transfinite compositions (of shape `κ.ord.toType`) of
-pushouts of coproducts of morphisms in `I`.
 
 ## References
 - https://ncatlab.org/nlab/show/small+object+argument
