@@ -208,9 +208,8 @@ where
 
 section Preprocessing
 
-private lemma not_lt_of_not_le {α : Type} [Preorder α] {x y : α} (h : ¬(x ≤ y)) : ¬(x < y) := by
-  intro h'
-  exact h h'.le
+private lemma not_lt_of_not_le {α : Type} [Preorder α] {x y : α} (h : ¬(x ≤ y)) : ¬(x < y) :=
+  (h ·.le)
 
 private lemma le_of_not_lt_le {α : Type} [Preorder α] {x y : α} (h1 : ¬(x < y)) (h2 : x ≤ y) :
     y ≤ x := by
