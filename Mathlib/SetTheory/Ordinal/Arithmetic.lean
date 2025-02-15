@@ -1699,7 +1699,7 @@ theorem lsub_le_sup_succ {ι : Type u} (f : ι → Ordinal.{max u v}) :
 set_option linter.deprecated false in
 theorem sup_eq_lsub_or_sup_succ_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
     sup.{_, v} f = lsub.{_, v} f ∨ succ (sup.{_, v} f) = lsub.{_, v} f := by
-  cases' eq_or_lt_of_le (sup_le_lsub.{_, v} f) with h h
+  rcases eq_or_lt_of_le (sup_le_lsub.{_, v} f) with h | h
   · exact Or.inl h
   · exact Or.inr ((succ_le_of_lt h).antisymm (lsub_le_sup_succ f))
 
