@@ -741,7 +741,7 @@ is a block (Wielandt, th. 7.3)-/
 theorem of_subset (a : X) (hfB : B.Finite) :
     IsBlock G (⋂ (k : G) (_ : a ∈ k • B), k • B) := by
   let B' := ⋂ (k : G) (_ : a ∈ k • B), k • B
-  cases' Set.eq_empty_or_nonempty B with hfB_e hfB_ne
+  rcases Set.eq_empty_or_nonempty B with hfB_e | hfB_ne
   · simp [hfB_e]
   have hB'₀ : ∀ (k : G) (_ : a ∈ k • B), B' ≤ k • B := by
     intro k hk

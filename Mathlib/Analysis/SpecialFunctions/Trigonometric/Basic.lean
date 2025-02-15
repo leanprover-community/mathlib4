@@ -753,7 +753,7 @@ theorem cos_pi_div_three : cos (π / 3) = 1 / 2 := by
       congr 1
       ring
     linarith [cos_pi, cos_three_mul (π / 3)]
-  cases' mul_eq_zero.mp h₁ with h h
+  rcases mul_eq_zero.mp h₁ with h | h
   · linarith [pow_eq_zero h]
   · have : cos π < cos (π / 3) := by
       refine cos_lt_cos_of_nonneg_of_le_pi ?_ le_rfl ?_ <;> linarith [pi_pos]
