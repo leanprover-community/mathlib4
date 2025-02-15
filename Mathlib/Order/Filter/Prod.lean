@@ -172,7 +172,7 @@ theorem Eventually.curry {la : Filter α} {lb : Filter β} {p : α × β → Pro
 
 protected lemma Frequently.uncurry {la : Filter α} {lb : Filter β} {p : α → β → Prop}
     (h : ∃ᶠ x in la, ∃ᶠ y in lb, p x y) : ∃ᶠ xy in la ×ˢ lb, p xy.1 xy.2 :=
-  mt (fun h ↦ by simpa only [not_frequently] using h.curry) h
+  mt (fun h ↦ by push_neg; exact h.curry) h
 
 /-- A fact that is eventually true about all pairs `l ×ˢ l` is eventually true about
 all diagonal pairs `(i, i)` -/

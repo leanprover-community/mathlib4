@@ -803,8 +803,8 @@ theorem eventually_eventually_nhds {p : X → Prop} :
 @[simp]
 theorem frequently_frequently_nhds {p : X → Prop} :
     (∃ᶠ x' in 𝓝 x, ∃ᶠ x'' in 𝓝 x', p x'') ↔ ∃ᶠ x in 𝓝 x, p x := by
-  rw [← not_iff_not]
-  simp only [not_frequently, eventually_eventually_nhds]
+  rw [← not_iff_not]; push_neg
+  exact eventually_eventually_nhds
 
 @[simp]
 theorem eventually_mem_nhds_iff : (∀ᶠ x' in 𝓝 x, s ∈ 𝓝 x') ↔ s ∈ 𝓝 x :=

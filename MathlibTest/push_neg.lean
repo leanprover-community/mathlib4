@@ -7,6 +7,7 @@ Authors: Alice Laroche, Frédéric Dupuis, Jireh Loreaux, Jovan Gerbscheid
 import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finset.Empty
 import Mathlib.Tactic.Push
+import Mathlib.Order.Filter.Basic
 
 private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
@@ -166,6 +167,14 @@ theorem mem_compl (s : Set α) (a : α) (h : a ∉ sᶜ) : a ∈ s := by
   push_neg at h
   exact h
 
+example (f : Filter ℕ) (h : ¬∀ᶠ x in f, x = 0) | ∃ᶠ x in f, x ≠ 0 := by
+  push_neg at h
+  exact h
+
+example (f : Filter ℕ) (h : ¬∃ᶠ x in f, x = 0) | ∀ᶠ x in f, x ≠ 0 := by
+  push_neg at h
+  exact h
+
 section Empty
 
 example (h : ¬IsEmpty α) : Nonempty α := by
@@ -273,7 +282,7 @@ example (h : (¬ ∀ n > 0, n = 3 → n = 5) ∧ ¬ ∃ n, n = 0) :
   exact h
 
 end Conv
-
+#check
 section Simproc
 
 example (a : β) : ¬ ∀ x : β, x < a → ∃ y : β, (y < a) ∧ ∀ z : β, x = z := by
@@ -282,7 +291,7 @@ example (a : β) : ¬ ∀ x : β, x < a → ∃ y : β, (y < a) ∧ ∀ z : β, 
   exact test_sorry
 
 attribute [local simp] Fin.forall_iff
--- verify that `↓pushNeg` overrides `Fin.forall_iff`.
+-- verify that `↓pushNeg` overrides a lemma like `Fin.forall_iff`.
 example : ¬ ∀ i : Fin n, i ≠ i := by
   simp [↓pushNeg]
   guard_target = ∃ i : Fin n, True

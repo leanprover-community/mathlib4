@@ -262,7 +262,6 @@ theorem ofScalars_radius_eq_zero_of_tendsto [NormOneClass E]
   apply not_summable_of_ratio_norm_eventually_ge one_lt_two
   · contrapose! hc
     apply not_tendsto_atTop_of_tendsto_nhds (a:=0)
-    rw [not_frequently] at hc
     apply Tendsto.congr' ?_ tendsto_const_nhds
     filter_upwards [hc] with n hc'
     rw [ofScalars_norm, norm_mul, norm_norm, not_ne_iff, mul_eq_zero] at hc'

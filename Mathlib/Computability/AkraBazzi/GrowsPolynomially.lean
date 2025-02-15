@@ -237,7 +237,6 @@ lemma eventually_atTop_zero_or_pos_or_neg (hf : GrowsPolynomially f) :
   if h : ∃ᶠ x in atTop, f x = 0 then
     exact Or.inl <| eventually_zero_of_frequently_zero hf h
   else
-    rw [not_frequently] at h
     push_neg at h
     cases eventually_atTop_nonneg_or_nonpos hf with
     | inl h' =>

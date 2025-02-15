@@ -167,28 +167,27 @@ The `push` tactic can be extended using the `@[push]` attribute.
 See also `push_neg`, which is a macro for `push Not`.
 
 In addition to constants, `push` can be used to push `∀` and `fun` binders:
-- `push Forall` can turn `∀ a, p a ∧ q a` into `(∀ a, p a) ∧ (∀ a, q a)`.
-- `push lambda` can turn `fun x => f x + g x` into `(fun x => f x) + (fun x => g x)`
+- `push ∀ _, _` can turn `∀ a, p a ∧ q a` into `(∀ a, p a) ∧ (∀ a, q a)`.
+- `push fun _ ↦ _` can turn `fun x => f x + g x` into `(fun x => f x) + (fun x => g x)`
 (or into `f + g`).
 
 One can use this tactic at the goal using `push_neg`,
 at every hypothesis and the goal using `push_neg at *` or at selected hypotheses and the goal
 using say `push_neg at h h' ⊢`, as usual.
 -/
-syntax (name := push) "push" (discharger)? (ppSpace colGt ident) (location)? : tactic
+syntax (name := push) "push " (discharger)? (colGt term) (location)? : tactic
 
 /--
 Elaborator for the "head" constant used by `push`.
 We check if the name refers to the `∀` or `fun` binder
 before interpreting the name as a constant.
 -/
-def elabHead (stx : Syntax) : CoreM Head := withRef stx do
-  match stx.getId with
-  | `Forall
-  | `forall => return .Forall
-  | `lambda
-  | `fun    => return .lambda
-  | _       => .name <$> Elab.realizeGlobalConstNoOverloadWithInfo stx
+def elabHead (stx : Syntax) : TacticM Head := withRef stx do
+  let e ← elabTermForApply stx
+  if e.isForall then return .Forall
+  if e.isLambda then return .lambda
+  if let some const := e.getAppFn.constName? then return .name const
+  throwError "tactic `push` expected a term that can be pushed, not {indentExpr e}"
 
 @[tactic push, inherit_doc push]
 def elabPush : Tactic := fun stx => withMainContext do
@@ -231,7 +230,7 @@ macro (name := push_neg) "push_neg" loc:(location)? : tactic => `(tactic| push N
 section Conv
 
 @[inherit_doc push]
-syntax (name := pushConv) "push" (discharger)? (ppSpace colGt ident) : conv
+syntax (name := pushConv) "push " (discharger)? (colGt term) : conv
 
 @[inherit_doc push_neg]
 macro "push_neg" : conv => `(conv| push Not)
