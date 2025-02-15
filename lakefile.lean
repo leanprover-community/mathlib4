@@ -9,7 +9,7 @@ open Lake DSL
 
 require "leanprover-community" / "batteries" @ git "lean-pr-testing-7059"
 require "leanprover-community" / "Qq" @ git "master"
-require "leanprover-community" / "aesop" @ git "master"
+require "leanprover-community" / "aesop" @ git "lean-pr-testing-7059"
 require "leanprover-community" / "proofwidgets" @ git "v0.0.52-pre" -- ProofWidgets should always be pinned to a specific version
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
