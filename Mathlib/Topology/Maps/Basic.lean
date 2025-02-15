@@ -136,6 +136,7 @@ lemma continuousAt_iff' (hf : IsInducing f) {x : X} (h : range f ∈ 𝓝 (f x))
     ContinuousAt (g ∘ f) x ↔ ContinuousAt g (f x) := by
   simp_rw [ContinuousAt, Filter.Tendsto, ← hf.map_nhds_of_mem _ h, Filter.map_map, comp]
 
+@[fun_prop]
 protected lemma continuous (hf : IsInducing f) : Continuous f :=
   hf.continuous_iff.mp continuous_id
 
@@ -249,6 +250,7 @@ lemma continuous_iff (hg : IsEmbedding g) : Continuous f ↔ Continuous (g ∘ f
 @[deprecated (since := "2024-10-26")]
 alias Embedding.continuous_iff := continuous_iff
 
+@[fun_prop]
 lemma continuous (hf : IsEmbedding f) : Continuous f := hf.isInducing.continuous
 
 lemma closure_eq_preimage_closure_image (hf : IsEmbedding f) (s : Set X) :
@@ -601,6 +603,7 @@ theorem IsOpenEmbedding.continuousAt_iff [TopologicalSpace Z] (hf : IsOpenEmbedd
 @[deprecated (since := "2024-10-18")]
 alias OpenEmbedding.continuousAt_iff := IsOpenEmbedding.continuousAt_iff
 
+@[fun_prop]
 theorem IsOpenEmbedding.continuous (hf : IsOpenEmbedding f) : Continuous f :=
   hf.isEmbedding.continuous
 
