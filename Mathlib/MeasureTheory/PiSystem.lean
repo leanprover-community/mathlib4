@@ -82,18 +82,18 @@ theorem IsPiSystem.singleton (S : Set α) : IsPiSystem ({S} : Set (Set α)) := b
 theorem IsPiSystem.insert_empty {S : Set (Set α)} (h_pi : IsPiSystem S) :
     IsPiSystem (insert ∅ S) := by
   intro s hs t ht hst
-  obtain ⟨hs, hs⟩ := hs
+  rcases hs with hs | hs
   · simp [hs]
-  · obtain ⟨ht, ht⟩ := ht
+  · rcases ht with ht | ht
     · simp [ht]
     · exact Set.mem_insert_of_mem _ (h_pi s hs t ht hst)
 
 theorem IsPiSystem.insert_univ {S : Set (Set α)} (h_pi : IsPiSystem S) :
     IsPiSystem (insert Set.univ S) := by
   intro s hs t ht hst
-  obtain ⟨hs, hs⟩ := hs
-  · obtain ⟨ht, ht⟩ := ht <;> simp [hs, ht]
-  · obtain ⟨ht, ht⟩ := ht
+  rcases hs with hs | hs
+  · rcases ht with ht | ht <;> simp [hs, ht]
+  · rcases ht with ht | ht
     · simp [hs, ht]
     · exact Set.mem_insert_of_mem _ (h_pi s hs t ht hst)
 
