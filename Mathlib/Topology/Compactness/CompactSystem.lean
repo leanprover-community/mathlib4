@@ -67,8 +67,6 @@ example (C : ℕ → Set α) (n : ℕ) : ⋂ i < n+1, C i = ⋂ i ≤ n, C i :=
 
 example (n : ℕ) : (Finset.range (n + 1)).Nonempty := by exact Finset.nonempty_range_succ
 
-example (C : ℕ → Set α) (s : Finset ℕ) (hs : s = ∅): ⋂ i ∈ s, C i = ∅ := by apply?
-
 @[simp]
 lemma iInter_empty_iff [Inhabited α] {C : ℕ → Set α} : (∃ n : ℕ, ⋂ i ≤ n, C i = ∅) ↔
     (∃ (s : Finset ℕ), ⋂ i ∈ s, C i = ∅) := by
@@ -127,7 +125,7 @@ theorem decumulate_succ (s : ℕ → Set α) (n : ℕ) :
     · simp only [not_le] at h
       exact Nat.le_antisymm hi h ▸ hx.2
 
-theorem iInter_decumulate (s : ℕ → Set α) (n : ℕ): ⋂ x, ⋂ y ≤ x, s y = ⋂ y, s y := by
+theorem iInter_decumulate (s : ℕ → Set α) : ⋂ x, ⋂ y ≤ x, s y = ⋂ y, s y := by
   apply Set.Subset.antisymm
   · apply iInter_mono
     intro z x hx
@@ -159,76 +157,64 @@ lemma l2 (C : Set (Set α)) (hC : IsPiSystem' C) (s : ℕ → Set α) (hs : ∀ 
     rw [decumulate_succ s n]
     exact hC (⋂ i, ⋂ (_ : i ≤ n), s i) hn (s (n + 1)) (hs (n + 1))
 
-lemma l3 (C : ℕ → Set α) (hC : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C) :
-  ∃ (s : Finset ℕ), ⋂ i ∈ s, C i = ∅ ↔ ∃ n, C n = ∅ := by sorry
+lemma l10 (C : ℕ → Set α) (hd : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C) :
+      (∃ n, C n = ∅) ↔ (∃ n, ⋂ i ≤ n, C i = ∅) := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · obtain ⟨n, hn⟩ := h
+    use n
+    by_cases hn' : n = 0
+    · rw [hn']
+      simp only [le_zero_eq, iInter_iInter_eq_left]
+      exact hn' ▸ hn
+    · obtain ⟨k, hk⟩ := exists_eq_succ_of_ne_zero hn'
+      rw [hk, decumulate_succ, ← succ_eq_add_one, ← hk, hn, Set.inter_empty]
+  · have h3 (n : ℕ) : ∃ m, ⋂ i ≤ n, C i ⊇ C m := by
+      induction n with
+      | zero =>
+        use 0
+        simp
+      | succ n hn =>
+        obtain ⟨m, hm⟩ := hn
+        rw [decumulate_succ]
+        obtain ⟨k, hk⟩ := hd m (n+1)
+        simp at hk
+        use k
+        simp only [Set.subset_inter_iff]
+        exact ⟨le_trans hk.1 hm, hk.2⟩
+    rw [← not_imp_not]
+    push_neg
+    intro h n
+    obtain h2 := hd n (n + 1)
+    simp at h2
+    obtain ⟨m, hm⟩ := h3 n
+    exact Set.Nonempty.mono hm (h m)
 
 theorem IsCompactSystem.iff_mono [Inhabited α] (hpi : IsPiSystem' p) : (IsCompactSystem p) ↔
-    (∀ (C : ℕ → Set α) (_ : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C), (∀ i, p (C i)) →
+    (∀ (C : ℕ → Set α), ∀ (_ : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C), (∀ i, p (C i)) →
       ⋂ i, C i = ∅ → ∃ (n : ℕ), C n = ∅) := by
-  have hs (C : ℕ → Set α) (hd : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C) : (∃ n, C n = ∅) ↔ (∃ n, ⋂ i ≤ n, C i = ∅) := by
-    refine ⟨fun h ↦ ?_, ?_⟩
-    · obtain ⟨n, hn⟩ := h
-      use n
-      by_cases hn' : n = 0
-      · rw [hn']
-        simp only [le_zero_eq, iInter_iInter_eq_left]
-        exact hn' ▸ hn
-      · obtain ⟨k, hk⟩ := exists_eq_succ_of_ne_zero hn'
-        rw [hk, decumulate_succ, ← succ_eq_add_one, ← hk, hn, Set.inter_empty]
-    · have h3 (n : ℕ) : ∃ m, ⋂ i ≤ n, C i ⊇ C m := by
-        induction n with
-        | zero =>
-          use 0
-          simp
-        | succ n hn =>
-          obtain ⟨m, hm⟩ := hn
-          rw [decumulate_succ]
-          obtain ⟨k, hk⟩ := hd m (n+1)
-          simp at hk
-          use k
-          simp only [Set.subset_inter_iff]
-          exact ⟨le_trans hk.1 hm, hk.2⟩
-      rw [← not_imp_not]
-      push_neg
-      intro h n
-      obtain h2 := hd n (n + 1)
-      simp at h2
-      obtain ⟨m, hm⟩ := h3 n
-      exact Set.Nonempty.mono hm (h m)
-  -- rw [IsCompactSystem.iff_le]
-  refine ⟨fun h ↦ fun C hdi hi ↦ ?_, fun h C ↦ ?_⟩
-  · rw [hs C hdi]
+  refine ⟨fun h ↦ fun C hdi hi ↦ ?_, fun h C h1 h2 ↦ ?_⟩
+  · rw [l10 C hdi]
     exact h C hi
-  ·
-    sorry
-
-  let D := fun n ↦ ⋂ i ≤ n, C i
-  have h' := h C
-  have h1 (n : ℕ) : ⋂ i ≤ n, D i = ⋂ i ≤ n, C i := biInter_decumulate C n
-  have h1' : ⋂ i, D i = ⋂ i, C i := by exact biInter_le_eq_iInter
-  have h2 : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) D := by
-    refine directed_of_isDirected_le ?_
-    intro i j hij
-    simp [D]
-    intro k hk
-    refine biInter_subset_of_mem ?_
-    exact le_trans hk hij
-  intro hi hi'
-  have h3 (i : ℕ) : p (D i) := by
-    simp [D, hpi]
-    obtain h4 := l2 {s : Set α | p s} hpi C
-    obtain h5 := h4 hi i
-    exact h5
-  obtain h5 := h D h2 h3 (h1' ▸  hi')
-  obtain h6 := h D h2
-  rw [← iInter_empty_iff] at *
-  rcases h5 with ⟨n, hn⟩
-  use n
-  rwa [← h1 n]
-
-lemma l4 : (∀ (n : ℕ), (C n).Nonempty →
-  (⋂ i, C i).Nonempty) ↔ ((⋂ i, C i) = ∅ → ∃ (n : ℕ), (C n) = ∅) := by
-  sorry
+  · let D := fun n ↦ ⋂ i ≤ n, C i
+    have h' := h C
+    have h8 (n : ℕ) : ⋂ i ≤ n, D i = ⋂ i ≤ n, C i := biInter_decumulate C n
+    have h1' : ⋂ i, D i = ⋂ i, C i := by exact biInter_le_eq_iInter
+    have h9 : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) D := by
+      refine directed_of_isDirected_le ?_
+      intro i j hij
+      simp [D]
+      intro k hk
+      refine biInter_subset_of_mem ?_
+      exact le_trans hk hij
+    have h3 (i : ℕ) : p (D i) := by
+      simp [D, hpi]
+      obtain h4 := l2 {s : Set α | p s} hpi C
+      obtain h5 := h4 h1 i
+      exact h5
+    obtain h5 := h D h9 h3 (h1' ▸  h2)
+    obtain h6 := h D h9
+    rcases h5 with ⟨n, hn⟩
+    use n
 
 example (P Q : Prop) : (P → Q) ↔ (¬ Q → ¬ P) := by exact Iff.symm not_imp_not
 
@@ -237,15 +223,15 @@ theorem IsCompactSystem.iff_mono' [Inhabited α] (hpi : IsPiSystem' p) : (IsComp
   ∀ (C : ℕ → Set α), ∀ (_ : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C), (∀ i, p (C i)) →
     (∀ (n : ℕ), (C n).Nonempty) →
       (⋂ i, C i).Nonempty  := by
-  -- rw [IsCompactSystem.iff_mono hpi]
-  refine ⟨fun h1 C h3 h4 ↦ ?_, fun h1 h2 h3 h4 ↦ ?_⟩
+  rw [IsCompactSystem.iff_mono hpi]
+  refine ⟨fun h1 C h3 h4 ↦ ?_, fun h1 C h3 ↦ ?_⟩
   · rw [← not_imp_not]
     push_neg
-
-    refine h1 C h4
-    simp only [nonempty_iInter, not_exists, not_forall]
-    sorry
-  · sorry
+    exact h1 C h3 h4
+  · intro s
+    rw [← not_imp_not]
+    push_neg
+    exact h1 C h3 s
 
 
 
@@ -279,9 +265,6 @@ lemma l7 (p : α → Prop) (s : α) : (s ∈ ⋃ (i : α) (_ : p i), {i}) ↔ (�
   rfl
 
 variable {α : Type*} [TopologicalSpace α]
-
-example (p : α → Prop) (s : α) : (⋃ (i : α) (_ : p i), {i}) s ↔ p s := by
-  apply?
 
 example (x y : Set α) (hx : IsClosed x) (hy : IsClosed y) : IsClosed (x ∩ y) := by
   exact IsClosed.inter hx hy
