@@ -447,7 +447,8 @@ lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_inter_of_eq
   subst h
   exact ContMDiffWithinAt.mpullbackWithin_vectorField_inter hV hf hf' hx₀ hs hmn
 
-/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
+/-- The pullback of a `C^m` vector field by a `C^n` function with invertible derivative and
+with `m + 1 ≤ n` is `C^m`.
 Version within a set at a point. -/
 protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_of_mem
     (hV : ContMDiffWithinAt I' I'.tangent m
@@ -460,7 +461,8 @@ protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_of_mem
     hV hf hf' hx₀ hs hmn).mono_of_mem_nhdsWithin
   exact Filter.inter_mem self_mem_nhdsWithin hst
 
-/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
+/-- The pullback of a `C^m` vector field by a `C^n` function with invertible derivative and
+with `m + 1 ≤ n` is `C^m`.
 Version within a set at a point. -/
 protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_of_mem_of_eq
     (hV : ContMDiffWithinAt I' I'.tangent m
@@ -473,7 +475,8 @@ protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_of_mem_of_e
   subst hy₀
   exact ContMDiffWithinAt.mpullbackWithin_vectorField_of_mem hV hf hf' hx₀ hs hmn hst
 
-/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
+/-- The pullback of a `C^m` vector field by a `C^n` function with invertible derivative and
+with `m + 1 ≤ n` is `C^m`.
 Version within a set at a point. -/
 protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField
     (hV : ContMDiffWithinAt I' I'.tangent m
@@ -485,7 +488,8 @@ protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField
   ContMDiffWithinAt.mpullbackWithin_vectorField_of_mem hV hf hf' hx₀ hs hmn
     hst.preimage_mem_nhdsWithin
 
-/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
+/-- The pullback of a `C^m` vector field by a `C^n` function with invertible derivative and
+with `m + 1 ≤ n` is `C^m`.
 Version within a set at a point. -/
 protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_of_eq
     (hV : ContMDiffWithinAt I' I'.tangent m
@@ -497,7 +501,8 @@ protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_of_eq
   subst h
   exact ContMDiffWithinAt.mpullbackWithin_vectorField hV hf hf' hx₀ hs hmn hst
 
-/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
+/-- The pullback of a `C^m` vector field by a `C^n` function with invertible derivative and
+with `m + 1 ≤ n` is `C^m`.
 Version within a set at a point, with a set used for the pullback possibly larger. -/
 protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField' {u : Set M}
     (hV : ContMDiffWithinAt I' I'.tangent m
@@ -519,7 +524,8 @@ protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField' {u : Set M
   simp only [mpullbackWithin, Bundle.TotalSpace.mk_inj]
   rw [MDifferentiableWithinAt.mfderivWithin_mono (h'y.mdifferentiableWithinAt le_rfl) (hs _ hy) hu]
 
-/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
+/-- The pullback of a `C^m` vector field by a `C^n` function with invertible derivative and
+with `m + 1 ≤ n` is `C^m`.
 Version within a set at a point, with a set used for the pullback possibly larger. -/
 protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_of_eq' {u : Set M}
     (hV : ContMDiffWithinAt I' I'.tangent m
@@ -532,7 +538,8 @@ protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_of_eq' {u :
   subst hy₀
   exact ContMDiffWithinAt.mpullbackWithin_vectorField' hV hf hf' hx₀ hs hmn hst hu
 
-/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
+/-- The pullback of a `C^m` vector field by a `C^n` function with invertible derivative and
+with `m + 1 ≤ n` is `C^m`.
 Version on a set. -/
 protected lemma _root_.ContMDiffOn.mpullbackWithin_vectorField_inter
     (hV : ContMDiffOn I' I'.tangent m (fun (y : M') ↦ (V y : TangentBundle I' M')) t)
@@ -543,7 +550,8 @@ protected lemma _root_.ContMDiffOn.mpullbackWithin_vectorField_inter
   fun _ hx₀ ↦ ContMDiffWithinAt.mpullbackWithin_vectorField_inter
     (hV _ hx₀.2) (hf _ hx₀.1) (hf' _ hx₀) hx₀.1 hs hmn
 
-/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
+/-- The pullback of a `C^m` vector field by a `C^n` function with invertible derivative and
+with `m + 1 ≤ n` is `C^m`.
 Version within a set at a point, but with full pullback. -/
 protected lemma _root_.ContMDiffWithinAt.mpullback_vectorField_preimage
     (hV : ContMDiffWithinAt I' I'.tangent m (fun (y : M') ↦ (V y : TangentBundle I' M')) t (f x₀))
@@ -553,7 +561,8 @@ protected lemma _root_.ContMDiffWithinAt.mpullback_vectorField_preimage
   simp only [← contMDiffWithinAt_univ, ← mfderivWithin_univ, ← mpullbackWithin_univ] at hV hf hf' ⊢
   simpa using hV.mpullbackWithin_vectorField_inter hf hf' (mem_univ _) uniqueMDiffOn_univ hmn
 
-/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
+/-- The pullback of a `C^m` vector field by a `C^n` function with invertible derivative and
+with `m + 1 ≤ n` is `C^m`.
 Version within a set at a point, but with full pullback. -/
 protected lemma _root_.ContMDiffWithinAt.mpullback_vectorField_preimage_of_eq
     (hV : ContMDiffWithinAt I' I'.tangent m (fun (y : M') ↦ (V y : TangentBundle I' M')) t y₀)
@@ -564,7 +573,8 @@ protected lemma _root_.ContMDiffWithinAt.mpullback_vectorField_preimage_of_eq
   subst hy₀
   exact ContMDiffWithinAt.mpullback_vectorField_preimage hV hf hf' hmn
 
-/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
+/-- The pullback of a `C^m` vector field by a `C^n` function with invertible derivative and
+with `m + 1 ≤ n` is `C^m`.
 Version within a set at a point, but with full pullback. -/
 protected lemma _root_.ContMDiffWithinAt.mpullback_vectorField_of_mem_nhdsWithin
     (hV : ContMDiffWithinAt I' I'.tangent m (fun (y : M') ↦ (V y : TangentBundle I' M')) t (f x₀))
@@ -574,7 +584,8 @@ protected lemma _root_.ContMDiffWithinAt.mpullback_vectorField_of_mem_nhdsWithin
       (fun (y : M) ↦ (mpullback I I' f V y : TangentBundle I M)) s x₀ :=
   (ContMDiffWithinAt.mpullback_vectorField_preimage hV hf hf' hmn).mono_of_mem_nhdsWithin hst
 
-/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
+/-- The pullback of a `C^m` vector field by a `C^n` function with invertible derivative and
+with `m + 1 ≤ n` is `C^m`.
 Version within a set at a point, but with full pullback. -/
 protected lemma _root_.ContMDiffWithinAt.mpullback_vectorField_of_mem_nhdsWithin_of_eq
     (hV : ContMDiffWithinAt I' I'.tangent m (fun (y : M') ↦ (V y : TangentBundle I' M')) t y₀)
@@ -585,7 +596,8 @@ protected lemma _root_.ContMDiffWithinAt.mpullback_vectorField_of_mem_nhdsWithin
   subst hy₀
   exact ContMDiffWithinAt.mpullback_vectorField_of_mem_nhdsWithin hV hf hf' hmn hst
 
-/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
+/-- The pullback of a `C^m` vector field by a `C^n` function with invertible derivative and
+with `m + 1 ≤ n` is `C^m`.
 Version on a set, but with full pullback -/
 protected lemma _root_.ContMDiffOn.mpullback_vectorField_preimage
     (hV : ContMDiffOn I' I'.tangent m (fun (y : M') ↦ (V y : TangentBundle I' M')) t)
@@ -595,7 +607,8 @@ protected lemma _root_.ContMDiffOn.mpullback_vectorField_preimage
       (fun (y : M) ↦ (mpullback I I' f V y : TangentBundle I M)) (f ⁻¹' t) :=
   fun x₀ hx₀ ↦ ContMDiffWithinAt.mpullback_vectorField_preimage (hV _ hx₀) (hf x₀) (hf' _ hx₀) hmn
 
-/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
+/-- The pullback of a `C^m` vector field by a `C^n` function with invertible derivative and
+with `m + 1 ≤ n` is `C^m`.
 Version at a point. -/
 protected lemma _root_.ContMDiffAt.mpullback_vectorField_preimage
     (hV : ContMDiffAt I' I'.tangent m (fun (y : M') ↦ (V y : TangentBundle I' M')) (f x₀))
@@ -605,7 +618,8 @@ protected lemma _root_.ContMDiffAt.mpullback_vectorField_preimage
   simp only [← contMDiffWithinAt_univ] at hV hf hf' ⊢
   simpa using ContMDiffWithinAt.mpullback_vectorField_preimage hV hf hf' hmn
 
-/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`. -/
+/-- The pullback of a `C^m` vector field by a `C^n` function with invertible derivative and
+with `m + 1 ≤ n` is `C^m`. -/
 protected lemma _root_.ContMDiff.mpullback_vectorField
     (hV : ContMDiff I' I'.tangent m (fun (y : M') ↦ (V y : TangentBundle I' M')))
     (hf : ContMDiff I I' n f) (hf' : ∀ x, (mfderiv I I' f x).IsInvertible) (hmn : m + 1 ≤ n) :
