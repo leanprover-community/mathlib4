@@ -1299,6 +1299,7 @@ variable {ι : Type*} [PartialOrder ι] (f : ι → α) (i : ι)
 
 theorem biSup_le_eq_sup : (⨆ j ≤ i, f j) = (⨆ j < i, f j) ⊔ f i := by
   rw [iSup_split_single _ i]
+  -- Squeezed for a ~10x speedup, though it's still reasonably fast unsqueezed.
   simp only [le_refl, iSup_pos, iSup_and', lt_iff_le_and_ne, and_comm, sup_comm]
 
 theorem biInf_le_eq_inf : (⨅ j ≤ i, f j) = (⨅ j < i, f j) ⊓ f i :=
@@ -1306,6 +1307,7 @@ theorem biInf_le_eq_inf : (⨅ j ≤ i, f j) = (⨅ j < i, f j) ⊓ f i :=
 
 theorem biSup_ge_eq_sup : (⨆ j ≥ i, f j) = f i ⊔ (⨆ j > i, f j) := by
   rw [iSup_split_single _ i]
+  -- Squeezed for a ~10x speedup, though it's still reasonably fast unsqueezed.
   simp only [ge_iff_le, le_refl, iSup_pos, ne_comm, iSup_and', gt_iff_lt, lt_iff_le_and_ne,
     and_comm]
 
