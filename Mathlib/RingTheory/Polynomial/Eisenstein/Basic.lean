@@ -198,7 +198,7 @@ theorem isWeaklyEisensteinAt (hf : f.IsEisensteinAt 𝓟) : IsWeaklyEisensteinAt
   ⟨fun h => hf.mem h⟩
 
 theorem coeff_mem (hf : f.IsEisensteinAt 𝓟) {n : ℕ} (hn : n ≠ f.natDegree) : f.coeff n ∈ 𝓟 := by
-  cases' ne_iff_lt_or_gt.1 hn with h₁ h₂
+  rcases ne_iff_lt_or_gt.1 hn with h₁ | h₂
   · exact hf.mem h₁
   · rw [coeff_eq_zero_of_natDegree_lt h₂]
     exact Ideal.zero_mem _

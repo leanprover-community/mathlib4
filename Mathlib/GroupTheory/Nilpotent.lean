@@ -806,7 +806,7 @@ variable {G : Type*} [hG : Group G]
 /-- A p-group is nilpotent -/
 theorem IsPGroup.isNilpotent [Finite G] {p : ℕ} [hp : Fact (Nat.Prime p)] (h : IsPGroup p G) :
     IsNilpotent G := by
-  cases' nonempty_fintype G
+  cases nonempty_fintype G
   classical
     revert hG
     apply @Fintype.induction_subsingleton_or_nontrivial _ G _
