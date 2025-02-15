@@ -15,9 +15,10 @@ import Mathlib.Tactic.Cases
 open Classical
 noncomputable section
 
-variable {ι I : Type}
+variable {ι I : Type*}
 variable {s t u : Set I}
-variable {α β γ : Type}
+variable {α γ : Type*}
+variable {β : Type _}
 
 namespace QueryComplexity
 

@@ -28,20 +28,22 @@ open Classical
 open Set
 noncomputable section
 
-variable {ι I : Type}
+universe u
+
+variable {ι I : Type*}
 variable {s t : Set I}
-variable {α β γ : Type}
+variable {α β γ : Type*}
 
 namespace QueryComplexity
 
 /-- A deterministic oracle is a map from `α` to `Bool` -/
-def Oracle (α : Type) := α → Bool
+def Oracle (α : Type*) := α → Bool
 
 /-- A deterministic computation that make decisions by querying oracles. A computation is either a
 pure value or the identifier of an oracle (`o`) drawn from a predefined set (`s`), a value to
 be queried by the oracle (`i`) and two other computations, to be run depending on the answer
 of the oracle. -/
-inductive Comp (ι : Type) {I : Type} (s : Set I) (α : Type) : Type where
+inductive Comp (ι : Type*) {I : Type*} (s : Set I) (α : Type*) : Type _ where
   | pure' : α → Comp ι s α
   | query' : (o : I) → o ∈ s → (i : ι) → (Bool → Comp ι s α) → Comp ι s α
 
@@ -57,8 +59,8 @@ instance : Monad (Comp ι s) where
   pure := Comp.pure'
   bind := Comp.bind'
 
-/-- Produce a `Comp` given the identifier of an oracle and a value to be queried. The `Comp`
-just returns `true` or `false` according to the answer of the oracle. -/
+/-- Produce a `Comp` given the identifier of an oracle and a value to be queried.
+The `Comp` just returns `true` or `false` according to the answer of the oracle. -/
 def query (o : I) (y : ι) : Comp ι {o} Bool :=
   Comp.query' o (mem_singleton _) y pure
 
