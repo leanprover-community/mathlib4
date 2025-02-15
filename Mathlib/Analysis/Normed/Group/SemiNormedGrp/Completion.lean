@@ -81,16 +81,6 @@ theorem completion.map_zero (V W : SemiNormedGrp) : completion.map (0 : V ⟶ W)
   (completion.mapHom V W).map_zero
 
 instance : Preadditive SemiNormedGrp.{u} where
-  homGroup P Q := inferInstanceAs <| AddCommGroup <| NormedAddGroupHom P Q
-  add_comp _ Q _ f f' g := by
-    ext x
-    -- Porting note: failing simps probably due to instance synthesis issues with concrete
-    -- cats; see the gymnastics below for what used to be
-    -- simp only [add_apply, comp_apply. map_add]
-    rw [NormedAddGroupHom.add_apply, CategoryTheory.comp_apply, CategoryTheory.comp_apply,
-      CategoryTheory.comp_apply, @NormedAddGroupHom.add_apply _ _ (_) (_)]
-    convert map_add g (f x) (f' x)
-  comp_add _ _ _ _ _ _ := rfl
 
 instance : Functor.Additive completion where
   map_add := SemiNormedGrp.hom_ext <| NormedAddGroupHom.completion_add _ _
