@@ -148,13 +148,13 @@ structure AtomicFact where
 deriving Inhabited
 
 /-- If `g` is a `Graph`, then for a vertex with index `v`, `g[v]` is an array containing edges
-starting from this vertex. Edges are `AtomicFact`s which `.lhs` and `.rhs` represent the source
+starting from this vertex. Edges are `AtomicFact`s whose `.lhs` and `.rhs` represent the source
 and destination, respectively. Some functions below may also use `.rel` and `.proof`. -/
 abbrev Graph := Array (Array AtomicFact)
 
 -- For debugging purposes.
 instance : ToString AtomicFact where
-  toString := fun fa => match fa.rel with
+  toString fa := match fa.rel with
   | .eq => s!"{fa.lhs} = {fa.rhs}"
   | .ne => s!"{fa.lhs} ≠ {fa.rhs}"
   | .le => s!"{fa.lhs} ≤ {fa.rhs}"
@@ -165,7 +165,7 @@ instance : ToString AtomicFact where
 -- TODO: Split conjunctions.
 -- TODO: Add an option for splitting disjunctions and implications.
 /-- Collects facts from the local context. For each occurring type `α`, the returned map contains
-a pair `(idxToAtom, facts)`, where the map `idxToAtom` converts indexes to found
+a pair `(idxToAtom, facts)`, where the map `idxToAtom` converts indices to found
 atomic expressions of type `α`, and `facts` contains all collected `AtomicFact`s about them. -/
 def collectFacts (g : MVarId) :
     MetaM <| Std.HashMap Expr <| Std.HashMap Nat Expr × Array AtomicFact := g.withContext do
@@ -209,7 +209,7 @@ where
 section Preprocessing
 
 private lemma le_of_eq_symm {α : Type} [Preorder α] {x y : α} (h : x = y) : y ≤ x :=
-  le_of_eq (Eq.symm h)
+  ge_of_eq h
 
 private lemma not_lt_of_not_le {α : Type} [Preorder α] {x y : α} (h : ¬(x ≤ y)) : ¬(x < y) := by
   intro h'
@@ -380,7 +380,7 @@ def condense (graph : Graph) : Array Nat :=
   let graphInv := inverseGraph graph
   (condenseImp graphInv order).run s |>.snd.condensation
 
-/-- Finds a contradictory `≠`-fact which `.lhs` and `.rhs` belong to the same strongly connected
+/-- Finds a contradictory `≠`-fact whose `.lhs` and `.rhs` belong to the same strongly connected
 component in the `≤`-graph, implying they must be equal. -/
 def findContradictoryNe (graph : Graph) (facts : Array AtomicFact) : Option AtomicFact :=
   let condensation := condense graph

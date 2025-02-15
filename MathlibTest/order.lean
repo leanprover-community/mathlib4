@@ -41,5 +41,8 @@ example {α : Type} [Preorder α] (a b c d : α) (h1 : a ≤ b) (h2 : b ≤ c) (
     c ≤ d := by
   order
 
-example {α : Type} [Preorder α] (a b : α) (h1 : a < b) (h2 : b < a) : False := by
+example {α : Type} [Preorder α] (a b : α) (h1 : a < b) : b > a := by
+  order
+
+example {α : Type} [Preorder α] (a b : α) (h1 : a > b) : b < a := by
   order
