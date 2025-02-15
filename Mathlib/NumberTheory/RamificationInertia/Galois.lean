@@ -38,7 +38,7 @@ Assume `B / A` is a finite extension of Dedekind domains, `K` is the fraction ri
 
 -/
 
-open Algebra
+open Algebra Ideal
 
 attribute [local instance] FractionRing.liftAlgebra
 
@@ -125,14 +125,15 @@ theorem exists_map_eq_of_isGalois [IsGalois K L] : ∃ σ : B ≃ₐ[A] B, map �
     (over_def P p).symm.trans (over_def Q p) with ⟨σ, hs⟩
   exact ⟨σ, hs.symm⟩
 
-theorem isPretransitive_of_isGalois [IsGalois K L] :
+theorem isPretransitive_of_isGalois' [IsGalois K L] :
     MulAction.IsPretransitive (B ≃ₐ[A] B) (primesOver p B) where
   exists_smul_eq := by
     intro ⟨P, _, _⟩ ⟨Q, _, _⟩
     rcases exists_map_eq_of_isGalois p P Q K L with ⟨σ, hs⟩
     exact ⟨σ, Subtype.val_inj.mp hs⟩
 
-instance [IsGalois K L] : MulAction.IsPretransitive (L ≃ₐ[K] L) (primesOver p B) where
+instance isPretransitive_of_isGalois [IsGalois K L] :
+    MulAction.IsPretransitive (L ≃ₐ[K] L) (primesOver p B) where
   exists_smul_eq := by
     intro ⟨P, _, _⟩ ⟨Q, _, _⟩
     rcases exists_map_eq_of_isGalois p P Q K L with ⟨σ, hs⟩
@@ -195,3 +196,192 @@ theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn [IsGalois K L] :
 end fundamental_identity
 
 end Ideal
+
+section decompositionGroup
+
+/-! ### decomposition Group -/
+
+variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] (p : Ideal A)
+  (P : Ideal B) [P.IsPrime] [P.LiesOver p]
+  (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L]
+  [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
+  [IsIntegralClosure B A L] [FiniteDimensional K L]
+
+-- Maybe defined it as `MulAction.stabilizer (L ≃ₐ[K] L) P` is better, since maybe in this way
+-- ` P ∈ decompositionGroup p P K L` is `defEq` to `map (galRestrict A K L B σ) P = P`.
+/-- The decomposition group of `P` over `K`, is the stabilizer of `P` under the action of
+  `Gal(L / K)`. -/
+def decompositionGroup : Subgroup (L ≃ₐ[K] L) :=
+  MulAction.stabilizer _ (primesOver.mk p P)
+
+variable {K} {L} in
+/-- The `decompositionGroup` is consisting of all elements of the Galois group `L ≃ₐ[K] L` such
+that keep `P` invariant. -/
+theorem decompositionGroup_mem (σ : L ≃ₐ[K] L) :
+    σ ∈ decompositionGroup p P K L ↔ map (galRestrict A K L B σ) P = P := by
+  rw [decompositionGroup, MulAction.mem_stabilizer_iff, ← Subtype.val_inj]
+  rw [coe_smul_primesOver_mk_eq_map_galRestrict]
+
+theorem decompositionGroup_mem' (σ : B ≃ₐ[A] B) :
+    (galRestrict A K L B).symm σ ∈ decompositionGroup p P K L ↔ map σ P = P := sorry
+
+/-- The decomposition field of `P` over `K` is the fixed field of `decompositionGroup p P`. -/
+def decompositionField : IntermediateField K L :=
+  IntermediateField.fixedField (decompositionGroup p P K L)
+
+end decompositionGroup
+
+open IntermediateField FiniteDimensional
+
+section decompositionIdeal
+
+variable {A B : Type*} [CommRing A] [IsDedekindDomain A] [CommRing B] [IsDedekindDomain B]
+  [Algebra A B] [Module.Finite A B] {p : Ideal A} (hpb : p ≠ ⊥) [p.IsMaximal]
+  (P : Ideal B) [P.IsPrime] [hp : P.LiesOver p]
+  (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L]
+  [IsFractionRing B L] [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
+  [FiniteDimensional K L] [IsGalois K L]
+  {D : Type*} [CommRing D] [IsDedekindDomain D]
+  [Algebra A D] [Module.Finite A D] [Algebra D (decompositionField p P K L)]
+  [IsFractionRing D (decompositionField p P K L)] [IsScalarTower A D (decompositionField p P K L)]
+  [Algebra D B] [Module.Finite D B] [Algebra D L] [IsScalarTower D B L]
+  [IsScalarTower D (decompositionField p P K L) L] [IsScalarTower A D B]
+  (Pd : Ideal D) [P.LiesOver Pd] [Pd.LiesOver p]
+
+include K L hpb
+
+theorem decompositionGroup_card_eq_ramificationIdx_mul_inertiaDeg :
+    Nat.card (decompositionGroup p P K L) = ramificationIdxIn p B * inertiaDegIn p B := by
+  have : FaithfulSMul A B := FaithfulSMul.of_field_isFractionRing A B K L
+  apply mul_left_cancel₀ (primesOver_ncard_ne_zero p B)
+  have : Fintype (MulAction.orbit (L ≃ₐ[K] L) (primesOver.mk p P)) := by
+    classical exact Set.fintypeRange fun m ↦ m • primesOver.mk p P
+  have : Fintype (decompositionGroup p P K L) := Fintype.ofFinite (decompositionGroup p P K L)
+  have : Fintype (MulAction.stabilizer (L ≃ₐ[K] L) (primesOver.mk p P)) := this
+  rw [ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hpb B K L,
+    ← IsGalois.card_aut_eq_finrank, decompositionGroup]
+  rw [← MulAction.card_orbit_mul_card_stabilizer_eq_card_group (L ≃ₐ[K] L) (primesOver.mk p P)]
+  rw [← Set.Nat.card_coe_set_eq, Fintype.card_eq_nat_card, Fintype.card_eq_nat_card]
+  rw [MulAction.orbit_eq_univ, Nat.card_univ]
+
+theorem finrank_over_decompositionField_eq_ramificationIdx_mul_inertiaDeg :
+    Module.finrank (decompositionField p P K L) L = ramificationIdxIn p B * inertiaDegIn p B := by
+  classical
+  rw [decompositionField, finrank_fixedField_eq_card (decompositionGroup p P K L)]
+  rw [Fintype.card_eq_nat_card, decompositionGroup_card_eq_ramificationIdx_mul_inertiaDeg hpb P K L]
+
+section Galois
+
+open IntermediateField AlgEquiv QuotientGroup
+
+variable {K E L : Type*} [Field K] [Field E] [Field L] [Algebra K E] [Algebra K L] [Algebra E L]
+ [FiniteDimensional K L]
+
+-- have better defEq comparing with `FixedPoints.toAlgAutMulEquiv`
+/-- If `H` is a subgroup of `Gal(L/K)`, then `Gal(L / fixedField H)` is isomorphic to `H`. -/
+def IntermediateField.subgroup_equiv_aut (H : Subgroup (L ≃ₐ[K] L)) :
+    (L ≃ₐ[fixedField H] L) ≃* H where
+  toFun ϕ := ⟨ϕ.restrictScalars K, le_of_eq (fixingSubgroup_fixedField H) ϕ.commutes⟩
+  invFun ϕ := { toRingEquiv (ϕ : L ≃ₐ[K] L) with
+    commutes' := (ge_of_eq (fixingSubgroup_fixedField H)) ϕ.mem }
+  left_inv _ := by ext; rfl
+  right_inv _ := by ext; rfl
+  map_mul' _ _ := by ext; rfl
+
+end Galois
+
+/-- `P` is the unique ideal lying over the decomposition ideal. -/
+theorem isMaximal_liesOver_decomposition_ideal_unique (Q : Ideal B) [Q.IsMaximal]
+    [Q.LiesOver Pd] : Q = P := by
+  have : Q.LiesOver p := LiesOver.trans Q Pd p
+  rcases (isPretransitive_of_isGalois Pd (decompositionField p P K L) L).1
+    (primesOver.mk Pd P) (primesOver.mk Pd Q) with ⟨σ, hs⟩
+  have hs : map (galRestrict D (decompositionField p P K L) L B σ) P = Q := Subtype.val_inj.mpr hs
+  let τ := (subgroup_equiv_aut (decompositionGroup p P K L)) σ
+  have h := (decompositionGroup_mem p P τ.1).mp τ.2
+  have : AlgEquiv.restrictScalars A ((galRestrict D (↥(decompositionField p P K L)) L B) σ) =
+      (galRestrict A K L B) τ := by
+    rfl
+  exact hs.symm.trans ((decompositionGroup_mem p P τ.1).mp τ.2)
+  /- rcases exists_map_eq_of_isGalois Pd P Q (decompositionField p P K L) L with ⟨σ, hs⟩
+  let τ := (subgroup_equiv_aut (decompositionGroup p P K L)).toFun <|
+    (galRestrict D (decompositionField p P K L) L B).symm σ
+  have h := (decompositionGroup_mem p P τ.1).mp τ.2
+  simp [τ, subgroup_equiv_aut] at h
+  have : ((galRestrict A K L B) ((subgroup_equiv_aut (decompositionGroup p P K L))
+  ((galRestrict D (↥(decompositionField p P K L)) L B).symm σ))).toFun = σ.toFun := by
+    simp [subgroup_equiv_aut]
+    --show (galRestrict A K L B) ((galRestrict A K L B).symm (AlgEquiv.restrictScalars A σ)) x = σ x
+    have : (AlgEquiv.restrictScalars K ((galRestrict D (↥(decompositionField p P K L)) L B).symm σ))
+     = (galRestrict A K L B).symm (AlgEquiv.restrictScalars A σ) := by
+      ext x
+      simp only [AlgEquiv.coe_restrictScalars']
+      sorry
+    sorry
+  sorry -/
+  -- rw [← h, ← hs]
+
+  --rw [← hs, (decompositionGroup_mem p P τ.1).mp τ.2]
+/-
+/-- An alternative statement of `isMaximal_lies_over_decompositionideal_unique`. -/
+theorem primes_over_decompositionideal_card_eq_one [IsGalois K L] :
+  Finset.card (primes_over (decompositionIdeal p P) L) = 1 :=
+    unique_primes_over_card_eq_one (decompositionIdeal p P) P
+
+private lemma ramificationIdx_and_inertiaDeg_of_decompositionIdeal [IsGalois K L] :
+    ramificationIdx_of_isGalois (decompositionIdeal p P) L = ramificationIdx_of_isGalois p L ∧
+    inertiaDeg_of_isGalois (decompositionIdeal p P) L = inertiaDeg_of_isGalois p L := by
+  let Pz := idealUnder (decompositionField p P) P
+  let E := { x // x ∈ decompositionField p P }
+  have h := ramificationIdx_mul_inertiaDeg_of_isGalois Pz L
+  rw [primes_over_decompositionideal_card_eq_one p P, one_mul,
+    finrank_over_decompositionField_eq_ramificationIdx_mul_inertiaDeg p P] at h
+  have h0 := Nat.pos_of_ne_zero <| IsDedekindDomain.ramificationIdx_ne_zero
+    (map_isMaximal_ne_bot p L) inferInstance (map_le_of_le_comap (le_of_eq hp.over))
+  have hr := Nat.le_of_dvd h0 <| Dvd.intro_left _ <| Eq.symm <|
+    ramificationIdx_algebra_tower (map_isMaximal_ne_bot Pz L)
+      (map_isMaximal_ne_bot p L) (map_le_iff_le_comap.mpr (le_of_eq rfl))
+  have h0 : inertiaDeg (algebraMap (𝓞 K) (𝓞 L)) p P > 0 := inertiaDeg_pos p P
+  have hi := Nat.le_of_dvd h0 <| Dvd.intro_left _  <| Eq.symm <|
+    inertiaDeg_algebra_tower p (decompositionIdeal p P) P
+  rw [ramificationIdx_eq_ramificationIdx_of_isGalois Pz P,
+    ramificationIdx_eq_ramificationIdx_of_isGalois p P] at hr
+  rw [inertiaDeg_eq_inertiaDeg_of_isGalois Pz P, inertiaDeg_eq_inertiaDeg_of_isGalois p P] at hi
+  have hr0 := Nat.pos_of_ne_zero <| IsDedekindDomain.ramificationIdx_ne_zero
+    (map_isMaximal_ne_bot Pz L) inferInstance (map_le_of_le_comap (le_of_eq rfl))
+  rw [inertiaDeg_eq_inertiaDeg_of_isGalois p P] at h0
+  rw [ramificationIdx_eq_ramificationIdx_of_isGalois Pz P] at hr0
+  exact (mul_eq_mul_iff_eq_and_eq_of_pos hr hi hr0 h0).mp h
+
+theorem ramificationIdx_of_decompositionIdeal [IsGalois K L] :
+  ramificationIdx_of_isGalois (decompositionIdeal p P) L = ramificationIdx_of_isGalois p L :=
+    (ramificationIdx_and_inertiaDeg_of_decompositionIdeal p P).1
+
+theorem inertiaDeg_of_decompositionIdeal [IsGalois K L] :
+  inertiaDeg_of_isGalois (decompositionIdeal p P) L = inertiaDeg_of_isGalois p L :=
+    (ramificationIdx_and_inertiaDeg_of_decompositionIdeal p P).2
+
+theorem ramificationIdx_of_decompositionideal_over_bot_eq_one [IsGalois K L] : ramificationIdx
+    (algebraMap (𝓞 K) (𝓞 (decompositionField p P))) p (decompositionIdeal p P) = 1 := by
+  let Pz := idealUnder (decompositionField p P) P
+  have h := ramificationIdx_algebra_tower (map_isMaximal_ne_bot Pz L)
+    (map_isMaximal_ne_bot p L) (map_le_iff_le_comap.mpr (le_of_eq rfl))
+  rw [ramificationIdx_eq_ramificationIdx_of_isGalois Pz P,
+    ramificationIdx_of_decompositionIdeal p P,
+    ← ramificationIdx_eq_ramificationIdx_of_isGalois p P] at h
+  nth_rw 1 [← one_mul (ramificationIdx (algebraMap (𝓞 K) (𝓞 L)) p P)] at h
+  exact mul_right_cancel₀ (IsDedekindDomain.ramificationIdx_ne_zero (map_isMaximal_ne_bot p L)
+    inferInstance (map_le_of_le_comap (le_of_eq hp.over))) h.symm
+
+/-- The residue class field corresponding to `decompositionField p P` is isomorphic to
+residue class field corresponding to `p`. -/
+theorem inertiaDeg_of_decompositionideal_over_bot_eq_one [IsGalois K L] : inertiaDeg
+    (algebraMap (𝓞 K) (𝓞 (decompositionField p P))) p (decompositionIdeal p P) = 1 := by
+  have h := inertiaDeg_algebra_tower p (decompositionIdeal p P) P
+  rw [inertiaDeg_eq_inertiaDeg_of_isGalois (idealUnder (decompositionField p P) P) P,
+    inertiaDeg_of_decompositionIdeal p P, ← inertiaDeg_eq_inertiaDeg_of_isGalois p P] at h
+  nth_rw 1 [← one_mul (inertiaDeg (algebraMap (𝓞 K) (𝓞 L)) p P)] at h
+  exact mul_right_cancel₀ (inertiaDeg_pos p P).ne.symm h.symm
+
+end decompositionIdeal
+-/
