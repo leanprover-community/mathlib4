@@ -112,7 +112,7 @@ lemma compProd_trim_condExpKernel (hm : m ≤ mΩ) :
   congr
 
 lemma condExpKernel_comp_trim (hm : m ≤ mΩ) : condExpKernel μ m ∘ₘ μ.trim hm = μ := by
-   rw [← Measure.snd_compProd, compProd_trim_condExpKernel, @Measure.snd_map_prod_mk, Measure.map_id]
+  rw [← Measure.snd_compProd, compProd_trim_condExpKernel, @Measure.snd_map_prod_mk, Measure.map_id]
   exact measurable_id'' hm
 
 section Measurability
