@@ -29,32 +29,50 @@ import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 * [F. Lorenz, *Algebra: Volume II: Fields with Structure, Algebras and Advanced Topics*][Lorenz2008]
 -/
 
-variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+variable {R₀ R M : Type*} [Ring R₀] [Ring R] [Module R₀ R]
+  [AddCommGroup M] [Module R₀ M] [Module R M] [IsScalarTower R₀ R R] [IsScalarTower R₀ R M]
 
 open Ideal in
-theorem IsSemiprimaryRing.isNoetherian_iff_isArtinian [IsSemiprimaryRing R] :
-    IsNoetherian R M ↔ IsArtinian R M := by
+theorem IsSemiprimaryRing.isArtinian_imp_finite_and_isNoetherian_iff_isArtinian
+    [IsSemiprimaryRing R] [Module.Finite R₀ (R ⧸ Ring.jacobson R)] :
+    (IsArtinian R M → Module.Finite R₀ M) ∧ (IsNoetherian R M ↔ IsArtinian R M) := by
   have ⟨ss, n, hn⟩ := (isSemiprimaryRing_iff R).mp ‹_›
   set Jac := Ring.jacobson R
   replace hn : Jac ^ n ≤ Module.annihilator R M := hn ▸ bot_le
   induction' n with n ih generalizing M
   · rw [Submodule.pow_zero, one_eq_top, top_le_iff, Module.annihilator_eq_top_iff] at hn
-    constructor <;> infer_instance
+    exact ⟨fun _ ↦ inferInstance, iff_of_true inferInstance inferInstance⟩
   obtain _ | n := n
   · rw [Submodule.pow_one, ← SetLike.coe_subset_coe,
       ← Module.isTorsionBySet_iff_subset_annihilator] at hn
     let _ := hn.module
-    have := hn.isSemisimpleModule_iff.mp inferInstance
-    exact IsSemisimpleModule.finite_tfae.out 1 2
+    let l := hn.semilinearMap
+    rw [l.isNoetherian_iff_of_bijective Function.bijective_id,
+      l.isArtinian_iff_of_bijective Function.bijective_id]
+    refine ⟨fun _ ↦ ?_, IsSemisimpleModule.finite_tfae.out 1 2⟩
+    have : Module.Finite (R ⧸ Jac) M :=
+      (IsSemisimpleModule.finite_tfae (R := R ⧸ Jac) (M := M).out 2 0).mp ‹_›
+    exact Module.Finite.trans (R := R₀) (R ⧸ Jac) M
   let N := Jac ^ (n + 1) • (⊤ : Submodule R M)
-  simp_rw [iff_iff_eq] at ih -- otherwise `rw [ih]` below fails!
-  rw [isNoetherian_iff_submodule_quotient N, isArtinian_iff_submodule_quotient N, ih, ih]
-  · rw [← SetLike.coe_subset_coe, ← Module.isTorsionBySet_iff_subset_annihilator,
+  have ihMN := ih (M := M ⧸ N) <| by
+    rw [← SetLike.coe_subset_coe, ← Module.isTorsionBySet_iff_subset_annihilator,
       Module.isTorsionBySet_quotient_iff]
-    intro m i hi; exact Submodule.smul_mem_smul hi trivial
-  · rw [← Submodule.annihilator_top, Submodule.le_annihilator_iff, Ideal.IsTwoSided.pow_succ,
+    exact fun m i hi ↦ Submodule.smul_mem_smul hi trivial
+  have ihN := ih (M := N) <| by
+    rw [← Submodule.annihilator_top, Submodule.le_annihilator_iff, Ideal.IsTwoSided.pow_succ,
       Submodule.mul_smul, ← Submodule.le_annihilator_iff] at hn
     exact (Ideal.pow_le_self n.succ_ne_zero).trans hn
+  refine ⟨fun _ ↦ ?_, by
+    rw [isNoetherian_iff_submodule_quotient N, isArtinian_iff_submodule_quotient N, ihMN.2, ihN.2]⟩
+  let N₀ := N.restrictScalars R₀
+  have : Module.Finite R₀ (M ⧸ N₀) := ihMN.1 inferInstance
+  have : Module.Finite R₀ N₀ := ihN.1 inferInstance
+  exact .of_submodule_quotient N₀
+
+open Ideal in
+theorem IsSemiprimaryRing.isNoetherian_iff_isArtinian [IsSemiprimaryRing R] :
+    IsNoetherian R M ↔ IsArtinian R M :=
+  IsSemiprimaryRing.isArtinian_imp_finite_and_isNoetherian_iff_isArtinian (R₀ := R).2
 
 variable (R M)
 
