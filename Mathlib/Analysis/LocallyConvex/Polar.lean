@@ -184,7 +184,7 @@ variable [Module 𝕜 E] [Module 𝕜 F]
 
 variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
 
-variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F] --[Module ℝ E] [IsScalarTower ℝ 𝕜 E]
+variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F]
 
 theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
   rw [polar_eq_biInter_preimage]
