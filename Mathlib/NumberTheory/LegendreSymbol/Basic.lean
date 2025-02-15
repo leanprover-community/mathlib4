@@ -73,7 +73,7 @@ theorem pow_div_two_eq_neg_one_or_one {a : ZMod p} (ha : a ≠ 0) :
   · subst p; revert a ha; intro a; fin_cases a
     · tauto
     · simp
-  rw [← mul_self_eq_one_iff, ← pow_add, ← two_mul, two_mul_odd_div_two hp_odd]
+  rw [← mul_self_eq_one_iff, ← pow_add, add_self, two_mul_odd_div_two hp_odd]
   exact pow_card_sub_one_eq_one ha
 
 end ZMod

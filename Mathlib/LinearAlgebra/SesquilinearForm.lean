@@ -490,7 +490,7 @@ lemma isOrthogonal_of_forall_apply_same {F : Type*} [FunLike F M M] [LinearMapCl
   rw [show B (f y) (f x) = B (f x) (f y) from hB.eq (f y) (f x)] at this
   simp only [add_assoc, add_right_inj] at this
   simp only [← add_assoc, add_left_inj] at this
-  simpa only [← two_mul] using this
+  simpa only [add_self] using this
 
 end OrthogonalMap
 

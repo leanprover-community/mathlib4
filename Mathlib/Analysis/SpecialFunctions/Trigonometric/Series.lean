@@ -39,7 +39,7 @@ theorem Complex.hasSum_cos' (z : ℂ) :
   dsimp only
   convert hasSum_fintype (_ : Fin 2 → ℂ) using 1
   rw [Fin.sum_univ_two]
-  simp_rw [Fin.val_zero, Fin.val_one, add_zero, pow_succ, pow_mul, mul_pow, neg_sq, ← two_mul,
+  simp_rw [Fin.val_zero, Fin.val_one, add_zero, pow_succ, pow_mul, mul_pow, neg_sq, add_self,
     neg_mul, mul_neg, neg_div, add_neg_cancel, zero_div, add_zero,
     mul_div_cancel_left₀ _ (two_ne_zero : (2 : ℂ) ≠ 0)]
 
@@ -57,7 +57,7 @@ theorem Complex.hasSum_sin' (z : ℂ) :
   convert hasSum_fintype (_ : Fin 2 → ℂ) using 1
   rw [Fin.sum_univ_two]
   simp_rw [Fin.val_zero, Fin.val_one, add_zero, pow_succ, pow_mul, mul_pow, neg_sq, sub_self,
-    zero_mul, zero_div, zero_add, neg_mul, mul_neg, neg_div, ← neg_add', ← two_mul,
+    zero_mul, zero_div, zero_add, neg_mul, mul_neg, neg_div, ← neg_add', add_self,
     neg_mul, neg_div, mul_assoc, mul_div_cancel_left₀ _ (two_ne_zero : (2 : ℂ) ≠ 0), Complex.div_I]
 
 /-- The power series expansion of `Complex.cos`. -/

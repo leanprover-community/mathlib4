@@ -213,7 +213,7 @@ instance : BoundedMul R where
     calc ‖x₁ * y₁ - x₂ * y₂‖
      _ ≤ ‖x₁ * y₁‖ + ‖x₂ * y₂‖        := norm_sub_le _ _
      _ ≤ Af * Ag + Af * Ag            := add_le_add (aux hx₁ hy₁) (aux hx₂ hy₂)
-     _ = 2 * Af * Ag                  := by simp [← two_mul, mul_assoc]
+     _ = 2 * Af * Ag                  := by simp [add_self, mul_assoc]
 
 end NonUnitalSeminormedRing
 

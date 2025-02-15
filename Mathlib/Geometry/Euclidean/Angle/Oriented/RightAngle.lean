@@ -449,7 +449,7 @@ theorem oangle_add_right_smul_rotation_pi_div_two {x : V} (h : x ≠ 0) (r : ℝ
   · have ha : o.oangle x (r • o.rotation (π / 2 : ℝ) x) = -(π / 2 : ℝ) := by
       rw [o.oangle_smul_right_of_neg _ _ hr, o.oangle_neg_right h, o.oangle_rotation_self_right h, ←
         sub_eq_zero, add_comm, sub_neg_eq_add, ← Real.Angle.coe_add, ← Real.Angle.coe_add,
-        add_assoc, add_halves, ← two_mul, Real.Angle.coe_two_pi]
+        add_assoc, add_halves, add_self, Real.Angle.coe_two_pi]
       simpa using h
     -- Porting note: if the type is not given in `neg_neg` then Lean "forgets" about the instance
     -- `Neg (Orientation ℝ V (Fin 2))`

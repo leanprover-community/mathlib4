@@ -640,7 +640,7 @@ lemma LevyProkhorov.continuous_equiv_symm_probabilityMeasure :
   specialize hQ _ (show JB ⊆ Iio N from fun _ h ↦ h.2)
   -- Now it remains to add the pieces and use the above estimates.
   apply (add_le_add hQ.le hN.le).trans
-  rw [add_assoc, ← ENNReal.ofReal_add third_ε_pos.le third_ε_pos.le, ← two_mul]
+  rw [add_assoc, ← ENNReal.ofReal_add third_ε_pos.le third_ε_pos.le, add_self]
   apply add_le_add (measure_mono subset_thickB) (ofReal_le_ofReal _)
   exact δ_gt.le
 

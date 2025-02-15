@@ -943,7 +943,7 @@ lemma exists_a_apply_add_eq : ∃ b c, 0 < c ∧ ∀ n, b < n →
     omega
   · convert hc.apply_add_p_eq (by omega) (hs n) using 3
     rcases hc.even_p (by omega) (hs n) with ⟨_, ht⟩
-    simp [ht, ← two_mul]
+    simp [ht, add_self]
 
 variable {a N}
 

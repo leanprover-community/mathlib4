@@ -479,12 +479,12 @@ theorem dvd_to_nat {m n : PosNum} : (m : ℕ) ∣ n ↔ m ∣ n :=
 theorem size_to_nat : ∀ n, (size n : ℕ) = Nat.size n
   | 1 => Nat.size_one.symm
   | bit0 n => by
-      rw [size, succ_to_nat, size_to_nat n, cast_bit0, ← two_mul]
+      rw [size, succ_to_nat, size_to_nat n, cast_bit0, add_self]
       erw [@Nat.size_bit false n]
       have := to_nat_pos n
       dsimp [Nat.bit]; omega
   | bit1 n => by
-      rw [size, succ_to_nat, size_to_nat n, cast_bit1, ← two_mul]
+      rw [size, succ_to_nat, size_to_nat n, cast_bit1, add_self]
       erw [@Nat.size_bit true n]
       dsimp [Nat.bit]; omega
 
@@ -860,11 +860,11 @@ theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
     induction' n with n IH generalizing m <;> cases' m with m m
         <;> simp only [PosNum.testBit]
     · rfl
-    · rw [PosNum.cast_bit1, ← two_mul, ← congr_fun Nat.bit_true, Nat.testBit_bit_zero]
-    · rw [PosNum.cast_bit0, ← two_mul, ← congr_fun Nat.bit_false, Nat.testBit_bit_zero]
+    · rw [PosNum.cast_bit1, add_self, ← congr_fun Nat.bit_true, Nat.testBit_bit_zero]
+    · rw [PosNum.cast_bit0, add_self, ← congr_fun Nat.bit_false, Nat.testBit_bit_zero]
     · simp [Nat.testBit_add_one]
-    · rw [PosNum.cast_bit1, ← two_mul, ← congr_fun Nat.bit_true, Nat.testBit_bit_succ, IH]
-    · rw [PosNum.cast_bit0, ← two_mul, ← congr_fun Nat.bit_false, Nat.testBit_bit_succ, IH]
+    · rw [PosNum.cast_bit1, add_self, ← congr_fun Nat.bit_true, Nat.testBit_bit_succ, IH]
+    · rw [PosNum.cast_bit0, add_self, ← congr_fun Nat.bit_false, Nat.testBit_bit_succ, IH]
 
 end Num
 
@@ -1396,7 +1396,7 @@ theorem divMod_to_nat (d n : PosNum) :
     revert IH; cases' divMod d n with q r; intro IH
     simp only [divMod] at IH ⊢
     apply divMod_to_nat_aux <;> simp only [Num.cast_bit1, cast_bit1]
-    · rw [← two_mul, ← two_mul, add_right_comm, mul_left_comm, ← mul_add, IH.1]
+    · rw [add_self, add_self, add_right_comm, mul_left_comm, ← mul_add, IH.1]
     · omega
   · unfold divMod
     -- Porting note: `cases'` didn't rewrite at `this`, so `revert` & `intro` are required.
@@ -1404,7 +1404,7 @@ theorem divMod_to_nat (d n : PosNum) :
     simp only [divMod] at IH ⊢
     apply divMod_to_nat_aux
     · simp only [Num.cast_bit0, cast_bit0]
-      rw [← two_mul, ← two_mul, mul_left_comm, ← mul_add, ← IH.1]
+      rw [add_self, add_self, mul_left_comm, ← mul_add, ← IH.1]
     · simpa using IH.2
 
 @[simp]

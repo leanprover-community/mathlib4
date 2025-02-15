@@ -231,7 +231,7 @@ lemma add_pow_le (ha : 0 ≤ a) (hb : 0 ≤ b) : ∀ n, (a + b) ^ n ≤ 2 ^ (n -
             add_add_add_comm, add_comm (_ * a)]
       _ ≤ 2 ^ n * (a ^ (n + 2) + b ^ (n + 2) + (a ^ (n + 1) * a + b ^ (n + 1) * b)) :=
           mul_le_mul_of_nonneg_left (add_le_add_left ?_ _) <| pow_nonneg (zero_le_two (α := R)) _
-      _ = _ := by simp only [← pow_succ, ← two_mul, ← mul_assoc]; rfl
+      _ = _ := by simp only [← pow_succ, add_self, ← mul_assoc]; rfl
     · obtain hab | hba := le_total a b
       · exact mul_add_mul_le_mul_add_mul (pow_le_pow_left₀ ha hab _) hab
       · exact mul_add_mul_le_mul_add_mul' (pow_le_pow_left₀ hb hba _) hba
@@ -239,7 +239,7 @@ lemma add_pow_le (ha : 0 ≤ a) (hb : 0 ≤ b) : ∀ n, (a + b) ^ n ≤ 2 ^ (n -
 protected lemma Even.add_pow_le (hn : Even n) :
     (a + b) ^ n ≤ 2 ^ (n - 1) * (a ^ n + b ^ n) := by
   obtain ⟨n, rfl⟩ := hn
-  rw [← two_mul, pow_mul]
+  rw [add_self, pow_mul]
   calc
     _ ≤ (2 * (a ^ 2 + b ^ 2)) ^ n := pow_le_pow_left₀ (sq_nonneg _) add_sq_le _
     _ = 2 ^ n * (a ^ 2 + b ^ 2) ^ n := by -- TODO: Should be `Nat.cast_commute`

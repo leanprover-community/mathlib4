@@ -217,7 +217,7 @@ theorem integral_gaussian_sq_complex {b : ℂ} (hb : 0 < b.re) :
       have : 0 ≤ π + π := by positivity
       simp only [integral_const, Measure.restrict_apply', measurableSet_Ioo, univ_inter, volume_Ioo,
         sub_neg_eq_add, ENNReal.toReal_ofReal, this]
-      rw [← two_mul, real_smul, mul_one, ofReal_mul, ofReal_ofNat, integral_mul_cexp_neg_mul_sq hb]
+      rw [add_self, real_smul, mul_one, ofReal_mul, ofReal_ofNat, integral_mul_cexp_neg_mul_sq hb]
       field_simp [(by contrapose! hb; rw [hb, zero_re] : b ≠ 0)]
       ring
 

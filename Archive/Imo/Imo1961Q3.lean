@@ -50,7 +50,7 @@ theorem Imo1961Q3 {n : ℕ} {x : ℝ} (h₀ : n ≠ 0) :
         | 1 =>
           rw [pow_one, pow_one, sub_eq_iff_eq_add] at h
           have : 2 * sin x * cos x = 0 := by
-            simpa [h, add_sq, add_assoc, ← two_mul, mul_add, mul_assoc, ← sq]
+            simpa [h, add_sq, add_assoc, add_self, mul_add, mul_assoc, ← sq]
               using cos_sq_add_sin_sq x
           simp [hsinx, hcosx] at this
         | 2 =>

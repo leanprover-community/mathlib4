@@ -347,7 +347,7 @@ theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 
     abel
   obtain ⟨d, hd⟩ := hn
   subst hd
-  simp only [← two_mul, pow_mul]
+  simp only [add_self, pow_mul]
   have hxy4 : 4 ∣ x ^ 2 - y ^ 2 := by
     rw [Int.dvd_iff_emod_eq_zero, Int.sub_emod, Int.sq_mod_four_eq_one_of_odd _,
       Int.sq_mod_four_eq_one_of_odd hy]

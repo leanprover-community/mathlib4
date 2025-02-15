@@ -81,7 +81,7 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
   conv_lhs => unfold bitwise
   simp only [bit, ite_apply, Bool.cond_eq_ite]
-  have h4 x : (x + x + 1) / 2 = x := by rw [← two_mul, add_comm]; simp [add_mul_div_left]
+  have h4 x : (x + x + 1) / 2 = x := by rw [add_self, add_comm]; simp [add_mul_div_left]
   cases a <;> cases b <;> simp [h4] <;> split_ifs
     <;> simp_all +decide [two_mul]
 

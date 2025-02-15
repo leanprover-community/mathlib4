@@ -122,7 +122,7 @@ theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : 
       rw [GE.ge] at e1
       -- Porting note: Bump index in nth_rewrite
       nth_rewrite 2 [← add_zero ‖R • x‖] at e1
-      rw [add_le_add_iff_left, two_smul, ← two_mul] at e1
+      rw [add_le_add_iff_left, two_smul, add_self] at e1
       rw [le_antisymm_iff]
       refine ⟨?_, norm_nonneg _⟩
       rwa [← mul_zero (2 : ℝ), mul_le_mul_left (show (0 : ℝ) < 2 by norm_num)] at e1

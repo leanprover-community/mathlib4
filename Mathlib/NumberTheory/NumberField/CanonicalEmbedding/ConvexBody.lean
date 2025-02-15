@@ -213,7 +213,7 @@ theorem convexBodyLT'_volume :
         Set.Ioo (-1 : ℝ) (1 : ℝ) ×ˢ Set.Ioo (- (B : ℝ) ^ 2) ((B : ℝ) ^ 2) by
           ext; simp_rw [Set.mem_setOf_eq, Set.mem_prod, Set.mem_Ioo, abs_lt]]
       simp_rw [volume_eq_prod, prod_prod, Real.volume_Ioo, sub_neg_eq_add, one_add_one_eq_two,
-        ← two_mul, ofReal_mul zero_le_two, ofReal_pow (coe_nonneg B), ofReal_ofNat,
+        add_self, ofReal_mul zero_le_two, ofReal_pow (coe_nonneg B), ofReal_ofNat,
         ofReal_coe_nnreal, ← mul_assoc, show (2 : ℝ≥0∞) * 2 = 4 by norm_num]
     · refine (MeasurableSet.inter ?_ ?_).nullMeasurableSet
       · exact measurableSet_lt (measurable_norm.comp Complex.measurable_re) measurable_const

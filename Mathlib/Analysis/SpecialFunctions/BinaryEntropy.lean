@@ -145,7 +145,7 @@ lemma binEntropy_lt_log_two : binEntropy p < log 2 ↔ p ≠ 2⁻¹ := by
   calc
   _ < log (p * p⁻¹ + (1 - p) * (1 - p)⁻¹) :=
     strictConcaveOn_log_Ioi.2 (inv_pos.2 hp₀) (inv_pos.2 hp₁)
-      (by simpa [eq_sub_iff_add_eq, ← two_mul, mul_comm, mul_eq_one_iff_eq_inv₀]) hp₀ hp₁ (by simp)
+      (by simpa [eq_sub_iff_add_eq, add_self, mul_comm, mul_eq_one_iff_eq_inv₀]) hp₀ hp₁ (by simp)
   _ = log 2 := by rw [mul_inv_cancel₀, mul_inv_cancel₀, one_add_one_eq_two] <;> positivity
 
 lemma binEntropy_le_log_two : binEntropy p ≤ log 2 := by

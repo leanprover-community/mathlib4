@@ -177,14 +177,14 @@ theorem abs_le_sqrt_two_mul_max (z : ℂ) : Complex.abs z ≤ Real.sqrt 2 * max 
       Real.sqrt (x ^ 2 + y ^ 2) ≤ Real.sqrt (y ^ 2 + y ^ 2) :=
         Real.sqrt_le_sqrt (add_le_add_right (sq_le_sq.2 hle) _)
       _ = Real.sqrt 2 * max |x| |y| := by
-        rw [max_eq_right hle, ← two_mul, Real.sqrt_mul two_pos.le, Real.sqrt_sq_eq_abs]
+        rw [max_eq_right hle, add_self, Real.sqrt_mul two_pos.le, Real.sqrt_sq_eq_abs]
   · have hle' := le_of_not_le hle
     rw [add_comm]
     calc
       Real.sqrt (y ^ 2 + x ^ 2) ≤ Real.sqrt (x ^ 2 + x ^ 2) :=
         Real.sqrt_le_sqrt (add_le_add_right (sq_le_sq.2 hle') _)
       _ = Real.sqrt 2 * max |x| |y| := by
-        rw [max_eq_left hle', ← two_mul, Real.sqrt_mul two_pos.le, Real.sqrt_sq_eq_abs]
+        rw [max_eq_left hle', add_self, Real.sqrt_mul two_pos.le, Real.sqrt_sq_eq_abs]
 
 theorem abs_re_div_abs_le_one (z : ℂ) : |z.re / Complex.abs z| ≤ 1 :=
   if hz : z = 0 then by simp [hz, zero_le_one]

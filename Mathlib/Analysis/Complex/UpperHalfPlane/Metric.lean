@@ -61,7 +61,7 @@ theorem exp_half_dist (z w : ℍ) :
   rw [← sinh_add_cosh, sinh_half_dist, cosh_half_dist, add_div]
 
 theorem cosh_dist (z w : ℍ) : cosh (dist z w) = 1 + dist (z : ℂ) w ^ 2 / (2 * z.im * w.im) := by
-  rw [dist_eq, cosh_two_mul, cosh_sq', add_assoc, ← two_mul, sinh_arsinh, div_pow, mul_pow,
+  rw [dist_eq, cosh_two_mul, cosh_sq', add_assoc, add_self, sinh_arsinh, div_pow, mul_pow,
     sq_sqrt, sq (2 : ℝ), mul_assoc, ← mul_div_assoc, mul_assoc, mul_div_mul_left] <;> positivity
 
 theorem sinh_half_dist_add_dist (a b c : ℍ) : sinh ((dist a b + dist b c) / 2) =

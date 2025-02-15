@@ -233,7 +233,7 @@ theorem threeAPFree_iff_eq_right {s : Set ℕ} :
   · rintro rfl
     exact (add_left_cancel habc).symm
   · rintro rfl
-    simp_rw [← two_mul] at habc
+    simp_rw [add_self] at habc
     exact mul_left_cancel₀ two_ne_zero habc
 
 end Nat

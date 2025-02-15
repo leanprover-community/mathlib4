@@ -928,7 +928,7 @@ theorem val_eq_one : ∀ {n : ℕ} (_ : 1 < n) (a : ZMod n), a.val = 1 ↔ a = 1
   | n + 2, _, _ => by simp only [val, ZMod, Fin.ext_iff, Fin.val_one]
 
 theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val = n := by
-  rw [neg_eq_iff_add_eq_zero, ← two_mul]
+  rw [neg_eq_iff_add_eq_zero, add_self]
   cases n
   · rw [@mul_eq_zero ℤ, @mul_eq_zero ℕ, val_eq_zero]
     exact

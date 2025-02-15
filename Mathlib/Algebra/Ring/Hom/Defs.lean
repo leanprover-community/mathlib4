@@ -624,7 +624,7 @@ def mkRingHomOfMulSelfOfTwoNeZero (h : ∀ x, f (x * x) = f x * f x) (h_two : (2
         mul_add, mul_add, ← sub_eq_zero, add_comm (f x * f x + f (y * x)), ← sub_sub, ← sub_sub,
         ← sub_sub, mul_comm y x, mul_comm (f y) (f x)] at hxy
       simp only [add_assoc, add_sub_assoc, add_sub_cancel] at hxy
-      rw [sub_sub, ← two_mul, ← add_sub_assoc, ← two_mul, ← mul_sub, mul_eq_zero (M₀ := α),
+      rw [sub_sub, add_self, ← add_sub_assoc, add_self, ← mul_sub, mul_eq_zero (M₀ := α),
         sub_eq_zero, or_iff_not_imp_left] at hxy
       exact hxy h_two }
 

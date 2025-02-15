@@ -112,7 +112,7 @@ namespace HolderConjugate
 
 instance instTwoTwo : HolderConjugate 2 2 where
   inv_add_inv' := by
-    rw [← two_mul, ENNReal.mul_inv_cancel]
+    rw [add_self, ENNReal.mul_inv_cancel]
     all_goals norm_num
 
 -- I'm not sure this is necessary, but maybe it's nice to have around given the `abbrev`.

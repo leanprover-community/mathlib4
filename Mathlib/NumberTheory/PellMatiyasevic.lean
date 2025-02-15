@@ -622,7 +622,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
           rcases lt_or_eq_of_le <| Nat.le_of_succ_le_succ ij with lin | ein
           · rw [Nat.mod_eq_of_lt (strictMono_x _ lin)]
             have ll : xn a1 (n - 1) + xn a1 (n - 1) ≤ xn a1 n := by
-              rw [← two_mul, mul_comm,
+              rw [add_self, mul_comm,
                 show xn a1 n = xn a1 (n - 1 + 1) by rw [tsub_add_cancel_of_le (succ_le_of_lt npos)],
                 xn_succ]
               exact le_trans (Nat.mul_le_mul_left _ a1) (Nat.le_add_right _ _)
@@ -635,7 +635,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
             · exact lt_of_lt_of_le (Nat.add_lt_add_left (strictMono_x a1 ill) _) ll
             · rw [ile]
               apply lt_of_le_of_ne ll
-              rw [← two_mul]
+              rw [add_self]
               exact fun e =>
                 ntriv <| by
                   let ⟨a2, s1⟩ :=
@@ -823,7 +823,7 @@ theorem matiyasevic {a k x y} :
               ((yn_modEq_a_sub_one b1 _).of_dvd this).symm.trans tk
             have ki : k + i < 4 * yn a1 i :=
               lt_of_le_of_lt (_root_.add_le_add ky (yn_ge_n a1 i)) <| by
-                rw [← two_mul]
+                rw [add_self]
                 exact Nat.mul_lt_mul_of_pos_right (by decide) (strictMono_y a1 ipos)
             have ji : j ≡ i [MOD 4 * n] :=
               have : xn a1 j ≡ xn a1 i [MOD xn a1 n] :=

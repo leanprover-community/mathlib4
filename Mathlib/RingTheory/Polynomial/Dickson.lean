@@ -186,7 +186,7 @@ theorem dickson_one_one_mul (m n : ℕ) :
   apply map_injective (Int.castRingHom ℚ) Int.cast_injective
   simp only [map_dickson, map_comp, eq_intCast, Int.cast_one, dickson_one_one_eq_chebyshev_T,
     Nat.cast_mul, Chebyshev.T_mul, two_mul, ← add_comp]
-  simp only [← two_mul, ← comp_assoc]
+  simp only [add_self, ← comp_assoc]
   apply eval₂_congr rfl rfl
   rw [comp_assoc]
   apply eval₂_congr rfl _ rfl

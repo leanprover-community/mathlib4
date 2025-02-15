@@ -76,7 +76,7 @@ private lemma recursion' (n : ℕ) :
   have hv₂d : Continuous v₂' := by fun_prop
   have hu₁_eval_one : u₁ 1 = 0 := by simp only [u₁, f]; simp
   have hu₁_eval_neg_one : u₁ (-1) = 0 := by simp only [u₁, f]; simp
-  have t : u₂ 1 * v₂ 1 - u₂ (-1) * v₂ (-1) = 2 * (0 ^ n * cos θ) := by simp [u₂, v₂, f, ← two_mul]
+  have t : u₂ 1 * v₂ 1 - u₂ (-1) * v₂ (-1) = 2 * (0 ^ n * cos θ) := by simp [u₂, v₂, f, add_self]
   have hf (x) : HasDerivAt f (- 2 * x) x := by
     convert (hasDerivAt_pow 2 x).const_sub 1 using 1
     simp

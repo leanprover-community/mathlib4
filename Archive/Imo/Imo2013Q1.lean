@@ -49,7 +49,7 @@ theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
   intro n
   obtain ⟨t, ht : ↑n = t + t⟩ | ⟨t, ht : ↑n = 2 * t + 1⟩ := (n : ℕ).even_or_odd
   · -- even case
-    rw [← two_mul] at ht
+    rw [add_self] at ht
     cases' t with t
     -- Eliminate the zero case to simplify later calculations.
     · exfalso; rw [Nat.mul_zero] at ht; exact PNat.ne_zero n ht

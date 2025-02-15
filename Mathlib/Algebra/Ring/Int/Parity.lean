@@ -50,7 +50,7 @@ lemma even_xor'_odd (n : ℤ) : Xor' (Even n) (Odd n) := by
 
 lemma even_xor'_odd' (n : ℤ) : ∃ k, Xor' (n = 2 * k) (n = 2 * k + 1) := by
   rcases even_or_odd n with (⟨k, rfl⟩ | ⟨k, rfl⟩) <;> use k
-  · simpa only [← two_mul, Xor', true_and, eq_self_iff_true, not_true, or_false,
+  · simpa only [add_self, Xor', true_and, eq_self_iff_true, not_true, or_false,
       and_false] using (succ_ne_self (2 * k)).symm
   · simp only [Xor', add_right_eq_self, false_or, eq_self_iff_true, not_true, not_false_iff,
       one_ne_zero, and_self_iff]

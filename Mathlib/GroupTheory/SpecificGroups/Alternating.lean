@@ -162,7 +162,7 @@ theorem closure_three_cycles_eq_alternating :
         l.prod ∈ closure { σ : Perm α | IsThreeCycle σ } by
       obtain ⟨l, rfl, hl⟩ := truncSwapFactors σ
       obtain ⟨n, hn⟩ := (prod_list_swap_mem_alternatingGroup_iff_even_length hl).1 hσ
-      rw [← two_mul] at hn
+      rw [add_self] at hn
       exact hind n l hl hn
     intro n
     induction' n with n ih <;> intro l hl hn

@@ -70,8 +70,8 @@ theorem int_prod_range_nonneg (m : ℤ) (n : ℕ) (hn : Even n) :
   induction n with
   | zero => simp
   | succ n ihn =>
-    rw [← two_mul] at ihn
-    rw [← two_mul, mul_add, mul_one, ← one_add_one_eq_two, ← add_assoc,
+    rw [add_self] at ihn
+    rw [add_self, mul_add, mul_one, ← one_add_one_eq_two, ← add_assoc,
       Finset.prod_range_succ, Finset.prod_range_succ, mul_assoc]
     refine mul_nonneg ihn ?_; generalize (1 + 1) * n = k
     rcases le_or_lt m k with hmk | hmk

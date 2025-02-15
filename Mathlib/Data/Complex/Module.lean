@@ -501,7 +501,7 @@ lemma Complex.coe_realPart (z : ℂ) : (ℜ z : ℂ) = z.re := calc
   (ℜ z : ℂ) = (↑(ℜ (↑z.re + ↑z.im * I))) := by congrm (ℜ $((re_add_im z).symm))
   _         = z.re                       := by
     rw [map_add, AddSubmonoid.coe_add, mul_comm, ← smul_eq_mul, realPart_I_smul]
-    simp [conj_ofReal, ← two_mul]
+    simp [conj_ofReal, add_self]
 
 lemma star_mul_self_add_self_mul_star {A : Type*} [NonUnitalRing A] [StarRing A]
     [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A] (a : A) :
