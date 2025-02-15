@@ -218,6 +218,7 @@ Q220680:
 
 Q225973:
   title: Ore's theorem
+  statement: SimpleGraph.ores_theorem
 
 Q226014:
   title: Poincaré recurrence theorem
