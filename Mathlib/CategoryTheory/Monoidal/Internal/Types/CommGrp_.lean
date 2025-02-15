@@ -46,24 +46,10 @@ commutative groups. -/
 noncomputable def commGrpTypeEquivalenceCommGrp : CommGrp_ (Type u) ≌ CommGrp.{u} where
   functor := CommGrpTypeEquivalenceCommGrp.functor
   inverse := CommGrpTypeEquivalenceCommGrp.inverse
-  unitIso :=
-    NatIso.ofComponents
-      (fun A =>
-        { hom := { hom := 𝟙 _ }
-          inv := { hom := 𝟙 _ } })
-      (by aesop_cat)
-  counitIso :=
-    NatIso.ofComponents
-      (fun A =>
-        { hom := CommGrp.ofHom
-            { toFun := id
-              map_one' := rfl
-              map_mul' := fun _ _ => rfl }
-          inv := CommGrp.ofHom
-            { toFun := id
-              map_one' := rfl
-              map_mul' := fun _ _ => rfl } })
-      (by aesop_cat)
+  unitIso := Iso.refl _
+  counitIso := NatIso.ofComponents
+    (fun A => MulEquiv.toCommGrpIso { Equiv.refl _ with map_mul' := fun _ _ => rfl })
+    (by aesop_cat)
 
 /-- The equivalences `Grp_ (Type u) ≌ Grp.{u}` and `CommGrp_ (Type u) ≌ CommGrp.{u}`
 are naturally compatible with the forgetful functors to `Grp` and `Grp_ (Type u)`.
