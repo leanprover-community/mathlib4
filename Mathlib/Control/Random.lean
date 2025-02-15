@@ -49,13 +49,13 @@ instance [MonadLift m n] : MonadLiftT (RandGT g m) (RandGT g n) where
 
 Note that `m` is a parameter as some types may only be sampleable with access to a certain monad. -/
 class Random (m) (α : Type u) where
-  /-- The underlying random generator -/
+  /-- Sample an element of this type from the provided generator. -/
   random [RandomGen g] : RandGT g m α
 
 /-- `BoundedRandom m α` gives us machinery to generate values of type `α` between certain bounds in
 the monad `m`. -/
 class BoundedRandom (m) (α : Type u) [Preorder α] where
-  /-- The underlying bounded random generator -/
+  /-- Sample a bounded element of this type from the provided generator. -/
   randomR {g : Type} (lo hi : α) (h : lo ≤ hi) [RandomGen g] : RandGT g m {a // lo ≤ a ∧ a ≤ hi}
 
 namespace Rand
