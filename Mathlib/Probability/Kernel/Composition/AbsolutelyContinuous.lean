@@ -65,7 +65,7 @@ lemma mutuallySingular_compProd_right_iff [SFinite μ] :
   ⟨fun h ↦ mutuallySingular_of_mutuallySingular_compProd h AbsolutelyContinuous.rfl
     AbsolutelyContinuous.rfl, MutuallySingular.compProd_of_right _ _⟩
 
-lemma AbsolutelyContinuous.kernel_of_compProd [SFinite μ] [SFinite ν] (h : μ ⊗ₘ κ ≪ ν ⊗ₘ η) :
+lemma AbsolutelyContinuous.kernel_of_compProd [SFinite μ] (h : μ ⊗ₘ κ ≪ ν ⊗ₘ η) :
     ∀ᵐ a ∂μ, κ a ≪ η a := by
   suffices ∀ᵐ a ∂μ, κ.singularPart η a = 0 by
     filter_upwards [this] with a ha
