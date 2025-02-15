@@ -204,7 +204,7 @@ instance {j₁ j₂ : κ.ord.toType} (φ : j₁ ⟶ j₂) (f : Arrow C) :
 /-- For any `f : Arrow C`, the object `((iteration I κ).obj f).right`
 identifies to `f.right`. -/
 @[simps! hom]
-noncomputable def iterationAppRightIso (f : Arrow C) :
+noncomputable def iterationObjRightIso (f : Arrow C) :
     f.right ≅ ((iteration I κ).obj f).right :=
   asIso ((ιIteration I κ).app f).right
 
@@ -213,13 +213,13 @@ noncomputable def iterationAppRightIso (f : Arrow C) :
 noncomputable def iterationFunctorObjObjRightIso (f : Arrow C) (j : κ.ord.toType) :
     (((iterationFunctor I κ).obj j).obj f).right ≅ f.right :=
   asIso ((transfiniteCompositionOfShapeιIterationAppRight I κ f).incl.app j) ≪≫
-    (iterationAppRightIso I κ f).symm
+    (iterationObjRightIso I κ f).symm
 
 @[reassoc (attr := simp)]
 lemma iterationFunctorObjObjRightIso_ιIteration_app_right (f : Arrow C) (j : κ.ord.toType) :
     (iterationFunctorObjObjRightIso I κ f j).hom ≫ ((ιIteration I κ).app f).right =
       (transfiniteCompositionOfShapeιIterationAppRight I κ f).incl.app j := by
-  simp [iterationFunctorObjObjRightIso, iterationAppRightIso]
+  simp [iterationFunctorObjObjRightIso, iterationObjRightIso]
 
 lemma prop_iterationFunctor_map_succ (j : κ.ord.toType) :
     (succStruct I κ).prop ((iterationFunctor I κ).map (homOfLE (Order.le_succ j))) := by
