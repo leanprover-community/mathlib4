@@ -79,6 +79,14 @@ theorem condExp_ae_eq_trim_integral_condExpKernel {F : Type*} [NormedAddCommGrou
  · exact hf.integral_condExpKernel
  · exact condExp_ae_eq_integral_condExpKernel hm hf_int
 
+@[simp]
+lemma prodMkLeft_comp_compProd {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''}
+    {η : Kernel Ω Ω''} [SFinite ν] [IsSFiniteKernel κ] :
+    (η.prodMkLeft Ω') ∘ₘ ν ⊗ₘ κ = η ∘ₘ κ ∘ₘ ν := by
+  conv_rhs => rw [← Measure.snd_compProd (μ := ν)]
+  rw [Kernel.prodMkLeft, Measure.snd, ← Measure.deterministic_comp_eq_map measurable_snd,
+    Measure.comp_assoc, Kernel.comp_deterministic_eq_comap]
+
 section Kernel
 
 /-! ### Sub-Gaussian with respect to a kernel and a measure -/
@@ -263,8 +271,23 @@ lemma prob_ge_le [SFinite ν] [IsMarkovKernel κ] (h : IsSubGaussianWith X c κ 
     simpa [hc0] using toReal_prob_le_one
   · exact h.measure_ge_le (lt_of_le_of_ne zero_le' (Ne.symm hc0)) hε
 
-lemma integrable_exp_add_compProd {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {Y : Ω'' → ℝ}
-    {cY : ℝ≥0} {η : Kernel (Ω' × Ω) Ω''} [SFinite ν] [IsSFiniteKernel κ] [IsMarkovKernel η]
+section Add
+
+variable {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {Y : Ω'' → ℝ} {cY : ℝ≥0}
+  [SFinite ν] [IsSFiniteKernel κ]
+
+lemma prodMkLeft_compProd {η : Kernel Ω Ω''} (h : IsSubGaussianWith Y cY η (κ ∘ₘ ν)) :
+    IsSubGaussianWith Y cY (prodMkLeft Ω' η) (ν ⊗ₘ κ) := by
+  constructor
+  · convert h.integrable_exp_mul
+    simp
+  · have h2 := h.mgf_le
+    simp only [prodMkLeft_apply] at h2
+    rw [← Measure.snd_compProd, Measure.snd] at h2
+    refine ae_of_ae_map ?_ h2
+    fun_prop
+
+lemma integrable_exp_add_compProd {η : Kernel (Ω' × Ω) Ω''} [IsMarkovKernel η]
     (hX : IsSubGaussianWith X c κ ν) (hY : IsSubGaussianWith Y cY η (ν ⊗ₘ κ)) (t : ℝ) :
     Integrable (fun ω ↦ exp (t * (X ω.1 + Y ω.2))) (⇑(κ ⊗ₖ η) ∘ₘ ν) := by
   simp_rw [mul_add, exp_add]
@@ -279,8 +302,7 @@ lemma integrable_exp_add_compProd {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} 
     rwa [Measure.comp_compProd_comm, Measure.snd,
       memℒp_map_measure_iff h.1 measurable_snd.aemeasurable] at h
 
-lemma add {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {Y : Ω'' → ℝ} {cY : ℝ≥0}
-    {η : Kernel (Ω' × Ω) Ω''} [SFinite ν] [IsSFiniteKernel κ] [IsMarkovKernel η]
+lemma add {η : Kernel (Ω' × Ω) Ω''} [IsMarkovKernel η]
     (hX : IsSubGaussianWith X c κ ν) (hY : IsSubGaussianWith Y cY η (ν ⊗ₘ κ)) :
     IsSubGaussianWith (fun p ↦ X p.1 + Y p.2) (c + cY) (κ ⊗ₖ η) ν := by
   refine .of_rat (integrable_exp_add_compProd hX hY) ?_
@@ -303,6 +325,13 @@ lemma add {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {Y : Ω'' → ℝ} {cY :
     rw [integral_mul_right, NNReal.coe_add, add_mul, add_div, exp_add]
     gcongr
     exact hX_mgf q
+
+lemma add' {η : Kernel Ω Ω''} [IsMarkovKernel η]
+    (hX : IsSubGaussianWith X c κ ν) (hY : IsSubGaussianWith Y cY η (κ ∘ₘ ν)) :
+    IsSubGaussianWith (fun p ↦ X p.1 + Y p.2) (c + cY) (κ ⊗ₖ prodMkLeft Ω' η) ν :=
+  hX.add (prodMkLeft_compProd hY)
+
+end Add
 
 section Indep
 
@@ -418,6 +447,11 @@ lemma isSubGaussian_iff_kernel :
 
 namespace IsSubGaussianWith
 
+lemma aestronglyMeasurable (h : IsSubGaussianWith X c μ) : AEStronglyMeasurable X μ := by
+  have h_int := h.integrable_exp_mul 1
+  simp only [one_mul] at h_int
+  exact (aemeasurable_of_aemeasurable_exp h_int.1.aemeasurable).aestronglyMeasurable
+
 lemma memℒp (h : IsSubGaussianWith X c μ) (t : ℝ) (p : ℝ≥0) :
     Memℒp (fun ω ↦ exp (t * X ω)) p μ := by
   rw [isSubGaussianWith_iff_kernel] at h
@@ -435,6 +469,24 @@ lemma zero [IsZeroOrProbabilityMeasure μ] : IsSubGaussianWith (fun _ ↦ 0) 0 �
 @[simp]
 lemma zero' [IsZeroOrProbabilityMeasure μ] : IsSubGaussianWith 0 0 μ := by
   simp [isSubGaussianWith_iff_kernel]
+
+lemma id_map (hX : AEMeasurable X μ) :
+    IsSubGaussianWith id c (μ.map X) ↔ IsSubGaussianWith X c μ := by
+  refine ⟨fun ⟨h1, h2⟩ ↦ ⟨?_, ?_⟩, fun ⟨h1, h2⟩ ↦ ⟨?_, ?_⟩⟩
+  · intro t
+    specialize h1 t
+    rw [integrable_map_measure] at h1
+    · exact h1
+    · exact Measurable.aestronglyMeasurable <| by fun_prop
+    · fun_prop
+  · simpa [Kernel.map_apply _, mgf_id_map hX] using h2
+  · intro t
+    specialize h1 t
+    rw [integrable_map_measure]
+    · exact h1
+    · exact Measurable.aestronglyMeasurable <| by fun_prop
+    · fun_prop
+  · simpa [Kernel.map_apply _, mgf_id_map hX] using h2
 
 /-- Chernoff bound on the right tail of a sub-Gaussian random variable. -/
 lemma measure_ge_le [IsFiniteMeasure μ] (h : IsSubGaussianWith X c μ) {ε : ℝ}
@@ -465,6 +517,44 @@ lemma sum_of_iIndepFun {ι : Type*} [IsZeroOrProbabilityMeasure μ]
 end IsSubGaussianWith
 
 section Martingale
+
+lemma mgf_map {μ : Measure Ω'} {Y : Ω' → Ω} {X : Ω → ℝ} (hY : AEMeasurable Y μ) {t : ℝ}
+    (h1 : AEStronglyMeasurable (fun ω ↦ exp (t * X ω)) (μ.map Y)) :
+    mgf X (μ.map Y) t = mgf (X ∘ Y) μ t := by rw [mgf, integral_map hY h1]; rfl
+
+lemma isSubGaussianWith_of_map {μ : Measure Ω'} {Y : Ω' → Ω} {X : Ω → ℝ} (hY : AEMeasurable Y μ)
+    (h : IsSubGaussianWith X c (μ.map Y)) :
+    IsSubGaussianWith (X ∘ Y) c μ := by
+  constructor
+  · intro t
+    have h1 := h.integrable_exp_mul t
+    rwa [integrable_map_measure h1.aestronglyMeasurable (by fun_prop)] at h1
+  · convert h.mgf_le
+    ext t
+    rw [mgf_map hY (h.integrable_exp_mul t).1]
+
+lemma isSubGaussianWith_add_of_isCondSubGaussianWith' [StandardBorelSpace Ω] [IsFiniteMeasure μ]
+    {Y : Ω → ℝ} {cY : ℝ≥0} (hm : m ≤ mΩ)
+    (hX : IsSubGaussianWith X c (μ.trim hm)) (hY : IsCondSubGaussianWith m hm Y cY μ) :
+    IsSubGaussianWith (X + Y) (c + cY) μ := by
+  suffices IsSubGaussianWith (fun p ↦ X p.1 + Y p.2) (c + cY)
+      (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) (fun ω ↦ (id ω, id ω)) μ) by
+    have h_eq : X + Y = (fun p ↦ X p.1 + Y p.2) ∘ (fun ω ↦ (id ω, id ω)) := by ext; simp
+    rw [h_eq]
+    refine isSubGaussianWith_of_map ?_ this
+    exact @Measurable.aemeasurable _ _ _ (m.prod mΩ) _ _
+      ((measurable_id'' hm).prod_mk measurable_id)
+  rw [isSubGaussianWith_iff_kernel] at hX ⊢
+  rw [IsCondSubGaussianWith] at hY
+  have hY' : Kernel.IsSubGaussianWith Y cY (condExpKernel μ m)
+      (@Measure.bind  _ _ _ m (Measure.dirac ()) (Kernel.const Unit (μ.trim hm))) := by
+    convert hY
+    simp
+  convert hX.add' hY'
+  simp only [id_eq]
+  ext
+  rw [Kernel.const_apply, ← Measure.compProd, compProd_trim_condExpKernel]
+  rfl
 
 lemma isSubGaussianWith_add_of_isCondSubGaussianWith [StandardBorelSpace Ω] [IsFiniteMeasure μ]
     {Y : Ω → ℝ} {cY : ℝ≥0} (hm : m ≤ mΩ) (hXm : Measurable[m] X)
