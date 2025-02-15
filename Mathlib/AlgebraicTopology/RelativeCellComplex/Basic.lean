@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.TransfiniteCompositionOfShape
+import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 
 /-!
 # Relative cell complexes
@@ -86,6 +86,18 @@ lemma hom_ext {Z : C} {φ₁ φ₂ : Y ⟶ Z} (h₀ : f ≫ φ₁ = f ≫ φ₂)
   | hl j hj hj' =>
     exact (c.F.isColimitOfIsWellOrderContinuous j hj).hom_ext
       (fun ⟨k, hk⟩ ↦ by simpa using hj' k hk)
+
+open MorphismProperty in
+/-- If `f` is a relative cell complex with respect to a constant
+family of morphisms `g`, then `f` is a transfinite composition
+of pushouts of coproducts of morphisms in the family `g`. -/
+@[simps toTransfiniteCompositionOfShape]
+def transfiniteCompositionOfShape
+    {α : Type*} {A B : α → C} (g : (i : α) → (A i ⟶ B i))
+    (c : RelativeCellComplex.{w} (fun (_ : J) ↦ g) f) :
+    (coproducts.{w} (ofHoms g)).pushouts.TransfiniteCompositionOfShape J f where
+  toTransfiniteCompositionOfShape := c.toTransfiniteCompositionOfShape
+  map_mem j hj := (c.attachCells j hj).pushouts_coproducts
 
 end RelativeCellComplex
 
