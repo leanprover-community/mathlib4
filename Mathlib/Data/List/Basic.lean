@@ -452,9 +452,11 @@ theorem head!_mem_self [Inhabited α] {l : List α} (h : l ≠ nil) : l.head! �
   have h' := mem_cons_self l.head! l.tail
   rwa [cons_head!_tail h] at h'
 
-theorem get_eq_get? (l : List α) (i : Fin l.length) :
-    l.get i = (l.get? i).get (by simp [getElem?_eq_getElem]) := by
+theorem get_eq_getElem? (l : List α) (i : Fin l.length) :
+    l.get i = l[i]?.get (by simp [getElem?_eq_getElem]) := by
   simp
+
+@[deprecated (since := "2025-02-15")] alias get_eq_get? := get_eq_getElem?
 
 theorem exists_mem_iff_getElem {l : List α} {p : α → Prop} :
     (∃ x ∈ l, p x) ↔ ∃ (i : ℕ) (_ : i < l.length), p l[i] := by
@@ -614,16 +616,16 @@ theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length)
   rw [drop_eq_getElem_cons h, take, take]
   simp
 
-theorem ext_get?' {l₁ l₂ : List α} (h' : ∀ n < max l₁.length l₂.length, l₁.get? n = l₂.get? n) :
+theorem ext_getElem?' {l₁ l₂ : List α} (h' : ∀ n < max l₁.length l₂.length, l₁[n]? = l₂[n]?) :
     l₁ = l₂ := by
-  apply ext_get?
+  apply ext_getElem?
   intro n
   rcases Nat.lt_or_ge n <| max l₁.length l₂.length with hn | hn
   · exact h' n hn
   · simp_all [Nat.max_le, getElem?_eq_none]
 
-theorem ext_get?_iff {l₁ l₂ : List α} : l₁ = l₂ ↔ ∀ n, l₁.get? n = l₂.get? n :=
-  ⟨by rintro rfl _; rfl, ext_get?⟩
+@[deprecated (since := "2025-02-15")] alias ext_get?' := ext_getElem?'
+@[deprecated (since := "2025-02-15")] alias ext_get?_iff := List.ext_getElem?_iff
 
 theorem ext_get_iff {l₁ l₂ : List α} :
     l₁ = l₂ ↔ l₁.length = l₂.length ∧ ∀ n h₁ h₂, get l₁ ⟨n, h₁⟩ = get l₂ ⟨n, h₂⟩ := by
@@ -633,9 +635,11 @@ theorem ext_get_iff {l₁ l₂ : List α} :
   · intro ⟨h₁, h₂⟩
     exact ext_get h₁ h₂
 
-theorem ext_get?_iff' {l₁ l₂ : List α} : l₁ = l₂ ↔
-    ∀ n < max l₁.length l₂.length, l₁.get? n = l₂.get? n :=
-  ⟨by rintro rfl _ _; rfl, ext_get?'⟩
+theorem ext_getElem?_iff' {l₁ l₂ : List α} : l₁ = l₂ ↔
+    ∀ n < max l₁.length l₂.length, l₁[n]? = l₂[n]? :=
+  ⟨by rintro rfl _ _; rfl, ext_getElem?'⟩
+
+@[deprecated (since := "2025-02-15")] alias ext_get?_iff' := ext_getElem?_iff'
 
 /-- If two lists `l₁` and `l₂` are the same length and `l₁[n]! = l₂[n]!` for all `n`,
 then the lists are equal. -/
@@ -665,13 +669,8 @@ theorem getElem?_idxOf [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
   rw [getElem?_eq_getElem, getElem_idxOf (idxOf_lt_length_iff.2 h)]
 
 @[deprecated (since := "2025-01-30")] alias getElem?_indexOf := getElem?_idxOf
-
--- This is incorrectly named and should be `get?_idxOf`;
--- this already exists, so will require a deprecation dance.
-theorem idxOf_get? [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
-    get? l (idxOf a l) = some a := by simp [h]
-
-@[deprecated (since := "2025-01-30")] alias indexOf_get? := idxOf_get?
+@[deprecated (since := "2025-02-15")] alias idxOf_get? := getElem?_idxOf
+@[deprecated (since := "2025-01-30")] alias indexOf_get? := getElem?_idxOf
 
 theorem idxOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy : y ∈ l) :
     idxOf x l = idxOf y l ↔ x = y :=
