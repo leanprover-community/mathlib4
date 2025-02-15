@@ -2548,7 +2548,6 @@ import Mathlib.Data.Analysis.Filter
 import Mathlib.Data.Analysis.Topology
 import Mathlib.Data.Array.Defs
 import Mathlib.Data.Array.ExtractLemmas
-import Mathlib.Data.Array.Lemmas
 import Mathlib.Data.BitVec
 import Mathlib.Data.Bool.AllAny
 import Mathlib.Data.Bool.Basic
@@ -2652,6 +2651,9 @@ import Mathlib.Data.Finset.Interval
 import Mathlib.Data.Finset.Lattice.Basic
 import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Data.Finset.Lattice.Lemmas
+import Mathlib.Data.Finset.Lattice.Pi
+import Mathlib.Data.Finset.Lattice.Prod
+import Mathlib.Data.Finset.Lattice.Union
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.MulAntidiagonal
 import Mathlib.Data.Finset.NAry
@@ -5223,6 +5225,7 @@ import Mathlib.Tactic.NormNum.Inv
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.LegendreSymbol
 import Mathlib.Tactic.NormNum.NatFib
+import Mathlib.Tactic.NormNum.NatLog
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.OfScientific
 import Mathlib.Tactic.NormNum.Pow
