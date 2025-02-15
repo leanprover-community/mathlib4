@@ -71,7 +71,6 @@ def toAdditiveLocalDecl (fvarId : FVarId) : TacticM Unit := withMainContext do
     | throwError "to_additive requires an equality goal"
   try toAdditiveCore e₁ e₂
   catch | _ => throwError "to_additive made no progress"
- 
 
 /-- The `to_additive` tactic, which solves converts equations in the language of
 multiplicative commutative additive groups (or monoids) to those in additive structures. -/
