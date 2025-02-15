@@ -14,9 +14,9 @@ where `w` is an auxiliary universe) if there exists a regular
 cardinal `κ : Cardinal.{w}` such that `IsCardinalForSmallObjectArgument I κ`
 holds. This technical condition is defined in the file
 `SmallObject.IsCardinalForSmallObjectArgument`. It involves certain
-smallness conditions relative to `w`, the existence of certain colimits,
+smallness conditions relative to `w`, the existence of certain colimits in `C`,
 and for each object `A` which is the source of a morphism in `I`,
-the `Hom(A, _)` functor (`coyoneda.obj (op A)`) should commute
+the `Hom(A, -)` functor (`coyoneda.obj (op A)`) should commute
 to transfinite compositions of pushouts of coproducts of morphisms in `I`
 (this condition is automatically satisfied for a suitable `κ` when `A` is a
 presentable object of `C`, see the file `Presentable.Basic`).
@@ -78,7 +78,7 @@ namespace MorphismProperty
 variable {C : Type u} [Category.{v} C] (I : MorphismProperty C)
 
 /-- A class of morphisms `I : MorphismProperty C` satisfies the property
-`HasSmallObjectArgument.{w} I` if it permits the small object arguments,
+`HasSmallObjectArgument.{w} I` if it permits the small object argument,
 i.e. there exists a regular cardinal `κ : Cardinal.{w}` such that
 `IsCardinalForSmallObjectArgument I κ` holds. -/
 class HasSmallObjectArgument : Prop where
