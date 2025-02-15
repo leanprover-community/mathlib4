@@ -165,6 +165,9 @@ theorem factor_comp_mk (H : S ≤ T) : (factor S T H).comp (mk S) = mk T := by
   ext x
   rw [RingHom.comp_apply, factor_mk]
 
+lemma factor_surjective (H : S ≤ T) : Function.Surjective (factor S T H) :=
+  Ideal.Quotient.lift_surjective_of_surjective _ _ Ideal.Quotient.mk_surjective
+
 end Quotient
 
 variable {I J} [I.IsTwoSided] [J.IsTwoSided]
