@@ -111,7 +111,7 @@ lemma compProd_trim_condExpKernel (hm : m ≤ mΩ) :
   simp only [Kernel.coe_comap, Function.comp_apply, id_eq]
   congr
 
-lemma condExpKernel_comp_trim (hm : m ≤ mΩ) : (condExpKernel μ m) ∘ₘ (μ.trim hm) = μ := by
+lemma condExpKernel_comp_trim (hm : m ≤ mΩ) : condExpKernel μ m ∘ₘ μ.trim hm = μ := by
   rw [← Measure.snd_compProd, compProd_trim_condExpKernel, @Measure.snd_map_prod_mk]
   · simp
   · exact measurable_id'' hm
