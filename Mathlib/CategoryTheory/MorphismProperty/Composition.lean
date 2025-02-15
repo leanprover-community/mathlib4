@@ -218,8 +218,8 @@ inductive multiplicativeClosure (W : MorphismProperty C) : MorphismProperty C
 
 /-- A variant of `multiplicativeClosure` in which compositions are taken on the left rather than
 on the right. It is not intended to be used directly, and one should rather access this via
-`multiplicativeClosure_eq_multiplicativeClosure'` in cases where the inductive principle of this variant is
-needed. -/
+`multiplicativeClosure_eq_multiplicativeClosure'` in cases where the inductive principle of this
+variant is needed. -/
 inductive multiplicativeClosure' (W : MorphismProperty C) : MorphismProperty C
   | of {x y : C} (f : x ⟶ y) (hf : W f) : multiplicativeClosure' W f
   | id (x : C) : multiplicativeClosure' W (𝟙 x)
@@ -256,7 +256,7 @@ lemma le_multiplicativeClosure : W ≤ W.multiplicativeClosure := fun {_ _} _ hf
 /-- The multiplicative closure of a multiplicative property is equal to itself. -/
 @[simp]
 lemma multiplicativeClosure_eq_self [W.IsMultiplicative] : W.multiplicativeClosure = W := by
-  apply le_antisymm _ le_multiplicativeClosure
+  apply le_antisymm _ <| le_multiplicativeClosure W
   intro _ _ _ hf
   induction hf with
   | of _ hf₀ => exact hf₀
@@ -267,24 +267,20 @@ lemma multiplicativeClosure_eq_self_iff : W.multiplicativeClosure = W ↔ W.IsMu
   mp h := by
     rw [← h]
     infer_instance
-  mpr h := multiplicativeClosure_eq_self
+  mpr h := multiplicativeClosure_eq_self W
 
-/-- The multiplicative closure of `W` is the smallest multiplicative property greater than or equal to
-`W`. -/
-lemma multiplicativeClosure_le_of_isMultiplicative_le
-    (W' : MorphismProperty C) [W'.IsMultiplicative]
-    (hWW' : W ≤ W') : W.multiplicativeClosure ≤ W' := by
-  intro _ _ _ hf
-  induction hf with
-  | of _ hf => exact hWW' _ hf
-  | id x => exact W'.id_mem _
-  | comp_of _ _ _ hg hf => exact W'.comp_mem _ _ hf (hWW' _ hg)
-
+/-- The multiplicative closure of `W` is the smallest multiplicative property greater than or equal
+to `W`. -/
 @[simp]
 lemma multiplicativeClosure_le_iff (W' : MorphismProperty C) [W'.IsMultiplicative] :
     multiplicativeClosure W ≤ W' ↔ W ≤ W' where
-  mp h := le_multiplicativeClosure.trans h
-  mpr h := multiplicativeClosure_le_of_isMultiplicative_le W' h
+  mp h := le_multiplicativeClosure W |>.trans h
+  mpr h := by
+    intro _ _ _ hf
+    induction hf with
+    | of _ hf => exact h _ hf
+    | id x => exact W'.id_mem _
+    | comp_of _ _ _ hg hf => exact W'.comp_mem _ _ hf (h _ hg)
 
 lemma multiplicativeClosure_monotone :
     Monotone (multiplicativeClosure (C := C)) :=
@@ -293,7 +289,7 @@ lemma multiplicativeClosure_monotone :
 lemma multiplicativeClosure_eq_multiplicativeClosure' :
     W.multiplicativeClosure = W.multiplicativeClosure' :=
   le_antisymm
-    (multiplicativeClosure_le_of_isMultiplicative_le _ (fun _ _ f hf ↦ .of f hf)) <|
+    ((multiplicativeClosure_le_iff _ _).mpr (fun _ _ f hf ↦ .of f hf)) <|
     fun x y f hf ↦ by induction hf with
       | of _ h => exact .of _ h
       | id x => exact .id x
