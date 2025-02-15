@@ -7,6 +7,7 @@ import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.RingTheory.Ideal.Quotient.Defs
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # The quotient map from `R ⧸ I ^ m` to `R ⧸ I ^ n` where `m ≥ n`
@@ -102,6 +103,18 @@ theorem mk_out_eq_mapQPow {m n : ℕ} (le : n ≤ m) (x : R ⧸ I ^ m) :
 
 lemma factorPow_surjective {m n : ℕ} (le : n ≤ m): Function.Surjective (factorPow I le) :=
   factor_surjective (I ^ m) (I ^ n) (pow_le_pow_right le)
+
+lemma factorPow_ker {m n : ℕ} (le : m ≤ n) : RingHom.ker (factorPow I le) =
+    (I ^ m).map (Ideal.Quotient.mk (I ^ n)) := by
+  ext x
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rcases Ideal.Quotient.mk_surjective x with ⟨r, hr⟩
+    rw [← hr] at h ⊢
+    simp only [factorPow, RingHom.mem_ker, factor_mk, eq_zero_iff_mem] at h
+    exact Ideal.mem_map_of_mem _ h
+  · rcases Ideal.mem_image_of_mem_map_of_surjective (Ideal.Quotient.mk (I ^ n))
+      Ideal.Quotient.mk_surjective h with ⟨r, hr, eq⟩
+    simpa [factorPow, ← eq, Ideal.Quotient.eq_zero_iff_mem] using hr
 
 end Quotient
 
