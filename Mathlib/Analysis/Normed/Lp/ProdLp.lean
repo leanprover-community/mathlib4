@@ -851,9 +851,8 @@ lemma idemFst_Lprojection :
     IsLprojection (WithLp 1 (α₁ × β₁)) (idemFst : AddMonoid.End (WithLp 1 (α₁ × β₁))) where
   proj := rfl
   Lnorm x := by
-    rw [prod_norm_eq_idemFst_of_L1]
-    simp only [one_toReal, Real.rpow_one, ne_eq, one_ne_zero, not_false_eq_true, div_self,
-      AddMonoid.End.smul_def, _root_.add_right_inj, idemFst_compl]
+    rw [prod_norm_eq_idemFst_of_L1, idemFst_compl]
+    rfl
 
 lemma idemSnd_Lprojection :
     IsLprojection (WithLp 1 (α₁ × β₁)) (idemSnd : AddMonoid.End (WithLp 1 (α₁ × β₁))) := by
