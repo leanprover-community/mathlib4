@@ -215,7 +215,7 @@ theorem isSimpleOrder_blockMem_iff_isPreprimitive [IsPretransitive G X] [Nontriv
   · intro h; let h_bot_or_top := h.eq_bot_or_eq_top
     apply IsPreprimitive.of_isTrivialBlock_base a
     intro B haB hB
-    cases' h_bot_or_top ⟨B, haB, hB⟩ with hB' hB' <;>
+    rcases h_bot_or_top ⟨B, haB, hB⟩ with hB' | hB' <;>
       simp only [← Subtype.coe_inj, Subtype.coe_mk] at hB'
     · left; rw [hB']; exact Set.subsingleton_singleton
     · right; rw [hB']; rfl

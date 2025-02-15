@@ -191,7 +191,7 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
       simp only [trans_apply, symm_trans_apply, Equiv.Set.ofEq_apply, Equiv.Set.ofEq_symm_apply,
         Equiv.sumCongr_apply]
       rw [hd1', Set.mem_union] at hx
-      cases' hx with hxσ hxτ
+      rcases hx with hxσ | hxτ
       · rw [mem_coe, mem_support] at hxσ
         rw [Set.union_apply_left, Set.union_apply_left]
         · simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inl, comp_apply,
