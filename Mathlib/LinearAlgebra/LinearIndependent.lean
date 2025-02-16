@@ -1673,39 +1673,54 @@ lemma exists_linearIndependent' (v : ι → V) :
 
 variable {K t}
 
-/-- `LinearIndependent.extend` adds vectors to a linear independent set `s ⊆ t` until it spans
-all elements of `t`. -/
-noncomputable def LinearIndependent.extend (hs : LinearIndependent K (fun x => x : s → V))
-    (hst : s ⊆ t) : Set V :=
+/-- `LinearIndepOn.extend` adds vectors to a linear independent set `s ⊆ t` until it spans
+all elements of `t`.
+TODO - generalize the lemmas below to functions that aren't the identity. -/
+noncomputable def LinearIndepOn.extend (hs : LinearIndepOn K id s) (hst : s ⊆ t) : Set V :=
   Classical.choose (exists_linearIndepOn_id_extension hs hst)
 
-theorem LinearIndependent.extend_subset (hs : LinearIndependent K (fun x => x : s → V))
-    (hst : s ⊆ t) : hs.extend hst ⊆ t :=
+@[deprecated (since := "2025-02-15")] alias LinearIndependent.extend := LinearIndepOn.extend
+
+theorem LinearIndepOn.extend_subset (hs : LinearIndepOn K id s) (hst : s ⊆ t) : hs.extend hst ⊆ t :=
   let ⟨hbt, _hsb, _htb, _hli⟩ := Classical.choose_spec (exists_linearIndepOn_id_extension hs hst)
   hbt
 
-theorem LinearIndependent.subset_extend (hs : LinearIndependent K (fun x => x : s → V))
-    (hst : s ⊆ t) : s ⊆ hs.extend hst :=
+@[deprecated (since := "2025-02-15")] alias
+  LinearIndependent.extend_subset := LinearIndepOn.extend_subset
+
+theorem LinearIndepOn.subset_extend (hs : LinearIndepOn K id s) (hst : s ⊆ t) : s ⊆ hs.extend hst :=
   let ⟨_hbt, hsb, _htb, _hli⟩ := Classical.choose_spec (exists_linearIndepOn_id_extension hs hst)
   hsb
 
-theorem LinearIndependent.subset_span_extend (hs : LinearIndependent K (fun x => x : s → V))
-    (hst : s ⊆ t) : t ⊆ span K (hs.extend hst) :=
+@[deprecated (since := "2025-02-15")] alias
+  LinearIndependent.subset_extend := LinearIndepOn.subset_extend
+
+theorem LinearIndepOn.subset_span_extend (hs : LinearIndepOn K id s) (hst : s ⊆ t) :
+    t ⊆ span K (hs.extend hst) :=
   let ⟨_hbt, _hsb, htb, _hli⟩ := Classical.choose_spec (exists_linearIndepOn_id_extension hs hst)
   htb
 
-theorem LinearIndependent.span_extend_eq_span (hs : LinearIndependent K (fun x => x : s → V))
-    (hst : s ⊆ t) : span K (hs.extend hst) = span K t :=
+@[deprecated (since := "2025-02-15")] alias
+  LinearIndependent.subset_span_extend := LinearIndepOn.subset_span_extend
+
+theorem LinearIndepOn.span_extend_eq_span (hs : LinearIndepOn K id s) (hst : s ⊆ t) :
+    span K (hs.extend hst) = span K t :=
   le_antisymm (span_mono (hs.extend_subset hst)) (span_le.2 (hs.subset_span_extend hst))
 
-theorem LinearIndependent.linearIndependent_extend (hs : LinearIndependent K (fun x => x : s → V))
-    (hst : s ⊆ t) : LinearIndependent K ((↑) : hs.extend hst → V) :=
+@[deprecated (since := "2025-02-15")] alias
+  LinearIndependent.span_extend_eq_span := LinearIndepOn.span_extend_eq_span
+
+theorem LinearIndepOn.linearIndepOn_extend (hs : LinearIndepOn K id s) (hst : s ⊆ t) :
+    LinearIndepOn K id (hs.extend hst) :=
   let ⟨_hbt, _hsb, _htb, hli⟩ := Classical.choose_spec (exists_linearIndepOn_id_extension hs hst)
   hli
 
+@[deprecated (since := "2025-02-15")] alias
+  LinearIndependent.linearIndependent_extend := LinearIndepOn.linearIndepOn_extend
+
 -- TODO(Mario): rewrite?
-theorem exists_of_linearIndependent_of_finite_span {t : Finset V}
-    (hs : LinearIndependent K (fun x => x : s → V)) (hst : s ⊆ (span K ↑t : Submodule K V)) :
+theorem exists_of_linearIndepOn_of_finite_span {t : Finset V}
+    (hs : LinearIndepOn K id s) (hst : s ⊆ (span K ↑t : Submodule K V)) :
     ∃ t' : Finset V, ↑t' ⊆ s ∪ ↑t ∧ s ⊆ ↑t' ∧ t'.card = t.card := by
   classical
   have :
@@ -1770,14 +1785,17 @@ theorem exists_of_linearIndependent_of_finite_span {t : Finset V}
     ⟨u, Subset.trans h.1 (by simp +contextual [subset_def, and_imp, or_imp]),
       h.2.1, by simp only [h.2.2, eq]⟩
 
+@[deprecated (since := "2025-02-15")] alias
+  exists_of_linearIndependent_of_finite_span := exists_of_linearIndepOn_of_finite_span
+
 theorem exists_finite_card_le_of_finite_of_linearIndependent_of_span (ht : t.Finite)
-    (hs : LinearIndependent K (fun x => x : s → V)) (hst : s ⊆ span K t) :
+    (hs : LinearIndepOn K id s) (hst : s ⊆ span K t) :
     ∃ h : s.Finite, h.toFinset.card ≤ ht.toFinset.card :=
   have : s ⊆ (span K ↑ht.toFinset : Submodule K V) := by simpa
-  let ⟨u, _hust, hsu, Eq⟩ := exists_of_linearIndependent_of_finite_span hs this
+  let ⟨u, _hust, hsu, Eq⟩ := exists_of_linearIndepOn_of_finite_span hs this
   have : s.Finite := u.finite_toSet.subset hsu
   ⟨this, by rw [← Eq]; exact Finset.card_le_card <| Finset.coe_subset.mp <| by simp [hsu]⟩
 
 end Module
 
-set_option linter.style.longFile 1800
+set_option linter.style.longFile 2000
