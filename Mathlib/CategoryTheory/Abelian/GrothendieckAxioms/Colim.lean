@@ -65,7 +65,7 @@ attribute [local instance] IsFiltered.isConnected
 /-- Assume that a functor `X : J ⥤ C` maps any morphism to a monomorphism,
 that `J` is filtered. Then the "inclusion" map `c.ι.app j₀` of a colimit cocone for `X`
 is a monomorphism if `colim : (Under j₀ ⥤ C) ⥤ C` preserves monomorphisms
-(e.g. when `C` has exact colimits of shape `Under j₀`). -/
+(e.g. when `C` satisfies AB5). -/
 lemma IsColimit.mono_ι_app_of_isFiltered
     {X : J ⥤ C} [∀ (j j' : J) (φ : j ⟶ j'), Mono (X.map φ)]
     {c : Cocone X} (hc : IsColimit c) [IsFiltered J] (j₀ : J)
