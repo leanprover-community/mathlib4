@@ -705,6 +705,12 @@ set_option synthInstance.checkSynthOrder false
 -- Porting note: this is okay since, as noted above, in this file the value of `f` can be inferred
 attribute [local instance] Quotient.algebraQuotientOfRamificationIdxNeZero
 
+variable {p} in
+theorem ramificationIdx_pos [NoZeroSMulDivisors R S] (hpb : p ≠ ⊥) [P.IsPrime] [P.LiesOver p] :
+    ramificationIdx (algebraMap R S) p P > 0 :=
+  Nat.pos_of_ne_zero <| IsDedekindDomain.ramificationIdx_ne_zero
+    (map_ne_bot_of_ne_bot hpb) inferInstance (map_le_of_le_comap (le_of_eq (over_def P p)))
+
 open scoped Classical in
 instance Factors.isScalarTower (P : (factors (map (algebraMap R S) p)).toFinset) :
     IsScalarTower R (R ⧸ p) (S ⧸ (P : Ideal S)) :=
