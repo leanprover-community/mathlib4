@@ -853,7 +853,7 @@ theorem _root_.FirstOrder.Language.Formula.realize_iSup [Finite β] {f : β → 
 
 @[simp]
 theorem _root_.FirstOrder.Language.Formula.realize_iInf [Finite β] {f : β → L.Formula α}
-    {v : α → M} : (Formula.iInf f).Realize v ↔ ∀ b, (f b).Realize v  := by
+    {v : α → M} : (Formula.iInf f).Realize v ↔ ∀ b, (f b).Realize v := by
   simp [Formula.iInf, Formula.Realize]
 
 end BoundedFormula
