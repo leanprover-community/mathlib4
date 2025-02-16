@@ -55,6 +55,36 @@ theorem isUniformEmbedding_translate_mul (a : α) : IsUniformEmbedding fun x : �
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_translate_mul := isUniformEmbedding_translate_mul
 
+section Cauchy
+
+namespace UniformGroup
+
+variable {ι G : Type*} [Group G] [UniformSpace G] [UniformGroup G]
+
+@[to_additive]
+lemma cauchy_iff_tendsto (𝓕 : Filter G) :
+    Cauchy 𝓕 ↔ NeBot 𝓕 ∧ Tendsto (fun p ↦ p.1 / p.2) (𝓕 ×ˢ 𝓕) (𝓝 1) := by
+  simp [Cauchy, uniformity_eq_comap_nhds_one_swapped, ← tendsto_iff_comap]
+
+@[to_additive]
+lemma cauchy_iff_tendsto_swapped (𝓕 : Filter G) :
+    Cauchy 𝓕 ↔ NeBot 𝓕 ∧ Tendsto (fun p ↦ p.2 / p.1) (𝓕 ×ˢ 𝓕) (𝓝 1) := by
+  simp [Cauchy, uniformity_eq_comap_nhds_one, ← tendsto_iff_comap]
+
+@[to_additive]
+lemma cauchy_map_iff_tendsto (𝓕 : Filter ι) (f : ι → G) :
+    Cauchy (map f 𝓕) ↔ NeBot 𝓕 ∧ Tendsto (fun p ↦ f p.1 / f p.2) (𝓕 ×ˢ 𝓕) (𝓝 1) := by
+  simp [cauchy_map_iff, uniformity_eq_comap_nhds_one_swapped, Function.comp_def]
+
+@[to_additive]
+lemma cauchy_map_iff_tendsto_swapped (𝓕 : Filter ι) (f : ι → G) :
+    Cauchy (map f 𝓕) ↔ NeBot 𝓕 ∧ Tendsto (fun p ↦ f p.2 / f p.1) (𝓕 ×ˢ 𝓕) (𝓝 1) := by
+  simp [cauchy_map_iff, uniformity_eq_comap_nhds_one, Function.comp_def]
+
+end UniformGroup
+
+end Cauchy
+
 section LatticeOps
 
 variable [Group β]
