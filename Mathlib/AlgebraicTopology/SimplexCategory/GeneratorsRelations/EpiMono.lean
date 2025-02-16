@@ -175,11 +175,11 @@ private lemma factor_δ_σ {n : ℕ} (i : Fin (n + 1)) (i' : Fin (n + 2)) :
   cases n with
   | zero =>
     rw [switch_δ_σ₀]
-    use mk 0, 𝟙 _, 𝟙 _, P_σ.id, P_δ.id
+    use mk 0, 𝟙 _, 𝟙 _, P_σ.id_mem _, P_δ.id_mem _
     simp
   | succ n =>
     obtain h | ⟨j, j', h⟩ := switch_δ_σ i i' <;> rw [h]
-    · use mk (n + 1), 𝟙 _, 𝟙 _, P_σ.id, P_δ.id
+    · use mk (n + 1), 𝟙 _, 𝟙 _, P_σ.id_mem _, P_δ.id_mem _
       simp
     · use mk n, σ j, δ j', P_σ.σ _, P_δ.δ _
 
@@ -190,12 +190,13 @@ private lemma factor_P_δ_σ {n : ℕ} (i : Fin (n + 1)) {x : SimplexCategoryGen
       (_ : P_σ e) (_ : P_δ m), f ≫ σ i = e ≫ m := by
   induction n using Nat.case_strong_induction_on generalizing x with
   | hz => cases hf with
-    | δ i => exact factor_δ_σ _ _
+    | of _ h => cases h; exact factor_δ_σ _ _
     | id  =>
       rw [Category.id_comp]
-      use mk 0, σ i, 𝟙 _, P_σ.σ _, P_δ.id
+      use mk 0, σ i, 𝟙 _, P_σ.σ _, P_δ.id_mem _
       simp
-    | comp j f hf =>
+    | comp_of j f hf hg =>
+      cases hg
       obtain ⟨h', hf'⟩ | hf' := eq_or_len_le_of_P_δ hf
       · subst h'
         simp only [eqToHom_refl] at hf'
@@ -205,64 +206,72 @@ private lemma factor_P_δ_σ {n : ℕ} (i : Fin (n + 1)) {x : SimplexCategoryGen
       · simp at hf'
   | hi n h_rec =>
     cases hf with
-    | δ i' => exact factor_δ_σ _ _
+    | of _ h => cases h; exact factor_δ_σ _ _
     | @id n =>
       rw [Category.id_comp]
-      use mk (n + 1), σ i, 𝟙 _, P_σ.σ _, P_δ.id
+      use mk (n + 1), σ i, 𝟙 _, P_σ.σ _, P_δ.id_mem _
       simp
-    | @comp m i' _ g hg =>
-      obtain ⟨h', h''⟩ | h := eq_or_len_le_of_P_δ hg
+    | comp_of f g hf hg =>
+      obtain ⟨h', h''⟩ | h := eq_or_len_le_of_P_δ hf
       · subst h'
+        cases hg
         rw [eqToHom_refl] at h''; subst h''
         rw [Category.id_comp]
         exact factor_δ_σ _ _
-      · obtain h' | ⟨j, j', h'⟩ := switch_δ_σ i i' <;> rw [Category.assoc, h']
+      · have hg' := hg
+        rcases hg' with ⟨i'⟩
+        obtain h' | ⟨j, j', h'⟩ := switch_δ_σ i i' <;> rw [Category.assoc, h']
         · rw [Category.comp_id]
-          use x, 𝟙 x, g, P_σ.id, hg
+          use x, 𝟙 x, f, P_σ.id_mem _, hf
           simp
         · rw [mk_len, Nat.lt_add_one_iff] at h
-          obtain ⟨z, e, m₁, he, hm₁, h⟩ := h_rec n (Nat.le_refl _) j g hg
+          obtain ⟨z, e, m₁, he, hm₁, h⟩ := h_rec n (Nat.le_refl _) j f hf
           rw [reassoc_of% h]
-          use z, e, m₁ ≫ δ j', he, P_δ.comp _ m₁ hm₁
+          use z, e, m₁ ≫ δ j', he, P_δ.comp_mem _ _ hm₁ (P_δ.δ _)
 
 /-- Any morphism in `SimplexCategoryGenRel` can be decomposed as a `P_σ` followed by a `P_δ`. -/
 theorem exists_P_σ_P_δ_factorisation {x y : SimplexCategoryGenRel} (f : x ⟶ y) :
     ∃ (z : SimplexCategoryGenRel) (e : x ⟶ z) (m : z ⟶ y)
         (_ : P_σ e) (_ : P_δ m), f = e ≫ m := by
-  induction f using hom_induction with
-  | @hi n => use (mk n), (𝟙 (mk n)), (𝟙 (mk n)), P_σ.id, P_δ.id; simp
-  | @hc₁ n n' f j h =>
+  induction f with
+  | @id n => use (mk n), (𝟙 (mk n)), (𝟙 (mk n)), P_σ.id_mem _, P_δ.id_mem _; simp
+  | @comp_δ n n' f j h =>
     obtain ⟨z, e, m, ⟨he, hm, h⟩⟩ := h
     rw [h, Category.assoc]
-    use z, e, m ≫ δ j, he, P_δ.comp _ _ hm
-  | @hc₂ n n' f j h =>
+    use z, e, m ≫ δ j, he, P_δ.comp_mem _ _ hm (P_δ.δ _)
+  | @comp_σ n n' f j h =>
     obtain ⟨z, e, m, ⟨he, hm, h⟩⟩ := h
     rw [h]
     cases hm with
-    | @δ i j' =>
+    | of g hg =>
+      cases hg
       rw [Category.assoc]
-      obtain ⟨z₁, e₁, m₁, ⟨he₁, hm₁, h₁⟩⟩ := factor_δ_σ j j'
+      obtain ⟨z₁, e₁, m₁, ⟨he₁, hm₁, h₁⟩⟩ := factor_δ_σ j _
       rw [h₁]
-      use z₁, e ≫ e₁, m₁, P_σ_comp _ _ he he₁, hm₁
+      use z₁, e ≫ e₁, m₁, P_σ.comp_mem _ _ he he₁, hm₁
       simp
     | @id n =>
       simp only [Category.comp_id]
-      use mk n', e ≫ σ j, 𝟙 _, P_σ.comp _ _ he, P_δ.id
+      use mk n', e ≫ σ j, 𝟙 _, P_σ.comp_mem _ _ he (P_σ.σ _), P_δ.id_mem _
       simp
-    | @comp n'' i x' g hg =>
+    | comp_of f g hf hg =>
       rw [Category.assoc, Category.assoc]
       cases n' with
       | zero =>
+        cases hg
         rw [switch_δ_σ₀, Category.comp_id]
-        use z, e, g, he, hg
+        use z, e, f, he, hf
       | succ n =>
+        have hg' := hg
+        rcases hg' with ⟨i⟩
         obtain h' | ⟨j', j'', h'⟩ := switch_δ_σ j i <;> rw [h']
         · rw [Category.comp_id]
-          use z, e, g, he, hg
-        · obtain ⟨z₁, e₁, m₁, ⟨he₁, hm₁, h₁⟩⟩ := factor_P_δ_σ j' g hg
+          use z, e, f, he, hf
+        · obtain ⟨z₁, e₁, m₁, ⟨he₁, hm₁, h₁⟩⟩ := factor_P_δ_σ j' f hf
           rw [reassoc_of% h₁]
-          use z₁, e ≫ e₁, m₁ ≫ δ j'', P_σ_comp _ _ he he₁, P_δ.comp _ _ hm₁
+          use z₁, e ≫ e₁, m₁ ≫ δ j'', P_σ.comp_mem _ _ he he₁, P_δ.comp_mem _ _ hm₁ (P_δ.δ _)
           simp
 
 end ExistenceOfFactorisations
+
 end SimplexCategoryGenRel
