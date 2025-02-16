@@ -418,7 +418,6 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_disc
     intro a ha b _
     refine inv_strictAnti₀ ?_
     contrapose! ha
-    simp only [le_zero_iff] at ha
     simp [zero_lt_iff, ha, hg]
   · intro x
     simp only [mem_diff, mem_setOf_eq, mem_singleton_iff, and_imp]

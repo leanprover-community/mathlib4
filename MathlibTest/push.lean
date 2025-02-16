@@ -13,8 +13,8 @@ example (a b c : Real) (ha : 0 < a) (hc : 0 < c) :
   rfl
 
 example (a b : ℚ): ((a + b⁻¹ + 1) / 2) ^ 2 = 0 := by
-  push HPow.hPow
-  guard_target =ₛ (a ^ 2 + 2 * a * b⁻¹ + b⁻¹ ^ 2 + 2 * (a + b⁻¹) * 1 + 1) / 2 ^ 2 = 0
+  push _ ^ _
+  guard_target = (a ^ 2 + 2 * a * b⁻¹ + (b ^ 2)⁻¹ + 2 * (a + b⁻¹) * 1 + 1) / 2 ^ 2 = 0
   ring_nf
   exact test_sorry
 

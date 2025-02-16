@@ -335,7 +335,7 @@ lemma bddAbove_setOf_k_lt_card : BddAbove {m | ∀ hf : {i | a i = m}.Finite, k 
 
 lemma k_pos : 0 < k a := by
   by_contra! hn
-  apply nonpos_iff_eq_zero.mp hn ▸ hc.infinite_setOf_apply_eq_k
+  apply hn ▸ hc.infinite_setOf_apply_eq_k
   convert Set.finite_empty
   ext i
   simp [(hc.pos i).ne']

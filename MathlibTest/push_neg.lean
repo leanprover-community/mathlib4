@@ -12,7 +12,7 @@ import Mathlib.Order.Filter.Basic
 private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
 -- set_option trace.Meta.Tactic.simp true
-variable {α β : Type} [LinearOrder β] {p q : Prop} {p' q' : α → Prop}
+variable {α β γ : Type} [LinearOrder β] [PartialOrder γ] [OrderTop γ] {p q : Prop} {p' q' : α → Prop}
 
 example : (¬p ∧ ¬q) → ¬(p ∨ q) := by
   intro h
@@ -61,6 +61,11 @@ example (x y : β) (h : y < x) : ¬(x ≤ y) := by
 example (a b : β) (h : a ≤ b) : ¬ a > b := by
   push_neg
   guard_target = a ≤ b
+  exact h
+
+example (x : γ) (h : x = ⊤) : ¬(x < ⊤) := by
+  push_neg
+  guard_target = x = ⊤
   exact h
 
 example (x y : α) (h : x = y) : ¬ (x ≠ y) := by
@@ -282,7 +287,7 @@ example (h : (¬ ∀ n > 0, n = 3 → n = 5) ∧ ¬ ∃ n, n = 0) :
   exact h
 
 end Conv
-#check
+
 section Simproc
 
 example (a : β) : ¬ ∀ x : β, x < a → ∃ y : β, (y < a) ∧ ∀ z : β, x = z := by

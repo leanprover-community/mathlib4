@@ -77,6 +77,9 @@ theorem not_lt_zero' : ¬a < 0 :=
 theorem le_zero_iff : a ≤ 0 ↔ a = 0 :=
   ⟨fun h ↦ le_antisymm h zero_le', fun h ↦ h ▸ le_rfl⟩
 
+@[push]
+theorem not_zero_lt_iff : ¬0 < a ↔ a = 0 := not_lt.trans le_zero_iff
+
 theorem zero_lt_iff : 0 < a ↔ a ≠ 0 :=
   ⟨ne_of_gt, fun h ↦ lt_of_le_of_ne zero_le' h.symm⟩
 
