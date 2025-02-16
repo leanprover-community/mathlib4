@@ -27,7 +27,38 @@ import Mathlib.GroupTheory.GroupAction.Hom
 
 -/
 
-open Set Pointwise
+open Function Set Pointwise
+
+
+#check MulAction.bijective
+section MulActionSemiHomClass
+
+section SMul
+
+variable {M N F : Type*} {α β : Type*} {σ : M → N} [SMul M α] [SMul N β] [FunLike F α β]
+  [MulActionSemiHomClass F σ α β] {f : F} {s : Set α} {t : Set β}
+
+@[to_additive (attr := simp)]
+theorem image_smul_setₛₗ (f : F) (c : M) (s : Set α) :
+    f '' (c • s) = σ c • f '' s :=
+  Semiconj.set_image (map_smulₛₗ f c) s
+
+@[to_additive]
+theorem Set.MapsTo.smul_setₛₗ (hst : MapsTo f s t) (c : M) : MapsTo f (c • s) (σ c • t) :=
+  Function.Semiconj.mapsTo_image_right (map_smulₛₗ _ _) hst
+
+/-- Translation of preimage is contained in preimage of translation -/
+@[to_additive]
+theorem smul_preimage_set_leₛₗ (f : F) (c : M) (t : Set β) : c • f ⁻¹' t ⊆ f ⁻¹' (σ c • t) :=
+  mapsTo_iff_subset_preimage.mp <| (mapsTo_preimage f t).smul_setₛₗ c
+
+end SMul
+
+section Monoid
+
+end Monoid
+
+end MulActionSemiHomClass
 
 @[to_additive]
 theorem MulAction.smul_bijective_of_is_unit
@@ -51,25 +82,6 @@ section MulActionSemiHomClass
 variable [FunLike F M N] [MulActionSemiHomClass F σ M N]
     (c : R) (s : Set M) (t : Set N)
 
--- @[simp] -- In https://github.com/leanprover-community/mathlib4/pull/8386, the `simp_nf` linter complains:
--- "Left-hand side does not simplify, when using the simp lemma on itself."
--- For now we will have to manually add `image_smul_setₛₗ _` to the `simp` argument list.
--- TODO: when https://github.com/leanprover/lean4/issues/3107 is fixed, mark this as `@[simp]`.
-@[to_additive]
-theorem image_smul_setₛₗ :
-    h '' (c • s) = σ c • h '' s := by
-  simp only [← image_smul, image_image, map_smulₛₗ h]
-
-variable {σ s t M N h} in
-@[to_additive]
-theorem Set.MapsTo.smul_setₛₗ (hst : MapsTo h s t) (c : R) : MapsTo h (c • s) (σ c • t) :=
-  Function.Semiconj.mapsTo_image_right (map_smulₛₗ _ _) hst
-
-/-- Translation of preimage is contained in preimage of translation -/
-@[to_additive]
-theorem smul_preimage_set_leₛₗ : c • h ⁻¹' t ⊆ h ⁻¹' (σ c • t) :=
-  mapsTo_iff_subset_preimage.mp <| (mapsTo_preimage h t).smul_setₛₗ c
-
 variable {c}
 
 /-- General version of `preimage_smul_setₛₗ` -/
@@ -86,7 +98,7 @@ theorem preimage_smul_setₛₗ'
     rw [map_smulₛₗ] at hn'
     rw [mem_preimage, ← hc' hn']
     exact hn
-  · exact smul_preimage_set_leₛₗ M N σ h c t
+  · exact smul_preimage_set_leₛₗ h c t
 
 /-- `preimage_smul_setₛₗ` when both scalars act by unit -/
 @[to_additive]
@@ -95,7 +107,6 @@ theorem preimage_smul_setₛₗ_of_units (hc : IsUnit c) (hc' : IsUnit (σ c)) :
   apply preimage_smul_setₛₗ'
   · exact (MulAction.smul_bijective_of_is_unit hc).surjective
   · exact (MulAction.smul_bijective_of_is_unit hc').injective
-
 
 /-- `preimage_smul_setₛₗ` in the context of a `MonoidHom` -/
 @[to_additive]
@@ -136,12 +147,12 @@ variable [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂]
 @[to_additive (attr := simp)]
 theorem image_smul_set :
     h '' (c • s) = c • h '' s :=
-  image_smul_setₛₗ _ _ _ h c s
+  image_smul_setₛₗ h c s
 
 @[to_additive]
 theorem smul_preimage_set_le :
     c • h ⁻¹' t ⊆ h ⁻¹' (c • t) :=
-  smul_preimage_set_leₛₗ _ _ _ h c t
+  smul_preimage_set_leₛₗ h c t
 
 variable {s t M N h} in
 @[to_additive]

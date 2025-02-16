@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Seminorm
+import Mathlib.GroupTheory.GroupAction.Pointwise
 
 /-!
 # The Minkowski functional, normed field version
@@ -72,6 +73,11 @@ lemma egauge_union (s t : Set E) (x : E) : egauge 𝕜 (s ∪ t) x = egauge 𝕜
 lemma le_egauge_inter (s t : Set E) (x : E) :
     egauge 𝕜 s x ⊔ egauge 𝕜 t x ≤ egauge 𝕜 (s ∩ t) x :=
   max_le (egauge_anti _ inter_subset_left _) (egauge_anti _ inter_subset_right _)
+
+lemma le_egauge_pi {ι : Type*} {E : ι → Type*} [∀ i, SMul 𝕜 (E i)] {I : Set ι} {i : ι}
+    (hi : i ∈ I) (s : ∀ i, Set (E i)) (x : ∀ i, E i) :
+    egauge 𝕜 (s i) (x i) ≤ egauge 𝕜 (I.pi s) x :=
+  egauge_le_of_mapsTo _ (Pi.evalMulActionHom i) (fun x hx ↦ hx i hi) _
 
 end SMul
 
