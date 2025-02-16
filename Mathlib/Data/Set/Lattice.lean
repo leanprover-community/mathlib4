@@ -1245,6 +1245,24 @@ lemma biInter_gt_eq_iInf [LT α] [NoMinOrder α] {s : α → Set β} :
 lemma biInter_ge_eq_iInf [Preorder α] {s : α → Set β} :
     ⋂ (n) (m ≥ n), s m = ⋂ n, s n := biInf_ge_eq_iInf
 
+section le
+
+variable {ι : Type*} [PartialOrder ι] (s : ι → Set α) (i : ι)
+
+theorem biUnion_le : (⋃ j ≤ i, s j) = (⋃ j < i, s j) ∪ s i :=
+  biSup_le_eq_sup s i
+
+theorem biInter_le : (⋂ j ≤ i, s j) = (⋂ j < i, s j) ∩ s i :=
+  biInf_le_eq_inf s i
+
+theorem biUnion_ge : (⋃ j ≥ i, s j) = s i ∪ ⋃ j > i, s j :=
+  biSup_ge_eq_sup s i
+
+theorem biInter_ge : (⋂ j ≥ i, s j) = s i ∩ ⋂ j > i, s j :=
+  biInf_ge_eq_inf s i
+
+end le
+
 section Function
 
 /-! ### Lemmas about `Set.MapsTo`

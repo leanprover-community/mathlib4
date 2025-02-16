@@ -382,15 +382,16 @@ theorem tendsto_finset_prod_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞
     (s : Finset ι) (h : ∀ i ∈ s, Tendsto (f i) x (𝓝 (a i))) (h' : ∀ i ∈ s, a i ≠ ∞) :
     Tendsto (fun b => ∏ c ∈ s, f c b) x (𝓝 (∏ c ∈ s, a c)) := by
   classical
-  induction' s using Finset.induction with a s has IH
-  · simp [tendsto_const_nhds]
-  simp only [Finset.prod_insert has]
-  apply Tendsto.mul (h _ (Finset.mem_insert_self _ _))
-  · right
-    exact prod_ne_top fun i hi => h' _ (Finset.mem_insert_of_mem hi)
-  · exact IH (fun i hi => h _ (Finset.mem_insert_of_mem hi)) fun i hi =>
-      h' _ (Finset.mem_insert_of_mem hi)
-  · exact Or.inr (h' _ (Finset.mem_insert_self _ _))
+  induction s using Finset.induction with
+  | empty => simp [tendsto_const_nhds]
+  | insert has IH =>
+    simp only [Finset.prod_insert has]
+    apply Tendsto.mul (h _ (Finset.mem_insert_self _ _))
+    · right
+      exact prod_ne_top fun i hi => h' _ (Finset.mem_insert_of_mem hi)
+    · exact IH (fun i hi => h _ (Finset.mem_insert_of_mem hi)) fun i hi =>
+        h' _ (Finset.mem_insert_of_mem hi)
+    · exact Or.inr (h' _ (Finset.mem_insert_self _ _))
 
 protected theorem continuousAt_const_mul {a b : ℝ≥0∞} (h : a ≠ ∞ ∨ b ≠ 0) :
     ContinuousAt (a * ·) b :=
@@ -415,16 +416,17 @@ protected theorem continuous_div_const (c : ℝ≥0∞) (c_ne_zero : c ≠ 0) :
 
 @[continuity, fun_prop]
 protected theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a ^ n := by
-  induction' n with n IH
-  · simp [continuous_const]
-  simp_rw [pow_add, pow_one, continuous_iff_continuousAt]
-  intro x
-  refine ENNReal.Tendsto.mul (IH.tendsto _) ?_ tendsto_id ?_ <;> by_cases H : x = 0
-  · simp only [H, zero_ne_top, Ne, or_true, not_false_iff]
-  · exact Or.inl fun h => H (pow_eq_zero h)
-  · simp only [H, pow_eq_top_iff, zero_ne_top, false_or, eq_self_iff_true, not_true, Ne,
-      not_false_iff, false_and]
-  · simp only [H, true_or, Ne, not_false_iff]
+  induction n with
+  | zero => simp [continuous_const]
+  | succ n IH =>
+    simp_rw [pow_add, pow_one, continuous_iff_continuousAt]
+    intro x
+    refine ENNReal.Tendsto.mul (IH.tendsto _) ?_ tendsto_id ?_ <;> by_cases H : x = 0
+    · simp only [H, zero_ne_top, Ne, or_true, not_false_iff]
+    · exact Or.inl fun h => H (pow_eq_zero h)
+    · simp only [H, pow_eq_top_iff, zero_ne_top, false_or, eq_self_iff_true, not_true, Ne,
+        not_false_iff, false_and]
+    · simp only [H, true_or, Ne, not_false_iff]
 
 theorem continuousOn_sub :
     ContinuousOn (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) { p : ℝ≥0∞ × ℝ≥0∞ | p ≠ ⟨∞, ∞⟩ } := by

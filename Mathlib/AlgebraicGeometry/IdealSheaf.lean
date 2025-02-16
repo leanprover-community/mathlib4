@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.AffineScheme
+import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 import Mathlib.Topology.LocalAtTarget
 
 /-!
@@ -24,10 +25,13 @@ We define ideal sheaves of schemes and provide various constructors for it.
   The support of an ideal sheaf.
 * `AlgebraicGeometry.Scheme.IdealSheafData.vanishingIdeal`:
   The vanishing ideal of a set.
+* `AlgebraicGeometry.Scheme.Hom.ker`: The kernel of a morphism.
 
-## Main result
+## Main results
 * `AlgebraicGeometry.Scheme.IdealSheafData.gc`:
   `support` and `vanishingIdeal` forms a galois connection.
+* `AlgebraicGeometry.Scheme.Hom.support_ker`: The support of a kernel of a quasi-compact morphism
+  is the closure of the range.
 
 ## Implementation detail
 
@@ -120,9 +124,7 @@ lemma ideal_sSup {I : Set (IdealSheafData X)} : (sSup I).ideal = sSup (ideal '' 
 
 @[simp]
 lemma ideal_iSup {ι : Type*} {I : ι → IdealSheafData X} : (iSup I).ideal = ⨆ i, (I i).ideal := by
-  show sSup _ = sSup _
-  rw [← Set.range_comp]
-  rfl
+  rw [← sSup_range, ← sSup_range, ideal_sSup, ← Set.range_comp, Function.comp_def]
 
 @[simp]
 lemma ideal_inf {I J : IdealSheafData X} : (I ⊓ J).ideal = I.ideal ⊓ J.ideal := by
@@ -425,4 +427,190 @@ lemma vanishingIdeal_support {I : IdealSheafData X} :
 
 end ofIsClosed
 
-end AlgebraicGeometry.Scheme.IdealSheafData
+end IdealSheafData
+
+section ker
+
+open IdealSheafData
+
+variable {Y Z : Scheme.{u}}
+
+/-- The kernel of a morphism,
+defined as the largest (quasi-coherent) ideal sheaf contained in the component-wise kernel.
+This is usually only well-behaved when `f` is quasi-compact. -/
+def Hom.ker (f : X.Hom Y) : IdealSheafData Y :=
+  ofIdeals fun U ↦ RingHom.ker (f.app U).hom
+
+@[simp]
+lemma Hom.ker_apply (f : X.Hom Y) [QuasiCompact f] (U : Y.affineOpens) :
+    f.ker.ideal U = RingHom.ker (f.app U).hom := by
+  let I : IdealSheafData Y := ⟨fun U ↦ RingHom.ker (f.app U).hom, ?_⟩
+  · exact congr($(ofIdeals_ideal I).ideal U)
+  intro U s
+  apply le_antisymm
+  · refine Ideal.map_le_iff_le_comap.mpr fun x hx ↦ ?_
+    simp_rw [RingHom.comap_ker, ← CommRingCat.hom_comp, Scheme.affineBasicOpen_coe, f.naturality,
+      CommRingCat.hom_comp, ← RingHom.comap_ker]
+    exact Ideal.ker_le_comap _ hx
+  · intro x hx
+    have := U.2.isLocalization_basicOpen s
+    obtain ⟨x, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.mk'_surjective (.powers s) x
+    refine (IsLocalization.mk'_mem_map_algebraMap_iff _ _ _ _ _).mpr ?_
+    suffices ∃ (V : X.Opens) (hV : V = X.basicOpen ((f.app U).hom s)),
+        letI := hV.trans_le (X.basicOpen_le _); ((f.app U).hom x |_ V) = 0 by
+      obtain ⟨_, rfl, H⟩ := this
+      obtain ⟨n, hn⟩ := exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact
+        X (U := f ⁻¹ᵁ U) (QuasiCompact.isCompact_preimage (f := f) _ U.1.2 U.2.isCompact)
+        (f.app U x) (f.app U s) H
+      exact ⟨_, ⟨n, rfl⟩, by simpa using hn⟩
+    refine ⟨f ⁻¹ᵁ Y.basicOpen s, by simp, ?_⟩
+    replace hx : (Y.presheaf.map (homOfLE (Y.basicOpen_le s)).op ≫ f.app _).hom x = 0 := by
+      trans (f.app (Y.basicOpen s)).hom (algebraMap Γ(Y, U) _ x)
+      · simp [-NatTrans.naturality, RingHom.algebraMap_toAlgebra]
+      · simp only [Scheme.affineBasicOpen_coe, RingHom.mem_ker] at hx
+        rw [← IsLocalization.mk'_spec' (M := .powers s), map_mul, hx, mul_zero]
+    rwa [f.naturality] at hx
+
+lemma Hom.le_ker_comp (f : X ⟶ Y) (g : Y.Hom Z) : g.ker ≤ (f ≫ g).ker := by
+  refine ofIdeals_mono fun U ↦ ?_
+  rw [Scheme.comp_app f g U, CommRingCat.hom_comp, ← RingHom.comap_ker]
+  exact Ideal.ker_le_comap _
+
+lemma ker_eq_top_of_isEmpty (f : X.Hom Y) [IsEmpty X] : f.ker = ⊤ :=
+  top_le_iff.mp (le_ofIdeals_iff.mpr fun U x _ ↦ by simpa using Subsingleton.elim _ _)
+
+lemma ker_of_isAffine {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] :
+    f.ker = ofIdealTop (RingHom.ker f.appTop.hom) := by
+  refine (le_of_isAffine ((ideal_ofIdeals_le _ _).trans (by simp))).antisymm
+    (le_ofIdeals_iff.mpr fun U ↦ ?_)
+  simp only [ofIdealTop_ideal, homOfLE_leOfHom, Ideal.map_le_iff_le_comap, RingHom.comap_ker,
+    ← CommRingCat.hom_comp, f.naturality]
+  intro x
+  simp +contextual
+
+lemma Hom.range_subset_ker_support (f : X.Hom Y) :
+    Set.range f.base ⊆ f.ker.support := by
+  rintro _ ⟨x, rfl⟩
+  obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
+    (isBasis_affine_open Y).exists_subset_of_mem_open (Set.mem_univ (f.base x)) isOpen_univ
+  refine ((support_inter f.ker ⟨U, hU⟩).ge ⟨?_, hxU⟩).1
+  simp only [Scheme.mem_zeroLocus_iff, SetLike.mem_coe]
+  intro s hs hxs
+  have : x ∈ f ⁻¹ᵁ Y.basicOpen s := hxs
+  rwa [Scheme.preimage_basicOpen, RingHom.mem_ker.mp (ideal_ofIdeals_le _ _ hs),
+    Scheme.basicOpen_zero] at this
+
+lemma Hom.iInf_ker_openCover_map_comp_apply
+    (f : X.Hom Y) [QuasiCompact f] (𝒰 : X.OpenCover) (U : Y.affineOpens) :
+    ⨅ i, (𝒰.map i ≫ f).ker.ideal U = f.ker.ideal U := by
+  refine le_antisymm ?_ (le_iInf fun i ↦ f.le_ker_comp (𝒰.map i) U)
+  intro s hs
+  simp only [Hom.ker_apply, RingHom.mem_ker]
+  apply X.IsSheaf.section_ext
+  rintro x hxU
+  obtain ⟨i, x, rfl⟩ := 𝒰.exists_eq x
+  simp only [homOfLE_leOfHom, CommRingCat.forget_map, map_zero, exists_and_left]
+  refine ⟨𝒰.map i ''ᵁ 𝒰.map i ⁻¹ᵁ f ⁻¹ᵁ U.1, ⟨_, hxU, rfl⟩,
+    Set.image_preimage_subset (𝒰.map i).base (f ⁻¹ᵁ U), ?_⟩
+  apply ((𝒰.map i).appIso _).commRingCatIsoToRingEquiv.injective
+  rw [map_zero, ← RingEquiv.coe_toRingHom, Iso.commRingCatIsoToRingEquiv_toRingHom,
+    Scheme.Hom.appIso_hom']
+  simp only [homOfLE_leOfHom, Scheme.Hom.app_eq_appLE, ← RingHom.comp_apply,
+    ← CommRingCat.hom_comp, Scheme.Hom.appLE_map, Scheme.appLE_comp_appLE]
+  simpa [Scheme.Hom.appLE] using ideal_ofIdeals_le _ _ (Ideal.mem_iInf.mp hs i)
+
+lemma Hom.iInf_ker_openCover_map_comp (f : X ⟶ Y) [QuasiCompact f] (𝒰 : X.OpenCover) :
+    ⨅ i, (𝒰.map i ≫ f).ker = f.ker := by
+  refine le_antisymm ?_ (le_iInf fun i ↦ f.le_ker_comp (𝒰.map i))
+  refine iInf_le_iff.mpr fun I hI U ↦ ?_
+  rw [← f.iInf_ker_openCover_map_comp_apply 𝒰, le_iInf_iff]
+  exact fun i ↦ hI i U
+
+lemma Hom.iUnion_support_ker_openCover_map_comp
+    (f : X.Hom Y) [QuasiCompact f] (𝒰 : X.OpenCover) [Finite 𝒰.J] :
+    ⋃ i, (𝒰.map i ≫ f).ker.support = f.ker.support := by
+  cases isEmpty_or_nonempty 𝒰.J
+  · have : IsEmpty X := Function.isEmpty 𝒰.f
+    simp [ker_eq_top_of_isEmpty]
+  suffices ∀ U : Y.affineOpens, (⋃ i, (𝒰.map i ≫ f).ker.support) ∩ U = f.ker.support ∩ U by
+    ext x
+    obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
+      (isBasis_affine_open Y).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
+    simpa [hxU] using congr(x ∈ $(this ⟨U, hU⟩))
+  intro U
+  simp only [Set.iUnion_inter, support_inter, ← f.iInf_ker_openCover_map_comp_apply 𝒰,
+    Scheme.zeroLocus_iInf_of_nonempty]
+
+lemma ker_morphismRestrict_ideal (f : X.Hom Y) [QuasiCompact f]
+    (U : Y.Opens) (V : U.toScheme.affineOpens) :
+    (f ∣_ U).ker.ideal V = f.ker.ideal ⟨U.ι ''ᵁ V, V.2.image_of_isOpenImmersion _⟩ := by
+  have inst : QuasiCompact (f ∣_ U) := MorphismProperty.of_isPullback
+      (isPullback_morphismRestrict _ _).flip inferInstance
+  ext x
+  simpa [Scheme.Hom.appLE] using map_eq_zero_iff _
+    (ConcreteCategory.bijective_of_isIso
+      (X.presheaf.map (eqToHom (image_morphismRestrict_preimage f U V)).op)).1
+
+lemma ker_ideal_of_isPullback_of_isOpenImmersion {X Y U V : Scheme.{u}}
+    (f : X ⟶ Y) (f' : U ⟶ V) (iU : U ⟶ X) (iV : V ⟶ Y) [IsOpenImmersion iV]
+    [QuasiCompact f] (H : IsPullback f' iU iV f) (W) :
+    f'.ker.ideal W =
+      (f.ker.ideal ⟨iV ''ᵁ W, W.2.image_of_isOpenImmersion _⟩).comap (iV.appIso W).inv.hom := by
+  have : QuasiCompact f' := MorphismProperty.of_isPullback H.flip inferInstance
+  have : IsOpenImmersion iU := MorphismProperty.of_isPullback H inferInstance
+  ext x
+  have : iU ''ᵁ f' ⁻¹ᵁ W = f ⁻¹ᵁ iV ''ᵁ W :=
+    IsOpenImmersion.image_preimage_eq_preimage_image_of_isPullback H W
+  let e : Γ(X, f ⁻¹ᵁ iV ''ᵁ W) ≅ Γ(U, f' ⁻¹ᵁ W) :=
+    X.presheaf.mapIso (eqToIso this).op ≪≫ iU.appIso _
+  have : (iV.appIso W).inv ≫ f.app _ = f'.app W ≫ e.inv := by
+    rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv]
+    simp only [Scheme.Hom.app_eq_appLE, Iso.trans_hom, Functor.mapIso_hom, Iso.op_hom, eqToIso.hom,
+      eqToHom_op, Scheme.Hom.appIso_hom', Scheme.Hom.map_appLE, e, Scheme.appLE_comp_appLE, H.w]
+  simp only [Scheme.Hom.ker_apply, RingHom.mem_ker, Ideal.mem_comap, ← RingHom.comp_apply,
+    ← CommRingCat.hom_comp, Scheme.Hom.appIso_inv_app, this]
+  simpa using (map_eq_zero_iff _ (ConcreteCategory.bijective_of_isIso e.inv).1).symm
+
+lemma Hom.support_ker (f : X.Hom Y) [QuasiCompact f] :
+    f.ker.support = closure (Set.range f.base) := by
+  apply subset_antisymm
+  · wlog hY : ∃ S, Y = Spec S
+    · intro x hx
+      let 𝒰 := Y.affineCover
+      obtain ⟨i, x, rfl⟩ := 𝒰.exists_eq x
+      have inst : QuasiCompact (𝒰.pullbackHom f i) :=
+        MorphismProperty.pullback_snd _ _ inferInstance
+      have := this (𝒰.pullbackHom f i) ⟨_, rfl⟩
+        ((support_inter _ ⟨⊤, isAffineOpen_top _⟩).ge ⟨?_, Set.mem_univ x⟩).1
+      · have := image_closure_subset_closure_image (f := (𝒰.map i).base)
+          (𝒰.map i).base.1.2 (Set.mem_image_of_mem _ this)
+        rw [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.comp_base, 𝒰.pullbackHom_map] at this
+        exact closure_mono (Set.range_comp_subset_range _ _) this
+      · rw [← (𝒰.map i).isOpenEmbedding.injective.mem_set_image, Scheme.image_zeroLocus,
+          ker_ideal_of_isPullback_of_isOpenImmersion f (𝒰.pullbackHom f i)
+            ((𝒰.pullbackCover f).map i) (𝒰.map i) (IsPullback.of_hasPullback _ _).flip,
+          Ideal.coe_comap, Set.image_preimage_eq]
+        · exact ⟨((support_inter _ _).le ⟨hx, by simp⟩).1, ⟨_, rfl⟩⟩
+        · exact (ConcreteCategory.bijective_of_isIso ((𝒰.map i).appIso ⊤).inv).2
+    obtain ⟨S, rfl⟩ := hY
+    wlog hX : ∃ R, X = Spec R generalizing X S
+    · intro x hx
+      have inst : CompactSpace X := HasAffineProperty.iff_of_isAffine.mp ‹QuasiCompact f›
+      let 𝒰 := X.affineCover.finiteSubcover
+      obtain ⟨_, ⟨i, rfl⟩, hx⟩ := (f.iUnion_support_ker_openCover_map_comp 𝒰).ge hx
+      have inst : QuasiCompact (𝒰.map i ≫ f) := HasAffineProperty.iff_of_isAffine.mpr
+        (by show CompactSpace (Spec _); infer_instance)
+      exact closure_mono (Set.range_comp_subset_range _ _) (this S (𝒰.map i ≫ f) ⟨_, rfl⟩ hx)
+    obtain ⟨R, rfl⟩ := hX
+    obtain ⟨φ, rfl⟩ := Spec.map_surjective f
+    rw [ker_of_isAffine, support_ofIdealTop, Spec_zeroLocus, ← Ideal.coe_comap,
+      RingHom.comap_ker, ← PrimeSpectrum.closure_range_comap, ← CommRingCat.hom_comp,
+      ← Scheme.ΓSpecIso_inv_naturality]
+    simp only [CommRingCat.hom_comp, PrimeSpectrum.comap_comp, ContinuousMap.coe_comp]
+    exact closure_mono (Set.range_comp_subset_range _ (Spec.map φ).base)
+  · rw [(isClosed_support _).closure_subset_iff]
+    exact f.range_subset_ker_support
+
+end ker
+
+end AlgebraicGeometry.Scheme
