@@ -44,6 +44,8 @@ attribute [local instance] FractionRing.liftAlgebra
 
 namespace Ideal
 
+/-! ### `ramificationIdx` and `inertiaDeg` in Galois extensions -/
+
 open scoped Classical in
 /-- If `L / K` is a Galois extension, it can be seen from the theorem
   `Ideal.ramificationIdx_eq_of_IsGalois` that all `Ideal.ramificationIdx` over a fixed
@@ -197,9 +199,11 @@ end fundamental_identity
 
 end Ideal
 
+open scoped Pointwise
+
 section decompositionGroup
 
-/-! ### decomposition Group -/
+/-! ### decomposition group -/
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] (p : Ideal A)
   (P : Ideal B) [P.IsPrime] [P.LiesOver p]
@@ -209,10 +213,10 @@ variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] (p : Ideal A)
 
 -- Maybe defined it as `MulAction.stabilizer (L ≃ₐ[K] L) P` is better, since maybe in this way
 -- ` P ∈ decompositionGroup p P K L` is `defEq` to `map (galRestrict A K L B σ) P = P`.
-/-- The decomposition group of `P` over `K`, is the stabilizer of `P` under the action of
-  `Gal(L / K)`. -/
+/-- Decomposition group of `P` over `K` is the stabilizer of `primes_over.mk p P`
+  under the action of `L ≃ₐ[K] L`. -/
 def decompositionGroup : Subgroup (L ≃ₐ[K] L) :=
-  MulAction.stabilizer _ (primesOver.mk p P)
+  MulAction.stabilizer (L ≃ₐ[K] L) (primesOver.mk p P)
 
 variable {K} {L} in
 /-- The `decompositionGroup` is consisting of all elements of the Galois group `L ≃ₐ[K] L` such
