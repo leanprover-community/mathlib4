@@ -1,4 +1,7 @@
 /-
+Needs Computability.Tape which is broken by leanprover#lean4#7059
+
+/-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
@@ -795,3 +798,4 @@ end
 end TM2to1
 
 end Turing
+-/
