@@ -429,7 +429,7 @@ class has_hom (obj : Type u) : Type (max u (v+1)) where
 
 infixr:10 " ⟶ " => has_hom.hom -- type as \h
 
-class CategoryStruct (obj : Type u) extends has_hom.{v} obj : Type (max u (v+1)) where
+class CategoryStruct (obj : Type u) : Type (max u (v+1)) extends has_hom.{v} obj where
   (id   : ∀ X : obj, hom X X)
   (comp : ∀ {X Y Z : obj}, (X ⟶ Y) → (Y ⟶ Z) → (X ⟶ Z))
 

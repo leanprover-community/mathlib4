@@ -39,7 +39,7 @@ you should parametrize over `(F : Type*) [BoundedContinuousMapClass F α β] (f 
 
 When you extend this structure, make sure to extend `BoundedContinuousMapClass`. -/
 structure BoundedContinuousFunction (α : Type u) (β : Type v) [TopologicalSpace α]
-    [PseudoMetricSpace β] extends ContinuousMap α β : Type max u v where
+    [PseudoMetricSpace β] : Type max u v extends ContinuousMap α β where
   map_bounded' : ∃ C, ∀ x y, dist (toFun x) (toFun y) ≤ C
 
 @[inherit_doc] scoped[BoundedContinuousFunction] infixr:25 " →ᵇ " => BoundedContinuousFunction

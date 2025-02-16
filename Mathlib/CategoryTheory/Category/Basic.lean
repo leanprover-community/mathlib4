@@ -83,7 +83,7 @@ namespace CategoryTheory
 /-- A preliminary structure on the way to defining a category,
 containing the data, but none of the axioms. -/
 @[pp_with_univ]
-class CategoryStruct (obj : Type u) extends Quiver.{v + 1} obj : Type max u (v + 1) where
+class CategoryStruct (obj : Type u) : Type max u (v + 1) extends Quiver.{v + 1} obj where
   /-- The identity morphism on an object. -/
   id : ∀ X : obj, Hom X X
   /-- Composition of morphisms in a category, written `f ≫ g`. -/
@@ -144,7 +144,7 @@ attribute [aesop safe (rule_sets := [CategoryTheory])] Subsingleton.elim
 The universe levels of the objects and morphisms are unconstrained, and will often need to be
 specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallCategory`.) -/
 @[pp_with_univ, stacks 0014]
-class Category (obj : Type u) extends CategoryStruct.{v} obj : Type max u (v + 1) where
+class Category (obj : Type u) : Type max u (v + 1) extends CategoryStruct.{v} obj where
   /-- Identity morphisms are left identities for composition. -/
   id_comp : ∀ {X Y : obj} (f : X ⟶ Y), 𝟙 X ≫ f = f := by aesop_cat
   /-- Identity morphisms are right identities for composition. -/

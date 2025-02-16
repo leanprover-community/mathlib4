@@ -38,7 +38,7 @@ you should parametrize over `(F : Type*) [ZeroAtInftyContinuousMapClass F α β]
 
 When you extend this structure, make sure to extend `ZeroAtInftyContinuousMapClass`. -/
 structure ZeroAtInftyContinuousMap (α : Type u) (β : Type v) [TopologicalSpace α] [Zero β]
-    [TopologicalSpace β] extends ContinuousMap α β : Type max u v where
+    [TopologicalSpace β] : Type max u v extends ContinuousMap α β where
   /-- The function tends to zero along the `cocompact` filter. -/
   zero_at_infty' : Tendsto toFun (cocompact α) (𝓝 0)
 

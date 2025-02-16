@@ -1717,8 +1717,9 @@ The additive version `AddGroupTopology α` and corresponding results are provide
 
 /-- A group topology on a group `α` is a topology for which multiplication and inversion
 are continuous. -/
-structure GroupTopology (α : Type u) [Group α] extends TopologicalSpace α, TopologicalGroup α :
-  Type u
+structure GroupTopology (α : Type u) [Group α] : Type u
+  extends TopologicalSpace α, TopologicalGroup α
+
 
 /-- An additive group topology on an additive group `α` is a topology for which addition and
   negation are continuous. -/

@@ -16,8 +16,8 @@ universe v
 
 /-- A (unital) star subsemiring is a non-associative ring which is closed under the `star`
 operation. -/
-structure StarSubsemiring (R : Type v) [NonAssocSemiring R] [Star R]
-    extends Subsemiring R : Type v where
+structure StarSubsemiring (R : Type v) [NonAssocSemiring R] [Star R] : Type v
+    extends Subsemiring R where
   /-- The `carrier` of a `StarSubsemiring` is closed under the `star` operation. -/
   star_mem' {a} : a ∈ carrier → star a ∈ carrier
 
