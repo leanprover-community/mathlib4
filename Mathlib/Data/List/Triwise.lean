@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yaël Dillies
 -/
 import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.TypeStar
+import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Triwise predicates on list.
@@ -31,7 +31,9 @@ attribute [simp] Triwise.nil
 variable {a b c : α} {l : List α} {p q : α → α → α → Prop} {f : α → β} {p' : β → β → β → Prop}
 
 lemma triwise_cons : (a :: l).Triwise p ↔ l.Pairwise (p a) ∧ l.Triwise p := by
-  simp [triwise_iff]
+  refine ⟨fun h ↦ ?_, fun h ↦ Triwise.cons h.1 h.2⟩
+  cases h with
+  | cons hp ht => exact ⟨hp, ht⟩
 
 variable (a b p)
 
