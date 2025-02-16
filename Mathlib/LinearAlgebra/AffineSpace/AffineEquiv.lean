@@ -481,7 +481,6 @@ theorem toEquiv_pointReflection (x : P₁) :
     (pointReflection k x).toEquiv = Equiv.pointReflection x :=
   rfl
 
-@[simp]
 theorem pointReflection_self (x : P₁) : pointReflection k x x = x :=
   vsub_vadd _ _
 
