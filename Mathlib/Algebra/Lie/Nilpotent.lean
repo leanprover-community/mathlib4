@@ -300,17 +300,15 @@ instance (priority := 100) trivialIsNilpotent [IsTrivial L M] : IsNilpotent L M 
 
 instance isNilpotentAdd (M₁ M₂ : LieSubmodule R L M) [IsNilpotent L M₁] [IsNilpotent L M₂] :
     IsNilpotent L (M₁ + M₂) := by
-  obtain ⟨k, hk⟩ := (isNilpotent_iff R L M₁).1 (inferInstance)
-  obtain ⟨l, hl⟩ := (isNilpotent_iff R L M₂).1 (inferInstance)
-  have ha : lowerCentralSeries R L M₁ (k ⊔ l) = ⊥ := by
-    have hhhh := antitone_lowerCentralSeries R L M₁
-    have h2 : k ≤ k ⊔ l := by exact Nat.le_max_left k l
-    have hhhh2 := hhhh h2
+  obtain ⟨k, _⟩ := (isNilpotent_iff R L M₁).1 (inferInstance)
+  obtain ⟨l, _⟩ := (isNilpotent_iff R L M₂).1 (inferInstance)
+  have h₁ : lowerCentralSeries R L M₁ (k ⊔ l) = ⊥ := by
+    have le : k ≤ k ⊔ l := by exact Nat.le_max_left k l
+    have := antitone_lowerCentralSeries R L M₁ le
     simp_all only [le_sup_left, le_bot_iff]
-  have hb : lowerCentralSeries R L M₂ (k ⊔ l) = ⊥ := by
-    have hhhh := antitone_lowerCentralSeries R L M₂
-    have h2 : l ≤ k ⊔ l := by exact Nat.le_max_right k l
-    have hhhh2 := hhhh h2
+  have h₂ : lowerCentralSeries R L M₂ (k ⊔ l) = ⊥ := by
+    have le : l ≤ k ⊔ l := by exact Nat.le_max_right k l
+    have := antitone_lowerCentralSeries R L M₂ le
     simp_all only [le_sup_left, le_bot_iff]
   apply (isNilpotent_iff R L (M₁ + M₂)).2
   use (k ⊔ l)
@@ -318,18 +316,17 @@ instance isNilpotentAdd (M₁ M₂ : LieSubmodule R L M) [IsNilpotent L M₁] [I
   rw[(M₁ ⊔ M₂).lowerCentralSeries_eq_lcs_comap]
   dsimp[lowerCentralSeries] at *
   simp_all
-  have xy : LieSubmodule.lcs (k ⊔ l) M₁ = ⊥ := by
+  have aux₁ : LieSubmodule.lcs (k ⊔ l) M₁ = ⊥ := by
     rw [← M₁.lowerCentralSeries_map_eq_lcs]
     refine (LieModuleHom.le_ker_iff_map (lowerCentralSeries R L (↥M₁) (k ⊔ l))).mp ?_
     simp_all only [LieSubmodule.ker_incl, le_bot_iff]
-    exact ha
-  have xx : LieSubmodule.lcs (k ⊔ l) M₂ = ⊥ := by
+    exact h₁
+  have aux₂ : LieSubmodule.lcs (k ⊔ l) M₂ = ⊥ := by
     rw [← M₂.lowerCentralSeries_map_eq_lcs]
     refine (LieModuleHom.le_ker_iff_map (lowerCentralSeries R L (↥M₂) (k ⊔ l))).mp ?_
     simp_all only [LieSubmodule.ker_incl, le_bot_iff]
-    exact hb
-  rw [xy]
-  rw [xx]
+    exact h₂
+  rw [aux₁, aux₂]
   refine LieSubmodule.comap_incl_eq_bot.mpr ?_
   simp_all only [le_refl, sup_of_le_left, bot_le, inf_of_le_right]
 
@@ -738,11 +735,10 @@ section
 
 variable [LieModule R L M]
 
-theorem nilpotent_submodule_nilpotent (M₁ M₂ : LieSubmodule R L M) :
-     (h₁ : M₁ ≤ M₂) →  (h₂ : IsNilpotent L M₂) → IsNilpotent L M₁ := by
-  intro a b
+theorem nilpotent_submodule_nilpotent (M₁ M₂ : LieSubmodule R L M)
+    (h₁ : M₁ ≤ M₂) (h₂ : IsNilpotent L M₂) : IsNilpotent L M₁ := by
   let f : L →ₗ⁅R⁆ L := 1
-  let g : M₁ →ₗ[R] M₂ := Submodule.inclusion a
+  let g : M₁ →ₗ[R] M₂ := Submodule.inclusion h₁
   have hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆ := by
     intro x m
     simp_all only [LieHom.coe_one, id_eq, f, g]
@@ -750,8 +746,7 @@ theorem nilpotent_submodule_nilpotent (M₁ M₂ : LieSubmodule R L M) :
     rfl
   have hg_inj : Function.Injective g := by
     apply Submodule.inclusion_injective
-  have hh := Function.Injective.lieModuleIsNilpotent hfg hg_inj
-  exact hh
+  exact Function.Injective.lieModuleIsNilpotent hfg hg_inj
 
 /-- The largest nilpotent submodule is the `sSup` of all nilpotent submodules. -/
 def largestNilpotentSubmodule :=
@@ -761,23 +756,21 @@ instance largestNilpotentSubmoduleIsNilpotent [IsNoetherian R M] :
     IsNilpotent L (largestNilpotentSubmodule R L M) := by
   have hwf := LieSubmodule.wellFoundedGT_of_noetherian R L M
   rw [← CompleteLattice.isSupClosedCompact_iff_wellFoundedGT] at hwf
-  refine hwf { N : LieSubmodule R L M | IsNilpotent L N } ⟨⊥, ?_⟩ fun I hI J hJ => ?_
+  refine hwf { N : LieSubmodule R L M | IsNilpotent L N } ⟨⊥, ?_⟩ fun N₁ h₁ N₂ h₂ => ?_
   · simp_all
     apply trivialIsNilpotent L
-  · rw [Set.mem_setOf_eq] at hI hJ ⊢
+  · rw [Set.mem_setOf_eq] at *
     apply isNilpotentAdd R L
 
 theorem nilpotent_iff_le_largest_nilpotent_submodule [IsNoetherian R M] (N : LieSubmodule R L M) :
     IsNilpotent L N ↔ N ≤ largestNilpotentSubmodule R L M := by
   constructor
   · intro h
-    have h2 : N ∈ { N : LieSubmodule R L M | IsNilpotent L N } := by
-      exact h
     dsimp[largestNilpotentSubmodule]
-    apply le_sSup (by exact h2)
+    apply le_sSup (by exact h)
   intro h
-  have := largestNilpotentSubmoduleIsNilpotent R L M
-  exact nilpotent_submodule_nilpotent R L M N (largestNilpotentSubmodule R L M) h this
+  exact nilpotent_submodule_nilpotent R L M N
+    (largestNilpotentSubmodule R L M) h (largestNilpotentSubmoduleIsNilpotent R L M)
 end
 
 end LieModule
@@ -1066,6 +1059,6 @@ theorem largest_nilpotent_ideal_le_radical : largestNilpotentIdeal R L ≤ radic
     largestNilpotentIdeal R L = ⊤ := by
   rw [eq_top_iff]
   apply le_sSup
-  simp_all
+  simp_all only [Set.mem_setOf_eq, isNilpotent_of_top_iff']
 
 end LieAlgebra
