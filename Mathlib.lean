@@ -381,6 +381,7 @@ import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.Group.Translate
 import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Algebra.Group.TypeTags.Finite
+import Mathlib.Algebra.Group.TypeTags.Fintype
 import Mathlib.Algebra.Group.TypeTags.Hom
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Algebra.Group.UniqueProds.Basic
@@ -2710,7 +2711,6 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Fintype.CardEmbedding
 import Mathlib.Data.Fintype.Defs
 import Mathlib.Data.Fintype.Fin
-import Mathlib.Data.Fintype.Group
 import Mathlib.Data.Fintype.Inv
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Fintype.List
