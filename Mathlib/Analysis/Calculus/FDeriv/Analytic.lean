@@ -719,11 +719,8 @@ theorem norm_iteratedFDeriv_le (n : ℕ) (x : (i : ι) → E i) :
   rw [f.iteratedFDeriv_eq]
   exact f.norm_iteratedFDeriv_le' n x
 
-lemma cPolynomialAt : CPolynomialAt 𝕜 f x :=
-  f.hasFiniteFPowerSeriesOnBall.cPolynomialAt_of_mem
-    (by simp only [Metric.emetric_ball_top, Set.mem_univ])
-
-lemma cPolyomialOn : CPolynomialOn 𝕜 f ⊤ := fun x _ ↦ f.cPolynomialAt x
+@[deprecated (since := "2025-02-15")] alias cPolynomialAt := cpolynomialAt
+@[deprecated (since := "2025-02-15")] alias cPolynomialOn := cpolynomialOn
 
 end ContinuousMultilinearMap
 

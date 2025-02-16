@@ -573,9 +573,11 @@ lemma cpolynomialAt  : CPolynomialAt 𝕜 f x :=
   f.hasFiniteFPowerSeriesOnBall.cPolynomialAt_of_mem
     (by simp only [Metric.emetric_ball_top, Set.mem_univ])
 
-lemma cpolyomialOn : CPolynomialOn 𝕜 f s := fun _ _ ↦ f.cpolynomialAt
+lemma cpolynomialOn : CPolynomialOn 𝕜 f s := fun _ _ ↦ f.cpolynomialAt
 
-lemma analyticOnNhd : AnalyticOnNhd 𝕜 f s := f.cpolyomialOn.analyticOnNhd
+@[deprecated (since := "2025-02-15")] alias cpolyomialOn := cpolynomialOn
+
+lemma analyticOnNhd : AnalyticOnNhd 𝕜 f s := f.cpolynomialOn.analyticOnNhd
 
 lemma analyticOn : AnalyticOn 𝕜 f s := f.analyticOnNhd.analyticOn
 
@@ -598,7 +600,9 @@ We show that a continuous linear map into continuous multilinear maps is continu
 
 namespace ContinuousLinearMap
 
-variable {ι : Type*} {Em : ι → Type*} [∀ i, NormedAddCommGroup (Em i)] [∀ i, NormedSpace 𝕜 (Em i)]
+variable {ι : Type*} {Em Fm : ι → Type*}
+  [∀ i, NormedAddCommGroup (Em i)] [∀ i, NormedSpace 𝕜 (Em i)]
+  [∀ i, NormedAddCommGroup (Fm i)] [∀ i, NormedSpace 𝕜 (Fm i)]
   [Fintype ι] (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 Em F)
   {s : Set (G × (Π i, Em i))} {x : G × (Π i, Em i)}
 
@@ -647,5 +651,16 @@ lemma analyticAt_uncurry_of_multilinear : AnalyticAt 𝕜 (fun (p : G × (Π i, 
 lemma analyticWithinAt_uncurry_of_multilinear :
     AnalyticWithinAt 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s x :=
   f.analyticAt_uncurry_of_multilinear.analyticWithinAt
+
+#check ContinuousMultilinearMap.compContinuousLinearMapContinuousMultilinear
+
+#check ContinuousLinearMap.flipMultilinear
+
+lemma foo : AnalyticOn 𝕜 (fun (p : (ContinuousMultilinearMap 𝕜 Em G) × (Π i, Fm i →L[𝕜] Em i))
+    ↦ p.1.compContinuousLinearMap p.2) univ := by
+  let f := ContinuousMultilinearMap.compContinuousLinearMapContinuousMultilinear 𝕜 Em Fm G
+
+
+
 
 end ContinuousLinearMap
