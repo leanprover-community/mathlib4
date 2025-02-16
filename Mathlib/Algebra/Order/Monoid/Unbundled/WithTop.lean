@@ -50,8 +50,14 @@ theorem untop_one : (1 : WithTop α).untop coe_ne_top = 1 :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem untop_one' (d : α) : (1 : WithTop α).untop' d = 1 :=
+theorem untopD_one (d : α) : (1 : WithTop α).untopD d = 1 :=
   rfl
+
+@[deprecated (since := "2025-02-06")]
+alias untop_zero' := untopD_zero
+
+@[to_additive existing, deprecated (since := "2025-02-06")]
+alias untop_one' := untopD_one
 
 @[to_additive (attr := simp, norm_cast) coe_nonneg]
 theorem one_le_coe [LE α] {a : α} : 1 ≤ (a : WithTop α) ↔ 1 ≤ a :=
@@ -241,6 +247,9 @@ lemma addLECancellable_of_ne_top [Preorder α] [ContravariantClass α α (· + �
 lemma addLECancellable_of_lt_top [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)]
     (ha : a < ⊤) : AddLECancellable a := addLECancellable_of_ne_top ha.ne
 
+lemma addLECancellable_coe [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)] (a : α) :
+    AddLECancellable (a : WithTop α) := addLECancellable_of_ne_top coe_ne_top
+
 lemma addLECancellable_iff_ne_top [Nonempty α] [Preorder α]
     [ContravariantClass α α (· + ·) (· ≤ ·)] : AddLECancellable a ↔ a ≠ ⊤ where
   mp := by rintro h rfl; exact (coe_lt_top <| Classical.arbitrary _).not_le <| h <| by simp
@@ -308,21 +317,15 @@ instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
   { WithTop.one, WithTop.addMonoid with
     natCast := fun n => ↑(n : α),
     natCast_zero := by
-      simp only -- Porting note: Had to add this...?
-      rw [Nat.cast_zero, WithTop.coe_zero],
+      simp only [Nat.cast_zero, WithTop.coe_zero],
     natCast_succ := fun n => by
-      simp only -- Porting note: Had to add this...?
-      rw [Nat.cast_add_one, WithTop.coe_add, WithTop.coe_one] }
+      simp only [Nat.cast_add_one, WithTop.coe_add, WithTop.coe_one] }
 
 @[simp, norm_cast] lemma coe_natCast (n : ℕ) : ((n : α) : WithTop α) = n := rfl
 
 @[simp] lemma top_ne_natCast (n : ℕ) : (⊤ : WithTop α) ≠ n := top_ne_coe
 @[simp] lemma natCast_ne_top (n : ℕ) : (n : WithTop α) ≠ ⊤ := coe_ne_top
 @[simp] lemma natCast_lt_top [LT α] (n : ℕ) : (n : WithTop α) < ⊤ := coe_lt_top _
-
-@[deprecated (since := "2024-04-05")] alias coe_nat := coe_natCast
-@[deprecated (since := "2024-04-05")] alias nat_ne_top := natCast_ne_top
-@[deprecated (since := "2024-04-05")] alias top_ne_nat := top_ne_natCast
 
 @[simp] lemma coe_ofNat (n : ℕ) [n.AtLeastTwo] :
     ((ofNat(n) : α) : WithTop α) = ofNat(n) := rfl
@@ -451,8 +454,14 @@ theorem unbot_one : (1 : WithBot α).unbot coe_ne_bot = 1 :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem unbot_one' (d : α) : (1 : WithBot α).unbot' d = 1 :=
+theorem unbotD_one (d : α) : (1 : WithBot α).unbotD d = 1 :=
   rfl
+
+@[deprecated (since := "2025-02-06")]
+alias unbot_zero' := unbotD_zero
+
+@[to_additive existing, deprecated (since := "2025-02-06")]
+alias unbot_one' := unbotD_one
 
 @[to_additive (attr := simp, norm_cast) coe_nonneg]
 theorem one_le_coe [LE α] : 1 ≤ (a : WithBot α) ↔ 1 ≤ a := coe_le_coe
@@ -527,10 +536,6 @@ instance addMonoidWithOne : AddMonoidWithOne (WithBot α) := WithTop.addMonoidWi
 @[simp] lemma natCast_ne_bot (n : ℕ) : (n : WithBot α) ≠ ⊥ := coe_ne_bot
 
 @[simp] lemma bot_ne_natCast (n : ℕ) : (⊥ : WithBot α) ≠ n := bot_ne_coe
-
-@[deprecated (since := "2024-04-05")] alias coe_nat := coe_natCast
-@[deprecated (since := "2024-04-05")] alias nat_ne_bot := natCast_ne_bot
-@[deprecated (since := "2024-04-05")] alias bot_ne_nat := bot_ne_natCast
 
 @[simp] lemma coe_ofNat (n : ℕ) [n.AtLeastTwo] :
     ((ofNat(n) : α) : WithBot α) = ofNat(n) := rfl

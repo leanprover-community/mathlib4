@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.Seq.Computation
+import Mathlib.Data.List.Basic
 
 /-!
 # Possibly infinite lists
@@ -418,12 +419,8 @@ def ofMLList : MLList Id α → Seq α :=
     | .none => none
     | .some (a, l') => some (a, l')
 
-@[deprecated (since := "2024-07-26")] alias ofLazyList := ofMLList
-
 instance coeMLList : Coe (MLList Id α) (Seq α) :=
   ⟨ofMLList⟩
-
-@[deprecated (since := "2024-07-26")] alias coeLazyList := coeMLList
 
 /-- Translate a sequence into a `MLList`. -/
 unsafe def toMLList : Seq α → MLList Id α
@@ -431,8 +428,6 @@ unsafe def toMLList : Seq α → MLList Id α
     match destruct s with
     | none => .nil
     | some (a, s') => .cons a (toMLList s')
-
-@[deprecated (since := "2024-07-26")] alias toLazyList := toMLList
 
 end MLList
 
@@ -917,11 +912,11 @@ theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂)
     simpa using m
   · intro m e
     have this := congr_arg destruct e
-    cases' show a = c ∨ a ∈ append t₁ s₂ by simpa using m with e' m
+    rcases show a = c ∨ a ∈ append t₁ s₂ by simpa using m with e' | m
     · rw [e']
       exact Or.inl (mem_cons _ _)
     · cases' show c = b ∧ append t₁ s₂ = s' by simpa with i1 i2
-      cases' o with e' IH
+      rcases o with e' | IH
       · simp [i1, e']
       · exact Or.imp_left (mem_cons_of_mem _) (IH m i2)
 

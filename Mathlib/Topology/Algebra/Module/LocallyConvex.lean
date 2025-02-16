@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
 import Mathlib.Analysis.Convex.Topology
+import Mathlib.Topology.Connected.LocPathConnected
 
 /-!
 # Locally convex topological modules
