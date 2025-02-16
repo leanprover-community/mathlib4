@@ -24,6 +24,10 @@ variable (p q : Prop) {α : Sort u} (s : α → Prop)
 
 -- Note: the lemma `Classical.not_imp` is attempted before `not_forall_eq`
 attribute [push] not_not not_or Classical.not_imp
+
+-- We may want to rewrite `¬n = 0` into `0 < n` for `n : ℕ`, so `ne_eq` is marked with low priority.
+attribute [push ← low] ne_eq
+
 @[push] theorem not_iff : ¬(p ↔ q) ↔ (p ∧ ¬q) ∨ (¬p ∧ q) :=
   _root_.not_iff.trans <| iff_iff_and_or_not_and_not.trans <| by rw [not_not, or_comm]
 
@@ -58,8 +62,6 @@ open Lean Meta Elab.Tactic Parser.Tactic
 - `¬(p ∧ q)` turns into `p → ¬q` or `¬a ∨ ¬q`, depending on the option `push_neg.use_distrib`.
 - `¬∃ a, p` turns into `∀ a, ¬p`, where the binder name `a` is preserved.
 - `¬∀ a, p` turns into `∃ a, ¬p`, where the binder name `a` is preserved.
-- `¬(p = q)` turns into `p ≠ q`, which would be less convenient as a rewrite lemma,
-  because it would be applicable to it's own result, thus needing two attempts before stopping.
 -/
 private def pushNegBuiltin : Simp.Simproc := fun e => do
   let e := (← instantiateMVars e).cleanupAnnotations
@@ -69,9 +71,6 @@ private def pushNegBuiltin : Simp.Simproc := fun e => do
       return mkSimpStep (mkOr (mkNot p) (mkNot q)) (← mkAppM ``not_and_or_eq #[p, q])
     else
       return mkSimpStep (.forallE `_ p (mkNot q) default) (← mkAppM ``not_and_eq #[p, q])
-  | (``Eq, #[_, e₁, e₂]) =>
-    -- To avoid a loop, it is crucial that this step returns `.continue _` instead of `.visit _`.
-    return Simp.Step.continue (some { expr := ← mkAppM ``Ne #[e₁, e₂] })
   | (``Exists, #[_, .lam n typ bo bi]) =>
     return mkSimpStep (.forallE n typ (mkNot bo) bi) (← mkAppM ``not_exists_eq #[.lam n typ bo bi])
   | _ =>
