@@ -113,15 +113,15 @@ lemma σ {n : ℕ} (i : Fin (n + 1)) : IsGenerator (σ i) := le_sup_right (a := 
 end IsGenerator
 
 /-- A property is true for every morphism iff it holds for generators and is multiplicative. -/
-lemma multiplicativeClosure_isGenerator_eq_top : IsGenerator.MultiplicativeClosure = ⊤ := by
+lemma multiplicativeClosure_isGenerator_eq_top : IsGenerator.multiplicativeClosure = ⊤ := by
   apply le_antisymm (by simp)
   intro x y f _
   apply CategoryTheory.Quotient.induction
   apply Paths.induction
-  · exact IsGenerator.MultiplicativeClosure.id_mem _
+  · exact IsGenerator.multiplicativeClosure.id_mem _
   · rintro _ _ _ _ ⟨⟩ h
-    · exact IsGenerator.MultiplicativeClosure.comp_mem _ _ h <| .of _ <| .δ _
-    · exact IsGenerator.MultiplicativeClosure.comp_mem _ _ h <| .of _ <| .σ _
+    · exact IsGenerator.multiplicativeClosure.comp_mem _ _ h <| .of _ <| .δ _
+    · exact IsGenerator.multiplicativeClosure.comp_mem _ _ h <| .of _ <| .σ _
 
 /-- An unrolled version of the induction principle obtained in the previous lemma. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
@@ -132,7 +132,7 @@ lemma hom_induction (P : MorphismProperty SimplexCategoryGenRel)
     {a b : SimplexCategoryGenRel} (f : a ⟶ b) :
     P f :=
   by
-  suffices IsGenerator.MultiplicativeClosure ≤ P by
+  suffices IsGenerator.multiplicativeClosure ≤ P by
     rw [multiplicativeClosure_isGenerator_eq_top, top_le_iff] at this
     rw [this]
     apply MorphismProperty.top_apply
@@ -157,9 +157,9 @@ lemma hom_induction' (P : MorphismProperty SimplexCategoryGenRel)
     (σ_comp : ∀ {n m : ℕ} (u : mk m ⟶ mk n)
       (i : Fin (m + 1)), P u → P (σ i ≫ u )) {a b : SimplexCategoryGenRel} (f : a ⟶ b) :
     P f := by
-  suffices IsGenerator.MultiplicativeClosure' ≤ P by
-    rw [← MorphismProperty.MultiplicativeClosure.eq_prime, multiplicativeClosure_isGenerator_eq_top
-      , top_le_iff] at this
+  suffices IsGenerator.multiplicativeClosure' ≤ P by
+    rw [← MorphismProperty.multiplicativeClosure_eq_multiplicativeClosure',
+      multiplicativeClosure_isGenerator_eq_top, top_le_iff] at this
     rw [this]
     apply MorphismProperty.top_apply
   intro _ _ f hf
