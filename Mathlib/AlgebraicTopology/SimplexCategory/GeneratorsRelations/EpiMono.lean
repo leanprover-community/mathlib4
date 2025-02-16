@@ -59,7 +59,7 @@ lemma isSplitEpi_P_σ {x y : SimplexCategoryGenRel} {e : x ⟶ y} (he : P_σ e) 
   induction he with
   | of x hx => cases hx; infer_instance
   | id => infer_instance
-  | comp_of _ _ _ h => cases h ; infer_instance
+  | comp_of _ _ _ h => cases h; infer_instance
 
 /-- All `P_δ` are split monos as composition of such. -/
 lemma isSplitMono_P_δ {x y : SimplexCategoryGenRel} {m : x ⟶ y} (hm : P_δ m) :
@@ -67,7 +67,7 @@ lemma isSplitMono_P_δ {x y : SimplexCategoryGenRel} {m : x ⟶ y} (hm : P_δ m)
   induction hm with
   | of x hx => cases hx; infer_instance
   | id => infer_instance
-  | comp_of _ _ _ h => cases h ; infer_instance
+  | comp_of _ _ _ h => cases h; infer_instance
 
 lemma isSplitEpi_P_σ_toSimplexCategory {x y : SimplexCategoryGenRel} {e : x ⟶ y} (he : P_σ e)
     : IsSplitEpi <| toSimplexCategory.map e := by
