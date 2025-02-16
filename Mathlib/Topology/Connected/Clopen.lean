@@ -262,7 +262,7 @@ theorem isPreconnected_iff_subset_of_disjoint {s : Set α} :
   · intro u v hu hv hs hsu hsv
     by_contra! H
     specialize h u v hu hv hs H
-    apply H
+    absurd H; push_neg
     rcases h with h | h
     · rcases hsv with ⟨x, hxs, hxv⟩
       exact ⟨x, hxs, ⟨h hxs, hxv⟩⟩
@@ -320,7 +320,7 @@ theorem isPreconnected_iff_subset_of_disjoint_closed :
     intro u v hu hv hs hsu hsv
     by_contra! H
     specialize h u v hu hv hs H
-    apply H
+    absurd H; push_neg
     rcases h with h | h
     · rcases hsv with ⟨x, hxs, hxv⟩
       exact ⟨x, hxs, ⟨h hxs, hxv⟩⟩

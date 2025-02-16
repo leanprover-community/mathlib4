@@ -1108,7 +1108,7 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
         le_trans hb₂
           (Nat.mul_le_mul_left _ <| le_trans (Nat.le_add_left _ _) (Nat.le_add_right _ _))
   · rcases Nat.eq_zero_or_pos (size rl) with rl0 | rl0
-    · rw [rl0, not_nonneg_iff_eq_zero, Nat.mul_eq_zero] at h
+    · rw [rl0, not_pos_iff_eq_zero, Nat.mul_eq_zero] at h
       replace h := h.resolve_left (by decide)
       rw [rl0, h, Nat.le_zero, Nat.mul_eq_zero] at H2
       rw [hr.2.size_eq, rl0, h, H2.resolve_left (by decide)] at H1

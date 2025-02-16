@@ -1072,7 +1072,7 @@ instance [Nonempty s] : Nonempty (affineSpan k s) :=
 @[simp]
 theorem affineSpan_eq_bot : affineSpan k s = ⊥ ↔ s = ∅ := by
   rw [← not_iff_not]; push_neg
-  rw [affineSpan_nonempty]
+  rw [← nonempty_iff_ne_bot, affineSpan_nonempty]
 
 @[simp]
 theorem bot_lt_affineSpan : ⊥ < affineSpan k s ↔ s.Nonempty := by
