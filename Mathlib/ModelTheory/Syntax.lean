@@ -756,14 +756,6 @@ noncomputable def iExsUnique [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formul
 protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=
   φ.iff ψ
 
-/-- take the disjunction of finitely many formulas -/
-noncomputable def iSup [Finite α] (f : α → L.Formula β) : L.Formula β :=
-  BoundedFormula.iSup f
-
-/-- take the conjunction of finitely many formulas -/
-noncomputable def iInf [Finite α] (f : α → L.Formula β) : L.Formula β :=
-  BoundedFormula.iInf f
-
 /-- A bijection sending formulas to sentences with constants. -/
 def equivSentence : L.Formula α ≃ L[[α]].Sentence :=
   (BoundedFormula.constantsVarsEquiv.trans (BoundedFormula.relabelEquiv (Equiv.sumEmpty _ _))).symm
