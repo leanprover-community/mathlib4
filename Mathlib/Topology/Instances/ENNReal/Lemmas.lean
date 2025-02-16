@@ -699,7 +699,7 @@ protected theorem tsum_eq_top_of_eq_top : (∃ a, f a = ∞) → ∑' a, f a = �
 protected theorem lt_top_of_tsum_ne_top {a : α → ℝ≥0∞} (tsum_ne_top : ∑' i, a i ≠ ∞) (j : α) :
     a j < ∞ := by
   contrapose! tsum_ne_top with h
-  exact ENNReal.tsum_eq_top_of_eq_top ⟨j, top_unique h⟩
+  exact ENNReal.tsum_eq_top_of_eq_top ⟨j, h⟩
 
 @[simp]
 protected theorem tsum_top [Nonempty α] : ∑' _ : α, ∞ = ∞ :=
