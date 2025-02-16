@@ -37,6 +37,7 @@ of three sections:
   parts.
 -/
 
+assert_not_exists Finset
 
 namespace GenContFract
 
@@ -63,7 +64,7 @@ variable {n : ℕ}
 theorem stream_eq_none_of_fr_eq_zero {ifp_n : IntFractPair K}
     (stream_nth_eq : IntFractPair.stream v n = some ifp_n) (nth_fr_eq_zero : ifp_n.fr = 0) :
     IntFractPair.stream v (n + 1) = none := by
-  cases' ifp_n with _ fr
+  obtain ⟨_, fr⟩ := ifp_n
   change fr = 0 at nth_fr_eq_zero
   simp [IntFractPair.stream, stream_nth_eq, nth_fr_eq_zero]
 
@@ -120,7 +121,7 @@ theorem stream_succ (h : Int.fract v ≠ 0) (n : ℕ) :
     IntFractPair.stream v (n + 1) = IntFractPair.stream (Int.fract v)⁻¹ n := by
   induction n with
   | zero =>
-    have H : (IntFractPair.of v).fr = Int.fract v := rfl
+    have H : (IntFractPair.of v).fr = Int.fract v := by simp [IntFractPair.of]
     rw [stream_zero, stream_succ_of_some (stream_zero v) (ne_of_eq_of_ne H h), H]
   | succ n ih =>
     rcases eq_or_ne (IntFractPair.stream (Int.fract v)⁻¹ n) none with hnone | hsome
@@ -249,7 +250,7 @@ theorem of_s_head_aux (v : K) : (of v).s.get? 0 = (IntFractPair.stream v 1).bind
   rw [of, IntFractPair.seq1]
   simp only [of, Stream'.Seq.map_tail, Stream'.Seq.map, Stream'.Seq.tail, Stream'.Seq.head,
     Stream'.Seq.get?, Stream'.map]
-  rw [← Stream'.get_succ, Stream'.get, Option.map]
+  rw [← Stream'.get_succ, Stream'.get, Option.map.eq_def]
   split <;> simp_all only [Option.some_bind, Option.none_bind, Function.comp_apply]
 
 /-- This gives the first pair of coefficients of the continued fraction of a non-integer `v`.

@@ -30,8 +30,6 @@ Let `p : R[X]`.
 
 namespace Polynomial
 
-open Polynomial
-
 section Primitive
 
 variable {R : Type*} [CommSemiring R]
@@ -207,7 +205,7 @@ theorem IsPrimitive.content_eq_one {p : R[X]} (hp : p.IsPrimitive) : p.content =
 section PrimPart
 
 /-- The primitive part of a polynomial `p` is the primitive polynomial gained by dividing `p` by
-  `p.content`. If `p = 0`, then `p.primPart = 1`.  -/
+  `p.content`. If `p = 0`, then `p.primPart = 1`. -/
 noncomputable def primPart (p : R[X]) : R[X] :=
   letI := Classical.decEq R
   if p = 0 then 1 else Classical.choose (C_content_dvd p)
@@ -266,7 +264,7 @@ theorem aeval_primPart_eq_zero {S : Type*} [Ring S] [IsDomain S] [Algebra R S]
     aeval s p.primPart = 0 := by
   rw [eq_C_content_mul_primPart p, map_mul, aeval_C] at hp
   have hcont : p.content ≠ 0 := fun h => hpzero (content_eq_zero_iff.1 h)
-  replace hcont := Function.Injective.ne (NoZeroSMulDivisors.algebraMap_injective R S) hcont
+  replace hcont := Function.Injective.ne (FaithfulSMul.algebraMap_injective R S) hcont
   rw [map_zero] at hcont
   exact eq_zero_of_ne_zero_of_mul_left_eq_zero hcont hp
 

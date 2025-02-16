@@ -14,7 +14,7 @@ This file defines some additional constructive equivalences using `Encodable` an
 function on `ℕ`.
 -/
 
-open Mathlib (Vector)
+open List (Vector)
 open Nat List
 
 namespace Encodable
@@ -112,12 +112,12 @@ end Finset
 
 /-- A listable type with decidable equality is encodable. -/
 def encodableOfList [DecidableEq α] (l : List α) (H : ∀ x, x ∈ l) : Encodable α :=
-  ⟨fun a => indexOf a l, l.get?, fun _ => indexOf_get? (H _)⟩
+  ⟨fun a => idxOf a l, l.get?, fun _ => idxOf_get? (H _)⟩
 
 /-- A finite type is encodable. Because the encoding is not unique, we wrap it in `Trunc` to
 preserve computability. -/
 def _root_.Fintype.truncEncodable (α : Type*) [DecidableEq α] [Fintype α] : Trunc (Encodable α) :=
-  @Quot.recOnSubsingleton' _ _ (fun s : Multiset α => (∀ x : α, x ∈ s) → Trunc (Encodable α)) _
+  @Quot.recOnSubsingleton _ _ (fun s : Multiset α => (∀ x : α, x ∈ s) → Trunc (Encodable α)) _
     Finset.univ.1 (fun l H => Trunc.mk <| encodableOfList l H) Finset.mem_univ
 
 /-- A noncomputable way to arbitrarily choose an ordering on a finite type.
@@ -127,11 +127,11 @@ noncomputable def _root_.Fintype.toEncodable (α : Type*) [Fintype α] : Encodab
   classical exact (Fintype.truncEncodable α).out
 
 /-- If `α` is encodable, then so is `Vector α n`. -/
-instance _root_.Vector.encodable [Encodable α] {n} : Encodable (Vector α n) :=
+instance List.Vector.encodable [Encodable α] {n} : Encodable (List.Vector α n) :=
   Subtype.encodable
 
 /-- If `α` is countable, then so is `Vector α n`. -/
-instance _root_.Vector.countable [Countable α] {n} : Countable (Vector α n) :=
+instance List.Vector.countable [Countable α] {n} : Countable (List.Vector α n) :=
   Subtype.countable
 
 /-- If `α` is encodable, then so is `Fin n → α`. -/
@@ -259,11 +259,11 @@ def raise : List ℕ → ℕ → List ℕ
   | m :: l, n => (m + n) :: raise l (m + n)
 
 theorem lower_raise : ∀ l n, lower (raise l n) n = l
-  | [], n => rfl
+  | [], _ => rfl
   | m :: l, n => by rw [raise, lower, Nat.add_sub_cancel_right, lower_raise l]
 
 theorem raise_lower : ∀ {l n}, List.Sorted (· ≤ ·) (n :: l) → raise (lower l n) n = l
-  | [], n, _ => rfl
+  | [], _, _ => rfl
   | m :: l, n, h => by
     have : n ≤ m := List.rel_of_sorted_cons h _ (l.mem_cons_self _)
     simp [raise, lower, Nat.sub_add_cancel this, raise_lower h.of_cons]
@@ -309,11 +309,11 @@ def raise' : List ℕ → ℕ → List ℕ
   | m :: l, n => (m + n) :: raise' l (m + n + 1)
 
 theorem lower_raise' : ∀ l n, lower' (raise' l n) n = l
-  | [], n => rfl
+  | [], _ => rfl
   | m :: l, n => by simp [raise', lower', add_tsub_cancel_right, lower_raise']
 
 theorem raise_lower' : ∀ {l n}, (∀ m ∈ l, n ≤ m) → List.Sorted (· < ·) l → raise' (lower' l n) n = l
-  | [], n, _, _ => rfl
+  | [], _, _, _ => rfl
   | m :: l, n, h₁, h₂ => by
     have : n ≤ m := h₁ _ (l.mem_cons_self _)
     simp [raise', lower', Nat.sub_add_cancel this,
@@ -344,7 +344,7 @@ instance finset : Denumerable (Finset α) :=
           raise_lower' (fun n _ => Nat.zero_le n) (Finset.sort_sorted_lt _)],
       fun n => by
       simp [-Multiset.map_coe, Finset.map, raise'Finset, Finset.sort,
-        List.mergeSort_eq_self (· ≤ ·) ((raise'_sorted _ _).imp (@le_of_lt _ _)), lower_raise']⟩
+        List.mergeSort_eq_self _ (raise'_sorted _ _).le_of_lt, lower_raise']⟩
 
 end Finset
 

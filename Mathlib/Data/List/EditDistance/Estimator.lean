@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2023 Kim Liesinger. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Liesinger
+Authors: Kim Morrison
 -/
 import Mathlib.Data.List.EditDistance.Bounds
 import Mathlib.Order.Estimator
@@ -23,7 +23,7 @@ This is then used in the implementation of `rewrite_search`
 to avoid needing the entire edit distance calculation in unlikely search paths.
 -/
 
-variable {α : Type*} {β δ : Type} [CanonicallyLinearOrderedAddCommMonoid δ]
+variable {α : Type*} {β δ : Type} [LinearOrderedAddCommMonoid δ] [CanonicallyOrderedAdd δ]
   (C : Levenshtein.Cost α β δ) (xs : List α) (ys : List β)
 
 /--

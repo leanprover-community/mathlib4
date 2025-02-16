@@ -3,7 +3,8 @@ Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton
 -/
-import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.Hom.ContinuousEval
+import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # The compact-open topology
@@ -31,8 +32,7 @@ compact-open, curry, function space
 -/
 
 
-open Set Filter TopologicalSpace
-open scoped Topology
+open Set Filter TopologicalSpace Topology
 
 namespace ContinuousMap
 
@@ -72,30 +72,54 @@ lemma tendsto_nhds_compactOpen {l : Filter α} {f : α → C(Y, Z)} {g : C(Y, Z)
 
 lemma continuous_compactOpen {f : X → C(Y, Z)} :
     Continuous f ↔ ∀ K, IsCompact K → ∀ U, IsOpen U → IsOpen {x | MapsTo (f x) K U} :=
-  continuous_generateFrom_iff.trans forall_image2_iff
+  continuous_generateFrom_iff.trans forall_mem_image2
 
 section Functorial
 
 /-- `C(X, ·)` is a functor. -/
-theorem continuous_comp (g : C(Y, Z)) : Continuous (ContinuousMap.comp g : C(X, Y) → C(X, Z)) :=
+theorem continuous_postcomp (g : C(Y, Z)) : Continuous (ContinuousMap.comp g : C(X, Y) → C(X, Z)) :=
   continuous_compactOpen.2 fun _K hK _U hU ↦ isOpen_setOf_mapsTo hK (hU.preimage g.2)
+
+@[deprecated (since := "2024-10-19")] alias continuous_comp := continuous_postcomp
 
 /-- If `g : C(Y, Z)` is a topology inducing map,
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is a topology inducing map too. -/
-theorem inducing_comp (g : C(Y, Z)) (hg : Inducing g) : Inducing (g.comp : C(X, Y) → C(X, Z)) where
-  induced := by
+theorem isInducing_postcomp (g : C(Y, Z)) (hg : IsInducing g) :
+    IsInducing (g.comp : C(X, Y) → C(X, Z)) where
+  eq_induced := by
     simp only [compactOpen_eq, induced_generateFrom_eq, image_image2, hg.setOf_isOpen,
       image2_image_right, MapsTo, mem_preimage, preimage_setOf_eq, comp_apply]
 
+@[deprecated (since := "2024-10-28")] alias inducing_postcomp := isInducing_postcomp
+
+@[deprecated (since := "2024-10-19")] alias inducing_comp := isInducing_postcomp
+
 /-- If `g : C(Y, Z)` is a topological embedding,
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is an embedding too. -/
-theorem embedding_comp (g : C(Y, Z)) (hg : Embedding g) : Embedding (g.comp : C(X, Y) → C(X, Z)) :=
-  ⟨inducing_comp g hg.1, fun _ _ ↦ (cancel_left hg.2).1⟩
+theorem isEmbedding_postcomp (g : C(Y, Z)) (hg : IsEmbedding g) :
+    IsEmbedding (g.comp : C(X, Y) → C(X, Z)) :=
+  ⟨isInducing_postcomp g hg.1, fun _ _ ↦ (cancel_left hg.2).1⟩
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_postcomp := isEmbedding_postcomp
+
+@[deprecated (since := "2024-10-19")] alias embedding_comp := isEmbedding_postcomp
 
 /-- `C(·, Z)` is a functor. -/
-theorem continuous_comp_left (f : C(X, Y)) : Continuous (fun g => g.comp f : C(Y, Z) → C(X, Z)) :=
+@[continuity, fun_prop]
+theorem continuous_precomp (f : C(X, Y)) : Continuous (fun g => g.comp f : C(Y, Z) → C(X, Z)) :=
   continuous_compactOpen.2 fun K hK U hU ↦ by
     simpa only [mapsTo_image_iff] using isOpen_setOf_mapsTo (hK.image f.2) hU
+
+@[deprecated (since := "2024-10-19")] alias continuous_comp_left := continuous_precomp
+
+variable (Z) in
+/-- Precomposition by a continuous map is itself a continuous map between spaces of continuous maps.
+-/
+@[simps apply]
+def compRightContinuousMap (f : C(X, Y)) :
+    C(C(Y, Z), C(X, Z)) where
+  toFun g := g.comp f
 
 /-- Any pair of homeomorphisms `X ≃ₜ Z` and `Y ≃ₜ T` gives rise to a homeomorphism
 `C(X, Y) ≃ₜ C(Z, T)`. -/
@@ -105,8 +129,16 @@ protected def _root_.Homeomorph.arrowCongr (φ : X ≃ₜ Z) (ψ : Y ≃ₜ T) :
   invFun f := .comp ψ.symm <| f.comp φ
   left_inv f := ext fun _ ↦ ψ.left_inv (f _) |>.trans <| congrArg f <| φ.left_inv _
   right_inv f := ext fun _ ↦ ψ.right_inv (f _) |>.trans <| congrArg f <| φ.right_inv _
-  continuous_toFun := continuous_comp _ |>.comp <| continuous_comp_left _
-  continuous_invFun := continuous_comp _ |>.comp <| continuous_comp_left _
+  continuous_toFun := continuous_postcomp _ |>.comp <| continuous_precomp _
+  continuous_invFun := continuous_postcomp _ |>.comp <| continuous_precomp _
+
+variable (Z) in
+/-- Precomposition by a homeomorphism is itself a homeomorphism between spaces of continuous maps.
+-/
+@[deprecated Homeomorph.arrowCongr (since := "2024-10-19")]
+def compRightHomeomorph (f : X ≃ₜ Y) :
+    C(Y, Z) ≃ₜ C(X, Z) :=
+  .arrowCongr f.symm (.refl _)
 
 variable [LocallyCompactPair Y Z]
 
@@ -148,40 +180,30 @@ lemma _root_.Continuous.compCM (hg : Continuous g) (hf : Continuous f) :
     Continuous fun x => (g x).comp (f x) :=
   continuous_comp'.comp (hf.prod_mk hg)
 
-@[deprecated _root_.Continuous.compCM (since := "2024-01-30")]
-lemma continuous.comp' (hf : Continuous f) (hg : Continuous g) :
-    Continuous fun x => (g x).comp (f x) :=
-  hg.compCM hf
-
 end Functorial
 
 section Ev
 
 /-- The evaluation map `C(X, Y) × X → Y` is continuous
 if `X, Y` is a locally compact pair of spaces. -/
-@[continuity]
-theorem continuous_eval [LocallyCompactPair X Y] : Continuous fun p : C(X, Y) × X => p.1 p.2 := by
-  simp_rw [continuous_iff_continuousAt, ContinuousAt, (nhds_basis_opens _).tendsto_right_iff]
-  rintro ⟨f, x⟩ U ⟨hx : f x ∈ U, hU : IsOpen U⟩
-  rcases exists_mem_nhds_isCompact_mapsTo f.continuous (hU.mem_nhds hx) with ⟨K, hxK, hK, hKU⟩
-  filter_upwards [prod_mem_nhds (eventually_mapsTo hK hU hKU) hxK] using fun _ h ↦ h.1 h.2
+instance [LocallyCompactPair X Y] : ContinuousEval C(X, Y) X Y where
+  continuous_eval := by
+    simp_rw [continuous_iff_continuousAt, ContinuousAt, (nhds_basis_opens _).tendsto_right_iff]
+    rintro ⟨f, x⟩ U ⟨hx : f x ∈ U, hU : IsOpen U⟩
+    rcases exists_mem_nhds_isCompact_mapsTo f.continuous (hU.mem_nhds hx) with ⟨K, hxK, hK, hKU⟩
+    filter_upwards [prod_mem_nhds (eventually_mapsTo hK hU hKU) hxK] using fun _ h ↦ h.1 h.2
 
-@[deprecated (since := "2023-12-26")] alias continuous_eval' := continuous_eval
+@[deprecated (since := "2024-10-01")] protected alias continuous_eval := continuous_eval
 
-/-- Evaluation of a continuous map `f` at a point `x` is continuous in `f`.
+instance : ContinuousEvalConst C(X, Y) X Y where
+  continuous_eval_const x :=
+    continuous_def.2 fun U hU ↦ by simpa using isOpen_setOf_mapsTo isCompact_singleton hU
 
-Porting note: merged `continuous_eval_const` with `continuous_eval_const'` removing unneeded
-assumptions. -/
-@[continuity]
-theorem continuous_eval_const (a : X) : Continuous fun f : C(X, Y) => f a :=
-  continuous_def.2 fun U hU ↦ by simpa using isOpen_setOf_mapsTo (isCompact_singleton (x := a)) hU
+@[deprecated (since := "2024-10-01")] protected alias continuous_eval_const := continuous_eval_const
 
-/-- Coercion from `C(X, Y)` with compact-open topology to `X → Y` with pointwise convergence
-topology is a continuous map.
-
-Porting note: merged `continuous_coe` with `continuous_coe'` removing unneeded assumptions. -/
+@[deprecated continuous_coeFun (since := "2024-10-01")]
 theorem continuous_coe : Continuous ((⇑) : C(X, Y) → (X → Y)) :=
-  continuous_pi continuous_eval_const
+  continuous_coeFun
 
 lemma isClosed_setOf_mapsTo {t : Set Y} (ht : IsClosed t) (s : Set X) :
     IsClosed {f : C(X, Y) | MapsTo f s t} :=
@@ -193,7 +215,7 @@ lemma isClopen_setOf_mapsTo (hK : IsCompact K) (hU : IsClopen U) :
 
 @[norm_cast]
 lemma specializes_coe {f g : C(X, Y)} : ⇑f ⤳ ⇑g ↔ f ⤳ g := by
-  refine ⟨fun h ↦ ?_, fun h ↦ h.map continuous_coe⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ h.map continuous_coeFun⟩
   suffices ∀ K, IsCompact K → ∀ U, IsOpen U → MapsTo g K U → MapsTo f K U by
     simpa [specializes_iff_pure, nhds_compactOpen]
   exact fun K _ U hU hg x hx ↦ (h.map (continuous_apply x)).mem_open hU (hg hx)
@@ -203,7 +225,7 @@ lemma inseparable_coe {f g : C(X, Y)} : Inseparable (f : X → Y) g ↔ Insepara
   simp only [inseparable_iff_specializes_and, specializes_coe]
 
 instance [T0Space Y] : T0Space C(X, Y) :=
-  t0Space_of_injective_of_continuous DFunLike.coe_injective continuous_coe
+  t0Space_of_injective_of_continuous DFunLike.coe_injective continuous_coeFun
 
 instance [R0Space Y] : R0Space C(X, Y) where
   specializes_symmetric f g h := by
@@ -211,10 +233,10 @@ instance [R0Space Y] : R0Space C(X, Y) where
     exact h.symm
 
 instance [T1Space Y] : T1Space C(X, Y) :=
-  t1Space_of_injective_of_continuous DFunLike.coe_injective continuous_coe
+  t1Space_of_injective_of_continuous DFunLike.coe_injective continuous_coeFun
 
 instance [R1Space Y] : R1Space C(X, Y) :=
-  .of_continuous_specializes_imp continuous_coe fun _ _ ↦ specializes_coe.1
+  .of_continuous_specializes_imp continuous_coeFun fun _ _ ↦ specializes_coe.1
 
 instance [T2Space Y] : T2Space C(X, Y) := inferInstance
 
@@ -237,7 +259,7 @@ section InfInduced
 /-- For any subset `s` of `X`, the restriction of continuous functions to `s` is continuous
 as a function from `C(X, Y)` to `C(s, Y)` with their respective compact-open topologies. -/
 theorem continuous_restrict (s : Set X) : Continuous fun F : C(X, Y) => F.restrict s :=
-  continuous_comp_left <| restrict s <| .id X
+  continuous_precomp <| restrict s <| .id X
 
 theorem compactOpen_le_induced (s : Set X) :
     (ContinuousMap.compactOpen : TopologicalSpace C(X, Y)) ≤
@@ -252,21 +274,15 @@ theorem compactOpen_eq_iInf_induced :
     (ContinuousMap.compactOpen : TopologicalSpace C(X, Y)) =
       ⨅ (K : Set X) (_ : IsCompact K), .induced (.restrict K) ContinuousMap.compactOpen := by
   refine le_antisymm (le_iInf₂ fun s _ ↦ compactOpen_le_induced s) ?_
-  refine le_generateFrom <| forall_image2_iff.2 fun K (hK : IsCompact K) U hU ↦ ?_
+  refine le_generateFrom <| forall_mem_image2.2 fun K (hK : IsCompact K) U hU ↦ ?_
   refine TopologicalSpace.le_def.1 (iInf₂_le K hK) _ ?_
   convert isOpen_induced (isOpen_setOf_mapsTo (isCompact_iff_isCompact_univ.1 hK) hU)
   simp [mapsTo_univ_iff, Subtype.forall, MapsTo]
 
-@[deprecated (since := "2024-03-05")]
-alias compactOpen_eq_sInf_induced := compactOpen_eq_iInf_induced
-
 theorem nhds_compactOpen_eq_iInf_nhds_induced (f : C(X, Y)) :
-    𝓝 f = ⨅ (s) (hs : IsCompact s), (𝓝 (f.restrict s)).comap (ContinuousMap.restrict s) := by
+    𝓝 f = ⨅ (s) (_ : IsCompact s), (𝓝 (f.restrict s)).comap (ContinuousMap.restrict s) := by
   rw [compactOpen_eq_iInf_induced]
   simp only [nhds_iInf, nhds_induced]
-
-@[deprecated (since := "2024-03-05")]
-alias nhds_compactOpen_eq_sInf_nhds_induced := nhds_compactOpen_eq_iInf_nhds_induced
 
 theorem tendsto_compactOpen_restrict {ι : Type*} {l : Filter ι} {F : ι → C(X, Y)} {f : C(X, Y)}
     (hFf : Filter.Tendsto F l (𝓝 f)) (s : Set X) :
@@ -277,7 +293,7 @@ theorem tendsto_compactOpen_iff_forall {ι : Type*} {l : Filter ι} (F : ι → 
     Tendsto F l (𝓝 f) ↔
       ∀ K, IsCompact K → Tendsto (fun i => (F i).restrict K) l (𝓝 (f.restrict K)) := by
   rw [compactOpen_eq_iInf_induced]
-  simp [nhds_iInf, nhds_induced, Filter.tendsto_comap_iff, Function.comp]
+  simp [nhds_iInf, nhds_induced, Filter.tendsto_comap_iff, Function.comp_def]
 
 /-- A family `F` of functions in `C(X, Y)` converges in the compact-open topology, if and only if
 it converges in the compact-open topology on each compact subset of `X`. -/
@@ -343,20 +359,11 @@ section Curry
     compact, then this is a homeomorphism, see `Homeomorph.curry`. -/
 def curry (f : C(X × Y, Z)) : C(X, C(Y, Z)) where
   toFun a := ⟨Function.curry f a, f.continuous.comp <| by fun_prop⟩
-  continuous_toFun := (continuous_comp f).comp continuous_coev
+  continuous_toFun := (continuous_postcomp f).comp continuous_coev
 
 @[simp]
 theorem curry_apply (f : C(X × Y, Z)) (a : X) (b : Y) : f.curry a b = f (a, b) :=
   rfl
-
-/-- Auxiliary definition, see `ContinuousMap.curry` and `Homeomorph.curry`. -/
-@[deprecated ContinuousMap.curry (since := "2024-03-05")]
-def curry' (f : C(X × Y, Z)) (a : X) : C(Y, Z) := curry f a
-
-set_option linter.deprecated false in
-/-- If a map `α × β → γ` is continuous, then its curried form `α → C(β, γ)` is continuous. -/
-@[deprecated ContinuousMap.curry (since := "2024-03-05")]
-theorem continuous_curry' (f : C(X × Y, Z)) : Continuous (curry' f) := (curry f).continuous
 
 /-- To show continuity of a map `α → C(β, γ)`, it suffices to show that its uncurried form
     `α × β → γ` is continuous. -/
@@ -375,7 +382,7 @@ theorem continuous_curry [LocallyCompactSpace (X × Y)] :
 /-- The uncurried form of a continuous map `X → C(Y, Z)` is a continuous map `X × Y → Z`. -/
 theorem continuous_uncurry_of_continuous [LocallyCompactSpace Y] (f : C(X, C(Y, Z))) :
     Continuous (Function.uncurry fun x y => f x y) :=
-  continuous_eval.comp <| f.continuous.prod_map continuous_id
+  continuous_eval.comp <| f.continuous.prodMap continuous_id
 
 /-- The uncurried form of a continuous map `X → C(Y, Z)` as a continuous map `X × Y → Z` (if `Y` is
     locally compact). If `X` is also locally compact, then this is a homeomorphism between the two
@@ -389,7 +396,8 @@ theorem continuous_uncurry [LocallyCompactSpace X] [LocallyCompactSpace Y] :
     Continuous (uncurry : C(X, C(Y, Z)) → C(X × Y, Z)) := by
   apply continuous_of_continuous_uncurry
   rw [← (Homeomorph.prodAssoc _ _ _).comp_continuous_iff']
-  apply continuous_eval.comp (continuous_eval.prod_map continuous_id)
+  dsimp [Function.comp_def]
+  exact (continuous_fst.fst.eval continuous_fst.snd).eval continuous_snd
 
 /-- The family of constant maps: `Y → C(X, Y)` as a continuous map. -/
 def const' : C(Y, C(X, Y)) :=
@@ -443,12 +451,12 @@ theorem continuousMapOfUnique_symm_apply [Unique X] (f : C(X, Y)) :
 
 end Homeomorph
 
-section QuotientMap
+section IsQuotientMap
 
 variable {X₀ X Y Z : Type*} [TopologicalSpace X₀] [TopologicalSpace X] [TopologicalSpace Y]
   [TopologicalSpace Z] [LocallyCompactSpace Y] {f : X₀ → X}
 
-theorem QuotientMap.continuous_lift_prod_left (hf : QuotientMap f) {g : X × Y → Z}
+theorem Topology.IsQuotientMap.continuous_lift_prod_left (hf : IsQuotientMap f) {g : X × Y → Z}
     (hg : Continuous fun p : X₀ × Y => g (f p.1, p.2)) : Continuous g := by
   let Gf : C(X₀, C(Y, Z)) := ContinuousMap.curry ⟨_, hg⟩
   have h : ∀ x : X, Continuous fun y => g (x, y) := by
@@ -461,11 +469,17 @@ theorem QuotientMap.continuous_lift_prod_left (hf : QuotientMap f) {g : X × Y �
     exact Gf.continuous
   exact ContinuousMap.continuous_uncurry_of_continuous ⟨G, this⟩
 
-theorem QuotientMap.continuous_lift_prod_right (hf : QuotientMap f) {g : Y × X → Z}
+@[deprecated (since := "2024-10-22")]
+alias QuotientMap.continuous_lift_prod_left := IsQuotientMap.continuous_lift_prod_left
+
+theorem Topology.IsQuotientMap.continuous_lift_prod_right (hf : IsQuotientMap f) {g : Y × X → Z}
     (hg : Continuous fun p : Y × X₀ => g (p.1, f p.2)) : Continuous g := by
   have : Continuous fun p : X₀ × Y => g ((Prod.swap p).1, f (Prod.swap p).2) :=
     hg.comp continuous_swap
   have : Continuous fun p : X₀ × Y => (g ∘ Prod.swap) (f p.1, p.2) := this
   exact (hf.continuous_lift_prod_left this).comp continuous_swap
 
-end QuotientMap
+@[deprecated (since := "2024-10-22")]
+alias QuotientMap.continuous_lift_prod_right := IsQuotientMap.continuous_lift_prod_right
+
+end IsQuotientMap

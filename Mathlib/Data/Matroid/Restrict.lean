@@ -36,7 +36,7 @@ It also proves some `Basis` analogues of `Base` lemmas that, while they could be
 ## Implementation Notes
 
 Since `R` and `M.E` are both terms in `Set α`, to define the restriction `M ↾ R`,
-we need to either insist that `R ⊆ M.E`, or to say what happens when `R` contains the junk
+we need to either insist that `R ⊆ M.E`, or to say what happens when `R` contains the junk
 outside `M.E`.
 
 It turns out that `R ⊆ M.E` is just an unnecessary hypothesis; if we say the restriction
@@ -62,11 +62,13 @@ We define the restriction order `≤r` to give a `PartialOrder` instance on the 
 reserved for the more mathematically important 'minor' order.
 -/
 
+assert_not_exists Field
+
 open Set
 
 namespace Matroid
 
-variable {α : Type*} {M : Matroid α} {R I J X Y : Set α}
+variable {α : Type*} {M : Matroid α} {R I X Y : Set α}
 
 section restrict
 
@@ -75,7 +77,7 @@ section restrict
   E := R
   Indep I := M.Indep I ∧ I ⊆ R
   indep_empty := ⟨M.empty_indep, empty_subset _⟩
-  indep_subset := fun I J h hIJ ↦ ⟨h.1.subset hIJ, hIJ.trans h.2⟩
+  indep_subset := fun _ _ h hIJ ↦ ⟨h.1.subset hIJ, hIJ.trans h.2⟩
   indep_aug := by
     rintro I I' ⟨hI, hIY⟩ (hIn : ¬ M.Basis' I R) (hI' : M.Basis' I' R)
     rw [basis'_iff_basis_inter_ground] at hIn hI'
@@ -111,11 +113,11 @@ section restrict
     simp only [hIJ, and_assoc, maximal_subset_iff, hJ.indep, hJ.subset, and_imp, true_and,
       hJ.subset.trans hAR]
     exact fun K hK _ hKA hJK ↦ hJ.eq_of_subset_indep hK hJK hKA
-  subset_ground I := And.right
+  subset_ground _ := And.right
 
 /-- Change the ground set of a matroid to some `R : Set α`. The independent sets of the restriction
   are the independent subsets of the new ground set. Most commonly used when `R ⊆ M.E`,
-  but it is convenient not to require this. The elements of `R \ M.E` become 'loops'.  -/
+  but it is convenient not to require this. The elements of `R \ M.E` become 'loops'. -/
 def restrict (M : Matroid α) (R : Set α) : Matroid α := (M.restrictIndepMatroid R).matroid
 
 /-- `M ↾ R` means `M.restrict R`. -/
@@ -138,11 +140,11 @@ theorem restrict_finite {R : Set α} (hR : R.Finite) : (M ↾ R).Finite :=
   rw [Dep, restrict_indep_iff, restrict_ground_eq]; tauto
 
 @[simp] theorem restrict_ground_eq_self (M : Matroid α) : (M ↾ M.E) = M := by
-  refine eq_of_indep_iff_indep_forall rfl ?_; aesop
+  refine ext_indep rfl ?_; aesop
 
 theorem restrict_restrict_eq {R₁ R₂ : Set α} (M : Matroid α) (hR : R₂ ⊆ R₁) :
     (M ↾ R₁) ↾ R₂ = M ↾ R₂ := by
-  refine eq_of_indep_iff_indep_forall rfl ?_
+  refine ext_indep rfl ?_
   simp only [restrict_ground_eq, restrict_indep_iff, and_congr_left_iff, and_iff_left_iff_imp]
   exact fun _ h _ _ ↦ h.trans hR
 
@@ -156,12 +158,15 @@ theorem restrict_restrict_eq {R₁ R₂ : Set α} (M : Matroid α) (hR : R₂ �
 theorem base_restrict_iff' : (M ↾ X).Base I ↔ M.Basis' I X := by
   simp_rw [base_iff_maximal_indep, Basis', maximal_iff, restrict_indep_iff]
 
+theorem Basis'.base_restrict (hI : M.Basis' I X) : (M ↾ X).Base I :=
+  base_restrict_iff'.1 hI
+
 theorem Basis.restrict_base (h : M.Basis I X) : (M ↾ X).Base I :=
   (base_restrict_iff h.subset_ground).2 h
 
-instance restrict_finiteRk [M.FiniteRk] (R : Set α) : (M ↾ R).FiniteRk :=
+instance restrict_rankFinite [M.RankFinite] (R : Set α) : (M ↾ R).RankFinite :=
   let ⟨_, hB⟩ := (M ↾ R).exists_base
-  hB.finiteRk_of_finite (hB.indep.of_restrict.finite)
+  hB.rankFinite_of_finite (hB.indep.of_restrict.finite)
 
 instance restrict_finitary [Finitary M] (R : Set α) : Finitary (M ↾ R) := by
   refine ⟨fun I hI ↦ ?_⟩
@@ -193,9 +198,12 @@ theorem basis_restrict_iff (hR : R ⊆ M.E := by aesop_mat) :
   intro hXR
   rw [← basis'_iff_basis_inter_ground, basis'_iff_basis]
 
+lemma basis'_iff_basis_restrict_univ : M.Basis' I X ↔ (M ↾ univ).Basis I X := by
+  rw [basis_restrict_iff', basis'_iff_basis_inter_ground, and_iff_left (subset_univ _)]
+
 theorem restrict_eq_restrict_iff (M M' : Matroid α) (X : Set α) :
     M ↾ X = M' ↾ X ↔ ∀ I, I ⊆ X → (M.Indep I ↔ M'.Indep I) := by
-  refine ⟨fun h I hIX ↦ ?_, fun h ↦ eq_of_indep_iff_indep_forall rfl fun I (hI : I ⊆ X) ↦ ?_⟩
+  refine ⟨fun h I hIX ↦ ?_, fun h ↦ ext_indep rfl fun I (hI : I ⊆ X) ↦ ?_⟩
   · rw [← and_iff_left (a := (M.Indep I)) hIX, ← and_iff_left (a := (M'.Indep I)) hIX,
       ← restrict_indep_iff, h, restrict_indep_iff]
   rw [restrict_indep_iff, and_iff_left hI, restrict_indep_iff, and_iff_left hI, h _ hI]
@@ -334,7 +342,7 @@ theorem Restriction.finite {M : Matroid α} [M.Finite] (h : N ≤r M) : N.Finite
   obtain ⟨R, hR, rfl⟩ := h
   exact restrict_finite <| M.ground_finite.subset hR
 
-theorem Restriction.finiteRk {M : Matroid α} [FiniteRk M] (h : N ≤r M) : N.FiniteRk := by
+theorem Restriction.rankFinite {M : Matroid α} [RankFinite M] (h : N ≤r M) : N.RankFinite := by
   obtain ⟨R, -, rfl⟩ := h
   infer_instance
 
@@ -352,6 +360,9 @@ theorem Indep.of_restriction (hI : N.Indep I) (hNM : N ≤r M) : M.Indep I := by
 theorem Indep.indep_restriction (hI : M.Indep I) (hNM : N ≤r M) (hIN : I ⊆ N.E) : N.Indep I := by
   obtain ⟨R, -, rfl⟩ := hNM; simpa [hI]
 
+theorem Restriction.indep_iff (hMN : N ≤r M) : N.Indep I ↔ M.Indep I ∧ I ⊆ N.E :=
+  ⟨fun h ↦ ⟨h.of_restriction hMN, h.subset_ground⟩, fun h ↦ h.1.indep_restriction hMN h.2⟩
+
 theorem Basis.basis_restriction (hI : M.Basis I X) (hNM : N ≤r M) (hX : X ⊆ N.E) : N.Basis I X := by
   obtain ⟨R, hR, rfl⟩ := hNM; rwa [basis_restrict_iff, and_iff_left (show X ⊆ R from hX)]
 
@@ -361,6 +372,13 @@ theorem Basis.of_restriction (hI : N.Basis I X) (hNM : N ≤r M) : M.Basis I X :
 theorem Base.basis_of_restriction (hI : N.Base I) (hNM : N ≤r M) : M.Basis I N.E := by
   obtain ⟨R, hR, rfl⟩ := hNM; rwa [base_restrict_iff] at hI
 
+theorem Restriction.base_iff (hMN : N ≤r M) {B : Set α} : N.Base B ↔ M.Basis B N.E :=
+  ⟨fun h ↦ Base.basis_of_restriction h hMN,
+    fun h ↦ by simpa [hMN.eq_restrict] using h.restrict_base⟩
+
+theorem Restriction.basis_iff (hMN : N ≤r M) : N.Basis I X ↔ M.Basis I X ∧ X ⊆ N.E :=
+  ⟨fun h ↦ ⟨h.of_restriction hMN, h.subset_ground⟩, fun h ↦ h.1.basis_restriction hMN h.2⟩
+
 theorem Dep.of_restriction (hX : N.Dep X) (hNM : N ≤r M) : M.Dep X := by
   obtain ⟨R, hR, rfl⟩ := hNM
   rw [restrict_dep_iff] at hX
@@ -369,6 +387,9 @@ theorem Dep.of_restriction (hX : N.Dep X) (hNM : N ≤r M) : M.Dep X := by
 theorem Dep.dep_restriction (hX : M.Dep X) (hNM : N ≤r M) (hXE : X ⊆ N.E := by aesop_mat) :
     N.Dep X := by
   obtain ⟨R, -, rfl⟩ := hNM; simpa [hX.not_indep]
+
+theorem Restriction.dep_iff (hMN : N ≤r M) : N.Dep X ↔ M.Dep X ∧ X ⊆ N.E :=
+  ⟨fun h ↦ ⟨h.of_restriction hMN, h.subset_ground⟩, fun h ↦ h.1.dep_restriction hMN h.2⟩
 
 end Restriction
 
@@ -437,6 +458,12 @@ theorem Indep.augment (hI : M.Indep I) (hJ : M.Indep J) (hIJ : I.encard < J.enca
   obtain ⟨J', hJ', hJJ'⟩ := hJ.subset_basis_of_subset I.subset_union_right
   rw [← hJ'.encard_eq_encard hb] at hIJ
   exact hIJ.not_le (encard_mono hJJ')
+
+lemma Indep.augment_finset {I J : Finset α} (hI : M.Indep I) (hJ : M.Indep J)
+    (hIJ : I.card < J.card) : ∃ e ∈ J, e ∉ I ∧ M.Indep (insert e I) := by
+  obtain ⟨x, hx, hxI⟩ := hI.augment hJ (by simpa [encard_eq_coe_toFinset_card])
+  simp only [mem_diff, Finset.mem_coe] at hx
+  exact ⟨x, hx.1, hx.2, hxI⟩
 
 end Basis
 

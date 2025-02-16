@@ -179,7 +179,7 @@ theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) :
     refine (natDegree_sum_le _ _).trans ?_
     simp_rw [Function.comp, natDegree_monomial]
     rw [Finset.fold_ite, Finset.fold_const]
-    · simp only [ite_self, max_eq_right, zero_le', Finset.fold_max_le, true_and_iff, and_imp,
+    · simp only [ite_self, max_eq_right, zero_le', Finset.fold_max_le, true_and, and_imp,
         tsub_le_iff_right, mem_support_iff, Ne, Finset.mem_filter]
       intro x hx hx'
       have hxp : x ≤ p.natDegree := le_natDegree_of_ne_zero hx
@@ -191,7 +191,7 @@ theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) :
 
 theorem natDegree_hasseDeriv [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
     natDegree (hasseDeriv n p) = natDegree p - n := by
-  cases' lt_or_le p.natDegree n with hn hn
+  rcases lt_or_le p.natDegree n with hn | hn
   · simpa [hasseDeriv_eq_zero_of_lt_natDegree, hn] using (tsub_eq_zero_of_le hn.le).symm
   · refine map_natDegree_eq_sub ?_ ?_
     · exact fun h => hasseDeriv_eq_zero_of_lt_natDegree _ _

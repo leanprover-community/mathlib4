@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Kyle Miller
+Authors: Kim Morrison, Kyle Miller
 -/
 import Mathlib.Tactic.CongrExclamation
 
@@ -126,7 +126,8 @@ Returns stuck metavariables as additional goals.
 -/
 def elabTermForConvert (term : Syntax) (expectedType? : Option Expr) :
     TacticM (Expr × List MVarId) := do
-  withCollectingNewGoalsFrom (allowNaturalHoles := true) (tagSuffix := `convert) do
+  withCollectingNewGoalsFrom (parentTag := ← getMainTag) (tagSuffix := `convert)
+      (allowNaturalHoles := true) do
     -- Allow typeclass inference failures since these will be inferred by unification
     -- or else become new goals
     withTheReader Term.Context (fun ctx => { ctx with ignoreTCFailures := true }) do

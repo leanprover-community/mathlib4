@@ -29,8 +29,7 @@ namespace Language
 
 open Structure
 
-variable {L : Language} {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
-variable [L.Structure M] [L.Structure N] [L.Structure P] [L.Structure Q]
+variable {L : Language} {M : Type*} [L.Structure M]
 
 /-- A substructure is elementary when every formula applied to a tuple in the substructure
   agrees with its value in the overall structure. -/

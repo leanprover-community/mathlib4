@@ -17,7 +17,7 @@ This module defines the Laplacian matrix of a graph, and proves some of its elem
 * `SimpleGraph.lapMatrix`: The Laplacian matrix of a simple graph, defined as the difference
   between the degree matrix and the adjacency matrix.
 * `isPosSemidef_lapMatrix`: The Laplacian matrix is positive semidefinite.
-* `rank_ker_lapMatrix_eq_card_ConnectedComponent`: The number of connected components in `G` is
+* `card_ConnectedComponent_eq_rank_ker_lapMatrix`: The number of connected components in `G` is
   the dimension of the nullspace of its Laplacian matrix.
 
 -/
@@ -113,9 +113,9 @@ theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable (x : V →
   rw [lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj]
   refine ⟨?_, fun h i j hA ↦ h i j hA.reachable⟩
   intro h i j ⟨w⟩
-  induction' w with w i j _ hA _ h'
-  · rfl
-  · exact (h i j hA).trans h'
+  induction w with
+  | nil => rfl
+  | cons hA _ h' => exact (h _ _ hA).trans h'
 
 theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable (x : V → ℝ) :
     Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by
@@ -156,9 +156,10 @@ lemma linearIndependent_lapMatrix_ker_basis_aux :
   rw [Subtype.ext_iff] at h0
   have h : ∑ c, g c • lapMatrix_ker_basis_aux G c = fun i ↦ g (connectedComponentMk G i) := by
     simp only [lapMatrix_ker_basis_aux, SetLike.mk_smul_mk, AddSubmonoid.coe_finset_sum]
-    conv_lhs => enter [2, c, j]; rw [Pi.smul_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
+    repeat rw [AddSubmonoid.coe_finset_sum]
     ext i
-    simp only [Finset.sum_apply, sum_ite_eq, mem_univ, ite_true]
+    simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, mul_ite, mul_one, mul_zero, sum_ite_eq,
+      mem_univ, ↓reduceIte]
   rw [h] at h0
   intro c
   obtain ⟨i, h'⟩ : ∃ i : V, G.connectedComponentMk i = c := Quot.exists_rep c
@@ -171,9 +172,10 @@ lemma top_le_span_range_lapMatrix_ker_basis_aux :
   use Quot.lift x.val (by rw [← lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable G x,
     LinearMap.map_coe_ker])
   ext j
-  simp only [lapMatrix_ker_basis_aux, AddSubmonoid.coe_finset_sum, Submodule.coe_toAddSubmonoid,
-    SetLike.val_smul, Finset.sum_apply, Pi.smul_apply, smul_eq_mul, mul_ite, mul_one, mul_zero,
-    sum_ite_eq, mem_univ, ite_true]
+  simp only [lapMatrix_ker_basis_aux]
+  rw [AddSubmonoid.coe_finset_sum]
+  simp only [SetLike.mk_smul_mk, Finset.sum_apply, Pi.smul_apply, smul_eq_mul, mul_ite, mul_one,
+    mul_zero, sum_ite_eq, mem_univ, ↓reduceIte]
   rfl
 
 /-- `lapMatrix_ker_basis G` is a basis of the nullspace indexed by its connected components,
@@ -185,10 +187,10 @@ noncomputable def lapMatrix_ker_basis :=
 
 end
 
-/-- The number of connected components in `G` is the dimension of the nullspace its Laplacian. -/
+/-- The number of connected components in `G` is the dimension of the nullspace of its Laplacian. -/
 theorem card_ConnectedComponent_eq_rank_ker_lapMatrix : Fintype.card G.ConnectedComponent =
-    FiniteDimensional.finrank ℝ (LinearMap.ker (Matrix.toLin' (G.lapMatrix ℝ))) := by
+    Module.finrank ℝ (LinearMap.ker (Matrix.toLin' (G.lapMatrix ℝ))) := by
   classical
-  rw [FiniteDimensional.finrank_eq_card_basis (lapMatrix_ker_basis G)]
+  rw [Module.finrank_eq_card_basis (lapMatrix_ker_basis G)]
 
 end SimpleGraph

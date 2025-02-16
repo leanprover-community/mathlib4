@@ -28,6 +28,8 @@ This is an abbreviation for `M✶.Indep X`, but has its own name for the sake of
   base `B` of `M`.
 -/
 
+assert_not_exists Field
+
 open Set
 
 namespace Matroid
@@ -41,7 +43,7 @@ section dual
 @[simps] def dualIndepMatroid (M : Matroid α) : IndepMatroid α where
   E := M.E
   Indep I := I ⊆ M.E ∧ ∃ B, M.Base B ∧ Disjoint I B
-  indep_empty := ⟨empty_subset M.E, M.exists_base.imp (fun B hB ↦ ⟨hB, empty_disjoint _⟩)⟩
+  indep_empty := ⟨empty_subset M.E, M.exists_base.imp (fun _ hB ↦ ⟨hB, empty_disjoint _⟩)⟩
   indep_subset := by
     rintro I J ⟨hJE, B, hB, hJB⟩ hIJ
     exact ⟨hIJ.trans hJE, ⟨B, hB, disjoint_of_subset_left hIJ hJB⟩⟩
@@ -117,7 +119,7 @@ theorem dual_indep_iff_exists' : (M✶.Indep I) ↔ I ⊆ M.E ∧ (∃ B, M.Base
 
 @[simp] theorem dual_ground : M✶.E = M.E := rfl
 
-@[simp] theorem dual_indep_iff_exists (hI : I ⊆ M.E := by aesop_mat) :
+theorem dual_indep_iff_exists (hI : I ⊆ M.E := by aesop_mat) :
     M✶.Indep I ↔ (∃ B, M.Base B ∧ Disjoint I B) := by
   rw [dual_indep_iff_exists', and_iff_right hI]
 
@@ -149,7 +151,7 @@ theorem setOf_dual_base_eq : {B | M✶.Base B} = (fun X ↦ M.E \ X) '' {B | M.B
   rwa [← h, diff_diff_cancel_left hB'.subset_ground]
 
 @[simp] theorem dual_dual (M : Matroid α) : M✶✶ = M :=
-  eq_of_base_iff_base_forall rfl (fun B (h : B ⊆ M.E) ↦
+  ext_base rfl (fun B (h : B ⊆ M.E) ↦
     by rw [dual_base_iff, dual_base_iff, dual_ground, diff_diff_cancel_left h])
 
 theorem dual_involutive : Function.Involutive (dual : Matroid α → Matroid α) := dual_dual
@@ -203,13 +205,13 @@ theorem base_iff_dual_base_compl (hB : B ⊆ M.E := by aesop_mat) :
     M.Base B ↔ M✶.Base (M.E \ B) := by
   rw [dual_base_iff, diff_diff_cancel_left hB]
 
-theorem ground_not_base (M : Matroid α) [h : RkPos M✶] : ¬M.Base M.E := by
-  rwa [rkPos_iff_empty_not_base, dual_base_iff, diff_empty] at h
+theorem ground_not_base (M : Matroid α) [h : RankPos M✶] : ¬M.Base M.E := by
+  rwa [rankPos_iff, dual_base_iff, diff_empty] at h
 
-theorem Base.ssubset_ground [h : RkPos M✶] (hB : M.Base B) : B ⊂ M.E :=
+theorem Base.ssubset_ground [h : RankPos M✶] (hB : M.Base B) : B ⊂ M.E :=
   hB.subset_ground.ssubset_of_ne (by rintro rfl; exact M.ground_not_base hB)
 
-theorem Indep.ssubset_ground [h : RkPos M✶] (hI : M.Indep I) : I ⊂ M.E := by
+theorem Indep.ssubset_ground [h : RankPos M✶] (hI : M.Indep I) : I ⊂ M.E := by
   obtain ⟨B, hB⟩ := hI.exists_base_superset; exact hB.2.trans_ssubset hB.1.ssubset_ground
 
 /-- A coindependent set of `M` is an independent set of the dual of `M✶`. we give it a separate

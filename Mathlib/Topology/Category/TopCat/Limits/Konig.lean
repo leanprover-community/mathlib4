@@ -29,7 +29,6 @@ discrete topology) in lemmas `nonempty_sections_of_finite_cofiltered_system` and
 (See <https://stacks.math.columbia.edu/tag/086J> for the Set version.)
 -/
 
-
 open CategoryTheory
 
 open CategoryTheory.Limits
@@ -108,13 +107,7 @@ theorem partialSections.closed [∀ j : J, T2Space (F.obj j)] {G : Finset J}
   rw [this]
   apply isClosed_biInter
   intro f _
-  -- Porting note: can't see through forget
-  have : T2Space ((forget TopCat).obj (F.obj f.snd.fst)) :=
-    inferInstanceAs (T2Space (F.obj f.snd.fst))
-  apply isClosed_eq
-  -- Porting note: used to be a single `continuity` that closed both goals
-  · exact (F.map f.snd.snd.snd.snd).continuous.comp (continuous_apply f.fst)
-  · continuity
+  apply isClosed_eq <;> fun_prop
 
 /-- Cofiltered limits of nonempty compact Hausdorff spaces are nonempty topological spaces.
 -/
@@ -133,8 +126,8 @@ theorem nonempty_limitCone_of_compact_t2_cofiltered_system (F : J ⥤ TopCat.{ma
   intro X Y f
   let G : FiniteDiagram J :=
     ⟨{X, Y},
-      {⟨X, Y, by simp only [true_or_iff, eq_self_iff_true, Finset.mem_insert], by
-          simp only [eq_self_iff_true, or_true_iff, Finset.mem_insert, Finset.mem_singleton], f⟩}⟩
+      {⟨X, Y, by simp only [true_or, eq_self_iff_true, Finset.mem_insert], by
+          simp only [eq_self_iff_true, or_true, Finset.mem_insert, Finset.mem_singleton], f⟩}⟩
   exact hu _ ⟨G, rfl⟩ (Finset.mem_singleton_self _)
 
 end TopologicalKonig

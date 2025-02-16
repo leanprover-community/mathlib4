@@ -50,7 +50,6 @@ namespace Localization
 
 namespace Construction
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- If `W : MorphismProperty C`, `LocQuiver W` is a quiver with the same objects
 as `C`, and whose morphisms are those in `C` and placeholders for formal
 inverses of the morphisms in `W`. -/
@@ -90,7 +89,6 @@ namespace MorphismProperty
 
 open Localization.Construction
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The localized category obtained by formally inverting the morphisms
 in `W : MorphismProperty C` -/
 def Localization :=
@@ -154,7 +152,7 @@ def lift : W.Localization ⥤ D :=
       -- Porting note: rest of proof was `rcases r with ⟨⟩; tidy`
       rcases r with (_|_|⟨f,hf⟩|⟨f,hf⟩)
       · aesop_cat
-      · aesop_cat
+      · simp
       all_goals
         dsimp
         haveI := hG f hf
@@ -163,7 +161,7 @@ def lift : W.Localization ⥤ D :=
 
 @[simp]
 theorem fac : W.Q ⋙ lift G hG = G :=
-  Functor.ext (fun X => rfl)
+  Functor.ext (fun _ => rfl)
     (by
       intro X Y f
       simp only [Functor.comp_map, eqToHom_refl, comp_id, id_comp]
@@ -197,7 +195,7 @@ localization with respect to a morphism_property `W` -/
 def objEquiv : C ≃ W.Localization where
   toFun := W.Q.obj
   invFun X := X.as.obj
-  left_inv X := rfl
+  left_inv _ := rfl
   right_inv := by
     rintro ⟨⟨X⟩⟩
     rfl

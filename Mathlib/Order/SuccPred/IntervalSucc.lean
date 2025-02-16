@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.Set.Lattice
-import Mathlib.Order.SuccPred.Basic
+import Mathlib.Order.SuccPred.Archimedean
 
 /-!
 # Intervals `Ixx (f x) (f (Order.succ x))`
@@ -44,6 +44,8 @@ theorem biUnion_Ico_Ioc_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOr
       by_cases hk : IsMax k
       · rw [hk.succ_eq, Ioc_self, empty_union]
       · rw [Ico_succ_right_eq_insert_of_not_isMax hmk hk, biUnion_insert]
+
+open scoped Function -- required for scoped `on` notation
 
 /-- If `α` is a linear succ order, `β` is a preorder, and `f : α → β` is a monotone function, then
 the intervals `Set.Ioc (f n) (f (Order.succ n))` are pairwise disjoint. -/
@@ -88,6 +90,8 @@ theorem pairwise_disjoint_on_Ioo_pred [PredOrder α] [Preorder β] {f : α → �
 end Monotone
 
 namespace Antitone
+
+open scoped Function -- required for scoped `on` notation
 
 /-- If `α` is a linear succ order, `β` is a preorder, and `f : α → β` is an antitone function, then
 the intervals `Set.Ioc (f (Order.succ n)) (f n)` are pairwise disjoint. -/

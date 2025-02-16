@@ -115,7 +115,7 @@ partial def explodeCore (e : Expr) (depth : Nat) (entries : Entries) (start : Bo
       let entries := valEntry?.map (entries.addSynonym var) |>.getD entries
       explodeCore (body.instantiate1 var) depth entries
   | _ => do
-    -- Right now all of these are caught by this case case:
+    -- Right now all of these are caught by this case:
     --   Expr.lit, Expr.forallE, Expr.const, Expr.sort, Expr.mvar, Expr.fvar, Expr.bvar
     --   (Note: Expr.mdata is stripped by cleanupAnnotations)
     -- Might be good to handle them individually.

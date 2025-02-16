@@ -3,9 +3,6 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Data.ZMod.Basic
-import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 
 /-!
@@ -18,39 +15,35 @@ It also contains basic results about congruence subgroups.
 
 -/
 
-
-local notation "SL(" n ", " R ")" => Matrix.SpecialLinearGroup (Fin n) R
-
-attribute [-instance] Matrix.SpecialLinearGroup.instCoeFun
-
-local notation:1024 "↑ₘ" A:1024 => ((A : SL(2, ℤ)) : Matrix (Fin 2) (Fin 2) ℤ)
-
 open Matrix.SpecialLinearGroup Matrix
+
+open scoped MatrixGroups ModularGroup
 
 variable (N : ℕ)
 
 local notation "SLMOD(" N ")" =>
   @Matrix.SpecialLinearGroup.map (Fin 2) _ _ _ _ _ _ (Int.castRingHom (ZMod N))
 
-
 @[simp]
-theorem SL_reduction_mod_hom_val (N : ℕ) (γ : SL(2, ℤ)) :
-    ∀ i j : Fin 2, (SLMOD(N) γ : Matrix (Fin 2) (Fin 2) (ZMod N)) i j = ((↑ₘγ i j : ℤ) : ZMod N) :=
-  fun _ _ => rfl
+theorem SL_reduction_mod_hom_val (γ : SL(2, ℤ)) (i j : Fin 2):
+    SLMOD(N) γ i j = (γ i j : ZMod N) :=
+  rfl
 
 namespace CongruenceSubgroup
 
 /-- The full level `N` congruence subgroup of `SL(2, ℤ)` of matrices that reduce to the identity
 modulo `N`. -/
-def Gamma (N : ℕ) : Subgroup SL(2, ℤ) :=
+def Gamma : Subgroup SL(2, ℤ) :=
   SLMOD(N).ker
 
-theorem Gamma_mem' (N : ℕ) (γ : SL(2, ℤ)) : γ ∈ Gamma N ↔ SLMOD(N) γ = 1 :=
+@[inherit_doc] scoped notation  "Γ(" n ")"  => Gamma n
+
+theorem Gamma_mem' {N} {γ : SL(2, ℤ)} : γ ∈ Gamma N ↔ SLMOD(N) γ = 1 :=
   Iff.rfl
 
 @[simp]
-theorem Gamma_mem (N : ℕ) (γ : SL(2, ℤ)) : γ ∈ Gamma N ↔ ((↑ₘγ 0 0 : ℤ) : ZMod N) = 1 ∧
-    ((↑ₘγ 0 1 : ℤ) : ZMod N) = 0 ∧ ((↑ₘγ 1 0 : ℤ) : ZMod N) = 0 ∧ ((↑ₘγ 1 1 : ℤ) : ZMod N) = 1 := by
+theorem Gamma_mem {N} {γ : SL(2, ℤ)} : γ ∈ Gamma N ↔ (γ 0 0 : ZMod N) = 1 ∧
+    (γ 0 1 : ZMod N) = 0 ∧ (γ 1 0 : ZMod N) = 0 ∧ (γ 1 1 : ZMod N) = 1 := by
   rw [Gamma_mem']
   constructor
   · intro h
@@ -61,24 +54,17 @@ theorem Gamma_mem (N : ℕ) (γ : SL(2, ℤ)) : γ ∈ Gamma N ↔ ((↑ₘγ 0 
     fin_cases i <;> fin_cases j <;> simp only [h]
     exacts [h.1, h.2.1, h.2.2.1, h.2.2.2]
 
-theorem Gamma_normal (N : ℕ) : Subgroup.Normal (Gamma N) :=
+theorem Gamma_normal : Subgroup.Normal (Gamma N) :=
   SLMOD(N).normal_ker
 
 theorem Gamma_one_top : Gamma 1 = ⊤ := by
   ext
   simp [eq_iff_true_of_subsingleton]
 
-theorem Gamma_zero_bot : Gamma 0 = ⊥ := by
-  ext
-  simp only [Gamma_mem, coe_matrix_coe, Int.coe_castRingHom, map_apply, Int.cast_id,
-    Subgroup.mem_bot]
-  constructor
-  · intro h
-    ext i j
-    fin_cases i <;> fin_cases j <;> simp only [h]
-    exacts [h.1, h.2.1, h.2.2.1, h.2.2.2]
-  · intro h
-    simp [h]
+lemma mem_Gamma_one (γ : SL(2, ℤ)) : γ ∈ Γ(1) := by
+  simp only [Gamma_one_top, Subgroup.mem_top]
+
+theorem Gamma_zero_bot : Gamma 0 = ⊥ := rfl
 
 lemma ModularGroup_T_pow_mem_Gamma (N M : ℤ) (hNM : N ∣ M) :
     (ModularGroup.T ^ M) ∈ Gamma (Int.natAbs N) := by
@@ -90,8 +76,8 @@ lemma ModularGroup_T_pow_mem_Gamma (N M : ℤ) (hNM : N ∣ M) :
 
 /-- The congruence subgroup of `SL(2, ℤ)` of matrices whose lower left-hand entry reduces to zero
 modulo `N`. -/
-def Gamma0 (N : ℕ) : Subgroup SL(2, ℤ) where
-  carrier := { g : SL(2, ℤ) | ((↑ₘg 1 0 : ℤ) : ZMod N) = 0 }
+def Gamma0 : Subgroup SL(2, ℤ) where
+  carrier := { g | (g 1 0 : ZMod N) = 0 }
   one_mem' := by simp
   mul_mem' := by
     intro a b ha hb
@@ -109,49 +95,41 @@ def Gamma0 (N : ℕ) : Subgroup SL(2, ℤ) where
     exact ha
 
 @[simp]
-theorem Gamma0_mem (N : ℕ) (A : SL(2, ℤ)) : A ∈ Gamma0 N ↔ ((↑ₘA 1 0 : ℤ) : ZMod N) = 0 :=
+theorem Gamma0_mem {N} {A : SL(2, ℤ)} : A ∈ Gamma0 N ↔ (A 1 0 : ZMod N) = 0 :=
   Iff.rfl
-
-theorem Gamma0_det (N : ℕ) (A : Gamma0 N) : (A.1.1.det : ZMod N) = 1 := by simp [A.1.property]
 
 /-- The group homomorphism from `CongruenceSubgroup.Gamma0` to `ZMod N` given by
 mapping a matrix to its lower right-hand entry. -/
 def Gamma0Map (N : ℕ) : Gamma0 N →* ZMod N where
-  toFun g := ((↑ₘg 1 1 : ℤ) : ZMod N)
+  toFun g := g.1 1 1
   map_one' := by simp
   map_mul' := by
-    intro A B
-    have := (two_mul_expl A.1.1 B.1.1).2.2.2
-    simp only [Subgroup.coe_mul, coe_matrix_coe, coe_mul, Int.coe_castRingHom, map_apply] at *
-    rw [this]
-    have ha := A.property
-    simp only [Int.cast_add, Int.cast_mul, add_left_eq_self, Gamma0_mem,
-      coe_matrix_coe, Int.coe_castRingHom, map_apply] at *
-    rw [ha]
-    simp
+    rintro ⟨A, hA⟩ ⟨B, _⟩
+    simp only [MulMemClass.mk_mul_mk, Fin.isValue, coe_mul, (two_mul_expl A.1 B).2.2.2,
+      Int.cast_add, Int.cast_mul, Gamma0_mem.mp hA, zero_mul, zero_add]
 
 /-- The congruence subgroup `Gamma1` (as a subgroup of `Gamma0`) of matrices whose bottom
-row is congruent to `(0,1)` modulo `N`. -/
+row is congruent to `(0, 1)` modulo `N`. -/
 def Gamma1' (N : ℕ) : Subgroup (Gamma0 N) :=
   (Gamma0Map N).ker
 
 @[simp]
-theorem Gamma1_mem' (N : ℕ) (γ : Gamma0 N) : γ ∈ Gamma1' N ↔ (Gamma0Map N) γ = 1 :=
+theorem Gamma1_mem' {N} {γ : Gamma0 N} : γ ∈ Gamma1' N ↔ Gamma0Map N γ = 1 :=
   Iff.rfl
 
-theorem Gamma1_to_Gamma0_mem (N : ℕ) (A : Gamma0 N) : A ∈ Gamma1' N ↔
-    ((↑ₘA 0 0 : ℤ) : ZMod N) = 1 ∧ ((↑ₘA 1 1 : ℤ) : ZMod N) = 1 ∧ ((↑ₘA 1 0 : ℤ) : ZMod N) = 0 := by
+theorem Gamma1_to_Gamma0_mem {N} (A : Gamma0 N) :
+    A ∈ Gamma1' N ↔
+    ((A.1 0 0 : ℤ) : ZMod N) = 1 ∧ ((A.1 1 1 : ℤ) : ZMod N) = 1
+      ∧ ((A.1 1 0 : ℤ) : ZMod N) = 0 := by
   constructor
   · intro ha
-    have hA := A.property
-    rw [Gamma0_mem] at hA
-    have adet := Gamma0_det N A
+    have adet : (A.1.1.det : ZMod N) = 1 := by simp only [A.1.property, Int.cast_one]
     rw [Matrix.det_fin_two] at adet
-    simp only [Gamma0Map, coe_matrix_coe, Int.coe_castRingHom, map_apply, Gamma1_mem',
-      MonoidHom.coe_mk, OneHom.coe_mk, Int.cast_sub, Int.cast_mul] at *
-    rw [hA, ha] at adet
-    simp only [mul_one, mul_zero, sub_zero] at adet
-    simp only [adet, hA, ha, eq_self_iff_true, and_self_iff]
+    simp only [Gamma1_mem', Gamma0Map, MonoidHom.coe_mk, OneHom.coe_mk, Int.cast_sub,
+      Int.cast_mul] at *
+    simpa only [Gamma1_mem', Gamma0Map, MonoidHom.coe_mk, OneHom.coe_mk, Int.cast_sub,
+      Int.cast_mul, ha, Gamma0_mem.mp A.property, and_self_iff, and_true, mul_one, mul_zero,
+      sub_zero] using adet
   · intro ha
     simp only [Gamma1_mem', Gamma0Map, MonoidHom.coe_mk, coe_matrix_coe,
       Int.coe_castRingHom, map_apply]
@@ -164,7 +142,7 @@ def Gamma1 (N : ℕ) : Subgroup SL(2, ℤ) :=
 
 @[simp]
 theorem Gamma1_mem (N : ℕ) (A : SL(2, ℤ)) : A ∈ Gamma1 N ↔
-    ((↑ₘA 0 0 : ℤ) : ZMod N) = 1 ∧ ((↑ₘA 1 1 : ℤ) : ZMod N) = 1 ∧ ((↑ₘA 1 0 : ℤ) : ZMod N) = 0 := by
+    (A 0 0 : ZMod N) = 1 ∧ (A 1 1 : ZMod N) = 1 ∧ (A 1 0 : ZMod N) = 0 := by
   constructor
   · intro ha
     simp_rw [Gamma1, Subgroup.mem_map] at ha

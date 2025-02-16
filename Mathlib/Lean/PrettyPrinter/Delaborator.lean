@@ -14,13 +14,6 @@ namespace Lean.PrettyPrinter.Delaborator
 
 open Lean.Meta Lean.SubExpr SubExpr
 
-namespace SubExpr
-
-variable {α : Type} [Inhabited α]
-variable {m : Type → Type} [Monad m]
-
-end SubExpr
-
 /-- Assuming the current expression in a lambda or pi,
 descend into the body using an unused name generated from the binder's name.
 Provides `d` with both `Syntax` for the bound name as an identifier

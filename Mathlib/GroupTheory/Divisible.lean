@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.Algebra.Group.ULift
-import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.Algebra.Group.Subgroup.Pointwise
+import Mathlib.Algebra.Module.NatInt
+import Mathlib.GroupTheory.QuotientGroup.Defs
 import Mathlib.Tactic.NormNum.Eq
 
 /-!
@@ -173,7 +175,7 @@ noncomputable def divisibleByIntOfSMulTopEqTop
     (H : ∀ {n : ℤ} (_hn : n ≠ 0), n • (⊤ : AddSubgroup A) = ⊤) : DivisibleBy A ℤ where
   div a n :=
     if hn : n = 0 then 0 else (show a ∈ n • (⊤ : AddSubgroup A) by rw [H hn]; trivial).choose
-  div_zero a := dif_pos rfl
+  div_zero _ := dif_pos rfl
   div_cancel a hn := by
     simp_rw [dif_neg hn]
     generalize_proofs h1
@@ -203,16 +205,10 @@ def rootableByIntOfRootableByNat [RootableBy A ℕ] : RootableBy A ℤ where
     | -[n+1] => (RootableBy.root a (n + 1))⁻¹
   root_zero a := RootableBy.root_zero a
   root_cancel {n} a hn := by
-    induction n
-    · change RootableBy.root a _ ^ _ = a
-      norm_num
-      rw [RootableBy.root_cancel]
-      rw [Int.ofNat_eq_coe] at hn
-      exact mod_cast hn
-    · change (RootableBy.root a _)⁻¹ ^ _ = a
-      norm_num
-      rw [RootableBy.root_cancel]
-      norm_num
+    cases n
+    · rw [Int.ofNat_eq_coe, Nat.cast_ne_zero] at hn
+      simp [RootableBy.root_cancel _ hn]
+    · simp [RootableBy.root_cancel _ (Nat.add_one_ne_zero _)]
 
 /-- A group is `ℕ`-rootable if it is `ℤ`-rootable
 -/
@@ -228,7 +224,6 @@ end Group
 
 section Hom
 
--- Porting note: reordered variables to fix `to_additive` on `QuotientGroup.rootableBy`
 variable {A B α : Type*}
 variable [Zero α] [Monoid A] [Monoid B] [Pow A α] [Pow B α] [RootableBy A α]
 variable (f : A → B)

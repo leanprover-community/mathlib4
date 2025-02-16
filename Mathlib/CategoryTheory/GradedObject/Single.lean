@@ -77,7 +77,7 @@ variable (C) in
 evaluation functor `eval j` identifies to the identity functor. -/
 @[simps!]
 noncomputable def singleCompEval (j : J) : single j ⋙ eval j ≅ 𝟭 C :=
-  NatIso.ofComponents (singleObjApplyIso j) (by aesop_cat)
+  NatIso.ofComponents (singleObjApplyIso j) (by simp)
 
 end GradedObject
 
