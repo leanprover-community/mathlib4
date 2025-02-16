@@ -177,7 +177,7 @@ lemma isRkFinite_set (M : Matroid α) [RankFinite M] (X : Set α) : M.IsRkFinite
   hI.isRkFinite_of_finite hI.indep.finite
 
 /-- A union of finitely many `IsRkFinite` sets is `IsRkFinite`. -/
-lemma IsRkFinite.iUnion {ι : Type*} [Fintype ι] {Xs : ι → Set α} (h : ∀ i, M.IsRkFinite (Xs i)) :
+lemma IsRkFinite.iUnion {ι : Type*} [Finite ι] {Xs : ι → Set α} (h : ∀ i, M.IsRkFinite (Xs i)) :
     M.IsRkFinite (⋃ i, Xs i) := by
   choose Is hIs using fun i ↦ M.exists_basis' (Xs i)
   have hfin : (⋃ i, Is i).Finite := finite_iUnion <| fun i ↦ (h i).finite_of_basis' (hIs i)
