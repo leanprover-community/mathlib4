@@ -209,9 +209,14 @@ def sigmaReindexIsoProd (Y Z : Over X) :
 
 /-- Given a morphism `f : X' ⟶ X` and an object `Y` over `X`, the `(map f).obj ((pullback f).obj Y)`
 is isomorphic to the binary product of `(Over.mk f)` and `Y`. -/
-def sigmaReindexIsoProdMk {X' : C} (f : X' ⟶ X) (Y : Over X) :
-    (map f).obj ((pullback f).obj Y) ≅ Limits.prod (Over.mk f) Y :=
+def sigmaReindexIsoProdMk {Y : C} (f : Y ⟶ X) (Z : Over X) :
+    (map f).obj ((pullback f).obj Z) ≅ Limits.prod (Over.mk f) Z :=
   sigmaReindexIsoProd (Over.mk f) _
+
+def ReindexIsoMkProdFstLeft {Y : C} (f : Y ⟶ X) (Z : Over X) :
+    (pullback f).obj Z ≅ Over.mk (@Limits.prod.fst _ _ (Over.mk f) Z).left :=
+  sorry
+
 
 lemma sigmaReindexIsoProd_hom_comp_fst {Y Z : Over X} :
     (sigmaReindexIsoProd Y Z).hom ≫ (fst Y Z) = (π_ Y Z) :=
@@ -352,17 +357,45 @@ end Adjunction
 namespace Over
 
 /-- `star (⊤_ C) : C ⥤ Over (⊤_ C)` is naturally isomorphic to `Functor.toOverTerminal C`. -/
-def toOverTerminalStarIso [HasTerminal C] [HasBinaryProducts C] :
+def starTerminalIso [HasTerminal C] [HasBinaryProducts C] :
     star (⊤_ C) ≅ Functor.toOverTerminal C := by
   apply Adjunction.functorRightAdjointIsoInverse
     (equivOverTerminal C) (star (⊤_ C)) (forgetAdjStar (⊤_ C))
 
+
+variable {C}
+
 /-- A natural isomorphism between the functors `star X` and `star Y ⋙ pullback f`
 for any morphism `f : X ⟶ Y`. -/
-def mapStarIso [HasBinaryProducts C] [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
-    star X ≅ star Y ⋙ pullback f :=
-  conjugateIsoEquiv
-    (Over.forgetAdjStar X) ((mapPullbackAdj f).comp (Over.forgetAdjStar Y)) (mapForget f)
+def starPullbackIso [HasBinaryProducts C] [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
+    star Y ⋙ pullback f ≅ star X :=
+  conjugateIsoEquiv ((mapPullbackAdj f).comp (forgetAdjStar Y)) (forgetAdjStar X) (mapForget f)
+
+#check star_obj_hom
+#check Over
+
+/-- `Over.pullback` is isomorphic to `Over.star` up to the iterated slice equivlanece. -/
+def pullbackIso [HasFiniteWidePullbacks C] {X Y : C} (f : X ⟶ Y) :
+    star (Over.mk f) ⋙ (Over.mk f).iteratedSliceEquiv.functor ≅ pullback f := by
+  refine NatIso.ofComponents ?_ ?_
+  · intro A
+    simp only [Functor.comp_obj]
+    dsimp
+    apply (sigmaReindexIsoProdMk f A).symm
+    refine Over.isoMk ?_ ?_
+    · dsimp
+      apply sigmaReindexIsoProdMk
+    · sorry
+
+    simp [star_obj_hom, pullback_obj_hom]
+    apply sigmaReindexIsoProdMk
+    congr 1
+
+    have : (prod.fst (X:= (mk f)) (Y:= A)).left = (pullback.snd A.hom f) := by sorry
+    exact Iso.refl (congr_arg Over.mk (by simp [Over.sigmaReindexIsoProdMk]))
+
+  · sorry
+
 
 end Over
 

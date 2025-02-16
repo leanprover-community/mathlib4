@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour, Emily Riehl
 -/
 
-import Mathlib.CategoryTheory.Comma.Over.Pullback
+--import Mathlib.CategoryTheory.Comma.Over.Pullback
+import Mathlib.CategoryTheory.Comma.Over.Sections
 import Mathlib.CategoryTheory.Closed.Cartesian
 
 /-!
@@ -112,7 +113,7 @@ def pushforwardCompIso {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
   (comp f g).pushforward ≅ fexp.pushforward ⋙ gexp.pushforward  :=
   conjugateIsoEquiv (gexp.adj.comp fexp.adj) ((comp f g).adj) (pullbackComp f g)
 
-/-- A morphism with a pushforward is exponentiable in the slice category. -/
+/-- A morphism with a pushforward is an exponentiable object in the slice category. -/
 instance exponentiableOverMk [HasFiniteWidePullbacks C] {X I : C} (f : X ⟶ I)
     [ExponentiableMorphism f] :
     Exponentiable (Over.mk f) where
@@ -176,58 +177,14 @@ open Over Reindex IsIso ChosenFiniteProducts CartesianClosed HasPushforwards
 
 variable {C} [HasFiniteWidePullbacks C] {I J : C} [CartesianClosed (Over J)] (f : I ⟶ J)
 
-/-- The first leg of a cospan constructing a pullback diagram in `Over J` used to define
-the pushforward along `f`. -/
-def curryId : Over.mk (𝟙 J) ⟶ (Over.mk f ⟹ Over.mk f) :=
-  CartesianClosed.curry (fst _ _)
+@[simps!]
+def pushforward : (Over I) ⥤ (Over J) :=
+  (Over.mk f).iteratedSliceEquiv.inverse ⋙ sections (Over.mk f)
 
-/-- The second leg of a cospan constructing a pullback diagram in `Over J` used to define
-the pushforward along `f`. -/
-def expMapFstProj (X : Over I) :
-    (Over.mk f ⟹ ((Over.map f).obj X)) ⟶ (Over.mk f ⟹ Over.mk f) :=
-  (exp _).map (Over.homMk X.hom)
+def pushforwardAdj : pullback f ⊣ pushforward f := Adjunction.comp (starSectionsAdj)
 
-/-- Pushforward along `f : I ⟶ J` as a pullback in `Over J`. -/
-def pushforwardObj (X : Over I) : Over J :=
-  pullback (curryId f) (expMapFstProj f X)
 
-/-- The functoriality of the pushforward derived form the functoriality of the exponentiation and
-the functoriality of the pullback construction in the slice category `Over J`. -/
-def pushforwardMap {X X' : Over I} (u : X ⟶ X') :
-    (pushforwardObj f X) ⟶ (pushforwardObj f X') := by
-  refine pullback.map _ _ _ _ (𝟙 (Over.mk (𝟙 J)))
-      ((exp _).map ((Over.map f).map u)) (𝟙 (Over.mk f ⟹ Over.mk f))
-    ?_ ?_
-  · simp
-  · unfold expMapFstProj
-    simp only [comp_id, ← (exp (Over.mk f)).map_comp]
-    congr
-    simp [map_obj_left, mk_left, map_map_left, homMk_left, w]
 
-/-- The pushforward functor `(Over I) ⥤ (Over J)` of a morphism `f : I ⟶ J` in a category `C`
-using the cartesian closedness of `Over J`. -/
-@[simps]
-def pushforwardFunctor :
-    (Over I) ⥤ (Over J) where
-  obj X := pullback (curryId f) (expMapFstProj f X)
-  map u := pushforwardMap f u
-  map_id X := by
-    apply pullback.hom_ext
-    · simp [pushforwardMap]
-    · simp [pushforwardMap, expMapFstProj]
-  map_comp := by
-    apply fun X Y Z u v ↦ pullback.hom_ext _ _
-    · unfold pushforwardMap
-      simp
-    · simp [pushforwardMap, expMapFstProj]
-
-variable {f}
-
-/-- An auxiliary morphism used to define the currying of a morphism in `Over I` to a morphism
-in `Over J`. See `pushforwardCurry`. -/
-def pushforwardCurryAux {X : Over I} {A : Over J} (u : (Over.pullback f).obj A ⟶ X) :
-    A ⟶ (Over.mk f ⟹ (Over.map f).obj X) :=
-  CartesianClosed.curry ((sigmaReindexIsoProd _ _).inv ≫ (Over.map f).map u)
 
 /-- The currying of `(Over.pullback f).obj A ⟶ X` in `Over I` to a morphism
 `A ⟶ (pushforward f).obj X` in `Over J`. -/
