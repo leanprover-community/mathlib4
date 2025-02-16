@@ -31,9 +31,7 @@ attribute [simp] Triwise.nil
 variable {a b c : α} {l : List α} {p q : α → α → α → Prop} {f : α → β} {p' : β → β → β → Prop}
 
 lemma triwise_cons : (a :: l).Triwise p ↔ l.Pairwise (p a) ∧ l.Triwise p := by
-  refine ⟨fun h ↦ ?_, fun h ↦ Triwise.cons h.1 h.2⟩
-  cases h with
-  | cons hp ht => exact ⟨hp, ht⟩
+  simp [triwise_iff]
 
 variable (a b p)
 
