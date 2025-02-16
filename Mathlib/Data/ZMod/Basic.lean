@@ -985,7 +985,7 @@ theorem neg_val {n : ℕ} [NeZero n] (a : ZMod n) : (-a).val = if a = 0 then 0 e
   apply Nat.mod_eq_of_lt
   apply Nat.sub_lt (NeZero.pos n)
   contrapose! h
-  rwa [Nat.le_zero, val_eq_zero] at h
+  rwa [val_eq_zero] at h
 
 theorem val_neg_of_ne_zero {n : ℕ} [nz : NeZero n] (a : ZMod n) [na : NeZero a] :
     (- a).val = n - a.val := by simp_all [neg_val a, na.out]

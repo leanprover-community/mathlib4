@@ -137,7 +137,7 @@ theorem boundedFormula_realize_cast {β : Type*} {n : ℕ} (φ : L.BoundedFormul
           Classical.epsilon fun m : M a =>
             ¬φ.Realize (fun i => x i a) (Fin.snoc (fun i => v i a) m),
           ?_⟩
-      exact Filter.mem_of_superset h fun a ha => Classical.epsilon_spec ha
+      refine Filter.Frequently.mono h fun a ha => Classical.epsilon_spec ha
     · rw [Filter.eventually_iff] at *
       exact Filter.mem_of_superset h fun a ha => ha (m a)
 

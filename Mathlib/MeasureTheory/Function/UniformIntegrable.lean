@@ -259,8 +259,8 @@ theorem Memℒp.eLpNormEssSup_indicator_norm_ge_eq_zero (hf : Memℒp f ∞ μ)
       rw [← nonpos_iff_eq_zero]
       refine (measure_mono this).trans ?_
       have hle := coe_nnnorm_ae_le_eLpNormEssSup f μ
-      simp_rw [ae_iff, not_le] at hle
-      exact nonpos_iff_eq_zero.2 hle
+      simp only [ae_iff] at hle
+      push_neg at hle; exact hle
     rw [this, eLpNormEssSup_measure_zero]
   exact measurableSet_le measurable_const hmeas.nnnorm.measurable.subtype_coe
 

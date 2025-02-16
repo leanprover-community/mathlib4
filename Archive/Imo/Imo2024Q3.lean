@@ -626,7 +626,7 @@ lemma apply_add_one_eq_card_small_le_card_eq {i : ℕ} (hi : N' a N < i) (hib : 
       rw [Nat.lt_add_one_iff, ← Small] at hts
       have ht0 : 0 < t := by
         by_contra! h0
-        simp [nonpos_iff_eq_zero.mp h0, hc.apply_ne_zero] at htr
+        simp [h0, hc.apply_ne_zero] at htr
       rw [← hc.infinite_setOf_apply_eq_iff_small ht0] at hts
       rw [← Nat.count_eq_card_filter_range] at htr
       constructor

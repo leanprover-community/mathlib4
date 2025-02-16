@@ -289,7 +289,7 @@ theorem eq_bot_mono (h : a ≤ b) (h₂ : b = ⊥) : a = ⊥ :=
 theorem bot_lt_iff_ne_bot : ⊥ < a ↔ a ≠ ⊥ :=
   bot_le.lt_iff_ne.trans ne_comm
 
-@[simp, push high]
+@[simp, push]
 theorem not_bot_lt_iff : ¬⊥ < a ↔ a = ⊥ :=
   bot_lt_iff_ne_bot.not_left
 

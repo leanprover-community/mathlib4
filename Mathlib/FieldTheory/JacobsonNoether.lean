@@ -129,7 +129,8 @@ theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
       omega
     · suffices h_find: Nat.find h_exist = 1 by
         rwa [h_find]
-      rw [not_lt, Nat.le_zero, ht, Nat.sub_eq_zero_iff_le] at h_pos
+      push_neg at h_pos
+      rw [ht, Nat.sub_eq_zero_iff_le] at h_pos
       linarith [(Nat.find_spec h_exist).1]
   -- We define `c` to be the value that we proved above to be non-zero.
   set c := (ad k D a)^[n] b with hc_def
