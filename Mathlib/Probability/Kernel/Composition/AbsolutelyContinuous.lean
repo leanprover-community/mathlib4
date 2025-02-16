@@ -72,12 +72,8 @@ lemma AbsolutelyContinuous.kernel_of_compProd [SFinite μ] (h : μ ⊗ₘ κ ≪
   rw [← κ.rnDeriv_add_singularPart η, compProd_add_right, AbsolutelyContinuous.add_left_iff] at h
   have : μ ⊗ₘ κ.singularPart η ⟂ₘ ν ⊗ₘ η :=
     MutuallySingular.compProd_of_right μ ν (.of_forall <| Kernel.mutuallySingular_singularPart _ _)
-  have h_zero : μ ⊗ₘ κ.singularPart η = 0 :=
-    eq_zero_of_absolutelyContinuous_of_mutuallySingular h.2 this
-  simp_rw [← measure_univ_eq_zero]
-  refine (lintegral_eq_zero_iff (Kernel.measurable_coe _ .univ)).mp ?_
-  rw [← setLIntegral_univ, ← compProd_apply_prod .univ .univ, h_zero]
-  simp
+  refine compProd_eq_zero_iff.mp ?_
+  exact eq_zero_of_absolutelyContinuous_of_mutuallySingular h.2 this
 
 lemma absolutelyContinuous_compProd_iff' [SFinite μ] [SFinite ν] [∀ a, NeZero (κ a)] :
     μ ⊗ₘ κ ≪ ν ⊗ₘ η ↔ μ ≪ ν ∧ ∀ᵐ a ∂μ, κ a ≪ η a :=
