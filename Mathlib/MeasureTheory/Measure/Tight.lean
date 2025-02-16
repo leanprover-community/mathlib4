@@ -3,9 +3,10 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Josha Dekker
 -/
+import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.Topology.Metrizable.Uniformity
-import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # (Pre-)tight measures
@@ -51,7 +52,7 @@ lemma exists_sub_le_measure_accumulate [IsFiniteMeasure μ] (K : ℕ → Set α)
     (h : μ (⋃ n, K n) = μ Set.univ) {ε : ENNReal} (hε : 0 < ε) :
     ∃ n, μ Set.univ - ε ≤ μ (Set.Accumulate K n) := by
   have : Filter.Tendsto (μ ∘ Set.Accumulate K) Filter.atTop (nhds (μ (⋃ n, Set.Accumulate K n))) :=
-    MeasureTheory.tendsto_measure_iUnion Set.monotone_accumulate
+    MeasureTheory.tendsto_measure_iUnion_atTop Set.monotone_accumulate
   rw [ENNReal.tendsto_atTop (measure_ne_top μ (⋃ n, Accumulate K n)), Set.iUnion_accumulate] at this
   obtain ⟨N, hN⟩ := this ε hε
   use N
@@ -63,17 +64,18 @@ lemma exists_sub_le_measure_accumulate2 [IsFiniteMeasure μ] (K : ℕ → Set α
     (h : μ (⋃ n, K n)ᶜ = 0) {ε : ENNReal} (hε : 0 < ε) :
     ∀ᶠ n in atTop, μ (Accumulate K n)ᶜ ≤ ε := by
   rw [Filter.eventually_atTop]
-
-  have : Filter.Tendsto (μ ∘ (Accumulate K)ᶜ) Filter.atTop (nhds (μ (⋂ n, (Accumulate K n)ᶜ))) := by
-    apply MeasureTheory.tendsto_measure_iInter
-
-
-  rw [ENNReal.tendsto_atTop (measure_ne_top μ (⋃ n, Accumulate K n)), Set.iUnion_accumulate] at this
+  have : Filter.Tendsto (μ ∘ (Accumulate K)ᶜ) Filter.atTop (𝓝 (μ (⋂ n, (Accumulate K n)ᶜ))) := by
+    apply MeasureTheory.tendsto_measure_iInter_atTop
+    · sorry
+    · sorry
+    · exact ⟨0, measure_ne_top _ _⟩
+  rw [ENNReal.tendsto_atTop (measure_ne_top _ _), ← compl_iUnion, iUnion_accumulate] at this
   obtain ⟨N, hN⟩ := this ε hε
   use N
   intro b hb
   have := hN b hb
   simp at this
+  sorry
 
 /-- For a finite measure `μ`, we can extract from a countable cover that has full measure, a finite
 cover of accumulated sets for which the complement has measure below `ε`. -/
@@ -259,7 +261,7 @@ lemma of_separableSpace_on_countablyGenerated_uniformSpace [IsCountablyGenerated
         _ = ε * ∑' (a : ℕ), 2⁻¹ ^ (a + 1) := by
           simp only [div_eq_mul_inv, ENNReal.inv_pow, ENNReal.tsum_mul_left]
         _ = ε * (2⁻¹ * 2) := by simp [ENNReal.tsum_geometric_add_one]
-        _ ≤ ε := by rw [ENNReal.inv_mul_cancel two_ne_zero ENNReal.two_ne_top, mul_one]
+        _ ≤ ε := by rw [ENNReal.inv_mul_cancel two_ne_zero ENNReal.ofNat_ne_top, mul_one]
 
 /-- Every finite, separably supported measure on a countably generated, uniform space is pretight.-/
 lemma of_isSeparablySupported_on_countablyGenerated_uniformSpace [IsCountablyGenerated (𝓤 α)]
@@ -302,20 +304,19 @@ lemma of_isSeparablySupported_on_countablyGenerated_uniformSpace [IsCountablyGen
     rw [Measure.Subtype.volume_def, MeasureTheory.Measure.comap_apply _ Subtype.val_injective]
     · rw [← MeasureTheory.measure_inter_add_diff₀ (t := closure S),
         ← MeasureTheory.measure_inter_add_diff₀ (μ := volume) (t := closure S), volume]
-      congr
-      apply add_le_add
-      · apply measure_mono
-        intro x hx
-        simp only [mem_inter_iff, mem_image, mem_compl_iff, closure_subtype, Subtype.exists,
-          exists_and_left, exists_prop, exists_eq_right_right, and_self_right]
-        constructor <;> simp_all only [mem_inter_iff, mem_compl_iff, not_false_eq_true]
-      · have : μ ((closure (Subtype.val '' K))ᶜ \ closure S) = 0 := by
-          rw [← nonpos_iff_eq_zero, ← hSμ_co]
-          apply measure_mono
+      · apply add_le_add
+        · apply measure_mono
           intro x hx
-          simp_all only [mem_diff, mem_compl_iff, not_false_eq_true]
-        rw [this]
-        exact zero_le _
+          simp only [mem_inter_iff, mem_image, mem_compl_iff, closure_subtype, Subtype.exists,
+            exists_and_left, exists_prop, exists_eq_right_right, and_self_right]
+          constructor <;> simp_all only [mem_inter_iff, mem_compl_iff, not_false_eq_true]
+        · have : μ ((closure (Subtype.val '' K))ᶜ \ closure S) = 0 := by
+            rw [← nonpos_iff_eq_zero, ← hSμ_co]
+            apply measure_mono
+            intro x hx
+            simp_all only [mem_diff, mem_compl_iff, not_false_eq_true]
+          rw [this]
+          exact zero_le _
       · apply MeasurableSet.nullMeasurableSet
         measurability
       · apply MeasurableSet.nullMeasurableSet
