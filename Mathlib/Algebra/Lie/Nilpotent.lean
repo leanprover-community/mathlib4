@@ -302,20 +302,31 @@ instance isNilpotentAdd (M₁ M₂ : LieSubmodule R L M) [IsNilpotent L M₁] [I
     IsNilpotent L (M₁ + M₂) := by
   obtain ⟨k, hk⟩ := (isNilpotent_iff R L M₁).1 (inferInstance)
   obtain ⟨l, hl⟩ := (isNilpotent_iff R L M₂).1 (inferInstance)
-  have ha : LieSubmodule.lcs (k ⊔ l) M₁ = ⊥ := by sorry
-  have hb : LieSubmodule.lcs (k ⊔ l) M₂ = ⊥ := by sorry
-  have h2 := LieSubmodule.lcs_sup (N₁ := M₁) (N₂ := M₂) (k := k ⊔ l)
-  rw [ha] at h2
-  rw [hb] at h2
-  have h3 : LieSubmodule.lcs (k ⊔ l) (M₁ ⊔ M₂) = ⊥ := by
-    simp_all only [LieSubmodule.lcs_sup, le_refl, sup_of_le_left]
+  have ha : lowerCentralSeries R L M₁ (k ⊔ l) = ⊥ := by
+    have hhhh := antitone_lowerCentralSeries R L M₁
+    have h2 : k ≤ k ⊔ l := by exact Nat.le_max_left k l
+    have hhhh2 := hhhh h2
+    simp_all only [le_sup_left, le_bot_iff]
+  have hb : lowerCentralSeries R L M₂ (k ⊔ l) = ⊥ := by
+    have hhhh := antitone_lowerCentralSeries R L M₂
+    have h2 : l ≤ k ⊔ l := by exact Nat.le_max_right k l
+    have hhhh2 := hhhh h2
+    simp_all only [le_sup_left, le_bot_iff]
+  apply (isNilpotent_iff R L (M₁ + M₂)).2
   use (k ⊔ l)
-  --simp_all
-  dsimp [lowerCentralSeries]
-  --have h : (M₁ : LieSubmodule R L M₁) = (⊤ : LieSubmodule R L M₁ ⊔ M₂) := by sorry
-  --#check LieSubmodule ℤ L ↥(M₁ ⊔ M₂)
-  --sorry
-  sorry
+  simp_all
+  rw[(M₁ ⊔ M₂).lowerCentralSeries_eq_lcs_comap]
+  dsimp[lowerCentralSeries] at *
+  simp_all
+  have xy : LieSubmodule.lcs (k ⊔ l) M₁ = ⊥ := by sorry
+  have xx : LieSubmodule.lcs (k ⊔ l) M₂ = ⊥ := by sorry
+  rw [xy]
+  rw [xx]
+  --search_proof
+  refine LieSubmodule.comap_incl_eq_bot.mpr ?_
+  simp_all only [le_refl, sup_of_le_left, bot_le, inf_of_le_right]
+
+
 
 theorem exists_forall_pow_toEnd_eq_zero [IsNilpotent L M] :
     ∃ k : ℕ, ∀ x : L, toEnd R L M x ^ k = 0 := by
