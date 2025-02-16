@@ -110,10 +110,8 @@ lemma empty_of_directed {s : ℕ → Set α} (hd : Directed (fun (x1 x2 : Set α
     exact Set.Nonempty.mono hm (h m)
 
 lemma dissipate_directed {s : ℕ → Set α} :
-    Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) fun n ↦ Dissipate s n := by
-  refine directed_of_isDirected_le ?_
-  intro i j hij
-  exact dissipate_subset_dissipate hij
+    Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) fun n ↦ Dissipate s n :=
+  directed_of_isDirected_le <| fun _ _ hij ↦ dissipate_subset_dissipate hij
 
 lemma mem_subset_dissipate_of_directed (C : ℕ → Set α)
     (hd : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C) (n : ℕ) : ∃ m, Dissipate C n ⊇ C m := by
