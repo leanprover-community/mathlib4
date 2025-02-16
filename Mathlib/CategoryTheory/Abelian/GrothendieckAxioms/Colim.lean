@@ -16,7 +16,7 @@ preserves monomorphisms (or epimorphisms) into statements
 involving arbitrary cocones instead of the ones given by
 the colimit API. We also show that when an inductive system
 involves only monomorphisms, then the "inclusion" morphism
-to the colimit is also a monomorphism (assuming `J`
+into the colimit is also a monomorphism (assuming `J`
 is filtered and `C` satisfies AB5).
 
 -/
@@ -49,30 +49,22 @@ lemma colim.map_mono' [HasColimitsOfShape J C]
         colimit.cocone_ι, ι_colimMap, reassoc_of% (hf j),
         IsColimit.comp_coconePointUniqueUpToIso_hom, colimit.cocone_ι]))
 
-/-- Assume that `colim : (J ⥤ C) ⥤ C` preserves monomorphisms, and
-`φ : X₁ ⟶ X₂` is a monomorphism in `J ⥤ C`, then if `f : c₁.pt ⟶ c₂.pt` is a morphism
-between the points of colimit cocones for `X₁` and `X₂` in such a way that `f`
-idenfities to `colim.map φ`, then `f` is a monomorphism. -/
-lemma colim.map_epi' [HasColimitsOfShape J C]
-    {X₁ X₂ : J ⥤ C} (φ : X₁ ⟶ X₂) [Epi φ]
-    {c₁ : Cocone X₁} (hc₁ : IsColimit c₁) {c₂ : Cocone X₂} (hc₂ : IsColimit c₂)
-    (f : c₁.pt ⟶ c₂.pt) (hf : ∀ j, c₁.ι.app j ≫ f = φ.app j ≫ c₂.ι.app j) : Epi f := by
-  refine ((MorphismProperty.epimorphisms C).arrow_mk_iso_iff ?_).2
-    (inferInstanceAs (Epi (colim.map φ)))
-  exact Arrow.isoMk
-    (IsColimit.coconePointUniqueUpToIso hc₁ (colimit.isColimit _))
-    (IsColimit.coconePointUniqueUpToIso hc₂ (colimit.isColimit _))
-    (hc₁.hom_ext (fun j ↦ by
-      dsimp
-      rw [IsColimit.comp_coconePointUniqueUpToIso_hom_assoc,
-        colimit.cocone_ι, ι_colimMap, reassoc_of% (hf j),
-        IsColimit.comp_coconePointUniqueUpToIso_hom, colimit.cocone_ι]))
+/-- Assume that `φ : X₁ ⟶ X₂` is a natural transformation in `J ⥤ C` which
+consists of epimorphisms, then if `f : c₁.pt ⟶ c₂.pt` is a morphism
+between the points of cocones `c₁` and `c₂` for `X₁` and `X₂`, in such
+a way that `c₂` is colimit and `f` is compatible with `φ`, then `f` is an epimorphism. -/
+lemma colim.map_epi'
+    {X₁ X₂ : J ⥤ C} (φ : X₁ ⟶ X₂) [∀ j, Epi (φ.app j)]
+    (c₁ : Cocone X₁) {c₂ : Cocone X₂} (hc₂ : IsColimit c₂)
+    (f : c₁.pt ⟶ c₂.pt) (hf : ∀ j, c₁.ι.app j ≫ f = φ.app j ≫ c₂.ι.app j) : Epi f where
+  left_cancellation {Z} g₁ g₂ h := hc₂.hom_ext (fun j ↦ by
+    rw [← cancel_epi (φ.app j), ← reassoc_of% hf, h, reassoc_of% hf])
 
 attribute [local instance] IsFiltered.isConnected
 
 /-- Assume that a functor `X : J ⥤ C` maps any morphism to a monomorphism,
 that `J` is filtered. Then the "inclusion" map `c.ι.app j₀` of a colimit cocone for `X`
-is a monomorphism when we assume that `colim : (Under j₀ ⥤ C) ⥤ C` preserves monomorphisms
+is a monomorphism if `colim : (Under j₀ ⥤ C) ⥤ C` preserves monomorphisms
 (e.g. when `C` has exact colimits of shape `Under j₀`). -/
 lemma IsColimit.mono_ι_app_of_isFiltered
     {X : J ⥤ C} [∀ (j j' : J) (φ : j ⟶ j'), Mono (X.map φ)]
