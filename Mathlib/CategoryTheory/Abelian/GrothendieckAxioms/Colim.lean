@@ -25,8 +25,6 @@ universe v' v u' u
 
 namespace CategoryTheory
 
-open Limits
-
 variable {C : Type u} [Category.{v} C] {J : Type u'} [Category.{v'} J]
 
 namespace Limits
