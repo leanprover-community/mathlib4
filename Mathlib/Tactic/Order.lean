@@ -3,9 +3,13 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Order.BoundedOrder.Basic
-import Mathlib.Order.Lattice
-import Qq
+-- import Mathlib.Order.BoundedOrder.Basic
+-- import Mathlib.Order.Lattice
+import Mathlib.Tactic.Order.CollectFacts
+import Mathlib.Tactic.Order.Preprocessing
+import Mathlib.Tactic.Order.Graph.Basic
+import Mathlib.Tactic.Order.Graph.Tarjan
+-- import Qq
 
 /-!
 # `order` tactic
@@ -129,411 +133,24 @@ namespace Mathlib.Tactic.Order
 
 open Lean Qq Elab Meta Tactic
 
-/-- A structure for storing facts about variables. -/
-inductive AtomicFact
-| eq (lhs : Nat) (rhs : Nat) (proof : Expr)
-| ne (lhs : Nat) (rhs : Nat) (proof : Expr)
-| le (lhs : Nat) (rhs : Nat) (proof : Expr)
-| nle (lhs : Nat) (rhs : Nat) (proof : Expr)
-| lt (lhs : Nat) (rhs : Nat) (proof : Expr)
-| nlt (lhs : Nat) (rhs : Nat) (proof : Expr)
-| isTop (idx : Nat)
-| isBot (idx : Nat)
-| isInf (lhs : Nat) (rhs : Nat) (res : Nat)
-| isSup (lhs : Nat) (rhs : Nat) (res : Nat)
-deriving Inhabited, BEq
-
--- For debugging purposes.
-instance : ToString AtomicFact where
-  toString fa := match fa with
-  | .eq lhs rhs _ => s!"{lhs} = {rhs}"
-  | .ne lhs rhs _ => s!"{lhs} ≠ {rhs}"
-  | .le lhs rhs _ => s!"{lhs} ≤ {rhs}"
-  | .nle lhs rhs _ => s!"¬ {lhs} ≤ {rhs}"
-  | .lt lhs rhs _ => s!"{lhs} < {rhs}"
-  | .nlt lhs rhs _ => s!"¬ {lhs} < {rhs}"
-  | .isTop idx => s!"{idx} = ⊤"
-  | .isBot idx => s!"{idx} = ⊥"
-  | .isInf lhs rhs res => s!"{lhs} ⊓ {rhs} = {res}"
-  | .isSup lhs rhs res => s!"{lhs} ⊔ {rhs} = {res}"
-
-abbrev CollectFactsState := Std.HashMap Expr <| Std.HashMap Expr Nat × Array AtomicFact
-abbrev CollectFactsM := StateT CollectFactsState MetaM
-
-def isTop {u : Level} (type : Q(Type u)) (x : Q($type)) : MetaM Bool := do
-  try
-    let leInst ← synthInstanceQ (q(LE $type))
-    let inst ← synthInstanceQ (q(OrderTop $type))
-    let top := q((@OrderTop.toTop $type $leInst $inst).top)
-    return ← isDefEq x top
-  catch _ =>
-    return false
-
-def isBot {u : Level} (type : Q(Type u)) (x : Q($type)) : MetaM Bool := do
-  try
-    let leInst ← synthInstanceQ (q(LE $type))
-    let inst ← synthInstanceQ (q(OrderBot $type))
-    let bot := q((@OrderBot.toBot $type $leInst $inst).bot)
-    return ← isDefEq x bot
-  catch _ =>
-    return false
-
-def getSupArgs? {u : Level} (type : Q(Type u)) (x : Q($type)) :
-    MetaM <| Option (Q($type) × Q($type)) := do
-  try
-    let inst ← synthInstanceQ q(SemilatticeSup $type)
-    let a ← mkFreshExprMVarQ type
-    let b ← mkFreshExprMVarQ type
-    let sup := q(@SemilatticeSup.sup $type $inst $a $b)
-    if ← isDefEq x sup then
-      return .some (← instantiateMVars a, ← instantiateMVars b)
-    else
-      return .none
-  catch _ =>
-    return .none
-
-def getInfArgs? {u : Level} (type : Q(Type u)) (x : Q($type)) :
-    MetaM <| Option (Q($type) × Q($type)) := do
-  try
-    let inst ← synthInstanceQ q(SemilatticeInf $type)
-    let a ← mkFreshExprMVarQ type
-    let b ← mkFreshExprMVarQ type
-    let inf := q(@SemilatticeInf.inf $type $inst $a $b)
-    if ← isDefEq x inf then
-      return .some (← instantiateMVars a, ← instantiateMVars b)
-    else
-      return .none
-  catch _ =>
-    return .none
-
-partial def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFactsM Nat := do
-  modify fun res => res.insertIfNew type (Std.HashMap.empty, #[])
-  modify fun res => res.modify type fun (atomToIdx, facts) =>
-    let atomToIdx := atomToIdx.insertIfNew x atomToIdx.size
-    (atomToIdx, facts)
-  let idx := (← get).get! type |>.fst.get! x
-  if idx + 1 == ((← get).get! type).fst.size then -- if new atom
-    if ← isTop type x then
-      modify fun res => res.modify type fun (atomToIdx, facts) =>
-        (atomToIdx, facts.push <| .isTop idx)
-    if ← isBot type x then
-      modify fun res => res.modify type fun (atomToIdx, facts) =>
-        (atomToIdx, facts.push <| .isBot idx)
-    if let .some (a, b) := ← getSupArgs? type x then
-      let aIdx ← addAtom type a
-      let bIdx ← addAtom type b
-      modify fun res => res.modify type fun (atomToIdx, facts) =>
-        (atomToIdx, facts.push <| .isSup aIdx bIdx idx)
-    if let .some (a, b) := ← getInfArgs? type x then
-      let aIdx ← addAtom type a
-      let bIdx ← addAtom type b
-      modify fun res => res.modify type fun (atomToIdx, facts) =>
-        (atomToIdx, facts.push <| .isInf aIdx bIdx idx)
-  return idx
-
-def addFact (type : Expr) (fact : AtomicFact) : CollectFactsM Unit := do
-  modify fun res => res.modify type fun (atomToIdx, facts) =>
-    let facts := facts.push fact
-    (atomToIdx, facts)
-
-def collectFactsImp (g : MVarId) : CollectFactsM Unit := g.withContext do
-  let ctx ← getLCtx
-  for ldecl in ctx do
-    if ldecl.isImplementationDetail then
-      continue
-    let ⟨0, type, expr⟩ := ← inferTypeQ ldecl.toExpr | continue
-    match type with
-    | ~q(@Eq ($α : Type _) $x $y) =>
-      if (← synthInstance? (q(Preorder $α))).isSome then
-        let xIdx := ← addAtom α x
-        let yIdx := ← addAtom α y
-        addFact α <| .eq xIdx yIdx expr
-    | ~q(@LE.le $α $inst $x $y) =>
-      let xIdx := ← addAtom α x
-      let yIdx := ← addAtom α y
-      addFact α <| .le xIdx yIdx expr
-    | ~q(@LT.lt $α $inst $x $y) =>
-      let xIdx := ← addAtom α x
-      let yIdx := ← addAtom α y
-      addFact α <| .lt xIdx yIdx expr
-    | ~q(@Ne ($α : Type _) $x $y) =>
-      if (← synthInstance? (q(Preorder $α))).isSome then
-        let xIdx := ← addAtom α x
-        let yIdx := ← addAtom α y
-        addFact α <| .ne xIdx yIdx expr
-    | ~q(Not $p) =>
-      match p with
-      | ~q(@LE.le $α $inst $x $y) =>
-        let xIdx := ← addAtom α x
-        let yIdx := ← addAtom α y
-        addFact α <| .nle xIdx yIdx expr
-      | ~q(@LT.lt $α $inst $x $y) =>
-        let xIdx := ← addAtom α x
-        let yIdx := ← addAtom α y
-        addFact α <| .nlt xIdx yIdx expr
-
--- TODO: Split conjunctions.
--- TODO: Add an option for splitting disjunctions and implications.
-/-- Collects facts from the local context. For each occurring type `α`, the returned map contains
-a pair `(idxToAtom, facts)`, where the map `idxToAtom` converts indices to found
-atomic expressions of type `α`, and `facts` contains all collected `AtomicFact`s about them. -/
-def collectFacts (g : MVarId) :
-    MetaM <| Std.HashMap Expr <| Std.HashMap Nat Expr × Array AtomicFact := g.withContext do
-  let res := (← (collectFactsImp g).run Std.HashMap.empty).snd
-  return res.map fun _ (atomToIdx, facts) =>
-    let idxToAtom : Std.HashMap Nat Expr := atomToIdx.fold (init := .empty) fun acc key value =>
-      acc.insert value key
-    (idxToAtom, facts)
-
-section Preprocessing
-
-private lemma not_lt_of_not_le {α : Type} [Preorder α] {x y : α} (h : ¬(x ≤ y)) : ¬(x < y) :=
-  (h ·.le)
-
-private lemma le_of_not_lt_le {α : Type} [Preorder α] {x y : α} (h1 : ¬(x < y)) (h2 : x ≤ y) :
-    y ≤ x := by
-  rw [not_lt_iff_not_le_or_ge] at h1
-  rcases h1 with (h1 | h1)
-  · exact False.elim (h1 h2)
-  · assumption
-
-/-- Preprocesses facts for preorders. Replaces `x < y` with two equivalent facts: `x ≤ y` and
-`¬ (y ≤ x)`. Replaces `x = y` with `x ≤ y`, `y ≤ x` and removes `x ≠ y`. -/
-def preprocessFactsPreorder (g : MVarId) (facts : Array AtomicFact) :
-    MetaM <| Array AtomicFact := g.withContext do
-  let mut res : Array AtomicFact := #[]
-  for fact in facts do
-    match fact with
-    | .lt lhs rhs proof =>
-      res := res.push <| .le lhs rhs (← mkAppM ``le_of_lt #[proof])
-      res := res.push <| .nle rhs lhs (← mkAppM ``not_le_of_lt #[proof])
-    | .eq lhs rhs proof =>
-      res := res.push <| .le lhs rhs (← mkAppM ``le_of_eq #[proof])
-      res := res.push <| .le rhs lhs (← mkAppM ``ge_of_eq #[proof])
-    | .ne _ _ _ =>
-      continue
-    | .isInf _ _ _ =>
-      continue
-    | .isSup _ _ _ =>
-      continue
-    | _ =>
-      res := res.push fact
-  return res
-
-/-- Preprocesses facts for partial orders. Replaces `x < y`, `¬ (x ≤ y)`, and `x = y` with
-equivalent facts involving only `≤`, `≠`, and `≮`. -/
-def preprocessFactsPartial (g : MVarId) (facts : Array AtomicFact)
-    (idxToAtom : Std.HashMap Nat Expr) : MetaM <| Array AtomicFact := g.withContext do
-  let mut res : Array AtomicFact := #[]
-  for fact in facts do
-    match fact with
-    | .lt lhs rhs proof =>
-      res := res.push <| .ne lhs rhs (← mkAppM ``LT.lt.ne #[proof])
-      res := res.push <| .le lhs rhs (← mkAppM ``LT.lt.le #[proof])
-    | .nle lhs rhs proof =>
-      res := res.push <| .ne lhs rhs (← mkAppM ``ne_of_not_le #[proof])
-      res := res.push <| .nlt lhs rhs (← mkAppM ``not_lt_of_not_le #[proof])
-    | .eq lhs rhs proof =>
-      res := res.push <| .le lhs rhs (← mkAppM ``le_of_eq #[proof])
-      res := res.push <| .le rhs lhs (← mkAppM ``ge_of_eq #[proof])
-    | .isSup lhs rhs sup =>
-      res := res.push <| .le lhs sup
-        (← mkAppOptM ``le_sup_left #[none, none, idxToAtom.get! lhs, idxToAtom.get! rhs])
-      res := res.push <| .le rhs sup
-        (← mkAppOptM ``le_sup_right #[none, none, idxToAtom.get! lhs, idxToAtom.get! rhs])
-      res := res.push fact
-    | .isInf lhs rhs inf =>
-      res := res.push <| .le inf lhs
-        (← mkAppOptM ``inf_le_left #[none, none, idxToAtom.get! lhs, idxToAtom.get! rhs])
-      res := res.push <| .le inf rhs
-        (← mkAppOptM ``inf_le_right #[none, none, idxToAtom.get! lhs, idxToAtom.get! rhs])
-      res := res.push fact
-    | _ =>
-      res := res.push fact
-  return res
-
-/-- Preprocesses facts for linear orders. Replaces `x < y`, `¬ (x ≤ y)`, `¬ (x < y)`, and `x = y`
-with equivalent facts involving only `≤` and `≠`. -/
-def preprocessFactsLinear (g : MVarId) (facts : Array AtomicFact)
-    (idxToAtom : Std.HashMap Nat Expr) : MetaM <| Array AtomicFact := g.withContext do
-  let mut res : Array AtomicFact := #[]
-  for fact in facts do
-    match fact with
-    | .lt lhs rhs proof =>
-      res := res.push <| .ne lhs rhs (← mkAppM ``LT.lt.ne #[proof])
-      res := res.push <| .le lhs rhs (← mkAppM ``LT.lt.le #[proof])
-    | .nle lhs rhs proof =>
-      res := res.push <| .ne lhs rhs (← mkAppM ``ne_of_not_le #[proof])
-      res := res.push <| .le rhs lhs (← mkAppM ``le_of_not_le #[proof])
-    | .nlt lhs rhs proof =>
-      res := res.push <| .le rhs lhs (← mkAppM ``le_of_not_lt #[proof])
-    | .eq lhs rhs proof =>
-      res := res.push <| .le lhs rhs (← mkAppM ``le_of_eq #[proof])
-      res := res.push <| .le rhs lhs (← mkAppM ``ge_of_eq #[proof])
-    | .isSup lhs rhs sup =>
-      res := res.push <| .le lhs sup
-        (← mkAppOptM ``le_sup_left #[none, none, idxToAtom.get! lhs, idxToAtom.get! rhs])
-      res := res.push <| .le rhs sup
-        (← mkAppOptM ``le_sup_right #[none, none, idxToAtom.get! lhs, idxToAtom.get! rhs])
-      res := res.push fact
-    | .isInf lhs rhs inf =>
-      res := res.push <| .le inf lhs
-        (← mkAppOptM ``inf_le_left #[none, none, idxToAtom.get! lhs, idxToAtom.get! rhs])
-      res := res.push <| .le inf rhs
-        (← mkAppOptM ``inf_le_right #[none, none, idxToAtom.get! lhs, idxToAtom.get! rhs])
-      res := res.push fact
-    | _ =>
-      res := res.push fact
-  return res
-
-end Preprocessing
-
-structure Edge where
-  src : Nat
-  dst : Nat
-  proof : Expr
-
-instance : ToString Edge where
-  toString e := s!"{e.src} ⟶ {e.dst}"
-
-/-- TODO -/
-abbrev Graph := Array (Array Edge)
-
-def Graph.addEdge (g : Graph) (edge : Edge) : Graph :=
-  g.modify edge.src fun edges => edges.push edge
-
-/-- Constructs a directed `Graph` using only `≤` facts. -/
-def constructLeGraph (nVertexes : Nat) (facts : Array AtomicFact)
-    (idxToAtom : Std.HashMap Nat Expr) : MetaM Graph := do
-  let mut res : Graph := Array.mkArray nVertexes #[]
-  for fact in facts do
-    if let .le lhs rhs proof := fact then
-      res := res.addEdge ⟨lhs, rhs, proof⟩
-    else if let .isTop idx := fact then
-      for i in [:nVertexes] do
-        if i != idx then
-          res := res.addEdge ⟨i, idx, ← mkAppOptM ``le_top #[none, none, none, idxToAtom.get! i]⟩
-    else if let .isBot idx := fact then
-      for i in [:nVertexes] do
-        if i != idx then
-          res := res.addEdge ⟨idx, i, ← mkAppOptM ``bot_le #[none, none, none, idxToAtom.get! i]⟩
-  return res
-
-/-- Inverts the edges of `g`. This swaps `lhs` and `rhs` in each edge and does nothing to the `rel`
-and `proof` fields. -/
-def inverseGraph (g : Graph) : Graph := Id.run do
-  let mut res : Graph:= Array.mkArray g.size #[]
-  for v in [:g.size] do
-    for edge in g[v]! do
-      res := res.addEdge ⟨edge.dst, edge.src, edge.proof⟩
-  return res
-
-/-- State for the DFS algorithm. -/
-structure DFSState where
-  /-- `visited[v] = true` if and only if the algorithm has already entered vertex `v`. -/
-  visited : Array Bool
-
-/-- State for the DFS algorithm used to compute the exit times (`tout`) of each vertex. -/
-structure FindToutDFSState extends DFSState where
-  /-- When the algorithm completes, `tout[v]` stores the exit time of vertex `v`. -/
-  tout : Array Nat
-  /-- Current time, incremented every time the DFS exits a vertex. -/
-  time : Nat
-
-/-- DFS algorithm for computing the exit times of each vertex. -/
-partial def findToutDFS (g : Graph) (v : Nat) : StateM FindToutDFSState Unit := do
-  modify fun s => {s with visited := s.visited.set! v true}
-  for edge in g[v]! do
-    let u := edge.dst
-    if !(← get).visited[u]! then
-      findToutDFS g u
-  modify fun s => {s with tout := s.tout.set! v s.time}
-  modify fun s => {s with time := s.time + 1}
-
-/-- Implementation of `findTout`. -/
-def findToutImp (g : Graph) : StateM FindToutDFSState Unit := do
-  for v in [:g.size] do
-    if !(← get).visited[v]! then
-      findToutDFS g v
-
-/-- Computes the exit times of each vertex in a DFS traversal starting at vertex `0`. -/
-def findTout (g : Graph) : Array Nat :=
-  let s : FindToutDFSState := {
-    visited := mkArray g.size false
-    tout := mkArray g.size 0
-    time := 0
-  }
-  (findToutImp g).run s |>.snd.tout
-
-/-- Given exit times `tout`, compute the topological ordering of the graph. -/
-def toutToTopSort (tout : Array Nat) : Array Nat := Id.run do
-  let nVertexes := tout.size
-  let mut res := mkArray nVertexes 0
-  for v in [:nVertexes] do
-    res := res.set! (nVertexes - tout[v]! - 1) v
-  return res
-
-/-- State for the DFS algorithm used to compute the condensation of the graph. -/
-structure CondenseDFSState extends DFSState where
-  /-- When the algorithm completes, `condensation[v]` stores the index of a vertex representing the
-  strongly connected component containing `v`. -/
-  condensation : Array Nat
-
-/-- DFS algorithm for computing the condensation of the graph. -/
-partial def condenseDFS (g : Graph) (c : Nat) (v : Nat) : StateM CondenseDFSState Unit := do
-  modify fun s => {s with visited := s.visited.set! v true, condensation := s.condensation.set! v c}
-  for edge in g[v]! do
-    let u := edge.dst
-    if !(← get).visited[u]! then
-      condenseDFS g c u
-
-/-- Implementation of `condense`. -/
-def condenseImp (g : Graph) (order : Array Nat) : StateM CondenseDFSState Unit := do
-  for v in order do
-    if !(← get).visited[v]! then
-      condenseDFS g v v
-
-/-- Computes the condensation of the given graph. The returned array at index `v` contains the index
-of the strongly connected component that includes `v`. The numbering of components is arbitrary. -/
-def condense (graph : Graph) : Array Nat :=
-  let tout := findTout graph
-  let order := toutToTopSort tout
-  let s : CondenseDFSState := {
-    visited := mkArray graph.size false
-    condensation := mkArray graph.size graph.size
-  }
-  let graphInv := inverseGraph graph
-  (condenseImp graphInv order).run s |>.snd.condensation
-
 /-- Finds a contradictory `≠`-fact whose `.lhs` and `.rhs` belong to the same strongly connected
 component in the `≤`-graph, implying they must be equal. -/
 def findContradictoryNe (graph : Graph) (facts : Array AtomicFact) : Option AtomicFact :=
-  let condensation := condense graph
+  let condensation := graph.condense
   facts.find? fun fact =>
     if let .ne lhs rhs _ := fact then
       condensation[lhs]! == condensation[rhs]!
     else
       false
 
-/-- DFS algorithm for constructing a proof that `x ≤ y` by finding a path from `x` to `y` in the
-`≤`-graph. -/
-partial def buildTransitiveLeProofDFS (g : Graph) (v t : Nat) (tExpr : Expr) :
-    StateT DFSState MetaM (Option Expr) := do
-  modify fun s => {s with visited := s.visited.set! v true}
-  if v == t then
-    return ← mkAppM ``le_refl #[tExpr]
-  for edge in g[v]! do
-    let u := edge.dst
-    if !(← get).visited[u]! then
-      match ← buildTransitiveLeProofDFS g u t tExpr with
-      | .some pf => return .some <| ← mkAppM ``le_trans #[edge.proof, pf]
-      | .none => continue
+/-- Using the `≤`-graph `g`, find a contradiction with some `≰`-fact. -/
+def findContradictionWithNle (g : Graph) (idxToAtom : Std.HashMap ℕ Expr)
+    (facts : Array AtomicFact) : MetaM <| Option Expr := do
+  for fact in facts do
+    if let .nle lhs rhs proof := fact then
+      let .some pf ← g.buildTransitiveLeProof idxToAtom lhs rhs | continue
+      return .some <| mkApp proof pf
   return .none
-
-/-- Given a `≤`-graph `g`, finds a proof of `s ≤ t` using transitivity. -/
-def buildTransitiveLeProof (g : Graph) (s t : Nat) (tExpr : Expr) : MetaM (Option Expr) := do
-  let state : DFSState := ⟨mkArray g.size false⟩
-  (buildTransitiveLeProofDFS g s t tExpr).run' state
 
 /-- Using `≮`-facts and the `le_of_not_lt_le` lemma, add edges to the `≤`-graph `g` as long as
 it remains possible. -/
@@ -550,7 +167,7 @@ def updateGraphWithNltInfSup (g : Graph) (idxToAtom : Std.HashMap Nat Expr)
       if usedNltFacts[i]! then
         continue
       let .nlt lhs rhs proof := nltFacts[i]! | throwError "Bug: Non-nlt fact in nltFacts."
-      let .some pf ← buildTransitiveLeProof g lhs rhs (idxToAtom.get! rhs) | continue
+      let .some pf ← g.buildTransitiveLeProof idxToAtom lhs rhs | continue
       g := g.addEdge ⟨rhs, lhs, ← mkAppM ``le_of_not_lt_le #[proof, pf]⟩
       changed := true
       usedNltFacts := usedNltFacts.set! i true
@@ -558,31 +175,21 @@ def updateGraphWithNltInfSup (g : Graph) (idxToAtom : Std.HashMap Nat Expr)
       for idx in [:g.size] do
         match fact with
         | .isSup lhs rhs sup =>
-          let idxExpr := idxToAtom.get! idx
-          let .some pf1 ← buildTransitiveLeProof g lhs idx idxExpr | continue
-          let .some pf2 ← buildTransitiveLeProof g rhs idx idxExpr | continue
-          if (← buildTransitiveLeProof g sup idx idxExpr).isNone then
+          let .some pf1 ← g.buildTransitiveLeProof idxToAtom lhs idx | continue
+          let .some pf2 ← g.buildTransitiveLeProof idxToAtom rhs idx | continue
+          if (← g.buildTransitiveLeProof idxToAtom sup idx).isNone then
             g := g.addEdge ⟨sup, idx, ← mkAppM ``sup_le #[pf1, pf2]⟩
             changed := true
         | .isInf lhs rhs inf =>
-          let .some pf1 ← buildTransitiveLeProof g idx lhs (idxToAtom.get! lhs) | continue
-          let .some pf2 ← buildTransitiveLeProof g idx rhs (idxToAtom.get! rhs) | continue
-          if (← buildTransitiveLeProof g idx inf (idxToAtom.get! inf)).isNone then
+          let .some pf1 ← g.buildTransitiveLeProof idxToAtom idx lhs | continue
+          let .some pf2 ← g.buildTransitiveLeProof idxToAtom idx rhs | continue
+          if (← g.buildTransitiveLeProof idxToAtom idx inf).isNone then
             g := g.addEdge ⟨idx, inf, ← mkAppM ``le_inf #[pf1, pf2]⟩
             changed := true
         | _ => throwError "Bug: Non-isInf or isSup fact in infSupFacts."
     if !changed then
       break
   return g
-
-/-- Using the `≤`-graph `g`, find a contradiction with some `≰`-fact. -/
-def findContradictionWithNle (g : Graph) (idxToAtom : Std.HashMap ℕ Expr)
-    (facts : Array AtomicFact) : MetaM <| Option Expr := do
-  for fact in facts do
-    if let .nle lhs rhs proof := fact then
-      let .some pf ← buildTransitiveLeProof g lhs rhs (idxToAtom.get! rhs) | continue
-      return .some <| mkApp proof pf
-  return .none
 
 /-- Supported order types: linear, partial, and preorder. -/
 inductive OrderType
@@ -614,13 +221,8 @@ elab "order" : tactic => focus do
     | .pre => preprocessFactsPreorder g facts
     | .part => preprocessFactsPartial g facts idxToAtom
     | .lin => preprocessFactsLinear g facts idxToAtom
-    let mut graph ← constructLeGraph idxToAtom.size facts idxToAtom
+    let mut graph ← Graph.constructLeGraph idxToAtom.size facts idxToAtom
     graph ← updateGraphWithNltInfSup graph idxToAtom facts
-    idxToAtom.forM fun idx atom => do
-      dbg_trace s!"{idx} : {← ppExpr atom}"
-    facts.forM fun fact => do
-      dbg_trace fact
-    dbg_trace graph
     if orderType == .pre then
       let .some pf ← findContradictionWithNle graph idxToAtom facts | continue
       g.assign pf
@@ -628,9 +230,9 @@ elab "order" : tactic => focus do
     else
       let .some contNe := findContradictoryNe graph facts | continue
       let .ne lhs rhs neProof := contNe | throwError "Bug: Non-ne fact in findContradictoryNe."
-      let .some pf1 ← buildTransitiveLeProof graph lhs rhs (idxToAtom.get! rhs)
+      let .some pf1 ← graph.buildTransitiveLeProof idxToAtom lhs rhs
         | throwError "Bug: Cannot find path in strongly connected component"
-      let .some pf2 ← buildTransitiveLeProof graph rhs lhs (idxToAtom.get! lhs)
+      let .some pf2 ← graph.buildTransitiveLeProof idxToAtom rhs lhs
         | throwError "Bug: Cannot find path in strongly connected component"
       let pf3 ← mkAppM ``le_antisymm #[pf1, pf2]
       g.assign <| mkApp neProof pf3
