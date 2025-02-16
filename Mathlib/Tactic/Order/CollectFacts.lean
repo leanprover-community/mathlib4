@@ -7,7 +7,7 @@ import Mathlib.Order.Basic
 import Qq
 
 /-!
-# Fact Collection for the `order` Tactic
+# Facts collecting for the `order` Tactic
 
 This file implements the collection of facts for the `order` tactic.
 -/
