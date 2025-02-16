@@ -29,7 +29,7 @@ inductive Tripletwise (p : α → α → α → Prop) : List α → Prop
 
 attribute [simp] Tripletwise.nil
 
-variable {a b c : α} {l : List α} {p q : α → α → α → Prop} {f : α → β} {p' : β → β → β → Prop}
+variable {a b c : α} {l l₁ l₂ : List α} {p q : α → α → α → Prop} {f : α → β} {p' : β → β → β → Prop}
 
 lemma tripletwise_cons : (a :: l).Tripletwise p ↔ l.Pairwise (p a) ∧ l.Tripletwise p := by
   rw [tripletwise_iff]; aesop
@@ -88,5 +88,19 @@ lemma tripletwise_iff_getElem : l.Tripletwise p ↔ ∀ i j k (hij : i < j) (hjk
         · simpa using ht i j k (by omega) (by omega) (by omega)
     · simpa using h 0 (i + 1) (j + 1) (by omega) (by omega) (by omega)
     · simpa using h (i + 1) (j + 1) (k + 1) (by omega) (by omega) (by omega)
+
+lemma tripletwise_append : (l₁ ++ l₂).Tripletwise p ↔ l₁.Tripletwise p ∧ l₂.Tripletwise p ∧
+    (∀ a ∈ l₁, l₂.Pairwise (p a)) ∧ ∀ a ∈ l₂, l₁.Pairwise fun x y ↦ p x y a := by
+  induction l₁ with
+  | nil => simp
+  | cons h t ih =>
+    simp [tripletwise_cons, ih, pairwise_append]
+    aesop
+
+lemma tripletwise_reverse : l.reverse.Tripletwise p ↔ l.Tripletwise fun a b c ↦ p c b a := by
+  induction l with
+  | nil => simp
+  | cons h t ih =>
+    simp [tripletwise_append, pairwise_reverse, tripletwise_cons, ih, and_comm]
 
 end List
