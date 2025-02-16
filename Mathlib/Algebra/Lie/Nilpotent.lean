@@ -298,6 +298,25 @@ variable (R L M)
 instance (priority := 100) trivialIsNilpotent [IsTrivial L M] : IsNilpotent L M :=
   ⟨by use 1; change ⁅⊤, ⊤⁆ = ⊥; simp⟩
 
+instance isNilpotentAdd (M₁ M₂ : LieSubmodule R L M) [IsNilpotent L M₁] [IsNilpotent L M₂] :
+    IsNilpotent L (M₁ + M₂) := by
+  obtain ⟨k, hk⟩ := (isNilpotent_iff R L M₁).1 (inferInstance)
+  obtain ⟨l, hl⟩ := (isNilpotent_iff R L M₂).1 (inferInstance)
+  have ha : LieSubmodule.lcs (k ⊔ l) M₁ = ⊥ := by sorry
+  have hb : LieSubmodule.lcs (k ⊔ l) M₂ = ⊥ := by sorry
+  have h2 := LieSubmodule.lcs_sup (N₁ := M₁) (N₂ := M₂) (k := k ⊔ l)
+  rw [ha] at h2
+  rw [hb] at h2
+  have h3 : LieSubmodule.lcs (k ⊔ l) (M₁ ⊔ M₂) = ⊥ := by
+    simp_all only [LieSubmodule.lcs_sup, le_refl, sup_of_le_left]
+  use (k ⊔ l)
+  --simp_all
+  dsimp [lowerCentralSeries]
+  --have h : (M₁ : LieSubmodule R L M₁) = (⊤ : LieSubmodule R L M₁ ⊔ M₂) := by sorry
+  --#check LieSubmodule ℤ L ↥(M₁ ⊔ M₂)
+  --sorry
+  sorry
+
 theorem exists_forall_pow_toEnd_eq_zero [IsNilpotent L M] :
     ∃ k : ℕ, ∀ x : L, toEnd R L M x ^ k = 0 := by
   obtain ⟨k, hM⟩ := IsNilpotent.nilpotent R L M
@@ -722,7 +741,13 @@ def largestNilpotentSubmodule :=
 
 instance largestNilpotentSubmoduleIsNilpotent [IsNoetherian R M] :
     IsNilpotent L (largestNilpotentSubmodule R L M) := by
-  sorry
+  have hwf := LieSubmodule.wellFoundedGT_of_noetherian R L M
+  rw [← CompleteLattice.isSupClosedCompact_iff_wellFoundedGT] at hwf
+  refine hwf { N : LieSubmodule R L M | IsNilpotent L N } ⟨⊥, ?_⟩ fun I hI J hJ => ?_
+  · simp_all
+    apply trivialIsNilpotent L
+  · rw [Set.mem_setOf_eq] at hI hJ ⊢
+    apply isNilpotentAdd R L
 
 theorem nilpotent_iff_le_largest_nilpotent_submodule [IsNoetherian R M] (N : LieSubmodule R L M) :
     IsNilpotent L N ↔ N ≤ largestNilpotentSubmodule R L M := by
