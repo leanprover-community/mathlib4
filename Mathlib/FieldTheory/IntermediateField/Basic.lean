@@ -229,6 +229,9 @@ end InheritedLemmas
 
 theorem natCast_mem (n : ℕ) : (n : L) ∈ S := by simpa using intCast_mem S n
 
+instance instSMulMemClass : SMulMemClass (IntermediateField K L) K L where
+  smul_mem := fun _ _ hx ↦ IntermediateField.smul_mem _ hx
+
 end IntermediateField
 
 /-- Turn a subalgebra closed under inverses into an intermediate field -/

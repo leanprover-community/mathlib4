@@ -116,7 +116,7 @@ lemma coe_toContinuousMap (f : ContinuousMonoidHom A B) : f.toContinuousMap = f 
 
 section
 
-variable  {F : Type*} [FunLike F A B]
+variable {F : Type*} [FunLike F A B]
 
 /-- Turn an element of a type `F` satisfying `MonoidHomClass F A B` and `ContinuousMapClass F A B`
 into a`ContinuousMonoidHom`. This is declared as the default coercion from `F` to

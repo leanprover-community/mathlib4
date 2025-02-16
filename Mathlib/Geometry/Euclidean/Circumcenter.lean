@@ -141,7 +141,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
     -- Porting note: was
     -- cases' hu with hucc hucr
     -- substs hucc hucr
-    cases' hu
+    cases hu
     have hcr₃val : cr₃ = √(cr * cr + t₃ * y * (t₃ * y)) := by
       cases' hnps with p0 hp0
       have h' : ↑(⟨cc, hcc₃'⟩ : s) = cc := rfl
@@ -871,7 +871,7 @@ theorem eq_or_eq_reflection_of_dist_eq {n : ℕ} {s : Simplex ℝ P n} {p p₁ p
       simpa only [Ne, vsub_eq_zero_iff_eq, inner_self_eq_zero] using hp
     rw [mul_left_inj' hz, mul_self_eq_mul_self_iff] at hd₁
     rw [hp₁, hp₂]
-    cases' hd₁ with hd₁ hd₁
+    rcases hd₁ with hd₁ | hd₁
     · left
       rw [hd₁]
     · right
