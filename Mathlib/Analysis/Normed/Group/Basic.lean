@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Group.Seminorm
+import Mathlib.Data.NNReal.Basic
 import Mathlib.Topology.MetricSpace.Basic
 
 /-!
@@ -481,6 +482,10 @@ theorem abs_norm_sub_norm_le' (a b : E) : |‖a‖ - ‖b‖| ≤ ‖a / b‖ :=
 @[to_additive norm_sub_norm_le]
 theorem norm_sub_norm_le' (a b : E) : ‖a‖ - ‖b‖ ≤ ‖a / b‖ :=
   (le_abs_self _).trans (abs_norm_sub_norm_le' a b)
+
+@[to_additive (attr := bound)]
+theorem norm_sub_le_norm_mul (a b : E) : ‖a‖ - ‖b‖ ≤ ‖a * b‖ := by
+  simpa using norm_mul_le' (a * b) (b⁻¹)
 
 @[to_additive dist_norm_norm_le]
 theorem dist_norm_norm_le' (a b : E) : dist ‖a‖ ‖b‖ ≤ ‖a / b‖ :=

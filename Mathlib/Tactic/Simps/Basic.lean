@@ -927,11 +927,15 @@ def getProjectionExprs (stx : Syntax) (tgt : Expr) (rhs : Expr) (cfg : Config) :
   -- the fields of the object
   let rhsArgs := rhs.getAppArgs.toList.drop params.size
   let (rawUnivs, projDeclata) ← getRawProjections stx str
-  return projDeclata.map fun proj ↦
-    (rhsArgs.getD (fallback := default) proj.projNrs.head!,
+  projDeclata.mapM fun proj ↦ do
+    let expr := proj.expr.instantiateLevelParams rawUnivs tgt.getAppFn.constLevels!
+    -- after instantiating universes, we have to check again whether the expression is a proof.
+    let proj := if ← isProof expr
+      then { proj with isDefault := false }
+      else proj
+    return (rhsArgs.getD (fallback := default) proj.projNrs.head!,
       { proj with
-        expr := (proj.expr.instantiateLevelParams rawUnivs
-          tgt.getAppFn.constLevels!).instantiateLambdasOrApps params
+        expr := expr.instantiateLambdasOrApps params
         projNrs := proj.projNrs.tail })
 
 variable (ref : Syntax) (univs : List Name)

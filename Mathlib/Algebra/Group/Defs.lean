@@ -575,6 +575,12 @@ lemma pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, one_mul]
   | 0 => by simp
   | n + 1 => by rw [pow_succ _ n, pow_succ, pow_succ', mul_assoc]
 
+@[to_additive] lemma mul_pow_mul (a b : M) (n : ℕ) :
+    (a * b) ^ n * a = a * (b * a) ^ n := by
+  induction n with
+  | zero => simp
+  | succ n ih => simp [pow_succ', ← ih, Nat.mul_add, mul_assoc]
+
 @[to_additive]
 lemma pow_mul_comm' (a : M) (n : ℕ) : a ^ n * a = a * a ^ n := by rw [← pow_succ, pow_succ']
 

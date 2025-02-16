@@ -8,7 +8,6 @@ import Mathlib.Algebra.Lie.Quotient
 import Mathlib.Algebra.Lie.Normalizer
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.LinearAlgebra.Eigenspace.Basic
-import Mathlib.Order.Filter.AtTopBot
 import Mathlib.RingTheory.Artinian.Module
 import Mathlib.RingTheory.Nilpotent.Lemmas
 
@@ -408,7 +407,7 @@ theorem nilpotencyLength_eq_one_iff [Nontrivial M] :
 theorem isTrivial_of_nilpotencyLength_le_one [IsNilpotent L M] (h : nilpotencyLength L M ≤ 1) :
     IsTrivial L M := by
   nontriviality M
-  cases' Nat.le_one_iff_eq_zero_or_eq_one.mp h with h h
+  rcases Nat.le_one_iff_eq_zero_or_eq_one.mp h with h | h
   · rw [nilpotencyLength_eq_zero_iff] at h; infer_instance
   · rwa [nilpotencyLength_eq_one_iff] at h
 
