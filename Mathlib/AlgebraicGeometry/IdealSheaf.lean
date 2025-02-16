@@ -3,11 +3,8 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.AffineScheme
+import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
-import Mathlib.AlgebraicGeometry.Morphisms.Immersion
-import Mathlib.CategoryTheory.MorphismProperty.Comma
-import Mathlib.Topology.LocalAtTarget
 
 /-!
 # Ideal sheaves on schemes
@@ -632,8 +629,12 @@ noncomputable
 def glueDataObjι (U : X.affineOpens) : I.glueDataObj U ⟶ U.1 :=
   Spec.map (CommRingCat.ofHom (Ideal.Quotient.mk _)) ≫ U.2.isoSpec.inv
 
-instance (U : X.affineOpens) : IsClosedImmersion (I.glueDataObjι U) := by
-  delta glueDataObjι; infer_instance
+instance (U : X.affineOpens) : IsPreimmersion (I.glueDataObjι U) :=
+  have : IsPreimmersion (Spec.map (CommRingCat.ofHom (Ideal.Quotient.mk (I.ideal U)))) :=
+    .mk_Spec_map
+      (isClosedEmbedding_comap_of_surjective _ _ Ideal.Quotient.mk_surjective).isEmbedding
+      (RingHom.surjectiveOnStalks_of_surjective Ideal.Quotient.mk_surjective)
+  .comp _ _
 
 lemma glueDataObjι_ι (U : X.affineOpens) : I.glueDataObjι U ≫ U.1.ι =
     Spec.map (CommRingCat.ofHom (Ideal.Quotient.mk _)) ≫ U.2.fromSpec := by
@@ -727,7 +728,7 @@ lemma ideal_le_ker_glueDataObjι (U V : X.affineOpens) :
       ⟨((I.glueDataObjι U).base p).2, hp⟩
   refine ⟨(I.glueDataObjι U ⁻¹ᵁ U.1.ι ⁻¹ᵁ X.basicOpen f),
     fun x hx ↦ X.basicOpen_le g (hfg ▸ hx), hf, ?_⟩
-  have := IsOpenImmersion.isIso_app (I.glueDataObjMap (X.affineBasicOpen_le f))
+  have := Hom.isIso_app (I.glueDataObjMap (X.affineBasicOpen_le f))
     (I.glueDataObjι U ⁻¹ᵁ U.1.ι ⁻¹ᵁ X.basicOpen f) (by rw [opensRange_glueDataObjMap])
   apply ((ConcreteCategory.isIso_iff_bijective _).mp this).1
   simp only [CommRingCat.forget_map, map_zero, ← RingHom.comp_apply,
