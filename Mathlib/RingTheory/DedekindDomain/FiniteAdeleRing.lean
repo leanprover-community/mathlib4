@@ -408,7 +408,7 @@ instance : FaithfulSMul (FiniteAdeleRing R K) (K_hat R K) :=
 
 instance : FaithfulSMul (R_hat R K) (FiniteAdeleRing R K) :=
   let h := FaithfulSMul.algebraMap_injective (R_hat R K) (K_hat R K)
-  (faithfulSMul_iff_algebraMap_injective _ _).2 <| ((funext (coe_algebraMap' R K)) ▸ h).of_comp
+  (faithfulSMul_iff_algebraMap_injective _ _).2 ((funext (coe_algebraMap' R K)) ▸ h).of_comp
 
 section Topology
 
