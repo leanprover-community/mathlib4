@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2023 Hanneke Wiersema. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard, Hanneke Wiersema
+Authors: Kevin Buzzard, Hanneke Wiersema, Andrew Yang
 -/
 import Mathlib.Algebra.Ring.Aut
 import Mathlib.NumberTheory.Padics.RingHoms
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+import Mathlib.RingTheory.RootsOfUnity.Minpoly
+import Mathlib.FieldTheory.KrullTopology
 
 /-!
 
@@ -307,3 +308,41 @@ theorem CyclotomicCharacter.spec (p : ℕ) [Fact p.Prime] {n : ℕ}
     (H : ∀ i, ∃ ζ : L, IsPrimitiveRoot ζ (p ^ i)) (g : L ≃+* L) (t : L) (ht : t ^ p ^ n = 1) :
     g t = t ^ ((CyclotomicCharacter L p g).val.toZModPow n).val :=
   toFun_spec p H g (rootsOfUnity.mkOfPowEq _ ht)
+
+theorem CyclotomicCharacter.toZModPow (p : ℕ) [Fact p.Prime] {n : ℕ}
+    (H : ∀ i, ∃ ζ : L, IsPrimitiveRoot ζ (p ^ i)) (g : L ≃+* L) :
+    (CyclotomicCharacter L p g).val.toZModPow n =
+      (ModularCyclotomicCharacter _ (H n).choose_spec.card_rootsOfUnity g).val :=
+  toZModPow_toFun _ _ H _
+
+open IntermediateField in
+lemma CyclotomicCharacter.continuous (p : ℕ) [Fact p.Prime]
+    (K L : Type*) [Field K] [Field L] [Algebra K L] :
+    Continuous ((CyclotomicCharacter L p).comp (MulSemiringAction.toRingAut (L ≃ₐ[K] L) L)) := by
+  by_cases H : ∀ (i : ℕ), ∃ ζ : L, IsPrimitiveRoot ζ (p ^ i); swap
+  · simp only [CyclotomicCharacter, CyclotomicCharacter.toFun, dif_neg H, MonoidHom.coe_comp]
+    exact continuous_const (y := 1)
+  choose ζ hζ using show _ from H
+  refine Continuous.of_coeHom_comp ?_
+  apply continuous_of_continuousAt_one
+  rw [ContinuousAt, map_one, (galGroupBasis K L).nhds_one_hasBasis.tendsto_iff
+    (Metric.nhds_basis_ball (α := ℤ_[p]) (x := 1))]
+  intro ε hε
+  obtain ⟨k, hk', hk⟩ : ∃ k : ℕ, k ≠ 0 ∧ p ^ (-k : ℤ) < ε := by
+    obtain ⟨k, hk⟩ := PadicInt.exists_pow_neg_lt p hε
+    exact ⟨k + 1, by simp, LE.le.trans_lt (by gcongr <;> simp [‹Fact p.Prime›.1.one_le]) hk⟩
+  refine ⟨_, ⟨_, ⟨(K⟮ζ k⟯), adjoin.finiteDimensional ?_, rfl⟩, rfl⟩, ?_⟩
+  · exact ((hζ k).isIntegral (Nat.pos_of_neZero _)).tower_top
+  · intro σ hσ
+    refine LE.le.trans_lt ?_ hk
+    show dist (CyclotomicCharacter L p σ.toRingEquiv).1 1 ≤ _
+    rw [dist_eq_norm, PadicInt.norm_le_pow_iff_mem_span_pow, ← PadicInt.ker_toZModPow,
+      RingHom.mem_ker, map_sub, map_one, CyclotomicCharacter.toZModPow (H := H),
+      sub_eq_zero, eq_comm]
+    apply ModularCyclotomicCharacter.unique
+    intro t ht
+    obtain ⟨i, hi, rfl⟩ := ((hζ k).isUnit_unit (Nat.pos_of_neZero _)).eq_pow_of_mem_rootsOfUnity ht
+    dsimp
+    rw [ZMod.val_one'', pow_one]
+    · exact hσ ⟨ζ k ^ i, pow_mem (mem_adjoin_simple_self K (ζ k)) _⟩
+    · exact (one_lt_pow₀ ‹Fact p.Prime›.1.one_lt hk').ne'
