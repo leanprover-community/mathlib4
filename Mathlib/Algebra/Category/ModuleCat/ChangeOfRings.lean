@@ -8,6 +8,7 @@ import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.CategoryTheory.Adjunction.Mates
+import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 # Change Of Rings
@@ -264,6 +265,24 @@ instance restrictScalars_isEquivalence_of_ringEquiv {R S} [Ring R] [Ring S] (e :
     (ModuleCat.restrictScalars e.toRingHom).IsEquivalence :=
   (restrictScalarsEquivalenceOfRingEquiv e).isEquivalence_functor
 
+instance {R S} [Ring R] [Ring S] (f : R →+* S) : (restrictScalars f).Additive where
+
+instance restrictScalarsEquivalenceOfRingEquiv_additive {R S} [Ring R] [Ring S] (e : R ≃+* S) :
+    (restrictScalarsEquivalenceOfRingEquiv e).functor.Additive where
+
+namespace Algebra
+
+instance {R₀ R S} [CommSemiring R₀] [Ring R] [Ring S] [Algebra R₀ R] [Algebra R₀ S]
+    (f : R →ₐ[R₀] S) : (restrictScalars f.toRingHom).Linear R₀ where
+  map_smul {M N} g r₀ := by ext m; exact congr_arg (· • g.hom m) (f.commutes r₀).symm
+
+instance restrictScalarsEquivalenceOfRingEquiv_linear
+    {R₀ R S} [CommSemiring R₀] [Ring R] [Ring S] [Algebra R₀ R] [Algebra R₀ S] (e : R ≃ₐ[R₀] S) :
+    (restrictScalarsEquivalenceOfRingEquiv e.toRingEquiv).functor.Linear R₀ :=
+  inferInstanceAs ((restrictScalars e.toAlgHom.toRingHom).Linear R₀)
+
+end Algebra
+
 open TensorProduct
 
 variable {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S)
@@ -298,7 +317,7 @@ def map' {M1 M2 : ModuleCat.{v} R} (l : M1 ⟶ M2) : obj' f M1 ⟶ obj' f M2 :=
 
 theorem map'_id {M : ModuleCat.{v} R} : map' f (𝟙 M) = 𝟙 _ := by
   ext x
-  simp [map']
+  simp [map', obj']
 
 theorem map'_comp {M₁ M₂ M₃ : ModuleCat.{v} R} (l₁₂ : M₁ ⟶ M₂) (l₂₃ : M₂ ⟶ M₃) :
     map' f (l₁₂ ≫ l₂₃) = map' f l₁₂ ≫ map' f l₂₃ := by
@@ -415,7 +434,7 @@ instance : CoeFun (obj' f M) fun _ => S → M :=
 
 /-- If `M, M'` are `R`-modules, then any `R`-linear map `g : M ⟶ M'` induces an `S`-linear map
 `(S →ₗ[R] M) ⟶ (S →ₗ[R] M')` defined by `h ↦ g ∘ h`-/
-@[simps]
+@[simps!]
 def map' {M M' : ModuleCat R} (g : M ⟶ M') : obj' f M ⟶ obj' f M' :=
   ofHom
   { toFun := fun h => g.hom.comp h
@@ -610,7 +629,7 @@ Given `R`-module X and `S`-module Y and a map `g : (extendScalars f).obj X ⟶ Y
 map `S ⨂ X → Y`, there is a `X ⟶ (restrictScalars f).obj Y`, i.e. `R`-linear map `X ⟶ Y` by
 `x ↦ g (1 ⊗ x)`.
 -/
-@[simps hom_apply]
+@[simps! hom_apply]
 def HomEquiv.toRestrictScalars {X Y} (g : (extendScalars f).obj X ⟶ Y) :
     X ⟶ (restrictScalars f).obj Y :=
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
@@ -649,7 +668,7 @@ Given `R`-module X and `S`-module Y and a map `X ⟶ (restrictScalars f).obj Y`,
 `X ⟶ Y`, there is a map `(extend_scalars f).obj X ⟶ Y`, i.e `S`-linear map `S ⨂ X → Y` by
 `s ⊗ x ↦ s • g x`.
 -/
-@[simps hom_apply]
+@[simps! hom_apply]
 def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
     (extendScalars f).obj X ⟶ Y := by
   letI m1 : Module R S := Module.compHom S f; letI m2 : Module R Y := Module.compHom Y f
@@ -734,7 +753,7 @@ def unit : 𝟭 (ModuleCat R) ⟶ extendScalars f ⋙ restrictScalars.{max v u�
 
 /-- For any `S`-module Y, there is a natural `R`-linear map from `S ⨂ Y` to `Y` by
 `s ⊗ y ↦ s • y` -/
-@[simps hom_apply]
+@[simps! hom_apply]
 def Counit.map {Y} : (restrictScalars f ⋙ extendScalars f).obj Y ⟶ Y :=
   ofHom
   { toFun :=
@@ -873,8 +892,7 @@ lemma homEquiv_extendScalarsId (M : ModuleCat R) :
     (extendRestrictScalarsAdj (RingHom.id R)).homEquiv _ _ ((extendScalarsId R).hom.app M) =
       (restrictScalarsId R).inv.app M := by
   ext m
-  rw [extendRestrictScalarsAdj_homEquiv_apply, ← extendScalarsId_inv_app_apply]
-  erw [← comp_apply]
+  rw [extendRestrictScalarsAdj_homEquiv_apply, ← extendScalarsId_inv_app_apply, ← comp_apply]
   simp
 
 lemma extendScalarsId_hom_app_one_tmul (M : ModuleCat R) (m : M) :

@@ -122,10 +122,6 @@ def Code.eval : Code → List ℕ →. List ℕ
 
 namespace Code
 
-/- Porting note: The equation lemma of `eval` is too strong; it simplifies terms like the LHS of
-`pred_eval`. Even `eqns` can't fix this. We removed `simp` attr from `eval` and prepare new simp
-lemmas for `eval`. -/
-
 @[simp]
 theorem zero'_eval : zero'.eval = fun v => pure (0 :: v) := by simp [eval]
 
@@ -1626,7 +1622,7 @@ theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trSt
       exact Or.inr (Or.inr <| q_ih h h')
   · refine ⟨fun h x h' => ?_, fun _ x h' => ?_, fun h x h' => ?_⟩ <;> simp
     · exact Or.inr (Or.inr <| Or.inl <| q₁_ih h h')
-    · cases' Finset.mem_insert.1 h' with h' h' <;> simp [h', unrev]
+    · rcases Finset.mem_insert.1 h' with h' | h' <;> simp [h', unrev]
     · exact Or.inr (Or.inr <| Or.inr <| q₂_ih h h')
 
 theorem trStmts₁_self (q) : q ∈ trStmts₁ q := by

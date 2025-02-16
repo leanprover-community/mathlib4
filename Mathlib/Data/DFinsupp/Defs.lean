@@ -742,8 +742,8 @@ protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (
       Function.comp, Subtype.coe_mk]
     have H2 : ∀ j, j ∈ s ∨ ite (j = i) 0 (f j) = 0 := by
       intro j
-      cases' H j with H2 H2
-      · cases' Multiset.mem_cons.1 H2 with H3 H3
+      rcases H j with H2 | H2
+      · rcases Multiset.mem_cons.1 H2 with H3 | H3
         · right; exact if_pos H3
         · left; exact H3
       right
@@ -756,7 +756,7 @@ protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (
   have H3 : single i _ + _ = (⟨f, Trunc.mk ⟨i ::ₘ s, H⟩⟩ : Π₀ i, β i) := single_add_erase _ _
   rw [← H3]
   change p (single i (f i) + _)
-  cases' Classical.em (f i = 0) with h h
+  rcases Classical.em (f i = 0) with h | h
   · rw [h, single_zero, zero_add]
     exact H2
   refine ha _ _ _ ?_ h H2
@@ -988,7 +988,7 @@ theorem subtypeDomain_def (f : Π₀ i, β i) :
     f.subtypeDomain p = mk (f.support.subtype p) fun i => f i := by
   ext i; by_cases h2 : f i ≠ 0 <;> try simp at h2; dsimp; simp [h2]
 
-@[simp, nolint simpNF] -- Porting note: simpNF claims that LHS does not simplify, but it does
+@[simp]
 theorem support_subtypeDomain {f : Π₀ i, β i} :
     (subtypeDomain p f).support = f.support.subtype p := by
   ext i

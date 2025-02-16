@@ -145,7 +145,7 @@ theorem hasDerivWithinAt_taylor_coeff_within {f : ℝ → E} {x y : ℝ} {k : �
   replace hf :
     HasDerivWithinAt (iteratedDerivWithin (k + 1) f s) (iteratedDerivWithin (k + 2) f s y) t y := by
     convert (hf.mono_of_mem_nhdsWithin hs).hasDerivWithinAt using 1
-    rw [iteratedDerivWithin_succ (ht.mono_nhds (nhdsWithin_le_iff.mpr hs))]
+    rw [iteratedDerivWithin_succ]
     exact (derivWithin_of_mem_nhdsWithin hs ht hf).symm
   have : HasDerivWithinAt (fun t => ((k + 1 : ℝ) * k !)⁻¹ * (x - t) ^ (k + 1))
       (-((k ! : ℝ)⁻¹ * (x - y) ^ k)) t y := by
@@ -162,17 +162,19 @@ theorem hasDerivWithinAt_taylor_coeff_within {f : ℝ → E} {x y : ℝ} {k : �
 
 Version for arbitrary sets -/
 theorem hasDerivWithinAt_taylorWithinEval {f : ℝ → E} {x y : ℝ} {n : ℕ} {s s' : Set ℝ}
-    (hs'_unique : UniqueDiffWithinAt ℝ s' y) (hs_unique : UniqueDiffOn ℝ s) (hs' : s' ∈ 𝓝[s] y)
+    (hs_unique : UniqueDiffOn ℝ s) (hs' : s' ∈ 𝓝[s] y)
     (hy : y ∈ s') (h : s' ⊆ s) (hf : ContDiffOn ℝ n f s)
     (hf' : DifferentiableWithinAt ℝ (iteratedDerivWithin n f s) s y) :
     HasDerivWithinAt (fun t => taylorWithinEval f n s t x)
       (((n ! : ℝ)⁻¹ * (x - y) ^ n) • iteratedDerivWithin (n + 1) f s y) s' y := by
+  have hs'_unique : UniqueDiffWithinAt ℝ s' y :=
+    UniqueDiffWithinAt.mono_nhds (hs_unique _ (h hy)) (nhdsWithin_le_iff.mpr hs')
   induction n with
   | zero =>
     simp only [taylor_within_zero_eval, Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero,
       mul_one, zero_add, one_smul]
     simp only [iteratedDerivWithin_zero] at hf'
-    rw [iteratedDerivWithin_one (hs_unique _ (h hy))]
+    rw [iteratedDerivWithin_one]
     exact hf'.hasDerivWithinAt.mono h
   | succ k hk =>
     simp_rw [Nat.add_succ, taylorWithinEval_succ]
@@ -195,7 +197,7 @@ theorem taylorWithinEval_hasDerivAt_Ioo {f : ℝ → E} {a b t : ℝ} (x : ℝ) 
       (((n ! : ℝ)⁻¹ * (x - t) ^ n) • iteratedDerivWithin (n + 1) f (Icc a b) t) t :=
   have h_nhds : Ioo a b ∈ 𝓝 t := isOpen_Ioo.mem_nhds ht
   have h_nhds' : Ioo a b ∈ 𝓝[Icc a b] t := nhdsWithin_le_nhds h_nhds
-  (hasDerivWithinAt_taylorWithinEval (uniqueDiffWithinAt_Ioo ht) (uniqueDiffOn_Icc hx) h_nhds' ht
+  (hasDerivWithinAt_taylorWithinEval (uniqueDiffOn_Icc hx) h_nhds' ht
     Ioo_subset_Icc_self hf <| (hf' t ht).mono_of_mem_nhdsWithin h_nhds').hasDerivAt h_nhds
 
 /-- Calculate the derivative of the Taylor polynomial with respect to `x₀`.
@@ -206,7 +208,7 @@ theorem hasDerivWithinAt_taylorWithinEval_at_Icc {f : ℝ → E} {a b t : ℝ} (
     (hf' : DifferentiableOn ℝ (iteratedDerivWithin n f (Icc a b)) (Icc a b)) :
     HasDerivWithinAt (fun y => taylorWithinEval f n (Icc a b) y x)
       (((n ! : ℝ)⁻¹ * (x - t) ^ n) • iteratedDerivWithin (n + 1) f (Icc a b) t) (Icc a b) t :=
-  hasDerivWithinAt_taylorWithinEval (uniqueDiffOn_Icc hx t ht) (uniqueDiffOn_Icc hx)
+  hasDerivWithinAt_taylorWithinEval (uniqueDiffOn_Icc hx)
     self_mem_nhdsWithin ht rfl.subset hf (hf' t ht)
 
 /-! ### Taylor's theorem with mean value type remainder estimate -/

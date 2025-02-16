@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.NeZero
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Data.Nat.Defs
-import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Fin.Rev
 
 /-!
 # Fin is a group
@@ -136,7 +136,7 @@ lemma neg_natCast_eq_one (n : ℕ) : -(n : Fin (n + 1)) = 1 := by
   simp only [natCast_eq_last, neg_last]
 
 lemma rev_add (a b : Fin n) : rev (a + b) = rev a - b := by
-  cases' n
+  cases n
   · exact a.elim0
   rw [← last_sub, ← last_sub, sub_add_eq_sub_sub]
 

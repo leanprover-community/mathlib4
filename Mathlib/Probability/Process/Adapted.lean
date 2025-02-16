@@ -35,7 +35,7 @@ adapted, progressively measurable
 
 open Filter Order TopologicalSpace
 
-open scoped Classical MeasureTheory NNReal ENNReal Topology
+open scoped MeasureTheory NNReal ENNReal Topology
 
 namespace MeasureTheory
 
@@ -58,7 +58,7 @@ protected theorem div [Div β] [ContinuousDiv β] (hu : Adapted f u) (hv : Adapt
     Adapted f (u / v) := fun i => (hu i).div (hv i)
 
 @[to_additive]
-protected theorem inv [Group β] [TopologicalGroup β] (hu : Adapted f u) :
+protected theorem inv [Group β] [IsTopologicalGroup β] (hu : Adapted f u) :
     Adapted f u⁻¹ := fun i => (hu i).inv
 
 protected theorem smul [SMul ℝ β] [ContinuousSMul ℝ β] (c : ℝ) (hu : Adapted f u) :
@@ -144,11 +144,11 @@ protected theorem finset_prod {γ} [CommMonoid β] [ContinuousMul β] {U : γ �
   convert ProgMeasurable.finset_prod' h using 1; ext (i a); simp only [Finset.prod_apply]
 
 @[to_additive]
-protected theorem inv [Group β] [TopologicalGroup β] (hu : ProgMeasurable f u) :
+protected theorem inv [Group β] [IsTopologicalGroup β] (hu : ProgMeasurable f u) :
     ProgMeasurable f fun i ω => (u i ω)⁻¹ := fun i => (hu i).inv
 
 @[to_additive]
-protected theorem div [Group β] [TopologicalGroup β] (hu : ProgMeasurable f u)
+protected theorem div [Group β] [IsTopologicalGroup β] (hu : ProgMeasurable f u)
     (hv : ProgMeasurable f v) : ProgMeasurable f fun i ω => u i ω / v i ω := fun i =>
   (hu i).div (hv i)
 

@@ -273,6 +273,10 @@ variable (R) [Ring R] [NoZeroDivisors R] [Nontrivial R] [Finite R]
 theorem char_is_prime (p : ℕ) [CharP R p] : p.Prime :=
   Or.resolve_right (char_is_prime_or_zero R p) (char_ne_zero_of_finite R p)
 
+lemma prime_ringChar : Nat.Prime (ringChar R) := by
+  apply CharP.char_prime_of_ne_zero R
+  exact CharP.ringChar_ne_zero_of_finite R
+
 end Ring
 end CharP
 

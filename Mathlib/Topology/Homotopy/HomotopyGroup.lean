@@ -46,6 +46,8 @@ open Homeomorph
 
 noncomputable section
 
+/-- `I^N` is notation (in the Topology namespace) for `N → I`,
+i.e. the unit cube indexed by a type `N`. -/
 scoped[Topology] notation "I^" N => N → I
 
 namespace Cube
@@ -76,11 +78,12 @@ end Cube
 
 variable (N X : Type*) [TopologicalSpace X] (x : X)
 
-/-- The space of paths with both endpoints equal to a specified point `x : X`. -/
+/-- The space of paths with both endpoints equal to a specified point `x : X`.
+Denoted as `Ω`, within the `Topology.Homotopy` namespace. -/
 abbrev LoopSpace :=
   Path x x
 
-scoped[Topology.Homotopy] notation "Ω" => LoopSpace
+@[inherit_doc] scoped[Topology.Homotopy] notation "Ω" => LoopSpace
 
 instance LoopSpace.inhabited : Inhabited (Path x x) :=
   ⟨Path.refl x⟩
@@ -207,7 +210,7 @@ def fromLoop (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : Ω^ N X x :=
       funSplitAt_apply, ContinuousMap.uncurry_apply, ContinuousMap.coe_mk,
       Function.uncurry_apply_pair]
     obtain rfl | Hne := eq_or_ne j i
-    · cases' Hj with Hj Hj <;> simp only [Hj, p.coe_toContinuousMap, p.source, p.target] <;> rfl
+    · rcases Hj with Hj | Hj <;> simp only [Hj, p.coe_toContinuousMap, p.source, p.target] <;> rfl
     · exact GenLoop.boundary _ _ ⟨⟨j, Hne⟩, Hj⟩⟩
 
 theorem continuous_fromLoop (i : N) : Continuous (@fromLoop N X _ x _ i) :=
@@ -364,11 +367,11 @@ def homotopyGroupEquivFundamentalGroup (i : N) :
   apply Quotient.congr (loopHomeo i).toEquiv
   exact fun p q => ⟨homotopicTo i, homotopicFrom i⟩
 
-/-- Homotopy group of finite index. -/
+/-- Homotopy group of finite index, denoted as `π_n` within the Topology namespace. -/
 abbrev HomotopyGroup.Pi (n) (X : Type*) [TopologicalSpace X] (x : X) :=
   HomotopyGroup (Fin n) _ x
 
-scoped[Topology] notation "π_" => HomotopyGroup.Pi
+@[inherit_doc] scoped[Topology] notation "π_" => HomotopyGroup.Pi
 
 /-- The 0-dimensional generalized loops based at `x` are in bijection with `X`. -/
 def genLoopHomeoOfIsEmpty (N x) [IsEmpty N] : Ω^ N X x ≃ₜ X where
