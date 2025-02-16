@@ -1205,7 +1205,7 @@ end general
 section two
 variable [Module (ZMod 2) G]
 
-lemma ZModModule.add_self (x : G) : x + x = 0 := by
+protected lemma ZModModule.add_self (x : G) : x + x = 0 := by
   simpa [two_nsmul] using char_nsmul_eq_zero 2 x
 
 lemma ZModModule.neg_eq_self (x : G) : -x = x := by simp [add_self, eq_comm, ← sub_eq_zero]

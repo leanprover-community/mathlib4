@@ -84,7 +84,7 @@ end AddSubmonoid
 @[deprecated (since := "2025-01-06")] alias sumSq := AddSubmonoid.sumSq
 
 /-- In an additive unital magma with multiplication, `x * x` is a sum of squares for all `x`. -/
-@[simp] theorem IsSumSq.mul_self [AddZeroClass R] [Mul R] (a : R) : IsSumSq (a * a) := by
+@[simp] protected theorem IsSumSq.mul_self [AddZeroClass R] [Mul R] (a : R) : IsSumSq (a * a) := by
   simpa using sq_add a zero
 
 /--

@@ -569,7 +569,7 @@ theorem exists_open_nhds_one_mul_subset {U : Set M} (hU : U ∈ 𝓝 (1 : M)) :
   simpa only [mul_subset_iff] using exists_open_nhds_one_split hU
 
 @[to_additive]
-theorem Filter.HasBasis.mul_self {p : ι → Prop} {s : ι → Set M} (h : (𝓝 1).HasBasis p s) :
+protected theorem Filter.HasBasis.mul_self {p : ι → Prop} {s : ι → Set M} (h : (𝓝 1).HasBasis p s) :
     (𝓝 1).HasBasis p fun i => s i * s i := by
   rw [← nhds_mul_nhds_one, ← map₂_mul, ← map_uncurry_prod]
   simpa only [← image_mul_prod] using h.prod_self.map _
