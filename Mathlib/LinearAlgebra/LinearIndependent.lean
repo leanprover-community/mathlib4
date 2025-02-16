@@ -36,6 +36,9 @@ vector space and `ι : Type*` is an arbitrary indexing type.
 
 * `LinearIndependent R v` states that the elements of the family `v` are linearly independent.
 
+* `LinearIndepOn R v s` states that the elements of the family `v` indexed by the members
+of the set `s : Set ι` are linearly independent.
+
 * `LinearIndependent.repr hv x` returns the linear combination representing `x : span R (range v)`
 on the linearly independent vectors `v`, given `hv : LinearIndependent R v`
 (using classical choice). `LinearIndependent.repr hv` is provided as a linear map.
@@ -125,6 +128,10 @@ def delabLinearIndependent : Delab :=
       withNaryArg 0 do return (← read).optionsPerPos.setBool (← getPos) `pp.analysis.namedArg true
     withTheReader Context ({· with optionsPerPos}) delab
 
+/-- `LinearIndepOn R v s` states that the vectors in the family `v` that are indexed
+by the elements of `s` are linearly independent over `R`. -/
+def LinearIndepOn (s : Set ι) : Prop := LinearIndependent R (fun x : s ↦ v x)
+
 variable {R v}
 
 theorem linearIndependent_iff_injective_linearCombination :
@@ -150,9 +157,22 @@ theorem LinearIndependent.ne_zero [Nontrivial R] (i : ι) (hv : LinearIndependen
 theorem linearIndependent_empty_type [IsEmpty ι] : LinearIndependent R v :=
   injective_of_subsingleton _
 
+@[simp]
+theorem linearIndependent_zero_iff [Nontrivial R] : LinearIndependent R (0 : ι → M) ↔ IsEmpty ι :=
+  ⟨fun h ↦ not_nonempty_iff.1 fun ⟨i⟩ ↦ (h.ne_zero i rfl).elim,
+    fun _ ↦ linearIndependent_empty_type⟩
+
 variable (R M) in
 theorem linearIndependent_empty : LinearIndependent R (fun x => x : (∅ : Set M) → M) :=
   linearIndependent_empty_type
+
+variable (R v) in
+@[simp]
+theorem linearIndepOn_empty : LinearIndepOn R v ∅ :=
+  linearIndependent_empty_type ..
+
+theorem linearIndependent_set_subtype {s : Set ι} :
+    LinearIndependent R (fun x : s ↦ v x) ↔ LinearIndepOn R v s := Iff.rfl
 
 /-- A subfamily of a linearly independent family (i.e., a composition with an injective map) is a
 linearly independent family. -/
@@ -361,6 +381,10 @@ theorem linearIndependent_equiv' (e : ι ≃ ι') {f : ι' → M} {g : ι → M}
     LinearIndependent R g ↔ LinearIndependent R f :=
   h ▸ linearIndependent_equiv e
 
+@[simp]
+theorem linearIndepOn_univ : LinearIndepOn R v univ ↔ LinearIndependent R v :=
+  linearIndependent_equiv' (Equiv.Set.univ ι) rfl
+
 theorem linearIndependent_subtype_range {ι} {f : ι → M} (hf : Injective f) :
     LinearIndependent R ((↑) : range f → M) ↔ LinearIndependent R f :=
   Iff.symm <| linearIndependent_equiv' (Equiv.ofInjective f hf) rfl
@@ -494,6 +518,10 @@ theorem LinearIndependent.restrict_of_comp_subtype {s : Set ι}
 theorem LinearIndependent.mono {t s : Set M} (h : t ⊆ s)
     (hs : LinearIndependent R (fun x ↦ x : s → M)) : LinearIndependent R (fun x ↦ x : t → M) :=
   hs.comp _ (Set.inclusion_injective h)
+
+theorem LinearIndepOn.mono {t s : Set ι} (hs : LinearIndepOn R v s) (h : t ⊆ s) :
+    LinearIndepOn R v t :=
+  hs.comp _ <| Set.inclusion_injective h
 
 theorem linearIndependent_of_finite (s : Set M)
     (H : ∀ t ⊆ s, Set.Finite t → LinearIndependent R (fun x ↦ x : t → M)) :
@@ -915,6 +943,14 @@ lemma LinearIndependent.pair_iff {x y : M} :
   fin_cases i
   exacts [(h _ _ hg).1, (h _ _ hg).2]
 
+lemma LinearIndependent.pair_symm_iff {x y : M} :
+    LinearIndependent R ![x, y] ↔ LinearIndependent R ![y, x] := by
+  suffices ∀ x y : M, LinearIndependent R ![x, y] → LinearIndependent R ![y, x] by tauto
+  simp only [LinearIndependent.pair_iff]
+  intro x y h s t
+  specialize h t s
+  rwa [add_comm, and_comm]
+
 /-- If the kernel of a linear map is disjoint from the span of a family of vectors,
 then the family is linearly independent iff it is linearly independent after composing with
 the linear map. -/
@@ -1090,7 +1126,7 @@ theorem linearIndependent_sum {v : ι ⊕ ι' → M} :
     refine hlr _ (sum_mem fun i _ => ?_) _ (neg_mem <| sum_mem fun i _ => ?_) this
     · exact smul_mem _ _ (subset_span ⟨Sum.inl i, mem_range_self _, rfl⟩)
     · exact smul_mem _ _ (subset_span ⟨Sum.inr i, mem_range_self _, rfl⟩)
-  cases' i with i i
+  rcases i with i | i
   · exact hl _ _ A i (Finset.mem_preimage.2 hi)
   · rw [this, neg_eq_zero] at A
     exact hr _ _ A i (Finset.mem_preimage.2 hi)
@@ -1116,10 +1152,10 @@ theorem linearIndependent_iUnion_finite_subtype {ι : Type*} {f : ι → Set M}
   · apply directed_of_isDirected_le
     exact fun t₁ t₂ ht => iUnion_mono fun i => iUnion_subset_iUnion_const fun h => ht h
   intro t
-  induction' t using Finset.induction_on with i s his ih
-  · refine (linearIndependent_empty R M).mono ?_
-    simp
-  · rw [Finset.set_biUnion_insert]
+  induction t using Finset.induction_on with
+  | empty => exact (linearIndependent_empty R M).mono (by simp)
+  | @insert i s his ih =>
+    rw [Finset.set_biUnion_insert]
     refine (hl _).union ih ?_
     rw [span_iUnion₂]
     exact hd i s s.finite_toSet his
@@ -1338,6 +1374,22 @@ theorem linearIndependent_singleton {x : M} (hx : x ≠ 0) :
     LinearIndependent R (fun x => x : ({x} : Set M) → M) :=
   linearIndependent_unique ((↑) : ({x} : Set M) → M) hx
 
+@[simp]
+theorem linearIndependent_subsingleton_index_iff [Subsingleton ι] (f : ι → M) :
+    LinearIndependent R f ↔ ∀ i, f i ≠ 0 := by
+  obtain (he | he) := isEmpty_or_nonempty ι
+  · simp [linearIndependent_empty_type]
+  obtain ⟨_⟩ := (unique_iff_subsingleton_and_nonempty (α := ι)).2 ⟨by assumption, he⟩
+  rw [linearIndependent_unique_iff]
+  exact ⟨fun h i ↦ by rwa [Unique.eq_default i], fun h ↦ h _⟩
+
+@[simp]
+theorem linearIndependent_subsingleton_iff [Subsingleton M] (f : ι → M) :
+    LinearIndependent R f ↔ IsEmpty ι := by
+  obtain h | i := isEmpty_or_nonempty ι
+  · simpa
+  exact iff_of_false (fun hli ↦ hli.ne_zero i.some (Subsingleton.eq_zero (f i.some))) (by simp)
+
 end Nontrivial
 
 /-!
@@ -1410,10 +1462,8 @@ theorem linearIndependent_insert' {ι} {s : Set ι} {a : ι} {f : ι → V} (has
   classical
   rw [← linearIndependent_equiv ((Equiv.optionEquivSumPUnit _).trans (Equiv.Set.insert has).symm),
     linearIndependent_option]
-  -- Porting note: `simp [(· ∘ ·), range_comp f]` → `simp [(· ∘ ·)]; erw [range_comp f ..]; simp`
-  -- https://github.com/leanprover-community/mathlib4/issues/5164
   simp only [comp_def]
-  erw [range_comp f ((↑) : s → ι)]
+  rw [range_comp']
   simp
 
 theorem linearIndependent_insert (hxs : x ∉ s) :
