@@ -75,21 +75,17 @@ theorem eq_inv_mul_iff_mul_eq {a c : α} : a = ↑b⁻¹ * c ↔ ↑b * a = c :=
 theorem mul_inv_eq_iff_eq_mul {a c : α} : a * ↑b⁻¹ = c ↔ a = c * b :=
   ⟨fun h => by rw [← h, inv_mul_cancel_right], fun h => by rw [h, mul_inv_cancel_right]⟩
 
--- Porting note: have to explicitly type annotate the 1
 @[to_additive]
 protected theorem inv_eq_of_mul_eq_one_left {a : α} (h : a * u = 1) : ↑u⁻¹ = a :=
   calc
-    ↑u⁻¹ = (1 : α) * ↑u⁻¹ := by rw [one_mul]
+    ↑u⁻¹ = 1 * ↑u⁻¹ := by rw [one_mul]
     _ = a := by rw [← h, mul_inv_cancel_right]
 
-
--- Porting note: have to explicitly type annotate the 1
 @[to_additive]
 protected theorem inv_eq_of_mul_eq_one_right {a : α} (h : ↑u * a = 1) : ↑u⁻¹ = a :=
   calc
-    ↑u⁻¹ = ↑u⁻¹ * (1 : α) := by rw [mul_one]
+    ↑u⁻¹ = ↑u⁻¹ * 1 := by rw [mul_one]
     _ = a := by rw [← h, inv_mul_cancel_left]
-
 
 @[to_additive]
 protected theorem eq_inv_of_mul_eq_one_left {a : α} (h : ↑u * a = 1) : a = ↑u⁻¹ :=
@@ -129,8 +125,8 @@ variable [Monoid α]
 theorem divp_left_inj (u : αˣ) {a b : α} : a /ₚ u = b /ₚ u ↔ a = b :=
   Units.mul_left_inj _
 
-/- Porting note: to match the mathlib3 behavior, this needs to have higher simp
-priority than eq_divp_iff_mul_eq. -/
+-- to match the mathlib3 behavior,
+-- this needs to have higher simp priority than eq_divp_iff_mul_eq.
 @[field_simps 1010]
 theorem divp_eq_iff_mul_eq {x : α} {u : αˣ} {y : α} : x /ₚ u = y ↔ y * u = x :=
   u.mul_left_inj.symm.trans <| by rw [divp_mul_cancel]; exact ⟨Eq.symm, Eq.symm⟩
@@ -144,8 +140,7 @@ theorem divp_eq_one_iff_eq {a : α} {u : αˣ} : a /ₚ u = 1 ↔ a = u :=
 
 /-- Used for `field_simp` to deal with inverses of units. This form of the lemma
 is essential since `field_simp` likes to use `inv_eq_one_div` to rewrite
-`↑u⁻¹ = ↑(1 / u)`.
--/
+`↑u⁻¹ = ↑(1 / u)`. -/
 @[field_simps]
 theorem inv_eq_one_divp' (u : αˣ) : ((1 / u : αˣ) : α) = 1 /ₚ u := by
   rw [one_div, one_divp]

@@ -210,7 +210,7 @@ noncomputable def FiniteField.primitiveChar (F F' : Type*) [Field F] [Finite F] 
   haveI hp : Fact p.Prime := ⟨CharP.char_is_prime F _⟩
   let pp := p.toPNat hp.1.pos
   have hp₂ : ¬ringChar F' ∣ p := by
-    cases' CharP.char_is_prime_or_zero F' (ringChar F') with hq hq
+    rcases CharP.char_is_prime_or_zero F' (ringChar F') with hq | hq
     · exact mt (Nat.Prime.dvd_iff_eq hp.1 (Nat.Prime.ne_one hq)).mp h.symm
     · rw [hq]
       exact fun hf => Nat.Prime.ne_zero hp.1 (zero_dvd_iff.mp hf)
