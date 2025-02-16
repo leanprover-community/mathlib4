@@ -514,7 +514,7 @@ lemma exists_subset_finite_closure_of_subset_closure [M.Finitary] (hX : X.Finite
     obtain ⟨T, hT, hTfin, hXT⟩ := aux
     obtain ⟨I, hI⟩ := M.exists_basis' T
     exact ⟨_, hI.subset.trans hT, hTfin.subset hI.subset, hI.indep, by rwa [hI.closure_eq_closure]⟩
-  refine Finite.induction_on_subset X hX ⟨∅, by simp⟩ (@fun e Z heX _ heZ ⟨T, hTY, hTfin, hT⟩ ↦ ?_)
+  refine Finite.induction_on_subset X hX ⟨∅, by simp⟩ (fun {e Z} heX _ heZ ⟨T, hTY, hTfin, hT⟩ ↦ ?_)
   obtain ⟨S, hSY, hSfin, -, heS⟩ := exists_mem_finite_closure_of_mem_closure (hXY heX)
   exact ⟨S ∪ T, union_subset hSY hTY, hSfin.union hTfin, insert_subset
     (M.closure_mono subset_union_left heS) (hT.trans (M.closure_mono subset_union_right))⟩

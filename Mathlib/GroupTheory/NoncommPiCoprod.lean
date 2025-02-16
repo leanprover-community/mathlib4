@@ -249,7 +249,6 @@ theorem independent_range_of_coprime_order
     exact (orderOf_map_dvd _ _).trans orderOf_dvd_card
   change f = 1
   rw [← pow_one f, ← orderOf_dvd_iff_pow_eq_one]
-  -- Porting note: ouch, had to replace an ugly `convert`
   obtain ⟨c, hc⟩ := Nat.dvd_gcd hxp hxi
   use c
   rw [← hc]

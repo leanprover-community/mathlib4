@@ -191,7 +191,9 @@ lemma exact_of_comp_of_mem_range
     (h1 : g ∘ₗ f = 0) (h2 : ∀ x, g x = 0 → x ∈ range f) : Exact f g :=
   exact_of_comp_eq_zero_of_ker_le_range h1 h2
 
-variable {R M N P : Type*} [CommRing R]
+section Ring
+
+variable {R M N P : Type*} [Ring R]
   [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [Module R M] [Module R N] [Module R P]
 
 lemma exact_subtype_mkQ (Q : Submodule R N) :
@@ -212,6 +214,8 @@ lemma exact_zero_iff_injective {M N : Type*} (P : Type*)
     [Module R P] (f : M →ₗ[R] N) :
     Function.Exact (0 : P →ₗ[R] M) f ↔ Function.Injective f := by
   simp [← ker_eq_bot, exact_iff]
+
+end Ring
 
 @[simp]
 lemma exact_zero_iff_surjective {M N : Type*} (P : Type*)
