@@ -9,6 +9,7 @@ import Mathlib.Analysis.Calculus.FDeriv.Mul
 import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Algebra.BigOperators.Group.Finset
 
+
 /-!
 # Derivatives of multivariate polynomials
 
