@@ -4,31 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
 
-import Std.Data.HashMap
-import Lean.Data.RBMap
-import Lean.Data.RBTree
-import Lean.Data.Json.Printer
-import Lean.Util.Paths
+import Cache.Lean
 
 variable {α : Type}
-
-/-- Removes a parent path from the beginning of a path -/
-def System.FilePath.withoutParent (path parent : FilePath) : FilePath :=
-  let rec aux : List String → List String → List String
-    | z@(x :: xs), y :: ys => if x == y then aux xs ys else z
-    | [], _ => []
-    | x, [] => x
-  mkFilePath <| aux path.components parent.components
-
-def Nat.toHexDigits (n : Nat) : Nat → (res : String := "") → String
-  | 0, s => s
-  | len+1, s =>
-    let b := UInt8.ofNat (n >>> (len * 8))
-    Nat.toHexDigits n len <|
-      s.push (Nat.digitChar (b >>> 4).toNat) |>.push (Nat.digitChar (b &&& 15).toNat)
-
-def UInt64.asLTar (n : UInt64) : String :=
-  s!"{Nat.toHexDigits n.toNat 8}.ltar"
 
 open Lean
 
