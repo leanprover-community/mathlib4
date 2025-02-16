@@ -9,7 +9,6 @@ import Mathlib.CategoryTheory.Limits.MonoCoprod
 
 
 /-!
-
 # Distributive categories
 
 ## Main definitions
