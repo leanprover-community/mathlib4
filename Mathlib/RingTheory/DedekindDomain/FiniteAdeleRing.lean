@@ -403,7 +403,7 @@ theorem coe_algebraMap' (r : R_hat R K) :
   rfl
 
 instance : FaithfulSMul (R_hat R K) (FiniteAdeleRing R K) :=
-  FaithfulSMul.of_comp (fun (r : R_hat R K) => coe_algebraMap' r)
+  FaithfulSMul.of_comp coe_algebraMap'
 
 section Topology
 
