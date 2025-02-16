@@ -303,9 +303,8 @@ instance nonAssocRing [Ring k] [MulOneClass G] : NonAssocRing (MonoidAlgebra k G
   { MonoidAlgebra.addCommGroup,
     MonoidAlgebra.nonAssocSemiring with
     intCast := fun z => single 1 (z : k)
-    -- Porting note: Both were `simpa`.
-    intCast_ofNat := fun n => by simp; rfl
-    intCast_negSucc := fun n => by simp; rfl }
+    intCast_ofNat n := by simp [natCast_def]
+    intCast_negSucc n := by simp [natCast_def, one_def] }
 
 theorem intCast_def [Ring k] [MulOneClass G] (z : ℤ) :
     (z : MonoidAlgebra k G) = single (1 : G) (z : k) :=
@@ -1060,9 +1059,8 @@ instance nonAssocRing [Ring k] [AddZeroClass G] : NonAssocRing k[G] :=
   { AddMonoidAlgebra.addCommGroup,
     AddMonoidAlgebra.nonAssocSemiring with
     intCast := fun z => single 0 (z : k)
-    -- Porting note: Both were `simpa`.
-    intCast_ofNat := fun n => by simp; rfl
-    intCast_negSucc := fun n => by simp; rfl }
+    intCast_ofNat := fun n => by simp [natCast_def]
+    intCast_negSucc := fun n => by simp [natCast_def, one_def] }
 
 theorem intCast_def [Ring k] [AddZeroClass G] (z : ℤ) :
     (z : k[G]) = single (0 : G) (z : k) :=

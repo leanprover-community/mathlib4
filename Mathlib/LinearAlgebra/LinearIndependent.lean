@@ -1095,7 +1095,7 @@ theorem linearIndependent_sum {v : ι ⊕ ι' → M} :
     refine hlr _ (sum_mem fun i _ => ?_) _ (neg_mem <| sum_mem fun i _ => ?_) this
     · exact smul_mem _ _ (subset_span ⟨Sum.inl i, mem_range_self _, rfl⟩)
     · exact smul_mem _ _ (subset_span ⟨Sum.inr i, mem_range_self _, rfl⟩)
-  cases' i with i i
+  rcases i with i | i
   · exact hl _ _ A i (Finset.mem_preimage.2 hi)
   · rw [this, neg_eq_zero] at A
     exact hr _ _ A i (Finset.mem_preimage.2 hi)
@@ -1121,10 +1121,10 @@ theorem linearIndependent_iUnion_finite_subtype {ι : Type*} {f : ι → Set M}
   · apply directed_of_isDirected_le
     exact fun t₁ t₂ ht => iUnion_mono fun i => iUnion_subset_iUnion_const fun h => ht h
   intro t
-  induction' t using Finset.induction_on with i s his ih
-  · refine (linearIndependent_empty R M).mono ?_
-    simp
-  · rw [Finset.set_biUnion_insert]
+  induction t using Finset.induction_on with
+  | empty => exact (linearIndependent_empty R M).mono (by simp)
+  | @insert i s his ih =>
+    rw [Finset.set_biUnion_insert]
     refine (hl _).union ih ?_
     rw [span_iUnion₂]
     exact hd i s s.finite_toSet his
@@ -1431,10 +1431,8 @@ theorem linearIndependent_insert' {ι} {s : Set ι} {a : ι} {f : ι → V} (has
   classical
   rw [← linearIndependent_equiv ((Equiv.optionEquivSumPUnit _).trans (Equiv.Set.insert has).symm),
     linearIndependent_option]
-  -- Porting note: `simp [(· ∘ ·), range_comp f]` → `simp [(· ∘ ·)]; erw [range_comp f ..]; simp`
-  -- https://github.com/leanprover-community/mathlib4/issues/5164
   simp only [comp_def]
-  erw [range_comp f ((↑) : s → ι)]
+  rw [range_comp']
   simp
 
 theorem linearIndependent_insert (hxs : x ∉ s) :

@@ -158,6 +158,6 @@ lemma LSeriesSummable.sum (hf : ∀ i ∈ S, LSeriesSummable (f i) s) :
 @[simp]
 lemma LSeries_sum (hf : ∀ i ∈ S, LSeriesSummable (f i) s) :
     LSeries (∑ i ∈ S, f i) s = ∑ i ∈ S, LSeries (f i) s := by
-  simpa [LSeries, term_sum] using tsum_sum hf
+  simpa [LSeries, term_sum] using tsum_finsetSum hf
 
 end sum
