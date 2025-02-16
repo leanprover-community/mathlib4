@@ -617,6 +617,10 @@ end ker
 
 section subscheme
 
+namespace IdealSheafData
+
+open _root_.PrimeSpectrum Limits
+
 variable (I : IdealSheafData X)
 
 /-- `Spec (𝒪ₓ(U)/I(U))`, the object to be glued into the closed subscheme. -/
@@ -640,7 +644,7 @@ lemma ker_glueDataObjι_appTop (U : X.affineOpens) :
   let φ := CommRingCat.ofHom (Ideal.Quotient.mk (I.ideal U))
   rw [← Ideal.mk_ker (I := I.ideal _)]
   show RingHom.ker (Spec.map φ ≫ _).appTop.hom = (RingHom.ker φ.hom).comap _
-  rw [← RingHom.ker_comp_equiv _ (Scheme.ΓSpecIso _).commRingCatIsoToRingEquiv, RingHom.comap_ker,
+  rw [← RingHom.ker_equiv_comp _ (Scheme.ΓSpecIso _).commRingCatIsoToRingEquiv, RingHom.comap_ker,
     RingEquiv.toRingHom_eq_coe, Iso.commRingCatIsoToRingEquiv_toRingHom, ← CommRingCat.hom_comp,
     ← CommRingCat.hom_comp]
   congr 2
@@ -680,8 +684,8 @@ lemma isLocalization_away {U V : X.affineOpens}
   have : IsLocalization.Away f Γ(X, U) := by
     subst hU; exact V.2.isLocalization_of_eq_basicOpen _ _ rfl
   simp only [IsLocalization.Away, f', ← Submonoid.map_powers]
-  refine IsLocalization.of_surjective _ Ideal.Quotient.mk_surjective _ Ideal.Quotient.mk_surjective
-    ?_ ?_ _
+  refine IsLocalization.of_surjective _ _ _ Ideal.Quotient.mk_surjective _
+    Ideal.Quotient.mk_surjective ?_ ?_
   · simp [RingHom.algebraMap_toAlgebra, Ideal.quotientMap_comp_mk]; rfl
   · subst hU
     simp only [Ideal.mk_ker, RingHom.algebraMap_toAlgebra, I.map_ideal', le_refl]
@@ -882,11 +886,7 @@ def glueData : Scheme.GlueData where
         rw [pullback.condition_assoc, pullback.condition_assoc, X.homOfLE_ι]
   f_open i j := inferInstance
 
-/-- The closed immersion `𝒪ₓ/I ⟶ X`. -/
-noncomputable
-def gluedTo : I.glueData.glued ⟶ X :=
-  Multicoequalizer.desc _ _ (fun i ↦ I.glueDataObjι i ≫ i.1.ι)
-    (by simp [GlueData.diagram, pullback.condition_assoc])
+end IdealSheafData
 
 end subscheme
 
