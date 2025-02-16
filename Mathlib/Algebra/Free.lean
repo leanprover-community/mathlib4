@@ -585,6 +585,18 @@ theorem toList_injective : Function.Injective (toList : FreeSemigroup α → Lis
   rw [← fromList_toList x, ← fromList_toList y]
   simp only [h, fromList_toList]
 
+@[to_additive]
+theorem toList_fromList (l : List α) (h : ¬l.isEmpty) :
+    toList (fromList l h) = l := by
+  match l with
+  | a :: l =>
+    simp only [fromList_cons, List.isEmpty_eq_true]
+    rw [apply_dite toList]
+    rw [toList_of]
+    simp only [List.isEmpty_eq_true, toList_mul, toList_of, toList_fromList, List.cons_append,
+      List.nil_append, dite_eq_ite, ite_eq_right_iff, List.cons.injEq, List.nil_eq, true_and,
+      imp_self]
+
 /--
   defines a lexicographic order on free semi group.
   Not a default instance because it should be better to declare it explicitly.
