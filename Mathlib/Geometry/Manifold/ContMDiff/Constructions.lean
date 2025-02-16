@@ -394,15 +394,11 @@ lemma ContMDiff.inr : ContMDiff I I n (@Sum.inr M M') := by
   simp [extChartAt, sum_chartAt_inr, ← hC, Sum.inr_injective.extend_apply C, C.right_inv hy.1,
     I.right_inv hy.2]
 
-@[simp]
 lemma extChartAt_inl_apply {x y : M} :
-    (extChartAt I (.inl x : M ⊕ M')) (Sum.inl y) = (extChartAt I x) y := by
-  simp [sum_chartAt_inl_apply]
+    (extChartAt I (.inl x : M ⊕ M')) (Sum.inl y) = (extChartAt I x) y := by simp
 
-@[simp]
 lemma extChartAt_inr_apply {x y : M'} :
-    (extChartAt I (.inr x : M ⊕ M')) (Sum.inr y) = (extChartAt I x) y := by
-  simp [sum_chartAt_inr_apply]
+    (extChartAt I (.inr x : M ⊕ M')) (Sum.inr y) = (extChartAt I x) y := by simp
 
 lemma ContMDiff.sum_elim {f : M → N} {g : M' → N}
     (hf : ContMDiff I J n f) (hg : ContMDiff I J n g) : ContMDiff I J n (Sum.elim f g) := by
