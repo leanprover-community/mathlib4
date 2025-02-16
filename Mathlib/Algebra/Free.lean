@@ -594,6 +594,7 @@ theorem toList_injective : Function.Injective (toList : FreeSemigroup α → Lis
 def instLinearOrder [LinearOrder α] : LinearOrder (FreeSemigroup α) :=
   LinearOrder.lift' (toList : FreeSemigroup α → List α) toList_injective
 
+@[to_additive]
 theorem LinearOrder_def [LinearOrder α] (x y : FreeSemigroup α) :
     letI _ := @instLinearOrder α
     x ≤ y ↔ toList x ≤ toList y := Iff.rfl
