@@ -8,17 +8,27 @@ import Mathlib.MeasureTheory.Measure.Regular
 /-!
 # Tight sets of measures and tight measures
 
-The key definition of interest here is that of tight measures, `IsTight`.
+A set of measures is tight if for all `0 < ε`, there exists a compact set `K` such that for all
+measures in the set, the complement of `K` has measure at most `ε`. A single measure `μ` is said
+to be tight if the singleton `{μ}` is tight.
 
 ## Main definitions
 
-* `MeasureTheory.Measure.IsTight`: A measure `μ` is tight if for all `0 < ε`, there exists `K`
-  compact such that `μ Kᶜ ≤ ε`. This is defined in terms of filters.
-  `iff_exists_isCompact_measure_compl_le` establishes equivalence with the usual definition.
+* `MeasureTheory.IsTightMeasureSet`: A set of measures `S` is tight if for all `0 < ε`, there exists
+  a compact set `K` such that for all `μ ∈ S`, `μ Kᶜ ≤ ε`.
+  The definition uses an equivalent formulation with filters: `⨆ μ ∈ S, μ` tends to `0` along the
+  filter of cocompact sets.
+  `isTightMeasureSet_iff_exists_isCompact_measure_compl_le` establishes equivalence between
+  the two definitions.
+* `MeasureTheory.IsTight`: A measure `μ` is tight if for all `0 < ε`, there exists `K`
+  compact such that `μ Kᶜ ≤ ε`.
+  The definition uses an equivalent formulation with filters: `μ` tends to `0` along the
+  filter of cocompact sets.
+  `isTight_iff_exists_isCompact_measure_compl_le` establishes equivalence of the two definitions.
 
 ## Main statements
 
-* `IsTight.of_innerRegular`: Every finite, inner-regular measure on a T2 space is tight.
+* An instance showing that every finite, inner-regular measure on a T2 space is tight.
 
 -/
 
@@ -39,23 +49,27 @@ def IsTightMeasureSet (S : Set (Measure α)) : Prop :=
   Tendsto (⨆ μ ∈ S, μ) (cocompact α).smallSets (𝓝 0)
 
 /-- A measure `μ` is tight if for all `0 < ε`, there exists `K` compact such that `μ Kᶜ ≤ ε`.
-This is formulated in terms of filters for simplicity, and proven equivalent to the usual definition
-in `iff_exists_isCompact_measure_compl_le`. -/
+This is formulated in terms of filters, and proven equivalent to the usual definition
+in `isTight_iff_exists_isCompact_measure_compl_le`. -/
 class IsTight (μ : Measure α) : Prop where
   tendsto_cocompact : Tendsto μ (cocompact α).smallSets (𝓝 0)
+
+lemma Measure.tendsto_cocompact (μ : Measure α) [IsTight μ] :
+    Tendsto μ (cocompact α).smallSets (𝓝 0) := IsTight.tendsto_cocompact
 
 section IsTightMeasureSet
 
 @[simp]
 lemma IsTightMeasureSet_singleton_iff : IsTightMeasureSet {μ} ↔ IsTight μ := by
   simp only [IsTightMeasureSet, mem_singleton_iff, iSup_iSup_eq_left]
-  exact ⟨fun h ↦ ⟨h⟩, fun h ↦ h.tendsto_cocompact⟩
+  exact ⟨fun h ↦ ⟨h⟩, fun _ ↦ μ.tendsto_cocompact⟩
 
 lemma IsTightMeasureSet_singleton (μ : Measure α) [IsTight μ] : IsTightMeasureSet {μ} := by
   rw [IsTightMeasureSet_singleton_iff]
   infer_instance
 
-/-- The usual definition of tightness is equivalent to the filter definition. -/
+/-- A set of measures `S` is tight if for all `0 < ε`, there exists a compact set `K` such that
+for all `μ ∈ S`, `μ Kᶜ ≤ ε`. -/
 lemma IsTightMeasureSet_iff_exists_isCompact_measure_compl_le :
     IsTightMeasureSet S ↔ ∀ ε, 0 < ε → ∃ K : Set α, IsCompact K ∧ ∀ μ ∈ S, μ (Kᶜ) ≤ ε := by
   simp only [IsTightMeasureSet, ENNReal.tendsto_nhds ENNReal.zero_ne_top, gt_iff_lt, zero_add,
@@ -80,53 +94,50 @@ lemma IsTightMeasureSet.subset (hT : IsTightMeasureSet T) (hST : S ⊆ T) :
 
 end IsTightMeasureSet
 
-/-- The usual definition of tightness is equivalent to the filter definition. -/
-lemma IsTight_iff_exists_isCompact_measure_compl_le :
+/-- A measure `μ` is tight if for all `0 < ε`, there exists `K` compact such that `μ Kᶜ ≤ ε`. -/
+lemma isTight_iff_exists_isCompact_measure_compl_le :
     IsTight μ ↔ ∀ ε, 0 < ε → ∃ K : Set α, IsCompact K ∧ μ (Kᶜ) ≤ ε := by
-  rw [← IsTightMeasureSet_singleton_iff, IsTightMeasureSet_iff_exists_isCompact_measure_compl_le]
-  simp
+  simp [← IsTightMeasureSet_singleton_iff, IsTightMeasureSet_iff_exists_isCompact_measure_compl_le]
 
-lemma Measure.exists_isCompact_measure_compl_le [h : IsTight μ]
+lemma Measure.exists_isCompact_measure_compl_le (μ : Measure α) [h : IsTight μ]
     {ε : ℝ≥0∞} (hε : 0 < ε) :
     ∃ K : Set α, IsCompact K ∧ μ (Kᶜ) ≤ ε :=
-  IsTight_iff_exists_isCompact_measure_compl_le.mp h ε hε
+  isTight_iff_exists_isCompact_measure_compl_le.mp h ε hε
 
 namespace IsTight
 
 lemma of_exists_isCompact_measure_compl_le (h : ∀ ε, 0 < ε → ∃ K : Set α, IsCompact K ∧ μ Kᶜ ≤ ε) :
-    IsTight μ := IsTight_iff_exists_isCompact_measure_compl_le.mpr h
+    IsTight μ := isTight_iff_exists_isCompact_measure_compl_le.mpr h
 
-lemma exists_isCompact_nat [h : IsTight μ] (n : ℕ) :
-    ∃ K : Set α, IsCompact K ∧ μ Kᶜ ≤ 1/n :=
-  μ.exists_isCompact_measure_compl_le (by simp)
-
-lemma exists_countable_isSigmaCompact_cover [h : IsTight μ] :
+lemma exists_isSigmaCompact_measure_eq [IsTight μ] :
     ∃ M, IsSigmaCompact M ∧ μ M = μ Set.univ := by
-  choose! K hK using h.exists_isCompact_nat
-  use ⋃ n, K n, isSigmaCompact_iUnion_of_isCompact _ (fun _ ↦ (hK _).1 )
+  choose! K hK
+    using (fun (n : ℕ) ↦ μ.exists_isCompact_measure_compl_le (by simp : 0 < 1/(n : ℝ≥0∞)))
+  use ⋃ n, K n, isSigmaCompact_iUnion_of_isCompact _ fun _ ↦ (hK _).1
   rw [measure_congr]
   rw [ae_eq_univ, Set.compl_iUnion, ← le_zero_iff]
-  refine le_of_forall_lt' (fun ε hε ↦ ?_)
-  obtain ⟨n, hn⟩ := ENNReal.exists_inv_nat_lt hε.ne.symm
+  refine le_of_forall_lt' fun ε hε ↦ ?_
+  obtain ⟨n, hn⟩ := ENNReal.exists_inv_nat_lt hε.ne'
   exact lt_of_le_of_lt ((measure_mono <| Set.iInter_subset _ n).trans <|
     (inv_eq_one_div (n : ENNReal)).symm ▸ (hK n).2) hn
 
+/-- In a compact space, every measure is tight. -/
 instance [CompactSpace α] : IsTight μ := by
   rw [← IsTightMeasureSet_singleton_iff]
   exact .of_compactSpace
 
-lemma mono [hν : IsTight ν] (h : μ ≤ ν) : IsTight μ where
+lemma mono [IsTight ν] (h : μ ≤ ν) : IsTight μ where
   tendsto_cocompact := tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
-    hν.tendsto_cocompact (fun _ ↦ by simp) h
+    ν.tendsto_cocompact (fun _ ↦ by simp) h
 
 instance [IsTight μ] {s : Set α} : IsTight (μ.restrict s) := mono μ.restrict_le_self
 
-instance [hμ : IsTight μ] [hν : IsTight ν] : IsTight (μ + ν) where
+instance [IsTight μ] [IsTight ν] : IsTight (μ + ν) where
   tendsto_cocompact := by
-    simpa only [add_zero] using Filter.Tendsto.add hμ.tendsto_cocompact hν.tendsto_cocompact
+    simpa only [add_zero] using Filter.Tendsto.add μ.tendsto_cocompact ν.tendsto_cocompact
 
 instance (c : ℝ≥0) [hμ : IsTight μ] : IsTight (c • μ) := by
-  rw [IsTight_iff_exists_isCompact_measure_compl_le] at hμ ⊢
+  rw [isTight_iff_exists_isCompact_measure_compl_le] at hμ ⊢
   intro ε hε
   have hεc : 0 < ε / c := by simp [hε.ne']
   obtain ⟨K, hK, hKc⟩ := hμ (ε / c) hεc
@@ -134,7 +145,7 @@ instance (c : ℝ≥0) [hμ : IsTight μ] : IsTight (c • μ) := by
 
 /-- Tight measures on T2 spaces that assign finite measure to compact sets are finite. -/
 instance [TopologicalSpace α] [T2Space α] [OpensMeasurableSpace α]
-    [hk : IsFiniteMeasureOnCompacts μ] [h : IsTight μ] :
+    [hk : IsFiniteMeasureOnCompacts μ] [IsTight μ] :
     IsFiniteMeasure μ where
   measure_univ_lt_top := by
     obtain ⟨K, hK, hμ⟩ := μ.exists_isCompact_measure_compl_le zero_lt_one
@@ -144,25 +155,18 @@ instance [TopologicalSpace α] [T2Space α] [OpensMeasurableSpace α]
 /-- Inner regular finite measures on T2 spaces are tight. -/
 instance [T2Space α] [OpensMeasurableSpace α] [IsFiniteMeasure μ] [μ.InnerRegular] :
     IsTight μ := by
-  rw [IsTight_iff_exists_isCompact_measure_compl_le]
-  cases eq_zero_or_neZero μ with
-  | inl hμ =>
-    rw [hμ]
-    exact fun _ h_pos ↦ ⟨∅, isCompact_empty, h_pos.le⟩
-  | inr hμ =>
-    let r := μ Set.univ
-    have hr := NeZero.pos r
-    intro ε hε
-    cases lt_or_ge ε r with
-    | inl hεr =>
-      have hεr' : r - ε < r := ENNReal.sub_lt_self (measure_ne_top μ _) hr.ne' hε.ne'
-      obtain ⟨K, _, hK_compact, hKμ⟩ :=
-        (MeasurableSet.univ : MeasurableSet (Set.univ : Set α)).exists_lt_isCompact hεr'
-      refine ⟨K, hK_compact, ?_⟩
-      rw [measure_compl hK_compact.measurableSet (measure_ne_top μ _), tsub_le_iff_right]
-      rw [ENNReal.sub_lt_iff_lt_right (ne_top_of_lt hεr) hεr.le, add_comm] at hKμ
-      exact hKμ.le
-    | inr hεr => exact ⟨∅, isCompact_empty, by rwa [Set.compl_empty]⟩
+  refine of_exists_isCompact_measure_compl_le fun ε hε ↦ ?_
+  let r := μ Set.univ
+  cases lt_or_ge ε r with
+  | inl hεr =>
+    have hεr' : r - ε < r := ENNReal.sub_lt_self (measure_ne_top μ _) (zero_le'.trans_lt hεr).ne'
+      hε.ne'
+    obtain ⟨K, _, hK_compact, hKμ⟩ := MeasurableSet.univ.exists_lt_isCompact hεr'
+    refine ⟨K, hK_compact, ?_⟩
+    rw [measure_compl hK_compact.measurableSet (measure_ne_top μ _), tsub_le_iff_right]
+    rw [ENNReal.sub_lt_iff_lt_right (ne_top_of_lt hεr) hεr.le, add_comm] at hKμ
+    exact hKμ.le
+  | inr hεr => exact ⟨∅, isCompact_empty, by rwa [Set.compl_empty]⟩
 
 end IsTight
 
