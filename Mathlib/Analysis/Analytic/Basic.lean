@@ -81,7 +81,7 @@ namespace FormalMultilinearSeries
 
 variable [Ring 𝕜] [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F]
 variable [TopologicalSpace E] [TopologicalSpace F]
-variable [TopologicalAddGroup E] [TopologicalAddGroup F]
+variable [IsTopologicalAddGroup E] [IsTopologicalAddGroup F]
 variable [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F]
 
 /-- Given a formal multilinear series `p` and a vector `x`, then `p.sum x` is the sum `Σ pₙ xⁿ`. A
