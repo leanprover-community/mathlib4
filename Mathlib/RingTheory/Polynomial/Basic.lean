@@ -259,32 +259,22 @@ def coeffs (p : R[X]) : Finset R :=
   letI := Classical.decEq R
   Finset.image (fun n => p.coeff n) p.support
 
-@[deprecated (since := "2024-05-17")] noncomputable alias frange := coeffs
-
 @[simp]
 theorem coeffs_zero : coeffs (0 : R[X]) = ∅ :=
   rfl
 
-@[deprecated (since := "2024-05-17")] alias frange_zero := coeffs_zero
-
 theorem mem_coeffs_iff {p : R[X]} {c : R} : c ∈ p.coeffs ↔ ∃ n ∈ p.support, c = p.coeff n := by
   simp [coeffs, eq_comm, (Finset.mem_image)]
-
-@[deprecated (since := "2024-05-17")] alias mem_frange_iff := mem_coeffs_iff
 
 theorem coeffs_one : coeffs (1 : R[X]) ⊆ {1} := by
   classical
     simp_rw [coeffs, Finset.image_subset_iff]
     simp_all [coeff_one]
 
-@[deprecated (since := "2024-05-17")] alias frange_one := coeffs_one
-
 theorem coeff_mem_coeffs (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n ∈ p.coeffs := by
   classical
   simp only [coeffs, exists_prop, mem_support_iff, Finset.mem_image, Ne]
   exact ⟨n, h, rfl⟩
-
-@[deprecated (since := "2024-05-17")] alias coeff_mem_frange := coeff_mem_coeffs
 
 theorem coeffs_monomial (n : ℕ) {c : R} (hc : c ≠ 0) : (monomial n c).coeffs = {c} := by
   rw [coeffs, support_monomial n hc]
@@ -491,8 +481,6 @@ theorem coeffs_ofSubring {p : T[X]} : (↑(p.ofSubring T).coeffs : Set R) ⊆ T 
   rw [← h'n, coeff_ofSubring]
   exact Subtype.mem (coeff p n : T)
 
-@[deprecated (since := "2024-05-17")] alias frange_ofSubring := coeffs_ofSubring
-
 end Ring
 
 end Polynomial
@@ -592,7 +580,7 @@ theorem mem_leadingCoeffNth (n : ℕ) (x) :
       rw [leadingCoeff_zero, eq_comm]
       exact coeff_eq_zero_of_degree_lt hpdeg
     · refine ⟨p, hpI, le_of_eq hpdeg, ?_⟩
-      rw [Polynomial.leadingCoeff, natDegree, hpdeg, Nat.cast_withBot, WithBot.unbot'_coe]
+      rw [Polynomial.leadingCoeff, natDegree, hpdeg, Nat.cast_withBot, WithBot.unbotD_coe]
   · rintro ⟨p, hpI, hpdeg, rfl⟩
     have : natDegree p + (n - natDegree p) = n :=
       add_tsub_cancel_of_le (natDegree_le_of_degree_le hpdeg)
@@ -860,7 +848,7 @@ end MvPolynomial
 
 end Prime
 
-/-- Hilbert basis theorem: a polynomial ring over a noetherian ring is a noetherian ring. -/
+/-- **Hilbert basis theorem**: a polynomial ring over a Noetherian ring is a Noetherian ring. -/
 protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNoetherianRing R[X] :=
   isNoetherianRing_iff.2
     ⟨fun I : Ideal R[X] =>

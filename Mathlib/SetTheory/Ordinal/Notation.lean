@@ -294,21 +294,21 @@ theorem cmp_compares : ∀ (a b : ONote) [NF a] [NF b], (cmp a b).Compares a b
       unfold _root_.cmp; cases nh : cmpUsing (· < ·) (n₁ : ℕ) n₂ <;>
       rw [cmpUsing, ite_eq_iff, not_lt] at nh
       case lt =>
-        cases' nh with nh nh
+        rcases nh with nh | nh
         · exact oadd_lt_oadd_2 h₁ nh.left
-        · rw [ite_eq_iff] at nh; cases' nh.right with nh nh <;> cases nh <;> contradiction
+        · rw [ite_eq_iff] at nh; rcases nh.right with nh | nh <;> cases nh <;> contradiction
       case gt =>
-        cases' nh with nh nh
+        rcases nh with nh | nh
         · cases nh; contradiction
         · cases' nh with _ nh
-          rw [ite_eq_iff] at nh; cases' nh with nh nh
+          rw [ite_eq_iff] at nh; rcases nh with nh | nh
           · exact oadd_lt_oadd_2 h₂ nh.left
           · cases nh; contradiction
-      cases' nh with nh nh
+      rcases nh with nh | nh
       · cases nh; contradiction
       cases' nh with nhl nhr
       rw [ite_eq_iff] at nhr
-      cases' nhr with nhr nhr
+      rcases nhr with nhr | nhr
       · cases nhr; contradiction
       obtain rfl := Subtype.eq (nhl.eq_of_not_lt nhr.1)
       have IHa := @cmp_compares _ _ h₁.snd h₂.snd
@@ -749,11 +749,11 @@ instance nf_opow (o₁ o₂) [NF o₁] [NF o₂] : NF (o₁ ^ o₂) := by
   haveI := (nf_repr_split' e₂).1
   cases' a with a0 n a'
   · cases' m with m
-    · by_cases o₂ = 0 <;> simp only [(· ^ ·), Pow.pow, pow, opow, opowAux2, *] <;> decide
+    · by_cases o₂ = 0 <;> simp only [(· ^ ·), Pow.pow, opow, opowAux2, *] <;> decide
     · by_cases m = 0
-      · simp only [(· ^ ·), Pow.pow, pow, opow, opowAux2, *, zero_def]
+      · simp only [(· ^ ·), Pow.pow, opow, opowAux2, *, zero_def]
         decide
-      · simp only [(· ^ ·), Pow.pow, pow, opow, opowAux2, mulNat_eq_mul, ofNat, *]
+      · simp only [(· ^ ·), Pow.pow, opow, opowAux2, mulNat_eq_mul, ofNat, *]
         infer_instance
   · simp only [(· ^ ·), Pow.pow, opow, opowAux2, e₁, split_eq_scale_split' e₂, mulNat_eq_mul]
     have := na.fst
@@ -948,7 +948,7 @@ def fundamentalSequence : ONote → (Option ONote) ⊕ (ℕ → ONote)
 
 private theorem exists_lt_add {α} [hα : Nonempty α] {o : Ordinal} {f : α → Ordinal}
     (H : ∀ ⦃a⦄, a < o → ∃ i, a < f i) {b : Ordinal} ⦃a⦄ (h : a < b + o) : ∃ i, a < b + f i := by
-  cases' lt_or_le a b with h h'
+  rcases lt_or_le a b with h | h'
   · obtain ⟨i⟩ := id hα
     exact ⟨i, h.trans_le (le_add_right _ _)⟩
   · rw [← Ordinal.add_sub_cancel_of_le h', add_lt_add_iff_left] at h

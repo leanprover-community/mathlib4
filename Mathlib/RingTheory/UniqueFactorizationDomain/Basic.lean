@@ -28,6 +28,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
   to get relatively prime elements.
 -/
 
+assert_not_exists Field
 
 variable {α : Type*}
 
@@ -347,7 +348,7 @@ theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
           rw [con, Multiset.prod_zero]
         · intro x hadd
           rw [Multiset.mem_add] at hadd
-          cases' hadd with h h <;> apply (Classical.choose_spec (pf _ _)).1 _ h <;> assumption
+          rcases hadd with h | h <;> apply (Classical.choose_spec (pf _ _)).1 _ h <;> assumption
         · rw [Multiset.prod_add]
           trans a * c
           · apply Associated.mul_mul <;> apply (Classical.choose_spec (pf _ _)).2 <;> assumption
@@ -464,7 +465,7 @@ theorem exists_reduced_factors :
     · obtain ⟨a', b', c', coprime, rfl, rfl⟩ := ih_a a_ne_zero b
       refine ⟨p * a', b', c', ?_, mul_left_comm _ _ _, rfl⟩
       intro q q_dvd_pa' q_dvd_b'
-      cases' p_prime.left_dvd_or_dvd_right_of_dvd_mul q_dvd_pa' with p_dvd_q q_dvd_a'
+      rcases p_prime.left_dvd_or_dvd_right_of_dvd_mul q_dvd_pa' with p_dvd_q | q_dvd_a'
       · have : p ∣ c' * b' := dvd_mul_of_dvd_right (p_dvd_q.trans q_dvd_b') _
         contradiction
       exact coprime q_dvd_a' q_dvd_b'
