@@ -225,7 +225,7 @@ variable (S) in
 /-- The seminormed group structure on the quotient by a subgroup. -/
 @[to_additive "The seminormed group structure on the quotient by an additive subgroup."]
 noncomputable instance instSeminormedCommGroup : SeminormedCommGroup (M ⧸ S) where
-  toUniformSpace := TopologicalGroup.toUniformSpace (M ⧸ S)
+  toUniformSpace := IsTopologicalGroup.toUniformSpace (M ⧸ S)
   __ := groupSeminorm.toSeminormedCommGroup
   uniformity_dist := by
     rw [uniformity_eq_comap_nhds_one', (nhds_one_hasBasis.comap _).eq_biInf]
@@ -349,26 +349,9 @@ theorem quotient_nhd_basis (S : AddSubgroup M) :
     (𝓝 (0 : M ⧸ S)).HasBasis (fun ε ↦ 0 < ε) fun ε ↦ { x | ‖x‖ < ε } := nhds_zero_hasBasis
 
 /-- The seminormed group structure on the quotient by an additive subgroup. -/
-noncomputable instance AddSubgroup.seminormedAddCommGroupQuotient (S : AddSubgroup M) :
-    SeminormedAddCommGroup (M ⧸ S) where
-  dist x y := ‖x - y‖
-  dist_self x := by simp only [norm_mk_zero, sub_self]
-  dist_comm := quotient_norm_sub_rev
-  dist_triangle x y z := by
-    refine le_trans ?_ (quotient_norm_add_le _ _ _)
-    exact (congr_arg norm (sub_add_sub_cancel _ _ _).symm).le
-  edist_dist x y := by exact ENNReal.coe_nnreal_eq _
-  toUniformSpace := IsTopologicalAddGroup.toUniformSpace (M ⧸ S)
-  uniformity_dist := by
-    rw [uniformity_eq_comap_nhds_zero', ((quotient_nhd_basis S).comap _).eq_biInf]
-    simp only [dist, quotient_norm_sub_rev (Prod.fst _), preimage_setOf_eq]
-
--- This is a sanity check left here on purpose to ensure that potential refactors won't destroy
--- this important property.
-example (S : AddSubgroup M) :
-    (instTopologicalSpaceQuotient : TopologicalSpace <| M ⧸ S) =
-      S.seminormedAddCommGroupQuotient.toUniformSpace.toTopologicalSpace :=
-  rfl
+@[deprecated QuotientAddGroup.instSeminormedAddCommGroup (since := "2025-02-02")]
+noncomputable def AddSubgroup.seminormedAddCommGroupQuotient (S : AddSubgroup M) :
+    SeminormedAddCommGroup (M ⧸ S) := inferInstance
 
 /-- The quotient in the category of normed groups. -/
 @[deprecated QuotientAddGroup.instNormedAddCommGroup (since := "2025-02-02")]
