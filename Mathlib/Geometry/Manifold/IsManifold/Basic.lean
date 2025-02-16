@@ -642,7 +642,6 @@ theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCor
     (he' : e' ∈ contDiffGroupoid n I') : e.prod e' ∈ contDiffGroupoid n (I.prod I') := by
   obtain ⟨he, he_symm⟩ := he
   obtain ⟨he', he'_symm⟩ := he'
-  simp only at he he_symm he' he'_symm
   constructor <;> simp only [PartialEquiv.prod_source, PartialHomeomorph.prod_toPartialEquiv,
     contDiffPregroupoid]
   · have h3 := ContDiffOn.prod_map he he'
