@@ -220,12 +220,12 @@ theorem Balanced.absorbs_self (hA : Balanced 𝕜 A) : Absorbs 𝕜 A A :=
 theorem Balanced.smul_mem_iff (hs : Balanced 𝕜 s) (h : ‖a‖ = ‖b‖) : a • x ∈ s ↔ b • x ∈ s :=
   ⟨(hs.smul_mem_mono · h.ge), (hs.smul_mem_mono · h.le)⟩
 
-theorem closedBall_Balanced : Balanced 𝕜 (Metric.closedBall (0 : 𝕜) 1) :=
+theorem closedBall_Balanced (r : ℝ) : Balanced 𝕜 (Metric.closedBall (0 : 𝕜) r) :=
   fun k hk x ⟨y, hy1, hy2⟩ => by
       simp only [smul_eq_mul] at hy2
       subst hy2
       simp_all only [Metric.mem_closedBall, dist_zero_right, norm_mul]
-      rw [← one_mul 1]
+      rw [← one_mul r]
       apply mul_le_mul hk hy1 (norm_nonneg y) (zero_le_one' ℝ)
 
 variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
