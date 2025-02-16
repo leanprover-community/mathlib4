@@ -362,7 +362,8 @@ end decompositionIdeal
 
 section inertiaGroup
 
-variable (A : Type*) {B : Type*} [CommRing A] [CommRing B] [Algebra A B] (P : Ideal B)
+variable (A : Type*) [CommRing A] (p : Ideal A) {B : Type*} [CommRing B] [Algebra A B]
+  (P : Ideal B) [P.LiesOver p]
   (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L]
   [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
   [IsIntegralClosure B A L] [Algebra.IsAlgebraic K L]
@@ -389,11 +390,16 @@ theorem inertiaGroup_le_decompositionGroup : inertiaGroup A P K L ≤ decomposit
     Submodule.sub_mem_iff_left P (Ideal.Quotient.eq.mp (((inertiaGroup A P K L).inv_mem hs) x))
   rw [sub_sub_cancel] at h
   exact mem_pointwise_smul_iff_inv_smul_mem.trans h.symm
+/-
+variable {A}
 
 /-- If `P` is the unique ideal lying over `p`, then the `inertiaGroup` is equal to the
 kernel of the homomorphism `residueGaloisHom`. -/
-theorem inertiaGroup_eq_ker {K L : Type*} [Field K] [Field L] [Algebra K L]
-    (p : Ideal (𝓞 K)) (P : Ideal (𝓞 L)) [p.IsMaximal] [P.IsMaximal] [hp : P unique_lies_over p] : inertiaGroup K P = MonoidHom.ker (residueGaloisHom p P) := by
+theorem inertiaGroup_eq_ker :
+    letI := IsIntegralClosure.MulSemiringAction A K L B;
+    letI : SMulCommClass (L ≃ₐ[K] L) A B :=
+    SMul.comp.smulCommClass (galRestrict A K L B).toMonoidHom
+    inertiaGroup A P K L = MonoidHom.ker (Ideal.Quotient.stabilizerHom P p (L ≃ₐ[K] L)) := by
   ext σ
   rw [MonoidHom.mem_ker, AlgEquiv.ext_iff]
   constructor
@@ -408,7 +414,8 @@ theorem inertiaGroup_eq_ker {K L : Type*} [Field K] [Field L] [Algebra K L]
     rfl
 
 /-- If `P` is the unique ideal lying over `p`, then the `inertiaGroup K P` is a normal subgroup. -/
-theorem inertiaGroup_normal {K L : Type*} [Field K] [Field L] [Algebra K L] (p : Ideal (𝓞 K)) (P : Ideal (𝓞 L)) [p.IsMaximal] [P.IsMaximal]
+theorem inertiaGroup_normal {K L : Type*} [Field K] [Field L] [Algebra K L]
+(p : Ideal (𝓞 K)) (P : Ideal (𝓞 L)) [p.IsMaximal] [P.IsMaximal]
     [hp : P unique_lies_over p] : Subgroup.Normal (inertiaGroup K P) := by
   rw [inertiaGroup_eq_ker p P]
   exact MonoidHom.normal_ker (residueGaloisHom p P)
@@ -424,5 +431,5 @@ noncomputable def aut_quoutient_inertiaGroup_equiv_residueField_aut [Normal K L]
 def inertiaFieldAux (K : Type*) {L : Type*} [Field K] [Field L] [Algebra K L]
     (P : Ideal (𝓞 L)) [P.IsMaximal] : IntermediateField K L :=
   fixedField (inertiaGroup K P)
-
+ -/
 end inertiaGroup
