@@ -109,7 +109,7 @@ end
 
 /-- The condition that the image of the map `e.f` of an embedding of
 complex shapes `e : Embedding c c'` is stable by `c'.next`. -/
-class IsTruncGE extends e.IsRelIff : Prop where
+class IsTruncGE : Prop extends e.IsRelIff where
   mem_next {j : ι} {k' : ι'} (h : c'.Rel (e.f j) k') :
     ∃ k, e.f k = k'
 
@@ -118,7 +118,7 @@ lemma mem_next [e.IsTruncGE] {j : ι} {k' : ι'} (h : c'.Rel (e.f j) k') : ∃ k
 
 /-- The condition that the image of the map `e.f` of an embedding of
 complex shapes `e : Embedding c c'` is stable by `c'.prev`. -/
-class IsTruncLE extends e.IsRelIff : Prop where
+class IsTruncLE : Prop extends e.IsRelIff where
   mem_prev {i' : ι'} {j : ι} (h : c'.Rel i' (e.f j)) :
     ∃ i, e.f i = i'
 

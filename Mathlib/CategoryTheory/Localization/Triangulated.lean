@@ -35,8 +35,8 @@ namespace MorphismProperty
 
 /-- Given `W` is a class of morphisms in a pretriangulated category `C`, this is the condition
 that `W` is compatible with the triangulation on `C`. -/
-class IsCompatibleWithTriangulation (W : MorphismProperty C)
-    extends W.IsCompatibleWithShift ℤ : Prop where
+class IsCompatibleWithTriangulation (W : MorphismProperty C) : Prop
+    extends W.IsCompatibleWithShift ℤ where
   compatible_with_triangulation (T₁ T₂ : Triangle C)
     (_ : T₁ ∈ distTriang C) (_ : T₂ ∈ distTriang C)
     (a : T₁.obj₁ ⟶ T₂.obj₁) (b : T₁.obj₂ ⟶ T₂.obj₂) (_ : W a) (_ : W b)
