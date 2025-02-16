@@ -186,12 +186,10 @@ variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
 
 variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F] [IsScalarTower ℝ 𝕜 𝕜]
 
-#check Seminorm.balanced_closedBall_zero
-
 theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
   rw [polar_eq_biInter_preimage]
   exact AbsConvex.iInter₂ fun i hi =>
-    ⟨Balanced.mulActionHom_preimage (E := F) (closedBall_Balanced 1) (𝕜 := 𝕜) (B i),
+    ⟨Balanced.mulActionHom_preimage (E := F) (Metric.balanced_closedBall_zero 1) (𝕜 := 𝕜) (B i),
       Convex.linear_preimage (convex_closedBall _ _) (B i)⟩
 
 /-
