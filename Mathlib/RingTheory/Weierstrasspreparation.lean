@@ -791,3 +791,5 @@ lemma weierstrass_preparation_strong_uniq [hmax : m.IsMaximal] [IsAdicComplete m
   let _ : Nontrivial R := nontrivial_of_ne 0 1 (ne_of_mem_of_not_mem (Submodule.zero_mem m)
     ((Ideal.ne_top_iff_one m).mp (Ideal.IsMaximal.ne_top hmax)))
   exact ⟨mon, deg_eq_find Ideal.IsPrime.ne_top' f ntriv h g mon distinguish eq, distinguish, eq⟩
+
+end
