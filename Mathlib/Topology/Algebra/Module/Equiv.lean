@@ -920,14 +920,31 @@ theorem inverse_equiv (e : M ≃L[R] M₂) : inverse (e : M →L[R] M₂) = e.sy
 
 @[deprecated (since := "2024-10-29")] alias inverse_non_equiv := inverse_of_not_isInvertible
 
+@[simp]
+theorem isInvertible_zero_iff :
+    IsInvertible (0 : M →L[R] M₂) ↔ Subsingleton M ∧ Subsingleton M₂ := by
+  refine ⟨fun ⟨e, he⟩ ↦ ?_, ?_⟩
+  · have A : Subsingleton M := by
+      refine ⟨fun x y ↦ e.injective ?_⟩
+      simp [he, ← ContinuousLinearEquiv.coe_coe]
+    exact ⟨A, e.toEquiv.symm.subsingleton⟩
+  · rintro ⟨hM, hM₂⟩
+    let e : M ≃L[R] M₂ :=
+    { toFun := 0
+      invFun := 0
+      left_inv x := Subsingleton.elim _ _
+      right_inv x := Subsingleton.elim _ _
+      map_add' x y := Subsingleton.elim _ _
+      map_smul' c x := Subsingleton.elim _ _ }
+    refine ⟨e, ?_⟩
+    ext x
+    exact Subsingleton.elim _ _
+
 @[simp] theorem inverse_zero : inverse (0 : M →L[R] M₂) = 0 := by
   by_cases h : IsInvertible (0 : M →L[R] M₂)
-  · rcases h with ⟨e', he'⟩
-    simp only [← he', inverse_equiv]
-    ext v
-    apply e'.injective
-    rw [← ContinuousLinearEquiv.coe_coe, he']
-    rfl
+  · rcases isInvertible_zero_iff.1 h with ⟨hM, hM₂⟩
+    ext x
+    exact Subsingleton.elim _ _
   · exact inverse_of_not_isInvertible h
 
 lemma IsInvertible.comp {g : M₂ →L[R] M₃} {f : M →L[R] M₂}
