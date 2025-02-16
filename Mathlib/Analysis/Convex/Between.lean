@@ -583,6 +583,27 @@ section LinearOrderedField
 variable [LinearOrderedField R] [AddCommGroup V] [Module R V] [AddTorsor V P] {x y z : P}
 variable {R}
 
+lemma wbtw_of_le_of_le {x y z : R} (hxy : x ≤ y) (hyz : y ≤ z) : Wbtw R x y z := by
+  convert (wbtw_mul_sub_add_iff (r := (y - x) / (z - x))).2 ?_
+  · by_cases hzx : z = x
+    · subst hzx
+      simp only [sub_self, div_zero, mul_zero, zero_add]
+      exact le_antisymm hyz hxy
+    · have hzx' : z - x ≠ 0 := by simpa [sub_eq_zero]
+      field_simp
+  · by_cases hzx : z = x
+    · simp [hzx]
+    · right
+      have hzx0 : z - x ≠ 0 := by simpa [sub_eq_zero]
+      have hyx : 0 ≤ y - x := by simp [hxy]
+      have hzx' : 0 ≤ z - x := by simp [hxy.trans hyz]
+      have hzxlt : 0 < z - x := hzx'.lt_of_ne hzx0.symm
+      refine ⟨div_nonneg hyx hzx', (div_le_one hzxlt).2 ?_⟩
+      simpa
+
+lemma sbtw_of_lt_of_lt {x y z : R} (hxy : x < y) (hyz : y < z) : Sbtw R x y z :=
+  ⟨wbtw_of_le_of_le hxy.le hyz.le, hxy.ne', hyz.ne⟩
+
 theorem wbtw_iff_left_eq_or_right_mem_image_Ici {x y z : P} :
     Wbtw R x y z ↔ x = y ∨ z ∈ lineMap x y '' Set.Ici (1 : R) := by
   refine ⟨fun h => ?_, fun h => ?_⟩
