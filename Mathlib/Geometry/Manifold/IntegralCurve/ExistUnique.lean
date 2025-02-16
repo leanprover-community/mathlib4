@@ -42,6 +42,7 @@ Lee. May require submanifolds.
 integral curve, vector field, local existence, uniqueness
 -/
 
+
 open scoped Topology
 
 open Function Set
@@ -63,81 +64,80 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt' [CompleteSpace E]
     ∃ u ∈ 𝓝 x₀, ∃ ε > (0 : ℝ), ∃ γ : M → ℝ → M, ∀ x ∈ u, γ x t₀ = x ∧
       IsIntegralCurveOn (γ x) v (Ioo (t₀ - ε) (t₀ + ε)) := by
   -- express the differentiability of the vector field `v` in the local chart
-  rw [contMDiffAt_iff] at hv
-  obtain ⟨_, hv⟩ := hv
+  replace hv := contMDiffAt_iff.mp hv |>.2.contDiffAt (range_mem_nhds_isInteriorPoint hx)
   -- use Picard-Lindelöf theorem to extract a flow in the local chart
-  obtain ⟨f, hf⟩ := hv.contDiffAt (range_mem_nhds_isInteriorPoint hx)
-    |>.snd.exists_eventually_eq_hasDerivAt_continuousAt t₀
-  simp_rw [← and_assoc] at hf
-  obtain ⟨hf1, hf2⟩ := Filter.eventually_and.mp hf
-  have hcont := hf2.self_of_nhds
-  rw [continuousAt_def] at hcont
+  have ⟨f, hf⟩ := hv.snd.exists_eventually_eq_hasDerivAt_continuousAt t₀
+  clear hv
+  simp only [Filter.eventually_and] at hf
+  have ⟨hf1, hf2, hf3⟩ := hf
+  -- `f ⟨x, t⟩` stays within `interior (extChartAt I x₀).target` if `⟨x, t⟩` is close to `⟨x₀, t₀⟩`
   have hnhds : f ⁻¹' (interior (extChartAt I x₀).target) ∈ 𝓝 ⟨extChartAt I x₀ x₀, t₀⟩ := by
-    apply hcont
+    apply hf3.self_of_nhds.preimage_mem_nhds
     apply isOpen_interior.mem_nhds
-    rwa [Filter.eventually_and.mp hf1 |>.1.self_of_nhds, ← I.isInteriorPoint_iff]
+    rwa [hf1.self_of_nhds, ← I.isInteriorPoint_iff]
   rw [← eventually_mem_nhds_iff] at hnhds
-  -- obtain a neighbourhood `s` so that the above conditions both hold in `s`
-  obtain ⟨us, hus, haux⟩ := (hf1.and hnhds).exists_mem
-  obtain ⟨u, hu, s, hs, hus⟩ := mem_nhds_prod_iff.mp hus -- could be a lemma?
-  -- MODIFY: prove that `γ := (extChartAt I x₀).symm ∘ f` is a desired integral curve
-  refine ⟨(extChartAt I x₀) ⁻¹' u ∩ (extChartAt I x₀).source, ?_, ?_⟩
+  have hfmem : ∀ᶠ zt in 𝓝 ⟨extChartAt I x₀ x₀, t₀⟩, f zt ∈ interior (extChartAt I x₀).target :=
+    hnhds.mono fun _ h ↦ mem_preimage.mp <| mem_of_mem_nhds h
+  -- obtain a neighbourhood `u ×ˢ s` in which all of the above conditions hold
+  replace hf := hf1.and <| hf2.and hfmem
+  clear hf1 hf2 hf3
+  rw [nhds_prod_eq] at hf
+  replace ⟨u, hu, s, hs, hf⟩ := Filter.eventually_prod_iff_exists_mem.mp hf
+  -- construct witnesses
+  let U := (extChartAt I x₀) ⁻¹' u ∩ (extChartAt I x₀).source
+  have ⟨ε, hε, hεs⟩ := Metric.mem_nhds_iff.mp hs
+  rw [Real.ball_eq_Ioo] at hεs
+  let γ (x) (t) := (extChartAt I x₀).symm <| f ⟨extChartAt I x₀ x, t⟩
+  -- collect useful formulas
+  have hmap : MapsTo (extChartAt I x₀) U u := by
+    intro x ⟨hx1, hx2⟩
+    rwa [← mem_preimage]
+  have ht₀ {x} (hx : x ∈ U) {t} (ht : t ∈ Ioo (t₀ - ε) (t₀ + ε)) :=
+    hf _ (hmap hx) _ (hεs ht) |>.1
+  have hderiv {x} (hx : x ∈ U) {t} (ht : t ∈ Ioo (t₀ - ε) (t₀ + ε)) :=
+    hf _ (hmap hx) _ (hεs ht) |>.2.1
+  have hmem {x} (hx : x ∈ U) {t} (ht : t ∈ Ioo (t₀ - ε) (t₀ + ε)) :
+      f (extChartAt I x₀ x, t) ∈ interior (extChartAt I x₀).target :=
+    hf _ (hmap hx) _ (hεs ht) |>.2.2
+  have hmem' {x} (hx : x ∈ U) {t} (ht : t ∈ Ioo (t₀ - ε) (t₀ + ε)) :
+      f (extChartAt I x₀ x, t) ∈ (extChartAt I x₀).target :=
+    mem_of_mem_of_subset (hmem hx ht) interior_subset
+  -- main proof
+  refine ⟨U, ?_, ε, hε, γ, fun x hx ↦ ⟨?_, fun t ht ↦ ?_⟩⟩
   · apply Filter.inter_mem _ (extChartAt_source_mem_nhds _)
     exact continuousAt_extChartAt _ |>.preimage_mem_nhds hu
-  · obtain ⟨ε, hε, hεs⟩ := Metric.mem_nhds_iff.mp hs
-    rw [Real.ball_eq_Ioo] at hεs
-    refine ⟨ε, hε, fun x t ↦ (extChartAt I x₀).symm <| f ⟨extChartAt I x₀ x, t⟩, fun x hx ↦ ?_⟩
-    have hmem : ⟨extChartAt I x₀ x, t₀⟩ ∈ us := by
-      apply mem_of_mem_of_subset _ hus
-      apply mk_mem_prod (mem_preimage.mp hx.1)
-      apply mem_of_mem_of_subset _ hεs
+  · symm
+    have : t₀ ∈ Ioo (t₀ - ε) (t₀ + ε) := by
       rw [← Real.ball_eq_Ioo]
       exact Metric.mem_ball_self hε
-    have hf3 := mem_preimage.mp <| mem_of_mem_nhds <| haux _ hmem |>.2
-    have hf3' := mem_of_mem_of_subset hf3 interior_subset
-    constructor
-    · beta_reduce
-      symm
-      rw [PartialEquiv.eq_symm_apply _ hx.2 hf3']
-      symm
-      rw [haux _ hmem |>.1.1]
-    · intro t ht
-      have hmem' : ⟨extChartAt I x₀ x, t⟩ ∈ us := by
-        apply mem_of_mem_of_subset _ hus
-        apply mk_mem_prod (mem_preimage.mp hx.1)
-        exact mem_of_mem_of_subset ht hεs
-      have hf3'' := mem_of_mem_of_subset (mem_preimage.mp <| mem_of_mem_nhds <| haux _ hmem' |>.2)
-        interior_subset
-      let xₜ : M := (extChartAt I x₀).symm <| f ⟨extChartAt I x₀ x, t⟩
-      have h : HasDerivAt (f ⟨extChartAt I x₀ x, ·⟩) (x := t) <|
-        fderivWithin ℝ (extChartAt I x₀ ∘ (extChartAt I xₜ).symm) (range I)
-          (extChartAt I xₜ xₜ) (v xₜ) := haux _ hmem' |>.1.2
-      -- express the derivative of the integral curve in the local chart
-      refine ⟨?_, HasDerivWithinAt.hasFDerivWithinAt ?_⟩
-      · apply ContinuousAt.comp _ h.continuousAt
-        exact continuousAt_extChartAt_symm'' hf3''
-      · have hft1 := mem_preimage.mp <|
-          mem_of_mem_of_subset hf3'' (extChartAt I x₀).target_subset_preimage_source
-        have hft2 := mem_extChartAt_source (I := I) xₜ
-        simp only [mfld_simps, hasDerivWithinAt_univ]
-        show HasDerivAt ((extChartAt I xₜ ∘ (extChartAt I x₀).symm) ∘ (f ⟨extChartAt I x₀ x, ·⟩))
-          (v xₜ) t
-        -- express `v (γ t)` as `D⁻¹ D (v (γ t))`, where `D` is a change of coordinates, so we can use
-        -- `HasFDerivAt.comp_hasDerivAt` on `h`
-        rw [← tangentCoordChange_self (I := I) (x := xₜ) (z := xₜ) (v := v xₜ) hft2,
-          ← tangentCoordChange_comp (x := x₀) ⟨⟨hft2, hft1⟩, hft2⟩]
-        apply HasFDerivAt.comp_hasDerivAt _ _ h
-        apply HasFDerivWithinAt.hasFDerivAt (s := range I)
-        -- apply HasFDerivWithinAt.hasFDerivAt (s := range I) _ <|
-        --   mem_nhds_iff.mpr ⟨interior (extChartAt I x₀).target,
-        --     subset_trans interior_subset (extChartAt_target_subset_range ..),
-        --     isOpen_interior, hf3⟩
-        · rw [← (extChartAt I x₀).right_inv hf3'']
-          exact hasFDerivWithinAt_tangentCoordChange ⟨hft1, hft2⟩
-        · rw [mem_nhds_iff]
-          refine ⟨interior (extChartAt I x₀).target,
-            subset_trans interior_subset (extChartAt_target_subset_range ..), isOpen_interior, ?_⟩
-          exact mem_preimage.mp <| mem_of_mem_nhds <| haux _ hmem' |>.2 -- define another `have`
+    rw [PartialEquiv.eq_symm_apply _ hx.2 (hmem' hx this)]
+    symm
+    rw [ht₀ hx this]
+  · let xₜ : M := (extChartAt I x₀).symm <| f ⟨extChartAt I x₀ x, t⟩
+    replace hderiv : HasDerivAt (f ⟨extChartAt I x₀ x, ·⟩) (x := t) <|
+      fderivWithin ℝ (extChartAt I x₀ ∘ (extChartAt I xₜ).symm) (range I)
+        (extChartAt I xₜ xₜ) (v xₜ) := hderiv hx ht
+    -- express the derivative of the integral curve in the local chart
+    refine ⟨continuousAt_extChartAt_symm'' (hmem' hx ht) |>.comp (x := t) hderiv.continuousAt,
+      HasDerivWithinAt.hasFDerivWithinAt ?_⟩
+    have hft1 := mem_preimage.mp <|
+      mem_of_mem_of_subset (hmem' hx ht) (extChartAt I x₀).target_subset_preimage_source
+    have hft2 := mem_extChartAt_source (I := I) xₜ
+    simp only [mfld_simps, hasDerivWithinAt_univ]
+    show HasDerivAt ((extChartAt I xₜ ∘ (extChartAt I x₀).symm) ∘ (f ⟨extChartAt I x₀ x, ·⟩))
+      (v xₜ) t
+    -- express `v (γ t)` as `D⁻¹ D (v (γ t))`, where `D` is a change of coordinates, so we can use
+    -- `HasFDerivAt.comp_hasDerivAt` on `h`
+    rw [← tangentCoordChange_self (I := I) (x := xₜ) (z := xₜ) (v := v xₜ) hft2,
+      ← tangentCoordChange_comp (x := x₀) ⟨⟨hft2, hft1⟩, hft2⟩]
+    apply HasFDerivAt.comp_hasDerivAt _ _ hderiv
+    apply HasFDerivWithinAt.hasFDerivAt (s := range I)
+    · rw [← (extChartAt I x₀).right_inv (hmem' hx ht)]
+      exact hasFDerivWithinAt_tangentCoordChange ⟨hft1, hft2⟩
+    · rw [mem_nhds_iff]
+      exact ⟨interior (extChartAt I x₀).target,
+        subset_trans interior_subset (extChartAt_target_subset_range ..), isOpen_interior,
+        hmem hx ht⟩
 
 /-- Existence of local integral curves for a $C^1$ vector field at interior points of a `C^1`
 manifold. -/
