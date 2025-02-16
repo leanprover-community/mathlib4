@@ -746,11 +746,9 @@ variable (β) in
 /-- `iExsUnique f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula β` by existentially
 quantifying over all variables `Sum.inr _` and asserting that the solution should be unique  -/
 noncomputable def iExsUnique [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
-  let _ := Fintype.ofFinite β
-  iExs β (φ ⊓ iAlls β
-    ((φ.relabel (fun a => Sum.elim (Sum.inl ∘ Sum.inl) Sum.inr a)).imp
-    (BoundedFormula.iInf
-      (fun g => Term.equal (var (Sum.inr g)) (var (Sum.inl (Sum.inr g)))))))
+  iExs β <| φ ⊓ iAlls β
+    ((φ.relabel (fun a => Sum.elim (.inl ∘ .inl) .inr a)).imp <|
+      .iInf fun g => Term.equal (var (.inr g)) (var (.inl (.inr g))))
 
 /-- The biimplication between formulas, as a formula. -/
 protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=
