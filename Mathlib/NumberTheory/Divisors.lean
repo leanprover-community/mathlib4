@@ -24,8 +24,11 @@ Let `n : ℕ`. All of the following definitions are in the `Nat` namespace:
  * `divisorsAntidiagonal n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
  * `Perfect n` is true when `n` is positive and the sum of `properDivisors n` is `n`.
 
-## Implementation details
- * `divisors 0`, `properDivisors 0`, and `divisorsAntidiagonal 0` are defined to be `∅`.
+## Conventions
+
+Since `0` has infinitely many divisors, none of the definitions in this file make sense for it.
+Therefore we adopt the convention that `Nat.divisors 0`, `Nat.properDivisors 0`,
+`Nat.divisorsAntidiagonal 0` and `Int.divisorsAntidiag 0` are all `∅`.
 
 ## Tags
 divisors, perfect numbers
@@ -38,17 +41,17 @@ namespace Nat
 
 variable (n : ℕ)
 
-/-- `divisors n` is the `Finset` of divisors of `n`. As a special case, `divisors 0 = ∅`. -/
+/-- `divisors n` is the `Finset` of divisors of `n`. By convention, we set `divisors 0 = ∅`. -/
 def divisors : Finset ℕ := {d ∈ Ico 1 (n + 1) | d ∣ n}
 
 /-- `properDivisors n` is the `Finset` of divisors of `n`, other than `n`.
-  As a special case, `properDivisors 0 = ∅`. -/
+By convention, we set `properDivisors 0 = ∅`. -/
 def properDivisors : Finset ℕ := {d ∈ Ico 1 n | d ∣ n}
 
 /-- Pairs of divisors of a natural number as a finset.
 
 `n.divisorsAntidiagonal` is the finset of pairs `(a, b) : ℕ × ℕ` such that `a * b = n`.
-As a special case, `Nat.divisorsAntidiagonal 0 = ∅`.
+By convention, we set `Nat.divisorsAntidiagonal 0 = ∅`.
 
 O(n). -/
 def divisorsAntidiagonal : Finset (ℕ × ℕ) :=
@@ -248,11 +251,14 @@ theorem swap_mem_divisorsAntidiagonal {x : ℕ × ℕ} :
     x.swap ∈ divisorsAntidiagonal n ↔ x ∈ divisorsAntidiagonal n := by
   rw [mem_divisorsAntidiagonal, mem_divisorsAntidiagonal, mul_comm, Prod.swap]
 
-/-- Simp normal form of `Nat.swap_mem_divisorsAntidiagonal`. -/
+/-- `Nat.swap_mem_divisorsAntidiagonal` with the LHS in simp normal form. -/
 @[simp]
-theorem swap_mem_divisorsAntidiagonal_aux {x : ℕ × ℕ} :
+theorem swap_mem_divisorsAntidiagonal_simpNF {x : ℕ × ℕ} :
     x.snd * x.fst = n ∧ ¬n = 0 ↔ x ∈ divisorsAntidiagonal n := by
   rw [mem_divisorsAntidiagonal, mul_comm]
+
+@[deprecated (since := "2025-02-16")]
+alias swap_mem_divisorsAntidiagonal_aux := swap_mem_divisorsAntidiagonal_simpNF
 
 lemma prodMk_mem_divisorsAntidiag {x y : ℕ} (hn : n ≠ 0) :
     (x, y) ∈ n.divisorsAntidiagonal ↔ x * y = n := by simp [hn]
@@ -536,7 +542,7 @@ local notation "negNatCast" =>
 /-- Pairs of divisors of an integer as a finset.
 
 `z.divisorsAntidiag` is the finset of pairs `(a, b) : ℤ × ℤ` such that `a * b = z`.
-As a special case, `Int.divisorsAntidiag 0 = ∅`.
+By convention, we set `Int.divisorsAntidiag 0 = ∅`.
 
 O(|z|). Computed from `Nat.divisorsAntidiagonal`. -/
 def divisorsAntidiag : (z : ℤ) → Finset (ℤ × ℤ)
@@ -590,12 +596,13 @@ lemma mem_divisorsAntidiag :
 lemma prodMk_mem_divisorsAntidiag (hz : z ≠ 0) : (x, y) ∈ z.divisorsAntidiag ↔ x * y = z := by
   simp [hz]
 
+-- The left hand side is not in simp normal form, see the variant below.
 lemma swap_mem_divisorsAntidiag : xy.swap ∈ z.divisorsAntidiag ↔ xy ∈ z.divisorsAntidiag := by
   simp [mul_comm]
 
-/-- Simp normal form of `Nat.swap_mem_divisorsAntidiagonal`. -/
+/-- `Int.swap_mem_divisorsAntidiag` with the LHS in simp normal form. -/
 @[simp]
-lemma swap_mem_divisorsAntidiagonal_aux :
+lemma swap_mem_divisorsAntidiag_simpNF :
     xy.snd * xy.fst = z ∧ ¬z = 0 ↔ xy ∈ z.divisorsAntidiag := by simp [mul_comm]
 
 lemma neg_mem_divisorsAntidiag : -xy ∈ z.divisorsAntidiag ↔ xy ∈ z.divisorsAntidiag := by simp
