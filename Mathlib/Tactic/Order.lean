@@ -5,6 +5,7 @@ Authors: Vasilii Nesterov
 -/
 
 import Mathlib.Order.Basic
+import Mathlib.Order.BoundedOrder.Basic
 import Qq
 
 /-!
@@ -137,8 +138,8 @@ inductive AtomicFact
 | nle (lhs : Nat) (rhs : Nat) (proof : Expr)
 | lt (lhs : Nat) (rhs : Nat) (proof : Expr)
 | nlt (lhs : Nat) (rhs : Nat) (proof : Expr)
-| isTop (idx : Nat) (proof : Expr)
-| isBot (idx : Nat) (proof : Expr)
+| isTop (idx : Nat)
+| isBot (idx : Nat)
 | isInf (lhs : Nat) (rhs : Nat) (res : Nat) (proof : Expr)
 | isSup (lhs : Nat) (rhs : Nat) (res : Nat) (proof : Expr)
 deriving Inhabited, BEq
@@ -152,21 +153,45 @@ instance : ToString AtomicFact where
   | .nle lhs rhs _ => s!"¬ {lhs} ≤ {rhs}"
   | .lt lhs rhs _ => s!"{lhs} < {rhs}"
   | .nlt lhs rhs _ => s!"¬ {lhs} < {rhs}"
-  | .isTop idx _ => s!"{idx} = ⊤"
-  | .isBot idx _ => s!"{idx} = ⊥"
+  | .isTop idx => s!"{idx} = ⊤"
+  | .isBot idx => s!"{idx} = ⊥"
   | .isInf lhs rhs res _ => s!"{lhs} ⊓ {rhs} = {res}"
   | .isSup lhs rhs res _ => s!"{lhs} ⊔ {rhs} = {res}"
 
 abbrev CollectFactsState := Std.HashMap Expr <| Std.HashMap Expr Nat × Array AtomicFact
 abbrev CollectFactsM := StateT CollectFactsState MetaM
 
-def addAtom (type x : Expr): CollectFactsM Nat := do
-  dbg_trace "addAtom {← ppExpr type} {← ppExpr x}"
+def isTop {u : Level} (type : Q(Type u)) (x : Q($type)) : MetaM Bool := do
+  try
+    let leInst ← synthInstanceQ (q(LE $type))
+    let inst ← synthInstanceQ (q(OrderTop $type))
+    let top := q((@OrderTop.toTop $type $leInst $inst).top)
+    return ← isDefEq x top
+  catch _ =>
+    return false
+
+def isBot {u : Level} (type : Q(Type u)) (x : Q($type)) : MetaM Bool := do
+  try
+    let leInst ← synthInstanceQ (q(LE $type))
+    let inst ← synthInstanceQ (q(OrderBot $type))
+    let bot := q((@OrderBot.toBot $type $leInst $inst).bot)
+    return ← isDefEq x bot
+  catch _ =>
+    return false
+
+def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFactsM Nat := do
   modify fun res => res.insertIfNew type (Std.HashMap.empty, #[])
   modify fun res => res.modify type fun (atomToIdx, facts) =>
     let atomToIdx := atomToIdx.insertIfNew x atomToIdx.size
     (atomToIdx, facts)
-  return (← get).get! type |>.fst.get! x
+  let idx := (← get).get! type |>.fst.get! x
+  if ← isTop type x then
+    modify fun res => res.modify type fun (atomToIdx, facts) =>
+      (atomToIdx, facts.push <| .isTop idx)
+  if ← isBot type x then
+    modify fun res => res.modify type fun (atomToIdx, facts) =>
+      (atomToIdx, facts.push <| .isBot idx)
+  return idx
 
 def addFact (type : Expr) (fact : AtomicFact) : CollectFactsM Unit := do
   modify fun res => res.modify type fun (atomToIdx, facts) =>
@@ -180,10 +205,11 @@ def collectFactsImp (g : MVarId) : CollectFactsM Unit := g.withContext do
       continue
     let ⟨0, type, expr⟩ := ← inferTypeQ ldecl.toExpr | continue
     match type with
-    | ~q(@Eq $α $x $y) =>
-      let xIdx := ← addAtom α x
-      let yIdx := ← addAtom α y
-      addFact α <| .eq xIdx yIdx expr
+    | ~q(@Eq.{1} $α $x $y) =>
+      if (← synthInstance? (q(LE $α))).isSome then
+        let xIdx := ← addAtom α x
+        let yIdx := ← addAtom α y
+        addFact α <| .eq xIdx yIdx expr
     | ~q(@LE.le $α $inst $x $y) =>
       let xIdx := ← addAtom α x
       let yIdx := ← addAtom α y
@@ -192,10 +218,11 @@ def collectFactsImp (g : MVarId) : CollectFactsM Unit := g.withContext do
       let xIdx := ← addAtom α x
       let yIdx := ← addAtom α y
       addFact α <| .lt xIdx yIdx expr
-    | ~q(@Ne $α $x $y) =>
-      let xIdx := ← addAtom α x
-      let yIdx := ← addAtom α y
-      addFact α <| .ne xIdx yIdx expr
+    | ~q(@Ne.{1} $α $x $y) =>
+      if (← synthInstance? (q(LE $α))).isSome then
+        let xIdx := ← addAtom α x
+        let yIdx := ← addAtom α y
+        addFact α <| .ne xIdx yIdx expr
     | ~q(Not $p) =>
       match p with
       | ~q(@LE.le $α $inst $x $y) =>
@@ -300,6 +327,9 @@ structure Edge where
   dst : Nat
   proof : Expr
 
+instance : ToString Edge where
+  toString e := s!"{e.src} ⟶ {e.dst}"
+
 /-- TODO -/
 abbrev Graph := Array (Array Edge)
 
@@ -307,12 +337,20 @@ def Graph.addEdge (g : Graph) (edge : Edge) : Graph :=
   g.modify edge.src fun edges => edges.push edge
 
 /-- Constructs a directed `Graph` using only `≤` facts. -/
-def constructLeGraph (nVertexes : Nat) (facts : Array AtomicFact) :
-    Graph := Id.run do
+def constructLeGraph (nVertexes : Nat) (facts : Array AtomicFact) (idxToAtom : Std.HashMap Nat Expr) :
+    MetaM Graph := do
   let mut res : Graph := Array.mkArray nVertexes #[]
   for fact in facts do
     if let .le lhs rhs proof := fact then
       res := res.addEdge ⟨lhs, rhs, proof⟩
+    else if let .isTop idx := fact then
+      for i in [:nVertexes] do
+        if i != idx then
+          res := res.addEdge ⟨i, idx, ← mkAppOptM ``le_top #[none, none, none, idxToAtom.get! i]⟩
+    else if let .isBot idx := fact then
+      for i in [:nVertexes] do
+        if i != idx then
+          res := res.addEdge ⟨idx, i, ← mkAppOptM ``bot_le #[none, none, none, idxToAtom.get! i]⟩
   return res
 
 /-- Inverts the edges of `g`. This swaps `lhs` and `rhs` in each edge and does nothing to the `rel`
@@ -431,7 +469,6 @@ def buildTransitiveLeProof (g : Graph) (s t : Nat) (tExpr : Expr) : MetaM (Optio
   let state : DFSState := ⟨mkArray g.size false⟩
   (buildTransitiveLeProofDFS g s t tExpr).run' state
 
--- TODO: O(n^3). Make optimal
 /-- Using `≮`-facts and the `le_of_not_lt_le` lemma, add edges to the `≤`-graph `g` as long as
 it remains possible. -/
 def updateGraphWithNlt (g : Graph) (idxToAtom : Std.HashMap Nat Expr) (facts : Array AtomicFact) :
@@ -485,18 +522,14 @@ elab "order" : tactic => focus do
   let .some g ← g.falseOrByContra | return
   setGoals [g]
   let TypeToAtoms ← collectFacts g
-  dbg_trace "Collected facts"
   g.withContext do
   for (type, (idxToAtom, facts)) in TypeToAtoms do
-    dbg_trace "before findBestInstance {← ppExpr type}"
     let .some orderType ← findBestInstance type | continue
-    dbg_trace "Preprocessing facts"
     let facts : Array AtomicFact ← match orderType with
     | .lin => preprocessFactsLinear g facts
     | .part => preprocessFactsPartial g facts
     | .pre => preprocessFactsPreorder g facts
-    dbg_trace "Preprocessed facts"
-    let mut graph := constructLeGraph idxToAtom.size facts
+    let mut graph ← constructLeGraph idxToAtom.size facts idxToAtom
     if orderType != .lin then
       graph ← updateGraphWithNlt graph idxToAtom facts
     if orderType == .pre then

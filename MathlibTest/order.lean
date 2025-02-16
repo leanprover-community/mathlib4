@@ -37,7 +37,7 @@ example {α : Type} [PartialOrder α] (a : α) :
   order
 
 example {α : Type} [Preorder α] (a b c d : α) (h1 : a ≤ b) (h2 : b ≤ c) (h3 : ¬(a < c))
-    (h4 : a ≤ d)  :
+    (h4 : a ≤ d) :
     c ≤ d := by
   order
 
@@ -45,4 +45,16 @@ example {α : Type} [Preorder α] (a b : α) (h1 : a < b) : b > a := by
   order
 
 example {α : Type} [Preorder α] (a b : α) (h1 : a > b) : b < a := by
+  order
+
+example {α : Type} [PartialOrder α] [OrderTop α] (a : α) (h1 : ⊤ ≤ a) : a = ⊤ := by
+  order
+
+example {α : Type} [Preorder α] [OrderTop α] (a : α) (h1 : a > ⊤) : a < a := by
+  order
+
+example {α : Type} [Preorder α] [OrderBot α] [OrderTop α] : (⊥ : α) ≤ ⊤ := by
+  order
+
+example {α : Type} (a b : α) [PartialOrder α] [OrderBot α] [OrderTop α] (h : (⊥ : α) = ⊤) : a = b := by
   order
