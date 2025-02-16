@@ -323,13 +323,13 @@ instance isNilpotentAdd (M₁ M₂ : LieSubmodule R L M) [IsNilpotent L M₁] [I
   have h₂ : lowerCentralSeries R L M₂ (k ⊔ l) = ⊥ := lcs_eq_bot M₂ (Nat.le_max_right k l) hl
   apply (isNilpotent_iff R L (M₁ + M₂)).2
   use (k ⊔ l)
-  simp_all
+  simp [LieSubmodule.add_eq_sup]
   rw [(M₁ ⊔ M₂).lowerCentralSeries_eq_lcs_comap]
-  simp_all
+  simp [LieSubmodule.lcs_sup]
   rw [(M₁.lowerCentralSeries_eq_bot_iff_lcs_eq_bot (k ⊔ l)).1 h₁,
       (M₂.lowerCentralSeries_eq_bot_iff_lcs_eq_bot (k ⊔ l)).1 h₂]
   refine LieSubmodule.comap_incl_eq_bot.mpr ?_
-  simp_all only [le_refl, sup_of_le_left, bot_le, inf_of_le_right]
+  simp [le_refl, sup_of_le_left, bot_le, inf_of_le_right]
 
 theorem exists_forall_pow_toEnd_eq_zero [IsNilpotent L M] :
     ∃ k : ℕ, ∀ x : L, toEnd R L M x ^ k = 0 := by
@@ -756,7 +756,7 @@ instance largestNilpotentSubmoduleIsNilpotent [IsNoetherian R M] :
   have hwf := LieSubmodule.wellFoundedGT_of_noetherian R L M
   rw [← CompleteLattice.isSupClosedCompact_iff_wellFoundedGT] at hwf
   refine hwf { N : LieSubmodule R L M | IsNilpotent L N } ⟨⊥, ?_⟩ fun N₁ h₁ N₂ h₂ => ?_
-  · simp_all
+  · simp [Set.mem_setOf_eq]
     apply trivialIsNilpotent L
   · rw [Set.mem_setOf_eq] at *
     apply isNilpotentAdd R L
