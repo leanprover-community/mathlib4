@@ -2148,6 +2148,7 @@ import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Internal.Limits
 import Mathlib.CategoryTheory.Monoidal.Internal.Module
 import Mathlib.CategoryTheory.Monoidal.Internal.Types.Basic
+import Mathlib.CategoryTheory.Monoidal.Internal.Types.CommGrp_
 import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp_
 import Mathlib.CategoryTheory.Monoidal.Limits
 import Mathlib.CategoryTheory.Monoidal.Linear
