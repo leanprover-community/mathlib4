@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.Presentable.Basic
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 import Mathlib.CategoryTheory.Limits.TypesFiltered
+import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 import Mathlib.CategoryTheory.Limits.Connected
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Subobject.Lattice
@@ -36,16 +37,6 @@ universe w v' v u' u
 namespace CategoryTheory
 
 open Limits Opposite
-
-instance {C : Type u} [Category.{v} C] {J : Type u'} [Category.{v'} J]
-    {F G : J ⥤ C} (f : F ⟶ G) [Mono f] (j : J) [HasLimitsOfShape WalkingCospan C] :
-    Mono (f.app j) :=
-  inferInstanceAs (Mono (((evaluation J C).obj j).map f))
-
-instance {C : Type u} [Category.{v} C] {J : Type u'} [Category.{v'} J]
-    {F G : J ⥤ C} (f : F ⟶ G) [Epi f] (j : J) [HasColimitsOfShape WalkingSpan C] :
-    Epi (f.app j) :=
-  inferInstanceAs (Epi (((evaluation J C).obj j).map f))
 
 attribute [local instance] IsFiltered.isConnected
 
