@@ -47,10 +47,6 @@ def preprocessFactsPreorder (g : MVarId) (facts : Array AtomicFact) :
       res := res.push <| .le rhs lhs (← mkAppM ``ge_of_eq #[proof])
     | .ne _ _ _ =>
       continue
-    | .isInf _ _ _ =>
-      continue
-    | .isSup _ _ _ =>
-      continue
     | _ =>
       res := res.push fact
   return res
