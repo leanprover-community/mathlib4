@@ -67,7 +67,7 @@ A presheaf is a sheaf if `F` preserves the limit of `Pairwise.diagram U`.
 `U i ⊓ U j` mapping into the open sets `U i`. This diagram has limit `iSup U`.)
 -/
 def IsSheafPreservesLimitPairwiseIntersections (F : Presheaf C X) : Prop :=
-  ∀ ⦃ι : Type w⦄ (U : ι → Opens X), Nonempty (PreservesLimit (Pairwise.diagram U).op F)
+  ∀ ⦃ι : Type w⦄ (U : ι → Opens X), PreservesLimit (Pairwise.diagram U).op F
 
 end
 
@@ -272,9 +272,9 @@ theorem isSheaf_iff_isSheafPreservesLimitPairwiseIntersections :
   rw [isSheaf_iff_isSheafPairwiseIntersections]
   constructor
   · intro h ι U
-    exact ⟨preservesLimit_of_preserves_limit_cone (Pairwise.coconeIsColimit U).op (h U).some⟩
+    exact preservesLimit_of_preserves_limit_cone (Pairwise.coconeIsColimit U).op (h U).some
   · intro h ι U
-    haveI := (h U).some
+    haveI := h U
     exact ⟨isLimitOfPreserves _ (Pairwise.coconeIsColimit U).op⟩
 
 end TopCat.Presheaf

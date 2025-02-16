@@ -16,7 +16,7 @@ We build a function `density κ ν : α → γ → Set β → ℝ` jointly measu
 such that for all `a : α` and all measurable sets `s : Set β` and `A : Set γ`,
 `∫ x in A, density κ ν a x s ∂(ν a) = (κ a (A ×ˢ s)).toReal`.
 
-There are two main applications of this construction (still TODO, in other files).
+There are two main applications of this construction.
 * Disintegration of kernels: for `κ : Kernel α (γ × β)`, we want to build a kernel
   `η : Kernel (α × γ) β` such that `κ = fst κ ⊗ₖ η`. For `β = ℝ`, we can use the density of `κ`
   with respect to `fst κ` for intervals to build a kernel cumulative distribution function for `η`.
