@@ -1023,7 +1023,8 @@ instance instCompleteLattice {_ : MeasurableSpace α} : CompleteLattice (Measure
             rw [OuterMeasure.top_apply hne]
             exact le_top
           else
-            simp_all [Set.not_nonempty_iff_eq_empty]
+            push_neg at hne
+            simp_all
         trim_le := le_top },
     le_top := fun _ => toOuterMeasure_le.mp le_top
     bot := 0

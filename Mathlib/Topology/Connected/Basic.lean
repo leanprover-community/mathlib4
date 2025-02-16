@@ -375,9 +375,8 @@ theorem IsPreconnected.subset_or_subset (hu : IsOpen u) (hv : IsOpen v) (huv : D
   specialize hs u v hu hv hsuv
   obtain hsu | hsu := (s ∩ u).eq_empty_or_nonempty
   · exact Or.inr ((Set.disjoint_iff_inter_eq_empty.2 hsu).subset_right_of_subset_union hsuv)
-  · replace hs := mt (hs hsu)
-    simp_rw [Set.not_nonempty_iff_eq_empty, ← Set.disjoint_iff_inter_eq_empty,
-      disjoint_iff_inter_eq_empty.1 huv] at hs
+  · replace hs := mt (hs hsu); push_neg at hs
+    simp_rw [← Set.disjoint_iff_inter_eq_empty, disjoint_iff_inter_eq_empty.1 huv] at hs
     exact Or.inl ((hs s.disjoint_empty).subset_left_of_subset_union hsuv)
 
 theorem IsPreconnected.subset_left_of_subset_union (hu : IsOpen u) (hv : IsOpen v)

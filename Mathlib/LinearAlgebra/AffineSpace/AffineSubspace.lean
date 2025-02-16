@@ -109,8 +109,7 @@ theorem subset_spanPoints (s : Set P) : s ⊆ spanPoints k s := fun p => mem_spa
 @[simp]
 theorem spanPoints_nonempty (s : Set P) : (spanPoints k s).Nonempty ↔ s.Nonempty := by
   constructor
-  · contrapose
-    rw [Set.not_nonempty_iff_eq_empty, Set.not_nonempty_iff_eq_empty]
+  · contrapose!
     intro h
     simp [h, spanPoints]
   · exact fun h => h.mono (subset_spanPoints _ _)
@@ -905,8 +904,7 @@ intersection. -/
 theorem inter_nonempty_of_nonempty_of_sup_direction_eq_top {s₁ s₂ : AffineSubspace k P}
     (h1 : (s₁ : Set P).Nonempty) (h2 : (s₂ : Set P).Nonempty)
     (hd : s₁.direction ⊔ s₂.direction = ⊤) : ((s₁ : Set P) ∩ s₂).Nonempty := by
-  by_contra h
-  rw [Set.not_nonempty_iff_eq_empty] at h
+  by_contra! h
   have hlt := sup_direction_lt_of_nonempty_of_inter_empty h1 h2 h
   rw [hd] at hlt
   exact not_top_lt hlt
@@ -1073,13 +1071,13 @@ instance [Nonempty s] : Nonempty (affineSpan k s) :=
 /-- The affine span of a set is `⊥` if and only if that set is empty. -/
 @[simp]
 theorem affineSpan_eq_bot : affineSpan k s = ⊥ ↔ s = ∅ := by
-  rw [← not_iff_not, ← Ne, ← Ne, ← nonempty_iff_ne_bot, affineSpan_nonempty,
-    nonempty_iff_ne_empty]
+  rw [← not_iff_not]; push_neg
+  rw [affineSpan_nonempty]
 
 @[simp]
 theorem bot_lt_affineSpan : ⊥ < affineSpan k s ↔ s.Nonempty := by
-  rw [bot_lt_iff_ne_bot, nonempty_iff_ne_empty]
-  exact (affineSpan_eq_bot _).not
+  rw [← not_iff_not]; push_neg
+  exact affineSpan_eq_bot _
 
 end
 

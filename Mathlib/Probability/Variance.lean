@@ -105,7 +105,7 @@ theorem evariance_eq_top [IsFiniteMeasure μ] (hXm : AEStronglyMeasurable X μ) 
 
 theorem evariance_lt_top_iff_memℒp [IsFiniteMeasure μ] (hX : AEStronglyMeasurable X μ) :
     evariance X μ < ∞ ↔ Memℒp X 2 μ where
-  mp := by contrapose!; rw [top_le_iff]; exact evariance_eq_top hX
+  mp := by contrapose!; exact evariance_eq_top hX
   mpr := evariance_lt_top
 
 lemma evariance_eq_top_iff [IsFiniteMeasure μ] (hX : AEStronglyMeasurable X μ) :
@@ -222,9 +222,9 @@ theorem evariance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : AEStrong
   · symm
     rw [evariance_eq_top hX hℒ, ENNReal.sub_eq_top_iff]
     refine ⟨?_, ENNReal.ofReal_ne_top⟩
-    rw [Memℒp, not_and] at hℒ
+    rw [Memℒp] at hℒ; push_neg at hℒ
     specialize hℒ hX
-    simp only [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.ofNat_ne_top, not_lt, top_le_iff,
+    simp only [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.ofNat_ne_top,
       ENNReal.toReal_ofNat, one_div, ENNReal.rpow_eq_top_iff, inv_lt_zero, inv_pos, and_true,
       or_iff_not_imp_left, not_and_or, zero_lt_two] at hℒ
     exact mod_cast hℒ fun _ => zero_le_two

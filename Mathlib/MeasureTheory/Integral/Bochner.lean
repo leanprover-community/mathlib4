@@ -832,7 +832,8 @@ theorem integral_const (c : E) : ∫ _ : α, c ∂μ = (μ univ).toReal • c :=
   by_cases hc : c = 0
   · simp [hc, integral_zero]
   · simp [integral_undef, (integrable_const_iff_isFiniteMeasure hc).not.2 hμ, *]
-    simp only [isFiniteMeasure_iff, not_lt, top_le_iff] at hμ
+    simp only [isFiniteMeasure_iff] at hμ
+    push_neg at hμ
     simp [hμ]
 
 theorem norm_integral_le_of_norm_le_const [IsFiniteMeasure μ] {f : α → G} {C : ℝ}

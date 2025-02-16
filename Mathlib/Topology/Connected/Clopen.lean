@@ -260,8 +260,8 @@ theorem isPreconnected_iff_subset_of_disjoint {s : Set α} :
     have hyu : y ∈ u := or_iff_not_imp_right.mp (hs hys) hyv
     exact h ⟨y, hys, hyu⟩ ⟨x, hxs, hxv⟩
   · intro u v hu hv hs hsu hsv
-    by_contra H
-    specialize h u v hu hv hs (Set.not_nonempty_iff_eq_empty.mp H)
+    by_contra! H
+    specialize h u v hu hv hs H
     apply H
     rcases h with h | h
     · rcases hsv with ⟨x, hxs, hxv⟩
@@ -318,8 +318,8 @@ theorem isPreconnected_iff_subset_of_disjoint_closed :
     exact h ⟨y, hys, hyu⟩ ⟨x, hxs, hxv⟩
   · rw [isPreconnected_closed_iff]
     intro u v hu hv hs hsu hsv
-    by_contra H
-    specialize h u v hu hv hs (Set.not_nonempty_iff_eq_empty.mp H)
+    by_contra! H
+    specialize h u v hu hv hs H
     apply H
     rcases h with h | h
     · rcases hsv with ⟨x, hxs, hxv⟩

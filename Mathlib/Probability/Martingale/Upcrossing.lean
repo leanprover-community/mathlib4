@@ -499,7 +499,7 @@ theorem upcrossingsBefore_mono (hab : a < b) : Monotone fun N ω => upcrossingsB
   · refine csSup_le_csSup (upperCrossingTime_lt_bddAbove hab) hemp fun n hn => ?_
     rw [Set.mem_setOf_eq, upperCrossingTime_eq_upperCrossingTime_of_lt hNM hn]
     exact lt_of_lt_of_le hn hNM
-  · rw [Set.not_nonempty_iff_eq_empty] at hemp
+  · push_neg at hemp
     simp [hemp, csSup_empty, bot_eq_zero', zero_le']
 
 theorem upcrossingsBefore_lt_of_exists_upcrossing (hab : a < b) {N₁ N₂ : ℕ} (hN₁ : N ≤ N₁)
