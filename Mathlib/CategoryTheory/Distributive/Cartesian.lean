@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.Limits.MonoCoprod
 ## Main definitions
 
 A category `C` with finite products and binary coproducts is called distributive if the
-canonical distributivity isomorphism `X ⨯ (Y ⨿ Z) ⟶ (X ⨯ Y) ⨿ (X ⨯ Z)` is an isomorphism
+canonical distributivity morphism `X ⨯ (Y ⨿ Z) ⟶ (X ⨯ Y) ⨿ (X ⨯ Z)` is an isomorphism
 for all objects `X`, `Y`, and `Z` in `C`.
 
 ## Implementation Details
