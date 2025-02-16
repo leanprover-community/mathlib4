@@ -147,6 +147,18 @@ theorem lowerCentralSeries_map_eq_lcs : (lowerCentralSeries R L N k).map N.incl 
   rw [lowerCentralSeries_eq_lcs_comap, LieSubmodule.map_comap_incl, inf_eq_right]
   apply lcs_le_self
 
+theorem lowerCentralSeries_eq_bot_iff_lcs_eq_bot:
+    (lowerCentralSeries R L N k = ⊥) ↔ (lcs k N = ⊥) := by
+  constructor
+  · intro h
+    rw [← N.lowerCentralSeries_map_eq_lcs]
+    refine (LieModuleHom.le_ker_iff_map (lowerCentralSeries R L N k)).mp ?_
+    simp_all only [ker_incl, le_bot_iff]
+  intro h
+  rw [N.lowerCentralSeries_eq_lcs_comap]
+  refine comap_incl_eq_bot.mpr ?_
+  simp_all only [bot_le, inf_of_le_right]
+
 end LieSubmodule
 
 namespace LieModule
@@ -295,6 +307,27 @@ variable (R L M)
 
 instance (priority := 100) trivialIsNilpotent [IsTrivial L M] : IsNilpotent L M :=
   ⟨by use 1; change ⁅⊤, ⊤⁆ = ⊥; simp⟩
+
+instance isNilpotentAdd (M₁ M₂ : LieSubmodule R L M) [IsNilpotent L M₁] [IsNilpotent L M₂] :
+    IsNilpotent L (M₁ + M₂) := by
+  obtain ⟨k, hk⟩ := (isNilpotent_iff R L M₁).1 (inferInstance)
+  obtain ⟨l, hl⟩ := (isNilpotent_iff R L M₂).1 (inferInstance)
+  let lcs_eq_bot {m n : ℕ} (N : LieSubmodule R L M) (le : m ≤ n)
+      (hn : lowerCentralSeries R L N m = ⊥) :
+    lowerCentralSeries R L N n = ⊥ := by
+    have := antitone_lowerCentralSeries R L N le
+    simp_all only [le_sup_iff, le_bot_iff]
+  have h₁ : lowerCentralSeries R L M₁ (k ⊔ l) = ⊥ := lcs_eq_bot M₁ (Nat.le_max_left k l) hk
+  have h₂ : lowerCentralSeries R L M₂ (k ⊔ l) = ⊥ := lcs_eq_bot M₂ (Nat.le_max_right k l) hl
+  apply (isNilpotent_iff R L (M₁ + M₂)).2
+  use (k ⊔ l)
+  simp [LieSubmodule.add_eq_sup]
+  rw [(M₁ ⊔ M₂).lowerCentralSeries_eq_lcs_comap]
+  simp [LieSubmodule.lcs_sup]
+  rw [(M₁.lowerCentralSeries_eq_bot_iff_lcs_eq_bot (k ⊔ l)).1 h₁,
+      (M₂.lowerCentralSeries_eq_bot_iff_lcs_eq_bot (k ⊔ l)).1 h₂]
+  refine LieSubmodule.comap_incl_eq_bot.mpr ?_
+  simp [le_refl, sup_of_le_left, bot_le, inf_of_le_right]
 
 theorem exists_forall_pow_toEnd_eq_zero [IsNilpotent L M] :
     ∃ k : ℕ, ∀ x : L, toEnd R L M x ^ k = 0 := by
