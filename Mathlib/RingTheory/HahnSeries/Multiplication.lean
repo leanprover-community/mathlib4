@@ -5,7 +5,6 @@ Authors: Aaron Anderson, Scott Carnahan
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Algebra.Order.SMulWithTop
 import Mathlib.Data.Finset.MulAntidiagonal
 import Mathlib.Data.Finset.SMulAntidiagonal
 import Mathlib.GroupTheory.GroupAction.Ring
@@ -339,21 +338,20 @@ theorem support_smul_subset_vadd_support [MulZeroClass R] [SMulWithZero R V] {x 
   rw [h]
   exact support_smul_subset_vadd_support'
 
-theorem orderTop_vAdd_le_orderTop_smul {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ']
-    [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [MulZeroClass R] [SMulWithZero R V] {x : HahnSeries Γ R}
-    {y : HahnModule Γ' R V} :
-    x.orderTop +ᵥ VAddTop.of Γ' ((of R).symm y).orderTop ≤
-      VAddTop.of Γ' ((of R).symm (x • y)).orderTop := by
+theorem orderTop_vAdd_le_orderTop_smul {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ'] [VAdd Γ Γ']
+    [IsOrderedCancelVAdd Γ Γ'] [MulZeroClass R] [SMulWithZero R V] {x : HahnSeries Γ R}
+    [VAdd (WithTop Γ) (WithTop Γ')] {y : HahnModule Γ' R V}
+    (h : ∀ (γ : Γ) (γ' : Γ'), γ +ᵥ γ' = (γ : WithTop Γ) +ᵥ (γ' : WithTop Γ')) :
+    x.orderTop +ᵥ ((of R).symm y).orderTop ≤ ((of R).symm (x • y)).orderTop := by
   by_cases hx : x = 0; · simp_all
   by_cases hy : y = 0; · simp_all
   have hhy : ((of R).symm y) ≠ 0 := hy
-  rw [HahnSeries.orderTop_of_ne hx, HahnSeries.orderTop_of_ne hhy, ← VAddTop.coe_VAdd,
+  rw [HahnSeries.orderTop_of_ne hx, HahnSeries.orderTop_of_ne hhy, ← h,
       ← Set.IsWF.min_vadd]
   by_cases hxy : (of R).symm (x • y) = 0
   · rw [hxy, HahnSeries.orderTop_zero]
     exact OrderTop.le_top (α := WithTop Γ') _
-  · rw [HahnSeries.orderTop_of_ne hxy, VAddTop.le_iff, Equiv.symm_apply_apply,
-      Equiv.symm_apply_apply, WithTop.coe_le_coe]
+  · rw [HahnSeries.orderTop_of_ne hxy, WithTop.coe_le_coe]
     exact Set.IsWF.min_le_min_of_subset support_smul_subset_vadd_support
 
 theorem coeff_smul_order_add_order {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Zero R]
@@ -500,7 +498,7 @@ theorem orderTop_add_le_mul {Γ} [LinearOrderedCancelAddCommMonoid Γ]
     [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} :
     x.orderTop + y.orderTop ≤ (x * y).orderTop := by
   rw [← smul_eq_mul]
-  exact HahnModule.orderTop_vAdd_le_orderTop_smul
+  exact HahnModule.orderTop_vAdd_le_orderTop_smul fun i j ↦ rfl
 
 private theorem mul_assoc' [NonUnitalSemiring R] (x y z : HahnSeries Γ R) :
     x * y * z = x * (y * z) := by
