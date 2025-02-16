@@ -61,12 +61,6 @@ variable {Ω Ω' : Type*} (m : MeasurableSpace Ω) {m1 m2 mΩ : MeasurableSpace 
   {mΩ' : MeasurableSpace Ω'}
   {μ : Measure Ω} {ν : Measure Ω'} {κ : Kernel Ω' Ω} {X : Ω → ℝ} {c : ℝ≥0} {ε : ℝ}
 
--- todo: fix measurable space arguments in Measure.bind and in Measure.snd_map_prod_mk
-lemma condExpKernel_comp_trim [StandardBorelSpace Ω] [IsFiniteMeasure μ] :
-    @Measure.bind _ _ m mΩ (μ.trim hm) (condExpKernel μ m) = μ := by
-  rw [← Measure.snd_compProd, compProd_trim_condExpKernel, @Measure.snd_map_prod_mk, Measure.map_id]
-  exact measurable_id'' hm
-
 -- todo: delete?
 theorem condExp_ae_eq_trim_integral_condExpKernel {F : Type*} [NormedAddCommGroup F] {f : Ω → F}
     [NormedSpace ℝ F] [CompleteSpace F]
@@ -408,11 +402,11 @@ lemma IsCondSubGaussianWith.zero' : IsCondSubGaussianWith m hm 0 0 μ :=
 
 lemma IsCondSubGaussianWith.memℒp (h : IsCondSubGaussianWith m hm X c μ) (t : ℝ) (p : ℝ≥0) :
     Memℒp (fun ω ↦ exp (t * X ω)) p μ :=
-  condExpKernel_comp_trim (μ := μ) m hm ▸ Kernel.IsSubGaussianWith.memℒp h t p
+  condExpKernel_comp_trim (μ := μ) hm ▸ Kernel.IsSubGaussianWith.memℒp h t p
 
 lemma IsCondSubGaussianWith.integrable_exp_mul (h : IsCondSubGaussianWith m hm X c μ) (t : ℝ) :
     Integrable (fun ω ↦ exp (t * X ω)) μ :=
-  condExpKernel_comp_trim (μ := μ) m hm ▸ Kernel.IsSubGaussianWith.integrable_exp_mul h t
+  condExpKernel_comp_trim (μ := μ) hm ▸ Kernel.IsSubGaussianWith.integrable_exp_mul h t
 
 end Conditional
 
