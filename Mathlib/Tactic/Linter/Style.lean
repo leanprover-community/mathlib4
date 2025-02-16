@@ -475,7 +475,7 @@ scoped to a single declaration. A non-scoped `open Classical` can hide that some
 would be better stated with explicit decidability statements.
 -/
 register_option linter.style.openClassical : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the openClassical linter"
 }
 
