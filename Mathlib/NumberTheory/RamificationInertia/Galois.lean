@@ -197,34 +197,6 @@ theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn [IsGalois K L] :
 
 end fundamental_identity
 
-section UniqueLiesOver
-
-variable {A : Type*} [CommSemiring A] {B : Type*} [Semiring B] [Algebra A B]
-  (P : Ideal B) (p : Ideal A)
-
-class UniquePrimeLiesOver extends P.LiesOver p : Prop where
-  unique : ∀ Q : Ideal B, [Q.IsPrime] → [Q.LiesOver p] → Q = P
-
-theorem unique_primes_over_card_eq_one [P.IsPrime] [hp : P.UniquePrimeLiesOver p] :
-    (primesOver p B).ncard = 1 :=
-  Nat.card_eq_one_iff_exists.mpr ⟨primesOver.mk p P, fun Q ↦ Subtype.val_inj.mp (hp.unique Q)⟩
-
-variable {A : Type*} [CommSemiring A] {B : Type*} [CommRing B] {C : Type*} [CommRing C]
-  [Nontrivial C] [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
-  [NoZeroSMulDivisors B C] [Algebra.IsIntegral B C] (P : Ideal C) (𝔓 : Ideal B) (p : Ideal A)
-
-theorem unique_lies_over_tower_top [𝔓.IsMaximal] [hP : P.UniquePrimeLiesOver p]
-    [𝔓.LiesOver p] : P.UniquePrimeLiesOver 𝔓 where
-  over := by
-    rcases exists_ideal_liesOver_maximal_of_isIntegral 𝔓 C with ⟨Q, ⟨_ ,hq⟩⟩
-    have : Q.LiesOver p := LiesOver.trans Q 𝔓 p
-    rw [← hP.unique Q, hq.over]
-  unique Q _ _ :=
-    letI := LiesOver.trans Q 𝔓 p
-    hP.unique Q
-
-end UniqueLiesOver
-
 end Ideal
 
 open scoped Pointwise
@@ -260,7 +232,7 @@ open IntermediateField FiniteDimensional
 
 section decompositionIdeal
 
-variable {A : Type*} [CommRing A] [IsDedekindDomain A] {p : Ideal A} (hpb : p ≠ ⊥) [p.IsMaximal]
+variable (A : Type*) [CommRing A] [IsDedekindDomain A] {p : Ideal A} (hpb : p ≠ ⊥) [p.IsMaximal]
   {B : Type*} [CommRing B] [IsDedekindDomain B] [Algebra A B] [Module.Finite A B]
   (P : Ideal B) [P.IsPrime] [P.LiesOver p]
   (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L]
@@ -283,10 +255,15 @@ theorem isMaximal_liesOver_decomposition_ideal_unique (Q : Ideal B) [Q.IsMaximal
   exact (Subtype.val_inj.mpr hs).symm.trans <| (decompositionGroup_mem A P (σ.restrictScalars K)).mp
     <| (fixingSubgroup_fixedField (decompositionGroup A P K L)).le σ.commutes
 
-theorem primes_over_decompositionIdeal_card_eq_one [IsGalois K L] : (Pd.primesOver B).ncard = 1 :=
-  sorry--unique_primes_over_card_eq_one Pd P
+include A P K L in
+omit [IsDedekindDomain A] [Algebra A D] in
+theorem primes_over_decompositionIdeal_card_eq_one : (Pd.primesOver B).ncard = 1 :=
+  Nat.card_eq_one_iff_exists.mpr ⟨primesOver.mk Pd P,
+    fun Q ↦ Subtype.val_inj.mp <| isMaximal_liesOver_decomposition_ideal_unique A P K L Pd Q⟩
 
 include hpb K L P
+
+variable {A}
 
 open Classical in
 theorem decompositionGroup_card_eq_ramificationIdx_mul_inertiaDeg :
@@ -319,7 +296,7 @@ private lemma ramificationIdx_and_inertiaDeg_of_decompositionIdeal :
   have hdb : Pd ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hpb Pd
   have h := ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hdb B
     (decompositionField A P K L) L
-  rw [primes_over_decompositionIdeal_card_eq_one K L Pd, one_mul,
+  rw [primes_over_decompositionIdeal_card_eq_one A P K L Pd, one_mul,
     finrank_over_decompositionField_eq_ramificationIdx_mul_inertiaDeg hpb] at h
   have h0 := ramificationIdx_pos P hpb
   have hr := Nat.le_of_dvd h0 <| Dvd.intro_left _ <| Eq.symm <|
