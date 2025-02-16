@@ -503,19 +503,20 @@ variable {B : Type*} [AddCommMonoid B] [Module R B] [TopologicalSpace B] [IsModu
 variable {C : Type*} [AddCommMonoid C] [Module R C] [TopologicalSpace C] [IsModuleTopology R C]
 
 /--
-If `ι` is finite and `B`,`C` are `R`-modules with the module topology,
-then any bilinear map `Rᶥ × B → C` is automatically continuous.
+If `n` is finite and `B`,`C` are `R`-modules with the module topology,
+then any bilinear map `Rⁿ × B → C` is automatically continuous.
 
 Note that whilst this result works for semirings, for rings this result is superceded
-by `IsModuleTopology.Module.continuous_bilinear_of_finite_left`.
+by `IsModuleTopology.continuous_bilinear_of_finite_left`.
 -/
-theorem continuous_bilinear_of_pi_fintype (ι : Type*) [Fintype ι]
+theorem continuous_bilinear_of_pi_fintype (ι : Type*) [Finite ι]
     (bil : (ι → R) →ₗ[R] B →ₗ[R] C) : Continuous (fun ab ↦ bil ab.1 ab.2 : ((ι → R) × B → C)) := by
   classical
+  cases nonempty_fintype ι
   -- The map in question, `(f, b) ↦ bil f b`, is easily checked to be equal to
   -- `(f, b) ↦ ∑ᵢ f i • bil (single i 1) b` where `single i 1 : ι → R` sends `i` to `1` and
   -- everything else to `0`.
-  have foo : (fun fb ↦ bil fb.1 fb.2 : ((ι → R) × B → C)) =
+  have h : (fun fb ↦ bil fb.1 fb.2 : ((ι → R) × B → C)) =
       (fun fb ↦ ∑ i, ((fb.1 i) • (bil (Finsupp.single i 1) fb.2) : C)) := by
     ext ⟨f, b⟩
     nth_rw 1 [← Finset.univ_sum_single f]
@@ -524,7 +525,7 @@ theorem continuous_bilinear_of_pi_fintype (ι : Type*) [Fintype ι]
     rw [← Finsupp.smul_single_one]
     push_cast
     simp
-  rw [foo]
+  rw [h]
   -- But this map is obviously continuous, because for a fixed `i`, `bil (single i 1)` is
   -- linear and thus continuous, and scalar multiplication and finite sums are continuous
   haveI : ContinuousAdd C := toContinuousAdd R C
@@ -534,7 +535,7 @@ end semiring
 
 section ring
 
-variable {R : Type*} [τR : TopologicalSpace R] [CommRing R] [TopologicalRing R]
+variable {R : Type*} [TopologicalSpace R] [CommRing R] [TopologicalRing R]
 variable {A : Type*} [AddCommGroup A] [Module R A] [aA : TopologicalSpace A] [IsModuleTopology R A]
 variable {B : Type*} [AddCommGroup B] [Module R B] [aB : TopologicalSpace B] [IsModuleTopology R B]
 variable {C : Type*} [AddCommGroup C] [Module R C] [aC : TopologicalSpace C] [IsModuleTopology R C]
