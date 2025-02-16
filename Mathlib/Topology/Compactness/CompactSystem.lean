@@ -131,7 +131,7 @@ theorem iInter_decumulate (s : ℕ → Set α) : ⋂ x, ⋂ y ≤ x, s y = ⋂ y
 
 def IsPiSystem' (C : Set (Set α)) := ∀ s ∈ C, ∀ t ∈ C, s ∩ t ∈ C
 
-lemma prime (C : Set (Set α)) (hC : ∅ ∈ C) : (IsPiSystem C) ↔ (IsPiSystem' C) := by
+lemma prime (C : Set (Set α)) (hC : ∅ ∈ C) : (IsPiSystem C) ↔ (∀ s ∈ C, ∀ t ∈ C, s ∩ t ∈ C) := by
   refine ⟨fun h s hs t ht ↦ ?_, fun h s hs t ht _ ↦ h s hs t ht⟩
   by_cases h' : (s ∩ t).Nonempty
   · exact h s hs t ht h'
@@ -208,9 +208,6 @@ theorem IsCompactSystem.iff_mono [Inhabited α] (hpi : IsPiSystem' p) : (IsCompa
     rcases h5 with ⟨n, hn⟩
     use n
 
-example (P Q : Prop) : (P → Q) ↔ (¬ Q → ¬ P) := by exact Iff.symm not_imp_not
-
-
 theorem IsCompactSystem.iff_mono' [Inhabited α] (hpi : IsPiSystem' p) : (IsCompactSystem p) ↔
   ∀ (C : ℕ → Set α), ∀ (_ : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C), (∀ i, p (C i)) →
     (∀ (n : ℕ), (C n).Nonempty) →
@@ -245,21 +242,12 @@ lemma l5 (p : α → Prop) (s : α) : p s ↔ (s ∈ ⋃ (i : α) (_ : p i), {i}
 
 @[simp]
 lemma l6 {p q : α → Prop} {s : α} : (p s ∧ q s) ↔ (s ∈ ⋃ (i : α) (_ : p i) (_ : q i), {i}) := by
-  simp_rw [Set.mem_iUnion₂, mem_iUnion]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_ ⟩
-  · use s, h.1, h.2
-    simp only [mem_singleton_iff]
-  · obtain ⟨i, hi, h1, h2⟩ := h
-    simp only [mem_singleton_iff] at h2
-    exact h2 ▸ ⟨hi, h1⟩
+  simp_rw [Set.mem_iUnion₂, mem_iUnion, mem_singleton_iff]
+  refine ⟨fun h ↦ ⟨s, h.1, h.2, rfl⟩, fun ⟨i, hi, h1, h2⟩ ↦ h2 ▸ ⟨hi, h1⟩⟩
 
 variable {α : Type*} [TopologicalSpace α]
 
-example (x y : Set α) (hx : IsClosed x) (hy : IsClosed y) : IsClosed (x ∩ y) := by
-  exact IsClosed.inter hx hy
-
-
-theorem IsCompact.isCompactSystem {α : Type*} [Inhabited α] [TopologicalSpace α] :
+theorem IsClosedCompact.isCompactSystem {α : Type*} [Inhabited α] [TopologicalSpace α] :
     IsCompactSystem (⋃ (s : Set α) (_ : IsCompact s) (_ : IsClosed s), {s}) := by
   have h : IsPiSystem' (⋃ (s : Set α) (_ : IsCompact s) (_ : IsClosed s), {s}) := by
     intro x hx y hy
@@ -270,8 +258,6 @@ theorem IsCompact.isCompactSystem {α : Type*} [Inhabited α] [TopologicalSpace 
   have h1' (i : ℕ) : IsCompact (C i) ∧ IsClosed (C i):= l6.mpr <| h1 i
   exact IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed C hC hn
     (fun i ↦ (h1' i).1) (fun i ↦ (h1' i).2)
-
-
 
 end Compact
 
