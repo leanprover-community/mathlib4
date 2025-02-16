@@ -29,7 +29,7 @@ def opFunctor : Cat.{v₁, u₁} ⥤ Cat.{v₁, u₁} where
 /-- The natural isomorphism between the double application of `Cat.opFunctor` and the
 identity functor on `Cat`. -/
 @[simps!]
-def opFunctorInvoutive : opFunctor.{v₁, u₁} ⋙ opFunctor.{v₁, u₁} ≅ 𝟭 _ :=
+def opFunctorInvolutive : opFunctor.{v₁, u₁} ⋙ opFunctor.{v₁, u₁} ≅ 𝟭 _ :=
   NatIso.ofComponents (fun C => .mk (unopUnop C) (opOp C))
 
 /-- The equivalence `Cat ≌ Cat` associating each category with its opposite category. -/
