@@ -330,6 +330,13 @@ theorem _root_.NeZero.of_faithfulSMul (n : ℕ) [NeZero (n : R)] :
 @[deprecated (since := "2025-01-31")]
 alias _root_.NeZero.of_noZeroSMulDivisors := NeZero.of_faithfulSMul
 
+variable {R A} in
+theorem of_comp {B : Type*} [Semiring B] [Algebra R B] {f : B → A}
+    (h : ∀ m, f (algebraMap R B m) = algebraMap R A m) :
+    FaithfulSMul R B := by
+  rw [faithfulSMul_iff_algebraMap_injective]
+  exact (funext fun m => h m) ▸ FaithfulSMul.algebraMap_injective R A |>.of_comp
+
 end FaithfulSMul
 
 lemma Algebra.charZero_of_charZero [CharZero R] : CharZero A :=

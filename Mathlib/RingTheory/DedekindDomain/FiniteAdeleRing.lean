@@ -170,15 +170,9 @@ def Coe.algHom : AlgHom R (R_hat R K) (K_hat R K) :=
 theorem Coe.algHom_apply (x : R_hat R K) (v : HeightOneSpectrum R) : (Coe.algHom R K) x v = x v :=
   rfl
 
-theorem algebraMap_apply (x : R_hat R K) :
-    algebraMap (R_hat R K) (K_hat R K) x = fun v => ↑(x v) := rfl
-
-theorem algebraMap_injective : Function.Injective (algebraMap (R_hat R K) (K_hat R K)) := by
-  intro x y hxy
-  funext v
-  simp [algebraMap_apply] at hxy
-  convert funext_iff.1 hxy v
-  rw [SetLike.coe_eq_coe]
+instance : FaithfulSMul (R_hat R K) (K_hat R K) where
+  eq_of_smul_eq_smul h :=
+    funext fun v => SetLike.coe_eq_coe.1 (funext_iff.1 (by simpa [Algebra.smul_def] using h 1) v)
 
 @[simp]
 theorem mul_integer_apply (x : FiniteIntegralAdeles R K) (r : R) :
@@ -405,17 +399,15 @@ lemma exists_finiteIntegralAdele_iff (a : FiniteAdeleRing R K) :
     (∃ c : R_hat R K, a = c) ↔ ∀ v : HeightOneSpectrum R, a v ∈ adicCompletionIntegers K v :=
   ⟨by rintro ⟨c, rfl⟩ v; exact (c v).2, fun h ↦ ⟨fun v ↦ ⟨a v, h v⟩, rfl⟩⟩
 
-theorem algebraMap_apply (r : R_hat R K) :
-    algebraMap (R_hat R K) (FiniteAdeleRing R K) r = ↑r := rfl
-
-theorem algebraMap_injective :
-    Function.Injective (algebraMap (R_hat R K) (FiniteAdeleRing R K)) := by
-  intro x y hxy
-  funext v
-  simp [algebraMap_apply] at hxy
-  convert (funext_iff.1 <| FiniteAdeleRing.ext_iff.1 hxy) v
-  rw [← Subtype.val_inj]
+variable {R K} in
+@[simp, norm_cast]
+theorem coe_algebraMap' (r : R_hat R K) :
+    algebraMap (R_hat R K) (FiniteAdeleRing R K) r =
+      algebraMap (R_hat R K) (K_hat R K) r :=
   rfl
+
+instance : FaithfulSMul (R_hat R K) (FiniteAdeleRing R K) :=
+  FaithfulSMul.of_comp (fun (r : R_hat R K) => coe_algebraMap' r)
 
 section Topology
 
