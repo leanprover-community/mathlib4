@@ -9,7 +9,7 @@ import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 /-!
 # Simplices in Euclidean spaces.
 
-This file defines properties of simplices in a `NormedAddTorsor`.
+This file defines properties of simplices in a Euclidean space.
 
 ## Main definitions
 
