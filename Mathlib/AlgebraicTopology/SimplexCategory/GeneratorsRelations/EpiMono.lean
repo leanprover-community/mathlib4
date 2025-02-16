@@ -45,10 +45,10 @@ def SplitEpiσ {n : ℕ} {i : Fin (n + 1)} : SplitEpi (σ i) where
 instance {n : ℕ} {i : Fin (n + 1)} : IsSplitEpi (σ i) := .mk' SplitEpiσ
 
 /-- Auxiliary predicate to express that a morphism is purely a composition of `σ i`s. -/
-abbrev P_σ := SimplexCategoryGenRel.IsDegeneracy.MultiplicativeClosure
+abbrev P_σ := IsDegeneracy.multiplicativeClosure
 
 /-- Auxiliary predicate to express that a morphism is purely a composition of `δ i`s. -/
-abbrev P_δ := SimplexCategoryGenRel.IsFace.MultiplicativeClosure
+abbrev P_δ := IsFace.multiplicativeClosure
 
 /-- All `P_σ` are split epis as composition of such. -/
 lemma isSplitEpi_P_σ {x y : SimplexCategoryGenRel} {e : x ⟶ y} (he : P_σ e) : IsSplitEpi e := by
