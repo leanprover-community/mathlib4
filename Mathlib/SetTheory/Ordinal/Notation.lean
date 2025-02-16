@@ -648,7 +648,7 @@ theorem split_eq_scale_split' : ∀ {o o' m} [NF o], split' o = (o', m) → spli
     · rcases p with ⟨rfl, rfl⟩
       exact ⟨rfl, rfl⟩
     · revert p
-      obtain ⟨a', m'⟩ := h' : split' a
+      rcases h' : split' a with ⟨a', m'⟩
       haveI := h.fst
       haveI := h.snd
       simp only [split_eq_scale_split' h', and_imp]
@@ -668,7 +668,7 @@ theorem nf_repr_split' : ∀ {o o' m} [NF o], split' o = (o', m) → NF o' ∧ r
     · rcases p with ⟨rfl, rfl⟩
       simp [h.zero_of_zero e0, NF.zero]
     · revert p
-      obtain ⟨a', m'⟩ := h' : split' a
+      rcases h' : split' a with ⟨a', m'⟩
       haveI := h.fst
       haveI := h.snd
       obtain ⟨IH₁, IH₂⟩ := nf_repr_split' h'
@@ -707,7 +707,7 @@ theorem repr_scale (x) [NF x] (o) [NF o] : repr (scale x o) = ω ^ repr x * repr
   simp only [scale_eq_mul, repr_mul, repr, PNat.one_coe, Nat.cast_one, mul_one, add_zero]
 
 theorem nf_repr_split {o o' m} [NF o] (h : split o = (o', m)) : NF o' ∧ repr o = repr o' + m := by
-  obtain ⟨a, n⟩ := e : split' o
+  rcases e : split' o with ⟨a, n⟩
   obtain ⟨s₁, s₂⟩ := nf_repr_split' e
   rw [split_eq_scale_split' e] at h
   injection h; substs o' n
@@ -715,7 +715,7 @@ theorem nf_repr_split {o o' m} [NF o] (h : split o = (o', m)) : NF o' ∧ repr o
   infer_instance
 
 theorem split_dvd {o o' m} [NF o] (h : split o = (o', m)) : ω ∣ repr o' := by
-  obtain ⟨a, n⟩ := e : split' o
+  rcases e : split' o with ⟨a, n⟩
   rw [split_eq_scale_split' e] at h
   injection h; subst o'
   cases nf_repr_split' e; simp
@@ -735,17 +735,19 @@ instance nf_mulNat (o) [NF o] (n) : NF (mulNat o n) := by simpa using ONote.mul_
 instance nf_opowAux (e a0 a) [NF e] [NF a0] [NF a] : ∀ k m, NF (opowAux e a0 a k m) := by
   intro k m
   unfold opowAux
-  rcases m with - | m
-  · cases k <;> exact NF.zero
-  rcases k with - | k
-  · exact NF.oadd_zero _ _
-  · haveI := nf_opowAux e a0 a k
-    simp only [Nat.succ_ne_zero m, IsEmpty.forall_iff, mulNat_eq_mul]; infer_instance
+  cases m with
+  | zero => cases k <;> exact NF.zero
+  | succ m =>
+    cases k with
+    | zero => exact NF.oadd_zero _ _
+    | succ k =>
+      haveI := nf_opowAux e a0 a k
+      simp only [Nat.succ_ne_zero m, IsEmpty.forall_iff, mulNat_eq_mul]; infer_instance
 
 instance nf_opow (o₁ o₂) [NF o₁] [NF o₂] : NF (o₁ ^ o₂) := by
-  obtain ⟨a, m⟩ := e₁ : split o₁
+  rcases e₁ : split o₁ with ⟨a, m⟩
   have na := (nf_repr_split e₁).1
-  obtain ⟨b', k⟩ := e₂ : split' o₂
+  rcases e₂ : split' o₂ with ⟨b', k⟩
   haveI := (nf_repr_split' e₂).1
   cases' a with a0 n a'
   · rcases m with - | m
@@ -883,14 +885,14 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
 end
 
 theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o₁ ^ repr o₂ := by
-  obtain ⟨a, m⟩ := e₁ : split o₁
+  rcases e₁ : split o₁ with ⟨a, m⟩
   obtain ⟨N₁, r₁⟩ := nf_repr_split e₁
   cases' a with a0 n a'
   · rcases m with - | m
     · by_cases h : o₂ = 0 <;> simp [opow_def, opowAux2, opow, e₁, h, r₁]
       have := mt repr_inj.1 h
       rw [zero_opow this]
-    · obtain ⟨b', k⟩ := e₂ : split' o₂
+    · rcases e₂ : split' o₂ with ⟨b', k⟩
       obtain ⟨_, r₂⟩ := nf_repr_split' e₂
       by_cases h : m = 0
       · simp [opowAux2, opow_def, opow, e₁, h, r₁, e₂, r₂]
@@ -912,7 +914,7 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
     have al := split_add_lt e₁
     have aa : repr (a' + ofNat m) = repr a' + m := by
       simp only [eq_self_iff_true, ONote.repr_ofNat, ONote.repr_add]
-    obtain ⟨b', k⟩ := e₂ : split' o₂
+    rcases e₂ : split' o₂ with ⟨b', k⟩
     obtain ⟨_, r₂⟩ := nf_repr_split' e₂
     simp only [opow_def, opow, e₁, r₁, split_eq_scale_split' e₂, opowAux2, repr]
     rcases k with - | k

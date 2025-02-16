@@ -167,10 +167,11 @@ alternating form uniquely defined by compatibility with the orientation and inne
 -/
 irreducible_def volumeForm : E [⋀^Fin n]→ₗ[ℝ] ℝ := by
   classical
-    rcases n with - | n
-    · let opos : E [⋀^Fin 0]→ₗ[ℝ] ℝ := .constOfIsEmpty ℝ E (Fin 0) (1 : ℝ)
+    cases n with
+    | zero =>
+      let opos : E [⋀^Fin 0]→ₗ[ℝ] ℝ := .constOfIsEmpty ℝ E (Fin 0) (1 : ℝ)
       exact o.eq_or_eq_neg_of_isEmpty.by_cases (fun _ => opos) fun _ => -opos
-    · exact (o.finOrthonormalBasis n.succ_pos _i.out).toBasis.det
+    | succ n => exact (o.finOrthonormalBasis n.succ_pos _i.out).toBasis.det
 
 @[simp]
 theorem volumeForm_zero_pos [_i : Fact (finrank ℝ E = 0)] :

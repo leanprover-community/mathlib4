@@ -109,7 +109,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
     · intro p₁ hp₁
       rw [Sphere.mem_coe, mem_sphere, ← mul_self_inj_of_nonneg dist_nonneg (Real.sqrt_nonneg _),
         Real.mul_self_sqrt (add_nonneg (mul_self_nonneg _) (mul_self_nonneg _))]
-      obtain ⟨hp₁, hp₁⟩ := hp₁
+      rcases hp₁ with hp₁ | hp₁
       · rw [hp₁]
         rw [hpo,
           dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd (orthogonalProjection_mem p) hcc _ _
