@@ -1,10 +1,6 @@
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.Tactic
 
--- import CFT.Continuous._0_ContinuousAddMonoidHom
--- import CFT.Continuous.«_0.4_const_and_map»
--- import CFT.Continuous.«_0.6_ContinuousMaps»
-
 /-
 # Foundations of continuous cohomology 1.
 
@@ -60,9 +56,6 @@ instance (n : ℕ) : TopologicalSpace 𝓒(G,M,n) := (ContinuousMultiMaps_aux G 
 instance : FunLike 𝓒(G,M,0) G M := inferInstanceAs (FunLike C(G,M) G M)
 instance (n : ℕ) : FunLike 𝓒(G,M,n+1) G 𝓒(G,M,n) := inferInstanceAs (FunLike C(G,𝓒(G,M,n)) _ _)
 
-lemma ContinuousMultiMaps_zero : 𝓒(G,M,0) = C(G,M) := rfl
-
-lemma ContinuousMultiMaps_succ (n : ℕ) : 𝓒(G,M,n+1) = C(G,𝓒(G,M,n)) := rfl
 
 @[ext] lemma ContinuousMultiMaps.ext {f f' : 𝓒(G,M,0)} (h : ∀ x : G, f x = f' x) : f = f' :=
   ContinuousMap.ext h
@@ -105,6 +98,11 @@ def ContinuousMultiMaps.module_aux :
 instance (n : ℕ) : Module R 𝓒(G,M,n) := (ContinuousMultiMaps.module_aux G M R n).fst
 instance (n : ℕ) : ContinuousConstSMul R 𝓒(G,M,n) :=
   (ContinuousMultiMaps.module_aux G M R n).snd.default
+
+def ContinuousMultiMaps_zero : 𝓒(G,M,0) ≃L[R] C(G,M) := ContinuousLinearEquiv.refl R 𝓒(G,M,0)
+
+def ContinuousMultiMaps_succ (n : ℕ) : 𝓒(G,M,n+1) ≃L[R] C(G,𝓒(G,M,n)) :=
+  ContinuousLinearEquiv.refl R 𝓒(G,M,n+1)
 
 namespace ContinuousLinearMap
 
@@ -151,25 +149,19 @@ open ContinuousLinearMap
 open _root_.LinearMap hiding sub_comp comp_sub coe_comp
 
 variable {G M R}
---def const {n : ℕ} : 𝓒(G,M,n) →L[R] 𝓒(G,M,n + 1) := constL G 𝓒(G,M,n) R
 
 variable {N : Type _} [TopologicalSpace N] [AddCommGroup N] [TopologicalAddGroup N]
   [Module R N] [ContinuousConstSMul R N]
-
--- def map {N : Type _} [TopologicalSpace N] [AddCommGroup N] [TopologicalAddGroup N]
---     [Module R N] [ContinuousConstSMul R N] {m n : ℕ} :
---     (𝓒(G,M,m) →L[R] 𝓒(G,N,n)) →ₗ[R] (𝓒(G,M,m+1) →L[R] 𝓒(G,N,n+1)) := mapL G _ R
-
--- lemma map_comp_const (m n : ℕ) (f : 𝓒(G,M,m) →L[R] 𝓒(G,N,n)) : map f ∘L const = const ∘L f := rfl
 
 variable (G M R)
 /--
 The differential `d G M n : 𝓒(G,M,n) →ₜ+ 𝓒(G,M,n+1)`.
 -/
 def d : ∀ n, 𝓒(G,M,n) →L[R] 𝓒(G,M,n+1)
-  | 0     => by
-    change C(G,M) →L[R] C(G,C(G,M))
-    exact constL - constL (M := M).mapL
+  | 0     => constL - constL (M := M).mapL
+    -- by
+    --   change C(G,M) →L[R] C(G,C(G,M))
+    --   exact constL - constL (M := M).mapL
   | n + 1 => constL - (d n).mapL
 
 lemma d_zero : d G M R 0 = constL - constL (M := M).mapL := rfl
