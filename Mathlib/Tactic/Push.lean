@@ -96,6 +96,14 @@ inductive Head where
 | lambda
 | Forall
 
+/-- Retreave the `Head` of an expression. -/
+def Head.ofExpr (e : Expr) : MetaM Head := do
+  if e.isForall then return .Forall
+  if e.isLambda then return .lambda
+  if let some const := e.getAppFn.constName? then
+    return .name const
+  throwError "tactic `push` expected a term that can be pushed, not {indentExpr e}"
+
 /--
 Check whether the expression is a target for pushing `head`.
 
@@ -188,34 +196,25 @@ using say `push_neg at h h' ⊢`, as usual.
 syntax (name := push) "push " (discharger)? (colGt term) (location)? : tactic
 
 open Elab in
-/--
-Elaborator for the "head" constant used by `push`.
-We check if the name refers to the `∀` or `fun` binder
-before interpreting the name as a constant.
--/
-def elabHead (stx : Syntax) : TacticM Head := withRef stx do
-  let e ← (do
-    if stx.isIdent then
-      if let some e ← Term.resolveId? stx (withInfo := true) then
-        return e
-    withTheReader Term.Context ({ · with ignoreTCFailures := true }) <|
-      Term.withoutModifyingElabMetaStateWithInfo <|
-        Term.withoutErrToSorry <|
-          Term.elabTerm stx none)
-  if e.isForall then return .Forall
-  if e.isLambda then return .lambda
-  if let some const := e.getAppFn.constName? then return .name const
-  throwError "tactic `push` expected a term that can be pushed, not {indentExpr e}"
+/-- Elaborator for the expression passed to `push` -/
+def elabHead (stx : Syntax) : TermElabM Expr := withRef stx do
+  if stx.isIdent then
+    if let some e ← Term.resolveId? stx (withInfo := true) then
+      return e
+  withTheReader Term.Context ({ · with ignoreTCFailures := true }) <|
+  Term.withoutModifyingElabMetaStateWithInfo <|
+  Term.withoutErrToSorry <|
+  Term.elabTerm stx none
 
 @[tactic push, inherit_doc push]
 def elabPush : Tactic := fun stx => withMainContext do
   let dischargeWrapper ← Lean.Elab.Tactic.mkDischargeWrapper stx[1]
-  let heaed ← elabHead stx[2]
+  let head ← Head.ofExpr (← elabHead stx[2])
   let loc := expandOptLocation stx[3]
   dischargeWrapper.with fun discharge? => do
     withLocation loc
-      (pushNegLocalDecl heaed discharge?)
-      (pushNegTarget heaed discharge?)
+      (pushNegLocalDecl head discharge?)
+      (pushNegTarget head discharge?)
       (fun _ ↦ logInfo "push_neg couldn't find a negation to push")
 
 /--
@@ -256,7 +255,7 @@ macro "push_neg" : conv => `(conv| push Not)
 /-- Execute `push` as a conv tactic. -/
 @[tactic pushConv] def elabPushConv : Tactic := fun stx ↦ withMainContext do
   let dischargeWrapper ← Lean.Elab.Tactic.mkDischargeWrapper stx[1]
-  let head ← elabHead stx[2]
+  let head ← Head.ofExpr (← elabHead stx[2])
   dischargeWrapper.with fun discharge? => do
     Conv.applySimpResult (← pushCore head (← instantiateMVars (← Conv.getLhs)) discharge?)
 
@@ -269,5 +268,36 @@ which will print the `push_neg` form of `e`.
 macro (name := pushNeg) tk:"#push_neg " e:term : command => `(command| #conv%$tk push_neg => $e)
 
 end Conv
+
+section DiscrTree
+
+/--
+`#push_discr_tree` is a command to see what `push` lemmas are in the environment for pushing
+a given constant. This can be helpful when you are constructing a set of `push` lemmas.
+-/
+syntax (name := pushTree) "#push_discr_tree " (colGt term) : command
+
+@[command_elab pushTree, inherit_doc pushTree]
+def elabPushTree : Elab.Command.CommandElab := fun stx => do
+  Elab.Command.runTermElabM fun _ => do
+  let head ← elabHead stx[1]
+  let headKey : DiscrTree.Key := (← withReducible <| DiscrTree.getMatchKeyRootFor head).1
+  let thms ← pushExt.getTheorems
+  let mut logged := false
+  for (key, trie) in thms.pre.root do
+    let rec keyEq (k k' : DiscrTree.Key) : Bool :=
+      match k, k' with
+      | .const n _, .const n' _ => n == n'
+      | .other    , .other      => true
+      | .arrow    , .arrow      => true
+      | _         , _           => false
+    if keyEq key headKey then
+      logInfo m! "DiscrTree branch for {key}:{indentD (format trie)}"
+      logged := true
+  unless logged do
+    logInfo m! "There are no `push` theorems for the key {headKey}"
+
+end DiscrTree
+
 
 end Mathlib.Tactic.Push
