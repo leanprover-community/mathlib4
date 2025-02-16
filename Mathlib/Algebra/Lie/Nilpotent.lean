@@ -149,6 +149,18 @@ theorem lowerCentralSeries_map_eq_lcs : (lowerCentralSeries R L N k).map N.incl 
   rw [lowerCentralSeries_eq_lcs_comap, LieSubmodule.map_comap_incl, inf_eq_right]
   apply lcs_le_self
 
+theorem lowerCentralSeries_eq_bot_iff_lcs_eq_bot:
+    (lowerCentralSeries R L N k = ⊥) ↔ (lcs k N = ⊥) := by
+  constructor
+  · intro h
+    rw [← N.lowerCentralSeries_map_eq_lcs]
+    refine (LieModuleHom.le_ker_iff_map (lowerCentralSeries R L N k)).mp ?_
+    simp_all only [ker_incl, le_bot_iff]
+  intro h
+  rw [N.lowerCentralSeries_eq_lcs_comap]
+  refine comap_incl_eq_bot.mpr ?_
+  simp_all only [bot_le, inf_of_le_right]
+
 end LieSubmodule
 
 namespace LieModule
@@ -298,18 +310,6 @@ variable (R L M)
 instance (priority := 100) trivialIsNilpotent [IsTrivial L M] : IsNilpotent L M :=
   ⟨by use 1; change ⁅⊤, ⊤⁆ = ⊥; simp⟩
 
-theorem aux {M₁ : LieSubmodule R L M} {k : ℕ} :
-    (lowerCentralSeries R L M₁ k = ⊥) ↔ (LieSubmodule.lcs k M₁ = ⊥) := by
-  constructor
-  · intro h
-    rw [← M₁.lowerCentralSeries_map_eq_lcs]
-    refine (LieModuleHom.le_ker_iff_map (lowerCentralSeries R L (↥M₁) k)).mp ?_
-    simp_all only [LieSubmodule.ker_incl, le_bot_iff]
-  intro h
-  rw [M₁.lowerCentralSeries_eq_lcs_comap]
-  refine LieSubmodule.comap_incl_eq_bot.mpr ?_
-  simp_all only [bot_le, inf_of_le_right]
-
 instance isNilpotentAdd (M₁ M₂ : LieSubmodule R L M) [IsNilpotent L M₁] [IsNilpotent L M₂] :
     IsNilpotent L (M₁ + M₂) := by
   obtain ⟨k, hk⟩ := (isNilpotent_iff R L M₁).1 (inferInstance)
@@ -327,7 +327,8 @@ instance isNilpotentAdd (M₁ M₂ : LieSubmodule R L M) [IsNilpotent L M₁] [I
   rw [(M₁ ⊔ M₂).lowerCentralSeries_eq_lcs_comap]
   dsimp [lowerCentralSeries] at *
   simp_all
-  rw [(aux R L M).1 h₁, (aux R L M).1 h₂]
+  rw [(M₁.lowerCentralSeries_eq_bot_iff_lcs_eq_bot (k ⊔ l)).1 h₁,
+      (M₂.lowerCentralSeries_eq_bot_iff_lcs_eq_bot (k ⊔ l)).1 h₂]
   refine LieSubmodule.comap_incl_eq_bot.mpr ?_
   simp_all only [le_refl, sup_of_le_left, bot_le, inf_of_le_right]
 
