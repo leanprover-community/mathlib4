@@ -395,13 +395,15 @@ lemma exists_finiteIntegralAdele_iff (a : FiniteAdeleRing R K) :
     (∃ c : R_hat R K, a = c) ↔ ∀ v : HeightOneSpectrum R, a v ∈ adicCompletionIntegers K v :=
   ⟨by rintro ⟨c, rfl⟩ v; exact (c v).2, fun h ↦ ⟨fun v ↦ ⟨a v, h v⟩, rfl⟩⟩
 
+instance : Algebra (FiniteAdeleRing R K) (K_hat R K) := (subalgebra _ _).toAlgebra
+
+instance : IsScalarTower (R_hat R K) (FiniteAdeleRing R K) (K_hat R K) where
+  smul_assoc x y z := smul_mul_assoc x y.val z
+
 @[simp, norm_cast]
 theorem coe_algebraMap' (r : R_hat R K) :
-    algebraMap (R_hat R K) (FiniteAdeleRing R K) r =
-      algebraMap (R_hat R K) (K_hat R K) r :=
+    algebraMap (R_hat R K) (FiniteAdeleRing R K) r = algebraMap (R_hat R K) (K_hat R K) r :=
   rfl
-
-instance : Algebra (FiniteAdeleRing R K) (K_hat R K) := (subalgebra _ _).toAlgebra
 
 instance : FaithfulSMul (FiniteAdeleRing R K) (K_hat R K) :=
     Subalgebra.instFaithfulSMulSubtypeMem (subalgebra _ _)
