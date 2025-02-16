@@ -21,6 +21,7 @@ namespace List
 variable {α β : Type*}
 
 /-- Whether a predicate holds for all ordered triples of elements of a list. -/
+@[mk_iff]
 inductive Triwise (p : α → α → α → Prop) : List α → Prop
   | nil : [].Triwise p
   | cons {a : α} {l : List α} : l.Pairwise (p a) → l.Triwise p → (a :: l).Triwise p
