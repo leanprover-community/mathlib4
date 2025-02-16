@@ -492,9 +492,9 @@ def extractOpenNames : Syntax → Array Syntax
   | `(command|open scoped $args*)      => args
   | _ => #[]
 
-@[inherit_doc Mathlib.Linter.linter.openClassical]
+@[inherit_doc Mathlib.Linter.linter.style.openClassical]
 def openClassicalLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.openClassical (← getOptions) do
+    unless Linter.getLinterValue linter.style.openClassical (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
      return
@@ -503,7 +503,7 @@ def openClassicalLinter : Linter where run := withSetOptionIn fun stx ↦ do
       return
     -- If `stx` describes an `open` command, extract the list of opened namespaces.
     for stxN in (extractOpenNames stx).filter (·.getId == `Classical) do
-      Linter.logLint linter.openClassical stxN "\
+      Linter.logLint linter.style.openClassical stxN "\
       please avoid 'open (scoped) Classical' statements: this can hide theorem statements\n\
       which would be better stated with explicit decidability statements.\n\
       Instead, use `open Classical in` for definitions or instances, the `classical` tactic \
