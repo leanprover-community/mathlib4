@@ -1,26 +1,44 @@
+/-
+Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasilii Nesterov
+-/
 import Mathlib.Tactic.Order.CollectFacts
+
+/-!
+# Graphs for the `order` tactic
+
+This module defines the `Graph` structure and basic operations on it. The `order` tactic uses
+`≤`-graphs, where the vertices represent atoms, and an edge `(x, y)` exists if `x ≤ y`.
+-/
 
 namespace Mathlib.Tactic.Order
 
 open Lean Expr Meta
 
+/-- An edge in a graph. In the `order` tactic, the `proof` field stores the of
+`atomToIdx[src] ≤ atomToIdx[dst]`. -/
 structure Edge where
   src : Nat
   dst : Nat
   proof : Expr
 
+-- For debugging purposes.
 instance : ToString Edge where
   toString e := s!"{e.src} ⟶ {e.dst}"
 
-/-- TODO -/
+/-- If `g` is a `Graph`, then for a vertex with index `v`, `g[v]` is an array containing
+the edges starting from this vertex. -/
 abbrev Graph := Array (Array Edge)
 
 namespace Graph
 
+/-- Adds an `edge` to the graph. -/
 def addEdge (g : Graph) (edge : Edge) : Graph :=
   g.modify edge.src fun edges => edges.push edge
 
-/-- Constructs a directed `Graph` using only `≤` facts. -/
+/-- Constructs a directed `Graph` using `≤` facts. It also creates edges from `⊥`
+(if present) to all vertices and from all vertices to `⊤` (if present). -/
 def constructLeGraph (nVertexes : Nat) (facts : Array AtomicFact)
     (idxToAtom : Std.HashMap Nat Expr) : MetaM Graph := do
   let mut res : Graph := Array.mkArray nVertexes #[]
@@ -35,15 +53,6 @@ def constructLeGraph (nVertexes : Nat) (facts : Array AtomicFact)
       for i in [:nVertexes] do
         if i != idx then
           res := res.addEdge ⟨idx, i, ← mkAppOptM ``bot_le #[none, none, none, idxToAtom.get! i]⟩
-  return res
-
-/-- Inverts the edges of `g`. This swaps `lhs` and `rhs` in each edge and does nothing to the `rel`
-and `proof` fields. -/
-def inverseGraph (g : Graph) : Graph := Id.run do
-  let mut res : Graph:= Array.mkArray g.size #[]
-  for v in [:g.size] do
-    for edge in g[v]! do
-      res := res.addEdge ⟨edge.dst, edge.src, edge.proof⟩
   return res
 
 /-- State for the DFS algorithm. -/

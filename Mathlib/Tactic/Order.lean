@@ -3,19 +3,16 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
--- import Mathlib.Order.BoundedOrder.Basic
--- import Mathlib.Order.Lattice
 import Mathlib.Tactic.Order.CollectFacts
 import Mathlib.Tactic.Order.Preprocessing
 import Mathlib.Tactic.Order.Graph.Basic
 import Mathlib.Tactic.Order.Graph.Tarjan
--- import Qq
 
 /-!
 # `order` tactic
 
 This module defines the `order` tactic, a decision procedure for the theories of `Preorder`,
-`PartialOrder`, and `LinearOrder`.
+`PartialOrder`, `LinearOrder`, and `Lattice`. It also supports `⊤` and `⊥`.
 
 ## Implementation Details
 
@@ -127,6 +124,19 @@ with variables interpreted as their respective components. Note that the reachab
 linear order where `C₁ R C₂` whenever `C₂` is reachable from `C₁`. It is easy to see that all facts
 in `T'` are satisfied by the model.
 
+### Lattice
+The algorithm for lattices is similar to that for partial orders, with two differences:
+1. During the preprocessing step, we add the facts `x ≤ x ⊔ y` and `y ≤ x ⊔ y` if `x ⊔ y` is present
+in the context, and similarly for `⊓`.
+2. In step 5, we expand the `≤`-graph using the following procedure: if a vertex `v` is reachable
+from both `x` and `y`, and `x ⊔ y` is present in the set of atoms, we add the edge `(x ⊔ y, v)`
+using `sup_le`, and similarly for `⊓`.
+
+One can show that this algorithm also serves as a decision procedure for the theory of lattices.
+
+### `⊤` and `⊥`
+For `⊤` and `⊥`, we add the edges `(x, ⊤)` and `(⊥, x)` for all vertices `x`, using `le_top`
+and `bot_le`, respectively.
 -/
 
 namespace Mathlib.Tactic.Order
@@ -134,14 +144,21 @@ namespace Mathlib.Tactic.Order
 open Lean Qq Elab Meta Tactic
 
 /-- Finds a contradictory `≠`-fact whose `.lhs` and `.rhs` belong to the same strongly connected
-component in the `≤`-graph, implying they must be equal. -/
-def findContradictoryNe (graph : Graph) (facts : Array AtomicFact) : Option AtomicFact :=
+component in the `≤`-graph, implying they must be equal, and then uses it to derive `False`. -/
+def findContradictionWithNe (graph : Graph) (idxToAtom : Std.HashMap Nat Expr)
+    (facts : Array AtomicFact) : MetaM <| Option Expr := do
   let scc := graph.findSCCs
-  facts.find? fun fact =>
-    if let .ne lhs rhs _ := fact then
-      scc[lhs]! == scc[rhs]!
-    else
-      false
+  for fact in facts do
+    let .ne lhs rhs neProof := fact | continue
+    if scc[lhs]! != scc[rhs]! then
+      continue
+    let .some pf1 ← graph.buildTransitiveLeProof idxToAtom lhs rhs
+      | throwError "Bug: Cannot find path in strongly connected component"
+    let .some pf2 ← graph.buildTransitiveLeProof idxToAtom rhs lhs
+      | throwError "Bug: Cannot find path in strongly connected component"
+    let pf3 ← mkAppM ``le_antisymm #[pf1, pf2]
+    return .some <| mkApp neProof pf3
+  return .none
 
 /-- Using the `≤`-graph `g`, find a contradiction with some `≰`-fact. -/
 def findContradictionWithNle (g : Graph) (idxToAtom : Std.HashMap ℕ Expr)
@@ -152,8 +169,13 @@ def findContradictionWithNle (g : Graph) (idxToAtom : Std.HashMap ℕ Expr)
       return .some <| mkApp proof pf
   return .none
 
-/-- Using `≮`-facts and the `le_of_not_lt_le` lemma, add edges to the `≤`-graph `g` as long as
-it remains possible. -/
+/-- Adds edges to the `≤`-graph using two types of facts:
+1. Each fact `¬ (x < y)` allows to add the edge `(x, y)` when `y` is reachable from `x` in the
+graph.
+2. Each fact `x ⊔ y = z` allows to add the edge `(z, s)` when `s` is reachable from both `x`
+and `y`.
+
+We repeat the process until no more edges can be added. -/
 def updateGraphWithNltInfSup (g : Graph) (idxToAtom : Std.HashMap Nat Expr)
     (facts : Array AtomicFact) : MetaM Graph := do
   let nltFacts := facts.filter fun fact => match fact with | .nlt _ _ _ => true | _ => false
@@ -208,7 +230,7 @@ def findBestOrderInstance (type : Expr) : MetaM <| Option OrderType := do
   return .none
 
 /-- A finishing tactic for solving goals in arbitrary `Preorder`, `PartialOrder`,
-or `LinearOrder`. -/
+or `LinearOrder`. Supports `⊤`, `⊥`, and lattice operations. -/
 elab "order" : tactic => focus do
   let g ← getMainGoal
   let .some g ← g.falseOrByContra | return
@@ -228,14 +250,8 @@ elab "order" : tactic => focus do
       g.assign pf
       return
     else
-      let .some contNe := findContradictoryNe graph facts | continue
-      let .ne lhs rhs neProof := contNe | throwError "Bug: Non-ne fact in findContradictoryNe."
-      let .some pf1 ← graph.buildTransitiveLeProof idxToAtom lhs rhs
-        | throwError "Bug: Cannot find path in strongly connected component"
-      let .some pf2 ← graph.buildTransitiveLeProof idxToAtom rhs lhs
-        | throwError "Bug: Cannot find path in strongly connected component"
-      let pf3 ← mkAppM ``le_antisymm #[pf1, pf2]
-      g.assign <| mkApp neProof pf3
+      let .some pf ← findContradictionWithNe graph idxToAtom facts | continue
+      g.assign pf
       return
   throwError "No contradiction found"
 

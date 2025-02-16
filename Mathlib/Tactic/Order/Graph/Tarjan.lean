@@ -1,7 +1,20 @@
+/-
+Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasilii Nesterov
+-/
 import Mathlib.Tactic.Order.Graph.Basic
+
+/-!
+# Tarjan's Algorithm
+
+This file implements Tarjan's algorithm for finding the strongly connected components (SCCs) of
+a graph.
+-/
 
 namespace Mathlib.Tactic.Order.Graph
 
+/-- State for Tarjan's algorithm. -/
 structure TarjanState extends DFSState where
   id : Array Nat
   lowlink : Array Nat
@@ -9,6 +22,8 @@ structure TarjanState extends DFSState where
   onStack : Array Bool
   time : Nat
 
+/-- The Tarjan's algorithm.
+See [Wikipedia](https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm). -/
 partial def tarjanDFS (g : Graph) (v : Nat) : StateM TarjanState Unit := do
   modify fun s => {
     visited := s.visited.set! v true,
@@ -43,11 +58,14 @@ partial def tarjanDFS (g : Graph) (v : Nat) : StateM TarjanState Unit := do
       if w = v then
         break
 
+/-- Implementation of `findSCCs` in the `StateM TarjanState` monad. -/
 def findSCCsImp (g : Graph) : StateM TarjanState Unit := do
   for v in [:g.size] do
     if !(← get).visited[v]! then
       tarjanDFS g v
 
+/-- Finds the strongly connected components of the graph `g`. Returns an array where the value at
+index `v` represents the SCC number containing vertex `v`. The numbering of SCCs is arbitrary. -/
 def findSCCs (g : Graph) : Array Nat :=
   let s : TarjanState := {
     visited := mkArray g.size false
@@ -58,5 +76,6 @@ def findSCCs (g : Graph) : Array Nat :=
     time := 0
   }
   (findSCCsImp g).run s |>.snd.lowlink
+
 
 end Mathlib.Tactic.Order.Graph

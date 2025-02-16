@@ -1,6 +1,17 @@
+/-
+Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasilii Nesterov
+-/
 import Mathlib.Order.BoundedOrder.Basic
 import Mathlib.Order.Lattice
 import Qq
+
+/-!
+# Fact Collection for the `order` Tactic
+
+This file implements the collection of facts for the `order` tactic.
+-/
 
 namespace Mathlib.Tactic.Order
 
@@ -34,9 +45,15 @@ instance : ToString AtomicFact where
   | .isInf lhs rhs res => s!"{lhs} ⊓ {rhs} = {res}"
   | .isSup lhs rhs res => s!"{lhs} ⊔ {rhs} = {res}"
 
+/-- State for `CollectFactsM`. It contains a map where the key `t` maps to a
+pair `(atomToIdx, facts)`. `atomToIdx` maps atomic expressions to their indices,
+and `facts` stores `AtomicFact`s about them. -/
 abbrev CollectFactsState := Std.HashMap Expr <| Std.HashMap Expr Nat × Array AtomicFact
+
+/-- Monad for the fact collection procedure. -/
 abbrev CollectFactsM := StateT CollectFactsState MetaM
 
+/-- Checks whether `x` equals `⊤`. -/
 def isTop {u : Level} (type : Q(Type u)) (x : Q($type)) : MetaM Bool := do
   try
     let leInst ← synthInstanceQ (q(LE $type))
@@ -46,6 +63,7 @@ def isTop {u : Level} (type : Q(Type u)) (x : Q($type)) : MetaM Bool := do
   catch _ =>
     return false
 
+/-- Checks whether `x` equals `⊥`. -/
 def isBot {u : Level} (type : Q(Type u)) (x : Q($type)) : MetaM Bool := do
   try
     let leInst ← synthInstanceQ (q(LE $type))
@@ -55,6 +73,7 @@ def isBot {u : Level} (type : Q(Type u)) (x : Q($type)) : MetaM Bool := do
   catch _ =>
     return false
 
+/-- Checks whether `x` equals `y ⊔ z` for some `y` and `z`. If so, returns `y` and `z`. -/
 def getSupArgs? {u : Level} (type : Q(Type u)) (x : Q($type)) :
     MetaM <| Option (Q($type) × Q($type)) := do
   try
@@ -69,6 +88,7 @@ def getSupArgs? {u : Level} (type : Q(Type u)) (x : Q($type)) :
   catch _ =>
     return .none
 
+/-- Checks whether `x` equals `y ⊓ z` for some `y` and `z`. If so, returns `y` and `z`. -/
 def getInfArgs? {u : Level} (type : Q(Type u)) (x : Q($type)) :
     MetaM <| Option (Q($type) × Q($type)) := do
   try
@@ -83,13 +103,16 @@ def getInfArgs? {u : Level} (type : Q(Type u)) (x : Q($type)) :
   catch _ =>
     return .none
 
+/-- Updates the state with the atom `x`. If `x` is `⊤` or `⊥`, adds the corresponding fact. If `x`
+is `y ⊔ z`, adds a fact about it, then recursively calls `addAtom` on `y` and `z`.
+Similarly for `⊓`. -/
 partial def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFactsM Nat := do
   modify fun res => res.insertIfNew type (Std.HashMap.empty, #[])
   modify fun res => res.modify type fun (atomToIdx, facts) =>
     let atomToIdx := atomToIdx.insertIfNew x atomToIdx.size
     (atomToIdx, facts)
   let idx := (← get).get! type |>.fst.get! x
-  if idx + 1 == ((← get).get! type).fst.size then -- if new atom
+  if idx + 1 == ((← get).get! type).fst.size then -- If new atom
     if ← isTop type x then
       modify fun res => res.modify type fun (atomToIdx, facts) =>
         (atomToIdx, facts.push <| .isTop idx)
@@ -108,11 +131,13 @@ partial def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFacts
         (atomToIdx, facts.push <| .isInf aIdx bIdx idx)
   return idx
 
+/-- Adds `fact` to the state. -/
 def addFact (type : Expr) (fact : AtomicFact) : CollectFactsM Unit :=
   modify fun res => res.modify type fun (atomToIdx, facts) =>
     (atomToIdx, facts.push fact)
 
 -- TODO: Split conjunctions.
+/-- Implementation for `collectFacts` in `CollectFactsM` monad. -/
 def collectFactsImp (g : MVarId) : CollectFactsM Unit := g.withContext do
   let ctx ← getLCtx
   for ldecl in ctx do

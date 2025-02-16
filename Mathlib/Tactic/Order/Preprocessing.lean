@@ -1,4 +1,16 @@
+/-
+Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasilii Nesterov
+-/
 import Mathlib.Tactic.Order.CollectFacts
+
+/-!
+# Facts preprocessing for the `order` tactic
+
+In this file we implement the preprocessing procedure for the `order` tactic.
+See `Mathlib.Tactic.Order` for details of preprocessing.
+-/
 
 namespace Mathlib.Tactic.Order
 
@@ -44,7 +56,8 @@ def preprocessFactsPreorder (g : MVarId) (facts : Array AtomicFact) :
   return res
 
 /-- Preprocesses facts for partial orders. Replaces `x < y`, `¬ (x ≤ y)`, and `x = y` with
-equivalent facts involving only `≤`, `≠`, and `≮`. -/
+equivalent facts involving only `≤`, `≠`, and `≮`. For each fact `x = y ⊔ z` adds `y ≤ x`
+and `z ≤ x` facts, and similarly for `⊓`. -/
 def preprocessFactsPartial (g : MVarId) (facts : Array AtomicFact)
     (idxToAtom : Std.HashMap Nat Expr) : MetaM <| Array AtomicFact := g.withContext do
   let mut res : Array AtomicFact := #[]
@@ -76,7 +89,8 @@ def preprocessFactsPartial (g : MVarId) (facts : Array AtomicFact)
   return res
 
 /-- Preprocesses facts for linear orders. Replaces `x < y`, `¬ (x ≤ y)`, `¬ (x < y)`, and `x = y`
-with equivalent facts involving only `≤` and `≠`. -/
+with equivalent facts involving only `≤` and `≠`. For each fact `x = y ⊔ z` adds `y ≤ x`
+and `z ≤ x` facts, and similarly for `⊓`. -/
 def preprocessFactsLinear (g : MVarId) (facts : Array AtomicFact)
     (idxToAtom : Std.HashMap Nat Expr) : MetaM <| Array AtomicFact := g.withContext do
   let mut res : Array AtomicFact := #[]
