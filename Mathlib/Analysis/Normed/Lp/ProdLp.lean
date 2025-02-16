@@ -852,17 +852,22 @@ def idemFst : AddMonoid.End (WithLp p (α × β)) := (AddMonoidHom.inl α β).co
 /-- Projection on `WithLp p (α × β)` with range `β` and kernel `α` -/
 def idemSnd : AddMonoid.End (WithLp p (α × β)) := (AddMonoidHom.inr α β).comp (AddMonoidHom.snd α β)
 
-lemma idemFst_apply (x : WithLp p (α × β)) : idemFst x = toLp p (x.1, 0) := rfl
+lemma idemFst_apply (x : WithLp p (α × β)) :
+    idemFst x = (WithLp.equiv _ _).symm (((WithLp.equiv _ _) x).1, 0) :=
+  rfl
 
-lemma idemSnd_apply (x : WithLp p (α × β)) : idemSnd x = toLp p (0, x.2) := rfl
+lemma idemSnd_apply (x : WithLp p (α × β)) :
+    idemSnd x = (WithLp.equiv _ _).symm (0, ((WithLp.equiv _ _) x).2) :=
+  rfl
 
 @[simp]
 lemma idemFst_add_idemSnd :
     idemFst + idemSnd = (1 : AddMonoid.End (WithLp p (α × β))) := AddMonoidHom.ext
   fun x => by
     rw [AddMonoidHom.add_apply, idemFst_apply, idemSnd_apply, AddMonoid.End.coe_one, id_eq,
-      ← toLp_add, Prod.mk_add_mk, zero_add, add_zero]
-    rfl
+      WithLp.equiv_symm_apply, WithLp.equiv_symm_apply,
+      ← WithLp.toLp_add, Prod.mk_add_mk, zero_add, add_zero, Prod.mk.eta]
+    simp only [equiv_apply, toLp_ofLp]
 
 lemma idemFst_compl : (1 : AddMonoid.End (WithLp p (α × β))) - idemFst = idemSnd := by
   rw [← idemFst_add_idemSnd, add_sub_cancel_left]
@@ -873,14 +878,14 @@ lemma idemSnd_compl : (1 : AddMonoid.End (WithLp p (α × β))) - idemSnd = idem
 theorem prod_norm_eq_idemFst_sup_idemSnd (x : WithLp ∞ (α × β)) :
     ‖x‖ = max ‖idemFst x‖ ‖idemSnd x‖ := by
   rw [WithLp.prod_norm_eq_sup, ← WithLp.norm_toLp_fst ∞ α β x.1,
-    ← WithLp.norm_toLp_snd ∞ α β x.2]
-  rfl
+    ← WithLp.norm_toLp_snd ∞ α β x.2, idemFst_apply, idemSnd_apply]
+  simp
 
 lemma prod_norm_eq_add_idemFst [Fact (1 ≤ p)] (hp : 0 < p.toReal) (x : WithLp p (α × β)) :
     ‖x‖ = (‖idemFst x‖ ^ p.toReal + ‖idemSnd x‖ ^ p.toReal) ^ (1 / p.toReal) := by
   rw [WithLp.prod_norm_eq_add hp, ← WithLp.norm_toLp_fst p α β x.1,
     ← WithLp.norm_toLp_snd p α β x.2]
-  rfl
+  simp [idemFst_apply, idemSnd_apply]
 
 lemma prod_norm_eq_idemFst_of_L1 (x : WithLp 1 (α × β)) : ‖x‖ = ‖idemFst x‖ + ‖idemSnd x‖ := by
   rw [prod_norm_eq_add_idemFst (lt_of_lt_of_eq zero_lt_one toReal_one.symm)]
