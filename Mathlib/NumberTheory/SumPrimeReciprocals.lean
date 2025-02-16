@@ -3,8 +3,9 @@ Copyright (c) 2023 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.SmoothNumbers
+import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Analysis.PSeries
+import Mathlib.NumberTheory.SmoothNumbers
 
 /-!
 # The sum of the reciprocals of the primes diverges
@@ -23,7 +24,7 @@ The proof is due to Erdős.
 -/
 
 open Set Nat
-open scoped BigOperators Topology
+open scoped Topology
 
 /-- The cardinality of the set of `k`-rough numbers `≤ N` is bounded by `N` times the sum
 of `1/p` over the primes `k ≤ p ≤ N`. -/
@@ -38,7 +39,7 @@ lemma Nat.roughNumbersUpTo_card_le' (N k : ℕ) :
 
 /-- The sum over primes `k ≤ p ≤ 4^(π(k-1)+1)` over `1/p` (as a real number) is at least `1/2`. -/
 lemma one_half_le_sum_primes_ge_one_div (k : ℕ) :
-    1 / 2 ≤ ∑ p in (4 ^ (k.primesBelow.card + 1)).succ.primesBelow \ k.primesBelow,
+    1 / 2 ≤ ∑ p ∈ (4 ^ (k.primesBelow.card + 1)).succ.primesBelow \ k.primesBelow,
       (1 / p : ℝ) := by
   set m : ℕ := 2 ^ k.primesBelow.card
   set N₀ : ℕ := 2 * m ^ 2 with hN₀
@@ -65,7 +66,7 @@ theorem not_summable_one_div_on_primes :
     ¬ Summable (indicator {p | p.Prime} (fun n : ℕ ↦ (1 : ℝ) / n)) := by
   intro h
   obtain ⟨k, hk⟩ := h.nat_tsum_vanishing (Iio_mem_nhds one_half_pos : Iio (1 / 2 : ℝ) ∈ 𝓝 0)
-  specialize hk ({p | Nat.Prime p} ∩ {p | k ≤ p}) <| inter_subset_right ..
+  specialize hk ({p | Nat.Prime p} ∩ {p | k ≤ p}) inter_subset_right
   rw [tsum_subtype, indicator_indicator, inter_eq_left.mpr fun n hn ↦ hn.1, mem_Iio] at hk
   have h' : Summable (indicator ({p | Nat.Prime p} ∩ {p | k ≤ p}) fun n ↦ (1 : ℝ) / n) := by
     convert h.indicator {n : ℕ | k ≤ n} using 1

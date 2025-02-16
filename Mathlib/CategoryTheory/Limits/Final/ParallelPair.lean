@@ -6,10 +6,10 @@ Authors: Dagur Asgeirsson, Joël Riou
 import Mathlib.CategoryTheory.Limits.Final
 /-!
 
-# Conditions for `parallelPair` to be initial
+# Conditions for `parallelPair` to be initial
 
-In this file we give sufficient conditions on a category `C` and parallel morphisms `f g : X ⟶ Y` 
-in `C` so that `parallelPair f g` becomes an initial functor.
+In this file we give sufficient conditions on a category `C` and parallel morphisms `f g : X ⟶ Y`
+in `C` so that `parallelPair f g` becomes an initial functor.
 
 The conditions are that there is a morphism out of `X` to every object of `C` and that any two
 parallel morphisms out of `X` factor through the parallel pair `f`, `g`
@@ -50,3 +50,7 @@ lemma parallelPair_initial_mk {X Y : C} (f g : X ⟶ Y)
     let f₂ : (mk (Y := zero) (g ≫ a) : CostructuredArrow (parallelPair f g) Z) ⟶ mk (Y := one) a :=
       homMk right
     exact Zigzag.of_hom_inv f₁ f₂)
+
+end Limits
+
+end CategoryTheory

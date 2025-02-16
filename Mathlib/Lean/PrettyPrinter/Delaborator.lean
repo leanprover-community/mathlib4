@@ -3,6 +3,7 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Init
 import Lean.PrettyPrinter.Delaborator.Basic
 
 /-!
@@ -12,13 +13,6 @@ import Lean.PrettyPrinter.Delaborator.Basic
 namespace Lean.PrettyPrinter.Delaborator
 
 open Lean.Meta Lean.SubExpr SubExpr
-
-namespace SubExpr
-
-variable {α : Type} [Inhabited α]
-variable {m : Type → Type} [Monad m]
-
-end SubExpr
 
 /-- Assuming the current expression in a lambda or pi,
 descend into the body using an unused name generated from the binder's name.
@@ -36,3 +30,5 @@ def OptionsPerPos.setBool (opts : OptionsPerPos) (p : SubExpr.Pos) (n : Name) (v
     OptionsPerPos :=
   let e := opts.findD p {} |>.setBool n v
   opts.insert p e
+
+end Lean.PrettyPrinter.Delaborator

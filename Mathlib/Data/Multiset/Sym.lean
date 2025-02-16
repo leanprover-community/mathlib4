@@ -32,7 +32,7 @@ unordered n-tuples from a given multiset. These are multiset versions of `Nat.mu
 
 namespace Multiset
 
-variable {α : Type*}
+variable {α β : Type*}
 
 section Sym2
 
@@ -46,6 +46,17 @@ protected def sym2 (m : Multiset α) : Multiset (Sym2 α) :=
 @[simp]
 theorem sym2_eq_zero_iff {m : Multiset α} : m.sym2 = 0 ↔ m = 0 :=
   m.inductionOn fun xs => by simp
+
+@[simp]
+theorem sym2_zero : (0 : Multiset α).sym2 = 0 := rfl
+
+theorem sym2_cons (a : α) (m : Multiset α) :
+    (m.cons a).sym2 = ((m.cons a).map <| fun b => s(a, b)) + m.sym2 :=
+  m.inductionOn fun _ => rfl
+
+theorem sym2_map (f : α → β) (m : Multiset α) :
+    (m.map f).sym2 = m.sym2.map (Sym2.map f) :=
+  m.inductionOn fun xs => by simp [List.sym2_map]
 
 theorem mk_mem_sym2_iff {m : Multiset α} {a b : α} :
     s(a, b) ∈ m.sym2 ↔ a ∈ m ∧ b ∈ m :=
@@ -71,6 +82,9 @@ theorem card_sym2 {m : Multiset α} :
     Multiset.card m.sym2 = Nat.choose (Multiset.card m + 1) 2 := by
   refine m.inductionOn fun xs => ?_
   simp [List.length_sym2]
+
+theorem dedup_sym2 [DecidableEq α] (m : Multiset α) : m.sym2.dedup = m.dedup.sym2 :=
+  m.inductionOn fun xs => by simp [List.dedup_sym2]
 
 end Sym2
 
