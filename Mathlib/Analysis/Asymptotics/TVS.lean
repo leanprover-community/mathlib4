@@ -193,6 +193,20 @@ lemma IsLittleOTVS.insert [TopologicalSpace α] {x : α} {s : Set α}
 lemma IsLittleOTVS.bot : f =o[𝕜;⊥] g :=
   fun u hU => ⟨univ, by simp⟩
 
+theorem IsLittleOTVS.pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
+    [∀ i, TopologicalSpace (E i)] [∀ i, Module 𝕜 (E i)] [∀ i, ContinuousSMul 𝕜 (E i)]
+    {f : (i : ι) → α → E i} {g : α → F} {l : Filter α} (h : ∀ i, f i =o[𝕜; l] g) :
+    (fun x i ↦ f i x) =o[𝕜; l] g := by
+  have := hasBasis_pi fun i ↦ nhds_basis_balanced 𝕜 (E i)
+  rw [← nhds_pi, ← Pi.zero_def] at this
+  simp only [this.isLittleOTVS_iff (basis_sets _), forall_and, Prod.forall]
+  rintro I U ⟨hIf, hU, Ub⟩
+  have := fun i hi ↦ (h i).eventually_smallSets (U i) (hU i hi)
+  rcases (hIf.eventually_all.mpr this).exists_mem_of_smallSets with ⟨V, hV₀, hV⟩
+  refine ⟨V, hV₀, fun ε hε ↦ ?_⟩
+  refine (hIf.eventually_all.mpr (hV · · ε hε)).mono fun x hx ↦ ?_
+  simpa only [id, egauge_pi hIf Ub, iSup₂_le_iff]
+
 theorem IsLittleOTVS.add [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
     {f₁ f₂ : α → E} {g : α → F} {l : Filter α}
     (h₁ : f₁ =o[𝕜; l] g) (h₂ : f₂ =o[𝕜; l] g) : (f₁ + f₂) =o[𝕜; l] g := by
