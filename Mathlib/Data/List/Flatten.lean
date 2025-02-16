@@ -3,7 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Mario Carneiro, Martin Dvorak
 -/
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Induction
 
 /-!
 # Join of a list of lists
@@ -18,6 +18,21 @@ assert_not_exists Monoid
 variable {α β : Type*}
 
 namespace List
+
+@[gcongr]
+protected theorem Sublist.flatten {l₁ l₂ : List (List α)} (h : l₁ <+ l₂) :
+    l₁.flatten <+ l₂.flatten := by
+  induction h with
+  | slnil => simp
+  | cons _ _ ih =>
+    rw [flatten_cons]
+    exact ih.trans (sublist_append_right _ _)
+  | cons₂ _ _ ih => simpa
+
+@[gcongr]
+protected theorem Sublist.flatMap {l₁ l₂ : List α} (h : l₁ <+ l₂) (f : α → List β) :
+    l₁.flatMap f <+ l₂.flatMap f :=
+  (h.map f).flatten
 
 set_option linter.deprecated false in
 /-- See `List.length_flatten` for the corresponding statement using `List.sum`. -/
@@ -109,11 +124,6 @@ theorem drop_take_succ_eq_cons_getElem (L : List α) (i : Nat) (h : i < L.length
   · simp
   · simpa using ih _ (by simpa using h)
 
-@[deprecated drop_take_succ_eq_cons_getElem (since := "2024-06-11")]
-theorem drop_take_succ_eq_cons_get (L : List α) (i : Fin L.length) :
-    (L.take (i + 1)).drop i = [get L i] := by
-  simp [drop_take_succ_eq_cons_getElem]
-
 set_option linter.deprecated false in
 /-- In a flatten of sublists, taking the slice between the indices `A` and `B - 1` gives back the
 original sublist of index `i` if `A` is the sum of the lengths of sublists of index `< i`, and
@@ -131,13 +141,6 @@ theorem drop_take_succ_flatten_eq_getElem' (L : List (List α)) (i : Nat) (h : i
 
 @[deprecated (since := "2024-10-15")]
 alias drop_take_succ_join_eq_getElem' := drop_take_succ_flatten_eq_getElem'
-
-set_option linter.deprecated false in
-@[deprecated drop_take_succ_flatten_eq_getElem' (since := "2024-06-11")]
-theorem drop_take_succ_join_eq_get' (L : List (List α)) (i : Fin L.length) :
-    (L.flatten.take (Nat.sum ((L.map length).take (i + 1)))).drop
-      (Nat.sum ((L.map length).take i)) = get L i := by
-   simp [drop_take_succ_flatten_eq_getElem']
 
 theorem flatten_drop_length_sub_one {L : List (List α)} (h : L ≠ []) :
     (L.drop (L.length - 1)).flatten = L.getLast h := by

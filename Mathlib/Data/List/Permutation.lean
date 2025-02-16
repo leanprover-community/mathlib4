@@ -8,6 +8,7 @@ import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.List.Count
 import Mathlib.Data.List.Duplicate
 import Mathlib.Data.List.InsertIdx
+import Mathlib.Data.List.Induction
 import Batteries.Data.List.Perm
 import Mathlib.Data.List.Perm.Basic
 
@@ -254,7 +255,7 @@ theorem perm_of_mem_permutationsAux :
   · exact (IH1 _ m).trans perm_middle
   · have p : l₁ ++ l₂ ~ is := by
       simp only [mem_cons] at m
-      cases' m with e m
+      rcases m with e | m
       · simp [e]
       exact is.append_nil ▸ IH2 _ m
     exact ((perm_middle.trans (p.cons _)).append_right _).trans (perm_append_comm.cons _)
@@ -416,12 +417,6 @@ theorem length_permutations'Aux (s : List α) (x : α) :
   induction' s with y s IH
   · simp
   · simpa using IH
-
-@[deprecated "No deprecation message was provided." (since := "2024-06-12")]
-theorem permutations'Aux_get_zero (s : List α) (x : α)
-    (hn : 0 < length (permutations'Aux x s) := (by simp)) :
-    (permutations'Aux x s).get ⟨0, hn⟩ = x :: s :=
-  get_permutations'Aux _ _ _ _
 
 theorem injective_permutations'Aux (x : α) : Function.Injective (permutations'Aux x) := by
   intro s t h

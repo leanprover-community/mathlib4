@@ -64,7 +64,7 @@ section Initial
 /-- The map from the empty scheme. -/
 @[simps]
 def Scheme.emptyTo (X : Scheme.{u}) : ∅ ⟶ X :=
-  ⟨{  base := ⟨fun x => PEmpty.elim x, by fun_prop⟩
+  ⟨{  base := TopCat.ofHom ⟨fun x => PEmpty.elim x, by fun_prop⟩
       c := { app := fun _ => CommRingCat.punitIsTerminal.from _ } }, fun x => PEmpty.elim x⟩
 
 @[ext]
@@ -99,7 +99,7 @@ instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ 
 
 instance (priority := 100) isIso_of_isEmpty {X Y : Scheme} (f : X ⟶ Y) [IsEmpty Y] :
     IsIso f := by
-  haveI : IsEmpty X := f.base.1.isEmpty
+  haveI : IsEmpty X := f.base.hom.1.isEmpty
   have : Epi f.base := by
     rw [TopCat.epi_iff_surjective]; rintro (x : Y)
     exact isEmptyElim x
@@ -127,6 +127,9 @@ theorem isAffineOpen_bot (X : Scheme) : IsAffineOpen (⊥ : X.Opens) :=
 
 instance : HasStrictInitialObjects Scheme :=
   hasStrictInitialObjects_of_initial_is_strict fun A f => by infer_instance
+
+instance {X : Scheme} [IsEmpty X] (U : X.Opens) : Subsingleton Γ(X, U) := by
+  obtain rfl : U = ⊥ := Subsingleton.elim _ _; infer_instance
 
 end Initial
 
@@ -310,7 +313,7 @@ lemma sigmaMk_mk (i) (x : f i) :
   show ((TopCat.sigmaCofan (fun x ↦ (f x).toTopCat)).inj i ≫
     (colimit.isoColimitCocone ⟨_, TopCat.sigmaCofanIsColimit _⟩).inv ≫ _) x =
       Scheme.forgetToTop.map (Sigma.ι f i) x
-  congr 1
+  congr 2
   refine (colimit.isoColimitCocone_ι_inv_assoc ⟨_, TopCat.sigmaCofanIsColimit _⟩ _ _).trans ?_
   exact ι_comp_sigmaComparison Scheme.forgetToTop _ _
 
@@ -388,7 +391,7 @@ lemma coprodMk_inl (x : X) :
   show ((TopCat.binaryCofan X Y).inl ≫
     (colimit.isoColimitCocone ⟨_, TopCat.binaryCofanIsColimit _ _⟩).inv ≫ _) x =
       Scheme.forgetToTop.map coprod.inl x
-  congr 1
+  congr 2
   refine (colimit.isoColimitCocone_ι_inv_assoc ⟨_, TopCat.binaryCofanIsColimit _ _⟩ _ _).trans ?_
   exact coprodComparison_inl Scheme.forgetToTop
 
@@ -398,7 +401,7 @@ lemma coprodMk_inr (x : Y) :
   show ((TopCat.binaryCofan X Y).inr ≫
     (colimit.isoColimitCocone ⟨_, TopCat.binaryCofanIsColimit _ _⟩).inv ≫ _) x =
       Scheme.forgetToTop.map coprod.inr x
-  congr 1
+  congr 2
   refine (colimit.isoColimitCocone_ι_inv_assoc ⟨_, TopCat.binaryCofanIsColimit _ _⟩ _ _).trans ?_
   exact coprodComparison_inr Scheme.forgetToTop
 
@@ -498,13 +501,11 @@ instance (R S : CommRingCatᵒᵖ) : IsIso (coprodComparison Scheme.Spec R S) :=
   rw [(IsIso.eq_comp_inv _).mpr this]
   infer_instance
 
-noncomputable
 instance : PreservesColimitsOfShape (Discrete WalkingPair) Scheme.Spec :=
   ⟨fun {_} ↦
     have (X Y : CommRingCatᵒᵖ) := PreservesColimitPair.of_iso_coprod_comparison Scheme.Spec X Y
     preservesColimit_of_iso_diagram _ (diagramIsoPair _).symm⟩
 
-noncomputable
 instance : PreservesColimitsOfShape (Discrete PEmpty.{1}) Scheme.Spec := by
   have : IsEmpty (Scheme.Spec.obj (⊥_ CommRingCatᵒᵖ)) :=
     @Function.isEmpty _ _ spec_punit_isEmpty (Scheme.Spec.mapIso
@@ -512,11 +513,9 @@ instance : PreservesColimitsOfShape (Discrete PEmpty.{1}) Scheme.Spec := by
   have := preservesInitial_of_iso Scheme.Spec (asIso (initial.to _))
   exact preservesColimitsOfShape_pempty_of_preservesInitial _
 
-noncomputable
-instance {J} [Fintype J] : PreservesColimitsOfShape (Discrete J) Scheme.Spec :=
+instance {J} [Finite J] : PreservesColimitsOfShape (Discrete J) Scheme.Spec :=
   preservesFiniteCoproductsOfPreservesBinaryAndInitial _ _
 
-noncomputable
 instance {J : Type*} [Finite J] : PreservesColimitsOfShape (Discrete J) Scheme.Spec :=
   letI := (nonempty_fintype J).some
   preservesColimitsOfShape_of_equiv (Discrete.equivalence (Fintype.equivFin _).symm) _

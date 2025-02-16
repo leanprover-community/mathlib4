@@ -86,10 +86,6 @@ theorem IsStrictOrder.swap (r) [IsStrictOrder α r] : IsStrictOrder α (swap r) 
 theorem IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap r) :=
   { @IsPreorder.swap α r _, @IsAntisymm.swap α r _ with }
 
-@[deprecated "No deprecation message was provided." (since := "2024-07-30")]
-theorem IsLinearOrder.swap (r) [IsLinearOrder α r] : IsLinearOrder α (swap r) :=
-  { @IsPartialOrder.swap α r _, @IsTotal.swap α r _ with }
-
 protected theorem IsAsymm.isAntisymm (r) [IsAsymm α r] : IsAntisymm α r :=
   ⟨fun _ _ h₁ h₂ => (_root_.asymm h₁ h₂).elim⟩
 
@@ -221,12 +217,6 @@ instance (priority := 100) isStrictOrderConnected_of_isStrictTotalOrder [IsStric
   ⟨fun _ _ _ h ↦ (trichotomous _ _).imp_right
     fun o ↦ o.elim (fun e ↦ e ▸ h) fun h' ↦ _root_.trans h' h⟩
 
--- see Note [lower instance priority]
-@[deprecated "No deprecation message was provided." (since := "2024-07-30")]
-instance (priority := 100) isStrictTotalOrder_of_isStrictTotalOrder [IsStrictTotalOrder α r] :
-    IsStrictWeakOrder α r :=
-  { isStrictWeakOrder_of_isOrderConnected with }
-
 /-! ### Well-order -/
 
 
@@ -271,10 +261,6 @@ theorem WellFounded.psigma_revLex
 theorem WellFounded.psigma_skipLeft (α : Type u) {β : Type v} {s : β → β → Prop}
     (hb : WellFounded s) : WellFounded (SkipLeft α s) :=
   psigma_revLex emptyWf.wf hb
-
-@[deprecated (since := "2024-07-24")] alias PSigma.lex_wf := WellFounded.psigma_lex
-@[deprecated (since := "2024-07-24")] alias PSigma.revLex_wf := WellFounded.psigma_revLex
-@[deprecated (since := "2024-07-24")] alias PSigma.skipLeft_wf := WellFounded.psigma_skipLeft
 
 end PSigma
 
@@ -522,11 +508,37 @@ end Set
 
 namespace Order.Preimage
 
-instance instIsRefl {r : α → α → Prop} [IsRefl α r] {f : β → α} : IsRefl β (f ⁻¹'o r) :=
-  ⟨fun a => refl_of r (f a)⟩
+instance instIsRefl [IsRefl α r] {f : β → α} : IsRefl β (f ⁻¹'o r) :=
+  ⟨fun _ => refl_of r _⟩
 
-instance instIsTrans {r : α → α → Prop} [IsTrans α r] {f : β → α} : IsTrans β (f ⁻¹'o r) :=
+instance instIsIrrefl [IsIrrefl α r] {f : β → α} : IsIrrefl β (f ⁻¹'o r) :=
+  ⟨fun _ => irrefl_of r _⟩
+
+instance instIsSymm [IsSymm α r] {f : β → α} : IsSymm β (f ⁻¹'o r) :=
+  ⟨fun _ _ ↦ symm_of r⟩
+
+instance instIsAsymm [IsAsymm α r] {f : β → α} : IsAsymm β (f ⁻¹'o r) :=
+  ⟨fun _ _ ↦ asymm_of r⟩
+
+instance instIsTrans [IsTrans α r] {f : β → α} : IsTrans β (f ⁻¹'o r) :=
   ⟨fun _ _ _ => trans_of r⟩
+
+instance instIsPreorder [IsPreorder α r] {f : β → α} : IsPreorder β (f ⁻¹'o r) where
+
+instance instIsStrictOrder [IsStrictOrder α r] {f : β → α} : IsStrictOrder β (f ⁻¹'o r) where
+
+instance instIsStrictWeakOrder [IsStrictWeakOrder α r] {f : β → α} :
+    IsStrictWeakOrder β (f ⁻¹'o r) where
+  incomp_trans _ _ _ := IsStrictWeakOrder.incomp_trans (lt := r) _ _ _
+
+instance instIsEquiv [IsEquiv α r] {f : β → α} : IsEquiv β (f ⁻¹'o r) where
+
+instance instIsTotal [IsTotal α r] {f : β → α} : IsTotal β (f ⁻¹'o r) :=
+  ⟨fun _ _ => total_of r _ _⟩
+
+theorem isAntisymm [IsAntisymm α r] {f : β → α} (hf : f.Injective) :
+    IsAntisymm β (f ⁻¹'o r) :=
+  ⟨fun _ _ h₁ h₂ ↦ hf <| antisymm_of r h₁ h₂⟩
 
 end Order.Preimage
 
@@ -799,9 +811,6 @@ instance [LinearOrder α] : IsTrichotomous α (· ≥ ·) :=
 instance [LinearOrder α] : IsStrictTotalOrder α (· < ·) where
 
 instance [LinearOrder α] : IsOrderConnected α (· < ·) := by infer_instance
-
-@[deprecated "No deprecation message was provided." (since := "2024-07-30")]
-instance [LinearOrder α] : IsStrictWeakOrder α (· < ·) := by infer_instance
 
 theorem transitive_le [Preorder α] : Transitive (@LE.le α _) :=
   transitive_of_trans _

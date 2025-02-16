@@ -116,14 +116,14 @@ instance : WellFoundedRelation ℕ∞ where
   wf := IsWellFounded.wf
 
 /-- Conversion of `ℕ∞` to `ℕ` sending `∞` to `0`. -/
-def toNat : ℕ∞ → ℕ := WithTop.untop' 0
+def toNat : ℕ∞ → ℕ := WithTop.untopD 0
 
 /-- Homomorphism from `ℕ∞` to `ℕ` sending `∞` to `0`. -/
 def toNatHom : MonoidWithZeroHom ℕ∞ ℕ where
   toFun := toNat
   map_one' := rfl
   map_zero' := rfl
-  map_mul' := WithTop.untop'_zero_mul
+  map_mul' := WithTop.untopD_zero_mul
 
 @[simp, norm_cast] lemma coe_toNatHom : toNatHom = toNat := rfl
 
@@ -149,7 +149,7 @@ theorem toNat_ofNat (n : ℕ) [n.AtLeastTwo] : toNat ofNat(n) = n :=
 theorem toNat_top : toNat ⊤ = 0 :=
   rfl
 
-@[simp] theorem toNat_eq_zero : toNat n = 0 ↔ n = 0 ∨ n = ⊤ := WithTop.untop'_eq_self_iff
+@[simp] theorem toNat_eq_zero : toNat n = 0 ↔ n = 0 ∨ n = ⊤ := WithTop.untopD_eq_self_iff
 
 @[simp]
 theorem recTopCoe_zero {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) : @recTopCoe C d f 0 = f 0 :=
@@ -311,6 +311,7 @@ lemma sub_ne_top_iff : a - b ≠ ⊤ ↔ a ≠ ⊤ ∨ b = ⊤ := WithTop.sub_ne
 
 lemma addLECancellable_of_ne_top : a ≠ ⊤ → AddLECancellable a := WithTop.addLECancellable_of_ne_top
 lemma addLECancellable_of_lt_top : a < ⊤ → AddLECancellable a := WithTop.addLECancellable_of_lt_top
+lemma addLECancellable_coe (a : ℕ) : AddLECancellable (a : ℕ∞) := WithTop.addLECancellable_coe _
 
 protected lemma le_sub_of_add_le_left (ha : a ≠ ⊤) : a + b ≤ c → b ≤ c - a :=
   (addLECancellable_of_ne_top ha).le_tsub_of_add_le_left
