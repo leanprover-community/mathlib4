@@ -174,10 +174,6 @@ instance : FaithfulSMul (R_hat R K) (K_hat R K) where
   eq_of_smul_eq_smul h :=
     funext fun v => SetLike.coe_eq_coe.1 (funext_iff.1 (by simpa [Algebra.smul_def] using h 1) v)
 
-@[simp]
-theorem mul_integer_apply (x : FiniteIntegralAdeles R K) (r : R) :
-    (x * algebraMap _ _ r) v = x v * algebraMap _ _ r := rfl
-
 end FiniteIntegralAdeles
 
 /-! ### The finite adèle ring of a Dedekind domain
