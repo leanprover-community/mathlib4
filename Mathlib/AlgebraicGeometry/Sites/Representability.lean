@@ -91,9 +91,9 @@ instance : IsOpenImmersion (toGlued hf i) := by
 
 /-- The map from the glued scheme `(glueData hf).glued`, treated as a sheaf, to `F`. -/
 noncomputable def yonedaGluedToSheaf :
-    zariskiTopology.yoneda.obj (glueData hf).glued ⟶ F :=
+    zariskiTopology.yoneda.obj (glueData hf).glued ⟶ F where
   -- The map is obtained by finding an object of `F((glueData hf).glued)`.
-  Sheaf.homEquiv.symm (yonedaEquiv.symm
+  val := yonedaEquiv.symm
   -- This section is obtained from gluing the section corresponding to `f i : Hom(-, X i) ⟶ F`.
     ((glueData hf).sheafValGluedMk (fun i ↦ yonedaEquiv (f i)) (by
       intro i j
@@ -102,7 +102,7 @@ noncomputable def yonedaGluedToSheaf :
       rw [yonedaEquiv_naturality, Equiv.symm_apply_apply,
         FunctorToTypes.map_comp_apply, yonedaEquiv_naturality, yonedaEquiv_naturality,
         Equiv.symm_apply_apply, ← Functor.map_comp_assoc,
-        Functor.relativelyRepresentable.symmetry_fst, ((hf i).rep.isPullback' (f j)).w])))
+        Functor.relativelyRepresentable.symmetry_fst, ((hf i).rep.isPullback' (f j)).w]))
 
 @[reassoc (attr := simp)]
 lemma yoneda_toGlued_yonedaGluedToSheaf (i : ι) :
@@ -121,7 +121,7 @@ lemma yonedaGluedToSheaf_app_toGlued {i : ι}  :
   rfl
 
 @[simp]
-lemma yonedaGluedToSheaf_comp {V U : Scheme.{u}} (γ : V ⟶ U) (α : U ⟶ (glueData hf).glued) :
+lemma yonedaGluedToSheaf_app_comp {V U : Scheme.{u}} (γ : V ⟶ U) (α : U ⟶ (glueData hf).glued) :
   (yonedaGluedToSheaf hf).val.app (op V) (γ ≫ α) =
     F.val.map γ.op ((yonedaGluedToSheaf hf).val.app (op U) α) :=
   congr_fun ((yonedaGluedToSheaf hf).val.naturality γ.op) α
