@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.Presentable.Basic
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 import Mathlib.CategoryTheory.Limits.TypesFiltered
+import Mathlib.CategoryTheory.Limits.Connected
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Subobject.Lattice
 import Mathlib.CategoryTheory.Filtered.Final
@@ -46,29 +47,7 @@ instance {C : Type u} [Category.{v} C] {J : Type u'} [Category.{v'} J]
     Epi (f.app j) :=
   inferInstanceAs (Epi (((evaluation J C).obj j).map f))
 
-namespace Limits
-
-variable {C : Type u} [Category.{v} C] (J : Type u') [Category.{v'} J] (X : C)
-
-@[simps]
-def constCocone : Cocone ((Functor.const J).obj X) where
-  pt := X
-  ι := 𝟙 _
-
-noncomputable def constCoconeIsColimit [IsFiltered J] :
-    IsColimit (constCocone J X) := by
-  have : Nonempty J := IsFiltered.nonempty
-  let j₀ := Classical.arbitrary J
-  exact
-    { desc s := s.ι.app j₀
-      fac s j := by
-        have h₁ := s.w (IsFiltered.leftToMax j₀ j)
-        have h₂ := s.w (IsFiltered.rightToMax j₀ j)
-        dsimp at h₁ h₂ ⊢
-        rw [← h₁, ← h₂, Category.id_comp]
-      uniq s m hm := by simpa using hm j₀ }
-
-end Limits
+attribute [local instance] IsFiltered.isConnected
 
 namespace HasExactColimitsOfShape
 
@@ -146,7 +125,7 @@ lemma mono_ι_app_of_isColimit_of_mono_map_of_isFiltered
       naturality _ _ g := by
         dsimp
         simp only [Category.id_comp, ← Y.map_comp, Under.w] }
-  exact map_mono f (hc₁ := constCoconeIsColimit _ _)
+  exact map_mono f (hc₁ := isColimitConstCocone _ _)
     (hc₂ := (Functor.Final.isColimitWhiskerEquiv _ _).symm hc) (c.ι.app j₀) (by aesop_cat)
 
 end HasExactColimitsOfShape
@@ -191,7 +170,7 @@ lemma mono_of_isColimit_monoOver : Mono f := by
     { app j := (F.obj j).obj.hom
       naturality _ _ f := (F.map f).w }
   exact HasExactColimitsOfShape.map_mono (φ := α) (hc₁ := hc)
-    (hc₂ := constCoconeIsColimit J X) f (by simpa using hf)
+    (hc₂ := isColimitConstCocone J X) f (by simpa using hf)
 
 lemma subobject_mk_of_isColimit_eq_iSup :
     haveI := mono_of_isColimit_monoOver F hc f hf
@@ -364,7 +343,7 @@ include κ hκ hc hy in
 lemma epi_f : Epi (f y) := by
   have := isFiltered_of_isCardinalDirected J κ
   exact (HasExactColimitsOfShape.mapShortComplex_exact (S_exact y)
-    (colimit.isColimit _) (constCoconeIsColimit _ _) (hc₃ hc j₀ κ) (f y) 0
+    (colimit.isColimit _) (isColimitConstCocone _ _) (hc₃ hc j₀ κ) (f y) 0
     (fun j ↦ by simpa using hf y j) (fun _ ↦ by simpa using hy.symm)).epi_f rfl
 
 end injectivity₀
@@ -417,7 +396,7 @@ lemma epi_f : Epi (f z) := by
     refine ((MorphismProperty.isomorphisms C).arrow_mk_iso_iff ?_).1
       (MorphismProperty.of_isPullback isPullback ?_)
     · refine Arrow.isoMk (Iso.refl _)
-        (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (constCoconeIsColimit J X)) ?_
+        (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (isColimitConstCocone J X)) ?_
       dsimp
       ext j
       dsimp
@@ -428,7 +407,7 @@ lemma epi_f : Epi (f z) := by
         (inferInstanceAs (IsIso (𝟙 c.pt)))
       exact Arrow.isoMk (IsColimit.coconePointUniqueUpToIso (colimit.isColimit Y) hc)
         (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
-          (constCoconeIsColimit J c.pt))
+          (isColimitConstCocone J c.pt))
   infer_instance
 
 end surjectivity
