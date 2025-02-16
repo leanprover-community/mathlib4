@@ -19,6 +19,7 @@ namespace Set
 def Dissipate [LE α] (s : α → Set β) (x : α) : Set β :=
   ⋂ y ≤ x, s y
 
+@[simp]
 theorem dissipate_def [LE α] {x : α} : Dissipate s x = ⋂ y ≤ x, s y :=
   rfl
 
@@ -52,7 +53,7 @@ theorem biInter_dissipate [Preorder α] {s : α → Set β} {x : α} :
     exact fun h ↦ hy h z <| le_refl z
 
 theorem iInter_dissipate [Preorder α] : ⋂ x, s x = ⋂ x, Dissipate s x := by
-  apply Subset.antisymm <;> simp [subset_def, mem_iInter, exists_imp, mem_dissipate]
+  apply Subset.antisymm <;> simp_rw [subset_def, mem_iInter, mem_dissipate]
   · exact fun z h x' y hy ↦ h y
   · exact fun z h x' ↦ h x' x' (le_refl x')
 
@@ -81,8 +82,8 @@ theorem dissipate_succ (s : ℕ → Set α) (n : ℕ) :
 lemma dissipate_zero (s : ℕ → Set β) : Dissipate s 0 = s 0 := by
   simp [dissipate_def]
 
-lemma subset_of_directed {C : ℕ → Set α} (hd : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C)
-    (n : ℕ) : ∃ m, ⋂ i ≤ n, C i ⊇ C m := by
+lemma subset_of_directed {s : ℕ → Set α} (hd : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) s)
+    (n : ℕ) : ∃ m, ⋂ i ≤ n, s i ⊇ s m := by
   induction n with
   | zero => use 0; simp
   | succ n hn =>
@@ -94,12 +95,12 @@ lemma subset_of_directed {C : ℕ → Set α} (hd : Directed (fun (x1 x2 : Set �
     simp only [subset_inter_iff]
     exact ⟨le_trans hk.1 hm, hk.2⟩
 
-lemma empty_of_directed {C : ℕ → Set α} (hd : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C) :
-      (∃ n, C n = ∅) ↔ (∃ n, Dissipate C n = ∅) := by
+lemma empty_of_directed {s : ℕ → Set α} (hd : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) s) :
+      (∃ n, s n = ∅) ↔ (∃ n, Dissipate s n = ∅) := by
   refine ⟨fun ⟨n, hn⟩ ↦ ⟨n, ?_⟩, ?_⟩
   · by_cases hn' : n = 0
     · rw [hn']
-      exact Eq.trans (dissipate_zero C) (hn' ▸ hn)
+      exact Eq.trans (dissipate_zero s) (hn' ▸ hn)
     · obtain ⟨k, hk⟩ := exists_eq_succ_of_ne_zero hn'
       rw [hk, dissipate_succ, ← succ_eq_add_one, ← hk, hn, Set.inter_empty]
   · rw [← not_imp_not]
@@ -107,5 +108,22 @@ lemma empty_of_directed {C : ℕ → Set α} (hd : Directed (fun (x1 x2 : Set α
     intro h n
     obtain ⟨m, hm⟩ := subset_of_directed hd n
     exact Set.Nonempty.mono hm (h m)
+
+lemma dissipate_directed {s : ℕ → Set α} :
+    Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) fun n ↦ Dissipate s n := by
+  refine directed_of_isDirected_le ?_
+  intro i j hij
+  exact dissipate_subset_dissipate hij
+
+lemma dissipate_of_piSystem {s : ℕ → Set α} {p : Set α → Prop}
+    (hp : ∀ (s t : Set α), p s → p t → p (s ∩ t)) (h : ∀ n, p (s n)) (n : ℕ) :
+      p (Dissipate s n) := by
+  induction n with
+  | zero =>
+    simp only [dissipate_def, le_zero_eq, iInter_iInter_eq_left]
+    exact h 0
+  | succ n hn =>
+    rw [dissipate_succ]
+    exact hp (Dissipate s n) (s (n+1)) hn (h (n+1))
 
 end Set
