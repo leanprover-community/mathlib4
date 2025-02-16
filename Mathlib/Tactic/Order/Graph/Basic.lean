@@ -19,8 +19,11 @@ open Lean Expr Meta
 /-- An edge in a graph. In the `order` tactic, the `proof` field stores the of
 `atomToIdx[src] ≤ atomToIdx[dst]`. -/
 structure Edge where
+  /-- Source of the edge. -/
   src : Nat
+  /-- Destination of the edge. -/
   dst : Nat
+  /-- Proof of `atomToIdx[src] ≤ atomToIdx[dst]`. -/
   proof : Expr
 
 -- For debugging purposes.

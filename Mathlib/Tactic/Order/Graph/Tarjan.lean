@@ -16,10 +16,16 @@ namespace Mathlib.Tactic.Order.Graph
 
 /-- State for Tarjan's algorithm. -/
 structure TarjanState extends DFSState where
+  /-- `id[v]` is the index of the vertex `v` in the DFS traversal. -/
   id : Array Nat
+  /-- `lowlink[v]` is the smallest index of any node on the stack that is reachable from `v`
+  through `v`'s DFS subtree. -/
   lowlink : Array Nat
+  /-- The stack of visited vertices used in Tarjan's algorithm. -/
   stack : Array Nat
+  /-- `onStack[v] = true` iff `v` is in `stack`. The structure is used to check it efficiently. -/
   onStack : Array Bool
+  /-- A time counter that increments each time the algorithm visits an unvisited vertex. -/
   time : Nat
 
 /-- The Tarjan's algorithm.
