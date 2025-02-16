@@ -441,6 +441,13 @@ theorem LinearIndependent.linearIndepOn_id_range (i : LinearIndependent R v) :
 @[deprecated (since := "2025-02-14")] alias
   LinearIndependent.coe_range := LinearIndependent.linearIndepOn_id_range
 
+theorem LinearIndependent.linearIndepOn_id_range' (hv : LinearIndependent R v) {t : Set M}
+    (ht : Set.range v = t) : LinearIndepOn R id t :=
+  ht ▸ hv.linearIndepOn_id_range
+
+@[deprecated (since := "2025-02-16")] alias LinearIndependent.to_subtype_range' :=
+    LinearIndependent.linearIndepOn_id_range'
+
 theorem LinearIndepOn.comp_of_image {s : Set ι'} {f : ι' → ι} (h : LinearIndepOn R v (f '' s))
     (hf : InjOn f s) : LinearIndepOn R (v ∘ f) s :=
   LinearIndependent.comp h _ (Equiv.Set.imageOfInjOn _ _ hf).injective
