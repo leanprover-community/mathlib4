@@ -3,7 +3,9 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Induction
+import Mathlib.Data.List.TakeWhile
+
 /-!
 
 # Dropping or taking from lists on the right
@@ -188,8 +190,9 @@ theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (
   induction' l using List.reverseRecOn with l a
   · simp only [rtakeWhile, takeWhile, reverse_nil, true_iff]
     intro f; contradiction
-  · simp only [rtakeWhile, reverse_append, takeWhile, ne_eq, not_false_eq_true,
-      getLast_append_of_ne_nil, getLast_singleton, reduceCtorEq]
+  · simp only [rtakeWhile, reverse_append, reverse_cons, reverse_nil, nil_append, singleton_append,
+      takeWhile, ne_eq, cons_ne_self, not_false_eq_true, getLast_append_of_ne_nil,
+      getLast_singleton]
     refine ⟨fun h => ?_ , fun h => ?_⟩
     · split at h <;> simp_all
     · simp [h]

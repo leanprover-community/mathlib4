@@ -1063,13 +1063,11 @@ instance : PredOrder (WithTop α) where
     · exact coe_le_coe.2 le_top
     exact coe_le_coe.2 (le_pred_of_lt <| coe_lt_coe.1 h)
 
-@[simp]
-theorem pred_top : pred (⊤ : WithTop α) = ↑(⊤ : α) :=
-  rfl
+/-- Not to be confused with `WithTop.pred_bot`, which is about `WithTop.pred`. -/
+@[simp] lemma orderPred_top : pred (⊤ : WithTop α) = ↑(⊤ : α) := rfl
 
-@[simp]
-theorem pred_coe (a : α) : pred (↑a : WithTop α) = ↑(pred a) :=
-  rfl
+/-- Not to be confused with `WithTop.pred_coe`, which is about `WithTop.pred`. -/
+@[simp] lemma orderPred_coe (a : α) : pred (↑a : WithTop α) = ↑(pred a) := rfl
 
 @[simp]
 theorem pred_untop :
@@ -1125,13 +1123,11 @@ instance : SuccOrder (WithBot α) where
     · exact coe_le_coe.2 bot_le
     · exact coe_le_coe.2 (succ_le_of_lt <| coe_lt_coe.1 h)
 
-@[simp]
-theorem succ_bot : succ (⊥ : WithBot α) = ↑(⊥ : α) :=
-  rfl
+/-- Not to be confused with `WithBot.succ_bot`, which is about `WithBot.succ`. -/
+@[simp] lemma orderSucc_bot : succ (⊥ : WithBot α) = ↑(⊥ : α) := rfl
 
-@[simp]
-theorem succ_coe (a : α) : succ (↑a : WithBot α) = ↑(succ a) :=
-  rfl
+/-- Not to be confused with `WithBot.succ_coe`, which is about `WithBot.succ`. -/
+@[simp] lemma orderSucc_coe (a : α) : succ (↑a : WithBot α) = ↑(succ a) := rfl
 
 @[simp]
 theorem succ_unbot :

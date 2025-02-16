@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Topology.Bases
-import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Separation.Regular
 
 /-!
 # Dense embeddings
@@ -39,6 +39,10 @@ structure IsDenseInducing [TopologicalSpace α] [TopologicalSpace β] (i : α �
 namespace IsDenseInducing
 
 variable [TopologicalSpace α] [TopologicalSpace β]
+
+theorem _root_.Dense.isDenseInducing_val {s : Set α} (hs : Dense s) :
+    IsDenseInducing (@Subtype.val α s) := ⟨IsInducing.subtypeVal, hs.denseRange_val⟩
+
 variable {i : α → β}
 
 lemma isInducing (di : IsDenseInducing i) : IsInducing i := di.toIsInducing
@@ -204,6 +208,51 @@ theorem mk' (i : α → β) (c : Continuous i) (dense : ∀ x, x ∈ closure (ra
   dense := dense
 
 end IsDenseInducing
+
+namespace Dense
+
+variable [TopologicalSpace α] [TopologicalSpace β] {s : Set α}
+
+/-- This is a shortcut for `hs.isDenseInducing_val.extend f`. It is useful because if `s : Set α`
+is dense then the coercion `(↑) : s → α` automatically satisfies `IsUniformInducing` and
+`IsDenseInducing` so this gives access to the theorems satisfied by a uniform extension by simply
+mentioning the density hypothesis. -/
+noncomputable def extend (hs : Dense s) (f : s → β) : α → β :=
+    hs.isDenseInducing_val.extend f
+
+variable {f : s → β}
+
+theorem extend_eq_of_tendsto [T2Space β] (hs : Dense s) {a : α} {b : β}
+    (hf : Tendsto f (comap (↑) (𝓝 a)) (𝓝 b)) : hs.extend f a = b :=
+  hs.isDenseInducing_val.extend_eq_of_tendsto hf
+
+theorem extend_eq_at [T2Space β] (hs : Dense s) {f : s → β} {x : s}
+    (hf : ContinuousAt f x) : hs.extend f x = f x :=
+  hs.isDenseInducing_val.extend_eq_at hf
+
+theorem extend_eq [T2Space β] (hs : Dense s) (hf : Continuous f) (x : s) :
+    hs.extend f x = f x :=
+  hs.extend_eq_at hf.continuousAt
+
+theorem extend_unique_at [T2Space β] {a : α} {g : α → β} (hs : Dense s)
+    (hf : ∀ᶠ x : s in comap (↑) (𝓝 a), g x = f x) (hg : ContinuousAt g a) :
+    hs.extend f a = g a :=
+  hs.isDenseInducing_val.extend_unique_at hf hg
+
+theorem extend_unique [T2Space β] {g : α → β} (hs : Dense s)
+    (hf : ∀ x : s, g x = f x) (hg : Continuous g) : hs.extend f = g :=
+  hs.isDenseInducing_val.extend_unique hf hg
+
+theorem continuousAt_extend [T3Space β] {a : α} (hs : Dense s)
+    (hf : ∀ᶠ x in 𝓝 a, ∃ b, Tendsto f (comap (↑) <| 𝓝 x) (𝓝 b)) :
+    ContinuousAt (hs.extend f) a :=
+  hs.isDenseInducing_val.continuousAt_extend hf
+
+theorem continuous_extend [T3Space β] (hs : Dense s)
+    (hf : ∀ a : α, ∃ b, Tendsto f (comap (↑) (𝓝 a)) (𝓝 b)) : Continuous (hs.extend f) :=
+  hs.isDenseInducing_val.continuous_extend hf
+
+end Dense
 
 /-- A dense embedding is an embedding with dense image. -/
 structure IsDenseEmbedding [TopologicalSpace α] [TopologicalSpace β] (e : α → β) extends

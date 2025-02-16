@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.Topology.Algebra.Module.LinearMap
 
 /-!
 # Topological (sub)algebras
@@ -51,6 +51,10 @@ theorem continuous_algebraMap_iff_smul [TopologicalSemiring A] :
 theorem continuousSMul_of_algebraMap [TopologicalSemiring A] (h : Continuous (algebraMap R A)) :
     ContinuousSMul R A :=
   ⟨(continuous_algebraMap_iff_smul R A).1 h⟩
+
+instance Subalgebra.continuousSMul (S : Subalgebra R A) (X) [TopologicalSpace X] [MulAction A X]
+    [ContinuousSMul A X] : ContinuousSMul S X :=
+  Subsemiring.continuousSMul S.toSubsemiring X
 
 section
 variable [ContinuousSMul R A]
@@ -191,7 +195,7 @@ theorem map_smul_of_tower {R S : Type*} [CommSemiring S] [SMul R A] [Algebra S A
   map_smul f c x
 
 protected theorem map_sum {ι : Type*} (f : A →A[R] B) (s : Finset ι) (g : ι → A) :
-    f (∑ i in s, g i) = ∑ i in s, f (g i) :=
+    f (∑ i ∈ s, g i) = ∑ i ∈ s, f (g i) :=
   map_sum ..
 
 /-- Any two continuous `R`-algebra morphisms from `R` are equal -/

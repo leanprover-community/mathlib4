@@ -3,9 +3,12 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
+import Mathlib.Algebra.Group.Pointwise.Set.Card
 import Mathlib.MeasureTheory.Group.Action
 import Mathlib.MeasureTheory.Measure.Prod
+import Mathlib.Topology.Algebra.Module.Equiv
 import Mathlib.Topology.ContinuousMap.CocompactMap
+import Mathlib.Topology.Algebra.ContinuousMonoidHom
 
 /-!
 # Measures on Groups
@@ -388,7 +391,37 @@ end DivisionMonoid
 
 section Group
 
-variable [Group G] [MeasurableMul G] [MeasurableInv G] {μ : Measure G}
+variable [Group G] {μ : Measure G}
+
+section MeasurableMul
+
+variable [MeasurableMul G]
+
+@[to_additive]
+instance : (count : Measure G).IsMulLeftInvariant where
+  map_mul_left_eq_self g := by
+    ext s hs
+    rw [count_apply hs, map_apply (measurable_const_mul _) hs,
+      count_apply (measurable_const_mul _ hs),
+      encard_preimage_of_bijective (Group.mulLeft_bijective _)]
+
+@[to_additive]
+instance : (count : Measure G).IsMulRightInvariant where
+  map_mul_right_eq_self g := by
+    ext s hs
+    rw [count_apply hs, map_apply (measurable_mul_const _) hs,
+      count_apply (measurable_mul_const _ hs),
+      encard_preimage_of_bijective (Group.mulRight_bijective _)]
+
+end MeasurableMul
+
+variable [MeasurableInv G]
+
+@[to_additive]
+instance : (count : Measure G).IsInvInvariant where
+  inv_eq_self := by ext s hs; rw [count_apply hs, inv_apply, count_apply hs.inv, encard_inv]
+
+variable [MeasurableMul G]
 
 @[to_additive]
 theorem map_div_left_ae (μ : Measure G) [IsMulLeftInvariant μ] [IsInvInvariant μ] (x : G) :
@@ -703,10 +736,11 @@ theorem isHaarMeasure_of_isCompact_nonempty_interior [TopologicalGroup G] [Borel
     toIsOpenPosMeasure := isOpenPosMeasure_of_mulLeftInvariant_of_compact K hK h }
 
 /-- The image of a Haar measure under a continuous surjective proper group homomorphism is again
-a Haar measure. See also `MulEquiv.isHaarMeasure_map`. -/
+a Haar measure. See also `MulEquiv.isHaarMeasure_map` and `ContinuousMulEquiv.isHaarMeasure_map`. -/
 @[to_additive
 "The image of an additive Haar measure under a continuous surjective proper additive group
-homomorphism is again an additive Haar measure. See also `AddEquiv.isAddHaarMeasure_map`."]
+homomorphism is again an additive Haar measure. See also `AddEquiv.isAddHaarMeasure_map`,
+`ContinuousAddEquiv.isAddHaarMeasure_map` and `ContinuousLinearEquiv.isAddHaarMeasure_map`."]
 theorem isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type*} [Group H]
     [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H] [TopologicalGroup H]
     (f : G →* H) (hf : Continuous f) (h_surj : Surjective f)
@@ -761,12 +795,20 @@ nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [TopologicalGrou
     [TopologicalGroup H] (e : G ≃* H) (he : Continuous e) (hesymm : Continuous e.symm) :
     IsHaarMeasure (Measure.map e μ) :=
   let f : G ≃ₜ H := .mk e
-  #adaptation_note
-  /--
-  After https://github.com/leanprover/lean4/pull/6024
+  #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
   we needed to write `e.toMonoidHom` instead of just `e`, to avoid unification issues.
   -/
   isHaarMeasure_map μ e.toMonoidHom he e.surjective f.isClosedEmbedding.tendsto_cocompact
+
+/--
+A convenience wrapper for MeasureTheory.Measure.isHaarMeasure_map.
+-/
+@[to_additive "A convenience wrapper for MeasureTheory.Measure.isAddHaarMeasure_map.
+"]
+instance _root_.ContinuousMulEquiv.isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type*}
+    [Group H] [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H]
+    [TopologicalGroup H] (e : G ≃ₜ* H) : (μ.map e).IsHaarMeasure :=
+  e.toMulEquiv.isHaarMeasure_map μ e.continuous e.symm.continuous
 
 /-- A convenience wrapper for MeasureTheory.Measure.isAddHaarMeasure_map`. -/
 instance _root_.ContinuousLinearEquiv.isAddHaarMeasure_map

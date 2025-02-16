@@ -53,8 +53,7 @@ theorem odd_fermatNumber (n : ℕ) : Odd (fermatNumber n) :=
   (even_pow.mpr ⟨even_two, (pow_pos two_pos n).ne'⟩).add_one
 
 theorem prod_fermatNumber (n : ℕ) : ∏ k ∈ range n, fermatNumber k = fermatNumber n - 2 := by
-  induction' n with n hn
-  · rfl
+  induction n with | zero => rfl | succ n hn =>
   rw [prod_range_succ, hn, fermatNumber, fermatNumber, mul_comm,
     (show 2 ^ 2 ^ n + 1 - 2 = 2 ^ 2 ^ n - 1 by omega), ← sq_sub_sq]
   ring_nf
@@ -68,13 +67,12 @@ theorem fermatNumber_eq_prod_add_two (n : ℕ) :
   exact le_of_lt <| two_lt_fermatNumber _
 
 theorem fermatNumber_succ (n : ℕ) : fermatNumber (n + 1) = (fermatNumber n - 1) ^ 2 + 1 := by
-  rw [fermatNumber, pow_succ, mul_comm, pow_mul']
-  rfl
+  rw [fermatNumber, pow_succ, mul_comm, pow_mul', fermatNumber, add_tsub_cancel_right]
 
 theorem two_mul_fermatNumber_sub_one_sq_le_fermatNumber_sq (n : ℕ) :
     2 * (fermatNumber n - 1) ^ 2 ≤ (fermatNumber (n + 1)) ^ 2 := by
   simp only [fermatNumber, add_tsub_cancel_right]
-  have : 0 ≤ 1 + 2 ^ (2 ^ n * 4) := le_add_left 0 (Nat.add 1 _)
+  have : 0 ≤ 1 + 2 ^ (2 ^ n * 4) := le_add_left _ _
   ring_nf
   omega
 

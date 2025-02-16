@@ -51,13 +51,15 @@ deriving BEq
 /-- Possible errors that text-based linters can report. -/
 -- We collect these in one inductive type to centralise error reporting.
 inductive StyleError where
-  /-- The bare string "Adaptation note" (or variants thereof): instead, the
-  #adaptation_note command should be used. -/
+  /-- The bare string "Adaptation note" (or variants thereof):
+  instead, the #adaptation_note command should be used. -/
   | adaptationNote
   /-- A line ends with windows line endings (\r\n) instead of unix ones (\n). -/
   | windowsLineEnding
   /-- A line contains trailing whitespace. -/
   | trailingWhitespace
+  /-- A line contains a space before a semicolon -/
+  | semicolon
 deriving BEq
 
 /-- How to format style errors -/
@@ -79,6 +81,7 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
   | windowsLineEnding => "This line ends with a windows line ending (\r\n): please use Unix line\
     endings (\n) instead"
   | trailingWhitespace => "This line ends with some whitespace: please remove this"
+  | semicolon => "This line contains a space before a semicolon"
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
@@ -87,6 +90,7 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.adaptationNote => "ERR_ADN"
   | StyleError.windowsLineEnding => "ERR_WIN"
   | StyleError.trailingWhitespace => "ERR_TWS"
+  | StyleError.semicolon => "ERR_SEM"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
@@ -164,6 +168,7 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         -- Use default values for parameters which are ignored for comparing style exceptions.
         -- NB: keep this in sync with `compare` above!
         | "ERR_ADN" => some (StyleError.adaptationNote)
+        | "ERR_SEM" => some (StyleError.semicolon)
         | "ERR_TWS" => some (StyleError.trailingWhitespace)
         | "ERR_WIN" => some (StyleError.windowsLineEnding)
         | _ => none
@@ -201,9 +206,9 @@ section
 /-- Lint on any occurrences of the string "Adaptation note:" or variants thereof. -/
 def adaptationNoteLinter : TextbasedLinter := fun lines ↦ Id.run do
   let mut errors := Array.mkEmpty 0
-  for (line, idx) in lines.zipWithIndex do
+  for h : idx in [:lines.size] do
     -- We make this shorter to catch "Adaptation note", "adaptation note" and a missing colon.
-    if line.containsSubstr "daptation note" then
+    if lines[idx].containsSubstr "daptation note" then
       errors := errors.push (StyleError.adaptationNote, idx + 1)
   return (errors, none)
 
@@ -212,11 +217,27 @@ def adaptationNoteLinter : TextbasedLinter := fun lines ↦ Id.run do
 def trailingWhitespaceLinter : TextbasedLinter := fun lines ↦ Id.run do
   let mut errors := Array.mkEmpty 0
   let mut fixedLines := lines
-  for (line, idx) in lines.zipWithIndex do
+  for h : idx in [:lines.size] do
+    let line := lines[idx]
     if line.back == ' ' then
       errors := errors.push (StyleError.trailingWhitespace, idx + 1)
       fixedLines := fixedLines.set! idx line.trimRight
   return (errors, if errors.size > 0 then some fixedLines else none)
+
+
+/-- Lint a collection of input strings for a semicolon preceded by a space. -/
+def semicolonLinter : TextbasedLinter := fun lines ↦ Id.run do
+  let mut errors := Array.mkEmpty 0
+  let mut fixedLines := lines
+  for h : idx in [:lines.size] do
+    let line := lines[idx]
+    let pos := line.find (· == ';')
+    -- Future: also lint for a semicolon *not* followed by a space or ⟩.
+    if pos != line.endPos && line.get (line.prev pos) == ' ' then
+      errors := errors.push (StyleError.semicolon, idx + 1)
+      -- We spell the bad string pattern this way to avoid the linter firing on itself.
+      fixedLines := fixedLines.set! idx (line.replace (⟨[' ', ';']⟩ : String) ";")
+   return (errors, if errors.size > 0 then some fixedLines else none)
 
 
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
@@ -230,7 +251,7 @@ end
 
 /-- All text-based linters registered in this file. -/
 def allLinters : Array TextbasedLinter := #[
-    adaptationNoteLinter, trailingWhitespaceLinter
+    adaptationNoteLinter, semicolonLinter, trailingWhitespaceLinter
   ]
 
 
@@ -264,6 +285,7 @@ def lintFile (path : FilePath) (exceptions : Array ErrorContext) :
   for lint in allLinters do
     let (err, changes) := lint changed
     allOutput := allOutput.append (Array.map (fun (e, n) ↦ #[(ErrorContext.mk e n path)]) err)
+    -- TODO: auto-fixes do not take style exceptions into account
     if let some c := changes then
       changed := c
       changes_made := true
@@ -276,14 +298,13 @@ def lintFile (path : FilePath) (exceptions : Array ErrorContext) :
 Print formatted errors for all unexpected style violations to standard output;
 correct automatically fixable style errors if configured so.
 Return the number of files which had new style errors.
-`moduleNames` are all the modules to lint,
+`nolints` is a list of style exceptions to take into account.
+`moduleNames` are the names of all the modules to lint,
 `mode` specifies what kind of output this script should produce,
 `fix` configures whether fixable errors should be corrected in-place. -/
-def lintModules (moduleNames : Array Lean.Name) (style : ErrorFormat) (fix : Bool) : IO UInt32 := do
-  -- Read the `nolints` file, with manual exceptions for the linter.
-  let nolints ← IO.FS.lines ("scripts" / "nolints-style.txt")
+def lintModules (nolints : Array String) (moduleNames : Array Lean.Name) (style : ErrorFormat)
+    (fix : Bool) : IO UInt32 := do
   let styleExceptions := parseStyleExceptions nolints
-
   let mut numberErrorFiles : UInt32 := 0
   let mut allUnexpectedErrors := #[]
   for module in moduleNames do

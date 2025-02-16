@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Kim Morrison, Simon Hudon
 -/
 import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.CategoryTheory.Groupoid

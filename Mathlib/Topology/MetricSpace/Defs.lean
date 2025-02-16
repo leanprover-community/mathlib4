@@ -78,7 +78,7 @@ theorem dist_pos {x y : γ} : 0 < dist x y ↔ x ≠ y := by
   simpa only [not_le] using not_congr dist_le_zero
 
 theorem eq_of_forall_dist_le {x y : γ} (h : ∀ ε > 0, dist x y ≤ ε) : x = y :=
-  eq_of_dist_eq_zero (eq_of_le_of_forall_le_of_dense dist_nonneg h)
+  eq_of_dist_eq_zero (eq_of_le_of_forall_lt_imp_le_of_dense dist_nonneg h)
 
 /-- Deduce the equality of points from the vanishing of the nonnegative distance -/
 theorem eq_of_nndist_eq_zero {x y : γ} : nndist x y = 0 → x = y := by

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Lean.Linter.Deprecated
-import Mathlib.Algebra.Group.ZeroOne
+import Mathlib.Data.One.Defs
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Tactic.TypeStar
@@ -138,7 +138,7 @@ def ofNatSucc : ℕ → PosNum
 def ofNat (n : ℕ) : PosNum :=
   ofNatSucc (Nat.pred n)
 
-instance {n : ℕ} : OfNat PosNum (n + 1) where
+instance (priority := low) {n : ℕ} : OfNat PosNum (n + 1) where
   ofNat := ofNat (n + 1)
 
 open Ordering

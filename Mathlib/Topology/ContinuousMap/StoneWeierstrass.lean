@@ -3,7 +3,6 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Heather Macbeth
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Unitization
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Topology.Algebra.StarSubalgebra
 import Mathlib.Topology.ContinuousMap.ContinuousMapZero
@@ -44,6 +43,7 @@ on non-compact spaces.
 
 -/
 
+assert_not_exists Unitization
 
 noncomputable section
 
@@ -67,11 +67,8 @@ theorem polynomial_comp_attachBound (A : Subalgebra ℝ C(X, ℝ)) (f : A) (g : 
     (g.toContinuousMapOn (Set.Icc (-‖f‖) ‖f‖)).comp (f : C(X, ℝ)).attachBound =
       Polynomial.aeval f g := by
   ext
-  simp only [ContinuousMap.coe_comp, Function.comp_apply, ContinuousMap.attachBound_apply_coe,
-    Polynomial.toContinuousMapOn_apply, Polynomial.aeval_subalgebra_coe,
-    Polynomial.aeval_continuousMap_apply, Polynomial.toContinuousMap_apply]
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [ContinuousMap.attachBound_apply_coe]
+  simp only [Polynomial.aeval_subalgebra_coe, Polynomial.aeval_continuousMap_apply]
+  simp
 
 /-- Given a continuous function `f` in a subalgebra of `C(X, ℝ)`, postcomposing by a polynomial
 gives another function in `A`.
@@ -312,6 +309,38 @@ theorem exists_mem_subalgebra_near_continuous_of_separatesPoints (A : Subalgebra
   obtain ⟨g, b⟩ := exists_mem_subalgebra_near_continuousMap_of_separatesPoints A w ⟨f, c⟩ ε pos
   use g
   rwa [norm_lt_iff _ pos] at b
+
+/-- A variant of the Stone-Weierstrass theorem where `X` need not be compact:
+If `A` is a subalgebra of `C(X, ℝ)` which separates points, then, for any compact set `K ⊆ X`,
+every real-valued continuous function on `X` is within any `ε > 0` of some element of `A` on `K`. -/
+theorem exists_mem_subalgebra_near_continuous_of_isCompact_of_separatesPoints
+    {X : Type*} [TopologicalSpace X] {A : Subalgebra ℝ C(X, ℝ)} (hA : A.SeparatesPoints)
+    (f : C(X, ℝ)) {K : Set X} (hK : IsCompact K) {ε : ℝ} (pos : 0 < ε) :
+    ∃ g ∈ A, ∀ x ∈ K, ‖(g : X → ℝ) x - f x‖ < ε := by
+  let restrict_on_K : C(X, ℝ) →⋆ₐ[ℝ] C(K, ℝ) :=
+    ContinuousMap.compStarAlgHom' ℝ ℝ ⟨(Subtype.val), continuous_subtype_val⟩
+  --consider the subalgebra AK of functions with domain K
+  let AK : Subalgebra ℝ C(K, ℝ) := Subalgebra.map (restrict_on_K) A
+  have hsep : AK.SeparatesPoints := by
+    intro x y hxy
+    obtain ⟨_, ⟨g, hg1, hg2⟩, hg_sep⟩ := hA (Subtype.coe_ne_coe.mpr hxy)
+    simp only [Set.mem_image, SetLike.mem_coe, exists_exists_and_eq_and]
+    use restrict_on_K g
+    refine ⟨Subalgebra.mem_map.mpr ?_,
+      by simpa only [compStarAlgHom'_apply, comp_apply, coe_mk, ne_eq, restrict_on_K, hg2]⟩
+    use g, hg1
+    simp [AlgHom.coe_coe]
+  obtain ⟨⟨gK, hgKAK⟩, hgapprox⟩ :=
+    @ContinuousMap.exists_mem_subalgebra_near_continuous_of_separatesPoints _ _
+    (isCompact_iff_compactSpace.mp hK) AK hsep (K.restrict f)
+    (ContinuousOn.restrict (Continuous.continuousOn f.continuous)) ε pos
+  obtain ⟨g, hgA, hgKAK⟩ := Subalgebra.mem_map.mp hgKAK
+  use g, hgA
+  intro x hxK
+  have eqg : g x = gK ⟨x, hxK⟩ := by
+    rw [← hgKAK]; rfl
+  rw [eqg]
+  exact hgapprox ⟨x, hxK⟩
 
 end ContinuousMap
 

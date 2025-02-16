@@ -443,7 +443,6 @@ instance nonarchAddGroupSeminormClass :
   map_zero f := f.map_zero'
   map_neg_eq_map' f := f.neg'
 
--- Porting note: `simpNF` said the left hand side simplified to this
 @[simp]
 theorem toZeroHom_eq_coe : ⇑p.toZeroHom = p := by
   rfl
@@ -659,7 +658,6 @@ instance groupNormClass : GroupNormClass (GroupNorm E) E ℝ where
   map_inv_eq_map f := f.inv'
   eq_one_of_map_eq_zero f := f.eq_one_of_map_eq_zero' _
 
--- Porting note: `simpNF` told me the left-hand side simplified to this
 @[to_additive (attr := simp)]
 theorem toGroupSeminorm_eq_coe : ⇑p.toGroupSeminorm = p :=
   rfl
@@ -784,7 +782,6 @@ instance nonarchAddGroupNormClass : NonarchAddGroupNormClass (NonarchAddGroupNor
   map_neg_eq_map' f := f.neg'
   eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero' _
 
--- Porting note: `simpNF` told me the left-hand side simplified to this
 @[simp]
 theorem toNonarchAddGroupSeminorm_eq_coe : ⇑p.toNonarchAddGroupSeminorm = p :=
   rfl

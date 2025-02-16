@@ -68,6 +68,7 @@ def gradientWithin (f : F → 𝕜) (s : Set F) (x : F) : F :=
   (toDual 𝕜 F).symm (fderivWithin 𝕜 f s x)
 
 /-- Gradient of `f` at the point `x`, if it exists.  Zero otherwise.
+Denoted as `∇` within the Gradient namespace.
 
 If the derivative exists (i.e., `∃ f', HasGradientAt f f' x`), then
 `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` where `x'` converges to `x`. -/
@@ -284,7 +285,7 @@ theorem HasGradientWithinAt.congr_of_eventuallyEq_of_mem (h : HasGradientWithinA
 
 theorem HasGradientAt.congr_of_eventuallyEq (h : HasGradientAt f f' x) (h₁ : f₁ =ᶠ[𝓝 x] f) :
     HasGradientAt f₁ f' x :=
-  HasGradientAtFilter.congr_of_eventuallyEq h h₁ (mem_of_mem_nhds h₁ : _)
+  HasGradientAtFilter.congr_of_eventuallyEq h h₁ (mem_of_mem_nhds h₁ :)
 
 theorem Filter.EventuallyEq.gradient_eq (hL : f₁ =ᶠ[𝓝 x] f) : ∇ f₁ x = ∇ f x := by
   unfold gradient

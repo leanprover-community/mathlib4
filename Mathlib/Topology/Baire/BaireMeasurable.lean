@@ -5,7 +5,7 @@ Authors: Felix Weilacher
 -/
 import Mathlib.Topology.GDelta.UniformSpace
 import Mathlib.Topology.LocallyClosed
-import Mathlib.MeasureTheory.Constructions.EventuallyMeasurable
+import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!

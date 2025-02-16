@@ -93,10 +93,10 @@ theorem norm_zero [Nontrivial S] [Module.Free R S] [Module.Finite R S] : norm R 
 theorem norm_eq_zero_iff [IsDomain R] [IsDomain S] [Module.Free R S] [Module.Finite R S] {x : S} :
     norm R x = 0 ↔ x = 0 := by
   constructor
-  on_goal 1 => let b := Module.Free.chooseBasis R S
   swap
   · rintro rfl; exact norm_zero
-  · letI := Classical.decEq (Module.Free.ChooseBasisIndex R S)
+  · let b := Module.Free.chooseBasis R S
+    let decEq := Classical.decEq (Module.Free.ChooseBasisIndex R S)
     rw [norm_eq_matrix_det b, ← Matrix.exists_mulVec_eq_zero_iff]
     rintro ⟨v, v_ne, hv⟩
     rw [← b.equivFun.apply_symm_apply v, b.equivFun_symm_apply, b.equivFun_apply,
@@ -165,8 +165,7 @@ theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots (x : L)
   · simp [minpoly.eq_zero hx, IntermediateField.AdjoinSimple.norm_gen_eq_one hx, aroots_def]
   rw [← adjoin.powerBasis_gen hx, PowerBasis.norm_gen_eq_prod_roots] <;>
     rw [adjoin.powerBasis_gen hx, ← minpoly.algebraMap_eq injKxL] <;>
-    try simp only [AdjoinSimple.algebraMap_gen _ _]
-  exact hf
+    simp only [AdjoinSimple.algebraMap_gen _ _, hf]
 
 end IntermediateField
 
@@ -231,7 +230,7 @@ theorem norm_eq_prod_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L
 
 theorem norm_eq_prod_automorphisms [FiniteDimensional K L] [IsGalois K L] (x : L) :
     algebraMap K L (norm K x) = ∏ σ : L ≃ₐ[K] L, σ x := by
-  apply NoZeroSMulDivisors.algebraMap_injective L (AlgebraicClosure L)
+  apply FaithfulSMul.algebraMap_injective L (AlgebraicClosure L)
   rw [map_prod (algebraMap L (AlgebraicClosure L))]
   rw [← Fintype.prod_equiv (Normal.algHomEquivAut K (AlgebraicClosure L) L)]
   · rw [← norm_eq_prod_embeddings _ _ x, ← IsScalarTower.algebraMap_apply]

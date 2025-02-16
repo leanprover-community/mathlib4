@@ -61,7 +61,7 @@ def rfindX : { n // true ∈ p n ∧ ∀ m < n, false ∈ p m } :=
       cases e : (p m).get pm
       · suffices ∀ᵉ k ≤ m, false ∈ p k from IH _ ⟨rfl, this⟩ fun n h => this _ (le_of_lt_succ h)
         intro n h
-        cases' h.lt_or_eq_dec with h h
+        rcases h.lt_or_eq_dec with h | h
         · exact al _ h
         · rw [h]
           exact ⟨_, e⟩
@@ -387,7 +387,7 @@ protected theorem bind {f : α →. β} {g : α → β →. σ} (hf : Partrec f)
 
 theorem map {f : α →. β} {g : α → β → σ} (hf : Partrec f) (hg : Computable₂ g) :
     Partrec fun a => (f a).map (g a) := by
-  simpa [bind_some_eq_map] using @Partrec.bind _ _ _ _ _ _ _ (fun a => Part.some ∘ (g a)) hf hg
+  simpa [bind_some_eq_map] using Partrec.bind (g := fun a x => some (g a x)) hf hg
 
 theorem to₂ {f : α × β →. σ} (hf : Partrec f) : Partrec₂ fun a b => f (a, b) :=
   hf.of_eq fun ⟨_, _⟩ => rfl
@@ -656,11 +656,7 @@ variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 open Computable
 
 theorem option_some_iff {f : α →. σ} : (Partrec fun a => (f a).map Option.some) ↔ Partrec f :=
-  ⟨fun h => (Nat.Partrec.ppred.comp h).of_eq fun n => by
-      -- Porting note: needed to help with applying bind_some_eq_map because `Function.comp` got
-      -- less reducible.
-      simp [Part.bind_assoc, ← Function.comp_apply (f := Part.some) (g := encode), bind_some_eq_map,
-        -Function.comp_apply],
+  ⟨fun h => (Nat.Partrec.ppred.comp h).of_eq fun n => by simp [Part.bind_assoc, bind_some_eq_map],
     fun hf => hf.map (option_some.comp snd).to₂⟩
 
 theorem option_casesOn_right {o : α → Option β} {f : α → σ} {g : α → β →. σ} (ho : Computable o)
@@ -729,7 +725,7 @@ theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
       · rwa [le_antisymm (Nat.le_of_lt_succ mk) km]
     · rcases IH _ am₃ k.succ (by simpa [F] using ⟨_, hk, am₃⟩) with ⟨n, hn₁, hn₂⟩
       refine ⟨n, hn₁, fun m mn km => ?_⟩
-      cases' km.lt_or_eq_dec with km km
+      rcases km.lt_or_eq_dec with km | km
       · exact hn₂ _ mn km
       · exact km ▸ ⟨_, hk⟩
 

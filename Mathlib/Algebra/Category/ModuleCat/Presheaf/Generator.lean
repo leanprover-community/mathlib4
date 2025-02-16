@@ -8,7 +8,7 @@ import Mathlib.Algebra.Category.ModuleCat.Presheaf.EpiMono
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Free
 import Mathlib.Algebra.Homology.ShortComplex.Exact
 import Mathlib.CategoryTheory.Elements
-import Mathlib.CategoryTheory.Generator
+import Mathlib.CategoryTheory.Generator.Basic
 
 /-!
 # Generators for the category of presheaves of modules
