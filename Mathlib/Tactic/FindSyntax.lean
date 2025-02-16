@@ -83,10 +83,8 @@ elab "#find_syntax " id:str d:(&" approx")? : command => do
       let mod := (← findModuleOf? nm).getD (← getMainModule)
       match_results := match_results.insert mod <| (match_results.findD mod #[]).push (nm, rem.trim)
   -- We sort the messages to produce a more stable output.
-  let sorted_results := match_results.toArray.qsort fun (mod1, _) (mod2, _) =>
-    (mod1.toString < mod2.toString)
-  let sorted_results := sorted_results.map fun (mod, msgs) =>
-    (mod, msgs.qsort (·.1.toString < ·.1.toString))
+  let sorted_results := match_results.toArray.qsort (·.1.lt ·.1)
+  let sorted_results := sorted_results.map fun (mod, msgs) => (mod, msgs.qsort (·.1.lt ·.1))
   let mods := (sorted_results.toList).map fun (mod, msgs) =>
     m!"In `{mod}`:" ++ (MessageData.nest 2 <|
       m!"".joinSep <| msgs.toList.map fun (decl, patt) =>
