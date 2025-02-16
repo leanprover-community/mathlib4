@@ -310,15 +310,15 @@ protected lemma IsDiameter.sbtw (h : s.IsDiameter p₁ p₂) (hr : s.radius ≠ 
 protected def ofDiameter (p₁ p₂ : P) : Sphere P :=
   ⟨midpoint ℝ p₁ p₂, (dist p₁ p₂) / 2⟩
 
-lemma isDiameter_ofDiameter (p₁ p₂ : P) : (ofDiameter p₁ p₂).IsDiameter p₁ p₂ :=
-  ⟨by simp [ofDiameter, mem_sphere, inv_mul_eq_div], rfl⟩
+lemma isDiameter_ofDiameter (p₁ p₂ : P) : (Sphere.ofDiameter p₁ p₂).IsDiameter p₁ p₂ :=
+  ⟨by simp [Sphere.ofDiameter, mem_sphere, inv_mul_eq_div], rfl⟩
 
-lemma IsDiameter.ofDiameter_eq (h : s.IsDiameter p₁ p₂) : ofDiameter p₁ p₂ = s := by
+lemma IsDiameter.ofDiameter_eq (h : s.IsDiameter p₁ p₂) : .ofDiameter p₁ p₂ = s := by
   ext
-  · simp [ofDiameter, h.midpoint_eq_center]
-  · simp [ofDiameter, ← h.dist_left_right_div_two]
+  · simp [Sphere.ofDiameter, h.midpoint_eq_center]
+  · simp [Sphere.ofDiameter, ← h.dist_left_right_div_two]
 
-lemma isDiameter_iff_ofDiameter_eq : s.IsDiameter p₁ p₂ ↔ ofDiameter p₁ p₂ = s :=
+lemma isDiameter_iff_ofDiameter_eq : s.IsDiameter p₁ p₂ ↔ .ofDiameter p₁ p₂ = s :=
   ⟨IsDiameter.ofDiameter_eq, by rintro rfl; exact isDiameter_ofDiameter _ _⟩
 
 end Sphere
