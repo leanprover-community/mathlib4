@@ -1065,9 +1065,7 @@ theorem largest_nilpotent_ideal_le_radical : largestNilpotentIdeal R L ≤ radic
 @[simp] lemma largest_nilpotent_ideal_eq_top_of_isNilpotent [LieRing.IsNilpotent L] :
     largestNilpotentIdeal R L = ⊤ := by
   rw [eq_top_iff]
-  have h : LieRing.IsNilpotent (⊤ : LieSubalgebra R L) := inferInstance
   apply le_sSup
-  simp
   simp_all
 
 end LieAlgebra
