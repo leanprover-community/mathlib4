@@ -115,6 +115,33 @@ lemma dissipate_directed {s : ℕ → Set α} :
   intro i j hij
   exact dissipate_subset_dissipate hij
 
+lemma mem_subset_dissipate_of_directed (C : ℕ → Set α)
+    (hd : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C) (n : ℕ) : ∃ m, Dissipate C n ⊇ C m := by
+  induction n with
+  | zero => use 0; simp
+  | succ n hn =>
+    obtain ⟨m, hm⟩ := hn
+    obtain ⟨k, hk⟩ := hd m (n+1)
+    simp_rw [dissipate_succ]
+    simp at hk
+    exact ⟨k, Set.subset_inter_iff.mpr <| ⟨le_trans hk.1 hm, hk.2⟩⟩
+
+lemma dissipate_exists_empty_iff_of_directed (C : ℕ → Set α)
+    (hd : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C) :
+      (∃ n, C n = ∅) ↔ (∃ n, Dissipate C n = ∅) := by
+  refine ⟨fun ⟨n, hn⟩ ↦ ⟨n, ?_⟩ , ?_⟩
+  · by_cases hn' : n = 0
+    · rw [hn', dissipate_zero]
+      exact hn' ▸ hn
+    · obtain ⟨k, hk⟩ := exists_eq_succ_of_ne_zero hn'
+      simp_rw [hk, succ_eq_add_one, dissipate_succ,
+        ← succ_eq_add_one, ← hk, hn, Set.inter_empty]
+  · rw [← not_imp_not]
+    push_neg
+    intro h n
+    obtain ⟨m, hm⟩ := mem_subset_dissipate_of_directed C hd n
+    exact Set.Nonempty.mono hm (h m)
+
 lemma dissipate_of_piSystem {s : ℕ → Set α} {p : Set α → Prop}
     (hp : ∀ (s t : Set α), p s → p t → p (s ∩ t)) (h : ∀ n, p (s n)) (n : ℕ) :
       p (Dissipate s n) := by
