@@ -197,6 +197,34 @@ theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn [IsGalois K L] :
 
 end fundamental_identity
 
+section UniqueLiesOver
+
+variable {A : Type*} [CommSemiring A] {B : Type*} [Semiring B] [Algebra A B]
+  (P : Ideal B) (p : Ideal A)
+
+class UniquePrimeLiesOver extends P.LiesOver p : Prop where
+  unique : ∀ Q : Ideal B, [Q.IsPrime] → [Q.LiesOver p] → Q = P
+
+theorem unique_primes_over_card_eq_one [P.IsPrime] [hp : P.UniquePrimeLiesOver p] :
+    (primesOver p B).ncard = 1 :=
+  Nat.card_eq_one_iff_exists.mpr ⟨primesOver.mk p P, fun Q ↦ Subtype.val_inj.mp (hp.unique Q)⟩
+
+variable {A : Type*} [CommSemiring A] {B : Type*} [CommRing B] {C : Type*} [CommRing C]
+  [Nontrivial C] [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
+  [NoZeroSMulDivisors B C] [Algebra.IsIntegral B C] (P : Ideal C) (𝔓 : Ideal B) (p : Ideal A)
+
+theorem unique_lies_over_tower_top [𝔓.IsMaximal] [hP : P.UniquePrimeLiesOver p]
+    [𝔓.LiesOver p] : P.UniquePrimeLiesOver 𝔓 where
+  over := by
+    rcases exists_ideal_liesOver_maximal_of_isIntegral 𝔓 C with ⟨Q, ⟨_ ,hq⟩⟩
+    have : Q.LiesOver p := LiesOver.trans Q 𝔓 p
+    rw [← hP.unique Q, hq.over]
+  unique Q _ _ :=
+    letI := LiesOver.trans Q 𝔓 p
+    hP.unique Q
+
+end UniqueLiesOver
+
 end Ideal
 
 open scoped Pointwise
@@ -205,33 +233,26 @@ section decompositionGroup
 
 /-! ### decomposition group -/
 
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] (p : Ideal A)
-  (P : Ideal B) [P.IsPrime] [P.LiesOver p]
+variable (A : Type*) {B : Type*} [CommRing A] [CommRing B] [Algebra A B] (P : Ideal B)
   (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L]
   [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
-  [IsIntegralClosure B A L] [FiniteDimensional K L]
+  [IsIntegralClosure B A L] [Algebra.IsAlgebraic K L]
 
--- Maybe defined it as `MulAction.stabilizer (L ≃ₐ[K] L) P` is better, since maybe in this way
--- ` P ∈ decompositionGroup p P K L` is `defEq` to `map (galRestrict A K L B σ) P = P`.
-/-- Decomposition group of `P` over `K` is the stabilizer of `primes_over.mk p P`
-  under the action of `L ≃ₐ[K] L`. -/
+/-- Decomposition group of `P` over `K` is the stabilizer of `P` under the action of `L ≃ₐ[K] L`. -/
 def decompositionGroup : Subgroup (L ≃ₐ[K] L) :=
-  MulAction.stabilizer (L ≃ₐ[K] L) (primesOver.mk p P)
+  letI := IsIntegralClosure.MulSemiringAction A K L B
+  MulAction.stabilizer (L ≃ₐ[K] L) P
 
 variable {K} {L} in
-/-- The `decompositionGroup` is consisting of all elements of the Galois group `L ≃ₐ[K] L` such
-that keep `P` invariant. -/
+/-- The decomposition group of `P` over `K` is consisting of all elements `σ` of the Galois group
+  `L ≃ₐ[K] L` such that `σ P = P`. -/
 theorem decompositionGroup_mem (σ : L ≃ₐ[K] L) :
-    σ ∈ decompositionGroup p P K L ↔ map (galRestrict A K L B σ) P = P := by
-  rw [decompositionGroup, MulAction.mem_stabilizer_iff, ← Subtype.val_inj]
-  rw [coe_smul_primesOver_mk_eq_map_galRestrict]
-
-theorem decompositionGroup_mem' (σ : B ≃ₐ[A] B) :
-    (galRestrict A K L B).symm σ ∈ decompositionGroup p P K L ↔ map σ P = P := sorry
+    σ ∈ decompositionGroup A P K L ↔ map (galRestrict A K L B σ) P = P :=
+  Iff.rfl
 
 /-- The decomposition field of `P` over `K` is the fixed field of `decompositionGroup p P`. -/
 def decompositionField : IntermediateField K L :=
-  IntermediateField.fixedField (decompositionGroup p P K L)
+  IntermediateField.fixedField (decompositionGroup A P K L)
 
 end decompositionGroup
 
@@ -245,24 +266,23 @@ variable {A : Type*} [CommRing A] [IsDedekindDomain A] {p : Ideal A} (hpb : p �
   (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L]
   [IsFractionRing B L] [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
   [FiniteDimensional K L] [IsGalois K L]
-  {D : Type*} [CommRing D] [IsDedekindDomain D] [Algebra D (decompositionField p P K L)]
-  [IsFractionRing D (decompositionField p P K L)] [Algebra A D]
-  [IsScalarTower A D (decompositionField p P K L)]
+  {D : Type*} [CommRing D] [IsDedekindDomain D] [Algebra D (decompositionField A P K L)]
+  [IsFractionRing D (decompositionField A P K L)] [Algebra A D]
+  [IsScalarTower A D (decompositionField A P K L)]
   [Algebra D B] [Module.Finite D B] [Algebra D L] [IsScalarTower D B L]
-  [IsScalarTower D (decompositionField p P K L) L] [IsScalarTower A D B]
+  [IsScalarTower D (decompositionField A P K L) L] [IsScalarTower A D B]
   (Pd : Ideal D) [Pd.IsMaximal] [P.LiesOver Pd]
 
-include K L p in
-omit [IsDedekindDomain A] [p.IsMaximal] [Algebra A D] [Pd.IsMaximal] in
+include K L A in
+omit [IsDedekindDomain A] [Algebra A D] [Pd.IsMaximal] in
 /-- `P` is the unique ideal lying over the decomposition ideal. -/
 theorem isMaximal_liesOver_decomposition_ideal_unique (Q : Ideal B) [Q.IsMaximal]
     [Q.LiesOver Pd] : Q = P := by
-  obtain ⟨σ, hs⟩ := (isPretransitive_of_isGalois Pd (decompositionField p P K L) L).1
+  obtain ⟨σ, hs⟩ := (isPretransitive_of_isGalois Pd (decompositionField A P K L) L).1
     (primesOver.mk Pd P) (primesOver.mk Pd Q)
-  exact (Subtype.val_inj.mpr hs).symm.trans <| (decompositionGroup_mem p P (σ.restrictScalars K)).mp
-    <| le_of_eq (fixingSubgroup_fixedField (decompositionGroup p P K L)) σ.commutes
+  exact (Subtype.val_inj.mpr hs).symm.trans <| (decompositionGroup_mem A P (σ.restrictScalars K)).mp
+    <| (fixingSubgroup_fixedField (decompositionGroup A P K L)).le σ.commutes
 
-/-- An alternative statement of `isMaximal_lies_over_decompositionideal_unique`. -/
 theorem primes_over_decompositionIdeal_card_eq_one [IsGalois K L] : (Pd.primesOver B).ncard = 1 :=
   sorry--unique_primes_over_card_eq_one Pd P
 
@@ -270,7 +290,8 @@ include hpb K L P
 
 open Classical in
 theorem decompositionGroup_card_eq_ramificationIdx_mul_inertiaDeg :
-    Fintype.card (decompositionGroup p P K L) = ramificationIdxIn p B * inertiaDegIn p B := by
+    Fintype.card (decompositionGroup A P K L) = ramificationIdxIn p B * inertiaDegIn p B := by
+  letI := IsIntegralClosure.MulSemiringAction A K L B
   have : FaithfulSMul A B := FaithfulSMul.of_field_isFractionRing A B K L
   have : Fintype (MulAction.orbit (L ≃ₐ[K] L) (primesOver.mk p P)) :=
     Set.fintypeRange fun m ↦ m • primesOver.mk p P
@@ -279,23 +300,25 @@ theorem decompositionGroup_card_eq_ramificationIdx_mul_inertiaDeg :
   rw [← IsGalois.card_aut_eq_finrank, decompositionGroup]
   rw [← MulAction.card_orbit_mul_card_stabilizer_eq_card_group (L ≃ₐ[K] L) (primesOver.mk p P)]
   simp only [← Set.Nat.card_coe_set_eq, Fintype.card_eq_nat_card]
-  rw [MulAction.orbit_eq_univ, Nat.card_univ]
+  rw [MulAction.orbit_eq_univ, Nat.card_univ,
+    show MulAction.stabilizer (L ≃ₐ[K] L) P = MulAction.stabilizer (L ≃ₐ[K] L) (primesOver.mk p P)
+    from Subgroup.ext fun σ ↦ @Subtype.val_inj _ _ (σ • primesOver.mk p P) (primesOver.mk p P)]
 
 theorem finrank_over_decompositionField_eq_ramificationIdx_mul_inertiaDeg :
-    Module.finrank (decompositionField p P K L) L = ramificationIdxIn p B * inertiaDegIn p B := by
-  classical rw [decompositionField, finrank_fixedField_eq_card (decompositionGroup p P K L)]
+    Module.finrank (decompositionField A P K L) L = ramificationIdxIn p B * inertiaDegIn p B := by
+  classical rw [decompositionField, finrank_fixedField_eq_card (decompositionGroup A P K L)]
   rw [decompositionGroup_card_eq_ramificationIdx_mul_inertiaDeg hpb P K L]
 
 private lemma ramificationIdx_and_inertiaDeg_of_decompositionIdeal :
     ramificationIdxIn Pd B = ramificationIdxIn p B ∧
     inertiaDegIn Pd B = inertiaDegIn p B := by
   have : FaithfulSMul A B := FaithfulSMul.of_field_isFractionRing A B K L
-  have : FaithfulSMul D B := FaithfulSMul.of_field_isFractionRing D B (decompositionField p P K L) L
-  have : FaithfulSMul A D := FaithfulSMul.of_field_isFractionRing A D K (decompositionField p P K L)
+  have : FaithfulSMul D B := FaithfulSMul.of_field_isFractionRing D B (decompositionField A P K L) L
+  have : FaithfulSMul A D := FaithfulSMul.of_field_isFractionRing A D K (decompositionField A P K L)
   have : Pd.LiesOver p := LiesOver.tower_bot P Pd p
   have hdb : Pd ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hpb Pd
   have h := ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hdb B
-    (decompositionField p P K L) L
+    (decompositionField A P K L) L
   rw [primes_over_decompositionIdeal_card_eq_one K L Pd, one_mul,
     finrank_over_decompositionField_eq_ramificationIdx_mul_inertiaDeg hpb] at h
   have h0 := ramificationIdx_pos P hpb
@@ -304,9 +327,9 @@ private lemma ramificationIdx_and_inertiaDeg_of_decompositionIdeal :
       map_le_iff_le_comap.mpr (over_def P Pd).le
   have h0 : inertiaDeg p P > 0 := inertiaDeg_pos p P
   have hi := Nat.le_of_dvd h0 <| Dvd.intro_left _  (inertiaDeg_algebra_tower p Pd P).symm
-  rw [ramificationIdxIn_eq_ramificationIdx Pd P (decompositionField p P K L) L,
+  rw [ramificationIdxIn_eq_ramificationIdx Pd P (decompositionField A P K L) L,
     ramificationIdxIn_eq_ramificationIdx p P K L, inertiaDegIn_eq_inertiaDeg p P K L,
-    inertiaDegIn_eq_inertiaDeg Pd P (decompositionField p P K L) L] at h ⊢
+    inertiaDegIn_eq_inertiaDeg Pd P (decompositionField A P K L) L] at h ⊢
   exact (mul_eq_mul_iff_eq_and_eq_of_pos hr hi (ramificationIdx_pos P hdb) h0).mp h
 
 theorem ramificationIdxIn_of_decompositionIdeal : ramificationIdxIn Pd B = ramificationIdxIn p B :=
@@ -318,13 +341,13 @@ theorem inertiaDegIn_of_decompositionIdeal : inertiaDegIn Pd B = inertiaDegIn p 
 theorem ramificationIdx_of_decompositionideal_over_bot_eq_one :
     ramificationIdx (algebraMap A D) p Pd = 1 := by
   have : FaithfulSMul A B := FaithfulSMul.of_field_isFractionRing A B K L
-  have : FaithfulSMul D B := FaithfulSMul.of_field_isFractionRing D B (decompositionField p P K L) L
-  have : FaithfulSMul A D := FaithfulSMul.of_field_isFractionRing A D K (decompositionField p P K L)
+  have : FaithfulSMul D B := FaithfulSMul.of_field_isFractionRing D B (decompositionField A P K L) L
+  have : FaithfulSMul A D := FaithfulSMul.of_field_isFractionRing A D K (decompositionField A P K L)
   have : Pd.LiesOver p := LiesOver.tower_bot P Pd p
   have hdb : Pd ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hpb Pd
   have h := ramificationIdx_algebra_tower (map_ne_bot_of_ne_bot hdb) (map_ne_bot_of_ne_bot hpb) <|
       map_le_iff_le_comap.mpr (over_def P Pd).le
-  rw [← ramificationIdxIn_eq_ramificationIdx Pd P (decompositionField p P K L) L,
+  rw [← ramificationIdxIn_eq_ramificationIdx Pd P (decompositionField A P K L) L,
     ramificationIdxIn_of_decompositionIdeal hpb P K L,
     ramificationIdxIn_eq_ramificationIdx p P K L] at h
   nth_rw 1 [← one_mul (ramificationIdx (algebraMap A B) p P)] at h
@@ -335,7 +358,7 @@ residue class field corresponding to `p`. -/
 theorem inertiaDeg_of_decompositionideal_over_bot_eq_one : inertiaDeg p Pd = 1 := by
   have : Pd.LiesOver p := LiesOver.tower_bot P Pd p
   have h := inertiaDeg_algebra_tower p Pd P
-  rw [← inertiaDegIn_eq_inertiaDeg Pd P (decompositionField p P K L) L,
+  rw [← inertiaDegIn_eq_inertiaDeg Pd P (decompositionField A P K L) L,
     inertiaDegIn_of_decompositionIdeal hpb P K L, inertiaDegIn_eq_inertiaDeg p P K L] at h
   nth_rw 1 [← one_mul (inertiaDeg p P)] at h
   exact mul_right_cancel₀ (inertiaDeg_pos p P).ne.symm h.symm
