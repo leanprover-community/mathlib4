@@ -746,7 +746,7 @@ noncomputable def iExs [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :
 protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=
   φ.iff ψ
 
-/-- take the disjunction of finitely many formulas -/
+/-- Take the disjunction of finitely many formulas -/
 noncomputable def iSup [Finite α] (f : α → L.Formula β) : L.Formula β :=
   BoundedFormula.iSup f
 
