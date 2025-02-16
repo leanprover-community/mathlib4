@@ -577,7 +577,7 @@ instance instCompleteSpace : CompleteSpace (CStarMatrix m n A) := Pi.complete _
 instance instT2Space : T2Space (CStarMatrix m n A) := Pi.t2Space
 instance instT3Space : T3Space (CStarMatrix m n A) := _root_.instT3Space
 
-instance instTopologicalAddGroup : TopologicalAddGroup (CStarMatrix m n A) :=
+instance instIsTopologicalAddGroup : IsTopologicalAddGroup (CStarMatrix m n A) :=
   Pi.topologicalAddGroup
 
 instance instUniformAddGroup : UniformAddGroup (CStarMatrix m n A) :=
