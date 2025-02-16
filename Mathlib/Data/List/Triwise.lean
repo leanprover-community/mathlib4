@@ -60,6 +60,11 @@ lemma triwise_map : (l.map f).Triwise p' ↔ l.Triwise (fun a b c ↦ p' (f a) (
   | nil => simp
   | cons h t ih => simp [map, triwise_cons, ih, pairwise_map]
 
+lemma Triwise.of_map (h : ∀ {a b c}, p' (f a) (f b) (f c) → p a b c) (hl : (l.map f).Triwise p') :
+    l.Triwise p := by
+  rw [triwise_map] at hl
+  exact hl.imp h
+
 lemma Triwise.map (h : ∀ {a b c}, p a b c → p' (f a) (f b) (f c)) (hl : l.Triwise p) :
     (l.map f).Triwise p' :=
   triwise_map.2 (hl.imp h)
