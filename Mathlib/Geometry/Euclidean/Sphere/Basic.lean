@@ -240,33 +240,17 @@ lemma IsDiameter.pointReflection_center_left (h : s.IsDiameter p₁ p₂) :
     Equiv.pointReflection s.center p₁ = p₂ := by
   rw [← h.midpoint_eq_center, Equiv.pointReflection_midpoint_left]
 
-lemma IsDiameter.affine_pointReflection_center_left (h : s.IsDiameter p₁ p₂) :
-    AffineEquiv.pointReflection ℝ s.center p₁ = p₂ := by
-  rw [← h.midpoint_eq_center, AffineEquiv.pointReflection_midpoint_left]
-
 lemma IsDiameter.pointReflection_center_right (h : s.IsDiameter p₁ p₂) :
     Equiv.pointReflection s.center p₂ = p₁ := by
   rw [← h.midpoint_eq_center, Equiv.pointReflection_midpoint_right]
-
-lemma IsDiameter.affine_pointReflection_center_right (h : s.IsDiameter p₁ p₂) :
-    AffineEquiv.pointReflection ℝ s.center p₂ = p₁ := by
-  rw [← h.midpoint_eq_center, AffineEquiv.pointReflection_midpoint_right]
 
 lemma isDiameter_iff_left_mem_and_pointReflection_center_left :
     s.IsDiameter p₁ p₂ ↔ p₁ ∈ s ∧ Equiv.pointReflection s.center p₁ = p₂ :=
   ⟨fun h ↦ ⟨h.1, h.pointReflection_center_left⟩, fun h ↦ ⟨h.1, by simp [← h.2]⟩⟩
 
-lemma isDiameter_iff_left_mem_and_affine_pointReflection_center_left :
-    s.IsDiameter p₁ p₂ ↔ p₁ ∈ s ∧ AffineEquiv.pointReflection ℝ s.center p₁ = p₂ :=
-  ⟨fun h ↦ ⟨h.1, h.pointReflection_center_left⟩, fun h ↦ ⟨h.1, by simp [← h.2]⟩⟩
-
 lemma isDiameter_iff_right_mem_and_pointReflection_center_right :
     s.IsDiameter p₁ p₂ ↔ p₂ ∈ s ∧ Equiv.pointReflection s.center p₂ = p₁ := by
   rw [isDiameter_comm, isDiameter_iff_left_mem_and_pointReflection_center_left]
-
-lemma isDiameter_iff_right_mem_and_affine_pointReflection_center_right :
-    s.IsDiameter p₁ p₂ ↔ p₂ ∈ s ∧ AffineEquiv.pointReflection ℝ s.center p₂ = p₁ := by
-  rw [isDiameter_comm, isDiameter_iff_left_mem_and_affine_pointReflection_center_left]
 
 lemma IsDiameter.right_eq_of_isDiameter (h₁₂ : s.IsDiameter p₁ p₂) (h₁₃ : s.IsDiameter p₁ p₃) :
     p₂ = p₃ := by
