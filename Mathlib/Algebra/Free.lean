@@ -445,16 +445,16 @@ theorem length_mul (x y : FreeSemigroup α) : (x * y).length = x.length + y.leng
 theorem length_of (x : α) : (of x).length = 1 := rfl
 
 @[to_additive]
-theorem length_lt_zero {α : Type u} (x : FreeSemigroup α) : x.length > 0 := Nat.zero_lt_succ _
+theorem length_lt_zero (x : FreeSemigroup α) : x.length > 0 := Nat.zero_lt_succ _
 
 @[to_additive]
-theorem length_factor_lt_left {α : Type u} (x y : FreeSemigroup α) :
+theorem length_factor_lt_left (x y : FreeSemigroup α) :
     x.length < (x * y).length := by
   rw [length_mul, Nat.lt_add_right_iff_pos]
   exact length_lt_zero _
 
 @[to_additive]
-theorem length_factor_lt_right {α : Type u} (x y : FreeSemigroup α) :
+theorem length_factor_lt_right (x y : FreeSemigroup α) :
     y.length < (x * y).length := by
   rw [length_mul, Nat.lt_add_left_iff_pos]
   exact length_lt_zero _
@@ -463,12 +463,12 @@ theorem length_factor_lt_right {α : Type u} (x y : FreeSemigroup α) :
   converts a nonempty list to a free semi group.
 -/
 @[to_additive "converts a nonempty list to a free additive semi group."]
-def fromList {α : Type u}  (l : List α) (h : ¬l.isEmpty) : FreeSemigroup α :=
+def fromList  (l : List α) (h : ¬l.isEmpty) : FreeSemigroup α :=
   match l with
   | a :: l => if h : l.isEmpty then of a else of a * fromList l h
 
 @[to_additive (attr := simp)]
-theorem fromList_head {α : Type u} {l : List α} (h : ¬l.isEmpty) :
+theorem fromList_head {l : List α} (h : ¬l.isEmpty) :
     (fromList l h).head = l.head
       (Ne.symm (ne_of_apply_ne List.isEmpty fun a ↦ h (id (Eq.symm a)))
     ) := by
@@ -479,7 +479,7 @@ theorem fromList_head {α : Type u} {l : List α} (h : ¬l.isEmpty) :
     simp only [List.isEmpty_eq_true, of_head, head_mul, dite_eq_ite, ite_self]
 
 @[to_additive (attr := simp)]
-theorem fromList_tail {α : Type u} {l : List α} (h : ¬l.isEmpty) :
+theorem fromList_tail {l : List α} (h : ¬l.isEmpty) :
     (fromList l h).tail = l.tail := by
   match l with
   | a :: l' =>
@@ -494,7 +494,7 @@ theorem fromList_tail {α : Type u} {l : List α} (h : ¬l.isEmpty) :
       simp only [List.head_cons_tail]
 
 @[to_additive (attr := simp)]
-theorem fromList_length {α : Type u} {l : List α} (h : ¬l.isEmpty) :
+theorem fromList_length {l : List α} (h : ¬l.isEmpty) :
     (fromList l h).length = l.length :=
   match l with
   | a :: l => if h : l.isEmpty then (
@@ -509,12 +509,12 @@ theorem fromList_length {α : Type u} {l : List α} (h : ¬l.isEmpty) :
   )
 
 @[to_additive (attr := simp)]
-theorem fromList_cons {α : Type u} (a : α) (l : List α) :
+theorem fromList_cons (a : α) (l : List α) :
     fromList (a :: l) (ne_true_of_eq_false rfl)
       = if h : l.isEmpty then of a else of a * fromList l h := rfl
 
 @[to_additive]
-theorem fromList_append {α : Type u} {l₁ l₂ : List α}
+theorem fromList_append {l₁ l₂ : List α}
   (h₁ : ¬l₁.isEmpty) (h₂ : ¬l₂.isEmpty) :
     fromList (l₁ ++ l₂) (by
       simp_all only [List.isEmpty_eq_true, List.append_eq_nil_iff, and_self,
@@ -540,26 +540,26 @@ theorem fromList_append {α : Type u} {l₁ l₂ : List α}
   converts a free semigroup to a list.
 -/
 @[to_additive "converts a free additive semigroup to a list."]
-def toList {α : Type u} : FreeSemigroup α → List α := fun x => x.head :: x.tail
+def toList : FreeSemigroup α → List α := fun x => x.head :: x.tail
 
 @[to_additive (attr := simp)]
-theorem toList_of {α : Type u} (a : α) : toList (of a) = [a] := rfl
+theorem toList_of (a : α) : toList (of a) = [a] := rfl
 
 @[to_additive (attr := simp)]
-theorem toList_mul {α : Type u} (x y : FreeSemigroup α) :
+theorem toList_mul (x y : FreeSemigroup α) :
   toList (x * y) = toList x ++ toList y := rfl
 
 @[to_additive (attr := simp)]
-theorem toList_length {α : Type u} (x : FreeSemigroup α) :
+theorem toList_length (x : FreeSemigroup α) :
   x.toList.length = x.length := rfl
 
 @[to_additive]
-theorem toList_nonEmpty {α : Type u} (x : FreeSemigroup α) : ¬x.toList.isEmpty := by
+theorem toList_nonEmpty (x : FreeSemigroup α) : ¬x.toList.isEmpty := by
   rw [toList]
   simp only [List.isEmpty_cons, Bool.false_eq_true, not_false_eq_true]
 
 @[to_additive (attr := simp)]
-theorem fromList_toList {α : Type u} (x : FreeSemigroup α) :
+theorem fromList_toList (x : FreeSemigroup α) :
     fromList (toList x) (toList_nonEmpty x) = x := by
   simp only [toList, fromList, List.isEmpty_eq_true]
   by_cases h : x.tail.isEmpty <;> simp only [h, Bool.false_eq_true, ↓reduceDIte]
@@ -580,7 +580,7 @@ theorem fromList_toList {α : Type u} (x : FreeSemigroup α) :
           fromList_head, fromList_tail, List.head_cons_tail, List.nil_append, and_self]
 
 @[to_additive]
-theorem toList_injective {α : Type u} : Function.Injective (toList : FreeSemigroup α → List α) := by
+theorem toList_injective : Function.Injective (toList : FreeSemigroup α → List α) := by
   intro x y h
   rw [← fromList_toList x, ← fromList_toList y]
   simp only [h, fromList_toList]
