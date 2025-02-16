@@ -165,8 +165,14 @@ variable (R v) in
 theorem linearIndepOn_empty : LinearIndepOn R v ∅ :=
   linearIndependent_empty_type ..
 
-theorem linearIndependent_set_subtype {s : Set ι} :
+theorem linearIndependent_set_coe_iff :
     LinearIndependent R (fun x : s ↦ v x) ↔ LinearIndepOn R v s := Iff.rfl
+
+theorem linearIndependent_subtype_iff {s : Set M} :
+    LinearIndependent R (Subtype.val : s → M) ↔ LinearIndepOn R id s := Iff.rfl
+
+theorem linearIndependent_comp_subtype_iff :
+    LinearIndependent R (v ∘ Subtype.val : s → M) ↔ LinearIndepOn R v s := Iff.rfl
 
 /-- A subfamily of a linearly independent family (i.e., a composition with an injective map) is a
 linearly independent family. -/
@@ -177,7 +183,8 @@ theorem LinearIndependent.comp (h : LinearIndependent R v) (f : ι' → ι) (hf 
 /-- A set of linearly independent vectors in a module `M` over a semiring `K` is also linearly
 independent over a subring `R` of `K`.
 The implementation uses minimal assumptions about the relationship between `R`, `K` and `M`.
-The version where `K` is an `R`-algebra is `LinearIndependent.restrict_scalars_algebras`. -/
+The version where `K` is an `R`-algebra is `LinearIndependent.restrict_scalars_algebras`.
+TODO : `LinearIndepOn` version.  -/
 theorem LinearIndependent.restrict_scalars [Semiring K] [SMulWithZero R K] [Module K M]
     [IsScalarTower R K M] (hinj : Injective fun r : R ↦ r • (1 : K))
     (li : LinearIndependent K v) : LinearIndependent R v := by
@@ -295,7 +302,8 @@ theorem linearIndependent_iff_finset_linearIndependent :
       (by simpa only [← s.sum_coe_sort] using eq) ⟨i, hi⟩⟩
 
 /-- If `v` is an injective family of vectors such that `f ∘ v` is linearly independent, then `v`
-    spans a submodule disjoint from the kernel of `f` -/
+    spans a submodule disjoint from the kernel of `f`.
+TODO : `LinearIndepOn` version. -/
 theorem Submodule.range_ker_disjoint {f : M →ₗ[R] M'}
     (hv : LinearIndependent R (f ∘ v)) :
     Disjoint (span R (range v)) (LinearMap.ker f) := by
@@ -308,7 +316,8 @@ theorem Submodule.range_ker_disjoint {f : M →ₗ[R] M'}
 such that they are both injective, and compatible with the scalar
 multiplications on `M` and `M'`, then `j` sends linearly independent families of vectors to
 linearly independent families of vectors. As a special case, taking `R = R'`
-it is `LinearIndependent.map_injOn`. -/
+it is `LinearIndependent.map_injOn`.
+TODO : `LinearIndepOn` version.  -/
 theorem LinearIndependent.map_of_injective_injectiveₛ {R' M' : Type*}
     [Semiring R'] [AddCommMonoid M'] [Module R' M'] (hv : LinearIndependent R v)
     (i : R' → R) (j : M →+ M') (hi : Injective i) (hj : Injective j)
@@ -322,7 +331,8 @@ theorem LinearIndependent.map_of_injective_injectiveₛ {R' M' : Type*}
 and `j : M →+ M'` is an injective monoid map, such that the scalar multiplications
 on `M` and `M'` are compatible, then `j` sends linearly independent families
 of vectors to linearly independent families of vectors. As a special case, taking `R = R'`
-it is `LinearIndependent.map_injOn`. -/
+it is `LinearIndependent.map_injOn`.
+TODO : `LinearIndepOn` version.  -/
 theorem LinearIndependent.map_of_surjective_injectiveₛ {R' M' : Type*}
     [Semiring R'] [AddCommMonoid M'] [Module R' M'] (hv : LinearIndependent R v)
     (i : R → R') (j : M →+ M') (hi : Surjective i) (hj : Injective j)
@@ -1195,24 +1205,6 @@ theorem LinearIndepOn.id_union {s t : Set M} (hs : LinearIndepOn R id s)
 
 @[deprecated (since := "2025-02-14")] alias LinearIndependent.union := LinearIndepOn.id_union
 
--- theorem linearIndependent_iUnion_finite_subtype {ι : Type*} {f : ι → Set M}
---     (hl : ∀ i, LinearIndependent R (fun x => x : f i → M))
---     (hd : ∀ i, ∀ t : Set ι, t.Finite → i ∉ t → Disjoint (span R (f i)) (⨆ i ∈ t, span R (f i))) :
---     LinearIndependent R (fun x => x : (⋃ i, f i) → M) := by
---   classical
---   rw [iUnion_eq_iUnion_finset f]
---   apply linearIndependent_iUnion_of_directed
---   · apply directed_of_isDirected_le
---     exact fun t₁ t₂ ht => iUnion_mono fun i => iUnion_subset_iUnion_const fun h => ht h
---   intro t
---   induction t using Finset.induction_on with
---   | empty => exact (linearIndependent_empty R M).mono (by simp)
---   | @insert i s his ih =>
---     rw [Finset.set_biUnion_insert]
---     refine (hl _).union ih ?_
---     rw [span_iUnion₂]
---     exact hd i s s.finite_toSet his
-/-- TODO : generalize this to non-identity functions. -/
 theorem linearIndepOn_id_iUnion_finite {f : ι → Set M} (hl : ∀ i, LinearIndepOn R id (f i))
     (hd : ∀ i, ∀ t : Set ι, t.Finite → i ∉ t → Disjoint (span R (f i)) (⨆ i ∈ t, span R (f i))) :
     LinearIndepOn R id (⋃ i, f i) := by
