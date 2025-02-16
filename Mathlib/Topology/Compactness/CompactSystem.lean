@@ -46,43 +46,12 @@ lemma prime (C : Set (Set α)) (hC : ∅ ∈ C) : (IsPiSystem C) ↔ (∀ s ∈ 
   · push_neg at h'
     exact h' ▸ hC
 
-lemma l10 (C : ℕ → Set α) (hd : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C) :
-      (∃ n, C n = ∅) ↔ (∃ n, ⋂ i ≤ n, C i = ∅) := by
-  refine ⟨fun h ↦ ?_, ?_⟩
-  · obtain ⟨n, hn⟩ := h
-    use n
-    by_cases hn' : n = 0
-    · rw [hn']
-      simp only [le_zero_eq, iInter_iInter_eq_left]
-      exact hn' ▸ hn
-    · obtain ⟨k, hk⟩ := exists_eq_succ_of_ne_zero hn'
-      simp_rw [hk, succ_eq_add_one, ← dissipate_def, dissipate_succ,
-        ← succ_eq_add_one, ← hk, hn, Set.inter_empty]
-  · have h3 (n : ℕ) : ∃ m, ⋂ i ≤ n, C i ⊇ C m := by
-      induction n with
-      | zero => use 0; simp
-      | succ n hn =>
-        obtain ⟨m, hm⟩ := hn
-        simp_rw [← dissipate_def, dissipate_succ]
-        obtain ⟨k, hk⟩ := hd m (n+1)
-        simp at hk
-        use k
-        simp only [Set.subset_inter_iff]
-        exact ⟨le_trans hk.1 hm, hk.2⟩
-    rw [← not_imp_not]
-    push_neg
-    intro h n
-    obtain h2 := hd n (n + 1)
-    simp at h2
-    obtain ⟨m, hm⟩ := h3 n
-    exact Set.Nonempty.mono hm (h m)
-
 theorem IsCompactSystem.iff_mono [Inhabited α] (hpi : ∀ (s t : Set α), p s → p t → p (s ∩ t)) :
     (IsCompactSystem p) ↔
     (∀ (C : ℕ → Set α), ∀ (_ : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C), (∀ i, p (C i)) →
       ⋂ i, C i = ∅ → ∃ (n : ℕ), C n = ∅) := by
   refine ⟨fun h ↦ fun C hdi hi ↦ ?_, fun h C h1 h2 ↦ ?_⟩
-  · rw [l10 C hdi]
+  · rw [dissipate_exists_empty_iff_of_directed C hdi]
     exact h C hi
   · rw [← biInter_le_eq_iInter] at h2
     exact h (Dissipate C) dissipate_directed (dissipate_of_piSystem hpi h1) h2
