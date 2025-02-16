@@ -779,6 +779,9 @@ theorem balanced_ball_zero (r : ℝ) : Balanced 𝕜 (ball p 0 r) := by
 
 /-- Closed seminorm-balls at the origin are balanced. -/
 theorem balanced_closedBall_zero (r : ℝ) : Balanced 𝕜 (closedBall p 0 r) := by
+  have e0 : Metric.closedBall (0 : E) r = Seminorm.closedBall p (0 ) r := by
+      aesop
+  apply (closedBall_Balanced r) (𝕜 := 𝕜)
   rintro a ha x ⟨y, hy, hx⟩
   rw [mem_closedBall_zero, ← hx, map_smul_eq_mul]
   calc
