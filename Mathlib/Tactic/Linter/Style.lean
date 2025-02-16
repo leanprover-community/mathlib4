@@ -498,7 +498,7 @@ def openClassicalLinter : Linter where run := withSetOptionIn fun stx ↦ do
       return
     if (← MonadState.get).messages.hasErrors then
      return
-    -- TODO: once mathlib's Lean version includes leanprover/lean4#4741, make this configurable
+    -- TODO: make this configurable!
     unless #[`Mathlib, `test, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
       return
     -- If `stx` describes an `open` command, extract the list of opened namespaces.
