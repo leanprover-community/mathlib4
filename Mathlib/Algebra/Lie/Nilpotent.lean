@@ -330,7 +330,6 @@ instance isNilpotentAdd (M₁ M₂ : LieSubmodule R L M) [IsNilpotent L M₁] [I
     exact hb
   rw [xy]
   rw [xx]
-  --search_proof
   refine LieSubmodule.comap_incl_eq_bot.mpr ?_
   simp_all only [le_refl, sup_of_le_left, bot_le, inf_of_le_right]
 
@@ -447,7 +446,7 @@ theorem nilpotencyLength_eq_one_iff [Nontrivial M] :
 theorem isTrivial_of_nilpotencyLength_le_one [IsNilpotent L M] (h : nilpotencyLength L M ≤ 1) :
     IsTrivial L M := by
   nontriviality M
-  cases' Nat.le_one_iff_eq_zero_or_eq_one.mp h with h h
+  rcases Nat.le_one_iff_eq_zero_or_eq_one.mp h with h | h
   · rw [nilpotencyLength_eq_zero_iff] at h; infer_instance
   · rwa [nilpotencyLength_eq_one_iff] at h
 
@@ -1066,9 +1065,7 @@ theorem largest_nilpotent_ideal_le_radical : largestNilpotentIdeal R L ≤ radic
 @[simp] lemma largest_nilpotent_ideal_eq_top_of_isNilpotent [LieRing.IsNilpotent L] :
     largestNilpotentIdeal R L = ⊤ := by
   rw [eq_top_iff]
-  have h : LieRing.IsNilpotent (⊤ : LieSubalgebra R L) := inferInstance
   apply le_sSup
-  simp
   simp_all
 
 end LieAlgebra
