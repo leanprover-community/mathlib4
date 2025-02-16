@@ -76,17 +76,15 @@ lemma triwise_iff_getElem : l.Triwise p ↔ ∀ i j k (hij : i < j) (hjk : j < k
     simp only [triwise_cons, length_cons, pairwise_iff_getElem, ih]
     refine ⟨fun ⟨hh, ht⟩ i j k hij hjk hk ↦ ?_,
             fun h ↦ ⟨fun i j hi hj hij ↦ ?_, fun i j k hij hjk hk ↦ ?_⟩⟩
-    · rcases i with - | i
-      · rcases j with - | j
-        · simp at hij
-        · rcases k with - | k
-          · omega
-          · simpa using hh j k (by omega) (by omega) (by omega)
-      · rcases j with - | j
-        · simp at hij
-        · rcases k with - | k
-          · omega
-          · simpa using ht i j k (by omega) (by omega) (by omega)
+    · rcases i with - | i <;> rcases j with - | j
+      · simp at hij
+      · rcases k with - | k
+        · omega
+        · simpa using hh j k (by omega) (by omega) (by omega)
+      · simp at hij
+      · rcases k with - | k
+        · omega
+        · simpa using ht i j k (by omega) (by omega) (by omega)
     · simpa using h 0 (i + 1) (j + 1) (by omega) (by omega) (by omega)
     · simpa using h (i + 1) (j + 1) (k + 1) (by omega) (by omega) (by omega)
 
