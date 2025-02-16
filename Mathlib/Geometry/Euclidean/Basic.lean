@@ -452,6 +452,17 @@ lemma dist_orthogonalProjection_eq_infDist (s : AffineSubspace ℝ P) [Nonempty 
     dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p x.property]
   simp [mul_self_nonneg]
 
+/-- The nonnegative distance between a point and its orthogonal projection to a subspace equals
+the distance to that subspace as given by `Metric.infNndist`. This is not a `simp` lemma since
+the simplest form depends on the context (if any calculations are to be done with the distance,
+the version with the orthogonal projection gives access to more lemmas about orthogonal
+projections that may be useful). -/
+lemma dist_orthogonalProjection_eq_infNndist (s : AffineSubspace ℝ P) [Nonempty s]
+    [HasOrthogonalProjection s.direction] (p : P) :
+    nndist p (orthogonalProjection s p) = Metric.infNndist p s := by
+  rw [← NNReal.coe_inj]
+  simp [dist_orthogonalProjection_eq_infDist]
+
 /-- The square of the distance between two points constructed by
 adding multiples of the same orthogonal vector to points in the same
 subspace. -/
