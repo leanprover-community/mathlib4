@@ -133,7 +133,7 @@ theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRe
       use v
       simp only [true_and, mem_filter, mem_univ]
       exact h
-    rwa [← card_pos, hg, ← two_mul, mul_pos_iff_of_pos_left] at hh
+    rwa [← card_pos, hg, add_self, mul_pos_iff_of_pos_left] at hh
     exact zero_lt_two
   have hc : (fun w : V => w ≠ v ∧ Odd (G.degree w)) = fun w : V => Odd (G.degree w) ∧ w ≠ v := by
     ext w
@@ -141,7 +141,7 @@ theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRe
   simp only [hc, filter_congr]
   rw [← filter_filter, filter_ne', card_erase_of_mem]
   · refine ⟨k - 1, tsub_eq_of_eq_add <| hg.trans ?_⟩
-    rw [add_assoc, one_add_one_eq_two, ← Nat.mul_succ, ← two_mul]
+    rw [add_assoc, one_add_one_eq_two, ← Nat.mul_succ, add_self]
     congr
     omega
   · simpa only [true_and, mem_filter, mem_univ]

@@ -189,7 +189,7 @@ theorem two_nsmul_eq_pi_iff {θ : Angle} : (2 : ℕ) • θ = π ↔ θ = (π / 
   -- Porting note: `congr` didn't simplify the goal of iff of `Or`s
   convert Iff.rfl
   rw [add_comm, ← coe_add, ← sub_eq_zero, ← coe_sub, neg_div, ← neg_sub, sub_neg_eq_add, add_assoc,
-    add_halves, ← two_mul, coe_neg, coe_two_pi, neg_zero]
+    add_halves, add_self, coe_neg, coe_two_pi, neg_zero]
 
 theorem two_zsmul_eq_pi_iff {θ : Angle} : (2 : ℤ) • θ = π ↔ θ = (π / 2 : ℝ) ∨ θ = (-π / 2 : ℝ) := by
   rw [two_zsmul, ← two_nsmul, two_nsmul_eq_pi_iff]
@@ -575,7 +575,7 @@ theorem toReal_coe_eq_self_add_two_pi_iff {θ : ℝ} :
 theorem two_nsmul_toReal_eq_two_mul_sub_two_pi {θ : Angle} :
     ((2 : ℕ) • θ).toReal = 2 * θ.toReal - 2 * π ↔ π / 2 < θ.toReal := by
   nth_rw 1 [← coe_toReal θ]
-  rw [← coe_nsmul, two_nsmul, ← two_mul, toReal_coe_eq_self_sub_two_pi_iff, Set.mem_Ioc]
+  rw [← coe_nsmul, two_nsmul, add_self, toReal_coe_eq_self_sub_two_pi_iff, Set.mem_Ioc]
   exact
     ⟨fun h => by linarith, fun h =>
       ⟨(div_lt_iff₀' (zero_lt_two' ℝ)).1 h, by linarith [pi_pos, toReal_le_pi θ]⟩⟩
@@ -587,7 +587,7 @@ theorem two_zsmul_toReal_eq_two_mul_sub_two_pi {θ : Angle} :
 theorem two_nsmul_toReal_eq_two_mul_add_two_pi {θ : Angle} :
     ((2 : ℕ) • θ).toReal = 2 * θ.toReal + 2 * π ↔ θ.toReal ≤ -π / 2 := by
   nth_rw 1 [← coe_toReal θ]
-  rw [← coe_nsmul, two_nsmul, ← two_mul, toReal_coe_eq_self_add_two_pi_iff, Set.mem_Ioc]
+  rw [← coe_nsmul, two_nsmul, add_self, toReal_coe_eq_self_add_two_pi_iff, Set.mem_Ioc]
   refine
     ⟨fun h => by linarith, fun h =>
       ⟨by linarith [pi_pos, neg_pi_lt_toReal θ], (le_div_iff₀' (zero_lt_two' ℝ)).1 h⟩⟩
@@ -685,7 +685,7 @@ theorem tan_eq_inv_of_two_nsmul_add_two_nsmul_eq_pi {θ ψ : Angle}
     (h : (2 : ℕ) • θ + (2 : ℕ) • ψ = π) : tan ψ = (tan θ)⁻¹ := by
   induction θ using Real.Angle.induction_on
   induction ψ using Real.Angle.induction_on
-  rw [← smul_add, ← coe_add, ← coe_nsmul, two_nsmul, ← two_mul, angle_eq_iff_two_pi_dvd_sub] at h
+  rw [← smul_add, ← coe_add, ← coe_nsmul, two_nsmul, add_self, angle_eq_iff_two_pi_dvd_sub] at h
   rcases h with ⟨k, h⟩
   rw [sub_eq_iff_eq_add, ← mul_inv_cancel_left₀ two_ne_zero π, mul_assoc, ← mul_add,
     mul_right_inj' (two_ne_zero' ℝ), ← eq_sub_iff_add_eq', mul_inv_cancel_left₀ two_ne_zero π,

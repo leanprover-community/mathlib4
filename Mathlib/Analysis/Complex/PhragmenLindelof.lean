@@ -127,7 +127,7 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
     ⟨(a + b) / 2, (b - a) / 2, by ring, by ring⟩
   have hab : a - b < a + b := hza.trans hzb
   have hb : 0 < b := by simpa only [sub_eq_add_neg, add_lt_add_iff_left, neg_lt_self_iff] using hab
-  rw [add_sub_sub_cancel, ← two_mul, div_mul_eq_div_div] at hB
+  rw [add_sub_sub_cancel, add_self, div_mul_eq_div_div] at hB
   have hπb : 0 < π / 2 / b := div_pos Real.pi_div_two_pos hb
   -- Choose some `c B : ℝ` satisfying `hB`, then choose `max c 0 < d < π / 2 / b`.
   rcases hB with ⟨c, hc, B, hO⟩

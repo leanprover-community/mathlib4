@@ -38,7 +38,7 @@ variable [Monoid α] [HasDistribNeg α] {n : ℕ} {a : α}
 
 @[simp] lemma Even.neg_pow : Even n → ∀ a : α, (-a) ^ n = a ^ n := by
   rintro ⟨c, rfl⟩ a
-  simp_rw [← two_mul, pow_mul, neg_sq]
+  simp_rw [add_self, pow_mul, neg_sq]
 
 lemma Even.neg_one_pow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_pow, one_pow]
 
@@ -96,7 +96,7 @@ alias ⟨Odd.exists_bit1, _⟩ := odd_iff_exists_bit1
     Set.range (fun x : α ↦ 2 * x + 1) = {a | Odd a} := by ext x; simp [Odd, eq_comm]
 
 lemma Even.add_odd : Even a → Odd b → Odd (a + b) := by
-  rintro ⟨a, rfl⟩ ⟨b, rfl⟩; exact ⟨a + b, by rw [mul_add, ← two_mul, add_assoc]⟩
+  rintro ⟨a, rfl⟩ ⟨b, rfl⟩; exact ⟨a + b, by rw [mul_add, add_self, add_assoc]⟩
 
 lemma Even.odd_add (ha : Even a) (hb : Odd b) : Odd (b + a) := add_comm a b ▸ ha.add_odd hb
 lemma Odd.add_even (ha : Odd a) (hb : Even b) : Odd (a + b) := add_comm a b ▸ hb.add_odd ha
@@ -222,11 +222,11 @@ lemma even_xor_odd (n : ℕ) : Xor' (Even n) (Odd n) := by
 lemma even_or_odd (n : ℕ) : Even n ∨ Odd n := (even_xor_odd n).or
 
 lemma even_or_odd' (n : ℕ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
-  simpa only [← two_mul, exists_or, Odd, Even] using even_or_odd n
+  simpa only [add_self, exists_or, Odd, Even] using even_or_odd n
 
 lemma even_xor_odd' (n : ℕ) : ∃ k, Xor' (n = 2 * k) (n = 2 * k + 1) := by
   obtain ⟨k, rfl⟩ | ⟨k, rfl⟩ := even_or_odd n <;> use k
-  · simpa only [← two_mul, eq_self_iff_true, xor_true] using (succ_ne_self (2 * k)).symm
+  · simpa only [add_self, eq_self_iff_true, xor_true] using (succ_ne_self (2 * k)).symm
   · simpa only [xor_true, xor_comm] using (succ_ne_self _)
 
 lemma odd_add_one {n : ℕ} : Odd (n + 1) ↔ ¬ Odd n := by
@@ -333,7 +333,7 @@ lemma iterate_two_mul (hf : Involutive f) (n : ℕ) : f^[2 * n] = id := by
 
 lemma iterate_even (hf : Involutive f) (hn : Even n) : f^[n] = id := by
   obtain ⟨m, rfl⟩ := hn
-  rw [← two_mul, hf.iterate_two_mul]
+  rw [add_self, hf.iterate_two_mul]
 
 lemma iterate_odd (hf : Involutive f) (hn : Odd n) : f^[n] = f := by
   obtain ⟨m, rfl⟩ := hn

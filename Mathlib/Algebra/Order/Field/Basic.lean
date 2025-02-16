@@ -310,7 +310,7 @@ theorem left_lt_add_div_two : a < (a + b) / 2 ↔ a < b := by simp [lt_div_iff�
 theorem add_div_two_lt_right : (a + b) / 2 < b ↔ a < b := by simp [div_lt_iff₀, mul_two]
 
 theorem add_thirds (a : α) : a / 3 + a / 3 + a / 3 = a := by
-  rw [div_add_div_same, div_add_div_same, ← two_mul, ← add_one_mul 2 a, two_add_one_eq_three,
+  rw [div_add_div_same, div_add_div_same, add_self, ← add_one_mul 2 a, two_add_one_eq_three,
     mul_div_cancel_left₀ a three_ne_zero]
 
 /-!
@@ -690,7 +690,7 @@ theorem sub_one_div_inv_le_two (a2 : 2 ≤ a) : (1 - 1 / a)⁻¹ ≤ 2 := by
   -- take inverses on both sides and use the assumption `2 ≤ a`.
   convert (one_div a).le.trans (inv_anti₀ zero_lt_two a2) using 1
   -- show `1 - 1 / 2 = 1 / 2`.
-  rw [sub_eq_iff_eq_add, ← two_mul, mul_inv_cancel₀ two_ne_zero]
+  rw [sub_eq_iff_eq_add, add_self, mul_inv_cancel₀ two_ne_zero]
 
 /-! ### Results about `IsLUB` -/
 

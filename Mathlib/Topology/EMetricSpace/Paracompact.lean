@@ -129,7 +129,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
         _ < 2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1) := ENNReal.add_lt_add hz hyx
         _ ≤ 2⁻¹ ^ (k + 1) + 2⁻¹ ^ (k + 1) :=
           (add_le_add (hpow_le <| by omega) (hpow_le <| by omega))
-        _ = 2⁻¹ ^ k := by rw [← two_mul, h2pow]
+        _ = 2⁻¹ ^ k := by rw [add_self, h2pow]
     -- For each `m ≤ n + k` there is at most one `j` such that `D m j ∩ B` is nonempty.
     have Hle (m) (hm : m ≤ n + k) : Set.Subsingleton { j | (D m j ∩ B).Nonempty } := by
       rintro j₁ ⟨y, hyD, hyB⟩ j₂ ⟨z, hzD, hzB⟩

@@ -250,7 +250,7 @@ def OddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // C
       | ⟨⟨sr i, sr j⟩, h⟩ => by
         replace h := r.inj h
         rw [← neg_sub, neg_eq_iff_add_eq_zero, hu, sub_eq_zero] at h
-        rw [Subtype.ext_iff, Prod.ext_iff, sr.injEq, sr.injEq, h, and_self, ← two_mul]
+        rw [Subtype.ext_iff, Prod.ext_iff, sr.injEq, sr.injEq, h, and_self, add_self]
         exact u.inv_mul_cancel_left j
     right_inv := fun
       | .inl _ => rfl

@@ -110,7 +110,7 @@ theorem quadratic_reciprocity (hp : p ≠ 2) (hq : q ≠ 2) (hpq : p ≠ q) :
   rw [card p] at h
   have nc : ∀ n r : ℕ, ((n : ℤ) : ZMod r) = n := fun n r => by norm_cast
   have nc' : (((-1) ^ (p / 2) : ℤ) : ZMod q) = (-1) ^ (p / 2) := by norm_cast
-  rw [legendreSym, legendreSym, nc, nc, h, map_mul, mul_rotate', mul_comm (p / 2), ← pow_two,
+  rw [legendreSym, legendreSym, nc, nc, h, map_mul, mul_rotate', mul_comm (p / 2), mul_self,
     quadraticChar_sq_one (prime_ne_zero q p hpq.symm), mul_one, pow_mul, χ₄_eq_neg_one_pow hp₁, nc',
     map_pow, quadraticChar_neg_one hq₂, card q, χ₄_eq_neg_one_pow hq₁]
 
@@ -123,7 +123,7 @@ theorem quadratic_reciprocity' (hp : p ≠ 2) (hq : q ≠ 2) :
     rw [(eq_zero_iff q q).mpr (mod_cast natCast_self q), mul_zero]
   · have qr := congr_arg (· * legendreSym p q) (quadratic_reciprocity hp hq h)
     have : ((q : ℤ) : ZMod p) ≠ 0 := mod_cast prime_ne_zero p q h
-    simpa only [mul_assoc, ← pow_two, sq_one p this, mul_one] using qr
+    simpa only [mul_assoc, mul_self, sq_one p this, mul_one] using qr
 
 /-- The Law of Quadratic Reciprocity: if `p` and `q` are odd primes and `p % 4 = 1`,
 then `(q / p) = (p / q)`. -/

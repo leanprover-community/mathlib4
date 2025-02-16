@@ -56,13 +56,13 @@ theorem AffineEquiv.map_midpoint (f : P ≃ᵃ[R] P') (a b : P) :
 
 theorem AffineEquiv.pointReflection_midpoint_left (x y : P) :
     pointReflection R (midpoint R x y) x = y := by
-  rw [midpoint, pointReflection_apply, lineMap_apply, vadd_vsub, vadd_vadd, ← add_smul, ← two_mul,
+  rw [midpoint, pointReflection_apply, lineMap_apply, vadd_vsub, vadd_vadd, ← add_smul, add_self,
     mul_invOf_self, one_smul, vsub_vadd]
 
 @[simp] -- Porting note: added variant with `Equiv.pointReflection` for `simp`
 theorem Equiv.pointReflection_midpoint_left (x y : P) :
     (Equiv.pointReflection (midpoint R x y)) x = y := by
-  rw [midpoint, pointReflection_apply, lineMap_apply, vadd_vsub, vadd_vadd, ← add_smul, ← two_mul,
+  rw [midpoint, pointReflection_apply, lineMap_apply, vadd_vsub, vadd_vadd, ← add_smul, add_self,
     mul_invOf_self, one_smul, vsub_vadd]
 
 theorem midpoint_comm (x y : P) : midpoint R x y = midpoint R y x := by

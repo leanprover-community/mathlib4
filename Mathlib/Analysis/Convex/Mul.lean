@@ -153,7 +153,7 @@ lemma convexOn_pow : ∀ n, ConvexOn 𝕜 (Ici 0) fun x : 𝕜 ↦ x ^ n :=
 /-- `x^n`, `n : ℕ` is convex on the whole real line whenever `n` is even. -/
 protected lemma Even.convexOn_pow {n : ℕ} (hn : Even n) : ConvexOn 𝕜 univ fun x : 𝕜 ↦ x ^ n := by
   obtain ⟨n, rfl⟩ := hn
-  simp_rw [← two_mul, pow_mul]
+  simp_rw [add_self, pow_mul]
   refine ConvexOn.pow ⟨convex_univ, fun x _ y _ a b ha hb hab ↦ sub_nonneg.1 ?_⟩
     (fun _ _ ↦ by positivity) _
   calc

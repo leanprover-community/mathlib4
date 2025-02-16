@@ -112,7 +112,7 @@ lemma two_mul_sq_add_one_le_two_pow_two_mul (k : ℕ) : 2 * k ^ 2 + 1 ≤ 2 ^ (2
     refine (add_le_add_right hk _).trans ?_
     rw [mul_add 2 k, pow_add, mul_one, pow_two, ← mul_assoc, mul_two, mul_two, add_assoc]
     gcongr
-    rw [← two_mul, ← pow_succ']
+    rw [add_self, ← pow_succ']
     exact le_add_of_le_right (mul_le_pow (by simp) _)
 
 end Nat

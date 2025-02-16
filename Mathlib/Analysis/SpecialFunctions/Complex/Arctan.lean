@@ -28,7 +28,7 @@ theorem tan_arctan {z : ℂ} (h₁ : z ≠ I) (h₂ : z ≠ -I) : tan (arctan z)
   rw [div_div_eq_mul_div, div_mul_cancel₀ _ two_ne_zero, ← div_mul_eq_mul_div,
     -- multiply top and bottom by `exp (arctan z * I)`
     ← mul_div_mul_right _ _ (exp_ne_zero (arctan z * I)), sub_mul, add_mul,
-    ← exp_add, neg_mul, neg_add_cancel, exp_zero, ← exp_add, ← two_mul]
+    ← exp_add, neg_mul, neg_add_cancel, exp_zero, ← exp_add, add_self]
   have z₁ : 1 + z * I ≠ 0 := by
     contrapose! h₁
     rw [add_eq_zero_iff_neg_eq, ← div_eq_iff I_ne_zero, div_I, neg_one_mul, neg_neg] at h₁

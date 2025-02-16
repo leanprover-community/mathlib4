@@ -55,7 +55,7 @@ theorem isGood_iff : IsGood x A ↔
 theorem IsGood.one_half_le (h : IsGood x A) : 1 / 2 ≤ x := (isGood_iff.1 h).2
 
 theorem sqrt_two_mul_sub_one_le_one : sqrt (2 * x - 1) ≤ 1 ↔ x ≤ 1 := by
-  simp [sqrt_le_iff, ← two_mul]
+  simp [sqrt_le_iff, add_self]
 
 theorem isGood_iff_eq_sqrt_two (hx : x ∈ Icc (1 / 2) 1) : IsGood x A ↔ A = sqrt 2 := by
   have : sqrt (2 * x - 1) ≤ 1 := sqrt_two_mul_sub_one_le_one.2 hx.2

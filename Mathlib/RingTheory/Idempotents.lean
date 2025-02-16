@@ -194,7 +194,7 @@ theorem isIdempotentElem_one_sub_one_sub_pow_pow
       simp only [sub_sub_cancel, P]
       simpa using pow_dvd_pow_of_dvd (sub_dvd_pow_sub_pow (α := Polynomial ℤ) 1 Polynomial.X n) n
     have := mul_dvd_mul H₁ H₂
-    simpa only [← mul_pow, mul_sub, mul_one, ← pow_two] using this
+    simpa only [← mul_pow, mul_sub, mul_one, mul_self] using this
   have := map_dvd (Polynomial.aeval x) this
   simp only [map_pow, map_sub, Polynomial.aeval_X, hx, map_one, zero_dvd_iff, P] at this
   rwa [sub_eq_zero, eq_comm, pow_two] at this

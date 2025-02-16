@@ -256,7 +256,7 @@ lemma CotangentSpace.map_eq_top_iff [IsNoetherianRing R] {M : Submodule R (maxim
   rw [Submodule.map_top, Submodule.range_subtype]
   apply Submodule.le_of_le_smul_of_le_jacobson_bot (IsNoetherian.noetherian _)
     (IsLocalRing.jacobson_eq_maximalIdeal _ bot_ne_top).ge
-  rw [smul_eq_mul, ← pow_two, ← Ideal.map_toCotangent_ker, ← Submodule.map_sup,
+  rw [smul_eq_mul, mul_self, ← Ideal.map_toCotangent_ker, ← Submodule.map_sup,
     ← Submodule.comap_map_eq, H, Submodule.comap_top, Submodule.map_top, Submodule.range_subtype]
 
 lemma CotangentSpace.span_image_eq_top_iff [IsNoetherianRing R] {s : Set (maximalIdeal R)} :

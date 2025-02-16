@@ -35,7 +35,7 @@ example {c z : ℝ} (cz : ‖c‖ ≤ ‖z‖) (z3 : 3 ≤ ‖z‖) :
     _ ≥ ‖z^2‖ - ‖c‖ := by bound
     _ ≥ ‖z^2‖ - ‖z‖ := by  bound  -- gcongr works here, not for the other two
     _ ≥ (‖z‖ - 1) * ‖z‖ := by
-      rw [mul_comm, mul_sub_one, ← pow_two, ← norm_pow]
+      rw [mul_comm, mul_sub_one, mul_self, ← norm_pow]
     _ ≥ 2 * ‖z‖ := by bound
 
 -- Testing branching functionality. None of these tests work with `positivity` or `bound`.

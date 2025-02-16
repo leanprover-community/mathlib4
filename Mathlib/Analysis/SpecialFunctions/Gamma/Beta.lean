@@ -382,7 +382,7 @@ theorem GammaSeq_mul (z : ℂ) {n : ℕ} (hn : n ≠ 0) :
       n / (n + ↑1 - z) * (↑1 / (z * ∏ j ∈ Finset.range n, (↑1 - z ^ 2 / ((j : ℂ) + 1) ^ 2))) := by
   -- also true for n = 0 but we don't need it
   have aux : ∀ a b c d : ℂ, a * b * (c * d) = a * c * (b * d) := by intros; ring
-  rw [GammaSeq, GammaSeq, div_mul_div_comm, aux, ← pow_two]
+  rw [GammaSeq, GammaSeq, div_mul_div_comm, aux, mul_self]
   have : (n : ℂ) ^ z * (n : ℂ) ^ (1 - z) = n := by
     rw [← cpow_add _ _ (Nat.cast_ne_zero.mpr hn), add_sub_cancel, cpow_one]
   rw [this, Finset.prod_range_succ', Finset.prod_range_succ, aux, ← Finset.prod_mul_distrib,

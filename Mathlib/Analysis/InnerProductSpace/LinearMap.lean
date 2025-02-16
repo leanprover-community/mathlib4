@@ -55,7 +55,7 @@ theorem inner_map_polarization (T : V →ₗ[ℂ] V) (x y : V) :
           Complex.I * ⟪T (x - Complex.I • y), x - Complex.I • y⟫_ℂ) /
         4 := by
   simp only [map_add, map_sub, inner_add_left, inner_add_right, LinearMap.map_smul, inner_smul_left,
-    inner_smul_right, Complex.conj_I, ← pow_two, Complex.I_sq, inner_sub_left, inner_sub_right,
+    inner_smul_right, Complex.conj_I, mul_self, Complex.I_sq, inner_sub_left, inner_sub_right,
     mul_add, ← mul_assoc, mul_neg, neg_neg, sub_neg_eq_add, one_mul, neg_one_mul, mul_sub, sub_sub]
   ring
 
@@ -66,7 +66,7 @@ theorem inner_map_polarization' (T : V →ₗ[ℂ] V) (x y : V) :
           Complex.I * ⟪T (x - Complex.I • y), x - Complex.I • y⟫_ℂ) /
         4 := by
   simp only [map_add, map_sub, inner_add_left, inner_add_right, LinearMap.map_smul, inner_smul_left,
-    inner_smul_right, Complex.conj_I, ← pow_two, Complex.I_sq, inner_sub_left, inner_sub_right,
+    inner_smul_right, Complex.conj_I, mul_self, Complex.I_sq, inner_sub_left, inner_sub_right,
     mul_add, ← mul_assoc, mul_neg, neg_neg, sub_neg_eq_add, one_mul, neg_one_mul, mul_sub, sub_sub]
   ring
 

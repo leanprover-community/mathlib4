@@ -162,7 +162,7 @@ theorem closure_three_cycles_eq_alternating :
         l.prod ∈ closure { σ : Perm α | IsThreeCycle σ } by
       obtain ⟨l, rfl, hl⟩ := truncSwapFactors σ
       obtain ⟨n, hn⟩ := (prod_list_swap_mem_alternatingGroup_iff_even_length hl).1 hσ
-      rw [← two_mul] at hn
+      rw [add_self] at hn
       exact hind n l hl hn
     intro n
     induction' n with n ih <;> intro l hl hn
@@ -205,7 +205,7 @@ theorem isThreeCycle_sq_of_three_mem_cycleType_five {g : Perm (Fin 5)} (h : 3 �
   simp only [mul_assoc]
   rw [hd.commute.eq, ← mul_assoc g']
   suffices hg' : orderOf g' ∣ 2 by
-    rw [← pow_two, orderOf_dvd_iff_pow_eq_one.1 hg', one_mul]
+    rw [mul_self, orderOf_dvd_iff_pow_eq_one.1 hg', one_mul]
     exact (card_support_eq_three_iff.1 h3).isThreeCycle_sq
   rw [← lcm_cycleType, Multiset.lcm_dvd]
   intro n hn

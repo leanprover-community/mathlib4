@@ -314,7 +314,7 @@ lemma eq_neg_one_or_eq_zero_or_eq_one_of_eq_smul
   rw [h] at H
   simp only [Pi.smul_apply, root_apply_coroot hα] at H
   rcases (chainLength α β).even_or_odd with (⟨n, hn⟩|⟨n, hn⟩)
-  · rw [hn, ← two_mul] at H
+  · rw [hn, add_self] at H
     simp only [smul_eq_mul, Nat.cast_mul, Nat.cast_ofNat, ← mul_sub, ← mul_comm (2 : K),
       Int.cast_sub, Int.cast_mul, Int.cast_ofNat, Int.cast_natCast,
       mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, or_false] at H

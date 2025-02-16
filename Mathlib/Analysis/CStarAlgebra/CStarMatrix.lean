@@ -628,7 +628,7 @@ instance instCStarRing : CStarRing (CStarMatrix n n A) where
       rw [h₂, ← Real.sqrt_mul]
       gcongr
       positivity
-    rw [← pow_two, ← Real.sqrt_le_sqrt_iff (by positivity)]
+    rw [mul_self, ← Real.sqrt_le_sqrt_iff (by positivity)]
     simp [hmain]
 
 /-- Matrices with entries in a non-unital C⋆-algebra form a non-unital C⋆-algebra. -/

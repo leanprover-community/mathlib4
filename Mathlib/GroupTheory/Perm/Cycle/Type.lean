@@ -621,7 +621,7 @@ theorem orderOf {g : Perm α} (ht : IsThreeCycle g) : orderOf g = 3 := by
   rw [← lcm_cycleType, ht.cycleType, Multiset.lcm_singleton, normalize_eq]
 
 theorem isThreeCycle_sq {g : Perm α} (ht : IsThreeCycle g) : IsThreeCycle (g * g) := by
-  rw [← pow_two, ← card_support_eq_three_iff, support_pow_coprime, ht.card_support]
+  rw [mul_self, ← card_support_eq_three_iff, support_pow_coprime, ht.card_support]
   rw [ht.orderOf]
   norm_num
 

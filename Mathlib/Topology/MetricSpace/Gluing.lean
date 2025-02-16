@@ -122,7 +122,7 @@ private theorem glueDist_triangle_inl_inr_inl (Φ : Z → X) (Ψ : Z → Y) (ε 
       glueDist Φ Ψ ε (.inl x) (.inr y) + glueDist Φ Ψ ε (.inr y) (.inl z) := by
   simp_rw [glueDist, add_add_add_comm _ ε, add_assoc]
   refine le_ciInf_add fun p => ?_
-  rw [add_left_comm, add_assoc, ← two_mul]
+  rw [add_left_comm, add_assoc, add_self]
   refine le_ciInf_add fun q => ?_
   rw [dist_comm z]
   linarith [dist_triangle4 x (Φ p) (Φ q) z, dist_triangle_left (Ψ p) (Ψ q) y, (abs_le.1 (H p q)).2]

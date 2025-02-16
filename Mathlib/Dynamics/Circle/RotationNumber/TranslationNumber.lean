@@ -582,7 +582,7 @@ theorem transnumAuxSeq_dist_lt (n : ℕ) :
   calc
     _ = dist ((f ^ 2 ^ n) 0 + (f ^ 2 ^ n) 0) ((f ^ 2 ^ n) ((f ^ 2 ^ n) 0)) / |2 ^ (n + 1)| := by
       simp_rw [transnumAuxSeq, Real.dist_eq]
-      rw [← abs_div, sub_div, pow_succ, pow_succ', ← two_mul, mul_div_mul_left _ _ (two_ne_zero' ℝ),
+      rw [← abs_div, sub_div, pow_succ, pow_succ', add_self, mul_div_mul_left _ _ (two_ne_zero' ℝ),
         pow_mul, sq, mul_apply]
     _ < _ := by gcongr; exact (f ^ 2 ^ n).dist_map_map_zero_lt (f ^ 2 ^ n)
 

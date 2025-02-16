@@ -308,7 +308,7 @@ theorem conj_eq_re_sub_im (z : K) : conj z = re z - im z * I :=
 theorem sub_conj (z : K) : z - conj z = 2 * im z * I :=
   calc
     z - conj z = re z + im z * I - (re z - im z * I) := by rw [re_add_im, ← conj_eq_re_sub_im]
-    _ = 2 * im z * I := by rw [add_sub_sub_cancel, ← two_mul, mul_assoc]
+    _ = 2 * im z * I := by rw [add_sub_sub_cancel, add_self, mul_assoc]
 
 @[rclike_simps]
 theorem conj_smul (r : ℝ) (z : K) : conj (r • z) = r • conj z := by

@@ -207,7 +207,7 @@ theorem IsMatching.even_card [Fintype M.verts] (h : M.IsMatching) : Even M.verts
   classical
   rw [isMatching_iff_forall_degree] at h
   use M.coe.edgeFinset.card
-  rw [← two_mul, ← M.coe.sum_degrees_eq_twice_card_edges]
+  rw [add_self, ← M.coe.sum_degrees_eq_twice_card_edges]
   -- Porting note: `SimpleGraph.Subgraph.coe_degree` does not trigger because it uses
   -- instance arguments instead of implicit arguments for the first `Fintype` argument.
   -- Using a `convert_to` to swap out the `Fintype` instance to the "right" one.

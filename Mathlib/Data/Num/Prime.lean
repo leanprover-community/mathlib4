@@ -61,7 +61,7 @@ theorem minFac_to_nat (n : PosNum) : (minFac n : ℕ) = Nat.minFac n := by
   · rfl
   · rw [minFac, Nat.minFac_eq, if_neg]
     swap
-    · simp [← two_mul]
+    · simp [add_self]
     rw [minFacAux_to_nat]
     · rfl
     simp only [cast_one, cast_bit1]
@@ -73,7 +73,7 @@ theorem minFac_to_nat (n : PosNum) : (minFac n : ℕ) = Nat.minFac n := by
         set_option simprocs false in simp [mul_lt_mul]
   · rw [minFac, Nat.minFac_eq, if_pos]
     · rfl
-    simp [← two_mul]
+    simp [add_self]
 
 /-- Primality predicate for a `PosNum`. -/
 @[simp]

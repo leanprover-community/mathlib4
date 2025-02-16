@@ -137,7 +137,7 @@ section Arithmetic
 theorem add_mod2 (a : ℕ) : ∃ t, a + a % 2 = t * 2 := by
   simp only [mul_comm _ 2] -- write `t*2` as `2*t`
   apply dvd_of_mod_eq_zero -- it suffices to prove `(a + a % 2) % 2 = 0`
-  rw [add_mod, mod_mod, ← two_mul, mul_mod_right]
+  rw [add_mod, mod_mod, add_self, mul_mod_right]
 
 private theorem le_pow2_and_pow2_eq_mod3' (c : ℕ) (x : ℕ) (h : c = 1 ∨ c = 2) :
     ∃ m : ℕ, c + 3 * x ≤ 2 ^ m ∧ 2 ^ m % 3 = c % 3 := by

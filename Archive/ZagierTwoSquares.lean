@@ -129,7 +129,7 @@ theorem complexInvo_sq : complexInvo k ^ 2 = 1 := by
   · -- more
     push_neg at less
     simp only [show x - 2 * y + y < x + z - y by zify [less, more.le]; linarith, ite_true]
-    rw [Nat.sub_add_cancel more.le, Nat.sub_right_comm, Nat.sub_sub _ _ y, ← two_mul, add_comm,
+    rw [Nat.sub_add_cancel more.le, Nat.sub_right_comm, Nat.sub_sub _ _ y, add_self, add_comm,
       Nat.add_sub_assoc more.le, Nat.add_sub_cancel]
   · -- middle
     push_neg at less more
@@ -137,7 +137,7 @@ theorem complexInvo_sq : complexInvo k ^ 2 = 1 := by
       show ¬(2 * y < 2 * y - x) by zify [more]; linarith, ite_false]
     rw [tsub_tsub_assoc (2 * y).le_refl more, tsub_self, zero_add,
       ← Nat.add_sub_assoc less, ← add_assoc, Nat.sub_add_cancel more, Nat.sub_sub _ _ y,
-      ← two_mul, add_comm, Nat.add_sub_cancel]
+      add_self, add_comm, Nat.add_sub_cancel]
 
 /-- Any fixed point of `complexInvo k` must be `(1, 1, k)`. -/
 theorem eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (complexInvo k)) :
@@ -154,7 +154,7 @@ theorem eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (comple
   · -- middle (the one fixed point falls under this case)
     simp only [zagierSet, Set.mem_setOf_eq] at h
     replace mem := mem.1
-    rw [tsub_eq_iff_eq_add_of_le more, ← two_mul] at mem
+    rw [tsub_eq_iff_eq_add_of_le more, add_self] at mem
     replace mem := (mul_left_cancel₀ two_ne_zero mem).symm
     subst mem
     rw [show x * x + 4 * x * z = x * (x + 4 * z) by linarith] at h

@@ -469,7 +469,7 @@ theorem div_eq_one_iff {a b : ℝ≥0∞} (hb₀ : b ≠ 0) (hb₁ : b ≠ ∞) 
     h.symm ▸ ENNReal.div_self hb₀ hb₁⟩
 
 theorem inv_two_add_inv_two : (2 : ℝ≥0∞)⁻¹ + 2⁻¹ = 1 := by
-  rw [← two_mul, ← div_eq_mul_inv, ENNReal.div_self two_ne_zero ofNat_ne_top]
+  rw [add_self, ← div_eq_mul_inv, ENNReal.div_self two_ne_zero ofNat_ne_top]
 
 theorem inv_three_add_inv_three : (3 : ℝ≥0∞)⁻¹ + 3⁻¹ + 3⁻¹ = 1 := by
   rw [← ENNReal.mul_inv_cancel three_ne_zero ofNat_ne_top]

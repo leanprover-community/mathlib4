@@ -66,7 +66,7 @@ theorem edist_of_im_eq {z w : ℂ} (h : z.im = w.im) : edist z w = edist z.re w.
   rw [edist_nndist, edist_nndist, nndist_of_im_eq h]
 
 theorem dist_conj_self (z : ℂ) : dist (conj z) z = 2 * |z.im| := by
-  rw [dist_of_re_eq (conj_re z), conj_im, dist_comm, Real.dist_eq, sub_neg_eq_add, ← two_mul,
+  rw [dist_of_re_eq (conj_re z), conj_im, dist_comm, Real.dist_eq, sub_neg_eq_add, add_self,
     _root_.abs_mul, abs_of_pos (zero_lt_two' ℝ)]
 
 theorem nndist_conj_self (z : ℂ) : nndist (conj z) z = 2 * Real.nnabs z.im :=

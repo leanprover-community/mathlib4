@@ -126,7 +126,7 @@ theorem arg_mem_Ioc (z : ℂ) : arg z ∈ Set.Ioc (-π) π := by
   rcases eq_or_ne z 0 with (rfl | hz)
   · simp [hπ, hπ.le]
   rcases existsUnique_add_zsmul_mem_Ioc Real.two_pi_pos (arg z) (-π) with ⟨N, hN, -⟩
-  rw [two_mul, neg_add_cancel_left, ← two_mul, zsmul_eq_mul] at hN
+  rw [two_mul, neg_add_cancel_left, add_self, zsmul_eq_mul] at hN
   rw [← abs_mul_cos_add_sin_mul_I z, ← cos_add_int_mul_two_pi _ N, ← sin_add_int_mul_two_pi _ N]
   have := arg_mul_cos_add_sin_mul_I (abs.pos hz) hN
   push_cast at this
@@ -416,7 +416,7 @@ theorem arg_neg_eq_arg_add_pi_iff {x : ℂ} :
   · rw [(ext rfl hi : x = x.re)]
     rcases lt_trichotomy x.re 0 with (hr | hr | hr)
     · rw [arg_ofReal_of_neg hr, ← ofReal_neg, arg_ofReal_of_nonneg (Left.neg_pos_iff.2 hr).le]
-      simp [hr.not_lt, ← two_mul, Real.pi_ne_zero]
+      simp [hr.not_lt, add_self, Real.pi_ne_zero]
     · simp [hr, hi, Real.pi_ne_zero.symm]
     · rw [arg_ofReal_of_nonneg hr.le, ← ofReal_neg, arg_ofReal_of_neg (Left.neg_neg_iff.2 hr)]
       simp [hr]
@@ -429,7 +429,7 @@ theorem arg_neg_coe_angle {x : ℂ} (hx : x ≠ 0) : (arg (-x) : Real.Angle) = a
   · rw [(ext rfl hi : x = x.re)]
     rcases lt_trichotomy x.re 0 with (hr | hr | hr)
     · rw [arg_ofReal_of_neg hr, ← ofReal_neg, arg_ofReal_of_nonneg (Left.neg_pos_iff.2 hr).le, ←
-        Real.Angle.coe_add, ← two_mul, Real.Angle.coe_two_pi, Real.Angle.coe_zero]
+        Real.Angle.coe_add, add_self, Real.Angle.coe_two_pi, Real.Angle.coe_zero]
     · exact False.elim (hx (ext hr hi))
     · rw [arg_ofReal_of_nonneg hr.le, ← ofReal_neg, arg_ofReal_of_neg (Left.neg_neg_iff.2 hr),
         Real.Angle.coe_zero, zero_add]

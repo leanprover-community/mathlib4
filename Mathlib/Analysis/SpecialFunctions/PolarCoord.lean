@@ -179,7 +179,7 @@ protected noncomputable def polarCoord : PartialHomeomorph ℂ (ℝ × ℝ) :=
 
 protected theorem polarCoord_apply (a : ℂ) :
     Complex.polarCoord a = (Complex.abs a, Complex.arg a) := by
-  simp_rw [Complex.abs_def, Complex.normSq_apply, ← pow_two]
+  simp_rw [Complex.abs_def, Complex.normSq_apply, mul_self]
   rfl
 
 protected theorem polarCoord_source : Complex.polarCoord.source = slitPlane := rfl

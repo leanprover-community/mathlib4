@@ -354,7 +354,7 @@ theorem same_gf [Field α] (m : ℕ) :
         π₁ * (1 - X ^ (2 * m + 1))⁻¹ * (π₀ * (1 - X ^ (m + 1 + m + 1))) := by
       rw [prod_range_succ _ m, ← hπ₁, prod_range_succ _ m, ← hπ₀]
     _ = π₁ * (1 - X ^ (2 * m + 1))⁻¹ * (π₀ * ((1 + X ^ (m + 1)) * (1 - X ^ (m + 1)))) := by
-      rw [← sq_sub_sq, one_pow, add_assoc _ m 1, ← two_mul (m + 1), pow_mul']
+      rw [← sq_sub_sq, one_pow, add_assoc _ m 1, add_self (m + 1), pow_mul']
     _ = π₀ * (1 - X ^ (m + 1)) * (1 - X ^ (2 * m + 1))⁻¹ * (π₁ * (1 + X ^ (m + 1))) := by ring
     _ =
         (∏ i ∈ range (m + 1), (1 - X ^ (m + 1 + i))) * (1 - X ^ (2 * m + 1))⁻¹ *
