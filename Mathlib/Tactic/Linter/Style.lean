@@ -493,7 +493,7 @@ def extractOpenNames : Syntax → Array Syntax
   | _ => #[]
 
 @[inherit_doc Mathlib.Linter.linter.style.openClassical]
-def openClassicalLinter : Linter where run := withSetOptionIn fun stx ↦ do
+def openClassicalLinter : Linter where run stx := do
     unless Linter.getLinterValue linter.style.openClassical (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
