@@ -48,6 +48,10 @@ abbrev P_σ := IsDegeneracy.multiplicativeClosure
 /-- Auxiliary predicate to express that a morphism is purely a composition of `δ i`s. -/
 abbrev P_δ := IsFace.multiplicativeClosure
 
+lemma P_σ.σ {n : ℕ} (i : Fin (n + 1)) : P_σ (σ i) := .of _ (.σ i)
+
+lemma P_δ.δ {n : ℕ} (i : Fin (n + 2)) : P_δ (δ i) := .of _ (.δ i)
+
 /-- All `P_σ` are split epis as composition of such. -/
 lemma isSplitEpi_P_σ {x y : SimplexCategoryGenRel} {e : x ⟶ y} (he : P_σ e) : IsSplitEpi e := by
   induction he with
