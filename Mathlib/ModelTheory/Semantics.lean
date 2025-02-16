@@ -851,11 +851,10 @@ theorem _root_.FirstOrder.Language.Formula.realize_iExsUnique [Finite γ]
     {φ : L.Formula (α ⊕ γ)} {v : α → M} : (φ.iExsUnique γ).Realize v ↔
       ∃! (i : γ → M), φ.Realize (Sum.elim v i) := by
   rw [Formula.iExsUnique, ExistsUnique]
-  simp only [Formula.realize_iExs, id_eq, Formula.realize_inf, Formula.realize_relabel,
-    Formula.realize_iAlls, Formula.realize_imp]
+  simp only [Formula.realize_iExs, Formula.realize_inf, Formula.realize_iAlls, Formula.realize_imp,
+    Formula.realize_relabel]
   simp only [Formula.Realize, Function.comp_def, Term.equal, Term.relabel, realize_iInf,
-    Finset.mem_univ, realize_bdEqual, Term.realize_var, Sum.elim_inl, Sum.elim_inr, forall_const,
-    funext_iff]
+    realize_bdEqual, Term.realize_var, Sum.elim_inl, Sum.elim_inr, funext_iff]
   refine exists_congr (fun i => and_congr_right' (forall_congr' (fun y => ?_)))
   rw [iff_iff_eq]; congr with x
   cases x <;> simp
