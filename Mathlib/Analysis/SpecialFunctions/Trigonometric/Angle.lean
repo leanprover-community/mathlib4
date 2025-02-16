@@ -90,7 +90,7 @@ theorem coe_nsmul (n : ℕ) (x : ℝ) : ↑(n • x : ℝ) = n • (↑x : Angle
 theorem coe_zsmul (z : ℤ) (x : ℝ) : ↑(z • x : ℝ) = z • (↑x : Angle) :=
   rfl
 
-theorem coe_eq_zero_iff {x : ℝ} : (↑x : Angle) = 0 ↔ ∃ n : ℤ, n • (2 * π) = x :=
+theorem coe_eq_zero_iff {x : ℝ} : (x : Angle) = 0 ↔ ∃ n : ℤ, n • (2 * π) = x :=
   AddCircle.coe_eq_zero_iff (2 * π)
 
 @[simp, norm_cast]
