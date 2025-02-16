@@ -3,6 +3,7 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
+import Mathlib.Probability.Kernel.Composition.MeasureComp
 import Mathlib.Probability.Kernel.CondDistrib
 import Mathlib.Probability.ConditionalProbability
 
@@ -96,12 +97,6 @@ instance : IsMarkovKernel (condExpKernel μ m) := by
   · exact ⟨fun a ↦ (IsEmpty.false a).elim⟩
   · simp [condExpKernel, h]; infer_instance
 
-lemma trim_eq_map {α : Type*} {m mα : MeasurableSpace α}
-    (μ : Measure α) (hm : m ≤ mα) : μ.trim hm = @Measure.map _ _ _ m id μ := by
-  refine @Measure.ext α m _ _ (fun s hs ↦ ?_)
-  rw [@Measure.map_apply _ _ _ m _ _ (measurable_id'' hm) _ hs, trim_measurableSet_eq hm hs,
-    preimage_id]
-
 lemma compProd_trim_condExpKernel (hm : m ≤ mΩ) :
     (μ.trim hm) ⊗ₘ condExpKernel μ m
       = @Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) (fun ω ↦ (id ω, id ω)) μ := by
@@ -110,11 +105,15 @@ lemma compProd_trim_condExpKernel (hm : m ≤ mΩ) :
   rw [condExpKernel_eq]
   have : m ⊓ mΩ = m := inf_of_le_left hm
   have h := compProd_map_condDistrib (mβ := m) (μ := μ) (X := id) measurable_id.aemeasurable
-  rw [← h, trim_eq_map μ hm]
+  rw [← h, trim_eq_map hm]
   congr 1
   ext a s hs
   simp only [Kernel.coe_comap, Function.comp_apply, id_eq]
   congr
+
+lemma condExpKernel_comp_trim (hm : m ≤ mΩ) : condExpKernel μ m ∘ₘ μ.trim hm = μ := by
+  rw [← Measure.snd_compProd, compProd_trim_condExpKernel, @Measure.snd_map_prod_mk, Measure.map_id]
+  exact measurable_id'' hm
 
 section Measurability
 
@@ -142,8 +141,12 @@ theorem _root_.MeasureTheory.StronglyMeasurable.integral_condExpKernel' [NormedS
     StronglyMeasurable[m ⊓ mΩ] (fun ω ↦ ∫ y, f y ∂condExpKernel μ m ω) := by
   nontriviality Ω
   simp_rw [condExpKernel_apply_eq_condDistrib]
+<<<<<<< HEAD
   refine StronglyMeasurable.integral_condDistrib (f := fun p ↦ f p.2) ?_
   exact hf.comp_measurable measurable_snd
+=======
+  exact (hf.comp_measurable measurable_snd).integral_condDistrib
+>>>>>>> origin/master
 
 theorem _root_.MeasureTheory.StronglyMeasurable.integral_condExpKernel [NormedSpace ℝ F]
     (hf : StronglyMeasurable f) :

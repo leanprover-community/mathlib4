@@ -2166,6 +2166,7 @@ import Mathlib.CategoryTheory.Monoidal.Tor
 import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
 import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
+import Mathlib.CategoryTheory.Monoidal.Yoneda
 import Mathlib.CategoryTheory.MorphismProperty.Basic
 import Mathlib.CategoryTheory.MorphismProperty.Comma
 import Mathlib.CategoryTheory.MorphismProperty.Composition
@@ -2309,6 +2310,7 @@ import Mathlib.CategoryTheory.Sites.Subsheaf
 import Mathlib.CategoryTheory.Sites.Types
 import Mathlib.CategoryTheory.Sites.Whiskering
 import Mathlib.CategoryTheory.Skeletal
+import Mathlib.CategoryTheory.SmallObject.Basic
 import Mathlib.CategoryTheory.SmallObject.Construction
 import Mathlib.CategoryTheory.SmallObject.IsCardinalForSmallObjectArgument
 import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
