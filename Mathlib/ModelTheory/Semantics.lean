@@ -870,12 +870,6 @@ theorem _root_.FirstOrder.Language.Formula.realize_iExsUnique [Finite γ]
   rw [iff_iff_eq]; congr with x
   cases x <;> simp
 
-@[simp]
-theorem realize_iExsUnique [Finite γ] {φ : L.Formula (α ⊕ γ)} {v : α → M} {v' : Fin 0 → M} :
-    BoundedFormula.Realize (φ.iExsUnique γ) v v' ↔
-      ∃! (i : γ → M), φ.Realize (Sum.elim v i) := by
-  rw [← Formula.realize_iExsUnique, iff_iff_eq]; congr; simp [eq_iff_true_of_subsingleton]
-
 end BoundedFormula
 
 namespace StrongHomClass
