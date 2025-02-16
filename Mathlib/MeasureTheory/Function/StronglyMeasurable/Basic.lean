@@ -109,7 +109,6 @@ theorem stronglyMeasurable_const' (hf : ∀ x y, f x = f y) : StronglyMeasurable
   convert stronglyMeasurable_const (β := β) using 1
   exact funext fun x => hf x default
 
--- Porting note: changed binding type of `MeasurableSpace α`.
 @[simp]
 theorem Subsingleton.stronglyMeasurable' [Subsingleton α] (f : α → β) : StronglyMeasurable f :=
   stronglyMeasurable_const' fun x y => by rw [Subsingleton.elim x y]
@@ -198,7 +197,7 @@ theorem norm_approxBounded_le {β} {f : α → β} [SeminormedAddCommGroup β] [
 
 theorem _root_.stronglyMeasurable_bot_iff [Nonempty β] [T2Space β] :
     StronglyMeasurable[⊥] f ↔ ∃ c, f = fun _ => c := by
-  cases' isEmpty_or_nonempty α with hα hα
+  rcases isEmpty_or_nonempty α with hα | hα
   · simp only [@Subsingleton.stronglyMeasurable' _ _ ⊥ _ _ f,
       eq_iff_true_of_subsingleton, exists_const]
   refine ⟨fun hf => ?_, fun hf_eq => ?_⟩
