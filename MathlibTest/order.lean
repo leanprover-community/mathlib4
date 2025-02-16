@@ -58,3 +58,15 @@ example {α : Type} [Preorder α] [OrderBot α] [OrderTop α] : (⊥ : α) ≤ �
 
 example {α : Type} (a b : α) [PartialOrder α] [OrderBot α] [OrderTop α] (h : (⊥ : α) = ⊤) : a = b := by
   order
+
+example {α : Type} (a b : α) [SemilatticeSup α] : a ≤ a ⊔ b := by
+  order
+
+example {α : Type} (a b c : α) [SemilatticeSup α] (h1 : a ≤ c) (h2 : b ≤ c) : a ⊔ b ≤ c := by
+  order
+
+example {α : Type} (a b c : α) [SemilatticeSup α] (h1 : a ≤ b) : a ⊔ c ≤ b ⊔ c := by
+  order
+
+example {α : Type} (a b : α) [Lattice α] : a ⊓ b ≤ a ⊔ b := by
+  order
