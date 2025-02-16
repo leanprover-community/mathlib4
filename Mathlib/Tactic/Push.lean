@@ -180,13 +180,21 @@ using say `push_neg at h h' ⊢`, as usual.
 -/
 syntax (name := push) "push " (discharger)? (colGt term) (location)? : tactic
 
+open Elab in
 /--
 Elaborator for the "head" constant used by `push`.
 We check if the name refers to the `∀` or `fun` binder
 before interpreting the name as a constant.
 -/
 def elabHead (stx : Syntax) : TacticM Head := withRef stx do
-  let e ← elabTermForApply stx
+  let e ← (do
+    if stx.isIdent then
+      if let some e ← Term.resolveId? stx (withInfo := true) then
+        return e
+    withTheReader Term.Context ({ · with ignoreTCFailures := true }) <|
+      Term.withoutModifyingElabMetaStateWithInfo <|
+        Term.withoutErrToSorry <|
+          Term.elabTerm stx none)
   if e.isForall then return .Forall
   if e.isLambda then return .lambda
   if let some const := e.getAppFn.constName? then return .name const

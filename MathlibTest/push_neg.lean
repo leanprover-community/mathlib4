@@ -167,11 +167,11 @@ theorem mem_compl (s : Set α) (a : α) (h : a ∉ sᶜ) : a ∈ s := by
   push_neg at h
   exact h
 
-example (f : Filter ℕ) (h : ¬∀ᶠ x in f, x = 0) | ∃ᶠ x in f, x ≠ 0 := by
+example (f : Filter ℕ) (h : ¬∀ᶠ x in f, x = 0) : ∃ᶠ x in f, x ≠ 0 := by
   push_neg at h
   exact h
 
-example (f : Filter ℕ) (h : ¬∃ᶠ x in f, x = 0) | ∀ᶠ x in f, x ≠ 0 := by
+example (f : Filter ℕ) (h : ¬∃ᶠ x in f, x = 0) : ∀ᶠ x in f, x ≠ 0 := by
   push_neg at h
   exact h
 
