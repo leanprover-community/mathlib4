@@ -11,7 +11,6 @@ import Mathlib.CategoryTheory.Monoidal.End
 import Mathlib.CategoryTheory.Monoidal.Preadditive
 
 /-!
-
 # Distributive monoidal categories
 
 ## Main definitions
