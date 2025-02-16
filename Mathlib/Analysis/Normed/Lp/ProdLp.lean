@@ -144,6 +144,12 @@ variable {p α β}
 @[simp] lemma ofLp_fst (x : WithLp p (α × β)) : (ofLp x).fst = x.fst := rfl
 @[simp] lemma ofLp_snd (x : WithLp p (α × β)) : (ofLp x).snd = x.snd := rfl
 
+@[ext]
+protected theorem ext {x y : WithLp p (α × β)} (fst : x.fst = y.fst) (snd : x.snd = y.snd) :
+    x = y := by
+  apply ofLp_injective p
+  ext <;> simpa
+
 end equiv
 
 section DistNorm
@@ -955,9 +961,8 @@ lemma idemSnd_apply (x : WithLp p (α × β)) : idemSnd x = toLp p (0, x.snd) :=
 lemma idemFst_add_idemSnd :
     idemFst + idemSnd = (1 : AddMonoid.End (WithLp p (α × β))) := AddMonoidHom.ext
   fun x => by
-    rw [AddMonoidHom.add_apply, idemFst_apply, idemSnd_apply, AddMonoid.End.coe_one, id_eq,
-      ← toLp_add, Prod.mk_add_mk, zero_add, add_zero]
-    rfl
+    rw [AddMonoidHom.add_apply, idemFst_apply, idemSnd_apply, AddMonoid.End.coe_one]
+    ext <;> simp
 
 lemma idemFst_compl : (1 : AddMonoid.End (WithLp p (α × β))) - idemFst = idemSnd := by
   rw [← idemFst_add_idemSnd, add_sub_cancel_left]
@@ -967,15 +972,13 @@ lemma idemSnd_compl : (1 : AddMonoid.End (WithLp p (α × β))) - idemSnd = idem
 
 theorem prod_norm_eq_idemFst_sup_idemSnd (x : WithLp ∞ (α × β)) :
     ‖x‖ = max ‖idemFst x‖ ‖idemSnd x‖ := by
-  rw [WithLp.prod_norm_eq_sup, ← WithLp.norm_toLp_fst ∞ α β x.fst,
-    ← WithLp.norm_toLp_snd ∞ α β x.snd]
-  rfl
+  rw [idemFst_apply, idemSnd_apply, WithLp.norm_toLp_fst, WithLp.norm_toLp_snd,
+    WithLp.prod_norm_eq_sup]
 
 lemma prod_norm_eq_add_idemFst [Fact (1 ≤ p)] (hp : 0 < p.toReal) (x : WithLp p (α × β)) :
     ‖x‖ = (‖idemFst x‖ ^ p.toReal + ‖idemSnd x‖ ^ p.toReal) ^ (1 / p.toReal) := by
-  rw [WithLp.prod_norm_eq_add hp, ← WithLp.norm_toLp_fst p α β x.fst,
-    ← WithLp.norm_toLp_snd p α β x.snd]
-  rfl
+  rw [idemFst_apply, idemSnd_apply, WithLp.prod_norm_eq_add hp, WithLp.norm_toLp_fst,
+    WithLp.norm_toLp_snd]
 
 lemma prod_norm_eq_idemFst_of_L1 (x : WithLp 1 (α × β)) : ‖x‖ = ‖idemFst x‖ + ‖idemSnd x‖ := by
   rw [prod_norm_eq_add_idemFst (lt_of_lt_of_eq zero_lt_one toReal_one.symm)]
