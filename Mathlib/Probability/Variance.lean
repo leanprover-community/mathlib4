@@ -222,11 +222,11 @@ theorem evariance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : AEStrong
   · symm
     rw [evariance_eq_top hX hℒ, ENNReal.sub_eq_top_iff]
     refine ⟨?_, ENNReal.ofReal_ne_top⟩
-    rw [Memℒp] at hℒ; push_neg at hℒ
+    unfold Memℒp at hℒ; push_neg at hℒ
     specialize hℒ hX
     simp only [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.ofNat_ne_top,
-      ENNReal.toReal_ofNat, one_div, ENNReal.rpow_eq_top_iff, inv_lt_zero, inv_pos, and_true,
-      or_iff_not_imp_left, not_and_or, zero_lt_two] at hℒ
+      ENNReal.toReal_ofNat, one_div, ENNReal.rpow_eq_top_iff, inv_lt_zero, inv_pos, zero_lt_two,
+      and_true, or_iff_not_imp_left, not_and_or, not_lt] at hℒ
     exact mod_cast hℒ fun _ => zero_le_two
 
 /-- **Chebyshev's inequality** for `ℝ≥0∞`-valued variance. -/

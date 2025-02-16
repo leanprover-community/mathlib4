@@ -146,7 +146,7 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : Anal
     push_neg at h
     obtain ⟨z, hz, hrz⟩ := h
     specialize h1 z hz 0 (mem_ball_self hr)
-    have h7 := h1.eventually_constant_or_nhds_le_map_nhds_aux.resolve_left hrz
+    have h7 := h1.eventually_constant_or_nhds_le_map_nhds_aux.resolve_left (by push_neg; exact hrz)
     rw [show gray z 0 = g z₀ by simp [gray, ray], ← map_compose] at h7
     refine h7.trans (map_mono ?_)
     have h10 : Continuous fun t : ℂ => z₀ + t • z :=
@@ -164,8 +164,9 @@ theorem AnalyticOnNhd.is_constant_or_isOpen (hg : AnalyticOnNhd ℂ g U) (hU : I
   · push_neg at h
     refine Or.inr fun s hs1 hs2 => isOpen_iff_mem_nhds.mpr ?_
     rintro z ⟨w, hw1, rfl⟩
-    exact (hg w (hs1 hw1)).eventually_constant_or_nhds_le_map_nhds.resolve_left (h w (hs1 hw1))
-        (image_mem_map (hs2.mem_nhds hw1))
+    exact (hg w (hs1 hw1)).eventually_constant_or_nhds_le_map_nhds.resolve_left
+      (by push_neg; exact h w (hs1 hw1))
+      (image_mem_map (hs2.mem_nhds hw1))
 
 @[deprecated (since := "2024-09-26")]
 alias AnalyticOn.is_constant_or_isOpen := AnalyticOnNhd.is_constant_or_isOpen

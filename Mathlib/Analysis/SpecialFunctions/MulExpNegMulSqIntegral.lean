@@ -168,7 +168,7 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
     mul_nonneg_iff_of_pos_left, (le_of_lt (sqrt_pos_of_pos hε))]
   let const : ℝ := (max (P Set.univ).toReal (P' Set.univ).toReal)
   have pos_of_measure : 0 < const := by
-    rw [Mathlib.Tactic.PushNeg.not_and_or_eq] at hPP'
+    rw [not_and_or] at hPP'
     rcases hPP' with hP0 | hP'0
     · exact lt_max_of_lt_left
         (toReal_pos ((Measure.measure_univ_ne_zero).mpr hP0) (measure_ne_top P Set.univ))

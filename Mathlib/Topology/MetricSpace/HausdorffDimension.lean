@@ -355,7 +355,7 @@ theorem dimH_preimage_le (hf : AntilipschitzWith K f) (s : Set Y) : dimH (f â»Â
   borelize X Y
   refine dimH_le fun d hd => le_dimH_of_hausdorffMeasure_eq_top ?_
   have := hf.hausdorffMeasure_preimage_le d.coe_nonneg s
-  rw [hd] at this
+  rw [hd, top_le_iff] at this
   contrapose! this
   exact ENNReal.mul_ne_top (by simp) this
 

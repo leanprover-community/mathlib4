@@ -276,7 +276,7 @@ theorem exists_seq_tendstoInMeasure_atTop_iff [IsFiniteMeasure μ]
     obtain ⟨ns, hns, h6⟩ := extraction_of_frequently_atTop h4
     exact ⟨δ, ns, hδ, hns, fun n ↦ Set.not_mem_Iio.1 (Set.not_mem_subset h5 (h6 n))⟩
   refine ⟨ns, hns, fun ns' _ ↦ ?_⟩
-  by_contra h6
+  by_contra! h6
   have h7 := tendstoInMeasure_iff_tendsto_toNNReal.mp <|
     tendstoInMeasure_of_tendsto_ae (fun n ↦ hf _) h6
   exact lt_irrefl _ (lt_of_le_of_lt (ge_of_tendsto' (h7 ε hε) (fun n ↦ h3 _)) hδ)
