@@ -136,10 +136,10 @@ open Lean Qq Elab Meta Tactic
 /-- Finds a contradictory `≠`-fact whose `.lhs` and `.rhs` belong to the same strongly connected
 component in the `≤`-graph, implying they must be equal. -/
 def findContradictoryNe (graph : Graph) (facts : Array AtomicFact) : Option AtomicFact :=
-  let condensation := graph.condense
+  let scc := graph.findSCCs
   facts.find? fun fact =>
     if let .ne lhs rhs _ := fact then
-      condensation[lhs]! == condensation[rhs]!
+      scc[lhs]! == scc[rhs]!
     else
       false
 

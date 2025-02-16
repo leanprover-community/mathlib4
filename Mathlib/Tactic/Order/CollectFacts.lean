@@ -108,11 +108,11 @@ partial def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFacts
         (atomToIdx, facts.push <| .isInf aIdx bIdx idx)
   return idx
 
-def addFact (type : Expr) (fact : AtomicFact) : CollectFactsM Unit := do
+def addFact (type : Expr) (fact : AtomicFact) : CollectFactsM Unit :=
   modify fun res => res.modify type fun (atomToIdx, facts) =>
-    let facts := facts.push fact
-    (atomToIdx, facts)
+    (atomToIdx, facts.push fact)
 
+-- TODO: Split conjunctions.
 def collectFactsImp (g : MVarId) : CollectFactsM Unit := g.withContext do
   let ctx ← getLCtx
   for ldecl in ctx do
@@ -149,7 +149,6 @@ def collectFactsImp (g : MVarId) : CollectFactsM Unit := g.withContext do
         let yIdx := ← addAtom α y
         addFact α <| .nlt xIdx yIdx expr
 
--- TODO: Split conjunctions.
 /-- Collects facts from the local context. For each occurring type `α`, the returned map contains
 a pair `(idxToAtom, facts)`, where the map `idxToAtom` converts indices to found
 atomic expressions of type `α`, and `facts` contains all collected `AtomicFact`s about them. -/
