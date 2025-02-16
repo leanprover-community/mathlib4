@@ -94,7 +94,7 @@ theorem gaugeSeminormFamily_ball (s : AbsConvexOpenSets 𝕜 E) :
   simp_rw [gaugeSeminorm_toFun]
   exact gauge_lt_one_eq_self_of_isOpen s.coe_convex s.coe_zero_mem s.coe_isOpen
 
-variable [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
+variable [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 variable [SMulCommClass ℝ 𝕜 E] [LocallyConvexSpace ℝ E]
 
 /-- The topology of a locally convex space is induced by the gauge seminorm family. -/

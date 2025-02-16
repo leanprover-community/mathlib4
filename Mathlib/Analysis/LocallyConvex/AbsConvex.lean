@@ -193,7 +193,7 @@ section NormedField
 
 variable [NormedField 𝕜]
   [AddCommGroup E] [Module ℝ E] [Module 𝕜 E]  [TopologicalSpace E]
-  [TopologicalAddGroup E] [ContinuousSMul ℝ E] [ContinuousSMul 𝕜 E]
+  [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] [ContinuousSMul 𝕜 E]
 
 theorem AbsConvex.closure {s : Set E} (hs : AbsConvex 𝕜 s) : AbsConvex 𝕜 (closure s) :=
   ⟨Balanced.closure hs.1, Convex.closure hs.2⟩
@@ -223,7 +223,7 @@ theorem nhds_hasBasis_absConvex :
   refine ⟨(balancedCore_balanced s).convexHull, ?_⟩
   exact convex_convexHull ℝ (balancedCore 𝕜 s)
 
-variable [ContinuousSMul ℝ E] [TopologicalAddGroup E]
+variable [ContinuousSMul ℝ E] [IsTopologicalAddGroup E]
 
 theorem nhds_hasBasis_absConvex_open :
     (𝓝 (0 : E)).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s) id := by
