@@ -49,11 +49,9 @@ variable {a b p}
 
 lemma Tripletwise.imp (h : ∀ {a b c}, p a b c → q a b c) (hl : l.Tripletwise p) :
     l.Tripletwise q := by
-  induction l with
-  | nil => simp
-  | cons head tail ih =>
-    rw [tripletwise_cons] at hl ⊢
-    exact ⟨hl.1.imp h, ih hl.2⟩
+  induction hl with
+  | nil => exact .nil
+  | cons head tail ih => exact .cons (head.imp h) ih
 
 lemma tripletwise_map :
     (l.map f).Tripletwise p' ↔ l.Tripletwise (fun a b c ↦ p' (f a) (f b) (f c)) := by
