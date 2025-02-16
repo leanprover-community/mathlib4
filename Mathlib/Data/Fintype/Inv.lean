@@ -16,7 +16,7 @@ import Mathlib.Data.Fintype.Defs
 * `Fintype.choose`: computably obtain a witness for `ExistsUnique`.
 -/
 
-assert_not_exists Monoid MonoidWithZero MulAction
+assert_not_exists Monoid
 
 open Function
 

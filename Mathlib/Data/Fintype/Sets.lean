@@ -18,7 +18,7 @@ In a `Fintype`, all `Set`s are automatically `Finset`s, and there are only finit
 * `Fintype.finsetEquivSet`: `Finset α` and `Set α` are equivalent if `α` is a `Fintype`
 -/
 
-assert_not_exists Monoid MonoidWithZero MulAction
+assert_not_exists Monoid
 
 open Function
 

@@ -18,7 +18,7 @@ given maps from/to finite types.
   a type is finite if there is a bi/in/surjection from/to a finite type.
 -/
 
-assert_not_exists Monoid MonoidWithZero MulAction
+assert_not_exists Monoid
 
 open Function
 
