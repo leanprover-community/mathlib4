@@ -9,13 +9,10 @@ import Mathlib.CategoryTheory.Opposites
 /-!
 # The dualizing functor on `Cat`
 
-We define a (strict) functor and an equivalence assigning opposite categories to categories.
-
-## Future work.
-
-Show that `Cat.opFunctor` is involutive.
+We define a (strict) functor `opFunctor` and an equivalence assigning opposite categories to
+categories. We then show that this functor is strictly involutive and that it induces an
+equivalence on `Cat`.
 -/
-
 
 universe v₁ v₂ u₁ u₂
 
@@ -23,11 +20,17 @@ namespace CategoryTheory
 
 namespace Cat
 
-/-- The functor `Cat ⥤ Cat` assigning to each category its opposite category. -/
+/-- The endofunctor `Cat ⥤ Cat` assigning to each category its opposite category. -/
 @[simps]
 def opFunctor : Cat.{v₁, u₁} ⥤ Cat.{v₁, u₁} where
   obj C := .of Cᵒᵖ
   map := Functor.op
+
+/-- The natural isomorphism between the double application of `Cat.opFunctor` and the
+identity functor on `Cat`. -/
+@[simps!]
+def opFunctorInvoutive : opFunctor.{v₁, u₁} ⋙ opFunctor.{v₁, u₁} ≅ 𝟭 _ :=
+  NatIso.ofComponents (fun C => .mk (unopUnop C) (opOp C))
 
 /-- The equivalence `Cat ≌ Cat` associating each category with its opposite category. -/
 @[simps]
