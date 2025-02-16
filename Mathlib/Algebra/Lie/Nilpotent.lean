@@ -318,8 +318,16 @@ instance isNilpotentAdd (M₁ M₂ : LieSubmodule R L M) [IsNilpotent L M₁] [I
   rw[(M₁ ⊔ M₂).lowerCentralSeries_eq_lcs_comap]
   dsimp[lowerCentralSeries] at *
   simp_all
-  have xy : LieSubmodule.lcs (k ⊔ l) M₁ = ⊥ := by sorry
-  have xx : LieSubmodule.lcs (k ⊔ l) M₂ = ⊥ := by sorry
+  have xy : LieSubmodule.lcs (k ⊔ l) M₁ = ⊥ := by
+    rw [← M₁.lowerCentralSeries_map_eq_lcs]
+    refine (LieModuleHom.le_ker_iff_map (lowerCentralSeries R L (↥M₁) (k ⊔ l))).mp ?_
+    simp_all only [LieSubmodule.ker_incl, le_bot_iff]
+    exact ha
+  have xx : LieSubmodule.lcs (k ⊔ l) M₂ = ⊥ := by
+    rw [← M₂.lowerCentralSeries_map_eq_lcs]
+    refine (LieModuleHom.le_ker_iff_map (lowerCentralSeries R L (↥M₂) (k ⊔ l))).mp ?_
+    simp_all only [LieSubmodule.ker_incl, le_bot_iff]
+    exact hb
   rw [xy]
   rw [xx]
   --search_proof
