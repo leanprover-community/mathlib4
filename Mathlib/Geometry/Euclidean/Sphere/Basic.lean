@@ -307,7 +307,7 @@ protected lemma IsDiameter.sbtw (h : s.IsDiameter p₁ p₂) (hr : s.radius ≠ 
   exact sbtw_midpoint_of_ne _ (h.left_ne_right_iff_radius_ne_zero.2 hr)
 
 /-- Construct the sphere with the given diameter. -/
-def ofDiameter (p₁ p₂ : P) : Sphere P :=
+protected def ofDiameter (p₁ p₂ : P) : Sphere P :=
   ⟨midpoint ℝ p₁ p₂, (dist p₁ p₂) / 2⟩
 
 lemma isDiameter_ofDiameter (p₁ p₂ : P) : (ofDiameter p₁ p₂).IsDiameter p₁ p₂ :=
