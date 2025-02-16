@@ -481,21 +481,34 @@ instance uniqueEmpty [IsEmpty α] : Unique (Set α) where
   uniq := eq_empty_of_isEmpty
 
 /-- See also `Set.nonempty_iff_ne_empty`. -/
+@[push]
 theorem not_nonempty_iff_eq_empty {s : Set α} : ¬s.Nonempty ↔ s = ∅ := by
   simp only [Set.Nonempty, not_exists, eq_empty_iff_forall_not_mem]
 
 /-- See also `Set.not_nonempty_iff_eq_empty`. -/
-theorem nonempty_iff_ne_empty : s.Nonempty ↔ s ≠ ∅ :=
+@[push ←]
+theorem nonempty_iff_ne_empty {s : Set α} : s.Nonempty ↔ s ≠ ∅ :=
   not_nonempty_iff_eq_empty.not_right
 
+/-- Variant of `nonempty_iff_ne_empty` used in the `push` tactic. -/
+@[push ←]
+theorem nonempty_iff_empty_ne {s : Set α} : s.Nonempty ↔ ∅ ≠ s :=
+  nonempty_iff_ne_empty.trans ne_comm
+
 /-- See also `nonempty_iff_ne_empty'`. -/
+@[push]
 theorem not_nonempty_iff_eq_empty' : ¬Nonempty s ↔ s = ∅ := by
   rw [nonempty_subtype, not_exists, eq_empty_iff_forall_not_mem]
 
 /-- See also `not_nonempty_iff_eq_empty'`. -/
+@[push ←]
 theorem nonempty_iff_ne_empty' : Nonempty s ↔ s ≠ ∅ :=
   not_nonempty_iff_eq_empty'.not_right
 
+/-- Variant of `nonempty_iff_ne_empty'` used in the `push` tactic. -/
+@[push ←]
+theorem nonempty_iff_empty_ne' : Nonempty s ↔ ∅ ≠ s :=
+  nonempty_iff_ne_empty'.trans ne_comm
 alias ⟨Nonempty.ne_empty, _⟩ := nonempty_iff_ne_empty
 
 @[simp]
