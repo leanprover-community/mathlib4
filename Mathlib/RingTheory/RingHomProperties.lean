@@ -54,7 +54,7 @@ theorem RespectsIso.cancel_right_isIso (hP : RespectsIso @P) {R S T : CommRingCa
     (g : S ⟶ T) [IsIso g] : P (g.hom.comp f.hom) ↔ P f.hom :=
   ⟨fun H => by
     convert hP.1 (f ≫ g).hom (asIso g).symm.commRingCatIsoToRingEquiv H
-    simp,
+    simp [← CommRingCat.hom_comp],
    hP.1 f.hom (asIso g).commRingCatIsoToRingEquiv⟩
 
 theorem RespectsIso.is_localization_away_iff (hP : RingHom.RespectsIso @P) {R S : Type u}
