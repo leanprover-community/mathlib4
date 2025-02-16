@@ -199,9 +199,13 @@ theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submo
     (h : finrank K S = finrank K V) : S = ⊤ := by
   haveI : IsNoetherian K V := iff_fg.2 inferInstance
   set bS := Basis.ofVectorSpace K S with bS_eq
-  have : LinearIndependent K ((↑) : ((↑) '' Basis.ofVectorSpaceIndex K S : Set V) → V) :=
-    LinearIndependent.image_subtype (f := Submodule.subtype S)
-      (by simpa [bS] using bS.linearIndependent) (by simp)
+  have : LinearIndepOn K id (Subtype.val '' Basis.ofVectorSpaceIndex K S) := by
+    refine LinearIndepOn.id_image ?_
+
+    have := bS.linearIndependent
+    simp [bS] at this
+
+    -- have := LinearIndepOn.id_image (by simpa [bS] using bS.linearIndependent) (by simp)
   set b := Basis.extend this with b_eq
   -- Porting note: `letI` now uses `this` so we need to give different names
   letI i1 : Fintype (this.extend _) :=
