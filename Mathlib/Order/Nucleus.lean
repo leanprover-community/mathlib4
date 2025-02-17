@@ -144,7 +144,6 @@ end CompleteLattice
 section Frame
 variable [Order.Frame X] {n : Nucleus X} {x y : X}
 
--- TODO: Does this hold as an equality?
 lemma map_himp_le : n (x ⇨ y) ≤ x ⇨ n y := by
   rw [le_himp_iff]
   calc

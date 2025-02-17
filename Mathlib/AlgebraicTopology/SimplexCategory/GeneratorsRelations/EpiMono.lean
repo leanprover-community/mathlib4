@@ -43,117 +43,29 @@ def SplitEpiσ {n : ℕ} {i : Fin (n + 1)} : SplitEpi (σ i) where
 instance {n : ℕ} {i : Fin (n + 1)} : IsSplitEpi (σ i) := .mk' SplitEpiσ
 
 /-- Auxiliary predicate to express that a morphism is purely a composition of `σ i`s. -/
-inductive P_σ : MorphismProperty SimplexCategoryGenRel
-  | σ {n : ℕ} (i : Fin (n + 1)) : P_σ <| σ i
-  | id {n : ℕ} : P_σ <| 𝟙 (.mk n)
-  | comp {n : ℕ} (i : Fin (n + 1)) {a : SimplexCategoryGenRel} (g : a ⟶ .mk (n + 1))
-    (hg: P_σ g) : P_σ <| g ≫ σ i
-
-/-- A version of `P_σ` where composition is taken on the right instead. It is equivalent to `P_σ`
-(see `P_σ_eq_P_σ'`). -/
-inductive P_σ' : MorphismProperty SimplexCategoryGenRel
-  | σ {n : ℕ} (i : Fin (n + 1)) : P_σ' <| σ i
-  | id {n : ℕ} : P_σ' <| 𝟙 (.mk n)
-  | comp {n : ℕ} (i : Fin (n + 1)) {a : SimplexCategoryGenRel} (g :.mk n ⟶ a)
-    (hg: P_σ' g) : P_σ' <| σ i ≫ g
+abbrev P_σ := degeneracies.multiplicativeClosure
 
 /-- Auxiliary predicate to express that a morphism is purely a composition of `δ i`s. -/
-inductive P_δ : MorphismProperty SimplexCategoryGenRel
-  | δ {n : ℕ} (i : Fin (n + 2)) : P_δ <| δ i
-  | id {n : ℕ} : P_δ <| 𝟙 (.mk n)
-  | comp {n : ℕ} (i : Fin (n + 2)) {a : SimplexCategoryGenRel} (g : a ⟶ .mk n )
-    (hg: P_δ g) : P_δ <| g ≫ δ i
+abbrev P_δ := faces.multiplicativeClosure
 
-/-- A version of `P_δ` where composition is taken on the right instead. It is equivalent to `P_δ`
-(see `P_σ_eq_P_δ'`). -/
-inductive P_δ' : MorphismProperty SimplexCategoryGenRel
-  | δ {n : ℕ} (i : Fin (n + 2)) : P_δ' <| δ i
-  | id {n : ℕ} : P_δ' <| 𝟙 (.mk n)
-  | comp {a : SimplexCategoryGenRel} {n : ℕ} (i : Fin (n + 2)) (g : .mk (n + 1) ⟶ a)
-    (hg: P_δ' g) : P_δ' <| δ i ≫ g
+lemma P_σ.σ {n : ℕ} (i : Fin (n + 1)) : P_σ (σ i) := .of _ (.σ i)
 
-lemma P_σ_eqToHom {x y : SimplexCategoryGenRel} (h : x = y) : P_σ <| eqToHom h := by
-  subst h
-  rw [eqToHom_refl]
-  exact P_σ.id
-
-lemma P_δ_eqToHom {x y : SimplexCategoryGenRel} (h : x = y) : P_δ <| eqToHom h := by
-  subst h
-  rw [eqToHom_refl]
-  exact P_δ.id
-
-lemma P_δ_comp {x y z : SimplexCategoryGenRel} (f : x ⟶ y) (g : y ⟶ z) :
-    P_δ f → P_δ g → P_δ (f ≫ g) := by
-  intro hf hg
-  induction hg with
-  | δ i => exact P_δ.comp _ f hf
-  | id => rwa [Category.comp_id]
-  | comp i b _ h => specialize h f hf
-                    rw [← Category.assoc]
-                    exact P_δ.comp i (f ≫ b) h
-
-lemma P_σ_comp {x y z : SimplexCategoryGenRel} (f : x ⟶ y) (g : y ⟶ z) :
-    P_σ f → P_σ g → P_σ (f ≫ g) := by
-  intro hf hg
-  induction hg with
-  | σ i => exact P_σ.comp _ f hf
-  | id => rwa [Category.comp_id]
-  | comp i b _ h => specialize h f hf
-                    rw [← Category.assoc]
-                    exact P_σ.comp i (f ≫ b) h
-
-lemma P_σ'_comp {x y z : SimplexCategoryGenRel} (f : x ⟶ y) (g : y ⟶ z) :
-    P_σ' f → P_σ' g → P_σ' (f ≫ g) := by
-  intro hf hg
-  induction hf with
-  | σ i => exact P_σ'.comp _ g hg
-  | id => rwa [Category.id_comp]
-  | comp i b _ h => specialize h g hg
-                    rw [Category.assoc]
-                    exact P_σ'.comp i (b ≫ g) h
-
-lemma P_δ'_comp {x y z : SimplexCategoryGenRel} (f : x ⟶ y) (g : y ⟶ z) :
-    P_δ' f → P_δ' g → P_δ' (f ≫ g) := by
-  intro hf hg
-  induction hf with
-  | δ i => exact P_δ'.comp _ g hg
-  | id => rwa [Category.id_comp]
-  | comp i b _ h => specialize h g hg
-                    rw [Category.assoc]
-                    exact P_δ'.comp i (b ≫ g) h
-
-/-- The property `P_σ` is equivalent to `P_σ'`. -/
-lemma P_σ_eq_P_σ' : P_σ = P_σ' := by
-  apply le_antisymm <;> intro x y f h
-  · induction h with
-    | σ i => exact P_σ'.σ i
-    | id => exact P_σ'.id
-    | comp i f h h' => exact P_σ'_comp _ _ h' (P_σ'.σ _)
-  · induction h with
-    | σ i => exact P_σ.σ i
-    | id => exact P_σ.id
-    | comp i f h h' => exact P_σ_comp _ _ (P_σ.σ _) h'
-
-/-- The property `P_δ` is equivalent to `P_δ'`. -/
-lemma P_δ_eq_P_δ' : P_δ = P_δ' := by
-  apply le_antisymm <;> intro x y f h
-  · induction h with
-    | δ i => exact P_δ'.δ i
-    | id => exact P_δ'.id
-    | comp i f h h' => exact P_δ'_comp _ _ h' (P_δ'.δ _)
-  · induction h with
-    | δ i => exact P_δ.δ i
-    | id => exact P_δ.id
-    | comp i f h h' => exact P_δ_comp _ _ (P_δ.δ _) h'
+lemma P_δ.δ {n : ℕ} (i : Fin (n + 2)) : P_δ (δ i) := .of _ (.δ i)
 
 /-- All `P_σ` are split epis as composition of such. -/
 lemma isSplitEpi_P_σ {x y : SimplexCategoryGenRel} {e : x ⟶ y} (he : P_σ e) : IsSplitEpi e := by
-  induction he <;> infer_instance
+  induction he with
+  | of x hx => cases hx; infer_instance
+  | id => infer_instance
+  | comp_of _ _ _ h => cases h; infer_instance
 
 /-- All `P_δ` are split monos as composition of such. -/
 lemma isSplitMono_P_δ {x y : SimplexCategoryGenRel} {m : x ⟶ y} (hm : P_δ m) :
     IsSplitMono m := by
-  induction hm <;> infer_instance
+  induction hm with
+  | of x hx => cases hx; infer_instance
+  | id => infer_instance
+  | comp_of _ _ _ h => cases h; infer_instance
 
 lemma isSplitEpi_P_σ_toSimplexCategory {x y : SimplexCategoryGenRel} {e : x ⟶ y} (he : P_σ e)
     : IsSplitEpi <| toSimplexCategory.map e := by
@@ -172,12 +84,15 @@ lemma isSplitMono_P_δ_toSimplexCategory {x y : SimplexCategoryGenRel} {m : x �
 lemma eq_or_len_le_of_P_δ {x y : SimplexCategoryGenRel} {f : x ⟶ y} (h_δ : P_δ f) :
     (∃ h : x = y, f = eqToHom h) ∨ x.len < y.len := by
   induction h_δ with
-  | δ i => right; simp
+  | of _ hx => cases hx; right; simp
   | id => left; use rfl; simp
-  | comp i u _ h' =>
+  | comp_of i u _ hg h' =>
     rcases h' with ⟨e, _⟩ | h'
-    · right; rw [e]; exact Nat.lt_add_one _
-    · right; exact Nat.lt_succ_of_lt h'
+    <;> apply Or.inr
+    <;> cases hg
+    · rw [e]
+      exact Nat.lt_add_one _
+    · exact Nat.lt_succ_of_lt h'
 
 end EpiMono
 
@@ -260,11 +175,11 @@ private lemma factor_δ_σ {n : ℕ} (i : Fin (n + 1)) (i' : Fin (n + 2)) :
   cases n with
   | zero =>
     rw [switch_δ_σ₀]
-    use mk 0, 𝟙 _, 𝟙 _, P_σ.id, P_δ.id
+    use mk 0, 𝟙 _, 𝟙 _, P_σ.id_mem _, P_δ.id_mem _
     simp
   | succ n =>
     obtain h | ⟨j, j', h⟩ := switch_δ_σ i i' <;> rw [h]
-    · use mk (n + 1), 𝟙 _, 𝟙 _, P_σ.id, P_δ.id
+    · use mk (n + 1), 𝟙 _, 𝟙 _, P_σ.id_mem _, P_δ.id_mem _
       simp
     · use mk n, σ j, δ j', P_σ.σ _, P_δ.δ _
 
@@ -275,12 +190,13 @@ private lemma factor_P_δ_σ {n : ℕ} (i : Fin (n + 1)) {x : SimplexCategoryGen
       (_ : P_σ e) (_ : P_δ m), f ≫ σ i = e ≫ m := by
   induction n using Nat.case_strong_induction_on generalizing x with
   | hz => cases hf with
-    | δ i => exact factor_δ_σ _ _
+    | of _ h => cases h; exact factor_δ_σ _ _
     | id  =>
       rw [Category.id_comp]
-      use mk 0, σ i, 𝟙 _, P_σ.σ _, P_δ.id
+      use mk 0, σ i, 𝟙 _, P_σ.σ _, P_δ.id_mem _
       simp
-    | comp j f hf =>
+    | comp_of j f hf hg =>
+      cases hg
       obtain ⟨h', hf'⟩ | hf' := eq_or_len_le_of_P_δ hf
       · subst h'
         simp only [eqToHom_refl] at hf'
@@ -290,63 +206,70 @@ private lemma factor_P_δ_σ {n : ℕ} (i : Fin (n + 1)) {x : SimplexCategoryGen
       · simp at hf'
   | hi n h_rec =>
     cases hf with
-    | δ i' => exact factor_δ_σ _ _
+    | of _ h => cases h; exact factor_δ_σ _ _
     | @id n =>
       rw [Category.id_comp]
-      use mk (n + 1), σ i, 𝟙 _, P_σ.σ _, P_δ.id
+      use mk (n + 1), σ i, 𝟙 _, P_σ.σ _, P_δ.id_mem _
       simp
-    | @comp m i' _ g hg =>
-      obtain ⟨h', h''⟩ | h := eq_or_len_le_of_P_δ hg
+    | comp_of f g hf hg =>
+      obtain ⟨h', h''⟩ | h := eq_or_len_le_of_P_δ hf
       · subst h'
+        cases hg
         rw [eqToHom_refl] at h''; subst h''
         rw [Category.id_comp]
         exact factor_δ_σ _ _
-      · obtain h' | ⟨j, j', h'⟩ := switch_δ_σ i i' <;> rw [Category.assoc, h']
+      · have hg' := hg
+        rcases hg' with ⟨i'⟩
+        obtain h' | ⟨j, j', h'⟩ := switch_δ_σ i i' <;> rw [Category.assoc, h']
         · rw [Category.comp_id]
-          use x, 𝟙 x, g, P_σ.id, hg
+          use x, 𝟙 x, f, P_σ.id_mem _, hf
           simp
         · rw [mk_len, Nat.lt_add_one_iff] at h
-          obtain ⟨z, e, m₁, he, hm₁, h⟩ := h_rec n (Nat.le_refl _) j g hg
+          obtain ⟨z, e, m₁, he, hm₁, h⟩ := h_rec n (Nat.le_refl _) j f hf
           rw [reassoc_of% h]
-          use z, e, m₁ ≫ δ j', he, P_δ.comp _ m₁ hm₁
+          use z, e, m₁ ≫ δ j', he, P_δ.comp_mem _ _ hm₁ (P_δ.δ _)
 
 /-- Any morphism in `SimplexCategoryGenRel` can be decomposed as a `P_σ` followed by a `P_δ`. -/
 theorem exists_P_σ_P_δ_factorisation {x y : SimplexCategoryGenRel} (f : x ⟶ y) :
     ∃ (z : SimplexCategoryGenRel) (e : x ⟶ z) (m : z ⟶ y)
         (_ : P_σ e) (_ : P_δ m), f = e ≫ m := by
-  induction f using hom_induction with
-  | @hi n => use (mk n), (𝟙 (mk n)), (𝟙 (mk n)), P_σ.id, P_δ.id; simp
-  | @hc₁ n n' f j h =>
+  induction f with
+  | @id n => use (mk n), (𝟙 (mk n)), (𝟙 (mk n)), P_σ.id_mem _, P_δ.id_mem _; simp
+  | @comp_δ n n' f j h =>
     obtain ⟨z, e, m, ⟨he, hm, h⟩⟩ := h
     rw [h, Category.assoc]
-    use z, e, m ≫ δ j, he, P_δ.comp _ _ hm
-  | @hc₂ n n' f j h =>
+    use z, e, m ≫ δ j, he, P_δ.comp_mem _ _ hm (P_δ.δ _)
+  | @comp_σ n n' f j h =>
     obtain ⟨z, e, m, ⟨he, hm, h⟩⟩ := h
     rw [h]
     cases hm with
-    | @δ i j' =>
+    | of g hg =>
+      cases hg
       rw [Category.assoc]
-      obtain ⟨z₁, e₁, m₁, ⟨he₁, hm₁, h₁⟩⟩ := factor_δ_σ j j'
+      obtain ⟨z₁, e₁, m₁, ⟨he₁, hm₁, h₁⟩⟩ := factor_δ_σ j _
       rw [h₁]
-      use z₁, e ≫ e₁, m₁, P_σ_comp _ _ he he₁, hm₁
+      use z₁, e ≫ e₁, m₁, P_σ.comp_mem _ _ he he₁, hm₁
       simp
     | @id n =>
       simp only [Category.comp_id]
-      use mk n', e ≫ σ j, 𝟙 _, P_σ.comp _ _ he, P_δ.id
+      use mk n', e ≫ σ j, 𝟙 _, P_σ.comp_mem _ _ he (P_σ.σ _), P_δ.id_mem _
       simp
-    | @comp n'' i x' g hg =>
+    | comp_of f g hf hg =>
       rw [Category.assoc, Category.assoc]
       cases n' with
       | zero =>
+        cases hg
         rw [switch_δ_σ₀, Category.comp_id]
-        use z, e, g, he, hg
+        use z, e, f, he, hf
       | succ n =>
+        have hg' := hg
+        rcases hg' with ⟨i⟩
         obtain h' | ⟨j', j'', h'⟩ := switch_δ_σ j i <;> rw [h']
         · rw [Category.comp_id]
-          use z, e, g, he, hg
-        · obtain ⟨z₁, e₁, m₁, ⟨he₁, hm₁, h₁⟩⟩ := factor_P_δ_σ j' g hg
+          use z, e, f, he, hf
+        · obtain ⟨z₁, e₁, m₁, ⟨he₁, hm₁, h₁⟩⟩ := factor_P_δ_σ j' f hf
           rw [reassoc_of% h₁]
-          use z₁, e ≫ e₁, m₁ ≫ δ j'', P_σ_comp _ _ he he₁, P_δ.comp _ _ hm₁
+          use z₁, e ≫ e₁, m₁ ≫ δ j'', P_σ.comp_mem _ _ he he₁, P_δ.comp_mem _ _ hm₁ (P_δ.δ _)
           simp
 
 end ExistenceOfFactorisations

@@ -69,12 +69,12 @@ theorem add [Add β] [ContinuousAdd β] (hf : AEStronglyMeasurable[m] f μ)
   AEStronglyMeasurable.add hf hg
 
 @[deprecated AEStronglyMeasurable.neg (since := "2025-01-23")]
-theorem neg [AddGroup β] [TopologicalAddGroup β] {f : α → β} (hfm : AEStronglyMeasurable[m] f μ) :
+theorem neg [AddGroup β] [IsTopologicalAddGroup β] {f : α → β} (hfm : AEStronglyMeasurable[m] f μ) :
     AEStronglyMeasurable[m] (-f) μ :=
   AEStronglyMeasurable.neg hfm
 
 @[deprecated AEStronglyMeasurable.sub (since := "2025-01-23")]
-theorem sub [AddGroup β] [TopologicalAddGroup β] {f g : α → β} (hfm : AEStronglyMeasurable[m] f μ)
+theorem sub [AddGroup β] [IsTopologicalAddGroup β] {f g : α → β} (hfm : AEStronglyMeasurable[m] f μ)
     (hgm : AEStronglyMeasurable[m] g μ) : AEStronglyMeasurable[m] (f - g) μ :=
   AEStronglyMeasurable.sub hfm hgm
 
@@ -273,7 +273,6 @@ variable (F p μ)
 noncomputable def lpMeasSubgroupToLpTrim (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ) :
     Lp F p (μ.trim hm) :=
   Memℒp.toLp (mem_lpMeasSubgroup_iff_aeStronglyMeasurable.mp f.mem).choose
-    -- Porting note: had to replace `f` with `f.1` here.
     (memℒp_trim_of_mem_lpMeasSubgroup hm f.1 f.mem)
 
 variable (𝕜)
@@ -281,7 +280,6 @@ variable (𝕜)
 /-- Map from `lpMeas` to `Lp F p (μ.trim hm)`. -/
 noncomputable def lpMeasToLpTrim (hm : m ≤ m0) (f : lpMeas F 𝕜 m p μ) : Lp F p (μ.trim hm) :=
   Memℒp.toLp (mem_lpMeas_iff_aeStronglyMeasurable.mp f.mem).choose
-    -- Porting note: had to replace `f` with `f.1` here.
     (memℒp_trim_of_mem_lpMeasSubgroup hm f.1 f.mem)
 
 variable {𝕜}
@@ -302,24 +300,20 @@ variable {F 𝕜 p μ}
 
 theorem lpMeasSubgroupToLpTrim_ae_eq (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ) :
     lpMeasSubgroupToLpTrim F p μ hm f =ᵐ[μ] f :=
-  -- Porting note: replaced `(↑f)` with `f.1` here.
   (ae_eq_of_ae_eq_trim (Memℒp.coeFn_toLp (memℒp_trim_of_mem_lpMeasSubgroup hm f.1 f.mem))).trans
     (mem_lpMeasSubgroup_iff_aeStronglyMeasurable.mp f.mem).choose_spec.2.symm
 
 theorem lpTrimToLpMeasSubgroup_ae_eq (hm : m ≤ m0) (f : Lp F p (μ.trim hm)) :
     lpTrimToLpMeasSubgroup F p μ hm f =ᵐ[μ] f :=
-  -- Porting note: filled in the argument
   Memℒp.coeFn_toLp (memℒp_of_memℒp_trim hm (Lp.memℒp f))
 
 theorem lpMeasToLpTrim_ae_eq (hm : m ≤ m0) (f : lpMeas F 𝕜 m p μ) :
     lpMeasToLpTrim F 𝕜 p μ hm f =ᵐ[μ] f :=
-  -- Porting note: replaced `(↑f)` with `f.1` here.
   (ae_eq_of_ae_eq_trim (Memℒp.coeFn_toLp (memℒp_trim_of_mem_lpMeasSubgroup hm f.1 f.mem))).trans
     (mem_lpMeasSubgroup_iff_aeStronglyMeasurable.mp f.mem).choose_spec.2.symm
 
 theorem lpTrimToLpMeas_ae_eq (hm : m ≤ m0) (f : Lp F p (μ.trim hm)) :
     lpTrimToLpMeas F 𝕜 p μ hm f =ᵐ[μ] f :=
-  -- Porting note: filled in the argument
   Memℒp.coeFn_toLp (memℒp_of_memℒp_trim hm (Lp.memℒp f))
 
 /-- `lpTrimToLpMeasSubgroup` is a right inverse of `lpMeasSubgroupToLpTrim`. -/
@@ -461,7 +455,6 @@ variable {m m0 : MeasurableSpace α} {μ : Measure α}
 `f =ᵐ[μ] Lp_meas_to_Lp_trim F 𝕜 p μ hm f`. -/
 theorem lpMeas.ae_fin_strongly_measurable' (hm : m ≤ m0) (f : lpMeas F 𝕜 m p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) :
-    -- Porting note: changed `f` to `f.1` in the next line. Not certain this is okay.
     ∃ g, FinStronglyMeasurable g (μ.trim hm) ∧ f.1 =ᵐ[μ] g :=
   ⟨lpMeasSubgroupToLpTrim F p μ hm f, Lp.finStronglyMeasurable _ hp_ne_zero hp_ne_top,
     (lpMeasSubgroupToLpTrim_ae_eq hm f).symm⟩
@@ -519,9 +512,6 @@ theorem Lp.induction_stronglyMeasurable_aux (hm : m ≤ m0) (hp_ne_top : p ≠ �
     @Lp.induction α F m _ p (μ.trim hm) _ hp_ne_top
       (fun g => P ((lpMeasToLpTrimLie F ℝ p μ hm).symm g)) ?_ ?_ ?_ g
   · intro b t ht hμt
-    -- Porting note: needed to pass `m` to `Lp.simpleFunc.coe_indicatorConst` to avoid
-    -- synthesized type class instance is not definitionally equal to expression inferred by typing
-    -- rules, synthesized m0 inferred m
     rw [@Lp.simpleFunc.coe_indicatorConst _ _ m, lpMeasToLpTrimLie_symm_indicator ht hμt.ne b]
     have hμt' : μ t < ∞ := (le_trim hm).trans_lt hμt
     specialize h_ind b ht hμt'
