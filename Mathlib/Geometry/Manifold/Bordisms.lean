@@ -150,8 +150,16 @@ variable {M : Type u} [TopologicalSpace M] [ChartedSpace H M]
   [BoundarylessManifold I' M'] [CompactSpace M'] [FiniteDimensional ℝ E']
 
 variable (M) in
-/-- If `M` is `n`-dimensional and closed, it is a singular `n`-manifold over itself. -/
-noncomputable def refl (hdim : finrank ℝ E = n) : SingularNManifold M n k where
+/-- If `M` is `n`-dimensional and closed, it is a singular `n`-manifold over itself.
+
+On paper, it is apparent that `M` is modelled on `n`-dimensional Euclidean space.
+However, abstractly constructing such an equivalence requires a non-canonical choice:
+thus, we prefer to pass in this assumption external.
+For constructions modelled on `ℝ^n`, this equivalence will be trivial to supply,
+i.e. not an issue in practice. -/
+noncomputable def refl (hequiv : H ≃ EuclideanSpace ℝ (Fin n)) (hdim : finrank ℝ E = n) :
+    SingularNManifold M n k where
+  modelSpace_equiv_euclideanSpace := hequiv
   H := H
   I := I
   dimension := hdim
@@ -160,32 +168,35 @@ noncomputable def refl (hdim : finrank ℝ E = n) : SingularNManifold M n k wher
 
 /-- If `(N, f)` is a singular `n`-manifold on `X` and `M` another `n`-dimensional smooth manifold,
 a smooth map `φ : M → N` induces a singular `n`-manifold structure `(M, f ∘ φ)` on `X`. -/
-noncomputable def comap [h : Fact (finrank ℝ E = n)]
+noncomputable def comap (hequiv : H ≃ EuclideanSpace ℝ (Fin n)) [h : Fact (finrank ℝ E = n)]
     (s : SingularNManifold X n k)
     {φ : M → s.M} (hφ : ContMDiff I s.I n φ) : SingularNManifold X n k where
   E := E
   M := M
   H := H
+  modelSpace_equiv_euclideanSpace := hequiv
   I := I
   f := s.f ∘ φ
   hf := s.hf.comp hφ.continuous
   dimension := h.out
 
 @[simp]
-lemma comap_f [Fact (finrank ℝ E = n)]
+lemma comap_f (hequiv : H ≃ EuclideanSpace ℝ (Fin n)) [Fact (finrank ℝ E = n)]
     (s : SingularNManifold X n k) {φ : M → s.M} (hφ : ContMDiff I s.I n φ) :
-    (s.comap hφ).f = s.f ∘ φ :=
+    (s.comap hequiv hφ).f = s.f ∘ φ :=
   rfl
 
 variable (M) in
 /-- The canonical singular `n`-manifold associated to the empty set (seen as an `n`-dimensional
 manifold, i.e. modelled on an `n`-dimensional space). -/
-def empty [h: Fact (finrank ℝ E = n)] (M : Type u) [TopologicalSpace M] [ChartedSpace H M]
+def empty (hequiv : H ≃ EuclideanSpace ℝ (Fin n)) [h: Fact (finrank ℝ E = n)]
+    (M : Type u) [TopologicalSpace M] [ChartedSpace H M]
     {I : ModelWithCorners ℝ E H} [IsManifold I k M] [IsEmpty M] :
   SingularNManifold X n k where
   M := M
   E := E
   H := H
+  modelSpace_equiv_euclideanSpace := hequiv
   I := I
   dimension := h.out
   f := fun x ↦ (IsEmpty.false x).elim
@@ -195,13 +206,27 @@ def empty [h: Fact (finrank ℝ E = n)] (M : Type u) [TopologicalSpace M] [Chart
 
 variable (M) in
 /-- An `n`-dimensional manifold induces a singular `n`-manifold on the one-point space. -/
-def trivial [h: Fact (finrank ℝ E = n)] : SingularNManifold PUnit n k where
+def trivial (hequiv : H ≃ EuclideanSpace ℝ (Fin n)) [h: Fact (finrank ℝ E = n)] :
+    SingularNManifold PUnit n k where
   E := E
   M := M
+  modelSpace_equiv_euclideanSpace := hequiv
   I := I
   dimension := h.out
   f := fun _ ↦ PUnit.unit
   hf := continuous_const
+
+def EuclideanSpace.prodEquivSum (α β 𝕜 : Type*) :
+    (EuclideanSpace 𝕜 α) × (EuclideanSpace 𝕜 β) ≃ EuclideanSpace 𝕜 (α ⊕ β) :=
+  (Equiv.sumArrowEquivProdArrow α β 𝕜).symm
+
+def EuclideanSpace.typeCongr {α β 𝕜 : Type*} (h : α ≃ β) :
+    EuclideanSpace 𝕜 α ≃ EuclideanSpace 𝕜 β :=
+  Equiv.piCongrLeft' (fun _ ↦ 𝕜) h
+
+def EuclideanSpace.prod_dimension {𝕜 : Type*} (n m : ℕ) :
+    (EuclideanSpace 𝕜 (Fin n)) × (EuclideanSpace 𝕜 (Fin m)) ≃ (EuclideanSpace 𝕜 (Fin (n + m))) :=
+  (EuclideanSpace.prodEquivSum (Fin n) (Fin m) 𝕜).trans (EuclideanSpace.typeCongr finSumFinEquiv)
 
 /-- The product of a singular `n`- and a singular `m`-manifold into a one-point space
 is a singular `n+m`-manifold. -/
@@ -210,16 +235,19 @@ is a singular `n+m`-manifold. -/
 def prod {m n : ℕ} (s : SingularNManifold PUnit n k) (t : SingularNManifold PUnit m k) :
     SingularNManifold PUnit (n + m) k where
   M := s.M × t.M
+  H := ModelProd s.H t.H
+  modelSpace_equiv_euclideanSpace :=
+    letI this : s.H × t.H ≃ (EuclideanSpace ℝ (Fin n)) × (EuclideanSpace ℝ (Fin m)) :=
+      Equiv.prodCongr s.modelSpace_equiv_euclideanSpace t.modelSpace_equiv_euclideanSpace
+    this.trans (EuclideanSpace.prod_dimension n m)
   I := s.I.prod t.I
   f := fun _ ↦ PUnit.unit
   hf := continuous_const
   dimension := by rw [finrank_prod, s.dimension, t.dimension]
 
-end SingularNManifold
+-- disjoint union: post-compose with a suitable equivalence of H resp. E!
 
--- TODO: for now, assume all manifolds are modelled on the same chart and model space...
--- Is this necessary (`H` presumably is necessary for disjoint unions to work out)?
--- How would that work in practice? Post-compose with a suitable equivalence of H resp. E?
+end SingularNManifold
 
 -- Careful: E and H must be in the same universe. Actually, must they? Why?
 universe u
