@@ -3,6 +3,7 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
+import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Units.Hom
@@ -842,6 +843,10 @@ lemma smul_set_insert (a : α) (b : β) (s : Set β) : a • insert b s = insert
 lemma smul_set_inter_subset : a • (t₁ ∩ t₂) ⊆ a • t₁ ∩ a • t₂ :=
   image_inter_subset ..
 
+@[to_additive vadd_prod]
+lemma smulSet_prod [SMul α γ] (a : α) (s : Set β) (t : Set γ) : a • (s ×ˢ t) = (a • s) ×ˢ (a • t) :=
+  image_prodMap_prod ..
+
 @[to_additive]
 lemma smul_set_iUnion (a : α) (s : ι → Set β) : a • ⋃ i, s i = ⋃ i, a • s i :=
   image_iUnion
@@ -1175,10 +1180,13 @@ theorem univ_pow : ∀ {n : ℕ}, n ≠ 0 → (univ : Set α) ^ n = univ
 protected theorem _root_.IsUnit.set : IsUnit a → IsUnit ({a} : Set α) :=
   IsUnit.map (singletonMonoidHom : α →* Set α)
 
-@[to_additive]
+@[to_additive nsmul_prod]
 lemma prod_pow [Monoid β] (s : Set α) (t : Set β) : ∀ n, (s ×ˢ t) ^ n = (s ^ n) ×ˢ (t ^ n)
   | 0 => by simp
   | n + 1 => by simp [pow_succ, prod_pow _ _ n]
+
+@[deprecated (since := "2025-02-15")]
+alias sum_nsmul := nsmul_prod
 
 end Monoid
 

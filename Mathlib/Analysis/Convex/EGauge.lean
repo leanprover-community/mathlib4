@@ -171,6 +171,18 @@ section VectorSpace
 
 variable {𝕜 : Type*} [NormedField 𝕜] {E : Type*} [AddCommGroup E] [Module 𝕜 E]
 
+theorem egauge_prod_pair {F : Type*} [AddCommGroup F] [Module 𝕜 F]
+    {U : Set E} (hU : Balanced 𝕜 U) {V : Set F} (hV : Balanced 𝕜 V) (a : E) (b : F) :
+    egauge 𝕜 (U ×ˢ V) (a, b) = max (egauge 𝕜 U a) (egauge 𝕜 V b) := by
+  apply eq_of_forall_gt_iff fun c ↦ ?_
+  simp only [max_lt_iff, egauge_lt_iff, smulSet_prod, mem_prod]
+  refine ⟨fun ⟨c', ⟨ha, hb⟩, hc'⟩ ↦ ⟨⟨c', ha, hc'⟩, c', hb, hc'⟩, ?_⟩
+  rintro ⟨⟨c₁, ha, hc₁⟩, c₂, hb, hc₂⟩
+  cases le_total ‖c₁‖ ‖c₂‖ with
+  | inl hle => exact ⟨c₂, ⟨hU.smul_mono hle ha, hb⟩, hc₂⟩
+  | inr hle => exact ⟨c₁, ⟨ha, hV.smul_mono hle hb⟩, hc₁⟩
+
+-- TODO: reuse `egauge_prod_pair`
 theorem egauge_add_add_le {U V : Set E} (hU : Balanced 𝕜 U) (hV : Balanced 𝕜 V) (a b : E) :
     egauge 𝕜 (U + V) (a + b) ≤ max (egauge 𝕜 U a) (egauge 𝕜 V b) := by
   refine le_of_forall_lt' fun c hc ↦ ?_
