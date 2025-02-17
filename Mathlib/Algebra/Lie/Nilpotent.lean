@@ -148,16 +148,12 @@ theorem lowerCentralSeries_map_eq_lcs : (lowerCentralSeries R L N k).map N.incl 
   apply lcs_le_self
 
 theorem lowerCentralSeries_eq_bot_iff_lcs_eq_bot:
-    (lowerCentralSeries R L N k = ⊥) ↔ (lcs k N = ⊥) := by
-  constructor
-  · intro h
-    rw [← N.lowerCentralSeries_map_eq_lcs]
-    refine (LieModuleHom.le_ker_iff_map (lowerCentralSeries R L N k)).mp ?_
-    simp_all only [ker_incl, le_bot_iff]
-  intro h
-  rw [N.lowerCentralSeries_eq_lcs_comap]
-  refine comap_incl_eq_bot.mpr ?_
-  simp_all only [bot_le, inf_of_le_right]
+    lowerCentralSeries R L N k = ⊥ ↔ lcs k N = ⊥ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [← N.lowerCentralSeries_map_eq_lcs, ← LieModuleHom.le_ker_iff_map]
+    simpa
+  · rw [N.lowerCentralSeries_eq_lcs_comap, comap_incl_eq_bot]
+    simp [h]
 
 end LieSubmodule
 
