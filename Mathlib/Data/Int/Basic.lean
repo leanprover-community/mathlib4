@@ -27,6 +27,8 @@ attribute [simp] natAbs_pos
 
 instance instNontrivial : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
+@[simp] lemma ofNat_injective : Function.Injective ofNat := @Int.ofNat.inj
+
 section inductionOn'
 
 variable {C : ℤ → Sort*} (z b : ℤ)
@@ -45,6 +47,25 @@ lemma inductionOn'_add_one (hz : b ≤ z) :
   rw [Int.inductionOn', cast_eq_iff_heq, ← hzb]
 
 end inductionOn'
+
+section strongRec
+
+variable {P : ℤ → Sort*} {lt : ∀ n < m, P n} {ge : ∀ n ≥ m, (∀ k < n, P k) → P n}
+
+lemma strongRec_of_ge :
+    ∀ hn : m ≤ n, m.strongRec lt ge n = ge n hn fun k _ ↦ m.strongRec lt ge k := by
+  refine m.strongRec (fun n hnm hmn ↦ (Int.not_lt.mpr hmn hnm).elim) (fun n _ ih hn ↦ ?_) n
+  rw [Int.strongRec, dif_neg (Int.not_lt.mpr hn)]
+  congr; revert ih
+  refine n.inductionOn' m (fun _ ↦ ?_) (fun k hmk ih' ih ↦ ?_) (fun k hkm ih' _ ↦ ?_) <;> ext l hl
+  · rw [inductionOn'_self, strongRec_of_lt hl]
+  · rw [inductionOn'_add_one hmk]; split_ifs with hlm
+    · rw [strongRec_of_lt hlm]
+    · rw [ih' fun l hl ↦ ih l (Int.lt_trans hl k.lt_succ), ih _ hl]
+  · rw [inductionOn'_sub_one hkm, ih']
+    exact fun l hlk hml ↦ (Int.not_lt.mpr hkm <| Int.lt_of_le_of_lt hml hlk).elim
+
+end strongRec
 
 /-! ### nat abs -/
 
