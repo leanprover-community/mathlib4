@@ -56,44 +56,36 @@ theorem veblenWith_of_ne_zero (f : Ordinal → Ordinal) (h : o ≠ 0) :
     veblenWith f o = derivFamily fun x : Set.Iio o ↦ veblenWith f x.1 := by
   rw [veblenWith, if_neg h]
 
-/-- `veblenWith f o` is always normal for `o ≠ 0`. See `isNormal_veblenWith` for a version which
-assumes `IsNormal f`. -/
-theorem isNormal_veblenWith' (f : Ordinal → Ordinal) (h : o ≠ 0) : IsNormal (veblenWith f o) := by
-  rw [veblenWith_of_ne_zero f h]
-  exact isNormal_derivFamily _
-
 variable (hf : IsNormal f)
 include hf
 
-/-- `veblenWith f o` is always normal whenever `f` is. See `isNormal_veblenWith'` for a version
-which does not assume `IsNormal f`. -/
+/-- `veblenWith f o` is always normal whenever `f` is. -/
 theorem isNormal_veblenWith (o : Ordinal) : IsNormal (veblenWith f o) := by
   obtain rfl | h := eq_or_ne o 0
   · rwa [veblenWith_zero]
-  · exact isNormal_veblenWith' f h
+  · rw [veblenWith_of_ne_zero f h]
+    exact isNormal_derivFamily fun ⟨o', ho⟩ ↦ isNormal_veblenWith o'
+termination_by o
 
 protected alias IsNormal.veblenWith := isNormal_veblenWith
 
 theorem veblenWith_veblenWith_of_lt (h : o₁ < o₂) (a : Ordinal) :
     veblenWith f o₁ (veblenWith f o₂ a) = veblenWith f o₂ a := by
-  let x : Set.Iio _ := ⟨o₁, h⟩
-  rw [veblenWith_of_ne_zero f h.bot_lt.ne',
-    derivFamily_fp (f := fun y : Set.Iio o₂ ↦ veblenWith f y.1) (i := x)]
-  exact hf.veblenWith x
+  rw [veblenWith_of_ne_zero f h.bot_lt.ne']
+  exact derivFamily_fp (f := fun y : Set.Iio o₂ ↦ veblenWith f y.1) (i := ⟨o₁, h⟩)
+    (fun _ ↦ hf.veblenWith _) a
 
 theorem veblenWith_succ (o : Ordinal) : veblenWith f (Order.succ o) = deriv (veblenWith f o) := by
-  rw [deriv_eq_enumOrd (hf.veblenWith o), veblenWith_of_ne_zero f (succ_ne_zero _),
-    derivFamily_eq_enumOrd]
-  · apply congr_arg
-    ext a
-    rw [Set.mem_iInter]
-    use fun ha ↦ ha ⟨o, Order.lt_succ o⟩
-    rintro (ha : _ = _) ⟨b, hb : b < _⟩
-    obtain rfl | hb := Order.lt_succ_iff_eq_or_lt.1 hb
-    · rw [Function.mem_fixedPoints_iff, ha]
-    · rw [← ha]
-      exact veblenWith_veblenWith_of_lt hf hb _
-  · exact fun o ↦ hf.veblenWith o.1
+  rw [deriv_eq_enumOrd, veblenWith_of_ne_zero f (succ_ne_zero _), derivFamily]
+  apply congr_arg
+  ext a
+  rw [Set.mem_iInter]
+  use fun ha ↦ ha ⟨o, Order.lt_succ o⟩
+  rintro ha ⟨b, hb : b < _⟩
+  obtain rfl | hb := Order.lt_succ_iff_eq_or_lt.1 hb
+  · rw [Function.mem_fixedPoints_iff, ha]
+  · rw [← ha]
+    exact veblenWith_veblenWith_of_lt hf hb _
 
 theorem veblenWith_right_strictMono (o : Ordinal) : StrictMono (veblenWith f o) :=
   (hf.veblenWith o).strictMono
@@ -155,7 +147,7 @@ theorem left_le_veblenWith (hp : 0 < f 0) (o a : Ordinal) : o ≤ veblenWith f o
 theorem IsNormal.veblenWith_zero (hp : 0 < f 0) : IsNormal (veblenWith f · 0) := by
   rw [isNormal_iff_strictMono_limit]
   refine ⟨veblenWith_zero_strictMono hf hp, fun o ho a IH ↦ ?_⟩
-  rw [veblenWith_of_ne_zero f ho.pos.ne', derivFamily_zero]
+  rw [veblenWith_of_ne_zero f ho.pos.ne', derivFamily_zero fun _ ↦ hf.veblenWith _]
   apply nfpFamily_le fun l ↦ ?_
   suffices ∃ b < o, List.foldr _ 0 l ≤ veblenWith f b 0 by
     obtain ⟨b, hb, hb'⟩ := this
