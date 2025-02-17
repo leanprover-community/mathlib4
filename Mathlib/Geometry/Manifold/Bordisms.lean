@@ -70,6 +70,8 @@ structure SingularNManifold.{u, v, w} (X : Type w) [TopologicalSpace X] (n : ℕ
   [topSpaceH : TopologicalSpace H]
   /-- The smooth manifold `M` is a charted space over `H` -/
   [chartedSpace : ChartedSpace H M]
+  /-- An equivalence `H ≃ ℝ^n`: this is useful to define disjoint unions of singular n-manifolds  -/
+  modelSpace_equiv_euclideanSpace : H ≃ EuclideanSpace ℝ (Fin n)
   /-- The model with corners for the manifold `M` -/
   I : ModelWithCorners ℝ E H
   /-- `M` is a smooth manifold with corners -/
@@ -116,6 +118,7 @@ variable {n : ℕ} {k : ℕ∞}
 -- This is part of proving functoriality of the bordism groups.
 noncomputable def map (s : SingularNManifold X n k)
     {φ : X → Y} (hφ : Continuous φ) : SingularNManifold Y n k where
+  modelSpace_equiv_euclideanSpace := s.modelSpace_equiv_euclideanSpace
   I := s.I
   f := φ ∘ s.f
   hf := hφ.comp s.hf
