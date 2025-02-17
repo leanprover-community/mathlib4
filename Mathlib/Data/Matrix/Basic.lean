@@ -215,13 +215,13 @@ variable [Fintype n] [DecidableEq n]
 variable [CommSemiring R] [Semiring α] [Semiring β] [Algebra R α] [Algebra R β]
 
 instance instAlgebra : Algebra R (Matrix n n α) where
-  toRingHom := (Matrix.scalar n).comp (algebraMap R α)
+  algebraMap := (Matrix.scalar n).comp (algebraMap R α)
   commutes' _ _ := scalar_commute _ (fun _ => Algebra.commutes _ _) _
   smul_def' r x := by ext; simp [Matrix.scalar, Algebra.smul_def r]
 
 theorem algebraMap_matrix_apply {r : R} {i j : n} :
     algebraMap R (Matrix n n α) r i j = if i = j then algebraMap R α r else 0 := by
-  dsimp [algebraMap, Algebra.toRingHom, Matrix.scalar]
+  dsimp [algebraMap, Algebra.algebraMap, Matrix.scalar]
   split_ifs with h <;> simp [h, Matrix.one_apply_ne]
 
 theorem algebraMap_eq_diagonal (r : R) :

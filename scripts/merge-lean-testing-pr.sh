@@ -17,7 +17,8 @@ if ! git merge origin/$BRANCH_NAME; then
     git add lean-toolchain lakefile.lean lake-manifest.json
 fi
 
-sed -i "s/$BRANCH_NAME/nightly-testing/g" lakefile.lean
+sed "s/$BRANCH_NAME/nightly-testing/g" < lakefile.lean > lakefile.lean.new
+mv lakefile.lean.new lakefile.lean
 git add lakefile.lean
 
 # Check for merge conflicts

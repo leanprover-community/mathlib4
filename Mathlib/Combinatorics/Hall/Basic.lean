@@ -62,7 +62,7 @@ def hallMatchingsOn {ι : Type u} {α : Type v} (t : ι → Finset α) (ι' : Fi
 def hallMatchingsOn.restrict {ι : Type u} {α : Type v} (t : ι → Finset α) {ι' ι'' : Finset ι}
     (h : ι' ⊆ ι'') (f : hallMatchingsOn t ι'') : hallMatchingsOn t ι' := by
   refine ⟨fun i => f.val ⟨i, h i.property⟩, ?_⟩
-  cases' f.property with hinj hc
+  obtain ⟨hinj, hc⟩ := f.property
   refine ⟨?_, fun i => hc ⟨i, h i.property⟩⟩
   rintro ⟨i, hi⟩ ⟨j, hj⟩ hh
   simpa only [Subtype.mk_eq_mk] using hinj hh
@@ -184,10 +184,8 @@ theorem Fintype.all_card_le_rel_image_card_iff_exists_injective {α : Type u} {�
     rw [← Set.toFinset_card]
     apply congr_arg
     ext b
-    -- Porting note: added `Set.mem_toFinset` (fixed by lean#6123)
-    simp [Rel.image, (Set.mem_toFinset)]
-  -- Porting note: added `Set.mem_toFinset` (fixed by lean#6123)
-  have h' : ∀ (f : α → β) (x), r x (f x) ↔ f x ∈ r' x := by simp [Rel.image, (Set.mem_toFinset)]
+    simp [r', Rel.image]
+  have h' : ∀ (f : α → β) (x), r x (f x) ↔ f x ∈ r' x := by simp [r', Rel.image]
   simp only [h, h']
   apply Finset.all_card_le_biUnion_card_iff_exists_injective
 

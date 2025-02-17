@@ -106,7 +106,7 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
       ← Spec.map_comp]
     erw [pullbackAwayιIso_inv_fst]
     congr 1
-    ext x
+    ext x : 2
     exact DFunLike.congr_fun (Algebra.TensorProduct.lift_comp_includeLeft
       (awayMapₐ 𝒜 j.2.2 rfl) (awayMapₐ 𝒜 i.2.2 (mul_comm _ _)) (fun _ _ ↦ .all _ _)).symm x
   · simp only [Iso.trans_hom, congrHom_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id,
@@ -115,7 +115,7 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
       Spec.map_comp, e₂, e₁]
     erw [pullbackAwayιIso_inv_snd]
     congr 1
-    ext x
+    ext x : 2
     exact DFunLike.congr_fun (Algebra.TensorProduct.lift_comp_includeRight
       (awayMapₐ 𝒜 j.2.2 rfl) (awayMapₐ 𝒜 i.2.2 (mul_comm _ _)) (fun _ _ ↦ .all _ _)).symm x
 

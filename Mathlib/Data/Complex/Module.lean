@@ -92,11 +92,11 @@ instance (priority := 100) instModule [Semiring R] [Module R ℝ] : Module R ℂ
   zero_smul r := by ext <;> simp [smul_re, smul_im, zero_smul]
 
 -- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980
-instance (priority := 95) instAlgebraOfReal [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ :=
-  { Complex.ofRealHom.comp (algebraMap R ℝ) with
-    smul := (· • ·)
-    smul_def' := fun r x => by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
-    commutes' := fun r ⟨xr, xi⟩ => by ext <;> simp [smul_re, smul_im, Algebra.commutes] }
+instance (priority := 95) instAlgebraOfReal [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ where
+  algebraMap := Complex.ofRealHom.comp (algebraMap R ℝ)
+  smul := (· • ·)
+  smul_def' := fun r x => by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
+  commutes' := fun r ⟨xr, xi⟩ => by ext <;> simp [smul_re, smul_im, Algebra.commutes]
 
 instance : StarModule ℝ ℂ :=
   ⟨fun r x => by simp only [star_def, star_trivial, real_smul, map_mul, conj_ofReal]⟩
@@ -189,13 +189,13 @@ theorem Complex.coe_smul {E : Type*} [AddCommGroup E] [Module ℂ E] (x : ℝ) (
 another scalar action of `M` on `E` whenever the action of `ℂ` commutes with the action of `M`. -/
 instance (priority := 900) SMulCommClass.complexToReal {M E : Type*} [AddCommGroup E] [Module ℂ E]
     [SMul M E] [SMulCommClass ℂ M E] : SMulCommClass ℝ M E where
-  smul_comm r _ _ := (smul_comm (r : ℂ) _ _ : _)
+  smul_comm r _ _ := smul_comm (r : ℂ) _ _
 
 /-- The scalar action of `ℝ` on a `ℂ`-module `E` induced by `Module.complexToReal` associates with
 another scalar action of `M` on `E` whenever the action of `ℂ` associates with the action of `M`. -/
 instance IsScalarTower.complexToReal {M E : Type*} [AddCommGroup M] [Module ℂ M] [AddCommGroup E]
     [Module ℂ E] [SMul M E] [IsScalarTower ℂ M E] : IsScalarTower ℝ M E where
-  smul_assoc r _ _ := (smul_assoc (r : ℂ) _ _ : _)
+  smul_assoc r _ _ := smul_assoc (r : ℂ) _ _
 
 -- check that the following instance is implied by the one above.
 example (E : Type*) [AddCommGroup E] [Module ℂ E] : IsScalarTower ℝ ℂ E := inferInstance

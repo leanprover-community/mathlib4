@@ -46,7 +46,7 @@ instance (x : X) : Field (X.residueField x) :=
 
 /-- The residue map from the stalk to the residue field. -/
 def residue (X : Scheme.{u}) (x) : X.presheaf.stalk x ⟶ X.residueField x :=
-  IsLocalRing.residue _
+  CommRingCat.ofHom (IsLocalRing.residue (X.presheaf.stalk x))
 
 /-- See `AlgebraicGeometry.IsClosedImmersion.Spec_map_residue` for the stronger result that
 `Spec.map (X.residue x)` is a closed immersion. -/
@@ -70,15 +70,15 @@ instance (X : Scheme.{u}) (x) : Epi (X.residue x) :=
 /-- If `K` is a field and `f : 𝒪_{X, x} ⟶ K` is a ring map, then this is the induced
 map `κ(x) ⟶ K`. -/
 def descResidueField {K : Type u} [Field K] {X : Scheme.{u}} {x : X}
-    (f : X.presheaf.stalk x ⟶ .of K) [IsLocalHom f] :
+    (f : X.presheaf.stalk x ⟶ .of K) [IsLocalHom f.hom] :
     X.residueField x ⟶ .of K :=
-  IsLocalRing.ResidueField.lift (S := K) f
+  CommRingCat.ofHom (IsLocalRing.ResidueField.lift (S := K) f.hom)
 
 @[reassoc (attr := simp)]
 lemma residue_descResidueField {K : Type u} [Field K] {X : Scheme.{u}} {x}
-    (f : X.presheaf.stalk x ⟶ .of K) [IsLocalHom f] :
+    (f : X.presheaf.stalk x ⟶ .of K) [IsLocalHom f.hom] :
     X.residue x ≫ X.descResidueField f = f :=
-  RingHom.ext fun _ ↦ rfl
+  CommRingCat.hom_ext <| RingHom.ext fun _ ↦ rfl
 
 /--
 If `U` is an open of `X` containing `x`, we have a canonical ring map from the sections
@@ -116,7 +116,7 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 a morphism of residue fields in the other direction. -/
 def Hom.residueFieldMap (f : X.Hom Y) (x : X) :
     Y.residueField (f.base x) ⟶ X.residueField x :=
-  IsLocalRing.ResidueField.map (f.stalkMap x)
+  CommRingCat.ofHom <| IsLocalRing.ResidueField.map (f.stalkMap x).hom
 
 @[reassoc]
 lemma residue_residueFieldMap (x : X) :
@@ -259,16 +259,17 @@ lemma range_fromSpecResidueField (x : X.carrier) :
     exact ⟨closedPoint (X.residueField x), rfl⟩
 
 lemma descResidueField_fromSpecResidueField {K : Type*} [Field K] (X : Scheme) {x}
-    (f : X.presheaf.stalk x ⟶ .of K) [IsLocalHom f] :
+    (f : X.presheaf.stalk x ⟶ .of K) [IsLocalHom f.hom] :
     Spec.map (X.descResidueField f) ≫
       X.fromSpecResidueField x = Spec.map f ≫ X.fromSpecStalk x := by
   simp [fromSpecResidueField, ← Spec.map_comp_assoc]
 
 lemma descResidueField_stalkClosedPointTo_fromSpecResidueField
     (K : Type u) [Field K] (X : Scheme.{u}) (f : Spec (.of K) ⟶ X) :
-    Spec.map (X.descResidueField (Scheme.stalkClosedPointTo f)) ≫
+    Spec.map (@descResidueField (CommRingCat.of K) _ X _ (Scheme.stalkClosedPointTo f)
+        _) ≫
       X.fromSpecResidueField (f.base (closedPoint K)) = f := by
-  erw [X.descResidueField_fromSpecResidueField]
+  rw [X.descResidueField_fromSpecResidueField]
   rw [Scheme.Spec_stalkClosedPointTo_fromSpecStalk]
 
 end fromResidueField

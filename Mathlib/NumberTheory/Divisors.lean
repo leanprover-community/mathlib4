@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.IsPrimePow
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Order.Interval.Finset.Nat
 
@@ -45,7 +46,8 @@ def properDivisors : Finset ℕ := {d ∈ Ico 1 n | d ∣ n}
 /-- `divisorsAntidiagonal n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
   As a special case, `divisorsAntidiagonal 0 = ∅`. -/
 def divisorsAntidiagonal : Finset (ℕ × ℕ) :=
-  {x ∈ Ico 1 (n + 1) ×ˢ Ico 1 (n + 1) | x.fst * x.snd = n}
+  (Icc 1 n).filterMap (fun x ↦ let y := n / x; if x * y = n then some (x, y) else none)
+    fun x₁ x₂ (x, y) hx₁ hx₂ ↦ by aesop
 
 variable {n}
 
@@ -96,20 +98,16 @@ theorem dvd_of_mem_divisors {m : ℕ} (h : n ∈ divisors m) : n ∣ m := by
 @[simp]
 theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
     x ∈ divisorsAntidiagonal n ↔ x.fst * x.snd = n ∧ n ≠ 0 := by
-  simp only [divisorsAntidiagonal, Finset.mem_Ico, Ne, Finset.mem_filter, Finset.mem_product]
-  rw [and_comm]
-  apply and_congr_right
-  rintro rfl
-  constructor <;> intro h
-  · contrapose! h
-    simp [h]
-  · rw [Nat.lt_add_one_iff, Nat.lt_add_one_iff]
-    rw [mul_eq_zero, not_or] at h
-    simp only [succ_le_of_lt (Nat.pos_of_ne_zero h.1), succ_le_of_lt (Nat.pos_of_ne_zero h.2),
-      true_and]
-    exact
-      ⟨Nat.le_mul_of_pos_right _ (Nat.pos_of_ne_zero h.2),
-        Nat.le_mul_of_pos_left _ (Nat.pos_of_ne_zero h.1)⟩
+  obtain ⟨a, b⟩ := x
+  simp only [divisorsAntidiagonal, mul_div_eq_iff_dvd, mem_filterMap, mem_Icc, one_le_iff_ne_zero,
+    Option.ite_none_right_eq_some, Option.some.injEq, Prod.ext_iff, and_left_comm, exists_eq_left]
+  constructor
+  · rintro ⟨han, ⟨ha, han'⟩, rfl⟩
+    simp [Nat.mul_div_eq_iff_dvd, han]
+    omega
+  · rintro ⟨rfl, hab⟩
+    rw [mul_ne_zero_iff] at hab
+    simpa [hab.1, hab.2] using Nat.le_mul_of_pos_right _ hab.2.bot_lt
 
 lemma ne_zero_of_mem_divisorsAntidiagonal {p : ℕ × ℕ} (hp : p ∈ n.divisorsAntidiagonal) :
     p.1 ≠ 0 ∧ p.2 ≠ 0 := by
@@ -125,13 +123,19 @@ lemma right_ne_zero_of_mem_divisorsAntidiagonal {p : ℕ × ℕ} (hp : p ∈ n.d
   (ne_zero_of_mem_divisorsAntidiagonal hp).2
 
 theorem divisor_le {m : ℕ} : n ∈ divisors m → n ≤ m := by
-  cases' m with m
+  rcases m with - | m
   · simp
   · simp only [mem_divisors, Nat.succ_ne_zero m, and_true, Ne, not_false_iff]
     exact Nat.le_of_dvd (Nat.succ_pos m)
 
 theorem divisors_subset_of_dvd {m : ℕ} (hzero : n ≠ 0) (h : m ∣ n) : divisors m ⊆ divisors n :=
   Finset.subset_iff.2 fun _x hx => Nat.mem_divisors.mpr ⟨(Nat.mem_divisors.mp hx).1.trans h, hzero⟩
+
+theorem card_divisors_le_self (n : ℕ) : #n.divisors ≤ n := calc
+  _ ≤ #(Ico 1 (n + 1)) := by
+    apply card_le_card
+    simp only [divisors, filter_subset]
+  _ = n := by rw [card_Ico, add_tsub_cancel_right]
 
 theorem divisors_subset_properDivisors {m : ℕ} (hzero : n ≠ 0) (h : m ∣ n) (hdiff : m ≠ n) :
     divisors m ⊆ properDivisors n := by
@@ -203,7 +207,7 @@ lemma one_lt_of_mem_properDivisors {m n : ℕ} (h : m ∈ n.properDivisors) : 1 
 lemma one_lt_div_of_mem_properDivisors {m n : ℕ} (h : m ∈ n.properDivisors) :
     1 < n / m := by
   obtain ⟨h_dvd, h_lt⟩ := mem_properDivisors.mp h
-  rwa [Nat.lt_div_iff_mul_lt h_dvd, mul_one]
+  rwa [Nat.lt_div_iff_mul_lt' h_dvd, mul_one]
 
 /-- See also `Nat.mem_properDivisors`. -/
 lemma mem_properDivisors_iff_exists {m n : ℕ} (hn : n ≠ 0) :
@@ -233,17 +237,11 @@ theorem divisorsAntidiagonal_one : divisorsAntidiagonal 1 = {(1, 1)} := by
   ext
   simp [mul_eq_one, Prod.ext_iff]
 
-/- Porting note: simpnf linter; added aux lemma below
-Left-hand side simplifies from
-  Prod.swap x ∈ Nat.divisorsAntidiagonal n
-to
-  x.snd * x.fst = n ∧ ¬n = 0-/
--- @[simp]
+-- The left hand side is not in simp normal form, see the variant below.
 theorem swap_mem_divisorsAntidiagonal {x : ℕ × ℕ} :
     x.swap ∈ divisorsAntidiagonal n ↔ x ∈ divisorsAntidiagonal n := by
   rw [mem_divisorsAntidiagonal, mem_divisorsAntidiagonal, mul_comm, Prod.swap]
 
--- Porting note: added below thm to replace the simp from the previous thm
 @[simp]
 theorem swap_mem_divisorsAntidiagonal_aux {x : ℕ × ℕ} :
     x.snd * x.fst = n ∧ ¬n = 0 ↔ x ∈ divisorsAntidiagonal n := by
@@ -366,9 +364,9 @@ theorem eq_properDivisors_of_subset_of_sum_eq_sum {s : Finset ℕ} (hsub : s ⊆
 
 theorem sum_properDivisors_dvd (h : (∑ x ∈ n.properDivisors, x) ∣ n) :
     ∑ x ∈ n.properDivisors, x = 1 ∨ ∑ x ∈ n.properDivisors, x = n := by
-  cases' n with n
+  rcases n with - | n
   · simp
-  · cases' n with n
+  · rcases n with - | n
     · simp at h
     · rw [or_iff_not_imp_right]
       intro ne_n
@@ -405,7 +403,7 @@ theorem properDivisors_eq_singleton_one_iff_prime : n.properDivisors = {1} ↔ n
   · exact fun h => Prime.properDivisors h
 
 theorem sum_properDivisors_eq_one_iff_prime : ∑ x ∈ n.properDivisors, x = 1 ↔ n.Prime := by
-  cases' n with n
+  rcases n with - | n
   · simp [Nat.not_prime_zero]
   · cases n
     · simp [Nat.not_prime_one]
@@ -474,16 +472,10 @@ theorem primeFactors_eq_to_filter_divisors_prime (n : ℕ) :
   · ext q
     simpa [hn, hn.ne', mem_primeFactorsList] using and_comm
 
-@[deprecated (since := "2024-07-17")]
-alias prime_divisors_eq_to_filter_divisors_prime := primeFactors_eq_to_filter_divisors_prime
-
 lemma primeFactors_filter_dvd_of_dvd {m n : ℕ} (hn : n ≠ 0) (hmn : m ∣ n) :
     {p ∈ n.primeFactors | p ∣ m} = m.primeFactors := by
   simp_rw [primeFactors_eq_to_filter_divisors_prime, filter_comm,
     divisors_filter_dvd_of_dvd hn hmn]
-
-@[deprecated (since := "2024-07-17")]
-alias prime_divisors_filter_dvd_of_dvd := primeFactors_filter_dvd_of_dvd
 
 @[simp]
 theorem image_div_divisors_eq_divisors (n : ℕ) :
@@ -514,5 +506,11 @@ theorem prod_div_divisors {α : Type*} [CommMonoid α] (n : ℕ) (f : ℕ → α
   · intro x hx y hy h
     rw [mem_divisors] at hx hy
     exact (div_eq_iff_eq_of_dvd_dvd hn hx.1 hy.1).mp h
+
+theorem disjoint_divisors_filter_isPrimePow {a b : ℕ} (hab : a.Coprime b) :
+    Disjoint (a.divisors.filter IsPrimePow) (b.divisors.filter IsPrimePow) := by
+  simp only [Finset.disjoint_left, Finset.mem_filter, and_imp, Nat.mem_divisors, not_and]
+  rintro n han _ha hn hbn _hb -
+  exact hn.ne_one (Nat.eq_one_of_dvd_coprimes hab han hbn)
 
 end Nat

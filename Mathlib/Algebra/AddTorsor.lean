@@ -38,6 +38,8 @@ multiplicative group actions).
 
 -/
 
+open scoped Pointwise
+
 /-- An `AddTorsor G P` gives a structure to the nonempty type `P`,
 acted on by an `AddGroup G` with a transitive and free action given
 by the `+ᵥ` operation and a corresponding subtraction given by the
@@ -87,7 +89,6 @@ theorem vadd_vsub (g : G) (p : P) : (g +ᵥ p) -ᵥ p = g :=
 /-- If the same point added to two group elements produces equal
 results, those group elements are equal. -/
 theorem vadd_right_cancel {g₁ g₂ : G} (p : P) (h : g₁ +ᵥ p = g₂ +ᵥ p) : g₁ = g₂ := by
--- Porting note: vadd_vsub g₁ → vadd_vsub g₁ p
   rw [← vadd_vsub g₁ p, h, vadd_vsub]
 
 @[simp]
@@ -163,8 +164,6 @@ theorem vadd_eq_vadd_iff_neg_add_eq_vsub {v₁ v₂ : G} {p₁ p₂ : P} :
 
 namespace Set
 
-open Pointwise
-
 theorem singleton_vsub_self (p : P) : ({p} : Set P) -ᵥ {p} = {(0 : G)} := by
   rw [Set.singleton_vsub_singleton, vsub_self]
 
@@ -232,6 +231,13 @@ theorem vadd_eq_vadd_iff_sub_eq_vsub {v₁ v₂ : G} {p₁ p₂ : P} :
 theorem vsub_sub_vsub_comm (p₁ p₂ p₃ p₄ : P) : p₁ -ᵥ p₂ - (p₃ -ᵥ p₄) = p₁ -ᵥ p₃ - (p₂ -ᵥ p₄) := by
   rw [← vsub_vadd_eq_vsub_sub, vsub_vadd_comm, vsub_vadd_eq_vsub_sub]
 
+namespace Set
+
+@[simp] lemma vadd_set_vsub_vadd_set (v : G) (s t : Set P) : (v +ᵥ s) -ᵥ (v +ᵥ t) = s -ᵥ t := by
+  ext; simp [mem_vsub, mem_vadd_set]
+
+end Set
+
 end comm
 
 namespace Prod
@@ -245,15 +251,6 @@ instance instAddTorsor : AddTorsor (G × G') (P × P') where
   vsub p₁ p₂ := (p₁.1 -ᵥ p₂.1, p₁.2 -ᵥ p₂.2)
   vsub_vadd' _ _ := Prod.ext (vsub_vadd _ _) (vsub_vadd _ _)
   vadd_vsub' _ _ := Prod.ext (vadd_vsub _ _) (vadd_vsub _ _)
-
--- Porting note: The proofs above used to be shorter:
--- zero_vadd p := by simp ⊢ 0 +ᵥ p = p
--- add_vadd := by simp [add_vadd] ⊢ ∀ (a : G) (b : G') (a_1 : G) (b_1 : G') (a_2 : P) (b_2 : P'),
---  (a + a_1, b + b_1) +ᵥ (a_2, b_2) = (a, b) +ᵥ ((a_1, b_1) +ᵥ (a_2, b_2))
--- vsub_vadd' p₁ p₂ := show (p₁.1 -ᵥ p₂.1 +ᵥ p₂.1, _) = p₁ by simp
---   ⊢ (p₁.fst -ᵥ p₂.fst +ᵥ p₂.fst, ((p₁.fst -ᵥ p₂.fst, p₁.snd -ᵥ p₂.snd) +ᵥ p₂).snd) = p₁
--- vadd_vsub' v p := show (v.1 +ᵥ p.1 -ᵥ p.1, v.2 +ᵥ p.2 -ᵥ p.2) = v by simp
---   ⊢ (v.fst +ᵥ p.fst -ᵥ p.fst, v.snd) = v
 
 @[simp]
 theorem fst_vadd (v : G × G') (p : P × P') : (v +ᵥ p).1 = v.1 +ᵥ p.1 :=
@@ -364,8 +361,6 @@ def constVAddHom : Multiplicative G →* Equiv.Perm P where
 
 variable {P}
 
--- Porting note: Previous code was:
--- open _Root_.Function
 open Function
 
 /-- Point reflection in `x` as a permutation. -/
@@ -412,7 +407,6 @@ theorem pointReflection_fixed_iff_of_injective_two_nsmul {x y : P} (h : Injectiv
 @[deprecated (since := "2024-11-18")] alias pointReflection_fixed_iff_of_injective_bit0 :=
 pointReflection_fixed_iff_of_injective_two_nsmul
 
--- Porting note: need this to calm down CI
 theorem injective_pointReflection_left_of_injective_two_nsmul {G P : Type*} [AddCommGroup G]
     [AddTorsor G P] (h : Injective (2 • · : G → G)) (y : P) :
     Injective fun x : P => pointReflection x y :=

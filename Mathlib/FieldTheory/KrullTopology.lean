@@ -175,11 +175,11 @@ instance krullTopology (K L : Type*) [Field K] [Field L] [Algebra K L] :
   GroupFilterBasis.topology (galGroupBasis K L)
 
 /-- For a field extension `L/K`, the Krull topology on `L ≃ₐ[K] L` makes it a topological group. -/
-instance (K L : Type*) [Field K] [Field L] [Algebra K L] : TopologicalGroup (L ≃ₐ[K] L) :=
+instance (K L : Type*) [Field K] [Field L] [Algebra K L] : IsTopologicalGroup (L ≃ₐ[K] L) :=
   GroupFilterBasis.isTopologicalGroup (galGroupBasis K L)
 
 open scoped Topology in
-lemma krullTopology_mem_nhds_one (K L : Type*) [Field K] [Field L] [Algebra K L]
+lemma krullTopology_mem_nhds_one_iff (K L : Type*) [Field K] [Field L] [Algebra K L]
     (s : Set (L ≃ₐ[K] L)) : s ∈ 𝓝 1 ↔ ∃ E : IntermediateField K L,
     FiniteDimensional K E ∧ (E.fixingSubgroup : Set (L ≃ₐ[K] L)) ⊆ s := by
   rw [GroupFilterBasis.nhds_one_eq]
@@ -188,6 +188,16 @@ lemma krullTopology_mem_nhds_one (K L : Type*) [Field K] [Field L] [Algebra K L]
     exact ⟨E, fin, hE⟩
   · rintro ⟨E, fin, hE⟩
     exact ⟨E.fixingSubgroup, ⟨E.fixingSubgroup, ⟨E, fin, rfl⟩, rfl⟩, hE⟩
+
+open scoped Topology in
+lemma krullTopology_mem_nhds_one_iff_of_normal (K L : Type*) [Field K] [Field L] [Algebra K L]
+    [Normal K L] (s : Set (L ≃ₐ[K] L)) : s ∈ 𝓝 1 ↔ ∃ E : IntermediateField K L,
+    FiniteDimensional K E ∧ Normal K E ∧ (E.fixingSubgroup : Set (L ≃ₐ[K] L)) ⊆ s := by
+  rw [krullTopology_mem_nhds_one_iff]
+  refine ⟨fun ⟨E, _, hE⟩ ↦ ?_, fun ⟨E, hE⟩ ↦ ⟨E, hE.1, hE.2.2⟩⟩
+  use (IntermediateField.normalClosure K E L)
+  simp only [normalClosure.is_finiteDimensional K E L, normalClosure.normal K E L, true_and]
+  exact le_trans (E.fixingSubgroup_anti E.le_normalClosure) hE
 
 section KrullT2
 
@@ -215,7 +225,7 @@ theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
     [Algebra.IsIntegral K L] : T2Space (L ≃ₐ[K] L) :=
   { t2 := fun f g hfg => by
       let φ := f⁻¹ * g
-      cases' DFunLike.exists_ne hfg with x hx
+      obtain ⟨x, hx⟩ := DFunLike.exists_ne hfg
       have hφx : φ x ≠ x := by
         apply ne_of_apply_ne f
         change f (f.symm (g x)) ≠ f x
@@ -267,6 +277,10 @@ theorem krullTopology_totallyDisconnected {K L : Type*} [Field K] [Field L] [Alg
     not_forall]
   exact ⟨x, IntermediateField.mem_adjoin_simple_self K x, hx⟩
 
+instance {K L : Type*} [Field K] [Field L] [Algebra K L] [Algebra.IsIntegral K L] :
+    TotallyDisconnectedSpace (L ≃ₐ[K] L) where
+  isTotallyDisconnected_univ := krullTopology_totallyDisconnected
+
 end TotallyDisconnected
 
 @[simp] lemma IntermediateField.fixingSubgroup_top (K L : Type*) [Field K] [Field L] [Algebra K L] :
@@ -279,7 +293,7 @@ end TotallyDisconnected
   ext
   simp [mem_fixingSubgroup_iff, mem_bot]
 
-instance krullTopology_discreteTopology_of_finiteDimensional (K L : Type) [Field K] [Field L]
+instance krullTopology_discreteTopology_of_finiteDimensional (K L : Type*) [Field K] [Field L]
     [Algebra K L] [FiniteDimensional K L] : DiscreteTopology (L ≃ₐ[K] L) := by
   rw [discreteTopology_iff_isOpen_singleton_one]
   change IsOpen ((⊥ : Subgroup (L ≃ₐ[K] L)) : Set (L ≃ₐ[K] L))

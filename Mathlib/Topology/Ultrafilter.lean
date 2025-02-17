@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
 import Mathlib.Order.Filter.Lift
 import Mathlib.Topology.Basic
-import Mathlib.Order.Filter.Ultrafilter
+import Mathlib.Order.Filter.Ultrafilter.Basic
 
 /-! # Characterization of basic topological properties in terms of ultrafilters -/
 

@@ -94,7 +94,7 @@ theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p
     rw [isBridge_iff_adj_and_forall_walk_mem_edges] at h
     replace h := h.2 (q.append p.reverse)
     simp only [Walk.edges_append, Walk.edges_reverse, List.mem_append, List.mem_reverse] at h
-    cases' h with h h
+    rcases h with h | h
     · cases q with
       | nil => simp [Walk.isPath_def] at hp
       | cons _ q =>
@@ -175,7 +175,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
           length_tail_add_one (not_nil_of_ne (by simpa using ha))] at h3
         omega
       · simp only [ne_eq, eq_mp_eq_cast, id_eq, isPath_copy]
-        exact (hf _).tail (not_nil_of_ne (by simpa using ha))
+        exact (hf _).tail
   case surj =>
     simp only [mem_edgeFinset, Finset.mem_compl, Finset.mem_singleton, Sym2.forall, mem_edgeSet]
     intros x y h

@@ -259,9 +259,17 @@ example (x : ℕ) (h : x * 2 > 5): x + x > 5 := by ring; assumption -- suggests 
 ```
 -/
 macro (name := ring) "ring" : tactic =>
-  `(tactic| first | ring1 | try_this ring_nf)
+  `(tactic| first | ring1 | try_this ring_nf
+  "\n\nThe `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+  \nNote that `ring` works primarily in *commutative* rings. \
+  If you have a noncommutative ring, abelian group or module, consider using \
+  `noncomm_ring`, `abel` or `module` instead.")
 @[inherit_doc ring] macro "ring!" : tactic =>
-  `(tactic| first | ring1! | try_this ring_nf!)
+  `(tactic| first | ring1! | try_this ring_nf!
+  "\n\nThe `ring!` tactic failed to close the goal. Use `ring_nf!` to obtain a normal form.
+  \nNote that `ring!` works primarily in *commutative* rings. \
+  If you have a noncommutative ring, abelian group or module, consider using \
+  `noncomm_ring`, `abel` or `module` instead.")
 
 /--
 The tactic `ring` evaluates expressions in *commutative* (semi)rings.
@@ -270,9 +278,17 @@ This is the conv tactic version, which rewrites a target which is a ring equalit
 See also the `ring` tactic.
 -/
 macro (name := ringConv) "ring" : conv =>
-  `(conv| first | discharge => ring1 | try_this ring_nf)
+  `(conv| first | discharge => ring1 | try_this ring_nf
+  "\n\nThe `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+  \nNote that `ring` works primarily in *commutative* rings. \
+  If you have a noncommutative ring, abelian group or module, consider using \
+  `noncomm_ring`, `abel` or `module` instead.")
 @[inherit_doc ringConv] macro "ring!" : conv =>
-  `(conv| first | discharge => ring1! | try_this ring_nf!)
+  `(conv| first | discharge => ring1! | try_this ring_nf!
+  "\n\nThe `ring!` tactic failed to close the goal. Use `ring_nf!` to obtain a normal form.
+  \nNote that `ring!` works primarily in *commutative* rings. \
+  If you have a noncommutative ring, abelian group or module, consider using \
+  `noncomm_ring`, `abel` or `module` instead.")
 
 end RingNF
 

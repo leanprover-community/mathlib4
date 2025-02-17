@@ -85,10 +85,8 @@ end Coimage
 In any abelian category this is an isomorphism.
 
 Conversely, any additive category with kernels and cokernels and
-in which this is always an isomorphism, is abelian.
-
-See <https://stacks.math.columbia.edu/tag/0107>
--/
+in which this is always an isomorphism, is abelian. -/
+@[stacks 0107]
 def coimageImageComparison : Abelian.coimage f ⟶ Abelian.image f :=
   cokernel.desc (kernel.ι f) (kernel.lift (cokernel.π f) f (by simp)) (by ext; simp)
 
@@ -105,5 +103,13 @@ theorem coimageImageComparison_eq_coimageImageComparison' :
 @[reassoc (attr := simp)]
 theorem coimage_image_factorisation : coimage.π f ≫ coimageImageComparison f ≫ image.ι f = f := by
   simp [coimageImageComparison]
+
+/-- The coimage-image comparison morphism is functorial. -/
+@[simps! obj map]
+def coimageImageComparisonFunctor : Arrow C ⥤ Arrow C where
+  obj f := Arrow.mk (coimageImageComparison f.hom)
+  map {f g} η := Arrow.homMk
+    (cokernel.map _ _ (kernel.map _ _ η.left η.right (by simp)) η.left (by simp))
+    (kernel.map _ _ η.right (cokernel.map _ _ η.left η.right (by simp)) (by simp)) (by aesop_cat)
 
 end CategoryTheory.Abelian

@@ -357,7 +357,7 @@ protected theorem measurable_comp_iff {f : β → γ} (e : α ≃ᵐ β) :
 /-- Any two types with unique elements are measurably equivalent. -/
 def ofUniqueOfUnique (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] [Unique α] [Unique β] :
     α ≃ᵐ β where
-  toEquiv := equivOfUnique α β
+  toEquiv := ofUnique α β
   measurable_toFun := Subsingleton.measurable
   measurable_invFun := Subsingleton.measurable
 
@@ -428,8 +428,7 @@ def Set.rangeInl : (range Sum.inl : Set (α ⊕ β)) ≃ᵐ α where
   toEquiv := Equiv.Set.rangeInl α β
   measurable_toFun s (hs : MeasurableSet s) := by
     refine ⟨_, hs.inl_image, Set.ext ?_⟩
-    rintro ⟨ab, a, rfl⟩
-    simp [Set.range_inl]
+    simp
   measurable_invFun := Measurable.subtype_mk measurable_inl
 
 /-- `β` is equivalent to its image in `α ⊕ β` as measurable spaces. -/
@@ -437,8 +436,7 @@ def Set.rangeInr : (range Sum.inr : Set (α ⊕ β)) ≃ᵐ β where
   toEquiv := Equiv.Set.rangeInr α β
   measurable_toFun s (hs : MeasurableSet s) := by
     refine ⟨_, hs.inr_image, Set.ext ?_⟩
-    rintro ⟨ab, b, rfl⟩
-    simp [Set.range_inr]
+    simp
   measurable_invFun := Measurable.subtype_mk measurable_inr
 
 /-- Products distribute over sums (on the right) as measurable spaces. -/
@@ -506,9 +504,7 @@ def arrowProdEquivProdArrow (α β γ : Type*) [MeasurableSpace α] [MeasurableS
   __ := Equiv.arrowProdEquivProdArrow α β γ
   measurable_toFun _ h := by
     simp_rw [Equiv.arrowProdEquivProdArrow, coe_fn_mk]
-    #adaptation_note
-    /--
-    After https://github.com/leanprover/lean4/pull/6024
+    #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
     we need provide the type hints `(a : γ → α × β)`, to avoid unification issues.
     -/
     exact MeasurableSet.preimage h (Measurable.prod_mk
@@ -722,7 +718,7 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
     have : Aᶜ = g '' Bᶜ := by
       apply compl_injective
       rw [← Afp]
-      simp
+      simp [F, B]
     rw [this]
     exact (hg.equivImage _).symm
   have Fmono : ∀ {A B}, A ⊆ B → F A ⊆ F B := fun h =>

@@ -27,6 +27,8 @@ appearing in the introduction of
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Category Limits Preadditive
 
 universe v u
@@ -85,7 +87,7 @@ lemma rightUnshift_v {n' a : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn :
 def leftUnshift {n' a : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn : n + a = n') :
     Cochain K L n :=
   Cochain.mk (fun p q hpq => (a * n' + ((a * (a-1))/2)).negOnePow •
-    (K.shiftFunctorObjXIso a (p - a) p (by linarith)).inv ≫ γ.v (p-a) q (by omega))
+    (K.shiftFunctorObjXIso a (p - a) p (by omega)).inv ≫ γ.v (p-a) q (by omega))
 
 lemma leftUnshift_v {n' a : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn : n + a = n')
     (p q : ℤ) (hpq : p + n = q) (p' : ℤ) (hp' : p' + n' = q) :
@@ -373,7 +375,7 @@ lemma leftShift_comp (a n' : ℤ) (hn' : n + a = n') {m t t' : ℤ} (γ' : Cocha
     (γ.comp γ' h).leftShift a t' ht' = (a * m).negOnePow • (γ.leftShift a n' hn').comp γ'
       (by rw [← ht', ← h, ← hn', add_assoc, add_comm a, add_assoc]) := by
   ext p q hpq
-  have h' : n' + m = t' := by linarith
+  have h' : n' + m = t' := by omega
   dsimp
   simp only [Cochain.comp_v _ _ h' p (p + n') q rfl (by omega),
     γ.leftShift_v a n' hn' p (p + n') rfl (p + a) (by omega),

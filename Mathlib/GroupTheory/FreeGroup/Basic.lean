@@ -3,8 +3,8 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Algebra.Group.Subgroup.Ker
+import Mathlib.Algebra.BigOperators.Group.List.Basic
 
 /-!
 # Free groups
@@ -126,7 +126,7 @@ theorem Step.append_right : ∀ {L₁ L₂ L₃ : List (α × Bool)}, Step L₁ 
 theorem not_step_nil : ¬Step [] L := by
   generalize h' : [] = L'
   intro h
-  cases' h with L₁ L₂
+  rcases h with - | ⟨L₁, L₂⟩
   simp [List.nil_eq_append_iff] at h'
 
 @[to_additive]
@@ -217,7 +217,7 @@ theorem cons_cons_iff (p) : Red (p :: L₁) (p :: L₂) ↔ Red L₁ L₂ :=
         cases eq₂
         constructor
       · subst_vars
-        cases' p with a b
+        obtain ⟨a, b⟩ := p
         rw [Step.cons_left_iff] at h₁₂
         rcases h₁₂ with (⟨L, h₁₂, rfl⟩ | rfl)
         · exact (ih rfl rfl).head h₁₂
@@ -336,18 +336,8 @@ theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
   | _, _, @Step.not _ L1 L2 x b => by
     induction L1 with
     | nil =>
-      -- dsimp [sizeOf]
       dsimp
-      simp only [Bool.sizeOf_eq_one]
-
-      have H :
-        1 + (1 + 1) + (1 + (1 + 1) + sizeOf L2) =
-          sizeOf L2 + (1 + ((1 + 1) + (1 + 1) + 1)) := by
-        ac_rfl
-      rw [H]
-      apply Nat.lt_add_of_pos_right
-      apply Nat.lt_add_right
-      apply Nat.zero_lt_one
+      omega
     | cons hd tl ih =>
       dsimp
       exact Nat.add_lt_add_left ih _

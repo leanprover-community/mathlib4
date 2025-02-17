@@ -8,12 +8,16 @@ open Lake DSL
 -/
 
 require "leanprover-community" / "batteries" @ git "main"
-require "leanprover-community" / "Qq" @ git "v4.14.0"
+require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.48"
-require "leanprover-community" / "importGraph" @ git "v4.15.0-rc1"
+require "leanprover-community" / "proofwidgets" @ git "v0.0.52-pre2" -- ProofWidgets should always be pinned to a specific version
+  with NameMap.empty.insert `errorOnBuild
+    "ProofWidgets not up-to-date. \
+    Please run `lake exe cache get` to fetch the latest ProofWidgets. \
+    If this does not work, report your issue on the Lean Zulip."
+require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
-require "leanprover-community" / "plausible" @ git "v4.15.0-rc1"
+require "leanprover-community" / "plausible" @ git "main"
 
 /-!
 ## Options for building mathlib
@@ -24,7 +28,8 @@ require "leanprover-community" / "plausible" @ git "v4.15.0-rc1"
 * as `moreServerArgs`, to set their default value in mathlib
   (as well as `Archive`, `Counterexamples` and `test`). -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
-  ⟨`linter.docPrime, true⟩,
+  -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
+  ⟨`linter.docPrime, false⟩,
   ⟨`linter.hashCommand, true⟩,
   ⟨`linter.oldObtain, true,⟩,
   ⟨`linter.refine, true⟩,
@@ -151,6 +156,9 @@ lean_exe unused where
   supportInterpreter := true
   -- Executables which import `Lake` must set `-lLake`.
   weakLinkArgs := #["-lLake"]
+
+lean_exe mathlib_test_executable where
+  root := `MathlibTest.MathlibTestExecutable
 
 /-!
 ## Other configuration
