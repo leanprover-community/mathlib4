@@ -33,8 +33,6 @@ universe u
 
 open CategoryTheory Limits Functor FintypeCat
 
-attribute [local instance] HasForget.instFunLike
-
 namespace Condensed
 
 variable {C : Type*} [Category C] [HasWeakSheafify (coherentTopology CompHaus.{u}) C]
@@ -74,6 +72,7 @@ noncomputable abbrev LocallyConstant.adjunction :
 
 open Condensed
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 open CondensedSet.LocallyConstant List in
 theorem isDiscrete_tfae  (X : CondensedSet.{u}) :
     TFAE
@@ -113,6 +112,7 @@ namespace CondensedMod
 
 variable (R : Type (u+1)) [Ring R]
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma isDiscrete_iff_isDiscrete_forget (M : CondensedMod R) :
     M.IsDiscrete ↔ ((Condensed.forget R).obj M).IsDiscrete  :=
   Sheaf.isConstant_iff_forget (coherentTopology CompHaus)
@@ -197,6 +197,7 @@ noncomputable abbrev LocallyConstant.adjunction :
     LightCondSet.LocallyConstant.functor ⊣ LightCondensed.underlying (Type u) :=
   CompHausLike.LocallyConstant.adjunction _ _
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 open LightCondSet.LocallyConstant List in
 theorem isDiscrete_tfae  (X : LightCondSet.{u}) :
     TFAE
@@ -229,6 +230,7 @@ namespace LightCondMod
 
 variable (R : Type u) [Ring R]
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma isDiscrete_iff_isDiscrete_forget (M : LightCondMod R) :
     M.IsDiscrete ↔ ((LightCondensed.forget R).obj M).IsDiscrete  :=
   Sheaf.isConstant_iff_forget (coherentTopology LightProfinite)

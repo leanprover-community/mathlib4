@@ -3,11 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Algebra.Periodic
+import Mathlib.Algebra.Field.NegOnePow
+import Mathlib.Algebra.Field.Periodic
 import Mathlib.Algebra.QuadraticDiscriminant
-import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Analysis.SpecialFunctions.Exp
-import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Trigonometric functions
@@ -754,7 +753,7 @@ theorem cos_pi_div_three : cos (π / 3) = 1 / 2 := by
       congr 1
       ring
     linarith [cos_pi, cos_three_mul (π / 3)]
-  cases' mul_eq_zero.mp h₁ with h h
+  rcases mul_eq_zero.mp h₁ with h | h
   · linarith [pow_eq_zero h]
   · have : cos π < cos (π / 3) := by
       refine cos_lt_cos_of_nonneg_of_le_pi ?_ le_rfl ?_ <;> linarith [pi_pos]
