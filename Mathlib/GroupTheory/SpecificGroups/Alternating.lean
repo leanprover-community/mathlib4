@@ -3,7 +3,7 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Data.Fintype.Units
 import Mathlib.GroupTheory.IndexNormal
 import Mathlib.GroupTheory.Perm.Fin
@@ -124,7 +124,7 @@ theorem isConj_of {σ τ : alternatingGroup α} (hc : IsConj (σ : Perm α) (τ 
   obtain ⟨τ, hτ⟩ := τ
   obtain ⟨π, hπ⟩ := isConj_iff.1 hc
   rw [Subtype.coe_mk, Subtype.coe_mk] at hπ
-  cases' Int.units_eq_one_or (Perm.sign π) with h h
+  rcases Int.units_eq_one_or (Perm.sign π) with h | h
   · rw [isConj_iff]
     refine ⟨⟨π, mem_alternatingGroup.mp h⟩, Subtype.val_injective ?_⟩
     simpa only [Subtype.val, Subgroup.coe_mul, coe_inv, coe_mk] using hπ
@@ -387,9 +387,9 @@ theorem eq_alternatingGroup_of_index_eq_two {G : Subgroup (Equiv.Perm α)} (hG :
 theorem alternatingGroup_le_of_index_le_two
     {G : Subgroup (Equiv.Perm α)} (hG : G.index ≤ 2) :
     alternatingGroup α ≤ G := by
-  cases' G.index.eq_zero_or_pos with h h
+  rcases G.index.eq_zero_or_pos with h | h
   · exact (index_ne_zero_of_finite h).elim
-  cases' (Nat.succ_le_iff.mpr h).eq_or_gt with h h
+  rcases (Nat.succ_le_iff.mpr h).eq_or_gt with h | h
   · exact index_eq_one.mp h ▸ le_top
   rw [eq_alternatingGroup_of_index_eq_two (hG.antisymm h)]
 
