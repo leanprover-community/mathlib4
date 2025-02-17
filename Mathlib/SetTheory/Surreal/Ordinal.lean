@@ -18,8 +18,6 @@ We define the canonical map `Ordinal → Surreal` in terms of the map `Ordinal.t
 
 open Surreal SetTheory PGame
 
-open scoped NaturalOps
-
 namespace Ordinal
 
 /-- Ordinal games are numeric. -/
