@@ -617,9 +617,49 @@ open LieModule Function
 
 variable [LieModule R L M]
 variable {L₂ M₂ : Type*} [LieRing L₂] [LieAlgebra R L₂]
-variable [AddCommGroup M₂] [Module R M₂] [LieRingModule L₂ M₂] [LieModule R L₂ M₂]
+variable [AddCommGroup M₂] [Module R M₂] [LieRingModule L₂ M₂]
 variable {f : L →ₗ⁅R⁆ L₂} {g : M →ₗ[R] M₂}
 variable (hf : Surjective f) (hg : Surjective g) (hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆)
+variable (hg_inj : Injective g)
+
+section
+
+include hfg in
+theorem lieModule_lcs_map_le (k : ℕ) :
+    (lowerCentralSeries R L M k : Submodule R M).map g ≤
+    (lowerCentralSeries R L₂ M₂ k : Submodule R M₂) := by
+  induction k with
+  | zero =>
+    simp [LinearMap.range_eq_top, Submodule.map_top]
+  | succ k ih =>
+    rw [lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span', Submodule.map_span]
+    apply Submodule.span_le.mpr
+    rintro m₂ ⟨m, ⟨x, n, m_n, h⟩, rfl⟩
+    simp
+    have : ∃ y : L₂, ∃ n : lowerCentralSeries R L₂ M₂ k, ⁅y, n⁆ = g m := by
+      use f x
+      use ⟨g m_n, ih (Submodule.mem_map_of_mem h.1)⟩
+      simp_all only [LieSubmodule.mem_top, LieSubmodule.coe_bracket]
+    obtain ⟨y, n, hn⟩ := this
+    rw [← hn]
+    apply LieSubmodule.lie_mem_lie
+    · simp_all only [LieSubmodule.mem_top, LieSubmodule.coe_bracket]
+    · exact SetLike.coe_mem n
+
+end
+
+variable [LieModule R L₂ M₂]
+
+include hg_inj hfg in
+theorem Function.Injective.lieModuleIsNilpotent [IsNilpotent L₂ M₂] : IsNilpotent L M := by
+  obtain ⟨k, hk⟩ := IsNilpotent.nilpotent R L₂ M₂
+  rw [isNilpotent_iff R]
+  use k
+  rw [← LieSubmodule.toSubmodule_inj] at hk ⊢
+  apply Submodule.map_injective_of_injective hg_inj
+  have := lieModule_lcs_map_le hfg k
+  rw [hk] at this
+  simp_all only [LieSubmodule.bot_toSubmodule, le_bot_iff, Submodule.map_bot]
 
 include hf hg hfg in
 theorem Function.Surjective.lieModule_lcs_map_eq (k : ℕ) :
@@ -670,6 +710,31 @@ theorem LieModule.isNilpotent_of_top_iff :
   Equiv.lieModule_isNilpotent_iff 1 (LinearEquiv.ofTop ⊤ rfl) fun _ _ ↦ rfl
 
 end Morphisms
+
+namespace LieModule
+
+variable (R L M)
+
+section
+
+variable [LieModule R L M]
+
+theorem nilpotent_submodule_nilpotent (M₁ M₂ : LieSubmodule R L M)
+    (h₁ : M₁ ≤ M₂) (h₂ : IsNilpotent L M₂) : IsNilpotent L M₁ := by
+  let f : L →ₗ⁅R⁆ L := 1
+  let g : M₁ →ₗ[R] M₂ := Submodule.inclusion h₁
+  have hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆ := by
+    intro x m
+    simp_all only [LieHom.coe_one, id_eq, f, g]
+    obtain ⟨val, property⟩ := m
+    rfl
+  have hg_inj : Function.Injective g := by
+    apply Submodule.inclusion_injective
+  exact Function.Injective.lieModuleIsNilpotent hfg hg_inj
+
+end
+
+end LieModule
 
 end NilpotentModules
 
