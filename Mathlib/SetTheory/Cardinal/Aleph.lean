@@ -694,9 +694,6 @@ end deprecated
 `a < o`. This implies `beth 0 = 0`, `beth (succ o) = 2 ^ beth o`, and that for a limit ordinal `o`,
 `beth o` is the supremum of `beth a` for `a < o`.
 
-Assuming the generalized continuum hypothesis, which is undecidable in ZFC, we have `ℶ_ o = ℵ_ o`
-for all ordinals.
-
 For the usual function starting at `ℵ₀`, see `Cardinal.beth`. -/
 def preBeth (o : Ordinal.{u}) : Cardinal.{u} :=
   ⨆ a : Iio o, 2 ^ preBeth a
@@ -777,6 +774,9 @@ theorem isNormal_preBeth : IsNormal (ord ∘ preBeth) := by
 
 /-- The Beth function is defined so that `beth 0 = ℵ₀'`, `beth (succ o) = 2 ^ beth o`, and that for
 a limit ordinal `o`, `beth o` is the supremum of `beth a` for `a < o`.
+
+Assuming the generalized continuum hypothesis, which is undecidable in ZFC, we have `ℶ_ o = ℵ_ o`
+for all ordinals.
 
 For a version which starts at zero, see `Cardinal.preBeth`. -/
 def beth (o : Ordinal.{u}) : Cardinal.{u} :=
