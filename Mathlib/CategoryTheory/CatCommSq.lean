@@ -85,13 +85,53 @@ lemma hInv_hInv (h : CatCommSq T.functor L R B.functor) :
   rfl
 
 /-- In a square of categories, when the top and bottom functors are part
-of equivalence of categorires, it is equivalent to show 2-commutativity for
+of equivalence of categories, it is equivalent to show 2-commutativity for
 the functors of these equivalences or for their inverses. -/
 def hInvEquiv : CatCommSq T.functor L R B.functor ≃ CatCommSq T.inverse R L B.inverse where
   toFun := hInv T L R B
   invFun := hInv T.symm R L B.symm
   left_inv := hInv_hInv T L R B
   right_inv := hInv_hInv T.symm R L B.symm
+
+end
+
+section
+
+variable (T : C₁ ⥤ C₂) (L : C₁ ≌ C₃) (R : C₂ ≌ C₄) (B : C₃ ⥤ C₄)
+
+/-- Vertical inverse of a 2-commutative square -/
+@[simps! iso'_hom_app iso'_inv_app]
+def vInv (_ : CatCommSq T L.functor R.functor B) : CatCommSq B L.inverse R.inverse T where
+  iso' := isoWhiskerRight (B.leftUnitor.symm ≪≫ isoWhiskerRight L.counitIso.symm B ≪≫
+      Functor.associator _ _ _ ≪≫
+      isoWhiskerLeft L.inverse (iso T L.functor R.functor B).symm) R.inverse ≪≫
+      Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (Functor.associator _ _ _) ≪≫
+      (Functor.associator _ _ _ ).symm ≪≫ isoWhiskerLeft _ R.unitIso.symm ≪≫
+      Functor.rightUnitor _
+
+lemma vInv_vInv (h : CatCommSq T L.functor R.functor B) :
+    vInv B L.symm R.symm T (vInv T L R B h) = h := by
+  ext X
+  erw [vInv_iso'_hom_app, vInv_iso'_inv_app]
+  dsimp
+  rw [← cancel_mono (B.map (L.functor.map (NatTrans.app L.unitIso.hom X)))]
+  erw [← (iso T L.functor R.functor B).hom.naturality (L.unitIso.hom.app X)]
+  dsimp
+  simp only [Functor.map_comp, Equivalence.fun_inv_map, Functor.comp_obj,
+    Functor.id_obj, assoc, Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app, comp_id]
+  erw [← B.map_comp, L.counit_app_functor, ← L.functor.map_comp, ← NatTrans.comp_app,
+    Iso.inv_hom_id, NatTrans.id_app, L.functor.map_id, B.map_id, comp_id, R.counit_app_functor,
+    ← R.functor.map_comp_assoc, ← R.functor.map_comp_assoc, assoc, ← NatTrans.comp_app,
+    Iso.hom_inv_id, NatTrans.id_app, comp_id]
+
+/-- In a square of categories, when the left and right functors are part
+of equivalence of categories, it is equivalent to show 2-commutativity for
+the functors of these equivalences or for their inverses. -/
+def vInvEquiv : CatCommSq T L.functor R.functor B ≃ CatCommSq B L.inverse R.inverse T where
+  toFun := vInv T L R B
+  invFun := vInv B L.symm R.symm T
+  left_inv := vInv_vInv T L R B
+  right_inv := vInv_vInv B L.symm R.symm T
 
 end
 

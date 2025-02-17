@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz, Nick Kuhn, Dagur Asgeirsson
+Authors: Adam Topaz, Nikolas Kuhn, Dagur Asgeirsson
 -/
 import Mathlib.Topology.Category.Profinite.EffectiveEpi
 import Mathlib.Topology.Category.Stonean.EffectiveEpi
@@ -20,7 +20,7 @@ Since Stonean spaces are the projective objects in `CompHaus`, which has enough 
 and the notions of effective epimorphism, epimorphism and surjective continuous map are equivalent
 in `CompHaus` and `Stonean`, we can use the general setup in
 `Mathlib.CategoryTheory.Sites.Coherent.SheafComparison` to deduce the equivalence of categories.
-We give the corresponding statements for `Profinite` as well.
+We give the corresponding statements for `Profinite` as well.
 
 ## Main results
 
@@ -39,26 +39,6 @@ open CategoryTheory Limits
 namespace Condensed
 
 namespace StoneanCompHaus
-
-instance : Stonean.toCompHaus.PreservesEffectiveEpis where
-  preserves f h :=
-    ((CompHaus.effectiveEpi_tfae f).out 0 2).mpr (((Stonean.effectiveEpi_tfae f).out 0 2).mp h)
-
-instance : Stonean.toCompHaus.ReflectsEffectiveEpis where
-  reflects f h :=
-    ((Stonean.effectiveEpi_tfae f).out 0 2).mpr (((CompHaus.effectiveEpi_tfae f).out 0 2).mp h)
-
-/--
-An effective presentation of an `X : CompHaus` with respect to the inclusion functor from `Stonean`
--/
-noncomputable def stoneanToCompHausEffectivePresentation (X : CompHaus) :
-    Stonean.toCompHaus.EffectivePresentation X where
-  p := X.presentation
-  f := CompHaus.presentation.π X
-  effectiveEpi := ((CompHaus.effectiveEpi_tfae _).out 0 1).mpr (inferInstance : Epi _)
-
-instance : Stonean.toCompHaus.EffectivelyEnough where
-  presentation X := ⟨stoneanToCompHausEffectivePresentation X⟩
 
 /-- The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `CompHaus`
     (i.e. condensed sets). -/
@@ -81,7 +61,7 @@ instance : Stonean.toProfinite.ReflectsEffectiveEpis where
     ((Stonean.effectiveEpi_tfae f).out 0 2).mpr (((Profinite.effectiveEpi_tfae _).out 0 2).mp h)
 
 /--
-An effective presentation of an `X : Profinite` with respect to the inclusion functor from `Stonean`
+An effective presentation of an `X : Profinite` with respect to the inclusion functor from `Stonean`
 -/
 noncomputable def stoneanToProfiniteEffectivePresentation (X : Profinite) :
     Stonean.toProfinite.EffectivePresentation X where
@@ -102,26 +82,6 @@ def equivalence (A : Type*) [Category A]
 end StoneanProfinite
 
 namespace ProfiniteCompHaus
-
-instance : profiniteToCompHaus.PreservesEffectiveEpis where
-  preserves f h :=
-    ((CompHaus.effectiveEpi_tfae _).out 0 2).mpr (((Profinite.effectiveEpi_tfae _).out 0 2).mp h)
-
-instance : profiniteToCompHaus.ReflectsEffectiveEpis where
-  reflects f h :=
-    ((Profinite.effectiveEpi_tfae f).out 0 2).mpr (((CompHaus.effectiveEpi_tfae _).out 0 2).mp h)
-
-/--
-An effective presentation of an `X : Profinite` with respect to the inclusion functor from `Stonean`
--/
-noncomputable def profiniteToCompHausEffectivePresentation (X : CompHaus) :
-    profiniteToCompHaus.EffectivePresentation X where
-  p := Stonean.toProfinite.obj X.presentation
-  f := CompHaus.presentation.π X
-  effectiveEpi := ((CompHaus.effectiveEpi_tfae _).out 0 1).mpr (inferInstance : Epi _)
-
-instance : profiniteToCompHaus.EffectivelyEnough where
-  presentation X := ⟨profiniteToCompHausEffectivePresentation X⟩
 
 /-- The equivalence from coherent sheaves on `Profinite` to coherent sheaves on `CompHaus`
     (i.e. condensed sets). -/

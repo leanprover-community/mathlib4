@@ -28,6 +28,9 @@ agree then the antipodes must also agree).
 * If `A` is commutative then `antipode` is necessarily a bijection and its square is
   the identity.
 
+(Note that all three facts have been proved for Hopf bimonoids in an arbitrary braided category,
+so we could deduce the facts here from an equivalence `HopfAlgebraCat R ≌ Hopf_ (ModuleCat R)`.)
+
 ## References
 
 * <https://en.wikipedia.org/wiki/Hopf_algebra>
@@ -39,14 +42,19 @@ agree then the antipodes must also agree).
 
 suppress_compilation
 
-universe u v
+universe u v w
+
+/-- Isolates the antipode of a Hopf algebra, to allow API to be constructed before proving the
+Hopf algebra axioms. See `HopfAlgebra` for documentation. -/
+class HopfAlgebraStruct (R : Type u) (A : Type v) [CommSemiring R] [Semiring A]
+    extends Bialgebra R A where
+  /-- The antipode of the Hopf algebra. -/
+  antipode : A →ₗ[R] A
 
 /-- A Hopf algebra over a commutative (semi)ring `R` is a bialgebra over `R` equipped with an
 `R`-linear endomorphism `antipode` satisfying the antipode axioms. -/
 class HopfAlgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends
-    Bialgebra R A where
-  /-- The antipode of the Hopf algebra. -/
-  antipode : A →ₗ[R] A
+    HopfAlgebraStruct R A where
   /-- One of the antipode axioms for a Hopf algebra. -/
   mul_antipode_rTensor_comul :
     LinearMap.mul' R A ∘ₗ antipode.rTensor A ∘ₗ comul = (Algebra.linearMap R A) ∘ₗ counit
@@ -55,6 +63,8 @@ class HopfAlgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extend
     LinearMap.mul' R A ∘ₗ antipode.lTensor A ∘ₗ comul = (Algebra.linearMap R A) ∘ₗ counit
 
 namespace HopfAlgebra
+
+export HopfAlgebraStruct (antipode)
 
 variable {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [HopfAlgebra R A]
 
@@ -70,15 +80,42 @@ theorem mul_antipode_lTensor_comul_apply (a : A) :
     algebraMap R A (Coalgebra.counit a) :=
   LinearMap.congr_fun mul_antipode_lTensor_comul a
 
+@[simp]
+theorem antipode_one :
+    HopfAlgebra.antipode (R := R) (1 : A) = 1 := by
+  simpa [Algebra.TensorProduct.one_def] using mul_antipode_rTensor_comul_apply (R := R) (1 : A)
+
+open Coalgebra
+
+@[simp]
+lemma sum_antipode_mul_eq {a : A} (repr : Repr R a) :
+    ∑ i ∈ repr.index, antipode (R := R) (repr.left i) * repr.right i =
+      algebraMap R A (counit a) := by
+  simpa [← repr.eq, map_sum] using congr($(mul_antipode_rTensor_comul (R := R)) a)
+
+@[simp]
+lemma sum_mul_antipode_eq {a : A} (repr : Repr R a) :
+    ∑ i ∈ repr.index, repr.left i * antipode (R := R) (repr.right i) =
+      algebraMap R A (counit a) := by
+  simpa [← repr.eq, map_sum] using congr($(mul_antipode_lTensor_comul (R := R)) a)
+
+lemma sum_antipode_mul_eq_smul {a : A} (repr : Repr R a) :
+    ∑ i ∈ repr.index, antipode (R := R) (repr.left i) * repr.right i =
+      counit (R := R) a • 1 := by
+  rw [sum_antipode_mul_eq, Algebra.smul_def, mul_one]
+
+lemma sum_mul_antipode_eq_smul {a : A} (repr : Repr R a) :
+    ∑ i ∈ repr.index, repr.left i * antipode (R := R) (repr.right i) =
+      counit (R := R) a • 1 := by
+  rw [sum_mul_antipode_eq, Algebra.smul_def, mul_one]
+
 end HopfAlgebra
 
-section CommSemiring
+namespace CommSemiring
 
 variable (R : Type u) [CommSemiring R]
 
 open HopfAlgebra
-
-namespace CommSemiring
 
 /-- Every commutative (semi)ring is a Hopf algebra over itself -/
 instance toHopfAlgebra : HopfAlgebra R R where

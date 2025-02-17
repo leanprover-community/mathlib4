@@ -3,12 +3,20 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
-import Lean
+import Lean.Elab.Tactic.ElabTerm
+import Mathlib.Init
+
+/-!
+# The `rename'` tactic
+The `rename'` tactic renames one or several hypotheses.
+-/
 
 namespace Mathlib.Tactic
 
 open Lean Elab.Tactic Meta
 
+/-- A parser for a single rename to perform in the `rename` tactic:
+these should have the form `h => hnew` (describing a rename of a hypothesis `h` to `hnew`). -/
 syntax renameArg := term " => " ident
 
 /-- `rename' h => hnew` renames the hypothesis named `h` to `hnew`.
@@ -30,3 +38,5 @@ elab_rules : tactic
     withMainContext do
       for fvar in ids, tgt in bs do
         Elab.Term.addTermInfo' tgt (mkFVar fvar)
+
+end Mathlib.Tactic

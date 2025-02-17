@@ -6,8 +6,6 @@ Authors: Yury Kudryashov, Joseph Myers
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
 import Mathlib.Analysis.Normed.Group.AddTorsor
 
-#align_import geometry.euclidean.basic from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"
-
 /-!
 # Perpendicular bisector of a segment
 
@@ -22,7 +20,7 @@ euclidean geometry, perpendicular, perpendicular bisector, line segment bisector
 -/
 
 open Set
-open scoped BigOperators RealInnerProductSpace
+open scoped RealInnerProductSpace
 
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
 variable [NormedAddTorsor V P]
@@ -31,7 +29,7 @@ noncomputable section
 
 namespace AffineSubspace
 
-variable {c c₁ c₂ p₁ p₂ : P}
+variable {c p₁ p₂ : P}
 
 /-- Perpendicular bisector of a segment in a Euclidean affine space. -/
 def perpBisector (p₁ p₂ : P) : AffineSubspace ℝ P :=
@@ -130,7 +128,6 @@ theorem inner_vsub_vsub_of_dist_eq_of_dist_eq {c₁ c₂ p₁ p₂ : P} (hc₁ :
     (hc₂ : dist p₁ c₂ = dist p₂ c₂) : ⟪c₂ -ᵥ c₁, p₂ -ᵥ p₁⟫ = 0 := by
   rw [← Submodule.mem_orthogonal_singleton_iff_inner_left, ← direction_perpBisector]
   apply vsub_mem_direction <;> rwa [mem_perpBisector_iff_dist_eq']
-#align euclidean_geometry.inner_vsub_vsub_of_dist_eq_of_dist_eq EuclideanGeometry.inner_vsub_vsub_of_dist_eq_of_dist_eq
 
 end EuclideanGeometry
 

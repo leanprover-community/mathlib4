@@ -5,10 +5,9 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Algebra.Ring.Nat
-
-#align_import data.nat.order.basic from "leanprover-community/mathlib"@"3ed3f98a1e836241990d3d308f1577e434977130"
+import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.Ring.Parity
+import Mathlib.Data.Set.Basic
 
 /-!
 # The natural numbers form an ordered semiring
@@ -37,12 +36,6 @@ instance instLinearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero �
   __ : CommMonoidWithZero ℕ := inferInstance
   mul_le_mul_left _ _ h c := Nat.mul_le_mul_left c h
 
-instance instCanonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring ℕ where
-  __ := instLinearOrderedCommSemiring
-  exists_add_of_le h := (Nat.le.dest h).imp fun _ => Eq.symm
-  le_self_add := Nat.le_add_right
-  eq_zero_or_eq_zero_of_mul_eq_zero := Nat.eq_zero_of_mul_eq_zero
-
 /-!
 ### Extra instances to short-circuit type class resolution
 
@@ -55,5 +48,10 @@ instance instStrictOrderedCommSemiring : StrictOrderedCommSemiring ℕ := inferI
 instance instOrderedSemiring : OrderedSemiring ℕ := StrictOrderedSemiring.toOrderedSemiring'
 instance instOrderedCommSemiring : OrderedCommSemiring ℕ :=
   StrictOrderedCommSemiring.toOrderedCommSemiring'
+
+/-! ### Miscellaneous lemmas -/
+
+lemma isCompl_even_odd : IsCompl { n : ℕ | Even n } { n | Odd n } := by
+  simp only [← Set.compl_setOf, isCompl_compl, ← not_even_iff_odd]
 
 end Nat

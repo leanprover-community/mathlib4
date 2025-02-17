@@ -3,19 +3,18 @@ Copyright (c) 2021 Alain Verberkmoes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alain Verberkmoes
 -/
-import Mathlib.Data.Int.Dvd.Basic
-import Mathlib.Tactic.Common
-
-#align_import imo.imo2011_q5 from "leanprover-community/mathlib"@"5f25c089cb34db4db112556f23c50d12da81b297"
+import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Algebra.Ring.Int.Defs
 
 /-!
 # IMO 2011 Q5
 
 Let `f` be a function from the set of integers to the set
 of positive integers.  Suppose that, for any two integers
-`m` and `n`, the difference `f(m) - f(n)` is divisible by
-`f(m - n)`.  Prove that, for all integers `m` and `n` with
-`f(m) ≤ f(n)`, the number `f(n)` is divisible by `f(m)`.
+`m` and `n`, the difference `f m - f n` is divisible by
+`f (m - n)`.  Prove that, for all integers `m` and `n` with
+`f m ≤ f n`, the number `f n` is divisible by `f m`.
 -/
 
 
@@ -40,7 +39,7 @@ theorem imo2011_q5 (f : ℤ → ℤ) (hpos : ∀ n : ℤ, 0 < f n) (hdvd : ∀ m
         _ ≤ f n - f m := le_of_dvd (sub_pos.mpr h_fm_lt_fn) ?_
         _ < f n := sub_lt_self _ (hpos m)
       -- ⊢ f (m - n) ∣ f n - f m
-      rw [← dvd_neg, neg_sub]
+      rw [← Int.dvd_neg, neg_sub]
       exact hdvd m n
     have h_d_eq_zero : d = 0 := by
       obtain hd | hd | hd : d > 0 ∨ d = 0 ∨ d < 0 := trichotomous d 0
@@ -60,4 +59,3 @@ theorem imo2011_q5 (f : ℤ → ℤ) (hpos : ∀ n : ℤ, 0 < f n) (hdvd : ∀ m
     exact (dvd_iff_dvd_of_dvd_sub h₂).mp dvd_rfl
   · -- m = n
     rw [h_fm_eq_fn]
-#align imo2011_q5 imo2011_q5
