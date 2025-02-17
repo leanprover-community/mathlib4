@@ -432,7 +432,7 @@ instance : Unique {x // x ∈ (⊥ : LieIdeal R L)} :=
 theorem abelian_derivedAbelianOfIdeal (I : LieIdeal R L) :
     IsLieAbelian (derivedAbelianOfIdeal I) := by
   dsimp only [derivedAbelianOfIdeal]
-  cases' h : derivedLengthOfIdeal R L I with k
+  rcases h : derivedLengthOfIdeal R L I with - | k
   · dsimp; infer_instance
   · rw [derivedSeries_of_derivedLength_succ] at h; exact h.1
 

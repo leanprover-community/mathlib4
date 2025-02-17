@@ -29,8 +29,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 noncomputable instance preservesHomology_preadditiveCoyonedaObj_of_projective
     (P : C) [hP : Projective P] :
     (preadditiveCoyonedaObj P).PreservesHomology := by
-  haveI := (projective_iff_preservesEpimorphisms_preadditiveCoyoneda_obj' P).mp hP
-  haveI := @Functor.preservesEpimorphisms_of_preserves_of_reflects _ _ _ _ _ _ _ _ this _
+  haveI := (projective_iff_preservesEpimorphisms_preadditiveCoyonedaObj P).mp hP
   apply Functor.preservesHomology_of_preservesEpis_and_kernels
 
 /-- The preadditive Co-Yoneda functor on `P` preserves finite colimits if `P` is projective. -/
@@ -42,8 +41,7 @@ noncomputable instance preservesFiniteColimits_preadditiveCoyonedaObj_of_project
 /-- An object is projective if its preadditive Co-Yoneda functor preserves finite colimits. -/
 theorem projective_of_preservesFiniteColimits_preadditiveCoyonedaObj (P : C)
     [hP : PreservesFiniteColimits (preadditiveCoyonedaObj P)] : Projective P := by
-  rw [projective_iff_preservesEpimorphisms_preadditiveCoyoneda_obj']
-  dsimp
+  rw [projective_iff_preservesEpimorphisms_preadditiveCoyonedaObj]
   have := Functor.preservesHomologyOfExact (preadditiveCoyonedaObj P)
   infer_instance
 

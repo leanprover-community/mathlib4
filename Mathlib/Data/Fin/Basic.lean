@@ -1422,7 +1422,7 @@ section Mul
 -/
 
 protected theorem mul_one' [NeZero n] (k : Fin n) : k * 1 = k := by
-  cases' n with n
+  rcases n with - | n
   · simp [eq_iff_true_of_subsingleton]
   cases n
   · simp [fin_one_eq_zero]

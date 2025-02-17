@@ -353,7 +353,7 @@ theorem radius_shift (p : FormalMultilinearSeries 𝕜 E F) : p.shift.radius = p
     intro h
     simp only [le_refl, le_sup_iff, exists_prop, and_true]
     intro n
-    cases' n with m
+    rcases n with - | m
     · simp
     right
     rw [pow_succ, ← mul_assoc]
