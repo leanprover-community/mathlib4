@@ -53,9 +53,10 @@ theorem pow_le_choose (r n : ℕ) : ((n + 1 - r : ℕ) ^ r : α) / r ! ≤ n.cho
 theorem choose_succ_le_two_pow (n k : ℕ) : (n + 1).choose k ≤ 2 ^ n := by
   by_cases lt : n + 1 < k
   · simp [choose_eq_zero_of_lt lt]
-  · cases' n with n
-    · cases k <;> simp_all
-    · cases' k with k
+  · cases n with
+    | zero => cases k <;> simp_all
+    | succ n =>
+      rcases k with - | k
       · rw [choose_zero_right]
         exact Nat.one_le_two_pow
       · rw [choose_succ_succ', two_pow_succ]

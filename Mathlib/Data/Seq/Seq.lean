@@ -235,7 +235,7 @@ theorem get?_tail (s : Seq α) (n) : get? (tail s) n = get? s (n + 1) :=
 def recOn {motive : Seq α → Sort v} (s : Seq α) (nil : motive nil)
     (cons : ∀ x s, motive (cons x s)) :
     motive s := by
-  cases' H : destruct s with v
+  rcases H : destruct s with - | v
   · rw [destruct_eq_nil H]
     apply nil
   · cases' v with a s'
@@ -244,7 +244,7 @@ def recOn {motive : Seq α → Sort v} (s : Seq α) (nil : motive nil)
 
 theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
     (h1 : ∀ b s', a = b ∨ C s' → C (cons b s')) : C s := by
-  cases' M with k e; unfold Stream'.get at e
+  obtain ⟨k, e⟩ := M; unfold Stream'.get at e
   induction' k with k IH generalizing s
   · have TH : s = cons a (tail s) := by
       apply destruct_eq_cons
@@ -277,13 +277,13 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
   revert h; generalize some b = o; revert o
   induction' n with n IH <;> intro o
   · change (Corec.f f o).1 = none → (Corec.f f (Corec.f f o).2).1 = none
-    cases' o with b <;> intro h
+    rcases o with - | b <;> intro h
     · rfl
     dsimp [Corec.f] at h
     dsimp [Corec.f]
-    revert h; cases' h₁ : f b with s <;> intro h
+    revert h; rcases h₁ : f b with - | s <;> intro h
     · rfl
-    · cases' s with a b'
+    · obtain ⟨a, b'⟩ := s
       contradiction
   · rw [Stream'.corec'_eq (Corec.f f) (Corec.f f o).2, Stream'.corec'_eq (Corec.f f) o]
     exact IH (Corec.f f o).2
@@ -297,7 +297,7 @@ theorem corec_eq (f : β → Option (α × β)) (b : β) :
   rw [h]
   dsimp [Corec.f]
   induction' h : f b with s; · rfl
-  cases' s with a b'; dsimp [Corec.f]
+  obtain ⟨a, b'⟩ := s; dsimp [Corec.f]
   apply congr_arg fun b' => some (a, b')
   apply Subtype.eq
   dsimp [corec, tail]
@@ -897,7 +897,7 @@ theorem exists_of_mem_map {f} {b : β} : ∀ {s : Seq α}, b ∈ map f s → ∃
   fun {s} h => by match s with
   | ⟨g, al⟩ =>
     let ⟨o, om, oe⟩ := @Stream'.exists_of_mem_map _ _ (Option.map f) (some b) g h
-    cases' o with a
+    rcases o with - | a
     · injection oe
     · injection oe with h'; exact ⟨a, om, h'⟩
 
@@ -912,11 +912,11 @@ theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂)
     simpa using m
   · intro m e
     have this := congr_arg destruct e
-    cases' show a = c ∨ a ∈ append t₁ s₂ by simpa using m with e' m
+    rcases show a = c ∨ a ∈ append t₁ s₂ by simpa using m with e' | m
     · rw [e']
       exact Or.inl (mem_cons _ _)
-    · cases' show c = b ∧ append t₁ s₂ = s' by simpa with i1 i2
-      cases' o with e' IH
+    · obtain ⟨i1, i2⟩ := show c = b ∧ append t₁ s₂ = s' by simpa
+      rcases o with e' | IH
       · simp [i1, e']
       · exact Or.imp_left (mem_cons_of_mem _) (IH m i2)
 
