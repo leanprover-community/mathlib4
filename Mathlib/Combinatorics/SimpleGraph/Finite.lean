@@ -348,7 +348,7 @@ theorem le_minDegree_of_forall_le_degree [DecidableRel G.Adj] [Nonempty V] (k : 
 /-- If there are no vertices then the `minDegree` is zero. -/
 @[simp]
 lemma minDegree_of_isEmpty [DecidableRel G.Adj] [IsEmpty V] : G.minDegree = 0 := by
-  rw [minDegree, WithTop.untop'_eq_self_iff]
+  rw [minDegree, WithTop.untopD_eq_self_iff]
   simp
 
 variable {G} in
