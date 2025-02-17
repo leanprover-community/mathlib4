@@ -15,6 +15,7 @@ import Mathlib.Tactic.TFAE
 This file introduces specializations of `WellFounded` and `WellQuasiOrdered` for sets.
 
 ## Main Definitions
+
  * `Set.WellFoundedOn s r` indicates that the relation `r` is
   well-founded when restricted to the set `s`.
  * `Set.IsWF s` indicates that `<` is well-founded when restricted to `s`.
@@ -24,6 +25,7 @@ This file introduces specializations of `WellFounded` and `WellQuasiOrdered` for
   monotone subsequence. Note that this is equivalent to containing only two comparable elements.
 
 ## Main Results
+
  * Higman's Lemma, `Set.PartiallyWellOrderedOn.partiallyWellOrderedOn_sublistForall₂`,
   shows that if `r` is partially well-ordered on `s`, then `List.SublistForall₂` is partially
   well-ordered on the set of lists of elements of `s`. The result was originally published by
@@ -33,6 +35,10 @@ This file introduces specializations of `WellFounded` and `WellQuasiOrdered` for
  * `Set.IsWF.mono` shows that a subset of a well-founded subset is well-founded.
  * `Set.IsWF.union` shows that the union of two well-founded subsets is well-founded.
  * `Finset.isWF` shows that all `Finset`s are well-founded.
+
+## TODO
+
+* Rename `Set.PartiallyWellOrderedOn` to `Set.WellQuasiOrderedOn` and `Set.IsPWO` to `Set.IsWQO`.
 
 ## References
  * [Higman, *Ordering by Divisibility in Abstract Algebras*][Higman52]
@@ -48,7 +54,6 @@ variable {ι α β γ : Type*} {π : ι → Type*}
 namespace Set
 
 /-! ### Relations well-founded on sets -/
-
 
 /-- `s.WellFoundedOn r` indicates that the relation `r` is well-founded when restricted to `s`. -/
 def WellFoundedOn (s : Set α) (r : α → α → Prop) : Prop :=
@@ -214,7 +219,7 @@ theorem _root_.WellFounded.isWF (h : WellFounded ((· < ·) : α → α → Prop
   WellFoundedLT.isWF s
 
 lemma IsWF.of_wellFoundedLT [WellFoundedLT α] : IsWF s :=
-  (isWF_univ_iff.2 wellFounded_lt).mono (subset_univ _)
+  (WellFoundedLT.isWF _).mono (subset_univ _)
 
 end LT
 
@@ -240,7 +245,6 @@ theorem isWF_iff_no_descending_seq :
 end Preorder
 
 /-! ### Partially well-ordered sets -/
-
 
 /-- `s.PartiallyWellOrderedOn r` indicates that the relation `r` is a WQO when restricted to `s`.
 
@@ -497,7 +501,9 @@ variable [LinearOrder α] {s : Set α}
 /-- In a linear order, the predicates `Set.IsPWO` and `Set.IsWF` are equivalent. -/
 theorem isPWO_iff_isWF : s.IsPWO ↔ s.IsWF := by
   change WellQuasiOrdered (· ≤ ·) ↔ WellFounded (· < ·)
-  rw [← wellQuasiOrderedLE_iff', ← isWellFounded_iff, wellQuasiOrderedLE_iff_wellFoundedLT]
+  rw [← wellQuasiOrderedLE_def, ← isWellFounded_iff, wellQuasiOrderedLE_iff_wellFoundedLT]
+
+alias ⟨_, IsWF.isPWO⟩ := isPWO_iff_isWF
 
 @[deprecated isPWO_iff_isWF (since := "2025-01-21")]
 theorem isWF_iff_isPWO : s.IsWF ↔ s.IsPWO :=
