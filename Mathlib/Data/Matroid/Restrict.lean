@@ -161,7 +161,7 @@ theorem isBase_restrict_iff' : (M ↾ X).IsBase I ↔ M.IsBasis' I X := by
 theorem IsBasis'.isBase_restrict (hI : M.IsBasis' I X) : (M ↾ X).IsBase I :=
   isBase_restrict_iff'.1 hI
 
-theorem IsBasis.restrict_base (h : M.IsBasis I X) : (M ↾ X).IsBase I :=
+theorem IsBasis.restrict_isBase (h : M.IsBasis I X) : (M ↾ X).IsBase I :=
   (isBase_restrict_iff h.subset_ground).2 h
 
 instance restrict_rankFinite [M.RankFinite] (R : Set α) : (M ↾ R).RankFinite :=
@@ -381,7 +381,7 @@ theorem Base.isBasis_of_isRestriction (hI : N.IsBase I) (hNM : N ≤r M) : M.IsB
 
 theorem IsRestriction.base_iff (hMN : N ≤r M) {B : Set α} : N.IsBase B ↔ M.IsBasis B N.E :=
   ⟨fun h ↦ Base.isBasis_of_isRestriction h hMN,
-    fun h ↦ by simpa [hMN.eq_restrict] using h.restrict_base⟩
+    fun h ↦ by simpa [hMN.eq_restrict] using h.restrict_isBase⟩
 
 theorem IsRestriction.isBasis_iff (hMN : N ≤r M) : N.IsBasis I X ↔ M.IsBasis I X ∧ X ⊆ N.E :=
   ⟨fun h ↦ ⟨h.of_isRestriction hMN, h.subset_ground⟩, fun h ↦ h.1.isBasis_isRestriction hMN h.2⟩
@@ -442,7 +442,7 @@ theorem IsBasis.isBase_of_isBase_subset (hIX : M.IsBasis I X) (hB : M.IsBase B) 
 
 theorem IsBasis.exchange (hIX : M.IsBasis I X) (hJX : M.IsBasis J X) (he : e ∈ I \ J) :
     ∃ f ∈ J \ I, M.IsBasis (insert f (I \ {e})) X := by
-  obtain ⟨y,hy, h⟩ := hIX.restrict_base.exchange hJX.restrict_base he
+  obtain ⟨y,hy, h⟩ := hIX.restrict_isBase.exchange hJX.restrict_isBase he
   exact ⟨y, hy, by rwa [isBase_restrict_iff] at h⟩
 
 theorem IsBasis.eq_exchange_of_diff_eq_singleton (hI : M.IsBasis I X) (hJ : M.IsBasis J X)
