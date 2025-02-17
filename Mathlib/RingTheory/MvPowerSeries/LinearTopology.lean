@@ -14,10 +14,7 @@ import Mathlib.RingTheory.TwoSidedIdeal.Operations
 - `MvPowerSeries.LinearTopology.basis`: the ideals of the ring of multivariate power series
 all coefficients the exponent of which is smaller than some bound vanish.
 
-- `MvPowerSeries.LinearTopology.basis_mem_nhds_zero` :
-  the two-sided ideals from `MvPowerSeries.LinearTopology.basis` are neighborhoods of `0`.
-
-- `MvPowerSeries.LinearTopology.hasBasis_twoSidedIdeal` :
+- `MvPowerSeries.LinearTopology.hasBasis_nhds_zero` :
   the two-sided ideals from `MvPowerSeries.LinearTopology.basis` form a basis
   of neighborhoods of `0` if the topology of `R` is (left and right) linear.
 
@@ -85,67 +82,31 @@ theorem basis_le {Jd Ke : TwoSidedIdeal R × (σ →₀ ℕ)} (hJK : Jd.1 ≤ Ke
 /-- `basis σ R ⟨J, d⟩ ≤ basis σ R ⟨K, e⟩` if and only if `J ≤ K` and `e ≤ d`. -/
 theorem basis_le_iff {J K : TwoSidedIdeal R} {d e : σ →₀ ℕ} (hK : K ≠ ⊤) :
     basis σ R ⟨J, d⟩ ≤ basis σ R ⟨K, e⟩ ↔ J ≤ K ∧ e ≤ d := by
+  classical
   constructor
   · simp only [basis, TwoSidedIdeal.le_iff, TwoSidedIdeal.coe_mk', setOf_subset_setOf]
     intro h
-    by_contra h'
-    simp only [not_and_or] at h'
-    rcases h' with h' | h'
-    · simp only [← coe_subset_coe, Set.not_subset] at h'
-      obtain ⟨a, haJ, haK⟩ := h'
-      apply haK
-      specialize h (monomial R e a) _ e (le_refl e)
-      · intro e' he'
-        classical
-        rw [coeff_monomial]
-        split_ifs
-        · exact haJ
-        · apply zero_mem
-      rwa [coeff_monomial_same] at h
-    · simp only [← inf_eq_right] at h'
+    constructor
+    · intro x hx
+      have (d') : coeff R d' (C σ R x) ∈ J := by
+        rw [coeff_C]; split_ifs <;> [exact hx; exact J.zero_mem]
+      simpa using h (C σ R x) (fun _ _ ↦ this _) _ (zero_le _)
+    · by_contra h'
       apply hK
       rw [eq_top_iff]
-      intro a _
-      specialize h (monomial R e a) _
-      · intro e' he'
-        convert zero_mem J
-        apply coeff_monomial_ne
-        rintro ⟨rfl⟩
-        exact h' (right_eq_inf.mpr he').symm
-      · specialize h e (le_refl e)
-        rwa [coeff_monomial_same] at h
+      intro x _
+      have (d') (hd'_le : d' ≤ d) : coeff R d' (monomial R e x) ∈ J := by
+        rw [coeff_monomial]
+        split_ifs with hd' <;> [exact (h' (hd' ▸ hd'_le)).elim; exact J.zero_mem]
+      simpa using h (monomial R e x) this _ le_rfl
   · rintro ⟨hJK, hed⟩
     exact basis_le hJK hed
+
 
 variable [TopologicalSpace R]
 
 -- We endow MvPowerSeries σ R with the product topology.
 open WithPiTopology
-
-/- variable (σ R) in
-theorem ringSubgroupsBasis :
-    RingSubgroupsBasis (fun (Jd : {J : TwoSidedIdeal R | (J : Set R) ∈ 𝓝 0} × (σ →₀ ℕ))
-        ↦ (basis σ R ⟨Jd.1, Jd.2⟩).asIdeal.toAddSubgroup) where
-  inter Jd Ke := ⟨⟨⟨Jd.1 ⊓ Ke.1, Filter.inter_mem Jd.1.prop Ke.1.prop⟩, Jd.2 ⊔ Ke.2⟩, by
-    simp only [le_inf_iff]
-    exact ⟨basis_le inf_le_left le_sup_left, basis_le inf_le_right le_sup_right⟩⟩
-  mul Jd := ⟨Jd, fun f ↦ by
-    simp only [Submodule.coe_toAddSubgroup, mem_mul]
-    rintro ⟨x, hx, y, hy, rfl⟩
-    exact Ideal.mul_mem_left _ _ hy⟩
-  leftMul f Jd := ⟨Jd, fun g hg ↦ (basis σ R ⟨Jd.1, Jd.2⟩).mul_mem_left f g hg⟩
-  rightMul f Jd := ⟨Jd, fun g hg ↦ by
-    intro e he
-    simp only [Submodule.coe_toAddSubgroup, TwoSidedIdeal.coe_asIdeal,
-      mem_coe, sub_zero, mem_basis_iff] at hg ⊢
-    classical
-    rw [coeff_mul]
-    apply sum_mem
-    rintro ⟨i, j⟩ h
-    apply TwoSidedIdeal.mul_mem_right
-    apply hg i (le_trans ?_ he)
-    simp only [← Finset.mem_antidiagonal.mp h, le_self_add]⟩
--/
 
 /-- If the ring `R` is endowed with a linear topology, then the sets `↑basis σ R (J, d)`,
 for `J : TwoSidedIdeal R` which are neighborhoods of `0 : R` and `d : σ →₀ ℕ`,
