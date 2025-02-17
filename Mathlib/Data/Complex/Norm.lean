@@ -62,8 +62,7 @@ private theorem norm_neg' (z : ℂ) : ‖-z‖ = ‖z‖ := by
 
 instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
   AddGroupNorm.toNormedAddCommGroup
-  { toFun := Complex.instNorm.norm
-    map_zero' := norm_map_zero'
+  { map_zero' := norm_map_zero'
     add_le' := norm_add_le'
     neg' := norm_neg'
     eq_zero_of_map_eq_zero' := fun _ ↦ norm_eq_zero_iff.mp }
@@ -71,12 +70,6 @@ instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
 /-- The complex absolute value function, defined as the Complex norm. -/
 @[deprecated "use the norm instead" (since := "2025-02-16")]
 protected noncomputable abbrev abs (z : ℂ) : ℝ := ‖z‖
-
-@[deprecated "Complex.abs has been deprecated, use the norm instead" (since := "2025-02-16")]
-theorem norm_eq_abs (z : ℂ) : ‖z‖ = ‖z‖ := rfl
-
-@[deprecated "Complex.abs has been deprecated, use the norm instead" (since := "2025-02-16")]
-theorem abs_eq_norm (z : ℂ) : ‖z‖ = ‖z‖ := rfl
 
 @[deprecated (since := "2025-02-16")] alias abs_apply := norm_def
 
