@@ -38,7 +38,7 @@ almost everywhere. -/
 theorem condExp_indep_eq (hle₁ : m₁ ≤ m) (hle₂ : m₂ ≤ m) [SigmaFinite (μ.trim hle₂)]
     (hf : StronglyMeasurable[m₁] f) (hindp : Indep m₁ m₂ μ) : μ[f|m₂] =ᵐ[μ] fun _ => μ[f] := by
   by_cases hfint : Integrable f μ
-  swap; · rw [condExp_undef hfint, integral_undef hfint]; rfl
+  swap; · rw [condExp_of_not_integrable hfint, integral_undef hfint]; rfl
   refine (ae_eq_condExp_of_forall_setIntegral_eq hle₂ hfint
     (fun s _ hs => integrableOn_const.2 (Or.inr hs)) (fun s hms hs => ?_)
       stronglyMeasurable_const.aestronglyMeasurable).symm

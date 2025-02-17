@@ -88,6 +88,10 @@ theorem angle_nonneg (x y : V) : 0 ≤ angle x y :=
 theorem angle_le_pi (x y : V) : angle x y ≤ π :=
   Real.arccos_le_pi _
 
+/-- The sine of the angle between two vectors is nonnegative. -/
+theorem sin_angle_nonneg (x y : V) : 0 ≤ sin (angle x y) :=
+  sin_nonneg_of_nonneg_of_le_pi (angle_nonneg x y) (angle_le_pi x y)
+
 /-- The angle between a vector and the negation of another vector. -/
 theorem angle_neg_right (x y : V) : angle x (-y) = π - angle x y := by
   unfold angle
@@ -171,7 +175,7 @@ theorem sin_angle_mul_norm_mul_norm (x y : V) :
   by_cases h : ‖x‖ * ‖y‖ = 0
   · rw [show ‖x‖ * ‖x‖ * (‖y‖ * ‖y‖) = ‖x‖ * ‖y‖ * (‖x‖ * ‖y‖) by ring, h, mul_zero,
       mul_zero, zero_sub]
-    cases' eq_zero_or_eq_zero_of_mul_eq_zero h with hx hy
+    rcases eq_zero_or_eq_zero_of_mul_eq_zero h with hx | hy
     · rw [norm_eq_zero] at hx
       rw [hx, inner_zero_left, zero_mul, neg_zero]
     · rw [norm_eq_zero] at hy

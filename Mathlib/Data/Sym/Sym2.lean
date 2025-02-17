@@ -268,6 +268,14 @@ def _root_.Function.Embedding.sym2Map (f : α ↪ β) : Sym2 α ↪ Sym2 β wher
   toFun := map f
   inj' := map.injective f.injective
 
+lemma lift_comp_map {g : γ → α} (f : {f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁}) :
+    lift f ∘ map g = lift ⟨fun (c₁ c₂ : γ) => f.val (g c₁) (g c₂), fun _ _ => f.prop _ _⟩ :=
+  lift.symm_apply_eq.mp rfl
+
+lemma lift_map_apply {g : γ → α} (f : {f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁}) (p : Sym2 γ) :
+    lift f (map g p) = lift ⟨fun (c₁ c₂ : γ) => f.val (g c₁) (g c₂), fun _ _ => f.prop _ _⟩ p := by
+  conv_rhs => rw [← lift_comp_map, comp_apply]
+
 section Membership
 
 /-! ### Membership and set coercion -/
@@ -614,14 +622,14 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
     Quot.map fromVector
       (by
         rintro ⟨x, hx⟩ ⟨y, hy⟩ h
-        cases' x with _ x; · simp at hx
-        cases' x with _ x; · simp at hx
-        cases' x with _ x; swap
+        rcases x with - | ⟨_, x⟩; · simp at hx
+        rcases x with - | ⟨_, x⟩; · simp at hx
+        rcases x with - | ⟨_, x⟩; swap
         · exfalso
           simp at hx
-        cases' y with _ y; · simp at hy
-        cases' y with _ y; · simp at hy
-        cases' y with _ y; swap
+        rcases y with - | ⟨_, y⟩; · simp at hy
+        rcases y with - | ⟨_, y⟩; · simp at hy
+        rcases y with - | ⟨_, y⟩; swap
         · exfalso
           simp at hy
         rcases perm_card_two_iff.mp h with (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
@@ -633,9 +641,9 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
     cases' x with x hx
     cases' x with _ x
     · simp at hx
-    cases' x with _ x
+    rcases x with - | ⟨_, x⟩
     · simp at hx
-    cases' x with _ x
+    rcases x with - | ⟨_, x⟩
     swap
     · exfalso
       simp at hx

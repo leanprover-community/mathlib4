@@ -70,6 +70,11 @@ lemma of_le {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ' ≤ κ) :
     IsCardinalFiltered J κ' where
   nonempty_cocone F hA := ⟨cocone F (hA.of_le h)⟩
 
+variable (κ) in
+lemma of_equivalence {J' : Type u'} [Category.{v'} J'] (e : J ≌ J') :
+    IsCardinalFiltered J' κ where
+  nonempty_cocone F hA := ⟨e.inverse.mapCoconeInv (cocone (F ⋙ e.inverse) hA)⟩
+
 section max
 
 variable {K : Type u'} (S : K → J) (hS : HasCardinalLT K κ)
@@ -159,5 +164,27 @@ lemma isCardinalFiltered_preorder (J : Type w) [Preorder J]
     exact ⟨Cocone.mk j
       { app a := homOfLE (hj a)
         naturality _ _ _ := rfl }⟩
+
+open IsCardinalFiltered
+
+instance isCardinalFiltered_under
+    (J : Type u) [Category.{v} J] (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [IsCardinalFiltered J κ] (j₀ : J) : IsCardinalFiltered (Under j₀) κ where
+  nonempty_cocone {A _} F hA := ⟨by
+    have := isFiltered_of_isCardinalDirected J κ
+    let c := cocone (F ⋙ Under.forget j₀) hA
+    let x (a : A) : j₀ ⟶ IsFiltered.max j₀ c.pt := (F.obj a).hom ≫ c.ι.app a ≫
+      IsFiltered.rightToMax j₀ c.pt
+    have hκ' : HasCardinalLT A κ := hasCardinalLT_of_hasCardinalLT_arrow hA
+    exact
+      { pt := Under.mk (toCoeq x hκ')
+        ι :=
+          { app a := Under.homMk (c.ι.app a ≫ IsFiltered.rightToMax j₀ c.pt ≫ coeqHom x hκ')
+              (by simpa [x] using coeq_condition x hκ' a)
+            naturality a b f := by
+              ext
+              have := c.w f
+              dsimp at this ⊢
+              simp only [reassoc_of% this, Category.assoc, Category.comp_id] } }⟩
 
 end CategoryTheory

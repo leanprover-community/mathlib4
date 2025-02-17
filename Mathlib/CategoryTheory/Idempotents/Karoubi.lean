@@ -110,9 +110,6 @@ theorem comp_f {P Q R : Karoubi C} (f : P ⟶ Q) (g : Q ⟶ R) : (f ≫ g).f = f
 @[simp]
 theorem id_f {P : Karoubi C} : Hom.f (𝟙 P) = P.p := rfl
 
-@[deprecated "No deprecation message was provided." (since := "2024-07-15")]
-theorem id_eq {P : Karoubi C} : 𝟙 P = ⟨P.p, by repeat' rw [P.idem]⟩ := rfl
-
 /-- It is possible to coerce an object of `C` into an object of `Karoubi C`.
 See also the functor `toKaroubi`. -/
 instance coe : CoeTC C (Karoubi C) :=
