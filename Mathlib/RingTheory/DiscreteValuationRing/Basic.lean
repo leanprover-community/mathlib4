@@ -212,7 +212,7 @@ theorem of_ufd_of_unique_irreducible [UniqueFactorizationMonoid R] (h₁ : ∃ p
   obtain ⟨p, hp⟩ := h₁
   refine ⟨p, hp, ?_⟩
   intro x hx
-  cases' WfDvdMonoid.exists_factors x hx with fx hfx
+  obtain ⟨fx, hfx⟩ := WfDvdMonoid.exists_factors x hx
   refine ⟨Multiset.card fx, ?_⟩
   have H := hfx.2
   rw [← Associates.mk_eq_mk_iff_associated] at H ⊢
@@ -317,7 +317,7 @@ variable {R}
 theorem associated_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irreducible ϖ) :
     ∃ n : ℕ, Associated x (ϖ ^ n) := by
   have : WfDvdMonoid R := IsNoetherianRing.wfDvdMonoid
-  cases' WfDvdMonoid.exists_factors x hx with fx hfx
+  obtain ⟨fx, hfx⟩ := WfDvdMonoid.exists_factors x hx
   use Multiset.card fx
   have H := hfx.2
   rw [← Associates.mk_eq_mk_iff_associated] at H ⊢
@@ -371,7 +371,7 @@ theorem unit_mul_pow_congr_unit {ϖ : R} (hirr : Irreducible ϖ) (u v : Rˣ) (m 
   obtain rfl : m = n := unit_mul_pow_congr_pow hirr hirr u v m n h
   rw [← sub_eq_zero] at h
   rw [← sub_mul, mul_eq_zero] at h
-  cases' h with h h
+  rcases h with h | h
   · rw [sub_eq_zero] at h
     exact mod_cast h
   · apply (hirr.ne_zero (pow_eq_zero h)).elim

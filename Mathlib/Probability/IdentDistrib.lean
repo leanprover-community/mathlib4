@@ -202,9 +202,6 @@ theorem eLpNorm_eq [NormedAddCommGroup γ] [OpensMeasurableSpace γ] (h : IdentD
   exact h.comp (Measurable.pow_const (measurable_coe_nnreal_ennreal.comp measurable_nnnorm)
     p.toReal)
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_eq := eLpNorm_eq
-
 theorem memℒp_snd [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν)
     (hf : Memℒp f p μ) : Memℒp g p ν := by
   refine ⟨h.aestronglyMeasurable_snd hf.aestronglyMeasurable, ?_⟩

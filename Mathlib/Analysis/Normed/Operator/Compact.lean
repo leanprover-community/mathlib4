@@ -202,7 +202,7 @@ theorem IsCompactOperator.neg [ContinuousNeg M₄] {f : M₁ → M₄} (hf : IsC
   let ⟨K, hK, hKf⟩ := hf
   ⟨-K, hK.neg, mem_of_superset hKf fun x (hx : f x ∈ K) => Set.neg_mem_neg.mpr hx⟩
 
-theorem IsCompactOperator.sub [TopologicalAddGroup M₄] {f g : M₁ → M₄} (hf : IsCompactOperator f)
+theorem IsCompactOperator.sub [IsTopologicalAddGroup M₄] {f g : M₁ → M₄} (hf : IsCompactOperator f)
     (hg : IsCompactOperator g) : IsCompactOperator (f - g) := by
   rw [sub_eq_add_neg]; exact hf.add hg.neg
 
@@ -210,7 +210,7 @@ variable (σ₁₄ M₁ M₄)
 
 /-- The submodule of compact continuous linear maps. -/
 def compactOperator [Module R₁ M₁] [Module R₄ M₄] [ContinuousConstSMul R₄ M₄]
-    [TopologicalAddGroup M₄] : Submodule R₄ (M₁ →SL[σ₁₄] M₄) where
+    [IsTopologicalAddGroup M₄] : Submodule R₄ (M₁ →SL[σ₁₄] M₄) where
   carrier := { f | IsCompactOperator f }
   add_mem' hf hg := hf.add hg
   zero_mem' := isCompactOperator_zero
@@ -298,13 +298,13 @@ section Continuous
 
 variable {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁] [NontriviallyNormedField 𝕜₂]
   {σ₁₂ : 𝕜₁ →+* 𝕜₂} [RingHomIsometric σ₁₂] {M₁ M₂ : Type*} [TopologicalSpace M₁] [AddCommGroup M₁]
-  [TopologicalSpace M₂] [AddCommGroup M₂] [Module 𝕜₁ M₁] [Module 𝕜₂ M₂] [TopologicalAddGroup M₁]
-  [ContinuousConstSMul 𝕜₁ M₁] [TopologicalAddGroup M₂] [ContinuousSMul 𝕜₂ M₂]
+  [TopologicalSpace M₂] [AddCommGroup M₂] [Module 𝕜₁ M₁] [Module 𝕜₂ M₂] [IsTopologicalAddGroup M₁]
+  [ContinuousConstSMul 𝕜₁ M₁] [IsTopologicalAddGroup M₂] [ContinuousSMul 𝕜₂ M₂]
 
 @[continuity]
 theorem IsCompactOperator.continuous {f : M₁ →ₛₗ[σ₁₂] M₂} (hf : IsCompactOperator f) :
     Continuous f := by
-  letI : UniformSpace M₂ := TopologicalAddGroup.toUniformSpace _
+  letI : UniformSpace M₂ := IsTopologicalAddGroup.toUniformSpace _
   haveI : UniformAddGroup M₂ := comm_topologicalAddGroup_is_uniform
   -- Since `f` is linear, we only need to show that it is continuous at zero.
   -- Let `U` be a neighborhood of `0` in `M₂`.
