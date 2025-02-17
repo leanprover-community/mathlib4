@@ -93,6 +93,7 @@ noncomputable def ClassGroup.mk : (FractionalIdeal R⁰ K)ˣ →* ClassGroup R :
   (QuotientGroup.mk' (toPrincipalIdeal R (FractionRing R)).range).comp
     (Units.map (FractionalIdeal.canonicalEquiv R⁰ K (FractionRing R)))
 
+-- TODO rename
 -- Can't be `@[simp]` because it can't figure out the quotient relation.
 theorem ClassGroup.Quot_mk_eq_mk (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
     Quot.mk _ I = ClassGroup.mk I := by
