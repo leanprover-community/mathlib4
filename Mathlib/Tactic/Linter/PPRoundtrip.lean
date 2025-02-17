@@ -6,7 +6,7 @@ Authors: Damiano Testa
 
 import Lean.Elab.Command
 import Mathlib.Tactic.Linter.Header
-import Mathlib.adomaniLeanUtils.inspect_syntax
+--import Mathlib.adomaniLeanUtils.inspect_syntax
 
 /-!
 #  The "ppRoundtrip" linter
@@ -57,9 +57,11 @@ def polishPP (s : String) : String :=
 For this reason, `polishSource s` performs more conservative changes:
 it only replace all whitespace starting from a linebreak (`\n`) with a single whitespace. -/
 def polishSource (s : String) : String × Array Nat :=
-  let split := (s.replace "{}" "{ }").split (· == '\n')
+  let split := (s.replace "{}" "{ }").split (· == '\n') |>.filter (!·.trimLeft.startsWith "--")
+  --dbg_trace split
   let preWS := split.foldl (init := #[]) fun p q =>
     let txt := q.trimLeft.length
+    let txt := if q.trimLeft.startsWith "--" then dbg_trace "here"; txt else txt
     (p.push (q.length - txt)).push txt
   let preWS := preWS.eraseIdxIfInBounds 0
   let s := (split.map .trimLeft).filter (· != "")
@@ -115,20 +117,32 @@ def capSyntax (stx : Syntax) (p : Nat) : Syntax :=
 namespace PPRoundtrip
 
 abbrev stoppingAt := #[
-    ``Lean.Parser.Command.declValEqns,
+    --``Lean.Parser.Command.ctor,  -- for inductive `where`
+    `Lean.Parser.Command.elab,  -- `elab`
+    `Lean.Parser.Command.syntax, -- for `syntax`
+    `Lean.Parser.Command.syntaxAbbrev, -- for `syntax`
+    `Lean.Parser.Command.macro, -- for `macro`
+    ``Lean.Parser.Command.initialize,
+    ``Lean.Parser.Command.declValEqns, -- for equation compiler
     ``Lean.Parser.Command.declValSimple,
     ``Lean.Parser.Command.whereStructInst
+  ]
+
+abbrev onlyParsing := #[
+    ``Lean.Parser.Command.declaration
   ]
 
 @[inherit_doc Mathlib.Linter.linter.ppRoundtrip]
 def ppRoundtrip : Linter where run := withSetOptionIn fun stx ↦ do
     unless Linter.getLinterValue linter.ppRoundtrip (← getOptions) do
       return
-    if (← MonadState.get).messages.hasErrors then
+    if (← get).messages.hasErrors then
+      return
+    unless onlyParsing.contains stx.getKind do
       return
     let stx := capSyntax stx (stx.getTailPos?.getD default).1
     let declValSimpleStart :=
-      match stx.find? (stoppingAt.contains ·.getKind) with
+      match stx.find? fun s => stoppingAt.contains s.getKind || s == mkAtomFrom s "where" with
       | some s =>
         --dbg_trace "found {s}"
         s.getPos?.getD default
