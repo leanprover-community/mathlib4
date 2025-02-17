@@ -1137,6 +1137,7 @@ import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
 import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 import Mathlib.AlgebraicTopology.SimplexCategory.Defs
+import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.Basic
 import Mathlib.AlgebraicTopology.SimplexCategory.MorphismProperty
 import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
 import Mathlib.AlgebraicTopology.SimplicialCategory.SimplicialObject
@@ -1695,6 +1696,7 @@ import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Colim
+import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Subobject
 import Mathlib.CategoryTheory.Abelian.Images
 import Mathlib.CategoryTheory.Abelian.Injective
 import Mathlib.CategoryTheory.Abelian.InjectiveResolution
