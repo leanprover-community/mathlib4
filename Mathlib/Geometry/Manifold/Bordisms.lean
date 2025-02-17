@@ -248,8 +248,12 @@ def prod {m n : ℕ} (s : SingularNManifold PUnit n k) (t : SingularNManifold PU
 instance {n : ℕ} (s t : SingularNManifold X n k) :
     ChartedSpace (EuclideanSpace ℝ (Fin n)) (s.M ⊕ t.M) := by
 
-  have : ChartedSpace (EuclideanSpace ℝ (Fin n)) s.H := sorry
-  have : ChartedSpace (EuclideanSpace ℝ (Fin n)) t.H := sorry
+  have sbetter : s.H ≃ₜ EuclideanSpace ℝ (Fin n) := sorry
+  have tbetter : t.H ≃ₜ EuclideanSpace ℝ (Fin n) := sorry
+  have : ChartedSpace (EuclideanSpace ℝ (Fin n)) s.H :=
+    sbetter.toPartialHomeomorph.singletonChartedSpace sbetter.toPartialHomeomorph_source
+  have : ChartedSpace (EuclideanSpace ℝ (Fin n)) t.H :=
+    tbetter.toPartialHomeomorph.singletonChartedSpace tbetter.toPartialHomeomorph_source
 
   have : ChartedSpace (EuclideanSpace ℝ (Fin n)) s.M :=
     ChartedSpace.comp (EuclideanSpace ℝ (Fin n)) s.H s.M
