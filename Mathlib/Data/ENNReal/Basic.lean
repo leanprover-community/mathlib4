@@ -193,7 +193,7 @@ instance : NNRatCast ℝ≥0∞ where
 theorem coe_nnratCast (q : ℚ≥0) : ↑(q : ℝ≥0) = (q : ℝ≥0∞) := rfl
 
 /-- `toNNReal x` returns `x` if it is real, otherwise 0. -/
-protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
+protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untopD 0
 
 /-- `toReal x` returns `x` if it is real, `0` otherwise. -/
 protected def toReal (a : ℝ≥0∞) : Real := a.toNNReal
@@ -207,6 +207,12 @@ protected def ofReal (r : Real) : ℝ≥0∞ := r.toNNReal
 theorem coe_toNNReal : ∀ {a : ℝ≥0∞}, a ≠ ∞ → ↑a.toNNReal = a
   | ofNNReal _, _ => rfl
   | ⊤, h => (h rfl).elim
+
+@[simp]
+theorem coe_comp_toNNReal_comp {ι : Type*} {f : ι → ℝ≥0∞} (hf : ∀ x, f x ≠ ∞) :
+    (fun (x : ℝ≥0) => (x : ℝ≥0∞)) ∘ ENNReal.toNNReal ∘ f = f := by
+  ext x
+  simp [coe_toNNReal (hf x)]
 
 @[simp]
 theorem ofReal_toReal {a : ℝ≥0∞} (h : a ≠ ∞) : ENNReal.ofReal a.toReal = a := by
@@ -275,7 +281,7 @@ theorem exists_ne_top {p : ℝ≥0∞ → Prop} : (∃ a ≠ ∞, p a) ↔ ∃ r
   Option.exists_ne_none
 
 theorem toNNReal_eq_zero_iff (x : ℝ≥0∞) : x.toNNReal = 0 ↔ x = 0 ∨ x = ∞ :=
-  WithTop.untop'_eq_self_iff
+  WithTop.untopD_eq_self_iff
 
 theorem toReal_eq_zero_iff (x : ℝ≥0∞) : x.toReal = 0 ↔ x = 0 ∨ x = ∞ := by
   simp [ENNReal.toReal, toNNReal_eq_zero_iff]
@@ -287,7 +293,7 @@ theorem toReal_ne_zero : a.toReal ≠ 0 ↔ a ≠ 0 ∧ a ≠ ∞ :=
   a.toReal_eq_zero_iff.not.trans not_or
 
 theorem toNNReal_eq_one_iff (x : ℝ≥0∞) : x.toNNReal = 1 ↔ x = 1 :=
-  WithTop.untop'_eq_iff.trans <| by simp
+  WithTop.untopD_eq_iff.trans <| by simp
 
 theorem toReal_eq_one_iff (x : ℝ≥0∞) : x.toReal = 1 ↔ x = 1 := by
   rw [ENNReal.toReal, NNReal.coe_eq_one, ENNReal.toNNReal_eq_one_iff]
@@ -381,7 +387,7 @@ theorem coe_two : ((2 : ℝ≥0) : ℝ≥0∞) = 2 := rfl
 
 theorem toNNReal_eq_toNNReal_iff (x y : ℝ≥0∞) :
     x.toNNReal = y.toNNReal ↔ x = y ∨ x = 0 ∧ y = ⊤ ∨ x = ⊤ ∧ y = 0 :=
-  WithTop.untop'_eq_untop'_iff
+  WithTop.untopD_eq_untopD_iff
 
 theorem toReal_eq_toReal_iff (x y : ℝ≥0∞) :
     x.toReal = y.toReal ↔ x = y ∨ x = 0 ∧ y = ⊤ ∨ x = ⊤ ∧ y = 0 := by

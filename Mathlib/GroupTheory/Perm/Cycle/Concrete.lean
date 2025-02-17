@@ -66,7 +66,7 @@ theorem formPerm_disjoint_iff (hl : Nodup l) (hl' : Nodup l') (hn : 2 ≤ l.leng
     all_goals have := formPerm_eq_self_of_not_mem _ _ ‹_›; tauto
 
 theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPerm l) := by
-  cases' l with x l
+  rcases l with - | ⟨x, l⟩
   · norm_num at hn
   induction' l with y l generalizing x
   · norm_num at hn
@@ -242,7 +242,7 @@ theorem nodup_toList (p : Perm α) (x : α) : Nodup (toList p x) := by
   rw [← cycleOf_apply_self, ← Ne, ← mem_support] at hx
   rw [get_toList, get_toList, ← cycleOf_pow_apply_self p x n, ←
     cycleOf_pow_apply_self p x m]
-  cases' n with n <;> cases' m with m
+  rcases n with - | n <;> rcases m with - | m
   · simp
   · rw [← hc.support_pow_of_pos_of_lt_orderOf m.zero_lt_succ hm, mem_support,
       cycleOf_pow_apply_self] at hx

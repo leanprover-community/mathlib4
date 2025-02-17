@@ -99,14 +99,6 @@ theorem injOn_natAbs_Iic : InjOn natAbs (Iic 0) :=
 
 end Intervals
 
-/-! ### `toNat` -/
-
-
-theorem toNat_of_nonpos : ∀ {z : ℤ}, z ≤ 0 → z.toNat = 0
-  | 0, _ => rfl
-  | (n + 1 : ℕ), h => (h.not_lt (by simp)).elim
-  | -[_+1], _ => rfl
-
 /-! ### bitwise ops
 
 This lemma is orphaned from `Data.Int.Bitwise` as it also requires material from `Data.Int.Order`.

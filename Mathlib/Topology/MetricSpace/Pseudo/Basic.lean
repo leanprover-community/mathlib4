@@ -270,3 +270,9 @@ theorem finite_cover_balls_of_compact {α : Type u} [PseudoMetricSpace α] {s : 
 alias IsCompact.finite_cover_balls := finite_cover_balls_of_compact
 
 end Compact
+
+/-- If a map is continuous on a separable set `s`, then the image of `s` is also separable. -/
+theorem ContinuousOn.isSeparable_image [TopologicalSpace β] {f : α → β} {s : Set α}
+    (hf : ContinuousOn f s) (hs : IsSeparable s) : IsSeparable (f '' s) := by
+  rw [image_eq_range, ← image_univ]
+  exact (isSeparable_univ_iff.2 hs.separableSpace).image hf.restrict
