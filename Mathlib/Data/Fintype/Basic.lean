@@ -415,7 +415,7 @@ This is useful for computation, as the right-hand side is usually more efficient
 -/
 theorem injective_iff_nodup_map_univ [Fintype α] (f : α → β) :
     Injective f ↔ (Multiset.map f univ.val).Nodup := by
-  simpa [Set.injective_iff_injOn_univ] using injOn_iff_nodup_map_val f univ
+  simpa [Set.injective_iff_injOn_univ] using injOn_iff_nodup_map f univ
 
 instance decidableInjectiveFintype [DecidableEq β] [Fintype α] :
     DecidablePred (Injective : (α → β) → Prop) :=
