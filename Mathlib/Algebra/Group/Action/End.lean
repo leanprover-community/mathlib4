@@ -36,6 +36,20 @@ variable {M N α : Type*}
 section
 variable [Monoid M] [MulAction M α]
 
+namespace MulAction
+
+variable (M α) in
+/-- Embedding of `α` into functions `M → α` induced by a multiplicative action of `M` on `α`. -/
+@[to_additive
+"Embedding of `α` into functions `M → α` induced by an additive action of `M` on `α`."]
+def toFun : α ↪ M → α :=
+  ⟨fun y x ↦ x • y, fun y₁ y₂ H ↦ one_smul M y₁ ▸ one_smul M y₂ ▸ by convert congr_fun H 1⟩
+
+@[to_additive (attr := simp)]
+lemma toFun_apply (x : M) (y : α) : MulAction.toFun M α y x = x • y := rfl
+
+end MulAction
+
 /-- Push forward the action of `R` on `M` along a compatible surjective map `f : R →* S`.
 
 See also `Function.Surjective.distribMulActionLeft` and `Function.Surjective.moduleLeft`.
