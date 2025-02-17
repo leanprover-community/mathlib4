@@ -44,39 +44,59 @@ variable {F ι α β γ δ : Type*}
 
 /-- The type of `⊔`-preserving functions from `α` to `β`. -/
 structure SupHom (α β : Type*) [Max α] [Max β] where
-  /-- The underlying function of a `SupHom` -/
+  /-- The underlying function of a `SupHom`.
+
+  Do not use this function directly. Instead use the coercion coming from the `FunLike`
+  instance. -/
   toFun : α → β
-  /-- A `SupHom` preserves suprema. -/
+  /-- A `SupHom` preserves suprema.
+
+  Do not use this directly. Use `map_sup` instead. -/
   map_sup' (a b : α) : toFun (a ⊔ b) = toFun a ⊔ toFun b
 
 /-- The type of `⊓`-preserving functions from `α` to `β`. -/
 structure InfHom (α β : Type*) [Min α] [Min β] where
-  /-- The underlying function of an `InfHom` -/
+  /-- The underlying function of an `InfHom`.
+
+  Do not use this function directly. Instead use the coercion coming from the `FunLike`
+  instance. -/
   toFun : α → β
-  /-- An `InfHom` preserves infima. -/
+  /-- An `InfHom` preserves infima.
+
+  Do not use this directly. Use `map_inf` instead. -/
   map_inf' (a b : α) : toFun (a ⊓ b) = toFun a ⊓ toFun b
 
 /-- The type of finitary supremum-preserving homomorphisms from `α` to `β`. -/
 structure SupBotHom (α β : Type*) [Max α] [Max β] [Bot α] [Bot β] extends SupHom α β where
-  /-- A `SupBotHom` preserves the bottom element. -/
+  /-- A `SupBotHom` preserves the bottom element.
+
+  Do not use this directly. Use `map_bot` instead. -/
   map_bot' : toFun ⊥ = ⊥
 
 /-- The type of finitary infimum-preserving homomorphisms from `α` to `β`. -/
 structure InfTopHom (α β : Type*) [Min α] [Min β] [Top α] [Top β] extends InfHom α β where
-  /-- An `InfTopHom` preserves the top element. -/
+  /-- An `InfTopHom` preserves the top element.
+
+  Do not use this directly. Use `map_top` instead. -/
   map_top' : toFun ⊤ = ⊤
 
 /-- The type of lattice homomorphisms from `α` to `β`. -/
 structure LatticeHom (α β : Type*) [Lattice α] [Lattice β] extends SupHom α β where
-  /-- A `LatticeHom` preserves infima. -/
+  /-- A `LatticeHom` preserves infima.
+
+  Do not use this directly. Use `map_inf` instead. -/
   map_inf' (a b : α) : toFun (a ⊓ b) = toFun a ⊓ toFun b
 
 /-- The type of bounded lattice homomorphisms from `α` to `β`. -/
 structure BoundedLatticeHom (α β : Type*) [Lattice α] [Lattice β] [BoundedOrder α]
   [BoundedOrder β] extends LatticeHom α β where
-  /-- A `BoundedLatticeHom` preserves the top element. -/
+  /-- A `BoundedLatticeHom` preserves the top element.
+
+  Do not use this directly. Use `map_top` instead. -/
   map_top' : toFun ⊤ = ⊤
-  /-- A `BoundedLatticeHom` preserves the bottom element. -/
+  /-- A `BoundedLatticeHom` preserves the bottom element.
+
+  Do not use this directly. Use `map_bot` instead. -/
   map_bot' : toFun ⊥ = ⊥
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: remove this configuration and use the default configuration.
@@ -256,17 +276,18 @@ end OrderEmbedding
 
 section BoundedLattice
 
-variable [Lattice α] [BoundedOrder α] [Lattice β] [BoundedOrder β]
-variable [FunLike F α β] [BoundedLatticeHomClass F α β]
-variable (f : F) {a b : α}
+variable [Lattice α] [Lattice β] [FunLike F α β]
 
-theorem Disjoint.map (h : Disjoint a b) : Disjoint (f a) (f b) := by
+theorem Disjoint.map [OrderBot α] [OrderBot β] [BotHomClass F α β] [InfHomClass F α β] {a b : α}
+    (f : F) (h : Disjoint a b) : Disjoint (f a) (f b) := by
   rw [disjoint_iff, ← map_inf, h.eq_bot, map_bot]
 
-theorem Codisjoint.map (h : Codisjoint a b) : Codisjoint (f a) (f b) := by
+theorem Codisjoint.map [OrderTop α] [OrderTop β] [TopHomClass F α β] [SupHomClass F α β] {a b : α}
+    (f : F) (h : Codisjoint a b) : Codisjoint (f a) (f b) := by
   rw [codisjoint_iff, ← map_sup, h.eq_top, map_top]
 
-theorem IsCompl.map (h : IsCompl a b) : IsCompl (f a) (f b) :=
+theorem IsCompl.map [BoundedOrder α] [BoundedOrder β] [BoundedLatticeHomClass F α β] {a b : α}
+    (f : F) (h : IsCompl a b) : IsCompl (f a) (f b) :=
   ⟨h.1.map _, h.2.map _⟩
 
 end BoundedLattice

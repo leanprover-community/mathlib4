@@ -182,7 +182,7 @@ lemma sum_apply_eq_ite [Fintype α] [DecidableEq α] (a : α) :
     ∑ ψ : AddChar α ℂ, ψ a = if a = 0 then (Fintype.card α : ℂ) else 0 := by
   simpa using sum_eq_ite (doubleDualEmb a : AddChar (AddChar α ℂ) ℂ)
 
-lemma expect_apply_eq_ite [Fintype α] [DecidableEq α] (a : α) :
+lemma expect_apply_eq_ite [Finite α] [DecidableEq α] (a : α) :
     𝔼 ψ : AddChar α ℂ, ψ a = if a = 0 then 1 else 0 := by
   simpa using expect_eq_ite (doubleDualEmb a : AddChar (AddChar α ℂ) ℂ)
 
