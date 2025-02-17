@@ -191,7 +191,7 @@ proof of `coe_direction_eq_vsub_set`, and is not intended to be used beyond that
 def directionOfNonempty {s : AffineSubspace k P} (h : (s : Set P).Nonempty) : Submodule k V where
   carrier := (s : Set P) -ᵥ s
   zero_mem' := by
-    cases' h with p hp
+    obtain ⟨p, hp⟩ := h
     exact vsub_self p ▸ vsub_mem_vsub hp hp
   add_mem' := by
     rintro _ _ ⟨p₁, hp₁, p₂, hp₂, rfl⟩ ⟨p₃, hp₃, p₄, hp₄, rfl⟩
@@ -691,7 +691,7 @@ variable (P)
 /-- The direction of `⊤` is the whole module as a submodule. -/
 @[simp]
 theorem direction_top : (⊤ : AffineSubspace k P).direction = ⊤ := by
-  cases' S.nonempty with p
+  obtain ⟨p⟩ := S.nonempty
   ext v
   refine ⟨imp_intro Submodule.mem_top, fun _hv => ?_⟩
   have hpv : ((v +ᵥ p) -ᵥ p : V) ∈ (⊤ : AffineSubspace k P).direction :=
@@ -860,7 +860,7 @@ theorem direction_le {s₁ s₂ : AffineSubspace k P} (h : s₁ ≤ s₂) : s₁
 /-- If one nonempty affine subspace is less than another, the same applies to their directions -/
 theorem direction_lt_of_nonempty {s₁ s₂ : AffineSubspace k P} (h : s₁ < s₂)
     (hn : (s₁ : Set P).Nonempty) : s₁.direction < s₂.direction := by
-  cases' hn with p hp
+  obtain ⟨p, hp⟩ := hn
   rw [lt_iff_le_and_exists] at h
   rcases h with ⟨hle, p₂, hp₂, hp₂s₁⟩
   rw [SetLike.lt_iff_le_and_exists]
@@ -884,8 +884,8 @@ the direction of their sup. -/
 theorem sup_direction_lt_of_nonempty_of_inter_empty {s₁ s₂ : AffineSubspace k P}
     (h1 : (s₁ : Set P).Nonempty) (h2 : (s₂ : Set P).Nonempty) (he : (s₁ ∩ s₂ : Set P) = ∅) :
     s₁.direction ⊔ s₂.direction < (s₁ ⊔ s₂).direction := by
-  cases' h1 with p₁ hp₁
-  cases' h2 with p₂ hp₂
+  obtain ⟨p₁, hp₁⟩ := h1
+  obtain ⟨p₂, hp₂⟩ := h2
   rw [SetLike.lt_iff_le_and_exists]
   use sup_direction_le s₁ s₂, p₂ -ᵥ p₁,
     vsub_mem_direction ((le_sup_right : s₂ ≤ s₁ ⊔ s₂) hp₂) ((le_sup_left : s₁ ≤ s₁ ⊔ s₂) hp₁)
@@ -916,7 +916,7 @@ in exactly one point. -/
 theorem inter_eq_singleton_of_nonempty_of_isCompl {s₁ s₂ : AffineSubspace k P}
     (h1 : (s₁ : Set P).Nonempty) (h2 : (s₂ : Set P).Nonempty)
     (hd : IsCompl s₁.direction s₂.direction) : ∃ p, (s₁ : Set P) ∩ s₂ = {p} := by
-  cases' inter_nonempty_of_nonempty_of_sup_direction_eq_top h1 h2 hd.sup_eq_top with p hp
+  obtain ⟨p, hp⟩ := inter_nonempty_of_nonempty_of_sup_direction_eq_top h1 h2 hd.sup_eq_top
   use p
   ext q
   rw [Set.mem_singleton_iff]
@@ -1330,7 +1330,7 @@ theorem direction_sup {s₁ s₂ : AffineSubspace k P} {p₁ p₂ : P} (hp₁ : 
     rw [direction_affineSpan, vectorSpan_eq_span_vsub_set_right k (Set.mem_union_left _ hp₁),
       Submodule.span_le]
     rintro v ⟨p₃, hp₃, rfl⟩
-    cases' hp₃ with hp₃ hp₃
+    rcases hp₃ with hp₃ | hp₃
     · rw [sup_assoc, sup_comm, SetLike.mem_coe, Submodule.mem_sup]
       use 0, Submodule.zero_mem _, p₃ -ᵥ p₁, vsub_mem_direction hp₃ hp₁
       rw [zero_add]

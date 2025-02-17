@@ -73,7 +73,7 @@ theorem isTrichotomous_lex [∀ i, IsTrichotomous (β i) s] (wf : WellFounded r)
           rw [← not_imp_not]
           exact fun h' => wf.not_lt_min _ _ h'
         have hne : a i ≠ b i := wf.min_mem _ hab
-        cases' trichotomous_of s (a i) (b i) with hi hi
+        rcases trichotomous_of s (a i) (b i) with hi | hi
         exacts [Or.inl ⟨i, hri, hi⟩,
           Or.inr <| Or.inr <| ⟨i, fun j hj => (hri j hj).symm, hi.resolve_left hne⟩] }
 

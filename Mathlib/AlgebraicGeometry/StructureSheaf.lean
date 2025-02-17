@@ -603,7 +603,7 @@ theorem toBasicOpen_injective (f : R) : Function.Injective (toBasicOpen R f) := 
       smul_mem' := fun {r₁ r₂} hr₂ => by dsimp at hr₂ ⊢; simp only [mul_assoc, hr₂] }
   -- Our claim now reduces to showing that `f` is contained in the radical of `I`
   suffices f ∈ I.radical by
-    cases' this with n hn
+    obtain ⟨n, hn⟩ := this
     exact ⟨⟨f ^ n, n, rfl⟩, hn⟩
   rw [← PrimeSpectrum.vanishingIdeal_zeroLocus_eq_radical, PrimeSpectrum.mem_vanishingIdeal]
   intro p hfp
@@ -612,7 +612,7 @@ theorem toBasicOpen_injective (f : R) : Function.Injective (toBasicOpen R f) := 
   have := congr_fun (congr_arg Subtype.val h_eq) ⟨p, hfp⟩
   dsimp at this
   rw [IsLocalization.eq (S := Localization.AtPrime p.asIdeal)] at this
-  cases' this with r hr
+  obtain ⟨r, hr⟩ := this
   exact ⟨r.1, hr, r.2⟩
 
 /-
@@ -632,22 +632,18 @@ theorem locally_const_basicOpen (U : Opens (PrimeSpectrum.Top R))
     PrimeSpectrum.isTopologicalBasis_basic_opens.exists_subset_of_mem_open hxV V.2
   -- The problem is of course, that `g` and `h` don't need to coincide.
   -- But, since `basicOpen h ≤ basicOpen g`, some power of `h` must be a multiple of `g`
-  cases' (PrimeSpectrum.basicOpen_le_basicOpen_iff h g).mp (Set.Subset.trans hDhV hVDg) with n hn
+  obtain ⟨n, hn⟩ := (PrimeSpectrum.basicOpen_le_basicOpen_iff h g).mp (Set.Subset.trans hDhV hVDg)
   -- Actually, we will need a *nonzero* power of `h`.
   -- This is because we will need the equality `basicOpen (h ^ n) = basicOpen h`, which only
   -- holds for a nonzero power `n`. We therefore artificially increase `n` by one.
   replace hn := Ideal.mul_mem_right h (Ideal.span {g}) hn
   rw [← pow_succ, Ideal.mem_span_singleton'] at hn
-  cases' hn with c hc
+  obtain ⟨c, hc⟩ := hn
   have basic_opens_eq := PrimeSpectrum.basicOpen_pow h (n + 1) (by omega)
   have i_basic_open := eqToHom basic_opens_eq ≫ homOfLE hDhV
   -- We claim that `(f * c) / h ^ (n+1)` is our desired representation
   use f * c, h ^ (n + 1), i_basic_open ≫ iVU, (basic_opens_eq.symm.le :) hxDh
-  rw [op_comp, Functor.map_comp] --, comp_apply, ← s_eq, res_const]
-  -- Porting note: `comp_apply` can't be rewritten, so use a change
-  change const R _ _ _ _ = (structureSheaf R).1.map i_basic_open.op
-    ((structureSheaf R).1.map iVU.op s)
-  rw [← s_eq, res_const]
+  rw [op_comp, Functor.map_comp, ConcreteCategory.comp_apply, ← s_eq, res_const]
   -- Note that the last rewrite here generated an additional goal, which was a parameter
   -- of `res_const`. We prove this goal first
   swap
@@ -729,7 +725,7 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
     -- Of course, the power `N` we used to expand the fractions might be bigger than the power
     -- `n (i, j)` which was originally chosen. We denote their difference by `k`
     have n_le_N : n (i, j) ≤ N := Finset.le_sup (Finset.mem_product.mpr ⟨hi, hj⟩)
-    cases' Nat.le.dest n_le_N with k hk
+    obtain ⟨k, hk⟩ := Nat.le.dest n_le_N
     simp only [← hk, pow_add, pow_one]
     -- To accommodate for the difference `k`, we multiply both sides of the equation `n_spec (i, j)`
     -- by `(h i * h j) ^ k`
@@ -737,11 +733,7 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
       · simp only [n, mul_pow]; ring
   -- Lastly, we need to show that the new fractions still represent our original `s`
   intro i _
-  rw [op_comp, Functor.map_comp]
-  -- Porting note: `comp_apply` can't be rewritten, so use a change
-  change (structureSheaf R).1.map (eqToHom (basic_opens_eq _)).op
-    ((structureSheaf R).1.map (iDh i).op s) = _
-  rw [← hs, res_const]
+  rw [op_comp, Functor.map_comp, ConcreteCategory.comp_apply, ← hs, res_const]
   -- additional goal spit out by `res_const`
   swap
   · exact (basic_opens_eq i).le
