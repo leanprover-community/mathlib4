@@ -88,11 +88,6 @@ instance isAsymm (r : α → α → Prop) [IsAsymm α r] : IsAsymm (List α) (Le
     | _, _, Lex.cons _, Lex.rel h₂ => asymm h₂ h₂
     | _, _, Lex.cons h₁, Lex.cons h₂ => aux _ _ h₁ h₂
 
-@[deprecated "No deprecation message was provided." (since := "2024-07-30")]
-instance isStrictTotalOrder (r : α → α → Prop) [IsStrictTotalOrder α r] :
-    IsStrictTotalOrder (List α) (Lex r) :=
-  { isStrictWeakOrder_of_isOrderConnected with }
-
 instance decidableRel [DecidableEq α] (r : α → α → Prop) [DecidableRel r] : DecidableRel (Lex r)
   | l₁, [] => isFalse fun h => by cases h
   | [], _ :: _ => isTrue Lex.nil
@@ -127,7 +122,7 @@ theorem to_ne : ∀ {l₁ l₂ : List α}, Lex (· ≠ ·) l₁ l₂ → l₁ �
 theorem _root_.Decidable.List.Lex.ne_iff [DecidableEq α] {l₁ l₂ : List α}
     (H : length l₁ ≤ length l₂) : Lex (· ≠ ·) l₁ l₂ ↔ l₁ ≠ l₂ :=
   ⟨to_ne, fun h => by
-    induction' l₁ with a l₁ IH generalizing l₂ <;> cases' l₂ with b l₂
+    induction' l₁ with a l₁ IH generalizing l₂ <;> rcases l₂ with - | ⟨b, l₂⟩
     · contradiction
     · apply nil
     · exact (not_lt_of_ge H).elim (succ_pos _)
@@ -146,6 +141,12 @@ end Lex
 --Note: this overrides an instance in core lean
 instance LT' [LT α] : LT (List α) :=
   ⟨Lex (· < ·)⟩
+
+-- TODO: This deprecated instance is still used (by the instance just below)
+@[deprecated "No deprecation message was provided." (since := "2024-07-30")]
+instance isStrictTotalOrder (r : α → α → Prop) [IsStrictTotalOrder α r] :
+    IsStrictTotalOrder (List α) (Lex r) :=
+  { isStrictWeakOrder_of_isOrderConnected with }
 
 instance [LinearOrder α] : LinearOrder (List α) :=
   linearOrderOfSTO (Lex (· < ·))
