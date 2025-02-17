@@ -75,7 +75,7 @@ example [CommGroup α] (x y z : α) : y = x * z / (x / y * z) := by
 example [CommGroup α] (a b s : α) : b⁻¹ * (s / a) = s / b / a := by mabel_nf
 
 /--
-error: to_additive requires an equality goal
+error: mabel_nf made no progress
 -/
 #guard_msgs in
 example : False := by mabel_nf
@@ -89,7 +89,7 @@ example [CommGroup α] (x y z : α) (w : x = y * z) : False := by
 
 example [CommGroup α] (x y z : α) (h : False) (w : x / x = y * z) : False := by
   mabel_nf at w
-  guard_hyp w : 1 = y * z
+  guard_hyp w : 0 = Additive.ofMul.toFun y + Additive.ofMul.toFun z
   assumption
 
 /--
@@ -123,6 +123,6 @@ example [CommGroup α] (x y z : α) (w : x / x = y * z) : x = 1 := by
 
 example [CommGroup α] (x y z : α) (h : False) (w : x / x = y * z) : False := by
   mabel_nf at *
-  guard_hyp w : 1 = y * z
+  guard_hyp w : 0 = Additive.ofMul.toFun y + Additive.ofMul.toFun z
   assumption
 end multiplicative
