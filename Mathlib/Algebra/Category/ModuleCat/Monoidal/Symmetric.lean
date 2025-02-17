@@ -101,12 +101,6 @@ theorem tensorμ_apply
     {A B C D : ModuleCat R} (x : A) (y : B) (z : C) (w : D) :
     tensorμ A B C D ((x ⊗ₜ y) ⊗ₜ (z ⊗ₜ w)) = (x ⊗ₜ z) ⊗ₜ (y ⊗ₜ w) := rfl
 
-@[simp]
-theorem tensor_μ_eq_tensorTensorTensorComm {A B C D : ModuleCat R} :
-    tensor_μ _ (A, B) (C, D) = (TensorProduct.tensorTensorTensorComm R A B C D).toLinearMap :=
-  TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext₂ fun _ _ =>
-    TensorProduct.ext <| LinearMap.ext₂ fun _ _ => rfl
-
 end MonoidalCategory
 
 end ModuleCat

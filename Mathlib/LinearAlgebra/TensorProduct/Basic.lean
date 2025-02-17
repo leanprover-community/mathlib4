@@ -1091,13 +1091,6 @@ theorem tensorTensorTensorComm_comp_map {V W : Type*}
       map (map f h) (map g j) ∘ₗ tensorTensorTensorComm R M N P Q :=
   ext_fourfold' fun _ _ _ _ => rfl
 
-theorem tensorTensorTensorComm_comp_map {V W : Type*}
-    [AddCommMonoid V] [AddCommMonoid W] [Module R V] [Module R W]
-    (f : M →ₗ[R] S) (g : N →ₗ[R] T) (h : P →ₗ[R] V) (j : Q →ₗ[R] W) :
-    tensorTensorTensorComm R S T V W ∘ₗ map (map f g) (map h j)
-      = map (map f h) (map g j) ∘ₗ tensorTensorTensorComm R M N P Q :=
-  ext_fourfold' fun _ _ _ _ => rfl
-
 variable (M N P Q)
 
 /-- This special case is useful for describing the interplay between `dualTensorHomEquiv` and

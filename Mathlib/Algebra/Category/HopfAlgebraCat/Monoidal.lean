@@ -3,7 +3,6 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-
 import Mathlib.Algebra.Category.BialgebraCat.Monoidal
 import Mathlib.Algebra.Category.HopfAlgebraCat.Basic
 import Mathlib.RingTheory.HopfAlgebra.TensorProduct
@@ -16,10 +15,9 @@ Hopf `R`-algebra instance on `A ⊗[R] B`.
 
 Here, we use this to declare a `MonoidalCategory` instance on the category of Hopf algebras, via
 the existing monoidal structure on `BialgebraCat`.
-
 -/
 
-universe v u
+universe u
 
 namespace HopfAlgebraCat
 open CategoryTheory MonoidalCategory TensorProduct
@@ -55,5 +53,8 @@ noncomputable def MonoidalCategory.inducingFunctorData :
 
 noncomputable instance instMonoidalCategory : MonoidalCategory (HopfAlgebraCat R) :=
   Monoidal.induced (forget₂ _ (BialgebraCat R)) (MonoidalCategory.inducingFunctorData R)
+
+/-- `forget₂ (HopfAlgebraCat R) (BialgebraCat R)` is a monoidal functor. -/
+noncomputable instance : (forget₂ (HopfAlgebraCat R) (BialgebraCat R)).Monoidal where
 
 end HopfAlgebraCat

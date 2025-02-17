@@ -38,6 +38,7 @@ is already universe polymorphic since it does not go via category theory.
 -/
 
 universe v u
+
 open CategoryTheory
 open scoped TensorProduct
 
@@ -64,6 +65,7 @@ end
 
 namespace Coalgebra
 namespace TensorProduct
+
 open CoalgebraCat.MonoidalCategoryAux MonoidalCategory
 
 variable {R M N P Q : Type u} [CommRing R]
