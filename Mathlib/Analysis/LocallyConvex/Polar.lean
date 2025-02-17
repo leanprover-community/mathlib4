@@ -177,14 +177,7 @@ def polarSubmodule {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) : S
 
 end NontriviallyNormedField
 
-section SeminormedAddCommGroup
 
-variable [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-
-theorem test (r : ℝ) : Balanced 𝕜 (Metric.closedBall (0 : 𝕜) r) := by
-  exact _root_.balanced_closedBall_zero
-
-end SeminormedAddCommGroup
 
 section NormedAlgebra
 
@@ -198,8 +191,8 @@ variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F] [IsScalarTower ℝ 𝕜 𝕜]
 theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
   rw [polar_eq_biInter_preimage]
   exact AbsConvex.iInter₂ fun i hi =>
-    ⟨Balanced.mulActionHom_preimage (E := F) (test 1) (𝕜 := 𝕜) (B i),
-      Convex.linear_preimage (convex_closedBall _ _) (B i)⟩
+    ⟨Balanced.mulActionHom_preimage (E := F) (balanced_closedBall_zero (E := 𝕜) (r := (1 : ℝ)))
+      (𝕜 := 𝕜) (B i), Convex.linear_preimage (convex_closedBall _ _) (B i)⟩
 
 /-
 TODO: prove the converse and upgrade this to the bipolar theorem
