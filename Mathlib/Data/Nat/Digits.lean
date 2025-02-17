@@ -234,12 +234,12 @@ theorem digits_ofDigits (b : ℕ) (h : 1 < b) (L : List ℕ) (w₁ : ∀ l ∈ L
         exact List.getLast_mem h'
 
 theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
-  cases' b with b
-  · cases' n with n
+  rcases b with - | b
+  · rcases n with - | n
     · rfl
     · change ofDigits 0 [n + 1] = n + 1
       dsimp [ofDigits]
-  · cases' b with b
+  · rcases b with - | b
     · induction' n with n ih
       · rfl
       · rw [Nat.zero_add] at ih ⊢
@@ -360,7 +360,7 @@ theorem ofDigits_add_ofDigits_eq_ofDigits_zipWith_of_length_eq {b : ℕ} {l1 l2 
 theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b + 2 := by
   induction m using Nat.strongRecOn with | ind n IH => ?_
   intro d hd
-  cases' n with n
+  rcases n with - | n
   · rw [digits_zero] at hd
     cases hd
   -- base b+2 expansion of 0 has no digits
@@ -433,7 +433,7 @@ theorem digits_append_digits {b m n : ℕ} (hb : 0 < b) :
   · by_cases h : digits b m = []
     · simp only [h, List.append_nil] at h_append ⊢
       exact getLast_digit_ne_zero b <| digits_ne_nil_iff_ne_zero.mp h_append
-    · exact (List.getLast_append' _ _ h) ▸
+    · exact (List.getLast_append_of_right_ne_nil _ _ h) ▸
           (getLast_digit_ne_zero _ <| digits_ne_nil_iff_ne_zero.mp h)
 
 theorem digits_append_zeroes_append_digits {b k m n : ℕ} (hb : 1 < b) (hm : 0 < m) :
