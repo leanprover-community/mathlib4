@@ -38,6 +38,7 @@ This file introduces specializations of `WellFounded` and `WellQuasiOrdered` for
 
 ## TODO
 
+* Prove that `s` is partial well ordered iff it has no infinite descending chain or antichain.
 * Rename `Set.PartiallyWellOrderedOn` to `Set.WellQuasiOrderedOn` and `Set.IsPWO` to `Set.IsWQO`.
 
 ## References
@@ -55,7 +56,7 @@ namespace Set
 
 /-! ### Relations well-founded on sets -/
 
-/-- `s.WellFoundedOn r` indicates that the relation `r` is well-founded when restricted to `s`. -/
+/-- `s.WellFoundedOn r` indicates that the relation `r` is `WellFounded` when restricted to `s`. -/
 def WellFoundedOn (s : Set α) (r : α → α → Prop) : Prop :=
   WellFounded (Subrel r (· ∈ s))
 
@@ -246,7 +247,8 @@ end Preorder
 
 /-! ### Partially well-ordered sets -/
 
-/-- `s.PartiallyWellOrderedOn r` indicates that the relation `r` is a WQO when restricted to `s`.
+/-- `s.PartiallyWellOrderedOn r` indicates that the relation `r` is `WellQuasiOrdered` when
+restricted to `s`.
 
 TODO: rename this to `WellQuasiOrderedOn` to match `WellQuasiOrdered`. -/
 def PartiallyWellOrderedOn (s : Set α) (r : α → α → Prop) : Prop :=
