@@ -12,7 +12,9 @@ import Mathlib.CategoryTheory.Preadditive.CommGrp_
 /-!
 # The forgetful functor `(C ⥤ₗ AddCommGroup) ⥤ (C ⥤ₗ Type v)` is an equivalence
 
-We construct a quasi-inverse for the
+This is true as long as `C` is additive.
+
+Here, `C ⥤ₗ D` is the category of finite-limits-preserving functors from `C` to `D`.
 -/
 
 open CategoryTheory MonoidalCategory Limits
