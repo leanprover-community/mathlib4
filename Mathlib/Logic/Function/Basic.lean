@@ -44,7 +44,7 @@ theorem const_injective [Nonempty α] : Injective (const α : β → α → β) 
 theorem const_inj [Nonempty α] {y₁ y₂ : β} : const α y₁ = const α y₂ ↔ y₁ = y₂ :=
   ⟨fun h ↦ const_injective h, fun h ↦ h ▸ rfl⟩
 
-theorem onFun_apply (f : β → β → γ) (g : α → β) (a b : α) : onFun f g a b = f (g a) (g b) :=
+theorem onFun_apply (f : β → β → Prop) (g : α → β) (a b : α) : onFun f g a b = f (g a) (g b) :=
   rfl
 
 lemma hfunext {α α' : Sort u} {β : α → Sort v} {β' : α' → Sort v} {f : ∀a, β a} {f' : ∀a, β' a}
