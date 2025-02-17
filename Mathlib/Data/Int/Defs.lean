@@ -8,6 +8,7 @@ import Mathlib.Data.Nat.Defs
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Lift
+import Mathlib.Tactic.OfNat
 
 /-!
 # Basic operations on the integers
@@ -445,6 +446,12 @@ lemma exists_lt_and_lt_iff_not_dvd (m : ℤ) (hn : 0 < n) :
     norm_cast at h
     exact ⟨a, h⟩
   mpr := by rintro ⟨a, rfl⟩; simp [Int.dvd_mul_right]
+
+@[norm_cast] theorem ofNat_dvd_natCast {x y : ℕ} : (ofNat(x) : ℤ) ∣ (y : ℤ) ↔ OfNat.ofNat x ∣ y :=
+  natCast_dvd_natCast
+
+@[norm_cast] theorem natCast_dvd_ofNat {x y : ℕ} : (x : ℤ) ∣ (ofNat(y) : ℤ) ↔ x ∣ OfNat.ofNat y :=
+  natCast_dvd_natCast
 
 lemma natCast_dvd {m : ℕ} : (m : ℤ) ∣ n ↔ m ∣ n.natAbs := by
   obtain hn | hn := natAbs_eq n <;> rw [hn] <;> simp [← natCast_dvd_natCast, Int.dvd_neg]

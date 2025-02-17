@@ -66,7 +66,7 @@ private lemma ineq_pqr_contradiction {p q r a b c : ℕ}
     _ = (q * r + r * p + p * q) * (a + b + c) := by ring
     _ ≤ _ := by gcongr
 
-private theorem Polynomial.flt_catalan_deriv [DecidableEq k]
+private theorem Polynomial.flt_catalan_deriv
     {p q r : ℕ} (hp : 0 < p) (hq : 0 < q) (hr : 0 < r)
     (hineq : q * r + r * p + p * q ≤ p * q * r)
     (chp : (p : k) ≠ 0) (chq : (q : k) ≠ 0) (chr : (r : k) ≠ 0)
@@ -92,6 +92,7 @@ private theorem Polynomial.flt_catalan_deriv [DecidableEq k]
   have habcp := hcap.symm.mul_left hbcp
 
   -- Use Mason-Stothers theorem
+  classical
   rcases Polynomial.abc
       (mul_ne_zero hCu hap) (mul_ne_zero hCv hbq) (mul_ne_zero hCw hcr)
       habp heq with nd_lt | dr0
@@ -137,7 +138,6 @@ private lemma find_contract {a : k[X]}
     exact ha heq
   · rw [← natDegree_expand, ← heq]
 
-variable [DecidableEq k]
 
 private theorem Polynomial.flt_catalan_aux
     {p q r : ℕ} {a b c : k[X]} {u v w : k}
@@ -148,7 +148,7 @@ private theorem Polynomial.flt_catalan_aux
     (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) (hab : IsCoprime a b)
     (hu : u ≠ 0) (hv : v ≠ 0) (hw : w ≠ 0) :
     a.natDegree = 0 := by
-  cases' eq_or_ne (ringChar k) 0 with ch0 chn0
+  rcases eq_or_ne (ringChar k) 0 with ch0 | chn0
   -- characteristic zero
   · obtain ⟨da, -, -⟩ := flt_catalan_deriv
       hp hq hr hineq chp chq chr ha hb hc hab hu hv hw heq
@@ -234,6 +234,7 @@ theorem Polynomial.flt
 
 theorem fermatLastTheoremWith'_polynomial {n : ℕ} (hn : 3 ≤ n) (chn : (n : k) ≠ 0) :
     FermatLastTheoremWith' k[X] n := by
+  classical
   rw [FermatLastTheoremWith']
   intros a b c ha hb hc heq
   obtain ⟨a', eq_a⟩ := gcd_dvd_left a b

@@ -340,9 +340,9 @@ theorem compl₁₂_inj {f₁ f₂ : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ} {g : Q�
   constructor <;> intro h
   · -- B₁.comp l r = B₂.comp l r → B₁ = B₂
     ext x y
-    cases' hₗ x with x' hx
+    obtain ⟨x', hx⟩ := hₗ x
     subst hx
-    cases' hᵣ y with y' hy
+    obtain ⟨y', hy⟩ := hᵣ y
     subst hy
     convert LinearMap.congr_fun₂ h x' y' using 0
   · -- B₁ = B₂ → B₁.comp l r = B₂.comp l r

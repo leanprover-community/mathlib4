@@ -211,7 +211,7 @@ instance toPerfectRing (p : ℕ) [hp : ExpChar K p] : PerfectRing K p := by
   apply mt (X_pow_sub_C_irreducible_of_prime hp)
   apply mt separable_of_irreducible
   simp [separable_def, isCoprime_zero_right, isUnit_iff_degree_eq_zero,
-    degree_X_pow_sub_C hp.pos, hp.ne_zero]
+    derivative_X_pow, degree_X_pow_sub_C hp.pos, hp.ne_zero]
 
 theorem separable_iff_squarefree {g : K[X]} : g.Separable ↔ Squarefree g := by
   refine ⟨Separable.squarefree, fun sqf ↦ isCoprime_of_irreducible_dvd (sqf.ne_zero ·.1) ?_⟩

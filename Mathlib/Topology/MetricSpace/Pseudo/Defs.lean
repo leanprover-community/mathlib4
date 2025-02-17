@@ -126,8 +126,10 @@ class PseudoMetricSpace (α : Type u) extends Dist α : Type u where
 @[ext]
 theorem PseudoMetricSpace.ext {α : Type*} {m m' : PseudoMetricSpace α}
     (h : m.toDist = m'.toDist) : m = m' := by
-  cases' m with d _ _ _ ed hed U hU B hB
-  cases' m' with d' _ _ _ ed' hed' U' hU' B' hB'
+  let d := m.toDist
+  obtain ⟨_, _, _, _, hed, _, hU, _, hB⟩ := m
+  let d' := m'.toDist
+  obtain ⟨_, _, _, _, hed', _, hU', _, hB'⟩ := m'
   obtain rfl : d = d' := h
   congr
   · ext x y : 2
@@ -1148,12 +1150,6 @@ theorem dense_iff_iUnion_ball (s : Set α) : Dense s ↔ ∀ r > 0, ⋃ c ∈ s,
 
 theorem denseRange_iff {f : β → α} : DenseRange f ↔ ∀ x, ∀ r > 0, ∃ y, dist x (f y) < r :=
   forall_congr' fun x => by simp only [mem_closure_iff, exists_range_iff]
-
-/-- If a map is continuous on a separable set `s`, then the image of `s` is also separable. -/
-theorem _root_.ContinuousOn.isSeparable_image [TopologicalSpace β] {f : α → β} {s : Set α}
-    (hf : ContinuousOn f s) (hs : IsSeparable s) : IsSeparable (f '' s) := by
-  rw [image_eq_range, ← image_univ]
-  exact (isSeparable_univ_iff.2 hs.separableSpace).image hf.restrict
 
 end Metric
 
