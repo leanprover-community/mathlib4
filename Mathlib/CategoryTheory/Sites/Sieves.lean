@@ -167,7 +167,7 @@ theorem ofArrows_pullback [HasPullbacks C] {ι : Type*} (Z : ι → C) (g : ∀ 
   · rintro ⟨hk⟩
     exact pullbackArrows.mk _ _ (ofArrows.mk hk)
   · rintro ⟨W, k, hk₁⟩
-    cases' hk₁ with i hi
+    obtain ⟨i, hi⟩ := hk₁
     apply ofArrows.mk
 
 theorem ofArrows_bind {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X)
@@ -187,7 +187,7 @@ theorem ofArrows_bind {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X)
 theorem ofArrows_surj {ι : Type*} {Y : ι → C} (f : ∀ i, Y i ⟶ X) {Z : C} (g : Z ⟶ X)
     (hg : ofArrows Y f g) : ∃ (i : ι) (h : Y i = Z),
     g = eqToHom h.symm ≫ f i := by
-  cases' hg with i
+  obtain ⟨i⟩ := hg
   exact ⟨i, rfl, by simp only [eqToHom_refl, id_comp]⟩
 
 /-- Given a presieve on `F(X)`, we can define a presieve on `X` by taking the preimage via `F`. -/
@@ -472,7 +472,7 @@ variable {Y f} {W : C} {g : W ⟶ X} (hg : ofArrows Y f g)
 include hg in
 lemma ofArrows.exists : ∃ (i : I) (h : W ⟶ Y i), g = h ≫ f i := by
   obtain ⟨_, h, _, H, rfl⟩ := hg
-  cases' H with i
+  obtain ⟨i⟩ := H
   exact ⟨i, h, rfl⟩
 
 /-- When `hg : Sieve.ofArrows Y f g`, this is a choice of `i` such that `g`
@@ -623,7 +623,7 @@ theorem pullbackArrows_comm [HasPullbacks C] {X Y : C} (f : Y ⟶ X) (R : Presie
   ext W g
   constructor
   · rintro ⟨_, h, k, hk, rfl⟩
-    cases' hk with W g hg
+    obtain ⟨W, g, hg⟩ := hk
     rw [Sieve.pullback_apply, assoc, ← pullback.condition, ← assoc]
     exact Sieve.downward_closed _ (by exact Sieve.le_generate R W hg) (h ≫ pullback.fst g f)
   · rintro ⟨W, h, k, hk, comm⟩

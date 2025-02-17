@@ -120,7 +120,7 @@ theorem continuousOn_taylorWithinEval {f : ℝ → E} {x : ℝ} {n : ℕ} {s : S
   refine continuousOn_finset_sum (Finset.range (n + 1)) fun i hi => ?_
   refine (continuousOn_const.mul ((continuousOn_const.sub continuousOn_id).pow _)).smul ?_
   rw [contDiffOn_nat_iff_continuousOn_differentiableOn_deriv hs] at hf
-  cases' hf with hf_left
+  obtain ⟨hf_left⟩ := hf
   specialize hf_left i
   simp only [Finset.mem_range] at hi
   refine hf_left ?_

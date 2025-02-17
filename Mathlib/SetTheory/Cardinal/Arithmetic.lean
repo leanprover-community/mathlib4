@@ -787,7 +787,7 @@ section extend
 theorem extend_function {α β : Type*} {s : Set α} (f : s ↪ β)
     (h : Nonempty ((sᶜ : Set α) ≃ ((range f)ᶜ : Set β))) : ∃ g : α ≃ β, ∀ x : s, g x = f x := by
   classical
-  have := h; cases' this with g
+  have := h; obtain ⟨g⟩ := this
   let h : α ≃ β :=
     (Set.sumCompl (s : Set α)).symm.trans
       ((sumCongr (Equiv.ofInjective f f.2) g).trans (Set.sumCompl (range f)))
@@ -796,7 +796,7 @@ theorem extend_function {α β : Type*} {s : Set α} (f : s ↪ β)
 theorem extend_function_finite {α : Type u} {β : Type v} [Finite α] {s : Set α} (f : s ↪ β)
     (h : Nonempty (α ≃ β)) : ∃ g : α ≃ β, ∀ x : s, g x = f x := by
   apply extend_function.{u, v} f
-  cases' id h with g
+  obtain ⟨g⟩ := id h
   rw [← lift_mk_eq.{u, v, max u v}] at h
   rw [← lift_mk_eq.{u, v, max u v}, mk_compl_eq_mk_compl_finite_lift.{u, v, max u v} h]
   rw [mk_range_eq_lift.{u, v, max u v}]; exact f.2
@@ -806,7 +806,7 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
   cases fintypeOrInfinite α
   · exact extend_function_finite f h
   · apply extend_function f
-    cases' id h with g
+    obtain ⟨g⟩ := id h
     haveI := Infinite.of_injective _ g.injective
     rw [← lift_mk_eq'] at h ⊢
     rwa [mk_compl_of_infinite s hs, mk_compl_of_infinite]

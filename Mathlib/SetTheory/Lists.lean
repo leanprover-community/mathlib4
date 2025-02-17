@@ -167,7 +167,7 @@ theorem subset_nil {l : Lists' α true} : l ⊆ Lists'.nil → l = Lists'.nil :=
 theorem mem_of_subset' {a} : ∀ {l₁ l₂ : Lists' α true} (_ : l₁ ⊆ l₂) (_ : a ∈ l₁.toList), a ∈ l₂
   | nil, _, Lists'.Subset.nil, h => by cases h
   | cons' a0 l0, l₂, s, h => by
-    cases' s with _ _ _ _ _ e m s
+    obtain ⟨_, _, _, _, _, e, m, s⟩ := s
     simp only [toList, Sigma.eta, List.find?, List.mem_cons] at h
     rcases h with (rfl | h)
     · exact ⟨_, m, e⟩

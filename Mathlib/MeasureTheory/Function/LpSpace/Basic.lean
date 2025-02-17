@@ -1346,7 +1346,7 @@ theorem ae_tendsto_of_cauchy_eLpNorm' [CompleteSpace E] {f : ℕ → α → E} {
     let hx_sum := hx.hasSum.tendsto_sum_nat
     exact ⟨∑' i, (f (i + 1) x - f i x), hx_sum⟩
   refine h.mono fun x hx => ?_
-  cases' hx with l hx
+  obtain ⟨l, hx⟩ := hx
   have h_rw_sum :
       (fun n => ∑ i ∈ Finset.range n, (f (i + 1) x - f i x)) = fun n => f n x - f 0 x := by
     ext1 n

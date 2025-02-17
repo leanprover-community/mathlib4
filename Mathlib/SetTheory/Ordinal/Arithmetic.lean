@@ -433,7 +433,7 @@ theorem IsNormal.le_set {f o} (H : IsNormal f) (p : Set Ordinal) (p0 : p.Nonempt
     -- Porting note: `refine'` didn't work well so `induction` is used
     induction b using limitRecOn with
     | H₁ =>
-      cases' p0 with x px
+      obtain ⟨x, px⟩ := p0
       have := Ordinal.le_zero.1 ((H₂ _).1 (Ordinal.zero_le _) _ px)
       rw [this] at px
       exact h _ px

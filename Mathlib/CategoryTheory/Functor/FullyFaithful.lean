@@ -312,8 +312,8 @@ theorem Faithful.div_comp (F : C ⥤ E) [F.Faithful] (G : D ⥤ E) [G.Faithful] 
     Faithful.div F G obj @h_obj @map @h_map ⋙ G = F := by
   -- Porting note: Have to unfold the structure twice because the first one recovers only the
   -- prefunctor `F_pre`
-  cases' F with F_pre _ _; cases' G with G_pre _ _
-  cases' F_pre with F_obj _; cases' G_pre with G_obj _
+  obtain ⟨F_pre, _, _⟩ := F; obtain ⟨G_pre, _, _⟩ := G
+  obtain ⟨F_obj, _⟩ := F_pre; obtain ⟨G_obj, _⟩ := G_pre
   unfold Faithful.div Functor.comp
   -- Porting note: unable to find the lean4 analogue to `unfold_projs`, works without it
   have : F_obj = G_obj ∘ obj := (funext h_obj).symm

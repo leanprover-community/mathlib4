@@ -624,8 +624,8 @@ instance : Subsingleton (LocallyFiniteOrder α) :=
 
 instance : Subsingleton (LocallyFiniteOrderTop α) :=
   Subsingleton.intro fun h₀ h₁ => by
-    cases' h₀ with h₀_finset_Ioi h₀_finset_Ici h₀_finset_mem_Ici h₀_finset_mem_Ioi
-    cases' h₁ with h₁_finset_Ioi h₁_finset_Ici h₁_finset_mem_Ici h₁_finset_mem_Ioi
+    obtain ⟨h₀_finset_Ioi, h₀_finset_Ici, h₀_finset_mem_Ici, h₀_finset_mem_Ioi⟩ := h₀
+    obtain ⟨h₁_finset_Ioi, h₁_finset_Ici, h₁_finset_mem_Ici, h₁_finset_mem_Ioi⟩ := h₁
     have hIci : h₀_finset_Ici = h₁_finset_Ici := by
       ext a b
       rw [h₀_finset_mem_Ici, h₁_finset_mem_Ici]
@@ -636,8 +636,8 @@ instance : Subsingleton (LocallyFiniteOrderTop α) :=
 
 instance : Subsingleton (LocallyFiniteOrderBot α) :=
   Subsingleton.intro fun h₀ h₁ => by
-    cases' h₀ with h₀_finset_Iio h₀_finset_Iic h₀_finset_mem_Iic h₀_finset_mem_Iio
-    cases' h₁ with h₁_finset_Iio h₁_finset_Iic h₁_finset_mem_Iic h₁_finset_mem_Iio
+    obtain ⟨h₀_finset_Iio, h₀_finset_Iic, h₀_finset_mem_Iic, h₀_finset_mem_Iio⟩ := h₀
+    obtain ⟨h₁_finset_Iio, h₁_finset_Iic, h₁_finset_mem_Iic, h₁_finset_mem_Iio⟩ := h₁
     have hIic : h₀_finset_Iic = h₁_finset_Iic := by
       ext a b
       rw [h₀_finset_mem_Iic, h₁_finset_mem_Iic]

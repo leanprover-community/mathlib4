@@ -113,7 +113,7 @@ theorem destruct_eq_think {s : Computation α} {s'} : destruct s = Sum.inr s' �
   induction' f0 : s.1 0 with a' <;> intro h
   · injection h with h'
     rw [← h']
-    cases' s with f al
+    obtain ⟨f, al⟩ := s
     apply Subtype.eq
     dsimp [think, tail]
     rw [← f0]
@@ -150,7 +150,7 @@ theorem tail_pure (a : α) : tail (pure a) = pure a :=
 
 @[simp]
 theorem tail_think (s : Computation α) : tail (think s) = s := by
-  cases' s with f al; apply Subtype.eq; dsimp [tail, think]
+  obtain ⟨f, al⟩ := s; apply Subtype.eq; dsimp [tail, think]
 
 @[simp]
 theorem tail_empty : tail (empty α) = empty α :=
@@ -286,7 +286,7 @@ instance : Membership α (Computation α) :=
   ⟨Computation.Mem⟩
 
 theorem le_stable (s : Computation α) {a m n} (h : m ≤ n) : s.1 m = some a → s.1 n = some a := by
-  cases' s with f al
+  obtain ⟨f, al⟩ := s
   induction' h with n _ IH
   exacts [id, fun h2 => al (IH h2)]
 
@@ -406,7 +406,7 @@ theorem get_thinkN (n) : get (thinkN s n) = get s :=
 theorem get_promises : s ~> get s := fun _ => get_eq_of_mem _
 
 theorem mem_of_promises {a} (p : s ~> a) : a ∈ s := by
-  cases' h with h
+  obtain ⟨h⟩ := h
   obtain ⟨a', h⟩ := h
   rw [p h]
   exact h
@@ -667,7 +667,7 @@ theorem results_bind {s : Computation α} {f : α → Computation β} {a b m n} 
   · intro _ h3 _ h1
     rw [think_bind]
     obtain ⟨m', h⟩ := of_results_think h1
-    cases' h with h1 e
+    obtain ⟨h1, e⟩ := h
     rw [e]
     exact results_think (h3 h1)
 

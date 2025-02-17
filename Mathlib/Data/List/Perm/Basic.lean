@@ -117,12 +117,12 @@ theorem perm_comp_forall₂ {l u v} (hlu : Perm l u) (huv : Forall₂ r u v) :
   induction hlu generalizing v with
   | nil => cases huv; exact ⟨[], Forall₂.nil, Perm.nil⟩
   | cons u _hlu ih =>
-    cases' huv with _ b _ v hab huv'
+    obtain ⟨_, b, _, v, hab, huv'⟩ := huv
     rcases ih huv' with ⟨l₂, h₁₂, h₂₃⟩
     exact ⟨b :: l₂, Forall₂.cons hab h₁₂, h₂₃.cons _⟩
   | swap a₁ a₂ h₂₃ =>
-    cases' huv with _ b₁ _ l₂ h₁ hr₂₃
-    cases' hr₂₃ with _ b₂ _ l₂ h₂ h₁₂
+    obtain ⟨_, b₁, _, l₂, h₁, hr₂₃⟩ := huv
+    obtain ⟨_, b₂, _, l₂, h₂, h₁₂⟩ := hr₂₃
     exact ⟨b₂ :: b₁ :: l₂, Forall₂.cons h₂ (Forall₂.cons h₁ h₁₂), Perm.swap _ _ _⟩
   | trans _ _ ih₁ ih₂ =>
     rcases ih₂ huv with ⟨lb₂, hab₂, h₂₃⟩

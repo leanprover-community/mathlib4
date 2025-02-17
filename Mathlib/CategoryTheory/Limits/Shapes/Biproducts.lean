@@ -1300,7 +1300,7 @@ def toBiconeIsLimit {X Y : C} (b : BinaryBicone X Y) :
     IsLimit b.toBicone.toCone ≃ IsLimit b.toCone :=
   IsLimit.equivIsoLimit <|
     Cones.ext (Iso.refl _) fun j => by
-      cases' j with as; cases as <;> simp
+      obtain ⟨as⟩ := j; cases as <;> simp
 
 /-- A binary bicone is a colimit cocone if and only if the corresponding bicone is a colimit
     cocone. -/
@@ -1308,7 +1308,7 @@ def toBiconeIsColimit {X Y : C} (b : BinaryBicone X Y) :
     IsColimit b.toBicone.toCocone ≃ IsColimit b.toCocone :=
   IsColimit.equivIsoColimit <|
     Cocones.ext (Iso.refl _) fun j => by
-      cases' j with as; cases as <;> simp
+      obtain ⟨as⟩ := j; cases as <;> simp
 
 end BinaryBicone
 

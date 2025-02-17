@@ -197,13 +197,13 @@ theorem NFBelow.oadd {e n a b} : NF e → NFBelow a (repr e) → repr e < b → 
   | ⟨⟨_, h⟩⟩ => NFBelow.oadd' h
 
 theorem NFBelow.fst {e n a b} (h : NFBelow (ONote.oadd e n a) b) : NF e := by
-  cases' h with _ _ _ _ eb _ h₁ h₂ h₃; exact ⟨⟨_, h₁⟩⟩
+  obtain ⟨_, _, _, _, eb, _, h₁, h₂, h₃⟩ := h; exact ⟨⟨_, h₁⟩⟩
 
 theorem NF.fst {e n a} : NF (oadd e n a) → NF e
   | ⟨⟨_, h⟩⟩ => h.fst
 
 theorem NFBelow.snd {e n a b} (h : NFBelow (ONote.oadd e n a) b) : NFBelow a (repr e) := by
-  cases' h with _ _ _ _ eb _ h₁ h₂ h₃; exact h₂
+  obtain ⟨_, _, _, _, eb, _, h₁, h₂, h₃⟩ := h; exact h₂
 
 theorem NF.snd' {e n a} : NF (oadd e n a) → NFBelow a (repr e)
   | ⟨⟨_, h⟩⟩ => h.snd
@@ -218,7 +218,7 @@ instance NF.oadd_zero (e n) [h : NF e] : NF (ONote.oadd e n 0) :=
   h.oadd _ NFBelow.zero
 
 theorem NFBelow.lt {e n a b} (h : NFBelow (ONote.oadd e n a) b) : repr e < b := by
-  cases' h with _ _ _ _ eb _ h₁ h₂ h₃; exact h₃
+  obtain ⟨_, _, _, _, eb, _, h₁, h₂, h₃⟩ := h; exact h₃
 
 theorem NFBelow_zero : ∀ {o}, NFBelow o 0 ↔ o = 0
   | 0 => ⟨fun _ => rfl, fun _ => NFBelow.zero⟩
@@ -246,7 +246,7 @@ theorem NFBelow.mono {o b₁ b₂} (bb : b₁ ≤ b₂) (h : NFBelow o b₁) : N
 
 theorem NF.below_of_lt {e n a b} (H : repr e < b) :
     NF (ONote.oadd e n a) → NFBelow (ONote.oadd e n a) b
-  | ⟨⟨b', h⟩⟩ => by (cases' h with _ _ _ _ eb _ h₁ h₂ h₃; exact NFBelow.oadd' h₁ h₂ H)
+  | ⟨⟨b', h⟩⟩ => by (obtain ⟨_, _, _, _, eb, _, h₁, h₂, h₃⟩ := h; exact NFBelow.oadd' h₁ h₂ H)
 
 theorem NF.below_of_lt' : ∀ {o b}, repr o < ω ^ b → NF o → NFBelow o b
   | 0, _, _, _ => NFBelow.zero
@@ -1225,7 +1225,7 @@ actually be defined this way due to conflicting dependencies. -/
 @[elab_as_elim]
 def recOn {C : NONote → Sort*} (o : NONote) (H0 : C 0)
     (H1 : ∀ e n a h, C e → C a → C (oadd e n a h)) : C o := by
-  cases' o with o h; induction' o with e n a IHe IHa
+  obtain ⟨o, h⟩ := o; induction' o with e n a IHe IHa
   · exact H0
   · exact H1 ⟨e, h.fst⟩ n ⟨a, h.snd⟩ h.snd' (IHe _) (IHa _)
 

@@ -84,7 +84,7 @@ def buildIsLimit (t₁ : IsLimit c₁) (t₂ : IsLimit c₂) (hi : IsLimit i) :
     hi.hom_ext
       (i.equalizer_ext
         (t₁.hom_ext fun j => by
-          cases' j with j
+          obtain ⟨j⟩ := j
           simpa using w j))
   fac s j := by simp
 
@@ -353,7 +353,7 @@ def buildIsColimit (t₁ : IsColimit c₁) (t₂ : IsColimit c₂) (hi : IsColim
       apply q.ι.app j
     · apply t₁.hom_ext
       intro j
-      cases' j with j
+      obtain ⟨j⟩ := j
       have reassoced_s (f : (p : J × J) × (p.fst ⟶ p.snd)) {W : C} (h : _ ⟶ W) :
         c₁.ι.app ⟨f⟩ ≫ s ≫ h = F.map f.snd ≫ c₂.ι.app ⟨f.fst.snd⟩ ≫ h := by
           simp only [← Category.assoc]
@@ -367,7 +367,7 @@ def buildIsColimit (t₁ : IsColimit c₁) (t₂ : IsColimit c₂) (hi : IsColim
     hi.hom_ext
       (i.coequalizer_ext
         (t₂.hom_ext fun j => by
-          cases' j with j
+          obtain ⟨j⟩ := j
           simpa using w j))
   fac s j := by simp
 

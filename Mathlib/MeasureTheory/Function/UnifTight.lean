@@ -153,7 +153,7 @@ theorem unifTight_of_subsingleton [Subsingleton ι] (hp_top : p ≠ ∞)
   · exact ⟨∅, by measurability, fun _ => hε_top.symm ▸ le_top⟩
   by_cases hι : Nonempty ι
   case neg => exact ⟨∅, (by measurability), fun i => False.elim <| hι <| Nonempty.intro i⟩
-  cases' hι with i
+  obtain ⟨i⟩ := hι
   obtain ⟨s, _, hμs, hfε⟩ := (hf i).exists_eLpNorm_indicator_compl_lt hp_top (coe_ne_zero.2 hε.ne')
   refine ⟨s, ne_of_lt hμs, fun j => ?_⟩
   convert hfε.le

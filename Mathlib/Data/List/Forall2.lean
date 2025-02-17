@@ -290,7 +290,7 @@ theorem sublistForall₂_iff {l₁ : List α} {l₂ : List β} :
     | cons _ _ ih => intro l₁ hl1; exact SublistForall₂.cons_right (ih hl1)
     | cons₂ _ _ ih =>
       intro l₁ hl1
-      cases' hl1 with _ _ _ _ hr hl _
+      obtain ⟨_, _, _, _, hr, hl, _⟩ := hl1
       exact SublistForall₂.cons hr (ih hl)
 
 instance SublistForall₂.is_refl [IsRefl α Rₐ] : IsRefl (List α) (SublistForall₂ Rₐ) :=
