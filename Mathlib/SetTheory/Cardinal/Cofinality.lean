@@ -813,6 +813,9 @@ protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLi
 protected theorem IsStrongLimit.isSuccPrelimit {c} (H : IsStrongLimit c) : IsSuccPrelimit c :=
   H.isSuccLimit.isSuccPrelimit
 
+theorem IsStrongLimit.aleph0_le {c} (H : IsStrongLimit c) : ℵ₀ ≤ c :=
+  aleph0_le_of_isSuccLimit H.isSuccLimit
+
 set_option linter.deprecated false in
 @[deprecated IsStrongLimit.isSuccLimit (since := "2024-09-17")]
 theorem IsStrongLimit.isLimit {c} (H : IsStrongLimit c) : IsLimit c :=
@@ -822,9 +825,6 @@ theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ := by
   refine ⟨aleph0_ne_zero, fun hx ↦ ?_⟩
   obtain ⟨n, rfl⟩ := lt_aleph0.1 hx
   exact_mod_cast nat_lt_aleph0 _
-
-theorem IsStrongLimit.aleph0_le {c} (H : IsStrongLimit c) : ℵ₀ ≤ c :=
-  aleph0_le_of_isSuccLimit H.isSuccLimit
 
 theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit (ℶ_ o) := by
   rcases eq_or_ne o 0 with (rfl | h)
