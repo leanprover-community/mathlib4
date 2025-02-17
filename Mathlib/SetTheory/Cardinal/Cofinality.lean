@@ -803,7 +803,7 @@ open Ordinal
 Note that `ℵ₀` is a strong limit by this definition. -/
 structure IsStrongLimit (c : Cardinal) : Prop where
   ne_zero : c ≠ 0
-  two_power_lt {x} : x < c → 2 ^ x < c
+  two_power_lt ⦃x⦄ : x < c → 2 ^ x < c
 
 protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLimit c := by
   rw [Cardinal.isSuccLimit_iff]
@@ -823,13 +823,13 @@ theorem IsStrongLimit.isLimit {c} (H : IsStrongLimit c) : IsLimit c :=
 
 theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ where
   ne_zero := aleph0_ne_zero
-  two_power_lt hx := by obtain ⟨n, rfl⟩ := lt_aleph0.1 hx; exact_mod_cast nat_lt_aleph0 _
+  two_power_lt x hx := by obtain ⟨n, rfl⟩ := lt_aleph0.1 hx; exact_mod_cast nat_lt_aleph0 _
 
 theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit (ℶ_ o) := by
   rcases eq_or_ne o 0 with (rfl | h)
   · rw [beth_zero]
     exact isStrongLimit_aleph0
-  · refine ⟨beth_ne_zero o, fun ha ↦ ?_⟩
+  · refine ⟨beth_ne_zero o, fun a ha ↦ ?_⟩
     rw [beth_limit] at ha
     · rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
       have := power_le_power_left two_ne_zero ha.le
@@ -847,7 +847,7 @@ theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, 2 ^ x < #α) {r : α �
     constructor
     rintro ⟨s, hs⟩
     exact (not_unbounded_iff s).2 hs (unbounded_of_isEmpty s)
-  have h' : IsStrongLimit #α := ⟨ha, @h⟩
+  have h' : IsStrongLimit #α := ⟨ha, h⟩
   have ha := h'.aleph0_le
   apply le_antisymm
   · have : { s : Set α | Bounded r s } = ⋃ i, 𝒫{ j | r j i } := setOf_exists _
@@ -872,7 +872,7 @@ theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, 2 ^ x < #α) :
     #{ s : Set α // #s < cof (#α).ord } = #α := by
   rcases eq_or_ne #α 0 with (ha | ha)
   · simp [ha]
-  have h' : IsStrongLimit #α := ⟨ha, @h⟩
+  have h' : IsStrongLimit #α := ⟨ha, h⟩
   rcases ord_eq α with ⟨r, wo, hr⟩
   haveI := wo
   apply le_antisymm
@@ -1187,7 +1187,7 @@ def IsInaccessible (c : Cardinal) :=
 
 theorem IsInaccessible.mk {c} (h₁ : ℵ₀ < c) (h₂ : c ≤ c.ord.cof) (h₃ : ∀ x < c, 2 ^ x < c) :
     IsInaccessible c :=
-  ⟨h₁, ⟨h₁.le, h₂⟩, (aleph0_pos.trans h₁).ne', @h₃⟩
+  ⟨h₁, ⟨h₁.le, h₂⟩, (aleph0_pos.trans h₁).ne', h₃⟩
 
 -- Lean's foundations prove the existence of ℵ₀ many inaccessible cardinals
 theorem univ_inaccessible : IsInaccessible univ.{u, v} :=
