@@ -553,7 +553,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : TM1.Stmt (Γ' K Γ) (Λ'
           Nat.sub_self, List.length_singleton, List.getElem_singleton,
           le_refl, Nat.lt_succ_self]
       rw [← proj_map_nth, hL, ListBlank.nth_mk]
-      cases' lt_or_gt_of_ne h with h h
+      rcases lt_or_gt_of_ne h with h | h
       · rw [List.getI_append]
         simpa only [List.length_map, List.length_reverse] using h
       · rw [gt_iff_lt] at h
@@ -595,7 +595,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : TM1.Stmt (Γ' K Γ) (Λ'
           · rfl
           rw [h, List.length_reverse, List.length_map]
         rw [← proj_map_nth, hL, ListBlank.nth_mk, e, List.map, List.reverse_cons]
-        cases' lt_or_gt_of_ne h with h h
+        rcases lt_or_gt_of_ne h with h | h
         · rw [List.getI_append]
           simpa only [List.length_map, List.length_reverse] using h
         · rw [gt_iff_lt] at h

@@ -6,7 +6,7 @@ María Inés de Frutos-Fernández, Sam van Gool, Silvain Rideau-Kikuchi, Amos Tu
 Francesco Veneziano
 -/
 
-import Mathlib.Algebra.Order.AbsoluteValue.Equivalence
+import Mathlib.Analysis.AbsoluteValue.Equivalence
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.NumberTheory.Padics.PadicNorm
