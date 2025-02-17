@@ -216,31 +216,22 @@ def trivial (hequiv : H ≃ₜ EuclideanSpace ℝ (Fin n)) [h: Fact (finrank ℝ
   f := fun _ ↦ PUnit.unit
   hf := continuous_const
 
-def EuclideanSpace.prodEquivSum (α β 𝕜 : Type*) :
-    (EuclideanSpace 𝕜 α) × (EuclideanSpace 𝕜 β) ≃ EuclideanSpace 𝕜 (α ⊕ β) :=
-  (Equiv.sumArrowEquivProdArrow α β 𝕜).symm
-
-def EuclideanSpace.typeCongr {α β 𝕜 : Type*} (h : α ≃ β) :
-    EuclideanSpace 𝕜 α ≃ EuclideanSpace 𝕜 β :=
-  Equiv.piCongrLeft' (fun _ ↦ 𝕜) h
-
-def EuclideanSpace.homeoTypeCongr {α β 𝕜 : Type*} [NontriviallyNormedField 𝕜] (h : α ≃ β) :
-    EuclideanSpace 𝕜 α ≃ₜ EuclideanSpace 𝕜 β where
-  __:= EuclideanSpace.typeCongr h
+def EuclideanSpace.prodEquivSum (α β 𝕜 : Type*) [NontriviallyNormedField 𝕜] :
+    (EuclideanSpace 𝕜 α) × (EuclideanSpace 𝕜 β) ≃ₜ EuclideanSpace 𝕜 (α ⊕ β) where
+  toEquiv := (Equiv.sumArrowEquivProdArrow α β 𝕜).symm
   continuous_toFun := sorry
   continuous_invFun := sorry
 
-def EuclideanSpace.prod_dimensionBasic {𝕜 : Type*} (n m : ℕ) :
-    (EuclideanSpace 𝕜 (Fin n)) × (EuclideanSpace 𝕜 (Fin m)) ≃ (EuclideanSpace 𝕜 (Fin (n + m))) :=
-  (EuclideanSpace.prodEquivSum (Fin n) (Fin m) 𝕜).trans (EuclideanSpace.typeCongr finSumFinEquiv)
+def EuclideanSpace.typeCongr {α β 𝕜 : Type*} [NontriviallyNormedField 𝕜] (h : α ≃ β) :
+    EuclideanSpace 𝕜 α ≃ₜ EuclideanSpace 𝕜 β where
+  __:= Equiv.piCongrLeft' (fun _ ↦ 𝕜) h
+  continuous_toFun := sorry
+  continuous_invFun := sorry
 
 def EuclideanSpace.prod_dimension {𝕜 : Type*} [NontriviallyNormedField 𝕜] (n m : ℕ) :
     (EuclideanSpace 𝕜 (Fin n)) × (EuclideanSpace 𝕜 (Fin m)) ≃ₜ
-      (EuclideanSpace 𝕜 (Fin (n + m))) where
-  toEquiv := EuclideanSpace.prod_dimensionBasic n m
-  continuous_toFun := sorry
-  continuous_invFun := sorry
-
+      (EuclideanSpace 𝕜 (Fin (n + m))) :=
+  (EuclideanSpace.prodEquivSum (Fin n) (Fin m) 𝕜).trans (EuclideanSpace.typeCongr finSumFinEquiv)
 
 /-- The product of a singular `n`- and a singular `m`-manifold into a one-point space
 is a singular `n+m`-manifold. -/
