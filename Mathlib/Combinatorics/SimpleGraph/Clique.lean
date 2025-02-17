@@ -776,7 +776,7 @@ instance [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α} :
 theorem isNIndepSet_induce {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ} :
     ((⊤ : Subgraph G).induce F).coe.IsNIndepSet n ↑s ↔
     G.IsNIndepSet n (Finset.map ⟨Subtype.val, Subtype.val_injective⟩ s) := by
-  simp [isNIndepSet_iff, isIndepSet_induce]
+  simp [isNIndepSet_iff, (isIndepSet_induce)]
 
 end NIndepSet
 
