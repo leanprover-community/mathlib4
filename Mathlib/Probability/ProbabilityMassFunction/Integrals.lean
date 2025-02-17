@@ -30,7 +30,7 @@ theorem integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeas
   _ = ∫ a in p.support, f a ∂(p.toMeasure) := by rw [restrict_toMeasure_support p]
   _ = ∑' (a : support p), (p.toMeasure {a.val}).toReal • f a := by
     apply integral_countable f p.support_countable
-    rwa [restrict_toMeasure_support p]
+    rwa [IntegrableOn, restrict_toMeasure_support p]
   _ = ∑' (a : support p), (p a).toReal • f a := by
     congr with x; congr 2
     apply PMF.toMeasure_apply_singleton p x (MeasurableSet.singleton _)

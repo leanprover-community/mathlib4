@@ -90,8 +90,7 @@ variable {m : ℕ}
 
 /-- Arity of the "output" of the fractional operation. -/
 @[simp]
-def FractionalOperation.size (ω : FractionalOperation D m) : ℕ :=
-  Multiset.card.toFun ω
+def FractionalOperation.size (ω : FractionalOperation D m) : ℕ := ω.card
 
 /-- Fractional operation is valid iff nonempty. -/
 def FractionalOperation.IsValid (ω : FractionalOperation D m) : Prop :=

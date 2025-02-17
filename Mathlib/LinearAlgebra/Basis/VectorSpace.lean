@@ -153,6 +153,7 @@ noncomputable def ofVectorSpaceIndex : Set V :=
 noncomputable def ofVectorSpace : Basis (ofVectorSpaceIndex K V) K V :=
   Basis.extend (linearIndependent_empty K V)
 
+@[stacks 09FN "Generalized from fields to division rings."]
 instance (priority := 100) _root_.Module.Free.of_divisionRing : Module.Free K V :=
   Module.Free.of_basis (ofVectorSpace K V)
 
@@ -216,7 +217,7 @@ submodules equal to the span of a nonzero element of the module. -/
 theorem atom_iff_nonzero_span (W : Submodule K V) :
     IsAtom W ↔ ∃ v ≠ 0, W = span K {v} := by
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · cases' h with hbot h
+  · obtain ⟨hbot, h⟩ := h
     rcases (Submodule.ne_bot_iff W).1 hbot with ⟨v, ⟨hW, hv⟩⟩
     refine ⟨v, ⟨hv, ?_⟩⟩
     by_contra heq

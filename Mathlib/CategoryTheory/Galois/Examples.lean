@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.Galois.Basic
-import Mathlib.RepresentationTheory.Action.Concrete
-import Mathlib.RepresentationTheory.Action.Limits
+import Mathlib.CategoryTheory.Action.Concrete
+import Mathlib.CategoryTheory.Action.Limits
 
 /-!
 # Examples of Galois categories and fiber functors
@@ -51,9 +51,9 @@ noncomputable def Action.imageComplement {X Y : Action FintypeCat (MonCat.of G)}
       calc (X.ρ g⁻¹ ≫ f.hom) x
           = (Y.ρ g⁻¹ * Y.ρ g) y.val := by rw [f.comm, FintypeCat.comp_apply, h]; rfl
         _ = y.val := by rw [← map_mul, inv_mul_cancel, Action.ρ_one, FintypeCat.id_apply]
-    map_one' := by simp only [Action.ρ_one]; rfl
-    map_mul' := fun g h ↦ FintypeCat.hom_ext _ _ <| fun y ↦ Subtype.ext <| by
-      exact congrFun (MonoidHom.map_mul Y.ρ g h) y.val
+    map_one' := by simp only [map_one, End.one_def, FintypeCat.id_apply, Subtype.coe_eta]; rfl
+    map_mul' := fun g h ↦ FintypeCat.hom_ext _ _ <| fun y ↦ Subtype.ext <|
+      congrFun (MonoidHom.map_mul Y.ρ.hom g h) y.val
   }
 
 /-- The inclusion from the complement of the image of `f : X ⟶ Y` into `Y`. -/
@@ -62,6 +62,7 @@ def Action.imageComplementIncl {X Y : Action FintypeCat (MonCat.of G)} (f : X �
   hom := FintypeCat.imageComplementIncl f.hom
   comm _ := rfl
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance {X Y : Action FintypeCat (MonCat.of G)} (f : X ⟶ Y) :
     Mono (Action.imageComplementIncl G f) := by
   apply Functor.mono_of_mono_map (forget _)
@@ -75,7 +76,7 @@ instance [Finite G] : HasColimitsOfShape (SingleObj G) FintypeCat.{w} := by
 
 noncomputable instance : PreservesFiniteLimits (forget (Action FintypeCat (MonCat.of G))) := by
   show PreservesFiniteLimits (Action.forget FintypeCat _ ⋙ FintypeCat.incl)
-  apply compPreservesFiniteLimits
+  apply comp_preservesFiniteLimits
 
 /-- The category of finite `G`-sets is a `PreGaloisCategory`. -/
 instance : PreGaloisCategory (Action FintypeCat (MonCat.of G)) where
@@ -88,7 +89,7 @@ instance : PreGaloisCategory (Action FintypeCat (MonCat.of G)) where
 
 /-- The forgetful functor from finite `G`-sets to sets is a `FiberFunctor`. -/
 noncomputable instance : FiberFunctor (Action.forget FintypeCat (MonCat.of G)) where
-  preservesFiniteCoproducts := ⟨fun _ _ ↦ inferInstance⟩
+  preservesFiniteCoproducts := ⟨fun _ ↦ inferInstance⟩
   preservesQuotientsByFiniteGroups _ _ _ := inferInstance
   reflectsIsos := ⟨fun f (_ : IsIso f.hom) => inferInstance⟩
 

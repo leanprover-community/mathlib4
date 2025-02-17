@@ -76,7 +76,7 @@ noncomputable section
 def slash (k : ℤ) (γ : GL(2, ℝ)⁺) (f : ℍ → ℂ) (x : ℍ) : ℂ :=
   f (γ • x) * (↑(↑ₘ[ℝ] γ).det : ℂ) ^ (k - 1) * UpperHalfPlane.denom γ x ^ (-k)
 
-variable {Γ : Subgroup SL(2, ℤ)} {k : ℤ} (f : ℍ → ℂ)
+variable {k : ℤ} (f : ℍ → ℂ)
 
 section
 
@@ -139,13 +139,17 @@ theorem SL_slash (γ : SL(2, ℤ)) : f ∣[k] γ = f ∣[k] (γ : GL(2, ℝ)⁺)
 theorem is_invariant_const (A : SL(2, ℤ)) (x : ℂ) :
     Function.const ℍ x ∣[(0 : ℤ)] A = Function.const ℍ x := by
   funext
-  simp only [SL_slash, slash_def, slash, Function.const_apply, det_coe', ofReal_one, zero_sub,
+  simp only [SL_slash, slash_def, slash, Function.const_apply, det_coe, ofReal_one, zero_sub,
     zpow_neg, zpow_one, inv_one, mul_one, neg_zero, zpow_zero]
 
 /-- The constant function 1 is invariant under any element of `SL(2, ℤ)`. -/
--- @[simp] -- Porting note: simpNF says LHS simplifies to something more complex
 theorem is_invariant_one (A : SL(2, ℤ)) : (1 : ℍ → ℂ) ∣[(0 : ℤ)] A = (1 : ℍ → ℂ) :=
   is_invariant_const _ _
+
+/-- Variant of `is_invariant_one` with the left hand side in simp normal form. -/
+@[simp]
+theorem is_invariant_one' (A : SL(2, ℤ)) : (1 : ℍ → ℂ) ∣[(0 : ℤ)] (A : GL(2, ℝ)⁺) = 1 := by
+  simpa using is_invariant_one A
 
 /-- A function `f : ℍ → ℂ` is slash-invariant, of weight `k ∈ ℤ` and level `Γ`,
   if for every matrix `γ ∈ Γ` we have `f(γ • z)= (c*z+d)^k f(z)` where `γ= ![![a, b], ![c, d]]`,
@@ -155,7 +159,7 @@ theorem slash_action_eq'_iff (k : ℤ) (f : ℍ → ℂ) (γ : SL(2, ℤ)) (z : 
   simp only [SL_slash, slash_def, ModularForm.slash]
   convert inv_mul_eq_iff_eq_mul₀ (G₀ := ℂ) _ using 2
   · rw [mul_comm]
-    simp only [denom, zpow_neg, det_coe', ofReal_one, one_zpow, mul_one,
+    simp only [denom, zpow_neg, det_coe, ofReal_one, one_zpow, mul_one,
       sl_moeb]
     rfl
   · convert zpow_ne_zero k (denom_ne_zero γ z)
@@ -184,7 +188,7 @@ theorem mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] (A : GL(2, ℝ)⁺) =
         ((↑ₘA).det : ℝ) • f ∣[k1] A * g ∣[k2] A := by
       apply mul_slash
-    _ = (1 : ℝ) • f ∣[k1] A * g ∣[k2] A := by rw [det_coe']
+    _ = (1 : ℝ) • f ∣[k1] A * g ∣[k2] A := by rw [det_coe]
     _ = f ∣[k1] A * g ∣[k2] A := by rw [one_smul]
 
 end

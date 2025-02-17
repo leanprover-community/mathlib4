@@ -167,7 +167,7 @@ theorem affineIndependent_iff_finrank_vectorSpan_eq [Fintype ι] (p : ι → P) 
     AffineIndependent k p ↔ finrank k (vectorSpan k (Set.range p)) = n := by
   classical
   have hn : Nonempty ι := by simp [← Fintype.card_pos_iff, hc]
-  cases' hn with i₁
+  obtain ⟨i₁⟩ := hn
   rw [affineIndependent_iff_linearIndependent_vsub _ _ i₁,
     linearIndependent_iff_card_eq_finrank_span, eq_comm,
     vectorSpan_range_eq_span_range_vsub_right_ne k p i₁, Set.finrank]
@@ -456,7 +456,7 @@ theorem collinear_pair (p₁ p₂ : P) : Collinear k ({p₁, p₂} : Set P) := b
   use p₁, p₂ -ᵥ p₁
   intro p hp
   rw [Set.mem_insert_iff, Set.mem_singleton_iff] at hp
-  cases' hp with hp hp
+  rcases hp with hp | hp
   · use 0
     simp [hp]
   · use 1
@@ -495,8 +495,7 @@ theorem affineIndependent_iff_not_collinear_of_ne {p : Fin 3 → P} {i₁ i₂ i
     AffineIndependent k p ↔ ¬Collinear k ({p i₁, p i₂, p i₃} : Set P) := by
   have hu : (Finset.univ : Finset (Fin 3)) = {i₁, i₂, i₃} := by
     -- Porting note: Originally `by decide!`
-    fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃
-      <;> simp (config := {decide := true}) only at h₁₂ h₁₃ h₂₃ ⊢
+    revert i₁ i₂ i₃; decide
   rw [affineIndependent_iff_not_collinear, ← Set.image_univ, ← Finset.coe_univ, hu,
     Finset.coe_insert, Finset.coe_insert, Finset.coe_singleton, Set.image_insert_eq, Set.image_pair]
 

@@ -3,7 +3,6 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.Regular
 import Mathlib.RingTheory.Ideal.Lattice
 
 /-!
@@ -70,7 +69,7 @@ theorem not_isPrime_iff {I : Ideal α} :
       ⟨fun ⟨x, y, hxy, hx, hy⟩ => ⟨x, hx, y, hy, hxy⟩, fun ⟨x, hx, y, hy, hxy⟩ =>
         ⟨x, y, hxy, hx, hy⟩⟩
 
-theorem bot_prime [IsDomain α] : (⊥ : Ideal α).IsPrime :=
+theorem bot_prime [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsPrime :=
   ⟨fun h => one_ne_zero (α := α) (by rwa [Ideal.eq_top_iff_one, Submodule.mem_bot] at h), fun h =>
     mul_eq_zero.mp (by simpa only [Submodule.mem_bot] using h)⟩
 
@@ -98,9 +97,23 @@ theorem IsPrime.pow_mem_iff_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : �
     r ^ n ∈ I ↔ r ∈ I :=
   ⟨hI.mem_of_pow_mem n, fun hr => I.pow_mem_of_mem hr n hn⟩
 
+/-- The complement of a prime ideal `P ⊆ R` is a submonoid of `R`. -/
+def primeCompl (P : Ideal α) [hp : P.IsPrime] : Submonoid α where
+  carrier := (Pᶜ : Set α)
+  one_mem' := by convert P.ne_top_iff_one.1 hp.1
+  mul_mem' {_ _} hnx hny hxy := Or.casesOn (hp.mem_or_mem hxy) hnx hny
+
 end Ideal
 
 end CommSemiring
+
+section Ring
+
+theorem IsDomain.of_bot_isPrime (A : Type*) [Ring A] [hbp : (⊥ : Ideal A).IsPrime] : IsDomain A :=
+  @NoZeroDivisors.to_isDomain A _
+    ⟨1, 0, fun h => hbp.ne_top ((Ideal.eq_top_iff_one ⊥).mpr h)⟩ ⟨fun h => hbp.2 h⟩
+
+end Ring
 
 section DivisionSemiring
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Order.AbsoluteValue
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Algebra.Ring.Pi
@@ -31,11 +31,7 @@ This is a concrete implementation that is useful for simplicity and computabilit
 sequence, cauchy, abs val, absolute value
 -/
 
-assert_not_exists Finset
-assert_not_exists Module
-assert_not_exists Submonoid
-assert_not_exists FloorRing
-assert_not_exists Module
+assert_not_exists Finset Module Submonoid FloorRing Module
 
 variable {α β : Type*}
 
@@ -164,11 +160,6 @@ variable [Ring β] {abv : β → α}
 
 instance : CoeFun (CauSeq β abv) fun _ => ℕ → β :=
   ⟨Subtype.val⟩
-
--- Porting note: Remove coeFn theorem
-/-@[simp]
-theorem mk_to_fun (f) (hf : IsCauSeq abv f) : @coeFn (CauSeq β abv) _ _ ⟨f, hf⟩ = f :=
-  rfl -/
 
 @[ext]
 theorem ext {f g : CauSeq β abv} (h : ∀ i, f i = g i) : f = g := Subtype.eq (funext h)
@@ -408,7 +399,7 @@ theorem zero_limZero : LimZero (0 : CauSeq β abv)
 theorem const_limZero {x : β} : LimZero (const x) ↔ x = 0 :=
   ⟨fun H =>
     (abv_eq_zero abv).1 <|
-      (eq_of_le_of_forall_le_of_dense (abv_nonneg abv _)) fun _ ε0 =>
+      (eq_of_le_of_forall_lt_imp_le_of_dense (abv_nonneg abv _)) fun _ ε0 =>
         let ⟨_, hi⟩ := H _ ε0
         le_of_lt <| hi _ le_rfl,
     fun e => e.symm ▸ zero_limZero⟩
@@ -500,16 +491,8 @@ theorem const_equiv {x y : β} : const x ≈ const y ↔ x = y :=
 
 theorem mul_equiv_mul {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 ≈ g2) :
     f1 * g1 ≈ f2 * g2 := by
-  change LimZero (f1 * g1 - f2 * g2)
-  convert add_limZero (mul_limZero_left g1 hf) (mul_limZero_right f2 hg) using 1
-  rw [mul_sub, sub_mul]
-  -- Porting note: doesn't work with `rw`, but did in Lean 3
-  exact (sub_add_sub_cancel (f1*g1) (f2*g1) (f2*g2)).symm
-  -- Porting note: was
-  /-
-  simpa only [mul_sub, sub_mul, sub_add_sub_cancel] using
-    add_lim_zero (mul_limZero_left g1 hf) (mul_limZero_right f2 hg)
-  -/
+  simpa only [mul_sub, sub_mul, sub_add_sub_cancel]
+    using add_limZero (mul_limZero_left g1 hf) (mul_limZero_right f2 hg)
 
 theorem smul_equiv_smul {G : Type*} [SMul G β] [IsScalarTower G β β] {f1 f2 : CauSeq β abv} (c : G)
     (hf : f1 ≈ f2) : c • f1 ≈ c • f2 := by
@@ -621,7 +604,7 @@ protected theorem mul_pos {f g : CauSeq α abs} : Pos f → Pos g → Pos (f * g
       mul_le_mul h₁ h₂ (le_of_lt G0) (le_trans (le_of_lt F0) h₁)⟩
 
 theorem trichotomy (f : CauSeq α abs) : Pos f ∨ LimZero f ∨ Pos (-f) := by
-  cases' Classical.em (LimZero f) with h h <;> simp [*]
+  rcases Classical.em (LimZero f) with h | h <;> simp [*]
   rcases abv_pos_of_not_limZero h with ⟨K, K0, hK⟩
   rcases exists_forall_ge_and hK (f.cauchy₃ K0) with ⟨i, hi⟩
   refine (le_total 0 (f i)).imp ?_ ?_ <;>
@@ -725,14 +708,14 @@ theorem rat_inf_continuous_lemma {ε : α} {a₁ a₂ b₁ b₂ : α} :
     abs (a₁ - b₁) < ε → abs (a₂ - b₂) < ε → abs (a₁ ⊓ a₂ - b₁ ⊓ b₂) < ε := fun h₁ h₂ =>
   (abs_min_sub_min_le_max _ _ _ _).trans_lt (max_lt h₁ h₂)
 
-instance : Sup (CauSeq α abs) :=
+instance : Max (CauSeq α abs) :=
   ⟨fun f g =>
     ⟨f ⊔ g, fun _ ε0 =>
       (exists_forall_ge_and (f.cauchy₃ ε0) (g.cauchy₃ ε0)).imp fun _ H _ ij =>
         let ⟨H₁, H₂⟩ := H _ le_rfl
         rat_sup_continuous_lemma (H₁ _ ij) (H₂ _ ij)⟩⟩
 
-instance : Inf (CauSeq α abs) :=
+instance : Min (CauSeq α abs) :=
   ⟨fun f g =>
     ⟨f ⊓ g, fun _ ε0 =>
       (exists_forall_ge_and (f.cauchy₃ ε0) (g.cauchy₃ ε0)).imp fun _ H _ ij =>
@@ -808,7 +791,7 @@ protected theorem sup_eq_right {a b : CauSeq α abs} (h : a ≤ b) : a ⊔ b ≈
   · intro _ _
     refine ⟨i, fun j hj => ?_⟩
     dsimp
-    erw [← max_sub_sub_right]
+    rw [← max_sub_sub_right]
     rwa [sub_self, max_eq_right, abs_zero]
     rw [sub_nonpos, ← sub_nonneg]
     exact ε0.le.trans (h _ hj)
@@ -820,7 +803,7 @@ protected theorem inf_eq_right {a b : CauSeq α abs} (h : b ≤ a) : a ⊓ b ≈
   · intro _ _
     refine ⟨i, fun j hj => ?_⟩
     dsimp
-    erw [← min_sub_sub_right]
+    rw [← min_sub_sub_right]
     rwa [sub_self, min_eq_right, abs_zero]
     exact ε0.le.trans (h _ hj)
   · refine Setoid.trans (inf_equiv_inf (Setoid.symm h) (Setoid.refl _)) ?_

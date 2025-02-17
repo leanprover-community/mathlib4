@@ -35,7 +35,7 @@ def isOrderedSubsetOf {α} [Inhabited α] [DecidableEq α] (a b : Array α) : Bo
 private def letTelescopeImpl {α} (e : Expr) (k : Array Expr → Expr → MetaM α) :
     MetaM α :=
   lambdaLetTelescope e fun xs b ↦ do
-    if let .some i ← xs.findIdxM? (fun x ↦ do pure ¬(← x.fvarId!.isLetVar)) then
+    if let .some i ← xs.findIdxM? (fun x ↦ do pure !(← x.fvarId!.isLetVar)) then
       k xs[0:i] (← mkLambdaFVars xs[i:] b)
     else
       k xs b

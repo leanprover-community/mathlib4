@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Igor Khavkine
 -/
 import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
-import Mathlib.MeasureTheory.Function.L1Space
 import Mathlib.MeasureTheory.Function.UniformIntegrable
 
 /-!
@@ -166,7 +165,6 @@ private theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α �
   revert f
   induction' n with n h
   · intro f hf
-    have : Subsingleton (Fin Nat.zero) := subsingleton_fin_zero -- Porting note: Added this instance
     exact unifTight_of_subsingleton hp_top hf
   intro f hfLp ε hε
   by_cases hε_top : ε = ∞
@@ -287,14 +285,14 @@ private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞
   have hgEcε := calc
     eLpNorm (Eᶜ.indicator g) p μ
       ≤ eLpNorm (Efᶜ.indicator (Egᶜ.indicator g)) p μ := by
-        unfold_let E; rw [compl_union, ← indicator_indicator]
+        unfold E; rw [compl_union, ← indicator_indicator]
     _ ≤ eLpNorm (Egᶜ.indicator g) p μ := eLpNorm_indicator_le _
     _ ≤ ε / 3 := hgε.le
   have hmfnEc : AEStronglyMeasurable _ μ := ((hf n).indicator hmE.compl).aestronglyMeasurable
   have hfnEcε : eLpNorm (Eᶜ.indicator (f n)) p μ ≤ ε / 3 := calc
     eLpNorm (Eᶜ.indicator (f n)) p μ
       ≤ eLpNorm (Egᶜ.indicator (Efᶜ.indicator (f n))) p μ := by
-        unfold_let E; rw [compl_union, inter_comm, ← indicator_indicator]
+        unfold E; rw [compl_union, inter_comm, ← indicator_indicator]
     _ ≤ eLpNorm (Efᶜ.indicator (f n)) p μ := eLpNorm_indicator_le _
     _ ≤ ε / 3 := hfε n
   have hmfngEc : AEStronglyMeasurable _ μ :=

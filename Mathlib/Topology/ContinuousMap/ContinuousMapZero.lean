@@ -20,7 +20,7 @@ the purpose of this type.
 
 assert_not_exists StarOrderedRing
 
-open Set Function
+open Function Set Topology
 
 /-- The type of continuous maps which map zero to zero.
 
@@ -82,7 +82,7 @@ protected instance instTopologicalSpace : TopologicalSpace C(X, R)₀ :=
 
 lemma isEmbedding_toContinuousMap : IsEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
   eq_induced := rfl
-  inj _ _ h := ext fun x ↦ congr($(h) x)
+  injective _ _ h := ext fun x ↦ congr($(h) x)
 
 @[deprecated (since := "2024-10-26")]
 alias embedding_toContinuousMap := isEmbedding_toContinuousMap
@@ -230,13 +230,13 @@ def toContinuousMapCLM (M : Type*) [Semiring M] [Module M R] [ContinuousConstSMu
   map_smul' _ _ := rfl
 
 /-- The evaluation at a point, as a continuous linear map from `C(X, R)₀` to `R`. -/
-def evalCLM (𝕜 : Type*) {R : Type*} [CompactSpace X] [NormedField 𝕜] [NormedCommRing R]
-    [NormedSpace 𝕜 R] (x : X) : C(X, R)₀ →L[𝕜] R :=
-  (ContinuousMap.evalCLM 𝕜 x).comp (toContinuousMapCLM 𝕜 : C(X, R)₀ →L[𝕜] C(X, R))
+def evalCLM (𝕜 : Type*) [Semiring 𝕜] [Module 𝕜 R] [ContinuousConstSMul 𝕜 R] (x : X) :
+    C(X, R)₀ →L[𝕜] R :=
+  (ContinuousMap.evalCLM 𝕜 x).comp (toContinuousMapCLM 𝕜)
 
 @[simp]
-lemma evalCLM_apply {𝕜 : Type*} {R : Type*} [CompactSpace X] [NormedField 𝕜] [NormedCommRing R]
-    [NormedSpace 𝕜 R] (x : X) (f : C(X, R)₀) : evalCLM 𝕜 x f = f x := rfl
+lemma evalCLM_apply {𝕜 : Type*} [Semiring 𝕜] [Module 𝕜 R] [ContinuousConstSMul 𝕜 R]
+    (x : X) (f : C(X, R)₀) : evalCLM 𝕜 x f = f x := rfl
 
 /-- Coercion to a function as an `AddMonoidHom`. Similar to `ContinuousMap.coeFnAddMonoidHom`. -/
 def coeFnAddMonoidHom : C(X, R)₀ →+ X → R where
@@ -287,7 +287,7 @@ protected instance instUniformSpace : UniformSpace C(X, R)₀ := .comap toContin
 lemma isUniformEmbedding_toContinuousMap :
     IsUniformEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
   comap_uniformity := rfl
-  inj _ _ h := ext fun x ↦ congr($(h) x)
+  injective _ _ h := ext fun x ↦ congr($(h) x)
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_toContinuousMap := isUniformEmbedding_toContinuousMap

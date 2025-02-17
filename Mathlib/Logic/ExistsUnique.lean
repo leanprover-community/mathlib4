@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 -/
 import Mathlib.Tactic.TypeStar
+import Batteries.Tactic.Alias
 
 /-!
 # `ExistsUnique`
@@ -78,9 +79,12 @@ theorem ExistsUnique.elim {p : α → Prop} {b : Prop}
     (h₂ : ∃! x, p x) (h₁ : ∀ x, p x → (∀ y, p y → y = x) → b) : b :=
   Exists.elim h₂ (fun w hw ↦ h₁ w (And.left hw) (And.right hw))
 
-theorem exists_unique_of_exists_of_unique {p : α → Prop}
+theorem existsUnique_of_exists_of_unique {p : α → Prop}
     (hex : ∃ x, p x) (hunique : ∀ y₁ y₂, p y₁ → p y₂ → y₁ = y₂) : ∃! x, p x :=
   Exists.elim hex (fun x px ↦ ExistsUnique.intro x px (fun y (h : p y) ↦ hunique y x h px))
+
+@[deprecated (since := "2024-12-17")]
+alias exists_unique_of_exists_of_unique := existsUnique_of_exists_of_unique
 
 theorem ExistsUnique.exists {p : α → Prop} : (∃! x, p x) → ∃ x, p x | ⟨x, h, _⟩ => ⟨x, h⟩
 
@@ -96,37 +100,52 @@ theorem ExistsUnique.unique {p : α → Prop}
 theorem existsUnique_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃! a, p a) ↔ ∃! a, q a :=
   exists_congr fun _ ↦ and_congr (h _) <| forall_congr' fun _ ↦ imp_congr_left (h _)
 
-@[simp] theorem exists_unique_iff_exists [Subsingleton α] {p : α → Prop} :
+@[simp] theorem existsUnique_iff_exists [Subsingleton α] {p : α → Prop} :
     (∃! x, p x) ↔ ∃ x, p x :=
   ⟨fun h ↦ h.exists, Exists.imp fun x hx ↦ ⟨hx, fun y _ ↦ Subsingleton.elim y x⟩⟩
 
-theorem exists_unique_const {b : Prop} (α : Sort*) [i : Nonempty α] [Subsingleton α] :
+@[deprecated (since := "2024-12-17")] alias exists_unique_iff_exists := existsUnique_iff_exists
+
+theorem existsUnique_const {b : Prop} (α : Sort*) [i : Nonempty α] [Subsingleton α] :
     (∃! _ : α, b) ↔ b := by simp
 
-@[simp] theorem exists_unique_eq {a' : α} : ∃! a, a = a' := by
+@[deprecated (since := "2024-12-17")] alias exists_unique_const := existsUnique_const
+
+@[simp] theorem existsUnique_eq {a' : α} : ∃! a, a = a' := by
   simp only [eq_comm, ExistsUnique, and_self, forall_eq', exists_eq']
 
-@[simp] theorem exists_unique_eq' {a' : α} : ∃! a, a' = a := by
+@[deprecated (since := "2024-12-17")] alias exists_unique_eq := existsUnique_eq
+
+/-- The difference with `existsUnique_eq` is that the equality is reversed. -/
+@[simp] theorem existsUnique_eq' {a' : α} : ∃! a, a' = a := by
   simp only [ExistsUnique, and_self, forall_eq', exists_eq']
 
-theorem exists_unique_prop {p q : Prop} : (∃! _ : p, q) ↔ p ∧ q := by simp
+@[deprecated (since := "2024-12-17")] alias exists_unique_eq' := existsUnique_eq'
 
-@[simp] theorem exists_unique_false : ¬∃! _ : α, False := fun ⟨_, h, _⟩ ↦ h
+theorem existsUnique_prop {p q : Prop} : (∃! _ : p, q) ↔ p ∧ q := by simp
 
-theorem exists_unique_prop_of_true {p : Prop} {q : p → Prop} (h : p) : (∃! h' : p, q h') ↔ q h :=
-  @exists_unique_const (q h) p ⟨h⟩ _
+@[deprecated (since := "2024-12-17")] alias exists_unique_prop := existsUnique_prop
+
+@[simp] theorem existsUnique_false : ¬∃! _ : α, False := fun ⟨_, h, _⟩ ↦ h
+
+@[deprecated (since := "2024-12-17")] alias exists_unique_false := existsUnique_false
+
+theorem existsUnique_prop_of_true {p : Prop} {q : p → Prop} (h : p) : (∃! h' : p, q h') ↔ q h :=
+  @existsUnique_const (q h) p ⟨h⟩ _
+
+@[deprecated (since := "2024-12-17")] alias exists_unique_prop_of_true := existsUnique_prop_of_true
 
 theorem ExistsUnique.elim₂ {p : α → Sort*} [∀ x, Subsingleton (p x)]
     {q : ∀ (x) (_ : p x), Prop} {b : Prop} (h₂ : ∃! x, ∃! h : p x, q x h)
     (h₁ : ∀ (x) (h : p x), q x h → (∀ (y) (hy : p y), q y hy → y = x) → b) : b := by
-  simp only [exists_unique_iff_exists] at h₂
+  simp only [existsUnique_iff_exists] at h₂
   apply h₂.elim
   exact fun x ⟨hxp, hxq⟩ H ↦ h₁ x hxp hxq fun y hyp hyq ↦ H y ⟨hyp, hyq⟩
 
 theorem ExistsUnique.intro₂ {p : α → Sort*} [∀ x, Subsingleton (p x)]
     {q : ∀ (x : α) (_ : p x), Prop} (w : α) (hp : p w) (hq : q w hp)
     (H : ∀ (y) (hy : p y), q y hy → y = w) : ∃! x, ∃! hx : p x, q x hx := by
-  simp only [exists_unique_iff_exists]
+  simp only [existsUnique_iff_exists]
   exact ExistsUnique.intro w ⟨hp, hq⟩ fun y ⟨hyp, hyq⟩ ↦ H y hyp hyq
 
 theorem ExistsUnique.exists₂ {p : α → Sort*} {q : ∀ (x : α) (_ : p x), Prop}
@@ -136,5 +155,5 @@ theorem ExistsUnique.exists₂ {p : α → Sort*} {q : ∀ (x : α) (_ : p x), P
 theorem ExistsUnique.unique₂ {p : α → Sort*} [∀ x, Subsingleton (p x)]
     {q : ∀ (x : α) (_ : p x), Prop} (h : ∃! x, ∃! hx : p x, q x hx) {y₁ y₂ : α}
     (hpy₁ : p y₁) (hqy₁ : q y₁ hpy₁) (hpy₂ : p y₂) (hqy₂ : q y₂ hpy₂) : y₁ = y₂ := by
-  simp only [exists_unique_iff_exists] at h
+  simp only [existsUnique_iff_exists] at h
   exact h.unique ⟨hpy₁, hqy₁⟩ ⟨hpy₂, hqy₂⟩

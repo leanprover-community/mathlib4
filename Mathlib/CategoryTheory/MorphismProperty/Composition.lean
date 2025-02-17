@@ -45,6 +45,12 @@ lemma of_op (W : MorphismProperty C) [W.op.ContainsIdentities] :
 lemma of_unop (W : MorphismProperty Cᵒᵖ) [W.unop.ContainsIdentities] :
     W.ContainsIdentities := (inferInstance : W.unop.op.ContainsIdentities)
 
+lemma eqToHom (W : MorphismProperty C) [W.ContainsIdentities] {x y : C} (h : x = y) :
+    W (eqToHom h) := by
+  subst h
+  rw [eqToHom_refl]
+  exact id_mem x
+
 instance inverseImage {P : MorphismProperty D} [P.ContainsIdentities] (F : C ⥤ D) :
     (P.inverseImage F).ContainsIdentities where
   id_mem X := by simpa only [← F.map_id] using P.id_mem (F.obj X)
@@ -81,6 +87,11 @@ class IsStableUnderComposition (P : MorphismProperty C) : Prop where
 lemma comp_mem (W : MorphismProperty C) [W.IsStableUnderComposition]
     {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hf : W f) (hg : W g) : W (f ≫ g) :=
   IsStableUnderComposition.comp_mem f g hf hg
+
+instance (priority := 900) (W : MorphismProperty C) [W.IsStableUnderComposition] :
+    W.Respects W where
+  precomp _ hi _ hf := W.comp_mem _ _ hi hf
+  postcomp _ hi _ hf := W.comp_mem _ _ hf hi
 
 instance IsStableUnderComposition.op {P : MorphismProperty C} [P.IsStableUnderComposition] :
     P.op.IsStableUnderComposition where
@@ -191,34 +202,56 @@ instance {P : MorphismProperty D} [P.IsMultiplicative] (F : C ⥤ D) :
 instance inf {P Q : MorphismProperty C} [P.IsMultiplicative] [Q.IsMultiplicative] :
     (P ⊓ Q).IsMultiplicative where
 
+instance naturalityProperty {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X ⟶ F₂.obj X) :
+    (naturalityProperty app).IsMultiplicative where
+  id_mem _ := by simp
+
 end IsMultiplicative
+
+/-- A class of morphisms `W` has the of-postcomp property wrt. `W'` if whenever
+`g` is in `W'` and `f ≫ g` is in `W`, also `f` is in `W`. -/
+class HasOfPostcompProperty (W W' : MorphismProperty C) : Prop where
+  of_postcomp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : W' g → W (f ≫ g) → W f
+
+/-- A class of morphisms `W` has the of-precomp property wrt. `W'` if whenever
+`f` is in `W'` and `f ≫ g` is in `W`, also `g` is in `W`. -/
+class HasOfPrecompProperty (W W' : MorphismProperty C) : Prop where
+  of_precomp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : W' f → W (f ≫ g) → W g
 
 /-- A class of morphisms `W` has the two-out-of-three property if whenever two out
 of three maps in `f`, `g`, `f ≫ g` are in `W`, then the third map is also in `W`. -/
 class HasTwoOutOfThreeProperty (W : MorphismProperty C)
-    extends W.IsStableUnderComposition : Prop where
-  of_postcomp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : W g → W (f ≫ g) → W f
-  of_precomp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : W f → W (f ≫ g) → W g
+    extends W.IsStableUnderComposition, W.HasOfPostcompProperty W,
+      W.HasOfPrecompProperty W : Prop where
 
 section
 
-variable (W : MorphismProperty C) [W.HasTwoOutOfThreeProperty]
+variable (W W' : MorphismProperty C) {W'}
 
-lemma of_postcomp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hg : W g) (hfg : W (f ≫ g)) :
-    W f :=
-  HasTwoOutOfThreeProperty.of_postcomp f g hg hfg
+lemma of_postcomp [W.HasOfPostcompProperty W'] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hg : W' g)
+    (hfg : W (f ≫ g)) : W f :=
+  HasOfPostcompProperty.of_postcomp f g hg hfg
 
-lemma of_precomp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hf : W f) (hfg : W (f ≫ g)) :
-    W g :=
-  HasTwoOutOfThreeProperty.of_precomp f g hf hfg
+lemma of_precomp [W.HasOfPrecompProperty W'] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hf : W' f)
+    (hfg : W (f ≫ g)) : W g :=
+  HasOfPrecompProperty.of_precomp f g hf hfg
 
-lemma postcomp_iff {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hg : W g) :
-    W (f ≫ g) ↔ W f :=
-  ⟨W.of_postcomp f g hg, fun hf => W.comp_mem _ _ hf hg⟩
+lemma postcomp_iff [W.RespectsRight W'] [W.HasOfPostcompProperty W']
+    {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hg : W' g) : W (f ≫ g) ↔ W f :=
+  ⟨W.of_postcomp f g hg, fun hf ↦ RespectsRight.postcomp _ hg _ hf⟩
 
-lemma precomp_iff {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hf : W f) :
+lemma precomp_iff [W.RespectsLeft W'] [W.HasOfPrecompProperty W']
+    {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hf : W' f) :
     W (f ≫ g) ↔ W g :=
-  ⟨W.of_precomp f g hf, fun hg => W.comp_mem _ _ hf hg⟩
+  ⟨W.of_precomp f g hf, fun hg ↦ RespectsLeft.precomp _ hf _ hg⟩
+
+lemma HasOfPostcompProperty.of_le (Q : MorphismProperty C) [W.HasOfPostcompProperty Q]
+    (hle : W' ≤ Q) : W.HasOfPostcompProperty W' where
+  of_postcomp f g hg hfg := W.of_postcomp (W' := Q) f g (hle _ hg) hfg
+
+lemma HasOfPrecompProperty.of_le (Q : MorphismProperty C) [W.HasOfPrecompProperty Q]
+    (hle : W' ≤ Q) : W.HasOfPrecompProperty W' where
+  of_precomp f g hg hfg := W.of_precomp (W' := Q) f g (hle _ hg) hfg
 
 end
 
