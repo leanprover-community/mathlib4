@@ -58,10 +58,6 @@ theorem isConnected_setOf_sameRay_and_ne_zero {x : E} (hx : x ≠ 0) :
   simp_rw [← exists_pos_left_iff_sameRay_and_ne_zero hx]
   exact isConnected_Ioi.image _ (continuous_id.smul continuous_const).continuousOn
 
-
-
-
-
 end SeminormedAddCommGroup
 
 section NormedAddCommGroup

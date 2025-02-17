@@ -3,7 +3,6 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Convex.Normed.Basic
 import Mathlib.Analysis.Normed.Group.Pointwise
@@ -23,13 +22,12 @@ We prove the following facts:
   is bounded.
 -/
 
-variable {E P : Type*}
+variable {E : Type*}
 
-open AffineBasis Module Metric Set
-open scoped Convex Pointwise Topology
+open Metric
 
 section SeminormedAddCommGroup
-variable [SeminormedAddCommGroup E] [NormedSpace ℝ E] [PseudoMetricSpace P] [NormedAddTorsor E P]
+variable [SeminormedAddCommGroup E] [NormedSpace ℝ E]
 variable {s : Set E}
 
 theorem Convex.thickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (thickening δ s) := by
