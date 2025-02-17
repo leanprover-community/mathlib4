@@ -583,23 +583,20 @@ section LinearOrderedField
 variable [LinearOrderedField R] [AddCommGroup V] [Module R V] [AddTorsor V P] {x y z : P}
 variable {R}
 
-lemma wbtw_of_le_of_le {x y z : R} (hxy : x ≤ y) (hyz : y ≤ z) : Wbtw R x y z := by
-  convert (wbtw_mul_sub_add_iff (r := (y - x) / (z - x))).2 ?_
-  · by_cases hzx : z = x
-    · subst hzx
-      simp only [sub_self, div_zero, mul_zero, zero_add]
-      exact le_antisymm hyz hxy
-    · have hzx' : z - x ≠ 0 := by simpa [sub_eq_zero]
-      field_simp
-  · by_cases hzx : z = x
-    · simp [hzx]
-    · right
-      have hzx0 : z - x ≠ 0 := by simpa [sub_eq_zero]
-      have hyx : 0 ≤ y - x := by simp [hxy]
-      have hzx' : 0 ≤ z - x := by simp [hxy.trans hyz]
-      have hzxlt : 0 < z - x := hzx'.lt_of_ne hzx0.symm
-      refine ⟨div_nonneg hyx hzx', (div_le_one hzxlt).2 ?_⟩
-      simpa
+lemma wbtw_iff_of_le {x y z : R} (hxz : x ≤ z) : Wbtw R x y z ↔ x ≤ y ∧ y ≤ z := by
+  cases hxz.eq_or_lt with
+  | inl hxz =>
+    subst hxz
+    rw [← le_antisymm_iff, wbtw_self_iff, eq_comm]
+  | inr hxz =>
+    have hxz' : 0 < z - x := sub_pos.mpr hxz
+    let r := (y - x) / (z - x)
+    have hy : y = (r * (z - x) + x) := by simp [r, hxz'.ne']
+    simp [hy, wbtw_mul_sub_add_iff, mul_nonneg_iff_of_pos_right hxz', ← le_sub_iff_add_le,
+      mul_le_iff_le_one_left hxz', hxz.ne]
+
+lemma wbtw_of_le_of_le {x y z : R} (hxy : x ≤ y) (hyz : y ≤ z) : Wbtw R x y z :=
+  (wbtw_iff_of_le (hxy.trans hyz)).mpr ⟨hxy, hyz⟩
 
 lemma sbtw_of_lt_of_lt {x y z : R} (hxy : x < y) (hyz : y < z) : Sbtw R x y z :=
   ⟨wbtw_of_le_of_le hxy.le hyz.le, hxy.ne', hyz.ne⟩
