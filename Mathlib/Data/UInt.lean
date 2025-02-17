@@ -32,24 +32,24 @@ run_cmd
     namespace $typeName
 
       instance : Neg $typeName where
-        neg a := mk ⟨-a.val⟩
+        neg a := ofBitVec ⟨-a.val⟩
 
       instance : Pow $typeName ℕ where
-        pow a n := mk ⟨a.val ^ n⟩
+        pow a n := ofBitVec ⟨a.val ^ n⟩
 
       instance : SMul ℕ $typeName where
-        smul n a := mk ⟨n • a.val⟩
+        smul n a := ofBitVec ⟨n • a.val⟩
 
       instance : SMul ℤ $typeName where
-        smul z a := mk ⟨z • a.val⟩
+        smul z a := ofBitVec ⟨z • a.val⟩
 
-      lemma neg_def (a : $typeName) : -a = ⟨⟨-a.val⟩⟩ := rfl
+      lemma neg_def (a : $typeName) : -a = ofBitVec ⟨-a.val⟩ := rfl
 
-      lemma pow_def (a : $typeName) (n : ℕ) : a ^ n = ⟨⟨a.val ^ n⟩⟩ := rfl
+      lemma pow_def (a : $typeName) (n : ℕ) : a ^ n = ofBitVec ⟨a.val ^ n⟩ := rfl
 
-      lemma nsmul_def (n : ℕ) (a : $typeName) : n • a = ⟨⟨n • a.val⟩⟩ := rfl
+      lemma nsmul_def (n : ℕ) (a : $typeName) : n • a = ofBitVec ⟨n • a.val⟩ := rfl
 
-      lemma zsmul_def (z : ℤ) (a : $typeName) : z • a = ⟨⟨z • a.val⟩⟩ := rfl
+      lemma zsmul_def (z : ℤ) (a : $typeName) : z • a = ofBitVec ⟨z • a.val⟩ := rfl
 
       open $typeName (eq_of_val_eq) in
       lemma val_injective : Function.Injective val := @eq_of_val_eq
@@ -67,14 +67,14 @@ run_cmd
           (fun _ _ => rfl) (fun _ _ => rfl)
 
       local instance instNatCast : NatCast $typeName where
-        natCast n := mk n
+        natCast n := ofBitVec n
 
       local instance instIntCast : IntCast $typeName where
-        intCast z := mk z
+        intCast z := ofBitVec z
 
-      lemma natCast_def (n : ℕ) : (n : $typeName) = ⟨n⟩ := rfl
+      lemma natCast_def (n : ℕ) : (n : $typeName) = ofBitVec n := rfl
 
-      lemma intCast_def (z : ℤ) : (z : $typeName) = ⟨z⟩ := rfl
+      lemma intCast_def (z : ℤ) : (z : $typeName) = ofBitVec z := rfl
 
       local instance instCommRing : CommRing $typeName :=
         Function.Injective.commRing toBitVec toBitVec_injective

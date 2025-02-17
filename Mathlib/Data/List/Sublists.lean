@@ -7,6 +7,7 @@ import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.List.Perm.Basic
 import Mathlib.Data.List.Lex
+import Mathlib.Data.List.Induction
 
 /-! # sublists
 
@@ -86,7 +87,7 @@ theorem mem_sublists' {s t : List α} : s ∈ sublists' t ↔ s <+ t := by
 theorem length_sublists' : ∀ l : List α, length (sublists' l) = 2 ^ length l
   | [] => rfl
   | a :: l => by
-    simp_arith only [sublists'_cons, length_append, length_sublists' l,
+    simp +arith only [sublists'_cons, length_append, length_sublists' l,
       length_map, length, Nat.pow_succ']
 
 @[simp]

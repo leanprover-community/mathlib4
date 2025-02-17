@@ -357,7 +357,7 @@ lemma smoothNumbers_succ {N : ℕ} (hN : ¬ N.Prime) : N.succ.smoothNumbers = N.
 
 /-- All `m`, `0 < m < n` are `n`-smooth numbers -/
 lemma mem_smoothNumbers_of_lt {m n : ℕ} (hm : 0 < m) (hmn : m < n) : m ∈ n.smoothNumbers :=
-  smoothNumbers_eq_factoredNumbers _ ▸ ⟨not_eq_zero_of_lt hm,
+  smoothNumbers_eq_factoredNumbers _ ▸ ⟨ne_zero_of_lt hm,
   fun _ h => Finset.mem_range.mpr <| lt_of_le_of_lt (le_of_mem_primeFactorsList h) hmn⟩
 
 /-- The non-zero non-`N`-smooth numbers are `≥ N`. -/
