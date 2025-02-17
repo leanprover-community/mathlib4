@@ -13,6 +13,7 @@ import Mathlib.Tactic.NormNum.Prime
 import Mathlib.Data.Rat.Floor
 import Mathlib.Tactic.NormNum.LegendreSymbol
 import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.NormNum.RealSqrt
 
 /-!
 # Tests for `norm_num` extensions
