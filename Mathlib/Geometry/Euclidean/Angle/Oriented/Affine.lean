@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Analysis.Convex.Side
+import Mathlib.Analysis.Convex.Normed2
 import Mathlib.Geometry.Euclidean.Angle.Oriented.Rotation
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 
