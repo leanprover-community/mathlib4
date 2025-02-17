@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Pfaffelhuber
 -/
 import Mathlib.Data.Set.Lattice
+import Mathlib.Order.Directed
 
 /-!
 # Dissipate
@@ -111,7 +112,7 @@ lemma empty_of_directed {s : ℕ → Set α} (hd : Directed (fun (x1 x2 : Set α
 
 lemma dissipate_directed {s : ℕ → Set α} :
     Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) fun n ↦ Dissipate s n :=
-  directed_of_isDirected_le <| fun _ _ hij ↦ dissipate_subset_dissipate hij
+     antitone_dissipate.directed_ge
 
 lemma mem_subset_dissipate_of_directed (C : ℕ → Set α)
     (hd : Directed (fun (x1 x2 : Set α) => x1 ⊇ x2) C) (n : ℕ) : ∃ m, Dissipate C n ⊇ C m := by
