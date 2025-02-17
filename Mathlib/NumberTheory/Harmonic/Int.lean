@@ -5,6 +5,7 @@ Authors: Koundinya Vajjha, Thomas Browning
 -/
 import Mathlib.NumberTheory.Harmonic.Defs
 import Mathlib.NumberTheory.Padics.PadicNumbers
+import Mathlib.Tactic.Positivity
 
 /-!
 
