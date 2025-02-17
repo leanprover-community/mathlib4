@@ -653,13 +653,12 @@ lemma μ_snd (X Y : C) : LaxMonoidal.μ F X Y ≫ F.map (snd X Y) = snd (F.obj X
 
 section
 
-variable {E : Type u₂} [Category.{v₂} E] [ChosenFiniteProducts E] (G : D ⥤ E)
+variable {F} {E : Type u₂} [Category.{v₂} E] [ChosenFiniteProducts E] {G : D ⥤ E}
   [PreservesFiniteProducts G]
 
-attribute [-instance] Functor.LaxMonoidal.comp Functor.Monoidal.instComp
-
+attribute [-instance] Functor.LaxMonoidal.comp Functor.Monoidal.instComp in
 @[reassoc (attr := simp)]
-lemma μ_comp {X Y : C} :
+lemma μ_comp (X Y : C) :
     LaxMonoidal.μ (F ⋙ G) X Y = LaxMonoidal.μ G _ _ ≫ G.map (LaxMonoidal.μ F X Y) := by
   apply (cancel_mono (μIso _ _ _).inv).1
   apply ChosenFiniteProducts.hom_ext <;> simp [← Functor.comp_obj, ← Functor.map_comp]
