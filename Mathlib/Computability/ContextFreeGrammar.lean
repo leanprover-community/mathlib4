@@ -209,8 +209,8 @@ lemma Derives.append_right {v w : List (Symbol T g.NT)}
 lemma produces_nonterminal {g : ContextFreeGrammar T}
     {u v : List (Symbol T g.NT)} (hguv : g.Produces u v) :
     ∃ r ∈ g.rules, .nonterminal r.input ∈ u := by
-  obtain ⟨w, ⟨l, r⟩⟩ := hguv
-  exact ⟨w, ⟨l, ContextFreeRule.has_nonterminal_if_rewrite r⟩⟩
+  obtain ⟨w, l, r⟩ := hguv
+  exact ⟨w, l, ContextFreeRule.has_nonterminal_if_rewrite r⟩
 
 lemma derives_nonterminal {g : ContextFreeGrammar T} {t : g.NT} (hgt : ∀ r ∈ g.rules, r.input ≠ t) :
     ∀ s ≠ [.nonterminal t], ¬g.Derives [.nonterminal t] s := fun _ hs ↦ by
@@ -225,7 +225,7 @@ lemma noninitial_empty {g : ContextFreeGrammar T} (hg : ∀ r ∈ g.rules, r.inp
     g.language = 0 :=
   Language.ext fun _ ↦ ⟨
     (absurd · (derives_nonterminal hg _ (by simp))),
-    fun _ ↦ by contradiction
+    False.elim
   ⟩
 
 end ContextFreeGrammar
