@@ -168,13 +168,13 @@ lemma hasBasis_nhds_zero [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] 
   when the ring of coefficients has a linar topology. -/
 instance [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
     IsLinearTopology (MvPowerSeries σ R) (MvPowerSeries σ R) :=
-  IsLinearTopology.mk_of_hasBasis'  _ (hasBasis_nhds_zero) TwoSidedIdeal.mul_mem_left
+  IsLinearTopology.mk_of_hasBasis'  _ hasBasis_nhds_zero TwoSidedIdeal.mul_mem_left
 
 /-- The topology on `MvPowerSeries` is a right linear topology
   when the ring of coefficients has a linear topology. -/
 instance [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
     IsLinearTopology (MvPowerSeries σ R)ᵐᵒᵖ (MvPowerSeries σ R) :=
-  IsLinearTopology.mk_of_hasBasis'  _ (hasBasis_nhds_zero) TwoSidedIdeal.opp_smul_mem
+  IsLinearTopology.mk_of_hasBasis'  _ hasBasis_nhds_zero (fun J _ _ hg ↦ J.mul_mem_right _ _ hg)
 
 end LinearTopology
 
