@@ -28,6 +28,16 @@ is a linear topology.
 
 This applies in particular when `R` has the discrete topology.
 
+## Note
+
+If we had an analogue of `PolynomialModule` for power series,
+meaning that we could consider the `R⟦X⟧`-module `M⟦X⟧` when `M` is an `R`-module,
+then one could prove that `M⟦X⟧` is linearly topologized over `R⟦X⟧`
+whenever `M` is linearly topologized over `R`.
+To recover the ring case, it would remain to show that the isomorphism between
+`Rᵐᵒᵖ⟦X⟧` and `R⟦X⟧ᵐᵒᵖ` identifies their respective actions on `R⟦X⟧`.
+(And likewise in the multivariate case.)
+
 -/
 
 namespace MvPowerSeries
@@ -50,16 +60,13 @@ def basis (σ : Type*) (R : Type*) [Ring R] (Jd : TwoSidedIdeal R × (σ →₀ 
       rw [coeff_mul]
       apply sum_mem
       rintro uv huv
-      apply TwoSidedIdeal.mul_mem_left
-      exact hg _ (le_trans (le_iff_exists_add'.mpr
-        ⟨uv.fst, (Finset.mem_antidiagonal.mp huv).symm⟩) he))
+      exact TwoSidedIdeal.mul_mem_left _ _ _ (hg _ (le_trans (Finset.antidiagonal.snd_le huv) he)))
     (fun {f g} hf e he ↦ by
       classical
       rw [coeff_mul]
       apply sum_mem
       rintro uv huv
-      exact TwoSidedIdeal.mul_mem_right Jd.1 _ _
-        (hf _ (le_trans (le_iff_exists_add.mpr ⟨uv.2, (Finset.mem_antidiagonal.mp huv).symm⟩) he)))
+      exact TwoSidedIdeal.mul_mem_right _ _ _ (hf _ (le_trans (Finset.antidiagonal.fst_le huv) he)))
 
 variable {σ : Type*} {R : Type*} [Ring R]
 
@@ -115,7 +122,7 @@ variable [TopologicalSpace R]
 -- We endow MvPowerSeries σ R with the product topology.
 open WithPiTopology
 
-variable (σ R) in
+/- variable (σ R) in
 theorem ringSubgroupsBasis :
     RingSubgroupsBasis (fun (Jd : {J : TwoSidedIdeal R | (J : Set R) ∈ 𝓝 0} × (σ →₀ ℕ))
         ↦ (basis σ R ⟨Jd.1, Jd.2⟩).asIdeal.toAddSubgroup) where
@@ -138,6 +145,7 @@ theorem ringSubgroupsBasis :
     apply TwoSidedIdeal.mul_mem_right
     apply hg i (le_trans ?_ he)
     simp only [← Finset.mem_antidiagonal.mp h, le_self_add]⟩
+-/
 
 /-- If the ring `R` is endowed with a linear topology, then the sets `↑basis σ R (J, d)`,
 for `J : TwoSidedIdeal R` which are neighborhoods of `0 : R` and `d : σ →₀ ℕ`,
