@@ -111,8 +111,8 @@ theorem coe_algebraMap :
   rfl
 
 theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
-    (LinearIndependent (FixedPoints.subfield G F) fun i : (s : Set F) => (i : F)) →
-      LinearIndependent F fun i : (s : Set F) => MulAction.toFun G F i := by
+    (LinearIndepOn (FixedPoints.subfield G F) id s) →
+      LinearIndepOn F (MulAction.toFun G F i) s := by
   classical
   have : IsEmpty ((∅ : Finset F) : Set F) := by simp
   refine Finset.induction_on s (fun _ => linearIndependent_empty_type) fun a s has ih hs => ?_
