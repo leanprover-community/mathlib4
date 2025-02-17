@@ -97,7 +97,7 @@ theorem reduce.not {p : Prop} :
         simp only [List.length, zero_add, List.length_append] at this
       omega
     | cons hd tail =>
-      cases' hd with y c
+      obtain ⟨y, c⟩ := hd
       dsimp only
       split_ifs with h <;> intro H
       · rw [H] at r

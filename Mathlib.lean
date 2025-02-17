@@ -681,7 +681,6 @@ import Mathlib.Algebra.NoZeroSMulDivisors.Prod
 import Mathlib.Algebra.Notation
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.AbsoluteValue.Equivalence
 import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
 import Mathlib.Algebra.Order.AddGroupWithTop
 import Mathlib.Algebra.Order.AddTorsor
@@ -1159,6 +1158,7 @@ import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
 import Mathlib.AlgebraicTopology.SingularHomology.Basic
 import Mathlib.AlgebraicTopology.SingularSet
 import Mathlib.AlgebraicTopology.TopologicalSimplex
+import Mathlib.Analysis.AbsoluteValue.Equivalence
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.Analytic.CPolynomial
 import Mathlib.Analysis.Analytic.ChangeOrigin
@@ -1688,6 +1688,7 @@ import Mathlib.CategoryTheory.Abelian.Exact
 import Mathlib.CategoryTheory.Abelian.Ext
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.FunctorCategory
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Indization
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
@@ -1762,6 +1763,7 @@ import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Category.Cat.Adjunction
 import Mathlib.CategoryTheory.Category.Cat.AsSmall
 import Mathlib.CategoryTheory.Category.Cat.Limit
+import Mathlib.CategoryTheory.Category.Cat.Op
 import Mathlib.CategoryTheory.Category.Factorisation
 import Mathlib.CategoryTheory.Category.GaloisConnection
 import Mathlib.CategoryTheory.Category.Grpd
@@ -2146,6 +2148,7 @@ import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Internal.Limits
 import Mathlib.CategoryTheory.Monoidal.Internal.Module
 import Mathlib.CategoryTheory.Monoidal.Internal.Types.Basic
+import Mathlib.CategoryTheory.Monoidal.Internal.Types.CommGrp_
 import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp_
 import Mathlib.CategoryTheory.Monoidal.Limits
 import Mathlib.CategoryTheory.Monoidal.Linear
