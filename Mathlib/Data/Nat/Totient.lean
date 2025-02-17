@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.CharP.Two
-import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Factorization.Induction
 import Mathlib.Data.Nat.Periodic
