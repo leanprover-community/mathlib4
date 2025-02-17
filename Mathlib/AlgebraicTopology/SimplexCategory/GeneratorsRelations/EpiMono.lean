@@ -23,7 +23,7 @@ open CategoryTheory
 section EpiMono
 
 /-- `δ i` is a split monomorphism thanks to the simplicial identities. -/
-def SplitMonoδ {n : ℕ} {i : Fin (n + 2)} : SplitMono (δ i) where
+def splitMonoδ {n : ℕ} {i : Fin (n + 2)} : SplitMono (δ i) where
   retraction := by
     induction i using Fin.lastCases with
     | last => exact σ n
@@ -35,14 +35,14 @@ def SplitMonoδ {n : ℕ} {i : Fin (n + 2)} : SplitMono (δ i) where
     · simp only [Fin.natCast_eq_last, Fin.lastCases_castSucc]
       exact δ_comp_σ_self
 
-instance {n : ℕ} {i : Fin (n + 2)} : IsSplitMono (δ i) := .mk' SplitMonoδ
+instance {n : ℕ} {i : Fin (n + 2)} : IsSplitMono (δ i) := .mk' splitMonoδ
 
 /-- `δ i` is a split epimorphism thanks to the simplicial identities. -/
-def SplitEpiσ {n : ℕ} {i : Fin (n + 1)} : SplitEpi (σ i) where
+def splitEpiσ {n : ℕ} {i : Fin (n + 1)} : SplitEpi (σ i) where
   section_ := δ i.castSucc
   id := δ_comp_σ_self
 
-instance {n : ℕ} {i : Fin (n + 1)} : IsSplitEpi (σ i) := .mk' SplitEpiσ
+instance {n : ℕ} {i : Fin (n + 1)} : IsSplitEpi (σ i) := .mk' splitEpiσ
 
 /-- Auxiliary predicate to express that a morphism is purely a composition of `σ i`s. -/
 abbrev P_σ := degeneracies.multiplicativeClosure
@@ -69,8 +69,8 @@ lemma isSplitMono_P_δ {x y : SimplexCategoryGenRel} {m : x ⟶ y} (hm : P_δ m)
   | id => infer_instance
   | comp_of _ _ _ h => cases h; infer_instance
 
-lemma isSplitEpi_P_σ_toSimplexCategory {x y : SimplexCategoryGenRel} {e : x ⟶ y} (he : P_σ e)
-    : IsSplitEpi <| toSimplexCategory.map e := by
+lemma isSplitEpi_P_σ_toSimplexCategory {x y : SimplexCategoryGenRel} {e : x ⟶ y} (he : P_σ e) :
+    IsSplitEpi <| toSimplexCategory.map e := by
   constructor
   constructor
   apply SplitEpi.map
