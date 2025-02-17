@@ -108,8 +108,10 @@ theorem colimit_eq_iff_aux {i j : J} {xi : F.obj i} {xj : F.obj j} :
   rw [← (equivShrink _).symm.injective.eq_iff, Equiv.symm_apply_apply, Equiv.symm_apply_apply,
     Quot.eq, FilteredColimit.rel_eq_eqvGen_quot_rel]
 
+omit [HasColimit F] in
 theorem isColimit_eq_iff {t : Cocone F} (ht : IsColimit t) {i j : J} {xi : F.obj i} {xj : F.obj j} :
     t.ι.app i xi = t.ι.app j xj ↔ ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj := by
+  have : HasColimit F := ⟨t, ht⟩
   refine Iff.trans ?_ (colimit_eq_iff_aux F)
   rw [← (IsColimit.coconePointUniqueUpToIso ht (colimitCoconeIsColimit F)).toEquiv.injective.eq_iff]
   convert Iff.rfl
