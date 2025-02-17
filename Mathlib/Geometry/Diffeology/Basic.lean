@@ -23,6 +23,11 @@ have also equivalently allowed the domains to be open subsets of ℝⁿ, or arbi
 We chose to go with the first option because the latter two can both be somewhat inconvenient to
 work with in Lean.
 
+A downside of working only with the spaces ℝⁿ instead of also their subsets is that it makes the
+sheaf condition / locality condition of diffeologies somewhat awkward to state and prove; to
+mitigate this, we provide `DiffeologicalSpace.mkOfPlotsOn` as a way to construct a diffeology from
+plots whose domains are subsets of ℝⁿ.
+
 ### D-Topology
 
 Since the D-topology does not always commute with e.g. products, it can not be registered as an
@@ -53,17 +58,26 @@ to extend this to all Banach or Fréchet spaces though in the future.
 
 open Topology ContDiff
 
+/-- The finite-dimensional normed spaces that diffeological spaces are modelled on. We introduce
+an abbreviation here because we refer to them quite a lot. -/
 abbrev Eucl (n : ℕ) := EuclideanSpace ℝ (Fin n)
 
 /-- A diffeology on `X`, given by the smooth functions (or "plots") from ℝⁿ to `X`. -/
 class DiffeologicalSpace (X : Type*) where
+  /-- The plots `Eucl n → X` representing the smooth ways to map `Eucl n` into `X`. This is the main
+  piece of data underlying the diffeology. -/
   plots (n : ℕ) : Set (Eucl n → X)
+  /-- Every constant map needs to be a plot. -/
   constant_plots {n : ℕ} (x : X) : (fun _ ↦ x) ∈ plots n
+  /-- Smooth reparametrisations of plots need to be plots. -/
   plot_reparam {n m : ℕ} {p : Eucl m → X} {f : Eucl n → Eucl m} :
     p ∈ plots m → (ContDiff ℝ ∞ f) → (p ∘ f ∈ plots n)
+  /-- Every locally smooth map `Eucl n → X` is a plot. -/
   locality {n : ℕ} {p : Eucl n → X} : (∀ x : Eucl n, ∃ u : Set (Eucl n), IsOpen u ∧ x ∈ u ∧
     ∀ {m : ℕ} {f : Eucl m → Eucl n}, (hfu : ∀ x, f x ∈ u) → ContDiff ℝ ∞ f → p ∘ f ∈ plots m) →
       p ∈ plots n
+  /-- The D-topology of the diffeology. This is included as part of the data in order to give
+  control over what the D-topology is defeq to. -/
   dTopology : TopologicalSpace X := {
     IsOpen := fun u ↦ ∀ {n : ℕ}, ∀ p ∈ plots n, TopologicalSpace.IsOpen (p ⁻¹' u)
     isOpen_univ := fun _ _ ↦ isOpen_univ
@@ -72,6 +86,7 @@ class DiffeologicalSpace (X : Type*) where
     isOpen_sUnion := fun _ hs _ p hp ↦
       Set.preimage_sUnion ▸ isOpen_biUnion fun u hu ↦ hs u hu p hp
   }
+  /-- The D-topology consists of exactly those sets whose preimages under plots are all open. -/
   isOpen_iff_preimages_plots {u : Set X} : dTopology.IsOpen u ↔
       ∀ {n : ℕ}, ∀ p ∈ plots n, TopologicalSpace.IsOpen (p ⁻¹' u) := by rfl
 
@@ -84,6 +99,8 @@ because the D-topology might not agree with already registered topologies like t
 on normed spaces.-/
 def DTop : TopologicalSpace X := DiffeologicalSpace.dTopology
 
+/-- A map `p : Eucl n → X` is called a plot iff it is part of the diffeology on `X`. This is
+equivalent to `p` being smooth with respect to the standard diffeology on `Eucl n`. -/
 def IsPlot {n : ℕ} (p : Eucl n → X) : Prop := p ∈ DiffeologicalSpace.plots n
 
 /-- A function between diffeological spaces is smooth iff composition with it preserves
@@ -91,10 +108,13 @@ smoothness of plots. -/
 @[fun_prop]
 def DSmooth (f : X → Y) : Prop := ∀ (n : ℕ) (p : Eucl n → X), IsPlot p → IsPlot (f ∘ p)
 
+/-- Notation for the D-topology of non-standard diffeologies. -/
 notation (name := DTop_of) "DTop[" d "]" => @DTop _ d
 
+/-- Notation for the plots of non-standard diffeologies. -/
 notation (name := IsPlot_of) "IsPlot[" d "]" => @IsPlot _ d
 
+/-- Notation for smoothness with respect to non-standard diffeologies. -/
 notation (name := DSmooth_of) "DSmooth[" d₁ ", " d₂ "]" => @DSmooth _ _ d₁ d₂
 
 end Defs
@@ -158,8 +178,9 @@ lemma DiffeologicalSpace.withDTopology_eq {X : Type*} {d : DiffeologicalSpace X}
   ext; rfl
 
 /-- A structure with plots specified on open subsets of ℝⁿ rather than ℝⁿ itself. Useful
-for constructing diffeologies, as it often makes the locality condition easiert to prove. -/
+for constructing diffeologies, as it often makes the locality condition easier to prove. -/
 structure DiffeologicalSpace.CorePlotsOn (X : Type*) where
+  /-- The predicate determining which maps `u → X` with `u : Set (Eucl n)` open are plots. -/
   isPlotOn {n : ℕ} {u : Set (Eucl n)} (hu : IsOpen u) : (Eucl n → X) → Prop
   isPlotOn_congr {n : ℕ} {u : Set (Eucl n)} (hu : IsOpen u) {p q : Eucl n → X}
     (h : Set.EqOn p q u) : isPlotOn hu p ↔ isPlotOn hu q
