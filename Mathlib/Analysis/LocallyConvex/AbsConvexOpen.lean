@@ -10,9 +10,10 @@ import Mathlib.Analysis.Convex.Gauge
 /-!
 # Absolutely convex open sets
 
-A set `s` in an commutative monoid `E` is called absolutely convex or disked if it is convex and
-balanced. The importance of absolutely convex sets comes from the fact that every locally convex
-topological vector space has a basis consisting of absolutely convex sets.
+A set `s` in a commutative monoid `E` equipped with a topology is said to be an absolutely convex
+open set if it is absolutely convex and open. When `E` is a topological additive group, the topology
+coincides with the topology induced by the family of seminorms arising as gauges of absolutely
+convex open neighborhoods of zero.
 
 ## Main definitions
 
