@@ -426,7 +426,7 @@ noncomputable def lowerCentralSeriesLast : LieSubmodule R L M :=
 theorem lowerCentralSeriesLast_le_max_triv [LieModule R L M] :
     lowerCentralSeriesLast R L M ≤ maxTrivSubmodule R L M := by
   rw [lowerCentralSeriesLast]
-  cases' h : nilpotencyLength L M with k
+  rcases h : nilpotencyLength L M with - | k
   · exact bot_le
   · rw [le_max_triv_iff_bracket_eq_bot]
     rw [nilpotencyLength_eq_succ_iff R, lowerCentralSeries_succ] at h
@@ -448,7 +448,7 @@ theorem lowerCentralSeriesLast_le_of_not_isTrivial [IsNilpotent L M] (h : ¬ IsT
     by_contra contra
     have := isTrivial_of_nilpotencyLength_le_one L M (not_lt.mp contra)
     contradiction
-  cases' hk : nilpotencyLength L M with k <;> rw [hk] at h
+  rcases hk : nilpotencyLength L M with - | k <;> rw [hk] at h
   · contradiction
   · exact antitone_lowerCentralSeries _ _ _ (Nat.lt_succ.mp h)
 

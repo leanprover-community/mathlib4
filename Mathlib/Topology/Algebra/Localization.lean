@@ -33,5 +33,5 @@ def Localization.ringTopology : RingTopology (Localization M) :=
 instance : TopologicalSpace (Localization M) :=
   Localization.ringTopology.toTopologicalSpace
 
-instance : TopologicalRing (Localization M) :=
-  Localization.ringTopology.toTopologicalRing
+instance : IsTopologicalRing (Localization M) :=
+  Localization.ringTopology.toIsTopologicalRing

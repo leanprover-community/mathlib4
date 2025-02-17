@@ -60,7 +60,7 @@ instance {G : Type*} [AddGroup G] [UniformSpace G] [UniformAddGroup G] [Nonarchi
     exact closure_minimal (Set.image_subset_iff.mpr hCW) C_closed
 
 /-- The completion of a nonarchimedean ring is a nonarchimedean ring. -/
-instance {R : Type*} [Ring R] [UniformSpace R] [TopologicalRing R] [UniformAddGroup R]
+instance {R : Type*} [Ring R] [UniformSpace R] [IsTopologicalRing R] [UniformAddGroup R]
     [NonarchimedeanRing R] :
     NonarchimedeanRing (Completion R) where
   is_nonarchimedean := NonarchimedeanAddGroup.is_nonarchimedean
