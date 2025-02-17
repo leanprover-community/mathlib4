@@ -821,10 +821,9 @@ set_option linter.deprecated false in
 theorem IsStrongLimit.isLimit {c} (H : IsStrongLimit c) : IsLimit c :=
   ⟨H.ne_zero, H.isSuccPrelimit⟩
 
-theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ := by
-  refine ⟨aleph0_ne_zero, fun hx ↦ ?_⟩
-  obtain ⟨n, rfl⟩ := lt_aleph0.1 hx
-  exact_mod_cast nat_lt_aleph0 _
+theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ where
+  ne_zero := aleph0_ne_zero
+  two_power_lt hx := by obtain ⟨n, rfl⟩ := lt_aleph0.1 hx; exact_mod_cast nat_lt_aleph0 _
 
 theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit (ℶ_ o) := by
   rcases eq_or_ne o 0 with (rfl | h)
