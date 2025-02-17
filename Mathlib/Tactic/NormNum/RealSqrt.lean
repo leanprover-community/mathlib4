@@ -56,8 +56,9 @@ lemma isRat_realSqrt {x : ℝ} {n sn : ℤ} {d sd : ℕ} (hn : sn * sn = n)
 
 /-- `norm_num` extension that evaluates the function `Real.sqrt`. -/
 @[norm_num Real.sqrt _]
-def evalRealSqrt : NormNumExt where eval {_ _} e := do
+def evalRealSqrt : NormNumExt where eval {u α} e := do
   let .app _ (x : Q(ℝ)) ← whnfR e | failure
+  have : u =QL 0 := ⟨⟩; have : $α =Q ℝ := ⟨⟩; have : $e =Q Real.sqrt $x := ⟨⟩
   let res ← derive (α := q(ℝ)) x
   match res with
   | .isBool _ _ => failure
@@ -75,8 +76,7 @@ def evalRealSqrt : NormNumExt where eval {_ _} e := do
       -- Recall that `Real.sqrt` returns 0 for negative inputs
       assumeInstancesCommute
       have pf_final : Q(IsNat (Real.sqrt $x) 0) := q(isNat_realSqrt_neg $pf)
-      let sℝ : Q(AddMonoidWithOne ℝ) ← synthInstanceQ q(AddMonoidWithOne ℝ)
-      return .isNat sℝ (mkRawNatLit 0) pf_final
+      return .isNat q(inferInstance) (mkRawNatLit 0) pf_final
   | .isRat sℝ eq en ed pf =>
       let n' : ℤ := en.intLit!
       let d : ℕ := ed.natLit!
@@ -85,8 +85,7 @@ def evalRealSqrt : NormNumExt where eval {_ _} e := do
         let hnum : Q($en ≤ 0) ← mkDecideProof q($en ≤ 0)
         assumeInstancesCommute
         have pf_final : Q(IsNat (Real.sqrt $x) 0) := q(isNat_realSqrt_neg_of_isRat $hnum $pf)
-        let sℝ : Q(AddMonoidWithOne ℝ) ← synthInstanceQ q(AddMonoidWithOne ℝ)
-        return .isNat sℝ (mkRawNatLit 0) pf_final
+        return .isNat q(inferInstance) (mkRawNatLit 0) pf_final
       let n : ℕ := n'.toNat
       let sn : ℤ := Nat.sqrt n
       let sd := Nat.sqrt d
@@ -106,7 +105,7 @@ def evalRealSqrt : NormNumExt where eval {_ _} e := do
 /-- `norm_num` extension that evaluates the function `NNReal.sqrt`. -/
 @[norm_num NNReal.sqrt _]
 def evalNNRealSqrt : NormNumExt where eval {u α} e := do
-  let e' : Q(«$α») ← whnfR e
+  let e' : Q($α) ← whnfR e
   match u, α, e' with
   | 0, ~q(NNReal), ~q(NNReal.sqrt $x) =>
     let res ← derive (α := q(ℝ≥0)) x
