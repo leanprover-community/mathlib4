@@ -167,7 +167,7 @@ theorem ofArrows_pullback [HasPullbacks C] {ι : Type*} (Z : ι → C) (g : ∀ 
   · rintro ⟨hk⟩
     exact pullbackArrows.mk _ _ (ofArrows.mk hk)
   · rintro ⟨W, k, hk₁⟩
-    obtain ⟨i, hi⟩ := hk₁
+    cases hk₁
     apply ofArrows.mk
 
 theorem ofArrows_bind {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X)

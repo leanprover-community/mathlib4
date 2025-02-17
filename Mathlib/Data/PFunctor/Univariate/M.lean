@@ -79,7 +79,7 @@ theorem agree_trivial {x : CofixA F 0} {y : CofixA F 1} : Agree x y := by constr
 
 theorem agree_children {n : ℕ} (x : CofixA F (succ n)) (y : CofixA F (succ n + 1)) {i j}
     (h₀ : HEq i j) (h₁ : Agree x y) : Agree (children' x i) (children' y j) := by
-  obtain ⟨_, _, _, _, _, _, hagree⟩ := h₁; cases h₀
+  obtain - | ⟨_, _, hagree⟩ := h₁; cases h₀
   apply hagree
 
 /-- `truncate a` turns `a` into a more limited approximation -/
@@ -137,19 +137,19 @@ theorem head_succ' (n m : ℕ) (x : ∀ n, CofixA F n) (Hconsistent : AllAgree x
   suffices ∀ n, head' (x (succ n)) = head' (x 1) by simp [this]
   clear m n
   intro n
-  rcases h₀ : x (succ n) with ⟨_, i₀, f₀⟩
-  rcases h₁ : x 1 with ⟨_, i₁, f₁⟩
+  rcases h₀ : x (succ n) with - | ⟨_, f₀⟩
+  cases h₁ : x 1
   dsimp only [head']
   induction' n with n n_ih
   · rw [h₁] at h₀
     cases h₀
     trivial
   · have H := Hconsistent (succ n)
-    rcases h₂ : x (succ n) with ⟨_, i₂, f₂⟩
+    cases h₂ : x (succ n)
     rw [h₀, h₂] at H
     apply n_ih (truncate ∘ f₀)
     rw [h₂]
-    obtain ⟨_, _, _, _, _, _, hagree⟩ := H
+    obtain - | ⟨_, _, hagree⟩ := H
     congr
     funext j
     dsimp only [comp_apply]
@@ -280,7 +280,7 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   induction' n with n
   · apply @Subsingleton.elim _ CofixA.instSubsingleton
   dsimp only [Approx.sMk, dest, head]
-  rcases h : x.approx (succ n) with ⟨_, hd, ch⟩
+  rcases h : x.approx (succ n) with - | ⟨hd, ch⟩
   have h' : hd = head' (x.approx 1) := by
     rw [← head_succ' n, h, head']
     apply x.consistent
@@ -335,14 +335,14 @@ theorem agree_iff_agree' {n : ℕ} (x y : M F) :
     · induction x using PFunctor.M.casesOn'
       induction y using PFunctor.M.casesOn'
       simp only [approx_mk] at h
-      obtain ⟨_, _, _, _, _, _, hagree⟩ := h
+      obtain - | ⟨_, _, hagree⟩ := h
       constructor <;> try rfl
       intro i
       apply n_ih
       apply hagree
   · induction' n with _ n_ih generalizing x y
     · constructor
-    · obtain ⟨_, _, _, a, x', y'⟩ := h
+    · obtain - | @⟨_, a, x', y'⟩ := h
       induction' x using PFunctor.M.casesOn' with x_a x_f
       induction' y using PFunctor.M.casesOn' with y_a y_f
       simp only [approx_mk]

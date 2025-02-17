@@ -241,7 +241,7 @@ theorem to_append_iff : Red L (L₁ ++ L₂) ↔ ∃ L₃ L₄, L = L₃ ++ L₄
       intro h
       induction' h with L' L₁₂ hLL' h ih generalizing L₁ L₂
       · exact ⟨_, _, eq.symm, by rfl, by rfl⟩
-      · obtain ⟨s, e, a, b⟩ := h
+      · obtain @⟨s, e, a, b⟩ := h
         rcases List.append_eq_append_iff.1 eq with (⟨s', rfl, rfl⟩ | ⟨e', rfl, rfl⟩)
         · have : L₁ ++ (s' ++ (a, b) :: (a, not b) :: e) = L₁ ++ s' ++ (a, b) :: (a, not b) :: e :=
             by simp
@@ -555,7 +555,7 @@ def Lift.aux : List (α × Bool) → β := fun L =>
 
 @[to_additive]
 theorem Red.Step.lift {f : α → β} (H : Red.Step L₁ L₂) : Lift.aux f L₁ = Lift.aux f L₂ := by
-  obtain ⟨_, _, _, b⟩ := H; cases b <;> simp [Lift.aux]
+  obtain @⟨_, _, _, b⟩ := H; cases b <;> simp [Lift.aux]
 
 /-- If `β` is a group, then any function from `α` to `β` extends uniquely to a group homomorphism
 from the free group over `α` to `β` -/
