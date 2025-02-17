@@ -1,19 +1,11 @@
 /-
-Copyright (c) 2024 Joël Riou. All rights reserved.
+Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.Presentable.Basic
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Colim
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Subobject
-import Mathlib.CategoryTheory.Limits.TypesFiltered
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-import Mathlib.CategoryTheory.Limits.Connected
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Subobject.Lattice
-import Mathlib.CategoryTheory.Filtered.Final
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Morphisms to a colimit in a Grothendieck abelian category
@@ -22,14 +14,14 @@ Let `C : Type u` be an abelian category `[Category.{v} C]` which
 satisfies `IsGrothendieckAbelian.{w} C`. Then, we may expect
 that all objects `X : C` are `κ`-presentable for some regular
 cardinal `κ`. However, we prove only a weaker result (which
-should be enough in order to obtain the existence of enough
-injectives): there is a regular cardinal `κ` such that
+is enough in order to obtain the existence of enough
+injectives): let `κ` be a big enough regular cardinal `κ` such that
 if `Y : J ⥤ C` is a functor from a `κ`-filtered
 category, and `c : Cocone Y` is a colimit cocone,
-then the map from the colimit of `X ⟶ Y j` to `X ⟶ c.pt`
-is injective, and bijective under the additional
-assumption that for any map `f : j ⟶ j'` in `J`, `Y.map f`
-is a monomorphism.
+then the map from the colimit of the types `X ⟶ Y j` to
+`X ⟶ c.pt` is injective, and it is bijective under the
+additional assumption that for any map `f : j ⟶ j'` in `J`,
+`Y.map f` is a monomorphism.
 
 -/
 
@@ -111,7 +103,7 @@ noncomputable def hc₃ : IsColimit (c₃ c j₀) :=
 include κ hκ hc hy in
 lemma epi_f : Epi (f y) := by
   have := isFiltered_of_isCardinalDirected J κ
-  exact (colim.mapShortComplex_exact (S_exact y)
+  exact (colim.exact_mapShortComplex (S_exact y)
     (colimit.isColimit _) (isColimitConstCocone _ _) (hc₃ hc j₀ κ) (f y) 0
     (fun j ↦ by simpa using hf y j) (fun _ ↦ by simpa using hy.symm)).epi_f rfl
 
