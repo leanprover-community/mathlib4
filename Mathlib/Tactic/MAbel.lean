@@ -67,7 +67,7 @@ partial def toAdditiveCore (e : Expr) : MetaM Simp.Result := do
         | ``HDiv.hDiv => True
         | _ => False
       let rec should_convert : Expr → Bool
-        | .app (.const name _) _ => is_multiplicative_operation name 
+        | .app (.const name _) _ => is_multiplicative_operation name
         | _ => False
       let rec go : Expr → MetaM Expr
         | .app fn arg
