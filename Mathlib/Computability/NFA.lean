@@ -208,6 +208,6 @@ theorem IsRegular.reverse {L : Language α} (h : L.IsRegular) : L.reverse.IsRegu
 /-- Regular languages are closed under reversal. -/
 @[simp]
 theorem isRegular_reverse_iff {L : Language α} : L.reverse.IsRegular ↔ L.IsRegular :=
-  ⟨fun h ↦ L.reverse_reverse ▸ h.reverse, .reverse⟩
+  ⟨(L.reverse_reverse ▸ ·.reverse), .reverse⟩
 
 end Language
