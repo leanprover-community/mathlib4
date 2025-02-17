@@ -65,7 +65,7 @@ the natural inclusion `I ^ n • ⊤ → I ^ m • ⊤`.
 -/
 abbrev mapQPow {m n : ℕ} (le : m ≤ n) :
     M ⧸ (I ^ n • ⊤ : Submodule R M) →ₗ[R] M ⧸ (I ^ m • ⊤ : Submodule R M) :=
-  mapQ _ _ LinearMap.id (smul_mono_left (Ideal.pow_le_pow_right le))
+  factor _ _ (smul_mono_left (Ideal.pow_le_pow_right le))
 
 /--`mapQPow` for `n = m + 1`-/
 abbrev mapQPowSucc (m : ℕ) : M ⧸ (I ^ (m + 1) • ⊤ : Submodule R M) →ₗ[R]
