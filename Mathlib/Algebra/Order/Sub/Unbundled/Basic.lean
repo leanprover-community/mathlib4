@@ -150,6 +150,11 @@ protected theorem tsub_lt_tsub_iff_left_of_le_of_le [AddLeftReflectLT α]
   ⟨hb.lt_of_tsub_lt_tsub_left_of_le h₂, hab.tsub_lt_tsub_left_of_le h₁⟩
 
 @[simp]
+protected lemma add_add_tsub_cancel (hc : AddLECancellable c) (hcb : c ≤ b) :
+    a + c + (b - c) = a + b := by
+  rw [← hc.add_tsub_assoc_of_le hcb, add_right_comm, hc.add_tsub_cancel_right]
+
+@[simp]
 protected theorem add_tsub_tsub_cancel (hac : AddLECancellable (a - c)) (h : c ≤ a) :
     a + b - (a - c) = b + c :=
   hac.tsub_eq_of_eq_add <| by rw [add_assoc, add_tsub_cancel_of_le h, add_comm]
@@ -234,6 +239,10 @@ theorem tsub_lt_tsub_iff_left_of_le_of_le [AddLeftReflectLT α] (h₁ : b ≤ a)
     (h₂ : c ≤ a) : a - b < a - c ↔ c < b :=
   Contravariant.AddLECancellable.tsub_lt_tsub_iff_left_of_le_of_le Contravariant.AddLECancellable h₁
     h₂
+
+@[simp]
+lemma add_add_tsub_cancel (hcb : c ≤ b) : a + c + (b - c) = a + b :=
+  Contravariant.AddLECancellable.add_add_tsub_cancel hcb
 
 @[simp]
 theorem add_tsub_tsub_cancel (h : c ≤ a) : a + b - (a - c) = b + c :=

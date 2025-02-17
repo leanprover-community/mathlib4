@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Data.Nat.Cast.Field
 import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
@@ -94,8 +92,7 @@ theorem mk_one_pow_eq_mk_choose_add :
       rw [pow_add, hd, pow_one, mul_comm, coeff_mul]
       simp_rw [coeff_mk, Pi.one_apply, one_mul]
       norm_cast
-      rw [Finset.sum_antidiagonal_choose_add, ← Nat.choose_succ_succ, Nat.succ_eq_add_one,
-        add_right_comm]
+      rw [Finset.sum_antidiagonal_choose_add, add_right_comm]
 
 /--
 Given a natural number `d : ℕ` and a commutative ring `S`, `PowerSeries.invOneSubPow S d` is the
@@ -152,14 +149,25 @@ theorem invOneSubPow_inv_eq_one_sub_pow :
   | zero => exact Eq.symm <| pow_zero _
   | succ d => rfl
 
-theorem invOneSubPow_inv_eq_one_of_eq_zero (h : d = 0) :
-    (invOneSubPow S d).inv = 1 := by
+theorem invOneSubPow_inv_zero_eq_one : (invOneSubPow S 0).inv = 1 := by
   delta invOneSubPow
-  simp only [h, Units.inv_eq_val_inv, inv_one, Units.val_one]
+  simp only [Units.inv_eq_val_inv, inv_one, Units.val_one]
 
 theorem mk_add_choose_mul_one_sub_pow_eq_one :
     (mk fun n ↦ Nat.choose (d + n) d : S⟦X⟧) * ((1 - X) ^ (d + 1)) = 1 :=
   (invOneSubPow S (d + 1)).val_inv
+
+theorem invOneSubPow_add (e : ℕ) :
+    invOneSubPow S (d + e) = invOneSubPow S d * invOneSubPow S e := by
+  simp_rw [invOneSubPow_eq_inv_one_sub_pow, pow_add]
+
+theorem one_sub_pow_mul_invOneSubPow_val_add_eq_invOneSubPow_val (e : ℕ) :
+    (1 - X) ^ e * (invOneSubPow S (d + e)).val = (invOneSubPow S d).val := by
+  simp [invOneSubPow_add, Units.val_mul, mul_comm, mul_assoc, ← invOneSubPow_inv_eq_one_sub_pow]
+
+theorem one_sub_pow_add_mul_invOneSubPow_val_eq_one_sub_pow (e : ℕ) :
+    (1 - X) ^ (d + e) * (invOneSubPow S e).val = (1 - X) ^ d := by
+  simp [pow_add, mul_assoc, ← invOneSubPow_inv_eq_one_sub_pow S e]
 
 end invOneSubPow
 

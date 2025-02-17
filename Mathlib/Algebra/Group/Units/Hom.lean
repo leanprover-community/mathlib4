@@ -31,8 +31,7 @@ used to golf the basic `Group` lemmas.
 Add a `@[to_additive]` version of `IsLocalHom`.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 open Function
 
@@ -78,6 +77,11 @@ theorem coe_map (f : M →* N) (x : Mˣ) : ↑(map f x) = f x := rfl
 
 @[to_additive (attr := simp)]
 theorem coe_map_inv (f : M →* N) (u : Mˣ) : ↑(map f u)⁻¹ = f ↑u⁻¹ := rfl
+
+@[to_additive (attr := simp)]
+lemma map_mk (f : M →* N) (val inv : M) (val_inv inv_val) :
+    map f (mk val inv val_inv inv_val) = mk (f val) (f inv)
+      (by rw [← f.map_mul, val_inv, f.map_one]) (by rw [← f.map_mul, inv_val, f.map_one]) := rfl
 
 @[to_additive (attr := simp)]
 theorem map_comp (f : M →* N) (g : N →* P) : map (g.comp f) = (map g).comp (map f) := rfl
@@ -215,7 +219,7 @@ variable {G R S T F : Type*}
 variable [Monoid R] [Monoid S] [Monoid T] [FunLike F R S]
 
 /-- A local ring homomorphism is a map `f` between monoids such that `a` in the domain
-  is a unit if `f a` is a unit for any `a`. See `LocalRing.local_hom_TFAE` for other equivalent
+  is a unit if `f a` is a unit for any `a`. See `IsLocalRing.local_hom_TFAE` for other equivalent
   definitions in the local ring case - from where this concept originates, but it is useful in
   other contexts, so we allow this generalisation in mathlib. -/
 class IsLocalHom (f : F) : Prop where

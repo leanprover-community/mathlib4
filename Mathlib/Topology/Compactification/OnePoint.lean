@@ -106,11 +106,11 @@ theorem infty_ne_coe (x : X) : ∞ ≠ (x : OnePoint X) :=
   nofun
 
 /-- Recursor for `OnePoint` using the preferred forms `∞` and `↑x`. -/
-@[elab_as_elim]
-protected def rec {C : OnePoint X → Sort*} (h₁ : C ∞) (h₂ : ∀ x : X, C x) :
+@[elab_as_elim, induction_eliminator, cases_eliminator]
+protected def rec {C : OnePoint X → Sort*} (infty : C ∞) (coe : ∀ x : X, C x) :
     ∀ z : OnePoint X, C z
-  | ∞ => h₁
-  | (x : X) => h₂ x
+  | ∞ => infty
+  | (x : X) => coe x
 
 /-- An elimination principle for `OnePoint`. -/
 @[inline] protected def elim : OnePoint X → Y → (X → Y) → Y := Option.elim
@@ -122,7 +122,6 @@ protected def rec {C : OnePoint X → Sort*} (h₁ : C ∞) (h₂ : ∀ x : X, C
 theorem isCompl_range_coe_infty : IsCompl (range ((↑) : X → OnePoint X)) {∞} :=
   isCompl_range_some_none X
 
--- Porting note: moved @[simp] to a new lemma
 theorem range_coe_union_infty : range ((↑) : X → OnePoint X) ∪ {∞} = univ :=
   range_some_union_none X
 
@@ -563,12 +562,12 @@ instance (X : Type*) [TopologicalSpace X] [DiscreteTopology X] :
     TotallySeparatedSpace (OnePoint X) where
   isTotallySeparated_univ x _ y _ hxy := by
     cases x with
-    | none =>
+    | infty =>
       refine ⟨{y}ᶜ, {y}, isOpen_compl_singleton, ?_, hxy, rfl, (compl_union_self _).symm.subset,
         disjoint_compl_left⟩
       rw [OnePoint.isOpen_iff_of_not_mem]
       exacts [isOpen_discrete _, hxy]
-    | some val =>
+    | coe val =>
       refine ⟨{some val}, {some val}ᶜ, ?_, isOpen_compl_singleton, rfl, hxy.symm, by simp,
         disjoint_compl_right⟩
       rw [OnePoint.isOpen_iff_of_not_mem]
@@ -596,9 +595,10 @@ noncomputable def equivOfIsEmbeddingOfRangeEq :
     { toFun := fun p ↦ p.elim y f
       invFun := fun q ↦ if hq : q = y then ∞ else ↑(show q ∈ range f from by simpa [hy]).choose
       left_inv := fun p ↦ by
-        induction' p using OnePoint.rec with p
-        · simp
-        · have hp : f p ≠ y := by simpa [hy] using mem_range_self (f := f) p
+        induction p using OnePoint.rec with
+        | infty => simp
+        | coe p =>
+          have hp : f p ≠ y := by simpa [hy] using mem_range_self (f := f) p
           simpa [hp] using hf.injective (mem_range_self p).choose_spec
       right_inv := fun q ↦ by
         rcases eq_or_ne q y with rfl | hq

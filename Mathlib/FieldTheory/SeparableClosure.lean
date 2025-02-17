@@ -73,6 +73,7 @@ section separableClosure
 /-- The (relative) separable closure of `F` in `E`, or called maximal separable subextension
 of `E / F`, is defined to be the intermediate field of `E / F` consisting of all separable
 elements. The previous results prove that these elements are closed under field operations. -/
+@[stacks 09HC]
 def separableClosure : IntermediateField F E where
   carrier := {x | IsSeparable F x}
   mul_mem' := isSeparable_mul
@@ -140,6 +141,7 @@ instance separableClosure.isAlgebraic : Algebra.IsAlgebraic F (separableClosure 
   ⟨fun x ↦ isAlgebraic_iff.2 (IsSeparable.isIntegral x.2).isAlgebraic⟩
 
 /-- The separable closure of `F` in `E` is separable over `F`. -/
+@[stacks 030K "$E_{sep}/F$ is separable"]
 instance separableClosure.isSeparable : Algebra.IsSeparable F (separableClosure F E) :=
   ⟨fun x ↦ by simpa only [IsSeparable, minpoly_eq] using x.2⟩
 
@@ -176,6 +178,7 @@ theorem separableClosure.normalClosure_eq_self :
 
 /-- If `E` is normal over `F`, then the separable closure of `F` in `E` is Galois (i.e.
 normal and separable) over `F`. -/
+@[stacks 0EXK]
 instance separableClosure.isGalois [Normal F E] : IsGalois F (separableClosure F E) where
   to_isSeparable := separableClosure.isSeparable F E
   to_normal := by
@@ -255,10 +258,12 @@ namespace Field
 
 /-- The (infinite) separable degree for a general field extension `E / F` is defined
 to be the degree of `separableClosure F E / F`. -/
+@[stacks 030L "Part 1"]
 def sepDegree := Module.rank F (separableClosure F E)
 
 /-- The (infinite) inseparable degree for a general field extension `E / F` is defined
 to be the degree of `E / separableClosure F E`. -/
+@[stacks 030L "Part 2"]
 def insepDegree := Module.rank (separableClosure F E) E
 
 /-- The finite inseparable degree for a general field extension `E / F` is defined

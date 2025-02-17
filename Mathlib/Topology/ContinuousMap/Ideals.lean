@@ -74,10 +74,10 @@ namespace ContinuousMap
 
 open TopologicalSpace
 
-section TopologicalRing
+section IsTopologicalRing
 
 variable {X R : Type*} [TopologicalSpace X] [Semiring R]
-variable [TopologicalSpace R] [TopologicalSemiring R]
+variable [TopologicalSpace R] [IsTopologicalSemiring R]
 variable (R)
 
 /-- Given a topological ring `R` and `s : Set X`, construct the ideal in `C(X, R)` of functions
@@ -153,7 +153,7 @@ theorem ideal_gc : GaloisConnection (setOfIdeal : Ideal C(X, R) → Set X) (idea
     by_contra hx'
     exact not_mem_idealOfSet.mpr ⟨x, hx', hfx⟩ (h hf)
 
-end TopologicalRing
+end IsTopologicalRing
 
 section RCLike
 
@@ -265,7 +265,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
             pow_pos (norm_pos_iff.mpr hx.1) 2⟩⟩
       convert I.mul_mem_left (star g) hI
       ext
-      simp only [comp_apply, ContinuousMap.coe_coe, coe_mk, algebraMapCLM_toFun, map_pow,
+      simp only [comp_apply, ContinuousMap.coe_coe, coe_mk, algebraMapCLM_apply, map_pow,
         mul_apply, star_apply, star_def]
       simp only [normSq_eq_def', RCLike.conj_mul, ofReal_pow]
       rfl
@@ -380,7 +380,7 @@ variable (X 𝕜 : Type*) [TopologicalSpace X]
 
 section ContinuousMapEval
 
-variable [CommRing 𝕜] [TopologicalSpace 𝕜] [TopologicalRing 𝕜]
+variable [CommRing 𝕜] [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
 variable [Nontrivial 𝕜] [NoZeroDivisors 𝕜]
 
 /-- The natural continuous map from a locally compact topological space `X` to the

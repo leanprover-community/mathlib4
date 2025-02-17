@@ -73,7 +73,7 @@ end Ring
 
 section Field
 
-variable {K : Type*} [Field K] [NeZero (2 : K)] {a b c x : K}
+variable {K : Type*} [Field K] [NeZero (2 : K)] {a b c : K}
 
 /-- Roots of a quadratic equation. -/
 theorem quadratic_eq_zero_iff (ha : a ≠ 0) {s : K} (h : discrim a b c = s * s) (x : K) :
@@ -97,6 +97,21 @@ theorem quadratic_eq_zero_iff_of_discrim_eq_zero (ha : a ≠ 0) (h : discrim a b
     a * (x * x) + b * x + c = 0 ↔ x = -b / (2 * a) := by
   have : discrim a b c = 0 * 0 := by rw [h, mul_zero]
   rw [quadratic_eq_zero_iff ha this, add_zero, sub_zero, or_self_iff]
+
+theorem discrim_eq_zero_of_existsUnique (ha : a ≠ 0) (h : ∃! x, a * (x * x) + b * x + c = 0) :
+    discrim a b c = 0 := by
+  simp_rw [quadratic_eq_zero_iff_discrim_eq_sq ha] at h
+  generalize discrim a b c = d at h
+  obtain ⟨x, rfl, hx⟩ := h
+  specialize hx (-(x + b / a))
+  field_simp [ha] at hx
+  specialize hx (by ring)
+  linear_combination -(2 * a * x + b) * hx
+
+theorem discrim_eq_zero_iff (ha : a ≠ 0) :
+    discrim a b c = 0 ↔ (∃! x, a * (x * x) + b * x + c = 0) := by
+  refine ⟨fun hd => ?_, discrim_eq_zero_of_existsUnique ha⟩
+  simp_rw [quadratic_eq_zero_iff_of_discrim_eq_zero ha hd, existsUnique_eq]
 
 end Field
 

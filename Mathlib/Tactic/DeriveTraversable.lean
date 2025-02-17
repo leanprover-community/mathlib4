@@ -217,7 +217,7 @@ def mkOneInstance (n cls : Name) (tac : MVarId → TermElabM Unit)
     let params := params.pop
     let tgt := mkAppN tgt params
     let tgt ← mkInst cls tgt
-    params.zipWithIndex.foldrM (fun (param, i) tgt => do
+    params.zipIdx.foldrM (fun (param, i) tgt => do
       -- add typeclass hypothesis for each inductive parameter
       let tgt ← (do
         guard (i < decl.numParams)
@@ -274,7 +274,7 @@ def deriveLawfulFunctor (m : MVarId) : TermElabM Unit := do
     if b then
       let hs ← getPropHyps
       s ← hs.foldlM (fun s f => f.getDecl >>= fun d => s.add (.fvar f) #[] d.toExpr) s
-    return { simpTheorems := #[s] }
+    Simp.mkContext (simpTheorems := #[s])
   let .app (.app (.const ``LawfulFunctor _) F) _ ← m.getType >>= instantiateMVars | failure
   let some n := F.getAppFn.constName? | failure
   let [mcn, mim, mcm] ← m.applyConst ``LawfulFunctor.mk | failure
@@ -435,7 +435,7 @@ def simpFunctorGoal (m : MVarId) (s : Simp.Context) (simprocs : Simp.SimprocsArr
     MetaM (Option (Array FVarId × MVarId) × Simp.Stats) := do
   let some e ← getSimpExtension? `functor_norm | failure
   let s' ← e.getTheorems
-  simpGoal m { s with simpTheorems := s.simpTheorems.push s' } simprocs discharge? simplifyTarget
+  simpGoal m (s.setSimpTheorems (s.simpTheorems.push s')) simprocs discharge? simplifyTarget
     fvarIdsToSimp stats
 /--
 Run the following tactic:
@@ -451,7 +451,7 @@ def traversableLawStarter (m : MVarId) (n : Name) (s : MetaM Simp.Context)
       (fun s n => s.addDeclToUnfold n) ({} : SimpTheorems)
   let (fi, m) ← m.intros
   m.withContext do
-    if let (some m, _) ← dsimpGoal m { simpTheorems := #[s'] } then
+    if let (some m, _) ← dsimpGoal m (← Simp.mkContext (simpTheorems := #[s'])) then
       let ma ← m.induction fi.back! (mkRecName n)
       ma.forM fun is =>
         is.mvarId.withContext do
@@ -467,9 +467,7 @@ def deriveLawfulTraversable (m : MVarId) : TermElabM Unit := do
     if b then
       let hs ← getPropHyps
       s ← hs.foldlM (fun s f => f.getDecl >>= fun d => s.add (.fvar f) #[] d.toExpr) s
-    pure <|
-    { config := { failIfUnchanged := false, unfoldPartialApp := true },
-      simpTheorems := #[s] }
+    Simp.mkContext { failIfUnchanged := false, unfoldPartialApp := true } (simpTheorems := #[s])
   let .app (.app (.const ``LawfulTraversable _) F) _ ← m.getType >>= instantiateMVars | failure
   let some n := F.getAppFn.constName? | failure
   let [mit, mct, mtmi, mn] ← m.applyConst ``LawfulTraversable.mk | failure

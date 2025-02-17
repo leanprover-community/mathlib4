@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Group.Subgroup.ZPowers
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Int.ModEq
 import Mathlib.GroupTheory.QuotientGroup.Defs
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 
 /-!
 # Equality modulo an element
@@ -279,5 +278,16 @@ variable [DivisionRing α] {a b c p : α}
 @[simp] lemma div_modEq_div (hc : c ≠ 0) : a / c ≡ b / c [PMOD p] ↔ a ≡ b [PMOD (p * c)] := by
   simp [ModEq, ← sub_div, div_eq_iff hc, mul_assoc]
 
+@[simp] lemma mul_modEq_mul_right (hc : c ≠ 0) : a * c ≡ b * c [PMOD p] ↔ a ≡ b [PMOD (p / c)] := by
+  rw [div_eq_mul_inv, ← div_modEq_div (inv_ne_zero hc), div_inv_eq_mul, div_inv_eq_mul]
+
 end DivisionRing
+
+section Field
+variable [Field α] {a b c p : α}
+
+@[simp] lemma mul_modEq_mul_left (hc : c ≠ 0) : c * a ≡ c * b [PMOD p] ↔ a ≡ b [PMOD (p / c)] := by
+  simp [mul_comm c, hc]
+
+end Field
 end AddCommGroup

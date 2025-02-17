@@ -266,7 +266,6 @@ structure LeftHomologyMapData where
 namespace LeftHomologyMapData
 
 attribute [reassoc (attr := simp)] commi commf' commπ
-attribute [nolint simpNF] mk.injEq
 
 /-- The left homology map data associated to the zero morphism between two short complexes. -/
 @[simps]
@@ -1009,7 +1008,7 @@ lemma hasCokernel [S.HasLeftHomology] [HasKernel S.g] :
   haveI : HasColimit (parallelPair h.f' 0) := ⟨⟨⟨_, h.hπ'⟩⟩⟩
   let e : parallelPair (kernel.lift S.g S.f S.zero) 0 ≅ parallelPair h.f' 0 :=
     parallelPair.ext (Iso.refl _) (IsLimit.conePointUniqueUpToIso (kernelIsKernel S.g) h.hi)
-      (by aesop_cat) (by aesop_cat)
+      (by aesop_cat) (by simp)
   exact hasColimitOfIso e
 
 end HasLeftHomology

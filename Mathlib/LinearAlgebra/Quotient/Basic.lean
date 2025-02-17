@@ -7,7 +7,7 @@ import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.GroupTheory.QuotientGroup.Basic
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Quotient.Defs
-import Mathlib.LinearAlgebra.Span
+import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
@@ -49,7 +49,7 @@ def restrictScalarsEquiv [Ring S] [SMul S R] [Module S M] [IsScalarTower S R M]
     (P : Submodule R M) : (M ⧸ P.restrictScalars S) ≃ₗ[S] M ⧸ P :=
   { Quotient.congrRight fun _ _ => Iff.rfl with
     map_add' := fun x y => Quotient.inductionOn₂' x y fun _x' _y' => rfl
-    map_smul' := fun _c x => Quotient.inductionOn' x fun _x' => rfl }
+    map_smul' := fun _c x => Submodule.Quotient.induction_on _ x fun _x' => rfl }
 
 @[simp]
 theorem restrictScalarsEquiv_mk [Ring S] [SMul S R] [Module S M] [IsScalarTower S R M]
@@ -78,7 +78,8 @@ instance QuotientBot.infinite [Infinite M] : Infinite (M ⧸ (⊥ : Submodule R 
 
 instance QuotientTop.unique : Unique (M ⧸ (⊤ : Submodule R M)) where
   default := 0
-  uniq x := Quotient.inductionOn' x fun _x => (Submodule.Quotient.eq ⊤).mpr Submodule.mem_top
+  uniq x := Submodule.Quotient.induction_on _ x fun _x =>
+    (Submodule.Quotient.eq ⊤).mpr Submodule.mem_top
 
 instance QuotientTop.fintype : Fintype (M ⧸ (⊤ : Submodule R M)) :=
   Fintype.ofSubsingleton 0
@@ -171,8 +172,6 @@ theorem comap_map_mkQ : comap p.mkQ (map p.mkQ p') = p ⊔ p' := by simp [comap_
 
 @[simp]
 theorem map_mkQ_eq_top : map p.mkQ p' = ⊤ ↔ p ⊔ p' = ⊤ := by
-  -- Porting note: ambiguity of `map_eq_top_iff` is no longer automatically resolved by preferring
-  -- the current namespace
   simp only [LinearMap.map_eq_top_iff p.range_mkQ, sup_comm, ker_mkQ]
 
 variable (q : Submodule R₂ M₂)
@@ -216,14 +215,11 @@ theorem mapQ_id (h : p ≤ p.comap LinearMap.id := (by rw [comap_id])) :
 theorem mapQ_pow {f : M →ₗ[R] M} (h : p ≤ p.comap f) (k : ℕ)
     (h' : p ≤ p.comap (f ^ k) := p.le_comap_pow_of_le_comap h k) :
     p.mapQ p (f ^ k) h' = p.mapQ p f h ^ k := by
-  induction' k with k ih
-  · simp [LinearMap.one_eq_id]
-  · simp only [LinearMap.iterate_succ]
-    -- Porting note: why does any of these `optParams` need to be applied? Why didn't `simp` handle
-    -- all of this for us?
-    convert mapQ_comp p p p f (f ^ k) h (p.le_comap_pow_of_le_comap h k)
-      (h.trans (comap_mono <| p.le_comap_pow_of_le_comap h k))
-    exact (ih _).symm
+  induction k with
+  | zero => simp [LinearMap.one_eq_id]
+  | succ k ih =>
+    simp only [LinearMap.iterate_succ]
+    rw [mapQ_comp, ih]
 
 theorem comap_liftQ (f : M →ₛₗ[τ₁₂] M₂) (h) : q.comap (p.liftQ f h) = (q.comap f).map (mkQ p) :=
   le_antisymm (by rintro ⟨x⟩ hx; exact ⟨_, hx, rfl⟩)
@@ -293,8 +289,8 @@ def Quotient.equiv {N : Type*} [AddCommGroup N] [Module R N] (P : Submodule R M)
         rw [← hf, Submodule.mem_map] at hx
         obtain ⟨y, hy, rfl⟩ := hx
         simpa
-    left_inv := fun x => Quotient.inductionOn' x (by simp [mk''_eq_mk])
-    right_inv := fun x => Quotient.inductionOn' x (by simp [mk''_eq_mk]) }
+    left_inv := fun x => Submodule.Quotient.induction_on _ x (by simp)
+    right_inv := fun x => Submodule.Quotient.induction_on _ x (by simp) }
 
 @[simp]
 theorem Quotient.equiv_symm {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M]

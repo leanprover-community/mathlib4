@@ -47,8 +47,8 @@ private noncomputable def mapPreimageDelta (hf : Function.Surjective f) (x : Adi
     {n : ℕ} {y yₙ : M} (hy : f y = x (n + 1)) (hyₙ : f yₙ = x n) :
     {d : (I ^ n • ⊤ : Submodule R M) | f d = f (yₙ - y) } :=
   have h : f (yₙ - y) ∈ Submodule.map f (I ^ n • ⊤ : Submodule R M) := by
-    rw [Submodule.map_smul'', Submodule.map_top, LinearMap.range_eq_top.mpr hf, map_sub,
-      hyₙ, hy, ← Submodule.neg_mem_iff, neg_sub, ← SModEq.sub_mem]
+    rw [Submodule.map_smul'', Submodule.map_top, LinearMap.range_eq_top.2 hf,
+      map_sub, hyₙ, hy, ← Submodule.neg_mem_iff, neg_sub, ← SModEq.sub_mem]
     exact AdicCauchySequence.mk_eq_mk (Nat.le_succ n) x
   ⟨⟨h.choose, h.choose_spec.1⟩, h.choose_spec.2⟩
 

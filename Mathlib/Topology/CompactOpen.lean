@@ -32,8 +32,7 @@ compact-open, curry, function space
 -/
 
 
-open Set Filter TopologicalSpace
-open scoped Topology
+open Set Filter TopologicalSpace Topology
 
 namespace ContinuousMap
 
@@ -73,7 +72,7 @@ lemma tendsto_nhds_compactOpen {l : Filter α} {f : α → C(Y, Z)} {g : C(Y, Z)
 
 lemma continuous_compactOpen {f : X → C(Y, Z)} :
     Continuous f ↔ ∀ K, IsCompact K → ∀ U, IsOpen U → IsOpen {x | MapsTo (f x) K U} :=
-  continuous_generateFrom_iff.trans forall_image2_iff
+  continuous_generateFrom_iff.trans forall_mem_image2
 
 section Functorial
 
@@ -181,11 +180,6 @@ lemma _root_.Continuous.compCM (hg : Continuous g) (hf : Continuous f) :
     Continuous fun x => (g x).comp (f x) :=
   continuous_comp'.comp (hf.prod_mk hg)
 
-@[deprecated _root_.Continuous.compCM (since := "2024-01-30")]
-lemma continuous.comp' (hf : Continuous f) (hg : Continuous g) :
-    Continuous fun x => (g x).comp (f x) :=
-  hg.compCM hf
-
 end Functorial
 
 section Ev
@@ -280,21 +274,15 @@ theorem compactOpen_eq_iInf_induced :
     (ContinuousMap.compactOpen : TopologicalSpace C(X, Y)) =
       ⨅ (K : Set X) (_ : IsCompact K), .induced (.restrict K) ContinuousMap.compactOpen := by
   refine le_antisymm (le_iInf₂ fun s _ ↦ compactOpen_le_induced s) ?_
-  refine le_generateFrom <| forall_image2_iff.2 fun K (hK : IsCompact K) U hU ↦ ?_
+  refine le_generateFrom <| forall_mem_image2.2 fun K (hK : IsCompact K) U hU ↦ ?_
   refine TopologicalSpace.le_def.1 (iInf₂_le K hK) _ ?_
   convert isOpen_induced (isOpen_setOf_mapsTo (isCompact_iff_isCompact_univ.1 hK) hU)
   simp [mapsTo_univ_iff, Subtype.forall, MapsTo]
-
-@[deprecated (since := "2024-03-05")]
-alias compactOpen_eq_sInf_induced := compactOpen_eq_iInf_induced
 
 theorem nhds_compactOpen_eq_iInf_nhds_induced (f : C(X, Y)) :
     𝓝 f = ⨅ (s) (_ : IsCompact s), (𝓝 (f.restrict s)).comap (ContinuousMap.restrict s) := by
   rw [compactOpen_eq_iInf_induced]
   simp only [nhds_iInf, nhds_induced]
-
-@[deprecated (since := "2024-03-05")]
-alias nhds_compactOpen_eq_sInf_nhds_induced := nhds_compactOpen_eq_iInf_nhds_induced
 
 theorem tendsto_compactOpen_restrict {ι : Type*} {l : Filter ι} {F : ι → C(X, Y)} {f : C(X, Y)}
     (hFf : Filter.Tendsto F l (𝓝 f)) (s : Set X) :
@@ -376,15 +364,6 @@ def curry (f : C(X × Y, Z)) : C(X, C(Y, Z)) where
 @[simp]
 theorem curry_apply (f : C(X × Y, Z)) (a : X) (b : Y) : f.curry a b = f (a, b) :=
   rfl
-
-/-- Auxiliary definition, see `ContinuousMap.curry` and `Homeomorph.curry`. -/
-@[deprecated ContinuousMap.curry (since := "2024-03-05")]
-def curry' (f : C(X × Y, Z)) (a : X) : C(Y, Z) := curry f a
-
-set_option linter.deprecated false in
-/-- If a map `α × β → γ` is continuous, then its curried form `α → C(β, γ)` is continuous. -/
-@[deprecated ContinuousMap.curry (since := "2024-03-05")]
-theorem continuous_curry' (f : C(X × Y, Z)) : Continuous (curry' f) := (curry f).continuous
 
 /-- To show continuity of a map `α → C(β, γ)`, it suffices to show that its uncurried form
     `α × β → γ` is continuous. -/
@@ -477,7 +456,7 @@ section IsQuotientMap
 variable {X₀ X Y Z : Type*} [TopologicalSpace X₀] [TopologicalSpace X] [TopologicalSpace Y]
   [TopologicalSpace Z] [LocallyCompactSpace Y] {f : X₀ → X}
 
-theorem IsQuotientMap.continuous_lift_prod_left (hf : IsQuotientMap f) {g : X × Y → Z}
+theorem Topology.IsQuotientMap.continuous_lift_prod_left (hf : IsQuotientMap f) {g : X × Y → Z}
     (hg : Continuous fun p : X₀ × Y => g (f p.1, p.2)) : Continuous g := by
   let Gf : C(X₀, C(Y, Z)) := ContinuousMap.curry ⟨_, hg⟩
   have h : ∀ x : X, Continuous fun y => g (x, y) := by
@@ -493,7 +472,7 @@ theorem IsQuotientMap.continuous_lift_prod_left (hf : IsQuotientMap f) {g : X ×
 @[deprecated (since := "2024-10-22")]
 alias QuotientMap.continuous_lift_prod_left := IsQuotientMap.continuous_lift_prod_left
 
-theorem IsQuotientMap.continuous_lift_prod_right (hf : IsQuotientMap f) {g : Y × X → Z}
+theorem Topology.IsQuotientMap.continuous_lift_prod_right (hf : IsQuotientMap f) {g : Y × X → Z}
     (hg : Continuous fun p : Y × X₀ => g (p.1, f p.2)) : Continuous g := by
   have : Continuous fun p : X₀ × Y => g ((Prod.swap p).1, f (Prod.swap p).2) :=
     hg.comp continuous_swap

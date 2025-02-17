@@ -23,7 +23,7 @@ simply by proving:
 2. `0 ≤ x ↔ IsSelfAdjoint x ∧ SpectrumRestricts Real.toNNReal x`.
 -/
 
-open Set
+open Set Topology
 
 namespace SpectrumRestricts
 
@@ -53,8 +53,8 @@ universe u v w
 calculus over the larger scalar ring descends to the smaller one. -/
 @[simps!]
 def starAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
-    [StarRing R] [TopologicalSpace R] [TopologicalSemiring R] [ContinuousStar R] [Semifield S]
-    [StarRing S] [TopologicalSpace S] [TopologicalSemiring S] [ContinuousStar S] [Ring A]
+    [StarRing R] [TopologicalSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Semifield S]
+    [StarRing S] [TopologicalSpace S] [IsTopologicalSemiring S] [ContinuousStar S] [Ring A]
     [StarRing A] [Algebra R S] [Algebra R A] [Algebra S A]
     [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S] {a : A}
     (φ : C(spectrum S a, S) →⋆ₐ[S] A) {f : C(S, R)} (h : SpectrumRestricts a f) :
@@ -66,8 +66,8 @@ def starAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
           fun x (hx : x ∈ spectrum S a) => h.subset_preimage hx⟩
 
 variable {R S A : Type*} {p q : A → Prop}
-variable [Semifield R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
-variable [Semifield S] [StarRing S] [MetricSpace S] [TopologicalSemiring S] [ContinuousStar S]
+variable [Semifield R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
+variable [Semifield S] [StarRing S] [MetricSpace S] [IsTopologicalSemiring S] [ContinuousStar S]
 variable [Ring A] [StarRing A] [Algebra S A]
 variable [Algebra R S] [Algebra R A] [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S]
 
@@ -140,7 +140,7 @@ protected theorem cfc (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S))
       obtain ⟨r, rfl⟩ := hs
       simp [((h a).mp ha).2.left_inv _]
 
-variable [ContinuousFunctionalCalculus R p] [UniqueContinuousFunctionalCalculus R A]
+variable [ContinuousFunctionalCalculus R p] [ContinuousMap.UniqueHom R A]
 
 lemma cfcHom_eq_restrict (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S))
     {a : A} (hpa : p a) (hqa : q a) (h : SpectrumRestricts a f) :
@@ -195,8 +195,8 @@ open ContinuousMapZero
 continuous functional calculus over the larger scalar ring descends to the smaller one. -/
 @[simps!]
 def nonUnitalStarAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
-    [StarRing R] [TopologicalSpace R] [TopologicalSemiring R] [ContinuousStar R] [Field S]
-    [StarRing S] [TopologicalSpace S] [TopologicalRing S] [ContinuousStar S] [NonUnitalRing A]
+    [StarRing R] [TopologicalSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Field S]
+    [StarRing S] [TopologicalSpace S] [IsTopologicalRing S] [ContinuousStar S] [NonUnitalRing A]
     [StarRing A] [Algebra R S] [Module R A] [Module S A] [IsScalarTower S A A] [SMulCommClass S A A]
     [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S] {a : A}
     (φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A) {f : C(S, R)} (h : QuasispectrumRestricts a f) :
@@ -208,8 +208,8 @@ def nonUnitalStarAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
           fun x (hx : x ∈ σₙ S a) => h.subset_preimage hx⟩, Subtype.ext h.map_zero⟩
 
 variable {R S A : Type*} {p q : A → Prop}
-variable [Semifield R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
-variable [Field S] [StarRing S] [MetricSpace S] [TopologicalRing S] [ContinuousStar S]
+variable [Semifield R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
+variable [Field S] [StarRing S] [MetricSpace S] [IsTopologicalRing S] [ContinuousStar S]
 variable [NonUnitalRing A] [StarRing A] [Module S A] [IsScalarTower S A A]
 variable [SMulCommClass S A A]
 variable [Algebra R S] [Module R A] [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S]
@@ -289,7 +289,7 @@ protected theorem cfc (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S))
       simp [((h a).mp ha).2.left_inv _]
 
 variable [NonUnitalContinuousFunctionalCalculus R p]
-variable [UniqueNonUnitalContinuousFunctionalCalculus R A]
+variable [ContinuousMapZero.UniqueHom R A]
 
 lemma cfcₙHom_eq_restrict (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S)) {a : A}
     (hpa : p a) (hqa : q a) (h : QuasispectrumRestricts a f) :
