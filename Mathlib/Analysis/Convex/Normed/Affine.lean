@@ -6,7 +6,7 @@ Authors: Alexander Bentkamp, Yury Kudryashov
 import Mathlib.Analysis.Convex.Between
 import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Convex.Topology
-import Mathlib.Analysis.Convex.Normed
+import Mathlib.Analysis.Convex.Normed.Topology
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.Normed.Affine.AddTorsor
 import Mathlib.Analysis.Normed.Affine.AddTorsorBases
@@ -44,8 +44,7 @@ theorem dist_add_dist_of_mem_segment {x y z : E} (h : y ∈ [x -[ℝ] z]) :
     dist x y + dist y z = dist x z :=
   (mem_segment_iff_wbtw.1 h).dist_add_dist
 
-instance (priority := 100) NormedSpace.instPathConnectedSpace : PathConnectedSpace E :=
-  IsTopologicalAddGroup.pathConnectedSpace
+
 
 /-- The set of vectors in the same ray as `x` is connected. -/
 theorem isConnected_setOf_sameRay (x : E) : IsConnected { y | SameRay ℝ x y } := by
@@ -59,16 +58,7 @@ theorem isConnected_setOf_sameRay_and_ne_zero {x : E} (hx : x ≠ 0) :
   simp_rw [← exists_pos_left_iff_sameRay_and_ne_zero hx]
   exact isConnected_Ioi.image _ (continuous_id.smul continuous_const).continuousOn
 
-theorem Convex.thickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (thickening δ s) := by
-  rw [← add_ball_zero]
-  exact hs.add (convex_ball 0 _)
 
-theorem Convex.cthickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (cthickening δ s) := by
-  obtain hδ | hδ := le_total 0 δ
-  · rw [cthickening_eq_iInter_thickening hδ]
-    exact convex_iInter₂ fun _ _ => hs.thickening _
-  · rw [cthickening_of_nonpos hδ]
-    exact hs.closure
 
 
 

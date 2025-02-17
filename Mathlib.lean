@@ -1384,8 +1384,9 @@ import Mathlib.Analysis.Convex.Join
 import Mathlib.Analysis.Convex.KreinMilman
 import Mathlib.Analysis.Convex.Measure
 import Mathlib.Analysis.Convex.Mul
-import Mathlib.Analysis.Convex.Normed
-import Mathlib.Analysis.Convex.Normed2
+import Mathlib.Analysis.Convex.Normed.Affine
+import Mathlib.Analysis.Convex.Normed.Basic
+import Mathlib.Analysis.Convex.Normed.Topology
 import Mathlib.Analysis.Convex.PartitionOfUnity
 import Mathlib.Analysis.Convex.Quasiconvex
 import Mathlib.Analysis.Convex.Radon
