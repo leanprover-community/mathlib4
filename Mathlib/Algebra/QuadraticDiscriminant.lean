@@ -98,11 +98,11 @@ theorem quadratic_eq_zero_iff_of_discrim_eq_zero (ha : a ≠ 0) (h : discrim a b
   have : discrim a b c = 0 * 0 := by rw [h, mul_zero]
   rw [quadratic_eq_zero_iff ha this, add_zero, sub_zero, or_self_iff]
 
-theorem discrim_eq_zero_of_existsUnique (ha : a ≠ 0) :
-    (∃! x, a * (x * x) + b * x + c = 0) → discrim a b c = 0 := by
-  simp_rw [quadratic_eq_zero_iff_discrim_eq_sq ha]
-  generalize discrim a b c = d
-  rintro ⟨x, rfl, hx⟩
+theorem discrim_eq_zero_of_existsUnique (ha : a ≠ 0) (h : ∃! x, a * (x * x) + b * x + c = 0) :
+    discrim a b c = 0 := by
+  simp_rw [quadratic_eq_zero_iff_discrim_eq_sq ha] at h
+  generalize discrim a b c = d at h
+  obtain ⟨x, rfl, hx⟩ := h
   specialize hx (-(x + b / a))
   field_simp [ha] at hx
   specialize hx (by ring)
