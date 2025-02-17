@@ -262,7 +262,7 @@ instance {n : ℕ} (s t : SingularNManifold X n k) :
   haveI := ChartedSpace.comp (EuclideanSpace ℝ (Fin n)) t.H t.M
   infer_instance
 
-instance {n : ℕ} (s t : SingularNManifold X n k) : IsManifold (𝓡 n) (↑k) (s.M ⊕ t.M) := sorry
+instance {n : ℕ} (s t : SingularNManifold X n k) : IsManifold (𝓡 n) k (s.M ⊕ t.M) := sorry
 
 /-- The disjoint union of two singular `n`-manifolds on `X` is a singular `n`-manifold on `X`. -/
 -- We need to choose a model space for the disjoint union (as a priori `s` and `t` could be
