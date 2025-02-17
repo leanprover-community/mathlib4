@@ -178,7 +178,7 @@ theorem IsStoppingTime.measurableSet_lt_of_isLUB (hτ : IsStoppingTime f τ) (i 
 theorem IsStoppingTime.measurableSet_lt (hτ : IsStoppingTime f τ) (i : ι) :
     MeasurableSet[f i] {ω | τ ω < i} := by
   obtain ⟨i', hi'_lub⟩ : ∃ i', IsLUB (Set.Iio i) i' := exists_lub_Iio i
-  cases' lub_Iio_eq_self_or_Iio_eq_Iic i hi'_lub with hi'_eq_i h_Iio_eq_Iic
+  rcases lub_Iio_eq_self_or_Iio_eq_Iic i hi'_lub with hi'_eq_i | h_Iio_eq_Iic
   · rw [← hi'_eq_i] at hi'_lub ⊢
     exact hτ.measurableSet_lt_of_isLUB i' hi'_lub
   · have h_lt_eq_preimage : {ω : Ω | τ ω < i} = τ ⁻¹' Set.Iio i := rfl
@@ -643,8 +643,8 @@ theorem measurableSet_eq_stopping_time [AddGroup ι] [TopologicalSpace ι] [Meas
     refine ⟨fun h => ⟨⟨?_, h.2⟩, ?_⟩, fun h => ⟨?_, h.1.2⟩⟩
     · rw [h.1]
     · rw [← h.1]; exact h.2
-    · cases' h with h' hσ_le
-      cases' h' with h_eq hτ_le
+    · obtain ⟨h', hσ_le⟩ := h
+      obtain ⟨h_eq, hτ_le⟩ := h'
       rwa [min_eq_left hτ_le, min_eq_left hσ_le] at h_eq
   rw [this]
   refine
@@ -666,8 +666,8 @@ theorem measurableSet_eq_stopping_time_of_countable [Countable ι] [TopologicalS
     refine ⟨fun h => ⟨⟨?_, h.2⟩, ?_⟩, fun h => ⟨?_, h.1.2⟩⟩
     · rw [h.1]
     · rw [← h.1]; exact h.2
-    · cases' h with h' hπ_le
-      cases' h' with h_eq hτ_le
+    · obtain ⟨h', hπ_le⟩ := h
+      obtain ⟨h_eq, hτ_le⟩ := h'
       rwa [min_eq_left hτ_le, min_eq_left hπ_le] at h_eq
   rw [this]
   refine

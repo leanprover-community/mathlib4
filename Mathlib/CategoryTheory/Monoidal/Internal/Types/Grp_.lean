@@ -51,24 +51,10 @@ end GrpTypeEquivalenceGrp
 noncomputable def grpTypeEquivalenceGrp : Grp_ (Type u) ≌ Grp.{u} where
   functor := GrpTypeEquivalenceGrp.functor
   inverse := GrpTypeEquivalenceGrp.inverse
-  unitIso :=
-    NatIso.ofComponents
-      (fun A =>
-        { hom := { hom := 𝟙 _ }
-          inv := { hom := 𝟙 _ } })
-      (by aesop_cat)
-  counitIso :=
-    NatIso.ofComponents
-      (fun A =>
-        { hom := Grp.ofHom
-            { toFun := id
-              map_one' := rfl
-              map_mul' := fun _ _ => rfl }
-          inv := Grp.ofHom
-            { toFun := id
-              map_one' := rfl
-              map_mul' := fun _ _ => rfl } })
-      (by aesop_cat)
+  unitIso := Iso.refl _
+  counitIso := NatIso.ofComponents
+    (fun A => MulEquiv.toGrpIso { Equiv.refl _ with map_mul' := fun _ _ => rfl })
+    (by aesop_cat)
 
 /-- The equivalences `Mon_ (Type u) ≌ MonCat.{u}` and `Grp_ (Type u) ≌ Grp.{u}`
 are naturally compatible with the forgetful functors to `MonCat` and `Mon_ (Type u)`.

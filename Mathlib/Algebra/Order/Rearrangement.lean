@@ -69,7 +69,6 @@ theorem MonovaryOn.sum_smul_comp_perm_le_sum_smul (hfg : MonovaryOn f g s)
     (hσ : {x | σ x ≠ x} ⊆ s) : ∑ i ∈ s, f i • g (σ i) ≤ ∑ i ∈ s, f i • g i := by
   classical
   revert hσ σ hfg
-  -- Porting note: Specify `p` to get around `∀ {σ}` in the current goal.
   apply Finset.induction_on_max_value (fun i ↦ toLex (g i, f i))
     (p := fun t ↦ ∀ {σ : Perm ι}, MonovaryOn f g t → {x | σ x ≠ x} ⊆ t →
       ∑ i ∈ t, f i • g (σ i) ≤ ∑ i ∈ t, f i • g i) s
@@ -100,12 +99,12 @@ theorem MonovaryOn.sum_smul_comp_perm_le_sum_smul (hfg : MonovaryOn f g s)
   refine add_le_add (smul_add_smul_le_smul_add_smul' ?_ ?_) (sum_congr rfl fun x hx ↦ ?_).le
   · specialize hamax (σ⁻¹ a) h1s
     rw [Prod.Lex.toLex_le_toLex] at hamax
-    cases' hamax with hamax hamax
+    rcases hamax with hamax | hamax
     · exact hfg (mem_insert_of_mem h1s) (mem_insert_self _ _) hamax
     · exact hamax.2
   · specialize hamax (σ a) (mem_of_mem_insert_of_ne (hσ <| σ.injective.ne hσa.symm) hσa.symm)
     rw [Prod.Lex.toLex_le_toLex] at hamax
-    cases' hamax with hamax hamax
+    rcases hamax with hamax | hamax
     · exact hamax.le
     · exact hamax.1.le
   · rw [mem_erase, Ne, eq_inv_iff_eq] at hx

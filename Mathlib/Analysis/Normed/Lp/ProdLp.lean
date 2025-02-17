@@ -792,6 +792,54 @@ def prodEquivₗᵢ : WithLp ∞ (α × β) ≃ₗᵢ[𝕜] α × β where
 
 end BoundedSMul
 
+section SeminormedAddCommGroup
+
+open ENNReal
+
+variable {p : ℝ≥0∞} {α β}
+
+/-- Projection on `WithLp p (α × β)` with range `α` and kernel `β` -/
+def idemFst : AddMonoid.End (WithLp p (α × β)) := (AddMonoidHom.inl α β).comp (AddMonoidHom.fst α β)
+
+/-- Projection on `WithLp p (α × β)` with range `β` and kernel `α` -/
+def idemSnd : AddMonoid.End (WithLp p (α × β)) := (AddMonoidHom.inr α β).comp (AddMonoidHom.snd α β)
+
+lemma idemFst_apply (x : WithLp p (α × β)) : idemFst x = (WithLp.equiv _ _).symm (x.1, 0) := rfl
+
+lemma idemSnd_apply (x : WithLp p (α × β)) : idemSnd x = (WithLp.equiv _ _).symm (0, x.2) := rfl
+
+@[simp]
+lemma idemFst_add_idemSnd :
+    idemFst + idemSnd = (1 : AddMonoid.End (WithLp p (α × β))) := AddMonoidHom.ext
+  fun x => by
+    rw [AddMonoidHom.add_apply, idemFst_apply, idemSnd_apply, AddMonoid.End.coe_one, id_eq,
+      ← WithLp.equiv_symm_add, Prod.mk_add_mk, zero_add, add_zero]
+    rfl
+
+lemma idemFst_compl : (1 : AddMonoid.End (WithLp p (α × β))) - idemFst = idemSnd := by
+  rw [← idemFst_add_idemSnd, add_sub_cancel_left]
+
+lemma idemSnd_compl : (1 : AddMonoid.End (WithLp p (α × β))) - idemSnd = idemFst := by
+  rw [← idemFst_add_idemSnd, add_sub_cancel_right]
+
+theorem prod_norm_eq_idemFst_sup_idemSnd (x : WithLp ∞ (α × β)) :
+    ‖x‖ = max ‖idemFst x‖ ‖idemSnd x‖ := by
+  rw [WithLp.prod_norm_eq_sup, ← WithLp.norm_equiv_symm_fst ∞ α β x.1,
+    ← WithLp.norm_equiv_symm_snd ∞ α β x.2]
+  rfl
+
+lemma prod_norm_eq_add_idemFst [Fact (1 ≤ p)] (hp : 0 < p.toReal) (x : WithLp p (α × β)) :
+    ‖x‖ = (‖idemFst x‖ ^ p.toReal + ‖idemSnd x‖ ^ p.toReal) ^ (1 / p.toReal) := by
+  rw [WithLp.prod_norm_eq_add hp, ← WithLp.norm_equiv_symm_fst p α β x.1,
+    ← WithLp.norm_equiv_symm_snd p α β x.2]
+  rfl
+
+lemma prod_norm_eq_idemFst_of_L1 (x : WithLp 1 (α × β)) : ‖x‖ = ‖idemFst x‖ + ‖idemSnd x‖ := by
+  rw [prod_norm_eq_add_idemFst (lt_of_lt_of_eq zero_lt_one one_toReal.symm)]
+  simp only [one_toReal, Real.rpow_one, ne_eq, one_ne_zero, not_false_eq_true, div_self]
+
+end SeminormedAddCommGroup
+
 section NormedSpace
 
 /-- The product of two normed spaces is a normed space, with the `L^p` norm. -/
