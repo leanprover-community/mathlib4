@@ -271,17 +271,13 @@ theorem mem_support_iff_exists_getVert {u v w : V} {p : G.Walk v w} :
   · intro h
     obtain ⟨q, r, hqr⟩ := SimpleGraph.Walk.mem_support_iff_exists_append.mp h
     use q.length
-    rw [hqr]
-    rw [Walk.getVert_append]
+    rw [hqr, Walk.getVert_append]
     simp only [lt_self_iff_false, ↓reduceIte, Nat.sub_self, getVert_zero, length_append,
       Nat.le_add_right, and_self]
   · rintro ⟨n, hn⟩
-    rw [SimpleGraph.Walk.mem_support_iff]
+    rw [mem_support_iff]
     cases n with
-    | zero =>
-      rw [getVert_zero] at hn
-      left
-      exact hn.1.symm
+    | zero => aesop
     | succ n =>
       right
       have hnp : ¬ p.Nil := by
@@ -293,7 +289,6 @@ theorem mem_support_iff_exists_getVert {u v w : V} {p : G.Walk v w} :
 termination_by p.length
 decreasing_by
 · simp_wf
-  rw [Nat.lt_iff_add_one_le]
-  rw [length_tail_add_one hnp]
+  rw [Nat.lt_iff_add_one_le, length_tail_add_one hnp]
 
 end SimpleGraph.Walk
