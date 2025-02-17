@@ -657,7 +657,7 @@ variable {F} {E : Type u₂} [Category.{v₂} E] [ChosenFiniteProducts E] {G : D
   [PreservesFiniteProducts G]
 
 attribute [-instance] Functor.LaxMonoidal.comp Functor.Monoidal.instComp in
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma μ_comp (X Y : C) :
     LaxMonoidal.μ (F ⋙ G) X Y = LaxMonoidal.μ G _ _ ≫ G.map (LaxMonoidal.μ F X Y) := by
   apply (cancel_mono (μIso _ _ _).inv).1
