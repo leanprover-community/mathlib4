@@ -99,8 +99,7 @@ def evalRealSqrt : NormNumExt where eval {u α} e := do
 /-- `norm_num` extension that evaluates the function `NNReal.sqrt`. -/
 @[norm_num NNReal.sqrt _]
 def evalNNRealSqrt : NormNumExt where eval {u α} e := do
-  let e' : Q($α) ← whnfR e
-  match u, α, e' with
+  match u, α, e with
   | 0, ~q(NNReal), ~q(NNReal.sqrt $x) =>
     match ← derive x with
     | .isBool _ _ => failure
@@ -111,8 +110,7 @@ def evalNNRealSqrt : NormNumExt where eval {u α} e := do
           have ey : Q(ℕ) := mkRawNatLit y
           have pf₁ : Q($ey * $ey = $ex) := (q(Eq.refl $ex) : Expr)
           assumeInstancesCommute
-          have pf_final : Q(IsNat (NNReal.sqrt $x) $ey) := q(isNat_nnrealSqrt $pf $pf₁)
-          return .isNat sℝ ey pf_final
+          return .isNat sℝ ey q(isNat_nnrealSqrt $pf $pf₁)
         else failure
     | .isNegNat _ ex pf => failure
     | .isRat sℝ eq en ed pf =>
