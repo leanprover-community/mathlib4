@@ -216,7 +216,7 @@ theorem neg_clog_inv_eq_log (b : ℕ) (r : R) : -clog b r⁻¹ = log b r := by r
 
 @[simp, norm_cast]
 theorem clog_natCast (b : ℕ) (n : ℕ) : clog b (n : R) = Nat.clog b n := by
-  cases' n with n
+  rcases n with - | n
   · simp [clog_of_right_le_one]
   · rw [clog_of_one_le_right, (Nat.ceil_eq_iff (Nat.succ_ne_zero n)).mpr] <;> simp
 

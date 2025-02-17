@@ -37,6 +37,11 @@ theorem stdBasisMatrix_eq_of_single_single (i : m) (j : n) (a : α) :
   by_cases hi : i = a <;> by_cases hj : j = b <;> simp [*]
 
 @[simp]
+theorem of_symm_stdBasisMatrix (i : m) (j : n) (a : α) :
+    of.symm (stdBasisMatrix i j a) = Pi.single i (Pi.single j a) :=
+  congr_arg of.symm <| stdBasisMatrix_eq_of_single_single i j a
+
+@[simp]
 theorem smul_stdBasisMatrix [SMulZeroClass R α] (r : R) (i : m) (j : n) (a : α) :
     r • stdBasisMatrix i j a = stdBasisMatrix i j (r • a) := by
   unfold stdBasisMatrix

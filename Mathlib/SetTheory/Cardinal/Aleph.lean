@@ -678,7 +678,7 @@ set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided."  (since := "2024-09-24")]
 theorem eq_aleph_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) (ho' : ω ≤ o) :
     ∃ a, (ℵ_ a).ord = o := by
-  cases' eq_aleph'_of_eq_card_ord ho with a ha
+  obtain ⟨a, ha⟩ := eq_aleph'_of_eq_card_ord ho
   use a - ω
   rwa [aleph_eq_aleph', Ordinal.add_sub_cancel_of_le]
   rwa [← aleph0_le_aleph', ← ord_le_ord, ha, ord_aleph0]
