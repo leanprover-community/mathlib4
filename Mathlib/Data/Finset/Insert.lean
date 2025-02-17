@@ -702,6 +702,7 @@ section Injective
 
 variable {f : α → β} {s : Finset α} {t : Finset β}
 
+variable (f s) in
 /-- A function `f` is injective on a finset `s` if and only if the image has no duplicates. -/
 theorem injOn_iff_nodup_map_val : Set.InjOn f s ↔ (Multiset.map f s.val).Nodup := by
   induction s using cons_induction with
@@ -711,7 +712,7 @@ theorem injOn_iff_nodup_map_val : Set.InjOn f s ↔ (Multiset.map f s.val).Nodup
     tauto
 
 instance [DecidableEq β] : Decidable (Set.InjOn f s) :=
-  decidable_of_iff' _ injOn_iff_nodup_map_val
+  decidable_of_iff' ((Multiset.map f s.val).Nodup) (injOn_iff_nodup_map_val f s)
 
 instance [DecidableEq β] : Decidable (Set.BijOn f s t) :=
   inferInstanceAs (Decidable (_ ∧ _ ∧ _))

@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finset.Image
+import Mathlib.Data.Finset.Insert
 
 /-!
 # Finite types
@@ -407,13 +408,23 @@ instance decidableEqMulEquivFintype {α β : Type*} [DecidableEq β] [Fintype α
 
 end BundledHoms
 
-instance decidableInjectiveFintype [DecidableEq α] [DecidableEq β] [Fintype α] :
-    DecidablePred (Injective : (α → β) → Prop) := fun x => by unfold Injective; infer_instance
+/--
+A function `f` with a finite domain is injective if and only if its range has no duplicates.
+
+This is useful for computation, as the right-hand side is usually more efficient.
+-/
+theorem injective_iff_nodup_map_univ [Fintype α] (f : α → β) :
+    Injective f ↔ (Multiset.map f univ.val).Nodup := by
+  simpa [Set.injective_iff_injOn_univ] using injOn_iff_nodup_map_val f univ
+
+instance decidableInjectiveFintype [DecidableEq β] [Fintype α] :
+    DecidablePred (Injective : (α → β) → Prop) :=
+  fun f => decidable_of_iff' ((Multiset.map f univ.val).Nodup) (injective_iff_nodup_map_univ f)
 
 instance decidableSurjectiveFintype [DecidableEq β] [Fintype α] [Fintype β] :
     DecidablePred (Surjective : (α → β) → Prop) := fun x => by unfold Surjective; infer_instance
 
-instance decidableBijectiveFintype [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype β] :
+instance decidableBijectiveFintype [DecidableEq β] [Fintype α] [Fintype β] :
     DecidablePred (Bijective : (α → β) → Prop) := fun x => by unfold Bijective; infer_instance
 
 instance decidableRightInverseFintype [DecidableEq α] [Fintype α] (f : α → β) (g : β → α) :
