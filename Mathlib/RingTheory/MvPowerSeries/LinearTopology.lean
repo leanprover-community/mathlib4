@@ -164,36 +164,17 @@ lemma hasBasis_nhds_zero [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] 
     refine ⟨⟨Iic d, I⟩, ⟨finite_Iic d, hI⟩, ?_⟩
     simpa [basis, coeff_apply, Iic, pi] using subset_rfl
 
-/-- The product topology on `MvPowerSeries` is a (left and right) linear topology
-  when the ring of coefficients has a linear topology.
-
-  This weaker version of `MvPowerSeries.LinearTopology.hasBasis_nhds_zero`
-  is useful in creating the instance below. -/
-theorem hasBasis_nhds_zero' [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
-  (𝓝 0).HasBasis (fun I : TwoSidedIdeal (MvPowerSeries σ R) ↦ (I : Set (MvPowerSeries σ R)) ∈ 𝓝 0)
-    fun I : TwoSidedIdeal (MvPowerSeries σ R) ↦ (I : Set (MvPowerSeries σ R)) where
-  mem_iff' := fun U ↦ by
-    rw [hasBasis_nhds_zero.mem_iff]
-    simp only [Prod.exists, exists_and_left]
-    constructor
-    · rintro ⟨J, hJ, d, hd⟩
-      exact ⟨basis σ R (J, d), hasBasis_nhds_zero.mem_of_superset hJ fun ⦃a⦄ a ↦ a, hd⟩
-    · rintro ⟨I, hI, hU⟩
-      rw [hasBasis_nhds_zero.mem_iff] at hI
-      obtain ⟨⟨J, d⟩, hJd, hI⟩ := hI
-      exact ⟨J, hJd , d, fun ⦃_⦄ a ↦ hU (hI a)⟩
-
 /-- The topology on `MvPowerSeries` is a left linear topology
   when the ring of coefficients has a linar topology. -/
 instance [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
     IsLinearTopology (MvPowerSeries σ R) (MvPowerSeries σ R) :=
-  (isLinearTopology_iff_hasBasis_twoSidedIdeal.mpr (hasBasis_nhds_zero')).1
+  IsLinearTopology.mk_of_hasBasis'  _ (hasBasis_nhds_zero) TwoSidedIdeal.mul_mem_left
 
 /-- The topology on `MvPowerSeries` is a right linear topology
   when the ring of coefficients has a linear topology. -/
 instance [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
     IsLinearTopology (MvPowerSeries σ R)ᵐᵒᵖ (MvPowerSeries σ R) :=
-  (isLinearTopology_iff_hasBasis_twoSidedIdeal.mpr (hasBasis_nhds_zero')).2
+  IsLinearTopology.mk_of_hasBasis'  _ (hasBasis_nhds_zero) TwoSidedIdeal.opp_smul_mem
 
 end LinearTopology
 

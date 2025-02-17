@@ -128,6 +128,9 @@ lemma nsmul_mem {x} (n : ℕ) (hx : x ∈ I) : n • x ∈ I := _root_.nsmul_mem
 
 lemma zsmul_mem {x} (n : ℤ) (hx : x ∈ I) : n • x ∈ I := _root_.zsmul_mem hx _
 
+lemma opp_smul_mem (x : Rᵐᵒᵖ) (y : R) (hy : y ∈ I) : x • y ∈ I :=
+  I.mul_mem_right _ _ hy
+
 /--
 The "set-theoretic-way" of constructing a two-sided ideal by providing:
 - the underlying set `S`;
