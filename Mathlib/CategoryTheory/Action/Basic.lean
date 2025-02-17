@@ -44,8 +44,7 @@ namespace Action
 
 variable {V}
 
-theorem ρ_one {G : Type u} [Monoid G] (A : Action V G) : A.ρ 1 = 𝟙 A.V := by
-  rw [MonoidHom.map_one]; rfl
+theorem ρ_one {G : Type u} [Monoid G] (A : Action V G) : A.ρ 1 = 𝟙 A.V := by simp
 
 /-- When a group acts, we can lift the action to the group of automorphisms. -/
 @[simps]
@@ -349,7 +348,7 @@ def mapAction (F : V ⥤ W) (G : Type u) [Monoid G] : Action V G ⥤ Action W G 
     { V := F.obj M.V
       ρ :=
         { toFun := fun g => F.map (M.ρ g)
-          map_one' := by simp only [End.one_def, Action.ρ_one, F.map_id]
+          map_one' := by simp
           map_mul' := fun g h => by
             dsimp
             rw [map_mul, End.mul_def, F.map_comp] } }
