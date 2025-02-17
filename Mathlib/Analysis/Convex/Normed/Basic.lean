@@ -7,7 +7,7 @@ import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
-# Topological and metric properties of convex sets in normed spaces
+# Metric properties of convex sets in normed spaces
 
 We prove the following facts:
 
@@ -17,7 +17,7 @@ We prove the following facts:
   the whole space;
 * `convexHull_ediam`, `convexHull_diam` : convex hull of a set has the same (e)metric diameter
   as the original set;
-* `bounded_convexHull` : convex hull of a set is bounded if and only if the original set
+* `isBounded_convexHull` : convex hull of a set is bounded if and only if the original set
   is bounded.
 -/
 

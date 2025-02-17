@@ -9,18 +9,12 @@ import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 import Mathlib.Analysis.Convex.Normed.Basic
 
 /-!
-# Topological and metric properties of convex sets in normed spaces
+# Properties of convex sets in normed spaces
 
 We prove the following facts:
 
-* `convexOn_norm`, `convexOn_dist` : norm and distance to a fixed point is convex on any convex
-  set;
-* `convexOn_univ_norm`, `convexOn_univ_dist` : norm and distance to a fixed point is convex on
-  the whole space;
-* `convexHull_ediam`, `convexHull_diam` : convex hull of a set has the same (e)metric diameter
-  as the original set;
-* `bounded_convexHull` : convex hull of a set is bounded if and only if the original set
-  is bounded.
+* `exists_mem_interior_convexHull_affineBasis` : We can intercalate a simplex between a point and
+  one of its neighborhoods.
 -/
 
 variable {E P : Type*}

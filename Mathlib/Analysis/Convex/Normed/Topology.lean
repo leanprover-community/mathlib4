@@ -8,18 +8,15 @@ import Mathlib.Analysis.Convex.Normed.Basic
 import Mathlib.Analysis.Normed.Group.Pointwise
 
 /-!
-# Topological and metric properties of convex sets in normed spaces
+# Topological properties of convex sets in normed spaces
 
 We prove the following facts:
 
-* `convexOn_norm`, `convexOn_dist` : norm and distance to a fixed point is convex on any convex
-  set;
-* `convexOn_univ_norm`, `convexOn_univ_dist` : norm and distance to a fixed point is convex on
-  the whole space;
-* `convexHull_ediam`, `convexHull_diam` : convex hull of a set has the same (e)metric diameter
-  as the original set;
-* `bounded_convexHull` : convex hull of a set is bounded if and only if the original set
-  is bounded.
+* `Convex.thickening` : The thickening of a convex set is convex;
+* `Convex.cthickening` : The closed thickening of a convex set is convex;
+* `isConnected_setOf_sameRay` : The set of vectors in the same ray as `x` is connected;
+* `isConnected_setOf_sameRay_and_ne_zero` : The set of nonzero vectors in the same ray as the
+  nonzero vector `x` is connected.
 -/
 
 variable {E : Type*}
