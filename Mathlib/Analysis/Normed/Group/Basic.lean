@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Group.Seminorm
+import Mathlib.Data.NNReal.Basic
 import Mathlib.Topology.MetricSpace.Basic
 
 /-!
@@ -482,6 +483,10 @@ theorem abs_norm_sub_norm_le' (a b : E) : |‖a‖ - ‖b‖| ≤ ‖a / b‖ :=
 theorem norm_sub_norm_le' (a b : E) : ‖a‖ - ‖b‖ ≤ ‖a / b‖ :=
   (le_abs_self _).trans (abs_norm_sub_norm_le' a b)
 
+@[to_additive (attr := bound)]
+theorem norm_sub_le_norm_mul (a b : E) : ‖a‖ - ‖b‖ ≤ ‖a * b‖ := by
+  simpa using norm_mul_le' (a * b) (b⁻¹)
+
 @[to_additive dist_norm_norm_le]
 theorem dist_norm_norm_le' (a b : E) : dist ‖a‖ ‖b‖ ≤ ‖a / b‖ :=
   abs_norm_sub_norm_le' a b
@@ -841,6 +846,17 @@ theorem mem_emetric_ball_one_iff {r : ℝ≥0∞} : a ∈ EMetric.ball 1 r ↔ �
   rw [EMetric.mem_ball, edist_one_eq_enorm]
 
 end ENorm
+
+open Set in
+@[to_additive]
+lemma SeminormedGroup.disjoint_nhds (x : E) (f : Filter E) :
+    Disjoint (𝓝 x) f ↔ ∃ δ > 0, ∀ᶠ y in f, δ ≤ ‖y / x‖ := by
+  simp [NormedCommGroup.nhds_basis_norm_lt x |>.disjoint_iff_left, compl_setOf, eventually_iff]
+
+@[to_additive]
+lemma SeminormedGroup.disjoint_nhds_one (f : Filter E) :
+    Disjoint (𝓝 1) f ↔ ∃ δ > 0, ∀ᶠ y in f, δ ≤ ‖y‖ := by
+  simpa using disjoint_nhds 1 f
 
 end SeminormedGroup
 

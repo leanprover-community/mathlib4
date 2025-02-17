@@ -214,7 +214,7 @@ theorem exists_floor (x : α) : ∃ fl : ℤ, ∀ z : ℤ, z ≤ fl ↔ (z : α)
       (let ⟨n, hn⟩ := exists_int_lt x
       ⟨n, le_of_lt hn⟩)
   refine this.imp fun fl h z => ?_
-  cases' h with h₁ h₂
+  obtain ⟨h₁, h₂⟩ := h
   exact ⟨fun h => le_trans (Int.cast_le.2 h) h₁, h₂ z⟩
 
 end StrictOrderedRing
@@ -241,7 +241,7 @@ section LinearOrderedSemifield
 variable [LinearOrderedSemifield α] [Archimedean α] {x y ε : α}
 
 lemma exists_nat_one_div_lt (hε : 0 < ε) : ∃ n : ℕ, 1 / (n + 1 : α) < ε := by
-  cases' exists_nat_gt (1 / ε) with n hn
+  obtain ⟨n, hn⟩ := exists_nat_gt (1 / ε)
   use n
   rw [div_lt_iff₀, ← div_lt_iff₀' hε]
   · apply hn.trans
@@ -392,8 +392,8 @@ theorem exists_rat_lt (x : α) : ∃ q : ℚ, (q : α) < x :=
   ⟨n, by rwa [Rat.cast_intCast]⟩
 
 theorem exists_rat_btwn {x y : α} (h : x < y) : ∃ q : ℚ, x < q ∧ (q : α) < y := by
-  cases' exists_nat_gt (y - x)⁻¹ with n nh
-  cases' exists_floor (x * n) with z zh
+  obtain ⟨n, nh⟩ := exists_nat_gt (y - x)⁻¹
+  obtain ⟨z, zh⟩ := exists_floor (x * n)
   refine ⟨(z + 1 : ℤ) / n, ?_⟩
   have n0' := (inv_pos.2 (sub_pos.2 h)).trans nh
   have n0 := Nat.cast_pos.1 n0'

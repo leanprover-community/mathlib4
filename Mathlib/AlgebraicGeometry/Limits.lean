@@ -128,6 +128,9 @@ theorem isAffineOpen_bot (X : Scheme) : IsAffineOpen (⊥ : X.Opens) :=
 instance : HasStrictInitialObjects Scheme :=
   hasStrictInitialObjects_of_initial_is_strict fun A f => by infer_instance
 
+instance {X : Scheme} [IsEmpty X] (U : X.Opens) : Subsingleton Γ(X, U) := by
+  obtain rfl : U = ⊥ := Subsingleton.elim _ _; infer_instance
+
 end Initial
 
 section Coproduct
@@ -498,13 +501,11 @@ instance (R S : CommRingCatᵒᵖ) : IsIso (coprodComparison Scheme.Spec R S) :=
   rw [(IsIso.eq_comp_inv _).mpr this]
   infer_instance
 
-noncomputable
 instance : PreservesColimitsOfShape (Discrete WalkingPair) Scheme.Spec :=
   ⟨fun {_} ↦
     have (X Y : CommRingCatᵒᵖ) := PreservesColimitPair.of_iso_coprod_comparison Scheme.Spec X Y
     preservesColimit_of_iso_diagram _ (diagramIsoPair _).symm⟩
 
-noncomputable
 instance : PreservesColimitsOfShape (Discrete PEmpty.{1}) Scheme.Spec := by
   have : IsEmpty (Scheme.Spec.obj (⊥_ CommRingCatᵒᵖ)) :=
     @Function.isEmpty _ _ spec_punit_isEmpty (Scheme.Spec.mapIso
@@ -512,11 +513,9 @@ instance : PreservesColimitsOfShape (Discrete PEmpty.{1}) Scheme.Spec := by
   have := preservesInitial_of_iso Scheme.Spec (asIso (initial.to _))
   exact preservesColimitsOfShape_pempty_of_preservesInitial _
 
-noncomputable
-instance {J} [Fintype J] : PreservesColimitsOfShape (Discrete J) Scheme.Spec :=
+instance {J} [Finite J] : PreservesColimitsOfShape (Discrete J) Scheme.Spec :=
   preservesFiniteCoproductsOfPreservesBinaryAndInitial _ _
 
-noncomputable
 instance {J : Type*} [Finite J] : PreservesColimitsOfShape (Discrete J) Scheme.Spec :=
   letI := (nonempty_fintype J).some
   preservesColimitsOfShape_of_equiv (Discrete.equivalence (Fintype.equivFin _).symm) _

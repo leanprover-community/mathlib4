@@ -214,18 +214,15 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
       and_self_iff]
   · rintro ⟨⟨x₁, hx₁⟩, ⟨x₂, hx₂⟩⟩
     use (prodIsoProd W X).inv (x₁, x₂)
-    change (forget TopCat).map _ _ = _
     apply Concrete.limit_ext
     rintro ⟨⟨⟩⟩
-    · change limit.π (pair Y Z) _ ((prod.map f g) _) = _
-      erw [← ConcreteCategory.comp_apply, Limits.prod.map_fst]
-      change (_ ≫ _ ≫ f) _ = _
-      rw [TopCat.prodIsoProd_inv_fst_assoc,TopCat.comp_app]
+    · rw [← ConcreteCategory.comp_apply]
+      erw [Limits.prod.map_fst]
+      rw [← ConcreteCategory.comp_apply, TopCat.prodIsoProd_inv_fst_assoc, TopCat.comp_app]
       exact hx₁
-    · change limit.π (pair Y Z) _ ((prod.map f g) _) = _
-      erw [← ConcreteCategory.comp_apply, Limits.prod.map_snd]
-      change (_ ≫ _ ≫ g) _ = _
-      rw [TopCat.prodIsoProd_inv_snd_assoc,TopCat.comp_app]
+    · rw [← ConcreteCategory.comp_apply]
+      erw [Limits.prod.map_snd]
+      rw [← ConcreteCategory.comp_apply, TopCat.prodIsoProd_inv_snd_assoc, TopCat.comp_app]
       exact hx₂
 
 theorem isInducing_prodMap {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : IsInducing f)
