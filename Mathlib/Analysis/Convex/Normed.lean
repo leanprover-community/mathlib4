@@ -4,11 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov
 -/
 import Mathlib.Analysis.Convex.Jensen
-import Mathlib.Analysis.Convex.Topology
-import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.Normed.Module.Basic
---import Mathlib.Analysis.Normed.Affine.AddTorsor
---import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 
 /-!
 # Topological and metric properties of convex sets in normed spaces
@@ -61,17 +57,6 @@ theorem convex_ball (a : E) (r : ℝ) : Convex ℝ (Metric.ball a r) := by
 theorem convex_closedBall (a : E) (r : ℝ) : Convex ℝ (Metric.closedBall a r) := by
   simpa only [Metric.closedBall, sep_univ] using (convexOn_univ_dist a).convex_le r
 
-theorem Convex.thickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (thickening δ s) := by
-  rw [← add_ball_zero]
-  exact hs.add (convex_ball 0 _)
-
-theorem Convex.cthickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (cthickening δ s) := by
-  obtain hδ | hδ := le_total 0 δ
-  · rw [cthickening_eq_iInter_thickening hδ]
-    exact convex_iInter₂ fun _ _ => hs.thickening _
-  · rw [cthickening_of_nonpos hδ]
-    exact hs.closure
-
 /-- Given a point `x` in the convex hull of `s` and a point `y`, there exists a point
 of `s` at distance at least `dist x y` from `y`. -/
 theorem convexHull_exists_dist_ge {s : Set E} {x : E} (hx : x ∈ convexHull ℝ s) (y : E) :
@@ -107,8 +92,5 @@ theorem convexHull_diam (s : Set E) : Metric.diam (convexHull ℝ s) = Metric.di
 theorem isBounded_convexHull {s : Set E} :
     Bornology.IsBounded (convexHull ℝ s) ↔ Bornology.IsBounded s := by
   simp only [Metric.isBounded_iff_ediam_ne_top, convexHull_ediam]
-
-instance (priority := 100) NormedSpace.instPathConnectedSpace : PathConnectedSpace E :=
-  IsTopologicalAddGroup.pathConnectedSpace
 
 end SeminormedAddCommGroup

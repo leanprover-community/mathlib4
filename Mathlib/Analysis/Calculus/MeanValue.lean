@@ -10,7 +10,7 @@ import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Calculus.LocalExtr.Rolle
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.Analysis.Convex.Normed
+import Mathlib.Analysis.Convex.Normed2
 import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.Topology.Instances.RealVectorSpace
 import Mathlib.Analysis.Normed.Group.AddTorsor

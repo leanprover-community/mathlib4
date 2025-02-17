@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Analysis.Convex.Between
-import Mathlib.Analysis.Convex.Normed
+import Mathlib.Analysis.Convex.Normed2
 import Mathlib.Analysis.Normed.Group.AddTorsor
 
 /-!
