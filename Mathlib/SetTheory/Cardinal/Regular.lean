@@ -17,14 +17,19 @@ This file defines regular and inaccessible cardinals.
 * `Cardinal.IsInaccessible c` means that `c` is strongly inaccessible:
   `ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c`.
 
-## Main theorems
-
-* `Ordinal.infinite_pigeonhole_card`: the infinite pigeonhole principle
-
 ## TODO
 
-Define singular cardinals.
+* Generalize the universes in the lemmas about `iSup`, by taking a `Small` assumption when necessary
+  instead.
+* Prove more theorems on inaccessible cardinals.
+* Define singular cardinals.
 -/
+
+universe u v
+
+open Function Cardinal Set Order Ordinal
+
+namespace Cardinal
 
 /-! ### Regular cardinals -/
 
@@ -288,7 +293,7 @@ def IsInaccessible (c : Cardinal) :=
 
 theorem IsInaccessible.mk {c} (h₁ : ℵ₀ < c) (h₂ : c ≤ c.ord.cof) (h₃ : ∀ x < c, (2^x) < c) :
     IsInaccessible c :=
-  ⟨h₁, ⟨h₁.le, h₂⟩, (aleph0_pos.trans h₁).ne', h₃⟩
+  ⟨h₁, ⟨h₁.le, h₂⟩, (aleph0_pos.trans h₁).ne', @h₃⟩
 
 -- Lean's foundations prove the existence of ℵ₀ many inaccessible cardinals
 theorem univ_inaccessible : IsInaccessible univ.{u, v} :=
@@ -297,48 +302,8 @@ theorem univ_inaccessible : IsInaccessible univ.{u, v} :=
     rw [← lift_two_power]
     apply lift_lt_univ'
 
--- TODO: prove `IsInaccessible o.card → IsInaccesible (ℵ_ o)`
-
-/-! ### Infinite pigeonhole principle -/
-
-/-- A function whose codomain's cardinality is infinite but strictly smaller than its domain's
-has a fiber with cardinality strictly great than the codomain. -/
-theorem infinite_pigeonhole_card_lt {β α : Type u} (f : β → α) (w : #α < #β) (w' : ℵ₀ ≤ #α) :
-    ∃ a : α, #α < #(f ⁻¹' {a}) := by
-  simp_rw [← succ_le_iff]
-  exact
-    Ordinal.infinite_pigeonhole_card f (succ #α) (succ_le_of_lt w) (w'.trans (lt_succ _).le)
-      ((lt_succ _).trans_le (isRegular_succ w').2.ge)
-
-/-- A function whose codomain's cardinality is infinite but strictly smaller than its domain's
-has an infinite fiber. -/
-theorem exists_infinite_fiber {β α : Type u} (f : β → α) (w : #α < #β) (w' : Infinite α) :
-    ∃ a : α, Infinite (f ⁻¹' {a}) := by
-  simp_rw [Cardinal.infinite_iff] at w' ⊢
-  obtain ⟨a, ha⟩ := infinite_pigeonhole_card_lt f w w'
-  exact ⟨a, w'.trans ha.le⟩
-
-/-- If an infinite type `β` can be expressed as a union of finite sets,
-then the cardinality of the collection of those finite sets
-must be at least the cardinality of `β`. -/
-theorem le_range_of_union_finset_eq_top {α β : Type*} [Infinite β] (f : α → Finset β)
-    (w : ⋃ a, (f a : Set β) = ⊤) : #β ≤ #(range f) := by
-  have k : _root_.Infinite (range f) := by
-    rw [infinite_coe_iff]
-    apply mt (union_finset_finite_of_range_finite f)
-    rw [w]
-    exact infinite_univ
-  by_contra h
-  simp only [not_le] at h
-  let u : ∀ b, ∃ a, b ∈ f a := fun b => by simpa using (w.ge :) (Set.mem_univ b)
-  let u' : β → range f := fun b => ⟨f (u b).choose, by simp⟩
-  have v' : ∀ a, u' ⁻¹' {⟨f a, by simp⟩} ≤ f a := by
-    rintro a p m
-    simp? [u']  at m says simp only [mem_preimage, mem_singleton_iff, Subtype.mk.injEq, u'] at m
-    rw [← m]
-    apply fun b => (u b).choose_spec
-  obtain ⟨⟨-, ⟨a, rfl⟩⟩, p⟩ := exists_infinite_fiber u' h k
-  exact (@Infinite.of_injective _ _ p (inclusion (v' a)) (inclusion_injective _)).false
+-- TODO: prove that `IsInaccessible o.card` implies `IsInaccesible (ℵ_ o)` and
+-- `IsInaccesible (ℶ_ o)`
 
 end Cardinal
 

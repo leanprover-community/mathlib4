@@ -20,17 +20,12 @@ This file contains the definition of cofinality of an order and an ordinal numbe
 ## Main Statements
 
 * `Cardinal.lt_power_cof`: A consequence of König's theorem stating that `c < c ^ c.ord.cof` for
-  `c ≥ ℵ₀`
+  `c ≥ ℵ₀`.
 
 ## Implementation Notes
 
 * The cofinality is defined for ordinals.
   If `c` is a cardinal number, its cofinality is `c.ord.cof`.
-
-## Tags
-
-cofinality, regular cardinals, limits cardinals, inaccessible cardinals,
-infinite pigeonhole principle
 -/
 
 noncomputable section
@@ -182,7 +177,6 @@ theorem ord_cof_eq (r : α → α → Prop) [IsWellOrder α r] :
   exact IsWellFounded.wf.not_lt_min _ this (IsOrderConnected.neg_trans h ba)
 
 /-! ### Cofinality of suprema and least strict upper bounds -/
-
 
 private theorem card_mem_cof {o} : ∃ (ι : _) (f : ι → Ordinal), lsub.{u, u} f = o ∧ #ι = o.card :=
   ⟨_, _, lsub_typein o, mk_toType o⟩
@@ -425,7 +419,6 @@ theorem bsup_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal} {c : Ordinal} (ho : o
 
 /-! ### Basic results -/
 
-
 @[simp]
 theorem cof_zero : cof 0 = 0 := by
   refine LE.le.antisymm  ?_ (Cardinal.zero_le _)
@@ -487,6 +480,10 @@ theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
           have := le_one_iff_subsingleton.1 (le_of_eq e)
           congr!,
     fun ⟨a, e⟩ => by simp [e]⟩
+
+/-! ### Fundamental sequences -/
+
+-- TODO: move stuff about fundamental sequences to their own file.
 
 /-- A fundamental sequence for `a` is an increasing sequence of length `o = cof a` that converges at
     `a`. We provide `o` explicitly in order to avoid type rewrites. -/
@@ -719,71 +716,12 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
       rw [← show g (f.symm ⟨b, h⟩) = b by simp [g]]
       apply Ordinal.le_iSup)
 
-/-! ### Infinite pigeonhole principle -/
-
-/-- If the union of s is unbounded and s is smaller than the cofinality,
-  then s has an unbounded member -/
-theorem unbounded_of_unbounded_sUnion (r : α → α → Prop) [wo : IsWellOrder α r] {s : Set (Set α)}
-    (h₁ : Unbounded r <| ⋃₀ s) (h₂ : #s < Order.cof (swap rᶜ)) : ∃ x ∈ s, Unbounded r x := by
-  by_contra! h
-  simp_rw [not_unbounded_iff] at h
-  let f : s → α := fun x : s => wo.wf.sup x (h x.1 x.2)
-  refine h₂.not_le (le_trans (csInf_le' ⟨range f, fun x => ?_, rfl⟩) mk_range_le)
-  rcases h₁ x with ⟨y, ⟨c, hc, hy⟩, hxy⟩
-  exact ⟨f ⟨c, hc⟩, mem_range_self _, fun hxz => hxy (Trans.trans (wo.wf.lt_sup _ hy) hxz)⟩
-
-/-- If the union of s is unbounded and s is smaller than the cofinality,
-  then s has an unbounded member -/
-theorem unbounded_of_unbounded_iUnion {α β : Type u} (r : α → α → Prop) [wo : IsWellOrder α r]
-    (s : β → Set α) (h₁ : Unbounded r <| ⋃ x, s x) (h₂ : #β < Order.cof (swap rᶜ)) :
-    ∃ x : β, Unbounded r (s x) := by
-  rw [← sUnion_range] at h₁
-  rcases unbounded_of_unbounded_sUnion r h₁ (mk_range_le.trans_lt h₂) with ⟨_, ⟨x, rfl⟩, u⟩
-  exact ⟨x, u⟩
-
-/-- The infinite pigeonhole principle -/
-theorem infinite_pigeonhole {β α : Type u} (f : β → α) (h₁ : ℵ₀ ≤ #β) (h₂ : #α < (#β).ord.cof) :
-    ∃ a : α, #(f ⁻¹' {a}) = #β := by
-  have : ∃ a, #β ≤ #(f ⁻¹' {a}) := by
-    by_contra! h
-    apply mk_univ.not_lt
-    rw [← preimage_univ, ← iUnion_of_singleton, preimage_iUnion]
-    exact
-      mk_iUnion_le_sum_mk.trans_lt
-        ((sum_le_iSup _).trans_lt <| mul_lt_of_lt h₁ (h₂.trans_le <| cof_ord_le _) (iSup_lt h₂ h))
-  obtain ⟨x, h⟩ := this
-  refine ⟨x, h.antisymm' ?_⟩
-  rw [le_mk_iff_exists_set]
-  exact ⟨_, rfl⟩
-
-/-- Pigeonhole principle for a cardinality below the cardinality of the domain -/
-theorem infinite_pigeonhole_card {β α : Type u} (f : β → α) (θ : Cardinal) (hθ : θ ≤ #β)
-    (h₁ : ℵ₀ ≤ θ) (h₂ : #α < θ.ord.cof) : ∃ a : α, θ ≤ #(f ⁻¹' {a}) := by
-  rcases le_mk_iff_exists_set.1 hθ with ⟨s, rfl⟩
-  obtain ⟨a, ha⟩ := infinite_pigeonhole (f ∘ Subtype.val : s → α) h₁ h₂
-  use a; rw [← ha, @preimage_comp _ _ _ Subtype.val f]
-  exact mk_preimage_of_injective _ _ Subtype.val_injective
-
-theorem infinite_pigeonhole_set {β α : Type u} {s : Set β} (f : s → α) (θ : Cardinal)
-    (hθ : θ ≤ #s) (h₁ : ℵ₀ ≤ θ) (h₂ : #α < θ.ord.cof) :
-    ∃ (a : α) (t : Set β) (h : t ⊆ s), θ ≤ #t ∧ ∀ ⦃x⦄ (hx : x ∈ t), f ⟨x, h hx⟩ = a := by
-  obtain ⟨a, ha⟩ := infinite_pigeonhole_card f θ hθ h₁ h₂
-  refine ⟨a, { x | ∃ h, f ⟨x, h⟩ = a }, ?_, ?_, ?_⟩
-  · rintro x ⟨hx, _⟩
-    exact hx
-  · refine
-      ha.trans
-        (ge_of_eq <|
-          Quotient.sound ⟨Equiv.trans ?_ (Equiv.subtypeSubtypeEquivSubtypeExists _ _).symm⟩)
-    simp only [coe_eq_subtype, mem_singleton_iff, mem_preimage, mem_setOf_eq]
-    rfl
-  rintro x ⟨_, hx'⟩; exact hx'
-
 end Ordinal
 
 namespace Cardinal
-
 open Ordinal
+
+/-! ### Results on sets -/
 
 theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, (2^x) < #α) {r : α → α → Prop}
     [IsWellOrder α r] (hr : (#α).ord = type r) : #{ s : Set α // Bounded r s } = #α := by
@@ -833,6 +771,28 @@ theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, (2^x) < #α) :
       exact one_lt_aleph0.trans_le (aleph0_le_cof.2 (isLimit_ord h'.aleph0_le))
     · intro a b hab
       simpa [singleton_eq_singleton_iff] using hab
+
+/-- If the union of s is unbounded and s is smaller than the cofinality,
+  then s has an unbounded member -/
+theorem unbounded_of_unbounded_sUnion (r : α → α → Prop) [wo : IsWellOrder α r] {s : Set (Set α)}
+    (h₁ : Unbounded r <| ⋃₀ s) (h₂ : #s < Order.cof (swap rᶜ)) : ∃ x ∈ s, Unbounded r x := by
+  by_contra! h
+  simp_rw [not_unbounded_iff] at h
+  let f : s → α := fun x : s => wo.wf.sup x (h x.1 x.2)
+  refine h₂.not_le (le_trans (csInf_le' ⟨range f, fun x => ?_, rfl⟩) mk_range_le)
+  rcases h₁ x with ⟨y, ⟨c, hc, hy⟩, hxy⟩
+  exact ⟨f ⟨c, hc⟩, mem_range_self _, fun hxz => hxy (Trans.trans (wo.wf.lt_sup _ hy) hxz)⟩
+
+/-- If the union of s is unbounded and s is smaller than the cofinality,
+  then s has an unbounded member -/
+theorem unbounded_of_unbounded_iUnion {α β : Type u} (r : α → α → Prop) [wo : IsWellOrder α r]
+    (s : β → Set α) (h₁ : Unbounded r <| ⋃ x, s x) (h₂ : #β < Order.cof (swap rᶜ)) :
+    ∃ x : β, Unbounded r (s x) := by
+  rw [← sUnion_range] at h₁
+  rcases unbounded_of_unbounded_sUnion r h₁ (mk_range_le.trans_lt h₂) with ⟨_, ⟨x, rfl⟩, u⟩
+  exact ⟨x, u⟩
+
+/-! ### Consequences of König's lemma -/
 
 theorem lt_power_cof {c : Cardinal.{u}} : ℵ₀ ≤ c → c < c ^ c.ord.cof :=
   Cardinal.inductionOn c fun α h => by
