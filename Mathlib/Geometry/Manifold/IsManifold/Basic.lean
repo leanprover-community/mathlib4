@@ -640,9 +640,8 @@ variable {E' H' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [Topologi
 theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
     {e : PartialHomeomorph H H} {e' : PartialHomeomorph H' H'} (he : e ∈ contDiffGroupoid n I)
     (he' : e' ∈ contDiffGroupoid n I') : e.prod e' ∈ contDiffGroupoid n (I.prod I') := by
-  cases' he with he he_symm
-  cases' he' with he' he'_symm
-  simp only at he he_symm he' he'_symm
+  obtain ⟨he, he_symm⟩ := he
+  obtain ⟨he', he'_symm⟩ := he'
   constructor <;> simp only [PartialEquiv.prod_source, PartialHomeomorph.prod_toPartialEquiv,
     contDiffPregroupoid]
   · have h3 := ContDiffOn.prod_map he he'
@@ -905,7 +904,7 @@ def TangentSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
     {M : Type*} [TopologicalSpace M] [ChartedSpace H M] (_x : M) : Type u := E
--- Porting note: was deriving TopologicalSpace, AddCommGroup, TopologicalAddGroup
+-- Porting note: was deriving TopologicalSpace, AddCommGroup, IsTopologicalAddGroup
 
 /- In general, the definition of `TangentSpace` is not reducible, so that type class inference
 does not pick wrong instances. We record the right instances for them. -/
@@ -917,7 +916,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 instance : TopologicalSpace (TangentSpace I x) := inferInstanceAs (TopologicalSpace E)
 instance : AddCommGroup (TangentSpace I x) := inferInstanceAs (AddCommGroup E)
-instance : TopologicalAddGroup (TangentSpace I x) := inferInstanceAs (TopologicalAddGroup E)
+instance : IsTopologicalAddGroup (TangentSpace I x) := inferInstanceAs (IsTopologicalAddGroup E)
 instance : Module 𝕜 (TangentSpace I x) := inferInstanceAs (Module 𝕜 E)
 instance : Inhabited (TangentSpace I x) := ⟨0⟩
 

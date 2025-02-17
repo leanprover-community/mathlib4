@@ -23,7 +23,7 @@ embedding in the expected way and deduce that the preadditive Yoneda embedding i
 -/
 
 
-universe v u
+universe v u u₁
 
 open CategoryTheory.Preadditive Opposite CategoryTheory.Limits
 
@@ -132,5 +132,18 @@ instance faithful_preadditiveYoneda : (preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ Add
 instance faithful_preadditiveCoyoneda :
     (preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGrp).Faithful :=
   Functor.Faithful.of_comp_eq whiskering_preadditiveCoyoneda
+
+section
+
+variable {D : Type u₁} [Category.{v} D] [Preadditive D] (F : C ⥤ D) [F.Additive]
+
+/-- The natural transformation `preadditiveYoneda.obj X ⟶ F.op ⋙ preadditiveYoneda.obj (F.obj X)`
+when `F : C ⥤ D` is an additive functor between preadditive categories and `X : C`. -/
+@[simps]
+def preadditiveYonedaMap (X : C) :
+    preadditiveYoneda.obj X ⟶ F.op ⋙ preadditiveYoneda.obj (F.obj X) where
+  app Y := AddCommGrp.ofHom F.mapAddHom
+
+end
 
 end CategoryTheory
