@@ -24,7 +24,7 @@ open scoped Topology
 
 open Set
 
-variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [TopologicalAddGroup E] [T2Space E]
+variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E] [T2Space E]
   [Module ℝ E] [ContinuousSMul ℝ E] [FiniteDimensional ℝ E]
 
 noncomputable section

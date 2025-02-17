@@ -96,7 +96,7 @@ is preserved under composition with a non-trivial swap, then `P` holds for all p
 theorem swap_induction_on [Finite α] {P : Perm α → Prop} (f : Perm α) :
     P 1 → (∀ f x y, x ≠ y → P f → P (swap x y * f)) → P f := by
   cases nonempty_fintype α
-  cases' (truncSwapFactors f).out with l hl
+  obtain ⟨l, hl⟩ := (truncSwapFactors f).out
   induction' l with g l ih generalizing f
   · simp +contextual only [hl.left.symm, List.prod_nil, forall_true_iff]
   · intro h1 hmul_swap

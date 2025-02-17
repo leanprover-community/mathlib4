@@ -89,7 +89,7 @@ lemma coe_sub_one (a : Fin (n + 1)) : ↑(a - 1) = if a = 0 then n else a - 1 :=
 
 @[simp]
 lemma lt_sub_iff {n : ℕ} {a b : Fin n} : a < a - b ↔ a < b := by
-  cases' n with n
+  rcases n with - | n
   · exact a.elim0
   constructor
   · contrapose!
