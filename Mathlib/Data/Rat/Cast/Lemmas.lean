@@ -29,7 +29,7 @@ lemma cast_pow (p : ℚ) (n : ℕ) : ↑(p ^ n) = (p ^ n : α) := by
 -- Porting note: rewrote proof
 @[simp]
 theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
-  cases' n with n
+  rcases n with - | n
   · simp
   rw [cast_def, inv_natCast_num, inv_natCast_den, if_neg n.succ_ne_zero,
     Int.sign_eq_one_of_pos (Int.ofNat_succ_pos n), Int.cast_one, one_div]
@@ -37,7 +37,7 @@ theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
 -- Porting note: proof got a lot easier - is this still the intended statement?
 @[simp]
 theorem cast_inv_int (n : ℤ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
-  cases' n with n n
+  rcases n with n | n
   · simp [ofInt_eq_cast, cast_inv_nat]
   · simp only [ofInt_eq_cast, Int.cast_negSucc, ← Nat.cast_succ, cast_neg, inv_neg, cast_inv_nat]
 
