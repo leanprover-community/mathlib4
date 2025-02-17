@@ -87,7 +87,7 @@ theorem arg_mul_cos_add_sin_mul_I {r : ℝ} (hr : 0 < r) {θ : ℝ} (hθ : θ �
   · rw [if_pos]
     exacts [Real.arcsin_sin' h₁, Real.cos_nonneg_of_mem_Icc h₁]
   · rw [Set.mem_Icc, not_and_or, not_le, not_le] at h₁
-    cases' h₁ with h₁ h₁
+    rcases h₁ with h₁ | h₁
     · replace hθ := hθ.1
       have hcos : Real.cos θ < 0 := by
         rw [← neg_pos, ← Real.cos_add_pi]

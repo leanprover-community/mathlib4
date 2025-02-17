@@ -512,7 +512,7 @@ private theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) :
           suffices ∀ x : β, Sum.Lex r s (Sum.inr x) (enum _ ⟨_, l⟩) by
             -- Porting note: `revert` & `intro` is required because `cases'` doesn't replace
             --               `enum _ _ l` in `this`.
-            revert this; cases' enum _ ⟨_, l⟩ with x x <;> intro this
+            revert this; rcases enum _ ⟨_, l⟩ with x | x <;> intro this
             · cases this (enum s ⟨0, h.pos⟩)
             · exact irrefl _ (this _)
           intro x
@@ -756,7 +756,7 @@ private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder 
     (h : IsLimit (type s)) (H : ∀ b' < type s, type r * b' ≤ c) (l : c < type r * type s) :
     False := by
   suffices ∀ a b, Prod.Lex s r (b, a) (enum _ ⟨_, l⟩) by
-    cases' enum _ ⟨_, l⟩ with b a
+    obtain ⟨b, a⟩ := enum _ ⟨_, l⟩
     exact irrefl _ (this _ _)
   intro a b
   rw [← typein_lt_typein (Prod.Lex s r), typein_enum]
@@ -1733,7 +1733,7 @@ theorem lsub_le_sup_succ {ι : Type u} (f : ι → Ordinal.{max u v}) :
 set_option linter.deprecated false in
 theorem sup_eq_lsub_or_sup_succ_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
     sup.{_, v} f = lsub.{_, v} f ∨ succ (sup.{_, v} f) = lsub.{_, v} f := by
-  cases' eq_or_lt_of_le (sup_le_lsub.{_, v} f) with h h
+  rcases eq_or_lt_of_le (sup_le_lsub.{_, v} f) with h | h
   · exact Or.inl h
   · exact Or.inr ((succ_le_of_lt h).antisymm (lsub_le_sup_succ f))
 
@@ -2146,7 +2146,7 @@ set_option linter.deprecated false in
 theorem mex_monotone {α β : Type u} {f : α → Ordinal.{max u v}} {g : β → Ordinal.{max u v}}
     (h : Set.range f ⊆ Set.range g) : mex.{_, v} f ≤ mex.{_, v} g := by
   refine mex_le_of_ne fun i hi => ?_
-  cases' h ⟨i, rfl⟩ with j hj
+  obtain ⟨j, hj⟩ := h ⟨i, rfl⟩
   rw [← hj] at hi
   exact ne_mex g j hi
 
@@ -2209,7 +2209,7 @@ set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided."  (since := "2024-09-20")]
 theorem exists_of_lt_bmex {o : Ordinal} {f : ∀ a < o, Ordinal} {a} (ha : a < bmex o f) :
     ∃ i hi, f i hi = a := by
-  cases' exists_of_lt_mex ha with i hi
+  obtain ⟨i, hi⟩ := exists_of_lt_mex ha
   exact ⟨_, typein_lt_self i, hi⟩
 
 set_option linter.deprecated false in

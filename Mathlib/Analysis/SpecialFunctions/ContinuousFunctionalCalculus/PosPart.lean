@@ -204,7 +204,7 @@ local notation "σₙ" => quasispectrum
 
 open ContinuousMapZero
 
-variable [TopologicalRing A] [T2Space A]
+variable [IsTopologicalRing A] [T2Space A]
 
 open NonUnitalContinuousFunctionalCalculus in
 /-- The positive and negative parts of a selfadjoint element `a` are unique. That is, if

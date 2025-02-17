@@ -18,7 +18,7 @@ open scoped Pointwise
 
 variable (F A B C D E : Type*) [Monoid A] [Monoid B] [Monoid C] [Monoid D] [CommGroup E]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C] [TopologicalSpace D]
-  [TopologicalSpace E] [TopologicalGroup E]
+  [TopologicalSpace E] [IsTopologicalGroup E]
 
 namespace ContinuousMonoidHom
 
@@ -78,7 +78,7 @@ instance [T2Space B] : T2Space (ContinuousMonoidHom A B) :=
   (isEmbedding_toContinuousMap A B).t2Space
 
 @[to_additive]
-instance : TopologicalGroup (ContinuousMonoidHom A E) :=
+instance : IsTopologicalGroup (ContinuousMonoidHom A E) :=
   let hi := isInducing_toContinuousMap A E
   let hc := hi.continuous
   { continuous_mul := hi.continuous_iff.mpr (continuous_mul.comp (Continuous.prodMap hc hc))
@@ -125,7 +125,7 @@ variable (A) {E}
 
 /-- `ContinuousMonoidHom f _` is a functor. -/
 @[to_additive "`ContinuousAddMonoidHom f _` is a functor."]
-def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [TopologicalGroup B]
+def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [IsTopologicalGroup B]
     (f : ContinuousMonoidHom B E) :
     ContinuousMonoidHom (ContinuousMonoidHom A B) (ContinuousMonoidHom A E) where
   toFun g := f.comp g
@@ -135,7 +135,7 @@ def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [TopologicalGroup B
 
 section LocallyCompact
 
-variable {X Y : Type*} [TopologicalSpace X] [Group X] [TopologicalGroup X]
+variable {X Y : Type*} [TopologicalSpace X] [Group X] [IsTopologicalGroup X]
   [UniformSpace Y] [CommGroup Y] [UniformGroup Y] [T0Space Y] [CompactSpace Y]
 
 @[to_additive]
@@ -195,9 +195,10 @@ theorem locallyCompactSpace_of_hasBasis (V : ℕ → Set Y)
     fun n x hx ↦ hU2 n (mul_one x ▸ Set.mul_mem_mul hx (mem_of_mem_nhds (hU1 (n + 1))))
   have hU4 : ∀ f : X →* Y, Set.MapsTo f (U 0) (V 0) → ∀ n, Set.MapsTo f (U n) (V n) := by
     intro f hf n
-    induction' n with n ih
-    · exact hf
-    · exact fun x hx ↦ hV (ih (hU3 n hx)) (map_mul f x x ▸ ih (hU2 n (Set.mul_mem_mul hx hx)))
+    induction n with
+    | zero => exact hf
+    | succ n ih =>
+      exact fun x hx ↦ hV (ih (hU3 n hx)) (map_mul f x x ▸ ih (hU2 n (Set.mul_mem_mul hx hx)))
   apply locallyCompactSpace_of_equicontinuousAt (U 0) (V 0) hU0c (hVo.mem_of_mem trivial)
   rw [hVo.uniformity_of_nhds_one.equicontinuousAt_iff_right]
   refine fun n _ ↦ Filter.eventually_iff_exists_mem.mpr ⟨U n, hU1 n, fun x hx ⟨f, hf⟩ ↦ ?_⟩

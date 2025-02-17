@@ -162,15 +162,15 @@ theorem coe_inj {x y : R} : (x : ℍ[R,c₁,c₂,c₃]) = y ↔ x = y :=
 -- Should adjust `simps` to name properly, i.e. as `zero_re` rather than `instZero_zero_re`.
 instance : Zero ℍ[R,c₁,c₂,c₃] := ⟨⟨0, 0, 0, 0⟩⟩
 
-@[simp] theorem zero_re : (0 : ℍ[R,c₁,c₂,c₃]).re = 0 := rfl
+@[scoped simp] theorem zero_re : (0 : ℍ[R,c₁,c₂,c₃]).re = 0 := rfl
 
-@[simp] theorem zero_imI : (0 : ℍ[R,c₁,c₂,c₃]).imI = 0 := rfl
+@[scoped simp] theorem zero_imI : (0 : ℍ[R,c₁,c₂,c₃]).imI = 0 := rfl
 
-@[simp] theorem zero_imJ : (0 : ℍ[R,c₁,c₂,c₃]).imJ = 0 := rfl
+@[scoped simp] theorem zero_imJ : (0 : ℍ[R,c₁,c₂,c₃]).imJ = 0 := rfl
 
-@[simp] theorem zero_imK : (0 : ℍ[R,c₁,c₂,c₃]).imK = 0 := rfl
+@[scoped simp] theorem zero_imK : (0 : ℍ[R,c₁,c₂,c₃]).imK = 0 := rfl
 
-@[simp] theorem zero_im : (0 : ℍ[R,c₁,c₂,c₃]).im = 0 := rfl
+@[scoped simp] theorem zero_im : (0 : ℍ[R,c₁,c₂,c₃]).im = 0 := rfl
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : R) : ℍ[R,c₁,c₂,c₃]) = 0 := rfl
@@ -183,15 +183,15 @@ variable [One R]
 -- Porting note: removed `simps`, added simp lemmas manually. Should adjust `simps` to name properly
 instance : One ℍ[R,c₁,c₂,c₃] := ⟨⟨1, 0, 0, 0⟩⟩
 
-@[simp] theorem one_re : (1 : ℍ[R,c₁,c₂,c₃]).re = 1 := rfl
+@[scoped simp] theorem one_re : (1 : ℍ[R,c₁,c₂,c₃]).re = 1 := rfl
 
-@[simp] theorem one_imI : (1 : ℍ[R,c₁,c₂,c₃]).imI = 0 := rfl
+@[scoped simp] theorem one_imI : (1 : ℍ[R,c₁,c₂,c₃]).imI = 0 := rfl
 
-@[simp] theorem one_imJ : (1 : ℍ[R,c₁,c₂,c₃]).imJ = 0 := rfl
+@[scoped simp] theorem one_imJ : (1 : ℍ[R,c₁,c₂,c₃]).imJ = 0 := rfl
 
-@[simp] theorem one_imK : (1 : ℍ[R,c₁,c₂,c₃]).imK = 0 := rfl
+@[scoped simp] theorem one_imK : (1 : ℍ[R,c₁,c₂,c₃]).imK = 0 := rfl
 
-@[simp] theorem one_im : (1 : ℍ[R,c₁,c₂,c₃]).im = 0 := rfl
+@[scoped simp] theorem one_im : (1 : ℍ[R,c₁,c₂,c₃]).im = 0 := rfl
 
 @[simp, norm_cast]
 theorem coe_one : ((1 : R) : ℍ[R,c₁,c₂,c₃]) = 1 := rfl
@@ -425,19 +425,19 @@ theorem coe_natCast (n : ℕ) : ↑(n : R) = (n : ℍ[R,c₁,c₂,c₃]) :=
 theorem intCast_re (z : ℤ) : (z : ℍ[R,c₁,c₂,c₃]).re = z :=
   rfl
 
-@[simp]
+@[scoped simp]
 theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).re = ofNat(n) := rfl
 
-@[simp]
+@[scoped simp]
 theorem ofNat_imI (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).imI = 0 := rfl
 
-@[simp]
+@[scoped simp]
 theorem ofNat_imJ (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).imJ = 0 := rfl
 
-@[simp]
+@[scoped simp]
 theorem ofNat_imK (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).imK = 0 := rfl
 
-@[simp]
+@[scoped simp]
 theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).im = 0 := rfl
 
 @[simp, norm_cast]
@@ -779,7 +779,6 @@ instance [SMul S R] [SMul T R] [SMulCommClass S T R] : SMulCommClass S T ℍ[R] 
 protected instance algebra [CommSemiring S] [Algebra S R] : Algebra S ℍ[R] :=
   inferInstanceAs <| Algebra S ℍ[R,-1,0,-1]
 
--- Porting note: added shortcut
 instance : Star ℍ[R] := QuaternionAlgebra.instStarQuaternionAlgebra
 instance : StarRing ℍ[R] := QuaternionAlgebra.instStarRing
 instance : IsStarNormal a := inferInstanceAs <| IsStarNormal (R := ℍ[R,-1,0,-1]) a
@@ -822,28 +821,28 @@ theorem coe_imK : (x : ℍ[R]).imK = 0 := rfl
 @[simp, norm_cast]
 theorem coe_im : (x : ℍ[R]).im = 0 := rfl
 
-@[simp] theorem zero_re : (0 : ℍ[R]).re = 0 := rfl
+@[scoped simp] theorem zero_re : (0 : ℍ[R]).re = 0 := rfl
 
-@[simp] theorem zero_imI : (0 : ℍ[R]).imI = 0 := rfl
+@[scoped simp] theorem zero_imI : (0 : ℍ[R]).imI = 0 := rfl
 
-@[simp] theorem zero_imJ : (0 : ℍ[R]).imJ = 0 := rfl
+@[scoped simp] theorem zero_imJ : (0 : ℍ[R]).imJ = 0 := rfl
 
-@[simp] theorem zero_imK : (0 : ℍ[R]).imK = 0 := rfl
+@[scoped simp] theorem zero_imK : (0 : ℍ[R]).imK = 0 := rfl
 
-@[simp] theorem zero_im : (0 : ℍ[R]).im = 0 := rfl
+@[scoped simp] theorem zero_im : (0 : ℍ[R]).im = 0 := rfl
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : R) : ℍ[R]) = 0 := rfl
 
-@[simp] theorem one_re : (1 : ℍ[R]).re = 1 := rfl
+@[scoped simp] theorem one_re : (1 : ℍ[R]).re = 1 := rfl
 
-@[simp] theorem one_imI : (1 : ℍ[R]).imI = 0 := rfl
+@[scoped simp] theorem one_imI : (1 : ℍ[R]).imI = 0 := rfl
 
-@[simp] theorem one_imJ : (1 : ℍ[R]).imJ = 0 := rfl
+@[scoped simp] theorem one_imJ : (1 : ℍ[R]).imJ = 0 := rfl
 
-@[simp] theorem one_imK : (1 : ℍ[R]).imK = 0 := rfl
+@[scoped simp] theorem one_imK : (1 : ℍ[R]).imK = 0 := rfl
 
-@[simp] theorem one_im : (1 : ℍ[R]).im = 0 := rfl
+@[scoped simp] theorem one_im : (1 : ℍ[R]).im = 0 := rfl
 
 @[simp, norm_cast]
 theorem coe_one : ((1 : R) : ℍ[R]) = 1 := rfl

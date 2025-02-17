@@ -230,8 +230,7 @@ theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     let f := Embedding.completeGraph (@Fin.valEmbedding n)
     use f.toHom.comp C
     intro v
-    cases' C with color valid
-    exact Fin.is_lt (color v)
+    exact Fin.is_lt (C.1 v)
   · rintro ⟨C, Cf⟩
     refine ⟨Coloring.mk ?_ ?_⟩
     · exact fun v => ⟨C v, Cf v⟩
