@@ -293,7 +293,7 @@ all prime factors `p` of `n`, then `x` has order `n` in `G`."]
 theorem orderOf_eq_of_pow_and_pow_div_prime (hn : 0 < n) (hx : x ^ n = 1)
     (hd : ∀ p : ℕ, p.Prime → p ∣ n → x ^ (n / p) ≠ 1) : orderOf x = n := by
   -- Let `a` be `n/(orderOf x)`, and show `a = 1`
-  cases' exists_eq_mul_right_of_dvd (orderOf_dvd_of_pow_eq_one hx) with a ha
+  obtain ⟨a, ha⟩ := exists_eq_mul_right_of_dvd (orderOf_dvd_of_pow_eq_one hx)
   suffices a = 1 by simp [this, ha]
   -- Assume `a` is not one...
   by_contra h

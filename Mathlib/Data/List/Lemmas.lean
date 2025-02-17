@@ -53,7 +53,7 @@ theorem foldr_range_subset_of_range_subset {f : β → α → α} {g : γ → α
   rintro _ ⟨l, rfl⟩
   induction' l with b l H
   · exact ⟨[], rfl⟩
-  · cases' hfg (Set.mem_range_self b) with c hgf
+  · obtain ⟨c, hgf⟩ := hfg (Set.mem_range_self b)
     cases' H with m hgf'
     rw [foldr_cons, ← hgf, ← hgf']
     exact ⟨c :: m, rfl⟩

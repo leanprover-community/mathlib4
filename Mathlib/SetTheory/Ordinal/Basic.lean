@@ -1042,7 +1042,7 @@ def liftPrincipalSeg : Ordinal.{u} <i Ordinal.{max (u + 1) v} :=
   ⟨↑liftInitialSeg.{max (u + 1) v, u}, univ.{u, v}, by
     refine fun b => inductionOn b ?_; intro β s _
     rw [univ, ← lift_umax]; constructor <;> intro h
-    · cases' h with a e
+    · obtain ⟨a, e⟩ := h
       rw [← e]
       refine inductionOn a ?_
       intro α r _
@@ -1062,7 +1062,7 @@ def liftPrincipalSeg : Ordinal.{u} <i Ordinal.{max (u + 1) v} :=
         rw [typein_enum, typein_enum]
         exact f.map_rel_iff.2 h
       · intro a'
-        cases' (hf _).2 (typein_lt_type _ a') with b e
+        obtain ⟨b, e⟩ := (hf _).2 (typein_lt_type _ a')
         exists b
         simp only [RelEmbedding.ofMonotone_coe]
         simp [e]⟩
@@ -1350,7 +1350,7 @@ theorem lt_univ {c} : c < univ.{u, u + 1} ↔ ∃ c', c = lift.{u + 1, u} c' :=
   ⟨fun h => by
     have := ord_lt_ord.2 h
     rw [ord_univ] at this
-    cases' liftPrincipalSeg.mem_range_of_rel_top (by simpa only [liftPrincipalSeg_top]) with o e
+    obtain ⟨o, e⟩ := liftPrincipalSeg.mem_range_of_rel_top (by simpa only [liftPrincipalSeg_top])
     have := card_ord c
     rw [← e, liftPrincipalSeg_coe, ← lift_card] at this
     exact ⟨_, this.symm⟩, fun ⟨_, e⟩ => e.symm ▸ lift_lt_univ _⟩

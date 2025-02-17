@@ -369,7 +369,7 @@ theorem exists_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : p 
   rcases separable_or p hf with (h | ⟨h1, g, hg, hgf⟩)
   · refine ⟨0, f, h, ?_⟩
     rw [pow_zero, expand_one]
-  · cases' N with N
+  · rcases N with - | N
     · rw [natDegree_eq_zero_iff_degree_le_zero, degree_le_zero_iff] at hn
       rw [hn, separable_C, isUnit_iff_ne_zero, Classical.not_not] at h1
       have hf0 : f ≠ 0 := hf.ne_zero
