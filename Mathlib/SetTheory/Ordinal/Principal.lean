@@ -136,9 +136,9 @@ theorem principal_nfp_blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordin
   rw [lt_nfp] at *
   obtain ⟨m, hm⟩ := ha
   obtain ⟨n, hn⟩ := hb
-  cases' le_total
+  rcases le_total
     ((fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b))^[m] o)
-    ((fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b))^[n] o) with h h
+    ((fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b))^[n] o) with h | h
   · use n + 1
     rw [Function.iterate_succ']
     exact lt_blsub₂ (@fun a _ b _ => op a b) (hm.trans_le h) hn

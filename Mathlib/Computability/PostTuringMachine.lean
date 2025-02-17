@@ -10,7 +10,7 @@ Commenting out until a fix is available.
 See https://leanprover.zulipchat.com/#narrow/channel/428973-nightly-testing/topic/breakages.20from.20leanprover.2Flean4.237059
 
 import Mathlib.Computability.Tape
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Defs
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Finset.Option
 import Mathlib.Data.PFun

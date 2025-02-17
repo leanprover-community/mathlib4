@@ -109,8 +109,7 @@ def Coe.addMonoidHom : AddMonoidHom (R_hat R K) (K_hat R K) where
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): was `ext v`
     refine funext fun v => ?_
     simp only [coe_apply, Pi.add_apply, Subring.coe_add]
-    -- Porting note: added
-    rw [Pi.add_apply, Pi.add_apply, Subring.coe_add]
+    rfl
 
 /-- The inclusion of `R_hat` in `K_hat` as a ring homomorphism. -/
 @[simps]
@@ -122,8 +121,7 @@ def Coe.ringHom : RingHom (R_hat R K) (K_hat R K) :=
       -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): was `ext p`
       refine funext fun p => ?_
       simp only [Pi.mul_apply, Subring.coe_mul]
-      -- Porting note: added
-      rw [Pi.mul_apply, Pi.mul_apply, Subring.coe_mul] }
+      rfl }
 
 end FiniteIntegralAdeles
 
