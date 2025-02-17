@@ -991,7 +991,7 @@ theorem liminf_le_of_frequently_le' {α β} [CompleteLattice β] {f : Filter α}
   refine sSup_le fun b hb => ?_
   have hbx : ∃ᶠ _ in f, b ≤ x := by
     revert h
-    rw [← not_imp_not, not_frequently, not_frequently]
+    rw [← not_imp_not]; push_neg
     exact fun h => hb.mp (h.mono fun a hbx hba hax => hbx (hba.trans hax))
   exact hbx.exists.choose_spec
 
@@ -1007,8 +1007,8 @@ theorem _root_.CompleteLatticeHom.apply_limsup_iterate (f : CompleteLatticeHom �
   rw [limsup_eq_iInf_iSup_of_nat', map_iInf]
   simp_rw [_root_.map_iSup, ← Function.comp_apply (f := f), ← Function.iterate_succ' f,
     ← Nat.add_succ]
-  conv_rhs => rw [iInf_split _ (0 < ·)]
-  simp only [not_lt, Nat.le_zero, iInf_iInf_eq_left, add_zero, iInf_nat_gt_zero_eq, left_eq_inf]
+  conv_rhs => rw [iInf_split _ (0 < ·)]; push_neg
+  simp only [iInf_iInf_eq_left, add_zero, iInf_nat_gt_zero_eq, left_eq_inf]
   refine (iInf_le (fun i => ⨆ j, f^[j + (i + 1)] a) 0).trans ?_
   simp only [zero_add, Function.comp_apply, iSup_le_iff]
   exact fun i => le_iSup (fun i => f^[i] a) (i + 1)
@@ -1273,7 +1273,6 @@ theorem frequently_lt_of_lt_limsSup {f : Filter α} [ConditionallyCompleteLinear
     (hf : f.IsCobounded (· ≤ ·) := by isBoundedDefault)
     (h : a < limsSup f) : ∃ᶠ n in f, a < n := by
   contrapose! h
-  simp only [not_frequently, not_lt] at h
   exact limsSup_le_of_le hf h
 
 theorem frequently_lt_of_limsInf_lt {f : Filter α} [ConditionallyCompleteLinearOrder α] {a : α}
@@ -1340,8 +1339,7 @@ theorem le_limsup_of_frequently_le {α β} [ConditionallyCompleteLinearOrder β]
     (hu : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault) :
     b ≤ limsup u f := by
   revert hu_le
-  rw [← not_imp_not, not_frequently]
-  simp_rw [← lt_iff_not_ge]
+  rw [← not_imp_not]; push_neg
   exact fun h => eventually_lt_of_limsup_lt h hu
 
 theorem liminf_le_of_frequently_le {α β} [ConditionallyCompleteLinearOrder β] {f : Filter α}

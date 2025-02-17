@@ -138,7 +138,7 @@ theorem measureUnivNNReal_eq_zero [IsFiniteMeasure μ] : measureUnivNNReal μ = 
 
 theorem measureUnivNNReal_pos [IsFiniteMeasure μ] (hμ : μ ≠ 0) : 0 < measureUnivNNReal μ := by
   contrapose! hμ
-  simpa [measureUnivNNReal_eq_zero, Nat.le_zero] using hμ
+  exact measureUnivNNReal_eq_zero.mp hμ
 
 /-- `le_of_add_le_add_left` is normally applicable to `OrderedCancelAddCommMonoid`,
 but it holds for measures with the additional assumption that μ is finite. -/
@@ -747,8 +747,7 @@ theorem forall_measure_inter_spanningSets_eq_zero [MeasurableSpace α] {μ : Mea
 some member of the countable family of finite measure spanning sets has positive measure. -/
 theorem exists_measure_inter_spanningSets_pos [MeasurableSpace α] {μ : Measure α} [SigmaFinite μ]
     (s : Set α) : (∃ n, 0 < μ (s ∩ spanningSets μ n)) ↔ 0 < μ s := by
-  rw [← not_iff_not]
-  simp only [not_exists, not_lt, nonpos_iff_eq_zero]
+  rw [← not_iff_not]; push_neg
   exact forall_measure_inter_spanningSets_eq_zero s
 
 /-- If the union of a.e.-disjoint null-measurable sets has finite measure, then there are only
@@ -822,7 +821,8 @@ theorem countable_meas_pos_of_disjoint_iUnion₀ {ι : Type*} {_ : MeasurableSpa
       ⊆ ⋃ n, { i : ι | 0 < sfiniteSeq μ n (As i) } := by
     intro i hi
     by_contra con
-    simp only [mem_iUnion, mem_setOf_eq, not_exists, not_lt, nonpos_iff_eq_zero] at *
+    push _ ∈ _ at con hi
+    push_neg at con
     rw [sum_apply₀] at hi
     · simp_rw [con] at hi
       simp at hi
@@ -1289,7 +1289,7 @@ theorem exists_pos_measure_of_cover [Countable ι] {U : ι → Set α} (hU : ⋃
     (hμ : μ ≠ 0) : ∃ i, 0 < μ (U i) := by
   contrapose! hμ with H
   rw [← measure_univ_eq_zero, ← hU]
-  exact measure_iUnion_null fun i => nonpos_iff_eq_zero.1 (H i)
+  exact measure_iUnion_null H
 
 theorem exists_pos_preimage_ball [PseudoMetricSpace δ] (f : α → δ) (x : δ) (hμ : μ ≠ 0) :
     ∃ n : ℕ, 0 < μ (f ⁻¹' Metric.ball x n) :=
@@ -1524,8 +1524,8 @@ noncomputable irreducible_def MeasureTheory.Measure.finiteSpanningSetsInOpen' [T
     isOpen_sUnion_countable S fun s hs => hs.1
   rw [μ.isTopologicalBasis_isOpen_lt_top.sUnion_eq] at hT
   have T_ne : T.Nonempty := by
-    by_contra h'T
-    rw [not_nonempty_iff_eq_empty.1 h'T, sUnion_empty] at hT
+    by_contra! h'T
+    rw [h'T, sUnion_empty] at hT
     simpa only [← hT] using mem_univ (default : α)
   obtain ⟨f, hf⟩ : ∃ f : ℕ → Set α, T = range f := T_count.exists_eq_range T_ne
   have fS : ∀ n, f n ∈ S := by

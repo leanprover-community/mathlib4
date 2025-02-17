@@ -106,7 +106,7 @@ variable [Group α] [Group G] [Group G']
 @[to_additive "A non-cyclic additive group is non-trivial."]
 theorem Nontrivial.of_not_isCyclic (nc : ¬IsCyclic α) : Nontrivial α := by
   contrapose! nc
-  exact @isCyclic_of_subsingleton _ _ (not_nontrivial_iff_subsingleton.mp nc)
+  exact @isCyclic_of_subsingleton _ _ nc
 
 @[to_additive]
 theorem MonoidHom.map_cyclic [h : IsCyclic G] (σ : G →* G) :
@@ -484,9 +484,9 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
   let c := Fintype.card α
   have hc0 : 0 < c := Fintype.card_pos_iff.2 ⟨1⟩
   apply card_orderOf_eq_totient_aux₁ hn hd
-  by_contra h0
+  by_contra! h0
   -- Must qualify `Finset.card_eq_zero` because of https://github.com/leanprover/lean4/issues/2849
-  simp_rw [not_lt, Nat.le_zero, Finset.card_eq_zero] at h0
+  simp only [Finset.card_eq_zero] at h0
   apply lt_irrefl c
   calc
     c = ∑ m ∈ c.divisors, #{a : α | orderOf a = m} := by

@@ -53,9 +53,9 @@ lemma order_eq_nat_iff (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) : hf.order = ↑n
   unfold order
   split_ifs with h
   · simp only [ENat.top_ne_coe, false_iff]
-    contrapose! h
+    contrapose h
     rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff]
-    exact ⟨n, h⟩
+    exact ⟨n, of_not_not h⟩
   · rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff] at h
     refine ⟨fun hn ↦ (WithTop.coe_inj.mp hn : h.choose = n) ▸ h.choose_spec, fun h' ↦ ?_⟩
     rw [unique_eventuallyEq_pow_smul_nonzero h.choose_spec h']

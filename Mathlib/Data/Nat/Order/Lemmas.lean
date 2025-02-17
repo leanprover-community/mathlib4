@@ -42,7 +42,6 @@ lemma exists_not_and_succ_of_not_zero_of_exists {p : ℕ → Prop} (H' : ¬ p 0)
   suffices 0 < k from
     ⟨k - 1, Nat.find_min H <| Nat.pred_lt this.ne', by rwa [Nat.sub_add_cancel this]⟩
   by_contra! contra
-  rw [le_zero_eq] at contra
   exact H' (contra ▸ hk)
 
 end Nat

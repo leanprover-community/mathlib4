@@ -231,7 +231,7 @@ theorem span_le_degreeLE_of_finite {s : Set R[X]} (s_fin : s.Finite) :
   by_cases s_emp : s.Nonempty
   · rcases exists_degree_le_of_mem_span_of_finite s_fin s_emp with ⟨p', _, hp'max⟩
     exact ⟨natDegree p', fun p hp => mem_degreeLE.mpr ((hp'max _ hp).trans degree_le_natDegree)⟩
-  · rw [Set.not_nonempty_iff_eq_empty] at s_emp
+  · push_neg at s_emp
     rw [s_emp, Submodule.span_empty]
     exact ⟨0, bot_le⟩
 

@@ -142,9 +142,8 @@ element. -/
 lemma subsingleton_of_disjoint_isClopen
     (h_clopen : ∀ i, IsClopen (s i)) :
     Subsingleton ι := by
-  replace h_nonempty : ∀ i, s i ≠ ∅ := by intro i; rw [← nonempty_iff_ne_empty]; exact h_nonempty i
-  rw [← not_nontrivial_iff_subsingleton]
-  by_contra contra
+  replace h_nonempty : ∀ i, s i ≠ ∅ := by push_neg; exact h_nonempty
+  by_contra! contra
   obtain ⟨i, j, h_ne⟩ := contra
   replace h_ne : s i ∩ s j = ∅ := by
     simpa only [← bot_eq_empty, eq_bot_iff, ← inf_eq_inter, ← disjoint_iff_inf_le] using h_disj h_ne
@@ -261,9 +260,9 @@ theorem isPreconnected_iff_subset_of_disjoint {s : Set α} :
     have hyu : y ∈ u := or_iff_not_imp_right.mp (hs hys) hyv
     exact h ⟨y, hys, hyu⟩ ⟨x, hxs, hxv⟩
   · intro u v hu hv hs hsu hsv
-    by_contra H
-    specialize h u v hu hv hs (Set.not_nonempty_iff_eq_empty.mp H)
-    apply H
+    by_contra! H
+    specialize h u v hu hv hs H
+    absurd H; push_neg
     rcases h with h | h
     · rcases hsv with ⟨x, hxs, hxv⟩
       exact ⟨x, hxs, ⟨h hxs, hxv⟩⟩
@@ -319,9 +318,9 @@ theorem isPreconnected_iff_subset_of_disjoint_closed :
     exact h ⟨y, hys, hyu⟩ ⟨x, hxs, hxv⟩
   · rw [isPreconnected_closed_iff]
     intro u v hu hv hs hsu hsv
-    by_contra H
-    specialize h u v hu hv hs (Set.not_nonempty_iff_eq_empty.mp H)
-    apply H
+    by_contra! H
+    specialize h u v hu hv hs H
+    absurd H; push_neg
     rcases h with h | h
     · rcases hsv with ⟨x, hxs, hxv⟩
       exact ⟨x, hxs, ⟨h hxs, hxv⟩⟩

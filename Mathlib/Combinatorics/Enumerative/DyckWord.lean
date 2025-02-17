@@ -256,7 +256,7 @@ def firstReturn : ℕ :=
 include h in
 lemma firstReturn_pos : 0 < p.firstReturn := by
   by_contra! f
-  rw [Nat.le_zero, firstReturn, findIdx_eq] at f
+  rw [firstReturn, findIdx_eq] at f
   #adaptation_note
   /--
   If we don't swap, then the second goal is dropped after completing the first goal.

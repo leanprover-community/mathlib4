@@ -238,6 +238,7 @@ theorem not_isField_iff_exists_prime [Nontrivial R] :
       ⟨p, bot_lt_iff_ne_bot.mp (lt_of_lt_of_le bot_lt le_p), hp.isPrime⟩,
       fun ⟨p, ne_bot, Prime⟩ => ⟨p, bot_lt_iff_ne_bot.mpr ne_bot, lt_top_iff_ne_top.mpr Prime.1⟩⟩
 
+set_option push_neg.use_distrib true in
 /-- Also see `Ideal.isSimpleOrder` for the forward direction as an instance when `R` is a
 division (semi)ring.
 
@@ -249,7 +250,6 @@ theorem isField_iff_isSimpleOrder_ideal : IsField R ↔ IsSimpleOrder (Ideal R) 
         (false_of_nontrivial_of_subsingleton <| Ideal R).elim⟩
   rw [← not_iff_not, Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top, ← not_iff_not]
   push_neg
-  simp_rw [lt_top_iff_ne_top, bot_lt_iff_ne_bot, ← or_iff_not_imp_left, not_ne_iff]
   exact ⟨fun h => ⟨h⟩, fun h => h.2⟩
 
 /-- When a ring is not a field, the maximal ideals are nontrivial. -/

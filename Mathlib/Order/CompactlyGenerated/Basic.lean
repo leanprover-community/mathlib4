@@ -385,7 +385,7 @@ theorem DirectedOn.inf_sSup_eq (h : DirectedOn (· ≤ ·) s) : a ⊓ sSup s = �
         rcases hc s hs h hcinf.2 with ⟨d, ds, cd⟩
         refine (le_inf hcinf.1 cd).trans (le_trans ?_ (le_iSup₂ d ds))
         rfl
-      · rw [Set.not_nonempty_iff_eq_empty] at hs
+      · push_neg at hs
         simp [hs])
     iSup_inf_le_inf_sSup
 
@@ -551,10 +551,8 @@ theorem Iic_coatomic_of_compact_element {k : α} (h : IsCompactElement k) :
     by_cases hS : S.Nonempty
     · refine ⟨sSup S, h.directed_sSup_lt_of_lt hS cC.directedOn SC, ?_⟩
       intro; apply le_sSup
-    exact
-      ⟨b, lt_of_le_of_ne hbk H, by
-        simp only [Set.not_nonempty_iff_eq_empty.mp hS, Set.mem_empty_iff_false, forall_const,
-          forall_prop_of_false, not_false_iff]⟩
+    push_neg at hS
+    exact ⟨b, lt_of_le_of_ne hbk H, by simp [hS]⟩
 
 theorem coatomic_of_top_compact (h : IsCompactElement (⊤ : α)) : IsCoatomic α :=
   (@OrderIso.IicTop α _ _).isCoatomic_iff.mp (Iic_coatomic_of_compact_element h)

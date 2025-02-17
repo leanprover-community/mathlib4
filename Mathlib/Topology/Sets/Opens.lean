@@ -264,7 +264,7 @@ theorem isOpenEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
 alias openEmbedding_of_le := isOpenEmbedding_of_le
 
 theorem not_nonempty_iff_eq_bot (U : Opens α) : ¬Set.Nonempty (U : Set α) ↔ U = ⊥ := by
-  rw [← coe_inj, coe_bot, ← Set.not_nonempty_iff_eq_empty]
+  push_neg; rw [← coe_inj, coe_bot]
 
 theorem ne_bot_iff_nonempty (U : Opens α) : U ≠ ⊥ ↔ Set.Nonempty (U : Set α) := by
   rw [Ne, ← not_nonempty_iff_eq_bot, not_not]

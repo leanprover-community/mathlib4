@@ -1,15 +1,18 @@
 /-
 Copyright (c) 2022 Alice Laroche. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alice Laroche, Frédéric Dupuis, Jireh Loreaux
+Authors: Alice Laroche, Frédéric Dupuis, Jireh Loreaux, Jovan Gerbscheid
 -/
 
-import Mathlib.Order.Defs.LinearOrder
-import Mathlib.Tactic.PushNeg
+import Mathlib.Data.Finite.Defs
+import Mathlib.Data.Finset.Empty
+import Mathlib.Tactic.Push
+import Mathlib.Order.Filter.Basic
 
 private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
-variable {α β : Type} [LinearOrder β] {p q : Prop} {p' q' : α → Prop}
+-- set_option trace.Meta.Tactic.simp true
+variable {α β γ : Type} [LinearOrder β] [PartialOrder γ] [OrderTop γ] {p q : Prop} {p' q' : α → Prop}
 
 example : (¬p ∧ ¬q) → ¬(p ∨ q) := by
   intro h
@@ -58,6 +61,11 @@ example (x y : β) (h : y < x) : ¬(x ≤ y) := by
 example (a b : β) (h : a ≤ b) : ¬ a > b := by
   push_neg
   guard_target = a ≤ b
+  exact h
+
+example (x : γ) (h : x = ⊤) : ¬(x < ⊤) := by
+  push_neg
+  guard_target = x = ⊤
   exact h
 
 example (x y : α) (h : x = y) : ¬ (x ≠ y) := by
@@ -160,6 +168,28 @@ example (a : α) (o : Option α) (h : ¬∀ hs, o.get hs ≠ a) : ∃ hs, o.get 
   push_neg at h
   exact h
 
+theorem mem_compl (s : Set α) (a : α) (h : a ∉ sᶜ) : a ∈ s := by
+  push_neg at h
+  exact h
+
+example (f : Filter ℕ) (h : ¬∀ᶠ x in f, x = 0) : ∃ᶠ x in f, x ≠ 0 := by
+  push_neg at h
+  exact h
+
+example (f : Filter ℕ) (h : ¬∃ᶠ x in f, x = 0) : ∀ᶠ x in f, x ≠ 0 := by
+  push_neg at h
+  exact h
+
+section Empty
+
+example (h : ¬IsEmpty α) : Nonempty α := by
+  push_neg at h
+  exact h
+
+example (h : ¬Nonempty α) : IsEmpty α := by
+  push_neg at h
+  exact h
+
 example (s : Set α) (h : ¬s.Nonempty) : s = ∅ := by
   push_neg at h
   exact h
@@ -175,6 +205,56 @@ example (s : Set α) (h : s ≠ ∅) : s.Nonempty := by
 example (s : Set α) (h : ∅ ≠ s) : s.Nonempty := by
   push_neg at h
   exact h
+
+example (s : Finset α) (h : ¬s.Nonempty) : s = ∅ := by
+  push_neg at h
+  exact h
+
+example (s : Finset α) (h : ¬ s = ∅) : s.Nonempty := by
+  push_neg at h
+  exact h
+
+example (s : Finset α) (h : s ≠ ∅) : s.Nonempty := by
+  push_neg at h
+  exact h
+
+example (s : Finset α) (h : ∅ ≠ s) : s.Nonempty := by
+  push_neg at h
+  exact h
+
+end Empty
+
+section Subsingleton
+
+example (h : ¬Nontrivial α) : Subsingleton α := by
+  push_neg at h
+  exact h
+
+example (h : ¬Subsingleton α) : Nontrivial α := by
+  push_neg at h
+  exact h
+
+end Subsingleton
+
+section Finite
+
+example (h : ¬Finite α) : Infinite α := by
+  push_neg at h
+  exact h
+
+example (h : ¬Infinite α) : Finite α := by
+  push_neg at h
+  exact h
+
+example (s : Set α) (h : ¬s.Finite) : s.Infinite := by
+  push_neg at h
+  exact h
+
+example (s : Set α) (h : ¬s.Infinite) : s.Finite := by
+  push_neg at h
+  exact h
+
+end Finite
 
 namespace no_proj
 
@@ -196,3 +276,30 @@ example {p q : Nat} : ¬ g.Adj p q := by
   exact test_sorry
 
 end no_proj
+
+section Conv
+
+example (h : (¬ ∀ n > 0, n = 3 → n = 5) ∧ ¬ ∃ n, n = 0) :
+    (∃ n > 0, n = 3 ∧ n ≠ 5) ∧ ¬ ∃ n, n = 0 := by
+  conv at h =>
+    arg 1
+    push Not
+  exact h
+
+end Conv
+
+section Simproc
+
+example (a : β) : ¬ ∀ x : β, x < a → ∃ y : β, (y < a) ∧ ∀ z : β, x = z := by
+  simp [↓pushNeg]
+  guard_target = ∃ x, x < a ∧ ∀ (y : β), y < a → ∃ z, x ≠ z
+  exact test_sorry
+
+attribute [local simp] Fin.forall_iff
+-- verify that `↓pushNeg` overrides a lemma like `Fin.forall_iff`.
+example : ¬ ∀ i : Fin n, i ≠ i := by
+  simp [↓pushNeg]
+  guard_target = ∃ i : Fin n, True
+  exact test_sorry
+
+end Simproc

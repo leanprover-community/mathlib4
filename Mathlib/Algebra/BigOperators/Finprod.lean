@@ -580,7 +580,7 @@ theorem MonoidHom.map_finprod {f : α → M} (g : M →* N) (hf : (mulSupport f)
     g (∏ᶠ i, f i) = ∏ᶠ i, g (f i) :=
   g.map_finprod_plift f <| hf.preimage Equiv.plift.injective.injOn
 
-@[to_additive]
+@[to_additive (attr := push)]
 theorem finprod_pow (hf : (mulSupport f).Finite) (n : ℕ) : (∏ᶠ i, f i) ^ n = ∏ᶠ i, f i ^ n :=
   (powMonoidHom n).map_finprod hf
 

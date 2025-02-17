@@ -54,7 +54,7 @@ lemma _root_.MonoidHom.exists_nhds_isBounded (f : G →* H) (hf : Measurable f) 
   let K : PositiveCompacts G := Classical.arbitrary _
   obtain ⟨n, hn⟩ : ∃ n : ℕ, 0 < haar (interior K ∩ f ⁻¹' ball 1 n) := by
     by_contra!
-    simp_rw [nonpos_iff_eq_zero, ← measure_iUnion_null_iff, ← inter_iUnion, ← preimage_iUnion,
+    simp_rw [← measure_iUnion_null_iff, ← inter_iUnion, ← preimage_iUnion,
       iUnion_ball_nat, preimage_univ, inter_univ] at this
     exact this.not_gt <| isOpen_interior.measure_pos _ K.interior_nonempty
   rw [← one_mul x, ← op_smul_eq_mul]

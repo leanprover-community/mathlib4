@@ -5,9 +5,9 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Nontrivial.Defs
-import Mathlib.Tactic.Contrapose
+import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Tactic.GCongr.CoreAttrs
-import Mathlib.Tactic.PushNeg
+import Mathlib.Tactic.Push
 import Mathlib.Util.AssertExists
 
 /-!
@@ -324,7 +324,7 @@ set_option push_neg.use_distrib true in
   at least one of them is greater than 1 and both are positive. -/
 lemma one_lt_mul_iff : 1 < m * n ↔ 0 < m ∧ 0 < n ∧ (1 < m ∨ 1 < n) := by
   constructor <;> intro h
-  · by_contra h'; push_neg at h'; simp [Nat.le_zero] at h'
+  · by_contra h'; push_neg at h'
     obtain rfl | rfl | h' := h'
     · simp at h
     · simp at h

@@ -50,7 +50,7 @@ instance instOne [∀ i, One <| f i] : One (∀ i : I, f i) :=
 theorem one_apply [∀ i, One <| f i] : (1 : ∀ i, f i) i = 1 :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := push ←)]
 theorem one_def [∀ i, One <| f i] : (1 : ∀ i, f i) = fun _ => 1 :=
   rfl
 
@@ -72,7 +72,7 @@ instance instMul [∀ i, Mul <| f i] : Mul (∀ i : I, f i) :=
 theorem mul_apply [∀ i, Mul <| f i] : (x * y) i = x i * y i :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := push ←)]
 theorem mul_def [∀ i, Mul <| f i] : x * y = fun i => x i * y i :=
   rfl
 
@@ -95,7 +95,7 @@ instance instPow [∀ i, Pow (f i) β] : Pow (∀ i, f i) β :=
 theorem pow_apply [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) (i : I) : (x ^ b) i = x i ^ b :=
   rfl
 
-@[to_additive (attr := to_additive) (reorder := 5 6) smul_def]
+@[to_additive (attr := push ←, to_additive) (reorder := 5 6) smul_def]
 theorem pow_def [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) : x ^ b = fun i => x i ^ b :=
   rfl
 
@@ -116,7 +116,7 @@ instance instInv [∀ i, Inv <| f i] : Inv (∀ i : I, f i) :=
 theorem inv_apply [∀ i, Inv <| f i] : x⁻¹ i = (x i)⁻¹ :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := push ←)]
 theorem inv_def [∀ i, Inv <| f i] : x⁻¹ = fun i => (x i)⁻¹ :=
   rfl
 
@@ -135,7 +135,7 @@ instance instDiv [∀ i, Div <| f i] : Div (∀ i : I, f i) :=
 theorem div_apply [∀ i, Div <| f i] : (x / y) i = x i / y i :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := push ←)]
 theorem div_def [∀ i, Div <| f i] : x / y = fun i => x i / y i :=
   rfl
 

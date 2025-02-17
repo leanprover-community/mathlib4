@@ -517,7 +517,8 @@ lemma height_eq_coe_iff_minimal_le_height {a : α} {n : ℕ} :
         coe_lt_height_iff, *]
   · suffices ∃ x < a, ↑n ≤ height x by
       simp_all [minimal_iff_forall_lt]
-    simp only [not_lt, top_le_iff, height_eq_top_iff] at hfin
+    push_neg at hfin
+    simp only [height_eq_top_iff] at hfin
     obtain ⟨p, rfl, hp⟩ := hfin (n+1)
     use p.eraseLast.last, RelSeries.eraseLast_last_rel_last _ (by omega)
     simpa [hp] using length_le_height_last (p := p.eraseLast)

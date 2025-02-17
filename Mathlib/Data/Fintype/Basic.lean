@@ -216,6 +216,7 @@ theorem compl_eq_univ_sdiff (s : Finset α) : sᶜ = univ \ s :=
 @[simp]
 theorem mem_compl : a ∈ sᶜ ↔ a ∉ s := by simp [compl_eq_univ_sdiff]
 
+@[push]
 theorem not_mem_compl : a ∉ sᶜ ↔ a ∈ s := by rw [mem_compl, not_not]
 
 @[simp, norm_cast]

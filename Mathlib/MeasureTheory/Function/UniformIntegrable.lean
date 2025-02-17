@@ -486,7 +486,7 @@ theorem tendsto_Lp_finite_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤
   rw [ENNReal.tendsto_atTop_zero]
   intro ε hε
   by_cases h : ε < ∞; swap
-  · rw [not_lt, top_le_iff] at h
+  · push_neg at h
     exact ⟨0, fun n _ => by simp [h]⟩
   by_cases hμ : μ = 0
   · exact ⟨0, fun n _ => by simp [hμ]⟩

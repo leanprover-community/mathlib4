@@ -365,8 +365,7 @@ theorem eq_properDivisors_of_subset_of_sum_eq_sum {s : Finset ℕ} (hsub : s ⊆
     intro h
     apply Subset.antisymm hsub
     rw [← sdiff_eq_empty_iff_subset]
-    contrapose h
-    rw [← Ne, ← nonempty_iff_ne_empty] at h
+    contrapose! h
     apply ne_of_lt
     rw [← zero_add (∑ x ∈ s, x), ← add_assoc, add_zero]
     apply add_lt_add_right
@@ -411,7 +410,7 @@ theorem properDivisors_eq_singleton_one_iff_prime : n.properDivisors = {1} ↔ n
       have := Nat.le_of_dvd ?_ hdvd
       · simpa [hdvd, this] using (le_iff_eq_or_lt.mp this).symm
       · by_contra!
-        simp only [nonpos_iff_eq_zero.mp this, this] at h
+        simp only [this] at h
         contradiction
   · exact fun h => Prime.properDivisors h
 

@@ -158,15 +158,14 @@ lemma apply_add_one_ne_of_apply_eq {i j : ℕ} (hi : N ≤ i) (hj : N ≤ j) (hi
     (hc.apply_add_one_lt_of_apply_eq hj h ha.symm).ne'
 
 lemma exists_infinite_setOf_apply_eq : ∃ m, {i | a i = m}.Infinite := by
-  by_contra hi
+  by_contra! hi
   have hr : (Set.range a).Infinite := by
     contrapose! hi with hr
-    rw [Set.not_infinite, ← Set.finite_coe_iff] at hr
+    rw [← Set.finite_coe_iff] at hr
     obtain ⟨n, hn⟩ := Finite.exists_infinite_fiber (Set.rangeFactorization a)
     rw [Set.infinite_coe_iff, Set.preimage] at hn
     simp only [Set.mem_singleton_iff, Set.rangeFactorization, Subtype.ext_iff] at hn
     exact ⟨↑n, hn⟩
-  simp only [not_exists, Set.not_infinite] at hi
   have hinj : Set.InjOn (fun i ↦ Nat.nth (a · = i) 0 + 1) (Set.range a \ Set.Ico 0 (M a N)) := by
     rintro _ ⟨⟨_, rfl⟩, hi⟩ _ ⟨⟨_, rfl⟩, hj⟩ h
     simp only [Set.mem_diff, Set.mem_range, Set.mem_Ico, zero_le, true_and, not_lt] at hi hj
@@ -336,7 +335,7 @@ lemma bddAbove_setOf_k_lt_card : BddAbove {m | ∀ hf : {i | a i = m}.Finite, k 
 
 lemma k_pos : 0 < k a := by
   by_contra! hn
-  apply nonpos_iff_eq_zero.mp hn ▸ hc.infinite_setOf_apply_eq_k
+  apply hn ▸ hc.infinite_setOf_apply_eq_k
   convert Set.finite_empty
   ext i
   simp [(hc.pos i).ne']
@@ -627,7 +626,7 @@ lemma apply_add_one_eq_card_small_le_card_eq {i : ℕ} (hi : N' a N < i) (hib : 
       rw [Nat.lt_add_one_iff, ← Small] at hts
       have ht0 : 0 < t := by
         by_contra! h0
-        simp [nonpos_iff_eq_zero.mp h0, hc.apply_ne_zero] at htr
+        simp [h0, hc.apply_ne_zero] at htr
       rw [← hc.infinite_setOf_apply_eq_iff_small ht0] at hts
       rw [← Nat.count_eq_card_filter_range] at htr
       constructor
@@ -643,11 +642,9 @@ lemma apply_add_one_eq_card_small_le_card_eq {i : ℕ} (hi : N' a N < i) (hib : 
     rw [← Small] at ht hu
     have ht0 : 0 < t := by
       by_contra! h0
-      simp only [nonpos_iff_eq_zero] at h0
       simp [h0, hc.apply_ne_zero] at ht
     have hu0 : 0 < u := by
       by_contra! h0
-      simp only [nonpos_iff_eq_zero] at h0
       simp [h0, hc.apply_ne_zero] at hu
     rw [← hc.infinite_setOf_apply_eq_iff_small ht0] at ht
     rw [← hc.infinite_setOf_apply_eq_iff_small hu0] at hu

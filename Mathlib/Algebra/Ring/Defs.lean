@@ -225,6 +225,7 @@ variable [CommSemiring α]
 theorem add_mul_self_eq (a b : α) : (a + b) * (a + b) = a * a + 2 * a * b + b * b := by
   simp only [two_mul, add_mul, mul_add, add_assoc, mul_comm b]
 
+@[push]
 lemma add_sq (a b : α) : (a + b) ^ 2 = a ^ 2 + 2 * a * b + b ^ 2 := by
   simp only [sq, add_mul_self_eq]
 

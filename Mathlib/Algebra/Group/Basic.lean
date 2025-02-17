@@ -215,7 +215,7 @@ variable [CommMonoid M] {x y z : M}
 theorem inv_unique (hy : x * y = 1) (hz : x * z = 1) : y = z :=
   left_inv_eq_right_inv (Trans.trans (mul_comm _ _) hy) hz
 
-@[to_additive nsmul_add] lemma mul_pow (a b : M) : ∀ n, (a * b) ^ n = a ^ n * b ^ n
+@[to_additive (attr := push) nsmul_add] lemma mul_pow (a b : M) : ∀ n, (a * b) ^ n = a ^ n * b ^ n
   | 0 => by rw [pow_zero, pow_zero, pow_zero, one_mul]
   | n + 1 => by rw [pow_succ', pow_succ', pow_succ', mul_pow, mul_mul_mul_comm]
 
@@ -395,7 +395,7 @@ theorem one_div_mul_one_div_rev : 1 / a * (1 / b) = 1 / (b * a) := by simp
 @[to_additive]
 theorem inv_div_left : a⁻¹ / b = (b * a)⁻¹ := by simp
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, push)]
 theorem inv_div : (a / b)⁻¹ = b / a := by simp
 
 @[to_additive]
@@ -413,7 +413,7 @@ instance (priority := 100) DivisionMonoid.toDivInvOneMonoid : DivInvOneMonoid α
   { DivisionMonoid.toDivInvMonoid with
     inv_one := by simpa only [one_div, inv_inv] using (inv_div (1 : α) 1).symm }
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, push, push ←)]
 lemma inv_pow (a : α) : ∀ n : ℕ, a⁻¹ ^ n = (a ^ n)⁻¹
   | 0 => by rw [pow_zero, pow_zero, inv_one]
   | n + 1 => by rw [pow_succ', pow_succ, inv_pow _ n, mul_inv_rev]
@@ -438,12 +438,12 @@ lemma zpow_neg (a : α) : ∀ n : ℤ, a ^ (-n) = (a ^ n)⁻¹
 lemma mul_zpow_neg_one (a b : α) : (a * b) ^ (-1 : ℤ) = b ^ (-1 : ℤ) * a ^ (-1 : ℤ) := by
   simp only [zpow_neg, zpow_one, mul_inv_rev]
 
-@[to_additive zsmul_neg]
+@[to_additive (attr := push ←) zsmul_neg]
 lemma inv_zpow (a : α) : ∀ n : ℤ, a⁻¹ ^ n = (a ^ n)⁻¹
   | (n : ℕ)    => by rw [zpow_natCast, zpow_natCast, inv_pow]
   | .negSucc n => by rw [zpow_negSucc, zpow_negSucc, inv_pow]
 
-@[to_additive (attr := simp) zsmul_neg']
+@[to_additive (attr := simp, push) zsmul_neg']
 lemma inv_zpow' (a : α) (n : ℤ) : a⁻¹ ^ n = a ^ (-n) := by rw [inv_zpow, zpow_neg]
 
 @[to_additive nsmul_zero_sub]
@@ -514,7 +514,7 @@ variable [DivisionCommMonoid α] (a b c d : α)
 
 attribute [local simp] mul_assoc mul_comm mul_left_comm div_eq_mul_inv
 
-@[to_additive neg_add]
+@[to_additive (attr := push high) neg_add]
 theorem mul_inv : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by simp
 
 @[to_additive]
@@ -589,11 +589,11 @@ theorem mul_div_mul_comm : a * b / (c * d) = a / c * (b / d) := by simp
   | (n : ℕ) => by simp_rw [zpow_natCast, mul_pow]
   | .negSucc n => by simp_rw [zpow_negSucc, ← inv_pow, mul_inv, mul_pow]
 
-@[to_additive nsmul_sub]
+@[to_additive (attr := push) nsmul_sub]
 lemma div_pow (a b : α) (n : ℕ) : (a / b) ^ n = a ^ n / b ^ n := by
   simp only [div_eq_mul_inv, mul_pow, inv_pow]
 
-@[to_additive zsmul_sub]
+@[to_additive (attr := push) zsmul_sub]
 lemma div_zpow (a b : α) (n : ℤ) : (a / b) ^ n = a ^ n / b ^ n := by
   simp only [div_eq_mul_inv, mul_zpow, inv_zpow]
 
@@ -799,7 +799,7 @@ theorem leftInverse_inv_mul_mul_right (c : G) :
 @[to_additive (attr := simp) natAbs_nsmul_eq_zero]
 lemma pow_natAbs_eq_one : a ^ n.natAbs = 1 ↔ a ^ n = 1 := by cases n <;> simp
 
-@[to_additive sub_nsmul]
+@[to_additive (attr := push) sub_nsmul]
 lemma pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ :=
   eq_mul_inv_of_mul_eq <| by rw [← pow_add, Nat.sub_add_cancel h]
 

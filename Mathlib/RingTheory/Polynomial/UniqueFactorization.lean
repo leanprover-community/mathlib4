@@ -68,7 +68,7 @@ theorem exists_irreducible_of_degree_pos (hf : 0 < f.degree) : ∃ g, Irreducibl
 theorem exists_irreducible_of_natDegree_pos (hf : 0 < f.natDegree) : ∃ g, Irreducible g ∧ g ∣ f :=
   exists_irreducible_of_degree_pos <| by
     contrapose! hf
-    exact natDegree_le_of_degree_le hf
+    exact natDegree_eq_zero_iff_degree_le_zero.mpr hf
 
 theorem exists_irreducible_of_natDegree_ne_zero (hf : f.natDegree ≠ 0) :
     ∃ g, Irreducible g ∧ g ∣ f :=

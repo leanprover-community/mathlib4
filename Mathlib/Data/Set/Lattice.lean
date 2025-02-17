@@ -387,7 +387,7 @@ lemma iInter_eq_const (hf : ∀ i, f i = s) : ⋂ i, f i = s :=
 
 end Nonempty
 
-@[simp]
+@[simp, push]
 theorem compl_iUnion (s : ι → Set β) : (⋃ i, s i)ᶜ = ⋂ i, (s i)ᶜ :=
   compl_iSup
 
@@ -396,7 +396,7 @@ theorem compl_iUnion (s : ι → Set β) : (⋃ i, s i)ᶜ = ⋂ i, (s i)ᶜ :=
 theorem compl_iUnion₂ (s : ∀ i, κ i → Set α) : (⋃ (i) (j), s i j)ᶜ = ⋂ (i) (j), (s i j)ᶜ := by
   simp_rw [compl_iUnion]
 
-@[simp]
+@[simp, push]
 theorem compl_iInter (s : ι → Set β) : (⋂ i, s i)ᶜ = ⋃ i, (s i)ᶜ :=
   compl_iInf
 
@@ -1072,6 +1072,7 @@ theorem nonempty_sInter {c : Set (Set α)} : (⋂₀ c).Nonempty ↔ ∃ a, ∀ 
   simp [nonempty_iff_ne_empty, sInter_eq_empty_iff]
 
 -- classical
+@[push]
 theorem compl_sUnion (S : Set (Set α)) : (⋃₀ S)ᶜ = ⋂₀ (compl '' S) :=
   ext fun x => by simp
 
@@ -1080,6 +1081,7 @@ theorem sUnion_eq_compl_sInter_compl (S : Set (Set α)) : ⋃₀ S = (⋂₀ (co
   rw [← compl_compl (⋃₀ S), compl_sUnion]
 
 -- classical
+@[push]
 theorem compl_sInter (S : Set (Set α)) : (⋂₀ S)ᶜ = ⋃₀ (compl '' S) := by
   rw [sUnion_eq_compl_sInter_compl, compl_compl_image]
 

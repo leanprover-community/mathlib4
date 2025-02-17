@@ -54,7 +54,7 @@ theorem mem_of_mem_insert_of_ne : b ∈ insert a s → b ≠ a → b ∈ s :=
 theorem eq_of_not_mem_of_mem_insert : b ∈ insert a s → b ∉ s → b = a :=
   Or.resolve_right
 
-@[simp]
+@[simp, push]
 theorem mem_insert_iff {x a : α} {s : Set α} : x ∈ insert a s ↔ x = a ∨ x ∈ s :=
   Iff.rfl
 
@@ -168,7 +168,7 @@ instance : LawfulSingleton α (Set α) :=
 theorem singleton_def (a : α) : ({a} : Set α) = insert a ∅ :=
   (insert_emptyc_eq a).symm
 
-@[simp]
+@[simp, push]
 theorem mem_singleton_iff {a b : α} : a ∈ ({b} : Set α) ↔ a = b :=
   Iff.rfl
 
@@ -326,10 +326,11 @@ lemma ssubset_iff_sdiff_singleton : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t \ {a} := by
 theorem mem_compl_singleton_iff {a x : α} : x ∈ ({a} : Set α)ᶜ ↔ x ≠ a :=
   Iff.rfl
 
+@[push]
 theorem compl_singleton_eq (a : α) : ({a} : Set α)ᶜ = { x | x ≠ a } :=
   rfl
 
-@[simp]
+@[simp, push high]
 theorem compl_ne_eq_singleton (a : α) : ({ x | x ≠ a } : Set α)ᶜ = {a} :=
   compl_compl _
 

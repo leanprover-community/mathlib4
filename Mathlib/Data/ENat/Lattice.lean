@@ -94,7 +94,6 @@ lemma sSup_eq_top_of_infinite (h : s.Infinite) : sSup s = ⊤ := by
   | top => simp at hx
   | coe x =>
     contrapose! h
-    simp only [not_infinite]
     apply Finite.subset <| Finite.Set.finite_image {n : ℕ | n ≤ x} (fun (n : ℕ) => (n : ℕ∞))
     intro y hy
     specialize h y hy
@@ -104,7 +103,6 @@ lemma sSup_eq_top_of_infinite (h : s.Infinite) : sSup s = ⊤ := by
 
 lemma finite_of_sSup_lt_top (h : sSup s < ⊤) : s.Finite := by
   contrapose! h
-  simp only [top_le_iff]
   exact sSup_eq_top_of_infinite h
 
 lemma sSup_mem_of_nonempty_of_lt_top [Nonempty s] (hs' : sSup s < ⊤) : sSup s ∈ s :=

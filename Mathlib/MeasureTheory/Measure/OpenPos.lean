@@ -49,8 +49,7 @@ theorem _root_.IsOpen.measure_pos_iff (hU : IsOpen U) : 0 < μ U ↔ U.Nonempty 
   ⟨fun h => nonempty_iff_ne_empty.2 fun he => h.ne' <| he.symm ▸ measure_empty, hU.measure_pos μ⟩
 
 theorem _root_.IsOpen.measure_eq_zero_iff (hU : IsOpen U) : μ U = 0 ↔ U = ∅ := by
-  simpa only [not_lt, nonpos_iff_eq_zero, not_nonempty_iff_eq_empty] using
-    not_congr (hU.measure_pos_iff μ)
+  simpa only [↓pushNeg] using not_congr (hU.measure_pos_iff μ)
 
 theorem measure_pos_of_nonempty_interior (h : (interior s).Nonempty) : 0 < μ s :=
   (isOpen_interior.measure_pos μ h).trans_le (measure_mono interior_subset)

@@ -62,8 +62,8 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
     · rw [P_succ, HomologicalComplex.comp_f, ← assoc, hq i h, zero_comp]
     · replace hi : n = i + q := by
         obtain ⟨j, hj⟩ := le_iff_exists_add.mp hi
-        rw [← Nat.lt_succ_iff, Nat.succ_eq_add_one, hj, not_lt, add_le_iff_nonpos_right,
-          nonpos_iff_eq_zero] at h
+        rw [← Nat.lt_succ_iff, Nat.succ_eq_add_one, hj, lt_add_iff_pos_right] at h
+        push_neg at h
         rw [← add_left_inj 1, hj, self_eq_add_right, h]
       rcases n with _|n
       · fin_cases i

@@ -559,16 +559,14 @@ section Liminf
 
 theorem exists_frequently_lt_of_liminf_ne_top {ι : Type*} {l : Filter ι} {x : ι → ℝ}
     (hx : liminf (fun n => (Real.nnabs (x n) : ℝ≥0∞)) l ≠ ∞) : ∃ R, ∃ᶠ n in l, x n < R := by
-  by_contra h
-  simp_rw [not_exists, not_frequently, not_lt] at h
+  by_contra! h
   refine hx (ENNReal.eq_top_of_forall_nnreal_le fun r => le_limsInf_of_le (by isBoundedDefault) ?_)
   simp only [eventually_map, ENNReal.coe_le_coe]
   filter_upwards [h r] with i hi using hi.trans (le_abs_self (x i))
 
 theorem exists_frequently_lt_of_liminf_ne_top' {ι : Type*} {l : Filter ι} {x : ι → ℝ}
     (hx : liminf (fun n => (Real.nnabs (x n) : ℝ≥0∞)) l ≠ ∞) : ∃ R, ∃ᶠ n in l, R < x n := by
-  by_contra h
-  simp_rw [not_exists, not_frequently, not_lt] at h
+  by_contra! h
   refine hx (ENNReal.eq_top_of_forall_nnreal_le fun r => le_limsInf_of_le (by isBoundedDefault) ?_)
   simp only [eventually_map, ENNReal.coe_le_coe]
   filter_upwards [h (-r)] with i hi using(le_neg.1 hi).trans (neg_le_abs _)
@@ -701,7 +699,7 @@ protected theorem tsum_eq_top_of_eq_top : (∃ a, f a = ∞) → ∑' a, f a = �
 protected theorem lt_top_of_tsum_ne_top {a : α → ℝ≥0∞} (tsum_ne_top : ∑' i, a i ≠ ∞) (j : α) :
     a j < ∞ := by
   contrapose! tsum_ne_top with h
-  exact ENNReal.tsum_eq_top_of_eq_top ⟨j, top_unique h⟩
+  exact ENNReal.tsum_eq_top_of_eq_top ⟨j, h⟩
 
 @[simp]
 protected theorem tsum_top [Nonempty α] : ∑' _ : α, ∞ = ∞ :=

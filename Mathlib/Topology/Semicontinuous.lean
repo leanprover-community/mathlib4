@@ -285,7 +285,7 @@ theorem lowerSemicontinuousWithinAt_iff_le_liminf {f : α → γ} :
     contrapose! hf
     obtain ⟨y, lty, ylt⟩ := exists_between hf; use y
     exact ⟨ylt, fun h => lty.not_le
-      (le_liminf_of_le (by isBoundedDefault) (h.mono fun _ hx => le_of_lt hx))⟩
+      (le_liminf_of_le (by isBoundedDefault) (h.mono fun _ hx => le_of_not_le hx))⟩
   exact fun hf y ylt => eventually_lt_of_lt_liminf (ylt.trans_le hf)
 
 alias ⟨LowerSemicontinuousWithinAt.le_liminf, _⟩ := lowerSemicontinuousWithinAt_iff_le_liminf
