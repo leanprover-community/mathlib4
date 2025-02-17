@@ -104,7 +104,7 @@ def colim.mapShortComplex : ShortComplex C :=
 variable {S c₂ c₃}
 
 include hc₂ hc₃ hS in
-/-- Assuming `HasExactColimitsOfShape J C`, this lemma rephases the exactness
+/-- Assuming `HasExactColimitsOfShape J C`, this lemma rephrases the exactness
 of the functor `colim : (J ⥤ C) ⥤ C` by saying that if `S : ShortComplex (J ⥤ C)`
 is exact, then the short complex obtained by taking the colimits is exact,
 where we allow the replacement of the chosen colimit cocones of the
