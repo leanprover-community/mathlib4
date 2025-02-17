@@ -1,7 +1,4 @@
 /-
-Broken by leanprover#lean4#7059
-
-/-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
@@ -1024,4 +1021,3 @@ instance : Countable {f : ℕ → ℕ // Computable f} :=
     (fun _ _ h => Subtype.val_inj.1 (PFun.lift_injective (by simpa using h)))
 
 end Nat.Partrec.Code
--/
