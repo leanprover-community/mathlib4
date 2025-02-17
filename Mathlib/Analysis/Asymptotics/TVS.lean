@@ -287,7 +287,7 @@ theorem IsLittleOTVS.prodMk [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
   rw [egauge_prod_pair, max_le_iff]
   exacts [⟨hfx, hgx⟩, hUb, hVb]
 
-theorem IsLittleOTVS.add [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
+theorem IsLittleOTVS.add [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
     {f₁ f₂ : α → E} {g : α → F} {l : Filter α}
     (h₁ : f₁ =o[𝕜; l] g) (h₂ : f₂ =o[𝕜; l] g) : (f₁ + f₂) =o[𝕜; l] g := by
   rw [(nhds_basis_balanced 𝕜 E).add_self.isLittleOTVS_iff (basis_sets _)]

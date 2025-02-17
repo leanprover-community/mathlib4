@@ -112,7 +112,7 @@ theorem extend_iUnion_le_tsum_nat' (s : ℕ → Set α) :
     · apply msU h
     funext i
     apply extend_eq _ (h i)
-  · cases' not_forall.1 h with i hi
+  · obtain ⟨i, hi⟩ := not_forall.1 h
     exact le_trans (le_iInf fun h => hi.elim h) (ENNReal.le_tsum i)
 
 end Subadditive

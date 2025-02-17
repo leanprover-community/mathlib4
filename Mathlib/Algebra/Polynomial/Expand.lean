@@ -236,11 +236,11 @@ theorem expand_contract [CharP R p] [NoZeroDivisors R] {f : R[X]} (hf : Polynomi
   rw [coeff_expand hp.bot_lt, coeff_contract hp]
   split_ifs with h
   · rw [Nat.div_mul_cancel h]
-  · cases' n with n
+  · rcases n with - | n
     · exact absurd (dvd_zero p) h
     have := coeff_derivative f n
     rw [hf, coeff_zero, zero_eq_mul] at this
-    cases' this with h'
+    rcases this with h' | _
     · rw [h']
     rename_i _ _ _ h'
     rw [← Nat.cast_succ, CharP.cast_eq_zero_iff R p] at h'

@@ -132,7 +132,7 @@ variable [LinearOrderedAddCommGroup α]
 /-- If we remove a smaller interval from a larger, the result is nonempty -/
 theorem nonempty_Ico_sdiff {x dx y dy : α} (h : dy < dx) (hx : 0 < dx) :
     Nonempty ↑(Ico x (x + dx) \ Ico y (y + dy)) := by
-  cases' lt_or_le x y with h' h'
+  rcases lt_or_le x y with h' | h'
   · use x
     simp [*, not_le.2 h']
   · use max x (x + dy)
