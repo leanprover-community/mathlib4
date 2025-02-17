@@ -698,25 +698,4 @@ theorem pairwise_cons {a : α} (ha : a ∉ s) (r : α → α → Prop) :
 
 end Pairwise
 
-section Injective
-
-variable {f : α → β} {s : Finset α} {t : Finset β}
-
-variable (f s) in
-/-- A function `f` is injective on a finset `s` if and only if the image has no duplicates. -/
-theorem injOn_iff_nodup_map : Set.InjOn f s ↔ (Multiset.map f s.val).Nodup := by
-  induction s using cons_induction with
-  | empty => simp
-  | cons x xs hx h =>
-    simp [Set.injOn_insert (show x ∉ (xs : Set α) by simpa)]
-    tauto
-
-instance [DecidableEq β] : Decidable (Set.InjOn f s) :=
-  decidable_of_iff' ((Multiset.map f s.val).Nodup) (injOn_iff_nodup_map f s)
-
-instance [DecidableEq β] : Decidable (Set.BijOn f s t) :=
-  inferInstanceAs (Decidable (_ ∧ _ ∧ _))
-
-end Injective
-
 end Finset

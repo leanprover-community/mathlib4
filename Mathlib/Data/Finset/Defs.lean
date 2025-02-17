@@ -392,19 +392,28 @@ instance decidableEqPiFinset {β : α → Type*} [_h : ∀ a, DecidableEq (β a)
 
 end DecidablePiExists
 
+theorem nodup_map_iff_injOn {f : α → β} {s : Finset α} :
+    (Multiset.map f s.val).Nodup ↔ Set.InjOn f s := by
+  simp [Multiset.nodup_map_iff_inj_on s.nodup, Set.InjOn]
+
 end Finset
 
 namespace List
 
 variable [DecidableEq α] {a : α} {f : α → β} {s : Finset α} {t : Set β} {t' : Finset β}
 
--- `Set.InjOn` and `Set.BijOn` are defined in `Data.Finset.Insert`.
+instance [DecidableEq β] : Decidable (Set.InjOn f s) :=
+  -- Use custom implementation for better performance.
+  decidable_of_iff ((Multiset.map f s.val).Nodup) Finset.nodup_map_iff_injOn
 
 instance [DecidablePred (· ∈ t)] : Decidable (Set.MapsTo f s t) :=
   inferInstanceAs (Decidable (∀ x ∈ s, f x ∈ t))
 
 instance [DecidableEq β] : Decidable (Set.SurjOn f s t') :=
   inferInstanceAs (Decidable (∀ x ∈ t', ∃ y ∈ s, f y = x))
+
+instance [DecidableEq β] : Decidable (Set.BijOn f s t') :=
+  inferInstanceAs (Decidable (_ ∧ _ ∧ _))
 
 end List
 
