@@ -628,17 +628,82 @@ theorem AdicCompletion.dvd_of_valued_le
     rwa [Valued.v.map_mul, map_inv₀, mul_inv_le_iff₀ (Valued.v.pos_iff.2 hy), one_mul]
   exact ⟨⟨x * y⁻¹, this⟩, by rw [inv_mul_cancel_right₀ hy]⟩
 
+variable (A K L B : Type*) [CommRing A] [CommRing B] [Field K] [Algebra A B] [Field L]
+    [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsDedekindDomain A]
+    [Algebra K L] [IsDedekindDomain B] [Algebra.IsIntegral A B] [IsFractionRing B L]
+    (v : HeightOneSpectrum A) (w : HeightOneSpectrum B)
+
+variable {B L} in
+def comap : HeightOneSpectrum A where
+  asIdeal := w.asIdeal.comap (algebraMap A B)
+  isPrime := Ideal.comap_isPrime (algebraMap A B) w.asIdeal
+  ne_bot := mt Ideal.eq_bot_of_comap_eq_bot w.ne_bot
+
+namespace adicCompletion
+
 -- https://github.com/mariainesdff/LocalClassFieldTheory/blob/18114679e7125329fd801032423c4c95078cdc77/LocalClassFieldTheory/DiscreteValuationRing/Localization.lean#L61
-instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) := sorry
+instance : IsDiscreteValuationRing 𝒪[v.adicCompletion K] := sorry
 
-variable (K v)
 
--- TODO
-theorem adicCompletion.residueField_finite :
-    Finite 𝓀[v.adicCompletion K] :=
+variable {A K B L v w} in
+theorem isInducing_algebraMap (h : w.comap A = v) :
+    letI : UniformSpace K := v.adicValued.toUniformSpace
+    letI : UniformSpace L := w.adicValued.toUniformSpace
+    Topology.IsInducing (algebraMap K L) := by
+  letI : UniformSpace K := v.adicValued.toUniformSpace
+  letI : UniformSpace L := w.adicValued.toUniformSpace
+  letI : Valued K ℤₘ₀ := v.adicValued
+  letI : Valued L ℤₘ₀ := w.adicValued
+  rw [IsTopologicalAddGroup.isInducing_iff_nhds_zero]
+  apply (Valued.hasBasis_nhds_zero K ℤₘ₀).ext <|
+    (Valued.hasBasis_nhds_zero L ℤₘ₀).comap (algebraMap K L)
+  · intro γ _
+    sorry
+  · intro γ _
+    sorry
+
+instance : Algebra ((w.comap A).adicCompletion K) (w.adicCompletion L) :=
+  letI : UniformSpace L := w.adicValued.toUniformSpace
+  letI : UniformSpace K := (w.comap A).adicValued.toUniformSpace
+  UniformSpace.Completion.mapRingHom (algebraMap K L) (isInducing_algebraMap rfl).continuous
+    |>.toAlgebra
+
+variable {A K B L v w} in
+theorem t (x : (w.comap A).adicCompletion K) (h : x ∈ 𝒪[(w.comap A).adicCompletion K]) :
+    letI : UniformSpace K := (w.comap A).adicValued.toUniformSpace
+    letI : UniformSpace L := w.adicValued.toUniformSpace
+    UniformSpace.Completion.mapRingHom (algebraMap K L)
+      (isInducing_algebraMap rfl).continuous x ∈ 𝒪[w.adicCompletion L] := by
+  letI : UniformSpace K := (w.comap A).adicValued.toUniformSpace
+  letI : UniformSpace L := w.adicValued.toUniformSpace
+  induction x using UniformSpace.Completion.induction_on
+  · sorry
+  · rename_i x
+    rw [show UniformSpace.Completion.mapRingHom (algebraMap K L) _ x =
+      UniformSpace.Completion.map (algebraMap K L) x from rfl]
+    rw [UniformSpace.Completion.map_coe]
+    · sorry
+    · sorry
+
+instance : Algebra 𝒪[(w.comap A).adicCompletion K] 𝒪[w.adicCompletion L] :=
+  RingHom.restrict _ _ _ t |>.toAlgebra
+
+instance : IsLocalHom (algebraMap 𝒪[(w.comap A).adicCompletion K] 𝒪[w.adicCompletion L]) :=
   sorry
 
-instance : CompactSpace (v.adicCompletionIntegers K) :=
-  sorry --Valued.WithZeroMulInt.integers_compactSpace (finite_residueField K v)
+instance : Module.Finite 𝒪[(w.comap A).adicCompletion K] 𝒪[w.adicCompletion L] :=
+  sorry
 
-end IsDedekindDomain.HeightOneSpectrum
+theorem residueField_finite
+    (h : ∀ v : HeightOneSpectrum A, Finite 𝓀[v.adicCompletion K])
+    (w : HeightOneSpectrum B) :
+    Finite 𝓀[w.adicCompletion L] :=
+  IsLocalRing.ResidueField.finite_of_finite (h (w.comap A))
+
+theorem compactSpace_integers
+     (h : ∀ v : HeightOneSpectrum A, Finite 𝓀[v.adicCompletion K])
+     (w : HeightOneSpectrum B) :
+     CompactSpace 𝒪[w.adicCompletion L] :=
+  Valued.WithZeroMulInt.integers_compactSpace (residueField_finite A K L B h w)
+
+end IsDedekindDomain.HeightOneSpectrum.adicCompletion
