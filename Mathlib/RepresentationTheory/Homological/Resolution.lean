@@ -243,7 +243,8 @@ def forget₂ToModuleCatHomotopyEquiv :
 /-- The hom of `k`-linear `G`-representations `k[G¹] → k` sending `∑ nᵢgᵢ ↦ ∑ nᵢ`. -/
 def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k where
   hom := ModuleCat.ofHom <| Finsupp.linearCombination _ fun _ => (1 : k)
-  comm _ := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext_ring (by simp [coe_of])
+  comm _ := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ =>
+    LinearMap.ext_ring (by simp [ModuleCat.endRingEquiv])
 
 /-- The homotopy equivalence of complexes of `k`-modules between the standard resolution of `k` as
 a trivial `G`-representation, and the complex which is `k` at 0 and 0 everywhere else, acts as
