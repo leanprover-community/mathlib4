@@ -92,7 +92,7 @@ def gaugeRescaleEquiv (s t : Set E) (hsa : Absorbent ℝ s) (hsb : IsVonNBounded
 
 end
 
-variable [TopologicalAddGroup E] [ContinuousSMul ℝ E] {s t : Set E}
+variable [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] {s t : Set E}
 
 theorem mapsTo_gaugeRescale_interior (h₀ : t ∈ 𝓝 0) (hc : Convex ℝ t) :
     MapsTo (gaugeRescale s t) (interior s) (interior t) := fun x hx ↦ by

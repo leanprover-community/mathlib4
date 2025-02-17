@@ -10,7 +10,7 @@ import Mathlib.Data.Multiset.Fold
 # The fold operation for a commutative associative operation over a finset.
 -/
 
-assert_not_exists OrderedCommMonoid MonoidWithZero
+assert_not_exists Monoid
 
 namespace Finset
 
@@ -89,10 +89,6 @@ theorem fold_hom {op' : γ → γ → γ} [Std.Commutative op'] [Std.Associative
 theorem fold_disjUnion {s₁ s₂ : Finset α} {b₁ b₂ : β} (h) :
     (s₁.disjUnion s₂ h).fold op (b₁ * b₂) f = s₁.fold op b₁ f * s₂.fold op b₂ f :=
   (congr_arg _ <| Multiset.map_add _ _ _).trans (Multiset.fold_add _ _ _ _ _)
-
-theorem fold_disjiUnion {ι : Type*} {s : Finset ι} {t : ι → Finset α} {b : ι → β} {b₀ : β} (h) :
-    (s.disjiUnion t h).fold op (s.fold op b₀ b) f = s.fold op b₀ fun i => (t i).fold op (b i) f :=
-  (congr_arg _ <| Multiset.map_bind _ _ _).trans (Multiset.fold_bind _ _ _ _ _)
 
 theorem fold_union_inter [DecidableEq α] {s₁ s₂ : Finset α} {b₁ b₂ : β} :
     ((s₁ ∪ s₂).fold op b₁ f * (s₁ ∩ s₂).fold op b₂ f) = s₁.fold op b₂ f * s₂.fold op b₁ f := by

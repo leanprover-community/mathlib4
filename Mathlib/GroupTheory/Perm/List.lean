@@ -101,7 +101,7 @@ theorem formPerm_apply_of_not_mem (h : x ∉ l) : formPerm l x = x :=
   not_imp_comm.1 mem_of_formPerm_apply_ne h
 
 theorem formPerm_apply_mem_of_mem (h : x ∈ l) : formPerm l x ∈ l := by
-  cases' l with y l
+  rcases l with - | ⟨y, l⟩
   · simp at h
   induction' l with z l IH generalizing x y
   · simpa using h
@@ -190,7 +190,7 @@ theorem formPerm_apply_lt_get (xs : List α) (h : Nodup xs) (n : ℕ) (hn : n + 
 theorem formPerm_apply_getElem (xs : List α) (w : Nodup xs) (i : ℕ) (h : i < xs.length) :
     formPerm xs xs[i] =
       xs[(i + 1) % xs.length]'(Nat.mod_lt _ (i.zero_le.trans_lt h)) := by
-  cases' xs with x xs
+  rcases xs with - | ⟨x, xs⟩
   · simp at h
   · have : i ≤ xs.length := by
       refine Nat.le_of_lt_succ ?_
@@ -350,7 +350,7 @@ theorem formPerm_eq_self_of_not_mem (l : List α) (x : α) (h : x ∉ l) : formP
   by_contra fun H => h <| mem_of_formPerm_ne_self _ _ H
 
 theorem formPerm_eq_one_iff (hl : Nodup l) : formPerm l = 1 ↔ l.length ≤ 1 := by
-  cases' l with hd tl
+  rcases l with - | ⟨hd, tl⟩
   · simp
   · rw [← formPerm_apply_mem_eq_self_iff _ hl hd (mem_cons_self _ _)]
     constructor

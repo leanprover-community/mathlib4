@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Adam Topaz
 -/
 import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.AlgebraicTopology.SimplexCategory
+import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Instances.NNReal.Defs
