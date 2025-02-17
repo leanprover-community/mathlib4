@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
 -/
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Int.Order.Basic
+import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Compare
 import Mathlib.Order.Max
 import Mathlib.Order.Monotone.Defs
