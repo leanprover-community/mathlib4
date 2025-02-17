@@ -93,7 +93,6 @@ theorem lift_projectSubobject [HasFiniteLimits C] [PreservesFiniteLimits T]
 /-- If `A : S → T.obj B` is a structured arrow for `S : D` and `T : C ⥤ D`, then we can explicitly
     describe the subobjects of `A` as the subobjects `P` of `B` in `C` for which `A.hom` factors
     through the image of `P` under `T`. -/
-@[simps!]
 def subobjectEquiv [HasFiniteLimits C] [PreservesFiniteLimits T] (A : StructuredArrow S T) :
     Subobject A ≃o { P : Subobject A.right // ∃ q, q ≫ T.map P.arrow = A.hom } where
   toFun P := ⟨projectSubobject P, projectSubobject_factors P⟩
