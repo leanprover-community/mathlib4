@@ -436,7 +436,7 @@ theorem Indep.exists_insert_of_not_isBasis (hI : M.Indep I) (hIX : I ⊆ X) (hI'
   obtain ⟨e, he, hi⟩ := (hI.indep_restrict_of_subset hIX).exists_insert_of_not_isBase hI' hJ
   exact ⟨e, he, (restrict_indep_iff.mp hi).1⟩
 
-theorem IsBasis.base_of_base_subset (hIX : M.IsBasis I X) (hB : M.IsBase B) (hBX : B ⊆ X) :
+theorem IsBasis.isBase_of_isBase_subset (hIX : M.IsBasis I X) (hB : M.IsBase B) (hBX : B ⊆ X) :
     M.IsBase I :=
   hB.isBase_of_isBasis_superset hBX hIX
 
