@@ -278,8 +278,6 @@ instance : Inhabited Surreal :=
 
 lemma mk_eq_mk {x y : PGame.{u}} {hx hy} : mk x hx = mk y hy ↔ x ≈ y := Quotient.eq
 
-alias ⟨_, mk_eq⟩ := mk_eq_mk
-
 lemma mk_eq_zero {x : PGame.{u}} {hx} : mk x hx = 0 ↔ x ≈ 0 := Quotient.eq
 
 /-- Lift an equivalence-respecting function on pre-games to surreals. -/
