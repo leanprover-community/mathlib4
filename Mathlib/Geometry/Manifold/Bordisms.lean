@@ -259,17 +259,16 @@ def prod {m n : ℕ} (s : SingularNManifold PUnit n k) (t : SingularNManifold PU
   hf := continuous_const
   dimension := by rw [finrank_prod, s.dimension, t.dimension]
 
+def chartedSpaceEuclidean {n : ℕ} (s : SingularNManifold X n k) :
+    ChartedSpace (EuclideanSpace ℝ (Fin n)) s.H :=
+  s.modelSpace_homeo_euclideanSpace.toPartialHomeomorph.singletonChartedSpace
+  s.modelSpace_homeo_euclideanSpace.toPartialHomeomorph_source
+
+attribute [local instance] chartedSpaceEuclidean in
 instance {n : ℕ} (s t : SingularNManifold X n k) :
     ChartedSpace (EuclideanSpace ℝ (Fin n)) (s.M ⊕ t.M) := by
-  have : ChartedSpace (EuclideanSpace ℝ (Fin n)) s.H :=
-    s.modelSpace_homeo_euclideanSpace.toPartialHomeomorph.singletonChartedSpace
-    s.modelSpace_homeo_euclideanSpace.toPartialHomeomorph_source
-  have : ChartedSpace (EuclideanSpace ℝ (Fin n)) t.H :=
-    t.modelSpace_homeo_euclideanSpace.toPartialHomeomorph.singletonChartedSpace
-    t.modelSpace_homeo_euclideanSpace.toPartialHomeomorph_source
-  have : ChartedSpace (EuclideanSpace ℝ (Fin n)) s.M :=
-    ChartedSpace.comp (EuclideanSpace ℝ (Fin n)) s.H s.M
-  have := ChartedSpace.comp (EuclideanSpace ℝ (Fin n)) t.H t.M
+  haveI := ChartedSpace.comp (EuclideanSpace ℝ (Fin n)) s.H s.M
+  haveI := ChartedSpace.comp (EuclideanSpace ℝ (Fin n)) t.H t.M
   -- These will become superfluous once merging master.
   have : Nonempty t.M := sorry
   have : Nonempty s.M := sorry
