@@ -398,17 +398,13 @@ namespace List
 
 variable [DecidableEq α] {a : α} {f : α → β} {s : Finset α} {t : Set β} {t' : Finset β}
 
-instance [DecidableEq β] : Decidable (Set.InjOn f s) :=
-  inferInstanceAs (Decidable (∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y))
+-- `Set.InjOn` and `Set.BijOn` are defined in `Data.Finset.Insert`.
 
 instance [DecidablePred (· ∈ t)] : Decidable (Set.MapsTo f s t) :=
   inferInstanceAs (Decidable (∀ x ∈ s, f x ∈ t))
 
 instance [DecidableEq β] : Decidable (Set.SurjOn f s t') :=
   inferInstanceAs (Decidable (∀ x ∈ t', ∃ y ∈ s, f y = x))
-
-instance [DecidableEq β] : Decidable (Set.BijOn f s t') :=
-  inferInstanceAs (Decidable (_ ∧ _ ∧ _))
 
 end List
 
