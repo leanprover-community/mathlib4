@@ -438,17 +438,17 @@ lemma isBase_iff_indep_closure_eq : M.IsBase B ↔ M.Indep B ∧ M.closure B = M
   exact fun hI ↦ ⟨fun h ↦ (M.closure_subset_ground _).antisymm h.2,
     fun h ↦ ⟨(M.subset_closure B).trans_eq h, h.symm.subset⟩⟩
 
-lemma Base.exchange_base_of_not_mem_closure (hB : M.Base B) (he : e ∈ B)
+lemma IsBase.exchange_base_of_not_mem_closure (hB : M.IsBase B) (he : e ∈ B)
     (hf : f ∉ M.closure (B \ {e})) (hfE : f ∈ M.E := by aesop_mat) :
-    M.Base (insert f (B \ {e})) := by
+    M.IsBase (insert f (B \ {e})) := by
   obtain rfl | hne := eq_or_ne f e
   · simpa [he]
   have ⟨hi, hfB⟩ : M.Indep (insert f (B \ {e})) ∧ f ∉ B := by
     simpa [(hB.indep.diff _).not_mem_closure_iff, hne] using hf
-  exact hB.exchange_base_of_indep hfB hi
+  exact hB.exchange_isBase_of_indep hfB hi
 
-lemma Indep.base_iff_ground_subset_closure (hI : M.Indep I) : M.Base I ↔ M.E ⊆ M.closure I :=
-  ⟨fun h ↦ h.closure_eq.symm.subset, hI.base_of_ground_subset_closure⟩
+lemma Indep.isBase_iff_ground_subset_closure (hI : M.Indep I) : M.IsBase I ↔ M.E ⊆ M.closure I :=
+  ⟨fun h ↦ h.closure_eq.symm.subset, hI.isBase_of_ground_subset_closure⟩
 
 lemma Indep.closure_inter_eq_self_of_subset (hI : M.Indep I) (hJI : J ⊆ I) :
     M.closure J ∩ I = J := by
