@@ -604,10 +604,10 @@ abbrev Fintype.toLocallyFiniteOrder [Fintype α] [DecidableRel (α := α) (· < 
 
 instance : Subsingleton (LocallyFiniteOrder α) :=
   Subsingleton.intro fun h₀ h₁ => by
-    cases' h₀ with h₀_finset_Icc h₀_finset_Ico h₀_finset_Ioc h₀_finset_Ioo
-      h₀_finset_mem_Icc h₀_finset_mem_Ico h₀_finset_mem_Ioc h₀_finset_mem_Ioo
-    cases' h₁ with h₁_finset_Icc h₁_finset_Ico h₁_finset_Ioc h₁_finset_Ioo
-      h₁_finset_mem_Icc h₁_finset_mem_Ico h₁_finset_mem_Ioc h₁_finset_mem_Ioo
+    obtain ⟨h₀_finset_Icc, h₀_finset_Ico, h₀_finset_Ioc, h₀_finset_Ioo,
+      h₀_finset_mem_Icc, h₀_finset_mem_Ico, h₀_finset_mem_Ioc, h₀_finset_mem_Ioo⟩ := h₀
+    obtain ⟨h₁_finset_Icc, h₁_finset_Ico, h₁_finset_Ioc, h₁_finset_Ioo,
+      h₁_finset_mem_Icc, h₁_finset_mem_Ico, h₁_finset_mem_Ioc, h₁_finset_mem_Ioo⟩ := h₁
     have hIcc : h₀_finset_Icc = h₁_finset_Icc := by
       ext a b x
       rw [h₀_finset_mem_Icc, h₁_finset_mem_Icc]

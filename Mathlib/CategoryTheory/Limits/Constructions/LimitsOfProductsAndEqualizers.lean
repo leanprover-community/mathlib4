@@ -80,12 +80,7 @@ def buildIsLimit (t₁ : IsLimit c₁) (t₂ : IsLimit c₂) (hi : IsLimit i) :
     · apply t₂.hom_ext
       intro ⟨j⟩
       simp [hs, ht]
-  uniq q m w :=
-    hi.hom_ext
-      (i.equalizer_ext
-        (t₁.hom_ext fun j => by
-          obtain ⟨j⟩ := j
-          simpa using w j))
+  uniq q m w := hi.hom_ext (i.equalizer_ext (t₁.hom_ext fun j => by simpa using w j.1))
   fac s j := by simp
 
 end HasLimitOfHasProductsOfHasEqualizers
