@@ -47,9 +47,9 @@ theorem EvalDomain.const (ha : EvalDomain a) :
   hpow := fun _ ↦ ha.hpow
   tendsto_zero := by simp only [Filter.cofinite_eq_bot, Filter.tendsto_bot]
 
-variable [TopologicalSemiring R] [UniformAddGroup R]
+variable [IsTopologicalSemiring R] [UniformAddGroup R]
     [UniformAddGroup S] [T2Space S] [CompleteSpace S]
-    [TopologicalRing S] [IsLinearTopology S S]
+    [IsTopologicalRing S] [IsLinearTopology S S]
 
 /-- For `EvalDomain a`, the evaluation homomorphism at `a` on `PowerSeries`. -/
 noncomputable def eval₂Hom (hφ : Continuous φ) (ha : EvalDomain a) :
