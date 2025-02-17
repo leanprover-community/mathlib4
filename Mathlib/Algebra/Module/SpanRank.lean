@@ -10,7 +10,7 @@ import Mathlib.RingTheory.Finiteness.Defs
 /-!
 # Minimum Cardinality of generating set of a submodule
 
-In this file, we define the minimum cardinality of generating set for a submodule, which is
+In this file, we define the minimum cardinality of a generating set for a submodule, which is
 implemented as `spanFinrank` and `spanRank`.
 The difference between these two definitions is only that when no finite generating set exists,
 `spanFinrank` takes value `0` but `spanRank` takes value `⊤`.
@@ -68,15 +68,15 @@ lemma spanFinrank_eq_iInf (p : Submodule R M) :
     p.spanFinrank = ⨅ (s : {s : Set M // s.Finite ∧ span R s = p}), s.2.1.toFinset.card := by
   rw [spanFinrank, spanRank_eq_iInf, ENat.iInf_toNat]
 
-/-- A submodule's spanRank is not top if and only if it is finitely generated -/
+/-- A submodule's `spanRank` is not top if and only if it is finitely generated. -/
 @[simp]
 lemma spanRank_ne_top_iff_fg {p : Submodule R M} :
     p.spanRank ≠ ⊤ ↔ p.FG := by
   simp [spanRank, Submodule.fg_def, and_comm]
 
-/-- A submodule is finitely generated if and only if its spanRank is equal to its spanFinrank -/
+/-- A submodule is finitely generated if and only if its `spanRank` is equal to its `spanFinrank`.-/
 lemma fg_iff_spanRank_eq_spanFinrank {p : Submodule R M} :
-    p.FG ↔ p.spanRank = p.spanFinrank := by
+    p.spanRank = p.spanFinrank ↔ p.FG := by
   rw [spanFinrank, ← spanRank_ne_top_iff_fg, ← ENat.coe_toNat_eq_self, eq_comm]
 
 /-- Constructs indexed generating elements whose cardinality equals `spanFinrank` for a finitely
@@ -121,7 +121,7 @@ lemma FG.spanRank_le_iff_exists_span_range_eq {p : Submodule R M} {n : ℕ} :
       rintro _ ⟨x, rfl⟩
       simp only [SetLike.mem_coe]
       apply Submodule.subset_span
-      rw [fg_iff_spanRank_eq_spanFinrank] at h
+      rw [← fg_iff_spanRank_eq_spanFinrank] at h
       have he : (p.spanFinrank : WithTop Nat) ≤ n := by rwa [h] at e
       use Fin.castLE (ENat.coe_le_coe.mp he) x
       simp_all only [Fin.coe_castLE, Fin.is_lt, dite_true]
@@ -147,12 +147,12 @@ lemma FG.spanRank_le_iff_exists_span_range_eq {p : Submodule R M} {n : ℕ} :
 noncomputable def FG.generators {p : Submodule R M} (h : p.FG) : Fin p.spanFinrank → M :=
   Classical.choose (exists_fun_spanFinrank_span_range_eq h)
 
-/-- The span of the generators equals the submodule -/
+/-- The span of the generators equals the submodule. -/
 lemma FG.span_range_generators {p : Submodule R M} (h : p.FG) :
     span R (Set.range (generators h)) = p :=
   Classical.choose_spec (exists_fun_spanFinrank_span_range_eq h)
 
-/-- The elements of the generators are in the submodule -/
+/-- The elements of the generators are in the submodule. -/
 lemma FG.generators_mem {p : Submodule R M} (h : p.FG) (i : Fin p.spanFinrank) :
     generators h i ∈ p := by
   simp_rw [← span_range_generators h]
@@ -165,7 +165,7 @@ lemma spanRank_eq_zero_iff_eq_bot {I : Submodule R M} : I.spanRank = 0 ↔ I = �
     have H : Submodule.FG I := by
       rw [← Submodule.spanRank_ne_top_iff_fg, e]
       trivial
-    rw [fg_iff_spanRank_eq_spanFinrank.mp H, ← WithTop.coe_zero, WithTop.coe_zero,
+    rw [fg_iff_spanRank_eq_spanFinrank.mpr H, ← WithTop.coe_zero, WithTop.coe_zero,
         Nat.cast_eq_zero] at e
     have := H.exists_fun_spanFinrank_span_range_eq
     rw [e] at this
@@ -190,22 +190,23 @@ lemma spanRank_sup_le_sum_spanRank {p q : Submodule R M} :
     exact le_top
   obtain ⟨f, hf⟩ := hp.exists_fun_spanFinrank_span_range_eq
   obtain ⟨g, hg⟩ := hq.exists_fun_spanFinrank_span_range_eq
-  rw [Submodule.fg_iff_spanRank_eq_spanFinrank] at hp hq
+  rw [← Submodule.fg_iff_spanRank_eq_spanFinrank] at hp hq
   rw [hp, hq, ← Nat.cast_add]
   rw [FG.spanRank_le_iff_exists_span_range_eq]
   refine ⟨(Sum.elim f g) ∘ finSumFinEquiv.symm, ?_⟩
   rw [Set.range_comp, Set.range_eq_univ.mpr (Equiv.surjective _), Set.image_univ,
     Set.Sum.elim_range, Submodule.span_union, hf, hg]
 
-lemma spanRank_span_set_finite {s : Set R} (hs : s.Finite) :
-    (Submodule.span R s).spanRank ≤ hs.toFinset.card := by
-  rw [Submodule.FG.spanRank_le_iff_exists_span_range_eq]
-  refine ⟨Subtype.val ∘ hs.toFinset.equivFin.symm, ?_⟩
-  rw [Set.range_comp, Set.range_eq_univ.mpr (Equiv.surjective _), Set.image_univ,
-    Subtype.range_val]
-  congr
-  ext
-  exact hs.mem_toFinset
+lemma spanRank_span_le_encard (s : Set M) :
+    (Submodule.span R s).spanRank ≤ s.encard :=
+  biInf_le _ (by constructor)
+
+lemma spanFinrank_span_le_ncard_of_finite {s : Set M} (hs : s.Finite) :
+    (span R s).spanFinrank ≤ s.ncard := by
+  rw [← ENat.coe_le_coe]
+  convert spanRank_span_le_encard (R := R) s
+  · simpa [spanFinrank] using (⟨hs.toFinset, by simp⟩ : (span R s).FG)
+  · exact hs.cast_ncard_eq
 
 @[simp]
 lemma spanRank_bot : (⊥ : Ideal R).spanRank = 0 :=
