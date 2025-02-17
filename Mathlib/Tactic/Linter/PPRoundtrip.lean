@@ -57,7 +57,8 @@ def polishPP (s : String) : String :=
 For this reason, `polishSource s` performs more conservative changes:
 it only replace all whitespace starting from a linebreak (`\n`) with a single whitespace. -/
 def polishSource (s : String) : String × Array Nat :=
-  let split := (s.replace "{}" "{ }").split (· == '\n') |>.filter (!·.trimLeft.startsWith "--")
+  let split := ((s.replace "{}" "{ }").replace "¬ " "¬").split (· == '\n') |>.filter
+    (!·.trimLeft.startsWith "--")
   --dbg_trace split
   let preWS := split.foldl (init := #[]) fun p q =>
     let txt := q.trimLeft.length
