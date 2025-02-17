@@ -6,6 +6,7 @@ Authors: Eric Wieser, Kevin Buzzard
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.Data.Fintype.Lattice
+import Mathlib.Data.Fintype.Units.Int
 import Mathlib.Tactic.FinCases
 
 /-!
