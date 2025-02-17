@@ -3,6 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Data.Set.Pointwise.SMul

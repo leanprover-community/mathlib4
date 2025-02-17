@@ -5,6 +5,7 @@ Authors: Robert Y. Lewis
 -/
 import Batteries.Tactic.Lint.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Data.Nat.Cast.Order.Ring

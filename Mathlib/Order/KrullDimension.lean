@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 -/
 
+import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Order.Minimal
