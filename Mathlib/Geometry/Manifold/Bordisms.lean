@@ -222,16 +222,16 @@ def EuclideanSpace.prodEquivSum (α β 𝕜 : Type*) [NontriviallyNormedField �
   continuous_toFun := sorry
   continuous_invFun := sorry
 
-def EuclideanSpace.typeCongr {α β 𝕜 : Type*} [NontriviallyNormedField 𝕜] (h : α ≃ β) :
-    EuclideanSpace 𝕜 α ≃ₜ EuclideanSpace 𝕜 β where
-  __:= Equiv.piCongrLeft' (fun _ ↦ 𝕜) h
-  continuous_toFun := sorry
-  continuous_invFun := sorry
+-- XXX: better name!
+def EuclideanSpace.congr {α β 𝕜 : Type*} [Fintype α] [NontriviallyNormedField 𝕜] (h : α ≃ β) :
+    EuclideanSpace 𝕜 α ≃ₜ EuclideanSpace 𝕜 β :=
+  haveI := Fintype.ofEquiv α h
+  (LinearIsometryEquiv.piLpCongrLeft 2 𝕜 𝕜 h).toHomeomorph
 
 def EuclideanSpace.prod_dimension {𝕜 : Type*} [NontriviallyNormedField 𝕜] (n m : ℕ) :
     (EuclideanSpace 𝕜 (Fin n)) × (EuclideanSpace 𝕜 (Fin m)) ≃ₜ
       (EuclideanSpace 𝕜 (Fin (n + m))) :=
-  (EuclideanSpace.prodEquivSum (Fin n) (Fin m) 𝕜).trans (EuclideanSpace.typeCongr finSumFinEquiv)
+  (EuclideanSpace.prodEquivSum (Fin n) (Fin m) 𝕜).trans (EuclideanSpace.congr finSumFinEquiv)
 
 /-- The product of a singular `n`- and a singular `m`-manifold into a one-point space
 is a singular `n+m`-manifold. -/
