@@ -128,7 +128,7 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
       · intro _
         exact R
       intro i w
-      cases' i with i
+      rcases i with - | i
       · apply h0
       · exact h i (by simp only [length_cons] at w; omega)
     rintro ⟨h0, h⟩; constructor
@@ -427,7 +427,7 @@ theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
       rw [List.chain'_cons] at ha
       refine gt_of_gt_of_ge ha.1 ?_
       rw [le_iff_lt_or_eq] at hmas
-      cases' hmas with hmas hmas
+      rcases hmas with hmas | hmas
       · by_contra! hh
         rw [← not_le] at hmas
         apply hmas
@@ -496,7 +496,7 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
     have hl' := (List.chain'_cons'.1 hl).2
     let l' : List.chains r := ⟨l, hl'⟩
     have : Acc (List.lex_chains r) l' := by
-      cases' l with b l
+      rcases l with - | ⟨b, l⟩
       · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
       /- l' is accessible by induction hypothesis -/
       · apply ih b (List.chain'_cons.1 hl).1

@@ -619,7 +619,7 @@ theorem tendsto_measure_iInter_le {α ι : Type*} {_ : MeasurableSpace α} {μ :
     (hf : ∃ i, μ (f i) ≠ ∞) :
     Tendsto (fun i ↦ μ (⋂ j ≤ i, f j)) atTop (𝓝 (μ (⋂ i, f i))) := by
   refine .of_neBot_imp fun hne ↦ ?_
-  cases' atTop_neBot_iff.mp hne
+  cases atTop_neBot_iff.mp hne
   rw [measure_iInter_eq_iInf_measure_iInter_le hm hf]
   exact tendsto_atTop_iInf
     fun i j hij ↦ measure_mono <| biInter_subset_biInter_left fun k hki ↦ le_trans hki hij
