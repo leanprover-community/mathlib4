@@ -61,15 +61,38 @@ variable {R} in
 structure Hom (A B : AlgebraCat.{v} R) where
   private mk ::
   /-- The underlying algebra map. -/
-  hom : A →ₐ[R] B
+  hom' : A →ₐ[R] B
 
 instance : Category (AlgebraCat.{v} R) where
   Hom A B := Hom A B
   id A := ⟨AlgHom.id R A⟩
-  comp f g := ⟨g.hom.comp f.hom⟩
+  comp f g := ⟨g.hom'.comp f.hom'⟩
 
-instance {M N : AlgebraCat.{v} R} : CoeFun (M ⟶ N) (fun _ ↦ M → N) where
-  coe f := f.hom
+instance : ConcreteCategory (AlgebraCat.{v} R) (· →ₐ[R] ·) where
+  hom := Hom.hom'
+  ofHom := Hom.mk
+
+variable {R} in
+/-- Turn a morphism in `AlgebraCat` back into an `AlgHom`. -/
+abbrev Hom.hom {A B : AlgebraCat.{v} R} (f : Hom A B) :=
+  ConcreteCategory.hom (C := AlgebraCat R) f
+
+variable {R} in
+/-- Typecheck an `AlgHom` as a morphism in `AlgebraCat`. -/
+abbrev ofHom {A B : Type v} [Ring A] [Ring B] [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) :
+    of R A ⟶ of R B :=
+  ConcreteCategory.ofHom (C := AlgebraCat R) f
+
+variable {R} in
+/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
+def Hom.Simps.hom (A B : AlgebraCat.{v} R) (f : Hom A B) :=
+  f.hom
+
+initialize_simps_projections Hom (hom' → hom)
+
+/-!
+The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
+-/
 
 @[simp]
 lemma hom_id {A : AlgebraCat.{v} R} : (𝟙 A : A ⟶ A).hom = AlgHom.id R A := rfl
@@ -90,11 +113,7 @@ lemma comp_apply {A B C : AlgebraCat.{v} R} (f : A ⟶ B) (g : B ⟶ C) (a : A) 
 lemma hom_ext {A B : AlgebraCat.{v} R} {f g : A ⟶ B} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
-/-- Typecheck an `AlgHom` as a morphism in `AlgebraCat R`. -/
-abbrev ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y] [Algebra R Y]
-    (f : X →ₐ[R] Y) : of R X ⟶ of R Y :=
-  ⟨f⟩
-
+@[simp]
 lemma hom_ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y]
     [Algebra R Y] (f : X →ₐ[R] Y) : (ofHom f).hom = f := rfl
 
@@ -126,12 +145,6 @@ lemma hom_inv_apply {A B : AlgebraCat.{v} R} (e : A ≅ B) (x : B) : e.hom (e.in
 
 instance : Inhabited (AlgebraCat R) :=
   ⟨of R R⟩
-
-instance : ConcreteCategory.{v} (AlgebraCat.{v} R) where
-  forget :=
-    { obj := fun R => R
-      map := fun f => f.hom }
-  forget_faithful := ⟨fun h => by ext x; simpa using congrFun h x⟩
 
 lemma forget_obj {A : AlgebraCat.{v} R} : (forget (AlgebraCat.{v} R)).obj A = A := rfl
 

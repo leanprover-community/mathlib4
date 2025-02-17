@@ -12,13 +12,17 @@ import Mathlib.Order.OrderIsoNat
 # Well quasi-orders
 
 A well quasi-order (WQO) is a relation such that any infinite sequence contains an infinite
-monotonic subsequence. For a preorder, this is equivalent to having a well-founded order with no
-infinite antichains.
+subsequence of related elements. For a preorder, this is equivalent to having a well-founded order
+with no infinite antichains.
 
 ## Main definitions
 
 * `WellQuasiOrdered`: a predicate for WQO unbundled relations
 * `WellQuasiOrderedLE`: a typeclass for a bundled WQO `≤` relation
+
+## Tags
+
+wqo, pwo, well quasi-order, partial well order, dickson order
 -/
 
 variable {α β : Type*} {r : α → α → Prop} {s : β → β → Prop}
@@ -74,10 +78,10 @@ theorem WellQuasiOrdered.prod [IsPreorder α r] (hr : WellQuasiOrdered r) (hs : 
   obtain ⟨m, n, h, hf⟩ := hs (Prod.snd ∘ f ∘ g)
   exact ⟨g m, g n, g.strictMono h, h₁ _ _ h.le, hf⟩
 
-/-- A typeclass for an ordered with a well quasi-ordered `≤` relation.
+/-- A typeclass for an order with a well quasi-ordered `≤` relation.
 
 Note that this is unlike `WellFoundedLT`, which instead takes a `<` relation. -/
-@[mk_iff wellQuasiOrderedLE_iff']
+@[mk_iff wellQuasiOrderedLE_def]
 class WellQuasiOrderedLE (α : Type*) [LE α] where
   wqo : @WellQuasiOrdered α (· ≤ ·)
 
@@ -99,7 +103,7 @@ instance (priority := 100) WellQuasiOrderedLE.to_wellFoundedLT [WellQuasiOrdered
 
 theorem WellQuasiOrdered.wellFounded {α : Type*} {r : α → α → Prop} [IsPreorder α r]
     (h : WellQuasiOrdered r) : WellFounded fun a b ↦ r a b ∧ ¬ r b a := by
-  letI : Preorder α :=
+  let _ : Preorder α :=
     { le := r
       le_refl := refl_of r
       le_trans := fun _ _ _ => trans_of r }
@@ -138,7 +142,7 @@ end Preorder
 section LinearOrder
 variable [LinearOrder α]
 
-/-- In a linear order, WQOs and well-orders are equivalent. -/
+/-- A linear WQO is the same thing as a well-order. -/
 theorem wellQuasiOrderedLE_iff_wellFoundedLT : WellQuasiOrderedLE α ↔ WellFoundedLT α := by
   rw [wellQuasiOrderedLE_iff, and_iff_left_iff_imp]
   exact fun _ s hs ↦ hs.subsingleton.finite

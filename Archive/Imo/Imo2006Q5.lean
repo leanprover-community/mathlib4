@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Dynamics.PeriodicPts
+import Mathlib.Dynamics.PeriodicPts.Lemmas
 
 /-!
 # IMO 2006 Q5
@@ -108,7 +108,7 @@ theorem Polynomial.isPeriodicPt_eval_two {P : Polynomial ℤ} {t : ℤ}
   · -- We take two nonequal consecutive entries.
     rw [Cycle.chain_map, periodicOrbit_chain' _ ht] at HC'
     push_neg at HC'
-    cases' HC' with n hn
+    obtain ⟨n, hn⟩ := HC'
     -- They must have opposite sign, so that P^{k + 1}(t) - P^k(t) = P^{k + 2}(t) - P^{k + 1}(t).
     cases' Int.natAbs_eq_natAbs_iff.1 (Habs n n.succ) with hn' hn'
     · apply (hn _).elim

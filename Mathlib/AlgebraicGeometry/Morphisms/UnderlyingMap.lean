@@ -174,7 +174,7 @@ lemma Scheme.Hom.denseRange (f : X.Hom Y) [IsDominant f] : DenseRange f.base :=
 instance (priority := 100) [Surjective f] : IsDominant f := ⟨f.surjective.denseRange⟩
 
 instance [IsDominant f] [IsDominant g] : IsDominant (f ≫ g) :=
-  ⟨g.denseRange.comp f.denseRange g.base.2⟩
+  ⟨g.denseRange.comp f.denseRange g.base.hom.2⟩
 
 instance : MorphismProperty.IsMultiplicative @IsDominant where
   id_mem := fun _ ↦ inferInstance

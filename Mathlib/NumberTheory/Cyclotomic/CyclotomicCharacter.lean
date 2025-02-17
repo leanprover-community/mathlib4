@@ -3,6 +3,7 @@ Copyright (c) 2023 Hanneke Wiersema. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Hanneke Wiersema
 -/
+import Mathlib.Algebra.Ring.Aut
 import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 
 /-!
@@ -165,12 +166,13 @@ def ModularCyclotomicCharacter' (n : ℕ) [NeZero n] :
     map_one' := ModularCyclotomicCharacter.id n
     map_mul' := ModularCyclotomicCharacter.comp n }
 
-lemma spec' (g : L ≃+* L) {t : Lˣ} (ht : t ∈ rootsOfUnity n L) :
+lemma ModularCyclotomicCharacter'.spec' (g : L ≃+* L) {t : Lˣ} (ht : t ∈ rootsOfUnity n L) :
     g t = t ^ ((ModularCyclotomicCharacter' L n g) : ZMod
       (Fintype.card { x // x ∈ rootsOfUnity n L })).val :=
   ModularCyclotomicCharacter.toFun_spec' g ht
 
-lemma unique' (g : L ≃+* L) {c : ZMod (Fintype.card { x // x ∈ rootsOfUnity n L })}
+lemma ModularCyclotomicCharacter'.unique' (g : L ≃+* L)
+    {c : ZMod (Fintype.card { x // x ∈ rootsOfUnity n L })}
     (hc : ∀ t ∈ rootsOfUnity n L, g t = t ^ c.val) :
     c = ModularCyclotomicCharacter' L n g :=
   ModularCyclotomicCharacter.toFun_unique' _ _ _ hc
