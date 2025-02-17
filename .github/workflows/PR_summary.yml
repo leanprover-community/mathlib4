@@ -121,7 +121,7 @@ jobs:
         techDebtVar="$(./scripts/technical-debt-metrics.sh pr_summary)"
 
         # store in a file, to avoid "long arguments" error.
-        printf '%s [%s](%s)%s\n\n%s\n\n---\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${high_percentages}" "${importCount}" "${declDiff}" "${techDebtVar}" > messageFile.md
+        printf '%s [%s](%s)%s\n\n%s\n\n---\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${high_percentages}" "${importCount}" "${declDiff}" "${techDebtVar}" > please_merge_master.md
 
-        cat messageFile.md
-        ./scripts/update_PR_comment.sh messageFile.md "${title}" "${PR}"
+        cat please_merge_master.md
+        ./scripts/update_PR_comment.sh please_merge_master.md "${title}" "${PR}"

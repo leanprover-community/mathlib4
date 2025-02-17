@@ -398,8 +398,8 @@ lemma intervalIntegrable_of_even₀ (h₁f : ∀ x, f x = f (-x))
 if it is interval integrable (with respect to the volume measure) on every interval of the form
 `0..x`, for positive `x`. -/
 theorem intervalIntegrable_of_even
-  (h₁f : ∀ x, f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) (a b : ℝ) :
-  IntervalIntegrable f volume a b :=
+    (h₁f : ∀ x, f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) (a b : ℝ) :
+    IntervalIntegrable f volume a b :=
   -- Split integral and apply lemma
   (intervalIntegrable_of_even₀ h₁f h₂f a).symm.trans (b := 0)
     (intervalIntegrable_of_even₀ h₁f h₂f b)
@@ -410,8 +410,8 @@ interval of the form `0..x`, for positive `x`.
 
 See `intervalIntegrable_of_odd` for a stronger result.-/
 lemma intervalIntegrable_of_odd₀
-  (h₁f : ∀ x, -f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) (t : ℝ) :
-  IntervalIntegrable f volume 0 t := by
+    (h₁f : ∀ x, -f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) (t : ℝ) :
+    IntervalIntegrable f volume 0 t := by
   rcases lt_trichotomy t 0 with h | h | h
   · rw [IntervalIntegrable.iff_comp_neg]
     conv => arg 1; intro t; rw [← h₁f]
@@ -424,8 +424,8 @@ lemma intervalIntegrable_of_odd₀
 iff it is interval integrable (with respect to the volume measure) on every interval of the form
 `0..x`, for positive `x`. -/
 theorem intervalIntegrable_of_odd
-  (h₁f : ∀ x, -f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) (a b : ℝ) :
-  IntervalIntegrable f volume a b :=
+    (h₁f : ∀ x, -f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) (a b : ℝ) :
+    IntervalIntegrable f volume a b :=
   -- Split integral and apply lemma
   (intervalIntegrable_of_odd₀ h₁f h₂f a).symm.trans (b := 0) (intervalIntegrable_of_odd₀ h₁f h₂f b)
 
@@ -656,9 +656,6 @@ end Basic
 nonrec theorem _root_.RCLike.intervalIntegral_ofReal {𝕜 : Type*} [RCLike 𝕜] {a b : ℝ}
     {μ : Measure ℝ} {f : ℝ → ℝ} : (∫ x in a..b, (f x : 𝕜) ∂μ) = ↑(∫ x in a..b, f x ∂μ) := by
   simp only [intervalIntegral, integral_ofReal, RCLike.ofReal_sub]
-
-@[deprecated (since := "2024-04-06")]
-alias RCLike.interval_integral_ofReal := RCLike.intervalIntegral_ofReal
 
 nonrec theorem integral_ofReal {a b : ℝ} {μ : Measure ℝ} {f : ℝ → ℝ} :
     (∫ x in a..b, (f x : ℂ) ∂μ) = ↑(∫ x in a..b, f x ∂μ) :=

@@ -43,8 +43,6 @@ theorem const_injective [Nonempty α] : Injective (const α : β → α → β) 
 theorem const_inj [Nonempty α] {y₁ y₂ : β} : const α y₁ = const α y₂ ↔ y₁ = y₂ :=
   ⟨fun h ↦ const_injective h, fun h ↦ h ▸ rfl⟩
 
--- Porting note: `Function.onFun` is now reducible
--- @[simp]
 theorem onFun_apply (f : β → β → γ) (g : α → β) (a b : α) : onFun f g a b = f (g a) (g b) :=
   rfl
 

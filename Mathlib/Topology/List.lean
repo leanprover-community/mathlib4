@@ -153,22 +153,19 @@ theorem tendsto_eraseIdx :
     dsimp [eraseIdx]
     exact tendsto_fst.cons ((@tendsto_eraseIdx n l).comp tendsto_snd)
 
-@[deprecated (since := "2024-05-04")] alias tendsto_removeNth := tendsto_eraseIdx
-
 theorem continuous_eraseIdx {n : ℕ} : Continuous fun l : List α => eraseIdx l n :=
   continuous_iff_continuousAt.mpr fun _a => tendsto_eraseIdx
-
-@[deprecated (since := "2024-05-04")] alias continuous_removeNth := continuous_eraseIdx
 
 @[to_additive]
 theorem tendsto_prod [Monoid α] [ContinuousMul α] {l : List α} :
     Tendsto List.prod (𝓝 l) (𝓝 l.prod) := by
-  induction' l with x l ih
-  · simp +contextual [nhds_nil, mem_of_mem_nhds, tendsto_pure_left]
-  simp_rw [tendsto_cons_iff, prod_cons]
-  have := continuous_iff_continuousAt.mp continuous_mul (x, l.prod)
-  rw [ContinuousAt, nhds_prod_eq] at this
-  exact this.comp (tendsto_id.prod_map ih)
+  induction l with
+  | nil => simp +contextual [nhds_nil, mem_of_mem_nhds, tendsto_pure_left]
+  | cons x l ih =>
+    simp_rw [tendsto_cons_iff, prod_cons]
+    have := continuous_iff_continuousAt.mp continuous_mul (x, l.prod)
+    rw [ContinuousAt, nhds_prod_eq] at this
+    exact this.comp (tendsto_id.prod_map ih)
 
 @[to_additive]
 theorem continuous_prod [Monoid α] [ContinuousMul α] : Continuous (prod : List α → α) :=
@@ -221,12 +218,8 @@ theorem continuousAt_eraseIdx {n : ℕ} {i : Fin (n + 1)} :
     simp only [Vector.eraseIdx_val]
     exact Tendsto.comp List.tendsto_eraseIdx continuousAt_subtype_val
 
-@[deprecated (since := "2024-05-04")] alias continuousAt_removeNth := continuousAt_eraseIdx
-
 theorem continuous_eraseIdx {n : ℕ} {i : Fin (n + 1)} :
     Continuous (List.Vector.eraseIdx i : List.Vector α (n + 1) → List.Vector α n) :=
   continuous_iff_continuousAt.mpr fun ⟨_a, _l⟩ => continuousAt_eraseIdx
-
-@[deprecated (since := "2024-05-04")] alias continuous_removeNth := continuous_eraseIdx
 
 end Vector
