@@ -16,7 +16,7 @@ all coefficients the exponent of which is smaller than some bound vanish.
 - `MvPowerSeries.LinearTopology.basis_mem_nhds_zero` :
   the two-sided ideals from `MvPowerSeries.LinearTopology.basis` are neighborhoods of `0`.
 
-- `MvPowerSeries.LinearTopology.hasBasis_twoSidedIdeal` :
+- `MvPowerSeries.LinearTopology.hasBasis_nhds_zero` :
   the two-sided ideals from `MvPowerSeries.LinearTopology.basis` form a basis
   of neighborhoods of `0` if the topology of `R` is (left and right) linear.
 
