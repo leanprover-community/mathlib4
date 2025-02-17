@@ -10,8 +10,9 @@ import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 # The bialgebra structure on monoid algebras
 
 Given a monoid `X`, a commutative semiring `R` and an `R`-bialgebra `A`, this file collects results
-about the `R`-bialgebra instance on `A[X]` defined using `Finsupp.instCoalgebra R X A` from
-`Mathlib.RingTheory.Coalgebra.Basic`.
+about the `R`-bialgebra instance on `A[X]` inherited from the corresponding structure on its
+coefficients, building upon results in `Mathlib/RingTheory/Coalgebra/MonoidAlgebra.lean` about the
+coalgebra structure.
 
 ## Main definitions
 
@@ -23,9 +24,9 @@ about the `R`-bialgebra instance on `A[X]` defined using `Finsupp.instCoalgebra 
 
 suppress_compilation
 
-namespace MonoidAlgebra
-
 open Bialgebra
+
+namespace MonoidAlgebra
 
 variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A]
   {X : Type*} [Bialgebra R A] [Monoid X]
@@ -50,8 +51,6 @@ end MonoidAlgebra
 
 namespace AddMonoidAlgebra
 
-open Bialgebra
-
 variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A]
   {X : Type*} [Bialgebra R A] [AddMonoid X]
 
@@ -74,6 +73,7 @@ instance instBialgebra : Bialgebra R A[X] where
 end AddMonoidAlgebra
 
 namespace LaurentPolynomial
+
 open AddMonoidAlgebra
 
 variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] [Bialgebra R A]

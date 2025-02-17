@@ -10,8 +10,8 @@ import Mathlib.RingTheory.Coalgebra.Basic
 # The coalgebra structure on monoid algebras
 
 Given a type `X`, a commutative semiring `R` and a semiring `A` which is also an `R`-coalgebra,
-this file collects results about the `R`-coalgebra instance on `A[X]` defined by
-`Finsupp.instCoalgebra R X A` from `Mathlib.RingTheory.Coalgebra.Basic`.
+this file collects results about the `R`-coalgebra instance on `A[X]` inherited from the
+corresponding structure on its coefficients, defined in `Mathlib/RingTheory/Coalgebra/Basic.lean`.
 
 ## Main definitions
 

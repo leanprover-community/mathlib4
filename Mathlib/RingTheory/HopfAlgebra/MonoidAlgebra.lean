@@ -10,8 +10,8 @@ import Mathlib.RingTheory.HopfAlgebra.Basic
 # The Hopf algebra structure on group algebras
 
 Given a group `G`, a commutative semiring `R` and an `R`-Hopf algebra `A`, this file collects
-results about the `R`-Hopf algebra instance on `A[G]` defined using `Finsupp.instCoalgebra R G A`
-from `Mathlib.RingTheory.Coalgebra.Basic`.
+results about the `R`-Hopf algebra instance on `A[G]`, building upon results in
+`Mathlib/RingTheory/Bialgebra/MonoidAlgebra.lean` about the bialgebra structure.
 
 ## Main definitions
 
@@ -24,9 +24,9 @@ from `Mathlib.RingTheory.Coalgebra.Basic`.
 
 suppress_compilation
 
-namespace MonoidAlgebra
-
 open HopfAlgebra
+
+namespace MonoidAlgebra
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [HopfAlgebra R A]
 variable {G : Type*} [Group G]
@@ -54,8 +54,6 @@ instance instHopfAlgebra : HopfAlgebra R (MonoidAlgebra A G) where
 end MonoidAlgebra
 
 namespace AddMonoidAlgebra
-
-open HopfAlgebra
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [HopfAlgebra R A]
 variable {G : Type*} [AddGroup G]
