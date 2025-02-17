@@ -105,7 +105,7 @@ end Arbitrary
 private theorem principal_nfp_iSup (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) :
     Principal op (nfp (fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, succ (op y.1.1 y.1.2)) o) := by
   intro a b ha hb
-  rw [lt_nfp] at *
+  rw [lt_nfp_iff] at *
   obtain ⟨m, ha⟩ := ha
   obtain ⟨n, hb⟩ := hb
   obtain h | h := le_total
@@ -133,12 +133,12 @@ set_option linter.deprecated false in
 theorem principal_nfp_blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) :
     Principal op (nfp (fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b)) o) := by
   intro a b ha hb
-  rw [lt_nfp] at *
+  rw [lt_nfp_iff] at *
   obtain ⟨m, hm⟩ := ha
   obtain ⟨n, hn⟩ := hb
-  cases' le_total
+  rcases le_total
     ((fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b))^[m] o)
-    ((fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b))^[n] o) with h h
+    ((fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b))^[n] o) with h | h
   · use n + 1
     rw [Function.iterate_succ']
     exact lt_blsub₂ (@fun a _ b _ => op a b) (hm.trans_le h) hn
