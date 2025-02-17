@@ -3,7 +3,7 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.AbsoluteValue.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.BigOperators.Ring.Multiset
@@ -131,16 +131,18 @@ theorem PNat.coe_prod {ι : Type*} (f : ι → ℕ+) (s : Finset ι) :
     ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : ℕ) :=
   map_prod PNat.coeMonoidHom _ _
 
-section CanonicallyOrderedCommSemiring
-variable [CanonicallyOrderedCommSemiring R] {f g h : ι → R} {s : Finset ι} {i : ι}
+section CanonicallyOrderedAdd
+variable [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
+  {f g h : ι → R} {s : Finset ι} {i : ι}
 
-/-- Note that the name is to match `CanonicallyOrderedCommSemiring.mul_pos`. -/
-@[simp] lemma _root_.CanonicallyOrderedCommSemiring.prod_pos [Nontrivial R] :
+/-- Note that the name is to match `CanonicallyOrderedAdd.mul_pos`. -/
+@[simp] lemma _root_.CanonicallyOrderedAdd.prod_pos [NoZeroDivisors R] [Nontrivial R] :
     0 < ∏ i ∈ s, f i ↔ (∀ i ∈ s, (0 : R) < f i) :=
-  CanonicallyOrderedCommSemiring.multiset_prod_pos.trans Multiset.forall_mem_map_iff
+  CanonicallyOrderedAdd.multiset_prod_pos.trans Multiset.forall_mem_map_iff
 
+attribute [local instance] CanonicallyOrderedAdd.toOrderedCommMonoid in
 /-- If `g, h ≤ f` and `g i + h i ≤ f i`, then the product of `f` over `s` is at least the
-  sum of the products of `g` and `h`. This is the version for `CanonicallyOrderedCommSemiring`.
+  sum of the products of `g` and `h`. This is the version for `CanonicallyOrderedAdd`.
 -/
 lemma prod_add_prod_le' (hi : i ∈ s) (h2i : g i + h i ≤ f i) (hgf : ∀ j ∈ s, j ≠ i → g j ≤ f j)
     (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) : ((∏ i ∈ s, g i) + ∏ i ∈ s, h i) ≤ ∏ i ∈ s, f i := by
@@ -150,7 +152,7 @@ lemma prod_add_prod_le' (hi : i ∈ s) (h2i : g i + h i ≤ f i) (hgf : ∀ j �
   rw [right_distrib]
   gcongr with j hj j hj <;> simp_all
 
-end CanonicallyOrderedCommSemiring
+end CanonicallyOrderedAdd
 
 /-! ### Named inequalities -/
 

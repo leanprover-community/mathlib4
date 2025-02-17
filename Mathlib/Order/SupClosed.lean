@@ -3,7 +3,7 @@ Copyright (c) 2023 Yaël Dillies, Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
-import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Finset.Lattice.Prod
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Order.Closure

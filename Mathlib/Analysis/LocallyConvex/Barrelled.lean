@@ -112,7 +112,7 @@ variable {α ι κ 𝕜₁ 𝕜₂ E F : Type*} [Nonempty κ] [NontriviallyNorme
 
 /-- Any TVS over a `NontriviallyNormedField` that is also a Baire space is barrelled. In
 particular, this applies to Banach spaces and Fréchet spaces. -/
-instance BaireSpace.instBarrelledSpace [TopologicalSpace E] [TopologicalAddGroup E]
+instance BaireSpace.instBarrelledSpace [TopologicalSpace E] [IsTopologicalAddGroup E]
     [ContinuousConstSMul 𝕜₁ E] [BaireSpace E] :
     BarrelledSpace 𝕜₁ E where
   continuous_of_lowerSemicontinuous := by

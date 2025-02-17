@@ -47,7 +47,7 @@ instance : CoeTC α (Computation α) :=
   computation `c`. -/
 def think (c : Computation α) : Computation α :=
   ⟨Stream'.cons none c.1, fun n a h => by
-    cases' n with n
+    rcases n with - | n
     · contradiction
     · exact c.2 h⟩
 
@@ -190,7 +190,7 @@ def corec (f : β → α ⊕ β) (b : β) : Computation α := by
   revert h; generalize Sum.inr b = o; revert o
   induction' n with n IH <;> intro o
   · change (Corec.f f o).1 = some a' → (Corec.f f (Corec.f f o).2).1 = some a'
-    cases' o with _ b <;> intro h
+    rcases o with _ | b <;> intro h
     · exact h
     unfold Corec.f at *; split <;> simp_all
   · rw [Stream'.corec'_eq (Corec.f f) (Corec.f f o).2, Stream'.corec'_eq (Corec.f f) o]
@@ -334,7 +334,7 @@ instance think_terminates (s : Computation α) : ∀ [Terminates s], Terminates 
 
 theorem of_think_mem {s : Computation α} {a} : a ∈ think s → a ∈ s
   | ⟨n, h⟩ => by
-    cases' n with n'
+    rcases n with - | n'
     · contradiction
     · exact ⟨n', h⟩
 
@@ -407,7 +407,7 @@ theorem get_promises : s ~> get s := fun _ => get_eq_of_mem _
 
 theorem mem_of_promises {a} (p : s ~> a) : a ∈ s := by
   cases' h with h
-  cases' h with a' h
+  obtain ⟨a', h⟩ := h
   rw [p h]
   exact h
 
@@ -466,7 +466,7 @@ theorem length_think (s : Computation α) [h : Terminates s] : length (think s) 
   · exact Nat.find_min' _ (Nat.find_spec ((terminates_def _).1 h))
   · have : (Option.isSome ((think s).val (length (think s))) : Prop) :=
       Nat.find_spec ((terminates_def _).1 s.think_terminates)
-    revert this; cases' length (think s) with n <;> intro this
+    revert this; rcases length (think s) with - | n <;> intro this
     · simp [think, Stream'.cons] at this
     · apply Nat.succ_le_succ
       apply Nat.find_min'
@@ -507,7 +507,7 @@ theorem eq_thinkN {s : Computation α} {a n} (h : Results s a n) : s = thinkN (p
   (intro s; apply recOn s (fun a' => _) fun s => _) <;> intro a h
   · rw [← eq_of_pure_mem h.mem]
     rfl
-  · cases' of_results_think h with n h
+  · obtain ⟨n, h⟩ := of_results_think h
     cases h
     contradiction
   · have := h.len_unique (results_pure _)
@@ -606,10 +606,10 @@ theorem ret_bind (a) (f : α → Computation β) : bind (pure a) f = f a := by
     match c₁, c₂, h with
     | _, _, Or.inl ⟨rfl, rfl⟩ =>
       simp only [BisimO, bind, Bind.f, corec_eq, rmap, destruct_pure]
-      cases' destruct (f a) with b cb <;> simp [Bind.g]
+      rcases destruct (f a) with b | cb <;> simp [Bind.g]
     | _, c, Or.inr rfl =>
       simp only [BisimO, Bind.f, corec_eq, rmap]
-      cases' destruct c with b cb <;> simp [Bind.g]
+      rcases destruct c with b | cb <;> simp [Bind.g]
   · simp
 
 @[simp]
@@ -621,7 +621,7 @@ theorem bind_pure (f : α → β) (s) : bind s (pure ∘ f) = map f s := by
   apply eq_of_bisim fun c₁ c₂ => c₁ = c₂ ∨ ∃ s, c₁ = bind s (pure ∘ f) ∧ c₂ = map f s
   · intro c₁ c₂ h
     match c₁, c₂, h with
-    | _, c₂, Or.inl (Eq.refl _) => cases' destruct c₂ with b cb <;> simp
+    | _, c₂, Or.inl (Eq.refl _) => rcases destruct c₂ with b | cb <;> simp
     | _, _, Or.inr ⟨s, rfl, rfl⟩ =>
       apply recOn s <;> intro s
       · simp
@@ -634,7 +634,7 @@ theorem bind_pure' (s : Computation α) : bind s pure = s := by
   apply eq_of_bisim fun c₁ c₂ => c₁ = c₂ ∨ ∃ s, c₁ = bind s pure ∧ c₂ = s
   · intro c₁ c₂ h
     match c₁, c₂, h with
-    | _, c₂, Or.inl (Eq.refl _) => cases' destruct c₂ with b cb <;> simp
+    | _, c₂, Or.inl (Eq.refl _) => rcases destruct c₂ with b | cb <;> simp
     | _, _, Or.inr ⟨s, rfl, rfl⟩ =>
       apply recOn s <;> intro s <;> simp
   · exact Or.inr ⟨s, rfl, rfl⟩
@@ -647,12 +647,12 @@ theorem bind_assoc (s : Computation α) (f : α → Computation β) (g : β → 
       c₁ = c₂ ∨ ∃ s, c₁ = bind (bind s f) g ∧ c₂ = bind s fun x : α => bind (f x) g
   · intro c₁ c₂ h
     match c₁, c₂, h with
-    | _, c₂, Or.inl (Eq.refl _) => cases' destruct c₂ with b cb <;> simp
+    | _, c₂, Or.inl (Eq.refl _) => rcases destruct c₂ with b | cb <;> simp
     | _, _, Or.inr ⟨s, rfl, rfl⟩ =>
       apply recOn s <;> intro s
       · simp only [BisimO, ret_bind]; generalize f s = fs
         apply recOn fs <;> intro t <;> simp
-        · cases' destruct (g t) with b cb <;> simp
+        · rcases destruct (g t) with b | cb <;> simp
       · simpa  [BisimO] using Or.inr ⟨s, rfl, rfl⟩
   · exact Or.inr ⟨s, rfl, rfl⟩
 
@@ -666,7 +666,7 @@ theorem results_bind {s : Computation α} {f : α → Computation β} {a b m n} 
     exact h2
   · intro _ h3 _ h1
     rw [think_bind]
-    cases' of_results_think h1 with m' h
+    obtain ⟨m', h⟩ := of_results_think h1
     cases' h with h1 e
     rw [e]
     exact results_think (h3 h1)
@@ -1080,7 +1080,7 @@ theorem LiftRelAux.ret_left (R : α → β → Prop) (C : Computation α → Com
 
 theorem LiftRelAux.swap (R : α → β → Prop) (C) (a b) :
     LiftRelAux (swap R) (swap C) b a = LiftRelAux R C a b := by
-  cases' a with a ca <;> cases' b with b cb <;> simp only [LiftRelAux]
+  rcases a with a | ca <;> rcases b with b | cb <;> simp only [LiftRelAux]
 
 @[simp]
 theorem LiftRelAux.ret_right (R : α → β → Prop) (C : Computation α → Computation β → Prop) (b ca) :
