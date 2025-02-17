@@ -25,7 +25,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
   {J : Type u'} [Category.{v'} J]
   [HasColimitsOfShape J C] [HasExactColimitsOfShape J C]
   (S : ShortComplex (J ⥤ C)) (hS : S.Exact)
-  (c₁ : Cocone S.X₁) (hc₁ : IsColimit c₁) (c₂ : Cocone S.X₂) (hc₂ : IsColimit c₂)
+  {c₁ : Cocone S.X₁} (hc₁ : IsColimit c₁) (c₂ : Cocone S.X₂) (hc₂ : IsColimit c₂)
   (c₃ : Cocone S.X₃) (hc₃ : IsColimit c₃)
   (f : c₁.pt ⟶ c₂.pt) (g : c₂.pt ⟶ c₃.pt)
   (hf : ∀ j, c₁.ι.app j ≫ f = S.f.app j ≫ c₂.ι.app j)
@@ -49,8 +49,8 @@ of the functor `colim : (J ⥤ C) ⥤ C` by saying that if `S : ShortComplex (J 
 is exact, then the short complex obtained by taking the colimits is exact,
 where we allow the replacement of the chosen colimit cocones of the
 colimit API by arbitrary colimit cocones. -/
-lemma colim.mapShortComplex_exact :
-    (mapShortComplex S c₁ hc₁ c₂ c₃ f g hf hg).Exact := by
+lemma colim.exact_mapShortComplex :
+    (mapShortComplex S hc₁ c₂ c₃ f g hf hg).Exact := by
   refine (ShortComplex.exact_iff_of_iso ?_).2 (hS.map colim)
   refine ShortComplex.isoMk
     (IsColimit.coconePointUniqueUpToIso hc₁ (colimit.isColimit _))
