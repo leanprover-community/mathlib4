@@ -301,7 +301,7 @@ theorem Integrable.ae_convolution_exists (hf : Integrable f ν) (hg : Integrable
 
 end Right
 
-variable [TopologicalSpace G] [TopologicalAddGroup G] [BorelSpace G]
+variable [TopologicalSpace G] [IsTopologicalAddGroup G] [BorelSpace G]
 
 theorem _root_.HasCompactSupport.convolutionExistsAt {x₀ : G}
     (h : HasCompactSupport fun t => L (f t) (g (x₀ - t))) (hf : LocallyIntegrable f μ)
@@ -385,7 +385,7 @@ theorem convolutionExistsAt_iff_integrable_swap :
 
 end MeasurableGroup
 
-variable [TopologicalSpace G] [TopologicalAddGroup G] [BorelSpace G]
+variable [TopologicalSpace G] [IsTopologicalAddGroup G] [BorelSpace G]
 variable [IsAddLeftInvariant μ] [IsNegInvariant μ]
 
 theorem _root_.HasCompactSupport.convolutionExists_left
@@ -535,7 +535,7 @@ theorem Integrable.integrable_convolution (hf : Integrable f μ)
 end
 
 variable [TopologicalSpace G]
-variable [TopologicalAddGroup G]
+variable [IsTopologicalAddGroup G]
 
 protected theorem _root_.HasCompactSupport.convolution [T2Space G] (hcf : HasCompactSupport f)
     (hcg : HasCompactSupport g) : HasCompactSupport (f ⋆[L, μ] g) :=
@@ -689,7 +689,7 @@ theorem convolution_neg_of_neg_eq (h1 : ∀ᵐ x ∂μ, f (-x) = f x) (h2 : ∀�
 end Measurable
 
 variable [TopologicalSpace G]
-variable [TopologicalAddGroup G]
+variable [IsTopologicalAddGroup G]
 variable [BorelSpace G]
 
 theorem _root_.HasCompactSupport.continuous_convolution_left

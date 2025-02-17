@@ -3,9 +3,9 @@ Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Algebra.IsPrimePow
-import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Data.Nat.Cast.Field
+import Mathlib.NumberTheory.ArithmeticFunction
 
 /-!
 # The von Mangoldt Function
