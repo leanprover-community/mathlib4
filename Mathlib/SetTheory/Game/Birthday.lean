@@ -67,7 +67,7 @@ theorem lt_birthday_iff {x : PGame} {o : Ordinal} :
   constructor
   · rw [birthday_def]
     intro h
-    cases' lt_max_iff.1 h with h' h'
+    rcases lt_max_iff.1 h with h' | h'
     · left
       rwa [lt_lsub_iff] at h'
     · right
@@ -136,8 +136,6 @@ theorem birthday_add : ∀ x y : PGame.{u}, (x + y).birthday = x.birthday ♯ y.
     rw [birthday_def, nadd, lsub_sum, lsub_sum]
     simp only [mk_add_moveLeft_inl, mk_add_moveLeft_inr, mk_add_moveRight_inl, mk_add_moveRight_inr,
       moveLeft_mk, moveRight_mk]
-    -- Porting note: Originally `simp only [birthday_add]`, but this causes an error in
-    -- `termination_by`. Use a workaround.
     conv_lhs => left; left; right; intro a; rw [birthday_add (xL a) ⟨yl, yr, yL, yR⟩]
     conv_lhs => left; right; right; intro b; rw [birthday_add ⟨xl, xr, xL, xR⟩ (yL b)]
     conv_lhs => right; left; right; intro a; rw [birthday_add (xR a) ⟨yl, yr, yL, yR⟩]

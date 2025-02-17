@@ -5,7 +5,6 @@ Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.Determinant
 import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
-import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Tactic.Monotonicity
@@ -456,7 +455,6 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
           haveI zero_le_ifp_n_fract : 0 ≤ ifp_n.fr :=
             IntFractPair.nth_stream_fr_nonneg stream_nth_eq
           inv_pos.2 (lt_of_le_of_ne zero_le_ifp_n_fract stream_nth_fr_ne_zero.symm)
-        -- Porting note: replaced complicated positivity proof with tactic.
         positivity
       rw [abs_of_pos this]
     rwa [this]

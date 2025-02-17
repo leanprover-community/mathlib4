@@ -54,11 +54,11 @@ instance : CommRing (FiniteIntegralAdeles R K) :=
 instance : TopologicalSpace (FiniteIntegralAdeles R K) :=
   inferInstanceAs (TopologicalSpace (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K))
 
-instance (v : HeightOneSpectrum R) : TopologicalRing (v.adicCompletionIntegers K) :=
-  Subring.instTopologicalRing ..
+instance (v : HeightOneSpectrum R) : IsTopologicalRing (v.adicCompletionIntegers K) :=
+  Subring.instIsTopologicalRing ..
 
-instance : TopologicalRing (FiniteIntegralAdeles R K) :=
-  inferInstanceAs (TopologicalRing (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K))
+instance : IsTopologicalRing (FiniteIntegralAdeles R K) :=
+  inferInstanceAs (IsTopologicalRing (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K))
 
 instance : Inhabited (FiniteIntegralAdeles R K) :=
   inferInstanceAs (Inhabited (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K))
@@ -70,7 +70,7 @@ local notation "R_hat" => FiniteIntegralAdeles
 /-- The product of all `adicCompletion`, where `v` runs over the maximal ideals of `R`. -/
 def ProdAdicCompletions :=
   ∀ v : HeightOneSpectrum R, v.adicCompletion K
--- deriving NonUnitalNonAssocRing, TopologicalSpace, TopologicalRing, CommRing, Inhabited
+-- deriving NonUnitalNonAssocRing, TopologicalSpace, IsTopologicalRing, CommRing, Inhabited
 
 section DerivedInstances
 
@@ -80,8 +80,8 @@ instance : NonUnitalNonAssocRing (ProdAdicCompletions R K) :=
 instance : TopologicalSpace (ProdAdicCompletions R K) :=
   inferInstanceAs (TopologicalSpace (∀ v : HeightOneSpectrum R, v.adicCompletion K))
 
-instance : TopologicalRing (ProdAdicCompletions R K) :=
-  inferInstanceAs (TopologicalRing (∀ v : HeightOneSpectrum R, v.adicCompletion K))
+instance : IsTopologicalRing (ProdAdicCompletions R K) :=
+  inferInstanceAs (IsTopologicalRing (∀ v : HeightOneSpectrum R, v.adicCompletion K))
 
 instance : CommRing (ProdAdicCompletions R K) :=
   inferInstanceAs (CommRing (∀ v : HeightOneSpectrum R, v.adicCompletion K))
@@ -270,7 +270,7 @@ open scoped Multiplicative
 theorem algebraMap' (k : K) : (_root_.algebraMap K (K_hat R K) k).IsFiniteAdele := by
   rw [IsFiniteAdele, Filter.eventually_cofinite]
   simp_rw [mem_adicCompletionIntegers, ProdAdicCompletions.algebraMap_apply',
-    Valued.valuedCompletion_apply, not_le]
+    adicCompletion, Valued.valuedCompletion_apply, not_le]
   change {v : HeightOneSpectrum R | 1 < v.valuation k}.Finite
   -- The goal currently: if k ∈ K = field of fractions of a Dedekind domain R,
   -- then v(k)>1 for only finitely many v.
@@ -343,19 +343,23 @@ instance : Coe (FiniteAdeleRing R K) (K_hat R K) where
 theorem coe_one : (1 : FiniteAdeleRing R K) = (1 : K_hat R K) := rfl
 
 @[simp, norm_cast]
-theorem coe_zero: (0 : FiniteAdeleRing R K) = (0 : K_hat R K) := rfl
+theorem coe_zero : (0 : FiniteAdeleRing R K) = (0 : K_hat R K) := rfl
 
 @[simp, norm_cast]
-theorem coe_add (x y : FiniteAdeleRing R K) : (x + y : FiniteAdeleRing R K) =
-  (x : K_hat R K) + (y : K_hat R K) := rfl
+theorem coe_add (x y : FiniteAdeleRing R K) :
+    (x + y : FiniteAdeleRing R K) = (x : K_hat R K) + (y : K_hat R K) :=
+  rfl
 
 @[simp, norm_cast]
-theorem coe_mul (x y : FiniteAdeleRing R K) : (x * y : FiniteAdeleRing R K) =
-  (x : K_hat R K) * (y : K_hat R K) := rfl
+theorem coe_mul (x y : FiniteAdeleRing R K) :
+    (x * y : FiniteAdeleRing R K) = (x : K_hat R K) * (y : K_hat R K) :=
+  rfl
 
 @[simp, norm_cast]
-theorem coe_algebraMap (x : K) : (((algebraMap K (FiniteAdeleRing R K)) x) : K_hat R K) =
-      (algebraMap K (ProdAdicCompletions R K)) x := rfl
+theorem coe_algebraMap (x : K) :
+    (((algebraMap K (FiniteAdeleRing R K)) x) : K_hat R K) =
+      (algebraMap K (ProdAdicCompletions R K)) x :=
+  rfl
 
 @[ext]
 lemma ext {a₁ a₂ : FiniteAdeleRing R K} (h : (a₁ : K_hat R K) = a₂) : a₁ = a₂ :=
@@ -367,23 +371,24 @@ instance : Algebra (R_hat R K) (FiniteAdeleRing R K) where
     simp only [mem_adicCompletionIntegers, mem_compl_iff, mem_setOf_eq, map_mul] at hv ⊢
     exact mt (mul_le_one' (rhat v).2) hv
     ⟩
-  toFun r := ⟨r, by simp_all⟩
-  map_one' := by ext; rfl
-  map_mul' _ _ := by ext; rfl
-  map_zero' := by ext; rfl
-  map_add' _ _ := by ext; rfl
+  algebraMap :=
+  { toFun r := ⟨r, by simp_all⟩
+    map_one' := by ext; rfl
+    map_mul' _ _ := by ext; rfl
+    map_zero' := by ext; rfl
+    map_add' _ _ := by ext; rfl }
   commutes' _ _ := mul_comm _ _
   smul_def' _ _ := rfl
 
-instance : CoeFun (FiniteAdeleRing R K)
-    (fun _ ↦ ∀ (v : HeightOneSpectrum R), adicCompletion K v) where
-  coe a v := a.1 v
+instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion K) where
+  coe a := a.1
+  coe_injective' _a _b := ext _ _
 
 open scoped algebraMap -- coercion from R to `FiniteAdeleRing R K`
 
 variable {R K} in
-lemma exists_finiteIntegralAdele_iff (a : FiniteAdeleRing R K) : (∃ c : R_hat R K,
-    a = c) ↔ ∀ (v : HeightOneSpectrum R), a v ∈ adicCompletionIntegers K v :=
+lemma exists_finiteIntegralAdele_iff (a : FiniteAdeleRing R K) :
+    (∃ c : R_hat R K, a = c) ↔ ∀ v : HeightOneSpectrum R, a v ∈ adicCompletionIntegers K v :=
   ⟨by rintro ⟨c, rfl⟩ v; exact (c v).2, fun h ↦ ⟨fun v ↦ ⟨a v, h v⟩, rfl⟩⟩
 
 section Topology
@@ -448,7 +453,7 @@ instance : TopologicalSpace (FiniteAdeleRing R K) :=
   SubmodulesRingBasis.topology (submodulesRingBasis R K)
 
 -- the point of `submodulesRingBasis` above: this now works
-example : TopologicalRing (FiniteAdeleRing R K) := inferInstance
+example : IsTopologicalRing (FiniteAdeleRing R K) := inferInstance
 
 end Topology
 

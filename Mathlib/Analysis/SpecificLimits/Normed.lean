@@ -6,7 +6,7 @@ Authors: Anatole Dedecker, Sébastien Gouëzel, Yury Kudryashov, Dylan MacKenzie
 import Mathlib.Algebra.BigOperators.Module
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Analysis.Asymptotics.Lemmas
 import Mathlib.Analysis.Normed.Field.InfiniteSum
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.SpecificLimits.Basic
@@ -242,9 +242,6 @@ theorem tsum_geometric_le_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
 
 variable [HasSummableGeomSeries R]
 
-@[deprecated (since := "2024-07-27")]
-alias NormedRing.tsum_geometric_of_norm_lt_one := tsum_geometric_le_of_norm_lt_one
-
 theorem geom_series_mul_neg (x : R) (h : ‖x‖ < 1) : (∑' i : ℕ, x ^ i) * (1 - x) = 1 := by
   have := (summable_geometric_of_norm_lt_one h).hasSum.mul_right (1 - x)
   refine tendsto_nhds_unique this.tendsto_sum_nat ?_
@@ -297,9 +294,6 @@ lemma isUnit_one_sub_of_norm_lt_one {x : R} (h : ‖x‖ < 1) : IsUnit (1 - x) :
   ⟨Units.oneSub x h, rfl⟩
 
 end HasSummableGeometricSeries
-
-@[deprecated (since := "2024-07-27")]
-alias NormedRing.summable_geometric_of_norm_lt_one := summable_geometric_of_norm_lt_one
 
 section Geometric
 

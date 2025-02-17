@@ -158,11 +158,11 @@ theorem forall₂_zip : ∀ {l₁ l₂}, Forall₂ R l₁ l₂ → ∀ {a b}, (a
 theorem forall₂_iff_zip {l₁ l₂} :
     Forall₂ R l₁ l₂ ↔ length l₁ = length l₂ ∧ ∀ {a b}, (a, b) ∈ zip l₁ l₂ → R a b :=
   ⟨fun h => ⟨Forall₂.length_eq h, @forall₂_zip _ _ _ _ _ h⟩, fun h => by
-    cases' h with h₁ h₂
+    obtain ⟨h₁, h₂⟩ := h
     induction' l₁ with a l₁ IH generalizing l₂
     · cases length_eq_zero.1 h₁.symm
       constructor
-    · cases' l₂ with b l₂
+    · rcases l₂ with - | ⟨b, l₂⟩
       · simp at h₁
       · simp only [length_cons, succ.injEq] at h₁
         exact Forall₂.cons (h₂ <| by simp [zip])
@@ -226,7 +226,8 @@ theorem rel_flatten : (Forall₂ (Forall₂ R) ⇒ Forall₂ R) flatten flatten
 
 @[deprecated (since := "2025-10-15")] alias rel_join := rel_flatten
 
-theorem rel_flatMap : (Forall₂ R ⇒ (R ⇒ Forall₂ P) ⇒ Forall₂ P) List.flatMap List.flatMap :=
+theorem rel_flatMap : (Forall₂ R ⇒ (R ⇒ Forall₂ P) ⇒ Forall₂ P)
+    (Function.swap List.flatMap) (Function.swap List.flatMap) :=
   fun _ _ h₁ _ _ h₂ => rel_flatten (rel_map (@h₂) h₁)
 
 @[deprecated (since := "2025-10-16")] alias rel_bind := rel_flatMap

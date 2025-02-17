@@ -84,11 +84,11 @@ theorem CycleType.count_def {σ : Perm α} (n : ℕ) :
   intro d h
   simp only [Function.comp_apply, eq_comm, Finset.mem_val.mp h, exists_const]
 
-@[simp] -- Porting note: new attr
+@[simp]
 theorem cycleType_eq_zero {σ : Perm α} : σ.cycleType = 0 ↔ σ = 1 := by
   simp [cycleType_def, cycleFactorsFinset_eq_empty_iff]
 
-@[simp] -- Porting note: new attr
+@[simp]
 theorem cycleType_one : (1 : Perm α).cycleType = 0 := cycleType_eq_zero.2 rfl
 
 theorem card_cycleType_eq_zero {σ : Perm α} : Multiset.card σ.cycleType = 0 ↔ σ = 1 := by
@@ -127,7 +127,7 @@ theorem Disjoint.cycleType {σ τ : Perm α} (h : Disjoint σ τ) :
     Multiset.map_add, Finset.union_val, Multiset.add_eq_union_iff_disjoint.mpr _]
   exact Finset.disjoint_val.2 h.disjoint_cycleFactorsFinset
 
-@[simp] -- Porting note: new attr
+@[simp]
 theorem cycleType_inv (σ : Perm α) : σ⁻¹.cycleType = σ.cycleType :=
   cycle_induction_on (P := fun τ : Perm α => τ⁻¹.cycleType = τ.cycleType) σ rfl
     (fun σ hσ => by simp only [hσ.cycleType, hσ.inv.cycleType, support_inv])
@@ -135,7 +135,7 @@ theorem cycleType_inv (σ : Perm α) : σ⁻¹.cycleType = σ.cycleType :=
       simp only [mul_inv_rev, hστ.cycleType, hστ.symm.inv_left.inv_right.cycleType, hσ, hτ,
         add_comm]
 
-@[simp] -- Porting note: new attr
+@[simp]
 theorem cycleType_conj {σ τ : Perm α} : (τ * σ * τ⁻¹).cycleType = σ.cycleType := by
   induction σ using cycle_induction_on with
   | base_one => simp
@@ -169,7 +169,7 @@ theorem sign_of_cycleType (f : Perm α) :
   · rw [Multiset.map_cons, Multiset.prod_cons, Multiset.sum_cons, Multiset.card_cons, ihs]
     simp only [pow_add, pow_one, mul_neg_one, neg_mul, mul_neg, mul_assoc, mul_one]
 
-@[simp] -- Porting note: new attr
+@[simp]
 theorem lcm_cycleType (σ : Perm α) : σ.cycleType.lcm = orderOf σ := by
   induction σ using cycle_induction_on with
   | base_one => simp
@@ -406,8 +406,8 @@ theorem zero_eq : vectorsProdEqOne G 0 = {Vector.nil} :=
   Set.eq_singleton_iff_unique_mem.mpr ⟨Eq.refl (1 : G), fun v _ => v.eq_nil⟩
 
 theorem one_eq : vectorsProdEqOne G 1 = {Vector.nil.cons 1} := by
-  simp_rw [Set.eq_singleton_iff_unique_mem, mem_iff, Vector.toList_singleton, List.prod_singleton,
-    Vector.head_cons, true_and]
+  simp_rw [Set.eq_singleton_iff_unique_mem, mem_iff, List.Vector.toList_singleton,
+    List.prod_singleton, List.Vector.head_cons, true_and]
   exact fun v hv => v.cons_head_tail.symm.trans (congr_arg₂ Vector.cons hv v.tail.eq_nil)
 
 instance zeroUnique : Unique (vectorsProdEqOne G 0) := by
@@ -541,7 +541,7 @@ variable [DecidableEq α]
 def partition (σ : Perm α) : (Fintype.card α).Partition where
   parts := σ.cycleType + Multiset.replicate (Fintype.card α - σ.support.card) 1
   parts_pos {n hn} := by
-    cases' mem_add.mp hn with hn hn
+    rcases mem_add.mp hn with hn | hn
     · exact zero_lt_one.trans (one_lt_of_mem_cycleType hn)
     · exact lt_of_lt_of_le zero_lt_one (ge_of_eq (Multiset.eq_of_mem_replicate hn))
   parts_sum := by

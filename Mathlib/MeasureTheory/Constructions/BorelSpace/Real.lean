@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 import Mathlib.MeasureTheory.MeasurableSpace.Prod
+import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
 # Borel (measurable) spaces ℝ, ℝ≥0, ℝ≥0∞

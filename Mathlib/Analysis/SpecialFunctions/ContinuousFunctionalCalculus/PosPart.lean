@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 
-import Mathlib.Topology.ContinuousMap.StarOrdered
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+import Mathlib.Topology.ContinuousMap.StarOrdered
+import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-! # The positive (and negative) parts of a selfadjoint element in a C⋆-algebra
 
@@ -205,7 +204,7 @@ local notation "σₙ" => quasispectrum
 
 open ContinuousMapZero
 
-variable [TopologicalRing A] [T2Space A]
+variable [IsTopologicalRing A] [T2Space A]
 
 open NonUnitalContinuousFunctionalCalculus in
 /-- The positive and negative parts of a selfadjoint element `a` are unique. That is, if
@@ -264,8 +263,8 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
           zero_add]
       map_star' := fun f ↦ by simp [← map_star] }
   have key : (cfcₙHomSuperset ha has) = ψ :=
-    have : UniqueNonUnitalContinuousFunctionalCalculus ℝ A := inferInstance
-    UniqueNonUnitalContinuousFunctionalCalculus.eq_of_continuous_of_map_id s rfl
+    have : ContinuousMapZero.UniqueHom ℝ A := inferInstance
+    ContinuousMapZero.UniqueHom.eq_of_continuous_of_map_id s rfl
     (cfcₙHomSuperset ha has) ψ (cfcₙHomSuperset_continuous ha has)
     ((cfcₙHomSuperset_continuous hb' hbs).add (cfcₙHomSuperset_continuous hc' hcs))
     (by simpa [zero, ψ, -cfcₙHomSuperset_apply, cfcₙHomSuperset_id, sub_eq_add_neg] using habc)

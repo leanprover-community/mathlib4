@@ -3,11 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Lift
-import Mathlib.Topology.Defs.Filter
-import Mathlib.Topology.Defs.Basic
 import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Order.Filter.Lift
+import Mathlib.Topology.Defs.Basic
+import Mathlib.Topology.Defs.Filter
 
 /-!
 # Basic theory of topological spaces.
@@ -120,7 +120,7 @@ lemma isOpen_iff_of_cover {f : α → Set X} (ho : ∀ i, IsOpen (f i)) (hU : (�
 
 theorem Set.Finite.isOpen_sInter {s : Set (Set X)} (hs : s.Finite) :
     (∀ t ∈ s, IsOpen t) → IsOpen (⋂₀ s) :=
-  Finite.induction_on hs (fun _ => by rw [sInter_empty]; exact isOpen_univ) fun _ _ ih h => by
+  Finite.induction_on _ hs (fun _ => by rw [sInter_empty]; exact isOpen_univ) fun _ _ ih h => by
     simp only [sInter_insert, forall_mem_insert] at h ⊢
     exact h.1.inter (ih h.2)
 
@@ -281,7 +281,7 @@ theorem interior_inter : interior (s ∩ t) = interior s ∩ interior t :=
 
 theorem Set.Finite.interior_biInter {ι : Type*} {s : Set ι} (hs : s.Finite) (f : ι → Set X) :
     interior (⋂ i ∈ s, f i) = ⋂ i ∈ s, interior (f i) :=
-  hs.induction_on (by simp) <| by intros; simp [*]
+  hs.induction_on _ (by simp) <| by intros; simp [*]
 
 theorem Set.Finite.interior_sInter {S : Set (Set X)} (hS : S.Finite) :
     interior (⋂₀ S) = ⋂ s ∈ S, interior s := by
