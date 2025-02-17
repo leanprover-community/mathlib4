@@ -722,7 +722,7 @@ theorem isIndepSet_neighborSet_of_triangleFree [DecidableEq α] (h: G.CliqueFree
 
 /-- The embedding of an independent set of an induced subgraph of the subgraph `G` is an independent
  set in `G` and vice versa. -/
-theorem induce_isIndepSet_iff {F : Set α} {s : Set F} :
+theorem isIndepSet_induce {F : Set α} {s : Set F} :
     ((⊤ : Subgraph G).induce F).coe.IsIndepSet s ↔ G.IsIndepSet (Subtype.val '' s) := by
   simp [Set.Pairwise]
 
@@ -757,11 +757,11 @@ instance [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α} :
 
 /-- The embedding of an `n`-independent set of an induced subgraph of the subgraph `G` is an
 `n`-independent set in `G` and vice versa. -/
-theorem induce_isNIndepSet_iff {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ} :
+theorem isNIndepSet_induce {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ} :
     ((⊤ : Subgraph G).induce F).coe.IsNIndepSet n ↑s ↔
     G.IsNIndepSet n (Finset.map ⟨Subtype.val, Subtype.val_injective⟩ s) := by
   simp only [isNIndepSet_iff, coe_map, card_map, and_congr_left_iff]
-  exact fun _ ↦ induce_isIndepSet_iff G
+  exact fun _ ↦ isIndepSet_induce G
 
 end NIndepSet
 
