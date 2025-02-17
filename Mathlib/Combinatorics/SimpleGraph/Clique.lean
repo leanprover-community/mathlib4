@@ -150,7 +150,7 @@ protected theorem IsClique.finsetMap {f : α ↪ β} {s : Finset α} (h : G.IsCl
 
 /-- If a set of vertices `A` is a clique in subgraph of `G` induced by a superset of `A`,
  its embedding is a clique in `G`. -/
-theorem induce_isClique {S : Subgraph G} {F : Set α} {A : Set F} (c : (S.induce F).coe.IsClique A) :
+theorem IsClique.of_induce {S : Subgraph G} {F : Set α} {A : Set F} (c : (S.induce F).coe.IsClique A) :
     G.IsClique (Subtype.val '' A) := by
   simp only [Set.Pairwise, Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
   intro _ ⟨_, ainA⟩ _ ⟨_, binA⟩ anb
@@ -266,12 +266,12 @@ theorem is3Clique_iff_exists_cycle_length_three :
 
 /-- If a set of vertices `A` is an `n`-clique in subgraph of `G` induced by a superset of `A`,
  its embedding is an `n`-clique in `G`. -/
-theorem induce_isNClique {S : Subgraph G} {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ}
+theorem IsNClique.of_induce {S : Subgraph G} {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ}
     (cc : (S.induce F).coe.IsNClique n s) :
     G.IsNClique n (Finset.map ⟨Subtype.val, Subtype.val_injective⟩ s) := by
   rw [isNClique_iff] at cc ⊢
   simp only [Subgraph.induce_verts, coe_map, card_map]
-  exact ⟨induce_isClique cc.left, cc.right⟩
+  exact ⟨cc.left.of_induce, cc.right⟩
 
 end NClique
 
