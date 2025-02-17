@@ -79,6 +79,9 @@ example {α : Type u} (a b : α) [Lattice α] : a ⊓ b ≤ a ⊔ b := by
 example {α : Type u} (a b : α) [Lattice α] : a ⊔ b = b ⊔ a := by
   order
 
+example {α : Type u} (a b c : α) [Lattice α] : a ⊓ (b ⊔ c) ≥ (a ⊓ b) ⊔ (a ⊓ c) := by
+  order
+
 -- worst case
 example {α : Type u} [PartialOrder α]
     (x1 y1 : α)
