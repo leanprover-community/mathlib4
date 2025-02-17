@@ -3,6 +3,7 @@ Copyright (c) 2021 Alain Verberkmoes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alain Verberkmoes
 -/
+import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Int.Defs
