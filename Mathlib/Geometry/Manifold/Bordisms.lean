@@ -245,7 +245,35 @@ def prod {m n : ℕ} (s : SingularNManifold PUnit n k) (t : SingularNManifold PU
   hf := continuous_const
   dimension := by rw [finrank_prod, s.dimension, t.dimension]
 
--- disjoint union: post-compose with a suitable equivalence of H resp. E!
+instance {n : ℕ} (s t : SingularNManifold X n k) :
+    ChartedSpace (EuclideanSpace ℝ (Fin n)) (s.M ⊕ t.M) := by
+
+  have : ChartedSpace (EuclideanSpace ℝ (Fin n)) s.H := sorry
+  have : ChartedSpace (EuclideanSpace ℝ (Fin n)) t.H := sorry
+
+  have : ChartedSpace (EuclideanSpace ℝ (Fin n)) s.M :=
+    ChartedSpace.comp (EuclideanSpace ℝ (Fin n)) s.H s.M
+  have := ChartedSpace.comp (EuclideanSpace ℝ (Fin n)) t.H t.M
+  -- These will become superfluous once merging master.
+  have : Nonempty t.M := sorry
+  have : Nonempty s.M := sorry
+  infer_instance
+
+instance {n : ℕ} (s t : SingularNManifold X n k) : IsManifold (𝓡 n) (↑k) (s.M ⊕ t.M) := sorry
+
+/-- The disjoint union of two singular `n`-manifolds on `X` is a singular `n`-manifold on `X`. -/
+-- We need to choose a model space for the disjoint union (as a priori `s` and `t` could be
+-- modelled on very different spaces: for simplicity, we choose `ℝ^n`; all real work is contained
+-- in the two instances above.
+def sum {n : ℕ} (s t : SingularNManifold X n k) : SingularNManifold X n k where
+  E := EuclideanSpace ℝ (Fin n)
+  H := EuclideanSpace ℝ (Fin n)
+  M := s.M ⊕ t.M
+  modelSpace_equiv_euclideanSpace := Equiv.refl _
+  I := 𝓘(ℝ, EuclideanSpace ℝ (Fin n))
+  dimension := finrank_euclideanSpace_fin
+  f := Sum.elim s.f t.f
+  hf := s.hf.sum_elim t.hf
 
 end SingularNManifold
 
