@@ -3,7 +3,6 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-
 import Mathlib.Algebra.Category.AlgebraCat.Monoidal
 import Mathlib.Algebra.Category.BialgebraCat.Basic
 import Mathlib.Algebra.Category.CoalgebraCat.Monoidal
@@ -22,7 +21,7 @@ using `Monoidal.induced`.
 
 -/
 
-universe v u
+universe u
 
 namespace BialgebraCat
 open CategoryTheory MonoidalCategory TensorProduct
@@ -66,6 +65,6 @@ noncomputable instance : (forget₂ (BialgebraCat R) (AlgebraCat R)).Monoidal wh
 noncomputable instance : (forget₂ (BialgebraCat R) (CoalgebraCat R)).Monoidal :=
   Functor.CoreMonoidal.toMonoidal {
     εIso := Iso.refl _
-    μIso := fun _ _ => Iso.refl _ }
+    μIso _ _ := Iso.refl _ }
 
  end BialgebraCat
