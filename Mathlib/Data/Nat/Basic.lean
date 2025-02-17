@@ -18,33 +18,6 @@ This file builds on `Data.Nat.Init` by adding basic lemmas on natural numbers
 depending on Mathlib definitions.
 
 See note [foundational algebra order theory].
-
-## TODO
-
-Split this file into:
-* `Data.Nat.Init` (or maybe `Data.Nat.Batteries`?) for lemmas that could go to Batteries
-* `Data.Nat.Basic` for the lemmas that require mathlib definitions
--/
-
-library_note "foundational algebra order theory"/--
-Batteries has a home-baked development of the algebraic and order theoretic theory of `ℕ` and `ℤ
-which, in particular, is not typeclass-mediated. This is useful to set up the algebra and finiteness
-libraries in mathlib (naturals and integers show up as indices/offsets in lists, cardinality in
-finsets, powers in groups, ...).
-
-Less basic uses of `ℕ` and `ℤ` should however use the typeclass-mediated development.
-
-The relevant files are:
-* `Data.Nat.Defs` for the continuation of the home-baked development on `ℕ`
-* `Data.Int.Defs` for the continuation of the home-baked development on `ℤ`
-* `Algebra.Group.Nat` for the monoid instances on `ℕ`
-* `Algebra.Group.Int` for the group instance on `ℤ`
-* `Algebra.Ring.Nat` for the semiring instance on `ℕ`
-* `Algebra.Ring.Int` for the ring instance on `ℤ`
-* `Algebra.Order.Group.Nat` for the ordered monoid instance on `ℕ`
-* `Algebra.Order.Group.Int` for the ordered group instance on `ℤ`
-* `Algebra.Order.Ring.Nat` for the ordered semiring instance on `ℕ`
-* `Algebra.Order.Ring.Int` for the ordered ring instance on `ℤ`
 -/
 
 /- We don't want to import the algebraic hierarchy in this file. -/
@@ -135,9 +108,6 @@ This section is here due to dependencies -- the lemmas here require some of the 
 proved above, and some of the results in later sections depend on the definitions in this section.
 -/
 
--- Porting note: The type ascriptions of these two lemmas need to be changed,
--- as mathport wrote a lambda that wasn't there in mathlib3, that prevents `simp` applying them.
-
 lemma leRecOn_injective {C : ℕ → Sort*} {n m} (hnm : n ≤ m) (next : ∀ {k}, C k → C (k + 1))
     (Hnext : ∀ n, Injective (@next n)) : Injective (@leRecOn C n m hnm next) := by
   induction hnm with
@@ -184,5 +154,9 @@ lemma dvd_sub' (h₁ : k ∣ m) (h₂ : k ∣ n) : k ∣ m - n := by
   · exact dvd_sub H h₁ h₂
   · rw [Nat.sub_eq_zero_iff_le.mpr H]
     exact Nat.dvd_zero k
+
+/-- `dvd` is injective in the left argument -/
+lemma dvd_left_injective : Function.Injective ((· ∣ ·) : ℕ → ℕ → Prop) := fun _ _ h =>
+  dvd_right_iff_eq.mp fun a => iff_of_eq (congr_fun h a)
 
 end Nat
