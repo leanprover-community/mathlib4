@@ -94,34 +94,34 @@ lemma mk_len (n : ℕ) : len (mk n) = n := rfl
 section InductionPrinciples
 
 /-- A morphism is called a face if it is a `δ i` for some `i : Fin (n + 2)`. -/
-inductive IsFace : MorphismProperty SimplexCategoryGenRel
-  | δ {n : ℕ} (i : Fin (n + 2)) : IsFace (δ i)
+inductive faces : MorphismProperty SimplexCategoryGenRel
+  | δ {n : ℕ} (i : Fin (n + 2)) : faces (δ i)
 
 /-- A morphism is called a degeneracy if it is a `σ i` for some `i : Fin (n + 1)`. -/
-inductive IsDegeneracy : MorphismProperty SimplexCategoryGenRel
-  | σ {n : ℕ} (i : Fin (n + 1)) : IsDegeneracy (σ i)
+inductive degeneracies : MorphismProperty SimplexCategoryGenRel
+  | σ {n : ℕ} (i : Fin (n + 1)) : degeneracies (σ i)
 
 /-- A morphism is a generator if it is either a face or a degeneracy. -/
-abbrev IsGenerator := IsFace ⊔ IsDegeneracy
+abbrev generators := faces ⊔ degeneracies
 
-namespace IsGenerator
+namespace generators
 
-lemma δ {n : ℕ} (i : Fin (n + 2)) : IsGenerator (δ i) := le_sup_left (a := IsFace) _ (.δ i)
+lemma δ {n : ℕ} (i : Fin (n + 2)) : generators (δ i) := le_sup_left (a := faces) _ (.δ i)
 
-lemma σ {n : ℕ} (i : Fin (n + 1)) : IsGenerator (σ i) := le_sup_right (a := IsFace) _ (.σ i)
+lemma σ {n : ℕ} (i : Fin (n + 1)) : generators (σ i) := le_sup_right (a := faces) _ (.σ i)
 
-end IsGenerator
+end generators
 
 /-- A property is true for every morphism iff it holds for generators and is multiplicative. -/
-lemma multiplicativeClosure_isGenerator_eq_top : IsGenerator.multiplicativeClosure = ⊤ := by
+lemma multiplicativeClosure_isGenerator_eq_top : generators.multiplicativeClosure = ⊤ := by
   apply le_antisymm (by simp)
   intro x y f _
   apply CategoryTheory.Quotient.induction
   apply Paths.induction
-  · exact IsGenerator.multiplicativeClosure.id_mem _
+  · exact generators.multiplicativeClosure.id_mem _
   · rintro _ _ _ _ ⟨⟩ h
-    · exact IsGenerator.multiplicativeClosure.comp_mem _ _ h <| .of _ <| .δ _
-    · exact IsGenerator.multiplicativeClosure.comp_mem _ _ h <| .of _ <| .σ _
+    · exact generators.multiplicativeClosure.comp_mem _ _ h <| .of _ <| .δ _
+    · exact generators.multiplicativeClosure.comp_mem _ _ h <| .of _ <| .σ _
 
 /-- An unrolled version of the induction principle obtained in the previous lemma. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
@@ -132,7 +132,7 @@ lemma hom_induction (P : MorphismProperty SimplexCategoryGenRel)
     {a b : SimplexCategoryGenRel} (f : a ⟶ b) :
     P f :=
   by
-  suffices IsGenerator.multiplicativeClosure ≤ P by
+  suffices generators.multiplicativeClosure ≤ P by
     rw [multiplicativeClosure_isGenerator_eq_top, top_le_iff] at this
     rw [this]
     apply MorphismProperty.top_apply
@@ -157,7 +157,7 @@ lemma hom_induction' (P : MorphismProperty SimplexCategoryGenRel)
     (σ_comp : ∀ {n m : ℕ} (u : mk m ⟶ mk n)
       (i : Fin (m + 1)), P u → P (σ i ≫ u )) {a b : SimplexCategoryGenRel} (f : a ⟶ b) :
     P f := by
-  suffices IsGenerator.multiplicativeClosure' ≤ P by
+  suffices generators.multiplicativeClosure' ≤ P by
     rw [← MorphismProperty.multiplicativeClosure_eq_multiplicativeClosure',
       multiplicativeClosure_isGenerator_eq_top, top_le_iff] at this
     rw [this]
