@@ -3,7 +3,8 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.TakeDrop
+import Mathlib.Data.List.Induction
 
 /-!
 # Prefixes, suffixes, infixes
@@ -25,7 +26,7 @@ All those (except `insert`) are defined in `Mathlib.Data.List.Defs`.
 * `l₁ <:+: l₂`: `l₁` is an infix of `l₂`.
 -/
 
-variable {α : Type*}
+variable {α β : Type*}
 
 namespace List
 
@@ -65,6 +66,39 @@ lemma isPrefix_append_of_length (h : l₁.length ≤ l₂.length) : l₁ <+: l�
 
 @[simp] lemma take_isPrefix_take {m n : ℕ} : l.take m <+: l.take n ↔ m ≤ n ∨ l.length ≤ n := by
   simp [prefix_take_iff, take_prefix]; omega
+
+@[gcongr]
+protected theorem IsPrefix.flatten {l₁ l₂ : List (List α)} (h : l₁ <+: l₂) :
+    l₁.flatten <+: l₂.flatten := by
+  rcases h with ⟨l, rfl⟩
+  simp
+
+@[gcongr]
+protected theorem IsPrefix.flatMap (h : l₁ <+: l₂) (f : α → List β) :
+    l₁.flatMap f <+: l₂.flatMap f :=
+  (h.map _).flatten
+
+@[gcongr]
+protected theorem IsSuffix.flatten {l₁ l₂ : List (List α)} (h : l₁ <:+ l₂) :
+    l₁.flatten <:+ l₂.flatten := by
+  rcases h with ⟨l, rfl⟩
+  simp
+
+@[gcongr]
+protected theorem IsSuffix.flatMap (h : l₁ <:+ l₂) (f : α → List β) :
+    l₁.flatMap f <:+ l₂.flatMap f :=
+  (h.map _).flatten
+
+@[gcongr]
+protected theorem IsInfix.flatten {l₁ l₂ : List (List α)} (h : l₁ <:+: l₂) :
+    l₁.flatten <:+: l₂.flatten := by
+  rcases h with ⟨l, l', rfl⟩
+  simp
+
+@[gcongr]
+protected theorem IsInfix.flatMap (h : l₁ <:+: l₂) (f : α → List β) :
+    l₁.flatMap f <:+: l₂.flatMap f :=
+  (h.map _).flatten
 
 lemma dropSlice_sublist (n m : ℕ) (l : List α) : l.dropSlice n m <+ l :=
   calc
