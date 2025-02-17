@@ -634,10 +634,10 @@ theorem lieModule_lcs_map_le (k : ℕ) : (lowerCentralSeries R L M k : Submodule
     rw [lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span', Submodule.map_span]
     apply Submodule.span_le.mpr
     rintro m₂ ⟨m, ⟨x, n, m_n, h⟩, rfl⟩
+    simp [lowerCentralSeries_succ, SetLike.mem_coe, LieSubmodule.mem_toSubmodule]
     have : ∃ y : L₂, ∃ n : lowerCentralSeries R L₂ M₂ k, ⁅y, n⁆ = g m := by
       use f x, ⟨g m_n, ih (Submodule.mem_map_of_mem h.1)⟩
       simp [LieSubmodule.mem_top, LieSubmodule.coe_bracket, hfg x m_n, h.2]
-    simp [lowerCentralSeries_succ, SetLike.mem_coe, LieSubmodule.mem_toSubmodule]
     obtain ⟨y, n, hn⟩ := this
     rw [← hn]
     apply LieSubmodule.lie_mem_lie
@@ -657,7 +657,7 @@ theorem Function.Injective.lieModuleIsNilpotent [IsNilpotent L₂ M₂] : IsNilp
   apply Submodule.map_injective_of_injective hg_inj
   have := lieModule_lcs_map_le hfg k
   rw [hk] at this
-  simp_all only [LieSubmodule.bot_toSubmodule, le_bot_iff, Submodule.map_bot]
+  simpa [LieSubmodule.bot_toSubmodule, le_bot_iff, Submodule.map_bot]
 
 include hf hg hfg in
 theorem Function.Surjective.lieModule_lcs_map_eq (k : ℕ) :
@@ -723,7 +723,7 @@ theorem isNilpotent_of_le (M₁ M₂ : LieSubmodule R L M)
   let g : M₁ →ₗ[R] M₂ := Submodule.inclusion h₁
   have hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆ := by
     intro x m
-    simp_all only [LieHom.coe_one, id_eq, f, g]
+    simp [LieHom.coe_one, id_eq, f, g]
     obtain ⟨val, property⟩ := m
     rfl
   have hg_inj : Function.Injective g := by
