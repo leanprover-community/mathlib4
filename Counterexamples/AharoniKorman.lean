@@ -75,32 +75,38 @@ attribute [aesop norm 10 tactic] Lean.Elab.Tactic.Omega.omegaDefault
 attribute [aesop 2 simp] Set.subset_def Finset.subset_iff
 
 /-- A type synonym on ℕ³ on which we will construct Hollom's partial order P_5. -/
-def Hollom : Type := ℕ × ℕ × ℕ
+@[ext]
+structure Hollom where
+  /--
+  The forward equivalence between ℕ³ and the underlying set in Hollom's partial order.
+  Note that this equivalence does not respect the partial order relation.
+  -/
+  toHollom ::
+  /--
+  The backward equivalence between ℕ³ and the underlying set in Hollom's partial order.
+  Note that this equivalence does not respect the partial order relation.
+  -/
+  ofHollom : ℕ × ℕ × ℕ
   deriving DecidableEq
 
-/--
-The backward equivalence between ℕ³ and the underlying set in Hollom's partial order.
-Note that this equivalence does not respect the partial order relation, and therefore should be used
-explicitly to transfer between the two types, despite their being equal.
--/
-def ofHollom : Hollom ≃ ℕ × ℕ × ℕ := Equiv.refl _
-/--
-The forward equivalence between ℕ³ and the underlying set in Hollom's partial order.
-Note that this equivalence does not respect the partial order relation, and therefore should be used
-explicitly to transfer between the two types, despite their being equal.
--/
-def toHollom : ℕ × ℕ × ℕ ≃ Hollom := Equiv.refl _
-
-@[simp] lemma ofHollom_symm_eq : ofHollom.symm = toHollom := rfl
-@[simp] lemma toHollom_symm_eq : toHollom.symm = ofHollom := rfl
+open Hollom
 
 @[simp] lemma ofHollom_toHollom (x) : ofHollom (toHollom x) = x := rfl
 @[simp] lemma toHollom_ofHollom (x) : toHollom (ofHollom x) = x := rfl
 
+/-- `toHollom` and `ofHollom` as an equivalence. -/
+@[simps]
+def equivHollom : ℕ × ℕ × ℕ ≃ Hollom where
+  toFun := toHollom; invFun := ofHollom; left_inv _ := rfl; right_inv _ := rfl
+
 namespace Hollom
 
-@[simp] lemma «forall» {p : Hollom → Prop} : (∀ x, p x) ↔ ∀ x, p (toHollom x) := Iff.rfl
-@[simp] lemma «exists» {p : Hollom → Prop} : (∃ x, p x) ↔ ∃ x, p (toHollom x) := Iff.rfl
+@[simp] lemma «forall» {p : Hollom → Prop} : (∀ x, p x) ↔ ∀ x, p (toHollom x) := by aesop
+@[simp] lemma «forall₂» {p : Hollom → Hollom → Prop} :
+    (∀ x y, p x y) ↔ ∀ x y, p (toHollom x) (toHollom y) := by aesop
+@[simp] lemma «forall₃» {p : Hollom → Hollom → Hollom → Prop} :
+    (∀ x y z, p x y z) ↔ ∀ x y z, p (toHollom x) (toHollom y) (toHollom z) := by aesop
+@[simp] lemma «exists» {p : Hollom → Prop} : (∃ x, p x) ↔ ∃ x, p (toHollom x) := by aesop
 
 local notation3 "h(" x ", " y ", " z ")" => toHollom (x, y, z)
 
@@ -109,7 +115,8 @@ lemma induction {p : Hollom → Prop} (h : ∀ x y z, p (h(x, y, z))) : ∀ x, p
 
 /-- The Hollom partial order is countable. This is very easy to see, since it is just `ℕ³` with a
 different order. -/
-instance : Countable Hollom := .of_equiv (ℕ × ℕ × ℕ) toHollom
+instance : Countable Hollom :=
+  .of_equiv (ℕ × ℕ × ℕ) equivHollom
 
 /--
 The ordering on ℕ³ which is used to define Hollom's example P₅
@@ -147,17 +154,14 @@ lemma HollomOrder.trans :
 instance : PartialOrder Hollom where
   le x y := HollomOrder (ofHollom x) (ofHollom y)
   le_refl _ := .within le_rfl le_rfl
-  le_trans := HollomOrder.trans
-  le_antisymm
+  le_trans := «forall₃».2 HollomOrder.trans
+  le_antisymm := «forall₂».2 fun
   | _, _, .twice _, .twice _ => by omega
-  | _, (_, _, _), .twice _, .within _ _ => by omega -- see lean4#6416
+  | _, (_, _, _), .twice _, .within _ _ => by omega -- see lean4#6416 about the `(_, _, _)`
   | _, _, .twice _, .next_min _ => by omega
   | _, _, .twice _, .next_add _ => by omega
   | _, _, .within _ _, .twice _ => by omega
-  | _, _, .within _ _, .within _ _ => by
-      rw [Prod.ext_iff, Prod.ext_iff]
-      simp only [and_true]
-      omega
+  | _, _, .within _ _, .within _ _ => by congr 3 <;> omega
   | _, _, .next_min _, .twice _ => by omega
   | _, _, .next_add _, .twice _ => by omega
 
@@ -736,16 +740,16 @@ lemma apply_eq_of_line_eq_step (f : SpinalMap C) {n xl yl xh yh : ℕ}
     all_goals
       simp +contextual only [mem_image, mem_union, embed_apply, Prod.exists, «exists»,
         EmbeddingLike.apply_eq_iff_eq, Prod.mk.injEq, not_exists, not_and, forall_exists_index,
-        and_imp, or_imp, B, forall_and]
+        and_imp, or_imp, B, forall_and, Hollom.ext_iff]
       constructor
       · rintro _ _ c a b hab rfl rfl rfl h
         have : (a, b) ≤ (x, y) := (Finset.mem_Icc.1 (chainBetween_subset hab)).2
         rw [← embed_apply, ← embed_apply] at h
-        exact f.not_lt_of_eq h (embed_strictMono (this.trans_lt (by simp)))
+        exact f.not_lt_of_eq congr(toHollom $h) (embed_strictMono (this.trans_lt (by simp)))
       · rintro _ _ c a b hab rfl rfl rfl h
         have : (x + 1, y + 1) ≤ (a, b) := (Finset.mem_Icc.1 (chainBetween_subset hab)).1
         rw [← embed_apply, ← embed_apply] at h
-        exact f.not_lt_of_eq h.symm (embed_strictMono (this.trans_lt' (by simp)))
+        exact f.not_lt_of_eq congr(toHollom $(h.symm)) (embed_strictMono (this.trans_lt' (by simp)))
   -- Therefore the image of both points is in `I \ B.image f`,
   replace hleft : f h(x + 1, y, n) ∈ I \ B.image f := by simpa [mem_sdiff, hleft, I] using this.1
   replace hright : f h(x, y + 1, n) ∈ I \ B.image f := by simpa [mem_sdiff, hright, I] using this.2
@@ -843,7 +847,8 @@ lemma square_subset_above (h : (C ∩ level n).Finite) :
     Function.Embedding.coeFn_mk, Set.mem_inter_iff, and_imp, «forall», toHollom_mem_level_iff,
     Prod.forall, Set.subset_def, Set.mem_image, Set.mem_Ici, Prod.exists, Prod.mk_le_mk,
     Set.mem_setOf_eq, forall_exists_index, EmbeddingLike.apply_eq_iff_eq, Prod.mk.injEq,
-    toHollom_le_toHollom_iff_fixed_right, Set.mem_diff, and_true, ← max_add_add_right]
+    toHollom_le_toHollom_iff_fixed_right, Set.mem_diff, and_true, ← max_add_add_right,
+    Hollom.ext_iff]
 
   -- After simplifying, direct calculations show the subset relation as required.
   rintro k hak hbk _ _ _ f g hkf hkg rfl rfl rfl
@@ -962,7 +967,7 @@ lemma square_subset_S_case_1 (h : (C ∩ level n).Finite) (h' : (C ∩ level (n 
     simp only [ge_iff_le, sup_le_iff, embed, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk,
       Set.mem_inter_iff, Set.mem_setOf_eq, and_imp, «forall», ofHollom_toHollom, Prod.forall,
       Set.subset_def, Set.mem_image, Set.mem_Ici, Prod.exists, Prod.mk_le_mk, forall_exists_index,
-      EmbeddingLike.apply_eq_iff_eq, Prod.mk.injEq]
+      EmbeddingLike.apply_eq_iff_eq, Prod.mk.injEq, Hollom.ext_iff]
     rintro d hbd hcd _ _ _ e f hde hdf rfl rfl rfl g h _ hgh rfl
     right
     apply toHollom_le_toHollom _ (by simp)
@@ -1125,13 +1130,13 @@ lemma S_mapsTo_previous (f : SpinalMap C) (hC : IsChain (· ≤ ·) C) (hn : n �
   have : ¬ m + 2 ≤ n := by
     intro h
     have := f.eq_of_le hp'.symm (.twice h)
-    simp only [EmbeddingLike.apply_eq_iff_eq, Prod.mk.injEq] at this
+    simp only [EmbeddingLike.apply_eq_iff_eq, Prod.mk.injEq, Hollom.ext_iff] at this
     omega
   -- and `(a, b, m) ≤ (x, y, n)` if `n + 2 ≤ m`, so this cannot hold either
   have : ¬ n + 2 ≤ m := by
     intro h
     have := f.eq_of_le hp' (.twice h)
-    simp only [EmbeddingLike.apply_eq_iff_eq, Prod.mk.injEq] at this
+    simp only [EmbeddingLike.apply_eq_iff_eq, Prod.mk.injEq, Hollom.ext_iff] at this
     omega
   -- So the only remaining option is that `m = n - 1`.
   omega
