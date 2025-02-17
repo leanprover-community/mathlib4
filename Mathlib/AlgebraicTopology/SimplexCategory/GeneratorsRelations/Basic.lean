@@ -5,7 +5,7 @@ Authors: Robin Carlier
 -/
 import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 import Mathlib.CategoryTheory.PathCategory.Basic
-/-! # Presentation of the simplex category by generator and relations.
+/-! # Presentation of the simplex category by generators and relations.
 
 We introduce `SimplexCategoryGenRel` as the category presented by generating
 morphisms `δ i : [n] ⟶ [n + 1]` and `σ i : [n + 1] ⟶ [n]` and subject to the
