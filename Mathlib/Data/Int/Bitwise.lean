@@ -6,6 +6,7 @@ Authors: Jeremy Avigad
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Size
+import Batteries.Data.Int
 
 /-!
 # Bitwise operations on integers
@@ -33,11 +34,6 @@ def bodd : ℤ → Bool
   its integer input. -/
 def bit (b : Bool) : ℤ → ℤ :=
   cond b (2 * · + 1) (2 * ·)
-
-/-- `testBit m n` returns whether the `(n+1)ˢᵗ` least significant bit is `1` or `0`-/
-def testBit : ℤ → ℕ → Bool
-  | (m : ℕ), n => Nat.testBit m n
-  | -[m +1], n => !(Nat.testBit m n)
 
 /-- `Int.natBitwise` is an auxiliary definition for `Int.bitwise`. -/
 def natBitwise (f : Bool → Bool → Bool) (m n : ℕ) : ℤ :=
@@ -146,8 +142,8 @@ theorem bodd_neg (n : ℤ) : bodd (-n) = bodd n := by
 
 @[simp]
 theorem bodd_add (m n : ℤ) : bodd (m + n) = xor (bodd m) (bodd n) := by
-  cases' m with m m <;>
-  cases' n with n n <;>
+  rcases m with m | m <;>
+  rcases n with n | n <;>
   simp only [ofNat_eq_coe, ofNat_add_negSucc, negSucc_add_ofNat,
              negSucc_add_negSucc, bodd_subNatNat] <;>
   simp only [negSucc_coe, bodd_neg, bodd_coe, ← Nat.bodd_add, Bool.xor_comm, ← Nat.cast_add]
@@ -158,7 +154,7 @@ theorem bodd_add (m n : ℤ) : bodd (m + n) = xor (bodd m) (bodd n) := by
 
 @[simp]
 theorem bodd_mul (m n : ℤ) : bodd (m * n) = (bodd m && bodd n) := by
-  cases' m with m m <;> cases' n with n n <;>
+  rcases m with m | m <;> rcases n with n | n <;>
   simp only [ofNat_eq_coe, ofNat_mul_negSucc, negSucc_mul_ofNat, ofNat_mul_ofNat,
              negSucc_mul_negSucc] <;>
   simp only [negSucc_coe, bodd_neg, bodd_coe, ← Nat.bodd_mul]
@@ -238,7 +234,7 @@ theorem testBit_bit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit
 -- Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_or : bitwise or = lor := by
   funext m n
-  cases' m with m m <;> cases' n with n n <;> try {rfl}
+  rcases m with m | m <;> rcases n with n | n <;> try {rfl}
     <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true, cond_true, lor, Nat.ldiff,
       negSucc.injEq, Bool.true_or, Nat.land]
   · rw [Nat.bitwise_swap, Function.swap]
@@ -255,7 +251,7 @@ theorem bitwise_or : bitwise or = lor := by
 -- Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_and : bitwise and = land := by
   funext m n
-  cases' m with m m <;> cases' n with n n <;> try {rfl}
+  rcases m with m | m <;> rcases n with n | n <;> try {rfl}
     <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true,
       cond_false, cond_true, lor, Nat.ldiff, Bool.and_true, negSucc.injEq,
       Bool.and_false, Nat.land]
@@ -270,7 +266,7 @@ theorem bitwise_and : bitwise and = land := by
 -- Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff := by
   funext m n
-  cases' m with m m <;> cases' n with n n <;> try {rfl}
+  rcases m with m | m <;> rcases n with n | n <;> try {rfl}
     <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true,
       cond_false, cond_true, lor, Nat.ldiff, Bool.and_true, negSucc.injEq,
       Bool.and_false, Nat.land, Bool.not_true, ldiff, Nat.lor]
@@ -288,7 +284,7 @@ theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff := by
 -- Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_xor : bitwise xor = Int.xor := by
   funext m n
-  cases' m with m m <;> cases' n with n n <;> try {rfl}
+  rcases m with m | m <;> rcases n with n | n <;> try {rfl}
     <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true, Bool.bne_eq_xor,
       cond_false, cond_true, lor, Nat.ldiff, Bool.and_true, negSucc.injEq, Bool.false_xor,
       Bool.true_xor, Bool.and_false, Nat.land, Bool.not_true, ldiff,
@@ -306,7 +302,7 @@ theorem bitwise_xor : bitwise xor = Int.xor := by
 @[simp]
 theorem bitwise_bit (f : Bool → Bool → Bool) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
-  cases' m with m m <;> cases' n with n n <;>
+  rcases m with m | m <;> rcases n with n | n <;>
   simp [bitwise, ofNat_eq_coe, bit_coe_nat, natBitwise, Bool.not_false, Bool.not_eq_false',
     bit_negSucc]
   · by_cases h : f false false <;> simp +decide [h]

@@ -60,9 +60,7 @@ See note [reducible non-instances]. -/
 @[to_additive]
 abbrev compHom [Monoid N] (g : N →* M) : MulAction N α where
   smul := SMul.comp.smul g
-  -- Porting note: was `by simp [g.map_one, MulAction.one_smul]`
   one_smul _ := by simpa [(· • ·)] using MulAction.one_smul ..
-  -- Porting note: was `by simp [g.map_mul, MulAction.mul_smul]`
   mul_smul _ _ _ := by simpa [(· • ·)] using MulAction.mul_smul ..
 
 /-- An additive action of `M` on `α` and an additive monoid homomorphism `N → M` induce

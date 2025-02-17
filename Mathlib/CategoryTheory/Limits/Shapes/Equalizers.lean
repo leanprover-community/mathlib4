@@ -63,16 +63,14 @@ inductive WalkingParallelPair : Type
 
 open WalkingParallelPair
 
+-- Don't generate unnecessary `sizeOf_spec` lemma which the `simpNF` linter will complain about.
+set_option genSizeOfSpec false in
 /-- The type family of morphisms for the diagram indexing a (co)equalizer. -/
 inductive WalkingParallelPairHom : WalkingParallelPair → WalkingParallelPair → Type
   | left : WalkingParallelPairHom zero one
   | right : WalkingParallelPairHom zero one
   | id (X : WalkingParallelPair) : WalkingParallelPairHom X X
   deriving DecidableEq
-
-/- Porting note: this simplifies using walkingParallelPairHom_id; replacement is below;
-simpNF still complains of striking this from the simp list -/
-attribute [-simp, nolint simpNF] WalkingParallelPairHom.id.sizeOf_spec
 
 /-- Satisfying the inhabited linter -/
 instance : Inhabited (WalkingParallelPairHom zero one) where default := WalkingParallelPairHom.left
@@ -113,11 +111,6 @@ instance walkingParallelPairHomCategory : SmallCategory WalkingParallelPair wher
 @[simp]
 theorem walkingParallelPairHom_id (X : WalkingParallelPair) : WalkingParallelPairHom.id X = 𝟙 X :=
   rfl
-
--- Porting note: simpNF asked me to do this because the LHS of the non-primed version reduced
-@[simp]
-theorem WalkingParallelPairHom.id.sizeOf_spec' (X : WalkingParallelPair) :
-    (WalkingParallelPairHom._sizeOf_inst X X).sizeOf (𝟙 X) = 1 + sizeOf X := by cases X <;> rfl
 
 /-- The functor `WalkingParallelPair ⥤ WalkingParallelPairᵒᵖ` sending left to left and right to
 right.
