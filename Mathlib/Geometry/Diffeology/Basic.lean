@@ -54,6 +54,14 @@ To make working with finite-dimensional spaces easier, `euclideanDiffeology` is 
 way that its D-topology is defeq to the topology induced by the norm - however, this currently comes
 at the cost of making the definition work only on finite-dimensional spaces. It should be possible
 to extend this to all Banach or Fréchet spaces though in the future.
+
+## References
+
+* [Patrick Iglesias-Zemmour, *Diffeology*][zemmour2013diffeology]
+* <https://ncatlab.org/nlab/show/diffeological+space>
+
+## Tags
+diffeology, diffeological space, smoothness, smooth function
 -/
 
 open Topology ContDiff
