@@ -28,6 +28,7 @@ section
 
 variable {C}
 
+/-- A group object internal to a cartesian monoidal category. Also see the bundled `Grp_`. -/
 class Grp_Class (X : C) extends Mon_Class X where
   /-- The inverse in a group object -/
   inv : X ⟶ X
@@ -77,6 +78,7 @@ instance : Inhabited (Grp_ C) where
 
 variable {C}
 
+/-- Make a group object from `Grp_Class`. -/
 def mk' (X : C) [Grp_Class X] : Grp_ C where
   __ := Mon_.mk' X
   inv := Grp_Class.inv (X := X)
