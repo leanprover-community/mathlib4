@@ -126,7 +126,7 @@ theorem Step.append_right : ∀ {L₁ L₂ L₃ : List (α × Bool)}, Step L₁ 
 theorem not_step_nil : ¬Step [] L := by
   generalize h' : [] = L'
   intro h
-  cases' h with L₁ L₂
+  rcases h with - | ⟨L₁, L₂⟩
   simp [List.nil_eq_append_iff] at h'
 
 @[to_additive]
@@ -217,7 +217,7 @@ theorem cons_cons_iff (p) : Red (p :: L₁) (p :: L₂) ↔ Red L₁ L₂ :=
         cases eq₂
         constructor
       · subst_vars
-        cases' p with a b
+        obtain ⟨a, b⟩ := p
         rw [Step.cons_left_iff] at h₁₂
         rcases h₁₂ with (⟨L, h₁₂, rfl⟩ | rfl)
         · exact (ih rfl rfl).head h₁₂

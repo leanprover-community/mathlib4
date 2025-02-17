@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Data.Nat.Cast.Field
 import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!

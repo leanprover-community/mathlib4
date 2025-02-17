@@ -101,7 +101,7 @@ instance {a : WithTop ℕ∞} [LieGroup I ω G] : LieGroup I a G :=
   LieGroup.of_le le_top
 
 @[to_additive]
-instance [TopologicalGroup G] : LieGroup I 0 G := by
+instance [IsTopologicalGroup G] : LieGroup I 0 G := by
   constructor
   rw [contMDiff_zero_iff]
   exact continuous_inv
@@ -129,7 +129,7 @@ include I n in
 see note [Design choices about smooth algebraic structures]. -/
 @[to_additive "An additive Lie group is an additive topological group. This is not an instance for
 technical reasons, see note [Design choices about smooth algebraic structures]."]
-theorem topologicalGroup_of_lieGroup : TopologicalGroup G :=
+theorem topologicalGroup_of_lieGroup : IsTopologicalGroup G :=
   { continuousMul_of_contMDiffMul I n with continuous_inv := (contMDiff_inv I n).continuous }
 
 end

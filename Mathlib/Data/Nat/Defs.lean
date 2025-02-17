@@ -590,10 +590,19 @@ lemma pow_left_injective (hn : n ≠ 0) : Injective (fun a : ℕ ↦ a ^ n) := b
 protected lemma pow_right_injective (ha : 2 ≤ a) : Injective (a ^ ·) := by
   simp [Injective, le_antisymm_iff, Nat.pow_le_pow_iff_right ha]
 
+protected lemma pow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (pow_left_injective hn).eq_iff
+protected lemma pow_right_inj (ha : 2 ≤ a) : a ^ m = a ^ n ↔ m = n :=
+  (Nat.pow_right_injective ha).eq_iff
+
 -- We want to use this lemma earlier than the lemma simp can prove it with
 @[simp, nolint simpNF] protected lemma pow_eq_zero {a : ℕ} : ∀ {n : ℕ}, a ^ n = 0 ↔ a = 0 ∧ n ≠ 0
   | 0 => by simp
   | n + 1 => by rw [Nat.pow_succ, mul_eq_zero, Nat.pow_eq_zero]; omega
+
+@[simp] protected lemma pow_eq_one : a ^ n = 1 ↔ a = 1 ∨ n = 0 := by
+  obtain rfl | hn := eq_or_ne n 0
+  · simp
+  · simpa [hn] using Nat.pow_left_inj hn (b := 1)
 
 /-- For `a > 1`, `a ^ b = a` iff `b = 1`. -/
 lemma pow_eq_self_iff {a b : ℕ} (ha : 1 < a) : a ^ b = a ↔ b = 1 :=
@@ -618,6 +627,9 @@ lemma one_lt_pow' (n m : ℕ) : 1 < (m + 2) ^ (n + 1) :=
  | 0 => by simp [Nat.zero_pow (Nat.pos_of_ne_zero hn)]
  | 1 => by simp
  | a + 2 => by simp [one_lt_pow hn]
+
+@[simp] protected lemma pow_le_one_iff (hn : n ≠ 0) : a ^ n ≤ 1 ↔ a ≤ 1 := by
+  rw [← not_lt, one_lt_pow_iff hn, not_lt]
 
 lemma one_lt_two_pow' (n : ℕ) : 1 < 2 ^ (n + 1) := one_lt_pow n.succ_ne_zero (by decide)
 

@@ -561,7 +561,7 @@ theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j
 
 theorem mk_le_of_forall_le {f : CauSeq ℚ abs} {x : ℝ} (h : ∃ i, ∀ j ≥ i, (f j : ℝ) ≤ x) :
     mk f ≤ x := by
-  cases' h with i H
+  obtain ⟨i, H⟩ := h
   rw [← neg_le_neg_iff, ← mk_neg]
   exact le_mk_of_forall_le ⟨i, fun j ij => by simp [H _ ij]⟩
 

@@ -121,6 +121,12 @@ lemma egauge_eq_zero_iff : egauge 𝕜 s x = 0 ↔ ∃ᶠ c : 𝕜 in 𝓝 0, x 
   rw [(nhds_basis_uniformity uniformity_basis_edist).frequently_iff]
   simp [and_comm]
 
+@[simp]
+lemma egauge_univ [(𝓝[≠] (0 : 𝕜)).NeBot] : egauge 𝕜 univ x = 0 := by
+  rw [egauge_eq_zero_iff]
+  refine (frequently_iff_neBot.2 ‹_›).mono fun c hc ↦ ?_
+  simp_all [smul_set_univ₀]
+
 variable (𝕜)
 
 @[simp]

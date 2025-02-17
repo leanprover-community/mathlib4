@@ -184,7 +184,7 @@ theorem of_mem_dlookup {a : α} {b : β a} :
 
 theorem mem_dlookup {a} {b : β a} {l : List (Sigma β)} (nd : l.NodupKeys) (h : Sigma.mk a b ∈ l) :
     b ∈ dlookup a l := by
-  cases' Option.isSome_iff_exists.mp (dlookup_isSome.mpr (mem_keys_of_mem h)) with b' h'
+  obtain ⟨b', h'⟩ := Option.isSome_iff_exists.mp (dlookup_isSome.mpr (mem_keys_of_mem h))
   cases nd.eq_of_mk_mem h (of_mem_dlookup h')
   exact h'
 
@@ -474,7 +474,7 @@ theorem dlookup_kerase_ne {a a'} {l : List (Sigma β)} (h : a ≠ a') :
   induction l with
   | nil => rfl
   | cons hd tl ih =>
-    cases' hd with ah bh
+    obtain ⟨ah, bh⟩ := hd
     by_cases h₁ : a = ah <;> by_cases h₂ : a' = ah
     · substs h₁ h₂
       cases Ne.irrefl h
@@ -606,7 +606,7 @@ theorem nodupKeys_dedupKeys (l : List (Sigma β)) : NodupKeys (dedupKeys l) := b
 theorem dlookup_dedupKeys (a : α) (l : List (Sigma β)) : dlookup a (dedupKeys l) = dlookup a l := by
   induction' l with l_hd _ l_ih
   · rfl
-  cases' l_hd with a' b
+  obtain ⟨a', b⟩ := l_hd
   by_cases h : a = a'
   · subst a'
     rw [dedupKeys_cons, dlookup_kinsert, dlookup_cons_eq]

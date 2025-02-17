@@ -128,7 +128,7 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
       · intro _
         exact R
       intro i w
-      cases' i with i
+      rcases i with - | i
       · apply h0
       · exact h i (by simp only [length_cons] at w; omega)
     rintro ⟨h0, h⟩; constructor
@@ -496,7 +496,7 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
     have hl' := (List.chain'_cons'.1 hl).2
     let l' : List.chains r := ⟨l, hl'⟩
     have : Acc (List.lex_chains r) l' := by
-      cases' l with b l
+      rcases l with - | ⟨b, l⟩
       · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
       /- l' is accessible by induction hypothesis -/
       · apply ih b (List.chain'_cons.1 hl).1

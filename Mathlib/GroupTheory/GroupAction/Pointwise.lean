@@ -159,6 +159,11 @@ variable {s t M N h} in
 theorem Set.MapsTo.smul_set (hst : MapsTo h s t) (c : R) : MapsTo h (c • s) (c • t) :=
   hst.smul_setₛₗ c
 
+variable {s t M N h} in
+@[to_additive]
+theorem Set.MapsTo.smul_set (hst : MapsTo h s t) (c : R) : MapsTo h (c • s) (c • t) :=
+  hst.smul_setₛₗ c
+
 variable {c}
 
 @[to_additive]

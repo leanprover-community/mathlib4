@@ -290,7 +290,7 @@ theorem ExtensionOfMaxAdjoin.extensionToFun_wd (h : Module.Baer R Q) {y : N}
     (r : R) (eq1 : ↑x = ↑a + r • y) :
     ExtensionOfMaxAdjoin.extensionToFun i f h x =
       (extensionOfMax i f).toLinearPMap a + ExtensionOfMaxAdjoin.extendIdealTo i f h y r := by
-  cases' a with a ha
+  obtain ⟨a, ha⟩ := a
   have eq2 :
     (ExtensionOfMaxAdjoin.fst i x - a : N) = (r - ExtensionOfMaxAdjoin.snd i x) • y := by
     change x = a + r • y at eq1

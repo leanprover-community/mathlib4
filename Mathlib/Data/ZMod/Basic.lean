@@ -98,7 +98,7 @@ theorem val_natCast_of_lt {n a : ℕ} (h : a < n) : (a : ZMod n).val = a := by
 instance charP (n : ℕ) : CharP (ZMod n) n where
   cast_eq_zero_iff' := by
     intro k
-    cases' n with n
+    rcases n with - | n
     · simp [zero_dvd_iff, Int.natCast_eq_zero]
     · exact Fin.natCast_eq_zero
 
@@ -110,7 +110,7 @@ theorem addOrderOf_one (n : ℕ) : addOrderOf (1 : ZMod n) = n :=
 where `a ≠ 0` is `addOrderOf_coe'`. -/
 @[simp]
 theorem addOrderOf_coe (a : ℕ) {n : ℕ} (n0 : n ≠ 0) : addOrderOf (a : ZMod n) = n / n.gcd a := by
-  cases' a with a
+  rcases a with - | a
   · simp only [Nat.cast_zero, addOrderOf_zero, Nat.gcd_zero_right,
       Nat.pos_of_ne_zero n0, Nat.div_self]
   rw [← Nat.smul_one_eq_cast, addOrderOf_nsmul' _ a.succ_ne_zero, ZMod.addOrderOf_one]
@@ -246,7 +246,7 @@ theorem intCast_cast (i : ZMod n) : ((cast i : ℤ) : R) = cast i :=
 theorem cast_add_eq_ite {n : ℕ} (a b : ZMod n) :
     (cast (a + b) : ℤ) =
       if (n : ℤ) ≤ cast a + cast b then (cast a + cast b - n : ℤ) else cast a + cast b := by
-  cases' n with n
+  rcases n with - | n
   · simp; rfl
   change Fin (n + 1) at a b
   change ((((a + b) : Fin (n + 1)) : ℕ) : ℤ) = if ((n + 1 : ℕ) : ℤ) ≤ (a : ℕ) + b then _ else _
@@ -266,7 +266,7 @@ variable {m : ℕ} [CharP R m]
 
 @[simp]
 theorem cast_one (h : m ∣ n) : (cast (1 : ZMod n) : R) = 1 := by
-  cases' n with n
+  rcases n with - | n
   · exact Int.cast_one
   show ((1 % (n + 1) : ℕ) : R) = 1
   cases n
@@ -408,7 +408,7 @@ lemma ringEquivOfPrime_eq_ringEquiv [Fintype R] {p : ℕ} [CharP R p] (hp : p.Pr
 
 /-- The identity between `ZMod m` and `ZMod n` when `m = n`, as a ring isomorphism. -/
 def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
-  cases' m with m <;> cases' n with n
+  rcases m with - | m <;> rcases n with - | n
   · exact RingEquiv.refl _
   · exfalso
     exact n.succ_ne_zero h.symm
@@ -524,7 +524,7 @@ theorem val_neg_one (n : ℕ) : (-1 : ZMod n.succ).val = n := by
 
 /-- `-1 : ZMod n` lifts to `n - 1 : R`. This avoids the characteristic assumption in `cast_neg`. -/
 theorem cast_neg_one {R : Type*} [Ring R] (n : ℕ) : cast (-1 : ZMod n) = (n - 1 : R) := by
-  cases' n with n
+  rcases n with - | n
   · dsimp [ZMod, ZMod.cast]; simp
   · rw [← natCast_val, val_neg_one, Nat.cast_succ, add_sub_cancel_right]
 
@@ -699,7 +699,7 @@ theorem inv_zero : ∀ n : ℕ, (0 : ZMod n)⁻¹ = 0
       rfl
 
 theorem mul_inv_eq_gcd {n : ℕ} (a : ZMod n) : a * a⁻¹ = Nat.gcd a.val n := by
-  cases' n with n
+  rcases n with - | n
   · dsimp [ZMod] at a ⊢
     calc
       _ = a * Int.sign a := rfl
@@ -768,7 +768,7 @@ theorem coe_unitOfCoprime {n : ℕ} (x : ℕ) (h : Nat.Coprime x n) :
   rfl
 
 theorem val_coe_unit_coprime {n : ℕ} (u : (ZMod n)ˣ) : Nat.Coprime (u : ZMod n).val n := by
-  cases' n with n
+  rcases n with - | n
   · rcases Int.units_eq_one_or u with (rfl | rfl) <;> simp
   apply Nat.coprime_of_mul_modEq_one ((u⁻¹ : Units (ZMod (n + 1))) : ZMod (n + 1)).val
   have := Units.ext_iff.1 (mul_inv_cancel u)
@@ -938,7 +938,7 @@ theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val 
     rw [← a.natCast_zmod_val, ← Nat.cast_two, ← Nat.cast_mul, natCast_zmod_eq_zero_iff_dvd]
   constructor
   · rintro ⟨m, he⟩
-    cases' m with m
+    rcases m with - | m
     · rw [mul_zero, mul_eq_zero] at he
       rcases he with (⟨⟨⟩⟩ | he)
       exact Or.inl (a.val_eq_zero.1 he)

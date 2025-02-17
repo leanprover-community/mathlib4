@@ -622,14 +622,14 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
     Quot.map fromVector
       (by
         rintro ⟨x, hx⟩ ⟨y, hy⟩ h
-        cases' x with _ x; · simp at hx
-        cases' x with _ x; · simp at hx
-        cases' x with _ x; swap
+        rcases x with - | ⟨_, x⟩; · simp at hx
+        rcases x with - | ⟨_, x⟩; · simp at hx
+        rcases x with - | ⟨_, x⟩; swap
         · exfalso
           simp at hx
-        cases' y with _ y; · simp at hy
-        cases' y with _ y; · simp at hy
-        cases' y with _ y; swap
+        rcases y with - | ⟨_, y⟩; · simp at hy
+        rcases y with - | ⟨_, y⟩; · simp at hy
+        rcases y with - | ⟨_, y⟩; swap
         · exfalso
           simp at hy
         rcases perm_card_two_iff.mp h with (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
@@ -641,9 +641,9 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
     cases' x with x hx
     cases' x with _ x
     · simp at hx
-    cases' x with _ x
+    rcases x with - | ⟨_, x⟩
     · simp at hx
-    cases' x with _ x
+    rcases x with - | ⟨_, x⟩
     swap
     · exfalso
       simp at hx

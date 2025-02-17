@@ -33,7 +33,7 @@ its quotients by open normal subgroups.
 
 universe u
 
-open CategoryTheory TopologicalGroup
+open CategoryTheory IsTopologicalGroup
 
 namespace ProfiniteGrp
 

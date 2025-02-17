@@ -167,7 +167,7 @@ def ListBlank.tail {Γ} [Inhabited Γ] (l : ListBlank Γ) : ListBlank Γ := by
   rintro a _ ⟨i, rfl⟩
   refine Quotient.sound' (Or.inl ?_)
   cases a
-  · cases' i with i <;> [exact ⟨0, rfl⟩; exact ⟨i, rfl⟩]
+  · rcases i with - | i <;> [exact ⟨0, rfl⟩; exact ⟨i, rfl⟩]
   exact ⟨i, rfl⟩
 
 @[simp]
@@ -378,7 +378,7 @@ element is sent to a sequence of default elements. -/
 def ListBlank.flatMap {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (l : ListBlank Γ) (f : Γ → List Γ')
     (hf : ∃ n, f default = List.replicate n default) : ListBlank Γ' := by
   apply l.liftOn (fun l ↦ ListBlank.mk (l.flatMap f))
-  rintro l _ ⟨i, rfl⟩; cases' hf with n e; refine Quotient.sound' (Or.inl ⟨i * n, ?_⟩)
+  rintro l _ ⟨i, rfl⟩; obtain ⟨n, e⟩ := hf; refine Quotient.sound' (Or.inl ⟨i * n, ?_⟩)
   rw [List.flatMap_append, mul_comm]; congr
   induction' i with i IH
   · rfl

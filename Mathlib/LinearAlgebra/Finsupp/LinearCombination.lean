@@ -223,7 +223,6 @@ theorem span_image_eq_map_linearCombination (s : Set α) :
       by_cases h : c ∈ s
       · exact smul_mem _ _ (subset_span (Set.mem_image_of_mem _ h))
       · simp [(Finsupp.mem_supported' R _).1 hz _ h]
-    -- Porting note: `rw` is required to infer metavariables in `sum_mem`.
     rw [mem_comap, linearCombination_apply]
     refine sum_mem ?_
     simp [this]
@@ -408,7 +407,6 @@ variable {v} {x : M}
 -/
 theorem mem_span_range_iff_exists_fun :
     x ∈ span R (range v) ↔ ∃ c : α → R, ∑ i, c i • v i = x := by
-  -- Porting note: `Finsupp.equivFunOnFinite.surjective.exists` should be come before `simp`.
   rw [Finsupp.equivFunOnFinite.surjective.exists]
   simp only [Finsupp.mem_span_range_iff_exists_finsupp, Finsupp.equivFunOnFinite_apply]
   exact exists_congr fun c => Eq.congr_left <| Finsupp.sum_fintype _ _ fun i => zero_smul _ _

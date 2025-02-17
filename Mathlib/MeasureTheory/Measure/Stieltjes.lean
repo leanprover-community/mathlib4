@@ -185,7 +185,7 @@ theorem length_Ioc (a b : ℝ) : f.length (Ioc a b) = ofReal (f b - f a) := by
   rcases le_or_lt b a with ab | ab
   · rw [Real.toNNReal_of_nonpos (sub_nonpos.2 (f.mono ab))]
     apply zero_le
-  cases' (Ioc_subset_Ioc_iff ab).1 h with h₁ h₂
+  obtain ⟨h₁, h₂⟩ := (Ioc_subset_Ioc_iff ab).1 h
   exact Real.toNNReal_le_toNNReal (sub_le_sub (f.mono h₁) (f.mono h₂))
 
 theorem length_mono {s₁ s₂ : Set ℝ} (h : s₁ ⊆ s₂) : f.length s₁ ≤ f.length s₂ :=

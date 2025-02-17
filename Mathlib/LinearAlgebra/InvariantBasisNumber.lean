@@ -229,8 +229,6 @@ theorem card_eq_of_linearEquiv {α β : Type*} [Fintype α] [Fintype β] (f : (�
   eq_of_fin_equiv R
     ((LinearEquiv.funCongrLeft R R (Fintype.equivFin α)).trans f ≪≫ₗ
       (LinearEquiv.funCongrLeft R R (Fintype.equivFin β)).symm)
--- Porting note: this was not well-named because `lequiv` could mean other things
--- (e.g., `localEquiv`)
 
 theorem nontrivial_of_invariantBasisNumber : Nontrivial R := by
   by_contra h

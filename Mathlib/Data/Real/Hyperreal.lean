@@ -436,7 +436,7 @@ theorem infinite_iff_abs_lt_abs {x : ℝ*} : Infinite x ↔ ∀ r : ℝ, (|r| : 
 theorem infinitePos_add_not_infiniteNeg {x y : ℝ*} :
     InfinitePos x → ¬InfiniteNeg y → InfinitePos (x + y) := by
   intro hip hnin r
-  cases' not_forall.mp hnin with r₂ hr₂
+  obtain ⟨r₂, hr₂⟩ := not_forall.mp hnin
   convert add_lt_add_of_lt_of_le (hip (r + -r₂)) (not_lt.mp hr₂) using 1
   simp
 

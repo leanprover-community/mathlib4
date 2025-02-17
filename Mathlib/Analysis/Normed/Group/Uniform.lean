@@ -359,7 +359,7 @@ instance (priority := 100) SeminormedCommGroup.to_uniformGroup : UniformGroup E 
 -- short-circuit type class inference
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) SeminormedCommGroup.toTopologicalGroup : TopologicalGroup E :=
+instance (priority := 100) SeminormedCommGroup.toIsTopologicalGroup : IsTopologicalGroup E :=
   inferInstance
 
 /-! ### SeparationQuotient -/

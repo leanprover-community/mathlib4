@@ -82,18 +82,18 @@ theorem IsPiSystem.singleton (S : Set α) : IsPiSystem ({S} : Set (Set α)) := b
 theorem IsPiSystem.insert_empty {S : Set (Set α)} (h_pi : IsPiSystem S) :
     IsPiSystem (insert ∅ S) := by
   intro s hs t ht hst
-  cases' hs with hs hs
+  rcases hs with hs | hs
   · simp [hs]
-  · cases' ht with ht ht
+  · rcases ht with ht | ht
     · simp [ht]
     · exact Set.mem_insert_of_mem _ (h_pi s hs t ht hst)
 
 theorem IsPiSystem.insert_univ {S : Set (Set α)} (h_pi : IsPiSystem S) :
     IsPiSystem (insert Set.univ S) := by
   intro s hs t ht hst
-  cases' hs with hs hs
-  · cases' ht with ht ht <;> simp [hs, ht]
-  · cases' ht with ht ht
+  rcases hs with hs | hs
+  · rcases ht with ht | ht <;> simp [hs, ht]
+  · rcases ht with ht | ht
     · simp [hs, ht]
     · exact Set.mem_insert_of_mem _ (h_pi s hs t ht hst)
 
@@ -108,8 +108,8 @@ theorem isPiSystem_iUnion_of_directed_le {α ι} (p : ι → Set (Set α))
     IsPiSystem (⋃ n, p n) := by
   intro t1 ht1 t2 ht2 h
   rw [Set.mem_iUnion] at ht1 ht2 ⊢
-  cases' ht1 with n ht1
-  cases' ht2 with m ht2
+  obtain ⟨n, ht1⟩ := ht1
+  obtain ⟨m, ht2⟩ := ht2
   obtain ⟨k, hpnk, hpmk⟩ : ∃ k, p n ≤ p k ∧ p m ≤ p k := hp_directed n m
   exact ⟨k, hp_pi k t1 (hpnk ht1) t2 (hpmk ht2) h⟩
 
@@ -311,7 +311,7 @@ theorem mem_generatePiSystem_iUnion_elim' {α β} {g : β → Set (Set α)} {s :
   · intros b h_b
     simp_rw [Finset.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
       at h_b
-    cases' h_b with h_b_w h_b_h
+    obtain ⟨h_b_w, h_b_h⟩ := h_b
     have h_b_alt : b = (Subtype.mk b h_b_w).val := rfl
     rw [h_b_alt, Subtype.val_injective.extend_apply]
     apply h_t'

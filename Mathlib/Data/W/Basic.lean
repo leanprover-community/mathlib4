@@ -99,8 +99,8 @@ theorem infinite_of_nonempty_of_isEmpty (a b : α) [ha : Nonempty (β a)] [he : 
         ?_
     intro n m h
     induction' n with n ih generalizing m
-    · cases' m with m <;> simp_all
-    · cases' m with m
+    · rcases m with - | m <;> simp_all
+    · rcases m with - | m
       · simp_all
       · refine congr_arg Nat.succ (ih ?_)
         simp_all [funext_iff]⟩

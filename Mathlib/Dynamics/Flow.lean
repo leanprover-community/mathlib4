@@ -136,7 +136,7 @@ end Flow
 
 namespace Flow
 
-variable {τ : Type*} [AddCommGroup τ] [TopologicalSpace τ] [TopologicalAddGroup τ]
+variable {τ : Type*} [AddCommGroup τ] [TopologicalSpace τ] [IsTopologicalAddGroup τ]
   {α : Type*} [TopologicalSpace α] (ϕ : Flow τ α)
 
 theorem isInvariant_iff_image_eq (s : Set α) : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s = s :=

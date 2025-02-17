@@ -36,6 +36,34 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C]
 def ShortComplex.toComposableArrows (S : ShortComplex C) : ComposableArrows C 2 :=
   ComposableArrows.mk₂ S.f S.g
 
+/-- A map of short complexes induces a map of composable arrows with the same data. -/
+def ShortComplex.mapToComposableArrows {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂) :
+    S₁.toComposableArrows ⟶ S₂.toComposableArrows :=
+  ComposableArrows.homMk₂ φ.τ₁ φ.τ₂ φ.τ₃ φ.comm₁₂.symm φ.comm₂₃.symm
+
+@[simp]
+theorem ShortComplex.mapToComposableArrows_app_0 {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂) :
+    (ShortComplex.mapToComposableArrows φ).app 0 = φ.τ₁ := rfl
+
+@[simp]
+theorem ShortComplex.mapToComposableArrows_app_1 {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂) :
+    (ShortComplex.mapToComposableArrows φ).app 1 = φ.τ₂ := rfl
+
+@[simp]
+theorem ShortComplex.mapToComposableArrows_app_2 {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂) :
+    (ShortComplex.mapToComposableArrows φ).app 2 = φ.τ₃ := rfl
+
+@[simp]
+theorem ShortComplex.mapToComposableArrows_id {S₁ : ShortComplex C} :
+    (ShortComplex.mapToComposableArrows (𝟙 S₁)) = 𝟙 S₁.toComposableArrows := by
+  aesop_cat
+
+@[simp]
+theorem ShortComplex.mapToComposableArrows_comp {S₁ S₂ S₃ : ShortComplex C} (φ : S₁ ⟶ S₂)
+    (ψ : S₂ ⟶ S₃) : ShortComplex.mapToComposableArrows (φ ≫ ψ) =
+      ShortComplex.mapToComposableArrows φ ≫ ShortComplex.mapToComposableArrows ψ := by
+  aesop_cat
+
 namespace ComposableArrows
 
 variable {n : ℕ} (S : ComposableArrows C n)

@@ -712,7 +712,7 @@ lemma le_rootMultiplicity_iff (p0 : p ≠ 0) {a : R} {n : ℕ} :
   rw [rootMultiplicity_eq_nat_find_of_nonzero p0, @Nat.le_find_iff _ (_)]
   simp_rw [Classical.not_not]
   refine ⟨fun h => ?_, fun h m hm => (pow_dvd_pow _ hm).trans h⟩
-  cases' n with n
+  rcases n with - | n
   · rw [pow_zero]
     apply one_dvd
   · exact h n n.lt_succ_self

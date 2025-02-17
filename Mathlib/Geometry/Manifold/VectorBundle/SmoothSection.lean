@@ -149,7 +149,7 @@ instance instZSMul : SMul ℤ Cₛ^n⟮I; F, V⟯ :=
 
 @[simp]
 theorem coe_zsmul (s : Cₛ^n⟮I; F, V⟯) (z : ℤ) : ⇑(z • s : Cₛ^n⟮I; F, V⟯) = z • ⇑s := by
-  cases' z with n n
+  rcases z with n | n
   · refine (coe_nsmul s n).trans ?_
     simp only [Int.ofNat_eq_coe, natCast_zsmul]
   · refine (congr_arg Neg.neg (coe_nsmul s (n + 1))).trans ?_

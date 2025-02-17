@@ -265,7 +265,7 @@ theorem WellFoundedGT.iSup_eq_monotonicSequenceLimit [CompleteLattice α]
   refine (iSup_le fun m => ?_).antisymm (le_iSup a _)
   rcases le_or_lt m (monotonicSequenceLimitIndex a) with hm | hm
   · exact a.monotone hm
-  · cases' WellFoundedGT.monotone_chain_condition' a with n hn
+  · obtain ⟨n, hn⟩ := WellFoundedGT.monotone_chain_condition' a
     have : n ∈ {n | ∀ m, n ≤ m → a n = a m} := fun k hk => (a.mono hk).eq_of_not_lt (hn k hk)
     exact (Nat.sInf_mem ⟨n, this⟩ m hm.le).ge
 
