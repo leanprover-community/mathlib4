@@ -29,7 +29,7 @@ theorem numeric_toPGame (o : Ordinal) : o.toPGame.Numeric := by
 /-- Converts an ordinal into the corresponding surreal. -/
 noncomputable def toSurreal : Ordinal ↪o Surreal where
   toFun o := .mk _ o.numeric_toPGame
-  inj' a b h := toPGame_equiv_iff.1 (by apply Quotient.exact h) -- Porting note: Added `by apply`
+  inj' a b h := toPGame_equiv_iff.1 (Quotient.exact h :)
   map_rel_iff' := @toPGame_le_iff
 
 end Ordinal
