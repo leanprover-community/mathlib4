@@ -625,8 +625,7 @@ variable (hg_inj : Injective g)
 section
 
 include hfg in
-theorem lieModule_lcs_map_le (k : ℕ) :
-    (lowerCentralSeries R L M k : Submodule R M).map g ≤
+theorem lieModule_lcs_map_le (k : ℕ) : (lowerCentralSeries R L M k : Submodule R M).map g ≤
     (lowerCentralSeries R L₂ M₂ k : Submodule R M₂) := by
   induction k with
   | zero =>
@@ -635,15 +634,14 @@ theorem lieModule_lcs_map_le (k : ℕ) :
     rw [lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span', Submodule.map_span]
     apply Submodule.span_le.mpr
     rintro m₂ ⟨m, ⟨x, n, m_n, h⟩, rfl⟩
-    simp
     have : ∃ y : L₂, ∃ n : lowerCentralSeries R L₂ M₂ k, ⁅y, n⁆ = g m := by
-      use f x
-      use ⟨g m_n, ih (Submodule.mem_map_of_mem h.1)⟩
-      simp_all only [LieSubmodule.mem_top, LieSubmodule.coe_bracket]
+      use f x, ⟨g m_n, ih (Submodule.mem_map_of_mem h.1)⟩
+      simp [LieSubmodule.mem_top, LieSubmodule.coe_bracket, hfg x m_n, h.2]
+    simp [lowerCentralSeries_succ, SetLike.mem_coe, LieSubmodule.mem_toSubmodule]
     obtain ⟨y, n, hn⟩ := this
     rw [← hn]
     apply LieSubmodule.lie_mem_lie
-    · simp_all only [LieSubmodule.mem_top, LieSubmodule.coe_bracket]
+    · simp [LieSubmodule.mem_top, LieSubmodule.coe_bracket]
     · exact SetLike.coe_mem n
 
 end
@@ -719,7 +717,7 @@ section
 
 variable [LieModule R L M]
 
-theorem nilpotent_submodule_nilpotent (M₁ M₂ : LieSubmodule R L M)
+theorem isNilpotent_of_le (M₁ M₂ : LieSubmodule R L M)
     (h₁ : M₁ ≤ M₂) (h₂ : IsNilpotent L M₂) : IsNilpotent L M₁ := by
   let f : L →ₗ⁅R⁆ L := 1
   let g : M₁ →ₗ[R] M₂ := Submodule.inclusion h₁
@@ -730,7 +728,7 @@ theorem nilpotent_submodule_nilpotent (M₁ M₂ : LieSubmodule R L M)
     rfl
   have hg_inj : Function.Injective g := by
     apply Submodule.inclusion_injective
-  exact Function.Injective.lieModuleIsNilpotent hfg hg_inj
+  exact hg_inj.lieModuleIsNilpotent hfg
 
 end
 
