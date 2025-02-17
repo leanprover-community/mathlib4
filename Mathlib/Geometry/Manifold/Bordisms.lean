@@ -48,10 +48,10 @@ open Module Set
 
 noncomputable section
 
-/-- A **singular `n`-manifold** on a topological space `X`, for `n ∈ ℕ`, is a pair `(M,f)`
+/-- A **singular `n`-manifold** on a topological space `X`, for `n ∈ ℕ`, is a pair `(M, f)`
 of a closed `n`-dimensional `C^k` manifold `M` together with a continuous map `M → X`.
 
-In practice, one wants to take `k=∞` (as then e.g. the intersection form is a powerful tool
+In practice, one commonly wants to take `k=∞` (as then e.g. the intersection form is a powerful tool
 to compute bordism groups; for the definition, this makes no difference.) -/
 structure SingularNManifold.{u, v, w} (X : Type w) [TopologicalSpace X] (n : ℕ) (k : ℕ∞) where
   /-- The normed space on which the manifold `M` is modeled. -/
@@ -60,7 +60,7 @@ structure SingularNManifold.{u, v, w} (X : Type w) [TopologicalSpace X] (n : ℕ
   [normedAddCommGroup : NormedAddCommGroup E]
   /-- `E` is a real normed space -/
   [normedSpace: NormedSpace ℝ E]
-  /-- The smooth manifold `M` of a singular `n`-manifold `(M,f)` -/
+  /-- The smooth manifold `M` of a singular `n`-manifold `(M, f)` -/
   M : Type u
   /-- The smooth manifold `M` is a topological space -/
   [topSpaceM : TopologicalSpace M]
@@ -82,11 +82,9 @@ structure SingularNManifold.{u, v, w} (X : Type w) [TopologicalSpace X] (n : ℕ
   [findim: FiniteDimensional ℝ E]
   /-- `M` is `n`-dimensional, as its model space `E` is -/
   dimension : finrank ℝ E = n
-  /-- The underlying map `M → X` of a singular `n`-manifold `(M,f)` on `X` -/
+  /-- The underlying map `M → X` of a singular `n`-manifold `(M, f)` on `X` -/
   f : M → X
   hf : Continuous f
--- TODO: why does the checkUnivs linter complain?
--- #lint only checkUnivs
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
