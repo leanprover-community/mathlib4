@@ -543,7 +543,7 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
   · intro hf
     refine Submodule.span_induction ?_ ?_ ?_ ?_ hf
     · intro f hf n
-      cases' (Set.mem_image _ _ _).mp hf with x hx
+      obtain ⟨x, hx⟩ := (Set.mem_image _ _ _).mp hf
       rw [← hx.right, coeff_C]
       by_cases h : n = 0
       · simpa [h] using hx.left
@@ -1119,7 +1119,7 @@ theorem mem_map_C_iff {I : Ideal R} {f : MvPolynomial σ R} :
   · intro hf
     refine Submodule.span_induction ?_ ?_ ?_ ?_ hf
     · intro f hf n
-      cases' (Set.mem_image _ _ _).mp hf with x hx
+      obtain ⟨x, hx⟩ := (Set.mem_image _ _ _).mp hf
       rw [← hx.right, coeff_C]
       by_cases h : n = 0
       · simpa [h] using hx.left

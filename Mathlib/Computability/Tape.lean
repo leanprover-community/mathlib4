@@ -3,6 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Init
+/-
+Broken by https://github.com/leanprover/lean4/pull/7059
+Commenting out until a fix is available.
+See https://leanprover.zulipchat.com/#narrow/channel/428973-nightly-testing/topic/breakages.20from.20leanprover.2Flean4.237059
+
 import Mathlib.Data.Vector.Basic
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Basic
@@ -167,7 +173,7 @@ def ListBlank.tail {Γ} [Inhabited Γ] (l : ListBlank Γ) : ListBlank Γ := by
   rintro a _ ⟨i, rfl⟩
   refine Quotient.sound' (Or.inl ?_)
   cases a
-  · cases' i with i <;> [exact ⟨0, rfl⟩; exact ⟨i, rfl⟩]
+  · rcases i with - | i <;> [exact ⟨0, rfl⟩; exact ⟨i, rfl⟩]
   exact ⟨i, rfl⟩
 
 @[simp]
@@ -214,7 +220,7 @@ theorem ListBlank.exists_cons {Γ} [Inhabited Γ] (l : ListBlank Γ) :
 def ListBlank.nth {Γ} [Inhabited Γ] (l : ListBlank Γ) (n : ℕ) : Γ := by
   apply l.liftOn (fun l ↦ List.getI l n)
   rintro l _ ⟨i, rfl⟩
-  cases' lt_or_le n _ with h h
+  rcases lt_or_le n _ with h | h
   · rw [List.getI_append _ _ _ h]
   rw [List.getI_eq_default _ h]
   rcases le_or_lt _ n with h₂ | h₂
@@ -249,7 +255,7 @@ theorem ListBlank.ext {Γ} [i : Inhabited Γ] {L₁ L₂ : ListBlank Γ} :
   refine List.ext_getElem ?_ fun i h h₂ ↦ Eq.symm ?_
   · simp only [Nat.add_sub_cancel' h, List.length_append, List.length_replicate]
   simp only [ListBlank.nth_mk] at H
-  cases' lt_or_le i l₁.length with h' h'
+  rcases lt_or_le i l₁.length with h' | h'
   · simp [h', List.getElem_append _ h₂, ← List.getI_eq_getElem _ h, ← List.getI_eq_getElem _ h', H]
   · rw [List.getElem_append_right h', List.getElem_replicate,
       ← List.getI_eq_default _ h', H, List.getI_eq_getElem _ h]
@@ -378,7 +384,7 @@ element is sent to a sequence of default elements. -/
 def ListBlank.flatMap {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (l : ListBlank Γ) (f : Γ → List Γ')
     (hf : ∃ n, f default = List.replicate n default) : ListBlank Γ' := by
   apply l.liftOn (fun l ↦ ListBlank.mk (l.flatMap f))
-  rintro l _ ⟨i, rfl⟩; cases' hf with n e; refine Quotient.sound' (Or.inl ⟨i * n, ?_⟩)
+  rintro l _ ⟨i, rfl⟩; obtain ⟨n, e⟩ := hf; refine Quotient.sound' (Or.inl ⟨i * n, ?_⟩)
   rw [List.flatMap_append, mul_comm]; congr
   induction' i with i IH
   · rfl
@@ -616,3 +622,4 @@ theorem Tape.map_mk₁ {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap �
 end Tape
 
 end Turing
+-/

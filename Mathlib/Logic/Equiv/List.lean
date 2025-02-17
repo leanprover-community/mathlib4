@@ -67,7 +67,7 @@ theorem decode_list_succ (v : ℕ) :
     decode (α := List α) (succ v) =
       (· :: ·) <$> decode (α := α) v.unpair.1 <*> decode (α := List α) v.unpair.2 :=
   show decodeList (succ v) = _ by
-    cases' e : unpair v with v₁ v₂
+    rcases e : unpair v with ⟨v₁, v₂⟩
     simp [decodeList, e]; rfl
 
 theorem length_le_encode : ∀ l : List α, length l ≤ encode l
@@ -112,7 +112,7 @@ end Finset
 
 /-- A listable type with decidable equality is encodable. -/
 def encodableOfList [DecidableEq α] (l : List α) (H : ∀ x, x ∈ l) : Encodable α :=
-  ⟨fun a => idxOf a l, l.get?, fun _ => idxOf_get? (H _)⟩
+  ⟨fun a => idxOf a l, (l[·]?), fun _ => getElem?_idxOf (H _)⟩
 
 /-- A finite type is encodable. Because the encoding is not unique, we wrap it in `Trunc` to
 preserve computability. -/
@@ -216,7 +216,7 @@ section List
 theorem denumerable_list_aux : ∀ n : ℕ, ∃ a ∈ @decodeList α _ n, encodeList a = n
   | 0 => by rw [decodeList]; exact ⟨_, rfl, rfl⟩
   | succ v => by
-    cases' e : unpair v with v₁ v₂
+    rcases e : unpair v with ⟨v₁, v₂⟩
     have h := unpair_right_le v
     rw [e] at h
     rcases have : v₂ < succ v := lt_succ_of_le h
@@ -238,7 +238,7 @@ theorem list_ofNat_succ (v : ℕ) :
     ofNat (List α) (succ v) = ofNat α v.unpair.1 :: ofNat (List α) v.unpair.2 :=
   ofNat_of_decode <|
     show decodeList (succ v) = _ by
-      cases' e : unpair v with v₁ v₂
+      rcases e : unpair v with ⟨v₁, v₂⟩
       simp [decodeList, e]
       rw [show decodeList v₂ = decode (α := List α) v₂ from rfl, decode_eq_ofNat, Option.seq_some]
 

@@ -4,10 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
 
-import Std.Data.HashMap
-import Lean.Data.RBMap
-import Lean.Data.RBTree
-import Lean.Data.Json.Printer
 import Cache.Lean
 
 variable {α : Type}
@@ -20,7 +16,7 @@ open System (FilePath)
 
 /-- Target directory for build files -/
 def LIBDIR : FilePath :=
-  ".lake" / "build" / "lib"
+  ".lake" / "build" / "lib" / "lean"
 
 /-- Target directory for IR files -/
 def IRDIR : FilePath :=
