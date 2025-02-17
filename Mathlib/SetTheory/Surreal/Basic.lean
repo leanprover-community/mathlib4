@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kim Morrison
 -/
 import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.SetTheory.Game.Ordinal
+import Mathlib.SetTheory.Game.Basic
 
 /-!
 # Surreal numbers
@@ -24,7 +24,7 @@ besides!) but we do not yet have a complete development.
 ## Order properties
 
 Surreal numbers inherit the relations `≤` and `<` from games (`Surreal.instLE` and
-`Surreal.instLT`), and these relations satisfy the axioms of a partial order.
+`Surreal.instLT`), and these relations satisfy the axioms of a linear order.
 
 ## Algebraic operations
 
@@ -249,12 +249,6 @@ theorem numeric_nat : ∀ n : ℕ, Numeric n
   | 0 => numeric_zero
   | n + 1 => (numeric_nat n).add numeric_one
 
-/-- Ordinal games are numeric. -/
-theorem numeric_toPGame (o : Ordinal) : o.toPGame.Numeric := by
-  induction' o using Ordinal.induction with o IH
-  apply numeric_of_isEmpty_rightMoves
-  simpa using fun i => IH _ (Ordinal.toLeftMovesToPGame_symm_lt i)
-
 end PGame
 
 end SetTheory
@@ -283,6 +277,8 @@ instance : Inhabited Surreal :=
   ⟨0⟩
 
 lemma mk_eq_mk {x y : PGame.{u}} {hx hy} : mk x hx = mk y hy ↔ x ≈ y := Quotient.eq
+
+alias ⟨_, mk_eq⟩ := mk_eq_mk
 
 lemma mk_eq_zero {x : PGame.{u}} {hx} : mk x hx = 0 ↔ x ≈ 0 := Quotient.eq
 
@@ -435,13 +431,3 @@ lemma bddBelow_of_small (s : Set Surreal.{u}) [Small.{u} s] : BddBelow s := by
 end Surreal
 
 open Surreal
-
-namespace Ordinal
-
-/-- Converts an ordinal into the corresponding surreal. -/
-noncomputable def toSurreal : Ordinal ↪o Surreal where
-  toFun o := mk _ (numeric_toPGame o)
-  inj' a b h := toPGame_equiv_iff.1 (by apply Quotient.exact h) -- Porting note: Added `by apply`
-  map_rel_iff' := @toPGame_le_iff
-
-end Ordinal

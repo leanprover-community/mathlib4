@@ -3,8 +3,8 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Game.Basic
 import Mathlib.SetTheory.Ordinal.NaturalOps
+import Mathlib.SetTheory.Surreal.Basic
 
 /-!
 # Ordinals as games
@@ -12,14 +12,13 @@ import Mathlib.SetTheory.Ordinal.NaturalOps
 We define the canonical map `Ordinal → SetTheory.PGame`, where every ordinal is mapped to the
 game whose left set consists of all previous ordinals.
 
-The map to surreals is defined in `Ordinal.toSurreal`.
+The map to surreals is defined in `SetTheory.Surreal.Ordinal`.
 
 # Main declarations
 
 - `Ordinal.toPGame`: The canonical map between ordinals and pre-games.
-- `Ordinal.toPGameEmbedding`: The order embedding version of the previous map.
+- `Ordinal.toGame`: The canonical map between ordinals and games.
 -/
-
 
 universe u
 
@@ -28,6 +27,8 @@ open SetTheory PGame
 open scoped NaturalOps PGame
 
 namespace Ordinal
+
+/-! ### `Ordinal` to `PGame` -/
 
 /-- Converts an ordinal into the corresponding pre-game. -/
 noncomputable def toPGame (o : Ordinal.{u}) : PGame.{u} :=
@@ -156,6 +157,8 @@ noncomputable def toPGameEmbedding : Ordinal.{u} ↪o PGame.{u} where
   inj' := toPGame_injective
   map_rel_iff' := @toPGame_le_iff
 
+/-! ### `Ordinal` to `Game` -/
+
 /-- Converts an ordinal into the corresponding game. -/
 noncomputable def toGame : Ordinal.{u} ↪o Game.{u} where
   toFun o := ⟦o.toPGame⟧
@@ -163,8 +166,11 @@ noncomputable def toGame : Ordinal.{u} ↪o Game.{u} where
   map_rel_iff' := toPGame_le_iff
 
 @[simp]
-theorem mk_toPGame (o : Ordinal) : ⟦o.toPGame⟧ = o.toGame :=
+theorem _root_.Game.mk_toPGame (o : Ordinal) : ⟦o.toPGame⟧ = o.toGame :=
   rfl
+
+@[deprecated (since := "2025-02-17")]
+alias mk_toPGame := Game.mk_toPGame
 
 @[deprecated toGame (since := "2024-11-23")]
 alias toGameEmbedding := toGame
@@ -224,8 +230,8 @@ theorem toPGame_nmul (a b : Ordinal) : (a ⨳ b).toPGame ≈ a.toPGame * b.toPGa
   refine ⟨le_of_forall_lf (fun i => ?_) isEmptyElim, le_of_forall_lf (fun i => ?_) isEmptyElim⟩
   · rw [toPGame_moveLeft']
     rcases lt_nmul_iff.1 (toLeftMovesToPGame_symm_lt i) with ⟨c, hc, d, hd, h⟩
-    rw [← toPGame_le_iff, le_iff_game_le, mk_toPGame, mk_toPGame, toGame_nadd _ _, toGame_nadd _ _,
-      ← le_sub_iff_add_le] at h
+    rw [← toPGame_le_iff, le_iff_game_le, Game.mk_toPGame, Game.mk_toPGame,
+      toGame_nadd _ _, toGame_nadd _ _, ← le_sub_iff_add_le] at h
     refine lf_of_le_of_lf h <| (lf_congr_left ?_).1 <| moveLeft_lf <| toLeftMovesMul <| Sum.inl
       ⟨toLeftMovesToPGame ⟨c, hc⟩, toLeftMovesToPGame ⟨d, hd⟩⟩
     simp only [mul_moveLeft_inl, toPGame_moveLeft', Equiv.symm_apply_apply, equiv_iff_game_eq,
@@ -237,7 +243,7 @@ theorem toPGame_nmul (a b : Ordinal) : (a ⨳ b).toPGame ≈ a.toPGame * b.toPGa
     rw [mul_moveLeft_inl, toPGame_moveLeft', toPGame_moveLeft', lf_iff_game_lf,
       quot_sub, quot_add, ← Game.not_le, le_sub_iff_add_le]
     repeat rw [← game_eq (toPGame_nmul _ _)]
-    simp_rw [mk_toPGame, ← toGame_nadd]
+    simp_rw [Game.mk_toPGame, ← toGame_nadd]
     apply toPGame_lf (nmul_nadd_lt _ _) <;>
     exact toLeftMovesToPGame_symm_lt _
 termination_by (a, b)
@@ -254,6 +260,6 @@ theorem toGame_natCast : ∀ n : ℕ, toGame n = n
     rfl
 
 theorem toPGame_natCast (n : ℕ) : toPGame n ≈ n := by
-  rw [PGame.equiv_iff_game_eq, mk_toPGame, toGame_natCast, quot_natCast]
+  rw [PGame.equiv_iff_game_eq, Game.mk_toPGame, toGame_natCast, quot_natCast]
 
 end Ordinal
