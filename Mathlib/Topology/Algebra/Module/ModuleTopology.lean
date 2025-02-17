@@ -77,7 +77,7 @@ This file develops the theory of the module topology.
   topology, then the product topology on `M × N` is the module topology.
 * `IsModuleTopology.instPi` : Given a finite collection of `R`-modules each of which has
   the module topology, the product topology on the product module is the module topology.
-* `IsModuleTopology.topologicalRing` : If `D` is an `R`-algebra equipped with the module
+* `IsModuleTopology.isTopologicalRing` : If `D` is an `R`-algebra equipped with the module
   topology, and `D` is finite as an `R`-module, then `D` is a topological ring (that is,
   addition, negation and multiplication are continuous).
 
@@ -535,7 +535,7 @@ end semiring
 
 section ring
 
-variable {R : Type*} [TopologicalSpace R] [CommRing R] [TopologicalRing R]
+variable {R : Type*} [TopologicalSpace R] [CommRing R] [IsTopologicalRing R]
 variable {A : Type*} [AddCommGroup A] [Module R A] [aA : TopologicalSpace A] [IsModuleTopology R A]
 variable {B : Type*} [AddCommGroup B] [Module R B] [aB : TopologicalSpace B] [IsModuleTopology R B]
 variable {C : Type*} [AddCommGroup C] [Module R C] [aC : TopologicalSpace C] [IsModuleTopology R C]
@@ -577,7 +577,7 @@ end bilinear
 
 section algebra
 
-variable (R : Type*) [CommRing R] [TopologicalSpace R] [TopologicalRing R]
+variable (R : Type*) [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
     (D : Type*) [Ring D] [Algebra R D] [Module.Finite R D] [TopologicalSpace D]
     [IsModuleTopology R D]
 
@@ -592,7 +592,7 @@ theorem continuous_mul_of_finite : Continuous (fun ab ↦ ab.1 * ab.2 : D × D �
 include R in
 /-- If `R` is a topological ring and `D` is an `R`-algebra, finite as an `R`-module,
 and if `D` is given the module topology, then `D` is a topological ring. -/
-theorem topologicalRing : TopologicalRing D where
+theorem isTopologicalRing : IsTopologicalRing D where
   -- Proof: we have already checked all the axioms above.
   continuous_add := (toContinuousAdd R D).1
   continuous_mul := continuous_mul_of_finite R D
