@@ -265,7 +265,7 @@ theorem chainHeight_insert_of_forall_gt (a : α) (hx : ∀ b ∈ s, a < b) :
       apply (h'.2.1.2 i hi).resolve_left
       rintro rfl
       cases' chain'_iff_pairwise.mp h.1 with _ _ hy
-      cases' h'.1 with h' h'
+      rcases h'.1 with h' | h'
       exacts [(hy _ hi).ne h', not_le_of_gt (hy _ hi) (hx _ h').le]
   · intro l hl
     refine ⟨a::l, ⟨?_, ?_⟩, by simp⟩
