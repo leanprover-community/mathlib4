@@ -68,24 +68,10 @@ abbrev mapQPow {m n : ℕ} (le : m ≤ n) :
   mapQ _ _ LinearMap.id (smul_mono_left (Ideal.pow_le_pow_right le))
 
 @[simp]
-theorem mapQPow_mk {m n : ℕ} (le : m ≤ n) (x : M) :
-    mapQPow I M le (Quotient.mk x) = (Quotient.mk x : M ⧸ I ^ m • ⊤) := by
-  simp
-
-@[simp]
-theorem mapQPow_eq (n : ℕ) : mapQPow I M (Nat.le_refl n) = LinearMap.id := by
-  simp
-
-@[simp]
-theorem mapQPow_comp {m n k : ℕ} (hmn : m ≤ n) (hnk : n ≤ k) :
-    mapQPow I M hmn ∘ₗ mapQPow I M hnk = mapQPow I M (hmn.trans hnk) := by
-  simp
-
-@[simp]
-theorem mapQPow_comp_apply {m n k : ℕ} (hmn : m ≤ n) (hnk : n ≤ k)
-    (x : M ⧸ (I ^ k • ⊤ : Submodule R M)) :
-    mapQPow I M hmn (mapQPow I M hnk x) = mapQPow I M (hmn.trans hnk) x := by
-  simp
+theorem mk_out_eq_mapQPow {m n : ℕ} (le : m ≤ n) (x : M ⧸ (I ^ n • ⊤ : Submodule R M)) :
+    Quotient.mk x.out = mapQPow I M le x := by
+  nth_rw 2 [← Quotient.out_eq x]
+  rfl
 
 /--`mapQPow` for `n = m + 1`-/
 abbrev mapQPowSucc (m : ℕ) : M ⧸ (I ^ (m + 1) • ⊤ : Submodule R M) →ₗ[R]
@@ -109,24 +95,10 @@ abbrev factorPow {m n : ℕ} (le : n ≤ m) : R ⧸ I ^ m →+* R ⧸ I ^ n :=
   factor _ _ (pow_le_pow_right le)
 
 @[simp]
-theorem factorPow_mk {m n : ℕ} (le : n ≤ m) (x : R) :
-    factorPow I le (mk (I ^ m) x) = mk (I ^ n) x := by
-  simp
-
-@[simp]
-theorem factorPow_eq (n : ℕ) : factorPow I (Nat.le_refl n) = RingHom.id _ := by
-  simp
-
-@[simp]
-theorem factorPow_comp {m n k : ℕ} (hmn : m ≤ n) (hnk : n ≤ k) :
-    (factorPow I hmn).comp (factorPow I hnk) = factorPow I (hmn.trans hnk) := by
-  simp
-
-@[simp]
-theorem factorPow_comp_apply {m n k : ℕ} (hmn : m ≤ n) (hnk : n ≤ k)
-    (x : R ⧸ I ^ k) :
-    factorPow I hmn (factorPow I hnk x) = factorPow I (hmn.trans hnk) x := by
-  simp
+theorem mk_out_eq_factorPow {m n : ℕ} (le : n ≤ m) (x : R ⧸ I ^ m) :
+    mk (I ^ n) x.out = factorPow I le x := by
+  nth_rw 2 [← Quotient.out_eq x]
+  rfl
 
 /--`factorPow` for `m = n + 1`-/
 abbrev factorPowSucc (n : ℕ) : R ⧸ I ^ (n + 1) →+* R ⧸ I ^ n :=
