@@ -18,7 +18,7 @@ While the extension for `Real.sqrt` can handle both integers and rationals, the 
 
 namespace Tactic.NormNum
 
-open Qq Lean Lean.Meta Elab.Tactic Mathlib.Meta.NormNum
+open Qq Lean Lean.Meta Elab.Tactic Mathlib.Meta.NormNum NNReal
 
 lemma isNat_realSqrt {x : ℝ} {nx ny : ℕ} (h : IsNat x nx) (hy : ny * ny = nx) :
     IsNat (Real.sqrt x) ny := ⟨by simp [h.out, ← hy]⟩
