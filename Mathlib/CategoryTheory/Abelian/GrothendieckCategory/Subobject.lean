@@ -86,7 +86,7 @@ lemma exists_isIso_of_functor_from_monoOver
     {κ : Cardinal.{w}} [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ]
     (hXκ : HasCardinalLT (Subobject X) κ)
     (c : Cocone (F ⋙ MonoOver.forget _ ⋙ Over.forget _)) (hc : IsColimit c)
-    (f : c.pt ⟶ X) (hf : ∀ (j : J), c.ι.app j ≫ f = (F.obj j).obj.hom)(h : Epi f) :
+    (f : c.pt ⟶ X) (hf : ∀ (j : J), c.ι.app j ≫ f = (F.obj j).obj.hom) (h : Epi f) :
     ∃ (j : J), IsIso (F.obj j).obj.hom := by
   have := isFiltered_of_isCardinalDirected J κ
   have := mono_of_isColimit_monoOver F hc f hf
