@@ -214,6 +214,7 @@ def firstUnitCoeff {f : k⟦X⟧} (hf : f ≠ 0) : kˣ :=
     exact (self_eq_X_pow_order_mul_divided_by_X_pow_order hf).symm
   unitOfInvertible (constantCoeff k (divided_by_X_pow_order hf))
 
+-- TODO rename
 /-- `Inv_divided_by_X_pow_order` is the inverse of the element obtained by diving a non-zero power
 series by the largest power of `X` dividing it. Useful to create a term of type `Units`, done in
 `Unit_divided_by_X_pow_order` -/
@@ -231,6 +232,7 @@ theorem Inv_divided_by_X_pow_order_leftInv {f : k⟦X⟧} (hf : f ≠ 0) :
   rw [mul_comm]
   exact mul_invOfUnit (divided_by_X_pow_order hf) (firstUnitCoeff hf) rfl
 
+-- TODO rename
 open scoped Classical in
 /-- `Unit_of_divided_by_X_pow_order` is the unit power series obtained by dividing a non-zero
 power series by the largest power of `X` that divides it. -/
