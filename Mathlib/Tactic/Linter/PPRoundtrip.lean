@@ -5,7 +5,8 @@ Authors: Damiano Testa
 -/
 
 import Lean.Elab.Command
-import Mathlib.Init
+import Mathlib.Tactic.Linter.Header
+import Mathlib.adomaniLeanUtils.inspect_syntax
 
 /-!
 #  The "ppRoundtrip" linter
@@ -27,7 +28,7 @@ It also prints both the source code and the "expected code" in a 5-character rad
 the first difference.
 -/
 register_option linter.ppRoundtrip : Bool := {
-  defValue := false
+  defValue := true
   descr := "enable the ppRoundtrip linter"
 }
 
@@ -56,7 +57,7 @@ def polishPP (s : String) : String :=
 For this reason, `polishSource s` performs more conservative changes:
 it only replace all whitespace starting from a linebreak (`\n`) with a single whitespace. -/
 def polishSource (s : String) : String × Array Nat :=
-  let split := s.split (· == '\n')
+  let split := (s.replace "{}" "{ }").split (· == '\n')
   let preWS := split.foldl (init := #[]) fun p q =>
     let txt := q.trimLeft.length
     (p.push (q.length - txt)).push txt
@@ -113,6 +114,12 @@ def capSyntax (stx : Syntax) (p : Nat) : Syntax :=
 
 namespace PPRoundtrip
 
+abbrev stoppingAt := #[
+    ``Lean.Parser.Command.declValEqns,
+    ``Lean.Parser.Command.declValSimple,
+    ``Lean.Parser.Command.whereStructInst
+  ]
+
 @[inherit_doc Mathlib.Linter.linter.ppRoundtrip]
 def ppRoundtrip : Linter where run := withSetOptionIn fun stx ↦ do
     unless Linter.getLinterValue linter.ppRoundtrip (← getOptions) do
@@ -120,18 +127,29 @@ def ppRoundtrip : Linter where run := withSetOptionIn fun stx ↦ do
     if (← MonadState.get).messages.hasErrors then
       return
     let stx := capSyntax stx (stx.getTailPos?.getD default).1
+    let declValSimpleStart :=
+      match stx.find? (stoppingAt.contains ·.getKind) with
+      | some s =>
+        --dbg_trace "found {s}"
+        s.getPos?.getD default
+      | none =>
+        --dbg_trace "till the end"
+        stx.getTailPos?.getD default
     let origSubstring := stx.getSubstring?.getD default
     let (real, lths) := polishSource origSubstring.toString
     let fmt ← (liftCoreM do PrettyPrinter.ppCategory `command stx <|> (do
-      Linter.logLint linter.ppRoundtrip stx
-        m!"The ppRoundtrip linter had some parsing issues: \
-           feel free to silence it with `set_option linter.ppRoundtrip false in` \
-           and report this error!"
+      --Linter.logLint linter.ppRoundtrip stx
+      --  m!"The ppRoundtrip linter had some parsing issues: \
+      --     feel free to silence it with `set_option linter.ppRoundtrip false in` \
+      --     and report this error!"
       return real))
     let st := polishPP fmt.pretty
     if st != real then
       let diff := real.firstDiffPos st
       let pos := posToShiftedPos lths diff.1 + origSubstring.startPos.1
+      --dbg_trace "pos: {pos}, declValSimpleStart.1: {declValSimpleStart.1}"
+      if pos < declValSimpleStart.1 then
+
       let f := origSubstring.str.drop (pos)
       let extraLth := (f.takeWhile (· != st.get diff)).length
       let srcCtxt := zoomString real diff.1 5
