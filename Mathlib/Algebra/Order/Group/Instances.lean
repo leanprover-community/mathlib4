@@ -14,10 +14,12 @@ import Mathlib.Algebra.Order.Monoid.OrderDual
 
 variable {α : Type*}
 
+-- TODO rename inst
 @[to_additive]
 instance OrderDual.orderedCommGroup [OrderedCommGroup α] : OrderedCommGroup αᵒᵈ :=
   { OrderDual.orderedCommMonoid, OrderDual.instGroup with }
 
+-- TODO rename inst
 @[to_additive]
 instance OrderDual.linearOrderedCommGroup [LinearOrderedCommGroup α] : LinearOrderedCommGroup αᵒᵈ :=
   { OrderDual.orderedCommGroup, OrderDual.instLinearOrder α with }
