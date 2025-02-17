@@ -26,8 +26,8 @@ predicate `S`) but are not completely determined.
 structure Semiquot (α : Type*) where mk' ::
   /-- Set containing some element of `α`-/
   s : Set α
-  /-- Assertion of non-emptiness via `Trunc`-/
-  val : Trunc s
+  /-- Assertion of non-emptiness via `Squash`-/
+  val : Squash s
 
 namespace Semiquot
 
@@ -38,12 +38,12 @@ instance : Membership α (Semiquot α) :=
 
 /-- Construct a `Semiquot α` from `h : a ∈ s` where `s : Set α`. -/
 def mk {a : α} {s : Set α} (h : a ∈ s) : Semiquot α :=
-  ⟨s, Trunc.mk ⟨a, h⟩⟩
+  ⟨s, Squash.mk ⟨a, h⟩⟩
 
 theorem ext_s {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ q₁.s = q₂.s := by
   refine ⟨congr_arg _, fun h => ?_⟩
   cases' q₁ with _ v₁; cases' q₂ with _ v₂; congr
-  exact Subsingleton.helim (congrArg Trunc (congrArg Set.Elem h)) v₁ v₂
+  exact Subsingleton.helim (congrArg Squash (congrArg Set.Elem h)) v₁ v₂
 
 theorem ext {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ ∀ a, a ∈ q₁ ↔ a ∈ q₂ :=
   ext_s.trans Set.ext_iff
@@ -68,7 +68,7 @@ theorem mem_pure' {a b : α} : a ∈ Semiquot.pure b ↔ a = b :=
 
 /-- Replace `s` in a `Semiquot` with a superset. -/
 def blur' (q : Semiquot α) {s : Set α} (h : q.s ⊆ s) : Semiquot α :=
-  ⟨s, Trunc.lift (fun a : q.s => Trunc.mk ⟨a.1, h a.2⟩) (fun _ _ => Trunc.eq _ _) q.2⟩
+  ⟨s, q.2.lift fun a : q.s => Squash.mk ⟨a.1, h a.2⟩⟩
 
 /-- Replace `s` in a `q : Semiquot α` with a union `s ∪ q.s` -/
 def blur (s : Set α) (q : Semiquot α) : Semiquot α :=
@@ -81,18 +81,30 @@ theorem blur_eq_blur' (q : Semiquot α) (s : Set α) (h : q.s ⊆ s) : blur s q 
 theorem mem_blur' (q : Semiquot α) {s : Set α} (h : q.s ⊆ s) {a : α} : a ∈ blur' q h ↔ a ∈ s :=
   Iff.rfl
 
-/-- Convert a `Trunc α` to a `Semiquot α`. -/
-def ofTrunc (q : Trunc α) : Semiquot α :=
+/-- Convert a `Squash α` to a `Semiquot α`. -/
+def ofSquash (q : Squash α) : Semiquot α :=
   ⟨Set.univ, q.map fun a => ⟨a, trivial⟩⟩
 
-/-- Convert a `Semiquot α` to a `Trunc α`. -/
-def toTrunc (q : Semiquot α) : Trunc α :=
+/-- Convert a `Semiquot α` to a `Squash α`. -/
+def toSquash (q : Semiquot α) : Squash α :=
   q.2.map Subtype.val
+
+set_option linter.deprecated false in
+/-- Convert a `Trunc α` to a `Semiquot α`. -/
+@[deprecated ofSquash (since := "2025-01-13")]
+def ofTrunc (q : Trunc α) : Semiquot α :=
+  ofSquash q
+
+set_option linter.deprecated false in
+/-- Convert a `Semiquot α` to a `Trunc α`. -/
+@[deprecated toSquash (since := "2025-01-13")]
+def toTrunc (q : Semiquot α) : Trunc α :=
+  toSquash q
 
 /-- If `f` is a constant on `q.s`, then `q.liftOn f` is the value of `f`
 at any point of `q`. -/
 def liftOn (q : Semiquot α) (f : α → β) (h : ∀ a ∈ q, ∀ b ∈ q, f a = f b) : β :=
-  Trunc.liftOn q.2 (fun x => f x.1) fun x y => h _ x.2 _ y.2
+  q.2.lift'On (fun x => f x.1) fun x y => h _ x.2 _ y.2
 
 theorem liftOn_ofMem (q : Semiquot α) (f : α → β)
     (h : ∀ a ∈ q, ∀ b ∈ q, f a = f b) (a : α) (aq : a ∈ q) : liftOn q f h = f a := by

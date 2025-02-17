@@ -54,7 +54,7 @@ structure DFinsupp [∀ i, Zero (β i)] : Type max u v where mk' ::
   /-- The underlying function of a dependent function with finite support (aka `DFinsupp`). -/
   toFun : ∀ i, β i
   /-- The support of a dependent function with finite support (aka `DFinsupp`). -/
-  support' : Trunc { s : Multiset ι // ∀ i, i ∈ s ∨ toFun i = 0 }
+  support' : Squash { s : Multiset ι // ∀ i, i ∈ s ∨ toFun i = 0 }
 
 variable {β}
 
