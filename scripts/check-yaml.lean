@@ -40,8 +40,9 @@ def processDb (decls : ConstMap) : String → IO Bool
     return false
 
 unsafe def main : IO Unit := do
+  let searchPath ← addSearchPathFromEnv (← getBuiltinSearchPath (← findSysroot))
   CoreM.withImportModules #[`Mathlib, `Archive]
-      (searchPath := compile_time_search_path%) (trustLevel := 1024) do
+      (searchPath := searchPath) (trustLevel := 1024) do
     let decls := (← getEnv).constants
     let results ← databases.mapM (fun p ↦ processDb decls p)
     if results.any id then
