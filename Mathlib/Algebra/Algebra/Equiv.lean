@@ -624,6 +624,8 @@ theorem one_apply (x : A₁) : (1 : A₁ ≃ₐ[R] A₁) x = x :=
 theorem mul_apply (e₁ e₂ : A₁ ≃ₐ[R] A₁) (x : A₁) : (e₁ * e₂) x = e₁ (e₂ x) :=
   rfl
 
+lemma aut_inv (ϕ : A₁ ≃ₐ[R] A₁) : ϕ⁻¹ = ϕ.symm := rfl
+
 /-- An algebra isomorphism induces a group isomorphism between automorphism groups.
 
 This is a more bundled version of `AlgEquiv.equivCongr`. -/
@@ -728,21 +730,6 @@ instance _root_.Finite.algEquiv [Finite (A₁ →ₐ[R] A₂)] : Finite (A₁ �
   Finite.of_injective _ AlgEquiv.coe_algHom_injective
 
 end Semiring
-
-section Ring
-
-variable [CommSemiring R] [Ring A₁] [Ring A₂]
-variable [Algebra R A₁] [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
-
-@[deprecated map_neg (since := "2024-06-20")]
-protected theorem map_neg (x) : e (-x) = -e x :=
-  map_neg e x
-
-@[deprecated map_sub (since := "2024-06-20")]
-protected theorem map_sub (x y) : e (x - y) = e x - e y :=
-  map_sub e x y
-
-end Ring
 
 end AlgEquiv
 

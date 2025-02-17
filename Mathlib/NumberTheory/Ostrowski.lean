@@ -6,7 +6,7 @@ María Inés de Frutos-Fernández, Sam van Gool, Silvain Rideau-Kikuchi, Amos Tu
 Francesco Veneziano
 -/
 
-import Mathlib.Algebra.Order.AbsoluteValue.Equivalence
+import Mathlib.Analysis.AbsoluteValue.Equivalence
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.NumberTheory.Padics.PadicNorm
@@ -55,17 +55,17 @@ private lemma tendsto_nat_rpow_inv :
 -- Multiplication by a constant moves in a List.sum
 private lemma list_mul_sum {R : Type*} [CommSemiring R] {T : Type*} (l : List T) (y : R) (x : R) :
     (l.mapIdx fun i _ => x * y ^ i).sum = x * (l.mapIdx fun i _ => y ^ i).sum := by
-  simp_rw [← smul_eq_mul, List.smul_sum, List.mapIdx_eq_enum_map]
+  simp_rw [← smul_eq_mul, List.smul_sum, List.mapIdx_eq_zipIdx_map]
   congr 1
   simp
 
 -- Geometric sum for lists
 private lemma list_geom {T : Type*} {F : Type*} [Field F] (l : List T) {y : F} (hy : y ≠ 1) :
     (l.mapIdx fun i _ => y ^ i).sum = (y ^ l.length - 1) / (y - 1) := by
-  rw [← geom_sum_eq hy l.length, List.mapIdx_eq_enum_map, Finset.sum_range, ← Fin.sum_univ_get']
-  simp only [List.getElem_enum, Function.uncurry_apply_pair]
-  let e : Fin l.enum.length ≃ Fin l.length := finCongr List.enum_length
-  exact Fintype.sum_bijective e e.bijective _ _ fun _ ↦ rfl
+  rw [← geom_sum_eq hy l.length, List.mapIdx_eq_zipIdx_map, Finset.sum_range, ← Fin.sum_univ_get']
+  simp only [List.getElem_zipIdx, Function.uncurry_apply_pair]
+  let e : Fin l.zipIdx.length ≃ Fin l.length := finCongr List.length_zipIdx
+  exact Fintype.sum_bijective e e.bijective _ _ fun _ ↦ by simp [e]
 
 open AbsoluteValue -- does not work as intended after `namespace Rat.AbsoluteValue`
 
@@ -294,10 +294,10 @@ lemma apply_le_sum_digits (n : ℕ) {m : ℕ} (hm : 1 < m) :
     _ = f L'.sum := by rw [Nat.ofDigits_eq_sum_mapIdx]; norm_cast
     _ ≤ (L'.map f).sum := listSum_le f L'
     _ ≤ (L.mapIdx fun i _ ↦ m * (f m) ^ i).sum := ?_
-  simp only [hL', List.mapIdx_eq_enum_map, List.map_map]
-  refine List.sum_le_sum fun ⟨i, a⟩ hia ↦ ?_
+  simp only [hL', List.mapIdx_eq_zipIdx_map, List.map_map]
+  refine List.sum_le_sum fun ⟨a, i⟩ hia ↦ ?_
   dsimp only [Function.comp_apply, Function.uncurry_apply_pair]
-  replace hia := List.mem_enumFrom hia
+  replace hia := List.mem_zipIdx hia
   push_cast
   rw [map_mul, map_pow]
   refine mul_le_mul_of_nonneg_right ?_ <| pow_nonneg (f.nonneg _) i
@@ -316,15 +316,14 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
     calc
     f m ≤ (L.mapIdx fun i _ ↦ n₀ * f n₀ ^ i).sum := apply_le_sum_digits m hn₀
     _ ≤ (L.mapIdx fun _ _ ↦ (n₀ : ℝ)).sum := by
-      simp only [List.mapIdx_eq_enum_map, List.map_map]
+      simp only [List.mapIdx_eq_zipIdx_map, List.map_map]
       refine List.sum_le_sum fun ⟨i, a⟩ _ ↦ ?_
       simp only [Function.comp_apply, Function.uncurry_apply_pair]
       exact mul_le_of_le_of_le_one' (mod_cast le_refl n₀) (pow_le_one₀ (by positivity) h)
         (by positivity) (by positivity)
     _ = n₀ * (Nat.log n₀ m + 1) := by
-      rw [List.mapIdx_eq_enum_map, List.eq_replicate_of_mem (a := (n₀ : ℝ))
-        (l := List.map (Function.uncurry fun _ _ ↦ n₀) (List.enum L)),
-        List.sum_replicate, List.length_map, List.enum_length, nsmul_eq_mul, mul_comm,
+      rw [List.mapIdx_eq_zipIdx_map, List.eq_replicate_of_mem (a := (n₀ : ℝ)) (l := L.zipIdx.map _),
+        List.sum_replicate, List.length_map, List.length_zipIdx, nsmul_eq_mul, mul_comm,
         Nat.digits_len n₀ m hn₀ (not_eq_zero_of_lt hm), Nat.cast_add_one]
       simp +contextual
     _ ≤ n₀ * (logb n₀ m + 1) := by gcongr; exact natLog_le_logb ..
@@ -411,7 +410,7 @@ lemma le_pow_log : f n ≤ f m ^ logb m n := by
 
 include hm hn notbdd in
 /-- Given `m, n ≥ 2` and `f m = m ^ s`, `f n = n ^ t` for `s, t > 0`, we have `t ≤ s`. -/
-private lemma le_of_eq_pow {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t)  : t ≤ s := by
+private lemma le_of_eq_pow {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t) : t ≤ s := by
   rw [← rpow_le_rpow_left_iff (x := n) (mod_cast hn), ← hfn]
   apply le_trans <| le_pow_log hm hn notbdd
   rw [hfm, ← rpow_mul (Nat.cast_nonneg m), mul_comm, rpow_mul (Nat.cast_nonneg m),

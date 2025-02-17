@@ -56,9 +56,9 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
     · simp
     · rwa [indicator_ae_eq_zero, Function.support_one, inter_univ]
   -- Define `f n` to be the average of the first `n + 1` indicators of the `s k`.
-  let f (n : ℕ) : α → ℝ≥0∞ := (↑(n + 1) : ℝ≥0∞)⁻¹ • ∑ k in Finset.range (n + 1), (s k).indicator 1
+  let f (n : ℕ) : α → ℝ≥0∞ := (↑(n + 1) : ℝ≥0∞)⁻¹ • ∑ k ∈ Finset.range (n + 1), (s k).indicator 1
   -- We gather a few simple properties of `f`.
-  have hfapp : ∀ n a, f n a = (↑(n + 1))⁻¹ * ∑ k in Finset.range (n + 1), (s k).indicator 1 a := by
+  have hfapp : ∀ n a, f n a = (↑(n + 1))⁻¹ * ∑ k ∈ Finset.range (n + 1), (s k).indicator 1 a := by
     simp only [f, Pi.natCast_def, Pi.smul_apply, Pi.inv_apply, Finset.sum_apply, eq_self_iff_true,
     forall_const, imp_true_iff, smul_eq_mul]
   have hf n : Measurable (f n) := by fun_prop (disch := exact hs _)
