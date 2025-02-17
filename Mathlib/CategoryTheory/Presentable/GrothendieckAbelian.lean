@@ -83,43 +83,6 @@ lemma mapShortComplex_exact : (mapShortComplex S c₁ hc₁ c₂ c₃ f g hf hg)
 
 end
 
---section
---
---variable [HasColimitsOfShape J C] [HasExactColimitsOfShape J C]
---  {X₁ X₂ : J ⥤ C} (φ : X₁ ⟶ X₂) [∀ j, Mono (φ.app j)]
---  {c₁ : Cocone X₁} (hc₁ : IsColimit c₁) {c₂ : Cocone X₂} (hc₂ : IsColimit c₂)
---  (f : c₁.pt ⟶ c₂.pt) (hf : ∀ j, c₁.ι.app j ≫ f = φ.app j ≫ c₂.ι.app j)
---
---include hf hc₁ hc₂ in
---lemma map_mono : Mono f := by
---  have : Mono φ := NatTrans.mono_of_mono_app φ
---  have e : Arrow.mk f ≅ Arrow.mk (colim.map φ) :=
---    Arrow.isoMk
---      (IsColimit.coconePointUniqueUpToIso hc₁ (colimit.isColimit _))
---      (IsColimit.coconePointUniqueUpToIso hc₂ (colimit.isColimit _))
---      (hc₁.hom_ext (fun j ↦ by
---        dsimp
---        rw [IsColimit.comp_coconePointUniqueUpToIso_hom_assoc,
---          colimit.cocone_ι, ι_colimMap, reassoc_of% (hf j),
---          IsColimit.comp_coconePointUniqueUpToIso_hom, colimit.cocone_ι]))
---  exact ((MorphismProperty.monomorphisms C).arrow_mk_iso_iff e).2
---    (inferInstanceAs (Mono (colim.map φ)))
---
---end
---
---lemma mono_ι_app_of_isColimit_of_mono_map_of_isFiltered
---    {Y : J ⥤ C} [∀ (j j' : J) (φ : j ⟶ j'), Mono (Y.map φ)]
---    (c : Cocone Y) (hc : IsColimit c) [IsFiltered J] (j₀ : J)
---    [HasColimitsOfShape (Under j₀) C] [HasExactColimitsOfShape (Under j₀) C] :
---    Mono (c.ι.app j₀) := by
---  let f : (Functor.const _).obj (Y.obj j₀) ⟶ Under.forget j₀ ⋙ Y :=
---    { app j := Y.map j.hom
---      naturality _ _ g := by
---        dsimp
---        simp only [Category.id_comp, ← Y.map_comp, Under.w] }
---  exact map_mono f (hc₁ := isColimitConstCocone _ _)
---    (hc₂ := (Functor.Final.isColimitWhiskerEquiv _ _).symm hc) (c.ι.app j₀) (by aesop_cat)
-
 end HasExactColimitsOfShape
 
 namespace MonoOver
@@ -224,30 +187,6 @@ lemma exists_isIso_of_functor_from_monoOver (h : Epi f) :
 end
 
 end IsGrothendieckAbelian
-
-namespace IsFiltered
-
-instance (J : Type u) [Category.{v} J] [IsFilteredOrEmpty J] (j₀ : J) :
-    IsFiltered (Under j₀) where
-  nonempty := ⟨Under.mk (𝟙 j₀)⟩
-  cocone_objs X Y := by
-    let f := coeqHom (X.hom ≫ leftToMax _ _) (Y.hom ≫ rightToMax _ _)
-    exact ⟨Under.mk (X.hom ≫ leftToMax _ _ ≫ f),
-      Under.homMk (leftToMax _ _ ≫ f), Under.homMk (rightToMax _ _ ≫ f)
-      (by simpa [Category.assoc] using
-        (coeq_condition (X.hom ≫ leftToMax _ _) (Y.hom ≫ rightToMax _ _)).symm), ⟨⟩⟩
-  cocone_maps X Y f g :=
-    ⟨Under.mk (Y.hom ≫ coeqHom f.right g.right),
-      Under.homMk (coeqHom f.right g.right), by ext; apply coeq_condition⟩
-
-instance (J : Type u) [Category.{v} J] [IsFiltered J] (j₀ : J) :
-    (Under.forget j₀).Final :=
-  Functor.final_of_exists_of_isFiltered _
-    (fun j ↦ ⟨Under.mk (leftToMax j₀ j), ⟨rightToMax _ _⟩⟩)
-    (fun {j k} s s' ↦ ⟨Under.mk (k.hom ≫ coeqHom s s'),
-        Under.homMk (coeqHom s s'), coeq_condition s s'⟩)
-
-end IsFiltered
 
 namespace IsCardinalFiltered
 
