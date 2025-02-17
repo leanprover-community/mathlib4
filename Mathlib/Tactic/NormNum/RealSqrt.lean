@@ -59,8 +59,7 @@ lemma isRat_realSqrt {x : ℝ} {n sn : ℤ} {d sd : ℕ} (hn : sn * sn = n)
 def evalRealSqrt : NormNumExt where eval {u α} e := do
   let .app _ (x : Q(ℝ)) ← whnfR e | failure
   have : u =QL 0 := ⟨⟩; have : $α =Q ℝ := ⟨⟩; have : $e =Q √$x := ⟨⟩
-  let res ← derive x
-  match res with
+  match ← derive x with
   | .isBool _ _ => failure
   | .isNat sℝ ex pf =>
       let x := ex.natLit!
@@ -69,14 +68,12 @@ def evalRealSqrt : NormNumExt where eval {u α} e := do
         have ey : Q(ℕ) := mkRawNatLit y
         have pf₁ : Q($ey * $ey = $ex) := (q(Eq.refl $ex) : Expr)
         assumeInstancesCommute
-        have pf_final : Q(IsNat √$x $ey) := q(isNat_realSqrt $pf $pf₁)
-        return .isNat sℝ ey pf_final
+        return .isNat sℝ ey q(isNat_realSqrt $pf $pf₁)
       else failure
   | .isNegNat _ ex pf =>
       -- Recall that `Real.sqrt` returns 0 for negative inputs
       assumeInstancesCommute
-      have pf_final : Q(IsNat (√$x) 0) := q(isNat_realSqrt_neg $pf)
-      return .isNat q(inferInstance) (mkRawNatLit 0) pf_final
+      return .isNat q(inferInstance) (mkRawNatLit 0) q(isNat_realSqrt_neg $pf)
   | .isRat sℝ eq en ed pf =>
       let n' : ℤ := en.intLit!
       let d : ℕ := ed.natLit!
@@ -84,8 +81,7 @@ def evalRealSqrt : NormNumExt where eval {u α} e := do
         -- Square root of a negative number, defined to be zero
         let hnum : Q($en ≤ 0) ← mkDecideProof q($en ≤ 0)
         assumeInstancesCommute
-        have pf_final : Q(IsNat (√$x) 0) := q(isNat_realSqrt_neg_of_isRat $hnum $pf)
-        return .isNat q(inferInstance) (mkRawNatLit 0) pf_final
+        return .isNat q(inferInstance) (mkRawNatLit 0) q(isNat_realSqrt_neg_of_isRat $hnum $pf)
       let n : ℕ := n'.toNat
       let sn : ℤ := Nat.sqrt n
       let sd := Nat.sqrt d
@@ -97,9 +93,7 @@ def evalRealSqrt : NormNumExt where eval {u α} e := do
         let hd : Q($esd * $esd = $ed) ← mkDecideProof q($esd * $esd = $ed)
         let hd₂ : Q($esd ≠ 0) ← mkDecideProof q($esd ≠ 0)
         assumeInstancesCommute
-        have pf_final : Q(IsRat √$x $esn $esd) :=
-          q(isRat_realSqrt $hn $hn₂ $hd $hd₂ $pf)
-        return .isRat sℝ (sn / sd) esn esd pf_final
+        return .isRat sℝ (sn / sd) esn esd q(isRat_realSqrt $hn $hn₂ $hd $hd₂ $pf)
       else failure
 
 /-- `norm_num` extension that evaluates the function `NNReal.sqrt`. -/
@@ -108,8 +102,7 @@ def evalNNRealSqrt : NormNumExt where eval {u α} e := do
   let e' : Q($α) ← whnfR e
   match u, α, e' with
   | 0, ~q(NNReal), ~q(NNReal.sqrt $x) =>
-    let res ← derive x
-    match res with
+    match ← derive x with
     | .isBool _ _ => failure
     | .isNat sℝ ex pf =>
         let x := ex.natLit!
