@@ -5,10 +5,11 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Batteries.Data.Rat.Lemmas
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Int.Basic
 import Mathlib.Data.Rat.Init
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
+import Mathlib.Data.Int.Init
+import Mathlib.Data.Nat.Basic
 
 /-!
 # Basics for the Rational Numbers
