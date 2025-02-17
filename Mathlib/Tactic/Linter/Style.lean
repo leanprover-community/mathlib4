@@ -498,9 +498,6 @@ def openClassicalLinter : Linter where run stx := do
       return
     if (← get).messages.hasErrors then
      return
-    -- TODO: make this configurable!
-    unless #[`Mathlib, `MathlibTest, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
-      return
     -- If `stx` describes an `open` command, extract the list of opened namespaces.
     for stxN in (extractOpenNames stx).filter (·.getId == `Classical) do
       Linter.logLint linter.style.openClassical stxN "\
