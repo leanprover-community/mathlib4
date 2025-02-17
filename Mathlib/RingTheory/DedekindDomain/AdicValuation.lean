@@ -7,6 +7,7 @@ import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.ValuationSubring
 import Mathlib.Topology.Algebra.Valued.ValuedField
+import Mathlib.Topology.Algebra.Valued.WithZeroMulInt
 import Mathlib.Algebra.Order.Group.TypeTags
 
 /-!
@@ -57,7 +58,7 @@ dedekind domain, dedekind ring, adic valuation
 
 noncomputable section
 
-open scoped Multiplicative
+open scoped Multiplicative Topology Valued
 
 open Multiplicative IsDedekindDomain
 
@@ -258,6 +259,13 @@ theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.sp
   rw [intValuation_apply, v.intValuationDef_if_neg hr, ← hv, Associates.count_self, Int.ofNat_one,
     ofAdd_neg, WithZero.coe_inv]
   apply v.associates_irreducible
+
+theorem intValuation_uniformizer_ne_zero {v : HeightOneSpectrum R} {π : R}
+    (hπ : v.intValuation π = Multiplicative.ofAdd (-1 : ℤ)) :
+    π ≠ 0 := by
+  contrapose! hπ
+  rw [hπ, intValuation_apply, intValuationDef_zero]
+  exact WithZero.zero_ne_coe
 
 /-! ### Adic valuations on the field of fractions `K` -/
 
@@ -565,5 +573,72 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
       ← Int.eq_natAbs_of_zero_le ha.le, smul_eq_mul]
     -- and now it's easy
     omega
+
+variable {R}
+
+theorem AdicCompletion.valued_eq_intValuationDef (v : HeightOneSpectrum R) (r : R) :
+    Valued.v (algebraMap _ (v.adicCompletion K) r) = v.intValuationDef r := by
+  rw [v.valuedAdicCompletion_eq_valuation, valuation_eq_intValuationDef]
+
+theorem AdicCompletion.valued_le_one (v : HeightOneSpectrum R) (r : R) :
+    Valued.v (algebraMap _ (v.adicCompletion K) r) ≤ 1 :=
+  valued_eq_intValuationDef K _ r ▸ v.intValuation_le_one r
+
+theorem AdicCompletion.valued_ne_zero (v : HeightOneSpectrum R) (r : nonZeroDivisors R) :
+    Valued.v (algebraMap _ (v.adicCompletion K) r.1) ≠ 0 :=
+  valued_eq_intValuationDef K _ r.1 ▸ v.intValuation_ne_zero' _
+
+open Valued Filter in
+/-- There exists a non-zero integer of value `< γ` for a given `γ`. -/
+theorem AdicCompletion.exists_nonZeroDivisor_valued_lt (v : HeightOneSpectrum R) (γ : ℤₘ₀ˣ) :
+    ∃ (r : nonZeroDivisors R), Valued.v (algebraMap _ (v.adicCompletion K) r.1) < γ := by
+  let ⟨π, hπ⟩ := v.intValuation_exists_uniformizer
+  have := WithZeroMulInt.tendsto_zero_pow_of_le_neg_one
+    (le_of_eq (valued_eq_intValuationDef K _ π ▸ hπ))
+  let ⟨a, ha⟩ := eventually_atTop.1 <| ((hasBasis_nhds_zero _ _).tendsto_right_iff).1 this γ trivial
+  use ⟨algebraMap _ _ π ^ a,
+    mem_nonZeroDivisors_of_ne_zero (pow_ne_zero _ <| v.intValuation_uniformizer_ne_zero hπ)⟩
+  convert ha _ le_rfl
+  simp
+
+open scoped Classical in
+/-- Given a collection of values `γ v` at primes `v `, we can find a global
+non-zero integer that has valuation less than `γ v` for a finite set of primes `v`. -/
+theorem AdicCompletion.exists_nonZeroDivisor_finset_valued_lt
+    (S : Set (HeightOneSpectrum R))
+    (hS : Set.Finite S)
+    (γ : (v : HeightOneSpectrum R) → ℤₘ₀ˣ) :
+    ∃ (r : nonZeroDivisors R), ∀ v ∈ S, Valued.v (algebraMap _ (v.adicCompletion K) r.1) < γ v := by
+  choose s hs using fun v => AdicCompletion.exists_nonZeroDivisor_valued_lt K v (γ v)
+  refine ⟨hS.toFinset.prod s, fun v hv => ?_⟩
+  simp only [Submonoid.coe_finset_prod, map_prod]
+  rw [← hS.toFinset.prod_erase_mul _ (hS.mem_toFinset.2 hv)]
+  refine mul_lt_of_le_one_of_lt (Finset.prod_le_one' (fun _ _ => ?_)) (hs v)
+  rw [v.valuedAdicCompletion_eq_valuation]
+  exact v.valuation_le_one _
+
+variable {K v}
+
+/-- If `x ∈ Kᵥ` has valuation at most that of `y ∈ Kᵥ`, then `x` is an integral
+multiple of `y`. -/
+theorem AdicCompletion.dvd_of_valued_le
+    {x y : v.adicCompletion K} (h : Valued.v x ≤ Valued.v y) (hy : y ≠ 0):
+    ∃ r : v.adicCompletionIntegers K, r * y = x := by
+  have : Valued.v (x * y⁻¹) ≤ 1 := by
+    rwa [Valued.v.map_mul, map_inv₀, mul_inv_le_iff₀ (Valued.v.pos_iff.2 hy), one_mul]
+  exact ⟨⟨x * y⁻¹, this⟩, by rw [inv_mul_cancel_right₀ hy]⟩
+
+-- https://github.com/mariainesdff/LocalClassFieldTheory/blob/18114679e7125329fd801032423c4c95078cdc77/LocalClassFieldTheory/DiscreteValuationRing/Localization.lean#L61
+instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) := sorry
+
+variable (K v)
+
+-- TODO
+theorem adicCompletion.residueField_finite :
+    Finite 𝓀[v.adicCompletion K] :=
+  sorry
+
+instance : CompactSpace (v.adicCompletionIntegers K) :=
+  sorry --Valued.WithZeroMulInt.integers_compactSpace (finite_residueField K v)
 
 end IsDedekindDomain.HeightOneSpectrum
