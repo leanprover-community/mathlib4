@@ -1209,10 +1209,10 @@ theorem exp_sub_pi_mul_I (z : ℂ) : exp (z - π * I) = -exp z :=
 belongs to a horizontal strip `|Complex.im z| ≤ b`, `b ≤ π / 2`, and `a ≤ 0`, then
 $$\left|exp^{a\left(e^{z}+e^{-z}\right)}\right| \le e^{a\cos b \exp^{|re z|}}.$$
 -/
-theorem abs_exp_mul_exp_add_exp_neg_le_of_abs_im_le {a b : ℝ} (ha : a ≤ 0) {z : ℂ} (hz : |z.im| ≤ b)
-    (hb : b ≤ π / 2) :
-    abs (exp (a * (exp z + exp (-z)))) ≤ Real.exp (a * Real.cos b * Real.exp |z.re|) := by
-  simp only [abs_exp, Real.exp_le_exp, re_ofReal_mul, add_re, exp_re, neg_im, Real.cos_neg, ←
+theorem norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le {a b : ℝ} (ha : a ≤ 0) {z : ℂ}
+    (hz : |z.im| ≤ b) (hb : b ≤ π / 2) :
+    ‖exp (a * (exp z + exp (-z)))‖ ≤ Real.exp (a * Real.cos b * Real.exp |z.re|) := by
+  simp only [norm_exp, Real.exp_le_exp, re_ofReal_mul, add_re, exp_re, neg_im, Real.cos_neg, ←
     add_mul, mul_assoc, mul_comm (Real.cos b), neg_re, ← Real.cos_abs z.im]
   have : Real.exp |z.re| ≤ Real.exp z.re + Real.exp (-z.re) :=
     apply_abs_le_add_of_nonneg (fun x => (Real.exp_pos x).le) z.re
@@ -1222,5 +1222,8 @@ theorem abs_exp_mul_exp_add_exp_neg_le_of_abs_im_le {a b : ℝ} (ha : a ≤ 0) {
         (hb.trans <| half_le_self <| Real.pi_pos.le) hz
   · refine Real.cos_nonneg_of_mem_Icc ⟨?_, hb⟩
     exact (neg_nonpos.2 <| Real.pi_div_two_pos.le).trans ((_root_.abs_nonneg _).trans hz)
+
+@[deprecated (since := "2025-02-16")] alias abs_exp_mul_exp_add_exp_neg_le_of_abs_im_le :=
+  norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le
 
 end Complex

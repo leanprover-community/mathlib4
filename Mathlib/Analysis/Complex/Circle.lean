@@ -58,8 +58,10 @@ lemma coe_injective : Injective ((↑) : Circle → ℂ) := fun _ _ ↦ ext
 lemma coe_inj : (x : ℂ) = y ↔ x = y := coe_injective.eq_iff
 
 lemma norm_coe (z : Circle) : ‖(z : ℂ)‖ = 1 := mem_sphere_zero_iff_norm.1 z.2
-lemma abs_coe (z : Circle) : abs z = 1 := norm_coe _
-@[simp] lemma normSq_coe (z : Circle) : normSq z = 1 := by simp [normSq_eq_abs]
+
+@[deprecated (since := "2025-02-16")] alias abs_coe := norm_coe
+
+@[simp] lemma normSq_coe (z : Circle) : normSq z = 1 := by simp [normSq_eq_norm_sq]
 @[simp] lemma coe_ne_zero (z : Circle) : (z : ℂ) ≠ 0 := ne_zero_of_mem_unit_sphere z
 @[simp, norm_cast] lemma coe_one : ↑(1 : Circle) = (1 : ℂ) := rfl
 -- Not simp because `OneMemClass.coe_eq_one` already proves it
@@ -100,9 +102,9 @@ def ofConjDivSelf (z : ℂ) (hz : z ≠ 0) : Circle where
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`. -/
 def exp : C(ℝ, Circle) where
-  toFun t := ⟨(t * I).exp, by simp [Submonoid.unitSphere, exp_mul_I, abs_cos_add_sin_mul_I]⟩
+  toFun t := ⟨(t * I).exp, by simp [Submonoid.unitSphere, exp_mul_I, norm_cos_add_sin_mul_I]⟩
   continuous_toFun := Continuous.subtype_mk (by fun_prop)
-    (by simp [Submonoid.unitSphere, exp_mul_I, abs_cos_add_sin_mul_I])
+    (by simp [Submonoid.unitSphere, exp_mul_I, norm_cos_add_sin_mul_I])
 
 @[simp, norm_cast]
 theorem coe_exp (t : ℝ) : exp t = Complex.exp (t * Complex.I) := rfl

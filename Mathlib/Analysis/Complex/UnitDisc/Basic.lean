@@ -41,22 +41,21 @@ theorem coe_injective : Injective ((↑) : 𝔻 → ℂ) :=
 theorem norm_lt_one (z : 𝔻) : ‖(z : ℂ)‖ < 1 :=
   mem_ball_zero_iff.1 z.2
 
-theorem abs_lt_one (z : 𝔻) : abs (z : ℂ) < 1 := norm_lt_one _
-
 theorem norm_ne_one (z : 𝔻) : ‖(z : ℂ)‖ ≠ 1 :=
-  z.abs_lt_one.ne
+  z.norm_lt_one.ne
 
-theorem abs_ne_one (z : 𝔻) : abs (z : ℂ) ≠ 1 := norm_ne_one _
+@[deprecated (since := "2025-02-16")] alias abs_lt_one := norm_lt_one
+@[deprecated (since := "2025-02-16")] alias abs_ne_one := norm_ne_one
 
 theorem normSq_lt_one (z : 𝔻) : normSq z < 1 := by
-  convert (Real.sqrt_lt' one_pos).1 z.abs_lt_one
+  convert (Real.sqrt_lt' one_pos).1 z.norm_lt_one
   exact (one_pow 2).symm
 
 theorem coe_ne_one (z : 𝔻) : (z : ℂ) ≠ 1 :=
   ne_of_apply_ne (‖·‖) <| by simp [z.norm_ne_one]
 
 theorem coe_ne_neg_one (z : 𝔻) : (z : ℂ) ≠ -1 :=
-  ne_of_apply_ne (‖·‖) <| by simpa [norm_neg] using z.abs_ne_one
+  ne_of_apply_ne (‖·‖) <| by simpa [norm_neg] using z.norm_ne_one
 
 theorem one_add_coe_ne_zero (z : 𝔻) : (1 + z : ℂ) ≠ 0 :=
   mt neg_eq_iff_add_eq_zero.2 z.coe_ne_neg_one.symm
@@ -71,15 +70,15 @@ def mk (z : ℂ) (hz : ‖z‖ < 1) : 𝔻 :=
   ⟨z, mem_ball_zero_iff.2 hz⟩
 
 @[simp]
-theorem coe_mk (z : ℂ) (hz : abs z < 1) : (mk z hz : ℂ) = z :=
+theorem coe_mk (z : ℂ) (hz : ‖z‖ < 1) : (mk z hz : ℂ) = z :=
   rfl
 
 @[simp]
-theorem mk_coe (z : 𝔻) (hz : abs (z : ℂ) < 1 := z.abs_lt_one) : mk z hz = z :=
+theorem mk_coe (z : 𝔻) (hz : ‖(z : ℂ)‖ < 1 := z.norm_lt_one) : mk z hz = z :=
   Subtype.eta _ _
 
 @[simp]
-theorem mk_neg (z : ℂ) (hz : abs (-z) < 1) : mk (-z) hz = -mk z (norm_neg z ▸ hz) :=
+theorem mk_neg (z : ℂ) (hz : ‖-z‖ < 1) : mk (-z) hz = -mk z (norm_neg z ▸ hz) :=
   rfl
 
 instance : SemigroupWithZero 𝔻 :=
@@ -170,7 +169,7 @@ theorem im_neg (z : 𝔻) : (-z).im = -z.im :=
 
 /-- Conjugate point of the unit disc. -/
 def conj (z : 𝔻) : 𝔻 :=
-  mk (conj' ↑z) <| (norm_conj z).symm ▸ z.abs_lt_one
+  mk (conj' ↑z) <| (norm_conj z).symm ▸ z.norm_lt_one
 
 -- Porting note: removed `norm_cast` because this is a bad `norm_cast` lemma
 -- because both sides have a head coe
