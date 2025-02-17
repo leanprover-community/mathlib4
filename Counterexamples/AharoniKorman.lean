@@ -814,6 +814,7 @@ Construction of the set `R`, which has the following key properties:
 def R (n : ℕ) (C : Set Hollom) : Set Hollom := {x ∈ level n | ∀ y ∈ C ∩ level n, x ≤ y ∨ y ≤ x}
 
 variable {n : ℕ}
+
 lemma R_subset_level : R n C ⊆ level n := Set.sep_subset (level n) _
 
 /--
