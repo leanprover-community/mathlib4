@@ -166,11 +166,8 @@ noncomputable def toGame : Ordinal.{u} ↪o Game.{u} where
   map_rel_iff' := toPGame_le_iff
 
 @[simp]
-theorem _root_.Game.mk_toPGame (o : Ordinal) : ⟦o.toPGame⟧ = o.toGame :=
+theorem mk_toPGame (o : Ordinal) : ⟦o.toPGame⟧ = o.toGame :=
   rfl
-
-@[deprecated (since := "2025-02-17")]
-alias mk_toPGame := Game.mk_toPGame
 
 @[deprecated toGame (since := "2024-11-23")]
 alias toGameEmbedding := toGame
@@ -230,8 +227,8 @@ theorem toPGame_nmul (a b : Ordinal) : (a ⨳ b).toPGame ≈ a.toPGame * b.toPGa
   refine ⟨le_of_forall_lf (fun i => ?_) isEmptyElim, le_of_forall_lf (fun i => ?_) isEmptyElim⟩
   · rw [toPGame_moveLeft']
     rcases lt_nmul_iff.1 (toLeftMovesToPGame_symm_lt i) with ⟨c, hc, d, hd, h⟩
-    rw [← toPGame_le_iff, le_iff_game_le, Game.mk_toPGame, Game.mk_toPGame,
-      toGame_nadd _ _, toGame_nadd _ _, ← le_sub_iff_add_le] at h
+    rw [← toPGame_le_iff, le_iff_game_le, mk_toPGame, mk_toPGame, toGame_nadd _ _, toGame_nadd _ _,
+      ← le_sub_iff_add_le] at h
     refine lf_of_le_of_lf h <| (lf_congr_left ?_).1 <| moveLeft_lf <| toLeftMovesMul <| Sum.inl
       ⟨toLeftMovesToPGame ⟨c, hc⟩, toLeftMovesToPGame ⟨d, hd⟩⟩
     simp only [mul_moveLeft_inl, toPGame_moveLeft', Equiv.symm_apply_apply, equiv_iff_game_eq,
@@ -243,7 +240,7 @@ theorem toPGame_nmul (a b : Ordinal) : (a ⨳ b).toPGame ≈ a.toPGame * b.toPGa
     rw [mul_moveLeft_inl, toPGame_moveLeft', toPGame_moveLeft', lf_iff_game_lf,
       quot_sub, quot_add, ← Game.not_le, le_sub_iff_add_le]
     repeat rw [← game_eq (toPGame_nmul _ _)]
-    simp_rw [Game.mk_toPGame, ← toGame_nadd]
+    simp_rw [mk_toPGame, ← toGame_nadd]
     apply toPGame_lf (nmul_nadd_lt _ _) <;>
     exact toLeftMovesToPGame_symm_lt _
 termination_by (a, b)
@@ -260,6 +257,6 @@ theorem toGame_natCast : ∀ n : ℕ, toGame n = n
     rfl
 
 theorem toPGame_natCast (n : ℕ) : toPGame n ≈ n := by
-  rw [PGame.equiv_iff_game_eq, Game.mk_toPGame, toGame_natCast, quot_natCast]
+  rw [PGame.equiv_iff_game_eq, mk_toPGame, toGame_natCast, quot_natCast]
 
 end Ordinal
