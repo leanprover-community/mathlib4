@@ -79,7 +79,8 @@ theorem probChar_dist_le_two (he : Continuous e) (hL : Continuous fun p : V × W
 
 theorem probChar_one_mem (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
     1 ∈ {probChar he hL w | w : W} := by
-  use 0; ext z
+  use 0
+  ext z
   simp only [probChar, map_zero, neg_zero, AddChar.map_zero_eq_one, OneMemClass.coe_one,
     ContinuousMap.coe_mk, ContinuousMap.one_apply]
 
@@ -87,7 +88,8 @@ theorem probChar_mul_mem (he : Continuous e) (hL : Continuous fun p : V × W ↦
     ∀ x y : C(V, ℂ), x ∈ {probChar he hL w | w : W} →
     y ∈ {probChar he hL w | w : W} → x * y ∈ {probChar he hL w | w : W} := by
   rintro x y ⟨v, hv⟩ ⟨v', hv'⟩
-  use v + v'; ext z
+  use v + v'
+  ext z
   simp only [probChar, map_add, ContinuousMap.coe_mk, ContinuousMap.mul_apply]
   rw [AddChar.map_add_eq_mul e, Submonoid.coe_mul]
   rw [← congrFun (congrArg DFunLike.coe hv) z, ← congrFun (congrArg DFunLike.coe hv') z]
@@ -96,7 +98,8 @@ theorem probChar_mul_mem (he : Continuous e) (hL : Continuous fun p : V × W ↦
 theorem probChar_star_mem (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
     ∀ x, x ∈ {probChar he hL w | w : W} → star x ∈ {probChar he hL w | w : W} := by
   intro x ⟨w, hw⟩
-  use -w; ext v
+  use -w
+  ext v
   rw [← hw]
   simp only [probChar, map_neg, neg_neg]
   simp [probChar_apply he hL]
