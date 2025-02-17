@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov
 -/
 import Mathlib.Analysis.Convex.Between
-import Mathlib.Analysis.Convex.Normed.Topology
 import Mathlib.Analysis.Normed.Affine.AddTorsor
 import Mathlib.Analysis.Normed.Affine.AddTorsorBases
+import Mathlib.Analysis.Convex.Normed.Basic
 
 /-!
 # Topological and metric properties of convex sets in normed spaces
@@ -40,20 +40,6 @@ theorem Wbtw.dist_add_dist {x y z : P} (h : Wbtw ℝ x y z) :
 theorem dist_add_dist_of_mem_segment {x y z : E} (h : y ∈ [x -[ℝ] z]) :
     dist x y + dist y z = dist x z :=
   (mem_segment_iff_wbtw.1 h).dist_add_dist
-
-
-
-/-- The set of vectors in the same ray as `x` is connected. -/
-theorem isConnected_setOf_sameRay (x : E) : IsConnected { y | SameRay ℝ x y } := by
-  by_cases hx : x = 0; · simpa [hx] using isConnected_univ (α := E)
-  simp_rw [← exists_nonneg_left_iff_sameRay hx]
-  exact isConnected_Ici.image _ (continuous_id.smul continuous_const).continuousOn
-
-/-- The set of nonzero vectors in the same ray as the nonzero vector `x` is connected. -/
-theorem isConnected_setOf_sameRay_and_ne_zero {x : E} (hx : x ≠ 0) :
-    IsConnected { y | SameRay ℝ x y ∧ y ≠ 0 } := by
-  simp_rw [← exists_pos_left_iff_sameRay_and_ne_zero hx]
-  exact isConnected_Ioi.image _ (continuous_id.smul continuous_const).continuousOn
 
 end SeminormedAddCommGroup
 
