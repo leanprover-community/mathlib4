@@ -554,6 +554,24 @@ theorem range_pullback_to_base_of_right :
     Opens.map_obj, Opens.carrier_eq_coe, Opens.coe_mk, Set.image_preimage_eq_inter_range,
     Set.inter_comm]
 
+lemma image_preimage_eq_preimage_image_of_isPullback {X Y U V : Scheme.{u}}
+    {f : X ⟶ Y} {f' : U ⟶ V} {iU : U ⟶ X} {iV : V ⟶ Y} [IsOpenImmersion iV] [IsOpenImmersion iU]
+    (H : IsPullback f' iU iV f) (W : V.Opens) : iU ''ᵁ f' ⁻¹ᵁ W = f ⁻¹ᵁ iV ''ᵁ W := by
+  ext x
+  by_cases hx : x ∈ Set.range iU.base
+  · obtain ⟨x, rfl⟩ := hx
+    simp only [IsOpenMap.coe_functor_obj, TopologicalSpace.Opens.map_coe,
+      iU.isOpenEmbedding.injective.mem_set_image, Set.mem_preimage, SetLike.mem_coe,
+      ← Scheme.comp_base_apply, ← H.w]
+    simp only [Scheme.comp_coeBase, TopCat.comp_app,
+      iV.isOpenEmbedding.injective.mem_set_image, SetLike.mem_coe]
+  · constructor
+    · rintro ⟨x, hx, rfl⟩; cases hx ⟨x, rfl⟩
+    · rintro ⟨y, hy, e : iV.base y = f.base x⟩
+      obtain ⟨x, rfl⟩ := (IsOpenImmersion.range_pullback_snd_of_left iV f).ge ⟨y, e⟩
+      rw [← H.isoPullback_inv_snd] at hx
+      cases hx ⟨_, rfl⟩
+
 /-- The universal property of open immersions:
 For an open immersion `f : X ⟶ Z`, given any morphism of schemes `g : Y ⟶ Z` whose topological
 image is contained in the image of `f`, we can lift this morphism to a unique `Y ⟶ X` that

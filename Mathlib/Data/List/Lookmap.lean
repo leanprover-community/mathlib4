@@ -56,8 +56,8 @@ theorem lookmap_congr {f g : α → Option α} :
     ∀ {l : List α}, (∀ a ∈ l, f a = g a) → l.lookmap f = l.lookmap g
   | [], _ => rfl
   | a :: l, H => by
-    cases' forall_mem_cons.1 H with H₁ H₂
-    cases' h : g a with b
+    obtain ⟨H₁, H₂⟩ := forall_mem_cons.1 H
+    rcases h : g a with - | b
     · simp [h, H₁.trans h, lookmap_congr H₂]
     · simp [lookmap_cons_some _ _ h, lookmap_cons_some _ _ (H₁.trans h)]
 
@@ -68,7 +68,7 @@ theorem lookmap_map_eq (g : α → β) (h : ∀ (a), ∀ b ∈ f a, g a = g b) :
     ∀ l : List α, map g (l.lookmap f) = map g l
   | [] => rfl
   | a :: l => by
-    cases' h' : f a with b
+    rcases h' : f a with - | b
     · simpa [h'] using lookmap_map_eq _ h l
     · simp [lookmap_cons_some _ _ h', h _ _ h']
 
@@ -86,7 +86,7 @@ theorem perm_lookmap (f : α → Option α) {l₁ l₂ : List α}
   · cases h : f a
     · simpa [h] using IH (pairwise_cons.1 H).2
     · simp [lookmap_cons_some _ _ h, p]
-  · cases' h₁ : f a with c <;> cases' h₂ : f b with d
+  · rcases h₁ : f a with - | c <;> rcases h₂ : f b with - | d
     · simpa [h₁, h₂] using swap _ _ _
     · simpa [h₁, lookmap_cons_some _ _ h₂] using swap _ _ _
     · simpa [lookmap_cons_some _ _ h₁, h₂] using swap _ _ _
