@@ -27,6 +27,7 @@ section
 variable {C : Type u} [Category.{v} C] [Preadditive C] [HasFiniteBiproducts C]
 
 attribute [local instance] hasFiniteProducts_of_hasFiniteBiproducts
+attribute [local instance] AddCommGrp.chosenFiniteProductsAddCommGrp
 
 private noncomputable local instance : ChosenFiniteProducts C :=
   ChosenFiniteProducts.ofFiniteProducts _
@@ -56,8 +57,7 @@ noncomputable def unitIsoAux (F : C ⥤ AddCommGrp.{v}) [PreservesFiniteLimits F
   refine CommGrp_.mkIso Multiplicative.toAdd.toIso (by aesop_cat) ?_
   dsimp [-Functor.comp_map]
   have : F.Additive := Functor.additive_of_preserves_binary_products _
-  rw [Functor.comp_map, F.map_add,
-    Functor.Monoidal.μ_comp F (forget AddCommGrp.{v}) (X := X) (Y := X),
+  rw [Functor.comp_map, F.map_add, Functor.Monoidal.μ_comp X X,
     Category.assoc, ← Functor.map_comp, Preadditive.comp_add, Functor.Monoidal.μ_fst,
     Functor.Monoidal.μ_snd]
   aesop_cat
