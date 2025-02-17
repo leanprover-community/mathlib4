@@ -286,10 +286,14 @@ theorem toNerve₂.mk_naturality {X : SSet.Truncated.{u} 2} {C : Cat}
     (hyp : (φ : X _[2]₂) →
       F.map (ev02₂ φ) =
         CategoryStruct.comp (obj := C) (F.map (ev01₂ φ)) (F.map (ev12₂ φ))) :
-    toNerve₂.mk.naturalityProperty F = ⊤ := by
-  exact Truncated.morphismProperty_eq_top (toNerve₂.mk.naturalityProperty F)
-    (fun | 0, _, _ => toNerve₂.mk_naturality_δ0i F _ | 1, _, _ => toNerve₂.mk_naturality_δ1i F hyp _)
-    (fun | 0, _, 0 => toNerve₂.mk_naturality_σ00 F | 1, _, i => toNerve₂.mk_naturality_σ1i _ hyp _)
+    toNerve₂.mk.naturalityProperty F = ⊤ :=
+  Truncated.morphismProperty_eq_top (toNerve₂.mk.naturalityProperty F)
+    (fun
+      | 0, _, _ => toNerve₂.mk_naturality_δ0i F _
+      | 1, _, _ => toNerve₂.mk_naturality_δ1i F hyp _)
+    (fun
+      | 0, _, 0 => toNerve₂.mk_naturality_σ00 F
+      | 1, _, _ => toNerve₂.mk_naturality_σ1i _ hyp _)
 
 /-- Because nerves are 2-coskeletal, a map of 2-truncated simplicial sets valued in a nerve can be
 recovered from the underlying ReflPrefunctor. -/
