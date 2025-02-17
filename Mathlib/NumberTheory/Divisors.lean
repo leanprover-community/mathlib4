@@ -246,19 +246,16 @@ theorem divisorsAntidiagonal_one : divisorsAntidiagonal 1 = {(1, 1)} := by
   ext
   simp [mul_eq_one, Prod.ext_iff]
 
--- The left hand side is not in simp normal form, see the variant below.
+@[simp high]
 theorem swap_mem_divisorsAntidiagonal {x : ℕ × ℕ} :
     x.swap ∈ divisorsAntidiagonal n ↔ x ∈ divisorsAntidiagonal n := by
   rw [mem_divisorsAntidiagonal, mem_divisorsAntidiagonal, mul_comm, Prod.swap]
 
 /-- `Nat.swap_mem_divisorsAntidiagonal` with the LHS in simp normal form. -/
-@[simp]
-theorem swap_mem_divisorsAntidiagonal_simpNF {x : ℕ × ℕ} :
+@[deprecated swap_mem_divisorsAntidiagonal (since := "2025-02-17")]
+theorem swap_mem_divisorsAntidiagonal_aux {x : ℕ × ℕ} :
     x.snd * x.fst = n ∧ ¬n = 0 ↔ x ∈ divisorsAntidiagonal n := by
   rw [mem_divisorsAntidiagonal, mul_comm]
-
-@[deprecated (since := "2025-02-16")]
-alias swap_mem_divisorsAntidiagonal_aux := swap_mem_divisorsAntidiagonal_simpNF
 
 lemma prodMk_mem_divisorsAntidiag {x y : ℕ} (hn : n ≠ 0) :
     (x, y) ∈ n.divisorsAntidiagonal ↔ x * y = n := by simp [hn]
@@ -596,14 +593,9 @@ lemma mem_divisorsAntidiag :
 lemma prodMk_mem_divisorsAntidiag (hz : z ≠ 0) : (x, y) ∈ z.divisorsAntidiag ↔ x * y = z := by
   simp [hz]
 
--- The left hand side is not in simp normal form, see the variant below.
+@[simp high]
 lemma swap_mem_divisorsAntidiag : xy.swap ∈ z.divisorsAntidiag ↔ xy ∈ z.divisorsAntidiag := by
   simp [mul_comm]
-
-/-- `Int.swap_mem_divisorsAntidiag` with the LHS in simp normal form. -/
-@[simp]
-lemma swap_mem_divisorsAntidiag_simpNF :
-    xy.snd * xy.fst = z ∧ ¬z = 0 ↔ xy ∈ z.divisorsAntidiag := by simp [mul_comm]
 
 lemma neg_mem_divisorsAntidiag : -xy ∈ z.divisorsAntidiag ↔ xy ∈ z.divisorsAntidiag := by simp
 
