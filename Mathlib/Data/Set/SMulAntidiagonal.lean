@@ -97,11 +97,9 @@ theorem eq_of_fst_le_fst_of_snd_le_snd (h₁ : (x : G × P).1 ≤ (y : G × P).1
 theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (smulAntidiagonal s t a).Finite := by
   refine Set.not_infinite.1 fun h => ?_
   have h1 : (smulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.fst ⁻¹'o (· ≤ ·)) :=
-    partiallyWellOrderedOn_iff_exists_monotone_subseq.2
-      fun f hf ↦ hs.exists_monotone_subseq fun n ↦ (mem_smulAntidiagonal.1 (hf n)).1
+    fun f ↦ hs fun n ↦ ⟨_, (mem_smulAntidiagonal.1 (f n).2).1⟩
   have h2 : (smulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.snd ⁻¹'o (· ≤ ·)) :=
-    partiallyWellOrderedOn_iff_exists_monotone_subseq.2
-      fun f hf ↦ ht.exists_monotone_subseq fun n ↦ (mem_smulAntidiagonal.1 (hf n)).2.1
+    fun f ↦ ht fun n ↦ ⟨_, (mem_smulAntidiagonal.1 (f n).2).2.1⟩
   have isrfl : IsRefl (G × P) (Prod.fst ⁻¹'o fun x x_1 ↦ x ≤ x_1) := by
     refine { refl := ?refl }
     simp_all only [Order.Preimage, le_refl, Prod.forall, implies_true]
