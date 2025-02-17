@@ -7,6 +7,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.Presentable.Basic
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
 import Mathlib.CategoryTheory.Limits.TypesFiltered
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 import Mathlib.CategoryTheory.Limits.Connected
@@ -82,42 +83,42 @@ lemma mapShortComplex_exact : (mapShortComplex S c₁ hc₁ c₂ c₃ f g hf hg)
 
 end
 
-section
-
-variable [HasColimitsOfShape J C] [HasExactColimitsOfShape J C]
-  {X₁ X₂ : J ⥤ C} (φ : X₁ ⟶ X₂) [∀ j, Mono (φ.app j)]
-  {c₁ : Cocone X₁} (hc₁ : IsColimit c₁) {c₂ : Cocone X₂} (hc₂ : IsColimit c₂)
-  (f : c₁.pt ⟶ c₂.pt) (hf : ∀ j, c₁.ι.app j ≫ f = φ.app j ≫ c₂.ι.app j)
-
-include hf hc₁ hc₂ in
-lemma map_mono : Mono f := by
-  have : Mono φ := NatTrans.mono_of_mono_app φ
-  have e : Arrow.mk f ≅ Arrow.mk (colim.map φ) :=
-    Arrow.isoMk
-      (IsColimit.coconePointUniqueUpToIso hc₁ (colimit.isColimit _))
-      (IsColimit.coconePointUniqueUpToIso hc₂ (colimit.isColimit _))
-      (hc₁.hom_ext (fun j ↦ by
-        dsimp
-        rw [IsColimit.comp_coconePointUniqueUpToIso_hom_assoc,
-          colimit.cocone_ι, ι_colimMap, reassoc_of% (hf j),
-          IsColimit.comp_coconePointUniqueUpToIso_hom, colimit.cocone_ι]))
-  exact ((MorphismProperty.monomorphisms C).arrow_mk_iso_iff e).2
-    (inferInstanceAs (Mono (colim.map φ)))
-
-end
-
-lemma mono_ι_app_of_isColimit_of_mono_map_of_isFiltered
-    {Y : J ⥤ C} [∀ (j j' : J) (φ : j ⟶ j'), Mono (Y.map φ)]
-    (c : Cocone Y) (hc : IsColimit c) [IsFiltered J] (j₀ : J)
-    [HasColimitsOfShape (Under j₀) C] [HasExactColimitsOfShape (Under j₀) C] :
-    Mono (c.ι.app j₀) := by
-  let f : (Functor.const _).obj (Y.obj j₀) ⟶ Under.forget j₀ ⋙ Y :=
-    { app j := Y.map j.hom
-      naturality _ _ g := by
-        dsimp
-        simp only [Category.id_comp, ← Y.map_comp, Under.w] }
-  exact map_mono f (hc₁ := isColimitConstCocone _ _)
-    (hc₂ := (Functor.Final.isColimitWhiskerEquiv _ _).symm hc) (c.ι.app j₀) (by aesop_cat)
+--section
+--
+--variable [HasColimitsOfShape J C] [HasExactColimitsOfShape J C]
+--  {X₁ X₂ : J ⥤ C} (φ : X₁ ⟶ X₂) [∀ j, Mono (φ.app j)]
+--  {c₁ : Cocone X₁} (hc₁ : IsColimit c₁) {c₂ : Cocone X₂} (hc₂ : IsColimit c₂)
+--  (f : c₁.pt ⟶ c₂.pt) (hf : ∀ j, c₁.ι.app j ≫ f = φ.app j ≫ c₂.ι.app j)
+--
+--include hf hc₁ hc₂ in
+--lemma map_mono : Mono f := by
+--  have : Mono φ := NatTrans.mono_of_mono_app φ
+--  have e : Arrow.mk f ≅ Arrow.mk (colim.map φ) :=
+--    Arrow.isoMk
+--      (IsColimit.coconePointUniqueUpToIso hc₁ (colimit.isColimit _))
+--      (IsColimit.coconePointUniqueUpToIso hc₂ (colimit.isColimit _))
+--      (hc₁.hom_ext (fun j ↦ by
+--        dsimp
+--        rw [IsColimit.comp_coconePointUniqueUpToIso_hom_assoc,
+--          colimit.cocone_ι, ι_colimMap, reassoc_of% (hf j),
+--          IsColimit.comp_coconePointUniqueUpToIso_hom, colimit.cocone_ι]))
+--  exact ((MorphismProperty.monomorphisms C).arrow_mk_iso_iff e).2
+--    (inferInstanceAs (Mono (colim.map φ)))
+--
+--end
+--
+--lemma mono_ι_app_of_isColimit_of_mono_map_of_isFiltered
+--    {Y : J ⥤ C} [∀ (j j' : J) (φ : j ⟶ j'), Mono (Y.map φ)]
+--    (c : Cocone Y) (hc : IsColimit c) [IsFiltered J] (j₀ : J)
+--    [HasColimitsOfShape (Under j₀) C] [HasExactColimitsOfShape (Under j₀) C] :
+--    Mono (c.ι.app j₀) := by
+--  let f : (Functor.const _).obj (Y.obj j₀) ⟶ Under.forget j₀ ⋙ Y :=
+--    { app j := Y.map j.hom
+--      naturality _ _ g := by
+--        dsimp
+--        simp only [Category.id_comp, ← Y.map_comp, Under.w] }
+--  exact map_mono f (hc₁ := isColimitConstCocone _ _)
+--    (hc₂ := (Functor.Final.isColimitWhiskerEquiv _ _).symm hc) (c.ι.app j₀) (by aesop_cat)
 
 end HasExactColimitsOfShape
 
@@ -160,7 +161,8 @@ lemma mono_of_isColimit_monoOver : Mono f := by
   let α : F ⋙ MonoOver.forget _ ⋙ Over.forget _ ⟶ (Functor.const _).obj X :=
     { app j := (F.obj j).obj.hom
       naturality _ _ f := (F.map f).w }
-  exact HasExactColimitsOfShape.map_mono (φ := α) (hc₁ := hc)
+  have := NatTrans.mono_of_mono_app α
+  exact colim.map_mono' (φ := α) (hc₁ := hc)
     (hc₂ := isColimitConstCocone J X) f (by simpa using hf)
 
 lemma subobject_mk_of_isColimit_eq_iSup :
@@ -411,8 +413,7 @@ include κ hXκ hc in
 open surjectivity in
 lemma surjectivity : ∃ (j₀ : J) (y : X ⟶ Y.obj j₀), z = y ≫ c.ι.app j₀ := by
   have := isFiltered_of_isCardinalDirected J κ
-  have : ∀ (j : J), Mono (c.ι.app j) := fun j ↦
-    HasExactColimitsOfShape.mono_ι_app_of_isColimit_of_mono_map_of_isFiltered c hc j
+  have := hc.mono_ι_app_of_isFiltered
   have := NatTrans.mono_of_mono_app c.ι
   obtain ⟨j, _⟩ := exists_isIso_of_functor_from_monoOver (F z) hXκ _
     (colimit.isColimit _) (f z) (hf z) (epi_f hc z κ)
