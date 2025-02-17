@@ -8,6 +8,7 @@ import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
 import Mathlib.Analysis.Complex.RealDeriv
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Analysis.SpecialFunctions.Exponential
+import Mathlib.GroupTheory.MonoidLocalization.Basic
 
 /-!
 # Complex and real exponential

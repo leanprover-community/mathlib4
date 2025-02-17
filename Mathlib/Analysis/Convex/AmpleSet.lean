@@ -6,6 +6,7 @@ Authors: Anatole Dedecker, Floris van Doorn
 import Mathlib.Analysis.Convex.Normed
 import Mathlib.Analysis.NormedSpace.Connected
 import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
+import Mathlib.Algebra.CharP.Invertible
 
 /-!
 # Ample subsets of real vector spaces

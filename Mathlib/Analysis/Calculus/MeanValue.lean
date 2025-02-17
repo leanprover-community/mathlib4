@@ -8,9 +8,12 @@ import Mathlib.Analysis.Calculus.Deriv.Slope
 import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Calculus.LocalExtr.Rolle
-import Mathlib.Analysis.Convex.Normed2
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Topology.LocallyConstant.Basic
+import Mathlib.Analysis.Convex.Normed
+import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.Topology.Instances.RealVectorSpace
+import Mathlib.Analysis.Normed.Group.AddTorsor
 
 /-!
 # The mean value inequality and equalities

@@ -6,6 +6,7 @@ Authors: Michael Stoll
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.NumberTheory.EulerProduct.Basic
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 /-!
 # Logarithms of Euler Products

@@ -6,6 +6,7 @@ Authors: Joseph Myers
 import Mathlib.Analysis.Convex.Between
 import Mathlib.Analysis.Convex.StrictConvexSpace
 import Mathlib.Analysis.Normed.Affine.Isometry
+import Mathlib.Analysis.Normed.Affine.AddTorsor
 
 /-!
 # Betweenness in affine spaces for strictly convex spaces

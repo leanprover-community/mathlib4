@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Geometry.Manifold.IsManifold.Basic
 import Mathlib.Topology.Compactness.Paracompact
 import Mathlib.Topology.Metrizable.Urysohn
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 /-!
 # Metrizability of a σ-compact manifold
