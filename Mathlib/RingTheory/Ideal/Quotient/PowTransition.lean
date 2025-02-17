@@ -52,7 +52,7 @@ namespace Submodule
 section
 
 @[simp]
-theorem mapQ_eq_factor [I.IsTwoSided] [J.IsTwoSided] (h : I ≤ J) (x : R ⧸ I) :
+theorem mapQ_eq_factor (h : I ≤ J) (x : R ⧸ I) :
     mapQ I J LinearMap.id h x = factor I J h x := rfl
 
 end

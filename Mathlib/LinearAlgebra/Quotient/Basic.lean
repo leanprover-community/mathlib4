@@ -249,13 +249,11 @@ theorem ker_liftQ_eq_bot' (f : M →ₛₗ[τ₁₂] M₂) (h : p = ker f) :
     ker (p.liftQ f (le_of_eq h)) = ⊥ :=
   ker_liftQ_eq_bot p f h.le h.ge
 
+/-- The linear map from the quotient by a smaller submodule to the quotient by a larger submodule.
+
+This is the `Submodule.Quotient` version of `Quot.Factor` -/
 abbrev factor (H : p ≤ p') : M ⧸ p →ₗ[R] M ⧸ p' :=
   mapQ _ _ LinearMap.id H
-
-@[simp]
-theorem factor_eq : factor p p (le_refl p) = LinearMap.id := by
-  ext
-  simp
 
 @[simp]
 theorem factor_mk (H : p ≤ p') (x : M) : factor p p' H (mkQ p x) = mkQ p' x :=
