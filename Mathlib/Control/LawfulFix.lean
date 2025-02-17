@@ -68,7 +68,7 @@ theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx
     · exact ⟨_, hh⟩
     have h₁ := Nat.find_spec h₀
     rw [dom_iff_mem] at h₁
-    cases' h₁ with y h₁
+    obtain ⟨y, h₁⟩ := h₁
     replace h₁ := approx_mono' f _ _ h₁
     suffices y = b by
       subst this
@@ -99,7 +99,7 @@ theorem exists_fix_le_approx (x : α) : ∃ i, Part.fix f x ≤ approx f i x := 
     exists 0
     intro b' h'
     simp only [mem_iff f] at h'
-    cases' h' with i h'
+    obtain ⟨i, h'⟩ := h'
     cases hh _ _ h'
 
 /-- The series of approximations of `fix f` (see `approx`) as a `Chain` -/
@@ -132,7 +132,7 @@ open Nat.Upto OmegaCompletePartialOrder
 theorem fix_eq_ωSup : Part.fix f = ωSup (approxChain f) := by
   apply le_antisymm
   · intro x
-    cases' exists_fix_le_approx f x with i hx
+    obtain ⟨i, hx⟩ := exists_fix_le_approx f x
     trans approx f i.succ x
     · trans
       · apply hx

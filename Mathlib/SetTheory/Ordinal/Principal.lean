@@ -134,8 +134,8 @@ theorem principal_nfp_blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordin
     Principal op (nfp (fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b)) o) := by
   intro a b ha hb
   rw [lt_nfp_iff] at *
-  cases' ha with m hm
-  cases' hb with n hn
+  obtain ⟨m, hm⟩ := ha
+  obtain ⟨n, hn⟩ := hb
   cases' le_total
     ((fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b))^[m] o)
     ((fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b))^[n] o) with h h

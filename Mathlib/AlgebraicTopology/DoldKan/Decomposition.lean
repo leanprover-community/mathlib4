@@ -61,7 +61,7 @@ theorem decomposition_Q (n q : ℕ) :
       ext ⟨x, hx⟩
       simp only [Nat.succ_eq_add_one, Finset.mem_filter, Finset.mem_univ, true_and]
       omega
-    · cases' Nat.le.dest (Nat.succ_le_succ_iff.mp hqn) with a ha
+    · obtain ⟨a, ha⟩ := Nat.le.dest (Nat.succ_le_succ_iff.mp hqn)
       rw [Q_succ, HomologicalComplex.sub_f_apply, HomologicalComplex.comp_f, hq]
       symm
       conv_rhs => rw [sub_eq_add_neg, add_comm]
