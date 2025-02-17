@@ -149,8 +149,7 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : X.Opens
     specialize H (X.presheaf.map i.op s)
     rw [Scheme.basicOpen_res, hs] at H
     specialize H (inf_bot_eq _) x hx
-    -- This seems to be related to a mismatch of `X.sheaf.presheaf` and `X.presheaf` in `H`
-    rw [← CommRingCat.germ_res_apply X.sheaf.presheaf i x hx s]
+    rw [← X.sheaf.presheaf.germ_res_apply i x hx s]
     exact H
   | h₂ X Y f =>
     refine ⟨f ⁻¹ᵁ f.opensRange, f.opensRange, by ext1; simp, rfl, ?_⟩
@@ -224,7 +223,7 @@ instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := b
   · ext x
     constructor
     · rintro ⟨hS, hT⟩
-      cases' h₁ (show x ∈ ⊤ by trivial) with h h
+      rcases h₁ (show x ∈ ⊤ by trivial) with h | h
       exacts [hS h, hT h]
     · simp
 

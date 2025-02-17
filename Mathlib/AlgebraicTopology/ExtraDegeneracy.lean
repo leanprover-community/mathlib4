@@ -16,7 +16,7 @@ import Mathlib.Tactic.FinCases
 In simplicial homotopy theory, in order to prove that the connected components
 of a simplicial set `X` are contractible, it suffices to construct an extra
 degeneracy as it is defined in *Simplicial Homotopy Theory* by Goerss-Jardine p. 190.
-It consists of a series of maps `π₀ X → X _[0]` and `X _[n] → X _[n+1]` which
+It consists of a series of maps `π₀ X → X _⦋0⦌` and `X _⦋n⦌ → X _⦋n+1⦌` which
 behave formally like an extra degeneracy `σ (-1)`. It can be thought as a datum
 associated to the augmented simplicial set `X → π₀ X`.
 
@@ -58,8 +58,8 @@ augmented simplicial objects. The morphisms `s'` and `s n` of the
 structure formally behave like extra degeneracies `σ (-1)`. -/
 @[ext]
 structure ExtraDegeneracy (X : SimplicialObject.Augmented C) where
-  s' : point.obj X ⟶ drop.obj X _[0]
-  s : ∀ n : ℕ, drop.obj X _[n] ⟶ drop.obj X _[n + 1]
+  s' : point.obj X ⟶ drop.obj X _⦋0⦌
+  s : ∀ n : ℕ, drop.obj X _⦋n⦌ ⟶ drop.obj X _⦋n + 1⦌
   s'_comp_ε : s' ≫ X.hom.app (op ⦋0⦌) = 𝟙 _
   s₀_comp_δ₁ : s 0 ≫ X.left.δ 1 = X.hom.app (op ⦋0⦌) ≫ s'
   s_comp_δ₀ : ∀ n : ℕ, s n ≫ X.left.δ 0 = 𝟙 _
@@ -170,8 +170,8 @@ def shift {n : ℕ} {Δ : SimplexCategory} (f : ⦋n⦌ ⟶ Δ) : ⦋n + 1⦌ �
             intro h₂
             subst h₂
             exact h₁ (le_antisymm hi (Fin.zero_le _))
-          cases' Fin.eq_succ_of_ne_zero h₁ with j₁ hj₁
-          cases' Fin.eq_succ_of_ne_zero h₂ with j₂ hj₂
+          obtain ⟨j₁, hj₁⟩ := Fin.eq_succ_of_ne_zero h₁
+          obtain ⟨j₂, hj₂⟩ := Fin.eq_succ_of_ne_zero h₂
           substs hj₁ hj₂
           simpa only [shiftFun_succ] using f.toOrderHom.monotone (Fin.succ_le_succ_iff.mp hi) }
 
@@ -318,7 +318,7 @@ noncomputable def extraDegeneracy :
         erw [Fin.succ_succAbove_zero, ExtraDegeneracy.s_comp_π_0, ExtraDegeneracy.s_comp_π_0]
         dsimp
         simp only [WidePullback.lift_base_assoc]
-      · cases' Fin.eq_succ_of_ne_zero h with k hk
+      · obtain ⟨k, hk⟩ := Fin.eq_succ_of_ne_zero h
         subst hk
         erw [Fin.succ_succAbove_succ, ExtraDegeneracy.s_comp_π_succ,
           ExtraDegeneracy.s_comp_π_succ]
@@ -336,7 +336,7 @@ noncomputable def extraDegeneracy :
         erw [ExtraDegeneracy.s_comp_π_0, ExtraDegeneracy.s_comp_π_0]
         dsimp
         simp only [WidePullback.lift_base_assoc]
-      · cases' Fin.eq_succ_of_ne_zero h with k hk
+      · obtain ⟨k, hk⟩ := Fin.eq_succ_of_ne_zero h
         subst hk
         erw [Fin.succ_predAbove_succ, ExtraDegeneracy.s_comp_π_succ,
           ExtraDegeneracy.s_comp_π_succ]

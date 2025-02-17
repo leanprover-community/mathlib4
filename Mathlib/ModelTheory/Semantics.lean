@@ -123,7 +123,7 @@ theorem realize_subst {t : L.Term α} {tf : α → L.Term β} {v : β → M} :
 
 theorem realize_restrictVar [DecidableEq α] {t : L.Term α} {f : t.varFinset → β}
     {v : β → M} (v' : α → M) (hv' : ∀ a, v (f a) = v' a) :
-     (t.restrictVar f).realize v = t.realize v' := by
+    (t.restrictVar f).realize v = t.realize v' := by
   induction t with
   | var => simp [restrictVar, hv']
   | func _ _ ih =>
@@ -178,7 +178,7 @@ theorem realize_varsToConstants [L[[α]].Structure M] [(lhomWithConstants L α).
     {t : L.Term (α ⊕ β)} {v : β → M} :
     t.varsToConstants.realize v = t.realize (Sum.elim (fun a => ↑(L.con a)) v) := by
   induction' t with ab n f ts ih
-  · cases' ab with a b <;> simp [Language.con]
+  · rcases ab with a | b <;> simp [Language.con]
   · simp only [realize, constantsOn, constantsOnFunc, ih, varsToConstants]
     -- Porting note: below lemma does not work with simp for some reason
     rw [withConstants_funMap_sum_inl]
@@ -820,7 +820,7 @@ theorem realize_toFormula (φ : L.BoundedFormula α n) (v : α ⊕ (Fin n) → M
     rw [← h, realize_relabel, Formula.Realize, iff_iff_eq]
     simp only [Function.comp_def]
     congr with x
-    · cases' x with _ x
+    · rcases x with _ | x
       · simp
       · refine Fin.lastCases ?_ ?_ x
         · rw [Sum.elim_inr, Sum.elim_inr,
