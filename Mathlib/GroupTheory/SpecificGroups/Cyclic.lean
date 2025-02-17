@@ -257,7 +257,7 @@ instance Subgroup.isCyclic [IsCyclic α] (H : Subgroup α) : IsCyclic H :=
       ⟨k.natAbs,
         Nat.pos_of_ne_zero fun h => hx₂ <| by
           rw [← hk, Int.natAbs_eq_zero.mp h, zpow_zero], by
-            cases' k with k k
+            rcases k with k | k
             · rw [Int.ofNat_eq_coe, Int.natAbs_cast k, ← zpow_natCast, ← Int.ofNat_eq_coe, hk]
               exact hx₁
             · rw [Int.natAbs_negSucc, ← Subgroup.inv_mem_iff H]; simp_all⟩
