@@ -31,7 +31,7 @@ In addition to comprehensive API on these two notions, the main results are the 
 
 All these are given in the `VectorField` namespace because pullbacks, Lie brackets, and so on,
 are notions that make sense in a variety of contexts. We also prefix the notions with `m` to
-distinguish the manifold notions from the vector spaces notions.
+distinguish the manifold notions from the vector space notions.
 
 For notions that come naturally in other namespaces for dot notation, we specify `vectorField` in
 the name to lift ambiguities. For instance, the fact that the Lie bracket of two smooth vector
