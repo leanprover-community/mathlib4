@@ -121,10 +121,12 @@ inductive HollomOrder : ℕ × ℕ × ℕ → ℕ × ℕ × ℕ → Prop
   | next_min {x y u v m : ℕ} : min x y + 1 ≤ min u v → HollomOrder (x, y, m + 1) (u, v, m)
   | next_add {x y u v m : ℕ} : x + y ≤ 2 * (u + v) → HollomOrder (x, y, m + 1) (u, v, m)
 
-instance : PartialOrder Hollom where
-  le x y := HollomOrder (ofHollom x) (ofHollom y)
-  le_refl x := .within le_rfl le_rfl
-  le_trans
+/--
+Transitivity of the hollom order. This needs to be split out from the instance otherwise it's
+painfully slow to compile.
+-/
+lemma HollomOrder.trans :
+    (x y z : ℕ × ℕ × ℕ) → (h₁ : HollomOrder x y) → (h₂ : HollomOrder y z) → HollomOrder x z
   | _, _, _, .twice _, .twice _ => .twice (by omega)
   | _, _, _, .twice _, .within _ _ => .twice (by omega)
   | _, _, _, .twice _, .next_min _ => .twice (by omega)
@@ -141,9 +143,14 @@ instance : PartialOrder Hollom where
   | _, _, _, .next_add _, .within _ _ => .next_add (by omega)
   | _, _, _, .next_add _, .next_min _ => .twice (by omega)
   | _, _, _, .next_add _, .next_add _ => .twice (by omega)
+
+instance : PartialOrder Hollom where
+  le x y := HollomOrder (ofHollom x) (ofHollom y)
+  le_refl _ := .within le_rfl le_rfl
+  le_trans := HollomOrder.trans
   le_antisymm
   | _, _, .twice _, .twice _ => by omega
-  | _, (_, _, _), .twice _, .within _ _ => by omega
+  | _, (_, _, _), .twice _, .within _ _ => by omega -- see lean4#6416
   | _, _, .twice _, .next_min _ => by omega
   | _, _, .twice _, .next_add _ => by omega
   | _, _, .within _ _, .twice _ => by omega
