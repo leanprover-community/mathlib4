@@ -38,8 +38,6 @@ theorem getLast_eq_of_mem_getLast? {x} (hx : x ∈ m.getLast?) :
   · rw [← Option.some_inj, ← hx]
     rfl
 
-  #exit
-
 @[simp]
 theorem splitBy_nil (r : α → α → Bool) : splitBy r [] = [] :=
   rfl
