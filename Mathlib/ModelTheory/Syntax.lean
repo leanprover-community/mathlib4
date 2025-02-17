@@ -728,7 +728,6 @@ protected nonrec abbrev not (φ : L.Formula α) : L.Formula α :=
 protected abbrev imp : L.Formula α → L.Formula α → L.Formula α :=
   BoundedFormula.imp
 
-
 variable (β) in
 /-- `iAlls f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula β` by universally
 quantifying over all variables `Sum.inr _`. -/
@@ -743,9 +742,27 @@ noncomputable def iExs [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :
   let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin β))
   (BoundedFormula.relabel (fun a => Sum.map id e a) φ).exs
 
+variable (β) in
+/-- `iExsUnique f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula β` by existentially
+quantifying over all variables `Sum.inr _` and asserting that the solution should be unique  -/
+noncomputable def iExsUnique [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
+  let _ := Fintype.ofFinite β
+  iExs β (φ ⊓ iAlls β
+    ((φ.relabel (fun a => Sum.elim (Sum.inl ∘ Sum.inl) Sum.inr a)).imp
+    (BoundedFormula.iInf
+      (fun g => Term.equal (var (Sum.inr g)) (var (Sum.inl (Sum.inr g)))))))
+
 /-- The biimplication between formulas, as a formula. -/
 protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=
   φ.iff ψ
+
+/-- take the disjunction of finitely many formulas -/
+noncomputable def iSup [Finite α] (f : α → L.Formula β) : L.Formula β :=
+  BoundedFormula.iSup f
+
+/-- take the conjunction of finitely many formulas -/
+noncomputable def iInf [Finite α] (f : α → L.Formula β) : L.Formula β :=
+  BoundedFormula.iInf f
 
 /-- A bijection sending formulas to sentences with constants. -/
 def equivSentence : L.Formula α ≃ L[[α]].Sentence :=
