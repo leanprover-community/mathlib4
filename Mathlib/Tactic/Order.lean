@@ -157,7 +157,7 @@ def findContradictionWithNle (g : Graph) (idxToAtom : Std.HashMap ℕ Expr)
 
 /-- Each fact `¬ (x < y)` allows to add the edge `(x, y)` when `y` is reachable from `x` in the
 graph. We repeat adding edges using this until no more edges can be added. -/
-def updateGraphWithNltInfSup (g : Graph) (idxToAtom : Std.HashMap Nat Expr)
+def updateGraphWithNlt (g : Graph) (idxToAtom : Std.HashMap Nat Expr)
     (facts : Array AtomicFact) : MetaM Graph := do
   let nltFacts := facts.filter fun fact => match fact with | .nlt _ _ _ => true | _ => false
   let mut usedNltFacts : Array Bool := mkArray nltFacts.size false
@@ -207,7 +207,7 @@ elab "order" : tactic => focus do
     | .part => preprocessFactsPartial g facts
     | .lin => preprocessFactsLinear g facts
     let mut graph ← Graph.constructLeGraph idxToAtom.size facts
-    graph ← updateGraphWithNltInfSup graph idxToAtom facts
+    graph ← updateGraphWithNlt graph idxToAtom facts
     if orderType == .pre then
       let .some pf ← findContradictionWithNle graph idxToAtom facts | continue
       g.assign pf
