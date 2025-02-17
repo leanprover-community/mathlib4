@@ -7,7 +7,13 @@ import Mathlib.Data.Real.Sqrt
 
 /-! # `norm_num` extension for `Real.sqrt`
 
-This module defines a `norm_num` extension for `Nat.sqrt`.
+This module defines a `norm_num` extension for `Real.sqrt` and `NNReal.sqrt`.
+
+## Implementation notes
+
+While the extension for `Real.sqrt` can handle both integers and rationals, the one for
+`NNReal.sqrt` can only deal with integers, due to a limitation of norm_num
+(i.e. the `IsRat` type requires a Ring instance).
 -/
 
 namespace Tactic.NormNum
