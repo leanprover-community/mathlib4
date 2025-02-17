@@ -3,11 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.Presentable.Basic
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
+import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Colim
+import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Subobject
 import Mathlib.CategoryTheory.Limits.TypesFiltered
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 import Mathlib.CategoryTheory.Limits.Connected
@@ -41,150 +41,10 @@ open Limits Opposite
 
 attribute [local instance] IsFiltered.isConnected
 
-namespace HasExactColimitsOfShape
-
-variable {C : Type u} [Category.{v} C] [Abelian C]
-    {J : Type u'} [Category.{v'} J]
-
-section
-
-variable [HasColimitsOfShape J C] [HasExactColimitsOfShape J C]
-    {S : ShortComplex (J ⥤ C)} (hS : S.Exact)
-    {c₁ : Cocone S.X₁} (hc₁ : IsColimit c₁) {c₂ : Cocone S.X₂} (hc₂ : IsColimit c₂)
-    {c₃ : Cocone S.X₃} (hc₃ : IsColimit c₃)
-    (f : c₁.pt ⟶ c₂.pt) (g : c₂.pt ⟶ c₃.pt)
-    (hf : ∀ j, c₁.ι.app j ≫ f = S.f.app j ≫ c₂.ι.app j)
-    (hg : ∀ j, c₂.ι.app j ≫ g = S.g.app j ≫ c₃.ι.app j)
-
-variable (S c₁ c₂ c₃) in
-@[simps]
-def mapShortComplex : ShortComplex C :=
-  ShortComplex.mk f g (hc₁.hom_ext (fun j ↦ by
-    dsimp
-    rw [reassoc_of% (hf j), hg j, comp_zero, ← NatTrans.comp_app_assoc, S.zero,
-      zero_app, zero_comp]))
-
-include hc₂ hc₃ hS in
-lemma mapShortComplex_exact : (mapShortComplex S c₁ hc₁ c₂ c₃ f g hf hg).Exact := by
-  refine (ShortComplex.exact_iff_of_iso ?_).2 (hS.map colim)
-  refine ShortComplex.isoMk
-    (IsColimit.coconePointUniqueUpToIso hc₁ (colimit.isColimit _))
-    (IsColimit.coconePointUniqueUpToIso hc₂ (colimit.isColimit _))
-    (IsColimit.coconePointUniqueUpToIso hc₃ (colimit.isColimit _))
-    (hc₁.hom_ext (fun j ↦ ?_)) (hc₂.hom_ext (fun j ↦ ?_))
-  · dsimp
-    rw [IsColimit.comp_coconePointUniqueUpToIso_hom_assoc,
-      colimit.cocone_ι, ι_colimMap, reassoc_of% (hf j),
-      IsColimit.comp_coconePointUniqueUpToIso_hom, colimit.cocone_ι]
-  · dsimp
-    rw [IsColimit.comp_coconePointUniqueUpToIso_hom_assoc,
-      colimit.cocone_ι, ι_colimMap, reassoc_of% (hg j),
-      IsColimit.comp_coconePointUniqueUpToIso_hom, colimit.cocone_ι]
-
-end
-
-end HasExactColimitsOfShape
-
-namespace MonoOver
-
-variable {C : Type u} [Category.{v} C] {X : C}
-
-instance mono_obj_hom (S : MonoOver X) :
-    Mono S.obj.hom := S.2
-
-lemma subobject_mk_le_mk_of_hom {S T : MonoOver X} (f : S ⟶ T) :
-    Subobject.mk S.obj.hom ≤ Subobject.mk T.obj.hom :=
-  Subobject.mk_le_mk_of_comm f.left (by simp)
-
-end MonoOver
-
-namespace Subobject
-
-variable {C : Type u} [Category.{v} C] {X Y : C} (f : X ⟶ Y) [Mono f]
-
-lemma epi_iff_mk_eq_top [Balanced C] :
-    Epi f ↔ Subobject.mk f = ⊤ := by
-  rw [← isIso_iff_mk_eq_top]
-  exact ⟨fun _ ↦ isIso_of_mono_of_epi f, fun _ ↦ inferInstance⟩
-
-end Subobject
-
 namespace IsGrothendieckAbelian
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [IsGrothendieckAbelian.{w} C]
   {X : C} {J : Type w} [SmallCategory J] (F : J ⥤ MonoOver X)
-
-section
-
-variable [IsFiltered J] {c : Cocone (F ⋙ MonoOver.forget _ ⋙ Over.forget _)}
-  (hc : IsColimit c) (f : c.pt ⟶ X) (hf : ∀ (j : J), c.ι.app j ≫ f = (F.obj j).obj.hom)
-
-include hc hf
-lemma mono_of_isColimit_monoOver : Mono f := by
-  let α : F ⋙ MonoOver.forget _ ⋙ Over.forget _ ⟶ (Functor.const _).obj X :=
-    { app j := (F.obj j).obj.hom
-      naturality _ _ f := (F.map f).w }
-  have := NatTrans.mono_of_mono_app α
-  exact colim.map_mono' (φ := α) (hc₁ := hc)
-    (hc₂ := isColimitConstCocone J X) f (by simpa using hf)
-
-lemma subobject_mk_of_isColimit_eq_iSup :
-    haveI := mono_of_isColimit_monoOver F hc f hf
-    Subobject.mk f = ⨆ j, Subobject.mk (F.obj j).obj.hom := by
-  haveI := mono_of_isColimit_monoOver F hc f hf
-  apply le_antisymm
-  · rw [le_iSup_iff]
-    intro s H
-    induction' s using Subobject.ind with Z g _
-    let c' : Cocone (F ⋙ MonoOver.forget _ ⋙ Over.forget _) := Cocone.mk Z
-      { app j := Subobject.ofMkLEMk _ _ (H j)
-        naturality j j' f := by
-          dsimp
-          simpa only [← cancel_mono g, Category.assoc, Subobject.ofMkLEMk_comp,
-            Category.comp_id] using MonoOver.w (F.map f) }
-    exact Subobject.mk_le_mk_of_comm (hc.desc c')
-      (hc.hom_ext (fun j ↦ by rw [hc.fac_assoc c' j, hf, Subobject.ofMkLEMk_comp]))
-  · rw [iSup_le_iff]
-    intro j
-    exact Subobject.mk_le_mk_of_comm (c.ι.app j) (hf j)
-
-end
-
-section
-
-variable
-  {κ : Cardinal.{w}} [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ]
-  (hXκ : HasCardinalLT (Subobject X) κ)
-  (c : Cocone (F ⋙ MonoOver.forget _ ⋙ Over.forget _)) (hc : IsColimit c)
-  (f : c.pt ⟶ X) (hf : ∀ (j : J), c.ι.app j ≫ f = (F.obj j).obj.hom)
-
-include hf hc hXκ in
-lemma exists_isIso_of_functor_from_monoOver (h : Epi f) :
-    ∃ (j : J), IsIso (F.obj j).obj.hom := by
-  have := isFiltered_of_isCardinalDirected J κ
-  simp only [Subobject.isIso_iff_mk_eq_top]
-  have := mono_of_isColimit_monoOver F hc f hf
-  rw [Subobject.epi_iff_mk_eq_top f,
-    subobject_mk_of_isColimit_eq_iSup F hc f hf] at h
-  let s (j : J) : Subobject X := Subobject.mk (F.obj j).obj.hom
-  let S := Set.range s
-  have h' : Function.Surjective (fun (j : J) ↦ (⟨s j, _, rfl⟩ : S)) := by
-    rintro ⟨_, j, rfl⟩
-    exact ⟨j, rfl⟩
-  obtain ⟨σ, hσ⟩ := h'.hasRightInverse
-  have hS : HasCardinalLT S κ :=
-    hXκ.of_injective (f := Subtype.val) Subtype.val_injective
-  refine ⟨IsCardinalFiltered.max σ hS, ?_⟩
-  rw [← top_le_iff, ← h, iSup_le_iff]
-  intro j
-  let t : S := ⟨_, j, rfl⟩
-  trans Subobject.mk (F.obj (σ t)).obj.hom
-  · have := le_of_eq (hσ t).symm
-    exact this
-  · exact MonoOver.subobject_mk_le_mk_of_hom
-      (F.map (IsCardinalFiltered.toMax σ hS t))
-
-end
 
 end IsGrothendieckAbelian
 
@@ -251,7 +111,7 @@ noncomputable def hc₃ : IsColimit (c₃ c j₀) :=
 include κ hκ hc hy in
 lemma epi_f : Epi (f y) := by
   have := isFiltered_of_isCardinalDirected J κ
-  exact (HasExactColimitsOfShape.mapShortComplex_exact (S_exact y)
+  exact (colim.mapShortComplex_exact (S_exact y)
     (colimit.isColimit _) (isColimitConstCocone _ _) (hc₃ hc j₀ κ) (f y) 0
     (fun j ↦ by simpa using hf y j) (fun _ ↦ by simpa using hy.symm)).epi_f rfl
 
