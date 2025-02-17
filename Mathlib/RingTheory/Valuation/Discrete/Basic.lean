@@ -36,8 +36,10 @@ variable {A : Type*} [Ring A]
 class IsDiscrete (v : Valuation A ℤₘ₀) : Prop where
   one_mem_range : (↑(ofAdd (-1 : ℤ)) : ℤₘ₀) ∈ range v
 
+variable {K : Type*} [Field K]
+
 /-- A discrete valuation on a field `K` is surjective. -/
-lemma IsDiscrete.surj {K : Type*} [Field K] (v : Valuation K ℤₘ₀) [hv : IsDiscrete v] :
+lemma IsDiscrete.surj (v : Valuation K ℤₘ₀) [hv : IsDiscrete v] :
     Surjective v := by
   intro c
   obtain ⟨π, hπ⟩ := hv
@@ -45,7 +47,7 @@ lemma IsDiscrete.surj {K : Type*} [Field K] (v : Valuation K ℤₘ₀) [hv : Is
   simp [hπ, ← WithZero.ofAdd_zpow]
 
 /-- A `ℤₘ₀`-valued valuation on a field `K` is discrete if and only if it is surjective. -/
-lemma isDiscrete_iff_surjective {K : Type*} [Field K] (v : Valuation K ℤₘ₀) :
+lemma isDiscrete_iff_surjective (v : Valuation K ℤₘ₀) :
     IsDiscrete v ↔ Surjective v :=
   ⟨fun _ ↦ IsDiscrete.surj v, fun hv ↦ ⟨hv _⟩⟩
 
