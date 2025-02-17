@@ -16,7 +16,7 @@ In practice, all such linters check for code style issues.
 Currently, this file contains linters checking
 - if the string "adaptation note" is used instead of the command #adaptation_note,
 - for lines with windows line endings,
-- for lines containing trailing whitespace
+- for lines containing trailing whitespace.
 
 For historic reasons, some further such check checks are written in a Python script `lint-style.py`:
 these are gradually being rewritten in Lean.
