@@ -11,11 +11,6 @@ import Mathlib.RingTheory.Bialgebra.Basic
 In this file we define `HopfAlgebra`, and provide instances for:
 
 * Commutative semirings: `CommSemiring.toHopfAlgebra`
-* The `R`-Hopf algebra instance on the group algebra `A[G]` where `G` is a group and `A` is an
-  `R`-Hopf algebra: `(Add)MonoidAlgebra.instHopfAlgebra`.
-* The `R`-Hopf algebra instance on `A[t, t⁻¹]` when `A` is an `R`-Hopf algebra:
-  `LaurentPolynomial.instHopfAlgebra`. When `A = R` this corresponds to the fact that `𝔾ₘ/R` is a
-  group scheme.
 
 # Main definitions
 
@@ -132,92 +127,3 @@ instance toHopfAlgebra : HopfAlgebra R R where
 theorem antipode_eq_id : antipode (R := R) (A := R) = .id := rfl
 
 end CommSemiring
-
-namespace MonoidAlgebra
-
-open HopfAlgebra
-
-variable {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [HopfAlgebra R A]
-variable {G : Type w} [Group G]
-
-variable (R A G) in
-instance instHopfAlgebraStruct : HopfAlgebraStruct R (MonoidAlgebra A G) where
-  antipode := Finsupp.lsum R fun g => Finsupp.lsingle g⁻¹ ∘ₗ antipode
-
-@[simp]
-lemma antipode_single (g : G) (a : A) :
-    antipode (R := R) (single g a) = single g⁻¹ (antipode (R := R) a) := by
-  simp [MonoidAlgebra, antipode]
-
-open Coalgebra in
-instance instHopfAlgebra : HopfAlgebra R (MonoidAlgebra A G) where
-  mul_antipode_rTensor_comul := by
-    ext a b : 2
-    simpa [← (ℛ R b).eq, -sum_antipode_mul_eq] using congr(lsingle (R := R) (1 : G)
-      $(sum_antipode_mul_eq (Coalgebra.Repr.arbitrary R b)))
-  mul_antipode_lTensor_comul := by
-    ext a b : 2
-    simpa [← (ℛ R b).eq, -sum_mul_antipode_eq] using congr(lsingle (R := R) (1 : G)
-      $(sum_mul_antipode_eq (Coalgebra.Repr.arbitrary R b)))
-
-end MonoidAlgebra
-
-namespace AddMonoidAlgebra
-
-open HopfAlgebra
-
-variable {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [HopfAlgebra R A]
-variable {G : Type w} [AddGroup G]
-
-variable (R A G) in
-instance instHopfAlgebraStruct : HopfAlgebraStruct R A[G] where
-  antipode := Finsupp.lsum R fun g => Finsupp.lsingle (-g) ∘ₗ antipode
-
-@[simp]
-lemma antipode_single (g : G) (a : A) :
-    antipode (R := R) (single g a) = single (-g) (antipode (R := R) a) := by
-  simp [AddMonoidAlgebra, antipode]
-
-open Coalgebra in
-instance instHopfAlgebra : HopfAlgebra R A[G] where
-  mul_antipode_rTensor_comul := by
-    ext a b : 2
-    simpa [← (ℛ R b).eq, single_mul_single, -sum_antipode_mul_eq] using
-      congr(lsingle (R := R) (0 : G) $(sum_antipode_mul_eq (Coalgebra.Repr.arbitrary R b)))
-  mul_antipode_lTensor_comul := by
-    ext a b : 2
-    simpa [← (ℛ R b).eq, single_mul_single, -sum_mul_antipode_eq] using
-      congr(lsingle (R := R) (0 : G) $(sum_mul_antipode_eq (Coalgebra.Repr.arbitrary R b)))
-
-end AddMonoidAlgebra
-
-namespace LaurentPolynomial
-
-open Finsupp
-
-variable (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [HopfAlgebra R A]
-
-instance instHopfAlgebra : HopfAlgebra R A[T;T⁻¹] :=
-  inferInstanceAs (HopfAlgebra R <| AddMonoidAlgebra A ℤ)
-
-variable {R A}
-
-@[simp]
-theorem antipode_C (a : A) :
-    HopfAlgebra.antipode (R := R) (C a) = C (HopfAlgebra.antipode (R := R) a) := by
-  rw [← single_eq_C, AddMonoidAlgebra.antipode_single]
-  simp
-
-@[simp]
-theorem antipode_T (n : ℤ) :
-    HopfAlgebra.antipode (R := R) (T n : A[T;T⁻¹]) = T (-n) := by
-  unfold T
-  rw [AddMonoidAlgebra.antipode_single]
-  simp only [HopfAlgebra.antipode_one, single_eq_C_mul_T, map_one, one_mul]
-
-@[simp]
-theorem antipode_C_mul_T (a : A) (n : ℤ) :
-    HopfAlgebra.antipode (R := R) (C a * T n) = C (HopfAlgebra.antipode (R := R) a) * T (-n) := by
-  simp [← single_eq_C_mul_T]
-
-end LaurentPolynomial
