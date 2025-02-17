@@ -186,22 +186,8 @@ private theorem splitByLoop_append {r : α → α → Bool} {l g : List α} {a :
     rw [nil_append]
     cases m with
     | nil => simp [splitBy.loop]
-    | cons c m =>
-      rw [splitBy.loop]
-      have := ha c rfl
-      rw [getLast_singleton] at this
-      rw [this, splitByLoop_eq_append [_], splitBy]
-      simp
-  | cons b l IH =>
-    rw [cons_append, splitBy.loop]
-    split
-    · rw [IH]
-      · simp
-      · simp [h]
-      · rwa [getLast_cons (cons_ne_nil b l)] at ha
-    · rw [chain'_append_cons_cons, ← Bool.ne_false_iff] at h
-      have := h.2.1
-      contradiction
+    | cons c m => simp_all [splitBy.loop, ha c rfl, splitByLoop_eq_append [_], splitBy]
+  | cons b l IH => simp_all [splitBy.loop]
 
 set_option linter.docPrime false in
 theorem splitBy_of_chain' {r : α → α → Bool} {l : List α} (hn : l ≠ [])
@@ -259,19 +245,16 @@ theorem splitBy_append {r : α → α → Bool} {l : List α}
   obtain rfl | hm := eq_or_ne m []
   · simp
   rw [splitBy_eq_iff]
-  refine ⟨?_, ?_, ?_, ?_⟩
-  · simp
-  · simp
-  · simp_rw [mem_append]
-    rintro n (hn | hn) <;> exact chain'_of_mem_splitBy hn
-  · rw [chain'_append]
-    refine ⟨chain'_getLast_head_splitBy _ _, chain'_getLast_head_splitBy _ _, fun x hx y hy ↦ ?_⟩
-    use ne_nil_of_mem_splitBy (mem_of_mem_getLast? hx), ne_nil_of_mem_splitBy (mem_of_mem_head? hy)
-    apply ha
-    · simp_rw [← getLast_eq_of_mem_getLast? hx, getLast_getLast_splitBy _ hl]
-      exact getLast_mem_getLast? _
-    · simp_rw [← head_eq_of_mem_head? hy, head_head_splitBy _ hm]
-      exact head_mem_head? _
+  refine ⟨by simp, by simp, ?_, ?_⟩
+  · aesop (add apply unsafe chain'_of_mem_splitBy)
+  rw [chain'_append]
+  refine ⟨chain'_getLast_head_splitBy _ _, chain'_getLast_head_splitBy _ _, fun x hx y hy ↦ ?_⟩
+  use ne_nil_of_mem_splitBy (mem_of_mem_getLast? hx), ne_nil_of_mem_splitBy (mem_of_mem_head? hy)
+  apply ha
+  · simp_rw [← getLast_eq_of_mem_getLast? hx, getLast_getLast_splitBy _ hl]
+    exact getLast_mem_getLast? _
+  · simp_rw [← head_eq_of_mem_head? hy, head_head_splitBy _ hm]
+    exact head_mem_head? _
 
 theorem splitBy_append_cons {r : α → α → Bool} {l : List α} {a : α} (m : List α)
     (ha : ∀ x ∈ l.getLast?, r x a = false) :

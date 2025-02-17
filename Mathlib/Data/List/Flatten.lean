@@ -166,8 +166,7 @@ theorem sublist_join {l} {L : List (List α)} (h : l ∈ L) :
     l <+ L.flatten :=
   sublist_flatten_of_mem h
 
-theorem head_flatten_of_head_ne_nil
-  {l : List (List α)} (hl : l ≠ []) (hl' : l.head hl ≠ []) :
+theorem head_flatten_of_head_ne_nil {l : List (List α)} (hl : l ≠ []) (hl' : l.head hl ≠ []) :
     l.flatten.head (flatten_ne_nil_iff.2 ⟨_, head_mem hl, hl'⟩) =
       (l.head hl).head hl' := by
   cases l with
@@ -176,8 +175,8 @@ theorem head_flatten_of_head_ne_nil
     simp_rw [flatten_cons, head_cons]
     exact head_append_of_ne_nil _
 
-theorem getLast_flatten_of_getLast_ne_nil
-  {l : List (List α)} (hl : l ≠ []) (hl' : l.getLast hl ≠ []) :
+theorem getLast_flatten_of_getLast_ne_nil {l : List (List α)} (hl : l ≠ [])
+    (hl' : l.getLast hl ≠ []) :
     l.flatten.getLast (flatten_ne_nil_iff.2 ⟨_, getLast_mem hl, hl'⟩) =
       (l.getLast hl).getLast hl' := by
   induction l using reverseRecOn with
