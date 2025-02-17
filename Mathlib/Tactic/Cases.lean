@@ -100,7 +100,7 @@ elab (name := induction') "induction' " tgts:(Parser.Tactic.casesTarget,+)
   g.withContext do
     let elimInfo ← getElimNameInfo usingArg targets (induction := true)
     let targets ← addImplicitTargets elimInfo targets
-    evalInduction.checkTargets targets
+    checkInductionTargets targets
     let targetFVarIds := targets.map (·.fvarId!)
     g.withContext do
       let genArgs ← if genArg.1.isNone then pure #[] else getFVarIds genArg.1[1].getArgs

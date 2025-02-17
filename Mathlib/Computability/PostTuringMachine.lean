@@ -3,6 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Init
+/-
+Broken by https://github.com/leanprover/lean4/pull/7059
+Commenting out until a fix is available.
+See https://leanprover.zulipchat.com/#narrow/channel/428973-nightly-testing/topic/breakages.20from.20leanprover.2Flean4.237059
+
 import Mathlib.Computability.Tape
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Prod
@@ -1231,3 +1237,4 @@ theorem tr_respects : Respects (TM0.step M) (TM1.step (tr M)) fun a b ↦ trCfg 
 end TM0to1
 
 end Turing
+-/
