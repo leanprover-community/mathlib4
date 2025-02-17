@@ -6,7 +6,6 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 import Mathlib.Data.Finsupp.Interval
 import Mathlib.RingTheory.MvPowerSeries.PiTopology
 import Mathlib.Topology.Algebra.LinearTopology
-import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
 
 /-! # Linear topology on the ring of multivariate power series
