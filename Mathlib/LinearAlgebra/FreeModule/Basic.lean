@@ -217,7 +217,7 @@ variable {S : Type*} [CommRing R] [Ring S] [Algebra R S]
 /-- If `B` is a basis of the `R`-algebra `S` such that `B i = 1` for some index `i`, then
 each `r : R` gets represented as `s • B i` as an element of `S`. -/
 theorem equivFun_algebraMap {ι : Type*} [Fintype ι] [DecidableEq ι] {B : Basis ι R S} {i : ι}
-    (hBi : B i = (1 : S)) (r : R) :
+    (hBi : B i = 1) (r : R) :
     B.equivFun ((algebraMap R S) r) = fun j : ι ↦ if j = i then r else 0 := by
   ext j
   apply LinearIndependent.eq_coords_of_eq B.linearIndependent
