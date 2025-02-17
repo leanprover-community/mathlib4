@@ -87,8 +87,8 @@ class DiffeologicalSpace (X : Type*) where
   /-- The D-topology of the diffeology. This is included as part of the data in order to give
   control over what the D-topology is defeq to. -/
   dTopology : TopologicalSpace X := {
-    IsOpen := fun u ↦ ∀ {n : ℕ}, ∀ p ∈ plots n, TopologicalSpace.IsOpen (p ⁻¹' u)
-    isOpen_univ := fun _ _ ↦ isOpen_univ
+    IsOpen u := ∀ ⦃n : ℕ⦄, ∀ p ∈ plots n, IsOpen (p ⁻¹' u)
+    isOpen_univ := fun _ _ _ ↦ isOpen_univ
     isOpen_inter := fun _ _ hs ht _ p hp ↦
       Set.preimage_inter.symm ▸ (IsOpen.inter (hs p hp) (ht p hp))
     isOpen_sUnion := fun _ hs _ p hp ↦
@@ -96,7 +96,7 @@ class DiffeologicalSpace (X : Type*) where
   }
   /-- The D-topology consists of exactly those sets whose preimages under plots are all open. -/
   isOpen_iff_preimages_plots {u : Set X} : dTopology.IsOpen u ↔
-      ∀ {n : ℕ}, ∀ p ∈ plots n, TopologicalSpace.IsOpen (p ⁻¹' u) := by rfl
+      ∀ {n : ℕ}, ∀ p ∈ plots n, IsOpen (p ⁻¹' u) := by rfl
 
 variable {X Y Z : Type*} [DiffeologicalSpace X] [DiffeologicalSpace Y] [DiffeologicalSpace Z]
 
@@ -206,15 +206,15 @@ structure DiffeologicalSpace.CorePlotsOn (X : Type*) where
   /-- The D-topology that the diffeology built from this structure will use. Can be overwritten
     to allow for better definitional equalities. -/
   dTopology : TopologicalSpace X := {
-    IsOpen := fun u ↦ ∀ {n : ℕ}, ∀ p : Eucl n → X, isPlot p → TopologicalSpace.IsOpen (p ⁻¹' u)
-    isOpen_univ := fun _ _ ↦ isOpen_univ
+    IsOpen u := ∀ ⦃n : ℕ⦄, ∀ p : Eucl n → X, isPlot p → IsOpen (p ⁻¹' u)
+    isOpen_univ := fun _ _ _ ↦ isOpen_univ
     isOpen_inter := fun _ _ hs ht _ p hp ↦
       Set.preimage_inter.symm ▸ (IsOpen.inter (hs p hp) (ht p hp))
     isOpen_sUnion := fun _ hs _ p hp ↦
       Set.preimage_sUnion ▸ isOpen_biUnion fun u hu ↦ hs u hu p hp
   }
   isOpen_iff_preimages_plots {u : Set X} : dTopology.IsOpen u ↔
-    ∀ {n : ℕ}, ∀ p : Eucl n → X, isPlot p → TopologicalSpace.IsOpen (p ⁻¹' u) := by rfl
+    ∀ {n : ℕ}, ∀ p : Eucl n → X, isPlot p → IsOpen (p ⁻¹' u) := by rfl
 
 /-- Constructs a diffeology from plots defined on open subsets or ℝⁿ rather than ℝⁿ itself,
 organised in the form of the auxiliary `CorePlotsOn` structure.
