@@ -5,6 +5,7 @@ Authors: Chris Hughes, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Logic.Embedding.Basic
 
 /-!
 # Endomorphisms, homomorphisms and group actions
