@@ -633,11 +633,11 @@ theorem lieModule_lcs_map_le (k : ℕ) : (lowerCentralSeries R L M k : Submodule
   | succ k ih =>
     rw [lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span', Submodule.map_span]
     apply Submodule.span_le.mpr
-    rintro m₂ ⟨m, ⟨x, n, m_n, h⟩, rfl⟩
+    rintro m₂ ⟨m, ⟨x, n, m_n, ⟨h₁, h₂⟩⟩, rfl⟩
     simp [lowerCentralSeries_succ, SetLike.mem_coe, LieSubmodule.mem_toSubmodule]
     have : ∃ y : L₂, ∃ n : lowerCentralSeries R L₂ M₂ k, ⁅y, n⁆ = g m := by
-      use f x, ⟨g m_n, ih (Submodule.mem_map_of_mem h.1)⟩
-      simp [LieSubmodule.mem_top, LieSubmodule.coe_bracket, hfg x m_n, h.2]
+      use f x, ⟨g m_n, ih (Submodule.mem_map_of_mem h₁)⟩
+      simp [LieSubmodule.mem_top, LieSubmodule.coe_bracket, hfg x m_n, h₂]
     obtain ⟨y, n, hn⟩ := this
     rw [← hn]
     apply LieSubmodule.lie_mem_lie
@@ -717,8 +717,8 @@ section
 
 variable [LieModule R L M]
 
-theorem isNilpotent_of_le (M₁ M₂ : LieSubmodule R L M)
-    (h₁ : M₁ ≤ M₂) (h₂ : IsNilpotent L M₂) : IsNilpotent L M₁ := by
+theorem isNilpotent_of_le (M₁ M₂ : LieSubmodule R L M) (h₁ : M₁ ≤ M₂) (h₂ : IsNilpotent L M₂) :
+    IsNilpotent L M₁ := by
   let f : L →ₗ⁅R⁆ L := 1
   let g : M₁ →ₗ[R] M₂ := Submodule.inclusion h₁
   have hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆ := by
