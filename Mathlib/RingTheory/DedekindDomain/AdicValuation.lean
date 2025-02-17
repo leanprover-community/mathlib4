@@ -658,6 +658,8 @@ theorem isInducing_algebraMap (h : w.comap A = v) :
   apply (Valued.hasBasis_nhds_zero K ℤₘ₀).ext <|
     (Valued.hasBasis_nhds_zero L ℤₘ₀).comap (algebraMap K L)
   · intro γ _
+    simp
+
     sorry
   · intro γ _
     sorry
