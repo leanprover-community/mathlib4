@@ -443,6 +443,7 @@ theorem Ideal.isIdempotentElem_iff_eq_bot_or_top_of_isLocalRing {R} [CommRing R]
     apply le_iInf
     rintro (_ | n) <;> simp [H.pow_succ_eq]
   · rintro (rfl | rfl) <;> simp [IsIdempotentElem]
+    -- TODO add lemmas that top and bot are idempotent
 
 open IsLocalRing in
 theorem Ideal.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors
