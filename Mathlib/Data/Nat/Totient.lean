@@ -8,6 +8,7 @@ import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Factorization.Induction
 import Mathlib.Data.Nat.Periodic
+import Mathlib.Data.Fintype.Units.Int
 
 /-!
 # Euler's totient function

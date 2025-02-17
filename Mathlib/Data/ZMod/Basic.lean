@@ -6,7 +6,7 @@ Authors: Chris Hughes
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.Module.End
 import Mathlib.Algebra.Ring.Prod
-import Mathlib.Data.Fintype.Units
+import Mathlib.Data.Fintype.Units.Defs
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Tactic.FinCases

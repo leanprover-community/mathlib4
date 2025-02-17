@@ -5,7 +5,8 @@ Authors: Judith Ludwig, Christian Merten
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Data.Finite.Sum
-import Mathlib.Data.Fintype.Units
+import Mathlib.Data.Fintype.Units.Defs
+import Mathlib.Data.Fintype.Units.GroupWithZero
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.LinearAlgebra.Projectivization.Basic
 

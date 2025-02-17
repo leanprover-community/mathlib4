@@ -2735,7 +2735,9 @@ import Mathlib.Data.Fintype.Shrink
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Data.Fintype.Sum
-import Mathlib.Data.Fintype.Units
+import Mathlib.Data.Fintype.Units.Defs
+import Mathlib.Data.Fintype.Units.GroupWithZero
+import Mathlib.Data.Fintype.Units.Int
 import Mathlib.Data.Fintype.Vector
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding

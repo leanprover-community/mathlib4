@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Antoine Chambert-Loir
 -/
 import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Data.Fintype.Units
+import Mathlib.Data.Fintype.Units.Int
 import Mathlib.GroupTheory.IndexNormal
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.GroupTheory.Subgroup.Simple

@@ -8,6 +8,7 @@ import Mathlib.Algebra.Field.ZMod
 import Mathlib.Data.ZMod.ValMinAbs
 import Mathlib.FieldTheory.Separable
 import Mathlib.RingTheory.IntegralDomain
+import Mathlib.Data.Fintype.Units.GroupWithZero
 
 /-!
 # Finite fields

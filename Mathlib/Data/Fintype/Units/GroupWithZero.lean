@@ -3,10 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sum
 import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.Algebra.Group.Units.Equiv
+import Mathlib.Data.Fintype.Units.Defs
 
 /-!
 # fintype instances relating to units
@@ -15,20 +16,6 @@ import Mathlib.SetTheory.Cardinal.Finite
 assert_not_exists Field
 
 variable {α : Type*}
-
-instance UnitsInt.fintype : Fintype ℤˣ :=
-  ⟨{1, -1}, fun x ↦ by cases Int.units_eq_one_or x <;> simp [*]⟩
-
-@[simp]
-theorem UnitsInt.univ : (Finset.univ : Finset ℤˣ) = {1, -1} := rfl
-
-@[simp]
-theorem Fintype.card_units_int : Fintype.card ℤˣ = 2 := rfl
-
-instance [Monoid α] [Fintype α] [DecidableEq α] : Fintype αˣ :=
-  Fintype.ofEquiv _ (unitsEquivProdSubtype α).symm
-
-instance [Monoid α] [Finite α] : Finite αˣ := Finite.of_injective _ Units.ext
 
 variable (α)
 

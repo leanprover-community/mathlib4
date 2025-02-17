@@ -5,6 +5,7 @@ Authors: Chris Hughes, Thomas Browning
 -/
 import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.GroupTheory.GroupAction.Quotient
+import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # A consequence of Burnside's lemma

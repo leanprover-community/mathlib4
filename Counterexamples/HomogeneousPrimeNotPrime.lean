@@ -5,7 +5,9 @@ Authors: Johan Commelin, Eric Wieser, Jujian Zhang
 -/
 import Mathlib.Algebra.Divisibility.Finite
 import Mathlib.Algebra.Divisibility.Prod
-import Mathlib.Data.Fintype.Units
+import Mathlib.Data.Fintype.Units.Defs
+import Mathlib.Data.Fintype.Units.Int
+import Mathlib.Data.Fintype.Units.GroupWithZero
 import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 
 /-!
