@@ -748,7 +748,7 @@ instance largestNilpotentSubmoduleIsNilpotent [IsNoetherian R M] :
   · simp [Set.mem_setOf_eq]
     apply trivialIsNilpotent L
   · rw [Set.mem_setOf_eq] at *
-    apply isNilpotentAdd R L
+    apply instIsNilpotentAdd R L
 
 theorem nilpotent_iff_le_largest_nilpotent_submodule [IsNoetherian R M] (N : LieSubmodule R L M) :
     IsNilpotent L N ↔ N ≤ largestNilpotentSubmodule R L M := by
