@@ -3,7 +3,6 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 
 /-!
@@ -21,7 +20,7 @@ universe v v' u u'
 
 namespace CategoryTheory.Limits
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
+variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
   {J : Type u'} [Category.{v'} J]
   [HasColimitsOfShape J C] [HasExactColimitsOfShape J C]
   (S : ShortComplex (J ⥤ C)) (hS : S.Exact)
@@ -41,7 +40,7 @@ def colim.mapShortComplex : ShortComplex C :=
     rw [reassoc_of% (hf j), hg j, comp_zero, ← NatTrans.comp_app_assoc, S.zero,
       zero_app, zero_comp]))
 
-variable {S c₁ c₂ c₃}
+variable {S c₂ c₃}
 
 include hc₂ hc₃ hS in
 /-- Assuming `HasExactColimitsOfShape J C`, this lemma rephrases the exactness
@@ -49,7 +48,7 @@ of the functor `colim : (J ⥤ C) ⥤ C` by saying that if `S : ShortComplex (J 
 is exact, then the short complex obtained by taking the colimits is exact,
 where we allow the replacement of the chosen colimit cocones of the
 colimit API by arbitrary colimit cocones. -/
-lemma colim.exact_mapShortComplex :
+lemma colim.mapShortComplex_exact :
     (mapShortComplex S hc₁ c₂ c₃ f g hf hg).Exact := by
   refine (ShortComplex.exact_iff_of_iso ?_).2 (hS.map colim)
   refine ShortComplex.isoMk
