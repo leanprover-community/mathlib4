@@ -66,7 +66,7 @@ theorem le_nfpFamily [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.{u}) (a)
 theorem lt_nfpFamily_iff [Small.{u} ι] {a b} : a < nfpFamily f b ↔ ∃ l, a < List.foldr f b l :=
   Ordinal.lt_iSup_iff
 
-@[deprecated (since := "2025-02-14")]
+@[deprecated (since := "2025-02-16")]
 alias lt_nfpFamily := lt_nfpFamily_iff
 
 theorem nfpFamily_le_iff [Small.{u} ι] {a b} : nfpFamily f a ≤ b ↔ ∀ l, List.foldr f a l ≤ b :=
@@ -664,7 +664,7 @@ theorem mul_eq_right_iff_opow_omega0_dvd {a b : Ordinal} : a * b = b ↔ a ^ ω 
   · rw [dvd_iff_mod_eq_zero]
     rw [← div_add_mod b (a ^ ω), mul_add, ← mul_assoc, ← opow_one_add, one_add_omega0,
       add_left_cancel_iff] at hab
-    cases' eq_zero_or_opow_omega0_le_of_mul_eq_right hab with hab hab
+    rcases eq_zero_or_opow_omega0_le_of_mul_eq_right hab with hab | hab
     · exact hab
     refine (not_lt_of_le hab (mod_lt b (opow_ne_zero ω ?_))).elim
     rwa [← Ordinal.pos_iff_ne_zero]
