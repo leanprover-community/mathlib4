@@ -255,30 +255,16 @@ theorem apply_apply (v : E) (f : E →L[𝕜] Fₗ) : apply 𝕜 Fₗ v f = f v 
 
 variable (σ₁₂ σ₂₃ E F G)
 
-
-/-- Composition of continuous semilinear maps as a continuous semibilinear map. -/
-def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G :=
-  LinearMap.mkContinuous₂
-    (LinearMap.mk₂'ₛₗ (RingHom.id 𝕜₃) σ₂₃ comp add_comp smul_comp comp_add fun c f g => by
-      ext
-      simp only [ContinuousLinearMap.map_smulₛₗ, coe_smul', coe_comp', Function.comp_apply,
-        Pi.smul_apply])
-    1 fun f g => by simpa only [one_mul] using opNorm_comp_le f g
-
 set_option maxSynthPendingDepth 2 in
-theorem norm_compSL_le : ‖compSL E F G σ₁₂ σ₂₃‖ ≤ 1 :=
-  LinearMap.mkContinuous₂_norm_le _ zero_le_one _
+theorem norm_compSL_le : ‖compSL σ₁₂ σ₂₃ E F G‖ ≤ 1 :=
+  opNorm_le_bound₂ _ zero_le_one <| by simpa using opNorm_comp_le
 
 variable {σ₁₂ σ₂₃ E F G}
-
-@[simp]
-theorem compSL_apply (f : F →SL[σ₂₃] G) (g : E →SL[σ₁₂] F) : compSL E F G σ₁₂ σ₂₃ f g = f.comp g :=
-  rfl
 
 theorem _root_.Continuous.const_clm_comp {X} [TopologicalSpace X] {f : X → E →SL[σ₁₂] F}
     (hf : Continuous f) (g : F →SL[σ₂₃] G) :
     Continuous (fun x => g.comp (f x) : X → E →SL[σ₁₃] G) :=
-  (compSL E F G σ₁₂ σ₂₃ g).continuous.comp hf
+  (compSL σ₁₂ σ₂₃ E F G g).continuous.comp hf
 
 -- Giving the implicit argument speeds up elaboration significantly
 theorem _root_.Continuous.clm_comp_const {X} [TopologicalSpace X] {g : X → F →SL[σ₂₃] G}
@@ -291,7 +277,7 @@ variable (𝕜 σ₁₂ σ₂₃ E Fₗ Gₗ)
 
 /-- Composition of continuous linear maps as a continuous bilinear map. -/
 def compL : (Fₗ →L[𝕜] Gₗ) →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ :=
-  compSL E Fₗ Gₗ (RingHom.id 𝕜) (RingHom.id 𝕜)
+  compSL (RingHom.id 𝕜) (RingHom.id 𝕜) E Fₗ Gₗ
 
 set_option maxSynthPendingDepth 2 in
 theorem norm_compL_le : ‖compL 𝕜 E Fₗ Gₗ‖ ≤ 1 :=

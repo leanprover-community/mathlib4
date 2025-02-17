@@ -501,10 +501,10 @@ def postcomp [IsTopologicalAddGroup F] [IsTopologicalAddGroup G] [ContinuousCons
       (UniformOnFun.postcomp_uniformContinuous L.uniformContinuous).continuous.comp
         (UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous
 
-variable (F G σ τ)
-
+variable (F G σ τ) in
 /-- Composition of continuous semilinear maps as a continuous semibilinear map. -/
-def compSL [TopologicalAddGroup F] [TopologicalAddGroup G]
+@[simps]
+def compSL [IsTopologicalAddGroup F] [IsTopologicalAddGroup G]
     [ContinuousConstSMul 𝕜₂ F] [ContinuousConstSMul 𝕜₃ G] :
     (F →SL[τ] G) →L[𝕜₃] (E →SL[σ] F) →SL[τ] E →SL[ρ] G where
   toFun := postcomp E
