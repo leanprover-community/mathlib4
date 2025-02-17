@@ -7,7 +7,7 @@ import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.ValuationSubring
 import Mathlib.Topology.Algebra.Valued.ValuedField
-import Mathlib.Topology.Algebra.Valued.WithValuation
+import Mathlib.Topology.Algebra.Valued.WithVal
 import Mathlib.Algebra.Order.Group.TypeTags
 
 /-!
@@ -413,18 +413,17 @@ theorem not_mem_adicCompletionIntegers {x : v.adicCompletion K} :
 section AlgebraInstances
 
 instance (priority := 100) adicValued.has_uniform_continuous_const_smul' :
-    UniformContinuousConstSMul R (WithValuation <| v.valuation K) :=
-  uniformContinuousConstSMul_of_continuousConstSMul R (WithValuation <| v.valuation K)
+    UniformContinuousConstSMul R (WithVal <| v.valuation K) :=
+  uniformContinuousConstSMul_of_continuousConstSMul R (WithVal <| v.valuation K)
 
 section Algebra
 variable [Algebra S K]
 
 instance adicValued.uniformContinuousConstSMul :
-    UniformContinuousConstSMul S (WithValuation <| v.valuation K) := by
+    UniformContinuousConstSMul S (WithVal <| v.valuation K) := by
   refine ⟨fun l ↦ ?_⟩
   simp_rw [Algebra.smul_def]
-  exact (Ring.uniformContinuousConstSMul
-    (WithValuation <| v.valuation K)).uniformContinuous_const_smul _
+  exact (Ring.uniformContinuousConstSMul (WithVal <| v.valuation K)).uniformContinuous_const_smul _
 
 open UniformSpace in
 instance : Algebra S (v.adicCompletion K) where
@@ -435,8 +434,8 @@ instance : Algebra S (v.adicCompletion K) where
     | hp =>
       exact isClosed_eq (continuous_mul_left _) (continuous_mul_right _)
     | ih x =>
-      change (↑(algebraMap S (WithValuation <| v.valuation K) r) : v.adicCompletion K) * x
-        = x * (↑(algebraMap S (WithValuation <| v.valuation K) r) : v.adicCompletion K)
+      change (↑(algebraMap S (WithVal <| v.valuation K) r) : v.adicCompletion K) * x
+        = x * (↑(algebraMap S (WithVal <| v.valuation K) r) : v.adicCompletion K)
       norm_cast
       rw [Algebra.commutes]
   smul_def' r x := by
@@ -444,19 +443,20 @@ instance : Algebra S (v.adicCompletion K) where
     | hp =>
       exact isClosed_eq (continuous_const_smul _) (continuous_mul_left _)
     | ih x =>
-      change _ = (↑(algebraMap S (WithValuation <| v.valuation K) r) : v.adicCompletion K) * x
+      change _ = (↑(algebraMap S (WithVal <| v.valuation K) r) : v.adicCompletion K) * x
       norm_cast
       rw [← Algebra.smul_def]
 
-theorem coe_smul_adicCompletion (r : S) (x : WithValuation (v.valuation K)) :
+theorem coe_smul_adicCompletion (r : S) (x : WithVal (v.valuation K)) :
     (↑(r • x) : v.adicCompletion K) = r • (↑x : v.adicCompletion K) :=
   UniformSpace.Completion.coe_smul r x
 
 theorem algebraMap_adicCompletion : ⇑(algebraMap S <| v.adicCompletion K) = (↑) ∘ algebraMap S K :=
   rfl
 
-instance : IsScalarTower S K (v.adicCompletion K) := sorry --inferInstanceAs <|
-  --IsScalarTower _ K (@UniformSpace.Completion K v.adicValued.toUniformSpace)
+-- now inferred automatically
+-- instance : IsScalarTower S K (v.adicCompletion K) := inferInstanceAs <|
+--   IsScalarTower _ K (@UniformSpace.Completion K v.adicValued.toUniformSpace)
 
 end Algebra
 
