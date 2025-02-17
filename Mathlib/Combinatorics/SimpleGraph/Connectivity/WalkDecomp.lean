@@ -20,6 +20,7 @@ namespace SimpleGraph.Walk
 universe u
 
 variable {V : Type u} {G : SimpleGraph V} {v w u : V}
+
 /-! ### Walk decompositions -/
 
 section WalkDecomp
