@@ -179,6 +179,25 @@ section GradedRing
 
 variable (𝒜 : ι → AddSubmonoid A) [inst : GradedRing 𝒜] (rel : A → A → Prop)
 
+instance : SetLike.GradedMonoid ((AddSubmonoid.map (RingQuot.mkRingHom rel)).comp 𝒜) where
+  one_mem := by
+    use 1
+    constructor
+    · exact SetLike.GradedOne.one_mem
+    · exact map_one (RingQuot.mkRingHom rel)
+  mul_mem := by
+    intro x y gi gj hi hj
+    simp only [Function.comp_apply, Submodule.mem_map]
+    rcases hi with ⟨a, ha1, ha2⟩
+    rcases hj with ⟨b, hb1, hb2⟩
+    use a * b
+    constructor
+    · exact SetLike.GradedMul.mul_mem ha1 hb1
+    · rw [map_mul, ha2, hb2]
+
+instance : GradedRing ((AddSubmonoid.map (RingQuot.mkRingHom rel)).comp 𝒜) :=
+  sorry
+
 end GradedRing
 
 section GradedAlgebra
