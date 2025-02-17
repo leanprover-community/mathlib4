@@ -349,7 +349,6 @@ Given a Dedekind domain `R` with field of fractions `K` and a maximal ideal `v` 
 the completion of `K` with respect to its `v`-adic valuation, denoted `v.adicCompletion`, and its
 ring of integers, denoted `v.adicCompletionIntegers`. -/
 
-
 variable {K}
 
 /-- `K` as a valued field with the `v`-adic valuation. -/
@@ -360,9 +359,6 @@ theorem adicValued_apply {x : K} : v.adicValued.v x = v.valuation K x :=
   rfl
 
 variable (K)
-
--- TODO: We would be fighting Lean in this section a lot less if "`K` equipped with its `v`-adic
--- valuation existed as a type synonym
 
 /-- The completion of `K` with respect to its `v`-adic valuation. -/
 abbrev adicCompletion := (v.valuation K).Completion
