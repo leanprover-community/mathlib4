@@ -13,12 +13,12 @@ This file contains results about smoothness of standard maps associated to produ
 - if `f` and `g` are `C^n`, so is their point-wise product.
 - the component projections from a product of manifolds are smooth.
 - functions into a product (*pi type*) are `C^n` iff their components are
-- if `M` and `N` are `C^n` manifolds modelled over the same space, `Sum.inl` and `Sum.inr` are
+- if `M` and `N` are manifolds modelled over the same space, `Sum.inl` and `Sum.inr` are
 `C^n`, as are `Sum.elim`, `Sum.map` and `Sum.swap`.
 
 -/
 
-open Set Function Filter ChartedSpace IsManifold
+open Set Function Filter ChartedSpace
 
 open scoped Topology Manifold
 
@@ -383,7 +383,7 @@ lemma ContMDiff.inr : ContMDiff I I n (@Sum.inr M M') := by
   refine ⟨continuous_inr.continuousAt, ?_⟩
   -- In extended charts, .inl equals the identity (on the chart sources).
   apply contDiffWithinAt_id.congr_of_eventuallyEq; swap
-  · simp [ChartedSpace.sum_chartAt_inr]
+  · simp only [mfld_simps, sum_chartAt_inr, PartialHomeomorph.lift_openEmbedding_toFun]
     congr
     apply Sum.inr_injective.extend_apply (chartAt _ x)
   set C := chartAt H x with hC
