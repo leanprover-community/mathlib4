@@ -39,13 +39,9 @@ theorem preadditiveCoyonedaObj_map_surjective {G : C} [Projective G] (hG : IsSep
   have mono : Mono cm.op.f := by dsimp [cm]; infer_instance
   let φ := preadditiveCoyonedaObj G
   have faithful : φ.Faithful := by rwa [← isSeparator_iff_faithful_preadditiveCoyonedaObj]
-  have preservesFiniteColimits : PreservesFiniteColimits φ :=
-    preservesFiniteColimits_preadditiveCoyonedaObj_of_projective _
-  let top := cm.op.map (preadditiveYoneda.obj Y)
-  let bot := cm.op.map (φ.op ⋙ preadditiveYoneda.obj (φ.obj Y))
   apply ShortComplex.epi_of_mono_of_epi_of_mono (cm.op.mapNatTrans (preadditiveYonedaMap _ _))
   · exact exact.op.map_of_mono_of_preservesKernel _ mono inferInstance
-  · simp only [bot, ShortComplex.map_f]
+  · simp only [ShortComplex.map_f]
     infer_instance
   · suffices φ.map.Surjective by simpa [AddCommGrp.epi_iff_surjective, Functor.coe_mapAddHom]
     exact fun f => ⟨f (𝟙 G), by aesop_cat⟩
