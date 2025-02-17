@@ -611,7 +611,7 @@ alias nfp_add_eq_mul_omega := nfp_add_eq_mul_omega0
 theorem add_eq_right_iff_mul_omega0_le {a b : Ordinal} : a + b = b ↔ a * ω ≤ b := by
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [← nfp_add_zero a, ← deriv_zero_right]
-    rcases eq_zero_or_opow_omega0_le_of_mul_eq_right hab with hab | hab
+    obtain ⟨c, hc⟩ := (isNormal_add_right a).fp_iff_deriv.1 h
     rw [← hc]
     exact (isNormal_deriv _).monotone (Ordinal.zero_le _)
   · have := Ordinal.add_sub_cancel_of_le h
@@ -695,7 +695,7 @@ theorem mul_eq_right_iff_opow_omega0_dvd {a b : Ordinal} : a * b = b ↔ a ^ ω 
   · rw [dvd_iff_mod_eq_zero]
     rw [← div_add_mod b (a ^ ω), mul_add, ← mul_assoc, ← opow_one_add, one_add_omega0,
       add_left_cancel_iff] at hab
-    cases' eq_zero_or_opow_omega0_le_of_mul_eq_right hab with hab hab
+    rcases eq_zero_or_opow_omega0_le_of_mul_eq_right hab with hab | hab
     · exact hab
     refine (not_lt_of_le hab (mod_lt b (opow_ne_zero ω ?_))).elim
     rwa [← Ordinal.pos_iff_ne_zero]
