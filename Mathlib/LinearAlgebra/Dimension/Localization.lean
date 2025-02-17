@@ -61,6 +61,7 @@ lemma IsLocalizedModule.lift_rank_eq :
   · exact (IsLocalizedModule.linearIndependent_lift p f hp hs).choose_spec.cardinal_lift_le_rank
   · choose sec hsec using IsLocalization.surj p (S := S)
     refine LinearIndependent.cardinal_lift_le_rank (ι := s) (v := fun i ↦ f i) ?_
+    rw [LinearIndepOn] at hs
     rw [linearIndependent_iff'] at hs ⊢
     intro t g hg i hit
     apply (IsLocalization.map_units S (sec (g i)).2).mul_left_injective
@@ -90,11 +91,11 @@ end
 
 variable (R M) in
 theorem exists_set_linearIndependent_of_isDomain [IsDomain R] :
-    ∃ s : Set M, #s = Module.rank R M ∧ LinearIndependent (ι := s) R Subtype.val := by
+    ∃ s : Set M, #s = Module.rank R M ∧ LinearIndepOn R id s := by
   obtain ⟨w, hw⟩ :=
     IsLocalizedModule.linearIndependent_lift R⁰ (LocalizedModule.mkLinearMap R⁰ M) le_rfl
       (Module.Free.chooseBasis (FractionRing R) (LocalizedModule R⁰ M)).linearIndependent
-  refine ⟨Set.range w, ?_, (linearIndependent_subtype_range hw.injective).mpr hw⟩
+  refine ⟨Set.range w, ?_, (linearIndepOn_id_range_iff hw.injective).mpr hw⟩
   apply Cardinal.lift_injective.{max u v}
   rw [Cardinal.mk_range_eq_of_injective hw.injective, ← Module.Free.rank_eq_card_chooseBasisIndex,
   IsLocalizedModule.lift_rank_eq (FractionRing R) R⁰ (LocalizedModule.mkLinearMap R⁰ M) le_rfl]
