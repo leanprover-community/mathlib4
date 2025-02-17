@@ -32,7 +32,7 @@ This file defines the determinant of a matrix, `Matrix.det`, and its essential p
 ## Implementation notes
 
 It is possible to configure `simp` to compute determinants. See the file
-`test/matrix.lean` for some examples.
+`MathlibTest/matrix.lean` for some examples.
 
 -/
 
@@ -74,7 +74,7 @@ theorem det_diagonal {d : n → R} : det (diagonal d) = ∏ i, d i := by
   rw [det_apply']
   refine (Finset.sum_eq_single 1 ?_ ?_).trans ?_
   · rintro σ - h2
-    cases' not_forall.1 (mt Equiv.ext h2) with x h3
+    obtain ⟨x, h3⟩ := not_forall.1 (mt Equiv.ext h2)
     convert mul_zero (ε σ)
     apply Finset.prod_eq_zero (mem_univ x)
     exact if_neg h3
@@ -252,7 +252,7 @@ theorem det_smul (A : Matrix n n R) (c : R) : det (c • A) = c ^ Fintype.card n
   calc
     det (c • A) = det ((diagonal fun _ => c) * A) := by rw [smul_eq_diagonal_mul]
     _ = det (diagonal fun _ => c) * det A := det_mul _ _
-    _ = c ^ Fintype.card n * det A := by simp [card_univ]
+    _ = c ^ Fintype.card n * det A := by simp
 
 @[simp]
 theorem det_smul_of_tower {α} [Monoid α] [DistribMulAction α R] [IsScalarTower α R R]
@@ -633,7 +633,7 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
 
 /-- The determinant of a 2×2 block matrix with the lower-left block equal to zero is the product of
 the determinants of the diagonal blocks. For the generalization to any number of blocks, see
-`Matrix.det_of_upper_triangular`. -/
+`Matrix.det_of_upperTriangular`. -/
 @[simp]
 theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Matrix n n R) :
     (Matrix.fromBlocks A B 0 D).det = A.det * D.det := by
@@ -644,10 +644,7 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
     · simp_rw [sum_mul_sum, ← sum_product', univ_product_univ]
       refine sum_nbij (fun σ ↦ σ.fst.sumCongr σ.snd) ?_ ?_ ?_ ?_
       · intro σ₁₂ _
-        simp only
-        erw [Set.mem_toFinset, MonoidHom.mem_range]
-        use σ₁₂
-        simp only [sumCongrHom_apply]
+        simp
       · intro σ₁ _ σ₂ _
         dsimp only
         intro h
@@ -679,7 +676,7 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
         simpa only [Set.MapsTo, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] using
           mt mem_sumCongrHom_range_of_perm_mapsTo_inl hσn
       obtain ⟨a, ha⟩ := not_forall.mp h1
-      cases' hx : σ (Sum.inl a) with a2 b
+      rcases hx : σ (Sum.inl a) with a2 | b
       · have hn := (not_exists.mp ha) a2
         exact absurd hx.symm hn
       · rw [Finset.prod_eq_zero (Finset.mem_univ (Sum.inl a)), mul_zero]
@@ -687,7 +684,7 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
 
 /-- The determinant of a 2×2 block matrix with the upper-right block equal to zero is the product of
 the determinants of the diagonal blocks. For the generalization to any number of blocks, see
-`Matrix.det_of_lower_triangular`. -/
+`Matrix.det_of_lowerTriangular`. -/
 @[simp]
 theorem det_fromBlocks_zero₁₂ (A : Matrix m m R) (C : Matrix n m R) (D : Matrix n n R) :
     (Matrix.fromBlocks A 0 C D).det = A.det * D.det := by
@@ -790,10 +787,10 @@ theorem det_fin_three (A : Matrix (Fin 3) (Fin 3) R) :
       A 0 0 * A 1 1 * A 2 2 - A 0 0 * A 1 2 * A 2 1
       - A 0 1 * A 1 0 * A 2 2 + A 0 1 * A 1 2 * A 2 0
       + A 0 2 * A 1 0 * A 2 1 - A 0 2 * A 1 1 * A 2 0 := by
-  simp only [det_succ_row_zero, ← Nat.not_even_iff_odd, submatrix_apply, Fin.succ_zero_eq_one,
-    submatrix_submatrix, det_unique, Fin.default_eq_zero, comp_apply, Fin.succ_one_eq_two,
-    Fin.sum_univ_succ, Fin.val_zero, Fin.zero_succAbove, univ_unique, Fin.val_succ,
-    Fin.val_eq_zero, Fin.succ_succAbove_zero, sum_singleton, Fin.succ_succAbove_one, even_add_self]
+  simp only [det_succ_row_zero, submatrix_apply, Fin.succ_zero_eq_one, submatrix_submatrix,
+    det_unique, Fin.default_eq_zero, Function.comp_apply, Fin.succ_one_eq_two, Fin.sum_univ_succ,
+    Fin.val_zero, Fin.zero_succAbove, univ_unique, Fin.val_succ, Fin.val_eq_zero,
+    Fin.succ_succAbove_zero, sum_singleton, Fin.succ_succAbove_one]
   ring
 
 end Matrix

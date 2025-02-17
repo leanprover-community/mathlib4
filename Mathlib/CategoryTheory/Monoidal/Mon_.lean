@@ -3,11 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.Algebra.Group.PUnit
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.Algebra.PUnitInstances.Algebra
 
 /-!
 # The category of monoids in a monoidal category.
@@ -29,6 +29,7 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 
 When the monoidal category is preadditive, this is also sometimes called an "algebra object".
 -/
+@[ext]
 class Mon_Class (X : C) where
   /-- The unit morphism of a monoid object. -/
   one : 𝟙_ C ⟶ X
@@ -246,14 +247,11 @@ namespace CategoryTheory.Functor
 
 variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/6053
-we needed to increase the `maxHeartbeats` limit.
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6053
+we needed to increase the `maxHeartbeats` limit if we didn't write an explicit proof for
+`map_id` and `map_comp`.
 
-This may indicate a configuration problem in Aesop.
--/
-set_option maxHeartbeats 400000 in
+This may indicate a configuration problem in Aesop. -/
 -- TODO: mapMod F A : Mod A ⥤ Mod (F.mapMon A)
 /-- A lax monoidal functor takes monoid objects to monoid objects.
 
@@ -284,6 +282,12 @@ def mapMon (F : C ⥤ D) [F.LaxMonoidal] : Mon_ C ⥤ Mon_ D where
       mul_hom := by
         rw [Category.assoc, μ_natural_assoc, ← F.map_comp, ← F.map_comp,
           f.mul_hom] }
+  map_id _ := by -- the `aesop_cat` autoparam solves this but it's slow
+    simp only [Mon_.id_hom', map_id]
+    rfl
+  map_comp _ _ := by -- the `aesop_cat` autoparam solves this but it's slow
+    simp only [Mon_.comp_hom', map_comp]
+    rfl
 
 variable (C D)
 
@@ -337,7 +341,6 @@ def monToLaxMonoidal : Mon_ C ⥤ LaxMonoidalFunctor (Discrete PUnit.{u + 1}) C 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 
-set_option maxHeartbeats 400000 in
 /-- Implementation of `Mon_.equivLaxMonoidalFunctorPUnit`. -/
 @[simps!]
 def unitIso :

@@ -3,7 +3,7 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat.Basic
+import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Data.Nat.Defs
@@ -20,11 +20,11 @@ namespace Nat
 
 /-! ### Instances -/
 
-instance instCanonicallyLinearOrderedAddCommMonoid : CanonicallyLinearOrderedAddCommMonoid ℕ where
+instance instLinearOrderedAddCommMonoid : LinearOrderedAddCommMonoid ℕ where
   __ := instLinearOrder
-  bot := 0
-  bot_le := Nat.zero_le
   add_le_add_left := @Nat.add_le_add_left
+
+instance instCanonicallyOrderedAdd : CanonicallyOrderedAdd ℕ where
   le_self_add := Nat.le_add_right
   exists_add_of_le := Nat.exists_eq_add_of_le
 

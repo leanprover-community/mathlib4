@@ -13,7 +13,7 @@ This file contains some basic results about the `Fintype` instance for `Fin`,
 especially properties of `Finset.univ : Finset (Fin n)`.
 -/
 
-open Mathlib
+open List (Vector)
 
 open Finset
 
@@ -61,7 +61,7 @@ theorem card_filter_univ_succ' (p : Fin (n + 1) → Prop) [DecidablePred p] :
     #{x | p x} = ite (p 0) 1 0 + #{x | p (.succ x)}:= by
   rw [card_filter_univ_succ]; split_ifs <;> simp [add_comm]
 
-theorem card_filter_univ_eq_vector_get_eq_count [DecidableEq α] (a : α) (v : Mathlib.Vector α n) :
+theorem card_filter_univ_eq_vector_get_eq_count [DecidableEq α] (a : α) (v : List.Vector α n) :
     #{i | v.get i = a} = v.toList.count a := by
   induction' v with n x xs hxs
   · simp

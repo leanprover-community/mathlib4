@@ -748,7 +748,7 @@ variable (α)
 protected def id : α →*₀o α :=
   { MonoidWithZeroHom.id α, OrderHom.id with }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(OrderMonoidWithZeroHom.id α) = id :=
   rfl
 

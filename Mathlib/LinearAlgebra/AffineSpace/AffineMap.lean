@@ -62,7 +62,7 @@ instance AffineMap.instFunLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*
     [AffineSpace V2 P2] : FunLike (P1 →ᵃ[k] P2) P1 P2 where
   coe := AffineMap.toFun
   coe_injective' := fun ⟨f, f_linear, f_add⟩ ⟨g, g_linear, g_add⟩ => fun (h : f = g) => by
-    cases' (AddTorsor.nonempty : Nonempty P1) with p
+    obtain ⟨p⟩ := (AddTorsor.nonempty : Nonempty P1)
     congr with v
     apply vadd_right_cancel (f p)
     rw [← f_add, h, ← g_add]
@@ -331,7 +331,7 @@ nonrec def id : P1 →ᵃ[k] P1 where
   map_vadd' _ _ := rfl
 
 /-- The identity affine map acts as the identity. -/
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(id k P1) = _root_.id :=
   rfl
 
@@ -710,7 +710,7 @@ section Ext
 
 variable [Finite ι] [DecidableEq ι] {f g : ((i : ι) → φv i) →ᵃ[k] P2}
 
-/-- Two affine maps from a Pi-tyoe of modules `(i : ι) → φv i` are equal if they are equal in their
+/-- Two affine maps from a Pi-type of modules `(i : ι) → φv i` are equal if they are equal in their
   operation on `Pi.single` and at zero. Analogous to `LinearMap.pi_ext`. See also `pi_ext_nonempty`,
   which instead of agreement at zero requires `Nonempty ι`. -/
 theorem pi_ext_zero (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) (h₂ : f 0 = g 0) :
@@ -727,7 +727,7 @@ theorem pi_ext_zero (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) (h₂ :
     rwa [s₂, s₃, h₂, vadd_right_cancel_iff] at s₁
   · exact h₂
 
-/-- Two affine maps from a Pi-tyoe of modules `(i : ι) → φv i` are equal if they are equal in their
+/-- Two affine maps from a Pi-type of modules `(i : ι) → φv i` are equal if they are equal in their
   operation on `Pi.single` and `ι` is nonempty.  Analogous to `LinearMap.pi_ext`. See also
   `pi_ext_zero`, which instead `Nonempty ι` requires agreement at 0.-/
 theorem pi_ext_nonempty [Nonempty ι] (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) :

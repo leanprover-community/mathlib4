@@ -8,7 +8,7 @@ import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 import Mathlib.RingTheory.OreLocalization.Ring
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.Ring
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Localizations of commutative rings
@@ -80,8 +80,7 @@ localization, ring localization, commutative ring localization, characteristic p
 commutative ring, field of fractions
 -/
 
-assert_not_exists AlgHom
-assert_not_exists Ideal
+assert_not_exists AlgHom Ideal
 
 open Function
 
@@ -850,6 +849,14 @@ namespace IsLocalization
 
 variable {K : Type*} [IsLocalization M S]
 
+theorem mk'_neg (x : R) (y : M) :
+    mk' S (-x) y = - mk' S x y := by
+  rw [eq_comm, eq_mk'_iff_mul_eq, neg_mul, map_neg, mk'_spec]
+
+theorem mk'_sub (x₁ x₂ : R) (y₁ y₂ : M) :
+    mk' S (x₁ * y₂ - x₂ * y₁) (y₁ * y₂) = mk' S x₁ y₁ - mk' S x₂ y₂ := by
+  rw [sub_eq_add_neg, sub_eq_add_neg, ← mk'_neg, ← mk'_add, neg_mul]
+
 include M in
 lemma injective_of_map_algebraMap_zero {T} [CommRing T] (f : S →+* T)
     (h : ∀ x, f (algebraMap R S x) = 0 → algebraMap R S x = 0) :
@@ -907,7 +914,7 @@ theorem noZeroDivisors_of_le_nonZeroDivisors [Algebra A S] {M : Submonoid A} [Is
         z * w * algebraMap A S y.2 * algebraMap A S x.2 = algebraMap A S x.1 * algebraMap A S y.1 :=
         by rw [mul_assoc z, hy, ← hx]; ring
       rw [h, zero_mul, zero_mul, ← (algebraMap A S).map_mul] at this
-      cases' eq_zero_or_eq_zero_of_mul_eq_zero ((to_map_eq_zero_iff S hM).mp this.symm) with H H
+      rcases eq_zero_or_eq_zero_of_mul_eq_zero ((to_map_eq_zero_iff S hM).mp this.symm) with H | H
       · exact Or.inl (eq_zero_of_fst_eq_zero hx H)
       · exact Or.inr (eq_zero_of_fst_eq_zero hy H) }
 

@@ -41,6 +41,8 @@ Partition
 <https://en.wikipedia.org/wiki/Partition_(number_theory)>
 -/
 
+assert_not_exists Field
+
 open Multiset
 
 namespace Nat
@@ -54,12 +56,11 @@ structure Partition (n : ℕ) where
   parts_pos : ∀ {i}, i ∈ parts → 0 < i
   /-- proof that the `parts` sum to `n`-/
   parts_sum : parts.sum = n
-  -- Porting note: chokes on `parts_pos`
-  --deriving DecidableEq
+deriving DecidableEq
 
 namespace Partition
 
--- TODO: This should be automatically derived, see https://github.com/leanprover/lean4/issues/2914
+@[deprecated "Partition now derives an instance of DecidableEq." (since := "2024-12-28")]
 instance decidableEqPartition {n : ℕ} : DecidableEq (Partition n) :=
   fun _ _ => decidable_of_iff' _ Partition.ext_iff
 

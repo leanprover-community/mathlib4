@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Martin Zinkevich, Rémy Degenne
 -/
 import Mathlib.Logic.Encodable.Lattice
 import Mathlib.MeasureTheory.MeasurableSpace.Defs
+import Mathlib.Order.Disjointed
 
 /-!
 # Induction principles for measurable sets, related to π-systems and λ-systems.
@@ -348,8 +349,7 @@ theorem piiUnionInter_singleton (π : ι → Set (Set α)) (i : ι) :
         ext1 x
         simp only [Finset.not_mem_empty, iff_false]
         exact fun hx => hi (hti x hx ▸ hx)
-      -- Porting note: `Finset.not_mem_empty` required
-      simp [ht_empty, Finset.not_mem_empty, iInter_false, iInter_univ, Set.mem_singleton univ]
+      simp [ht_empty, iInter_false, iInter_univ, Set.mem_singleton univ]
   · cases' h with hs hs
     · refine ⟨{i}, ?_, fun _ => s, ⟨fun x hx => ?_, ?_⟩⟩
       · rw [Finset.coe_singleton]
@@ -482,6 +482,8 @@ end UnionInter
 
 namespace MeasurableSpace
 
+open scoped Function -- required for scoped `on` notation
+
 variable {α : Type*}
 
 /-! ## Dynkin systems and Π-λ theorem -/
@@ -611,13 +613,11 @@ theorem ofMeasurableSpace_toMeasurableSpace
 
 /-- If `s` is in a Dynkin system `d`, we can form the new Dynkin system `{s ∩ t | t ∈ d}`. -/
 def restrictOn {s : Set α} (h : d.Has s) : DynkinSystem α where
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
   Has t := d.Has (t ∩ s)
   has_empty := by simp [d.has_empty]
   has_compl {t} hts := by
-    beta_reduce
     have : tᶜ ∩ s = (t ∩ s)ᶜ \ sᶜ := Set.ext fun x => by by_cases h : x ∈ s <;> simp [h]
-    rw [this]
+    simp_rw [this]
     exact
       d.has_diff (d.has_compl hts) (d.has_compl h)
         (compl_subset_compl.mpr inter_subset_right)

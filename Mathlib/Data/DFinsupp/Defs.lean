@@ -38,8 +38,7 @@ the `Add` instance as noncomputable. This design difference is independent of th
 definitions, or introduce two more definitions for the other combinations of decisions.
 -/
 
-assert_not_exists Finset.prod
-assert_not_exists Submonoid
+assert_not_exists Finset.prod Submonoid
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 
@@ -622,7 +621,7 @@ def update : Π₀ i, β i :=
         · simp
         · obtain hj | (hj : f j = 0) := s.prop j
           · exact Or.inl (Multiset.mem_cons_of_mem hj)
-          · exact Or.inr ((Function.update_noteq hi.symm b _).trans hj)⟩⟩
+          · exact Or.inr ((Function.update_of_ne hi.symm b _).trans hj)⟩⟩
 
 variable (j : ι)
 
@@ -645,14 +644,14 @@ theorem update_eq_single_add_erase {β : ι → Type*} [∀ i, AddZeroClass (β 
   ext j
   rcases eq_or_ne i j with (rfl | h)
   · simp
-  · simp [Function.update_noteq h.symm, h, erase_ne, h.symm]
+  · simp [Function.update_of_ne h.symm, h, erase_ne, h.symm]
 
 theorem update_eq_erase_add_single {β : ι → Type*} [∀ i, AddZeroClass (β i)] (f : Π₀ i, β i)
     (i : ι) (b : β i) : f.update i b = f.erase i + single i b := by
   ext j
   rcases eq_or_ne i j with (rfl | h)
   · simp
-  · simp [Function.update_noteq h.symm, h, erase_ne, h.symm]
+  · simp [Function.update_of_ne h.symm, h, erase_ne, h.symm]
 
 theorem update_eq_sub_add_single {β : ι → Type*} [∀ i, AddGroup (β i)] (f : Π₀ i, β i) (i : ι)
     (b : β i) : f.update i b = f - single i (f i) + single i b := by
@@ -743,8 +742,8 @@ protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (
       Function.comp, Subtype.coe_mk]
     have H2 : ∀ j, j ∈ s ∨ ite (j = i) 0 (f j) = 0 := by
       intro j
-      cases' H j with H2 H2
-      · cases' Multiset.mem_cons.1 H2 with H3 H3
+      rcases H j with H2 | H2
+      · rcases Multiset.mem_cons.1 H2 with H3 | H3
         · right; exact if_pos H3
         · left; exact H3
       right
@@ -757,7 +756,7 @@ protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (
   have H3 : single i _ + _ = (⟨f, Trunc.mk ⟨i ::ₘ s, H⟩⟩ : Π₀ i, β i) := single_add_erase _ _
   rw [← H3]
   change p (single i (f i) + _)
-  cases' Classical.em (f i = 0) with h h
+  rcases Classical.em (f i = 0) with h | h
   · rw [h, single_zero, zero_add]
     exact H2
   refine ha _ _ _ ?_ h H2
@@ -922,6 +921,11 @@ theorem mapRange_single {f : ∀ i, β₁ i → β₂ i} {hf : ∀ i, f i 0 = 0}
       simp
     · simp [h, hf]
 
+theorem mapRange_injective (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) :
+    Function.Injective (mapRange f hf) ↔ ∀ i, Function.Injective (f i) :=
+  ⟨fun h i x y eq ↦ single_injective (@h (single i x) (single i y) <| by
+    simpa using congr_arg _ eq), fun h _ _ eq ↦ DFinsupp.ext fun i ↦ h i congr($eq i)⟩
+
 variable [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] [∀ (i) (x : β₂ i), Decidable (x ≠ 0)]
 
 theorem support_mapRange {f : ∀ i, β₁ i → β₂ i} {hf : ∀ i, f i 0 = 0} {g : Π₀ i, β₁ i} :
@@ -984,7 +988,7 @@ theorem subtypeDomain_def (f : Π₀ i, β i) :
     f.subtypeDomain p = mk (f.support.subtype p) fun i => f i := by
   ext i; by_cases h2 : f i ≠ 0 <;> try simp at h2; dsimp; simp [h2]
 
-@[simp, nolint simpNF] -- Porting note: simpNF claims that LHS does not simplify, but it does
+@[simp]
 theorem support_subtypeDomain {f : Π₀ i, β i} :
     (subtypeDomain p f).support = f.support.subtype p := by
   ext i

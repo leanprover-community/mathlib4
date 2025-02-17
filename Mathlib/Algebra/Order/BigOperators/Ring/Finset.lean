@@ -3,8 +3,8 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Algebra.Order.AbsoluteValue
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.BigOperators.Ring.Multiset
 import Mathlib.Tactic.Ring
@@ -38,15 +38,13 @@ the case of an ordered commutative multiplicative monoid. -/
 @[gcongr]
 lemma prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g i) :
     ∏ i ∈ s, f i ≤ ∏ i ∈ s, g i := by
-  induction' s using Finset.cons_induction with a s has ih h
-  · simp
-  · simp only [prod_cons]
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s has ih =>
+    simp only [prod_cons, forall_mem_cons] at h0 h1 ⊢
     have := posMulMono_iff_mulPosMono.1 ‹PosMulMono R›
-    apply mul_le_mul
-    · exact h1 a (mem_cons_self a s)
-    · refine ih (fun x H ↦ h0 _ ?_) (fun x H ↦ h1 _ ?_) <;> exact subset_cons _ H
-    · apply prod_nonneg fun x H ↦ h0 x (subset_cons _ H)
-    · apply le_trans (h0 a (mem_cons_self a s)) (h1 a (mem_cons_self a s))
+    gcongr
+    exacts [prod_nonneg h0.2, h0.1.trans h1.1, h1.1, ih h0.2 h1.2]
 
 /-- If each `f i`, `i ∈ s` belongs to `[0, 1]`, then their product is less than or equal to one.
 See also `Finset.prod_le_one'` for the case of an ordered commutative multiplicative monoid. -/
@@ -112,11 +110,7 @@ lemma prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h
   simp_rw [prod_eq_mul_prod_diff_singleton hi]
   refine le_trans ?_ (mul_le_mul_of_nonneg_right h2i ?_)
   · rw [right_distrib]
-    refine add_le_add ?_ ?_ <;>
-    · refine mul_le_mul_of_nonneg_left ?_ ?_
-      · refine prod_le_prod ?_ ?_ <;> simp +contextual [*]
-      · try apply_assumption
-        try assumption
+    gcongr with j hj <;> aesop
   · apply prod_nonneg
     simp only [and_imp, mem_sdiff, mem_singleton]
     exact fun j hj hji ↦ le_trans (hg j hj) (hgf j hj hji)
@@ -137,30 +131,28 @@ theorem PNat.coe_prod {ι : Type*} (f : ι → ℕ+) (s : Finset ι) :
     ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : ℕ) :=
   map_prod PNat.coeMonoidHom _ _
 
-section CanonicallyOrderedCommSemiring
-variable [CanonicallyOrderedCommSemiring R] {f g h : ι → R} {s : Finset ι} {i : ι}
+section CanonicallyOrderedAdd
+variable [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
+  {f g h : ι → R} {s : Finset ι} {i : ι}
 
-/-- Note that the name is to match `CanonicallyOrderedCommSemiring.mul_pos`. -/
-@[simp] lemma _root_.CanonicallyOrderedCommSemiring.prod_pos [Nontrivial R] :
+/-- Note that the name is to match `CanonicallyOrderedAdd.mul_pos`. -/
+@[simp] lemma _root_.CanonicallyOrderedAdd.prod_pos [NoZeroDivisors R] [Nontrivial R] :
     0 < ∏ i ∈ s, f i ↔ (∀ i ∈ s, (0 : R) < f i) :=
-  CanonicallyOrderedCommSemiring.multiset_prod_pos.trans Multiset.forall_mem_map_iff
+  CanonicallyOrderedAdd.multiset_prod_pos.trans Multiset.forall_mem_map_iff
 
+attribute [local instance] CanonicallyOrderedAdd.toOrderedCommMonoid in
 /-- If `g, h ≤ f` and `g i + h i ≤ f i`, then the product of `f` over `s` is at least the
-  sum of the products of `g` and `h`. This is the version for `CanonicallyOrderedCommSemiring`.
+  sum of the products of `g` and `h`. This is the version for `CanonicallyOrderedAdd`.
 -/
 lemma prod_add_prod_le' (hi : i ∈ s) (h2i : g i + h i ≤ f i) (hgf : ∀ j ∈ s, j ≠ i → g j ≤ f j)
     (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) : ((∏ i ∈ s, g i) + ∏ i ∈ s, h i) ≤ ∏ i ∈ s, f i := by
   classical
-    simp_rw [prod_eq_mul_prod_diff_singleton hi]
-    refine le_trans ?_ (mul_le_mul_right' h2i _)
-    rw [right_distrib]
-    apply add_le_add <;> apply mul_le_mul_left' <;> apply prod_le_prod' <;>
-            simp only [and_imp, mem_sdiff, mem_singleton] <;>
-          intros <;>
-        apply_assumption <;>
-      assumption
+  simp_rw [prod_eq_mul_prod_diff_singleton hi]
+  refine le_trans ?_ (mul_le_mul_right' h2i _)
+  rw [right_distrib]
+  gcongr with j hj j hj <;> simp_all
 
-end CanonicallyOrderedCommSemiring
+end CanonicallyOrderedAdd
 
 /-! ### Named inequalities -/
 
@@ -226,8 +218,6 @@ lemma AbsoluteValue.sum_le [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue
 lemma IsAbsoluteValue.abv_sum [Semiring R] [OrderedSemiring S] (abv : R → S) [IsAbsoluteValue abv]
     (f : ι → R) (s : Finset ι) : abv (∑ i ∈ s, f i) ≤ ∑ i ∈ s, abv (f i) :=
   (IsAbsoluteValue.toAbsoluteValue abv).sum_le _ _
-
-@[deprecated (since := "2024-02-14")] alias abv_sum_le_sum_abv := IsAbsoluteValue.abv_sum
 
 nonrec lemma AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
     (abv : AbsoluteValue R S) (f : ι → R) (s : Finset ι) :
