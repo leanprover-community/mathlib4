@@ -32,7 +32,7 @@ section Ring
 namespace Submodule
 
 variable {R M : Type*} {r : R} {x y : M} [Ring R] [AddCommGroup M] [Module R M]
-variable (p p' : Submodule R M)
+variable (p p' p'' : Submodule R M)
 
 open LinearMap QuotientAddGroup
 
@@ -248,6 +248,40 @@ theorem ker_liftQ_eq_bot (f : M →ₛₗ[τ₁₂] M₂) (h) (h' : ker f ≤ p)
 theorem ker_liftQ_eq_bot' (f : M →ₛₗ[τ₁₂] M₂) (h : p = ker f) :
     ker (p.liftQ f (le_of_eq h)) = ⊥ :=
   ker_liftQ_eq_bot p f h.le h.ge
+
+abbrev factor (H : p ≤ p') : M ⧸ p →ₗ[R] M ⧸ p' :=
+  mapQ _ _ LinearMap.id H
+
+@[simp]
+theorem factor_eq : factor p p (le_refl p) = LinearMap.id := by
+  ext
+  simp
+
+@[simp]
+theorem factor_mk (H : p ≤ p') (x : M) : factor p p' H (mkQ p x) = mkQ p' x :=
+  rfl
+
+@[simp]
+theorem factor_comp_mk (H : p ≤ p') : (factor p p' H).comp (mkQ p) = mkQ p' := by
+  ext x
+  rw [LinearMap.comp_apply, factor_mk]
+
+@[simp]
+theorem factor_comp (H1 : p ≤ p') (H2 : p' ≤ p'') :
+    (factor p' p'' H2).comp (factor p p' H1) = factor p p'' (H1.trans H2) := by
+  ext
+  simp
+
+@[simp]
+theorem factor_comp_apply (H1 : p ≤ p') (H2 : p' ≤ p'') (x : M ⧸ p) :
+    factor p' p'' H2 (factor p p' H1 x) = factor p p'' (H1.trans H2) x := by
+  show (factor p' p'' H2).comp (factor p p' H1) x = factor p p'' (H1.trans H2) x
+  simp
+
+lemma factor_surjective (H : p ≤ p') : Function.Surjective (factor p p' H) := by
+  intro x
+  use Quotient.mk x.out
+  exact Quotient.out_eq x
 
 /-- The correspondence theorem for modules: there is an order isomorphism between submodules of the
 quotient of `M` by `p`, and submodules of `M` larger than `p`. -/
