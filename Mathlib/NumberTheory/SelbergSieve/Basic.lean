@@ -178,8 +178,8 @@ theorem multSum_eq_main_err (d : ℕ) : multSum d = ν d * X + R d := by
   dsimp [rem]
   ring
 
-theorem siftedSum_as_delta : siftedSum = ∑ d ∈ support, a d * if Nat.gcd P d = 1 then 1 else 0 :=
-  by
+theorem siftedsum_eq_sum_support_mul_ite :
+    siftedSum = ∑ d ∈ support, a d * if Nat.gcd P d = 1 then 1 else 0 := by
   dsimp only [siftedSum]
   simp_rw [mul_ite, mul_one, mul_zero]
 
@@ -189,7 +189,7 @@ omit s in
 def UpperMoebius (muPlus : ℕ → ℝ) : Prop :=
   ∀ n : ℕ, (if n=1 then 1 else 0) ≤ ∑ d ∈ n.divisors, muPlus d
 
-theorem upper_bound_of_UpperMoebius (muPlus : ℕ → ℝ) (h : UpperMoebius muPlus) :
+theorem siftedSum_le_sum_of_upperMoebius (muPlus : ℕ → ℝ) (h : UpperMoebius muPlus) :
     siftedSum ≤ ∑ d ∈ divisors P, muPlus d * multSum d := by
   have hμ : ∀ n, (if n = 1 then 1 else 0) ≤ ∑ d ∈ n.divisors, muPlus d := h
   calc siftedSum ≤
@@ -197,7 +197,7 @@ theorem upper_bound_of_UpperMoebius (muPlus : ℕ → ℝ) (h : UpperMoebius muP
     _ = ∑ n ∈ support, ∑ d ∈ divisors P, if d ∣ n then a n * muPlus d else 0 := ?caseB
     _ = ∑ d ∈ divisors P, muPlus d * multSum d := ?caseC
   case caseA =>
-    rw [siftedSum_as_delta]
+    rw [siftedsum_eq_sum_support_mul_ite]
     apply Finset.sum_le_sum; intro n _
     exact mul_le_mul_of_nonneg_left (hμ (Nat.gcd P n)) (weights_nonneg n)
   case caseB =>
@@ -210,10 +210,10 @@ theorem upper_bound_of_UpperMoebius (muPlus : ℕ → ℝ) (h : UpperMoebius muP
     rw [sum_comm]
     simp_rw [multSum, ← sum_filter, mul_sum, mul_comm]
 
-theorem siftedSum_le_mainSum_errSum_of_UpperMoebius (muPlus : ℕ → ℝ)
+theorem siftedSum_le_mainSum_errSum_of_upperMoebius (muPlus : ℕ → ℝ)
     (h : UpperMoebius muPlus) :
     siftedSum ≤ X * mainSum muPlus + errSum muPlus := by
-  calc siftedSum ≤ ∑ d ∈ divisors P, muPlus d * multSum d := upper_bound_of_UpperMoebius _ h
+  calc siftedSum ≤ ∑ d ∈ divisors P, muPlus d * multSum d := siftedSum_le_sum_of_upperMoebius _ h
    _ ≤ X * ∑ d ∈ divisors P, muPlus d * ν d + ∑ d ∈ divisors P, muPlus d * R d := ?caseA
    _ ≤ _ := ?caseB
   case caseA =>

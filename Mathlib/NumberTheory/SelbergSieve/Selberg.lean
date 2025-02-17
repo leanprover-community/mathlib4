@@ -434,7 +434,7 @@ theorem selberg_bound (s : SelbergSieve) :
   let mu_plus := selbergMuPlus
   calc
     s.siftedSum ≤ X * s.mainSum μ⁺ + s.errSum μ⁺ :=
-      s.siftedSum_le_mainSum_errSum_of_UpperMoebius mu_plus upperMoebius_selbergMuPlus
+      s.siftedSum_le_mainSum_errSum_of_upperMoebius mu_plus upperMoebius_selbergMuPlus
     _ ≤ _ := ?_
   gcongr
   · rw [s.selberg_bound_simple_mainSum, div_eq_mul_inv]
