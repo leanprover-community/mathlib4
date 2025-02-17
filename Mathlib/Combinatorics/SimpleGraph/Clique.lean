@@ -255,7 +255,7 @@ theorem is3Clique_iff_exists_cycle_length_three :
 /-- If a set of vertices `A` is an `n`-clique in subgraph of `G` induced by a superset of `A`,
  its embedding is an `n`-clique in `G`. -/
 theorem induce_isNClique {S : Subgraph G} {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ}
-    (cc : (S.induce F).coe.IsNClique n ↑s) :
+    (cc : (S.induce F).coe.IsNClique n s) :
     G.IsNClique n (Finset.map ⟨Subtype.val, Subtype.val_injective⟩ s) := by
   rw [isNClique_iff] at cc ⊢
   simp only [Subgraph.induce_verts, coe_map, card_map]
@@ -724,7 +724,7 @@ theorem isIndepSet_neighborSet_of_triangleFree [DecidableEq α] (h: G.CliqueFree
  set in `G` and vice versa. -/
 theorem induce_isIndepSet_iff {F : Set α} {s : Set F} :
     ((⊤ : Subgraph G).induce F).coe.IsIndepSet s ↔ G.IsIndepSet (Subtype.val '' s) := by
-  simp_all [Set.Pairwise]
+  simp [Set.Pairwise]
 
 end IndepSet
 
