@@ -25,7 +25,7 @@ initialize registerTraceClass `mabel.detail
 
 variable {α : Type*}
 
-abbrev ofMul' (α : Type*) := Additive.ofMul (α := α)
+private abbrev ofMul' (α : Type*) := Additive.ofMul (α := α)
 lemma ofMul_mul' [CommMonoid α] (x y : α) :
     Additive.ofMul.toFun (x * y) = Additive.ofMul.toFun x + Additive.ofMul.toFun y := rfl
 lemma ofMul_pow' [CommMonoid α] (x : α) (n : ℕ) :
@@ -66,24 +66,36 @@ partial def toAdditiveCore (e : Expr) : MetaM Simp.Result := do
         | ``HMul.hMul => True
         | ``HDiv.hDiv => True
         | _ => False
-      let rec should_convert : Expr → Bool
-        | .app (.const name _) _ => is_multiplicative_operation name
-        | _ => False
-      let rec go : Expr → MetaM Expr
-        | .app fn arg
-            => if should_convert fn then
-                return ← to_additive (.app fn arg)
-              else
-                return .app (← (to_additive fn)) (← (to_additive arg))
-        | exp@(.bvar _) => return ← to_additive exp
-        | exp => return exp
+      let rec
+        /-- Returns true when an operation is multiplication of division --/
+        should_convert : Expr → Bool
+          | .app (.const name _) _ => is_multiplicative_operation name 
+          | .app (application@(.app _ _)) _ => should_convert application
+          | _ => False
+      let rec
+        /-- Convert multiplicative expressions to additive expressions.
+        Stop recursing after seeing the first multiplicative expression.
+        For example: (f a) * (f b) -> (f a) + (f b)
+        but f (x * y) * f (w * z) -> f(x * y) + f (w * z) 
+        --/
+        go : Expr → MetaM Expr
+          | .app fn arg
+              => if should_convert fn then
+                  return ← to_additive (.app fn arg)
+                else
+                  return .app (← (to_additive fn)) (← (to_additive arg))
+          | exp@(.bvar _) => return ← to_additive exp
+          | .lam name e₁ e₂ binfo => return .lam name (← to_additive e₁) (← to_additive e₂) binfo
+          | .forallE name btype body binfo => return .forallE name btype (← to_additive body) binfo
+          | .letE name type value body nonDep
+            => return .letE name type (← to_additive value) (← to_additive body) nonDep
+          | exp => return exp
       let α ← inferType e
       let e' ← match (← synthInstance? (← mkAppM ``CommMonoid #[α])) with
         | .some _ => mkAppM ``Equiv.toFun #[← mkAppM ``ofMul' #[α], e]
         | .none => go e
       return e'
-  let e' ← to_additive e
-  return (← (Meta.simp e' ctx)).1
+  return (← (Meta.simp (← to_additive e) ctx)).1
 
 /-- Use `to_additive` to rewrite the main goal. -/
 def toAdditiveTarget : TacticM Unit := withMainContext do
@@ -195,5 +207,4 @@ macro (name := abelConv) "mabel" : conv =>
   `(conv| first | discharge => mabel1)
 @[inherit_doc abelConv] macro "mabel!" : conv =>
   `(conv| first | discharge => mabel1!)
-example [CommMonoid α] (a b : α) : a * (b * a) = a * a * b := by mabel
 end Mathlib.Tactic.MAbel
