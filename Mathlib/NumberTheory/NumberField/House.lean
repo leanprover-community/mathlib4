@@ -49,8 +49,7 @@ theorem house_mul_le (α β : K) : house (α * β) ≤ house α * house β := by
   simp only [house, _root_.map_mul]; apply norm_mul_le
 
 @[simp] theorem house_intCast (x : ℤ) : house (x : K) = |x| := by
-  simp only [house, map_intCast, Pi.intCast_def, pi_norm_const, Complex.norm_eq_abs,
-    Complex.abs_intCast, Int.cast_abs]
+  simp only [house, map_intCast, Pi.intCast_def, pi_norm_const, Complex.norm_intCast, Int.cast_abs]
 
 end
 
@@ -98,10 +97,8 @@ theorem basis_repr_norm_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
     · exact norm_le_pi_norm (σ ((algebraMap (𝓞 K) K) α)) j
   · rw [sum_const, card_univ, nsmul_eq_mul, Embeddings.card, mul_assoc]
 
-theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
-    Complex.abs (((integralBasis K).reindex (equivReindex K).symm).repr α i) ≤
-      (c K) * house (algebraMap (𝓞 K) K α) :=
-  basis_repr_norm_le_const_mul_house _ _ _
+@[deprecated (since := "2025-02-17")] alias basis_repr_abs_le_const_mul_house :=
+  basis_repr_norm_le_const_mul_house
 
 /-- `newBasis K` defines a reindexed basis of the ring of integers of `K`,
   adjusted by the inverse of the equivalence `equivReindex`. -/
@@ -229,10 +226,10 @@ private theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
       _ ≤ (c K) * A * (supOfBasis K) := ?_
       _ ≤ (c₂ K) * A := ?_
     · simp only [Int.cast_abs, ← Real.norm_eq_abs (asiegel K a kr lu)]; rfl
-    · have remark := basis_repr_abs_le_const_mul_house K
+    · have remark := basis_repr_norm_le_const_mul_house K
       simp only [Basis.repr_reindex, Finsupp.mapDomain_equiv_apply,
         integralBasis_repr_apply, eq_intCast, Rat.cast_intCast,
-          Complex.abs_intCast] at remark
+          Complex.norm_intCast] at remark
       exact mod_cast remark ((a kr.1 lu.1 * ((newBasis K) lu.2))) kr.2
     · simp only [house, _root_.map_mul, mul_assoc]
       exact mul_le_mul_of_nonneg_left (norm_mul_le _ _) (c_nonneg K)

@@ -112,10 +112,7 @@ lemma norm_invInterpStrip {ε : ℝ} (hε : ε > 0) :
   repeat rw [norm_cpow_eq_rpow_re_of_pos (sSupNormIm_eps_pos f hε _) _]
   simp
 
-lemma abs_invInterpStrip {ε : ℝ} (hε : ε > 0) :
-    abs (invInterpStrip f z ε) =
-    (ε + sSupNormIm f 0) ^ (z.re - 1) * (ε + sSupNormIm f 1) ^ (-z.re) :=
-  norm_invInterpStrip _ _ hε
+@[deprecated (since := "2025-02-17")] alias abs_invInterpStrip := norm_invInterpStrip
 
 /-- The function `invInterpStrip` is `diffContOnCl`. -/
 lemma diffContOnCl_invInterpStrip {ε : ℝ} (hε : ε > 0) :
@@ -427,13 +424,13 @@ lemma norm_le_interpStrip_of_mem_verticalClosedStrip_eps (ε : ℝ) (hε : ε > 
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1))
     (hd : DiffContOnCl ℂ f (verticalStrip 0 1)) (hz : z ∈ verticalClosedStrip 0 1) :
     ‖f z‖ ≤  ‖((ε + sSupNormIm f 0) ^ (1-z) * (ε + sSupNormIm f 1) ^ z : ℂ)‖ := by
-  simp only [F, abs_invInterpStrip _ _ hε, norm_smul, norm_mul,
+  simp only [F, norm_invInterpStrip _ _ hε, norm_smul, norm_mul,
     ← ofReal_add, norm_cpow_eq_rpow_re_of_pos (sSupNormIm_eps_pos f hε _) _, sub_re, one_re]
   rw [← mul_inv_le_iff₀', ← one_mul (((ε + sSupNormIm f 1) ^ z.re)), ← mul_inv_le_iff₀,
     ← Real.rpow_neg_one, ← Real.rpow_neg_one]
   · simp only [← Real.rpow_mul (le_of_lt (sSupNormIm_eps_pos f hε _)),
     mul_neg, mul_one, neg_sub, mul_assoc]
-    simpa [F, abs_invInterpStrip _ _ hε, norm_smul, mul_comm] using
+    simpa [F, norm_invInterpStrip _ _ hε, norm_smul, mul_comm] using
       norm_mul_invInterpStrip_le_one_of_mem_verticalClosedStrip f ε hε z hd hB hz
   · simp only [Real.rpow_pos_of_pos (sSupNormIm_eps_pos f hε _) z.re]
   · simp only [Real.rpow_pos_of_pos (sSupNormIm_eps_pos f hε _) (1-z.re)]
@@ -459,7 +456,7 @@ lemma norm_le_interpStrip_of_mem_verticalStrip_zero (z : ℂ)
     · simp only [ofReal_zero, zero_add]
     · simp_rw [← ofReal_add]
       have : ∀ x ∈ Ioi 0, (x + sSupNormIm f 0) ^ (1 - z.re) * (x + sSupNormIm f 1) ^ z.re
-          = abs (↑(x + sSupNormIm f 0) ^ (1 - z) * ↑(x + sSupNormIm f 1) ^ z) := by
+          = ‖((x + sSupNormIm f 0 : ℝ) ^ (1 - z) * (x + sSupNormIm f 1 : ℝ) ^ z : ℂ)‖ := by
               intro x hx
               simp only [norm_mul]
               repeat rw [norm_cpow_eq_rpow_re_of_nonneg (le_of_lt (sSupNormIm_eps_pos f hx _)) _]
@@ -625,7 +622,7 @@ lemma norm_le_interpStrip_of_mem_verticalClosedStrip {l u : ℝ} (hul: l < u)
   have hgoal := norm_le_interpStrip_of_mem_verticalClosedStrip₀₁ (scale f l u)
     (mem_verticalClosedStrip_of_scale_id_mem_verticalClosedStrip hul hz)
     (scale_diffContOnCl hul hd) (scale_bddAbove hul hB)
-  simp only [scale, smul_eq_mul, norm_eq_abs] at hgoal
+  simp only [scale, smul_eq_mul] at hgoal
   rw [fun_arg_eq hul, div_sub_div_same, interpStrip_scale f hul z] at hgoal
   exact hgoal
 

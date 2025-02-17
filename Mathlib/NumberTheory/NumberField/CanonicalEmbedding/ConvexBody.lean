@@ -66,7 +66,7 @@ theorem convexBodyLT_neg_mem (x : mixedSpace K) (hx : x ∈ (convexBodyLT K f)) 
     -x ∈ (convexBodyLT K f) := by
   simp only [Set.mem_prod, Prod.fst_neg, Set.mem_pi, Set.mem_univ, Pi.neg_apply,
     mem_ball_zero_iff, norm_neg, Real.norm_eq_abs, forall_true_left, Subtype.forall,
-    Prod.snd_neg, Complex.norm_eq_abs] at hx ⊢
+    Prod.snd_neg] at hx ⊢
   exact hx
 
 theorem convexBodyLT_convex : Convex ℝ (convexBodyLT K f) :=
@@ -580,7 +580,7 @@ theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀
     · rw [if_pos rfl] at h_le₀
       dsimp only at h_le₀
       rw [h_eq, ← norm_embedding_eq, Real.lt_sqrt (norm_nonneg _), ← Complex.re_add_im
-        (embedding w₀ _), Complex.norm_eq_abs, Complex.abs_add_mul_I, Real.sq_sqrt (by positivity)]
+        (embedding w₀ _), Complex.norm_add_mul_I, Real.sq_sqrt (by positivity)]
       refine add_lt_add ?_ ?_
       · rw [← sq_abs, sq_lt_one_iff₀ (abs_nonneg _)]
         exact h_le₀.1

@@ -564,7 +564,7 @@ lemma integrable_rpow_abs_mul_cexp_of_re_mem_interior_integrableExpSet
   have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet hz
   rw [← integrable_norm_iff]
   swap; · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
-  simpa [abs_rpow_of_nonneg (abs_nonneg _), Complex.abs_exp]
+  simpa [abs_rpow_of_nonneg (abs_nonneg _), Complex.norm_exp]
     using integrable_rpow_abs_mul_exp_of_mem_interior_integrableExpSet hz hp
 
 lemma integrable_pow_abs_mul_cexp_of_re_mem_interior_integrableExpSet

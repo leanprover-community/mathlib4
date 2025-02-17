@@ -129,8 +129,8 @@ private theorem exp_polynomial_approx_aux (f : ℤ[X]) (s : ℂ) :
   specialize h (max (x * ‖s‖) 1 * ‖aeval (x * s) f‖) (Set.mem_image_of_mem _ hx)
   refine le_trans ?_ (pow_le_pow_left₀ (abs_nonneg _) h _)
   simp_rw [Polynomial.map_mul, Polynomial.map_pow, map_X, eval_mul, eval_pow, eval_X, norm_mul,
-    Complex.norm_pow, real_smul, norm_mul, abs_ofReal, ← eval₂_eq_eval_map, ← aeval_def, abs_mul,
-    abs_norm, mul_pow, abs_of_pos hx.1]
+    Complex.norm_pow, real_smul, norm_mul, norm_real, ← eval₂_eq_eval_map, ← aeval_def, abs_mul,
+    abs_norm, mul_pow, Real.norm_of_nonneg hx.1.le]
   refine mul_le_mul_of_nonneg_right ?_ (pow_nonneg (norm_nonneg _) _)
   rw [← mul_pow, abs_of_nonneg (by positivity), max_def]
   split_ifs with hx1
@@ -188,8 +188,8 @@ theorem exp_polynomial_approx (f : ℤ[X]) (hf : f.eval 0 ≠ 0) :
       ((eval 0 f ^ p * cexp r) * (p - 1)! +
         ↑(p * (p - 1)!) * (eval 0 gp' * cexp r - (aeval r) gp)) := by
     push_cast; ring
-  rw [le_div_iff₀ (Nat.cast_pos.mpr (Nat.factorial_pos _) : (0 : ℝ) < _), ← abs_natCast, ← norm_mul,
-    this, Nat.mul_factorial_pred prime_p.pos, mul_sub, ← h]
+  rw [le_div_iff₀ (Nat.cast_pos.mpr (Nat.factorial_pos _) : (0 : ℝ) < _), ← norm_natCast,
+    ← norm_mul, this, Nat.mul_factorial_pred prime_p.pos, mul_sub, ← h]
   have :
       ↑(eval 0 f) ^ p * cexp r * ↑(p - 1)! +
         (↑p ! * (↑(eval 0 gp') * cexp r) - (aeval r) (sumIDeriv (X ^ (p - 1) * f ^ p))) =

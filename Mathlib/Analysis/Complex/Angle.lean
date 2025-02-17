@@ -85,11 +85,11 @@ lemma norm_sub_mem_Icc_angle (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     rintro rfl
     simp at hy
   subst y
-  rw [norm_eq_abs, abs_eq_one_iff'] at hx
+  rw [norm_eq_one_iff'] at hx
   obtain ⟨θ, hθ, rfl⟩ := hx
   rw [angle_exp_one, exp_mul_I, add_sub_right_comm, (toIocMod_eq_self _).2]
   · norm_cast
-    rw [norm_eq_abs, abs_add_mul_I]
+    rw [norm_add_mul_I]
     refine ⟨Real.le_sqrt_of_sq_le ?_, ?_⟩
     · rw [mul_pow, ← abs_pow, abs_sq]
       calc

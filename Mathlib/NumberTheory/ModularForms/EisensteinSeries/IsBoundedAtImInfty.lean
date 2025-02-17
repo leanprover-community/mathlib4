@@ -41,6 +41,7 @@ lemma summable_norm_eisSummand {k : ℤ} (hk : 3 ≤ k) (z : ℍ) :
   simp only [eisSummand, norm_zpow]
   exact_mod_cast summand_bound z (show 0 ≤ (k : ℝ) by positivity) b
 
+/-- The norm of the restricted sum is less than the full sum of the norms. -/
 lemma norm_le_tsum_norm (N : ℕ) (a : Fin 2 → ZMod N) (k : ℤ) (hk : 3 ≤ k) (z : ℍ) :
     ‖eisensteinSeries a k z‖  ≤ ∑' (x : Fin 2 → ℤ), ‖eisSummand k x z‖ := by
   simp_rw [eisensteinSeries]
@@ -48,10 +49,7 @@ lemma norm_le_tsum_norm (N : ℕ) (a : Fin 2 → ZMod N) (k : ℤ) (hk : 3 ≤ k
     (tsum_subtype_le (fun (x : Fin 2 → ℤ) ↦ ‖(eisSummand k x z)‖) _ (fun _ ↦ norm_nonneg _)
       (summable_norm_eisSummand hk z))
 
-/-- The absolute value of the restricted sum is less than the full sum of the absolute values. -/
-lemma abs_le_tsum_abs (N : ℕ) (a : Fin 2 → ZMod N) (k : ℤ) (hk : 3 ≤ k) (z : ℍ) :
-    Complex.abs (eisensteinSeries a k z) ≤ ∑' (x : Fin 2 → ℤ), Complex.abs (eisSummand k x z) :=
-  norm_le_tsum_norm _ _ _ hk _
+@[deprecated (since := "2025-02-17")] alias abs_le_tsum_abs := norm_le_tsum_norm
 
 /-- Eisenstein series are bounded at infinity. -/
 theorem isBoundedAtImInfty_eisensteinSeries_SIF {N : ℕ+} (a : Fin 2 → ZMod N) {k : ℤ} (hk : 3 ≤ k)
@@ -62,7 +60,7 @@ theorem isBoundedAtImInfty_eisensteinSeries_SIF {N : ℕ+} (a : Fin 2 → ZMod N
   obtain ⟨n, hn⟩ := (ModularGroup_T_zpow_mem_verticalStrip z N.2)
   rw [eisensteinSeries_slash_apply, ← eisensteinSeries_SIF_apply,
     ← T_zpow_width_invariant N k n (eisensteinSeries_SIF (a ᵥ* A) k) z]
-  apply le_trans (abs_le_tsum_abs N (a ᵥ* A) k hk _)
+  apply le_trans (norm_le_tsum_norm N (a ᵥ* A) k hk _)
   have hk' : (2 : ℝ) < k := by norm_cast
   apply tsum_le_tsum _ (summable_norm_eisSummand hk _)
   · exact_mod_cast (summable_one_div_norm_rpow hk').mul_left <| r ⟨⟨N, 2⟩, Nat.ofNat_pos⟩ ^ (-k)

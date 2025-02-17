@@ -105,14 +105,13 @@ theorem continuousOn_norm_circleTransformBoundingFunction {R r : ℝ} (hr : r < 
     · simpa only [inv_pow] using continuousOn_prod_circle_transform_function hr
   exact this.norm
 
-theorem continuousOn_abs_circleTransformBoundingFunction {R r : ℝ} (hr : r < R) (z : ℂ) :
-    ContinuousOn (abs ∘ circleTransformBoundingFunction R z) (closedBall z r ×ˢ univ) :=
-  continuousOn_norm_circleTransformBoundingFunction hr _
+@[deprecated (since := "2025-02-17")] alias continuousOn_abs_circleTransformBoundingFunction :=
+  continuousOn_norm_circleTransformBoundingFunction
 
 theorem norm_circleTransformBoundingFunction_le {R r : ℝ} (hr : r < R) (hr' : 0 ≤ r) (z : ℂ) :
     ∃ x : closedBall z r ×ˢ [[0, 2 * π]], ∀ y : closedBall z r ×ˢ [[0, 2 * π]],
     ‖circleTransformBoundingFunction R z y‖ ≤ ‖circleTransformBoundingFunction R z x‖ := by
-  have cts := continuousOn_abs_circleTransformBoundingFunction hr z
+  have cts := continuousOn_norm_circleTransformBoundingFunction hr z
   have comp : IsCompact (closedBall z r ×ˢ [[0, 2 * π]]) := by
     apply_rules [IsCompact.prod, ProperSpace.isCompact_closedBall z r, isCompact_uIcc]
   have none : (closedBall z r ×ˢ [[0, 2 * π]]).Nonempty :=
@@ -120,10 +119,8 @@ theorem norm_circleTransformBoundingFunction_le {R r : ℝ} (hr : r < R) (hr' : 
   have := IsCompact.exists_isMaxOn comp none (cts.mono <| prod_mono_right (subset_univ _))
   simpa [isMaxOn_iff] using this
 
-theorem abs_circleTransformBoundingFunction_le {R r : ℝ} (hr : r < R) (hr' : 0 ≤ r) (z : ℂ) :
-    ∃ x : closedBall z r ×ˢ [[0, 2 * π]], ∀ y : closedBall z r ×ˢ [[0, 2 * π]],
-    abs (circleTransformBoundingFunction R z y) ≤ abs (circleTransformBoundingFunction R z x) :=
-  norm_circleTransformBoundingFunction_le hr hr' _
+@[deprecated (since := "2025-02-17")] alias abs_circleTransformBoundingFunction_le :=
+  norm_circleTransformBoundingFunction_le
 
 /-- The derivative of a `circleTransform` is locally bounded. -/
 theorem circleTransformDeriv_bound {R : ℝ} (hR : 0 < R) {z x : ℂ} {f : ℂ → ℂ} (hx : x ∈ ball z R)
@@ -132,15 +129,15 @@ theorem circleTransformDeriv_bound {R : ℝ} (hR : 0 < R) {z x : ℂ} {f : ℂ �
   obtain ⟨r, hr, hrx⟩ := exists_lt_mem_ball_of_mem_ball hx
   obtain ⟨ε', hε', H⟩ := exists_ball_subset_ball hrx
   obtain ⟨⟨⟨a, b⟩, ⟨ha, hb⟩⟩, hab⟩ :=
-    abs_circleTransformBoundingFunction_le hr (pos_of_mem_ball hrx).le z
+    norm_circleTransformBoundingFunction_le hr (pos_of_mem_ball hrx).le z
   let V : ℝ → ℂ → ℂ := fun θ w => circleTransformDeriv R z w (fun _ => 1) θ
   obtain ⟨X, -, HX2⟩ := (isCompact_sphere z R).exists_isMaxOn
     (NormedSpace.sphere_nonempty.2 hR.le) hf.norm
-  refine ⟨abs (V b a) * abs (f X), ε', hε', H.trans (ball_subset_ball hr.le), fun y v hv ↦ ?_⟩
+  refine ⟨‖V b a‖ * ‖f X‖, ε', hε', H.trans (ball_subset_ball hr.le), fun y v hv ↦ ?_⟩
   obtain ⟨y1, hy1, hfun⟩ :=
     Periodic.exists_mem_Ico₀ (circleTransformDeriv_periodic R z v f) Real.two_pi_pos y
   have hy2 : y1 ∈ [[0, 2 * π]] := Icc_subset_uIcc <| Ico_subset_Icc_self hy1
-  simp only [isMaxOn_iff, mem_sphere_iff_norm, norm_eq_abs] at HX2
+  simp only [isMaxOn_iff, mem_sphere_iff_norm] at HX2
   have := mul_le_mul (hab ⟨⟨v, y1⟩, ⟨ball_subset_closedBall (H hv), hy2⟩⟩)
     (HX2 (circleMap z R y1) (circleMap_mem_sphere z hR.le y1)) (norm_nonneg _)
     (norm_nonneg _)

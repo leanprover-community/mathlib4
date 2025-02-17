@@ -300,7 +300,7 @@ theorem isTheta_deriv_ofReal_cpow_const_atTop {c : ℂ} (hc : c ≠ 0) :
       (Asymptotics.IsTheta.of_norm_eventuallyEq EventuallyEq.rfl).const_mul_left hc
     _ =ᶠ[atTop] fun x ↦ x ^ (c.re - 1) := by
       filter_upwards [eventually_gt_atTop 0] with x hx
-      rw [norm_eq_abs, abs_cpow_eq_rpow_re_of_pos hx, sub_re, one_re]
+      rw [norm_cpow_eq_rpow_re_of_pos hx, sub_re, one_re]
 
 theorem isBigO_deriv_ofReal_cpow_const_atTop (c : ℂ) :
     deriv (fun (x : ℝ) => (x : ℂ) ^ c) =O[atTop] fun x => x ^ (c.re - 1) := by
@@ -628,7 +628,7 @@ theorem deriv_norm_ofReal_cpow (c : ℂ) {t : ℝ} (ht : 0 < t) :
   rw [EventuallyEq.deriv_eq (f := fun x ↦ x ^ c.re)]
   · rw [Real.deriv_rpow_const (Or.inl ht.ne')]
   · filter_upwards [eventually_gt_nhds ht] with x hx
-    rw [Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos hx]
+    rw [Complex.norm_cpow_eq_rpow_re_of_pos hx]
 
 lemma isTheta_deriv_rpow_const_atTop {p : ℝ} (hp : p ≠ 0) :
     deriv (fun (x : ℝ) => x ^ p) =Θ[atTop] fun x => x ^ (p-1) := by

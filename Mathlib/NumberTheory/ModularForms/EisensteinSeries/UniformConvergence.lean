@@ -90,7 +90,7 @@ lemma auxbound1' {c : ℝ} (d : ℝ) (hc : 1 ≤ c ^ 2) : r z ≤ ‖c * (z : �
   simpa only [r, norm_def, normSq_apply, add_re, re_ofReal_mul, coe_re, ← pow_two, add_im, mul_im,
     coe_im, ofReal_im, zero_mul, add_zero, min_le_iff] using Or.inl H1
 
-lemma auxbound1 {c : ℝ} (d : ℝ) (hc : 1 ≤ c ^ 2) : r z ≤ Complex.abs (c * z + d) :=
+lemma auxbound1 {c : ℝ} (d : ℝ) (hc : 1 ≤ c ^ 2) : r z ≤ ‖c * (z : ℂ) + d‖ :=
   auxbound1' _ _ hc
 
 lemma auxbound2' (c : ℝ) {d : ℝ} (hd : 1 ≤ d ^ 2) : r z ≤ ‖c * (z : ℂ) + d‖ := by
@@ -99,7 +99,7 @@ lemma auxbound2' (c : ℝ) {d : ℝ} (hd : 1 ≤ d ^ 2) : r z ≤ ‖c * (z : �
   simpa only [r, norm_def, normSq_apply, add_re, re_ofReal_mul, coe_re, ofReal_re, ← pow_two,
     add_im, im_ofReal_mul, coe_im, ofReal_im, add_zero, min_le_iff] using Or.inr H1
 
-lemma auxbound2 (c : ℝ) {d : ℝ} (hd : 1 ≤ d ^ 2) : r z ≤ Complex.abs (c * z + d) :=
+lemma auxbound2 (c : ℝ) {d : ℝ} (hd : 1 ≤ d ^ 2) : r z ≤ ‖c * (z : ℂ) + d‖ :=
   auxbound2' _ _ hd
 
 lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
@@ -126,7 +126,7 @@ lemma r_mul_max_le' {x : Fin 2 → ℤ} (hx : x ≠ 0) : r z * ‖x‖ ≤ ‖x 
     · simpa only [norm_eq_max_natAbs, ofReal_div, ofReal_intCast] using auxbound1 z (x 1 / ‖x‖) H1
     · simpa only [norm_eq_max_natAbs, ofReal_div, ofReal_intCast] using auxbound2 z (x 0 / ‖x‖) H2
 
-lemma r_mul_max_le {x : Fin 2 → ℤ} (hx : x ≠ 0) : r z * ‖x‖ ≤ Complex.abs (x 0 * z + x 1) :=
+lemma r_mul_max_le {x : Fin 2 → ℤ} (hx : x ≠ 0) : r z * ‖x‖ ≤ ‖x 0 * (z : ℂ) + x 1‖ :=
   r_mul_max_le' _ hx
 
 /-- Upper bound for the summand `|c * z + d| ^ (-k)`, as a product of a function of `z` and a
@@ -143,7 +143,7 @@ lemma summand_bound' {k : ℝ} (hk : 0 ≤ k) (x : Fin 2 → ℤ) :
       (neg_nonpos.mpr hk)
 
 lemma summand_bound {k : ℝ} (hk : 0 ≤ k) (x : Fin 2 → ℤ) :
-    Complex.abs (x 0 * z + x 1) ^ (-k) ≤ (r z) ^ (-k) * ‖x‖ ^ (-k) := summand_bound' _ hk _
+    ‖x 0 * (z : ℂ) + x 1‖ ^ (-k) ≤ (r z) ^ (-k) * ‖x‖ ^ (-k) := summand_bound' _ hk _
 
 variable {z} in
 lemma summand_bound_of_mem_verticalStrip' {k : ℝ} (hk : 0 ≤ k) (x : Fin 2 → ℤ)
@@ -156,7 +156,7 @@ lemma summand_bound_of_mem_verticalStrip' {k : ℝ} (hk : 0 ≤ k) (x : Fin 2 �
 variable {z} in
 lemma summand_bound_of_mem_verticalStrip {k : ℝ} (hk : 0 ≤ k) (x : Fin 2 → ℤ)
     {A B : ℝ} (hB : 0 < B) (hz : z ∈ verticalStrip A B) :
-    Complex.abs (x 0 * z + x 1) ^ (-k) ≤ r ⟨⟨A, B⟩, hB⟩ ^ (-k) * ‖x‖ ^ (-k) :=
+    ‖x 0 * (z : ℂ) + x 1‖ ^ (-k) ≤ r ⟨⟨A, B⟩, hB⟩ ^ (-k) * ‖x‖ ^ (-k) :=
   summand_bound_of_mem_verticalStrip' hk _ _ hz
 
 end bounding_functions
@@ -195,7 +195,7 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) {N : �
   obtain ⟨A, B, hB, HABK⟩ := subset_verticalStrip_of_isCompact hK
   refine (tendstoUniformlyOn_tsum (hu := p_sum.mul_left <| r ⟨⟨A, B⟩, hB⟩ ^ (-k : ℝ))
     (fun p z hz ↦ ?_)).mono HABK
-  simpa only [eisSummand, one_div, ← zpow_neg, norm_eq_abs, abs_zpow, ← Real.rpow_intCast,
+  simpa only [eisSummand, one_div, ← zpow_neg, norm_zpow, ← Real.rpow_intCast,
     Int.cast_neg] using summand_bound_of_mem_verticalStrip (by positivity) p hB hz
 
 /-- Variant of `eisensteinSeries_tendstoLocallyUniformly` formulated with maps `ℂ → ℂ`, which is

@@ -69,7 +69,7 @@ instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
     eq_zero_of_map_eq_zero' := fun _ ↦ norm_eq_zero_iff.mp }
 
 /-- The complex absolute value function, defined as the Complex norm. -/
-@[deprecated "Complex.abs has been deprecated, use the norm instead" (since := "2025-02-16")]
+@[deprecated "use the norm instead" (since := "2025-02-16")]
 protected noncomputable abbrev abs (z : ℂ) : ℝ := ‖z‖
 
 @[deprecated "Complex.abs has been deprecated, use the norm instead" (since := "2025-02-16")]

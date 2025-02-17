@@ -136,7 +136,7 @@ theorem intervalIntegrable_cpow {r : ℂ} (h : 0 ≤ r.re ∨ (0 : ℝ) ∉ [[a,
     rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hc] at this ⊢
     refine IntegrableOn.congr_fun this (fun x hx => ?_) measurableSet_Ioc
     dsimp only
-    rw [Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos hx.1, ← h', rpow_zero]
+    rw [Complex.norm_cpow_eq_rpow_re_of_pos hx.1, ← h', rpow_zero]
   · -- case `c < 0`: integrand is identically constant, *except* at `x = 0` if `r ≠ 0`.
     apply IntervalIntegrable.symm
     rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hc.le]
@@ -147,7 +147,7 @@ theorem intervalIntegrable_cpow {r : ℂ} (h : 0 ≤ r.re ∨ (0 : ℝ) ∉ [[a,
     · have : ∀ x : ℝ, x ∈ Ioo c 0 → ‖Complex.exp (↑π * Complex.I * r)‖ = ‖(x : ℂ) ^ r‖ := by
         intro x hx
         rw [Complex.ofReal_cpow_of_nonpos hx.2.le, norm_mul, ← Complex.ofReal_neg,
-          Complex.norm_eq_abs (_ ^ _), Complex.abs_cpow_eq_rpow_re_of_pos (neg_pos.mpr hx.2), ← h',
+          Complex.norm_cpow_eq_rpow_re_of_pos (neg_pos.mpr hx.2), ← h',
           rpow_zero, one_mul]
       refine IntegrableOn.congr_fun ?_ this measurableSet_Ioo
       rw [integrableOn_const]
@@ -169,7 +169,7 @@ theorem intervalIntegrable_cpow' {r : ℂ} (h : -1 < r.re) :
       · intro x hx
         rw [uIoc_of_le hc] at hx
         dsimp only
-        rw [Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos hx.1]
+        rw [Complex.norm_cpow_eq_rpow_re_of_pos hx.1]
       · exact measurableSet_uIoc
     · refine ContinuousOn.aestronglyMeasurable ?_ measurableSet_uIoc
       refine continuousOn_of_forall_continuousAt fun x hx => ?_
@@ -196,7 +196,7 @@ theorem integrableOn_Ioo_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
   have B : IntegrableOn (fun a ↦ a ^ s.re) (Ioo 0 t) := by
     apply (integrableOn_congr_fun _ measurableSet_Ioo).1 h.norm
     intro a ha
-    simp [Complex.abs_cpow_eq_rpow_re_of_pos ha.1]
+    simp [Complex.norm_cpow_eq_rpow_re_of_pos ha.1]
   rwa [integrableOn_Ioo_rpow_iff ht] at B
 
 @[simp]

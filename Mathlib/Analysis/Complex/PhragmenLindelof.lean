@@ -74,12 +74,12 @@ theorem isBigO_sub_exp_exp {a : ℝ} {f g : ℂ → E} {l : Filter ℂ} {u : ℂ
 /-- An auxiliary lemma that combines two “exponential of a power” estimates into a similar estimate
 on the difference of the functions. -/
 theorem isBigO_sub_exp_rpow {a : ℝ} {f g : ℂ → E} {l : Filter ℂ}
-    (hBf : ∃ c < a, ∃ B, f =O[cobounded ℂ ⊓ l] fun z => expR (B * abs z ^ c))
-    (hBg : ∃ c < a, ∃ B, g =O[cobounded ℂ ⊓ l] fun z => expR (B * abs z ^ c)) :
-    ∃ c < a, ∃ B, (f - g) =O[cobounded ℂ ⊓ l] fun z => expR (B * abs z ^ c) := by
+    (hBf : ∃ c < a, ∃ B, f =O[cobounded ℂ ⊓ l] fun z => expR (B * ‖z‖ ^ c))
+    (hBg : ∃ c < a, ∃ B, g =O[cobounded ℂ ⊓ l] fun z => expR (B * ‖z‖ ^ c)) :
+    ∃ c < a, ∃ B, (f - g) =O[cobounded ℂ ⊓ l] fun z => expR (B * ‖z‖ ^ c) := by
   have : ∀ {c₁ c₂ B₁ B₂ : ℝ}, c₁ ≤ c₂ → 0 ≤ B₂ → B₁ ≤ B₂ →
-      (fun z : ℂ => expR (B₁ * abs z ^ c₁)) =O[cobounded ℂ ⊓ l]
-        fun z => expR (B₂ * abs z ^ c₂) := fun hc hB₀ hB ↦ .of_norm_eventuallyLE <| by
+      (fun z : ℂ => expR (B₁ * ‖z‖ ^ c₁)) =O[cobounded ℂ ⊓ l]
+        fun z => expR (B₂ * ‖z‖ ^ c₂) := fun hc hB₀ hB ↦ .of_norm_eventuallyLE <| by
     filter_upwards [(eventually_cobounded_le_norm 1).filter_mono inf_le_left] with z hz
     simp only [Real.norm_eq_abs, Real.abs_exp]
     gcongr; assumption
@@ -146,7 +146,7 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
   -- An upper estimate on `‖g ε w‖` that will be used in two branches of the proof.
   obtain ⟨δ, δ₀, hδ⟩ :
     ∃ δ : ℝ,
-      δ < 0 ∧ ∀ ⦃w⦄, im w ∈ Icc (a - b) (a + b) → abs (g ε w) ≤ expR (δ * expR (d * |re w|)) := by
+      δ < 0 ∧ ∀ ⦃w⦄, im w ∈ Icc (a - b) (a + b) → ‖g ε w‖ ≤ expR (δ * expR (d * |re w|)) := by
     refine
       ⟨ε * Real.cos (d * b),
         mul_neg_of_neg_of_pos ε₀
@@ -158,9 +158,9 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
         mul_le_mul_left hd₀]
     simpa only [aff, re_ofReal_mul, _root_.abs_mul, abs_of_pos hd₀, sub_re, mul_I_re, ofReal_im,
       zero_mul, neg_zero, sub_zero] using
-      abs_exp_mul_exp_add_exp_neg_le_of_abs_im_le ε₀.le hw hb'.le
+      norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le ε₀.le hw hb'.le
   -- `abs (g ε w) ≤ 1` on the lines `w.im = a ± b` (actually, it holds everywhere in the strip)
-  have hg₁ : ∀ w, im w = a - b ∨ im w = a + b → abs (g ε w) ≤ 1 := by
+  have hg₁ : ∀ w, im w = a - b ∨ im w = a + b → ‖g ε w‖ ≤ 1 := by
     refine fun w hw => (hδ <| hw.by_cases ?_ ?_).trans (Real.exp_le_one_iff.2 ?_)
     exacts [fun h => h.symm ▸ left_mem_Icc.2 hab.le, fun h => h.symm ▸ right_mem_Icc.2 hab.le,
       mul_nonpos_of_nonpos_of_nonneg δ₀.le (Real.exp_pos _).le]
@@ -380,7 +380,7 @@ nonrec theorem quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
       positivity
     · -- For the estimate as `ζ.re → ∞`, we reuse the upper estimate on `f`
       simp only [EventuallyLE, eventually_inf_principal, eventually_comap, comp_apply, one_mul,
-        Real.norm_of_nonneg (Real.exp_pos _).le, abs_exp, ← Real.exp_mul, Real.exp_le_exp]
+        Real.norm_of_nonneg (Real.exp_pos _).le, norm_exp, ← Real.exp_mul, Real.exp_le_exp]
       filter_upwards [eventually_ge_atTop 0] with x hx z hz _
       rw [hz, abs_of_nonneg hx, mul_comm _ c]
       gcongr; apply le_max_left
@@ -425,7 +425,7 @@ theorem eqOn_quadrant_I (hdf : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
       f =O[cobounded ℂ ⊓ 𝓟 (Ioi 0 ×ℂ Ioi 0)] fun z => expR (B * ‖z‖ ^ c))
     (hdg : DiffContOnCl ℂ g (Ioi 0 ×ℂ Ioi 0))
     (hBg : ∃ c < (2 : ℝ), ∃ B,
-      g =O[cobounded ℂ ⊓ 𝓟 (Ioi 0 ×ℂ Ioi 0)] fun z => expR (B * abs z ^ c))
+      g =O[cobounded ℂ ⊓ 𝓟 (Ioi 0 ×ℂ Ioi 0)] fun z => expR (B * ‖z‖ ^ c))
     (hre : ∀ x : ℝ, 0 ≤ x → f x = g x) (him : ∀ x : ℝ, 0 ≤ x → f (x * I) = g (x * I)) :
     EqOn f g {z | 0 ≤ z.re ∧ 0 ≤ z.im} := fun _z hz =>
   sub_eq_zero.1 <|
@@ -690,14 +690,14 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
       apply norm_eq_norm_of_isMaxOn_of_ball_subset hd hmax
       -- move to a lemma?
       intro z hz
-      rw [mem_ball, dist_zero_left, dist_eq, norm_eq_abs, Complex.norm_of_nonneg hx₀] at hz
+      rw [mem_ball, dist_zero_left, dist_eq, Complex.norm_of_nonneg hx₀] at hz
       rw [mem_setOf_eq]
       contrapose! hz
       calc
         x₀ ≤ x₀ - z.re := (le_sub_self_iff _).2 hz
         _ ≤ |x₀ - z.re| := le_abs_self _
         _ = |(z - x₀).re| := by rw [sub_re, ofReal_re, _root_.abs_sub_comm]
-        _ ≤ abs (z - x₀) := abs_re_le_abs _
+        _ ≤ ‖z - x₀‖ := abs_re_le_norm _
     -- Thus we have `C < ‖f x₀‖ = ‖f 0‖ ≤ C`. Contradiction completes the proof.
     refine (h.not_le <| this ▸ ?_).elim
     simpa using him 0
@@ -768,7 +768,7 @@ theorem eq_zero_on_right_half_plane_of_superexponential_decay (hd : DiffContOnCl
   -- Consider $g_n(z)=e^{nz}f(z)$.
   set g : ℕ → ℂ → E := fun (n : ℕ) (z : ℂ) => exp z ^ n • f z
   have hg : ∀ n z, ‖g n z‖ = expR z.re ^ n * ‖f z‖ := fun n z ↦ by
-    simp only [g, norm_smul, norm_eq_abs, Complex.abs_pow, abs_exp]
+    simp only [g, norm_smul, norm_pow, norm_exp]
   intro z hz
   -- Since `e^{nz} → ∞` as `n → ∞`, it suffices to show that each `g_n` is bounded from above by `C`
   suffices H : ∀ n : ℕ, ‖g n z‖ ≤ C by
@@ -788,7 +788,7 @@ theorem eq_zero_on_right_half_plane_of_superexponential_decay (hd : DiffContOnCl
     simp only [← Real.exp_nat_mul, ← Real.exp_add, Real.norm_eq_abs, Real.abs_exp, add_mul]
     gcongr
     · calc
-        z.re ≤ ‖z‖ := re_le_abs _
+        z.re ≤ ‖z‖ := re_le_norm _
         _ = ‖z‖ ^ (1 : ℝ) := (Real.rpow_one _).symm
         _ ≤ ‖z‖ ^ max c 1 := Real.rpow_le_rpow_of_exponent_le hz (le_max_right _ _)
     exacts [le_max_left _ _, hz, le_max_left _ _]

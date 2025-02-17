@@ -276,7 +276,7 @@ instance : NonnegHomClass (InfinitePlace K) K ℝ where
   apply_nonneg w _ := w.1.nonneg _
 
 @[simp]
-theorem apply (φ : K →+* ℂ) (x : K) : (mk φ) x = Complex.abs (φ x) := rfl
+theorem apply (φ : K →+* ℂ) (x : K) : (mk φ) x = ‖φ x‖ := rfl
 
 /-- For an infinite place `w`, return an embedding `φ` such that `w = infinite_place φ` . -/
 noncomputable def embedding (w : InfinitePlace K) : K →+* ℂ := w.2.choose
@@ -287,7 +287,7 @@ theorem mk_embedding (w : InfinitePlace K) : mk (embedding w) = w := Subtype.ext
 @[simp]
 theorem mk_conjugate_eq (φ : K →+* ℂ) : mk (ComplexEmbedding.conjugate φ) = mk φ := by
   refine DFunLike.ext _ _ (fun x => ?_)
-  rw [apply, apply, ComplexEmbedding.conjugate_coe_eq, Complex.abs_conj]
+  rw [apply, apply, ComplexEmbedding.conjugate_coe_eq, Complex.norm_conj]
 
 theorem norm_embedding_eq (w : InfinitePlace K) (x : K) :
     ‖(embedding w) x‖ = w x := by
@@ -541,7 +541,7 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
         erw [← Complex.conj_eq_iff_im, RingHom.congr_fun h' x]
         exact hψ.symm
       rwa [← norm_embedding_eq, ← Complex.re_add_im (embedding w x), this, Complex.ofReal_zero,
-        zero_mul, add_zero, Complex.norm_eq_abs, Complex.abs_ofReal] at h
+        zero_mul, add_zero, Complex.norm_real] at h
   · exact fun x ↦ IsAlgClosed.splits_codomain (minpoly ℚ x)
 
 theorem _root_.NumberField.adjoin_eq_top_of_infinitePlace_lt {x : 𝓞 K} {w : InfinitePlace K}
@@ -1078,9 +1078,9 @@ theorem nrRealPlaces_eq_zero_of_two_lt (hk : 2 < k) (hζ : IsPrimitiveRoot ζ k)
     rw [← Complex.conj_eq_iff_im, ← NumberField.ComplexEmbedding.conjugate_coe_eq]
     congr
   have hre : (f ζ).re = 1 ∨ (f ζ).re = -1 := by
-    rw [← Complex.abs_re_eq_abs] at him
+    rw [← Complex.abs_re_eq_norm] at him
     have := Complex.norm_eq_one_of_pow_eq_one hζ'.pow_eq_one (by omega)
-    rwa [Complex.norm_eq_abs, ← him, ← abs_one, abs_eq_abs] at this
+    rwa [← him, ← abs_one, abs_eq_abs] at this
   cases hre with
   | inl hone =>
     exact hζ'.ne_one (by omega) <| Complex.ext (by simp [hone]) (by simp [him])
