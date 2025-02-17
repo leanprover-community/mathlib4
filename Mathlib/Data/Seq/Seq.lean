@@ -244,7 +244,7 @@ def recOn {motive : Seq α → Sort v} (s : Seq α) (nil : motive nil)
     (cons : ∀ x s, motive (cons x s)) :
     motive s := by
   rcases H : destruct s with - | v
-  · rw [destruct_eq_nil H]
+  · rw [destruct_eq_none H]
     apply nil
   · cases' v with a s'
     rw [destruct_eq_cons H]
