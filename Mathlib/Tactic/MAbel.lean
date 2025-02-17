@@ -61,6 +61,11 @@ partial def toAdditiveCore (e : Expr) : MetaM Simp.Result := do
     (congrTheorems := ← getSimpCongrTheorems)
 
   let rec
+    /-- Convert multiplicative expressions to additive expressions.
+        Stop recursing after seeing the first multiplicative expression.
+        For example: (f a) * (f b) -> (f a) + (f b)
+        but f (x * y) * f (w * z) -> f(x * y) + f (w * z)
+        -/
     to_additive (e : Expr) := do
       let is_multiplicative_operation : Name → Bool
         | ``HMul.hMul => True
@@ -73,11 +78,7 @@ partial def toAdditiveCore (e : Expr) : MetaM Simp.Result := do
           | .app (application@(.app _ _)) _ => should_convert application
           | _ => False
       let rec
-        /-- Convert multiplicative expressions to additive expressions.
-        Stop recursing after seeing the first multiplicative expression.
-        For example: (f a) * (f b) -> (f a) + (f b)
-        but f (x * y) * f (w * z) -> f(x * y) + f (w * z)
-        --/
+        /-- Recursive step for to_additive -/
         go : Expr → MetaM Expr
           | .app fn arg
               => if should_convert fn then
