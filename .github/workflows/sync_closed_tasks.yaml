@@ -12,6 +12,7 @@ on:
 
 jobs:
   build:
+    name: "Cross off linked issues"
     runs-on: ubuntu-latest
     steps:
       - name: Cross off any linked issue and PR references

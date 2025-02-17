@@ -308,7 +308,6 @@ theorem of_to_nat' : ∀ n : Num, Num.ofNat' (n : ℕ) = n
   | 0 => ofNat'_zero
   | pos p => p.of_to_nat'
 
-set_option linter.deprecated false in
 lemma toNat_injective : Injective (castNum : Num → ℕ) := LeftInverse.injective of_to_nat'
 
 @[norm_cast]
@@ -418,9 +417,6 @@ theorem to_of_nat : ∀ n : ℕ, ((n : Num) : ℕ) = n
 @[simp, norm_cast]
 theorem of_natCast {α} [AddMonoidWithOne α] (n : ℕ) : ((n : Num) : α) = n := by
   rw [← cast_to_nat, to_of_nat]
-
-@[deprecated (since := "2024-04-17")]
-alias of_nat_cast := of_natCast
 
 @[norm_cast]
 theorem of_nat_inj {m n : ℕ} : (m : Num) = n ↔ m = n :=
@@ -862,7 +858,7 @@ theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
   | pos m =>
     rw [cast_pos]
     induction' n with n IH generalizing m <;> cases' m with m m
-        <;> dsimp only [PosNum.testBit]
+        <;> simp only [PosNum.testBit]
     · rfl
     · rw [PosNum.cast_bit1, ← two_mul, ← congr_fun Nat.bit_true, Nat.testBit_bit_zero]
     · rw [PosNum.cast_bit0, ← two_mul, ← congr_fun Nat.bit_false, Nat.testBit_bit_zero]
@@ -1356,15 +1352,9 @@ theorem of_nat_toZNumNeg (n : ℕ) : Num.toZNumNeg n = -n := by rw [← of_nat_t
 theorem of_intCast [AddGroupWithOne α] (n : ℤ) : ((n : ZNum) : α) = n := by
   rw [← cast_to_int, to_of_int]
 
-@[deprecated (since := "2024-04-17")]
-alias of_int_cast := of_intCast
-
 @[simp, norm_cast]
 theorem of_natCast [AddGroupWithOne α] (n : ℕ) : ((n : ZNum) : α) = n := by
   rw [← Int.cast_natCast, of_intCast, Int.cast_natCast]
-
-@[deprecated (since := "2024-04-17")]
-alias of_nat_cast := of_natCast
 
 @[simp, norm_cast]
 theorem dvd_to_int (m n : ZNum) : (m : ℤ) ∣ n ↔ m ∣ n :=
@@ -1383,10 +1373,10 @@ theorem divMod_to_nat_aux {n d : PosNum} {q r : Num} (h₁ : (r : ℕ) + d * ((q
     apply Num.mem_ofZNum'.trans
     rw [← ZNum.to_int_inj, Num.cast_toZNum, Num.cast_sub', sub_eq_iff_eq_add, ← Int.natCast_inj]
     simp
-  cases' e : Num.ofZNum' (Num.sub' r (Num.pos d)) with r₂
+  rcases e : Num.ofZNum' (Num.sub' r (Num.pos d)) with - | r₂
   · rw [Num.cast_bit0, two_mul]
     refine ⟨h₁, lt_of_not_ge fun h => ?_⟩
-    cases' Nat.le.dest h with r₂ e'
+    obtain ⟨r₂, e'⟩ := Nat.le.dest h
     rw [← Num.to_of_nat r₂, add_comm] at e'
     cases e.symm.trans (this.2 e'.symm)
   · have := this.1 e
@@ -1403,14 +1393,14 @@ theorem divMod_to_nat (d n : PosNum) :
       divMod_to_nat_aux (by simp) (Nat.mul_le_mul_left 2 (PosNum.cast_pos d : (0 : ℕ) < d))
   · unfold divMod
     -- Porting note: `cases'` didn't rewrite at `this`, so `revert` & `intro` are required.
-    revert IH; cases' divMod d n with q r; intro IH
+    revert IH; obtain ⟨q, r⟩ := divMod d n; intro IH
     simp only [divMod] at IH ⊢
     apply divMod_to_nat_aux <;> simp only [Num.cast_bit1, cast_bit1]
     · rw [← two_mul, ← two_mul, add_right_comm, mul_left_comm, ← mul_add, IH.1]
     · omega
   · unfold divMod
     -- Porting note: `cases'` didn't rewrite at `this`, so `revert` & `intro` are required.
-    revert IH; cases' divMod d n with q r; intro IH
+    revert IH; obtain ⟨q, r⟩ := divMod d n; intro IH
     simp only [divMod] at IH ⊢
     apply divMod_to_nat_aux
     · simp only [Num.cast_bit0, cast_bit0]

@@ -23,7 +23,7 @@ open MonoidHom
 private
 lemma dvd_exponent {ι G : Type*} [Finite ι] [CommGroup G] {n : ι → ℕ}
     (e : G ≃* ((i : ι) → Multiplicative (ZMod (n i)))) (i : ι) :
-  n i ∣ Monoid.exponent G := by
+    n i ∣ Monoid.exponent G := by
   classical -- to get `DecidableEq ι`
   have : n i = orderOf (e.symm <| Pi.mulSingle i <| .ofAdd 1) := by
     simpa only [MulEquiv.orderOf_eq, orderOf_piMulSingle, orderOf_ofAdd_eq_addOrderOf]
@@ -33,8 +33,9 @@ lemma dvd_exponent {ι G : Type*} [Finite ι] [CommGroup G] {n : ι → ℕ}
 variable (G M : Type*) [CommGroup G] [Finite G] [CommMonoid M]
 
 private
-lemma exists_apply_ne_one_aux (H : ∀ n : ℕ, n ∣ Monoid.exponent G → ∀ a : ZMod n, a ≠ 0 →
-    ∃ φ : Multiplicative (ZMod n) →* M, φ (.ofAdd a) ≠ 1)
+lemma exists_apply_ne_one_aux
+    (H : ∀ n : ℕ, n ∣ Monoid.exponent G → ∀ a : ZMod n, a ≠ 0 →
+      ∃ φ : Multiplicative (ZMod n) →* M, φ (.ofAdd a) ≠ 1)
     {a : G} (ha : a ≠ 1) :
     ∃ φ : G →* M, φ a ≠ 1 := by
   obtain ⟨ι, _, n, _, h⟩ := CommGroup.equiv_prod_multiplicative_zmod_of_finite G
@@ -42,9 +43,9 @@ lemma exists_apply_ne_one_aux (H : ∀ n : ℕ, n ∣ Monoid.exponent G → ∀ 
   obtain ⟨i, hi⟩ : ∃ i : ι, e a i ≠ 1 := by
     contrapose! ha
     exact (MulEquiv.map_eq_one_iff e).mp <| funext ha
-  have hi : Multiplicative.toAdd (e a i) ≠ 0 := by
+  have hi : (e a i).toAdd ≠ 0 := by
     simp only [ne_eq, toAdd_eq_zero, hi, not_false_eq_true]
-  obtain ⟨φi, hφi⟩ := H (n i) (dvd_exponent e i) (Multiplicative.toAdd <| e a i) hi
+  obtain ⟨φi, hφi⟩ := H (n i) (dvd_exponent e i) ((e a i).toAdd) hi
   use (φi.comp (Pi.evalMonoidHom (fun (i : ι) ↦ Multiplicative (ZMod (n i))) i)).comp e
   simpa only [coe_comp, coe_coe, Function.comp_apply, Pi.evalMonoidHom_apply, ne_eq] using hφi
 

@@ -3,10 +3,10 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.RingTheory.Localization.Submodule
+import Mathlib.RingTheory.LocalProperties.Submodule
 import Mathlib.RingTheory.RingHomProperties
 
 /-!
@@ -41,15 +41,15 @@ In this file, we define local properties in general.
 
 -/
 
-open scoped Pointwise Classical
+open scoped Pointwise
 
 universe u
+
+section Properties
 
 variable {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S)
 variable (R' S' : Type u) [CommRing R'] [CommRing S']
 variable [Algebra R R'] [Algebra S S']
-
-section Properties
 
 section CommRing
 
@@ -396,7 +396,29 @@ end Properties
 
 section Ideal
 
-open scoped nonZeroDivisors
+variable {R : Type*} (S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable (p : Submonoid R) [IsLocalization p S]
+
+theorem Ideal.localized'_eq_map (I : Ideal R) :
+    Submodule.localized' S p (Algebra.linearMap R S) I = I.map (algebraMap R S) := by
+  rw [map, span, Submodule.localized'_eq_span, Algebra.coe_linearMap]
+
+theorem Ideal.localized₀_eq_restrictScalars_map (I : Ideal R) :
+    Submodule.localized₀ p (Algebra.linearMap R S) I = (I.map (algebraMap R S)).restrictScalars R :=
+  congr(Submodule.restrictScalars R $(localized'_eq_map S p I))
+
+theorem Algebra.idealMap_eq_ofEq_comp_toLocalized₀ (I : Ideal R) :
+    Algebra.idealMap S I =
+      (LinearEquiv.ofEq _ _ <| Ideal.localized₀_eq_restrictScalars_map S p I).toLinearMap ∘ₗ
+      Submodule.toLocalized₀ p (Algebra.linearMap R S) I :=
+  rfl
+
+theorem Ideal.mem_of_localization_maximal {r : R} {J : Ideal R}
+    (h : ∀ (P : Ideal R) (_ : P.IsMaximal),
+      algebraMap R _ r ∈ Ideal.map (algebraMap R (Localization.AtPrime P)) J) :
+    r ∈ J :=
+  Submodule.mem_of_localization_maximal _ _ _ _ fun P hP ↦ by
+    apply (localized'_eq_map (Localization.AtPrime P) P.primeCompl J).symm ▸ h P hP
 
 /-- Let `I J : Ideal R`. If the localization of `I` at each maximal ideal `P` is included in
 the localization of `J` at `P`, then `I ≤ J`. -/
@@ -404,22 +426,8 @@ theorem Ideal.le_of_localization_maximal {I J : Ideal R}
     (h : ∀ (P : Ideal R) (_ : P.IsMaximal),
       Ideal.map (algebraMap R (Localization.AtPrime P)) I ≤
         Ideal.map (algebraMap R (Localization.AtPrime P)) J) :
-    I ≤ J := by
-  intro x hx
-  suffices J.colon (Ideal.span {x}) = ⊤ by
-    simpa using Submodule.mem_colon.mp
-      (show (1 : R) ∈ J.colon (Ideal.span {x}) from this.symm ▸ Submodule.mem_top) x
-      (Ideal.mem_span_singleton_self x)
-  refine Not.imp_symm (J.colon (Ideal.span {x})).exists_le_maximal ?_
-  push_neg
-  intro P hP le
-  obtain ⟨⟨⟨a, ha⟩, ⟨s, hs⟩⟩, eq⟩ :=
-    (IsLocalization.mem_map_algebraMap_iff P.primeCompl _).mp (h P hP (Ideal.mem_map_of_mem _ hx))
-  rw [← _root_.map_mul, ← sub_eq_zero, ← map_sub] at eq
-  obtain ⟨⟨m, hm⟩, eq⟩ := (IsLocalization.map_eq_zero_iff P.primeCompl _ _).mp eq
-  refine hs ((hP.isPrime.mem_or_mem (le (Ideal.mem_colon_singleton.mpr ?_))).resolve_right hm)
-  simp only [Subtype.coe_mk, mul_sub, sub_eq_zero, mul_comm x s, mul_left_comm] at eq
-  simpa only [mul_assoc, eq] using J.mul_mem_left m ha
+    I ≤ J :=
+  fun _ hm ↦ mem_of_localization_maximal fun P hP ↦ h P hP (mem_map_of_mem _ hm)
 
 /-- Let `I J : Ideal R`. If the localization of `I` at each maximal ideal `P` is equal to
 the localization of `J` at `P`, then `I = J`. -/
@@ -428,8 +436,8 @@ theorem Ideal.eq_of_localization_maximal {I J : Ideal R}
       Ideal.map (algebraMap R (Localization.AtPrime P)) I =
         Ideal.map (algebraMap R (Localization.AtPrime P)) J) :
     I = J :=
-  le_antisymm (Ideal.le_of_localization_maximal fun P hP => (h P hP).le)
-    (Ideal.le_of_localization_maximal fun P hP => (h P hP).ge)
+  le_antisymm (le_of_localization_maximal fun P hP ↦ (h P hP).le)
+    (le_of_localization_maximal fun P hP ↦ (h P hP).ge)
 
 /-- An ideal is trivial if its localization at every maximal ideal is trivial. -/
 theorem ideal_eq_bot_of_localization' (I : Ideal R)
@@ -438,28 +446,16 @@ theorem ideal_eq_bot_of_localization' (I : Ideal R)
     I = ⊥ :=
   Ideal.eq_of_localization_maximal fun P hP => by simpa using h P hP
 
--- TODO: This proof should work for all modules, once we have enough material on submodules of
--- localized modules.
+theorem eq_zero_of_localization (r : R)
+    (h : ∀ (J : Ideal R) (_ : J.IsMaximal), algebraMap R (Localization.AtPrime J) r = 0) :
+    r = 0 :=
+  Module.eq_zero_of_localization_maximal _ (fun _ _ ↦ Algebra.linearMap R _) r h
+
 /-- An ideal is trivial if its localization at every maximal ideal is trivial. -/
 theorem ideal_eq_bot_of_localization (I : Ideal R)
     (h : ∀ (J : Ideal R) (_ : J.IsMaximal),
       IsLocalization.coeSubmodule (Localization.AtPrime J) I = ⊥) :
     I = ⊥ :=
-  ideal_eq_bot_of_localization' _ fun P hP =>
-    (Ideal.map_eq_bot_iff_le_ker _).mpr fun x hx => by
-      rw [RingHom.mem_ker, ← Submodule.mem_bot R, ← h P hP, IsLocalization.mem_coeSubmodule]
-      exact ⟨x, hx, rfl⟩
-
-theorem eq_zero_of_localization (r : R)
-    (h : ∀ (J : Ideal R) (_ : J.IsMaximal), algebraMap R (Localization.AtPrime J) r = 0) :
-    r = 0 := by
-  rw [← Ideal.span_singleton_eq_bot]
-  apply ideal_eq_bot_of_localization
-  intro J hJ
-  delta IsLocalization.coeSubmodule
-  erw [Submodule.map_span, Submodule.span_eq_bot]
-  rintro _ ⟨_, h', rfl⟩
-  cases Set.mem_singleton_iff.mpr h'
-  exact h J hJ
+  bot_unique fun r hr ↦ eq_zero_of_localization r fun J hJ ↦ (h J hJ).le ⟨r, hr, rfl⟩
 
 end Ideal

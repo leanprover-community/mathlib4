@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Exact
 import Mathlib.Algebra.Module.ULift
-import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 # Presentations of modules
@@ -327,6 +327,14 @@ lemma desc_var (s : relations.Solution N) (g : relations.G) :
   simp only [linearEquiv_symm_var, fromQuotient_toQuotient, π_single]
 
 @[simp]
+lemma desc_comp_π (s : relations.Solution N) : (h.desc s).comp solution.π = s.π := by aesop
+
+@[simp]
+lemma π_desc_apply (s : relations.Solution N) (x : relations.G →₀ A) :
+    h.desc s (solution.π x) = s.π x :=
+  DFunLike.congr_fun (h.desc_comp_π s) x
+
+@[simp]
 lemma postcomp_desc (s : relations.Solution N) :
     solution.postcomp (h.desc s) = s := by aesop
 
@@ -346,8 +354,8 @@ certain linear equations. -/
 noncomputable def linearMapEquiv : (M →ₗ[A] N) ≃ relations.Solution N where
   toFun f := solution.postcomp f
   invFun s := h.desc s
-  left_inv f := h.postcomp_injective (by aesop)
-  right_inv s := by aesop
+  left_inv f := h.postcomp_injective (by simp)
+  right_inv s := by simp
 
 section
 

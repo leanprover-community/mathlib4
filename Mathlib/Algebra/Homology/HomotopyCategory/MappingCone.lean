@@ -18,6 +18,8 @@ we redefine it as `CochainComplex.mappingCone φ`. The API involves definitions
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Limits
 
 variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
@@ -239,10 +241,10 @@ lemma inl_v_d (i j k : ℤ) (hij : i + (-1) = j) (hik : k + (-1) = i) :
   rw [homotopyCofiber.inlX_d φ j i k (by dsimp; omega) (by dsimp; omega)]
   abel
 
-@[reassoc (attr := simp 1100)]
+@[reassoc]
 lemma inr_f_d (n₁ n₂ : ℤ) :
     (inr φ).f n₁ ≫ (mappingCone φ).d n₁ n₂ = G.d n₁ n₂ ≫ (inr φ).f n₂ := by
-  apply Hom.comm
+  simp
 
 @[reassoc]
 lemma d_fst_v (i j k : ℤ) (hij : i + 1 = j) (hjk : j + 1 = k) :

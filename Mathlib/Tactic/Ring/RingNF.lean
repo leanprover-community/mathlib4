@@ -19,7 +19,7 @@ such as `sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
 -/
 
 namespace Mathlib.Tactic
-open Lean hiding Rat
+open Lean
 open Qq Meta
 
 namespace Ring
@@ -133,10 +133,9 @@ Runs a tactic in the `RingNF.M` monad, given initial data:
 -/
 partial def M.run
     {α : Type} (s : IO.Ref AtomM.State) (cfg : RingNF.Config) (x : M α) : MetaM α := do
-  let ctx := {
-    simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}]
-    congrTheorems := ← getSimpCongrTheorems
-    config.singlePass := cfg.mode matches .raw }
+  let ctx ← Simp.mkContext { singlePass := cfg.mode matches .raw }
+    (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
+    (congrTheorems := ← getSimpCongrTheorems)
   let simp ← match cfg.mode with
   | .raw => pure pure
   | .SOP =>
@@ -145,7 +144,7 @@ partial def M.run
       ``_root_.pow_one, ``mul_neg, ``add_neg].foldlM (·.addConst ·) thms
     let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_neg,
       ``rat_rawCast_neg, ``rat_rawCast_pos].foldlM (·.addConst · (post := false)) thms
-    let ctx' := { ctx with simpTheorems := #[thms] }
+    let ctx' := ctx.setSimpTheorems #[thms]
     pure fun r' : Simp.Result ↦ do
       r'.mkEqTrans (← Simp.main r'.expr ctx' (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
   let nctx := { ctx, simp }
@@ -260,9 +259,17 @@ example (x : ℕ) (h : x * 2 > 5): x + x > 5 := by ring; assumption -- suggests 
 ```
 -/
 macro (name := ring) "ring" : tactic =>
-  `(tactic| first | ring1 | try_this ring_nf)
+  `(tactic| first | ring1 | try_this ring_nf
+  "\n\nThe `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+  \nNote that `ring` works primarily in *commutative* rings. \
+  If you have a noncommutative ring, abelian group or module, consider using \
+  `noncomm_ring`, `abel` or `module` instead.")
 @[inherit_doc ring] macro "ring!" : tactic =>
-  `(tactic| first | ring1! | try_this ring_nf!)
+  `(tactic| first | ring1! | try_this ring_nf!
+  "\n\nThe `ring!` tactic failed to close the goal. Use `ring_nf!` to obtain a normal form.
+  \nNote that `ring!` works primarily in *commutative* rings. \
+  If you have a noncommutative ring, abelian group or module, consider using \
+  `noncomm_ring`, `abel` or `module` instead.")
 
 /--
 The tactic `ring` evaluates expressions in *commutative* (semi)rings.
@@ -271,9 +278,17 @@ This is the conv tactic version, which rewrites a target which is a ring equalit
 See also the `ring` tactic.
 -/
 macro (name := ringConv) "ring" : conv =>
-  `(conv| first | discharge => ring1 | try_this ring_nf)
+  `(conv| first | discharge => ring1 | try_this ring_nf
+  "\n\nThe `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+  \nNote that `ring` works primarily in *commutative* rings. \
+  If you have a noncommutative ring, abelian group or module, consider using \
+  `noncomm_ring`, `abel` or `module` instead.")
 @[inherit_doc ringConv] macro "ring!" : conv =>
-  `(conv| first | discharge => ring1! | try_this ring_nf!)
+  `(conv| first | discharge => ring1! | try_this ring_nf!
+  "\n\nThe `ring!` tactic failed to close the goal. Use `ring_nf!` to obtain a normal form.
+  \nNote that `ring!` works primarily in *commutative* rings. \
+  If you have a noncommutative ring, abelian group or module, consider using \
+  `noncomm_ring`, `abel` or `module` instead.")
 
 end RingNF
 

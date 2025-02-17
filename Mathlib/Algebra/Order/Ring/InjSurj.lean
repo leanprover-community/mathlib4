@@ -74,7 +74,7 @@ protected abbrev strictOrderedSemiring [StrictOrderedSemiring α] (zero : f 0 = 
     (natCast : ∀ n : ℕ, f n = n) : StrictOrderedSemiring β where
   toSemiring := hf.semiring f zero one add mul nsmul npow natCast
   __ := hf.orderedCancelAddCommMonoid f zero add (swap nsmul)
-  __ := pullback_nonzero f zero one
+  __ := domain_nontrivial f zero one
   __ := hf.orderedSemiring f zero one add mul nsmul npow natCast
   mul_lt_mul_of_pos_left a b c h hc := show f (c * a) < f (c * b) by
     simpa only [mul, zero] using mul_lt_mul_of_pos_left ‹f a < f b› (by rwa [← zero])

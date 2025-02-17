@@ -104,6 +104,14 @@ protected theorem mem_ker (x : L) : x ∈ LieModule.ker R L M ↔ ∀ m : M, ⁅
   simp only [LieModule.ker, LieHom.mem_ker, LinearMap.ext_iff, LinearMap.zero_apply,
     toEnd_apply_apply]
 
+lemma isFaithful_iff_ker_eq_bot : IsFaithful R L M ↔ LieModule.ker R L M = ⊥ := by
+  rw [isFaithful_iff', LieSubmodule.ext_iff]
+  aesop
+
+@[simp] lemma ker_eq_bot [IsFaithful R L M] :
+    LieModule.ker R L M = ⊥ :=
+  (isFaithful_iff_ker_eq_bot R L M).mp inferInstance
+
 /-- The largest submodule of a Lie module `M` on which the Lie algebra `L` acts trivially. -/
 def maxTrivSubmodule : LieSubmodule R L M where
   carrier := { m | ∀ x : L, ⁅x, m⁆ = 0 }
@@ -121,8 +129,8 @@ instance : IsTrivial L (maxTrivSubmodule R L M) where trivial x m := Subtype.ext
 @[simp]
 theorem ideal_oper_maxTrivSubmodule_eq_bot (I : LieIdeal R L) :
     ⁅I, maxTrivSubmodule R L M⁆ = ⊥ := by
-  rw [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.lieIdeal_oper_eq_linear_span,
-    LieSubmodule.bot_coeSubmodule, Submodule.span_eq_bot]
+  rw [← LieSubmodule.toSubmodule_inj, LieSubmodule.lieIdeal_oper_eq_linear_span,
+    LieSubmodule.bot_toSubmodule, Submodule.span_eq_bot]
   rintro m ⟨⟨x, hx⟩, ⟨⟨m, hm⟩, rfl⟩⟩
   exact hm x
 
@@ -153,8 +161,8 @@ def maxTrivHom (f : M →ₗ⁅R,L⁆ N) : maxTrivSubmodule R L M →ₗ⁅R,L�
   toFun m := ⟨f m, fun x =>
     (LieModuleHom.map_lie _ _ _).symm.trans <|
       (congr_arg f (m.property x)).trans (LieModuleHom.map_zero _)⟩
-  map_add' m n := by simp [Function.comp_apply]; rfl -- Porting note:
-  map_smul' t m := by simp [Function.comp_apply]; rfl -- these two were `by simpa`
+  map_add' m n := by ext; simp
+  map_smul' t m := by ext; simp
   map_lie' {x m} := by simp
 
 @[norm_cast, simp]
@@ -167,8 +175,8 @@ def maxTrivEquiv (e : M ≃ₗ⁅R,L⁆ N) : maxTrivSubmodule R L M ≃ₗ⁅R,L
   { maxTrivHom (e : M →ₗ⁅R,L⁆ N) with
     toFun := maxTrivHom (e : M →ₗ⁅R,L⁆ N)
     invFun := maxTrivHom (e.symm : N →ₗ⁅R,L⁆ M)
-    left_inv := fun m => by ext; simp [LieModuleEquiv.coe_to_lieModuleHom]
-    right_inv := fun n => by ext; simp [LieModuleEquiv.coe_to_lieModuleHom] }
+    left_inv := fun m => by ext; simp [LieModuleEquiv.coe_toLieModuleHom]
+    right_inv := fun n => by ext; simp [LieModuleEquiv.coe_toLieModuleHom] }
 
 @[norm_cast, simp]
 theorem coe_maxTrivEquiv_apply (e : M ≃ₗ⁅R,L⁆ N) (m : maxTrivSubmodule R L M) :
@@ -209,14 +217,22 @@ theorem coe_maxTrivLinearMapEquivLieModuleHom_symm (f : M →ₗ⁅R,L⁆ N) :
   rfl
 
 @[simp]
-theorem coe_linearMap_maxTrivLinearMapEquivLieModuleHom (f : maxTrivSubmodule R L (M →ₗ[R] N)) :
+theorem toLinearMap_maxTrivLinearMapEquivLieModuleHom (f : maxTrivSubmodule R L (M →ₗ[R] N)) :
     (maxTrivLinearMapEquivLieModuleHom (M := M) (N := N) f : M →ₗ[R] N) = (f : M →ₗ[R] N) := by
   ext; rfl
 
+@[deprecated (since := "2024-12-30")]
+alias coe_linearMap_maxTrivLinearMapEquivLieModuleHom :=
+  toLinearMap_maxTrivLinearMapEquivLieModuleHom
+
 @[simp]
-theorem coe_linearMap_maxTrivLinearMapEquivLieModuleHom_symm (f : M →ₗ⁅R,L⁆ N) :
+theorem toLinearMap_maxTrivLinearMapEquivLieModuleHom_symm (f : M →ₗ⁅R,L⁆ N) :
     (maxTrivLinearMapEquivLieModuleHom (M := M) (N := N) |>.symm f : M →ₗ[R] N) = (f : M →ₗ[R] N) :=
   rfl
+
+@[deprecated (since := "2024-12-30")]
+alias coe_linearMap_maxTrivLinearMapEquivLieModuleHom_symm :=
+  toLinearMap_maxTrivLinearMapEquivLieModuleHom_symm
 
 end LieModule
 
@@ -246,6 +262,14 @@ theorem abelian_of_le_center (I : LieIdeal R L) (h : I ≤ center R L) : IsLieAb
 
 theorem isLieAbelian_iff_center_eq_top : IsLieAbelian L ↔ center R L = ⊤ :=
   LieModule.isTrivial_iff_max_triv_eq_top R L L
+
+theorem isFaithful_self_iff : LieModule.IsFaithful R L L ↔ center R L = ⊥ := by
+  rw [LieModule.isFaithful_iff_ker_eq_bot, self_module_ker_eq_center]
+
+@[simp]
+theorem center_eq_bot [LieModule.IsFaithful R L L] :
+    center R L = ⊥ :=
+  (isFaithful_self_iff R L).mp inferInstance
 
 end LieAlgebra
 

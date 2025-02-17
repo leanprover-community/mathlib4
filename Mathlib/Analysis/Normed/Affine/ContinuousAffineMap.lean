@@ -175,7 +175,7 @@ noncomputable instance : NormedAddCommGroup (V →ᴬ[𝕜] W) :=
           simp only [norm_eq_zero, coe_const, Function.const_apply] at h₁
           rw [h₁]
           rfl
-        · rw [norm_eq_zero', contLinear_eq_zero_iff_exists_const] at h₁
+        · rw [norm_eq_zero, contLinear_eq_zero_iff_exists_const] at h₁
           obtain ⟨q, rfl⟩ := h₁
           simp only [norm_le_zero_iff, coe_const, Function.const_apply] at h₂
           rw [h₂]

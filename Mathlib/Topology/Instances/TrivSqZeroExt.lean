@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.TrivSqZeroExt
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 
 /-!
 # Topology on `TrivSqZeroExt R M`
@@ -42,14 +42,12 @@ instance instTopologicalSpace : TopologicalSpace (tsze R M) :=
 instance [T2Space R] [T2Space M] : T2Space (tsze R M) :=
   Prod.t2Space
 
-theorem nhds_def (x : tsze R M) : 𝓝 x = (𝓝 x.fst).prod (𝓝 x.snd) := by
-  cases x using Prod.rec
-  exact nhds_prod_eq
+theorem nhds_def (x : tsze R M) : 𝓝 x = 𝓝 x.fst ×ˢ 𝓝 x.snd := nhds_prod_eq
 
-theorem nhds_inl [Zero M] (x : R) : 𝓝 (inl x : tsze R M) = (𝓝 x).prod (𝓝 0) :=
+theorem nhds_inl [Zero M] (x : R) : 𝓝 (inl x : tsze R M) = 𝓝 x ×ˢ 𝓝 0 :=
   nhds_def _
 
-theorem nhds_inr [Zero R] (m : M) : 𝓝 (inr m : tsze R M) = (𝓝 0).prod (𝓝 m) :=
+theorem nhds_inr [Zero R] (m : M) : 𝓝 (inr m : tsze R M) = 𝓝 0 ×ˢ 𝓝 m :=
   nhds_def _
 
 nonrec theorem continuous_fst : Continuous (fst : tsze R M → R) :=
@@ -116,14 +114,14 @@ instance [Neg R] [Neg M] [ContinuousNeg R] [ContinuousNeg M] : ContinuousNeg (ts
   Prod.continuousNeg
 
 /-- This is not an instance due to complaints by the `fails_quickly` linter. At any rate, we only
-really care about the `TopologicalRing` instance below. -/
+really care about the `IsTopologicalRing` instance below. -/
 theorem topologicalSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
-    [TopologicalSemiring R] [ContinuousAdd M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] :
-    TopologicalSemiring (tsze R M) := { }
+    [IsTopologicalSemiring R] [ContinuousAdd M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] :
+    IsTopologicalSemiring (tsze R M) := { }
 
-instance [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [TopologicalRing R]
-    [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] :
-    TopologicalRing (tsze R M) where
+instance [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [IsTopologicalRing R]
+    [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] :
+    IsTopologicalRing (tsze R M) where
 
 instance [SMul S R] [SMul S M] [ContinuousConstSMul S R] [ContinuousConstSMul S M] :
     ContinuousConstSMul S (tsze R M) :=

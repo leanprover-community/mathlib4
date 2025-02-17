@@ -275,7 +275,7 @@ def comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : Seminorm
     toFun := fun x => p (f x)
     -- Porting note: the `simp only` below used to be part of the `rw`.
     -- I'm not sure why this change was needed, and am worried by it!
-    -- Note: #8386 had to change `map_smulₛₗ` to `map_smulₛₗ _`
+    -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `map_smulₛₗ` to `map_smulₛₗ _`
     smul' := fun _ _ => by simp only [map_smulₛₗ _]; rw [map_smul_eq_mul, RingHomIsometric.is_iso] }
 
 theorem coe_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : ⇑(p.comp f) = p ∘ f :=
@@ -1067,9 +1067,9 @@ protected theorem uniformContinuous_of_continuousAt_zero [UniformSpace E] [Unifo
     tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds (hp.comp Filter.tendsto_comap)
       (fun xy => dist_nonneg) fun xy => p.norm_sub_map_le_sub _ _
 
-protected theorem continuous_of_continuousAt_zero [TopologicalSpace E] [TopologicalAddGroup E]
+protected theorem continuous_of_continuousAt_zero [TopologicalSpace E] [IsTopologicalAddGroup E]
     {p : Seminorm 𝕝 E} (hp : ContinuousAt p 0) : Continuous p := by
-  letI := TopologicalAddGroup.toUniformSpace E
+  letI := IsTopologicalAddGroup.toUniformSpace E
   haveI : UniformAddGroup E := comm_topologicalAddGroup_is_uniform
   exact (Seminorm.uniformContinuous_of_continuousAt_zero hp).continuous
 
@@ -1102,29 +1102,30 @@ protected theorem uniformContinuous' [UniformSpace E] [UniformAddGroup E] [Conti
 /-- A seminorm is continuous if `p.ball 0 r ∈ 𝓝 0` for *all* `r > 0`.
 Over a `NontriviallyNormedField` it is actually enough to check that this is true
 for *some* `r`, see `Seminorm.continuous`. -/
-protected theorem continuous_of_forall [TopologicalSpace E] [TopologicalAddGroup E]
+protected theorem continuous_of_forall [TopologicalSpace E] [IsTopologicalAddGroup E]
     {p : Seminorm 𝕝 E} (hp : ∀ r > 0, p.ball 0 r ∈ (𝓝 0 : Filter E)) :
     Continuous p :=
   Seminorm.continuous_of_continuousAt_zero (continuousAt_zero_of_forall hp)
 
-protected theorem continuous [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
-    {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.ball 0 r ∈ (𝓝 0 : Filter E)) : Continuous p :=
+protected theorem continuous [TopologicalSpace E] [IsTopologicalAddGroup E]
+    [ContinuousConstSMul 𝕜 E] {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.ball 0 r ∈ (𝓝 0 : Filter E)) :
+    Continuous p :=
   Seminorm.continuous_of_continuousAt_zero (continuousAt_zero hp)
 
 /-- A seminorm is continuous if `p.closedBall 0 r ∈ 𝓝 0` for *all* `r > 0`.
 Over a `NontriviallyNormedField` it is actually enough to check that this is true
 for *some* `r`, see `Seminorm.continuous'`. -/
-protected theorem continuous_of_forall' [TopologicalSpace E] [TopologicalAddGroup E]
+protected theorem continuous_of_forall' [TopologicalSpace E] [IsTopologicalAddGroup E]
     {p : Seminorm 𝕝 E} (hp : ∀ r > 0, p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
     Continuous p :=
   Seminorm.continuous_of_continuousAt_zero (continuousAt_zero_of_forall' hp)
 
-protected theorem continuous' [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
-    {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
-    Continuous p :=
+protected theorem continuous' [TopologicalSpace E] [IsTopologicalAddGroup E]
+    [ContinuousConstSMul 𝕜 E] {p : Seminorm 𝕜 E} {r : ℝ}
+    (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) : Continuous p :=
   Seminorm.continuous_of_continuousAt_zero (continuousAt_zero' hp)
 
-theorem continuous_of_le [TopologicalSpace E] [TopologicalAddGroup E]
+theorem continuous_of_le [TopologicalSpace E] [IsTopologicalAddGroup E]
     {p q : Seminorm 𝕝 E} (hq : Continuous q) (hpq : p ≤ q) : Continuous p := by
   refine Seminorm.continuous_of_forall (fun r hr ↦ Filter.mem_of_superset
     (IsOpen.mem_nhds ?_ <| q.mem_ball_self hr) (ball_antitone hpq))

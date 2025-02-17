@@ -83,6 +83,59 @@ def funPropTac : Tactic
 
   | _ => throwUnsupportedSyntax
 
+
+
+/-- Command that printins all function properties attached to a function.
+
+For example
+```
+#print_fun_prop_theorems HAdd.hAdd
+```
+might print out
+```
+Continuous
+  continuous_add, args: [4,5], priority: 1000
+  continuous_add_left, args: [5], priority: 1000
+  continuous_add_right, args [4], priority: 1000
+  ...
+Diferentiable
+  Differentiable.add, args: [4,5], priority: 1000
+  Differentiable.add_const, args: [4], priority: 1000
+  Differentiable.const_add, args: [5], priority: 1000
+  ...
+```
+
+You can also see only theorems about a concrete function property
+```
+#print_fun_prop_theorems HAdd.hAdd Continuous
+```
+-/
+elab "#print_fun_prop_theorems " funIdent:ident funProp:(ident)? : command => do
+
+  let funName ← ensureNonAmbiguous funIdent (← resolveGlobalConst funIdent)
+  let funProp? ← funProp.mapM (fun stx => do
+    ensureNonAmbiguous stx (← resolveGlobalConst stx))
+
+  let theorems := (functionTheoremsExt.getState (← getEnv)).theorems.findD funName {}
+
+  let logTheorems (funProp : Name) (thms : Array FunctionTheorem) : Command.CommandElabM Unit := do
+    let mut msg : MessageData := ""
+    msg := msg ++ m!"{← Meta.ppOrigin (.decl funProp)}"
+    for thm in thms do
+      msg := msg ++ m!"\n  {← Meta.ppOrigin (.decl thm.thmOrigin.name)}, \
+                 args: {thm.mainArgs}, form: {thm.form}"
+      pure ()
+    logInfo msg
+
+
+  match funProp? with
+  | none =>
+    for (funProp,thms) in theorems do
+      logTheorems funProp thms
+  | some funProp =>
+    logTheorems funProp (theorems.findD funProp #[])
+
+
 end Meta.FunProp
 
 end Mathlib

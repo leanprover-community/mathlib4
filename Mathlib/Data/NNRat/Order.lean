@@ -12,8 +12,9 @@ import Mathlib.Algebra.Order.Nonneg.Ring
 
 -/
 
-deriving instance CanonicallyOrderedCommSemiring for NNRat
-deriving instance CanonicallyLinearOrderedAddCommMonoid for NNRat
+deriving instance OrderedCommSemiring for NNRat
+deriving instance LinearOrderedAddCommMonoid for NNRat
 
 -- TODO: `deriving instance OrderedSub for NNRat` doesn't work yet, so we add the instance manually
 instance NNRat.instOrderedSub : OrderedSub ℚ≥0 := Nonneg.orderedSub
+instance NNRat.instCanonicallyOrderedAdd : CanonicallyOrderedAdd ℚ≥0 := Nonneg.canonicallyOrderedAdd
