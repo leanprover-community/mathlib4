@@ -67,12 +67,6 @@ abbrev mapQPow {m n : ℕ} (le : m ≤ n) :
     M ⧸ (I ^ n • ⊤ : Submodule R M) →ₗ[R] M ⧸ (I ^ m • ⊤ : Submodule R M) :=
   mapQ _ _ LinearMap.id (smul_mono_left (Ideal.pow_le_pow_right le))
 
-@[simp]
-theorem mk_out_eq_mapQPow {m n : ℕ} (le : m ≤ n) (x : M ⧸ (I ^ n • ⊤ : Submodule R M)) :
-    Quotient.mk x.out = mapQPow I M le x := by
-  nth_rw 2 [← Quotient.out_eq x]
-  rfl
-
 /--`mapQPow` for `n = m + 1`-/
 abbrev mapQPowSucc (m : ℕ) : M ⧸ (I ^ (m + 1) • ⊤ : Submodule R M) →ₗ[R]
     M ⧸ (I ^ m • ⊤ : Submodule R M) := mapQPow I M (Nat.le_succ m)
@@ -93,12 +87,6 @@ to `R ⧸ I ^ n` induced by the natural inclusion `I ^ n → I ^ m`.
 -/
 abbrev factorPow {m n : ℕ} (le : n ≤ m) : R ⧸ I ^ m →+* R ⧸ I ^ n :=
   factor _ _ (pow_le_pow_right le)
-
-@[simp]
-theorem mk_out_eq_factorPow {m n : ℕ} (le : n ≤ m) (x : R ⧸ I ^ m) :
-    mk (I ^ n) x.out = factorPow I le x := by
-  nth_rw 2 [← Quotient.out_eq x]
-  rfl
 
 /--`factorPow` for `m = n + 1`-/
 abbrev factorPowSucc (n : ℕ) : R ⧸ I ^ (n + 1) →+* R ⧸ I ^ n :=
