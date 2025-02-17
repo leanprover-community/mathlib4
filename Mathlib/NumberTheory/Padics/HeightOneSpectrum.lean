@@ -146,7 +146,7 @@ lemma Padic.isHomeomorph_ofAdicCompletion (p : ℕ) [Fact p.Prime] :
   letI h : (Valued.v (R := p.toHeightOneSpectrum.adicCompletion ℚ)).RankOne :=
   { hom := WithZeroMulInt.toNNReal (Nat.cast_ne_zero.mpr ‹Fact p.Prime›.1.ne_zero)
     strictMono' := WithZeroMulInt.toNNReal_strictMono (by simpa using ‹Fact p.Prime›.1.one_lt)
-    nontrivial' := 
+    nontrivial' :=
     ⟨UniformSpace.Completion.coeRingHom (α := ℚ) p,
     by simpa using ‹Fact p.Prime›.1.ne_zero, by
       simp only [UniformSpace.Completion.coeRingHom,
