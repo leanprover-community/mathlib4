@@ -69,14 +69,14 @@ partial def toAdditiveCore (e : Expr) : MetaM Simp.Result := do
       let rec
         /-- Returns true when an operation is multiplication of division --/
         should_convert : Expr → Bool
-          | .app (.const name _) _ => is_multiplicative_operation name 
+          | .app (.const name _) _ => is_multiplicative_operation name
           | .app (application@(.app _ _)) _ => should_convert application
           | _ => False
       let rec
         /-- Convert multiplicative expressions to additive expressions.
         Stop recursing after seeing the first multiplicative expression.
         For example: (f a) * (f b) -> (f a) + (f b)
-        but f (x * y) * f (w * z) -> f(x * y) + f (w * z) 
+        but f (x * y) * f (w * z) -> f(x * y) + f (w * z)
         --/
         go : Expr → MetaM Expr
           | .app fn arg
