@@ -643,6 +643,59 @@ theorem map_prod_map {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ} (
   rw [map_apply (hf.prod_map hg) (hs.prod ht), map_apply hf hs, map_apply hg ht]
   exact prod_prod (f ⁻¹' s) (g ⁻¹' t)
 
+
+/-! ### The monoidal product in the Giry monad -/
+
+-- theorem _root_.Measurable.measure_of_isPiSystem {μ : α → Measure β} [∀ a, IsFiniteMeasure (μ a)]
+--     {S : Set (Set β)} (hgen : ‹MeasurableSpace β› = .generateFrom S) (hpi : IsPiSystem S)
+--     (h_basic : ∀ s ∈ S, Measurable fun a ↦ μ a s) (h_univ : Measurable fun a ↦ μ a univ) :
+--     Measurable μ := by
+--   rw [measurable_measure]
+--   intro s hs
+--   induction s, hs using MeasurableSpace.induction_on_inter hgen hpi with
+--   | empty => simp
+--   | basic s hs => exact h_basic s hs
+--   | compl s hsm ihs =>
+--     simp only [measure_compl hsm (measure_ne_top _ _)]
+--     exact h_univ.sub ihs
+--   | iUnion f hfd hfm ihf =>
+--     simpa only [measure_iUnion hfd hfm] using .ennreal_tsum ihf
+--
+-- theorem _root_.Measurable.measure_of_isPiSystem_of_isProbabilityMeasure {μ : α → Measure β}
+--     [∀ a, IsProbabilityMeasure (μ a)]
+--     {S : Set (Set β)} (hgen : ‹MeasurableSpace β› = .generateFrom S) (hpi : IsPiSystem S)
+--     (h_basic : ∀ s ∈ S, Measurable fun a ↦ μ a s) : Measurable μ :=
+--   .measure_of_isPiSystem hgen hpi h_basic <| by simp
+
+abbrev ProbProduct (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] :=
+  { μ : Measure α × Measure β // IsProbabilityMeasure μ.1 ∧ IsProbabilityMeasure μ.2 }
+
+abbrev monoidal_product (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] :
+    ProbProduct α β -> Measure (α × β) :=
+  fun μ => Measure.prod (Subtype.val μ).1 (Subtype.val μ).2
+
+local instance (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] (z : ProbProduct α β) :
+    IsProbabilityMeasure (monoidal_product α β z) where
+  measure_univ := by rcases z with ⟨_, ⟨_, _⟩⟩; simp
+
+theorem measurable_monoidal_product : Measurable (monoidal_product α β) :=
+  Measurable.measure_of_isPiSystem_of_isProbabilityMeasure
+    generateFrom_prod.symm isPiSystem_prod <| by
+    simp only [Set.mem_image2, forall_exists_index, and_imp]
+    intros _ u Hu v Hv Heq
+    let _ (a : ProbProduct α β) : SFinite a.val.2 := by rcases a with ⟨_, ⟨_, _⟩⟩; infer_instance
+    rw [<- Heq, funext <| fun a => MeasureTheory.Measure.prod_prod u v]
+    apply Measurable.mul
+    · rw [<- comp_def (fun μ => μ u) (fun (μ : ProbProduct α β) => (Subtype.val μ).1),
+          <- comp_def Prod.fst _]
+      apply Measurable.comp (measurable_coe Hu) <|
+            Measurable.comp measurable_fst measurable_subtype_coe
+    · rw [<- comp_def (fun μ => μ v) (fun (μ : ProbProduct α β) => (Subtype.val μ).2),
+          <- comp_def Prod.snd _]
+      apply Measurable.comp (measurable_coe Hv) <|
+            Measurable.comp measurable_snd measurable_subtype_coe
+
+
 end Measure
 
 open Measure
