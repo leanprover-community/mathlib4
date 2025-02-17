@@ -39,17 +39,11 @@ def Int.heightOneSpectrumEquiv : HeightOneSpectrum ℤ ≃ { p : ℕ // p.Prime 
     exact n.2, by simpa using n.2.ne_zero⟩
   left_inv p := by
     ext1
-    conv_rhs => rw [← Ideal.span_singleton_generator p.asIdeal]
-    dsimp
-    generalize Submodule.IsPrincipal.generator p.asIdeal = n
-    cases n.natAbs_eq with
-    | inl h => rw [← h]
-    | inr h => rw [← Ideal.span_singleton_neg, ← h]
+    simp only [span_natAbs, Ideal.span_singleton_generator]
   right_inv n := by
     ext
-    have := Ideal.span_singleton_generator (Ideal.span {(n : ℤ)})
-    rw [Ideal.span_singleton_eq_span_singleton, Int.associated_iff] at this
-    cases this <;> norm_num [*]
+    simpa only [Ideal.span_singleton_eq_span_singleton, Int.associated_iff_natAbs] using
+      Ideal.span_singleton_generator (Ideal.span {(n : ℤ)})
 
 /-- The maximal ideal (`span {n}`) associated to a prime `p : ℕ`. -/
 @[simps! asIdeal]
@@ -62,8 +56,8 @@ lemma Nat.toHeightOneSpectrum_intValuation (p : ℕ) [Fact p.Prime] (n : ℤ) (h
   classical
   rw [intValuation_apply, intValuationDef_if_neg _ hn,
     count_associates_factors_eq (by simpa) inferInstance p.toHeightOneSpectrum.3,
-    Nat.toHeightOneSpectrum_asIdeal, count_span_normalizedFactors_eq hn
-    (by rw [← Nat.prime_iff_prime_int]; exact Fact.out),
+    Nat.toHeightOneSpectrum_asIdeal,
+    count_span_normalizedFactors_eq hn (by rw [← Nat.prime_iff_prime_int]; exact Fact.out),
     padicValInt.of_ne_one_ne_zero ‹Fact p.Prime›.out.ne_one hn]
   congr 4
   apply ENat.coe_inj.mp
@@ -97,7 +91,7 @@ def Padic.ofAdicCompletion (p : ℕ) [Fact p.Prime] :
   refine ⟨WithZero.unitsWithZeroEquiv.symm (Multiplicative.ofAdd (-k)), trivial, ?_⟩
   rintro x (hx : p.toHeightOneSpectrum.valuation x < (Multiplicative.ofAdd (-k : ℤ)))
   simp only [eq_ratCast, Metric.mem_ball, dist_zero_right, padicNormE.eq_padicNorm]
-  refine LE.le.trans_lt ?_ hk
+  refine lt_of_le_of_lt ?_ hk
   rw [padicNorm]
   split_ifs with h
   · simp
@@ -138,8 +132,7 @@ lemma Padic.valuation_ofAdicCompletionofAdicCompletion (p : ℕ) [Fact p.Prime] 
       apply Multiplicative.ofAdd.injective
       apply WithZero.coe_inj.mp
       simp only [WithZero.coe_inv, ofAdd_toAdd, WithZero.coe_unzero,
-        ← Nat.toHeightOneSpectrum_valuation _ _ h]
-      rfl
+        ← Nat.toHeightOneSpectrum_valuation _ _ h, adicValued_apply]
   · apply isClosed_eq
     · fun_prop
     · refine continuous_subtype_val.comp ?_
@@ -151,9 +144,10 @@ lemma Padic.isHomeomorph_ofAdicCompletion (p : ℕ) [Fact p.Prime] :
   letI := p.toHeightOneSpectrum.adicValued (K := ℚ)
   have := algebraRat.charZero (adicCompletion ℚ p.toHeightOneSpectrum)
   letI h : (Valued.v (R := p.toHeightOneSpectrum.adicCompletion ℚ)).RankOne :=
-    ⟨WithZeroMulInt.toNNReal (Nat.cast_ne_zero.mpr ‹Fact p.Prime›.1.ne_zero),
-    WithZeroMulInt.toNNReal_strictMono (by simpa using ‹Fact p.Prime›.1.one_lt),
-    UniformSpace.Completion.coeRingHom (α := ℚ) p,
+  { hom := WithZeroMulInt.toNNReal (Nat.cast_ne_zero.mpr ‹Fact p.Prime›.1.ne_zero)
+    strictMono' := WithZeroMulInt.toNNReal_strictMono (by simpa using ‹Fact p.Prime›.1.one_lt)
+    nontrivial' := 
+    ⟨UniformSpace.Completion.coeRingHom (α := ℚ) p,
     by simpa using ‹Fact p.Prime›.1.ne_zero, by
       simp only [UniformSpace.Completion.coeRingHom,
         RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, valuedAdicCompletion_def,
@@ -163,7 +157,7 @@ lemma Padic.isHomeomorph_ofAdicCompletion (p : ℕ) [Fact p.Prime] :
       simp only [padicValRat.of_nat, padicValNat_self, Nat.cast_one, Int.reduceNeg, ←
         WithZero.coe_one, ne_eq, WithZero.coe_inj]
       rw [← Multiplicative.toAdd.injective.eq_iff]
-      simp⟩
+      simp⟩ }
   letI := Valued.toNormedField (p.toHeightOneSpectrum.adicCompletion ℚ) _
   have : Isometry (Padic.ofAdicCompletion p) := by
     apply AddMonoidHomClass.isometry_of_norm
