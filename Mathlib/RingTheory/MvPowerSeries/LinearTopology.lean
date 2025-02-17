@@ -139,72 +139,53 @@ theorem ringSubgroupsBasis :
     apply hg i (le_trans ?_ he)
     simp only [← Finset.mem_antidiagonal.mp h, le_self_add]⟩
 
-/-- If the coefficient ring `R` is endowed with a linear topology, then for every `d : σ →₀ ℕ`,
-`↑(basis σ R d) ∈ 𝓝 (0 : MvPowerSeries σ R)`. -/
-theorem basis_mem_nhds_zero (Jd : {J : TwoSidedIdeal R | (J : Set R) ∈ 𝓝 0} × (σ →₀ ℕ)) :
-    (basis σ R ⟨Jd.1, Jd.2⟩ : Set (MvPowerSeries σ R)) ∈ 𝓝 0 := by
-  classical
-  rw [nhds_pi, Filter.mem_pi]
-  use Finset.Iic Jd.2, Finset.finite_toSet _, (fun e => if e ≤ Jd.2 then Jd.1 else univ)
-  constructor
-  · intro e
-    split_ifs
-    · exact Jd.1.prop
-    · simp only [Filter.univ_mem]
-  · intro f
-    simp only [Finset.coe_Iic, mem_pi, mem_Iic, mem_ite_univ_right, mem_singleton_iff, mem_coe]
-    rw [mem_basis_iff]
-    exact forall_imp (fun e h he => h he he)
+/-- If the ring `R` is endowed with a linear topology, then the sets `↑basis σ R (J, d)`,
+for `J : TwoSidedIdeal R` which are neighborhoods of `0 : R` and `d : σ →₀ ℕ`,
+constitute a basis of neighborhoods of `0 : MvPowerSeries σ R` for the product topology. -/
+lemma hasBasis_nhds_zero [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
+    (𝓝 0 : Filter (MvPowerSeries σ R)).HasBasis
+      (fun Id : TwoSidedIdeal R × (σ →₀ ℕ) ↦ (Id.1 : Set R) ∈ 𝓝 0)
+      (fun Id ↦ basis _ _ Id) := by
+  rw [nhds_pi]
+  refine IsLinearTopology.hasBasis_twoSidedIdeal.pi_self.to_hasBasis ?_ ?_
+  · intro ⟨D, I⟩ ⟨hD, hI⟩
+    refine ⟨⟨I, Finset.sup hD.toFinset id⟩, hI, fun f hf d hd ↦ ?_⟩
+    rw [SetLike.mem_coe, mem_basis_iff] at hf
+    convert hf _ <| Finset.le_sup (hD.mem_toFinset.mpr hd)
+  · intro ⟨I, d⟩ hI
+    refine ⟨⟨Iic d, I⟩, ⟨finite_Iic d, hI⟩, ?_⟩
+    simpa [basis, coeff_apply, Iic, pi] using subset_rfl
 
-lemma mem_nhds_zero_iff [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R]
-    {U : Set (MvPowerSeries σ R)} :
-    U ∈ 𝓝 0 ↔ ∃ Jd, ((Jd.1 : Set R) ∈ 𝓝 0) ∧ (basis σ R Jd : Set (MvPowerSeries σ R)) ⊆ U := by
-  constructor
-  · rw [nhds_pi, Filter.mem_pi]
-    rintro ⟨D, hD, t, ht, ht'⟩
-    suffices ∃ J : TwoSidedIdeal R, (J : Set R) ∈ 𝓝 0 ∧ (J : Set R) ⊆ ⋂ i ∈ D, t i by
-      obtain ⟨J, hJ, hJD⟩ := this
-      use ⟨J, Finset.sup hD.toFinset id⟩
-      constructor
-      · exact hJ
-      · apply subset_trans _ ht'
-        intros f hf e he
-        simp only [← coeff_apply R f e]
-        apply biInter_subset_of_mem he
-        apply hJD
-        rw [mem_coe, mem_basis_iff] at hf
-        exact hf e (Finset.le_sup (f := id) (hD.mem_toFinset.mpr he))
-    set s := ⋂ i ∈ D, t i
-    rw [← (IsLinearTopology.hasBasis_twoSidedIdeal (R := R)).mem_iff']
-    exact (Filter.biInter_mem hD).mpr fun i a ↦ ht i
-  · rintro ⟨Jd, hJd_mem_nhds, hJd⟩
-    exact Filter.sets_of_superset _ (basis_mem_nhds_zero ⟨⟨Jd.1, hJd_mem_nhds⟩,Jd.2⟩) hJd
+/-- The product topology on `MvPowerSeries` is a (left and right) linear topology
+  when the ring of coefficients has a linear topology.
 
-/-- The topology on `MvPowerSeries` is a (left and right) linear topology
-  when the ring of coefficients has a linear topology. -/
-theorem hasBasis_twoSidedIdeal [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
+  This weaker version of `MvPowerSeries.LinearTopology.hasBasis_nhds_zero`
+  is useful in creating the instance below. -/
+theorem hasBasis_nhds_zero' [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
   (𝓝 0).HasBasis (fun I : TwoSidedIdeal (MvPowerSeries σ R) ↦ (I : Set (MvPowerSeries σ R)) ∈ 𝓝 0)
-    fun I : TwoSidedIdeal (MvPowerSeries σ R) ↦ (I : Set (MvPowerSeries σ R)) := by
-  constructor
-  intro U
-  simp only [mem_nhds_zero_iff]
-  constructor
-  · rintro ⟨Jd, hJ, hd⟩
-    exact ⟨basis σ R Jd, ⟨Jd, ⟨hJ, by simp⟩⟩, hd⟩
-  · rintro ⟨J, ⟨⟨Id, hI, hJ⟩, hU⟩⟩
-    exact ⟨Id, hI, fun ⦃a⦄ a_1 ↦ hU (hJ a_1)⟩
+    fun I : TwoSidedIdeal (MvPowerSeries σ R) ↦ (I : Set (MvPowerSeries σ R)) where
+  mem_iff' := fun U ↦ by
+    rw [hasBasis_nhds_zero.mem_iff]
+    simp only [Prod.exists, exists_and_left]
+    constructor
+    · rintro ⟨J, hJ, d, hd⟩
+      exact ⟨basis σ R (J, d), hasBasis_nhds_zero.mem_of_superset hJ fun ⦃a⦄ a ↦ a, hd⟩
+    · rintro ⟨I, hI, hU⟩
+      rw [hasBasis_nhds_zero.mem_iff] at hI
+      obtain ⟨⟨J, d⟩, hJd, hI⟩ := hI
+      exact ⟨J, hJd , d, fun ⦃_⦄ a ↦ hU (hI a)⟩
 
 /-- The topology on `MvPowerSeries` is a left linear topology
   when the ring of coefficients has a linar topology. -/
 instance [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
     IsLinearTopology (MvPowerSeries σ R) (MvPowerSeries σ R) :=
-  (isLinearTopology_iff_hasBasis_twoSidedIdeal.mpr (hasBasis_twoSidedIdeal)).1
+  (isLinearTopology_iff_hasBasis_twoSidedIdeal.mpr (hasBasis_nhds_zero')).1
 
 /-- The topology on `MvPowerSeries` is a right linear topology
   when the ring of coefficients has a linear topology. -/
 instance [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
     IsLinearTopology (MvPowerSeries σ R)ᵐᵒᵖ (MvPowerSeries σ R) :=
-  (isLinearTopology_iff_hasBasis_twoSidedIdeal.mpr (hasBasis_twoSidedIdeal)).2
+  (isLinearTopology_iff_hasBasis_twoSidedIdeal.mpr (hasBasis_nhds_zero')).2
 
 end LinearTopology
 
