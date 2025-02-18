@@ -707,9 +707,6 @@ end Morphisms
 namespace LieModule
 
 variable (R L M)
-
-section
-
 variable [LieModule R L M]
 
 theorem isNilpotent_of_le (M₁ M₂ : LieSubmodule R L M) (h₁ : M₁ ≤ M₂) (h₂ : IsNilpotent L M₂) :
