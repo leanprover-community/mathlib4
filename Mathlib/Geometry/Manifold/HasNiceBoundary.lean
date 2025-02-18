@@ -146,7 +146,7 @@ noncomputable def BoundaryManifoldData.euclideanHalfSpace_self (n : ℕ) (k : �
   range_eq_boundary := sorry
 
 -- Missing topology prerequisites
-section topology_prereqs
+section PrereqsTopology
 
 open Set Topology Function
 
@@ -195,8 +195,18 @@ lemma IsClosedEmbedding.sum_elim
   obtain ⟨hcont', hinj', hClosedEmb'⟩ := hg
   exact ⟨by fun_prop, h, hClosedEmb.sum_elim hClosedEmb'⟩
 
-lemma IsClosedMap.prod_mk (c : Y ): IsClosedMap (Prod.mk c : X → _) := sorry
+-- related to Set.preimage_fst_singleton_eq_range, but seems to be missing
+-- "#loogle Prod.mk, "Set"" doesn't find anything relevant"
+lemma aux {α β : Type*} {s : Set α} {b : β} : Prod.mk b '' s = Set.prod {b} s := by
+  ext ⟨y, x⟩
+  refine ⟨?_, fun ⟨hy, hx⟩ ↦ ⟨x, hx, by simp [Prod.mk.injEq, and_true, hy.symm]⟩⟩
+  rintro ⟨p, hp, ⟨hpy, hpyx⟩⟩
+  constructor; exacts [by simp, by simpa]
 
+lemma IsClosedMap.prod_mk [T2Space Y] (c : Y ): IsClosedMap (Prod.mk c : X → _) := by
+  intro K hK
+  rw [aux]
+  exact isClosed_singleton.prod hK
 
 end topology_prereqs
 
@@ -217,8 +227,6 @@ def Homeomorph.foo {X : Type*} [TopologicalSpace X] : X ⊕ X ≃ₜ X × Fin 2 
   letI b := Homeomorph.finTwo.symm.prodCongr (Homeomorph.refl X)
   ((Homeomorph.sumEquivBoolProd X).trans b.symm).trans (Homeomorph.prodComm _ _)
 
-#exit
-
 -- def Diffeomorph.foo : M ⊕ M ≃ₘ^k⟮I, I⟯ M × Fin 2 := sorry
 
 noncomputable def BoundaryManifoldData.Icc (n : ℕ) (k : ℕ∞) :
@@ -233,11 +241,9 @@ noncomputable def BoundaryManifoldData.Icc (n : ℕ) (k : ℕ∞) :
   isImmersion := sorry
   range_eq_boundary := sorry
 
-
-
 -- missing lemma: mfderiv of Prod.map (know it's smooth)
 -- mathlib has versions for Prod.mk, also with left and right constant
-section missing
+section PrereqsDiffGeo
 
 variable  {𝕜 : Type u_1} [NontriviallyNormedField 𝕜]
 
@@ -262,7 +268,7 @@ lemma mfderiv_prod_map
 
 -- and variations for within, etc
 
-end missing
+end PrereqsDiffGeo
 
 #exit
 
