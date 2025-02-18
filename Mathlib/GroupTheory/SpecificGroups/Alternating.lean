@@ -101,7 +101,7 @@ end Equiv.Perm
 theorem alternatingGroup.index_eq_two [Nontrivial α] :
     (alternatingGroup α).index = 2 := by
   rw [alternatingGroup, index_ker, MonoidHom.range_eq_top.mpr (sign_surjective α)]
-  simp_rw [mem_top, Nat.card_eq_fintype_card]; rfl
+  simp_rw [mem_top, Nat.card_eq_fintype_card, card_subtype_true, card_units_int]
 
 @[nontriviality]
 theorem alternatingGroup.index_eq_one [Subsingleton α] : (alternatingGroup α).index = 1 := by
@@ -306,7 +306,7 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
     have h13 : (1 : Fin 5) ≠ 3 := by decide
     rw [Disjoint.cycleType, (isCycle_swap h04).cycleType, (isCycle_swap h13).cycleType,
       card_support_swap h04, card_support_swap h13]
-    · rfl
+    · simp
     · rw [disjoint_iff_disjoint_support, support_swap h04, support_swap h13]
       decide
   · contradiction

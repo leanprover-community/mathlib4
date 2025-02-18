@@ -193,9 +193,8 @@ lemma mpullbackWithin_comp_of_left
   simp only [mpullbackWithin, comp_apply]
   have hg : MDifferentiableWithinAt I' I'' g t (f x₀) :=
     mdifferentiableWithinAt_of_isInvertible_mfderivWithin hg'
-  rw [mfderivWithin_comp _ hg hf h hu, IsInvertible.inverse_comp_apply_of_left]
-  · rfl
-  · exact hg'
+  rw [mfderivWithin_comp _ hg hf h hu, Function.comp_apply,
+    IsInvertible.inverse_comp_apply_of_left hg']
 
 lemma mpullbackWithin_comp_of_right
     {g : M' → M''} {f : M → M'} {V : Π (x : M''), TangentSpace I'' x} {s : Set M} {t : Set M'}
@@ -206,8 +205,8 @@ lemma mpullbackWithin_comp_of_right
   simp only [mpullbackWithin, comp_apply]
   have hf : MDifferentiableWithinAt I I' f s x₀ :=
     mdifferentiableWithinAt_of_isInvertible_mfderivWithin hf'
-  rw [mfderivWithin_comp _ hg hf h hu, IsInvertible.inverse_comp_apply_of_right hf']
-  rfl
+  rw [mfderivWithin_comp _ hg hf h hu, IsInvertible.inverse_comp_apply_of_right hf',
+    Function.comp_apply]
 
 
 /-! ### Regularity of pullback of vector fields
