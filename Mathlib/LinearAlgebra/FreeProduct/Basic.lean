@@ -140,7 +140,7 @@ inductive rel : FreeTensorAlgebra R A → FreeTensorAlgebra R A → Prop
 open scoped Function -- required for scoped `on` notation
 
 /-- The generating equivalence relation for elements of the power algebra
-that are identified in the free product. -/
+that are identified in the free product -/
 @[reducible, simp] def rel' := rel R A on ofDirectSum
 
 theorem rel_id (i : I) : rel R A (ι R <| lof R I A i 1) 1 := rel.id

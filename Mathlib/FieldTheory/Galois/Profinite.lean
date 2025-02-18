@@ -310,7 +310,7 @@ variable (k K)
 
 /-- The `ContinuousMulEquiv` between `K ≃ₐ[k] K` and `lim Gal(L/k)` where `L` is a
   `FiniteGaloisIntermediateField` ordered by inverse inclusion, obtained
-  from `InfiniteGalois.mulEquivToLimit`. -/
+  from `InfiniteGalois.mulEquivToLimit` -/
 noncomputable def continuousMulEquivToLimit [IsGalois k K] :
     (K ≃ₐ[k] K) ≃ₜ* limit (asProfiniteGaloisGroupFunctor k K) where
   toMulEquiv := mulEquivToLimit k K
@@ -321,12 +321,12 @@ instance [IsGalois k K] : CompactSpace (K ≃ₐ[k] K) :=
   (continuousMulEquivToLimit k K).symm.compactSpace
 
 /-- `Gal(K/k)` as a profinite group as there is
-a `ContinuousMulEquiv` to a `ProfiniteGrp` given above. -/
+a `ContinuousMulEquiv` to a `ProfiniteGrp` given above -/
 noncomputable def profiniteGalGrp [IsGalois k K] : ProfiniteGrp :=
   ProfiniteGrp.of (K ≃ₐ[k] K)
 
 /-- The categorical isomorphism between `profiniteGalGrp` and `lim Gal(L/k)` where `L` is a
-  `FiniteGaloisIntermediateField` ordered by inverse inclusion. -/
+  `FiniteGaloisIntermediateField` ordered by inverse inclusion -/
 noncomputable def profiniteGalGrpIsoLimit [IsGalois k K] :
     profiniteGalGrp k K ≅ limit (asProfiniteGaloisGroupFunctor k K) :=
   ContinuousMulEquiv.toProfiniteGrpIso (continuousMulEquivToLimit k K)
