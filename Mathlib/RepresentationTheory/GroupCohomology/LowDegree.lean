@@ -216,6 +216,20 @@ theorem dTwo_comp_dOne : dTwo A ∘ₗ dOne A = 0 := by
     ModuleCat.hom_ofHom, Category.assoc, Iso.hom_inv_id_assoc, HomologicalComplex.d_comp_d_assoc,
     zero_comp, comp_zero, ModuleCat.hom_zero]
 
+open ShortComplex
+
+/-- The (exact) short complex `A.ρ.invariants ⟶ A ⟶ (G → A)`. -/
+def shortComplexH0 : ShortComplex (ModuleCat k) :=
+  moduleCatMk _ _ (dZero_comp_subtype A)
+
+/-- The short complex `A --dZero--> Fun(G, A) --dOne--> Fun(G × G, A)`. -/
+def shortComplexH1 : ShortComplex (ModuleCat k) :=
+  moduleCatMk (dZero A) (dOne A) (dOne_comp_dZero A)
+
+/-- The short complex `Fun(G, A) --dOne--> Fun(G × G, A) --dTwo--> Fun(G × G × G, A)`. -/
+def shortComplexH2 : ShortComplex (ModuleCat k) :=
+  moduleCatMk (dOne A) (dTwo A) (dTwo_comp_dOne A)
+
 end Differentials
 
 section Cocycles
@@ -661,23 +675,7 @@ theorem isMulTwoCoboundary_of_twoCoboundaries
   exact ⟨x, fun g h => funext_iff.1 hx (g, h)⟩
 
 end ofMulDistribMulAction
-section ShortComplexes
 
-open ShortComplex
-
-/-- The (exact) short complex `A.ρ.invariants ⟶ A ⟶ (G → A)`. -/
-def shortComplexH0 : ShortComplex (ModuleCat k) :=
-  moduleCatMk _ _ (dZero_comp_subtype A)
-
-/-- The short complex `A --dZero--> Fun(G, A) --dOne--> Fun(G × G, A)`. -/
-def shortComplexH1 : ShortComplex (ModuleCat k) :=
-  moduleCatMk (dZero A) (dOne A) (dOne_comp_dZero A)
-
-/-- The short complex `Fun(G, A) --dOne--> Fun(G × G, A) --dTwo--> Fun(G × G × G, A)`. -/
-def shortComplexH2 : ShortComplex (ModuleCat k) :=
-  moduleCatMk (dOne A) (dTwo A) (dTwo_comp_dOne A)
-
-end ShortComplexes
 section Cohomology
 
 /-- We define the 0th group cohomology of a `k`-linear `G`-representation `A`, `H⁰(G, A)`, to be
