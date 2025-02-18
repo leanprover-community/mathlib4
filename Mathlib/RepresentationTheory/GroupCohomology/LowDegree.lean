@@ -769,11 +769,12 @@ def dZeroArrowIso : Arrow.mk ((inhomogeneousCochains A).d 0 1) ≅
 
 /-- The 0-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `A.ρ.invariants`, which is a simpler type. -/
-def isoZeroCocycles : cocycles A 0 ≅ ModuleCat.of k A.ρ.invariants :=
+def isoZeroCocycles : cocycles A 0 ≅ H0 A :=
   KernelFork.mapIsoOfIsLimit
     ((inhomogeneousCochains A).cyclesIsKernel 0 1 (by simp)) (shortComplexH0_exact A).fIsKernel
       (dZeroArrowIso A)
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoZeroCocycles_hom_comp_subtype :
     (isoZeroCocycles A).hom ≫ ModuleCat.ofHom A.ρ.invariants.subtype =
       iCocycles A 0 ≫ (zeroCochainsLequiv A).toModuleIso.hom := by
@@ -785,6 +786,7 @@ cochains, is isomorphic to the invariants of the representation on `A`. -/
 def isoH0 : groupCohomology A 0 ≅ H0 A :=
   (CochainComplex.isoHomologyπ₀ _).symm ≪≫ isoZeroCocycles A
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma groupCohomologyπ_comp_isoH0_hom  :
     groupCohomologyπ A 0 ≫ (isoH0 A).hom = (isoZeroCocycles A).hom := by
   simp [isoH0]
@@ -808,14 +810,14 @@ def isoOneCocycles : cocycles A 1 ≅ ModuleCat.of k (oneCocycles A) :=
   (inhomogeneousCochains A).cyclesIsoSc' _ _ _ (by simp) (by simp) ≪≫
     cyclesMapIso (shortComplexH1Iso A) ≪≫ (shortComplexH1 A).moduleCatCyclesIso
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoOneCocycles_hom_comp_subtype :
     (isoOneCocycles A).hom ≫ ModuleCat.ofHom (oneCocycles A).subtype =
       iCocycles A 1 ≫ (oneCochainsLequiv A).toModuleIso.hom := by
-  dsimp [isoOneCocycles]
-  rw [Category.assoc, Category.assoc]
-  erw [(shortComplexH1 A).moduleCatCyclesIso_hom_subtype]
-  rw [cyclesMap_i, HomologicalComplex.cyclesIsoSc'_hom_iCycles_assoc]
+  have := (shortComplexH1 A).moduleCatCyclesIso_hom_subtype
+  simp_all [shortComplexH1, isoOneCocycles, oneCocycles]
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma toCocycles_comp_isoOneCocycles_hom :
     toCocycles A 0 1 ≫ (isoOneCocycles A).hom =
       (zeroCochainsLequiv A).toModuleIso.hom ≫
@@ -828,6 +830,7 @@ def isoH1 : groupCohomology A 1 ≅ H1 A :=
   (inhomogeneousCochains A).homologyIsoSc' _ _ _ (by simp) (by simp) ≪≫
     homologyMapIso (shortComplexH1Iso A) ≪≫ (shortComplexH1 A).moduleCatHomologyIso
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma groupCohomologyπ_comp_isoH1_hom  :
     groupCohomologyπ A 1 ≫ (isoH1 A).hom = (isoOneCocycles A).hom ≫ H1π A := by
   simp [isoH1, isoOneCocycles]
@@ -852,14 +855,14 @@ def isoTwoCocycles : cocycles A 2 ≅ ModuleCat.of k (twoCocycles A) :=
   (inhomogeneousCochains A).cyclesIsoSc' _ _ _ (by simp) (by simp) ≪≫
     cyclesMapIso (shortComplexH2Iso A) ≪≫ (shortComplexH2 A).moduleCatCyclesIso
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoTwoCocycles_hom_comp_subtype :
     (isoTwoCocycles A).hom ≫ ModuleCat.ofHom (twoCocycles A).subtype =
       iCocycles A 2 ≫ (twoCochainsLequiv A).toModuleIso.hom := by
-  dsimp [isoTwoCocycles]
-  rw [Category.assoc, Category.assoc]
-  erw [(shortComplexH2 A).moduleCatCyclesIso_hom_subtype]
-  rw [cyclesMap_i, HomologicalComplex.cyclesIsoSc'_hom_iCycles_assoc]
+  have := (shortComplexH2 A).moduleCatCyclesIso_hom_subtype
+  simp_all [shortComplexH2, isoTwoCocycles, twoCocycles]
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma toCocycles_comp_isoTwoCocycles_hom :
     toCocycles A 1 2 ≫ (isoTwoCocycles A).hom =
       (oneCochainsLequiv A).toModuleIso.hom ≫
@@ -872,6 +875,7 @@ def isoH2 : groupCohomology A 2 ≅ H2 A :=
   (inhomogeneousCochains A).homologyIsoSc' _ _ _ (by simp) (by simp) ≪≫
     homologyMapIso (shortComplexH2Iso A) ≪≫ (shortComplexH2 A).moduleCatHomologyIso
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma groupCohomologyπ_comp_isoH2_hom  :
     groupCohomologyπ A 2 ≫ (isoH2 A).hom = (isoTwoCocycles A).hom ≫ H2π A := by
   simp [isoH2, isoTwoCocycles]
