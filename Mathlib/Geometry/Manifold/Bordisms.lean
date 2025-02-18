@@ -3,7 +3,7 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.Diffeomorph
+import Mathlib.Geometry.Manifold.ContMDiff.Defs
 import Mathlib.Geometry.Manifold.Instances.Real
 
 /-!
@@ -67,11 +67,14 @@ In practice, one commonly wants to take `k=∞` (as then e.g. the intersection f
 to compute bordism groups; for the definition, this makes no difference.) -/
 structure SingularNManifold (X : Type*) [TopologicalSpace X] (n : ℕ) (k : ℕ∞)
   {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
-  where
+  [TopologicalSpace H] (I : ModelWithCorners ℝ E H) where
+  /-- The manifold `M` of a singular `n`-manifold `(M, f)` -/
   M : Type*
+  /-- The manifold `M` is a topological space. -/
   [topSpaceM : TopologicalSpace M]
+  /-- The manifold `M` is a charted space over `H`. -/
   [chartedSpace: ChartedSpace H M]
+  /-- `M` is a `C^k` manifold. -/
   [isManifold: IsManifold I k M]
   [compactSpace: CompactSpace M]
   [boundaryless: BoundarylessManifold I M]
@@ -80,8 +83,6 @@ structure SingularNManifold (X : Type*) [TopologicalSpace X] (n : ℕ) (k : ℕ�
   /-- The underlying map `M → X` of a singular `n`-manifold `(M, f)` on `X` -/
   f : M → X
   hf : Continuous f
-
--- XXX: can I use Type* above? try when the file compiles!
 
 namespace SingularNManifold
 
@@ -139,7 +140,7 @@ noncomputable def refl (hdim : finrank ℝ E = n) :
   f := id
   hf := continuous_id
 
-/-- If `(N, f)` is a singular `n`-manifold on `X` and `M` another `n`-dimensional smooth manifold,
+/-- If `(N, f)` is a singular `n`-manifold on `X` and `M` another `n`-dimensional manifold,
 a smooth map `φ : M → N` induces a singular `n`-manifold structure `(M, f ∘ φ)` on `X`. -/
 noncomputable def comap [h : Fact (finrank ℝ E' = n)]
     (s : SingularNManifold X n k I)
