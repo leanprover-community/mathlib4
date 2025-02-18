@@ -21,10 +21,12 @@ carries a natural concept of nilpotency. We define these here via the lower cent
 
   * `LieModule.lowerCentralSeries`
   * `LieModule.IsNilpotent`
+  * `LieModule.maxNilpotentSubmodule`
+  * `LieAlgebra.maxNilpotentIdeal`
 
 ## Tags
 
-lie algebra, lower central series, nilpotent
+lie algebra, lower central series, nilpotent, max nilpotent ideal
 -/
 
 universe u v w w₁ w₂
@@ -716,6 +718,24 @@ theorem isNilpotent_of_le (M₁ M₂ : LieSubmodule R L M) (h₁ : M₁ ≤ M₂
   have hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆ := by aesop
   exact (Submodule.inclusion_injective h₁).lieModuleIsNilpotent hfg
 
+/-- The max nilpotent submodule is the `sSup` of all nilpotent submodules. -/
+def maxNilpotentSubmodule :=
+  sSup { N : LieSubmodule R L M | IsNilpotent L N }
+
+instance maxNilpotentSubmoduleIsNilpotent [IsNoetherian R M] :
+    IsNilpotent L (maxNilpotentSubmodule R L M) := by
+  have hwf := LieSubmodule.wellFoundedGT_of_noetherian R L M
+  rw [← CompleteLattice.isSupClosedCompact_iff_wellFoundedGT] at hwf
+  refine hwf { N : LieSubmodule R L M | IsNilpotent L N } ⟨⊥, ?_⟩ fun N₁ h₁ N₂ h₂ => ?_
+  · simp [trivialIsNilpotent L]
+  · rw [Set.mem_setOf_eq] at h₁ h₂
+    apply instIsNilpotentAdd R L
+
+theorem nilpotent_iff_le_max_nilpotent_submodule [IsNoetherian R M] (N : LieSubmodule R L M) :
+    IsNilpotent L N ↔ N ≤ maxNilpotentSubmodule R L M :=
+  ⟨fun h ↦ le_sSup h, fun h ↦ isNilpotent_of_le R L M N (maxNilpotentSubmodule R L M) h
+    (maxNilpotentSubmoduleIsNilpotent R L M)⟩
+
 end LieModule
 
 end NilpotentModules
@@ -956,3 +976,33 @@ instance LieModule.instIsNilpotentTensor [IsNilpotent L M] :
   exact ⟨k, by simp [hk]⟩
 
 end ExtendScalars
+
+namespace LieAlgebra
+
+open LieModule
+
+variable (R : Type u) (L : Type v)
+variable [CommRing R] [LieRing L] [LieAlgebra R L]
+
+/-- The max nilpotent ideal of a Lie algebra. It is defined as the max nilpotent Lie submodule of
+`L` under the adjoint action. -/
+def maxNilpotentIdeal := maxNilpotentSubmodule R L L
+
+instance maxNilpotentIdealIsNilpotent [IsNoetherian R L] :
+    IsNilpotent L (maxNilpotentIdeal R L) := by
+  apply maxNilpotentSubmoduleIsNilpotent
+
+theorem LieIdeal.nilpotent_iff_le_max_nilpotent_ideal [IsNoetherian R L] (I : LieIdeal R L) :
+    IsNilpotent L I ↔ I ≤ maxNilpotentIdeal R L := by
+  apply nilpotent_iff_le_max_nilpotent_submodule
+
+theorem center_le_max_nilpotent_ideal : center R L ≤ maxNilpotentIdeal R L := by
+  exact le_sSup (trivialIsNilpotent L (center R L))
+
+@[simp] lemma max_nilpotent_ideal_eq_top_of_isNilpotent [LieRing.IsNilpotent L] :
+    maxNilpotentIdeal R L = ⊤ := by
+  rw [eq_top_iff]
+  apply le_sSup
+  simpa
+
+end LieAlgebra
