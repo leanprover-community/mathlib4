@@ -185,7 +185,7 @@ def prod {m n : ℕ} (s : SingularNManifold PUnit n k I) (t : SingularNManifold 
   hf := continuous_const
   dimension := by rw [finrank_prod, s.dimension, t.dimension]
 
-variable (s t : SingularNManifold X n k I) [Nonempty H] -- superfluous
+variable (s t : SingularNManifold X n k I)
 
 /-- The disjoint union of two singular `n`-manifolds on `X` is a singular `n`-manifold on `X`. -/
 -- We need to choose a model space for the disjoint union (as a priori `s` and `t` could be
