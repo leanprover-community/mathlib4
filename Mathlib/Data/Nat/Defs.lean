@@ -565,8 +565,8 @@ protected lemma div_mul_div_le (a b c d : ℕ) :
 
 #### TODO
 
-* Rename `Nat.pow_le_pow_of_le_left` to `Nat.pow_le_pow_left`, protect it, remove the alias
-* Rename `Nat.pow_le_pow_of_le_right` to `Nat.pow_le_pow_right`, protect it, remove the alias
+* Rename `Nat.pow_le_pow_left` to `Nat.pow_le_pow_left`, protect it, remove the alias
+* Rename `Nat.pow_le_pow_right` to `Nat.pow_le_pow_right`, protect it, remove the alias
 -/
 
 protected lemma pow_lt_pow_left (h : a < b) : ∀ {n : ℕ}, n ≠ 0 → a ^ n < b ^ n

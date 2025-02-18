@@ -877,7 +877,7 @@ theorem eq_pow_of_pell {m n k} :
     have nt : (↑(n ^ k) : ℤ) < 2 * a * n - n * n - 1 := by
       refine eq_pow_of_pell_lem hn.ne' hk.ne' ?_
       calc
-        n ^ k ≤ n ^ w := Nat.pow_le_pow_of_le_right hn kw
+        n ^ k ≤ n ^ w := Nat.pow_le_pow_right hn kw
         _ < (w + 1) ^ w := Nat.pow_lt_pow_left (Nat.lt_succ_of_le nw) wpos.ne'
         _ ≤ a := xn_ge_a_pow w1 w
     lift (2 * a * n - n * n - 1 : ℤ) to ℕ using (Nat.cast_nonneg _).trans nt.le with t te
@@ -905,7 +905,7 @@ theorem eq_pow_of_pell {m n k} :
         (modEq_zero_iff_dvd.1 <|
           (yn_modEq_a_sub_one hw1 j).symm.trans <| modEq_zero_iff_dvd.2 ⟨z, yj.symm⟩)
     have hnka : n ^ k < xn hw1 j := calc
-      n ^ k ≤ n ^ j := Nat.pow_le_pow_of_le_right hn0 (le_trans kw wj)
+      n ^ k ≤ n ^ j := Nat.pow_le_pow_right hn0 (le_trans kw wj)
       _ < (w + 1) ^ j := Nat.pow_lt_pow_left (Nat.lt_succ_of_le nw) hj0.ne'
       _ ≤ xn hw1 j := xn_ge_a_pow hw1 j
     have nt : (↑(n ^ k) : ℤ) < 2 * xn hw1 j * n - n * n - 1 :=
