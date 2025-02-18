@@ -643,38 +643,6 @@ theorem map_prod_map {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ} (
   rw [map_apply (hf.prod_map hg) (hs.prod ht), map_apply hf hs, map_apply hg ht]
   exact prod_prod (f ⁻¹' s) (g ⁻¹' t)
 
-
-/-! ### The monoidal product in the Giry monad
-Lemma 4.1 of https://doi.org/10.1016/j.aim.2020.10723
--/
-
-abbrev ProbProdMeasure (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] :=
-  { μ : Measure α × Measure β // IsProbabilityMeasure μ.1 ∧ IsProbabilityMeasure μ.2 }
-
-abbrev monoidal_product (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] :
-    ProbProdMeasure α β -> Measure (α × β) :=
-  fun μ => Measure.prod (Subtype.val μ).1 (Subtype.val μ).2
-
-local instance (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] (z : ProbProdMeasure α β) :
-    IsProbabilityMeasure (monoidal_product α β z) where
-  measure_univ := by rcases z with ⟨_, ⟨_, _⟩⟩; simp
-
-theorem measurable_monoidal_product : Measurable (monoidal_product α β) := by
-  apply Measurable.measure_of_isPiSystem generateFrom_prod.symm isPiSystem_prod _ (by simp)
-  simp only [mem_image2, mem_setOf_eq, forall_exists_index, and_imp]
-  intros _ u Hu v Hv Heq
-  let _ (a : ProbProdMeasure α β) : SFinite a.val.2 := by rcases a with ⟨_, ⟨_, _⟩⟩; infer_instance
-  rw [<- Heq, funext <| fun a => MeasureTheory.Measure.prod_prod u v]
-  apply Measurable.mul
-  · rw [<- comp_def (fun μ => μ u) (fun (μ : ProbProdMeasure α β) => (Subtype.val μ).1),
-        <- comp_def Prod.fst _]
-    apply Measurable.comp (measurable_coe Hu) <|
-          Measurable.comp measurable_fst measurable_subtype_coe
-  · rw [<- comp_def (fun μ => μ v) (fun (μ : ProbProdMeasure α β) => (Subtype.val μ).2),
-        <- comp_def Prod.snd _]
-    apply Measurable.comp (measurable_coe Hv) <|
-          Measurable.comp measurable_snd measurable_subtype_coe
-
 end Measure
 
 open Measure
