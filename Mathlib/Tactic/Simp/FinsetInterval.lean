@@ -54,8 +54,14 @@ partial def evalFinsetIccNat {em eml en enl : Q(ℕ)} (m n : ℕ) (hm : Q(IsNat 
     let hnm ← mkDecideProofQq q($en < $em)
     return ⟨q(∅), q(Finset.Icc_eq_empty_of_lt $hnm)⟩
 
+end Mathlib.Tactic.Simp
+
+open Mathlib.Tactic.Simp
+
+namespace Finset
+
 /-- Simproc to compute `Finset.Icc a b` when `a b : ℕ`. -/
-simproc_decl _root_.Finset.Icc_nat (Icc _ _) := fun e ↦ do
+simproc_decl Icc_nat (Icc _ _) := fun e ↦ do
   let ⟨1, ~q(Finset ℕ), ~q(Icc (OfNat.ofNat $em) (OfNat.ofNat $en))⟩ ← inferTypeQ e
     | return .continue
   let hm : Q(IsNat (OfNat.ofNat $em) $em) := q(⟨rfl⟩)
@@ -68,7 +74,7 @@ simproc_decl _root_.Finset.Icc_nat (Icc _ _) := fun e ↦ do
   return .done { expr := s, proof? := p }
 
 /-- Simproc to compute `Finset.Ico a b` when `a b : ℕ`. -/
-simproc_decl _root_.Finset.Ico_nat (Ico _ _) := fun e ↦ do
+simproc_decl Ico_nat (Ico _ _) := fun e ↦ do
   let ⟨1, ~q(Finset ℕ), ~q(Ico (OfNat.ofNat $em) (OfNat.ofNat $en))⟩ ← inferTypeQ e
     | return .continue
   let hm : Q(IsNat (OfNat.ofNat $em) $em) := q(⟨rfl⟩)
@@ -87,7 +93,7 @@ simproc_decl _root_.Finset.Ico_nat (Ico _ _) := fun e ↦ do
     return .done { expr := s, proof? := q(Ico_eq_of_Icc_pred_eq $hn₀ $p) }
 
 /-- Simproc to compute `Finset.Ioc a b` when `a b : ℕ`. -/
-simproc_decl _root_.Finset.Ioc_nat (Ioc _ _) := fun e ↦ do
+simproc_decl Ioc_nat (Ioc _ _) := fun e ↦ do
   let ⟨1, ~q(Finset ℕ), ~q(Ioc (OfNat.ofNat $em) (OfNat.ofNat $en))⟩ ← inferTypeQ e
     | return .continue
   let hm : Q(IsNat (OfNat.ofNat $em) $em) := q(⟨rfl⟩)
@@ -101,7 +107,7 @@ simproc_decl _root_.Finset.Ioc_nat (Ioc _ _) := fun e ↦ do
   return .done { expr := s, proof? := q(Ioc_eq_of_Icc_succ_eq $p) }
 
 /-- Simproc to compute `Finset.Ioo a b` when `a b : ℕ`. -/
-simproc_decl _root_.Finset.Ioo_nat (Ioo _ _) := fun e ↦ do
+simproc_decl Ioo_nat (Ioo _ _) := fun e ↦ do
   let ⟨1, ~q(Finset ℕ), ~q(Ioo (OfNat.ofNat $em) (OfNat.ofNat $en))⟩ ← inferTypeQ e
     | return .continue
   let hm : Q(IsNat (OfNat.ofNat $em) $em) := q(⟨rfl⟩)
@@ -131,4 +137,4 @@ example : Ioo 1 2 = ∅ := by simp only [Ioo_nat]
 example : Ioo 1 3 = {2} := by simp only [Ioo_nat]
 example : Ioo 1 4 = {2, 3} := by simp only [Ioo_nat]
 
-end Mathlib.Tactic.Simp
+end Finset
