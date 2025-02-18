@@ -667,8 +667,7 @@ theorem Function.Surjective.lieModule_lcs_map_eq (k : ℕ) :
       simp only [← LieSubmodule.mem_toSubmodule] at this
       simp_rw [lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span',
         Submodule.map_span, LieSubmodule.mem_top, true_and, ← LieSubmodule.mem_toSubmodule]
-      apply Submodule.span_mono
-      apply Set.Subset.trans _ this
+      refine Submodule.span_mono (Set.Subset.trans ?_ this)
       rintro m₁ ⟨x, n, hn, rfl⟩
       obtain ⟨n', hn', rfl⟩ := ih hn
       exact ⟨x, n', hn', rfl⟩
