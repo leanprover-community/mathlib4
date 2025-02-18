@@ -175,20 +175,11 @@ protected theorem intCast_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [A
     (S : Subalgebra R A) (n : ℤ) : (n : A) ∈ S :=
   intCast_mem S n
 
-@[deprecated natCast_mem (since := "2024-04-05")] alias coe_nat_mem := Subalgebra.natCast_mem
-@[deprecated intCast_mem (since := "2024-04-05")] alias coe_int_mem := Subalgebra.intCast_mem
-
 /-- The projection from a subalgebra of `A` to an additive submonoid of `A`. -/
 @[simps coe]
 def toAddSubmonoid {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
     (S : Subalgebra R A) : AddSubmonoid A :=
   S.toSubsemiring.toAddSubmonoid
-
--- Porting note: this field already exists in Lean 4.
--- /-- The projection from a subalgebra of `A` to a submonoid of `A`. -/
--- def toSubmonoid {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
---     (S : Subalgebra R A) : Submonoid A :=
---   S.toSubsemiring.toSubmonoid
 
 /-- A subalgebra over a ring is also a `Subring`. -/
 @[simps toSubsemiring]
@@ -665,10 +656,10 @@ theorem toSubring_eq_top {R A : Type*} [CommRing R] [Ring A] [Algebra R A] {S : 
   Subalgebra.toSubring_injective.eq_iff' top_toSubring
 
 theorem mem_sup_left {S T : Subalgebra R A} : ∀ {x : A}, x ∈ S → x ∈ S ⊔ T :=
-  have : S ≤ S ⊔ T := le_sup_left; (this ·) -- Porting note: need `have` instead of `show`
+  have : S ≤ S ⊔ T := le_sup_left; (this ·)
 
 theorem mem_sup_right {S T : Subalgebra R A} : ∀ {x : A}, x ∈ T → x ∈ S ⊔ T :=
-  have : T ≤ S ⊔ T := le_sup_right; (this ·) -- Porting note: need `have` instead of `show`
+  have : T ≤ S ⊔ T := le_sup_right; (this ·)
 
 theorem mul_mem_sup {S T : Subalgebra R A} {x y : A} (hx : x ∈ S) (hy : y ∈ T) : x * y ∈ S ⊔ T :=
   (S ⊔ T).mul_mem (mem_sup_left hx) (mem_sup_right hy)
@@ -766,6 +757,43 @@ theorem iSup_toSubsemiring {ι : Sort*} [Nonempty ι] (S : ι → Subalgebra R A
     (iSup S).toSubsemiring = ⨆ i, (S i).toSubsemiring := by
   simp only [iSup, Set.range_nonempty, sSup_toSubsemiring, ← Set.range_comp, Function.comp_def]
 
+lemma mem_iSup_of_mem {ι : Sort*} {S : ι → Subalgebra R A} (i : ι) {x : A} (hx : x ∈ S i) :
+    x ∈ iSup S :=
+  le_iSup S i hx
+
+@[elab_as_elim]
+lemma iSup_induction {ι : Sort*} (S : ι → Subalgebra R A) {motive : A → Prop}
+    {x : A} (mem : x ∈ ⨆ i, S i)
+    (basic : ∀ i, ∀ a ∈ S i, motive a)
+    (zero : motive 0) (one : motive 1)
+    (add : ∀ a b, motive a → motive b → motive (a + b))
+    (mul : ∀ a b, motive a → motive b → motive (a * b))
+    (algebraMap : ∀ r, motive (algebraMap R A r)) : motive x := by
+  let T : Subalgebra R A :=
+  { carrier := {x | motive x}
+    mul_mem' {a b} := mul a b
+    one_mem' := one
+    add_mem' {a b} := add a b
+    zero_mem' := zero
+    algebraMap_mem' := algebraMap }
+  suffices iSup S ≤ T from this mem
+  rwa [iSup_le_iff]
+
+/-- A dependent version of `Subalgebra.iSup_induction`. -/
+@[elab_as_elim]
+theorem iSup_induction' {ι : Sort*} (S : ι → Subalgebra R A) {motive : ∀ x, (x ∈ ⨆ i, S i) → Prop}
+    {x : A} (mem : x ∈ ⨆ i, S i)
+    (basic : ∀ (i) (x) (hx : x ∈ S i), motive x (mem_iSup_of_mem i hx))
+    (zero : motive 0 (zero_mem _)) (one : motive 1 (one_mem _))
+    (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (add_mem ‹_› ‹_›))
+    (mul : ∀ x y hx hy, motive x hx → motive y hy → motive (x * y) (mul_mem ‹_› ‹_›))
+    (algebraMap : ∀ r, motive (algebraMap R A r) (Subalgebra.algebraMap_mem _ ‹_›)) :
+    motive x mem := by
+  refine Exists.elim ?_ fun (hx : x ∈ ⨆ i, S i) (hc : motive x hx) ↦ hc
+  exact iSup_induction S (motive := fun x' ↦ ∃ h, motive x' h) mem
+    (fun _ _ h ↦ ⟨_, basic _ _ h⟩) ⟨_, zero⟩ ⟨_, one⟩ (fun _ _ h h' ↦ ⟨_, add _ _ _ _ h.2 h'.2⟩)
+    (fun _ _ h h' ↦ ⟨_, mul _ _ _ _ h.2 h'.2⟩) fun _ ↦ ⟨_, algebraMap _⟩
+
 instance : Inhabited (Subalgebra R A) := ⟨⊥⟩
 
 theorem mem_bot {x : A} : x ∈ (⊥ : Subalgebra R A) ↔ x ∈ Set.range (algebraMap R A) := Iff.rfl
@@ -786,6 +814,9 @@ theorem _root_.AlgHom.range_eq_top (f : A →ₐ[R] B) :
   Algebra.eq_top_iff
 
 @[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := AlgHom.range_eq_top
+
+@[simp]
+theorem range_ofId : (Algebra.ofId R A).range = ⊥ := rfl
 
 @[simp]
 theorem range_id : (AlgHom.id R A).range = ⊤ :=

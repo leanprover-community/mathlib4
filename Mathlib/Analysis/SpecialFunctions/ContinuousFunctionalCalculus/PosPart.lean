@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 
-import Mathlib.Topology.ContinuousMap.StarOrdered
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+import Mathlib.Topology.ContinuousMap.StarOrdered
+import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-! # The positive (and negative) parts of a selfadjoint element in a C⋆-algebra
 
@@ -205,7 +204,7 @@ local notation "σₙ" => quasispectrum
 
 open ContinuousMapZero
 
-variable [TopologicalRing A] [T2Space A]
+variable [IsTopologicalRing A] [T2Space A]
 
 open NonUnitalContinuousFunctionalCalculus in
 /-- The positive and negative parts of a selfadjoint element `a` are unique. That is, if

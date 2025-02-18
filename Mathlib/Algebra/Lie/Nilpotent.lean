@@ -8,7 +8,6 @@ import Mathlib.Algebra.Lie.Quotient
 import Mathlib.Algebra.Lie.Normalizer
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.LinearAlgebra.Eigenspace.Basic
-import Mathlib.Order.Filter.AtTopBot
 import Mathlib.RingTheory.Artinian.Module
 import Mathlib.RingTheory.Nilpotent.Lemmas
 
@@ -105,8 +104,7 @@ private theorem coe_lowerCentralSeries_eq_int_aux (R₁ R₂ L M : Type*)
 
 theorem coe_lowerCentralSeries_eq_int [LieModule R L M] (k : ℕ) :
     (lowerCentralSeries R L M k : Set M) = (lowerCentralSeries ℤ L M k : Set M) := by
-  show ((lowerCentralSeries R L M k).toSubmodule : Set M) =
-       ((lowerCentralSeries ℤ L M k).toSubmodule : Set M)
+  rw [← LieSubmodule.coe_toSubmodule, ← LieSubmodule.coe_toSubmodule]
   induction k with
   | zero => rfl
   | succ k ih =>
@@ -149,6 +147,14 @@ theorem lowerCentralSeries_map_eq_lcs : (lowerCentralSeries R L N k).map N.incl 
   rw [lowerCentralSeries_eq_lcs_comap, LieSubmodule.map_comap_incl, inf_eq_right]
   apply lcs_le_self
 
+theorem lowerCentralSeries_eq_bot_iff_lcs_eq_bot:
+    lowerCentralSeries R L N k = ⊥ ↔ lcs k N = ⊥ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [← N.lowerCentralSeries_map_eq_lcs, ← LieModuleHom.le_ker_iff_map]
+    simpa
+  · rw [N.lowerCentralSeries_eq_lcs_comap, comap_incl_eq_bot]
+    simp [h]
+
 end LieSubmodule
 
 namespace LieModule
@@ -172,7 +178,7 @@ theorem eventually_iInf_lowerCentralSeries_eq [IsArtinian R M] :
   have h_wf : WellFoundedGT (LieSubmodule R L M)ᵒᵈ :=
     LieSubmodule.wellFoundedLT_of_isArtinian R L M
   obtain ⟨n, hn : ∀ m, n ≤ m → lowerCentralSeries R L M n = lowerCentralSeries R L M m⟩ :=
-    WellFounded.monotone_chain_condition.mp h_wf.wf ⟨_, antitone_lowerCentralSeries R L M⟩
+    h_wf.monotone_chain_condition ⟨_, antitone_lowerCentralSeries R L M⟩
   refine Filter.eventually_atTop.mpr ⟨n, fun l hl ↦ le_antisymm (iInf_le _ _) (le_iInf fun m ↦ ?_)⟩
   rcases le_or_lt l m with h | h
   · rw [← hn _ hl, ← hn _ (hl.trans h)]
@@ -183,7 +189,6 @@ theorem trivial_iff_lower_central_eq_bot : IsTrivial L M ↔ lowerCentralSeries 
   · simp
   · rw [LieSubmodule.eq_bot_iff] at h; apply IsTrivial.mk; intro x m; apply h
     apply LieSubmodule.subset_lieSpan
-    -- Porting note: was `use x, m; rfl`
     simp only [LieSubmodule.top_coe, Subtype.exists, LieSubmodule.mem_top, exists_prop, true_and,
       Set.mem_setOf]
     exact ⟨x, m, rfl⟩
@@ -299,6 +304,20 @@ variable (R L M)
 instance (priority := 100) trivialIsNilpotent [IsTrivial L M] : IsNilpotent L M :=
   ⟨by use 1; change ⁅⊤, ⊤⁆ = ⊥; simp⟩
 
+instance instIsNilpotentAdd (M₁ M₂ : LieSubmodule R L M) [IsNilpotent L M₁] [IsNilpotent L M₂] :
+    IsNilpotent L (M₁ + M₂) := by
+  obtain ⟨k, hk⟩ := IsNilpotent.nilpotent R L M₁
+  obtain ⟨l, hl⟩ := IsNilpotent.nilpotent R L M₂
+  let lcs_eq_bot {m n} (N : LieSubmodule R L M) (le : m ≤ n) (hn : lowerCentralSeries R L N m = ⊥) :
+    lowerCentralSeries R L N n = ⊥ := by
+    simpa [hn] using antitone_lowerCentralSeries R L N le
+  have h₁ : lowerCentralSeries R L M₁ (k ⊔ l) = ⊥ := lcs_eq_bot M₁ (Nat.le_max_left k l) hk
+  have h₂ : lowerCentralSeries R L M₂ (k ⊔ l) = ⊥ := lcs_eq_bot M₂ (Nat.le_max_right k l) hl
+  refine (isNilpotent_iff R L (M₁ + M₂)).mpr ⟨k ⊔ l, ?_⟩
+  simp [LieSubmodule.add_eq_sup, (M₁ ⊔ M₂).lowerCentralSeries_eq_lcs_comap, LieSubmodule.lcs_sup,
+    (M₁.lowerCentralSeries_eq_bot_iff_lcs_eq_bot (k ⊔ l)).1 h₁,
+    (M₂.lowerCentralSeries_eq_bot_iff_lcs_eq_bot (k ⊔ l)).1 h₂, LieSubmodule.comap_incl_eq_bot]
+
 theorem exists_forall_pow_toEnd_eq_zero [IsNilpotent L M] :
     ∃ k : ℕ, ∀ x : L, toEnd R L M x ^ k = 0 := by
   obtain ⟨k, hM⟩ := IsNilpotent.nilpotent R L M
@@ -410,7 +429,7 @@ theorem nilpotencyLength_eq_one_iff [Nontrivial M] :
 theorem isTrivial_of_nilpotencyLength_le_one [IsNilpotent L M] (h : nilpotencyLength L M ≤ 1) :
     IsTrivial L M := by
   nontriviality M
-  cases' Nat.le_one_iff_eq_zero_or_eq_one.mp h with h h
+  rcases Nat.le_one_iff_eq_zero_or_eq_one.mp h with h | h
   · rw [nilpotencyLength_eq_zero_iff] at h; infer_instance
   · rwa [nilpotencyLength_eq_one_iff] at h
 
@@ -429,7 +448,7 @@ noncomputable def lowerCentralSeriesLast : LieSubmodule R L M :=
 theorem lowerCentralSeriesLast_le_max_triv [LieModule R L M] :
     lowerCentralSeriesLast R L M ≤ maxTrivSubmodule R L M := by
   rw [lowerCentralSeriesLast]
-  cases' h : nilpotencyLength L M with k
+  rcases h : nilpotencyLength L M with - | k
   · exact bot_le
   · rw [le_max_triv_iff_bracket_eq_bot]
     rw [nilpotencyLength_eq_succ_iff R, lowerCentralSeries_succ] at h
@@ -451,7 +470,7 @@ theorem lowerCentralSeriesLast_le_of_not_isTrivial [IsNilpotent L M] (h : ¬ IsT
     by_contra contra
     have := isTrivial_of_nilpotencyLength_le_one L M (not_lt.mp contra)
     contradiction
-  cases' hk : nilpotencyLength L M with k <;> rw [hk] at h
+  rcases hk : nilpotencyLength L M with - | k <;> rw [hk] at h
   · contradiction
   · exact antitone_lowerCentralSeries _ _ _ (Nat.lt_succ.mp h)
 
@@ -561,7 +580,6 @@ theorem lcs_add_le_iff (l k : ℕ) : N₁.lcs (l + k) ≤ N₂ ↔ N₁.lcs l �
     rw [(by abel : l + (k + 1) = l + 1 + k), ih, ucs_succ, lcs_succ, top_lie_le_iff_le_normalizer]
 
 theorem lcs_le_iff (k : ℕ) : N₁.lcs k ≤ N₂ ↔ N₁ ≤ N₂.ucs k := by
-  -- Porting note: `convert` needed type annotations
   convert lcs_add_le_iff (R := R) (L := L) (M := M) 0 k
   rw [zero_add]
 
@@ -613,10 +631,6 @@ theorem Function.Surjective.lieModule_lcs_map_eq (k : ℕ) :
       g '' {m | ∃ (x : L) (n : _), n ∈ lowerCentralSeries R L M k ∧ ⁅x, n⁆ = m} =
         {m | ∃ (x : L₂) (n : _), n ∈ lowerCentralSeries R L M k ∧ ⁅x, g n⁆ = m} by
       simp only [← LieSubmodule.mem_toSubmodule] at this
-      -- Porting note: was
-      -- simp [← LieSubmodule.mem_toSubmodule, ← ih, LieSubmodule.lieIdeal_oper_eq_linear_span',
-      --   Submodule.map_span, -Submodule.span_image, this,
-      --   -LieSubmodule.mem_toSubmodule]
       simp_rw [lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span',
         Submodule.map_span, LieSubmodule.mem_top, true_and, ← LieSubmodule.mem_toSubmodule, this,
         ← ih, Submodule.mem_map, exists_exists_and_eq_and]
