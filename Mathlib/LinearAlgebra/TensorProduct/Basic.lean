@@ -1030,7 +1030,7 @@ theorem congr_mul (f : M ≃ₗ[R] M) (g : N ≃ₗ[R] N) (f' : M ≃ₗ[R] M) (
 
 @[simp] theorem congr_zpow (f : M ≃ₗ[R] M) (g : N ≃ₗ[R] N) (n : ℤ) :
     congr f g ^ n = congr (f ^ n) (g ^ n) := by
-  induction n with
+  cases n with
   | ofNat n => exact congr_pow _ _ _
   | negSucc n => simp_rw [zpow_negSucc, congr_pow]; exact congr_symm _ _
 
