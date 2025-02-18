@@ -81,42 +81,36 @@ structure BoundaryManifoldData (M : Type u) [TopologicalSpace M] [ChartedSpace H
     [TopologicalSpace H₀] (I₀ : ModelWithCorners ℝ E₀ H₀) where
   /-- TODO! -/
   M₀ : Type u
-  [top: TopologicalSpace M₀]
+  [topologicalSpaceM: TopologicalSpace M₀]
   /-- A chosen charted space structure on `M₀` on `H₀` -/
-  [charts : ChartedSpace H₀ M₀]
+  [chartedSpace : ChartedSpace H₀ M₀]
   /-- `M₀` is a `C^k` manifold with corners w.r.t. `I₀` -/
-  [smoothManifold : IsManifold I₀ k M₀]
+  [isManifold : IsManifold I₀ k M₀]
   /-- A `C^k` map from the model manifold into `M`, which is required to be a smooth embedding,
   i.e. a smooth immersion which is also a topological embedding -/
   f: M₀ → M
   isEmbedding: Topology.IsEmbedding f
-  isSmooth: ContMDiff I₀ I k f
+  contMDiff: ContMDiff I₀ I k f
   isImmersion: ∀ x, Function.Injective (mfderiv I₀ I f x)
   /-- `f` maps `M₀` surjectively to the boundary of `M`. -/
   range_eq_boundary: Set.range f = I.boundary M
 
-#exit
--- TODO: deal with universe polymorphism; I'm assuming the same universe for now!
-
 variable {M : Type u} [TopologicalSpace M] [ChartedSpace H M] {k : ℕ∞}
   {I : ModelWithCorners ℝ E H} [IsManifold I k M]
+  {E₀ H₀: Type*} [NormedAddCommGroup E₀] [NormedSpace ℝ E₀]
+  [TopologicalSpace H₀] (I₀ : ModelWithCorners ℝ E₀ H₀)
   {M' : Type u} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I k M]
   {N : Type u} [TopologicalSpace N] [ChartedSpace H' N]
   {J : ModelWithCorners ℝ E' H'} [IsManifold J ⊤ N]
 
-instance (d : BoundaryManifoldData M I k) : TopologicalSpace d.H₀ := d.topologicalSpace
+instance (d : BoundaryManifoldData M I k I₀) : TopologicalSpace d.M₀ := d.topologicalSpaceM
 
-instance (d : BoundaryManifoldData M I k) : NormedAddCommGroup d.E₀ := d.normedAddCommGroup
+instance (d : BoundaryManifoldData M I k I₀) : ChartedSpace H₀ d.M₀ := d.chartedSpace
 
-instance (d : BoundaryManifoldData M I k) : NormedSpace ℝ d.E₀ := d.normedSpace
+instance (d : BoundaryManifoldData M I k I₀) : IsManifold I₀ k d.M₀ :=
+  d.isManifold
 
-instance (d : BoundaryManifoldData M I k) : TopologicalSpace d.M₀ := d.topologicalSpaceM
-
-instance (d : BoundaryManifoldData M I k) : ChartedSpace d.H₀ d.M₀ := d.charts
-
-instance (d : BoundaryManifoldData M I k) : IsManifold d.I₀ k d.M₀ :=
-  d.smoothManifold
-
+#exit
 -- In general, constructing `BoundaryManifoldData` requires deep results: some cases and results
 -- we can state already. Boundaryless manifolds have nice boundary, as do products.
 
