@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
 import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.Basic
-/-! # Epi-mono factorisation in the simplex category presented by generators and relations
+/-! # Epi-mono factorization in the simplex category presented by generators and relations
 
-This file aims to establish that there is a nice epi-mono factorisation in `SimplexCategoryGenRel`.
+This file aims to establish that there is a nice epi-mono factorization in `SimplexCategoryGenRel`.
 More precisely, we introduce two (inductively-defined) morphism property `P_δ` and `P_σ` that
 single out morphisms that are compositions of `δ i` (resp. `σ i`).
 
@@ -69,14 +69,14 @@ lemma isSplitMono_P_δ {x y : SimplexCategoryGenRel} {m : x ⟶ y} (hm : P_δ m)
   | id => infer_instance
   | comp_of _ _ _ h => cases h; infer_instance
 
-lemma isSplitEpi_P_σ_toSimplexCategory {x y : SimplexCategoryGenRel} {e : x ⟶ y} (he : P_σ e) :
+lemma isSplitEpi_P_σ_toSimplexCategory_of_P_σ {x y : SimplexCategoryGenRel} {e : x ⟶ y} (he : P_σ e) :
     IsSplitEpi <| toSimplexCategory.map e := by
   constructor
   constructor
   apply SplitEpi.map
   exact isSplitEpi_P_σ he |>.exists_splitEpi.some
 
-lemma isSplitMono_P_δ_toSimplexCategory {x y : SimplexCategoryGenRel} {m : x ⟶ y} (hm : P_δ m)
+lemma isSplitMono_P_δ_toSimplexCategory_of_P_δ {x y : SimplexCategoryGenRel} {m : x ⟶ y} (hm : P_δ m)
     : IsSplitMono <| toSimplexCategory.map m := by
   constructor
   constructor
