@@ -78,30 +78,30 @@ theorem nfpFamily_le {a b} : (∀ l, List.foldr f a l ≤ b) → nfpFamily f a �
 theorem nfpFamily_monotone [Small.{u} ι] (hf : ∀ i, Monotone (f i)) : Monotone (nfpFamily f) :=
   fun _ _ h ↦ nfpFamily_le <| fun l ↦ (List.foldr_monotone hf l h).trans (foldr_le_nfpFamily _ _ l)
 
-theorem apply_lt_nfpFamily [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a b}
+theorem apply_lt_nfpFamily [Small.{u} ι] (H : ∀ i, StrictMono (f i)) {a b}
     (hb : b < nfpFamily f a) (i) : f i b < nfpFamily f a :=
   let ⟨l, hl⟩ := lt_nfpFamily_iff.1 hb
-  lt_nfpFamily_iff.2 ⟨i::l, (H i).strictMono hl⟩
+  lt_nfpFamily_iff.2 ⟨i::l, H i hl⟩
 
-theorem apply_lt_nfpFamily_iff [Nonempty ι] [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a b} :
-    (∀ i, f i b < nfpFamily f a) ↔ b < nfpFamily f a := by
-  refine ⟨fun h ↦ ?_, apply_lt_nfpFamily H⟩
-  let ⟨l, hl⟩ := lt_nfpFamily_iff.1 (h (Classical.arbitrary ι))
-  exact lt_nfpFamily_iff.2 <| ⟨l, (H _).le_apply.trans_lt hl⟩
+theorem apply_lt_nfpFamily_iff [Nonempty ι] [Small.{u} ι] (H : ∀ i, StrictMono (f i)) {a b} :
+    (∀ i, f i b < nfpFamily f a) ↔ b < nfpFamily f a where
+  mp h := (H (Classical.arbitrary ι)).le_apply.trans_lt (h _)
+  mpr := apply_lt_nfpFamily H
 
-theorem nfpFamily_le_apply [Nonempty ι] [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a b} :
+theorem nfpFamily_le_apply [Small.{u} ι] (H : ∀ i, StrictMono (f i)) {a b i}
+    (hb : nfpFamily f a ≤ f i b) : nfpFamily f a ≤ b := by
+  contrapose! hb; exact apply_lt_nfpFamily H hb i
+
+theorem nfpFamily_le_apply_iff [Nonempty ι] [Small.{u} ι] (H : ∀ i, StrictMono (f i)) {a b} :
     (∃ i, nfpFamily f a ≤ f i b) ↔ nfpFamily f a ≤ b := by
-  rw [← not_iff_not]
-  push_neg
-  exact apply_lt_nfpFamily_iff H
+  simpa using (apply_lt_nfpFamily_iff H).not
 
 theorem nfpFamily_le_fp (H : ∀ i, Monotone (f i)) {a b} (ab : a ≤ b) (h : ∀ i, f i b ≤ b) :
     nfpFamily f a ≤ b := by
-  apply Ordinal.iSup_le
-  intro l
-  induction' l with i l IH generalizing a
-  · exact ab
-  · exact (H i (IH ab)).trans (h i)
+  refine nfpFamily_le fun l ↦ ?_
+  induction l with
+  | nil => exact ab
+  | cons i l IH => exact (H i IH).trans (h i)
 
 theorem nfpFamily_fp [Small.{u} ι] {i} (H : IsNormal (f i)) (a) :
     f i (nfpFamily f a) = nfpFamily f a := by
@@ -110,18 +110,18 @@ theorem nfpFamily_fp [Small.{u} ι] {i} (H : IsNormal (f i)) (a) :
   · exact Ordinal.le_iSup _ (i::l)
   · exact H.le_apply.trans (Ordinal.le_iSup _ _)
 
-theorem apply_le_nfpFamily [Small.{u} ι] [hι : Nonempty ι] (H : ∀ i, IsNormal (f i)) {a b} :
-    (∀ i, f i b ≤ nfpFamily f a) ↔ b ≤ nfpFamily f a := by
-  refine ⟨fun h => ?_, fun h i => ?_⟩
-  · obtain ⟨i⟩ := hι
-    exact (H i).le_apply.trans (h i)
-  · rw [← nfpFamily_fp (H i)]
-    exact (H i).monotone h
+theorem apply_le_nfpFamily [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a b}
+    (hb : b ≤ nfpFamily f a) (i) : f i b ≤ nfpFamily f a := by
+  rw [← nfpFamily_fp (H i)]
+  exact (H i).monotone hb
 
-theorem nfpFamily_eq_self [Small.{u} ι] {a} (h : ∀ i, f i a = a) : nfpFamily f a = a := by
-  apply (Ordinal.iSup_le ?_).antisymm (le_nfpFamily f a)
-  intro l
-  rw [List.foldr_fixed' h l]
+theorem apply_le_nfpFamily_iff [Nonempty ι] [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a b} :
+    (∀ i, f i b ≤ nfpFamily f a) ↔ b ≤ nfpFamily f a where
+  mp h := (H (Classical.arbitrary ι)).le_apply.trans (h _)
+  mpr := apply_le_nfpFamily H
+
+theorem nfpFamily_eq_self [Small.{u} ι] {a} (h : ∀ i, f i a = a) : nfpFamily f a = a :=
+  (nfpFamily_le fun l ↦ (List.foldr_fixed' h l).le).antisymm (le_nfpFamily f a)
 
 -- Todo: This is actually a special case of the fact the intersection of club sets is a club set.
 /-- A generalization of the fixed point lemma for normal functions: any family of normal functions
@@ -288,7 +288,7 @@ set_option linter.deprecated false in
 theorem apply_lt_nfpBFamily (H : ∀ i hi, IsNormal (f i hi)) {a b} (hb : b < nfpBFamily.{u, v} o f a)
     (i hi) : f i hi b < nfpBFamily.{u, v} o f a := by
   rw [← familyOfBFamily_enum o f]
-  apply apply_lt_nfpFamily (fun _ => H _ _) hb
+  apply apply_lt_nfpFamily (fun _ => (H _ _).strictMono) hb
 
 set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided."  (since := "2024-10-14")]
@@ -297,7 +297,7 @@ theorem apply_lt_nfpBFamily_iff (ho : o ≠ 0) (H : ∀ i hi, IsNormal (f i hi))
   ⟨fun h => by
     haveI := toType_nonempty_iff_ne_zero.2 ho
     refine (apply_lt_nfpFamily_iff ?_).1 fun _ => h _ _
-    exact fun _ => H _ _, apply_lt_nfpBFamily H⟩
+    exact fun _ => (H _ _).strictMono, apply_lt_nfpBFamily H⟩
 
 set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided."  (since := "2024-10-14")]
@@ -441,15 +441,8 @@ theorem nfp_eq_nfpFamily (f : Ordinal → Ordinal) : nfp f = nfpFamily fun _ : U
 
 theorem iSup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) :
     ⨆ n : ℕ, f^[n] a = nfp f a := by
-  apply le_antisymm
-  · rw [Ordinal.iSup_le_iff]
-    intro n
-    rw [← List.length_replicate n Unit.unit, ← List.foldr_const f a]
-    exact Ordinal.le_iSup _ _
-  · apply Ordinal.iSup_le
-    intro l
-    rw [List.foldr_const f a l]
-    exact Ordinal.le_iSup _ _
+  simp_rw [nfp, nfpFamily, List.foldr_const]
+  exact (Equiv.listUniqueEquiv _).iSup_comp.symm
 
 set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided."  (since := "2024-08-27")]
@@ -487,37 +480,41 @@ theorem nfp_le {a b} : (∀ n, f^[n] a ≤ b) → nfp f a ≤ b :=
 @[simp]
 theorem nfp_id : nfp id = id := by
   ext
-  simp_rw [← iSup_iterate_eq_nfp, iterate_id]
-  exact ciSup_const
+  simp_rw [← iSup_iterate_eq_nfp, iterate_id, ciSup_const]
 
 theorem nfp_monotone (hf : Monotone f) : Monotone (nfp f) :=
-  nfpFamily_monotone fun _ => hf
+  nfpFamily_monotone fun _ ↦ hf
 
-theorem IsNormal.apply_lt_nfp (H : IsNormal f) {a b} : f b < nfp f a ↔ b < nfp f a := by
-  unfold nfp
-  rw [← @apply_lt_nfpFamily_iff Unit (fun _ => f) _ _ (fun _ => H) a b]
-  exact ⟨fun h _ => h, fun h => h Unit.unit⟩
+theorem apply_lt_nfp_iff (H : StrictMono f) {a b} : f b < nfp f a ↔ b < nfp f a := by
+  simpa using apply_lt_nfpFamily_iff fun _ : Unit ↦ H
 
-theorem IsNormal.nfp_le_apply (H : IsNormal f) {a b} : nfp f a ≤ f b ↔ nfp f a ≤ b :=
-  le_iff_le_iff_lt_iff_lt.2 H.apply_lt_nfp
+alias ⟨_, apply_lt_nfp⟩ := apply_lt_nfp_iff
+@[deprecated (since := "2025-02-17")] protected alias IsNormal.apply_lt_nfp_iff := apply_lt_nfp_iff
+
+theorem nfp_le_apply_iff (H : StrictMono f) {a b} : nfp f a ≤ f b ↔ nfp f a ≤ b :=
+  le_iff_le_iff_lt_iff_lt.2 (apply_lt_nfp_iff H)
+
+alias ⟨_, nfp_le_apply⟩ := nfp_le_apply_iff
+@[deprecated (since := "2025-02-17")] protected alias IsNormal.nfp_le_apply := nfp_le_apply_iff
 
 theorem nfp_le_fp (H : Monotone f) {a b} (ab : a ≤ b) (h : f b ≤ b) : nfp f a ≤ b :=
-  nfpFamily_le_fp (fun _ => H) ab fun _ => h
+  nfpFamily_le_fp (fun _ ↦ H) ab fun _ ↦ h
 
 theorem IsNormal.nfp_fp (H : IsNormal f) : ∀ a, f (nfp f a) = nfp f a :=
-  @nfpFamily_fp Unit (fun _ => f) _ () H
+  @nfpFamily_fp Unit (fun _ ↦ f) _ () H
 
-theorem IsNormal.apply_le_nfp (H : IsNormal f) {a b} : f b ≤ nfp f a ↔ b ≤ nfp f a :=
-  ⟨H.le_apply.trans, fun h => by simpa only [H.nfp_fp] using H.le_iff.2 h⟩
+theorem IsNormal.apply_le_nfp_iff (H : IsNormal f) {a b} : f b ≤ nfp f a ↔ b ≤ nfp f a := by
+  simpa using apply_le_nfpFamily_iff fun _ : Unit ↦ H
+
+alias ⟨_, IsNormal.apply_le_nfp⟩ := IsNormal.apply_le_nfp_iff
 
 theorem nfp_eq_self {a} (h : f a = a) : nfp f a = a :=
-  nfpFamily_eq_self fun _ => h
+  nfpFamily_eq_self fun _ ↦ h
 
 /-- The fixed point lemma for normal functions: any normal function has an unbounded set of
 fixed points. -/
 theorem not_bddAbove_fp (H : IsNormal f) : ¬ BddAbove (Function.fixedPoints f) := by
-  convert not_bddAbove_fp_family fun _ : Unit => H
-  exact (Set.iInter_const _).symm
+  simpa [Set.iInter_const] using not_bddAbove_fp_family fun _ : Unit ↦ H
 
 /-- The derivative of a normal function `f` is the sequence of fixed points of `f`.
 
