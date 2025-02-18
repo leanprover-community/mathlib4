@@ -148,24 +148,40 @@ theorem lift_surjective_of_surjective {f : R →+* S} (H : ∀ a : R, a ∈ I �
   use Ideal.Quotient.mk I x
   simp only [Ideal.Quotient.lift_mk]
 
-variable (S T : Ideal R) [S.IsTwoSided] [T.IsTwoSided]
+variable {S T U : Ideal R} [S.IsTwoSided] [T.IsTwoSided] [U.IsTwoSided]
 
 /-- The ring homomorphism from the quotient by a smaller ideal to the quotient by a larger ideal.
-
 This is the `Ideal.Quotient` version of `Quot.Factor` -/
 def factor (H : S ≤ T) : R ⧸ S →+* R ⧸ T :=
   Ideal.Quotient.lift S (mk T) fun _ hx => eq_zero_iff_mem.2 (H hx)
 
 @[simp]
-theorem factor_mk (H : S ≤ T) (x : R) : factor S T H (mk S x) = mk T x :=
+theorem factor_mk (H : S ≤ T) (x : R) : factor H (mk S x) = mk T x :=
   rfl
 
 @[simp]
-theorem factor_comp_mk (H : S ≤ T) : (factor S T H).comp (mk S) = mk T := by
+theorem factor_eq : factor (le_refl S) = RingHom.id _ := by
+  ext
+  simp
+
+@[simp]
+theorem factor_comp_mk (H : S ≤ T) : (factor H).comp (mk S) = mk T := by
   ext x
   rw [RingHom.comp_apply, factor_mk]
 
-lemma factor_surjective (H : S ≤ T) : Function.Surjective (factor S T H) :=
+@[simp]
+theorem factor_comp (H1 : S ≤ T) (H2 : T ≤ U) :
+    (factor H2).comp (factor H1) = factor (H1.trans H2) := by
+  ext
+  simp
+
+@[simp]
+theorem factor_comp_apply (H1 : S ≤ T) (H2 : T ≤ U) (x : R ⧸ S) :
+    factor H2 (factor H1 x) = factor (H1.trans H2) x := by
+  show (factor H2).comp (factor H1) x = factor (H1.trans H2) x
+  simp
+
+lemma factor_surjective (H : S ≤ T) : Function.Surjective (factor H) :=
   Ideal.Quotient.lift_surjective_of_surjective _ _ Ideal.Quotient.mk_surjective
 
 end Quotient

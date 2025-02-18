@@ -335,11 +335,16 @@ lemma isoSpec_hom_base_apply (x : U) :
 
 lemma isoSpec_inv_appTop :
     hU.isoSpec.inv.appTop = U.topIso.hom ≫ (Scheme.ΓSpecIso Γ(X, U)).inv := by
-  simp only [Scheme.Opens.toScheme_presheaf_obj, isoSpec_inv, Scheme.isoSpec, asIso_inv,
-    Scheme.comp_coeBase, Opens.map_comp_obj, Opens.map_top, Scheme.comp_app, Scheme.inv_appTop,
-    Scheme.Opens.topIso_hom, Scheme.ΓSpecIso_inv_naturality, IsIso.inv_comp_eq]
+  simp_rw [Scheme.Opens.toScheme_presheaf_obj, isoSpec_inv, Scheme.isoSpec, asIso_inv,
+    Scheme.comp_app, Scheme.Opens.topIso_hom, Scheme.ΓSpecIso_inv_naturality,
+    Scheme.inv_appTop, -- `check_compositions` reports defeq problems starting after this step.
+    IsIso.inv_comp_eq]
   rw [Scheme.toSpecΓ_appTop]
+  -- We need `erw` here because the goal has
+  -- `Scheme.ΓSpecIso Γ(↑U, ⊤)).hom ≫ Scheme.ΓSpecIso Γ(X, U.ι ''ᵁ ⊤)).inv`
+  -- and `Γ(X, U.ι ''ᵁ ⊤)` is non-reducibly defeq to `Γ(↑U, ⊤)`.
   erw [Iso.hom_inv_id_assoc]
+  simp only [Opens.map_top]
 
 lemma isoSpec_hom_appTop :
     hU.isoSpec.hom.appTop = (Scheme.ΓSpecIso Γ(X, U)).hom ≫ U.topIso.inv := by
