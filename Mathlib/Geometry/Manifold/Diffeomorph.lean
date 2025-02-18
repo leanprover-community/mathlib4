@@ -581,10 +581,8 @@ section disjointUnion
 
 variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
   {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M'']
-variable {N J : Type*} [TopologicalSpace N] [ChartedSpace H N] {J : ModelWithCorners 𝕜 E' H}
-  {N' : Type*} [TopologicalSpace N'] [ChartedSpace H N'] [Nonempty H] [Nonempty H']
-
--- XXX: should Equiv.sumCongr, Homeomorph.sumCongr also get a _symm lemma? is currently missing
+  {N J : Type*} [TopologicalSpace N] [ChartedSpace H N] {J : ModelWithCorners 𝕜 E' H}
+  {N' : Type*} [TopologicalSpace N'] [ChartedSpace H N']
 
 /-- The sum of two diffeomorphisms -/
 def sumCongr (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
