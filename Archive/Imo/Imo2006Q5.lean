@@ -53,8 +53,8 @@ theorem Int.natAbs_eq_of_chain_dvd {l : Cycle ℤ} {x y : ℤ} (hl : l.Chain (·
 theorem Int.add_eq_add_of_natAbs_eq_of_natAbs_eq {a b c d : ℤ} (hne : a ≠ b)
     (h₁ : (c - a).natAbs = (d - b).natAbs) (h₂ : (c - b).natAbs = (d - a).natAbs) :
     a + b = c + d := by
-  cases' Int.natAbs_eq_natAbs_iff.1 h₁ with h₁ h₁
-  · cases' Int.natAbs_eq_natAbs_iff.1 h₂ with h₂ h₂
+  rcases Int.natAbs_eq_natAbs_iff.1 h₁ with h₁ | h₁
+  · rcases Int.natAbs_eq_natAbs_iff.1 h₂ with h₂ | h₂
     · exact (hne <| by linarith).elim
     · linarith
   · linarith
@@ -110,7 +110,7 @@ theorem Polynomial.isPeriodicPt_eval_two {P : Polynomial ℤ} {t : ℤ}
     push_neg at HC'
     obtain ⟨n, hn⟩ := HC'
     -- They must have opposite sign, so that P^{k + 1}(t) - P^k(t) = P^{k + 2}(t) - P^{k + 1}(t).
-    cases' Int.natAbs_eq_natAbs_iff.1 (Habs n n.succ) with hn' hn'
+    rcases Int.natAbs_eq_natAbs_iff.1 (Habs n n.succ) with hn' | hn'
     · apply (hn _).elim
       convert hn' <;> simp only [Function.iterate_succ_apply']
     -- We deduce P^{k + 2}(t) = P^k(t) and hence P(P(t)) = t.

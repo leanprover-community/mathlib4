@@ -151,8 +151,8 @@ theorem setLIntegral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) {s : Set α
   rw [this, ← setLIntegral_withDensity_eq_setLIntegral_mul _ measurable_preCDF _ hs]
   · simp only [withDensity_preCDF ρ r, Pi.one_apply, lintegral_one, Measure.restrict_apply,
       MeasurableSet.univ, univ_inter]
-  · rw [(_ : (1 : α → ℝ≥0∞) = fun _ ↦ 1)]
-    exacts [measurable_const, rfl]
+  · rw [Pi.one_def]
+    exact measurable_const
 
 lemma lintegral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) [IsFiniteMeasure ρ] :
     ∫⁻ x, preCDF ρ r x ∂ρ.fst = ρ.IicSnd r univ := by

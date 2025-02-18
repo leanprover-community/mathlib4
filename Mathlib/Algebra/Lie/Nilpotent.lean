@@ -619,38 +619,31 @@ open LieModule Function
 
 variable [LieModule R L M]
 variable {L₂ M₂ : Type*} [LieRing L₂] [LieAlgebra R L₂]
-variable [AddCommGroup M₂] [Module R M₂] [LieRingModule L₂ M₂]
+variable [AddCommGroup M₂] [Module R M₂] [LieRingModule L₂ M₂] [LieModule R L₂ M₂]
 variable {f : L →ₗ⁅R⁆ L₂} {g : M →ₗ[R] M₂}
-variable (hf : Surjective f) (hg : Surjective g) (hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆)
-variable (hg_inj : Injective g)
-
-section
+variable (hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆)
 
 include hfg in
 theorem lieModule_lcs_map_le (k : ℕ) :
-    (lowerCentralSeries R L M k : Submodule R M).map g ≤
-    (lowerCentralSeries R L₂ M₂ k : Submodule R M₂) := by
+    (lowerCentralSeries R L M k : Submodule R M).map g ≤ lowerCentralSeries R L₂ M₂ k := by
   induction k with
   | zero =>
     simp [LinearMap.range_eq_top, Submodule.map_top]
   | succ k ih =>
-    rw [lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span', Submodule.map_span]
-    apply Submodule.span_le.mpr
-    rintro m₂ ⟨m, ⟨x, n, m_n, h⟩, rfl⟩
-    simp
+    rw [lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span', Submodule.map_span,
+      Submodule.span_le]
+    rintro m₂ ⟨m, ⟨x, n, m_n, ⟨h₁, h₂⟩⟩, rfl⟩
+    simp only [lowerCentralSeries_succ, SetLike.mem_coe, LieSubmodule.mem_toSubmodule]
     have : ∃ y : L₂, ∃ n : lowerCentralSeries R L₂ M₂ k, ⁅y, n⁆ = g m := by
-      use f x
-      use ⟨g m_n, ih (Submodule.mem_map_of_mem h.1)⟩
-      simp_all only [LieSubmodule.mem_top, LieSubmodule.coe_bracket]
+      use f x, ⟨g m_n, ih (Submodule.mem_map_of_mem h₁)⟩
+      simp [hfg x m_n, h₂]
     obtain ⟨y, n, hn⟩ := this
     rw [← hn]
     apply LieSubmodule.lie_mem_lie
-    · simp_all only [LieSubmodule.mem_top, LieSubmodule.coe_bracket]
+    · simp
     · exact SetLike.coe_mem n
 
-end
-
-variable [LieModule R L₂ M₂]
+variable [LieModule R L₂ M₂] (hg_inj : Injective g)
 
 include hg_inj hfg in
 theorem Function.Injective.lieModuleIsNilpotent [IsNilpotent L₂ M₂] : IsNilpotent L M := by
@@ -659,46 +652,46 @@ theorem Function.Injective.lieModuleIsNilpotent [IsNilpotent L₂ M₂] : IsNilp
   use k
   rw [← LieSubmodule.toSubmodule_inj] at hk ⊢
   apply Submodule.map_injective_of_injective hg_inj
-  have := lieModule_lcs_map_le hfg k
-  rw [hk] at this
-  simp_all only [LieSubmodule.bot_toSubmodule, le_bot_iff, Submodule.map_bot]
+  simpa [hk] using lieModule_lcs_map_le hfg k
 
-include hf hg hfg in
+variable (hf_surj : Surjective f) (hg_surj : Surjective g)
+
+include hf_surj hg_surj hfg in
 theorem Function.Surjective.lieModule_lcs_map_eq (k : ℕ) :
     (lowerCentralSeries R L M k : Submodule R M).map g = lowerCentralSeries R L₂ M₂ k := by
+  refine le_antisymm (lieModule_lcs_map_le hfg k) ?_
   induction k with
   | zero => simpa [LinearMap.range_eq_top]
   | succ k ih =>
     suffices
-      g '' {m | ∃ (x : L) (n : _), n ∈ lowerCentralSeries R L M k ∧ ⁅x, n⁆ = m} =
-        {m | ∃ (x : L₂) (n : _), n ∈ lowerCentralSeries R L M k ∧ ⁅x, g n⁆ = m} by
+      {m | ∃ (x : L₂) (n : _), n ∈ lowerCentralSeries R L M k ∧ ⁅x, g n⁆ = m} ⊆
+        g '' {m | ∃ (x : L) (n : _), n ∈ lowerCentralSeries R L M k ∧ ⁅x, n⁆ = m} by
       simp only [← LieSubmodule.mem_toSubmodule] at this
       simp_rw [lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span',
-        Submodule.map_span, LieSubmodule.mem_top, true_and, ← LieSubmodule.mem_toSubmodule, this,
-        ← ih, Submodule.mem_map, exists_exists_and_eq_and]
-    ext m₂
-    constructor
-    · rintro ⟨m, ⟨x, n, hn, rfl⟩, rfl⟩
-      exact ⟨f x, n, hn, hfg x n⟩
-    · rintro ⟨x, n, hn, rfl⟩
-      obtain ⟨y, rfl⟩ := hf x
-      exact ⟨⁅y, n⁆, ⟨y, n, hn, rfl⟩, (hfg y n).symm⟩
+        Submodule.map_span, LieSubmodule.mem_top, true_and, ← LieSubmodule.mem_toSubmodule]
+      refine Submodule.span_mono (Set.Subset.trans ?_ this)
+      rintro m₁ ⟨x, n, hn, rfl⟩
+      obtain ⟨n', hn', rfl⟩ := ih hn
+      exact ⟨x, n', hn', rfl⟩
+    rintro m₂ ⟨x, n, hn, rfl⟩
+    obtain ⟨y, rfl⟩ := hf_surj x
+    exact ⟨⁅y, n⁆, ⟨y, n, hn, rfl⟩, (hfg y n).symm⟩
 
-include hf hg hfg in
+include hf_surj hg_surj hfg in
 theorem Function.Surjective.lieModuleIsNilpotent [IsNilpotent L M] : IsNilpotent L₂ M₂ := by
   obtain ⟨k, hk⟩ := IsNilpotent.nilpotent R L M
   rw [isNilpotent_iff R]
   use k
   rw [← LieSubmodule.toSubmodule_inj] at hk ⊢
-  simp [← hf.lieModule_lcs_map_eq hg hfg k, hk]
+  simp [← hf_surj.lieModule_lcs_map_eq hfg hg_surj k, hk]
 
 theorem Equiv.lieModule_isNilpotent_iff (f : L ≃ₗ⁅R⁆ L₂) (g : M ≃ₗ[R] M₂)
     (hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆) : IsNilpotent L M ↔ IsNilpotent L₂ M₂ := by
   constructor <;> intro h
   · have hg : Surjective (g : M →ₗ[R] M₂) := g.surjective
-    exact f.surjective.lieModuleIsNilpotent hg hfg
+    exact f.surjective.lieModuleIsNilpotent hfg hg
   · have hg : Surjective (g.symm : M₂ →ₗ[R] M) := g.symm.surjective
-    refine f.symm.surjective.lieModuleIsNilpotent hg fun x m => ?_
+    refine f.symm.surjective.lieModuleIsNilpotent (fun x m => ?_) hg
     rw [LinearEquiv.coe_coe, LieEquiv.coe_toLieHom, ← g.symm_apply_apply ⁅f.symm x, g.symm m⁆, ←
       hfg, f.apply_symm_apply, g.apply_symm_apply]
 
@@ -715,26 +708,15 @@ end Morphisms
 
 namespace LieModule
 
-open LieAlgebra
-
 variable (R L M)
-
-section
-
 variable [LieModule R L M]
 
-theorem nilpotent_submodule_nilpotent (M₁ M₂ : LieSubmodule R L M)
-    (h₁ : M₁ ≤ M₂) (h₂ : IsNilpotent L M₂) : IsNilpotent L M₁ := by
-  let f : L →ₗ⁅R⁆ L := 1
+theorem isNilpotent_of_le (M₁ M₂ : LieSubmodule R L M) (h₁ : M₁ ≤ M₂) (h₂ : IsNilpotent L M₂) :
+    IsNilpotent L M₁ := by
+  let f : L →ₗ⁅R⁆ L := LieHom.id
   let g : M₁ →ₗ[R] M₂ := Submodule.inclusion h₁
-  have hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆ := by
-    intro x m
-    simp_all only [LieHom.coe_one, id_eq, f, g]
-    obtain ⟨val, property⟩ := m
-    rfl
-  have hg_inj : Function.Injective g := by
-    apply Submodule.inclusion_injective
-  exact Function.Injective.lieModuleIsNilpotent hfg hg_inj
+  have hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆ := by aesop
+  exact (Submodule.inclusion_injective h₁).lieModuleIsNilpotent hfg
 
 /-- The largest nilpotent submodule is the `sSup` of all nilpotent submodules. -/
 def largestNilpotentSubmodule :=
@@ -759,7 +741,6 @@ theorem nilpotent_iff_le_largest_nilpotent_submodule [IsNoetherian R M] (N : Lie
   intro h
   exact nilpotent_submodule_nilpotent R L M N
     (largestNilpotentSubmodule R L M) h (largestNilpotentSubmoduleIsNilpotent R L M)
-end
 
 end LieModule
 

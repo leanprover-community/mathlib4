@@ -13,13 +13,13 @@ In this file, we define a structure `RelativeCellComplex` which expresses
 that a morphism `f : X ⟶ Y` is a transfinite composition of morphisms,
 all of which consists in attaching cells. Here, we allow a different
 family of authorized cells at each step. For example, (relative)
-CW-complexes are defined in the file `Topology.CWComplex.Abstract.Basic`
+CW-complexes are defined in the file `Mathlib.Topology.CWComplex.Abstract.Basic`
 by requiring that at the `n`th step, we attach `n`-disks along their
 boundaries.
 
 This structure `RelativeCellComplex` is also used in the
 formalization of the small object argument,
-see the file `CategoryTheory.SmallObject.IsCardinalForSmallObjectArgument`.
+see the file `Mathlib.CategoryTheory.SmallObject.IsCardinalForSmallObjectArgument`.
 
 ## References
 * https://ncatlab.org/nlab/show/small+object+argument
