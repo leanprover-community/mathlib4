@@ -166,8 +166,7 @@ theorem ofArrows_pullback [HasPullbacks C] {ι : Type*} (Z : ι → C) (g : ∀ 
   constructor
   · rintro ⟨hk⟩
     exact pullbackArrows.mk _ _ (ofArrows.mk hk)
-  · rintro ⟨W, k, hk₁⟩
-    cases hk₁
+  · rintro ⟨W, k, ⟨_⟩⟩
     apply ofArrows.mk
 
 theorem ofArrows_bind {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X)
@@ -471,8 +470,7 @@ variable {Y f} {W : C} {g : W ⟶ X} (hg : ofArrows Y f g)
 
 include hg in
 lemma ofArrows.exists : ∃ (i : I) (h : W ⟶ Y i), g = h ≫ f i := by
-  obtain ⟨_, h, _, H, rfl⟩ := hg
-  obtain ⟨i⟩ := H
+  obtain ⟨_, h, _, ⟨i⟩, rfl⟩ := hg
   exact ⟨i, h, rfl⟩
 
 /-- When `hg : Sieve.ofArrows Y f g`, this is a choice of `i` such that `g`
@@ -622,8 +620,7 @@ theorem pullbackArrows_comm [HasPullbacks C] {X Y : C} (f : Y ⟶ X) (R : Presie
     Sieve.generate (R.pullbackArrows f) = (Sieve.generate R).pullback f := by
   ext W g
   constructor
-  · rintro ⟨_, h, k, hk, rfl⟩
-    obtain ⟨W, g, hg⟩ := hk
+  · rintro ⟨_, h, k, ⟨W, g, hg⟩, rfl⟩
     rw [Sieve.pullback_apply, assoc, ← pullback.condition, ← assoc]
     exact Sieve.downward_closed _ (by exact Sieve.le_generate R W hg) (h ≫ pullback.fst g f)
   · rintro ⟨W, h, k, hk, comm⟩
