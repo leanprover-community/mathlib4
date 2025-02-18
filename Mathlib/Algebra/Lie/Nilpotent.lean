@@ -711,16 +711,10 @@ variable [LieModule R L M]
 
 theorem isNilpotent_of_le (M₁ M₂ : LieSubmodule R L M) (h₁ : M₁ ≤ M₂) (h₂ : IsNilpotent L M₂) :
     IsNilpotent L M₁ := by
-  let f : L →ₗ⁅R⁆ L := 1
+  let f : L →ₗ⁅R⁆ L := LieHom.id
   let g : M₁ →ₗ[R] M₂ := Submodule.inclusion h₁
-  have hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆ := by
-    intro x m
-    simp only [LieHom.coe_one, id_eq, f, g]
-    obtain ⟨val, property⟩ := m
-    rfl
-  have hg_inj : Function.Injective g := by
-    apply Submodule.inclusion_injective
-  exact hg_inj.lieModuleIsNilpotent hfg
+  have hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆ := by aesop
+  exact (Submodule.inclusion_injective h₁).lieModuleIsNilpotent hfg
 
 end
 
