@@ -25,8 +25,8 @@ This file defines loops, and provides API for interacting with them.
 
 # Terminology
 The set `M.closure ∅ = {e | M.IsLoop e}` appears frequently in statements about loops.
-To avoid favouring one term such as `setOf_isLoop` or `closure_empty`,
-we instead refer to it in lemma names by the shorter term `loops`.
+we stick with the more convenient spelling `M.closure ∅`,
+but refer to it in lemma names by the shorter term `loops`.
 -/
 
 variable {α β : Type*} {M N : Matroid α} {e f : α} {F X C I : Set α}
