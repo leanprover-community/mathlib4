@@ -3550,9 +3550,19 @@ import Mathlib.LinearAlgebra.AnnihilatingPolynomial
 import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.LinearAlgebra.Basis.Bilinear
 import Mathlib.LinearAlgebra.Basis.Cardinality
+import Mathlib.LinearAlgebra.Basis.Constr
+import Mathlib.LinearAlgebra.Basis.Coord
 import Mathlib.LinearAlgebra.Basis.Defs
+import Mathlib.LinearAlgebra.Basis.Equiv
 import Mathlib.LinearAlgebra.Basis.Exact
+import Mathlib.LinearAlgebra.Basis.Ext
+import Mathlib.LinearAlgebra.Basis.Fin
 import Mathlib.LinearAlgebra.Basis.Flag
+import Mathlib.LinearAlgebra.Basis.Mk
+import Mathlib.LinearAlgebra.Basis.Prod
+import Mathlib.LinearAlgebra.Basis.Reindex
+import Mathlib.LinearAlgebra.Basis.SMul
+import Mathlib.LinearAlgebra.Basis.Submodule
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.BilinearForm.Basic
 import Mathlib.LinearAlgebra.BilinearForm.DualLattice
@@ -3642,7 +3652,6 @@ import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.LinearAlgebra.JordanChevalley
 import Mathlib.LinearAlgebra.Lagrange
 import Mathlib.LinearAlgebra.LinearDisjoint
-import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.LinearAlgebra.LinearIndependent.Basic
 import Mathlib.LinearAlgebra.LinearIndependent.Defs
 import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
