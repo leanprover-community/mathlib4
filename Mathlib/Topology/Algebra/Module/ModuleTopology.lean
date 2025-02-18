@@ -68,7 +68,7 @@ is isomorphism-invariant.
 
 ## Main theorems
 
-* `TopologicalSemiring.toIsModuleTopology : IsModuleTopology R R`. The module
+* `IsTopologicalSemiring.toIsModuleTopology : IsModuleTopology R R`. The module
     topology on `R` is `R`'s topology.
 * `IsModuleTopology.iso [IsModuleTopology R A] (e : A ≃L[R] B) : IsModuleTopology R B`. If `A` and
     `B` are `R`-modules with topologies, if `e` is a topological isomorphism between them,
@@ -219,7 +219,7 @@ end iso
 
 section self
 
-variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [TopologicalSemiring R]
+variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [IsTopologicalSemiring R]
 
 /-!
 We now fix once and for all a topological semiring `R`.
@@ -230,7 +230,7 @@ is `R`'s topology.
 
 /-- The topology on a topological semiring `R` agrees with the module topology when considering
 `R` as an `R`-module in the obvious way (i.e., via `Semiring.toModule`). -/
-instance _root_.TopologicalSemiring.toIsModuleTopology : IsModuleTopology R R := by
+instance _root_.IsTopologicalSemiring.toIsModuleTopology : IsModuleTopology R R := by
   /- By a previous lemma it suffices to show that the identity from (R,usual) to
   (R, module topology) is continuous. -/
   apply of_continuous_id
@@ -262,11 +262,11 @@ end self
 
 section MulOpposite
 
-variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [TopologicalSemiring R]
+variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [IsTopologicalSemiring R]
 
 /-- The module topology coming from the action of the topological ring `Rᵐᵒᵖ` on `R`
   (via `Semiring.toOppositeModule`, i.e. via `(op r) • m = m * r`) is `R`'s topology. -/
-instance _root_.TopologicalSemiring.toOppositeIsModuleTopology : IsModuleTopology Rᵐᵒᵖ R :=
+instance _root_.IsTopologicalSemiring.toOppositeIsModuleTopology : IsModuleTopology Rᵐᵒᵖ R :=
   .iso (MulOpposite.opContinuousLinearEquiv Rᵐᵒᵖ).symm
 
 end MulOpposite
@@ -308,14 +308,14 @@ theorem continuousNeg (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpac
 
 variable (R) in
 theorem topologicalAddGroup (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
-    [IsModuleTopology R C] : TopologicalAddGroup C where
-      continuous_add := (IsModuleTopology.toContinuousAdd R C).1
-      continuous_neg := continuous_neg R C
+    [IsModuleTopology R C] : IsTopologicalAddGroup C where
+  continuous_add := (IsModuleTopology.toContinuousAdd R C).1
+  continuous_neg := continuous_neg R C
 
 @[fun_prop, continuity]
 theorem continuous_of_ringHom {R A B} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B]
     [TopologicalSpace R] [TopologicalSpace A] [IsModuleTopology R A] [TopologicalSpace B]
-    [TopologicalSemiring B]
+    [IsTopologicalSemiring B]
     (φ : A →+* B) (hφ : Continuous (φ.comp (algebraMap R A))) : Continuous φ := by
   let inst := Module.compHom B (φ.comp (algebraMap R A))
   let φ' : A →ₗ[R] B := ⟨φ, fun r m ↦ by simp [Algebra.smul_def]; rfl⟩
@@ -412,5 +412,84 @@ lemma _root_.ModuleTopology.eq_coinduced_of_surjective
   exact (isQuotientMap_of_surjective hφ).eq_coinduced
 
 end surjection
+
+section Prod
+
+variable {R : Type*} [TopologicalSpace R] [Semiring R]
+variable {M : Type*} [AddCommMonoid M] [Module R M] [TopologicalSpace M] [IsModuleTopology R M]
+variable {N : Type*} [AddCommMonoid N] [Module R N] [TopologicalSpace N] [IsModuleTopology R N]
+
+/-- The product of the module topologies for two modules over a topological ring
+is the module topology. -/
+instance instProd : IsModuleTopology R (M × N) := by
+  constructor
+  have : ContinuousAdd M := toContinuousAdd R M
+  have : ContinuousAdd N := toContinuousAdd R N
+  -- In this proof, `M × N` always denotes the product with its *product* topology.
+  -- Addition `(M × N)² → M × N` and scalar multiplication `R × (M × N) → M × N`
+  -- are continuous for the product topology (by results in the library), so the module topology
+  -- on `M × N` is finer than the product topology (as it's the Inf of such topologies).
+  -- It thus remains to show that the product topology is finer than the module topology.
+  refine le_antisymm ?_ <| sInf_le ⟨Prod.continuousSMul, Prod.continuousAdd⟩
+  -- Or equivalently, if `P` denotes `M × N` with the module topology,
+  let P := M × N
+  let τP : TopologicalSpace P := moduleTopology R P
+  have : IsModuleTopology R P := ⟨rfl⟩
+  have : ContinuousAdd P := ModuleTopology.continuousAdd R P
+  -- and if `i` denotes the identity map from `M × N` to `P`
+  let i : M × N → P := id
+  -- then we need to show that `i` is continuous.
+  rw [← continuous_id_iff_le]
+  change @Continuous (M × N) P instTopologicalSpaceProd τP i
+  -- But `i` can be written as (m, n) ↦ (m, 0) + (0, n)
+  -- or equivalently as i₁ ∘ pr₁ + i₂ ∘ pr₂, where prᵢ are the projections,
+  -- the iⱼ's are linear inclusions M → P and N → P, and the addition is P × P → P.
+  let i₁ : M →ₗ[R] P := LinearMap.inl R M N
+  let i₂ : N →ₗ[R] P := LinearMap.inr R M N
+  rw [show (i : M × N → P) =
+       (fun abcd ↦ abcd.1 + abcd.2 : P × P → P) ∘
+       (fun ab ↦ (i₁ ab.1, i₂ ab.2)) by
+       ext ⟨a, b⟩ <;> aesop]
+  -- and these maps are all continuous, hence `i` is too
+  fun_prop
+
+end Prod
+
+section Pi
+
+variable {R : Type*} [TopologicalSpace R] [Semiring R]
+variable {ι : Type*} [Finite ι] {A : ι → Type*} [∀ i, AddCommMonoid (A i)]
+  [∀ i, Module R (A i)] [∀ i, TopologicalSpace (A i)]
+  [∀ i, IsModuleTopology R (A i)]
+
+/-- The product of the module topologies for a finite family of modules over a topological ring
+is the module topology. -/
+instance instPi : IsModuleTopology R (∀ i, A i) := by
+  -- This is an easy induction on the size of the finite type, given the result
+  -- for binary products above. We use a "decategorified" induction principle for finite types.
+  induction ι using Finite.induction_empty_option
+  · -- invariance under equivalence of the finite type we're taking the product over
+    case of_equiv X Y e _ _ _ _ _ =>
+    exact iso (ContinuousLinearEquiv.piCongrLeft R A e)
+  · -- empty case
+    infer_instance
+  · -- "inductive step" is to check for product over `Option ι` case when known for product over `ι`
+    case h_option ι _ hind _ _ _ _ =>
+    -- `Option ι` is a `Sum` of `ι` and `Unit`
+    let e : Option ι ≃ ι ⊕ Unit := Equiv.optionEquivSumPUnit ι
+    -- so suffices to check for a product of modules over `ι ⊕ Unit`
+    suffices IsModuleTopology R ((i' : ι ⊕ Unit) → A (e.symm i')) from iso (.piCongrLeft R A e.symm)
+    -- but such a product is isomorphic to a binary product
+    -- of (product over `ι`) and (product over `Unit`)
+    suffices IsModuleTopology R
+      (((s : ι) → A (e.symm (Sum.inl s))) × ((t : Unit) → A (e.symm (Sum.inr t)))) from
+      iso (ContinuousLinearEquiv.sumPiEquivProdPi R ι Unit _).symm
+    -- The product over `ι` has the module topology by the inductive hypothesis,
+    -- and the product over `Unit` is just a module which is assumed to have the module topology
+    have := iso (ContinuousLinearEquiv.piUnique R (fun t ↦ A (e.symm (Sum.inr t)))).symm
+    -- so the result follows from the previous lemma (binary products).
+    infer_instance
+
+end Pi
 
 end IsModuleTopology

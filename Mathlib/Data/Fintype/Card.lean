@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Union
 import Mathlib.Data.List.NodupEquivFin
 import Mathlib.Data.Set.Image
 import Mathlib.Order.WellFounded
@@ -43,8 +44,7 @@ We provide `Infinite` instances for
 
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists MulAction
+assert_not_exists MonoidWithZero MulAction
 
 open Function
 
@@ -194,7 +194,6 @@ theorem card_eq {α β} [_F : Fintype α] [_G : Fintype β] : card α = card β 
 /-- Note: this lemma is specifically about `Fintype.ofSubsingleton`. For a statement about
 arbitrary `Fintype` instances, use either `Fintype.card_le_one_iff_subsingleton` or
 `Fintype.card_unique`. -/
-@[simp]
 theorem card_ofSubsingleton (a : α) [Subsingleton α] : @Fintype.card _ (ofSubsingleton a) = 1 :=
   rfl
 
@@ -204,7 +203,6 @@ theorem card_unique [Unique α] [h : Fintype α] : Fintype.card α = 1 :=
 
 /-- Note: this lemma is specifically about `Fintype.ofIsEmpty`. For a statement about
 arbitrary `Fintype` instances, use `Fintype.card_eq_zero`. -/
-@[simp]
 theorem card_ofIsEmpty [IsEmpty α] : @Fintype.card α Fintype.ofIsEmpty = 0 :=
   rfl
 
@@ -349,6 +347,20 @@ theorem Fintype.card_lex (α : Type*) [Fintype α] : Fintype.card (Lex α) = Fin
 
 @[simp] lemma Fintype.card_additive (α : Type*) [Fintype α] : card (Additive α) = card α :=
   Finset.card_map _
+
+-- Note: The extra hypothesis `h` is there so that the rewrite lemma applies,
+-- no matter what instance of `Fintype (Set.univ : Set α)` is used.
+@[simp]
+theorem Fintype.card_setUniv [Fintype α] {h : Fintype (Set.univ : Set α)} :
+    Fintype.card (Set.univ : Set α) = Fintype.card α := by
+  apply Fintype.card_of_finset'
+  simp
+
+@[simp]
+theorem Fintype.card_subtype_true [Fintype α] {h : Fintype {_a : α // True}} :
+    @Fintype.card {_a // True} h = Fintype.card α := by
+  apply Fintype.card_of_subtype
+  simp
 
 /-- Given that `α ⊕ β` is a fintype, `α` is also a fintype. This is non-computable as it uses
 that `Sum.inl` is an injection, but there's no clear inverse if `α` is empty. -/
@@ -1162,7 +1174,7 @@ theorem Fintype.induction_subsingleton_or_nontrivial {P : ∀ (α) [Fintype α],
     P α := by
   obtain ⟨n, hn⟩ : ∃ n, Fintype.card α = n := ⟨Fintype.card α, rfl⟩
   induction' n using Nat.strong_induction_on with n ih generalizing α
-  cases' subsingleton_or_nontrivial α with hsing hnontriv
+  rcases subsingleton_or_nontrivial α with hsing | hnontriv
   · apply hbase
   · apply hstep
     intro β _ hlt

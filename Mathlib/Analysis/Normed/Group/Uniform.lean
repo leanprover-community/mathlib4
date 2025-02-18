@@ -3,7 +3,7 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.Normed.Group.Continuity
 import Mathlib.Topology.Algebra.UniformGroup.Basic
 import Mathlib.Topology.MetricSpace.Algebra
 import Mathlib.Topology.MetricSpace.IsometricSMul
@@ -159,7 +159,7 @@ end NNNorm
 
 @[to_additive lipschitzWith_one_norm]
 theorem lipschitzWith_one_norm' : LipschitzWith 1 (norm : E → ℝ) := by
-  simpa only [dist_one_left] using LipschitzWith.dist_right (1 : E)
+  simpa using LipschitzWith.dist_right (1 : E)
 
 @[to_additive lipschitzWith_one_nnnorm]
 theorem lipschitzWith_one_nnnorm' : LipschitzWith 1 (NNNorm.nnnorm : E → ℝ≥0) :=
@@ -359,7 +359,7 @@ instance (priority := 100) SeminormedCommGroup.to_uniformGroup : UniformGroup E 
 -- short-circuit type class inference
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) SeminormedCommGroup.toTopologicalGroup : TopologicalGroup E :=
+instance (priority := 100) SeminormedCommGroup.toIsTopologicalGroup : IsTopologicalGroup E :=
   inferInstance
 
 /-! ### SeparationQuotient -/

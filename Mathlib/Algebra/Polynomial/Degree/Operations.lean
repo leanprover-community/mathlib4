@@ -12,7 +12,7 @@ import Mathlib.Algebra.Polynomial.Degree.Definitions
 ## Main results
 - `degree_mul` : The degree of the product is the sum of degrees
 - `leadingCoeff_add_of_degree_eq` and `leadingCoeff_add_of_degree_lt` :
-    The leading_coefficient of a sum is determined by the leading coefficients and degrees
+    The leading coefficient of a sum is determined by the leading coefficients and degrees
 -/
 
 noncomputable section
@@ -285,7 +285,7 @@ theorem coeff_mul_degree_add_degree (p q : R[X]) :
               (lt_of_le_of_lt degree_le_natDegree (WithBot.coe_lt_coe.2 H)),
             zero_mul]
         · rw [not_lt_iff_eq_or_lt] at H
-          cases' H with H H
+          rcases H with H | H
           · subst H
             rw [add_left_cancel_iff] at h₁
             dsimp at h₁
@@ -374,6 +374,36 @@ theorem leadingCoeff_mul_monic {p q : R[X]} (hq : Monic q) :
     fun H : leadingCoeff p ≠ 0 => by
       rw [leadingCoeff_mul', hq.leadingCoeff, mul_one]
       rwa [hq.leadingCoeff, mul_one]
+
+lemma degree_C_mul_of_isUnit (ha : IsUnit a) (p : R[X]) : (C a * p).degree = p.degree := by
+  obtain rfl | hp := eq_or_ne p 0
+  · simp
+  nontriviality R
+  rw [degree_mul', degree_C ha.ne_zero]
+  · simp
+  · simpa [ha.mul_right_eq_zero]
+
+lemma degree_mul_C_of_isUnit (ha : IsUnit a) (p : R[X]) : (p * C a).degree = p.degree := by
+  obtain rfl | hp := eq_or_ne p 0
+  · simp
+  nontriviality R
+  rw [degree_mul', degree_C ha.ne_zero]
+  · simp
+  · simpa [ha.mul_left_eq_zero]
+
+lemma natDegree_C_mul_of_isUnit (ha : IsUnit a) (p : R[X]) : (C a * p).natDegree = p.natDegree := by
+  simp [natDegree, degree_C_mul_of_isUnit ha]
+
+lemma natDegree_mul_C_of_isUnit (ha : IsUnit a) (p : R[X]) : (p * C a).natDegree = p.natDegree := by
+  simp [natDegree, degree_mul_C_of_isUnit ha]
+
+lemma leadingCoeff_C_mul_of_isUnit (ha : IsUnit a) (p : R[X]) :
+    (C a * p).leadingCoeff = a * p.leadingCoeff := by
+  rwa [leadingCoeff, coeff_C_mul, natDegree_C_mul_of_isUnit, leadingCoeff]
+
+lemma leadingCoeff_mul_C_of_isUnit (ha : IsUnit a) (p : R[X]) :
+    (p * C a).leadingCoeff = p.leadingCoeff * a := by
+  rwa [leadingCoeff, coeff_mul_C, natDegree_mul_C_of_isUnit, leadingCoeff]
 
 @[simp]
 theorem leadingCoeff_mul_X_pow {p : R[X]} {n : ℕ} : leadingCoeff (p * X ^ n) = leadingCoeff p :=

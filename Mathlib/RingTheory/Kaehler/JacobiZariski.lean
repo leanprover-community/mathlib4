@@ -135,7 +135,7 @@ lemma Cotangent.exact :
     have hz : z.1 ∈ P.ker.map (Q.toComp P).toAlgHom.toRingHom := e
     have : Extension.Cotangent.mk (P := (Q.comp P).toExtension) ⟨x, hx'⟩ =
       Extension.Cotangent.mk z := by
-      ext; simpa only [comp_vars, val_mk, Ideal.toCotangent_eq, sub_sub_cancel, pow_two]
+      ext; simpa only [comp_vars, val_mk, Ideal.toCotangent_eq, sub_sub_cancel, pow_two, z]
     rw [this, ← Submodule.restrictScalars_mem (Q.comp P).Ring, ← Submodule.mem_comap,
       ← Submodule.span_singleton_le_iff_mem, ← Submodule.map_le_map_iff_of_injective
       (f := Submodule.subtype _) Subtype.val_injective, Submodule.map_subtype_span_singleton,
@@ -280,7 +280,7 @@ lemma δAux_C (r) :
 lemma δAux_toAlgHom {Q : Generators.{u₁} S T}
     {Q' : Generators.{u₃} S T} (f : Hom Q Q') (x) :
     δAux R Q' (f.toAlgHom x) = δAux R Q x + Finsupp.linearCombination _ (δAux R Q' ∘ f.val)
-      (Q.cotangentSpaceBasis.repr ((1 : T) ⊗ₜ[Q.Ring] D S Q.Ring x : _)) := by
+      (Q.cotangentSpaceBasis.repr ((1 : T) ⊗ₜ[Q.Ring] D S Q.Ring x :)) := by
   letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   have : IsScalarTower Q.Ring Q.Ring T := IsScalarTower.left _
   induction' x using MvPolynomial.induction_on with s x₁ x₂ hx₁ hx₂ p n IH

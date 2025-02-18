@@ -73,6 +73,11 @@ lemma aeval_val_relation (i) : aeval P.val (P.relation i) = 0 := by
   rw [← RingHom.mem_ker, ← P.ker_eq_ker_aeval_val, ← P.span_range_relation_eq_ker]
   exact Ideal.subset_span ⟨i, rfl⟩
 
+lemma relation_mem_ker (i : P.rels) : P.relation i ∈ P.ker := by
+  rw [← P.span_range_relation_eq_ker]
+  apply Ideal.subset_span
+  use i
+
 /-- The polynomial algebra wrt a family of generators modulo a family of relations. -/
 protected abbrev Quotient : Type (max w u) := P.Ring ⧸ P.ker
 
@@ -120,6 +125,28 @@ instance [P.IsFinite] : FinitePresentation R P.Quotient :=
 lemma finitePresentation_of_isFinite [P.IsFinite] :
     FinitePresentation R S :=
   FinitePresentation.equiv (P.quotientEquiv.restrictScalars R)
+
+variable (R S) in
+/-- An arbitrary choice of a finite presentation of a finitely presented algebra. -/
+noncomputable
+def ofFinitePresentation [FinitePresentation R S] : Presentation.{0, 0} R S :=
+  letI H := FinitePresentation.out (R := R) (A := S)
+  letI n : ℕ := H.choose
+  letI f : MvPolynomial (Fin n) R →ₐ[R] S := H.choose_spec.choose
+  haveI hf : Function.Surjective f := H.choose_spec.choose_spec.1
+  haveI hf' : (RingHom.ker f).FG := H.choose_spec.choose_spec.2
+  letI H' := Submodule.fg_iff_exists_fin_generating_family.mp hf'
+  let m : ℕ := H'.choose
+  let v : Fin m → MvPolynomial (Fin n) R := H'.choose_spec.choose
+  let hv : Ideal.span (Set.range v) = RingHom.ker f := H'.choose_spec.choose_spec
+  { __ := Generators.ofSurjective (fun x ↦ f (.X x)) (by convert hf; ext; simp)
+    rels := Fin m
+    relation := v
+    span_range_relation_eq_ker := hv.trans (by congr; ext; simp) }
+
+instance [FinitePresentation R S] : (ofFinitePresentation R S).IsFinite where
+  finite_vars := Finite.of_fintype (Fin _)
+  finite_rels := Finite.of_fintype (Fin _)
 
 section Construction
 

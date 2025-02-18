@@ -87,9 +87,7 @@ section
 variable {R : Type max u v} [CommRing R] {D : Type v} [SmallCategory D]
 
 lemma hasColimitDiagram (I : D ⥤ Ideal R) (i : ℕ) :
-    HasColimit (diagram I i) := by
-  have : HasColimitsOfShape Dᵒᵖ (AddCommGrpMax.{u, v}) := inferInstance
-  infer_instance
+    HasColimit (diagram I i) := inferInstance
 
 /-
 In this definition we do not assume any special property of the diagram `I`, but the relevant case
@@ -199,7 +197,7 @@ valued in `SelfLERadical J`. -/
 def idealPowersToSelfLERadical (J : Ideal R) : ℕᵒᵖ ⥤ SelfLERadical J :=
   FullSubcategory.lift _ (idealPowersDiagram J) fun k => by
     change _ ≤ (J ^ unop k).radical
-    cases' unop k with n
+    rcases unop k with - | n
     · simp [Ideal.radical_top, pow_zero, Ideal.one_eq_top, le_top]
     · simp only [J.radical_pow n.succ_ne_zero, Ideal.le_radical]
 

@@ -325,7 +325,7 @@ If `α` might be empty, then `TopologicalSpace.exists_countable_dense` is the ma
 separability of `α`. -/
 theorem exists_dense_seq [SeparableSpace α] [Nonempty α] : ∃ u : ℕ → α, DenseRange u := by
   obtain ⟨s : Set α, hs, s_dense⟩ := exists_countable_dense α
-  cases' Set.countable_iff_exists_subset_range.mp hs with u hu
+  obtain ⟨u, hu⟩ := Set.countable_iff_exists_subset_range.mp hs
   exact ⟨u, s_dense.mono hu⟩
 
 /-- A dense sequence in a non-empty separable topological space.
@@ -526,14 +526,8 @@ theorem isSeparable_range [TopologicalSpace β] [SeparableSpace α] {f : α → 
 theorem IsSeparable.of_subtype (s : Set α) [SeparableSpace s] : IsSeparable s := by
   simpa using isSeparable_range (continuous_subtype_val (p := (· ∈ s)))
 
-@[deprecated (since := "2024-02-05")]
-alias isSeparable_of_separableSpace_subtype := IsSeparable.of_subtype
-
 theorem IsSeparable.of_separableSpace [h : SeparableSpace α] (s : Set α) : IsSeparable s :=
   IsSeparable.mono (isSeparable_univ_iff.2 h) (subset_univ _)
-
-@[deprecated (since := "2024-02-05")]
-alias isSeparable_of_separableSpace := IsSeparable.of_separableSpace
 
 end TopologicalSpace
 

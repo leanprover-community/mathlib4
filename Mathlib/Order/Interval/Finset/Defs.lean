@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Finset.Prod
 import Mathlib.Order.Interval.Set.Image
 import Mathlib.Order.Interval.Set.UnorderedInterval
 
@@ -670,7 +671,7 @@ variable [LocallyFiniteOrder α] (a b : α)
 `Finset αᵒᵈ`!) instead of `(Icc b a).map toDual.toEmbedding` as this means the
 following is defeq:
 ```
-lemma this : (Icc (toDual (toDual a)) (toDual (toDual b)) : _) = (Icc a b : _) := rfl
+lemma this : (Icc (toDual (toDual a)) (toDual (toDual b)) :) = (Icc a b :) := rfl
 ```
 -/
 instance OrderDual.instLocallyFiniteOrder : LocallyFiniteOrder αᵒᵈ where
@@ -728,7 +729,7 @@ variable [LocallyFiniteOrderTop α]
 /-- Note we define `Iic (toDual a)` as `Ici a` (which has type `Finset α` not `Finset αᵒᵈ`!)
 instead of `(Ici a).map toDual.toEmbedding` as this means the following is defeq:
 ```
-lemma this : (Iic (toDual (toDual a)) : _) = (Iic a : _) := rfl
+lemma this : (Iic (toDual (toDual a)) :) = (Iic a :) := rfl
 ```
 -/
 instance OrderDual.instLocallyFiniteOrderBot : LocallyFiniteOrderBot αᵒᵈ where
@@ -761,7 +762,7 @@ variable [LocallyFiniteOrderBot α]
 /-- Note we define `Ici (toDual a)` as `Iic a` (which has type `Finset α` not `Finset αᵒᵈ`!)
 instead of `(Iic a).map toDual.toEmbedding` as this means the following is defeq:
 ```
-lemma this : (Ici (toDual (toDual a)) : _) = (Ici a : _) := rfl
+lemma this : (Ici (toDual (toDual a)) :) = (Ici a :) := rfl
 ```
 -/
 instance OrderDual.instLocallyFiniteOrderTop : LocallyFiniteOrderTop αᵒᵈ where

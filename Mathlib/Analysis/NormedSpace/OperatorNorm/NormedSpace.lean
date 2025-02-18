@@ -49,7 +49,7 @@ that produces a concrete bound.
 -/
 theorem bound_of_ball_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[𝕜] Fₗ)
     (h : ∀ z ∈ Metric.ball (0 : E) r, ‖f z‖ ≤ c) : ∃ C, ∀ z : E, ‖f z‖ ≤ C * ‖z‖ := by
-  cases' @NontriviallyNormedField.non_trivial 𝕜 _ with k hk
+  obtain ⟨k, hk⟩ := @NontriviallyNormedField.non_trivial 𝕜 _
   use c * (‖k‖ / r)
   intro z
   refine bound_of_shell _ r_pos hk (fun x hko hxo => ?_) _
@@ -102,7 +102,6 @@ theorem opNorm_zero_iff [RingHomIsometric σ₁₂] : ‖f‖ = 0 ↔ f = 0 :=
       rintro rfl
       exact opNorm_zero)
 
-@[deprecated (since := "2024-02-02")] alias op_norm_zero_iff := opNorm_zero_iff
 
 /-- If a normed space is non-trivial, then the norm of the identity equals `1`. -/
 @[simp]
@@ -207,9 +206,6 @@ theorem opNorm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃ₛ
       simp
     haveI := g.symm.surjective.nontrivial
     simp [g.symm.toLinearIsometry.norm_toContinuousLinearMap]
-
-@[deprecated (since := "2024-02-02")]
-alias op_norm_comp_linearIsometryEquiv := opNorm_comp_linearIsometryEquiv
 
 @[simp]
 theorem norm_smulRightL (c : E →L[𝕜] 𝕜) [Nontrivial Fₗ] : ‖smulRightL 𝕜 E Fₗ c‖ = ‖c‖ :=
