@@ -145,60 +145,8 @@ noncomputable def BoundaryManifoldData.euclideanHalfSpace_self (n : ℕ) (k : �
   isImmersion x := sorry
   range_eq_boundary := sorry
 
--- TODO: this is the only interesting statement to prove below
--- XXX: is going the inverse direction (and proving it's a bijective embedding) easier?
--- @[fun_prop]
--- lemma Continuous.foo {X : Type*} [TopologicalSpace X] :
---     Continuous (fun p ↦ p.1.casesOn (Sum.inl p.2) (Sum.inr p.2) : Bool × X → X ⊕ X) := by
---   sorry
-
---def bar {X : Type*} [TopologicalSpace X] : X ⊕s
-lemma Continuous.bar {X : Type*} [TopologicalSpace X] :
-    Continuous (Sum.elim (fun x : X ↦ (true, x)) (fun x ↦ (false, x))) := by fun_prop
-
-lemma IsOpenEmbedding.baz {X : Type*} [TopologicalSpace X] :
-    Topology.IsOpenEmbedding (Sum.elim (fun x : X ↦ (true, x)) (fun x ↦ (false, x))) := by
-  -- continuity is easy
-  -- open map: should also be abstract nonsense
-  apply Topology.IsOpenEmbedding.of_continuous_injective_isOpenMap
-  · fun_prop
-  · sorry -- injective
-  · sorry -- open map: should follow from abstract nonsense
-
-def Homeomorph.sumEquivBoolProd (X : Type*) [TopologicalSpace X] : X ⊕ X ≃ₜ Bool × X := by
-  apply Homeomorph.homeomorphOfContinuousOpen (Equiv.boolProdEquivSum X).symm--(h₁)
-  · show Continuous (Sum.elim (Prod.mk false) (Prod.mk true))
-    fun_prop
-  · show Topology.IsOpenEmbedding (Sum.elim (Prod.mk false) (Prod.mk true))
-    sorry
-
-
-  -- toEquiv := Equiv.boolProdEquivSum X).symm
-  -- continuous_toFun := by fun_prop
-  -- continuous_invFun := by fun_prop
-
-#exit
-
-def Homeomorph.finTwo : Bool ≃ₜ Fin 2 where
-  toEquiv := finTwoEquiv.symm
-
-def Homeomorph.foo {X : Type*} [TopologicalSpace X] : X ⊕ X ≃ₜ X × Fin 2 :=
-  letI b := Homeomorph.finTwo.symm.prodCongr (Homeomorph.refl X)
-  ((Homeomorph.boolProdEquivSum X).symm.trans b.symm).trans (Homeomorph.prodComm _ _)
-
--- def Diffeomorph.foo : M ⊕ M ≃ₘ^k⟮I, I⟯ M × Fin 2 := sorry
-
-noncomputable def BoundaryManifoldData.Icc (n : ℕ) (k : ℕ∞) :
-    BoundaryManifoldData (Set.Icc (0 : ℝ) 1) (𝓡∂ 1) k (𝓡 0) where
-  M₀ := Fin 2
-  -- TODO: these are missing from mathlib
-  chartedSpace := sorry
-  isManifold := sorry
-  f x := if h : x = 0 then ⊥ else ⊤
-  isEmbedding := sorry -- should follow from the above topological lemmas!
-  contMDiff := sorry
-  isImmersion := sorry
-  range_eq_boundary := sorry
+-- Missing topology prerequisites
+section topology_prereqs
 
 open Set Topology Function
 
@@ -213,7 +161,7 @@ lemma isClosedEmbedding_iff_continuous_injective_isClosedMap {f : X → Y} :
 
 -- missing in Topology/Constructions/Sum.lean
 
--- is this true?
+-- is this true? if so, prove and add it (low priority)
 -- theorem IsClosedMap.sumMap {f : X → Y} {g : Z → W} (hf : IsClosedMap f) (hg : IsClosedMap g) :
 --     IsClosedMap (Sum.map f g) := by
 --   exact isClosedMap_sum.2 ⟨isClosedMap_inl.comp hf,isClosedMap_inr.comp hg⟩
@@ -246,6 +194,46 @@ lemma IsClosedEmbedding.sum_elim
   obtain ⟨hcont, hinj, hClosedEmb⟩ := hf
   obtain ⟨hcont', hinj', hClosedEmb'⟩ := hg
   exact ⟨by fun_prop, h, hClosedEmb.sum_elim hClosedEmb'⟩
+
+lemma IsClosedMap.prod_mk (c : Y ): IsClosedMap (Prod.mk c : X → _) := sorry
+
+
+end topology_prereqs
+
+variable {X Y Z W : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+  [TopologicalSpace Z] [TopologicalSpace W]
+
+def Homeomorph.sumEquivBoolProd (X : Type*) [TopologicalSpace X] : X ⊕ X ≃ₜ Bool × X := by
+  apply Homeomorph.homeomorphOfContinuousClosed (Equiv.boolProdEquivSum X).symm
+  · show Continuous (Sum.elim (Prod.mk false) (Prod.mk true))
+    fun_prop
+  · show IsClosedMap (Sum.elim (Prod.mk false) (Prod.mk true))
+    exact (IsClosedMap.prod_mk false).sum_elim (IsClosedMap.prod_mk true)
+
+def Homeomorph.finTwo : Bool ≃ₜ Fin 2 where
+  toEquiv := finTwoEquiv.symm
+
+def Homeomorph.foo {X : Type*} [TopologicalSpace X] : X ⊕ X ≃ₜ X × Fin 2 :=
+  letI b := Homeomorph.finTwo.symm.prodCongr (Homeomorph.refl X)
+  ((Homeomorph.sumEquivBoolProd X).trans b.symm).trans (Homeomorph.prodComm _ _)
+
+#exit
+
+-- def Diffeomorph.foo : M ⊕ M ≃ₘ^k⟮I, I⟯ M × Fin 2 := sorry
+
+noncomputable def BoundaryManifoldData.Icc (n : ℕ) (k : ℕ∞) :
+    BoundaryManifoldData (Set.Icc (0 : ℝ) 1) (𝓡∂ 1) k (𝓡 0) where
+  M₀ := Fin 2
+  -- TODO: these are missing from mathlib
+  chartedSpace := sorry
+  isManifold := sorry
+  f x := if h : x = 0 then ⊥ else ⊤
+  isEmbedding := sorry -- should follow from the above topological lemmas!
+  contMDiff := sorry
+  isImmersion := sorry
+  range_eq_boundary := sorry
+
+
 
 -- missing lemma: mfderiv of Prod.map (know it's smooth)
 -- mathlib has versions for Prod.mk, also with left and right constant
