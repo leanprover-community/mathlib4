@@ -117,8 +117,11 @@ theorem _root_.InitialSeg.isNormal (f : α ≤i β) : IsNormal f where
 theorem _root_.PrincipalSeg.isNormal (f : α <i β) : IsNormal f :=
   (f : α ≤i β).isNormal
 
+theorem _root_.OrderIso.isNormal (f : α ≃o β) : IsNormal f :=
+  f.toInitialSeg.isNormal
+
 protected theorem id : IsNormal (@id α) :=
-  (InitialSeg.refl _).isNormal
+  (OrderIso.refl _).isNormal
 
 theorem trans (hg : IsNormal g) (hf : IsNormal f) : IsNormal (g ∘ f) where
   strictMono := hg.strictMono.comp hf.strictMono
