@@ -227,10 +227,7 @@ theorem insertNth_ne_zero_of_right (h : s ≠ 0) : insertNth p y s ≠ 0 := by
   simp [← insertNth_apply_succAbove p y s a, c]
 
 theorem insertNth_ne_zero : insertNth p y s ≠ 0 ↔ y ≠ 0 ∨ s ≠ 0 := by
-  refine ⟨fun h => ?_,
-    fun h => h.casesOn (insertNth_ne_zero_of_left p) (insertNth_ne_zero_of_right p)⟩
-  refine imp_iff_not_or.1 fun h' c => h ?_
-  rw [h', c, Finsupp.insertNth_zero_zero]
+  simp [insertNth_eq_zero, -not_and, not_and_or]
 
 theorem snoc_support_subset :
     (s.snoc y).support ⊆ insert (.last n) (s.support.map Fin.castSuccEmb) := by
