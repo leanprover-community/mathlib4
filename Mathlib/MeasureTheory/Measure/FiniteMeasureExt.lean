@@ -52,10 +52,10 @@ theorem ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_count
     nth_rewrite 2 [← sqrt_zero]
     exact Continuous.tendsto continuous_sqrt 0
   have lim1 : Tendsto (fun ε => |∫ x, mulExpNegMulSq ε (f x) ∂P - ∫ x, mulExpNegMulSq ε (f x) ∂P'|)
-    (𝓝[>] 0) (𝓝 0) := by
+      (𝓝[>] 0) (𝓝 0) := by
     apply squeeze_zero' (eventually_nhdsWithin_of_forall (fun x _ => abs_nonneg _))
       (eventually_nhdsWithin_of_forall _) h0
-    exact (fun ε hε => dist_integral_mulExpNegMulSq_comp_le f hA_toReal hbound_toReal heq' hε)
+    exact fun ε hε => dist_integral_mulExpNegMulSq_comp_le f hA_toReal hbound_toReal heq' hε
   have lim2 : Tendsto (fun ε => |∫ x, mulExpNegMulSq ε (f x) ∂P
       - ∫ x, mulExpNegMulSq ε (f x) ∂P'|) (𝓝[>] 0)
       (𝓝 |∫ x, f x ∂↑P - ∫ x, f x ∂↑P'|) :=
