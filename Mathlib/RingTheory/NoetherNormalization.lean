@@ -237,10 +237,10 @@ from `k[X_0,...,X_(r-1)]` to `k[X_0,...,X_(n-1)]/I` if `I` is not top.-/
 theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) k))
     (hi : I ≠ ⊤) : ∃ s ≤ n, ∃ g : (MvPolynomial (Fin s) k) →ₐ[k] ((MvPolynomial (Fin n) k) ⧸ I),
     Function.Injective g ∧ g.IsIntegral := by
-  induction' n with d hd
-  · refine ⟨0, le_rfl, Quotient.mkₐ k I, ?_⟩
-    constructor
-    · intro a b hab
+  induction n with
+  | zero =>
+      refine ⟨0, le_rfl, Quotient.mkₐ k I, fun a b hab ↦ ?_,
+        isIntegral_of_surjective _ (Quotient.mkₐ_surjective k I)⟩
       rw [Quotient.mkₐ_eq_mk, Ideal.Quotient.eq] at hab
       by_contra neq
       have eq := eq_C_of_isEmpty (a - b)
@@ -249,27 +249,22 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
       have one : c • (a - b) = 1 := by
         rw [MvPolynomial.smul_eq_C_mul, eq, ← RingHom.map_mul, eqr, MvPolynomial.C_1]
       exact hi ((eq_top_iff_one I).mpr (one ▸ I.smul_of_tower_mem c hab))
-    · apply isIntegral_of_surjective _ (Quotient.mkₐ_surjective k I)
-  by_cases eqi : I = 0
-  · set q := Quotient.mkₐ k I
-    have bij : Function.Bijective q := by
-      unfold q
-      simp only [Quotient.mkₐ_eq_mk]
-      constructor
-      · intro a b hab
-        rw [Ideal.Quotient.eq, eqi, Submodule.zero_eq_bot, mem_bot] at hab
+  | succ d hd =>
+    by_cases eqi : I = 0
+    · have bij : Function.Bijective (Quotient.mkₐ k I) := by
+        refine ⟨fun a b hab ↦ ?_, Quotient.mk_surjective⟩
+        rw [Quotient.mkₐ_eq_mk, Ideal.Quotient.eq, eqi, Submodule.zero_eq_bot, mem_bot] at hab
         rw [← add_zero b, ← hab, add_sub_cancel]
-      · exact Quotient.mk_surjective
-    exact ⟨d + 1, le_rfl, q, bij.1, q.isIntegral_of_surjective bij.2⟩
-  · obtain ⟨f, fi, fne⟩ := Submodule.exists_mem_ne_zero_of_ne_bot eqi
-    set ϕ := kerLiftAlg <| hom2 f I
-    letI := Quotient.nontrivial hi
-    obtain ⟨s, _, g, injg, intg⟩ := hd (ker <| hom2 f I) (ker_ne_top <| hom2 f I)
-    have comp : (kerLiftAlg (hom2 f I)).comp (Quotient.mkₐ k <| ker <| hom2 f I) = (hom2 f I) :=
-      AlgHom.ext fun a ↦ by
-        simp only [AlgHom.coe_comp, Quotient.mkₐ_eq_mk, Function.comp_apply, kerLiftAlg_mk]
-    exact ⟨s, by linarith, ϕ.comp g, (ϕ.coe_comp  g) ▸ (kerLiftAlg_injective _).comp injg,
-      intg.trans _ _ <| (comp ▸ hom2_isIntegral f I fne fi).tower_top _ _⟩
+      exact ⟨d + 1, le_rfl, _, bij.1, isIntegral_of_surjective _ bij.2⟩
+    · obtain ⟨f, fi, fne⟩ := Submodule.exists_mem_ne_zero_of_ne_bot eqi
+      set ϕ := kerLiftAlg <| hom2 f I
+      have := Quotient.nontrivial hi
+      obtain ⟨s, _, g, injg, intg⟩ := hd (ker <| hom2 f I) (ker_ne_top <| hom2 f I)
+      have comp : (kerLiftAlg (hom2 f I)).comp (Quotient.mkₐ k <| ker <| hom2 f I) = (hom2 f I) :=
+        AlgHom.ext fun a ↦ by
+          simp only [AlgHom.coe_comp, Quotient.mkₐ_eq_mk, Function.comp_apply, kerLiftAlg_mk]
+      exact ⟨s, by linarith, ϕ.comp g, (ϕ.coe_comp  g) ▸ (kerLiftAlg_injective _).comp injg,
+        intg.trans _ _ <| (comp ▸ hom2_isIntegral f I fne fi).tower_top _ _⟩
 
 variable (k R : Type*) [Field k] [CommRing R] [Nontrivial R] [a : Algebra k R]
   [fin : Algebra.FiniteType k R]
