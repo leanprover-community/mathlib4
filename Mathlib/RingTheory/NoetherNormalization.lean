@@ -247,7 +247,8 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
       exact hi ((eq_top_iff_one I).mpr (one ▸ I.smul_of_tower_mem c hab))
   | succ d hd =>
     by_cases eqi : I = 0
-    · have bij : Function.Bijective (Quotient.mkₐ k I) := (Quotient.mk_bij_iff_eq_zero I).mpr eqi
+    · have bij : Function.Bijective (Quotient.mkₐ k I) :=
+        (Quotient.mk_bijective_iff_eq_bot I).mpr eqi
       exact ⟨d + 1, le_rfl, _, bij.1, isIntegral_of_surjective _ bij.2⟩
     · obtain ⟨f, fi, fne⟩ := Submodule.exists_mem_ne_zero_of_ne_bot eqi
       set ϕ := kerLiftAlg <| hom2 f I
