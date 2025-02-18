@@ -93,13 +93,17 @@ lemma integrable_compProd_snd_iff (hf : AEStronglyMeasurable f (κ ∘ₘ μ)) :
   · rfl
   · rwa [← this]
 
-lemma todo_of_integrable_comp (h_int : Integrable f (κ ∘ₘ μ)) :
-    (∀ᵐ x ∂μ, Integrable f (κ x)) ∧ Integrable (fun x ↦ ∫ y, ‖f y‖ ∂κ x) μ := by
-  rwa [← Measure.integrable_compProd_snd_iff h_int.1, Measure.integrable_compProd_iff h_int.1]
-    at h_int
-
 lemma ae_integrable_of_integrable_comp (h_int : Integrable f (κ ∘ₘ μ)) :
-    ∀ᵐ x ∂μ, Integrable f (κ x) := (todo_of_integrable_comp h_int).1
+    ∀ᵐ x ∂μ, Integrable f (κ x) := by
+  rw [← Measure.integrable_compProd_snd_iff h_int.1, Measure.integrable_compProd_iff h_int.1]
+    at h_int
+  exact h_int.1
+
+lemma integrable_integral_norm_of_integrable_comp (h_int : Integrable f (κ ∘ₘ μ)) :
+    Integrable (fun x ↦ ∫ y, ‖f y‖ ∂κ x) μ := by
+  rw [← Measure.integrable_compProd_snd_iff h_int.1, Measure.integrable_compProd_iff h_int.1]
+    at h_int
+  exact h_int.2
 
 end Integrable
 
