@@ -74,6 +74,7 @@ noncomputable def adjunction :
       homEquiv_naturality_left_symm := by
         intros
         dsimp [Functor.FullyFaithful.homEquiv]
+        -- these erw seem difficult to remove
         erw [Adjunction.homEquiv_naturality_left_symm,
           Adjunction.homEquiv_naturality_left_symm]
         dsimp
@@ -81,6 +82,7 @@ noncomputable def adjunction :
       homEquiv_naturality_right := by
         intros
         dsimp
+        -- these erw seem difficult to remove
         erw [Adjunction.homEquiv_naturality_right, Adjunction.homEquiv_naturality_right]
         dsimp
         rfl }
