@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Bases
@@ -53,7 +52,7 @@ basis, bases
 
 -/
 
-assert_not_exists LinearMap.pi LinearIndependent Cardinal
+assert_not_exists LinearMap.pi LinearIndependent Cardinal Submodule.restrictScalars
 
 noncomputable section
 
@@ -88,9 +87,6 @@ structure Basis where
     repr : M ≃ₗ[R] ι →₀ R
 
 end
-
-instance uniqueBasis [Subsingleton R] : Unique (Basis ι R M) :=
-  ⟨⟨⟨default⟩⟩, fun ⟨b⟩ => by rw [Subsingleton.elim b]⟩
 
 namespace Basis
 
@@ -525,14 +521,6 @@ theorem index_nonempty (b : Basis ι R M) [Nontrivial M] : Nonempty ι := by
   obtain ⟨i, _⟩ := not_forall.mp (mt b.ext_elem_iff.2 ne)
   exact ⟨i⟩
 
-/-- If the submodule `P` has a basis, `x ∈ P` iff it is a linear combination of basis vectors. -/
-theorem mem_submodule_iff {P : Submodule R M} (b : Basis ι R P) {x : M} :
-    x ∈ P ↔ ∃ c : ι →₀ R, x = Finsupp.sum c fun i x => x • (b i : M) := by
-  conv_lhs =>
-    rw [← P.range_subtype, ← Submodule.map_top, ← b.span_eq, Submodule.map_span, ← Set.range_comp,
-        ← Finsupp.range_linearCombination]
-  simp [@eq_comm _ x, Function.comp, Finsupp.linearCombination_apply]
-
 section Constr
 
 variable (S : Type*) [Semiring S] [Module S M']
@@ -764,14 +752,6 @@ variable [SMulCommClass R S M']
 theorem Basis.constr_apply_fintype [Fintype ι] (b : Basis ι R M) (f : ι → M') (x : M) :
     (constr (M' := M') b S f : M → M') x = ∑ i, b.equivFun x i • f i := by
   simp [b.constr_apply, b.equivFun_apply, Finsupp.sum_fintype]
-
-/-- If the submodule `P` has a finite basis,
-`x ∈ P` iff it is a linear combination of basis vectors. -/
-theorem Basis.mem_submodule_iff' [Fintype ι] {P : Submodule R M} (b : Basis ι R P) {x : M} :
-    x ∈ P ↔ ∃ c : ι → R, x = ∑ i, c i • (b i : M) :=
-  b.mem_submodule_iff.trans <|
-    Finsupp.equivFunOnFinite.exists_congr_left.trans <|
-      exists_congr fun c => by simp [Finsupp.sum_fintype, Finsupp.equivFunOnFinite]
 
 theorem Basis.coord_equivFun_symm [Finite ι] (b : Basis ι R M) (i : ι) (f : ι → R) :
     b.coord i (b.equivFun.symm f) = f i :=
