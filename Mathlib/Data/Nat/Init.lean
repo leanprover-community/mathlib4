@@ -39,16 +39,16 @@ finsets, powers in groups, ...).
 Less basic uses of `ℕ` and `ℤ` should however use the typeclass-mediated development.
 
 The relevant files are:
-* `Data.Nat.Init` for the continuation of the home-baked development on `ℕ`
-* `Data.Int.Defs` for the continuation of the home-baked development on `ℤ`
-* `Algebra.Group.Nat` for the monoid instances on `ℕ`
-* `Algebra.Group.Int` for the group instance on `ℤ`
-* `Algebra.Ring.Nat` for the semiring instance on `ℕ`
-* `Algebra.Ring.Int` for the ring instance on `ℤ`
-* `Algebra.Order.Group.Nat` for the ordered monoid instance on `ℕ`
-* `Algebra.Order.Group.Int` for the ordered group instance on `ℤ`
-* `Algebra.Order.Ring.Nat` for the ordered semiring instance on `ℕ`
-* `Algebra.Order.Ring.Int` for the ordered ring instance on `ℤ`
+* `Mathlib.Data.Nat.Init` for the continuation of the home-baked development on `ℕ`
+* `Mathlib.Data.Int.Defs` for the continuation of the home-baked development on `ℤ`
+* `Mathlib.Algebra.Group.Nat` for the monoid instances on `ℕ`
+* `Mathlib.Algebra.Group.Int` for the group instance on `ℤ`
+* `Mathlib.Algebra.Ring.Nat` for the semiring instance on `ℕ`
+* `Mathlib.Algebra.Ring.Int` for the ring instance on `ℤ`
+* `Mathlib.Algebra.Order.Group.Nat` for the ordered monoid instance on `ℕ`
+* `Mathlib.Algebra.Order.Group.Int` for the ordered group instance on `ℤ`
+* `Mathlib.Algebra.Order.Ring.Nat` for the ordered semiring instance on `ℕ`
+* `Mathlib.Algebra.Order.Ring.Int` for the ordered ring instance on `ℤ`
 -/
 
 /- We don't want to import the algebraic hierarchy in this file. -/
@@ -150,8 +150,7 @@ lemma forall_lt_succ : (∀ m < n + 1, p m) ↔ (∀ m < n, p m) ∧ p n := by
 lemma exists_lt_succ : (∃ m < n + 1, p m) ↔ (∃ m < n, p m) ∨ p n := by
   classical
   rw [← Decidable.not_iff_not]
-  simp [not_exists, not_or]
-  exact forall_lt_succ
+  simpa [not_exists, not_or] using forall_lt_succ
 
 lemma two_lt_of_ne : ∀ {n}, n ≠ 0 → n ≠ 1 → n ≠ 2 → 2 < n
   | 0, h, _, _ => (h rfl).elim
@@ -984,9 +983,9 @@ lemma dvd_sub_mod (k : ℕ) : n ∣ k - k % n :=
 
 lemma add_mod_eq_ite :
     (m + n) % k = if k ≤ m % k + n % k then m % k + n % k - k else m % k + n % k := by
-  cases k
-  · simp
-  case succ k =>
+  cases k with
+  | zero => simp
+  | succ k =>
     rw [Nat.add_mod]
     by_cases h : k + 1 ≤ m % (k + 1) + n % (k + 1)
     · rw [if_pos h, Nat.mod_eq_sub_mod h, Nat.mod_eq_of_lt]
