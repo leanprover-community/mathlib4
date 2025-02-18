@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Analysis.Normed.Module.ConvexTopological
 import Mathlib.Data.Bundle
 import Mathlib.Geometry.Manifold.ChartedSpace
-import Mathlib.Analysis.Normed.Module.ConvexTopological
 
 /-!
 # `C^n` manifolds (possibly with boundary or corners)
