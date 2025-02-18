@@ -67,7 +67,7 @@ messages = (public_response['messages']) + (reviewers_response['messages']) + (f
 print(messages)
 # we use the ID of the first message in the `PR reviews` channel to react to it
 # whether or not it has the PR number in the content.
-first_message_in_PR_reviews_id=messages[0]['id']
+first_message_in_PR_reviews_id=first_message_in_PR_reviews['messages'][0]['id']
 print(f'First message ID: {first_message_in_PR_reviews_id}')
 
 pr_pattern = re.compile(f'https://github.com/leanprover-community/mathlib4/pull/{PR_NUMBER}')
