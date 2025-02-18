@@ -180,14 +180,14 @@ lemma sup_edge_of_adj (h : G.Adj s t) : G ⊔ edge s t = G := by
   rwa [sup_eq_left, ← edgeSet_subset_edgeSet, edge_edgeSet_of_ne h.ne, Set.singleton_subset_iff,
     mem_edgeSet]
 
-lemma disjoint_edge {u v : V} (h : u ≠ v) : Disjoint G (edge u v) ↔ ¬G.Adj u v := by
+lemma disjoint_edge {u v : V} : Disjoint G (edge u v) ↔ ¬G.Adj u v := by
+  by_cases h : u = v
+  · subst h
+    simp [edge_self_eq_bot]
   simp [← disjoint_edgeSet, edge_edgeSet_of_ne h]
 
 lemma sdiff_edge {u v : V} (h : ¬G.Adj u v) : G \ edge u v = G := by
-  by_cases huv : u = v
-  · subst huv
-    simp [edge_self_eq_bot]
-  · simp [disjoint_edge _ huv, h]
+  simp [disjoint_edge, h]
 
 theorem Subgraph.spanningCoe_sup_edge_le {H : Subgraph (G ⊔ edge s t)} (h : ¬ H.Adj s t) :
     H.spanningCoe ≤ G := by
