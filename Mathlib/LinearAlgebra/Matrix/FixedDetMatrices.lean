@@ -91,7 +91,8 @@ def reduce_rec {C : Δ m → Sort*}
     zify
     exact reduce_aux h
 
-/-- Map from `Δ m → Δ m` which reduces a `FixedDetMatrix` towards a representative element in reps -/
+/-- Map from `Δ m → Δ m` which reduces a `FixedDetMatrix` towards a representative element
+in reps -/
 def reduce : Δ m → Δ m := fun A ↦
   if (A.1 1 0) = 0 then
     if 0 < A.1 0 0 then (T ^ (-(A.1 0 1 / A.1 1 1))) • A else
