@@ -154,7 +154,7 @@ end FormalMultilinearSeries
 end
 
 namespace FormalMultilinearSeries
-variable [CommRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
+variable [Ring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
   [ContinuousConstSMul 𝕜 E] [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
   [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
 
