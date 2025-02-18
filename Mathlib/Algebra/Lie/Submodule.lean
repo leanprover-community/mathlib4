@@ -1503,3 +1503,5 @@ theorem LieIdeal.topEquiv_apply (x : (⊤ : LieIdeal R L)) : LieIdeal.topEquiv x
   rfl
 
 end TopEquiv
+
+set_option linter.style.longFile 1700
