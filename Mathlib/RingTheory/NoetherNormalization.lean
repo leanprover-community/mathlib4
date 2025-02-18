@@ -60,8 +60,8 @@ variable {f v} in
 private lemma lt_up (vlt : ∀ i, v i < up) : ∀ l ∈ ofFn v, l < up := by
   intro l h
   rw [mem_ofFn, Set.mem_range] at h
-  obtain ⟨y, hy⟩ := h
-  exact hy ▸ vlt y
+  obtain ⟨y, rfl⟩ := h
+  exact vlt y
 
 /-- `r` maps `(i : Fin (n + 1))` to `up ^ i`-/
 local notation3 "r" => fun (i : Fin (n + 1)) ↦ up ^ i.1
