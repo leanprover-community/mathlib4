@@ -244,7 +244,7 @@ theorem siftedSum_le_mainSum_errSum_of_upperMoebius (muPlus : ℕ → ℝ) (h : 
 end Lemmas
 
 section LambdaSquared
-/-
+/--
   We consider a special class of upper bound sieves called the Λ² sieve. This class is parameterised
   by a sequence of real numbers. We will later choose a set of weights that minimises the main term,
   under a constraint that lets us control the error term.
@@ -333,14 +333,14 @@ section SelbergTerms
 
 variable [s : SelbergSieve]
 
-/--
-These are the terms that appear in the sum `S` in the main term of the fundamental theorem.
+/-- These are the terms that appear in the sum `S` in the main term of the fundamental theorem.
 
 $S = ∑_{l|P, l≤\sqrt{y}} g(l)$
 -/
 def selbergTerms : ArithmeticFunction ℝ :=
   nu.pmul (.prodPrimeFactors fun p =>  1 / (1 - ν p))
 
+@[inherit_doc selbergTerms]
 scoped [SelbergSieve.Notation] notation3 "g" => selbergTerms
 
 theorem selbergTerms_apply (d : ℕ) :
