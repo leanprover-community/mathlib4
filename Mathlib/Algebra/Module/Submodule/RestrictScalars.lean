@@ -55,7 +55,7 @@ variable (R M)
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars S : Submodule R M → Submodule S M) := fun _ _ h =>
-  ext <| Set.ext_iff.1 (SetLike.ext'_iff.1 h : _)
+  ext <| Set.ext_iff.1 (SetLike.ext'_iff.1 h :)
 
 @[simp]
 theorem restrictScalars_inj {V₁ V₂ : Submodule R M} :
@@ -106,6 +106,6 @@ we can turn an `R`-submodule into an `S`-submodule by forgetting the action of `
 def restrictScalarsLatticeHom : CompleteLatticeHom (Submodule R M) (Submodule S M) where
   toFun := restrictScalars S
   map_sInf' s := by ext; simp
-  map_sSup' s := by rw [← toAddSubmonoid_eq, toAddSubmonoid_sSup, ← Set.image_comp]; simp
+  map_sSup' s := by rw [← toAddSubmonoid_inj, toAddSubmonoid_sSup, ← Set.image_comp]; simp
 
 end Submodule

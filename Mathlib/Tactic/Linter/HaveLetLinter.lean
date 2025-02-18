@@ -49,10 +49,9 @@ register_option linter.haveLet : Nat := {
 namespace haveLet
 
 /-- find the `have` syntax. -/
-partial
 def isHave? : Syntax → Bool
   | .node _ ``Lean.Parser.Tactic.tacticHave_ _ => true
-  |_ => false
+  | _ => false
 
 end haveLet
 

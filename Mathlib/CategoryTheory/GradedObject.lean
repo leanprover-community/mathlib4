@@ -3,10 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
-import Mathlib.Algebra.Group.Int
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # The category of graded objects
@@ -216,11 +216,8 @@ theorem shiftFunctor_map_apply {β : Type*} [AddCommGroup β] (s : β)
 instance [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) :
   Zero (X ⟶ Y) := ⟨fun _ => 0⟩
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/4481
-the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
--/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/4481
+the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`. -/
 @[simp, nolint simpNF]
 theorem zero_apply [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) (b : β) :
     (0 : X ⟶ Y) b = 0 :=
@@ -283,10 +280,10 @@ namespace GradedObject
 noncomputable section
 
 variable (β : Type)
-variable (C : Type (u + 1)) [LargeCategory C] [ConcreteCategory C] [HasCoproducts.{0} C]
+variable (C : Type (u + 1)) [LargeCategory C] [HasForget C] [HasCoproducts.{0} C]
   [HasZeroMorphisms C]
 
-instance : ConcreteCategory (GradedObject β C) where forget := total β C ⋙ forget C
+instance : HasForget (GradedObject β C) where forget := total β C ⋙ forget C
 
 instance : HasForget₂ (GradedObject β C) C where forget₂ := total β C
 
