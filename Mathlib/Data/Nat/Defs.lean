@@ -612,7 +612,7 @@ lemma le_self_pow (hn : n ≠ 0) : ∀ a : ℕ, a ≤ a ^ n
   | 0 => zero_le _
   | a + 1 => by simpa using Nat.pow_le_pow_right a.succ_pos (Nat.one_le_iff_ne_zero.2 hn)
 
-lemma one_le_pow (n m : ℕ) (h : 0 < m) : 1 ≤ m ^ n := by simpa using Nat.pow_le_pow_of_le_left h n
+lemma one_le_pow (n m : ℕ) (h : 0 < m) : 1 ≤ m ^ n := by simpa using Nat.pow_le_pow_left h n
 
 lemma one_le_pow' (n m : ℕ) : 1 ≤ (m + 1) ^ n := one_le_pow n (m + 1) (succ_pos m)
 
@@ -648,7 +648,7 @@ protected lemma div_pow (h : a ∣ b) : (b / a) ^ c = b ^ c / a ^ c := by
   · simp
   obtain rfl | ha := a.eq_zero_or_pos
   · simp [Nat.zero_pow hc]
-  refine (Nat.div_eq_of_eq_mul_right (pos_pow_of_pos c ha) ?_).symm
+  refine (Nat.div_eq_of_eq_mul_right (Nat.pow_pos ha) ?_).symm
   rw [← Nat.mul_pow, Nat.mul_div_cancel_left' h]
 
 protected lemma pow_pos_iff : 0 < a ^ n ↔ 0 < a ∨ n = 0 := by
