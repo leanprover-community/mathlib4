@@ -90,7 +90,7 @@ section
 
 variable [F.LaxMonoidal]
 
-/-- the unit morphism of a lax monoidal functor-/
+/-- the unit morphism of a lax monoidal functor -/
 def ε : 𝟙_ D ⟶ F.obj (𝟙_ C) := ε'
 
 /-- the tensorator of a lax monoidal functor -/
@@ -273,7 +273,7 @@ section
 
 variable [F.OplaxMonoidal]
 
-/-- the counit morphism of a lax monoidal functor-/
+/-- the counit morphism of a lax monoidal functor -/
 def η : F.obj (𝟙_ C) ⟶ 𝟙_ D := η'
 
 /-- the cotensorator of an oplax monoidal functor -/

@@ -124,7 +124,7 @@ variable (N P : Type*) [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R 
 variable {ι : Type*}
 
 /-- The trace of a linear map correspond to the contraction pairing under the isomorphism
- `End(M) ≃ M* ⊗ M`-/
+ `End(M) ≃ M* ⊗ M` -/
 theorem trace_eq_contract_of_basis [Finite ι] (b : Basis ι R M) :
     LinearMap.trace R M ∘ₗ dualTensorHom R M M = contractLeft R M := by
   classical
@@ -140,7 +140,7 @@ theorem trace_eq_contract_of_basis [Finite ι] (b : Basis ι R M) :
     simp [Finsupp.single_eq_pi_single, hij]
 
 /-- The trace of a linear map correspond to the contraction pairing under the isomorphism
- `End(M) ≃ M* ⊗ M`-/
+ `End(M) ≃ M* ⊗ M` -/
 theorem trace_eq_contract_of_basis' [Fintype ι] [DecidableEq ι] (b : Basis ι R M) :
     LinearMap.trace R M = contractLeft R M ∘ₗ (dualTensorHomEquivOfBasis b).symm.toLinearMap := by
   simp [LinearEquiv.eq_comp_toLinearMap_symm, trace_eq_contract_of_basis b]
@@ -150,7 +150,7 @@ variable (R M)
 variable [Module.Free R M] [Module.Finite R M] [Module.Free R N] [Module.Finite R N]
 
 /-- When `M` is finite free, the trace of a linear map correspond to the contraction pairing under
-the isomorphism `End(M) ≃ M* ⊗ M`-/
+the isomorphism `End(M) ≃ M* ⊗ M` -/
 @[simp]
 theorem trace_eq_contract : LinearMap.trace R M ∘ₗ dualTensorHom R M M = contractLeft R M :=
   trace_eq_contract_of_basis (Module.Free.chooseBasis R M)
@@ -161,7 +161,7 @@ theorem trace_eq_contract_apply (x : Module.Dual R M ⊗[R] M) :
   rw [← comp_apply, trace_eq_contract]
 
 /-- When `M` is finite free, the trace of a linear map correspond to the contraction pairing under
-the isomorphism `End(M) ≃ M* ⊗ M`-/
+the isomorphism `End(M) ≃ M* ⊗ M` -/
 theorem trace_eq_contract' :
     LinearMap.trace R M = contractLeft R M ∘ₗ (dualTensorHomEquiv R M M).symm.toLinearMap :=
   trace_eq_contract_of_basis' (Module.Free.chooseBasis R M)

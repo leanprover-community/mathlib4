@@ -126,7 +126,7 @@ def tail (s : Seq α) : Seq α :=
     cases' s with f al
     exact al n'⟩
 
-/-- member definition for `Seq`-/
+/-- member definition for `Seq` -/
 protected def Mem (s : Seq α) (a : α) :=
   some a ∈ s.1
 
@@ -310,7 +310,7 @@ variable (R : Seq α → Seq α → Prop)
 
 local infixl:50 " ~ " => R
 
-/-- Bisimilarity relation over `Option` of `Seq1 α`-/
+/-- Bisimilarity relation over `Option` of `Seq1 α` -/
 def BisimO : Option (Seq1 α) → Option (Seq1 α) → Prop
   | none, none => True
   | some (a, s), some (a', s') => a = a' ∧ R s s'

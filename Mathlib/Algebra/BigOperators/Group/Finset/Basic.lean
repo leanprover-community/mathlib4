@@ -1465,7 +1465,7 @@ lemma prod_filter_of_pairwise_eq_one [CommMonoid β] {f : ι → α} {g : α →
 
 /-- A version of `Finset.prod_map` and `Finset.prod_image`, but we do not assume that `f` is
 injective. Rather, we assume that the image of `f` on `I` only overlaps where `g (f i) = 1`.
-The conclusion is the same as in `prod_image`.-/
+The conclusion is the same as in `prod_image`. -/
 @[to_additive (attr := simp)
 "A version of `Finset.sum_map` and `Finset.sum_image`, but we do not assume that `f` is
 injective. Rather, we assume that the image of `f` on `I` only overlaps where `g (f i) = 0`.
@@ -1478,7 +1478,7 @@ lemma prod_image_of_pairwise_eq_one [CommMonoid β] {f : ι → α} {g : α → 
 
 /-- A version of `Finset.prod_map` and `Finset.prod_image`, but we do not assume that `f` is
 injective. Rather, we assume that the images of `f` are disjoint on `I`, and `g ⊥ = 1`. The
-conclusion is the same as in `prod_image`.-/
+conclusion is the same as in `prod_image`. -/
 @[to_additive (attr := simp)
 "A version of `Finset.sum_map` and `Finset.sum_image`, but we do not assume that `f` is
 injective. Rather, we assume that the images of `f` are disjoint on `I`, and `g ⊥ = 0`. The

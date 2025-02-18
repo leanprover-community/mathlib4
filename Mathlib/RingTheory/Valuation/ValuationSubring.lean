@@ -473,7 +473,7 @@ end UnitGroup
 
 section nonunits
 
-/-- The nonunits of a valuation subring of `K`, as a subsemigroup of `K`-/
+/-- The nonunits of a valuation subring of `K`, as a subsemigroup of `K` -/
 def nonunits : Subsemigroup K where
   carrier := {x | A.valuation x < 1}
   -- Porting note: added `Set.mem_setOf.mp`
