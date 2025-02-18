@@ -20,9 +20,19 @@ It has been separated out to not burden `Data.Set.Card` with extra imports.
 - `exists_union_disjoint_cardinal_eq_iff` is the same, except using cardinal notation.
 -/
 
-variable {α : Type*} {s : Set α}
+variable {α : Type*}
+
+open scoped Finset
+
+theorem Finset.exists_disjoint_union_of_even_card [DecidableEq α] {s : Finset α} (he : Even #s) :
+    ∃ (t u : Finset α), t ∪ u = s ∧ Disjoint t u ∧ #t = #u :=
+  let ⟨n, hn⟩ := he
+  let ⟨t, ht, ht'⟩ := exists_subset_card_eq (show n ≤ #s by omega)
+  ⟨t, s \ t, by simp [card_sdiff, disjoint_sdiff, *]⟩
 
 namespace Set
+
+variable {s : Set α}
 
 open Cardinal
 
