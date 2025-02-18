@@ -266,6 +266,10 @@ def psumEquivSum (α β) : α ⊕' β ≃ α ⊕ β where
 def sumCongr {α₁ α₂ β₁ β₂} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) : α₁ ⊕ β₁ ≃ α₂ ⊕ β₂ :=
   ⟨Sum.map ea eb, Sum.map ea.symm eb.symm, fun x => by simp, fun x => by simp⟩
 
+@[simp]
+lemma sumCongr_symm_symm {α₁ α₂ β₁ β₂} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
+  sumCongr ea.symm eb.symm = (sumCongr ea eb).symm := rfl
+
 /-- If `α ≃ α'` and `β ≃ β'`, then `α ⊕' β ≃ α' ⊕' β'`. -/
 def psumCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : α ⊕' γ ≃ β ⊕' δ where
   toFun x := PSum.casesOn x (PSum.inl ∘ e₁) (PSum.inr ∘ e₂)

@@ -524,6 +524,10 @@ def sumCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X ⊕ Y ≃ₜ X' ⊕ Y
   continuous_invFun := h₁.symm.continuous.sum_map h₂.symm.continuous
   toEquiv := h₁.toEquiv.sumCongr h₂.toEquiv
 
+@[simp]
+lemma sumCongr_symm_symm (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') :
+  sumCongr h₁.symm h₂.symm = (sumCongr h₁ h₂).symm := rfl
+
 /-- Product of two homeomorphisms. -/
 def prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X × Y ≃ₜ X' × Y' where
   toEquiv := h₁.toEquiv.prodCongr h₂.toEquiv
