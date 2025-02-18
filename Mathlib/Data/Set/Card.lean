@@ -1066,8 +1066,7 @@ open Cardinal
 theorem exists_union_disjoint_cardinal_eq_of_infinite (h : s.Infinite) : ∃ (t u : Set α),
     t ∪ u = s ∧ Disjoint t u ∧ #t = #u := by
   have := h.to_subtype
-  have f : s ≃ s ⊕ s := by
-    apply Classical.choice
+  obtain ⟨f⟩ : Nonempty (s ≃ s ⊕ s) := by
     rw [← Cardinal.eq, ← add_def, add_mk_eq_self]
   refine ⟨Subtype.val '' (f ⁻¹' (range .inl)), Subtype.val '' (f ⁻¹' (range .inr)), ?_, ?_, ?_⟩
   · simp [← image_union, ← preimage_union]
