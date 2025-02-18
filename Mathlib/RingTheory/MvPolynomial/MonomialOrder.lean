@@ -129,23 +129,16 @@ theorem Monic.coeff_degree {f : MvPolynomial σ R} (hf : m.Monic f) : f.coeff (m
 theorem degree_zero : m.degree (0 : MvPolynomial σ R) = 0 := by
   simp [degree]
 
-/- @[simp, nontriviality]
+@[simp, nontriviality]
 theorem degree_subsingleton [Subsingleton R] {f : MvPolynomial σ R} :
     m.degree f = 0 := by
   rw [Subsingleton.eq_zero f, degree_zero]
--/
 
 @[simp]
 theorem leadingCoeff_zero : m.leadingCoeff (0 : MvPolynomial σ R) = 0 := by
   simp [degree, leadingCoeff]
 
 @[deprecated (since := "2025-01-31")] alias lCoeff_zero := leadingCoeff_zero
-
-/- @[simp, nontriviality]
-theorem leadingCoeff_subsingleton [Subsingleton R] {f : MvPolynomial σ R} :
-    m.leadingCoeff f = 0 := by
-  rw [Subsingleton.eq_zero f, leadingCoeff_zero]
-  -/
 
 theorem Monic.ne_zero [Nontrivial R] {f : MvPolynomial σ R} (hf : m.Monic f) :
     f ≠ 0 := by
