@@ -97,7 +97,7 @@ lemma IsMatching.not_adj_left_of_ne {M : Subgraph G} {u v w : V} (hM : M.IsMatch
   exact huv (hx.2 _ hadj ▸ (hx.2 _ hadj').symm)
 
 lemma IsMatching.not_adj_rigth_of_ne {M : Subgraph G} {u v w : V} (hM : M.IsMatching) (huw : u ≠ w)
-    (hadj : M.Adj u v) : ¬M.Adj w v  := 
+    (hadj : M.Adj u v) : ¬M.Adj w v  :=
   fun hadj' ↦ hM.not_adj_left_of_ne huw hadj.symm hadj'.symm
 
 lemma IsMatching.sup (hM : M.IsMatching) (hM' : M'.IsMatching)
