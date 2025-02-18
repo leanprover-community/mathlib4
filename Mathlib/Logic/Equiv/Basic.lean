@@ -270,23 +270,6 @@ def sumCongr {α₁ α₂ β₁ β₂} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β
 lemma sumCongr_symm_symm {α₁ α₂ β₁ β₂} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
   sumCongr ea.symm eb.symm = (sumCongr ea eb).symm := rfl
 
-/-- If `α ≃ α'` and `β ≃ β'`, then `α ⊕' β ≃ α' ⊕' β'`. -/
-def psumCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : α ⊕' γ ≃ β ⊕' δ where
-  toFun x := PSum.casesOn x (PSum.inl ∘ e₁) (PSum.inr ∘ e₂)
-  invFun x := PSum.casesOn x (PSum.inl ∘ e₁.symm) (PSum.inr ∘ e₂.symm)
-  left_inv := by rintro (x | x) <;> simp
-  right_inv := by rintro (x | x) <;> simp
-
-/-- Combine two `Equiv`s using `PSum` in the domain and `Sum` in the codomain. -/
-def psumSum {α₂ β₂} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
-    α₁ ⊕' β₁ ≃ α₂ ⊕ β₂ :=
-  (ea.psumCongr eb).trans (psumEquivSum _ _)
-
-/-- Combine two `Equiv`s using `Sum` in the domain and `PSum` in the codomain. -/
-def sumPSum {α₁ β₁} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
-    α₁ ⊕ β₁ ≃ α₂ ⊕' β₂ :=
-  (ea.symm.psumSum eb.symm).symm
-
 @[simp]
 theorem sumCongr_trans {α₁ α₂ β₁ β₂ γ₁ γ₂} (e : α₁ ≃ β₁) (f : α₂ ≃ β₂) (g : β₁ ≃ γ₁) (h : β₂ ≃ γ₂) :
     (Equiv.sumCongr e f).trans (Equiv.sumCongr g h) = Equiv.sumCongr (e.trans g) (f.trans h) := by
@@ -303,6 +286,23 @@ theorem sumCongr_refl {α β} :
     Equiv.sumCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (α ⊕ β) := by
   ext i
   cases i <;> rfl
+
+/-- If `α ≃ α'` and `β ≃ β'`, then `α ⊕' β ≃ α' ⊕' β'`. -/
+def psumCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : α ⊕' γ ≃ β ⊕' δ where
+  toFun x := PSum.casesOn x (PSum.inl ∘ e₁) (PSum.inr ∘ e₂)
+  invFun x := PSum.casesOn x (PSum.inl ∘ e₁.symm) (PSum.inr ∘ e₂.symm)
+  left_inv := by rintro (x | x) <;> simp
+  right_inv := by rintro (x | x) <;> simp
+
+/-- Combine two `Equiv`s using `PSum` in the domain and `Sum` in the codomain. -/
+def psumSum {α₂ β₂} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
+    α₁ ⊕' β₁ ≃ α₂ ⊕ β₂ :=
+  (ea.psumCongr eb).trans (psumEquivSum _ _)
+
+/-- Combine two `Equiv`s using `Sum` in the domain and `PSum` in the codomain. -/
+def sumPSum {α₁ β₁} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
+    α₁ ⊕ β₁ ≃ α₂ ⊕' β₂ :=
+  (ea.symm.psumSum eb.symm).symm
 
 /-- A subtype of a sum is equivalent to a sum of subtypes. -/
 def subtypeSum {α β} {p : α ⊕ β → Prop} :
