@@ -206,6 +206,24 @@ namespace OrderIso
 
 variable [Preorder α] [Preorder β]
 
+/-- Makes a Galois connection from an order-preserving bijection. -/
+lemma to_galoisConnection (e : α ≃o β) : GaloisConnection e e.symm :=
+  fun _ _ => e.rel_symm_apply.symm
+
+/-- Makes a Galois insertion from an order-preserving bijection. -/
+protected def toGaloisInsertion (e : α ≃o β) : GaloisInsertion e e.symm where
+  choice b _ := e b
+  gc := e.to_galoisConnection
+  le_l_u g := le_of_eq (e.right_inv g).symm
+  choice_eq _ _ := rfl
+
+/-- Makes a Galois coinsertion from an order-preserving bijection. -/
+protected def toGaloisCoinsertion (e : α ≃o β) : GaloisCoinsertion e e.symm where
+  choice b _ := e.symm b
+  gc := e.to_galoisConnection
+  u_l_le g := le_of_eq (e.left_inv g)
+  choice_eq _ _ := rfl
+
 @[simp]
 theorem bddAbove_image (e : α ≃o β) {s : Set α} : BddAbove (e '' s) ↔ BddAbove s :=
   e.to_galoisConnection.bddAbove_l_image

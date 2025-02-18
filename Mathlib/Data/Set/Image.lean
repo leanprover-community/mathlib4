@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Tactic.Use
 import Batteries.Tactic.Congr
+import Mathlib.Order.Hom.Basic
 import Mathlib.Order.TypeTags
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Set.SymmDiff

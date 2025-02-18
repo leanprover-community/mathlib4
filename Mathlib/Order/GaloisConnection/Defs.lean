@@ -4,7 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Order.BoundedOrder.Basic
-import Mathlib.Order.Hom.Basic
+import Mathlib.Logic.Equiv.Option
+import Mathlib.Order.RelIso.Basic
+import Mathlib.Order.Disjoint
+import Mathlib.Order.WithBot
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Util.AssertExists
 import Mathlib.Order.Monotone.Basic
 
 /-!
@@ -22,7 +27,7 @@ such that `∀ a b, l a ≤ b ↔ a ≤ u b`.
 * `GaloisCoinsertion`: A Galois coinsertion is a Galois connection where `u ∘ l = id`
 -/
 
-assert_not_exists CompleteLattice
+assert_not_exists CompleteLattice OrderHom
 
 open Function OrderDual Set
 
@@ -36,10 +41,6 @@ variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {κ : ι → So
 but do not depend on the category theory library in mathlib. -/
 def GaloisConnection [Preorder α] [Preorder β] (l : α → β) (u : β → α) :=
   ∀ a b, l a ≤ b ↔ a ≤ u b
-
-/-- Makes a Galois connection from an order-preserving bijection. -/
-theorem OrderIso.to_galoisConnection [Preorder α] [Preorder β] (oi : α ≃o β) :
-    GaloisConnection oi oi.symm := fun _ _ => oi.rel_symm_apply.symm
 
 namespace GaloisConnection
 
@@ -236,14 +237,6 @@ structure GaloisInsertion {α β : Type*} [Preorder α] [Preorder β] (l : α �
   /-- Property of the choice function. -/
   choice_eq : ∀ a h, choice a h = l a
 
-/-- Makes a Galois insertion from an order-preserving bijection. -/
-protected def OrderIso.toGaloisInsertion [Preorder α] [Preorder β] (oi : α ≃o β) :
-    GaloisInsertion oi oi.symm where
-  choice b _ := oi b
-  gc := oi.to_galoisConnection
-  le_l_u g := le_of_eq (oi.right_inv g).symm
-  choice_eq _ _ := rfl
-
 /-- A constructor for a Galois insertion with the trivial `choice` function. -/
 def GaloisInsertion.monotoneIntro {α β : Type*} [Preorder α] [Preorder β] {l : α → β} {u : β → α}
     (hu : Monotone u) (hl : Monotone l) (hul : ∀ a, a ≤ u (l a)) (hlu : ∀ b, l (u b) = b) :
@@ -310,14 +303,6 @@ structure GaloisCoinsertion [Preorder α] [Preorder β] (l : α → β) (u : β 
   u_l_le : ∀ x, u (l x) ≤ x
   /-- Property of the choice function. -/
   choice_eq : ∀ a h, choice a h = u a
-
-/-- Makes a Galois coinsertion from an order-preserving bijection. -/
-protected def OrderIso.toGaloisCoinsertion [Preorder α] [Preorder β] (oi : α ≃o β) :
-    GaloisCoinsertion oi oi.symm where
-  choice b _ := oi.symm b
-  gc := oi.to_galoisConnection
-  u_l_le g := le_of_eq (oi.left_inv g)
-  choice_eq _ _ := rfl
 
 /-- Make a `GaloisInsertion` between `αᵒᵈ` and `βᵒᵈ` from a `GaloisCoinsertion` between `α` and
 `β`. -/
