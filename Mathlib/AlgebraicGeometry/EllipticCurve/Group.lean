@@ -162,14 +162,14 @@ variable {W} in
 lemma smul_basis_eq_zero {p q : R[X]} (hpq : p • (1 : W.CoordinateRing) + q • mk W Y = 0) :
     p = 0 ∧ q = 0 := by
   have h := Fintype.linearIndependent_iff.mp (CoordinateRing.basis W).linearIndependent ![p, q]
-  erw [Fin.sum_univ_succ, basis_zero, Fin.sum_univ_one, basis_one] at h
+  rw [Fin.sum_univ_succ, basis_zero, Fin.sum_univ_one, Fin.succ_zero_eq_one, basis_one] at h
   exact ⟨h hpq 0, h hpq 1⟩
 
 variable {W} in
 lemma exists_smul_basis_eq (x : W.CoordinateRing) :
     ∃ p q : R[X], p • (1 : W.CoordinateRing) + q • mk W Y = x := by
   have h := (CoordinateRing.basis W).sum_equivFun x
-  erw [Fin.sum_univ_succ, Fin.sum_univ_one, basis_zero, basis_one] at h
+  rw [Fin.sum_univ_succ, Fin.sum_univ_one, basis_zero, Fin.succ_zero_eq_one, basis_one] at h
   exact ⟨_, _, h⟩
 
 lemma smul_basis_mul_C (y : R[X]) (p q : R[X]) :

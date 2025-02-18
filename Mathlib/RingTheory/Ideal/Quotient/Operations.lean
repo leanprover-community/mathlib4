@@ -269,27 +269,27 @@ noncomputable def quotientInfEquivQuotientProd (I J : Ideal R) (coprime : IsCopr
 @[simp]
 theorem quotientInfEquivQuotientProd_fst (I J : Ideal R) (coprime : IsCoprime I J) (x : R ⧸ I ⊓ J) :
     (quotientInfEquivQuotientProd I J coprime x).fst =
-      Ideal.Quotient.factor (I ⊓ J) I inf_le_left x :=
+      Ideal.Quotient.factor inf_le_left x :=
   Quot.inductionOn x fun _ => rfl
 
 @[simp]
 theorem quotientInfEquivQuotientProd_snd (I J : Ideal R) (coprime : IsCoprime I J) (x : R ⧸ I ⊓ J) :
     (quotientInfEquivQuotientProd I J coprime x).snd =
-      Ideal.Quotient.factor (I ⊓ J) J inf_le_right x :=
+      Ideal.Quotient.factor inf_le_right x :=
   Quot.inductionOn x fun _ => rfl
 
 @[simp]
 theorem fst_comp_quotientInfEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
     (RingHom.fst _ _).comp
         (quotientInfEquivQuotientProd I J coprime : R ⧸ I ⊓ J →+* (R ⧸ I) × R ⧸ J) =
-      Ideal.Quotient.factor (I ⊓ J) I inf_le_left := by
+      Ideal.Quotient.factor inf_le_left := by
   apply Quotient.ringHom_ext; ext; rfl
 
 @[simp]
 theorem snd_comp_quotientInfEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
     (RingHom.snd _ _).comp
         (quotientInfEquivQuotientProd I J coprime : R ⧸ I ⊓ J →+* (R ⧸ I) × R ⧸ J) =
-      Ideal.Quotient.factor (I ⊓ J) J inf_le_right := by
+      Ideal.Quotient.factor inf_le_right := by
   apply Quotient.ringHom_ext; ext; rfl
 
 /-- **Chinese remainder theorem**, specialized to two ideals. -/
@@ -301,27 +301,27 @@ noncomputable def quotientMulEquivQuotientProd (I J : Ideal R) (coprime : IsCopr
 @[simp]
 theorem quotientMulEquivQuotientProd_fst (I J : Ideal R) (coprime : IsCoprime I J) (x : R ⧸ I * J) :
     (quotientMulEquivQuotientProd I J coprime x).fst =
-      Ideal.Quotient.factor (I * J) I mul_le_right x :=
+      Ideal.Quotient.factor mul_le_right x :=
   Quot.inductionOn x fun _ => rfl
 
 @[simp]
 theorem quotientMulEquivQuotientProd_snd (I J : Ideal R) (coprime : IsCoprime I J) (x : R ⧸ I * J) :
     (quotientMulEquivQuotientProd I J coprime x).snd =
-      Ideal.Quotient.factor (I * J) J mul_le_left x :=
+      Ideal.Quotient.factor mul_le_left x :=
   Quot.inductionOn x fun _ => rfl
 
 @[simp]
 theorem fst_comp_quotientMulEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
     (RingHom.fst _ _).comp
         (quotientMulEquivQuotientProd I J coprime : R ⧸ I * J →+* (R ⧸ I) × R ⧸ J) =
-      Ideal.Quotient.factor (I * J) I mul_le_right := by
+      Ideal.Quotient.factor mul_le_right := by
   apply Quotient.ringHom_ext; ext; rfl
 
 @[simp]
 theorem snd_comp_quotientMulEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
     (RingHom.snd _ _).comp
         (quotientMulEquivQuotientProd I J coprime : R ⧸ I * J →+* (R ⧸ I) × R ⧸ J) =
-      Ideal.Quotient.factor (I * J) J mul_le_left := by
+      Ideal.Quotient.factor mul_le_left := by
   apply Quotient.ringHom_ext; ext; rfl
 
 end ChineseRemainder
@@ -679,7 +679,7 @@ variable [CommRing R] (I J : Ideal R)
 
 /-- The obvious ring hom `R/I → R/(I ⊔ J)` -/
 def quotLeftToQuotSup : R ⧸ I →+* R ⧸ I ⊔ J :=
-  Ideal.Quotient.factor I (I ⊔ J) le_sup_left
+  Ideal.Quotient.factor le_sup_left
 
 /-- The kernel of `quotLeftToQuotSup` -/
 theorem ker_quotLeftToQuotSup : RingHom.ker (quotLeftToQuotSup I J) =
