@@ -37,7 +37,7 @@ noncomputable def Sym2.mulFinsupp (f : α →₀ R) :
     (fun p => Sym2.mul (p.map f)) Sym2.mem_support_sym2_of_mul_ne_zero
 
 lemma Sym2.mul_finsupp_support (f : α →₀ R) :
-    (Sym2.mul_finsupp f).support ⊆ f.support.sym2 := fun p hp => by
+    (Sym2.mulFinsupp f).support ⊆ f.support.sym2 := fun p hp => by
   apply Sym2.mem_support_sym2_of_mul_ne_zero
   simp_all only [Finsupp.mem_support_iff, ne_eq]
   exact hp
