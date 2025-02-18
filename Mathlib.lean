@@ -1384,7 +1384,6 @@ import Mathlib.Analysis.Convex.Join
 import Mathlib.Analysis.Convex.KreinMilman
 import Mathlib.Analysis.Convex.Measure
 import Mathlib.Analysis.Convex.Mul
-import Mathlib.Analysis.Convex.Normed.Affine
 import Mathlib.Analysis.Convex.Normed.Basic
 import Mathlib.Analysis.Convex.Normed.Topology
 import Mathlib.Analysis.Convex.PartitionOfUnity
@@ -1479,6 +1478,7 @@ import Mathlib.Analysis.Meromorphic.Order
 import Mathlib.Analysis.Normed.Affine.AddTorsor
 import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 import Mathlib.Analysis.Normed.Affine.ContinuousAffineMap
+import Mathlib.Analysis.Normed.Affine.Convex
 import Mathlib.Analysis.Normed.Affine.Isometry
 import Mathlib.Analysis.Normed.Affine.MazurUlam
 import Mathlib.Analysis.Normed.Affine.Simplex
