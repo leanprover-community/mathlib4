@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 import Mathlib.Algebra.GCDMonoid.Basic
+import Mathlib.Algebra.Group.Int.Units
 import Mathlib.Algebra.Order.Group.Unbundled.Int
 import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.Algebra.GroupWithZero.Nat
