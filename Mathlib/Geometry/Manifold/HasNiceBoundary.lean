@@ -100,7 +100,7 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {k : ℕ∞}
   {I : ModelWithCorners ℝ E H} [IsManifold I k M]
   {E₀ H₀: Type*} [NormedAddCommGroup E₀] [NormedSpace ℝ E₀]
   [TopologicalSpace H₀] (I₀ : ModelWithCorners ℝ E₀ H₀)
-  -- {M' : Type u} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I k M]
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] [IsManifold I k M']
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
   {J : ModelWithCorners ℝ E' H'} [IsManifold J ⊤ N]
 
@@ -195,6 +195,8 @@ lemma IsClosedEmbedding.sum_elim
   obtain ⟨hcont, hinj, hClosedEmb⟩ := hf
   obtain ⟨hcont', hinj', hClosedEmb'⟩ := hg
   exact ⟨by fun_prop, h, hClosedEmb.sum_elim hClosedEmb'⟩
+
+-- also missing: IsEmbedding.sum_elim (from weaker hypotheses)
 
 -- related to Set.preimage_fst_singleton_eq_range, but seems to be missing
 -- "#loogle Prod.mk, "Set"" doesn't find anything relevant"
@@ -336,22 +338,20 @@ def BoundaryManifoldData.of_Euclidean_halfSpace (n : ℕ) (k : ℕ∞)
     {M : Type} [TopologicalSpace M] [ChartedSpace (EuclideanHalfSpace (n + 1)) M]
     [IsManifold (𝓡∂ (n + 1)) k M] : BoundaryManifoldData M (𝓡∂ (n + 1)) k (𝓡 n):= sorry
 
--- WIP definition; doesn't work yet
 -- TODO: need bd and bd' to have the same data E₀ and H₀!
--- def BoundaryManifoldData.sum [Nonempty M] [Nonempty M'] [Nonempty H]
---     (bd : BoundaryManifoldData M I k) (bd' : BoundaryManifoldData M' I k) :
---     BoundaryManifoldData (M ⊕ M) I k where--:= sorry
---   M₀ := bd.M₀ ⊕ bd.M₀
---   E₀ := sorry
---   H₀ := sorry
---   I₀ := sorry -- should be either I₀
---   f := Sum.map bd.f bd'.f
---   isEmbedding := sorry -- should be in mathlib
---   isSmooth := by
---     --have : Nonempty H₀ := sorry
---     sorry -- works, except for nonemptiness apply ContMDiff.sum_map bd.isSmooth bd'.isSmooth
---   isImmersion := sorry
---   range_eq_boundary := sorry -- easy, using boundary_disjointUnion
+/-- If `M` and `M'` are modelled on the same model `I` and have nice boundary over `I₀`,
+their disjoint union also does. -/
+-- XXX: for bordism groups, do I need to prescribe the model on the boundary also?
+noncomputable def BoundaryManifoldData.sum [Nonempty H] -- remove hypothesis!
+    (bd : BoundaryManifoldData M I k I₀) (bd' : BoundaryManifoldData M' I k I₀) :
+    BoundaryManifoldData (M ⊕ M') I k I₀ where
+  M₀ := bd.M₀ ⊕ bd'.M₀
+  isManifold := sorry -- TODO: investigate where this fails to be inferred!
+  f := Sum.map bd.f bd'.f
+  isEmbedding := sorry -- should be in mathlib
+  contMDiff := bd.contMDiff.sum_map bd'.contMDiff
+  isImmersion := sorry
+  range_eq_boundary := sorry -- easy, using boundary_disjointUnion
 
 -- TODO: move to InteriorBoundary
 open Fact.Manifold
