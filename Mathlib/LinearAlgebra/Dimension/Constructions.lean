@@ -456,14 +456,14 @@ theorem finrank_span_eq_card [Nontrivial R] {ι : Type*} [Fintype ι] {b : ι �
       rwa [← lift_inj, mk_range_eq_of_injective hb.injective, Cardinal.mk_fintype, lift_natCast,
         lift_eq_nat_iff] at this)
 
-theorem finrank_span_set_eq_card {s : Set M} [Fintype s] (hs : LinearIndependent R ((↑) : s → M)) :
+theorem finrank_span_set_eq_card {s : Set M} [Fintype s] (hs : LinearIndepOn R id s) :
     finrank R (span R s) = s.toFinset.card :=
   finrank_eq_of_rank_eq
     (by
       have : Module.rank R (span R s) = #s := rank_span_set hs
       rwa [Cardinal.mk_fintype, ← Set.toFinset_card] at this)
 
-theorem finrank_span_finset_eq_card {s : Finset M} (hs : LinearIndependent R ((↑) : s → M)) :
+theorem finrank_span_finset_eq_card {s : Finset M} (hs : LinearIndepOn R id (s : Set M)) :
     finrank R (span R (s : Set M)) = s.card := by
   convert finrank_span_set_eq_card (s := (s : Set M)) hs
   ext
