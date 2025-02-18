@@ -3,12 +3,6 @@ Copyright (c) 2020 Pim Spelier, Daan van Gent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Spelier, Daan van Gent
 -/
-import Mathlib.Init
-/-
-Broken by https://github.com/leanprover/lean4/pull/7059
-Commenting out until a fix is available.
-See https://leanprover.zulipchat.com/#narrow/channel/428973-nightly-testing/topic/breakages.20from.20leanprover.2Flean4.237059
-
 import Mathlib.Algebra.Polynomial.Eval.Defs
 import Mathlib.Computability.Encoding
 import Mathlib.Computability.TuringMachine
@@ -308,4 +302,3 @@ instance inhabitedTM2ComputableAux : Inhabited (TM2ComputableAux Bool Bool) :=
 end
 
 end Turing
--/

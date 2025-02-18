@@ -157,7 +157,7 @@ lemma mem_kstar_iff_exists_nonempty {x : List α} :
   · rintro ⟨S, rfl, h⟩
     refine ⟨S.filter fun l ↦ !List.isEmpty l,
       by simp [List.flatten_filter_not_isEmpty], fun y hy ↦ ?_⟩
-    simp only [mem_filter, Bool.not_eq_eq_eq_not, Bool.not_true, isEmpty_eq_false, ne_eq] at hy
+    simp only [mem_filter, Bool.not_eq_eq_eq_not, Bool.not_true, isEmpty_eq_false_iff, ne_eq] at hy
     exact ⟨h y hy.1, hy.2⟩
   · rintro ⟨S, hx, h⟩
     exact ⟨S, hx, fun y hy ↦ (h y hy).1⟩
