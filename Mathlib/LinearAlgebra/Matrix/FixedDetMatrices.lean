@@ -222,10 +222,12 @@ private lemma prop_red_T (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → 
 private lemma prop_red_T_pow (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → C (T • B)) :
      ∀ B (n : ℤ), C (T^n • B) ↔ C B := by
   intro B n
-  induction' n using Int.induction_on with n hn m hm
-  · simp only [zpow_zero, one_smul, imp_self]
-  · simpa only [add_comm (n:ℤ), zpow_add _ 1, ← smul_eq_mul, zpow_one, smul_assoc, prop_red_T hS hT]
-  · rwa [sub_eq_neg_add, zpow_add, zpow_neg_one, ← prop_red_T hS hT, mul_smul, smul_inv_smul]
+  induction n with
+  | hz => simp only [zpow_zero, one_smul, imp_self]
+  | hp n hn =>
+    simpa only [add_comm (n:ℤ), zpow_add _ 1, ← smul_eq_mul, zpow_one, smul_assoc, prop_red_T hS hT]
+  | hn m hm =>
+    rwa [sub_eq_neg_add, zpow_add, zpow_neg_one, ← prop_red_T hS hT, mul_smul, smul_inv_smul]
 
 @[elab_as_elim]
 theorem induction_on {C : Δ m → Prop} {A : Δ m} (hm : m ≠ 0)

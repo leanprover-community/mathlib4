@@ -75,6 +75,10 @@ lemma condDistrib_apply_of_ne_zero [MeasurableSingletonClass β]
   · rw [Measure.fst_map_prod_mk hY]
   · rwa [Measure.fst_map_prod_mk hY]
 
+lemma compProd_map_condDistrib (hY : AEMeasurable Y μ) :
+    (μ.map X) ⊗ₘ condDistrib Y X μ = μ.map fun a ↦ (X a, Y a) := by
+  rw [condDistrib, ← Measure.fst_map_prod_mk₀ hY, Measure.disintegrate]
+
 section Measurability
 
 theorem measurable_condDistrib (hs : MeasurableSet s) :
@@ -90,6 +94,10 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.ae_integrable_condDistrib_map_
 
 variable [NormedSpace ℝ F]
 
+theorem _root_.MeasureTheory.StronglyMeasurable.integral_condDistrib (hf : StronglyMeasurable f) :
+    StronglyMeasurable (fun x ↦ ∫ y, f (x, y) ∂condDistrib Y X μ x) := by
+  rw [condDistrib]; exact hf.integral_kernel_prod_right'
+
 theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_condDistrib_map
     (hY : AEMeasurable Y μ) (hf : AEStronglyMeasurable f (μ.map fun a => (X a, Y a))) :
     AEStronglyMeasurable (fun x => ∫ y, f (x, y) ∂condDistrib Y X μ x) (μ.map X) := by
@@ -99,6 +107,10 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_condDistrib (hX : AEM
     (hY : AEMeasurable Y μ) (hf : AEStronglyMeasurable f (μ.map fun a => (X a, Y a))) :
     AEStronglyMeasurable (fun a => ∫ y, f (X a, y) ∂condDistrib Y X μ (X a)) μ :=
   (hf.integral_condDistrib_map hY).comp_aemeasurable hX
+
+theorem stronglyMeasurable_integral_condDistrib (hf : StronglyMeasurable f) :
+    StronglyMeasurable[mβ.comap X] (fun a ↦ ∫ y, f (X a, y) ∂condDistrib Y X μ (X a)) :=
+  (hf.integral_condDistrib).comp_measurable <| Measurable.of_comap_le le_rfl
 
 theorem aestronglyMeasurable_integral_condDistrib (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ)
     (hf : AEStronglyMeasurable f (μ.map fun a => (X a, Y a))) :
@@ -191,17 +203,11 @@ theorem setLIntegral_preimage_condDistrib (hX : Measurable X) (hY : AEMeasurable
     Measure.fst_map_prod_mk₀ hY, Measure.setLIntegral_condKernel_eq_measure_prod ht hs,
     Measure.map_apply_of_aemeasurable (hX.aemeasurable.prod_mk hY) (ht.prod hs), mk_preimage_prod]
 
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_preimage_condDistrib := setLIntegral_preimage_condDistrib
-
 theorem setLIntegral_condDistrib_of_measurableSet (hX : Measurable X) (hY : AEMeasurable Y μ)
     (hs : MeasurableSet s) {t : Set α} (ht : MeasurableSet[mβ.comap X] t) :
     ∫⁻ a in t, condDistrib Y X μ (X a) s ∂μ = μ (t ∩ Y ⁻¹' s) := by
   obtain ⟨t', ht', rfl⟩ := ht
   rw [setLIntegral_preimage_condDistrib hX hY hs ht']
-
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_condDistrib_of_measurableSet := setLIntegral_condDistrib_of_measurableSet
 
 /-- For almost every `a : α`, the `condDistrib Y X μ` kernel applied to `X a` and a measurable set
 `s` is equal to the conditional expectation of the indicator of `Y ⁻¹' s`. -/

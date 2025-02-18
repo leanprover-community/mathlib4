@@ -151,11 +151,8 @@ theorem setLIntegral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) {s : Set α
   rw [this, ← setLIntegral_withDensity_eq_setLIntegral_mul _ measurable_preCDF _ hs]
   · simp only [withDensity_preCDF ρ r, Pi.one_apply, lintegral_one, Measure.restrict_apply,
       MeasurableSet.univ, univ_inter]
-  · rw [(_ : (1 : α → ℝ≥0∞) = fun _ ↦ 1)]
-    exacts [measurable_const, rfl]
-
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_preCDF_fst := setLIntegral_preCDF_fst
+  · rw [Pi.one_def]
+    exact measurable_const
 
 lemma lintegral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) [IsFiniteMeasure ρ] :
     ∫⁻ x, preCDF ρ r x ∂ρ.fst = ρ.IicSnd r univ := by
@@ -186,9 +183,6 @@ lemma setIntegral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) {s : Set α} (
   · refine ae_restrict_of_ae ?_
     filter_upwards [preCDF_le_one ρ] with a ha
     exact (ha r).trans_lt ENNReal.one_lt_top
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_preCDF_fst := setIntegral_preCDF_fst
 
 lemma integral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) [IsFiniteMeasure ρ] :
     ∫ x, (preCDF ρ r x).toReal ∂ρ.fst = (ρ.IicSnd r univ).toReal := by
@@ -296,9 +290,6 @@ theorem setLIntegral_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x 
     ∫⁻ a in s, ENNReal.ofReal (condCDF ρ a x) ∂ρ.fst = ρ (s ×ˢ Iic x) :=
   (isCondKernelCDF_condCDF ρ).setLIntegral () hs x
 
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_condCDF := setLIntegral_condCDF
-
 theorem lintegral_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ) :
     ∫⁻ a, ENNReal.ofReal (condCDF ρ a x) ∂ρ.fst = ρ (univ ×ˢ Iic x) :=
   (isCondKernelCDF_condCDF ρ).lintegral () x
@@ -310,9 +301,6 @@ theorem integrable_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : 
 theorem setIntegral_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ) {s : Set α}
     (hs : MeasurableSet s) : ∫ a in s, condCDF ρ a x ∂ρ.fst = (ρ (s ×ˢ Iic x)).toReal :=
   (isCondKernelCDF_condCDF ρ).setIntegral () hs x
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_condCDF := setIntegral_condCDF
 
 theorem integral_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ) :
     ∫ a, condCDF ρ a x ∂ρ.fst = (ρ (univ ×ˢ Iic x)).toReal :=

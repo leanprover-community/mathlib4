@@ -479,7 +479,7 @@ theorem X_inj [Nontrivial R] {s t : σ} : (X s : MvPowerSeries σ R) = X t ↔ s
     rw [coeff_X, if_pos rfl, coeff_X] at h
     split_ifs at h with H
     · rw [Finsupp.single_eq_single_iff] at H
-      cases' H with H H
+      rcases H with H | H
       · exact H.1
       · exfalso
         exact one_ne_zero H.1
@@ -548,6 +548,13 @@ theorem map_C (a : R) : map σ f (C σ R a) = C σ S (f a) :=
 theorem map_X (s : σ) : map σ f (X s) = X s := by simp [MvPowerSeries.X]
 
 end Map
+
+@[simp]
+theorem map_eq_zero {S : Type*} [DivisionSemiring R] [Semiring S] [Nontrivial S]
+    (φ : MvPowerSeries σ R) (f : R →+* S) : φ.map σ f = 0 ↔ φ = 0 := by
+  simp only [MvPowerSeries.ext_iff]
+  congr! with n
+  simp
 
 section Semiring
 

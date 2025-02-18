@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Will Sawin
 -/
 import Mathlib.Topology.Algebra.Module.Equiv
+import Mathlib.RingTheory.Finiteness.Cardinality
+import Mathlib.Algebra.Algebra.Bilinear
 
 /-!
 # A "module topology" for modules over a topological ring
@@ -62,17 +64,22 @@ the linear maps `A → M` are precisely the continuous linear maps
 from (`A` with its module topology) to `M`, so the module topology is a left adjoint
 to the forgetful functor.
 
-This file develops the theory of the module topology. We prove that the module topology on
-`R` as a module over itself is `R`'s original topology, and that the module topology
-is isomorphism-invariant.
+This file develops the theory of the module topology.
 
 ## Main theorems
 
-* `TopologicalSemiring.toIsModuleTopology : IsModuleTopology R R`. The module
+* `IsTopologicalSemiring.toIsModuleTopology : IsModuleTopology R R`. The module
     topology on `R` is `R`'s topology.
 * `IsModuleTopology.iso [IsModuleTopology R A] (e : A ≃L[R] B) : IsModuleTopology R B`. If `A` and
     `B` are `R`-modules with topologies, if `e` is a topological isomorphism between them,
     and if `A` has the module topology, then `B` has the module topology.
+* `IsModuleTopology.instProd` : If `M` and `N` are `R`-modules each equipped with the module
+  topology, then the product topology on `M × N` is the module topology.
+* `IsModuleTopology.instPi` : Given a finite collection of `R`-modules each of which has
+  the module topology, the product topology on the product module is the module topology.
+* `IsModuleTopology.isTopologicalRing` : If `D` is an `R`-algebra equipped with the module
+  topology, and `D` is finite as an `R`-module, then `D` is a topological ring (that is,
+  addition, negation and multiplication are continuous).
 
 Now say `φ : A →ₗ[R] B` is an `R`-linear map between `R`-modules equipped with
 the module topology.
@@ -84,20 +91,15 @@ is the proof that if furthermore `φ` is surjective then it is a quotient map,
 that is, the module topology on `B` is the pushforward of the module topology
 on `A`.
 
+Now say `ψ : A →ₗ[R] B →ₗ[R] C` is an `R`-bilinear map between `R`-modules equipped with
+the module topology.
+
+* `IsModuleTopology.continuous_bilinear_of_finite_left` : If `A` is finite then `A × B → C`
+  is continuous.
+* `IsModuleTopology.continuous_bilinear_of_finite_right` : If `B` is finite then `A × B → C`
+  is continuous.
+
 ## TODO
-
-A forthcoming PR from the FLT repo will show that the module topology on a (binary or finite)
-product of modules is the product of the module topologies.
-
-We will also show the slightly more subtle result that if `M`, `N` and `P` are `R`-modules
-equipped with the module topology and if furthermore `M` is finite as an `R`-module,
-then any bilinear map `M × N → P` is continuous.
-
-As a consequence of this, we deduce that if `R` is a commutative topological ring
-and `A` is an `R`-algebra of finite type as `R`-module, then `A` with its module
-topology becomes a topological ring (i.e., multiplication is continuous).
-
-Other TODOs (not done in the FLT repo):
 
 * The module topology is a functor from the category of `R`-modules
   to the category of topological `R`-modules, and it's an adjoint to the forgetful functor.
@@ -219,7 +221,7 @@ end iso
 
 section self
 
-variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [TopologicalSemiring R]
+variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [IsTopologicalSemiring R]
 
 /-!
 We now fix once and for all a topological semiring `R`.
@@ -230,7 +232,7 @@ is `R`'s topology.
 
 /-- The topology on a topological semiring `R` agrees with the module topology when considering
 `R` as an `R`-module in the obvious way (i.e., via `Semiring.toModule`). -/
-instance _root_.TopologicalSemiring.toIsModuleTopology : IsModuleTopology R R := by
+instance _root_.IsTopologicalSemiring.toIsModuleTopology : IsModuleTopology R R := by
   /- By a previous lemma it suffices to show that the identity from (R,usual) to
   (R, module topology) is continuous. -/
   apply of_continuous_id
@@ -262,11 +264,11 @@ end self
 
 section MulOpposite
 
-variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [TopologicalSemiring R]
+variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [IsTopologicalSemiring R]
 
 /-- The module topology coming from the action of the topological ring `Rᵐᵒᵖ` on `R`
   (via `Semiring.toOppositeModule`, i.e. via `(op r) • m = m * r`) is `R`'s topology. -/
-instance _root_.TopologicalSemiring.toOppositeIsModuleTopology : IsModuleTopology Rᵐᵒᵖ R :=
+instance _root_.IsTopologicalSemiring.toOppositeIsModuleTopology : IsModuleTopology Rᵐᵒᵖ R :=
   .iso (MulOpposite.opContinuousLinearEquiv Rᵐᵒᵖ).symm
 
 end MulOpposite
@@ -308,14 +310,14 @@ theorem continuousNeg (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpac
 
 variable (R) in
 theorem topologicalAddGroup (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
-    [IsModuleTopology R C] : TopologicalAddGroup C where
-      continuous_add := (IsModuleTopology.toContinuousAdd R C).1
-      continuous_neg := continuous_neg R C
+    [IsModuleTopology R C] : IsTopologicalAddGroup C where
+  continuous_add := (IsModuleTopology.toContinuousAdd R C).1
+  continuous_neg := continuous_neg R C
 
 @[fun_prop, continuity]
 theorem continuous_of_ringHom {R A B} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B]
     [TopologicalSpace R] [TopologicalSpace A] [IsModuleTopology R A] [TopologicalSpace B]
-    [TopologicalSemiring B]
+    [IsTopologicalSemiring B]
     (φ : A →+* B) (hφ : Continuous (φ.comp (algebraMap R A))) : Continuous φ := by
   let inst := Module.compHom B (φ.comp (algebraMap R A))
   let φ' : A →ₗ[R] B := ⟨φ, fun r m ↦ by simp [Algebra.smul_def]; rfl⟩
@@ -448,7 +450,7 @@ instance instProd : IsModuleTopology R (M × N) := by
   let i₂ : N →ₗ[R] P := LinearMap.inr R M N
   rw [show (i : M × N → P) =
        (fun abcd ↦ abcd.1 + abcd.2 : P × P → P) ∘
-       (fun ab ↦ (i₁ ab.1,i₂ ab.2)) by
+       (fun ab ↦ (i₁ ab.1, i₂ ab.2)) by
        ext ⟨a, b⟩ <;> aesop]
   -- and these maps are all continuous, hence `i` is too
   fun_prop
@@ -491,5 +493,111 @@ instance instPi : IsModuleTopology R (∀ i, A i) := by
     infer_instance
 
 end Pi
+
+section bilinear
+
+section semiring
+
+variable {R : Type*} [TopologicalSpace R] [CommSemiring R]
+variable {B : Type*} [AddCommMonoid B] [Module R B] [TopologicalSpace B] [IsModuleTopology R B]
+variable {C : Type*} [AddCommMonoid C] [Module R C] [TopologicalSpace C] [IsModuleTopology R C]
+
+/--
+If `n` is finite and `B`,`C` are `R`-modules with the module topology,
+then any bilinear map `Rⁿ × B → C` is automatically continuous.
+
+Note that whilst this result works for semirings, for rings this result is superceded
+by `IsModuleTopology.continuous_bilinear_of_finite_left`.
+-/
+theorem continuous_bilinear_of_pi_fintype (ι : Type*) [Finite ι]
+    (bil : (ι → R) →ₗ[R] B →ₗ[R] C) : Continuous (fun ab ↦ bil ab.1 ab.2 : ((ι → R) × B → C)) := by
+  classical
+  cases nonempty_fintype ι
+  -- The map in question, `(f, b) ↦ bil f b`, is easily checked to be equal to
+  -- `(f, b) ↦ ∑ᵢ f i • bil (single i 1) b` where `single i 1 : ι → R` sends `i` to `1` and
+  -- everything else to `0`.
+  have h : (fun fb ↦ bil fb.1 fb.2 : ((ι → R) × B → C)) =
+      (fun fb ↦ ∑ i, ((fb.1 i) • (bil (Finsupp.single i 1) fb.2) : C)) := by
+    ext ⟨f, b⟩
+    nth_rw 1 [← Finset.univ_sum_single f]
+    simp_rw [← Finsupp.single_eq_pi_single, map_sum, LinearMap.coeFn_sum, Finset.sum_apply]
+    refine Finset.sum_congr rfl (fun x _ ↦ ?_)
+    rw [← Finsupp.smul_single_one]
+    push_cast
+    simp
+  rw [h]
+  -- But this map is obviously continuous, because for a fixed `i`, `bil (single i 1)` is
+  -- linear and thus continuous, and scalar multiplication and finite sums are continuous
+  haveI : ContinuousAdd C := toContinuousAdd R C
+  fun_prop
+
+end semiring
+
+section ring
+
+variable {R : Type*} [TopologicalSpace R] [CommRing R] [IsTopologicalRing R]
+variable {A : Type*} [AddCommGroup A] [Module R A] [aA : TopologicalSpace A] [IsModuleTopology R A]
+variable {B : Type*} [AddCommGroup B] [Module R B] [aB : TopologicalSpace B] [IsModuleTopology R B]
+variable {C : Type*} [AddCommGroup C] [Module R C] [aC : TopologicalSpace C] [IsModuleTopology R C]
+
+/--
+If `A`, `B` and `C` have the module topology, and if furthermore `A` is a finite `R`-module,
+then any bilinear map `A × B → C` is automatically continuous
+-/
+@[continuity, fun_prop]
+theorem continuous_bilinear_of_finite_left [Module.Finite R A]
+    (bil : A →ₗ[R] B →ₗ[R] C) : Continuous (fun ab ↦ bil ab.1 ab.2 : (A × B → C)) := by
+  -- `A` is finite and hence admits a surjection from `Rⁿ` for some finite `n`.
+  obtain ⟨m, f, hf⟩ := Module.Finite.exists_fin' R A
+  -- The induced linear map `φ : Rⁿ × B → A × B` is surjective
+  let bil' : (Fin m → R) →ₗ[R] B →ₗ[R] C := bil.comp f
+  let φ := f.prodMap (LinearMap.id : B →ₗ[R] B)
+  have hφ : Function.Surjective φ := Function.Surjective.prodMap hf fun b ↦ ⟨b, rfl⟩
+  -- ... and thus a quotient map, so it suffices to prove that the composite `Rⁿ × B → C` is
+  -- continuous.
+  rw [Topology.IsQuotientMap.continuous_iff (isQuotientMap_of_surjective hφ)]
+  -- But this follows from an earlier result.
+  exact continuous_bilinear_of_pi_fintype (Fin m) bil'
+
+/--
+If `A`, `B` and `C` have the module topology, and if furthermore `B` is a finite `R`-module,
+then any bilinear map `A × B → C` is automatically continuous
+-/
+@[continuity, fun_prop]
+theorem continuous_bilinear_of_finite_right [Module.Finite R B]
+    (bil : A →ₗ[R] B →ₗ[R] C) : Continuous (fun ab ↦ bil ab.1 ab.2 : (A × B → C)) := by
+  -- We already proved this when `A` is finite instead of `B`, so it's obvious by symmetry
+  rw [show (fun ab ↦ bil ab.1 ab.2 : (A × B → C)) =
+    ((fun ba ↦ bil.flip ba.1 ba.2 : (B × A → C)) ∘ (Prod.swap : A × B → B × A)) by ext; simp]
+  fun_prop
+
+end ring
+
+end bilinear
+
+section algebra
+
+variable (R : Type*) [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
+    (D : Type*) [Ring D] [Algebra R D] [Module.Finite R D] [TopologicalSpace D]
+    [IsModuleTopology R D]
+
+include R in
+/-- If `D` is an `R`-algebra, finite as an `R`-module, and if `D` has the module topology,
+then multiplication on `D` is automatically continuous. -/
+@[continuity, fun_prop]
+theorem continuous_mul_of_finite : Continuous (fun ab ↦ ab.1 * ab.2 : D × D → D) :=
+  -- Proof: multiplication is bilinear so this follows from previous results.
+  continuous_bilinear_of_finite_left (LinearMap.mul R D)
+
+include R in
+/-- If `R` is a topological ring and `D` is an `R`-algebra, finite as an `R`-module,
+and if `D` is given the module topology, then `D` is a topological ring. -/
+theorem isTopologicalRing : IsTopologicalRing D where
+  -- Proof: we have already checked all the axioms above.
+  continuous_add := (toContinuousAdd R D).1
+  continuous_mul := continuous_mul_of_finite R D
+  continuous_neg := continuous_neg R D
+
+end algebra
 
 end IsModuleTopology

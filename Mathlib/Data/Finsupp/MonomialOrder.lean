@@ -15,6 +15,7 @@ A *monomial order* is well ordering relation on a type of the form `σ →₀ �
 is compatible with addition and for which `0` is the smallest element.
 Since several monomial orders may have to be used simultaneously, one cannot
 get them as instances.
+
 In this formalization, they are presented as a structure `MonomialOrder` which encapsulates
 `MonomialOrder.toSyn`, an additive and monotone isomorphism to a linearly ordered cancellative
 additive commutative monoid.
@@ -93,11 +94,11 @@ lemma toSyn_strictMono : StrictMono (m.toSyn) := by
 
 /-- Given a monomial order, notation for the corresponding strict order relation on `σ →₀ ℕ` -/
 scoped
-notation:25 c "≺[" m:25 "]" d:25 => (MonomialOrder.toSyn m c < MonomialOrder.toSyn m d)
+notation:25 c " ≺[" m:25 "] " d:25 => (MonomialOrder.toSyn m c < MonomialOrder.toSyn m d)
 
 /-- Given a monomial order, notation for the corresponding order relation on `σ →₀ ℕ` -/
 scoped
-notation:25 c "≼[" m:25 "]" d:25 => (MonomialOrder.toSyn m c ≤ MonomialOrder.toSyn m d)
+notation:25 c " ≼[" m:25 "] " d:25 => (MonomialOrder.toSyn m c ≤ MonomialOrder.toSyn m d)
 
 end MonomialOrder
 
@@ -113,7 +114,7 @@ noncomputable instance {α N : Type*} [LinearOrder α] [OrderedCancelAddCommMono
   le_of_add_le_add_left a b c h := by simpa only [add_le_add_iff_left] using h
   add_le_add_left a b h c := by simpa only [add_le_add_iff_left] using h
 
-/-- for the lexicographic ordering, X 0 * X 1 < X 0  ^ 2 -/
+/-- for the lexicographic ordering, X 0 * X 1 < X 0 ^ 2 -/
 example : toLex (Finsupp.single 0 2) > toLex (Finsupp.single 0 1 + Finsupp.single 1 1) := by
   use 0; simp
 

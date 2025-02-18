@@ -150,22 +150,22 @@ theorem ofDigits_eq_foldr {α : Type*} [Semiring α] (b : α) (L : List ℕ) :
   · dsimp [ofDigits]
     rw [ih]
 
-theorem ofDigits_eq_sum_map_with_index_aux (b : ℕ) (l : List ℕ) :
-    ((List.range l.length).zipWith ((fun i a : ℕ => a * b ^ (i + 1))) l).sum =
-      b * ((List.range l.length).zipWith (fun i a => a * b ^ i) l).sum := by
+theorem ofDigits_eq_sum_mapIdx_aux (b : ℕ) (l : List ℕ) :
+    (l.zipWith ((fun a i : ℕ => a * b ^ (i + 1))) (List.range l.length)).sum =
+      b * (l.zipWith (fun a i => a * b ^ i) (List.range l.length)).sum := by
   suffices
-    (List.range l.length).zipWith (fun i a : ℕ => a * b ^ (i + 1)) l =
-      (List.range l.length).zipWith (fun i a => b * (a * b ^ i)) l
+    l.zipWith (fun a i : ℕ => a * b ^ (i + 1)) (List.range l.length) =
+      l.zipWith (fun a i=> b * (a * b ^ i)) (List.range l.length)
     by simp [this]
   congr; ext; simp [pow_succ]; ring
 
 theorem ofDigits_eq_sum_mapIdx (b : ℕ) (L : List ℕ) :
     ofDigits b L = (L.mapIdx fun i a => a * b ^ i).sum := by
-  rw [List.mapIdx_eq_enum_map, List.enum_eq_zip_range, List.map_uncurry_zip_eq_zipWith,
-    ofDigits_eq_foldr]
+  rw [List.mapIdx_eq_zipIdx_map, List.zipIdx_eq_zip_range', List.map_zip_eq_zipWith,
+    ofDigits_eq_foldr, ← List.range_eq_range']
   induction' L with hd tl hl
   · simp
-  · simpa [List.range_succ_eq_map, List.zipWith_map_left, ofDigits_eq_sum_map_with_index_aux] using
+  · simpa [List.range_succ_eq_map, List.zipWith_map_right, ofDigits_eq_sum_mapIdx_aux] using
       Or.inl hl
 
 @[simp]
@@ -234,12 +234,12 @@ theorem digits_ofDigits (b : ℕ) (h : 1 < b) (L : List ℕ) (w₁ : ∀ l ∈ L
         exact List.getLast_mem h'
 
 theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
-  cases' b with b
-  · cases' n with n
+  rcases b with - | b
+  · rcases n with - | n
     · rfl
     · change ofDigits 0 [n + 1] = n + 1
       dsimp [ofDigits]
-  · cases' b with b
+  · rcases b with - | b
     · induction' n with n ih
       · rfl
       · rw [Nat.zero_add] at ih ⊢
@@ -341,6 +341,24 @@ theorem mul_ofDigits (n : ℕ) {b : ℕ} {l : List ℕ} :
     rw [List.map_cons, ofDigits_cons, ofDigits_cons, ← ih]
     ring
 
+lemma ofDigits_inj_of_len_eq {b : ℕ} (hb : 1 < b) {L1 L2 : List ℕ}
+    (len : L1.length = L2.length) (w1 : ∀ l ∈ L1, l < b) (w2 : ∀ l ∈ L2, l < b)
+    (h : ofDigits b L1 = ofDigits b L2) : L1 = L2 := by
+  induction' L1 with D L ih generalizing L2
+  · simp only [List.length_nil] at len
+    exact (List.length_eq_zero.mp len.symm).symm
+  obtain ⟨d, l, rfl⟩ := List.exists_cons_of_length_eq_add_one len.symm
+  simp only [List.length_cons, add_left_inj] at len
+  simp only [ofDigits_cons] at h
+  have eqd : D = d := by
+    have H : (D + b * ofDigits b L) % b = (d + b * ofDigits b l) % b := by rw [h]
+    simpa [mod_eq_of_lt (w2 d <| List.mem_cons_self d l),
+      mod_eq_of_lt (w1 D <| List.mem_cons_self D L)] using H
+  simp only [eqd, add_right_inj, mul_left_cancel_iff_of_pos (zero_lt_of_lt hb)] at h
+  have := ih len (fun a ha ↦ w1 a <| List.mem_cons_of_mem D ha)
+    (fun a ha ↦ w2 a <| List.mem_cons_of_mem d ha) h
+  rw [eqd, this]
+
 /-- The addition of ofDigits of two lists is equal to ofDigits of digit-wise addition of them -/
 theorem ofDigits_add_ofDigits_eq_ofDigits_zipWith_of_length_eq {b : ℕ} {l1 l2 : List ℕ}
     (h : l1.length = l2.length) :
@@ -360,7 +378,7 @@ theorem ofDigits_add_ofDigits_eq_ofDigits_zipWith_of_length_eq {b : ℕ} {l1 l2 
 theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b + 2 := by
   induction m using Nat.strongRecOn with | ind n IH => ?_
   intro d hd
-  cases' n with n
+  rcases n with - | n
   · rw [digits_zero] at hd
     cases hd
   -- base b+2 expansion of 0 has no digits
@@ -433,7 +451,7 @@ theorem digits_append_digits {b m n : ℕ} (hb : 0 < b) :
   · by_cases h : digits b m = []
     · simp only [h, List.append_nil] at h_append ⊢
       exact getLast_digit_ne_zero b <| digits_ne_nil_iff_ne_zero.mp h_append
-    · exact (List.getLast_append' _ _ h) ▸
+    · exact (List.getLast_append_of_right_ne_nil _ _ h) ▸
           (getLast_digit_ne_zero _ <| digits_ne_nil_iff_ne_zero.mp h)
 
 theorem digits_append_zeroes_append_digits {b k m n : ℕ} (hb : 1 < b) (hm : 0 < m) :

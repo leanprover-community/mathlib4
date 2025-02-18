@@ -24,7 +24,7 @@ satisfying certain properties (see `ComplexShape.TensorSigns`).
 
 -/
 
-assert_not_exists TwoSidedIdeal
+assert_not_exists Field TwoSidedIdeal
 
 variable {I₁ I₂ I₃ I₁₂ I₂₃ J : Type*}
   (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂) (c₃ : ComplexShape I₃)
