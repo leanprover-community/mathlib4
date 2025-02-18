@@ -684,7 +684,7 @@ theorem algebraMap_mem_integers  (hwv : w.comap A = v) (x : v.adicCompletion K)
   letI : UniformSpace L := w.adicValued.toUniformSpace
   induction x using induction_on
   · apply isClosed_imp (by simpa using Valued.integer_isOpen _)
-    exact IsClosed.preimage continuous_map <| Valued.WithZeroMulInt.integers_isClosed _
+    exact IsClosed.preimage continuous_map <| Valued.integer_isClosed _
   · rw [mapRingHom_coe (uniformContinuous_algebraMap hwv), mem_adicCompletionIntegers,
       valuedAdicCompletion_def, w.adicValued.extension_extends, adicValued_apply,
       ← valuation_comap A]
@@ -711,6 +711,6 @@ theorem compactSpace_integers
      (h : ∀ v : HeightOneSpectrum A, Finite 𝓀[v.adicCompletion K])
      (w : HeightOneSpectrum B) :
      CompactSpace 𝒪[w.adicCompletion L] :=
-  Valued.WithZeroMulInt.integers_compactSpace (residueField_finite A K L B h w)
+  Valued.WithZeroMulInt.integer_compactSpace (residueField_finite A K L B h w)
 
 end IsDedekindDomain.HeightOneSpectrum.adicCompletion

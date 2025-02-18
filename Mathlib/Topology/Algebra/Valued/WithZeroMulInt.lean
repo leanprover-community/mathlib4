@@ -115,27 +115,13 @@ theorem finite_cover_of_uniformity_basis [IsDiscreteValuationRing 𝒪[K]] {γ :
   refine ⟨y, Set.mem_image_of_mem _ <| Finset.mem_image_of_mem _ (h.complete _),
     lt_of_le_of_lt (mem_maximalIdeal_pow_valuation (Ideal.Quotient.out_sub _ _) hϖ) hm⟩
 
-variable (K)
-
-open Set Valued in
-/-- The ring of integers `𝒪[K]` of a `ℤₘ₀`-valued field `K` is closed. -/
-theorem integers_isClosed : IsClosed (𝒪[K] : Set K) := by
-  refine isClosed_iff_nhds.2 fun x hx => ?_
-  simp only [isClosed_iff_nhds, SetLike.mem_coe, Valuation.mem_integer_iff, not_le] at hx ⊢
-  contrapose! hx
-  refine ⟨{y | v y = v x}, loc_const (ne_zero_of_lt hx),
-    subset_empty_iff.1 fun y ⟨hy₁, hy₂⟩ => ?_⟩
-  exact (not_lt_of_le <| hy₂) <| hy₁.symm ▸ hx
-
-variable {K}
-
 /-- The ring of integers `𝒪[K]` of a complete `ℤₘ₀`-valued field `K` with finite residue
 field is compact, whenever `𝒪[K]` is a discrete valuation ring. -/
-theorem integers_compactSpace [CompleteSpace K] [IsDiscreteValuationRing 𝒪[K]] (h : Finite 𝓀[K]) :
+theorem integer_compactSpace [CompleteSpace K] [IsDiscreteValuationRing 𝒪[K]] (h : Finite 𝓀[K]) :
     CompactSpace 𝒪[K] := by
   refine CompactSpace.mk (isCompact_iff_isCompact_univ.1 <| ?_)
   exact isCompact_iff_totallyBounded_isComplete.2
     ⟨(hasBasis_uniformity _ _).totallyBounded_iff.2 <| fun _ hγ =>
-      finite_cover_of_uniformity_basis h, (integers_isClosed K).isComplete⟩
+      finite_cover_of_uniformity_basis h, (integer_isClosed K).isComplete⟩
 
 end Valued.WithZeroMulInt
