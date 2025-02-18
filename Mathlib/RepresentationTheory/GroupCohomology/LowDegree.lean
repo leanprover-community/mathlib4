@@ -690,6 +690,10 @@ abbrev H1 := (shortComplexH1 A).moduleCatHomology
 /-- The quotient map `Z¹(G, A) → H¹(G, A).` -/
 abbrev H1π : ModuleCat.of k (oneCocycles A) ⟶ H1 A := (shortComplexH1 A).moduleCatHomologyπ
 
+variable {A} in
+lemma H1π_eq_zero_iff (x : oneCocycles A) : H1π A x = 0 ↔ x ∈ oneCoboundaries A :=
+  Submodule.Quotient.mk_eq_zero _
+
 /-- We define the 2nd group cohomology of a `k`-linear `G`-representation `A`, `H²(G, A)`, to be
 2-cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo 2-coboundaries
 (i.e. `B²(G, A) := Im(d¹: Fun(G, A) → Fun(G², A))`). -/
@@ -697,6 +701,10 @@ abbrev H2 := (shortComplexH2 A).moduleCatHomology
 
 /-- The quotient map `Z²(G, A) → H²(G, A).` -/
 abbrev H2π : ModuleCat.of k (twoCocycles A) ⟶ H2 A := (shortComplexH2 A).moduleCatHomologyπ
+
+variable {A} in
+lemma H2π_eq_zero_iff (x : twoCocycles A) : H2π A x = 0 ↔ x ∈ twoCoboundaries A :=
+  Submodule.Quotient.mk_eq_zero _
 
 end Cohomology
 
