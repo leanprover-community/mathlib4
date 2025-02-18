@@ -127,7 +127,6 @@ The homomorphism from `Gal(K/k)` to `lim Gal(L/k)` where `L` is a
 `FiniteGaloisIntermediateField k K` ordered by inverse inclusion. It is induced by the
 canonical projections from `Gal(K/k)` to `Gal(L/k)`.
 -/
-@[simps]
 noncomputable def algEquivToLimit : (K ≃ₐ[k] K) →* limit (asProfiniteGaloisGroupFunctor k K) where
   toFun σ := {
     val := fun L ↦ σ.restrictNormalHom L.unop
@@ -177,7 +176,6 @@ noncomputable def proj (L : FiniteGaloisIntermediateField k K) :
   map_one' := rfl
   map_mul' _ _ := rfl
 
-@[simp]
 lemma finGaloisGroupFunctor_map_proj_eq_proj (g : limit (asProfiniteGaloisGroupFunctor k K))
     {L₁ L₂ : FiniteGaloisIntermediateField k K} (h : L₁ ⟶ L₂) :
     (finGaloisGroupFunctor k K).map h.op (proj L₂ g) = proj L₁ g :=
