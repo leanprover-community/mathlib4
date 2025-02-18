@@ -274,7 +274,7 @@ theorem mem_basicOpen_den (x : ProjectiveSpectrum.top 𝒜)
 
 /-- Given a point `x` corresponding to a homogeneous prime ideal, there is a (dependent) function
 such that, for any `f` in the homogeneous localization at `x`, it returns the obvious section in the
-basic open set `D(f.den)` -/
+basic open set `D(f.den)`. -/
 def sectionInBasicOpen (x : ProjectiveSpectrum.top 𝒜) :
     ∀ f : HomogeneousLocalization.NumDenSameDeg 𝒜 x.asHomogeneousIdeal.toIdeal.primeCompl,
     (Proj.structureSheaf 𝒜).1.obj (op (ProjectiveSpectrum.basicOpen 𝒜 f.den)) :=

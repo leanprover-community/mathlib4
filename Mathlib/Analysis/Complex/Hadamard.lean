@@ -103,7 +103,7 @@ vertical line `re z = x` -/
 lemma sSupNormIm_eps_pos {ε : ℝ} (hε : ε > 0) (x : ℝ) : 0 < ε + sSupNormIm f x := by
    linarith [sSupNormIm_nonneg f x]
 
-/-- Useful rewrite for the absolute value of `invInterpStrip`. -/
+/-- Useful rewrite for the absolute value of `invInterpStrip` -/
 lemma abs_invInterpStrip {ε : ℝ} (hε : ε > 0) :
     abs (invInterpStrip f z ε) =
     (ε + sSupNormIm f 0) ^ (z.re - 1) * (ε + sSupNormIm f 1) ^ (-z.re) := by

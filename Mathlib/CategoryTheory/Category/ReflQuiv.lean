@@ -28,7 +28,7 @@ instance : CoeSort ReflQuiv (Type u) where coe := Bundled.α
 
 instance (C : ReflQuiv.{v, u}) : ReflQuiver.{v + 1, u} C := C.str
 
-/-- The underlying quiver of a reflexive quiver. -/
+/-- The underlying quiver of a reflexive quiver -/
 def toQuiv (C : ReflQuiv.{v, u}) : Quiv.{v, u} := Quiv.of C.α
 
 /-- Construct a bundled `ReflQuiv` from the underlying type and the typeclass. -/
@@ -115,7 +115,7 @@ end ReflPrefunctor
 
 namespace Cat
 
-/-- The hom relation that identifies the specified reflexivity arrows with the nil paths. -/
+/-- The hom relation that identifies the specified reflexivity arrows with the nil paths -/
 inductive FreeReflRel {V} [ReflQuiver V] : (X Y : Paths V) → (f g : X ⟶ Y) → Prop
   | mk {X : V} : FreeReflRel X X (Quiver.Hom.toPath (𝟙rq X)) .nil
 
@@ -141,7 +141,7 @@ theorem FreeRefl.lift_unique' {V} [ReflQuiver V] {D} [Category D] (F₁ F₂ : F
   Quotient.lift_unique' (C := Cat.free.obj (Quiv.of V)) (FreeReflRel (V := V)) _ _ h
 
 /-- The functor sending a reflexive quiver to the free category it generates, a quotient of
-its path category. -/
+its path category -/
 @[simps!]
 def freeRefl : ReflQuiv.{v, u} ⥤ Cat.{max u v, u} where
   obj V := Cat.of (FreeRefl V)
