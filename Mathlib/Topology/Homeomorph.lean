@@ -529,13 +529,14 @@ lemma sumCongr_symm (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') :
   (sumCongr h₁ h₂).symm = sumCongr h₁.symm h₂.symm := rfl
 
 @[simp]
-theorem sumCongr_refl : sumCongr (refl X) (refl Y) = refl (X ⊕ Y) := by
+theorem sumCongr_refl : sumCongr (.refl X) (.refl Y) = .refl (X ⊕ Y) := by
   ext i
   cases i <;> rfl
 
 @[simp]
-theorem sumCongr_trans (h₁ : X ≃ₜ Y) (h₂ : X' ≃ₜ Y') (h₃ : X'' ≃ₜ Y'') (h₄ : X''' ≃ₜ Y''') :
-    (sumCongr h₁ h₂).trans (sumCongr h₃ h₄) = Equiv.sumCongr (h₁.trans h₂) (h₃.trans h₄) := by
+theorem sumCongr_trans {X'' Y'' : Type*} [TopologicalSpace X''] [TopologicalSpace Y'']
+    (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') (h₃ : X' ≃ₜ X'') (h₄ : Y' ≃ₜ Y'') :
+    (sumCongr h₁ h₂).trans (sumCongr h₃ h₄) = sumCongr (h₁.trans h₃) (h₂.trans h₄) := by
   ext i
   cases i <;> rfl
 
