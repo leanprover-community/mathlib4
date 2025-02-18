@@ -135,4 +135,3 @@ theorem of_one_lt_codim [IsTopologicalAddGroup F] [ContinuousSMul ℝ F] {E : Su
 end Codimension
 
 end AmpleSet
-#min_imports
