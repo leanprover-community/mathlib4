@@ -39,7 +39,7 @@ finsets, powers in groups, ...).
 Less basic uses of `ℕ` and `ℤ` should however use the typeclass-mediated development.
 
 The relevant files are:
-* `Mathlib.Data.Nat.Init` for the continuation of the home-baked development on `ℕ`
+* `Mathlib.Data.Nat.Basic` for the continuation of the home-baked development on `ℕ`
 * `Mathlib.Data.Int.Defs` for the continuation of the home-baked development on `ℤ`
 * `Mathlib.Algebra.Group.Nat` for the monoid instances on `ℕ`
 * `Mathlib.Algebra.Group.Int` for the group instance on `ℤ`
