@@ -174,67 +174,27 @@ def trivial [h: Fact (finrank ℝ E = n)] : SingularNManifold PUnit n k I where
   f := fun _ ↦ PUnit.unit
   hf := continuous_const
 
-#exit
-
-def EuclideanSpace.prodEquivSum (α β 𝕜 : Type*) [NontriviallyNormedField 𝕜] :
-    (EuclideanSpace 𝕜 α) × (EuclideanSpace 𝕜 β) ≃ₜ EuclideanSpace 𝕜 (α ⊕ β) where
-  toEquiv := (Equiv.sumArrowEquivProdArrow α β 𝕜).symm
-  continuous_toFun := sorry
-  continuous_invFun := sorry
-
--- XXX: better name!
-def EuclideanSpace.congr {α β 𝕜 : Type*} [Fintype α] [NontriviallyNormedField 𝕜] (h : α ≃ β) :
-    EuclideanSpace 𝕜 α ≃ₜ EuclideanSpace 𝕜 β :=
-  haveI := Fintype.ofEquiv α h
-  (LinearIsometryEquiv.piLpCongrLeft 2 𝕜 𝕜 h).toHomeomorph
-
-def EuclideanSpace.prod_dimension {𝕜 : Type*} [NontriviallyNormedField 𝕜] (n m : ℕ) :
-    (EuclideanSpace 𝕜 (Fin n)) × (EuclideanSpace 𝕜 (Fin m)) ≃ₜ
-      (EuclideanSpace 𝕜 (Fin (n + m))) :=
-  (EuclideanSpace.prodEquivSum (Fin n) (Fin m) 𝕜).trans (EuclideanSpace.congr finSumFinEquiv)
-
 /-- The product of a singular `n`- and a singular `m`-manifold into a one-point space
 is a singular `n+m`-manifold. -/
 -- FUTURE: prove that this observation induces a commutative ring structure
 -- on the unoriented bordism group `Ω_n^O = Ω_n^O(pt)`.
-def prod {m n : ℕ} (s : SingularNManifold PUnit n k) (t : SingularNManifold PUnit m k) :
-    SingularNManifold PUnit (n + m) k where
+def prod {m n : ℕ} (s : SingularNManifold PUnit n k I) (t : SingularNManifold PUnit m k I') :
+    SingularNManifold PUnit (n + m) k (I.prod I') where
   M := s.M × t.M
-  H := ModelProd s.H t.H
-  modelSpace_homeo_euclideanSpace :=
-    letI this : s.H × t.H ≃ₜ (EuclideanSpace ℝ (Fin n)) × (EuclideanSpace ℝ (Fin m)) :=
-      s.modelSpace_homeo_euclideanSpace.prodCongr t.modelSpace_homeo_euclideanSpace
-    this.trans (EuclideanSpace.prod_dimension n m)
-  I := s.I.prod t.I
   f := fun _ ↦ PUnit.unit
   hf := continuous_const
   dimension := by rw [finrank_prod, s.dimension, t.dimension]
 
-def chartedSpaceEuclidean {n : ℕ} (s : SingularNManifold X n k) :
-    ChartedSpace (EuclideanSpace ℝ (Fin n)) s.H :=
-  s.modelSpace_homeo_euclideanSpace.toPartialHomeomorph.singletonChartedSpace
-  s.modelSpace_homeo_euclideanSpace.toPartialHomeomorph_source
-
-attribute [local instance] chartedSpaceEuclidean in
-instance {n : ℕ} (s t : SingularNManifold X n k) :
-    ChartedSpace (EuclideanSpace ℝ (Fin n)) (s.M ⊕ t.M) := by
-  haveI := ChartedSpace.comp (EuclideanSpace ℝ (Fin n)) s.H s.M
-  haveI := ChartedSpace.comp (EuclideanSpace ℝ (Fin n)) t.H t.M
-  infer_instance
-
-instance {n : ℕ} (s t : SingularNManifold X n k) : IsManifold (𝓡 n) k (s.M ⊕ t.M) := sorry
+variable (s t : SingularNManifold X n k I) [Nonempty H] -- superfluous
 
 /-- The disjoint union of two singular `n`-manifolds on `X` is a singular `n`-manifold on `X`. -/
 -- We need to choose a model space for the disjoint union (as a priori `s` and `t` could be
 -- modelled on very different spaces: for simplicity, we choose `ℝ^n`; all real work is contained
 -- in the two instances above.
-def sum {n : ℕ} (s t : SingularNManifold X n k) : SingularNManifold X n k where
-  E := EuclideanSpace ℝ (Fin n)
-  H := EuclideanSpace ℝ (Fin n)
+def sum {n : ℕ} (s t : SingularNManifold X n k I) [finrank: Fact (finrank ℝ E = n)] :
+    SingularNManifold X n k I where
   M := s.M ⊕ t.M
-  modelSpace_homeo_euclideanSpace := Homeomorph.refl _
-  I := 𝓘(ℝ, EuclideanSpace ℝ (Fin n))
-  dimension := finrank_euclideanSpace_fin
+  dimension := finrank.out
   f := Sum.elim s.f t.f
   hf := s.hf.sum_elim t.hf
 
