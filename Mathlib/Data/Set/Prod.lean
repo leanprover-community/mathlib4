@@ -152,7 +152,7 @@ theorem Disjoint.set_prod_right (ht : Disjoint t₁ t₂) (s₁ s₂ : Set α) :
     Disjoint (s₁ ×ˢ t₁) (s₂ ×ˢ t₂) :=
   disjoint_left.2 fun ⟨_a, _b⟩ ⟨_, hb₁⟩ ⟨_, hb₂⟩ => disjoint_left.1 ht hb₁ hb₂
 
-theorem image_prodMap_prod (f : α → β) (g : γ → δ) (s : Set α) (t : Set γ) :
+theorem prodMap_image_prod (f : α → β) (g : γ → δ) (s : Set α) (t : Set γ) :
     (Prod.map f g) '' (s ×ˢ t) = (f '' s) ×ˢ (g '' t) := by
   ext
   aesop
