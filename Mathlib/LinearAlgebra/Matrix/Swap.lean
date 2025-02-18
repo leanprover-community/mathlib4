@@ -25,7 +25,6 @@ This is a thin wrapper around `(Equiv.swap i j).permMatrix`.
 namespace Matrix
 
 section Def
-
 variable {R n : Type*} [Zero R] [One R] [DecidableEq n]
 
 variable (R) in
@@ -51,8 +50,7 @@ lemma conjTranspose_swap {R : Type*} [Semiring R] [StarRing R] (i j : n) :
 end Def
 
 section
-
-variable {R n : Type*} [Semiring R] [DecidableEq n]
+variable {R n m : Type*} [Semiring R] [DecidableEq n]
 
 @[simp]
 lemma map_swap {S : Type*} [Semiring S] (f : R →+* S) (i j : n) :
@@ -78,8 +76,6 @@ lemma swap_mulVec_apply (i j : n) (a : n → R) :
 lemma vecMul_swap_apply (i j : n) (a : n → R) :
     (a ᵥ* swap R i j) i = a j := by
   simp [swap, PEquiv.vecMul_toMatrix_toPEquiv]
-
-variable {m : Type*}
 
 /-- Multiplying with `swap R i j` on the left swaps the `i`-th row with the `j`-th row. -/
 @[simp]
@@ -122,7 +118,6 @@ lemma swap_mul_self (i j : n) : swap R i j * swap R i j = 1 := by
 end
 
 namespace GeneralLinearGroup
-
 variable (R : Type*) {n : Type*} [CommRing R] [DecidableEq n] [Fintype n]
 
 /-- `Matrix.swap` as an element of `GL n R`. -/
