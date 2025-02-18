@@ -3,6 +3,7 @@ Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
+import Mathlib.NumberTheory.RamificationInertia.Basic
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.ValuationSubring
@@ -646,49 +647,55 @@ instance : IsDiscreteValuationRing 𝒪[v.adicCompletion K] := sorry
 
 
 variable {A K B L v w} in
-theorem isInducing_algebraMap (h : w.comap A = v) :
+theorem uniformContinuous_algebraMap (h : w.comap A = v) :
     letI : UniformSpace K := v.adicValued.toUniformSpace
     letI : UniformSpace L := w.adicValued.toUniformSpace
-    Topology.IsInducing (algebraMap K L) := by
+    UniformContinuous (algebraMap K L) := by
   letI : UniformSpace K := v.adicValued.toUniformSpace
   letI : UniformSpace L := w.adicValued.toUniformSpace
   letI : Valued K ℤₘ₀ := v.adicValued
   letI : Valued L ℤₘ₀ := w.adicValued
-  rw [IsTopologicalAddGroup.isInducing_iff_nhds_zero]
-  apply (Valued.hasBasis_nhds_zero K ℤₘ₀).ext <|
-    (Valued.hasBasis_nhds_zero L ℤₘ₀).comap (algebraMap K L)
-  · intro γ _
-    simp
+  refine uniformContinuous_of_continuousAt_zero _ ?_
+  simp only [ContinuousAt, map_zero]
+  rw [(Valued.hasBasis_nhds_zero K _).tendsto_iff (Valued.hasBasis_nhds_zero L _)]
+  -- proceed as in FLT
+  sorry
 
-    sorry
-  · intro γ _
-    sorry
-
-instance : Algebra ((w.comap A).adicCompletion K) (w.adicCompletion L) :=
+instance (hwv : w.comap A = v) : Algebra (v.adicCompletion K) (w.adicCompletion L) :=
   letI : UniformSpace L := w.adicValued.toUniformSpace
-  letI : UniformSpace K := (w.comap A).adicValued.toUniformSpace
-  UniformSpace.Completion.mapRingHom (algebraMap K L) (isInducing_algebraMap rfl).continuous
+  letI : UniformSpace K := v.adicValued.toUniformSpace
+  UniformSpace.Completion.mapRingHom (algebraMap K L) (uniformContinuous_algebraMap hwv).continuous
     |>.toAlgebra
 
+-- from FLT
+lemma valuation_comap (w : HeightOneSpectrum B) (x : K) :
+    let e := Ideal.ramificationIdx (algebraMap A B) (comap A w).asIdeal w.asIdeal
+    (comap A w).valuation x ^ e = w.valuation (algebraMap K L x) := by
+  sorry
+
+open UniformSpace.Completion in
 variable {A K B L v w} in
-theorem t (x : (w.comap A).adicCompletion K) (h : x ∈ 𝒪[(w.comap A).adicCompletion K]) :
-    letI : UniformSpace K := (w.comap A).adicValued.toUniformSpace
+theorem algebraMap_mem_integers  (hwv : w.comap A = v) (x : v.adicCompletion K)
+    (h : x ∈ v.adicCompletionIntegers K) :
+    letI : UniformSpace K := v.adicValued.toUniformSpace
     letI : UniformSpace L := w.adicValued.toUniformSpace
-    UniformSpace.Completion.mapRingHom (algebraMap K L)
-      (isInducing_algebraMap rfl).continuous x ∈ 𝒪[w.adicCompletion L] := by
-  letI : UniformSpace K := (w.comap A).adicValued.toUniformSpace
+    mapRingHom (algebraMap K L)
+      (uniformContinuous_algebraMap hwv).continuous x ∈ w.adicCompletionIntegers L := by
+  letI : UniformSpace K := v.adicValued.toUniformSpace
   letI : UniformSpace L := w.adicValued.toUniformSpace
-  induction x using UniformSpace.Completion.induction_on
-  · sorry
-  · rename_i x
-    rw [show UniformSpace.Completion.mapRingHom (algebraMap K L) _ x =
-      UniformSpace.Completion.map (algebraMap K L) x from rfl]
-    rw [UniformSpace.Completion.map_coe]
-    · sorry
-    · sorry
+  induction x using induction_on
+  · apply isClosed_imp
+    · simpa using Valued.integer_isOpen _
+    · exact IsClosed.preimage continuous_map <| Valued.WithZeroMulInt.integers_isClosed _
+  · simp [mapRingHom_coe (uniformContinuous_algebraMap hwv)]
+    rw [mem_adicCompletionIntegers, valuedAdicCompletion_def, w.adicValued.extension_extends,
+      adicValued_apply, ← valuation_comap A]
+    apply pow_le_one₀ zero_le'
+    rwa [mem_adicCompletionIntegers, valuedAdicCompletion_def, v.adicValued.extension_extends,
+      adicValued_apply, ← hwv] at h
 
 instance : Algebra 𝒪[(w.comap A).adicCompletion K] 𝒪[w.adicCompletion L] :=
-  RingHom.restrict _ _ _ t |>.toAlgebra
+  RingHom.restrict _ _ _ (algebraMap_mem_integers rfl) |>.toAlgebra
 
 instance : IsLocalHom (algebraMap 𝒪[(w.comap A).adicCompletion K] 𝒪[w.adicCompletion L]) :=
   sorry
