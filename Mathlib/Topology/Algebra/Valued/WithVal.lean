@@ -3,8 +3,8 @@ Copyright (c) 2025 Salvatore Mercuri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
-import Mathlib.RingTheory.DedekindDomain.Ideal
-import Mathlib.Topology.Algebra.Valued.ValuedField
+import Mathlib.Topology.UniformSpace.Completion
+import Mathlib.Topology.Algebra.Valued.ValuationTopology
 
 /-!
 # WithVal
@@ -52,7 +52,7 @@ instance {S : Type*} [CommRing S] [CommRing R] [Algebra S R] [IsFractionRing S R
 instance {S : Type*} [SMul S R] : SMul S (WithVal v) :=
   ‹SMul S R›
 
-instance {P S : Type*} [SMul P S] [SMul S R] [SMul P R] [CommRing R] [IsScalarTower P S R] :
+instance {P S : Type*} [SMul P S] [SMul S R] [SMul P R] [IsScalarTower P S R] :
     IsScalarTower P S (WithVal v) :=
   ‹IsScalarTower P S R›
 
