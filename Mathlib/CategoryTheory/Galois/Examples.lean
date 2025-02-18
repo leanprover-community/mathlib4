@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Christian Merten
+Authors: Christian Merten, Naoya Umezaki
 -/
 import Mathlib.CategoryTheory.Galois.Basic
 import Mathlib.CategoryTheory.Action.Concrete
@@ -221,11 +221,14 @@ instance (X : Action FintypeCat (MonCat.of H)) [Nonempty X.V] :
 the functor maps connected objects to connected object if f is surjective
 essentially 58.4.1 (1) → (3)
 -/
-instance (f_surj : Function.Surjective f) (X : Action FintypeCat (MonCat.of H))
-    [PreGaloisCategory.IsConnected X] [Nonempty X.V] :
-    PreGaloisCategory.IsConnected ((restrictScalars f).obj X) := by
-  rw [FintypeCat.Action.isConnected_iff_transitive] at *
-  exact MulAction.isPretransitive_compHom f_surj (G := X.V)
+instance (f_surj : Function.Surjective f) :
+    PreGaloisCategory.PreservesIsConnected (restrictScalars f) where
+  preserves {X} {h} := by
+    have : Nonempty X.V :=
+      PreGaloisCategory.nonempty_fiber_of_isConnected
+        (forget₂ (Action FintypeCat (MonCat.of H)) FintypeCat) X
+    rw [FintypeCat.Action.isConnected_iff_transitive] at *
+    exact MulAction.isPretransitive_compHom f_surj (G := X.V)
 
 end
 
