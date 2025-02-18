@@ -60,8 +60,8 @@ variable {f v} in
 private lemma lt_up (vlt : ∀ i, v i < up) : ∀ l ∈ ofFn v, l < up := by
   intro l h
   rw [mem_ofFn, Set.mem_range] at h
-  obtain ⟨y, hy⟩ := h
-  exact hy ▸ vlt y
+  obtain ⟨y, rfl⟩ := h
+  exact vlt y
 
 /-- `r` maps `(i : Fin (n + 1))` to `up ^ i`-/
 local notation3 "r" => fun (i : Fin (n + 1)) ↦ up ^ i.1
@@ -72,8 +72,7 @@ noncomputable abbrev T1 (c : k) :
     MvPolynomial (Fin (n + 1)) k →ₐ[k] MvPolynomial (Fin (n + 1)) k :=
   aeval fun i ↦ if i = 0 then X 0 else X i + c • X 0 ^ r i
 
-private lemma t1_comp_t1_neg (c : k) :
-    (T1 f c).comp (T1 f (-c)) = AlgHom.id _ _ := by
+private lemma t1_comp_t1_neg (c : k) : (T1 f c).comp (T1 f (-c)) = AlgHom.id _ _ := by
   rw [comp_aeval, ← MvPolynomial.aeval_X_left]
   ext i v
   cases i using Fin.cases <;>
@@ -230,7 +229,7 @@ section mainthm
 open NoetherNormalization
 
 /-- There exists some `s ≤ n` and an integral injective algebra homomorphism
-from `k[X_0,...,X_(r-1)]` to `k[X_0,...,X_(n-1)]/I` if `I` is not top.-/
+from `k[X_0,...,X_(r-1)]` to `k[X_0,...,X_(n-1)]/I` if `I ≠ ⊤`.-/
 theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) k))
     (hi : I ≠ ⊤) : ∃ s ≤ n, ∃ g : (MvPolynomial (Fin s) k) →ₐ[k] ((MvPolynomial (Fin n) k) ⧸ I),
     Function.Injective g ∧ g.IsIntegral := by
@@ -268,6 +267,7 @@ For a finitely generated algebra `A` over a field `k`,
 there exists a natural number `r` and an injective homomorphism
 from `k[X_1, X_2, ..., X_r]` to `A` such that `A` is integral over `k[X_1, X_2, ..., X_r]`.
 -/
+@[stacks 00OW]
 theorem exists_integral_inj_algHom_of_fg : ∃ s, ∃ g : (MvPolynomial (Fin s) k) →ₐ[k] R,
     Function.Injective g ∧ g.IsIntegral := by
   obtain ⟨n, f, fsurj⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp fin
