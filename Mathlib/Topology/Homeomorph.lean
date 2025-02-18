@@ -525,8 +525,19 @@ def sumCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X ⊕ Y ≃ₜ X' ⊕ Y
   toEquiv := h₁.toEquiv.sumCongr h₂.toEquiv
 
 @[simp]
-lemma sumCongr_symm_symm (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') :
-  sumCongr h₁.symm h₂.symm = (sumCongr h₁ h₂).symm := rfl
+lemma sumCongr_symm (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') :
+  (sumCongr h₁ h₂).symm = sumCongr h₁.symm h₂.symm := rfl
+
+@[simp]
+theorem sumCongr_refl : sumCongr (refl X) (refl Y) = refl (X ⊕ Y) := by
+  ext i
+  cases i <;> rfl
+
+@[simp]
+theorem sumCongr_trans (h₁ : X ≃ₜ Y) (h₂ : X' ≃ₜ Y') (h₃ : X'' ≃ₜ Y'') (h₄ : X''' ≃ₜ Y''') :
+    (sumCongr h₁ h₂).trans (sumCongr h₃ h₄) = Equiv.sumCongr (h₁.trans h₂) (h₃.trans h₄) := by
+  ext i
+  cases i <;> rfl
 
 /-- Product of two homeomorphisms. -/
 def prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X × Y ≃ₜ X' × Y' where
