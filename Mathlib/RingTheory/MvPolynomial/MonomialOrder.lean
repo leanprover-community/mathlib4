@@ -594,7 +594,7 @@ theorem leadingCoeff_prod_of_regular {ι : Type*}
   simp only [leadingCoeff, degree_prod_of_regular H, coeff_prod_sum_degree]
 
 /-- A product of monic polynomials is monic -/
-theorem Monic.prod {ι : Type*} {P : ι → MvPolynomial σ R} {s : Finset ι}
+protected theorem Monic.prod {ι : Type*} {P : ι → MvPolynomial σ R} {s : Finset ι}
     (H : ∀ i ∈ s, m.Monic (P i)) :
     m.Monic (∏ i ∈ s, P i) := by
   rw [Monic, leadingCoeff_prod_of_regular]
