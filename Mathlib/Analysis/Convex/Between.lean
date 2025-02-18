@@ -595,7 +595,7 @@ lemma wbtw_iff_of_le {x y z : R} (hxz : x ≤ z) : Wbtw R x y z ↔ x ≤ y ∧ 
     simp [hy, wbtw_mul_sub_add_iff, mul_nonneg_iff_of_pos_right hxz', ← le_sub_iff_add_le,
       mul_le_iff_le_one_left hxz', hxz.ne]
 
-lemma wbtw_of_le_of_le {x y z : R} (hxy : x ≤ y) (hyz : y ≤ z) : Wbtw R x y z :=
+lemma Wbtw.of_le_of_le {x y z : R} (hxy : x ≤ y) (hyz : y ≤ z) : Wbtw R x y z :=
   (wbtw_iff_of_le (hxy.trans hyz)).mpr ⟨hxy, hyz⟩
 
 lemma sbtw_of_lt_of_lt {x y z : R} (hxy : x < y) (hyz : y < z) : Sbtw R x y z :=
