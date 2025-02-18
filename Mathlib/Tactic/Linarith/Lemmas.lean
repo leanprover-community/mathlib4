@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 import Batteries.Tactic.Lint.Basic
+import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Data.Nat.Cast.Order.Ring
@@ -59,11 +59,11 @@ theorem add_neg {α : Type*} [StrictOrderedSemiring α] {a b : α} (ha : a < 0)
   _root_.add_neg ha hb
 
 theorem mul_neg {α} [StrictOrderedRing α] {a b : α} (ha : a < 0) (hb : 0 < b) : b * a < 0 :=
-  have : (-b)*a > 0 := mul_pos_of_neg_of_neg (neg_neg_of_pos hb) ha
+  have : (-b)*a > 0 := mul_pos_of_neg_of_neg (neg_neg_iff_pos.mpr hb) ha
   neg_of_neg_pos (by simpa)
 
 theorem mul_nonpos {α} [OrderedRing α] {a b : α} (ha : a ≤ 0) (hb : 0 < b) : b * a ≤ 0 :=
-  have : (-b)*a ≥ 0 := mul_nonneg_of_nonpos_of_nonpos (le_of_lt (neg_neg_of_pos hb)) ha
+  have : (-b)*a ≥ 0 := mul_nonneg_of_nonpos_of_nonpos (le_of_lt (neg_neg_iff_pos.mpr hb)) ha
   by simpa
 
 -- used alongside `mul_neg` and `mul_nonpos`, so has the same argument pattern for uniformity

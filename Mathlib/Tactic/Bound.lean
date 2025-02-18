@@ -5,6 +5,7 @@ Authors: Geoffrey Irving
 -/
 
 import Aesop
+import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.Linarith.Frontend

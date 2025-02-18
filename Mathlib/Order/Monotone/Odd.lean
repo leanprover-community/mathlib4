@@ -3,8 +3,9 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Group.Basic
+import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.Instances
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Order.Monotone.Union
 
 /-!
@@ -26,7 +27,7 @@ theorem strictMono_of_odd_strictMonoOn_nonneg {f : G → H} (h₁ : ∀ x, f (-x
     (h₂ : StrictMonoOn f (Ici 0)) : StrictMono f := by
   refine StrictMonoOn.Iic_union_Ici (fun x hx y hy hxy => neg_lt_neg_iff.1 ?_) h₂
   rw [← h₁, ← h₁]
-  exact h₂ (neg_nonneg.2 hy) (neg_nonneg.2 hx) (neg_lt_neg hxy)
+  exact h₂ (neg_nonneg.2 hy) (neg_nonneg.2 hx) (neg_lt_neg_iff.2 hxy)
 
 /-- An odd function on a linear ordered additive commutative group is strictly antitone on the whole
 group provided that it is strictly antitone on `Set.Ici 0`. -/
@@ -40,7 +41,7 @@ theorem monotone_of_odd_of_monotoneOn_nonneg {f : G → H} (h₁ : ∀ x, f (-x)
     (h₂ : MonotoneOn f (Ici 0)) : Monotone f := by
   refine MonotoneOn.Iic_union_Ici (fun x hx y hy hxy => neg_le_neg_iff.1 ?_) h₂
   rw [← h₁, ← h₁]
-  exact h₂ (neg_nonneg.2 hy) (neg_nonneg.2 hx) (neg_le_neg hxy)
+  exact h₂ (neg_nonneg.2 hy) (neg_nonneg.2 hx) (neg_le_neg_iff.2 hxy)
 
 /-- An odd function on a linear ordered additive commutative group is antitone on the whole group
 provided that it is monotone on `Set.Ici 0`. -/
