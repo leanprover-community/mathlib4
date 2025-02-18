@@ -358,8 +358,7 @@ instance : Limits.PreservesLimits (forget₂ ProfiniteGrp Profinite) where
       (limitConeIsLimit F) (Profinite.limitConeIsLimit (F ⋙ (forget₂ ProfiniteGrp Profinite))) }
 
 instance : CompactSpace (limitConePtAux F) :=
-  CompHausLike.instCompactSpaceObjForget _
-    (CompHaus.limitCone ((F ⋙ forget₂ ProfiniteGrp Profinite) ⋙ profiniteToCompHaus)).pt
+  inferInstanceAs (CompactSpace (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt)
 
 /-- The abbreviation for the limit of `ProfiniteGrp`s. -/
 abbrev limit : ProfiniteGrp := ProfiniteGrp.of (ProfiniteGrp.limitConePtAux F)
