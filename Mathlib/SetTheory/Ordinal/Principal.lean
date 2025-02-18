@@ -8,7 +8,8 @@ import Mathlib.SetTheory.Ordinal.FixedPoint
 /-!
 # Principal ordinals
 
-We define principal or indecomposable ordinals, and we prove the standard properties about them.
+We define principal or indecomposable ordinals, i.e. ordinals closed under a binary operation, and
+we prove the standard properties about them.
 
 ## Main definitions and results
 
@@ -207,17 +208,48 @@ theorem principal_add_iff_add_self_lt : Principal (· + ·) a ↔ ∀ b < a, b +
   principal_iff_of_monotone
     (fun x _ _ h => add_le_add_left h x) (fun x _ _ h => add_le_add_right h x)
 
-theorem principal_add_omega0 : Principal (· + ·) ω := fun a b ha hb ↦
-  match a, b, lt_omega0.1 ha, lt_omega0.1 hb with
-  | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by
-    dsimp only; rw [← Nat.cast_add]
-    apply nat_lt_omega0
+theorem principal_add_omega0 : Principal (· + ·) ω :=
+  principal_add_iff_add_left_eq_self.2 fun _ ↦ add_omega0
 
 @[deprecated (since := "2024-09-30")]
 alias principal_add_omega := principal_add_omega0
 
+theorem add_omega0 : a < ω ^ b → a + ω ^ b = ω ^ b :=
+  principal_add_omega0.add_absorp
+
 theorem add_of_le_omega0 : a < ω → ω ≤ b → a + b = b :=
   principal_add_omega0.add_absorp_of_le
+
+@[deprecated (since := "2024-09-30")] alias one_add_omega := one_add_omega0
+
+@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
+alias omega_le_of_isLimit := omega0_le_of_isLimit
+
+@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
+alias one_add_of_omega_le := one_add_of_omega0_le
+
+theorem natCast_add_omega0 (n : ℕ) : n + ω = ω :=
+  add_omega0 (natCast_lt_omega0 n)
+
+@[simp]
+theorem natCast_add_of_omega0_le {o} (h : ω ≤ o) (n : ℕ) : n + o = o :=
+  add_of_le_omega0 (natCast_lt_omega0 n) h
+
+theorem one_add_omega0 : 1 + ω = ω :=
+  mod_cast natCast_add_omega0 1
+
+@[simp]
+theorem one_add_of_omega0_le {o} (h : ω ≤ o) : 1 + o = o :=
+  mod_cast natCast_add_of_omega0_le h 1
+
+theorem add_omega0 {a : Ordinal} (h : a < ω) : a + ω = ω := by
+  obtain ⟨n, rfl⟩ := lt_omega0.1 h
+  exact natCast_add_omega0 n
+
+@[deprecated (since := "2024-09-30")]
+alias add_omega := add_omega0
+
+  #exit
 
 theorem natCast_add_of_le_omega0 (n : ℕ) (h : ω ≤ a) : n + a = a :=
   add_of_le_omega0 (nat_lt_omega0 n) h

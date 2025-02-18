@@ -2377,6 +2377,7 @@ theorem omega0_le_of_isLimit {o} (h : IsLimit o) : ω ≤ o :=
 @[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias omega_le_of_isLimit := omega0_le_of_isLimit
 
+-- TODO: this could be proved more easily using the results from the Principal file.
 theorem natCast_add_omega0 (n : ℕ) : n + ω = ω := by
   refine le_antisymm (le_of_forall_lt fun a ha ↦ ?_) (le_add_left _ _)
   obtain ⟨b, hb', hb⟩ := (lt_add_iff omega0_ne_zero).1 ha
