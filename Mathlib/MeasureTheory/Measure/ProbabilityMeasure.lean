@@ -561,13 +561,13 @@ open Measure
 local instance {α : Type*} [MeasurableSpace α] : MeasurableSpace (ProbabilityMeasure α) :=
   Subtype.instMeasurableSpace
 
-abbrev monoidal_product (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] :
+abbrev monoidal_product {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     (ProbabilityMeasure α × ProbabilityMeasure β) -> Measure (α × β) :=
   fun μ => Measure.prod (Subtype.val μ.1) (Subtype.val μ.2)
 
 local instance (α β : Type*) [MeasurableSpace α] [MeasurableSpace β]
   (μ : ProbabilityMeasure α × ProbabilityMeasure β) :
-    IsProbabilityMeasure (monoidal_product α β μ) where
+    IsProbabilityMeasure (monoidal_product μ) where
   measure_univ := by rcases μ with ⟨⟨_, _⟩, ⟨_, _⟩⟩; simp
 
 local instance (α β : Type*) [MeasurableSpace α] [MeasurableSpace β]
@@ -575,19 +575,17 @@ local instance (α β : Type*) [MeasurableSpace α] [MeasurableSpace β]
     SFinite (μ.2.val) := by rcases μ with ⟨_, ⟨_, _⟩⟩; simp; infer_instance
 
 theorem measurable_monoidal_product {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
-    Measurable (monoidal_product α β) := by
+    Measurable (@monoidal_product α β _ _) := by
   apply Measurable.measure_of_isPiSystem generateFrom_prod.symm isPiSystem_prod _ (by simp)
   simp only [mem_image2, mem_setOf_eq, forall_exists_index, and_imp]
   intros _ u Hu v Hv Heq
   rw [<- Heq, funext <| fun a => MeasureTheory.Measure.prod_prod u v]
   apply Measurable.mul
-  · rw [<- comp_def (fun μ => μ u)
-                    (fun (μ : ProbabilityMeasure α × ProbabilityMeasure β) => μ.1.val),
+  · rw [<- comp_def (fun μ => μ u) (fun (μ : ProbabilityMeasure _ × _) => μ.1.val),
         <- comp_def _ Prod.fst]
     apply Measurable.comp (measurable_coe Hu) <|
           Measurable.comp measurable_subtype_coe measurable_fst
-  · rw [<- comp_def (fun μ => μ v)
-                    (fun (μ : ProbabilityMeasure α × ProbabilityMeasure β) => μ.2.val),
+  · rw [<- comp_def (fun μ => μ v) (fun (μ : _ × ProbabilityMeasure _) => μ.2.val),
         <- comp_def _ Prod.snd]
     apply Measurable.comp (measurable_coe Hv) <|
           Measurable.comp measurable_subtype_coe measurable_snd
