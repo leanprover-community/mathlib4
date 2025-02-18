@@ -11,8 +11,9 @@ import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 /-!
 # Smooth manifolds with nice boundary
 
-Many manifolds "in nature" have nice boundary, which is again a smooth manifold one dimension lower.
-The definition `SmoothManifoldWithCorners` does not enforce this, to also include manifolds
+Many manifolds coming up in differential geometry or applications have "nice" boundary,
+i.e. the boundary is again a (smooth) manifold one dimension lower.
+The definition `IsManifold` does not enforce this, in order to also include manifolds
 with corners. In this file, we define a typeclass `HasNiceBoundary`, for smooth manifolds whose
 boundary is again a smooth manifold such that the inclusion $∂M → M` is smooth.
 We do *not* demand that `∂M` have dimension one lower than `M`,
@@ -26,8 +27,7 @@ This file might get merged into `Manifolds/InteriorBoundary` then.
 
 ## TODO
 * relax the notation of smoothness, and allow any C^n here
-* we assume M, M' and M'' are manifolds over the same space `H` with the same model `I`.
-Is this truly necessary, or can we allow something weaker? Would e.g. equivalent models suffice?
+
 
 -/
 
@@ -48,9 +48,19 @@ variable {M : Type u} [TopologicalSpace M] [cm : ChartedSpace H M]
   {M'' : Type u} [TopologicalSpace M''] [ChartedSpace H M'']
   {I'' : ModelWithCorners ℝ E H} [IsManifold I ⊤ M'']
 
-/-- Let `M` be a `C^k` real manifold, modelled on the pair `(E, H)`.
-A smooth manifold has nice boundary if its boundary is a smooth manifold such that the inclusion
-`∂M ↪ M` is a smooth embedding.
+/-- Let `M` be a `C^k` real manifold, modelled on the pair `(E, H)`. We say that `M` has nice
+boundary if exist a smooth manifold `N` and a smooth embedding `φ : N ↪ M` with image `∂M`.
+
+`BoundaryManifoldData` is a data-carrying structure which captures this: it consists of a smooth
+manifold `N` and a smooth embedding `f : M₀ → M` such that `range f = I.boundary M`.
+
+A priori, we could allow the model spaces `E` and `H` for `N`, as well as the model with corners
+on it, to vary freely: for applications in bordism theory, this proves impractical.
+To formalise the statement "The manifold `W` has smooth boundary `M \sqcup N`", we could like
+to consider the disjoint union of two BoundaryManifoldData: this works best if we fix the model
+spaces and model with corners as part of their type.
+For this reason, the `ModelWithCorners` (and the underlying pair `(E, H)`) are part of this structure's
+parameters.
 
 The first version of this said "I.boundary M is a smooth manifold".
 This proved hard to work with, as I.boundary M is a subset, and computing the boundary means
@@ -66,35 +76,26 @@ Is a pair `(M₀, f)` of a smooth manifold `M₀` modelled over `(E₀, H₀)` a
 `f : M₀ → M` which is a smooth immersion, such that `range f = I.boundary M`.
 -/
 structure BoundaryManifoldData (M : Type u) [TopologicalSpace M] [ChartedSpace H M]
-    (I : ModelWithCorners ℝ E H) (k : ℕ∞) [IsManifold I k M] where
+    (I : ModelWithCorners ℝ E H) (k : ℕ∞) [IsManifold I k M]
+    {E₀ H₀: Type*} [NormedAddCommGroup E₀] [NormedSpace ℝ E₀]
+    [TopologicalSpace H₀] (I₀ : ModelWithCorners ℝ E₀ H₀) where
   /-- TODO! -/
   M₀ : Type u
-  /-- TODO! -/
-  [topologicalSpaceM: TopologicalSpace M₀]
-  /-- The Euclidean space the boundary is modelled on. -/
-  {E₀ : Type u}
-  /-- TODO! -/
-  [normedAddCommGroup : NormedAddCommGroup E₀]
-  /-- TODO! -/
-  [normedSpace : NormedSpace ℝ E₀]
-  /-- The topological space the boundary is a charted space on. -/
-  {H₀ : Type u}
-  /-- TODO! -/
-  [topologicalSpace : TopologicalSpace H₀]
+  [top: TopologicalSpace M₀]
   /-- A chosen charted space structure on `M₀` on `H₀` -/
   [charts : ChartedSpace H₀ M₀]
-  /-- A chosen model with corners for the boundary -/
-  I₀ : ModelWithCorners ℝ E₀ H₀
-  /-- `M₀` is a `C^k` manifold with corners, w.r.t. our chosen model -/
+  /-- `M₀` is a `C^k` manifold with corners w.r.t. `I₀` -/
   [smoothManifold : IsManifold I₀ k M₀]
-  /-- A `C^k` map from the model manifold into `M`, which is required to be an embedding -/
+  /-- A `C^k` map from the model manifold into `M`, which is required to be a smooth embedding,
+  i.e. a smooth immersion which is also a topological embedding -/
   f: M₀ → M
   isEmbedding: Topology.IsEmbedding f
   isSmooth: ContMDiff I₀ I k f
   isImmersion: ∀ x, Function.Injective (mfderiv I₀ I f x)
-  /-- `f` maps `M₀` to the boundary of `M`. -/
+  /-- `f` maps `M₀` surjectively to the boundary of `M`. -/
   range_eq_boundary: Set.range f = I.boundary M
 
+#exit
 -- TODO: deal with universe polymorphism; I'm assuming the same universe for now!
 
 variable {M : Type u} [TopologicalSpace M] [ChartedSpace H M] {k : ℕ∞}
