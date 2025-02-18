@@ -99,7 +99,7 @@ class ContinuousENorm (E : Type*) [TopologicalSpace E] extends ENorm E where
 /-- An enormed monoid is an additive monoid endowed with a continuous enorm. -/
 class ENormedAddMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, AddMonoid E where
   enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 0
-  enorm_add_le : ∀ x y : E, ‖x + y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
+  protected enorm_add_le : ∀ x y : E, ‖x + y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
 
 /-- An enormed monoid is a monoid endowed with a continuous enorm. -/
 @[to_additive]
@@ -1209,14 +1209,14 @@ theorem nnnorm_ne_zero_iff' : ‖a‖₊ ≠ 0 ↔ a ≠ 1 :=
 
 @[to_additive enorm_ne_zero]
 lemma enorm_ne_zero' {E : Type*} [TopologicalSpace E] [ENormedMonoid E] {a : E} :
-  ‖a‖ₑ ≠ 0 ↔ a ≠ 1 := enorm_eq_zero'.ne
+    ‖a‖ₑ ≠ 0 ↔ a ≠ 1 := enorm_eq_zero'.ne
 
 @[to_additive (attr := simp) nnnorm_pos]
 lemma nnnorm_pos' : 0 < ‖a‖₊ ↔ a ≠ 1 := pos_iff_ne_zero.trans nnnorm_ne_zero_iff'
 
 @[to_additive (attr := simp) enorm_pos]
 lemma enorm_pos' {E : Type*} [TopologicalSpace E] [ENormedMonoid E] {a : E} :
-  0 < ‖a‖ₑ ↔ a ≠ 1 := pos_iff_ne_zero.trans enorm_ne_zero'
+    0 < ‖a‖ₑ ↔ a ≠ 1 := pos_iff_ne_zero.trans enorm_ne_zero'
 
 variable (E)
 

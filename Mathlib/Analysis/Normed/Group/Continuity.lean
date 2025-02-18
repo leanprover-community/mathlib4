@@ -186,7 +186,6 @@ section SeminormedGroup
 
 variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E} {a : E}
 
-
 section
 
 variable [TopologicalSpace α] {f : α → E} {s : Set α} {a : α}
