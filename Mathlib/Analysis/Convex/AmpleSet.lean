@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Floris van Doorn
 -/
 import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Analysis.Convex.Normed.Topology
+import Mathlib.Analysis.Normed.Module.ConvexTopological
 import Mathlib.Analysis.NormedSpace.Connected
 import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
 

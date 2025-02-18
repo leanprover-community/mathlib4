@@ -5,7 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.Analysis.Convex.Between
 import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Analysis.Convex.Normed.Topology
+import Mathlib.Analysis.Normed.Module.ConvexTopological
 
 /-!
 # Sides of affine subspaces

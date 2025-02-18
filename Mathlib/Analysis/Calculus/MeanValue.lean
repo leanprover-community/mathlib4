@@ -8,7 +8,7 @@ import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.Deriv.Slope
 import Mathlib.Analysis.Calculus.LocalExtr.Rolle
-import Mathlib.Analysis.Convex.Normed.Topology
+import Mathlib.Analysis.Normed.Module.ConvexTopological
 import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.RingTheory.LocalRing.Basic

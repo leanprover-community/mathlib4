@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Data.Bundle
 import Mathlib.Geometry.Manifold.ChartedSpace
-import Mathlib.Analysis.Convex.Normed.Topology
+import Mathlib.Analysis.Normed.Module.ConvexTopological
 
 /-!
 # `C^n` manifolds (possibly with boundary or corners)
