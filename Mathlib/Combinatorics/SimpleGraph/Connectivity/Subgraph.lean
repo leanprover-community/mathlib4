@@ -145,7 +145,7 @@ theorem mem_verts_toSubgraph (p : G.Walk u v) : w ∈ p.toSubgraph.verts ↔ w �
       ⟨by rintro (rfl | h) <;> simp [*], by simp (config := { contextual := true })⟩
     simp [ih, or_assoc, this]
 
-lemma not_nil_of_adj_toSubgraph {u v} {x : V} (p : G.Walk u v) (hadj : p.toSubgraph.Adj w x) :
+lemma not_nil_of_adj_toSubgraph {u v} {x : V} {p : G.Walk u v} (hadj : p.toSubgraph.Adj w x) :
     ¬p.Nil := by
   cases p <;> simp_all
 
@@ -189,12 +189,11 @@ theorem toSubgraph_rotate [DecidableEq V] (c : G.Walk v v) (h : u ∈ c.support)
 theorem toSubgraph_map (f : G →g G') (p : G.Walk u v) :
     (p.map f).toSubgraph = p.toSubgraph.map f := by induction p <;> simp [*, Subgraph.map_sup]
 
-@[simp]
 lemma adj_toSubgraph_mapLe {G' : SimpleGraph V} {w x : V} (p : G.Walk u v) (h : G ≤ G') :
-    (p.mapLe h).toSubgraph.Adj w x ↔ p.toSubgraph.Adj w x  := by
-  simp only [Walk.toSubgraph_map, Subgraph.map_adj]
+    (p.mapLe h).toSubgraph.Adj w x ↔ p.toSubgraph.Adj w x := by
+  simp only [toSubgraph_map, Subgraph.map_adj]
   nth_rewrite 1 [← Hom.mapSpanningSubgraphs_apply h w, ← Hom.mapSpanningSubgraphs_apply h x]
-  rw [Relation.map_apply_apply (Hom.mapSpanningSubgraph_inj h) (Hom.mapSpanningSubgraph_inj h)]
+  rw [Relation.map_apply_apply (Hom.mapSpanningSubgraphs_inj h) (Hom.mapSpanningSubgraphs_inj h)]
 
 @[simp]
 theorem finite_neighborSet_toSubgraph (p : G.Walk u v) : (p.toSubgraph.neighborSet w).Finite := by
@@ -381,7 +380,7 @@ lemma ncard_neighborSet_toSubgraph_eq_two {u v} {p : G.Walk u u} (hpc : p.IsCycl
   rw [← hi.1, hpc.neighborSet_toSubgraph_internal he.1 (by omega)]
   exact Set.ncard_pair (hpc.getVert_sub_one_neq_getVert_add_one (by omega))
 
-lemma exists_snd_verts_eq {p : G.Walk v v} (h : p.IsCycle) (hadj : p.toSubgraph.Adj v w) :
+lemma exists_isCycle_snd_verts_eq {p : G.Walk v v} (h : p.IsCycle) (hadj : p.toSubgraph.Adj v w) :
     ∃ (p' : G.Walk v v), p'.IsCycle ∧ p'.snd = w ∧ p'.toSubgraph.verts = p.toSubgraph.verts := by
   have : w ∈ p.toSubgraph.neighborSet v := hadj
   rw [h.neighborSet_toSubgraph_endpoint] at this
@@ -389,8 +388,8 @@ lemma exists_snd_verts_eq {p : G.Walk v v} (h : p.IsCycle) (hadj : p.toSubgraph.
   obtain hl | hr := this
   · exact ⟨p, ⟨h, hl.symm, rfl⟩⟩
   · use p.reverse
-    rw [Walk.penultimate, ← @Walk.getVert_reverse] at hr
-    exact ⟨h.reverse, hr.symm, by rw [SimpleGraph.Walk.toSubgraph_reverse _]⟩
+    rw [penultimate, ← getVert_reverse] at hr
+    exact ⟨h.reverse, hr.symm, by rw [toSubgraph_reverse _]⟩
 
 end IsCycle
 

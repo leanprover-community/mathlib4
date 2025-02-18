@@ -304,7 +304,7 @@ lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
         (by omega : (m - 1) ≤ p.length) hnm
       omega
 
-lemma IsPath.getVert_start_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
+lemma IsPath.getVert_eq_start_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
     p.getVert i = u ↔ i = 0 := by
   refine ⟨?_, by aesop⟩
   intro h
@@ -313,15 +313,15 @@ lemma IsPath.getVert_start_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : 
   · apply hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by rw [Set.mem_setOf]; omega)
     simp [h]
 
-lemma IsPath.getVert_end_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
+lemma IsPath.getVert_eq_end_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
     p.getVert i = w ↔ i = p.length := by
-  have := hp.reverse.getVert_start_iff (by omega : p.reverse.length - i ≤ p.reverse.length)
+  have := hp.reverse.getVert_eq_start_iff (by omega : p.reverse.length - i ≤ p.reverse.length)
   simp only [length_reverse, getVert_reverse,
     show p.length - (p.length - i) = i from by omega] at this
   rw [this]
   omega
 
-lemma IsPath.getVert_injOn_iff (p : G.Walk u v): Set.InjOn p.getVert {i | i ≤ p.length} ↔
+lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤ p.length} ↔
     p.IsPath := by
   refine ⟨?_, fun a => a.getVert_injOn⟩
   induction p with
