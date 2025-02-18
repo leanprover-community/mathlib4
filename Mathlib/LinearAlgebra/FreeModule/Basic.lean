@@ -216,14 +216,10 @@ variable {S : Type*} [CommRing R] [Ring S] [Algebra R S]
 
 /-- If `B` is a basis of the `R`-algebra `S` such that `B i = 1` for some index `i`, then
 each `r : R` gets represented as `s • B i` as an element of `S`. -/
-theorem equivFun_algebraMap {ι : Type*} [Fintype ι] [DecidableEq ι] {B : Basis ι R S} {i : ι}
-    (hBi : B i = 1) (r : R) :
-    B.equivFun ((algebraMap R S) r) = fun j : ι ↦ if j = i then r else 0 := by
+theorem repr_algebraMap {ι : Type*} [DecidableEq ι] {B : Basis ι R S} {i : ι} (hBi : B i = 1)
+    (r : R) : B.repr ((algebraMap R S) r) = fun j : ι ↦ if i = j then r else 0 := by
   ext j
-  apply LinearIndependent.eq_coords_of_eq B.linearIndependent
-  rw [Basis.sum_equivFun B (algebraMap R S r), sum_congr (Eq.refl _)
-    (fun x _ ↦ ite_zero_smul _ r (B x)), Algebra.algebraMap_eq_smul_one,
-      sum_ite_eq' univ (i : ι) fun j : ι ↦ r • B j]
-  simp [mem_univ, if_true, hBi]
+  rw [Algebra.algebraMap_eq_smul_one, map_smul, ← hBi, Finsupp.smul_apply, B.repr_self_apply]
+  simp
 
 end Basis
