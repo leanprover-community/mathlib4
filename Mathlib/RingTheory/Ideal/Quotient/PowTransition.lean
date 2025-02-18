@@ -37,7 +37,7 @@ variable {R : Type*} [Ring R] {I J : Ideal R}
     {M : Type*} [AddCommGroup M] [Module R M]
 
 lemma Ideal.Quotient.factor_ker (H : I ≤ J) [I.IsTwoSided] [J.IsTwoSided] :
-    RingHom.ker (factor I J H) = J.map (Ideal.Quotient.mk I) := by
+    RingHom.ker (factor H) = J.map (Ideal.Quotient.mk I) := by
   ext x
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases Ideal.Quotient.mk_surjective x with ⟨r, hr⟩
@@ -53,7 +53,7 @@ section
 
 @[simp]
 theorem mapQ_eq_factor (h : I ≤ J) (x : R ⧸ I) :
-    mapQ I J LinearMap.id h x = factor I J h x := rfl
+    mapQ I J LinearMap.id h x = factor h x := rfl
 
 end
 
@@ -65,7 +65,7 @@ the natural inclusion `I ^ n • ⊤ → I ^ m • ⊤`.
 -/
 abbrev mapQPow {m n : ℕ} (le : m ≤ n) :
     M ⧸ (I ^ n • ⊤ : Submodule R M) →ₗ[R] M ⧸ (I ^ m • ⊤ : Submodule R M) :=
-  factor _ _ (smul_mono_left (Ideal.pow_le_pow_right le))
+  factor (smul_mono_left (Ideal.pow_le_pow_right le))
 
 /--`mapQPow` for `n = m + 1`-/
 abbrev mapQPowSucc (m : ℕ) : M ⧸ (I ^ (m + 1) • ⊤ : Submodule R M) →ₗ[R]
@@ -86,7 +86,7 @@ The ring homomorphism from `R ⧸ I ^ m`
 to `R ⧸ I ^ n` induced by the natural inclusion `I ^ n → I ^ m`.
 -/
 abbrev factorPow {m n : ℕ} (le : n ≤ m) : R ⧸ I ^ m →+* R ⧸ I ^ n :=
-  factor _ _ (pow_le_pow_right le)
+  factor (pow_le_pow_right le)
 
 /--`factorPow` for `m = n + 1`-/
 abbrev factorPowSucc (n : ℕ) : R ⧸ I ^ (n + 1) →+* R ⧸ I ^ n :=

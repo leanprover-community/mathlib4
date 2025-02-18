@@ -243,6 +243,10 @@ theorem ker_liftQ_eq_bot' (f : M →ₛₗ[τ₁₂] M₂) (h : p = ker f) :
     ker (p.liftQ f (le_of_eq h)) = ⊥ :=
   ker_liftQ_eq_bot p f h.le h.ge
 
+section
+
+variable {p p' p''}
+
 /-- The linear map from the quotient by a smaller submodule to the quotient by a larger submodule.
 
 This is the `Submodule.Quotient` version of `Quot.Factor` -/
@@ -250,30 +254,32 @@ abbrev factor (H : p ≤ p') : M ⧸ p →ₗ[R] M ⧸ p' :=
   mapQ _ _ LinearMap.id H
 
 @[simp]
-theorem factor_mk (H : p ≤ p') (x : M) : factor p p' H (mkQ p x) = mkQ p' x :=
+theorem factor_mk (H : p ≤ p') (x : M) : factor H (mkQ p x) = mkQ p' x :=
   rfl
 
 @[simp]
-theorem factor_comp_mk (H : p ≤ p') : (factor p p' H).comp (mkQ p) = mkQ p' := by
+theorem factor_comp_mk (H : p ≤ p') : (factor H).comp (mkQ p) = mkQ p' := by
   ext x
   rw [LinearMap.comp_apply, factor_mk]
 
 @[simp]
 theorem factor_comp (H1 : p ≤ p') (H2 : p' ≤ p'') :
-    (factor p' p'' H2).comp (factor p p' H1) = factor p p'' (H1.trans H2) := by
+    (factor H2).comp (factor H1) = factor (H1.trans H2) := by
   ext
   simp
 
 @[simp]
 theorem factor_comp_apply (H1 : p ≤ p') (H2 : p' ≤ p'') (x : M ⧸ p) :
-    factor p' p'' H2 (factor p p' H1 x) = factor p p'' (H1.trans H2) x := by
-  show (factor p' p'' H2).comp (factor p p' H1) x = factor p p'' (H1.trans H2) x
+    factor H2 (factor H1 x) = factor (H1.trans H2) x := by
+  show (factor H2).comp (factor H1) x = factor (H1.trans H2) x
   simp
 
-lemma factor_surjective (H : p ≤ p') : Function.Surjective (factor p p' H) := by
+lemma factor_surjective (H : p ≤ p') : Function.Surjective (factor H) := by
   intro x
   use Quotient.mk x.out
   exact Quotient.out_eq x
+
+end
 
 /-- The correspondence theorem for modules: there is an order isomorphism between submodules of the
 quotient of `M` by `p`, and submodules of `M` larger than `p`. -/

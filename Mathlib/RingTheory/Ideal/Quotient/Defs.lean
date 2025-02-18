@@ -171,17 +171,17 @@ theorem factor_comp_mk (H : S ≤ T) : (factor H).comp (mk S) = mk T := by
 
 @[simp]
 theorem factor_comp (H1 : S ≤ T) (H2 : T ≤ U) :
-    (factor T U H2).comp (factor S T H1) = factor S U (H1.trans H2) := by
+    (factor H2).comp (factor H1) = factor (H1.trans H2) := by
   ext
   simp
 
 @[simp]
 theorem factor_comp_apply (H1 : S ≤ T) (H2 : T ≤ U) (x : R ⧸ S) :
-    factor T U H2 (factor S T H1 x) = factor S U (H1.trans H2) x := by
-  show (factor T U H2).comp (factor S T H1) x = factor S U (H1.trans H2) x
+    factor H2 (factor H1 x) = factor (H1.trans H2) x := by
+  show (factor H2).comp (factor H1) x = factor (H1.trans H2) x
   simp
 
-lemma factor_surjective (H : S ≤ T) : Function.Surjective (factor S T H) :=
+lemma factor_surjective (H : S ≤ T) : Function.Surjective (factor H) :=
   Ideal.Quotient.lift_surjective_of_surjective _ _ Ideal.Quotient.mk_surjective
 
 end Quotient
