@@ -132,7 +132,8 @@ scoped[Computability] attribute [simp] add_eq_sup
 theorem add_idem (a : α) : a + a = a := by simp
 
 lemma natCast_eq_one {n : ℕ} (nezero : n ≠ 0) : (n : α) = 1 := by
-  induction n, Nat.one_le_iff_ne_zero.mpr nezero using Nat.le_induction with
+  rw [← Nat.one_le_iff_ne_zero] at nezero
+  induction n, nezero using Nat.le_induction with
   | base => exact Nat.cast_one
   | succ x _ hx => rw [Nat.cast_add, hx, Nat.cast_one, add_idem 1]
 
