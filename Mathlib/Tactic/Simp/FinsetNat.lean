@@ -20,14 +20,12 @@ private lemma Icc_eq_insert_of_Icc_succ_eq {m n : ℕ} {s : Finset ℕ} (hmn : m
   rw [← hs, Nat.Icc_insert_succ_left hmn]
 
 /-- Given natural numbers `m` and `n`, returns `(s, ⊢ Finset.Icc m n = s)`. -/
-partial def evalFinsetIccNat {em eml en enl : Q(ℕ)} (hm : Q(IsNat $em $eml))
+partial def evalFinsetIccNat {em eml en enl : Q(ℕ)} (m n : ℕ) (hm : Q(IsNat $em $eml))
     (hn : Q(IsNat $en $enl)) : MetaM ((s : Q(Finset ℕ)) × Q(.Icc $em $en = $s)) := do
-  let m := eml.natLit!
-  let n := enl.natLit!
   if m ≤ n then
     let hmn ← mkDecideProofQq q($em ≤ $en)
-    let hm := q(isNat_natSucc $hm rfl)
-    let ⟨s, hs⟩ ← evalFinsetIccNat hm hn
+    let hm' := q(isNat_natSucc $hm rfl)
+    let ⟨s, hs⟩ ← evalFinsetIccNat (m+1) n hm' hn
     return ⟨q(insert $em $s), q(Icc_eq_insert_of_Icc_succ_eq $hmn $hs)⟩
   else
     let hnm ← mkDecideProofQq q($en < $em)
@@ -38,12 +36,15 @@ simproc_decl finsetIcc_nat (Icc _ _) := fun e ↦ do
     | return .continue
   let hm : Q(IsNat (OfNat.ofNat $em) $em) := q(⟨rfl⟩)
   let hn : Q(IsNat (OfNat.ofNat $en) $en) := q(⟨rfl⟩)
-  let ⟨s, p⟩ ← evalFinsetIccNat hm hn
+  unless em.isRawNatLit && en.isRawNatLit do
+    return .continue
+  let m := em.natLit!
+  let n := en.natLit!
+  let ⟨s, p⟩ ← evalFinsetIccNat m n hm hn
   return .done { expr := s, proof? := p }
 
-example : Icc 1 0 = ∅ := by simp [-Icc_eq_empty_of_lt, -Icc_eq_empty_iff]
--- TODO: The following time out
--- example : Icc 1 1 = {1} := by simp [-Icc_self]
--- example : Icc 1 2 = {1, 2} := by simp
+example : Icc 1 0 = ∅ := by simp [finsetIcc_nat, -Icc_eq_empty_of_lt, -Icc_eq_empty_iff]
+example : Icc 1 1 = {1} := by simp [finsetIcc_nat, -Icc_self]
+example : Icc 1 2 = {1, 2} := by simp [finsetIcc_nat]
 
 end Mathlib.Tactic.Simp
