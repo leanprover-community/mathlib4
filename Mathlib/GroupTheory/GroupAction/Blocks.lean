@@ -737,7 +737,7 @@ theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
 is a block (Wielandt, th. 7.3). -/
 @[to_additive
   "The intersection of the translates of a *finite* subset which contain a given point
-  is a block (Wielandt, th. 7.3)"]
+  is a block (Wielandt, th. 7.3)."]
 theorem of_subset (a : X) (hfB : B.Finite) :
     IsBlock G (⋂ (k : G) (_ : a ∈ k • B), k • B) := by
   let B' := ⋂ (k : G) (_ : a ∈ k • B), k • B
