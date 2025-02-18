@@ -64,35 +64,39 @@ of a closed `n`-dimensional `C^k` manifold `M` together with a continuous map `M
 
 In practice, one commonly wants to take `k=∞` (as then e.g. the intersection form is a powerful tool
 to compute bordism groups; for the definition, this makes no difference.) -/
-structure SingularNManifold.{u, v, w} (X : Type w) [TopologicalSpace X] (n : ℕ) (k : ℕ∞) where
-  /-- The normed space on which the manifold `M` is modeled. -/
-  E : Type v
-  /-- `E` is normed (additive) abelian group -/
-  [normedAddCommGroup : NormedAddCommGroup E]
-  /-- `E` is a real normed space -/
-  [normedSpace: NormedSpace ℝ E]
+structure SingularNManifold.{u, v, w} (X : Type w) [TopologicalSpace X] (n : ℕ) (k : ℕ∞)
+  {E H : Type v} [NormedAddCommGroup E] [NormedSpace ℝ E] [findim: FiniteDimensional ℝ E]
+  [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
+  (M : Type u) [TopologicalSpace M] [ChartedSpace H M] [IsManifold I k M]
+  [CompactSpace M] [BoundarylessManifold I M] where
+  -- /-- The normed space on which the manifold `M` is modeled. -/
+  -- E : Type v
+  -- /-- `E` is normed (additive) abelian group -/
+  -- [normedAddCommGroup : NormedAddCommGroup E]
+  -- /-- `E` is a real normed space -/
+  -- [normedSpace: NormedSpace ℝ E]
   /-- The smooth manifold `M` of a singular `n`-manifold `(M, f)` -/
-  M : Type u
-  /-- The smooth manifold `M` is a topological space -/
-  [topSpaceM : TopologicalSpace M]
-  /-- The topological space on which the manifold `M` is modeled -/
-  H : Type v
-  /-- `H` is a topological space -/
-  [topSpaceH : TopologicalSpace H]
-  /-- The smooth manifold `M` is a charted space over `H` -/
-  [chartedSpace : ChartedSpace H M]
-  /-- A homeomorphism `H ≃ₜ ℝ^n`: this is used to define disjoint unions of singular n-manifolds -/
-  modelSpace_homeo_euclideanSpace : H ≃ₜ EuclideanSpace ℝ (Fin n)
-  /-- The model with corners for the manifold `M` -/
-  I : ModelWithCorners ℝ E H
-  /-- `M` is a smooth manifold with corners -/
-  [smoothMfd : IsManifold I k M]
-  /-- `M` is compact -/
-  [compactSpace : CompactSpace M]
-  /-- `M` is boundaryless -/
-  [boundaryless: BoundarylessManifold I M]
-  /-- `M` is finite-dimensional, as its model space `E` is -/
-  [findim: FiniteDimensional ℝ E]
+  -- M : Type u
+  -- /-- The smooth manifold `M` is a topological space -/
+  -- [topSpaceM : TopologicalSpace M]
+  -- /-- The topological space on which the manifold `M` is modeled -/
+  -- H : Type v
+  -- /-- `H` is a topological space -/
+  -- [topSpaceH : TopologicalSpace H]
+  -- /-- The smooth manifold `M` is a charted space over `H` -/
+  -- [chartedSpace : ChartedSpace H M]
+  -- /-- A homeomorphism `H ≃ₜ ℝ^n`: this is used to define disjoint unions of singular n-manifolds -/
+  -- modelSpace_homeo_euclideanSpace : H ≃ₜ EuclideanSpace ℝ (Fin n)
+  -- /-- The model with corners for the manifold `M` -/
+  -- I : ModelWithCorners ℝ E H
+  -- /-- `M` is a smooth manifold with corners -/
+  -- [smoothMfd : IsManifold I k M]
+  -- /-- `M` is compact -/
+  -- [compactSpace : CompactSpace M]
+  -- /-- `M` is boundaryless -/
+  -- [boundaryless: BoundarylessManifold I M]
+  -- /-- `M` is finite-dimensional, as its model space `E` is -/
+  -- [findim: FiniteDimensional ℝ E]
   /-- `M` is `n`-dimensional, as its model space `E` is -/
   dimension : finrank ℝ E = n
   /-- The underlying map `M → X` of a singular `n`-manifold `(M, f)` on `X` -/
