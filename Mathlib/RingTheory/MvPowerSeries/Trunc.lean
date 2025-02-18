@@ -118,7 +118,7 @@ variable [CommSemiring R] (n : σ →₀ ℕ)
 
 /-- Auxiliary definition for the truncation function. -/
 def truncFun' (φ : MvPowerSeries σ R) : MvPolynomial σ R :=
-  ∑ m in Finset.Iic n, MvPolynomial.monomial m (coeff R m φ)
+  ∑ m ∈ Finset.Iic n, MvPolynomial.monomial m (coeff R m φ)
 
 /-- Coefficients of the truncated function. -/
 theorem coeff_truncFun' (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
