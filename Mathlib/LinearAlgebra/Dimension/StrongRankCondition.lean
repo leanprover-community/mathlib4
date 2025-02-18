@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.LinearAlgebra.Basis.Basic
+import Mathlib.LinearAlgebra.Basis.Reindex
+import Mathlib.LinearAlgebra.Basis.Submodule
 import Mathlib.LinearAlgebra.Dimension.Finrank
 import Mathlib.LinearAlgebra.InvariantBasisNumber
 
