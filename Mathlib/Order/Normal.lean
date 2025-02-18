@@ -17,7 +17,10 @@ We instead opt for an alternate but equivalent definition: a normal function is 
 function `f` such that at successor limits `a`, `f a` is the least upper bound of `f b` with
 `b < a`.
 
-TODO: replace `Ordinal.IsNormal` by this more general notion.
+## TODO
+
+* Prove the equivalence with the standard definition (in some other file).
+* Replace `Ordinal.IsNormal` by this more general notion.
 -/
 
 open Order Set
