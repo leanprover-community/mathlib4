@@ -98,6 +98,7 @@ instance instTopologicalSpace : TopologicalSpace (WeakBilin B) :=
 theorem coeFn_continuous : Continuous fun (x : WeakBilin B) y => B x y :=
   continuous_induced_dom
 
+@[fun_prop]
 theorem eval_continuous (y : F) : Continuous fun x : WeakBilin B => B x y :=
   (continuous_pi_iff.mp (coeFn_continuous B)) y
 
