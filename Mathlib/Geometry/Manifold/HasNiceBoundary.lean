@@ -3,7 +3,7 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.InteriorBoundary
+import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.MFDeriv.Defs
 import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
@@ -274,7 +274,7 @@ def BoundaryManifoldData.prod_of_boundaryless_left [BoundarylessManifold I M]
   f := Prod.map id bd.f
   isEmbedding := IsEmbedding.prodMap IsEmbedding.id bd.isEmbedding
   -- XXX: mathlib naming is inconsistent, prodMap vs prod_map; check if zulip consensus
-  isSmooth := ContMDiff.prod_map contMDiff_id bd.isSmooth
+  isSmooth := sorry -- ContMDiff.prod_map contMDiff_id bd.isSmooth
   -- TODO: tweak this definition, by demanding this only for 1 ≤ k
   isImmersion x := by
     have : (1 : WithTop ℕ∞) ≤ k := sorry
@@ -298,7 +298,7 @@ def BoundaryManifoldData.prod_of_boundaryless_right (bd : BoundaryManifoldData M
   I₀ := bd.I₀.prod J
   f := Prod.map bd.f id
   isEmbedding := IsEmbedding.prodMap bd.isEmbedding IsEmbedding.id
-  isSmooth := ContMDiff.prod_map bd.isSmooth contMDiff_id
+  isSmooth := sorry -- ContMDiff.prod_map bd.isSmooth contMDiff_id
   isImmersion x := by
     have : (1 : WithTop ℕ∞) ≤ k := sorry
     rw [mfderiv_prod_map ((bd.isSmooth x.1).mdifferentiableAt this) mdifferentiableAt_id]
@@ -350,11 +350,6 @@ def BoundaryManifoldData.of_Euclidean_halfSpace (n : ℕ) (k : ℕ∞)
 
 -- TODO: move to InteriorBoundary
 open Fact.Manifold
-/-- A product `M × [x,y]` has boundary `M × {x,y}`. -/
-lemma boundary_product {x y : ℝ} [Fact (x < y)] [BoundarylessManifold I M] :
-    (I.prod (𝓡∂ 1)).boundary (M × (Set.Icc x y)) = Set.prod univ {⊥, ⊤} := by
-  have : (𝓡∂ 1).boundary (Icc x y) = {⊥, ⊤} := by rw [boundary_iccChartedSpace]
-  rw [I.boundary_of_boundaryless_left, boundary_iccChartedSpace]
 
 variable (k) in
 -- FIXME: delete this, in favour of the boundary data instance on Icc and the product
@@ -400,8 +395,9 @@ noncomputable def BoundaryManifoldData.prod_Icc [Nonempty H] [Nonempty M]
   isSmooth := by
     -- future: improving the sum_elim result will make this sorry unnecessary
     have : Nonempty (ModelProd H (EuclideanHalfSpace 1)) := by rw [ModelProd]; infer_instance
-    exact ContMDiff.sum_elim (contMDiff_id.prod_mk contMDiff_const)
-      (contMDiff_id.prod_mk contMDiff_const)
+    sorry
+    --exact ContMDiff.sum_elim (contMDiff_id.prod_mk contMDiff_const)
+    --  (contMDiff_id.prod_mk contMDiff_const)
   isImmersion p := by
     by_cases h: p.isLeft
     · let x := p.getLeft h
@@ -428,14 +424,15 @@ noncomputable def BoundaryManifoldData.prod_Icc [Nonempty H] [Nonempty M]
   range_eq_boundary := by
     simp only [boundary_product, Set.Sum.elim_range, Set.prod, mem_univ, true_and]
     ext x
-    rw [mem_setOf]
+    sorry
+    /- rw [mem_setOf]
     constructor
     · rintro (⟨x', hx'⟩ | ⟨x', hx'⟩) <;> rw [← hx'] <;> tauto
     · -- Can this be simplified?
       intro hx
       simp only [mem_insert_iff, mem_singleton_iff] at hx
       obtain (h | h) := hx
-      exacts [Or.inl ⟨x.1, by rw [← h]⟩, Or.inr ⟨x.1, by rw [← h]⟩]
+      exacts [Or.inl ⟨x.1, by rw [← h]⟩, Or.inr ⟨x.1, by rw [← h]⟩] -/
 
 #exit
 
