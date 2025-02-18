@@ -230,7 +230,7 @@ section mainthm
 open NoetherNormalization
 
 /-- There exists some `s ≤ n` and an integral injective algebra homomorphism
-from `k[X_0,...,X_(r-1)]` to `k[X_0,...,X_(n-1)]/I` if `I` is not top.-/
+from `k[X_0,...,X_(r-1)]` to `k[X_0,...,X_(n-1)]/I` if `I ≠ ⊤`.-/
 theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) k))
     (hi : I ≠ ⊤) : ∃ s ≤ n, ∃ g : (MvPolynomial (Fin s) k) →ₐ[k] ((MvPolynomial (Fin n) k) ⧸ I),
     Function.Injective g ∧ g.IsIntegral := by
