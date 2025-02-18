@@ -1067,6 +1067,12 @@ lemma comap_ker {C : Type*} [Semiring C] [Algebra R C] (f : B →ₐ[R] C) (g : 
     (RingHom.ker f).comap g = RingHom.ker (f.comp g) :=
   RingHom.comap_ker f.toRingHom g.toRingHom
 
+/-- Synonym for `RingHom.ker_coe_equiv`, but given an algebra equivalence. -/
+@[simp] theorem ker_coe_equiv {R A B : Type*} [CommSemiring R] [Ring A] [Ring B]
+    [Algebra R A] [Algebra R B] (e : A ≃ₐ[R] B) :
+    RingHom.ker (e : A →+* B) = ⊥ :=
+  RingHom.ker_coe_equiv (e.toRingEquiv)
+
 end AlgHom
 
 namespace Algebra
