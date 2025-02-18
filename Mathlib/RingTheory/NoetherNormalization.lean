@@ -124,19 +124,18 @@ private lemma leadingCoeff_finSuccEquiv_t  :
       eval₂Hom_C, coe_comp]
     simp only [AlgEquiv.ofAlgHom_apply, Function.comp_apply, leadingCoeff_C, map_pow,
       leadingCoeff_pow, algebraMap_eq]
-    have : ∀ j, ((finSuccEquiv k n) ((T1 f) 1 (X j))).leadingCoeff = 1 := by
-      intro j
-      simp only [aeval_eq_bind₁, bind₁_X_right]
-      by_cases h : j = 0
-      · simp only [if_pos h, finSuccEquiv_apply, eval₂Hom_X', Fin.cases_zero, monic_X,
-          Monic.leadingCoeff]
-      · simp only [if_neg h, one_smul, map_add, map_pow]
-        obtain ⟨i, hi⟩ := Fin.exists_succ_eq.mpr h
-        rw [← hi, finSuccEquiv_X_succ, finSuccEquiv_X_zero, add_comm]
-        apply leadingCoeff_X_pow_add_C
-        simp only [add_pos_iff, ofNat_pos, true_or, pow_pos]
-    · simp only [this, one_pow, Finset.prod_const_one, mul_one]
-  · exact fun i ↦ pow_zero _
+    have : ∀ j, ((finSuccEquiv k n) ((T1 f) 1 (X j))).leadingCoeff = 1 := by  rw [monomial_eq, Finsupp.prod_fintype _ _ <| fun i ↦ pow_zero _, _root_.map_mul, map_prod,
+    _root_.map_mul, _root_.map_prod, leadingCoeff_mul, leadingCoeff_prod, AlgEquiv.ofAlgHom_apply,
+    algHom_C, algebraMap_eq, finSuccEquiv_apply, eval₂Hom_C, coe_comp]
+  simp only [AlgEquiv.ofAlgHom_apply, Function.comp_apply, leadingCoeff_C, map_pow,
+    leadingCoeff_pow, algebraMap_eq]
+  have : ∀ j, ((finSuccEquiv k n) ((T1 f) 1 (X j))).leadingCoeff = 1 := fun j ↦ by
+    by_cases h : j = 0
+    · simp [h, finSuccEquiv_apply]
+    · simp only [aeval_eq_bind₁, bind₁_X_right, if_neg h, one_smul, map_add, map_pow]
+      obtain ⟨i, rfl⟩ := Fin.exists_succ_eq.mpr h
+      simp [finSuccEquiv_X_succ, finSuccEquiv_X_zero, add_comm]
+  simp only [this, one_pow, Finset.prod_const_one, mul_one]
 
 /- `T` maps `f` into some polynomial in `X_0` such that the leading coefficient is invertible. -/
 private lemma T_leadingcoeff_isUnit (fne : f ≠ 0) :
