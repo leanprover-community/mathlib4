@@ -33,7 +33,7 @@ Second we construct the following maps: Let `I` be an ideal containing `f` and l
 
 Finially We use induction to prove there is an injective map from `k[X_0,...,X_{r-1}]`
   to `k[X_0,...,X_(n-1)]/I`.The case `n=0` is trivial.
-For `n+1`, I = 0 is trivial. Otherwise, `hom2` induces a map `φ` by quotient kernel.
+For `n+1`, if `I = 0` there is nothing to do. Otherwise, `hom2` induces a map `φ` by quotient kernel.
   We use the inductive hypothesis on k[X_1,...,X_n] and the kernel of `hom2` to get `s, g`.
 Compose `φ` and `g` and we get the desired map since both `φ` and `g` are injective and integral.
 
