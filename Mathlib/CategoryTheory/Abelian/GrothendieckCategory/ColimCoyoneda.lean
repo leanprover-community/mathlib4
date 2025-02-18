@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.MorphismProperty.Limits
 Let `C : Type u` be an abelian category `[Category.{v} C]` which
 satisfies `IsGrothendieckAbelian.{w} C`. We may expect
 that all the objects `X : C` are `κ`-presentable for some regular
-cardinal `κ`. However, we prove only a weaker result (which
+cardinal `κ`. However, we only prove a weaker result (which
 is enough in order to obtain the existence of enough
 injectives (TODO)): let `κ` be a big enough regular
 cardinal `κ` such that if `Y : J ⥤ C` is a functor from
@@ -43,8 +43,6 @@ namespace IsPresentable
 
 variable {Y : J ⥤ C} {c : Cocone Y} (hc : IsColimit c)
 
-section injectivity
-
 namespace injectivity₀
 
 variable {j₀ : J} (y : X ⟶ Y.obj j₀) (hy : y ≫ c.ι.app j₀ = 0)
@@ -61,7 +59,7 @@ is an epimorphism (see `epi_f`). If `κ` is a regular cardinal that is
 bigger than the cardinality of `Subobject X` and `J` is `κ`-filtered,
 it follows that for some `φ : j₀ ⟶ j` in `Under j₀`,
 the inclusion `(kernel.ι (g y)).app j` is an isomorphism,
-which implies that that `y ≫ Y.map φ = 0` (see `injectivity₀`).
+which implies that that `y ≫ Y.map φ = 0` (see the lemma `injectivity₀`).
 -/
 
 /-- The natural transformation `X ⟶ Y.obj t.right` for `t : Under j₀`
@@ -102,6 +100,8 @@ noncomputable def F : Under j₀ ⥤ MonoOver X where
 
 end injectivity₀
 
+section
+
 variable {κ : Cardinal.{w}} [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ]
   (hXκ : HasCardinalLT (Subobject X) κ)
 
@@ -126,14 +126,39 @@ lemma injectivity (j₀ : J) (y₁ y₂ : X ⟶ Y.obj j₀)
     (by rw [Preadditive.sub_comp, sub_eq_zero, hy])
   exact ⟨j, φ, by simpa only [Preadditive.sub_comp, sub_eq_zero] using hφ⟩
 
-end injectivity
-
-section surjectivity
+end
 
 namespace surjectivity
 
 variable (z : X ⟶ c.pt)
 
+/-!
+Let `z : X ⟶ c.pt` (where `c` is a colimit cocone for `Y : J ⥤ C`).
+We consider the pullback of `c.ι` and of the constant
+map `(Functor.const J).map z`. If we assume that `c.ι` is a monomorphism,
+then this pullback evaluated at `j : J` can be identified to a subobject of `X`
+(this is the inverse image by `z` of `Y.obj j` considered as a subobject of `c.pt`).
+This corresponds to a functor `F z : J ⥤ MonoOver X`, and when taking the colimit
+(computed in `C`), we obtain an epimorphism
+`f z : colimit (pullback c.ι ((Functor.const J).map z)) ⟶ X`
+when `J` is filtered (see `epi_f`). If `κ` is a regular cardinal that is
+bigger than the cardinality of `Subobject X` and `J` is `κ`-filtered,
+we deduce that `z` factors as `X ⟶ Y.obj j ⟶ c.pt` for some `j`
+(see the lemma `surjectivity`).
+-/
+
+/-- The functor `J ⥤ MonoOver X` which sends `j : J` to the inverse image by `z : X ⟶ c.pt`
+of the subobject `Y.obj j` of `c.pt`; it is defined here as the object in `MonoOver X`
+corresponding to the monomorphism
+`(pullback.snd c.ι ((Functor.const _).map z)).app j`. -/
+@[simps]
+noncomputable def F [Mono c.ι] : J ⥤ MonoOver X where
+  obj j := MonoOver.mk' ((pullback.snd c.ι ((Functor.const _).map z)).app j)
+  map {j j'} f := MonoOver.homMk ((pullback c.ι ((Functor.const _).map z)).map f)
+
+
+/-- The canonical map `colimit (pullback c.ι ((Functor.const J).map z)) ⟶ X`,
+which is an isomorphism when `J` is filtered, see `isIso_f`. -/
 noncomputable def f : colimit (pullback c.ι ((Functor.const J).map z)) ⟶ X :=
   colimit.desc _ (Cocone.mk X
     { app j := (pullback.snd c.ι ((Functor.const _).map z)).app j })
@@ -143,31 +168,28 @@ lemma hf (j : J) :
       (pullback.snd c.ι ((Functor.const J).map z)).app j :=
   colimit.ι_desc _ _
 
-include hc in
-lemma epi_f [IsFiltered J] : Epi (f z) := by
-  have isPullback := (IsPullback.of_hasPullback c.ι ((Functor.const _).map z)).map colim
-  have : IsIso (f z) := by
-    refine ((MorphismProperty.isomorphisms C).arrow_mk_iso_iff ?_).1
-      (MorphismProperty.of_isPullback isPullback ?_)
-    · refine Arrow.isoMk (Iso.refl _)
-        (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (isColimitConstCocone J X)) ?_
-      dsimp
-      ext j
-      dsimp
-      rw [Category.id_comp, ι_colimMap_assoc, colimit.comp_coconePointUniqueUpToIso_hom,
-        constCocone_ι, NatTrans.id_app, Category.comp_id]
-      apply hf
-    · refine ((MorphismProperty.isomorphisms C).arrow_mk_iso_iff ?_).2
-        (inferInstanceAs (IsIso (𝟙 c.pt)))
-      exact Arrow.isoMk (IsColimit.coconePointUniqueUpToIso (colimit.isColimit Y) hc)
-        (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
-          (isColimitConstCocone J c.pt))
-  infer_instance
+include hc
 
-@[simps]
-noncomputable def F [Mono c.ι] : J ⥤ MonoOver X where
-  obj j := MonoOver.mk' ((pullback.snd c.ι ((Functor.const _).map z)).app j)
-  map {j j'} f := MonoOver.homMk ((pullback c.ι ((Functor.const _).map z)).map f)
+lemma isIso_f [IsFiltered J] : IsIso (f z) := by
+  refine ((MorphismProperty.isomorphisms C).arrow_mk_iso_iff ?_).1
+    (MorphismProperty.of_isPullback
+      ((IsPullback.of_hasPullback c.ι ((Functor.const _).map z)).map colim) ?_)
+  · refine Arrow.isoMk (Iso.refl _)
+      (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (isColimitConstCocone J X)) ?_
+    dsimp
+    ext j
+    rw [Category.id_comp, ι_colimMap_assoc, colimit.comp_coconePointUniqueUpToIso_hom,
+      constCocone_ι, NatTrans.id_app, Category.comp_id]
+    apply hf
+  · refine ((MorphismProperty.isomorphisms C).arrow_mk_iso_iff ?_).2
+      (inferInstanceAs (IsIso (𝟙 c.pt)))
+    exact Arrow.isoMk (IsColimit.coconePointUniqueUpToIso (colimit.isColimit Y) hc)
+      (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
+        (isColimitConstCocone J c.pt))
+
+lemma epi_f [IsFiltered J] : Epi (f z) := by
+  have := isIso_f hc z
+  infer_instance
 
 end surjectivity
 
@@ -187,11 +209,13 @@ lemma surjectivity [∀ (j j' : J) (φ : j ⟶ j'), Mono (Y.map φ)]
   rw [Category.assoc, IsIso.eq_inv_comp, ← NatTrans.comp_app, pullback.condition,
     NatTrans.comp_app, Functor.const_map_app]
 
-end surjectivity
-
 end IsPresentable
 
 open IsPresentable in
+/-- If `X` is an object in a Grothendieck abelian category, then
+the functor `coyoneda.obj (op X)` commutes with colimits corresponding
+to diagrams of monomorphisms indexed by `κ`-filtered categories
+for a big enough regular cardinal `κ`. -/
 lemma preservesColimit_coyoneda_obj_of_mono
     (Y : J ⥤ C) {κ : Cardinal.{w}} [hκ : Fact κ.IsRegular]
     [IsCardinalFiltered J κ] (hXκ : HasCardinalLT (Subobject X) κ)
