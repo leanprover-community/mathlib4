@@ -39,6 +39,9 @@ theorem IsInt.raw_refl (n : ℤ) : IsInt n n := ⟨rfl⟩
 theorem isNat_zero (α) [AddMonoidWithOne α] : IsNat (Zero.zero : α) (nat_lit 0) :=
   ⟨Nat.cast_zero.symm⟩
 
+theorem isNat_zero' (α) [AddMonoidWithOne α] : IsNat (0 : α) (nat_lit 0) :=
+  ⟨Nat.cast_zero.symm⟩
+
 /-- The `norm_num` extension which identifies the expression `Zero.zero`, returning `0`. -/
 @[norm_num Zero.zero] def evalZero : NormNumExt where eval {u α} e := do
   let sα ← inferAddMonoidWithOne α
