@@ -172,8 +172,8 @@ instance reflectsIsomorphisms (D : Type u₀) [Category.{v₀} D] (F : C ⥤ D) 
 /-- If the source of a faithful functor is the opposite category of one with a subobject classifier,
   the same holds -- the functor reflects isomorphisms.
 -/
-instance reflectsIsomorphismsOp (D : Type u₀) [Category.{v₀} D]
-    (F : Cᵒᵖ ⥤ D) [Functor.Faithful F] :
+instance reflectsIsomorphismsOp (D : Type u₀) [Category.{v₀} D] (F : Cᵒᵖ ⥤ D)
+    [Functor.Faithful F] :
     Functor.ReflectsIsomorphisms F :=
   reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms F
 
