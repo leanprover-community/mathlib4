@@ -1214,9 +1214,9 @@ instance : Algebra K ((idealX K).adicCompletionIntegers (RatFunc K)) :=
     ((LaurentSeriesRingEquiv K).toRingHom.comp HahnSeries.C).codRestrict _
       (algebraMap_C_mem_adicCompletionIntegers K)
 
---instance : IsScalarTower K ((idealX K).adicCompletionIntegers (RatFunc K))
---    (RatFuncAdicCompl K) :=
---  apply IsScalarTower.of_algebraMap_eq --(fun _ ↦ by rfl)
+instance : @IsScalarTower K ((idealX K).adicCompletionIntegers (RatFunc K))
+    (RatFuncAdicCompl K) _ _ (instAlgebraRatFuncAdicCompl K).toSMul :=
+  IsScalarTower.of_algebraMap_eq (fun _ ↦ by rfl)
 
 /-- The algebra isomorphism between `K⟦X⟧` and the unit ball inside the `X`-adic completion of
 `RatFunc K`. -/
