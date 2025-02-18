@@ -641,8 +641,7 @@ theorem lieModule_lcs_map_le (k : ℕ) :
     · simp
     · exact SetLike.coe_mem n
 
-variable [LieModule R L₂ M₂]
-variable (hg_inj : Injective g)
+variable [LieModule R L₂ M₂] (hg_inj : Injective g)
 
 include hg_inj hfg in
 theorem Function.Injective.lieModuleIsNilpotent [IsNilpotent L₂ M₂] : IsNilpotent L M := by
