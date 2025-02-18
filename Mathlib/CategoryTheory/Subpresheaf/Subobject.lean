@@ -41,21 +41,21 @@ noncomputable def equivalenceMonoOver : Subpresheaf F ≌ MonoOver F where
 
 variable {F} in
 @[simp]
-lemma range_subobject_mk_ι (A : Subpresheaf F) :
+lemma range_subobjectMk_ι (A : Subpresheaf F) :
     range (Subobject.mk A.ι).arrow = A :=
   (((equivalenceMonoOver F).trans
     (ThinSkeleton.equivalence _).symm).unitIso.app A).to_eq.symm
 
 variable {F} in
 @[simp]
-lemma subobject_mk_range_arrow (X : Subobject F) :
+lemma subobjectMk_range_arrow (X : Subobject F) :
     Subobject.mk (range X.arrow).ι = X :=
   (((equivalenceMonoOver F).trans
     (ThinSkeleton.equivalence _).symm).counitIso.app X).to_eq
 
 /-- The order isomorphism `Subpresheaf F ≃o MonoOver F`. -/
 @[simps]
-noncomputable def orderIsoSubject : Subpresheaf F ≃o Subobject F where
+noncomputable def orderIsoSubobject : Subpresheaf F ≃o Subobject F where
   toFun A := Subobject.mk A.ι
   invFun X := Subpresheaf.range X.arrow
   left_inv A := by simp
