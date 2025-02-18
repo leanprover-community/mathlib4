@@ -69,15 +69,15 @@ lemma isSplitMono_P_δ {x y : SimplexCategoryGenRel} {m : x ⟶ y} (hm : P_δ m)
   | id => infer_instance
   | comp_of _ _ _ h => cases h; infer_instance
 
-lemma isSplitEpi_P_σ_toSimplexCategory_of_P_σ {x y : SimplexCategoryGenRel} {e : x ⟶ y} (he : P_σ e) :
-    IsSplitEpi <| toSimplexCategory.map e := by
+lemma isSplitEpi_P_σ_toSimplexCategory_of_P_σ {x y : SimplexCategoryGenRel} {e : x ⟶ y}
+    (he : P_σ e) : IsSplitEpi <| toSimplexCategory.map e := by
   constructor
   constructor
   apply SplitEpi.map
   exact isSplitEpi_P_σ he |>.exists_splitEpi.some
 
-lemma isSplitMono_P_δ_toSimplexCategory_of_P_δ {x y : SimplexCategoryGenRel} {m : x ⟶ y} (hm : P_δ m)
-    : IsSplitMono <| toSimplexCategory.map m := by
+lemma isSplitMono_P_δ_toSimplexCategory_of_P_δ {x y : SimplexCategoryGenRel} {m : x ⟶ y}
+    (hm : P_δ m) : IsSplitMono <| toSimplexCategory.map m := by
   constructor
   constructor
   apply SplitMono.map
