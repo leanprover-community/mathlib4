@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johan Commelin
 -/
 import Mathlib.Analysis.Analytic.Basic
+import Mathlib.Analysis.Analytic.CPolynomialDef
 import Mathlib.Combinatorics.Enumerative.Composition
 
 /-!
@@ -817,7 +818,7 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
   exact E
 
 /-- If two functions `g` and `f` have power series `q` and `p` respectively at `f x` and `x`,
-then `g ∘ f` admits the power  series `q.comp p` at `x` within `s`. -/
+then `g ∘ f` admits the power series `q.comp p` at `x`. -/
 theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinearSeries 𝕜 F G}
     {p : FormalMultilinearSeries 𝕜 E F} {x : E}
     (hg : HasFPowerSeriesAt g q (f x)) (hf : HasFPowerSeriesAt f p x) :
@@ -909,6 +910,56 @@ lemma AnalyticOnNhd.comp_analyticOn {f : F → G} {g : E → F} {s : Set F}
 
 @[deprecated (since := "2024-09-26")]
 alias AnalyticOn.comp_analyticWithinOn := AnalyticOnNhd.comp_analyticOn
+
+/-- If two functions `g` and `f` have finite power series `q` and `p` respectively at `f x` and `x`,
+then `g ∘ f` admits the finite power series `q.comp p` at `x`. -/
+theorem HasFiniteFPowerSeriesAt.comp {m n : ℕ} {g : F → G} {f : E → F}
+    {q : FormalMultilinearSeries 𝕜 F G} {p : FormalMultilinearSeries 𝕜 E F} {x : E}
+    (hg : HasFiniteFPowerSeriesAt g q (f x) m) (hf : HasFiniteFPowerSeriesAt f p x n) (hn : 0 < n) :
+    HasFiniteFPowerSeriesAt (g ∘ f) (q.comp p) x (m * n) := by
+  rcases hg.hasFPowerSeriesAt.comp hf.hasFPowerSeriesAt with ⟨r, hr⟩
+  refine ⟨r, hr, ?_⟩
+  intro i hi
+  simp only [FormalMultilinearSeries.comp]
+  apply Finset.sum_eq_zero
+  rintro c -
+  ext v
+  simp only [compAlongComposition_apply, ContinuousMultilinearMap.zero_apply]
+  rcases le_or_lt m c.length with hc | hc
+  · simp [hg.finite _ hc]
+  obtain ⟨j, hj⟩ : ∃ j, n ≤ c.blocksFun j := by
+    contrapose! hi
+    rw [← c.sum_blocksFun]
+    rcases eq_zero_or_pos c.length with h'c | h'c
+    · have : ∑ j : Fin c.length, c.blocksFun j = 0 := by
+        apply Finset.sum_eq_zero (fun j hj ↦ ?_)
+        have := j.2
+        omega
+      rw [this]
+      apply mul_pos (by omega) hn
+    · calc
+      ∑ j : Fin c.length, c.blocksFun j
+      _ < ∑ j : Fin c.length, n := by
+        apply Finset.sum_lt_sum (fun j hj ↦ (hi j).le)
+        exact ⟨⟨0, h'c⟩, Finset.mem_univ _, hi _⟩
+      _ = c.length * n := by simp
+      _ ≤ m * n := by gcongr
+  apply ContinuousMultilinearMap.map_coord_zero _ j
+  simp [applyComposition, hf.finite _ hj]
+
+/-- If two functions `g` and `f` have finite power series `q` and `p` respectively at `f x` and `x`,
+then `g ∘ f` admits the finite power series `q.comp p` at `x`. -/
+theorem CPolynomialAt.comp {m n : ℕ} {g : F → G} {f : E → F} {x : E}
+    (hg : CPolynomialAt 𝕜 g (f x)) (hf : CPolynomialAt 𝕜 f x) :
+    CPolynomialAt 𝕜 (g ∘ f) x := by
+  rcases hg with ⟨q, m, hm⟩
+  rcases hf with ⟨p, n, hn⟩
+  refine ⟨q.comp p, m * (n + 1), ?_⟩
+  apply hm.comp
+
+
+#exit
+
 
 /-!
 ### Associativity of the composition of formal multilinear series
