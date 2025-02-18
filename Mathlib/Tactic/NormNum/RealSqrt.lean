@@ -33,24 +33,23 @@ lemma isNat_realSqrt_neg {x : ℝ} {nx : ℕ} (h : IsInt x (Int.negOfNat nx)) :
   refine Real.sqrt_eq_zero_of_nonpos ?_
   simp [h.out]
 
-lemma isNat_realSqrt_neg_of_isRat {x : ℝ} {num : ℤ} {denom : ℕ} (hnum : num ≤ 0)
-    (h : IsRat x num denom) : IsNat √x 0 := by
+lemma isNat_realSqrt_of_isRat_negOfNat {x : ℝ} {num : ℕ} {denom : ℕ}
+    (h : IsRat x (.negOfNat num) denom) : IsNat √x 0 := by
   refine ⟨?_⟩
+  obtain ⟨inv, rfl⟩ := h
   simp only [Nat.cast_zero]
   refine Real.sqrt_eq_zero_of_nonpos ?_
-  let .mk inv eq := h
-  simp only [eq]
-  refine mul_nonpos_of_nonpos_of_nonneg (by exact_mod_cast hnum) ?_
-  rw [invOf_nonneg]
-  exact Nat.cast_nonneg' denom
+  simp only [Int.cast_negOfNat, neg_mul, neg_nonpos]
+  exact mul_nonneg (Nat.cast_nonneg' _) (invOf_nonneg.2 <| Nat.cast_nonneg' _)
 
-lemma isRat_realSqrt {x : ℝ} {n sn : ℤ} {d sd : ℕ} (hn : sn * sn = n)
-    (hn₂ : 0 ≤ sn) (hd : sd * sd = d) (hd₂ : sd ≠ 0) (h : IsRat x n d) :
-    IsRat √x sn sd := by
+lemma isRat_realSqrt_of_isRat_ofNat {x : ℝ} {n sn : ℕ} {d sd : ℕ} (hn : sn * sn = n)
+    (hd : sd * sd = d) (hd₂ : sd ≠ 0) (h : IsRat x (.ofNat n) d) :
+    IsRat √x (.ofNat sn) sd := by
   refine .mk (invertibleOfNonzero (by exact_mod_cast hd₂)) ?out
   let .mk inv eq := h
   rw [eq, ← hn, invOf_eq_inv, ← hd]
-  simp only [Int.cast_mul, Nat.cast_mul, mul_inv_rev, invOf_eq_inv]
+  simp only [Int.ofNat_eq_coe, Int.cast_mul, Nat.cast_mul, mul_inv_rev, invOf_eq_inv,
+    Int.cast_natCast]
   rw [Real.sqrt_mul (mul_self_nonneg ↑sn)]
   aesop
 
@@ -75,26 +74,26 @@ def evalRealSqrt : NormNumExt where eval {u α} e := do
       assumeInstancesCommute
       return .isNat q(inferInstance) (mkRawNatLit 0) q(isNat_realSqrt_neg $pf)
   | .isRat sℝ eq en ed pf =>
-      let n' : ℤ := en.intLit!
       let d : ℕ := ed.natLit!
-      if n' ≤ 0 then
-        -- Square root of a negative number, defined to be zero
-        let hnum : Q($en ≤ 0) ← mkDecideProof q($en ≤ 0)
+      match en with
+      | .app (.const ``Int.negOfNat []) (n : Q(ℕ)) =>
+        have : (Int.negOfNat $n) =Q $en := ⟨⟩
         assumeInstancesCommute
-        return .isNat q(inferInstance) (mkRawNatLit 0) q(isNat_realSqrt_neg_of_isRat $hnum $pf)
-      let n : ℕ := n'.toNat
-      let sn : ℤ := Nat.sqrt n
-      let sd := Nat.sqrt d
-      if sn * sn = n ∧ sd * sd = d then
-        have esn : Q(ℤ) := mkRawIntLit sn
+        return .isNat q(inferInstance) (mkRawNatLit 0) q(isNat_realSqrt_of_isRat_negOfNat $pf)
+      | .app (.const ``Int.ofNat []) (n' : Q(ℕ)) =>
+        have : Int.ofNat $n' =Q $en := ⟨⟩
+        let n : ℕ := n'.natLit!
+        let sn := Nat.sqrt n
+        let sd := Nat.sqrt d
+        unless sn * sn = n ∧ sd * sd = d do failure
+        have esn : Q(ℕ) := mkRawNatLit sn
         have esd : Q(ℕ) := mkRawNatLit sd
-        let hn : Q($esn * $esn = $en) ← mkDecideProof q($esn * $esn = $en)
-        let hn₂ : Q(0 ≤ $esn) ← mkDecideProof q(0 ≤ $esn)
+        let hn : Q($esn * $esn = $n') ← mkDecideProof q($esn * $esn = $en)
         let hd : Q($esd * $esd = $ed) ← mkDecideProof q($esd * $esd = $ed)
         let hd₂ : Q($esd ≠ 0) ← mkDecideProof q($esd ≠ 0)
         assumeInstancesCommute
-        return .isRat sℝ (sn / sd) esn esd q(isRat_realSqrt $hn $hn₂ $hd $hd₂ $pf)
-      else failure
+        return .isRat sℝ (sn / sd) _ esd q(isRat_realSqrt_of_isRat_ofNat $hn $hd $hd₂ $pf)
+      | _ => failure
 
 /-- `norm_num` extension that evaluates the function `NNReal.sqrt`. -/
 @[norm_num NNReal.sqrt _]
