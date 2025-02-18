@@ -3,13 +3,14 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+import Mathlib.Geometry.Manifold.ContMDiff.Constructions
 import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.MFDeriv.Defs
 import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 /-!
-# Smooth manifolds with nice boundary
+# Smooth manifolds with smooth boundary
 
 Many manifolds coming up in differential geometry or applications have "nice" boundary,
 i.e. the boundary is again a (smooth) manifold one dimension lower.
@@ -59,8 +60,8 @@ on it, to vary freely: for applications in bordism theory, this proves impractic
 To formalise the statement "The manifold `W` has smooth boundary `M \sqcup N`", we could like
 to consider the disjoint union of two BoundaryManifoldData: this works best if we fix the model
 spaces and model with corners as part of their type.
-For this reason, the `ModelWithCorners` (and the underlying pair `(E, H)`) are part of this structure's
-parameters.
+For this reason, the `ModelWithCorners` (and the underlying pair `(E, H)`)
+are part of this structure's parameters.
 
 The first version of this said "I.boundary M is a smooth manifold".
 This proved hard to work with, as I.boundary M is a subset, and computing the boundary means
@@ -100,8 +101,8 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {k : ℕ∞}
   {E₀ H₀: Type*} [NormedAddCommGroup E₀] [NormedSpace ℝ E₀]
   [TopologicalSpace H₀] (I₀ : ModelWithCorners ℝ E₀ H₀)
   -- {M' : Type u} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I k M]
-  -- {N : Type u} [TopologicalSpace N] [ChartedSpace H' N]
-  -- {J : ModelWithCorners ℝ E' H'} [IsManifold J ⊤ N]
+  {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
+  {J : ModelWithCorners ℝ E' H'} [IsManifold J ⊤ N]
 
 instance (d : BoundaryManifoldData M I k I₀) : TopologicalSpace d.M₀ := d.topologicalSpaceM
 
@@ -270,24 +271,22 @@ lemma mfderiv_prod_map
 
 end PrereqsDiffGeo
 
-#exit
+open Topology Set
 
-variable (M I) in
+variable {I₀} (M I) in
 /-- If `M` is boundaryless and `N` has nice boundary, so does `M × N`. -/
 def BoundaryManifoldData.prod_of_boundaryless_left [BoundarylessManifold I M]
-    (bd : BoundaryManifoldData N J k) : BoundaryManifoldData (M × N) (I.prod J) k where
+    (bd : BoundaryManifoldData N J k I₀) :
+    BoundaryManifoldData (M × N) (I.prod J) k (I.prod I₀) where
   M₀ := M × bd.M₀
-  E₀ := E × bd.E₀
-  H₀ := ModelProd H bd.H₀
-  I₀ := I.prod bd.I₀
   f := Prod.map id bd.f
   isEmbedding := IsEmbedding.prodMap IsEmbedding.id bd.isEmbedding
   -- XXX: mathlib naming is inconsistent, prodMap vs prod_map; check if zulip consensus
-  isSmooth := sorry -- ContMDiff.prod_map contMDiff_id bd.isSmooth
+  contMDiff := ContMDiff.prod_map contMDiff_id bd.contMDiff
   -- TODO: tweak this definition, by demanding this only for 1 ≤ k
   isImmersion x := by
     have : (1 : WithTop ℕ∞) ≤ k := sorry
-    rw [mfderiv_prod_map mdifferentiableAt_id ((bd.isSmooth x.2).mdifferentiableAt this)]
+    rw [mfderiv_prod_map mdifferentiableAt_id ((bd.contMDiff x.2).mdifferentiableAt this)]
     apply Function.Injective.prodMap
     · rw [mfderiv_id]
       exact fun ⦃a₁ a₂⦄ a ↦ a
@@ -297,20 +296,17 @@ def BoundaryManifoldData.prod_of_boundaryless_left [BoundarylessManifold I M]
     congr
     exact bd.range_eq_boundary
 
-variable (N J) in
+variable {I₀} (N J) in
 /-- If `M` has nice boundary and `N` is boundaryless, `M × N` has nice boundary. -/
-def BoundaryManifoldData.prod_of_boundaryless_right (bd : BoundaryManifoldData M I k)
-    [BoundarylessManifold J N] : BoundaryManifoldData (M × N) (I.prod J) k where
+def BoundaryManifoldData.prod_of_boundaryless_right (bd : BoundaryManifoldData M I k I₀)
+    [BoundarylessManifold J N] : BoundaryManifoldData (M × N) (I.prod J) k (I₀.prod J) where
   M₀ := bd.M₀ × N
-  E₀ := bd.E₀ × E'
-  H₀ := ModelProd bd.H₀ H'
-  I₀ := bd.I₀.prod J
   f := Prod.map bd.f id
   isEmbedding := IsEmbedding.prodMap bd.isEmbedding IsEmbedding.id
-  isSmooth := sorry -- ContMDiff.prod_map bd.isSmooth contMDiff_id
+  contMDiff := ContMDiff.prod_map bd.contMDiff contMDiff_id
   isImmersion x := by
     have : (1 : WithTop ℕ∞) ≤ k := sorry
-    rw [mfderiv_prod_map ((bd.isSmooth x.1).mdifferentiableAt this) mdifferentiableAt_id]
+    rw [mfderiv_prod_map ((bd.contMDiff x.1).mdifferentiableAt this) mdifferentiableAt_id]
     apply Function.Injective.prodMap
     · exact bd.isImmersion _
     · rw [mfderiv_id]
@@ -320,15 +316,7 @@ def BoundaryManifoldData.prod_of_boundaryless_right (bd : BoundaryManifoldData M
     congr
     exact bd.range_eq_boundary
 
--- XXX: are these two lemmas useful?
-lemma BoundaryManifoldData.prod_of_boundaryless_left_model
-    [BoundarylessManifold I M] (bd : BoundaryManifoldData N J k) :
-  (BoundaryManifoldData.prod_of_boundaryless_left M I bd).I₀ = I.prod bd.I₀ := rfl
-
-lemma BoundaryManifoldData.prod_of_boundaryless_right_model
-    (bd : BoundaryManifoldData M I k) [BoundarylessManifold J N] :
-  (BoundaryManifoldData.prod_of_boundaryless_right N J bd).I₀ = bd.I₀.prod J := rfl
-
+#exit
 /-- If `M` is an `n`-dimensional `C^k`-manifold modelled on finite-dimensional Euclidean half-space,
 its boundary is an `n-1`-manifold.
 TODO: this is not strong enough; also need that M has boundary captured by the boundary
