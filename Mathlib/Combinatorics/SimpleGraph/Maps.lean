@@ -272,6 +272,11 @@ def mapSpanningSubgraphs {G G' : SimpleGraph V} (h : G ≤ G') : G →g G' where
   toFun x := x
   map_rel' ha := h ha
 
+lemma mapSpanningSubgraph_inj {G G' : SimpleGraph V} (h : G ≤ G') :
+    Function.Injective (Hom.mapSpanningSubgraphs h) := by
+  intro v w hvw
+  simpa [Hom.mapSpanningSubgraphs_apply] using hvw
+
 theorem mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective f.mapEdgeSet := by
   rintro ⟨e₁, h₁⟩ ⟨e₂, h₂⟩
   dsimp [Hom.mapEdgeSet]

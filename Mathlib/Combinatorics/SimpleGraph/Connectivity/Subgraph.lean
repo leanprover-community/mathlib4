@@ -190,6 +190,13 @@ theorem toSubgraph_map (f : G →g G') (p : G.Walk u v) :
     (p.map f).toSubgraph = p.toSubgraph.map f := by induction p <;> simp [*, Subgraph.map_sup]
 
 @[simp]
+lemma adj_toSubgraph_mapLe {G' : SimpleGraph V} {w x : V} (p : G.Walk u v) (h : G ≤ G') :
+    (p.mapLe h).toSubgraph.Adj w x ↔ p.toSubgraph.Adj w x  := by
+  simp only [Walk.toSubgraph_map, Subgraph.map_adj]
+  nth_rewrite 1 [← Hom.mapSpanningSubgraphs_apply h w, ← Hom.mapSpanningSubgraphs_apply h x]
+  rw [Relation.map_apply_apply (Hom.mapSpanningSubgraph_inj h) (Hom.mapSpanningSubgraph_inj h)]
+
+@[simp]
 theorem finite_neighborSet_toSubgraph (p : G.Walk u v) : (p.toSubgraph.neighborSet w).Finite := by
   induction p with
   | nil =>

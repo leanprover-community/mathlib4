@@ -361,12 +361,23 @@ lemma IsCycles.induce_supp (c : G.ConnectedComponent) (h : G.IsCycles) :
   ext w'
   simp only [mem_neighborSet, c.adj_spanningCoe_induce_supp, hw, true_and]
 
-lemma IsCycle.IsCycles_toSubgraph_spanningCoe {u : V} {p : G.Walk u u} (hpc : p.IsCycle) :
+lemma IsCycle.isCycles_toSubgraph_spanningCoe {u : V} {p : G.Walk u u} (hpc : p.IsCycle) :
     p.toSubgraph.spanningCoe.IsCycles := by
   intro v hv
   apply hpc.ncard_neighborSet_toSubgraph_eq_two
   obtain ⟨_, hw⟩ := hv
   exact p.mem_verts_toSubgraph.mp <| p.toSubgraph.edge_vert hw
+
+lemma Walk.IsPath.isCycles_toSubgraph_sup_edge {u v} {p : G.Walk u v} (hp : p.IsPath) (h : u ≠ v)
+    (hs : s(v, u) ∉ p.edges) : (p.toSubgraph.spanningCoe ⊔ edge v u).IsCycles := by
+  let c := Walk.cons (by simp [h.symm] : (completeGraph V).Adj v u) (p.mapLe (OrderTop.le_top G))
+  have : p.toSubgraph.spanningCoe ⊔ edge v u = c.toSubgraph.spanningCoe := by
+    ext w x
+    simp only [sup_adj, Subgraph.spanningCoe_adj, completeGraph_eq_top, edge_adj, c,
+      SimpleGraph.Walk.toSubgraph.eq_2, Subgraph.sup_adj, subgraphOfAdj_adj,
+      Walk.adj_toSubgraph_mapLe]
+    aesop
+  exact this ▸ IsCycle.isCycles_toSubgraph_spanningCoe (by simp [Walk.cons_isCycle_iff, c, hp, hs])
 
 lemma Walk.IsCycle.toSubgraph_adj_iff_of_isCycles [Finite V] {u} {p : G.Walk u u} (hp : p.IsCycle)
     (hcyc : G.IsCycles) (hv : v ∈ p.toSubgraph.verts) : ∀ w, p.toSubgraph.Adj v w ↔ G.Adj v w := by
@@ -378,7 +389,6 @@ lemma Walk.IsCycle.toSubgraph_adj_iff_of_isCycles [Finite V] {u} {p : G.Walk u u
             hp.ncard_neighborSet_toSubgraph_eq_two (by aesop), Set.nonempty_of_ncard_ne_zero]
   rw [← Cardinal.eq, ← Set.cast_ncard (Set.toFinite _), ← Set.cast_ncard (Set.toFinite _),
         hcyc h, hp.ncard_neighborSet_toSubgraph_eq_two (by aesop)]
-
 
 open scoped symmDiff
 
