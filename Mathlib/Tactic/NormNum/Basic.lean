@@ -498,6 +498,10 @@ theorem isNat_natSucc : {a : ℕ} → {a' c : ℕ} →
     IsNat a a' → Nat.succ a' = c → IsNat (a.succ) c
   | _, _,_, ⟨rfl⟩, rfl => ⟨by simp⟩
 
+theorem isNat_natPred : {a : ℕ} → {a' c : ℕ} → 
+    IsNat a a' → Nat.pred a' = c → IsNat a.pred c
+  | _, _,_, ⟨rfl⟩, rfl => ⟨by simp⟩
+
 /-- The `norm_num` extension which identifies expressions of the form `Nat.succ a`,
 such that `norm_num` successfully recognises `a`. -/
 @[norm_num Nat.succ _] def evalNatSucc : NormNumExt where eval {u α} e := do
