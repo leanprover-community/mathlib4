@@ -23,8 +23,7 @@ More precisely, `T` maps `X_i` to `X_i + X_0 ^ r_i` when `i ≠ 0`, and `X_0` to
 Here we choose `r_i` to be `up ^ i` where `up` is big enough, so that `T` maps
   different monomials of `f` to polynomials with different degrees in `X_0`. See `T_degree_inj`.
 
-Second we construct the following maps: Let `I` be an ideal containing `f`.
-  `φ : k[X_0,...X_{n-1}] ≃ₐ[k] k[X_1,...X_n][X]`
+Second we construct the following maps: Let `I` be an ideal containing `f` and let `φ : k[X_0,...X_{n-1}] ≃ₐ[k] k[X_1,...X_n][X]` be the natural isomorphism.
   `hom1 : k[X_0,...X_{n-1}] →ₐ[k[X_0,...X_{n-1}]] k[X_1,...X_n][X]/φ(T(I))`
   `eqv1 : k[X_1,...X_n][X]/φ(T(I)) ≃ₐ[k] k[X_0,...,X_n]/T(I)`
   `eqv2 : k[X_0,...,X_n]/T(I) ≃ₐ[k] k[X_0,...,X_n]/I`
