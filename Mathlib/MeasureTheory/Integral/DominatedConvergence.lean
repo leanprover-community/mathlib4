@@ -501,8 +501,8 @@ theorem continuous_primitive (h_int : ∀ a b, IntervalIntegrable f μ a b) (a :
     Continuous fun b => ∫ x in a..b, f x ∂μ := by
   rw [continuous_iff_continuousAt]
   intro b₀
-  cases' exists_lt b₀ with b₁ hb₁
-  cases' exists_gt b₀ with b₂ hb₂
+  obtain ⟨b₁, hb₁⟩ := exists_lt b₀
+  obtain ⟨b₂, hb₂⟩ := exists_gt b₀
   apply ContinuousWithinAt.continuousAt _ (Icc_mem_nhds hb₁ hb₂)
   exact continuousWithinAt_primitive (measure_singleton b₀) (h_int _ _)
 
@@ -521,8 +521,8 @@ theorem continuous_parametric_primitive_of_continuous
   apply Metric.continuousAt_iff'.2 (fun ε εpos ↦ ?_)
   -- choose `a` and `b` such that `(a, b)` contains both `a₀` and `b₀`. We will use uniform
   -- estimates on a neighborhood of the compact set `{q} × [a, b]`.
-  cases' exists_lt (min a₀ b₀) with a a_lt
-  cases' exists_gt (max a₀ b₀) with b lt_b
+  obtain ⟨a, a_lt⟩ := exists_lt (min a₀ b₀)
+  obtain ⟨b, lt_b⟩ := exists_gt (max a₀ b₀)
   rw [lt_min_iff] at a_lt
   rw [max_lt_iff] at lt_b
   have : IsCompact ({q} ×ˢ (Icc a b)) := isCompact_singleton.prod isCompact_Icc
