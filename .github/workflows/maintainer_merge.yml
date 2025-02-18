@@ -19,6 +19,7 @@ jobs:
     # both set simultaneously: depending on the event that triggers the PR, usually only one is set
     env:
       AUTHOR: ${{ github.event.comment.user.login }}${{ github.event.review.user.login }}
+      PR_AUTHOR: ${{ github.event.issue.user.login }}${{ github.event.pull_request.user.login }}
       PR_NUMBER: ${{ github.event.issue.number }}${{ github.event.pull_request.number }}
       COMMENT_EVENT: ${{ github.event.comment.body }}
       COMMENT_REVIEW: ${{ github.event.review.body }}
@@ -32,6 +33,7 @@ jobs:
       - name: Find maintainer merge/delegate
         id: merge_or_delegate
         run: |
+          echo "PR author: ${PR_AUTHOR}"
           COMMENT="${COMMENT_EVENT}${COMMENT_REVIEW}"
 
           # we strip `\r` since line endings from GitHub contain this character
@@ -81,7 +83,7 @@ jobs:
 
           echo ""
           message="$(
-            ./scripts/maintainer_merge_message.sh "${AUTHOR}" "${{ steps.merge_or_delegate.outputs.mOrD }}" "${EVENT_NAME}" "${PR_NUMBER}" "${PR_URL}" "${PR_TITLE_ISSUE}${PR_TITLE_PR}" "${COMMENT_EVENT}${COMMENT_REVIEW}"
+            ./scripts/maintainer_merge_message.sh "${AUTHOR}" "${{ steps.merge_or_delegate.outputs.mOrD }}" "${EVENT_NAME}" "${PR_NUMBER}" "${PR_URL}" "${PR_TITLE_ISSUE}${PR_TITLE_PR}" "${COMMENT_EVENT}${COMMENT_REVIEW}" "${PR_AUTHOR}"
           )"
           printf 'title<<EOF\n%s\nEOF' "${message}" | tee "$GITHUB_OUTPUT"
 

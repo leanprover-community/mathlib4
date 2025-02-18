@@ -181,3 +181,22 @@ def Pi.monoidHomMulEquiv {ι : Type*} [Fintype ι] [DecidableEq ι] (M : ι → 
       MonoidHom.mul_apply, mul_apply]
 
 end MulEquiv
+
+variable [Finite ι] [DecidableEq ι] {M : Type*}
+
+-- manually additivized to fix variable names
+-- See https://github.com/leanprover-community/mathlib4/issues/11462
+lemma Pi.single_induction [AddCommMonoid M] (p : (ι → M) → Prop) (f : ι → M)
+    (zero : p 0) (add : ∀ f g, p f → p g → p (f + g))
+    (single : ∀ i m, p (Pi.single i m)) : p f := by
+  cases nonempty_fintype ι
+  rw [← Finset.univ_sum_single f]
+  exact Finset.sum_induction _ _ add zero (by simp [single])
+
+@[to_additive (attr := elab_as_elim) existing]
+lemma Pi.mulSingle_induction [CommMonoid M] (p : (ι → M) → Prop) (f : ι → M)
+    (one : p 1) (mul : ∀ f g, p f → p g → p (f * g))
+    (mulSingle : ∀ i m, p (Pi.mulSingle i m)) : p f := by
+  cases nonempty_fintype ι
+  rw [← Finset.univ_prod_mulSingle f]
+  exact Finset.prod_induction _ _ mul one (by simp [mulSingle])

@@ -162,7 +162,7 @@ Instead of directly providing the data we opt instead for a `Prop` class. In all
 the continuous functional calculus is uniquely determined, and utilizing this approach
 prevents diamonds or problems arising from multiple instances. -/
 class ContinuousFunctionalCalculus (R : Type*) {A : Type*} (p : outParam (A → Prop))
-    [CommSemiring R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
+    [CommSemiring R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
     [Ring A] [StarRing A] [TopologicalSpace A] [Algebra R A] : Prop where
   predicate_zero : p 0
   [compactSpace_spectrum (a : A) : CompactSpace (spectrum R a)]
@@ -191,7 +191,7 @@ from one on a larger ring (i.e., to go from a continuous functional calculus ove
 elements to one over `ℝ` for selfadjoint elements), and proving this additional property is
 preserved would be burdensome or impossible. -/
 class ContinuousMap.UniqueHom (R A : Type*) [CommSemiring R] [StarRing R]
-    [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
+    [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
     [TopologicalSpace A] [Algebra R A] : Prop where
   eq_of_continuous_of_map_id (s : Set R) [CompactSpace s]
     (φ ψ : C(s, R) →⋆ₐ[R] A) (hφ : Continuous φ) (hψ : Continuous ψ)
@@ -202,7 +202,7 @@ class ContinuousMap.UniqueHom (R A : Type*) [CommSemiring R] [StarRing R]
   ContinuousMap.UniqueHom
 
 variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R]
-variable [TopologicalSemiring R] [ContinuousStar R] [TopologicalSpace A] [Ring A] [StarRing A]
+variable [IsTopologicalSemiring R] [ContinuousStar R] [TopologicalSpace A] [Ring A] [StarRing A]
 variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R p]
 
 include instCFC in
@@ -485,7 +485,7 @@ lemma cfc_add_const (r : R) (f : R → R) (a : A)
 open Finset in
 lemma cfc_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
     (hf : ∀ i ∈ s, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
-    cfc (∑ i in s, f i)  a = ∑ i in s, cfc (f i) a := by
+    cfc (∑ i ∈ s, f i)  a = ∑ i ∈ s, cfc (f i) a := by
   by_cases ha : p a
   · have hsum : s.sum f = fun z => ∑ i ∈ s, f i z := by ext; simp
     have hf' : ContinuousOn (∑ i : s, f i) (spectrum R a) := by
@@ -721,7 +721,7 @@ end Basic
 section Inv
 
 variable {R A : Type*} {p : A → Prop} [Semifield R] [StarRing R] [MetricSpace R]
-variable [TopologicalSemiring R] [ContinuousStar R] [TopologicalSpace A]
+variable [IsTopologicalSemiring R] [ContinuousStar R] [TopologicalSpace A]
 variable [Ring A] [StarRing A] [Algebra R A] [ContinuousFunctionalCalculus R p]
 
 lemma isUnit_cfc_iff (f : R → R) (a : A) (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
@@ -834,7 +834,7 @@ end Inv
 section Neg
 
 variable {R A : Type*} {p : A → Prop} [CommRing R] [StarRing R] [MetricSpace R]
-variable [TopologicalRing R] [ContinuousStar R] [TopologicalSpace A]
+variable [IsTopologicalRing R] [ContinuousStar R] [TopologicalSpace A]
 variable [Ring A] [StarRing A] [Algebra R A] [ContinuousFunctionalCalculus R p]
 variable (f g : R → R) (a : A) (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
 variable (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac)
@@ -872,7 +872,7 @@ section Order
 section Semiring
 
 variable {R A : Type*} {p : A → Prop} [OrderedCommSemiring R] [StarRing R]
-variable [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
+variable [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
 variable [∀ (α) [TopologicalSpace α], StarOrderedRing C(α, R)]
 variable [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
 variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R p]
@@ -978,7 +978,7 @@ end NNReal
 section Ring
 
 variable {R A : Type*} {p : A → Prop} [OrderedCommRing R] [StarRing R]
-variable [MetricSpace R] [TopologicalRing R] [ContinuousStar R]
+variable [MetricSpace R] [IsTopologicalRing R] [ContinuousStar R]
 variable [∀ (α) [TopologicalSpace α], StarOrderedRing C(α, R)]
 variable [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
 variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R p]
@@ -1046,7 +1046,7 @@ end Order
 section Superset
 
 variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R]
-    [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
+    [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
     [TopologicalSpace A] [Algebra R A] [instCFC : ContinuousFunctionalCalculus R p]
 
 /-- The composition of `cfcHom` with the natural embedding `C(s, R) → C(spectrum R a, R)`

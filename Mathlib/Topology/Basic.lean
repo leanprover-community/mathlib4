@@ -3,11 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Lift
-import Mathlib.Topology.Defs.Filter
-import Mathlib.Topology.Defs.Basic
 import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Order.Filter.Lift
+import Mathlib.Topology.Defs.Basic
+import Mathlib.Topology.Defs.Filter
 
 /-!
 # Basic theory of topological spaces.

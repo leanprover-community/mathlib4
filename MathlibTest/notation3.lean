@@ -84,14 +84,16 @@ notation3 "∀ᶠᶠ " (...) " in " f ": "
 #guard_msgs in #check foobar (fun y ↦ Eq y 1) (Filter.atTop.eventually fun x ↦ LT.lt x 3)
 
 notation3 "∃' " (...) ", " r:(scoped p => Exists p) => r
-/-- info: ∃' (x : ℕ) (_ : x < 3), x < 3 : Prop -/
-#guard_msgs in #check ∃' x < 3, x < 3
+/-- info: ∃' (a : ℕ) (_ : a < 3), a < 3 : Prop -/
+#guard_msgs in #check ∃' a < 3, a < 3
+/-- info: ∃' (x : ℕ) (_ : x < 3), True : Prop -/
+#guard_msgs in #check ∃' _ < 3, True
+/-- info: ∃' (x : ℕ) (_ : x < 1) (x_1 : ℕ) (_ : x_1 < 2), x = 0 : Prop -/
+#guard_msgs in #check ∃' (x < 1) (_ < 2), x = 0
 
 def func (x : α) : α := x
 notation3 "func! " (...) ", " r:(scoped p => func p) => r
--- Make sure it handles additional arguments. Should not consume `(· * 2)`.
--- Note: right now this causes the notation to not pretty print at all.
-/-- info: func (fun x ↦ x) fun x ↦ x * 2 : ℕ → ℕ -/
+/-- info: (func! (x : ℕ → ℕ), x) fun x ↦ x * 2 : ℕ → ℕ -/
 #guard_msgs in #check (func! (x : Nat → Nat), x) (· * 2)
 
 structure MyUnit where
@@ -236,8 +238,8 @@ info: [notation3] syntax declaration has name Test.termδNat
 (matchExpr✝ (Expr.isConstOf✝ · `Nat)))
           pure✝ >=>
         pure✝
-[notation3] Defined delaborator Test.termδNat.delab
-[notation3] Adding `delab` attribute for keys [app.Inhabited.default]
+[notation3] Creating delaborator for key Mathlib.Notation3.DelabKey.app (some `Inhabited.default) 2
+[notation3] Defined delaborator Test.termδNat.«delab_app.Inhabited.default»
 -/
 #guard_msgs in
 set_option trace.notation3 true in
@@ -247,5 +249,21 @@ notation3 "δNat" => (default : Nat)
 #guard_msgs in #check (default : Nat)
 /-- info: δNat : ℕ -/
 #guard_msgs in #check @default Nat (Inhabited.mk 5)
+
+
+notation3 "(" "ignorez " "SVP" ")" => Sort _
+notation3 "Objet " "mathématique " "supérieur" => Type _
+notation3 "Énoncé" => Prop
+notation3 "Objet " "mathématique" => Type
+/-- info: 1 = 1 : Énoncé -/
+#guard_msgs in #check 1 = 1
+/-- info: Énoncé : Objet mathématique -/
+#guard_msgs in #check Prop
+/-- info: Nat : Objet mathématique -/
+#guard_msgs in #check Nat
+/-- info: Objet mathématique : Objet mathématique supérieur -/
+#guard_msgs in #check Type
+/-- info: PSum.{u, v} (α : (ignorez SVP)) (β : (ignorez SVP)) : (ignorez SVP) -/
+#guard_msgs in #check PSum
 
 end Test

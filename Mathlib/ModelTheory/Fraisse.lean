@@ -192,13 +192,12 @@ theorem age.countable_quotient [h : Countable M] : (Quotient.mk' '' L.age M).Cou
     exact ⟨⟨(fg_iff_structure_fg _).1 (fg_closure s.finite_toSet), ⟨Substructure.subtype _⟩⟩, hs⟩
   · simp only [mem_range, Quotient.eq]
     rintro ⟨P, ⟨⟨s, hs⟩, ⟨PM⟩⟩, hP2⟩
-    have : P ≈ N := by apply Quotient.eq'.mp; rw [hP2]; rfl -- Porting note: added
-    refine ⟨s.image PM, Setoid.trans (b := P) ?_ this⟩
+    refine ⟨s.image PM, Setoid.trans (b := P) ?_ <| Quotient.exact hP2⟩
     rw [← Embedding.coe_toHom, Finset.coe_image, closure_image PM.toHom, hs, ← Hom.range_eq_map]
     exact ⟨PM.equivRange.symm⟩
 
+-- This is not a simp-lemma because it does not apply to itself.
 /-- The age of a direct limit of structures is the union of the ages of the structures. -/
--- @[simp] -- Porting note: cannot simplify itself
 theorem age_directLimit {ι : Type w} [Preorder ι] [IsDirected ι (· ≤ ·)] [Nonempty ι]
     (G : ι → Type max w w') [∀ i, L.Structure (G i)] (f : ∀ i j, i ≤ j → G i ↪[L] G j)
     [DirectedSystem G fun i j h => f i j h] : L.age (DirectLimit G f) = ⋃ i : ι, L.age (G i) := by
@@ -238,7 +237,7 @@ theorem exists_cg_is_age_of (hn : K.Nonempty)
     exact (hp.is_equiv_invariant_of_fg fg _ _ hP2).1 hP1
   choose P hPK hP hFP using fun (N : K) (n : ℕ) => jep N N.2 (F (n + 1)).out (hF' _)
   let G : ℕ → K := @Nat.rec (fun _ => K) ⟨(F 0).out, hF' 0⟩ fun n N => ⟨P N n, hPK N n⟩
-  -- Poting note: was
+  -- Porting note: was
   -- let f : ∀ i j, i ≤ j → G i ↪[L] G j := DirectedSystem.natLeRec fun n => (hP _ n).some
   let f : ∀ (i j : ℕ), i ≤ j → (G i).val ↪[L] (G j).val := by
     refine DirectedSystem.natLERec (G' := fun i => (G i).val) (L := L) ?_
@@ -253,7 +252,7 @@ theorem exists_cg_is_age_of (hn : K.Nonempty)
     have : Quotient.out (Quotient.mk' N) ≈ N := Quotient.eq_mk_iff_out.mp rfl
     obtain ⟨n, ⟨e⟩⟩ := (hF N).1 ⟨N, KN, this⟩
     refine mem_iUnion_of_mem n ⟨fg _ KN, ⟨Embedding.comp ?_ e.symm.toEmbedding⟩⟩
-    cases' n with n
+    rcases n with - | n
     · dsimp [G]; exact Embedding.refl _ _
     · dsimp [G]; exact (hFP _ n).some
 
