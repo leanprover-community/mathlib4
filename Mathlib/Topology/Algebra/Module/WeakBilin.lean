@@ -137,17 +137,13 @@ instance instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (We
     LinearMap.smul_apply]
 
 /--
-Map F into the topological dual of E with the weak topology induced by F
+Map `F` into the topological dual of `E` with the weak topology induced by `F`
 -/
-def _root_.LinearMap.dualPairing [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜] :
-    F →ₗ[𝕜] (WeakBilin B) →L[𝕜] 𝕜 where
-  toFun := fun x => ⟨B.flip x, WeakBilin.eval_continuous _ _⟩
-  map_add' := fun x y => by
-    simp only [map_add]
-    rfl
-  map_smul' := fun r x => by
-    simp only [map_smul, RingHom.id_apply]
-    rfl
+def eval [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜] :
+    F →ₗ[𝕜] WeakBilin B →L[𝕜] 𝕜 where
+  toFun f := ⟨B.flip f, by fun_prop⟩
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
 
 end Semiring
 
