@@ -12,8 +12,8 @@ This file contains a proof by Nagata of the Noether normalization lemma.
 
 ## Main Results
 Let `A` be a finitely generated algebra over a field `k`.
-Then there exists a natural number `r` and an injective homomorphism
-from `k[X_1, X_2, ..., X_r]` to `A` such that `A` is integral over `k[X_1, X_2, ..., X_r]`.
+Then there exists a natural number `s` and an injective homomorphism
+from `k[X_0, X_1, ..., X_(s-1)]` to `A` such that `A` is integral over `k[X_0, X_1, ..., X_(s-1)]`.
 
 ## Strategy of the proof
 Suppose `f` is a nonzero polynomial in `n+1` variables.
@@ -33,7 +33,7 @@ let `φ : k[X_0,...X_{n-1}] ≃ₐ[k] k[X_1,...X_n][X]` be the natural isomorphi
 `hom1` is integral because `φ(T(I))` contains a monic polynomial. See `hom1_isIntegral`.
 `hom2` is integral because it's the composition of integral maps. See `hom2_isIntegral`.
 
-Finally We use induction to prove there is an injective map from `k[X_0,...,X_{r-1}]`
+Finally We use induction to prove there is an injective map from `k[X_0,...,X_{s-1}]`
   to `k[X_0,...,X_(n-1)]/I`.The case `n=0` is trivial.
 For `n+1`, if `I = 0` there is nothing to do.
 Otherwise, `hom2` induces a map `φ` by quotient kernel.
@@ -229,7 +229,7 @@ section mainthm
 open NoetherNormalization
 
 /-- There exists some `s ≤ n` and an integral injective algebra homomorphism
-from `k[X_0,...,X_(r-1)]` to `k[X_0,...,X_(n-1)]/I` if `I ≠ ⊤`.-/
+from `k[X_0,...,X_(s-1)]` to `k[X_0,...,X_(n-1)]/I` if `I ≠ ⊤`.-/
 theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) k))
     (hi : I ≠ ⊤) : ∃ s ≤ n, ∃ g : (MvPolynomial (Fin s) k) →ₐ[k] ((MvPolynomial (Fin n) k) ⧸ I),
     Function.Injective g ∧ g.IsIntegral := by
@@ -264,8 +264,8 @@ variable (k R : Type*) [Field k] [CommRing R] [Nontrivial R] [a : Algebra k R]
 
 /-- **Noether normalization lemma**
 For a finitely generated algebra `A` over a field `k`,
-there exists a natural number `r` and an injective homomorphism
-from `k[X_1, X_2, ..., X_r]` to `A` such that `A` is integral over `k[X_1, X_2, ..., X_r]`.
+there exists a natural number `s` and an injective homomorphism
+from `k[X_0, X_1, ..., X_(s-1)]` to `A` such that `A` is integral over `k[X_0, X_1, ..., X_(s-1)]`.
 -/
 @[stacks 00OW]
 theorem exists_integral_inj_algHom_of_fg : ∃ s, ∃ g : (MvPolynomial (Fin s) k) →ₐ[k] R,
@@ -279,8 +279,8 @@ theorem exists_integral_inj_algHom_of_fg : ∃ s, ∃ g : (MvPolynomial (Fin s) 
   exact ⟨injg, intg.trans _ _ (isIntegral_of_surjective _ ϕ.surjective)⟩
 
 /-- For a finitely generated algebra `A` over a field `k`,
-there exists a natural number `r` and an injective homomorphism
-from `k[X_1, X_2, ..., X_r]` to `A` such that `A` is finite over `k[X_1, X_2, ..., X_r]`. -/
+there exists a natural number `s` and an injective homomorphism
+from `k[X_0, X_1, ..., X_(s-1)]` to `A` such that `A` is finite over `k[X_0, X_1, ..., X_(s-1)]`. -/
 theorem exists_finite_inj_algHom_of_fg : ∃ s, ∃ g : (MvPolynomial (Fin s) k) →ₐ[k] R,
     Function.Injective g ∧ g.Finite := by
   obtain ⟨s, g, ⟨inj, int⟩⟩ := exists_integral_inj_algHom_of_fg k R
