@@ -438,7 +438,7 @@ theorem negPart_toSimpleFunc (f : α →₁ₛ[μ] ℝ) :
   rw [h₁]
   show max _ _ = max _ _
   rw [h₂]
-  simp only [Pi.neg_apply, SimpleFunc.coe_neg]
+  simp
 
 theorem integral_eq_norm_posPart_sub (f : α →₁ₛ[μ] ℝ) : integral f = ‖posPart f‖ - ‖negPart f‖ := by
   -- Convert things in `L¹` to their `SimpleFunc` counterpart

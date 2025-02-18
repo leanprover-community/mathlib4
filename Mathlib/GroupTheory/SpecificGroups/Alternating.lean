@@ -306,8 +306,7 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
     have h13 : (1 : Fin 5) ≠ 3 := by decide
     rw [Disjoint.cycleType, (isCycle_swap h04).cycleType, (isCycle_swap h13).cycleType,
       card_support_swap h04, card_support_swap h13]
-    · simp only [Multiset.coe_singleton, Multiset.singleton_add, Multiset.replicate_succ,
-        Multiset.replicate_zero, Multiset.cons_zero]
+    · simp
     · rw [disjoint_iff_disjoint_support, support_swap h04, support_swap h13]
       decide
   · contradiction
