@@ -238,13 +238,10 @@ lemma compProd_apply_prod {κ : Kernel α β} {η : Kernel (α × β) γ}
     (κ ⊗ₖ η) a (s ×ˢ t) = ∫⁻ b in s, η (a, b) t ∂(κ a) := by
   rw [compProd_apply (hs.prod ht), ← lintegral_indicator hs]
   congr with a
-  classical
-  rw [Set.indicator_apply]
-  split_ifs with ha <;> simp [ha]
+  by_cases ha : a ∈ s <;> simp [ha]
 
 lemma compProd_congr {κ : Kernel α β} {η η' : Kernel (α × β) γ}
-    [IsSFiniteKernel η] [IsSFiniteKernel η']
-    (h : ∀ a, ∀ᵐ b ∂(κ a), η (a, b) = η' (a, b)) :
+    [IsSFiniteKernel η] [IsSFiniteKernel η'] (h : ∀ a, ∀ᵐ b ∂(κ a), η (a, b) = η' (a, b)) :
     κ ⊗ₖ η = κ ⊗ₖ η' := by
   by_cases hκ : IsSFiniteKernel κ
   swap; · simp_rw [compProd_of_not_isSFiniteKernel_left _ _ hκ]

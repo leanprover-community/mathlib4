@@ -65,14 +65,15 @@ lemma compProd_apply_prod [SFinite μ] [IsSFiniteKernel κ]
     (μ ⊗ₘ κ) (s ×ˢ t) = ∫⁻ a in s, κ a t ∂μ := by
   simp [compProd, Kernel.compProd_apply_prod hs ht]
 
-lemma compProd_congr [IsSFiniteKernel κ] [IsSFiniteKernel η]
-    (h : κ =ᵐ[μ] η) : μ ⊗ₘ κ = μ ⊗ₘ η := by
+lemma compProd_congr [IsSFiniteKernel κ] [IsSFiniteKernel η] (h : κ =ᵐ[μ] η) :
+    μ ⊗ₘ κ = μ ⊗ₘ η := by
   rw [compProd, compProd]
   congr 1
   refine Kernel.compProd_congr ?_
   simpa
 
 @[simp] lemma compProd_zero_left (κ : Kernel α β) : (0 : Measure α) ⊗ₘ κ = 0 := by simp [compProd]
+
 @[simp] lemma compProd_zero_right (μ : Measure α) : μ ⊗ₘ (0 : Kernel α β) = 0 := by simp [compProd]
 
 lemma compProd_eq_zero_iff [SFinite μ] [IsSFiniteKernel κ] :
