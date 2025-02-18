@@ -19,8 +19,6 @@ this is the usual left or right quotient of a group by a subgroup.
 * `rel`: The double coset relation defined by two subgroups `H K` of `G`.
 * `Doset.quotient`: The quotient of `G` by the double coset relation, i.e, `H \ G / K`.
 -/
--- Porting note: removed import
--- import Mathlib.Tactic.Group
 
 variable {G : Type*} [Group G] {α : Type*} [Mul α]
 
@@ -83,7 +81,6 @@ theorem bot_rel_eq_leftRel (H : Subgroup G) :
   rw [rel_iff, QuotientGroup.leftRel_apply]
   constructor
   · rintro ⟨a, rfl : a = 1, b, hb, rfl⟩
-    change a⁻¹ * (1 * a * b) ∈ H
     rwa [one_mul, inv_mul_cancel_left]
   · rintro (h : a⁻¹ * b ∈ H)
     exact ⟨1, rfl, a⁻¹ * b, h, by rw [one_mul, mul_inv_cancel_left]⟩
@@ -94,7 +91,6 @@ theorem rel_bot_eq_right_group_rel (H : Subgroup G) :
   rw [rel_iff, QuotientGroup.rightRel_apply]
   constructor
   · rintro ⟨b, hb, a, rfl : a = 1, rfl⟩
-    change b * a * 1 * a⁻¹ ∈ H
     rwa [mul_one, mul_inv_cancel_right]
   · rintro (h : b * a⁻¹ ∈ H)
     exact ⟨b * a⁻¹, h, 1, rfl, by rw [mul_one, inv_mul_cancel_right]⟩

@@ -16,7 +16,6 @@ This file contains the Banach open mapping theorem, i.e., the fact that a biject
 bounded linear map between Banach spaces has a bounded inverse.
 -/
 
-open scoped Classical
 open Function Metric Set Filter Finset Topology NNReal
 
 open LinearMap (range ker)

@@ -81,7 +81,7 @@ theorem continuous_left_toIocMod : ContinuousWithinAt (toIocMod hp a) (Iic x) x 
   rw [(funext fun y => Eq.trans (by rw [neg_neg]) <| toIocMod_neg _ _ _ :
       toIocMod hp a = (fun x => p - x) ∘ toIcoMod hp (-a) ∘ Neg.neg)]
   -- Porting note: added
-  have : ContinuousNeg 𝕜 := TopologicalAddGroup.toContinuousNeg
+  have : ContinuousNeg 𝕜 := IsTopologicalAddGroup.toContinuousNeg
   exact
     (continuous_sub_left _).continuousAt.comp_continuousWithinAt <|
       (continuous_right_toIcoMod _ _ _).comp continuous_neg.continuousWithinAt fun y => neg_le_neg
@@ -478,7 +478,7 @@ theorem card_addOrderOf_eq_totient {n : ℕ} :
         erw [infinite_coe_iff]
         exact infinite_not_isOfFinAddOrder hu
       exact Nat.card_eq_zero_of_infinite
-    · have : IsEmpty { u : AddCircle p // ¬IsOfFinAddOrder u } := by simpa using h
+    · have : IsEmpty { u : AddCircle p // ¬IsOfFinAddOrder u } := by simpa [isEmpty_subtype] using h
       exact Nat.card_of_isEmpty
   · rw [← coe_setOf, Nat.card_congr (setAddOrderOfEquiv p hn),
       n.totient_eq_card_lt_and_coprime]

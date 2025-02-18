@@ -70,7 +70,7 @@ theorem emultiplicity_eq_card_pow_dvd {m n b : ℕ} (hm : m ≠ 1) (hn : 0 < n) 
               and_assoc, and_congr_right_iff, iff_and_self]
             intro hi h
             rw [← fin.pow_dvd_iff_le_multiplicity] at h
-            cases' m with m
+            rcases m with - | m
             · rw [zero_pow, zero_dvd_iff] at h
               exacts [(hn.ne' h).elim, one_le_iff_ne_zero.1 hi]
             refine LE.le.trans_lt ?_ hb
@@ -278,7 +278,7 @@ theorem emultiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), emultiplic
     by_cases hn : n = 0
     · subst hn
       simp only [ne_eq, bit_eq_zero_iff, true_and, Bool.not_eq_false] at h
-      simp only [h, factorial, mul_one, Nat.isUnit_iff, cast_one]
+      simp only [bit, h, cond_true, mul_zero, zero_add, factorial_one]
       rw [Prime.emultiplicity_one]
       · exact zero_lt_one
       · decide

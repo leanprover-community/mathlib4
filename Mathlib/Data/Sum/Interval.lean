@@ -42,7 +42,7 @@ theorem mem_sumLift₂ :
       (∃ a₁ b₁ c₁, a = inl a₁ ∧ b = inl b₁ ∧ c = inl c₁ ∧ c₁ ∈ f a₁ b₁) ∨
         ∃ a₂ b₂ c₂, a = inr a₂ ∧ b = inr b₂ ∧ c = inr c₂ ∧ c₂ ∈ g a₂ b₂ := by
   constructor
-  · cases' a with a a <;> cases' b with b b
+  · rcases a with a | a <;> rcases b with b | b
     · rw [sumLift₂, mem_map]
       rintro ⟨c, hc, rfl⟩
       exact Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩
@@ -217,10 +217,10 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder (α ⊕ β) where
   finsetIco := sumLift₂ Ico Ico
   finsetIoc := sumLift₂ Ioc Ioc
   finsetIoo := sumLift₂ Ioo Ioo
-  finset_mem_Icc := by rintro (a | a) (b | b) (x | x) <;> simp
-  finset_mem_Ico := by rintro (a | a) (b | b) (x | x) <;> simp
-  finset_mem_Ioc := by rintro (a | a) (b | b) (x | x) <;> simp
-  finset_mem_Ioo := by rintro (a | a) (b | b) (x | x) <;> simp
+  finset_mem_Icc := by simp
+  finset_mem_Ico := by simp
+  finset_mem_Ioc := by simp
+  finset_mem_Ioo := by simp
 
 variable (a₁ a₂ : α) (b₁ b₂ : β)
 

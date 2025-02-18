@@ -94,25 +94,20 @@ instance impartial_neg (G : PGame) [G.Impartial] : (-G).Impartial := by
   refine ⟨?_, fun i => ?_, fun i => ?_⟩
   · rw [neg_neg]
     exact Equiv.symm (neg_equiv_self G)
-  · rw [moveLeft_neg']
+  · rw [moveLeft_neg]
     exact impartial_neg _
-  · rw [moveRight_neg']
+  · rw [moveRight_neg]
     exact impartial_neg _
 termination_by G
 
 variable (G : PGame) [Impartial G]
 
 theorem nonpos : ¬0 < G := by
-  intro h
-  have h' := neg_lt_neg_iff.2 h
-  rw [neg_zero, lt_congr_left (Equiv.symm (neg_equiv_self G))] at h'
-  exact (h.trans h').false
+  apply (lt_asymm · ?_)
+  rwa [← neg_lt_neg_iff, neg_zero, ← lt_congr_right (neg_equiv_self G)]
 
 theorem nonneg : ¬G < 0 := by
-  intro h
-  have h' := neg_lt_neg_iff.2 h
-  rw [neg_zero, lt_congr_right (Equiv.symm (neg_equiv_self G))] at h'
-  exact (h.trans h').false
+  simpa using nonpos (-G)
 
 /-- In an impartial game, either the first player always wins, or the second player always wins. -/
 theorem equiv_or_fuzzy_zero : (G ≈ 0) ∨ G ‖ 0 := by
@@ -182,13 +177,13 @@ theorem forall_rightMoves_fuzzy_iff_equiv_zero : (∀ j, G.moveRight j ‖ 0) �
 theorem exists_left_move_equiv_iff_fuzzy_zero : (∃ i, G.moveLeft i ≈ 0) ↔ G ‖ 0 := by
   refine ⟨fun ⟨i, hi⟩ => (fuzzy_zero_iff_gf G).2 (lf_of_le_moveLeft hi.2), fun hn => ?_⟩
   rw [fuzzy_zero_iff_gf G, zero_lf_le] at hn
-  cases' hn with i hi
+  obtain ⟨i, hi⟩ := hn
   exact ⟨i, (equiv_zero_iff_ge _).2 hi⟩
 
 theorem exists_right_move_equiv_iff_fuzzy_zero : (∃ j, G.moveRight j ≈ 0) ↔ G ‖ 0 := by
   refine ⟨fun ⟨i, hi⟩ => (fuzzy_zero_iff_lf G).2 (lf_of_moveRight_le hi.1), fun hn => ?_⟩
   rw [fuzzy_zero_iff_lf G, lf_zero_le] at hn
-  cases' hn with i hi
+  obtain ⟨i, hi⟩ := hn
   exact ⟨i, (equiv_zero_iff_le _).2 hi⟩
 
 end Impartial

@@ -34,6 +34,8 @@ We also deduce that the corresponding maps are measurable embeddings.
 measurable, equivalence, group action
 -/
 
+open scoped Pointwise
+
 namespace MeasurableEquiv
 
 variable {G G₀ α : Type*} [MeasurableSpace G] [MeasurableSpace G₀] [MeasurableSpace α] [Group G]
@@ -201,3 +203,30 @@ def divLeft [MeasurableMul G] [MeasurableInv G] (g : G) : G ≃ᵐ G where
   measurable_invFun := measurable_inv.mul_const g
 
 end MeasurableEquiv
+
+namespace MeasureTheory.Measure
+variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A] [MeasurableSpace A]
+  -- We only need `MeasurableConstSMul G A` but we don't have this class. So we erroneously must
+  -- assume `MeasurableSpace G` + `MeasurableSMul G A`
+  [MeasurableSpace G] [MeasurableSMul G A]
+variable {μ ν : Measure A} {g : G}
+
+noncomputable instance : DistribMulAction Gᵈᵐᵃ (Measure A) where
+  smul g μ := μ.map (DomMulAct.mk.symm g⁻¹ • ·)
+  one_smul μ := show μ.map _ = _ by simp
+  mul_smul g g' μ := show μ.map _ = ((μ.map _).map _) by
+    rw [map_map]
+    · simp [Function.comp_def, mul_smul]
+    · exact measurable_const_smul ..
+    · exact measurable_const_smul ..
+  smul_zero g := show (0 : Measure A).map _ = 0 by simp
+  smul_add g μ ν := show (μ + ν).map _ = μ.map _ + ν.map _ by
+    rw [Measure.map_add]; exact measurable_const_smul ..
+
+lemma dmaSMul_apply (μ : Measure A) (g : Gᵈᵐᵃ) (s : Set A) :
+    (g • μ) s = μ (DomMulAct.mk.symm g • s) := by
+  refine ((MeasurableEquiv.smul ((DomMulAct.mk.symm g : G)⁻¹)).map_apply _).trans ?_
+  congr 1
+  exact Set.preimage_smul_inv (DomMulAct.mk.symm g) s
+
+end MeasureTheory.Measure
