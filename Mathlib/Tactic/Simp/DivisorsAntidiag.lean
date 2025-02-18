@@ -6,7 +6,7 @@ Authors: Yaël Dillies, Paul Lezeau
 import Mathlib.Data.Finset.Sort
 import Mathlib.Lean.Expr.Lit
 import Mathlib.NumberTheory.Divisors
-import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Simp.FinsetNat
 
 /-!
 # Simproc for `Int.divisorsAntidiag`
@@ -21,28 +21,55 @@ open
       Term
     Parser
       Tactic
+  Mathlib
+    Meta
+      NormNum
 
 namespace Mathlib.Tactic.Simp
 
--- #check Term.elabTermAndSynthesize
+open Finset
 
-/-- Simproc to compute `Int.divisorsAntidiag`. -/
-def divisorsAntidiag : Simproc := fun e ↦ do
-  match ← inferTypeQ e with
-  | ⟨1, ~q(Finset (ℤ × ℤ)), ~q(Int.divisorsAntidiag $e')⟩ =>
-    let some z ← intLitQq? e' | throwError s!"{e'} is not a integer literal"
-    logInfo s!"{z}"
-    -- let antidiag ← unsafe evalExpr (Finset <| ℤ × ℤ) q(ℕ) e
-    return .continue
-    -- let S : Finset (ℤ × ℤ) := {}
-    -- let _ ← (List.range (n+1)).mapM fun i =>
-  -- let n := Lean.ToExpr.toExpr n
-  -- let s : Q(Finset <| ℤ × ℤ) := q($(quote n))
-  -- return .continue
+/-- Given a natural number `n`, returns `(s, ⊢ Nat.divisorsAntidiagonal n = s)`. -/
+def evalNatDivisorsAntidiag {en enl : Q(ℕ)} (hn : Q(IsNat $en $enl)) :
+    MetaM ((l : Q(Finset (ℕ × ℕ))) × Q(Nat.divisorsAntidiagonal $en = $l)) := do
+  match enl.natLit! with
+  | 0 =>
+    have _ : $enl =Q nat_lit 0 := ⟨⟩
+    have hen : Q($en = 0) := q($(hn).out)
+    return ⟨_, q($hen ▸ Nat.primeFactorsList_zero)⟩
+  | 1 =>
+    let _ : $enl =Q nat_lit 1 := ⟨⟩
+    have hen : Q($en = 1) := q($(hn).out)
+    return ⟨_, q($hen ▸ Nat.primeFactorsList_one)⟩
+  | _ => do
+    have h2 : Q(IsNat 2 (nat_lit 2)) := q(⟨Eq.refl (nat_lit 2)⟩)
+    let ⟨l, p⟩ ← evalPrimeFactorsListAux hn h2
+    return ⟨l, q(($p).primeFactorsList_eq)⟩
 
-  | _ => return .continue
-
-simproc divisors_antidiag (Int.divisorsAntidiag _) := divisorsAntidiag
+/-- Given a natural number `n`, returns `(l, ⊢ Nat.primeFactorsList n = l)`. -/
+def evalDivisorsAntidiag
+    {en enl : Q(ℕ)} (hn : Q(IsNat $en $enl)) :
+    MetaM ((l : Q(List ℕ)) × Q(Nat.primeFactorsList $en = $l)) := do
+  match enl.natLit! with
+  | 0 =>
+    have _ : $enl =Q nat_lit 0 := ⟨⟩
+    have hen : Q($en = 0) := q($(hn).out)
+    return ⟨_, q($hen ▸ Nat.primeFactorsList_zero)⟩
+  | 1 =>
+    let _ : $enl =Q nat_lit 1 := ⟨⟩
+    have hen : Q($en = 1) := q($(hn).out)
+    return ⟨_, q($hen ▸ Nat.primeFactorsList_one)⟩
+  | _ => do
+    have h2 : Q(IsNat 2 (nat_lit 2)) := q(⟨Eq.refl (nat_lit 2)⟩)
+    let ⟨l, p⟩ ← evalPrimeFactorsListAux hn h2
+    return ⟨l, q(($p).primeFactorsList_eq)⟩
+>
+simproc divisors_antidiag (Int.divisorsAntidiag _) := fun e ↦ do
+  let ⟨1, ~q(Finset (ℤ × ℤ)), ~q(Int.divisorsAntidiag <| OfNat.ofNat $e)⟩ ← inferTypeQ e
+    | return .continue
+  let hn : Q(IsNat (OfNat.ofNat $e) $e) := q(⟨rfl⟩)
+  let ⟨l, p⟩ ← evalPrimeFactorsList hn
+  return .done { expr := l, proof? := p }
 
 example : Int.divisorsAntidiag 10 = {(-1, -1), (1, 1)} := by
   simp
