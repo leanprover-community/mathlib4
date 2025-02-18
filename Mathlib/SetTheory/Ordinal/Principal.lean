@@ -192,7 +192,7 @@ theorem exists_lt_add_of_not_principal_add (ha : ¬ Principal (· + ·) a) :
     ∃ b < a, ∃ c < a, b + c = a := by
   rw [not_principal_iff] at ha
   rcases ha with ⟨b, hb, c, hc, H⟩
-  refine ⟨b, hb, _, lt_of_le_of_ne (sub_le_self a b) fun hab => ?_,
+  refine ⟨b, hb, _, lt_of_le_of_ne (sub_le_self a b) fun hab ↦ ?_,
     Ordinal.add_sub_cancel_of_le hb.le⟩
   rw [← sub_le, hab] at H
   exact H.not_lt hc
@@ -207,7 +207,7 @@ theorem principal_add_iff_add_self_lt : Principal (· + ·) a ↔ ∀ b < a, b +
   principal_iff_of_monotone
     (fun x _ _ h => add_le_add_left h x) (fun x _ _ h => add_le_add_right h x)
 
-theorem principal_add_omega0 : Principal (· + ·) ω := fun a b ha hb =>
+theorem principal_add_omega0 : Principal (· + ·) ω := fun a b ha hb ↦
   match a, b, lt_omega0.1 ha, lt_omega0.1 hb with
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by
     dsimp only; rw [← Nat.cast_add]
@@ -244,8 +244,7 @@ alias add_omega_opow := add_omega0_opow
 theorem add_of_omega0_opow_le : a < ω ^ b → ω ^ b ≤ c → a + c = c :=
   (principal_add_omega0_opow b).add_absorp_of_le
 
-@[deprecated add_of_omega0_opow_le (since := "2024-09-23")]
-alias add_absorp := add_of_omega0_opow_le
+@[deprecated (since := "2025-02-17")] alias add_absorp := add_of_omega0_opow_le
 
 /-- The main characterization theorem for additive principal ordinals. -/
 theorem principal_add_iff_zero_or_omega0_opow :
@@ -256,9 +255,10 @@ theorem principal_add_iff_zero_or_omega0_opow :
     obtain ⟨n, hn⟩ := lt_omega0_opow_succ.1 (lt_opow_succ_log_self one_lt_omega0 o)
     refine fun h ↦ hn.not_lt ?_
     clear hn
-    induction' n with n IH
-    · rwa [Nat.cast_zero, mul_zero, Ordinal.pos_iff_ne_zero]
-    · rw [Nat.cast_succ, mul_add, mul_one]
+    induction n with
+    | zero => rwa [Nat.cast_zero, mul_zero, Ordinal.pos_iff_ne_zero]
+    | succ n IH =>
+      rw [Nat.cast_succ, mul_add, mul_one]
       exact H IH h
   · rintro (rfl | ⟨a, rfl⟩)
     exacts [principal_zero, principal_add_omega0_opow a]
