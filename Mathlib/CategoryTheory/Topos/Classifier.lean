@@ -109,7 +109,7 @@ def χ : X ⟶ Ω C :=
 ```
       U ---------m----------> X
       |                       |
-terminal.from U              χ_ m
+terminal.from U              χ m
       |                       |
       v                       v
     ⊤_ C -----truth C-------> Ω
@@ -123,7 +123,7 @@ lemma isPullback_χ : IsPullback m (terminal.from U) (χ m) (truth C) :=
 ```
       U ---------m----------> X
       |                       |
-terminal.from U              χ_ m
+terminal.from U              χ m
       |                       |
       v                       v
     ⊤_ C -----truth C-------> Ω
@@ -139,7 +139,7 @@ is a pullback square.
 lemma unique (χ' : X ⟶ Ω C) (hχ' : IsPullback m (terminal.from _) χ' (truth C)) : χ' = χ m :=
   HasClassifier.exists_classifier.some.uniq m χ' hχ'
 
-/-- `t C` is a regular monomorphism (because it is split). -/
+/-- `truth C` is a regular monomorphism (because it is split). -/
 noncomputable instance truthIsRegularMono : RegularMono (truth C) :=
   RegularMono.ofIsSplitMono (truth C)
 
@@ -147,7 +147,7 @@ noncomputable instance truthIsRegularMono : RegularMono (truth C) :=
 ```
       U ---------m----------> X
       |                       |
-terminal.from U              χ_ m
+terminal.from U              χ m
       |                       |
       v                       v
     ⊤_ C -----truth C-------> Ω
