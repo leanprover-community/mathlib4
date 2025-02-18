@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
 import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.Basic
-/-! # Epi-mono factorisation in the simplex category presented by generators and relations
+/-! # Epi-mono factorization in the simplex category presented by generators and relations
 
-This file aims to establish that there is a nice epi-mono factorisation in `SimplexCategoryGenRel`.
-More precisely, we introduce two (inductively-defined) morphism property `P_δ` and `P_σ` that
+This file aims to establish that there is a nice epi-mono factorization in `SimplexCategoryGenRel`.
+More precisely, we introduce two morphism properties `P_δ` and `P_σ` that
 single out morphisms that are compositions of `δ i` (resp. `σ i`).
 
 The main result of this file is `exists_P_σ_P_δ_factorisation`, which asserts that every
@@ -21,7 +21,7 @@ open CategoryTheory
 section EpiMono
 
 /-- `δ i` is a split monomorphism thanks to the simplicial identities. -/
-def SplitMonoδ {n : ℕ} {i : Fin (n + 2)} : SplitMono (δ i) where
+def splitMonoδ {n : ℕ} (i : Fin (n + 2)) : SplitMono (δ i) where
   retraction := by
     induction i using Fin.lastCases with
     | last => exact σ n
@@ -33,14 +33,14 @@ def SplitMonoδ {n : ℕ} {i : Fin (n + 2)} : SplitMono (δ i) where
     · simp only [Fin.natCast_eq_last, Fin.lastCases_castSucc]
       exact δ_comp_σ_self
 
-instance {n : ℕ} {i : Fin (n + 2)} : IsSplitMono (δ i) := .mk' SplitMonoδ
+instance {n : ℕ} {i : Fin (n + 2)} : IsSplitMono (δ i) := .mk' <| splitMonoδ i
 
 /-- `δ i` is a split epimorphism thanks to the simplicial identities. -/
-def SplitEpiσ {n : ℕ} {i : Fin (n + 1)} : SplitEpi (σ i) where
+def splitEpiσ {n : ℕ} (i : Fin (n + 1)) : SplitEpi (σ i) where
   section_ := δ i.castSucc
   id := δ_comp_σ_self
 
-instance {n : ℕ} {i : Fin (n + 1)} : IsSplitEpi (σ i) := .mk' SplitEpiσ
+instance {n : ℕ} {i : Fin (n + 1)} : IsSplitEpi (σ i) := .mk' <| splitEpiσ i
 
 /-- Auxiliary predicate to express that a morphism is purely a composition of `σ i`s. -/
 abbrev P_σ := degeneracies.multiplicativeClosure
@@ -67,14 +67,14 @@ lemma isSplitMono_P_δ {x y : SimplexCategoryGenRel} {m : x ⟶ y} (hm : P_δ m)
   | id => infer_instance
   | comp_of _ _ _ h => cases h; infer_instance
 
-lemma isSplitEpi_P_σ_toSimplexCategory {x y : SimplexCategoryGenRel} {e : x ⟶ y} (he : P_σ e)
-    : IsSplitEpi <| toSimplexCategory.map e := by
+lemma isSplitEpi_P_σ_toSimplexCategory_of_P_σ {x y : SimplexCategoryGenRel} {e : x ⟶ y} (he : P_σ e) :
+    IsSplitEpi <| toSimplexCategory.map e := by
   constructor
   constructor
   apply SplitEpi.map
   exact isSplitEpi_P_σ he |>.exists_splitEpi.some
 
-lemma isSplitMono_P_δ_toSimplexCategory {x y : SimplexCategoryGenRel} {m : x ⟶ y} (hm : P_δ m)
+lemma isSplitMono_P_δ_toSimplexCategory_of_P_δ {x y : SimplexCategoryGenRel} {m : x ⟶ y} (hm : P_δ m)
     : IsSplitMono <| toSimplexCategory.map m := by
   constructor
   constructor
@@ -87,9 +87,9 @@ lemma eq_or_len_le_of_P_δ {x y : SimplexCategoryGenRel} {f : x ⟶ y} (h_δ : P
   | of _ hx => cases hx; right; simp
   | id => left; use rfl; simp
   | comp_of i u _ hg h' =>
-    rcases h' with ⟨e, _⟩ | h'
-    <;> apply Or.inr
-    <;> cases hg
+    rcases h' with ⟨e, _⟩ | h' <;>
+    apply Or.inr <;>
+    cases hg
     · rw [e]
       exact Nat.lt_add_one _
     · exact Nat.lt_succ_of_lt h'
