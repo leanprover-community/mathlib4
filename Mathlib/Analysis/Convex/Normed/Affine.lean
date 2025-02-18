@@ -9,8 +9,7 @@ import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 import Mathlib.Analysis.Convex.Normed.Basic
 
 /-!
-# Properties of convex sets in normed spaces
-
+# Simplices in normed affine spaces
 We prove the following facts:
 
 * `exists_mem_interior_convexHull_affineBasis` : We can intercalate a simplex between a point and
