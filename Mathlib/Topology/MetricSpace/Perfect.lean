@@ -27,7 +27,7 @@ including a version of the Cantor-Bendixson Theorem.
 
 accumulation point, perfect set, cantor-bendixson.
 
---/
+-/
 
 open Set Filter
 
