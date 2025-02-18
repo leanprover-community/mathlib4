@@ -7,7 +7,7 @@ import Mathlib.Algebra.MvPolynomial.Monad
 import Mathlib.Data.List.Indexes
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 /-!
-# Noether normalizaton lemma
+# Noether normalization lemma
 This file contains a proof by Nagata of the Noether normalization lemma.
 
 ## Main Results
@@ -15,15 +15,16 @@ Let `A` be a finitely generated algebra over a field `k`.
 Then there exists a natural number `r` and an injective homomorphism
 from `k[X_1, X_2, ..., X_r]` to `A` such that `A` is integral over `k[X_1, X_2, ..., X_r]`.
 
-# Strategy of the proof
+## Strategy of the proof
 Suppose `f` is a nonzero polynomial in `n+1` variables.
-First we construct an algebra equivalence `T` from `k[X_0,...,X_n]` to itself such that
+First, we construct an algebra equivalence `T` from `k[X_0,...,X_n]` to itself such that
   `f` is mapped to a polynomial in `X_0` with invertible leading coefficient.
 More precisely, `T` maps `X_i` to `X_i + X_0 ^ r_i` when `i ≠ 0`, and `X_0` to `X_0`.
 Here we choose `r_i` to be `up ^ i` where `up` is big enough, so that `T` maps
-  different monomials of `f` to polynomials with different degrees in `X_0`. See `T_degree_inj`.
+  different monomials of `f` to polynomials with different degrees in `X_0`.
+See `degreeOf_t_neq_of_neq`.
 
-Second we construct the following maps: Let `I` be an ideal containing `f` and
+Secondly, we construct the following maps: let `I` be an ideal containing `f` and
 let `φ : k[X_0,...X_{n-1}] ≃ₐ[k] k[X_1,...X_n][X]` be the natural isomorphism.
   `hom1 : k[X_0,...X_{n-1}] →ₐ[k[X_0,...X_{n-1}]] k[X_1,...X_n][X]/φ(T(I))`
   `eqv1 : k[X_1,...X_n][X]/φ(T(I)) ≃ₐ[k] k[X_0,...,X_n]/T(I)`
@@ -32,12 +33,12 @@ let `φ : k[X_0,...X_{n-1}] ≃ₐ[k] k[X_1,...X_n][X]` be the natural isomorphi
 `hom1` is integral because `φ(T(I))` contains a monic polynomial. See `hom1_isIntegral`.
 `hom2` is integral because it's the composition of integral maps. See `hom2_isIntegral`.
 
-Finially We use induction to prove there is an injective map from `k[X_0,...,X_{r-1}]`
+Finally We use induction to prove there is an injective map from `k[X_0,...,X_{r-1}]`
   to `k[X_0,...,X_(n-1)]/I`.The case `n=0` is trivial.
 For `n+1`, if `I = 0` there is nothing to do.
 Otherwise, `hom2` induces a map `φ` by quotient kernel.
 We use the inductive hypothesis on k[X_1,...,X_n] and the kernel of `hom2` to get `s, g`.
-Compose `φ` and `g` and we get the desired map since both `φ` and `g` are injective and integral.
+Composing `φ` and `g` we get the desired map since both `φ` and `g` are injective and integral.
 
 ## Reference
 * <https://stacks.math.columbia.edu/tag/00OW>
@@ -247,10 +248,7 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
       exact hi ((eq_top_iff_one I).mpr (one ▸ I.smul_of_tower_mem c hab))
   | succ d hd =>
     by_cases eqi : I = 0
-    · have bij : Function.Bijective (Quotient.mkₐ k I) := by
-        refine ⟨fun a b hab ↦ ?_, Quotient.mk_surjective⟩
-        rw [Quotient.mkₐ_eq_mk, Ideal.Quotient.eq, eqi, Submodule.zero_eq_bot, mem_bot] at hab
-        rw [← add_zero b, ← hab, add_sub_cancel]
+    · have bij : Function.Bijective (Quotient.mkₐ k I) := (Quotient.mkₐ_bij_iff_eq_zero I).mpr eqi
       exact ⟨d + 1, le_rfl, _, bij.1, isIntegral_of_surjective _ bij.2⟩
     · obtain ⟨f, fi, fne⟩ := Submodule.exists_mem_ne_zero_of_ne_bot eqi
       set ϕ := kerLiftAlg <| hom2 f I
