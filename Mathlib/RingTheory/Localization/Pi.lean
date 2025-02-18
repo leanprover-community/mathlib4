@@ -11,6 +11,7 @@ import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.Algebra.Group.Pi.Units
 import Mathlib.RingTheory.Nilpotent.Lemmas
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 /-!
 # Localizing a product of commutative rings
@@ -77,33 +78,33 @@ theorem bijective_lift_piRingHom_algebraMap_comp_piEvalRingHom [IsLocalization M
   (ringEquivOfRingEquiv (M := M) (T := M) _ _ (.refl _) <|
     Submonoid.map_equiv_eq_comap_symm _ _).bijective
 
-/-- Let `M` be a submonoid of a direct product of commutative rings `R' i`, and let `M' i` denote
-the projection of `M` onto each factor. If each `R' i` has maximal nilradical then the direct
-product `∏ R' i` surjects onto the localization of `∏ R' i` at `M`.
+/-- If `R'` is a commutative ring with maximal nilradical and `S` is any localization of `R'` then
+`R'` surjects onto `S`.
 -/
-noncomputable def SurjectiveOfNilradicalIsMaximal (h' : ∀ i, (nilradical (R i)).IsMaximal) :
-    Function.Surjective (algebraMap (∀i, R i) (∀ i, S i)) := by
+theorem surjective_of_algebraMap {R' : Type*} [CommSemiring R'] (M : Submonoid R') {S : Type*}
+[CommSemiring S] [Algebra R' S] [sloc : IsLocalization M S] (h : (nilradical R').IsMaximal)
+    : Function.Surjective (algebraMap R' S) := by
+  by_cases h₀ : (0 : R') ∈ M
+  · have := sloc.uniqueOfZeroMem h₀
+    exact Function.surjective_to_subsingleton ⇑(algebraMap R' S)
+  · exact AlgEquiv.surjective (localizationEquivSelfOfNilradicalIsMaximal h₀)
 
-  -- set R' := (∀ i, R i)
-  -- set P := (∀ i, S i)
-  -- set f := sloc.lift (isUnit_of_product_of_localizations R S h)
-  -- set f' : ∀i, (∀i, R' i) →+* S' i :=
-  --   fun i ↦ RingHom.comp (algebraMap (R' i) (S' i)) (Pi.evalRingHom R' i)
-  -- set f'' :  R →+* P := Pi.ringHom f'
-  -- intro s
-
-  sorry
-  -- have : ∃ r : R, f'' r = f s := by
-  --   have h₁ (i : ι): (∃ x : R' i, f s i = algebraMap (R' i) (S' i) x) := by
-  --     obtain ⟨x, hx⟩ := surjective_of_algebraMap (M' i) (h' i) (f s i)
-  --     exact ⟨x, hx.symm⟩
-  --   use fun i ↦ (h₁ i).choose
-  --   refine funext fun i ↦ ?_
-  --   have (x) : (algebraMap (R' i) (S' i)) (x i)  = f'' x i := rfl
-  --   rw [← this fun i ↦ (h₁ i).choose]
-  --   exact ((h₁ i).choose_spec).symm
-  -- obtain ⟨r, hr⟩ := this
-  -- rw [← sloc.lift_eq (isUnit_of_product_of_localizations R' S' h) r] at hr
-  -- exact ⟨r, RingEquiv.injective (EquivOfProductOfLocalizations S R' S' h h') hr⟩
-
+/-- Let `M` be a submonoid of a direct product of commutative rings `R i`.
+If each `R i` has maximal nilradical then the direct product `∏ R i` surjects onto the
+localization of `∏ R i` at `M`.
+-/
+noncomputable def SurjectiveOfNilradicalIsMaximal (h : ∀ i, (nilradical (R i)).IsMaximal)
+  [IsLocalization M S'] [Fintype ι]: Function.Surjective (algebraMap (Π i, R i) (S')) := by
+  intro s
+  have : Function.Surjective
+    (Pi.ringHom (fun i ↦ RingHom.comp (algebraMap (R i) (S i)) (Pi.evalRingHom R i))) :=
+    Function.Surjective.piMap (fun i ↦ by
+     by_cases h₀ : (0 : R i) ∈ (M.map (Pi.evalRingHom R i))
+     · have := uniqueOfZeroMem h₀ (S := (S i))
+       exact Function.surjective_to_subsingleton ⇑(algebraMap (R i) (S i))
+     · exact AlgEquiv.surjective (localizationEquivSelfOfNilradicalIsMaximal h₀))
+  obtain ⟨r, hr⟩ := this ((lift (isUnit_piRingHom_algebraMap_comp_piEvalRingHom R S M)) s)
+  rw [← lift_eq (isUnit_piRingHom_algebraMap_comp_piEvalRingHom R S M) (S := S') r] at hr
+  exact ⟨r,
+  Function.Bijective.injective (bijective_lift_piRingHom_algebraMap_comp_piEvalRingHom R S _ M) hr⟩
 end IsLocalization
