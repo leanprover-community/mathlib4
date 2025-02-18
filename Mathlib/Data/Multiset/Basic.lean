@@ -1345,7 +1345,7 @@ theorem pmap_eq_map_attach {p : α → Prop} (f : ∀ a, p a → β) (s) :
 
 -- @[simp] -- Porting note: Left hand does not simplify
 theorem attach_map_val' (s : Multiset α) (f : α → β) : (s.attach.map fun i => f i.val) = s.map f :=
-  Quot.inductionOn s fun l => congr_arg _ <| List.attach_map_coe l f
+  Quot.inductionOn s fun l => congr_arg _ <| List.attach_map_val l f
 
 @[simp]
 theorem attach_map_val (s : Multiset α) : s.attach.map Subtype.val = s :=

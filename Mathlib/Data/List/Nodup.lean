@@ -104,6 +104,8 @@ theorem nodup_iff_getElem?_ne_getElem? {l : List α} :
     rw [Ne, ← Option.some_inj, ← getElem?_eq_getElem, ← getElem?_eq_getElem]
     exact h i j hij hj
 
+set_option linter.deprecated false in
+@[deprecated nodup_iff_getElem?_ne_getElem? (since := "2025-02-17")]
 theorem nodup_iff_get?_ne_get? {l : List α} :
     l.Nodup ↔ ∀ i j : ℕ, i < j → j < l.length → l.get? i ≠ l.get? j := by
   simp [nodup_iff_getElem?_ne_getElem?]
@@ -244,7 +246,7 @@ lemma nodup_tail_reverse (l : List α) (h : l[0]? = l.getLast?) :
   | cons a l ih =>
     by_cases hl : l = []
     · aesop
-    · simp_all only [List.get?_eq_getElem?, List.tail_reverse, List.nodup_reverse,
+    · simp_all only [List.tail_reverse, List.nodup_reverse,
         List.dropLast_cons_of_ne_nil hl, List.tail_cons]
       simp only [length_cons, Nat.zero_lt_succ, getElem?_eq_getElem, getElem_cons_zero,
         Nat.add_one_sub_one, Nat.lt_add_one, Option.some.injEq, List.getElem_cons,
