@@ -530,14 +530,14 @@ variable {s : Set α} {hs : MeasurableSet s} {hμs : μ s ≠ ∞} {c : E}
 def indicatorConstLp (p : ℝ≥0∞) (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) : Lp E p μ :=
   Memℒp.toLp (s.indicator fun _ => c) (memℒp_indicator_const p hs c (Or.inr hμs))
 
-/-- A version of `Set.indicator_add` for `MeasureTheory.indicatorConstLp`.-/
+/-- A version of `Set.indicator_add` for `MeasureTheory.indicatorConstLp`. -/
 theorem indicatorConstLp_add {c' : E} :
     indicatorConstLp p hs hμs c + indicatorConstLp p hs hμs c' =
     indicatorConstLp p hs hμs (c + c') := by
   simp_rw [indicatorConstLp, ← Memℒp.toLp_add, indicator_add]
   rfl
 
-/-- A version of `Set.indicator_sub` for `MeasureTheory.indicatorConstLp`.-/
+/-- A version of `Set.indicator_sub` for `MeasureTheory.indicatorConstLp`. -/
 theorem indicatorConstLp_sub {c' : E} :
     indicatorConstLp p hs hμs c - indicatorConstLp p hs hμs c' =
     indicatorConstLp p hs hμs (c - c') := by

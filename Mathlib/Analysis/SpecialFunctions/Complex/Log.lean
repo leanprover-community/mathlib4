@@ -22,7 +22,7 @@ open Set Filter Bornology
 open scoped Real Topology ComplexConjugate
 
 /-- Inverse of the `exp` function. Returns values such that `(log x).im > - π` and `(log x).im ≤ π`.
-  `log 0 = 0`-/
+  `log 0 = 0` -/
 @[pp_nodot]
 noncomputable def log (x : ℂ) : ℂ :=
   x.abs.log + arg x * I

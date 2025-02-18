@@ -308,7 +308,7 @@ theorem IsUltrahomogeneous.extend_embedding (M_homog : L.IsUltrahomogeneous M) {
   simp only [Equiv.apply_symm_apply, Embedding.equivRange_apply, s]
 
 /-- A countably generated structure is ultrahomogeneous if and only if any equivalence between
-finitely generated substructures can be extended to any element in the domain.-/
+finitely generated substructures can be extended to any element in the domain. -/
 theorem isUltrahomogeneous_iff_IsExtensionPair (M_CG : CG L M) : L.IsUltrahomogeneous M ↔
     L.IsExtensionPair M M := by
   constructor

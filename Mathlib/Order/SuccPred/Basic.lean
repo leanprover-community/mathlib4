@@ -47,11 +47,11 @@ variable {α β : Type*}
 class SuccOrder (α : Type*) [Preorder α] where
   /-- Successor function -/
   succ : α → α
-  /-- Proof of basic ordering with respect to `succ`-/
+  /-- Proof of basic ordering with respect to `succ`. -/
   le_succ : ∀ a, a ≤ succ a
   /-- Proof of interaction between `succ` and maximal element -/
   max_of_succ_le {a} : succ a ≤ a → IsMax a
-  /-- Proof that `succ a` is the least element greater than `a`-/
+  /-- Proof that `succ a` is the least element greater than `a`. -/
   succ_le_of_lt {a b} : a < b → succ a ≤ b
 
 /-- Order equipped with a sensible predecessor function. -/
@@ -59,11 +59,11 @@ class SuccOrder (α : Type*) [Preorder α] where
 class PredOrder (α : Type*) [Preorder α] where
   /-- Predecessor function -/
   pred : α → α
-  /-- Proof of basic ordering with respect to `pred`-/
+  /-- Proof of basic ordering with respect to `pred`. -/
   pred_le : ∀ a, pred a ≤ a
   /-- Proof of interaction between `pred` and minimal element -/
   min_of_le_pred {a} : a ≤ pred a → IsMin a
-  /-- Proof that `pred b` is the greatest element less than `b`-/
+  /-- Proof that `pred b` is the greatest element less than `b`. -/
   le_pred_of_lt {a b} : a < b → a ≤ pred b
 
 instance [Preorder α] [SuccOrder α] :

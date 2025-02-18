@@ -67,7 +67,7 @@ inductive homRel : HomRel (Paths FreeSimplexQuiver)
 end FreeSimplexQuiver
 
 /-- SimplexCategory is the category presented by generators and relation by the simplicial
-identities.-/
+identities. -/
 def SimplexCategoryGenRel := Quotient FreeSimplexQuiver.homRel
   deriving Category
 

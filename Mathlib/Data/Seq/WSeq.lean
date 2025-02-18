@@ -105,7 +105,7 @@ def recOn {C : WSeq α → Sort v} (s : WSeq α) (h1 : C nil) (h2 : ∀ x s, C (
     (h3 : ∀ s, C (think s)) : C s :=
   Seq.recOn s h1 fun o => Option.recOn o h3 h2
 
-/-- membership for weak sequences-/
+/-- membership for weak sequences -/
 protected def Mem (s : WSeq α) (a : α) :=
   Seq.Mem s (some a)
 

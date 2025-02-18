@@ -575,7 +575,7 @@ lemma differentiableAt_update_of_residue
     · exact eventually_of_mem self_mem_nhdsWithin fun x hx hx' ↦ (hx <| inv_eq_zero.mp hx').elim
 
 /-- The even part of the Hurwitz zeta function, i.e. the meromorphic function of `s` which agrees
-with `1 / 2 * ∑' (n : ℤ), 1 / |n + a| ^ s` for `1 < re s`-/
+with `1 / 2 * ∑' (n : ℤ), 1 / |n + a| ^ s` for `1 < re s` -/
 noncomputable def hurwitzZetaEven (a : UnitAddCircle) :=
   Function.update (fun s ↦ completedHurwitzZetaEven a s / Gammaℝ s)
   0 (if a = 0 then -1 / 2 else 0)

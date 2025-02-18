@@ -1146,10 +1146,10 @@ lemma mul_add_mod_of_lt (h : c < b) : (a * b + c) % b = c := by
 protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ 2 * n + 1 := by
   omega
 
-/-- A natural number `m` divides the sum `m + n` if and only if `m` divides `n`.-/
+/-- A natural number `m` divides the sum `m + n` if and only if `m` divides `n`. -/
 @[simp] protected lemma dvd_add_self_left : m ∣ m + n ↔ m ∣ n := Nat.dvd_add_right (Nat.dvd_refl m)
 
-/-- A natural number `m` divides the sum `n + m` if and only if `m` divides `n`.-/
+/-- A natural number `m` divides the sum `n + m` if and only if `m` divides `n`. -/
 @[simp] protected lemma dvd_add_self_right : m ∣ n + m ↔ m ∣ n := Nat.dvd_add_left (Nat.dvd_refl m)
 
 -- TODO: update `Nat.dvd_sub` in core

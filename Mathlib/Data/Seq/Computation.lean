@@ -171,7 +171,7 @@ def recOn {C : Computation α → Sort v} (s : Computation α) (h1 : ∀ a, C (p
       rw [destruct_eq_think H]
       apply h2
 
-/-- Corecursor constructor for `corec`-/
+/-- Corecursor constructor for `corec` -/
 def Corec.f (f : β → α ⊕ β) : α ⊕ β → Option α × (α ⊕ β)
   | Sum.inl a => (some a, Sum.inl a)
   | Sum.inr b =>
@@ -278,7 +278,7 @@ end Bisim
 
 -- It's more of a stretch to use ∈ for this relation, but it
 -- asserts that the computation limits to the given value.
-/-- Assertion that a `Computation` limits to a given value-/
+/-- Assertion that a `Computation` limits to a given value -/
 protected def Mem (s : Computation α) (a : α) :=
   some a ∈ s.1
 
@@ -527,7 +527,7 @@ def memRecOn {C : Computation α → Sort v} {a s} (M : a ∈ s) (h1 : C (pure a
   generalize length s = n
   induction' n with n IH; exacts [h1, h2 _ IH]
 
-/-- Recursor based on assertion of `Terminates`-/
+/-- Recursor based on assertion of `Terminates` -/
 def terminatesRecOn
     {C : Computation α → Sort v}
     (s) [Terminates s]
@@ -544,12 +544,12 @@ def map (f : α → β) : Computation α → Computation β
       · contradiction
       · rw [al e]; exact h⟩
 
-/-- bind over a `Sum` of `Computation`-/
+/-- bind over a `Sum` of `Computation` -/
 def Bind.g : β ⊕ Computation β → β ⊕ (Computation α ⊕ Computation β)
   | Sum.inl b => Sum.inl b
   | Sum.inr cb' => Sum.inr <| Sum.inr cb'
 
-/-- bind over a function mapping `α` to a `Computation`-/
+/-- bind over a function mapping `α` to a `Computation` -/
 def Bind.f (f : α → Computation β) :
     Computation α ⊕ Computation β → β ⊕ (Computation α ⊕ Computation β)
   | Sum.inl ca =>

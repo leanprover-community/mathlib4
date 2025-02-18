@@ -587,7 +587,7 @@ theorem coprime_classification :
       | constructor; ring; rw [Int.gcd_comm]; exact coprime_sq_sub_mul co pp
 
 /-- by assuming `x` is odd and `z` is positive we get a slightly more precise classification of
-the Pythagorean triple `x ^ 2 + y ^ 2 = z ^ 2`-/
+the Pythagorean triple `x ^ 2 + y ^ 2 = z ^ 2` -/
 theorem coprime_classification' {x y z : ℤ} (h : PythagoreanTriple x y z)
     (h_coprime : Int.gcd x y = 1) (h_parity : x % 2 = 1) (h_pos : 0 < z) :
     ∃ m n,
