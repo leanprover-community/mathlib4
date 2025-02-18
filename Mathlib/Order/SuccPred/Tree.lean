@@ -17,7 +17,7 @@ This is a `PartialOrder`, with `PredOrder` with the immediate parent as a predec
 `OrderBot` which is the root. We also have an `IsPredArchimedean` assumption to prevent infinite
 dangling chains.
 
---/
+-/
 
 variable {α : Type*} [PartialOrder α] [PredOrder α] [IsPredArchimedean α]
 
