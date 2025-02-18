@@ -316,6 +316,7 @@
   "Mathlib.Tactic.Bound":
   ["Mathlib.Algebra.Order.AbsoluteValue",
    "Mathlib.Algebra.Order.Floor",
+   "Mathlib.Algebra.Order.Group.Basic",
    "Mathlib.Analysis.Analytic.Basic",
    "Mathlib.Tactic.Bound.Init"],
   "Mathlib.Tactic.Basic": ["Mathlib.Tactic.Linter.OldObtain"],
@@ -394,7 +395,6 @@
   ["Batteries.Tactic.Init", "Mathlib.Logic.Function.Defs"],
   "Mathlib.Data.Nat.Find": ["Batteries.WF"],
   "Mathlib.Data.Multiset.Bind": ["Mathlib.Algebra.GroupWithZero.Action.Defs"],
-  "Mathlib.Data.List.TakeDrop": ["Mathlib.Tactic.Common"],
   "Mathlib.Data.List.Range": ["Batteries.Data.Nat.Lemmas"],
   "Mathlib.Data.List.ProdSigma":
   ["Batteries.Data.Nat.Lemmas", "Mathlib.Data.List.Basic"],
