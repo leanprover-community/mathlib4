@@ -33,19 +33,19 @@ This file might get merged into `Manifolds/InteriorBoundary` then.
 
 open scoped Manifold
 
-universe u
+--universe u
 -- XXX: should M₀, E₀, H₀ have the same universe?
 
 -- Let M, M' and M'' be smooth manifolds *over the same space* `H`, with *the same* `model `I`.
-variable {E E' E'' E''' H H' H'' H''' : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E E' E'' E''' H H' H'' H''' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedAddCommGroup E'']  [NormedSpace ℝ E'']
   [NormedAddCommGroup E'''] [NormedSpace ℝ E''']
   [TopologicalSpace H] [TopologicalSpace H'] [TopologicalSpace H''] [TopologicalSpace H''']
 
-variable {M : Type u} [TopologicalSpace M] [cm : ChartedSpace H M]
+variable {M : Type*} [TopologicalSpace M] [cm : ChartedSpace H M]
   {I : ModelWithCorners ℝ E H} [IsManifold I ⊤ M]
-  {M' : Type u} [TopologicalSpace M'] [cm': ChartedSpace H M'] [IsManifold I ⊤ M']
-  {M'' : Type u} [TopologicalSpace M''] [ChartedSpace H M'']
+  {M' : Type*} [TopologicalSpace M'] [cm': ChartedSpace H M'] [IsManifold I ⊤ M']
+  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M'']
   {I'' : ModelWithCorners ℝ E H} [IsManifold I ⊤ M'']
 
 /-- Let `M` be a `C^k` real manifold, modelled on the pair `(E, H)`. We say that `M` has nice
@@ -75,12 +75,12 @@ and being a topological embedding.
 Is a pair `(M₀, f)` of a smooth manifold `M₀` modelled over `(E₀, H₀)` and an embedding
 `f : M₀ → M` which is a smooth immersion, such that `range f = I.boundary M`.
 -/
-structure BoundaryManifoldData (M : Type u) [TopologicalSpace M] [ChartedSpace H M]
+structure BoundaryManifoldData (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     (I : ModelWithCorners ℝ E H) (k : ℕ∞) [IsManifold I k M]
     {E₀ H₀: Type*} [NormedAddCommGroup E₀] [NormedSpace ℝ E₀]
     [TopologicalSpace H₀] (I₀ : ModelWithCorners ℝ E₀ H₀) where
   /-- TODO! -/
-  M₀ : Type u
+  M₀ : Type*
   [topologicalSpaceM: TopologicalSpace M₀]
   /-- A chosen charted space structure on `M₀` on `H₀` -/
   [chartedSpace : ChartedSpace H₀ M₀]
@@ -95,13 +95,13 @@ structure BoundaryManifoldData (M : Type u) [TopologicalSpace M] [ChartedSpace H
   /-- `f` maps `M₀` surjectively to the boundary of `M`. -/
   range_eq_boundary: Set.range f = I.boundary M
 
-variable {M : Type u} [TopologicalSpace M] [ChartedSpace H M] {k : ℕ∞}
+variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {k : ℕ∞}
   {I : ModelWithCorners ℝ E H} [IsManifold I k M]
   {E₀ H₀: Type*} [NormedAddCommGroup E₀] [NormedSpace ℝ E₀]
   [TopologicalSpace H₀] (I₀ : ModelWithCorners ℝ E₀ H₀)
-  {M' : Type u} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I k M]
-  {N : Type u} [TopologicalSpace N] [ChartedSpace H' N]
-  {J : ModelWithCorners ℝ E' H'} [IsManifold J ⊤ N]
+  -- {M' : Type u} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I k M]
+  -- {N : Type u} [TopologicalSpace N] [ChartedSpace H' N]
+  -- {J : ModelWithCorners ℝ E' H'} [IsManifold J ⊤ N]
 
 instance (d : BoundaryManifoldData M I k I₀) : TopologicalSpace d.M₀ := d.topologicalSpaceM
 
@@ -110,7 +110,6 @@ instance (d : BoundaryManifoldData M I k I₀) : ChartedSpace H₀ d.M₀ := d.c
 instance (d : BoundaryManifoldData M I k I₀) : IsManifold I₀ k d.M₀ :=
   d.isManifold
 
-#exit
 -- In general, constructing `BoundaryManifoldData` requires deep results: some cases and results
 -- we can state already. Boundaryless manifolds have nice boundary, as do products.
 
@@ -118,15 +117,12 @@ variable (M) in
 /-- If `M` is boundaryless, its boundary manifold data is easy to construct. -/
 -- We can just take the empty manifold, with a vacuously defined map.
 def BoundaryManifoldData.of_boundaryless [BoundarylessManifold I M] :
-    BoundaryManifoldData M I k where
-  M₀ := ULift Empty
-  E₀ := E
-  H₀ := E
-  charts := ChartedSpace.empty E (ULift Empty)
-  I₀ := modelWithCornersSelf ℝ E
+    BoundaryManifoldData M I k I where
+  M₀ := Empty
+  chartedSpace := ChartedSpace.empty _ _
   f x := (IsEmpty.false x).elim
   isEmbedding := Topology.IsEmbedding.of_subsingleton _
-  isSmooth x := (IsEmpty.false x).elim
+  isManifold := by infer_instance
   isImmersion x := (IsEmpty.false x).elim
   range_eq_boundary := by
     have : I.boundary M = ∅ := by
@@ -134,7 +130,9 @@ def BoundaryManifoldData.of_boundaryless [BoundarylessManifold I M] :
       infer_instance
     rw [this]
     simp [Empty.instIsEmpty]
+  contMDiff x := (IsEmpty.false x).elim
 
+#exit
 /-- The `n`-dimensional Euclidean half-space (modelled on itself) has nice boundary
 (which is an `n-1`-dimensional manifold). -/
 noncomputable def BoundaryManifoldData.euclideanHalfSpace_self (n : ℕ) (k : ℕ∞) :
