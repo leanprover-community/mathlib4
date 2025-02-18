@@ -152,10 +152,6 @@ theorem card_eq {α β} [_F : Fintype α] [_G : Fintype β] : card α = card β 
 
 end Fintype
 
-@[simp]
-theorem Fintype.card_fin (n : ℕ) : Fintype.card (Fin n) = n :=
-  List.length_finRange n
-
 theorem Fintype.card_fin_lt_of_le {m n : ℕ} (h : m ≤ n) :
     Fintype.card {i : Fin n // i < m} = m := by
   conv_rhs => rw [← Fintype.card_fin m]

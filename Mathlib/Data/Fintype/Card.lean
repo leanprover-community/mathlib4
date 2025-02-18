@@ -53,6 +53,10 @@ theorem card_ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈
 theorem card_of_finset' {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) [Fintype p] :
     Fintype.card p = #s := by rw [← card_ofFinset s H]; congr!
 
+@[simp]
+theorem card_fin (n : ℕ) : Fintype.card (Fin n) = n :=
+  List.length_finRange n
+
 end Fintype
 
 namespace Fintype
