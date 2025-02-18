@@ -132,31 +132,52 @@ def BoundaryManifoldData.of_boundaryless [BoundarylessManifold I M] :
     simp [Empty.instIsEmpty]
   contMDiff x := (IsEmpty.false x).elim
 
-#exit
+-- TODO: fill in these sorries (low priority)
 /-- The `n`-dimensional Euclidean half-space (modelled on itself) has nice boundary
 (which is an `n-1`-dimensional manifold). -/
 noncomputable def BoundaryManifoldData.euclideanHalfSpace_self (n : ℕ) (k : ℕ∞) :
-    BoundaryManifoldData (EuclideanHalfSpace (n+1)) (𝓡∂ (n + 1)) k where
+    BoundaryManifoldData (EuclideanHalfSpace (n+1)) (𝓡∂ (n + 1)) k (𝓡 n) where
   M₀ := EuclideanSpace ℝ (Fin n)
-  E₀ := EuclideanSpace ℝ (Fin n)
-  H₀ := EuclideanSpace ℝ (Fin n)
-  I₀ := 𝓘(ℝ, EuclideanSpace ℝ (Fin n))
+  isManifold := by infer_instance
   f x := ⟨fun i ↦ if h: i = 0 then 0 else x (Fin.pred i (by omega)), by simp⟩
   isEmbedding := sorry
-  isSmooth := sorry
+  contMDiff := sorry
   isImmersion x := sorry
   range_eq_boundary := sorry
 
--- TODO: only interesting statement to prove below
-@[fun_prop]
-lemma Continuous.foo {X : Type*} [TopologicalSpace X] :
-    Continuous (fun p ↦ p.1.casesOn (Sum.inl p.2) (Sum.inr p.2) : Bool × X → X ⊕ X) := by
-  sorry
+-- TODO: this is the only interesting statement to prove below
+-- XXX: is going the inverse direction (and proving it's a bijective embedding) easier?
+-- @[fun_prop]
+-- lemma Continuous.foo {X : Type*} [TopologicalSpace X] :
+--     Continuous (fun p ↦ p.1.casesOn (Sum.inl p.2) (Sum.inr p.2) : Bool × X → X ⊕ X) := by
+--   sorry
 
-def Homeomorph.boolProdEquivSum (X : Type*) [TopologicalSpace X] : Bool × X ≃ₜ X ⊕ X where
-  toEquiv := Equiv.boolProdEquivSum X
-  continuous_toFun := by fun_prop
-  continuous_invFun := by fun_prop
+--def bar {X : Type*} [TopologicalSpace X] : X ⊕s
+lemma Continuous.bar {X : Type*} [TopologicalSpace X] :
+    Continuous (Sum.elim (fun x : X ↦ (true, x)) (fun x ↦ (false, x))) := by fun_prop
+
+lemma IsOpenEmbedding.baz {X : Type*} [TopologicalSpace X] :
+    Topology.IsOpenEmbedding (Sum.elim (fun x : X ↦ (true, x)) (fun x ↦ (false, x))) := by
+  -- continuity is easy
+  -- open map: should also be abstract nonsense
+  apply Topology.IsOpenEmbedding.of_continuous_injective_isOpenMap
+  · fun_prop
+  · sorry -- injective
+  · sorry -- open map: should follow from abstract nonsense
+
+def Homeomorph.sumEquivBoolProd (X : Type*) [TopologicalSpace X] : X ⊕ X ≃ₜ Bool × X := by
+  apply Homeomorph.homeomorphOfContinuousOpen (Equiv.boolProdEquivSum X).symm--(h₁)
+  · show Continuous (Sum.elim (Prod.mk false) (Prod.mk true))
+    fun_prop
+  · show Topology.IsOpenEmbedding (Sum.elim (Prod.mk false) (Prod.mk true))
+    sorry
+
+
+  -- toEquiv := Equiv.boolProdEquivSum X).symm
+  -- continuous_toFun := by fun_prop
+  -- continuous_invFun := by fun_prop
+
+#exit
 
 def Homeomorph.finTwo : Bool ≃ₜ Fin 2 where
   toEquiv := finTwoEquiv.symm
@@ -167,17 +188,17 @@ def Homeomorph.foo {X : Type*} [TopologicalSpace X] : X ⊕ X ≃ₜ X × Fin 2 
 
 -- def Diffeomorph.foo : M ⊕ M ≃ₘ^k⟮I, I⟯ M × Fin 2 := sorry
 
--- fails to infer a ChartedSpace instance on Fin 2: another time
--- noncomputable def BoundaryManifoldData.Icc (n : ℕ) (k : ℕ∞) :
---     BoundaryManifoldData (Set.Icc (0 : ℝ) 1) (𝓡∂ 1) k where
---   M₀ := Fin 2
---   E₀ := EuclideanSpace ℝ (Fin 0)
---   H₀ := EuclideanSpace ℝ (Fin 0)
---   I₀ := 𝓘(ℝ, EuclideanSpace ℝ (Fin 0))
---   f x := if h : x = 0 then ⊥ else ⊤
---   isEmbedding := sorry -- should follow from the above!
---   isSmooth := sorry
---   range_eq_boundary := sorry
+noncomputable def BoundaryManifoldData.Icc (n : ℕ) (k : ℕ∞) :
+    BoundaryManifoldData (Set.Icc (0 : ℝ) 1) (𝓡∂ 1) k (𝓡 0) where
+  M₀ := Fin 2
+  -- TODO: these are missing from mathlib
+  chartedSpace := sorry
+  isManifold := sorry
+  f x := if h : x = 0 then ⊥ else ⊤
+  isEmbedding := sorry -- should follow from the above topological lemmas!
+  contMDiff := sorry
+  isImmersion := sorry
+  range_eq_boundary := sorry
 
 open Set Topology Function
 
@@ -228,7 +249,6 @@ lemma IsClosedEmbedding.sum_elim
 
 -- missing lemma: mfderiv of Prod.map (know it's smooth)
 -- mathlib has versions for Prod.mk, also with left and right constant
-
 section missing
 
 variable  {𝕜 : Type u_1} [NontriviallyNormedField 𝕜]
@@ -255,6 +275,8 @@ lemma mfderiv_prod_map
 -- and variations for within, etc
 
 end missing
+
+#exit
 
 variable (M I) in
 /-- If `M` is boundaryless and `N` has nice boundary, so does `M × N`. -/
