@@ -38,7 +38,7 @@ theorem hasStrictDerivAt_log_of_pos (hx : 0 < x) : HasStrictDerivAt log x⁻¹ x
   rwa [exp_log hx] at this
 
 theorem hasStrictDerivAt_log (hx : x ≠ 0) : HasStrictDerivAt log x⁻¹ x := by
-  cases' hx.lt_or_lt with hx hx
+  rcases hx.lt_or_lt with hx | hx
   · convert (hasStrictDerivAt_log_of_pos (neg_pos.mpr hx)).comp x (hasStrictDerivAt_neg x) using 1
     · ext y; exact (log_neg_eq_log y).symm
     · field_simp [hx.ne]
@@ -318,5 +318,23 @@ theorem hasSum_log_one_add_inv {a : ℝ} (h : 0 < a) :
   · field_simp
     linarith
   · field_simp
+
+/-- Expansion of `log (1 + a)` as a series in powers of `a / (a + 2)`. -/
+theorem hasSum_log_one_add {a : ℝ} (h : 0 ≤ a) :
+    HasSum (fun k : ℕ => (2 : ℝ) * (1 / (2 * k + 1)) * (a / (a + 2)) ^ (2 * k + 1))
+      (log (1 + a)) := by
+  obtain (rfl | ha0) := eq_or_ne a 0
+  · simp [hasSum_zero]
+  · convert hasSum_log_one_add_inv (inv_pos.mpr (lt_of_le_of_ne h ha0.symm)) using 4
+    all_goals field_simp [add_comm]
+
+lemma le_log_one_add_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 2 * x / (x + 2) ≤ log (1 + x) := by
+  convert le_hasSum (hasSum_log_one_add hx) 0 (by intros; positivity) using 1
+  field_simp
+
+lemma lt_log_one_add_of_pos {x : ℝ} (hx : 0 < x) : 2 * x / (x + 2) < log (1 + x) := by
+  convert lt_hasSum (hasSum_log_one_add hx.le) 0 (by intros; positivity)
+    1 (by positivity) (by positivity) using 1
+  field_simp
 
 end Real

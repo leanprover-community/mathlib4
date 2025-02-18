@@ -180,7 +180,7 @@ example {R : Type*} [CommRing R] (h : ∀ x : R, ∃ y : R, x + y = 2) :
   rw [this]
   ring
 
-example {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G]
+example {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
     (h : ∀ᶠ x in 𝓝 (1 : G), ∃ᶠ y in 𝓝 x, x * y⁻¹ = 1) :
     ∀ᶠ x in 𝓝 (1 : G), ∃ᶠ y in 𝓝 x, x ^ 2 = y ^ 2 := by
   peel h with a b h_peel

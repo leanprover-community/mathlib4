@@ -464,7 +464,7 @@ theorem iselect_cons [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) {a} (f : 
 theorem corec_def {X} (f : X → F X) (x₀ : X) : M.corec f x₀ = M.mk (F.map (M.corec f) (f x₀)) := by
   dsimp only [M.corec, M.mk]
   congr with n
-  cases' n with n
+  rcases n with - | n
   · dsimp only [sCorec, Approx.sMk]
   · dsimp only [sCorec, Approx.sMk]
     cases f x₀
@@ -576,7 +576,7 @@ theorem eq_of_bisim [Nonempty (M F)] (bisim : IsBisimulation R) : ∀ s₁ s₂,
   · have H := nth_of_bisim R bisim _ _ ps Hr h
     exact H.left
   · rw [not_or] at h
-    cases' h with h₀ h₁
+    obtain ⟨h₀, h₁⟩ := h
     simp only [iselect_eq_default, *, not_false_iff]
 
 end Bisim

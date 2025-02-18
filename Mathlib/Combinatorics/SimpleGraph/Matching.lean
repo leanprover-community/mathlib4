@@ -3,8 +3,9 @@ Copyright (c) 2020 Alena Gusakov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alena Gusakov, Arthur Paulino, Kyle Miller, Pim Otte
 -/
-import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
+import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Set.Functor
 
@@ -334,6 +335,16 @@ lemma IsCycles.other_adj_of_adj (h : G.IsCycles) (hadj : G.Adj v w) :
   obtain ⟨w', hww'⟩ := (G.neighborSet v).exists_ne_of_one_lt_ncard (by omega) w
   exact ⟨w', ⟨hww'.2.symm, hww'.1⟩⟩
 
+lemma IsCycles.existsUnique_ne_adj (h : G.IsCycles) (hadj : G.Adj v w) :
+    ∃! w', w ≠ w' ∧ G.Adj v w' := by
+  obtain ⟨w', ⟨hww, hww'⟩⟩ := h.other_adj_of_adj hadj
+  use w'
+  refine ⟨⟨hww, hww'⟩, ?_⟩
+  intro y ⟨hwy, hwy'⟩
+  obtain ⟨x, y', hxy'⟩ := Set.ncard_eq_two.mp (h ⟨w, hadj⟩)
+  simp_rw [← SimpleGraph.mem_neighborSet] at *
+  aesop
+
 lemma IsCycles.induce_supp (c : G.ConnectedComponent) (h : G.IsCycles) :
     (G.induce c.supp).spanningCoe.IsCycles := by
   intro v ⟨w, hw⟩
@@ -359,6 +370,110 @@ lemma Subgraph.IsPerfectMatching.symmDiff_isCycles
   · right
     use w, w'
     aesop
+
+lemma IsCycles.snd_of_mem_support_of_isPath_of_adj [Finite V] {v w w' : V}
+    (hcyc : G.IsCycles) (p : G.Walk v w) (hw : w ≠ w') (hw' : w' ∈ p.support) (hp : p.IsPath)
+    (hadj : G.Adj v w') : p.snd = w' := by
+  classical
+  apply hp.snd_of_toSubgraph_adj
+  rw [Walk.mem_support_iff_exists_getVert] at hw'
+  obtain ⟨n, ⟨rfl, hnl⟩⟩ := hw'
+  by_cases hn : n = 0 ∨ n = p.length
+  · aesop
+  have e : G.neighborSet (p.getVert n) ≃ p.toSubgraph.neighborSet (p.getVert n) := by
+    refine @Classical.ofNonempty _ ?_
+    rw [← Cardinal.eq, ← Set.cast_ncard (Set.toFinite _), ← Set.cast_ncard (Set.toFinite _),
+        hp.ncard_neighborSet_toSubgraph_internal_eq_two (by omega) (by omega),
+        hcyc (Set.nonempty_of_mem hadj.symm)]
+  rw [Subgraph.adj_comm, Subgraph.adj_iff_of_neighborSet_equiv e (Set.toFinite _)]
+  exact hadj.symm
+
+private lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe_aux [Fintype V] {v w : V}
+    (hcyc : G.IsCycles) (p : G.Walk v w) (hp : p.IsPath) :
+    (G \ p.toSubgraph.spanningCoe).Reachable w v := by
+  classical
+  -- Consider the case when p is nil
+  by_cases hvw : v = w
+  · subst hvw
+    use .nil
+  have hpn : ¬p.Nil := Walk.not_nil_of_ne hvw
+  obtain ⟨w', ⟨hw'1, hw'2⟩, hwu⟩ := hcyc.existsUnique_ne_adj
+    (p.toSubgraph_adj_snd hpn).adj_sub
+  -- The edge (v, w) can't be in p, because then it would be the second node
+  have hnpvw' : ¬ p.toSubgraph.Adj v w' := by
+    intro h
+    exact hw'1 (hp.snd_of_toSubgraph_adj h)
+  -- If w = w', then then the reachability can be proved with just one edge
+  by_cases hww' : w = w'
+  · subst hww'
+    have : (G \  p.toSubgraph.spanningCoe).Adj w v := by
+      simp only [sdiff_adj, Subgraph.spanningCoe_adj]
+      exact ⟨hw'2.symm, fun h ↦ hnpvw' h.symm⟩
+    exact this.reachable
+  -- Construct the walk needed recursively by extending p
+  have hle : (G \ (p.cons hw'2.symm).toSubgraph.spanningCoe) ≤ (G \ p.toSubgraph.spanningCoe) := by
+    apply sdiff_le_sdiff (by rfl) ?hcd
+    aesop
+  have hp'p : (p.cons hw'2.symm).IsPath := by
+    rw [Walk.cons_isPath_iff]
+    refine ⟨hp, fun hw' ↦ ?_⟩
+    exact hw'1 (hcyc.snd_of_mem_support_of_isPath_of_adj _ hww' hw' hp hw'2)
+  have : (G \ p.toSubgraph.spanningCoe).Adj w' v := by
+    simp only [sdiff_adj, Subgraph.spanningCoe_adj]
+    refine ⟨hw'2.symm, fun h ↦ ?_⟩
+    exact hnpvw' h.symm
+  use (((hcyc.reachable_sdiff_toSubgraph_spanningCoe_aux
+    (p.cons hw'2.symm) hp'p).some).mapLe hle).append this.toWalk
+termination_by Fintype.card V + 1 - p.length
+decreasing_by
+  simp_wf
+  have := Walk.IsPath.length_lt hp
+  omega
+
+lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe [Finite V] {v w : V} (hcyc : G.IsCycles)
+    (p : G.Walk v w) (hp : p.IsPath) : (G \ p.toSubgraph.spanningCoe).Reachable w v := by
+  have : Fintype V := Fintype.ofFinite V
+  exact reachable_sdiff_toSubgraph_spanningCoe_aux hcyc p hp
+
+lemma IsCycles.reachable_deleteEdges [Finite V] (hadj : G.Adj v w)
+    (hcyc : G.IsCycles) : (G.deleteEdges {s(v, w)}).Reachable v w := by
+  have : fromEdgeSet {s(v, w)} = hadj.toWalk.toSubgraph.spanningCoe := by
+    simp only [Walk.toSubgraph, singletonSubgraph_le_iff, subgraphOfAdj_verts, Set.mem_insert_iff,
+      Set.mem_singleton_iff, or_true, sup_of_le_left]
+    exact (Subgraph.spanningCoe_subgraphOfAdj hadj).symm
+  rw [show G.deleteEdges {s(v, w)} = G \ fromEdgeSet {s(v, w)} from by rfl]
+  exact this ▸ (hcyc.reachable_sdiff_toSubgraph_spanningCoe hadj.toWalk
+    (Walk.IsPath.of_adj hadj)).symm
+
+lemma IsCycles.exists_cycle_toSubgraph_verts_eq_connectedComponentSupp [Finite V]
+    {c : G.ConnectedComponent} (h : G.IsCycles) (hv : v ∈ c.supp)
+    (hn : (G.neighborSet v).Nonempty) :
+    ∃ (p : G.Walk v v), p.IsCycle ∧ p.toSubgraph.verts = c.supp := by
+  classical
+  obtain ⟨w, hw⟩ := hn
+  obtain ⟨u, p, hp⟩ := SimpleGraph.adj_and_reachable_delete_edges_iff_exists_cycle.mp
+    ⟨hw, h.reachable_deleteEdges hw⟩
+  have hvp : v ∈ p.support := SimpleGraph.Walk.fst_mem_support_of_mem_edges _ hp.2
+  have : p.toSubgraph.verts = c.supp := by
+    obtain ⟨c', hc'⟩ := p.toSubgraph_connected.exists_verts_eq_connectedComponentSupp (by
+      intro v hv w hadj
+      refine (Subgraph.adj_iff_of_neighborSet_equiv ?_ (Set.toFinite _)).mpr hadj
+      have : (G.neighborSet v).Nonempty := by
+        rw [Walk.mem_verts_toSubgraph] at hv
+        refine (Set.nonempty_of_ncard_ne_zero ?_).mono (p.toSubgraph.neighborSet_subset v)
+        rw [hp.1.ncard_neighborSet_toSubgraph_eq_two hv]
+        omega
+      refine @Classical.ofNonempty _ ?_
+      rw [← Cardinal.eq, ← Set.cast_ncard (Set.toFinite _), ← Set.cast_ncard (Set.toFinite _),
+        h this, hp.1.ncard_neighborSet_toSubgraph_eq_two (p.mem_verts_toSubgraph.mp hv)])
+    rw [hc']
+    have : v ∈ c'.supp := by
+      rw [← hc', Walk.mem_verts_toSubgraph]
+      exact hvp
+    simp_all
+  use p.rotate hvp
+  rw [← this]
+  exact ⟨hp.1.rotate _, by simp_all⟩
 
 /--
 A graph `G` is alternating with respect to some other graph `G'`, if exactly every other edge in
