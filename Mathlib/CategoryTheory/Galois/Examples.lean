@@ -167,6 +167,68 @@ noncomputable def isoQuotientStabilizerOfIsConnected (X : Action FintypeCat (Mon
     obtain ⟨τ, rfl⟩ := Quotient.exists_rep a
     exact mul_smul σ τ x
 
+
+section
+variable
+  {G H : Type u} [Group G] [Group H] (f : G →* H)
+  (X Y : Type) [MulAction H X] [MulAction H Y]
+
+/--
+the functor G-finset ⥤ H-finset induced by a group homomorphism f : G → H
+-/
+@[simps]
+def restrictScalars :
+    Action FintypeCat (MonCat.of H) ⥤ Action FintypeCat (MonCat.of G) :=
+  {
+  obj := fun X => { V := X.V, ρ := MonCat.ofHom f ≫ X.ρ }
+  map := fun f => { hom := f.hom, comm := by intro g; simp [f.comm] }
+  }
+
+@[simp]
+lemma restrictScalars_map {X Y : Action FintypeCat (MonCat.of H)}
+    (g : X ⟶ Y) : ((restrictScalars f).map g).hom = g.hom := rfl
+
+/--
+the functor induced by a hom is faithful
+-/
+instance : (restrictScalars f).Faithful where
+  map_injective := by
+    intro X Y g₁ g₂ h
+    ext x
+    rw [← restrictScalars_map f, ← restrictScalars_map f, h]
+
+/--
+the functor induced by f is full if f is surjective
+essentially 58.4.1 (1) → (2)
+-/
+lemma restrictScalars_full (f_surj : Function.Surjective f) : (restrictScalars f).Full where
+  map_surjective := by
+    intro X Y g
+    use ⟨g.hom, ?_⟩
+    · refine
+      Action.hom_ext ((restrictScalars f).map { hom := g.hom, comm := ?w }) g
+        (congrFun rfl ((restrictScalars f).map { hom := g.hom, comm := ?w }))
+    · intro h
+      rcases f_surj h with ⟨a, rfl⟩
+      have : X.ρ (f a) = ((restrictScalars f).obj X).ρ a := rfl
+      rw [this, g.comm a]
+      exact rfl
+
+instance (X : Action FintypeCat (MonCat.of H)) [Nonempty X.V] :
+    Nonempty ((restrictScalars f).obj X).V := by exact ‹Nonempty X.V›
+
+/--
+the functor maps connected objects to connected object if f is surjective
+essentially 58.4.1 (1) → (3)
+-/
+instance (f_surj : Function.Surjective f) (X : Action FintypeCat (MonCat.of H))
+    [PreGaloisCategory.IsConnected X] [Nonempty X.V] :
+    PreGaloisCategory.IsConnected ((restrictScalars f).obj X) := by
+  rw [FintypeCat.Action.isConnected_iff_transitive] at *
+  exact MulAction.isPretransitive_compHom f_surj (G := X.V)
+
+end
+
 end FintypeCat
 
 end CategoryTheory
