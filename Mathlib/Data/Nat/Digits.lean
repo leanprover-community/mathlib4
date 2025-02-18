@@ -234,11 +234,11 @@ theorem digits_ofDigits (b : ℕ) (h : 1 < b) (L : List ℕ) (w₁ : ∀ l ∈ L
         exact List.getLast_mem h'
 
 theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
-  cases' b with b
-  · cases' n with n
+  rcases b with - | b
+  · rcases n with - | n
     · rfl
     · simp
-  · cases' b with b
+  · rcases b with - | b
     · induction' n with n ih
       · rfl
       · rw [Nat.zero_add] at ih ⊢
@@ -359,7 +359,7 @@ theorem ofDigits_add_ofDigits_eq_ofDigits_zipWith_of_length_eq {b : ℕ} {l1 l2 
 theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b + 2 := by
   induction m using Nat.strongRecOn with | ind n IH => ?_
   intro d hd
-  cases' n with n
+  rcases n with - | n
   · rw [digits_zero] at hd
     cases hd
   -- base b+2 expansion of 0 has no digits

@@ -216,7 +216,7 @@ theorem exists_le_of_tendsto_atBot (h : Tendsto u atTop atBot) :
 
 theorem exists_lt_of_tendsto_atTop [NoMaxOrder β] (h : Tendsto u atTop atTop) (a : α) (b : β) :
     ∃ a' ≥ a, b < u a' := by
-  cases' exists_gt b with b' hb'
+  obtain ⟨b', hb'⟩ := exists_gt b
   rcases exists_le_of_tendsto_atTop h a b' with ⟨a', ha', ha''⟩
   exact ⟨a', ha', lt_of_lt_of_le hb' ha''⟩
 
@@ -568,7 +568,7 @@ variable [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] [Preorder β] {
 theorem unbounded_of_tendsto_atTop [NoMaxOrder β] (h : Tendsto f atTop atTop) :
     ¬BddAbove (range f) := by
   rintro ⟨M, hM⟩
-  cases' mem_atTop_sets.mp (h <| Ioi_mem_atTop M) with a ha
+  obtain ⟨a, ha⟩ := mem_atTop_sets.mp (h <| Ioi_mem_atTop M)
   apply lt_irrefl M
   calc
     M < f a := ha a le_rfl
