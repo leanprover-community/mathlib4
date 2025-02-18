@@ -53,6 +53,8 @@ theorem coe_comap [RingHomClass F R S] (I : Ideal S) : (comap f I : Set R) = f �
 
 lemma comap_coe [RingHomClass F R S] (I : Ideal S) : I.comap (f : R →+* S) = I.comap f := rfl
 
+lemma map_coe [RingHomClass F R S] (I : Ideal R) : I.map (f : R →+* S) = I.map f := rfl
+
 variable {f}
 
 theorem map_mono (h : I ≤ J) : map f I ≤ map f J :=

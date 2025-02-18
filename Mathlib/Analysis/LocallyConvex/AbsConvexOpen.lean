@@ -44,7 +44,7 @@ variable (𝕜 E)
 def AbsConvexOpenSets :=
   { s : Set E // (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s }
 
-noncomputable instance AbsConvexOpenSets.instCoeTC : CoeTC (AbsConvexOpenSets 𝕜 E) (Set E) :=
+noncomputable instance AbsConvexOpenSets.instCoeOut : CoeOut (AbsConvexOpenSets 𝕜 E) (Set E) :=
   ⟨Subtype.val⟩
 
 namespace AbsConvexOpenSets
