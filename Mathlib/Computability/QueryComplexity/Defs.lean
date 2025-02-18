@@ -30,10 +30,11 @@ noncomputable section
 
 universe u
 
-variable {ι I : Type*}
+variable {I : Type*}
+variable {ι : I → Type*}
 variable {s t : Set I}
 variable {α β γ : Type*}
-variable {ω : ι → Type*}
+variable {ω : {i : I} → ι i → Type*}
 
 namespace QueryComplexity
 
@@ -47,12 +48,9 @@ abbrev BOracle (α : Type*) := Oracle α fun _ ↦ Bool
 pure value or the identifier of an oracle (`o`) drawn from a predefined set (`s`), a value to
 be queried by the oracle (`i`) and a dependent selection function that determines which oracle to
 run, depending on the result of the query. -/
-inductive Comp (ι : Type*) (ω : ι → Type*) (s : Set I) (α : Type*) : Type _ where
+inductive Comp (ι : I → Type*) (ω : {i : I} → ι i → Type*) (s : Set I) (α : Type*) : Type _ where
   | pure' : α → Comp ι ω s α
-  | query' : (o : I) → o ∈ s → (y : ι) → ((ω y) → Comp ι ω s α) → Comp ι ω s α
-
-/-- `Comp` where all oracles return `Bool` -/
-abbrev BComp (ι : Type*) {I : Type*} (s : Set I) (α : Type*) := Comp ι (fun _ ↦ Bool) s α
+  | query' : (o : I) → o ∈ s → (y : ι o) → ((ω y) → Comp ι ω s α) → Comp ι ω s α
 
 namespace Comp
 
@@ -68,12 +66,12 @@ instance : Monad (Comp ι ω s) where
 
 /-- Produce a `Comp` given the identifier of an oracle and a value to be queried.
 The `Comp` just returns `true` or `false` according to the answer of the oracle. -/
-def query (o : I) (y : ι) : Comp ι ω {o} (ω y)  :=
+def query (o : I) (y : ι o) : Comp ι ω {o} (ω y)  :=
   Comp.query' o (mem_singleton _) y pure
 
 /-- Execute `f` with the oracles `os`. Returns the final value and the number of queries to
 each one of the oracles. -/
-def run (f : Comp ι ω s α) (os : I → Oracle ι ω) : α × (I → ℕ) := match f with
+def run (f : Comp ι ω s α) (os : (i : I) → Oracle (ι i) ω) : α × (I → ℕ) := match f with
   | .pure' x => (x, fun _ => 0)
   | .query' i _ y f =>
     let x := os i y
@@ -81,21 +79,12 @@ def run (f : Comp ι ω s α) (os : I → Oracle ι ω) : α × (I → ℕ) := m
     (z, c + fun j => if j = i then 1 else 0)
 
 /-- The value of a `Comp ι s` after execution -/
-def value (f : Comp ι ω s α) (o : I → Oracle ι ω) : α :=
+def value (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) : α :=
   (f.run o).1
 
-/-- The value of a `Comp ι s` after execution with a single oracle -/
-@[simp]
-def value' (f : Comp ι ω s α) (o : Oracle ι ω) : α :=
-  f.value fun _ ↦ o
-
 /-- The query count for a specific oracle of a `Comp ι s` -/
-def cost (f : Comp ι ω s α) (o : I → Oracle ι ω) (i : I) : ℕ :=
+def cost (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) (i : I) : ℕ :=
   (f.run o).2 i
-
-/-- The cost of a `Comp ι s`, when run with a single oracle -/
-def cost' (f : Comp ι ω s α) (o : Oracle ι ω) : I → ℕ :=
-  f.cost fun _ ↦ o
 
 /-- Extend the set of allowed oracles in a computation -/
 def allow (f : Comp ι ω s α) (st : s ⊆ t) : Comp ι ω t α := match f with
