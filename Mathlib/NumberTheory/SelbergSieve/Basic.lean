@@ -349,7 +349,7 @@ theorem selbergTerms_pos (l : ℕ) (hl : l ∣ P) : 0 < g l := by
   have hp_dvd : p ∣ P := (Nat.dvd_of_mem_primeFactors hp).trans hl
   linarith only [nu_lt_one_of_prime p hp_prime hp_dvd]
 
-theorem selbergTerms_mult : ArithmeticFunction.IsMultiplicative g := by
+theorem selbergTerms_isMultiplicative : ArithmeticFunction.IsMultiplicative g := by
   unfold selbergTerms
   arith_mult
 
@@ -394,7 +394,7 @@ theorem conv_selbergTerms_eq_selbergTerms_mul_nu {d : ℕ} (hd : d ∣ P) :
     _ = g d * ∑ l ∈ divisors P, if l ∣ d then 1 / g l else 0 := by
       simp_rw [← sum_filter, mul_sum]; apply sum_congr rfl; intro l hl
       simp only [mem_filter, mem_divisors, ne_eq] at hl
-      rw [selbergTerms_mult.map_div_of_coprime hl.2]
+      rw [selbergTerms_isMultiplicative.map_div_of_coprime hl.2]
       · ring
       · apply coprime_of_squarefree_mul <|
           (Nat.div_mul_cancel hl.2).symm ▸ (squarefree_of_dvd_prodPrimes hd)
