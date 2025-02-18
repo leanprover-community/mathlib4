@@ -155,14 +155,9 @@ protected alias ⟨_, toFinset_mono⟩ := Finite.toFinset_subset_toFinset
 
 protected alias ⟨_, toFinset_strictMono⟩ := Finite.toFinset_ssubset_toFinset
 
--- Porting note: `simp` can simplify LHS but then it simplifies something
--- in the generated `Fintype {x | p x}` instance and fails to apply `Set.toFinset_setOf`
 @[simp high]
 protected theorem toFinset_setOf [Fintype α] (p : α → Prop) [DecidablePred p]
-    (h : { x | p x }.Finite) : h.toFinset = Finset.univ.filter p := by
-  ext
-  -- Porting note: `simp` doesn't use the `simp` lemma `Set.toFinset_setOf` without the `_`
-  simp [Set.toFinset_setOf _]
+    (h : { x | p x }.Finite) : h.toFinset = Finset.univ.filter p := by simp
 
 @[simp]
 nonrec theorem disjoint_toFinset {hs : s.Finite} {ht : t.Finite} :
@@ -220,6 +215,10 @@ protected theorem toFinset_range [DecidableEq α] [Fintype β] (f : β → α) (
     h.toFinset = Finset.univ.image f := by
   ext
   simp
+
+@[simp]
+protected theorem toFinset_nontrivial (h : s.Finite) : h.toFinset.Nontrivial ↔ s.Nontrivial := by
+  rw [Finset.Nontrivial, h.coe_toFinset]
 
 end Finite
 
@@ -728,11 +727,10 @@ end
 
 /-! ### Cardinality -/
 
-theorem empty_card : Fintype.card (∅ : Set α) = 0 :=
+theorem card_empty : Fintype.card (∅ : Set α) = 0 :=
   rfl
 
-theorem empty_card' {h : Fintype.{u} (∅ : Set α)} : @Fintype.card (∅ : Set α) h = 0 := by
-  simp
+@[deprecated (since := "2025-02-05")] alias empty_card := card_empty
 
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
     @Fintype.card _ (fintypeInsertOfNotMem s h) = Fintype.card s + 1 := by
@@ -740,7 +738,7 @@ theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ 
 
 @[simp]
 theorem card_insert {a : α} (s : Set α) [Fintype s] (h : a ∉ s)
-    {d : Fintype.{u} (insert a s : Set α)} : @Fintype.card _ d = Fintype.card s + 1 := by
+    {d : Fintype (insert a s : Set α)} : @Fintype.card _ d = Fintype.card s + 1 := by
   rw [← card_fintypeInsertOfNotMem s h]; congr!
 
 theorem card_image_of_inj_on {s : Set α} [Fintype s] {f : α → β} [Fintype (f '' s)]

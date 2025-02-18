@@ -6,6 +6,8 @@ Amelia Livingston, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Subsemigroup.Defs
+import Mathlib.Tactic.FastInstance
+import Mathlib.Data.Set.Insert
 
 /-!
 # Submonoids: definition
@@ -137,11 +139,10 @@ initialize_simps_projections AddSubmonoid (carrier → coe, as_prefix coe)
 theorem mem_toSubsemigroup {s : Submonoid M} {x : M} : x ∈ s.toSubsemigroup ↔ x ∈ s :=
   Iff.rfl
 
--- Porting note: `x ∈ s.carrier` is now syntactically `x ∈ s.toSubsemigroup.carrier`,
--- which `simp` already simplifies to `x ∈ s.toSubsemigroup`. So we remove the `@[simp]` attribute
--- here, and instead add the simp lemma `mem_toSubsemigroup` to allow `simp` to do this exact
--- simplification transitively.
-@[to_additive]
+-- In Lean 3, `dsimp` would use theorems proved by `Iff.rfl`.
+-- If that were still the case, this would useful as a `@[simp]` lemma,
+-- despite the fact that it is provable by `simp` (by not `dsimp`).
+@[to_additive (attr := simp, nolint simpNF)] -- See https://github.com/leanprover-community/mathlib4/issues/10675
 theorem mem_carrier {s : Submonoid M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
@@ -351,21 +352,21 @@ theorem mk_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S 
 @[to_additive
       "An `AddSubmonoid` of a unital additive magma inherits a unital additive magma structure."]
 instance (priority := 75) toMulOneClass {M : Type*} [MulOneClass M] {A : Type*} [SetLike A M]
-    [SubmonoidClass A M] (S : A) : MulOneClass S :=
-    Subtype.coe_injective.mulOneClass Subtype.val rfl (fun _ _ => rfl)
+    [SubmonoidClass A M] (S : A) : MulOneClass S := fast_instance%
+  Subtype.coe_injective.mulOneClass Subtype.val rfl (fun _ _ => rfl)
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a monoid inherits a monoid structure. -/
 @[to_additive "An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure."]
 instance (priority := 75) toMonoid {M : Type*} [Monoid M] {A : Type*} [SetLike A M]
-    [SubmonoidClass A M] (S : A) : Monoid S :=
+    [SubmonoidClass A M] (S : A) : Monoid S := fast_instance%
   Subtype.coe_injective.monoid Subtype.val rfl (fun _ _ => rfl) (fun _ _ => rfl)
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a `CommMonoid` is a `CommMonoid`. -/
 @[to_additive "An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`."]
 instance (priority := 75) toCommMonoid {M} [CommMonoid M] {A : Type*} [SetLike A M]
-    [SubmonoidClass A M] (S : A) : CommMonoid S :=
+    [SubmonoidClass A M] (S : A) : CommMonoid S := fast_instance%
   Subtype.coe_injective.commMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
@@ -420,7 +421,8 @@ theorem one_def : (1 : S) = ⟨1, S.one_mem⟩ :=
 /-- A submonoid of a unital magma inherits a unital magma structure. -/
 @[to_additive
       "An `AddSubmonoid` of a unital additive magma inherits a unital additive magma structure."]
-instance toMulOneClass {M : Type*} [MulOneClass M] (S : Submonoid M) : MulOneClass S :=
+instance toMulOneClass {M : Type*} [MulOneClass M] (S : Submonoid M) :
+    MulOneClass S := fast_instance%
   Subtype.coe_injective.mulOneClass Subtype.val rfl fun _ _ => rfl
 
 @[to_additive]
@@ -430,12 +432,12 @@ protected theorem pow_mem {M : Type*} [Monoid M] (S : Submonoid M) {x : M} (hx :
 
 /-- A submonoid of a monoid inherits a monoid structure. -/
 @[to_additive "An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure."]
-instance toMonoid {M : Type*} [Monoid M] (S : Submonoid M) : Monoid S :=
+instance toMonoid {M : Type*} [Monoid M] (S : Submonoid M) : Monoid S := fast_instance%
   Subtype.coe_injective.monoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
 
 /-- A submonoid of a `CommMonoid` is a `CommMonoid`. -/
 @[to_additive "An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`."]
-instance toCommMonoid {M} [CommMonoid M] (S : Submonoid M) : CommMonoid S :=
+instance toCommMonoid {M} [CommMonoid M] (S : Submonoid M) : CommMonoid S := fast_instance%
   Subtype.coe_injective.commMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/

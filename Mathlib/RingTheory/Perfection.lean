@@ -199,7 +199,6 @@ end Perfection
 
 /-- A perfection map to a ring of characteristic `p` is a map that is isomorphic
 to its perfection. -/
--- @[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): This linter does not exist yet.
 structure PerfectionMap (p : ℕ) [Fact p.Prime] {R : Type u₁} [CommSemiring R] [CharP R p]
     {P : Type u₂} [CommSemiring P] [CharP P p] [PerfectRing P p] (π : P →+* R) : Prop where
   injective : ∀ ⦃x y : P⦄,
@@ -326,7 +325,7 @@ variable (p : ℕ)
 
 -- Porting note: Specified all arguments explicitly
 /-- `O/(p)` for `O`, ring of integers of `K`. -/
-@[nolint unusedArguments] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `nolint has_nonempty_instance`
+@[nolint unusedArguments]
 def ModP (K : Type u₁) [Field K] (v : Valuation K ℝ≥0) (O : Type u₂) [CommRing O] [Algebra O K]
     (_ : v.Integers O) (p : ℕ) :=
   O ⧸ (Ideal.span {(p : O)} : Ideal O)
@@ -438,7 +437,6 @@ end Classical
 end ModP
 
 /-- Perfection of `O/(p)` where `O` is the ring of integers of `K`. -/
--- @[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): This linter does not exist yet.
 def PreTilt :=
   Ring.Perfection (ModP K v O hv p) p
 
@@ -454,10 +452,9 @@ instance : CharP (PreTilt K v O hv p) p :=
 
 section Classical
 
-open scoped Classical
-
 open Perfection
 
+open scoped Classical in
 /-- The valuation `Perfection(O/(p)) → ℝ≥0` as a function.
 Given `f ∈ Perfection(O/(p))`, if `f = 0` then output `0`;
 otherwise output `preVal(f(n))^(p^n)` for any `n` such that `f(n) ≠ 0`. -/
@@ -468,6 +465,7 @@ noncomputable def valAux (f : PreTilt K v O hv p) : ℝ≥0 :=
 
 variable {K v O hv p}
 
+open scoped Classical in
 theorem coeff_nat_find_add_ne_zero {f : PreTilt K v O hv p} {h : ∃ n, coeff _ _ n f ≠ 0} (k : ℕ) :
     coeff _ _ (Nat.find h + k) f ≠ 0 :=
   coeff_add_ne_zero (Nat.find_spec h) k
@@ -476,6 +474,7 @@ theorem valAux_eq {f : PreTilt K v O hv p} {n : ℕ} (hfn : coeff _ _ n f ≠ 0)
     valAux K v O hv p f = ModP.preVal K v O hv p (coeff _ _ n f) ^ p ^ n := by
   have h : ∃ n, coeff _ _ n f ≠ 0 := ⟨n, hfn⟩
   rw [valAux, dif_pos h]
+  classical
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le (Nat.find_min' h hfn)
   induction' k with k ih
   · rfl
@@ -533,8 +532,8 @@ theorem valAux_add (f g : PreTilt K v O hv p) :
   replace hn := coeff_ne_zero_of_le hn (le_trans (le_max_right m n) (le_max_left _ k))
   replace hk := coeff_ne_zero_of_le hk (le_max_right (max m n) k)
   rw [valAux_eq hm, valAux_eq hn, valAux_eq hk, RingHom.map_add]
-  cases' le_max_iff.1
-      (ModP.preVal_add (coeff _ _ (max (max m n) k) f) (coeff _ _ (max (max m n) k) g)) with h h
+  rcases le_max_iff.1
+      (ModP.preVal_add (coeff _ _ (max (max m n) k) f) (coeff _ _ (max (max m n) k) g)) with h | h
   · exact le_max_of_le_left (pow_le_pow_left' h _)
   · exact le_max_of_le_right (pow_le_pow_left' h _)
 
@@ -574,7 +573,6 @@ end PreTilt
 /-- The tilt of a field, as defined in Perfectoid Spaces by Peter Scholze, as in
 [scholze2011perfectoid]. Given a field `K` with valuation `K → ℝ≥0` and ring of integers `O`,
 this is implemented as the fraction field of the perfection of `O/(p)`. -/
--- @[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): This linter does not exist yet.
 def Tilt [Fact p.Prime] [Fact (v p ≠ 1)] :=
   FractionRing (PreTilt K v O hv p)
 

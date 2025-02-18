@@ -70,11 +70,16 @@ def sectionΓ'Bool : Γ' → Bool
   | Γ'.bit b => b
   | _ => Inhabited.default
 
+@[simp]
+theorem sectionΓ'Bool_inclusionBoolΓ' {b} : sectionΓ'Bool (inclusionBoolΓ' b) = b := by
+  cases b <;> rfl
+
+@[deprecated sectionΓ'Bool_inclusionBoolΓ' (since := "2025-01-21")]
 theorem leftInverse_section_inclusion : Function.LeftInverse sectionΓ'Bool inclusionBoolΓ' :=
   fun x => Bool.casesOn x rfl rfl
 
 theorem inclusionBoolΓ'_injective : Function.Injective inclusionBoolΓ' :=
-  Function.HasLeftInverse.injective (Exists.intro sectionΓ'Bool leftInverse_section_inclusion)
+  Function.HasLeftInverse.injective ⟨_, (fun _ => sectionΓ'Bool_inclusionBoolΓ')⟩
 
 /-- An encoding function of the positive binary numbers in bool. -/
 def encodePosNum : PosNum → List Bool
@@ -107,7 +112,7 @@ theorem encodePosNum_nonempty (n : PosNum) : encodePosNum n ≠ [] :=
   PosNum.casesOn n (List.cons_ne_nil _ _) (fun _m => List.cons_ne_nil _ _) fun _m =>
     List.cons_ne_nil _ _
 
-theorem decode_encodePosNum : ∀ n, decodePosNum (encodePosNum n) = n := by
+@[simp] theorem decode_encodePosNum : ∀ n, decodePosNum (encodePosNum n) = n := by
   intro n
   induction' n with m hm m hm <;> unfold encodePosNum decodePosNum
   · rfl
@@ -115,7 +120,7 @@ theorem decode_encodePosNum : ∀ n, decodePosNum (encodePosNum n) = n := by
     exact if_neg (encodePosNum_nonempty m)
   · exact congr_arg PosNum.bit0 hm
 
-theorem decode_encodeNum : ∀ n, decodeNum (encodeNum n) = n := by
+@[simp] theorem decode_encodeNum : ∀ n, decodeNum (encodeNum n) = n := by
   intro n
   cases' n with n <;> unfold encodeNum decodeNum
   · rfl
@@ -123,7 +128,7 @@ theorem decode_encodeNum : ∀ n, decodeNum (encodeNum n) = n := by
   rw [PosNum.cast_to_num]
   exact if_neg (encodePosNum_nonempty n)
 
-theorem decode_encodeNat : ∀ n, decodeNat (encodeNat n) = n := by
+@[simp] theorem decode_encodeNat : ∀ n, decodeNat (encodeNat n) = n := by
   intro n
   conv_rhs => rw [← Num.to_of_nat n]
   exact congr_arg ((↑) : Num → ℕ) (decode_encodeNum n)
@@ -144,11 +149,7 @@ def encodingNatΓ' : Encoding ℕ where
   Γ := Γ'
   encode x := List.map inclusionBoolΓ' (encodeNat x)
   decode x := some (decodeNat (List.map sectionΓ'Bool x))
-  decode_encode x :=
-    congr_arg _ <| by
-      -- Porting note: `rw` can't unify `g ∘ f` with `fun x => g (f x)`, used `LeftInverse.id`
-      -- instead.
-      rw [List.map_map, leftInverse_section_inclusion.id, List.map_id, decode_encodeNat]
+  decode_encode x := congr_arg _ <| by simp [Function.comp_def]
 
 /-- A binary FinEncoding of ℕ in Γ'. -/
 def finEncodingNatΓ' : FinEncoding ℕ :=
@@ -163,7 +164,7 @@ def unaryEncodeNat : Nat → List Bool
 def unaryDecodeNat : List Bool → Nat :=
   List.length
 
-theorem unary_decode_encode_nat : ∀ n, unaryDecodeNat (unaryEncodeNat n) = n := fun n =>
+@[simp] theorem unary_decode_encode_nat : ∀ n, unaryDecodeNat (unaryEncodeNat n) = n := fun n =>
   Nat.rec rfl (fun (_m : ℕ) hm => (congr_arg Nat.succ hm.symm).symm) n
 
 /-- A unary fin_encoding of ℕ. -/
@@ -182,7 +183,7 @@ def decodeBool : List Bool → Bool
   | b :: _ => b
   | _ => Inhabited.default
 
-theorem decode_encodeBool (b : Bool) : decodeBool (encodeBool b) = b := rfl
+@[simp] theorem decode_encodeBool (b : Bool) : decodeBool (encodeBool b) = b := rfl
 
 /-- A fin_encoding of bool in bool. -/
 def finEncodingBoolBool : FinEncoding Bool where

@@ -17,7 +17,6 @@ coalgebras over `G`.
 
 ## TODO
 
-* Prove the dual result about the structure map of the terminal coalgebra of an endofunctor.
 * Prove that if the countable infinite product over the powers of the endofunctor exists, then
   algebras over the endofunctor coincide with algebras over the free monad on the endofunctor.
 -/
@@ -193,7 +192,7 @@ def equivOfNatIso {F G : C ⥤ C} (α : F ≅ G) : Algebra F ≌ Algebra G where
 
 namespace Initial
 
-variable {A} (h : @Limits.IsInitial (Algebra F) _ A)
+variable {A : Algebra F} (h : Limits.IsInitial A)
 /-- The inverse of the structure map of an initial algebra -/
 @[simp]
 def strInv : A.1 ⟶ F.obj A.1 :=
@@ -381,6 +380,35 @@ def equivOfNatIso {F G : C ⥤ C} (α : F ≅ G) : Coalgebra F ≌ Coalgebra G w
   unitIso := functorOfNatTransId.symm ≪≫ functorOfNatTransEq (by simp) ≪≫ functorOfNatTransComp _ _
   counitIso :=
     (functorOfNatTransComp _ _).symm ≪≫ functorOfNatTransEq (by simp) ≪≫ functorOfNatTransId
+
+namespace Terminal
+
+variable {A : Coalgebra F} (h : Limits.IsTerminal A)
+
+/-- The inverse of the structure map of an terminal coalgebra -/
+@[simp]
+def strInv : F.obj A.1 ⟶ A.1 :=
+  (h.from ⟨F.obj A.V, F.map A.str⟩).f
+
+theorem right_inv' :
+    ⟨A.str ≫ strInv h, by rw [Category.assoc, F.map_comp, strInv, ← Hom.h] ⟩ = 𝟙 A :=
+  Limits.IsTerminal.hom_ext h _ (𝟙 A)
+
+theorem right_inv : A.str ≫ strInv h = 𝟙 _ :=
+  congr_arg Hom.f (right_inv' h)
+
+theorem left_inv : strInv h ≫ A.str = 𝟙 _ := by
+  rw [strInv, ← (h.from ⟨F.obj A.V, F.map A.str⟩).h, ← F.map_id, ← F.map_comp]
+  congr
+  exact right_inv h
+
+/-- The structure map of the terminal coalgebra is an isomorphism,
+hence endofunctors preserve their terminal coalgebras
+-/
+theorem str_isIso (h : Limits.IsTerminal A) : IsIso A.str :=
+  { out := ⟨strInv h, right_inv _, left_inv _⟩  }
+
+end Terminal
 
 end Coalgebra
 

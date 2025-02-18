@@ -1320,6 +1320,8 @@ def attach (s : Multiset α) : Multiset { x // x ∈ s } :=
 theorem coe_attach (l : List α) : @Eq (Multiset { x // x ∈ l }) (@attach α l) l.attach :=
   rfl
 
+set_option linter.deprecated false in
+@[deprecated "Deprecated without replacement." (since := "2025-02-07")]
 theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {s : Multiset α} (hx : x ∈ s) :
     SizeOf.sizeOf x < SizeOf.sizeOf s := by
   induction' s using Quot.inductionOn with l a b
@@ -1528,8 +1530,6 @@ theorem filter_add_not (s : Multiset α) : filter p s + filter (fun a => ¬p a) 
 
 theorem filter_map (f : β → α) (s : Multiset β) : filter p (map f s) = map f (filter (p ∘ f) s) :=
   Quot.inductionOn s fun l => by simp [List.filter_map]; rfl
-
-@[deprecated (since := "2024-06-16")] alias map_filter := filter_map
 
 -- TODO: rename to `map_filter` when the deprecated alias above is removed.
 lemma map_filter' {f : α → β} (hf : Injective f) (s : Multiset α)
@@ -1965,9 +1965,9 @@ lemma count_sub (a : α) (s t : Multiset α) : count a (s - t) = count a s - cou
 /-- This is a special case of `tsub_le_iff_right`, which should be used instead of this.
 This is needed to prove `OrderedSub (Multiset α)`. -/
 protected lemma sub_le_iff_le_add : s - t ≤ u ↔ s ≤ u + t := by
-  revert s
-  exact @(Multiset.induction_on t (by simp [Multiset.sub_zero]) fun a t IH s => by
-      simp [IH, erase_le_iff_le_cons])
+  induction t using Multiset.induction_on generalizing s with
+  | empty => simp [Multiset.sub_zero]
+  | cons a s IH => simp [IH, erase_le_iff_le_cons]
 
 /-- This is a special case of `tsub_le_iff_left`, which should be used instead of this. -/
 protected lemma sub_le_iff_le_add' : s - t ≤ u ↔ s ≤ t + u := by
@@ -2405,7 +2405,7 @@ theorem exists_mem_of_rel_of_mem {r : α → β → Prop} {s : Multiset α} {t :
   induction' h with x y s t hxy _hst ih
   · simp
   · intro a ha
-    cases' mem_cons.1 ha with ha ha
+    rcases mem_cons.1 ha with ha | ha
     · exact ⟨y, mem_cons_self _ _, ha.symm ▸ hxy⟩
     · rcases ih ha with ⟨b, hbt, hab⟩
       exact ⟨b, mem_cons.2 (Or.inr hbt), hab⟩

@@ -293,7 +293,7 @@ theorem sdiff_lt (hx : y ≤ x) (hy : y ≠ ⊥) : x \ y < x := by
   rw [← h, inf_eq_right.mpr hx]
 
 @[simp]
-theorem le_sdiff_iff : x ≤ y \ x ↔ x = ⊥ :=
+theorem le_sdiff_right : x ≤ y \ x ↔ x = ⊥ :=
   ⟨fun h => disjoint_self.1 (disjoint_sdiff_self_right.mono_right h), fun h => h.le.trans bot_le⟩
 
 @[simp] lemma sdiff_eq_right : x \ y = y ↔ x = ⊥ ∧ y = ⊥ := by
@@ -689,13 +689,19 @@ theorem codisjoint_himp_self_right : Codisjoint x (x ⇨ y) :=
 theorem himp_le : x ⇨ y ≤ z ↔ y ≤ z ∧ Codisjoint x z :=
   (@le_sdiff αᵒᵈ _ _ _ _).trans <| and_congr_right' <| @codisjoint_comm _ (_) _ _ _
 
-@[simp] lemma himp_le_iff : x ⇨ y ≤ x ↔ x = ⊤ :=
+@[simp] lemma himp_le_left : x ⇨ y ≤ x ↔ x = ⊤ :=
   ⟨fun h ↦ codisjoint_self.1 <| codisjoint_himp_self_right.mono_right h, fun h ↦ le_top.trans h.ge⟩
 
 @[simp] lemma himp_eq_left : x ⇨ y = x ↔ x = ⊤ ∧ y = ⊤ := by
   rw [codisjoint_himp_self_left.eq_iff]; aesop
 
 lemma himp_ne_right : x ⇨ y ≠ x ↔ x ≠ ⊤ ∨ y ≠ ⊤ := himp_eq_left.not.trans not_and_or
+
+lemma codisjoint_iff_compl_le_left : Codisjoint x y ↔ yᶜ ≤ x :=
+  hnot_le_iff_codisjoint_left.symm
+
+lemma codisjoint_iff_compl_le_right : Codisjoint x y ↔ xᶜ ≤ y :=
+  hnot_le_iff_codisjoint_right.symm
 
 end BooleanAlgebra
 
