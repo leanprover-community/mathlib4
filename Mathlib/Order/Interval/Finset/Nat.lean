@@ -118,6 +118,11 @@ theorem Icc_pred_right {b : ℕ} (h : 0 < b) : Icc a (b - 1) = Ico a b := by
   ext x
   rw [mem_Icc, mem_Ico, lt_iff_le_pred h]
 
+lemma Icc_eq_Ioo : Icc (a + 1) (b - 1) = Ioo a b := by
+  obtain rfl | hb := eq_or_ne b 0
+  · simp
+  · rw [Icc_pred_right _ hb.bot_lt, Ico_succ_left]
+
 theorem Ico_succ_succ : Ico a.succ b.succ = Ioc a b := by
   ext x
   rw [mem_Ico, mem_Ioc, succ_le_iff, Nat.lt_succ_iff]
