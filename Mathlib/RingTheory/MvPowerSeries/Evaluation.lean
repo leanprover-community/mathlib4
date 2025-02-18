@@ -65,7 +65,7 @@ structure EvalDomain (a : σ → S) : Prop where
   tendsto_zero : Tendsto a cofinite (nhds 0)
 
 /-- The domain of evaluation of `MvPowerSeries`, as an ideal -/
-def EvalDomain_ideal [TopologicalRing S] [IsLinearTopology S S] :
+def EvalDomain_ideal [IsTopologicalRing S] [IsLinearTopology S S] :
     Ideal (σ → S) where
   carrier := setOf EvalDomain
   add_mem' {a} {b} ha hb := {
@@ -257,10 +257,10 @@ theorem eval₂_X (s : σ) :
     eval₂ φ a (X s) = a s := by
   rw [← coe_X, eval₂_coe, MvPolynomial.eval₂_X]
 
-variable [TopologicalSemiring R] [UniformAddGroup R]
+variable [IsTopologicalSemiring R] [UniformAddGroup R]
     [UniformAddGroup S] [CompleteSpace S] [T2Space S] [IsLinearTopology S S]
 
-variable [TopologicalRing S]
+variable [IsTopologicalRing S]
 
 variable {φ a}
 
@@ -325,7 +325,7 @@ theorem eval₂_unique (hφ : Continuous φ) (ha : EvalDomain a)
 
 theorem comp_eval₂ (hφ : Continuous φ) (ha : EvalDomain a)
     {T : Type*} [UniformSpace T] [CompleteSpace T] [T2Space T]
-    [CommRing T] [TopologicalRing T] [IsLinearTopology T T] [UniformAddGroup T]
+    [CommRing T] [IsTopologicalRing T] [IsLinearTopology T T] [UniformAddGroup T]
     {ε : S →+* T} (hε : Continuous ε) :
     ε ∘ eval₂ φ a = eval₂ (ε.comp φ) (ε ∘ a) := by
   rw [← coe_eval₂Hom hφ ha, ← coe_comp]
@@ -392,7 +392,7 @@ theorem aeval_eq_sum (ha : EvalDomain a) (f : MvPowerSeries σ R) :
 
 theorem comp_aeval (ha : EvalDomain a)
     {T : Type*} [CommRing T] [UniformSpace T] [UniformAddGroup T]
-    [TopologicalRing T] [IsLinearTopology T T]
+    [IsTopologicalRing T] [IsLinearTopology T T]
     [T2Space T] [Algebra R T] [ContinuousSMul R T] [CompleteSpace T]
     {ε : S →ₐ[R] T} (hε : Continuous ε) :
     ε.comp (aeval ha) = aeval (ha.map hε)  := by
