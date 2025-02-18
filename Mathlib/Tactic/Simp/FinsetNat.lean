@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2025 Yaël Dillies, Paul Lezeau. All rights reserved.
+Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Paul Lezeau
+Authors: Yaël Dillies
 -/
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Util.Qq
