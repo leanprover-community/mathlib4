@@ -634,7 +634,7 @@ theorem lieModule_lcs_map_le (k : ℕ) :
     simp only [lowerCentralSeries_succ, SetLike.mem_coe, LieSubmodule.mem_toSubmodule]
     have : ∃ y : L₂, ∃ n : lowerCentralSeries R L₂ M₂ k, ⁅y, n⁆ = g m := by
       use f x, ⟨g m_n, ih (Submodule.mem_map_of_mem h₁)⟩
-      simp [LieSubmodule.mem_top, LieSubmodule.coe_bracket, hfg x m_n, h₂]
+      simp [hfg x m_n, h₂]
     obtain ⟨y, n, hn⟩ := this
     rw [← hn]
     apply LieSubmodule.lie_mem_lie
