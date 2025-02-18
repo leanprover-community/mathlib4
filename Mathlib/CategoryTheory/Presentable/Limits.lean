@@ -167,9 +167,8 @@ lemma isCardinalPresentable_of_isColimit'
     (hK : HasCardinalLT (Arrow K) κ)
     [∀ k, IsCardinalPresentable (Y.obj k) κ] :
     IsCardinalPresentable c.pt κ := by
-  have : ∀ (k : Kᵒᵖ), ((Y.op ⋙ coyoneda).obj k).IsCardinalAccessible κ := fun k ↦ by
-    dsimp
-    infer_instance
+  have (k : Kᵒᵖ) : ((Y.op ⋙ coyoneda).obj k).IsCardinalAccessible κ := by
+    dsimp; infer_instance
   exact Functor.isCardinalAccessible_of_isLimit
     (coyoneda.mapCone c.op) (isLimitOfPreserves _ hc.op) κ (by simpa)
 
@@ -181,7 +180,7 @@ lemma isCardinalPresentable_of_isColimit
     [∀ k, IsCardinalPresentable (Y.obj k) κ] :
     IsCardinalPresentable c.pt κ := by
   let e := ShrinkHoms.equivalence.{w} C
-  have : ∀ (k : K), IsCardinalPresentable ((Y ⋙ e.functor).obj k) κ := by
+  have (k : K) : IsCardinalPresentable ((Y ⋙ e.functor).obj k) κ := by
     dsimp; infer_instance
   rw [← isCardinalPresentable_iff_of_isEquivalence c.pt κ e.functor]
   exact isCardinalPresentable_of_isColimit' _
