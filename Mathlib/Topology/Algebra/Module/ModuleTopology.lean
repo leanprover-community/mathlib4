@@ -175,7 +175,7 @@ variable {R : Type*} [TopologicalSpace R]
 topology) to (`A` with the module topology) is continuous, then the topology on `A` is
 the module topology. -/
 theorem of_continuous_id [ContinuousAdd A] [ContinuousSMul R A]
-    (h : @Continuous A A τA (moduleTopology R A) id):
+    (h : @Continuous A A τA (moduleTopology R A) id) :
     IsModuleTopology R A where
   -- The topologies are equal because each is finer than the other. One inclusion
   -- follows from the continuity hypothesis; the other is because the module topology
