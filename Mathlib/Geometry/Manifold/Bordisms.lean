@@ -9,15 +9,21 @@ import Mathlib.Geometry.Manifold.Instances.Real
 /-!
 ## (Unoriented) bordism theory
 
-This file defines the beginnings of (unoriented) bordism theory. For the full definition,
-a number of prerequisites are missing from mathlib, but a surprising amount of progress
-can already be made today.
+This file defines the beginnings of (unoriented) bordism theory. For the full definition of
+smooth oriented bordism groups, a number of prerequisites are missing from mathlib. However,
+a significant amount of this work is already possible.
+
 Currently, this file only contains the definition of *singular *n*-manifolds*:
-bordism classes are the equivalence classes of singular n-manifolds w.r.t. the (co)bordism relation.
+bordism classes are the equivalence classes of singular n-manifolds w.r.t. the (co)bordism relation
+and will be added in a future PR, as well as the definition of the (unoriented) bordism groups.
 
 ## Main definitions
+
 - **SingularNManifold**: a singular `n`-manifold on a topological space `X`, for `n ∈ ℕ`, is a pair
 `(M, f)` of a closed `n`-dimensional smooth manifold `M` together with a continuous map `M → X`.
+We don't assume `M` to be modelled on `ℝ^n` (nor to be using with the standard model),
+but instead add the model topological space `H`, the vector space `E` and the model with corners `I`
+as type parameters.
 - `SingularNManifold.map`: a map `X → Y` of topological spaces induces a map between the spaces
 of singular n-manifolds
 - `SingularNManifold.comap`: if `(N,f)` is a singular n-manifold on `X` and `φ: M → N` is smooth,
@@ -31,12 +37,17 @@ on the one-point space, is a singular `n+m`-manifold on the one-point space.
 - `SingularNManifold.sum`: the disjoint union of two singular `n`-manifolds
 is a singular `n`-manifold
 
+## Implementation notes
+
+To be written! Document the design decisions and why they were made.
+
 ## TODO
 - define cobordisms and the cobordism relation
 - prove that the cobordisms relation is an equivalence relation
 - define unoriented bordisms groups (as a set of equivalence classes),
 prove they are a group
-- prove that unoriented bordism groups define an extraordinary homology theory
+- define relative bordism groups (generalising the previous three points)
+- prove that relative unoriented bordism groups define an extraordinary homology theory
 
 ## Tags
 
