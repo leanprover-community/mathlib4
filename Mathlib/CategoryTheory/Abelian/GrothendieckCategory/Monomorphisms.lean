@@ -64,7 +64,7 @@ instance map_bot_le (j : J) : Mono (h.F.map (homOfLE bot_le : ⊥ ⟶ j)) := by
 
 end mono
 
-include h
+include h in
 lemma mono : Mono f := by
   let φ : (Functor.const _).obj X ⟶ h.F :=
     { app k := h.isoBot.inv ≫ h.F.map (homOfLE bot_le)
