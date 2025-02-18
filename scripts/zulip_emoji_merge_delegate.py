@@ -50,7 +50,18 @@ reviewers_response = client.get_messages({
 print(f"public_response:{public_response}")
 print(f"reviewers_response:{reviewers_response}")
 
-messages = (public_response['messages']) + (reviewers_response['messages'])
+# Get the oldest message in any channel whose title matches `#{PR_NUMBER}`.
+first_message_in_relevant_channel = client.get_messages({
+    "anchor": "oldest",
+    "num_before": 0,
+    "num_after": 0,
+    "narrow": [
+        {"operator": "channel", "operand": f'#{PR_NUMBER}'},
+    ],
+})
+print(first_message_in_relevant_channel)
+
+messages = (public_response['messages']) + (reviewers_response['messages']) + (first_message_in_relevant_channel['messages'])
 
 pr_pattern = re.compile(f'https://github.com/leanprover-community/mathlib4/pull/{PR_NUMBER}')
 
