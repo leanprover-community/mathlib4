@@ -161,8 +161,6 @@ private lemma T_leadingcoeff_isUnit (fne : f ≠ 0) :
   rw [leadingCoeff_finSuccEquiv_t] at coeff
   simpa only [coeff, algebraMap_eq] using (mem_support_iff.mp vin).isUnit.map MvPolynomial.C
 
-  -- exact ⟨u.unit⁻¹, monic_of_isUnit_leadingCoeff_inv_smul u⟩
-
 end equivT
 
 section intmaps
