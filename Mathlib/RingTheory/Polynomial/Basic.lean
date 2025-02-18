@@ -215,7 +215,7 @@ theorem exists_degree_le_of_mem_span {s : Set R[X]} {p : R[X]}
 
 /-- A stronger version of `Polynomial.exists_degree_le_of_mem_span` under the assumption that the
 set `s : R[X]` is finite. There exists a polynomial `p' ∈ s` whose degree dominates the degree of
-every element of `p ∈ span R s` -/
+every element of `p ∈ span R s`. -/
 theorem exists_degree_le_of_mem_span_of_finite {s : Set R[X]} (s_fin : s.Finite) (hs : s.Nonempty) :
     ∃ p' ∈ s, ∀ (p : R[X]), p ∈ Submodule.span R s → degree p ≤ degree p' := by
   rcases Set.Finite.exists_maximal_wrt degree s s_fin hs with ⟨a, has, hmax⟩

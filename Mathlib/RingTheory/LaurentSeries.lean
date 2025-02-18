@@ -514,7 +514,8 @@ open RatFunc IsDedekindDomain.HeightOneSpectrum
 
 variable {K}
 
-/- The `X`-adic valuation of a polynomial equals the `X`-adic valuation of its coercion to `K⟦X⟧` -/
+/- The `X`-adic valuation of a polynomial equals the `X`-adic valuation of
+its coercion to `K⟦X⟧`. -/
 theorem intValuation_eq_of_coe (P : K[X]) :
     (Polynomial.idealX K).intValuation P = (idealX K).intValuation (P : K⟦X⟧) := by
   by_cases hP : P = 0
@@ -540,7 +541,7 @@ theorem intValuation_eq_of_coe (P : K[X]) :
     count_span_normalizedFactors_eq_of_normUnit (coe_ne_zero hP) normUnit_X X_prime,
     span_ne_zero'.1, (idealX K).isPrime, span_ne_zero'.2]
 
-/-- The integral valuation of the power series `X : K⟦X⟧` equals `(ofAdd -1) : ℤₘ₀` -/
+/-- The integral valuation of the power series `X : K⟦X⟧` equals `(ofAdd -1) : ℤₘ₀`. -/
 @[simp]
 theorem intValuation_X : (idealX K).intValuationDef X = ↑(Multiplicative.ofAdd (-1 : ℤ)) := by
   rw [← Polynomial.coe_X, ← intValuation_apply, ← intValuation_eq_of_coe]
@@ -818,7 +819,7 @@ theorem Cauchy.exists_lb_coeff_ne {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) :
   rw [hf d (lt_of_lt_of_le hd (min_le_left _ _)), hN₂ d (lt_of_lt_of_le hd (min_le_right _ _))]
 
 /- Given a Cauchy filter `ℱ` in the Laurent Series and a bound `D`, for almost all series in the
-filter the coefficients below `D` coincide with `Caucy.coeff hℱ` -/
+filter the coefficients below `D` coincide with `Caucy.coeff hℱ`. -/
 theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) {D : ℤ} :
     ∀ᶠ f : K⸨X⸩ in ℱ, ∀ d, d < D → coeff hℱ d = f.coeff d := by
   -- `φ` sends `d` to the set of Laurent Series having `d`th coefficient equal to `ℱ.coeff`.
@@ -1021,7 +1022,7 @@ abbrev extensionAsRingHom :=
 /-- An abbreviation for the `X`-adic completion of `RatFunc K` -/
 abbrev RatFuncAdicCompl := adicCompletion (RatFunc K) (idealX K)
 
-/- The two instances below make `comparePkg` and `comparePkg_eq_extension` slightly faster -/
+/- The two instances below make `comparePkg` and `comparePkg_eq_extension` slightly faster. -/
 instance : UniformSpace (RatFuncAdicCompl K) := inferInstance
 instance : UniformSpace K⸨X⸩ := inferInstance
 
