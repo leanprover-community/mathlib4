@@ -10,7 +10,7 @@ import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Trunc
-import Mathlib.RingTheory.Ideal.Quotient.PowTransition
+
 /-!
 
 -/
