@@ -3,6 +3,7 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
+import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Order.CollectFacts
 import Mathlib.Tactic.Order.Preprocessing
 import Mathlib.Tactic.Order.Graph.Basic
@@ -229,30 +230,33 @@ def findBestOrderInstance (type : Expr) : MetaM <| Option OrderType := do
     return .some .pre
   return .none
 
-/-- A finishing tactic for solving goals in arbitrary `Preorder`, `PartialOrder`,
-or `LinearOrder`. Supports `⊤`, `⊥`, and lattice operations. -/
-elab "order" : tactic => focus do
-  let g ← getMainGoal
-  let .some g ← g.falseOrByContra | return
-  setGoals [g]
+/-- Core of the `order` tactic. -/
+elab "order_core" : tactic => liftMetaFinishingTactic fun g => do
   let TypeToAtoms ← collectFacts g
   g.withContext do
-  for (type, (idxToAtom, facts)) in TypeToAtoms do
-    let .some orderType ← findBestOrderInstance type | continue
-    let facts : Array AtomicFact ← match orderType with
-    | .pre => preprocessFactsPreorder g facts
-    | .part => preprocessFactsPartial g facts idxToAtom
-    | .lin => preprocessFactsLinear g facts idxToAtom
-    let mut graph ← Graph.constructLeGraph idxToAtom.size facts idxToAtom
-    graph ← updateGraphWithNltInfSup graph idxToAtom facts
-    if orderType == .pre then
-      let .some pf ← findContradictionWithNle graph idxToAtom facts | continue
-      g.assign pf
-      return
-    else
-      let .some pf ← findContradictionWithNe graph idxToAtom facts | continue
-      g.assign pf
-      return
-  throwError "No contradiction found"
+    for (type, (idxToAtom, facts)) in TypeToAtoms do
+      let .some orderType ← findBestOrderInstance type | continue
+      let facts : Array AtomicFact ← match orderType with
+      | .pre => preprocessFactsPreorder g facts
+      | .part => preprocessFactsPartial g facts idxToAtom
+      | .lin => preprocessFactsLinear g facts idxToAtom
+      let mut graph ← Graph.constructLeGraph idxToAtom.size facts idxToAtom
+      graph ← updateGraphWithNltInfSup graph idxToAtom facts
+      if orderType == .pre then
+        let .some pf ← findContradictionWithNle graph idxToAtom facts | continue
+        g.assign pf
+        return
+      else
+        let .some pf ← findContradictionWithNe graph idxToAtom facts | continue
+        g.assign pf
+        return
+    throwError "No contradiction found"
+
+/-- Finishing tactic for solving goals in arbitrary `Preorder`, `PartialOrder`,
+or `LinearOrder`. Supports `⊤`, `⊥`, and lattice operations. -/
+macro "order" : tactic => `(tactic|
+  · by_contra!
+    order_core
+)
 
 end Mathlib.Tactic.Order

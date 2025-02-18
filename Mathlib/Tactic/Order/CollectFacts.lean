@@ -136,14 +136,16 @@ def addFact (type : Expr) (fact : AtomicFact) : CollectFactsM Unit :=
   modify fun res => res.modify type fun (atomToIdx, facts) =>
     (atomToIdx, facts.push fact)
 
--- TODO: Split conjunctions.
 /-- Implementation for `collectFacts` in `CollectFactsM` monad. -/
-def collectFactsImp (g : MVarId) : CollectFactsM Unit := g.withContext do
+partial def collectFactsImp (g : MVarId) : CollectFactsM Unit := g.withContext do
   let ctx ← getLCtx
   for ldecl in ctx do
     if ldecl.isImplementationDetail then
       continue
-    let ⟨0, type, expr⟩ := ← inferTypeQ ldecl.toExpr | continue
+    processExpr ldecl.toExpr
+where
+  processExpr (expr : Expr) : CollectFactsM Unit := do
+    let ⟨0, type, expr⟩ := ← inferTypeQ expr | return
     match type with
     | ~q(@Eq ($α : Type _) $x $y) =>
       if (← synthInstance? (q(Preorder $α))).isSome then
@@ -173,6 +175,11 @@ def collectFactsImp (g : MVarId) : CollectFactsM Unit := g.withContext do
         let xIdx := ← addAtom α x
         let yIdx := ← addAtom α y
         addFact α <| .nlt xIdx yIdx expr
+      | _ => return
+    | ~q($p ∧ $q) =>
+      processExpr q(And.left $expr)
+      processExpr q(And.right $expr)
+    | _ => return
 
 /-- Collects facts from the local context. For each occurring type `α`, the returned map contains
 a pair `(idxToAtom, facts)`, where the map `idxToAtom` converts indices to found

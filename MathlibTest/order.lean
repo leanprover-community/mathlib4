@@ -83,6 +83,16 @@ example {α : Type u} (a b c : α) [Lattice α] : a ⊓ (b ⊔ c) ≥ (a ⊓ b) 
 example {α : Type u} (a b c : Set α) : a ∩ (b ∪ c) ≥ (a ∩ b) ∪ (a ∩ c) := by
   order
 
+example {α : Type u} (a b : α) [LinearOrder α] (h1 : ¬ (a = b)) : a ≠ b := by
+  order
+
+example {α : Type u} (a b : α) [LinearOrder α] (h1 : a < b ∧ b < a) : False := by
+  order
+
+example {α : Type u} (a b : α) [LinearOrder α] : a ≤ b ∨ b ≤ a := by
+  order
+
+
 -- worst case
 example {α : Type u} [PartialOrder α]
     (x1 y1 : α)
