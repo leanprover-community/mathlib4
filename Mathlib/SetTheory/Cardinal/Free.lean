@@ -3,10 +3,10 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Daniel Weber
 -/
+import Mathlib.Algebra.Group.TypeTags.Finite
 import Mathlib.Data.Finsupp.Fintype
 import Mathlib.GroupTheory.FreeAbelianGroupFinsupp
 import Mathlib.GroupTheory.FreeGroup.Reduce
-import Mathlib.Data.Fintype.Group
 import Mathlib.RingTheory.FreeCommRing
 import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.SetTheory.Cardinal.Finsupp

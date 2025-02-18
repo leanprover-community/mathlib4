@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Algebra.GCDMonoid.Multiset
+import Mathlib.Algebra.GCDMonoid.Nat
+import Mathlib.Algebra.Group.TypeTags.Finite
 import Mathlib.Combinatorics.Enumerative.Partition
 import Mathlib.Data.List.Rotate
-import Mathlib.GroupTheory.Perm.Cycle.Factors
-import Mathlib.Algebra.GCDMonoid.Nat
-import Mathlib.Data.Fintype.Group
 import Mathlib.GroupTheory.Perm.Closure
+import Mathlib.GroupTheory.Perm.Cycle.Factors
 import Mathlib.Tactic.NormNum.GCD
 
 /-!
