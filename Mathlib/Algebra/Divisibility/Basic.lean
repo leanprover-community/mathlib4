@@ -74,6 +74,7 @@ instance : IsTrans α Dvd.dvd :=
 theorem dvd_mul_right (a b : α) : a ∣ a * b :=
   Dvd.intro b rfl
 
+@[aesop unsafe 50% apply]
 theorem dvd_mul_of_dvd_left (h : a ∣ b) (c : α) : a ∣ b * c :=
   h.trans (dvd_mul_right b c)
 
@@ -159,6 +160,7 @@ theorem Dvd.elim_left {P : Prop} (h₁ : a ∣ b) (h₂ : ∀ c, b = c * a → P
 theorem dvd_mul_left (a b : α) : a ∣ b * a :=
   Dvd.intro b (mul_comm a b)
 
+@[aesop unsafe 50% apply]
 theorem dvd_mul_of_dvd_right (h : a ∣ b) (c : α) : a ∣ c * b := by
   rw [mul_comm]; exact h.mul_right _
 
