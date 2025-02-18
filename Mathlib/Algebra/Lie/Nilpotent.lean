@@ -650,9 +650,7 @@ theorem Function.Injective.lieModuleIsNilpotent [IsNilpotent L₂ M₂] : IsNilp
   use k
   rw [← LieSubmodule.toSubmodule_inj] at hk ⊢
   apply Submodule.map_injective_of_injective hg_inj
-  have := lieModule_lcs_map_le hfg k
-  rw [hk] at this
-  simpa [LieSubmodule.bot_toSubmodule, le_bot_iff, Submodule.map_bot]
+  simpa [hk] using lieModule_lcs_map_le hfg k
 
 variable (hf_surj : Surjective f) (hg_surj : Surjective g)
 
