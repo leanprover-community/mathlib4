@@ -206,7 +206,7 @@ lemma isUnit_of_mem_ofUnits (S : Subgroup Mˣ) {x : M} (hx : x ∈ S.ofUnits) : 
   | ⟨_, _, h⟩ => ⟨_, h⟩
 
 /-- Given some `x : M` which is a member of the submonoid of unit elements corresponding to a
-  subgroup of units, produce a unit of `M` whose coercion is equal to `x`. ` -/
+subgroup of units, produce a unit of `M` whose coercion is equal to `x`. -/
 @[to_additive " Given some `x : M` which is a member of the additive submonoid of additive unit
 elements corresponding to a subgroup of units, produce a unit of `M` whose coercion is equal to
 `x`. "]
