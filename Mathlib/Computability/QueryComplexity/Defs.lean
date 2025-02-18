@@ -82,9 +82,17 @@ def run (f : Comp ι ω s α) (os : (i : I) → Oracle (ι i) ω) : α × (I →
 def value (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) : α :=
   (f.run o).1
 
+-- Which type can we give `o`?
+-- def value' (f : Comp ι ω s α) (o : Oracle ι ω) : α :=
+--   f.value (fun _ => o)
+
 /-- The query count for a specific oracle of a `Comp ι s` -/
 def cost (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) (i : I) : ℕ :=
   (f.run o).2 i
+
+-- Which type can we give `o`?
+/- def cost' (f : Comp ι ω s α) (o : Oracle ι ω) : I → ℕ := -/
+/-   f.cost (fun _ => o) -/
 
 /-- Extend the set of allowed oracles in a computation -/
 def allow (f : Comp ι ω s α) (st : s ⊆ t) : Comp ι ω t α := match f with
