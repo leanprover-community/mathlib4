@@ -3,7 +3,8 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Group.Basic
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.Filter.Tendsto
@@ -394,19 +395,19 @@ section OrderedAddCommGroup
 variable [OrderedAddCommGroup β] {f g : α → β} {a : α} {s : Set α} {l : Filter α}
 
 theorem IsMinFilter.neg (hf : IsMinFilter f l a) : IsMaxFilter (fun x => -f x) l a :=
-  hf.comp_antitone fun _x _y hx => neg_le_neg hx
+  hf.comp_antitone fun _x _y hx => neg_le_neg_iff.mpr hx
 
 theorem IsMaxFilter.neg (hf : IsMaxFilter f l a) : IsMinFilter (fun x => -f x) l a :=
-  hf.comp_antitone fun _x _y hx => neg_le_neg hx
+  hf.comp_antitone fun _x _y hx => neg_le_neg_iff.mpr hx
 
 theorem IsExtrFilter.neg (hf : IsExtrFilter f l a) : IsExtrFilter (fun x => -f x) l a :=
   hf.elim (fun hf => hf.neg.isExtr) fun hf => hf.neg.isExtr
 
 theorem IsMinOn.neg (hf : IsMinOn f s a) : IsMaxOn (fun x => -f x) s a :=
-  hf.comp_antitone fun _x _y hx => neg_le_neg hx
+  hf.comp_antitone fun _x _y hx => neg_le_neg_iff.mpr hx
 
 theorem IsMaxOn.neg (hf : IsMaxOn f s a) : IsMinOn (fun x => -f x) s a :=
-  hf.comp_antitone fun _x _y hx => neg_le_neg hx
+  hf.comp_antitone fun _x _y hx => neg_le_neg_iff.mpr hx
 
 theorem IsExtrOn.neg (hf : IsExtrOn f s a) : IsExtrOn (fun x => -f x) s a :=
   hf.elim (fun hf => hf.neg.isExtr) fun hf => hf.neg.isExtr
