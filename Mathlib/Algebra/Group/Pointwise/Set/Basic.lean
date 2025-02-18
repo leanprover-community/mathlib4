@@ -3,7 +3,6 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Units.Hom
@@ -842,10 +841,6 @@ lemma smul_set_insert (a : α) (b : β) (s : Set β) : a • insert b s = insert
 @[to_additive]
 lemma smul_set_inter_subset : a • (t₁ ∩ t₂) ⊆ a • t₁ ∩ a • t₂ :=
   image_inter_subset ..
-
-@[to_additive vadd_prod]
-lemma smulSet_prod [SMul α γ] (a : α) (s : Set β) (t : Set γ) : a • (s ×ˢ t) = (a • s) ×ˢ (a • t) :=
-  image_prodMap_prod ..
 
 @[to_additive]
 lemma smul_set_iUnion (a : α) (s : ι → Set β) : a • ⋃ i, s i = ⋃ i, a • s i :=
