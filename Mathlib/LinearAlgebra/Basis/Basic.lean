@@ -33,6 +33,9 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module 
 
 namespace Basis
 
+instance uniqueBasis [Subsingleton R] : Unique (Basis ι R M) :=
+  ⟨⟨⟨default⟩⟩, fun ⟨b⟩ => by rw [Subsingleton.elim b]⟩
+
 variable (b : Basis ι R M)
 
 section Coord
@@ -52,6 +55,22 @@ protected theorem linearIndependent : LinearIndependent R b :=
 
 protected theorem ne_zero [Nontrivial R] (i) : b i ≠ 0 :=
   b.linearIndependent.ne_zero i
+
+/-- If the submodule `P` has a basis, `x ∈ P` iff it is a linear combination of basis vectors. -/
+theorem mem_submodule_iff {P : Submodule R M} (b : Basis ι R P) {x : M} :
+    x ∈ P ↔ ∃ c : ι →₀ R, x = Finsupp.sum c fun i x => x • (b i : M) := by
+  conv_lhs =>
+    rw [← P.range_subtype, ← Submodule.map_top, ← b.span_eq, Submodule.map_span, ← Set.range_comp,
+        ← Finsupp.range_linearCombination]
+  simp [@eq_comm _ x, Function.comp, Finsupp.linearCombination_apply]
+
+/-- If the submodule `P` has a finite basis,
+`x ∈ P` iff it is a linear combination of basis vectors. -/
+theorem mem_submodule_iff' [Fintype ι] {P : Submodule R M} (b : Basis ι R P) {x : M} :
+    x ∈ P ↔ ∃ c : ι → R, x = ∑ i, c i • (b i : M) :=
+  b.mem_submodule_iff.trans <|
+    Finsupp.equivFunOnFinite.exists_congr_left.trans <|
+      exists_congr fun c => by simp [Finsupp.sum_fintype, Finsupp.equivFunOnFinite]
 
 section Prod
 
