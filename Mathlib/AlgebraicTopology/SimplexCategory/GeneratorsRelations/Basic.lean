@@ -175,7 +175,7 @@ lemma hom_induction' (P : MorphismProperty SimplexCategoryGenRel)
     · simpa using (σ_comp g i hrec)
 
 /-- An induction principle for reasonning about objects in `SimplexCategoryGenRel`. This should be
-used instead of identifying an object with `mk` of its len. -/
+used instead of identifying an object with `mk` of its `len`. -/
 @[elab_as_elim, cases_eliminator]
 protected def rec {P : SimplexCategoryGenRel → Sort*}
     (H : ∀ n : ℕ, P (.mk n)) :
