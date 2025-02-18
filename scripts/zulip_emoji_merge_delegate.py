@@ -50,18 +50,25 @@ reviewers_response = client.get_messages({
 print(f"public_response:{public_response}")
 print(f"reviewers_response:{reviewers_response}")
 
-# Get the oldest message in any channel whose title matches `#{PR_NUMBER}`.
-first_message_in_relevant_channel = client.get_messages({
+# Get the oldest message in any topic in `PR reviews` whose title matches `#{PR_NUMBER}`.
+first_message_in_PR_reviews = client.get_messages({
     "anchor": "oldest",
     "num_before": 0,
-    "num_after": 0,
+    "num_after": 1,
     "narrow": [
-        {"operator": "channel", "operand": f'#{PR_NUMBER}'},
+        {"operator": "channel", "operand": "PR reviews"},
+        {"operator": "search", "operand": f'#{PR_NUMBER}'},
     ],
 })
-print(first_message_in_relevant_channel)
+print(f'First message:{first_message_in_PR_reviews}')
 
-messages = (public_response['messages']) + (reviewers_response['messages']) + (first_message_in_relevant_channel['messages'])
+messages = (public_response['messages']) + (reviewers_response['messages']) + (first_message_in_PR_reviews['messages'])
+
+print(messages)
+# we use the ID of the first message in the `PR reviews` channel to react to it
+# whether or not it has the PR number in the content.
+first_message_in_PR_reviews_id=messages[0]['id']
+print(f'First message ID: {first_message_in_PR_reviews_id}')
 
 pr_pattern = re.compile(f'https://github.com/leanprover-community/mathlib4/pull/{PR_NUMBER}')
 
@@ -78,7 +85,7 @@ for message in messages:
     has_merge = any(reaction['emoji_name'] == 'merge' for reaction in reactions)
     has_awaiting_author = any(reaction['emoji_name'] == 'writing' for reaction in reactions)
     has_closed = any(reaction['emoji_name'] == 'closed-pr' for reaction in reactions)
-    match = pr_pattern.search(content)
+    match = pr_pattern.search(content) or message['id'] == first_message_in_PR_reviews_id
     if match:
         print(f"matched: '{message}'")
 
