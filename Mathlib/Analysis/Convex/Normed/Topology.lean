@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov
 -/
 import Mathlib.Analysis.Convex.Topology
-import Mathlib.Analysis.Convex.Normed.Basic
+import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Analysis.Normed.Group.Pointwise
 
 /-!

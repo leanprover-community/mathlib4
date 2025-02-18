@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.Analysis.Convex.Normed.Basic
+import Mathlib.Analysis.Normed.Module.Convex
 
 /-!
 # Convex sets are null-measurable
