@@ -103,10 +103,6 @@ theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (smulAntidiagonal s 
   have isrfl : IsRefl (G × P) (Prod.fst ⁻¹'o fun x x_1 ↦ x ≤ x_1) := by
     refine { refl := ?refl }
     simp_all only [Order.Preimage, le_refl, Prod.forall, implies_true]
-  have istrns : IsTrans (G × P) (Prod.fst ⁻¹'o fun x x_1 ↦ x ≤ x_1) := by
-    refine { trans := ?trans }
-    simp_all only [Order.Preimage, Prod.forall]
-    exact fun a _ a_1 _ a_2 _ a_3 a_4 ↦ Preorder.le_trans a a_1 a_2 a_3 a_4
   obtain ⟨g, hg⟩ := h1.exists_monotone_subseq fun n ↦ (h.natEmbedding _ n).2
   obtain ⟨m, n, mn, h2'⟩ := h2 fun n ↦ h.natEmbedding _ _
   refine mn.ne (g.injective <| (h.natEmbedding _).injective ?_)
