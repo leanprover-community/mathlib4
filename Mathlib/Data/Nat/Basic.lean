@@ -56,8 +56,6 @@ attribute [gcongr] Nat.succ_le_succ Nat.div_le_div_right Nat.div_le_div_left Nat
 
 lemma succ_injective : Injective Nat.succ := @succ.inj
 
-lemma succ_ne_succ : succ m ≠ succ n ↔ m ≠ n := succ_injective.ne_iff
-
 /-! ### `div` -/
 
 protected lemma div_mul_div_le (a b c d : ℕ) :

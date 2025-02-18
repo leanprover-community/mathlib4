@@ -74,6 +74,9 @@ lemma succ_pos' : 0 < succ n := succ_pos n
 
 alias succ_inj := succ_inj'
 
+lemma succ_ne_succ : succ m ≠ succ n ↔ m ≠ n :=
+  ⟨mt (congrArg Nat.succ ·), mt succ.inj⟩
+
 lemma succ_succ_ne_one (n : ℕ) : n.succ.succ ≠ 1 := by simp
 
 lemma one_lt_succ_succ (n : ℕ) : 1 < n.succ.succ := succ_lt_succ <| succ_pos n
