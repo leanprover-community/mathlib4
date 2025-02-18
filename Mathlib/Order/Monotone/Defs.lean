@@ -28,28 +28,12 @@ to mean "decreasing".
 * `StrictMonoOn f s`: Same as `StrictMono f`, but for all `a, b ∈ s`.
 * `StrictAntiOn f s`: Same as `StrictAnti f`, but for all `a, b ∈ s`.
 
-## Main theorems
-
-* `monotone_nat_of_le_succ`, `monotone_int_of_le_succ`: If `f : ℕ → α` or `f : ℤ → α` and
-  `f n ≤ f (n + 1)` for all `n`, then `f` is monotone.
-* `antitone_nat_of_succ_le`, `antitone_int_of_succ_le`: If `f : ℕ → α` or `f : ℤ → α` and
-  `f (n + 1) ≤ f n` for all `n`, then `f` is antitone.
-* `strictMono_nat_of_lt_succ`, `strictMono_int_of_lt_succ`: If `f : ℕ → α` or `f : ℤ → α` and
-  `f n < f (n + 1)` for all `n`, then `f` is strictly monotone.
-* `strictAnti_nat_of_succ_lt`, `strictAnti_int_of_succ_lt`: If `f : ℕ → α` or `f : ℤ → α` and
-  `f (n + 1) < f n` for all `n`, then `f` is strictly antitone.
-
 ## Implementation notes
 
 Some of these definitions used to only require `LE α` or `LT α`. The advantage of this is
 unclear and it led to slight elaboration issues. Now, everything requires `Preorder α` and seems to
 work fine. Related Zulip discussion:
 https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Order.20diamond/near/254353352.
-
-## TODO
-
-The above theorems are also true in `ℕ+`, `Fin n`... To make that work, we need `SuccOrder α`
-and `IsSuccArchimedean α`.
 
 ## Tags
 
