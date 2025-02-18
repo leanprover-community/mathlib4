@@ -591,7 +591,7 @@ lemma wbtw_iff_of_le {x y z : R} (hxz : x ≤ z) : Wbtw R x y z ↔ x ≤ y ∧ 
   | inr hxz =>
     have hxz' : 0 < z - x := sub_pos.mpr hxz
     let r := (y - x) / (z - x)
-    have hy : y = (r * (z - x) + x) := by simp [r, hxz'.ne']
+    have hy : y = r * (z - x) + x := by simp [r, hxz'.ne']
     simp [hy, wbtw_mul_sub_add_iff, mul_nonneg_iff_of_pos_right hxz', ← le_sub_iff_add_le,
       mul_le_iff_le_one_left hxz', hxz.ne]
 
