@@ -26,7 +26,7 @@ variable {R : Type*} {Γ₀ : outParam (Type*)} [Ring R] [LinearOrderedCommGroup
 @[nolint unusedArguments]
 def WithVal : Valuation R Γ₀ → Type _ := fun _ => R
 
-namespace WithValuation
+namespace WithVal
 
 variable (v : Valuation R Γ₀)
 
@@ -61,13 +61,13 @@ instance (v : Valuation R Γ₀) : Valued (WithVal v) Γ₀ := Valued.mk' v
 /-- Canonical ring equivalence between `WithValuation v` and `R`. -/
 def equiv : WithVal v ≃+* R := RingEquiv.refl _
 
-end WithValuation
+end WithVal
 
 /-! The completion of a field with respect to a valuation. -/
 
 namespace Valuation
 
-open WithValuation
+open WithVal
 
 variable {K : Type*} [Field K] (v : Valuation K Γ₀)
 

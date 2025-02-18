@@ -377,8 +377,9 @@ instance : Inhabited (v.adicCompletion K) :=
 theorem valuedAdicCompletion_def {x : v.adicCompletion K} : Valued.v x = Valued.extension x :=
   rfl
 
-instance adicCompletion_completeSpace : CompleteSpace (v.adicCompletion K) := inferInstance--As <|
-  --CompleteSpace (@UniformSpace.Completion K v.adicValued.toUniformSpace)
+-- now inferred automatically
+-- instance adicCompletion_completeSpace : CompleteSpace (v.adicCompletion K) :=
+--  inferInstanceCompleteSpace (@UniformSpace.Completion K v.adicValued.toUniformSpace)
 
 -- Porting note: replaced by `Coe`
 -- instance AdicCompletion.hasLiftT : HasLiftT K (v.adicCompletion K) :=

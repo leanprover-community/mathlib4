@@ -553,7 +553,7 @@ open IsDedekindDomain.HeightOneSpectrum PowerSeries
 open scoped LaurentSeries
 
 theorem valuation_eq_LaurentSeries_valuation (P : RatFunc K) :
-    (Polynomial.idealX K).valuation P = (PowerSeries.idealX K).valuation (P : K⸨X⸩) := by
+    (Polynomial.idealX K).valuation _ P = (PowerSeries.idealX K).valuation _ (P : K⸨X⸩) := by
   refine RatFunc.induction_on' P ?_
   intro f g h
   rw [Polynomial.valuation_of_mk K f h, RatFunc.mk_eq_mk' f h, Eq.comm]
@@ -570,7 +570,7 @@ namespace LaurentSeries
 
 open IsDedekindDomain.HeightOneSpectrum PowerSeries RatFunc
 
-instance : Valued K⸨X⸩ ℤₘ₀ := Valued.mk' (PowerSeries.idealX K).valuation
+instance : Valued K⸨X⸩ ℤₘ₀ := Valued.mk' ((PowerSeries.idealX K).valuation _)
 
 theorem valuation_X_pow (s : ℕ) :
     Valued.v (((X : K⟦X⟧) : K⸨X⸩) ^ s) = Multiplicative.ofAdd (-(s : ℤ)) := by
@@ -1214,9 +1214,9 @@ instance : Algebra K ((idealX K).adicCompletionIntegers (RatFunc K)) :=
     ((LaurentSeriesRingEquiv K).toRingHom.comp HahnSeries.C).codRestrict _
       (algebraMap_C_mem_adicCompletionIntegers K)
 
-instance : IsScalarTower K ((idealX K).adicCompletionIntegers (RatFunc K))
-    ((idealX K).adicCompletion (RatFunc K)) :=
-  IsScalarTower.of_algebraMap_eq (fun _ ↦ by rfl)
+--instance : IsScalarTower K ((idealX K).adicCompletionIntegers (RatFunc K))
+--    (RatFuncAdicCompl K) :=
+--  apply IsScalarTower.of_algebraMap_eq --(fun _ ↦ by rfl)
 
 /-- The algebra isomorphism between `K⟦X⟧` and the unit ball inside the `X`-adic completion of
 `RatFunc K`. -/
