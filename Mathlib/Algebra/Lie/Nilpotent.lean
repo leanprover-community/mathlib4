@@ -619,7 +619,7 @@ open LieModule Function
 
 variable [LieModule R L M]
 variable {L₂ M₂ : Type*} [LieRing L₂] [LieAlgebra R L₂]
-variable [AddCommGroup M₂] [Module R M₂] [LieRingModule L₂ M₂] [LieModule R L₂ M₂]
+variable [AddCommGroup M₂] [Module R M₂] [LieRingModule L₂ M₂]
 variable {f : L →ₗ⁅R⁆ L₂} {g : M →ₗ[R] M₂}
 variable (hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆)
 
@@ -739,7 +739,7 @@ theorem nilpotent_iff_le_largest_nilpotent_submodule [IsNoetherian R M] (N : Lie
     dsimp[largestNilpotentSubmodule]
     apply le_sSup (by exact h)
   intro h
-  exact nilpotent_submodule_nilpotent R L M N
+  exact isNilpotent_of_le R L M N
     (largestNilpotentSubmodule R L M) h (largestNilpotentSubmoduleIsNilpotent R L M)
 
 end LieModule
