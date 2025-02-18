@@ -351,7 +351,8 @@ theorem div_modByMonic_unique {f g} (q r : R[X]) (hg : Monic g)
       not_le_of_gt h₄ <|
         calc
           degree g ≤ degree g + degree (q - f /ₘ g) := by
-            erw [degree_eq_natDegree hg.ne_zero, degree_eq_natDegree hqf, WithBot.coe_le_coe]
+            rw [degree_eq_natDegree hg.ne_zero, degree_eq_natDegree hqf]
+            norm_cast
             exact Nat.le_add_right _ _
           _ = degree (r - f %ₘ g) := by rw [h₂, degree_mul']; simpa [Monic.def.1 hg]
   exact ⟨Eq.symm <| eq_of_sub_eq_zero h₅, Eq.symm <| eq_of_sub_eq_zero <| by simpa [h₅] using h₁⟩
@@ -712,7 +713,7 @@ lemma le_rootMultiplicity_iff (p0 : p ≠ 0) {a : R} {n : ℕ} :
   rw [rootMultiplicity_eq_nat_find_of_nonzero p0, @Nat.le_find_iff _ (_)]
   simp_rw [Classical.not_not]
   refine ⟨fun h => ?_, fun h m hm => (pow_dvd_pow _ hm).trans h⟩
-  cases' n with n
+  rcases n with - | n
   · rw [pow_zero]
     apply one_dvd
   · exact h n n.lt_succ_self

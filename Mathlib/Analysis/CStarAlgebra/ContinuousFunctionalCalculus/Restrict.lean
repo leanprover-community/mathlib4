@@ -53,8 +53,8 @@ universe u v w
 calculus over the larger scalar ring descends to the smaller one. -/
 @[simps!]
 def starAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
-    [StarRing R] [TopologicalSpace R] [TopologicalSemiring R] [ContinuousStar R] [Semifield S]
-    [StarRing S] [TopologicalSpace S] [TopologicalSemiring S] [ContinuousStar S] [Ring A]
+    [StarRing R] [TopologicalSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Semifield S]
+    [StarRing S] [TopologicalSpace S] [IsTopologicalSemiring S] [ContinuousStar S] [Ring A]
     [StarRing A] [Algebra R S] [Algebra R A] [Algebra S A]
     [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S] {a : A}
     (φ : C(spectrum S a, S) →⋆ₐ[S] A) {f : C(S, R)} (h : SpectrumRestricts a f) :
@@ -66,8 +66,8 @@ def starAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
           fun x (hx : x ∈ spectrum S a) => h.subset_preimage hx⟩
 
 variable {R S A : Type*} {p q : A → Prop}
-variable [Semifield R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
-variable [Semifield S] [StarRing S] [MetricSpace S] [TopologicalSemiring S] [ContinuousStar S]
+variable [Semifield R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
+variable [Semifield S] [StarRing S] [MetricSpace S] [IsTopologicalSemiring S] [ContinuousStar S]
 variable [Ring A] [StarRing A] [Algebra S A]
 variable [Algebra R S] [Algebra R A] [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S]
 
@@ -195,8 +195,8 @@ open ContinuousMapZero
 continuous functional calculus over the larger scalar ring descends to the smaller one. -/
 @[simps!]
 def nonUnitalStarAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
-    [StarRing R] [TopologicalSpace R] [TopologicalSemiring R] [ContinuousStar R] [Field S]
-    [StarRing S] [TopologicalSpace S] [TopologicalRing S] [ContinuousStar S] [NonUnitalRing A]
+    [StarRing R] [TopologicalSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Field S]
+    [StarRing S] [TopologicalSpace S] [IsTopologicalRing S] [ContinuousStar S] [NonUnitalRing A]
     [StarRing A] [Algebra R S] [Module R A] [Module S A] [IsScalarTower S A A] [SMulCommClass S A A]
     [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S] {a : A}
     (φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A) {f : C(S, R)} (h : QuasispectrumRestricts a f) :
@@ -208,8 +208,8 @@ def nonUnitalStarAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
           fun x (hx : x ∈ σₙ S a) => h.subset_preimage hx⟩, Subtype.ext h.map_zero⟩
 
 variable {R S A : Type*} {p q : A → Prop}
-variable [Semifield R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
-variable [Field S] [StarRing S] [MetricSpace S] [TopologicalRing S] [ContinuousStar S]
+variable [Semifield R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
+variable [Field S] [StarRing S] [MetricSpace S] [IsTopologicalRing S] [ContinuousStar S]
 variable [NonUnitalRing A] [StarRing A] [Module S A] [IsScalarTower S A A]
 variable [SMulCommClass S A A]
 variable [Algebra R S] [Module R A] [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S]

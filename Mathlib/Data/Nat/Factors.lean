@@ -204,7 +204,7 @@ theorem perm_primeFactorsList_mul_of_coprime {a b : ℕ} (hab : Coprime a b) :
 
 theorem primeFactorsList_sublist_right {n k : ℕ} (h : k ≠ 0) :
     n.primeFactorsList <+ (n * k).primeFactorsList := by
-  cases' n with hn
+  rcases n with - | hn
   · simp [zero_mul]
   apply sublist_of_subperm_of_sorted _ (primeFactorsList_sorted _) (primeFactorsList_sorted _)
   simp only [(perm_primeFactorsList_mul (Nat.succ_ne_zero _) h).subperm_left]

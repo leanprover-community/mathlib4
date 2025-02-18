@@ -239,8 +239,8 @@ theorem bitwise_swap {f : Bool → Bool → Bool} :
   funext m n
   simp only [Function.swap]
   induction' m using Nat.strongRecOn with m ih generalizing n
-  cases' m with m
-  <;> cases' n with n
+  rcases m with - | m
+  <;> rcases n with - | n
   <;> try rw [bitwise_zero_left, bitwise_zero_right]
   · specialize ih ((m+1) / 2) (div_lt_self' ..)
     simp [bitwise_of_ne_zero, ih]
