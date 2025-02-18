@@ -3,10 +3,10 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Floris van Doorn
 -/
-import Mathlib.Analysis.NormedSpace.Connected
-import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Analysis.Convex.Normed.Topology
+import Mathlib.Analysis.NormedSpace.Connected
+import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
 
 /-!
 # Ample subsets of real vector spaces
@@ -135,3 +135,4 @@ theorem of_one_lt_codim [IsTopologicalAddGroup F] [ContinuousSMul ℝ F] {E : Su
 end Codimension
 
 end AmpleSet
+#min_imports
