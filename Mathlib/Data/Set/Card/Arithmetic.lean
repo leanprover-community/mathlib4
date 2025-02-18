@@ -10,6 +10,9 @@ import Mathlib.SetTheory.Cardinal.Arithmetic
 /-!
 # Results using cardinal arithmetic
 
+This file contains results about cardinal arithmetic that are not in the main cardinal theory files.
+It has been separated out to not burden `Data.Set.Card` with extra imports.
+
 ## Main results
 
 - `exists_union_disjoint_ncard_eq_of_even`: Given a set `s` with an even cardinality, there exist
