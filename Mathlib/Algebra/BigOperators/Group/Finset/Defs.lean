@@ -228,18 +228,28 @@ elab_rules : term
 
 end deprecated
 
-open Lean Meta Parser.Term PrettyPrinter.Delaborator SubExpr
+open Lean Meta Parser.Term PrettyPrinter.Delaborator SubExpr Qq
 open scoped Batteries.ExtendedBinder
+
+/-- For a finset of the form `{x ∈ s | p x}`, returns `(s, some p)`. For any other finset `s`,
+returns `(s, none)`. -/
+def getFinsetFilter {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
+    MetaM (Q(Finset $α) × Option Q($α → Prop)) := do
+  match s with
+  | ~q(@Finset.filter _ _ $s $p) => return (s, some p)
+  | _ => return (s, none)
 
 /-- Delaborator for `Finset.prod`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the product is over `Finset.univ`. -/
 @[app_delab Finset.prod] def delabFinsetProd : Delab :=
   whenPPOption getPPNotation <| withOverApp 5 <| do
   let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
-  guard <| f.isLambda
+  guard f.isLambda
   let ppDomain ← getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
     return (i, ← delab)
+  let ⟨.succ _, ~q(Finset $α), s⟩ ← inferTypeQ s | failure
+  let (s, p) ← getFinsetFilter (α := α) s
   if s.isAppOfArity ``Finset.univ 2 then
     let binder ←
       if ppDomain then
@@ -247,17 +257,22 @@ to show the domain type when the product is over `Finset.univ`. -/
         `(bigOpBinder| $(.mk i):ident : $ty)
       else
         `(bigOpBinder| $(.mk i):ident)
-    `(∏ $binder:bigOpBinder, $body)
+    -- Help! How do I delaborate `s` and `p` here?
+    match p with
+    | some _ => `(∏ $binder:bigOpBinder, $body)
+    | none => `(∏ $binder:bigOpBinder, $body)
   else
-    let ss ← withNaryArg 3 <| delab
-    `(∏ $(.mk i):ident ∈ $ss, $body)
+    let ss ← withNaryArg 3 delab
+    match p with
+    | some _ => `(∏ $(.mk i):ident ∈ $ss, $body)
+    | none => `(∏ $(.mk i):ident ∈ $ss, $body)
 
 /-- Delaborator for `Finset.sum`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the sum is over `Finset.univ`. -/
 @[app_delab Finset.sum] def delabFinsetSum : Delab :=
   whenPPOption getPPNotation <| withOverApp 5 <| do
   let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
-  guard <| f.isLambda
+  guard f.isLambda
   let ppDomain ← getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
     return (i, ← delab)
@@ -270,7 +285,7 @@ to show the domain type when the sum is over `Finset.univ`. -/
         `(bigOpBinder| $(.mk i):ident)
     `(∑ $binder:bigOpBinder, $body)
   else
-    let ss ← withNaryArg 3 <| delab
+    let ss ← withNaryArg 3 delab
     `(∑ $(.mk i):ident ∈ $ss, $body)
 
 end BigOperators
