@@ -13,9 +13,9 @@ import Mathlib.Data.Fintype.Sort
 
 # Trimmed Length
 
-Given a relseries rs : RelSeries (· ≤ ·), we define the trimmed length of rs to be the cardinality
-of the underlying function rs.toFun of rs minus 1. This models the number of `<` relations occuring
-in rs. In this file we develop the main API for working with the trimmed length.
+Given a relseries `rs : RelSeries (· ≤ ·)`, we define the trimmed length of `rs` to be the
+cardinality of the underlying function `rs.toFun` of `rs` minus `1`. This models the number of `<`
+relations occuring in `rs`. In this file we develop the main API for working with the trimmed length
 
 -/
 
@@ -28,8 +28,8 @@ variable [PartialOrder α] [DecidableEq α]
   (rs : RelSeries (α := α) (· ≤ ·))
 
 /--
-Given (rs : RelSeries (α := α) (· ≤ ·)), rs.trimmedLength measures the number of `<`s appearing
-in rs defined as the image of the underlying function of rs, rs.toFun.
+Given `rs : RelSeries (α := α) (· ≤ ·)`,  `rs.trimmedLength` measures the number of `<`s appearing
+in `rs` defined as the image of the underlying function of `rs`, i.e. `rs.toFun`.
 -/
 def RelSeries.trimmedLength (rs : RelSeries (α := α) (· ≤ ·)) : ℕ :=
   (Finset.image rs.toFun Finset.univ).card - 1
@@ -44,14 +44,14 @@ lemma RelSeries.trimmedLength_le_length : rs.trimmedLength ≤ rs.length := by
   exact this
 
 /--
-The length of a relseries rs is equal to the trimmed length if and only if the underlying function
-of rs (i.e. rs.toFun) is injective.
+The length of a relseries `rs` is equal to the trimmed length if and only if the underlying function
+of `rs` (i.e. `rs.toFun`) is injective.
 -/
 lemma RelSeries.length_eq_trimmedLength_iff :
   rs.length = rs.trimmedLength ↔ rs.toFun.Injective := by
   constructor
   · intro h
-    simp[RelSeries.trimmedLength] at h
+    simp only [trimmedLength] at h
     have := Finset.card_image_iff (s := .univ) (f := rs.toFun)
     simp_all only [Finset.card_univ, Finset.one_le_card,
       Finset.image_nonempty, Finset.univ_nonempty,
@@ -61,14 +61,14 @@ lemma RelSeries.length_eq_trimmedLength_iff :
     apply antisymm (r := (· ≤ ·))
     · have := Finset.card_le_card_of_injOn (s := .univ) (t := Finset.image rs.toFun Finset.univ)
         rs.toFun (by simp) h.injOn
-      simp at this
-      simp[RelSeries.trimmedLength]
+      simp only [Finset.card_univ, Fintype.card_fin, trimmedLength, ge_iff_le] at this ⊢
       omega
     · exact RelSeries.trimmedLength_le_length rs
 
 variable {rs} in
 /--
-If rs has length greater than 0, there must be some index i such that rs i.castSucc < rs i.succ
+If `rs` has length greater than `0`, there must be some index `i` such that
+`rs i.castSucc < rs i.succ`.
 -/
 theorem RelSeries.trimmedLength_exists_le
 (hrs : rs.trimmedLength > 0) : ∃ (i : Fin rs.length), rs i.castSucc < rs i.succ := by
@@ -91,8 +91,9 @@ theorem RelSeries.trimmedLength_exists_le
 
 variable {rs} in
 /--
-If the last two elements of rs are equal, then rs.trimmedLength = rs.eraseLast.trimmedLength. Note
-that if rs only has one element, the "last two elements" are both just the unique element of rs.
+If the last two elements of `rs` are equal, then `rs.trimmedLength = rs.eraseLast.trimmedLength`.
+Note that if `rs` only has one element, the "last two elements" are both just the unique element of
+`rs`.
 -/
 theorem RelSeries.trimmedLength_eraseLast_of_eq
   (lasteq : ∃ i : Fin (rs.length), rs.toFun i.castSucc = rs.toFun i.succ ∧ (i + 1 : ℕ) = rs.length)
@@ -120,9 +121,9 @@ theorem RelSeries.trimmedLength_eraseLast_of_eq
 
 variable {rs} in
 /--
-If the last two elements a, b of rs satisfy a < b, then
-rs.trimmedLength = rs.eraseLast.trimmedLength. Note that if rs only has one element,
-the "last two elements" are both just the unique element of rs.
+If the last two elements `a, b` of `rs` satisfy `a < b`, then
+`rs.trimmedLength = rs.eraseLast.trimmedLength`. Note that if `rs` only has one element,
+the "last two elements" are both just the unique element of `rs`.
 In this case the condition is vacuous.
 -/
 theorem RelSeries.trimmedLength_eraseLast_of_lt
@@ -139,7 +140,7 @@ theorem RelSeries.trimmedLength_eraseLast_of_lt
         · simp only [Finset.disjoint_singleton_right, Finset.mem_image, Finset.mem_univ,
           eraseLast_toFun, true_and, not_exists]
           intro x
-          suffices rs.toFun ⟨↑x, by omega⟩ < rs.toFun i.succ by exact ne_of_lt this
+          suffices rs.toFun ⟨↑x, by omega⟩ < rs.toFun i.succ from ne_of_lt this
           apply LT.lt.trans_le' (b := rs.toFun i.castSucc)
           · exact hi1
           · apply rs.rel_of_le
@@ -158,12 +159,8 @@ theorem RelSeries.trimmedLength_eraseLast_of_lt
         · simp only [eraseLast_length, Finset.mem_union, Finset.mem_image, Finset.mem_univ,
           eraseLast_toFun, true_and, Finset.mem_singleton]
           apply Or.inl
-          have hj' : j ≠ Fin.last rs.length := by
-            have : i.succ = Fin.last _ := by
-              exact Eq.symm (Fin.eq_of_val_eq (id (Eq.symm hi2)))
-            rw[← this]
-            exact hj
-          use (j.castPred hj').cast (m := rs.length - 1 + 1) (by omega)
+          use (j.castPred (ne_of_ne_of_eq hj ((Fin.eq_of_val_eq hi2) : i.succ = Fin.last _))).cast
+           (m := rs.length - 1 + 1) (by omega)
           rfl
       · intro x hx
         simp only [eraseLast_length, Finset.mem_union, Finset.mem_image, Finset.mem_univ,
@@ -176,7 +173,7 @@ theorem RelSeries.trimmedLength_eraseLast_of_lt
 
 
 /--
-The trimmed length of rs.eraseLast is less than or equal to the trimmed length of rs
+The trimmed length of `rs.eraseLast` is less than or equal to the trimmed length of `rs`.
 -/
 theorem RelSeries.trimmedLength_eraseLast_le :
   rs.eraseLast.trimmedLength ≤ rs.trimmedLength := by
@@ -220,22 +217,15 @@ instance (rs : RelSeries (α := α) (· ≤ ·)) :
     decidableLE := inferInstance
 
 /--
-Constructs LTSeries associated to a given RelSeries (α := α) (· ≤ ·) constructed by
+Constructs the `LTSeries` associated to a given `RelSeries (α := α) (· ≤ ·)` constructed by
 taking only those places where the relation is not equality.
 -/
+@[simps]
 def RelSeries.trim (rs : RelSeries (α := α) (· ≤ ·)) :
  RelSeries (α := α) (· < ·) where
    length := rs.trimmedLength
-   toFun := by
-    refine Subtype.val ∘ monoEquivOfFin (Finset.image rs.toFun Finset.univ) ?_
-    simp[RelSeries.trimmedLength]
+   toFun := Subtype.val ∘ monoEquivOfFin (Finset.image rs.toFun Finset.univ)
+    (by simp[RelSeries.trimmedLength])
    step := by
     intro i
     simp
-
-/--
-The length of the rs.trim is equal to the trimmed length of rs.
--/
-lemma RelSeries.length_trim (rs : RelSeries (α := α) (· ≤ ·)) :
-  rs.trim.length = rs.trimmedLength := by
-    simp[trim]
