@@ -276,6 +276,10 @@ theorem mem_oneCocycles_iff (f : G → A) :
   rw [← add_eq_zero_iff_eq_neg, ← oneCocycles_map_one f, ← mul_inv_cancel g,
     (mem_oneCocycles_iff f).1 f.2 g g⁻¹]
 
+theorem dZero_apply_mem_oneCocycles (x : A) :
+    dZero A x ∈ oneCocycles A :=
+  congr($(dOne_comp_dZero A) x)
+
 theorem oneCocycles_map_mul_of_isTrivial [A.IsTrivial] (f : oneCocycles A) (g h : G) :
     f (g * h) = f g + f h := by
   rw [(mem_oneCocycles_iff f).1 f.2, apply_eq_self A.ρ g (f h), add_comm]
@@ -351,6 +355,10 @@ lemma twoCocycles_ρ_map_inv_sub_map_inv (f : twoCocycles A) (g : G) :
     at this
   exact sub_eq_sub_iff_add_eq_add.2 this.symm
 
+theorem dOne_apply_mem_twoCocycles (x : G → A) :
+    dOne A x ∈ twoCocycles A :=
+  congr($(dTwo_comp_dOne A) x)
+
 end Cocycles
 
 section Coboundaries
@@ -367,7 +375,7 @@ def twoCoboundaries : Submodule k (G × G → A) :=
 
 variable {A}
 
-instance : FunLike (oneBoundaries A) G A := ⟨Subtype.val, Subtype.val_injective⟩
+instance : FunLike (oneCoboundaries A) G A := ⟨Subtype.val, Subtype.val_injective⟩
 
 @[simp]
 theorem oneCoboundaries.coe_mk (f : G → A) (hf) :
@@ -711,8 +719,9 @@ abbrev H1 := (shortComplexH1 A).moduleCatHomology
 abbrev H1π : ModuleCat.of k (oneCocycles A) ⟶ H1 A := (shortComplexH1 A).moduleCatHomologyπ
 
 variable {A} in
-lemma H1π_eq_zero_iff (x : oneCocycles A) : H1π A x = 0 ↔ x ∈ oneCoboundaries A :=
-  Submodule.Quotient.mk_eq_zero _
+lemma H1π_eq_zero_iff (x : oneCocycles A) : H1π A x = 0 ↔ ⇑x ∈ oneCoboundaries A := by
+  show (LinearMap.range ((dZero A).codRestrict (oneCocycles A) _)).mkQ _ = 0 ↔ _
+  simp [LinearMap.range_codRestrict, oneCoboundaries]
 
 /-- We define the 2nd group cohomology of a `k`-linear `G`-representation `A`, `H²(G, A)`, to be
 2-cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo 2-coboundaries
@@ -723,8 +732,9 @@ abbrev H2 := (shortComplexH2 A).moduleCatHomology
 abbrev H2π : ModuleCat.of k (twoCocycles A) ⟶ H2 A := (shortComplexH2 A).moduleCatHomologyπ
 
 variable {A} in
-lemma H2π_eq_zero_iff (x : twoCocycles A) : H2π A x = 0 ↔ x ∈ twoCoboundaries A :=
-  Submodule.Quotient.mk_eq_zero _
+lemma H2π_eq_zero_iff (x : twoCocycles A) : H2π A x = 0 ↔ ⇑x ∈ twoCoboundaries A := by
+  show (LinearMap.range ((dOne A).codRestrict (twoCocycles A) _)).mkQ _ = 0 ↔ _
+  simp [LinearMap.range_codRestrict, twoCoboundaries]
 
 end Cohomology
 
@@ -751,8 +761,9 @@ section H1
 group homs `G → A`. -/
 def H1LequivOfIsTrivial [A.IsTrivial] :
     H1 A ≃ₗ[k] Additive G →+ A :=
-  (Submodule.quotEquivOfEqBot _ (oneCoboundaries_eq_bot_of_isTrivial A)).trans
-    (oneCocyclesLequivOfIsTrivial A)
+  (Submodule.quotEquivOfEqBot _
+    (by simp [shortComplexH1, ShortComplex.moduleCatToCycles, Submodule.eq_bot_iff])).trans
+  (oneCocyclesLequivOfIsTrivial A)
 
 theorem H1LequivOfIsTrivial_comp_H1π [A.IsTrivial] :
     (H1LequivOfIsTrivial A).comp (H1π A).hom = oneCocyclesLequivOfIsTrivial A := by
