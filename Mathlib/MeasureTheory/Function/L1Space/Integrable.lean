@@ -879,7 +879,7 @@ theorem Integrable.mul_of_top_left {f : α → 𝕜} {φ : α → 𝕜} (hφ : I
 lemma Memℒp.integrable_mul' {q r : ℝ≥0∞} {f g : α → 𝕜} (hf : Memℒp f q μ) (hg : Memℒp g r μ)
     (hqr : 1 / q + 1 / r = 1) :
     Integrable (f * g) μ :=
-  memℒp_one_iff_integrable.1 <| Memℒp.mul hg hf (by convert hqr.symm; simp)
+  memℒp_one_iff_integrable.1 <| Memℒp.mul hg hf (by field_simp [hqr])
 
 lemma Memℒp.integrable_mul {q r : ℝ≥0∞} {f g : α → 𝕜} (hf : Memℒp f q μ) (hg : Memℒp g r μ)
     (hqr : 1 / q + 1 / r = 1) :
