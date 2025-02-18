@@ -159,8 +159,6 @@ theorem sum_map_tmul_tmul_eq {B : Type*} [AddCommMonoid B] [Module R B]
 
 end Coalgebra
 
-section CommSemiring
-
 open Coalgebra
 
 namespace CommSemiring
@@ -380,7 +378,6 @@ instance instCoalgebra : Coalgebra R (ι →₀ A) where
 
 end Finsupp
 
-end CommSemiring
 namespace TensorProduct
 open Coalgebra
 
