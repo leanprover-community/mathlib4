@@ -52,9 +52,10 @@ lemma deriv_Gamma_nat (n : ℕ) :
     apply EventuallyEq.deriv_eq
     filter_upwards [eventually_gt_nhds hx] using h_rec
   have hder_nat (n : ℕ) : deriv f (n + 1) = deriv f 1 + harmonic n := by
-    induction' n with n hn
-    · simp
-    · rw [cast_succ, hder_rec (n + 1) (by positivity), hn, harmonic_succ]
+    induction n with
+    | zero => simp
+    | succ n hn =>
+      rw [cast_succ, hder_rec (n + 1) (by positivity), hn, harmonic_succ]
       push_cast
       ring
   suffices -deriv f 1 = γ by rw [hder_nat n, ← this, neg_neg]

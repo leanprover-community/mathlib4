@@ -130,10 +130,10 @@ def divNatLtTwoPow (n d : ℕ) : ℤ → Bool
 @[nolint docBlame]
 unsafe def ofPosRatDn (n : ℕ+) (d : ℕ+) : Float × Bool := by
   let e₁ : ℤ := n.1.size - d.1.size - prec
-  cases' Int.shift2 d.1 n.1 (e₁ + prec) with d₁ n₁
+  obtain ⟨d₁, n₁⟩ := Int.shift2 d.1 n.1 (e₁ + prec)
   let e₂ := if n₁ < d₁ then e₁ - 1 else e₁
   let e₃ := max e₂ emin
-  cases' Int.shift2 d.1 n.1 (e₃ + prec) with d₂ n₂
+  obtain ⟨d₂, n₂⟩ := Int.shift2 d.1 n.1 (e₃ + prec)
   let r := mkRat n₂ d₂
   let m := r.floor
   refine (Float.finite Bool.false e₃ (Int.toNat m) ?_, r.den = 1)
