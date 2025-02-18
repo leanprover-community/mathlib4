@@ -90,7 +90,7 @@ lemma IsMatching.map_ofLE (h : M.IsMatching) (hGG' : G ≤ G') :
   use w
   simpa using hv' ▸ hw
 
-lemma IsMatching.not_adj_of_ne {M : Subgraph G} {u v w : V} (hM : M.IsMatching) (huv : v ≠ w)
+lemma IsMatching.not_adj_left_of_ne {M : Subgraph G} {u v w : V} (hM : M.IsMatching) (huv : v ≠ w)
     (hadj : M.Adj u v) : ¬M.Adj u w := by
   intro hadj'
   obtain ⟨x, hx⟩ := hM (M.edge_vert hadj)

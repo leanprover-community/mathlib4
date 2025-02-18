@@ -272,7 +272,7 @@ def mapSpanningSubgraphs {G G' : SimpleGraph V} (h : G ≤ G') : G →g G' where
   toFun x := x
   map_rel' ha := h ha
 
-lemma mapSpanningSubgraphs_inj {G G' : SimpleGraph V} (h : G ≤ G') :
+lemma mapSpanningSubgraphs_injective {G G' : SimpleGraph V} (h : G ≤ G') :
     Injective (mapSpanningSubgraphs h) :=
   fun v w hvw ↦ by simpa [mapSpanningSubgraphs_apply] using hvw
 
