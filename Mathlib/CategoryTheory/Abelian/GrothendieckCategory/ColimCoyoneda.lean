@@ -72,7 +72,7 @@ def g : (Functor.const _).obj X ⟶ Under.forget j₀ ⋙ Y where
     simp only [Category.id_comp, Category.assoc, ← Functor.map_comp, Under.w]
 
 /-- The obvious morphism `colimit (kernel (g y)) ⟶ X` (which is an epimorphism
-is `J` is filtered, see `epi_f`.). -/
+if `J` is filtered, see `epi_f`.). -/
 noncomputable def f : colimit (kernel (g y)) ⟶ X :=
   IsColimit.map (colimit.isColimit _) (constCocone _ X) (kernel.ι _)
 
