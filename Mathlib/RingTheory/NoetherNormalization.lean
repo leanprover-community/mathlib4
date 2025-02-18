@@ -136,7 +136,7 @@ private lemma leadingCoeff_finSuccEquiv_t  :
 
 /- `T` maps `f` into some polynomial in `X_0` such that the leading coefficient is invertible. -/
 private lemma T_leadingcoeff_isUnit (fne : f ≠ 0) :
-    ∃ c : (MvPolynomial (Fin n) k)ˣ, (c.val • (finSuccEquiv k n (T f f))).Monic := by
+    IsUnit (finSuccEquiv k n (T f f)).leadingCoeff := by
   obtain ⟨v, vin, vs⟩ := Finset.exists_max_image f.support
     (fun v ↦ (T f ((monomial v) (coeff v f))).degreeOf 0) (support_nonempty.mpr fne)
   set h := fun w ↦ (MvPolynomial.monomial w) (coeff w f)
@@ -160,9 +160,9 @@ private lemma T_leadingcoeff_isUnit (fne : f ≠ 0) :
   nth_rw 2 [← f.support_sum_monomial_coeff]
   rw [Finset.sum_eq_add_sum_diff_singleton vin h]
   rw [leadingCoeff_finSuccEquiv_t] at coeff
-  have u : IsUnit (finSuccEquiv k n ((T f) (h v + ∑ x ∈ f.support \ {v}, h x))).leadingCoeff := by
-    simpa only [coeff, algebraMap_eq] using (mem_support_iff.mp vin).isUnit.map MvPolynomial.C
-  exact ⟨u.unit⁻¹, monic_of_isUnit_leadingCoeff_inv_smul u⟩
+  simpa only [coeff, algebraMap_eq] using (mem_support_iff.mp vin).isUnit.map MvPolynomial.C
+
+  -- exact ⟨u.unit⁻¹, monic_of_isUnit_leadingCoeff_inv_smul u⟩
 
 end equivT
 
@@ -179,16 +179,16 @@ private noncomputable abbrev hom1 : MvPolynomial (Fin n) k →ₐ[MvPolynomial (
 
 /- `hom1 f I` is integral.-/
 private lemma hom1_isIntegral (fne : f ≠ 0) (fi : f ∈ I): (hom1 f I).IsIntegral := by
-  obtain ⟨c, eq⟩ := T_leadingcoeff_isUnit f fne
-  exact eq.quotient_isIntegral <| Submodule.smul_of_tower_mem _ c.val <|
-    mem_map_of_mem _ <| mem_map_of_mem _ fi
+  obtain u := T_leadingcoeff_isUnit f fne
+  exact (monic_of_isUnit_leadingCoeff_inv_smul u).quotient_isIntegral <|
+    Submodule.smul_of_tower_mem _ u.unit⁻¹.val <| mem_map_of_mem _ <| mem_map_of_mem _ fi
 
 /- `eqv1` is the isomorphism from `k[X_1,...X_n][X]/φ(T(I))`
 to `k[X_0,...,X_n]/T(I)`, induced by `φ`. -/
 private noncomputable abbrev eqv1 :
     ((MvPolynomial (Fin n) k)[X] ⧸ (I.map (T f)).map (finSuccEquiv k n)) ≃ₐ[k]
     MvPolynomial (Fin (n + 1)) k ⧸ I.map (T f) := quotientEquivAlg
-  ((I.map (T f)).map (finSuccEquiv k n)) (I.map (T f)) (finSuccEquiv k n).symm (by
+  ((I.map (T f)).map (finSuccEquiv k n)) (I.map (T f)) (finSuccEquiv k n).symm <| by
   set g := (finSuccEquiv k n)
   have : g.symm.toRingEquiv.toRingHom.comp g = RingHom.id _ :=
     g.toRingEquiv.symm_toRingHom_comp_toRingHom
@@ -197,13 +197,13 @@ private noncomputable abbrev eqv1 :
     _ = (I.map (T f)).map (RingHom.id _)  := by simp only [← Ideal.map_map, Ideal.map_coe]
     _ = (I.map (T f)).map (g.symm.toAlgHom.toRingHom.comp g) :=
       congrFun (congrArg Ideal.map this.symm) (I.map (T f))
-    _ = _ := by simp [← Ideal.map_map, Ideal.map_coe])
+    _ = _ := by simp [← Ideal.map_map, Ideal.map_coe]
 
 /- `eqv2` is the isomorphism from `k[X_0,...,X_n]/T(I)` into `k[X_0,...,X_n]/I`,
 induced by `T`. -/
 private noncomputable abbrev eqv2 :
     (MvPolynomial (Fin (n + 1)) k ⧸ I.map (T f)) ≃ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I
-  := quotientEquivAlg (R₁ := k) (I.map (T f)) I (T f).symm (by
+  := quotientEquivAlg (R₁ := k) (I.map (T f)) I (T f).symm <| by
   calc
     _ = I.map ((T f).symm.toRingEquiv.toRingHom.comp (T f)) := by
       have : (T f).symm.toRingEquiv.toRingHom.comp (T f) = RingHom.id _ :=
@@ -211,7 +211,7 @@ private noncomputable abbrev eqv2 :
       rw [this, Ideal.map_id]
     _ = _ := by
       rw [← Ideal.map_map, Ideal.map_coe, Ideal.map_coe]
-      exact congrArg _ rfl)
+      exact congrArg _ rfl
 
 /- `hom2` is the composition of maps above, from `k[X_0,...X_(n-1)]` to `k[X_0,...X_n]/I`. -/
 private noncomputable def hom2 : MvPolynomial (Fin n) k →ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I :=
