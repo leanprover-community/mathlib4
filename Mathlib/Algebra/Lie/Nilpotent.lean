@@ -638,7 +638,7 @@ theorem lieModule_lcs_map_le (k : ℕ) :
     obtain ⟨y, n, hn⟩ := this
     rw [← hn]
     apply LieSubmodule.lie_mem_lie
-    · simp [LieSubmodule.mem_top, LieSubmodule.coe_bracket]
+    · simp
     · exact SetLike.coe_mem n
 
 variable [LieModule R L₂ M₂]
