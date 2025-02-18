@@ -121,87 +121,60 @@ lemma map_comp (s : SingularNManifold X n k I)
   simp [Function.comp_def]
   rfl
 
-#exit
--- Let M, M' and W be smooth manifolds.
-universe u
-variable {E E' E'' E''' H H' H'' H''' : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
+-- Let M' and W be real C^k manifolds.
+variable {E' E'' E''' H' H'' H''' : Type*}
   [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedAddCommGroup E'']  [NormedSpace ℝ E'']
   [NormedAddCommGroup E'''] [NormedSpace ℝ E''']
-  [TopologicalSpace H] [TopologicalSpace H'] [TopologicalSpace H''] [TopologicalSpace H''']
+  [TopologicalSpace H'] [TopologicalSpace H''] [TopologicalSpace H''']
 
-variable {M : Type u} [TopologicalSpace M] [ChartedSpace H M]
-  {I : ModelWithCorners ℝ E H} [IsManifold I k M]
-  {M' : Type u} [TopologicalSpace M'] [ChartedSpace H' M']
+variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   {I' : ModelWithCorners ℝ E' H'} [IsManifold I' k M']
-  [BoundarylessManifold I M] [CompactSpace M] [FiniteDimensional ℝ E]
   [BoundarylessManifold I' M'] [CompactSpace M'] [FiniteDimensional ℝ E']
 
-variable (M) in
-/-- If `M` is `n`-dimensional and closed, it is a singular `n`-manifold over itself.
-
-On paper, it is apparent that `M` is modelled on `n`-dimensional Euclidean space.
-However, abstractly constructing such an equivalence requires a non-canonical choice:
-thus, we prefer to pass in this assumption external.
-For constructions modelled on `ℝ^n`, this homeomorphism is trivial to supply,
-i.e. this requirement does not pose an issue in practice. -/
-noncomputable def refl (hequiv : H ≃ₜ EuclideanSpace ℝ (Fin n)) (hdim : finrank ℝ E = n) :
-    SingularNManifold M n k where
-  modelSpace_homeo_euclideanSpace := hequiv
-  H := H
-  I := I
+variable (M I) in
+/-- If `M` is `n`-dimensional and closed, it is a singular `n`-manifold over itself.-/
+noncomputable def refl (hdim : finrank ℝ E = n) :
+    SingularNManifold M n k I where
   dimension := hdim
   f := id
   hf := continuous_id
 
 /-- If `(N, f)` is a singular `n`-manifold on `X` and `M` another `n`-dimensional smooth manifold,
 a smooth map `φ : M → N` induces a singular `n`-manifold structure `(M, f ∘ φ)` on `X`. -/
-noncomputable def comap (hequiv : H ≃ₜ EuclideanSpace ℝ (Fin n)) [h : Fact (finrank ℝ E = n)]
-    (s : SingularNManifold X n k)
-    {φ : M → s.M} (hφ : ContMDiff I s.I n φ) : SingularNManifold X n k where
-  E := E
-  M := M
-  H := H
-  modelSpace_homeo_euclideanSpace := hequiv
-  I := I
+noncomputable def comap [h : Fact (finrank ℝ E' = n)]
+    (s : SingularNManifold X n k I)
+    {φ : M' → s.M} (hφ : ContMDiff I' I n φ) : SingularNManifold X n k I' where
   f := s.f ∘ φ
   hf := s.hf.comp hφ.continuous
   dimension := h.out
 
 @[simp]
-lemma comap_f (hequiv : H ≃ₜ EuclideanSpace ℝ (Fin n)) [Fact (finrank ℝ E = n)]
-    (s : SingularNManifold X n k) {φ : M → s.M} (hφ : ContMDiff I s.I n φ) :
-    (s.comap hequiv hφ).f = s.f ∘ φ :=
+lemma comap_f [Fact (finrank ℝ E' = n)]
+    (s : SingularNManifold X n k I) {φ : M' → s.M} (hφ : ContMDiff I' I n φ) :
+    (s.comap hφ).f = s.f ∘ φ :=
   rfl
 
-variable (M) in
+variable (M I) in
 /-- The canonical singular `n`-manifold associated to the empty set (seen as an `n`-dimensional
 manifold, i.e. modelled on an `n`-dimensional space). -/
-def empty (hequiv : H ≃ₜ EuclideanSpace ℝ (Fin n)) [h: Fact (finrank ℝ E = n)]
-    (M : Type u) [TopologicalSpace M] [ChartedSpace H M]
-    {I : ModelWithCorners ℝ E H} [IsManifold I k M] [IsEmpty M] :
-  SingularNManifold X n k where
+def empty [h: Fact (finrank ℝ E = n)] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+    {I : ModelWithCorners ℝ E H} [IsManifold I k M] [IsEmpty M] : SingularNManifold X n k I where
   M := M
-  E := E
-  H := H
-  modelSpace_homeo_euclideanSpace := hequiv
-  I := I
   dimension := h.out
   f := fun x ↦ (IsEmpty.false x).elim
   hf := by
     rw [continuous_iff_continuousAt]
     exact fun x ↦ (IsEmpty.false x).elim
 
-variable (M) in
+variable (M I) in
 /-- An `n`-dimensional manifold induces a singular `n`-manifold on the one-point space. -/
-def trivial (hequiv : H ≃ₜ EuclideanSpace ℝ (Fin n)) [h: Fact (finrank ℝ E = n)] :
-    SingularNManifold PUnit n k where
-  E := E
+def trivial [h: Fact (finrank ℝ E = n)] : SingularNManifold PUnit n k I where
   M := M
-  modelSpace_homeo_euclideanSpace := hequiv
-  I := I
   dimension := h.out
   f := fun _ ↦ PUnit.unit
   hf := continuous_const
+
+#exit
 
 def EuclideanSpace.prodEquivSum (α β 𝕜 : Type*) [NontriviallyNormedField 𝕜] :
     (EuclideanSpace 𝕜 α) × (EuclideanSpace 𝕜 β) ≃ₜ EuclideanSpace 𝕜 (α ⊕ β) where
