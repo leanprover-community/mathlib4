@@ -222,7 +222,7 @@ private lemma prop_red_T (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → 
 private lemma prop_red_T_pow (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → C (T • B)) :
      ∀ B (n : ℤ), C (T^n • B) ↔ C B := by
   intro B n
-  induction n using Int.induction_on with
+  induction n with
   | hz => simp only [zpow_zero, one_smul, imp_self]
   | hp n hn =>
     simpa only [add_comm (n:ℤ), zpow_add _ 1, ← smul_eq_mul, zpow_one, smul_assoc, prop_red_T hS hT]

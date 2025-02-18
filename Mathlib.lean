@@ -4408,6 +4408,7 @@ import Mathlib.Order.MinMax
 import Mathlib.Order.Minimal
 import Mathlib.Order.ModularLattice
 import Mathlib.Order.Monotone.Basic
+import Mathlib.Order.Monotone.Defs
 import Mathlib.Order.Monotone.Extension
 import Mathlib.Order.Monotone.Monovary
 import Mathlib.Order.Monotone.MonovaryOrder
@@ -4823,6 +4824,7 @@ import Mathlib.RingTheory.Nakayama
 import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.RingTheory.Nilpotent.Lemmas
+import Mathlib.RingTheory.NoetherNormalization
 import Mathlib.RingTheory.Noetherian.Basic
 import Mathlib.RingTheory.Noetherian.Defs
 import Mathlib.RingTheory.Noetherian.Filter
