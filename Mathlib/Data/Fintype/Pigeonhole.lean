@@ -20,13 +20,6 @@ We provide the following versions of the pigeonholes principle.
   formulation.
 
 Some more pigeonhole-like statements can be found in `Data.Fintype.CardEmbedding`.
-
-## Instances
-
-We provide `Infinite` instances for
-* specific types: `ℕ`, `ℤ`, `String`
-* type constructors: `Multiset α`, `List α`
-
 -/
 
 assert_not_exists MonoidWithZero MulAction

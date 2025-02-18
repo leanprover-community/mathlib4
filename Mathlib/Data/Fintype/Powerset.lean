@@ -56,7 +56,7 @@ instance Set.fintype [Fintype α] : Fintype (Set α) :=
     simp⟩
 
 -- Not to be confused with `Set.Finite`, the predicate
-instance Finite.instSet [Finite α] : Finite (Set α) := by
+instance Set.instFinite [Finite α] : Finite (Set α) := by
   cases nonempty_fintype α
   infer_instance
 
