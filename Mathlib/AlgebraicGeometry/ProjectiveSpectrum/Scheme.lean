@@ -164,7 +164,7 @@ variable {f : A} {m : ℕ} (x : Proj| (pbo f))
 
 /--
 For any `x` in `Proj| (pbo f)`, the corresponding ideal in `Spec A⁰_f`. This fact that this ideal
-is prime is proven in `TopComponent.Forward.toFun`-/
+is prime is proven in `TopComponent.Forward.toFun`. -/
 def carrier : Ideal (A⁰_ f) :=
   Ideal.comap (algebraMap (A⁰_ f) (Away f))
     (x.val.asHomogeneousIdeal.toIdeal.map (algebraMap A (Away f)))

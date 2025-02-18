@@ -62,7 +62,7 @@ noncomputable def taylorWithin (f : ℝ → E) (n : ℕ) (s : Set ℝ) (x₀ : �
     PolynomialModule.comp (Polynomial.X - Polynomial.C x₀)
       (PolynomialModule.single ℝ k (taylorCoeffWithin f k s x₀))
 
-/-- The Taylor polynomial with derivatives inside of a set `s` considered as a function `ℝ → E`-/
+/-- The Taylor polynomial with derivatives inside of a set `s` considered as a function `ℝ → E` -/
 noncomputable def taylorWithinEval (f : ℝ → E) (n : ℕ) (s : Set ℝ) (x₀ x : ℝ) : E :=
   PolynomialModule.eval x (taylorWithin f n s x₀)
 
