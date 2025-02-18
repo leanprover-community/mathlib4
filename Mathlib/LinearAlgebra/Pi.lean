@@ -299,8 +299,7 @@ variable (R φ)
 
 theorem single_eq_pi_diag (i : ι) : single R φ i = pi (diag i) := by
   ext x j
-  -- Porting note: made types explicit
-  convert (update_apply (R := R) (φ := φ) (ι := ι) 0 x i j _).symm
+  convert (update_apply 0 x i j _).symm
   rfl
 
 theorem ker_single (i : ι) : ker (single R φ i) = ⊥ :=

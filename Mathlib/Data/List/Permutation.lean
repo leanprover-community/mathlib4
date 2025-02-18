@@ -296,7 +296,7 @@ theorem mem_permutationsAux_of_perm :
     rcases append_of_mem (p'.symm.subset (mem_cons_self _ _)) with ⟨l₁, l₂, e⟩
     subst is'
     have p := (perm_middle.symm.trans p').cons_inv
-    cases' l₂ with a l₂'
+    rcases l₂ with - | ⟨a, l₂'⟩
     · exact Or.inl ⟨l₁, by simpa using p⟩
     · exact Or.inr (Or.inr ⟨l₁, a :: l₂', mem_permutations_of_perm_lemma (IH2 _) p, by simp⟩)
   · exact Or.inr (Or.inl m)

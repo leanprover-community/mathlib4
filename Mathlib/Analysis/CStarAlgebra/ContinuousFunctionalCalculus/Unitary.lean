@@ -19,7 +19,7 @@ import Mathlib.Analysis.Complex.Basic
 section Generic
 
 variable {R A : Type*} {p : A → Prop} [CommRing R] [StarRing R] [MetricSpace R]
-variable [TopologicalRing R] [ContinuousStar R] [TopologicalSpace A] [Ring A] [StarRing A]
+variable [IsTopologicalRing R] [ContinuousStar R] [TopologicalSpace A] [Ring A] [StarRing A]
 variable [Algebra R A] [ContinuousFunctionalCalculus R p]
 
 lemma cfc_unitary_iff (f : R → R) (a : A) (ha : p a := by cfc_tac)

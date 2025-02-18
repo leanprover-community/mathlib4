@@ -207,7 +207,7 @@ theorem IsLittleOTVS.pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E 
   refine (hIf.eventually_all.mpr (hV · · ε hε)).mono fun x hx ↦ ?_
   simpa only [id, egauge_pi hIf Ub, iSup₂_le_iff]
 
-theorem IsLittleOTVS.add [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
+theorem IsLittleOTVS.add [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
     {f₁ f₂ : α → E} {g : α → F} {l : Filter α}
     (h₁ : f₁ =o[𝕜; l] g) (h₂ : f₂ =o[𝕜; l] g) : (f₁ + f₂) =o[𝕜; l] g := by
   rw [(nhds_basis_balanced 𝕜 E).add_self.isLittleOTVS_iff (basis_sets _)]

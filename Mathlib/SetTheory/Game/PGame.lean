@@ -1654,7 +1654,7 @@ theorem leftMoves_add_cases {x y : PGame} (k) {P : (x + y).LeftMoves → Prop}
     (hl : ∀ i, P <| toLeftMovesAdd (Sum.inl i)) (hr : ∀ i, P <| toLeftMovesAdd (Sum.inr i)) :
     P k := by
   rw [← toLeftMovesAdd.apply_symm_apply k]
-  cases' toLeftMovesAdd.symm k with i i
+  rcases toLeftMovesAdd.symm k with i | i
   · exact hl i
   · exact hr i
 
@@ -1663,7 +1663,7 @@ theorem rightMoves_add_cases {x y : PGame} (k) {P : (x + y).RightMoves → Prop}
     (hl : ∀ j, P <| toRightMovesAdd (Sum.inl j)) (hr : ∀ j, P <| toRightMovesAdd (Sum.inr j)) :
     P k := by
   rw [← toRightMovesAdd.apply_symm_apply k]
-  cases' toRightMovesAdd.symm k with i i
+  rcases toRightMovesAdd.symm k with i | i
   · exact hl i
   · exact hr i
 
@@ -1896,7 +1896,7 @@ private theorem add_le_add_right' : ∀ {x y z : PGame}, x ≤ y → x + z ≤ y
   | mk xl xr xL xR, mk yl yr yL yR, mk zl zr zL zR => fun h => by
     refine le_def.2 ⟨fun i => ?_, fun i => ?_⟩ <;> cases' i with i i
     · rw [le_def] at h
-      cases' h with h_left h_right
+      obtain ⟨h_left, h_right⟩ := h
       rcases h_left i with (⟨i', ih⟩ | ⟨j, jh⟩)
       · exact Or.inl ⟨toLeftMovesAdd (Sum.inl i'), add_le_add_right' ih⟩
       · refine Or.inr ⟨toRightMovesAdd (Sum.inl j), ?_⟩

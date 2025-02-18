@@ -227,7 +227,7 @@ theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx
     (C ((p ^ n :) : ℤ) : MvPolynomial (idx × ℕ) ℤ) ∣
       bind₁ (fun b : idx => rename (fun i => (b, i)) (wittPolynomial p ℤ n)) Φ -
         ∑ i ∈ range n, C ((p : ℤ) ^ i) * wittStructureInt p Φ i ^ p ^ (n - i) := by
-  cases' n with n
+  rcases n with - | n
   · simp only [isUnit_one, Int.ofNat_zero, Int.ofNat_succ, zero_add, pow_zero, C_1, IsUnit.dvd,
       Nat.cast_one]
   -- prepare a useful equation for rewriting

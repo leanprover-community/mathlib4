@@ -5,10 +5,7 @@ Authors: Julian Kuelshammer
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.Choose.Central
-import Mathlib.Data.Tree.Basic
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity

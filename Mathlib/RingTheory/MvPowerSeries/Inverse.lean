@@ -117,7 +117,7 @@ theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ 
         sub_eq_add_neg, sub_eq_zero, Finset.sum_congr rfl]
       rintro ⟨i, j⟩ hij
       rw [Finset.mem_erase, mem_antidiagonal] at hij
-      cases' hij with h₁ h₂
+      obtain ⟨h₁, h₂⟩ := hij
       subst n
       rw [if_pos]
       suffices 0 + j < i + j by simpa

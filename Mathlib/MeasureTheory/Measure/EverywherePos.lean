@@ -197,9 +197,9 @@ lemma _root_.IsOpen.isEverywherePos [IsOpenPosMeasure μ] (hs : IsOpen s) : IsEv
   apply lt_of_lt_of_le _ (measure_mono hu)
   exact (u_open.inter hs).measure_pos μ ⟨x, ⟨xu, xs⟩⟩
 
-section TopologicalGroup
+section IsTopologicalGroup
 
-variable {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G]
+variable {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
   [LocallyCompactSpace G] [MeasurableSpace G] [BorelSpace G] {μ : Measure G}
   [IsMulLeftInvariant μ] [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ]
 
@@ -296,7 +296,7 @@ theorem innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_group :
     exact everywherePosSubset_ae_eq_of_measure_ne_top K_closed.measurableSet
       K_comp.measure_lt_top.ne
 
-end TopologicalGroup
+end IsTopologicalGroup
 
 end Measure
 

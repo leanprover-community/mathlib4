@@ -272,7 +272,7 @@ necessary from the definition). -/
 def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
   members := {PartialHomeomorph.refl H} ∪ { e : PartialHomeomorph H H | e.source = ∅ }
   trans' e e' he he' := by
-    cases' he with he he
+    rcases he with he | he
     · simpa only [mem_singleton_iff.1 he, refl_trans]
     · have : (e ≫ₕ e').source ⊆ e.source := sep_subset _ _
       rw [he] at this
@@ -294,7 +294,7 @@ def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
       have x's : x ∈ (e.restr s).source := by
         rw [restr_source, open_s.interior_eq]
         exact ⟨hx, xs⟩
-      cases' hs with hs hs
+      rcases hs with hs | hs
       · replace hs : PartialHomeomorph.restr e s = PartialHomeomorph.refl H := by
           simpa only using hs
         have : (e.restr s).source = univ := by
@@ -310,7 +310,7 @@ def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
         rw [mem_setOf_eq] at hs
         rwa [hs] at x's
   mem_of_eqOnSource' e e' he he'e := by
-    cases' he with he he
+    rcases he with he | he
     · left
       have : e = e' := by
         refine eq_of_eqOnSource_univ (Setoid.symm he'e) ?_ ?_ <;>
@@ -747,6 +747,17 @@ theorem ChartedSpace.t1Space [T1Space H] : T1Space M := by
         mem_singleton_iff, true_and]
       exact (chartAt H x).injOn.ne (ChartedSpace.mem_chart_source x) hy hxy
   · exact ⟨(chartAt H x).source, (chartAt H x).open_source, ChartedSpace.mem_chart_source x, hy⟩
+
+/-- A charted space over a discrete space is discrete. -/
+theorem ChartedSpace.discreteTopology [DiscreteTopology H] : DiscreteTopology M := by
+  apply singletons_open_iff_discrete.1 (fun x ↦ ?_)
+  have : IsOpen ((chartAt H x).source ∩ (chartAt H x) ⁻¹' {chartAt H x x}) :=
+    isOpen_inter_preimage _ (isOpen_discrete _)
+  convert this
+  refine Subset.antisymm (by simp) ?_
+  simp only [subset_singleton_iff, mem_inter_iff, mem_preimage, mem_singleton_iff, and_imp]
+  intro y hy h'y
+  exact (chartAt H x).injOn hy (mem_chart_source _ x) h'y
 
 end
 

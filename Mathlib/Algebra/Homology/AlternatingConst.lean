@@ -59,7 +59,7 @@ def alternatingConstHomologyDataZero (X : C) (n : ℕ) (hn : n = 0) :
 
 instance (X : C) (n : ℕ) : (alternatingConst.obj X).HasHomology n := by
   rcases n.even_or_odd with h | h
-  · cases' n with n
+  · rcases n with - | n
     · exact ⟨⟨alternatingConstHomologyDataZero X _ rfl⟩⟩
     · exact ⟨⟨alternatingConstHomologyDataEvenNEZero X _ h (by simp)⟩⟩
   · exact ⟨⟨alternatingConstHomologyDataOdd X _ h⟩⟩

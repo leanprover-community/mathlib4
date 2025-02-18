@@ -307,7 +307,7 @@ theorem SameCycle.exists_pow_eq [DecidableEq α] [Fintype α] (f : Perm α) (h :
     ∃ i : ℕ, 0 < i ∧ i ≤ #(f.cycleOf x).support + 1 ∧ (f ^ i) x = y := by
   by_cases hx : x ∈ f.support
   · obtain ⟨k, hk, hk'⟩ := h.exists_pow_eq_of_mem_support hx
-    cases' k with k
+    rcases k with - | k
     · refine ⟨#(f.cycleOf x).support, ?_, self_le_add_right _ _, ?_⟩
       · refine zero_lt_one.trans (one_lt_card_support_of_ne_one ?_)
         simpa using hx

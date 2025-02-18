@@ -385,7 +385,7 @@ lemma IsCycles.snd_of_mem_support_of_isPath_of_adj [Finite V] {v w w' : V}
     rw [← Cardinal.eq, ← Set.cast_ncard (Set.toFinite _), ← Set.cast_ncard (Set.toFinite _),
         hp.ncard_neighborSet_toSubgraph_internal_eq_two (by omega) (by omega),
         hcyc (Set.nonempty_of_mem hadj.symm)]
-  rw [Subgraph.adj_comm, Subgraph.adj_iff_of_neighborSet_equiv e (Set.toFinite _).fintype]
+  rw [Subgraph.adj_comm, Subgraph.adj_iff_of_neighborSet_equiv e (Set.toFinite _)]
   exact hadj.symm
 
 private lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe_aux [Fintype V] {v w : V}
@@ -457,7 +457,7 @@ lemma IsCycles.exists_cycle_toSubgraph_verts_eq_connectedComponentSupp [Finite V
   have : p.toSubgraph.verts = c.supp := by
     obtain ⟨c', hc'⟩ := p.toSubgraph_connected.exists_verts_eq_connectedComponentSupp (by
       intro v hv w hadj
-      refine (Subgraph.adj_iff_of_neighborSet_equiv ?_ (Set.toFinite _).fintype).mpr hadj
+      refine (Subgraph.adj_iff_of_neighborSet_equiv ?_ (Set.toFinite _)).mpr hadj
       have : (G.neighborSet v).Nonempty := by
         rw [Walk.mem_verts_toSubgraph] at hv
         refine (Set.nonempty_of_ncard_ne_zero ?_).mono (p.toSubgraph.neighborSet_subset v)

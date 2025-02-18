@@ -96,15 +96,15 @@ theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type*}
 
 /-- The semiring topology on `PowerSeries` of a topological semiring -/
 @[scoped instance]
-theorem instTopologicalSemiring [Semiring R] [TopologicalSemiring R] :
-    TopologicalSemiring (PowerSeries R) :=
-  MvPowerSeries.WithPiTopology.instTopologicalSemiring Unit R
+theorem instIsTopologicalSemiring [Semiring R] [IsTopologicalSemiring R] :
+    IsTopologicalSemiring (PowerSeries R) :=
+  MvPowerSeries.WithPiTopology.instIsTopologicalSemiring Unit R
 
 /-- The ring topology on `PowerSeries` of a topological ring -/
 @[scoped instance]
-theorem instTopologicalRing [Ring R] [TopologicalRing R] :
-    TopologicalRing (PowerSeries R) :=
-  MvPowerSeries.WithPiTopology.instTopologicalRing Unit R
+theorem instIsTopologicalRing [Ring R] [IsTopologicalRing R] :
+    IsTopologicalRing (PowerSeries R) :=
+  MvPowerSeries.WithPiTopology.instIsTopologicalRing Unit R
 
 end WithPiTopology
 

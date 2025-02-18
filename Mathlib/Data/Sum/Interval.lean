@@ -42,7 +42,7 @@ theorem mem_sumLift₂ :
       (∃ a₁ b₁ c₁, a = inl a₁ ∧ b = inl b₁ ∧ c = inl c₁ ∧ c₁ ∈ f a₁ b₁) ∨
         ∃ a₂ b₂ c₂, a = inr a₂ ∧ b = inr b₂ ∧ c = inr c₂ ∧ c₂ ∈ g a₂ b₂ := by
   constructor
-  · cases' a with a a <;> cases' b with b b
+  · rcases a with a | a <;> rcases b with b | b
     · rw [sumLift₂, mem_map]
       rintro ⟨c, hc, rfl⟩
       exact Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩

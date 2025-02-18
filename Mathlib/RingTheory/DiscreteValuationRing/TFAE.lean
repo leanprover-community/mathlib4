@@ -104,7 +104,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [IsLocalRing R] [IsDomain R
       rw [← Ideal.span_singleton_eq_bot, eq_bot_iff, ← e]; exact hI.1
   have : ∃ n, maximalIdeal R ^ n ≤ Ideal.span {a} := by
     rw [← this]; apply Ideal.exists_radical_pow_le_of_fg; exact IsNoetherian.noetherian _
-  cases' hn : Nat.find this with n
+  rcases hn : Nat.find this with - | n
   · have := Nat.find_spec this
     rw [hn, pow_zero, Ideal.one_eq_top] at this
     exact (Ideal.IsMaximal.ne_top inferInstance (eq_top_iff.mpr <| this.trans hle)).elim

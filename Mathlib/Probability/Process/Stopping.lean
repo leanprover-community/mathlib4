@@ -643,8 +643,8 @@ theorem measurableSet_eq_stopping_time [AddGroup ι] [TopologicalSpace ι] [Meas
     refine ⟨fun h => ⟨⟨?_, h.2⟩, ?_⟩, fun h => ⟨?_, h.1.2⟩⟩
     · rw [h.1]
     · rw [← h.1]; exact h.2
-    · cases' h with h' hσ_le
-      cases' h' with h_eq hτ_le
+    · obtain ⟨h', hσ_le⟩ := h
+      obtain ⟨h_eq, hτ_le⟩ := h'
       rwa [min_eq_left hτ_le, min_eq_left hσ_le] at h_eq
   rw [this]
   refine
@@ -666,8 +666,8 @@ theorem measurableSet_eq_stopping_time_of_countable [Countable ι] [TopologicalS
     refine ⟨fun h => ⟨⟨?_, h.2⟩, ?_⟩, fun h => ⟨?_, h.1.2⟩⟩
     · rw [h.1]
     · rw [← h.1]; exact h.2
-    · cases' h with h' hπ_le
-      cases' h' with h_eq hτ_le
+    · obtain ⟨h', hπ_le⟩ := h
+      obtain ⟨h_eq, hτ_le⟩ := h'
       rwa [min_eq_left hτ_le, min_eq_left hπ_le] at h_eq
   rw [this]
   refine

@@ -45,7 +45,7 @@ theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p :
   obtain ⟨t, ht, t_open, z_mem⟩ := eventually_nhds_iff.mp (isBigOWith_iff.mp hc)
   obtain ⟨δ, δ_pos, δε⟩ := (Metric.isOpen_iff.mp t_open) 0 z_mem
   clear h hc z_mem
-  cases' n with n
+  rcases n with - | n
   · exact norm_eq_zero.mp (by
       -- Porting note: the symmetric difference of the `simpa only` sets:
       -- added `zero_add, pow_one`

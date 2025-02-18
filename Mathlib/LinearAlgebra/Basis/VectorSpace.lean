@@ -61,11 +61,9 @@ theorem range_extend (hs : LinearIndependent K ((↑) : s → V)) :
     range (Basis.extend hs) = hs.extend (subset_univ _) := by
   rw [coe_extend, Subtype.range_coe_subtype, setOf_mem_eq]
 
--- Porting note: adding this to make the statement of `subExtend` more readable
 /-- Auxiliary definition: the index for the new basis vectors in `Basis.sumExtend`.
 
-The specific value of this definition should be considered an implementation detail.
--/
+The specific value of this definition should be considered an implementation detail. -/
 def sumExtendIndex (hs : LinearIndependent K v) : Set V :=
   LinearIndependent.extend hs.to_subtype_range (subset_univ _) \ range v
 

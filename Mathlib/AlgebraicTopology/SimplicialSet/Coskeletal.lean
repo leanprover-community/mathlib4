@@ -150,12 +150,12 @@ lemma fac_aux₂ {n : ℕ}
         match t with
         | 0 =>
             have : α.hom ≫ (mkOfSucc 0).op = α₂.hom :=
-              Quiver.Hom.unop_inj (by ext x ; fin_cases x <;> rfl)
+              Quiver.Hom.unop_inj (by ext x; fin_cases x <;> rfl)
             rw [this, h₂, ← congr_fun (s.w β₂) x]
             rfl
         | 1 =>
             have : α.hom ≫ (mkOfSucc 1).op = α₀.hom :=
-              Quiver.Hom.unop_inj (by ext x ; fin_cases x <;> rfl)
+              Quiver.Hom.unop_inj (by ext x; fin_cases x <;> rfl)
             rw [this, h₀, ← congr_fun (s.w β₀) x]
             rfl
       rw [← StructuredArrow.w β₁, FunctorToTypes.map_comp_apply, this, ← s.w β₁]

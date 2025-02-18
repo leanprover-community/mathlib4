@@ -190,8 +190,6 @@ theorem induction {C : TensorAlgebra R M → Prop}
       mul_mem' := @mul
       add_mem' := @add
       algebraMap_mem' := algebraMap }
-  -- Porting note: Added `h`. `h` is needed for `of`.
-  let h : AddCommMonoid s := inferInstanceAs (AddCommMonoid (Subalgebra.toSubmodule s))
   let of : M →ₗ[R] s := (TensorAlgebra.ι R).codRestrict (Subalgebra.toSubmodule s) ι
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (TensorAlgebra R M) = s.val.comp (lift R of) := by

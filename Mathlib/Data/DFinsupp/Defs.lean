@@ -732,7 +732,7 @@ protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (
     (ha : ∀ (i b) (f : Π₀ i, β i), f i = 0 → b ≠ 0 → p f → p (single i b + f)) : p f := by
   cases' f with f s
   induction' s using Trunc.induction_on with s
-  cases' s with s H
+  obtain ⟨s, H⟩ := s
   induction' s using Multiset.induction_on with i s ih generalizing f
   · have : f = 0 := funext fun i => (H i).resolve_left (Multiset.not_mem_zero _)
     subst this

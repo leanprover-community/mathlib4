@@ -5,6 +5,7 @@ Authors: Mitchell Horner
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+import Mathlib.Data.Nat.Cast.Field
 
 /-!
 # Binomial coefficents and factorial variants

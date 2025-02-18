@@ -239,8 +239,8 @@ theorem independent_range_of_coprime_order
   · intro _ _ hj
     apply hcomm
     exact hj ∘ Subtype.ext
-  cases' hxp with g hgf
-  cases' hxi with g' hg'f
+  obtain ⟨g, hgf⟩ := hxp
+  obtain ⟨g', hg'f⟩ := hxi
   have hxi : orderOf f ∣ Fintype.card (H i) := by
     rw [← hg'f]
     exact (orderOf_map_dvd _ _).trans orderOf_dvd_card
