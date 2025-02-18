@@ -528,7 +528,7 @@ lemma finite_powers : (powers a : Set G).Finite ↔ IsOfFinOrder a := by
 @[to_additive (attr := simp)]
 lemma infinite_powers : (powers a : Set G).Infinite ↔ ¬ IsOfFinOrder a := finite_powers.not
 
-/-- The equivalence between `Fin (orderOf x)` and `Submonoid.powers x`, sending `i` to `x ^ i`." -/
+/-- The equivalence between `Fin (orderOf x)` and `Submonoid.powers x`, sending `i` to `x ^ i` -/
 @[to_additive "The equivalence between `Fin (addOrderOf a)` and
 `AddSubmonoid.multiples a`, sending `i` to `i • a`"]
 noncomputable def finEquivPowers (x : G) (hx : IsOfFinOrder x) : Fin (orderOf x) ≃ powers x :=

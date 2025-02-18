@@ -794,7 +794,7 @@ theorem mk_sub [∀ i, AddGroup (β i)] {s : Finset ι} {x y : ∀ i : (↑s : S
   ext fun i => by simp only [sub_apply, mk_apply]; split_ifs <;> [rfl; rw [sub_zero]]
 
 /-- If `s` is a subset of `ι` then `mk_addGroupHom s` is the canonical additive
-group homomorphism from $\prod_{i\in s}\beta_i$ to $\prod_{\mathtt{i : \iota}}\beta_i.$ -/
+group homomorphism from $\prod_{i\in s}\beta_i$ to $\prod_{\mathtt{i : \iota}}\beta_i$. -/
 def mkAddGroupHom [∀ i, AddGroup (β i)] (s : Finset ι) :
     (∀ i : (s : Set ι), β ↑i) →+ Π₀ i : ι, β i where
   toFun := mk s

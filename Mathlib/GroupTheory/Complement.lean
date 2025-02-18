@@ -710,11 +710,11 @@ section Action
 
 open Pointwise MulAction MemLeftTransversals
 
-/-- The collection of left transversals of a subgroup. -/
+/-- The collection of left transversals of a subgroup -/
 @[to_additive "The collection of left transversals of a subgroup."]
 abbrev LeftTransversal (H : Subgroup G) := {S : Set G // IsComplement S H}
 
-/-- The collection of right transversals of a subgroup. -/
+/-- The collection of right transversals of a subgroup -/
 @[to_additive "The collection of right transversals of a subgroup."]
 abbrev RightTransversal (H : Subgroup G) := {T : Set G // IsComplement H T}
 

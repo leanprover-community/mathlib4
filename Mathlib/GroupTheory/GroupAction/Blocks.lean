@@ -734,7 +734,7 @@ theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
    are just `k + ℕ`, for `k ≤ 0`, and the corresponding intersection is `ℕ`, which is not a block.
    (Remark by Thomas Browning) -/
 /-- The intersection of the translates of a *finite* subset which contain a given point
-is a block (Wielandt, th. 7.3) -/
+is a block (Wielandt, th. 7.3). -/
 @[to_additive
   "The intersection of the translates of a *finite* subset which contain a given point
   is a block (Wielandt, th. 7.3)"]

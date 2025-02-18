@@ -203,7 +203,7 @@ lemma proj_adjoin_singleton_val [IsGalois k K] (g : limit (asProfiniteGaloisGrou
   proj_of_le _ g y _ _
 
 /-- A function from `K` to `K` defined pointwise using a family of compatible elements of
-`Gal(L/k)` where `L` is a `FiniteGaloisIntermediateField`. -/
+`Gal(L/k)` where `L` is a `FiniteGaloisIntermediateField` -/
 private noncomputable def toAlgEquivAux [IsGalois k K]
     (g : limit (asProfiniteGaloisGroupFunctor k K)) : K → K :=
   fun x ↦ (proj (adjoin k {x}) g ⟨x, subset_adjoin _ _ (by simp only [Set.mem_singleton_iff])⟩).val
