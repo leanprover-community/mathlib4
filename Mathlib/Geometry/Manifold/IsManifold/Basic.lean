@@ -824,9 +824,8 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
 is a `C^n` manifold modeled on `(E, H)`. -/
 instance disjointUnion : IsManifold I n (M ⊕ M') where
   compatible {e} e' he he' := by
-    by_cases h : Nonempty H; swap
-    · have : IsEmpty H := not_nonempty_iff.mp h
-      exact ContDiffGroupoid.mem_of_source_eq_empty _ (eq_empty_of_isEmpty _)
+    obtain (h | h) := isEmpty_or_nonempty H
+    · exact ContDiffGroupoid.mem_of_source_eq_empty _ (eq_empty_of_isEmpty _)
     obtain (⟨f, hf, hef⟩ | ⟨f, hf, hef⟩) := ChartedSpace.mem_atlas_sum he
     · obtain (⟨f', hf', he'f'⟩ | ⟨f', hf', he'f'⟩) := ChartedSpace.mem_atlas_sum he'
       · rw [hef, he'f', f.lift_openEmbedding_trans f' IsOpenEmbedding.inl]
