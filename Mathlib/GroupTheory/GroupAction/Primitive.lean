@@ -69,8 +69,8 @@ class _root_.AddAction.IsPreprimitive [VAdd G X] extends AddAction.IsPretransiti
 the only blocks are the trivial ones -/
 @[to_additive]
 class IsPreprimitive [SMul G X] extends IsPretransitive G X : Prop where
-/-- An action is preprimitive if it is pretransitive and
-the only blocks are the trivial ones -/
+  /-- An action is preprimitive if it is pretransitive and
+  the only blocks are the trivial ones -/
   isTrivialBlock_of_isBlock : ∀ {B : Set X}, IsBlock G B → IsTrivialBlock B
 
 open IsPreprimitive
@@ -215,7 +215,7 @@ theorem isSimpleOrder_blockMem_iff_isPreprimitive [IsPretransitive G X] [Nontriv
   · intro h; let h_bot_or_top := h.eq_bot_or_eq_top
     apply IsPreprimitive.of_isTrivialBlock_base a
     intro B haB hB
-    cases' h_bot_or_top ⟨B, haB, hB⟩ with hB' hB' <;>
+    rcases h_bot_or_top ⟨B, haB, hB⟩ with hB' | hB' <;>
       simp only [← Subtype.coe_inj, Subtype.coe_mk] at hB'
     · left; rw [hB']; exact Set.subsingleton_singleton
     · right; rw [hB']; rfl

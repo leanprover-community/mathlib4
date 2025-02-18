@@ -64,7 +64,7 @@ Strict Segal, one can produce an `n`-simplex in `X`. -/
 @[simp]
 noncomputable def lift {X : SSet.{u}} [StrictSegal X] {n}
     (s : Cone (proj (op ⦋n⦌) (Truncated.inclusion 2).op ⋙
-      (Truncated.inclusion 2).op ⋙ X)) (x : s.pt) : X _[n] :=
+      (Truncated.inclusion 2).op ⋙ X)) (x : s.pt) : X _⦋n⦌ :=
   StrictSegal.spineToSimplex {
     vertex := fun i ↦ s.π.app (.mk (Y := op ⦋0⦌₂) (.op (SimplexCategory.const _ _ i))) x
     arrow := fun i ↦ s.π.app (.mk (Y := op ⦋1⦌₂) (.op (mkOfLe _ _ (Fin.castSucc_le_succ i)))) x
@@ -150,12 +150,12 @@ lemma fac_aux₂ {n : ℕ}
         match t with
         | 0 =>
             have : α.hom ≫ (mkOfSucc 0).op = α₂.hom :=
-              Quiver.Hom.unop_inj (by ext x ; fin_cases x <;> rfl)
+              Quiver.Hom.unop_inj (by ext x; fin_cases x <;> rfl)
             rw [this, h₂, ← congr_fun (s.w β₂) x]
             rfl
         | 1 =>
             have : α.hom ≫ (mkOfSucc 1).op = α₀.hom :=
-              Quiver.Hom.unop_inj (by ext x ; fin_cases x <;> rfl)
+              Quiver.Hom.unop_inj (by ext x; fin_cases x <;> rfl)
             rw [this, h₀, ← congr_fun (s.w β₀) x]
             rfl
       rw [← StructuredArrow.w β₁, FunctorToTypes.map_comp_apply, this, ← s.w β₁]

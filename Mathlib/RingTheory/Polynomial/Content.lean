@@ -95,7 +95,7 @@ theorem content_X_mul {p : R[X]} : content (X * p) = content p := by
   have h : (X * p).support = p.support.map ⟨Nat.succ, Nat.succ_injective⟩ := by
     ext a
     simp only [exists_prop, Finset.mem_map, Function.Embedding.coeFn_mk, Ne, mem_support_iff]
-    cases' a with a
+    rcases a with - | a
     · simp [coeff_X_mul_zero, Nat.succ_ne_zero]
     rw [mul_comm, coeff_mul_X]
     constructor
