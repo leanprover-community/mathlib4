@@ -384,7 +384,7 @@ lemma isNilpotent_restrict_genEigenspace_top [IsNoetherian R M] (f : End R M) (�
   rw [genEigenspace_top_eq_maxUnifEigenspaceIndex]
 
 /-- The submodule `eigenspace f μ` for a linear map `f` and a scalar `μ` consists of all vectors `x`
-such that `f x = μ • x`. (Def 5.36 of [axler2015]) -/
+such that `f x = μ • x`. (Def 5.36 of [axler2015]). -/
 abbrev eigenspace (f : End R M) (μ : R) : Submodule R M :=
   f.genEigenspace μ 1
 
@@ -404,7 +404,7 @@ lemma hasEigenvector_iff {f : End R M} {μ : R} {x : M} :
     f.HasEigenvector μ x ↔ x ∈ f.eigenspace μ ∧ x ≠ 0 := Iff.rfl
 
 /-- A scalar `μ` is an eigenvalue for a linear map `f` if there are nonzero vectors `x`
-such that `f x = μ • x`. (Def 5.5 of [axler2015]) -/
+such that `f x = μ • x`. (Def 5.5 of [axler2015]). -/
 abbrev HasEigenvalue (f : End R M) (a : R) : Prop :=
   HasUnifEigenvalue f a 1
 

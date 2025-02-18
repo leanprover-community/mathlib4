@@ -101,7 +101,7 @@ end finGaloisGroupMap
 
 variable (k K) in
 /-- The functor from `FiniteGaloisIntermediateField` (ordered by reverse inclusion) to `FiniteGrp`,
-mapping each `FiniteGaloisIntermediateField` `L` to `Gal (L/k)`. -/
+mapping each `FiniteGaloisIntermediateField` `L` to `Gal (L/k)` -/
 noncomputable def finGaloisGroupFunctor : (FiniteGaloisIntermediateField k K)ᵒᵖ ⥤ FiniteGrp where
   obj L := L.unop.finGaloisGroup
   map := finGaloisGroupMap
