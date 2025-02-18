@@ -214,45 +214,10 @@ theorem principal_add_omega0 : Principal (· + ·) ω :=
 @[deprecated (since := "2024-09-30")]
 alias principal_add_omega := principal_add_omega0
 
-theorem add_omega0 : a < ω ^ b → a + ω ^ b = ω ^ b :=
-  principal_add_omega0.add_absorp
+-- `add_omega0` is proven in the Arithmetic file.
 
 theorem add_of_le_omega0 : a < ω → ω ≤ b → a + b = b :=
   principal_add_omega0.add_absorp_of_le
-
-@[deprecated (since := "2024-09-30")] alias one_add_omega := one_add_omega0
-
-@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
-alias omega_le_of_isLimit := omega0_le_of_isLimit
-
-@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
-alias one_add_of_omega_le := one_add_of_omega0_le
-
-theorem natCast_add_omega0 (n : ℕ) : n + ω = ω :=
-  add_omega0 (natCast_lt_omega0 n)
-
-@[simp]
-theorem natCast_add_of_omega0_le {o} (h : ω ≤ o) (n : ℕ) : n + o = o :=
-  add_of_le_omega0 (natCast_lt_omega0 n) h
-
-theorem one_add_omega0 : 1 + ω = ω :=
-  mod_cast natCast_add_omega0 1
-
-@[simp]
-theorem one_add_of_omega0_le {o} (h : ω ≤ o) : 1 + o = o :=
-  mod_cast natCast_add_of_omega0_le h 1
-
-theorem add_omega0 {a : Ordinal} (h : a < ω) : a + ω = ω := by
-  obtain ⟨n, rfl⟩ := lt_omega0.1 h
-  exact natCast_add_omega0 n
-
-@[deprecated (since := "2024-09-30")]
-alias add_omega := add_omega0
-
-  #exit
-
-theorem natCast_add_of_le_omega0 (n : ℕ) (h : ω ≤ a) : n + a = a :=
-  add_of_le_omega0 (nat_lt_omega0 n) h
 
 theorem principal_add_omega0_opow (x : Ordinal) : Principal (· + ·) (ω ^ x) := by
   obtain rfl | ha' := eq_or_ne x 0
