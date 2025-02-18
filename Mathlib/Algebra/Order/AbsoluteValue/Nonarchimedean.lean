@@ -19,16 +19,17 @@ namespace AbsoluteValue
 
 section LinearOrderedSemiring
 
-variable [Semiring R] [LinearOrderedSemiring S]
+variable [LinearOrderedSemiring S]
 
 /--An `AbsoluteValue` `f` is nonarchimean if it satisfies `f (x + y) ≤ max (f x) (f y)` for all
 `x` and `y` in `R`-/
-def IsNonarchimedean  (f : AbsoluteValue R S) : Prop := ∀ x y : R, f (x + y) ≤ max (f x) (f y)
+def IsNonarchimedean [Semiring R] (f : AbsoluteValue R S) : Prop :=
+    ∀ x y : R, f (x + y) ≤ max (f x) (f y)
 
 open Finset in
 /--Ultrametric inequality with Finset.Sum-/
-lemma sum_le_sup_of_isNonarchimedean {f : AbsoluteValue R S} (nonarch : IsNonarchimedean f)
-    {s : Finset α} (hnonempty : s.Nonempty) {l : α → R} :
+lemma apply_sum_le_sup_of_isNonarchimedean [Semiring R] {f : AbsoluteValue R S}
+    (nonarch : IsNonarchimedean f) {s : Finset α} (hnonempty : s.Nonempty) {l : α → R} :
     f (∑ i ∈ s, l i) ≤ s.sup' hnonempty fun i => f (l i) := by
   apply Nonempty.cons_induction (p := fun a hn ↦ f (∑ i ∈ a, l i) ≤ a.sup' hn fun i ↦ f (l i))
   · simp
@@ -59,12 +60,34 @@ section LinearOrderedCommRing
 
 section Ring
 
-variable [Ring R] [Nontrivial R] [LinearOrderedCommRing S]
+variable [Ring R] [LinearOrderedCommRing S]
 
-lemma apply_int_le_one_of_isNonarchimedean {abv : AbsoluteValue R S}
+lemma apply_int_le_one_of_isNonarchimedean [Nontrivial R] {abv : AbsoluteValue R S}
     (nonarch : IsNonarchimedean abv) (x : ℤ) : abv x ≤ 1 := by
   rw [← AbsoluteValue.apply_natAbs_eq]
   exact apply_nat_le_one_of_isNonarchimedean nonarch x.natAbs
+
+lemma apply_sum_eq_of_lt {f : AbsoluteValue R S} (nonarch : IsNonarchimedean f) {x y : R}
+    (h_ne : f x < f y) : f (x + y) = f y := by
+  by_contra! h
+  have h1 : f (x + y) ≤ f y := le_trans (nonarch x y) (le_of_eq <| max_eq_right_of_lt h_ne)
+  apply lt_irrefl (f y)
+  calc
+    f y = f (y + x + -x) := by simp
+    _   ≤ max (f (y + x)) (f (-x)) := nonarch (y + x) (-x)
+    _   < max (f y) (f y) := by
+      rw [max_self, AbsoluteValue.map_neg, add_comm]
+      exact max_lt (lt_of_le_of_ne h1 h) h_ne
+    _   = f y := max_self (f y)
+
+lemma apply_sum_eq_max_of_ne {f : AbsoluteValue R S} (nonarch : IsNonarchimedean f) {x y : R}
+    (h_ne : f x ≠ f y) : f (x + y) = max (f x) (f y) := by
+  apply Ne.lt_or_lt at h_ne
+  rcases h_ne with h_lt | h_lt
+  · rw [apply_sum_eq_of_lt nonarch h_lt]
+    exact (max_eq_right_of_lt h_lt).symm
+  · rw [add_comm, apply_sum_eq_of_lt nonarch h_lt]
+    exact (max_eq_left_of_lt h_lt).symm
 
 end Ring
 
