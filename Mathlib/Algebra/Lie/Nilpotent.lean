@@ -716,8 +716,6 @@ theorem isNilpotent_of_le (M₁ M₂ : LieSubmodule R L M) (h₁ : M₁ ≤ M₂
   have hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆ := by aesop
   exact (Submodule.inclusion_injective h₁).lieModuleIsNilpotent hfg
 
-end
-
 end LieModule
 
 end NilpotentModules
