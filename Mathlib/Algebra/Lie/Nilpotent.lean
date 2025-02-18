@@ -660,23 +660,24 @@ variable (hf_surj : Surjective f) (hg_surj : Surjective g)
 include hf_surj hg_surj hfg in
 theorem Function.Surjective.lieModule_lcs_map_eq (k : ℕ) :
     (lowerCentralSeries R L M k : Submodule R M).map g = lowerCentralSeries R L₂ M₂ k := by
+  refine le_antisymm (lieModule_lcs_map_le hfg k) ?_
   induction k with
   | zero => simpa [LinearMap.range_eq_top]
   | succ k ih =>
     suffices
-      g '' {m | ∃ (x : L) (n : _), n ∈ lowerCentralSeries R L M k ∧ ⁅x, n⁆ = m} =
-        {m | ∃ (x : L₂) (n : _), n ∈ lowerCentralSeries R L M k ∧ ⁅x, g n⁆ = m} by
+      {m | ∃ (x : L₂) (n : _), n ∈ lowerCentralSeries R L M k ∧ ⁅x, g n⁆ = m} ⊆
+        g '' {m | ∃ (x : L) (n : _), n ∈ lowerCentralSeries R L M k ∧ ⁅x, n⁆ = m} by
       simp only [← LieSubmodule.mem_toSubmodule] at this
       simp_rw [lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span',
-        Submodule.map_span, LieSubmodule.mem_top, true_and, ← LieSubmodule.mem_toSubmodule, this,
-        ← ih, Submodule.mem_map, exists_exists_and_eq_and]
-    ext m₂
-    constructor
-    · rintro ⟨m, ⟨x, n, hn, rfl⟩, rfl⟩
-      exact ⟨f x, n, hn, hfg x n⟩
-    · rintro ⟨x, n, hn, rfl⟩
-      obtain ⟨y, rfl⟩ := hf_surj x
-      exact ⟨⁅y, n⁆, ⟨y, n, hn, rfl⟩, (hfg y n).symm⟩
+        Submodule.map_span, LieSubmodule.mem_top, true_and, ← LieSubmodule.mem_toSubmodule]
+      apply Submodule.span_mono
+      apply Set.Subset.trans _ this
+      rintro m₁ ⟨x, n, hn, rfl⟩
+      obtain ⟨n', hn', rfl⟩ := ih hn
+      exact ⟨x, n', hn', rfl⟩
+    rintro m₂ ⟨x, n, hn, rfl⟩
+    obtain ⟨y, rfl⟩ := hf_surj x
+    exact ⟨⁅y, n⁆, ⟨y, n, hn, rfl⟩, (hfg y n).symm⟩
 
 include hf_surj hg_surj hfg in
 theorem Function.Surjective.lieModuleIsNilpotent [IsNilpotent L M] : IsNilpotent L₂ M₂ := by
