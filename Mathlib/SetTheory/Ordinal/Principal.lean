@@ -219,8 +219,8 @@ alias principal_add_omega := principal_add_omega0
 theorem add_of_le_omega0 : a < ω → ω ≤ b → a + b = b :=
   principal_add_omega0.add_absorp_of_le
 
-theorem principal_add_omega0_opow (x : Ordinal) : Principal (· + ·) (ω ^ x) := by
-  obtain rfl | ha' := eq_or_ne x 0
+theorem principal_add_omega0_opow (o : Ordinal) : Principal (· + ·) (ω ^ o) := by
+  obtain rfl | ha' := eq_or_ne o 0
   · rw [opow_zero, principal_one_iff, add_zero]
   · rw [principal_add_iff_add_self_lt]
     intro a ha
