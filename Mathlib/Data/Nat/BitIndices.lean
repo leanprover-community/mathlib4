@@ -85,8 +85,7 @@ theorem bitIndices_bit_false (n : ℕ) :
 See `Finset.equivBitIndices` for this bijection. -/
 theorem bitIndices_twoPowsum {L : List ℕ} (hL : List.Sorted (· < ·) L) :
     (L.map (fun i ↦ 2^i)).sum.bitIndices = L := by
-  cases' L with a L
-  · simp
+  cases L with | nil => simp | cons a L =>
   obtain ⟨haL, hL⟩ := sorted_cons.1 hL
   simp_rw [Nat.lt_iff_add_one_le] at haL
   have h' : ∃ (L₀ : List ℕ), L₀.Sorted (· < ·) ∧ L = L₀.map (· + a + 1) := by

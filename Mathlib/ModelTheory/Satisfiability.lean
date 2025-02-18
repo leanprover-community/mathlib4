@@ -392,7 +392,7 @@ def IsComplete (T : L.Theory) : Prop :=
 namespace IsComplete
 
 theorem models_not_iff (h : T.IsComplete) (φ : L.Sentence) : T ⊨ᵇ φ.not ↔ ¬T ⊨ᵇ φ := by
-  cases' h.2 φ with hφ hφn
+  rcases h.2 φ with hφ | hφn
   · simp only [hφ, not_true, iff_false]
     rw [models_sentence_iff, not_forall]
     refine ⟨h.1.some, ?_⟩
@@ -405,7 +405,7 @@ theorem models_not_iff (h : T.IsComplete) (φ : L.Sentence) : T ⊨ᵇ φ.not �
 
 theorem realize_sentence_iff (h : T.IsComplete) (φ : L.Sentence) (M : Type*) [L.Structure M]
     [M ⊨ T] [Nonempty M] : M ⊨ φ ↔ T ⊨ᵇ φ := by
-  cases' h.2 φ with hφ hφn
+  rcases h.2 φ with hφ | hφn
   · exact iff_of_true (hφ.realize_sentence M) hφ
   · exact
       iff_of_false ((Sentence.realize_not M).1 (hφn.realize_sentence M))

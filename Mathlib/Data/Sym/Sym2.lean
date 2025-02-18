@@ -623,14 +623,14 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
     Quot.map fromVector
       (by
         rintro ⟨x, hx⟩ ⟨y, hy⟩ h
-        cases' x with _ x; · simp at hx
-        cases' x with _ x; · simp at hx
-        cases' x with _ x; swap
+        rcases x with - | ⟨_, x⟩; · simp at hx
+        rcases x with - | ⟨_, x⟩; · simp at hx
+        rcases x with - | ⟨_, x⟩; swap
         · exfalso
           simp at hx
-        cases' y with _ y; · simp at hy
-        cases' y with _ y; · simp at hy
-        cases' y with _ y; swap
+        rcases y with - | ⟨_, y⟩; · simp at hy
+        rcases y with - | ⟨_, y⟩; · simp at hy
+        rcases y with - | ⟨_, y⟩; swap
         · exfalso
           simp at hy
         rcases perm_card_two_iff.mp h with (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
@@ -642,9 +642,9 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
     cases' x with x hx
     cases' x with _ x
     · simp at hx
-    cases' x with _ x
+    rcases x with - | ⟨_, x⟩
     · simp at hx
-    cases' x with _ x
+    rcases x with - | ⟨_, x⟩
     swap
     · exfalso
       simp at hx
@@ -778,7 +778,7 @@ instance [Nontrivial α] : Nontrivial (Sym2 α) :=
 unsafe instance [Repr α] : Repr (Sym2 α) where
   reprPrec s _ := f!"s({repr s.unquot.1}, {repr s.unquot.2})"
 
-lemma smul {α R N} [SMul R N] (f : { f : α → α → R // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ })
+lemma lift_smul_lift {α R N} [SMul R N] (f : { f : α → α → R // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ })
     (g : { g : α → α → N // ∀ a₁ a₂, g a₁ a₂ = g a₂ a₁ }) :
     lift f • lift g = lift ⟨f.val • g.val, fun _ _ => by
       rw [Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', f.prop, g.prop]⟩ := by
@@ -788,10 +788,10 @@ lemma smul {α R N} [SMul R N] (f : { f : α → α → R // ∀ a₁ a₂, f a�
 /--
 Multiplication as a function from `Sym2`.
 -/
-def mul {M} [CommMagma M] : Sym2 M → M := lift ⟨fun i j => (i * j), fun _ _ => mul_comm _ _⟩
+def mul {M} [CommMagma M] : Sym2 M → M := lift ⟨(· * ·), mul_comm⟩
 
 @[simp]
 lemma mul_mk {M} [CommMagma M] (xy : M × M) :
-    mul (.mk xy)   = xy.1 * xy.2 := rfl
+    mul (.mk xy) = xy.1 * xy.2 := rfl
 
 end Sym2

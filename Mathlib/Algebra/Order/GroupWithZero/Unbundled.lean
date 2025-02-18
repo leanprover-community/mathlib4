@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Order.Monotone.Basic
 import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.GCongr.CoreAttrs
 import Mathlib.Tactic.Monotonicity.Attr

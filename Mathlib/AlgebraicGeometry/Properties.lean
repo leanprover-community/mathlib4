@@ -208,12 +208,10 @@ instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := b
         toNonempty := inferInstance }
   simp_rw [isPreirreducible_iff_isClosed_union_isClosed, not_forall, not_or] at H
   rcases H with ⟨S, T, hS, hT, h₁, h₂, h₃⟩
-  erw [not_forall] at h₂ h₃
-  simp_rw [not_forall] at h₂ h₃
-  haveI : Nonempty (⟨Sᶜ, hS.1⟩ : X.Opens) := ⟨⟨_, h₂.choose_spec.choose_spec⟩⟩
-  haveI : Nonempty (⟨Tᶜ, hT.1⟩ : X.Opens) := ⟨⟨_, h₃.choose_spec.choose_spec⟩⟩
-  haveI : Nonempty (⟨Sᶜ, hS.1⟩ ⊔ ⟨Tᶜ, hT.1⟩ : X.Opens) :=
-    ⟨⟨_, Or.inl h₂.choose_spec.choose_spec⟩⟩
+  rw [Set.not_top_subset] at h₂ h₃
+  haveI : Nonempty (⟨Sᶜ, hS.1⟩ : X.Opens) := ⟨⟨_, h₂.choose_spec⟩⟩
+  haveI : Nonempty (⟨Tᶜ, hT.1⟩ : X.Opens) := ⟨⟨_, h₃.choose_spec⟩⟩
+  haveI : Nonempty (⟨Sᶜ, hS.1⟩ ⊔ ⟨Tᶜ, hT.1⟩ : X.Opens) := ⟨⟨_, Or.inl h₂.choose_spec⟩⟩
   let e : Γ(X, _) ≅ CommRingCat.of _ :=
     (X.sheaf.isProductOfDisjoint ⟨_, hS.1⟩ ⟨_, hT.1⟩ ?_).conePointUniqueUpToIso
       (CommRingCat.prodFanIsLimit _ _)
@@ -223,7 +221,7 @@ instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := b
   · ext x
     constructor
     · rintro ⟨hS, hT⟩
-      cases' h₁ (show x ∈ ⊤ by trivial) with h h
+      rcases h₁ (show x ∈ ⊤ by trivial) with h | h
       exacts [hS h, hT h]
     · simp
 
