@@ -27,7 +27,7 @@ lemma Submodule.isCompact_of_fg [CompactSpace R] {N : Submodule R M} (hN : N.FG)
     AddHom.coe_mk]
   continuity
 
-lemma Ideal.isCompact_of_fg [TopologicalSemiring R] [CompactSpace R]
+lemma Ideal.isCompact_of_fg [IsTopologicalSemiring R] [CompactSpace R]
     {I : Ideal R} (hI : I.FG) : IsCompact (X := R) I :=
   Submodule.isCompact_of_fg hI
 

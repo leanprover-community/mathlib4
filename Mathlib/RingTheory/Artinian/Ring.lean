@@ -3,9 +3,10 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Junyan Xu, Jujian Zhang
 -/
+import Mathlib.Algebra.Field.Equiv
 import Mathlib.RingTheory.Artinian.Module
 import Mathlib.RingTheory.Localization.Defs
-import Mathlib.RingTheory.Nakayama
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 /-!
 # Artinian rings
@@ -23,7 +24,7 @@ itself, or simply Artinian if it is both left and right Artinian.
   ring to any localization of itself is surjective.
 
 * `IsArtinianRing.isNilpotent_jacobson_bot`: the Jacobson radical of a commutative artinian ring
-  is a nilpotent ideal. (TODO: generalize to noncommutative rings.)
+  is a nilpotent ideal.
 
 ## Implementation Details
 
@@ -45,43 +46,45 @@ open Set Submodule IsArtinian
 
 namespace IsArtinianRing
 
+@[stacks 00J8]
+theorem isNilpotent_jacobson_bot {R} [Ring R] [IsArtinianRing R] :
+    IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) :=
+  Ideal.jacobson_bot (R := R) ▸ IsSemiprimaryRing.isNilpotent
+
 variable {R : Type*} [CommRing R] [IsArtinianRing R]
 
-@[stacks 00J8]
-theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) := by
-  let Jac := Ideal.jacobson (⊥ : Ideal R)
-  let f : ℕ →o (Ideal R)ᵒᵈ := ⟨fun n => Jac ^ n, fun _ _ h => Ideal.pow_le_pow_right h⟩
-  obtain ⟨n, hn⟩ : ∃ n, ∀ m, n ≤ m → Jac ^ n = Jac ^ m := IsArtinian.monotone_stabilizes f
-  refine ⟨n, ?_⟩
-  let J : Ideal R := annihilator (Jac ^ n)
-  suffices J = ⊤ by
-    have hJ : J • Jac ^ n = ⊥ := annihilator_smul (Jac ^ n)
-    simpa only [this, top_smul, Ideal.zero_eq_bot] using hJ
-  by_contra hJ
-  change J ≠ ⊤ at hJ
-  rcases IsArtinian.set_has_minimal { J' : Ideal R | J < J' } ⟨⊤, hJ.lt_top⟩ with
-    ⟨J', hJJ' : J < J', hJ' : ∀ I, J < I → ¬I < J'⟩
-  rcases SetLike.exists_of_lt hJJ' with ⟨x, hxJ', hxJ⟩
-  obtain rfl : J ⊔ Ideal.span {x} = J' := by
-    apply eq_of_le_of_not_lt _ (hJ' (J ⊔ Ideal.span {x}) _)
-    · exact sup_le hJJ'.le (span_le.2 (singleton_subset_iff.2 hxJ'))
-    · rw [SetLike.lt_iff_le_and_exists]
-      exact ⟨le_sup_left, ⟨x, mem_sup_right (mem_span_singleton_self x), hxJ⟩⟩
-  have : J ⊔ Jac • Ideal.span {x} ≤ J ⊔ Ideal.span {x} :=
-    sup_le_sup_left (smul_le.2 fun _ _ _ => Submodule.smul_mem _ _) _
-  have : Jac * Ideal.span {x} ≤ J := by -- Need version 4 of Nakayama's lemma on Stacks
-    by_contra H
-    refine H (Ideal.mul_le_left.trans (le_of_le_smul_of_le_jacobson_bot (fg_span_singleton _) le_rfl
-      (le_sup_right.trans_eq (this.eq_of_not_lt (hJ' _ ?_)).symm)))
-    exact lt_of_le_of_ne le_sup_left fun h => H <| h.symm ▸ le_sup_right
-  have : Ideal.span {x} * Jac ^ (n + 1) ≤ ⊥ := calc
-    Ideal.span {x} * Jac ^ (n + 1) = Ideal.span {x} * Jac * Jac ^ n := by
-      rw [pow_succ', ← mul_assoc]
-    _ ≤ J * Jac ^ n := mul_le_mul (by rwa [mul_comm]) le_rfl
-    _ = ⊥ := by simp [J]
-  refine hxJ (mem_annihilator.2 fun y hy => (mem_bot R).1 ?_)
-  refine this (mul_mem_mul (mem_span_singleton_self x) ?_)
-  rwa [← hn (n + 1) (Nat.le_succ _)]
+lemma jacobson_eq_radical (I : Ideal R) : I.jacobson = I.radical := by
+  simp_rw [Ideal.jacobson, Ideal.radical_eq_sInf, IsArtinianRing.isPrime_iff_isMaximal]
+
+theorem isNilpotent_nilradical : IsNilpotent (nilradical R) := by
+  rw [nilradical, ← jacobson_eq_radical]
+  exact isNilpotent_jacobson_bot
+
+variable (R) in
+/-- Commutative artinian reduced local ring is a field. -/
+theorem isField_of_isReduced_of_isLocalRing [IsReduced R] [IsLocalRing R] : IsField R :=
+  (IsArtinianRing.equivPi R).trans (RingEquiv.piUnique _) |>.toMulEquiv.isField
+    _ (Ideal.Quotient.field _).toIsField
+
+section IsUnit
+
+open nonZeroDivisors
+
+/-- If an element of an artinian ring is not a zero divisor then it is a unit. -/
+theorem isUnit_of_mem_nonZeroDivisors {a : R} (ha : a ∈ R⁰) : IsUnit a :=
+  IsUnit.isUnit_iff_mulLeft_bijective.mpr <|
+    IsArtinian.bijective_of_injective_endomorphism (LinearMap.mulLeft R a)
+      fun _ _ ↦ (mul_cancel_left_mem_nonZeroDivisors ha).mp
+
+/-- In an artinian ring, an element is a unit iff it is a non-zero-divisor.
+See also `isUnit_iff_mem_nonZeroDivisors_of_finite`.-/
+theorem isUnit_iff_mem_nonZeroDivisors {a : R} : IsUnit a ↔ a ∈ R⁰ :=
+  ⟨IsUnit.mem_nonZeroDivisors, isUnit_of_mem_nonZeroDivisors⟩
+
+theorem isUnit_submonoid_eq : IsUnit.submonoid R = R⁰ := by
+  ext; simp [IsUnit.mem_submonoid_iff, isUnit_iff_mem_nonZeroDivisors]
+
+end IsUnit
 
 section Localization
 

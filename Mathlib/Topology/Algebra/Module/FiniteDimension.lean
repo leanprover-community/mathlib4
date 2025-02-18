@@ -4,17 +4,17 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Anatole Dedecker
 -/
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
+import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.Topology.Algebra.Module.Simple
 import Mathlib.Topology.Algebra.Module.Determinant
 import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Finite dimensional topological vector spaces over complete fields
 
 Let `𝕜` be a complete nontrivially normed field, and `E` a topological vector space (TVS) over
-`𝕜` (i.e we have `[AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]`
+`𝕜` (i.e we have `[AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]`
 and `[ContinuousSMul 𝕜 E]`).
 
 If `E` is finite dimensional and Hausdorff, then all linear maps from `E` to any other TVS are
@@ -52,7 +52,7 @@ noncomputable section
 section Field
 
 variable {𝕜 E F : Type*} [Field 𝕜] [TopologicalSpace 𝕜] [AddCommGroup E] [Module 𝕜 E]
-  [TopologicalSpace E] [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [TopologicalAddGroup F]
+  [TopologicalSpace E] [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
   [ContinuousSMul 𝕜 F]
 
 /-- The space of continuous linear maps between finite-dimensional spaces is finite-dimensional. -/
@@ -65,20 +65,20 @@ end Field
 section NormedField
 
 variable {𝕜 : Type u} [hnorm : NontriviallyNormedField 𝕜] {E : Type v} [AddCommGroup E] [Module 𝕜 E]
-  [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousSMul 𝕜 E] {F : Type w} [AddCommGroup F]
-  [Module 𝕜 F] [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousSMul 𝕜 F] {F' : Type x}
-  [AddCommGroup F'] [Module 𝕜 F'] [TopologicalSpace F'] [TopologicalAddGroup F']
+  [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] {F : Type w} [AddCommGroup F]
+  [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] {F' : Type x}
+  [AddCommGroup F'] [Module 𝕜 F'] [TopologicalSpace F'] [IsTopologicalAddGroup F']
   [ContinuousSMul 𝕜 F']
 
 /-- If `𝕜` is a nontrivially normed field, any T2 topology on `𝕜` which makes it a topological
 vector space over itself (with the norm topology) is *equal* to the norm topology. -/
-theorem unique_topology_of_t2 {t : TopologicalSpace 𝕜} (h₁ : @TopologicalAddGroup 𝕜 t _)
+theorem unique_topology_of_t2 {t : TopologicalSpace 𝕜} (h₁ : @IsTopologicalAddGroup 𝕜 t _)
     (h₂ : @ContinuousSMul 𝕜 𝕜 _ hnorm.toUniformSpace.toTopologicalSpace t) (h₃ : @T2Space 𝕜 t) :
     t = hnorm.toUniformSpace.toTopologicalSpace := by
   -- Let `𝓣₀` denote the topology on `𝕜` induced by the norm, and `𝓣` be any T2 vector
   -- topology on `𝕜`. To show that `𝓣₀ = 𝓣`, it suffices to show that they have the same
   -- neighborhoods of 0.
-  refine TopologicalAddGroup.ext h₁ inferInstance (le_antisymm ?_ ?_)
+  refine IsTopologicalAddGroup.ext h₁ inferInstance (le_antisymm ?_ ?_)
   · -- To show `𝓣 ≤ 𝓣₀`, we have to show that closed balls are `𝓣`-neighborhoods of 0.
     rw [Metric.nhds_basis_closedBall.ge_iff]
     -- Let `ε > 0`. Since `𝕜` is nontrivially normed, we have `0 < ‖ξ₀‖ < ε` for some `ξ₀ : 𝕜`.
@@ -192,12 +192,16 @@ variable [CompleteSpace 𝕜]
 `continuous_equivFun_basis` which gives the same result without universe restrictions. -/
 private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Fintype ι]
     (ξ : Basis ι 𝕜 E) : Continuous ξ.equivFun := by
-  letI : UniformSpace E := TopologicalAddGroup.toUniformSpace E
+  letI : UniformSpace E := IsTopologicalAddGroup.toUniformSpace E
   letI : UniformAddGroup E := comm_topologicalAddGroup_is_uniform
-  induction' hn : Fintype.card ι with n IH generalizing ι E
-  · rw [Fintype.card_eq_zero_iff] at hn
+  suffices ∀ n, Fintype.card ι = n → Continuous ξ.equivFun by exact this _ rfl
+  intro n hn
+  induction n generalizing ι E with
+  | zero =>
+    rw [Fintype.card_eq_zero_iff] at hn
     exact continuous_of_const fun x y => funext hn.elim
-  · haveI : FiniteDimensional 𝕜 E := .of_fintype_basis ξ
+  | succ n IH =>
+    haveI : FiniteDimensional 𝕜 E := .of_fintype_basis ξ
     -- first step: thanks to the induction hypothesis, any n-dimensional subspace is equivalent
     -- to a standard space of dimension n, hence it is complete and therefore closed.
     have H₁ : ∀ s : Submodule 𝕜 E, finrank 𝕜 s = n → IsClosed (s : Set E) := by
@@ -503,16 +507,16 @@ theorem Submodule.complete_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDi
 end UniformAddGroup
 
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-   [AddCommGroup E] [TopologicalSpace E] [TopologicalAddGroup E] [Module 𝕜 E]
+   [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E] [Module 𝕜 E]
    [ContinuousSMul 𝕜 E]
-   [AddCommGroup F] [TopologicalSpace F] [T2Space F] [TopologicalAddGroup F] [Module 𝕜 F]
+   [AddCommGroup F] [TopologicalSpace F] [T2Space F] [IsTopologicalAddGroup F] [Module 𝕜 F]
    [ContinuousSMul 𝕜 F]
 
 /-- A finite-dimensional subspace is closed. -/
 theorem Submodule.closed_of_finiteDimensional
     [T2Space E] (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
     IsClosed (s : Set E) :=
-  letI := TopologicalAddGroup.toUniformSpace E
+  letI := IsTopologicalAddGroup.toUniformSpace E
   haveI : UniformAddGroup E := comm_topologicalAddGroup_is_uniform
   s.complete_of_finiteDimensional.isClosed
 

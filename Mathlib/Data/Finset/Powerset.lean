@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Lattice.Union
 import Mathlib.Data.Multiset.Powerset
+import Mathlib.Data.Set.Pairwise.Lattice
 
 /-!
 # The powerset of a finset
@@ -85,13 +87,23 @@ theorem powerset_insert [DecidableEq α] (s : Finset α) (a : α) :
   · constructor
     · exact fun H => Or.inr ⟨_, H, insert_erase h⟩
     · intro H
-      cases' H with H H
+      rcases H with H | H
       · exact Subset.trans (erase_subset a t) H
       · rcases H with ⟨u, hu⟩
         rw [← hu.2]
         exact Subset.trans (erase_insert_subset a u) hu.1
   · have : ¬∃ u : Finset α, u ⊆ s ∧ insert a u = t := by simp [Ne.symm (ne_insert_of_not_mem _ _ h)]
     simp [Finset.erase_eq_of_not_mem h, this]
+
+lemma pairwiseDisjoint_pair_insert [DecidableEq α] {a : α} (ha : a ∉ s) :
+    (s.powerset : Set (Finset α)).PairwiseDisjoint fun t ↦ ({t, insert a t} : Set (Finset α)) := by
+  simp_rw [Set.pairwiseDisjoint_iff, mem_coe, mem_powerset]
+  rintro i hi j hj
+  simp only [Set.Nonempty, Set.mem_inter_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
+    exists_eq_or_imp, exists_eq_left, or_imp, imp_self, true_and]
+  refine ⟨?_, ?_, insert_erase_invOn.2.injOn (not_mem_mono hi ha) (not_mem_mono hj ha)⟩ <;>
+    rintro rfl <;>
+    cases Finset.not_mem_mono ‹_› ha (Finset.mem_insert_self _ _)
 
 /-- For predicate `p` decidable on subsets, it is decidable whether `p` holds for any subset. -/
 instance decidableExistsOfDecidableSubsets {s : Finset α} {p : ∀ t ⊆ s, Prop}
