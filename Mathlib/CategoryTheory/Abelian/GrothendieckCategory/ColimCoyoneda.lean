@@ -156,7 +156,6 @@ noncomputable def F [Mono c.ι] : J ⥤ MonoOver X where
   obj j := MonoOver.mk' ((pullback.snd c.ι ((Functor.const _).map z)).app j)
   map {j j'} f := MonoOver.homMk ((pullback c.ι ((Functor.const _).map z)).map f)
 
-
 /-- The canonical map `colimit (pullback c.ι ((Functor.const J).map z)) ⟶ X`,
 which is an isomorphism when `J` is filtered, see `isIso_f`. -/
 noncomputable def f : colimit (pullback c.ι ((Functor.const J).map z)) ⟶ X :=
