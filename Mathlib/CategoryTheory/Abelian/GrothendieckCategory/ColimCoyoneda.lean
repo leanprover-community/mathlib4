@@ -86,7 +86,8 @@ variable {y} in
 include hc hy in
 lemma epi_f [IsFiltered J] : Epi (f y) := by
   exact (colim.exact_mapShortComplex
-    ((ShortComplex.mk _ _ (kernel.condition (g y))).exact_of_f_is_kernel (kernelIsKernel (g y)))
+    ((ShortComplex.mk _ _ (kernel.condition (g y))).exact_of_f_is_kernel
+      (kernelIsKernel (g y)))
     (colimit.isColimit _) (isColimitConstCocone _ _)
     ((Functor.Final.isColimitWhiskerEquiv (Under.forget j₀) c).symm hc) (f y) 0
     (fun j ↦ by simpa using hf y j)
@@ -133,11 +134,6 @@ namespace surjectivity
 
 variable (z : X ⟶ c.pt)
 
-@[simps]
-noncomputable def F [Mono c.ι] : J ⥤ MonoOver X where
-  obj j := MonoOver.mk' ((pullback.snd c.ι ((Functor.const _).map z)).app j)
-  map {j j'} f := MonoOver.homMk ((pullback c.ι ((Functor.const _).map z)).map f)
-
 noncomputable def f : colimit (pullback c.ι ((Functor.const J).map z)) ⟶ X :=
   colimit.desc _ (Cocone.mk X
     { app j := (pullback.snd c.ι ((Functor.const _).map z)).app j })
@@ -147,11 +143,8 @@ lemma hf (j : J) :
       (pullback.snd c.ι ((Functor.const J).map z)).app j :=
   colimit.ι_desc _ _
 
-variable (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ]
-
-include hc κ in
-lemma epi_f : Epi (f z) := by
-  have := isFiltered_of_isCardinalDirected J κ
+include hc in
+lemma epi_f [IsFiltered J] : Epi (f z) := by
   have isPullback := (IsPullback.of_hasPullback c.ι ((Functor.const _).map z)).map colim
   have : IsIso (f z) := by
     refine ((MorphismProperty.isomorphisms C).arrow_mk_iso_iff ?_).1
@@ -171,6 +164,11 @@ lemma epi_f : Epi (f z) := by
           (isColimitConstCocone J c.pt))
   infer_instance
 
+@[simps]
+noncomputable def F [Mono c.ι] : J ⥤ MonoOver X where
+  obj j := MonoOver.mk' ((pullback.snd c.ι ((Functor.const _).map z)).app j)
+  map {j j'} f := MonoOver.homMk ((pullback c.ι ((Functor.const _).map z)).map f)
+
 end surjectivity
 
 include hc in
@@ -183,7 +181,7 @@ lemma surjectivity [∀ (j j' : J) (φ : j ⟶ j'), Mono (Y.map φ)]
   have := hc.mono_ι_app_of_isFiltered
   have := NatTrans.mono_of_mono_app c.ι
   obtain ⟨j, _⟩ := exists_isIso_of_functor_from_monoOver (F z) hXκ _
-    (colimit.isColimit _) (f z) (hf z) (epi_f hc z κ)
+    (colimit.isColimit _) (f z) (hf z) (epi_f hc z)
   refine ⟨j, inv ((F z).obj j).obj.hom ≫ (pullback.fst c.ι _).app j, ?_⟩
   dsimp
   rw [Category.assoc, IsIso.eq_inv_comp, ← NatTrans.comp_app, pullback.condition,
