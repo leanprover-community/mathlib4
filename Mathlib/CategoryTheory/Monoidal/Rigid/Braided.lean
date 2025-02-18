@@ -88,12 +88,12 @@ instance leftRigidCategoryOfRightRigidCategory [RightRigidCategory C] : LeftRigi
 instance rightRigidCategoryOfLeftRigidCategory [LeftRigidCategory C] : RightRigidCategory C where
   rightDual X := hasRightDualOfHasLeftDual (X := X)
 
-/-- If `C` is a braided and right rigid category, then it is a rigid category. --/
+/-- If `C` is a braided and right rigid category, then it is a rigid category. -/
 instance rigidCategoryOfRightRigidCategory [RightRigidCategory C] : RigidCategory C where
   rightDual := inferInstance
   leftDual := inferInstance
 
-/-- If `C` is a braided and left rigid category, then it is a rigid category. --/
+/-- If `C` is a braided and left rigid category, then it is a rigid category. -/
 instance rigidCategoryOfLeftRigidCategory [LeftRigidCategory C] : RigidCategory C where
   rightDual := inferInstance
   leftDual := inferInstance
