@@ -57,12 +57,12 @@ theorem zpow_mem_zpowers (g : G) (k : ℤ) : g ^ k ∈ zpowers g :=
 theorem npow_mem_zpowers (g : G) (k : ℕ) : g ^ k ∈ zpowers g :=
   zpow_natCast g k ▸ zpow_mem_zpowers g k
 
--- Porting note: increasing simp priority. Better lemma than `Subtype.exists`
+-- increasing simp priority. Better lemma than `Subtype.exists`
 @[to_additive (attr := simp 1100)]
 theorem forall_zpowers {x : G} {p : zpowers x → Prop} : (∀ g, p g) ↔ ∀ m : ℤ, p ⟨x ^ m, m, rfl⟩ :=
   Set.forall_subtype_range_iff
 
--- Porting note: increasing simp priority. Better lemma than `Subtype.exists`
+-- increasing simp priority. Better lemma than `Subtype.exists`
 @[to_additive (attr := simp 1100)]
 theorem exists_zpowers {x : G} {p : zpowers x → Prop} : (∃ g, p g) ↔ ∃ m : ℤ, p ⟨x ^ m, m, rfl⟩ :=
   Set.exists_subtype_range_iff

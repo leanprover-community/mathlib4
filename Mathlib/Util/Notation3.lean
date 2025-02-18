@@ -218,6 +218,14 @@ def setupLCtx (lctx : LocalContext) (boundNames : Array Name) :
   return (lctx, boundFVars)
 
 /--
+Like `Expr.isType`, but uses logic that normalizes the universe level.
+Mirrors the core `Sort` delaborator logic.
+-/
+def isType' : Expr → Bool
+  | .sort u => u.dec.isSome
+  | _       => false
+
+/--
 Represents a key to use when registering the `delab` attribute for a delaborator.
 We use this to handle overapplication.
 -/
@@ -250,7 +258,22 @@ partial def exprToMatcher (boundFVars : Std.HashMap FVarId Name)
   match e with
   | .mvar .. => return ([], ← `(pure))
   | .const n _ => return ([.app n 0], ← ``(matchExpr (Expr.isConstOf · $(quote n))))
-  | .sort .. => return ([.other `sort], ← ``(matchExpr Expr.isSort))
+  | .sort u =>
+    /-
+    We should try being more accurate here.
+    Prop / Type / Type _ / Sort _ is at least an OK approximation.
+    We mimic the core Sort delaborator `Lean.PrettyPrinter.Delaborator.delabSort`.
+    -/
+    let matcher ←
+      if u.isZero then
+        ``(matchExpr Expr.isProp)
+      else if e.isType0 then
+        ``(matchExpr Expr.isType0)
+      else if u.dec.isSome then
+        ``(matchExpr isType')
+      else
+        ``(matchExpr Expr.isSort)
+    return ([.other `sort], matcher)
   | .fvar fvarId =>
     if let some n := boundFVars[fvarId]? then
       -- This fvar is a pattern variable.

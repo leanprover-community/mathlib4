@@ -75,6 +75,9 @@ def symm (f : M ≃ₚ[L] N) : N ≃ₚ[L] M where
 theorem symm_symm (f : M ≃ₚ[L] N) : f.symm.symm = f :=
   rfl
 
+theorem symm_bijective : Function.Bijective (symm : (M ≃ₚ[L] N) → _) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 @[simp]
 theorem symm_apply (f : M ≃ₚ[L] N) (x : f.cod) : f.symm.toEquiv x = f.toEquiv.symm x :=
   rfl
@@ -236,11 +239,14 @@ def toEmbeddingOfEqTop {f : M ≃ₚ[L] N} (h : f.dom = ⊤) : M ↪[L] N :=
   (h ▸ f.toEmbedding).comp topEquiv.symm.toEmbedding
 
 @[simp]
-theorem toEmbeddingOfEqTop__apply {f : M ≃ₚ[L] N} (h : f.dom = ⊤) (m : M) :
+theorem toEmbeddingOfEqTop_apply {f : M ≃ₚ[L] N} (h : f.dom = ⊤) (m : M) :
     toEmbeddingOfEqTop h m = f.toEquiv ⟨m, h.symm ▸ mem_top m⟩ := by
   rcases f with ⟨dom, cod, g⟩
   cases h
   rfl
+
+set_option linter.style.nameCheck false in
+@[deprecated (since := "2024-11-30")] alias toEmbeddingOfEqTop__apply := toEmbeddingOfEqTop_apply
 
 /-- Given a partial equivalence which has the whole structure as domain and
   as codomain, returns the corresponding equivalence. -/

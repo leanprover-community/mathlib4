@@ -595,6 +595,16 @@ noncomputable instance inducedFunctorOfEquiv {C' : Type*} (e : C' ≃ D) :
 noncomputable instance fullyFaithfulToEssImage (F : C ⥤ D) [F.Full] [F.Faithful] :
     IsEquivalence F.toEssImage where
 
+/-- A biimplication of properties on the objects of a category `C` induces an equivalence of the
+respective induced full subcategories of `C`. -/
+@[simps]
+def ofFullSubcategory {Z Z' : C → Prop} (h : ∀ X, Z X ↔ Z' X) :
+    FullSubcategory Z ≌ FullSubcategory Z' where
+  functor := FullSubcategory.map (fun _ => (h _).mp)
+  inverse := FullSubcategory.map (fun _ => (h _).mpr)
+  unitIso := NatIso.ofComponents (fun X => Iso.refl _)
+  counitIso := NatIso.ofComponents (fun X => Iso.refl _)
+
 end Equivalence
 
 namespace Iso
@@ -626,20 +636,5 @@ def isoInverseComp {G : C ≌ D} (i : G.functor ⋙ H ≅ F) : H ≅ G.inverse �
     ≪≫ isoWhiskerLeft G.inverse i
 
 end Iso
-
-@[deprecated (since := "2024-04-06")] alias IsEquivalence := Functor.IsEquivalence
-@[deprecated (since := "2024-04-06")] alias IsEquivalence.fun_inv_map := Functor.fun_inv_map
-@[deprecated (since := "2024-04-06")] alias IsEquivalence.inv_fun_map := Functor.inv_fun_map
-@[deprecated (since := "2024-04-06")] alias IsEquivalence.ofIso := Equivalence.changeFunctor
-@[deprecated (since := "2024-04-06")]
-alias IsEquivalence.ofIso_trans := Equivalence.changeFunctor_trans
-@[deprecated (since := "2024-04-06")]
-alias IsEquivalence.ofIso_refl := Equivalence.changeFunctor_refl
-@[deprecated (since := "2024-04-06")]
-alias IsEquivalence.equivOfIso := Functor.isEquivalence_iff_of_iso
-@[deprecated (since := "2024-04-06")]
-alias IsEquivalence.cancelCompRight := Functor.isEquivalence_of_comp_right
-@[deprecated (since := "2024-04-06")]
-alias IsEquivalence.cancelCompLeft := Functor.isEquivalence_of_comp_left
 
 end CategoryTheory

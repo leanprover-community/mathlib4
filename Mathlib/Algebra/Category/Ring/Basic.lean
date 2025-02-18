@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Category.Grp.Basic
-import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 import Mathlib.Algebra.Ring.Equiv
+import Mathlib.Algebra.Ring.PUnit
+import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 
 /-!
 # Category instances for `Semiring`, `Ring`, `CommSemiring`, and `CommRing`.
@@ -153,12 +154,12 @@ instance {R : SemiRingCat} : Semiring ((forget SemiRingCat).obj R) :=
 instance hasForgetToMonCat : HasForget₂ SemiRingCat MonCat where
   forget₂ :=
     { obj := fun R ↦ MonCat.of R
-      map := fun f ↦ f.hom.toMonoidHom }
+      map := fun f ↦ MonCat.ofHom f.hom.toMonoidHom }
 
 instance hasForgetToAddCommMonCat : HasForget₂ SemiRingCat AddCommMonCat where
   forget₂ :=
     { obj := fun R ↦ AddCommMonCat.of R
-      map := fun f ↦ f.hom.toAddMonoidHom }
+      map := fun f ↦ AddCommMonCat.ofHom f.hom.toAddMonoidHom }
 
 /-- Ring equivalence are isomorphisms in category of semirings -/
 @[simps]
@@ -472,7 +473,7 @@ instance hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat where
 instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat where
   forget₂ :=
     { obj := fun R ↦ CommMonCat.of R
-      map := fun f ↦ f.hom.toMonoidHom }
+      map := fun f ↦ CommMonCat.ofHom f.hom.toMonoidHom }
 
 /-- Ring equivalence are isomorphisms in category of semirings -/
 @[simps]
@@ -640,6 +641,11 @@ instance hasForgetToAddCommMonCat : HasForget₂ CommRingCat CommSemiRingCat whe
   forget₂ :=
     { obj := fun R ↦ CommSemiRingCat.of R
       map := fun f ↦ CommSemiRingCat.ofHom f.hom }
+
+@[simps]
+instance : HasForget₂ CommRingCat CommMonCat where
+  forget₂ := { obj M := .of M, map f := CommMonCat.ofHom f.hom }
+  forget_comp := rfl
 
 /-- Ring equivalence are isomorphisms in category of semirings -/
 @[simps]

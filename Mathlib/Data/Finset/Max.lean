@@ -3,6 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
@@ -69,7 +70,7 @@ theorem mem_of_max {s : Finset α} : ∀ {a : α}, s.max = a → a ∈ s := by
     by_cases p : b = a
     · induction p
       exact mem_insert_self b s
-    · cases' max_choice (↑b) s.max with q q <;> rw [max_insert, q] at h
+    · rcases max_choice (↑b) s.max with q | q <;> rw [max_insert, q] at h
       · cases h
         cases p rfl
       · exact mem_insert_of_mem (ih h)
@@ -517,7 +518,7 @@ variable [LinearOrder α]
 
 theorem exists_max_image (s : Finset β) (f : β → α) (h : s.Nonempty) :
     ∃ x ∈ s, ∀ x' ∈ s, f x' ≤ f x := by
-  cases' max_of_nonempty (h.image f) with y hy
+  obtain ⟨y, hy⟩ := max_of_nonempty (h.image f)
   rcases mem_image.mp (mem_of_max hy) with ⟨x, hx, rfl⟩
   exact ⟨x, hx, fun x' hx' => le_max_of_eq (mem_image_of_mem f hx') hy⟩
 

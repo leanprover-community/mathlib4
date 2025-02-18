@@ -48,7 +48,7 @@ section
 variable [Monoid G]
 
 instance : CoeSort (Rep k G) (Type u) :=
-  HasForget.hasCoeToSort _
+  ⟨fun V => V.V⟩
 
 instance (V : Rep k G) : AddCommGroup V := by
   change AddCommGroup ((forget₂ (Rep k G) (ModuleCat k)).obj V); infer_instance
@@ -61,13 +61,12 @@ instance (V : Rep k G) : Module k V := by
 -/
 def ρ (V : Rep k G) : Representation k G V :=
 -- Porting note: was `V.ρ`
-  (ModuleCat.endRingEquiv V.V).toMonoidHom.comp (Action.ρ V)
+  (ModuleCat.endRingEquiv V.V).toMonoidHom.comp (Action.ρ V).hom
 
 /-- Lift an unbundled representation to `Rep`. -/
-def of {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) : Rep k G :=
+abbrev of {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) : Rep k G :=
   ⟨ModuleCat.of k V, MonCat.ofHom ((ModuleCat.endRingEquiv _).symm.toMonoidHom.comp ρ) ⟩
 
-@[simp]
 theorem coe_of {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) :
     (of ρ : Type u) = V :=
   rfl
@@ -77,7 +76,7 @@ theorem of_ρ {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k
   rfl
 
 theorem Action_ρ_eq_ρ {A : Rep k G} :
-    Action.ρ A = (ModuleCat.endRingEquiv _).symm.toMonoidHom.comp A.ρ :=
+    Action.ρ A = MonCat.ofHom ((ModuleCat.endRingEquiv _).symm.toMonoidHom.comp A.ρ) :=
   rfl
 
 @[simp]
@@ -318,8 +317,6 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶
       Finsupp.lift_apply, ← this, coe_of, of_ρ, Representation.ofMulAction_single x (1 : G) (1 : k),
       smul_eq_mul, mul_one, zero_smul, Finsupp.sum_single_index, one_smul,
       ConcreteCategory.hom_ofHom]
-    -- Mismatched `Zero k` instances
-    rfl
   right_inv x := leftRegularHom_apply x
 
 theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
@@ -353,6 +350,8 @@ protected def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
   map_comp := fun _ _ => by ext; rfl
 
 @[simp] theorem ihom_obj_ρ_apply {A B : Rep k G} (g : G) (x : A →ₗ[k] B) :
+    -- Hint to put this lemma into `simp`-normal form.
+    DFunLike.coe (F := (Representation k G (↑A.V →ₗ[k] ↑B.V)))
     ((Rep.ihom A).obj B).ρ g x = B.ρ g ∘ₗ x ∘ₗ A.ρ g⁻¹ :=
   rfl
 
