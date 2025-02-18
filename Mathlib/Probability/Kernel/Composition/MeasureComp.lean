@@ -33,6 +33,11 @@ lemma snd_compProd (μ : Measure α) [SFinite μ] (κ : Kernel α β) [IsSFinite
   · rfl
   · exact measurable_snd hs
 
+lemma ae_ae_of_ae_comp [SFinite μ] [IsSFiniteKernel κ] {p : β → Prop} (h : ∀ᵐ ω ∂(κ ∘ₘ μ), p ω) :
+    ∀ᵐ ω' ∂μ, ∀ᵐ ω ∂(κ ω'), p ω := by
+  rw [← snd_compProd] at h
+  exact Measure.ae_ae_of_ae_compProd (ae_of_ae_map measurable_snd.aemeasurable h)
+
 instance [SFinite μ] [IsSFiniteKernel κ] : SFinite (κ ∘ₘ μ) := by
   rw [← snd_compProd]; infer_instance
 
@@ -52,14 +57,6 @@ lemma map_comp (μ : Measure α) (κ : Kernel α β) {f : β → γ} (hf : Measu
   rw [Measure.map_apply hf hs, Measure.bind_apply (hf hs) κ.measurable,
     Measure.bind_apply hs (Kernel.measurable _)]
   simp_rw [Kernel.map_apply' _ hf _ hs]
-
--- todo: kernel version
-lemma _root_.MeasureTheory.Measure.ae_ae_of_ae_comp [SFinite μ] [IsSFiniteKernel κ]
-    {p : β → Prop} (h : ∀ᵐ ω ∂(κ ∘ₘ μ), p ω):
-    ∀ᵐ ω' ∂μ, ∀ᵐ ω ∂(κ ω'), p ω := by
-  have : κ ∘ₘ μ = (μ ⊗ₘ κ).map Prod.snd := by rw [← Measure.snd]; simp
-  simp_rw [this] at h
-  exact Measure.ae_ae_of_ae_compProd (ae_of_ae_map measurable_snd.aemeasurable h)
 
 section CompProd
 
