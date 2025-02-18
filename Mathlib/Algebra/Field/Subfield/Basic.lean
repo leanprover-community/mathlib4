@@ -264,15 +264,7 @@ theorem mem_iInf {ι : Sort*} {S : ι → Subfield K} {x : K} : (x ∈ ⨅ i, S 
 theorem sInf_toSubring (s : Set (Subfield K)) :
     (sInf s).toSubring = ⨅ t ∈ s, Subfield.toSubring t := by
   ext x
-  rw [mem_toSubring, mem_sInf]
-  erw [Subring.mem_sInf]
-  exact
-    ⟨fun h p ⟨p', hp⟩ => hp ▸ Subring.mem_sInf.mpr fun p ⟨hp', hp⟩ => hp ▸ h _ hp', fun h p hp =>
-      h p.toSubring
-        ⟨p,
-          Subring.ext fun x =>
-            ⟨fun hx => Subring.mem_sInf.mp hx _ ⟨hp, rfl⟩, fun hx =>
-              Subring.mem_sInf.mpr fun p' ⟨_, p'_eq⟩ => p'_eq ▸ hx⟩⟩⟩
+  simp [mem_sInf, ← sInf_image, Subring.mem_sInf]
 
 theorem isGLB_sInf (S : Set (Subfield K)) : IsGLB S (sInf S) := by
   have : ∀ {s t : Subfield K}, (s : Set K) ≤ t ↔ s ≤ t := by simp [SetLike.coe_subset_coe]
