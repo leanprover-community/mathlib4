@@ -50,7 +50,7 @@ noncomputable def basis : Basis (Module.Free.ChooseBasisIndex ℤ G) (ZMod n) (M
     simp only [Submodule.mkQ_apply, g] at hx
     rw [Submodule.liftQ_apply] at hx
     simp [mod, DFunLike.ext_iff, ZMod.intCast_zmod_eq_zero_iff_dvd] at hx
-    simp
+    simp only [Submodule.mkQ_apply, B, mod, g, f]
     rw [Submodule.Quotient.mk_eq_zero]
     choose c hc using hx
     refine ⟨bG.repr.symm ⟨(f x).support, c, by simp [hc, NeZero.ne]⟩, bG.repr.injective ?_⟩
@@ -59,8 +59,8 @@ noncomputable def basis : Basis (Module.Free.ChooseBasisIndex ℤ G) (ZMod n) (M
       exact (this ▸ (mapRange_surjective _ (map_zero _) ZMod.intCast_surjective).comp
         bG.repr.surjective).of_comp
     ext x b
-    simp [mod, comp_apply, mapRange.addMonoidHom_apply, Int.coe_castAddHom,
-      mapRange_apply, QuotientAddGroup.coe_mk', g, f]
+    simp only [comp_apply, mapRange.linearMap_apply, AddMonoidHom.coe_toIntLinearMap,
+      Int.coe_castAddHom, mapRange_apply, Submodule.mkQ_apply, mod, bG, g, f, B, H]
     rfl
 
 variable [Module.Finite ℤ G]
