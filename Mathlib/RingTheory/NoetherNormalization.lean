@@ -268,6 +268,7 @@ For a finitely generated algebra `A` over a field `k`,
 there exists a natural number `r` and an injective homomorphism
 from `k[X_1, X_2, ..., X_r]` to `A` such that `A` is integral over `k[X_1, X_2, ..., X_r]`.
 -/
+@[stacks 00OW]
 theorem exists_integral_inj_algHom_of_fg : ∃ s, ∃ g : (MvPolynomial (Fin s) k) →ₐ[k] R,
     Function.Injective g ∧ g.IsIntegral := by
   obtain ⟨n, f, fsurj⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp fin
