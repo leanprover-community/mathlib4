@@ -21,16 +21,19 @@ The difference between these two definitions is only that when no finite generat
   number. If no finite generating set exists, it is defined to be `0`.
 * `spanRank`: The minimum cardinality of a generating set of a submodule, possibly infinite, with
   type `ℕ∞`. If no finite generating set exists, it is defined to be `⊤`.
-* `FG.generators`: For a finitely generated submodule, get a set of minimum generating elements
-  indexed by `Fin (p.spanFinrank)`
+* `FG.generators`: For a finitely generated submodule, get a set of generating elements with minimal
+  cardinality.
 
 ## Main Results
 
-* `FG.exists_fun_spanFinrank_span_range_eq` : Any finitely generated submodule has a generating
-  family of cardinality equal to `spanFinrank`.
+* `FG.exists_span_set_encard_eq_spanFinrank` : Any finitely generated submodule has a generating
+  set of cardinality equal to `spanFinrank`.
 
 ## Tags
 submodule, generating subset, span rank
+
+## TODO
+* Add lemmas that link these notions to `Module.rank`.
 -/
 
 variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
