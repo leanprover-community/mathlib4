@@ -324,7 +324,7 @@ theorem encard_diff_eq (exch : ExchangeProperty IsBase) (hB₁ : IsBase B₁) (h
 
 /-- Any two sets `B₁`, `B₂` in a family with the exchange property have the same
 `ℕ∞`-cardinality. -/
-theorem encard_base_eq (exch : ExchangeProperty IsBase) (hB₁ : IsBase B₁) (hB₂ : IsBase B₂) :
+theorem encard_isBase_eq (exch : ExchangeProperty IsBase) (hB₁ : IsBase B₁) (hB₂ : IsBase B₂) :
     B₁.encard = B₂.encard := by
   rw [← encard_diff_add_encard_inter B₁ B₂, exch.encard_diff_eq hB₁ hB₂, inter_comm,
     encard_diff_add_encard_inter]
@@ -426,7 +426,7 @@ theorem IsBase.ncard_diff_comm (hB₁ : M.IsBase B₁) (hB₂ : M.IsBase B₂) :
 
 theorem IsBase.encard_eq_encard_of_isBase (hB₁ : M.IsBase B₁) (hB₂ : M.IsBase B₂) :
     B₁.encard = B₂.encard := by
-  rw [M.isBase_exchange.encard_base_eq hB₁ hB₂]
+  rw [M.isBase_exchange.encard_isBase_eq hB₁ hB₂]
 
 theorem IsBase.ncard_eq_ncard_of_isBase (hB₁ : M.IsBase B₁) (hB₂ : M.IsBase B₂) :
     B₁.ncard = B₂.ncard := by

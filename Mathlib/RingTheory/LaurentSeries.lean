@@ -475,10 +475,11 @@ theorem single_inv (d : ℤ) {α : F} (hα : α ≠ 0) :
 
 theorem single_zpow (n : ℤ) :
     single (n : ℤ) (1 : F) = single (1 : ℤ) 1 ^ n := by
-  induction' n with n_pos n_neg
-  · apply single_one_eq_pow
-  · rw [Int.negSucc_coe, Int.ofNat_add, Nat.cast_one, ← inv_one,
-      single_inv (n_neg + 1 : ℤ) one_ne_zero, zpow_neg, ← Nat.cast_one, ← Int.ofNat_add,
+  cases n with
+  | ofNat n => apply single_one_eq_pow
+  | negSucc n =>
+    rw [Int.negSucc_coe, Int.ofNat_add, Nat.cast_one, ← inv_one,
+      single_inv (n + 1 : ℤ) one_ne_zero, zpow_neg, ← Nat.cast_one, ← Int.ofNat_add,
       Nat.cast_one, inv_inj, zpow_natCast, single_one_eq_pow, inv_one]
 
 instance : Algebra (RatFunc F) F⸨X⸩ := RingHom.toAlgebra (coeAlgHom F).toRingHom
@@ -486,8 +487,7 @@ instance : Algebra (RatFunc F) F⸨X⸩ := RingHom.toAlgebra (coeAlgHom F).toRin
 theorem algebraMap_apply_div :
     algebraMap (RatFunc F) F⸨X⸩ (algebraMap _ _ p / algebraMap _ _ q) =
       algebraMap F[X] F⸨X⸩ p / algebraMap _ _ q := by
-  -- Porting note: had to supply implicit arguments to `convert`
-  convert coe_div (algebraMap F[X] (RatFunc F) p) (algebraMap F[X] (RatFunc F) q) <;>
+  convert coe_div _ _ <;>
     rw [← mk_one, coe_def, coeAlgHom, mk_eq_div, liftAlgHom_apply_div, map_one, div_one,
       Algebra.ofId_apply]
 
@@ -586,7 +586,7 @@ theorem valuation_single_zpow (s : ℤ) :
   rw [← single_zero_one, ← add_neg_cancel s, ← mul_one 1, ← single_mul_single, map_mul,
     mul_eq_one_iff_eq_inv₀] at this
   · rw [this]
-    induction' s with s s
+    cases' s with s s
     · rw [Int.ofNat_eq_coe, ← HahnSeries.ofPowerSeries_X_pow] at this
       rw [Int.ofNat_eq_coe, ← this, PowerSeries.coe_pow, valuation_X_pow]
     · simp only [Int.negSucc_coe, neg_neg, ← HahnSeries.ofPowerSeries_X_pow, PowerSeries.coe_pow,

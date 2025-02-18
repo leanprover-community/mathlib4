@@ -192,9 +192,15 @@ protected lemma add_nonnneg_iff_neg_le' : 0 ≤ a + b ↔ -a ≤ b := add_nonnne
 
 end
 
-@[elab_as_elim] protected lemma induction_on {p : ℤ → Prop} (i : ℤ)
+/--
+Induction on integers: prove a proposition `p i` by proving the base case `p 0`,
+the upwards induction step `p i → p (i + 1)` and the downwards induction step `p (-i) → p (-i - 1)`.
+
+It is used as the default induction principle for the `induction` tactic.
+-/
+@[elab_as_elim, induction_eliminator] protected lemma induction_on {p : ℤ → Prop} (i : ℤ)
     (hz : p 0) (hp : ∀ i : ℕ, p i → p (i + 1)) (hn : ∀ i : ℕ, p (-i) → p (-i - 1)) : p i := by
-  induction i with
+  cases i with
   | ofNat i =>
     induction i with
     | zero => exact hz
