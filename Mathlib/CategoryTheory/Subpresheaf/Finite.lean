@@ -83,19 +83,19 @@ namespace IsFinite
 variable [hG : G.IsFinite]
 
 /-- A choice of index type for the generating sections of a finitely generated subpresheaf. -/
-def index : Type := hG.exists_isGeneratedBy.choose
+def Index : Type := hG.exists_isGeneratedBy.choose
 
-instance : Finite (index G) := hG.exists_isGeneratedBy.choose_spec.choose
+instance : Finite (Index G) := hG.exists_isGeneratedBy.choose_spec.choose
 
 variable {G}
 
 /-- Objects on which a choice of generating sections of a finitely generated subpresheaf
 are defined. -/
-noncomputable def X : index G → Cᵒᵖ :=
+noncomputable def X : Index G → Cᵒᵖ :=
   hG.exists_isGeneratedBy.choose_spec.choose_spec.choose
 
 /-- A choice of generating sections of a finitely generated subpresheaf. -/
-noncomputable def x : (i : index G) → F.obj (X i) :=
+noncomputable def x : (i : Index G) → F.obj (X i) :=
   hG.exists_isGeneratedBy.choose_spec.choose_spec.choose_spec.choose
 
 end IsFinite
