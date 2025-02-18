@@ -352,12 +352,17 @@ end Denumerable
 
 namespace Equiv
 
-/-- The type lists on unit is canonically equivalent to the natural numbers. -/
-def listUnitEquiv : List Unit ≃ ℕ where
+@[simps!]
+theorem listUniqueEquiv (α : Type*) [Unique α] : List α ≃ ℕ where
   toFun := List.length
-  invFun n := List.replicate n ()
+  invFun n := List.replicate n default
   left_inv u := List.length_injective (by simp)
-  right_inv n := List.length_replicate n ()
+  right_inv n := List.length_replicate n default
+
+/-- The type lists on unit is canonically equivalent to the natural numbers. -/
+@[deprecated listUniqueEquiv (since := "2025-02-17")]
+def listUnitEquiv : List Unit ≃ ℕ :=
+  listUniqueEquiv _
 
 /-- `List ℕ` is equivalent to `ℕ`. -/
 def listNatEquivNat : List ℕ ≃ ℕ :=
