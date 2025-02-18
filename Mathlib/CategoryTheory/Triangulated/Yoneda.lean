@@ -18,6 +18,8 @@ functors `preadditiveCoyoneda.obj A : C ⥤ AddCommGrp` for `A : Cᵒᵖ` and
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Limits
 
 variable {C : Type*} [Category C] [Preadditive C] [HasShift C ℤ]

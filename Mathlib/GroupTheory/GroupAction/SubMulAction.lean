@@ -154,7 +154,15 @@ end OfTower
 
 end SetLike
 
+/-- A SubAddAction is a set which is closed under scalar multiplication. -/
+structure SubAddAction (R : Type u) (M : Type v) [VAdd R M] : Type v where
+  /-- The underlying set of a `SubAddAction`. -/
+  carrier : Set M
+  /-- The carrier set is closed under scalar multiplication. -/
+  vadd_mem' : ∀ (c : R) {x : M}, x ∈ carrier → c +ᵥ x ∈ carrier
+
 /-- A SubMulAction is a set which is closed under scalar multiplication. -/
+@[to_additive]
 structure SubMulAction (R : Type u) (M : Type v) [SMul R M] : Type v where
   /-- The underlying set of a `SubMulAction`. -/
   carrier : Set M
@@ -165,37 +173,44 @@ namespace SubMulAction
 
 variable [SMul R M]
 
+@[to_additive]
 instance : SetLike (SubMulAction R M) M :=
   ⟨SubMulAction.carrier, fun p q h => by cases p; cases q; congr⟩
 
+@[to_additive]
 instance : SMulMemClass (SubMulAction R M) R M where smul_mem := smul_mem' _
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem mem_carrier {p : SubMulAction R M} {x : M} : x ∈ p.carrier ↔ x ∈ (p : Set M) :=
   Iff.rfl
 
-@[ext]
+@[to_additive (attr := ext)]
 theorem ext {p q : SubMulAction R M} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
   SetLike.ext h
 
 /-- Copy of a sub_mul_action with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. -/
+@[to_additive "Copy of a sub_mul_action with a new `carrier` equal to the old one.
+  Useful to fix definitional equalities."]
 protected def copy (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : SubMulAction R M where
   carrier := s
   smul_mem' := hs.symm ▸ p.smul_mem'
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem coe_copy (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : (p.copy s hs : Set M) = s :=
   rfl
 
+@[to_additive]
 theorem copy_eq (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : p.copy s hs = p :=
   SetLike.coe_injective hs
 
+@[to_additive]
 instance : Bot (SubMulAction R M) where
   bot :=
     { carrier := ∅
       smul_mem' := fun _c h => Set.not_mem_empty h }
 
+@[to_additive]
 instance : Inhabited (SubMulAction R M) :=
   ⟨⊥⟩
 
@@ -209,14 +224,16 @@ variable [SMul R M]
 variable (p : SubMulAction R M)
 variable {r : R} {x : M}
 
+@[to_additive]
 theorem smul_mem (r : R) (h : x ∈ p) : r • x ∈ p :=
   p.smul_mem' r h
 
+@[to_additive]
 instance : SMul R p where smul c x := ⟨c • x.1, smul_mem _ c x.2⟩
 
 variable {p}
 
-@[simp, norm_cast]
+@[to_additive (attr := norm_cast, simp)]
 theorem val_smul (r : R) (x : p) : (↑(r • x) : M) = r • (x : M) :=
   rfl
 
@@ -225,14 +242,16 @@ theorem val_smul (r : R) (x : p) : (↑(r • x) : M) = r • (x : M) :=
 variable (p)
 
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
+@[to_additive "Embedding of a submodule `p` to the ambient space `M`."]
 protected def subtype : p →[R] M where
   toFun := Subtype.val
   map_smul' := by simp [val_smul]
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem subtype_apply (x : p) : p.subtype x = x :=
   rfl
 
+@[to_additive]
 theorem subtype_eq_val : (SubMulAction.subtype p : p → M) = Subtype.val :=
   rfl
 
@@ -245,14 +264,16 @@ variable [hA : SMulMemClass A R M] (S' : A)
 
 -- Prefer subclasses of `MulAction` over `SMulMemClass`.
 /-- A `SubMulAction` of a `MulAction` is a `MulAction`. -/
+@[to_additive "A `SubAddAction` of an `AddAction` is an `AddAction`."]
 instance (priority := 75) toMulAction : MulAction R S' :=
   Subtype.coe_injective.mulAction Subtype.val (SetLike.val_smul S')
 
 /-- The natural `MulActionHom` over `R` from a `SubMulAction` of `M` to `M`. -/
+@[to_additive "The natural `AddActionHom` over `R` from a `SubAddAction` of `M` to `M`."]
 protected def subtype : S' →[R] M where
   toFun := Subtype.val; map_smul' _ _ := rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 protected theorem coeSubtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
   rfl
 
@@ -267,28 +288,33 @@ section
 variable [SMul S R] [SMul S M] [IsScalarTower S R M]
 variable (p : SubMulAction R M)
 
+@[to_additive]
 theorem smul_of_tower_mem (s : S) {x : M} (h : x ∈ p) : s • x ∈ p := by
   rw [← one_smul R x, ← smul_assoc]
   exact p.smul_mem _ h
 
+@[to_additive]
 instance smul' : SMul S p where smul c x := ⟨c • x.1, smul_of_tower_mem _ c x.2⟩
 
+@[to_additive]
 instance isScalarTower : IsScalarTower S R p where
   smul_assoc s r x := Subtype.ext <| smul_assoc s r (x : M)
 
+@[to_additive]
 instance isScalarTower' {S' : Type*} [SMul S' R] [SMul S' S] [SMul S' M] [IsScalarTower S' R M]
     [IsScalarTower S' S M] : IsScalarTower S' S p where
   smul_assoc s r x := Subtype.ext <| smul_assoc s r (x : M)
 
-@[simp, norm_cast]
+@[to_additive (attr := norm_cast, simp)]
 theorem val_smul_of_tower (s : S) (x : p) : ((s • x : p) : M) = s • (x : M) :=
   rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem smul_mem_iff' {G} [Group G] [SMul G R] [MulAction G M] [IsScalarTower G R M] (g : G)
     {x : M} : g • x ∈ p ↔ x ∈ p :=
   ⟨fun h => inv_smul_smul g x ▸ p.smul_of_tower_mem g⁻¹ h, p.smul_of_tower_mem g⟩
 
+@[to_additive]
 instance isCentralScalar [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsScalarTower Sᵐᵒᵖ R M]
     [IsCentralScalar S M] :
     IsCentralScalar S p where
@@ -302,17 +328,20 @@ variable [Monoid S] [SMul S R] [MulAction S M] [IsScalarTower S R M]
 variable (p : SubMulAction R M)
 
 /-- If the scalar product forms a `MulAction`, then the subset inherits this action -/
+@[to_additive]
 instance mulAction' : MulAction S p where
   smul := (· • ·)
   one_smul x := Subtype.ext <| one_smul _ (x : M)
   mul_smul c₁ c₂ x := Subtype.ext <| mul_smul c₁ c₂ (x : M)
 
+@[to_additive]
 instance mulAction : MulAction R p :=
   p.mulAction'
 
 end
 
 /-- Orbits in a `SubMulAction` coincide with orbits in the ambient space. -/
+@[to_additive]
 theorem val_image_orbit {p : SubMulAction R M} (m : p) :
     Subtype.val '' MulAction.orbit R m = MulAction.orbit R (m : M) :=
   (Set.range_comp _ _).symm
@@ -322,15 +351,18 @@ lemma orbit_of_sub_mul {p : SubMulAction R M} (m : p) :
     (mul_action.orbit R m : set M) = MulAction.orbit R (m : M) := rfl
 -/
 
+@[to_additive]
 theorem val_preimage_orbit {p : SubMulAction R M} (m : p) :
     Subtype.val ⁻¹' MulAction.orbit R (m : M) = MulAction.orbit R m := by
   rw [← val_image_orbit, Subtype.val_injective.preimage_image]
 
+@[to_additive]
 lemma mem_orbit_subMul_iff {p : SubMulAction R M} {x m : p} :
     x ∈ MulAction.orbit R m ↔ (x : M) ∈ MulAction.orbit R (m : M) := by
   rw [← val_preimage_orbit, Set.mem_preimage]
 
 /-- Stabilizers in monoid SubMulAction coincide with stabilizers in the ambient space -/
+@[to_additive]
 theorem stabilizer_of_subMul.submonoid {p : SubMulAction R M} (m : p) :
     MulAction.stabilizerSubmonoid R m = MulAction.stabilizerSubmonoid R (m : M) := by
   ext
@@ -342,6 +374,7 @@ section MulActionGroup
 
 variable [Group R] [MulAction R M]
 
+@[to_additive]
 lemma orbitRel_of_subMul (p : SubMulAction R M) :
     MulAction.orbitRel R p = (MulAction.orbitRel R M).comap Subtype.val := by
   refine Setoid.ext_iff.2 (fun x y ↦ ?_)
@@ -349,6 +382,7 @@ lemma orbitRel_of_subMul (p : SubMulAction R M) :
   exact mem_orbit_subMul_iff
 
 /-- Stabilizers in group SubMulAction coincide with stabilizers in the ambient space -/
+@[to_additive]
 theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
     MulAction.stabilizer R m = MulAction.stabilizer R (m : M) := by
   rw [← Subgroup.toSubmonoid_inj]
@@ -419,23 +453,28 @@ variable {M α : Type*} [Monoid M] [MulAction M α]
 
 
 /-- The inclusion of a SubMulAction into the ambient set, as an equivariant map -/
+@[to_additive  "The inclusion of a SubAddAction into the ambient set, as an equivariant map."]
 def inclusion (s : SubMulAction M α) : s →[M] α where
 -- The inclusion map of the inclusion of a SubMulAction
   toFun := Subtype.val
 -- The commutation property
   map_smul' _ _ := rfl
 
+@[to_additive]
 theorem inclusion.toFun_eq_coe (s : SubMulAction M α) :
     s.inclusion.toFun = Subtype.val := rfl
 
+@[to_additive]
 theorem inclusion.coe_eq (s : SubMulAction M α) :
     ⇑s.inclusion = Subtype.val := rfl
 
+@[to_additive]
 lemma image_inclusion (s : SubMulAction M α) :
     Set.range s.inclusion = s.carrier := by
   rw [inclusion.coe_eq]
   exact Subtype.range_coe
 
+@[to_additive]
 lemma inclusion_injective (s : SubMulAction M α) :
     Function.Injective s.inclusion :=
   Subtype.val_injective

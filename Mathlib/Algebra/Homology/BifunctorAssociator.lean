@@ -34,6 +34,8 @@ the associator for the monoidal category structure on homological complexes.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Category Limits
 
 namespace HomologicalComplex

@@ -79,10 +79,6 @@ lemma FiniteDimensional.of_fact_finrank_eq_two {K V : Type*} [DivisionRing K]
 
 attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
-@[deprecated (since := "2024-02-02")]
-alias FiniteDimensional.finiteDimensional_of_fact_finrank_eq_two :=
-  FiniteDimensional.of_fact_finrank_eq_two
-
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [Fact (finrank ℝ E = 2)]
   (o : Orientation ℝ E (Fin 2))
 
@@ -196,7 +192,7 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
     norm_map' := fun x => by
       dsimp
       refine le_antisymm ?_ ?_
-      · cases' eq_or_lt_of_le (norm_nonneg (o.rightAngleRotationAux₁ x)) with h h
+      · rcases eq_or_lt_of_le (norm_nonneg (o.rightAngleRotationAux₁ x)) with h | h
         · rw [← h]
           positivity
         refine le_of_mul_le_mul_right ?_ h
@@ -499,7 +495,7 @@ theorem norm_kahler (x y : E) : ‖o.kahler x y‖ = ‖x‖ * ‖y‖ := by sim
 
 theorem eq_zero_or_eq_zero_of_kahler_eq_zero {x y : E} (hx : o.kahler x y = 0) : x = 0 ∨ y = 0 := by
   have : ‖x‖ * ‖y‖ = 0 := by simpa [hx] using (o.norm_kahler x y).symm
-  cases' eq_zero_or_eq_zero_of_mul_eq_zero this with h h
+  rcases eq_zero_or_eq_zero_of_mul_eq_zero this with h | h
   · left
     simpa using h
   · right

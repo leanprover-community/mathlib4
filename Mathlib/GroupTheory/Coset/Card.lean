@@ -14,6 +14,8 @@ there is an analogous version for additive groups
 
 -/
 
+assert_not_exists Field
+
 open scoped Pointwise
 
 namespace Subgroup

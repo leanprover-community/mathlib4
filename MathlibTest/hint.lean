@@ -51,3 +51,26 @@ info: Try these:
 -/
 #guard_msgs in
 example {P : Nat → Prop} (h : { x // P x }) : ∃ x, P x ∧ 0 ≤ x := by hint
+
+section multiline_hint
+
+local macro "this_is_a_multiline_exact" ppLine t:term : tactic => `(tactic| exact $t)
+
+local elab tk:"long_trivial" : tactic => do
+  let triv := Lean.mkIdent ``trivial
+  let actual ← `(tactic| this_is_a_multiline_exact $triv)
+  Lean.Meta.Tactic.TryThis.addSuggestion tk { suggestion := .tsyntax actual}
+  Lean.Elab.Tactic.evalTactic actual
+
+register_hint long_trivial
+
+/--
+info: Try these:
+• this_is_a_multiline_exact
+  trivial
+-/
+#guard_msgs in
+example : True := by
+  hint
+
+end multiline_hint

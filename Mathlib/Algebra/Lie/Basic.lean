@@ -200,13 +200,11 @@ theorem lie_nsmul (n : ℕ) : ⁅x, n • m⁆ = n • ⁅x, m⁆ :=
     { toFun := fun m : M => ⁅x, m⁆, map_zero' := lie_zero x, map_add' := fun _ _ => lie_add _ _ _}
     _ _
 
-@[simp]
 theorem zsmul_lie (a : ℤ) : ⁅a • x, m⁆ = a • ⁅x, m⁆ :=
   AddMonoidHom.map_zsmul
     { toFun := fun x : L => ⁅x, m⁆, map_zero' := zero_lie m, map_add' := fun _ _ => add_lie _ _ _ }
     _ _
 
-@[simp]
 theorem lie_zsmul (a : ℤ) : ⁅x, a • m⁆ = a • ⁅x, m⁆ :=
   AddMonoidHom.map_zsmul
     { toFun := fun m : M => ⁅x, m⁆, map_zero' := lie_zero x, map_add' := fun _ _ => lie_add _ _ _ }
@@ -220,6 +218,10 @@ theorem lie_jacobi : ⁅x, ⁅y, z⁆⁆ + ⁅y, ⁅z, x⁆⁆ + ⁅z, ⁅x, y�
   abel
 
 instance LieRing.instLieAlgebra : LieAlgebra ℤ L where lie_smul n x y := lie_zsmul x y n
+
+instance : LieModule ℤ L M where
+  smul_lie n x m := zsmul_lie x m n
+  lie_smul n x m := lie_zsmul x m n
 
 instance LinearMap.instLieRingModule : LieRingModule L (M →ₗ[R] N) where
   bracket x f :=
@@ -275,7 +277,8 @@ instance Module.Dual.instLieModule : LieModule R L (M →ₗ[R] R) where
 
 end BasicProperties
 
-/-- A morphism of Lie algebras is a linear map respecting the bracket operations. -/
+/-- A morphism of Lie algebras (denoted as `L₁ →ₗ⁅R⁆ L₂`)
+is a linear map respecting the bracket operations. -/
 structure LieHom (R L L' : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [LieRing L'] [LieAlgebra R L'] extends L →ₗ[R] L' where
   /-- A morphism of Lie algebras is compatible with brackets. -/
@@ -340,7 +343,7 @@ theorem map_zero (f : L₁ →ₗ⁅R⁆ L₂) : f 0 = 0 :=
 def id : L₁ →ₗ⁅R⁆ L₁ :=
   { (LinearMap.id : L₁ →ₗ[R] L₁) with map_lie' := rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(id : L₁ →ₗ⁅R⁆ L₁) = _root_.id :=
   rfl
 
@@ -468,9 +471,10 @@ theorem LieModule.compLieHom [Module R M] [LieModule R L₂ M] :
 
 end ModulePullBack
 
-/-- An equivalence of Lie algebras is a morphism which is also a linear equivalence. We could
-instead define an equivalence to be a morphism which is also a (plain) equivalence. However it is
-more convenient to define via linear equivalence to get `.toLinearEquiv` for free. -/
+/-- An equivalence of Lie algebras (denoted as `L₁ ≃ₗ⁅R⁆ L₂`) is a morphism
+which is also a linear equivalence.
+We could instead define an equivalence to be a morphism which is also a (plain) equivalence.
+However, it is more convenient to define via linear equivalence to get `.toLinearEquiv` for free. -/
 structure LieEquiv (R : Type u) (L : Type v) (L' : Type w) [CommRing R] [LieRing L] [LieAlgebra R L]
   [LieRing L'] [LieAlgebra R L'] extends L →ₗ⁅R⁆ L' where
   /-- The inverse function of an equivalence of Lie algebras -/
@@ -640,8 +644,8 @@ variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
 variable [Module R M] [Module R N] [Module R P]
 variable [LieRingModule L M] [LieRingModule L N] [LieRingModule L P]
 
-/-- A morphism of Lie algebra modules is a linear map which commutes with the action of the Lie
-algebra. -/
+/-- A morphism of Lie algebra modules (denoted as `M →ₗ⁅R,L⁆ N`) is a linear map
+which commutes with the action of the Lie algebra. -/
 structure LieModuleHom extends M →ₗ[R] N where
   /-- A module of Lie algebra modules is compatible with the action of the Lie algebra on the
   modules. -/
@@ -701,7 +705,7 @@ theorem map_zero (f : M →ₗ⁅R,L⁆ N) : f 0 = 0 :=
 def id : M →ₗ⁅R,L⁆ M :=
   { (LinearMap.id : M →ₗ[R] M) with map_lie' := rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ((id : M →ₗ⁅R,L⁆ M) : M → M) = _root_.id :=
   rfl
 
@@ -855,8 +859,8 @@ instance : Module R (M →ₗ⁅R,L⁆ N) :=
 
 end LieModuleHom
 
-/-- An equivalence of Lie algebra modules is a linear equivalence which is also a morphism of
-Lie algebra modules. -/
+/-- An equivalence of Lie algebra modules (denoted as `M ≃ₗ⁅R,L⁆ N`) is a linear equivalence
+which is also a morphism of Lie algebra modules. -/
 structure LieModuleEquiv extends M →ₗ⁅R,L⁆ N where
   /-- The inverse function of an equivalence of Lie modules -/
   invFun : N → M

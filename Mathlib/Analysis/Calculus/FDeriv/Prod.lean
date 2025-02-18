@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
+Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov, Eric Wieser
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Linear
 import Mathlib.Analysis.Calculus.FDeriv.Comp
@@ -352,7 +352,7 @@ theorem hasStrictFDerivAt_apply (i : ι) (f : ∀ i, F' i) :
   let id' := ContinuousLinearMap.id 𝕜 (∀ i, F' i)
   have h := ((hasStrictFDerivAt_pi'
              (Φ := fun (f : ∀ i, F' i) (i' : ι) => f i') (Φ' := id') (x := f))).1
-  have h' : comp (proj i) id' = proj i := by rfl
+  have h' : comp (proj i) id' = proj i := by ext; simp [id']
   rw [← h']; apply h; apply hasStrictFDerivAt_id
 
 @[simp 1100] -- Porting note: increased priority to make lint happy
@@ -486,6 +486,187 @@ theorem fderiv_pi (h : ∀ i, DifferentiableAt 𝕜 (φ i) x) :
   (hasFDerivAt_pi.2 fun i => (h i).hasFDerivAt).fderiv
 
 end Pi
+
+/-!
+### Derivatives of tuples `f : E → Π i : Fin n.succ, F' i`
+
+These can be used to prove results about functions of the form `fun x ↦ ![f x, g x, h x]`,
+as `Matrix.vecCons` is defeq to `Fin.cons`.
+-/
+section PiFin
+
+variable {n : Nat} {F' : Fin n.succ → Type*}
+variable [∀ i, NormedAddCommGroup (F' i)] [∀ i, NormedSpace 𝕜 (F' i)]
+variable {φ : E → F' 0} {φs : E → ∀ i, F' (Fin.succ i)}
+
+theorem hasStrictFDerivAt_finCons {φ' : E →L[𝕜] Π i, F' i} :
+    HasStrictFDerivAt (fun x => Fin.cons (φ x) (φs x)) φ' x ↔
+      HasStrictFDerivAt φ (.proj 0 ∘L φ') x ∧
+      HasStrictFDerivAt φs (Pi.compRightL 𝕜 F' Fin.succ ∘L φ') x := by
+  rw [hasStrictFDerivAt_pi', Fin.forall_fin_succ, hasStrictFDerivAt_pi']
+  dsimp [ContinuousLinearMap.comp, LinearMap.comp, Function.comp_def]
+  simp only [Fin.cons_zero, Fin.cons_succ]
+
+/-- A variant of `hasStrictFDerivAt_finCons` where the derivative variables are free on the RHS
+instead. -/
+theorem hasStrictFDerivAt_finCons'
+    {φ' : E →L[𝕜] F' 0} {φs' : E →L[𝕜] Π i, F' (Fin.succ i)} :
+    HasStrictFDerivAt (fun x => Fin.cons (φ x) (φs x)) (φ'.finCons φs') x ↔
+      HasStrictFDerivAt φ φ' x ∧ HasStrictFDerivAt φs φs' x :=
+  hasStrictFDerivAt_finCons
+
+@[fun_prop]
+theorem HasStrictFDerivAt.finCons
+    {φ' : E →L[𝕜] F' 0} {φs' : E →L[𝕜] Π i, F' (Fin.succ i)}
+    (h : HasStrictFDerivAt φ φ' x) (hs : HasStrictFDerivAt φs φs' x) :
+    HasStrictFDerivAt (fun x => Fin.cons (φ x) (φs x)) (φ'.finCons φs') x :=
+  hasStrictFDerivAt_finCons'.mpr ⟨h, hs⟩
+
+theorem hasFDerivAtFilter_finCons
+    {φ' : E →L[𝕜] Π i, F' i} {l : Filter E} :
+    HasFDerivAtFilter (fun x => Fin.cons (φ x) (φs x)) φ' x l ↔
+      HasFDerivAtFilter φ (.proj 0 ∘L φ') x l ∧
+      HasFDerivAtFilter φs (Pi.compRightL 𝕜 F' Fin.succ ∘L φ') x l := by
+  rw [hasFDerivAtFilter_pi', Fin.forall_fin_succ, hasFDerivAtFilter_pi']
+  dsimp [ContinuousLinearMap.comp, LinearMap.comp, Function.comp_def]
+  simp only [Fin.cons_zero, Fin.cons_succ]
+
+/-- A variant of `hasFDerivAtFilter_finCons` where the derivative variables are free on the RHS
+instead. -/
+theorem hasFDerivAtFilter_finCons'
+    {φ' : E →L[𝕜] F' 0} {φs' : E →L[𝕜] Π i, F' (Fin.succ i)} {l : Filter E} :
+    HasFDerivAtFilter (fun x => Fin.cons (φ x) (φs x)) (φ'.finCons φs') x l ↔
+      HasFDerivAtFilter φ φ' x l ∧ HasFDerivAtFilter φs φs' x l :=
+  hasFDerivAtFilter_finCons
+
+theorem HasFDerivAtFilter.finCons
+    {φ' : E →L[𝕜] F' 0} {φs' : E →L[𝕜] Π i, F' (Fin.succ i)} {l : Filter E}
+    (h : HasFDerivAtFilter φ φ' x l) (hs : HasFDerivAtFilter φs φs' x l) :
+    HasFDerivAtFilter (fun x => Fin.cons (φ x) (φs x)) (φ'.finCons φs') x l :=
+  hasFDerivAtFilter_finCons'.mpr ⟨h, hs⟩
+
+theorem hasFDerivAt_finCons
+    {φ' : E →L[𝕜] Π i, F' i} :
+    HasFDerivAt (fun x => Fin.cons (φ x) (φs x)) φ' x ↔
+      HasFDerivAt φ (.proj 0 ∘L φ') x ∧ HasFDerivAt φs (Pi.compRightL 𝕜 F' Fin.succ ∘L φ') x :=
+  hasFDerivAtFilter_finCons
+
+/-- A variant of `hasFDerivAt_finCons` where the derivative variables are free on the RHS
+instead. -/
+theorem hasFDerivAt_finCons'
+    {φ' : E →L[𝕜] F' 0} {φs' : E →L[𝕜] Π i, F' (Fin.succ i)} :
+    HasFDerivAt (fun x => Fin.cons (φ x) (φs x)) (φ'.finCons φs') x ↔
+      HasFDerivAt φ φ' x ∧ HasFDerivAt φs φs' x :=
+  hasFDerivAt_finCons
+
+@[fun_prop]
+theorem HasFDerivAt.finCons
+    {φ' : E →L[𝕜] F' 0} {φs' : E →L[𝕜] Π i, F' (Fin.succ i)}
+    (h : HasFDerivAt φ φ' x) (hs : HasFDerivAt φs φs' x) :
+    HasFDerivAt (fun x => Fin.cons (φ x) (φs x)) (φ'.finCons φs') x :=
+  hasFDerivAt_finCons'.mpr ⟨h, hs⟩
+
+theorem hasFDerivWithinAt_finCons
+    {φ' : E →L[𝕜] Π i, F' i} :
+    HasFDerivWithinAt (fun x => Fin.cons (φ x) (φs x)) φ' s x ↔
+      HasFDerivWithinAt φ (.proj 0 ∘L φ') s x ∧
+      HasFDerivWithinAt φs (Pi.compRightL 𝕜 F' Fin.succ ∘L φ') s x :=
+  hasFDerivAtFilter_finCons
+
+/-- A variant of `hasFDerivWithinAt_finCons` where the derivative variables are free on the RHS
+instead. -/
+theorem hasFDerivWithinAt_finCons'
+    {φ' : E →L[𝕜] F' 0} {φs' : E →L[𝕜] Π i, F' (Fin.succ i)} :
+    HasFDerivWithinAt (fun x => Fin.cons (φ x) (φs x)) (φ'.finCons φs') s x ↔
+      HasFDerivWithinAt φ φ' s x ∧ HasFDerivWithinAt φs φs' s x :=
+  hasFDerivAtFilter_finCons
+
+@[fun_prop]
+theorem HasFDerivWithinAt.finCons
+    {φ' : E →L[𝕜] F' 0} {φs' : E →L[𝕜] Π i, F' (Fin.succ i)}
+    (h : HasFDerivWithinAt φ φ' s x) (hs : HasFDerivWithinAt φs φs' s x) :
+    HasFDerivWithinAt (fun x => Fin.cons (φ x) (φs x)) (φ'.finCons φs') s x :=
+  hasFDerivWithinAt_finCons'.mpr ⟨h, hs⟩
+
+theorem differentiableWithinAt_finCons :
+    DifferentiableWithinAt 𝕜 (fun x => Fin.cons (φ x) (φs x)) s x ↔
+      DifferentiableWithinAt 𝕜 φ s x ∧ DifferentiableWithinAt 𝕜 φs s x := by
+  rw [differentiableWithinAt_pi, Fin.forall_fin_succ, differentiableWithinAt_pi]
+  simp only [Fin.cons_zero, Fin.cons_succ]
+
+/-- A variant of `differentiableWithinAt_finCons` where the derivative variables are free on the RHS
+instead. -/
+theorem differentiableWithinAt_finCons' :
+    DifferentiableWithinAt 𝕜 (fun x => Fin.cons (φ x) (φs x)) s x ↔
+      DifferentiableWithinAt 𝕜 φ s x ∧ DifferentiableWithinAt 𝕜 φs s x :=
+  differentiableWithinAt_finCons
+
+@[fun_prop]
+theorem DifferentiableWithinAt.finCons
+    (h : DifferentiableWithinAt 𝕜 φ s x) (hs : DifferentiableWithinAt 𝕜 φs s x) :
+    DifferentiableWithinAt 𝕜 (fun x => Fin.cons (φ x) (φs x)) s x :=
+  differentiableWithinAt_finCons'.mpr ⟨h, hs⟩
+
+theorem differentiableAt_finCons :
+    DifferentiableAt 𝕜 (fun x => Fin.cons (φ x) (φs x)) x ↔
+      DifferentiableAt 𝕜 φ x ∧ DifferentiableAt 𝕜 φs x := by
+  rw [differentiableAt_pi, Fin.forall_fin_succ, differentiableAt_pi]
+  simp only [Fin.cons_zero, Fin.cons_succ]
+
+/-- A variant of `differentiableAt_finCons` where the derivative variables are free on the RHS
+instead. -/
+theorem differentiableAt_finCons' :
+    DifferentiableAt 𝕜 (fun x => Fin.cons (φ x) (φs x)) x ↔
+      DifferentiableAt 𝕜 φ x ∧ DifferentiableAt 𝕜 φs x :=
+  differentiableAt_finCons
+
+@[fun_prop]
+theorem DifferentiableAt.finCons
+    (h : DifferentiableAt 𝕜 φ x) (hs : DifferentiableAt 𝕜 φs x) :
+    DifferentiableAt 𝕜 (fun x => Fin.cons (φ x) (φs x)) x :=
+  differentiableAt_finCons'.mpr ⟨h, hs⟩
+
+theorem differentiableOn_finCons :
+    DifferentiableOn 𝕜 (fun x => Fin.cons (φ x) (φs x)) s ↔
+      DifferentiableOn 𝕜 φ s ∧ DifferentiableOn 𝕜 φs s := by
+  rw [differentiableOn_pi, Fin.forall_fin_succ, differentiableOn_pi]
+  simp only [Fin.cons_zero, Fin.cons_succ]
+
+/-- A variant of `differentiableOn_finCons` where the derivative variables are free on the RHS
+instead. -/
+theorem differentiableOn_finCons' :
+    DifferentiableOn 𝕜 (fun x => Fin.cons (φ x) (φs x)) s ↔
+      DifferentiableOn 𝕜 φ s ∧ DifferentiableOn 𝕜 φs s :=
+  differentiableOn_finCons
+
+@[fun_prop]
+theorem DifferentiableOn.finCons
+    (h : DifferentiableOn 𝕜 φ s) (hs : DifferentiableOn 𝕜 φs s) :
+    DifferentiableOn 𝕜 (fun x => Fin.cons (φ x) (φs x)) s :=
+  differentiableOn_finCons'.mpr ⟨h, hs⟩
+
+theorem differentiable_finCons :
+    Differentiable 𝕜 (fun x => Fin.cons (φ x) (φs x)) ↔
+      Differentiable 𝕜 φ ∧ Differentiable 𝕜 φs := by
+  rw [differentiable_pi, Fin.forall_fin_succ, differentiable_pi]
+  simp only [Fin.cons_zero, Fin.cons_succ]
+
+/-- A variant of `differentiable_finCons` where the derivative variables are free on the RHS
+instead. -/
+theorem differentiable_finCons' :
+    Differentiable 𝕜 (fun x => Fin.cons (φ x) (φs x)) ↔
+      Differentiable 𝕜 φ ∧ Differentiable 𝕜 φs :=
+  differentiable_finCons
+
+@[fun_prop]
+theorem Differentiable.finCons
+    (h : Differentiable 𝕜 φ) (hs : Differentiable 𝕜 φs) :
+    Differentiable 𝕜 (fun x => Fin.cons (φ x) (φs x)) :=
+  differentiable_finCons'.mpr ⟨h, hs⟩
+
+-- TODO: write the `Fin.cons` versions of `fderivWithin_pi` and `fderiv_pi`
+
+end PiFin
 
 end CartesianProduct
 

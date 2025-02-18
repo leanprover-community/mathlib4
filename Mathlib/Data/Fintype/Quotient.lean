@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yuyang Zhao
 -/
 import Mathlib.Data.List.Pi
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Defs
 
 /-!
 # Quotients of families indexed by a finite type
