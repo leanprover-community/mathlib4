@@ -211,9 +211,6 @@ theorem principal_add_iff_add_self_lt : Principal (· + ·) a ↔ ∀ b < a, b +
 theorem principal_add_omega0 : Principal (· + ·) ω :=
   principal_add_iff_add_left_eq_self.2 fun _ ↦ add_omega0
 
-@[deprecated (since := "2024-09-30")]
-alias principal_add_omega := principal_add_omega0
-
 -- `add_omega0` is proven in the Arithmetic file.
 
 theorem add_of_le_omega0 : a < ω → ω ≤ b → a + b = b :=
