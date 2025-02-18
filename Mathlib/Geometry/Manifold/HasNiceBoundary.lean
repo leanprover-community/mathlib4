@@ -204,12 +204,21 @@ lemma aux {α β : Type*} {s : Set α} {b : β} : Prod.mk b '' s = Set.prod {b} 
   rintro ⟨p, hp, ⟨hpy, hpyx⟩⟩
   constructor; exacts [by simp, by simpa]
 
-lemma IsClosedMap.prod_mk [T2Space Y] (c : Y ): IsClosedMap (Prod.mk c : X → _) := by
+lemma aux2 {α β : Type*} {s : Set α} {b : β} : (fun x ↦ Prod.mk x b) '' s = Set.prod s {b} := by
+  ext ⟨y, x⟩
+  sorry -- proof is similar to aux
+
+lemma IsClosedMap.prod_mk_left [T2Space Y] (c : Y): IsClosedMap (Prod.mk c : X → _) := by
   intro K hK
   rw [aux]
   exact isClosed_singleton.prod hK
 
-end topology_prereqs
+lemma IsClosedMap.prod_mk_right [T2Space Y] (c : Y): IsClosedMap (fun x : X ↦ Prod.mk x c) := by
+  intro K hK
+  rw [aux2]
+  exact hK.prod isClosed_singleton
+
+end PrereqsTopology
 
 variable {X Y Z W : Type*} [TopologicalSpace X] [TopologicalSpace Y]
   [TopologicalSpace Z] [TopologicalSpace W]
@@ -219,7 +228,7 @@ def Homeomorph.sumEquivBoolProd (X : Type*) [TopologicalSpace X] : X ⊕ X ≃�
   · show Continuous (Sum.elim (Prod.mk false) (Prod.mk true))
     fun_prop
   · show IsClosedMap (Sum.elim (Prod.mk false) (Prod.mk true))
-    exact (IsClosedMap.prod_mk false).sum_elim (IsClosedMap.prod_mk true)
+    exact (IsClosedMap.prod_mk_left false).sum_elim (IsClosedMap.prod_mk_left true)
 
 def Homeomorph.finTwo : Bool ≃ₜ Fin 2 where
   toEquiv := finTwoEquiv.symm
@@ -316,17 +325,16 @@ def BoundaryManifoldData.prod_of_boundaryless_right (bd : BoundaryManifoldData M
     congr
     exact bd.range_eq_boundary
 
-#exit
 /-- If `M` is an `n`-dimensional `C^k`-manifold modelled on finite-dimensional Euclidean half-space,
 its boundary is an `n-1`-manifold.
-TODO: this is not strong enough; also need that M has boundary captured by the boundary
-(i.e., modelling a boundaryless manifold on the half-space should be excluded)
+TODO: this statement as-is is false, as its hypotheses are not strong enough; we also need that
+M has boundary captured by the boundary of the half-space
+(e.g., modelling a boundaryless manifold on the half-space should be excluded)
 
 Proving this requires knowing homology groups of spheres (or similar). -/
--- TODO: also prove that the boundary has dimension one lower
 def BoundaryManifoldData.of_Euclidean_halfSpace (n : ℕ) (k : ℕ∞)
     {M : Type} [TopologicalSpace M] [ChartedSpace (EuclideanHalfSpace (n + 1)) M]
-    [IsManifold (𝓡∂ (n + 1)) k M] : BoundaryManifoldData M (𝓡∂ (n + 1)) k := sorry
+    [IsManifold (𝓡∂ (n + 1)) k M] : BoundaryManifoldData M (𝓡∂ (n + 1)) k (𝓡 n):= sorry
 
 -- WIP definition; doesn't work yet
 -- TODO: need bd and bd' to have the same data E₀ and H₀!
@@ -352,15 +360,12 @@ variable (k) in
 -- FIXME: delete this, in favour of the boundary data instance on Icc and the product
 noncomputable def BoundaryManifoldData.prod_Icc [Nonempty H] [Nonempty M]
     [BoundarylessManifold I M] :
-    BoundaryManifoldData (M × (Set.Icc (0 : ℝ) 1)) (I.prod (𝓡∂ 1)) k  where
+    BoundaryManifoldData (M × (Set.Icc (0 : ℝ) 1)) (I.prod (𝓡∂ 1)) k I where
   M₀ := M ⊕ M
-  H₀ := H
-  E₀ := E
-  I₀ := I
   f := Sum.elim (·, ⊥) (·, ⊤)
   isEmbedding := by
-    apply IsOpenEmbedding.isEmbedding
-    apply (IsOpenEmbedding.of_continuous_injective_isOpenMap)
+    apply IsClosedEmbedding.isEmbedding
+    apply (IsClosedEmbedding.of_continuous_injective_isClosedMap)
     · fun_prop
     · intro x y hxy
       -- this is a bit tedious... is there a nicer way?
@@ -387,14 +392,10 @@ noncomputable def BoundaryManifoldData.prod_Icc [Nonempty H] [Nonempty M]
           have : x.getRight (Sum.not_isLeft.mp hx) = y.getRight (Sum.not_isLeft.mp hy) :=
             congrArg Prod.fst hxy
           rw [this]
-    · apply IsOpenMap.sum_elim
-      all_goals sorry -- should be easy!
-  isSmooth := by
-    -- future: improving the sum_elim result will make this sorry unnecessary
-    have : Nonempty (ModelProd H (EuclideanHalfSpace 1)) := by rw [ModelProd]; infer_instance
-    sorry
-    --exact ContMDiff.sum_elim (contMDiff_id.prod_mk contMDiff_const)
-    --  (contMDiff_id.prod_mk contMDiff_const)
+    · apply IsClosedMap.sum_elim
+      all_goals apply IsClosedMap.prod_mk_right
+  contMDiff := (contMDiff_id.prod_mk contMDiff_const).sum_elim
+    (contMDiff_id.prod_mk contMDiff_const)
   isImmersion p := by
     by_cases h: p.isLeft
     · let x := p.getLeft h
@@ -410,7 +411,8 @@ noncomputable def BoundaryManifoldData.prod_Icc [Nonempty H] [Nonempty M]
         sorry --apply MDifferentiableAt.congr_of_eventuallyEq this
         -- then argue these are EventuallyEq, so we're fine
       -- mfderiv I J f x "is" mfderiv I J (Sum.elim f g) (.inl x)
-      have : Injective (mfderiv I (I.prod (𝓡∂ 1)) ((·, ⊥) : M → M × (Set.Icc (0 : ℝ) 1)) x) := by
+      have : Function.Injective (mfderiv I (I.prod (𝓡∂ 1))
+          ((·, ⊥) : M → M × (Set.Icc (0 : ℝ) 1)) x) := by
         rw [mfderiv_prod_left]
         apply LinearMap.inl_injective
       sorry
