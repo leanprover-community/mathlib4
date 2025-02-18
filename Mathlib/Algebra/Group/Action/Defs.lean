@@ -5,10 +5,6 @@ Authors: Chris Hughes, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Opposites
-import Mathlib.Data.FunLike.Basic
-import Mathlib.Logic.Embedding.Basic
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Tactic.Spread
 
 /-!
@@ -444,19 +440,6 @@ lemma SMulCommClass.of_commMonoid
     rw [← one_smul G (s • x), ← smul_assoc, ← one_smul G x, ← smul_assoc s 1 x,
       smul_comm, smul_assoc, one_smul, smul_assoc, one_smul]
 
-namespace MulAction
-
-variable (M α) in
-/-- Embedding of `α` into functions `M → α` induced by a multiplicative action of `M` on `α`. -/
-@[to_additive
-"Embedding of `α` into functions `M → α` induced by an additive action of `M` on `α`."]
-def toFun : α ↪ M → α :=
-  ⟨fun y x ↦ x • y, fun y₁ y₂ H ↦ one_smul M y₁ ▸ one_smul M y₂ ▸ by convert congr_fun H 1⟩
-
-@[to_additive (attr := simp)]
-lemma toFun_apply (x : M) (y : α) : MulAction.toFun M α y x = x • y := rfl
-
-end MulAction
 end
 
 section CompatibleScalar
