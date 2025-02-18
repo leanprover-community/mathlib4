@@ -1053,7 +1053,7 @@ variable [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 /-- A version of `Homeomorph.mulLeft a b⁻¹` that is defeq to `a / b`. -/
 @[to_additive (attr := simps! (config := { simpRhs := true }))
-  " A version of `Homeomorph.addLeft a (-b)` that is defeq to `a - b`. "]
+  "A version of `Homeomorph.addLeft a (-b)` that is defeq to `a - b`."]
 def Homeomorph.divLeft (x : G) : G ≃ₜ G :=
   { Equiv.divLeft x with
     continuous_toFun := continuous_const.div' continuous_id
@@ -1631,7 +1631,7 @@ instance {G} [TopologicalSpace G] [AddGroup G] [IsTopologicalAddGroup G] :
   continuous_inv := @continuous_neg G _ _ _
 
 /-- If `G` is a group with topological `⁻¹`, then it is homeomorphic to its units. -/
-@[to_additive " If `G` is an additive group with topological negation, then it is homeomorphic to
+@[to_additive "If `G` is an additive group with topological negation, then it is homeomorphic to
 its additive units."]
 def toUnits_homeomorph [Group G] [TopologicalSpace G] [ContinuousInv G] : G ≃ₜ Gˣ where
   toEquiv := toUnits.toEquiv
