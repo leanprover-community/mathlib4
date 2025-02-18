@@ -303,8 +303,8 @@ lemma mulEquivToLimit_symm_continuous [IsGalois k K] : Continuous (mulEquivToLim
   intro H ⟨L, le⟩
   rw [mem_nhds_iff]
   use mulEquivToLimit k K '' L.1.fixingSubgroup
-  simp [le, isOpen_mulEquivToLimit_image_fixingSubgroup L, one_mem,
-    (mulEquivToLimit k K).injective.preimage_image]
+  simp only [isOpen_mulEquivToLimit_image_fixingSubgroup L]
+  simpa [one_mem] using Set.image_subset_iff.mp (Set.image_mono le)
 
 variable (k K)
 
