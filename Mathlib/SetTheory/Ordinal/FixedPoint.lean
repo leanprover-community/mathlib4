@@ -124,8 +124,8 @@ theorem nfpFamily_eq_self [Small.{u} ι] {a} (h : ∀ i, f i a = a) : nfpFamily 
   (nfpFamily_le fun l ↦ (List.foldr_fixed' h l).le).antisymm (le_nfpFamily f a)
 
 -- Todo: This is actually a special case of the fact the intersection of club sets is a club set.
-/-- A generalization of the fixed point lemma for normal functions: any family of normal functions
-    has an unbounded set of common fixed points. -/
+/-- A generalization of the **fixed point lemma** for normal functions: any family of normal
+functions has an unbounded set of common fixed points. -/
 theorem not_bddAbove_fp_family [Small.{u} ι] (H : ∀ i, IsNormal (f i)) :
     ¬ BddAbove (⋂ i, Function.fixedPoints (f i)) := by
   rw [not_bddAbove_iff]
@@ -511,7 +511,7 @@ alias ⟨_, IsNormal.apply_le_nfp⟩ := IsNormal.apply_le_nfp_iff
 theorem nfp_eq_self {a} (h : f a = a) : nfp f a = a :=
   nfpFamily_eq_self fun _ ↦ h
 
-/-- The fixed point lemma for normal functions: any normal function has an unbounded set of
+/-- The **fixed point lemma** for normal functions: any normal function has an unbounded set of
 fixed points. -/
 theorem not_bddAbove_fp (H : IsNormal f) : ¬ BddAbove (Function.fixedPoints f) := by
   simpa [Set.iInter_const] using not_bddAbove_fp_family fun _ : Unit ↦ H
