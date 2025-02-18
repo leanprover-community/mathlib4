@@ -43,12 +43,11 @@ proved in `Mathlib.NumberTheory.LSeries.HurwitzZetaEven`.
 -/
 
 
-open CharZero MeasureTheory Set Filter Asymptotics TopologicalSpace Real Asymptotics
-  Classical HurwitzZeta
+open CharZero Set Filter HurwitzZeta
 
 open Complex hiding exp norm_eq_abs abs_of_nonneg abs_two continuous_exp
 
-open scoped Topology Real Nat
+open scoped Topology Real
 
 noncomputable section
 
@@ -224,20 +223,5 @@ theorem tendsto_sub_mul_tsum_nat_rpow :
 /- naming scheme was changed from `riemannCompletedZeta` to `completedRiemannZeta`; add
 aliases for the old names -/
 section aliases
-
-@[deprecated (since := "2024-05-27")]
-noncomputable alias riemannCompletedZeta₀ := completedRiemannZeta₀
-
-@[deprecated (since := "2024-05-27")]
-noncomputable alias riemannCompletedZeta := completedRiemannZeta
-
-@[deprecated (since := "2024-05-27")]
-alias riemannCompletedZeta₀_one_sub := completedRiemannZeta₀_one_sub
-
-@[deprecated (since := "2024-05-27")]
-alias riemannCompletedZeta_one_sub := completedRiemannZeta_one_sub
-
-@[deprecated (since := "2024-05-27")]
-alias riemannCompletedZeta_residue_one := completedRiemannZeta_residue_one
 
 end aliases

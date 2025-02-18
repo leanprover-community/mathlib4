@@ -60,9 +60,6 @@ theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
 
 @[simp, norm_cast] lemma den_intCast (n : ℤ) : (n : ℚ).den = 1 := rfl
 
-@[deprecated (since := "2024-04-29")] alias coe_int_num := num_intCast
-@[deprecated (since := "2024-04-29")] alias coe_int_den := den_intCast
-
 lemma intCast_injective : Injective (Int.cast : ℤ → ℚ) := fun _ _ ↦ congr_arg num
 lemma natCast_injective : Injective (Nat.cast : ℕ → ℚ) :=
   intCast_injective.comp fun _ _ ↦ Int.natCast_inj.1
@@ -194,8 +191,6 @@ lemma mul_eq_mkRat (q r : ℚ) : q * r = mkRat (q.num * r.num) (q.den * r.den) :
 -- TODO: Rename `divInt_eq_iff` in Batteries to `divInt_eq_divInt`
 alias divInt_eq_divInt := divInt_eq_iff
 
-@[deprecated (since := "2024-04-29")] alias mul_num_den := mul_eq_mkRat
-
 instance instPowNat : Pow ℚ ℕ where
   pow q n := ⟨q.num ^ n, q.den ^ n, by simp [Nat.pow_eq_zero], by
     rw [Int.natAbs_pow]; exact q.reduced.pow _ _⟩
@@ -234,8 +229,6 @@ lemma inv_def' (q : ℚ) : q⁻¹ = q.den /. q.num := by rw [← inv_divInt', nu
 
 lemma div_def' (q r : ℚ) : q / r = (q.num * r.den) /. (q.den * r.num) := by
   rw [← divInt_div_divInt, num_divInt_den, num_divInt_den]
-
-@[deprecated (since := "2024-04-15")] alias div_num_den := div_def'
 
 variable (a b c : ℚ)
 
@@ -438,13 +431,19 @@ theorem den_eq_one_iff (r : ℚ) : r.den = 1 ↔ ↑r.num = r :=
 instance canLift : CanLift ℚ ℤ (↑) fun q => q.den = 1 :=
   ⟨fun q hq => ⟨q.num, coe_int_num_of_den_eq_one hq⟩⟩
 
-@[deprecated (since := "2024-04-05")] alias coe_int_eq_divInt := intCast_eq_divInt
-@[deprecated (since := "2024-04-05")] alias coe_int_div_eq_divInt := intCast_div_eq_divInt
-
 -- Will be subsumed by `Int.coe_inj` after we have defined
 -- `LinearOrderedField ℚ` (which implies characteristic zero).
 theorem coe_int_inj (m n : ℤ) : (m : ℚ) = n ↔ m = n :=
   ⟨congr_arg num, congr_arg _⟩
 
 end Casts
+
+/--
+A version of `Rat.casesOn` that uses `/` instead of `Rat.mk'`. Use as `cases' q` for `q : Rat`.
+-/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
+def divCasesOn {C : ℚ → Sort*} (a : ℚ)
+    (h : ∀ (n : ℤ) (d : ℕ), d ≠ 0 → n.natAbs.Coprime d → C (n / d)) : C a :=
+  a.casesOn fun n d nz red => by rw [Rat.mk'_eq_divInt, Rat.divInt_eq_div]; exact h n d nz red
+
 end Rat

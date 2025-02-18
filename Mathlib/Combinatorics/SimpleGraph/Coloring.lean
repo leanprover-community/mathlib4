@@ -137,6 +137,10 @@ theorem isEmpty_of_colorable_zero (h : G.Colorable 0) : IsEmpty V := by
   obtain ⟨i, hi⟩ := h.some v
   exact Nat.not_lt_zero _ hi
 
+@[simp]
+lemma colorable_zero_iff : G.Colorable 0 ↔ IsEmpty V :=
+   ⟨G.isEmpty_of_colorable_zero, fun _ ↦ G.colorable_of_isEmpty 0⟩
+
 /-- The "tautological" coloring of a graph, using the vertices of the graph as colors. -/
 def selfColoring : G.Coloring V := Coloring.mk id fun {_ _} => G.ne_of_adj
 
@@ -226,8 +230,7 @@ theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     let f := Embedding.completeGraph (@Fin.valEmbedding n)
     use f.toHom.comp C
     intro v
-    cases' C with color valid
-    exact Fin.is_lt (color v)
+    exact Fin.is_lt (C.1 v)
   · rintro ⟨C, Cf⟩
     refine ⟨Coloring.mk ?_ ?_⟩
     · exact fun v => ⟨C v, Cf v⟩

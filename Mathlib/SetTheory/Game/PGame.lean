@@ -26,7 +26,7 @@ We may denote a game as $\{L | R\}$, where $L$ and $R$ stand for the collections
 moves. This notation is not currently used in Mathlib.
 
 Combinatorial games themselves, as a quotient of pregames, are constructed in
-`SetTheory.Game.Basic`.
+`Mathlib.SetTheory.Game.Basic`.
 
 ## Conway induction
 
@@ -850,7 +850,6 @@ theorem Equiv.le {x y : PGame} (h : x ≈ y) : x ≤ y :=
 theorem Equiv.ge {x y : PGame} (h : x ≈ y) : y ≤ x :=
   h.2
 
-@[refl, simp]
 theorem equiv_rfl {x : PGame} : x ≈ x :=
   refl x
 
@@ -973,7 +972,7 @@ theorem lf_or_equiv_or_gf (x y : PGame) : x ⧏ y ∨ (x ≈ y) ∨ y ⧏ x := b
   by_cases h : x ⧏ y
   · exact Or.inl h
   · right
-    cases' lt_or_equiv_of_le (PGame.not_lf.1 h) with h' h'
+    rcases lt_or_equiv_of_le (PGame.not_lf.1 h) with h' | h'
     · exact Or.inr h'.lf
     · exact Or.inl (Equiv.symm h')
 
@@ -1080,7 +1079,7 @@ theorem fuzzy_of_equiv_of_fuzzy {x y z : PGame} (h₁ : x ≈ y) (h₂ : y ‖ z
 
 /-- Exactly one of the following is true (although we don't prove this here). -/
 theorem lt_or_equiv_or_gt_or_fuzzy (x y : PGame) : x < y ∨ (x ≈ y) ∨ y < x ∨ x ‖ y := by
-  cases' le_or_gf x y with h₁ h₁ <;> cases' le_or_gf y x with h₂ h₂
+  rcases le_or_gf x y with h₁ | h₁ <;> rcases le_or_gf y x with h₂ | h₂
   · right
     left
     exact ⟨h₁, h₂⟩
@@ -1363,6 +1362,26 @@ theorem moveRight_neg_symm {x : PGame} (i) :
 theorem moveRight_neg_symm' {x : PGame} (i) :
     x.moveRight i = -(-x).moveLeft (toLeftMovesNeg i) := by simp
 
+@[simp]
+theorem forall_leftMoves_neg {x : PGame} {p : (-x).LeftMoves → Prop} :
+    (∀ i : (-x).LeftMoves, p i) ↔ (∀ i : x.RightMoves, p (toLeftMovesNeg i)) :=
+  toLeftMovesNeg.forall_congr_right.symm
+
+@[simp]
+theorem exists_leftMoves_neg {x : PGame} {p : (-x).LeftMoves → Prop} :
+    (∃ i : (-x).LeftMoves, p i) ↔ (∃ i : x.RightMoves, p (toLeftMovesNeg i)) :=
+  toLeftMovesNeg.exists_congr_right.symm
+
+@[simp]
+theorem forall_rightMoves_neg {x : PGame} {p : (-x).RightMoves → Prop} :
+    (∀ i : (-x).RightMoves, p i) ↔ (∀ i : x.LeftMoves, p (toRightMovesNeg i)) :=
+  toRightMovesNeg.forall_congr_right.symm
+
+@[simp]
+theorem exists_rightMoves_neg {x : PGame} {p : (-x).RightMoves → Prop} :
+    (∃ i : (-x).RightMoves, p i) ↔ (∃ i : x.LeftMoves, p (toRightMovesNeg i)) :=
+  toRightMovesNeg.exists_congr_right.symm
+
 theorem leftMoves_neg_cases {x : PGame} (k) {P : (-x).LeftMoves → Prop}
     (h : ∀ i, P <| toLeftMovesNeg i) :
     P k := by
@@ -1635,7 +1654,7 @@ theorem leftMoves_add_cases {x y : PGame} (k) {P : (x + y).LeftMoves → Prop}
     (hl : ∀ i, P <| toLeftMovesAdd (Sum.inl i)) (hr : ∀ i, P <| toLeftMovesAdd (Sum.inr i)) :
     P k := by
   rw [← toLeftMovesAdd.apply_symm_apply k]
-  cases' toLeftMovesAdd.symm k with i i
+  rcases toLeftMovesAdd.symm k with i | i
   · exact hl i
   · exact hr i
 
@@ -1644,7 +1663,7 @@ theorem rightMoves_add_cases {x y : PGame} (k) {P : (x + y).RightMoves → Prop}
     (hl : ∀ j, P <| toRightMovesAdd (Sum.inl j)) (hr : ∀ j, P <| toRightMovesAdd (Sum.inr j)) :
     P k := by
   rw [← toRightMovesAdd.apply_symm_apply k]
-  cases' toRightMovesAdd.symm k with i i
+  rcases toRightMovesAdd.symm k with i | i
   · exact hl i
   · exact hr i
 
@@ -1807,7 +1826,7 @@ def negAddRelabelling : ∀ x y : PGame, -(x + y) ≡r -x + -y
 termination_by x y => (x, y)
 
 theorem neg_add_le {x y : PGame} : -(x + y) ≤ -x + -y :=
-  (negAddRelabelling x y).le
+  (x.neg_add y).le
 
 /-- `x + y` has exactly the same moves as `y + x`. -/
 def addCommRelabelling : ∀ x y : PGame.{u}, x + y ≡r y + x
@@ -1818,10 +1837,10 @@ def addCommRelabelling : ∀ x y : PGame.{u}, x + y ≡r y + x
 termination_by x y => (x, y)
 
 theorem add_comm_le {x y : PGame} : x + y ≤ y + x :=
-  (addCommRelabelling x y).le
+  (x.add_comm y).le
 
 theorem add_comm_equiv {x y : PGame} : x + y ≈ y + x :=
-  (addCommRelabelling x y).equiv
+  (x.add_comm y).equiv
 
 /-- `(x + y) + z` has exactly the same moves as `x + (y + z)`. -/
 def addAssocRelabelling : ∀ x y z : PGame.{u}, x + y + z ≡r x + (y + z)
@@ -1838,7 +1857,7 @@ def addAssocRelabelling : ∀ x y z : PGame.{u}, x + y + z ≡r x + (y + z)
 termination_by x y z => (x, y, z)
 
 theorem add_assoc_equiv {x y z : PGame} : x + y + z ≈ x + (y + z) :=
-  (addAssocRelabelling x y z).equiv
+  (x.add_assoc y z).equiv
 
 theorem neg_add_cancel_le_zero : ∀ x : PGame, -x + x ≤ 0
   | ⟨xl, xr, xL, xR⟩ =>
@@ -1877,7 +1896,7 @@ private theorem add_le_add_right' : ∀ {x y z : PGame}, x ≤ y → x + z ≤ y
   | mk xl xr xL xR, mk yl yr yL yR, mk zl zr zL zR => fun h => by
     refine le_def.2 ⟨fun i => ?_, fun i => ?_⟩ <;> cases' i with i i
     · rw [le_def] at h
-      cases' h with h_left h_right
+      obtain ⟨h_left, h_right⟩ := h
       rcases h_left i with (⟨i', ih⟩ | ⟨j, jh⟩)
       · exact Or.inl ⟨toLeftMovesAdd (Sum.inl i'), add_le_add_right' ih⟩
       · refine Or.inr ⟨toRightMovesAdd (Sum.inl j), ?_⟩
@@ -1906,13 +1925,13 @@ theorem add_lf_add_right {y z : PGame} (h : y ⧏ z) (x) : y + x ⧏ z + x :=
     exact mt this h
   fun w =>
   calc
-    z ≤ z + 0 := (addZeroRelabelling _).symm.le
+    z ≤ z + 0 := (PGame.add_zero _).symm.le
     _ ≤ z + (x + -x) := add_le_add_left (zero_le_add_neg_cancel x) _
-    _ ≤ z + x + -x := (addAssocRelabelling _ _ _).symm.le
+    _ ≤ z + x + -x := (PGame.add_assoc _ _ _).symm.le
     _ ≤ y + x + -x := add_le_add_right w _
-    _ ≤ y + (x + -x) := (addAssocRelabelling _ _ _).le
+    _ ≤ y + (x + -x) := (PGame.add_assoc _ _ _).le
     _ ≤ y + 0 := add_le_add_left (add_neg_cancel_le_zero x) _
-    _ ≤ y := (addZeroRelabelling _).le
+    _ ≤ y := (PGame.add_zero _).le
 
 theorem add_lf_add_left {y z : PGame} (h : y ⧏ z) (x) : x + y ⧏ x + z := by
   rw [lf_congr add_comm_equiv add_comm_equiv]
@@ -1952,31 +1971,31 @@ theorem sub_congr_right {x y z : PGame} : (y ≈ z) → (x - y ≈ x - z) :=
 theorem le_iff_sub_nonneg {x y : PGame} : x ≤ y ↔ 0 ≤ y - x :=
   ⟨fun h => (zero_le_add_neg_cancel x).trans (add_le_add_right h _), fun h =>
     calc
-      x ≤ 0 + x := (zeroAddRelabelling x).symm.le
+      x ≤ 0 + x := (PGame.zero_add x).symm.le
       _ ≤ y - x + x := add_le_add_right h _
-      _ ≤ y + (-x + x) := (addAssocRelabelling _ _ _).le
+      _ ≤ y + (-x + x) := (PGame.add_assoc _ _ _).le
       _ ≤ y + 0 := add_le_add_left (neg_add_cancel_le_zero x) _
-      _ ≤ y := (addZeroRelabelling y).le
+      _ ≤ y := (PGame.add_zero y).le
       ⟩
 
 theorem lf_iff_sub_zero_lf {x y : PGame} : x ⧏ y ↔ 0 ⧏ y - x :=
   ⟨fun h => (zero_le_add_neg_cancel x).trans_lf (add_lf_add_right h _), fun h =>
     calc
-      x ≤ 0 + x := (zeroAddRelabelling x).symm.le
+      x ≤ 0 + x := (PGame.zero_add x).symm.le
       _ ⧏ y - x + x := add_lf_add_right h _
-      _ ≤ y + (-x + x) := (addAssocRelabelling _ _ _).le
+      _ ≤ y + (-x + x) := (PGame.add_assoc _ _ _).le
       _ ≤ y + 0 := add_le_add_left (neg_add_cancel_le_zero x) _
-      _ ≤ y := (addZeroRelabelling y).le
+      _ ≤ y := (PGame.add_zero y).le
       ⟩
 
 theorem lt_iff_sub_pos {x y : PGame} : x < y ↔ 0 < y - x :=
   ⟨fun h => lt_of_le_of_lt (zero_le_add_neg_cancel x) (add_lt_add_right h _), fun h =>
     calc
-      x ≤ 0 + x := (zeroAddRelabelling x).symm.le
+      x ≤ 0 + x := (PGame.zero_add x).symm.le
       _ < y - x + x := add_lt_add_right h _
-      _ ≤ y + (-x + x) := (addAssocRelabelling _ _ _).le
+      _ ≤ y + (-x + x) := (PGame.add_assoc _ _ _).le
       _ ≤ y + 0 := add_le_add_left (neg_add_cancel_le_zero x) _
-      _ ≤ y := (addZeroRelabelling y).le
+      _ ≤ y := (PGame.add_zero y).le
       ⟩
 
 /-! ### Inserting an option -/

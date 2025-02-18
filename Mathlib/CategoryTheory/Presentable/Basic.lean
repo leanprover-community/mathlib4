@@ -148,10 +148,6 @@ lemma isCardinalPresentable_iff_of_isEquivalence
   · intro
     infer_instance
 
-lemma isCardinalPresentable_shrinkHoms_iff [LocallySmall.{w} C] :
-    IsCardinalPresentable ((ShrinkHoms.functor.{w} C).obj X) κ ↔ IsCardinalPresentable X κ :=
-  isCardinalPresentable_iff_of_isEquivalence X κ _
-
 end
 
 section

@@ -151,7 +151,7 @@ theorem log_le_of_logEmbedding_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r)
         (fun w _ => logEmbedding_component_le hr h w)).trans ?_
       rw [nsmul_eq_mul]
       refine mul_le_mul ?_ le_rfl hr (Fintype.card (InfinitePlace K)).cast_nonneg
-      simp [card_univ]
+      simp
   · have hyp := logEmbedding_component_le hr h ⟨w, hw⟩
     rw [logEmbedding_component, abs_mul, Nat.abs_cast] at hyp
     refine (le_trans ?_ hyp).trans ?_
@@ -400,9 +400,7 @@ theorem logEmbeddingQuot_injective :
     Function.comp_apply, EmbeddingLike.apply_eq_iff_eq] at h
   exact (EmbeddingLike.apply_eq_iff_eq _).mp <| (QuotientGroup.kerLift_injective _).eq_iff.mp h
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/4119
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/4119
 the `Module ℤ (Additive ((𝓞 K)ˣ ⧸ NumberField.Units.torsion K))` instance required below isn't found
 unless we use `set_option maxSynthPendingDepth 2`, or add
 explicit instances:

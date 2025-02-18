@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Hom.CompleteLattice
 
@@ -97,6 +98,16 @@ theorem IsBounded.isBoundedUnder {q : β → β → Prop} {u : α → β}
 theorem IsBoundedUnder.comp {l : Filter γ} {q : β → β → Prop} {u : γ → α} {v : α → β}
     (hv : ∀ a₀ a₁, r a₀ a₁ → q (v a₀) (v a₁)) : l.IsBoundedUnder r u → l.IsBoundedUnder q (v ∘ u)
   | ⟨a, h⟩ => ⟨v a, show ∀ᶠ x in map u l, q (v x) (v a) from h.mono fun x => hv x a⟩
+
+lemma isBoundedUnder_map_iff {ι κ X : Type*} {r : X → X → Prop} {f : ι → X} {φ : κ → ι}
+    {𝓕 : Filter κ} :
+    (map φ 𝓕).IsBoundedUnder r f ↔ 𝓕.IsBoundedUnder r (f ∘ φ) :=
+  Iff.rfl
+
+lemma Tendsto.isBoundedUnder_comp {ι κ X : Type*} {r : X → X → Prop} {f : ι → X} {φ : κ → ι}
+    {𝓕 : Filter ι} {𝓖 : Filter κ} (φ_tendsto : Tendsto φ 𝓖 𝓕) (𝓕_bounded : 𝓕.IsBoundedUnder r f) :
+    𝓖.IsBoundedUnder r (f ∘ φ) :=
+  isBoundedUnder_map_iff.mp (𝓕_bounded.mono φ_tendsto)
 
 section Preorder
 variable [Preorder α] {f : Filter β} {u : β → α} {s : Set β}
@@ -1002,17 +1013,11 @@ theorem _root_.CompleteLatticeHom.apply_limsup_iterate (f : CompleteLatticeHom �
   simp only [zero_add, Function.comp_apply, iSup_le_iff]
   exact fun i => le_iSup (fun i => f^[i] a) (i + 1)
 
-@[deprecated (since := "2024-07-21")]
-alias CompleteLatticeHom.apply_limsup_iterate := CompleteLatticeHom.apply_limsup_iterate
-
 /-- If `f : α → α` is a morphism of complete lattices, then the liminf of its iterates of any
 `a : α` is a fixed point. -/
 theorem _root_.CompleteLatticeHom.apply_liminf_iterate (f : CompleteLatticeHom α α) (a : α) :
     f (liminf (fun n => f^[n] a) atTop) = liminf (fun n => f^[n] a) atTop :=
   (CompleteLatticeHom.dual f).apply_limsup_iterate _
-
-@[deprecated (since := "2024-07-21")]
-alias CompleteLatticeHom.apply_liminf_iterate := CompleteLatticeHom.apply_liminf_iterate
 
 variable {f g : Filter β} {p q : β → Prop} {u v : β → α}
 
@@ -1097,15 +1102,9 @@ theorem _root_.OrderIso.apply_blimsup [CompleteLattice γ] (e : α ≃o γ) :
   simp only [blimsup_eq, map_sInf, Function.comp_apply, e.image_eq_preimage,
     Set.preimage_setOf_eq, e.le_symm_apply]
 
-@[deprecated (since := "2024-07-21")]
-alias OrderIso.apply_blimsup := OrderIso.apply_blimsup
-
 theorem _root_.OrderIso.apply_bliminf [CompleteLattice γ] (e : α ≃o γ) :
     e (bliminf u f p) = bliminf (e ∘ u) f p :=
   e.dual.apply_blimsup
-
-@[deprecated (since := "2024-07-21")]
-alias OrderIso.apply_bliminf := OrderIso.apply_bliminf
 
 theorem _root_.sSupHom.apply_blimsup_le [CompleteLattice γ] (g : sSupHom α γ) :
     g (blimsup u f p) ≤ blimsup (g ∘ u) f p := by
@@ -1113,15 +1112,9 @@ theorem _root_.sSupHom.apply_blimsup_le [CompleteLattice γ] (g : sSupHom α γ)
   refine ((OrderHomClass.mono g).map_iInf₂_le _).trans ?_
   simp only [_root_.map_iSup, le_refl]
 
-@[deprecated (since := "2024-07-21")]
-alias SupHom.apply_blimsup_le := sSupHom.apply_blimsup_le
-
 theorem _root_.sInfHom.le_apply_bliminf [CompleteLattice γ] (g : sInfHom α γ) :
     bliminf (g ∘ u) f p ≤ g (bliminf u f p) :=
   (sInfHom.dual g).apply_blimsup_le
-
-@[deprecated (since := "2024-07-21")]
-alias InfHom.le_apply_bliminf := sInfHom.le_apply_bliminf
 
 end CompleteLattice
 

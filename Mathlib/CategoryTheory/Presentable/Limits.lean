@@ -180,10 +180,11 @@ lemma isCardinalPresentable_of_isColimit
     (hK : HasCardinalLT (Arrow K) κ)
     [∀ k, IsCardinalPresentable (Y.obj k) κ] :
     IsCardinalPresentable c.pt κ := by
-  rw [← isCardinalPresentable_shrinkHoms_iff.{w}]
-  let e := ShrinkHoms.equivalence C
+  let e := ShrinkHoms.equivalence.{w} C
   have : ∀ (k : K), IsCardinalPresentable ((Y ⋙ e.functor).obj k) κ := by
     dsimp; infer_instance
-  exact isCardinalPresentable_of_isColimit' _ (isColimitOfPreserves e.functor hc) κ hK
+  rw [← isCardinalPresentable_iff_of_isEquivalence c.pt κ e.functor]
+  exact isCardinalPresentable_of_isColimit' _
+    (isColimitOfPreserves e.functor hc) κ hK
 
 end CategoryTheory
