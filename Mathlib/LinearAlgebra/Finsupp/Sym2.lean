@@ -31,7 +31,7 @@ lemma Sym2.mem_support_sym2_of_mul_ne_zero {f : α →₀ R} (p : Sym2 α) (hp :
 /--
 `Sym2.mul` as a `Finsupp`
 -/
-noncomputable def Sym2.mul_finsupp (f : α →₀ R) :
+noncomputable def Sym2.mulFinsupp (f : α →₀ R) :
     Sym2 α →₀ R := Finsupp.onFinset
       f.support.sym2
     (fun p => Sym2.mul (p.map f)) Sym2.mem_support_sym2_of_mul_ne_zero
