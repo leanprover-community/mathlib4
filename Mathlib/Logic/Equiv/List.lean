@@ -352,6 +352,7 @@ end Denumerable
 
 namespace Equiv
 
+/-- A list on a unique type is equivalent to ℕ by sending each list to its length. -/
 @[simps!]
 theorem listUniqueEquiv (α : Type*) [Unique α] : List α ≃ ℕ where
   toFun := List.length
