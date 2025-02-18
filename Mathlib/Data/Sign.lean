@@ -115,11 +115,8 @@ instance : BoundedOrder SignType where
   le_top := LE.of_pos
   bot := -1
   bot_le :=
-    #adaptation_note
-    /--
-    Added `by exact` after https://github.com/leanprover/lean4/pull/6053,
-    but don't understand why it was needed.
-    -/
+    #adaptation_note /-- https://github.com/leanprover/lean4/pull/6053
+    Added `by exact`, but don't understand why it was needed. -/
     by exact LE.of_neg
 
 instance : HasDistribNeg SignType :=
@@ -347,7 +344,7 @@ theorem sign_eq_zero_iff : sign a = 0 ↔ a = 0 := by
   refine ⟨fun h => ?_, fun h => h.symm ▸ sign_zero⟩
   rw [sign_apply] at h
   split_ifs at h with h_1 h_2
-  cases' h
+  cases h
   exact (le_of_not_lt h_1).eq_of_not_lt h_2
 
 theorem sign_ne_zero : sign a ≠ 0 ↔ a ≠ 0 :=

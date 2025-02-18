@@ -212,9 +212,6 @@ end Functor
 
 namespace Functor
 
-@[deprecated (since := "2024-07-09")] alias CategoryTheory.Functor.map_exact :=
-  ShortComplex.Exact.map
-
 open Limits Abelian
 
 variable {A : Type u₁} {B : Type u₂} [Category.{v₁} A] [Category.{v₂} B]
@@ -263,11 +260,6 @@ lemma preservesHomology_of_map_exact : L.PreservesHomology where
       infer_instance
     exact (hL (ShortComplex.mk _ _ (kernel.condition f))
       (ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel f))).fIsKernel
-
-@[deprecated (since := "2024-07-09")] alias preservesKernelsOfMapExact :=
-  PreservesHomology.preservesKernels
-@[deprecated (since := "2024-07-09")] alias preservesCokernelsOfMapExact :=
-  PreservesHomology.preservesCokernels
 
 end
 
