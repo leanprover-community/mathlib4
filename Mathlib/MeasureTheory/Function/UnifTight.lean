@@ -325,7 +325,7 @@ private theorem ae_tendsto_ae_congr {f f' : ℕ → α → β} {g g' : α → β
   rw [← hgg'x]; exact hfgx
 
 /-- Forward direction of Vitali's convergence theorem, with a.e. instead of `InMeasure`
-convergence. -/
+convergence -/
 theorem tendsto_Lp_of_tendsto_ae (hp : 1 ≤ p) (hp' : p ≠ ∞)
     {f : ℕ → α → β} {g : α → β} (haef : ∀ n, AEStronglyMeasurable (f n) μ)
     (hg' : Memℒp g p μ) (hui : UnifIntegrable f p μ) (hut : UnifTight f p μ)

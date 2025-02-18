@@ -122,7 +122,7 @@ variable {α : Type*} {β : Type*} (a : Matrix α β (𝓞 K))
 private def a' : α → β → (K →+* ℂ) → (K →+* ℂ) → ℤ := fun k l r =>
   (newBasis K).repr (a k l * (newBasis K) r)
 
-/-- `asiegel K a` the integer matrix of the coefficients of the
+/-- `asiegel K a` is the integer matrix of the coefficients of the
 product of matrix elements and basis vectors. -/
 private def asiegel : Matrix (α × (K →+* ℂ)) (β × (K →+* ℂ)) ℤ := fun k l => a' K a k.1 l.1 l.2 k.2
 

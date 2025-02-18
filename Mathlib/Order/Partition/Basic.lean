@@ -35,7 +35,7 @@ open Set
 /-- A `Partition` of an element `s` of a `CompleteLattice` is a collection of
 independent nontrivial elements whose supremum is `s`.  -/
 structure Partition [CompleteLattice α] (s : α) where
-  /-- The collection of parts. -/
+  /-- The collection of parts -/
   parts : Set α
   /-- The parts are `sSupIndep`. -/
   sSupIndep' : sSupIndep parts

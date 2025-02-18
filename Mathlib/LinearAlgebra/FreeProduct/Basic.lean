@@ -47,7 +47,7 @@ universe u v w w'
 namespace DirectSum
 open scoped DirectSum
 
-/-- A variant of `DirectSum.induction_on` that uses `DirectSum.lof` instead of `.of`. -/
+/-- A variant of `DirectSum.induction_on` that uses `DirectSum.lof` instead of `.of` -/
 theorem induction_lon {R : Type*} [Semiring R] {ι: Type*} [DecidableEq ι]
     {M : ι → Type*} [(i: ι) → AddCommMonoid <| M i] [(i : ι) → Module R (M i)]
     {C: (⨁ i, M i) → Prop} (x : ⨁ i, M i)
@@ -115,11 +115,11 @@ namespace LinearAlgebra.FreeProduct
 instance : Module R (⨁ i, A i) := by infer_instance
 
 /-- The free tensor algebra over a direct sum of `R`-algebras, before
-taking the quotient by the free product relation. -/
+taking the quotient by the free product relation -/
 abbrev FreeTensorAlgebra := TensorAlgebra R (⨁ i, A i)
 
 /-- The direct sum of tensor powers of a direct sum of `R`-algebras,
-before taking the quotient by the free product relation. -/
+before taking the quotient by the free product relation -/
 abbrev PowerAlgebra := ⨁ (n : ℕ), TensorPower R n (⨁ i, A i)
 
 /-- The free tensor algebra and its representation as an infinite direct sum
@@ -129,7 +129,7 @@ of tensor powers are (noncomputably) equivalent as `R`-algebras. -/
   TensorAlgebra.equivDirectSum.symm
 
 /-- The generating equivalence relation for elements of the free tensor algebra
-that are identified in the free product. -/
+that are identified in the free product -/
 inductive rel : FreeTensorAlgebra R A → FreeTensorAlgebra R A → Prop
   | id  : ∀ {i : I}, rel (ι R <| lof R I A i 1) 1
   | prod : ∀ {i : I} {a₁ a₂ : A i},
@@ -147,17 +147,17 @@ theorem rel_id (i : I) : rel R A (ι R <| lof R I A i 1) 1 := rel.id
 
 
 /-- The free product of the collection of `R`-algebras `A i`, as a quotient of
-`FreeTensorAlgebra R A`. -/
+`FreeTensorAlgebra R A` -/
 @[reducible] def _root_.LinearAlgebra.FreeProduct := RingQuot <| FreeProduct.rel R A
 
 /-- The free product of the collection of `R`-algebras `A i`,
-as a quotient of `PowerAlgebra R A`. -/
+as a quotient of `PowerAlgebra R A` -/
 @[reducible] def _root_.LinearAlgebra.FreeProductOfPowers := RingQuot <| FreeProduct.rel' R A
 
 @[deprecated (since := "2024-12-07")]
 alias _root_.LinearAlgebra.FreeProduct_ofPowers := LinearAlgebra.FreeProductOfPowers
 
-/-- The `R`-algebra equivalence relating `FreeProduct` and `FreeProduct_ofPowers`. -/
+/-- The `R`-algebra equivalence relating `FreeProduct` and `FreeProduct_ofPowers` -/
 noncomputable def equivPowerAlgebra : FreeProductOfPowers R A ≃ₐ[R] FreeProduct R A :=
   RingQuot.algEquivQuotAlgEquiv
     (FreeProduct.powerAlgebra_equiv_freeAlgebra R A |>.symm) (FreeProduct.rel R A)
@@ -171,11 +171,11 @@ instance instSemiring : Semiring (FreeProduct R A) := by infer_instance
 instance instAlgebra : Algebra R (FreeProduct R A) := by infer_instance
 
 /-- The canonical quotient map `FreeTensorAlgebra R A →ₐ[R] FreeProduct R A`,
-as an `R`-algebra homomorphism. -/
+as an `R`-algebra homomorphism -/
 abbrev mkAlgHom : FreeTensorAlgebra R A →ₐ[R] FreeProduct R A :=
   RingQuot.mkAlgHom R (rel R A)
 
-/-- The canonical linear map from the direct sum of the `A i` to the free product. -/
+/-- The canonical linear map from the direct sum of the `A i` to the free product -/
 abbrev ι' : (⨁ i, A i) →ₗ[R] FreeProduct R A :=
   (mkAlgHom R A).toLinearMap ∘ₗ TensorAlgebra.ι R (M := ⨁ i, A i)
 
@@ -197,7 +197,7 @@ theorem mul_injections (a₁ a₂ : A i) :
   simp
 
 /-- The `i`th canonical injection, from `A i` to the free product, as
-a linear map. -/
+a linear map -/
 abbrev lof (i : I) : A i →ₗ[R] FreeProduct R A :=
   ι' R A ∘ₗ DirectSum.lof R I A i
 
@@ -205,12 +205,12 @@ abbrev lof (i : I) : A i →ₗ[R] FreeProduct R A :=
 theorem lof_map_one (i : I) : lof R A i 1 = 1 := by
   rw [lof]; dsimp [mkAlgHom]; exact identify_one R A i
 
-/-- The `i`th canonical injection, from `A i` to the free product. -/
+/-- The `i`th canonical injection, from `A i` to the free product -/
 irreducible_def ι (i : I) : A i →ₐ[R] FreeProduct R A :=
   AlgHom.ofLinearMap (ι' R A ∘ₗ DirectSum.lof R I A i)
     (lof_map_one R A i) (mul_injections R A · · |>.symm)
 
-/-- The family of canonical injection maps, with `i` left implicit. -/
+/-- The family of canonical injection maps, with `i` left implicit -/
 irreducible_def of {i : I} : A i →ₐ[R] FreeProduct R A := ι R A i
 
 
