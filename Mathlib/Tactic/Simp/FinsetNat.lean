@@ -33,7 +33,7 @@ partial def evalFinsetIccNat {em eml en enl : Q(ℕ)} (hm : Q(IsNat $em $eml))
     let hnm ← mkDecideProofQq q($en < $em)
     return ⟨q(∅), q(Finset.Icc_eq_empty_of_lt $hnm)⟩
 
-scoped simproc finsetIcc_nat (Icc _ _) := fun e ↦ do
+simproc_decl finsetIcc_nat (Icc _ _) := fun e ↦ do
   let ⟨1, ~q(Finset ℕ), ~q(Icc (OfNat.ofNat $em) (OfNat.ofNat $en))⟩ ← inferTypeQ e
     | return .continue
   let hm : Q(IsNat (OfNat.ofNat $em) $em) := q(⟨rfl⟩)
