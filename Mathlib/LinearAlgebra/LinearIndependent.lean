@@ -112,6 +112,25 @@ variable (R) (v)
 def LinearIndependent : Prop :=
   Injective (Finsupp.linearCombination R v)
 
+open Lean PrettyPrinter.Delaborator SubExpr in
+/-- Delaborator for `LinearIndependent` that suggests pretty printing with type hints
+in case the family of vectors is over a `Set`.
+
+Type hints look like `LinearIndependent fun (v : ↑s) => ↑v` or `LinearIndependent (ι := ↑s) f`,
+depending on whether the family is a lambda expression or not. -/
+@[app_delab LinearIndependent]
+def delabLinearIndependent : Delab :=
+  whenPPOption getPPNotation <|
+  whenNotPPOption getPPAnalysisSkip <|
+  withOptionAtCurrPos `pp.analysis.skip true do
+    let e ← getExpr
+    guard <| e.isAppOfArity ``LinearIndependent 7
+    let some _ := (e.getArg! 0).coeTypeSet? | failure
+    let optionsPerPos ← if (e.getArg! 3).isLambda then
+      withNaryArg 3 do return (← read).optionsPerPos.setBool (← getPos) pp.funBinderTypes.name true
+    else
+      withNaryArg 0 do return (← read).optionsPerPos.setBool (← getPos) `pp.analysis.namedArg true
+    withTheReader Context ({· with optionsPerPos}) delab
 /-- `LinearIndepOn R v s` states that the vectors in the family `v` that are indexed
 by the elements of `s` are linearly independent over `R`. -/
 def LinearIndepOn (s : Set ι) : Prop := LinearIndependent R (fun x : s ↦ v x)
