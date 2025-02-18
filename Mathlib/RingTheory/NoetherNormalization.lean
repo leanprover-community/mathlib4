@@ -97,17 +97,12 @@ private lemma degreeOf_zero_t {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).de
   simp only [Fin.prod_univ_succ, Fin.sum_univ_succ, _root_.map_mul, map_prod, map_pow,
     AlgEquiv.ofAlgHom_apply, MvPolynomial.aeval_C, MvPolynomial.aeval_X, if_pos, Fin.succ_ne_zero,
     ite_false, one_smul, map_add, finSuccEquiv_X_zero, finSuccEquiv_X_succ, algebraMap_eq]
-  have h1 : (finSuccEquiv k n) (C a) ≠ 0 :=
-    (map_ne_zero_iff _ (AlgEquiv.injective _)).mpr ((map_ne_zero_iff _ (C_injective _ _)).mpr ha)
-  have h2 : Polynomial.X (R := (MvPolynomial (Fin n) k)) ^ v 0 ≠ 0 := pow_ne_zero (v 0) X_ne_zero
-  have h3 (i : Fin n) :
-      (Polynomial.C (X (R := k) i) + Polynomial.X ^ r i.succ) ^ v i.succ ≠ 0 := by
-    apply pow_ne_zero (v i.succ) (leadingCoeff_ne_zero.mp ?_)
-    rw [add_comm, leadingCoeff_X_pow_add_C (by simp)]
-    exact one_ne_zero
-  rw [natDegree_mul h1 (mul_ne_zero h2 (Finset.prod_ne_zero_iff.mpr (fun i _ ↦ h3 i))),
-    natDegree_mul h2 (Finset.prod_ne_zero_iff.mpr (fun i _ ↦ h3 i)),
-    natDegree_prod _  _ (fun i _ ↦ h3 i), natDegree_finSuccEquiv, degreeOf_C]
+  have h (i : Fin n) :
+      (Polynomial.C (X (R := k) i) + Polynomial.X ^ r i.succ) ^ v i.succ ≠ 0 :=
+    pow_ne_zero (v i.succ) (leadingCoeff_ne_zero.mp <| by simp [add_comm, leadingCoeff_X_pow_add_C])
+  rw [natDegree_mul (by simp [ha]) (mul_ne_zero (by simp) (Finset.prod_ne_zero_iff.mpr
+    (fun i _ ↦ h i))), natDegree_mul (by simp) (Finset.prod_ne_zero_iff.mpr (fun i _ ↦ h i)),
+    natDegree_prod _  _ (fun i _ ↦ h i), natDegree_finSuccEquiv, degreeOf_C]
   simpa only [natDegree_pow, zero_add, natDegree_X, mul_one, Fin.val_zero, pow_zero, one_mul,
     add_right_inj] using Finset.sum_congr rfl (fun i _ ↦ by
     rw [add_comm (Polynomial.C _), natDegree_X_pow_add_C, mul_comm])
