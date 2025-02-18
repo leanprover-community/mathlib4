@@ -72,8 +72,7 @@ noncomputable abbrev T1 (c : k) :
     MvPolynomial (Fin (n + 1)) k →ₐ[k] MvPolynomial (Fin (n + 1)) k :=
   aeval fun i ↦ if i = 0 then X 0 else X i + c • X 0 ^ r i
 
-private lemma t1_comp_t1_neg (c : k) :
-    (T1 f c).comp (T1 f (-c)) = AlgHom.id _ _ := by
+private lemma t1_comp_t1_neg (c : k) : (T1 f c).comp (T1 f (-c)) = AlgHom.id _ _ := by
   rw [comp_aeval, ← MvPolynomial.aeval_X_left]
   ext i v
   cases i using Fin.cases <;>
