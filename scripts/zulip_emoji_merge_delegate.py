@@ -50,25 +50,19 @@ reviewers_response = client.get_messages({
 print(f"public_response:{public_response}")
 print(f"reviewers_response:{reviewers_response}")
 
-# Get the oldest message in any topic in `PR reviews` whose title matches `#{PR_NUMBER}`.
-first_message_in_PR_reviews = client.get_messages({
-    "anchor": "oldest",
-    "num_before": 0,
-    "num_after": 1,
-    "narrow": [
-        {"operator": "channel", "operand": "PR reviews"},
-        {"operator": "search", "operand": f'#{PR_NUMBER}'},
-    ],
-})
-print(f'First message:{first_message_in_PR_reviews}')
+hashPR = re.compile(f'#{PR_NUMBER}')
 
-messages = (public_response['messages']) + (reviewers_response['messages']) + (first_message_in_PR_reviews['messages'])
+# we look for the first message in the channel `PR reviews` whose topic matches the PR number
+# and we store its ID as `specialID`.
+for msg in public_response['messages']:
+    if hashPR.search(msg['subject']) and msg['display_recipient'] == 'PR reviews':
+        specialID=msg['id']
+        print(f'ID:{specialID}\nFirst message with correct subject:{msg}\n')
+        break
+
+messages = (public_response['messages']) + (reviewers_response['messages'])
 
 print(messages)
-# we use the ID of the first message in the `PR reviews` channel to react to it
-# whether or not it has the PR number in the content.
-first_message_in_PR_reviews_id=first_message_in_PR_reviews['messages'][0]['id']
-print(f'First message ID: {first_message_in_PR_reviews_id}')
 
 pr_pattern = re.compile(f'https://github.com/leanprover-community/mathlib4/pull/{PR_NUMBER}')
 
@@ -85,7 +79,7 @@ for message in messages:
     has_merge = any(reaction['emoji_name'] == 'merge' for reaction in reactions)
     has_awaiting_author = any(reaction['emoji_name'] == 'writing' for reaction in reactions)
     has_closed = any(reaction['emoji_name'] == 'closed-pr' for reaction in reactions)
-    match = pr_pattern.search(content) or message['id'] == first_message_in_PR_reviews_id
+    match = pr_pattern.search(content) or message['id'] == specialID
     if match:
         print(f"matched: '{message}'")
 
