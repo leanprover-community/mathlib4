@@ -313,6 +313,11 @@ end FiniteType
 
 end AlgHom
 
+theorem Algebra.finiteType_iff_algebraMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] :
+    FiniteType R A ↔ (algebraMap R A).FiniteType := by
+  dsimp [RingHom.FiniteType]
+  constructor <;> (intro h; convert h; apply algebra_ext; exact congrFun rfl)
+
 section MonoidAlgebra
 
 variable {R : Type*} {M : Type*}
