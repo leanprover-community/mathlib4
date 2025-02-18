@@ -645,7 +645,6 @@ namespace adicCompletion
 -- https://github.com/mariainesdff/LocalClassFieldTheory/blob/18114679e7125329fd801032423c4c95078cdc77/LocalClassFieldTheory/DiscreteValuationRing/Localization.lean#L61
 instance : IsDiscreteValuationRing 𝒪[v.adicCompletion K] := sorry
 
-
 variable {A K B L v w} in
 theorem uniformContinuous_algebraMap (h : w.comap A = v) :
     letI : UniformSpace K := v.adicValued.toUniformSpace
@@ -684,12 +683,11 @@ theorem algebraMap_mem_integers  (hwv : w.comap A = v) (x : v.adicCompletion K)
   letI : UniformSpace K := v.adicValued.toUniformSpace
   letI : UniformSpace L := w.adicValued.toUniformSpace
   induction x using induction_on
-  · apply isClosed_imp
-    · simpa using Valued.integer_isOpen _
-    · exact IsClosed.preimage continuous_map <| Valued.WithZeroMulInt.integers_isClosed _
-  · simp [mapRingHom_coe (uniformContinuous_algebraMap hwv)]
-    rw [mem_adicCompletionIntegers, valuedAdicCompletion_def, w.adicValued.extension_extends,
-      adicValued_apply, ← valuation_comap A]
+  · apply isClosed_imp (by simpa using Valued.integer_isOpen _)
+    exact IsClosed.preimage continuous_map <| Valued.WithZeroMulInt.integers_isClosed _
+  · rw [mapRingHom_coe (uniformContinuous_algebraMap hwv), mem_adicCompletionIntegers,
+      valuedAdicCompletion_def, w.adicValued.extension_extends, adicValued_apply,
+      ← valuation_comap A]
     apply pow_le_one₀ zero_le'
     rwa [mem_adicCompletionIntegers, valuedAdicCompletion_def, v.adicValued.extension_extends,
       adicValued_apply, ← hwv] at h
