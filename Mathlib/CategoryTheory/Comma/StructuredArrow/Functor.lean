@@ -101,6 +101,13 @@ def mapCompιCompGrothendieckProj {X Y : D} (f : X ⟶ Y) :
     CostructuredArrow.map f ⋙ Grothendieck.ι (functor L) Y ⋙ grothendieckProj L ≅ proj L X :=
   isoWhiskerLeft (CostructuredArrow.map f) (ιCompGrothendieckPrecompFunctorToCommaCompFst L (𝟭 _) Y)
 
+/-- Each natural transformation `T ⟶ S` between functors `S T : C ⥤ D` induces a natural
+transformation between the associated costructured arrow functors `D ⥤ Cat`. -/
+@[simps]
+def functorNatTransFunctor {S T : C ⥤ D} (i : T ⟶ S) : functor S ⟶ functor T where
+  app d := map₂ (F := 𝟭 _) (G := 𝟭 _) i (𝟙 _)
+  naturality d e f := Functor.ext (fun _ => by simp [map, map₂, Comma.map, Comma.mapRight])
+
 end CostructuredArrow
 
 end CategoryTheory
