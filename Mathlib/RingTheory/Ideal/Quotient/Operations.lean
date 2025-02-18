@@ -396,17 +396,17 @@ theorem Quotient.mkₐ_ker (I : Ideal A) [I.IsTwoSided] :
     RingHom.ker (Quotient.mkₐ R₁ I : A →+* A ⧸ I) = I :=
   Ideal.mk_ker
 
-lemma Quotient.mkₐ_bij_iff_eq_zero (I : Ideal A) :
-    Function.Bijective (mkₐ A I) ↔ I = 0 := by
+lemma Quotient.mkₐ_bij_iff_eq_zero (I : Ideal A) [I.IsTwoSided] :
+    Function.Bijective (mk I) ↔ I = 0 := by
   constructor
   · intro h
     rw [Submodule.zero_eq_bot, ← Ideal.map_eq_bot_iff_of_injective h.1]
-    refine (map_eq_bot_iff_le_ker (mkₐ A I)).mpr <| le_of_eq ?_
+    refine (map_eq_bot_iff_le_ker (mk I)).mpr <| le_of_eq ?_
     ext x
-    rw [← eq_zero_iff_mem, mem_ker, mkₐ_eq_mk]
+    rw [← eq_zero_iff_mem, mem_ker]
   · intro h
     refine ⟨(injective_iff_map_eq_zero _).mpr (fun a ha ↦ ?_), mk_surjective⟩
-    rw [mkₐ_eq_mk, eq_zero_iff_mem, h, zero_eq_bot, mem_bot] at ha
+    rw [eq_zero_iff_mem, h, zero_eq_bot, mem_bot] at ha
     exact ha
 
 variable {R₁}
