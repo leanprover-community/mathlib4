@@ -1706,6 +1706,7 @@ import Mathlib.CategoryTheory.Abelian.Images
 import Mathlib.CategoryTheory.Abelian.Injective
 import Mathlib.CategoryTheory.Abelian.InjectiveResolution
 import Mathlib.CategoryTheory.Abelian.LeftDerived
+import Mathlib.CategoryTheory.Abelian.Monomorphisms
 import Mathlib.CategoryTheory.Abelian.NonPreadditive
 import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.CategoryTheory.Abelian.Projective
