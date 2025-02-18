@@ -61,43 +61,42 @@ lemma isRat_realSqrt_of_isRat_ofNat {x : ℝ} {n sn : ℕ} {d sd : ℕ} (hn : sn
 /-- `norm_num` extension that evaluates the function `Real.sqrt`. -/
 @[norm_num √_]
 def evalRealSqrt : NormNumExt where eval {u α} e := do
-  let .app _ (x : Q(ℝ)) ← whnfR e | failure
-  have : u =QL 0 := ⟨⟩; have : $α =Q ℝ := ⟨⟩; have : $e =Q √$x := ⟨⟩
-  match ← derive x with
-  | .isBool _ _ => failure
-  | .isNat sℝ ex pf =>
-      let x := ex.natLit!
-      let y := Nat.sqrt x
-      if y * y = x then
-        have ey : Q(ℕ) := mkRawNatLit y
-        have pf₁ : Q($ey * $ey = $ex) := (q(Eq.refl $ex) : Expr)
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(√$x) =>
+    match ← derive x with
+    | .isBool _ _ => failure
+    | .isNat sℝ ex pf =>
+        let x := ex.natLit!
+        let y := Nat.sqrt x
+        if y * y = x then
+          have ey : Q(ℕ) := mkRawNatLit y
+          have pf₁ : Q($ey * $ey = $ex) := (q(Eq.refl $ex) : Expr)
+          assumeInstancesCommute
+          return .isNat sℝ ey q(isNat_realSqrt $pf $pf₁)
+        else failure
+    | .isNegNat _ ex pf =>
+        -- Recall that `Real.sqrt` returns 0 for negative inputs
         assumeInstancesCommute
-        return .isNat sℝ ey q(isNat_realSqrt $pf $pf₁)
-      else failure
-  | .isNegNat _ ex pf =>
-      -- Recall that `Real.sqrt` returns 0 for negative inputs
-      assumeInstancesCommute
-      return .isNat q(inferInstance) (mkRawNatLit 0) q(isNat_realSqrt_neg $pf)
-  | .isRat sℝ eq en ed pf =>
-      match en with
-      | .app (.const ``Int.negOfNat []) (n : Q(ℕ)) =>
-        have : (Int.negOfNat $n) =Q $en := ⟨⟩
-        assumeInstancesCommute
-        return .isNat q(inferInstance) (mkRawNatLit 0) q(isNat_realSqrt_of_isRat_negOfNat $pf)
-      | .app (.const ``Int.ofNat []) (n' : Q(ℕ)) =>
-        have : Int.ofNat $n' =Q $en := ⟨⟩
-        let n : ℕ := n'.natLit!
-        let d : ℕ := ed.natLit!
-        let sn := Nat.sqrt n
-        let sd := Nat.sqrt d
-        unless sn * sn = n ∧ sd * sd = d do failure
-        have esn : Q(ℕ) := mkRawNatLit sn
-        have esd : Q(ℕ) := mkRawNatLit sd
-        have hn : Q($esn * $esn = $n') := (q(Eq.refl $n') : Expr)
-        have hd : Q($esd * $esd = $ed) := (q(Eq.refl $ed) : Expr)
-        assumeInstancesCommute
-        return .isRat sℝ (sn / sd) _ esd q(isRat_realSqrt_of_isRat_ofNat $hn $hd $pf)
-      | _ => failure
+        return .isNat q(inferInstance) (mkRawNatLit 0) q(isNat_realSqrt_neg $pf)
+    | .isRat sℝ eq en ed pf =>
+        match en with
+        | .app (.const ``Int.negOfNat []) (n : Q(ℕ)) =>
+          assumeInstancesCommute
+          return .isNat q(inferInstance) (mkRawNatLit 0) q(isNat_realSqrt_of_isRat_negOfNat $pf)
+        | .app (.const ``Int.ofNat []) (n' : Q(ℕ)) =>
+          let n : ℕ := n'.natLit!
+          let d : ℕ := ed.natLit!
+          let sn := Nat.sqrt n
+          let sd := Nat.sqrt d
+          unless sn * sn = n ∧ sd * sd = d do failure
+          have esn : Q(ℕ) := mkRawNatLit sn
+          have esd : Q(ℕ) := mkRawNatLit sd
+          have hn : Q($esn * $esn = $n') := (q(Eq.refl $n') : Expr)
+          have hd : Q($esd * $esd = $ed) := (q(Eq.refl $ed) : Expr)
+          assumeInstancesCommute
+          return .isRat sℝ (sn / sd) _ esd q(isRat_realSqrt_of_isRat_ofNat $hn $hd $pf)
+        | _ => failure
+  | _ => failure
 
 /-- `norm_num` extension that evaluates the function `NNReal.sqrt`. -/
 @[norm_num NNReal.sqrt _]
