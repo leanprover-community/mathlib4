@@ -10,7 +10,7 @@ This file aims to establish that there is a nice epi-mono factorization in `Simp
 More precisely, we introduce two morphism properties `P_δ` and `P_σ` that
 single out morphisms that are compositions of `δ i` (resp. `σ i`).
 
-The main result of this file is `exists_P_σ_P_δ_factorisation`, which asserts that every
+The main result of this file is `exists_P_σ_P_δ_factorization`, which asserts that every
 moprhism as a decomposition of a `P_σ` followed by a `P_δ`.
 
 -/
@@ -96,11 +96,11 @@ lemma eq_or_len_le_of_P_δ {x y : SimplexCategoryGenRel} {f : x ⟶ y} (h_δ : P
 
 end EpiMono
 
-section ExistenceOfFactorisations
+section ExistenceOfFactorizations
 
 /-- An auxiliary lemma to show that one can always use the simplicial identities to simplify a term
 in the form `δ ≫ σ` into either an identity, or a term of the form `σ ≫ δ`. This is the crucial
-special case to induct on to get an epi-mono factorisation for all morphisms. -/
+special case to induct on to get an epi-mono factorization for all morphisms. -/
 private lemma switch_δ_σ {n : ℕ} (i : Fin (n + 1 + 1)) (i' : Fin (n + 1 + 2)) :
    δ i' ≫ σ i = 𝟙 _ ∨ ∃ j j', δ i' ≫ σ i = σ j ≫ δ j' := by
   obtain h'' | h'' | h'' : i'= i.castSucc ∨ i' < i.castSucc ∨ i.castSucc < i' := by
@@ -183,7 +183,7 @@ private lemma factor_δ_σ {n : ℕ} (i : Fin (n + 1)) (i' : Fin (n + 2)) :
       simp
     · use mk n, σ j, δ j', P_σ.σ _, P_δ.δ _
 
-/-- An auxiliary lemma that shows there exists a factorisation as a P_δ followed by a P_σ for
+/-- An auxiliary lemma that shows there exists a factorization as a P_δ followed by a P_σ for
 morphisms of the form `P_δ ≫ σ`. -/
 private lemma factor_P_δ_σ {n : ℕ} (i : Fin (n + 1)) {x : SimplexCategoryGenRel}
     (f : x ⟶ mk (n + 1)) (hf : P_δ f) : ∃ (z : SimplexCategoryGenRel) (e : x ⟶ z) (m : z ⟶ mk n)
@@ -230,7 +230,7 @@ private lemma factor_P_δ_σ {n : ℕ} (i : Fin (n + 1)) {x : SimplexCategoryGen
           use z, e, m₁ ≫ δ j', he, P_δ.comp_mem _ _ hm₁ (P_δ.δ _)
 
 /-- Any morphism in `SimplexCategoryGenRel` can be decomposed as a `P_σ` followed by a `P_δ`. -/
-theorem exists_P_σ_P_δ_factorisation {x y : SimplexCategoryGenRel} (f : x ⟶ y) :
+theorem exists_P_σ_P_δ_factorization {x y : SimplexCategoryGenRel} (f : x ⟶ y) :
     ∃ (z : SimplexCategoryGenRel) (e : x ⟶ z) (m : z ⟶ y)
         (_ : P_σ e) (_ : P_δ m), f = e ≫ m := by
   induction f with
@@ -272,6 +272,6 @@ theorem exists_P_σ_P_δ_factorisation {x y : SimplexCategoryGenRel} (f : x ⟶ 
           use z₁, e ≫ e₁, m₁ ≫ δ j'', P_σ.comp_mem _ _ he he₁, P_δ.comp_mem _ _ hm₁ (P_δ.δ _)
           simp
 
-end ExistenceOfFactorisations
+end ExistenceOfFactorizations
 
 end SimplexCategoryGenRel
