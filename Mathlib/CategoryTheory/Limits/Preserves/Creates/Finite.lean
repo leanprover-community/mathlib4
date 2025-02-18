@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.Creates
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.FinCategory.AsType
 
 /-!
@@ -69,6 +71,14 @@ instance compCreatesFiniteLimits (F : C ⥤ D) (G : D ⥤ E) [CreatesFiniteLimit
 def createsFiniteLimitsOfNatIso {F G : C ⥤ D} {h : F ≅ G} [CreatesFiniteLimits F] :
     CreatesFiniteLimits G where
   createsFiniteLimits _ _ _ := createsLimitsOfShapeOfNatIso h
+
+theorem hasFiniteLimits_of_hasLimitsLimits_of_createsFiniteLimits (F : C ⥤ D) [HasFiniteLimits D]
+    [CreatesFiniteLimits F] : HasFiniteLimits C where
+  out _ _ _ := hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape F
+
+instance (priority := 100) preservesFiniteLimits_of_createsFiniteLimits_and_hasFiniteLimits
+    (F : C ⥤ D) [CreatesFiniteLimits F] [HasFiniteLimits D] : PreservesFiniteLimits F where
+  preservesFiniteLimits _ _ _ := inferInstance
 
 end
 
@@ -149,6 +159,14 @@ instance compCreatesFiniteColimits (F : C ⥤ D) (G : D ⥤ E) [CreatesFiniteCol
 def createsFiniteColimitsOfNatIso {F G : C ⥤ D} {h : F ≅ G} [CreatesFiniteColimits F] :
     CreatesFiniteColimits G where
   createsFiniteColimits _ _ _ := createsColimitsOfShapeOfNatIso h
+
+theorem hasFiniteColimits_of_hasColimits_of_createsFiniteColimits (F : C ⥤ D) [HasFiniteColimits D]
+    [CreatesFiniteColimits F] : HasFiniteColimits C where
+  out _ _ _ := hasColimitsOfShape_of_hasColimitsOfShape_createsColimitsOfShape F
+
+instance (priority := 100) preservesFiniteColimits_of_createsFiniteColimits_and_hasFiniteColimits
+    (F : C ⥤ D) [CreatesFiniteColimits F] [HasFiniteColimits D] : PreservesFiniteColimits F where
+  preservesFiniteColimits _ _ _ := inferInstance
 
 end
 

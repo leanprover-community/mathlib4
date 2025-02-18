@@ -140,18 +140,6 @@ abbrev ofHom (f : C(X, Y)) : of P X ⟶ of P Y := ConcreteCategory.ofHom f
 
 end
 
--- Note (https://github.com/leanprover-community/mathlib4/issues/10754): Lean does not see through the forgetful functor here
-instance (X : CompHausLike.{u} P) : TopologicalSpace ((forget (CompHausLike P)).obj X) :=
-  inferInstanceAs (TopologicalSpace X.toTop)
-
--- Note (https://github.com/leanprover-community/mathlib4/issues/10754): Lean does not see through the forgetful functor here
-instance (X : CompHausLike.{u} P) : CompactSpace ((forget (CompHausLike P)).obj X) :=
-  inferInstanceAs (CompactSpace X.toTop)
-
--- Note (https://github.com/leanprover-community/mathlib4/issues/10754): Lean does not see through the forgetful functor here
-instance (X : CompHausLike.{u} P) : T2Space ((forget (CompHausLike P)).obj X) :=
-  inferInstanceAs (T2Space X.toTop)
-
 variable {P}
 
 /-- If `P` imples `P'`, then there is a functor from `CompHausLike P` to `CompHausLike P'`. -/

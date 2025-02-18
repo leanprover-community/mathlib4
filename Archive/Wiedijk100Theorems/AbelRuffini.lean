@@ -6,8 +6,9 @@ Authors: Thomas Browning
 import Mathlib.Analysis.Calculus.LocalExtr.Polynomial
 import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.FieldTheory.AbelRuffini
-import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RingTheory.EisensteinCriterion
+import Mathlib.RingTheory.Int.Basic
+import Mathlib.RingTheory.RootsOfUnity.Minpoly
 
 /-!
 # Construction of an algebraic number that is not solvable by radicals.

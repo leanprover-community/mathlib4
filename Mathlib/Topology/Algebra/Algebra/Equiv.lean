@@ -42,7 +42,7 @@ structure ContinuousAlgEquiv (R A B : Type*) [CommSemiring R]
     [Algebra R B] extends A ≃ₐ[R] B, A ≃ₜ B
 
 @[inherit_doc]
-notation:50 A " ≃A[" R "]" B => ContinuousAlgEquiv R A B
+notation:50 A " ≃A[" R "] " B => ContinuousAlgEquiv R A B
 
 attribute [nolint docBlame] ContinuousAlgEquiv.toHomeomorph
 
@@ -76,8 +76,8 @@ instance equivLike : EquivLike (A ≃A[R] B) A B where
   coe f := f.toFun
   inv f := f.invFun
   coe_injective' f g h₁ h₂ := by
-    cases' f with f' _
-    cases' g with g' _
+    obtain ⟨f', _⟩ := f
+    obtain ⟨g', _⟩ := g
     rcases f' with ⟨⟨_, _⟩, _⟩
     rcases g' with ⟨⟨_, _⟩, _⟩
     congr
@@ -255,6 +255,9 @@ theorem self_comp_symm (e : A ≃A[R] B) : (e : A → B) ∘ e.symm = id :=
 
 @[simp]
 theorem symm_symm (e : A ≃A[R] B) : e.symm.symm = e := rfl
+
+theorem symm_bijective : Function.Bijective (symm : (A ≃A[R] B) → _) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
 theorem refl_symm : (refl R A).symm = refl R A := rfl

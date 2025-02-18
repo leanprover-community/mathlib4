@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
 import Mathlib.Analysis.Convex.Topology
+import Mathlib.Topology.Connected.LocPathConnected
 
 /-!
 # Locally convex topological modules
@@ -71,7 +72,7 @@ end Semimodule
 section Module
 
 variable (𝕜 E : Type*) [OrderedSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-  [TopologicalAddGroup E]
+  [IsTopologicalAddGroup E]
 
 theorem LocallyConvexSpace.ofBasisZero {ι : Type*} (b : ι → Set E) (p : ι → Prop)
     (hbasis : (𝓝 0).HasBasis p b) (hconvex : ∀ i, p i → Convex 𝕜 (b i)) :
@@ -112,7 +113,7 @@ end Module
 section LinearOrderedField
 
 variable (𝕜 E : Type*) [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-  [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
+  [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
 theorem LocallyConvexSpace.convex_open_basis_zero [LocallyConvexSpace 𝕜 E] :
     (𝓝 0 : Filter E).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ Convex 𝕜 s) id :=
@@ -129,7 +130,7 @@ closed, then we can find open disjoint convex sets containing them. -/
 theorem Disjoint.exists_open_convexes [LocallyConvexSpace 𝕜 E] {s t : Set E} (disj : Disjoint s t)
     (hs₁ : Convex 𝕜 s) (hs₂ : IsCompact s) (ht₁ : Convex 𝕜 t) (ht₂ : IsClosed t) :
     ∃ u v, IsOpen u ∧ IsOpen v ∧ Convex 𝕜 u ∧ Convex 𝕜 v ∧ s ⊆ u ∧ t ⊆ v ∧ Disjoint u v := by
-  letI : UniformSpace E := TopologicalAddGroup.toUniformSpace E
+  letI : UniformSpace E := IsTopologicalAddGroup.toUniformSpace E
   haveI : UniformAddGroup E := comm_topologicalAddGroup_is_uniform
   have := (LocallyConvexSpace.convex_open_basis_zero 𝕜 E).comap fun x : E × E => x.2 - x.1
   rw [← uniformity_eq_comap_nhds_zero] at this

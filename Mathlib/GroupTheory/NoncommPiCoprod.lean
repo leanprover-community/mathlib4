@@ -39,6 +39,7 @@ images of different morphisms commute, we obtain a canonical morphism
 
 -/
 
+assert_not_exists Field
 
 namespace Subgroup
 
@@ -238,8 +239,8 @@ theorem independent_range_of_coprime_order
   · intro _ _ hj
     apply hcomm
     exact hj ∘ Subtype.ext
-  cases' hxp with g hgf
-  cases' hxi with g' hg'f
+  obtain ⟨g, hgf⟩ := hxp
+  obtain ⟨g', hg'f⟩ := hxi
   have hxi : orderOf f ∣ Fintype.card (H i) := by
     rw [← hg'f]
     exact (orderOf_map_dvd _ _).trans orderOf_dvd_card
@@ -248,7 +249,6 @@ theorem independent_range_of_coprime_order
     exact (orderOf_map_dvd _ _).trans orderOf_dvd_card
   change f = 1
   rw [← pow_one f, ← orderOf_dvd_iff_pow_eq_one]
-  -- Porting note: ouch, had to replace an ugly `convert`
   obtain ⟨c, hc⟩ := Nat.dvd_gcd hxp hxi
   use c
   rw [← hc]

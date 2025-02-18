@@ -6,7 +6,7 @@ María Inés de Frutos-Fernández, Sam van Gool, Silvain Rideau-Kikuchi, Amos Tu
 Francesco Veneziano
 -/
 
-import Mathlib.Algebra.Order.AbsoluteValue.Equivalence
+import Mathlib.Analysis.AbsoluteValue.Equivalence
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.NumberTheory.Padics.PadicNorm
@@ -410,7 +410,7 @@ lemma le_pow_log : f n ≤ f m ^ logb m n := by
 
 include hm hn notbdd in
 /-- Given `m, n ≥ 2` and `f m = m ^ s`, `f n = n ^ t` for `s, t > 0`, we have `t ≤ s`. -/
-private lemma le_of_eq_pow {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t)  : t ≤ s := by
+private lemma le_of_eq_pow {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t) : t ≤ s := by
   rw [← rpow_le_rpow_left_iff (x := n) (mod_cast hn), ← hfn]
   apply le_trans <| le_pow_log hm hn notbdd
   rw [hfm, ← rpow_mul (Nat.cast_nonneg m), mul_comm, rpow_mul (Nat.cast_nonneg m),
