@@ -599,7 +599,7 @@ lemma Wbtw.of_le_of_le {x y z : R} (hxy : x ≤ y) (hyz : y ≤ z) : Wbtw R x y 
   (wbtw_iff_of_le (hxy.trans hyz)).mpr ⟨hxy, hyz⟩
 
 lemma Sbtw.of_lt_of_lt {x y z : R} (hxy : x < y) (hyz : y < z) : Sbtw R x y z :=
-  ⟨wbtw_of_le_of_le hxy.le hyz.le, hxy.ne', hyz.ne⟩
+  ⟨.of_le_of_le hxy.le hyz.le, hxy.ne', hyz.ne⟩
 
 theorem wbtw_iff_left_eq_or_right_mem_image_Ici {x y z : P} :
     Wbtw R x y z ↔ x = y ∨ z ∈ lineMap x y '' Set.Ici (1 : R) := by
