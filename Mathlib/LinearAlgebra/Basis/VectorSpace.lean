@@ -66,20 +66,20 @@ theorem range_extend (hs : LinearIndepOn K id s) :
 The specific value of this definition should be considered an implementation detail.
 -/
 def sumExtendIndex (hs : LinearIndependent K v) : Set V :=
-  LinearIndepOn.extend hs.linearIndepOn_id_range (subset_univ _) \ range v
+  LinearIndepOn.extend hs.linearIndepOn_id (subset_univ _) \ range v
 
 /-- If `v` is a linear independent family of vectors, extend it to a basis indexed by a sum type. -/
 noncomputable def sumExtend (hs : LinearIndependent K v) : Basis (ι ⊕ sumExtendIndex hs) K V :=
   let s := Set.range v
   let e : ι ≃ s := Equiv.ofInjective v hs.injective
-  let b := hs.linearIndepOn_id_range.extend (subset_univ (Set.range v))
-  (Basis.extend hs.linearIndepOn_id_range).reindex <|
+  let b := hs.linearIndepOn_id.extend (subset_univ (Set.range v))
+  (Basis.extend hs.linearIndepOn_id).reindex <|
     Equiv.symm <|
       calc
         ι ⊕ (b \ s : Set V) ≃ s ⊕ (b \ s : Set V) := Equiv.sumCongr e (Equiv.refl _)
         _ ≃ b :=
           haveI := Classical.decPred (· ∈ s)
-          Equiv.Set.sumDiffSubset (hs.linearIndepOn_id_range.subset_extend _)
+          Equiv.Set.sumDiffSubset (hs.linearIndepOn_id.subset_extend _)
 
 theorem subset_extend {s : Set V} (hs : LinearIndepOn K id s) : s ⊆ hs.extend (Set.subset_univ _) :=
   hs.subset_extend _
@@ -235,7 +235,7 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
     ∃ g : V' →ₗ[K] V, g.comp f = LinearMap.id := by
   let B := Basis.ofVectorSpaceIndex K V
   let hB := Basis.ofVectorSpace K V
-  have hB₀ : _ := hB.linearIndependent.linearIndepOn_id_range
+  have hB₀ : _ := hB.linearIndependent.linearIndepOn_id
   have : LinearIndepOn K _root_.id (f '' B) := by
     have h₁ : LinearIndepOn K _root_.id (f '' Set.range (Basis.ofVectorSpace K V)) :=
       LinearIndepOn.image (f := f) hB₀ (show Disjoint _ _ by simp [hf_inj])

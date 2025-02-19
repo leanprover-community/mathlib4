@@ -99,7 +99,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
   have r'' : range v ≠ range v' := (r' <| · ▸ ⟨none, rfl⟩)
   -- The key step in the proof is checking that this strictly larger family is linearly independent.
   have i' : LinearIndepOn R id (range v') := by
-    apply LinearIndependent.linearIndepOn_id_range
+    apply LinearIndependent.linearIndepOn_id
     rw [linearIndependent_iffₛ]
     intro l l' z
     simp_rw [linearCombination_option, v', Option.elim'] at z

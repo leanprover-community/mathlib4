@@ -401,12 +401,13 @@ theorem LinearIndepOn.map_injOn (hv : LinearIndepOn R v s) (f : M →ₗ[R] M')
     (hf_inj : Set.InjOn f (span R (v '' s))) : LinearIndepOn R (f ∘ v) s :=
   (f.linearIndepOn_iff_of_injOn hf_inj).mpr hv
 
+-- TODO : Rename this `LinearIndependent.of_subsingleton`.
 @[nontriviality]
 theorem linearIndependent_of_subsingleton [Subsingleton R] : LinearIndependent R v :=
   linearIndependent_iffₛ.2 fun _l _l' _hl => Subsingleton.elim _ _
 
 @[nontriviality]
-theorem linearIndepOn_of_subsingleton [Subsingleton R] : LinearIndepOn R v s :=
+theorem LinearIndepOn.of_subsingleton [Subsingleton R] : LinearIndepOn R v s :=
   linearIndependent_of_subsingleton
 
 theorem linearIndependent_equiv (e : ι ≃ ι') {f : ι' → M} :
@@ -425,6 +426,8 @@ theorem linearIndepOn_equiv (e : ι ≃ ι') {f : ι' → M} {s : Set ι} :
 @[simp]
 theorem linearIndepOn_univ : LinearIndepOn R v univ ↔ LinearIndependent R v :=
   linearIndependent_equiv' (Equiv.Set.univ ι) rfl
+
+alias ⟨_, LinearIndependent.linearIndepOn⟩ := linearIndepOn_univ
 
 theorem linearIndepOn_iff_image {ι} {s : Set ι} {f : ι → M} (hf : Set.InjOn f s) :
     LinearIndepOn R f s ↔ LinearIndepOn R id (f '' s) :=
@@ -450,22 +453,23 @@ alias ⟨LinearIndependent.of_linearIndepOn_id_range, _⟩ := linearIndepOn_id_r
 @[deprecated (since := "2025-02-15")] alias LinearIndependent.of_subtype_range :=
     LinearIndependent.of_linearIndepOn_id_range
 
-theorem LinearIndependent.linearIndepOn_id_range (i : LinearIndependent R v) :
+theorem LinearIndependent.linearIndepOn_id (i : LinearIndependent R v) :
     LinearIndepOn R id (range v) := by
   simpa using i.comp _ (rangeSplitting_injective v)
 
 @[deprecated (since := "2025-02-15")] alias LinearIndependent.to_subtype_range :=
-    LinearIndependent.linearIndepOn_id_range
+    LinearIndependent.linearIndepOn_id
 
 @[deprecated (since := "2025-02-14")] alias
-  LinearIndependent.coe_range := LinearIndependent.linearIndepOn_id_range
+  LinearIndependent.coe_range := LinearIndependent.linearIndepOn_id
 
-theorem LinearIndependent.linearIndepOn_id_range' (hv : LinearIndependent R v) {t : Set M}
+/-- A version of `LinearIndependent.linearIndepOn_id` with the set range equality as a hypothesis.-/
+theorem LinearIndependent.linearIndepOn_id' (hv : LinearIndependent R v) {t : Set M}
     (ht : Set.range v = t) : LinearIndepOn R id t :=
-  ht ▸ hv.linearIndepOn_id_range
+  ht ▸ hv.linearIndepOn_id
 
 @[deprecated (since := "2025-02-16")] alias LinearIndependent.to_subtype_range' :=
-    LinearIndependent.linearIndepOn_id_range'
+    LinearIndependent.linearIndepOn_id'
 
 theorem LinearIndepOn.comp_of_image {s : Set ι'} {f : ι' → ι} (h : LinearIndepOn R v (f '' s))
     (hf : InjOn f s) : LinearIndepOn R (v ∘ f) s :=
@@ -554,6 +558,8 @@ theorem linearIndepOn_iffₛ : LinearIndepOn R v s ↔
 
 @[deprecated (since := "2025-02-15")] alias linearIndependent_comp_subtypeₛ := linearIndepOn_iffₛ
 
+/-- An indexed set of vectors is linearly dependent iff there are two distinct
+`Finsupp.LinearCombination`s of the vectors with the same value. -/
 theorem linearDepOn_iff'ₛ : ¬LinearIndepOn R v s ↔
       ∃ f g : ι →₀ R, f ∈ Finsupp.supported R R s ∧ g ∈ Finsupp.supported R R s ∧
         Finsupp.linearCombination R v f = Finsupp.linearCombination R v g ∧ f ≠ g := by
@@ -857,7 +863,7 @@ theorem LinearIndependent.maximal_iff {ι : Type w} {R : Type u} [Semiring R] [N
         Surjective j := by
   constructor
   · rintro p κ w i' j rfl
-    specialize p (range w) i'.linearIndepOn_id_range (range_comp_subset_range _ _)
+    specialize p (range w) i'.linearIndepOn_id (range_comp_subset_range _ _)
     rw [range_comp, ← image_univ (f := w)] at p
     exact range_eq_univ.mp (image_injective.mpr i'.injective p)
   · intro p w i' h
@@ -1099,9 +1105,9 @@ theorem LinearIndependent.fin_cons' {m : ℕ} (x : M) (v : Fin m → M) (hli : L
   rw [this, zero_smul, zero_add] at total_eq
   exact Fin.cases this (hli _ total_eq) j
 
-section Subtype
+section LinearIndepOn
 
-/-! The following lemmas use the subtype defined by a set in `M` as the index set `ι`. -/
+/-! The following give equivalent versions of `LinearIndepOn` and its negation. -/
 
 theorem linearIndepOn_iff : LinearIndepOn R v s ↔
       ∀ l ∈ Finsupp.supported R R s, (Finsupp.linearCombination R v) l = 0 → l = 0 :=
@@ -1112,6 +1118,8 @@ theorem linearIndepOn_iff : LinearIndepOn R v s ↔
 
 @[deprecated (since := "2025-02-15")] alias linearIndependent_subtype := linearIndepOn_iff
 
+/-- An indexed set of vectors is linearly dependent iff there is a nontrivial
+`Finsupp.linearCombination` of the vectors that is zero. -/
 theorem linearDepOn_iff' : ¬LinearIndepOn R v s ↔
       ∃ f : ι →₀ R, f ∈ Finsupp.supported R R s ∧ Finsupp.linearCombination R v f = 0 ∧ f ≠ 0 := by
   simp [linearIndepOn_iff, and_left_comm]
@@ -1146,7 +1154,7 @@ theorem linearIndepOn_iff_linearCombinationOn :
 @[deprecated (since := "2025-02-15")] alias linearIndependent_iff_linearCombinationOn :=
   linearIndepOn_iff_linearCombinationOn
 
-end Subtype
+end LinearIndepOn
 
 end Module
 
@@ -1227,7 +1235,7 @@ theorem LinearIndepOn.id_union {s t : Set M} (hs : LinearIndepOn R id s)
     (ht : LinearIndepOn R id t) (hst : Disjoint (span R s) (span R t)) :
     LinearIndepOn R id (s ∪ t) := by
   have h := hs.linearIndependent.sum_type ht.linearIndependent (by simpa)
-  simpa [id_eq] using h.linearIndepOn_id_range
+  simpa [id_eq] using h.linearIndepOn_id
 
 @[deprecated (since := "2025-02-14")] alias LinearIndependent.union := LinearIndepOn.id_union
 
@@ -1241,13 +1249,12 @@ theorem linearIndepOn_id_iUnion_finite {f : ι → Set M} (hl : ∀ i, LinearInd
     exact fun t₁ t₂ ht => iUnion_mono fun i => iUnion_subset_iUnion_const fun h => ht h
   intro t
   induction t using Finset.induction_on with
-  | empty =>
-      simp
+  | empty => simp
   | @insert i s his ih =>
-      rw [Finset.set_biUnion_insert]
-      refine (hl _).id_union ih ?_
-      rw [span_iUnion₂]
-      exact hd i s s.finite_toSet his
+    rw [Finset.set_biUnion_insert]
+    refine (hl _).id_union ih ?_
+    rw [span_iUnion₂]
+    exact hd i s s.finite_toSet his
 
 @[deprecated (since := "2025-02-15")] alias
     linearIndependent_iUnion_finite_subtype := linearIndepOn_id_iUnion_finite
@@ -1274,7 +1281,7 @@ theorem linearIndependent_iUnion_finite {η : Type*} {ιs : η → Type*} {f : �
         exact subset_span (mem_range_self y₂)
       exact False.elim ((hindep x₁).ne_zero _ h0)
   rw [range_sigma_eq_iUnion_range]
-  apply linearIndepOn_id_iUnion_finite (fun j => (hindep j).linearIndepOn_id_range) hd
+  apply linearIndepOn_id_iUnion_finite (fun j => (hindep j).linearIndepOn_id) hd
 
 open LinearMap
 
@@ -1465,15 +1472,15 @@ theorem linearIndependent_unique_iff (v : ι → M) [Unique ι] :
 
 alias ⟨_, linearIndependent_unique⟩ := linearIndependent_unique_iff
 
-theorem linearIndepOn_singleton {v : ι → M} {i : ι} (hi : v i ≠ 0) : LinearIndepOn R v {i} :=
+theorem LinearIndepOn.singleton {v : ι → M} {i : ι} (hi : v i ≠ 0) : LinearIndepOn R v {i} :=
   linearIndependent_unique _ hi
 
 variable (R) in
-theorem linearIndepOn_id_singleton {x : M} (hx : x ≠ 0) : LinearIndepOn R id {x} :=
+theorem LinearIndepOn.id_singleton {x : M} (hx : x ≠ 0) : LinearIndepOn R id {x} :=
   linearIndependent_unique Subtype.val hx
 
 @[deprecated (since := "2025-02-15")] alias
-    linearIndependent_singleton := linearIndepOn_id_singleton
+    linearIndependent_singleton := LinearIndepOn.id_singleton
 
 @[simp]
 theorem linearIndependent_subsingleton_index_iff [Subsingleton ι] (f : ι → M) :
@@ -1533,7 +1540,7 @@ protected theorem LinearIndepOn.insert (hs : LinearIndepOn K id s) (hx : x ∉ s
     LinearIndepOn K id (insert x s) := by
   rw [← union_singleton]
   have x0 : x ≠ 0 := mt (by rintro rfl; apply zero_mem (span K s)) hx
-  apply hs.id_union (linearIndepOn_singleton x0)
+  apply hs.id_union (LinearIndepOn.singleton x0)
   rwa [disjoint_span_singleton' x0]
 
 @[deprecated (since := "2025-02-15")] alias LinearIndependent.insert := LinearIndepOn.insert
@@ -1578,7 +1585,7 @@ theorem linearIndepOn_id_insert (hxs : x ∉ s) :
 
 theorem linearIndepOn_id_pair {x y : V} (hx : x ≠ 0) (hy : ∀ a : K, a • x ≠ y) :
     LinearIndepOn K id {x, y} :=
-  pair_comm y x ▸ (linearIndepOn_id_singleton K hx).insert (x := y) <|
+  pair_comm y x ▸ (LinearIndepOn.id_singleton K hx).insert (x := y) <|
     mt mem_span_singleton.1 <| not_exists.2 hy
 
 @[deprecated (since := "2025-02-15")] alias linearIndependent_pair := linearIndepOn_id_pair
