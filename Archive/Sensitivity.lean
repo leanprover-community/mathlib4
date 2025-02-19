@@ -210,7 +210,7 @@ theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
 theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
   induction' n with n ih
   · dsimp [ε] at h; exact h fun _ => true
-  · cases' v with v₁ v₂
+  · obtain ⟨v₁, v₂⟩ := v
     ext <;> change _ = (0 : V n) <;> simp only <;> apply ih <;> intro p <;>
       [let q : Q n.succ := fun i => if h : i = 0 then true else p (i.pred h);
       let q : Q n.succ := fun i => if h : i = 0 then false else p (i.pred h)]
@@ -368,7 +368,7 @@ open Classical in
 subspace of `V (m+1)` spanned by the corresponding basis vectors non-trivially
 intersects the range of `g m`. -/
 theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
-    ∃ y ∈ Span (e '' H) ⊓ range (g m), y ≠ (0 : _) := by
+    ∃ y ∈ Span (e '' H) ⊓ range (g m), y ≠ 0 := by
   let W := Span (e '' H)
   let img := range (g m)
   suffices 0 < dim (W ⊓ img) by
@@ -408,7 +408,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     rw [Finsupp.mem_support_iff] at p_in
     rw [Set.mem_toFinset]
     exact (dualBases_e_ε _).mem_of_mem_span y_mem_H p p_in
-  obtain ⟨q, H_max⟩ : ∃ q : Q m.succ, ∀ q' : Q m.succ, |(ε q' : _) y| ≤ |ε q y| :=
+  obtain ⟨q, H_max⟩ : ∃ q : Q m.succ, ∀ q' : Q m.succ, |(ε q' :) y| ≤ |ε q y| :=
     Finite.exists_max _
   have H_q_pos : 0 < |ε q y| := by
     contrapose! y_ne

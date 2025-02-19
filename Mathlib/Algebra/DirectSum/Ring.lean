@@ -235,7 +235,7 @@ private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
       simpa only [coe_comp, Function.comp_apply, AddMonoidHom.compHom_apply_apply, flip_apply,
         AddMonoidHom.flipHom_apply]
         using DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this a) b) c
-  ext ai ax bi bx ci cx
+  ext ai ax bi bx ci cx : 6
   dsimp only [coe_comp, Function.comp_apply, AddMonoidHom.compHom_apply_apply, flip_apply,
     AddMonoidHom.flipHom_apply]
   simp_rw [mulHom_of_of]
@@ -424,9 +424,8 @@ instance : NatCast (A 0) :=
 theorem of_natCast (n : ℕ) : of A 0 n = n :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem of_zero_ofNat (n : ℕ) [n.AtLeastTwo] : of A 0 (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+theorem of_zero_ofNat (n : ℕ) [n.AtLeastTwo] : of A 0 ofNat(n) = ofNat(n) :=
   of_natCast A n
 
 /-- The `Semiring` structure derived from `GSemiring A`. -/

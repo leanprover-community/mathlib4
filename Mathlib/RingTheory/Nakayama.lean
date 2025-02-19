@@ -16,13 +16,13 @@ This file contains some alternative statements of Nakayama's Lemma as found in
 ## Main statements
 
 * `Submodule.eq_smul_of_le_smul_of_le_jacobson` - A version of (2) in
-  [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV).,
+  [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV),
   generalising to the Jacobson of any ideal.
 * `Submodule.eq_bot_of_le_smul_of_le_jacobson_bot` - Statement (2) in
   [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV).
 
 * `Submodule.sup_smul_eq_sup_smul_of_le_smul_of_le_jacobson` - A version of (4) in
-  [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV).,
+  [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV),
   generalising to the Jacobson of any ideal.
 * `Submodule.smul_le_of_le_smul_of_le_jacobson_bot` - Statement (4) in
   [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV).
@@ -54,8 +54,8 @@ theorem eq_smul_of_le_smul_of_le_jacobson {I J : Ideal R} {N : Submodule R M} (h
     (hIN : N ≤ I • N) (hIjac : I ≤ jacobson J) : N = J • N := by
   refine le_antisymm ?_ (Submodule.smul_le.2 fun _ _ _ => Submodule.smul_mem _ _)
   intro n hn
-  cases' Submodule.exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul I N hN hIN with r hr
-  cases' exists_mul_sub_mem_of_sub_one_mem_jacobson r (hIjac hr.1) with s hs
+  obtain ⟨r, hr⟩ := Submodule.exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul I N hN hIN
+  obtain ⟨s, hs⟩ := exists_mul_sub_mem_of_sub_one_mem_jacobson r (hIjac hr.1)
   have : n = -(s * r - 1) • n := by
     rw [neg_sub, sub_smul, mul_smul, hr.2 n hn, one_smul, smul_zero, sub_zero]
   rw [this]
@@ -84,7 +84,7 @@ lemma eq_bot_of_set_smul_eq_of_subset_jacobson_annihilator {s : Set R}
 lemma top_ne_ideal_smul_of_le_jacobson_annihilator [Nontrivial M]
     [Module.Finite R M] {I} (h : I ≤ (Module.annihilator R M).jacobson) :
     (⊤ : Submodule R M) ≠ I • ⊤ := fun H => top_ne_bot <|
-  eq_bot_of_eq_ideal_smul_of_le_jacobson_annihilator Module.Finite.out H <|
+  eq_bot_of_eq_ideal_smul_of_le_jacobson_annihilator Module.Finite.fg_top H <|
     (congrArg (I ≤ Ideal.jacobson ·) annihilator_top).mpr h
 
 open Pointwise in

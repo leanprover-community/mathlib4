@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
+import Mathlib.Topology.Order.LeftRight
 import Mathlib.Topology.Separation.Hausdorff
 
 /-!
@@ -12,7 +13,7 @@ In this file we introduce 3 typeclass mixins that relate topology and order stru
 
 - `ClosedIicTopology` says that all the intervals $(-∞, a]$ (formally, `Set.Iic a`)
   are closed sets;
-- `ClosedIciTopoplogy` says that all the intervals $[a, +∞)$ (formally, `Set.Ici a`)
+- `ClosedIciTopology` says that all the intervals $[a, +∞)$ (formally, `Set.Ici a`)
   are closed sets;
 - `OrderClosedTopology` says that the set of points `(x, y)` such that `x ≤ y`
   is closed in the product topology.
@@ -25,7 +26,7 @@ We prove many basic properties of such topologies.
 
 This file contains the proofs of the following facts.
 For exact requirements
-(`OrderClosedTopology` vs `ClosedIciTopoplogy` vs `ClosedIicTopology,
+(`OrderClosedTopology` vs `ClosedIciTopology` vs `ClosedIicTopology,
 `Preorder` vs `PartialOrder` vs `LinearOrder` etc)
 see their statements.
 
@@ -107,10 +108,6 @@ variable [TopologicalSpace α] [Preorder α] [ClosedIicTopology α] {f : β → 
 
 theorem isClosed_Iic : IsClosed (Iic a) :=
   ClosedIicTopology.isClosed_Iic a
-
-@[deprecated isClosed_Iic (since := "2024-02-15")]
-lemma ClosedIicTopology.isClosed_le' (a : α) : IsClosed {x | x ≤ a} := isClosed_Iic a
-export ClosedIicTopology (isClosed_le')
 
 instance : ClosedIciTopology αᵒᵈ where
   isClosed_Ici _ := isClosed_Iic (α := α)
@@ -278,6 +275,12 @@ protected theorem PredOrder.nhdsLT [PredOrder α] : 𝓝[<] a = ⊥ := by
 
 @[deprecated (since := "2024-12-21")] protected alias PredOrder.nhdsWithin_Iio := PredOrder.nhdsLT
 
+theorem PredOrder.nhdsGT_eq_nhdsNE [PredOrder α] (a : α) : 𝓝[>] a = 𝓝[≠] a := by
+  rw [← nhdsLT_sup_nhdsGT, PredOrder.nhdsLT, bot_sup_eq]
+
+theorem PredOrder.nhdsGE_eq_nhds [PredOrder α] (a : α) : 𝓝[≥] a = 𝓝 a := by
+  rw [← nhdsLT_sup_nhdsGE, PredOrder.nhdsLT, bot_sup_eq]
+
 theorem Ico_mem_nhdsLT_of_mem (H : b ∈ Ioc a c) : Ico a c ∈ 𝓝[<] b :=
   mem_of_superset (Ioo_mem_nhdsLT_of_mem H) Ioo_subset_Ico_self
 
@@ -414,10 +417,6 @@ variable [TopologicalSpace α] [Preorder α] [ClosedIciTopology α] {f : β → 
 
 theorem isClosed_Ici {a : α} : IsClosed (Ici a) :=
   ClosedIciTopology.isClosed_Ici a
-
-@[deprecated isClosed_Ici (since := "2024-02-15")]
-lemma ClosedIciTopology.isClosed_ge' (a : α) : IsClosed {x | a ≤ x} := isClosed_Ici a
-export ClosedIciTopology (isClosed_ge')
 
 instance : ClosedIicTopology αᵒᵈ where
   isClosed_Iic _ := isClosed_Ici (α := α)
@@ -563,6 +562,12 @@ protected theorem CovBy.nhdsGT (h : a ⋖ b) : 𝓝[>] a = ⊥ := h.toDual.nhdsL
 protected theorem SuccOrder.nhdsGT [SuccOrder α] : 𝓝[>] a = ⊥ := PredOrder.nhdsLT (α := αᵒᵈ)
 
 @[deprecated (since := "2024-12-22")] alias SuccOrder.nhdsWithin_Ioi := SuccOrder.nhdsGT
+
+theorem SuccOrder.nhdsLT_eq_nhdsNE [SuccOrder α] (a : α) : 𝓝[<] a = 𝓝[≠] a :=
+  PredOrder.nhdsGT_eq_nhdsNE (α := αᵒᵈ) a
+
+theorem SuccOrder.nhdsLE_eq_nhds [SuccOrder α] (a : α) : 𝓝[≤] a = 𝓝 a :=
+  PredOrder.nhdsGE_eq_nhds (α := αᵒᵈ) a
 
 theorem Ioc_mem_nhdsGT_of_mem (H : b ∈ Ico a c) : Ioc a c ∈ 𝓝[>] b :=
   mem_of_superset (Ioo_mem_nhdsGT_of_mem H) Ioo_subset_Ioc_self

@@ -52,7 +52,7 @@ def Arrow.opEquiv (C : Type u) [Category.{v} C] : Arrow Cᵒᵖ ≃ Arrow C wher
   right_inv _ := rfl
 
 @[simp]
-lemma hasCardinal_arrow_op_iff (C : Type u) [Category.{v} C] (κ : Cardinal.{w}) :
+lemma hasCardinalLT_arrow_op_iff (C : Type u) [Category.{v} C] (κ : Cardinal.{w}) :
     HasCardinalLT (Arrow Cᵒᵖ) κ ↔ HasCardinalLT (Arrow C) κ :=
   hasCardinalLT_iff_of_equiv (Arrow.opEquiv C) κ
 
@@ -77,27 +77,16 @@ noncomputable def Arrow.shrinkHomsEquiv (C : Type u) [Category.{v} C] [LocallySm
     Arrow.{w} (ShrinkHoms C) ≃ Arrow C where
   toFun := (ShrinkHoms.equivalence C).inverse.mapArrow.obj
   invFun := (ShrinkHoms.equivalence C).functor.mapArrow.obj
-  left_inv _ := by simp [Functor.mapArrow]; rfl
-  right_inv _ := by simp [Functor.mapArrow]; rfl
-
--- to be moved
-lemma Arrow.ext {C : Type u} [Category.{v} C] {f g : Arrow C}
-    (h₁ : f.left = g.left) (h₂ : f.right = g.right)
-    (h₃ : f.hom = eqToHom h₁ ≫ g.hom ≫ eqToHom h₂.symm) : f = g := by
-  obtain ⟨X, Y, f⟩ := f
-  obtain ⟨X', Y', g⟩ := g
-  obtain rfl : X = X' := h₁
-  obtain rfl : Y = Y' := h₂
-  obtain rfl : f = g := by simpa using h₃
-  rfl
+  left_inv _ := by simp
+  right_inv _ := by simp
 
 /-- The bijection `Arrow (Shrink C) ≃ Arrow C`. -/
 noncomputable def Arrow.shrinkEquiv (C : Type u) [Category.{v} C] [Small.{w} C] :
     Arrow (Shrink.{w} C) ≃ Arrow C where
   toFun := (Shrink.equivalence C).inverse.mapArrow.obj
   invFun := (Shrink.equivalence C).functor.mapArrow.obj
-  left_inv f := Arrow.ext (by simp [Shrink.equivalence])
-    (by simp [Shrink.equivalence]) (by simp [Shrink.equivalence]; rfl)
+  left_inv _ := Arrow.ext (Equiv.apply_symm_apply _ _)
+      ((Equiv.apply_symm_apply _ _)) (by simp; rfl)
   right_inv _ := Arrow.ext (by simp [Shrink.equivalence])
     (by simp [Shrink.equivalence]) (by simp [Shrink.equivalence])
 

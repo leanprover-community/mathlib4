@@ -489,15 +489,21 @@ theorem Dense.topology_eq_generateFrom [OrderTopology α] [DenselyOrdered α] {s
       let _ := generateFrom (Ioi '' s ∪ Iio '' s)
       exact isOpen_iUnion fun x ↦ isOpen_iUnion fun h ↦ .basic _ <| .inr <| mem_image_of_mem _ h.1
 
-@[deprecated OrderBot.atBot_eq (since := "2024-02-14")]
-theorem atBot_le_nhds_bot [OrderBot α] : (atBot : Filter α) ≤ 𝓝 ⊥ := by
-  rw [OrderBot.atBot_eq]
-  apply pure_le_nhds
+theorem PredOrder.hasBasis_nhds_Ioc_of_exists_gt [OrderTopology α] [PredOrder α] {a : α}
+    (ha : ∃ u, a < u) : (𝓝 a).HasBasis (a < ·) (Set.Ico a ·) :=
+  PredOrder.nhdsGE_eq_nhds a ▸ nhdsGE_basis_of_exists_gt ha
 
-set_option linter.deprecated false in
-@[deprecated OrderTop.atTop_eq (since := "2024-02-14")]
-theorem atTop_le_nhds_top [OrderTop α] : (atTop : Filter α) ≤ 𝓝 ⊤ :=
-  @atBot_le_nhds_bot αᵒᵈ _ _ _
+theorem PredOrder.hasBasis_nhds_Ioc [OrderTopology α] [PredOrder α] [NoMaxOrder α] {a : α} :
+    (𝓝 a).HasBasis (a < ·) (Set.Ico a ·) :=
+  PredOrder.hasBasis_nhds_Ioc_of_exists_gt (exists_gt a)
+
+theorem SuccOrder.hasBasis_nhds_Ioc_of_exists_lt [OrderTopology α] [SuccOrder α] {a : α}
+    (ha : ∃ l, l < a) : (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
+  SuccOrder.nhdsLE_eq_nhds a ▸ nhdsLE_basis_of_exists_lt ha
+
+theorem SuccOrder.hasBasis_nhds_Ioc [OrderTopology α] [SuccOrder α] {a : α} [NoMinOrder α] :
+    (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
+  SuccOrder.hasBasis_nhds_Ioc_of_exists_lt (exists_lt a)
 
 variable (α)
 

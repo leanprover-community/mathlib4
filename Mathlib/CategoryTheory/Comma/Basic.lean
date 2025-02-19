@@ -289,7 +289,7 @@ theorem map_fst : map α β ⋙ fst L' R' = fst L R ⋙ F₁ :=
 where `α : F₁ ⋙ L' ⟶ L ⋙ F`. -/
 @[simps!]
 def mapFst : map α β ⋙ fst L' R' ≅ fst L R ⋙ F₁ :=
-  NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
 
 /-- The equality between `map α β ⋙ snd L' R'` and `snd L R ⋙ F₂`,
 where `β : R ⋙ F ⟶ F₂ ⋙ R'`. -/
@@ -301,7 +301,7 @@ theorem map_snd : map α β ⋙ snd L' R' = snd L R ⋙ F₂ :=
 where `β : R ⋙ F ⟶ F₂ ⋙ R'`. -/
 @[simps!]
 def mapSnd : map α β ⋙ snd L' R' ≅ snd L R ⋙ F₂ :=
-  NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
 
 end
 
@@ -544,13 +544,13 @@ def opFunctor : Comma L R ⥤ (Comma R.op L.op)ᵒᵖ where
   map f := ⟨op f.right, op f.left, Quiver.Hom.unop_inj (by simp)⟩
 
 /-- Composing the `leftOp` of `opFunctor L R` with `fst L.op R.op` is naturally isomorphic
-to `snd L R`.-/
+to `snd L R`. -/
 @[simps!]
 def opFunctorCompFst : (opFunctor L R).leftOp ⋙ fst _ _ ≅ (snd _ _).op :=
   Iso.refl _
 
 /-- Composing the `leftOp` of `opFunctor L R` with `snd L.op R.op` is naturally isomorphic
-to `fst L R`.-/
+to `fst L R`. -/
 @[simps!]
 def opFunctorCompSnd : (opFunctor L R).leftOp ⋙ snd _ _ ≅ (fst _ _).op :=
   Iso.refl _

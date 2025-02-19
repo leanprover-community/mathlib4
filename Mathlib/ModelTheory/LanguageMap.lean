@@ -96,8 +96,8 @@ variable {L L'} {L'' : Language}
 @[ext]
 protected theorem funext {F G : L →ᴸ L'} (h_fun : F.onFunction = G.onFunction)
     (h_rel : F.onRelation = G.onRelation) : F = G := by
-  cases' F with Ff Fr
-  cases' G with Gf Gr
+  obtain ⟨Ff, Fr⟩ := F
+  obtain ⟨Gf, Gr⟩ := G
   simp only [mk.injEq]
   exact And.intro h_fun h_rel
 
@@ -109,7 +109,7 @@ instance [L.IsAlgebraic] [L.IsRelational] : Unique (L →ᴸ L') :=
 def comp (g : L' →ᴸ L'') (f : L →ᴸ L') : L →ᴸ L'' :=
   ⟨fun _n F => g.1 (f.1 F), fun _ R => g.2 (f.2 R)⟩
 
--- Porting note: added ᴸ to avoid clash with function composition
+-- added ᴸ to avoid clash with function composition
 @[inherit_doc]
 local infixl:60 " ∘ᴸ " => LHom.comp
 
@@ -278,7 +278,7 @@ structure LEquiv (L L' : Language) where
   left_inv : invLHom.comp toLHom = LHom.id L
   right_inv : toLHom.comp invLHom = LHom.id L'
 
-infixl:10 " ≃ᴸ " => LEquiv
+@[inherit_doc] infixl:10 " ≃ᴸ " => LEquiv
 
 -- \^L
 namespace LEquiv
@@ -363,7 +363,7 @@ theorem constantsOnMap_isExpansionOn {f : α → β} {fα : α → M} {fβ : β 
   letI := constantsOn.structure fα
   letI := constantsOn.structure fβ
   exact
-    ⟨fun {n} => Nat.casesOn n (fun F _x => (congr_fun h F : _)) fun n F => isEmptyElim F, fun R =>
+    ⟨fun {n} => Nat.casesOn n (fun F _x => (congr_fun h F :)) fun n F => isEmptyElim F, fun R =>
       isEmptyElim R⟩
 
 end ConstantsOn
@@ -389,7 +389,7 @@ theorem card_withConstants :
   rw [withConstants, card_sum, card_constantsOn]
 
 /-- The language map adding constants. -/
-@[simps!] -- Porting note: add `!` to `simps`
+@[simps!]
 def lhomWithConstants : L →ᴸ L[[α]] :=
   LHom.sumInl
 

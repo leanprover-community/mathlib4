@@ -30,9 +30,6 @@ More information can be found in `Mathlib/Algebra/BigOperators/Group/Finset.lean
 Finsets are directly used to define fintypes in Lean.
 A `Fintype α` instance for a type `α` consists of a universal `Finset α` containing every term of
 `α`, called `univ`. See `Mathlib/Data/Fintype/Basic.lean`.
-There is also `univ'`, the noncomputable partner to `univ`,
-which is defined to be `α` as a finset if `α` is finite,
-and the empty finset otherwise. See `Mathlib/Data/Fintype/Basic.lean`.
 
 `Finset.card`, the size of a finset is defined in `Mathlib/Data/Finset/Card.lean`.
 This is then used to define `Fintype.card`, the size of a type.
@@ -59,14 +56,7 @@ finite sets, finset
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
-assert_not_exists List.sublistsLen
-assert_not_exists Multiset.powerset
-
-assert_not_exists DirectedSystem
-
-assert_not_exists CompleteLattice
-
-assert_not_exists OrderedCommMonoid
+assert_not_exists List.sublistsLen Multiset.powerset DirectedSystem CompleteLattice Monoid
 
 open Multiset Subtype Function
 
@@ -263,6 +253,8 @@ theorem mem_of_subset {s₁ s₂ : Finset α} {a : α} : s₁ ⊆ s₂ → a ∈
 theorem not_mem_mono {s t : Finset α} (h : s ⊆ t) {a : α} : a ∉ t → a ∉ s :=
   mt <| @h _
 
+alias not_mem_subset := not_mem_mono
+
 theorem Subset.antisymm {s₁ s₂ : Finset α} (H₁ : s₁ ⊆ s₂) (H₂ : s₂ ⊆ s₁) : s₁ = s₂ :=
   ext fun a => ⟨@H₁ a, @H₂ a⟩
 
@@ -352,11 +344,13 @@ theorem coe_coeEmb : ⇑(coeEmb : Finset α ↪o Set α) = ((↑) : Finset α �
 These results can be defined using the current imports, but deserve to be given a nicer home.
 -/
 
+set_option linter.deprecated false in
+@[deprecated "Deprecated without replacement." (since := "2025-02-07")]
 theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {s : Finset α} (hx : x ∈ s) :
     SizeOf.sizeOf x < SizeOf.sizeOf s := by
   cases s
   dsimp [SizeOf.sizeOf, SizeOf.sizeOf, Multiset.sizeOf]
-  rw [add_comm]
+  rw [Nat.add_comm]
   refine lt_trans ?_ (Nat.lt_succ_self _)
   exact Multiset.sizeOf_lt_sizeOf_of_mem hx
 
@@ -368,8 +362,6 @@ instance decidableDforallFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a �
     Decidable (∀ (a) (h : a ∈ s), p a h) :=
   Multiset.decidableDforallMultiset
 
--- Porting note: In lean3, `decidableDforallFinset` was picked up when decidability of `s ⊆ t` was
--- needed. In lean4 it seems this is not the case.
 instance instDecidableRelSubset [DecidableEq α] : DecidableRel (α := Finset α) (· ⊆ ·) :=
   fun _ _ ↦ decidableDforallFinset
 
@@ -400,6 +392,10 @@ instance decidableEqPiFinset {β : α → Type*} [_h : ∀ a, DecidableEq (β a)
 
 end DecidablePiExists
 
+theorem nodup_map_iff_injOn {f : α → β} {s : Finset α} :
+    (Multiset.map f s.val).Nodup ↔ Set.InjOn f s := by
+  simp [Multiset.nodup_map_iff_inj_on s.nodup, Set.InjOn]
+
 end Finset
 
 namespace List
@@ -407,7 +403,8 @@ namespace List
 variable [DecidableEq α] {a : α} {f : α → β} {s : Finset α} {t : Set β} {t' : Finset β}
 
 instance [DecidableEq β] : Decidable (Set.InjOn f s) :=
-  inferInstanceAs (Decidable (∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y))
+  -- Use custom implementation for better performance.
+  decidable_of_iff ((Multiset.map f s.val).Nodup) Finset.nodup_map_iff_injOn
 
 instance [DecidablePred (· ∈ t)] : Decidable (Set.MapsTo f s t) :=
   inferInstanceAs (Decidable (∀ x ∈ s, f x ∈ t))

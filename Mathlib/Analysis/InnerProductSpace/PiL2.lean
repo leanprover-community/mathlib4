@@ -106,12 +106,13 @@ abbrev EuclideanSpace (𝕜 : Type*) (n : Type*) : Type _ :=
 
 section Notation
 open Lean Meta Elab Term Macro TSyntax PrettyPrinter.Delaborator SubExpr
+open Mathlib.Tactic (subscriptTerm)
 
 /-- Notation for vectors in Lp space. `!₂[x, y, ...]` is a shorthand for
 `(WithLp.equiv 2 _ _).symm ![x, y, ...]`, of type `EuclideanSpace _ (Fin _)`.
 
 This also works for other subscripts. -/
-syntax (name := PiLp.vecNotation) "!" noWs subscript(term) noWs "[" term,* "]" : term
+syntax (name := PiLp.vecNotation) "!" noWs subscriptTerm noWs "[" term,* "]" : term
 macro_rules | `(!$p:subscript[$e:term,*]) => do
   -- override the `Fin n.succ` to a literal
   let n := e.getElems.size
@@ -119,7 +120,7 @@ macro_rules | `(!$p:subscript[$e:term,*]) => do
 
 set_option trace.debug true in
 /-- Unexpander for the `!₂[x, y, ...]` notation. -/
-@[delab app.DFunLike.coe]
+@[app_delab DFunLike.coe]
 def EuclideanSpace.delabVecNotation : Delab :=
   whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 6 do
     -- check that the `(WithLp.equiv _ _).symm` is present
@@ -389,12 +390,7 @@ protected def toBasis (b : OrthonormalBasis ι 𝕜 E) : Basis ι 𝕜 E :=
   Basis.ofEquivFun b.repr.toLinearEquiv
 
 @[simp]
-protected theorem coe_toBasis (b : OrthonormalBasis ι 𝕜 E) : (⇑b.toBasis : ι → E) = ⇑b := by
-  rw [OrthonormalBasis.toBasis] -- Porting note: was `change`
-  ext j
-  classical
-    rw [Basis.coe_ofEquivFun]
-    congr
+protected theorem coe_toBasis (b : OrthonormalBasis ι 𝕜 E) : (⇑b.toBasis : ι → E) = ⇑b := rfl
 
 @[simp]
 protected theorem coe_toBasis_repr (b : OrthonormalBasis ι 𝕜 E) :
@@ -688,10 +684,7 @@ theorem Complex.isometryOfOrthonormal_symm_apply (v : OrthonormalBasis (Fin 2) �
 
 theorem Complex.isometryOfOrthonormal_apply (v : OrthonormalBasis (Fin 2) ℝ F) (z : ℂ) :
     Complex.isometryOfOrthonormal v z = z.re • v 0 + z.im • v 1 := by
-  -- Porting note: was
-  -- simp [Complex.isometryOfOrthonormal, ← v.sum_repr_symm]
-  rw [Complex.isometryOfOrthonormal, LinearIsometryEquiv.trans_apply]
-  simp [← v.sum_repr_symm]
+  simp [Complex.isometryOfOrthonormal, ← v.sum_repr_symm]
 
 end Complex
 

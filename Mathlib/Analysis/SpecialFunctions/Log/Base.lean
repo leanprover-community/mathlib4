@@ -3,6 +3,7 @@ Copyright (c) 2022 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
+import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Data.Int.Log
 
@@ -350,6 +351,7 @@ theorem tendsto_logb_atTop_of_base_lt_one : Tendsto (logb b) atTop atBot := by
 
 end BPosAndBLtOne
 
+@[norm_cast]
 theorem floor_logb_natCast {b : ℕ} {r : ℝ} (hr : 0 ≤ r) :
     ⌊logb b r⌋ = Int.log b r := by
   obtain rfl | hr := hr.eq_or_lt
@@ -367,9 +369,7 @@ theorem floor_logb_natCast {b : ℕ} {r : ℝ} (hr : 0 ≤ r) :
     · simp_all only [CharP.cast_eq_zero, logb_zero_left, Int.floor_zero, Int.log_zero_left]
     · simp_all only [Nat.cast_one, logb_one_left, Int.floor_zero, Int.log_one_left]
 
-@[deprecated (since := "2024-04-17")]
-alias floor_logb_nat_cast := floor_logb_natCast
-
+@[norm_cast]
 theorem ceil_logb_natCast {b : ℕ} {r : ℝ} (hr : 0 ≤ r) :
     ⌈logb b r⌉ = Int.clog b r := by
   obtain rfl | hr := hr.eq_or_lt
@@ -387,8 +387,27 @@ theorem ceil_logb_natCast {b : ℕ} {r : ℝ} (hr : 0 ≤ r) :
     · simp_all only [CharP.cast_eq_zero, logb_zero_left, Int.ceil_zero, Int.clog_zero_left]
     · simp_all only [Nat.cast_one, logb_one_left, Int.ceil_zero, Int.clog_one_left]
 
-@[deprecated (since := "2024-04-17")]
-alias ceil_logb_nat_cast := ceil_logb_natCast
+@[norm_cast]
+theorem natFloor_logb_natCast (b : ℕ) (n : ℕ) : ⌊logb b n⌋₊ = Nat.log b n := by
+  obtain _ | _ | b := b
+  · simp [Real.logb]
+  · simp [Real.logb]
+  obtain rfl | hn := eq_or_ne n 0
+  · simp
+  rw [← Nat.cast_inj (R := ℤ), Int.natCast_floor_eq_floor, floor_logb_natCast (by simp),
+    Int.log_natCast]
+  exact logb_nonneg (by simp [Nat.cast_add_one_pos]) (Nat.one_le_cast.2 (by omega))
+
+@[norm_cast]
+theorem natCeil_logb_natCast (b : ℕ) (n : ℕ) : ⌈logb b n⌉₊ = Nat.clog b n := by
+  obtain _ | _ | b := b
+  · simp [Real.logb]
+  · simp [Real.logb]
+  obtain rfl | hn := eq_or_ne n 0
+  · simp
+  rw [← Nat.cast_inj (R := ℤ), Int.natCast_ceil_eq_ceil, ceil_logb_natCast (by simp),
+    Int.clog_natCast]
+  exact logb_nonneg (by simp [Nat.cast_add_one_pos]) (Nat.one_le_cast.2 (by omega))
 
 lemma natLog_le_logb (a b : ℕ) : Nat.log b a ≤ Real.logb b a := by
   apply le_trans _ (Int.floor_le ((b : ℝ).logb a))

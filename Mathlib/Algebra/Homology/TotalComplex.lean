@@ -25,6 +25,8 @@ differentials `(K.X p).X q ⟶ (K.X p).X (q + 1)`.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Category Limits Preadditive
 
 namespace HomologicalComplex₂

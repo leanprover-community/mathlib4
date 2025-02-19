@@ -41,6 +41,8 @@ Partition
 <https://en.wikipedia.org/wiki/Partition_(number_theory)>
 -/
 
+assert_not_exists Field
+
 open Multiset
 
 namespace Nat
@@ -48,18 +50,17 @@ namespace Nat
 /-- A partition of `n` is a multiset of positive integers summing to `n`. -/
 @[ext]
 structure Partition (n : ℕ) where
-  /-- positive integers summing to `n`-/
+  /-- positive integers summing to `n` -/
   parts : Multiset ℕ
   /-- proof that the `parts` are positive -/
   parts_pos : ∀ {i}, i ∈ parts → 0 < i
-  /-- proof that the `parts` sum to `n`-/
+  /-- proof that the `parts` sum to `n` -/
   parts_sum : parts.sum = n
-  -- Porting note: chokes on `parts_pos`
-  --deriving DecidableEq
+deriving DecidableEq
 
 namespace Partition
 
--- TODO: This should be automatically derived, see https://github.com/leanprover/lean4/issues/2914
+@[deprecated "Partition now derives an instance of DecidableEq." (since := "2024-12-28")]
 instance decidableEqPartition {n : ℕ} : DecidableEq (Partition n) :=
   fun _ _ => decidable_of_iff' _ Partition.ext_iff
 
