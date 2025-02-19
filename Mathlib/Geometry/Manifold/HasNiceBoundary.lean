@@ -154,48 +154,6 @@ open Set Topology Function
 variable {X Y Z W : Type*} [TopologicalSpace X] [TopologicalSpace Y]
   [TopologicalSpace Z] [TopologicalSpace W]
 
--- missing lemma for Topology/Maps/Basic.lean
-lemma isClosedEmbedding_iff_continuous_injective_isClosedMap {f : X → Y} :
-    IsClosedEmbedding f ↔ Continuous f ∧ Injective f ∧ IsClosedMap f :=
-  ⟨fun h => ⟨h.continuous, h.injective, h.isClosedMap⟩, fun h =>
-    .of_continuous_injective_isClosedMap h.1 h.2.1 h.2.2⟩
-
--- missing in Topology/Constructions/Sum.lean
-
--- is this true? if so, prove and add it (low priority)
--- theorem IsClosedMap.sumMap {f : X → Y} {g : Z → W} (hf : IsClosedMap f) (hg : IsClosedMap g) :
---     IsClosedMap (Sum.map f g) := by
---   exact isClosedMap_sum.2 ⟨isClosedMap_inl.comp hf,isClosedMap_inr.comp hg⟩
-
-@[simp]
-theorem isClosedMap_sum_elim {f : X → Z} {g : Y → Z} :
-    IsClosedMap (Sum.elim f g) ↔ IsClosedMap f ∧ IsClosedMap g := by
-  simp only [isClosedMap_sum, Sum.elim_inl, Sum.elim_inr]
-
-theorem IsClosedMap.sum_elim {f : X → Z} {g : Y → Z} (hf : IsClosedMap f) (hg : IsClosedMap g) :
-    IsClosedMap (Sum.elim f g) :=
-  isClosedMap_sum_elim.2 ⟨hf, hg⟩
-
-lemma IsOpenEmbedding.sum_elim
-    {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-    {f : X → Z} {g : Y → Z} (hf : IsOpenEmbedding f) (hg : IsOpenEmbedding g)
-    (h : Injective (Sum.elim f g)):
-    IsOpenEmbedding (Sum.elim f g) := by
-  rw [isOpenEmbedding_iff_continuous_injective_isOpenMap] at hf hg ⊢
-  obtain ⟨hcont, hinj, hopenEmb⟩ := hf
-  obtain ⟨hcont', hinj', hopenEmb'⟩ := hg
-  exact ⟨by fun_prop, h, hopenEmb.sum_elim hopenEmb'⟩
-
-lemma IsClosedEmbedding.sum_elim
-    {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-    {f : X → Z} {g : Y → Z} (hf : IsClosedEmbedding f) (hg : IsClosedEmbedding g)
-    (h : Injective (Sum.elim f g)) :
-    IsClosedEmbedding (Sum.elim f g) := by
-  rw [isClosedEmbedding_iff_continuous_injective_isClosedMap] at hf hg ⊢
-  obtain ⟨hcont, hinj, hClosedEmb⟩ := hf
-  obtain ⟨hcont', hinj', hClosedEmb'⟩ := hg
-  exact ⟨by fun_prop, h, hClosedEmb.sum_elim hClosedEmb'⟩
-
 -- also missing: IsEmbedding.sum_elim (from weaker hypotheses)
 
 -- related to Set.preimage_fst_singleton_eq_range, but seems to be missing
