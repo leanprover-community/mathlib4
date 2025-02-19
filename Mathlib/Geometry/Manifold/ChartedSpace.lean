@@ -764,7 +764,7 @@ theorem chartAt_self_eq {H : Type*} [TopologicalSpace H] {x : H} :
 /-- Any discrete space is a charted space over a singleton set. -/
 -- XXX: this definition is not quite right yet, shouldn't need to specify b...
 instance ChartedSpace.of_discreteTopology [TopologicalSpace M] [TopologicalSpace H]
-    [DiscreteTopology M] [h : Inhabited H] [Subsingleton H] : ChartedSpace H M where
+    [DiscreteTopology M] [h: Unique H] : ChartedSpace H M where
   atlas :=
     letI f := fun x : M ↦ PartialHomeomorph.const
       (isOpen_discrete {x}) (isOpen_discrete {h.default})
@@ -777,10 +777,8 @@ instance ChartedSpace.of_discreteTopology [TopologicalSpace M] [TopologicalSpace
 -- /-- A chart on the discrete space is the constant chart. -/
 -- @[simp, mfld_simps]
 -- lemma chartedSpace_of_discreteTopology_chartAt [TopologicalSpace M] [TopologicalSpace H]
---     [DiscreteTopology M] [h : Inhabited H] [Subsingleton H] {x : M} :
+--     [DiscreteTopology M] [h : Unique H] {x : M} :
 --     chartAt H x = PartialHomeomorph.const (isOpen_discrete {x}) (isOpen_discrete {h.default}) := rfl
-
-#exit
 
 section Products
 
