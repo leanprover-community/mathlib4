@@ -200,7 +200,7 @@ def _root_.CategoryTheory.Functor.mapShortComplex (F : C ⥤ D) [F.PreservesZero
         dsimp
         simp only [← F.map_comp, φ.comm₂₃] }
 
-/-- A constructor for isomorphisms in the category `ShortComplex C`-/
+/-- A constructor for isomorphisms in the category `ShortComplex C` -/
 @[simps]
 def isoMk (e₁ : S₁.X₁ ≅ S₂.X₁) (e₂ : S₁.X₂ ≅ S₂.X₂) (e₃ : S₁.X₃ ≅ S₂.X₃)
     (comm₁₂ : e₁.hom ≫ S₂.f = S₁.f ≫ e₂.hom := by aesop_cat)

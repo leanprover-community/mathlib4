@@ -99,7 +99,7 @@ $|\text{Aut}(E/F)| = [E : F]$. -/
 @[stacks 09I1 "'only if' part"]
 theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
     Fintype.card (E ≃ₐ[F] E) = finrank F E := by
-  cases' Field.exists_primitive_element F E with α hα
+  obtain ⟨α, hα⟩ := Field.exists_primitive_element F E
   let iso : F⟮α⟯ ≃ₐ[F] E :=
     { toFun := fun e => e.val
       invFun := fun e => ⟨e, by rw [hα]; exact IntermediateField.mem_top⟩
@@ -299,7 +299,7 @@ end IsGalois
 section
 
 /-In this section we prove that the normal subgroups correspond to the Galois subextensions
-in the Galois correspondence and its related results.-/
+in the Galois correspondence and its related results. -/
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 
@@ -372,7 +372,7 @@ namespace IsGalois
 
 theorem is_separable_splitting_field [FiniteDimensional F E] [IsGalois F E] :
     ∃ p : F[X], p.Separable ∧ p.IsSplittingField F E := by
-  cases' Field.exists_primitive_element F E with α h1
+  obtain ⟨α, h1⟩ := Field.exists_primitive_element F E
   use minpoly F α, separable F α, IsGalois.splits F α
   rw [eq_top_iff, ← IntermediateField.top_toSubalgebra, ← h1]
   rw [IntermediateField.adjoin_simple_toSubalgebra_of_integral (integral F α)]

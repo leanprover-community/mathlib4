@@ -252,7 +252,7 @@ theorem exists_cg_is_age_of (hn : K.Nonempty)
     have : Quotient.out (Quotient.mk' N) ≈ N := Quotient.eq_mk_iff_out.mp rfl
     obtain ⟨n, ⟨e⟩⟩ := (hF N).1 ⟨N, KN, this⟩
     refine mem_iUnion_of_mem n ⟨fg _ KN, ⟨Embedding.comp ?_ e.symm.toEmbedding⟩⟩
-    cases' n with n
+    rcases n with - | n
     · dsimp [G]; exact Embedding.refl _ _
     · dsimp [G]; exact (hFP _ n).some
 
@@ -308,7 +308,7 @@ theorem IsUltrahomogeneous.extend_embedding (M_homog : L.IsUltrahomogeneous M) {
   simp only [Equiv.apply_symm_apply, Embedding.equivRange_apply, s]
 
 /-- A countably generated structure is ultrahomogeneous if and only if any equivalence between
-finitely generated substructures can be extended to any element in the domain.-/
+finitely generated substructures can be extended to any element in the domain. -/
 theorem isUltrahomogeneous_iff_IsExtensionPair (M_CG : CG L M) : L.IsUltrahomogeneous M ↔
     L.IsExtensionPair M M := by
   constructor

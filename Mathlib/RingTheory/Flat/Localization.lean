@@ -101,6 +101,5 @@ variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
 
 instance [Module.Flat A B] (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
     Module.Flat (Localization.AtPrime p) (Localization.AtPrime P) := by
-  rw [Module.flat_iff_of_isLocalization
-    (S := (Localization.AtPrime p)) (p := p.primeCompl)]
+  rw [Module.flat_iff_of_isLocalization (Localization.AtPrime p) p.primeCompl]
   exact Module.Flat.trans A B (Localization.AtPrime P)

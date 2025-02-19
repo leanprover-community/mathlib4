@@ -1170,7 +1170,8 @@ theorem prod_comp [DecidableEq γ] (f : γ → β) (g : α → γ) :
 @[to_additive]
 theorem prod_piecewise [DecidableEq α] (s t : Finset α) (f g : α → β) :
     (∏ x ∈ s, (t.piecewise f g) x) = (∏ x ∈ s ∩ t, f x) * ∏ x ∈ s \ t, g x := by
-  erw [prod_ite, filter_mem_eq_inter, ← sdiff_eq_filter]
+  simp only [piecewise]
+  rw [prod_ite, filter_mem_eq_inter, ← sdiff_eq_filter]
 
 @[to_additive]
 theorem prod_inter_mul_prod_diff [DecidableEq α] (s t : Finset α) (f : α → β) :
@@ -1450,12 +1451,13 @@ theorem prod_unique_nonempty {α β : Type*} [CommMonoid β] [Unique α] (s : Fi
 
 section Image_Overlap
 
-variable {α β ι : Type*} [DecidableEq ι] [DecidableEq α]
+variable {α β ι : Type*} [DecidableEq α]
 
 @[to_additive]
 lemma prod_filter_of_pairwise_eq_one [CommMonoid β] {f : ι → α} {g : α → β} {n : ι} {I : Finset ι}
     (hn : n ∈ I) (hf : (I : Set ι).Pairwise fun i j ↦ f i = f j → g (f i) = 1) :
     ∏ j ∈ filter (fun j ↦ f j = f n) I, g (f j) = g (f n) := by
+  classical
   have h j (hj : j ∈ (filter (fun i ↦ f i = f n) I).erase n) : g (f j) = 1 := by
     simp only [mem_erase, mem_filter] at hj
     exact hf hj.2.1 hn hj.1 hj.2.2
@@ -1464,7 +1466,7 @@ lemma prod_filter_of_pairwise_eq_one [CommMonoid β] {f : ι → α} {g : α →
 
 /-- A version of `Finset.prod_map` and `Finset.prod_image`, but we do not assume that `f` is
 injective. Rather, we assume that the image of `f` on `I` only overlaps where `g (f i) = 1`.
-The conclusion is the same as in `prod_image`.-/
+The conclusion is the same as in `prod_image`. -/
 @[to_additive (attr := simp)
 "A version of `Finset.sum_map` and `Finset.sum_image`, but we do not assume that `f` is
 injective. Rather, we assume that the image of `f` on `I` only overlaps where `g (f i) = 0`.
@@ -1477,7 +1479,7 @@ lemma prod_image_of_pairwise_eq_one [CommMonoid β] {f : ι → α} {g : α → 
 
 /-- A version of `Finset.prod_map` and `Finset.prod_image`, but we do not assume that `f` is
 injective. Rather, we assume that the images of `f` are disjoint on `I`, and `g ⊥ = 1`. The
-conclusion is the same as in `prod_image`.-/
+conclusion is the same as in `prod_image`. -/
 @[to_additive (attr := simp)
 "A version of `Finset.sum_map` and `Finset.sum_image`, but we do not assume that `f` is
 injective. Rather, we assume that the images of `f` are disjoint on `I`, and `g ⊥ = 0`. The

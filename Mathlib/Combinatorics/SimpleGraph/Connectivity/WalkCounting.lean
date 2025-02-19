@@ -119,7 +119,7 @@ theorem mem_finsetWalkLength_iff {n : ℕ} {u v : V} {p : G.Walk u v} :
 variable (G)
 
 /-- The `Finset` of walks from `u` to `v` with length less than `n`. See `finsetWalkLength` for
-context. In particular, we use this definition for `SimpleGraph.Path.instFintype`. --/
+context. In particular, we use this definition for `SimpleGraph.Path.instFintype`. -/
 def finsetWalkLengthLT (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
   (Finset.range n).disjiUnion
     (fun l ↦ G.finsetWalkLength l u v)
@@ -187,6 +187,8 @@ instance fintypeSubtypePathLengthLT (u v : V) (n : ℕ) :
   fintypeSetPathLengthLT G u v n
 
 end LocallyFinite
+
+instance [Finite V] : Finite G.ConnectedComponent := Quot.finite _
 
 section Fintype
 
@@ -265,8 +267,7 @@ lemma odd_card_iff_odd_components [Finite V] : Odd (Nat.card V) ↔
     Set.ncard_coe_Finset, Set.Nat.card_coe_set_eq]
   exact (Finset.odd_sum_iff_odd_card_odd (fun x : G.ConnectedComponent ↦ x.supp.ncard))
 
-lemma ncard_odd_components_mono [Fintype V] [DecidableEq V] {G' : SimpleGraph V}
-    [DecidableRel G.Adj] (h : G ≤ G') :
+lemma ncard_odd_components_mono [Finite V] {G' : SimpleGraph V} (h : G ≤ G') :
      {c : ConnectedComponent G' | Odd c.supp.ncard}.ncard
       ≤ {c : ConnectedComponent G | Odd c.supp.ncard}.ncard := by
   have aux (c : G'.ConnectedComponent) (hc : Odd c.supp.ncard) :
