@@ -81,7 +81,8 @@ end EmptyOn
 
 section LoopyOn
 
-/-- The `Matroid α` with ground set `E` whose only base is `∅` -/
+/-- The `Matroid α` with ground set `E` whose only base is `∅`.
+The elements are all 'loops' - see `Matroid.IsLoop` and `Matroid.loopyOn_isLoop_iff`. -/
 def loopyOn (E : Set α) : Matroid α := emptyOn α ↾ E
 
 @[simp] theorem loopyOn_ground (E : Set α) : (loopyOn E).E = E := rfl
