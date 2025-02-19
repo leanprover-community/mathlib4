@@ -111,9 +111,10 @@ lemma value_query (i : I) (y : ι i) (o : (i : I) → Oracle (ι i) ω) :
 lemma cost_bind (f : Comp ι ω s α) (g : α → Comp ι ω s β) (o : (i : I) → Oracle (ι i) ω) :
     (f >>= g).cost o = f.cost o + (g (f.value o)).cost o := by
   ext i
-  induction' f with _ _ _ _ _ h
-  · simp
-  · simp only [bind, bind'] at h
+  induction f with
+  | pure' _ => simp
+  | query' _ _ _ _ h =>
+    simp only [bind, bind'] at h
     simp only [cost_query', bind, bind', add_assoc, h, Pi.add_apply]
     apply congr_arg₂ _ rfl
     simp only [value_query', add_right_inj]
@@ -122,9 +123,10 @@ lemma cost_bind (f : Comp ι ω s α) (g : α → Comp ι ω s β) (o : (i : I) 
 @[simp]
 lemma value_bind (f : Comp ι ω s α) (g : α → Comp ι ω s β) (o : (i : I) → Oracle (ι i) ω) :
     (f >>= g).value o = (g (f.value o)).value o := by
-  induction' f with _ _ _ _ _ h
-  · rfl
-  · simp only [value_query', query'_bind, h]
+  induction f with
+  | pure' _ => rfl
+  | query' _ _ _ _ h =>
+    simp only [value_query', query'_bind, h]
 
 /-!
 ## `allow` and `allowAll` don't change `Comp.value`, `Comp.cost` and `pure`
@@ -133,22 +135,24 @@ lemma value_bind (f : Comp ι ω s α) (g : α → Comp ι ω s β) (o : (i : I)
 @[simp]
 lemma value_allow (f : Comp ι ω s α) (st : s ⊆ t) (o : (i : I) → Oracle (ι i) ω) :
     (f.allow st).value o = f.value o := by
-  induction' f with _ _ _ _ _ h
-  · simp only [allow]
+  induction f with
+  | pure' _ =>
+    simp only [allow]
     rfl
-  · simp only [allow, value_query', h]
+  | query' _ _ _ _ h =>
+    simp only [allow, value_query', h]
 
 @[simp]
 lemma value_allowAll (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) :
-    f.allowAll.value o = f.value o := by
-  apply value_allow
+    f.allowAll.value o = f.value o :=
+  value_allow _ _ _
 
 @[simp]
 lemma cost_allow (f : Comp ι ω s α) (st : s ⊆ t) (o : (i : I) → Oracle (ι i) ω) :
     (f.allow st).cost o = f.cost o := by
-  induction' f with _ _ _ _ _ h
-  · simp only [allow, cost_pure, cost_pure']
-  · simp only [allow, cost_query', h]
+  induction f with
+  | pure' _ => simp only [allow, cost_pure, cost_pure']
+  | query' _ _ _ _ h => simp only [allow, cost_query', h]
 
 @[simp]
 lemma cost_allowAll (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) :

@@ -77,7 +77,7 @@ variable [DecidableEq I]
 each one of the oracles. -/
 def run (f : Comp ι ω s α) (os : (i : I) → Oracle (ι i) ω) : α × (I → ℕ) :=
   match f with
-  | .pure' x => (x, fun _ => 0)
+  | .pure' x => (x, 0)
   | .query' i _ y f =>
     let x := os i y
     let (z, c) := (f x).run os
