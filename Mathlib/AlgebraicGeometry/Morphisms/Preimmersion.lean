@@ -26,7 +26,7 @@ namespace AlgebraicGeometry
 /-- A morphism of schemes `f : X ⟶ Y` is a preimmersion if the underlying map of
 topological spaces is an embedding and the induced morphisms of stalks are all surjective. -/
 @[mk_iff]
-class IsPreimmersion {X Y : Scheme} (f : X ⟶ Y) extends SurjectiveOnStalks f : Prop where
+class IsPreimmersion {X Y : Scheme} (f : X ⟶ Y) : Prop extends SurjectiveOnStalks f where
   base_embedding : IsEmbedding f.base
 
 lemma Scheme.Hom.isEmbedding {X Y : Scheme} (f : Hom X Y) [IsPreimmersion f] : IsEmbedding f.base :=

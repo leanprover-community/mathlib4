@@ -62,8 +62,8 @@ structure BiheytingHom (α β : Type*) [BiheytingAlgebra α] [BiheytingAlgebra �
 /-- `HeytingHomClass F α β` states that `F` is a type of Heyting homomorphisms.
 
 You should extend this class when you extend `HeytingHom`. -/
-class HeytingHomClass (F α β : Type*) [HeytingAlgebra α] [HeytingAlgebra β] [FunLike F α β]
-  extends LatticeHomClass F α β : Prop where
+class HeytingHomClass (F α β : Type*) [HeytingAlgebra α] [HeytingAlgebra β] [FunLike F α β] : Prop
+    extends LatticeHomClass F α β where
   /-- The proposition that a Heyting homomorphism preserves the bottom element. -/
   map_bot (f : F) : f ⊥ = ⊥
   /-- The proposition that a Heyting homomorphism preserves the Heyting implication. -/
@@ -72,8 +72,9 @@ class HeytingHomClass (F α β : Type*) [HeytingAlgebra α] [HeytingAlgebra β] 
 /-- `CoheytingHomClass F α β` states that `F` is a type of co-Heyting homomorphisms.
 
 You should extend this class when you extend `CoheytingHom`. -/
-class CoheytingHomClass (F α β : Type*) [CoheytingAlgebra α] [CoheytingAlgebra β] [FunLike F α β]
-  extends LatticeHomClass F α β : Prop where
+class CoheytingHomClass (F α β : Type*) [CoheytingAlgebra α] [CoheytingAlgebra β] [FunLike F α β] :
+    Prop
+  extends LatticeHomClass F α β where
   /-- The proposition that a co-Heyting homomorphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
   /-- The proposition that a co-Heyting homomorphism preserves the difference operation. -/
@@ -82,8 +83,9 @@ class CoheytingHomClass (F α β : Type*) [CoheytingAlgebra α] [CoheytingAlgebr
 /-- `BiheytingHomClass F α β` states that `F` is a type of bi-Heyting homomorphisms.
 
 You should extend this class when you extend `BiheytingHom`. -/
-class BiheytingHomClass (F α β : Type*) [BiheytingAlgebra α] [BiheytingAlgebra β] [FunLike F α β]
-  extends LatticeHomClass F α β : Prop where
+class BiheytingHomClass (F α β : Type*) [BiheytingAlgebra α] [BiheytingAlgebra β] [FunLike F α β] :
+    Prop
+  extends LatticeHomClass F α β where
   /-- The proposition that a bi-Heyting homomorphism preserves the Heyting implication. -/
   map_himp (f : F) : ∀ a b, f (a ⇨ b) = f a ⇨ f b
   /-- The proposition that a bi-Heyting homomorphism preserves the difference operation. -/

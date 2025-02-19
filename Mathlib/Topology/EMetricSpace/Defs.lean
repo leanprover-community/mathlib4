@@ -73,7 +73,7 @@ on a product.
 
 Continuity of `edist` is proved in `Topology.Instances.ENNReal`
 -/
-class PseudoEMetricSpace (α : Type u) extends EDist α : Type u where
+class PseudoEMetricSpace (α : Type u) : Type u extends EDist α  where
   edist_self : ∀ x : α, edist x x = 0
   edist_comm : ∀ x y : α, edist x y = edist y x
   edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z
@@ -540,7 +540,7 @@ end EMetric
 
 --namespace
 /-- We now define `EMetricSpace`, extending `PseudoEMetricSpace`. -/
-class EMetricSpace (α : Type u) extends PseudoEMetricSpace α : Type u where
+class EMetricSpace (α : Type u) : Type u extends PseudoEMetricSpace α where
   eq_of_edist_eq_zero : ∀ {x y : α}, edist x y = 0 → x = y
 
 @[ext]

@@ -79,8 +79,8 @@ structure Valuation extends R →*₀ Γ₀ where
 
 You should also extend this typeclass when you extend `Valuation`. -/
 class ValuationClass (F) (R Γ₀ : outParam Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
-  [FunLike F R Γ₀]
-  extends MonoidWithZeroHomClass F R Γ₀ : Prop where
+    [FunLike F R Γ₀] : Prop
+  extends MonoidWithZeroHomClass F R Γ₀ where
   /-- The valuation of a a sum is less that the sum of the valuations -/
   map_add_le_max (f : F) (x y : R) : f (x + y) ≤ max (f x) (f y)
 

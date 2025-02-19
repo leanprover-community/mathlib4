@@ -210,6 +210,8 @@ theorem getElem_rotate (l : List α) (n : ℕ) (k : Nat) (h : k < (l.rotate n).l
   rw [← Option.some_inj, ← getElem?_eq_getElem, ← getElem?_eq_getElem, getElem?_rotate]
   exact h.trans_eq (length_rotate _ _)
 
+set_option linter.deprecated false in
+@[deprecated getElem?_rotate (since := "2025-02-14")]
 theorem get?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
     (l.rotate n).get? m = l.get? ((m + n) % l.length) := by
   simp only [get?_eq_getElem?, length_rotate, hml, getElem?_eq_getElem, getElem_rotate]
@@ -221,14 +223,25 @@ theorem get_rotate (l : List α) (n : ℕ) (k : Fin (l.rotate n).length) :
   simp [getElem_rotate]
 
 theorem head?_rotate {l : List α} {n : ℕ} (h : n < l.length) : head? (l.rotate n) = l[n]? := by
-  rw [← get?_zero, get?_rotate (n.zero_le.trans_lt h), Nat.zero_add, Nat.mod_eq_of_lt h,
-    get?_eq_getElem?]
+  rw [head?_eq_getElem?, getElem?_rotate (n.zero_le.trans_lt h), Nat.zero_add, Nat.mod_eq_of_lt h]
 
 theorem get_rotate_one (l : List α) (k : Fin (l.rotate 1).length) :
     (l.rotate 1).get k = l.get ⟨(k + 1) % l.length, mod_lt _ (length_rotate l 1 ▸ k.pos)⟩ :=
   get_rotate l 1 k
 
 @[deprecated (since := "2024-08-19")] alias nthLe_rotate_one := get_rotate_one
+
+/-- A version of `List.getElem_rotate` that represents `l[k]` in terms of
+`(List.rotate l n)[⋯]`, not vice versa. Can be used instead of rewriting `List.getElem_rotate`
+from right to left. -/
+theorem getElem_eq_getElem_rotate (l : List α) (n : ℕ) (k : Nat) (hk : k < l.length) :
+    l[k] = ((l.rotate n)[(l.length - n % l.length + k) % l.length]'
+      ((Nat.mod_lt _ (k.zero_le.trans_lt hk)).trans_eq (length_rotate _ _).symm)) := by
+  rw [getElem_rotate]
+  refine congr_arg l.get (Fin.eq_of_val_eq ?_)
+  simp only [mod_add_mod]
+  rw [← add_mod_mod, Nat.add_right_comm, Nat.sub_add_cancel, add_mod_left, mod_eq_of_lt]
+  exacts [hk, (mod_lt _ (k.zero_le.trans_lt hk)).le]
 
 /-- A version of `List.get_rotate` that represents `List.get l` in terms of
 `List.get (List.rotate l n)`, not vice versa. Can be used instead of rewriting `List.get_rotate`

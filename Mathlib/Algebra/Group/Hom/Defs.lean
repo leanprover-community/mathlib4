@@ -150,8 +150,8 @@ homomorphisms.
 You should also extend this typeclass when you extend `AddMonoidHom`.
 -/
 class AddMonoidHomClass (F : Type*) (M N : outParam Type*)
-    [AddZeroClass M] [AddZeroClass N] [FunLike F M N]
-    extends AddHomClass F M N, ZeroHomClass F M N : Prop
+    [AddZeroClass M] [AddZeroClass N] [FunLike F M N] : Prop
+    extends AddHomClass F M N, ZeroHomClass F M N
 
 -- Instances and lemmas are defined below through `@[to_additive]`.
 end add_zero
@@ -359,8 +359,8 @@ infixr:25 " →* " => MonoidHom
 You should also extend this typeclass when you extend `MonoidHom`. -/
 @[to_additive]
 class MonoidHomClass (F : Type*) (M N : outParam Type*) [MulOneClass M] [MulOneClass N]
-  [FunLike F M N]
-  extends MulHomClass F M N, OneHomClass F M N : Prop
+  [FunLike F M N] : Prop
+  extends MulHomClass F M N, OneHomClass F M N
 
 @[to_additive]
 instance MonoidHom.instFunLike : FunLike (M →* N) M N where
