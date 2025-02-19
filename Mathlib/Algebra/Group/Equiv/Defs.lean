@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Data.FunLike.Equiv
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Tactic.MinImports
 
 /-!
 # Multiplicative and additive equivs
@@ -568,7 +568,3 @@ def MonoidHom.toMulEquiv [MulOneClass M] [MulOneClass N] (f : M →* N) (g : N �
   left_inv := DFunLike.congr_fun h₁
   right_inv := DFunLike.congr_fun h₂
   map_mul' := f.map_mul
-
-namespace Equiv
-
-end Equiv
