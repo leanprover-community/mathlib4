@@ -1041,7 +1041,7 @@ theorem IsClosedMap.sum_elim {f : X → Z} {g : Y → Z} (hf : IsClosedMap f) (h
 lemma IsClosedEmbedding.sum_elim {f : X → Z} {g : Y → Z}
     (hf : IsClosedEmbedding f) (hg : IsClosedEmbedding g) (h : Injective (Sum.elim f g)) :
     IsClosedEmbedding (Sum.elim f g) := by
-  rw [isClosedEmbedding_iff_continuous_injective_isClosedMap] at hf hg ⊢
+  rw [IsClosedEmbedding.isClosedEmbedding_iff_continuous_injective_isClosedMap] at hf hg ⊢
   exact ⟨hf.1.sum_elim hg.1, h, hf.2.2.sum_elim hg.2.2⟩
 
 end Sum

@@ -155,28 +155,16 @@ open Set Topology Function
 variable {X Y Z W : Type*} [TopologicalSpace X] [TopologicalSpace Y]
   [TopologicalSpace Z] [TopologicalSpace W]
 
--- also missing: IsEmbedding.sum_elim (from weaker hypotheses)
-
--- related to Set.preimage_fst_singleton_eq_range, but seems to be missing
--- "#loogle Prod.mk, "Set"" doesn't find anything relevant"
-lemma aux {α β : Type*} {s : Set α} {b : β} : Prod.mk b '' s = Set.prod {b} s := by
-  ext ⟨y, x⟩
-  refine ⟨?_, fun ⟨hy, hx⟩ ↦ ⟨x, hx, by simp [Prod.mk.injEq, and_true, hy.symm]⟩⟩
-  rintro ⟨p, hp, ⟨hpy, hpyx⟩⟩
-  constructor; exacts [by simp, by simpa]
-
-lemma aux2 {α β : Type*} {s : Set α} {b : β} : (fun x ↦ Prod.mk x b) '' s = Set.prod s {b} := by
-  ext ⟨y, x⟩
-  sorry -- proof is similar to aux
+-- also missing: IsEmbedding.sum_elim (from weaker hypotheses), will not add for now
 
 lemma IsClosedMap.prod_mk_left [T2Space Y] (c : Y): IsClosedMap (Prod.mk c : X → _) := by
   intro K hK
-  rw [aux]
+  rw [Set.singleton_prod]
   exact isClosed_singleton.prod hK
 
 lemma IsClosedMap.prod_mk_right [T2Space Y] (c : Y): IsClosedMap (fun x : X ↦ Prod.mk x c) := by
   intro K hK
-  rw [aux2]
+  rw [Set.prod_singleton]
   exact hK.prod isClosed_singleton
 
 end PrereqsTopology
