@@ -80,15 +80,16 @@ structure BoundaryManifoldData (M : Type*) [TopologicalSpace M] [ChartedSpace H 
     (I : ModelWithCorners ℝ E H) (k : ℕ∞) [IsManifold I k M]
     {E₀ H₀: Type*} [NormedAddCommGroup E₀] [NormedSpace ℝ E₀]
     [TopologicalSpace H₀] (I₀ : ModelWithCorners ℝ E₀ H₀) where
-  /-- TODO! -/
+  /-- A `C^k` manifold `M₀` which describes the boundary of `M` -/
   M₀ : Type*
-  [topologicalSpaceM: TopologicalSpace M₀]
+  /-- `M₀` is a topological space-/
+  [topologicalSpace: TopologicalSpace M₀]
   /-- A chosen charted space structure on `M₀` on `H₀` -/
   [chartedSpace : ChartedSpace H₀ M₀]
   /-- `M₀` is a `C^k` manifold with corners w.r.t. `I₀` -/
   [isManifold : IsManifold I₀ k M₀]
   /-- A `C^k` map from the model manifold into `M`, which is required to be a smooth embedding,
-  i.e. a smooth immersion which is also a topological embedding -/
+  i.e. a `C^k` immersion which is also a topological embedding -/
   f: M₀ → M
   isEmbedding: Topology.IsEmbedding f
   contMDiff: ContMDiff I₀ I k f
@@ -104,7 +105,7 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {k : ℕ∞}
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
   {J : ModelWithCorners ℝ E' H'} [IsManifold J ⊤ N]
 
-instance (d : BoundaryManifoldData M I k I₀) : TopologicalSpace d.M₀ := d.topologicalSpaceM
+instance (d : BoundaryManifoldData M I k I₀) : TopologicalSpace d.M₀ := d.topologicalSpace
 
 instance (d : BoundaryManifoldData M I k I₀) : ChartedSpace H₀ d.M₀ := d.chartedSpace
 
