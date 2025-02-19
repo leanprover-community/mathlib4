@@ -793,7 +793,7 @@ nonrec def Chain (r : α → α → Prop) (c : Cycle α) : Prop :=
       · have := isRotated_nil_iff.1 hab
         contradiction
       · dsimp only
-        cases' hab with n hn
+        obtain ⟨n, hn⟩ := hab
         induction' n with d hd generalizing a b l m
         · simp only [rotate_zero, cons.injEq] at hn
           rw [hn.1, hn.2]

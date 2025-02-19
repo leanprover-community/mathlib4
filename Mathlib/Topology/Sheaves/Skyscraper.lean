@@ -365,7 +365,7 @@ def skyscraperPresheafStalkAdjunction [HasColimits C] :
 instance [HasColimits C] : (skyscraperPresheafFunctor p₀ : C ⥤ Presheaf C X).IsRightAdjoint  :=
   (skyscraperPresheafStalkAdjunction _).isRightAdjoint
 
-instance [HasColimits C] : (Presheaf.stalkFunctor C p₀).IsLeftAdjoint  :=
+instance [HasColimits C] : (Presheaf.stalkFunctor C p₀).IsLeftAdjoint :=
   -- Use a classical instance instead of the one from `variable`s
   have : ∀ U : Opens X, Decidable (p₀ ∈ U) := fun _ ↦ Classical.dec _
   (skyscraperPresheafStalkAdjunction _).isLeftAdjoint

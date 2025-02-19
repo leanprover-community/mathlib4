@@ -95,7 +95,7 @@ noncomputable def liftNormedAddGroupHomEquiv {N : Type*} [SeminormedAddCommGroup
     rfl
 
 /-- For a norm-continuous group homomorphism `f`, its lift to the separation quotient
-is bounded by the norm of `f`-/
+is bounded by the norm of `f`. -/
 theorem norm_liftNormedAddGroupHom_le {N : Type*} [SeminormedAddCommGroup N]
     (f : NormedAddGroupHom M N) (hf : ∀ s, ‖s‖ = 0 → f s = 0) :
     ‖liftNormedAddGroupHom f hf‖ ≤ ‖f‖ :=

@@ -328,12 +328,12 @@ theorem subtypePerm_mul (f g : Perm α) (hf hg) :
 private theorem inv_aux : (∀ x, p x ↔ p (f x)) ↔ ∀ x, p x ↔ p (f⁻¹ x) :=
   f⁻¹.surjective.forall.trans <| by simp_rw [f.apply_inv_self, Iff.comm]
 
-/-- See `Equiv.Perm.inv_subtypePerm`-/
+/-- See `Equiv.Perm.inv_subtypePerm`. -/
 theorem subtypePerm_inv (f : Perm α) (hf) :
     f⁻¹.subtypePerm hf = (f.subtypePerm <| inv_aux.2 hf : Perm { x // p x })⁻¹ :=
   rfl
 
-/-- See `Equiv.Perm.subtypePerm_inv`-/
+/-- See `Equiv.Perm.subtypePerm_inv`. -/
 @[simp]
 theorem inv_subtypePerm (f : Perm α) (hf) :
     (f.subtypePerm hf : Perm { x // p x })⁻¹ = f⁻¹.subtypePerm (inv_aux.1 hf) :=

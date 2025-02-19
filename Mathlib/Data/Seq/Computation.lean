@@ -113,7 +113,7 @@ theorem destruct_eq_think {s : Computation α} {s'} : destruct s = Sum.inr s' �
   induction' f0 : s.1 0 with a' <;> intro h
   · injection h with h'
     rw [← h']
-    cases' s with f al
+    obtain ⟨f, al⟩ := s
     apply Subtype.eq
     dsimp [think, tail]
     rw [← f0]
@@ -150,7 +150,7 @@ theorem tail_pure (a : α) : tail (pure a) = pure a :=
 
 @[simp]
 theorem tail_think (s : Computation α) : tail (think s) = s := by
-  cases' s with f al; apply Subtype.eq; dsimp [tail, think]
+  obtain ⟨f, al⟩ := s; apply Subtype.eq; dsimp [tail, think]
 
 @[simp]
 theorem tail_empty : tail (empty α) = empty α :=
@@ -171,7 +171,7 @@ def recOn {C : Computation α → Sort v} (s : Computation α) (h1 : ∀ a, C (p
       rw [destruct_eq_think H]
       apply h2
 
-/-- Corecursor constructor for `corec`-/
+/-- Corecursor constructor for `corec` -/
 def Corec.f (f : β → α ⊕ β) : α ⊕ β → Option α × (α ⊕ β)
   | Sum.inl a => (some a, Sum.inl a)
   | Sum.inr b =>
@@ -278,7 +278,7 @@ end Bisim
 
 -- It's more of a stretch to use ∈ for this relation, but it
 -- asserts that the computation limits to the given value.
-/-- Assertion that a `Computation` limits to a given value-/
+/-- Assertion that a `Computation` limits to a given value -/
 protected def Mem (s : Computation α) (a : α) :=
   some a ∈ s.1
 
@@ -286,7 +286,7 @@ instance : Membership α (Computation α) :=
   ⟨Computation.Mem⟩
 
 theorem le_stable (s : Computation α) {a m n} (h : m ≤ n) : s.1 m = some a → s.1 n = some a := by
-  cases' s with f al
+  obtain ⟨f, al⟩ := s
   induction' h with n _ IH
   exacts [id, fun h2 => al (IH h2)]
 
@@ -406,7 +406,7 @@ theorem get_thinkN (n) : get (thinkN s n) = get s :=
 theorem get_promises : s ~> get s := fun _ => get_eq_of_mem _
 
 theorem mem_of_promises {a} (p : s ~> a) : a ∈ s := by
-  cases' h with h
+  obtain ⟨h⟩ := h
   obtain ⟨a', h⟩ := h
   rw [p h]
   exact h
@@ -527,7 +527,7 @@ def memRecOn {C : Computation α → Sort v} {a s} (M : a ∈ s) (h1 : C (pure a
   generalize length s = n
   induction' n with n IH; exacts [h1, h2 _ IH]
 
-/-- Recursor based on assertion of `Terminates`-/
+/-- Recursor based on assertion of `Terminates` -/
 def terminatesRecOn
     {C : Computation α → Sort v}
     (s) [Terminates s]
@@ -544,12 +544,12 @@ def map (f : α → β) : Computation α → Computation β
       · contradiction
       · rw [al e]; exact h⟩
 
-/-- bind over a `Sum` of `Computation`-/
+/-- bind over a `Sum` of `Computation` -/
 def Bind.g : β ⊕ Computation β → β ⊕ (Computation α ⊕ Computation β)
   | Sum.inl b => Sum.inl b
   | Sum.inr cb' => Sum.inr <| Sum.inr cb'
 
-/-- bind over a function mapping `α` to a `Computation`-/
+/-- bind over a function mapping `α` to a `Computation` -/
 def Bind.f (f : α → Computation β) :
     Computation α ⊕ Computation β → β ⊕ (Computation α ⊕ Computation β)
   | Sum.inl ca =>
@@ -667,7 +667,7 @@ theorem results_bind {s : Computation α} {f : α → Computation β} {a b m n} 
   · intro _ h3 _ h1
     rw [think_bind]
     obtain ⟨m', h⟩ := of_results_think h1
-    cases' h with h1 e
+    obtain ⟨h1, e⟩ := h
     rw [e]
     exact results_think (h3 h1)
 

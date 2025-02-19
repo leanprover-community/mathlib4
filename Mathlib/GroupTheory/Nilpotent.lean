@@ -147,7 +147,7 @@ theorem upperCentralSeries_one : upperCentralSeries G 1 = center G := by
 variable {G}
 
 /-- The `n+1`st term of the upper central series `H i` has underlying set equal to the `x` such
-that `⁅x,G⁆ ⊆ H n`-/
+that `⁅x,G⁆ ⊆ H n`. -/
 theorem mem_upperCentralSeries_succ_iff {n : ℕ} {x : G} :
     x ∈ upperCentralSeries G (n + 1) ↔ ∀ y : G, x * y * x⁻¹ * y⁻¹ ∈ upperCentralSeries G n :=
   Iff.rfl
@@ -239,7 +239,7 @@ theorem nilpotent_iff_finite_ascending_central_series :
 
 theorem is_descending_rev_series_of_is_ascending {H : ℕ → Subgroup G} {n : ℕ} (hn : H n = ⊤)
     (hasc : IsAscendingCentralSeries H) : IsDescendingCentralSeries fun m : ℕ => H (n - m) := by
-  cases' hasc with h0 hH
+  obtain ⟨h0, hH⟩ := hasc
   refine ⟨hn, fun x m hx g => ?_⟩
   dsimp at hx
   by_cases hm : n ≤ m
@@ -257,7 +257,7 @@ alias is_decending_rev_series_of_is_ascending := is_descending_rev_series_of_is_
 
 theorem is_ascending_rev_series_of_is_descending {H : ℕ → Subgroup G} {n : ℕ} (hn : H n = ⊥)
     (hdesc : IsDescendingCentralSeries H) : IsAscendingCentralSeries fun m : ℕ => H (n - m) := by
-  cases' hdesc with h0 hH
+  obtain ⟨h0, hH⟩ := hdesc
   refine ⟨hn, fun x m hx g => ?_⟩
   dsimp only at hx ⊢
   by_cases hm : n ≤ m

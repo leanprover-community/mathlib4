@@ -958,6 +958,14 @@ protected theorem LinearMap.linearIndependent_iff_of_disjoint (f : M →ₗ[R] M
     LinearIndependent R (f ∘ v) ↔ LinearIndependent R v :=
   f.linearIndependent_iff_of_injOn <| LinearMap.injOn_of_disjoint_ker le_rfl hf_inj
 
+open Finset in
+/-- If `∑ i, f i • v i = ∑ i, g i • v i`, then for all `i`, `f i = g i`. -/
+theorem LinearIndependent.eq_coords_of_eq [Fintype ι] {v : ι → M} (hv : LinearIndependent R v)
+    {f : ι → R} {g : ι → R} (heq : ∑ i, f i • v i = ∑ i, g i • v i) (i : ι) : f i = g i := by
+  rw [← sub_eq_zero, ← sum_sub_distrib] at heq
+  simp_rw [← sub_smul] at heq
+  exact sub_eq_zero.mp ((linearIndependent_iff'.mp hv) univ (fun i ↦ f i - g i) heq i (mem_univ i))
+
 /-- If `v` is a linearly independent family of vectors and the kernel of a linear map `f` is
 disjoint with the submodule spanned by the vectors of `v`, then `f ∘ v` is a linearly independent
 family of vectors. See also `LinearIndependent.map'` for a special case assuming `ker f = ⊥`. -/
@@ -1499,12 +1507,8 @@ theorem linearIndependent_fin_cons {n} {v : Fin n → V} :
 theorem linearIndependent_fin_snoc {n} {v : Fin n → V} :
     LinearIndependent K (Fin.snoc v x : Fin (n + 1) → V) ↔
       LinearIndependent K v ∧ x ∉ Submodule.span K (range v) := by
-  -- Porting note: `rw` → `erw`
-  -- https://github.com/leanprover-community/mathlib4/issues/5164
-  -- Here Lean can not see that `fun i ↦ Fin.cons x v (↑(finRotate (n + 1)) i)`
-  -- matches with `?f ∘ ↑(finRotate (n + 1))`.
-  rw [Fin.snoc_eq_cons_rotate]
-  erw [linearIndependent_equiv, linearIndependent_fin_cons]
+  rw [Fin.snoc_eq_cons_rotate, ← Function.comp_def, linearIndependent_equiv,
+    linearIndependent_fin_cons]
 
 /-- See `LinearIndependent.fin_cons'` for an uglier version that works if you
 only have a module over a semiring. -/

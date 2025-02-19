@@ -170,7 +170,7 @@ theorem abs_le_abs_re_add_abs_im (z : ℂ) : Complex.abs z ≤ |z.re| + |z.im| :
   simpa [re_add_im] using Complex.abs.add_le z.re (z.im * I)
 
 theorem abs_le_sqrt_two_mul_max (z : ℂ) : Complex.abs z ≤ Real.sqrt 2 * max |z.re| |z.im| := by
-  cases' z with x y
+  obtain ⟨x, y⟩ := z
   simp only [abs_apply, normSq_mk, ← sq]
   by_cases hle : |x| ≤ |y|
   · calc
