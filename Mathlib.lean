@@ -3661,7 +3661,6 @@ import Mathlib.LinearAlgebra.Basis.Coord
 import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.LinearAlgebra.Basis.Equiv
 import Mathlib.LinearAlgebra.Basis.Exact
-import Mathlib.LinearAlgebra.Basis.Ext
 import Mathlib.LinearAlgebra.Basis.Fin
 import Mathlib.LinearAlgebra.Basis.Flag
 import Mathlib.LinearAlgebra.Basis.Mk
