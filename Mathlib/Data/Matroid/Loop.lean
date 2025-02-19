@@ -60,13 +60,12 @@ lemma isLoop_tfae (M : Matroid α) (e : α) : List.TFAE [
   tfae_have 2 <-> 3 := by simp [M.empty_indep.mem_closure_iff_of_not_mem (not_mem_empty e),
     isCircuit_def, minimal_iff_forall_ssubset, ssubset_singleton_iff]
   tfae_have 2 <-> 4 := by simp [M.empty_indep.mem_closure_iff_of_not_mem (not_mem_empty e)]
-  tfae_have 4 -> 5 := fun h B hB ↦
-    ⟨by simpa using h.subset_ground, fun heB ↦ h.not_indep (hB.indep.subset (by simpa))⟩
-  tfae_have 5 -> 4 := by
-    rw [dep_iff, singleton_subset_iff]
-    refine fun h ↦ ⟨fun hi ↦ ?_, (h M.exists_isBase.choose_spec).1⟩
+  tfae_have 4 <-> 5 := by
+    simp only [dep_iff, singleton_subset_iff, mem_diff, forall_and]
+    refine ⟨fun h ↦ ⟨fun _ _ ↦ h.2, fun B hB heB ↦ h.1 (hB.indep.subset (by simpa))⟩,
+      fun h ↦ ⟨fun hi ↦ ?_, h.1 _ M.exists_isBase.choose_spec⟩⟩
     obtain ⟨B, hB, heB⟩ := hi.exists_isBase_superset
-    exact (h hB).2 (by simpa using heB)
+    exact h.2 _ hB (by simpa using heB)
   tfae_finish
 
 @[simp]
