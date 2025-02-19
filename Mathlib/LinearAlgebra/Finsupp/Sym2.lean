@@ -21,6 +21,11 @@ variable [CommMonoidWithZero R]
 
 namespace Sym2
 
+lemma sym2_support_eq_preimage_support_mul [NoZeroDivisors R] (f : α →₀ R) :
+    f.support.sym2 = map f ⁻¹' mul.support := by
+  ext ⟨a,b⟩
+  simp_all
+
 lemma mem_sym2_support_of_mul_ne_zero {f : α →₀ R} (p : Sym2 α) (hp : mul (p.map f) ≠ 0) :
     p ∈ f.support.sym2 := by
   obtain ⟨a,b⟩ := p
