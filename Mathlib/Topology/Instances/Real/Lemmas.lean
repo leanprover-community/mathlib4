@@ -3,20 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Periodic
-import Mathlib.Data.Real.Star
+import Mathlib.Algebra.Field.Periodic
 import Mathlib.Topology.Algebra.Order.Archimedean
-import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.Algebra.Star
-import Mathlib.Topology.Algebra.UniformMulAction
-import Mathlib.Topology.Instances.Int
-import Mathlib.Topology.Order.Bornology
-import Mathlib.Topology.Algebra.UniformGroup.Defs
 import Mathlib.Topology.Instances.Real.Defs
 
 /-!
 # Topological properties of ℝ
 -/
+
 assert_not_exists UniformOnFun
 
 noncomputable section
@@ -67,9 +61,6 @@ theorem Real.uniformContinuous_abs : UniformContinuous (abs : ℝ → ℝ) :=
 theorem Real.continuous_inv : Continuous fun a : { r : ℝ // r ≠ 0 } => a.val⁻¹ :=
   continuousOn_inv₀.restrict
 
-theorem Real.uniformContinuous_const_mul {x : ℝ} : UniformContinuous (x * ·) :=
-  uniformContinuous_const_smul x
-
 theorem Real.uniformContinuous_mul (s : Set (ℝ × ℝ)) {r₁ r₂ : ℝ}
     (H : ∀ x ∈ s, |(x : ℝ × ℝ).1| < r₁ ∧ |x.2| < r₂) :
     UniformContinuous fun p : s => p.1.1 * p.1.2 :=
@@ -79,7 +70,7 @@ theorem Real.uniformContinuous_mul (s : Set (ℝ × ℝ)) {r₁ r₂ : ℝ}
       let ⟨h₁, h₂⟩ := max_lt_iff.1 h
       Hδ (H _ a.2).1 (H _ b.2).2 h₁ h₂⟩
 
--- Porting note: moved `TopologicalRing` instance up
+-- Porting note: moved `IsTopologicalRing` instance up
 
 
 theorem Real.totallyBounded_ball (x ε : ℝ) : TotallyBounded (ball x ε) := by

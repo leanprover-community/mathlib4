@@ -9,13 +9,16 @@ import Mathlib.LinearAlgebra.Matrix.BaseChange
 
 /-!
 # Restriction to submodules and restriction of scalars for perfect pairings.
+
 We provide API for restricting perfect pairings to submodules and for restricting their scalars.
+
 ## Main definitions
  * `PerfectPairing.restrict`: restriction of a perfect pairing to submodules.
  * `PerfectPairing.restrictScalars`: restriction of scalars for a perfect pairing taking values in a
    subring.
- * `PerfectPairing.restrictScalarsField`: restriction of scalars for a perfect pairing taking values
-   in a subfield.
+ * `PerfectPairing.restrictScalarsField`: simultaneously restrict both the domains and scalars
+   of a perfect pairing with coefficients in a field.
+
 -/
 
 open Function Module Set
@@ -30,12 +33,15 @@ section CommRing
 variable {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
   (p : PerfectPairing R M N)
 
-private lemma restrict_aux
-    {M' N' : Type*} [AddCommGroup M'] [Module R M'] [AddCommGroup N'] [Module R N']
-    (i : M' →ₗ[R] M) (j : N' →ₗ[R] N)
-    (hM : IsCompl (LinearMap.range i) ((LinearMap.range j).dualAnnihilator.map p.toDualLeft.symm))
-    (hN : IsCompl (LinearMap.range j) ((LinearMap.range i).dualAnnihilator.map p.toDualRight.symm))
-    (hi : Injective i) (hj : Injective j) :
+section Restrict
+
+variable {M' N' : Type*} [AddCommGroup M'] [Module R M'] [AddCommGroup N'] [Module R N']
+  (i : M' →ₗ[R] M) (j : N' →ₗ[R] N) (hi : Injective i) (hj : Injective j)
+  (hij : p.IsPerfectCompl (LinearMap.range i) (LinearMap.range j))
+
+include hi hj hij
+
+private lemma restrict_aux :
     Bijective (p.toLin.compl₁₂ i j) := by
   refine ⟨LinearMap.ker_eq_bot.mp <| eq_bot_iff.mpr fun m hm ↦ ?_, fun f ↦ ?_⟩
   · replace hm : i m ∈ (LinearMap.range j).dualAnnihilator.map p.toDualLeft.symm := by
@@ -44,11 +50,13 @@ private lemma restrict_aux
       rintro - ⟨n, rfl⟩
       simpa using LinearMap.congr_fun hm n
     suffices i m ∈ (⊥ : Submodule R M) by simpa [hi] using this
-    simpa only [← hM.inf_eq_bot, Submodule.mem_inf] using ⟨LinearMap.mem_range_self i m, hm⟩
-  · set F : Module.Dual R N := f ∘ₗ j.linearProjOfIsCompl _ hj hN with hF
+    simpa only [← hij.isCompl_left.inf_eq_bot, Submodule.mem_inf]
+      using ⟨LinearMap.mem_range_self i m, hm⟩
+  · set F : Module.Dual R N := f ∘ₗ j.linearProjOfIsCompl _ hj hij.isCompl_right with hF
     have hF (n : N') : F (j n) = f n := by simp [hF]
     set m : M := p.toDualLeft.symm F with hm
-    obtain ⟨-, ⟨m₀, rfl⟩, y, hy, hm'⟩ := Submodule.exists_add_eq_of_codisjoint hM.codisjoint m
+    obtain ⟨-, ⟨m₀, rfl⟩, y, hy, hm'⟩ :=
+      Submodule.exists_add_eq_of_codisjoint hij.isCompl_left.codisjoint m
     refine ⟨m₀, LinearMap.ext fun n ↦ ?_⟩
     replace hy : (p y) (j n) = 0 := by
       simp only [Submodule.mem_map, Submodule.mem_dualAnnihilator] at hy
@@ -61,22 +69,25 @@ private lemma restrict_aux
 /-- The restriction of a perfect pairing to submodules (expressed as injections to provide
 definitional control). -/
 @[simps]
-def restrict {M' N' : Type*} [AddCommGroup M'] [Module R M'] [AddCommGroup N'] [Module R N']
-    (i : M' →ₗ[R] M) (j : N' →ₗ[R] N)
-    (hM : IsCompl (LinearMap.range i) ((LinearMap.range j).dualAnnihilator.map p.toDualLeft.symm))
-    (hN : IsCompl (LinearMap.range j) ((LinearMap.range i).dualAnnihilator.map p.toDualRight.symm))
-    (hi : Injective i) (hj : Injective j) :
+def restrict :
     PerfectPairing R M' N' where
   toLin := p.toLin.compl₁₂ i j
-  bijectiveLeft := p.restrict_aux i j hM hN hi hj
-  bijectiveRight := p.flip.restrict_aux j i hN hM hj hi
+  bijectiveLeft := p.restrict_aux i j hi hj hij
+  bijectiveRight := p.flip.restrict_aux j i hj hi hij.flip
+
+@[simp]
+lemma restrict_apply_apply (x : M') (y : N') :
+    p.restrict i j hi hj hij x y = p (i x) (j y) :=
+  rfl
+
+end Restrict
 
 section RestrictScalars
 
-variable {S : Type*}
+variable {S M' N' : Type*}
   [CommRing S] [Algebra S R] [Module S M] [Module S N] [IsScalarTower S R M] [IsScalarTower S R N]
   [NoZeroSMulDivisors S R] [Nontrivial R]
-  {M' N' : Type*} [AddCommGroup M'] [Module S M'] [AddCommGroup N'] [Module S N']
+  [AddCommGroup M'] [Module S M'] [AddCommGroup N'] [Module S N']
   (i : M' →ₗ[S] M) (j : N' →ₗ[S] N)
 
 /-- An auxiliary definition used to construct `PerfectPairing.restrictScalars`. -/
@@ -84,7 +95,7 @@ private def restrictScalarsAux
     (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap S R).range) :
     M' →ₗ[S] N' →ₗ[S] S :=
  LinearMap.restrictScalarsRange i j (Algebra.linearMap S R)
-    (NoZeroSMulDivisors.algebraMap_injective S R) p.toLin hp
+    (FaithfulSMul.algebraMap_injective S R) p.toLin hp
 
 private lemma restrictScalarsAux_injective
     (hi : Injective i)
@@ -92,17 +103,18 @@ private lemma restrictScalarsAux_injective
     (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap S R).range) :
     Injective (p.restrictScalarsAux i j hp) := by
   let f := LinearMap.restrictScalarsRange i j (Algebra.linearMap S R)
-      (NoZeroSMulDivisors.algebraMap_injective S R) p.toLin hp
+      (FaithfulSMul.algebraMap_injective S R) p.toLin hp
   rw [← LinearMap.ker_eq_bot]
   refine (Submodule.eq_bot_iff _).mpr fun x (hx : f x = 0) ↦ ?_
   replace hx (n : N) : p (i x) n = 0 := by
     have hn : n ∈ span R (LinearMap.range j : Set N) := hN ▸ Submodule.mem_top
-    induction' hn using Submodule.span_induction with z hz
-    · obtain ⟨n', rfl⟩ := hz
+    induction hn using Submodule.span_induction with
+    | mem z hz =>
+      obtain ⟨n', rfl⟩ := hz
       simpa [f] using LinearMap.congr_fun hx n'
-    · simp
-    · rw [← p.toLin_apply, map_add]; aesop
-    · rw [← p.toLin_apply, map_smul]; aesop
+    | zero => simp
+    | add => rw [← p.toLin_apply, map_add]; aesop
+    | smul => rw [← p.toLin_apply, map_smul]; aesop
   rw [← i.map_eq_zero_iff hi, ← p.toLin.map_eq_zero_iff p.bijectiveLeft.injective]
   ext n
   simpa using hx n
@@ -117,7 +129,7 @@ private lemma restrictScalarsAux_surjective
   obtain ⟨m, hm⟩ := h g
   refine ⟨m, ?_⟩
   ext n
-  apply NoZeroSMulDivisors.algebraMap_injective S R
+  apply FaithfulSMul.algebraMap_injective S R
   change Algebra.linearMap S R _ = _
   simpa [restrictScalarsAux] using LinearMap.congr_fun hm n
 
@@ -144,7 +156,7 @@ end CommRing
 
 section Field
 
-variable {K L M N M : Type*} [Field K] [Field L] [Algebra K L]
+variable {K L M N : Type*} [Field K] [Field L] [Algebra K L]
   [AddCommGroup M] [AddCommGroup N] [Module L M] [Module L N]
   [Module K M] [Module K N] [IsScalarTower K L M]
   (p : PerfectPairing L M N)
@@ -153,9 +165,6 @@ variable {K L M N M : Type*} [Field K] [Field L] [Algebra K L]
 whose `L` span is full, then these subspaces induce a `K`-structure in the sense of
 [*Algebra I*, Bourbaki : Chapter II, §8.1 Definition 1][bourbaki1989]. -/
 lemma exists_basis_basis_of_span_eq_top_of_mem_algebraMap
-    {K L : Type*} [Field K] [Field L] [Algebra K L]
-    [Module L M] [Module L N] [Module K M] [Module K N] [IsScalarTower K L M]
-    (p : PerfectPairing L M N)
     (M' : Submodule K M) (N' : Submodule K N)
     (hM : span L (M' : Set M) = ⊤)
     (hN : span L (N' : Set N) = ⊤)
@@ -172,8 +181,8 @@ lemma exists_basis_basis_of_span_eq_top_of_mem_algebraMap
   have hv' : LinearIndependent K v' := by
     replace hv₃ := hv₃.restrict_scalars (R := K) <| by
       simp_rw [← Algebra.algebraMap_eq_smul_one]
-      exact NoZeroSMulDivisors.algebraMap_injective K L
-    rw [show ((↑) : v → M) = M'.subtype ∘ v' from rfl] at hv₃
+      exact FaithfulSMul.algebraMap_injective K L
+    rw [show ((↑) : v → M) = M'.subtype ∘ v' by ext; simp [v']] at hv₃
     exact hv₃.of_comp
   suffices span K (Set.range v') = ⊤ by
     let e := (Module.Finite.finite_basis b).equivFin
@@ -208,15 +217,11 @@ variable {M' N' : Type*}
   [AddCommGroup M'] [AddCommGroup N'] [Module K M'] [Module K N'] [IsScalarTower K L N]
   (i : M' →ₗ[K] M) (j : N' →ₗ[K] N) (hi : Injective i) (hj : Injective j)
 
-/-- Restriction of scalars for a perfect pairing taking values in a subfield. -/
-def restrictScalarsField {K L : Type*} [Field K] [Field L] [Algebra K L]
-    [Module L M] [Module L N] [Module K M] [Module K N] [IsScalarTower K L M] [IsScalarTower K L N]
-    [Module K M'] [Module K N']
-    (i : M' →ₗ[K] M) (j : N' →ₗ[K] N)
-    (hi : Injective i) (hj : Injective j)
+/-- An auxiliary definition used only to simplify the construction of the more general definition
+`PerfectPairing.restrictScalarsField`. -/
+private def restrictScalarsFieldAux
     (hM : span L (LinearMap.range i : Set M) = ⊤)
     (hN : span L (LinearMap.range j : Set N) = ⊤)
-    (p : PerfectPairing L M N)
     (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap K L).range) :
     PerfectPairing K M' N' := by
   suffices FiniteDimensional K M' from mkOfInjective _ (p.restrictScalarsAux_injective i j hi hN hp)
@@ -226,6 +231,36 @@ def restrictScalarsField {K L : Type*} [Field K] [Field L] [Algebra K L]
     exact hp m n
   have : FiniteDimensional K (LinearMap.range i) := FiniteDimensional.of_fintype_basis b'
   exact Finite.equiv (LinearEquiv.ofInjective i hi).symm
+
+/-- Simultaneously restrict both the domains and scalars of a perfect pairing with coefficients in a
+field. -/
+def restrictScalarsField
+    (hij : p.IsPerfectCompl (span L <| LinearMap.range i) (span L <| LinearMap.range j))
+    (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap K L).range) :
+    PerfectPairing K M' N' := by
+  letI P : PerfectPairing L (span L <| LinearMap.range i) (span L <| LinearMap.range j) :=
+    p.restrict (Submodule.subtype _) (Submodule.subtype _) (by simp) (by simp) (by simpa)
+  exact P.restrictScalarsFieldAux
+    ((LinearMap.range i).inclusionSpan L ∘ₗ i.rangeRestrict)
+    ((LinearMap.range j).inclusionSpan L ∘ₗ j.rangeRestrict)
+    (((LinearMap.range i).injective_inclusionSpan L).comp (by simpa))
+    (((LinearMap.range j).injective_inclusionSpan L).comp (by simpa))
+    (by rw [LinearMap.range_comp_of_range_eq_top _ (LinearMap.range_rangeRestrict _)]
+        exact (LinearMap.range i).span_range_inclusionSpan L)
+    (by rw [LinearMap.range_comp_of_range_eq_top _ (LinearMap.range_rangeRestrict _)]
+        exact (LinearMap.range j).span_range_inclusionSpan L)
+    (fun x y ↦ LinearMap.BilinMap.apply_apply_mem_of_mem_span
+      (LinearMap.range <| Algebra.linearMap K L) (range i) (range j)
+      ((LinearMap.restrictScalarsₗ K L _ _ _).comp (p.toLin.restrictScalars K))
+      (by simpa) (i x) (j y) (subset_span (mem_range_self x)) (subset_span (mem_range_self y)))
+
+@[simp] lemma restrictScalarsField_apply_apply
+    (hij : p.IsPerfectCompl (span L <| LinearMap.range i) (span L <| LinearMap.range j))
+    (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap K L).range)
+    (x : M') (y : N') :
+    algebraMap K L (p.restrictScalarsField i j hi hj hij hp x y) = p (i x) (j y) :=
+  LinearMap.restrictScalarsRange_apply i j (Algebra.linearMap K L)
+    (FaithfulSMul.algebraMap_injective K L) p.toLin hp x y
 
 end Field
 

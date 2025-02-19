@@ -101,6 +101,16 @@ theorem le_hasProd (hf : HasProd f a) (i : ι) (hb : ∀ j, j ≠ i → 1 ≤ f 
     _ ≤ a := prod_le_hasProd _ (by simpa) hf
 
 @[to_additive]
+theorem lt_hasProd [MulRightStrictMono α] (hf : HasProd f a) (i : ι)
+    (hi : ∀ (j : ι), j ≠ i → 1 ≤ f j) (j : ι) (hij : j ≠ i) (hj : 1 < f j) :
+    f i < a := by
+  classical
+  calc
+    f i < f j * f i := lt_mul_of_one_lt_left' (f i) hj
+    _ = ∏ k ∈ {j, i}, f k := by rw [Finset.prod_pair hij]
+    _ ≤ a := prod_le_hasProd _ (fun k hk ↦ hi k (hk ∘ mem_insert_of_mem ∘ mem_singleton.mpr)) hf
+
+@[to_additive]
 theorem prod_le_tprod {f : ι → α} (s : Finset ι) (hs : ∀ i, i ∉ s → 1 ≤ f i) (hf : Multipliable f) :
     ∏ i ∈ s, f i ≤ ∏' i, f i :=
   prod_le_hasProd s hs hf.hasProd
@@ -163,7 +173,7 @@ end OrderedCommMonoid
 
 section OrderedCommGroup
 
-variable [OrderedCommGroup α] [TopologicalSpace α] [TopologicalGroup α]
+variable [OrderedCommGroup α] [TopologicalSpace α] [IsTopologicalGroup α]
   [OrderClosedTopology α] {f g : ι → α} {a₁ a₂ : α} {i : ι}
 
 @[to_additive]
@@ -198,10 +208,10 @@ theorem one_lt_tprod (hsum : Multipliable g) (hg : ∀ i, 1 ≤ g i) (i : ι) (h
 
 end OrderedCommGroup
 
-section CanonicallyOrderedCommMonoid
+section CanonicallyOrderedMul
 
-variable [CanonicallyOrderedCommMonoid α] [TopologicalSpace α] [OrderClosedTopology α]
-  {f : ι → α} {a : α}
+variable [OrderedCommMonoid α] [CanonicallyOrderedMul α] [TopologicalSpace α]
+  [OrderClosedTopology α] {f : ι → α} {a : α}
 
 @[to_additive]
 theorem le_hasProd' (hf : HasProd f a) (i : ι) : f i ≤ a :=
@@ -228,7 +238,7 @@ theorem isLUB_hasProd' (hf : HasProd f a) : IsLUB (Set.range fun s ↦ ∏ i ∈
   classical
   exact isLUB_of_tendsto_atTop (Finset.prod_mono_set' f) hf
 
-end CanonicallyOrderedCommMonoid
+end CanonicallyOrderedMul
 
 section LinearOrder
 
@@ -248,7 +258,7 @@ theorem hasProd_of_isLUB_of_one_le [LinearOrderedCommMonoid α] [TopologicalSpac
   tendsto_atTop_isLUB (Finset.prod_mono_set_of_one_le' h) hf
 
 @[to_additive]
-theorem hasProd_of_isLUB [CanonicallyLinearOrderedCommMonoid α] [TopologicalSpace α]
+theorem hasProd_of_isLUB [LinearOrderedCommMonoid α] [CanonicallyOrderedMul α] [TopologicalSpace α]
     [OrderTopology α] {f : ι → α} (b : α) (hf : IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) b) :
     HasProd f b :=
   tendsto_atTop_isLUB (Finset.prod_mono_set' f) hf

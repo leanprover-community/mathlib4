@@ -5,7 +5,6 @@ Authors: Chris Hughes, Yaël Dillies
 -/
 
 import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Data.List.Iterate
 import Mathlib.GroupTheory.Perm.Finite
 import Mathlib.GroupTheory.Perm.List
 
@@ -175,27 +174,31 @@ theorem sameCycle_extendDomain {p : β → Prop} [DecidablePred p] {f : α ≃ S
 alias ⟨_, SameCycle.extendDomain⟩ := sameCycle_extendDomain
 
 theorem SameCycle.exists_pow_eq' [Finite α] : SameCycle f x y → ∃ i < orderOf f, (f ^ i) x = y := by
-  classical
-    rintro ⟨k, rfl⟩
-    use (k % orderOf f).natAbs
-    have h₀ := Int.natCast_pos.mpr (orderOf_pos f)
-    have h₁ := Int.emod_nonneg k h₀.ne'
-    rw [← zpow_natCast, Int.natAbs_of_nonneg h₁, zpow_mod_orderOf]
-    refine ⟨?_, by rfl⟩
-    rw [← Int.ofNat_lt, Int.natAbs_of_nonneg h₁]
-    exact Int.emod_lt_of_pos _ h₀
+  rintro ⟨k, rfl⟩
+  use (k % orderOf f).natAbs
+  have h₀ := Int.natCast_pos.mpr (orderOf_pos f)
+  have h₁ := Int.emod_nonneg k h₀.ne'
+  rw [← zpow_natCast, Int.natAbs_of_nonneg h₁, zpow_mod_orderOf]
+  refine ⟨?_, by rfl⟩
+  rw [← Int.ofNat_lt, Int.natAbs_of_nonneg h₁]
+  exact Int.emod_lt_of_pos _ h₀
 
 theorem SameCycle.exists_pow_eq'' [Finite α] (h : SameCycle f x y) :
     ∃ i : ℕ, 0 < i ∧ i ≤ orderOf f ∧ (f ^ i) x = y := by
-  classical
-    obtain ⟨_ | i, hi, rfl⟩ := h.exists_pow_eq'
-    · refine ⟨orderOf f, orderOf_pos f, le_rfl, ?_⟩
-      rw [pow_orderOf_eq_one, pow_zero]
-    · exact ⟨i.succ, i.zero_lt_succ, hi.le, by rfl⟩
+  obtain ⟨_ | i, hi, rfl⟩ := h.exists_pow_eq'
+  · refine ⟨orderOf f, orderOf_pos f, le_rfl, ?_⟩
+    rw [pow_orderOf_eq_one, pow_zero]
+  · exact ⟨i.succ, i.zero_lt_succ, hi.le, by rfl⟩
 
-instance (f : Perm α) [DecidableRel (SameCycle f⁻¹)] :
-    DecidableRel (SameCycle f) := fun x y =>
-  decidable_of_iff (f⁻¹.SameCycle x y) (sameCycle_inv)
+theorem SameCycle.exists_fin_pow_eq [Finite α] (h : SameCycle f x y) :
+    ∃ i : Fin (orderOf f), (f ^ (i : ℕ)) x = y := by
+  obtain ⟨i, hi, hx⟩ := SameCycle.exists_pow_eq' h
+  exact ⟨⟨i, hi⟩, hx⟩
+
+theorem SameCycle.exists_nat_pow_eq [Finite α] (h : SameCycle f x y) :
+    ∃ i : ℕ, (f ^ i) x = y := by
+  obtain ⟨i, _, hi⟩ := h.exists_pow_eq'
+  exact ⟨i, hi⟩
 
 instance (f : Perm α) [DecidableRel (SameCycle f)] :
     DecidableRel (SameCycle f⁻¹) := fun x y =>
@@ -203,18 +206,6 @@ instance (f : Perm α) [DecidableRel (SameCycle f)] :
 
 instance (priority := 100) [DecidableEq α] : DecidableRel (SameCycle (1 : Perm α)) := fun x y =>
   decidable_of_iff (x = y) sameCycle_one.symm
-
-instance [Fintype α] [DecidableEq α] (f : Perm α) : DecidableRel (SameCycle f) := fun x y =>
-  decidable_of_iff (y ∈ List.iterate f x (Fintype.card (Perm α))) <| by
-    simp only [List.mem_iterate, iterate_eq_pow, eq_comm (a := y)]
-    exact ⟨fun ⟨n, _, hn⟩ => ⟨n, hn⟩, fun ⟨i, hi⟩ => ⟨(i % orderOf f).natAbs,
-      Int.ofNat_lt.1 <| by
-        rw [Int.natAbs_of_nonneg (Int.emod_nonneg _ <| Int.natCast_ne_zero.2 (orderOf_pos _).ne')]
-        refine (Int.emod_lt _ <| Int.natCast_ne_zero_iff_pos.2 <| orderOf_pos _).trans_le ?_
-        simp [orderOf_le_card_univ],
-      by
-        rw [← zpow_natCast, Int.natAbs_of_nonneg (Int.emod_nonneg _ <|
-          Int.natCast_ne_zero_iff_pos.2 <| orderOf_pos _), zpow_mod_orderOf, hi]⟩⟩
 
 end SameCycle
 
@@ -381,7 +372,7 @@ theorem isCycle_swap_mul_aux₂ {α : Type*} [DecidableEq α] :
     ∀ (n : ℤ) {b x : α} {f : Perm α} (_ : (swap x (f x) * f) b ≠ b) (_ : (f ^ n) (f x) = b),
       ∃ i : ℤ, ((swap x (f x) * f) ^ i) (f x) = b := by
   intro n
-  induction n with
+  cases n with
   | ofNat n => exact isCycle_swap_mul_aux₁ n
   | negSucc n =>
     intro b x f hb h
@@ -420,7 +411,7 @@ theorem IsCycle.eq_swap_of_apply_apply_eq_self {α : Type*} [DecidableEq α] {f 
         refine by_contradiction fun hy => ?_
         cases' hz.2 hy with j hj
         rw [← sub_add_cancel j i, zpow_add, mul_apply, hi] at hj
-        cases' zpow_apply_eq_of_apply_apply_eq_self hffx (j - i) with hji hji
+        rcases zpow_apply_eq_of_apply_apply_eq_self hffx (j - i) with hji | hji
         · rw [← hj, hji] at hyx
           tauto
         · rw [← hj, hji] at hfyx
@@ -431,8 +422,7 @@ theorem IsCycle.swap_mul {α : Type*} [DecidableEq α] {f : Perm α} (hf : IsCyc
   ⟨f x, by simp [swap_apply_def, mul_apply, if_neg hffx, f.injective.eq_iff, if_neg hx, hx],
     fun y hy =>
     let ⟨i, hi⟩ := hf.exists_zpow_eq hx (ne_and_ne_of_swap_mul_apply_ne_self hy).1
-    -- Porting note: Needed to add Perm α typehint, otherwise does not know how to coerce to fun
-    have hi : (f ^ (i - 1) : Perm α) (f x) = y :=
+    have hi : (f ^ (i - 1)) (f x) = y :=
       calc
         (f ^ (i - 1) : Perm α) (f x) = (f ^ (i - 1) * f ^ (1 : ℤ) : Perm α) x := by simp
         _ = y := by rwa [← zpow_add, sub_add_cancel]
@@ -553,7 +543,7 @@ theorem IsCycle.pow_iff [Finite β] {f : Perm β} (hf : IsCycle f) {n : ℕ} :
         simp [pow_mul, pow_orderOf_eq_one]
       have : orderOf (f ^ n) = orderOf f := by rw [h.orderOf, hr, hf.orderOf]
       rw [orderOf_pow, Nat.div_eq_self] at this
-      cases' this with h
+      rcases this with h | _
       · exact absurd h (orderOf_pos _).ne'
       · rwa [Nat.coprime_iff_gcd_eq_one, Nat.gcd_comm]
     · intro h
@@ -867,9 +857,9 @@ variable [DecidableEq α] {l : List α}
 theorem Nodup.isCycleOn_formPerm (h : l.Nodup) :
     l.formPerm.IsCycleOn { a | a ∈ l } := by
   refine ⟨l.formPerm.bijOn fun _ => List.formPerm_mem_iff_mem, fun a ha b hb => ?_⟩
-  rw [Set.mem_setOf, ← List.indexOf_lt_length] at ha hb
-  rw [← List.getElem_indexOf ha, ← List.getElem_indexOf hb]
-  refine ⟨l.indexOf b - l.indexOf a, ?_⟩
+  rw [Set.mem_setOf, ← List.idxOf_lt_length_iff] at ha hb
+  rw [← List.getElem_idxOf ha, ← List.getElem_idxOf hb]
+  refine ⟨l.idxOf b - l.idxOf a, ?_⟩
   simp only [sub_eq_neg_add, zpow_add, zpow_neg, Equiv.Perm.inv_eq_iff_eq, zpow_natCast,
     Equiv.Perm.coe_mul, List.formPerm_pow_apply_getElem _ h, Function.comp]
   rw [add_comm]

@@ -6,14 +6,15 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Data.Real.Star
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Algebra.Star
+import Mathlib.Topology.Algebra.UniformGroup.Defs
 import Mathlib.Topology.Instances.Int
 import Mathlib.Topology.Order.Bornology
-import Mathlib.Topology.Algebra.UniformGroup.Defs
 
 /-!
 # Topological properties of ℝ
 -/
-assert_not_exists UniformOnFun
+
+assert_not_exists UniformContinuousConstSMul UniformOnFun
 
 noncomputable section
 
@@ -40,9 +41,13 @@ theorem Real.uniformContinuous_neg : UniformContinuous (@Neg.neg ℝ _) :=
 instance : UniformAddGroup ℝ :=
   UniformAddGroup.mk' Real.uniformContinuous_add Real.uniformContinuous_neg
 
+theorem Real.uniformContinuous_const_mul {x : ℝ} : UniformContinuous (x * ·) :=
+  uniformContinuous_of_continuousAt_zero (DistribMulAction.toAddMonoidHom ℝ x)
+    (continuous_const_smul x).continuousAt
+
 -- short-circuit type class inference
-instance : TopologicalAddGroup ℝ := by infer_instance
-instance : TopologicalRing ℝ := inferInstance
+instance : IsTopologicalAddGroup ℝ := by infer_instance
+instance : IsTopologicalRing ℝ := inferInstance
 instance : TopologicalDivisionRing ℝ := inferInstance
 
 instance : ProperSpace ℝ where

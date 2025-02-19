@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 import Mathlib.Analysis.Calculus.TangentCone
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Asymptotics
 import Mathlib.Analysis.Asymptotics.TVS
+import Mathlib.Analysis.Asymptotics.Lemmas
 
 /-!
 # The Fréchet derivative
@@ -1092,6 +1093,19 @@ theorem hasFDerivAt_zero_of_eventually_const (c : F) (hf : f =ᶠ[𝓝 x] fun _ 
   (hasFDerivAt_const _ _).congr_of_eventuallyEq hf
 
 end Const
+
+theorem differentiableWithinAt_of_isInvertible_fderivWithin
+    (hf : (fderivWithin 𝕜 f s x).IsInvertible) : DifferentiableWithinAt 𝕜 f s x := by
+  contrapose hf
+  rw [fderivWithin_zero_of_not_differentiableWithinAt hf]
+  contrapose! hf
+  rcases isInvertible_zero_iff.1 hf with ⟨hE, hF⟩
+  exact (hasFDerivAt_of_subsingleton _ _).differentiableAt.differentiableWithinAt
+
+theorem differentiableAt_of_isInvertible_fderiv
+    (hf : (fderiv 𝕜 f x).IsInvertible) : DifferentiableAt 𝕜 f x := by
+  simp only [← differentiableWithinAt_univ, ← fderivWithin_univ] at hf ⊢
+  exact differentiableWithinAt_of_isInvertible_fderivWithin hf
 
 section MeanValue
 

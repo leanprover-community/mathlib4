@@ -49,6 +49,8 @@ namespace WidePullbackShape
 
 variable {J}
 
+-- Don't generate unnecessary `sizeOf_spec` lemma which the `simpNF` linter will complain about.
+set_option genSizeOfSpec false in
 /-- The type of arrows for the shape indexing a wide pullback. -/
 inductive Hom : WidePullbackShape J → WidePullbackShape J → Type w
   | id : ∀ X, Hom X X
@@ -96,11 +98,6 @@ instance category : SmallCategory (WidePullbackShape J) :=
 @[simp]
 theorem hom_id (X : WidePullbackShape J) : Hom.id X = 𝟙 X :=
   rfl
-
-/- Porting note: we get a warning that we should change LHS to `sizeOf (𝟙 X)` but Lean cannot
-find the category instance on `WidePullbackShape J` in that case. Once supplied in the proof,
-the proposed proof of `simp [only WidePullbackShape.hom_id]` does not work -/
-attribute [nolint simpNF] Hom.id.sizeOf_spec
 
 variable {C : Type u} [Category.{v} C]
 
@@ -153,6 +150,8 @@ namespace WidePushoutShape
 
 variable {J}
 
+-- Don't generate unnecessary `sizeOf_spec` lemma which the `simpNF` linter will complain about.
+set_option genSizeOfSpec false in
 /-- The type of arrows for the shape indexing a wide pushout. -/
 inductive Hom : WidePushoutShape J → WidePushoutShape J → Type w
   | id : ∀ X, Hom X X
@@ -198,10 +197,6 @@ instance category : SmallCategory (WidePushoutShape J) :=
 theorem hom_id (X : WidePushoutShape J) : Hom.id X = 𝟙 X :=
   rfl
 
-/- Porting note: we get a warning that we should change LHS to `sizeOf (𝟙 X)` but Lean cannot
-find the category instance on `WidePushoutShape J` in that case. Once supplied in the proof,
-the proposed proof of `simp [only WidePushoutShape.hom_id]` does not work -/
-attribute [nolint simpNF] Hom.id.sizeOf_spec
 variable {C : Type u} [Category.{v} C]
 
 /-- Construct a functor out of the wide pushout shape given a J-indexed collection of arrows from a
@@ -359,12 +354,9 @@ noncomputable abbrev ι (j : J) : objs j ⟶ widePushout _ _ arrows :=
 noncomputable abbrev head : B ⟶ widePushout B objs arrows :=
   colimit.ι (WidePushoutShape.wideSpan _ _ _) Option.none
 
-@[reassoc (attr := simp)]
+@[reassoc, simp]
 theorem arrow_ι (j : J) : arrows j ≫ ι arrows j = head arrows := by
   apply colimit.w (WidePushoutShape.wideSpan _ _ _) (WidePushoutShape.Hom.init j)
-
--- Porting note: this can simplify itself
-attribute [nolint simpNF] WidePushout.arrow_ι WidePushout.arrow_ι_assoc
 
 variable {arrows}
 
@@ -417,7 +409,7 @@ end WidePushout
 variable (J)
 
 /-- The action on morphisms of the obvious functor
-  `WidePullbackShape_op : WidePullbackShape J ⥤ (WidePushoutShape J)ᵒᵖ`-/
+  `WidePullbackShape_op : WidePullbackShape J ⥤ (WidePushoutShape J)ᵒᵖ` -/
 def widePullbackShapeOpMap :
     ∀ X Y : WidePullbackShape J,
       (X ⟶ Y) → ((op X : (WidePushoutShape J)ᵒᵖ) ⟶ (op Y : (WidePushoutShape J)ᵒᵖ))
@@ -444,7 +436,7 @@ def widePushoutShapeOp : WidePushoutShape J ⥤ (WidePullbackShape J)ᵒᵖ wher
   obj X := op X
   map := fun {X} {Y} => widePushoutShapeOpMap J X Y
 
-/-- The obvious functor `(WidePullbackShape J)ᵒᵖ ⥤ WidePushoutShape J`-/
+/-- The obvious functor `(WidePullbackShape J)ᵒᵖ ⥤ WidePushoutShape J` -/
 @[simps!]
 def widePullbackShapeUnop : (WidePullbackShape J)ᵒᵖ ⥤ WidePushoutShape J :=
   (widePullbackShapeOp J).leftOp
