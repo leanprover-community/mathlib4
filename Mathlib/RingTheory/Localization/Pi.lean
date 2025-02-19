@@ -82,18 +82,23 @@ theorem bijective_lift_piRingHom_algebraMap_comp_piEvalRingHom [IsLocalization M
 If each `R i` has maximal nilradical then the direct product `∏ R i` surjects onto the
 localization of `∏ R i` at `M`.
 -/
-noncomputable def SurjectivePiNilradicalIsMaximal (h : ∀ i, (nilradical (R i)).IsMaximal)
-  [IsLocalization M S'] [Fintype ι]: Function.Surjective (algebraMap (Π i, R i) (S')) := by
+open Function in
+lemma find_me_a_name (M : Submonoid (Π i, R i)) (h : ∀ i, (nilradical (R i)).IsMaximal)
+  [∀ i, IsLocalization (M.map (Pi.evalRingHom R i)) (S i)] :
+    Surjective (Pi.ringHom (fun i ↦ RingHom.comp (algebraMap (R i) (S i)) (Pi.evalRingHom R i))) := by
+  apply Function.Surjective.piMap (fun i ↦ ?_)
+  by_cases h₀ : (0 : R i) ∈ (M.map (Pi.evalRingHom R i))
+  · have := uniqueOfZeroMem h₀ (S := (S i))
+    exact Function.surjective_to_subsingleton (algebraMap (R i) (S i))
+  · exact AlgEquiv.surjective (localizationEquivSelfOfNilradicalIsMaximal h₀)
+
+
+open Function in
+lemma algebraMap_pi_injective_of_nilradical_isMaximal (h : ∀ i, (nilradical (R i)).IsMaximal)
+  [IsLocalization M S'] [Fintype ι] [Nonempty ι] : Surjective (algebraMap (Π i, R i) (S')) := by
   intro s
-  have : Function.Surjective
-    (Pi.ringHom (fun i ↦ RingHom.comp (algebraMap (R i) (S i)) (Pi.evalRingHom R i))) :=
-    Function.Surjective.piMap (fun i ↦ by
-     by_cases h₀ : (0 : R i) ∈ (M.map (Pi.evalRingHom R i))
-     · have := uniqueOfZeroMem h₀ (S := (S i))
-       exact Function.surjective_to_subsingleton ⇑(algebraMap (R i) (S i))
-     · exact AlgEquiv.surjective (localizationEquivSelfOfNilradicalIsMaximal h₀))
-  obtain ⟨r, hr⟩ := this ((lift (isUnit_piRingHom_algebraMap_comp_piEvalRingHom R S M)) s)
-  rw [← lift_eq (isUnit_piRingHom_algebraMap_comp_piEvalRingHom R S M) (S := S') r] at hr
-  exact ⟨r,
-  Function.Bijective.injective (bijective_lift_piRingHom_algebraMap_comp_piEvalRingHom R S _ M) hr⟩
+  set S := fun (i : ι) => Localization (M.map (Pi.evalRingHom R i))
+  obtain ⟨r, hr⟩ := find_me_a_name R S M h ((lift (isUnit_piRingHom_algebraMap_comp_piEvalRingHom R S M)) s)
+  refine ⟨r, Bijective.injective (bijective_lift_piRingHom_algebraMap_comp_piEvalRingHom R S _ M) ?_⟩
+  rwa [lift_eq (isUnit_piRingHom_algebraMap_comp_piEvalRingHom R S M) r]
 end IsLocalization
