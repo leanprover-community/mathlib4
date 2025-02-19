@@ -652,6 +652,10 @@ theorem refl_symm : (PartialHomeomorph.refl X).symm = PartialHomeomorph.refl X :
 /-! const: `PartialEquiv.const` as a partial homeomorphism -/
 section const
 
+/--
+This is `PartialEquiv.single` as a partial homeomorphism: a constant map,
+whose source and target are necessarily singleton sets.
+-/
 def const {a : X} {b : Y} (ha : IsOpen {a}) (hb : IsOpen {b}) : PartialHomeomorph X Y where
   toPartialEquiv := PartialEquiv.single a b
   open_source := ha
