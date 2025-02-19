@@ -29,7 +29,11 @@ vector space and `ι : Type*` is an arbitrary indexing type.
   a basis, is called `Basis.ofEquivFun`.
 
 * `Basis.reindex` uses an equiv to map a basis to a different indexing set.
+
 * `Basis.map` uses a linear equiv to map a basis to a different module.
+
+* `Basis.constr`: given `b : Basis ι R M` and `f : ι → M`, construct a linear map `g` so that
+  `g (b i) = f i`.
 
 ## Main results
 
@@ -368,6 +372,164 @@ theorem eq_of_apply_eq {b₁ b₂ : Basis ι R M} : (∀ i, b₁ i = b₂ i) →
   DFunLike.ext _ _
 
 end Ext
+
+variable [Module R M']
+
+section Constr
+
+variable (S : Type*) [Semiring S] [Module S M']
+variable [SMulCommClass R S M']
+
+/-- Construct a linear map given the value at the basis, called `Basis.constr b S f` where `b` is
+a basis, `f` is the value of the linear map over the elements of the basis, and `S` is an
+extra semiring (typically `S = R` or `S = ℕ`).
+
+This definition is parameterized over an extra `Semiring S`,
+such that `SMulCommClass R S M'` holds.
+If `R` is commutative, you can set `S := R`; if `R` is not commutative,
+you can recover an `AddEquiv` by setting `S := ℕ`.
+See library note [bundled maps over different rings].
+-/
+def constr : (ι → M') ≃ₗ[S] M →ₗ[R] M' where
+  toFun f := (Finsupp.linearCombination R id).comp <| Finsupp.lmapDomain R R f ∘ₗ ↑b.repr
+  invFun f i := f (b i)
+  left_inv f := by
+    ext
+    simp
+  right_inv f := by
+    refine b.ext fun i => ?_
+    simp
+  map_add' f g := by
+    refine b.ext fun i => ?_
+    simp
+  map_smul' c f := by
+    refine b.ext fun i => ?_
+    simp
+
+theorem constr_def (f : ι → M') :
+    constr (M' := M') b S f = linearCombination R id ∘ₗ Finsupp.lmapDomain R R f ∘ₗ ↑b.repr :=
+  rfl
+
+theorem constr_apply (f : ι → M') (x : M) :
+    constr (M' := M') b S f x = (b.repr x).sum fun b a => a • f b := by
+  simp only [constr_def, LinearMap.comp_apply, lmapDomain_apply, linearCombination_apply]
+  rw [Finsupp.sum_mapDomain_index] <;> simp [add_smul]
+
+@[simp]
+theorem constr_basis (f : ι → M') (i : ι) : (constr (M' := M') b S f : M → M') (b i) = f i := by
+  simp [Basis.constr_apply, b.repr_self]
+
+theorem constr_eq {g : ι → M'} {f : M →ₗ[R] M'} (h : ∀ i, g i = f (b i)) :
+    constr (M' := M') b S g = f :=
+  b.ext fun i => (b.constr_basis S g i).trans (h i)
+
+theorem constr_self (f : M →ₗ[R] M') : (constr (M' := M') b S fun i => f (b i)) = f :=
+  b.constr_eq S fun _ => rfl
+
+theorem constr_range {f : ι → M'} :
+    LinearMap.range (constr (M' := M') b S f) = span R (range f) := by
+  rw [b.constr_def S f, LinearMap.range_comp, LinearMap.range_comp, LinearEquiv.range, ←
+    Finsupp.supported_univ, Finsupp.lmapDomain_supported, ← Set.image_univ, ←
+    Finsupp.span_image_eq_map_linearCombination, Set.image_id]
+
+@[simp]
+theorem constr_comp (f : M' →ₗ[R] M') (v : ι → M') :
+    constr (M' := M') b S (f ∘ v) = f.comp (constr (M' := M') b S v) :=
+  b.ext fun i => by simp only [Basis.constr_basis, LinearMap.comp_apply, Function.comp]
+
+variable (S : Type*) [Semiring S] [Module S M']
+variable [SMulCommClass R S M']
+
+@[simp]
+theorem constr_apply_fintype [Fintype ι] (b : Basis ι R M) (f : ι → M') (x : M) :
+    (constr (M' := M') b S f : M → M') x = ∑ i, b.equivFun x i • f i := by
+  simp [b.constr_apply, b.equivFun_apply, Finsupp.sum_fintype]
+
+end Constr
+
+section Equiv
+
+variable (i : ι)
+variable {M'' : Type*} (b' : Basis ι' R M') (e : ι ≃ ι')
+variable [AddCommMonoid M''] [Module R M'']
+
+/-- If `b` is a basis for `M` and `b'` a basis for `M'`, and the index types are equivalent,
+`b.equiv b' e` is a linear equivalence `M ≃ₗ[R] M'`, mapping `b i` to `b' (e i)`. -/
+protected def equiv : M ≃ₗ[R] M' :=
+  b.repr.trans (b'.reindex e.symm).repr.symm
+
+@[simp]
+theorem equiv_apply : b.equiv b' e (b i) = b' (e i) := by simp [Basis.equiv]
+
+@[simp]
+theorem equiv_refl : b.equiv b (Equiv.refl ι) = LinearEquiv.refl R M :=
+  b.ext' fun i => by simp
+
+@[simp]
+theorem equiv_symm : (b.equiv b' e).symm = b'.equiv b e.symm :=
+  b'.ext' fun i => (b.equiv b' e).injective (by simp)
+
+@[simp]
+theorem equiv_trans {ι'' : Type*} (b'' : Basis ι'' R M'') (e : ι ≃ ι') (e' : ι' ≃ ι'') :
+    (b.equiv b' e).trans (b'.equiv b'' e') = b.equiv b'' (e.trans e') :=
+  b.ext' fun i => by simp
+
+@[simp]
+theorem map_equiv (b : Basis ι R M) (b' : Basis ι' R M') (e : ι ≃ ι') :
+    b.map (b.equiv b' e) = b'.reindex e.symm := by
+  ext i
+  simp
+
+section CommSemiring
+
+variable {R M M' : Type*} [CommSemiring R]
+variable [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
+variable (b : Basis ι R M) (b' : Basis ι' R M')
+variable [SMulCommClass R R M']
+
+/-- If `b` is a basis for `M` and `b'` a basis for `M'`,
+and `f`, `g` form a bijection between the basis vectors,
+`b.equiv' b' f g hf hg hgf hfg` is a linear equivalence `M ≃ₗ[R] M'`, mapping `b i` to `f (b i)`.
+-/
+def equiv' (f : M → M') (g : M' → M) (hf : ∀ i, f (b i) ∈ range b') (hg : ∀ i, g (b' i) ∈ range b)
+    (hgf : ∀ i, g (f (b i)) = b i) (hfg : ∀ i, f (g (b' i)) = b' i) : M ≃ₗ[R] M' :=
+  { constr (M' := M') b R (f ∘ b) with
+    invFun := constr (M' := M) b' R (g ∘ b')
+    left_inv :=
+      have : (constr (M' := M) b' R (g ∘ b')).comp (constr (M' := M') b R (f ∘ b)) = LinearMap.id :=
+        b.ext fun i =>
+          Exists.elim (hf i) fun i' hi' => by
+            rw [LinearMap.comp_apply, b.constr_basis, Function.comp_apply, ← hi', b'.constr_basis,
+              Function.comp_apply, hi', hgf, LinearMap.id_apply]
+      fun x => congr_arg (fun h : M →ₗ[R] M => h x) this
+    right_inv :=
+      have : (constr (M' := M') b R (f ∘ b)).comp (constr (M' := M) b' R (g ∘ b')) = LinearMap.id :=
+        b'.ext fun i =>
+          Exists.elim (hg i) fun i' hi' => by
+            rw [LinearMap.comp_apply, b'.constr_basis, Function.comp_apply, ← hi', b.constr_basis,
+              Function.comp_apply, hi', hfg, LinearMap.id_apply]
+      fun x => congr_arg (fun h : M' →ₗ[R] M' => h x) this }
+
+@[simp]
+theorem equiv'_apply (f : M → M') (g : M' → M) (hf hg hgf hfg) (i : ι) :
+    b.equiv' b' f g hf hg hgf hfg (b i) = f (b i) :=
+  b.constr_basis R _ _
+
+@[simp]
+theorem equiv'_symm_apply (f : M → M') (g : M' → M) (hf hg hgf hfg) (i : ι') :
+    (b.equiv' b' f g hf hg hgf hfg).symm (b' i) = g (b' i) :=
+  b'.constr_basis R _ _
+
+theorem sum_repr_mul_repr {ι'} [Fintype ι'] (b' : Basis ι' R M) (x : M) (i : ι) :
+    (∑ j : ι', b.repr (b' j) i * b'.repr x j) = b.repr x i := by
+  conv_rhs => rw [← b'.sum_repr x]
+  simp_rw [map_sum, map_smul, Finset.sum_apply']
+  refine Finset.sum_congr rfl fun j _ => ?_
+  rw [Finsupp.smul_apply, smul_eq_mul, mul_comm]
+
+end CommSemiring
+
+end Equiv
 
 end Basis
 
