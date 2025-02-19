@@ -52,14 +52,6 @@ print(f"reviewers_response:{reviewers_response}")
 
 hashPR = re.compile(f'#{PR_NUMBER}')
 
-# we look for the first message in the channel `PR reviews` whose topic matches the PR number
-# and we store its ID as `specialID`.
-for msg in public_response['messages']:
-    if hashPR.search(msg['subject']) and msg['display_recipient'] == 'PR reviews':
-        specialID=msg['id']
-        print(f'ID:{specialID}\nFirst message with correct subject:{msg}\n')
-        break
-
 messages = (public_response['messages']) + (reviewers_response['messages'])
 
 print(messages)
@@ -67,6 +59,11 @@ print(messages)
 pr_pattern = re.compile(f'https://github.com/leanprover-community/mathlib4/pull/{PR_NUMBER}')
 
 print(f"Searching for: '{pr_pattern}'")
+
+# we store in `first_by_subject` the ID of the messages in a thread whose subject matches
+# the PR number and that we already visited. We use this to only react to the first message
+# in each thread in `PR reviews` the matches the PR number.
+first_by_subject = {}
 
 for message in messages:
     if message['display_recipient'] == 'rss':
@@ -79,7 +76,9 @@ for message in messages:
     has_merge = any(reaction['emoji_name'] == 'merge' for reaction in reactions)
     has_awaiting_author = any(reaction['emoji_name'] == 'writing' for reaction in reactions)
     has_closed = any(reaction['emoji_name'] == 'closed-pr' for reaction in reactions)
-    match = pr_pattern.search(content) or message['id'] == specialID
+    first_in_thread = hashPR.search(message['subject']) and message['display_recipient'] == 'PR reviews' and message['subject'] not in first_by_subject
+    first_by_subject[message['subject']] = message['id']
+    match = pr_pattern.search(content) or first_in_thread
     if match:
         print(f"matched: '{message}'")
 
