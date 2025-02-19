@@ -9,7 +9,7 @@ import Mathlib.Analysis.Analytic.CPolynomialDef
 /-! # Properties of continuously polynomial functions
 
 We expand the API around continuously polynomial functions. Notably, we show that this class is
-stable under the usual operations (addition, subtraction)
+stable under the usual operations (addition, subtraction, negation).
 
 We also prove that continuous multilinear maps are continuously polynomial, and so
 are continuous linear maps into continuous multilinear maps. In particular, such maps are
