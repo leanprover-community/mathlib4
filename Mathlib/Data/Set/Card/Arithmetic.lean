@@ -36,8 +36,8 @@ variable {s : Set α}
 
 open Cardinal
 
-theorem exists_union_disjoint_cardinal_eq_of_infinite (h : s.Infinite) : ∃ (t u : Set α),
-    t ∪ u = s ∧ Disjoint t u ∧ #t = #u := by
+theorem exists_union_disjoint_cardinal_eq_of_infinite (h : s.Infinite)
+    ∃ (t u : Set α), t ∪ u = s ∧ Disjoint t u ∧ #t = #u := by
   have := h.to_subtype
   obtain ⟨f⟩ : Nonempty (s ≃ s ⊕ s) := by
     rw [← Cardinal.eq, ← add_def, add_mk_eq_self]
@@ -47,8 +47,8 @@ theorem exists_union_disjoint_cardinal_eq_of_infinite (h : s.Infinite) : ∃ (t 
       (isCompl_range_inl_range_inr.disjoint.preimage f)
   · simp [mk_image_eq Subtype.val_injective]
 
-theorem exists_union_disjoint_cardinal_eq_of_even (he : Even s.ncard) : ∃ (t u : Set α),
-    t ∪ u = s ∧ Disjoint t u ∧ #t = #u := by
+theorem exists_union_disjoint_cardinal_eq_of_even (he : Even s.ncard) :
+    ∃ (t u : Set α), t ∪ u = s ∧ Disjoint t u ∧ #t = #u := by
   obtain hs | hs := s.infinite_or_finite
   · exact exists_union_disjoint_cardinal_eq_of_infinite hs
   classical
@@ -57,8 +57,8 @@ theorem exists_union_disjoint_cardinal_eq_of_even (he : Even s.ncard) : ∃ (t u
   use t.toSet, u.toSet
   simp [← Finset.coe_union, *]
 
-theorem exists_union_disjoint_ncard_eq_of_even (he : Even s.ncard) : ∃ (t u : Set α),
-    t ∪ u = s ∧ Disjoint t u ∧ t.ncard = u.ncard := by
+theorem exists_union_disjoint_ncard_eq_of_even (he : Even s.ncard) :
+    ∃ (t u : Set α), t ∪ u = s ∧ Disjoint t u ∧ t.ncard = u.ncard := by
   obtain ⟨t, u, hutu, hdtu, hctu⟩ := exists_union_disjoint_cardinal_eq_of_even he
   exact ⟨t, u, hutu, hdtu, congrArg Cardinal.toNat hctu⟩
 
