@@ -112,6 +112,33 @@ theorem coe_mk : ⇑(Basis.mk hli hsp) = v :=
 
 end Mk
 
+section Coord
+
+variable (hli : LinearIndependent R v) (hsp : ⊤ ≤ span R (range v))
+
+variable {hli hsp}
+
+/-- Given a basis, the `i`th element of the dual basis evaluates to 1 on the `i`th element of the
+basis. -/
+theorem mk_coord_apply_eq (i : ι) : (Basis.mk hli hsp).coord i (v i) = 1 :=
+  show hli.repr ⟨v i, Submodule.subset_span (mem_range_self i)⟩ i = 1 by simp [hli.repr_eq_single i]
+
+/-- Given a basis, the `i`th element of the dual basis evaluates to 0 on the `j`th element of the
+basis if `j ≠ i`. -/
+theorem mk_coord_apply_ne {i j : ι} (h : j ≠ i) : (Basis.mk hli hsp).coord i (v j) = 0 :=
+  show hli.repr ⟨v j, Submodule.subset_span (mem_range_self j)⟩ i = 0 by
+    simp [hli.repr_eq_single j, h]
+
+/-- Given a basis, the `i`th element of the dual basis evaluates to the Kronecker delta on the
+`j`th element of the basis. -/
+theorem mk_coord_apply [DecidableEq ι] {i j : ι} :
+    (Basis.mk hli hsp).coord i (v j) = if j = i then 1 else 0 := by
+  rcases eq_or_ne j i with h | h
+  · simp only [h, if_true, eq_self_iff_true, mk_coord_apply_eq i]
+  · simp only [h, if_false, mk_coord_apply_ne h]
+
+end Coord
+
 section Span
 
 variable (hli : LinearIndependent R v)
