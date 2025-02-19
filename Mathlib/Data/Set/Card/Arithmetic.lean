@@ -30,13 +30,19 @@ theorem Finset.exists_disjoint_union_of_even_card [DecidableEq α] {s : Finset �
   let ⟨t, ht, ht'⟩ := exists_subset_card_eq (show n ≤ #s by omega)
   ⟨t, s \ t, by simp [card_sdiff, disjoint_sdiff, *]⟩
 
+theorem Finset.exists_disjoint_union_of_even_card_iff [DecidableEq α] (s : Finset α) :
+    Even #s ↔ ∃ (t u : Finset α), t ∪ u = s ∧ Disjoint t u ∧ #t = #u :=
+  ⟨Finset.exists_disjoint_union_of_even_card, by
+    rintro ⟨t, u, rfl, hdtu, hctu⟩
+    simp_all⟩
+
 namespace Set
 
 variable {s : Set α}
 
 open Cardinal
 
-theorem exists_union_disjoint_cardinal_eq_of_infinite (h : s.Infinite)
+theorem Infinite.exists_union_disjoint_cardinal_eq_of_infinite (h : s.Infinite) :
     ∃ (t u : Set α), t ∪ u = s ∧ Disjoint t u ∧ #t = #u := by
   have := h.to_subtype
   obtain ⟨f⟩ : Nonempty (s ≃ s ⊕ s) := by
@@ -50,7 +56,7 @@ theorem exists_union_disjoint_cardinal_eq_of_infinite (h : s.Infinite)
 theorem exists_union_disjoint_cardinal_eq_of_even (he : Even s.ncard) :
     ∃ (t u : Set α), t ∪ u = s ∧ Disjoint t u ∧ #t = #u := by
   obtain hs | hs := s.infinite_or_finite
-  · exact exists_union_disjoint_cardinal_eq_of_infinite hs
+  · exact hs.exists_union_disjoint_cardinal_eq_of_infinite
   classical
   rw [ncard_eq_toFinset_card s hs] at he
   obtain ⟨t, u, hutu, hdtu, hctu⟩ := Finset.exists_disjoint_union_of_even_card he
