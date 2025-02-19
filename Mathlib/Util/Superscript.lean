@@ -99,7 +99,7 @@ returns `i`, by binary search. -/
 def partitionPoint (lo := 0) (hi := as.size) : Nat :=
   if lo < hi then
     let m := (lo + hi)/2
-    let a := as.get! m
+    let a := as[m]!
     if leftOfPartition a then
       partitionPoint (m+1) hi
     else
