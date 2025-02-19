@@ -12,7 +12,6 @@ import Mathlib.Topology.Algebra.Order.LiminfLimsup
 This file compiles filter-related results about `ℝ≥0∞` (see Data/Real/ENNReal.lean).
 -/
 
-
 open Filter ENNReal
 
 namespace ENNReal
