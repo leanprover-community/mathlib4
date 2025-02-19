@@ -33,18 +33,17 @@ here.
 -/
 
 universe u v
-variable (𝕜 : Type u) [NontriviallyNormedField 𝕜]
-
 open Function Filter Set Bornology
 open scoped Topology Pointwise
 
-section TangentCone
-
-variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+section Defs
 
 /-- The set of all tangent directions to the set `s` at the point `x`. -/
-def tangentConeAt (s : Set E) (x : E) : Set E :=
-  { y : E | MapClusterPt y ((⊤ : Filter 𝕜) ×ˢ 𝓝[insert x s] x) fun (c, d) ↦ c • (d - x) }
+def tangentConeAt (𝕜 : Type*) {E : Type*} [AddCommGroup E] [SMul 𝕜 E] [TopologicalSpace E]
+    (s : Set E) (x : E) : Set E :=
+  { y : E | MapClusterPt y ((⊤ : Filter 𝕜) ×ˢ 𝓝[-x +ᵥ s] 0) (· • ·).uncurry }
+
+variable (𝕜 : Type*) [Semiring 𝕜] {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 
 /-- A property ensuring that the tangent cone to `s` at `x` spans a dense subset of the whole space.
 The main role of this property is to ensure that the differential within `s` at `x` is unique,
@@ -64,7 +63,7 @@ unique, hence this name. The uniqueness it asserts is proved in `UniqueDiffOn.eq
 def UniqueDiffOn (s : Set E) : Prop :=
   ∀ x ∈ s, UniqueDiffWithinAt 𝕜 s x
 
-end TangentCone
+end Defs
 
 variable {𝕜}
 variable {E : Type v} {F G : Type*}
@@ -76,33 +75,17 @@ section AddCommGroup
 variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable {x y : E} {s t : Set E}
 
-theorem mem_tangentConeAt_iff_mapClusterPt : y ∈ tangentConeAt 𝕜 s x ↔
-    MapClusterPt y (cobounded 𝕜 ×ˢ 𝓟 s) fun (c, d) ↦ c • (d - x) := by
-  simp only [tangentConeAt, MapClusterPt, mem_setOf_eq, ← map₂_smul, ← image_add_left',
-    ← map_principal, map₂_map_right, map_prod_eq_map₂', sub_eq_neg_add]
-
 theorem mem_tangentConeAt_of_seq {α : Type*} {l : Filter α} [l.NeBot] {c : α → 𝕜} {d : α → E}
-    (hc : Tendsto (‖c ·‖) l atTop) (hd : ∀ᶠ n in l, x + d n ∈ s)
+    (hd₀ : Tendsto d l (𝓝 0)) (hd : ∀ᶠ n in l, x + d n ∈ s)
     (hcd : Tendsto (fun n ↦ c n • d n) l (𝓝 y)) : y ∈ tangentConeAt 𝕜 s x := by
-  rw [tendsto_norm_atTop_iff_cobounded] at hc
-  rw [mem_tangentConeAt_iff_mapClusterPt]
-  refine .of_comp (hc.prod_mk (tendsto_principal.mpr hd)) ?_
-  simpa [comp_def] using hcd.mapClusterPt
-
-theorem mem_tangentConeAt_of_add_smul_mem {α : Type*} {l : Filter α} [l.NeBot] {c : α → 𝕜}
-    {d : α → E} (hc : Tendsto c l (𝓝[≠] 0)) (hd : ∀ᶠ n in l, x + c n • d n ∈ s)
-    (hcd : Tendsto d l (𝓝 y)) : y ∈ tangentConeAt 𝕜 s x := by
-  refine mem_tangentConeAt_of_seq (c := c⁻¹) ?_ hd (hcd.congr' ?_)
-  · simpa using NormedField.tendsto_norm_inv_nhdsNE_zero_atTop.comp hc
-  · filter_upwards [hc.eventually eventually_mem_nhdsWithin] with a ha
-    simp_all
+  refine .of_comp (tendsto_top.prod_mk <| tendsto_nhdsWithin_iff.mpr ⟨hd₀, ?_⟩)
+    (by simpa [comp_def] using hcd.mapClusterPt)
+  simpa [← preimage_vadd] using hd
 
 theorem mem_tangentConeAt_of_pow_smul {r : 𝕜} (hr₀ : r ≠ 0) (hr : ‖r‖ < 1)
     (hs : ∀ᶠ n : ℕ in atTop, x + r ^ n • y ∈ s) : y ∈ tangentConeAt 𝕜 s x := by
-  refine mem_tangentConeAt_of_add_smul_mem ?_ hs tendsto_const_nhds
-  simp only [← comap_norm_nhdsGT_zero, tendsto_comap_iff, tendsto_nhdsWithin_iff, comp_def,
-    norm_pow, tendsto_pow_atTop_nhds_zero_of_lt_one (norm_nonneg _) hr]
-  simp [hr₀]
+  apply mem_tangentConeAt_of_seq _ hs
+  
 
 @[simp]
 theorem tangentCone_univ : tangentConeAt 𝕜 univ x = univ :=
