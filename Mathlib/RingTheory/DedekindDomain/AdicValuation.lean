@@ -496,7 +496,7 @@ open scoped algebraMap in -- to make the coercions from `R` fire
 /-- The valuation on the completion agrees with the global valuation on elements of the
 integer ring. -/
 theorem valuedAdicCompletion_eq_valuation (r : R) :
-    Valued.v (r : v.adicCompletion K) = v.valuation K (r : K) := by
+    Valued.v (r : v.adicCompletion K) = v.valuation K r := by
   convert Valued.valuedCompletion_apply (r : K)
 
 variable {R K} in
