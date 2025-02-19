@@ -147,7 +147,7 @@ section Induction
 variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 
 theorem fg_of_fg_toSubalgebra (S : IntermediateField F E) (h : S.toSubalgebra.FG) : S.FG := by
-  cases' h with t ht
+  obtain ⟨t, ht⟩ := h
   exact ⟨t, (eq_adjoin_of_eq_algebra_adjoin _ _ _ ht.symm).symm⟩
 
 @[deprecated (since := "2024-10-28")] alias fG_of_fG_toSubalgebra := fg_of_fg_toSubalgebra

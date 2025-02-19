@@ -328,8 +328,8 @@ theorem nonarchimedean (hB : SubmodulesBasis B) : @NonarchimedeanAddGroup M _ hB
 
 library_note "nonarchimedean non instances"/--
 The non archimedean subgroup basis lemmas cannot be instances because some instances
-(such as `MeasureTheory.AEEqFun.instAddMonoid` or `TopologicalAddGroup.toContinuousAdd`)
-cause the search for `@TopologicalAddGroup β ?m1 ?m2`, i.e. a search for a topological group where
+(such as `MeasureTheory.AEEqFun.instAddMonoid` or `IsTopologicalAddGroup.toContinuousAdd`)
+cause the search for `@IsTopologicalAddGroup β ?m1 ?m2`, i.e. a search for a topological group where
 the topology/group structure are unknown. -/
 
 

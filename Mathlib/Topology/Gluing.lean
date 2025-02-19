@@ -146,12 +146,7 @@ theorem eqvGen_of_π_eq
     {x y : sigmaObj (β := D.toGlueData.J) (C := TopCat) D.toGlueData.U}
     (h : 𝖣.π x = 𝖣.π y) :
     Relation.EqvGen
-      -- Porting note: was (Types.CoequalizerRel 𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap)
-      (Types.CoequalizerRel
-        (X := sigmaObj (C := TopCat) (D.toGlueData.diagram).left)
-        (Y := sigmaObj (C := TopCat) (D.toGlueData.diagram).right)
-        𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap)
-      x y := by
+      (Function.Coequalizer.Rel 𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap) x y := by
   delta GlueData.π Multicoequalizer.sigmaπ at h
   -- Porting note: inlined `inferInstance` instead of leaving as a side goal.
   replace h : coequalizer.π D.diagram.fstSigmaMap D.diagram.sndSigmaMap x =

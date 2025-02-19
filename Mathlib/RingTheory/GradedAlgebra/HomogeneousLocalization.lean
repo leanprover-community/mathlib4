@@ -774,7 +774,7 @@ theorem Away.isLocalization_mul (hd : d ≠ 0) :
     ring
   · intro z
     obtain ⟨n, s, hs, rfl⟩ := Away.mk_surjective 𝒜 (hx ▸ SetLike.mul_mem_graded hf hg) z
-    cases' d with d
+    rcases d with - | d
     · contradiction
     let t : Away 𝒜 f := Away.mk 𝒜 hf (n * (e + 1)) (s * g ^ (n * d)) <| by
       convert SetLike.mul_mem_graded hs (SetLike.pow_mem_graded _ hg) using 2; simp; ring
@@ -797,7 +797,7 @@ theorem Away.isLocalization_mul (hd : d ≠ 0) :
       Localization.mk_eq_mk_iff, Localization.r_iff_exists, Submonoid.coe_mul, Localization.mk_mul,
       SubmonoidClass.coe_pow, Subtype.exists, exists_prop]
     refine ⟨_, ⟨k, rfl⟩, ?_⟩
-    cases' d with d
+    rcases d with - | d
     · contradiction
     subst hx
     convert congr(f ^ (e * (k + m + n)) * g ^ (d * (k + m + n)) * $hc) using 1 <;> ring

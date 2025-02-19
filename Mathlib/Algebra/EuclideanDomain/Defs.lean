@@ -3,8 +3,6 @@ Copyright (c) 2018 Louis Carlin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
 -/
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Order.RelClasses
 
@@ -60,7 +58,6 @@ value of `j`.
 
 Euclidean domain, transfinite Euclidean domain, Bézout's lemma
 -/
-
 
 universe u
 
@@ -127,11 +124,6 @@ theorem div_add_mod' (m k : R) : m / k * k + m % k = m := by
   rw [mul_comm]
   exact div_add_mod _ _
 
-theorem mod_eq_sub_mul_div {R : Type*} [EuclideanDomain R] (a b : R) : a % b = a - b * (a / b) :=
-  calc
-    a % b = b * (a / b) + a % b - b * (a / b) := (add_sub_cancel_left _ _).symm
-    _ = a - b * (a / b) := by rw [div_add_mod]
-
 theorem mod_lt : ∀ (a) {b : R}, b ≠ 0 → a % b ≺ b :=
   EuclideanDomain.remainder_lt
 
@@ -145,9 +137,6 @@ theorem mod_zero (a : R) : a % 0 = a := by simpa only [zero_mul, zero_add] using
 theorem lt_one (a : R) : a ≺ (1 : R) → a = 0 :=
   haveI := Classical.dec
   not_imp_not.1 fun h => by simpa only [one_mul] using mul_left_not_lt 1 h
-
-theorem val_dvd_le : ∀ a b : R, b ∣ a → a ≠ 0 → ¬a ≺ b
-  | _, b, ⟨d, rfl⟩, ha => mul_left_not_lt b (mt (by rintro rfl; exact mul_zero _) ha)
 
 @[simp]
 theorem div_zero (a : R) : a / 0 = 0 :=
