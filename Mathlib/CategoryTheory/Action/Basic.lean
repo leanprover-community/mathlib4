@@ -340,20 +340,20 @@ def resComp {G H K : MonCat} (f : G ⟶ H) (g : H ⟶ K) : res V g ⋙ res V f �
 variable {G H : MonCat.{u}} (f : G ⟶ H)
 
 /-- The functor from `Action V H` to `Action V G` induced by a morphism `f : G → H` is faithful. -/
-instance : (Action.res V f).Faithful where
+instance : (res V f).Faithful where
   map_injective {X} {Y} g₁ g₂ h := by
     ext
-    rw [← Action.res_map_hom _ _ g₁, ← Action.res_map_hom _ _ g₂, h]
+    rw [← res_map_hom _ _ g₁, ← res_map_hom _ _ g₂, h]
 
 /-- The functor from `Action V H` to `Action V G` induced by a morphism `f : G → H` is full
 if `f` is surjective. -/
-lemma res_full (f_surj : Function.Surjective f) : (Action.res V f).Full where
+lemma res_full (f_surj : Function.Surjective f) : (res V f).Full where
   map_surjective {X} {Y} g := by
     use ⟨g.hom, fun h ↦ ?_⟩
     · ext
       simp
     · obtain ⟨a, rfl⟩ := f_surj h
-      have : X.ρ (f a) = ((Action.res V f).obj X).ρ a := rfl
+      have : X.ρ (f a) = ((res V f).obj X).ρ a := rfl
       rw [this, g.comm a]
       simp
 
