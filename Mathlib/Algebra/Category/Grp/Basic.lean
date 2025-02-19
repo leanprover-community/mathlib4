@@ -169,10 +169,12 @@ lemma ofHom_comp {X Y Z : Type u} [Group X] [Group Y] [Group Z]
 lemma ofHom_apply {X Y : Type u} [Group X] [Group Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x := rfl
 
+-- This is essentially an alias for `Iso.hom_inv_id_apply`; consider deprecation?
 @[to_additive]
 lemma inv_hom_apply {X Y : Grp} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by
   simp
 
+-- This is essentially an alias for `Iso.inv_hom_id_apply`; consider deprecation?
 @[to_additive]
 lemma hom_inv_apply {X Y : Grp} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
   simp
@@ -389,10 +391,12 @@ lemma ofHom_comp {X Y Z : Type u} [CommGroup X] [CommGroup Y] [CommGroup Z]
 lemma ofHom_apply {X Y : Type u} [CommGroup X] [CommGroup Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x := rfl
 
+-- This is essentially an alias for `Iso.hom_inv_id_apply`; consider deprecation?
 @[to_additive]
 lemma inv_hom_apply {X Y : CommGrp} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by
   simp
 
+-- This is essentially an alias for `Iso.inv_hom_id_apply`; consider deprecation?
 @[to_additive]
 lemma hom_inv_apply {X Y : CommGrp} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
   simp
