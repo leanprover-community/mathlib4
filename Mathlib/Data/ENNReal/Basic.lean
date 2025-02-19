@@ -508,6 +508,9 @@ theorem toNNReal_natCast (n : ℕ) : (n : ℝ≥0∞).toNNReal = n := by
 
 @[deprecated (since := "2025-02-19")] alias toNNReal_nat := toNNReal_natCast
 
+theorem toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] : ENNReal.toNNReal ofNat(n) = ofNat(n) :=
+  toNNReal_natCast n
+
 @[simp, norm_cast]
 theorem toReal_natCast (n : ℕ) : (n : ℝ≥0∞).toReal = n := by
   rw [← ENNReal.ofReal_natCast n, ENNReal.toReal_ofReal (Nat.cast_nonneg _)]

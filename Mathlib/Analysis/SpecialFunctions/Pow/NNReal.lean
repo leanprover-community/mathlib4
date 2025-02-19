@@ -181,14 +181,14 @@ theorem rpow_two (x : ℝ≥0) : x ^ (2 : ℝ) = x ^ 2 := rpow_ofNat x 2
 theorem mul_rpow {x y : ℝ≥0} {z : ℝ} : (x * y) ^ z = x ^ z * y ^ z :=
   NNReal.eq <| Real.mul_rpow x.2 y.2
 
-/-- `rpow` as a `MonoidHom`-/
+/-- `rpow` as a `MonoidHom` -/
 @[simps]
 def rpowMonoidHom (r : ℝ) : ℝ≥0 →* ℝ≥0 where
   toFun := (· ^ r)
   map_one' := one_rpow _
   map_mul' _x _y := mul_rpow
 
-/-- `rpow` variant of `List.prod_map_pow` for `ℝ≥0`-/
+/-- `rpow` variant of `List.prod_map_pow` for `ℝ≥0` -/
 theorem list_prod_map_rpow (l : List ℝ≥0) (r : ℝ) :
     (l.map (· ^ r)).prod = l.prod ^ r :=
   l.prod_hom (rpowMonoidHom r)

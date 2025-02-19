@@ -822,8 +822,10 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
 
 /-- The disjoint union of two `C^n` manifolds modelled on `(E, H)`
 is a `C^n` manifold modeled on `(E, H)`. -/
-instance disjointUnion [Nonempty H] : IsManifold I n (M ⊕ M') where
+instance disjointUnion : IsManifold I n (M ⊕ M') where
   compatible {e} e' he he' := by
+    obtain (h | h) := isEmpty_or_nonempty H
+    · exact ContDiffGroupoid.mem_of_source_eq_empty _ (eq_empty_of_isEmpty _)
     obtain (⟨f, hf, hef⟩ | ⟨f, hf, hef⟩) := ChartedSpace.mem_atlas_sum he
     · obtain (⟨f', hf', he'f'⟩ | ⟨f', hf', he'f'⟩) := ChartedSpace.mem_atlas_sum he'
       · rw [hef, he'f', f.lift_openEmbedding_trans f' IsOpenEmbedding.inl]

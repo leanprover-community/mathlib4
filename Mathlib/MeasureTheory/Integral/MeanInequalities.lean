@@ -74,7 +74,7 @@ theorem lintegral_mul_le_one_of_lintegral_rpow_eq_one {p q : ℝ} (hpq : p.IsCon
         simp [hpq.symm.pos]
       · exact (hf.pow_const _).mul_const _
 
-/-- Function multiplied by the inverse of its p-seminorm `(∫⁻ f^p ∂μ) ^ 1/p`-/
+/-- Function multiplied by the inverse of its p-seminorm `(∫⁻ f^p ∂μ) ^ 1/p` -/
 def funMulInvSnorm (f : α → ℝ≥0∞) (p : ℝ) (μ : Measure α) : α → ℝ≥0∞ := fun a =>
   f a * ((∫⁻ c, f c ^ p ∂μ) ^ (1 / p))⁻¹
 

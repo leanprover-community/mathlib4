@@ -31,8 +31,7 @@ lemma deriv_Gamma_nat (n : ℕ) :
   /- This follows from two properties of the function `f n = log (Gamma n)`:
   firstly, the elementary computation that `deriv f (n + 1) = deriv f n + 1 / n`, so that
   `deriv f n = deriv f 1 + harmonic n`; secondly, the convexity of `f` (the Bohr-Mollerup theorem),
-  which shows that `deriv f n` is `log n + o(1)` as `n → ∞`.
-  `-/
+  which shows that `deriv f n` is `log n + o(1)` as `n → ∞`. -/
   let f := log ∘ Gamma
   -- First reduce to computing derivative of `log ∘ Gamma`.
   suffices deriv (log ∘ Gamma) (n + 1) = -γ + harmonic n by

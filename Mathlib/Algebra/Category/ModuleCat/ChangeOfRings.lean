@@ -425,7 +425,7 @@ end Unbundled
 variable (M : ModuleCat.{v} R)
 
 /-- If `M` is an `R`-module, then the set of `R`-linear maps `S →ₗ[R] M` is an `S`-module with
-scalar multiplication defined by `s • l := x ↦ l (x • s)`-/
+scalar multiplication defined by `s • l := x ↦ l (x • s)` -/
 def obj' : ModuleCat S :=
   of _ ((restrictScalars f).obj (of _ S) →ₗ[R] M)
 
@@ -433,7 +433,7 @@ instance : CoeFun (obj' f M) fun _ => S → M :=
   inferInstanceAs <| CoeFun ((restrictScalars f).obj (of _ S) →ₗ[R] M) _
 
 /-- If `M, M'` are `R`-modules, then any `R`-linear map `g : M ⟶ M'` induces an `S`-linear map
-`(S →ₗ[R] M) ⟶ (S →ₗ[R] M')` defined by `h ↦ g ∘ h`-/
+`(S →ₗ[R] M) ⟶ (S →ₗ[R] M')` defined by `h ↦ g ∘ h` -/
 @[simps!]
 def map' {M M' : ModuleCat R} (g : M ⟶ M') : obj' f M ⟶ obj' f M' :=
   ofHom
