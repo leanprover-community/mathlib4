@@ -1,9 +1,10 @@
 /-
 Copyright (c) 2025 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Damiano Testa
+Authors: Michael Rothgang, Damiano Testa
 -/
-import Mathlib.Init
+
+import Lean.Elab.Command
 
 /-!
 #  The "DocString" style linter
@@ -72,8 +73,6 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     | .node _ _ #[(.atom si ..), _] => si.getTrailing?.getD default
     | _ => default
   let start := startSubstring.toString
-  -- dbg_trace "'{start}{docString}'"
-  -- dbg_trace "just the string is '{docString}'"
   if let some messages := checkDocstring start docString then
     for msg in messages do
       Linter.logLint linter.style.docString docStx msg
