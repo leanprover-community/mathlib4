@@ -176,7 +176,7 @@ theorem Nat.castRingHom_nat : Nat.castRingHom ℕ = RingHom.id ℕ :=
   rfl
 
 /-- We don't use `RingHomClass` here, since that might cause type-class slowdown for
-`Subsingleton`-/
+`Subsingleton`. -/
 instance Nat.uniqueRingHom {R : Type*} [NonAssocSemiring R] : Unique (ℕ →+* R) where
   default := Nat.castRingHom R
   uniq := RingHom.eq_natCast'

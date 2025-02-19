@@ -129,6 +129,12 @@ theorem extend_target_mem_nhdsWithin {y : M} (hy : y ∈ f.source) :
   rw [← PartialEquiv.image_source_eq_target, ← map_extend_nhds f hy]
   exact image_mem_map (extend_source_mem_nhds _ hy)
 
+lemma extend_image_target_mem_nhds {x : M} (hx : x ∈ f.source) :
+    I '' f.target ∈ 𝓝[range I] (f.extend I) x := by
+  rw [← f.map_extend_nhds hx, Filter.mem_map,
+    f.extend_coe, Set.preimage_comp, I.preimage_image f.target]
+  exact (f.continuousAt hx).preimage_mem_nhds (f.open_target.mem_nhds (f.map_source hx))
+
 theorem extend_image_nhd_mem_nhds_of_boundaryless [I.Boundaryless] {x} (hx : x ∈ f.source)
     {s : Set M} (h : s ∈ 𝓝 x) : (f.extend I) '' s ∈ 𝓝 ((f.extend I) x) := by
   rw [← f.map_extend_nhds_of_boundaryless hx, Filter.mem_map]
