@@ -126,7 +126,7 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
     simp_rw [Pi.smul_apply, toFun_apply, one_smul] at hla
     refine hs.2 (hla ▸ Submodule.sum_mem _ fun c hcs => ?_)
     change (⟨l c, this c hcs⟩ : FixedPoints.subfield G F) • c ∈ _
-    refine Submodule.smul_mem _ _ (Submodule.subset_span <| by simpa)
+    exact Submodule.smul_mem _ _ <| Submodule.subset_span <| by simpa
 
   intro i his g
   refine
