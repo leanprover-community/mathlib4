@@ -53,10 +53,6 @@ theorem card_ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈
 theorem card_of_finset' {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) [Fintype p] :
     Fintype.card p = #s := by rw [← card_ofFinset s H]; congr!
 
-@[simp]
-theorem card_fin (n : ℕ) : Fintype.card (Fin n) = n :=
-  List.length_finRange n
-
 end Fintype
 
 namespace Fintype
@@ -475,3 +471,40 @@ theorem Fintype.induction_subsingleton_or_nontrivial {P : ∀ (α) [Fintype α],
     intro β _ hlt
     rw [hn] at hlt
     exact ih (Fintype.card β) hlt _ rfl
+
+section Fin
+
+@[simp]
+theorem Fintype.card_fin (n : ℕ) : Fintype.card (Fin n) = n :=
+  List.length_finRange n
+
+theorem Fintype.card_fin_lt_of_le {m n : ℕ} (h : m ≤ n) :
+    Fintype.card {i : Fin n // i < m} = m := by
+  conv_rhs => rw [← Fintype.card_fin m]
+  apply Fintype.card_congr
+  exact { toFun := fun ⟨⟨i, _⟩, hi⟩ ↦ ⟨i, hi⟩
+          invFun := fun ⟨i, hi⟩ ↦ ⟨⟨i, lt_of_lt_of_le hi h⟩, hi⟩
+          left_inv := fun i ↦ rfl
+          right_inv := fun i ↦ rfl }
+
+theorem Finset.card_fin (n : ℕ) : #(univ : Finset (Fin n)) = n := by simp
+
+/-- `Fin` as a map from `ℕ` to `Type` is injective. Note that since this is a statement about
+equality of types, using it should be avoided if possible. -/
+theorem fin_injective : Function.Injective Fin := fun m n h =>
+  (Fintype.card_fin m).symm.trans <| (Fintype.card_congr <| Equiv.cast h).trans (Fintype.card_fin n)
+
+theorem Fin.val_eq_val_of_heq {k l : ℕ} {i : Fin k} {j : Fin l} (h : HEq i j) :
+    (i : ℕ) = (j : ℕ) :=
+  (Fin.heq_ext_iff (fin_injective (type_eq_of_heq h))).1 h
+
+/-- A reversed version of `Fin.cast_eq_cast` that is easier to rewrite with. -/
+theorem Fin.cast_eq_cast' {n m : ℕ} (h : Fin n = Fin m) :
+    _root_.cast h = Fin.cast (fin_injective h) := by
+  cases fin_injective h
+  rfl
+
+theorem card_finset_fin_le {n : ℕ} (s : Finset (Fin n)) : #s ≤ n := by
+  simpa only [Fintype.card_fin] using s.card_le_univ
+
+end Fin
