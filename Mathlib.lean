@@ -1720,6 +1720,7 @@ import Mathlib.CategoryTheory.Abelian.Refinements
 import Mathlib.CategoryTheory.Abelian.RightDerived
 import Mathlib.CategoryTheory.Abelian.Subobject
 import Mathlib.CategoryTheory.Abelian.Transfer
+import Mathlib.CategoryTheory.Abelian.Yoneda
 import Mathlib.CategoryTheory.Action
 import Mathlib.CategoryTheory.Action.Basic
 import Mathlib.CategoryTheory.Action.Concrete
