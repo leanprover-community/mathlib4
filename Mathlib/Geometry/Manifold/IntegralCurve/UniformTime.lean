@@ -34,7 +34,7 @@ variable
   [T2Space M] {γ γ' : ℝ → M} {v : (x : M) → TangentSpace I x} {s s' : Set ℝ} {t₀ : ℝ}
 
 /-- This is the uniqueness theorem of integral curves applied to a real-indexed family of integral
-  curves with the same starting point. -/
+curves with the same starting point. -/
 lemma eqOn_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) {x : M}
     (γ : ℝ → ℝ → M) (hγx : ∀ a, γ a 0 = x) (hγ : ∀ a > 0, IsIntegralCurveOn (γ a) v (Ioo (-a) a))
@@ -48,9 +48,8 @@ lemma eqOn_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
   · apply Ioo_subset_Ioo <;> linarith
 
 /-- For a family of integral curves `γ : ℝ → ℝ → M` with the same starting point `γ 0 = x` such that
-  each `γ a` is defined on `Ioo (-a) a`, the global curve `γ_ext := fun t ↦ γ (|t| + 1) t` agrees
-  with each `γ a` on `Ioo (-a) a`. This will help us show that `γ_ext` is a global integral
-  curve. -/
+each `γ a` is defined on `Ioo (-a) a`, the global curve `γ_ext := fun t ↦ γ (|t| + 1) t` agrees
+with each `γ a` on `Ioo (-a) a`. This will help us show that `γ_ext` is a global integral curve. -/
 lemma eqOn_abs_add_one_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) {x : M}
     (γ : ℝ → ℝ → M) (hγx : ∀ a, γ a 0 = x) (hγ : ∀ a > 0, IsIntegralCurveOn (γ a) v (Ioo (-a) a))
@@ -63,8 +62,8 @@ lemma eqOn_abs_add_one_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
       (neg_lt_self_iff.mp <| lt_trans ht.1 ht.2) (not_lt.mp hlt) ht |>.symm
 
 /-- For a family of integral curves `γ : ℝ → ℝ → M` with the same starting point `γ 0 = x` such that
-  each `γ a` is defined on `Ioo (-a) a`, the function `γ_ext := fun t ↦ γ (|t| + 1) t` is a global
-  integral curve. -/
+each `γ a` is defined on `Ioo (-a) a`, the function `γ_ext := fun t ↦ γ (|t| + 1) t` is a global
+integral curve. -/
 lemma isIntegralCurve_abs_add_one_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) {x : M}
     (γ : ℝ → ℝ → M) (hγx : ∀ a, γ a 0 = x) (hγ : ∀ a > 0, IsIntegralCurveOn (γ a) v (Ioo (-a) a)) :
@@ -82,8 +81,8 @@ lemma isIntegralCurve_abs_add_one_of_isIntegralCurveOn_Ioo [BoundarylessManifold
     exact Ioo_mem_nhds this.1 this.2
 
 /-- The existence of a global integral curve is equivalent to the existence of a family of local
-  integral curves `γ : ℝ → ℝ → M` with the same starting point `γ 0 = x` such that each `γ a` is
-  defined on `Ioo (-a) a`. -/
+integral curves `γ : ℝ → ℝ → M` with the same starting point `γ 0 = x` such that each `γ a` is
+defined on `Ioo (-a) a`. -/
 lemma exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) (x : M) :
     (∃ γ, γ 0 = x ∧ IsIntegralCurve γ v) ↔
@@ -94,9 +93,9 @@ lemma exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo [BoundarylessManif
     isIntegralCurve_abs_add_one_of_isIntegralCurveOn_Ioo hv γ hγx (fun a _ ↦  hγ a)⟩
 
 /-- Let `γ` and `γ'` be integral curves defined on `Ioo a b` and `Ioo a' b'`, respectively. Then,
-  `piecewise (Ioo a b) γ γ'` is equal to `γ` and `γ'` in their respective domains.
-  `Set.piecewise_eqOn` shows the equality for `γ` by definition, while this lemma shows the equality
-  for `γ'` by the uniqueness of integral curves. -/
+`piecewise (Ioo a b) γ γ'` is equal to `γ` and `γ'` in their respective domains.
+`Set.piecewise_eqOn` shows the equality for `γ` by definition, while this lemma shows the equality
+for `γ'` by the uniqueness of integral curves. -/
 lemma eqOn_piecewise_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
     {a b a' b' : ℝ} (hγ : IsIntegralCurveOn γ v (Ioo a b))
@@ -117,12 +116,12 @@ lemma eqOn_piecewise_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
 
 /-- The extension of an integral curve by another integral curve is an integral curve.
 
-  If two integral curves are defined on overlapping open intervals, and they agree at a point in
-  their common domain, then they can be patched together to form a longer integral curve.
+If two integral curves are defined on overlapping open intervals, and they agree at a point in
+their common domain, then they can be patched together to form a longer integral curve.
 
-  This is stated for manifolds without boundary for simplicity. We actually only need to assume that
-  the images of `γ` and `γ'` lie in the interior of the manifold. TODO: Generalise to manifolds with
-  boundary. -/
+This is stated for manifolds without boundary for simplicity. We actually only need to assume that
+the images of `γ` and `γ'` lie in the interior of the manifold.
+TODO: Generalise to manifolds with boundary. -/
 lemma isIntegralCurveOn_piecewise [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
     {a b a' b' : ℝ} (hγ : IsIntegralCurveOn γ v (Ioo a b))
@@ -145,10 +144,10 @@ lemma isIntegralCurveOn_piecewise [BoundarylessManifold I M]
       eqOn_piecewise_of_isIntegralCurveOn_Ioo hv hγ hγ' ht₀ h⟩
 
 /-- If there exists `ε > 0` such that the local integral curve at each point `x : M` is defined at
-  least on an open interval `Ioo (-ε) ε`, then every point on `M` has a global integral
-  curve passing through it.
+least on an open interval `Ioo (-ε) ε`, then every point on `M` has a global integral curve
+passing through it.
 
-  See Lemma 9.15, [J.M. Lee (2012)][lee2012]. -/
+See Lemma 9.15, [J.M. Lee (2012)][lee2012]. -/
 lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
     {v : (x : M) → TangentSpace I x}
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
