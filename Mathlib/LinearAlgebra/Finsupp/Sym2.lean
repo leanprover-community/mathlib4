@@ -33,11 +33,11 @@ The composition of a `Finsupp` with `Sym2.mul` as a `Finsupp`
 noncomputable def Sym2.mulFinsupp (f : α →₀ R) :
     Sym2 α →₀ R := Finsupp.onFinset
       f.support.sym2
-    (fun p => Sym2.mul (p.map f)) Sym2.mem_support_sym2_of_mul_ne_zero
+    (fun p => Sym2.mul (p.map f)) Sym2.mem_sym2_support_of_mul_ne_zero
 
 lemma Sym2.support_mulFinsupp_subset (f : α →₀ R) :
     (Sym2.mulFinsupp f).support ⊆ f.support.sym2 := fun p hp => by
-  apply Sym2.mem_support_sym2_of_mul_ne_zero
+  apply Sym2.mem_sym2_support_of_mul_ne_zero
   simp_all only [Finsupp.mem_support_iff, ne_eq]
   exact hp
 
