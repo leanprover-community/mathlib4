@@ -85,7 +85,7 @@ def functorToInterchangeIso : functorToInterchange A K ≅
 /-- (Implementation) One way to express the flipped version of our functor. We choose this
 association because the type of `Presheaf.tautologicalCocone` is
 `Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda)`, so this association will show up in the
-proof.-/
+proof. -/
 @[simps!]
 def flipFunctorToInterchange : (functorToInterchange A K).flip ≅
     ((CostructuredArrow.proj yoneda A ⋙ yoneda) ⋙ (whiskeringLeft J Cᵒᵖ (Type u)).obj K) :=

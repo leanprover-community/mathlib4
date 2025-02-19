@@ -96,8 +96,8 @@ variable {L L'} {L'' : Language}
 @[ext]
 protected theorem funext {F G : L →ᴸ L'} (h_fun : F.onFunction = G.onFunction)
     (h_rel : F.onRelation = G.onRelation) : F = G := by
-  cases' F with Ff Fr
-  cases' G with Gf Gr
+  obtain ⟨Ff, Fr⟩ := F
+  obtain ⟨Gf, Gr⟩ := G
   simp only [mk.injEq]
   exact And.intro h_fun h_rel
 
