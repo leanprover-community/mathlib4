@@ -25,6 +25,19 @@ TODO
 
 universe w v u
 
+lemma Set.Iic.succ_eq {α : Type u} [PartialOrder α] [SuccOrder α] {j : α}
+    (k : Set.Iic j) (hk : ¬ IsMax k) :
+    Order.succ k = Order.succ k.1 :=
+  coe_succ_of_mem (by
+    obtain ⟨k, hk'⟩ := k
+    simp only [mem_Iic] at hk' ⊢
+    rw [Order.succ_le_iff_of_not_isMax
+      (fun hk' ↦ hk (fun ⟨a, ha⟩ hka ↦ by exact hk' hka))]
+    obtain _ | rfl := hk'.lt_or_eq
+    · assumption
+    · exfalso
+      exact hk (fun x _ ↦ x.2))
+
 namespace CategoryTheory
 
 open Category Opposite Limits ZeroObject
@@ -232,6 +245,31 @@ end IsDetecting
 
 namespace IsGrothendieckAbelian
 
+section
+
+variable {J : Type w} [SmallCategory J] {X : C} (F : J ⥤ MonoOver X) [Abelian C]
+  [IsGrothendieckAbelian.{w} C]
+  [IsFiltered J] (c : Cocone (F ⋙ MonoOver.forget _)) [Mono c.pt.hom]
+  (h : Subobject.mk c.pt.hom = ⨆ j, Subobject.mk (F.obj j).obj.hom)
+
+noncomputable def isColimitMapCoconeOfSubobjectMkEqISup :
+    IsColimit ((Over.forget _).mapCocone c) := by
+  let f : colimit (F ⋙ MonoOver.forget X ⋙ Over.forget X) ⟶ X :=
+    colimit.desc _ (Cocone.mk X
+      { app j := (F.obj j).obj.hom
+        naturality {j j'} g := by simp [MonoOver.forget] })
+  have := mono_of_isColimit_monoOver F (colimit.isColimit _) f (by simp [f])
+  have := subobject_mk_of_isColimit_eq_iSup F (colimit.isColimit _) f (by simp [f])
+  rw [← h] at this
+  refine IsColimit.ofIsoColimit (colimit.isColimit _)
+    (Cocones.ext (Subobject.isoOfMkEqMk _ _ this) (fun j ↦ ?_))
+  rw [← cancel_mono (c.pt.hom)]
+  dsimp
+  rw [Category.assoc, Subobject.ofMkLEMk_comp, Over.w]
+  apply colimit.ι_desc
+
+end
+
 def generatingMonomorphisms (G : C) : MorphismProperty C :=
   MorphismProperty.ofHoms (fun (X : Subobject G) ↦ X.arrow)
 
@@ -368,15 +406,14 @@ noncomputable abbrev functor : J ⥤ C :=
 
 instance : (functor hG A₀ J).IsWellOrderContinuous where
   nonempty_isColimit m hm := ⟨by
-    sorry /-
     have := IsFiltered.set_iio _ hm
-    let c := (functorToMonoOver hG A₀ J ⋙ MonoOver.forget _).coconeLT m
+    let c := (Set.principalSegIio m).cocone (functorToMonoOver hG A₀ J ⋙ MonoOver.forget _)
     have : Mono c.pt.hom := by dsimp [c]; infer_instance
     apply IsGrothendieckAbelian.isColimitMapCoconeOfSubobjectMkEqISup
-      ((functorToMonoOver hG A₀ J).restrictionLT m) c
+      ((Set.principalSegIio m).monotone.functor ⋙ functorToMonoOver hG A₀ J) c
     dsimp [c]
     simp only [Subobject.mk_arrow]
-    exact transfiniteIterate_limit (largerSubobject hG) A₀ m hm-/⟩
+    exact transfiniteIterate_limit (largerSubobject hG) A₀ m hm⟩
 
 lemma mono_functor_map_le_succ (j : J) (hj : ¬IsMax j) :
     generatingMonomorphismsPushouts G ((functor hG A₀ J).map (homOfLE (Order.le_succ j))) := by
@@ -386,39 +423,44 @@ lemma mono_functor_map_le_succ (j : J) (hj : ¬IsMax j) :
   exact Arrow.isoMk (Iso.refl _) (Subobject.isoOfEq _ _ (transfiniteIterate_succ _ _ _ hj))
     (by simp [MonoOver.forget])
 
-end
+variable {J} in
+noncomputable def transfiniteCompositionOfShape'' (j : J) :
+  (generatingMonomorphismsPushouts G).TransfiniteCompositionOfShape (Set.Iic j)
+    ((functor hG A₀ J).map (homOfLE bot_le : ⊥ ⟶ j)) where
+  F := (Set.initialSegIic j).monotone.functor ⋙ functor hG A₀ J
+  isoBot := Iso.refl _
+  incl :=
+    { app k := (functor hG A₀ J).map (homOfLE k.2)
+      naturality k k' h := by simp [MonoOver.forget] }
+  isColimit := colimitOfDiagramTerminal isTerminalTop _
+  map_mem k hk := by
+    dsimp [MonoOver.forget]
+    convert generatingMonomorphismsPushouts_ofLE_le_largerSubobject hG
+      (transfiniteIterate (largerSubobject hG) k.1 A₀) using 2
+    all_goals
+      rw [Set.Iic.succ_eq _ hk, transfiniteIterate_succ _ _ _ (Set.not_isMax_coe _ hk)]
 
-section
+end
 
 variable {A : C} {f : A ⟶ X} [Mono f] {J : Type w} [LinearOrder J] [OrderBot J] [SuccOrder J]
-  [WellFoundedLT J]
-  {j : J} (hj : transfiniteIterate (largerSubobject hG) j (Subobject.mk f) = ⊤)
+  [WellFoundedLT J] {j : J}
 
-/-noncomputable def arrowIso :
-    Arrow.mk f ≅ Arrow.mk (((functor hG (Subobject.mk f) J).coconeLE j).ι.app ⊥) := by
+noncomputable def transfiniteCompositionOfShape
+    (hj : transfiniteIterate (largerSubobject hG) j (Subobject.mk f) = ⊤) :
+    (generatingMonomorphismsPushouts G).TransfiniteCompositionOfShape (Set.Iic j) f := by
   let t := transfiniteIterate (largerSubobject hG) j (Subobject.mk f)
   have := (Subobject.isIso_arrow_iff_eq_top t).mpr hj
-  refine (Arrow.isoMk (Subobject.isoOfEq _ _ (transfiniteIterate_bot _ _) ≪≫
-    Subobject.underlyingIso f) (asIso t.arrow) ?_).symm
-  simp [MonoOver.forget]-/
-
-variable (f)
-
-include hj in
-lemma generatingMonomorphismsPushouts_transfiniteCompositionOfShape :
-    (generatingMonomorphismsPushouts G).transfiniteCompositionsOfShape (Set.Iic j) f := by
-  sorry
-  /-refine (MorphismProperty.arrow_iso_iff _ (arrowIso hG hj)).2 ?_
+  apply (transfiniteCompositionOfShape'' hG (Subobject.mk f) j).ofArrowIso
+  refine Arrow.isoMk ((Subobject.isoOfEq _ _ (transfiniteIterate_bot _ _) ≪≫
+    Subobject.underlyingIso f)) (asIso t.arrow) ?_
   dsimp [MonoOver.forget]
-  refine ⟨_, fun ⟨k, hk⟩ hk' ↦ ?_, _,
-    (functor hG (Subobject.mk f) J).isColimitCoconeLE j⟩
-  dsimp [MonoOver.forget]
-  convert generatingMonomorphismsPushouts_ofLE_le_largerSubobject hG
-    (transfiniteIterate (largerSubobject hG) k (Subobject.mk f)) using 2
-  all_goals
-  · rw [Set.Iic.succ_eq _ hk', transfiniteIterate_succ _ _ _ (Set.not_isMax_coe _ hk')]-/
+  rw [assoc, Subobject.underlyingIso_hom_comp_eq_mk, Subobject.ofLE_arrow,
+    Subobject.ofLE_arrow]
 
-end
+lemma transfiniteCompositionsOfShape
+    (hj : transfiniteIterate (largerSubobject hG) j (Subobject.mk f) = ⊤) :
+    (generatingMonomorphismsPushouts G).transfiniteCompositionsOfShape (Set.Iic j) f :=
+  (transfiniteCompositionOfShape hG hj).mem
 
 end TransfiniteCompositionMonoPushouts
 
@@ -435,12 +477,11 @@ lemma generatingMonomorphisms_rlp [IsGrothendieckAbelian.{w} C] (hG : IsSeparato
       by_contra!
       exact ho (by simpa using this)
     refine MorphismProperty.transfiniteCompositionsOfShape_le_llp_rlp _ _ _
-      (generatingMonomorphismsPushouts_transfiniteCompositionOfShape hG i hj) _
+      (transfiniteCompositionsOfShape hG hj) _
       (by simpa)
   · exact MorphismProperty.antitone_rlp (generatingMonomorphisms_le_monomorphisms _)
 
 open MorphismProperty
-
 
 instance (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] :
     IsCardinalFiltered κ.ord.toType κ :=
@@ -510,108 +551,6 @@ instance enoughInjectives [IsGrothendieckAbelian.{w} C] :
           apply (isZero_zero C).eq_of_tgt
         mono := fac.hi
     }⟩
-
-
-/-
-namespace enoughInjectives
-
-variable [IsGrothendieckAbelian.{w} C] (G) (hG : IsSeparator G)
-variable (J : Type w) [LinearOrder J] [OrderBot J] [SuccOrder J] [WellFoundedLT J]
-variable {X Y : C} (f : X ⟶ Y)
-
-instance : HasIterationOfShape J C where
-  hasColimitsOfShape_of_isSuccLimit j hj := inferInstance
-
-instance {Z : C} (π : Z ⟶ Y) :
-    HasCoproductsOfShape (SmallObject.FunctorObjIndex
-      (Subobject.arrow (X := G)) π) C :=
-  hasColimitsOfShape_of_equivalence (Discrete.equivalence (equivShrink.{w} _).symm)
-
-instance {Z : C} (π : Z ⟶ Y) :
-    HasExactColimitsOfShape (Discrete (SmallObject.FunctorObjIndex
-      (Subobject.arrow (X := G)) π)) C :=
-  HasExactColimitsOfShape.of_domain_equivalence C
-    (Discrete.equivalence (equivShrink.{w} _).symm)
-
-noncomputable def obj : C := SmallObject.obj (Subobject.arrow (X := G)) J f
-
-noncomputable def ιObj : X ⟶ obj G J f := SmallObject.ιObj _ _ f
-
-noncomputable def πObj : obj G J f ⟶ Y := SmallObject.πObj _ _ f
-
-@[reassoc (attr := simp)]
-lemma ιObj_πObj : ιObj G J f ≫ πObj G J f = f := by simp [ιObj, πObj]
-
-open MorphismProperty in
-lemma transfiniteCompositionsOfShape_ιObj :
-    (monomorphisms C).transfiniteCompositionsOfShape J (ιObj G J f) := by
-  refine monotone_transfiniteCompositionsOfShape ?_ _ _
-    (SmallObject.transfiniteCompositionsOfShape_ιObj (Subobject.arrow (X := G)) J f)
-  refine (monotone_pushouts ?_).trans (monomorphisms C).pushouts_le
-  intro A B i hi
-  rw [coproducts_iff] at hi
-  obtain ⟨J, hi⟩ := hi
-  refine (HasExactColimitsOfShape.monomorphisms_isStableUnderColimitsOfShape
-    _ _).colimitsOfShape_le _ (monotone_colimitsOfShape ?_ _ _ hi)
-  rintro _ _ _ ⟨i⟩
-  apply MorphismProperty.monomorphisms.infer_property
-
-instance : Mono (ιObj G J f) :=
-  (MorphismProperty.monomorphisms C).transfiniteCompositionsOfShape_le _ _
-    (transfiniteCompositionsOfShape_ιObj G J f)
-
-variable [NoMaxOrder J]
-
-open MorphismProperty in
-instance (j j' : J) (φ : j ⟶ j') :
-    Mono ((SmallObject.inductiveSystemForget (Subobject.arrow (X := G)) J f).map φ) := by
-  apply (monomorphisms C).mem_map_of_transfinite_composition
-  intro k hk
-  rw [SmallObject.inductiveSystemForget_map_le_succ _ _ _ _ hk]
-  apply RespectsIso.postcomp
-  apply of_isPushout (IsPushout.of_hasPushout _ _) _
-  exact (HasExactColimitsOfShape.monomorphisms_isStableUnderColimitsOfShape C _).colimMap _
-    (fun ⟨j⟩ ↦ inferInstanceAs (Mono j.i.arrow))
-
-variable {κ : Cardinal.{w}} [Fact κ.IsRegular] [IsCardinalFiltered J κ]
-  (hκ : HasCardinalLT (Subobject G) κ)
-
-variable {G}
-include hG hκ in
-lemma rlp_πObj : (MorphismProperty.monomorphisms C).rlp (πObj G J f) := by
-  rw [← generatingMonomorphismsPushouts_rlp hG]
-  have : ∀ (i : Subobject G),
-    PreservesColimit (SmallObject.inductiveSystemForget (Subobject.arrow (X := G)) J f)
-      (coyoneda.obj (op (Subobject.underlying.obj i))) := fun i ↦
-    IsPresentable.preservesColimit_of_mono (Subobject.hasCardinalLT_of_mono hκ i.arrow) _
-  exact SmallObject.rlp_πObj (Subobject.arrow (X := G)) J f
-
-end enoughInjectives
-
-instance (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] :
-    IsCardinalFiltered κ.ord.toType κ :=
-  isCardinalFiltered_preorder _ _ (fun ι f hs ↦ by
-    have h : Function.Surjective (fun i ↦ (⟨f i, i, rfl⟩ : Set.range f)) := fun _ ↦ by aesop
-    have pif := Cardinal.mk_le_of_surjective h
-    obtain ⟨j, hj⟩ := Ordinal.lt_cof_type (α := κ.ord.toType) (r := (· < ·))
-      (S := Set.range f) (lt_of_le_of_lt (Cardinal.mk_le_of_surjective h) (lt_of_lt_of_le hs
-          (by simp [hκ.out.cof_eq])))
-    exact ⟨j, fun i ↦ (hj (f i) (by simp)).le⟩)
-
-instance enoughInjectives [IsGrothendieckAbelian.{w} C] :
-    EnoughInjectives C where
-  presentation X := by
-    obtain ⟨κ, hκ', hκ⟩ := HasCardinalLT.exists_regular_cardinal.{w} (Subobject (separator C))
-    have : Fact κ.IsRegular := ⟨hκ'⟩
-    have : OrderBot κ.ord.toType := Ordinal.toTypeOrderBotOfPos (Cardinal.IsRegular.ord_pos hκ')
-    have := Cardinal.noMaxOrder hκ'.aleph0_le
-    exact ⟨{
-      f := enoughInjectives.ιObj (separator C) κ.ord.toType (0 : X ⟶ 0)
-      injective := by
-          rw [injective_iff_monomorphisms_rlp_zero]
-          convert enoughInjectives.rlp_πObj (isSeparator_separator C)
-            κ.ord.toType (0 : X ⟶ 0) hκ
-          apply (isZero_zero C).eq_of_tgt }⟩-/
 
 end IsGrothendieckAbelian
 
