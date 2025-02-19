@@ -199,7 +199,7 @@ alias UniformInducing.injective := IsUniformInducing.injective
 /-- A map `f : α → β` between uniform spaces is a *uniform embedding* if it is uniform inducing and
 injective. If `α` is a separated space, then the latter assumption follows from the former. -/
 @[mk_iff]
-structure IsUniformEmbedding (f : α → β) extends IsUniformInducing f : Prop where
+structure IsUniformEmbedding (f : α → β) : Prop extends IsUniformInducing f where
   /-- A uniform embedding is injective. -/
   injective : Function.Injective f
 

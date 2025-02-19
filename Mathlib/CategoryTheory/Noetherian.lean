@@ -52,13 +52,13 @@ lemma ArtinianObject.subobject_lt_wellFounded (X : C) [ArtinianObject X] :
 variable (C)
 
 /-- A category is noetherian if it is essentially small and all objects are noetherian. -/
-class Noetherian extends EssentiallySmall C : Prop where
+class Noetherian : Prop extends EssentiallySmall C where
   noetherianObject : ∀ X : C, NoetherianObject X
 
 attribute [instance] Noetherian.noetherianObject
 
 /-- A category is artinian if it is essentially small and all objects are artinian. -/
-class Artinian extends EssentiallySmall C : Prop where
+class Artinian : Prop extends EssentiallySmall C where
   artinianObject : ∀ X : C, ArtinianObject X
 
 attribute [instance] Artinian.artinianObject

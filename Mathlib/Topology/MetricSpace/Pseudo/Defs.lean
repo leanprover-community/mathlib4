@@ -109,7 +109,7 @@ structure. When instantiating a `PseudoMetricSpace` structure, the uniformity fi
 necessary, they will be filled in by default. In the same way, each (pseudo) metric space induces a
 (pseudo) emetric space structure. It is included in the structure, but filled in by default.
 -/
-class PseudoMetricSpace (α : Type u) extends Dist α : Type u where
+class PseudoMetricSpace (α : Type u) : Type u extends Dist α where
   dist_self : ∀ x : α, dist x x = 0
   dist_comm : ∀ x y : α, dist x y = dist y x
   dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z

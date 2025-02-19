@@ -36,7 +36,7 @@ universe v v₂ u u₂
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
 /-- A `Groupoid` is a category such that all morphisms are isomorphisms. -/
-class Groupoid (obj : Type u) extends Category.{v} obj : Type max u (v + 1) where
+class Groupoid (obj : Type u) : Type max u (v + 1) extends Category.{v} obj where
   /-- The inverse morphism -/
   inv : ∀ {X Y : obj}, (X ⟶ Y) → (Y ⟶ X)
   /-- `inv f` composed `f` is the identity -/

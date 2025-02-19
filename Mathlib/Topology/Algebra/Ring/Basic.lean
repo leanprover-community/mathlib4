@@ -357,8 +357,8 @@ universe u v
 
 /-- A ring topology on a ring `α` is a topology for which addition, negation and multiplication
 are continuous. -/
-structure RingTopology (α : Type u) [Ring α]
-    extends TopologicalSpace α, IsTopologicalRing α : Type u
+structure RingTopology (α : Type u) [Ring α] : Type u
+  extends TopologicalSpace α, IsTopologicalRing α
 
 namespace RingTopology
 

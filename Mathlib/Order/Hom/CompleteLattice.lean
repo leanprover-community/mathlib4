@@ -91,8 +91,8 @@ class sInfHomClass (F α β : Type*) [InfSet α] [InfSet β] [FunLike F α β] :
 /-- `FrameHomClass F α β` states that `F` is a type of frame morphisms. They preserve `⊓` and `⨆`.
 
 You should extend this class when you extend `FrameHom`. -/
-class FrameHomClass (F α β : Type*) [CompleteLattice α] [CompleteLattice β] [FunLike F α β]
-  extends InfTopHomClass F α β : Prop where
+class FrameHomClass (F α β : Type*) [CompleteLattice α] [CompleteLattice β] [FunLike F α β] : Prop
+  extends InfTopHomClass F α β where
   /-- The proposition that members of `FrameHomClass` commute with arbitrary suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)
 
@@ -100,7 +100,8 @@ class FrameHomClass (F α β : Type*) [CompleteLattice α] [CompleteLattice β] 
 
 You should extend this class when you extend `CompleteLatticeHom`. -/
 class CompleteLatticeHomClass (F α β : Type*) [CompleteLattice α] [CompleteLattice β]
-  [FunLike F α β] extends sInfHomClass F α β : Prop where
+    [FunLike F α β] : Prop
+  extends sInfHomClass F α β where
   /-- The proposition that members of `CompleteLatticeHomClass` commute with arbitrary
   suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)

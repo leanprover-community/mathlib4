@@ -44,7 +44,7 @@ variable (K)
 
 /-- A topological division ring is a division ring with a topology where all operations are
     continuous, including inversion. -/
-class TopologicalDivisionRing extends IsTopologicalRing K, HasContinuousInv₀ K : Prop
+class TopologicalDivisionRing : Prop extends IsTopologicalRing K, HasContinuousInv₀ K
 
 section Subfield
 
