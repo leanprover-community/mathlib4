@@ -266,19 +266,21 @@ lemma toNerve₂.mk_naturality_σ1i {X : SSet.Truncated.{u} 2}  {C : Type u} [Sm
     rw [← toNerve₂.mk_naturality_δ1i, ← assoc, ← map_comp, ← op_comp]
     change toNerve₂.mk.naturalityProperty F (δ₂ 2 ≫ σ₂ i)
     · fin_cases i
-      · conv_rhs => apply δ_comp_σ_of_gt' (by decide)
+      · show mk.naturalityProperty F (δ₂ 2 ≫ σ₂ 0)
+        rw [δ₂_two_comp_σ₂_zero]
         exact (toNerve₂.mk.naturalityProperty F).comp_mem _ _
           (toNerve₂.mk_naturality_σ00 F) (toNerve₂.mk_naturality_δ0i F _)
-      · conv_rhs => apply δ_comp_σ_succ' (by decide)
+      · show mk.naturalityProperty F (δ₂ 2 ≫ σ₂ 1)
+        rw [δ₂_two_comp_σ₂_one]
         exact (toNerve₂.mk.naturalityProperty F).id_mem _
     · exact hyp
   · unfold δ0₂
     rw [← toNerve₂.mk_naturality_δ1i, ← assoc, ← map_comp, ← op_comp]
     change toNerve₂.mk.naturalityProperty F (δ₂ 0 ≫ σ₂ i)
     · fin_cases i <;> dsimp only [Fin.zero_eta, Fin.isValue, Fin.mk_one]
-      · conv_rhs => apply δ_comp_σ_self
+      · rw [δ₂_zero_comp_σ₂_zero']
         exact (toNerve₂.mk.naturalityProperty F).id_mem _
-      · conv_rhs => apply δ_comp_σ_of_le (n := 0) (i := 0) (j := 0) (by decide)
+      · rw [δ₂_zero_comp_σ₂_one]
         exact (toNerve₂.mk.naturalityProperty F).comp_mem _ _
           (toNerve₂.mk_naturality_σ00 F) (toNerve₂.mk_naturality_δ0i F _)
     · exact hyp
