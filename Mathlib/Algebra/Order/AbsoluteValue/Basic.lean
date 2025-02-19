@@ -85,6 +85,9 @@ theorem coe_toMulHom : ⇑abv.toMulHom = abv :=
 protected theorem nonneg (x : R) : 0 ≤ abv x :=
   abv.nonneg' x
 
+theorem nonpos_iff (x : R) : abv x ≤ 0 ↔ abv x = 0 :=
+  (abv.nonneg x).le_iff_eq
+
 @[simp]
 protected theorem eq_zero {x : R} : abv x = 0 ↔ x = 0 :=
   abv.eq_zero' x
@@ -122,6 +125,13 @@ theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
 @[simp]
 protected theorem map_zero : abv 0 = 0 :=
   abv.eq_zero.2 rfl
+
+theorem ne_zero_of_one_lt {x : R} (habv : 1 < abv x) : x ≠ 0 :=
+  AbsoluteValue.pos_iff abv |>.mp <| zero_le_one.trans_lt habv
+
+theorem pos_of_pos {v : AbsoluteValue R S} (w : AbsoluteValue R S) {a : R} (hv : 0 < v a) :
+    0 < w a := by
+  rwa [AbsoluteValue.pos_iff] at hv ⊢
 
 end Semiring
 
@@ -190,6 +200,9 @@ lemma apply_nat_le_self (n : ℕ) : abv n ≤ n := by
       _ = abv n + 1 := congrArg (abv n + ·) abv.map_one
       _ ≤ n + 1 := add_le_add_right hn 1
 
+theorem one_add_pow_le (a : R) (n : ℕ) : abv (1 + a ^ n) ≤ 1 + abv a ^ n :=
+  le_trans (abv.add_le _ _) (by rw [map_one, map_pow])
+
 end IsDomain
 
 end Semiring
@@ -232,6 +245,10 @@ protected theorem le_add (a b : R) : abv a - abv b ≤ abv (a + b) := by
 @[bound]
 lemma sub_le_add (a b : R) : abv (a - b) ≤ abv a + abv b := by
   simpa only [← sub_eq_add_neg, AbsoluteValue.map_neg] using abv.add_le a (-b)
+
+theorem one_sub_pow_le [Nontrivial R] [IsDomain S]  (a : R) (n : ℕ) :
+    1 - abv a ^ n ≤ abv (1 + a ^ n) :=
+  le_trans (by rw [map_one, map_pow]) (abv.le_add 1 (a ^ n))
 
 instance [Nontrivial R] [IsDomain S] : MulRingNormClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.subadditiveHomClass,
@@ -369,9 +386,18 @@ lemma IsNontrivial.exists_abv_lt_one (h : v.IsNontrivial) : ∃ x ≠ 0, v x < 1
   rw [map_inv₀]
   exact (inv_lt_one₀ <| v.pos hy₀).mpr hy
 
+theorem isNontrivial_iff_exists_abv_gt_one : v.IsNontrivial ↔ ∃ x, 1 < v x := by
+  refine ⟨fun h => h.exists_abv_gt_one, fun ⟨x, hx⟩ => ?_⟩
+  refine ⟨x⁻¹, ?_, ?_⟩
+  · simp only [ne_eq, inv_eq_zero]; exact ne_zero_of_one_lt _ hx
+  · simp [map_inv₀, ne_eq, inv_eq_one, hx.ne']
+
 end LinearOrderedSemifield
 
 end nontrivial
+
+end AbsoluteValue
+namespace AbsoluteValue
 
 end AbsoluteValue
 
@@ -547,3 +573,51 @@ end DivisionSemiring
 end LinearOrderedSemifield
 
 end IsAbsoluteValue
+
+namespace AbsoluteValue
+
+section LinearOrderedSemifield
+
+variable [LinearOrderedSemifield S] [DivisionSemiring R] (abv : R → S) [IsAbsoluteValue abv]
+
+theorem _root_.AbsoluteValue.inv_pos {v : AbsoluteValue R S} {x : R} (h : 0 < v x) : 0 < v x⁻¹ := by
+  rwa [IsAbsoluteValue.abv_inv v, _root_.inv_pos]
+
+variable [ExistsAddOfLE S]
+
+theorem inv_lt_one_iff {v : AbsoluteValue R S} {x : R} : v x⁻¹ < 1 ↔ x = 0 ∨ 1 < v x := by
+  simp_rw [map_inv₀, inv_lt_one_iff₀, nonpos_iff, map_eq_zero]
+
+theorem mul_one_div_lt_iff
+    {v : AbsoluteValue R S} {y : R} (x : R) (h : 0 < v y) : v (x * (1 / y)) < 1 ↔ v x < v y := by
+  rw [map_mul, one_div, map_inv₀, mul_inv_lt_iff₀ h, one_mul]
+
+theorem mul_one_div_pow_lt_iff
+    {v : AbsoluteValue R S} {n : ℕ} {y : R} (x : R) (h : 0 < v y) :
+    v (x * (1 / y ^ n)) < 1 ↔ v x < v y ^ n :=
+  map_pow v _ _ ▸ mul_one_div_lt_iff x (map_pow v _ _ ▸ pow_pos h n)
+
+theorem one_lt_of_lt_one
+    {v w : AbsoluteValue R S} (h : ∀ x, v x < 1 → w x < 1) {x : R} (hv : 1 < v x) : 1 < w x :=
+  (inv_lt_one_iff.1 <| h _ <| map_inv₀ v _ ▸ inv_lt_one_of_one_lt₀ hv).resolve_left <|
+    ne_zero_of_one_lt _ hv
+
+theorem one_lt_iff_of_lt_one_iff
+    {v w : AbsoluteValue R S} (h : ∀ x, v x < 1 ↔ w x < 1) (x : R) : 1 < v x ↔ 1 < w x :=
+  ⟨fun hv => one_lt_of_lt_one (fun _ => (h _).1) hv,
+    fun hw => one_lt_of_lt_one (fun _ => (h _).2) hw⟩
+
+theorem eq_one_of_lt_one_iff
+    {v w : AbsoluteValue R S} (h : ∀ x, v x < 1 ↔ w x < 1) {x : R} (hv : v x = 1) : w x = 1 := by
+  have := (not_lt.1 <| (h x).not.1 hv.not_lt)
+  apply this.gt_or_eq.resolve_left
+  rw [← one_lt_iff_of_lt_one_iff h, hv]
+  exact lt_irrefl _
+
+theorem eq_one_iff_of_lt_one_iff
+    {v w : AbsoluteValue R S} (h : ∀ x, v x < 1 ↔ w x < 1) (x : R) : v x = 1 ↔ w x = 1 :=
+  ⟨fun hv => eq_one_of_lt_one_iff h hv, fun hw => eq_one_of_lt_one_iff (fun _ => (h _).symm) hw⟩
+
+end LinearOrderedSemifield
+
+end AbsoluteValue
