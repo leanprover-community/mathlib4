@@ -27,7 +27,7 @@ note: this linter can be disabled with `set_option linter.style.docString false`
 example : Nat := 1
 
 /--
-warning: error: doc-string "Trailing newline  " should start resp. end with at most a single space
+warning: error: doc-string "Trailing newline  " should end with at most a single space
 note: this linter can be disabled with `set_option linter.style.docString false`
 -/
 #guard_msgs in
@@ -66,8 +66,19 @@ note: this linter can be disabled with `set_option linter.style.docString false`
 example : Nat := 1
 
 /--
+warning: error: docstring "With a trailing quote" " ends with a single quote
+note: this linter can be disabled with `set_option linter.style.docString false`
+-/
+#guard_msgs in
+/-- With a trailing quote" -/
+example : Nat := 1
+
+/--
 warning: error: subsequent lines in the doc-string "With a trailing
   quote" " should not be indented note: this linter can be disabled with `set_option linter.style.docString false`
+---
+warning: error: docstring "With a trailing
+  quote" " ends with a single quote note: this linter can be disabled with `set_option linter.style.docString false`
 -/
 #guard_msgs in
 /-- With a trailing

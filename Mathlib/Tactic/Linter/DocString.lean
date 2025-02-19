@@ -48,7 +48,7 @@ def checkDocstring (initialWhitespace input : String) : Option (Array String) :=
   let lines := (input.split (· == '\n')).drop 0
   if lines.any (fun l ↦ l.startsWith " ") then
     errors := errors.push s!"error: subsequent lines in the doc-string \"{input}\" should not be indented"
-  if input.endsWith "\"" then
+  if input.trimRight.endsWith "\"" then
     errors := errors.push s!"error: docstring \"{input}\" ends with a single quote"
   else if input.trimRight.endsWith "," then
     errors := errors.push s!"error: docstring \"{input}\" ends with a comma"
@@ -72,10 +72,11 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     | .node _ _ #[(.atom si ..), _] => si.getTrailing?.getD default
     | _ => default
   let start := startSubstring.toString
-  dbg_trace "'{start}{docString}'"
-  dbg_trace "just the string is '{docString}'"
-  if let some msg := checkDocstring start docString then
-    Linter.logLint linter.style.docString docStx msg
+  -- dbg_trace "'{start}{docString}'"
+  -- dbg_trace "just the string is '{docString}'"
+  if let some messages := checkDocstring start docString then
+    for msg in messages do
+      Linter.logLint linter.style.docString docStx msg
 
 initialize addLinter docStringLinter
 
