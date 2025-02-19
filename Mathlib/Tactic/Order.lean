@@ -3,6 +3,7 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
+import Init.Meta
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Order.CollectFacts
 import Mathlib.Tactic.Order.Preprocessing
@@ -231,9 +232,10 @@ def findBestOrderInstance (type : Expr) : MetaM <| Option OrderType := do
   return .none
 
 /-- Core of the `order` tactic. -/
-elab "order_core" : tactic => liftMetaFinishingTactic fun g => do
-  let TypeToAtoms ← collectFacts g
+-- elab "order_core" : tactic => liftMetaFinishingTactic fun g =>
+def orderCore (only? : Bool) (hyps : Array Expr) (g : MVarId) : MetaM Unit := do
   g.withContext do
+    let TypeToAtoms ← collectFacts g only? hyps
     for (type, (idxToAtom, facts)) in TypeToAtoms do
       let .some orderType ← findBestOrderInstance type | continue
       let facts : Array AtomicFact ← match orderType with
@@ -252,11 +254,27 @@ elab "order_core" : tactic => liftMetaFinishingTactic fun g => do
         return
     throwError "No contradiction found"
 
+syntax orderArgs := (&" only")? (" [" term,* "]")?
+
+syntax (name := order_core) "order_core" orderArgs : tactic
+
+def elabOrderArg (tactic : Name) (t : Term) : TacticM Expr := Term.withoutErrToSorry do
+  let (e, mvars) ← elabTermWithHoles t none tactic
+  unless mvars.isEmpty do
+    throwErrorAt t "Argument passed to {tactic} has metavariables:{indentD e}"
+  return e
+
+open Syntax in
+elab_rules : tactic
+  | `(tactic| order_core $[only%$o]? $[[$args,*]]?) => withMainContext do
+    let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabOrderArg `linarith)
+    commitIfNoEx do liftMetaFinishingTactic <| orderCore o.isSome args
+
 /-- Finishing tactic for solving goals in arbitrary `Preorder`, `PartialOrder`,
 or `LinearOrder`. Supports `⊤`, `⊥`, and lattice operations. -/
-macro "order" : tactic => `(tactic|
-  · by_contra!
-    order_core
+macro "order" args:orderArgs : tactic => `(tactic|
+  · by_contra! _order_goal
+    order_core $args
 )
 
 end Mathlib.Tactic.Order

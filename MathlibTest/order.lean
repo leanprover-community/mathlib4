@@ -22,6 +22,12 @@ example {α : Type u} [PartialOrder α] (a b c d e : α) (h1 : a ≤ b) (h2 : b 
     a < e := by
   order
 
+example {α : Type u} [PartialOrder α] (a b c d e : α) (h1 : a ≤ b) (h2 : b ≤ c) (h3 : c ≤ d) (h4 : d ≤ e) (h5 : b ≠ d) :
+    a < e := by
+  have : a ≤ c := by
+    order only [h1, h2]
+  order only [h1, h2, h3, h4, h5] -- todo
+
 example {α : Type u} [PartialOrder α] (s t x y : α) (h1 : s ≤ x) (h2 : x ≤ t) (h3 : s ≤ y)
     (h4 : y ≤ t) (h5 : x ≠ y) :
     s < t := by
@@ -92,6 +98,8 @@ example {α : Type u} (a b : α) [LinearOrder α] (h1 : a < b ∧ b < a) : False
 example {α : Type u} (a b : α) [LinearOrder α] : a ≤ b ∨ b ≤ a := by
   order
 
+example {n : Nat} (A B C : Matrix (Fin n) (Fin n) ℚ) : (A * B * C).rank ≤ A.rank ⊓ C.rank := by
+  order [Matrix.rank_mul_le A B, Matrix.rank_mul_le (A * B) C]
 
 -- worst case
 example {α : Type u} [PartialOrder α]

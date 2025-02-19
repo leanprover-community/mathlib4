@@ -48,7 +48,7 @@ instance : ToString AtomicFact where
 /-- State for `CollectFactsM`. It contains a map where the key `t` maps to a
 pair `(atomToIdx, facts)`. `atomToIdx` maps atomic expressions to their indices,
 and `facts` stores `AtomicFact`s about them. -/
-abbrev CollectFactsState := Std.HashMap Expr <| Std.HashMap Expr Nat × Array AtomicFact
+abbrev CollectFactsState := Std.HashMap Expr <| DiscrTree (Nat × Expr) × Array AtomicFact
 
 /-- Monad for the fact collection procedure. -/
 abbrev CollectFactsM := StateT CollectFactsState MetaM
@@ -103,16 +103,20 @@ def getInfArgs? {u : Level} (type : Q(Type u)) (x : Q($type)) :
   catch _ =>
     return .none
 
+#check DiscrTree
+
 /-- Updates the state with the atom `x`. If `x` is `⊤` or `⊥`, adds the corresponding fact. If `x`
 is `y ⊔ z`, adds a fact about it, then recursively calls `addAtom` on `y` and `z`.
 Similarly for `⊓`. -/
 partial def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFactsM Nat := do
-  modify fun res => res.insertIfNew type (Std.HashMap.empty, #[])
-  modify fun res => res.modify type fun (atomToIdx, facts) =>
-    let atomToIdx := atomToIdx.insertIfNew x atomToIdx.size
-    (atomToIdx, facts)
-  let idx := (← get).get! type |>.fst.get! x
-  if idx + 1 == ((← get).get! type).fst.size then -- If new atom
+  modify fun res => res.insertIfNew type (.empty, #[])
+  let (atomToIdx, facts) := (← get).get! type
+  if (← atomToIdx.getMatch x).isEmpty then
+    let atomToIdxNew ← atomToIdx.insert x (atomToIdx.size, x)
+    modify fun res => res.insert type (atomToIdxNew, facts)
+  let (atomToIdx, _) := (← get).get! type
+  let #[(idx, _)] ← atomToIdx.getMatch x | throwError "bug"
+  if idx + 1 == atomToIdx.size then -- If new atom
     if ← isTop type x then
       modify fun res => res.modify type fun (atomToIdx, facts) =>
         (atomToIdx, facts.push <| .isTop idx)
@@ -136,16 +140,30 @@ def addFact (type : Expr) (fact : AtomicFact) : CollectFactsM Unit :=
   modify fun res => res.modify type fun (atomToIdx, facts) =>
     (atomToIdx, facts.push fact)
 
+#check Name
+
 /-- Implementation for `collectFacts` in `CollectFactsM` monad. -/
-partial def collectFactsImp (g : MVarId) : CollectFactsM Unit := g.withContext do
+partial def collectFactsImp (g : MVarId) (only? : Bool) (hyps : Array Expr) : CollectFactsM Unit := g.withContext do
   let ctx ← getLCtx
-  for ldecl in ctx do
-    if ldecl.isImplementationDetail then
-      continue
-    processExpr ldecl.toExpr
+  for expr in hyps do
+    processExpr expr
+  let goalDecl := Option.get! <| ctx.findDecl? fun ldecl =>
+    if ldecl.userName.getRoot == `_order_goal then
+      .some ldecl
+    else .none
+  processExpr goalDecl.toExpr
+  if !only? then
+    for ldecl in ctx do
+      if ldecl.isImplementationDetail || ldecl.fvarId == goalDecl.fvarId then
+        continue
+      processExpr ldecl.toExpr
 where
   processExpr (expr : Expr) : CollectFactsM Unit := do
-    let ⟨0, type, expr⟩ := ← inferTypeQ expr | return
+    let type ← inferType expr
+    if !(← isProp type) then
+      return
+    let ⟨u, type, expr⟩ ← inferTypeQ expr
+    have : u =QL 0 := ⟨⟩
     match type with
     | ~q(@Eq ($α : Type _) $x $y) =>
       if (← synthInstance? (q(Preorder $α))).isSome then
@@ -184,12 +202,12 @@ where
 /-- Collects facts from the local context. For each occurring type `α`, the returned map contains
 a pair `(idxToAtom, facts)`, where the map `idxToAtom` converts indices to found
 atomic expressions of type `α`, and `facts` contains all collected `AtomicFact`s about them. -/
-def collectFacts (g : MVarId) :
+def collectFacts (g : MVarId) (only? : Bool) (hyps : Array Expr) :
     MetaM <| Std.HashMap Expr <| Std.HashMap Nat Expr × Array AtomicFact := g.withContext do
-  let res := (← (collectFactsImp g).run Std.HashMap.empty).snd
-  return res.map fun _ (atomToIdx, facts) =>
+  let res := (← (collectFactsImp g only? hyps).run Std.HashMap.empty).snd
+  return res.map fun type (atomToIdx, facts) =>
     let idxToAtom : Std.HashMap Nat Expr := atomToIdx.fold (init := .empty) fun acc key value =>
-      acc.insert value key
+      acc.insert value.fst value.snd
     (idxToAtom, facts)
 
 end Mathlib.Tactic.Order
