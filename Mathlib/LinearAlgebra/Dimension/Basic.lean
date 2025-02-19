@@ -374,7 +374,7 @@ theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
     rw [Cardinal.mk_le_one_iff_set_subsingleton]
     apply subsingleton_of_subsingleton
   intro w hw
-  exact ⟨⟨{0}, linearIndepOn_of_subsingleton⟩, hw.trans_eq (Cardinal.mk_singleton _).symm⟩
+  exact ⟨⟨{0}, LinearIndepOn.of_subsingleton⟩, hw.trans_eq (Cardinal.mk_singleton _).symm⟩
 
 lemma rank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Algebra S R] [Module S M]
     [IsScalarTower S R M] (L L' : Submodule R M) {s : S} (hr : IsSMulRegular M s)

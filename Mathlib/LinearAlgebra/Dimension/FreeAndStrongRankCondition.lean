@@ -49,7 +49,7 @@ theorem le_rank_iff_exists_linearIndependent [Module.Free K V] {c : Cardinal} :
     obtain ⟨κ, t'⟩ := Module.Free.exists_basis (R := K) (M := V)
     let t := t'.reindexRange
     have : LinearIndepOn K id (Set.range t') := by
-      convert t.linearIndependent.linearIndepOn_id_range
+      convert t.linearIndependent.linearIndepOn_id
       ext
       simp [t]
     rw [← t.mk_eq_rank'', le_mk_iff_exists_subset] at h

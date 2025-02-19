@@ -116,7 +116,7 @@ the family by another vector while retaining linear independence. -/
 theorem exists_linearIndependent_cons_of_lt_rank [StrongRankCondition R] {n : ℕ} {v : Fin n → M}
     (hv : LinearIndependent R v) (h : n < Module.rank R M) :
     ∃ (x : M), LinearIndependent R (Fin.cons x v) := by
-  obtain ⟨t, h₁, h₂, h₃⟩ := exists_linearIndepOn_of_lt_rank hv.linearIndepOn_id_range
+  obtain ⟨t, h₁, h₂, h₃⟩ := exists_linearIndepOn_of_lt_rank hv.linearIndepOn_id
   have : range v ≠ t := by
     refine fun e ↦ h.ne ?_
     rw [← e, ← lift_injective.eq_iff, mk_range_eq_of_injective hv.injective] at h₂

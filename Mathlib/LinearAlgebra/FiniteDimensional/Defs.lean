@@ -200,7 +200,7 @@ theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submo
   haveI : IsNoetherian K V := iff_fg.2 inferInstance
   set bS := Basis.ofVectorSpace K S with bS_eq
   have : LinearIndepOn K id (Subtype.val '' Basis.ofVectorSpaceIndex K S) := by
-    simpa [bS] using bS.linearIndependent.linearIndepOn_id_range.image
+    simpa [bS] using bS.linearIndependent.linearIndepOn_id.image
       (f := Submodule.subtype S) (by simp)
   set b := Basis.extend this with b_eq
   -- Porting note: `letI` now uses `this` so we need to give different names
