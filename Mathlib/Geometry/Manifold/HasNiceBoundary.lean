@@ -17,18 +17,32 @@ i.e. the boundary is again a (smooth) manifold one dimension lower.
 The definition `IsManifold` does not enforce this, in order to also include manifolds
 with corners. In this file, we define a typeclass `HasNiceBoundary`, for smooth manifolds whose
 boundary is again a smooth manifold such that the inclusion $∂M → M` is smooth.
-We do *not* demand that `∂M` have dimension one lower than `M`,
-nor that `M` be finite-dimensional, for that matter.
+We do *not* require that `M` or `∂M` be finite-dimensional
+(nor that, in the finite case, `∂M` have co-dimension one).
 
-We mostly *do not prove* such instances (as this is more work and out of scope).
-**TODO** this file has mostly definitions and sorried theorems; it remains to work out the
-details and prove this definition is usable.
+## Main definitions and results
 
-This file might get merged into `Manifolds/InteriorBoundary` then.
+* `BoundaryManifoldData I E₀ H₀ I₀` encodes a smooth manifold `M` modelled on `I` having smooth
+  boundary: this is encoded by a pair (M₀, f) of a `C^n` manifold `M₀` modelled on `I₀`
+  over the pair `(E₀, H₀)` and a smooth embedding `f: M₀ → M` whose image is precisely `∂M`.
+
+* `BoundaryManifoldData.of_boundaryless`: a boundaryless manifold has smooth boundary
+  (namely, any empty type)
+* `BoundaryManifoldData.Icc`: a real interval `[x, y]` (for `x < y`) has smooth boundary
+* `BoundaryManifoldData.prod_of_boundaryless_left`: if `M` is boundaryless and `N` has smooth
+  boundary, so does `M × N`
+* `BoundaryManifoldData.prod_of_boundaryless_right`: if `M` has smooth boundary and `N` is
+  boundaryless, `M × N` has smooth boundary
+* `BoundaryManifoldData.sum`: if `M` and `N` are modelled on the same model `I` and have smooth
+  boundary, so does their disjoint union `M ⊕ N`
 
 ## TODO
-* relax the notation of smoothness, and allow any C^n here
+* `BoundaryManifoldData.euclideanHalfSpace_self`: n-dimensional Euclidean half-space has smooth
+  boundary (e.g., `n-1`-dimensional Euclidean space)
+* if `M` is `n`-dimensional and modelled on Euclidean half-space (such that the model is surjective),
+  it has smooth boundary: this might require e.g. invariance of domain
 
+* Should this file be merged into `IsManifold/InteriorBoundary.lean`?
 
 -/
 
@@ -111,9 +125,6 @@ instance (d : BoundaryManifoldData M I k I₀) : ChartedSpace H₀ d.M₀ := d.c
 
 instance (d : BoundaryManifoldData M I k I₀) : IsManifold I₀ k d.M₀ :=
   d.isManifold
-
--- In general, constructing `BoundaryManifoldData` requires deep results: some cases and results
--- we can state already. Boundaryless manifolds have nice boundary, as do products.
 
 variable (M) in
 /-- If `M` is boundaryless, its boundary manifold data is easy to construct. -/
