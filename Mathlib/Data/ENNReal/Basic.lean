@@ -524,11 +524,6 @@ lemma toNNReal_natCast_eq_toNNReal (n : ℕ) :
     (n : ℝ≥0∞).toNNReal = (n : ℝ).toNNReal := by
   rw [Real.toNNReal_of_nonneg (by positivity), ENNReal.toNNReal_natCast, mk_natCast]
 
-lemma _root_.Nat.rpow_mul_toNNReal (n k : ℕ) (R : ℝ) :
-    n ^ k * R.toNNReal = (n ^ k * R).toNNReal := by
-  norm_cast
-  rw [← ENNReal.toNNReal_natCast, Real.toNNReal_mul (by positivity), toNNReal_natCast_eq_toNNReal]
-
 theorem le_coe_iff : a ≤ ↑r ↔ ∃ p : ℝ≥0, a = p ∧ p ≤ r := WithTop.le_coe_iff
 
 theorem coe_le_iff : ↑r ≤ a ↔ ∀ p : ℝ≥0, a = p → r ≤ p := WithTop.coe_le_iff
