@@ -532,19 +532,37 @@ lemma prob_ge_le [IsProbabilityMeasure μ] (h : HasSubgaussianMGF X c μ) (hε :
   rw [HasSubgaussianMGF_iff_kernel] at h
   simpa using h.prob_ge_le hε
 
-lemma add_of_indepFun [SFinite μ] {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX μ)
+lemma add_of_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX μ)
     (hY : HasSubgaussianMGF Y cY μ) (hindep : IndepFun X Y μ) :
-    HasSubgaussianMGF (X + Y) (cX + cY) μ := by
-  rw [HasSubgaussianMGF_iff_kernel] at hX hY ⊢
-  simpa using hX.add_of_indepFun hY hindep
+    HasSubgaussianMGF (X + Y) (cX + cY) μ where
+  -- we don't use the kernel version because it would require `SFinite μ`
+  integrable_exp_mul t := by
+    simp_rw [Pi.add_apply, mul_add, exp_add]
+    exact Memℒp.integrable_mul (hX.memℒp t 2) (hY.memℒp t 2)
+  mgf_le t := by
+    calc mgf (X + Y) μ t
+    _ = mgf X μ t * mgf Y μ t :=
+      hindep.mgf_add (hX.integrable_exp_mul t).1 (hY.integrable_exp_mul t).1
+    _ ≤ exp (cX * t ^ 2 / 2) * exp (cY * t ^ 2 / 2) := by
+      gcongr
+      · exact mgf_nonneg
+      · exact hX.mgf_le t
+      · exact hY.mgf_le t
+    _ = exp ((cX + cY) * t ^ 2 / 2) := by rw [← exp_add]; congr; ring
 
 lemma sum_of_iIndepFun {ι : Type*} [IsZeroOrProbabilityMeasure μ]
     {X : ι → Ω → ℝ} (h_indep : iIndepFun (fun _ ↦ inferInstance) X μ) {c : ι → ℝ≥0}
     (h_meas : ∀ i, Measurable (X i))
     {s : Finset ι} (h_subG : ∀ i ∈ s, HasSubgaussianMGF (X i) (c i) μ) :
     HasSubgaussianMGF (∑ i ∈ s, X i) (∑ i ∈ s, c i) μ := by
-  simp_rw [HasSubgaussianMGF_iff_kernel] at h_subG ⊢
-  simpa using Kernel.HasSubgaussianMGF.sum_of_iIndepFun h_indep h_meas h_subG
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | @insert i s his h =>
+    rw [Finset.sum_insert his, Finset.sum_insert his]
+    have h_indep' := (h_indep.indepFun_finset_sum_of_not_mem h_meas his).symm
+    refine add_of_indepFun (h_subG _ (Finset.mem_insert_self _ _)) (h ?_) h_indep'
+    exact fun i hi ↦ h_subG _ (Finset.mem_insert_of_mem hi)
 
 end HasSubgaussianMGF
 
