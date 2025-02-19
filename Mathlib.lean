@@ -5626,6 +5626,7 @@ import Mathlib.Topology.Instances.CantorSet
 import Mathlib.Topology.Instances.Complex
 import Mathlib.Topology.Instances.Discrete
 import Mathlib.Topology.Instances.ENNReal.Basic
+import Mathlib.Topology.Instances.ENNReal.Defs
 import Mathlib.Topology.Instances.ENNReal.Lemmas
 import Mathlib.Topology.Instances.ENat
 import Mathlib.Topology.Instances.EReal.Defs
