@@ -232,7 +232,6 @@ def findBestOrderInstance (type : Expr) : MetaM <| Option OrderType := do
   return .none
 
 /-- Core of the `order` tactic. -/
--- elab "order_core" : tactic => liftMetaFinishingTactic fun g =>
 def orderCore (only? : Bool) (hyps : Array Expr) (g : MVarId) : MetaM Unit := do
   g.withContext do
     let TypeToAtoms ← collectFacts g only? hyps
@@ -254,10 +253,13 @@ def orderCore (only? : Bool) (hyps : Array Expr) (g : MVarId) : MetaM Unit := do
         return
     throwError "No contradiction found"
 
+/-- Args for the `order` tactic. -/
 syntax orderArgs := (&" only")? (" [" term,* "]")?
 
+/-- `order_core` is the part of the `order` tactic that works after negation. -/
 syntax (name := order_core) "order_core" orderArgs : tactic
 
+/-- Elaborates `order` arguments. A copy-paste from `elabLinarithArgs`. -/
 def elabOrderArg (tactic : Name) (t : Term) : TacticM Expr := Term.withoutErrToSorry do
   let (e, mvars) ← elabTermWithHoles t none tactic
   unless mvars.isEmpty do

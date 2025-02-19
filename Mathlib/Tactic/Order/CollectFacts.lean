@@ -156,6 +156,7 @@ partial def collectFactsImp (g : MVarId) (only? : Bool) (hyps : Array Expr) :
         continue
       processExpr ldecl.toExpr
 where
+  /-- Extracts facts and atoms from the expression. -/
   processExpr (expr : Expr) : CollectFactsM Unit := do
     let type ← inferType expr
     if !(← isProp type) then
