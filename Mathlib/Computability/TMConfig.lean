@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Computability.Halting
 import Mathlib.Computability.PostTuringMachine
-import Mathlib.Data.Num.Lemmas
 import Mathlib.Tactic.DeriveFintype
 
 /-!
@@ -21,7 +20,6 @@ Turing machine for evaluating these functions. This amounts to a constructive pr
 * `ToPartrec.Code`: a simplified basis for partial recursive functions, valued in
   `List ℕ →. List ℕ`.
   * `ToPartrec.Code.eval`: semantics for a `ToPartrec.Code` program
-* `PartrecToTM2.tr`: A TM2 turing machine which can evaluate `code` programs
 -/
 
 open List (Vector)
