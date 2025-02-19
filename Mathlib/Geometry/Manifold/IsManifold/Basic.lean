@@ -801,11 +801,13 @@ instance empty [IsEmpty M] : IsManifold I n M := by
     _ = ∅ := empty_inter (range I)
   apply (this ▸ hx).elim
 
+attribute [local instance] ChartedSpace.of_discreteTopology in
 variable (n) in
 def of_discreteTopology [DiscreteTopology M] [Unique E] :
-    IsManifold (modelWithCornersSelf 𝕜 E) n M :=
-  isManifold_of_contDiffOn _ _ _ (fun _ _ _ _ ↦ contDiff_of_subsingleton.contDiffOn)
+    IsManifold (modelWithCornersSelf 𝕜 E) n M := by
+  apply isManifold_of_contDiffOn _ _ _ (fun _ _ _ _ ↦ contDiff_of_subsingleton.contDiffOn)
 
+attribute [local instance] ChartedSpace.of_discreteTopology in
 example [Unique E] : IsManifold (𝓘(𝕜, E)) n (Fin 2) := of_discreteTopology _
 
 /-- The product of two `C^n` manifolds is naturally a `C^n` manifold. -/
