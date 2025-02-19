@@ -87,7 +87,7 @@ theorem subset_univ (s : Finset α) : s ⊆ univ := fun a _ => mem_univ a
 end Finset
 
 namespace Mathlib.Meta
-open Lean Elab Term Meta Batteries.ExtendedBinder
+open Lean Elab Term Meta Batteries.ExtendedBinder Parser.Term PrettyPrinter.Delaborator SubExpr
 
 /-- Elaborate set builder notation for `Finset`.
 
@@ -108,8 +108,6 @@ See also
   `{x | p x}`, `{x : α | p x}`, `{x ∉ s | p x}`, `{x ≠ a | p x}`.
 * `Order.LocallyFinite.Basic` for the `Finset` builder notation elaborator handling syntax of the
   form `{x ≤ a | p x}`, `{x ≥ a | p x}`, `{x < a | p x}`, `{x > a | p x}`.
-
-TODO: Write a delaborator
 -/
 @[term_elab setBuilder]
 def elabFinsetBuilderSetOf : TermElab
@@ -138,6 +136,65 @@ def elabFinsetBuilderSetOf : TermElab
     unless ← knownToBeFinsetNotSet expectedType? do throwUnsupportedSyntax
     elabTerm (← `(Finset.filter (fun $x:ident ↦ $p) (singleton $a)ᶜ)) expectedType?
   | _, _ => throwUnsupportedSyntax
+
+/-- The possibilities we distinguish to delaborate a finset that might have been filtered:
+* `finset s` corresponds to `s`/`∑ x ∈ s, f x`
+* `univ` corresponds to `univ`/`∑ x, f x`
+* `filter s p` corresponds to `{x ∈ s | p x}`/`∑ x ∈ s with p x, f x`
+* `filterUniv p` corresponds to `{x | p x}`/`∑ x with p x, f x`
+
+TODO: Make extensible to other syntaxes like `{x ≠ a | p x}`. -/
+inductive FilteredFinset where
+  | finset (s : Term)
+  | univ
+  | filter (s : Term) (p : Term)
+  | filterUniv (p : Term)
+
+/-- Delaborates a finset. In case it is a `Finset.filter`, `i` is used for the binder name. -/
+def delabFinsetArg (i : Ident) : DelabM FilteredFinset := do
+  let s ← getExpr
+  if s.isAppOfArity ``Finset.univ 2 then
+    return .univ
+  else if s.isAppOfArity ``Finset.filter 4 then
+    let #[_, _, _, t] := s.getAppArgs | failure
+    let p ←
+      withNaryArg 1 do
+        if (← getExpr).isLambda then
+          withBindingBody i.getId do
+            let p ← delab
+            return p
+        else
+          let p ← delab
+          return (← `($p $i))
+    if t.isAppOfArity ``Finset.univ 2 then
+      return .filterUniv p
+    else
+      let ss ← withNaryArg 3 delab
+      return .filter ss p
+  else
+    let ss ← delab
+    return .finset ss
+
+/-- Delaborator for `Finset.filter`. The `pp.piBinderTypes` option controls whether
+to show the domain type when the product is over `Finset.univ`. -/
+@[app_delab Finset.filter] def delabFinsetFilter : Delab :=
+  whenPPOption getPPNotation do
+  let ppDomain ← getPPOption getPPPiBinderTypes
+  let #[_, p, _, t] := (← getExpr).getAppArgs | failure
+  guard p.isLambda
+  let i ← withNaryArg 1 <| withBindingBodyUnusedName fun i => pure ⟨i⟩
+  let p ← withNaryArg 1 <| withBindingBody i.getId do
+    let p ← delab
+    return p
+  if t.isAppOfArity ``Finset.univ 2 then
+    if ppDomain then
+      let ty ← withNaryArg 0 delab
+      `({$i:ident : $ty | $p})
+    else
+      `({$i:ident | $p})
+  else
+    let t ← withNaryArg 3 delab
+    `({$i:ident ∈ $t | $p})
 
 end Mathlib.Meta
 
