@@ -33,16 +33,16 @@ theorem map_finsuppSum' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R
         - ∑ i ∈ f.support, Q (g i (f i)) := by
   exact Q.map_sum' _ (fun i => g i (f i))
 
-lemma polarSym2_map_mul_comp_map (Q : QuadraticMap R M N) (g : ι → M) (l : ι → R) (p : Sym2 ι) :
+lemma polarSym2_map_smul_apply (Q : QuadraticMap R M N) (g : ι → M) (l : ι → R) (p : Sym2 ι) :
     polarSym2 Q (p.map (l • g)) = (Sym2.mul ∘ Sym2.map l) p • polarSym2 Q (p.map g) := by
   obtain ⟨_,_⟩ := p
   simp only [Pi.smul_apply', Sym2.map_pair_eq, polarSym2_sym2Mk, polar_smul_right, polar_smul_left,
     Function.comp_apply, Sym2.mul_mk, ← smul_assoc, smul_eq_mul, mul_comm]
 
-lemma polarSym2_map_mul_comp_map2 (Q : QuadraticMap R M N) (g : ι → M) (l : ι → R) :
+lemma polarSym2_map_smul (Q : QuadraticMap R M N) (g : ι → M) (l : ι → R) :
     polarSym2 Q ∘ Sym2.map (l • g) = Sym2.mul ∘ Sym2.map l • polarSym2 Q ∘ Sym2.map g := by
   ext _
-  rw [Function.comp_apply, polarSym2_map_mul_comp_map, Pi.smul_apply', Function.comp_apply]
+  rw [Function.comp_apply, polarSym2_map_smul_apply, Pi.smul_apply', Function.comp_apply]
   rfl
 
 open Finsupp in
@@ -59,7 +59,7 @@ theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι
     (fun p hp => zero_smul R ((polarSym2 Q) (Sym2.map g p)))]
   apply Finset.sum_congr rfl
   intro _ _
-  rw [Sym2.mulFinsupp_eq_mul_comp_map, ← polarSym2_map_mul_comp_map]
+  rw [Sym2.mulFinsupp_eq_mul_comp_map, ← polarSym2_map_smul_apply]
   rfl
 
 open Finsupp in
@@ -93,7 +93,7 @@ theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι 
   rw [Finsupp.sum]
   simp_rw [add_right_inj]
   apply Finset.sum_congr rfl
-  rw [← polarSym2_map_mul_comp_map2]
+  rw [← polarSym2_map_smul]
   intro _ _
   simp only [Pi.smul_apply', Function.comp_apply]
 
