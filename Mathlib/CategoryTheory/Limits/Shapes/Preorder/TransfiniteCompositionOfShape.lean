@@ -119,6 +119,12 @@ def iic (j : J) :
         rfl }
   isColimit := colimitOfDiagramTerminal isTerminalTop _
 
+instance _root_.Set.Ici.subtype_functor_final (j : J) :
+    (Subtype.mono_coe (Set.Ici j)).functor.Final := by
+  rw [Monotone.final_functor_iff]
+  intro k
+  exact ⟨⟨max j k, le_max_left _ _⟩, le_max_right _ _⟩
+
 @[simps]
 noncomputable def ici (j : J) :
     TransfiniteCompositionOfShape (Set.Ici j) (c.incl.app j) where
@@ -129,7 +135,7 @@ noncomputable def ici (j : J) :
   isoBot := Iso.refl _
   incl := whiskerLeft _ c.incl
   isColimit := by
-    have : (Subtype.mono_coe (Set.Ici j)).functor.Final := sorry
+    have := Set.Ici.subtype_functor_final j
     exact (Functor.Final.isColimitWhiskerEquiv _ _).2 c.isColimit
 
 end TransfiniteCompositionOfShape
