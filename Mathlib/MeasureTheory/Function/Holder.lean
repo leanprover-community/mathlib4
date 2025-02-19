@@ -5,37 +5,33 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.Normed.Module.Dual
-import Mathlib.Data.Real.StarOrdered
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.Order.CompletePartialOrder
-import Mathlib.Data.ENNReal.Holder
 
 /-! # Continuous bilinear maps on `MeasureTheory.Lp` spaces
 
-More generally, given a continuous bilinear map `B : E →L[𝕜] F →L[𝕜] G`, we define an
-associated map `ContinuousLinearMap.holder : Lp E p μ → Lp F q μ → Lp G r μ` where `p q r` are
-a Hölder triple. We bundle this into a bilinear map `ContinuousLinearMap.holderₗ` and a continuous
-bilinear map `ContinuousLinearMap.holderL`.
+Given a continuous bilinear map `B : E →L[𝕜] F →L[𝕜] G`, we define an associated map
+`ContinuousLinearMap.holder : Lp E p μ → Lp F q μ → Lp G r μ` where `p q r` are a Hölder triple.
+We bundle this into a bilinear map `ContinuousLinearMap.holderₗ` and a continuous
+bilinear map `ContinuousLinearMap.holderL` under some additional assumptions.
 
-This allows us to declare a heterogeneous scalar multiplication (`HSMul`) instance on
-`MeasureTheory.Lp` spaces.
+We also declare a heterogeneous scalar multiplication (`HSMul`) instance on `MeasureTheory.Lp`
+spaces. Although this could use the `ContinuousLinearMap.holder` construction above, we opt not to
+do so in order to minimize the necessary type class assumptions.
 
-When `p q : ℝ≥0∞` are Hölder conjugate (i.e., `HolderConjugate p q`), we can construct the
-natural continuous linear map `Lp.toDualCLM : Lp (Dual 𝕜 E) p μ →L[𝕜] Dual 𝕜 (Lp E q μ)` given by
+When `p q : ℝ≥0∞` are Hölder conjugate (i.e., `HolderConjugate p q`), we also construct the
+natural map `MeasureTheory.Lp.toDualCLM : Lp (Dual 𝕜 E) p μ →L[𝕜] Dual 𝕜 (Lp E q μ)` given by
 `fun φ f ↦ ∫ x, (φ x) (f x) ∂μ`.
  -/
 
-open ENNReal
+open ENNReal MeasureTheory Lp
+open scoped NNReal
 
 noncomputable section
-
-open MeasureTheory Lp
 
 /-! ### Induced bilinear maps -/
 
 section Bilinear
-
-open scoped NNReal
 
 variable {α 𝕜 E F G : Type*} {m : MeasurableSpace α} {μ : Measure α}
     {p q r : ENNReal} [hpqr : HolderTriple p q r] [NontriviallyNormedField 𝕜]
