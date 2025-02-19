@@ -137,44 +137,6 @@ def elabFinsetBuilderSetOf : TermElab
     elabTerm (← `(Finset.filter (fun $x:ident ↦ $p) (singleton $a)ᶜ)) expectedType?
   | _, _ => throwUnsupportedSyntax
 
-/-- The possibilities we distinguish to delaborate a finset that might have been filtered:
-* `finset s` corresponds to `s`/`∑ x ∈ s, f x`
-* `univ` corresponds to `univ`/`∑ x, f x`
-* `filter s p` corresponds to `{x ∈ s | p x}`/`∑ x ∈ s with p x, f x`
-* `filterUniv p` corresponds to `{x | p x}`/`∑ x with p x, f x`
-
-TODO: Make extensible to other syntaxes like `{x ≠ a | p x}`. -/
-inductive FilteredFinset where
-  | finset (s : Term)
-  | univ
-  | filter (s : Term) (p : Term)
-  | filterUniv (p : Term)
-
-/-- Delaborates a finset. In case it is a `Finset.filter`, `i` is used for the binder name. -/
-def delabFinsetArg (i : Ident) : DelabM FilteredFinset := do
-  let s ← getExpr
-  if s.isAppOfArity ``Finset.univ 2 then
-    return .univ
-  else if s.isAppOfArity ``Finset.filter 4 then
-    let #[_, _, _, t] := s.getAppArgs | failure
-    let p ←
-      withNaryArg 1 do
-        if (← getExpr).isLambda then
-          withBindingBody i.getId do
-            let p ← delab
-            return p
-        else
-          let p ← delab
-          return (← `($p $i))
-    if t.isAppOfArity ``Finset.univ 2 then
-      return .filterUniv p
-    else
-      let ss ← withNaryArg 3 delab
-      return .filter ss p
-  else
-    let ss ← delab
-    return .finset ss
-
 /-- Delaborator for `Finset.filter`. The `pp.piBinderTypes` option controls whether
 to show the domain type when the product is over `Finset.univ`. -/
 @[app_delab Finset.filter] def delabFinsetFilter : Delab :=
