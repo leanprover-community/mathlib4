@@ -403,5 +403,7 @@ theorem algebraMap.coe_smul (A B C : Type*) [SMul A B] [CommSemiring B] [Semirin
   _ = a • (b • 1) := smul_assoc ..
   _ = a • (b : C) := congrArg _ (Algebra.algebraMap_eq_smul_one b).symm
 
-def Extends_map_algebraMap {α β γ : Type*} [CommRing α] [Ring β] [Algebra α β] (g : α → γ)
-    (f : β → γ) : Prop := ∀ x : α, f (algebraMap α β x) = g x
+/-- Given an `A`-algebra `B`, a function `f : B → α` extends a function `g : A → α` if
+  `∀ x : A, f (algebra_map A B x) = g x`. -/
+def Extends_map_algebraMap {A B α : Type*} [CommRing A] [Ring B] [Algebra A B] (g : A → α)
+    (f : B → α) : Prop := ∀ x : A, f (algebraMap A B x) = g x
