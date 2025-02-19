@@ -1206,7 +1206,7 @@ private def Graph_walk' {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
     have h' : C.Graph.Adj ⟨u, hu⟩ ⟨w, hw⟩ := h
     exact Walk.cons h' (C.Graph_walk' hw hv p)
 
-/- There is a walk beetwen every pair of vertices in a connected component. -/
+/-- There is a walk beetwen every pair of vertices in a connected component. -/
 noncomputable def Graph_walk {G : SimpleGraph V} (C : G.ConnectedComponent) (u v : C) :
     C.Graph.Walk u v :=
   C.Graph_walk' u.property v.property ((C.reachable_of_in u.property v.property).some)
