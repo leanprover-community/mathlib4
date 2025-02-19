@@ -226,6 +226,22 @@ lemma _root_.ProbabilityTheory.Kernel.HasSubgaussianMGF_congr [SFinite ν] [IsSF
     HasSubgaussianMGF X c κ ν ↔ HasSubgaussianMGF Y c κ ν :=
   ⟨fun hX ↦ congr hX h, fun hY ↦ congr hY <| by filter_upwards [h] with ω' hω' using hω'.symm⟩
 
+protected lemma of_map {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''}
+    [SFinite ν] {κ : Kernel Ω' Ω''} [IsSFiniteKernel κ] {Y : Ω'' → Ω} {X : Ω → ℝ}
+    (hY : Measurable Y) (h : HasSubgaussianMGF X c (κ.map Y) ν) :
+    HasSubgaussianMGF (X ∘ Y) c κ ν where
+  integrable_exp_mul t := by
+    have h1 := h.integrable_exp_mul t
+    rwa [← Measure.map_comp _ _ hY, integrable_map_measure h1.aestronglyMeasurable (by fun_prop)]
+      at h1
+  mgf_le := by
+    filter_upwards [h.ae_forall_integrable_exp_mul, h.mgf_le] with ω' h_int h_mgf t
+    convert h_mgf t
+    ext t
+    rw [Kernel.map_apply _ hY, mgf_map hY.aemeasurable]
+    convert (h_int t).1
+    rw [Kernel.map_apply _ hY]
+
 lemma id_map (hX : Measurable X) :
     HasSubgaussianMGF id c (κ.map X) ν ↔ HasSubgaussianMGF X c κ ν := by
   have h_map : (κ.map X) ∘ₘ ν = (κ ∘ₘ ν).map X := by
@@ -329,7 +345,7 @@ lemma add {η : Kernel (Ω' × Ω) Ω''} [IsMarkovKernel η]
 lemma add' {η : Kernel Ω Ω''} [IsMarkovKernel η]
     (hX : HasSubgaussianMGF X c κ ν) (hY : HasSubgaussianMGF Y cY η (κ ∘ₘ ν)) :
     HasSubgaussianMGF (fun p ↦ X p.1 + Y p.2) (c + cY) (κ ⊗ₖ prodMkLeft Ω' η) ν :=
-  hX.add (prodMkLeft_compProd hY)
+  hX.add hY.prodMkLeft_compProd
 
 end Add
 
@@ -469,6 +485,16 @@ lemma zero [IsZeroOrProbabilityMeasure μ] : HasSubgaussianMGF (fun _ ↦ 0) 0 �
 
 @[simp]
 lemma zero' [IsZeroOrProbabilityMeasure μ] : HasSubgaussianMGF 0 0 μ := zero
+
+protected lemma of_rat (h_int : ∀ t : ℝ, Integrable (fun ω ↦ exp (t * X ω)) μ)
+    (h_mgf : ∀ q : ℚ, mgf X μ q ≤ exp (c * q ^ 2 / 2)) :
+    HasSubgaussianMGF X c μ where
+  -- we don't use the `Kernel.HasSubgaussianMGF` version here because it would require `SFinite μ`
+  integrable_exp_mul := h_int
+  mgf_le t := by
+    refine Rat.denseRange_cast.induction_on t ?_ h_mgf
+    refine isClosed_le ?_ (by fun_prop)
+    exact continuous_mgf fun u ↦ h_int _
 
 lemma id_map (hX : AEMeasurable X μ) :
     HasSubgaussianMGF id c (μ.map X) ↔ HasSubgaussianMGF X c μ := by
