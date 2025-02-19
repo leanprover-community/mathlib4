@@ -48,6 +48,20 @@ lemma polarSym2_map_mul (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R
   rw [Function.comp_apply, polarSym2_map_hMul, Pi.smul_apply', Function.comp_apply]
   rfl
 
+lemma polarSym2_map_mul_comp_map (Q : QuadraticMap R M N) (g : ι → M) (l : ι → R) (p : Sym2 ι) :
+    (polarSym2 Q) (p.map (l  • g)) =
+      (Sym2.mul ∘ Sym2.map l) p • ((polarSym2 Q) (p.map g)) := by
+  obtain ⟨_,_⟩ := p
+  simp only [Pi.smul_apply', Sym2.map_pair_eq, polarSym2_sym2Mk, polar_smul_right, polar_smul_left,
+    Function.comp_apply, Sym2.mul_mk]
+  simp only [← smul_assoc, smul_eq_mul, mul_comm]
+
+lemma polarSym2_map_mul_comp_map2 (Q : QuadraticMap R M N) (g : ι → M) (l : ι → R) :
+    polarSym2 Q ∘ Sym2.map (l • g) = Sym2.mul ∘ Sym2.map l • polarSym2 Q ∘ Sym2.map g := by
+  ext _
+  rw [Function.comp_apply, polarSym2_map_mul_comp_map, Pi.smul_apply', Function.comp_apply]
+  rfl
+
 open Finsupp in
 theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
     Q (linearCombination R g l) =
@@ -88,7 +102,7 @@ open Finsupp in
 theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
     Q (linearCombination R g l) = linearCombination R (Q ∘ g) (l * l) +
       ∑ p ∈ l.support.sym2 with ¬ p.IsDiag,
-        (((Sym2.mulFinsupp l) : Sym2 ι → R) • ((polarSym2 Q) ∘ Sym2.map g)) p := by
+        ((Sym2.mul ∘ Sym2.map l) • ((polarSym2 Q) ∘ Sym2.map g)) p := by
   simp_rw [linearCombination_apply, map_finsuppSum, map_smul, mul_smul]
   rw [Finsupp.sum_of_support_subset (l * l) (support_mul_subset_left (g₁ := l))
     (fun i a => a • (⇑Q ∘ g) i) (fun _ _=> by simp only [Function.comp_apply, zero_smul])]
@@ -97,17 +111,16 @@ theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι 
   rw [Finsupp.sum]
   simp_rw [add_right_inj]
   apply Finset.sum_congr rfl
-  intro p hp
+  rw [← polarSym2_map_mul_comp_map2]
+  intro _ _
   simp only [Pi.smul_apply', Function.comp_apply]
-  rw [← polarSym2_map_hMul]
-  simp only [Pi.smul_apply']
 
 -- c.f. `LinearMap.sum_repr_mul_repr_mul`
 open Finsupp in
 theorem sum_repr_sq_add_sum_repr_mul_polar (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
     linearCombination R (Q ∘ bm) ((bm.repr x) * (bm.repr x)) +
       ∑ p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag,
-        ((Sym2.mulFinsupp (bm.repr x) : Sym2 ι → R) • ((polarSym2 Q) ∘ Sym2.map bm)) p = Q x := by
+        (Sym2.mul ∘ Sym2.map (bm.repr x) • ((polarSym2 Q) ∘ Sym2.map bm)) p = Q x := by
   rw [← apply_linearCombination, Basis.linearCombination_repr]
 
 end
