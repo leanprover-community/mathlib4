@@ -37,7 +37,7 @@ namespace Turing
 ## Simulating sequentialized partial recursive functions in TM2
 
 At this point we have a sequential model of partial recursive functions: the `Cfg` type and
-`step : Cfg → Option Cfg` function from the previous section. The key feature of this model is that
+`step : Cfg → Option Cfg` function from `TMConfig.lean`. The key feature of this model is that
 it does a finite amount of computation (in fact, an amount which is statically bounded by the size
 of the program) between each step, and no individual step can diverge (unlike the compositional
 semantics, where every sub-part of the computation is potentially divergent). So we can utilize the
