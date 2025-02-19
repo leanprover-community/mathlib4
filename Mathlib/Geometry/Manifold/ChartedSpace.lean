@@ -763,8 +763,8 @@ theorem chartAt_self_eq {H : Type*} [TopologicalSpace H] {x : H} :
 
 /-- Any discrete space is a charted space over a singleton set. -/
 -- XXX: this definition is not quite right yet, shouldn't need to specify b...
-instance ChartedSpace.of_discreteTopology [TopologicalSpace M] [TopologicalSpace H]
-    [DiscreteTopology M] [h : Inhabited H] [Subsingleton H] : ChartedSpace H M where
+def ChartedSpace.of_discreteTopology_of_unique [TopologicalSpace M] [TopologicalSpace H]
+    [DiscreteTopology M] [h: Unique H] : ChartedSpace H M where
   atlas :=
     letI f := fun x : M ↦ PartialHomeomorph.const
       (isOpen_discrete {x}) (isOpen_discrete {h.default})
@@ -772,6 +772,24 @@ instance ChartedSpace.of_discreteTopology [TopologicalSpace M] [TopologicalSpace
   chartAt x := PartialHomeomorph.const (isOpen_discrete {x}) (isOpen_discrete {h.default})
   mem_chart_source x := by simp
   chart_mem_atlas x := by simp
+
+-- XXX: is there a more elegant way?
+def unique_of_nonempty_subsingleton {α : Type*} (h : Nonempty α) (h': Subsingleton α) :
+    Unique α := by
+  inhabit α
+  exact uniqueOfSubsingleton inhabited_h.default
+
+open Classical in
+instance ChartedSpace.of_discreteTopology [TopologicalSpace M] [TopologicalSpace H]
+    [DiscreteTopology M] [h1: Subsingleton H] : ChartedSpace H M :=
+  if h : Nonempty H then
+    haveI := unique_of_nonempty_subsingleton h h1
+    ChartedSpace.of_discreteTopology_of_unique
+  else by
+    have : IsEmpty H := not_nonempty_iff.mp h
+    have : IsEmpty M := sorry --isEmpty_of_chartedSpace H
+    -- exact empty H M
+    sorry
 
 -- this is true, but not meaningful on paper... should still state it?
 -- /-- A chart on the discrete space is the constant chart. -/
