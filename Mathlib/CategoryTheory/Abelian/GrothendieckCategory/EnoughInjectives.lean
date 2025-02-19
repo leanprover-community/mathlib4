@@ -71,7 +71,7 @@ instance {A B I : C} (i : A ⟶ B)  [Mono i] [Injective I] [HasZeroObject C] (p 
     HasLiftingProperty i (p : I ⟶ 0) :=
   Injective.hasLiftingProperty_of_isZero i p (isZero_zero C)
 
-lemma injective_iff_eq_zero [HasZeroMorphisms C] {I Z : C} (p : I ⟶ Z) (hZ : IsZero Z) :
+lemma injective_iff_rlp_of_isZero [HasZeroMorphisms C] {I Z : C} (p : I ⟶ Z) (hZ : IsZero Z) :
     Injective I ↔ (MorphismProperty.monomorphisms C).rlp p := by
   obtain rfl := hZ.eq_of_tgt p 0
   constructor
@@ -86,7 +86,7 @@ lemma injective_iff_eq_zero [HasZeroMorphisms C] {I Z : C} (p : I ⟶ Z) (hZ : I
 
 lemma injective_iff_monomorphisms_rlp_zero [HasZeroMorphisms C] [HasZeroObject C] (I : C) :
     Injective I ↔ (MorphismProperty.monomorphisms C).rlp (0 : I ⟶ 0) :=
-  injective_iff_eq_zero _ (isZero_zero C)
+  injective_iff_rlp_of_isZero _ (isZero_zero C)
 
 end
 
