@@ -1,9 +1,10 @@
 /-
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang, Kevin Buzzard
+Authors: Jujian Zhang, Kevin Buzzard, Joël Riou
 -/
 import Mathlib.CategoryTheory.Preadditive.Projective
+import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 
 /-!
 # Injective objects and categories with enough injectives
@@ -14,11 +15,7 @@ An object `J` is injective iff every morphism into `J` can be obtained by extend
 
 noncomputable section
 
-open CategoryTheory
-
-open CategoryTheory.Limits
-
-open Opposite
+open CategoryTheory Limits Opposite ZeroObject
 
 universe v v₁ v₂ u₁ u₂
 
@@ -251,7 +248,37 @@ theorem enoughProjectives_of_enoughInjectives_op [EnoughInjectives Cᵒᵖ] : En
 theorem enoughInjectives_of_enoughProjectives_op [EnoughProjectives Cᵒᵖ] : EnoughInjectives C :=
   ⟨fun X => ⟨⟨_, inferInstance, (Projective.π (op X)).unop, inferInstance⟩⟩⟩
 
+lemma hasLiftingProperty_of_isZero
+    {A B I Z : C} (i : A ⟶ B) [Mono i] [Injective I] (p : I ⟶ Z) (hZ : IsZero Z) :
+    HasLiftingProperty i p where
+  sq_hasLift {f g} sq := ⟨⟨{
+    l := Injective.factorThru f i
+    fac_right := hZ.eq_of_tgt _ _ }⟩⟩
+
+instance {A B I : C} (i : A ⟶ B)  [Mono i] [Injective I] [HasZeroObject C] (p : I ⟶ 0) :
+    HasLiftingProperty i (p : I ⟶ 0) :=
+  Injective.hasLiftingProperty_of_isZero i p (isZero_zero C)
+
 end Injective
+
+lemma injective_iff_rlp_of_isZero
+    [HasZeroMorphisms C] {I Z : C} (p : I ⟶ Z) (hZ : IsZero Z) :
+    Injective I ↔ (MorphismProperty.monomorphisms C).rlp p := by
+  obtain rfl := hZ.eq_of_tgt p 0
+  constructor
+  · intro _ A B i (_ : Mono i)
+    exact Injective.hasLiftingProperty_of_isZero i 0 hZ
+  · intro h
+    constructor
+    intro A B f i hi
+    have := h _ hi
+    have sq : CommSq f i (0 : I ⟶ Z) 0 := ⟨by simp⟩
+    exact ⟨sq.lift, by simp⟩
+
+lemma injective_iff_monomorphisms_rlp_zero
+    [HasZeroMorphisms C] [HasZeroObject C] (I : C) :
+    Injective I ↔ (MorphismProperty.monomorphisms C).rlp (0 : I ⟶ 0) :=
+  injective_iff_rlp_of_isZero _ (isZero_zero C)
 
 namespace Adjunction
 
