@@ -337,7 +337,7 @@ def resComp {G H K : MonCat} (f : G ⟶ H) (g : H ⟶ K) : res V g ⋙ res V f �
 -- TODO promote `res` to a pseudofunctor from
 -- the locally discrete bicategory constructed from `Monᵒᵖ` to `Cat`, sending `G` to `Action V G`.
 
-variable {G H : MonCat} (f : G ⟶ H)
+variable {G H : MonCat.{u}} (f : G ⟶ H)
 
 /-- The functor from `Action V H` to `Action V G` induced by a morphism `f : G → H` is faithful. -/
 instance : (Action.res V f).Faithful where
