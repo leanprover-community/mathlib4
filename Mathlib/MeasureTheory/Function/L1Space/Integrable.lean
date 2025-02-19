@@ -876,20 +876,14 @@ theorem Integrable.mul_of_top_left {f : α → 𝕜} {φ : α → 𝕜} (hφ : I
     (hf : Memℒp f ∞ μ) : Integrable (φ * f) μ :=
   hφ.smul_of_top_left hf
 
-lemma Memℒp.integrable_mul' {q r : ℝ≥0∞} {f g : α → 𝕜} (hf : Memℒp f q μ) (hg : Memℒp g r μ)
-    (hqr : 1 / q + 1 / r = 1) :
+lemma Memℒp.integrable_mul' {p q : ℝ≥0∞} {f g : α → 𝕜} (hf : Memℒp f p μ) (hg : Memℒp g q μ)
+    [HolderTriple p q 1] :
     Integrable (f * g) μ :=
-  memℒp_one_iff_integrable.1 <| Memℒp.mul hg hf (by field_simp [hqr])
+  memℒp_one_iff_integrable.1 <| hg.mul hf
 
-lemma Memℒp.integrable_mul {q r : ℝ≥0∞} {f g : α → 𝕜} (hf : Memℒp f q μ) (hg : Memℒp g r μ)
-    (hqr : 1 / q + 1 / r = 1) :
-    Integrable (fun x ↦ f x * g x) μ := hf.integrable_mul' hg hqr
-
-lemma Memℒp.integrable_mul_of_two' {f g : α → 𝕜} (hf : Memℒp f 2 μ) (hg : Memℒp g 2 μ) :
-    Integrable (f * g) μ := hf.integrable_mul' hg (ENNReal.add_halves 1)
-
-lemma Memℒp.integrable_mul_of_two {f g : α → 𝕜} (hf : Memℒp f 2 μ) (hg : Memℒp g 2 μ) :
-    Integrable (fun x ↦ f x * g x) μ := hf.integrable_mul_of_two' hg
+lemma Memℒp.integrable_mul {p q : ℝ≥0∞} {f g : α → 𝕜} (hf : Memℒp f p μ) (hg : Memℒp g q μ)
+    [HolderTriple p q 1] :
+    Integrable (fun x ↦ f x * g x) μ := hf.integrable_mul' hg
 
 end NormedRing
 
