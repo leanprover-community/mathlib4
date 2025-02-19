@@ -82,7 +82,7 @@ theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι
   simp only [mul_apply, Function.comp_apply]
   simp only [←smul_eq_mul, smul_assoc]
   simp_all only [sub_left_inj]
-  rw [Finsupp.sum_of_support_subset (Sym2.mulFinsupp l) (Sym2.mul_finsupp_support l) _
+  rw [Finsupp.sum_of_support_subset (Sym2.mulFinsupp l) (Sym2.support_mulFinsupp_subset l) _
     (fun p hp => zero_smul R ((polarSym2 Q) (Sym2.map g p)))]
   apply Finset.sum_congr rfl
   intro p _
