@@ -307,6 +307,7 @@ theorem ballot_neg (p q : ℕ) (qp : q < p) :
   rw [this, count_injective_image]
   exact List.cons_injective
 
+set_option linter.style.multiGoal false in
 theorem ballot_problem' :
     ∀ q p, q < p → (uniformOn (countedSequence p q) staysPositive).toReal = (p - q) / (p + q) := by
   classical
@@ -327,9 +328,8 @@ theorem ballot_problem' :
     have h₃ : p + 1 + (q + 1) > 0 := Nat.add_pos_left (Nat.succ_pos _) _
     rw [← uniformOn_add_compl_eq {l : List ℤ | l.headI = 1} _ (countedSequence_finite _ _),
       first_vote_pos _ _ h₃, first_vote_neg _ _ h₃, ballot_pos, ballot_neg _ _ qp]
-    rw [ENNReal.toReal_add, ENNReal.toReal_mul, ENNReal.toReal_mul, ← Nat.cast_add,
-      ENNReal.toReal_div, ENNReal.toReal_div, ENNReal.toReal_natCast, ENNReal.toReal_natCast,
-      ENNReal.toReal_natCast, h₁, h₂]
+    rw [ENNReal.toReal_add]
+    simp_rw [ENNReal.toReal_mul, ← Nat.cast_add, ENNReal.toReal_div, ENNReal.toReal_natCast, h₁, h₂]
     · have h₄ : (p + 1 : ℝ) + (q + 1 : ℝ) ≠ (0 : ℝ) := by
         apply ne_of_gt
         assumption_mod_cast
