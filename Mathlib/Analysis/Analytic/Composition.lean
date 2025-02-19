@@ -947,19 +947,44 @@ theorem HasFiniteFPowerSeriesAt.comp {m n : ℕ} {g : F → G} {f : E → F}
   apply ContinuousMultilinearMap.map_coord_zero _ j
   simp [applyComposition, hf.finite _ hj]
 
-/-- If two functions `g` and `f` have finite power series `q` and `p` respectively at `f x` and `x`,
-then `g ∘ f` admits the finite power series `q.comp p` at `x`. -/
-theorem CPolynomialAt.comp {m n : ℕ} {g : F → G} {f : E → F} {x : E}
+/-- If two functions `g` and `f` are continuously polynomial respectively at `f x` and `x`,
+then `g ∘ f` is continuously polynomial at `x`. -/
+theorem CPolynomialAt.comp {g : F → G} {f : E → F} {x : E}
     (hg : CPolynomialAt 𝕜 g (f x)) (hf : CPolynomialAt 𝕜 f x) :
     CPolynomialAt 𝕜 (g ∘ f) x := by
   rcases hg with ⟨q, m, hm⟩
   rcases hf with ⟨p, n, hn⟩
   refine ⟨q.comp p, m * (n + 1), ?_⟩
-  apply hm.comp
+  exact hm.comp (hn.of_le (Nat.le_succ n)) (Nat.zero_lt_succ n)
 
+/-- If two functions `g` and `f` are continuously polynomial respectively at `f x` and `x`,
+then `g ∘ f` is continuously polynomial at `x`. -/
+theorem CPolynomialAt.comp' {g : F → G} {f : E → F} {x : E}
+    (hg : CPolynomialAt 𝕜 g (f x)) (hf : CPolynomialAt 𝕜 f x) :
+    CPolynomialAt 𝕜 (fun z ↦ g (f z)) x :=
+  hg.comp hf
 
-#exit
+/-- Version of `CPolynomialAt.comp` where point equality is a separate hypothesis. -/
+theorem CPolynomialAt.comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E} (hg : CPolynomialAt 𝕜 g y)
+    (hf : CPolynomialAt 𝕜 f x) (hy : f x = y) : CPolynomialAt 𝕜 (g ∘ f) x := by
+  rw [← hy] at hg
+  exact hg.comp hf
 
+/-- Version of `CPolynomialAt.comp` where point equality is a separate hypothesis. -/
+theorem CPolynomialAt.comp_of_eq' {g : F → G} {f : E → F} {y : F} {x : E} (hg : CPolynomialAt 𝕜 g y)
+    (hf : CPolynomialAt 𝕜 f x) (hy : f x = y) : CPolynomialAt 𝕜 (fun z ↦ g (f z)) x := by
+  apply hg.comp_of_eq hf hy
+
+/-- If two functions `g` and `f` are continuously polynomial respectively on `s.image f` and `s`,
+then `g ∘ f` is continuously polynomial on `s`. -/
+theorem CPolynomialOn.comp' {s : Set E} {g : F → G} {f : E → F} (hg : CPolynomialOn 𝕜 g (s.image f))
+    (hf : CPolynomialOn 𝕜 f s) : CPolynomialOn 𝕜 (g ∘ f) s :=
+  fun z hz => (hg (f z) (Set.mem_image_of_mem f hz)).comp (hf z hz)
+
+theorem CPolynomialOn.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F}
+    (hg : CPolynomialOn 𝕜 g t) (hf : CPolynomialOn 𝕜 f s) (st : Set.MapsTo f s t) :
+    CPolynomialOn 𝕜 (g ∘ f) s :=
+  comp' (mono hg (Set.mapsTo'.mp st)) hf
 
 /-!
 ### Associativity of the composition of formal multilinear series

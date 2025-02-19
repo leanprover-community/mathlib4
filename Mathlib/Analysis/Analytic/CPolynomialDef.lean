@@ -76,10 +76,13 @@ neighborhood of `0`and `pₙ = 0` for `n ≤ m`. -/
 def HasFiniteFPowerSeriesAt (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) (x : E) (n : ℕ) :=
   ∃ r, HasFiniteFPowerSeriesOnBall f p x n r
 
-theorem HasFiniteFPowerSeriesAt.toHasFPowerSeriesAt
+theorem HasFiniteFPowerSeriesAt.hasFPowerSeriesAt
     (hf : HasFiniteFPowerSeriesAt f p x n) : HasFPowerSeriesAt f p x :=
   let ⟨r, hf⟩ := hf
   ⟨r, hf.toHasFPowerSeriesOnBall⟩
+
+@[deprecated (since := "2025-02-10")]
+alias HasFiniteFPowerSeriesAt.toHasFPowerSeriesAt := HasFiniteFPowerSeriesAt.hasFPowerSeriesAt
 
 theorem HasFiniteFPowerSeriesAt.finite (hf : HasFiniteFPowerSeriesAt f p x n) :
     ∀ m : ℕ, n ≤ m → p m = 0 := let ⟨_, hf⟩ := hf; hf.finite
@@ -103,11 +106,6 @@ theorem HasFiniteFPowerSeriesOnBall.hasFiniteFPowerSeriesAt
     HasFiniteFPowerSeriesAt f p x n :=
   ⟨r, hf⟩
 
-theorem HasFiniteFPowerSeriesAt.hasFPowerSeriesAt (hf : HasFiniteFPowerSeriesAt f p x n) :
-    HasFPowerSeriesAt f p x := by
-  rcases hf with ⟨r, hr⟩
-  exact ⟨r, hr.toHasFPowerSeriesOnBall⟩
-
 theorem HasFiniteFPowerSeriesAt.cpolynomialAt (hf : HasFiniteFPowerSeriesAt f p x n) :
     CPolynomialAt 𝕜 f x :=
   ⟨p, n, hf⟩
@@ -124,7 +122,7 @@ alias HasFiniteFPowerSeriesOnBall.cPolynomialAt := HasFiniteFPowerSeriesOnBall.c
 
 theorem CPolynomialAt.analyticAt (hf : CPolynomialAt 𝕜 f x) : AnalyticAt 𝕜 f x :=
   let ⟨p, _, hp⟩ := hf
-  ⟨p, hp.toHasFPowerSeriesAt⟩
+  ⟨p, hp.hasFPowerSeriesAt⟩
 
 theorem CPolynomialAt.analyticWithinAt {s : Set E} (hf : CPolynomialAt 𝕜 f x) :
     AnalyticWithinAt 𝕜 f s x :=
@@ -140,6 +138,17 @@ theorem HasFiniteFPowerSeriesOnBall.congr (hf : HasFiniteFPowerSeriesOnBall f p 
     (hg : EqOn f g (EMetric.ball x r)) : HasFiniteFPowerSeriesOnBall g p x n r :=
   ⟨hf.1.congr hg, hf.finite⟩
 
+theorem HasFiniteFPowerSeriesOnBall.of_le {m n : ℕ}
+    (h : HasFiniteFPowerSeriesOnBall f p x n r) (hmn : n ≤ m) :
+    HasFiniteFPowerSeriesOnBall f p x m r :=
+  ⟨h.toHasFPowerSeriesOnBall, fun i hi ↦ h.finite i (hmn.trans hi)⟩
+
+theorem HasFiniteFPowerSeriesAt.of_le {m n : ℕ}
+    (h : HasFiniteFPowerSeriesAt f p x n) (hmn : n ≤ m) :
+    HasFiniteFPowerSeriesAt f p x m := by
+  rcases h with ⟨r, hr⟩
+  exact ⟨r, hr.of_le hmn⟩
+
 /-- If a function `f` has a finite power series `p` around `x`, then the function
 `z ↦ f (z - y)` has the same finite power series around `x + y`. -/
 theorem HasFiniteFPowerSeriesOnBall.comp_sub (hf : HasFiniteFPowerSeriesOnBall f p x n r) (y : E) :
@@ -152,11 +161,11 @@ theorem HasFiniteFPowerSeriesOnBall.mono (hf : HasFiniteFPowerSeriesOnBall f p x
 
 theorem HasFiniteFPowerSeriesAt.congr (hf : HasFiniteFPowerSeriesAt f p x n) (hg : f =ᶠ[𝓝 x] g) :
     HasFiniteFPowerSeriesAt g p x n :=
-  Exists.imp (fun _ hg ↦ ⟨hg, hf.finite⟩) (hf.toHasFPowerSeriesAt.congr hg)
+  Exists.imp (fun _ hg ↦ ⟨hg, hf.finite⟩) (hf.hasFPowerSeriesAt.congr hg)
 
 protected theorem HasFiniteFPowerSeriesAt.eventually (hf : HasFiniteFPowerSeriesAt f p x n) :
     ∀ᶠ r : ℝ≥0∞ in 𝓝[>] 0, HasFiniteFPowerSeriesOnBall f p x n r :=
-  hf.toHasFPowerSeriesAt.eventually.mono fun _ h ↦ ⟨h, hf.finite⟩
+  hf.hasFPowerSeriesAt.eventually.mono fun _ h ↦ ⟨h, hf.finite⟩
 
 theorem CPolynomialAt.congr (hf : CPolynomialAt 𝕜 f x) (hg : f =ᶠ[𝓝 x] g) : CPolynomialAt 𝕜 g x :=
   let ⟨_, _, hpf⟩ := hf
