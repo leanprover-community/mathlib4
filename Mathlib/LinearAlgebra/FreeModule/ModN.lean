@@ -15,7 +15,7 @@ If `G` is a rank `d` free `ℤ`-module, then `G/nG` is a finite group of cardina
 
 open Finsupp Function
 
-variable {G : Type*} [AddCommGroup G] [Module.Free ℤ G] {n : ℕ}
+variable {G H M : Type*} [AddCommGroup G] [Module.Free ℤ G] {n : ℕ}
 
 variable (G n) in
 /-- `ModN G n` denotes the quotient of `G` by multiples of `n` -/
@@ -24,6 +24,29 @@ abbrev ModN : Type _ := G ⧸ LinearMap.range (LinearMap.lsmul ℤ G n)
 namespace ModN
 
 instance : Module (ZMod n) (ModN G n) := QuotientAddGroup.zmodModule (by simp)
+
+/-- The universal property of `ModN G n` in terms of monoids: Monoid homomorphisms from `ModN G n`
+are the same as monoid homormorphisms from `G` whose values are `n`-torsion. -/
+protected def liftEquiv [AddMonoid M] : (ModN G n →+ M) ≃ {φ : G →+ M // ∀ g, n • φ g = 0} where
+  toFun f := ⟨f.comp (QuotientAddGroup.mk' _), fun g ↦ by
+    let Gn : AddSubgroup G := (LinearMap.range (LinearMap.lsmul ℤ G n)).toAddSubgroup
+    suffices n • g ∈ (QuotientAddGroup.mk' Gn).ker by
+      simp only [AddMonoidHom.coe_comp, comp_apply, ← map_nsmul]
+      change f (QuotientAddGroup.mk' Gn (n • g)) = 0 -- Can we avoid `change`?
+      rw [this, map_zero]
+    simp [QuotientAddGroup.ker_mk', Gn]⟩
+  invFun φ := QuotientAddGroup.lift _ φ <| by rintro - ⟨g, rfl⟩; simpa using φ.property g
+  left_inv f := by
+    ext x
+    induction x using QuotientAddGroup.induction_on
+    rfl -- Should `simp` suffice here?
+  right_inv φ := by aesop
+
+/-- The universal property of `ModN G n` in terms of `ZMod n`-modules: `ZMod n`-linear maps from
+`ModN G n` are the same as monoid homormorphisms from `G` whose values are `n`-torsion. -/
+protected def liftEquiv' [AddCommGroup H] [Module (ZMod n) H] :
+    (ModN G n →ₗ[ZMod n] H) ≃ {φ : G →+ H // ∀ g, n • φ g = 0} :=
+  (AddMonoidHom.toZModLinearMapEquiv n).symm.toEquiv.trans (ModN.liftEquiv )
 
 variable [NeZero n]
 
@@ -49,7 +72,8 @@ noncomputable def basis : Basis (Module.Free.ChooseBasisIndex ℤ G) (ZMod n) (M
     intro x hx
     simp only [Submodule.mkQ_apply, g] at hx
     rw [Submodule.liftQ_apply] at hx
-    simp [mod, DFunLike.ext_iff, ZMod.intCast_zmod_eq_zero_iff_dvd] at hx
+    replace hx : ∀ b, ↑n ∣ f x b := by
+      simpa [mod, DFunLike.ext_iff, ZMod.intCast_zmod_eq_zero_iff_dvd] using hx
     simp only [Submodule.mkQ_apply, B, mod, g, f]
     rw [Submodule.Quotient.mk_eq_zero]
     choose c hc using hx
