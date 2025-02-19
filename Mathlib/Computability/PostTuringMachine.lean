@@ -779,7 +779,7 @@ theorem tr_supports {S : Finset Λ} (ss : TM1.Supports M S) :
     · apply Finset.mem_univ
   · intro q a q' s h₁ h₂
     rcases q with ⟨_ | q, v⟩; · cases h₁
-    cases' q' with q' v'
+    obtain ⟨q', v'⟩ := q'
     simp only [trStmts, Finset.mem_coe] at h₂ ⊢
     rw [Finset.mem_product] at h₂ ⊢
     simp only [Finset.mem_univ, and_true] at h₂ ⊢

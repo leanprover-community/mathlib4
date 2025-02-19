@@ -1760,8 +1760,8 @@ lemma Identical.add {x₁ x₂ y₁ y₂ : PGame.{u}} (hx : x₁ ≡ x₂) (hy :
 
 lemma memₗ_add_iff {x y₁ y₂ : PGame} :
     x ∈ₗ y₁ + y₂ ↔ (∃ z ∈ₗ y₁, x ≡ z + y₂) ∨ (∃ z ∈ₗ y₂, x ≡ y₁ + z) := by
-  cases' y₁ with y₁l y₁r y₁L y₁R
-  cases' y₂ with y₂l y₂r y₂L y₂R
+  obtain ⟨y₁l, y₁r, y₁L, y₁R⟩ := y₁
+  obtain ⟨y₂l, y₂r, y₂L, y₂R⟩ := y₂
   constructor
   · rintro ⟨(i | i), hi⟩
     exacts [.inl ⟨y₁L i, moveLeft_memₗ _ _, hi⟩, .inr ⟨y₂L i, moveLeft_memₗ _ _, hi⟩]
@@ -1770,8 +1770,8 @@ lemma memₗ_add_iff {x y₁ y₂ : PGame} :
 
 lemma memᵣ_add_iff {x y₁ y₂ : PGame} :
     x ∈ᵣ y₁ + y₂ ↔ (∃ z ∈ᵣ y₁, x ≡ z + y₂) ∨ (∃ z ∈ᵣ y₂, x ≡ y₁ + z) := by
-  cases' y₁ with y₁l y₁r y₁L y₁R
-  cases' y₂ with y₂l y₂r y₂L y₂R
+  obtain ⟨y₁l, y₁r, y₁L, y₁R⟩ := y₁
+  obtain ⟨y₂l, y₂r, y₂L, y₂R⟩ := y₂
   constructor
   · rintro ⟨(i | i), hi⟩
     exacts [.inl ⟨y₁R i, moveRight_memᵣ _ _, hi⟩, .inr ⟨y₂R i, moveRight_memᵣ _ _, hi⟩]

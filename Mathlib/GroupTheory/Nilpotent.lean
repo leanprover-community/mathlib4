@@ -239,7 +239,7 @@ theorem nilpotent_iff_finite_ascending_central_series :
 
 theorem is_descending_rev_series_of_is_ascending {H : ℕ → Subgroup G} {n : ℕ} (hn : H n = ⊤)
     (hasc : IsAscendingCentralSeries H) : IsDescendingCentralSeries fun m : ℕ => H (n - m) := by
-  cases' hasc with h0 hH
+  obtain ⟨h0, hH⟩ := hasc
   refine ⟨hn, fun x m hx g => ?_⟩
   dsimp at hx
   by_cases hm : n ≤ m
@@ -257,7 +257,7 @@ alias is_decending_rev_series_of_is_ascending := is_descending_rev_series_of_is_
 
 theorem is_ascending_rev_series_of_is_descending {H : ℕ → Subgroup G} {n : ℕ} (hn : H n = ⊥)
     (hdesc : IsDescendingCentralSeries H) : IsAscendingCentralSeries fun m : ℕ => H (n - m) := by
-  cases' hdesc with h0 hH
+  obtain ⟨h0, hH⟩ := hdesc
   refine ⟨hn, fun x m hx g => ?_⟩
   dsimp only at hx ⊢
   by_cases hm : n ≤ m
