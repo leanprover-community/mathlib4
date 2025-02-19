@@ -551,20 +551,24 @@ end map -- section
 
 section MonoidalProduct
 /-! ### The monoidal product in the Giry monad
-Lemma 4.1 of https://doi.org/10.1016/j.aim.2020.10723
+Lemma 4.1 of https://doi.org/10.1016/j.aim.2020.107239
 -/
 
 open Function
 
 open Measure
 
+/-- The type of probability measures is a measurable space when equipped with the Giry monad. -/
 local instance {α : Type*} [MeasurableSpace α] : MeasurableSpace (ProbabilityMeasure α) :=
   Subtype.instMeasurableSpace
 
+/-- Monoidal product for probability measures: The product of two probability measures
+is their product measure. -/
 abbrev monoidal_product {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     (ProbabilityMeasure α × ProbabilityMeasure β) -> Measure (α × β) :=
   fun μ => Measure.prod (Subtype.val μ.1) (Subtype.val μ.2)
 
+/-- The monoidal product of two probability measures is a probability measure. -/
 local instance (α β : Type*) [MeasurableSpace α] [MeasurableSpace β]
   (μ : ProbabilityMeasure α × ProbabilityMeasure β) :
     IsProbabilityMeasure (monoidal_product μ) where
@@ -574,6 +578,8 @@ local instance (α β : Type*) [MeasurableSpace α] [MeasurableSpace β]
   (μ : ProbabilityMeasure α × ProbabilityMeasure β) :
     SFinite (μ.2.val) := by rcases μ with ⟨_, ⟨_, _⟩⟩; simp; infer_instance
 
+/-- The monoidal product is a measurable function from the product of probability spaces over
+``α`` and ``β`` into the type of probability spaces over ``α × β`` -/
 theorem measurable_monoidal_product {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     Measurable (@monoidal_product α β _ _) := by
   apply Measurable.measure_of_isPiSystem generateFrom_prod.symm isPiSystem_prod _ (by simp)
