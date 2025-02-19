@@ -221,6 +221,12 @@ theorem linearIndependent_le_span {ι : Type*} (v : ι → M) (i : LinearIndepen
   rw [s]
   exact le_top
 
+/-- If `R` satisfies the strong rank condition, then for any linearly independent family `v : ι → M`
+and spanning set `w : Set M`, the cardinality of `ι` is bounded by the cardinality of `w`.
+-/
+theorem linearIndependent_le_span'' {ι : Type w} (v : ι → M) (i : LinearIndependent R v) (w : Set M)
+    (s : span R w = ⊤) : Cardinal.lift.{v} #ι ≤ Cardinal.lift.{w} #w := by sorry
+
 /-- A version of `linearIndependent_le_span` for `Finset`. -/
 theorem linearIndependent_le_span_finset {ι : Type*} (v : ι → M) (i : LinearIndependent R v)
     (w : Finset M) (s : span R (w : Set M) = ⊤) : #ι ≤ w.card := by

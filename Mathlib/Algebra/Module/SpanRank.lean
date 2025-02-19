@@ -6,6 +6,8 @@ Authors: Wanyi He, Jiedong Jiang, Xuchun Li, Jingting Wang, Andrew Yang
 import Mathlib.Data.Set.Card
 import Mathlib.Data.ENat.Lattice
 import Mathlib.RingTheory.Finiteness.Defs
+import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 
 /-!
 # Minimum Cardinality of generating set of a submodule
@@ -35,11 +37,13 @@ submodule, generating subset, span rank
 * Add lemmas that link these notions to `Module.rank`.
 -/
 
+namespace Submodule
+
+section Defs
+
 universe u
 
 variable {R : Type*} {M : Type u} [Semiring R] [AddCommMonoid M] [Module R M]
-
-namespace Submodule
 
 open Cardinal
 
@@ -50,6 +54,8 @@ noncomputable def spanRank (p : Submodule R M) : Cardinal := ⨅ (s : {s : Set M
   generating set exists, the span rank is defined to be `0`. -/
 noncomputable def spanFinrank (p : Submodule R M) : ℕ := (spanRank p).toNat
 
+instance (p : Submodule R M) : Nonempty {s : Set M // span R s = p} := ⟨⟨p, by simp⟩⟩
+
 lemma spanRank_toENat_eq_iInf_encard (p : Submodule R M) : p.spanRank.toENat =
     (⨅ (s : Set M) (_ : span R s = p), s.encard) := by
   rw [spanRank]
@@ -59,7 +65,6 @@ lemma spanRank_toENat_eq_iInf_encard (p : Submodule R M) : p.spanRank.toENat =
     exact toENat.monotone' (ciInf_le' _ (⟨s, hs⟩ : {s : Set M // span R s = p}))
   · have := congrFun toENat_comp_ofENat.{u}.symm (⨅ (s : Set M) (_ : span R s = p), s.encard)
     rw [id_eq] at this; rw [this]
-    haveI : Nonempty {s : Set M // span R s = p} := ⟨⟨p, by simp⟩⟩
     refine toENat.monotone' (le_ciInf fun s ↦ ?_)
     have : ofENat.{u} (⨅ (s' : Set M), ⨅ (_ : span R s' = p), s'.encard) ≤ ofENat s.1.encard :=
       ofENatHom.monotone' (le_trans (ciInf_le' _ s.1) (ciInf_le' _ s.2))
@@ -194,15 +199,37 @@ lemma spanRank_sup_le_sum_spanRank {p q : Submodule R M} :
   obtain ⟨sq, ⟨hq₁, rfl⟩⟩ := exists_span_set_card_eq_spanRank q
   exact ⟨sp ∪ sq, ⟨hp₁ ▸ hq₁ ▸ (Cardinal.mk_union_le sp sq), span_union sp sq⟩⟩
 
--- section rank
+end Defs
 
--- Commented out since `StrongRankProperty` and `OrzechProperty` are not imported.
--- proof_wanted rank_eq_spanRank [Module.Free M] [StrongRankProperty R] :
---     M.rank = (⊤ : Submodule R M).spanRank
+section rank
 
--- proof_wanted rank_le_spanRank [OrzechProperty R] :
---     M.rank ≤ (⊤ : Submodule R M).spanRank
+open Cardinal
 
--- end rank
+universe u v w
+
+variable {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
+
+lemma Basis.mk_eq_spanRank [RankCondition R] {ι : Type v} (v : Basis ι R M) :
+    #ι = (⊤ : Submodule R M).spanRank := by
+  sorry
+
+/-- A version where they can be of different universe levels. -/
+lemma Basis.mk_eq_spanRank' [RankCondition R] {ι : Type w} (v : Basis ι R M) :
+    Cardinal.lift.{v} #ι = Cardinal.lift.{w} (⊤ : Submodule R M).spanRank := by
+  sorry
+
+theorem rank_eq_spanRank_of_free [Module.Free R M] [StrongRankCondition R] :
+    Module.rank R M = (⊤ : Submodule R M).spanRank := by
+  obtain ⟨I, B⟩ := ‹Module.Free R M›
+  rw [← Basis.mk_eq_rank'' B, Basis.mk_eq_spanRank B]
+
+theorem rank_le_spanRank [StrongRankCondition R] :
+    Module.rank R M ≤ (⊤ : Submodule R M).spanRank := by
+  rw [Module.rank, Submodule.spanRank]
+  refine ciSup_le' (fun ι ↦ (le_ciInf fun s ↦ ?_))
+  have := linearIndependent_le_span'' _ ι.2 s.1 s.2
+  simpa
+
+end rank
 
 end Submodule
