@@ -730,7 +730,7 @@ theorem erase_add_single (i : ι) (f : Π₀ i, β i) : f.erase i + single i (f 
 
 protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (h0 : p 0)
     (ha : ∀ (i b) (f : Π₀ i, β i), f i = 0 → b ≠ 0 → p f → p (single i b + f)) : p f := by
-  cases' f with f s
+  obtain ⟨f, s⟩ := f
   induction' s using Trunc.induction_on with s
   obtain ⟨s, H⟩ := s
   induction' s using Multiset.induction_on with i s ih generalizing f
@@ -829,7 +829,7 @@ theorem support_mk'_subset {f : ∀ i, β i} {s : Multiset ι} {h} :
 
 @[simp]
 theorem mem_support_toFun (f : Π₀ i, β i) (i) : i ∈ f.support ↔ f i ≠ 0 := by
-  cases' f with f s
+  obtain ⟨f, s⟩ := f
   induction' s using Trunc.induction_on with s
   dsimp only [support, Trunc.lift_mk]
   rw [Finset.mem_filter, Multiset.mem_toFinset, coe_mk']
