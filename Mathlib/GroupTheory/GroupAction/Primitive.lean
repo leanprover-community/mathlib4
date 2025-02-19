@@ -140,7 +140,7 @@ theorem IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints {a : X} (ha : a 
     IsPreprimitive G X :=
   have : IsPretransitive G X := by
     rw [isPretransitive_iff_base a]
-    cases' H (mem_orbit_self a) (IsBlock.orbit a) with H H
+    obtain H | H := H (mem_orbit_self a) (IsBlock.orbit a)
     · exfalso; apply ha
       rw [Set.subsingleton_iff_singleton (mem_orbit_self a)] at H
       simp only [mem_fixedPoints]
