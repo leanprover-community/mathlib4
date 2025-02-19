@@ -5,6 +5,8 @@ Authors: Alexander Bentkamp, Yury Kudryashov
 -/
 import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Analysis.Convex.Topology
+import Mathlib.Analysis.Normed.Group.Pointwise
 
 /-!
 # Metric properties of convex sets in normed spaces
@@ -23,7 +25,7 @@ We prove the following facts:
 
 variable {E : Type*}
 
-open Set
+open Metric Set
 
 section SeminormedAddCommGroup
 variable [SeminormedAddCommGroup E] [NormedSpace ℝ E]
@@ -62,6 +64,17 @@ theorem convexHull_exists_dist_ge {s : Set E} {x : E} (hx : x ∈ convexHull ℝ
     ∃ x' ∈ s, dist x y ≤ dist x' y :=
   (convexOn_dist y (convex_convexHull ℝ _)).exists_ge_of_mem_convexHull (subset_convexHull ..) hx
 
+theorem Convex.thickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (thickening δ s) := by
+  rw [← add_ball_zero]
+  exact hs.add (convex_ball 0 _)
+
+theorem Convex.cthickening (hs : Convex ℝ s) (δ : ℝ) : Convex ℝ (cthickening δ s) := by
+  obtain hδ | hδ := le_total 0 δ
+  · rw [cthickening_eq_iInter_thickening hδ]
+    exact convex_iInter₂ fun _ _ => hs.thickening _
+  · rw [cthickening_of_nonpos hδ]
+    exact hs.closure
+
 /-- Given a point `x` in the convex hull of `s` and a point `y` in the convex hull of `t`,
 there exist points `x' ∈ s` and `y' ∈ t` at distance at least `dist x y`. -/
 theorem convexHull_exists_dist_ge2 {s t : Set E} {x y : E} (hx : x ∈ convexHull ℝ s)
@@ -91,5 +104,20 @@ theorem convexHull_diam (s : Set E) : Metric.diam (convexHull ℝ s) = Metric.di
 theorem isBounded_convexHull {s : Set E} :
     Bornology.IsBounded (convexHull ℝ s) ↔ Bornology.IsBounded s := by
   simp only [Metric.isBounded_iff_ediam_ne_top, convexHull_ediam]
+
+instance (priority := 100) NormedSpace.instPathConnectedSpace : PathConnectedSpace E :=
+  IsTopologicalAddGroup.pathConnectedSpace
+
+/-- The set of vectors in the same ray as `x` is connected. -/
+theorem isConnected_setOf_sameRay (x : E) : IsConnected { y | SameRay ℝ x y } := by
+  by_cases hx : x = 0; · simpa [hx] using isConnected_univ (α := E)
+  simp_rw [← exists_nonneg_left_iff_sameRay hx]
+  exact isConnected_Ici.image _ (continuous_id.smul continuous_const).continuousOn
+
+/-- The set of nonzero vectors in the same ray as the nonzero vector `x` is connected. -/
+theorem isConnected_setOf_sameRay_and_ne_zero {x : E} (hx : x ≠ 0) :
+    IsConnected { y | SameRay ℝ x y ∧ y ≠ 0 } := by
+  simp_rw [← exists_pos_left_iff_sameRay_and_ne_zero hx]
+  exact isConnected_Ioi.image _ (continuous_id.smul continuous_const).continuousOn
 
 end SeminormedAddCommGroup
