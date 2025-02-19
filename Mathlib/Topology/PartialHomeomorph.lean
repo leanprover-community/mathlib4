@@ -652,9 +652,7 @@ theorem refl_symm : (PartialHomeomorph.refl X).symm = PartialHomeomorph.refl X :
 /-! const: `PartialEquiv.const` as a partial homeomorphism -/
 section const
 
-variable {a : X} {b : Y}
-
-def const (ha : IsOpen {a}) (hb : IsOpen {b}) : PartialHomeomorph X Y where
+def const {a : X} {b : Y} (ha : IsOpen {a}) (hb : IsOpen {b}) : PartialHomeomorph X Y where
   toPartialEquiv := PartialEquiv.single a b
   open_source := ha
   open_target := hb
