@@ -169,9 +169,8 @@ lemma IsLoop.of_isRestriction (he : N.IsLoop e) (hNM : N ≤r M) : M.IsLoop e :=
 lemma IsLoop.isLoop_isRestriction (he : M.IsLoop e) (hNM : N ≤r M) (heN : e ∈ N.E) : N.IsLoop e :=
   (hNM.isLoop_iff).2 ⟨heN, he⟩
 
-@[simp]
 lemma map_loops {f : α → β} {hf : InjOn f M.E} : (M.map f hf).loops = f '' M.loops := by
-  rw [loops, map_closure_eq, preimage_empty]
+  simp
 
 @[simp]
 lemma map_isLoop_iff {f : α → β} {hf : InjOn f M.E} (he : e ∈ M.E := by aesop_mat) :
@@ -182,7 +181,6 @@ lemma map_isLoop_iff {f : α → β} {hf : InjOn f M.E} (he : e ∈ M.E := by ae
 lemma mapEmbedding_isLoop_iff {f : α ↪ β} : (M.mapEmbedding f).IsLoop (f e) ↔ M.IsLoop e := by
   simp [mapEmbedding, isLoop_iff, isLoop_iff, map_closure_eq, preimage_empty]
 
-@[simp]
 lemma comap_loops {M : Matroid β} {f : α → β} : (M.comap f).loops = f ⁻¹' M.loops := by
    rw [loops, comap_closure_eq, image_empty]
 
