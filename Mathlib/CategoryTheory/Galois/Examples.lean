@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Christian Merten, Naoya Umezaki
+Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.Galois.Basic
 import Mathlib.CategoryTheory.Action.Concrete
