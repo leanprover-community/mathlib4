@@ -47,7 +47,7 @@ lemma translate_translate (a b : G) (f : G → α) : τ a (τ b f) = τ (a + b) 
 
 lemma translate_add (a b : G) (f : G → α) : τ (a + b) f = τ a (τ b f) := by ext; simp [sub_sub]
 
-/-- See `translate_add`-/
+/-- See `translate_add` -/
 lemma translate_add' (a b : G) (f : G → α) : τ (a + b) f = τ b (τ a f) := by
   rw [add_comm, translate_add]
 

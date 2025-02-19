@@ -243,7 +243,7 @@ end InnerProductSpace
 
 section NoInnerProduct
 
-variable (f) [AddCommGroup V] [TopologicalSpace V] [TopologicalAddGroup V] [T2Space V]
+variable (f) [AddCommGroup V] [TopologicalSpace V] [IsTopologicalAddGroup V] [T2Space V]
   [MeasurableSpace V] [BorelSpace V] [Module ℝ V] [ContinuousSMul ℝ V] [FiniteDimensional ℝ V]
 
 /-- Riemann-Lebesgue lemma for functions on a finite-dimensional real vector space, formulated via

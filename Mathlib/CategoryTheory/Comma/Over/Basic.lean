@@ -232,7 +232,7 @@ def mapCongr {X Y : T} (f g : X ⟶ Y) (h : f = g) :
   NatIso.ofComponents (fun A ↦ eqToIso (by rw [h]))
 
 variable (T) in
-/-- The functor defined by the over categories.-/
+/-- The functor defined by the over categories -/
 @[simps] def mapFunctor : T ⥤ Cat where
   obj X := Cat.of (Over X)
   map := map
@@ -594,7 +594,7 @@ def mapCongr {X Y : T} (f g : X ⟶ Y) (h : f = g) :
   NatIso.ofComponents (fun A ↦ eqToIso (by rw [h]))
 
 variable (T) in
-/-- The functor defined by the under categories.-/
+/-- The functor defined by the under categories -/
 @[simps] def mapFunctor : Tᵒᵖ  ⥤ Cat where
   obj X := Cat.of (Under X.unop)
   map f := map f.unop
