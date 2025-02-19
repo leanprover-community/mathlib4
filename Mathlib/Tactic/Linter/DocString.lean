@@ -14,7 +14,7 @@ namespace Mathlib.Linter
 The "DocString" linter validates style conventions regarding doc-string formatting.
 -/
 register_option linter.style.docString : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the style.docString linter"
 }
 
