@@ -28,8 +28,17 @@ instead of `e.toFun x` and `e.invFun x`.
 * `PartialHomeomorph.const`: a partial homeomorphism which is a constant map,
 whose source and target are necessarily singleton sets
 * `PartialHomeomorph.ofSet`: the identity on a set `s`
+* `PartialHomeomorph.restr s`: restrict a partial homeomorphism `e` to `e.source ∩ interior s`
 * `PartialHomeomorph.EqOnSource`: equivalence relation describing the "right" notion of equality
   for partial homeomorphisms
+* `PartialHomeomorph.prod`: the product of two partial homeomorphisms,
+  as a partial homeomorphism on the product space
+* `PartialHomeomorph.pi`: the product of a finite family of partial homeomorphisms
+* `PartialHomeomorph.disjointUnion`: combine two partial homeomorphisms with disjoint sources
+  and disjoint targets
+* `PartialHomeomorph.lift_openEmbedding`: extend a partial homeomorphism `X → Y`
+  under an open embedding `X → X'`, to a partial homeomorphism `X' → Z`.
+  (This is used to define the disjoint union of charted spaces.)
 
 ## Implementation notes
 
