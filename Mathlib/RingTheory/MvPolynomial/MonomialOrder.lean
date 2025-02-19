@@ -489,14 +489,14 @@ theorem degree_pow_of_pow_leadingCoeff_ne_zero {f : MvPolynomial σ R} {n : ℕ}
   apply m.toSyn.injective
   apply le_antisymm (m.degree_pow_le n)
   apply le_degree
-  rw [mem_support_iff, coeff_pow_of_smul_degree]
+  rw [mem_support_iff, coeff_pow_nsmul_degree]
   exact hf
 
 /-- Leading coefficient of powers -/
 theorem leadingCoeff_pow_of_pow_leadingCoeff_ne_zero {f : MvPolynomial σ R} {n : ℕ}
     (hf : m.leadingCoeff f ^ n ≠ 0) :
     m.leadingCoeff (f ^ n) = m.leadingCoeff f ^ n := by
-  rw [leadingCoeff, degree_pow_of_pow_leadingCoeff_ne_zero hf, coeff_pow_of_smul_degree]
+  rw [leadingCoeff, degree_pow_of_pow_leadingCoeff_ne_zero hf, coeff_pow_nsmul_degree]
 
 protected theorem Monic.pow {f : MvPolynomial σ R} {n : ℕ} (hf : m.Monic f) :
     m.Monic (f ^ n) := by
@@ -522,7 +522,7 @@ theorem degree_pow [IsReduced R] (f : MvPolynomial σ R) (n : ℕ) :
 /-- Leading coefficient of powers (in a reduced ring) -/
 theorem leadingCoeff_pow [IsReduced R] (f : MvPolynomial σ R) (n : ℕ) :
     m.leadingCoeff (f ^ n) = m.leadingCoeff f ^ n := by
-  rw [leadingCoeff, degree_pow, coeff_pow_of_smul_degree]
+  rw [leadingCoeff, degree_pow, coeff_pow_nsmul_degree]
 
 theorem degree_smul_le {r : R} {f : MvPolynomial σ R} :
     m.degree (r • f) ≼[m] m.degree f := by
