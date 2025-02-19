@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Junyan Xu
 -/
 import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Homotopy.Basic
+import Mathlib.Topology.Path
 
 /-!
 # H-spaces
@@ -117,17 +117,17 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
       exact Prod.ext (HSpace.hmulE.2 t x h.1) (HSpace.hmulE.2 t y h.2)
 
 
-namespace TopologicalGroup
+namespace IsTopologicalGroup
 
 /-- The definition `toHSpace` is not an instance because its additive version would
 lead to a diamond since a topological field would inherit two `HSpace` structures, one from the
 `MulOneClass` and one from the `AddZeroClass`. In the case of a group, we make
-`TopologicalGroup.hSpace` an instance."-/
+`IsTopologicalGroup.hSpace` an instance."-/
 @[to_additive
       "The definition `toHSpace` is not an instance because it comes together with a
       multiplicative version which would lead to a diamond since a topological field would inherit
       two `HSpace` structures, one from the `MulOneClass` and one from the `AddZeroClass`.
-      In the case of an additive group, we make `TopologicalAddGroup.hSpace` an instance."]
+      In the case of an additive group, we make `IsTopologicalAddGroup.hSpace` an instance."]
 def toHSpace (M : Type u) [MulOneClass M] [TopologicalSpace M] [ContinuousMul M] : HSpace M where
   hmul := ⟨Function.uncurry Mul.mul, continuous_mul⟩
   e := 1
@@ -136,23 +136,23 @@ def toHSpace (M : Type u) [MulOneClass M] [TopologicalSpace M] [ContinuousMul M]
   hmulE := (HomotopyRel.refl _ _).cast rfl (by ext1; apply mul_one)
 
 @[to_additive]
-instance (priority := 600) hSpace (G : Type u) [TopologicalSpace G] [Group G] [TopologicalGroup G] :
-    HSpace G :=
+instance (priority := 600) hSpace (G : Type u) [TopologicalSpace G] [Group G]
+    [IsTopologicalGroup G] : HSpace G :=
   toHSpace G
 
-theorem one_eq_hSpace_e {G : Type u} [TopologicalSpace G] [Group G] [TopologicalGroup G] :
+theorem one_eq_hSpace_e {G : Type u} [TopologicalSpace G] [Group G] [IsTopologicalGroup G] :
     (1 : G) = HSpace.e :=
   rfl
 
 /- In the following example we see that the H-space structure on the product of two topological
 groups is definitionally equally to the product H-space-structure of the two groups. -/
-example {G G' : Type u} [TopologicalSpace G] [Group G] [TopologicalGroup G] [TopologicalSpace G']
-    [Group G'] [TopologicalGroup G'] : TopologicalGroup.hSpace (G × G') = HSpace.prod G G' := by
+example {G G' : Type u} [TopologicalSpace G] [Group G] [IsTopologicalGroup G] [TopologicalSpace G']
+    [Group G'] [IsTopologicalGroup G'] : IsTopologicalGroup.hSpace (G × G') = HSpace.prod G G' := by
   simp only [HSpace.prod]
   rfl
 
 
-end TopologicalGroup
+end IsTopologicalGroup
 
 namespace unitInterval
 

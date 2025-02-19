@@ -162,7 +162,7 @@ namespace IsPrecomplete
 
 instance bot : IsPrecomplete (⊥ : Ideal R) M := by
   refine ⟨fun f hf => ⟨f 1, fun n => ?_⟩⟩
-  cases' n with n
+  rcases n with - | n
   · rw [pow_zero, Ideal.one_eq_top, top_smul]
     exact SModEq.top
   specialize hf (Nat.le_add_left 1 n)
@@ -451,7 +451,7 @@ theorem mk_eq_mk {m n : ℕ} (hmn : m ≤ n) (f : AdicCauchySequence I M) :
 
 end AdicCauchySequence
 
-/-- The `I`-adic cauchy condition can be checked on successive `n`.-/
+/-- The `I`-adic cauchy condition can be checked on successive `n`. -/
 theorem isAdicCauchy_iff (f : ℕ → M) :
     IsAdicCauchy I M f ↔ ∀ n, f n ≡ f (n + 1) [SMOD (I ^ n • ⊤ : Submodule R M)] := by
   constructor

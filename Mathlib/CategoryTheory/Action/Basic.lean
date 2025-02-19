@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.Grp.Basic
-import Mathlib.CategoryTheory.SingleObj
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.Algebra.Ring.PUnit
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Conj
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.SingleObj
 
 /-!
 # `Action V G`, the category of actions of a monoid `G` inside some category `V`.
@@ -335,6 +336,26 @@ def resComp {G H K : MonCat} (f : G ⟶ H) (g : H ⟶ K) : res V g ⋙ res V f �
 
 -- TODO promote `res` to a pseudofunctor from
 -- the locally discrete bicategory constructed from `Monᵒᵖ` to `Cat`, sending `G` to `Action V G`.
+
+variable {G H : MonCat.{u}} (f : G ⟶ H)
+
+/-- The functor from `Action V H` to `Action V G` induced by a morphism `f : G → H` is faithful. -/
+instance : (res V f).Faithful where
+  map_injective {X} {Y} g₁ g₂ h := by
+    ext
+    rw [← res_map_hom _ _ g₁, ← res_map_hom _ _ g₂, h]
+
+/-- The functor from `Action V H` to `Action V G` induced by a morphism `f : G → H` is full
+if `f` is surjective. -/
+lemma full_res (f_surj : Function.Surjective f) : (res V f).Full where
+  map_surjective {X} {Y} g := by
+    use ⟨g.hom, fun h ↦ ?_⟩
+    · ext
+      simp
+    · obtain ⟨a, rfl⟩ := f_surj h
+      have : X.ρ (f a) = ((res V f).obj X).ρ a := rfl
+      rw [this, g.comm a]
+      simp
 
 end Action
 

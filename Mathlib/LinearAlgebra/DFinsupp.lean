@@ -641,7 +641,6 @@ variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
 variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
 variable {γ : ι → Type*} [DecidableEq ι]
 
-
 @[simp]
 theorem map_dfinsupp_sumAddHom [∀ i, AddZeroClass (γ i)] (f : M ≃ₛₗ[τ₁₂] M₂) (t : Π₀ i, γ i)
     (g : ∀ i, γ i →+ M) :

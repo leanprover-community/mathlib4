@@ -159,7 +159,7 @@ theorem solution_nonzero {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha�
 theorem solution_spec' {a₁ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (a₂ : 𝕎 k) :
     solution p a₁ a₂ ^ p * a₁.coeff 0 = solution p a₁ a₂ * a₂.coeff 0 := by
   have := solution_spec p a₁ a₂
-  cases' Nat.exists_eq_succ_of_ne_zero hp.out.ne_zero with q hq
+  obtain ⟨q, hq⟩ := Nat.exists_eq_succ_of_ne_zero hp.out.ne_zero
   have hq' : q = p - 1 := by simp only [hq, tsub_zero, Nat.succ_sub_succ_eq_sub]
   conv_lhs =>
     congr
@@ -203,7 +203,7 @@ theorem frobeniusRotation_nonzero {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠
 theorem frobenius_frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha₂ : a₂.coeff 0 ≠ 0) :
     frobenius (frobeniusRotation p ha₁ ha₂) * a₁ = frobeniusRotation p ha₁ ha₂ * a₂ := by
   ext n
-  cases' n with n
+  rcases n with - | n
   · simp only [WittVector.mul_coeff_zero, WittVector.coeff_frobenius_charP, frobeniusRotation,
       frobeniusRotationCoeff]
     apply solution_spec' _ ha₁

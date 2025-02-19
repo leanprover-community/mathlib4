@@ -79,7 +79,7 @@ end
 
 /-- The functor `Type u ⥤ SheafOfModules.{u} R` which sends a type `I` to
 `free I` which is a coproduct indexed by `I` of copies of `R` (thought as a
-presheaf of modules over itself). --/
+presheaf of modules over itself). -/
 noncomputable def freeFunctor : Type u ⥤ SheafOfModules.{u} R where
   obj := free
   map f := freeMap f
