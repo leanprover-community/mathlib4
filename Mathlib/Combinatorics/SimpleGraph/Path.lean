@@ -1196,6 +1196,7 @@ lemma Graph_adj {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V} (hu : u
     (hv : v ∈ C) : C.Graph.Adj ⟨u, hu⟩ ⟨v, hv⟩ ↔ G.Adj u v := by
   simp [Graph]
 
+/-- Get the walk between two vertices in a connected component from a walk in the original graph. -/
 private def Graph_walk' {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
     (hu : u ∈ C) (hv : v ∈ C) (p : G.Walk u v) : C.Graph.Walk ⟨u, hu⟩ ⟨v, hv⟩ := by
   cases p with
