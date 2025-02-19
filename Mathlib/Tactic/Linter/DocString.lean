@@ -26,38 +26,33 @@ register_option linter.style.docString : Bool := {
 namespace Style
 
 /-- Checks whether a declaration docstring `input` conforms to mathlib's style guidelines
-(or, at least the syntactically checkable parts). -/
-def isGoodDocstring (initialWhitespace input : String) : IO Bool := do
+(or, at least the syntactically checkable parts).
+If the doc-string is not well-formed, return `some msg` where `msg` describes what went wrong,
+otherwise return `none`. -/
+def checkDocstring (initialWhitespace input : String) : Option String := do
   match initialWhitespace with
-  | "\n" | " " => {let n := 42}
+  | "\n" | " " => {let _n := 37}
   | "" =>
-    IO.eprintln s!"error: doc-string \"{input}\" should start with a space or newline"
-    return false
+    return s!"error: doc-string \"{input}\" should start with a space or newline"
   | _ =>
     -- In any other cases, we have extraneous whitespace.
-    IO.eprintln s!"error: doc-string \"{input}\" should start with a single space"
-    return false
+    return s!"error: doc-string \"{input}\" should start with a single space"
 
   -- Check the ending of the doc-string: a new line or exactly one space.
   if !(input.endsWith "\n" || input.endsWith " ") then
-    IO.eprintln s!"error: doc-string \"{input}\" end start with a space or newline"
-    return false
+    return s!"error: doc-string \"{input}\" end start with a space or newline"
   else if (input.endsWith "  ") then
-    IO.eprintln s!"error: doc-string \"{input}\" should start resp. end with at most a single space"
-    return false
+    return s!"error: doc-string \"{input}\" should start resp. end with at most a single space"
   -- Catch misleading indentation.
   let lines := (input.split (· == '\n')).drop 0
   if lines.any (fun l ↦ l.startsWith " ") then
-    IO.eprintln s!"error: subsequent lines in the doc-string \"{input}\" should not be indented"
-    return false
+    return s!"error: subsequent lines in the doc-string \"{input}\" should not be indented"
   if input.endsWith "\"" then
-    IO.eprintln s!"error: docstring \"{input}\" ends with a single quote"
-    return false
+    return s!"error: docstring \"{input}\" ends with a single quote"
   else if input.trimRight.endsWith "," then
-    IO.eprintln s!"error: docstring \"{input}\" ends with a comma"
-    return false
-  -- This list of checks is not exhaustive, but a good start.
-  return true
+    return s!"error: docstring \"{input}\" ends with a comma"
+  -- -- This list of checks is not exhaustive, but a good start.
+  none
 
 
 @[inherit_doc Mathlib.Linter.linter.style.docString]
@@ -78,8 +73,8 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let start := startSubstring.toString
   dbg_trace "'{start}{docString}'"
   dbg_trace "just the string is '{docString}'"
-  if !(← isGoodDocstring start docString) then
-    Linter.logLint linter.style.docString docStx m!"Something is unformatted here?"
+  if let some msg := checkDocstring start docString then
+    Linter.logLint linter.style.docString docStx msg
 
 initialize addLinter docStringLinter
 
