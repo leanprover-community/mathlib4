@@ -20,8 +20,6 @@ variable {m n : ℕ} {s : Finset ℕ}
 private lemma Icc_eq_insert_of_Icc_succ_eq (hmn : m ≤ n) (hs : Icc (m + 1) n = s) :
     Icc m n = insert m s := by rw [← hs, Nat.Icc_insert_succ_left hmn]
 
-private lemma Icc_of_eq (hmn : m = n) : Icc m n = {m} := by simp [hmn]
-
 private lemma Ico_eq_of_Icc_pred_eq (hn : n ≠ 0) (hs : Icc m (n - 1) = s) : Ico m n = s := by
   rw [← hs, Nat.Icc_pred_right _ hn.bot_lt]
 
@@ -48,8 +46,8 @@ partial def evalFinsetIccNat {em eml en enl : Q(ℕ)} (m n : ℕ) (hm : Q(IsNat 
   -- If `m = n`, then `Icc m n = {m}`. We handle this case separately because `insert m ∅` is
   -- not synteq to `{m}`.
   if m = n then
-    let hmn ← mkDecideProofQq q($em = $en)
-    return ⟨q({$em}), q(Icc_of_eq $hmn)⟩
+    have : $em =Q $en := ⟨⟩
+    return ⟨q({$em}), q(Icc_self _)⟩
   -- If `m < n`, then `Icc m n = insert m (Icc m n)`.
   else if m < n then
     let hmn ← mkDecideProofQq q($em ≤ $en)
