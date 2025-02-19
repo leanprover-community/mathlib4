@@ -150,11 +150,19 @@ abbrev toNerve₂.mk.naturalityProperty {X : SSet.Truncated.{u} 2}  {C : Type u}
     MorphismProperty (SimplexCategory.Truncated 2) :=
   (MorphismProperty.naturalityProperty (fun n => toNerve₂.mk.app F n.unop)).unop
 
+lemma nerve.σ_zero_eq_mk_id {C : Type u} [SmallCategory C] (x : C) :
+    (nerve C).σ (0 : Fin 1) (.mk₀ x) = .mk₁ (𝟙 x) :=
+  ComposableArrows.ext₁ rfl rfl (by dsimp [nerve]; aesop)
+
 lemma toNerve₂.mk_naturality_σ00 {X : SSet.Truncated.{u} 2}  {C : Type u} [SmallCategory C]
     (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C) :
     toNerve₂.mk.naturalityProperty F (σ₂ (n := 0) 0) := by
   ext x
-  dsimp only [Nat.reduceAdd, types_comp_apply, mk.app_one]
+  refine Eq.trans ?_ (nerve.σ_zero_eq_mk_id (C := C) (F.obj x)).symm
+  have := ReflPrefunctor.map_id F x
+  dsimp at this ⊢
+  rw [← this]
+  simp only [← OneTruncation₂.id_edge x]
   fapply ComposableArrows.ext₁
   · simp only [ComposableArrows.mk₁_obj, ComposableArrows.Mk₁.obj]
     congr 1
@@ -170,12 +178,12 @@ lemma toNerve₂.mk_naturality_σ00 {X : SSet.Truncated.{u} 2}  {C : Type u} [Sm
     apply SimplexCategory.hom_zero_zero
   · refine eq_of_heq <|
       (?_ : HEq _ (ComposableArrows.mk₁ (C := C) (𝟙rq (F.obj x))).hom).trans ?_
-    · have : ∀ x' a b (h1 : X.map (δ₂ 1).op x' = a) (h2 : X.map (δ₂ 0).op x' = b),
+    · simp only [ComposableArrows.mk₁_map, ComposableArrows.Mk₁.map]
+      have : ∀ x' a b (h1 : X.map (δ₂ 1).op x' = a) (h2 : X.map (δ₂ 0).op x' = b),
         x = a → x = b → x' = X.map (σ₂ (n := 0) 0).op x →
-        HEq (ComposableArrows.mk₁ (C := C) (F.map ⟨x', h1, h2⟩)).hom
-          (ComposableArrows.mk₁ (C := C) (𝟙rq (F.obj x))).hom := by
+        HEq (F.map ⟨x', h1, h2⟩) (𝟙rq (F.obj x)) := by
         rintro _ _ _ _ _ rfl rfl rfl
-        exact congr_arg_heq (fun a => (ComposableArrows.mk₁ (C := C) a).hom) (F.map_id x)
+        exact heq_of_eq (F.map_id x)
       apply this
       · simp only [SimplexCategory.len_mk]
         refine congr_fun (?_ : X.map _ ≫ X.map _ = 𝟙 _).symm x
@@ -185,8 +193,10 @@ lemma toNerve₂.mk_naturality_σ00 {X : SSet.Truncated.{u} 2}  {C : Type u} [Sm
         refine congr_fun (?_ : X.map _ ≫ X.map _ = 𝟙 _).symm x
         rw [← map_comp, ← map_id]; congr 1
         exact Quiver.Hom.unop_inj (SimplexCategory.hom_zero_zero _)
-      · simp
-    · simp; rfl
+      · simp only [OneTruncation₂.id_edge]
+    · simp only [heq_eqToHom_comp_iff, heq_comp_eqToHom_iff, ComposableArrows.mk₁_map,
+      ComposableArrows.Mk₁.map,  heq_eq_eq]
+      exact (Eq.symm this)
 
 lemma toNerve₂.mk_naturality_δ0i {X : SSet.Truncated.{u} 2}  {C : Type u} [SmallCategory C]
     (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C) (i : Fin 2) :
