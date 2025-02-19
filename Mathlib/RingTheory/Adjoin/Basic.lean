@@ -7,7 +7,7 @@ import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Algebra.Subalgebra.Prod
 import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.Algebra.Module.Submodule.EqLocus
-import Mathlib.LinearAlgebra.Basis.Mk
+import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.LinearAlgebra.Prod
 /-!
