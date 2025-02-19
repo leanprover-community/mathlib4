@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
 import Mathlib.Algebra.Algebra.Basic
-import Mathlib.LinearAlgebra.Basis.Mk
+import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 # Bases of submodules
