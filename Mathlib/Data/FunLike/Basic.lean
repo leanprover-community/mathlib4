@@ -230,4 +230,8 @@ protected theorem congr_arg (f : F) {x y : α} (h₂ : x = y) : f x = f y :=
 
 end DFunLike
 
+/-- Functions are `FunLike`. -/
+instance : FunLike (α → β) α β :=
+  ⟨id, Function.injective_id⟩
+
 end NonDependent
