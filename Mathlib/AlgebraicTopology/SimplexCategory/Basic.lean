@@ -365,14 +365,17 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
     σ (Fin.castSucc i) ≫ σ j = σ j.succ ≫ σ i := by
   ext k : 3
   dsimp [σ]
-  cases' k using Fin.lastCases with k
-  · simp only [len_mk, Fin.predAbove_right_last]
-  · cases' k using Fin.cases with k
-    · rw [Fin.castSucc_zero, Fin.predAbove_of_le_castSucc _ 0 (Fin.zero_le _),
+  cases k using Fin.lastCases with
+  | last => simp only [len_mk, Fin.predAbove_right_last]
+  | cast k =>
+    cases k using Fin.cases with
+    | zero =>
+      rw [Fin.castSucc_zero, Fin.predAbove_of_le_castSucc _ 0 (Fin.zero_le _),
       Fin.predAbove_of_le_castSucc _ _ (Fin.zero_le _), Fin.castPred_zero,
       Fin.predAbove_of_le_castSucc _ 0 (Fin.zero_le _),
       Fin.predAbove_of_le_castSucc _ _ (Fin.zero_le _)]
-    · rcases le_or_lt i k with (h | h)
+    | succ k =>
+      rcases le_or_lt i k with (h | h)
       · simp_rw [Fin.predAbove_of_castSucc_lt i.castSucc _ (Fin.castSucc_lt_castSucc_iff.mpr
         (Fin.castSucc_lt_succ_iff.mpr h)), ← Fin.succ_castSucc, Fin.pred_succ,
         Fin.succ_predAbove_succ]
@@ -408,11 +411,13 @@ lemma factor_δ_spec {m n : ℕ} (f : ⦋m⦌ ⟶ ⦋n+1⦌) (j : Fin (n+2))
   ext k : 3
   specialize hj k
   dsimp [factor_δ, δ, σ]
-  cases' j using cases with j
-  · rw [predAbove_of_le_castSucc _ _ (zero_le _), castPred_zero, predAbove_of_castSucc_lt 0 _
+  cases j using cases with
+  | zero =>
+    rw [predAbove_of_le_castSucc _ _ (zero_le _), castPred_zero, predAbove_of_castSucc_lt 0 _
     (castSucc_zero ▸ pos_of_ne_zero hj),
     zero_succAbove, succ_pred]
-  · rw [predAbove_of_castSucc_lt 0 _ (castSucc_zero ▸ succ_pos _), pred_succ]
+  | succ j =>
+    rw [predAbove_of_castSucc_lt 0 _ (castSucc_zero ▸ succ_pos _), pred_succ]
     rcases hj.lt_or_lt with (hj | hj)
     · rw [predAbove_of_le_castSucc j _]
       swap

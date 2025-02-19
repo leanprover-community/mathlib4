@@ -118,7 +118,7 @@ theorem tendsto_verticalIntegral (hb : 0 < b.re) (c : ℝ) :
   refine (tendsto_exp_atBot.comp (tendsto_neg_atTop_atBot.comp ?_)).const_mul _
   apply tendsto_atTop_add_const_right
   simp_rw [sq, ← mul_assoc, ← sub_mul]
-  refine Tendsto.atTop_mul_atTop (tendsto_atTop_add_const_right _ _ ?_) tendsto_id
+  refine Tendsto.atTop_mul_atTop₀ (tendsto_atTop_add_const_right _ _ ?_) tendsto_id
   exact (tendsto_const_mul_atTop_of_pos hb).mpr tendsto_id
 
 theorem integrable_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :

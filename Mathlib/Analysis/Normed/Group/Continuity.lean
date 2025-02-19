@@ -80,15 +80,15 @@ theorem tendsto_norm' {x : E} : Tendsto (fun a => ‖a‖) (𝓝 x) (𝓝 ‖x�
 theorem tendsto_norm_one : Tendsto (fun a : E => ‖a‖) (𝓝 1) (𝓝 0) := by
   simpa using tendsto_norm_div_self (1 : E)
 
-@[to_additive (attr := continuity) continuous_norm]
+@[to_additive (attr := continuity, fun_prop) continuous_norm]
 theorem continuous_norm' : Continuous fun a : E => ‖a‖ := by
   simpa using continuous_id.dist (continuous_const : Continuous fun _a => (1 : E))
 
-@[to_additive (attr := continuity) continuous_nnnorm]
+@[to_additive (attr := continuity, fun_prop) continuous_nnnorm]
 theorem continuous_nnnorm' : Continuous fun a : E => ‖a‖₊ :=
   continuous_norm'.subtype_mk _
 
-@[to_additive (attr := continuity) continuous_enorm]
+@[to_additive (attr := continuity, fun_prop) continuous_enorm]
 lemma continuous_enorm' : Continuous fun a : E ↦ ‖a‖ₑ :=
   ENNReal.isOpenEmbedding_coe.continuous.comp continuous_nnnorm'
 

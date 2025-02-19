@@ -1184,7 +1184,7 @@ noncomputable def equivProdDFinsupp [∀ i, Zero (α i)] :
   toFun f := (f none, comapDomain some (Option.some_injective _) f)
   invFun f := f.2.extendWith f.1
   left_inv f := by
-    ext i; cases' i with i
+    ext i; obtain - | i := i
     · rw [extendWith_none]
     · rw [extendWith_some, comapDomain_apply]
   right_inv x := by

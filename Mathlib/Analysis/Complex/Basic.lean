@@ -150,7 +150,7 @@ theorem tendsto_abs_cocompact_atTop : Tendsto abs (cocompact ℂ) atTop :=
 /-- The `normSq` function on `ℂ` is proper. -/
 theorem tendsto_normSq_cocompact_atTop : Tendsto normSq (cocompact ℂ) atTop := by
   simpa [mul_self_abs]
-    using tendsto_abs_cocompact_atTop.atTop_mul_atTop tendsto_abs_cocompact_atTop
+    using tendsto_abs_cocompact_atTop.atTop_mul_atTop₀ tendsto_abs_cocompact_atTop
 
 open ContinuousLinearMap
 
