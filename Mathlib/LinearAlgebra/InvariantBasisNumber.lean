@@ -101,7 +101,6 @@ free module, rank, Orzech property, (strong) rank condition, invariant basis num
 
 -/
 
-
 noncomputable section
 
 open Function
@@ -229,8 +228,6 @@ theorem card_eq_of_linearEquiv {α β : Type*} [Fintype α] [Fintype β] (f : (�
   eq_of_fin_equiv R
     ((LinearEquiv.funCongrLeft R R (Fintype.equivFin α)).trans f ≪≫ₗ
       (LinearEquiv.funCongrLeft R R (Fintype.equivFin β)).symm)
--- Porting note: this was not well-named because `lequiv` could mean other things
--- (e.g., `localEquiv`)
 
 theorem nontrivial_of_invariantBasisNumber : Nontrivial R := by
   by_contra h
@@ -308,9 +305,13 @@ attribute [local instance] Ideal.Quotient.field
 
 /-- Nontrivial commutative rings have the invariant basis number property.
 
-In fact, any nontrivial commutative ring satisfies the strong rank condition, see
-`commRing_strongRankCondition`. We prove this instance separately to avoid dependency on
-`LinearAlgebra.Charpoly.Basic`. -/
+There are two stronger results in mathlib: `commRing_strongRankCondition`, which says that any
+nontrivial commutative ring satisfies the strong rank condition, and
+`rankCondition_of_nontrivial_of_commSemiring`, which says that any nontrivial commutative semiring
+satisfies the rank condition.
+
+We prove this instance separately to avoid dependency on
+`Mathlib.LinearAlgebra.Charpoly.Basic` or `Mathlib.LinearAlgebra.Matrix.ToLin`. -/
 instance (priority := 100) invariantBasisNumber_of_nontrivial_of_commRing {R : Type u} [CommRing R]
     [Nontrivial R] : InvariantBasisNumber R :=
   ⟨fun e =>

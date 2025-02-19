@@ -127,8 +127,6 @@ variable [IdemSemiring α] {a b c : α}
 theorem add_eq_sup (a b : α) : a + b = a ⊔ b :=
   IdemSemiring.add_eq_sup _ _
 
--- Porting note: This simp theorem often leads to timeout when `α` has rich structure.
---               So, this theorem should be scoped.
 scoped[Computability] attribute [simp] add_eq_sup
 
 theorem add_idem (a : α) : a + a = a := by simp
