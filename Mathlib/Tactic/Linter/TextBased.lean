@@ -329,3 +329,30 @@ def lintModules (nolints : Array String) (moduleNames : Array Lean.Name) (style 
   return numberErrorFiles
 
 end Mathlib.Linter.TextBased
+
+
+/-- Checks whether `input` is a declaration doc-string conforming syntactically
+to mathlib's style guidelines. -/
+def isGoodDocstring (input : String) : IO Bool := do
+  if !input.startsWith "/--" || !input.endsWith "-/" then
+    IO.eprintln s!"error: {input} is not a valid doc-string"
+    return false
+
+  if !(input.startsWith "/--\n" || input.startsWith "/-- ") then
+    IO.eprintln s!"error: doc-string \"{input}\" should start with a space or newline"
+    return false
+  if !(input.endsWith "\n-/" || input.startsWith " -/") then
+    IO.eprintln s!"error: doc-string \"{input}\" end start with a space or newline"
+    return false
+  -- Catch extraneous spaces.
+  if (input.startsWith "/--  " || input.endsWith "  -/") then
+    IO.eprintln s!"error: doc-string \"{input}\" should start resp. end with at most a single space"
+    return false
+  -- Catch misleading indentation.
+  let lines := (input.split (· == '\n')).drop 0
+  if lines.any (fun l ↦ l.startsWith " ") then
+    IO.eprintln s!"error: subsequent lines in the doc-string \"{input}\" should not be indented"
+    return false
+  -- This list of checks is not exhaustive, but a good start.
+  -- Future ideas: doc-strings ending with a single quote or a comma
+  return true
