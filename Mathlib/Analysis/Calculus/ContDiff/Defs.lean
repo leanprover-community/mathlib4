@@ -696,7 +696,7 @@ theorem ContDiffWithinAt.eventually_hasFTaylorSeriesUpToOn {f : E → F} {s : Se
 
 /-- On a set with unique differentiability, an analytic function is automatically `C^ω`, as its
 successive derivatives are also analytic. This does not require completeness of the space. See
-also `AnalyticOn.contDiffOn_of_completeSpace`.-/
+also `AnalyticOn.contDiffOn_of_completeSpace`. -/
 theorem AnalyticOn.contDiffOn (h : AnalyticOn 𝕜 f s) (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 n f s := by
   suffices ContDiffOn 𝕜 ω f s from this.of_le le_top

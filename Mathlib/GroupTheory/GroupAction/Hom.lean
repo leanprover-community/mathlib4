@@ -85,7 +85,7 @@ structure MulActionHom where
 /- Porting note: local notation given a name, conflict with Algebra.Hom.GroupAction
  see https://github.com/leanprover/lean4/issues/2000 -/
 /-- `φ`-equivariant functions `X → Y`,
-where `φ : M → N`, where `M` and `N` act on `X` and `Y` respectively.-/
+where `φ : M → N`, where `M` and `N` act on `X` and `Y` respectively. -/
 notation:25 (name := «MulActionHomLocal≺») X " →ₑ[" φ:25 "] " Y:0 => MulActionHom φ X Y
 
 /-- `M`-equivariant functions `X → Y` with respect to the action of `M`.

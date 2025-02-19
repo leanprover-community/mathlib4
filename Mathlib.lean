@@ -2348,6 +2348,7 @@ import Mathlib.CategoryTheory.Subpresheaf.Equalizer
 import Mathlib.CategoryTheory.Subpresheaf.Image
 import Mathlib.CategoryTheory.Subpresheaf.OfSection
 import Mathlib.CategoryTheory.Subpresheaf.Sieves
+import Mathlib.CategoryTheory.Subpresheaf.Subobject
 import Mathlib.CategoryTheory.Subterminal
 import Mathlib.CategoryTheory.Sums.Associator
 import Mathlib.CategoryTheory.Sums.Basic
@@ -2921,6 +2922,7 @@ import Mathlib.Data.NNRat.Order
 import Mathlib.Data.NNReal.Basic
 import Mathlib.Data.NNReal.Defs
 import Mathlib.Data.NNReal.Star
+import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Data.Nat.BitIndices
 import Mathlib.Data.Nat.Bits
@@ -2950,7 +2952,6 @@ import Mathlib.Data.Nat.Choose.Multinomial
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Choose.Vandermonde
 import Mathlib.Data.Nat.Count
-import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Nat.Digits
 import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.EvenOddRec
@@ -2971,6 +2972,7 @@ import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Data.Nat.Hyperoperation
+import Mathlib.Data.Nat.Init
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Nat.Log
 import Mathlib.Data.Nat.MaxPowDiv

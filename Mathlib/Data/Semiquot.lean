@@ -24,9 +24,9 @@ predicate `S`) but are not completely determined.
   of nondeterministic functions. -/
   -- Porting note: removed universe parameter
 structure Semiquot (α : Type*) where mk' ::
-  /-- Set containing some element of `α`-/
+  /-- Set containing some element of `α` -/
   s : Set α
-  /-- Assertion of non-emptiness via `Trunc`-/
+  /-- Assertion of non-emptiness via `Trunc` -/
   val : Trunc s
 
 namespace Semiquot
