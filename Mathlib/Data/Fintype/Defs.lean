@@ -137,11 +137,11 @@ def elabFinsetBuilderSetOf : TermElab
     elabTerm (← `(Finset.filter (fun $x:ident ↦ $p) (singleton $a)ᶜ)) expectedType?
   | _, _ => throwUnsupportedSyntax
 
-/-- Delaborator for `Finset.filter`. The `pp.piBinderTypes` option controls whether
+/-- Delaborator for `Finset.filter`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the filter is over `Finset.univ`. -/
 @[app_delab Finset.filter] def delabFinsetFilter : Delab :=
   whenPPOption getPPNotation do
-  let ppDomain ← getPPOption getPPPiBinderTypes
+  let ppDomain ← getPPOption getPPFunBinderTypes
   let #[_, p, _, t] := (← getExpr).getAppArgs | failure
   guard p.isLambda
   let i ← withNaryArg 1 <| withBindingBodyUnusedName fun i => pure ⟨i⟩
