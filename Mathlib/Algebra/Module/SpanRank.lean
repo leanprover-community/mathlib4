@@ -6,7 +6,6 @@ Authors: Wanyi He, Jiedong Jiang, Xuchun Li, Jingting Wang, Andrew Yang
 import Mathlib.Data.Set.Card
 import Mathlib.Data.ENat.Lattice
 import Mathlib.RingTheory.Finiteness.Defs
-import Mathlib.LinearAlgebra.Dimension.Basic
 
 /-!
 # Minimum Cardinality of generating set of a submodule
@@ -194,5 +193,16 @@ lemma spanRank_sup_le_sum_spanRank {p q : Submodule R M} :
   obtain ⟨sp, ⟨hp₁, rfl⟩⟩ := exists_span_set_card_eq_spanRank p
   obtain ⟨sq, ⟨hq₁, rfl⟩⟩ := exists_span_set_card_eq_spanRank q
   exact ⟨sp ∪ sq, ⟨hp₁ ▸ hq₁ ▸ (Cardinal.mk_union_le sp sq), span_union sp sq⟩⟩
+
+section rank
+
+-- Commented out since `StrongRankProperty` and `OrzechProperty` are not imported.
+-- proof_wanted rank_eq_spanRank [Module.Free M] [StrongRankProperty R] :
+--     M.rank = (⊤ : Submodule R M).spanRank
+
+-- proof_wanted rank_le_spanRank [OrzechProperty R] :
+--     M.rank ≤ (⊤ : Submodule R M).spanRank
+
+end rank
 
 end Submodule
