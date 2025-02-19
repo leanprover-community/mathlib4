@@ -9,7 +9,6 @@ import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Tactic.Linarith
 
 /-!
 # Absolute values
@@ -372,8 +371,9 @@ theorem inv_pos {x : F} (h : 0 < v x) : 0 < v x⁻¹ := by
   rwa [map_inv₀, _root_.inv_pos]
 
 theorem ne_zero_of_one_lt {F S : Type*} [Field F] [LinearOrderedField S]
-    {v : AbsoluteValue F S} {x : F} (hv : 1 < v x) : x ≠ 0 :=
-  fun hx => by linarith [map_zero v ▸ hx ▸ hv]
+    {v : AbsoluteValue F S} {x : F} (hv : 1 < v x) : x ≠ 0 := by
+  contrapose! hv
+  simp [hv]
 
 theorem isNontrivial_iff_exists_abv_one_lt {F S : Type*} [Field F] [LinearOrderedField S]
     {v : AbsoluteValue F S} :
@@ -381,7 +381,8 @@ theorem isNontrivial_iff_exists_abv_one_lt {F S : Type*} [Field F] [LinearOrdere
   refine ⟨fun h => h.exists_abv_gt_one, fun ⟨x, hx⟩ => ?_⟩
   refine ⟨x⁻¹, ?_, ?_⟩
   · simp only [ne_eq, inv_eq_zero]; exact ne_zero_of_one_lt hx
-  · simp only [map_inv₀, ne_eq, inv_eq_one]; linarith
+  · simp only [map_inv₀, ne_eq, inv_eq_one]
+    exact ne_of_gt hx
 
 theorem nonpos_iff {x : F} : v x ≤ 0 ↔ v x = 0 := by
   simp [le_antisymm_iff, v.nonneg _]
@@ -407,7 +408,7 @@ theorem one_lt_iff_of_lt_one_iff (h : ∀ x, v x < 1 ↔ w x < 1) (x : F) : 1 < 
 theorem eq_one_of_lt_one_iff (h : ∀ x, v x < 1 ↔ w x < 1) {x : F} (hv : v x = 1) : w x = 1 := by
   cases eq_or_lt_of_le (not_lt.1 <| (h x).not.1 hv.not_lt) with
   | inl hl => rw [← hl]
-  | inr hr => rw [← one_lt_iff_of_lt_one_iff h] at hr; linarith
+  | inr hr => rw [← one_lt_iff_of_lt_one_iff h] at hr; absurd hv; exact ne_of_gt hr
 
 theorem eq_one_iff_of_lt_one_iff (h : ∀ x, v x < 1 ↔ w x < 1) (x : F) : v x = 1 ↔ w x = 1 :=
   ⟨fun hv => eq_one_of_lt_one_iff h hv, fun hw => eq_one_of_lt_one_iff (fun _ => (h _).symm) hw⟩
