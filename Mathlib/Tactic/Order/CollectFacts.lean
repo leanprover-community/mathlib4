@@ -103,8 +103,6 @@ def getInfArgs? {u : Level} (type : Q(Type u)) (x : Q($type)) :
   catch _ =>
     return .none
 
-#check DiscrTree
-
 /-- Updates the state with the atom `x`. If `x` is `⊤` or `⊥`, adds the corresponding fact. If `x`
 is `y ⊔ z`, adds a fact about it, then recursively calls `addAtom` on `y` and `z`.
 Similarly for `⊓`. -/
@@ -140,10 +138,10 @@ def addFact (type : Expr) (fact : AtomicFact) : CollectFactsM Unit :=
   modify fun res => res.modify type fun (atomToIdx, facts) =>
     (atomToIdx, facts.push fact)
 
-#check Name
-
+set_option linter.unusedVariables false in
 /-- Implementation for `collectFacts` in `CollectFactsM` monad. -/
-partial def collectFactsImp (g : MVarId) (only? : Bool) (hyps : Array Expr) : CollectFactsM Unit := g.withContext do
+partial def collectFactsImp (g : MVarId) (only? : Bool) (hyps : Array Expr) :
+    CollectFactsM Unit := g.withContext do
   let ctx ← getLCtx
   for expr in hyps do
     processExpr expr
@@ -205,8 +203,8 @@ atomic expressions of type `α`, and `facts` contains all collected `AtomicFact`
 def collectFacts (g : MVarId) (only? : Bool) (hyps : Array Expr) :
     MetaM <| Std.HashMap Expr <| Std.HashMap Nat Expr × Array AtomicFact := g.withContext do
   let res := (← (collectFactsImp g only? hyps).run Std.HashMap.empty).snd
-  return res.map fun type (atomToIdx, facts) =>
-    let idxToAtom : Std.HashMap Nat Expr := atomToIdx.fold (init := .empty) fun acc key value =>
+  return res.map fun _ (atomToIdx, facts) =>
+    let idxToAtom : Std.HashMap Nat Expr := atomToIdx.fold (init := .empty) fun acc _ value =>
       acc.insert value.fst value.snd
     (idxToAtom, facts)
 
