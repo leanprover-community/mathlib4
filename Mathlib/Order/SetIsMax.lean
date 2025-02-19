@@ -24,7 +24,7 @@ lemma not_isMax_coe (hm : ¬ IsMax m) :
     ¬ IsMax m.1 :=
   fun h ↦ hm (fun _ hb ↦ h hb)
 
-lemma not_isMin_coe {S : Set J} (m : S) (hm : ¬ IsMin m) :
+lemma not_isMin_coe (hm : ¬ IsMin m) :
     ¬ IsMin m.1 :=
   fun h ↦ hm (fun _ hb ↦ h hb)
 
