@@ -3093,6 +3093,7 @@ import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Data.Set.Card
+import Mathlib.Data.Set.Card.Arithmetic
 import Mathlib.Data.Set.CoeSort
 import Mathlib.Data.Set.Constructions
 import Mathlib.Data.Set.Countable
