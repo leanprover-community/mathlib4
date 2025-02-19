@@ -107,11 +107,15 @@ section LinearOrderedCommGroupWithZero
 variable [LinearOrderedCommGroupWithZero α] {a b c d : α} {m n : ℕ}
 
 -- See note [lower instance priority]
-instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosMono : MulPosMono α where
+-- This instance has an even lower priority, due to bad unification issues
+-- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/performance.20example.20with.20type-class.20inference
+instance (priority := 90) LinearOrderedCommGroupWithZero.toMulPosMono : MulPosMono α where
   elim _a _b _c hbc := mul_le_mul_right' hbc _
 
 -- See note [lower instance priority]
-instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulMono : PosMulMono α where
+-- This instance has an even lower priority, due to bad unification issues
+-- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/performance.20example.20with.20type-class.20inference
+instance (priority := 90) LinearOrderedCommGroupWithZero.toPosMulMono : PosMulMono α where
   elim _a _b _c hbc := mul_le_mul_left' hbc _
 
 -- See note [lower instance priority]
