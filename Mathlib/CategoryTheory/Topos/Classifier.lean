@@ -65,6 +65,9 @@ terminal.from U               χ
       v                       v
     ⊤_ C ------truth--------> Ω
 ```
+An equivalent formulation replaces the object `⊤_ C` with an arbitrary object, and instead
+includes the assumption that `truth` is a monomorphism. Under this formulation, the fact that
+`truth` is a monomorphism is instead a theorem.
 -/
 structure Classifier where
   /-- The target of the truth morphism -/
@@ -79,7 +82,6 @@ structure Classifier where
   uniq {U X : C} (m : U ⟶ X) [Mono m] (χ' : X ⟶ Ω)
       (hχ' : IsPullback m (terminal.from U) χ' truth) :
     χ' = χ m
-
 
 /-- A category `C` has a subobject classifier if there is at least one subobject classifier. -/
 class HasClassifier : Prop where
