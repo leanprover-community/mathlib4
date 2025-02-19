@@ -128,7 +128,6 @@ open Set PartialHomeomorph Manifold  -- Porting note: Added `Manifold`
 
 /-! ### Structure groupoids -/
 
-
 section Groupoid
 
 /-! One could add to the definition of a structure groupoid the fact that the restriction of an
@@ -536,7 +535,6 @@ end Groupoid
 
 /-! ### Charted spaces -/
 
-
 /-- A charted space is a topological space endowed with an atlas, i.e., a set of local
 homeomorphisms taking value in a model space `H`, called charts, such that the domains of the charts
 cover the whole space. We express the covering property by choosing for each `x` a member
@@ -586,32 +584,6 @@ lemma isEmpty_of_chartedSpace (H : Type*) {M : Type*} [TopologicalSpace H] [Topo
   · exact (IsEmpty.false (chartAt H x x)).elim
 
 section ChartedSpace
-
-/-- An empty type is a charted space over any topological space. -/
-def ChartedSpace.empty (H : Type*) [TopologicalSpace H]
-    (M : Type*) [TopologicalSpace M] [IsEmpty M] : ChartedSpace H M where
-  atlas := ∅
-  chartAt x := (IsEmpty.false x).elim
-  mem_chart_source x := (IsEmpty.false x).elim
-  chart_mem_atlas x := (IsEmpty.false x).elim
-
-/-- Any space is a `ChartedSpace` modelled over itself, by just using the identity chart. -/
-instance chartedSpaceSelf (H : Type*) [TopologicalSpace H] : ChartedSpace H H where
-  atlas := {PartialHomeomorph.refl H}
-  chartAt _ := PartialHomeomorph.refl H
-  mem_chart_source x := mem_univ x
-  chart_mem_atlas _ := mem_singleton _
-
-/-- In the trivial `ChartedSpace` structure of a space modelled over itself through the identity,
-the atlas members are just the identity. -/
-@[simp, mfld_simps]
-theorem chartedSpaceSelf_atlas {H : Type*} [TopologicalSpace H] {e : PartialHomeomorph H H} :
-    e ∈ atlas H H ↔ e = PartialHomeomorph.refl H :=
-  Iff.rfl
-
-/-- In the model space, `chartAt` is always the identity. -/
-theorem chartAt_self_eq {H : Type*} [TopologicalSpace H] {x : H} :
-    chartAt H x = PartialHomeomorph.refl H := rfl
 
 section
 
@@ -761,6 +733,36 @@ theorem ChartedSpace.discreteTopology [DiscreteTopology H] : DiscreteTopology M 
 
 end
 
+section Constructions
+
+/-- An empty type is a charted space over any topological space. -/
+def ChartedSpace.empty (H : Type*) [TopologicalSpace H]
+    (M : Type*) [TopologicalSpace M] [IsEmpty M] : ChartedSpace H M where
+  atlas := ∅
+  chartAt x := (IsEmpty.false x).elim
+  mem_chart_source x := (IsEmpty.false x).elim
+  chart_mem_atlas x := (IsEmpty.false x).elim
+
+/-- Any space is a `ChartedSpace` modelled over itself, by just using the identity chart. -/
+instance chartedSpaceSelf (H : Type*) [TopologicalSpace H] : ChartedSpace H H where
+  atlas := {PartialHomeomorph.refl H}
+  chartAt _ := PartialHomeomorph.refl H
+  mem_chart_source x := mem_univ x
+  chart_mem_atlas _ := mem_singleton _
+
+/-- In the trivial `ChartedSpace` structure of a space modelled over itself through the identity,
+the atlas members are just the identity. -/
+@[simp, mfld_simps]
+theorem chartedSpaceSelf_atlas {H : Type*} [TopologicalSpace H] {e : PartialHomeomorph H H} :
+    e ∈ atlas H H ↔ e = PartialHomeomorph.refl H :=
+  Iff.rfl
+
+/-- In the model space, `chartAt` is always the identity. -/
+theorem chartAt_self_eq {H : Type*} [TopologicalSpace H] {x : H} :
+    chartAt H x = PartialHomeomorph.refl H := rfl
+
+section Products
+
 library_note "Manifold type tags" /-- For technical reasons we introduce two type tags:
 
 * `ModelProd H H'` is the same as `H × H'`;
@@ -869,6 +871,8 @@ theorem piChartedSpace_chartAt {ι : Type*} [Finite ι] (H : ι → Type*)
     chartAt (H := ModelPi H) f = PartialHomeomorph.pi fun i ↦ chartAt (H i) (f i) :=
   rfl
 
+end Products
+
 section sum
 
 variable [TopologicalSpace H] [TopologicalSpace M] [TopologicalSpace M']
@@ -949,10 +953,11 @@ lemma ChartedSpace.mem_atlas_sum [h : Nonempty H]
 
 end sum
 
+end Constructions
+
 end ChartedSpace
 
 /-! ### Constructing a topology from an atlas -/
-
 
 /-- Sometimes, one may want to construct a charted space structure on a space which does not yet
 have a topological structure, where the topology would come from the charts. For this, one needs
@@ -1040,8 +1045,6 @@ def toChartedSpace : @ChartedSpace H _ M c.toTopologicalSpace :=
 end ChartedSpaceCore
 
 /-! ### Charted space with a given structure groupoid -/
-
-
 section HasGroupoid
 
 variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
