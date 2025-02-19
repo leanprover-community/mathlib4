@@ -6,6 +6,8 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.ComposableArrows
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Fin
+import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Preorder
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Order.LatticeIntervals
@@ -116,6 +118,19 @@ def iic (j : J) :
         rw [← Functor.map_comp, Category.comp_id]
         rfl }
   isColimit := colimitOfDiagramTerminal isTerminalTop _
+
+@[simps]
+noncomputable def ici (j : J) :
+    TransfiniteCompositionOfShape (Set.Ici j) (c.incl.app j) where
+  F := (Subtype.mono_coe (Set.Ici j)).functor ⋙ c.F
+  isWellOrderContinuous := by
+    -- why is it not inferred?!
+    apply Functor.IsWellOrderContinuous.restriction_setIci
+  isoBot := Iso.refl _
+  incl := whiskerLeft _ c.incl
+  isColimit := by
+    have : (Subtype.mono_coe (Set.Ici j)).functor.Final := sorry
+    exact (Functor.Final.isColimitWhiskerEquiv _ _).2 c.isColimit
 
 end TransfiniteCompositionOfShape
 

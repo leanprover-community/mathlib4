@@ -434,12 +434,10 @@ lemma generatingMonomorphisms_rlp [IsGrothendieckAbelian.{w} C] (hG : IsSeparato
       apply Ordinal.toTypeOrderBot
       by_contra!
       exact ho (by simpa using this)
-    sorry
-    --exact MorphismProperty.hasLiftingProperty_of_transfiniteCompositionsOfShape _ i
-    --  (generatingMonomorphismsPushouts_transfiniteCompositionOfShape hG i hj) p
-    --  (by simpa only [MorphismProperty.pushouts_rlp] using hp)
+    refine MorphismProperty.transfiniteCompositionsOfShape_le_llp_rlp _ _ _
+      (generatingMonomorphismsPushouts_transfiniteCompositionOfShape hG i hj) _
+      (by simpa)
   · exact MorphismProperty.antitone_rlp (generatingMonomorphisms_le_monomorphisms _)
-
 
 open MorphismProperty
 
@@ -453,9 +451,6 @@ instance (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] :
       (S := Set.range f) (lt_of_le_of_lt (Cardinal.mk_le_of_surjective h) (lt_of_lt_of_le hs
           (by simp [hκ.out.cof_eq])))
     exact ⟨j, fun i ↦ (hj (f i) (by simp)).le⟩)
-
-instance [IsGrothendieckAbelian.{w} C] :
-    IsStableUnderCoproducts.{w} (monomorphisms C) := sorry
 
 variable (G) in
 lemma hasSmallObjectArgument_generatingMonomorphisms
