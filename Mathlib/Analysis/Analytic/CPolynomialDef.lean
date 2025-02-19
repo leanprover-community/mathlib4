@@ -289,7 +289,7 @@ protected theorem HasFiniteFPowerSeriesOnBall.continuousOn
     ContinuousOn f (EMetric.ball x r) := hf.1.continuousOn
 
 protected theorem HasFiniteFPowerSeriesAt.continuousAt (hf : HasFiniteFPowerSeriesAt f p x n) :
-    ContinuousAt f x := hf.toHasFPowerSeriesAt.continuousAt
+    ContinuousAt f x := hf.hasFPowerSeriesAt.continuousAt
 
 protected theorem CPolynomialAt.continuousAt (hf : CPolynomialAt 𝕜 f x) : ContinuousAt f x :=
   hf.analyticAt.continuousAt
