@@ -563,7 +563,12 @@ lemma le_coproducts : W ≤ coproducts.{w} W :=
   (le_colimitsOfShape_punit.{w} W).trans
     (colimitsOfShape_le_coproducts W PUnit.{w + 1})
 
-lemma coproducts_monotone : Monotone (coproducts.{w} (C := C)) := sorry
+lemma coproducts_monotone : Monotone (coproducts.{w} (C := C)) := by
+  rintro W₁ W₂ h X Y f hf
+  rw [coproducts_iff] at hf
+  obtain ⟨J, hf⟩ := hf
+  exact W₂.colimitsOfShape_le_coproducts J _
+    (colimitsOfShape_monotone h _ _ hf)
 
 end Coproducts
 
@@ -640,10 +645,30 @@ lemma isStableUnderCoproductsOfShape_of_isStableUnderFiniteCoproducts
 class IsStableUnderCoproducts : Prop where
   isStableUnderCoproductsOfShape (J : Type w) : W.IsStableUnderCoproductsOfShape J
 
+lemma isStableUnderCoproductsOfShape_of_isStableUnderCoproducts
+    [IsStableUnderCoproducts.{w} W] (J : Type w) :
+    W.IsStableUnderCoproductsOfShape J :=
+  IsStableUnderCoproducts.isStableUnderCoproductsOfShape _
+
+lemma coproducts_le [IsStableUnderCoproducts.{w} W] :
+    coproducts.{w} W ≤ W := by
+  intro X Y f hf
+  rw [coproducts_iff] at hf
+  obtain ⟨J, hf⟩ := hf
+  exact (isStableUnderCoproductsOfShape_of_isStableUnderCoproducts W J).colimitsOfShape_le _ hf
+
+@[simp]
+lemma coproducts_eq_self [IsStableUnderCoproducts.{w} W] :
+    coproducts.{w} W = W :=
+  le_antisymm W.coproducts_le W.le_coproducts
+
 @[simp]
 lemma coproducts_le_iff {P Q : MorphismProperty C} [IsStableUnderCoproducts.{w} Q] :
     coproducts.{w} P ≤ Q ↔ P ≤ Q := by
-  sorry
+  constructor
+  · exact le_trans P.le_coproducts
+  · intro h
+    exact le_trans (coproducts_monotone h) Q.coproducts_le
 
 end Products
 

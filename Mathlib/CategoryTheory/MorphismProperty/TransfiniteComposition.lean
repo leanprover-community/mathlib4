@@ -330,8 +330,11 @@ lemma transfiniteCompositions_monotone :
     (transfiniteCompositionsOfShape_monotone J h _ hf)
 
 lemma le_transfiniteCompositions :
-    W ≤ transfiniteCompositions.{w} W := by
-  sorry
+    W ≤ transfiniteCompositions.{w} W :=
+  le_trans (fun _ _ _ hf ↦
+    (MorphismProperty.TransfiniteCompositionOfShape.ofOrderIso (.ofMem _ hf)
+      (orderIsoShrink.{w} (Fin 2)).symm).mem)
+    (transfiniteCompositionsOfShape_le_transfiniteCompositions _ _)
 
 lemma transfiniteCompositions_le [IsStableUnderTransfiniteComposition.{w} W] :
     transfiniteCompositions.{w} W ≤ W := by
