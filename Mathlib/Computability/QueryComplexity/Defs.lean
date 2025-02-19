@@ -24,9 +24,7 @@ in this module is based on the original stochastic version. Source:
 * Comp.run : Comp ι s α → (I → Oracle ι) → α × (I → ℕ)
 -/
 
-open Classical
 open Set
-noncomputable section
 
 universe u
 
@@ -39,23 +37,27 @@ variable {ω : {i : I} → ι i → Type*}
 namespace QueryComplexity
 
 /-- A deterministic oracle is a dependent map -/
-def Oracle (α : Type*) (β : α → Type*) := (x : α) → (β x)
+def Oracle (α : Type*) (β : α → Type*) : Type _ := (x : α) → (β x)
 
 /-- An `Oracle` that always returns `Bool` -/
-abbrev BOracle (α : Type*) := Oracle α fun _ ↦ Bool
+abbrev BOracle (α : Type*) : Type _ := Oracle α fun _ ↦ Bool
 
 /-- A deterministic computation that make decisions by querying oracles. A computation is either a
 pure value or the identifier of an oracle (`o`) drawn from a predefined set (`s`), a value to
 be queried by the oracle (`i`) and a dependent selection function that determines which oracle to
 run, depending on the result of the query. -/
 inductive Comp (ι : I → Type*) (ω : {i : I} → ι i → Type*) (s : Set I) (α : Type*) : Type _ where
+  /-- A pure value without any oracle interaction. -/
   | pure' : α → Comp ι ω s α
-  | query' : (o : I) → o ∈ s → (y : ι o) → ((ω y) → Comp ι ω s α) → Comp ι ω s α
+  /-- An query to the permitted oracle `o` with input `i`, and a way to proceed with
+  computation for each possible return value. -/
+  | query' : (o : I) → o ∈ s → (i : ι o) → (ω i → Comp ι ω s α) → Comp ι ω s α
 
 namespace Comp
 
 /-- The standard bind operation for `Comp` -/
-def bind' (f : Comp ι ω s α) (g : α → Comp ι ω s β) : Comp ι ω s β := match f with
+def bind' (f : Comp ι ω s α) (g : α → Comp ι ω s β) : Comp ι ω s β :=
+  match f with
   | .pure' x => g x
   | .query' o m y f => .query' o m y fun b => (f b).bind' g
 
@@ -69,17 +71,19 @@ The `Comp` just returns `true` or `false` according to the answer of the oracle.
 def query (o : I) (y : ι o) : Comp ι ω {o} (ω y)  :=
   Comp.query' o (mem_singleton _) y pure
 
+open scoped Classical in
 /-- Execute `f` with the oracles `os`. Returns the final value and the number of queries to
 each one of the oracles. -/
-def run (f : Comp ι ω s α) (os : (i : I) → Oracle (ι i) ω) : α × (I → ℕ) := match f with
+noncomputable def run (f : Comp ι ω s α) (os : (i : I) → Oracle (ι i) ω) : α × (I → ℕ) :=
+  match f with
   | .pure' x => (x, fun _ => 0)
   | .query' i _ y f =>
     let x := os i y
-    let (z,c) := (f x).run os
-    (z, c + fun j => if j = i then 1 else 0)
+    let (z, c) := (f x).run os
+    (z, c + Pi.single i 1)
 
 /-- The value of a `Comp ι s` after execution -/
-def value (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) : α :=
+noncomputable def value (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) : α :=
   (f.run o).1
 
 -- Which type can we give `o`?
@@ -87,7 +91,7 @@ def value (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) : α :=
 --   f.value (fun _ => o)
 
 /-- The query count for a specific oracle of a `Comp ι s` -/
-def cost (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) (i : I) : ℕ :=
+noncomputable def cost (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) (i : I) : ℕ :=
   (f.run o).2 i
 
 -- Which type can we give `o`?
@@ -100,7 +104,7 @@ def allow (f : Comp ι ω s α) (st : s ⊆ t) : Comp ι ω t α := match f with
   | .query' i m y f => .query' i (st m) y (fun b => (f b).allow st)
 
 /-- Extend the set of allowed oracles in a computation to the universe set -/
-def allow_all (f : Comp ι ω s α) : Comp ι ω (@univ I) α :=
+def allowAll (f : Comp ι ω s α) : Comp ι ω (univ : Set I) α :=
   f.allow (subset_univ s)
 
 end Comp
