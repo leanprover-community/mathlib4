@@ -27,9 +27,11 @@ The definitions can be found in `Order/Interval/Set/Defs`.
 This file contains basic facts on inclusion, intersection, difference of intervals
 (where the precise statements may depend on the properties of the order,
 in particular for some statements it should be `LinearOrder` or `DenselyOrdered`).
-
+w
 TODO: This is just the beginning; a lot of rules are missing
 -/
+
+assert_not_exists RelIso
 
 open Function
 

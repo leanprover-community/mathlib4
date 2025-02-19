@@ -23,7 +23,7 @@ such that `∀ a b, l a ≤ b ↔ a ≤ u b`.
 * `GaloisCoinsertion`: A Galois coinsertion is a Galois connection where `u ∘ l = id`
 -/
 
-assert_not_exists CompleteLattice OrderHom
+assert_not_exists CompleteLattice RelIso
 
 open Function OrderDual Set
 
