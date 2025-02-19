@@ -565,6 +565,14 @@ theorem isClosedMap_const {X Y} [TopologicalSpace X] [TopologicalSpace Y] [T1Spa
     IsClosedMap (Function.const X y) :=
   IsClosedMap.of_nonempty fun s _ h2s => by simp_rw [const, h2s.image_const, isClosed_singleton]
 
+lemma isClosedMap_prodMk_left [TopologicalSpace Y] [T1Space X] (x : X) :
+    IsClosedMap (fun y : Y ↦ Prod.mk x y) :=
+  fun _K hK ↦ Set.singleton_prod ▸ isClosed_singleton.prod hK
+
+lemma isClosedMap_prodMk_right [TopologicalSpace Y] [T1Space Y] (y : Y) :
+    IsClosedMap (fun x : X ↦ Prod.mk x y) :=
+  fun _K hK ↦ Set.prod_singleton ▸ hK.prod isClosed_singleton
+
 theorem nhdsWithin_insert_of_ne [T1Space X] {x y : X} {s : Set X} (hxy : x ≠ y) :
     𝓝[insert y s] x = 𝓝[s] x := by
   refine le_antisymm (Filter.le_def.2 fun t ht => ?_) (nhdsWithin_mono x <| subset_insert y s)
