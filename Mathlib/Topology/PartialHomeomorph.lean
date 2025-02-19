@@ -25,6 +25,8 @@ instead of `e.toFun x` and `e.invFun x`.
 * `PartialHomeomorph.symm`: the inverse of a partial homeomorphism
 * `PartialHomeomorph.trans`: the composition of two partial homeomorphisms
 * `PartialHomeomorph.refl`: the identity partial homeomorphism
+* `PartialHomeomorph.const`: a partial homeomorphism which is a constant map,
+whose source and target are necessarily singleton sets
 * `PartialHomeomorph.ofSet`: the identity on a set `s`
 * `PartialHomeomorph.EqOnSource`: equivalence relation describing the "right" notion of equality
   for partial homeomorphisms
@@ -646,6 +648,22 @@ theorem refl_partialEquiv : (PartialHomeomorph.refl X).toPartialEquiv = PartialE
 @[simp, mfld_simps]
 theorem refl_symm : (PartialHomeomorph.refl X).symm = PartialHomeomorph.refl X :=
   rfl
+
+/-! const: `PartialEquiv.const` as a partial homeomorphism -/
+section const
+
+/--
+This is `PartialEquiv.single` as a partial homeomorphism: a constant map,
+whose source and target are necessarily singleton sets.
+-/
+def const {a : X} {b : Y} (ha : IsOpen {a}) (hb : IsOpen {b}) : PartialHomeomorph X Y where
+  toPartialEquiv := PartialEquiv.single a b
+  open_source := ha
+  open_target := hb
+  continuousOn_toFun := by simp
+  continuousOn_invFun := by simp
+
+end const
 
 /-! ofSet: the identity on a set `s` -/
 section ofSet
