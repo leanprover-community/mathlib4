@@ -85,6 +85,9 @@ theorem coe_toMulHom : ⇑abv.toMulHom = abv :=
 protected theorem nonneg (x : R) : 0 ≤ abv x :=
   abv.nonneg' x
 
+theorem nonpos_iff (x : R) : abv x ≤ 0 ↔ abv x = 0 :=
+  (abv.nonneg x).le_iff_eq
+
 @[simp]
 protected theorem eq_zero {x : R} : abv x = 0 ↔ x = 0 :=
   abv.eq_zero' x
@@ -107,14 +110,14 @@ protected theorem ne_zero_iff {x : R} : abv x ≠ 0 ↔ x ≠ 0 :=
   abv.eq_zero.not
 
 protected theorem pos {x : R} (hx : x ≠ 0) : 0 < abv x :=
-  lt_of_le_of_ne (abv.nonneg x) (Ne.symm <| mt abv.eq_zero.mp hx)
+  lt_of_le_of_ne (abv.nonneg x) (Ne.symm <| abv.ne_zero_iff.mpr hx)
 
 @[simp]
 protected theorem pos_iff {x : R} : 0 < abv x ↔ x ≠ 0 :=
   ⟨fun h₁ => mt abv.eq_zero.mpr h₁.ne', abv.pos⟩
 
 protected theorem ne_zero {x : R} (hx : x ≠ 0) : abv x ≠ 0 :=
-  (abv.pos hx).ne'
+  abv.ne_zero_iff.mpr hx
 
 theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
   h <| by simp [← abv.map_mul]
@@ -122,6 +125,13 @@ theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
 @[simp]
 protected theorem map_zero : abv 0 = 0 :=
   abv.eq_zero.2 rfl
+
+theorem ne_zero_of_one_lt {x : R} (habv : 1 < abv x) : x ≠ 0 :=
+  AbsoluteValue.pos_iff abv |>.mp <| zero_le_one.trans_lt habv
+
+theorem pos_of_pos {v : AbsoluteValue R S} (w : AbsoluteValue R S) {a : R} (hv : 0 < v a) :
+    0 < w a := by
+  rwa [AbsoluteValue.pos_iff] at hv ⊢
 
 end Semiring
 
@@ -288,7 +298,7 @@ variable {S : Type*} [OrderedSemiring S] [Nontrivial S]
 
 /-- The *trivial* absolute value takes the value `1` on all nonzero elements. -/
 protected
-def trivial: AbsoluteValue R S where
+def trivial : AbsoluteValue R S where
   toFun x := if x = 0 then 0 else 1
   map_mul' x y := by
     rcases eq_or_ne x 0 with rfl | hx
@@ -364,6 +374,14 @@ lemma IsNontrivial.exists_abv_lt_one {F S : Type*} [Field F] [LinearOrderedField
   refine ⟨y⁻¹, inv_ne_zero hy₀, ?_⟩
   rw [map_inv₀]
   exact (inv_lt_one₀ <| v.pos hy₀).mpr hy
+
+theorem isNontrivial_iff_exists_abv_gt_one {F S : Type*} [Field F] [LinearOrderedField S]
+    {v : AbsoluteValue F S} :
+    v.IsNontrivial ↔ ∃ x, 1 < v x := by
+  refine ⟨fun h => h.exists_abv_gt_one, fun ⟨x, hx⟩ => ?_⟩
+  refine ⟨x⁻¹, ?_, ?_⟩
+  · simp only [ne_eq, inv_eq_zero]; exact ne_zero_of_one_lt _ hx
+  · simp [map_inv₀, ne_eq, inv_eq_one, hx.ne']
 
 end nontrivial
 
@@ -504,9 +522,9 @@ end LinearOrderedCommRing
 
 section LinearOrderedField
 
-variable {S : Type*} [LinearOrderedSemifield S]
-
 section Semiring
+
+variable {S : Type*} [OrderedSemiring S] [IsCancelMulZero S]
 
 variable {R : Type*} [Semiring R] [Nontrivial R] (abv : R → S) [IsAbsoluteValue abv]
 
@@ -522,6 +540,8 @@ end Semiring
 
 section DivisionSemiring
 
+variable {S : Type*} [LinearOrderedSemifield S]
+
 variable {R : Type*} [DivisionSemiring R] (abv : R → S) [IsAbsoluteValue abv]
 
 theorem abv_inv (a : R) : abv a⁻¹ = (abv a)⁻¹ :=
@@ -530,8 +550,67 @@ theorem abv_inv (a : R) : abv a⁻¹ = (abv a)⁻¹ :=
 theorem abv_div (a b : R) : abv (a / b) = abv a / abv b :=
   map_div₀ (abvHom' abv) a b
 
+theorem _root_.AbsoluteValue.inv_pos {v : AbsoluteValue R S} {x : R} (h : 0 < v x) : 0 < v x⁻¹ := by
+  rwa [IsAbsoluteValue.abv_inv v, _root_.inv_pos]
+
 end DivisionSemiring
 
 end LinearOrderedField
 
 end IsAbsoluteValue
+
+namespace AbsoluteValue
+variable  {F S : Type*} [Field F] [LinearOrderedField S] in
+#synth MonoidWithZeroHomClass (AbsoluteValue F S) F S
+#check monoidWithZeroHomClass
+
+variable {R : Type*}  [Semiring R] [OrderedRing S] [IsDomain S] [Nontrivial R] in
+#synth MonoidWithZeroHomClass (AbsoluteValue R S) R S
+
+theorem inv_lt_one_iff {F S : Type*} [DivisionSemiring F] [LinearOrderedField S]
+    {v : AbsoluteValue F S} {x : F} : v x⁻¹ < 1 ↔ x = 0 ∨ 1 < v x := by
+  simp only [map_inv₀, inv_lt_one_iff₀, nonpos_iff, map_eq_zero]
+
+theorem mul_one_div_lt_iff {F S : Type*} [DivisionSemiring F] [LinearOrderedField S]
+    {v : AbsoluteValue F S} {y : F} (x : F) (h : 0 < v y) : v (x * (1 / y)) < 1 ↔ v x < v y := by
+  rw [map_mul, one_div, map_inv₀, mul_inv_lt_iff₀ h, one_mul]
+
+theorem mul_one_div_pow_lt_iff {F S : Type*} [DivisionSemiring F] [LinearOrderedField S]
+    {v : AbsoluteValue F S} {n : ℕ} {y : F} (x : F) (h : 0 < v y) :
+    v (x * (1 / y ^ n)) < 1 ↔ v x < v y ^ n :=
+  map_pow v _ _ ▸ mul_one_div_lt_iff x (map_pow v _ _ ▸ pow_pos h n)
+
+theorem one_lt_of_lt_one {F S : Type*} [DivisionSemiring F] [LinearOrderedField S]
+    {v w : AbsoluteValue F S} (h : ∀ x, v x < 1 → w x < 1) {x : F} (hv : 1 < v x) : 1 < w x :=
+  (inv_lt_one_iff.1 <| h _ <| map_inv₀ v _ ▸ inv_lt_one_of_one_lt₀ hv).resolve_left <|
+    ne_zero_of_one_lt _ hv
+
+theorem one_lt_iff_of_lt_one_iff {F S : Type*} [DivisionSemiring F] [LinearOrderedField S]
+    {v w : AbsoluteValue F S} (h : ∀ x, v x < 1 ↔ w x < 1) (x : F) : 1 < v x ↔ 1 < w x :=
+  ⟨fun hv => one_lt_of_lt_one (fun _ => (h _).1) hv,
+    fun hw => one_lt_of_lt_one (fun _ => (h _).2) hw⟩
+
+theorem eq_one_of_lt_one_iff {F S : Type*} [DivisionSemiring F] [LinearOrderedField S]
+    {v w : AbsoluteValue F S} (h : ∀ x, v x < 1 ↔ w x < 1) {x : F} (hv : v x = 1) : w x = 1 := by
+  have := (not_lt.1 <| (h x).not.1 hv.not_lt)
+  apply this.gt_or_eq.resolve_left
+  rw [← one_lt_iff_of_lt_one_iff h, hv]
+  exact lt_irrefl _
+
+theorem eq_one_iff_of_lt_one_iff {F S : Type*} [DivisionSemiring F] [LinearOrderedField S]
+    {v w : AbsoluteValue F S} (h : ∀ x, v x < 1 ↔ w x < 1) (x : F) : v x = 1 ↔ w x = 1 :=
+  ⟨fun hv => eq_one_of_lt_one_iff h hv, fun hw => eq_one_of_lt_one_iff (fun _ => (h _).symm) hw⟩
+
+variable {R S : Type*} [OrderedRing S] [Semiring R] (v : AbsoluteValue R S) [IsDomain S]
+  [Nontrivial R]
+
+theorem one_add_pow_le (a : R) (n : ℕ) : v (1 + a ^ n) ≤ 1 + v a ^ n :=
+  le_trans (v.add_le _ _) (by rw [map_one, map_pow])
+
+variable {R S : Type*} [OrderedCommRing S] [Ring R] (v : AbsoluteValue R S) [NoZeroDivisors S]
+  [IsDomain S] [Nontrivial R]
+
+theorem one_sub_pow_le (a : R) (n : ℕ) : 1 - v a ^ n ≤ v (1 + a ^ n) :=
+  le_trans (by rw [map_one, map_pow]) (v.le_add 1 (a ^ n))
+
+end AbsoluteValue
