@@ -7,7 +7,7 @@ import Mathlib.Order.Basic
 import Qq
 
 /-!
-# Facts collecting for the `order` Tactic
+# Facts collection for the `order` Tactic
 
 This file implements the collection of facts for the `order` tactic.
 -/
@@ -37,20 +37,22 @@ instance : ToString AtomicFact where
   | .nlt lhs rhs _ => s!"¬ {lhs} < {rhs}"
 
 /-- State for `CollectFactsM`. It contains a map where the key `t` maps to a
-pair `(atomToIdx, facts)`. `atomToIdx` maps atomic expressions to their indices,
-and `facts` stores `AtomicFact`s about them. -/
-abbrev CollectFactsState := Std.HashMap Expr <| Std.HashMap Expr Nat × Array AtomicFact
+pair `(atomToIdx, facts)`. `atomToIdx` is a `DiscrTree` containing atomic expressions with their
+indices, and `facts` stores `AtomicFact`s about them. -/
+abbrev CollectFactsState := Std.HashMap Expr <| DiscrTree (Nat × Expr) × Array AtomicFact
 
 /-- Monad for the fact collection procedure. -/
 abbrev CollectFactsM := StateT CollectFactsState MetaM
 
 /-- Updates the state with the atom `x`. -/
 partial def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFactsM Nat := do
-  modify fun res => res.insertIfNew type (Std.HashMap.empty, #[])
-  modify fun res => res.modify type fun (atomToIdx, facts) =>
-    let atomToIdx := atomToIdx.insertIfNew x atomToIdx.size
-    (atomToIdx, facts)
-  let idx := (← get).get! type |>.fst.get! x
+  modify fun res => res.insertIfNew type (.empty, #[])
+  let (atomToIdx, facts) := (← get).get! type
+  if (← atomToIdx.getMatch x).isEmpty then
+    let atomToIdxNew ← atomToIdx.insert x (atomToIdx.size, x)
+    modify fun res => res.insert type (atomToIdxNew, facts)
+  let (atomToIdx, _) := (← get).get! type
+  let #[(idx, _)] ← atomToIdx.getMatch x | failure
   return idx
 
 /-- Adds `fact` to the state. -/
@@ -58,14 +60,22 @@ def addFact (type : Expr) (fact : AtomicFact) : CollectFactsM Unit :=
   modify fun res => res.modify type fun (atomToIdx, facts) =>
     (atomToIdx, facts.push fact)
 
--- TODO: Split conjunctions.
+set_option linter.unusedVariables false in
 /-- Implementation for `collectFacts` in `CollectFactsM` monad. -/
-def collectFactsImp (g : MVarId) : CollectFactsM Unit := g.withContext do
+partial def collectFactsImp (g : MVarId) :
+    CollectFactsM Unit := g.withContext do
   let ctx ← getLCtx
   for ldecl in ctx do
     if ldecl.isImplementationDetail then
       continue
-    let ⟨0, type, expr⟩ := ← inferTypeQ ldecl.toExpr | continue
+    processExpr ldecl.toExpr
+where
+  processExpr (expr : Expr) : CollectFactsM Unit := do
+    let type ← inferType expr
+    if !(← isProp type) then
+      return
+    let ⟨u, type, expr⟩ ← inferTypeQ expr
+    have : u =QL 0 := ⟨⟩
     match type with
     | ~q(@Eq ($α : Type _) $x $y) =>
       if (← synthInstance? (q(Preorder $α))).isSome then
@@ -95,6 +105,8 @@ def collectFactsImp (g : MVarId) : CollectFactsM Unit := g.withContext do
         let xIdx := ← addAtom α x
         let yIdx := ← addAtom α y
         addFact α <| .nlt xIdx yIdx expr
+      | _ => return
+    | _ => return
 
 /-- Collects facts from the local context. For each occurring type `α`, the returned map contains
 a pair `(idxToAtom, facts)`, where the map `idxToAtom` converts indices to found
@@ -103,8 +115,8 @@ def collectFacts (g : MVarId) :
     MetaM <| Std.HashMap Expr <| Std.HashMap Nat Expr × Array AtomicFact := g.withContext do
   let res := (← (collectFactsImp g).run Std.HashMap.empty).snd
   return res.map fun _ (atomToIdx, facts) =>
-    let idxToAtom : Std.HashMap Nat Expr := atomToIdx.fold (init := .empty) fun acc key value =>
-      acc.insert value key
+    let idxToAtom : Std.HashMap Nat Expr := atomToIdx.fold (init := .empty) fun acc _ value =>
+      acc.insert value.fst value.snd
     (idxToAtom, facts)
 
 end Mathlib.Tactic.Order

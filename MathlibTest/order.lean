@@ -1,6 +1,4 @@
-import Mathlib.Tactic.Order
-import Mathlib.Data.Nat.Defs
-import Mathlib.Data.Int.Order.Basic
+import Mathlib
 
 example (a b c : Nat) (h1 : a ≤ b) (h2 : b ≤ c) : a ≤ c := by
   order
@@ -46,6 +44,17 @@ example {α : Type} [Preorder α] (a b : α) (h1 : a < b) : b > a := by
 
 example {α : Type} [Preorder α] (a b : α) (h1 : a > b) : b < a := by
   order
+
+example {n : Nat} (A B C : Matrix (Fin n) (Fin n) ℚ) : (A * B * C).rank ≤ A.rank ⊓ C.rank := by
+  have h1 := Matrix.rank_mul_le A B
+  have h2 := Matrix.rank_mul_le (A * B) C
+  have h3 : A.rank ⊓ B.rank ≤ A.rank := inf_le_left
+  have h4 : (A * B).rank ⊓ C.rank ≤ (A * B).rank := inf_le_left
+  have h5 : (A * B).rank ⊓ C.rank ≤ C.rank := inf_le_right
+  simp
+  constructor
+  · order
+  · order
 
 -- worst case for the current algorithm
 example {α : Type u} [PartialOrder α]
