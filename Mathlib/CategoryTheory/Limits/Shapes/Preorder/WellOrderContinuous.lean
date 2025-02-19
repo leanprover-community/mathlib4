@@ -79,9 +79,14 @@ instance (F : J ⥤ C) {J' : Type w'} [PartialOrder J'] (e : J' ≃o J)
   inferInstanceAs (e.toInitialSeg.monotone.functor ⋙ F).IsWellOrderContinuous
 
 
+lemma _root_.Set.not_isMax_coe {S : Set J} (m : S) (hm : ¬ IsMax m) :
+    ¬ IsMax m.1 := by
+  aesop
+
 lemma _root_.Set.not_isMin_coe {S : Set J} (m : S) (hm : ¬ IsMin m) :
     ¬ IsMin m.1 := by
   aesop
+
 section
 
 variable {J' : Type w} [LinearOrder J']
