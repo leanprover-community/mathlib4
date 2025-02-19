@@ -45,10 +45,11 @@ local macro:1000 (priority := high) X:term " _[" n:term "]₂" : term =>
 
 /-- The components of the counit of `nerve₂Adj`. -/
 @[simps!]
-def nerve₂Adj.counit.app (C : Cat.{u, u}) :
-    (nerveFunctor₂.obj C).HomotopyCategory ⥤ C := by
+def nerve₂Adj.counit.app (C : Type u) [SmallCategory C] :
+    (nerveFunctor₂.obj (Cat.of C)).HomotopyCategory ⥤ C := by
   fapply Quotient.lift
-  · exact (whiskerRight (OneTruncation₂.ofNerve₂.natIso).hom _ ≫ ReflQuiv.adj.{u}.counit).app C
+  · exact
+      (whiskerRight (OneTruncation₂.ofNerve₂.natIso).hom _ ≫ ReflQuiv.adj.{u}.counit).app (Cat.of C)
   · intro x y f g rel
     cases rel; rename_i φ
     simp [ReflQuiv.adj, Quot.liftOn, Cat.FreeRefl.quotientFunctor, Quotient.functor,
@@ -60,18 +61,19 @@ def nerve₂Adj.counit.app (C : Cat.{u, u}) :
       (homOfLE (by decide)) (homOfLE (by decide))
 
 @[simp]
-theorem nerve₂Adj.counit.app_eq (C : Cat) :
-    SSet.Truncated.HomotopyCategory.quotientFunctor (nerveFunctor₂.obj C) ⋙
+theorem nerve₂Adj.counit.app_eq (C : Type u) [SmallCategory C] :
+    SSet.Truncated.HomotopyCategory.quotientFunctor (nerveFunctor₂.obj (Cat.of C)) ⋙
       nerve₂Adj.counit.app.{u} C =
     (whiskerRight OneTruncation₂.ofNerve₂.natIso.hom _ ≫
-      ReflQuiv.adj.{u}.counit).app C := rfl
+      ReflQuiv.adj.{u}.counit).app (Cat.of C) := rfl
 
 /-- Naturality of `nerve₂Adj.counit.app` is proven using `HomotopyCategory.lift_unique'`. -/
-theorem nerve₂Adj.counit.naturality ⦃C D : Cat.{u, u}⦄ (F : C ⟶ D) :
+theorem nerve₂Adj.counit.naturality ⦃C D : Type u⦄ [SmallCategory C] [SmallCategory D]
+    (F : (Cat.of C) ⟶ (Cat.of D)) :
     (nerveFunctor₂ ⋙ hoFunctor₂).map F ⋙ nerve₂Adj.counit.app D =
       nerve₂Adj.counit.app C ⋙ F := by
   apply HomotopyCategory.lift_unique'
-  have := hoFunctor₂_naturality (nerveFunctor₂.map F)
+  have := hoFunctor₂_naturality (nerveFunctor₂.map (F : (Cat.of C) ⟶ (Cat.of D)))
   conv => lhs; rw [← Functor.assoc]; lhs; apply this.symm
   simp only [Cat.freeRefl_obj_α, ReflQuiv.of_val, comp_obj, Functor.comp_map]
   rw [← Functor.assoc _ _ F]
@@ -84,17 +86,17 @@ theorem nerve₂Adj.counit.naturality ⦃C D : Cat.{u, u}⦄ (F : C ⟶ D) :
 
 /-- The counit of `nerve₂Adj.` -/
 def nerve₂Adj.counit : nerveFunctor₂ ⋙ hoFunctor₂.{u} ⟶ (𝟭 Cat) where
-  app := nerve₂Adj.counit.app
-  naturality := nerve₂Adj.counit.naturality
+  app := fun _ ↦ nerve₂Adj.counit.app (Cat.of _)
+  naturality := fun _ _ F ↦ nerve₂Adj.counit.naturality F
 
 local notation (priority := high) "[" n "]" => SimplexCategory.mk n
 
 /-- Because nerves are 2-coskeletal, the components of a map of 2-truncated simplicial sets valued
 in a nerve can be recovered from the underlying ReflPrefunctor. -/
-def toNerve₂.mk.app {X : SSet.Truncated 2} {C : Cat}
+def toNerve₂.mk.app {X : SSet.Truncated 2} {C : Type u} [SmallCategory C]
     (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C)
     (n : SimplexCategory.Truncated 2) :
-    X.obj (op n) ⟶ (nerveFunctor₂.obj C).obj (op n) := by
+    X.obj (op n) ⟶ (nerveFunctor₂.obj (Cat.of C)).obj (op n) := by
   obtain ⟨n, hn⟩ := n
   induction' n using SimplexCategory.rec with n
   match n with
@@ -102,26 +104,27 @@ def toNerve₂.mk.app {X : SSet.Truncated 2} {C : Cat}
   | 1 => exact fun f => .mk₁ (F.map ⟨f, rfl, rfl⟩)
   | 2 => exact fun φ => .mk₂ (F.map (ev01₂ φ)) (F.map (ev12₂ φ))
 
-@[simp] theorem toNerve₂.mk.app_zero {X : SSet.Truncated 2} {C : Cat}
+@[simp] theorem toNerve₂.mk.app_zero {X : SSet.Truncated 2} {C : Type u} [SmallCategory C]
     (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C) (x : X _[0]₂) :
     mk.app F [0]₂ x = .mk₀ (F.obj x) := rfl
 
-@[simp] theorem toNerve₂.mk.app_one {X : SSet.Truncated 2} {C : Cat}
+@[simp] theorem toNerve₂.mk.app_one {X : SSet.Truncated 2} {C : Type u} [SmallCategory C]
     (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C) (f : X _[1]₂) :
     mk.app F [1]₂ f = .mk₁ (F.map ⟨f, rfl, rfl⟩) := rfl
 
-@[simp] theorem toNerve₂.mk.app_two {X : SSet.Truncated 2} {C : Cat}
+@[simp] theorem toNerve₂.mk.app_two {X : SSet.Truncated 2} {C : Type u} [SmallCategory C]
     (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C) (φ : X _[2]₂) :
     mk.app F [2]₂ φ = .mk₂ (F.map (ev01₂ φ)) (F.map (ev12₂ φ)) := rfl
 
 /-- This is similar to one of the famous Segal maps, except valued in a product rather than a
 pullback.-/
-noncomputable def nerve₂.seagull (C : Cat.{v, u}) :
-    (nerveFunctor₂.obj C).obj (op [2]₂) ⟶
-    (nerveFunctor₂.obj C).obj (op [1]₂) ⨯ (nerveFunctor₂.obj C).obj (op [1]₂) :=
-  prod.lift ((nerveFunctor₂.obj C).map (.op δ2₂)) ((nerveFunctor₂.obj C).map (.op δ0₂))
+noncomputable def nerve₂.seagull (C : Type u) [Category C] :
+    (nerveFunctor₂.obj (Cat.of C)).obj (op [2]₂) ⟶
+    (nerveFunctor₂.obj (Cat.of C)).obj (op [1]₂) ⨯ (nerveFunctor₂.obj (Cat.of C)).obj (op [1]₂) :=
+  prod.lift
+    ((nerveFunctor₂.obj (Cat.of C)).map (.op δ2₂)) ((nerveFunctor₂.obj (Cat.of C)).map (.op δ0₂))
 
-instance (C : Cat) : Mono (nerve₂.seagull C) where
+instance (C : Type u) [Category C] : Mono (nerve₂.seagull C) where
   right_cancellation {X} (f g : X → ComposableArrows C 2) eq := by
     ext x
     simp [nerve₂.seagull] at eq
@@ -142,12 +145,12 @@ instance (C : Cat) : Mono (nerve₂.seagull C) where
 
 /-- Naturality of the components defined by `toNerve₂.mk.app` as a morphism property of
 maps in `SimplexCategory.Truncated 2).` -/
-abbrev toNerve₂.mk.naturalityProperty {X : SSet.Truncated.{u} 2} {C : Cat}
+abbrev toNerve₂.mk.naturalityProperty {X : SSet.Truncated.{u} 2}  {C : Type u} [SmallCategory C]
     (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C) :
     MorphismProperty (SimplexCategory.Truncated 2) :=
   (MorphismProperty.naturalityProperty (fun n => toNerve₂.mk.app F n.unop)).unop
 
-lemma toNerve₂.mk_naturality_σ00 {X : SSet.Truncated.{u} 2} {C : Cat}
+lemma toNerve₂.mk_naturality_σ00 {X : SSet.Truncated.{u} 2}  {C : Type u} [SmallCategory C]
     (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C) :
     toNerve₂.mk.naturalityProperty F (σ₂ (n := 0) 0) := by
   ext x
@@ -185,14 +188,14 @@ lemma toNerve₂.mk_naturality_σ00 {X : SSet.Truncated.{u} 2} {C : Cat}
       · simp
     · simp; rfl
 
-lemma toNerve₂.mk_naturality_δ0i {X : SSet.Truncated.{u} 2} {C : Cat}
+lemma toNerve₂.mk_naturality_δ0i {X : SSet.Truncated.{u} 2}  {C : Type u} [SmallCategory C]
     (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C) (i : Fin 2) :
     toNerve₂.mk.naturalityProperty F (δ₂ i) := by
   ext x
   apply ComposableArrows.ext₀
   fin_cases i <;> rfl
 
-lemma toNerve₂.mk_naturality_δ1i {X : SSet.Truncated.{u} 2} {C : Cat}
+lemma toNerve₂.mk_naturality_δ1i {X : SSet.Truncated.{u} 2}  {C : Type u} [SmallCategory C]
     (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C)
     (hyp : (φ : X _[2]₂) →
       F.map (ev02₂ φ) =
@@ -250,7 +253,7 @@ lemma toNerve₂.mk_naturality_δ1i {X : SSet.Truncated.{u} 2} {C : Cat}
         rw [← map_comp]; rfl
       · rfl
 
-lemma toNerve₂.mk_naturality_σ1i {X : SSet.Truncated.{u} 2} {C : Cat}
+lemma toNerve₂.mk_naturality_σ1i {X : SSet.Truncated.{u} 2}  {C : Type u} [SmallCategory C]
     (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C)
     (hyp : (φ : X _[2]₂) →
       F.map (ev02₂ φ) =
@@ -281,7 +284,7 @@ lemma toNerve₂.mk_naturality_σ1i {X : SSet.Truncated.{u} 2} {C : Cat}
     · exact hyp
 
 /-- A proof that the components defined by `toNerve₂.mk.app` are natural. -/
-theorem toNerve₂.mk_naturality {X : SSet.Truncated.{u} 2} {C : Cat}
+theorem toNerve₂.mk_naturality {X : SSet.Truncated.{u} 2} {C : Type u} [SmallCategory C]
     (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C)
     (hyp : (φ : X _[2]₂) →
       F.map (ev02₂ φ) =
@@ -298,41 +301,41 @@ theorem toNerve₂.mk_naturality {X : SSet.Truncated.{u} 2} {C : Cat}
 /-- Because nerves are 2-coskeletal, a map of 2-truncated simplicial sets valued in a nerve can be
 recovered from the underlying ReflPrefunctor. -/
 @[simps!]
-def toNerve₂.mk {X : SSet.Truncated.{u} 2} {C : Cat}
+def toNerve₂.mk {X : SSet.Truncated.{u} 2} {C : Type u} [SmallCategory C]
     (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C)
     (hyp : (φ : X _[2]₂) →
       F.map (ev02₂ φ) =
         CategoryStruct.comp (obj := C) (F.map (ev01₂ φ)) (F.map (ev12₂ φ))) :
-    X ⟶ nerveFunctor₂.obj C where
+    X ⟶ nerveFunctor₂.obj (Cat.of C) where
   app := fun n => toNerve₂.mk.app F n.unop
   naturality _ _ f := MorphismProperty.of_eq_top (toNerve₂.mk_naturality F hyp) f.unop
 
 /-- An alternate version of `toNerve₂.mk`, which constructs a map of 2-truncated simplicial sets
 valued in a nerve  from the underlying ReflPrefunctor, where the central hypothesis is conjugated
 by the isomorphism `nerve₂Adj.NatIso.app C`. -/
-@[simps!] def toNerve₂.mk' {X : SSet.Truncated.{u} 2} {C : Cat}
-    (f : SSet.oneTruncation₂.obj X ⟶ SSet.oneTruncation₂.obj (nerveFunctor₂.obj C))
+@[simps!] def toNerve₂.mk' {X : SSet.Truncated.{u} 2} {C : Type u} [SmallCategory C]
+    (f : SSet.oneTruncation₂.obj X ⟶ SSet.oneTruncation₂.obj (nerveFunctor₂.obj (Cat.of C)))
     (hyp : (φ : X _[2]₂) →
-      (f ≫ (OneTruncation₂.ofNerve₂.natIso.app C).hom).map (ev02₂ φ)
-      = CategoryStruct.comp (obj := C)
-        ((f ≫ (OneTruncation₂.ofNerve₂.natIso.app C).hom).map (ev01₂ φ))
-        ((f ≫ (OneTruncation₂.ofNerve₂.natIso.app C).hom).map (ev12₂ φ)))
-    : X ⟶ nerveFunctor₂.obj C :=
-  toNerve₂.mk (f ≫ (OneTruncation₂.ofNerve₂.natIso.app C).hom) hyp
+      (f ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev02₂ φ)
+      = CategoryStruct.comp (obj := (Cat.of C))
+        ((f ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev01₂ φ))
+        ((f ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev12₂ φ)))
+    : X ⟶ nerveFunctor₂.obj (Cat.of C) :=
+  toNerve₂.mk (f ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom) hyp
 
 /-- A computation about `toNerve₂.mk'`. -/
-theorem oneTruncation₂_toNerve₂Mk' {X : SSet.Truncated 2} {C : Cat}
-    (f : SSet.oneTruncation₂.obj X ⟶ SSet.oneTruncation₂.obj (nerveFunctor₂.obj C))
+theorem oneTruncation₂_toNerve₂Mk' {X : SSet.Truncated 2} {C : Type u} [SmallCategory C]
+    (f : SSet.oneTruncation₂.obj X ⟶ SSet.oneTruncation₂.obj (nerveFunctor₂.obj (Cat.of C)))
     (hyp : (φ : X _[2]₂) →
-      (f ≫ (OneTruncation₂.ofNerve₂.natIso.app C).hom).map (ev02₂ φ)
+      (f ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev02₂ φ)
       = CategoryStruct.comp (obj := C)
-        ((f ≫ (OneTruncation₂.ofNerve₂.natIso.app C).hom).map (ev01₂ φ))
-        ((f ≫ (OneTruncation₂.ofNerve₂.natIso.app C).hom).map (ev12₂ φ))) :
+        ((f ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev01₂ φ))
+        ((f ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev12₂ φ))) :
     oneTruncation₂.map (toNerve₂.mk' f hyp) = f := by
   refine ReflPrefunctor.ext (fun _ ↦ ComposableArrows.ext₀ rfl)
     (fun X Y g ↦ eq_of_heq (heq_eqRec_iff_heq.2 <| heq_eqRec_iff_heq.2 ?_))
   simp [oneTruncation₂]
-  have {A B A' B' : OneTruncation₂ (nerveFunctor₂.obj C)}
+  have {A B A' B' : OneTruncation₂ (nerveFunctor₂.obj (Cat.of C))}
       : A = A' → B = B' → ∀ (x : A ⟶ B) (y : A' ⟶ B'), x.1 = y.1 → HEq x y := by
     rintro rfl rfl ⟨⟩ ⟨⟩ ⟨⟩; rfl
   apply this
@@ -349,7 +352,8 @@ theorem oneTruncation₂_toNerve₂Mk' {X : SSet.Truncated 2} {C : Cat}
 
 /-- An equality between maps into the 2-truncated nerve is detected by an equality beteween their
 underlying refl prefunctors. -/
-theorem toNerve₂.ext {X : SSet.Truncated 2} {C : Cat} (f g : X ⟶ nerveFunctor₂.obj C)
+theorem toNerve₂.ext {X : SSet.Truncated 2} {C : Type u} [SmallCategory C]
+    (f g : X ⟶ nerveFunctor₂.obj (Cat.of C))
     (hyp : SSet.oneTruncation₂.map f = SSet.oneTruncation₂.map g) : f = g := by
   have eq₀ x : f.app (op [0]₂) x = g.app (op [0]₂) x := congr(($hyp).obj x)
   have eq₁ x : f.app (op [1]₂) x = g.app (op [1]₂) x := congr((($hyp).map ⟨x, rfl, rfl⟩).1)
