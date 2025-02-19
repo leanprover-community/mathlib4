@@ -201,7 +201,7 @@ theorem smul_inv (r : k) (φ : k⟦X⟧) : (r • φ)⁻¹ = r⁻¹ • φ⁻¹ 
   MvPowerSeries.smul_inv _ _
 
 /-- `firstUnitCoeff` is the non-zero coefficient whose index is `f.order`, seen as a unit of the
-  field. It is obtained using `divided_by_X_pow_order`, defined in `PowerSeries.Order`-/
+  field. It is obtained using `divided_by_X_pow_order`, defined in `PowerSeries.Order`. -/
 def firstUnitCoeff {f : k⟦X⟧} (hf : f ≠ 0) : kˣ :=
   let d := f.order.lift (order_finite_iff_ne_zero.mpr hf)
   have f_const : coeff k d f ≠ 0 := by apply coeff_order

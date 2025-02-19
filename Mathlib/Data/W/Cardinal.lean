@@ -48,7 +48,7 @@ theorem cardinalMk_le_of_le' {κ : Cardinal.{max u v}}
   simp_rw [← lift_umax.{v, u}] at hκ
   nth_rewrite 1 [← lift_id'.{v, u} #γ] at hκ
   simp_rw [← mk_arrow, ← mk_sigma, le_def] at hκ
-  cases' hκ with hκ
+  obtain ⟨hκ⟩ := hκ
   exact Cardinal.mk_le_of_injective (elim_injective _ hκ.1 hκ.2)
 
 @[deprecated (since := "2024-11-10")] alias cardinal_mk_le_of_le' := cardinalMk_le_of_le'

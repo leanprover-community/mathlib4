@@ -41,7 +41,7 @@ bialgebra
 
 suppress_compilation
 
-universe u v
+universe u v w
 
 open scoped TensorProduct
 

@@ -19,6 +19,8 @@ A `Content` is in particular an `AddContent` on the set of compact sets.
 ## Main definitions
 
 * `MeasureTheory.AddContent C`: additive contents over the set of sets `C`.
+* `MeasureTheory.AddContent.IsSigmaSubadditive`: an `AddContent` is σ-subadditive if
+  `m (⋃ i, f i) ≤ ∑' i, m (f i)` for any sequence of sets `f` in `C` such that `⋃ i, f i ∈ C`.
 
 ## Main statements
 
@@ -27,7 +29,7 @@ Let `m` be an `AddContent C`. If `C` is a set semi-ring (`IsSetSemiring C`) we h
 * `MeasureTheory.sum_addContent_le_of_subset`: if `I` is a finset of pairwise disjoint sets in `C`
   and `⋃₀ I ⊆ t` for `t ∈ C`, then `∑ s ∈ I, m s ≤ m t`.
 * `MeasureTheory.addContent_mono`: if `s ⊆ t` for two sets in `C`, then `m s ≤ m t`.
-* `MeasureTheory.addContent_sUnion_le_sum`: an `addContent C` on a `SetSemiring C` is
+* `MeasureTheory.addContent_sUnion_le_sum`: an `AddContent C` on a `SetSemiring C` is
   sub-additive.
 * `MeasureTheory.addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le`: if an
   `AddContent` is σ-subadditive on a semi-ring of sets, then it is σ-additive.
@@ -112,6 +114,11 @@ lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C) (h_d
     rw [← hs_eq_t] at h_dis
     exact Disjoint.eq_bot_of_self h_dis
 
+/-- An additive content is said to be sigma-sub-additive if for any sequence of sets `f` in `C` such
+that `⋃ i, f i ∈ C`, we have `m (⋃ i, f i) ≤ ∑' i, m (f i)`. -/
+def AddContent.IsSigmaSubadditive (m : AddContent C) : Prop :=
+  ∀ ⦃f : ℕ → Set α⦄ (_hf : ∀ i, f i ∈ C) (_hf_Union : (⋃ i, f i) ∈ C), m (⋃ i, f i) ≤ ∑' i, m (f i)
+
 section IsSetSemiring
 
 lemma addContent_eq_add_disjointOfDiffUnion_of_subset (hC : IsSetSemiring C)
@@ -130,7 +137,7 @@ lemma addContent_eq_add_disjointOfDiffUnion_of_subset (hC : IsSetSemiring C)
   · rwa [hC.sUnion_union_disjointOfDiffUnion_of_subset hs hI hI_ss]
 
 /-- For an `m : addContent C` on a `SetSemiring C`, if `I` is a `Finset` of pairwise disjoint
-  sets in `C` and `⋃₀ I ⊆ t` for `t ∈ C`, then `∑ s ∈ I, m s ≤ m t`.-/
+  sets in `C` and `⋃₀ I ⊆ t` for `t ∈ C`, then `∑ s ∈ I, m s ≤ m t`. -/
 lemma sum_addContent_le_of_subset (hC : IsSetSemiring C)
     (h_ss : ↑I ⊆ C) (h_dis : PairwiseDisjoint (I : Set (Set α)) id)
     (ht : t ∈ C) (hJt : ∀ s ∈ I, s ⊆ t) :
@@ -150,7 +157,7 @@ lemma addContent_mono (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
   · simp [hst]
 
 /-- For an `m : addContent C` on a `SetSemiring C` and `s t : Set α` with `s ⊆ t`, we can write
-`m t = m s + ∑ i in hC.disjointOfDiff ht hs, m i`.-/
+`m t = m s + ∑ i in hC.disjointOfDiff ht hs, m i`. -/
 theorem eq_add_disjointOfDiff_of_subset (hC : IsSetSemiring C)
     (hs : s ∈ C) (ht : t ∈ C) (hst : s ⊆ t) :
     m t = m s + ∑ i ∈ hC.disjointOfDiff ht hs, m i := by
@@ -166,7 +173,7 @@ theorem eq_add_disjointOfDiff_of_subset (hC : IsSetSemiring C)
   · rw [coe_insert]
     rwa [hC.sUnion_insert_disjointOfDiff ht hs hst]
 
-/-- An `addContent C` on a `SetSemiring C` is sub-additive.-/
+/-- An `addContent C` on a `SetSemiring C` is sub-additive. -/
 lemma addContent_sUnion_le_sum {m : AddContent C} (hC : IsSetSemiring C)
     (J : Finset (Set α)) (h_ss : ↑J ⊆ C) (h_mem : ⋃₀ ↑J ∈ C) :
     m (⋃₀ ↑J) ≤ ∑ u ∈ J, m u := by
@@ -215,6 +222,7 @@ lemma addContent_le_sum_of_subset_sUnion {m : AddContent C} (hC : IsSetSemiring 
 /-- If an `AddContent` is σ-subadditive on a semi-ring of sets, then it is σ-additive. -/
 theorem addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le {m : AddContent C}
     (hC : IsSetSemiring C)
+    -- TODO: `m_subadd` is in fact equivalent to `m.IsSigmaSubadditive`.
     (m_subadd : ∀ (f : ℕ → Set α) (_ : ∀ i, f i ∈ C) (_ : ⋃ i, f i ∈ C)
       (_hf_disj : Pairwise (Disjoint on f)), m (⋃ i, f i) ≤ ∑' i, m (f i))
     (f : ℕ → Set α) (hf : ∀ i, f i ∈ C) (hf_Union : (⋃ i, f i) ∈ C)
@@ -238,6 +246,15 @@ theorem addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le {m : AddCo
     exact hf_disj hij
   · simp only [Finset.mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     exact fun i _ ↦ subset_iUnion _ i
+
+/-- If an `AddContent` is σ-subadditive on a semi-ring of sets, then it is σ-additive. -/
+theorem addContent_iUnion_eq_tsum_of_disjoint_of_IsSigmaSubadditive {m : AddContent C}
+    (hC : IsSetSemiring C) (m_subadd : m.IsSigmaSubadditive)
+    (f : ℕ → Set α) (hf : ∀ i, f i ∈ C) (hf_Union : (⋃ i, f i) ∈ C)
+    (hf_disj : Pairwise (Disjoint on f)) :
+    m (⋃ i, f i) = ∑' i, m (f i) :=
+  addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le hC
+    (fun _ hf hf_Union _ ↦ m_subadd hf hf_Union) f hf hf_Union hf_disj
 
 end IsSetSemiring
 

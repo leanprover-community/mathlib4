@@ -622,7 +622,7 @@ theorem eq_zero_of_comapDomain_eq_zero [AddCommMonoid M] (f : α → β) (l : β
   rw [← support_eq_empty, ← support_eq_empty, comapDomain]
   simp only [Finset.ext_iff, Finset.not_mem_empty, iff_false, mem_preimage]
   intro h a ha
-  cases' hf.2.2 ha with b hb
+  obtain ⟨b, hb⟩ := hf.2.2 ha
   exact h b (hb.2.symm ▸ ha)
 
 section FInjective
@@ -1152,7 +1152,7 @@ def sumFinsuppEquivProdFinsupp {α β γ : Type*} [Zero γ] : (α ⊕ β →₀ 
   invFun fg := sumElim fg.1 fg.2
   left_inv f := by
     ext ab
-    cases' ab with a b <;> simp
+    rcases ab with a | b <;> simp
   right_inv fg := by ext <;> simp
 
 theorem fst_sumFinsuppEquivProdFinsupp {α β γ : Type*} [Zero γ] (f : α ⊕ β →₀ γ) (x : α) :

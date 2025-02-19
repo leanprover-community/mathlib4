@@ -5,7 +5,9 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Data.Stream.Defs
 import Mathlib.Logic.Function.Basic
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Defs
+import Mathlib.Data.Nat.Basic
+import Mathlib.Tactic.Common
 
 /-!
 # Streams a.k.a. infinite lists a.k.a. infinite sequences
@@ -112,7 +114,7 @@ theorem mem_cons_of_mem {a : α} {s : Stream' α} (b : α) : a ∈ s → a ∈ b
 
 theorem eq_or_mem_of_mem_cons {a b : α} {s : Stream' α} : (a ∈ b::s) → a = b ∨ a ∈ s :=
     fun ⟨n, h⟩ => by
-  cases' n with n'
+  rcases n with - | n'
   · left
     exact h
   · right

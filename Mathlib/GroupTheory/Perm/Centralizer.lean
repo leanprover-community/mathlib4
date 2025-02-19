@@ -3,19 +3,16 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.NoncommCoprod
-import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.GroupTheory.Perm.ConjAct
-import Mathlib.GroupTheory.Perm.Cycle.Factors
 import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
 import Mathlib.GroupTheory.Perm.DomMulAct
-import Mathlib.GroupTheory.Perm.Finite
 
-/-! # Centralizer of a permutation and cardinality of conjugacy classes
-  # in the symmetric groups
+/-!
+# Centralizer of a permutation and cardinality of conjugacy classes in the symmetric groups
 
 Let `α : Type` with `Fintype α` (and `DecidableEq α`).
 The main goal of this file is to compute the cardinality of
@@ -123,7 +120,7 @@ lemma Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset {k c : Perm α}
   conv_lhs => rw [this]
   simp only [Finset.coe_smul_finset]
 
-/-- The action by conjugation of `Subgroup.centraliser {g}`
+/-- The action by conjugation of `Subgroup.centralizer {g}`
   on the cycles of a given permutation -/
 def Subgroup.Centralizer.cycleFactorsFinset_mulAction :
     MulAction (centralizer {g}) g.cycleFactorsFinset where
@@ -524,7 +521,7 @@ theorem kerParam_range_eq :
       refine ⟨⟨i, mem_centralizer_singleton_iff.mpr (self_mem_cycle_factors_commute i.2)⟩, ?_, rfl⟩
       exact Perm.ext fun x ↦ Subtype.ext (cycleFactorsFinset_mem_commute' g i.2 x.2).mul_inv_cancel
   · rintro - ⟨p, hp, rfl⟩
-    simp only [coeSubtype]
+    simp only [coe_subtype]
     set u : Perm (Function.fixedPoints g) :=
       subtypePerm p (fun x ↦ mem_fixedPoints_iff_apply_mem_of_mem_centralizer p.2)
     simp only [SetLike.mem_coe, mem_ker_toPermHom_iff, IsCycle.forall_commute_iff] at hp
@@ -632,16 +629,10 @@ theorem card_of_cycleType (m : Multiset ℕ) :
   · -- nonempty case
     apply symm
     apply Nat.div_eq_of_eq_mul_left
-    · apply Nat.mul_pos
-      · apply Nat.mul_pos
-        · apply Nat.factorial_pos
-        · apply Multiset.prod_pos
-          exact fun a ha ↦ lt_of_lt_of_le (zero_lt_two) (hm.2 a ha)
-      · exact Finset.prod_pos (fun _ _ ↦ Nat.factorial_pos _)
+    · have : 0 < m.prod := Multiset.prod_pos <| fun a ha => zero_lt_two.trans_le (hm.2 a ha)
+      positivity
     rw [card_of_cycleType_mul_eq, if_pos hm]
   · -- empty case
     exact (card_of_cycleType_eq_zero_iff α).mpr hm
 
 end Equiv.Perm
-
-
