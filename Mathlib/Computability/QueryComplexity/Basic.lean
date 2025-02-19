@@ -126,7 +126,7 @@ lemma value_bind (f : Comp ι ω s α) (g : α → Comp ι ω s β) (o : (i : I)
   · simp only [value_query', query'_bind, h]
 
 /-!
-## `allow` and `allow_all` don't change `Comp.value`, `Comp.cost` and `pure`
+## `allow` and `allowAll` don't change `Comp.value`, `Comp.cost` and `pure`
 -/
 
 @[simp]
@@ -138,8 +138,8 @@ lemma value_allow (f : Comp ι ω s α) (st : s ⊆ t) (o : (i : I) → Oracle (
   · simp only [allow, value_query', h]
 
 @[simp]
-lemma value_allow_all (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) :
-    f.allow_all.value o = f.value o := by
+lemma value_allowAll (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) :
+    f.allowAll.value o = f.value o := by
   apply value_allow
 
 @[simp]
@@ -150,8 +150,8 @@ lemma cost_allow (f : Comp ι ω s α) (st : s ⊆ t) (o : (i : I) → Oracle (�
   · simp only [allow, cost_query', h]
 
 @[simp]
-lemma cost_allow_all (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) (i : I) :
-    f.allow_all.cost o i = f.cost o i := by
+lemma cost_allowAll (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) (i : I) :
+    f.allowAll.cost o i = f.cost o i := by
   apply cost_allow
 
 @[simp]
@@ -159,8 +159,8 @@ lemma allow_pure (x : α) (st : s ⊆ t) : (pure x : Comp ι ω s α).allow st =
   simp only [allow]
 
 @[simp]
-lemma allow_all_pure (x : α) : (pure x : Comp ι ω s α).allow_all = pure x := by
-  simp only [allow_all, allow_pure]
+lemma allowAll_pure (x : α) : (pure x : Comp ι ω s α).allowAll = pure x := by
+  simp only [allowAll, allow_pure]
 
 /-!
 ## `map` doesn't change `Comp.value` and `Comp.cost`
