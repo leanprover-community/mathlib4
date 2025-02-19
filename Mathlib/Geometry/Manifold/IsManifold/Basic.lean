@@ -803,7 +803,8 @@ instance empty [IsEmpty M] : IsManifold I n M := by
 
 attribute [local instance] ChartedSpace.of_discreteTopology in
 variable (n) in
-def of_discreteTopology [DiscreteTopology M] [Unique E] :
+/-- A discrete space `M` is a smooth manifold over the trivial model on a trivial normed space. -/
+theorem of_discreteTopology [DiscreteTopology M] [Unique E] :
     IsManifold (modelWithCornersSelf 𝕜 E) n M := by
   apply isManifold_of_contDiffOn _ _ _ (fun _ _ _ _ ↦ contDiff_of_subsingleton.contDiffOn)
 
