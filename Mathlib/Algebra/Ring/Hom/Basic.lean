@@ -17,6 +17,7 @@ These lemmas have been banished here to avoid unnecessary imports in
 They could be moved to more natural homes.
 -/
 
+assert_not_exists RelIso Field
 
 open Function
 

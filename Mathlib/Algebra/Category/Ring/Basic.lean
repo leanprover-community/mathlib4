@@ -124,14 +124,10 @@ lemma ofHom_comp {R S T : Type u} [Semiring R] [Semiring S] [Semiring T]
 lemma ofHom_apply {R S : Type u} [Semiring R] [Semiring S]
     (f : R →+* S) (r : R) : ofHom f r = f r := rfl
 
-@[simp]
 lemma inv_hom_apply {R S : SemiRingCat} (e : R ≅ S) (r : R) : e.inv (e.hom r) = r := by
-  rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {R S : SemiRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 instance : Inhabited SemiRingCat :=
@@ -278,14 +274,10 @@ lemma ofHom_comp {R S T : Type u} [Ring R] [Ring S] [Ring T]
 lemma ofHom_apply {R S : Type u} [Ring R] [Ring S]
     (f : R →+* S) (r : R) : ofHom f r = f r := rfl
 
-@[simp]
 lemma inv_hom_apply {R S : RingCat} (e : R ≅ S) (r : R) : e.inv (e.hom r) = r := by
-  rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {R S : RingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 instance : Inhabited RingCat :=
@@ -437,14 +429,10 @@ lemma ofHom_comp {R S T : Type u} [CommSemiring R] [CommSemiring S] [CommSemirin
 lemma ofHom_apply {R S : Type u} [CommSemiring R] [CommSemiring S]
     (f : R →+* S) (r : R) : ofHom f r = f r := rfl
 
-@[simp]
 lemma inv_hom_apply {R S : CommSemiRingCat} (e : R ≅ S) (r : R) : e.inv (e.hom r) = r := by
-  rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {R S : CommSemiRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 instance : Inhabited CommSemiRingCat :=
@@ -594,14 +582,10 @@ lemma ofHom_comp {R S T : Type u} [CommRing R] [CommRing S] [CommRing T]
 lemma ofHom_apply {R S : Type u} [CommRing R] [CommRing S]
     (f : R →+* S) (r : R) : ofHom f r = f r := rfl
 
-@[simp]
 lemma inv_hom_apply {R S : CommRingCat} (e : R ≅ S) (r : R) : e.inv (e.hom r) = r := by
-  rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {R S : CommRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 instance : Inhabited CommRingCat :=
