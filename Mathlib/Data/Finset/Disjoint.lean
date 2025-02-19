@@ -52,7 +52,7 @@ alias ⟨_root_.Disjoint.not_mem_of_mem_left_finset, _⟩ := disjoint_left
 theorem disjoint_right : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ t → a ∉ s := by
   rw [_root_.disjoint_comm, disjoint_left]
 
-alias ⟨_root_.Disjoint.not_mem_of_mem_right_finset, _⟩ := disjoint_left
+alias ⟨_root_.Disjoint.not_mem_of_mem_right_finset, _⟩ := disjoint_right
 
 theorem disjoint_iff_ne : Disjoint s t ↔ ∀ a ∈ s, ∀ b ∈ t, a ≠ b := by
   simp only [disjoint_left, imp_not_comm, forall_eq']
