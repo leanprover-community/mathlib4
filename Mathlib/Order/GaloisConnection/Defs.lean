@@ -4,13 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Order.BoundedOrder.Basic
-import Mathlib.Logic.Equiv.Option
-import Mathlib.Order.RelIso.Basic
-import Mathlib.Order.Disjoint
-import Mathlib.Order.WithBot
+import Mathlib.Order.Monotone.Basic
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Util.AssertExists
-import Mathlib.Order.Monotone.Basic
 
 /-!
 # Galois connections, insertions and coinsertions
