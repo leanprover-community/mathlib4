@@ -168,7 +168,7 @@ def Homeomorph.sumEquivBoolProd (X : Type*) [TopologicalSpace X] : X ⊕ X ≃�
   · show Continuous (Sum.elim (Prod.mk false) (Prod.mk true))
     fun_prop
   · show IsClosedMap (Sum.elim (Prod.mk false) (Prod.mk true))
-    exact (isClosedMap_prod_mk_left false).sum_elim (isClosedMap_prod_mk_left true)
+    exact (isClosedMap_prodMk_left false).sum_elim (isClosedMap_prodMk_left true)
 
 def Homeomorph.finTwo : Bool ≃ₜ Fin 2 where
   toEquiv := finTwoEquiv.symm
@@ -179,10 +179,12 @@ def Homeomorph.foo {X : Type*} [TopologicalSpace X] : X ⊕ X ≃ₜ X × Fin 2 
 
 -- def Diffeomorph.foo : M ⊕ M ≃ₘ^k⟮I, I⟯ M × Fin 2 := sorry
 
+attribute [local instance] ChartedSpace.of_discreteTopology in
+attribute [local instance] IsManifold.of_discreteTopology in
 noncomputable def BoundaryManifoldData.Icc (n : ℕ) (k : ℕ∞) :
     BoundaryManifoldData (Set.Icc (0 : ℝ) 1) (𝓡∂ 1) k (𝓡 0) where
   M₀ := Fin 2
-  -- TODO: these are missing from mathlib
+  -- TODO: these are missing from mathlib - actually, do the above two local instances work now?
   chartedSpace := sorry
   isManifold := sorry
   f x := if h : x = 0 then ⊥ else ⊤
@@ -331,7 +333,7 @@ noncomputable def BoundaryManifoldData.prod_Icc [Nonempty H] [Nonempty M]
             congrArg Prod.fst hxy
           rw [this]
     · apply IsClosedMap.sum_elim
-      all_goals apply IsClosedMap.prod_mk_right
+      all_goals apply isClosedMap_prodMk_right
   contMDiff := (contMDiff_id.prod_mk contMDiff_const).sum_elim
     (contMDiff_id.prod_mk contMDiff_const)
   isImmersion p := by
