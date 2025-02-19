@@ -33,7 +33,7 @@ what went wrong, otherwise return `none`. -/
 def checkDocstring (initialWhitespace input : String) : Option (Array String) := do
   let mut errors := #[]
   match initialWhitespace with
-  | "\n" | " " => {let _n := 37}
+  | "\n" | " " => pure ()
   | "" =>
     errors := errors.push s!"error: doc-string \"{input}\" should start with a space or newline"
   | _ =>
@@ -42,12 +42,12 @@ def checkDocstring (initialWhitespace input : String) : Option (Array String) :=
 
   -- Check the ending of the doc-string: a new line or exactly one space.
   if !(input.endsWith "\n" || input.endsWith " ") then
-    errors := errors.push s!"error: doc-string \"{input}\" end start with a space or newline"
+    errors := errors.push s!"error: doc-string \"{input}\" should end with a space or newline"
   else if (input.endsWith "  ") then
     errors := errors.push s!"error: doc-string \"{input}\" should end with at most a single space"
   -- Catch misleading indentation.
   let lines := (input.split (· == '\n')).drop 0
-  if lines.any (fun l ↦ l.startsWith " ") then
+  if lines.any (·.startsWith " ") then
     errors := errors.push s!"error: subsequent lines in the doc-string \"{input}\" should not be indented"
   if input.trimRight.endsWith "\"" then
     errors := errors.push s!"error: docstring \"{input}\" ends with a single quote"
@@ -55,7 +55,6 @@ def checkDocstring (initialWhitespace input : String) : Option (Array String) :=
     errors := errors.push s!"error: docstring \"{input}\" ends with a comma"
   -- This list of checks is not exhaustive, but a good start.
   errors
-
 
 @[inherit_doc Mathlib.Linter.linter.style.docString]
 def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
