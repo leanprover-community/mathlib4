@@ -336,7 +336,7 @@ theorem image_subset_preimage_of_inverse {f : α → β} {g : β → α} (I : Le
 theorem preimage_subset_image_of_inverse {f : α → β} {g : β → α} (I : LeftInverse g f) (s : Set β) :
     f ⁻¹' s ⊆ g '' s := fun b h => ⟨f b, h, I b⟩
 
-theorem range_intersection_ssubset_iff_preimage_ssubset {f : α → β} {S S' : Set β} :
+theorem range_inter_ssubset_iff_preimage_ssubset {f : α → β} {S S' : Set β} :
   range f ∩ S ⊂ range f ∩ S' ↔ f ⁻¹' S ⊂ f ⁻¹' S' := by
     simp only [Set.ssubset_iff_exists]
     apply and_congr ?_ (by aesop)
