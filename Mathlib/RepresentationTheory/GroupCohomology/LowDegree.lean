@@ -105,6 +105,12 @@ theorem dZero_ker_eq_invariants : LinearMap.ker (dZero A) = invariants A.ρ := b
   ext
   simp only [dZero_apply, apply_eq_self, sub_self, LinearMap.zero_apply, Pi.zero_apply]
 
+lemma dZero_comp_subtype : dZero A ∘ₗ A.ρ.invariants.subtype = 0 := by
+  ext ⟨x, hx⟩ g
+  replace hx := hx g
+  rw [← sub_eq_zero] at hx
+  exact hx
+
 /-- The 1st differential in the complex of inhomogeneous cochains of `A : Rep k G`, as a
 `k`-linear map `Fun(G, A) → Fun(G × G, A)`. It sends
 `(f, (g₁, g₂)) ↦ ρ_A(g₁)(f(g₂)) - f(g₁g₂) + f(g₁).` -/
@@ -205,10 +211,24 @@ theorem dTwo_comp_dOne : dTwo A ∘ₗ dOne A = 0 := by
   show (ModuleCat.ofHom (dOne A) ≫ ModuleCat.ofHom (dTwo A)).hom = _
   have h1 := congr_arg ModuleCat.ofHom (dOne_comp_eq A)
   have h2 := congr_arg ModuleCat.ofHom (dTwo_comp_eq A)
-  simp only [ModuleCat.ofHom_comp, ModuleCat.ofHom_comp, ← LinearEquiv.toModuleIso_hom_hom] at h1 h2
+  simp only [ModuleCat.ofHom_comp, ModuleCat.ofHom_comp, ← LinearEquiv.toModuleIso_hom] at h1 h2
   simp only [(Iso.eq_inv_comp _).2 h2, (Iso.eq_inv_comp _).2 h1, ModuleCat.ofHom_hom,
     ModuleCat.hom_ofHom, Category.assoc, Iso.hom_inv_id_assoc, HomologicalComplex.d_comp_d_assoc,
     zero_comp, comp_zero, ModuleCat.hom_zero]
+
+open ShortComplex
+
+/-- The (exact) short complex `A.ρ.invariants ⟶ A ⟶ (G → A)`. -/
+def shortComplexH0 : ShortComplex (ModuleCat k) :=
+  moduleCatMk _ _ (dZero_comp_subtype A)
+
+/-- The short complex `A --dZero--> Fun(G, A) --dOne--> Fun(G × G, A)`. -/
+def shortComplexH1 : ShortComplex (ModuleCat k) :=
+  moduleCatMk (dZero A) (dOne A) (dOne_comp_dZero A)
+
+/-- The short complex `Fun(G, A) --dOne--> Fun(G × G, A) --dTwo--> Fun(G × G × G, A)`. -/
+def shortComplexH2 : ShortComplex (ModuleCat k) :=
+  moduleCatMk (dOne A) (dTwo A) (dTwo_comp_dOne A)
 
 end Differentials
 
@@ -660,23 +680,31 @@ section Cohomology
 
 /-- We define the 0th group cohomology of a `k`-linear `G`-representation `A`, `H⁰(G, A)`, to be
 the invariants of the representation, `Aᴳ`. -/
-abbrev H0 := A.ρ.invariants
+abbrev H0 := ModuleCat.of k A.ρ.invariants
 
 /-- We define the 1st group cohomology of a `k`-linear `G`-representation `A`, `H¹(G, A)`, to be
 1-cocycles (i.e. `Z¹(G, A) := Ker(d¹ : Fun(G, A) → Fun(G², A)`) modulo 1-coboundaries
 (i.e. `B¹(G, A) := Im(d⁰: A → Fun(G, A))`). -/
-abbrev H1 := oneCocycles A ⧸ oneCoboundaries A
+abbrev H1 := (shortComplexH1 A).moduleCatHomology
 
 /-- The quotient map `Z¹(G, A) → H¹(G, A).` -/
-def H1_π : oneCocycles A →ₗ[k] H1 A := (oneCoboundaries A).mkQ
+abbrev H1π : ModuleCat.of k (oneCocycles A) ⟶ H1 A := (shortComplexH1 A).moduleCatHomologyπ
+
+variable {A} in
+lemma H1π_eq_zero_iff (x : oneCocycles A) : H1π A x = 0 ↔ x ∈ oneCoboundaries A :=
+  Submodule.Quotient.mk_eq_zero _
 
 /-- We define the 2nd group cohomology of a `k`-linear `G`-representation `A`, `H²(G, A)`, to be
 2-cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo 2-coboundaries
 (i.e. `B²(G, A) := Im(d¹: Fun(G, A) → Fun(G², A))`). -/
-abbrev H2 := twoCocycles A ⧸ twoCoboundaries A
+abbrev H2 := (shortComplexH2 A).moduleCatHomology
 
 /-- The quotient map `Z²(G, A) → H²(G, A).` -/
-def H2_π : twoCocycles A →ₗ[k] H2 A := (twoCoboundaries A).mkQ
+abbrev H2π : ModuleCat.of k (twoCocycles A) ⟶ H2 A := (shortComplexH2 A).moduleCatHomologyπ
+
+variable {A} in
+lemma H2π_eq_zero_iff (x : twoCocycles A) : H2π A x = 0 ↔ x ∈ twoCoboundaries A :=
+  Submodule.Quotient.mk_eq_zero _
 
 end Cohomology
 
@@ -706,16 +734,16 @@ def H1LequivOfIsTrivial [A.IsTrivial] :
   (Submodule.quotEquivOfEqBot _ (oneCoboundaries_eq_bot_of_isTrivial A)).trans
     (oneCocyclesLequivOfIsTrivial A)
 
-theorem H1LequivOfIsTrivial_comp_H1_π [A.IsTrivial] :
-    (H1LequivOfIsTrivial A).comp (H1_π A) = oneCocyclesLequivOfIsTrivial A := by
+theorem H1LequivOfIsTrivial_comp_H1π [A.IsTrivial] :
+    (H1LequivOfIsTrivial A).comp (H1π A).hom = oneCocyclesLequivOfIsTrivial A := by
   ext; rfl
 
 @[simp] theorem H1LequivOfIsTrivial_H1_π_apply_apply
     [A.IsTrivial] (f : oneCocycles A) (x : Additive G) :
-    H1LequivOfIsTrivial A (H1_π A f) x = f x.toMul := rfl
+    H1LequivOfIsTrivial A (Submodule.Quotient.mk f) x = f x.toMul := rfl
 
 @[simp] theorem H1LequivOfIsTrivial_symm_apply [A.IsTrivial] (f : Additive G →+ A) :
-    (H1LequivOfIsTrivial A).symm f = H1_π A ((oneCocyclesLequivOfIsTrivial A).symm f) :=
+    (H1LequivOfIsTrivial A).symm f = H1π A ((oneCocyclesLequivOfIsTrivial A).symm f) :=
   rfl
 
 end H1
@@ -725,16 +753,6 @@ section groupCohomologyIso
 open ShortComplex
 
 section H0
-
-lemma dZero_comp_H0_subtype : dZero A ∘ₗ (H0 A).subtype = 0 := by
-  ext ⟨x, hx⟩ g
-  replace hx := hx g
-  rw [← sub_eq_zero] at hx
-  exact hx
-
-/-- The (exact) short complex `A.ρ.invariants ⟶ A ⟶ (G → A)`. -/
-def shortComplexH0 : ShortComplex (ModuleCat k) :=
-  ShortComplex.moduleCatMk _ _ (dZero_comp_H0_subtype A)
 
 instance : Mono (shortComplexH0 A).f := by
   rw [ModuleCat.mono_iff_injective]
@@ -757,11 +775,12 @@ def dZeroArrowIso : Arrow.mk ((inhomogeneousCochains A).d 0 1) ≅
 
 /-- The 0-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `A.ρ.invariants`, which is a simpler type. -/
-def isoZeroCocycles : cocycles A 0 ≅ ModuleCat.of k A.ρ.invariants :=
+def isoZeroCocycles : cocycles A 0 ≅ H0 A :=
   KernelFork.mapIsoOfIsLimit
     ((inhomogeneousCochains A).cyclesIsKernel 0 1 (by simp)) (shortComplexH0_exact A).fIsKernel
       (dZeroArrowIso A)
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoZeroCocycles_hom_comp_subtype :
     (isoZeroCocycles A).hom ≫ ModuleCat.ofHom A.ρ.invariants.subtype =
       iCocycles A 0 ≫ (zeroCochainsLequiv A).toModuleIso.hom := by
@@ -770,9 +789,10 @@ lemma isoZeroCocycles_hom_comp_subtype :
 
 /-- The 0th group cohomology of `A`, defined as the 0th cohomology of the complex of inhomogeneous
 cochains, is isomorphic to the invariants of the representation on `A`. -/
-def isoH0 : groupCohomology A 0 ≅ ModuleCat.of k (H0 A) :=
+def isoH0 : groupCohomology A 0 ≅ H0 A :=
   (CochainComplex.isoHomologyπ₀ _).symm ≪≫ isoZeroCocycles A
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma groupCohomologyπ_comp_isoH0_hom  :
     groupCohomologyπ A 0 ≫ (isoH0 A).hom = (isoZeroCocycles A).hom := by
   simp [isoH0]
@@ -780,10 +800,6 @@ lemma groupCohomologyπ_comp_isoH0_hom  :
 end H0
 
 section H1
-
-/-- The short complex `A --dZero--> Fun(G, A) --dOne--> Fun(G × G, A)`. -/
-def shortComplexH1 : ShortComplex (ModuleCat k) :=
-  moduleCatMk (dZero A) (dOne A) (dOne_comp_dZero A)
 
 /-- The short complex `A --dZero--> Fun(G, A) --dOne--> Fun(G × G, A)` is isomorphic to the 1st
 short complex associated to the complex of inhomogeneous cochains of `A`. -/
@@ -800,14 +816,14 @@ def isoOneCocycles : cocycles A 1 ≅ ModuleCat.of k (oneCocycles A) :=
   (inhomogeneousCochains A).cyclesIsoSc' _ _ _ (by simp) (by simp) ≪≫
     cyclesMapIso (shortComplexH1Iso A) ≪≫ (shortComplexH1 A).moduleCatCyclesIso
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoOneCocycles_hom_comp_subtype :
     (isoOneCocycles A).hom ≫ ModuleCat.ofHom (oneCocycles A).subtype =
       iCocycles A 1 ≫ (oneCochainsLequiv A).toModuleIso.hom := by
-  dsimp [isoOneCocycles]
-  rw [Category.assoc, Category.assoc]
-  erw [(shortComplexH1 A).moduleCatCyclesIso_hom_subtype]
-  rw [cyclesMap_i, HomologicalComplex.cyclesIsoSc'_hom_iCycles_assoc]
+  have := (shortComplexH1 A).moduleCatCyclesIso_hom_subtype
+  simp_all [shortComplexH1, isoOneCocycles, oneCocycles]
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma toCocycles_comp_isoOneCocycles_hom :
     toCocycles A 0 1 ≫ (isoOneCocycles A).hom =
       (zeroCochainsLequiv A).toModuleIso.hom ≫
@@ -816,22 +832,18 @@ lemma toCocycles_comp_isoOneCocycles_hom :
 
 /-- The 1st group cohomology of `A`, defined as the 1st cohomology of the complex of inhomogeneous
 cochains, is isomorphic to `oneCocycles A ⧸ oneCoboundaries A`, which is a simpler type. -/
-def isoH1 : groupCohomology A 1 ≅ ModuleCat.of k (H1 A) :=
+def isoH1 : groupCohomology A 1 ≅ H1 A :=
   (inhomogeneousCochains A).homologyIsoSc' _ _ _ (by simp) (by simp) ≪≫
     homologyMapIso (shortComplexH1Iso A) ≪≫ (shortComplexH1 A).moduleCatHomologyIso
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma groupCohomologyπ_comp_isoH1_hom  :
-    groupCohomologyπ A 1 ≫ (isoH1 A).hom =
-      (isoOneCocycles A).hom ≫ (shortComplexH1 A).moduleCatHomologyπ := by
+    groupCohomologyπ A 1 ≫ (isoH1 A).hom = (isoOneCocycles A).hom ≫ H1π A := by
   simp [isoH1, isoOneCocycles]
 
 end H1
 
 section H2
-
-/-- The short complex `Fun(G, A) --dOne--> Fun(G × G, A) --dTwo--> Fun(G × G × G, A)`. -/
-def shortComplexH2 : ShortComplex (ModuleCat k) :=
-  moduleCatMk (dOne A) (dTwo A) (dTwo_comp_dOne A)
 
 /-- The short complex `Fun(G, A) --dOne--> Fun(G × G, A) --dTwo--> Fun(G × G × G, A)` is
 isomorphic to the 2nd short complex associated to the complex of inhomogeneous cochains of `A`. -/
@@ -849,14 +861,14 @@ def isoTwoCocycles : cocycles A 2 ≅ ModuleCat.of k (twoCocycles A) :=
   (inhomogeneousCochains A).cyclesIsoSc' _ _ _ (by simp) (by simp) ≪≫
     cyclesMapIso (shortComplexH2Iso A) ≪≫ (shortComplexH2 A).moduleCatCyclesIso
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoTwoCocycles_hom_comp_subtype :
     (isoTwoCocycles A).hom ≫ ModuleCat.ofHom (twoCocycles A).subtype =
       iCocycles A 2 ≫ (twoCochainsLequiv A).toModuleIso.hom := by
-  dsimp [isoTwoCocycles]
-  rw [Category.assoc, Category.assoc]
-  erw [(shortComplexH2 A).moduleCatCyclesIso_hom_subtype]
-  rw [cyclesMap_i, HomologicalComplex.cyclesIsoSc'_hom_iCycles_assoc]
+  have := (shortComplexH2 A).moduleCatCyclesIso_hom_subtype
+  simp_all [shortComplexH2, isoTwoCocycles, twoCocycles]
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma toCocycles_comp_isoTwoCocycles_hom :
     toCocycles A 1 2 ≫ (isoTwoCocycles A).hom =
       (oneCochainsLequiv A).toModuleIso.hom ≫
@@ -865,13 +877,13 @@ lemma toCocycles_comp_isoTwoCocycles_hom :
 
 /-- The 2nd group cohomology of `A`, defined as the 2nd cohomology of the complex of inhomogeneous
 cochains, is isomorphic to `twoCocycles A ⧸ twoCoboundaries A`, which is a simpler type. -/
-def isoH2 : groupCohomology A 2 ≅ ModuleCat.of k (H2 A) :=
+def isoH2 : groupCohomology A 2 ≅ H2 A :=
   (inhomogeneousCochains A).homologyIsoSc' _ _ _ (by simp) (by simp) ≪≫
     homologyMapIso (shortComplexH2Iso A) ≪≫ (shortComplexH2 A).moduleCatHomologyIso
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma groupCohomologyπ_comp_isoH2_hom  :
-    groupCohomologyπ A 2 ≫ (isoH2 A).hom =
-      (isoTwoCocycles A).hom ≫ (shortComplexH2 A).moduleCatHomologyπ := by
+    groupCohomologyπ A 2 ≫ (isoH2 A).hom = (isoTwoCocycles A).hom ≫ H2π A := by
   simp [isoH2, isoTwoCocycles]
 
 end H2

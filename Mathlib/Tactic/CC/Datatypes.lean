@@ -3,9 +3,9 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
-import Lean.Meta.Tactic.Rfl
 import Batteries.Data.RBMap.Basic
 import Mathlib.Lean.Meta.Basic
+import Mathlib.Lean.Meta.CongrTheorems
 import Mathlib.Data.Ordering.Basic
 
 /-!
@@ -428,7 +428,8 @@ Note that this only works for two-argument relations: `ModEq n` and `ModEq m` ar
 same. -/
 abbrev SymmCongruences := Std.HashMap SymmCongruencesKey (List (Expr × Name))
 
-/-- Stores the root representatives of subsingletons. -/
+/-- Stores the root representatives of subsingletons, this uses `FastSingleton` instead of
+`Subsingleton`. -/
 abbrev SubsingletonReprs := RBExprMap Expr
 
 /-- Stores the root representatives of `.instImplicit` arguments. -/
@@ -469,7 +470,7 @@ structure CCState extends CCConfig where
   /-- Records equality between `ACApps`. -/
   acR : RBACAppsMap (ACApps × DelayedExpr) := ∅
   /-- Returns true if the `CCState` is inconsistent. For example if it had both `a = b` and `a ≠ b`
-      in it.-/
+      in it. -/
   inconsistent : Bool := false
   /-- "Global Modification Time". gmt is a number stored on the `CCState`,
       it is compared with the modification time of a cc_entry in e-matching. See `CCState.mt`. -/

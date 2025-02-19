@@ -1362,7 +1362,7 @@ theorem ContinuousOn.if' {s : Set α} {p : α → Prop} {f g : α → β} [∀ a
   by_cases hx' : x ∈ frontier { a | p a }
   · exact (hpf x ⟨hx, hx'⟩).piecewise_nhdsWithin (hpg x ⟨hx, hx'⟩)
   · rw [← inter_univ s, ← union_compl_self { a | p a }, inter_union_distrib_left] at hx ⊢
-    cases' hx with hx hx
+    rcases hx with hx | hx
     · apply ContinuousWithinAt.union
       · exact (hf x hx).congr (fun y hy => if_pos hy.2) (if_pos hx.2)
       · have : x ∉ closure { a | p a }ᶜ := fun h => hx' ⟨subset_closure hx.2, by
@@ -1494,6 +1494,17 @@ lemma ContinuousOn.union_continuousAt
   continuousOn_of_forall_continuousAt <| fun _ hx => hx.elim
   (fun h => ContinuousWithinAt.continuousAt (continuousWithinAt hs h) <| IsOpen.mem_nhds s_op h)
   (ht _)
+
+open Classical in
+/-- If a function is continuous on two closed sets, it is also continuous on their union. -/
+theorem ContinuousOn.union_isClosed {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    {s t : Set X} (hs : IsClosed s) (ht : IsClosed t) {f : X → Y} (hfs : ContinuousOn f s)
+    (hft : ContinuousOn f t) : ContinuousOn f (s ∪ t) := by
+  refine fun x hx ↦ .union ?_ ?_
+  · refine if hx : x ∈ s then hfs x hx else continuousWithinAt_of_not_mem_closure ?_
+    rwa [hs.closure_eq]
+  · refine if hx : x ∈ t then hft x hx else continuousWithinAt_of_not_mem_closure ?_
+    rwa [ht.closure_eq]
 
 /-- If `f` is continuous on some neighbourhood `s'` of `s` and `f` maps `s` to `t`,
 the preimage of a set neighbourhood of `t` is a set neighbourhood of `s`. -/

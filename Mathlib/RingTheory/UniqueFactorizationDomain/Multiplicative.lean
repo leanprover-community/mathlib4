@@ -15,6 +15,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
   primes `p`, and `f` is multiplicative on coprime elements, then `f` is multiplicative everywhere.
 -/
 
+assert_not_exists Field
 
 variable {α : Type*}
 

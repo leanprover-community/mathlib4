@@ -3,6 +3,7 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
+import Mathlib.Data.Finset.Pi
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Order.Interval.Finset.Basic
 
@@ -59,7 +60,7 @@ variable [LocallyFiniteOrderBot α]
 
 open Finset
 
-/-- Restrict domain of a function `f` indexed by `α` to elements `≤ α`, seen as a finite set. -/
+/-- Restrict domain of a function `f` indexed by `α` to elements `≤ a`, seen as a finite set. -/
 def frestrictLe (a : α) := (Iic a).restrict (π := π)
 
 @[simp]

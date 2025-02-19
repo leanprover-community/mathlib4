@@ -404,7 +404,7 @@ def isoOfIsIsomorphicZero {X : C} (P : IsIsomorphic X 0) : X ≅ 0 where
   hom := 0
   inv := 0
   hom_inv_id := by
-    cases' P with P
+    have P := P.some
     rw [← P.hom_inv_id, ← Category.id_comp P.inv]
     apply Eq.symm
     simp only [id_comp, Iso.hom_inv_id, comp_zero]
@@ -420,7 +420,6 @@ variable [HasZeroMorphisms C]
 /-- A zero morphism `0 : X ⟶ Y` is an isomorphism if and only if
 the identities on both `X` and `Y` are zero.
 -/
-@[simps]
 def isIsoZeroEquiv (X Y : C) : IsIso (0 : X ⟶ Y) ≃ 𝟙 X = 0 ∧ 𝟙 Y = 0 where
   toFun := by
     intro i
@@ -430,9 +429,6 @@ def isIsoZeroEquiv (X Y : C) : IsIso (0 : X ⟶ Y) ≃ 𝟙 X = 0 ∧ 𝟙 Y = 0
   invFun h := ⟨⟨(0 : Y ⟶ X), by aesop_cat⟩⟩
   left_inv := by aesop_cat
   right_inv := by aesop_cat
-
--- Porting note: simp solves these
-attribute [-simp, nolint simpNF] isIsoZeroEquiv_apply isIsoZeroEquiv_symm_apply
 
 /-- A zero morphism `0 : X ⟶ X` is an isomorphism if and only if
 the identity on `X` is zero.

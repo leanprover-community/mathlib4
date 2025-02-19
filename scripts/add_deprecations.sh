@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/env bash
 
  : <<'BASH_MODULE_DOC'
 
