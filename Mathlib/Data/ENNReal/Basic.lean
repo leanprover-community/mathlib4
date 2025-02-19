@@ -503,19 +503,23 @@ lemma ofNat_lt_top {n : ℕ} [Nat.AtLeastTwo n] : ofNat(n) < ∞ := natCast_lt_t
 @[simp] theorem one_lt_top : 1 < ∞ := coe_lt_top
 
 @[simp, norm_cast]
-theorem toNNReal_nat (n : ℕ) : (n : ℝ≥0∞).toNNReal = n := by
+theorem toNNReal_natCast (n : ℕ) : (n : ℝ≥0∞).toNNReal = n := by
   rw [← ENNReal.coe_natCast n, ENNReal.toNNReal_coe]
 
+@[deprecated (since := "2025-02-19")] alias toNNReal_nat := toNNReal_natCast
+
 @[simp, norm_cast]
-theorem toReal_nat (n : ℕ) : (n : ℝ≥0∞).toReal = n := by
+theorem toReal_natCast (n : ℕ) : (n : ℝ≥0∞).toReal = n := by
   rw [← ENNReal.ofReal_natCast n, ENNReal.toReal_ofReal (Nat.cast_nonneg _)]
 
+@[deprecated (since := "2025-02-19")] alias toReal_nat := toReal_natCast
+
 @[simp] theorem toReal_ofNat (n : ℕ) [n.AtLeastTwo] : ENNReal.toReal ofNat(n) = ofNat(n) :=
-  toReal_nat n
+  toReal_natCast n
 
 lemma _root_.Nat.cast_toNNReal (n : ℕ) :
     (n : ℝ≥0∞).toNNReal = (n : ℝ).toNNReal := by
-  rw [Real.toNNReal_of_nonneg (by positivity), ENNReal.toNNReal_nat, mk_natCast]
+  rw [Real.toNNReal_of_nonneg (by positivity), ENNReal.toNNReal_natCast, mk_natCast]
 
 lemma _root_.Nat.rpow_mul_toNNReal (n k : ℕ) (R : ℝ) :
     n ^ k * R.toNNReal = (n ^ k * R).toNNReal := by
