@@ -2,6 +2,8 @@ import Mathlib.Tactic.Linter.DocString
 
 /-! Tests for the `docstring` linter -/
 
+set_option linter.style.docString true
+
 /--
 warning: error: doc-string "Missing space " should start with a space or newline
 note: this linter can be disabled with `set_option linter.style.docString false`
@@ -11,7 +13,7 @@ note: this linter can be disabled with `set_option linter.style.docString false`
 example : Nat := 1
 
 /--
-warning: error: doc-string "Missing ending space" end start with a space or newline
+warning: error: doc-string "Missing ending space" should end with a space or newline
 note: this linter can be disabled with `set_option linter.style.docString false`
 -/
 #guard_msgs in
