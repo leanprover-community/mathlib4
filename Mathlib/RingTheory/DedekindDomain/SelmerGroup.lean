@@ -90,7 +90,7 @@ def valuationOfNeZeroToFun (x : Kˣ) : Multiplicative ℤ :=
 
 @[simp]
 theorem valuationOfNeZeroToFun_eq (x : Kˣ) :
-    (v.valuationOfNeZeroToFun x : ℤₘ₀) = v.valuation _ (x : K) := by
+    (v.valuationOfNeZeroToFun x : ℤₘ₀) = v.valuation K x := by
   classical
   rw [show v.valuation _ (x : K) = _ * _ by rfl]
   rw [Units.val_inv_eq_inv_val]
