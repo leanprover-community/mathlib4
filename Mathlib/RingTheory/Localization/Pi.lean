@@ -84,7 +84,7 @@ localization of `∏ R i` at `M`.
 -/
 open Function in
 lemma find_me_a_name (M : Submonoid (Π i, R i)) (h : ∀ i, (nilradical (R i)).IsMaximal)
-  [∀ i, IsLocalization (M.map (Pi.evalRingHom R i)) (S i)] : 
+  [∀ i, IsLocalization (M.map (Pi.evalRingHom R i)) (S i)] :
     Surjective (Pi.ringHom (fun i ↦ RingHom.comp (algebraMap (R i) (S i)) (Pi.evalRingHom R i))) := by
   apply Function.Surjective.piMap (fun i ↦ ?_)
   by_cases h₀ : (0 : R i) ∈ (M.map (Pi.evalRingHom R i))
