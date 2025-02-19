@@ -67,6 +67,23 @@ def Injective (f : α → β) : Prop :=
 theorem Injective.comp {g : β → φ} {f : α → β} (hg : Injective g) (hf : Injective f) :
     Injective (g ∘ f) := fun _a₁ _a₂ => fun h => hf (hg h)
 
+variable {f : α → β}
+
+theorem Injective.eq_iff (I : Injective f) {a b : α} : f a = f b ↔ a = b :=
+  ⟨@I _ _, congr_arg f⟩
+
+theorem Injective.eq_iff' (I : Injective f) {a b : α} {c : β} (h : f b = c) : f a = c ↔ a = b :=
+  h ▸ I.eq_iff
+
+theorem Injective.ne (hf : Injective f) {a₁ a₂ : α} : a₁ ≠ a₂ → f a₁ ≠ f a₂ :=
+  mt fun h ↦ hf h
+
+theorem Injective.ne_iff (hf : Injective f) {x y : α} : f x ≠ f y ↔ x ≠ y :=
+  ⟨mt <| congr_arg f, hf.ne⟩
+
+theorem Injective.ne_iff' (hf : Injective f) {x y : α} {z : β} (h : f y = z) : f x ≠ z ↔ x ≠ y :=
+  h ▸ hf.ne_iff
+
 /-- A function `f : α → β` is called surjective if every `b : β` is equal to `f a`
 for some `a : α`. -/
 def Surjective (f : α → β) : Prop :=
@@ -81,6 +98,9 @@ theorem Surjective.comp {g : β → φ} {f : α → β} (hg : Surjective g) (hf 
 /-- A function is called bijective if it is both injective and surjective. -/
 def Bijective (f : α → β) :=
   Injective f ∧ Surjective f
+
+protected theorem Bijective.injective {f : α → β} (hf : Bijective f) : Injective f := hf.1
+protected theorem Bijective.surjective {f : α → β} (hf : Bijective f) : Surjective f := hf.2
 
 theorem Bijective.comp {g : β → φ} {f : α → β} : Bijective g → Bijective f → Bijective (g ∘ f)
   | ⟨h_ginj, h_gsurj⟩, ⟨h_finj, h_fsurj⟩ => ⟨h_ginj.comp h_finj, h_gsurj.comp h_fsurj⟩

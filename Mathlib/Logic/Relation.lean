@@ -3,11 +3,12 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Relator
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.SimpRw
+import Mathlib.Logic.Basic
+import Mathlib.Order.Defs.Unbundled
 
 /-!
 # Relation closures

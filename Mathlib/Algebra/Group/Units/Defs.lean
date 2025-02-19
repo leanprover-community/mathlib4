@@ -112,7 +112,7 @@ theorem ext : Function.Injective (val : αˣ → α)
 
 @[to_additive (attr := norm_cast)]
 theorem eq_iff {a b : αˣ} : (a : α) = b ↔ a = b :=
-  ⟨fun h => ext h, congr_arg _⟩
+  ext.eq_iff
 
 /-- Units have decidable equality if the base `Monoid` has decidable equality. -/
 @[to_additive "Additive units have decidable equality
