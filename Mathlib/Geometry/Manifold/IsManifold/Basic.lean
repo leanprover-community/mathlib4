@@ -640,9 +640,8 @@ variable {E' H' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [Topologi
 theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
     {e : PartialHomeomorph H H} {e' : PartialHomeomorph H' H'} (he : e ∈ contDiffGroupoid n I)
     (he' : e' ∈ contDiffGroupoid n I') : e.prod e' ∈ contDiffGroupoid n (I.prod I') := by
-  cases' he with he he_symm
-  cases' he' with he' he'_symm
-  simp only at he he_symm he' he'_symm
+  obtain ⟨he, he_symm⟩ := he
+  obtain ⟨he', he'_symm⟩ := he'
   constructor <;> simp only [PartialEquiv.prod_source, PartialHomeomorph.prod_toPartialEquiv,
     contDiffPregroupoid]
   · have h3 := ContDiffOn.prod_map he he'
@@ -823,8 +822,10 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
 
 /-- The disjoint union of two `C^n` manifolds modelled on `(E, H)`
 is a `C^n` manifold modeled on `(E, H)`. -/
-instance disjointUnion [Nonempty H] : IsManifold I n (M ⊕ M') where
+instance disjointUnion : IsManifold I n (M ⊕ M') where
   compatible {e} e' he he' := by
+    obtain (h | h) := isEmpty_or_nonempty H
+    · exact ContDiffGroupoid.mem_of_source_eq_empty _ (eq_empty_of_isEmpty _)
     obtain (⟨f, hf, hef⟩ | ⟨f, hf, hef⟩) := ChartedSpace.mem_atlas_sum he
     · obtain (⟨f', hf', he'f'⟩ | ⟨f', hf', he'f'⟩) := ChartedSpace.mem_atlas_sum he'
       · rw [hef, he'f', f.lift_openEmbedding_trans f' IsOpenEmbedding.inl]

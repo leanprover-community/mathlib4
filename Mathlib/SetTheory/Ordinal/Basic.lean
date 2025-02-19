@@ -1042,14 +1042,14 @@ def liftPrincipalSeg : Ordinal.{u} <i Ordinal.{max (u + 1) v} :=
   ⟨↑liftInitialSeg.{max (u + 1) v, u}, univ.{u, v}, by
     refine fun b => inductionOn b ?_; intro β s _
     rw [univ, ← lift_umax]; constructor <;> intro h
-    · cases' h with a e
+    · obtain ⟨a, e⟩ := h
       rw [← e]
       refine inductionOn a ?_
       intro α r _
       exact lift_type_lt.{u, u + 1, max (u + 1) v}.2 ⟨typein r⟩
     · rw [← lift_id (type s)] at h ⊢
-      cases' lift_type_lt.{_,_,v}.1 h with f
-      cases' f with f a hf
+      obtain ⟨f⟩ := lift_type_lt.{_,_,v}.1 h
+      obtain ⟨f, a, hf⟩ := f
       exists a
       revert hf
       -- Porting note: apply inductionOn does not work, refine does
@@ -1062,7 +1062,7 @@ def liftPrincipalSeg : Ordinal.{u} <i Ordinal.{max (u + 1) v} :=
         rw [typein_enum, typein_enum]
         exact f.map_rel_iff.2 h
       · intro a'
-        cases' (hf _).2 (typein_lt_type _ a') with b e
+        obtain ⟨b, e⟩ := (hf _).2 (typein_lt_type _ a')
         exists b
         simp only [RelEmbedding.ofMonotone_coe]
         simp [e]⟩
@@ -1150,7 +1150,7 @@ theorem ord_le {c o} : ord c ≤ o ↔ c ≤ o.card :=
         exact
           let ⟨f⟩ := h
           ⟨f.toEmbedding⟩
-      · cases' h with f
+      · obtain ⟨f⟩ := h
         have g := RelEmbedding.preimage f s
         haveI := RelEmbedding.isWellOrder g
         exact le_trans (ord_le_type _) g.ordinal_type_le
@@ -1350,7 +1350,7 @@ theorem lt_univ {c} : c < univ.{u, u + 1} ↔ ∃ c', c = lift.{u + 1, u} c' :=
   ⟨fun h => by
     have := ord_lt_ord.2 h
     rw [ord_univ] at this
-    cases' liftPrincipalSeg.mem_range_of_rel_top (by simpa only [liftPrincipalSeg_top]) with o e
+    obtain ⟨o, e⟩ := liftPrincipalSeg.mem_range_of_rel_top (by simpa only [liftPrincipalSeg_top])
     have := card_ord c
     rw [← e, liftPrincipalSeg_coe, ← lift_card] at this
     exact ⟨_, this.symm⟩, fun ⟨_, e⟩ => e.symm ▸ lift_lt_univ _⟩

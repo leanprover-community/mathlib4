@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Algebra.NeZero
-import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Int.DivMod
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Equiv.Set
@@ -514,7 +513,7 @@ lemma nonempty_embedding_iff : Nonempty (Fin n ↪ Fin m) ↔ n ≤ m := by
   induction n generalizing m with
   | zero => exact m.zero_le
   | succ n ihn =>
-    cases' h with e
+    obtain ⟨e⟩ := h
     rcases exists_eq_succ_of_ne_zero (pos_iff_nonempty.2 (Nonempty.map e inferInstance)).ne'
       with ⟨m, rfl⟩
     refine Nat.succ_le_succ <| ihn ⟨?_⟩
@@ -1422,7 +1421,7 @@ section Mul
 -/
 
 protected theorem mul_one' [NeZero n] (k : Fin n) : k * 1 = k := by
-  cases' n with n
+  rcases n with - | n
   · simp [eq_iff_true_of_subsingleton]
   cases n
   · simp [fin_one_eq_zero]

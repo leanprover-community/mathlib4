@@ -61,6 +61,8 @@ set, sets, subset, subsets, union, intersection, insert, singleton, complement, 
 
 -/
 
+assert_not_exists RelIso
+
 /-! ### Set coercion to a type -/
 
 open Function
@@ -317,6 +319,9 @@ theorem not_mem_subset (h : s ⊆ t) : a ∉ t → a ∉ s :=
 
 theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
   simp only [subset_def, not_forall, exists_prop]
+
+theorem not_top_subset : ¬⊤ ⊆ s ↔ ∃ a, a ∉ s := by
+  simp [not_subset]
 
 lemma eq_of_forall_subset_iff (h : ∀ u, s ⊆ u ↔ t ⊆ u) : s = t := eq_of_forall_ge_iff h
 

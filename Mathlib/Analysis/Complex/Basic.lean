@@ -140,8 +140,8 @@ def equivRealProdCLM : ℂ ≃L[ℝ] ℝ × ℝ :=
 theorem equivRealProdCLM_symm_apply (p : ℝ × ℝ) :
     Complex.equivRealProdCLM.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
 
-instance : ProperSpace ℂ :=
-  (id lipschitz_equivRealProd : LipschitzWith 1 equivRealProdCLM.toHomeomorph).properSpace
+instance : ProperSpace ℂ := lipschitz_equivRealProd.properSpace
+  equivRealProdCLM.toHomeomorph.isProperMap
 
 /-- The `abs` function on `ℂ` is proper. -/
 theorem tendsto_abs_cocompact_atTop : Tendsto abs (cocompact ℂ) atTop :=
@@ -150,7 +150,7 @@ theorem tendsto_abs_cocompact_atTop : Tendsto abs (cocompact ℂ) atTop :=
 /-- The `normSq` function on `ℂ` is proper. -/
 theorem tendsto_normSq_cocompact_atTop : Tendsto normSq (cocompact ℂ) atTop := by
   simpa [mul_self_abs]
-    using tendsto_abs_cocompact_atTop.atTop_mul_atTop tendsto_abs_cocompact_atTop
+    using tendsto_abs_cocompact_atTop.atTop_mul_atTop₀ tendsto_abs_cocompact_atTop
 
 open ContinuousLinearMap
 

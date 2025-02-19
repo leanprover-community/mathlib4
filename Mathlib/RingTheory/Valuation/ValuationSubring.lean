@@ -473,7 +473,7 @@ end UnitGroup
 
 section nonunits
 
-/-- The nonunits of a valuation subring of `K`, as a subsemigroup of `K`-/
+/-- The nonunits of a valuation subring of `K`, as a subsemigroup of `K` -/
 def nonunits : Subsemigroup K where
   carrier := {x | A.valuation x < 1}
   -- Porting note: added `Set.mem_setOf.mp`
@@ -643,10 +643,10 @@ theorem ker_unitGroupToResidueFieldUnits :
   ext
   -- Porting note: simp fails but rw works
   -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  -- simp [Subgroup.mem_comap, Subgroup.coeSubtype, coe_mem_principalUnitGroup_iff]
-  rw [Subgroup.mem_comap, Subgroup.coeSubtype, coe_mem_principalUnitGroup_iff]
+  -- simp [Subgroup.mem_comap, Subgroup.coe_subtype, coe_mem_principalUnitGroup_iff]
+  rw [Subgroup.mem_comap, Subgroup.coe_subtype, coe_mem_principalUnitGroup_iff]
   rfl
-  -- simp [Subgroup.mem_comap, Subgroup.coeSubtype, coe_mem_principalUnitGroup_iff]
+  -- simp [Subgroup.mem_comap, Subgroup.coe_subtype, coe_mem_principalUnitGroup_iff]
 
 theorem surjective_unitGroupToResidueFieldUnits :
     Function.Surjective A.unitGroupToResidueFieldUnits :=
