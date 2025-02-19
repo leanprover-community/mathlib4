@@ -9,8 +9,8 @@ import Mathlib.Data.Set.CoeSort
 /-!
 # Maximum of a subset
 
-Let `S : Set J` and `m : S`. If `m` is not the maximum of `S`,
-then `↑m : J` is not the maxium of `J`.
+Let `S : Set J` and `m : S`. If `m` is not a maximal element of `S`,
+then `↑m : J` is not maximal in `J`.
 
 -/
 
