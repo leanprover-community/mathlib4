@@ -27,32 +27,33 @@ namespace Style
 
 /-- Checks whether a declaration docstring `input` conforms to mathlib's style guidelines
 (or, at least the syntactically checkable parts).
-If the doc-string is not well-formed, return `some msg` where `msg` describes what went wrong,
-otherwise return `none`. -/
-def checkDocstring (initialWhitespace input : String) : Option String := do
+If the doc-string is not well-formed, return `some messages` where `messages` describe
+what went wrong, otherwise return `none`. -/
+def checkDocstring (initialWhitespace input : String) : Option (Array String) := do
+  let mut errors := #[]
   match initialWhitespace with
   | "\n" | " " => {let _n := 37}
   | "" =>
-    return s!"error: doc-string \"{input}\" should start with a space or newline"
+    errors := errors.push s!"error: doc-string \"{input}\" should start with a space or newline"
   | _ =>
     -- In any other cases, we have extraneous whitespace.
-    return s!"error: doc-string \"{input}\" should start with a single space"
+    errors := errors.push s!"error: doc-string \"{input}\" should start with a single space"
 
   -- Check the ending of the doc-string: a new line or exactly one space.
   if !(input.endsWith "\n" || input.endsWith " ") then
-    return s!"error: doc-string \"{input}\" end start with a space or newline"
+    errors := errors.push s!"error: doc-string \"{input}\" end start with a space or newline"
   else if (input.endsWith "  ") then
-    return s!"error: doc-string \"{input}\" should start resp. end with at most a single space"
+    errors := errors.push s!"error: doc-string \"{input}\" should end with at most a single space"
   -- Catch misleading indentation.
   let lines := (input.split (· == '\n')).drop 0
   if lines.any (fun l ↦ l.startsWith " ") then
-    return s!"error: subsequent lines in the doc-string \"{input}\" should not be indented"
+    errors := errors.push s!"error: subsequent lines in the doc-string \"{input}\" should not be indented"
   if input.endsWith "\"" then
-    return s!"error: docstring \"{input}\" ends with a single quote"
+    errors := errors.push s!"error: docstring \"{input}\" ends with a single quote"
   else if input.trimRight.endsWith "," then
-    return s!"error: docstring \"{input}\" ends with a comma"
-  -- -- This list of checks is not exhaustive, but a good start.
-  none
+    errors := errors.push s!"error: docstring \"{input}\" ends with a comma"
+  -- This list of checks is not exhaustive, but a good start.
+  errors
 
 
 @[inherit_doc Mathlib.Linter.linter.style.docString]
