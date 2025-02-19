@@ -131,7 +131,7 @@ lemma _root_.range_mem_nhds_isInteriorPoint {x : M} (h : I.IsInteriorPoint x) :
   exact ⟨interior (range I), interior_subset, isOpen_interior, h⟩
 
 /-- Type class for manifold without boundary. This differs from `ModelWithCorners.Boundaryless`,
-  which states that the `ModelWithCorners` maps to the whole model vector space. -/
+which states that the `ModelWithCorners` maps to the whole model vector space. -/
 class _root_.BoundarylessManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
