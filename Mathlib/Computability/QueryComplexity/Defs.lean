@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving, Tomaz Mascarenhas, Eric Wieser
 -/
 import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Insert
 
 /-!
 # Definition of a model of computation based on oracles.
