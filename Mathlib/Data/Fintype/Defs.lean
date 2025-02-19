@@ -138,7 +138,7 @@ def elabFinsetBuilderSetOf : TermElab
   | _, _ => throwUnsupportedSyntax
 
 /-- Delaborator for `Finset.filter`. The `pp.piBinderTypes` option controls whether
-to show the domain type when the product is over `Finset.univ`. -/
+to show the domain type when the filter is over `Finset.univ`. -/
 @[app_delab Finset.filter] def delabFinsetFilter : Delab :=
   whenPPOption getPPNotation do
   let ppDomain ← getPPOption getPPPiBinderTypes
