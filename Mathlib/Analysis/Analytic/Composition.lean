@@ -117,7 +117,7 @@ theorem applyComposition_single (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
   dsimp
   congr 1
   convert Composition.single_embedding hn ⟨i, hi2⟩ using 1
-  cases' j with j_val j_property
+  obtain ⟨j_val, j_property⟩ := j
   have : j_val = 0 := le_bot_iff.1 (Nat.lt_succ_iff.1 j_property)
   congr!
   simp

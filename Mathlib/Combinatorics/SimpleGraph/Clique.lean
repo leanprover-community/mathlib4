@@ -775,7 +775,7 @@ def IndepSetFreeOn (G : SimpleGraph α) (s : Set α) (n : ℕ) : Prop :=
 
 end IndepSetFree
 
-/-! ### Set of independent sets-/
+/-! ### Set of independent sets -/
 
 
 section IndepSetSet
@@ -794,7 +794,7 @@ theorem mem_indepSetSet_iff : s ∈ G.indepSetSet n ↔ G.IsNIndepSet n s :=
 
 end IndepSetSet
 
-/-! ### Independence Number-/
+/-! ### Independence Number -/
 
 
 section IndepNumber

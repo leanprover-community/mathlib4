@@ -101,12 +101,12 @@ end Name
 
 namespace ConstantInfo
 
-/-- Checks whether this `ConstantInfo` is a definition, -/
+/-- Checks whether this `ConstantInfo` is a definition. -/
 def isDef : ConstantInfo → Bool
   | defnInfo _ => true
   | _          => false
 
-/-- Checks whether this `ConstantInfo` is a theorem, -/
+/-- Checks whether this `ConstantInfo` is a theorem. -/
 def isThm : ConstantInfo → Bool
   | thmInfo _ => true
   | _          => false

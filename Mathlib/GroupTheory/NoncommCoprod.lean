@@ -73,7 +73,7 @@ variable {M N P : Type*} [MulOneClass M] [MulOneClass N] [Monoid P]
 /-- Coproduct of two `MonoidHom`s with the same codomain,
   with a commutation assumption:
   `f.noncommCoprod g _ (p : M × N) = f p.1 * g p.2`.
-  (Noncommutative case; in the commutative case, use `MonoidHom.coprod`.)-/
+  (Noncommutative case; in the commutative case, use `MonoidHom.coprod`.) -/
 @[to_additive (attr := simps)
     "Coproduct of two `AddMonoidHom`s with the same codomain,
     with a commutation assumption:

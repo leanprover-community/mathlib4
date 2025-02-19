@@ -35,6 +35,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 non-unital subring
 -/
 
+assert_not_exists RelIso
 
 universe u v w
 

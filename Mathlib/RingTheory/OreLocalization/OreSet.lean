@@ -20,6 +20,8 @@ This file contains results on left Ore sets for rings and monoids with zero.
 
 -/
 
+assert_not_exists RelIso
+
 namespace OreLocalization
 
 /-- Cancellability in monoids with zeros can act as a replacement for the `ore_right_cancel`

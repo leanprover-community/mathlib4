@@ -77,7 +77,7 @@ theorem isUnit_of_mem_nonZeroDivisors {a : R} (ha : a ∈ R⁰) : IsUnit a :=
       fun _ _ ↦ (mul_cancel_left_mem_nonZeroDivisors ha).mp
 
 /-- In an artinian ring, an element is a unit iff it is a non-zero-divisor.
-See also `isUnit_iff_mem_nonZeroDivisors_of_finite`.-/
+See also `isUnit_iff_mem_nonZeroDivisors_of_finite`. -/
 theorem isUnit_iff_mem_nonZeroDivisors {a : R} : IsUnit a ↔ a ∈ R⁰ :=
   ⟨IsUnit.mem_nonZeroDivisors, isUnit_of_mem_nonZeroDivisors⟩
 

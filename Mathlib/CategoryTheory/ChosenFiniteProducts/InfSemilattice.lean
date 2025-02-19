@@ -27,7 +27,8 @@ variable (C : Type u) [SemilatticeInf C] [OrderTop C]
 
 namespace SemilatticeInf
 
-/-- Chosen finite products for the preorder category of a meet-semilattice with a greatest element-/
+/-- Chosen finite products for the preorder category of a meet-semilattice with
+a greatest element -/
 noncomputable scoped instance chosenFiniteProducts : ChosenFiniteProducts C where
   terminal := ⟨_, Preorder.isTerminalTop C⟩
   product X Y := ⟨_,  Preorder.isLimitBinaryFan X Y⟩

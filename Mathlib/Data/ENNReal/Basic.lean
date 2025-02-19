@@ -503,15 +503,22 @@ lemma ofNat_lt_top {n : ℕ} [Nat.AtLeastTwo n] : ofNat(n) < ∞ := natCast_lt_t
 @[simp] theorem one_lt_top : 1 < ∞ := coe_lt_top
 
 @[simp, norm_cast]
-theorem toNNReal_nat (n : ℕ) : (n : ℝ≥0∞).toNNReal = n := by
+theorem toNNReal_natCast (n : ℕ) : (n : ℝ≥0∞).toNNReal = n := by
   rw [← ENNReal.coe_natCast n, ENNReal.toNNReal_coe]
 
+theorem toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] : ENNReal.toNNReal ofNat(n) = ofNat(n) :=
+  toNNReal_natCast n
+
+@[deprecated (since := "2025-02-19")] alias toNNReal_nat := toNNReal_natCast
+
 @[simp, norm_cast]
-theorem toReal_nat (n : ℕ) : (n : ℝ≥0∞).toReal = n := by
+theorem toReal_natCast (n : ℕ) : (n : ℝ≥0∞).toReal = n := by
   rw [← ENNReal.ofReal_natCast n, ENNReal.toReal_ofReal (Nat.cast_nonneg _)]
 
+@[deprecated (since := "2025-02-19")] alias toReal_nat := toReal_natCast
+
 @[simp] theorem toReal_ofNat (n : ℕ) [n.AtLeastTwo] : ENNReal.toReal ofNat(n) = ofNat(n) :=
-  toReal_nat n
+  toReal_natCast n
 
 theorem le_coe_iff : a ≤ ↑r ↔ ∃ p : ℝ≥0, a = p ∧ p ≤ r := WithTop.le_coe_iff
 

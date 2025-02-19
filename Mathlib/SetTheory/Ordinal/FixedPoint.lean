@@ -703,7 +703,7 @@ theorem mul_eq_right_iff_opow_omega0_dvd {a b : Ordinal} : a * b = b ↔ a ^ ω 
     · exact hab
     refine (not_lt_of_le hab (mod_lt b (opow_ne_zero ω ?_))).elim
     rwa [← Ordinal.pos_iff_ne_zero]
-  cases' h with c hc
+  obtain ⟨c, hc⟩ := h
   rw [hc, ← mul_assoc, ← opow_one_add, one_add_omega0]
 
 @[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
