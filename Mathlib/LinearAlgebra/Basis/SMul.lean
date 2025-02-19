@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
 import Mathlib.Algebra.Algebra.Defs
-import Mathlib.LinearAlgebra.Basis.Coord
+import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 # Bases and scalar multiplication
