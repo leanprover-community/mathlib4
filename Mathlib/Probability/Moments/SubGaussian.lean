@@ -31,18 +31,45 @@ The name sub-Gaussian is used by various authors to refer to any one of (i)-(v).
 random variable has sub-Gaussian moment generating function (mgf) with constant `K₅` to mean that
 property (v) holds with that constant. The function `exp (K₅ * t^2 / 2)` which appears in
 property (v) is the mgf of a Gaussian with variance `K₅`.
+That property (v) is the most convenient one to work with if one wants to prove concentration
+inequalities using Chernoff's method.
 
-TODO: implement (i)-(iv) and prove relations between those properties.
+TODO: implement definitions for (i)-(iv) when it makes sense (for example (iv) is linked to an
+Orlicz norm) and prove relations between those properties.
 
-TODO TODO: adapt this text to the new implementation. Talk about kernels, conditional sub-G, sub-G.
+### Conditionally sub-Gaussian random variables and kernels
+
+TODO: talk about kernels, conditional sub-G, how sub-G is related.
 
 ## Main definitions
 
-*
+* `Kernel.HasSubgaussianMGF`: a random variable `X` has a sub-Gaussian moment generating function
+  with parameter `c` with respect to a kernel `κ` and a measure `ν` if for `ν`-almost all `ω'`,
+  for all `t : ℝ`, the moment generating function of `X` with respect to `κ ω'` is bounded by
+  `exp (c * t ^ 2 / 2)`.
+* `HasSubgaussianMGF`: a random variable `X` has a sub-Gaussian moment generating function
+  with parameter `c` with respect to a measure `μ` if for all `t : ℝ`, `exp (t * X)`
+  is `μ`-integrable and the moment generating function of `X` is bounded by `exp (c * t ^ 2 / 2)`
+  for all `t : ℝ`.
+  This is equivalent to `Kernel.HasSubgaussianMGF` with a constant kernel.
+  See `HasSubgaussianMGF_iff_kernel`.
+* `HasCondSubgaussianMGF`: a random variable `X` has a conditionally sub-Gaussian moment generating
+  function with parameter `c` with respect to a sigma-algebra `m` and a measure `μ` if for all
+  `t : ℝ`, `exp (t * X)` is `μ`-integrable and the moment generating function of `X` contioned
+  on `m` is almost surely bounded by `exp (c * t ^ 2 / 2)` for all `t : ℝ`.
+  The actual definition uses `Kernel.HasSubgaussianMGF`: `HasCondSubgaussianMGF` is defined as
+  sub-Gaussian with respect to the conditional expectation kernel for `m` and the restriction of `μ`
+  to the sigma-algebra `m`.
 
 ## Main statements
 
 *
+* `HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF`
+
+## Implementation notes
+
+TODO: talk about integrability wrt `κ ∘ₘ ν` instead of a.e. integrability.
+In the conditional case, that's integrability wrt `μ`.
 
 ## References
 
@@ -60,15 +87,6 @@ namespace ProbabilityTheory
 variable {Ω Ω' : Type*} (m : MeasurableSpace Ω) {m1 m2 mΩ : MeasurableSpace Ω} (hm : m ≤ mΩ)
   {mΩ' : MeasurableSpace Ω'}
   {μ : Measure Ω} {ν : Measure Ω'} {κ : Kernel Ω' Ω} {X : Ω → ℝ} {c : ℝ≥0} {ε : ℝ}
-
--- todo: delete?
-theorem condExp_ae_eq_trim_integral_condExpKernel {F : Type*} [NormedAddCommGroup F] {f : Ω → F}
-    [NormedSpace ℝ F] [CompleteSpace F]
-    [StandardBorelSpace Ω] [IsFiniteMeasure μ]
-    (hm : m ≤ mΩ) (hf : StronglyMeasurable f) (hf_int : Integrable f μ) :
-    μ[f|m] =ᵐ[μ.trim hm] fun ω ↦ ∫ y, f y ∂condExpKernel μ m ω :=
-  StronglyMeasurable.ae_eq_trim_of_stronglyMeasurable hm stronglyMeasurable_condExp
-      hf.integral_condExpKernel (condExp_ae_eq_integral_condExpKernel hm hf_int)
 
 @[simp]
 lemma prodMkLeft_comp_compProd {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''}
