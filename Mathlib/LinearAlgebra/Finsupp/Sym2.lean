@@ -19,7 +19,9 @@ variable {α R}
 
 variable [CommMonoidWithZero R]
 
-lemma Sym2.mem_sym2_support_of_mul_ne_zero {f : α →₀ R} (p : Sym2 α) (hp : mul (p.map f) ≠ 0) :
+namespace Sym2
+
+lemma mem_sym2_support_of_mul_ne_zero {f : α →₀ R} (p : Sym2 α) (hp : mul (p.map f) ≠ 0) :
     p ∈ f.support.sym2 := by
   obtain ⟨a,b⟩ := p
   simp only [Finset.mem_sym2_iff, mem_iff, Finsupp.mem_support_iff, ne_eq, forall_eq_or_imp,
@@ -30,15 +32,19 @@ lemma Sym2.mem_sym2_support_of_mul_ne_zero {f : α →₀ R} (p : Sym2 α) (hp :
 /--
 The composition of a `Finsupp` with `Sym2.mul` as a `Finsupp`
 -/
-noncomputable def Sym2.mulFinsupp (f : α →₀ R) :
+noncomputable def mulFinsupp (f : α →₀ R) :
     Sym2 α →₀ R := Finsupp.onFinset
       f.support.sym2
-    (fun p => Sym2.mul (p.map f)) Sym2.mem_sym2_support_of_mul_ne_zero
+    (fun p => mul (p.map f)) mem_sym2_support_of_mul_ne_zero
 
-lemma Sym2.support_mulFinsupp_subset (f : α →₀ R) :
-    (Sym2.mulFinsupp f).support ⊆ f.support.sym2 := fun p hp => by
-  apply Sym2.mem_sym2_support_of_mul_ne_zero
+lemma support_mulFinsupp_subset (f : α →₀ R) :
+    (mulFinsupp f).support ⊆ f.support.sym2 := fun p hp => by
+  apply mem_sym2_support_of_mul_ne_zero
   simp_all only [Finsupp.mem_support_iff, ne_eq]
   exact hp
+
+lemma mulFinsupp_eq_mul_comp_map (l : α →₀ R) : (mulFinsupp l) = mul ∘ map l := rfl
+
+end Sym2
 
 end
