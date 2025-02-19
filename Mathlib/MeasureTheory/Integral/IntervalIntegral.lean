@@ -383,7 +383,7 @@ variable {f : ℝ → E}
 of the form `0..x` if it is interval integrable (with respect to the volume measure) on every
 interval of the form `0..x`, for positive `x`.
 
-See `intervalIntegrable_of_even` for a stronger result.-/
+See `intervalIntegrable_of_even` for a stronger result. -/
 lemma intervalIntegrable_of_even₀ (h₁f : ∀ x, f x = f (-x))
     (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) (t : ℝ) :
     IntervalIntegrable f volume 0 t := by
@@ -408,7 +408,7 @@ theorem intervalIntegrable_of_even
 of the form `0..x` if it is interval integrable (with respect to the volume measure) on every
 interval of the form `0..x`, for positive `x`.
 
-See `intervalIntegrable_of_odd` for a stronger result.-/
+See `intervalIntegrable_of_odd` for a stronger result. -/
 lemma intervalIntegrable_of_odd₀
     (h₁f : ∀ x, -f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) (t : ℝ) :
     IntervalIntegrable f volume 0 t := by

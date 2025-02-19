@@ -216,7 +216,7 @@ instance finCategoryWidePushout [Fintype J] : FinCategory (WidePushoutShape J) w
 for every finite collection of morphisms
 -/
 class HasFiniteWidePullbacks : Prop where
-  /-- `C` has all wide pullbacks any Fintype `J`-/
+  /-- `C` has all wide pullbacks for any Finite `J` -/
   out (J : Type) [Finite J] : HasLimitsOfShape (WidePullbackShape J) C
 
 instance hasLimitsOfShape_widePullbackShape (J : Type) [Finite J] [HasFiniteWidePullbacks C] :
@@ -228,7 +228,7 @@ instance hasLimitsOfShape_widePullbackShape (J : Type) [Finite J] [HasFiniteWide
 for every finite collection of morphisms
 -/
 class HasFiniteWidePushouts : Prop where
-  /-- `C` has all wide pushouts any Fintype `J`-/
+  /-- `C` has all wide pushouts for any Finite `J` -/
   out (J : Type) [Finite J] : HasColimitsOfShape (WidePushoutShape J) C
 
 instance hasColimitsOfShape_widePushoutShape (J : Type) [Finite J] [HasFiniteWidePushouts C] :

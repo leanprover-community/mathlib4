@@ -15,6 +15,8 @@ import Mathlib.Data.Set.Basic
 
 /-! # Symmetric differences of sets -/
 
+assert_not_exists RelIso
+
 namespace Set
 
 universe u

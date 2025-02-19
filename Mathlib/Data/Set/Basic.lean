@@ -61,6 +61,8 @@ set, sets, subset, subsets, union, intersection, insert, singleton, complement, 
 
 -/
 
+assert_not_exists RelIso
+
 /-! ### Set coercion to a type -/
 
 open Function

@@ -3,8 +3,9 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
 -/
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Int.Order.Basic
+import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Compare
 import Mathlib.Order.Max
 import Mathlib.Order.Monotone.Defs

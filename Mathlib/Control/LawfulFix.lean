@@ -73,7 +73,7 @@ theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx
     suffices y = b by
       subst this
       exact h₁
-    cases' hh with i hh
+    obtain ⟨i, hh⟩ := hh
     revert h₁; generalize succ (Nat.find h₀) = j; intro h₁
     wlog case : i ≤ j
     · rcases le_total i j with H | H <;> [skip; symm] <;> apply_assumption <;> assumption
