@@ -743,7 +743,8 @@ where /-- Implementation of `applyReplacementFun`. -/
     if !e.hasLooseBVars then
       trace[to_additive_detail] "applyReplacementFun: replacing at {e}"
     else
-      -- the following causes: PANIC at Lean.Meta.whnfEasyCases Lean.Meta.WHNF:338:22: loose bvar in expression
+      -- the following causes:
+      -- PANIC at Lean.Meta.whnfEasyCases Lean.Meta.WHNF:338:22: loose bvar in expression
       -- trace[to_additive_detail] "applyReplacementFun: replacing at {e}"
       -- Less informative, but doesn't panic
       trace[to_additive_detail] "applyReplacementFun: replacing at {toString e}"
@@ -754,18 +755,21 @@ where /-- Implementation of `applyReplacementFun`. -/
       if n₀ != n₁ then
         trace[to_additive_detail] "applyReplacementFun: changing {n₀} to {n₁}"
       if 0 ∈ (reorderFn n₀).flatten then
-        trace[to_additive_detail] "applyReplacementFun: reordering the universe variables from {ls₀} to {ls₁}"
+        trace[to_additive_detail] "applyReplacementFun: reordering the universe variables from \
+          {ls₀} to {ls₁}"
       return some <| Lean.mkConst n₁ ls₁
     | .app g x => do
       let gf := g.getAppFn
       if gf.isBVar && x.isLit then
-        trace[to_additive_detail] "applyReplacementFun: Variables applied to numerals are not changed {g.app x}"
+        trace[to_additive_detail] "applyReplacementFun: Variables applied to numerals are not \
+          changed {g.app x}"
         return some <| g.app x
       let gArgs := g.getAppArgs
       trace[to_additive_detail] "applyReplacementFun: gf: {gf}, gArgs {gArgs}"
       let mut gAllArgs := gArgs.push x
       let (gfAdditive, gAllArgsAdditive) ←
         if let some nm := gf.constName? then
+          -- TODO: factor this logic out into a function?
           -- e = `(nm y₁ .. yₙ x)
           /- Test if the head should not be replaced. -/
           let relevantArgId := relevantArg nm
@@ -774,8 +778,8 @@ where /-- Implementation of `applyReplacementFun`. -/
               if let some fxd :=
                 additiveTest env b gAllArgs[relevantArgId]! then
                 do
-                  trace[to_additive_detail] "applyReplacementFun: The application of {nm} contains the fixed type \
-                    {fxd}, so it is not changed"
+                  trace[to_additive_detail] "applyReplacementFun: The application of {nm} \
+                    contains the fixed type {fxd}, so it is not changed"
                   pure gf
               else
                 r gf
@@ -790,13 +794,14 @@ where /-- Implementation of `applyReplacementFun`. -/
             -- this is panicking?
             -- dbg_trace "applyReplacementFun': {nm} {gAllArgs} {reorder}"
             gAllArgs := gAllArgs.permute! reorder
-            trace[to_additive_detail] "applyReplacementFun: reordering the arguments of {nm}: {gAllArgs} using the cyclic permutations {reorder}"
+            trace[to_additive_detail] "applyReplacementFun: reordering the arguments of {nm}: \
+              {gAllArgs} using the cyclic permutations {reorder}"
           /- Do not replace numerals in specific types. -/
           let firstArg := gAllArgs[0]!
           if let some changedArgNrs := b.changeNumeralAttr.find? env nm then
             if additiveTest env b firstArg |>.isNone then
-              trace[to_additive_detail] "applyReplacementFun: We change the numerals in this expression. \
-                  However, we will still recurse into all the non-numeral arguments."
+              trace[to_additive_detail] "applyReplacementFun: We change the numerals in this \
+                expression. However, we will still recurse into all the non-numeral arguments."
               -- In this case, we still update all arguments of `g` that are not numerals,
               -- since all other arguments can contain subexpressions like
               -- `(fun x ↦ ℕ) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
@@ -1442,6 +1447,7 @@ def proceedFieldsAux (b : BundledExtensions)
 
 /-- Add the structure fields of `src` to the translations dictionary
 so that future uses of `to_additive` will map them to the corresponding `tgt` fields. -/
+-- TODO: does this need to support `reorder`?
 def proceedFields (b : BundledExtensions)
     (src tgt : Name) : CoreM Unit := do
   let aux := @proceedFieldsAux b src tgt
@@ -1466,13 +1472,40 @@ def proceedFields (b : BundledExtensions)
 
 /-- Elaboration of the configuration options for `to_additive`. -/
 def elabToAdditive : Syntax → CoreM Config
-  | `(attr| order_dual%$tk $[?%$trace]? $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?)
   | `(attr| to_additive%$tk $[?%$trace]? $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
     let mut attrs := #[]
     let mut reorder := []
     let mut existing := some false
     for stx in opts do
       match stx with
+      | `(toAdditiveOption| (attr := $[$stxs],*)) =>
+        attrs := attrs ++ stxs
+      | `(toAdditiveOption| (reorder := $[$[$reorders:num]*],*)) =>
+        reorder := reorder ++ reorders.toList.map (·.toList.map (·.raw.isNatLit?.get! - 1))
+      | `(toAdditiveOption| existing) =>
+        existing := some true
+      | _ => throwUnsupportedSyntax
+    reorder := reorder.reverse
+    trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
+    return { trace := trace.isSome
+             tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
+             doc := doc.bind (·.raw.isStrLit?)
+             allowAutoName := false
+             attrs
+             reorder
+             existing
+             ref := (tgt.map (·.raw)).getD tk }
+  | _ => throwUnsupportedSyntax
+
+/-- Elaboration of the configuration options for `to_additive`. -/
+def elabOrderDual : Syntax → CoreM Config
+  | `(attr| order_dual%$tk $[?%$trace]? $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
+    let mut attrs := #[]
+    let mut reorder := []
+    let mut existing := some false
+    for stx in opts do
+      match stx with
+      -- TODO: add `order_dual self` syntax here?
       | `(toAdditiveOption| (attr := $[$stxs],*)) =>
         attrs := attrs ++ stxs
       | `(toAdditiveOption| (reorder := $[$[$reorders:num]*],*)) =>
@@ -1614,12 +1647,14 @@ partial def addToAdditiveAttr (b : BundledExtensions)
       else
         "The additive declaration doesn't exist. Please remove the option `existing`."
   if cfg.reorder != [] then
-    trace[to_additive] "@[to_additive] will reorder the arguments of {tgt} according to {cfg.reorder}."
+    trace[to_additive] "@[to_additive] will reorder the arguments of {tgt} according to \
+      {cfg.reorder}."
     b.reorderAttr.add src cfg.reorder
     -- HACK: special case order_dual
     if b.attrName = `order_dual && src != tgt then
       let reorderInv := cfg.reorder.map .reverse
-      trace[to_additive] "@[to_additive] will also reorder the arguments of {src} according to {reorderInv}."
+      trace[to_additive] "@[to_additive] will also reorder the arguments of {src} according to \
+        {reorderInv}."
       b.reorderAttr.add tgt reorderInv
     -- we allow using this attribute if it's only to add the reorder configuration
     if findTranslation? (← getEnv) b src |>.isSome then
@@ -1631,6 +1666,7 @@ partial def addToAdditiveAttr (b : BundledExtensions)
   insertTranslation b src tgt alreadyExists
   let nestedNames ←
     if alreadyExists then
+      -- TODO: for `order_dual self`: generate and validate declaration?
       -- since `tgt` already exists, we just need to copy metadata and
       -- add translations `src.x ↦ tgt.x'` for any subfields.
       trace[to_additive_detail] "declaration {tgt} already exists."
@@ -1667,7 +1703,7 @@ initialize registerBuiltinAttribute {
     descr := "Transport order dual"
     add := fun src stx kind ↦
       do _ ← (addToAdditiveAttr orderDualBundle
-        orderDualDict orderDualFixAbbreviation src (← elabToAdditive stx) kind)
+        orderDualDict orderDualFixAbbreviation src (← elabOrderDual stx) kind)
     -- we (presumably) need to run after compilation to properly add the `simp` attribute
     applicationTime := .afterCompilation
   }
