@@ -26,7 +26,7 @@ variable {ι R M} [Semiring R] [AddCommMonoid M] [Module R M]
 Define the multiplication of a scalar-valued, finitely supported, function with a module-valued
 function as a finitely supported module-valued function.
 -/
-noncomputable def Finsupp.hMul (f : ι →₀ R) (g : ι → M) : ι →₀ M :=
+noncomputable def Finsupp.pointwiseSMul (f : ι →₀ R) (g : ι → M) : ι →₀ M :=
     Finsupp.ofSupportFinite (fun a ↦ f a • g a) (by
       apply Set.Finite.subset f.finite_support
       simp only [Function.support_subset_iff, Finsupp.mem_support_iff, Ne,
@@ -36,8 +36,8 @@ noncomputable def Finsupp.hMul (f : ι →₀ R) (g : ι → M) : ι →₀ M :=
       rw [h, zero_smul])
 
 @[simp]
-lemma Finsupp.coe_pointwise_module_smul (f : ι →₀ R) (g : ι → M) (a : ι) :
-    (Finsupp.hMul f g) a = f a • g a := rfl
+lemma Finsupp.coe_pointwiseSMul (f : ι →₀ R) (g : ι → M) (a : ι) :
+    (Finsupp.pointwiseSMul f g) a = f a • g a := rfl
 
 end
 
@@ -58,14 +58,15 @@ theorem map_finsuppSum' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R
 
 open Finsupp in
 lemma polarSym2_map_hMul (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) (p : Sym2 ι) :
-    (polarSym2 Q) (p.map (hMul l g)) = (Sym2.mulFinsupp l) p • ((polarSym2 Q) (p.map g)) := by
+    (polarSym2 Q) (p.map (pointwiseSMul l g)) =
+      (Sym2.mulFinsupp l) p • ((polarSym2 Q) (p.map g)) := by
   obtain ⟨_,_⟩ := p
-  simp only [coe_pointwise_module_smul, Sym2.map_pair_eq, polarSym2_sym2Mk, polar_smul_right,
+  simp only [coe_pointwiseSMul, Sym2.map_pair_eq, polarSym2_sym2Mk, polar_smul_right,
     polar_smul_left, ← smul_assoc, smul_eq_mul, mul_comm, Sym2.mulFinsupp, onFinset_apply,
     Sym2.mul_mk]
 
 lemma polarSym2_map_mul (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
-    (polarSym2 Q) ∘ Sym2.map (Finsupp.hMul l g) =
+    (polarSym2 Q) ∘ Sym2.map (Finsupp.pointwiseSMul l g) =
       (fun (p : Sym2 ι) => Sym2.mul (p.map l)) • (polarSym2 Q) ∘ Sym2.map g := by
   ext _
   rw [Function.comp_apply, polarSym2_map_hMul, Pi.smul_apply', Function.comp_apply]
@@ -111,7 +112,7 @@ open Finsupp in
 theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
     Q (linearCombination R g l) = linearCombination R (Q ∘ g) (l * l) +
       ∑ p ∈ l.support.sym2 with ¬ p.IsDiag,
-        (hMul (Sym2.mulFinsupp l) ((polarSym2 Q) ∘ Sym2.map g)) p := by
+        (pointwiseSMul (Sym2.mulFinsupp l) ((polarSym2 Q) ∘ Sym2.map g)) p := by
   simp_rw [linearCombination_apply, map_finsuppSum, map_smul, mul_smul]
   rw [Finsupp.sum_of_support_subset (l * l) (support_mul_subset_left (g₁ := l))
     (fun i a => a • (⇑Q ∘ g) i) (fun _ _=> by simp only [Function.comp_apply, zero_smul])]
@@ -121,16 +122,16 @@ theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι 
   simp_rw [add_right_inj]
   apply Finset.sum_congr rfl
   intro p hp
-  simp only [coe_pointwise_module_smul, Function.comp_apply]
+  simp only [coe_pointwiseSMul, Function.comp_apply]
   rw [← polarSym2_map_hMul]
-  simp only [coe_pointwise_module_smul]
+  simp only [coe_pointwiseSMul]
 
 -- c.f. `LinearMap.sum_repr_mul_repr_mul`
 open Finsupp in
 theorem sum_repr_sq_add_sum_repr_mul_polar (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
     linearCombination R (Q ∘ bm) ((bm.repr x) * (bm.repr x)) +
       ∑ p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag,
-        (hMul (Sym2.mulFinsupp (bm.repr x)) ((polarSym2 Q) ∘ Sym2.map bm)) p = Q x := by
+        (pointwiseSMul (Sym2.mulFinsupp (bm.repr x)) ((polarSym2 Q) ∘ Sym2.map bm)) p = Q x := by
   rw [← apply_linearCombination, Basis.linearCombination_repr]
 
 end
