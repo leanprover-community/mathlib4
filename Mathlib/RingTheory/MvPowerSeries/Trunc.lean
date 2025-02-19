@@ -29,6 +29,9 @@ so that `m < n` means that `m ≠ n` and `m s ≤ n s` for all `s : σ`.
 to the multivariate polynomial that has the same coefficients as `φ`,
 for all `m ≤ n`, and `0` otherwise.
 
+Here, `m` and `n`  have types `σ →₀ ℕ` so that `m ≤ n` means that `m s ≤ n s` for all `s : σ`.
+
+
 * `MvPowerSeries.coeff_mul_eq_coeff_trunc'_mul_trunc'` : compares the coefficients
 of a product with those of the product of truncations.
 
@@ -98,7 +101,7 @@ theorem coeff_trunc (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
 
 @[simp]
 theorem trunc_one (n : σ →₀ ℕ) (hnn : n ≠ 0) : trunc R n 1 = 1 :=
-  MvPolynomial.ext _ _ fun m => by
+  MvPolynomial.ext _ _ fun m ↦ by
     classical
     rw [coeff_trunc, coeff_one]
     split_ifs with H H'
@@ -116,7 +119,7 @@ theorem trunc_one (n : σ →₀ ℕ) (hnn : n ≠ 0) : trunc R n 1 = 1 :=
 
 @[simp]
 theorem trunc_C (n : σ →₀ ℕ) (hnn : n ≠ 0) (a : R) : trunc R n (C σ R a) = MvPolynomial.C a :=
-  MvPolynomial.ext _ _ fun m => by
+  MvPolynomial.ext _ _ fun m ↦ by
     classical
     rw [coeff_trunc, coeff_C, MvPolynomial.coeff_C]
     split_ifs with H <;> first |rfl|try simp_all only [ne_eq, not_true_eq_false]
@@ -176,7 +179,7 @@ theorem coeff_trunc' (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
 /-- Truncation of the multivariate power series `1` -/
 @[simp]
 theorem trunc'_one (n : σ →₀ ℕ) : trunc' R n 1 = 1 :=
-  MvPolynomial.ext _ _ fun m => by
+  MvPolynomial.ext _ _ fun m ↦ by
     classical
     rw [coeff_trunc', coeff_one]
     split_ifs with H H'
@@ -189,7 +192,7 @@ theorem trunc'_one (n : σ →₀ ℕ) : trunc' R n 1 = 1 :=
 @[simp]
 theorem trunc'_C (n : σ →₀ ℕ) (a : R) :
     trunc' R n (C σ R a) = MvPolynomial.C a :=
-  MvPolynomial.ext _ _ fun m => by
+  MvPolynomial.ext _ _ fun m ↦ by
     classical
     rw [coeff_trunc', coeff_C, MvPolynomial.coeff_C]
     split_ifs with H <;> first |rfl|try simp_all
