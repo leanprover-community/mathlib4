@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.LinearAlgebra.Basis.Constr
+import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.LinearAlgebra.Basis.Submodule
 import Mathlib.RingTheory.Ideal.Span
 
