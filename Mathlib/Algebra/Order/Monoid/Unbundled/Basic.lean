@@ -58,11 +58,14 @@ section LE
 variable [LE α]
 
 /- The prime on this lemma is present only on the multiplicative version.  The unprimed version
-is taken by the analogous lemma for semiring, with an extra non-negativity assumption. -/
-@[to_additive (attr := gcongr) add_le_add_left]
+is taken by the analogous lemma for semiring, with an extra non-negativity assumption.
+We also lower the `gcongr` priority for the multiplicative version. -/
+@[to_additive add_le_add_left, gcongr 100]
 theorem mul_le_mul_left' [MulLeftMono α] {b c : α} (bc : b ≤ c) (a : α) :
     a * b ≤ a * c :=
   CovariantClass.elim _ bc
+
+attribute [gcongr] add_le_add_left
 
 @[to_additive le_of_add_le_add_left]
 theorem le_of_mul_le_mul_left' [MulLeftReflectLE α] {a b c : α}
@@ -71,12 +74,15 @@ theorem le_of_mul_le_mul_left' [MulLeftReflectLE α] {a b c : α}
   ContravariantClass.elim _ bc
 
 /- The prime on this lemma is present only on the multiplicative version.  The unprimed version
-is taken by the analogous lemma for semiring, with an extra non-negativity assumption. -/
-@[to_additive (attr := gcongr) add_le_add_right]
+is taken by the analogous lemma for semiring, with an extra non-negativity assumption.
+We also lower the `gcongr` priority for the multiplicative version. -/
+@[to_additive add_le_add_right, gcongr 100]
 theorem mul_le_mul_right' [i : MulRightMono α] {b c : α} (bc : b ≤ c)
     (a : α) :
     b * a ≤ c * a :=
   i.elim a bc
+
+attribute [gcongr] add_le_add_right
 
 @[to_additive le_of_add_le_add_right]
 theorem le_of_mul_le_mul_right' [i : MulRightReflectLE α] {a b c : α}
@@ -114,10 +120,12 @@ theorem mul_lt_mul_iff_right [MulRightStrictMono α]
     b * a < c * a ↔ b < c :=
   rel_iff_cov α α (swap (· * ·)) (· < ·) a
 
-@[to_additive (attr := gcongr) add_lt_add_left]
+@[to_additive add_lt_add_left, gcongr 100]
 theorem mul_lt_mul_left' [MulLeftStrictMono α] {b c : α} (bc : b < c) (a : α) :
     a * b < a * c :=
   CovariantClass.elim _ bc
+
+attribute [gcongr] add_lt_add_left
 
 @[to_additive lt_of_add_lt_add_left]
 theorem lt_of_mul_lt_mul_left' [MulLeftReflectLT α] {a b c : α}
@@ -125,11 +133,13 @@ theorem lt_of_mul_lt_mul_left' [MulLeftReflectLT α] {a b c : α}
     b < c :=
   ContravariantClass.elim _ bc
 
-@[to_additive (attr := gcongr) add_lt_add_right]
+@[to_additive add_lt_add_right, gcongr 100]
 theorem mul_lt_mul_right' [i : MulRightStrictMono α] {b c : α} (bc : b < c)
     (a : α) :
     b * a < c * a :=
   i.elim a bc
+
+attribute [gcongr] add_lt_add_right
 
 @[to_additive lt_of_add_lt_add_right]
 theorem lt_of_mul_lt_mul_right' [i : MulRightReflectLT α] {a b c : α}
@@ -159,7 +169,7 @@ lemma mul_left_strictMono [MulLeftStrictMono α] {a : α} : StrictMono (a * ·) 
 lemma mul_right_strictMono [MulRightStrictMono α] {a : α} : StrictMono (· * a) :=
   fun _ _ h ↦ mul_lt_mul_right' h _
 
-@[to_additive (attr := gcongr)]
+@[to_additive, gcongr 100]
 theorem mul_lt_mul_of_lt_of_lt [MulLeftStrictMono α]
     [MulRightStrictMono α]
     {a b c d : α} (h₁ : a < b) (h₂ : c < d) : a * c < b * d :=
@@ -167,6 +177,7 @@ theorem mul_lt_mul_of_lt_of_lt [MulLeftStrictMono α]
     a * c < a * d := mul_lt_mul_left' h₂ a
     _ < b * d := mul_lt_mul_right' h₁ d
 
+attribute [gcongr] add_lt_add_of_lt_of_lt
 alias add_lt_add := add_lt_add_of_lt_of_lt
 
 @[to_additive]
@@ -196,11 +207,13 @@ theorem Right.mul_lt_mul [MulLeftMono α]
     a * c < b * d :=
   mul_lt_mul_of_lt_of_le h₁ h₂.le
 
-@[to_additive (attr := gcongr) add_le_add]
+@[to_additive add_le_add, gcongr 100]
 theorem mul_le_mul' [MulLeftMono α] [MulRightMono α]
     {a b c d : α} (h₁ : a ≤ b) (h₂ : c ≤ d) :
     a * c ≤ b * d :=
   (mul_le_mul_left' h₂ _).trans (mul_le_mul_right' h₁ d)
+
+attribute [gcongr] add_le_add
 
 @[to_additive]
 theorem mul_le_mul_three [MulLeftMono α]
