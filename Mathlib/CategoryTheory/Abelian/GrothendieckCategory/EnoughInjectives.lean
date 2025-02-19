@@ -235,6 +235,11 @@ namespace IsGrothendieckAbelian
 def generatingMonomorphisms (G : C) : MorphismProperty C :=
   MorphismProperty.ofHoms (fun (X : Subobject G) ↦ X.arrow)
 
+instance (G : C) [Small.{w} (Subobject G)] :
+    MorphismProperty.IsSmall.{w} (generatingMonomorphisms G) := by
+  dsimp [generatingMonomorphisms]
+  infer_instance
+
 lemma generatingMonomorphisms_le_monomorphisms (G : C) :
     generatingMonomorphisms G ≤ MorphismProperty.monomorphisms C := by
   rintro _ _ _ ⟨X⟩
@@ -373,8 +378,6 @@ instance : (functor hG A₀ J).IsWellOrderContinuous where
     simp only [Subobject.mk_arrow]
     exact transfiniteIterate_limit (largerSubobject hG) A₀ m hm-/⟩
 
---example (j : J) : ((functor hG A₀ J).restrictionLE j).IsWellOrderContinuous := inferInstance
-
 lemma mono_functor_map_le_succ (j : J) (hj : ¬IsMax j) :
     generatingMonomorphismsPushouts G ((functor hG A₀ J).map (homOfLE (Order.le_succ j))) := by
   refine (MorphismProperty.arrow_mk_iso_iff _ ?_).2
@@ -440,16 +443,46 @@ lemma generatingMonomorphisms_rlp [IsGrothendieckAbelian.{w} C] (hG : IsSeparato
 
 open MorphismProperty
 
-lemma generatingMonomorphisms_hasSmallObjectArgument
-    [IsGrothendieckAbelian.{w} C] (hG : IsSeparator G) :
-    HasSmallObjectArgument.{w} (generatingMonomorphisms G) := sorry
+
+instance (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] :
+    IsCardinalFiltered κ.ord.toType κ :=
+  isCardinalFiltered_preorder _ _ (fun ι f hs ↦ by
+    have h : Function.Surjective (fun i ↦ (⟨f i, i, rfl⟩ : Set.range f)) := fun _ ↦ by aesop
+    have pif := Cardinal.mk_le_of_surjective h
+    obtain ⟨j, hj⟩ := Ordinal.lt_cof_type (α := κ.ord.toType) (r := (· < ·))
+      (S := Set.range f) (lt_of_le_of_lt (Cardinal.mk_le_of_surjective h) (lt_of_lt_of_le hs
+          (by simp [hκ.out.cof_eq])))
+    exact ⟨j, fun i ↦ (hj (f i) (by simp)).le⟩)
 
 instance [IsGrothendieckAbelian.{w} C] :
     IsStableUnderCoproducts.{w} (monomorphisms C) := sorry
 
+variable (G) in
+lemma hasSmallObjectArgument_generatingMonomorphisms
+    [IsGrothendieckAbelian.{w} C] :
+    HasSmallObjectArgument.{w} (generatingMonomorphisms G) := by
+  obtain ⟨κ, hκ', hκ⟩ := HasCardinalLT.exists_regular_cardinal.{w} (Subobject G)
+  have : Fact κ.IsRegular := ⟨hκ'⟩
+  letI := Cardinal.toTypeOrderBot hκ'.ne_zero
+  exact ⟨κ, inferInstance, inferInstance,
+    { preservesColimit {A B X Y} i hi f hf := by
+        let hf' : (monomorphisms C).TransfiniteCompositionOfShape κ.ord.toType f :=
+          { toTransfiniteCompositionOfShape := hf.toTransfiniteCompositionOfShape
+            map_mem j hj := by
+              have := (hf.attachCells j hj).pushouts_coproducts
+              simp only [ofHoms_homFamily] at this
+              refine (?_ : _ ≤ monomorphisms C) _ this
+              simp only [pushouts_le_iff, coproducts_le_iff]
+              exact generatingMonomorphisms_le_monomorphisms G }
+        have := hf'.mono_map
+        apply preservesColimit_coyoneda_obj_of_mono (Y := hf.F) (κ := κ)
+        obtain ⟨S⟩ := hi
+        exact Subobject.hasCardinalLT_of_mono hκ S.arrow }⟩
+
+
 lemma llp_rlp_monomorphisms [IsGrothendieckAbelian.{w} C] (hG : IsSeparator G) :
     (monomorphisms C).rlp.llp = monomorphisms C := by
-  have := generatingMonomorphisms_hasSmallObjectArgument.{w} hG
+  have := hasSmallObjectArgument_generatingMonomorphisms.{w} G
   refine le_antisymm ?_ (le_llp_rlp _)
   rw [← generatingMonomorphisms_rlp hG, llp_rlp_of_hasSmallObjectArgument]
   trans (transfiniteCompositions.{w} (coproducts.{w} (monomorphisms C)).pushouts).retracts
@@ -463,7 +496,7 @@ lemma llp_rlp_monomorphisms [IsGrothendieckAbelian.{w} C] (hG : IsSeparator G) :
 lemma hasFunctorialFactorization_monomorphisms_rlp_monomorphisms
     [IsGrothendieckAbelian.{w} C] (hG : IsSeparator G) :
     HasFunctorialFactorization (monomorphisms C) (monomorphisms C).rlp := by
-  have := generatingMonomorphisms_hasSmallObjectArgument.{w} hG
+  have := hasSmallObjectArgument_generatingMonomorphisms.{w} G
   rw [← generatingMonomorphisms_rlp hG, ← llp_rlp_monomorphisms hG,
     ← generatingMonomorphisms_rlp hG]
   infer_instance
