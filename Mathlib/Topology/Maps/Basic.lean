@@ -759,9 +759,9 @@ alias _root_.closedEmbedding_of_continuous_injective_closed :=
   IsClosedEmbedding.of_continuous_injective_isClosedMap
 
 lemma isClosedEmbedding_iff_continuous_injective_isClosedMap {f : X → Y} :
-    IsClosedEmbedding f ↔ Continuous f ∧ Injective f ∧ IsClosedMap f :=
-  ⟨fun h ↦ ⟨h.continuous, h.injective, h.isClosedMap⟩, fun h ↦
-    .of_continuous_injective_isClosedMap h.1 h.2.1 h.2.2⟩
+    IsClosedEmbedding f ↔ Continuous f ∧ Injective f ∧ IsClosedMap f where
+  mp h := ⟨h.continuous, h.injective, h.isClosedMap⟩
+  mpr h := .of_continuous_injective_isClosedMap h.1 h.2.1 h.2.2
 
 protected theorem id : IsClosedEmbedding (@id X) := ⟨.id, IsClosedMap.id.isClosed_range⟩
 
