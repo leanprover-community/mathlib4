@@ -30,31 +30,39 @@ namespace Style
 (or, at least the syntactically checkable parts).
 If the doc-string is not well-formed, return `some messages` where `messages` describe
 what went wrong, otherwise return `none`. -/
-def checkDocstring (initialWhitespace input : String) : Option (Array String) := do
+def checkDocstring (initialWhitespace input : String) : Option (Array (String.Range × String)) := do
   let mut errors := #[]
   match initialWhitespace with
   | "\n" | " " => pure ()
   | "" =>
-    errors := errors.push s!"error: doc-string \"{input}\" should start with a space or newline"
+    errors := errors.push
+      (default, s!"error: doc-string \"{input}\" should start with a space or newline")
   | _ =>
     -- In any other cases, we have extraneous whitespace.
-    errors := errors.push s!"error: doc-string \"{input}\" should start with a single space"
+    errors := errors.push
+      (default, s!"error: doc-string \"{input}\" should start with a single space")
 
   -- Check the ending of the doc-string: a new line or exactly one space.
   if !(input.endsWith "\n" || input.endsWith " ") then
-    errors := errors.push s!"error: doc-string \"{input}\" should end with a space or newline"
+    errors := errors.push
+      (default, s!"error: doc-string \"{input}\" should end with a space or newline")
   else if (input.endsWith "  ") then
-    errors := errors.push s!"error: doc-string \"{input}\" should end with at most a single space"
+    errors := errors.push
+      ({start := ⟨input.length - 1⟩, stop := ⟨input.length⟩},
+        s!"error: doc-string \"{input}\" should end with at most a single space")
   -- Catch misleading indentation.
   let lines := (input.split (· == '\n')).drop 0
   if lines.any (·.startsWith " ") then
-    errors := errors.push s!"error: subsequent lines in the doc-string \"{input}\" should not be indented"
+    errors := errors.push
+      (default, s!"error: subsequent lines in the doc-string \"{input}\" should not be indented")
   if input.trimRight.endsWith "\"" then
-    errors := errors.push s!"error: docstring \"{input}\" ends with a single quote"
+    errors := errors.push
+      (default, s!"error: docstring \"{input}\" ends with a single quote")
   else if input.trimRight.endsWith "," then
-    errors := errors.push s!"error: docstring \"{input}\" ends with a comma"
+    errors := errors.push
+      (default, s!"error: docstring \"{input}\" ends with a comma")
   -- This list of checks is not exhaustive, but a good start.
-  errors
+  some errors
 
 @[inherit_doc Mathlib.Linter.linter.style.docString]
 def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -72,9 +80,12 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     | .node _ _ #[(.atom si ..), _] => si.getTrailing?.getD default
     | _ => default
   let start := startSubstring.toString
+  let some beg := docStx.getPos? | default
+  let beg := beg + ⟨3⟩ -- to account for `/--`
   if let some messages := checkDocstring start docString then
-    for msg in messages do
-      Linter.logLint linter.style.docString docStx msg
+    for (rg, msg) in messages do
+      Linter.logLint linter.style.docString
+        (.ofRange {start := rg.start + beg, stop := rg.stop + beg}) msg
 
 initialize addLinter docStringLinter
 
