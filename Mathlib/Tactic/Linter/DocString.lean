@@ -47,8 +47,11 @@ def checkDocstring (initialWhitespace input : String) : Option (Array String) :=
     errors := errors.push s!"error: doc-strings should end with at most a single space"
   -- Catch misleading indentation.
   let lines := (input.split (· == '\n')).drop 0
-  if lines.any (·.startsWith " ") then
-    errors := errors.push s!"error: subsequent lines in a doc-string should not be indented"
+  if lines.any (·.startsWith " ")
+    -- For now, we skip cases where a line starts with "* " or "- " as these are probably markdown
+    -- code blocks. (We can later try to re-enable some linting there.)
+    && !lines.any (fun l ↦ l.startsWith "* " || l.startsWith "- ") then
+      errors := errors.push s!"error: subsequent lines in a doc-string should not be indented"
   if input.trimRight.endsWith "\"" then
     errors := errors.push s!"error: docstring \"{input}\" ends with a single quote"
   else if input.trimRight.endsWith "," then

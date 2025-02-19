@@ -83,3 +83,36 @@ warning: error: docstring "With a trailing
 /-- With a trailing
   quote" -/
 example : Nat := 1
+
+
+-- Avoid false positives on docstrings containing markdown.
+
+#guard_msgs in
+/-- This function works in a few cases:
+* in this one,
+  and this is complicated.
+* in another one also
+-/
+example : Nat := 1
+
+#guard_msgs in
+/-- This function works in a few cases:
+- in this one,
+  and this is complicated.
+- in another one also
+-/
+example : Nat := 1
+
+-- False positives: indented code blocks.
+/--
+warning: error: subsequent lines in a doc-string should not be indented
+note: this linter can be disabled with `set_option linter.style.docString false`
+-/
+#guard_msgs in
+/-- Let's give an example.
+```lean4
+def foo : Bool := by
+  sorry
+```
+-/
+example : Nat := 1
