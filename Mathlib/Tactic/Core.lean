@@ -190,8 +190,8 @@ def allGoals (tac : TacticM Unit) : TacticM Unit := do
           throw ex
   setGoals mvarIdsNew.toList
 
-/-- Simulates the `<;>` tactic combinator. First runs `tac1` and then runs
-    `tac2` on all newly-generated subgoals.
+/-- Simulates the `<;>` tactic combinator.
+First runs `tac1` and then runs `tac2` on all newly-generated subgoals.
 -/
 def andThenOnSubgoals (tac1 : TacticM Unit) (tac2 : TacticM Unit) : TacticM Unit :=
   focus do tac1; allGoals tac2
