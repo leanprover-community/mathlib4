@@ -518,8 +518,8 @@ protected theorem mul_apply [Mul X] [ContinuousMul X] {a₁ b₁ a₂ b₂ : X} 
 /-! #### Truncating a path -/
 
 
-/-- `γ.truncate t₀ t₁` is the path which follows the path `γ` on the
-  time interval `[t₀, t₁]` and stays still otherwise. -/
+/-- `γ.truncate t₀ t₁` is the path which follows the path `γ` on the time interval `[t₀, t₁]`
+and stays still otherwise. -/
 def truncate {X : Type*} [TopologicalSpace X] {a b : X} (γ : Path a b) (t₀ t₁ : ℝ) :
     Path (γ.extend <| min t₀ t₁) (γ.extend t₁) where
   toFun s := γ.extend (min (max s t₀) t₁)
@@ -544,7 +544,7 @@ def truncate {X : Type*} [TopologicalSpace X] {a b : X} (γ : Path a b) (t₀ t�
     · rfl
 
 /-- `γ.truncateOfLE t₀ t₁ h`, where `h : t₀ ≤ t₁` is `γ.truncate t₀ t₁`
-  casted as a path from `γ.extend t₀` to `γ.extend t₁`. -/
+casted as a path from `γ.extend t₀` to `γ.extend t₁`. -/
 def truncateOfLE {X : Type*} [TopologicalSpace X] {a b : X} (γ : Path a b) {t₀ t₁ : ℝ}
     (h : t₀ ≤ t₁) : Path (γ.extend t₀) (γ.extend t₁) :=
   (γ.truncate t₀ t₁).cast (by rw [min_eq_left h]) rfl
@@ -556,8 +556,8 @@ theorem truncate_range {a b : X} (γ : Path a b) {t₀ t₁ : ℝ} :
   intro x _hx
   simp only [DFunLike.coe, Path.truncate, mem_range_self]
 
-/-- For a path `γ`, `γ.truncate` gives a "continuous family of paths", by which we
-  mean the uncurried function which maps `(t₀, t₁, s)` to `γ.truncate t₀ t₁ s` is continuous. -/
+/-- For a path `γ`, `γ.truncate` gives a "continuous family of paths", by which we mean
+the uncurried function which maps `(t₀, t₁, s)` to `γ.truncate t₀ t₁ s` is continuous. -/
 @[continuity]
 theorem truncate_continuous_family {a b : X} (γ : Path a b) :
     Continuous (fun x => γ.truncate x.1 x.2.1 x.2.2 : ℝ × ℝ × I → X) :=
