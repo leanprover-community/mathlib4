@@ -35,20 +35,20 @@ def checkDocstring (initialWhitespace input : String) : Option (Array String) :=
   match initialWhitespace with
   | "\n" | " " => pure ()
   | "" =>
-    errors := errors.push s!"error: doc-string \"{input}\" should start with a space or newline"
+    errors := errors.push s!"error: doc-strings should start with a space or newline"
   | _ =>
     -- In any other cases, we have extraneous whitespace.
-    errors := errors.push s!"error: doc-string \"{input}\" should start with a single space"
+    errors := errors.push s!"error: doc-strings should start with a single space"
 
   -- Check the ending of the doc-string: a new line or exactly one space.
   if !(input.endsWith "\n" || input.endsWith " ") then
-    errors := errors.push s!"error: doc-string \"{input}\" should end with a space or newline"
+    errors := errors.push s!"error: doc-strings should end with a space or newline"
   else if (input.endsWith "  ") then
-    errors := errors.push s!"error: doc-string \"{input}\" should end with at most a single space"
+    errors := errors.push s!"error: doc-strings should end with at most a single space"
   -- Catch misleading indentation.
   let lines := (input.split (· == '\n')).drop 0
   if lines.any (·.startsWith " ") then
-    errors := errors.push s!"error: subsequent lines in the doc-string \"{input}\" should not be indented"
+    errors := errors.push s!"error: subsequent lines in a doc-string should not be indented"
   if input.trimRight.endsWith "\"" then
     errors := errors.push s!"error: docstring \"{input}\" ends with a single quote"
   else if input.trimRight.endsWith "," then

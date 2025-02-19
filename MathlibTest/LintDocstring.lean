@@ -5,7 +5,7 @@ import Mathlib.Tactic.Linter.DocString
 set_option linter.style.docString true
 
 /--
-warning: error: doc-string "Missing space " should start with a space or newline
+warning: error: doc-strings should start with a space or newline
 note: this linter can be disabled with `set_option linter.style.docString false`
 -/
 #guard_msgs in
@@ -13,7 +13,7 @@ note: this linter can be disabled with `set_option linter.style.docString false`
 example : Nat := 1
 
 /--
-warning: error: doc-string "Missing ending space" should end with a space or newline
+warning: error: doc-strings should end with a space or newline
 note: this linter can be disabled with `set_option linter.style.docString false`
 -/
 #guard_msgs in
@@ -21,7 +21,7 @@ note: this linter can be disabled with `set_option linter.style.docString false`
 example : Nat := 1
 
 /--
-warning: error: doc-string "Trailing newline " should start with a single space
+warning: error: doc-strings should start with a single space
 note: this linter can be disabled with `set_option linter.style.docString false`
 -/
 #guard_msgs in
@@ -29,7 +29,7 @@ note: this linter can be disabled with `set_option linter.style.docString false`
 example : Nat := 1
 
 /--
-warning: error: doc-string "Trailing newline  " should end with at most a single space
+warning: error: doc-strings should end with at most a single space
 note: this linter can be disabled with `set_option linter.style.docString false`
 -/
 #guard_msgs in
@@ -38,8 +38,7 @@ Trailing newline  -/
 example : Nat := 1
 
 /--
-warning: error: subsequent lines in the doc-string "Bad indentation
-  on the second line " should not be indented
+warning: error: subsequent lines in a doc-string should not be indented
 note: this linter can be disabled with `set_option linter.style.docString false`
 -/
 #guard_msgs in
@@ -48,9 +47,7 @@ note: this linter can be disabled with `set_option linter.style.docString false`
 example : Nat := 1
 
 /--
-warning: error: subsequent lines in the doc-string "Bad indentation
-not on the second, but
-   the second line " should not be indented
+warning: error: subsequent lines in a doc-string should not be indented
 note: this linter can be disabled with `set_option linter.style.docString false`
 -/
 #guard_msgs in
@@ -76,8 +73,8 @@ note: this linter can be disabled with `set_option linter.style.docString false`
 example : Nat := 1
 
 /--
-warning: error: subsequent lines in the doc-string "With a trailing
-  quote" " should not be indented note: this linter can be disabled with `set_option linter.style.docString false`
+warning: error: subsequent lines in a doc-string should not be indented
+note: this linter can be disabled with `set_option linter.style.docString false`
 ---
 warning: error: docstring "With a trailing
   quote" " ends with a single quote note: this linter can be disabled with `set_option linter.style.docString false`
