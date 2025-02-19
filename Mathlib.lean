@@ -2510,6 +2510,7 @@ import Mathlib.Computability.Primrec
 import Mathlib.Computability.Reduce
 import Mathlib.Computability.RegularExpressions
 import Mathlib.Computability.TMComputable
+import Mathlib.Computability.TMConfig
 import Mathlib.Computability.TMToPartrec
 import Mathlib.Computability.Tape
 import Mathlib.Computability.TuringMachine
