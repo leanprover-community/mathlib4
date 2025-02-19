@@ -261,9 +261,7 @@ private def delabFinsetArg (i : Ident) : DelabM FinsetResult := do
     let p ←
       withNaryArg 1 do
         if (← getExpr).isLambda then
-          withBindingBody i.getId do
-            let p ← delab
-            return p
+          withBindingBody i.getId delab
         else
           let p ← delab
           return (← `($p $i))
