@@ -5,9 +5,9 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Nontrivial.Defs
-import Mathlib.Order.Defs.LinearOrder
+import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.GCongr.CoreAttrs
-import Mathlib.Tactic.Push
+import Mathlib.Tactic.PushNeg
 import Mathlib.Util.AssertExists
 
 /-!
