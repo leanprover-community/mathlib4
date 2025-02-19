@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Oliver Nash
 -/
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Union
 
 /-!
 # Finsets in product types
@@ -41,6 +42,10 @@ protected def product (s : Finset α) (t : Finset β) : Finset (α × β) :=
 
 instance instSProd : SProd (Finset α) (Finset β) (Finset (α × β)) where
   sprod := Finset.product
+
+@[simp]
+theorem product_eq_sprod : Finset.product s t = s ×ˢ t :=
+  rfl
 
 @[simp]
 theorem product_val : (s ×ˢ t).1 = s.1 ×ˢ t.1 :=

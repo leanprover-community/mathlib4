@@ -28,7 +28,7 @@ namespace MeasureTheory
 
 universe u v w
 
-variable {G : Type u} {M : Type v} {α : Type w} {s : Set α}
+variable {G : Type u} {M : Type v} {α : Type w}
 
 namespace SMulInvariantMeasure
 
@@ -198,7 +198,7 @@ instance smulInvariantMeasure_map_smul [SMul M α] [SMul N α] [SMulCommClass N 
 
 end SMulHomClass
 
-variable (G) {m : MeasurableSpace α} [Group G] [MulAction G α] (c : G) (μ : Measure α)
+variable (G) {m : MeasurableSpace α} [Group G] [MulAction G α] (μ : Measure α)
 
 variable [MeasurableSpace G] [MeasurableSMul G α] in
 /-- Equivalent definitions of a measure invariant under a multiplicative action of a group.

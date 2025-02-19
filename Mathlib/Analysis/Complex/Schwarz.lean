@@ -68,7 +68,7 @@ theorem schwarz_aux {f : ℂ → ℂ} (hd : DifferentiableOn ℂ f (ball c R₁)
     refine ge_of_tendsto ?_ this
     exact (tendsto_const_nhds.div tendsto_id hR₁.ne').mono_left nhdsWithin_le_nhds
   rw [mem_ball] at hz
-  filter_upwards [Ioo_mem_nhdsWithin_Iio ⟨hz, le_rfl⟩] with r hr
+  filter_upwards [Ioo_mem_nhdsLT hz] with r hr
   have hr₀ : 0 < r := dist_nonneg.trans_lt hr.1
   replace hd : DiffContOnCl ℂ (dslope f c) (ball c r) := by
     refine DifferentiableOn.diffContOnCl ?_

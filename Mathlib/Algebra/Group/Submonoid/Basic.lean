@@ -50,8 +50,6 @@ submonoid, submonoids
 
 assert_not_exists MonoidWithZero
 
--- Only needed for notation
--- Only needed for notation
 variable {M : Type*} {N : Type*}
 variable {A : Type*}
 
@@ -138,7 +136,7 @@ theorem closure_le : closure s ≤ S ↔ s ⊆ S :=
 
 /-- Submonoid closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure s ≤ closure t`. -/
-@[to_additive
+@[to_additive (attr := gcongr)
       "Additive submonoid closure of a set is monotone in its argument: if `s ⊆ t`,
       then `closure s ≤ closure t`"]
 theorem closure_mono ⦃s t : Set M⦄ (h : s ⊆ t) : closure s ≤ closure t :=

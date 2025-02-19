@@ -3,12 +3,12 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Jireh Loreaux
 -/
-
+import Mathlib.Algebra.Group.Subgroup.Map
+import Mathlib.Algebra.Module.Opposite
 import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.RingTheory.Congruence.Opposite
 import Mathlib.RingTheory.Ideal.Defs
 import Mathlib.RingTheory.TwoSidedIdeal.Lattice
-import Mathlib.Algebra.Module.Opposite
 
 /-!
 # Operations on two-sided ideals
@@ -88,8 +88,8 @@ variable [NonUnitalRingHomClass F R S]
 
 /--
 Preimage of a two-sided ideal, as a two-sided ideal. -/
-def comap (I : TwoSidedIdeal S) : TwoSidedIdeal R :=
-{ ringCon := I.ringCon.comap f }
+def comap (I : TwoSidedIdeal S) : TwoSidedIdeal R where
+  ringCon := I.ringCon.comap f
 
 lemma mem_comap {I : TwoSidedIdeal S} {x : R} :
     x ∈ I.comap f ↔ f x ∈ I := by

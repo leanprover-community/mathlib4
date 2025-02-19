@@ -3,7 +3,7 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.Normed.Group.Continuity
 import Mathlib.Topology.Algebra.UniformGroup.Basic
 import Mathlib.Topology.MetricSpace.Algebra
 import Mathlib.Topology.MetricSpace.IsometricSMul
@@ -15,13 +15,13 @@ This file proves lipschitzness of normed group operations and shows that normed 
 groups.
 -/
 
-variable {𝓕 α E F : Type*}
+variable {𝓕 E F : Type*}
 
 open Filter Function Metric Bornology
 open scoped ENNReal NNReal Uniformity Pointwise Topology
 
 section SeminormedGroup
-variable [SeminormedGroup E] [SeminormedGroup F] {s : Set E} {a a₁ a₂ b b₁ b₂ : E} {r r₁ r₂ : ℝ}
+variable [SeminormedGroup E] [SeminormedGroup F] {s : Set E} {a b : E} {r : ℝ}
 
 @[to_additive]
 instance NormedGroup.to_isometricSMul_right : IsometricSMul Eᵐᵒᵖ E :=
@@ -159,7 +159,7 @@ end NNNorm
 
 @[to_additive lipschitzWith_one_norm]
 theorem lipschitzWith_one_norm' : LipschitzWith 1 (norm : E → ℝ) := by
-  simpa only [dist_one_left] using LipschitzWith.dist_right (1 : E)
+  simpa using LipschitzWith.dist_right (1 : E)
 
 @[to_additive lipschitzWith_one_nnnorm]
 theorem lipschitzWith_one_nnnorm' : LipschitzWith 1 (NNNorm.nnnorm : E → ℝ≥0) :=
@@ -177,7 +177,7 @@ end SeminormedGroup
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a a₁ a₂ b b₁ b₂ : E} {r r₁ r₂ : ℝ}
+variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a₁ a₂ b₁ b₂ : E} {r₁ r₂ : ℝ}
 
 @[to_additive]
 instance NormedGroup.to_isometricSMul_left : IsometricSMul E E :=
@@ -239,7 +239,7 @@ theorem edist_mul_mul_le (a₁ a₂ b₁ b₂ : E) :
 
 section PseudoEMetricSpace
 variable {α E : Type*} [SeminormedCommGroup E] [PseudoEMetricSpace α] {K Kf Kg : ℝ≥0}
-  {f g : α → E} {s : Set α} {x : α}
+  {f g : α → E} {s : Set α}
 
 @[to_additive (attr := simp)]
 lemma lipschitzWith_inv_iff : LipschitzWith K f⁻¹ ↔ LipschitzWith K f := by simp [LipschitzWith]
@@ -359,7 +359,7 @@ instance (priority := 100) SeminormedCommGroup.to_uniformGroup : UniformGroup E 
 -- short-circuit type class inference
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) SeminormedCommGroup.toTopologicalGroup : TopologicalGroup E :=
+instance (priority := 100) SeminormedCommGroup.toIsTopologicalGroup : IsTopologicalGroup E :=
   inferInstance
 
 /-! ### SeparationQuotient -/
@@ -381,7 +381,7 @@ instance : NormedCommGroup (SeparationQuotient E) where
 
 @[to_additive]
 theorem mk_eq_one_iff {p : E} : mk p = 1 ↔ ‖p‖ = 0 := by
-  rw [← norm_mk', norm_eq_zero'']
+  rw [← norm_mk', norm_eq_zero']
 
 set_option linter.docPrime false in
 @[to_additive (attr := simp) nnnorm_mk]

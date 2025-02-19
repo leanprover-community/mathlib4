@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Order.Monotone.Basic
 import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.GCongr.CoreAttrs
 import Mathlib.Tactic.Monotonicity.Attr
@@ -89,13 +90,11 @@ open Function
 
 variable {M₀ G₀ : Type*} (α : Type*)
 
-set_option quotPrecheck false in
-/-- Local notation for the nonnegative elements of a type `α`. TODO: actually make local. -/
-notation "α≥0" => { x : α // 0 ≤ x }
+/-- Local notation for the nonnegative elements of a type `α`. -/
+local notation3 "α≥0" => { x : α // 0 ≤ x }
 
-set_option quotPrecheck false in
-/-- Local notation for the positive elements of a type `α`. TODO: actually make local. -/
-notation "α>0" => { x : α // 0 < x }
+/-- Local notation for the positive elements of a type `α`. -/
+local notation3 "α>0" => { x : α // 0 < x }
 
 section Abbreviations
 
@@ -193,6 +192,30 @@ instance MulPosReflectLT.to_contravariantClass_pos_mul_lt [MulPosReflectLT α] :
     ContravariantClass α>0 α (fun x y => y * x) (· < ·) :=
   ⟨fun a _ _ bc => @ContravariantClass.elim α≥0 α (fun x y => y * x) (· < ·) _ ⟨_, a.2.le⟩ _ _ bc⟩
 
+instance (priority := 100) MulLeftMono.toPosMulMono [MulLeftMono α] :
+    PosMulMono α where elim _ _ := ‹MulLeftMono α›.elim _
+
+instance (priority := 100) MulRightMono.toMulPosMono [MulRightMono α] :
+    MulPosMono α where elim _ _ := ‹MulRightMono α›.elim _
+
+instance (priority := 100) MulLeftStrictMono.toPosMulStrictMono [MulLeftStrictMono α] :
+    PosMulStrictMono α where elim _ _ := ‹MulLeftStrictMono α›.elim _
+
+instance (priority := 100) MulRightStrictMono.toMulPosStrictMono [MulRightStrictMono α] :
+    MulPosStrictMono α where elim _ _ := ‹MulRightStrictMono α›.elim _
+
+instance (priority := 100) MulLeftMono.toPosMulReflectLT [MulLeftReflectLT α] :
+   PosMulReflectLT α where elim _ _ := ‹MulLeftReflectLT α›.elim _
+
+instance (priority := 100) MulRightMono.toMulPosReflectLT [MulRightReflectLT α] :
+   MulPosReflectLT α where elim _ _ := ‹MulRightReflectLT α›.elim _
+
+instance (priority := 100) MulLeftStrictMono.toPosMulReflectLE [MulLeftReflectLE α] :
+   PosMulReflectLE α where elim _ _ := ‹MulLeftReflectLE α›.elim _
+
+instance (priority := 100) MulRightStrictMono.toMulPosReflectLE [MulRightReflectLE α] :
+   MulPosReflectLE α where elim _ _ := ‹MulRightReflectLE α›.elim _
+
 @[gcongr]
 theorem mul_le_mul_of_nonneg_left [PosMulMono α] (h : b ≤ c) (a0 : 0 ≤ a) : a * b ≤ a * c :=
   @CovariantClass.elim α≥0 α (fun x y => x * y) (· ≤ ·) _ ⟨a, a0⟩ _ _ h
@@ -253,9 +276,6 @@ theorem mul_le_mul_of_nonneg [PosMulMono α] [MulPosMono α]
     (h₁ : a ≤ b) (h₂ : c ≤ d) (a0 : 0 ≤ a) (d0 : 0 ≤ d) : a * c ≤ b * d :=
   (mul_le_mul_of_nonneg_left h₂ a0).trans (mul_le_mul_of_nonneg_right h₁ d0)
 
-@[deprecated (since := "2024-07-13")]
-alias mul_le_mul_of_le_of_le := mul_le_mul_of_nonneg
-
 theorem mul_le_mul_of_nonneg' [PosMulMono α] [MulPosMono α]
     (h₁ : a ≤ b) (h₂ : c ≤ d) (c0 : 0 ≤ c) (b0 : 0 ≤ b) : a * c ≤ b * d :=
   (mul_le_mul_of_nonneg_right h₁ c0).trans (mul_le_mul_of_nonneg_left h₂ b0)
@@ -272,9 +292,6 @@ theorem mul_lt_mul_of_le_of_lt_of_nonneg_of_pos [PosMulStrictMono α] [MulPosMon
 
 alias mul_lt_mul_of_nonneg_of_pos' := mul_lt_mul_of_le_of_lt_of_nonneg_of_pos
 
-@[deprecated (since := "2024-07-13")]
-alias mul_lt_mul_of_le_of_le' := mul_lt_mul_of_le_of_lt_of_nonneg_of_pos
-
 theorem mul_lt_mul_of_lt_of_le_of_nonneg_of_pos [PosMulMono α] [MulPosStrictMono α]
     (h₁ : a < b) (h₂ : c ≤ d) (a0 : 0 ≤ a) (d0 : 0 < d) : a * c < b * d :=
   (mul_le_mul_of_nonneg_left h₂ a0).trans_lt (mul_lt_mul_of_pos_right h₁ d0)
@@ -287,22 +304,13 @@ theorem mul_lt_mul_of_lt_of_le_of_pos_of_nonneg [PosMulMono α] [MulPosStrictMon
 
 alias mul_lt_mul_of_pos_of_nonneg' := mul_lt_mul_of_lt_of_le_of_pos_of_nonneg
 
-@[deprecated (since := "2024-07-13")]
-alias mul_lt_mul_of_le_of_lt' := mul_lt_mul_of_lt_of_le_of_pos_of_nonneg
-
 theorem mul_lt_mul_of_pos [PosMulStrictMono α] [MulPosStrictMono α]
     (h₁ : a < b) (h₂ : c < d) (a0 : 0 < a) (d0 : 0 < d) : a * c < b * d :=
   (mul_lt_mul_of_pos_left h₂ a0).trans (mul_lt_mul_of_pos_right h₁ d0)
 
-@[deprecated (since := "2024-07-13")]
-alias mul_lt_mul_of_pos_of_pos := mul_lt_mul_of_pos
-
 theorem mul_lt_mul_of_pos' [PosMulStrictMono α] [MulPosStrictMono α]
     (h₁ : a < b) (h₂ : c < d) (c0 : 0 < c) (b0 : 0 < b) : a * c < b * d :=
   (mul_lt_mul_of_pos_right h₁ c0).trans (mul_lt_mul_of_pos_left h₂ b0)
-
-@[deprecated (since := "2024-07-13")]
-alias mul_lt_mul_of_lt_of_lt' := mul_lt_mul_of_pos'
 
 alias mul_le_mul := mul_le_mul_of_nonneg'
 attribute [gcongr] mul_le_mul
@@ -512,14 +520,10 @@ theorem mulPosReflectLT_iff_contravariant_pos :
       · simp [← ha] at h
       · exact @ContravariantClass.elim α>0 α (fun x y => y * x) (· < ·) _ ⟨_, ha⟩ _ _ h ⟩⟩
 
--- Porting note: mathlib3 proofs would look like `StrictMono.monotone <| @CovariantClass.elim ..`
--- but implicit argument handling causes that to break
 -- see Note [lower instance priority]
 instance (priority := 100) PosMulStrictMono.toPosMulMono [PosMulStrictMono α] : PosMulMono α :=
   posMulMono_iff_covariant_pos.2 (covariantClass_le_of_lt _ _ _)
 
--- Porting note: mathlib3 proofs would look like `StrictMono.monotone <| @CovariantClass.elim ..`
--- but implicit argument handling causes that to break
 -- see Note [lower instance priority]
 instance (priority := 100) MulPosStrictMono.toMulPosMono [MulPosStrictMono α] : MulPosMono α :=
   mulPosMono_iff_covariant_pos.2 (covariantClass_le_of_lt _ _ _)
@@ -935,6 +939,21 @@ end LinearOrder
 
 end MulOneClass
 
+section MulZero
+
+variable [Mul M₀] [Zero M₀] [Preorder M₀] [Preorder α] {f g : α → M₀}
+
+lemma Monotone.mul [PosMulMono M₀] [MulPosMono M₀] (hf : Monotone f) (hg : Monotone g)
+    (hf₀ : ∀ x, 0 ≤ f x) (hg₀ : ∀ x, 0 ≤ g x) : Monotone (f * g) :=
+  fun _ _ h ↦ mul_le_mul (hf h) (hg h) (hg₀ _) (hf₀ _)
+
+lemma MonotoneOn.mul [PosMulMono M₀] [MulPosMono M₀] {s : Set α} (hf : MonotoneOn f s)
+    (hg : MonotoneOn g s) (hf₀ : ∀ x ∈ s, 0 ≤ f x) (hg₀ : ∀ x ∈ s, 0 ≤ g x) :
+    MonotoneOn (f * g) s :=
+  fun _ ha _ hb h ↦ mul_le_mul (hf ha hb h) (hg ha hb h) (hg₀ _ ha) (hf₀ _ hb)
+
+end MulZero
+
 section MonoidWithZero
 variable [MonoidWithZero M₀]
 
@@ -983,6 +1002,11 @@ lemma mul_lt_one_of_nonneg_of_lt_one_right [MulPosMono M₀] (ha : a ≤ 1) (hb�
 section
 variable [ZeroLEOneClass M₀] [PosMulMono M₀] [MulPosMono M₀]
 
+@[bound]
+protected lemma Bound.one_lt_mul : 1 ≤ a ∧ 1 < b ∨ 1 < a ∧ 1 ≤ b → 1 < a * b := by
+  rintro (⟨ha, hb⟩ | ⟨ha, hb⟩); exacts [one_lt_mul ha hb, one_lt_mul_of_lt_of_le ha hb]
+
+@[bound]
 lemma mul_le_one₀ (ha : a ≤ 1) (hb₀ : 0 ≤ b) (hb : b ≤ 1) : a * b ≤ 1 :=
   one_mul (1 : M₀) ▸ mul_le_mul ha hb hb₀ zero_le_one
 
@@ -1058,10 +1082,6 @@ lemma Antitone.mul_const [MulPosMono M₀] (hf : Antitone f) (ha : 0 ≤ a) :
 lemma Antitone.const_mul [PosMulMono M₀] (hf : Antitone f) (ha : 0 ≤ a) :
     Antitone fun x ↦ a * f x := (monotone_mul_left_of_nonneg ha).comp_antitone hf
 
-lemma Monotone.mul [PosMulMono M₀] [MulPosMono M₀] (hf : Monotone f) (hg : Monotone g)
-    (hf₀ : ∀ x, 0 ≤ f x) (hg₀ : ∀ x, 0 ≤ g x) : Monotone (f * g) :=
-  fun _ _ h ↦ mul_le_mul (hf h) (hg h) (hg₀ _) (hf₀ _)
-
 end Preorder
 
 
@@ -1080,7 +1100,7 @@ lemma strictMonoOn_mul_self [PosMulStrictMono M₀] [MulPosMono M₀] :
 
 -- See Note [decidable namespace]
 protected lemma Decidable.mul_lt_mul'' [PosMulMono M₀] [PosMulStrictMono M₀] [MulPosStrictMono M₀]
-    [@DecidableRel M₀ (· ≤ ·)] (h1 : a < c) (h2 : b < d)
+    [DecidableRel (α := M₀) (· ≤ ·)] (h1 : a < c) (h2 : b < d)
     (h3 : 0 ≤ a) (h4 : 0 ≤ b) : a * b < c * d :=
   h4.lt_or_eq_dec.elim (fun b0 ↦ mul_lt_mul h1 h2.le b0 <| h3.trans h1.le) fun b0 ↦ by
     rw [← b0, mul_zero]; exact mul_pos (h3.trans_lt h1) (h4.trans_lt h2)
@@ -1246,6 +1266,12 @@ lemma lt_of_mul_self_lt_mul_self₀ (hb : 0 ≤ b) : a * a < b * b → a < b := 
   simp_rw [← sq]
   exact lt_of_pow_lt_pow_left₀ _ hb
 
+lemma sq_lt_sq₀ (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ 2 < b ^ 2 ↔ a < b :=
+  pow_lt_pow_iff_left₀ ha hb two_ne_zero
+
+lemma sq_le_sq₀ (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ 2 ≤ b ^ 2 ↔ a ≤ b :=
+  pow_le_pow_iff_left₀ ha hb two_ne_zero
+
 end MonoidWithZero.LinearOrder
 
 section CancelMonoidWithZero
@@ -1357,6 +1383,8 @@ lemma inv_le_iff_one_le_mul₀' (ha : 0 < a) : a⁻¹ ≤ b ↔ 1 ≤ a * b := b
 
 lemma one_le_inv₀ (ha : 0 < a) : 1 ≤ a⁻¹ ↔ a ≤ 1 := by simpa using one_le_inv_mul₀ ha (b := 1)
 lemma inv_le_one₀ (ha : 0 < a) : a⁻¹ ≤ 1 ↔ 1 ≤ a := by simpa using inv_mul_le_one₀ ha (b := 1)
+
+@[bound] alias ⟨_, Bound.one_le_inv₀⟩ := one_le_inv₀
 
 @[bound]
 lemma inv_le_one_of_one_le₀ (ha : 1 ≤ a) : a⁻¹ ≤ 1 := (inv_le_one₀ <| zero_lt_one.trans_le ha).2 ha
@@ -1583,6 +1611,30 @@ lemma zpow_le_zpow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) :
 lemma zpow_lt_zpow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) :
     a ^ m < a ^ n ↔ n < m := (zpow_right_strictAnti₀ ha₀ ha₁).lt_iff_lt
 
+@[simp] lemma one_le_zpow_iff_right₀ (ha : 1 < a) : 1 ≤ a ^ n ↔ 0 ≤ n := by
+  simp [← zpow_le_zpow_iff_right₀ ha]
+
+@[simp] lemma one_lt_zpow_iff_right₀ (ha : 1 < a) : 1 < a ^ n ↔ 0 < n := by
+  simp [← zpow_lt_zpow_iff_right₀ ha]
+
+@[simp] lemma one_le_zpow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) : 1 ≤ a ^ n ↔ n ≤ 0 := by
+  simp [← zpow_le_zpow_iff_right_of_lt_one₀ ha₀ ha₁]
+
+@[simp] lemma one_lt_zpow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) : 1 < a ^ n ↔ n < 0 := by
+  simp [← zpow_lt_zpow_iff_right_of_lt_one₀ ha₀ ha₁]
+
+@[simp] lemma zpow_le_one_iff_right₀ (ha : 1 < a) : a ^ n ≤ 1 ↔ n ≤ 0 := by
+  simp [← zpow_le_zpow_iff_right₀ ha]
+
+@[simp] lemma zpow_lt_one_iff_right₀ (ha : 1 < a) : a ^ n < 1 ↔ n < 0 := by
+  simp [← zpow_lt_zpow_iff_right₀ ha]
+
+@[simp] lemma zpow_le_one_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) : a ^ n ≤ 1 ↔ 0 ≤ n := by
+  simp [← zpow_le_zpow_iff_right_of_lt_one₀ ha₀ ha₁]
+
+@[simp] lemma zpow_lt_one_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) : a ^ n < 1 ↔ 0 < n := by
+  simp [← zpow_lt_zpow_iff_right_of_lt_one₀ ha₀ ha₁]
+
 end PosMulStrictMono
 
 section MulPosStrictMono
@@ -1602,7 +1654,7 @@ lemma mul_inv_lt_iff₀ (hc : 0 < c) : b * c⁻¹ < a ↔ b < a * c where
 lemma lt_div_iff₀ (hc : 0 < c) : a < b / c ↔ a * c < b := by
   rw [div_eq_mul_inv, lt_mul_inv_iff₀ hc]
 
-/-- See `div_le_iff₀'` for a version with multiplication on the other side. -/
+/-- See `div_lt_iff₀'` for a version with multiplication on the other side. -/
 lemma div_lt_iff₀ (hc : 0 < c) : b / c < a ↔ b < a * c := by
   rw [div_eq_mul_inv, mul_inv_lt_iff₀ hc]
 
@@ -1847,4 +1899,4 @@ lemma div_lt_comm₀ (hb : 0 < b) (hc : 0 < c) : a / b < c ↔ a / c < b := by
 end PosMulStrictMono
 end CommGroupWithZero
 
-set_option linter.style.longFile 1900
+set_option linter.style.longFile 2000

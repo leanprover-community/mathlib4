@@ -3,6 +3,7 @@ Copyright (c) 2019 Michael Howes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Howes, Newell Jensen
 -/
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.GroupTheory.FreeGroup.Basic
 import Mathlib.GroupTheory.QuotientGroup.Defs
 
@@ -50,6 +51,22 @@ theorem mk_surjective (rels : Set (FreeGroup α)) : Function.Surjective <| mk re
 mapped to the equivalence class of the image of `x` in `FreeGroup α`. -/
 def of {rels : Set (FreeGroup α)} (x : α) : PresentedGroup rels :=
   mk rels (FreeGroup.of x)
+
+lemma mk_eq_one_iff {rels : Set (FreeGroup α)} {x : FreeGroup α} :
+    mk rels x = 1 ↔ x ∈ Subgroup.normalClosure rels :=
+  QuotientGroup.eq_one_iff _
+
+lemma one_of_mem {rels : Set (FreeGroup α)} {x : FreeGroup α} (hx : x ∈ rels) :
+    mk rels x = 1 :=
+  mk_eq_one_iff.mpr <| Subgroup.subset_normalClosure hx
+
+lemma mk_eq_mk_of_mul_inv_mem {rels : Set (FreeGroup α)} {x y : FreeGroup α}
+    (hx : x * y⁻¹ ∈ rels) : mk rels x = mk rels y :=
+  eq_of_mul_inv_eq_one <| one_of_mem hx
+
+lemma mk_eq_mk_of_inv_mul_mem {rels : Set (FreeGroup α)} {x y : FreeGroup α}
+    (hx : x⁻¹ * y ∈ rels) : mk rels x = mk rels y :=
+  eq_of_inv_mul_eq_one <| one_of_mem hx
 
 /-- The generators of a presented group generate the presented group. That is, the subgroup closure
 of the set of generators equals `⊤`. -/

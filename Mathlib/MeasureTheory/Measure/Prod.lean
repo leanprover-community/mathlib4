@@ -70,33 +70,35 @@ variable {μ μ' : Measure α} {ν ν' : Measure β} {τ : Measure γ}
   a measurable function. `measurable_measure_prod_mk_left` is strictly more general. -/
 theorem measurable_measure_prod_mk_left_finite [IsFiniteMeasure ν] {s : Set (α × β)}
     (hs : MeasurableSet s) : Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
-  classical
-  refine induction_on_inter (C := fun s => Measurable fun x => ν (Prod.mk x ⁻¹' s))
-    generateFrom_prod.symm isPiSystem_prod ?_ ?_ ?_ ?_ hs
-  · simp
-  · rintro _ ⟨s, hs, t, _, rfl⟩
-    simp only [mk_preimage_prod_right_eq_if, measure_if]
-    exact measurable_const.indicator hs
-  · intro t ht h2t
-    simp_rw [preimage_compl, measure_compl (measurable_prod_mk_left ht) (measure_ne_top ν _)]
-    exact h2t.const_sub _
-  · intro f h1f h2f h3f
-    simp_rw [preimage_iUnion]
-    have : ∀ b, ν (⋃ i, Prod.mk b ⁻¹' f i) = ∑' i, ν (Prod.mk b ⁻¹' f i) := fun b =>
-      measure_iUnion (fun i j hij => Disjoint.preimage _ (h1f hij)) fun i =>
-        measurable_prod_mk_left (h2f i)
-    simp_rw [this]
-    apply Measurable.ennreal_tsum h3f
+  induction s, hs using induction_on_inter generateFrom_prod.symm isPiSystem_prod with
+  | empty => simp
+  | basic s hs =>
+    obtain ⟨s, hs, t, -, rfl⟩ := hs
+    classical simpa only [mk_preimage_prod_right_eq_if, measure_if]
+      using measurable_const.indicator hs
+  | compl s hs ihs =>
+    simp_rw [preimage_compl, measure_compl (measurable_prod_mk_left hs) (measure_ne_top ν _)]
+    exact ihs.const_sub _
+  | iUnion f hfd hfm ihf =>
+    have (a : α) : ν (Prod.mk a ⁻¹' ⋃ i, f i) = ∑' i, ν (Prod.mk a ⁻¹' f i) := by
+      rw [preimage_iUnion, measure_iUnion]
+      exacts [hfd.mono fun _ _ ↦ .preimage _, fun i ↦ measurable_prod_mk_left (hfm i)]
+    simpa only [this] using Measurable.ennreal_tsum ihf
 
 /-- If `ν` is an s-finite measure, and `s ⊆ α × β` is measurable, then `x ↦ ν { y | (x, y) ∈ s }`
-  is a measurable function. -/
+is a measurable function.
+
+Not true without the s-finite assumption: on `ℝ × ℝ` with the product sigma-algebra, let `s` be the
+diagonal and let `ν` be an uncountable sum of Dirac measures (all Dirac measures for points in a
+set `t`). Then `ν (Prod.mk x ⁻¹' s) = ν {x} = if x ∈ t then 1 else 0`. If `t` is chosen
+non-measurable, this will not be measurable. -/
 theorem measurable_measure_prod_mk_left [SFinite ν] {s : Set (α × β)} (hs : MeasurableSet s) :
     Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
   rw [← sum_sfiniteSeq ν]
   simp_rw [Measure.sum_apply_of_countable]
   exact Measurable.ennreal_tsum (fun i ↦ measurable_measure_prod_mk_left_finite hs)
 
-/-- If `μ` is a σ-finite measure, and `s ⊆ α × β` is measurable, then `y ↦ μ { x | (x, y) ∈ s }` is
+/-- If `μ` is an s-finite measure, and `s ⊆ α × β` is measurable, then `y ↦ μ { x | (x, y) ∈ s }` is
   a measurable function. -/
 theorem measurable_measure_prod_mk_right {μ : Measure α} [SFinite μ] {s : Set (α × β)}
     (hs : MeasurableSet s) : Measurable fun y => μ ((fun x => (x, y)) ⁻¹' s) :=
@@ -194,7 +196,7 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν 
       μ.prod ν (s ×ˢ t) ≤ μ.prod ν (S ×ˢ T) := by gcongr <;> apply subset_toMeasurable
       _ = μ S * ν T := by
         rw [prod_apply hSTm]
-        simp_rw [mk_preimage_prod_right_eq_if, measure_if,
+        simp_rw [S, mk_preimage_prod_right_eq_if, measure_if,
           lintegral_indicator (measurableSet_toMeasurable _ _), lintegral_const,
           restrict_apply_univ, mul_comm]
       _ = μ s * ν t := by rw [measure_toMeasurable, measure_toMeasurable]
@@ -229,7 +231,7 @@ instance prod.instIsOpenPosMeasure {X Y : Type*} [TopologicalSpace X] [Topologic
   rintro U U_open ⟨⟨x, y⟩, hxy⟩
   rcases isOpen_prod_iff.1 U_open x y hxy with ⟨u, v, u_open, v_open, xu, yv, huv⟩
   refine ne_of_gt (lt_of_lt_of_le ?_ (measure_mono huv))
-  simp only [prod_prod, CanonicallyOrderedCommSemiring.mul_pos]
+  simp only [prod_prod, CanonicallyOrderedAdd.mul_pos]
   constructor
   · exact u_open.measure_pos μ ⟨x, xu⟩
   · exact v_open.measure_pos ν ⟨y, yv⟩
@@ -311,7 +313,7 @@ theorem measure_ae_null_of_prod_null {s : Set (α × β)} (h : μ.prod ν s = 0)
   rw [measure_prod_null mt] at ht
   rw [eventuallyLE_antisymm_iff]
   exact
-    ⟨EventuallyLE.trans_eq (Eventually.of_forall fun x => (measure_mono (preimage_mono hst) : _))
+    ⟨EventuallyLE.trans_eq (Eventually.of_forall fun x => measure_mono (preimage_mono hst))
         ht,
       Eventually.of_forall fun x => zero_le _⟩
 
@@ -506,7 +508,7 @@ theorem prod_apply_symm {s : Set (α × β)} (hs : MeasurableSet s) :
 theorem ae_ae_comm {p : α → β → Prop} (h : MeasurableSet {x : α × β | p x.1 x.2}) :
     (∀ᵐ x ∂μ, ∀ᵐ y ∂ν, p x y) ↔ ∀ᵐ y ∂ν, ∀ᵐ x ∂μ, p x y := calc
   _ ↔ ∀ᵐ x ∂μ.prod ν, p x.1 x.2 := .symm <| ae_prod_iff_ae_ae h
-  _ ↔ ∀ᵐ x ∂ν.prod μ, p x.2 x.1 := by rw [← prod_swap, ae_map_iff (by fun_prop) h]; rfl
+  _ ↔ ∀ᵐ x ∂ν.prod μ, p x.2 x.1 := by rw [← prod_swap, ae_map_iff (by fun_prop) h]; simp
   _ ↔ ∀ᵐ y ∂ν, ∀ᵐ x ∂μ, p x y := ae_prod_iff_ae_ae <| measurable_swap h
 
 /-- If `s ×ˢ t` is a null measurable set and `ν t ≠ 0`, then `s` is a null measurable set. -/
@@ -787,6 +789,14 @@ theorem lintegral_prod (f : α × β → ℝ≥0∞) (hf : AEMeasurable f (μ.pr
     filter_upwards [ae_ae_of_ae_prod hf.ae_eq_mk] with _ ha using lintegral_congr_ae ha
   rw [A, B, lintegral_prod_of_measurable _ hf.measurable_mk]
 
+/-- **Tonelli's Theorem for set integrals**: For `ℝ≥0∞`-valued almost everywhere measurable
+  functions on `s ×ˢ t`, the integral of `f` on `s ×ˢ t` is equal to the iterated integral on `s`
+  and `t` respectively. -/
+theorem setLIntegral_prod [SFinite μ] {s : Set α} (t : Set β) (f : α × β → ENNReal)
+    (hf : AEMeasurable f ((μ.prod ν).restrict (s ×ˢ t))) :
+    ∫⁻ z in s ×ˢ t, f z ∂μ.prod ν = ∫⁻ x in s, ∫⁻ y in t, f (x, y) ∂ν ∂μ := by
+  rw [← Measure.prod_restrict, lintegral_prod _ (by rwa [Measure.prod_restrict])]
+
 /-- The symmetric version of Tonelli's Theorem: For `ℝ≥0∞`-valued almost everywhere measurable
 functions on `α × β`, the integral of `f` is equal to the iterated integral, in reverse order. -/
 theorem lintegral_prod_symm [SFinite μ] (f : α × β → ℝ≥0∞) (hf : AEMeasurable f (μ.prod ν)) :
@@ -854,6 +864,13 @@ instance fst.instIsProbabilityMeasure [IsProbabilityMeasure ρ] : IsProbabilityM
     rw [fst_univ]
     exact measure_univ
 
+instance fst.instIsZeroOrProbabilityMeasure [IsZeroOrProbabilityMeasure ρ] :
+    IsZeroOrProbabilityMeasure ρ.fst := by
+  rcases eq_zero_or_isProbabilityMeasure ρ with h | h
+  · simp only [h, fst_zero]
+    infer_instance
+  · infer_instance
+
 @[simp]
 lemma fst_prod [IsProbabilityMeasure ν] : (μ.prod ν).fst = μ := by
   ext1 s hs
@@ -873,6 +890,17 @@ theorem fst_map_prod_mk₀ {X : α → β} {Y : α → γ} {μ : Measure α}
 theorem fst_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α}
     (hY : Measurable Y) : (μ.map fun a => (X a, Y a)).fst = μ.map X :=
   fst_map_prod_mk₀ hY.aemeasurable
+
+@[simp]
+lemma fst_add {μ ν : Measure (α × β)} : (μ + ν).fst = μ.fst + ν.fst := by
+  ext s hs
+  simp_rw [coe_add, Pi.add_apply, fst_apply hs, coe_add, Pi.add_apply]
+
+lemma fst_sum {ι : Type*} (μ : ι → Measure (α × β)) : (sum μ).fst = sum (fun n ↦ (μ n).fst) := by
+  ext s hs
+  rw [fst_apply hs, sum_apply, sum_apply _ hs]
+  · simp_rw [fst_apply hs]
+  · exact measurable_fst hs
 
 @[gcongr]
 theorem fst_mono {μ : Measure (α × β)} (h : ρ ≤ μ) : ρ.fst ≤ μ.fst := map_mono h measurable_fst
@@ -901,6 +929,13 @@ instance snd.instIsProbabilityMeasure [IsProbabilityMeasure ρ] : IsProbabilityM
     rw [snd_univ]
     exact measure_univ
 
+instance snd.instIsZeroOrProbabilityMeasure [IsZeroOrProbabilityMeasure ρ] :
+    IsZeroOrProbabilityMeasure ρ.snd := by
+  rcases eq_zero_or_isProbabilityMeasure ρ with h | h
+  · simp only [h, snd_zero]
+    infer_instance
+  · infer_instance
+
 @[simp]
 lemma snd_prod [IsProbabilityMeasure μ] : (μ.prod ν).snd = ν := by
   ext1 s hs
@@ -920,6 +955,17 @@ theorem snd_map_prod_mk₀ {X : α → β} {Y : α → γ} {μ : Measure α} (hX
 theorem snd_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α} (hX : Measurable X) :
     (μ.map fun a => (X a, Y a)).snd = μ.map Y :=
   snd_map_prod_mk₀ hX.aemeasurable
+
+@[simp]
+lemma snd_add {μ ν : Measure (α × β)} : (μ + ν).snd = μ.snd + ν.snd := by
+  ext s hs
+  simp_rw [coe_add, Pi.add_apply, snd_apply hs, coe_add, Pi.add_apply]
+
+lemma snd_sum {ι : Type*} (μ : ι → Measure (α × β)) : (sum μ).snd = sum (fun n ↦ (μ n).snd) := by
+  ext s hs
+  rw [snd_apply hs, sum_apply, sum_apply _ hs]
+  · simp_rw [snd_apply hs]
+  · exact measurable_snd hs
 
 @[gcongr]
 theorem snd_mono {μ : Measure (α × β)} (h : ρ ≤ μ) : ρ.snd ≤ μ.snd := map_mono h measurable_snd

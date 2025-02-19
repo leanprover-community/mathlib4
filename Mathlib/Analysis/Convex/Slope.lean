@@ -40,7 +40,7 @@ theorem ConvexOn.slope_mono_adjacent (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx
   field_simp [a, b, mul_comm (z - x) _] at key ⊢
   rw [div_le_div_iff_of_pos_right]
   · linarith
-  · nlinarith
+  · positivity
 
 /-- If `f : 𝕜 → 𝕜` is concave, then for any three points `x < y < z` the slope of the secant line of
 `f` on `[x, y]` is greater than the slope of the secant line of `f` on `[y, z]`. -/
@@ -73,7 +73,7 @@ theorem StrictConvexOn.slope_strict_mono_adjacent (hf : StrictConvexOn 𝕜 s f)
   field_simp [mul_comm (z - x) _] at key ⊢
   rw [div_lt_div_iff_of_pos_right]
   · linarith
-  · nlinarith
+  · positivity
 
 /-- If `f : 𝕜 → 𝕜` is strictly concave, then for any three points `x < y < z` the slope of the
 secant line of `f` on `[x, y]` is strictly greater than the slope of the secant line of `f` on
@@ -255,8 +255,8 @@ theorem ConvexOn.secant_mono (hf : ConvexOn 𝕜 s f) {a x y : 𝕜} (ha : a ∈
     (f x - f a) / (x - a) ≤ (f y - f a) / (y - a) := by
   rcases eq_or_lt_of_le hxy with (rfl | hxy)
   · simp
-  cases' lt_or_gt_of_ne hxa with hxa hxa
-  · cases' lt_or_gt_of_ne hya with hya hya
+  rcases lt_or_gt_of_ne hxa with hxa | hxa
+  · rcases lt_or_gt_of_ne hya with hya | hya
     · convert hf.secant_mono_aux3 hx ha hxy hya using 1 <;> rw [← neg_div_neg_eq] <;> field_simp
     · convert hf.slope_mono_adjacent hx hy hxa hya using 1
       rw [← neg_div_neg_eq]; field_simp
@@ -299,8 +299,8 @@ through `a` and `b` is strictly monotone with respect to `b`. -/
 theorem StrictConvexOn.secant_strict_mono (hf : StrictConvexOn 𝕜 s f) {a x y : 𝕜} (ha : a ∈ s)
     (hx : x ∈ s) (hy : y ∈ s) (hxa : x ≠ a) (hya : y ≠ a) (hxy : x < y) :
     (f x - f a) / (x - a) < (f y - f a) / (y - a) := by
-  cases' lt_or_gt_of_ne hxa with hxa hxa
-  · cases' lt_or_gt_of_ne hya with hya hya
+  rcases lt_or_gt_of_ne hxa with hxa | hxa
+  · rcases lt_or_gt_of_ne hya with hya | hya
     · convert hf.secant_strict_mono_aux3 hx ha hxy hya using 1 <;> rw [← neg_div_neg_eq] <;>
         field_simp
     · convert hf.slope_strict_mono_adjacent hx hy hxa hya using 1

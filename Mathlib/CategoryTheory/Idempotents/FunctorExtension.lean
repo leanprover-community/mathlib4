@@ -103,7 +103,7 @@ def functorExtension₁CompWhiskeringLeftToKaroubiIso :
       (fun X =>
         { hom := { f := (F.obj X).p }
           inv := { f := (F.obj X).p } })
-      (fun {X Y} f => by aesop_cat))
+      (fun {X Y} f => by simp))
     (by aesop_cat)
 
 /-- The counit isomorphism of the equivalence `(C ⥤ Karoubi D) ≌ (Karoubi C ⥤ Karoubi D)`. -/
@@ -180,7 +180,7 @@ def functorExtension₂CompWhiskeringLeftToKaroubiIso :
       (fun X =>
         { hom := { f := 𝟙 _ }
           inv := { f := 𝟙 _ } })
-      (by aesop_cat))
+      (by simp))
     (by aesop_cat)
 
 section IsIdempotentComplete

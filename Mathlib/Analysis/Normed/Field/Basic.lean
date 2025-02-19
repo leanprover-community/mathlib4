@@ -5,10 +5,12 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Analysis.Normed.Group.Constructions
-import Mathlib.Analysis.Normed.Group.Submodule
-import Mathlib.Data.Set.Pointwise.Interval
 import Mathlib.Algebra.Field.Subfield.Defs
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
+import Mathlib.Analysis.Normed.Group.Constructions
+import Mathlib.Analysis.Normed.Group.Subgroup
+import Mathlib.Analysis.Normed.Group.Submodule
+import Mathlib.Algebra.Ring.Regular
 
 /-!
 # Normed fields
@@ -26,17 +28,11 @@ ring/field are given in:
 -/
 
 -- Guard against import creep.
-assert_not_exists AddChar
-assert_not_exists comap_norm_atTop
-assert_not_exists DilationEquiv
-assert_not_exists Finset.sup_mul_le_mul_sup_of_nonneg
-assert_not_exists IsOfFinOrder
-assert_not_exists Isometry.norm_map_of_map_one
-assert_not_exists NNReal.isOpen_Ico_zero
-assert_not_exists Rat.norm_cast_real
-assert_not_exists RestrictScalars
+assert_not_exists AddChar comap_norm_atTop DilationEquiv Finset.sup_mul_le_mul_sup_of_nonneg
+  IsOfFinOrder Isometry.norm_map_of_map_one NNReal.isOpen_Ico_zero Rat.norm_cast_real
+  RestrictScalars
 
-variable {α : Type*} {β : Type*} {ι : Type*}
+variable {G α β ι : Type*}
 
 open Filter
 open scoped Topology NNReal
@@ -172,13 +168,16 @@ export NormOneClass (norm_one)
 
 attribute [simp] norm_one
 
-@[simp]
-theorem nnnorm_one [SeminormedAddCommGroup α] [One α] [NormOneClass α] : ‖(1 : α)‖₊ = 1 :=
-  NNReal.eq norm_one
+section SeminormedAddCommGroup
+variable [SeminormedAddCommGroup G] [One G] [NormOneClass G]
 
-theorem NormOneClass.nontrivial (α : Type*) [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
-    Nontrivial α :=
+@[simp] lemma nnnorm_one : ‖(1 : G)‖₊ = 1 := NNReal.eq norm_one
+@[simp] lemma enorm_one : ‖(1 : G)‖ₑ = 1 := by simp [enorm]
+
+theorem NormOneClass.nontrivial : Nontrivial G :=
   nontrivial_of_ne 0 1 <| ne_of_apply_ne norm <| by simp
+
+end SeminormedAddCommGroup
 
 -- see Note [lower instance priority]
 instance (priority := 100) NonUnitalSeminormedCommRing.toNonUnitalCommRing
@@ -291,7 +290,7 @@ instance (priority := 75) NonUnitalSubalgebraClass.nonUnitalNormedRing {S 𝕜 E
 
 instance ULift.nonUnitalSeminormedRing : NonUnitalSeminormedRing (ULift α) :=
   { ULift.seminormedAddCommGroup, ULift.nonUnitalRing with
-    norm_mul := fun x y => (norm_mul_le x.down y.down : _) }
+    norm_mul := fun x y => (norm_mul_le x.down y.down :) }
 
 /-- Non-unital seminormed ring structure on the product of two non-unital seminormed rings,
   using the sup norm. -/
@@ -651,9 +650,8 @@ instance isAbsoluteValue_norm : IsAbsoluteValue (norm : α → ℝ) where
   abv_add' := norm_add_le
   abv_mul' := norm_mul
 
-@[simp]
-theorem nnnorm_mul (a b : α) : ‖a * b‖₊ = ‖a‖₊ * ‖b‖₊ :=
-  NNReal.eq <| norm_mul a b
+@[simp] lemma nnnorm_mul (a b : α) : ‖a * b‖₊ = ‖a‖₊ * ‖b‖₊ := NNReal.eq <| norm_mul a b
+@[simp] lemma enorm_mul (a b : α) : ‖a * b‖ₑ = ‖a‖ₑ * ‖b‖ₑ := by simp [enorm]
 
 /-- `norm` as a `MonoidWithZeroHom`. -/
 @[simps]
@@ -679,6 +677,8 @@ theorem norm_pow (a : α) : ∀ n : ℕ, ‖a ^ n‖ = ‖a‖ ^ n :=
 theorem nnnorm_pow (a : α) (n : ℕ) : ‖a ^ n‖₊ = ‖a‖₊ ^ n :=
   (nnnormHom.toMonoidHom : α →* ℝ≥0).map_pow a n
 
+@[simp] lemma enorm_pow (a : α) (n : ℕ) : ‖a ^ n‖ₑ = ‖a‖ₑ ^ n := by simp [enorm]
+
 protected theorem List.norm_prod (l : List α) : ‖l.prod‖ = (l.map norm).prod :=
   map_list_prod (normHom.toMonoidHom : α →* ℝ) _
 
@@ -700,6 +700,9 @@ theorem norm_inv (a : α) : ‖a⁻¹‖ = ‖a‖⁻¹ :=
 @[simp]
 theorem nnnorm_inv (a : α) : ‖a⁻¹‖₊ = ‖a‖₊⁻¹ :=
   NNReal.eq <| by simp
+
+@[simp]
+lemma enorm_inv {a : α} (ha : a ≠ 0) : ‖a⁻¹‖ₑ = ‖a‖ₑ⁻¹ := by simp [enorm, ENNReal.coe_inv, ha]
 
 @[simp]
 theorem norm_zpow : ∀ (a : α) (n : ℤ), ‖a ^ n‖ = ‖a‖ ^ n :=
@@ -758,9 +761,12 @@ lemma norm_le_one_of_discrete
   · simp
   · simp [norm_eq_one_iff_ne_zero_of_discrete.mpr hx]
 
-lemma discreteTopology_unit_closedBall_eq_univ : (Metric.closedBall 0 1 : Set 𝕜) = Set.univ := by
+lemma unitClosedBall_eq_univ_of_discrete : (Metric.closedBall 0 1 : Set 𝕜) = Set.univ := by
   ext
   simp
+
+@[deprecated (since := "2024-12-01")]
+alias discreteTopology_unit_closedBall_eq_univ := unitClosedBall_eq_univ_of_discrete
 
 end Discrete
 
@@ -925,19 +931,10 @@ open NNReal
 
 theorem norm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ = x := by rw [Real.norm_eq_abs, x.abs_eq]
 
-@[simp]
-theorem nnnorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖₊ = x :=
-  NNReal.eq <| Real.norm_of_nonneg x.2
+@[simp] lemma nnnorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖₊ = x := by ext; simp [nnnorm]
+@[simp] lemma enorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ₑ = x := by simp [enorm]
 
 end NNReal
-
-@[simp 1001] -- Porting note: increase priority so that the LHS doesn't simplify
-theorem norm_norm [SeminormedAddCommGroup α] (x : α) : ‖‖x‖‖ = ‖x‖ :=
-  Real.norm_of_nonneg (norm_nonneg _)
-
-@[simp]
-theorem nnnorm_norm [SeminormedAddCommGroup α] (a : α) : ‖‖a‖‖₊ = ‖a‖₊ := by
-  rw [Real.nnnorm_of_nonneg (norm_nonneg a)]; rfl
 
 /-- A restatement of `MetricSpace.tendsto_atTop` in terms of the norm. -/
 theorem NormedAddCommGroup.tendsto_atTop [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)]
@@ -955,7 +952,7 @@ theorem NormedAddCommGroup.tendsto_atTop' [Nonempty α] [Preorder α] [IsDirecte
 
 section RingHomIsometric
 
-variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
+variable {R₁ R₂ : Type*}
 
 /-- This class states that a ring homomorphism is isometric. This is a sufficient assumption
 for a continuous semilinear map to be bounded and this is the main use for this typeclass. -/
@@ -965,7 +962,7 @@ class RingHomIsometric [Semiring R₁] [Semiring R₂] [Norm R₁] [Norm R₂] (
 
 attribute [simp] RingHomIsometric.is_iso
 
-variable [SeminormedRing R₁] [SeminormedRing R₂] [SeminormedRing R₃]
+variable [SeminormedRing R₁]
 
 instance RingHomIsometric.ids : RingHomIsometric (RingHom.id R₁) :=
   ⟨rfl⟩
@@ -1093,6 +1090,10 @@ instance toSeminormedCommRing [SeminormedCommRing R] [_h : SubringClass S R] (s 
 
 instance toNormedCommRing [NormedCommRing R] [SubringClass S R] (s : S) : NormedCommRing s :=
   { SubringClass.toNormedRing s with mul_comm := mul_comm }
+
+instance toNormOneClass [SeminormedRing R] [NormOneClass R] [SubringClass S R] (s : S) :
+    NormOneClass s :=
+  .induced s R <| SubringClass.subtype _
 
 end SubringClass
 

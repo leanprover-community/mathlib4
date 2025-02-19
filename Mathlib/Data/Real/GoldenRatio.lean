@@ -3,10 +3,11 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Alexey Soloyev, Junyan Xu, Kamila Szewczyk
 -/
-import Mathlib.Data.Real.Irrational
-import Mathlib.Data.Nat.Fib.Basic
-import Mathlib.Data.Fin.VecNotation
+import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.Algebra.LinearRecurrence
+import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.Nat.Fib.Basic
+import Mathlib.Data.Real.Irrational
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.Prime
 

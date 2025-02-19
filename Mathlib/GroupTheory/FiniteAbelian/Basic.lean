@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
 -/
 import Mathlib.Algebra.Module.PID
-import Mathlib.Data.ZMod.Quotient
+import Mathlib.Algebra.Group.TypeTags.Finite
+import Mathlib.Data.ZMod.QuotientRing
 
 /-!
 # Structure of finite(ly generated) abelian groups
@@ -129,7 +130,7 @@ theorem equiv_directSum_zmod_of_finite [Finite G] :
       Nonempty <| G ≃+ ⨁ i : ι, ZMod (p i ^ e i) := by
   cases nonempty_fintype G
   obtain ⟨n, ι, fι, p, hp, e, ⟨f⟩⟩ := equiv_free_prod_directSum_zmod G
-  cases' n with n
+  rcases n with - | n
   · have : Unique (Fin Nat.zero →₀ ℤ) :=
       { uniq := by simp only [eq_iff_true_of_subsingleton]; trivial }
     exact ⟨ι, fι, p, hp, e, ⟨f.trans AddEquiv.uniqueProd⟩⟩

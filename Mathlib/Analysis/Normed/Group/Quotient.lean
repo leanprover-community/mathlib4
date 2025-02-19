@@ -82,7 +82,7 @@ includes a uniform space structure which includes a topological space structure,
 with propositional fields asserting compatibility conditions.
 The usual way to define a `SeminormedAddCommGroup` is to let Lean build a uniform space structure
 using the provided norm, and then trivially build a proof that the norm and uniform structure are
-compatible. Here the uniform structure is provided using `TopologicalAddGroup.toUniformSpace`
+compatible. Here the uniform structure is provided using `IsTopologicalAddGroup.toUniformSpace`
 which uses the topological structure and the group structure to build the uniform structure. This
 uniform structure induces the correct topological structure by construction, but the fact that it
 is compatible with the norm is not obvious; this is where the mathematical content explained in
@@ -150,7 +150,7 @@ theorem quotient_norm_mk_le' (S : AddSubgroup M) (m : M) : ‖(m : M ⧸ S)‖ �
 /-- The norm of the image under the natural morphism to the quotient. -/
 theorem quotient_norm_mk_eq (S : AddSubgroup M) (m : M) :
     ‖mk' S m‖ = sInf ((‖m + ·‖) '' S) := by
-  rw [mk'_apply, norm_mk, sInf_image', ← infDist_image isometry_neg, image_neg,
+  rw [mk'_apply, norm_mk, sInf_image', ← infDist_image isometry_neg, image_neg_eq_neg,
     neg_coe_set (H := S), infDist_eq_iInf]
   simp only [dist_eq_norm', sub_neg_eq_add, add_comm]
 
@@ -226,7 +226,7 @@ noncomputable instance AddSubgroup.seminormedAddCommGroupQuotient (S : AddSubgro
     refine le_trans ?_ (quotient_norm_add_le _ _ _)
     exact (congr_arg norm (sub_add_sub_cancel _ _ _).symm).le
   edist_dist x y := by exact ENNReal.coe_nnreal_eq _
-  toUniformSpace := TopologicalAddGroup.toUniformSpace (M ⧸ S)
+  toUniformSpace := IsTopologicalAddGroup.toUniformSpace (M ⧸ S)
   uniformity_dist := by
     rw [uniformity_eq_comap_nhds_zero', ((quotient_nhd_basis S).comap _).eq_biInf]
     simp only [dist, quotient_norm_sub_rev (Prod.fst _), preimage_setOf_eq]

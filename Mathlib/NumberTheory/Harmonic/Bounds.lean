@@ -14,6 +14,12 @@ This file proves $\log(n+1) \le H_n \le 1 + \log(n)$ for all natural numbers $n$
 
 -/
 
+lemma harmonic_eq_sum_Icc {n : ℕ} : harmonic n = ∑ i ∈ Finset.Icc 1 n, (↑i)⁻¹ := by
+  rw [harmonic, Finset.range_eq_Ico, Finset.sum_Ico_add' (fun (i : ℕ) ↦ (i : ℚ)⁻¹) 0 n (c := 1)]
+  -- It might be better to restate `Nat.Ico_succ_right` in terms of `+ 1`,
+  -- as we try to move away from `Nat.succ`.
+  simp only [Nat.add_one, Nat.Ico_succ_right]
+
 theorem log_add_one_le_harmonic (n : ℕ) :
     Real.log ↑(n+1) ≤ harmonic n := by
   calc _ = ∫ x in (1 : ℕ)..↑(n+1), x⁻¹ := ?_

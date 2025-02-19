@@ -464,9 +464,9 @@ partial def parse (iM : Q(AddCommMonoid $M)) (x : Q($M)) :
     pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommGroup.toNatModule), [], q(NF.zero_eq_eval $M)⟩
   /- anything else should be treated as an atom -/
   | _ =>
-    let k : ℕ ← AtomM.addAtom x
-    pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommGroup.toNatModule), [((q(1), x), k)],
-      q(NF.atom_eq_eval $x)⟩
+    let (k, ⟨x', _⟩) ← AtomM.addAtomQ x
+    pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommGroup.toNatModule), [((q(1), x'), k)],
+      q(NF.atom_eq_eval $x')⟩
 
 /-- Given expressions `R` and `M` representing types such that `M`'s is a module over `R`'s, and
 given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
@@ -573,10 +573,7 @@ def postprocess (mvarId : MVarId) : MetaM MVarId := do
     let ⟨levelParams, _, proof⟩ ← abstractMVars (mkConst thm)
     thms ← thms.add (.stx (← mkFreshId) Syntax.missing) levelParams proof
   -- now run `simp` with these lemmas, and (importantly) *no* simprocs
-  let ctx : Simp.Context := {
-      config      := { failIfUnchanged := false }
-      simpTheorems := #[thms]
-    }
+  let ctx ← Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[thms])
   let (some r, _) ← simpTarget mvarId ctx (simprocs := #[]) |
     throwError "internal error in match_scalars tactic: postprocessing should not close goals"
   return r
