@@ -36,19 +36,17 @@ lemma query'_bind (o : I) (m : o ∈ s) (y : ι o) (f : ω y → Comp ι ω s α
 
 /-- `Comp` is a lawful monad -/
 instance : LawfulMonad (Comp ι ω s) := LawfulMonad.mk'
-  (id_map := by
-    intro α f
+  (id_map := fun x => by
     simp only [map_eq, id, bind, bind']
-    induction' f with _ _ _ _ _ h
-    · rfl
-    · simp only [bind', h])
-  (pure_bind := by intro α β x f; simp only [bind, bind'])
-  (bind_assoc := by
-    intro _ _ _ f _ _
+    induction x with
+    | pure' _ => rfl
+    | query' _ _ _ _ h => simp only [bind', h])
+  (pure_bind := fun x f => rfl)
+  (bind_assoc := fun x f g => by
     simp only [bind]
-    induction' f with _ _ _ _ _ h
-    · rfl
-    · simp only [bind', h])
+    induction x with
+    | pure' _ => rfl
+    | query' _ _ _ _ h => simp only [bind', h])
 
 variable [DecidableEq I]
 
