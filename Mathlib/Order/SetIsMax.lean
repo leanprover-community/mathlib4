@@ -7,7 +7,7 @@ import Mathlib.Order.Max
 import Mathlib.Data.Set.CoeSort
 
 /-!
-# Maximum of a subset
+# Maximal elements of subsets
 
 Let `S : Set J` and `m : S`. If `m` is not a maximal element of `S`,
 then `↑m : J` is not maximal in `J`.
