@@ -41,6 +41,8 @@ Heyting algebras are the order theoretic equivalent of cartesian-closed categori
 Heyting, Brouwer, algebra, implication, negation, intuitionistic
 -/
 
+assert_not_exists RelIso
+
 open Function OrderDual
 
 universe u

@@ -10,6 +10,8 @@ import Mathlib.Data.Set.SymmDiff
 # The `tauto_set` tactic
 -/
 
+assert_not_exists RelIso
+
 namespace Mathlib.Tactic.TautoSet
 
 open Lean Elab.Tactic

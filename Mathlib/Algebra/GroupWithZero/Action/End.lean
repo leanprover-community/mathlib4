@@ -12,7 +12,7 @@ import Mathlib.Algebra.GroupWithZero.Action.Units
 # Group actions and (endo)morphisms
 -/
 
-assert_not_exists Equiv.Perm.equivUnitsEnd Prod.fst_mul Ring
+assert_not_exists RelIso Equiv.Perm.equivUnitsEnd Prod.fst_mul Ring
 
 open Function
 

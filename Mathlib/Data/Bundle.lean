@@ -37,6 +37,8 @@ general, the constructions of fiber bundles we will make will be of this form.
 - https://en.wikipedia.org/wiki/Bundle_(mathematics)
 -/
 
+assert_not_exists RelIso
+
 open Function Set
 
 namespace Bundle
