@@ -50,15 +50,12 @@ reviewers_response = client.get_messages({
 print(f"public_response:{public_response}")
 print(f"reviewers_response:{reviewers_response}")
 
-hashPR = re.compile(f'#{PR_NUMBER}')
-
 messages = (public_response['messages']) + (reviewers_response['messages'])
 
-print(messages)
+hashPR = re.compile(f'#{PR_NUMBER}')
+urlPR = re.compile(f'https://github.com/leanprover-community/mathlib4/pull/{PR_NUMBER}')
 
-pr_pattern = re.compile(f'https://github.com/leanprover-community/mathlib4/pull/{PR_NUMBER}')
-
-print(f"Searching for: '{pr_pattern}'")
+print(f"Searching for: '{urlPR}'")
 
 # we store in `first_by_subject` the ID of the messages in a thread whose subject matches
 # the PR number and that we already visited. We use this to only react to the first message
@@ -78,7 +75,7 @@ for message in messages:
     has_closed = any(reaction['emoji_name'] == 'closed-pr' for reaction in reactions)
     first_in_thread = hashPR.search(message['subject']) and message['display_recipient'] == 'PR reviews' and message['subject'] not in first_by_subject
     first_by_subject[message['subject']] = message['id']
-    match = pr_pattern.search(content) or first_in_thread
+    match = urlPR.search(content) or first_in_thread
     if match:
         print(f"matched: '{message}'")
 
