@@ -12,16 +12,33 @@ import Mathlib.Algebra.MvPolynomial.Eval
 
 # Formal (multivariate) power series - Truncation
 
-`MvPowerSeries.trunc n φ` truncates a formal multivariate power series
+* `MvPowerSeries.trunc n φ` truncates a formal multivariate power series
 to the multivariate polynomial that has the same coefficients as `φ`,
 for all `m < n`, and `0` otherwise.
 
 Note that here, `m` and `n` have types `σ →₀ ℕ`,
 so that `m < n` means that `m ≠ n` and `m s ≤ n s` for all `s : σ`.
 
-`MvPowerSeries.trunc' n φ` truncates a formal multivariate power series
+* `MvPowerSeries.trunc_one` : truncation of the unit power series
+
+* `MvPowerSeries.trunc_C` : truncation of a constant
+
+* `MvPowerSeries.trunc_C_mul` : truncation of constant multiple.
+
+* `MvPowerSeries.trunc' n φ` truncates a formal multivariate power series
 to the multivariate polynomial that has the same coefficients as `φ`,
 for all `m ≤ n`, and `0` otherwise.
+
+* `MvPowerSeries.coeff_mul_eq_coeff_trunc'_mul_trunc'` : compares the coefficients
+of a product with those of the product of truncations.
+
+* `MvPowerSeries.trunc'_one` : truncation of a the unit power series.
+
+* `MvPowerSeries.trunc'_C` : truncation of a constant.
+
+* `MvPowerSeries.trunc'_C_mul` : truncation of a constant multiple.
+
+* `MvPowerSeries.trunc'_map` : image of a truncation under a change of rings
 
 ## TODO
 
@@ -55,7 +72,12 @@ theorem coeff_truncFun (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
 
 variable (R)
 
-/-- The `n`th truncation of a multivariate formal power series to a multivariate polynomial -/
+/-- The `n`th truncation of a multivariate formal power series to a multivariate polynomial
+
+If `f : MvPowerSeries σ R` and `n : σ →₀ ℕ` is a (finitely-supported) function from `σ`
+to the naturals, then `trunc' R n f` is the multivariable power series obtained from `f`
+by keeping only the monomials $c\prod_i X_i^{a_i}$ where `a i ≤ n i` for all `i`
+and $a i < n i` for some `i`. -/
 def trunc : MvPowerSeries σ R →+ MvPolynomial σ R where
   toFun := truncFun n
   map_zero' := by
@@ -128,11 +150,12 @@ theorem coeff_truncFun' (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
 
 variable (R)
 
-/-- 
+/--
 The `n`th truncation of a multivariate formal power series to a multivariate polynomial.
 
-If `f : MvPowerSeries σ R` and `n : σ →₀ ℕ` is a (finitely-supported) function from `σ` to the naturals, then `trunc' R n f` is the multivariable power series obtained from `f` by keeping only the monomials $c\prod_i X_i^{a_i}$ where `a i ≤ n i` for all `i`.
--/
+If `f : MvPowerSeries σ R` and `n : σ →₀ ℕ` is a (finitely-supported) function from `σ`
+to the naturals, then `trunc' R n f` is the multivariable power series obtained from `f`
+by keeping only the monomials $c\prod_i X_i^{a_i}$ where `a i ≤ n i` for all `i`. -/
 def trunc' : MvPowerSeries σ R →+ MvPolynomial σ R where
   toFun := truncFun' n
   map_zero' := by
