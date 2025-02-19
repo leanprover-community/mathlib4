@@ -62,7 +62,7 @@ def addFact (type : Expr) (fact : AtomicFact) : CollectFactsM Unit :=
 
 set_option linter.unusedVariables false in
 /-- Implementation for `collectFacts` in `CollectFactsM` monad. -/
-partial def collectFactsImp (g : MVarId) :
+def collectFactsImp (g : MVarId) :
     CollectFactsM Unit := g.withContext do
   let ctx ← getLCtx
   for ldecl in ctx do
@@ -70,6 +70,7 @@ partial def collectFactsImp (g : MVarId) :
       continue
     processExpr ldecl.toExpr
 where
+  /-- Extracts facts and atoms from the expression. -/
   processExpr (expr : Expr) : CollectFactsM Unit := do
     let type ← inferType expr
     if !(← isProp type) then
