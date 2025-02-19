@@ -82,14 +82,18 @@ section Kernel
 
 /-! ### Sub-Gaussian with respect to a kernel and a measure -/
 
-/-- A random variable is sub-Gaussian with parameter `c` with respect to a kernel `κ` and
-a measure `ν` if `ν`-almost surely, for all `t : ℝ`, the moment generating function of `X`
-with respect to `κ` is bounded by `exp (c * t ^ 2 / 2)`. -/
+/-- A random variable `X` is sub-Gaussian with parameter `c` with respect to a kernel `κ` and
+a measure `ν` if for `ν`-almost all `ω'`, for all `t : ℝ`, the moment generating function of `X`
+with respect to `κ ω'` is bounded by `exp (c * t ^ 2 / 2)`. -/
 structure Kernel.IsSubGaussianWith (X : Ω → ℝ) (c : ℝ≥0)
     (κ : Kernel Ω' Ω) (ν : Measure Ω' := by volume_tac) : Prop where
   integrable_exp_mul : ∀ t : ℝ, Integrable (fun ω ↦ exp (t * X ω)) (κ ∘ₘ ν)
   mgf_le : ∀ᵐ ω' ∂ν, ∀ t : ℝ, mgf X (κ ω') t ≤ exp (c * t ^ 2 / 2)
 
+/-- A random variable `X` is sub-Gaussian with respect to a kernel `κ` and a measure `ν` if
+there exists `c` such that it is sub-Gaussian with that parameter.
+That is, if for `ν`-almost all `ω'`, for all `t : ℝ`, the moment generating function of `X`
+with respect to `κ ω'` is bounded by `exp (c * t ^ 2 / 2)`. -/
 def Kernel.IsSubGaussian (X : Ω → ℝ) (κ : Kernel Ω' Ω) (ν : Measure Ω' := by volume_tac) : Prop :=
   ∃ c : ℝ≥0, Kernel.IsSubGaussianWith X c κ ν
 
@@ -377,10 +381,20 @@ section Conditional
 
 variable [StandardBorelSpace Ω] [IsFiniteMeasure μ]
 
+/-- A random variable `X` is conditionally sub-Gaussian with parameter `c` with respect to a
+sigma-algebra `m` and a measure `μ` if for all `t : ℝ`, `exp (t * X)` is `μ`-integrable and
+the moment generating function of `X` contioned on `m` is almost surely bounded by
+`exp (c * t ^ 2 / 2)` for all `t : ℝ`.
+
+The actual definition uses `Kernel.IsSubGaussianWith`: `IsCondSubGaussianWith` is defined as
+sub-Gaussian with respect to the conditional expectation kernel for `m` and the restriction of `μ`
+to the sigma-algebra `m`. -/
 def IsCondSubGaussianWith (X : Ω → ℝ) (c : ℝ≥0)
     (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] : Prop :=
   Kernel.IsSubGaussianWith X c (condExpKernel μ m) (μ.trim hm)
 
+/-- A random variable `X` is conditionally sub-Gaussian if there is a parameter `c` such that
+it is conditionally sub-Gaussian with that parameter. See `IsCondSubGaussianWith`. -/
 def IsCondSubGaussian (X : Ω → ℝ) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] : Prop :=
   ∃ c : ℝ≥0, IsCondSubGaussianWith m hm X c μ
 
@@ -410,10 +424,15 @@ lemma IsCondSubGaussianWith.integrable_exp_mul (h : IsCondSubGaussianWith m hm X
 
 end Conditional
 
+/-- A random variable `X` is sub-Gaussian with parameter `c` with respect to a measure `μ` if
+for all `t : ℝ`, `exp (t * X)` is `μ`-integrable and the moment generating function of `X`
+is bounded by `exp (c * t ^ 2 / 2)` for all `t : ℝ`. -/
 structure IsSubGaussianWith (X : Ω → ℝ) (c : ℝ≥0) (μ : Measure Ω := by volume_tac) : Prop where
   integrable_exp_mul : ∀ t : ℝ, Integrable (fun ω ↦ exp (t * X ω)) μ
   mgf_le : ∀ t : ℝ, mgf X μ t ≤ exp (c * t ^ 2 / 2)
 
+/-- A random variable `X` is sub-Gaussian if there is a parameter `c` such that
+it is sub-Gaussian with that parameter. See `IsSubGaussianWith`. -/
 def IsSubGaussian (X : Ω → ℝ) (μ : Measure Ω := by volume_tac) : Prop :=
   ∃ c : ℝ≥0, IsSubGaussianWith X c μ
 
