@@ -76,7 +76,7 @@ where
     if !(← isProp type) then
       return
     let ⟨u, type, expr⟩ ← inferTypeQ expr
-    have : u =QL 0 := ⟨⟩
+    let _ : u =QL 0 := ⟨⟩
     match type with
     | ~q(@Eq ($α : Type _) $x $y) =>
       if (← synthInstance? (q(Preorder $α))).isSome then
