@@ -60,7 +60,7 @@ variable [LE α]
 /- The prime on this lemma is present only on the multiplicative version. The unprimed version
 is taken by the analogous lemma for semiring, with an extra non-negativity assumption.
 We also lower the `gcongr` priority, so that the semiring-version is used more eagerly by `gcongr`.
-(The priority on the additive version doesn't matter) -/
+(The priority on the additive version doesn't matter.) -/
 @[to_additive (attr := gcongr 500) add_le_add_left]
 theorem mul_le_mul_left' [MulLeftMono α] {b c : α} (bc : b ≤ c) (a : α) :
     a * b ≤ a * c :=
@@ -73,7 +73,9 @@ theorem le_of_mul_le_mul_left' [MulLeftReflectLE α] {a b c : α}
   ContravariantClass.elim _ bc
 
 /- The prime on this lemma is present only on the multiplicative version.  The unprimed version
-is taken by the analogous lemma for semiring, with an extra non-negativity assumption. -/
+is taken by the analogous lemma for semiring, with an extra non-negativity assumption.
+We also lower the `gcongr` priority, so that the semiring-version is used more eagerly by `gcongr`.
+(The priority on the additive version doesn't matter.) -/
 @[to_additive (attr := gcongr 500) add_le_add_right]
 theorem mul_le_mul_right' [i : MulRightMono α] {b c : α} (bc : b ≤ c)
     (a : α) :
