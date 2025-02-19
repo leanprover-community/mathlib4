@@ -347,7 +347,7 @@ instance : (res V f).Faithful where
 
 /-- The functor from `Action V H` to `Action V G` induced by a morphism `f : G → H` is full
 if `f` is surjective. -/
-lemma res_full (f_surj : Function.Surjective f) : (res V f).Full where
+lemma full_res (f_surj : Function.Surjective f) : (res V f).Full where
   map_surjective {X} {Y} g := by
     use ⟨g.hom, fun h ↦ ?_⟩
     · ext
