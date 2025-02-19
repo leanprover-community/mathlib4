@@ -527,6 +527,8 @@ theorem coe_subtype : ⇑ H.subtype = ((↑) : H → G) :=
 
 @[deprecated (since := "2025-02-18")]
 alias coeSubtype := coe_subtype
+@[deprecated (since := "2025-02-18")]
+alias _root_.AddSubgroup.coeSubtype := AddSubgroup.coe_subtype
 
 @[to_additive]
 theorem subtype_injective : Function.Injective (Subgroup.subtype H) :=
