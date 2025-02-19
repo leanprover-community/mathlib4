@@ -345,8 +345,8 @@ instance instCommSemiring [CommSemiring α] [PartialOrder α] [CanonicallyOrdere
     CommSemiring (WithBot α) :=
   WithTop.instCommSemiring
 
-instance [MulZeroClass α] [Preorder α] [PosMulMono α] : PosMulMono (WithBot α) :=
-  ⟨by
+instance [MulZeroClass α] [Preorder α] [PosMulMono α] : PosMulMono (WithBot α) where
+  elim := by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk]
     rcases eq_or_ne x 0 with rfl | x0'
@@ -360,10 +360,10 @@ instance [MulZeroClass α] [Preorder α] [PosMulMono α] : PosMulMono (WithBot �
     · exact absurd h (bot_lt_coe _).not_le
     simp only [← coe_mul, coe_le_coe] at *
     norm_cast at x0
-    exact mul_le_mul_of_nonneg_left h x0 ⟩
+    exact mul_le_mul_of_nonneg_left h x0
 
-instance [MulZeroClass α] [Preorder α] [MulPosMono α] : MulPosMono (WithBot α) :=
-  ⟨by
+instance [MulZeroClass α] [Preorder α] [MulPosMono α] : MulPosMono (WithBot α) where
+  elim := by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk]
     rcases eq_or_ne x 0 with rfl | x0'
@@ -377,10 +377,10 @@ instance [MulZeroClass α] [Preorder α] [MulPosMono α] : MulPosMono (WithBot �
     · exact absurd h (bot_lt_coe _).not_le
     simp only [← coe_mul, coe_le_coe] at *
     norm_cast at x0
-    exact mul_le_mul_of_nonneg_right h x0 ⟩
+    exact mul_le_mul_of_nonneg_right h x0
 
-instance [MulZeroClass α] [Preorder α] [PosMulStrictMono α] : PosMulStrictMono (WithBot α) :=
-  ⟨by
+instance [MulZeroClass α] [Preorder α] [PosMulStrictMono α] : PosMulStrictMono (WithBot α) where
+  elim := by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk]
     lift x to α using x0.ne_bot
@@ -390,10 +390,10 @@ instance [MulZeroClass α] [Preorder α] [PosMulStrictMono α] : PosMulStrictMon
     · simp_rw [mul_bot x0.ne.symm, ← coe_mul, bot_lt_coe]
     simp only [← coe_mul, coe_lt_coe] at *
     norm_cast at x0
-    exact mul_lt_mul_of_pos_left h x0 ⟩
+    exact mul_lt_mul_of_pos_left h x0
 
-instance [MulZeroClass α] [Preorder α] [MulPosStrictMono α] : MulPosStrictMono (WithBot α) :=
-  ⟨by
+instance [MulZeroClass α] [Preorder α] [MulPosStrictMono α] : MulPosStrictMono (WithBot α) where
+  elim := by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk]
     lift x to α using x0.ne_bot
@@ -403,10 +403,10 @@ instance [MulZeroClass α] [Preorder α] [MulPosStrictMono α] : MulPosStrictMon
     · simp_rw [bot_mul x0.ne.symm, ← coe_mul, bot_lt_coe]
     simp only [← coe_mul, coe_lt_coe] at *
     norm_cast at x0
-    exact mul_lt_mul_of_pos_right h x0 ⟩
+    exact mul_lt_mul_of_pos_right h x0
 
-instance [MulZeroClass α] [Preorder α] [PosMulReflectLT α] : PosMulReflectLT (WithBot α) :=
-  ⟨by
+instance [MulZeroClass α] [Preorder α] [PosMulReflectLT α] : PosMulReflectLT (WithBot α) where
+  elim := by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk] at h
     rcases eq_or_ne x 0 with rfl | x0'
@@ -421,10 +421,10 @@ instance [MulZeroClass α] [Preorder α] [PosMulReflectLT α] : PosMulReflectLT 
     · exact WithBot.bot_lt_coe _
     simp only [← coe_mul, coe_lt_coe] at *
     norm_cast at x0
-    exact lt_of_mul_lt_mul_left h x0 ⟩
+    exact lt_of_mul_lt_mul_left h x0
 
-instance [MulZeroClass α] [Preorder α] [MulPosReflectLT α] : MulPosReflectLT (WithBot α) :=
-  ⟨by
+instance [MulZeroClass α] [Preorder α] [MulPosReflectLT α] : MulPosReflectLT (WithBot α) where
+  elim := by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk] at h
     rcases eq_or_ne x 0 with rfl | x0'
@@ -439,10 +439,10 @@ instance [MulZeroClass α] [Preorder α] [MulPosReflectLT α] : MulPosReflectLT 
     · exact WithBot.bot_lt_coe _
     simp only [← coe_mul, coe_lt_coe] at *
     norm_cast at x0
-    exact lt_of_mul_lt_mul_right h x0 ⟩
+    exact lt_of_mul_lt_mul_right h x0
 
-instance [MulZeroClass α] [Preorder α] [PosMulReflectLE α] : PosMulReflectLE (WithBot α) :=
-  ⟨by
+instance [MulZeroClass α] [Preorder α] [PosMulReflectLE α] : PosMulReflectLE (WithBot α) where
+  elim := by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk] at h
     lift x to α using x0.ne_bot
@@ -453,10 +453,10 @@ instance [MulZeroClass α] [Preorder α] [PosMulReflectLE α] : PosMulReflectLE 
       exact absurd h (bot_lt_coe _).not_le
     simp only [← coe_mul, coe_le_coe] at *
     norm_cast at x0
-    exact le_of_mul_le_mul_left h x0 ⟩
+    exact le_of_mul_le_mul_left h x0
 
-instance [MulZeroClass α] [Preorder α] [MulPosReflectLE α] : MulPosReflectLE (WithBot α) :=
-  ⟨by
+instance [MulZeroClass α] [Preorder α] [MulPosReflectLE α] : MulPosReflectLE (WithBot α) where
+  elim := by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk] at h
     lift x to α using x0.ne_bot
@@ -467,7 +467,7 @@ instance [MulZeroClass α] [Preorder α] [MulPosReflectLE α] : MulPosReflectLE 
       exact absurd h (bot_lt_coe _).not_le
     simp only [← coe_mul, coe_le_coe] at *
     norm_cast at x0
-    exact le_of_mul_le_mul_right h x0 ⟩
+    exact le_of_mul_le_mul_right h x0
 
 instance instOrderedCommSemiring [OrderedCommSemiring α] [CanonicallyOrderedAdd α]
     [NoZeroDivisors α] [Nontrivial α] :
