@@ -71,10 +71,11 @@ The `Comp` just returns `true` or `false` according to the answer of the oracle.
 def query (o : I) (y : ι o) : Comp ι ω {o} (ω y)  :=
   Comp.query' o (mem_singleton _) y pure
 
-open scoped Classical in
+variable [DecidableEq I]
+
 /-- Execute `f` with the oracles `os`. Returns the final value and the number of queries to
 each one of the oracles. -/
-noncomputable def run (f : Comp ι ω s α) (os : (i : I) → Oracle (ι i) ω) : α × (I → ℕ) :=
+def run (f : Comp ι ω s α) (os : (i : I) → Oracle (ι i) ω) : α × (I → ℕ) :=
   match f with
   | .pure' x => (x, fun _ => 0)
   | .query' i _ y f =>
@@ -83,7 +84,7 @@ noncomputable def run (f : Comp ι ω s α) (os : (i : I) → Oracle (ι i) ω) 
     (z, c + Pi.single i 1)
 
 /-- The value of a `Comp ι s` after execution -/
-noncomputable def value (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) : α :=
+def value (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) : α :=
   (f.run o).1
 
 -- Which type can we give `o`?
@@ -91,7 +92,7 @@ noncomputable def value (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω)
 --   f.value (fun _ => o)
 
 /-- The query count for a specific oracle of a `Comp ι s` -/
-noncomputable def cost (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) (i : I) : ℕ :=
+def cost (f : Comp ι ω s α) (o : (i : I) → Oracle (ι i) ω) (i : I) : ℕ :=
   (f.run o).2 i
 
 -- Which type can we give `o`?
