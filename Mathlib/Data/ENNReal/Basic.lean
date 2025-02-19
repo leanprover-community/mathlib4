@@ -510,10 +510,9 @@ theorem toNNReal_nat (n : ℕ) : (n : ℝ≥0∞).toNNReal = n := by
 theorem toReal_nat (n : ℕ) : (n : ℝ≥0∞).toReal = n := by
   rw [← ENNReal.ofReal_natCast n, ENNReal.toReal_ofReal (Nat.cast_nonneg _)]
 
-lemma _root_.Nat.cast_toNNReal (N : ℕ) :
-    (Nat.cast N : ℝ≥0∞).toNNReal = (Nat.cast N : ℝ).toNNReal := by
-  rw [Real.toNNReal_of_nonneg (by positivity), ENNReal.toNNReal_nat]
-  congr
+lemma _root_.Nat.cast_toNNReal (n : ℕ) :
+    (n : ℝ≥0∞).toNNReal = (n : ℝ).toNNReal := by
+  rw [Real.toNNReal_of_nonneg (by positivity), ENNReal.toNNReal_nat, mk_natCast]
 
 lemma _root_.Nat.rpow_mul_toNNReal (n k : ℕ) (R : ℝ) :
     n ^ k * R.toNNReal = (n ^ k * R).toNNReal := by
