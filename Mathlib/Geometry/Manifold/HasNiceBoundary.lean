@@ -147,27 +147,7 @@ noncomputable def BoundaryManifoldData.euclideanHalfSpace_self (n : ℕ) (k : �
   isImmersion x := sorry
   range_eq_boundary := sorry
 
--- Missing topology prerequisites
-section PrereqsTopology
-
-open Set Topology Function
-
-variable {X Y Z W : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-  [TopologicalSpace Z] [TopologicalSpace W]
-
--- also missing: IsEmbedding.sum_elim (from weaker hypotheses), will not add for now
-
-lemma IsClosedMap.prod_mk_left [T2Space Y] (c : Y): IsClosedMap (Prod.mk c : X → _) := by
-  intro K hK
-  rw [Set.singleton_prod]
-  exact isClosed_singleton.prod hK
-
-lemma IsClosedMap.prod_mk_right [T2Space Y] (c : Y): IsClosedMap (fun x : X ↦ Prod.mk x c) := by
-  intro K hK
-  rw [Set.prod_singleton]
-  exact hK.prod isClosed_singleton
-
-end PrereqsTopology
+-- missing mathlib lemma: IsEmbedding.sum_elim (if true), will not add for now
 
 variable {X Y Z W : Type*} [TopologicalSpace X] [TopologicalSpace Y]
   [TopologicalSpace Z] [TopologicalSpace W]
@@ -177,7 +157,7 @@ def Homeomorph.sumEquivBoolProd (X : Type*) [TopologicalSpace X] : X ⊕ X ≃�
   · show Continuous (Sum.elim (Prod.mk false) (Prod.mk true))
     fun_prop
   · show IsClosedMap (Sum.elim (Prod.mk false) (Prod.mk true))
-    exact (IsClosedMap.prod_mk_left false).sum_elim (IsClosedMap.prod_mk_left true)
+    exact (isClosedMap_prod_mk_left false).sum_elim (isClosedMap_prod_mk_left true)
 
 def Homeomorph.finTwo : Bool ≃ₜ Fin 2 where
   toEquiv := finTwoEquiv.symm
