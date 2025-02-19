@@ -921,6 +921,8 @@ def flipMultilinear (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') :
       dsimp only [MultilinearMap.coe_mk]
       exact LinearMap.mkContinuous_norm_le _ (by positivity) _
 
+/-- Flip arguments in `f : ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')` to get
+`G →L[𝕜] ContinuousMultilinearMap 𝕜 E G'` -/
 @[simps! apply_apply]
 def _root_.ContinuousMultilinearMap.flipLinear (f : ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')) :
     G →L[𝕜] ContinuousMultilinearMap 𝕜 E G' :=
@@ -939,10 +941,12 @@ def _root_.ContinuousMultilinearMap.flipLinear (f : ContinuousMultilinearMap �
             apply f.le_opNorm
       map_add' := fun x y ↦ by ext1; simp
       map_smul' := fun c x ↦ by ext1; simp }
-  ‖f‖ fun x ↦ by
-    simp only [LinearMap.coe_mk, AddHom.coe_mk]
-    exact MultilinearMap.mkContinuous_norm_le _ (by positivity) _
+    ‖f‖ fun x ↦ by
+      simp only [LinearMap.coe_mk, AddHom.coe_mk]
+      exact MultilinearMap.mkContinuous_norm_le _ (by positivity) _
 
+/-- Flipping arguments gives a linear equivalence between `G →L[𝕜] ContinuousMultilinearMap 𝕜 E G'`
+and `ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')` -/
 variable (𝕜 E G G') in
 def flipMultilinearEquivₗ : (G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') ≃ₗ[𝕜]
     (ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')) where
@@ -953,6 +957,8 @@ def flipMultilinearEquivₗ : (G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') 
   left_inv f := rfl
   right_inv f := rfl
 
+/-- Flipping arguments gives a continuous linear equivalence between
+`G →L[𝕜] ContinuousMultilinearMap 𝕜 E G'` and `ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')` -/
 variable (𝕜 E G G') in
 def flipMultilinearEquiv : (G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') ≃L[𝕜]
     (ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')) := by
