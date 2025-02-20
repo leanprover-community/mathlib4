@@ -3,7 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+import Mathlib.Algebra.BigOperators.Monoid.Multiset.Defs
 import Mathlib.Algebra.Order.BigOperators.Group.List
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Monoid.OrderDual

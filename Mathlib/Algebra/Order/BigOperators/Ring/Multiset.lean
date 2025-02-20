@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde
 -/
 import Mathlib.Algebra.Order.BigOperators.Ring.List
-import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+import Mathlib.Algebra.BigOperators.Monoid.Multiset.Defs
 
 /-!
 # Big operators on a multiset in ordered rings

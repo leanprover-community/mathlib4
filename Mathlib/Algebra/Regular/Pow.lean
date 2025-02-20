@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.Regular.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Algebra.BigOperators.Monoid.Finset.Defs
 
 /-!
 # Regular elements

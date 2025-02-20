@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.BigOperators.Group.List.Defs
+import Mathlib.Algebra.BigOperators.Monoid.List.Defs
 import Mathlib.Order.RelClasses
 import Mathlib.Data.List.TakeDrop
 import Mathlib.Data.List.Forall2
