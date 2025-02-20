@@ -10,8 +10,8 @@ import Mathlib.Data.Multiset.Basic
 /-!
 # Sums and products over multisets
 
-In this file we define products and sums indexed by multisets. This is later used to define products
-and sums indexed by finite sets.
+In this file we define products and sums indexed by multisets.
+This is later used to define products and sums indexed by finite sets.
 
 ## Main declarations
 

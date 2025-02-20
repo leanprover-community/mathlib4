@@ -4,23 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Monoid.Finset.Basic
+
 /-!
 # Big operators
 
-In this file we define products and sums indexed by finite sets (specifically, `Finset`).
-
-## Notation
-
-We introduce the following notation.
-
-Let `s` be a `Finset α`, and `f : α → β` a function.
-
-* `∏ x ∈ s, f x` is notation for `Finset.prod s f` (assuming `β` is a `CommMonoid`)
-* `∑ x ∈ s, f x` is notation for `Finset.sum s f` (assuming `β` is an `AddCommMonoid`)
-* `∏ x, f x` is notation for `Finset.prod Finset.univ f`
-  (assuming `α` is a `Fintype` and `β` is a `CommMonoid`)
-* `∑ x, f x` is notation for `Finset.sum Finset.univ f`
-  (assuming `α` is a `Fintype` and `β` is an `AddCommMonoid`)
+In this file we prove lemmas about products and sums in groups indexed by finite sets
+(specifically, `Finset`).
 
 ## Implementation Notes
 

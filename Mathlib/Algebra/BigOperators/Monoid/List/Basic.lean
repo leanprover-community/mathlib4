@@ -18,9 +18,8 @@ import Mathlib.Algebra.Group.Int.Defs
 /-!
 # Sums and products from lists
 
-This file provides basic results about `List.prod`, `List.sum`, which calculate the product and sum
-of elements of a list and `List.alternatingProd`, `List.alternatingSum`, their alternating
-counterparts.
+This file provides basic results about `List.prod`, `List.sum`,
+which calculate the product and sum of elements of a list.
 -/
 assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
