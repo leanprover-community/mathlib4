@@ -328,28 +328,21 @@ theorem Filter.bar {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [To
     {f : X → Z} {g : Y → Z} (F : Filter Z) :
     Filter.map Sum.inr (Filter.comap g F) = Filter.comap (Sum.elim f g) F := sorry
 
--- might be much too strong: if im f and im g are separated by open sets, the sum is an embedding
-lemma IsEmbedding.sum_elim_Strong {f : X → Z} {g : Y → Z}
-    (hf : IsEmbedding f) (hg : IsEmbedding g) (h : Function.Injective (Sum.elim f g))
+lemma Topology.IsInducing.sum_elim_of_separatedOpen {f : X → Z} {g : Y → Z}
+    (hf : IsInducing f) (hg : IsInducing g)
     {U V : Set Z} (hU : IsOpen U) (hV : IsOpen V) (hUV : Disjoint U V)
-    (hfU : Set.range f ⊆ U) (hgV : Set.range g ⊆ V) :
-    IsEmbedding (Sum.elim f g) := by
-  constructor; swap; · exact h
-  replace hf := hf.isInducing
-  replace hg := hg.isInducing
+    (hfU : Set.range f ⊆ U) (hgV : Set.range g ⊆ V) : IsInducing (Sum.elim f g) := by
   rw [isInducing_iff_nhds] at hf hg ⊢
   intro s
   cases s with
   | inl x =>
     simp only [Sum.elim_inl, nhds_inl, hf x]
-    -- under less hypotheses, this would just be Filter.foo (𝓝 (f x))
     apply Filter.filter_eq
     ext s
-    have hU : U ∈ 𝓝 (f x) := by
-      apply (hU.mem_nhds sorry) -- easy, x ∈ range f ⊆ U
+    have hU : U ∈ 𝓝 (f x) := hU.mem_nhds (hfU (mem_range_self x))
     have hS (S : Set Z) : Sum.elim f g ⁻¹' S = Sum.inl '' (f ⁻¹' S) := by
-        ext
-        sorry -- missing lemma, should be easy
+      ext
+      sorry -- missing lemma, should be easy
     constructor <;> intro h
     · choose t ht hst using h
       refine ⟨t ∩ U, Filter.inter_mem ht hU, ?_⟩
@@ -363,6 +356,18 @@ lemma IsEmbedding.sum_elim_Strong {f : X → Z} {g : Y → Z}
         exacts [by gcongr; exact inter_subset_left, hst]
       simp_all
   | inr x => sorry -- as the first case
+
+-- might be much too strong: if im f and im g are separated by open sets, the sum is an embedding
+lemma IsEmbedding.sum_elim_Strong {f : X → Z} {g : Y → Z}
+    (hf : IsEmbedding f) (hg : IsEmbedding g) (h : Function.Injective (Sum.elim f g))
+    {U V : Set Z} (hU : IsOpen U) (hV : IsOpen V) (hUV : Disjoint U V)
+    (hfU : Set.range f ⊆ U) (hgV : Set.range g ⊆ V) :
+    IsEmbedding (Sum.elim f g) := by
+  have : Function.Injective (Sum.elim f g) := by
+    sorry -- use hUV, hfU and hgV
+  exact ⟨hf.isInducing.sum_elim_of_separatedOpen hg.isInducing hU hV hUV hfU hgV, this⟩
+
+#exit
 
 -- It seems we actually need this lemma after all.
 lemma IsEmbedding.sum_elim {f : X → Z} {g : Y → Z}
