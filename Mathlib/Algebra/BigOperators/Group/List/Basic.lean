@@ -7,7 +7,7 @@ import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.BigOperators.Group.List.Defs
 import Mathlib.Order.RelClasses
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.TakeDrop
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Perm.Basic
 import Mathlib.Algebra.Group.Basic
@@ -472,8 +472,6 @@ namespace MonoidHom
 @[to_additive]
 protected theorem map_list_prod (f : M →* N) (l : List M) : f l.prod = (l.map f).prod :=
   map_list_prod f l
-
-attribute [deprecated map_list_sum (since := "2024-05-02")] AddMonoidHom.map_list_sum
 
 end MonoidHom
 

@@ -46,6 +46,7 @@ import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Tactic.DeprecateTo
+import Mathlib.Tactic.ErwQuestion
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.ExistsI
 import Mathlib.Tactic.ExtractGoal
@@ -75,7 +76,7 @@ import Mathlib.Tactic.OfNat
 -- import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.ProjectionNotation
 import Mathlib.Tactic.Propose
-import Mathlib.Tactic.PushNeg
+import Mathlib.Tactic.Push
 import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Relation.Rfl

@@ -90,11 +90,6 @@ theorem eLpNorm_one_condExp_le_eLpNorm (f : α → ℝ) : eLpNorm (μ[f|m]) 1 μ
 @[deprecated (since := "2025-01-21")]
 alias eLpNorm_one_condexp_le_eLpNorm := eLpNorm_one_condExp_le_eLpNorm
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_one_condExp_le_snorm := eLpNorm_one_condExp_le_eLpNorm
-
-@[deprecated (since := "2025-01-21")] alias snorm_one_condexp_le_snorm := snorm_one_condExp_le_snorm
-
 theorem integral_abs_condExp_le (f : α → ℝ) : ∫ x, |(μ[f|m]) x| ∂μ ≤ ∫ x, |f x| ∂μ := by
   by_cases hm : m ≤ m0
   swap
@@ -144,12 +139,6 @@ theorem setIntegral_abs_condExp_le {s : Set α} (hs : MeasurableSet[m] s) (f : �
   simp_rw [← Real.norm_eq_abs, norm_indicator_eq_indicator_norm]
 
 @[deprecated (since := "2025-01-21")] alias setIntegral_abs_condexp_le := setIntegral_abs_condExp_le
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_abs_condExp_le := setIntegral_abs_condExp_le
-
-@[deprecated (since := "2025-01-21")]
-alias set_integral_abs_condexp_le := set_integral_abs_condExp_le
 
 /-- If the real valued function `f` is bounded almost everywhere by `R`, then so is its conditional
 expectation. -/
@@ -249,10 +238,8 @@ theorem condExp_stronglyMeasurable_simpleFunc_mul (hm : m ≤ m0) (f : @SimpleFu
     · simp only [hx, Pi.mul_apply, Set.indicator_of_not_mem, not_false_iff, zero_mul]
   apply @SimpleFunc.induction _ _ m _ (fun f => _)
     (fun c s hs => ?_) (fun g₁ g₂ _ h_eq₁ h_eq₂ => ?_) f
-  · -- Porting note: if not classical, `DecidablePred fun x ↦ x ∈ s` cannot be synthesised
-    -- for `Set.piecewise_eq_indicator`
-    classical simp only [@SimpleFunc.const_zero _ _ m, @SimpleFunc.coe_piecewise _ _ m,
-      @SimpleFunc.coe_const _ _ m, @SimpleFunc.coe_zero _ _ m, Set.piecewise_eq_indicator]
+  · simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise,
+      SimpleFunc.coe_const, SimpleFunc.coe_zero, Set.piecewise_eq_indicator]
     rw [this, this]
     refine (condExp_indicator (hg.smul c) hs).trans ?_
     filter_upwards [condExp_smul c g m] with x hx

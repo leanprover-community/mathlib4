@@ -41,6 +41,8 @@ Partition
 <https://en.wikipedia.org/wiki/Partition_(number_theory)>
 -/
 
+assert_not_exists Field
+
 open Multiset
 
 namespace Nat
@@ -48,11 +50,11 @@ namespace Nat
 /-- A partition of `n` is a multiset of positive integers summing to `n`. -/
 @[ext]
 structure Partition (n : ℕ) where
-  /-- positive integers summing to `n`-/
+  /-- positive integers summing to `n` -/
   parts : Multiset ℕ
   /-- proof that the `parts` are positive -/
   parts_pos : ∀ {i}, i ∈ parts → 0 < i
-  /-- proof that the `parts` sum to `n`-/
+  /-- proof that the `parts` sum to `n` -/
   parts_sum : parts.sum = n
 deriving DecidableEq
 

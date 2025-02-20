@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
 import Mathlib.Algebra.Algebra.Field
+import Mathlib.Algebra.BigOperators.Field
 import Mathlib.FieldTheory.Differential.Basic
 import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
@@ -66,7 +67,7 @@ lemma IsLiouville.trans {A : Type*} [Field A] [Algebra K A] [Algebra F A]
       apply_fun ((↑) : F → K)
       · simp only [Function.comp_apply, coe_deriv, hc, algebraMap.coe_zero]
         apply hc₀
-      · apply NoZeroSMulDivisors.algebraMap_injective
+      · apply FaithfulSMul.algebraMap_injective
 
 section Algebraic
 /-
@@ -120,7 +121,7 @@ private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensiona
   isLiouville (a : F) (ι : Type) [Fintype ι] (c : ι → F) (hc : ∀ x, (c x)′ = 0)
       (u : ι → K) (v : K) (h : a = ∑ x, c x * logDeriv (u x) + v′) := by
     haveI : CharZero K := charZero_of_injective_algebraMap
-      (NoZeroSMulDivisors.algebraMap_injective F K)
+      (FaithfulSMul.algebraMap_injective F K)
     -- We sum `e x` over all isomorphisms `e : K ≃ₐ[F] K`.
     -- Because this is a Galois extension each of the relevant values will be in `F`.
     -- We need to divide by `Fintype.card (K ≃ₐ[F] K)` to get the original answer.
@@ -159,7 +160,7 @@ private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensiona
     · -- Proving that this works is mostly straightforward algebraic manipulation,
       apply_fun (algebraMap F K)
       case inj =>
-        exact NoZeroSMulDivisors.algebraMap_injective F K
+        exact FaithfulSMul.algebraMap_injective F K
       simp only [map_add, map_sum, map_mul, ← logDeriv_algebraMap, hu₀, ← deriv_algebraMap, hv₀]
       unfold u₁ v₁ c₀
       clear c₀ u₁ u₀ hu₀ v₁ v₀ hv₀

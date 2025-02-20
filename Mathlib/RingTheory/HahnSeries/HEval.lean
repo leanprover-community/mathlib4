@@ -13,16 +13,16 @@ import Mathlib.RingTheory.PowerSeries.Basic
  * `HahnSeries.SummableFamily.powerSeriesFamily`: A summable family of Hahn series whose elements
    are non-negative powers of a fixed positive-order Hahn series multiplied by the coefficients of a
    formal power series.
+ * `PowerSeries.heval`: The `R`-algebra homomorphism from `PowerSeries σ R` to `HahnSeries Γ R` that
+   takes `X` to a fixed positive-order Hahn Series and extends to formal infinite sums.
 
 ## TODO
- * `PowerSeries.heval`: An `R`-algebra homomorphism from `PowerSeries R` to `HahnSeries Γ R` taking
-   `X` to a positive order Hahn Series.
+ * `MvPowerSeries.heval`: An `R`-algebra homomorphism from `MvPowerSeries σ R` to `HahnSeries Γ R`
+   (for finite σ) taking each `X i` to a positive order Hahn Series.
 
 -/
 
 open Finset Function
-
-open Pointwise
 
 noncomputable section
 
@@ -63,7 +63,7 @@ theorem support_powerSeriesFamily_subset (hx : 0 < x.orderTop) (a b : PowerSerie
     ((powerSeriesFamily hx (a * b)).coeff g).support ⊆
     (((powerSeriesFamily hx a).mul (powerSeriesFamily hx b)).coeff g).support.image
       fun i => i.1 + i.2 := by
-  simp only [coeff_support, smulFamily_toFun, HahnSeries.smul_coeff, Set.Finite.toFinset_subset,
+  simp only [coeff_support, smulFamily_toFun, HahnSeries.coeff_smul, Set.Finite.toFinset_subset,
     coe_image, support_subset_iff, Set.mem_image, Prod.exists]
   intro n hn
   simp_rw [PowerSeries.coeff_mul, sum_smul, mul_smul] at hn
@@ -72,7 +72,7 @@ theorem support_powerSeriesFamily_subset (hx : 0 < x.orderTop) (a b : PowerSerie
   use he.choose.1, he.choose.2
   refine ⟨?_, he.choose_spec.1⟩
   simp only [mul_toFun, smulFamily_toFun, powers_toFun, Algebra.mul_smul_comm,
-    Algebra.smul_mul_assoc, HahnSeries.smul_coeff, Set.Finite.coe_toFinset, ne_eq, Prod.mk.eta,
+    Algebra.smul_mul_assoc, HahnSeries.coeff_smul, Set.Finite.coe_toFinset, ne_eq, Prod.mk.eta,
     Function.mem_support]
   rw [← pow_add, smul_comm, he.choose_spec.1]
   exact he.choose_spec.2
@@ -82,7 +82,7 @@ theorem hsum_powerSeriesFamily_mul (hx : 0 < x.orderTop) (a b : PowerSeries R) :
     ((powerSeriesFamily hx a).mul (powerSeriesFamily hx b)).hsum := by
   ext g
   simp only [powerSeriesFamily_apply, PowerSeries.coeff_mul, Finset.sum_smul, ← Finset.sum_product,
-    hsum_coeff_eq_sum, mul_toFun]
+    coeff_hsum_eq_sum, mul_toFun]
   rw [sum_subset (support_powerSeriesFamily_subset hx a b g)]
   · rw [← coeff_sum, sum_sigma', coeff_sum]
     refine (Finset.sum_of_injOn (fun x => ⟨x.1 + x.2, x⟩) (fun _ _ _ _ => by simp_all) ?_ ?_
@@ -112,3 +112,63 @@ end PowerSeriesFamily
 end SummableFamily
 
 end HahnSeries
+
+namespace PowerSeries
+
+open HahnSeries SummableFamily
+
+variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R] {x : HahnSeries Γ R}
+(hx : 0 < x.orderTop)
+
+/-- The `R`-algebra homomorphism from `R[[X]]` to `HahnSeries Γ R` given by sending the power series
+variable `X` to a positive order element `x` and extending to infinite sums. -/
+@[simps]
+def heval : PowerSeries R →ₐ[R] HahnSeries Γ R where
+  toFun f := (powerSeriesFamily hx f).hsum
+  map_one' := by
+    simp only [hsum, powerSeriesFamily_apply, PowerSeries.coeff_one, ite_smul, one_smul, zero_smul]
+    ext g
+    simp only
+    rw [finsum_eq_single (fun i => (if i = 0 then x ^ i else 0).coeff g) (0 : ℕ)
+      (fun n hn => by simp_all), pow_zero, ← zero_pow_eq 0, pow_zero]
+  map_mul' a b := by
+    simp only [← hsum_mul, hsum_powerSeriesFamily_mul]
+  map_zero' := by
+    simp only [hsum, powerSeriesFamily_apply, map_zero, zero_smul, coeff_zero, finsum_zero]
+    exact rfl
+  map_add' a b := by
+    simp only [powerSeriesFamily_add, hsum_add]
+  commutes' r := by
+    simp only [PowerSeries.algebraMap_apply, algebraMap_apply, Algebra.id.map_eq_id,
+      RingHom.id_apply, C_apply]
+    ext g
+    simp only [coeff_hsum, smulFamily_toFun, coeff_C, powers_toFun, ite_smul, zero_smul]
+    rw [finsum_eq_single _ 0 fun n hn => by simp_all]
+    by_cases hg : g = 0 <;> simp [hg, Algebra.algebraMap_eq_smul_one]
+
+theorem heval_mul {a b : PowerSeries R} :
+    heval hx (a * b) = (heval hx a) * heval hx b :=
+  map_mul (heval hx) a b
+
+theorem heval_unit (u : (PowerSeries R)ˣ) : IsUnit (heval hx u) := by
+  refine isUnit_iff_exists_inv.mpr ?_
+  use heval hx u.inv
+  rw [← heval_mul, Units.val_inv, map_one]
+
+theorem coeff_heval (f : PowerSeries R) (g : Γ) :
+    (heval hx f).coeff g = ∑ᶠ n, ((powerSeriesFamily hx f).coeff g) n := by
+  rw [heval_apply, coeff_hsum]
+  exact rfl
+
+theorem coeff_heval_zero (f : PowerSeries R) :
+    (heval hx f).coeff 0 = PowerSeries.constantCoeff R f := by
+  rw [coeff_heval, finsum_eq_single (fun n => ((powerSeriesFamily hx f).coeff 0) n) 0,
+    ← PowerSeries.coeff_zero_eq_constantCoeff_apply]
+  · simp_all
+  · intro n hn
+    simp_all only [ne_eq, coeff_toFun, smulFamily_toFun, powers_toFun, HahnSeries.coeff_smul,
+      smul_eq_mul]
+    exact mul_eq_zero_of_right ((PowerSeries.coeff R n) f) (coeff_eq_zero_of_lt_orderTop
+      (lt_of_lt_of_le ((nsmul_pos_iff hn).mpr hx) orderTop_nsmul_le_orderTop_pow))
+
+end PowerSeries

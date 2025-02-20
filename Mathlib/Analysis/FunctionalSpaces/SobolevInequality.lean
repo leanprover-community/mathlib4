@@ -95,7 +95,7 @@ variable {p : ℝ}
     T μ p f univ x =
     ∫⁻ (x : ∀ i, A i), (f x ^ (1 - (#ι - 1 : ℝ) * p)
     * ∏ i : ι, (∫⁻ t : A i, f (update x i t) ∂(μ i)) ^ p) ∂(.pi μ) := by
-  simp [T, lmarginal_univ, lmarginal_singleton, card_univ]
+  simp [T, lmarginal_singleton]
 
 @[simp] lemma T_empty (f : (∀ i, A i) → ℝ≥0∞) (x : ∀ i, A i) :
     T μ p f ∅ x = f x ^ (1 + p) := by
@@ -320,7 +320,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux [Fintype ι]
     _ = ∫⁻ x, ∏ _i : ι, ‖u x‖ₑ ^ (1 / (#ι - 1 : ℝ)) := by
         -- express the left-hand integrand as a product of identical factors
         congr! 2 with x
-        simp_rw [prod_const, card_univ]
+        simp_rw [prod_const]
         norm_cast
     _ ≤ ∫⁻ x, ∏ i, (∫⁻ xᵢ, ‖fderiv ℝ u (update x i xᵢ)‖ₑ) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) := ?_
     _ ≤ (∫⁻ x, ‖fderiv ℝ u x‖ₑ) ^ p := by
@@ -355,7 +355,7 @@ open Module
 /-- The constant factor occurring in the conclusion of `lintegral_pow_le_pow_lintegral_fderiv`.
 It only depends on `E`, `μ` and `p`.
 It is determined by the ratio of the measures on `E` and `ℝⁿ` and
-the operator norm of a chosen equivalence `E ≃ ℝⁿ` (raised to suitable powers involving `p`).-/
+the operator norm of a chosen equivalence `E ≃ ℝⁿ` (raised to suitable powers involving `p`). -/
 irreducible_def lintegralPowLePowLIntegralFDerivConst (p : ℝ) : ℝ≥0 := by
   let ι := Fin (finrank ℝ E)
   have : finrank ℝ E = finrank ℝ (ι → ℝ) := by
@@ -451,9 +451,6 @@ theorem eLpNorm_le_eLpNorm_fderiv_one  {u : E → F} (hu : ContDiff ℝ 1 u) (h2
     eLpNorm_nnreal_pow_eq_lintegral hp.symm.pos.ne',
     inv_mul_cancel₀ h0p.ne', NNReal.rpow_one]
   exact lintegral_pow_le_pow_lintegral_fderiv μ hu h2u hp.coe
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_le_snorm_fderiv_one := eLpNorm_le_eLpNorm_fderiv_one
 
 /-- The constant factor occurring in the conclusion of `eLpNorm_le_eLpNorm_fderiv_of_eq_inner`.
 It only depends on `E`, `μ` and `p`. -/
@@ -590,9 +587,6 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner  {u : E → F'}
       left
       positivity
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_le_snorm_fderiv_of_eq_inner := eLpNorm_le_eLpNorm_fderiv_of_eq_inner
-
 variable (F) in
 /-- The constant factor occurring in the conclusion of `eLpNorm_le_eLpNorm_fderiv_of_eq`.
 It only depends on `E`, `F`, `μ` and `p`. -/
@@ -646,9 +640,6 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq [FiniteDimensional ℝ F]
       simp_rw [C₂, C₁, C, e, SNormLESNormFDerivOfEqConst]
       push_cast
       simp_rw [mul_assoc]
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_le_snorm_fderiv_of_eq := eLpNorm_le_eLpNorm_fderiv_of_eq
 
 
 variable (F) in
@@ -718,9 +709,6 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
     _ = eLpNormLESNormFDerivOfLeConst F μ s p q * eLpNorm (fderiv ℝ u) p μ := by
       simp_rw [eLpNormLESNormFDerivOfLeConst, ENNReal.coe_mul]; ring
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_le_snorm_fderiv_of_le := eLpNorm_le_eLpNorm_fderiv_of_le
-
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 function `u` supported in a bounded set `s` in a normed space `E` of finite dimension
 `n`, equipped with Haar measure, and let `1 < p < n`.
@@ -737,8 +725,5 @@ theorem eLpNorm_le_eLpNorm_fderiv [FiniteDimensional ℝ F]
   norm_cast
   simp only [tsub_le_iff_right, le_add_iff_nonneg_right]
   positivity
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_le_snorm_fderiv := eLpNorm_le_eLpNorm_fderiv
 
 end MeasureTheory

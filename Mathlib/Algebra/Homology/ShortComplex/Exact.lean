@@ -909,15 +909,6 @@ lemma Exact.liftFromProjective_comp
   rw [← toCycles_i, Projective.factorThru_comp_assoc, liftCycles_i]
 
 
-@[deprecated (since := "2024-07-09")] alias _root_.CategoryTheory.Exact.lift :=
-  Exact.liftFromProjective
-@[deprecated (since := "2024-07-09")] alias _root_.CategoryTheory.Exact.lift_comp :=
-  Exact.liftFromProjective_comp
-@[deprecated (since := "2024-07-09")] alias _root_.CategoryTheory.Injective.Exact.desc :=
-  Exact.descToInjective
-@[deprecated (since := "2024-07-09")] alias _root_.CategoryTheory.Injective.Exact.comp_desc :=
-  Exact.comp_descToInjective
-
 end Abelian
 
 end ShortComplex

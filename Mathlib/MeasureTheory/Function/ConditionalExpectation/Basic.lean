@@ -231,8 +231,6 @@ theorem setIntegral_condExp (hm : m ≤ m₀) [SigmaFinite (μ.trim hm)] (hf : I
 
 @[deprecated (since := "2025-01-21")] alias setIntegral_condexp := setIntegral_condExp
 
-@[deprecated (since := "2024-04-17")] alias set_integral_condexp := setIntegral_condExp
-
 theorem integral_condExp (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] :
     ∫ x, (μ[f|m]) x ∂μ = ∫ x, f x ∂μ := by
   by_cases hf : Integrable f μ
@@ -266,12 +264,6 @@ theorem ae_eq_condExp_of_forall_setIntegral_eq (hm : m ≤ m₀) [SigmaFinite (�
 
 @[deprecated (since := "2025-01-21")]
 alias ae_eq_condexp_of_forall_setIntegral_eq := ae_eq_condExp_of_forall_setIntegral_eq
-
-@[deprecated (since := "2024-04-17")]
-alias ae_eq_condExp_of_forall_set_integral_eq := ae_eq_condExp_of_forall_setIntegral_eq
-
-@[deprecated (since := "2025-01-21")]
-alias ae_eq_condexp_of_forall_set_integral_eq := ae_eq_condExp_of_forall_set_integral_eq
 
 theorem condExp_bot' [hμ : NeZero μ] (f : α → E) :
     μ[f|⊥] = fun _ => (μ Set.univ).toReal⁻¹ • ∫ x, f x ∂μ := by

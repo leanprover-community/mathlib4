@@ -60,27 +60,27 @@ def variance : ℝ := (evariance X μ).toReal
 /-- The `ℝ≥0∞`-valued variance of the real-valued random variable `X` according to the measure `μ`.
 
 This is defined as the Lebesgue integral of `(X - 𝔼[X])^2`. -/
-scoped notation "eVar[" X " ; " μ "]" => ProbabilityTheory.evariance X μ
+scoped notation "eVar[" X "; " μ "]" => ProbabilityTheory.evariance X μ
 
 /-- The `ℝ≥0∞`-valued variance of the real-valued random variable `X` according to the volume
 measure.
 
 This is defined as the Lebesgue integral of `(X - 𝔼[X])^2`. -/
-scoped notation "eVar[" X "]" => eVar[X ; MeasureTheory.MeasureSpace.volume]
+scoped notation "eVar[" X "]" => eVar[X; MeasureTheory.MeasureSpace.volume]
 
 /-- The `ℝ`-valued variance of the real-valued random variable `X` according to the measure `μ`.
 
 It is set to `0` if `X` has infinite variance. -/
-scoped notation "Var[" X " ; " μ "]" => ProbabilityTheory.variance X μ
+scoped notation "Var[" X "; " μ "]" => ProbabilityTheory.variance X μ
 
 /-- The `ℝ`-valued variance of the real-valued random variable `X` according to the volume measure.
 
 It is set to `0` if `X` has infinite variance. -/
-scoped notation "Var[" X "]" => Var[X ; MeasureTheory.MeasureSpace.volume]
+scoped notation "Var[" X "]" => Var[X; MeasureTheory.MeasureSpace.volume]
 
 theorem evariance_lt_top [IsFiniteMeasure μ] (hX : Memℒp X 2 μ) : evariance X μ < ∞ := by
   have := ENNReal.pow_lt_top (hX.sub <| memℒp_const <| μ[X]).2 2
-  rw [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.two_ne_top, ← ENNReal.rpow_two] at this
+  rw [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.ofNat_ne_top, ← ENNReal.rpow_two] at this
   simp only [ENNReal.toReal_ofNat, Pi.sub_apply, ENNReal.one_toReal, one_div] at this
   rw [← ENNReal.rpow_mul, inv_mul_cancel₀ (two_ne_zero : (2 : ℝ) ≠ 0), ENNReal.rpow_one] at this
   simp_rw [ENNReal.rpow_two] at this
@@ -95,7 +95,7 @@ theorem evariance_eq_top [IsFiniteMeasure μ] (hXm : AEStronglyMeasurable X μ) 
   rw [← Ne, ← lt_top_iff_ne_top] at h
   have : Memℒp (fun ω => X ω - μ[X]) 2 μ := by
     refine ⟨hXm.sub aestronglyMeasurable_const, ?_⟩
-    rw [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.two_ne_top]
+    rw [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.ofNat_ne_top]
     simp only [ENNReal.toReal_ofNat, ENNReal.one_toReal, ENNReal.rpow_two, Ne]
     exact ENNReal.rpow_lt_top_of_nonneg (by linarith) h.ne
   refine hX ?_
@@ -125,7 +125,7 @@ theorem evariance_eq_lintegral_ofReal :
     evariance X μ = ∫⁻ ω, ENNReal.ofReal ((X ω - μ[X]) ^ 2) ∂μ := by
   simp [evariance, ← enorm_pow, Real.enorm_of_nonneg (sq_nonneg _)]
 
-lemma variance_eq_integral (hX : AEMeasurable X μ) : Var[X ; μ] = ∫ ω, (X ω - μ[X]) ^ 2 ∂μ := by
+lemma variance_eq_integral (hX : AEMeasurable X μ) : Var[X; μ] = ∫ ω, (X ω - μ[X]) ^ 2 ∂μ := by
   simp [variance, evariance, toReal_enorm, ← integral_toReal ((hX.sub_const _).enorm.pow_const _) <|
     .of_forall fun _ ↦ ENNReal.pow_lt_top enorm_lt_top _]
 
@@ -224,7 +224,7 @@ theorem evariance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : AEStrong
     refine ⟨?_, ENNReal.ofReal_ne_top⟩
     rw [Memℒp, not_and] at hℒ
     specialize hℒ hX
-    simp only [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.two_ne_top, not_lt, top_le_iff,
+    simp only [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.ofNat_ne_top, not_lt, top_le_iff,
       ENNReal.toReal_ofNat, one_div, ENNReal.rpow_eq_top_iff, inv_lt_zero, inv_pos, and_true,
       or_iff_not_imp_left, not_and_or, zero_lt_two] at hℒ
     exact mod_cast hℒ fun _ => zero_le_two
@@ -234,11 +234,11 @@ theorem meas_ge_le_evariance_div_sq {X : Ω → ℝ} (hX : AEStronglyMeasurable 
     (hc : c ≠ 0) : μ {ω | ↑c ≤ |X ω - μ[X]|} ≤ evariance X μ / c ^ 2 := by
   have A : (c : ℝ≥0∞) ≠ 0 := by rwa [Ne, ENNReal.coe_eq_zero]
   have B : AEStronglyMeasurable (fun _ : Ω => μ[X]) μ := aestronglyMeasurable_const
-  convert meas_ge_le_mul_pow_eLpNorm μ two_ne_zero ENNReal.two_ne_top (hX.sub B) A using 1
+  convert meas_ge_le_mul_pow_eLpNorm μ two_ne_zero ENNReal.ofNat_ne_top (hX.sub B) A using 1
   · congr
     simp only [Pi.sub_apply, ENNReal.coe_le_coe, ← Real.norm_eq_abs, ← coe_nnnorm,
       NNReal.coe_le_coe, ENNReal.ofReal_coe_nnreal]
-  · rw [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.two_ne_top]
+  · rw [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.ofNat_ne_top]
     simp only [show ENNReal.ofNNReal (c ^ 2) = (ENNReal.ofNNReal c) ^ 2 by norm_cast,
       ENNReal.toReal_ofNat, one_div, Pi.sub_apply]
     rw [div_eq_mul_inv, ENNReal.inv_pow, mul_comm, ENNReal.rpow_two]

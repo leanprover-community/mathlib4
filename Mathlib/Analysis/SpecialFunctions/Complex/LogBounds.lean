@@ -115,7 +115,7 @@ lemma norm_one_add_mul_inv_le {t : ℝ} (ht : t ∈ Set.Icc 0 1) {z : ℂ} (hz :
     _ ≤ 1 - t * ‖z‖ := by
       nlinarith [norm_nonneg z]
     _ = 1 - ‖t * z‖ := by
-      rw [norm_mul, norm_eq_abs (t : ℂ), abs_of_nonneg ht.1]
+      rw [norm_mul, norm_eq_abs (t : ℂ), Complex.abs_of_nonneg ht.1]
     _ ≤ ‖1 + t * z‖ := by
       rw [← norm_neg (t * z), ← sub_neg_eq_add]
       convert norm_sub_norm_le 1 (-(t * z))
@@ -162,7 +162,7 @@ lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
     _ = ∫ t in (0 : ℝ)..1, t ^ n * ‖(1 + t * z)⁻¹‖ := by
         refine intervalIntegral.integral_congr <| fun t ht ↦ ?_
         rw [Set.uIcc_of_le zero_le_one, Set.mem_Icc] at ht
-        simp_rw [norm_mul, norm_pow, norm_eq_abs, abs_of_nonneg ht.1]
+        simp_rw [norm_mul, norm_pow, norm_eq_abs, Complex.abs_of_nonneg ht.1]
     _ ≤ ∫ t in (0 : ℝ)..1, t ^ n * (1 - ‖z‖)⁻¹ :=
         intervalIntegral.integral_mono_on zero_le_one
           (integrable_pow_mul_norm_one_add_mul_inv n hz) help <|
@@ -185,7 +185,7 @@ lemma norm_log_one_add_le {z : ℂ} (hz : ‖z‖ < 1) :
   apply le_trans (norm_add_le _ _)
   exact add_le_add_right (Complex.norm_log_one_add_sub_self_le hz) ‖z‖
 
-/--For `‖z‖ ≤ 1/2`, the complex logarithm is bounded by `(3/2) * ‖z‖`. -/
+/-- For `‖z‖ ≤ 1/2`, the complex logarithm is bounded by `(3/2) * ‖z‖`. -/
 lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1/2) : ‖(log (1 + z))‖ ≤ (3/2) * ‖z‖ := by
   apply le_trans (norm_log_one_add_le (lt_of_le_of_lt hz one_half_lt_one))
   have hz3 : (1 - ‖z‖)⁻¹ ≤ 2 := by

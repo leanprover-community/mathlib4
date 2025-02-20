@@ -176,7 +176,7 @@ theorem Nat.castRingHom_nat : Nat.castRingHom ℕ = RingHom.id ℕ :=
   rfl
 
 /-- We don't use `RingHomClass` here, since that might cause type-class slowdown for
-`Subsingleton`-/
+`Subsingleton`. -/
 instance Nat.uniqueRingHom {R : Type*} [NonAssocSemiring R] : Unique (ℕ →+* R) where
   default := Nat.castRingHom R
   uniq := RingHom.eq_natCast'
@@ -193,9 +193,6 @@ theorem natCast_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
 @[simp]
 theorem natCast_def (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
   rfl
-
-@[deprecated (since := "2024-04-05")] alias nat_apply := natCast_apply
-@[deprecated (since := "2024-04-05")] alias coe_nat := natCast_def
 
 @[simp]
 theorem ofNat_apply (n : ℕ) [n.AtLeastTwo] (a : α) : (OfNat.ofNat n : ∀ a, π a) a = n := rfl

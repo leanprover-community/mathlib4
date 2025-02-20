@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+import Mathlib.Data.Fintype.Sets
+import Mathlib.Data.Multiset.Bind
 
 /-!
 # Big operators
@@ -311,9 +313,6 @@ theorem prod_empty : ∏ x ∈ ∅, f x = 1 :=
 @[to_additive]
 theorem prod_of_isEmpty [IsEmpty α] (s : Finset α) : ∏ i ∈ s, f i = 1 := by
   rw [eq_empty_of_isEmpty s, prod_empty]
-
-@[deprecated (since := "2024-06-11")] alias prod_of_empty := prod_of_isEmpty
-@[deprecated (since := "2024-06-11")] alias sum_of_empty := sum_of_isEmpty
 
 @[to_additive (attr := simp)]
 theorem prod_const_one : (∏ _x ∈ s, (1 : β)) = 1 := by

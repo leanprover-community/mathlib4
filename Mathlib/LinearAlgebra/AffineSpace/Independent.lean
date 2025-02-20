@@ -353,7 +353,7 @@ variable {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AffineSpace V�
 independent, then the original family of points is also affine-independent. -/
 theorem AffineIndependent.of_comp {p : ι → P} (f : P →ᵃ[k] P₂) (hai : AffineIndependent k (f ∘ p)) :
     AffineIndependent k p := by
-  cases' isEmpty_or_nonempty ι with h h
+  rcases isEmpty_or_nonempty ι with h | h
   · haveI := h
     apply affineIndependent_of_subsingleton
   obtain ⟨i⟩ := h
@@ -366,7 +366,7 @@ theorem AffineIndependent.of_comp {p : ι → P} (f : P →ᵃ[k] P₂) (hai : A
 affine-independent. -/
 theorem AffineIndependent.map' {p : ι → P} (hai : AffineIndependent k p) (f : P →ᵃ[k] P₂)
     (hf : Function.Injective f) : AffineIndependent k (f ∘ p) := by
-  cases' isEmpty_or_nonempty ι with h h
+  rcases isEmpty_or_nonempty ι with h | h
   · haveI := h
     apply affineIndependent_of_subsingleton
   obtain ⟨i⟩ := h
@@ -422,7 +422,7 @@ theorem AffineIndependent.affineSpan_disjoint_of_disjoint [Nontrivial k] {p : ι
     (ha : AffineIndependent k p) {s1 s2 : Set ι} (hd : Disjoint s1 s2) :
     Disjoint (affineSpan k (p '' s1) : Set P) (affineSpan k (p '' s2)) := by
   refine Set.disjoint_left.2 fun p0 hp0s1 hp0s2 => ?_
-  cases' ha.exists_mem_inter_of_exists_mem_inter_affineSpan hp0s1 hp0s2 with i hi
+  obtain ⟨i, hi⟩ := ha.exists_mem_inter_of_exists_mem_inter_affineSpan hp0s1 hp0s2
   exact Set.disjoint_iff.1 hd hi
 
 /-- If a family is affinely independent, a point in the family is in
@@ -831,9 +831,7 @@ theorem face_points' {n : ℕ} (s : Simplex k P n) {fs : Finset (Fin (n + 1))} {
 theorem face_eq_mkOfPoint {n : ℕ} (s : Simplex k P n) (i : Fin (n + 1)) :
     s.face (Finset.card_singleton i) = mkOfPoint k (s.points i) := by
   ext
-  simp only [Affine.Simplex.mkOfPoint_points, Affine.Simplex.face_points]
-  -- Porting note: `simp` can't use the next lemma
-  rw [Finset.orderEmbOfFin_singleton]
+  simp [Affine.Simplex.mkOfPoint_points, Affine.Simplex.face_points, Finset.orderEmbOfFin_singleton]
 
 /-- The set of points of a face. -/
 @[simp]

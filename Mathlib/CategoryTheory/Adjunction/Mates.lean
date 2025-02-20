@@ -96,8 +96,6 @@ def mateEquiv : (G ⋙ L₂ ⟶ L₁ ⋙ H) ≃ (R₁ ⋙ G ⟶ H ⋙ R₂) wher
     rw [← assoc, ← Functor.comp_map, assoc, ← β.naturality, ← assoc, Functor.comp_map,
       ← G.map_comp, right_triangle_components, map_id, id_comp]
 
-@[deprecated (since := "2024-07-09")] alias transferNatTrans := mateEquiv
-
 /-- A component of a transposed version of the mates correspondence. -/
 theorem mateEquiv_counit (α : G ⋙ L₂ ⟶ L₁ ⋙ H) (d : D) :
     L₂.map ((mateEquiv adj₁ adj₂ α).app _) ≫ adj₂.counit.app _ =
@@ -247,7 +245,7 @@ theorem leftAdjointSquare.comp_vhcomp
     leftAdjointSquare.comp α β γ δ =
       leftAdjointSquare.vcomp (leftAdjointSquare.hcomp α β) (leftAdjointSquare.hcomp γ δ) := rfl
 
-/-- Horizontal and vertical composition of squares commutes.-/
+/-- Horizontal and vertical composition of squares commutes. -/
 theorem leftAdjointSquare.comp_hvcomp
     (α : G₁ ⋙ L₃ ⟶ L₁ ⋙ H₁) (β : H₁ ⋙ L₄ ⟶ L₂ ⋙ K₁)
     (γ : G₂ ⋙ L₅ ⟶ L₃ ⋙ H₂) (δ : H₂ ⋙ L₆ ⟶ L₄ ⋙ K₂) :
@@ -276,7 +274,7 @@ theorem rightAdjointSquare.comp_vhcomp
     rightAdjointSquare.comp α β γ δ =
     rightAdjointSquare.vcomp (rightAdjointSquare.hcomp α β) (rightAdjointSquare.hcomp γ δ) := rfl
 
-/-- Horizontal and vertical composition of squares commutes.-/
+/-- Horizontal and vertical composition of squares commutes. -/
 theorem rightAdjointSquare.comp_hvcomp
     (α : R₁ ⋙ G₁ ⟶ H₁ ⋙ R₃) (β : R₂ ⋙ H₁ ⟶ K₁ ⋙ R₄)
     (γ : R₃ ⋙ G₂ ⟶ H₂ ⋙ R₅) (δ : R₄ ⋙ H₂ ⟶ K₂ ⋙ R₆) :
@@ -334,8 +332,6 @@ def conjugateEquiv : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
     (L₂ ⟶ L₁) ≃ _ := (Iso.homCongr L₂.leftUnitor L₁.rightUnitor).symm
     _ ≃ _ := mateEquiv adj₁ adj₂
     _ ≃ (R₁ ⟶ R₂) := R₁.rightUnitor.homCongr R₂.leftUnitor
-
-@[deprecated (since := "2024-07-09")] alias transferNatTransSelf := conjugateEquiv
 
 /-- A component of a transposed form of the conjugation definition. -/
 theorem conjugateEquiv_counit (α : L₂ ⟶ L₁) (d : D) :

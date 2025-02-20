@@ -264,9 +264,6 @@ theorem Memℒp.eLpNormEssSup_indicator_norm_ge_eq_zero (hf : Memℒp f ∞ μ)
     rw [this, eLpNormEssSup_measure_zero]
   exact measurableSet_le measurable_const hmeas.nnnorm.measurable.subtype_coe
 
-@[deprecated (since := "2024-07-27")]
-alias Memℒp.snormEssSup_indicator_norm_ge_eq_zero := Memℒp.eLpNormEssSup_indicator_norm_ge_eq_zero
-
 /- This lemma is slightly weaker than `MeasureTheory.Memℒp.eLpNorm_indicator_norm_ge_pos_le` as the
 latter provides `0 < M`. -/
 theorem Memℒp.eLpNorm_indicator_norm_ge_le (hf : Memℒp f p μ) (hmeas : StronglyMeasurable f) {ε : ℝ}
@@ -304,9 +301,6 @@ theorem Memℒp.eLpNorm_indicator_norm_ge_le (hf : Memℒp f p μ) (hmeas : Stro
     · rw [Set.mem_setOf_eq]
       rwa [← hiff]
 
-@[deprecated (since := "2024-07-27")]
-alias Memℒp.snorm_indicator_norm_ge_le := Memℒp.eLpNorm_indicator_norm_ge_le
-
 /-- This lemma implies that a single function is uniformly integrable (in the probability sense). -/
 theorem Memℒp.eLpNorm_indicator_norm_ge_pos_le (hf : Memℒp f p μ) (hmeas : StronglyMeasurable f)
     {ε : ℝ} (hε : 0 < ε) :
@@ -318,9 +312,6 @@ theorem Memℒp.eLpNorm_indicator_norm_ge_pos_le (hf : Memℒp f p μ) (hmeas : 
   refine Set.indicator_le_indicator_of_subset (fun x hx => ?_) (fun x => norm_nonneg (f x)) x
   rw [Set.mem_setOf_eq] at hx -- removing the `rw` breaks the proof!
   exact (max_le_iff.1 hx).1
-
-@[deprecated (since := "2024-07-27")]
-alias Memℒp.snorm_indicator_norm_ge_pos_le := Memℒp.eLpNorm_indicator_norm_ge_pos_le
 
 end
 
@@ -351,9 +342,6 @@ theorem eLpNorm_indicator_le_of_bound {f : α → β} (hp_top : p ≠ ∞) {ε :
     rw [← ENNReal.ofReal_rpow_of_pos (div_pos hε hM),
       ENNReal.rpow_le_rpow_iff (ENNReal.toReal_pos hp hp_top), ENNReal.ofReal_div_of_pos hM]
   · simpa only [ENNReal.ofReal_eq_zero, not_le, Ne]
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_indicator_le_of_bound := eLpNorm_indicator_le_of_bound
 
 section
 
@@ -389,9 +377,6 @@ theorem Memℒp.eLpNorm_indicator_le' (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (h
     · rw [Pi.add_apply, Set.indicator_of_not_mem, Set.indicator_of_mem, zero_add] <;>
         simpa using hx
 
-@[deprecated (since := "2024-07-27")]
-alias Memℒp.snorm_indicator_le' := Memℒp.eLpNorm_indicator_le'
-
 /-- This lemma is superseded by `MeasureTheory.Memℒp.eLpNorm_indicator_le` which does not require
 measurability on `f`. -/
 theorem Memℒp.eLpNorm_indicator_le_of_meas (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf : Memℒp f p μ)
@@ -403,9 +388,6 @@ theorem Memℒp.eLpNorm_indicator_le_of_meas (hp_one : 1 ≤ p) (hp_top : p ≠ 
   rw [ENNReal.ofReal_div_of_pos zero_lt_two, (by norm_num : ENNReal.ofReal 2 = 2),
       ENNReal.mul_div_cancel] <;>
     norm_num
-
-@[deprecated (since := "2024-07-27")]
-alias Memℒp.snorm_indicator_le_of_meas := Memℒp.eLpNorm_indicator_le_of_meas
 
 theorem Memℒp.eLpNorm_indicator_le (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf : Memℒp f p μ) {ε : ℝ}
     (hε : 0 < ε) :
@@ -419,9 +401,6 @@ theorem Memℒp.eLpNorm_indicator_le (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf
   rw [eLpNorm_indicator_eq_eLpNorm_restrict hs, eLpNorm_indicator_eq_eLpNorm_restrict hs]
   exact eLpNorm_congr_ae heq.restrict
 
-@[deprecated (since := "2024-07-27")]
-alias Memℒp.snorm_indicator_le := Memℒp.eLpNorm_indicator_le
-
 /-- A constant function is uniformly integrable. -/
 theorem unifIntegrable_const {g : α → β} (hp : 1 ≤ p) (hp_ne_top : p ≠ ∞) (hg : Memℒp g p μ) :
     UnifIntegrable (fun _ : ι => g) p μ := by
@@ -434,7 +413,7 @@ theorem unifIntegrable_subsingleton [Subsingleton ι] (hp_one : 1 ≤ p) (hp_top
     {f : ι → α → β} (hf : ∀ i, Memℒp (f i) p μ) : UnifIntegrable f p μ := by
   intro ε hε
   by_cases hι : Nonempty ι
-  · cases' hι with i
+  · obtain ⟨i⟩ := hι
     obtain ⟨δ, hδpos, hδ⟩ := (hf i).eLpNorm_indicator_le hp_one hp_top hε
     refine ⟨δ, hδpos, fun j s hs hμs => ?_⟩
     convert hδ s hs hμs
@@ -447,8 +426,6 @@ theorem unifIntegrable_fin (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {n : ℕ} {f 
   revert f
   induction' n with n h
   · intro f hf
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added this instance
-    have : Subsingleton (Fin Nat.zero) := subsingleton_fin_zero
     exact unifIntegrable_subsingleton hp_one hp_top hf
   intro f hfLp ε hε
   let g : Fin n → α → β := fun k => f k
@@ -499,9 +476,6 @@ theorem eLpNorm_sub_le_of_dist_bdd (μ : Measure α)
   rw [eLpNorm_indicator_const hs hp hp']
   refine mul_le_mul_right' (le_of_eq ?_) _
   rw [← ofReal_norm_eq_enorm, Real.norm_eq_abs, abs_of_nonneg hc]
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_sub_le_of_dist_bdd := eLpNorm_sub_le_of_dist_bdd
 
 /-- A sequence of uniformly integrable functions which converges μ-a.e. converges in Lp. -/
 theorem tendsto_Lp_finite_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
