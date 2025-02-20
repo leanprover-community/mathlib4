@@ -724,8 +724,7 @@ def maxNilpotentSubmodule :=
 
 instance maxNilpotentSubmoduleIsNilpotent [IsNoetherian R M] :
     IsNilpotent L (maxNilpotentSubmodule R L M) := by
-  have hwf := LieSubmodule.wellFoundedGT_of_noetherian R L M
-  rw [← CompleteLattice.isSupClosedCompact_iff_wellFoundedGT] at hwf
+  have hwf := CompleteLattice.WellFoundedGT.isSupClosedCompact (LieSubmodule R L M) inferInstance
   refine hwf { N : LieSubmodule R L M | IsNilpotent L N } ⟨⊥, ?_⟩ fun N₁ h₁ N₂ h₂ => ?_
   · simp [trivialIsNilpotent L]
   · rw [Set.mem_setOf_eq] at h₁ h₂
