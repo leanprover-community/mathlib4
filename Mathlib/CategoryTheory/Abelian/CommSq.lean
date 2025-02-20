@@ -19,7 +19,7 @@ v    v
 X₃ ⟶ X₄
 ```
 
-we consider the associated exact sequence `X₁ ⟶ X₂ ⊞ X₃ ⟶ X₄ ⟶ 0`.
+We study the associated exact sequence `X₁ ⟶ X₂ ⊞ X₃ ⟶ X₄ ⟶ 0`.
 
 -/
 
