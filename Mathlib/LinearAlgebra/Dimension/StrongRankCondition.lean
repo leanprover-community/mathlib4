@@ -278,7 +278,7 @@ theorem linearIndependent_le_span'' {ι : Type v} (v : ι → M) (i : LinearInde
     (s : span R w = ⊤) : #ι ≤ #w := by
   fapply card_le_of_injective'' (R := R)
   · apply Finsupp.linearCombination
-    exact fun i => Span.repr R w ⟨v i, s ▸ trivial⟩
+    exact fun i ↦ Span.repr R w ⟨v i, s ▸ trivial⟩
   · intro f g h
     apply_fun linearCombination R ((↑) : w → M) at h
     simp only [linearCombination_linearCombination, Submodule.coe_mk,
