@@ -4743,6 +4743,7 @@ import Mathlib.RingTheory.Ideal.Quotient.Index
 import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 import Mathlib.RingTheory.Ideal.Quotient.Noetherian
 import Mathlib.RingTheory.Ideal.Quotient.Operations
+import Mathlib.RingTheory.Ideal.Quotient.PowTransition
 import Mathlib.RingTheory.Ideal.Span
 import Mathlib.RingTheory.Idempotents
 import Mathlib.RingTheory.Int.Basic

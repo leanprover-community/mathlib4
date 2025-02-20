@@ -470,7 +470,7 @@ lemma IsCircuit.strong_elimination (hC₁ : M.IsCircuit C₁) (hC₂ : M.IsCircu
 /-- The circuit elimination axiom : for any pair of distinct isCircuits `C₁, C₂` and any `e`,
 some circuit is contained in `(C₁ ∪ C₂) \ {e}`.
 
-This is one of the axioms when definining a finitary matroid via circuits;
+This is one of the axioms when defining a finitary matroid via circuits;
 as an axiom, it is usually stated with the extra assumption that `e ∈ C₁ ∩ C₂`. -/
 lemma IsCircuit.elimination (hC₁ : M.IsCircuit C₁) (hC₂ : M.IsCircuit C₂) (h : C₁ ≠ C₂) (e : α) :
     ∃ C ⊆ (C₁ ∪ C₂) \ {e}, M.IsCircuit C := by
