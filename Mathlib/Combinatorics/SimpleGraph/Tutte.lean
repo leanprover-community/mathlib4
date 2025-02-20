@@ -10,7 +10,7 @@ import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
 import Mathlib.Data.Fintype.Card
 
 /-!
-# Tutte's theorem (work-in-progress)
+# Tutte's theorem (work in progress)
 
 ## Main definitions
 * `SimpleGraph.TutteViolator G u` is a set of vertices `u` which certifies non-existance of a
@@ -47,7 +47,7 @@ private lemma IsMatching.exists_verts_compl_subset_universalVerts [Fintype V]
       ∃ M : Subgraph G, M.verts = Subtype.val '' K.supp \ M1.verts ∧ M.IsMatching := by
     have : G.IsClique (Subtype.val '' K.supp \ M1.verts) :=
       ((h' K).of_induce).subset Set.diff_subset
-    rw [← this.even_iff_matches (Set.toFinite _), hM1.1]
+    rw [← this.even_iff_exists_isMatching (Set.toFinite _), hM1.1]
     exact even_ncard_supp_sdiff_rep_union _ ht hrep
   let M2 : Subgraph G := (⨆ (K : G.deleteUniversalVerts.coe.ConnectedComponent),
     (compMatching K).choose)
@@ -84,7 +84,7 @@ theorem IsPerfectMatching.exists_of_isClique_supp [Fintype V]
     G.deleteUniversalVerts.coe.IsClique K.supp) : ∃ (M : Subgraph G), M.IsPerfectMatching := by
   classical
   obtain ⟨M, ⟨hM, sub⟩⟩ := IsMatching.exists_verts_compl_subset_universalVerts h h'
-  obtain ⟨M', hM'⟩ := ((G.isClique_universalVerts.subset sub).even_iff_matches
+  obtain ⟨M', hM'⟩ := ((G.isClique_universalVerts.subset sub).even_iff_exists_isMatching
     (Set.toFinite _)).mp (by simpa [Set.even_ncard_compl_iff hveven, -Set.toFinset_card,
       ← Set.ncard_eq_toFinset_card'] using hM.even_card)
   use M ⊔ M'
