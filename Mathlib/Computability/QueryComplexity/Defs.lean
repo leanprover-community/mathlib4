@@ -49,7 +49,7 @@ to run, depending on the result of the query. -/
 inductive Comp (ι : I → Type*) (ω : {i : I} → ι i → Type*) (s : Set I) (α : Type*) : Type _ where
   /-- A pure value without any oracle interaction. -/
   | pure' : α → Comp ι ω s α
-  /-- An query to the permitted oracle `o` with input `i`, and a way to proceed with
+  /-- A query to the permitted oracle `o` with input `i`, and a way to proceed with
   computation for each possible return value. -/
   | query' : (o : I) → o ∈ s → (i : ι o) → (ω i → Comp ι ω s α) → Comp ι ω s α
 
@@ -70,8 +70,8 @@ instance : Monad (Comp ι ω s) where
 lemma pure'_eq : (pure' : α → Comp ι ω s α) = pure := rfl
 
 /-- Produce a `Comp` given the identifier of an oracle and a value to be queried.
-The `Comp` just returns `true` or `false` according to the answer of the oracle. -/
-def query (o : I) (y : ι o) : Comp ι ω {o} (ω y)  :=
+The `Comp` just returns the same answer the oracle gave. -/
+def query (o : I) (y : ι o) : Comp ι ω {o} (ω y) :=
   Comp.query' o (mem_singleton _) y pure
 
 variable [DecidableEq I]
