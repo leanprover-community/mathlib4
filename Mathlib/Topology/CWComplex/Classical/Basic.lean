@@ -56,7 +56,7 @@ namespace Topology
 
 /-- A CW complex of a topological space `X` relative to another subspace `D` is the data of its
 *`n`-cells* `cell n i` for each `n : ℕ` along with *attaching maps* that satisfy a number of
-properties with the most important being closure-finiteness (`mapsto`) and weak topology
+properties with the most important being closure-finiteness (`mapsTo`) and weak topology
 (`closed'`). Note that this definition requires `C` and `D` to be closed subspaces.
 If `C` is not closed choose `X` to be `C`. -/
 class RelCWComplex.{u} {X : Type u} [TopologicalSpace X] (C : Set X) (D : outParam (Set X)) where
@@ -81,7 +81,7 @@ class RelCWComplex.{u} {X : Type u} [TopologicalSpace X] (C : Set X) (D : outPar
   disjointBase' (n : ℕ) (i : cell n) : Disjoint (map n i '' ball 0 1) D
   /-- The boundary of a cell is contained in a finite union of closed cells of a lower dimension.
   Use `RelCWComplex.cellFrontier_subset_finite_closedCell` instead. -/
-  mapsto (n : ℕ) (i : cell n) : ∃ I : Π m, Finset (cell m),
+  mapsTo (n : ℕ) (i : cell n) : ∃ I : Π m, Finset (cell m),
     MapsTo (map n i) (sphere 0 1) (D ∪ ⋃ (m < n) (j ∈ I m), map m j '' closedBall 0 1)
   /-- A CW complex has weak topology, i.e. a set `A` in `X` is closed iff its intersection with
   every closed cell and `D` is closed. Use `RelCWComplex.closed` instead. -/
@@ -104,7 +104,7 @@ def CWComplex.mk.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
     (continuousOn_symm : ∀ (n : ℕ) (i : cell n), ContinuousOn (map n i).symm (map n i).target)
     (pairwiseDisjoint' :
       (univ : Set (Σ n, cell n)).PairwiseDisjoint (fun ni ↦ map ni.1 ni.2 '' ball 0 1))
-    (mapsto: ∀ n i, ∃ I : Π m, Finset (cell m),
+    (mapsTo: ∀ n i, ∃ I : Π m, Finset (cell m),
       MapsTo (map n i) (sphere 0 1) (⋃ (m < n) (j ∈ I m), map m j '' closedBall 0 1))
     (closed' : ∀ (A : Set X), (asubc : A ⊆ C) →
       (∀ n j, IsClosed (A ∩ map n j '' closedBall 0 1)) → IsClosed A)
@@ -116,7 +116,7 @@ def CWComplex.mk.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
   continuousOn_symm := continuousOn_symm
   pairwiseDisjoint' := pairwiseDisjoint'
   disjointBase' := by simp only [disjoint_empty, implies_true]
-  mapsto := by simpa only [empty_union]
+  mapsTo := by simpa only [empty_union]
   closed' := by simpa only [inter_empty, isClosed_empty, and_true]
   isClosedBase := isClosed_empty
   union' := by simpa only [empty_union]
@@ -139,14 +139,14 @@ def RelCWComplex.cellFrontier [RelCWComplex C D] (n : ℕ) (i : cell C n) : Set 
 
 namespace CWComplex
 
-export RelCWComplex (cell map source_eq continuousOn continuousOn_symm mapsto isClosedBase openCell
+export RelCWComplex (cell map source_eq continuousOn continuousOn_symm mapsTo isClosedBase openCell
   closedCell cellFrontier)
 
 end CWComplex
 
-lemma CWComplex.mapsto [CWComplex C] (n : ℕ) (i : cell C n) : ∃ I : Π m, Finset (cell C m),
+lemma CWComplex.mapsTo [CWComplex C] (n : ℕ) (i : cell C n) : ∃ I : Π m, Finset (cell C m),
     MapsTo (map n i) (sphere 0 1) (⋃ (m < n) (j ∈ I m), map m j '' closedBall 0 1) := by
-  have := RelCWComplex.mapsto n i
+  have := RelCWComplex.mapsTo n i
   simp_rw [empty_union] at this
   exact this
 
@@ -167,14 +167,14 @@ lemma RelCWComplex.disjoint_openCell_of_ne [RelCWComplex C D] {n m : ℕ} {i : c
 lemma RelCWComplex.cellFrontier_subset_base_union_finite_closedCell [RelCWComplex C D]
     (n : ℕ) (i : cell C n) : ∃ I : Π m, Finset (cell C m), cellFrontier n i ⊆
     D ∪ ⋃ (m < n) (j ∈ I m), closedCell m j := by
-  rcases mapsto n i with ⟨I, hI⟩
+  rcases mapsTo n i with ⟨I, hI⟩
   use I
   rw [mapsTo'] at hI
   exact hI
 
 lemma CWComplex.cellFrontier_subset_finite_closedCell [CWComplex C] (n : ℕ) (i : cell C n) :
     ∃ I : Π m, Finset (cell C m), cellFrontier n i ⊆ ⋃ (m < n) (j ∈ I m), closedCell m j := by
-  rcases RelCWComplex.mapsto n i with ⟨I, hI⟩
+  rcases RelCWComplex.mapsTo n i with ⟨I, hI⟩
   use I
   rw [mapsTo', empty_union] at hI
   exact hI
