@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 
 import Mathlib.CategoryTheory.MorphismProperty.Limits
+import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties
 import Mathlib.CategoryTheory.Abelian.CommSq
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 import Mathlib.CategoryTheory.Abelian.Monomorphisms
@@ -40,57 +41,15 @@ lemma Set.Iic.succ_eq {α : Type u} [PartialOrder α] [SuccOrder α] {j : α}
     · exfalso
       exact hk (fun x _ ↦ x.2))
 
+lemma _root_.Set.Iio.nonempty {J : Type w} [LinearOrder J] [OrderBot J]
+    (j : J) (hj : Order.IsSuccLimit j) : Nonempty (Set.Iio j) :=
+  ⟨⟨⊥, Ne.bot_lt (by simpa using hj.not_isMin)⟩⟩
+
 namespace CategoryTheory
 
 open Category Opposite Limits ZeroObject
 
-lemma IsFiltered.set_iio {J : Type w} [LinearOrder J] [OrderBot J]
-    (j : J) (hj : Order.IsSuccLimit j) : IsFiltered (Set.Iio j) := by
-  have : Nonempty (Set.Iio j) := ⟨⟨⊥, by
-    simp only [Set.mem_Iio]
-    by_contra!
-    simp only [le_bot_iff] at this
-    subst this
-    have := hj.not_isMin
-    simp at this⟩⟩
-  infer_instance
-
-noncomputable instance (o : Ordinal.{w}) : SuccOrder o.toType :=
-  SuccOrder.ofLinearWellFoundedLT o.toType
-
 variable {C : Type u} [Category.{v} C]
-
-section
-
-lemma Injective.hasLiftingProperty_of_isZero
-    {A B I Z : C} (i : A ⟶ B) [Mono i] [Injective I] (p : I ⟶ Z) (hZ : IsZero Z) :
-    HasLiftingProperty i p where
-  sq_hasLift {f g} sq := ⟨⟨{
-    l := Injective.factorThru f i
-    fac_right := hZ.eq_of_tgt _ _ }⟩⟩
-
-instance {A B I : C} (i : A ⟶ B)  [Mono i] [Injective I] [HasZeroObject C] (p : I ⟶ 0) :
-    HasLiftingProperty i (p : I ⟶ 0) :=
-  Injective.hasLiftingProperty_of_isZero i p (isZero_zero C)
-
-lemma injective_iff_rlp_of_isZero [HasZeroMorphisms C] {I Z : C} (p : I ⟶ Z) (hZ : IsZero Z) :
-    Injective I ↔ (MorphismProperty.monomorphisms C).rlp p := by
-  obtain rfl := hZ.eq_of_tgt p 0
-  constructor
-  · intro _ A B i (_ : Mono i)
-    exact Injective.hasLiftingProperty_of_isZero i 0 hZ
-  · intro h
-    constructor
-    intro A B f i hi
-    have := h _ hi
-    have sq : CommSq f i (0 : I ⟶ Z) 0 := ⟨by simp⟩
-    exact ⟨sq.lift, by simp⟩
-
-lemma injective_iff_monomorphisms_rlp_zero [HasZeroMorphisms C] [HasZeroObject C] (I : C) :
-    Injective I ↔ (MorphismProperty.monomorphisms C).rlp (0 : I ⟶ 0) :=
-  injective_iff_rlp_of_isZero _ (isZero_zero C)
-
-end
 
 namespace Subobject
 
@@ -340,7 +299,7 @@ noncomputable abbrev functor : J ⥤ C :=
 
 instance : (functor hG A₀ J).IsWellOrderContinuous where
   nonempty_isColimit m hm := ⟨by
-    have := IsFiltered.set_iio _ hm
+    have := Set.Iio.nonempty _ hm
     let c := (Set.principalSegIio m).cocone (functorToMonoOver hG A₀ J ⋙ MonoOver.forget _)
     have : Mono c.pt.hom := by dsimp [c]; infer_instance
     apply IsGrothendieckAbelian.isColimitMapCoconeOfSubobjectMkEqISup
@@ -480,7 +439,7 @@ instance enoughInjectives [IsGrothendieckAbelian.{w} C] :
     exact ⟨{
         f := fac.i
         injective := by
-          rw [injective_iff_monomorphisms_rlp_zero]
+          rw [injective_iff_rlp_monomorphisms_zero]
           convert fac.hp
           apply (isZero_zero C).eq_of_tgt
         mono := fac.hi
