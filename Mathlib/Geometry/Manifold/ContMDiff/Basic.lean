@@ -257,7 +257,7 @@ lemma contMDiff_of_discreteTopology [DiscreteTopology M] :
     ContMDiff I I' n f := by
   intro x
   -- f is locally constant, and constant functions are smooth.
-  apply contMDiff_const.contMDiffAt.congr_of_eventuallyEq
+  apply contMDiff_const (c := f x).contMDiffAt.congr_of_eventuallyEq
   simp [EventuallyEq]
 
 end const
