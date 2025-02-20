@@ -18,7 +18,6 @@ as local hypotheses and also works as a `conv` tactic. `push_neg` is a macro for
 
 namespace Mathlib.Tactic.Push
 
-
 universe u
 variable (p q : Prop) {α : Sort u} (s : α → Prop)
 
@@ -298,6 +297,5 @@ def elabPushTree : Elab.Command.CommandElab := fun stx => do
     logInfo m! "There are no `push` theorems for the key {headKey}"
 
 end DiscrTree
-
 
 end Mathlib.Tactic.Push
