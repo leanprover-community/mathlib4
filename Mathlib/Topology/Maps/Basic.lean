@@ -754,11 +754,6 @@ lemma of_continuous_injective_isClosedMap (h₁ : Continuous f) (h₂ : Injectiv
   refine ⟨(f '' sᶜ)ᶜ, (h₃ _ hs.isClosed_compl).isOpen_compl, ?_⟩
   rw [preimage_compl, preimage_image_eq _ h₂, compl_compl]
 
-lemma isClosedEmbedding_iff_continuous_injective_isClosedMap {f : X → Y} :
-    IsClosedEmbedding f ↔ Continuous f ∧ Injective f ∧ IsClosedMap f :=
-  ⟨fun h ↦ ⟨h.continuous, h.injective, h.isClosedMap⟩, fun h ↦
-    .of_continuous_injective_isClosedMap h.1 h.2.1 h.2.2⟩
-
 @[deprecated (since := "2024-10-20")]
 alias _root_.closedEmbedding_of_continuous_injective_closed :=
   IsClosedEmbedding.of_continuous_injective_isClosedMap
