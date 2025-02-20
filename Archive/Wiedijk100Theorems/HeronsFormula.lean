@@ -54,7 +54,7 @@ theorem heron {p₁ p₂ p₃ : P} (h1 : p₁ ≠ p₂) (h2 : p₃ ≠ p₂) :
   have numerator_nonneg : 0 ≤ numerator := by
     have frac_nonneg : 0 ≤ numerator / denominator :=
       (sub_nonneg.mpr (cos_sq_le_one γ)).trans_eq split_to_frac
-    cases' div_nonneg_iff.mp frac_nonneg with h h
+    rcases div_nonneg_iff.mp frac_nonneg with h | h
     · exact h.left
     · simpa [numerator, denominator, a, b, c, h1, h2] using le_antisymm h.right (sq_nonneg _)
   have ab2_nonneg : 0 ≤ 2 * a * b := by positivity

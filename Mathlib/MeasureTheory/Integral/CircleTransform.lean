@@ -81,7 +81,7 @@ theorem continuous_circleTransformDeriv {R : ℝ} (hR : 0 < R) {f : ℂ → E} {
   rw [circleTransformDeriv_eq]
   exact (continuous_circleMap_inv hw).smul (continuous_circleTransform hR hf hw)
 
-/-- A useful bound for circle integrals (with complex codomain)-/
+/-- A useful bound for circle integrals (with complex codomain) -/
 def circleTransformBoundingFunction (R : ℝ) (z : ℂ) (w : ℂ × ℝ) : ℂ :=
   circleTransformDeriv R z w.1 (fun _ => 1) w.2
 

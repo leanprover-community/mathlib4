@@ -397,7 +397,7 @@ def Nonnegg (c d : ℕ) : ℤ → ℤ → Prop
   | -[_+1], -[_+1] => False
 
 theorem nonnegg_comm {c d : ℕ} {x y : ℤ} : Nonnegg c d x y = Nonnegg d c y x := by
-  induction x <;> induction y <;> rfl
+  cases x <;> cases y <;> rfl
 
 theorem nonnegg_neg_pos {c d} : ∀ {a b : ℕ}, Nonnegg c d (-a) b ↔ SqLe a d b c
   | 0, b => ⟨by simp [SqLe, Nat.zero_le], fun _ => trivial⟩

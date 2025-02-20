@@ -119,7 +119,7 @@ theorem valuation_of_unit_eq (x : Rˣ) :
   rw [← WithZero.coe_inj, valuationOfNeZero_eq, Units.coe_map, eq_iff_le_not_lt]
   constructor
   · exact v.valuation_le_one x
-  · cases' x with x _ hx _
+  · obtain ⟨x, _, hx, _⟩ := x
     change ¬v.valuation (algebraMap R K x) < 1
     apply_fun v.intValuation at hx
     rw [map_one, map_mul] at hx

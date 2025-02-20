@@ -456,7 +456,7 @@ theorem integral_indicator_const [CompleteSpace E] (e : E) ⦃s : Set X⦄ (s_me
 @[simp]
 theorem integral_indicator_one ⦃s : Set X⦄ (hs : MeasurableSet s) :
     ∫ x, s.indicator 1 x ∂μ = (μ s).toReal :=
-  (integral_indicator_const 1 hs).trans ((smul_eq_mul _).trans (mul_one _))
+  (integral_indicator_const 1 hs).trans ((smul_eq_mul ..).trans (mul_one _))
 
 theorem setIntegral_indicatorConstLp [CompleteSpace E]
     {p : ℝ≥0∞} (hs : MeasurableSet s) (ht : MeasurableSet t) (hμt : μ t ≠ ∞) (e : E) :
@@ -540,6 +540,19 @@ theorem norm_setIntegral_le_of_norm_le_const {C : ℝ} (hs : μ s < ∞) (hC : �
 theorem norm_setIntegral_le_of_norm_le_const' {C : ℝ} (hs : μ s < ∞) (hsm : MeasurableSet s)
     (hC : ∀ x ∈ s, ‖f x‖ ≤ C) : ‖∫ x in s, f x ∂μ‖ ≤ C * (μ s).toReal :=
   norm_setIntegral_le_of_norm_le_const_ae'' hs hsm <| Eventually.of_forall hC
+
+theorem norm_integral_sub_setIntegral_le [IsFiniteMeasure μ] {C : ℝ}
+    (hf : ∀ᵐ (x : X) ∂μ, ‖f x‖ ≤ C) {s : Set X} (hs : MeasurableSet s) (hf1 : Integrable f μ) :
+    ‖∫ (x : X), f x ∂μ - ∫ x in s, f x ∂μ‖ ≤ (μ sᶜ).toReal * C := by
+  have h0 : ∫ (x : X), f x ∂μ - ∫ x in s, f x ∂μ = ∫ x in sᶜ, f x ∂μ := by
+    rw [sub_eq_iff_eq_add, add_comm, integral_add_compl hs hf1]
+  have h1 : ∫ x in sᶜ, ‖f x‖ ∂μ ≤ ∫ _ in sᶜ, C ∂μ :=
+    integral_mono_ae (Integrable.restrict (Integrable.norm hf1))
+      (integrable_const C) (ae_restrict_of_ae hf)
+  have h2 : ∫ _ in sᶜ, C ∂μ = (μ sᶜ).toReal * C := by
+    rw [setIntegral_const C, smul_eq_mul]
+  rw [h0, ← h2]
+  exact le_trans (norm_integral_le_integral_norm f) h1
 
 theorem setIntegral_eq_zero_iff_of_nonneg_ae {f : X → ℝ} (hf : 0 ≤ᵐ[μ.restrict s] f)
     (hfi : IntegrableOn f s μ) : ∫ x in s, f x ∂μ = 0 ↔ f =ᵐ[μ.restrict s] 0 :=

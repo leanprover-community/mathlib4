@@ -691,7 +691,7 @@ theorem raised_iff {n m} : Raised n m ↔ n ≤ m ∧ m ≤ n + 1 := by
     · exact Or.inr (le_antisymm h₂ h₁)
 
 theorem Raised.dist_le {n m} (H : Raised n m) : Nat.dist n m ≤ 1 := by
-  cases' raised_iff.1 H with H1 H2; rwa [Nat.dist_eq_sub_of_le H1, tsub_le_iff_left]
+  obtain ⟨H1, H2⟩ := raised_iff.1 H; rwa [Nat.dist_eq_sub_of_le H1, tsub_le_iff_left]
 
 theorem Raised.dist_le' {n m} (H : Raised n m) : Nat.dist m n ≤ 1 := by
   rw [Nat.dist_comm]; exact H.dist_le
@@ -1239,7 +1239,7 @@ theorem Valid'.glue_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' o
   cases' r with rs rl rx rr; · exact ⟨hl, rfl⟩
   dsimp [glue]; split_ifs
   · rw [splitMax_eq]
-    · cases' Valid'.eraseMax_aux hl with v e
+    · obtain ⟨v, e⟩ := Valid'.eraseMax_aux hl
       suffices H : _ by
         refine ⟨Valid'.balanceR v (hr.of_gt ?_ ?_) H, ?_⟩
         · refine findMax'_all (P := fun a : α => Bounded nil (a : WithTop α) o₂)
@@ -1250,7 +1250,7 @@ theorem Valid'.glue_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' o
       refine Or.inl ⟨_, Or.inr e, ?_⟩
       rwa [hl.2.eq_node'] at bal
   · rw [splitMin_eq]
-    · cases' Valid'.eraseMin_aux hr with v e
+    · obtain ⟨v, e⟩ := Valid'.eraseMin_aux hr
       suffices H : _ by
         refine ⟨Valid'.balanceL (hl.of_lt ?_ ?_) v H, ?_⟩
         · refine @findMin'_all (P := fun a : α => Bounded nil o₁ (a : WithBot α))
@@ -1302,7 +1302,7 @@ theorem Valid'.merge_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' 
         (sep.imp fun x h => h.1) with
       v e
     exact Valid'.merge_aux₁ hl hr h v e
-  · cases' IHlr hl.right (hr.of_gt hl.1.2.to_nil sep.2.1) sep.2.2 with v e
+  · obtain ⟨v, e⟩ := IHlr hl.right (hr.of_gt hl.1.2.to_nil sep.2.1) sep.2.2
     have := Valid'.merge_aux₁ hr.dual hl.dual h_1 v.dual
     rw [size_dual, add_comm, size_dual, ← dual_balanceR, ← Valid'.dual_iff, size_dual,
       add_comm rs] at this
@@ -1380,8 +1380,8 @@ theorem Valid'.map_aux {β} [Preorder β] {f : α → β} (f_strict_mono : Stric
     have t_ih_l' := t_ih_l h.left
     have t_ih_r' := t_ih_r h.right
     clear t_ih_l t_ih_r
-    cases' t_ih_l' with t_l_valid t_l_size
-    cases' t_ih_r' with t_r_valid t_r_size
+    obtain ⟨t_l_valid, t_l_size⟩ := t_ih_l'
+    obtain ⟨t_r_valid, t_r_size⟩ := t_ih_r'
     simp only [map, size_node, and_true]
     constructor
     · exact And.intro t_l_valid.ord t_r_valid.ord
@@ -1410,8 +1410,8 @@ theorem Valid'.erase_aux [DecidableRel (α := α) (· ≤ ·)] (x : α) {t a₁ 
     have t_ih_l' := t_ih_l h.left
     have t_ih_r' := t_ih_r h.right
     clear t_ih_l t_ih_r
-    cases' t_ih_l' with t_l_valid t_l_size
-    cases' t_ih_r' with t_r_valid t_r_size
+    obtain ⟨t_l_valid, t_l_size⟩ := t_ih_l'
+    obtain ⟨t_r_valid, t_r_size⟩ := t_ih_r'
     cases cmpLE x t_x <;> rw [h.sz.1]
     · suffices h_balanceable : _ by
         constructor
@@ -1421,7 +1421,7 @@ theorem Valid'.erase_aux [DecidableRel (α := α) (· ≤ ·)] (x : α) {t a₁ 
           exact t_l_size
       left; exists t_l.size; exact And.intro t_l_size h.bal.1
     · have h_glue := Valid'.glue h.left h.right h.bal.1
-      cases' h_glue with h_glue_valid h_glue_sized
+      obtain ⟨h_glue_valid, h_glue_sized⟩ := h_glue
       constructor
       · exact h_glue_valid
       · right; rw [h_glue_sized]
@@ -1452,24 +1452,24 @@ theorem size_erase_of_mem [DecidableRel (α := α) (· ≤ ·)] {x : α} {t a₁
     · have t_ih_l := t_ih_l' h_mem
       clear t_ih_l' t_ih_r'
       have t_l_h := Valid'.erase_aux x h.left
-      cases' t_l_h with t_l_valid t_l_size
+      obtain ⟨t_l_valid, t_l_size⟩ := t_l_h
       rw [size_balanceR t_l_valid.bal h.right.bal t_l_valid.sz h.right.sz
           (Or.inl (Exists.intro t_l.size (And.intro t_l_size h.bal.1)))]
       rw [t_ih_l, h.sz.1]
       have h_pos_t_l_size := pos_size_of_mem h.left.sz h_mem
-      revert h_pos_t_l_size; cases' t_l.size with t_l_size <;> intro h_pos_t_l_size
+      revert h_pos_t_l_size; rcases t_l.size with - | t_l_size <;> intro h_pos_t_l_size
       · cases h_pos_t_l_size
       · simp [Nat.add_right_comm]
     · rw [(Valid'.glue h.left h.right h.bal.1).2, h.sz.1]; rfl
     · have t_ih_r := t_ih_r' h_mem
       clear t_ih_l' t_ih_r'
       have t_r_h := Valid'.erase_aux x h.right
-      cases' t_r_h with t_r_valid t_r_size
+      obtain ⟨t_r_valid, t_r_size⟩ := t_r_h
       rw [size_balanceL h.left.bal t_r_valid.bal h.left.sz t_r_valid.sz
           (Or.inr (Exists.intro t_r.size (And.intro t_r_size h.bal.1)))]
       rw [t_ih_r, h.sz.1]
       have h_pos_t_r_size := pos_size_of_mem h.right.sz h_mem
-      revert h_pos_t_r_size; cases' t_r.size with t_r_size <;> intro h_pos_t_r_size
+      revert h_pos_t_r_size; rcases t_r.size with - | t_r_size <;> intro h_pos_t_r_size
       · cases h_pos_t_r_size
       · simp [Nat.add_assoc]
 

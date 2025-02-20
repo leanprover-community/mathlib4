@@ -109,7 +109,7 @@ theorem isBounded_convexHull {s : Set E} :
   simp only [Metric.isBounded_iff_ediam_ne_top, convexHull_ediam]
 
 instance (priority := 100) NormedSpace.instPathConnectedSpace : PathConnectedSpace E :=
-  TopologicalAddGroup.pathConnectedSpace
+  IsTopologicalAddGroup.pathConnectedSpace
 
 theorem Wbtw.dist_add_dist {x y z : P} (h : Wbtw ℝ x y z) :
     dist x y + dist y z = dist x z := by

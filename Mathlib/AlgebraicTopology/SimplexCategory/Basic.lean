@@ -1,151 +1,32 @@
 /-
 Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Kim Morrison, Adam Topaz
+Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
 -/
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.Linarith
-import Mathlib.CategoryTheory.Skeletal
+import Mathlib.AlgebraicTopology.SimplexCategory.Defs
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Order.Category.NonemptyFinLinOrd
-import Mathlib.CategoryTheory.Functor.ReflectsIso
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.Linarith
 
-/-! # The simplex category
+/-! # Basic properties of the simplex category
 
-We construct a skeletal model of the simplex category, with objects `ℕ` and the
-morphism `n ⟶ m` being the monotone maps from `Fin (n+1)` to `Fin (m+1)`.
+In `Mathlib.AlgebraicTopology.SimplexCategory.Defs`, we define the simplex
+category with objects `ℕ` and morphisms `n ⟶ m` the monotone maps from
+`Fin (n + 1)` to `Fin (m + 1)`.
 
-We show that this category is equivalent to `NonemptyFinLinOrd`.
-
-## Remarks
-
-The definitions `SimplexCategory` and `SimplexCategory.Hom` are marked as irreducible.
-
-We provide the following functions to work with these objects:
-1. `SimplexCategory.mk` creates an object of `SimplexCategory` out of a natural number.
-  Use the notation `⦋n⦌` in the `Simplicial` locale.
-2. `SimplexCategory.len` gives the "length" of an object of `SimplexCategory`, as a natural.
-3. `SimplexCategory.Hom.mk` makes a morphism out of a monotone map between `Fin`'s.
-4. `SimplexCategory.Hom.toOrderHom` gives the underlying monotone map associated to a
-  term of `SimplexCategory.Hom`.
-
+In this file, we define the generating maps for the simplex category, show that
+this category is equivalent to `NonemptyFinLinOrd`, and establish basic
+properties of its epimorphisms and monomorphisms.
 -/
-
 
 universe v
 
-open CategoryTheory CategoryTheory.Limits
-
-/-- The simplex category:
-* objects are natural numbers `n : ℕ`
-* morphisms from `n` to `m` are monotone functions `Fin (n+1) → Fin (m+1)`
--/
-def SimplexCategory :=
-  ℕ
+open Simplicial CategoryTheory Limits
 
 namespace SimplexCategory
 
-section
-
-
--- Porting note: the definition of `SimplexCategory` is made irreducible below
-/-- Interpret a natural number as an object of the simplex category. -/
-def mk (n : ℕ) : SimplexCategory :=
-  n
-
-/-- the `n`-dimensional simplex can be denoted `⦋n⦌` -/
-scoped[Simplicial] notation "⦋" n "⦌" => SimplexCategory.mk n
-
--- TODO: Make `len` irreducible.
-/-- The length of an object of `SimplexCategory`. -/
-def len (n : SimplexCategory) : ℕ :=
-  n
-
-@[ext]
-theorem ext (a b : SimplexCategory) : a.len = b.len → a = b :=
-  id
-
-attribute [irreducible] SimplexCategory
-
-open Simplicial
-
-@[simp]
-theorem len_mk (n : ℕ) : ⦋n⦌.len = n :=
-  rfl
-
-@[simp]
-theorem mk_len (n : SimplexCategory) : ⦋n.len⦌ = n :=
-  rfl
-
-/-- A recursor for `SimplexCategory`. Use it as `induction Δ using SimplexCategory.rec`. -/
-protected def rec {F : SimplexCategory → Sort*} (h : ∀ n : ℕ, F ⦋n⦌) : ∀ X, F X := fun n =>
-  h n.len
-
-/-- Morphisms in the `SimplexCategory`. -/
-protected def Hom (a b : SimplexCategory) :=
-  Fin (a.len + 1) →o Fin (b.len + 1)
-
-namespace Hom
-
-/-- Make a morphism in `SimplexCategory` from a monotone map of `Fin`'s. -/
-def mk {a b : SimplexCategory} (f : Fin (a.len + 1) →o Fin (b.len + 1)) : SimplexCategory.Hom a b :=
-  f
-
-/-- Recover the monotone map from a morphism in the simplex category. -/
-def toOrderHom {a b : SimplexCategory} (f : SimplexCategory.Hom a b) :
-    Fin (a.len + 1) →o Fin (b.len + 1) :=
-  f
-
-theorem ext' {a b : SimplexCategory} (f g : SimplexCategory.Hom a b) :
-    f.toOrderHom = g.toOrderHom → f = g :=
-  id
-
-attribute [irreducible] SimplexCategory.Hom
-
-@[simp]
-theorem mk_toOrderHom {a b : SimplexCategory} (f : SimplexCategory.Hom a b) : mk f.toOrderHom = f :=
-  rfl
-
-@[simp]
-theorem toOrderHom_mk {a b : SimplexCategory} (f : Fin (a.len + 1) →o Fin (b.len + 1)) :
-    (mk f).toOrderHom = f :=
-  rfl
-
-theorem mk_toOrderHom_apply {a b : SimplexCategory} (f : Fin (a.len + 1) →o Fin (b.len + 1))
-    (i : Fin (a.len + 1)) : (mk f).toOrderHom i = f i :=
-  rfl
-
-/-- Identity morphisms of `SimplexCategory`. -/
-@[simp]
-def id (a : SimplexCategory) : SimplexCategory.Hom a a :=
-  mk OrderHom.id
-
-/-- Composition of morphisms of `SimplexCategory`. -/
-@[simp]
-def comp {a b c : SimplexCategory} (f : SimplexCategory.Hom b c) (g : SimplexCategory.Hom a b) :
-    SimplexCategory.Hom a c :=
-  mk <| f.toOrderHom.comp g.toOrderHom
-
-end Hom
-
-instance smallCategory : SmallCategory.{0} SimplexCategory where
-  Hom n m := SimplexCategory.Hom n m
-  id _ := SimplexCategory.Hom.id _
-  comp f g := SimplexCategory.Hom.comp g f
-
-@[simp]
-lemma id_toOrderHom (a : SimplexCategory) :
-    Hom.toOrderHom (𝟙 a) = OrderHom.id := rfl
-
-@[simp]
-lemma comp_toOrderHom {a b c : SimplexCategory} (f : a ⟶ b) (g : b ⟶ c) :
-    (f ≫ g).toOrderHom = g.toOrderHom.comp f.toOrderHom := rfl
-
-@[ext]
-theorem Hom.ext {a b : SimplexCategory} (f g : a ⟶ b) :
-    f.toOrderHom = g.toOrderHom → f = g :=
-  Hom.ext' _ _
+section Init
 
 /-- The constant morphism from ⦋0⦌. -/
 def const (x y : SimplexCategory) (i : Fin (y.len + 1)) : x ⟶ y :=
@@ -212,7 +93,6 @@ theorem eq_of_one_to_one (f : ⦋1⦌ ⟶ ⦋1⦌) :
     rw [e0, e1] at this
     exact Not.elim (by decide) this
 
-
 /-- Make a morphism `⦋n⦌ ⟶ ⦋m⦌` from a monotone map between fin's.
 This is useful for constructing morphisms between `⦋n⦌` directly
 without identifying `n` with `⦋n⦌.len`.
@@ -221,7 +101,7 @@ without identifying `n` with `⦋n⦌.len`.
 def mkHom {n m : ℕ} (f : Fin (n + 1) →o Fin (m + 1)) : ⦋n⦌ ⟶ ⦋m⦌ :=
   SimplexCategory.Hom.mk f
 
-/-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out a specified `h : i ≤ j` in `Fin (n+1)`.-/
+/-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out a specified `h : i ≤ j` in `Fin (n+1)`. -/
 def mkOfLe {n} (i j : Fin (n+1)) (h : i ≤ j) : ⦋1⦌ ⟶ ⦋n⦌ :=
   SimplexCategory.mkHom {
     toFun := fun | 0 => i | 1 => j
@@ -234,15 +114,15 @@ def mkOfLe {n} (i j : Fin (n+1)) (h : i ≤ j) : ⦋1⦌ ⟶ ⦋n⦌ :=
 lemma mkOfLe_refl {n} (j : Fin (n + 1)) :
     mkOfLe j j (by omega) = ⦋1⦌.const ⦋n⦌ j := Hom.ext_one_left _ _
 
-/-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out the "diagonal composite" edge-/
+/-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out the "diagonal composite" edge -/
 def diag (n : ℕ) : ⦋1⦌ ⟶ ⦋n⦌ :=
   mkOfLe 0 n (Fin.zero_le _)
 
-/-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out the edge spanning the interval from `j` to `j + l`.-/
+/-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out the edge spanning the interval from `j` to `j + l`. -/
 def intervalEdge {n} (j l : ℕ) (hjl : j + l ≤ n) : ⦋1⦌ ⟶ ⦋n⦌ :=
   mkOfLe ⟨j, (by omega)⟩ ⟨j + l, (by omega)⟩ (Nat.le_add_right j l)
 
-/-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out the arrow `i ⟶ i+1` in `Fin (n+1)`.-/
+/-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out the arrow `i ⟶ i+1` in `Fin (n+1)`. -/
 def mkOfSucc {n} (i : Fin n) : ⦋1⦌ ⟶ ⦋n⦌ :=
   SimplexCategory.mkHom {
     toFun := fun | 0 => i.castSucc | 1 => i.succ
@@ -260,7 +140,7 @@ lemma mkOfSucc_homToOrderHom_one {n} (i : Fin n) :
     DFunLike.coe (F := Fin 2 →o Fin (n+1)) (Hom.toOrderHom (mkOfSucc i)) 1 = i.succ := rfl
 
 
-/-- The morphism `⦋2⦌ ⟶ ⦋n⦌` that picks out a specified composite of morphisms in `Fin (n+1)`.-/
+/-- The morphism `⦋2⦌ ⟶ ⦋n⦌` that picks out a specified composite of morphisms in `Fin (n+1)`. -/
 def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
     ⦋2⦌ ⟶ ⦋n⦌ :=
   SimplexCategory.mkHom {
@@ -272,7 +152,7 @@ def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
       | 0, 2, _ => Fin.le_trans h₁ h₂
   }
 
-/-- The "inert" morphism associated to a subinterval `j ≤ i ≤ j + l` of `Fin (n + 1)`.-/
+/-- The "inert" morphism associated to a subinterval `j ≤ i ≤ j + l` of `Fin (n + 1)`. -/
 def subinterval {n} (j l : ℕ) (hjl : j + l ≤ n) :
     ⦋l⦌ ⟶ ⦋n⦌ :=
   SimplexCategory.mkHom {
@@ -332,9 +212,7 @@ instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ ⦋0⦌) where
 theorem hom_zero_zero (f : ⦋0⦌ ⟶ ⦋0⦌) : f = 𝟙 _ := by
   apply Subsingleton.elim
 
-end
-
-open Simplicial
+end Init
 
 section Generators
 
@@ -344,7 +222,6 @@ section Generators
 TODO: prove that the simplex category is equivalent to
 one given by the following generators and relations.
 -/
-
 
 /-- The `i`-th face map from `⦋n⦌` to `⦋n+1⦌` -/
 def δ {n} (i : Fin (n + 2)) : ⦋n⦌ ⟶ ⦋n + 1⦌ :=
@@ -488,14 +365,17 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
     σ (Fin.castSucc i) ≫ σ j = σ j.succ ≫ σ i := by
   ext k : 3
   dsimp [σ]
-  cases' k using Fin.lastCases with k
-  · simp only [len_mk, Fin.predAbove_right_last]
-  · cases' k using Fin.cases with k
-    · rw [Fin.castSucc_zero, Fin.predAbove_of_le_castSucc _ 0 (Fin.zero_le _),
+  cases k using Fin.lastCases with
+  | last => simp only [len_mk, Fin.predAbove_right_last]
+  | cast k =>
+    cases k using Fin.cases with
+    | zero =>
+      rw [Fin.castSucc_zero, Fin.predAbove_of_le_castSucc _ 0 (Fin.zero_le _),
       Fin.predAbove_of_le_castSucc _ _ (Fin.zero_le _), Fin.castPred_zero,
       Fin.predAbove_of_le_castSucc _ 0 (Fin.zero_le _),
       Fin.predAbove_of_le_castSucc _ _ (Fin.zero_le _)]
-    · rcases le_or_lt i k with (h | h)
+    | succ k =>
+      rcases le_or_lt i k with (h | h)
       · simp_rw [Fin.predAbove_of_castSucc_lt i.castSucc _ (Fin.castSucc_lt_castSucc_iff.mpr
         (Fin.castSucc_lt_succ_iff.mpr h)), ← Fin.succ_castSucc, Fin.pred_succ,
         Fin.succ_predAbove_succ]
@@ -531,11 +411,13 @@ lemma factor_δ_spec {m n : ℕ} (f : ⦋m⦌ ⟶ ⦋n+1⦌) (j : Fin (n+2))
   ext k : 3
   specialize hj k
   dsimp [factor_δ, δ, σ]
-  cases' j using cases with j
-  · rw [predAbove_of_le_castSucc _ _ (zero_le _), castPred_zero, predAbove_of_castSucc_lt 0 _
+  cases j using cases with
+  | zero =>
+    rw [predAbove_of_le_castSucc _ _ (zero_le _), castPred_zero, predAbove_of_castSucc_lt 0 _
     (castSucc_zero ▸ pos_of_ne_zero hj),
     zero_succAbove, succ_pred]
-  · rw [predAbove_of_castSucc_lt 0 _ (castSucc_zero ▸ succ_pos _), pred_succ]
+  | succ j =>
+    rw [predAbove_of_castSucc_lt 0 _ (castSucc_zero ▸ succ_pos _), pred_succ]
     rcases hj.lt_or_lt with (hj | hj)
     · rw [predAbove_of_le_castSucc j _]
       swap
@@ -711,37 +593,6 @@ lemma isSkeletonOf :
     IsSkeletonOf NonemptyFinLinOrd SimplexCategory skeletalFunctor where
   skel := skeletal
   eqv := SkeletalFunctor.isEquivalence
-
-/-- The truncated simplex category. -/
-def Truncated (n : ℕ) :=
-  FullSubcategory fun a : SimplexCategory => a.len ≤ n
-
-instance (n : ℕ) : SmallCategory.{0} (Truncated n) :=
-  FullSubcategory.category _
-
-namespace Truncated
-
-instance {n} : Inhabited (Truncated n) :=
-  ⟨⟨⦋0⦌, by simp⟩⟩
-
-/-- The fully faithful inclusion of the truncated simplex category into the usual
-simplex category.
--/
-def inclusion (n : ℕ) : SimplexCategory.Truncated n ⥤ SimplexCategory :=
-  fullSubcategoryInclusion _
-
-instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Full := FullSubcategory.full _
-instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Faithful := FullSubcategory.faithful _
-
-/-- A proof that the full subcategory inclusion is fully faithful.-/
-noncomputable def inclusion.fullyFaithful (n : ℕ) :
-    (inclusion n : Truncated n ⥤ _).op.FullyFaithful := Functor.FullyFaithful.ofFullyFaithful _
-
-@[ext]
-theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
-    f.toOrderHom = g.toOrderHom → f = g := SimplexCategory.Hom.ext _ _
-
-end Truncated
 
 section Concrete
 
@@ -957,7 +808,7 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
 theorem eq_comp_δ_of_not_surjective {n : ℕ} {Δ : SimplexCategory} (θ : Δ ⟶ mk (n + 1))
     (hθ : ¬Function.Surjective θ.toOrderHom) :
     ∃ (i : Fin (n + 2)) (θ' : Δ ⟶ mk n), θ = θ' ≫ δ i := by
-  cases' not_forall.mp hθ with i hi
+  obtain ⟨i, hi⟩ := not_forall.mp hθ
   use i
   exact eq_comp_δ_of_not_surjective' θ i (not_exists.mp hi)
 

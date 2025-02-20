@@ -8,6 +8,8 @@ import Mathlib.Algebra.Module.ZMod
 import Mathlib.GroupTheory.Torsion
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.RingTheory.Coprime.Ideal
+import Mathlib.RingTheory.Finiteness.Defs
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Quotient.Defs
 import Mathlib.RingTheory.SimpleModule.Basic
 
@@ -760,7 +762,7 @@ theorem noZeroSMulDivisors_iff_torsion_eq_bot : NoZeroSMulDivisors R M ↔ torsi
     rw [eq_bot_iff]
     rintro x ⟨a, hax⟩
     change (a : R) • x = 0 at hax
-    cases' eq_zero_or_eq_zero_of_smul_eq_zero hax with h0 h0
+    rcases eq_zero_or_eq_zero_of_smul_eq_zero hax with h0 | h0
     · exfalso
       exact nonZeroDivisors.coe_ne_zero a h0
     · exact h0
@@ -792,7 +794,7 @@ theorem torsion_eq_bot : torsion R (M ⧸ torsion R M) = ⊥ :=
     Quotient.inductionOn' z fun x ⟨a, hax⟩ => by
       rw [Quotient.mk''_eq_mk, ← Quotient.mk_smul, Quotient.mk_eq_zero] at hax
       rw [mem_bot, Quotient.mk''_eq_mk, Quotient.mk_eq_zero]
-      cases' hax with b h
+      obtain ⟨b, h⟩ := hax
       exact ⟨b * a, (mul_smul _ _ _).trans h⟩
 
 instance noZeroSMulDivisors [IsDomain R] : NoZeroSMulDivisors R (M ⧸ torsion R M) :=

@@ -649,8 +649,6 @@ theorem Ideal.smithCoeffs_ne_zero (b : Basis ι R S) (I : Ideal S) (hI : I ≠ �
   refine Subtype.coe_injective ?_
   simp [hi]
 
--- Porting note: can be inferred in Lean 4 so no longer necessary
-
 end Ideal
 
 end SmithNormal

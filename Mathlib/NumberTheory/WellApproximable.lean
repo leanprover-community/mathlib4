@@ -23,14 +23,14 @@ where the rational number `m/n` is in lowest terms. The result is that for any `
 either almost all `x` or almost no `x`.
 
 This result was proved by Gallagher in 1959
-[P. Gallagher, *Approximation by reduced fractions*](Gallagher1961). It is formalised here as
+[P. Gallagher, *Approximation by reduced fractions*][Gallagher1961]. It is formalised here as
 `AddCircle.addWellApproximable_ae_empty_or_univ` except with `x` belonging to the circle `ℝ ⧸ ℤ`
 since this turns out to be more natural.
 
 Given a particular `δ`, the Duffin-Schaeffer conjecture (now a theorem) gives a criterion for
 deciding which of the two cases in the conclusion of Gallagher's theorem actually occurs. It was
 proved by Koukoulopoulos and Maynard in 2019
-[D. Koukoulopoulos, J. Maynard, *On the Duffin-Schaeffer conjecture*](KoukoulopoulosMaynard2020).
+[D. Koukoulopoulos, J. Maynard, *On the Duffin-Schaeffer conjecture*][KoukoulopoulosMaynard2020].
 We do *not* include a formalisation of the Koukoulopoulos-Maynard result here.
 
 ## Main definitions and results:

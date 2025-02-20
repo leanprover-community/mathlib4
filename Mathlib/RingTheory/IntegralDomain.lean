@@ -5,7 +5,9 @@ Authors: Johan Commelin, Chris Hughes
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.Data.Fintype.Inv
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Integral domains
@@ -182,7 +184,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
       apply hf
       ext g
       rw [MonoidHom.one_apply]
-      cases' hx ⟨f.toHomUnits g, g, rfl⟩ with n hn
+      obtain ⟨n, hn⟩ := hx ⟨f.toHomUnits g, g, rfl⟩
       rwa [Subtype.ext_iff, Units.ext_iff, Subtype.coe_mk, MonoidHom.coe_toHomUnits, one_pow,
         eq_comm] at hn
     replace hx1 : (x.val : R) - 1 ≠ 0 := -- Porting note: was `(x : R)`

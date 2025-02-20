@@ -170,15 +170,11 @@ theorem Absorbs.eventually_nhds_zero (h : Absorbs 𝕜 s t) (h₀ : 0 ∈ s) :
     ∀ᶠ c : 𝕜 in 𝓝 0, MapsTo (c • ·) t s :=
   (absorbs_iff_eventually_nhds_zero h₀).1 h
 
-end NormedDivisionRing
-
-section NormedField
-
-variable [NormedField 𝕜] [NormedRing 𝕝] [NormedSpace 𝕜 𝕝] [AddCommGroup E] [Module 𝕜 E]
-  [SMulWithZero 𝕝 E] [IsScalarTower 𝕜 𝕝 E] {s A : Set E} {x : E} {a b : 𝕜}
+variable [NormedRing 𝕝] [Module 𝕜 𝕝] [BoundedSMul 𝕜 𝕝] [SMulWithZero 𝕝 E] [IsScalarTower 𝕜 𝕝 E]
+  {a b : 𝕜} {x : E}
 
 /-- Scalar multiplication (by possibly different types) of a balanced set is monotone. -/
-theorem Balanced.smul_mono (hs : Balanced 𝕝 s) {a : 𝕝} {b : 𝕜} (h : ‖a‖ ≤ ‖b‖) : a • s ⊆ b • s := by
+theorem Balanced.smul_mono (hs : Balanced 𝕝 s) {a : 𝕝} (h : ‖a‖ ≤ ‖b‖) : a • s ⊆ b • s := by
   obtain rfl | hb := eq_or_ne b 0
   · rw [norm_zero, norm_le_zero_iff] at h
     simp only [h, ← image_smul, zero_smul, Subset.rfl]
@@ -188,7 +184,7 @@ theorem Balanced.smul_mono (hs : Balanced 𝕝 s) {a : 𝕝} {b : 𝕜} (h : ‖
         rw [norm_smul, norm_inv, ← div_eq_inv_mul]
         exact div_le_one_of_le₀ h (norm_nonneg _)
 
-theorem Balanced.smul_mem_mono [SMulCommClass 𝕝 𝕜 E] (hs : Balanced 𝕝 s) {a : 𝕜} {b : 𝕝}
+theorem Balanced.smul_mem_mono [SMulCommClass 𝕝 𝕜 E] (hs : Balanced 𝕝 s) {b : 𝕝}
     (ha : a • x ∈ s) (hba : ‖b‖ ≤ ‖a‖) : b • x ∈ s := by
   rcases eq_or_ne a 0 with rfl | ha₀
   · simp_all
@@ -199,18 +195,24 @@ theorem Balanced.smul_mem_mono [SMulCommClass 𝕝 𝕜 E] (hs : Balanced 𝕝 s
         exact div_le_one_of_le₀ hba (norm_nonneg _)
       (a⁻¹ • b) • a • x = b • x := by rw [smul_comm, smul_assoc, smul_inv_smul₀ ha₀]
 
-theorem Balanced.subset_smul (hA : Balanced 𝕜 A) (ha : 1 ≤ ‖a‖) : A ⊆ a • A := by
-  rw [← @norm_one 𝕜] at ha; simpa using hA.smul_mono ha
+theorem Balanced.subset_smul (hs : Balanced 𝕜 s) (ha : 1 ≤ ‖a‖) : s ⊆ a • s := by
+  rw [← @norm_one 𝕜] at ha; simpa using hs.smul_mono ha
 
-theorem Balanced.smul_congr (hs : Balanced 𝕜 A) (h : ‖a‖ = ‖b‖) : a • A = b • A :=
+theorem Balanced.smul_congr (hs : Balanced 𝕜 s) (h : ‖a‖ = ‖b‖) : a • s = b • s :=
   (hs.smul_mono h.le).antisymm (hs.smul_mono h.ge)
 
-theorem Balanced.smul_eq (hA : Balanced 𝕜 A) (ha : ‖a‖ = 1) : a • A = A :=
-  (hA _ ha.le).antisymm <| hA.subset_smul ha.ge
+theorem Balanced.smul_eq (hs : Balanced 𝕜 s) (ha : ‖a‖ = 1) : a • s = s :=
+  (hs _ ha.le).antisymm <| hs.subset_smul ha.ge
 
 /-- A balanced set absorbs itself. -/
-theorem Balanced.absorbs_self (hA : Balanced 𝕜 A) : Absorbs 𝕜 A A :=
-  .of_norm ⟨1, fun _ => hA.subset_smul⟩
+theorem Balanced.absorbs_self (hs : Balanced 𝕜 s) : Absorbs 𝕜 s s :=
+  .of_norm ⟨1, fun _ => hs.subset_smul⟩
+
+end NormedDivisionRing
+
+section NormedField
+
+variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s A : Set E} {x : E} {a b : 𝕜}
 
 theorem Balanced.smul_mem_iff (hs : Balanced 𝕜 s) (h : ‖a‖ = ‖b‖) : a • x ∈ s ↔ b • x ∈ s :=
   ⟨(hs.smul_mem_mono · h.ge), (hs.smul_mem_mono · h.le)⟩

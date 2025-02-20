@@ -64,7 +64,7 @@ theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
   IsLocalRing.of_nonunits_add
     (by
       intro x y hx hy hu
-      cases' isUnit_iff_exists_inv.1 hu with z hxyz
+      obtain ⟨z, hxyz⟩ := isUnit_iff_exists_inv.1 hu
       have : ∀ {r : R} {s : P.primeCompl}, mk' S r s ∈ nonunits S → r ∈ P := fun {r s} =>
         not_imp_comm.1 fun nr => isUnit_iff_exists_inv.2 ⟨mk' S ↑s (⟨r, nr⟩ : P.primeCompl),
           mk'_mul_mk'_eq_one' _ _ <| show r ∈ P.primeCompl from nr⟩

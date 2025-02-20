@@ -75,7 +75,7 @@ theorem verschiebungPoly_zero : verschiebungPoly 0 = 0 :=
 
 theorem aeval_verschiebung_poly' (x : 𝕎 R) (n : ℕ) :
     aeval x.coeff (verschiebungPoly n) = (verschiebungFun x).coeff n := by
-  cases' n with n
+  rcases n with - | n
   · simp only [verschiebungPoly, ite_true, map_zero, verschiebungFun_coeff_zero]
   · rw [verschiebungPoly, verschiebungFun_coeff_succ, if_neg n.succ_ne_zero, aeval_X,
       add_tsub_cancel_right]

@@ -114,7 +114,8 @@ lemma preservesFiniteLimits_of_preservesKernels [HasFiniteProducts C] [HasEquali
   letI := preservesEqualizers_of_preservesKernels F
   letI := preservesTerminalObject_of_preservesZeroMorphisms F
   letI := preservesLimitsOfShape_pempty_of_preservesTerminal F
-  letI : PreservesFiniteProducts F := ⟨preservesFiniteProducts_of_preserves_binary_and_terminal F⟩
+  letI : PreservesFiniteProducts F :=
+    ⟨fun _ ↦ preservesFiniteProducts_of_preserves_binary_and_terminal F _⟩
   exact preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts F
 
 end FiniteLimits
@@ -198,7 +199,8 @@ lemma preservesFiniteColimits_of_preservesCokernels [HasFiniteCoproducts C] [Has
   letI := preservesCoequalizers_of_preservesCokernels F
   letI := preservesInitialObject_of_preservesZeroMorphisms F
   letI := preservesColimitsOfShape_pempty_of_preservesInitial F
-  letI : PreservesFiniteCoproducts F := ⟨preservesFiniteCoproductsOfPreservesBinaryAndInitial F⟩
+  letI : PreservesFiniteCoproducts F :=
+    ⟨fun _ ↦ preservesFiniteCoproductsOfPreservesBinaryAndInitial F _⟩
   exact preservesFiniteColimits_of_preservesCoequalizers_and_finiteCoproducts F
 
 end FiniteColimits

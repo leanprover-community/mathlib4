@@ -1603,8 +1603,6 @@ Q1535225:
 
 Q1542114:
   title: Bézout's theorem
-  decl: Nat.gcd_eq_gcd_ab
-  authors: mathlib
 
 Q1543149:
   title: Sokhatsky–Weierstrass theorem
@@ -2832,6 +2830,10 @@ Q5125859:
 
 Q5127710:
   title: Clark–Ocone theorem
+
+Q513028:
+  title: Bézout's identity
+  decl: Nat.gcd_eq_gcd_ab
 
 Q5132839:
   title: Clifford's circle theorems

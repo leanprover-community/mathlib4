@@ -13,6 +13,7 @@ the same ideas, or similar results with a few minor differences. The file is div
 different general ideas.
 -/
 
+assert_not_exists RelIso
 
 namespace Set
 

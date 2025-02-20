@@ -21,7 +21,7 @@ namespace SeparationQuotient
 section VectorSpace
 
 variable (K E : Type*) [DivisionRing K] [AddCommGroup E] [Module K E]
-  [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul K E]
+  [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousConstSMul K E]
 
 /-- There exists a continuous `K`-linear map from `SeparationQuotient E` to `E`
 such that `mk (outCLM x) = x` for all `x`.

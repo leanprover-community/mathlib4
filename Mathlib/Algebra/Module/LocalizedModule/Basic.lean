@@ -44,7 +44,7 @@ variable (M : Type v) [AddCommMonoid M] [Module R M]
 variable (T : Type*) [CommSemiring T] [Algebra R T] [IsLocalization S T]
 
 /-- The equivalence relation on `M × S` where `(m1, s1) ≈ (m2, s2)` if and only if
-for some (u : S), u * (s2 • m1 - s1 • m2) = 0-/
+for some (u : S), u * (s2 • m1 - s1 • m2) = 0 -/
 def r (a b : M × S) : Prop :=
   ∃ u : S, u • b.2 • a.1 = u • a.2 • b.1
 
@@ -78,7 +78,7 @@ section
 
 variable {M S}
 
-/-- The canonical map sending `(m, s) ↦ m/s`-/
+/-- The canonical map sending `(m, s) ↦ m/s` -/
 def mk (m : M) (s : S) : LocalizedModule S M :=
   Quotient.mk' ⟨m, s⟩
 
@@ -235,8 +235,8 @@ instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
           on_goal 1 => rw [e₁, e₂]
           on_goal 2 => rw [eq_comm]
           all_goals
-            rw [smul_smul, mul_mul_mul_comm, ← smul_eq_mul, ← smul_eq_mul A, smul_smul_smul_comm,
-              mul_smul, mul_smul])
+            rw [smul_smul, mul_mul_mul_comm, ← smul_eq_mul, ← smul_eq_mul (α := A),
+              smul_smul_smul_comm, mul_smul, mul_smul])
     one := mk 1 (1 : S)
     one_mul := by
       rintro ⟨a, s⟩
@@ -1200,7 +1200,7 @@ variable (f₀ : M₀ →ₗ[R] M₀') [IsLocalizedModule S f₀]
 variable {M₁ M₁'} [AddCommMonoid M₁] [AddCommMonoid M₁'] [Module R M₁] [Module R M₁']
 variable (f₁ : M₁ →ₗ[R] M₁') [IsLocalizedModule S f₁]
 
-/-- Formula for `IsLocalizedModule.map` when each localized module is a `LocalizedModule`.-/
+/-- Formula for `IsLocalizedModule.map` when each localized module is a `LocalizedModule`. -/
 lemma map_LocalizedModules (g : M₀ →ₗ[R] M₁) (m : M₀) (s : S) :
     ((map S (mkLinearMap S M₀) (mkLinearMap S M₁)) g)
     (LocalizedModule.mk m s) = LocalizedModule.mk (g m) s := by

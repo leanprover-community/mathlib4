@@ -107,7 +107,7 @@ theorem compress_sdiff_sdiff (a b : α) : compress (a \ b) (b \ a) b = a := by
 theorem compress_idem (u v a : α) : compress u v (compress u v a) = compress u v a := by
   unfold compress
   split_ifs with h h'
-  · rw [le_sdiff_iff.1 h'.2, sdiff_bot, sdiff_bot, sup_assoc, sup_idem]
+  · rw [le_sdiff_right.1 h'.2, sdiff_bot, sdiff_bot, sup_assoc, sup_idem]
   · rfl
   · rfl
 
@@ -255,7 +255,7 @@ theorem mem_of_mem_compression (ha : a ∈ 𝓒 u v s) (hva : v ≤ a) (hvu : v 
   · exact ha.1
   unfold compress at h
   split_ifs at h
-  · rw [← h, le_sdiff_iff] at hva
+  · rw [← h, le_sdiff_right] at hva
     rwa [← h, hvu hva, hva, sup_bot_eq, sdiff_bot]
   · rwa [← h]
 

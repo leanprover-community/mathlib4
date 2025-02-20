@@ -5,6 +5,7 @@ Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.Algebra.ZeroOne.Prod
 
 /-!
 # Monoid, group etc structures on `M × N`
@@ -71,33 +72,6 @@ theorem one_mk_mul_one_mk [Monoid M] [Mul N] (b₁ b₂ : N) :
 theorem mk_one_mul_mk_one [Mul M] [Monoid N] (a₁ a₂ : M) :
     (a₁, (1 : N)) * (a₂, 1) = (a₁ * a₂, 1) := by
   rw [mk_mul_mk, mul_one]
-
-@[to_additive]
-instance instOne [One M] [One N] : One (M × N) :=
-  ⟨(1, 1)⟩
-
-@[to_additive (attr := simp)]
-theorem fst_one [One M] [One N] : (1 : M × N).1 = 1 :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem snd_one [One M] [One N] : (1 : M × N).2 = 1 :=
-  rfl
-
-@[to_additive]
-theorem one_eq_mk [One M] [One N] : (1 : M × N) = (1, 1) :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem mk_one_one [One M] [One N] : ((1 : M), (1 : N)) = 1 := rfl
-
-@[to_additive (attr := simp)]
-theorem mk_eq_one [One M] [One N] {x : M} {y : N} : (x, y) = 1 ↔ x = 1 ∧ y = 1 :=
-  mk.inj_iff
-
-@[to_additive (attr := simp)]
-theorem swap_one [One M] [One N] : (1 : M × N).swap = 1 :=
-  rfl
 
 @[to_additive]
 theorem fst_mul_snd [MulOneClass M] [MulOneClass N] (p : M × N) : (p.fst, 1) * (1, p.snd) = p :=
@@ -528,7 +502,7 @@ variable [CommMonoid P] (f : M →* P) (g : N →* P)
 
 /-- Coproduct of two `MonoidHom`s with the same codomain:
   `f.coprod g (p : M × N) = f p.1 * g p.2`.
-  (Commutative case; for the general case, see `MonoidHom.noncommCoprod`.)-/
+  (Commutative case; for the general case, see `MonoidHom.noncommCoprod`.) -/
 @[to_additive
     "Coproduct of two `AddMonoidHom`s with the same codomain:
     `f.coprod g (p : M × N) = f p.1 + g p.2`.

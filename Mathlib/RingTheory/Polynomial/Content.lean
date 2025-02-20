@@ -95,7 +95,7 @@ theorem content_X_mul {p : R[X]} : content (X * p) = content p := by
   have h : (X * p).support = p.support.map ⟨Nat.succ, Nat.succ_injective⟩ := by
     ext a
     simp only [exists_prop, Finset.mem_map, Function.Embedding.coeFn_mk, Ne, mem_support_iff]
-    cases' a with a
+    rcases a with - | a
     · simp [coeff_X_mul_zero, Nat.succ_ne_zero]
     rw [mul_comm, coeff_mul_X]
     constructor
@@ -287,7 +287,7 @@ theorem gcd_content_eq_of_dvd_sub {a : R} {p q : R[X]} (h : C a ∣ p - q) :
       (lt_of_le_of_lt (le_max_right _ _) (Nat.lt_succ_self _))]
   apply Finset.gcd_eq_of_dvd_sub
   intro x _
-  cases' h with w hw
+  obtain ⟨w, hw⟩ := h
   use w.coeff x
   rw [← coeff_sub, hw, coeff_C_mul]
 

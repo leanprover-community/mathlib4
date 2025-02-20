@@ -5,10 +5,6 @@ Authors: Chris Hughes, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Opposites
-import Mathlib.Data.FunLike.Basic
-import Mathlib.Logic.Embedding.Basic
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Tactic.Spread
 
 /-!
@@ -57,8 +53,23 @@ variable {M N G H α β γ δ : Type*}
 @[to_additive "See also `AddMonoid.toAddAction`"]
 instance (priority := 910) Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
 
+/-- Like `Mul.toSMul`, but multiplies on the right.
+
+See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWithZero`. -/
+@[to_additive "Like `Add.toVAdd`, but adds on the right.
+
+  See also `AddMonoid.toOppositeAddAction`."]
+instance (priority := 910) Mul.toSMulMulOpposite (α : Type*) [Mul α] : SMul αᵐᵒᵖ α where
+  smul a b := b * a.unop
+
 @[to_additive (attr := simp)]
-lemma smul_eq_mul (α : Type*) [Mul α] {a a' : α} : a • a' = a * a' := rfl
+lemma smul_eq_mul {α : Type*} [Mul α] (a b : α) : a • b = a * b := rfl
+
+@[to_additive]
+lemma op_smul_eq_mul {α : Type*} [Mul α] (a b : α) : MulOpposite.op a • b = b * a := rfl
+
+@[to_additive (attr := simp)]
+lemma MulOpposite.smul_eq_mul_unop [Mul α] (a : αᵐᵒᵖ) (b : α) : a • b = b * a.unop := rfl
 
 /-- Type class for additive monoid actions. -/
 class AddAction (G : Type*) (P : Type*) [AddMonoid G] extends VAdd G P where
@@ -444,19 +455,6 @@ lemma SMulCommClass.of_commMonoid
     rw [← one_smul G (s • x), ← smul_assoc, ← one_smul G x, ← smul_assoc s 1 x,
       smul_comm, smul_assoc, one_smul, smul_assoc, one_smul]
 
-namespace MulAction
-
-variable (M α) in
-/-- Embedding of `α` into functions `M → α` induced by a multiplicative action of `M` on `α`. -/
-@[to_additive
-"Embedding of `α` into functions `M → α` induced by an additive action of `M` on `α`."]
-def toFun : α ↪ M → α :=
-  ⟨fun y x ↦ x • y, fun y₁ y₂ H ↦ one_smul M y₁ ▸ one_smul M y₂ ▸ by convert congr_fun H 1⟩
-
-@[to_additive (attr := simp)]
-lemma toFun_apply (x : M) (y : α) : MulAction.toFun M α y x = x • y := rfl
-
-end MulAction
 end
 
 section CompatibleScalar

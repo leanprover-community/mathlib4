@@ -822,8 +822,10 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
 
 /-- The disjoint union of two `C^n` manifolds modelled on `(E, H)`
 is a `C^n` manifold modeled on `(E, H)`. -/
-instance disjointUnion [Nonempty H] : IsManifold I n (M ⊕ M') where
+instance disjointUnion : IsManifold I n (M ⊕ M') where
   compatible {e} e' he he' := by
+    obtain (h | h) := isEmpty_or_nonempty H
+    · exact ContDiffGroupoid.mem_of_source_eq_empty _ (eq_empty_of_isEmpty _)
     obtain (⟨f, hf, hef⟩ | ⟨f, hf, hef⟩) := ChartedSpace.mem_atlas_sum he
     · obtain (⟨f', hf', he'f'⟩ | ⟨f', hf', he'f'⟩) := ChartedSpace.mem_atlas_sum he'
       · rw [hef, he'f', f.lift_openEmbedding_trans f' IsOpenEmbedding.inl]
@@ -904,7 +906,7 @@ def TangentSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
     {M : Type*} [TopologicalSpace M] [ChartedSpace H M] (_x : M) : Type u := E
--- Porting note: was deriving TopologicalSpace, AddCommGroup, TopologicalAddGroup
+-- Porting note: was deriving TopologicalSpace, AddCommGroup, IsTopologicalAddGroup
 
 /- In general, the definition of `TangentSpace` is not reducible, so that type class inference
 does not pick wrong instances. We record the right instances for them. -/
@@ -916,7 +918,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 instance : TopologicalSpace (TangentSpace I x) := inferInstanceAs (TopologicalSpace E)
 instance : AddCommGroup (TangentSpace I x) := inferInstanceAs (AddCommGroup E)
-instance : TopologicalAddGroup (TangentSpace I x) := inferInstanceAs (TopologicalAddGroup E)
+instance : IsTopologicalAddGroup (TangentSpace I x) := inferInstanceAs (IsTopologicalAddGroup E)
 instance : Module 𝕜 (TangentSpace I x) := inferInstanceAs (Module 𝕜 E)
 instance : Inhabited (TangentSpace I x) := ⟨0⟩
 

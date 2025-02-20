@@ -69,12 +69,12 @@ instance : Functor.ReflectsIsomorphisms (functorToAction F) where
     isIso_of_reflects_iso f F
 
 noncomputable instance : PreservesFiniteCoproducts (functorToAction F) :=
-  ⟨fun J _ ↦ Action.preservesColimitsOfShape_of_preserves (functorToAction F)
-    (inferInstanceAs <| PreservesColimitsOfShape (Discrete J) F)⟩
+  ⟨fun _ ↦ Action.preservesColimitsOfShape_of_preserves (functorToAction F)
+    (inferInstanceAs <| PreservesColimitsOfShape (Discrete _) F)⟩
 
 noncomputable instance : PreservesFiniteProducts (functorToAction F) :=
-  ⟨fun J _ ↦ Action.preservesLimitsOfShape_of_preserves (functorToAction F)
-    (inferInstanceAs <| PreservesLimitsOfShape (Discrete J) F)⟩
+  ⟨fun _ ↦ Action.preservesLimitsOfShape_of_preserves (functorToAction F)
+    (inferInstanceAs <| PreservesLimitsOfShape (Discrete _) F)⟩
 
 noncomputable instance (G : Type*) [Group G] [Finite G] :
     PreservesColimitsOfShape (SingleObj G) (functorToAction F) :=

@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
-import Mathlib.Data.Int.ModEq
+import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.Prime.Defs
@@ -19,9 +19,7 @@ import Mathlib.Data.Nat.Prime.Defs
     prime characteristic `p`)
 -/
 
-assert_not_exists Field Finset
-
-open Set
+assert_not_exists Field Finset OrderHom
 
 variable (R : Type*)
 
@@ -52,12 +50,6 @@ lemma cast_eq_zero_iff (a : ℕ) : (a : R) = 0 ↔ p ∣ a := cast_eq_zero_iff' 
 variable {R} in
 lemma congr {q : ℕ} (h : p = q) : CharP R q := h ▸ ‹CharP R p›
 
-lemma natCast_eq_natCast' (h : a ≡ b [MOD p]) : (a : R) = b := by
-  wlog hle : a ≤ b
-  · exact (this R p h.symm (le_of_not_le hle)).symm
-  rw [Nat.modEq_iff_dvd' hle] at h
-  rw [← Nat.sub_add_cancel hle, Nat.cast_add, (cast_eq_zero_iff R p _).mpr h, zero_add]
-
 @[simp] lemma cast_eq_zero : (p : R) = 0 := (cast_eq_zero_iff R p p).2 dvd_rfl
 
 -- TODO: This lemma needs to be `@[simp]` for confluence in the presence of `CharP.cast_eq_zero` and
@@ -67,24 +59,12 @@ lemma natCast_eq_natCast' (h : a ≡ b [MOD p]) : (a : R) = b := by
 -- @[simp]
 lemma ofNat_eq_zero [p.AtLeastTwo] : (ofNat(p) : R) = 0 := cast_eq_zero R p
 
-lemma natCast_eq_natCast_mod (a : ℕ) : (a : R) = a % p :=
-  natCast_eq_natCast' R p (Nat.mod_modEq a p).symm
-
 lemma eq {p q : ℕ} (_hp : CharP R p) (_hq : CharP R q) : p = q :=
   Nat.dvd_antisymm ((cast_eq_zero_iff R p q).1 (cast_eq_zero _ _))
     ((cast_eq_zero_iff R q p).1 (cast_eq_zero _ _))
 
 instance ofCharZero [CharZero R] : CharP R 0 where
   cast_eq_zero_iff' x := by rw [zero_dvd_iff, ← Nat.cast_zero, Nat.cast_inj]
-
-variable [IsRightCancelAdd R]
-
-lemma natCast_eq_natCast : (a : R) = b ↔ a ≡ b [MOD p] := by
-  wlog hle : a ≤ b
-  · rw [eq_comm, this R p (le_of_not_le hle), Nat.ModEq.comm]
-  rw [Nat.modEq_iff_dvd' hle, ← cast_eq_zero_iff R p (b - a),
-    ← add_right_cancel_iff (G := R) (a := a) (b := b - a), zero_add, ← Nat.cast_add,
-    Nat.sub_add_cancel hle, eq_comm]
 
 end AddMonoidWithOne
 
@@ -99,12 +79,6 @@ lemma intCast_eq_zero_iff (a : ℤ) : (a : R) = 0 ↔ (p : ℤ) ∣ a := by
   · simp only [Int.cast_zero, eq_self_iff_true, Int.dvd_zero]
   · lift a to ℕ using le_of_lt h with b
     rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
-
-lemma intCast_eq_intCast : (a : R) = b ↔ a ≡ b [ZMOD p] := by
-  rw [eq_comm, ← sub_eq_zero, ← Int.cast_sub, CharP.intCast_eq_zero_iff R p, Int.modEq_iff_dvd]
-
-lemma intCast_eq_intCast_mod : (a : R) = a % (p : ℤ) :=
-  (CharP.intCast_eq_intCast R p).mpr (Int.mod_modEq a p).symm
 
 lemma charP_to_charZero [CharP R 0] : CharZero R :=
   charZero_of_inj_zero fun n h0 => eq_zero_of_zero_dvd ((cast_eq_zero_iff R 0 n).mp h0)

@@ -312,7 +312,7 @@ noncomputable section norm
 variable {K}
 
 open scoped Classical in
-/-- The norm at the infinite place `w` of an element of the mixed space. --/
+/-- The norm at the infinite place `w` of an element of the mixed space -/
 def normAtPlace (w : InfinitePlace K) : (mixedSpace K) →*₀ ℝ where
   toFun x := if hw : IsReal w then ‖x.1 ⟨w, hw⟩‖ else ‖x.2 ⟨w, not_isReal_iff_isComplex.mp hw⟩‖
   map_zero' := by simp

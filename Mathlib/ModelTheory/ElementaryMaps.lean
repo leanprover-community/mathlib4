@@ -186,8 +186,8 @@ theorem refl_apply (x : M) : refl L M x = x :=
 def comp (hnp : N ↪ₑ[L] P) (hmn : M ↪ₑ[L] N) : M ↪ₑ[L] P where
   toFun := hnp ∘ hmn
   map_formula' n φ x := by
-    cases' hnp with _ hhnp
-    cases' hmn with _ hhmn
+    obtain ⟨_, hhnp⟩ := hnp
+    obtain ⟨_, hhmn⟩ := hmn
     erw [hhnp, hhmn]
 
 @[simp]

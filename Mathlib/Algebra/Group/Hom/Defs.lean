@@ -879,7 +879,7 @@ def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M)
       _ = g x * g y := h₁ _
 
 /-- If `M` and `N` have multiplications, `f : M →ₙ* N` is a surjective multiplicative map,
-and `M` is commutative, then `N` is commutative. --/
+and `M` is commutative, then `N` is commutative. -/
 @[to_additive
 "If `M` and `N` have additions, `f : M →ₙ+ N` is a surjective additive map,
 and `M` is commutative, then `N` is commutative."]

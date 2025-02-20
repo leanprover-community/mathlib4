@@ -170,7 +170,7 @@ theorem abs_le_abs_re_add_abs_im (z : ℂ) : Complex.abs z ≤ |z.re| + |z.im| :
   simpa [re_add_im] using Complex.abs.add_le z.re (z.im * I)
 
 theorem abs_le_sqrt_two_mul_max (z : ℂ) : Complex.abs z ≤ Real.sqrt 2 * max |z.re| |z.im| := by
-  cases' z with x y
+  obtain ⟨x, y⟩ := z
   simp only [abs_apply, normSq_mk, ← sq]
   by_cases hle : |x| ≤ |y|
   · calc
@@ -243,7 +243,7 @@ theorem equiv_limAux (f : CauSeq ℂ Complex.abs) :
   (CauSeq.equiv_lim ⟨_, isCauSeq_re f⟩ _ (half_pos ε0))
         (CauSeq.equiv_lim ⟨_, isCauSeq_im f⟩ _ (half_pos ε0))).imp
     fun _ H j ij => by
-    cases' H _ ij with H₁ H₂
+    obtain ⟨H₁, H₂⟩ := H _ ij
     apply lt_of_le_of_lt (abs_le_abs_re_add_abs_im _)
     dsimp [limAux] at *
     have := add_lt_add H₁ H₂

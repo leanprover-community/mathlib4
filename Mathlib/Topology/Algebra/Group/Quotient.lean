@@ -108,18 +108,18 @@ theorem nhds_one_isCountablyGenerated [FirstCountableTopology G] [N.Normal] :
 
 end ContinuousMul
 
-variable [TopologicalGroup G] (N : Subgroup G)
+variable [IsTopologicalGroup G] (N : Subgroup G)
 
 @[to_additive]
-instance instTopologicalGroup [N.Normal] : TopologicalGroup (G ⧸ N) where
+instance instIsTopologicalGroup [N.Normal] : IsTopologicalGroup (G ⧸ N) where
   continuous_mul := by
     rw [← (isOpenQuotientMap_mk.prodMap isOpenQuotientMap_mk).continuous_comp_iff]
     exact continuous_mk.comp continuous_mul
   continuous_inv := continuous_inv.quotient_map' _
 
 @[to_additive (attr := deprecated "No deprecation message was provided." (since := "2024-08-05"))]
-theorem _root_.topologicalGroup_quotient [N.Normal] : TopologicalGroup (G ⧸ N) :=
-  instTopologicalGroup N
+theorem _root_.topologicalGroup_quotient [N.Normal] : IsTopologicalGroup (G ⧸ N) :=
+  instIsTopologicalGroup N
 
 @[to_additive]
 theorem isClosedMap_coe {H : Subgroup G} (hH : IsCompact (H : Set G)) :
@@ -131,7 +131,7 @@ theorem isClosedMap_coe {H : Subgroup G} (hH : IsCompact (H : Set G)) :
 @[to_additive]
 instance instT3Space [N.Normal] [hN : IsClosed (N : Set G)] : T3Space (G ⧸ N) := by
   rw [← QuotientGroup.ker_mk' N] at hN
-  haveI := TopologicalGroup.t1Space (G ⧸ N) ((isQuotientMap_mk N).isClosed_preimage.mp hN)
+  haveI := IsTopologicalGroup.t1Space (G ⧸ N) ((isQuotientMap_mk N).isClosed_preimage.mp hN)
   infer_instance
 
 end QuotientGroup
