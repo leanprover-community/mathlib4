@@ -96,8 +96,6 @@ simproc_decl Ico_nat (Ico _ _) := fun e ↦ do
   | 0 =>
     return .done { expr := (q(∅) : Q(Finset ℕ)), proof? := q(Ico_zero $em) }
   | n + 1 =>
-    have en' := mkRawNatLitQq n
-    have : $en =Q $en' + 1 := ⟨⟩
     let hn := q(isNat_natPred $hn rfl)
     let ⟨s, p⟩ ← evalFinsetIccNat m n hm hn
     return .done { expr := s, proof? := q(Ico_eq_of_Icc_pred_eq (Nat.succ_ne_zero _) $p) }
@@ -154,8 +152,6 @@ simproc_decl Iio_nat (Iio _) := fun e ↦ do
   | 0 =>
     return .done { expr := (q(∅) : Q(Finset ℕ)), proof? := q(Iio_zero) }
   | n + 1 =>
-    have en' := mkRawNatLitQq n
-    have : $en =Q $en' + 1 := ⟨⟩
     let hn := q(isNat_natPred $hn rfl)
     let ⟨s, p⟩ ← evalFinsetIccNat 0 n q(isNat_zero' _) hn
     return .done { expr := s, proof? := q(Iio_eq_of_Icc_zero_pred_eq (Nat.succ_ne_zero _) $p) }
