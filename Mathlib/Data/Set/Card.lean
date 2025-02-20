@@ -904,9 +904,9 @@ theorem eq_univ_iff_ncard [Finite α] (s : Set α) :
 
 lemma even_ncard_compl_iff [Fintype α] (heven : Even (Fintype.card α)) (s : Set α) :
   Even sᶜ.ncard ↔ Even s.ncard := by
-  simp [Set.compl_eq_univ_diff, Set.ncard_diff (Set.subset_univ _ : s ⊆ Set.univ),
-    Nat.even_sub (Set.ncard_le_ncard (Set.subset_univ _ : s ⊆ Set.univ)),
-    (Set.ncard_univ _).symm ▸ (Fintype.card_eq_nat_card ▸ heven)]
+  simp [compl_eq_univ_diff, ncard_diff (subset_univ _ : s ⊆ Set.univ),
+    Nat.even_sub (ncard_le_ncard (subset_univ _ : s ⊆ Set.univ)),
+    (ncard_univ _).symm ▸ (Fintype.card_eq_nat_card ▸ heven)]
 
 lemma odd_ncard_compl_iff [Fintype α] (heven : Even (Fintype.card α)) (s : Set α) :
   Odd sᶜ.ncard ↔ Odd s.ncard := by

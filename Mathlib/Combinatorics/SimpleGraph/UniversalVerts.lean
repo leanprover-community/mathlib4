@@ -59,11 +59,12 @@ lemma disjoint_image_val_universalVerts (s : Set G.deleteUniversalVerts.verts) :
 
 /-- In this lemma we consider components after deleting universal vertices. If we take
 one such component and remove both a set of representatives of odd components and a subset
-of -/
-lemma even_ncard_supp_sdiff_rep_union {t : Set V} {s : Set G.deleteUniversalVerts.verts}
-    (K : G.deleteUniversalVerts.coe.ConnectedComponent) (h : t ⊆ G.universalVerts)
+of universal vertices, then an even number of vertices remain. -/
+lemma even_ncard_image_val_supp_sdiff_image_val_rep_union {t : Set V}
+    {s : Set G.deleteUniversalVerts.verts} (K : G.deleteUniversalVerts.coe.ConnectedComponent)
+    (h : t ⊆ G.universalVerts)
     (hrep : ConnectedComponent.Represents s G.deleteUniversalVerts.coe.oddComponents) :
-  Even ((Subtype.val '' K.supp) \ (Subtype.val '' s ∪ t)).ncard := by
+    Even (Subtype.val '' K.supp \ (Subtype.val '' s ∪ t)).ncard := by
   simp only [← Set.diff_inter_diff, ← Set.image_diff Subtype.val_injective,
     sdiff_eq_left.mpr <| Set.disjoint_of_subset_right h (disjoint_image_val_universalVerts _),
     Set.inter_diff_distrib_right, Set.inter_self, Set.diff_inter_self_eq_diff,

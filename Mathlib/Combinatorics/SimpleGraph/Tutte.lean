@@ -28,12 +28,12 @@ def TutteViolator (G: SimpleGraph V) (u : Set V) : Prop :=
 /-- This lemma states that a graph in which the universal vertices do not violate the
 Tutte-condition, if the graph decomposes into cliques, there exists a matching that covers
 everything except some universal vertices. It is marked private, because
-it is strickly weaker than `IsPerfectMatching.exists_of_isClique_supp` -/
+it is strictly weaker than `IsPerfectMatching.exists_of_isClique_supp` -/
 private lemma IsMatching.exists_verts_compl_subset_universalVerts [Fintype V]
     (h : ¬TutteViolator G G.universalVerts)
     (h' : ∀ (K : G.deleteUniversalVerts.coe.ConnectedComponent),
     G.deleteUniversalVerts.coe.IsClique K.supp) :
-    ∃ (M : Subgraph G), M.IsMatching ∧ M.vertsᶜ ⊆ G.universalVerts := by
+    ∃ M : Subgraph G, M.IsMatching ∧ M.vertsᶜ ⊆ G.universalVerts := by
   classical
   have hrep := ConnectedComponent.Represents.image_out
       G.deleteUniversalVerts.coe.oddComponents
@@ -48,17 +48,17 @@ private lemma IsMatching.exists_verts_compl_subset_universalVerts [Fintype V]
     have : G.IsClique (Subtype.val '' K.supp \ M1.verts) :=
       ((h' K).of_induce).subset Set.diff_subset
     rw [← this.even_iff_exists_isMatching (Set.toFinite _), hM1.1]
-    exact even_ncard_supp_sdiff_rep_union _ ht hrep
-  let M2 : Subgraph G := (⨆ (K : G.deleteUniversalVerts.coe.ConnectedComponent),
-    (compMatching K).choose)
+    exact even_ncard_image_val_supp_sdiff_image_val_rep_union _ ht hrep
+  let M2 : Subgraph G := ⨆ (K : G.deleteUniversalVerts.coe.ConnectedComponent),
+    (compMatching K).choose
   have hM2 : M2.IsMatching := by
     apply Subgraph.IsMatching.iSup (fun c ↦ (compMatching c).choose_spec.2) (fun i j hij ↦ ?_)
     rw [(compMatching i).choose_spec.2.support_eq_verts,
         (compMatching j).choose_spec.2.support_eq_verts,
         (compMatching i).choose_spec.1, (compMatching j).choose_spec.1]
-    exact Set.disjoint_of_subset (Set.diff_subset) (Set.diff_subset) <|
-      Set.disjoint_image_of_injective Subtype.val_injective
-        (SimpleGraph.pairwise_disjoint_supp_connectedComponent _ hij)
+    exact Set.disjoint_of_subset Set.diff_subset Set.diff_subset <|
+      Set.disjoint_image_of_injective Subtype.val_injective <|
+        SimpleGraph.pairwise_disjoint_supp_connectedComponent _ hij
   have disjointM12 : Disjoint M1.support M2.support := by
     rw [hM1.2.support_eq_verts, hM2.support_eq_verts, Subgraph.verts_iSup,
       Set.disjoint_iUnion_right]
@@ -83,14 +83,14 @@ theorem IsPerfectMatching.exists_of_isClique_supp [Fintype V]
     (h' : ∀ (K : G.deleteUniversalVerts.coe.ConnectedComponent),
     G.deleteUniversalVerts.coe.IsClique K.supp) : ∃ (M : Subgraph G), M.IsPerfectMatching := by
   classical
-  obtain ⟨M, ⟨hM, sub⟩⟩ := IsMatching.exists_verts_compl_subset_universalVerts h h'
-  obtain ⟨M', hM'⟩ := ((G.isClique_universalVerts.subset sub).even_iff_exists_isMatching
+  obtain ⟨M, ⟨hM, hsub⟩⟩ := IsMatching.exists_verts_compl_subset_universalVerts h h'
+  obtain ⟨M', hM'⟩ := ((G.isClique_universalVerts.subset hsub).even_iff_exists_isMatching
     (Set.toFinite _)).mp (by simpa [Set.even_ncard_compl_iff hveven, -Set.toFinset_card,
       ← Set.ncard_eq_toFinset_card'] using hM.even_card)
   use M ⊔ M'
   have hspan : (M ⊔ M').IsSpanning := by
     rw [Subgraph.isSpanning_iff, Subgraph.verts_sup, hM'.1]
-    exact Set.union_compl_self M.verts
+    exact M.verts.union_compl_self
   exact ⟨hM.sup hM'.2 (by
     simp only [hM.support_eq_verts, hM'.2.support_eq_verts, hM'.1, Subgraph.verts_sup]
     exact (Set.disjoint_compl_left_iff_subset.mpr fun ⦃a⦄ a ↦ a).symm), hspan⟩

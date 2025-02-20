@@ -88,6 +88,6 @@ lemma ConnectedComponent.even_ncard_supp_sdiff_rep {s : Set V} (K : G.ConnectedC
       (by simpa [Set.ncard_image_of_injective, ← Nat.not_odd_iff_even] using h)] using h
   · have : K.supp.ncard ≠ 0 := Nat.ne_of_odd_add (Nat.not_even_iff_odd.mp h)
     rw [hrep.ncard_sdiff_of_mem (Nat.not_even_iff_odd.mp h), Nat.even_sub (by omega)]
-    simpa [Nat.even_sub]using Nat.not_even_iff_odd.mp h
+    simpa [Nat.even_sub] using Nat.not_even_iff_odd.mp h
 
 end SimpleGraph
