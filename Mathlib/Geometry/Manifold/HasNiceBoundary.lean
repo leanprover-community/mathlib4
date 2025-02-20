@@ -320,10 +320,41 @@ noncomputable def BoundaryManifoldData.sum
   f := Sum.map bd.f bd'.f
   isEmbedding := by
     apply IsEmbedding.sum_elim
-    sorry -- should be in mathlib
+    · exact IsEmbedding.inl.comp bd.isEmbedding
+    · exact IsEmbedding.inr.comp bd'.isEmbedding
+    · -- The overall function is injective: can this be simplified further?
+      intro x y hxy
+      cases x with
+      | inl x' =>
+        cases y with
+        | inl y' =>
+          simp_all
+          exact bd.isEmbedding.injective hxy
+        | inr y' => simp_all
+      | inr x' =>
+        cases y with
+        | inl y' => simp_all
+        | inr y' =>
+          simp_all
+          exact bd'.isEmbedding.injective hxy
   contMDiff := bd.contMDiff.sum_map bd'.contMDiff
-  isImmersion := sorry
-  range_eq_boundary := sorry -- easy, using boundary_disjointUnion
+  isImmersion hk p := by
+    cases p with
+    -- missing lemma: mfderiv of Sum.map is mfderiv of the relevant component
+    | inl x => sorry
+    | inr x => sorry
+  range_eq_boundary := by
+    rw [Sum.range_eq, ModelWithCorners.boundary_disjointUnion]
+    congr
+    · have : Sum.map bd.f bd'.f ∘ Sum.inl = (Sum.inl (α := M) (β := M')) ∘ bd.f := by
+        ext; simp
+      rw [this, range_comp, bd.range_eq_boundary]
+    · have : Sum.map bd.f bd'.f ∘ Sum.inr = (Sum.inr (α := M) (β := M')) ∘ bd'.f := by
+        ext; simp
+      rw [this, range_comp, bd'.range_eq_boundary]
+
+
+#exit
 
 -- TODO: move to InteriorBoundary
 open Fact.Manifold
