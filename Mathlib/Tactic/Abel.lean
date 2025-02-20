@@ -522,7 +522,6 @@ def abelNFLocalDecl (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (fvarId : FVa
   | none => replaceMainGoal []
   | some (_, newGoal) => replaceMainGoal [newGoal]
 
-
 @[tactic_alt abel]
 elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic => do
   let mut cfg ← elabAbelNFConfig cfg
