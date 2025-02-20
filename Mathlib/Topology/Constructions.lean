@@ -1065,7 +1065,7 @@ lemma inr_image_eq_preimage_elim {f : X → Z} {g : Y → Z} (S : Set Z) :
 
 lemma Topology.IsInducing.sumElim_of_separatedOpen {f : X → Z} {g : Y → Z}
     (hf : IsInducing f) (hg : IsInducing g)
-    {U V : Set Z} (hU : IsOpen U) (hV : IsOpen V) (hUV : Disjoint U V)
+    {U V : Set Z} (hU : IsOpen U) (hV : IsOpen V)
     (hfU : Set.range f ⊆ U) (hgV : Set.range g ⊆ V) : IsInducing (Sum.elim f g) := by
   rw [isInducing_iff_nhds] at hf hg ⊢
   intro s
@@ -1113,7 +1113,7 @@ lemma IsEmbedding.sumElim_Strong_of_separatedOpen {f : X → Z} {g : Y → Z}
     IsEmbedding (Sum.elim f g) := by
   have : Function.Injective (Sum.elim f g) := by
     sorry -- use hUV, hfU and hgV
-  exact ⟨hf.isInducing.sumElim_of_separatedOpen hg.isInducing hU hV hUV hfU hgV, this⟩
+  exact ⟨hf.isInducing.sumElim_of_separatedOpen hg.isInducing hU hV hfU hgV, this⟩
 
 #exit
 end Sum
