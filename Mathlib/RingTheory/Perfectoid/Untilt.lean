@@ -36,8 +36,7 @@ open Perfection Ideal
 
 noncomputable section
 
-variable {O : Type*} [CommRing O]
-  {p : ℕ} [Fact (Nat.Prime p)] [Fact ¬IsUnit (p : O)]
+variable {O : Type*} [CommRing O] {p : ℕ} [Fact (Nat.Prime p)] [Fact ¬IsUnit (p : O)]
 
 namespace PreTilt
 
