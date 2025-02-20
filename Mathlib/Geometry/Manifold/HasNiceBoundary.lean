@@ -119,7 +119,7 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {k : ℕ∞}
   [TopologicalSpace H₀] (I₀ : ModelWithCorners ℝ E₀ H₀)
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] [IsManifold I k M']
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
-  {J : ModelWithCorners ℝ E' H'} [IsManifold J ⊤ N]
+  {J : ModelWithCorners ℝ E' H'} [IsManifold J k N]
 
 instance (d : BoundaryManifoldData M I k I₀) : TopologicalSpace d.M₀ := d.topologicalSpace
 
@@ -216,6 +216,8 @@ section PrereqsDiffGeo
 
 variable  {𝕜 : Type u_1} [NontriviallyNormedField 𝕜]
 
+section
+
 variable {E E' F F' : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
@@ -234,6 +236,18 @@ lemma mfderiv_prod_map
     (hf : MDifferentiableAt I J f x) (hg : MDifferentiableAt I' J' g x') :
     mfderiv (I.prod I') (J.prod J') (Prod.map f g) (x, x')
     = (mfderiv I J f x).prodMap (mfderiv I' J' g x') := sorry
+
+-- and variations for within, etc
+
+end
+
+@[simp, mfld_simps]
+theorem mfderiv_sum_at_inl {f : M → N} {g : M' → N} {p : M} (hf : MDifferentiableAt I J f p) :
+    mfderiv I J (Sum.map f g) (Sum.inl p) = mfderiv I J f p := sorry
+
+@[simp, mfld_simps]
+theorem mfderiv_sum_at_inr {f : M → N} {g : M' → N} {p : M'} (hg : MDifferentiableAt I J g p) :
+    mfderiv I J (Sum.map f g) (Sum.inr p) = mfderiv I J g p := sorry
 
 -- and variations for within, etc
 
@@ -340,9 +354,16 @@ noncomputable def BoundaryManifoldData.sum
   contMDiff := bd.contMDiff.sum_map bd'.contMDiff
   isImmersion hk p := by
     cases p with
-    -- missing lemma: mfderiv of Sum.map is mfderiv of the relevant component
-    | inl x => sorry
-    | inr x => sorry
+    | inl x =>
+      simp only [Sum.map_inl]
+      have diff : MDifferentiableAt I₀ I bd.f x := sorry
+      -- ideal proof should be like `rw [mfderiv_sum_at_inl this]; apply bd.isImmersion hk x`
+      convert bd.isImmersion hk x
+      -- cannot guess g, but specifying it makes unification go haywire
+      -- -> there's a problem somewhere!
+      -- apply mfderiv_sum_at_inl diff --(g := bd'.f) diff
+      sorry
+    | inr x => sorry -- similar to the inl case
   range_eq_boundary := by
     rw [Sum.range_eq, ModelWithCorners.boundary_disjointUnion]
     congr
@@ -352,9 +373,6 @@ noncomputable def BoundaryManifoldData.sum
     · have : Sum.map bd.f bd'.f ∘ Sum.inr = (Sum.inr (α := M) (β := M')) ∘ bd'.f := by
         ext; simp
       rw [this, range_comp, bd'.range_eq_boundary]
-
-
-#exit
 
 -- TODO: move to InteriorBoundary
 open Fact.Manifold
