@@ -10,7 +10,7 @@ import Mathlib.Algebra.Homology.CommSq
 /-!
 # The exact sequence attached to a pushout square
 
-Consider a pushout square in an abelian category
+Consider a pushout square in an abelian category:
 
 ```
 X₁ ⟶ X₂
@@ -29,12 +29,12 @@ namespace CategoryTheory
 
 open Category Limits
 
-namespace IsPushout
-
 variable {C : Type u} [Category.{v} C] [Abelian C] {X₁ X₂ X₃ X₄ : C}
   {t : X₁ ⟶ X₂} {l : X₁ ⟶ X₃} {r : X₂ ⟶ X₄} {b : X₃ ⟶ X₄}
 
-lemma shortComplex_exact (h : IsPushout t l r b) : h.shortComplex.Exact :=
+namespace IsPushout
+
+lemma exact_shortComplex (h : IsPushout t l r b) : h.shortComplex.Exact :=
   h.shortComplex.exact_of_g_is_cokernel
     h.isColimitCokernelCofork
 
@@ -60,5 +60,22 @@ lemma hom_eq_add_up_to_refinements (h : IsPushout t l r b) {T : C} (x₄ : T ⟶
   aesop_cat
 
 end IsPushout
+
+namespace IsPullback
+
+lemma exact_shortComplex' (h : IsPullback t l r b) : h.shortComplex'.Exact :=
+  h.shortComplex'.exact_of_f_is_kernel
+    h.isLimitKernelFork
+
+/-!
+Note: if `h : IsPullback t l r b`, then `X₁ ⟶ X₂ ⊞ X₃` is a monomorphism,
+which can be translated in concrete terms thanks to the lemma `IsPullback.hom_ext`:
+if a morphism `f : Z ⟶ X₁` becomes zero after composing with `X₁ ⟶ X₂` and
+`X₁ ⟶ X₃`, then `f = 0`. This is the reason why we do not state the dual
+statement to `IsPushout.hom_eq_add_up_to_refinements`.
+-/
+
+end IsPullback
+
 
 end CategoryTheory
