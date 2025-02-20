@@ -143,7 +143,7 @@
   "Mathlib.Tactic.Positivity.Basic",
   "Mathlib.Tactic.Positivity.Finset",
   "Mathlib.Tactic.ProjectionNotation",
-  "Mathlib.Tactic.PushNeg",
+  "Mathlib.Tactic.Push",
   "Mathlib.Tactic.Qify",
   "Mathlib.Tactic.RSuffices",
   "Mathlib.Tactic.Recover",
@@ -244,7 +244,9 @@
   "Mathlib.Tactic.Nontriviality.Core": ["Mathlib.Logic.Nontrivial.Basic"],
   "Mathlib.Tactic.NoncommRing": ["Mathlib.Algebra.Group.Action.Defs"],
   "Mathlib.Tactic.MoveAdd":
-  ["Mathlib.Algebra.Group.Basic", "Mathlib.Init.Order.LinearOrder"],
+  ["Mathlib.Algebra.Group.Basic",
+   "Mathlib.Init.Order.LinearOrder",
+   "Mathlib.Order.Defs.LinearOrder"],
   "Mathlib.Tactic.Measurability":
   ["Mathlib.Algebra.Group.Defs", "Mathlib.Tactic.Measurability.Init"],
   "Mathlib.Tactic.Linter.UnusedTactic":
@@ -407,9 +409,11 @@
   "Mathlib.Data.List.Basic":
   ["Mathlib.Control.Basic", "Mathlib.Data.Option.Basic"],
   "Mathlib.Data.LazyList.Basic": ["Mathlib.Lean.Thunk"],
+  "Mathlib.Data.Int.Init": ["Batteries.Tactic.Init"],
   "Mathlib.Data.Int.Defs": ["Batteries.Data.Int.Order", "Mathlib.Tactic.OfNat"],
   "Mathlib.Data.Int.ConditionallyCompleteOrder":
   ["Mathlib.Order.ConditionallyCompleteLattice.Basic"],
+  "Mathlib.Data.Int.Basic": ["Mathlib.Tactic.OfNat"],
   "Mathlib.Data.FunLike.Basic": ["Mathlib.Logic.Function.Basic"],
   "Mathlib.Data.Finsupp.Notation": ["Mathlib.Data.Finsupp.Single"],
   "Mathlib.Data.Finset.Insert": ["Mathlib.Data.Finset.Attr"],
@@ -478,6 +482,7 @@
   "Mathlib.Algebra.Module.LinearMap.Basic": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Module.Equiv": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Homology.ModuleCat": ["Mathlib.Algebra.Homology.Homotopy"],
+  "Mathlib.Algebra.GroupWithZero.Units.Basic": ["Mathlib.Data.Int.Basic"],
   "Mathlib.Algebra.Group.Units.Basic": ["Mathlib.Tactic.Subsingleton"],
   "Mathlib.Algebra.Group.Units": ["Mathlib.Tactic.Subsingleton"],
   "Mathlib.Algebra.Group.Pi.Basic": ["Batteries.Tactic.Classical"],
