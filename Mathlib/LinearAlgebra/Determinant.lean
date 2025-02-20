@@ -336,13 +336,12 @@ theorem bot_lt_ker_of_det_eq_zero {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] {f
 lemma det_mulLeft (a : R) : (mulLeft R a).det = a := by simp
 lemma det_mulRight (a : R) : (mulRight R a).det = a := by simp
 
-theorem prodMap_det [Module.Free R M] [Module.Free R M'] [Module.Finite R M] [Module.Finite R M']
+theorem det_prodMap [Module.Free R M] [Module.Free R M'] [Module.Finite R M] [Module.Finite R M']
     (f : Module.End R M) (f' : Module.End R M') :
     (prodMap f f').det = f.det * f'.det := by
   classical
   let b  := Module.Free.chooseBasis R M
   let b' := Module.Free.chooseBasis R M'
-  have := toMatrix_prodMap b b' f f'
   rw [← det_toMatrix (b.prod b'), ← det_toMatrix b, ← det_toMatrix b', toMatrix_prodMap,
     det_fromBlocks_zero₂₁, det_toMatrix]
 
