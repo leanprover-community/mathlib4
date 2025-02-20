@@ -107,7 +107,7 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
     intro x
     by_cases hv : x ∈ v
     · rw [← Set.diff_union_of_subset hsv] at hv
-      cases' hv with hsv hs
+      rcases hv with hsv | hs
       · simpa only [hsv.2, Set.indicator_of_not_mem, not_false_iff, sub_zero, hsv,
           Set.indicator_of_mem] using gc_bd0 x
       · simp [hgs hs, hs]
@@ -116,7 +116,7 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
     refine Function.support_subset_iff'.2 fun x hx => ?_
     simp only [hgv hx, Pi.zero_apply, zero_smul]
   have gc_mem : Memℒp (fun x => g x • c) p μ := by
-    refine Memℒp.smul_of_top_left (memℒp_top_const _) ?_
+    refine Memℒp.smul (memℒp_top_const _) ?_ (p := p) (q := ∞)
     refine ⟨g.continuous.aestronglyMeasurable, ?_⟩
     have : eLpNorm (v.indicator fun _x => (1 : ℝ)) p μ < ⊤ :=
       (eLpNorm_indicator_const_le _ _).trans_lt <| by simp [lt_top_iff_ne_top, hμv.ne]

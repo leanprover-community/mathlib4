@@ -484,7 +484,7 @@ instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
   Quotient.mk'_surjective.pathConnectedSpace continuous_coinduced_rng
 
 /-- This is a special case of `NormedSpace.instPathConnectedSpace` (and
-`TopologicalAddGroup.pathConnectedSpace`). It exists only to simplify dependencies. -/
+`IsTopologicalAddGroup.pathConnectedSpace`). It exists only to simplify dependencies. -/
 instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where
   joined x y := ⟨⟨⟨fun (t : I) ↦ (1 - t) * x + t * y, by fun_prop⟩, by simp, by simp⟩⟩
   nonempty := inferInstance

@@ -831,9 +831,7 @@ theorem face_points' {n : ℕ} (s : Simplex k P n) {fs : Finset (Fin (n + 1))} {
 theorem face_eq_mkOfPoint {n : ℕ} (s : Simplex k P n) (i : Fin (n + 1)) :
     s.face (Finset.card_singleton i) = mkOfPoint k (s.points i) := by
   ext
-  simp only [Affine.Simplex.mkOfPoint_points, Affine.Simplex.face_points]
-  -- Porting note: `simp` can't use the next lemma
-  rw [Finset.orderEmbOfFin_singleton]
+  simp [Affine.Simplex.mkOfPoint_points, Affine.Simplex.face_points, Finset.orderEmbOfFin_singleton]
 
 /-- The set of points of a face. -/
 @[simp]

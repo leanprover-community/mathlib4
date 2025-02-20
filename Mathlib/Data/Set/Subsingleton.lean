@@ -15,6 +15,8 @@ elements.
 
 -/
 
+assert_not_exists RelIso
+
 open Function
 
 universe u v

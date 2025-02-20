@@ -497,7 +497,7 @@ instance instContinuousSMul : ContinuousSMul 𝕜 𝓢(E, F) := by
   rw [(schwartz_withSeminorms 𝕜 E F).withSeminorms_eq]
   exact (schwartzSeminormFamily 𝕜 E F).moduleFilterBasis.continuousSMul
 
-instance instTopologicalAddGroup : TopologicalAddGroup 𝓢(E, F) :=
+instance instIsTopologicalAddGroup : IsTopologicalAddGroup 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.isTopologicalAddGroup
 
 instance instUniformSpace : UniformSpace 𝓢(E, F) :=

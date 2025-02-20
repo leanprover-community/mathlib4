@@ -197,7 +197,7 @@ theorem norm_approxBounded_le {β} {f : α → β} [SeminormedAddCommGroup β] [
 
 theorem _root_.stronglyMeasurable_bot_iff [Nonempty β] [T2Space β] :
     StronglyMeasurable[⊥] f ↔ ∃ c, f = fun _ => c := by
-  cases' isEmpty_or_nonempty α with hα hα
+  rcases isEmpty_or_nonempty α with hα | hα
   · simp only [@Subsingleton.stronglyMeasurable' _ _ ⊥ _ _ f,
       eq_iff_true_of_subsingleton, exists_const]
   refine ⟨fun hf => ?_, fun hf_eq => ?_⟩
@@ -378,13 +378,13 @@ protected theorem div [Div β] [ContinuousDiv β] (hf : StronglyMeasurable f)
   ⟨fun n => hf.approx n / hg.approx n, fun x => (hf.tendsto_approx x).div' (hg.tendsto_approx x)⟩
 
 @[to_additive]
-theorem mul_iff_right [CommGroup β] [TopologicalGroup β] (hf : StronglyMeasurable f) :
+theorem mul_iff_right [CommGroup β] [IsTopologicalGroup β] (hf : StronglyMeasurable f) :
     StronglyMeasurable (f * g) ↔ StronglyMeasurable g :=
   ⟨fun h ↦ show g = f * g * f⁻¹ by simp only [mul_inv_cancel_comm] ▸ h.mul hf.inv,
     fun h ↦ hf.mul h⟩
 
 @[to_additive]
-theorem mul_iff_left [CommGroup β] [TopologicalGroup β] (hf : StronglyMeasurable f) :
+theorem mul_iff_left [CommGroup β] [IsTopologicalGroup β] (hf : StronglyMeasurable f) :
     StronglyMeasurable (g * f) ↔ StronglyMeasurable g :=
   mul_comm g f ▸ mul_iff_right hf
 
@@ -998,7 +998,7 @@ protected theorem add [AddMonoid β] [ContinuousAdd β] (hf : FinStronglyMeasura
     fun x => (hf.tendsto_approx x).add (hg.tendsto_approx x)⟩
 
 @[measurability]
-protected theorem neg [AddGroup β] [TopologicalAddGroup β] (hf : FinStronglyMeasurable f μ) :
+protected theorem neg [AddGroup β] [IsTopologicalAddGroup β] (hf : FinStronglyMeasurable f μ) :
     FinStronglyMeasurable (-f) μ := by
   refine ⟨fun n => -hf.approx n, fun n => ?_, fun x => (hf.tendsto_approx x).neg⟩
   suffices μ (Function.support fun x => -(hf.approx n) x) < ∞ by convert this

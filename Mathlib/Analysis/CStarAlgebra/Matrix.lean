@@ -51,7 +51,7 @@ theorem entry_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.uni
     apply Multiset.single_le_sum
     · intro x h_x
       rw [Multiset.mem_map] at h_x
-      cases' h_x with a h_a
+      obtain ⟨a, h_a⟩ := h_x
       rw [← h_a.2]
       apply sq_nonneg
     · rw [Multiset.mem_map]

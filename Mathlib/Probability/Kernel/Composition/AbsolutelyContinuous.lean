@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne
+Authors: Rémy Degenne, Lorenzo Luccioli
 -/
 import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 import Mathlib.Probability.Kernel.RadonNikodym
@@ -50,9 +50,8 @@ lemma MutuallySingular.compProd_of_right (μ ν : Measure α) (hκη : ∀ᵐ a 
   have h1 a : η a (Prod.mk a ⁻¹' s) = 0 := by rw [h_eq, Kernel.measure_mutuallySingularSetSlice]
   have h2 : ∀ᵐ a ∂μ, κ a (Prod.mk a ⁻¹' s)ᶜ = 0 := by
     filter_upwards [hκη] with a ha
-    rw [h_eq, ← Kernel.withDensity_rnDeriv_eq_zero_iff_measure_eq_zero κ η a,
+    rwa [h_eq, ← Kernel.withDensity_rnDeriv_eq_zero_iff_measure_eq_zero κ η a,
       Kernel.withDensity_rnDeriv_eq_zero_iff_mutuallySingular]
-    exact ha
   simp [h1, lintegral_congr_ae h2]
 
 lemma MutuallySingular.compProd_of_right' (μ ν : Measure α) (hκη : ∀ᵐ a ∂ν, κ a ⟂ₘ η a) :
@@ -65,7 +64,7 @@ lemma mutuallySingular_compProd_right_iff [SFinite μ] :
   ⟨fun h ↦ mutuallySingular_of_mutuallySingular_compProd h AbsolutelyContinuous.rfl
     AbsolutelyContinuous.rfl, MutuallySingular.compProd_of_right _ _⟩
 
-lemma AbsolutelyContinuous.kernel_of_compProd [SFinite μ] [SFinite ν] (h : μ ⊗ₘ κ ≪ ν ⊗ₘ η) :
+lemma AbsolutelyContinuous.kernel_of_compProd [SFinite μ] (h : μ ⊗ₘ κ ≪ ν ⊗ₘ η) :
     ∀ᵐ a ∂μ, κ a ≪ η a := by
   suffices ∀ᵐ a ∂μ, κ.singularPart η a = 0 by
     filter_upwards [this] with a ha
@@ -73,12 +72,8 @@ lemma AbsolutelyContinuous.kernel_of_compProd [SFinite μ] [SFinite ν] (h : μ 
   rw [← κ.rnDeriv_add_singularPart η, compProd_add_right, AbsolutelyContinuous.add_left_iff] at h
   have : μ ⊗ₘ κ.singularPart η ⟂ₘ ν ⊗ₘ η :=
     MutuallySingular.compProd_of_right μ ν (.of_forall <| Kernel.mutuallySingular_singularPart _ _)
-  have h_zero : μ ⊗ₘ κ.singularPart η = 0 :=
-    eq_zero_of_absolutelyContinuous_of_mutuallySingular h.2 this
-  simp_rw [← measure_univ_eq_zero]
-  refine (lintegral_eq_zero_iff (Kernel.measurable_coe _ .univ)).mp ?_
-  rw [← setLIntegral_univ, ← compProd_apply_prod .univ .univ, h_zero]
-  simp
+  refine compProd_eq_zero_iff.mp ?_
+  exact eq_zero_of_absolutelyContinuous_of_mutuallySingular h.2 this
 
 lemma absolutelyContinuous_compProd_iff' [SFinite μ] [SFinite ν] [∀ a, NeZero (κ a)] :
     μ ⊗ₘ κ ≪ ν ⊗ₘ η ↔ μ ≪ ν ∧ ∀ᵐ a ∂μ, κ a ≪ η a :=

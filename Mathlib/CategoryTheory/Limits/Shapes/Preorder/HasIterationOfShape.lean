@@ -98,4 +98,7 @@ lemma hasIterationOfShape_of_initialSeg {α : Type*} [LinearOrder α]
     exact hasColimitsOfShape_of_initialSeg  _
       (InitialSeg.trans (Set.principalSegIio j) h)
 
+instance (j : J) : HasIterationOfShape (Set.Iic j) C :=
+  hasIterationOfShape_of_initialSeg C (Set.initialSegIic j)
+
 end CategoryTheory.Limits

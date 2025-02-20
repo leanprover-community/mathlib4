@@ -530,14 +530,14 @@ variable {s : Set α} {hs : MeasurableSet s} {hμs : μ s ≠ ∞} {c : E}
 def indicatorConstLp (p : ℝ≥0∞) (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) : Lp E p μ :=
   Memℒp.toLp (s.indicator fun _ => c) (memℒp_indicator_const p hs c (Or.inr hμs))
 
-/-- A version of `Set.indicator_add` for `MeasureTheory.indicatorConstLp`.-/
+/-- A version of `Set.indicator_add` for `MeasureTheory.indicatorConstLp` -/
 theorem indicatorConstLp_add {c' : E} :
     indicatorConstLp p hs hμs c + indicatorConstLp p hs hμs c' =
     indicatorConstLp p hs hμs (c + c') := by
   simp_rw [indicatorConstLp, ← Memℒp.toLp_add, indicator_add]
   rfl
 
-/-- A version of `Set.indicator_sub` for `MeasureTheory.indicatorConstLp`.-/
+/-- A version of `Set.indicator_sub` for `MeasureTheory.indicatorConstLp` -/
 theorem indicatorConstLp_sub {c' : E} :
     indicatorConstLp p hs hμs c - indicatorConstLp p hs hμs c' =
     indicatorConstLp p hs hμs (c - c') := by
@@ -1346,7 +1346,7 @@ theorem ae_tendsto_of_cauchy_eLpNorm' [CompleteSpace E] {f : ℕ → α → E} {
     let hx_sum := hx.hasSum.tendsto_sum_nat
     exact ⟨∑' i, (f (i + 1) x - f i x), hx_sum⟩
   refine h.mono fun x hx => ?_
-  cases' hx with l hx
+  obtain ⟨l, hx⟩ := hx
   have h_rw_sum :
       (fun n => ∑ i ∈ Finset.range n, (f (i + 1) x - f i x)) = fun n => f n x - f 0 x := by
     ext1 n
@@ -1402,7 +1402,7 @@ theorem cauchy_tendsto_of_tendsto {f : ℕ → α → E} (hf : ∀ n, AEStrongly
     suffices h_tendsto_zero : ∃ N : ℕ, ∀ n : ℕ, N ≤ n → B n ≤ ε from
       ⟨h_tendsto_zero.choose, h_tendsto_zero.choose_spec _ le_rfl⟩
     exact (ENNReal.tendsto_atTop_zero.mp (ENNReal.tendsto_atTop_zero_of_tsum_ne_top hB)) ε hε
-  cases' h_B with N h_B
+  obtain ⟨N, h_B⟩ := h_B
   refine ⟨N, fun n hn => ?_⟩
   have h_sub : eLpNorm (f n - f_lim) p μ ≤ atTop.liminf fun m => eLpNorm (f n - f m) p μ := by
     refine eLpNorm_lim_le_liminf_eLpNorm (fun m => (hf n).sub (hf m)) (f n - f_lim) ?_
@@ -1419,7 +1419,7 @@ theorem memℒp_of_cauchy_tendsto (hp : 1 ≤ p) {f : ℕ → α → E} (hf : �
     (h_tendsto : atTop.Tendsto (fun n => eLpNorm (f n - f_lim) p μ) (𝓝 0)) : Memℒp f_lim p μ := by
   refine ⟨h_lim_meas, ?_⟩
   rw [ENNReal.tendsto_atTop_zero] at h_tendsto
-  cases' h_tendsto 1 zero_lt_one with N h_tendsto_1
+  obtain ⟨N, h_tendsto_1⟩ := h_tendsto 1 zero_lt_one
   specialize h_tendsto_1 N (le_refl N)
   have h_add : f_lim = f_lim - f N + f N := by abel
   rw [h_add]
