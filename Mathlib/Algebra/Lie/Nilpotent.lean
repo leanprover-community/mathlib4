@@ -996,8 +996,8 @@ instance maxNilpotentIdealIsNilpotent [IsNoetherian R L] :
   instMaxNilpotentSubmoduleIsNilpotent R L L
 
 theorem LieIdeal.nilpotent_iff_le_max_nilpotent_ideal [IsNoetherian R L] (I : LieIdeal R L) :
-    IsNilpotent L I ↔ I ≤ maxNilpotentIdeal R L := by
-  apply nilpotent_iff_le_max_nilpotent_submodule
+    IsNilpotent L I ↔ I ≤ maxNilpotentIdeal R L :=
+  nilpotent_iff_le_max_nilpotent_submodule R L L I
 
 theorem center_le_max_nilpotent_ideal : center R L ≤ maxNilpotentIdeal R L :=
   le_sSup (trivialIsNilpotent L (center R L))
