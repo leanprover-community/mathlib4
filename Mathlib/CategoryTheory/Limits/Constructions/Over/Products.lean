@@ -56,7 +56,7 @@ def conesEquivInverse (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
   map f :=
     { hom := f.hom.left
       w := fun j => by
-        cases' j with j
+        obtain - | j := j
         · simp
         · dsimp
           rw [← f.w ⟨j⟩]
