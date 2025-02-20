@@ -926,7 +926,7 @@ theorem coe_lcs_eq [LieModule R L M] :
     · rintro ⟨⟨x, hx⟩, m, hm, rfl⟩
       exact ⟨x, hx, m, hm, rfl⟩
 
-lemma isNilpotent_restricts_to_ideal {I : LieIdeal R L} (hI :IsNilpotent L I)
+lemma isNilpotent_restricts_to_ideal (hI :IsNilpotent L I)
     : LieRing.IsNilpotent I := by
   let f : I →ₗ⁅R⁆ L := I.incl
   let g : I →ₗ⁅R⁆ I := LieHom.id
@@ -1012,7 +1012,7 @@ theorem maxNilpotentIdeal_le_radical : maxNilpotentIdeal R L ≤ radical R L := 
   apply sSup_le_sSup
   intro I hI
   have h : IsNilpotent I I :=
-    LieIdeal.isNilpotent_restricts_to_ideal (R := R) (L := L) hI
+    LieIdeal.isNilpotent_restricts_to_ideal I hI
   exact isSolvable_of_isNilpotent I
 
 @[simp] lemma maxNilpotentIdeal_eq_top_of_isNilpotent [LieRing.IsNilpotent L] :
