@@ -71,6 +71,4 @@ lemma even_ncard_image_val_supp_sdiff_image_val_rep_union {t : Set V}
     ← Set.image_inter Subtype.val_injective, Set.ncard_image_of_injective _ Subtype.val_injective,
     K.even_ncard_supp_sdiff_rep hrep]
 
-
-
 end SimpleGraph

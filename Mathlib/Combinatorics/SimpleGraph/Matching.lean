@@ -12,7 +12,6 @@ import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Set.Card.Arithmetic
 import Mathlib.Data.Set.Functor
 
-
 /-!
 # Matchings
 

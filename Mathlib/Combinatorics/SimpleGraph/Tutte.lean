@@ -22,8 +22,8 @@ universe u
 variable {V : Type u} {G G' : SimpleGraph V} {u x v' w : V} [Fintype V]
 
 /-- A set certifying non-existance of a perfect matching -/
-def TutteViolator (G: SimpleGraph V) (u : Set V) : Prop :=
-  u.ncard < {c : ((⊤ : G.Subgraph).deleteVerts u).coe.ConnectedComponent | Odd (c.supp.ncard)}.ncard
+def IsTutteViolator (G: SimpleGraph V) (u : Set V) : Prop :=
+  u.ncard < ((⊤ : G.Subgraph).deleteVerts u).coe.oddComponents.ncard
 
 /-- This lemma states that a graph in which the universal vertices do not violate the
 Tutte-condition, if the graph decomposes into cliques, there exists a matching that covers
