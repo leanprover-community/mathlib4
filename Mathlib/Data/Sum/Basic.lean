@@ -165,12 +165,14 @@ open Sum
 
 namespace Function
 
-theorem Injective.sum_elim {f : α → γ} {g : β → γ} (hf : Injective f) (hg : Injective g)
+theorem Injective.sumElim {f : α → γ} {g : β → γ} (hf : Injective f) (hg : Injective g)
     (hfg : ∀ a b, f a ≠ g b) : Injective (Sum.elim f g)
   | inl _, inl _, h => congr_arg inl <| hf h
   | inl _, inr _, h => (hfg _ _ h).elim
   | inr _, inl _, h => (hfg _ _ h.symm).elim
   | inr _, inr _, h => congr_arg inr <| hg h
+
+@[deprecated (since := "2025-02-20")] alias Injective.sum_elim := Injective.sumElim
 
 theorem Injective.sum_map {f : α → β} {g : α' → β'} (hf : Injective f) (hg : Injective g) :
     Injective (Sum.map f g)
