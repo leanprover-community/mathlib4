@@ -182,7 +182,7 @@ noncomputable def IsPullback.isLimitKernelFork (h : IsPullback fst snd f g) :
     IsLimit h.kernelFork :=
   h.isLimitEquivIsLimitKernelFork h.isLimit
 
-lemma IsPullback.epi_shortComplex_g (h : IsPullback fst snd f g) :
+lemma IsPullback.mono_shortComplex'_f (h : IsPullback fst snd f g) :
     Mono h.shortComplex'.f := by
   rw [Preadditive.mono_iff_cancel_zero]
   intro _ b hb
