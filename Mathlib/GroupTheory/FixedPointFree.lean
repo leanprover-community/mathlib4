@@ -34,7 +34,9 @@ end Definitions
 
 namespace FixedPointFree
 
--- todo: refactor Mathlib/Algebra/GroupPower/IterateHom to generalize φ to MonoidHomClass
+-- todo: refactor `Mathlib.Algebra.GroupPower.IterateHom` to generalize φ to MonoidHomClass
+-- Yaël: `Mathlib.Algebra.GroupPower.IterateHom` stopped existing in
+-- https://github.com/leanprover-community/mathlib4/pull/22132
 variable [Group G] {φ : G →* G}
 
 theorem commutatorMap_injective (hφ : FixedPointFree φ) : Function.Injective (commutatorMap φ) := by
