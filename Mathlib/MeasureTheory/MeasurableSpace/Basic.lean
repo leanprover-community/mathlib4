@@ -945,6 +945,7 @@ theorem Measurable.eq_mp {β} [MeasurableSpace β] {i i' : δ} (h : i = i') {f :
     (hf : Measurable f) : Measurable fun x => (congr_arg π h).mp (f x) :=
   (measurable_eq_mp π h).comp hf
 
+@[measurability, fun_prop]
 theorem measurable_piCongrLeft (f : δ' ≃ δ) : Measurable (piCongrLeft π f) := by
   rw [measurable_pi_iff]
   intro i

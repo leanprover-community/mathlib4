@@ -750,7 +750,7 @@ theorem castSucc_pred_eq_pred_castSucc {a : Fin (n + 1)} (ha : a ≠ 0)
 
 theorem castSucc_pred_add_one_eq {a : Fin (n + 1)} (ha : a ≠ 0) :
     (a.pred ha).castSucc + 1 = a := by
-  cases' a using cases with a
+  cases a using cases
   · exact (ha rfl).elim
   · rw [pred_succ, coeSucc_eq_succ]
 
@@ -841,6 +841,11 @@ theorem castPred_zero' [NeZero n] (h := Fin.ext_iff.not.2 last_pos'.ne) :
 theorem castPred_zero (h := Fin.ext_iff.not.2 last_pos.ne)  :
     castPred (0 : Fin (n + 2)) h = 0 := rfl
 
+theorem castPred_ne_zero {j : Fin (n + 2)} (h₁ : j ≠ Fin.last (n + 1)) (h₂ : j ≠ 0) :
+     Fin.castPred j h₁ ≠ 0 := by
+   contrapose! h₂
+   rwa [← Fin.castPred_zero, Fin.castPred_inj] at h₂
+
 @[simp]
 theorem castPred_one [NeZero n] (h := Fin.ext_iff.not.2 one_lt_last.ne) :
     castPred (1 : Fin (n + 2)) h = 1 := by
@@ -854,7 +859,7 @@ theorem succ_castPred_eq_castPred_succ {a : Fin (n + 1)} (ha : a ≠ last n)
 
 theorem succ_castPred_eq_add_one {a : Fin (n + 1)} (ha : a ≠ last n) :
     (a.castPred ha).succ = a + 1 := by
-  cases' a using lastCases with a
+  cases a using lastCases
   · exact (ha rfl).elim
   · rw [castPred_castSucc, coeSucc_eq_succ]
 
