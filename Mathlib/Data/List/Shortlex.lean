@@ -48,11 +48,11 @@ theorem of_length_lt {s t : List α} (h : s.length < t.length) : Shortlex r s t 
 
 /-- If two lists `s` and `t` have the same length, `s` is smaller than `t` under the shortlex order
 over a relation `r`  when `s` is smaller than `t` under the lexicographic order over `r` -/
-theorem of_lex {s t : List α} (h : s.length = t.length) (h2 : List.Lex r s t) :
+theorem of_lex {s t : List α} (len_eq : s.length = t.length) (h_lex : List.Lex r s t) :
     Shortlex r s t := by
   apply Prod.lex_def.mpr
   right
-  exact ⟨h, h2⟩
+  exact ⟨len_eq, h_lex⟩
 
 theorem _root_.List.shortlex_def {s t : List α} : Shortlex r s t ↔
     s.length < t.length ∨ s.length = t.length ∧ List.Lex r s t := Prod.lex_def

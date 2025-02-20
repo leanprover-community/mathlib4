@@ -202,15 +202,15 @@ instance IsTrichotomous [IsTrichotomous α r] [IsTrichotomous β s] :
 instance IsAsymm {α β : Type*} {r : α → α → Prop} [IsAsymm α r] {s : β → β → Prop}
     [IsAsymm β s] : IsAsymm (α × β) (Prod.Lex r s) where
   asymm := by
-    intro a b h1 h2
-    cases h1 with
+    intro a b hab hba
+    cases hab with
     | left b₁ b₂ h =>
       rename_i a₁ _
-      cases h2 with
+      cases hba with
       | left b₁ b₂ h => exact IsAsymm.asymm _ _ (by assumption) h
       | right a h => exact IsAsymm.asymm a₁ _ (by assumption) (by assumption)
     | right a h =>
-      cases h2 with
+      cases hba with
       | left b₁ b₂ h => exact IsAsymm.asymm a _ (by assumption) (by assumption)
       | right a h => exact IsAsymm.asymm _ _ (by assumption) h
 
