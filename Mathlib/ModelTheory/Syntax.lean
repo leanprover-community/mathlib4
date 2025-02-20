@@ -501,7 +501,7 @@ def relabelAux (g : α → β ⊕ (Fin n)) (k : ℕ) : α ⊕ (Fin k) → β ⊕
   Sum.map id finSumFinEquiv ∘ Equiv.sumAssoc _ _ _ ∘ Sum.map g id
 
 @[simp]
-theorem sum_elim_comp_relabelAux {m : ℕ} {g : α → β ⊕ (Fin n)} {v : β → M}
+theorem sumElim_comp_relabelAux {m : ℕ} {g : α → β ⊕ (Fin n)} {v : β → M}
     {xs : Fin (n + m) → M} : Sum.elim v xs ∘ relabelAux g m =
     Sum.elim (Sum.elim v (xs ∘ castAdd m) ∘ g) (xs ∘ natAdd n) := by
   ext x
@@ -509,6 +509,8 @@ theorem sum_elim_comp_relabelAux {m : ℕ} {g : α → β ⊕ (Fin n)} {v : β �
   · simp only [BoundedFormula.relabelAux, Function.comp_apply, Sum.map_inl, Sum.elim_inl]
     rcases g x with l | r <;> simp
   · simp [BoundedFormula.relabelAux]
+
+@[deprecated (since := "2025-02-21")] alias sum_elim_comp_relabelAux := sumElim_comp_relabelAux
 
 @[simp]
 theorem relabelAux_sum_inl (k : ℕ) :
