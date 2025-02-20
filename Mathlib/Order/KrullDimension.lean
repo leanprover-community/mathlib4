@@ -6,6 +6,7 @@ Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 
 import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Data.ENat.Lattice
+import Mathlib.Data.Int.Basic
 import Mathlib.Order.Minimal
 import Mathlib.Order.RelSeries
 import Mathlib.Tactic.FinCases

@@ -576,8 +576,7 @@ variable {σ : R →* S}
 @[ext]
 theorem ext_ring {f g : R →ₑ+[σ] N'} (h : f 1 = g 1) : f = g := by
   ext x
-  rw [← mul_one x, ← smul_eq_mul R, f.map_smulₑ, g.map_smulₑ, h]
-
+  rw [← mul_one x, ← smul_eq_mul, f.map_smulₑ, g.map_smulₑ, h]
 
 end Semiring
 

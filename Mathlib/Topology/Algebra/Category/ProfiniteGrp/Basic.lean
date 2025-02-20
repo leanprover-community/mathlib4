@@ -177,14 +177,12 @@ lemma ofHom_comp (f : ContinuousMonoidHom X Y) (g : ContinuousMonoidHom Y Z) :
 @[to_additive]
 lemma ofHom_apply (f : ContinuousMonoidHom X Y) (x : X) : ofHom f x = f x := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma inv_hom_apply {A B : ProfiniteGrp.{u}} (e : A ≅ B) (x : A) : e.inv (e.hom x) = x := by
-  rw [← comp_apply]
   simp
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma hom_inv_apply {A B : ProfiniteGrp.{u}} (e : A ≅ B) (x : B) : e.hom (e.inv x) = x := by
-  rw [← comp_apply]
   simp
 
 @[to_additive (attr := simp)]

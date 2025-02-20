@@ -15,6 +15,7 @@ We define bundled non-unital subsemirings and some standard constructions:
 `subtype` and `inclusion` ring homomorphisms.
 -/
 
+assert_not_exists RelIso
 
 universe u v w
 

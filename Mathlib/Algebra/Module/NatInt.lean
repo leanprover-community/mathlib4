@@ -26,7 +26,7 @@ This file concerns modules where the scalars are the natural numbers or the inte
 semimodule, module, vector space
 -/
 
-assert_not_exists Field Invertible Multiset Pi.single_smul₀ Set.indicator
+assert_not_exists RelIso Field Invertible Multiset Pi.single_smul₀ Set.indicator
 
 open Function Set
 
