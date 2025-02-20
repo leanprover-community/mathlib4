@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Data.Fintype.List
+import Mathlib.Data.Fintype.OfMap
 
 /-!
 # Cycles of a list
@@ -47,7 +48,7 @@ theorem nextOr_self_cons_cons (xs : List α) (x y d : α) : nextOr (x :: y :: xs
 
 theorem nextOr_cons_of_ne (xs : List α) (y x d : α) (h : x ≠ y) :
     nextOr (y :: xs) x d = nextOr xs x d := by
-  cases' xs with z zs
+  rcases xs with - | ⟨z, zs⟩
   · rfl
   · exact if_neg h
 
@@ -56,7 +57,7 @@ theorem nextOr_eq_nextOr_of_mem_of_ne (xs : List α) (x d d' : α) (x_mem : x �
     (x_ne : x ≠ xs.getLast (ne_nil_of_mem x_mem)) : nextOr xs x d = nextOr xs x d' := by
   induction' xs with y ys IH
   · cases x_mem
-  cases' ys with z zs
+  rcases ys with - | ⟨z, zs⟩
   · simp at x_mem x_ne
     contradiction
   by_cases h : x = y
@@ -68,7 +69,7 @@ theorem nextOr_eq_nextOr_of_mem_of_ne (xs : List α) (x d d' : α) (x_mem : x �
 theorem mem_of_nextOr_ne {xs : List α} {x d : α} (h : nextOr xs x d ≠ d) : x ∈ xs := by
   induction' xs with y ys IH
   · simp at h
-  cases' ys with z zs
+  rcases ys with - | ⟨z, zs⟩
   · simp at h
   · by_cases hx : x = y
     · simp [hx]
@@ -88,7 +89,7 @@ theorem nextOr_mem {xs : List α} {x d : α} (hd : d ∈ xs) : nextOr xs x d ∈
   intro xs' hxs' hd
   induction' xs with y ys ih
   · exact hd
-  cases' ys with z zs
+  rcases ys with - | ⟨z, zs⟩
   · exact hd
   rw [nextOr]
   split_ifs with h
@@ -171,7 +172,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
     rw [length_cons]
     exact length_pos_of_mem (by assumption)
   suffices k + 1 = l.length by simp [this] at hk
-  cases' l with hd tl
+  rcases l with - | ⟨hd, tl⟩
   · simp at hk
   · rw [nodup_iff_injective_get] at hl
     rw [length, Nat.succ_inj']
@@ -196,7 +197,6 @@ theorem prev_getLast_cons (h : x ∈ x :: l) :
 theorem prev_cons_cons_eq' (y z : α) (h : x ∈ y :: z :: l) (hx : x = y) :
     prev (y :: z :: l) x h = getLast (z :: l) (cons_ne_nil _ _) := by rw [prev, dif_pos hx]
 
---@[simp] Porting note (#10618): `simp` can prove it
 theorem prev_cons_cons_eq (z : α) (h : x ∈ x :: z :: l) :
     prev (x :: z :: l) x h = getLast (z :: l) (cons_ne_nil _ _) :=
   prev_cons_cons_eq' l x x z h rfl
@@ -218,10 +218,10 @@ theorem prev_ne_cons_cons (y z : α) (h : x ∈ y :: z :: l) (hy : x ≠ y) (hz 
   · rw [prev, dif_neg hy, if_neg hz]
 
 theorem next_mem (h : x ∈ l) : l.next x h ∈ l :=
-  nextOr_mem (get_mem _ _ _)
+  nextOr_mem (get_mem _ _)
 
 theorem prev_mem (h : x ∈ l) : l.prev x h ∈ l := by
-  cases' l with hd tl
+  rcases l with - | ⟨hd, tl⟩
   · simp at h
   induction' tl with hd' tl hl generalizing hd
   · simp
@@ -234,7 +234,7 @@ theorem prev_mem (h : x ∈ l) : l.prev x h ∈ l := by
       · exact mem_cons_of_mem _ (hl _ _)
 
 theorem next_get (l : List α) (h : Nodup l) (i : Fin l.length) :
-    next l (l.get i) (get_mem _ _ _) =
+    next l (l.get i) (get_mem _ _) =
       l.get ⟨(i + 1) % l.length, Nat.mod_lt _ (i.1.zero_le.trans_lt i.2)⟩ :=
   match l, h, i with
   | [], _, i => by simpa using i.2
@@ -255,7 +255,7 @@ theorem next_get (l : List α) (h : Nodup l) (i : Fin l.length) :
     · subst hi'
       rw [next_getLast_cons]
       · simp [hi', get]
-      · rw [get_cons_succ]; exact get_mem _ _ _
+      · rw [get_cons_succ]; exact get_mem _ _
       · exact hx'
       · simp [getLast_eq_getElem]
       · exact hn.of_cons
@@ -272,12 +272,12 @@ theorem next_get (l : List α) (h : Nodup l) (i : Fin l.length) :
         intro h
         have := nodup_iff_injective_get.1 hn h
         simp at this; simp [this] at hi'
-      · rw [get_cons_succ]; exact get_mem _ _ _
+      · rw [get_cons_succ]; exact get_mem _ _
 
 -- Unused variable linter incorrectly reports that `h` is unused here.
 set_option linter.unusedVariables false in
 theorem prev_get (l : List α) (h : Nodup l) (i : Fin l.length) :
-    prev l (l.get i) (get_mem _ _ _) =
+    prev l (l.get i) (get_mem _ _) =
       l.get ⟨(i + (l.length - 1)) % l.length, Nat.mod_lt _ i.pos⟩ :=
   match l with
   | [] => by simpa using i.2
@@ -333,7 +333,7 @@ theorem prev_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
     prev l (next l x hx) (next_mem _ _ _) = x := by
   obtain ⟨⟨n, hn⟩, rfl⟩ := get_of_mem hx
   simp only [next_get, prev_get, h, Nat.mod_add_mod]
-  cases' l with hd tl
+  rcases l with - | ⟨hd, tl⟩
   · simp at hn
   · have : (n + 1 + length tl) % (length tl + 1) = n := by
       rw [length_cons] at hn
@@ -344,7 +344,7 @@ theorem next_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
     next l (prev l x hx) (prev_mem _ _ _) = x := by
   obtain ⟨⟨n, hn⟩, rfl⟩ := get_of_mem hx
   simp only [next_get, prev_get, h, Nat.mod_add_mod]
-  cases' l with hd tl
+  rcases l with - | ⟨hd, tl⟩
   · simp at hn
   · have : (n + length tl + 1) % (length tl + 1) = n := by
       rw [length_cons] at hn
@@ -399,7 +399,7 @@ namespace Cycle
 
 variable {α : Type*}
 
--- Porting note (#11445): new definition
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- The coercion from `List α` to `Cycle α` -/
 @[coe] def ofList : List α → Cycle α :=
   Quot.mk _
@@ -579,7 +579,7 @@ theorem nodup_reverse_iff {s : Cycle α} : s.reverse.Nodup ↔ s.Nodup :=
 
 theorem Subsingleton.nodup {s : Cycle α} (h : Subsingleton s) : Nodup s := by
   induction' s using Quot.inductionOn with l
-  cases' l with hd tl
+  obtain - | ⟨hd, tl⟩ := l
   · simp
   · have : tl = [] := by simpa [Subsingleton, length_eq_zero, Nat.succ_le_succ_iff] using h
     simp [this]
@@ -786,18 +786,18 @@ nonrec def Chain (r : α → α → Prop) (c : Cycle α) : Prop :=
       | a :: m => Chain r a (m ++ [a]))
     fun a b hab =>
     propext <| by
-      cases' a with a l <;> cases' b with b m
+      rcases a with - | ⟨a, l⟩ <;> rcases b with - | ⟨b, m⟩
       · rfl
       · have := isRotated_nil_iff'.1 hab
         contradiction
       · have := isRotated_nil_iff.1 hab
         contradiction
       · dsimp only
-        cases' hab with n hn
+        obtain ⟨n, hn⟩ := hab
         induction' n with d hd generalizing a b l m
         · simp only [rotate_zero, cons.injEq] at hn
           rw [hn.1, hn.2]
-        · cases' l with c s
+        · rcases l with - | ⟨c, s⟩
           · simp only [rotate_cons_succ, nil_append, rotate_singleton, cons.injEq] at hn
             rw [hn.1, hn.2]
           · rw [Nat.add_comm, ← rotate_rotate, rotate_cons_succ, rotate_zero, cons_append] at hn
@@ -812,7 +812,6 @@ theorem chain_coe_cons (r : α → α → Prop) (a : α) (l : List α) :
     Chain r (a :: l) ↔ List.Chain r a (l ++ [a]) :=
   Iff.rfl
 
---@[simp] Porting note (#10618): `simp` can prove it
 theorem chain_singleton (r : α → α → Prop) (a : α) : Chain r [a] ↔ r a a := by
   rw [chain_coe_cons, nil_append, List.chain_singleton]
 
@@ -824,13 +823,10 @@ theorem chain_ne_nil (r : α → α → Prop) {l : List α} :
 
 theorem chain_map {β : Type*} {r : α → α → Prop} (f : β → α) {s : Cycle β} :
     Chain r (s.map f) ↔ Chain (fun a b => r (f a) (f b)) s :=
-  Quotient.inductionOn' s fun l => by
-    cases' l with a l
+  Quotient.inductionOn s fun l => by
+    rcases l with - | ⟨a, l⟩
     · rfl
-    dsimp only [Chain, ← mk''_eq_coe, Quotient.liftOn'_mk'', Cycle.map, Quotient.map', Quot.map,
-      Quotient.mk'', Quotient.liftOn', Quotient.liftOn, Quot.liftOn_mk, List.map]
-    rw [← concat_eq_append, ← List.map_concat, List.chain_map f]
-    simp
+    · simp [← concat_eq_append, ← List.map_concat, List.chain_map f]
 
 nonrec theorem chain_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
     Chain r (List.range n.succ) ↔ r n 0 ∧ ∀ m < n, r m m.succ := by
@@ -864,7 +860,7 @@ theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := b
         ⟨pairwise_of_forall_mem_list fun b hb c hc => hs b (Hl hb) c (Hl hc),
           pairwise_singleton r a, fun b hb c hc => ?_⟩⟩
   · rw [mem_append] at hb
-    cases' hb with hb hb
+    rcases hb with hb | hb
     · exact hs a Ha b (Hl hb)
     · rw [mem_singleton] at hb
       rw [hb]

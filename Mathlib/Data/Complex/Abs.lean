@@ -69,43 +69,42 @@ theorem abs_apply {z : ℂ} : Complex.abs z = (normSq z).sqrt :=
 theorem abs_ofReal (r : ℝ) : Complex.abs r = |r| := by
   simp [Complex.abs, normSq_ofReal, Real.sqrt_mul_self_eq_abs]
 
-nonrec theorem abs_of_nonneg {r : ℝ} (h : 0 ≤ r) : Complex.abs r = r :=
+protected theorem abs_of_nonneg {r : ℝ} (h : 0 ≤ r) : Complex.abs r = r :=
   (Complex.abs_ofReal _).trans (abs_of_nonneg h)
 
 -- Porting note: removed `norm_cast` attribute because the RHS can't start with `↑`
 @[simp]
 theorem abs_natCast (n : ℕ) : Complex.abs n = n := Complex.abs_of_nonneg (Nat.cast_nonneg n)
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem abs_ofNat (n : ℕ) [n.AtLeastTwo] :
-    Complex.abs (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n :=
+    Complex.abs ofNat(n) = ofNat(n) :=
   abs_natCast n
 
 theorem mul_self_abs (z : ℂ) : Complex.abs z * Complex.abs z = normSq z :=
   Real.mul_self_sqrt (normSq_nonneg _)
 
-theorem sq_abs (z : ℂ) : Complex.abs z ^ 2 = normSq z :=
+protected theorem sq_abs (z : ℂ) : Complex.abs z ^ 2 = normSq z :=
   Real.sq_sqrt (normSq_nonneg _)
 
 @[simp]
 theorem sq_abs_sub_sq_re (z : ℂ) : Complex.abs z ^ 2 - z.re ^ 2 = z.im ^ 2 := by
-  rw [sq_abs, normSq_apply, ← sq, ← sq, add_sub_cancel_left]
+  rw [Complex.sq_abs, normSq_apply, ← sq, ← sq, add_sub_cancel_left]
 
 @[simp]
 theorem sq_abs_sub_sq_im (z : ℂ) : Complex.abs z ^ 2 - z.im ^ 2 = z.re ^ 2 := by
   rw [← sq_abs_sub_sq_re, sub_sub_cancel]
 
-lemma abs_add_mul_I (x y : ℝ) : abs (x + y * I) = (x ^ 2 + y ^ 2).sqrt := by
+lemma abs_add_mul_I (x y : ℝ) : Complex.abs (x + y * I) = (x ^ 2 + y ^ 2).sqrt := by
   rw [← normSq_add_mul_I]; rfl
 
-lemma abs_eq_sqrt_sq_add_sq (z : ℂ) : abs z = (z.re ^ 2 + z.im ^ 2).sqrt := by
+lemma abs_eq_sqrt_sq_add_sq (z : ℂ) : Complex.abs z = (z.re ^ 2 + z.im ^ 2).sqrt := by
   rw [abs_apply, normSq_apply, sq, sq]
 
 @[simp]
 theorem abs_I : Complex.abs I = 1 := by simp [Complex.abs]
 
-theorem abs_two : Complex.abs 2 = 2 := abs_ofNat 2
+protected theorem abs_two : Complex.abs 2 = 2 := abs_ofNat 2
 
 @[simp]
 theorem range_abs : range Complex.abs = Ici 0 :=
@@ -117,20 +116,13 @@ theorem range_abs : range Complex.abs = Ici 0 :=
 theorem abs_conj (z : ℂ) : Complex.abs (conj z) = Complex.abs z :=
   AbsTheory.abs_conj z
 
--- Porting note (#10618): @[simp] can prove it now
 theorem abs_prod {ι : Type*} (s : Finset ι) (f : ι → ℂ) :
     Complex.abs (s.prod f) = s.prod fun I => Complex.abs (f I) :=
   map_prod Complex.abs _ _
 
--- @[simp]
-/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
-by `simp only [@map_pow]` -/
-theorem abs_pow (z : ℂ) (n : ℕ) : Complex.abs (z ^ n) = Complex.abs z ^ n :=
+protected theorem abs_pow (z : ℂ) (n : ℕ) : Complex.abs (z ^ n) = Complex.abs z ^ n :=
   map_pow Complex.abs z n
 
--- @[simp]
-/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
-by `simp only [@map_zpow₀]` -/
 theorem abs_zpow (z : ℂ) (n : ℤ) : Complex.abs (z ^ n) = Complex.abs z ^ n :=
   map_zpow₀ Complex.abs z n
 
@@ -155,35 +147,30 @@ theorem im_le_abs (z : ℂ) : z.im ≤ Complex.abs z :=
 @[simp]
 theorem abs_re_lt_abs {z : ℂ} : |z.re| < Complex.abs z ↔ z.im ≠ 0 := by
   rw [Complex.abs, AbsoluteValue.coe_mk, MulHom.coe_mk, Real.lt_sqrt (abs_nonneg _), normSq_apply,
-    _root_.sq_abs, ← sq, lt_add_iff_pos_right, mul_self_pos]
+    sq_abs, ← sq, lt_add_iff_pos_right, mul_self_pos]
 
 @[simp]
 theorem abs_im_lt_abs {z : ℂ} : |z.im| < Complex.abs z ↔ z.re ≠ 0 := by
   simpa using @abs_re_lt_abs (z * I)
 
 @[simp]
-lemma abs_re_eq_abs {z : ℂ} : |z.re| = abs z ↔ z.im = 0 :=
+lemma abs_re_eq_abs {z : ℂ} : |z.re| = Complex.abs z ↔ z.im = 0 :=
   not_iff_not.1 <| (abs_re_le_abs z).lt_iff_ne.symm.trans abs_re_lt_abs
 
 @[simp]
-lemma abs_im_eq_abs {z : ℂ} : |z.im| = abs z ↔ z.re = 0 :=
+lemma abs_im_eq_abs {z : ℂ} : |z.im| = Complex.abs z ↔ z.re = 0 :=
   not_iff_not.1 <| (abs_im_le_abs z).lt_iff_ne.symm.trans abs_im_lt_abs
 
 @[simp]
-theorem abs_abs (z : ℂ) : |Complex.abs z| = Complex.abs z :=
-  _root_.abs_of_nonneg (AbsoluteValue.nonneg _ z)
+protected theorem abs_abs (z : ℂ) : |Complex.abs z| = Complex.abs z :=
+  abs_of_nonneg (AbsoluteValue.nonneg _ z)
 
 -- Porting note: probably should be golfed
 theorem abs_le_abs_re_add_abs_im (z : ℂ) : Complex.abs z ≤ |z.re| + |z.im| := by
   simpa [re_add_im] using Complex.abs.add_le z.re (z.im * I)
 
--- Porting note: added so `two_pos` in the next proof works
--- TODO: move somewhere else
-instance : NeZero (1 : ℝ) :=
- ⟨by apply one_ne_zero⟩
-
 theorem abs_le_sqrt_two_mul_max (z : ℂ) : Complex.abs z ≤ Real.sqrt 2 * max |z.re| |z.im| := by
-  cases' z with x y
+  obtain ⟨x, y⟩ := z
   simp only [abs_apply, normSq_mk, ← sq]
   by_cases hle : |x| ≤ |y|
   · calc
@@ -201,18 +188,16 @@ theorem abs_le_sqrt_two_mul_max (z : ℂ) : Complex.abs z ≤ Real.sqrt 2 * max 
 
 theorem abs_re_div_abs_le_one (z : ℂ) : |z.re / Complex.abs z| ≤ 1 :=
   if hz : z = 0 then by simp [hz, zero_le_one]
-  else by simp_rw [_root_.abs_div, abs_abs,
+  else by simp_rw [abs_div, Complex.abs_abs,
     div_le_iff₀ (AbsoluteValue.pos Complex.abs hz), one_mul, abs_re_le_abs]
 
 theorem abs_im_div_abs_le_one (z : ℂ) : |z.im / Complex.abs z| ≤ 1 :=
   if hz : z = 0 then by simp [hz, zero_le_one]
-  else by simp_rw [_root_.abs_div, abs_abs,
+  else by simp_rw [_root_.abs_div, Complex.abs_abs,
     div_le_iff₀ (AbsoluteValue.pos Complex.abs hz), one_mul, abs_im_le_abs]
 
-@[simp, norm_cast] lemma abs_intCast (n : ℤ) : abs n = |↑n| := by rw [← ofReal_intCast, abs_ofReal]
-
-@[deprecated (since := "2024-02-14")]
-lemma int_cast_abs (n : ℤ) : |↑n| = Complex.abs n := (abs_intCast _).symm
+@[simp, norm_cast] lemma abs_intCast (n : ℤ) : Complex.abs n = |↑n| := by
+  rw [← ofReal_intCast, abs_ofReal]
 
 theorem normSq_eq_abs (x : ℂ) : normSq x = (Complex.abs x) ^ 2 := by
   simp [abs, sq, abs_def, Real.mul_self_sqrt (normSq_nonneg _)]
@@ -258,7 +243,7 @@ theorem equiv_limAux (f : CauSeq ℂ Complex.abs) :
   (CauSeq.equiv_lim ⟨_, isCauSeq_re f⟩ _ (half_pos ε0))
         (CauSeq.equiv_lim ⟨_, isCauSeq_im f⟩ _ (half_pos ε0))).imp
     fun _ H j ij => by
-    cases' H _ ij with H₁ H₂
+    obtain ⟨H₁, H₂⟩ := H _ ij
     apply lt_of_le_of_lt (abs_le_abs_re_add_abs_im _)
     dsimp [limAux] at *
     have := add_lt_add H₁ H₂
@@ -307,10 +292,16 @@ theorem lim_abs (f : CauSeq ℂ Complex.abs) : lim (cauSeqAbs f) = Complex.abs (
     let ⟨i, hi⟩ := equiv_lim f ε ε0
     ⟨i, fun j hj => lt_of_le_of_lt (Complex.abs.abs_abv_sub_le_abv_sub _ _) (hi j hj)⟩
 
+lemma ne_zero_of_re_pos {s : ℂ} (hs : 0 < s.re) : s ≠ 0 :=
+  fun h ↦ (zero_re ▸ h ▸ hs).false
+
 lemma ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : s ≠ 0 :=
-  fun h ↦ ((zero_re ▸ h ▸ hs).trans zero_lt_one).false
+  ne_zero_of_re_pos <| zero_lt_one.trans hs
+
+lemma re_neg_ne_zero_of_re_pos {s : ℂ} (hs : 0 < s.re) : (-s).re ≠ 0 :=
+  ne_iff_lt_or_gt.mpr <| Or.inl <| neg_re s ▸ (neg_lt_zero.mpr hs)
 
 lemma re_neg_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : (-s).re ≠ 0 :=
-  ne_iff_lt_or_gt.mpr <| Or.inl <| neg_re s ▸ by linarith
+  re_neg_ne_zero_of_re_pos <| zero_lt_one.trans hs
 
 end Complex

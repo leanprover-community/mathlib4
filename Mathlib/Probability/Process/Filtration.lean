@@ -3,6 +3,7 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
 -/
+import Mathlib.MeasureTheory.Constructions.Cylinders
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
 
 /-!
@@ -32,7 +33,7 @@ filtration, stochastic process
 
 open Filter Order TopologicalSpace
 
-open scoped Classical MeasureTheory NNReal ENNReal Topology
+open scoped MeasureTheory NNReal ENNReal Topology
 
 namespace MeasureTheory
 
@@ -88,7 +89,7 @@ instance : Bot (Filtration ι m) :=
 instance : Top (Filtration ι m) :=
   ⟨const ι m le_rfl⟩
 
-instance : Sup (Filtration ι m) :=
+instance : Max (Filtration ι m) :=
   ⟨fun f g =>
     { seq := fun i => f i ⊔ g i
       mono' := fun _ _ hij =>
@@ -99,7 +100,7 @@ instance : Sup (Filtration ι m) :=
 theorem coeFn_sup {f g : Filtration ι m} : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
   rfl
 
-instance : Inf (Filtration ι m) :=
+instance : Min (Filtration ι m) :=
   ⟨fun f g =>
     { seq := fun i => f i ⊓ g i
       mono' := fun _ _ hij =>
@@ -132,6 +133,7 @@ theorem sSup_def (s : Set (Filtration ι m)) (i : ι) :
     sSup s i = sSup ((fun f : Filtration ι m => f i) '' s) :=
   rfl
 
+open scoped Classical in
 noncomputable instance : InfSet (Filtration ι m) :=
   ⟨fun s =>
     { seq := fun i => if Set.Nonempty s then sInf ((fun f : Filtration ι m => f i) '' s) else m
@@ -150,6 +152,7 @@ noncomputable instance : InfSet (Filtration ι m) :=
         obtain ⟨f, hf_mem⟩ := h_nonempty
         exact le_trans (sInf_le ⟨f, hf_mem, rfl⟩) (f.le i) }⟩
 
+open scoped Classical in
 theorem sInf_def (s : Set (Filtration ι m)) (i : ι) :
     sInf s i = if Set.Nonempty s then sInf ((fun f : Filtration ι m => f i) '' s) else m :=
   rfl
@@ -211,10 +214,14 @@ instance (priority := 100) IsFiniteMeasure.sigmaFiniteFiltration [Preorder ι] (
 
 /-- Given an integrable function `g`, the conditional expectations of `g` with respect to a
 filtration is uniformly integrable. -/
-theorem Integrable.uniformIntegrable_condexp_filtration [Preorder ι] {μ : Measure Ω}
+theorem Integrable.uniformIntegrable_condExp_filtration [Preorder ι] {μ : Measure Ω}
     [IsFiniteMeasure μ] {f : Filtration ι m} {g : Ω → ℝ} (hg : Integrable g μ) :
     UniformIntegrable (fun i => μ[g|f i]) 1 μ :=
-  hg.uniformIntegrable_condexp f.le
+  hg.uniformIntegrable_condExp f.le
+
+@[deprecated (since := "2025-01-21")]
+alias Integrable.uniformIntegrable_condexp_filtration :=
+  Integrable.uniformIntegrable_condExp_filtration
 
 section OfSet
 
@@ -290,6 +297,7 @@ section Limit
 variable {E : Type*} [Zero E] [TopologicalSpace E] {ℱ : Filtration ι m} {f : ι → Ω → E}
   {μ : Measure Ω}
 
+open scoped Classical in
 /-- Given a process `f` and a filtration `ℱ`, if `f` converges to some `g` almost everywhere and
 `g` is `⨆ n, ℱ n`-measurable, then `limitProcess f ℱ μ` chooses said `g`, else it returns 0.
 
@@ -321,12 +329,17 @@ theorem memℒp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : 
         (lt_of_le_of_lt ?_ (ENNReal.coe_lt_top : ↑R < ∞))⟩
     simp_rw [liminf_eq, eventually_atTop]
     exact sSup_le fun b ⟨a, ha⟩ => (ha a le_rfl).trans (hbdd _)
-  · exact zero_memℒp
-
-@[deprecated (since := "2024-07-27")]
-alias memℒp_limitProcess_of_snorm_bdd := memℒp_limitProcess_of_eLpNorm_bdd
+  · exact Memℒp.zero
 
 end Limit
+
+variable {α : Type*}
+
+/-- The exterior σ-algebras of finite sets of `α` form a cofiltration indexed by `Finset α`. -/
+def cylinderEventsCompl : Filtration (Finset α)ᵒᵈ (.pi (π := fun _ : α ↦ Ω)) where
+  seq Λ := cylinderEvents (↑(OrderDual.ofDual Λ))ᶜ
+  mono' _ _ h := cylinderEvents_mono <| Set.compl_subset_compl_of_subset h
+  le' _  := cylinderEvents_le_pi
 
 end Filtration
 

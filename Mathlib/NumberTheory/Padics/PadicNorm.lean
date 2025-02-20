@@ -64,7 +64,6 @@ protected theorem nonneg (q : ℚ) : 0 ≤ padicNorm p q :=
 protected theorem zero : padicNorm p 0 = 0 := by simp [padicNorm]
 
 /-- The `p`-adic norm of `1` is `1`. -/
--- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem one : padicNorm p 1 = 1 := by simp [padicNorm]
 
 /-- The `p`-adic norm of `p` is `p⁻¹` if `p > 1`.
@@ -228,9 +227,9 @@ theorem dvd_iff_norm_le {n : ℕ} {z : ℤ} : ↑(p ^ n) ∣ z ↔ padicNorm p z
   · rw [zpow_le_zpow_iff_right₀, neg_le_neg_iff, padicValRat.of_int,
       padicValInt.of_ne_one_ne_zero hp.1.ne_one _]
     · norm_cast
-      rw [← multiplicity.Finite.pow_dvd_iff_le_multiplicity]
+      rw [← FiniteMultiplicity.pow_dvd_iff_le_multiplicity]
       · norm_cast
-      · apply Int.multiplicity_finite_iff.2 ⟨by simp [hp.out.ne_one], mod_cast hz⟩
+      · apply Int.finiteMultiplicity_iff.2 ⟨by simp [hp.out.ne_one], mod_cast hz⟩
     · exact_mod_cast hz
     · exact_mod_cast hp.out.one_lt
 

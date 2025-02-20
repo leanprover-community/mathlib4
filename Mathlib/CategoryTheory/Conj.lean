@@ -63,11 +63,11 @@ theorem symm_self_conj (f : End X) : α.symm.conj (α.conj f) = f := by
 theorem self_symm_conj (f : End Y) : α.conj (α.symm.conj f) = f :=
   α.symm.symm_self_conj f
 
-/- Porting note (#10618): removed `@[simp]`; simp can prove this -/
+@[simp]
 theorem conj_pow (f : End X) (n : ℕ) : α.conj (f ^ n) = α.conj f ^ n :=
   α.conj.toMonoidHom.map_pow f n
 
--- Porting note (#11215): TODO: change definition so that `conjAut_apply` becomes a `rfl`?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: change definition so that `conjAut_apply` becomes a `rfl`?
 /-- `conj` defines a group isomorphisms between groups of automorphisms -/
 def conjAut : Aut X ≃* Aut Y :=
   (Aut.unitsEndEquivAut X).symm.trans <| (Units.mapEquiv α.conj).trans <| Aut.unitsEndEquivAut Y
@@ -83,7 +83,7 @@ theorem trans_conjAut {Z : C} (β : Y ≅ Z) (f : Aut X) :
     (α ≪≫ β).conjAut f = β.conjAut (α.conjAut f) := by
   simp only [conjAut_apply, Iso.trans_symm, Iso.trans_assoc]
 
-/- Porting note (#10618): removed `@[simp]`; simp can prove this -/
+@[simp]
 theorem conjAut_mul (f g : Aut X) : α.conjAut (f * g) = α.conjAut f * α.conjAut g :=
   map_mul α.conjAut f g
 
@@ -91,11 +91,11 @@ theorem conjAut_mul (f g : Aut X) : α.conjAut (f * g) = α.conjAut f * α.conjA
 theorem conjAut_trans (f g : Aut X) : α.conjAut (f ≪≫ g) = α.conjAut f ≪≫ α.conjAut g :=
   conjAut_mul α g f
 
-/- Porting note (#10618): removed `@[simp]`; simp can prove this -/
+@[simp]
 theorem conjAut_pow (f : Aut X) (n : ℕ) : α.conjAut (f ^ n) = α.conjAut f ^ n :=
   map_pow α.conjAut f n
 
-/- Porting note (#10618): removed `@[simp]`; simp can prove this -/
+@[simp]
 theorem conjAut_zpow (f : Aut X) (n : ℤ) : α.conjAut (f ^ n) = α.conjAut f ^ n :=
   map_zpow α.conjAut f n
 

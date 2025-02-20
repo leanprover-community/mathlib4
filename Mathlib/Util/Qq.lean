@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison, Alex J. Best
+Authors: Kim Morrison, Alex J. Best, Yaël Dillies
 -/
 import Mathlib.Init
 import Qq
@@ -27,5 +27,12 @@ def inferTypeQ' (e : Expr) : MetaM ((u : Level) × (α : Q(Type $u)) × Q($α)) 
   pure ⟨v, α, e⟩
 
 theorem QuotedDefEq.rfl {u : Level} {α : Q(Sort u)} {a : Q($α)} : @QuotedDefEq u α a a := ⟨⟩
+
+/-- Return a local declaration whose type is definitionally equal to `sort`.
+
+This is a Qq version of `Lean.Meta.findLocalDeclWithType?` -/
+def findLocalDeclWithTypeQ? {u : Level} (sort : Q(Sort u)) : MetaM (Option Q($sort)) := do
+  let some fvarId ← findLocalDeclWithType? q($sort) | return none
+  return some <| .fvar fvarId
 
 end Qq

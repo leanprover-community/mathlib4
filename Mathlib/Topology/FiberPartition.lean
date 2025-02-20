@@ -14,7 +14,7 @@ function.
 Note: this API is designed to be useful when defining the counit of the adjunction between
 the functor which takes a set to the condensed set corresponding to locally constant maps to that
 set, and the forgetful functor from the category of condensed sets to the category of sets
-(see PR #14027).
+(see PR https://github.com/leanprover-community/mathlib4/pull/14027).
 -/
 
 

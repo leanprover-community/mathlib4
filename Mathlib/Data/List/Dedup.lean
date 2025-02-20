@@ -160,4 +160,11 @@ theorem replicate_dedup {x : α} : ∀ {k}, k ≠ 0 → (replicate k x).dedup = 
 theorem count_dedup (l : List α) (a : α) : l.dedup.count a = if a ∈ l then 1 else 0 := by
   simp_rw [count_eq_of_nodup <| nodup_dedup l, mem_dedup]
 
+theorem Perm.dedup {l₁ l₂ : List α} (p : l₁ ~ l₂) : dedup l₁ ~ dedup l₂ :=
+  perm_iff_count.2 fun a =>
+    if h : a ∈ l₁ then by
+      simp [h, nodup_dedup, p.subset h]
+    else by
+      simp [h, count_eq_zero_of_not_mem, mt p.mem_iff.2]
+
 end List

@@ -38,10 +38,12 @@ specified declaration should be one of the following:
 
 1. An inductive type (i.e. the `Algebra` property itself), in this case it is assumed that the
 `RingHom` and the `Algebra` property are definitionally the same, and the tactic will construct the
-`Algebra` property by giving the `RingHom` property as a term.
-2. A constructor for the `Algebra` property. In this case it is assumed that the `RingHom` property
-is the last argument of the constructor, and that no other explicit argument is needed. The tactic
-then constructs the `Algebra` property by applying the constructor to the `RingHom` property.
+`Algebra` property by giving the `RingHom` property as a term. Due to how this is performed, we also
+need to assume that the `Algebra` property can be constructed only from the homomorphism, so it can
+not have any other explicit arguments.
+2. A lemma (or constructor) proving the `Algebra` property from the `RingHom` property. In this case
+it is assumed that the `RingHom` property is the final argument, and that no other explicit argument
+is needed. The tactic then constructs the `Algebra` property by applying the lemma or constructor.
 
 Here are three examples of properties tagged with the `algebraize` attribute:
 ```
@@ -98,9 +100,9 @@ There are two cases for what declaration corresponding to this `Name` can be.
 1. An inductive type (i.e. the `Algebra` property itself), in this case it is assumed that the
 `RingHom` and the `Algebra` property are definitionally the same, and the tactic will construct the
 `Algebra` property by giving the `RingHom` property as a term.
-2. A constructor for the `Algebra` property. In this case it is assumed that the `RingHom` property
-is the last argument of the constructor, and that no other explicit argument is needed. The tactic
-then constructs the `Algebra` property by applying the constructor to the `RingHom` property.
+2. A lemma (or constructor) proving the `Algebra` property from the `RingHom` property. In this case
+it is assumed that the `RingHom` property is the final argument, and that no other explicit argument
+is needed. The tactic then constructs the `Algebra` property by applying the lemma or constructor.
 
 Finally, if no argument is provided to the `algebraize` attribute, it is assumed that the tagged
 declaration has name `RingHom.Property` and that the corresponding `Algebra` property has name
@@ -122,7 +124,7 @@ namespace Algebraize
 /-- Given an expression `f` of type `RingHom A B` where `A` and `B` are commutative semirings,
 this function adds the instance `Algebra A B` to the context (if it does not already exist).
 
-This function also requries the type of `f`, given by the parameter `ft`. The reason this is done
+This function also requires the type of `f`, given by the parameter `ft`. The reason this is done
 (even though `ft` can be inferred from `f`) is to avoid recomputing `ft` in the `algebraize` tactic,
 as when `algebraize` calls `addAlgebraInstanceFromRingHom` it has already computed `ft`. -/
 def addAlgebraInstanceFromRingHom (f ft : Expr) : TacticM Unit := withMainContext do
@@ -171,7 +173,8 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
     let (nm, args) := decl.type.getAppFnArgs
     -- Check if the type of the current hypothesis has been tagged with the `algebraize` attribute
     match Attr.algebraizeAttr.getParam? (← getEnv) nm with
-    -- If it has, `p` will be the name of the corresponding `Algebra` property (or a constructor)
+    -- If it has, `p` will either be the name of the corresponding `Algebra` property, or a
+    -- lemma/constructor.
     | some p =>
       -- The last argument of the `RingHom` property is assumed to be `f`
       let f := args[args.size - 1]!
@@ -184,42 +187,27 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
       /- If the attribute points to the corresponding `Algebra` property itself, we assume that it
       is definitionally the same as the `RingHom` property. Then, we just need to construct its type
       and the local declaration will already give a valid term. -/
-      match cinfo with
-      | .inductInfo _ =>
+      if cinfo.isInductive then
         let pargs := pargs.set! 0 args[0]!
         let pargs := pargs.set! 1 args[1]!
         let tp ← mkAppOptM p pargs -- This should be the type `Algebra.Property A B`
         unless (← synthInstance? tp).isSome do
         liftMetaTactic fun mvarid => do
           let nm ← mkFreshBinderNameForTactic `algebraizeInst
-          let mvar ← mvarid.define nm tp decl.toExpr
-          let (_, mvar) ← mvar.intro1P
+          let (_, mvar) ← mvarid.note nm decl.toExpr tp
           return [mvar]
-      /- Otherwise, the attribute points to a constructor of the `Algebra` property. In this case,
-      we assume that the `RingHom` property is the last argument of the constructor (and that
-      this is all we need to supply explicitly). -/
-      | .ctorInfo ctor =>
-        -- construct the desired value
+      /- Otherwise, the attribute points to a lemma or a constructor for the `Algebra` property.
+      In this case, we assume that the `RingHom` property is the last argument of the lemma or
+      constructor (and that this is all we need to supply explicitly). -/
+      else
         let pargs := pargs.set! (n - 1) decl.toExpr
         let val ← mkAppOptM p pargs
-
-        -- construct the expected type
-        let alg ← mkAppOptM ``Algebra #[args[0]!, args[1]!, none, none]
-        let algInst := (← synthInstance? alg)
-        let mut argsType := Array.mkArray (ctor.numParams) (none : Option Expr)
-        argsType := argsType.set! 0 args[0]!
-        argsType := argsType.set! 1 args[1]!
-        argsType := argsType.set! (ctor.numParams - 1) algInst
-        let tp := ← mkAppOptM ctor.induct argsType
-
+        let tp ← inferType val
         unless (← synthInstance? tp).isSome do
         liftMetaTactic fun mvarid => do
           let nm ← mkFreshBinderNameForTactic `algebraizeInst
-          let mvar ← mvarid.define nm tp val
-          let (_, mvar) ← mvar.intro1P
+          let (_, mvar) ← mvarid.note nm val
           return [mvar]
-      | _ => logError s!"bad argument to `algebraize` attribute: {p}. \
-        Only supporting inductive types or constructors."
     | none => return
 
 /-- Configuration for `algebraize`. -/
@@ -253,11 +241,11 @@ tactic searches through the local context for `RingHom` properties that can be c
 `Algebra` properties. The macro `algebraize_only` calls
 `algebraize (config := {properties := false})`,
 so in other words it only adds `Algebra` and `IsScalarTower` instances. -/
-syntax "algebraize" (ppSpace config)? (ppSpace algebraizeTermSeq)? : tactic
+syntax "algebraize " optConfig (algebraizeTermSeq)? : tactic
 
 elab_rules : tactic
-  | `(tactic| algebraize $[$config]? $args) => withMainContext do
-    let cfg ← elabAlgebraizeConfig (mkOptionalNode config)
+  | `(tactic| algebraize $cfg:optConfig $args) => withMainContext do
+    let cfg ← elabAlgebraizeConfig cfg
     let t ← match args with
     | `(algebraizeTermSeq| [$rs,*]) => rs.getElems.mapM fun i => Term.elabTerm i none
     | _ =>
@@ -290,9 +278,7 @@ but does not try to add any instances about any properties tagged with
 syntax "algebraize_only" (ppSpace algebraizeTermSeq)? : tactic
 
 macro_rules
-  | `(tactic| algebraize_only $args) =>
-    `(tactic| algebraize (config := {properties := false}) $args)
-  | `(tactic| algebraize_only) =>
-    `(tactic| algebraize (config := {properties := false}))
+  | `(tactic| algebraize_only $[$args]?) =>
+    `(tactic| algebraize -properties $[$args]?)
 
 end Mathlib.Tactic

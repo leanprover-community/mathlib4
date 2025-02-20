@@ -3,13 +3,14 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Alex Keizer
 -/
+import Mathlib.Algebra.Group.Nat.Even
+import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.List.GetD
 import Mathlib.Data.Nat.Bits
-import Mathlib.Algebra.Ring.Nat
 import Mathlib.Order.Basic
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Common
-import Mathlib.Algebra.NeZero
 
 /-!
 # Bitwise operations on natural numbers
@@ -36,7 +37,6 @@ should be connected.
 bitwise, and, or, xor
 -/
 
-
 open Function
 
 namespace Nat
@@ -51,7 +51,7 @@ lemma bitwise_zero_left (m : Nat) : bitwise f 0 m = if f false true then m else 
 @[simp]
 lemma bitwise_zero_right (n : Nat) : bitwise f n 0 = if f true false then n else 0 := by
   unfold bitwise
-  simp only [ite_self, decide_False, Nat.zero_div, ite_true, ite_eq_right_iff]
+  simp only [ite_self, decide_false, Nat.zero_div, ite_true, ite_eq_right_iff]
   rintro ⟨⟩
   split_ifs <;> rfl
 
@@ -69,40 +69,29 @@ lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
 theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n → C (bit b n)) {n}
     (h : n ≠ 0) :
     binaryRec z f n = bit_decomp n ▸ f (bodd n) (div2 n) (binaryRec z f (div2 n)) := by
-  rw [Eq.rec_eq_cast]
-  rw [binaryRec]
-  dsimp only
-  rw [dif_neg h, eq_mpr_eq_cast]
+  cases n using bitCasesOn with
+  | h b n =>
+    rw [binaryRec_eq _ _ (by right; simpa [bit_eq_zero_iff] using h)]
+    generalize_proofs h; revert h
+    rw [bodd_bit, div2_bit]
+    simp
 
 @[simp]
 lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
   conv_lhs => unfold bitwise
-  #adaptation_note /-- nightly-2024-03-16: simp was
-  -- simp (config := { unfoldPartialApp := true }) only [bit, bit1, bit0, Bool.cond_eq_ite] -/
   simp only [bit, ite_apply, Bool.cond_eq_ite]
-  have h2 x : (x + x + 1) % 2 = 1 := by rw [← two_mul, add_comm]; apply add_mul_mod_self_left
   have h4 x : (x + x + 1) / 2 = x := by rw [← two_mul, add_comm]; simp [add_mul_div_left]
-  cases a <;> cases b <;> simp [h2, h4] <;> split_ifs
-    <;> simp_all (config := {decide := true}) [two_mul]
+  cases a <;> cases b <;> simp [h4] <;> split_ifs
+    <;> simp_all +decide [two_mul]
 
-lemma bit_mod_two (a : Bool) (x : ℕ) :
-    bit a x % 2 = if a then 1 else 0 := by
-  #adaptation_note /-- nightly-2024-03-16: simp was
-  -- simp (config := { unfoldPartialApp := true }) only [bit, bit1, bit0, ← mul_two,
-  --   Bool.cond_eq_ite] -/
-  simp only [bit, ite_apply, ← mul_two, Bool.cond_eq_ite]
-  split_ifs <;> simp [Nat.add_mod]
-
-@[simp]
 lemma bit_mod_two_eq_zero_iff (a x) :
     bit a x % 2 = 0 ↔ !a := by
-  rw [bit_mod_two]; split_ifs <;> simp_all
+  simp
 
-@[simp]
 lemma bit_mod_two_eq_one_iff (a x) :
     bit a x % 2 = 1 ↔ a := by
-  rw [bit_mod_two]; split_ifs <;> simp_all
+  simp
 
 @[simp]
 theorem lor_bit : ∀ a m b n, bit a m ||| bit b n = bit (a || b) (m ||| n) :=
@@ -144,12 +133,10 @@ theorem bit_false : bit false = (2 * ·) :=
 theorem bit_true : bit true = (2 * · + 1) :=
   rfl
 
-@[simp]
-theorem bit_eq_zero {n : ℕ} {b : Bool} : n.bit b = 0 ↔ n = 0 ∧ b = false := by
-  cases b <;> simp [bit, Nat.mul_eq_zero]
+@[deprecated (since := "2024-10-19")] alias bit_eq_zero := bit_eq_zero_iff
 
 theorem bit_ne_zero_iff {n : ℕ} {b : Bool} : n.bit b ≠ 0 ↔ n = 0 → b = true := by
-  simpa only [not_and, Bool.not_eq_false] using (@bit_eq_zero n b).not
+  simp
 
 /-- An alternative for `bitwise_bit` which replaces the `f false false = false` assumption
 with assumptions that neither `bit a m` nor `bit b n` are `0`
@@ -252,8 +239,8 @@ theorem bitwise_swap {f : Bool → Bool → Bool} :
   funext m n
   simp only [Function.swap]
   induction' m using Nat.strongRecOn with m ih generalizing n
-  cases' m with m
-  <;> cases' n with n
+  rcases m with - | m
+  <;> rcases n with - | n
   <;> try rw [bitwise_zero_left, bitwise_zero_right]
   · specialize ih ((m+1) / 2) (div_lt_self' ..)
     simp [bitwise_of_ne_zero, ih]
@@ -275,7 +262,7 @@ theorem land_comm (n m : ℕ) : n &&& m = m &&& n :=
 
 lemma and_two_pow (n i : ℕ) : n &&& 2 ^ i = (n.testBit i).toNat * 2 ^ i := by
   refine eq_of_testBit_eq fun j => ?_
-  obtain rfl | hij := Decidable.eq_or_ne i j <;> cases' h : n.testBit i
+  obtain rfl | hij := Decidable.eq_or_ne i j <;> cases h : n.testBit i
   · simp [h]
   · simp [h]
   · simp [h, testBit_two_pow_of_ne hij]
@@ -292,7 +279,7 @@ macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic| (
   induction' m using Nat.binaryRec with b' m hm
   · simp
   induction' k using Nat.binaryRec with b'' k hk
-  -- porting note (#10745): was `simp [hn]`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [hn]`
   -- This is necessary because these are simp lemmas in mathlib
   <;> simp [hn, Bool.or_assoc, Bool.and_assoc, Bool.bne_eq_xor]))
 
@@ -363,32 +350,33 @@ theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b <
   obtain ha | hb | hc := xor_trichotomy <| Nat.xor_assoc _ _ _ ▸ xor_ne_zero.2 h.ne
   exacts [(h.asymm ha).elim, Or.inl <| Nat.xor_comm _ _ ▸ hb, Or.inr hc]
 
+@[simp]
+theorem xor_mod_two_eq {m n : ℕ} : (m ^^^ n) % 2 = (m + n) % 2 := by
+  by_cases h : (m + n) % 2 = 0
+  · simp only [h, mod_two_eq_zero_iff_testBit_zero, testBit_zero, xor_mod_two_eq_one, decide_not,
+      Bool.decide_iff_dist, Bool.not_eq_false', beq_iff_eq, decide_eq_decide]
+    omega
+  · simp only [mod_two_ne_zero] at h
+    simp only [h, xor_mod_two_eq_one]
+    omega
+
+@[simp]
+theorem even_xor {m n : ℕ} : Even (m ^^^ n) ↔ (Even m ↔ Even n) := by
+  simp only [even_iff, xor_mod_two_eq]
+  omega
+
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
   cases b <;> simp <;> omega
 
-/-- If `x` and `y` fit within `n` bits, then the result of any bitwise operation on `x` and `y` also
-fits within `n` bits -/
-theorem bitwise_lt {f x y n} (hx : x < 2 ^ n) (hy : y < 2 ^ n) :
-    bitwise f x y < 2 ^ n := by
-  induction x using Nat.binaryRec' generalizing n y with
-  | z =>
-    simp only [bitwise_zero_left]
-    split <;> assumption
-  | @f bx nx hnx ih =>
-    cases y using Nat.binaryRec' with
-    | z =>
-      simp only [bitwise_zero_right]
-      split <;> assumption
-    | f «by» ny hny =>
-      rw [bitwise_bit' _ _ _ _ hnx hny]
-      cases n <;> simp_all
+@[deprecated bitwise_lt_two_pow (since := "2024-12-28")]
+alias bitwise_lt := bitwise_lt_two_pow
 
 lemma shiftLeft_lt {x n m : ℕ} (h : x < 2 ^ n) : x <<< m < 2 ^ (n + m) := by
   simp only [Nat.pow_add, shiftLeft_eq, Nat.mul_lt_mul_right (Nat.two_pow_pos _), h]
 
 /-- Note that the LHS is the expression used within `Std.BitVec.append`, hence the name. -/
 lemma append_lt {x y n m} (hx : x < 2 ^ n) (hy : y < 2 ^ m) : y <<< n ||| x < 2 ^ (n + m) := by
-  apply bitwise_lt
+  apply bitwise_lt_two_pow
   · rw [add_comm]; apply shiftLeft_lt hy
   · apply lt_of_lt_of_le hx <| Nat.pow_le_pow_right (le_succ _) (le_add_right _ _)
 

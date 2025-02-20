@@ -67,10 +67,8 @@ instance {α : Type u₁} [DecidableEq α] : DecidableEq (Discrete α) :=
 /-- The "Discrete" category on a type, whose morphisms are equalities.
 
 Because we do not allow morphisms in `Prop` (only in `Type`),
-somewhat annoyingly we have to define `X ⟶ Y` as `ULift (PLift (X = Y))`.
-
-See <https://stacks.math.columbia.edu/tag/001A>
--/
+somewhat annoyingly we have to define `X ⟶ Y` as `ULift (PLift (X = Y))`. -/
+@[stacks 001A]
 instance discreteCategory (α : Type u₁) : SmallCategory (Discrete α) where
   Hom X Y := ULift (PLift (X.as = Y.as))
   id _ := ULift.up (PLift.up rfl)
@@ -169,19 +167,13 @@ theorem functor_obj {I : Type u₁} (F : I → C) (i : I) :
     (Discrete.functor F).obj (Discrete.mk i) = F i :=
   rfl
 
-@[simp]
 theorem functor_map {I : Type u₁} (F : I → C) {i : Discrete I} (f : i ⟶ i) :
     (Discrete.functor F).map f = 𝟙 (F i.as) := by aesop_cat
-@[deprecated (since := "2024-07-16")]
-alias CategoryTheory.FreeMonoidalCategory.discrete_functor_map_eq_id := functor_map
 
 @[simp]
 theorem functor_obj_eq_as {I : Type u₁} (F : I → C) (X : Discrete I) :
     (Discrete.functor F).obj X = F X.as :=
   rfl
-@[deprecated (since := "2024-07-16")]
-alias CategoryTheory.FreeMonoidalCategory.discrete_functor_obj_eq_as := functor_obj_eq_as
-
 /-- The discrete functor induced by a composition of maps can be written as a
 composition of two discrete functors.
 -/
@@ -246,9 +238,9 @@ def equivalence {I : Type u₁} {J : Type u₂} (e : I ≃ J) : Discrete I ≌ D
   functor := Discrete.functor (Discrete.mk ∘ (e : I → J))
   inverse := Discrete.functor (Discrete.mk ∘ (e.symm : J → I))
   unitIso :=
-    Discrete.natIso fun i => eqToIso (by aesop_cat)
+    Discrete.natIso fun i => eqToIso (by simp)
   counitIso :=
-    Discrete.natIso fun j => eqToIso (by aesop_cat)
+    Discrete.natIso fun j => eqToIso (by simp)
 
 /-- We can convert an equivalence of `discrete` categories to a type-level `Equiv`. -/
 @[simps]
@@ -303,5 +295,25 @@ def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁
       obtain rfl : x = y := Discrete.eq_of_hom f
       obtain rfl : f = 𝟙 _ := rfl
       simp))) (by aesop_cat)
+
+/-- A category is discrete when there is at most one morphism between two objects,
+in which case they are equal. -/
+class IsDiscrete (C : Type*) [Category C] : Prop where
+  subsingleton (X Y : C) : Subsingleton (X ⟶ Y) := by infer_instance
+  eq_of_hom {X Y : C} (f : X ⟶ Y) : X = Y
+
+attribute [instance] IsDiscrete.subsingleton
+
+lemma obj_ext_of_isDiscrete {C : Type*} [Category C] [IsDiscrete C]
+    {X Y : C} (f : X ⟶ Y) : X = Y := IsDiscrete.eq_of_hom f
+
+instance Discrete.isDiscrete (C : Type*) : IsDiscrete (Discrete C) where
+  eq_of_hom := by rintro ⟨_⟩ ⟨_⟩ ⟨⟨rfl⟩⟩; rfl
+
+instance (C : Type*) [Category C] [IsDiscrete C] : IsDiscrete Cᵒᵖ where
+  eq_of_hom := by
+    rintro ⟨_⟩ ⟨_⟩ ⟨f⟩
+    obtain rfl := obj_ext_of_isDiscrete f
+    rfl
 
 end CategoryTheory

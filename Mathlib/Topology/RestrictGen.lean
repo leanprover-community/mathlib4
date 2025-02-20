@@ -33,12 +33,11 @@ and provide the others as corollaries.
   to the case `S = {K | IsCompact K}`.
 -/
 
-open Set Filter
-open scoped Topology
+open Filter Set
 
 variable {X : Type*} [TopologicalSpace X] {S : Set (Set X)} {t : Set X} {x : X}
 
-namespace RestrictGenTopology
+namespace Topology.RestrictGenTopology
 
 protected theorem isOpen_iff (hS : RestrictGenTopology S) :
     IsOpen t ↔ ∀ s ∈ S, IsOpen ((↑) ⁻¹' t : Set s) :=
@@ -103,4 +102,4 @@ lemma isCompact_of_weaklyLocallyCompact [WeaklyLocallyCompactSpace X] :
     RestrictGenTopology {K : Set X | IsCompact K} :=
   of_nhds exists_compact_mem_nhds
 
-end RestrictGenTopology
+end Topology.RestrictGenTopology

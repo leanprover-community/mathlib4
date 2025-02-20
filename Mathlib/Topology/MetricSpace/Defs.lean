@@ -78,7 +78,7 @@ theorem dist_pos {x y : γ} : 0 < dist x y ↔ x ≠ y := by
   simpa only [not_le] using not_congr dist_le_zero
 
 theorem eq_of_forall_dist_le {x y : γ} (h : ∀ ε > 0, dist x y ≤ ε) : x = y :=
-  eq_of_dist_eq_zero (eq_of_le_of_forall_le_of_dense dist_nonneg h)
+  eq_of_dist_eq_zero (eq_of_le_of_forall_lt_imp_le_of_dense dist_nonneg h)
 
 /-- Deduce the equality of points from the vanishing of the nonnegative distance -/
 theorem eq_of_nndist_eq_zero {x y : γ} : nndist x y = 0 → x = y := by
@@ -175,7 +175,7 @@ instance : MetricSpace PUnit.{u + 1} where
   dist_triangle _ _ _ := show (0 : ℝ) ≤ 0 + 0 by rw [add_zero]
   toUniformSpace := inferInstance
   uniformity_dist := by
-    simp (config := { contextual := true }) [principal_univ, eq_top_of_neBot (𝓤 PUnit)]
+    simp +contextual [principal_univ, eq_top_of_neBot (𝓤 PUnit)]
 
 /-!
 ### `Additive`, `Multiplicative`
@@ -197,9 +197,9 @@ instance : Dist (Multiplicative X) := ‹Dist X›
 
 @[simp] theorem dist_ofAdd (a b : X) : dist (ofAdd a) (ofAdd b) = dist a b := rfl
 
-@[simp] theorem dist_toMul (a b : Additive X) : dist (toMul a) (toMul b) = dist a b := rfl
+@[simp] theorem dist_toMul (a b : Additive X) : dist a.toMul b.toMul = dist a b := rfl
 
-@[simp] theorem dist_toAdd (a b : Multiplicative X) : dist (toAdd a) (toAdd b) = dist a b := rfl
+@[simp] theorem dist_toAdd (a b : Multiplicative X) : dist a.toAdd b.toAdd = dist a b := rfl
 
 end
 
@@ -211,10 +211,10 @@ variable [PseudoMetricSpace X]
 
 @[simp] theorem nndist_ofAdd (a b : X) : nndist (ofAdd a) (ofAdd b) = nndist a b := rfl
 
-@[simp] theorem nndist_toMul (a b : Additive X) : nndist (toMul a) (toMul b) = nndist a b := rfl
+@[simp] theorem nndist_toMul (a b : Additive X) : nndist a.toMul b.toMul = nndist a b := rfl
 
 @[simp]
-theorem nndist_toAdd (a b : Multiplicative X) : nndist (toAdd a) (toAdd b) = nndist a b := rfl
+theorem nndist_toAdd (a b : Multiplicative X) : nndist a.toAdd b.toAdd = nndist a b := rfl
 
 end
 

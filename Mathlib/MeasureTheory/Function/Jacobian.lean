@@ -211,7 +211,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
       _ < u n := by linarith [u_pos n]
   -- the sets `K n z p` are also closed, again by design.
   have K_closed : ∀ (n) (z : T) (p), IsClosed (K n z p) := fun n z p =>
-    isClosed_closure.inter isClosed_ball
+    isClosed_closure.inter isClosed_closedBall
   -- reindex the sets `K n z p`, to let them only depend on an integer parameter `q`.
   obtain ⟨F, hF⟩ : ∃ F : ℕ → ℕ × T × ℕ, Function.Surjective F := by
     haveI : Encodable T := T_count.toEncodable
@@ -241,6 +241,8 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
   exact subset_closure hnz
 
 variable [MeasurableSpace E] [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ]
+
+open scoped Function -- required for scoped `on` notation
 
 /-- Assume that a function `f` has a derivative at every point of a set `s`. Then one may
 partition `s` into countably many disjoint relatively measurable sets (i.e., intersections
@@ -796,8 +798,9 @@ theorem addHaar_image_le_lintegral_abs_det_fderiv_aux1 (hs : MeasurableSet s)
     have I : ENNReal.ofReal |A.det| < m := by
       simp only [m, ENNReal.ofReal, lt_add_iff_pos_right, εpos, ENNReal.coe_lt_coe]
     rcases ((addHaar_image_le_mul_of_det_lt μ A I).and self_mem_nhdsWithin).exists with ⟨δ, h, δpos⟩
-    obtain ⟨δ', δ'pos, hδ'⟩ : ∃ (δ' : ℝ), 0 < δ' ∧ ∀ B, dist B A < δ' → dist B.det A.det < ↑ε :=
-      continuousAt_iff.1 (ContinuousLinearMap.continuous_det (E := E)).continuousAt ε εpos
+    obtain ⟨δ', δ'pos, hδ'⟩ : ∃ (δ' : ℝ), 0 < δ' ∧ ∀ B, dist B A < δ' → dist B.det A.det < ↑ε := by
+      refine continuousAt_iff.1 ?_ ε εpos
+      exact ContinuousLinearMap.continuous_det.continuousAt
     let δ'' : ℝ≥0 := ⟨δ' / 2, (half_pos δ'pos).le⟩
     refine ⟨min δ δ'', lt_min δpos (half_pos δ'pos), ?_, ?_⟩
     · intro B hB
@@ -883,7 +886,7 @@ theorem addHaar_image_le_lintegral_abs_det_fderiv (hs : MeasurableSet s)
   have u_meas : ∀ n, MeasurableSet (u n) := by
     intro n
     apply MeasurableSet.disjointed fun i => ?_
-    exact measurable_spanningSets μ i
+    exact measurableSet_spanningSets μ i
   have A : s = ⋃ n, s ∩ u n := by
     rw [← inter_iUnion, iUnion_disjointed, iUnion_spanningSets, inter_univ]
   calc
@@ -918,8 +921,9 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image_aux1 (hs : MeasurableSet s)
             ∀ (t : Set E) (g : E → E), ApproximatesLinearOn g A t δ →
               ENNReal.ofReal |A.det| * μ t ≤ μ (g '' t) + ε * μ t := by
     intro A
-    obtain ⟨δ', δ'pos, hδ'⟩ : ∃ (δ' : ℝ), 0 < δ' ∧ ∀ B, dist B A < δ' → dist B.det A.det < ↑ε :=
-      continuousAt_iff.1 (ContinuousLinearMap.continuous_det (E := E)).continuousAt ε εpos
+    obtain ⟨δ', δ'pos, hδ'⟩ : ∃ (δ' : ℝ), 0 < δ' ∧ ∀ B, dist B A < δ' → dist B.det A.det < ↑ε := by
+      refine continuousAt_iff.1 ?_ ε εpos
+      exact ContinuousLinearMap.continuous_det.continuousAt
     let δ'' : ℝ≥0 := ⟨δ' / 2, (half_pos δ'pos).le⟩
     have I'' : ∀ B : E →L[ℝ] E, ‖B - A‖ ≤ ↑δ'' → |B.det - A.det| ≤ ↑ε := by
       intro B hB
@@ -1035,7 +1039,7 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image (hs : MeasurableSet s)
   have u_meas : ∀ n, MeasurableSet (u n) := by
     intro n
     apply MeasurableSet.disjointed fun i => ?_
-    exact measurable_spanningSets μ i
+    exact measurableSet_spanningSets μ i
   have A : s = ⋃ n, s ∩ u n := by
     rw [← inter_iUnion, iUnion_disjointed, iUnion_spanningSets, inter_univ]
   calc
@@ -1177,8 +1181,9 @@ theorem integral_image_eq_integral_abs_det_fderiv_smul (hs : MeasurableSet s)
   rw [NNReal.smul_def, Real.coe_toNNReal _ (abs_nonneg (f' x).det)]
 
 -- Porting note: move this to `Topology.Algebra.Module.Basic` when port is over
-theorem det_one_smulRight {𝕜 : Type*} [NormedField 𝕜] (v : 𝕜) :
+theorem det_one_smulRight {𝕜 : Type*} [CommRing 𝕜] [TopologicalSpace 𝕜] [ContinuousMul 𝕜] (v : 𝕜) :
     ((1 : 𝕜 →L[𝕜] 𝕜).smulRight v).det = v := by
+  nontriviality 𝕜
   have : (1 : 𝕜 →L[𝕜] 𝕜).smulRight v = v • (1 : 𝕜 →L[𝕜] 𝕜) := by
     ext1
     simp only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply,

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.LinearMap
 
 /-!
 # Continuous affine maps.
@@ -171,7 +171,7 @@ instance : MulAction S (P →ᴬ[R] W) :=
 
 end MulAction
 
-variable [TopologicalAddGroup W]
+variable [IsTopologicalAddGroup W]
 
 instance : Add (P →ᴬ[R] W) where
   add f g := { (f : P →ᵃ[R] W) + (g : P →ᵃ[R] W) with cont := f.continuous.add g.continuous }

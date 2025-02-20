@@ -61,11 +61,9 @@ theorem range_extend (hs : LinearIndependent K ((↑) : s → V)) :
     range (Basis.extend hs) = hs.extend (subset_univ _) := by
   rw [coe_extend, Subtype.range_coe_subtype, setOf_mem_eq]
 
--- Porting note: adding this to make the statement of `subExtend` more readable
 /-- Auxiliary definition: the index for the new basis vectors in `Basis.sumExtend`.
 
-The specific value of this definition should be considered an implementation detail.
--/
+The specific value of this definition should be considered an implementation detail. -/
 def sumExtendIndex (hs : LinearIndependent K v) : Set V :=
   LinearIndependent.extend hs.to_subtype_range (subset_univ _) \ range v
 
@@ -153,6 +151,7 @@ noncomputable def ofVectorSpaceIndex : Set V :=
 noncomputable def ofVectorSpace : Basis (ofVectorSpaceIndex K V) K V :=
   Basis.extend (linearIndependent_empty K V)
 
+@[stacks 09FN "Generalized from fields to division rings."]
 instance (priority := 100) _root_.Module.Free.of_divisionRing : Module.Free K V :=
   Module.Free.of_basis (ofVectorSpace K V)
 
@@ -216,7 +215,7 @@ submodules equal to the span of a nonzero element of the module. -/
 theorem atom_iff_nonzero_span (W : Submodule K V) :
     IsAtom W ↔ ∃ v ≠ 0, W = span K {v} := by
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · cases' h with hbot h
+  · obtain ⟨hbot, h⟩ := h
     rcases (Submodule.ne_bot_iff W).1 hbot with ⟨v, ⟨hW, hv⟩⟩
     refine ⟨v, ⟨hv, ?_⟩⟩
     by_contra heq
@@ -265,15 +264,6 @@ theorem Submodule.exists_isCompl (p : Submodule K V) : ∃ q : Submodule K V, Is
 
 instance Submodule.complementedLattice : ComplementedLattice (Submodule K V) :=
   ⟨Submodule.exists_isCompl⟩
-
-theorem LinearMap.exists_rightInverse_of_surjective (f : V →ₗ[K] V') (hf_surj : range f = ⊤) :
-    ∃ g : V' →ₗ[K] V, f.comp g = LinearMap.id := by
-  let C := Basis.ofVectorSpaceIndex K V'
-  let hC := Basis.ofVectorSpace K V'
-  haveI : Inhabited V := ⟨0⟩
-  refine ⟨(hC.constr ℕ : _ → _) (C.restrict (invFun f)), hC.ext fun c => ?_⟩
-  rw [LinearMap.comp_apply, hC.constr_basis]
-  simp [hC, rightInverse_invFun (LinearMap.range_eq_top.1 hf_surj) c]
 
 /-- Any linear map `f : p →ₗ[K] V'` defined on a subspace `p` can be extended to the whole
 space. -/

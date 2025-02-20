@@ -99,8 +99,8 @@ section Hom
 
 variable [FunLike F α β]
 
-/- Porting note: `[HeytingAlgebra α, β]` -> `{ _ : HeytingAlgebra α, β}` as a dangerous instance fix
-similar for Coheyting & Biheyting instances -/
+/-! This section passes in some instances implicitly. See note [implicit instance arguments] -/
+
 -- See note [lower instance priority]
 instance (priority := 100) HeytingHomClass.toBoundedLatticeHomClass [HeytingAlgebra α]
     { _ : HeytingAlgebra β} [HeytingHomClass F α β] : BoundedLatticeHomClass F α β :=
@@ -246,13 +246,6 @@ instance instHeytingHomClass : HeytingHomClass (HeytingHom α β) α β where
   map_bot f := f.map_bot'
   map_himp := HeytingHom.map_himp'
 
-
--- Porting note: CoeFun undesired here in lean 4
--- /-- Helper instance for when there's too many metavariables to apply `DFunLike.CoeFun`
--- directly. -/
--- instance : CoeFun (HeytingHom α β) fun _ => α → β :=
---   DFunLike.hasCoeToFun
-
 -- @[simp] -- Porting note: not in simp-nf, simp can simplify lhs. Added aux simp lemma
 theorem toFun_eq_coe {f : HeytingHom α β} : f.toFun = ⇑f :=
   rfl
@@ -289,7 +282,7 @@ protected def id : HeytingHom α α :=
     toLatticeHom := LatticeHom.id _
     map_himp' := fun _ _ => rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(HeytingHom.id α) = id :=
   rfl
 
@@ -395,7 +388,7 @@ protected def id : CoheytingHom α α :=
     toLatticeHom := LatticeHom.id _
     map_sdiff' := fun _ _ => rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(CoheytingHom.id α) = id :=
   rfl
 
@@ -499,7 +492,7 @@ variable (α)
 protected def id : BiheytingHom α α :=
   { HeytingHom.id _, CoheytingHom.id _ with toLatticeHom := LatticeHom.id _ }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(BiheytingHom.id α) = id :=
   rfl
 

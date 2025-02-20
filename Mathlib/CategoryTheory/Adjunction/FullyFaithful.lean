@@ -40,16 +40,20 @@ open Category
 
 open Opposite
 
+attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
+
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
 variable {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R)
+
+attribute [local simp] homEquiv_unit homEquiv_counit
 
 /-- If the left adjoint is faithful, then each component of the unit is an monomorphism. -/
 instance unit_mono_of_L_faithful [L.Faithful] (X : C) : Mono (h.unit.app X) where
   right_cancellation {Y} f g hfg :=
     L.map_injective <| (h.homEquiv Y (L.obj X)).injective <| by simpa using hfg
 
-/-- If the left adjoint is full, then each component of the unit is a split epimorphism.-/
+/-- If the left adjoint is full, then each component of the unit is a split epimorphism. -/
 noncomputable def unitSplitEpiOfLFull [L.Full] (X : C) : SplitEpi (h.unit.app X) where
   section_ := L.preimage (h.counit.app (L.obj X))
   id := by simp [← h.unit_naturality (L.preimage (h.counit.app (L.obj X)))]
@@ -65,7 +69,7 @@ instance [L.Full] [L.Faithful] (X : C) : IsIso (h.unit.app X) :=
 instance unit_isIso_of_L_fully_faithful [L.Full] [L.Faithful] : IsIso (Adjunction.unit h) :=
   NatIso.isIso_of_isIso_app _
 
-/-- If the right adjoint is faithful, then each component of the counit is an epimorphism.-/
+/-- If the right adjoint is faithful, then each component of the counit is an epimorphism. -/
 instance counit_epi_of_R_faithful [R.Faithful] (X : D) : Epi (h.counit.app X) where
   left_cancellation {Y} f g hfg :=
     R.map_injective <| (h.homEquiv (R.obj X) Y).symm.injective <| by simpa using hfg
@@ -220,9 +224,6 @@ lemma isIso_unit_app_iff_mem_essImage [R.Faithful] [R.Full] {Y : C} :
 theorem mem_essImage_of_unit_isIso (A : C)
     [IsIso (h.unit.app A)] : A ∈ R.essImage :=
   ⟨L.obj A, ⟨(asIso (h.unit.app A)).symm⟩⟩
-
-@[deprecated (since := "2024-06-19")] alias _root_.CategoryTheory.mem_essImage_of_unit_isIso :=
-  mem_essImage_of_unit_isIso
 
 lemma isIso_unit_app_of_iso [R.Faithful] [R.Full] {X : D} {Y : C} (e : Y ≅ R.obj X) :
     IsIso (h.unit.app Y) :=

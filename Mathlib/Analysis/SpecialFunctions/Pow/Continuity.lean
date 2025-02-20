@@ -15,10 +15,7 @@ This file contains lemmas about continuity of the power functions on `ℂ`, `ℝ
 
 noncomputable section
 
-open scoped Classical
-open Real Topology NNReal ENNReal Filter ComplexConjugate
-
-open Filter Finset Set
+open Real Topology NNReal ENNReal Filter ComplexConjugate Finset Set
 
 section CpowLimits
 
@@ -136,6 +133,10 @@ theorem ContinuousOn.cpow_const {b : ℂ} (hf : ContinuousOn f s)
     (h : ∀ a : α, a ∈ s → f a ∈ slitPlane) : ContinuousOn (fun x => f x ^ b) s :=
   hf.cpow continuousOn_const h
 
+@[fun_prop]
+lemma continuous_const_cpow (z : ℂ) [NeZero z] : Continuous fun s : ℂ ↦ z ^ s :=
+  continuous_id.const_cpow (.inl <| NeZero.ne z)
+
 end CpowLimits
 
 section RpowLimits
@@ -194,7 +195,7 @@ theorem continuousAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) :
 
 theorem continuousAt_rpow_of_pos (p : ℝ × ℝ) (hp : 0 < p.2) :
     ContinuousAt (fun p : ℝ × ℝ => p.1 ^ p.2) p := by
-  cases' p with x y
+  obtain ⟨x, y⟩ := p
   dsimp only at hp
   obtain hx | rfl := ne_or_eq x 0
   · exact continuousAt_rpow_of_ne (x, y) hx
@@ -315,7 +316,7 @@ open ComplexOrder in
 assumptions about `p.2`. -/
 theorem continuousAt_cpow_of_re_pos {p : ℂ × ℂ} (h₁ : 0 ≤ p.1.re ∨ p.1.im ≠ 0) (h₂ : 0 < p.2.re) :
     ContinuousAt (fun x : ℂ × ℂ => x.1 ^ x.2) p := by
-  cases' p with z w
+  obtain ⟨z, w⟩ := p
   rw [← not_lt_zero_iff, lt_iff_le_and_ne, not_and_or, Ne, Classical.not_not,
     not_le_zero_iff] at h₁
   rcases h₁ with (h₁ | (rfl : z = 0))
@@ -352,10 +353,12 @@ theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) 
       rwa [neg_re, ofReal_re, neg_pos]
     · exact (continuous_exp.comp (continuous_const.mul continuous_snd)).continuousAt
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  need `by exact` to deal with tricky unification -/
 theorem continuousAt_ofReal_cpow_const (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) :
-    ContinuousAt (fun a => (a : ℂ) ^ y : ℝ → ℂ) x :=
-  ContinuousAt.comp (x := x) (continuousAt_ofReal_cpow x y h)
-    (continuous_id.prod_mk continuous_const).continuousAt
+    ContinuousAt (fun a => (a : ℂ) ^ y : ℝ → ℂ) x := by
+  exact ContinuousAt.comp (x := x) (continuousAt_ofReal_cpow x y h)
+          ((continuous_id (X := ℝ)).prod_mk (continuous_const (y := y))).continuousAt
 
 theorem continuous_ofReal_cpow_const {y : ℂ} (hs : 0 < y.re) :
     Continuous (fun x => (x : ℂ) ^ y : ℝ → ℂ) :=

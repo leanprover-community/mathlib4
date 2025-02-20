@@ -3,7 +3,7 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Module.Submodule.Localization
+import Mathlib.Algebra.Module.LocalizedModule.Submodule
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.OreLocalization.OreSet
@@ -51,18 +51,15 @@ lemma IsLocalizedModule.linearIndependent_lift {ι} {v : ι → N} (hf : LinearI
 
 lemma IsLocalizedModule.lift_rank_eq :
     Cardinal.lift.{v} (Module.rank S N) = Cardinal.lift.{v'} (Module.rank R M) := by
-  cases' subsingleton_or_nontrivial R
+  cases subsingleton_or_nontrivial R
   · have := (algebraMap R S).codomain_trivial; simp only [rank_subsingleton, lift_one]
   have := (IsLocalization.injective S hp).nontrivial
-  apply le_antisymm
-  · rw [Module.rank_def, lift_iSup (bddAbove_range.{v', v'} _)]
-    apply ciSup_le'
+  apply le_antisymm <;>
+    rw [Module.rank_def, lift_iSup (bddAbove_range _)] <;>
+    apply ciSup_le' <;>
     intro ⟨s, hs⟩
-    exact (IsLocalizedModule.linearIndependent_lift p f hp hs).choose_spec.cardinal_lift_le_rank
-  · rw [Module.rank_def, lift_iSup (bddAbove_range.{v, v} _)]
-    apply ciSup_le'
-    intro ⟨s, hs⟩
-    choose sec hsec using IsLocalization.surj p (S := S)
+  · exact (IsLocalizedModule.linearIndependent_lift p f hp hs).choose_spec.cardinal_lift_le_rank
+  · choose sec hsec using IsLocalization.surj p (S := S)
     refine LinearIndependent.cardinal_lift_le_rank (ι := s) (v := fun i ↦ f i) ?_
     rw [linearIndependent_iff'] at hs ⊢
     intro t g hg i hit
@@ -120,7 +117,7 @@ end CommRing
 
 section Ring
 
-variable {R} [Ring R] [IsDomain R] (S : Submonoid R)
+variable {R} [Ring R] [IsDomain R]
 
 /-- A domain that is not (left) Ore is of infinite rank.
 See [cohn_1995] Proposition 1.3.6 -/
@@ -139,9 +136,10 @@ lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R�
     simpa only [dif_pos i.prop] using this (fun i ↦ if h : i < n then g ⟨i, h⟩ else 0) 0
       (by simp [← Fin.sum_univ_eq_sum_range, ← hg]) i i.prop
   intro g x hg i hin
-  induction' n with n IH generalizing g x i
-  · exact (hin.not_le (zero_le i)).elim
-  · rw [Finset.sum_range_succ'] at hg
+  induction n generalizing g x i with
+  | zero => exact (hin.not_le (zero_le i)).elim
+  | succ n IH =>
+    rw [Finset.sum_range_succ'] at hg
     by_cases hg0 : g 0 = 0
     · simp only [hg0, zero_smul, add_zero, add_assoc] at hg
       cases i; exacts [hg0, IH _ _ hg _ (Nat.succ_lt_succ_iff.mp hin)]

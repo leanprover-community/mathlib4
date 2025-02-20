@@ -3,12 +3,11 @@ Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli, Junyan Xu
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.CategoryTheory.Groupoid.VertexGroup
 import Mathlib.CategoryTheory.Groupoid.Basic
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.Data.Set.Lattice
-import Mathlib.Order.GaloisConnection
 
 /-!
 # Subgroupoid
@@ -194,7 +193,7 @@ instance : Bot (Subgroupoid C) :=
 instance : Inhabited (Subgroupoid C) :=
   ⟨⊤⟩
 
-instance : Inf (Subgroupoid C) :=
+instance : Min (Subgroupoid C) :=
   ⟨fun S T =>
     { arrows := fun c d => S.arrows c d ∩ T.arrows c d
       inv := fun hp ↦ ⟨S.inv hp.1, T.inv hp.2⟩
@@ -272,7 +271,7 @@ theorem mem_discrete_iff {c d : C} (f : c ⟶ d) :
     f ∈ discrete.arrows c d ↔ ∃ h : c = d, f = eqToHom h :=
   ⟨by rintro ⟨⟩; exact ⟨rfl, rfl⟩, by rintro ⟨rfl, rfl⟩; constructor⟩
 
-/-- A subgroupoid is wide if its carrier set is all of `C`-/
+/-- A subgroupoid is wide if its carrier set is all of `C`. -/
 structure IsWide : Prop where
   wide : ∀ c, 𝟙 c ∈ S.arrows c c
 

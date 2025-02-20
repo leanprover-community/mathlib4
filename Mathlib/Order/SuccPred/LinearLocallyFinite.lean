@@ -6,8 +6,10 @@ Authors: Rémy Degenne
 import Mathlib.Data.Countable.Basic
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Order.SuccPred.Archimedean
-import Mathlib.Order.Interval.Finset.Defs
 import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Finset.Max
+import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Order.Interval.Finset.Defs
 
 /-!
 # Linear locally finite orders
@@ -29,7 +31,7 @@ Furthermore, we show that there is an `OrderIso` between such an order and a sub
 
 ## Main results
 
-Instances about linear locally finite orders:
+Results about linear locally finite orders:
 * `LinearLocallyFiniteOrder.SuccOrder`: a linear locally finite order has a successor function.
 * `LinearLocallyFiniteOrder.PredOrder`: a linear locally finite order has a predecessor
   function.
@@ -139,20 +141,29 @@ theorem le_of_lt_succFn (j i : ι) (hij : j < succFn i) : j ≤ i := by
   rw [mem_lowerBounds] at hk_lb
   exact not_lt.mp fun hi_lt_j ↦ not_le.mpr hk (hk_lb j hi_lt_j)
 
-noncomputable instance (priority := 100) [LocallyFiniteOrder ι] : SuccOrder ι where
+variable (ι) in
+/-- A locally finite order is a `SuccOrder`.
+This is not an instance, because its `succ` field conflicts with computable `SuccOrder` structures
+on `ℕ` and `ℤ`. -/
+noncomputable def succOrder [LocallyFiniteOrder ι] : SuccOrder ι where
   succ := succFn
   le_succ := le_succFn
   max_of_succ_le h := isMax_of_succFn_le _ h
   succ_le_of_lt h := succFn_le_of_lt _ _ h
 
-noncomputable instance (priority := 100) [LocallyFiniteOrder ι] : PredOrder ι :=
+variable (ι) in
+/-- A locally finite order is a `PredOrder`.
+This is not an instance, because its `succ` field conflicts with computable `PredOrder` structures
+on `ℕ` and `ℤ`. -/
+noncomputable def predOrder [LocallyFiniteOrder ι] : PredOrder ι :=
+  letI := succOrder (ι := ιᵒᵈ)
   inferInstanceAs (PredOrder ιᵒᵈᵒᵈ)
 
-instance (priority := 100) [LocallyFiniteOrder ι] : IsSuccArchimedean ι where
+instance (priority := 100) [LocallyFiniteOrder ι] [SuccOrder ι] : IsSuccArchimedean ι where
   exists_succ_iterate_of_le := by
     intro i j hij
     rw [le_iff_lt_or_eq] at hij
-    cases' hij with hij hij
+    rcases hij with hij | hij
     swap
     · refine ⟨0, ?_⟩
       simpa only [Function.iterate_zero, id] using hij
@@ -177,8 +188,8 @@ instance (priority := 100) [LocallyFiniteOrder ι] : IsSuccArchimedean ι where
     have h_max : IsMax (succ^[n] i) := isMax_iterate_succ_of_eq_of_ne h_eq hnm.ne
     exact not_le.mpr (h_lt n) (h_max (h_lt n).le)
 
-instance (priority := 100) [LocallyFiniteOrder ι] : IsPredArchimedean ι :=
-  inferInstance
+instance (priority := 100) [LocallyFiniteOrder ι] [PredOrder ι] : IsPredArchimedean ι :=
+  inferInstanceAs (IsPredArchimedean ιᵒᵈᵒᵈ)
 
 end LinearLocallyFiniteOrder
 
@@ -257,7 +268,7 @@ theorem toZ_iterate_succ_of_not_isMax (n : ℕ) (hn : ¬IsMax (succ^[n] i0)) :
 
 theorem toZ_iterate_pred_of_not_isMin (n : ℕ) (hn : ¬IsMin (pred^[n] i0)) :
     toZ i0 (pred^[n] i0) = -n := by
-  cases' n with n
+  rcases n with - | n
   · simp
   have : pred^[n.succ] i0 < i0 := by
     refine lt_of_le_of_ne (pred_iterate_le _ _) fun h_pred_iterate_eq ↦ hn ?_
@@ -357,7 +368,7 @@ noncomputable def orderIsoRangeToZOfLinearSuccPredArch [hι : Nonempty ι] :
   map_rel_iff' := by intro i j; exact toZ_le_iff i j
 
 instance (priority := 100) countable_of_linear_succ_pred_arch : Countable ι := by
-  cases' isEmpty_or_nonempty ι with _ hι
+  rcases isEmpty_or_nonempty ι with _ | hι
   · infer_instance
   · exact Countable.of_equiv _ orderIsoRangeToZOfLinearSuccPredArch.symm.toEquiv
 
@@ -427,3 +438,9 @@ def orderIsoRangeOfLinearSuccPredArch [OrderBot ι] [OrderTop ι] :
     rw [← @toZ_le_iff ι _ _ _ _ ⊥, Int.toNat_of_nonneg (toZ_nonneg bot_le)]
 
 end OrderIso
+
+instance (priority := 100) Countable.of_linearOrder_locallyFiniteOrder [LocallyFiniteOrder ι] :
+    Countable ι :=
+  have := LinearLocallyFiniteOrder.succOrder ι
+  have := LinearLocallyFiniteOrder.predOrder ι
+  countable_of_linear_succ_pred_arch

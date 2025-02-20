@@ -3,6 +3,7 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+import Mathlib.Analysis.SpecialFunctions.Gamma.Deriv
 import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 
 /-! # Convexity properties of the Gamma function
@@ -56,7 +57,7 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
   let f : ℝ → ℝ → ℝ → ℝ := fun c u x => exp (-c * x) * x ^ (c * (u - 1))
   have e : IsConjExponent (1 / a) (1 / b) := Real.isConjExponent_one_div ha hb hab
   have hab' : b = 1 - a := by linarith
-  have hst : 0 < a * s + b * t := add_pos (mul_pos ha hs) (mul_pos hb ht)
+  have hst : 0 < a * s + b * t := by positivity
   -- some properties of f:
   have posf : ∀ c u x : ℝ, x ∈ Ioi (0 : ℝ) → 0 ≤ f c u x := fun c u x hx =>
     mul_nonneg (exp_pos _).le (rpow_pos_of_pos hx _).le
@@ -85,7 +86,7 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
       congr 1
       exact (norm_of_nonneg (posf _ _ x hx)).symm
     · refine ContinuousOn.aestronglyMeasurable ?_ measurableSet_Ioi
-      refine (Continuous.continuousOn ?_).mul (ContinuousAt.continuousOn fun x hx => ?_)
+      refine (Continuous.continuousOn ?_).mul (continuousOn_of_forall_continuousAt fun x hx => ?_)
       · exact continuous_exp.comp (continuous_const.mul continuous_id')
       · exact continuousAt_rpow_const _ _ (Or.inl (mem_Ioi.mp hx).ne')
   -- now apply Hölder:
@@ -175,7 +176,7 @@ theorem f_add_nat_le (hf_conv : ConvexOn ℝ (Ioi 0) f)
 theorem f_add_nat_ge (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hn : 2 ≤ n) (hx : 0 < x) :
     f n + x * log (n - 1) ≤ f (n + x) := by
-  have npos : 0 < (n : ℝ) - 1 := by rw [← Nat.cast_one, sub_pos, Nat.cast_lt]; linarith
+  have npos : 0 < (n : ℝ) - 1 := by rw [← Nat.cast_one, sub_pos, Nat.cast_lt]; omega
   have c :=
     (convexOn_iff_slope_mono_adjacent.mp <| hf_conv).2 npos (by linarith : 0 < (n : ℝ) + x)
       (by linarith : (n : ℝ) - 1 < (n : ℝ)) (by linarith)
@@ -208,7 +209,7 @@ theorem le_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
     f x ≤ f 1 + x * log (n + 1) - x * log n + logGammaSeq x n := by
   rw [logGammaSeq, ← add_sub_assoc, le_sub_iff_add_le, ← f_add_nat_eq (@hf_feq) hx, add_comm x]
   refine (f_add_nat_le hf_conv (@hf_feq) (Nat.add_one_ne_zero n) hx hx').trans (le_of_eq ?_)
-  rw [f_nat_eq @hf_feq (by linarith : n + 1 ≠ 0), Nat.add_sub_cancel, Nat.cast_add_one]
+  rw [f_nat_eq @hf_feq (by omega : n + 1 ≠ 0), Nat.add_sub_cancel, Nat.cast_add_one]
   ring
 
 theorem ge_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
@@ -338,7 +339,7 @@ theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
     log_mul A.ne' (Gamma_pos_of_pos A).ne', ← le_sub_iff_add_le',
     log_le_iff_le_exp (Gamma_pos_of_pos A)] at this
   refine this.trans_lt (exp_lt_one_iff.mpr ?_)
-  rw [mul_comm, ← mul_div_assoc, div_sub' _ _ (2 : ℝ) two_ne_zero]
+  rw [mul_comm, ← mul_div_assoc, div_sub' two_ne_zero]
   refine div_neg_of_neg_of_pos ?_ two_pos
   rw [sub_neg, mul_one, ← Nat.cast_two, ← log_pow, ← exp_lt_exp, Nat.cast_two, exp_log two_pos,
       exp_log] <;>

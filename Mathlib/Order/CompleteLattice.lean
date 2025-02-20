@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Bool.Set
 import Mathlib.Data.Nat.Set
+import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Prod
 import Mathlib.Data.ULift
 import Mathlib.Order.Bounds.Basic
@@ -45,7 +46,7 @@ In lemma names,
 
 open Function OrderDual Set
 
-variable {α β β₂ γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → Sort*}
+variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → Sort*}
 
 @[simp] lemma iSup_ulift {ι : Type*} [SupSet α] (f : ULift ι → α) :
     ⨆ i : ULift ι, f i = ⨆ i, f (.up i) := by simp [iSup]; congr with x; simp
@@ -112,6 +113,7 @@ theorem sSup_le_sSup_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, x ≤ y)
       hac.trans (hb hct)
 
 -- We will generalize this to conditionally complete lattices in `csSup_singleton`.
+@[simp]
 theorem sSup_singleton {a : α} : sSup {a} = a :=
   isLUB_singleton.sSup_eq
 
@@ -167,10 +169,20 @@ theorem sInf_le_sInf_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, y ≤ x)
   le_sInf fun x hx ↦ let ⟨_y, hyt, hyx⟩ := h x hx; sInf_le_of_le hyt hyx
 
 -- We will generalize this to conditionally complete lattices in `csInf_singleton`.
+@[simp]
 theorem sInf_singleton {a : α} : sInf {a} = a :=
   isGLB_singleton.sInf_eq
 
 end
+
+instance {α : Type*} [CompleteSemilatticeInf α] : CompleteSemilatticeSup αᵒᵈ where
+  le_sSup := @CompleteSemilatticeInf.sInf_le α _
+  sSup_le := @CompleteSemilatticeInf.le_sInf α _
+
+instance {α : Type*} [CompleteSemilatticeSup α] : CompleteSemilatticeInf αᵒᵈ where
+  le_sInf := @CompleteSemilatticeSup.sSup_le α _
+  sInf_le := @CompleteSemilatticeSup.le_sSup α _
+
 
 /-- A complete lattice is a bounded lattice which has suprema and infima for every subset. -/
 class CompleteLattice (α : Type*) extends Lattice α, CompleteSemilatticeSup α,
@@ -295,8 +307,6 @@ class CompleteLinearOrder (α : Type*) extends CompleteLattice α, BiheytingAlge
 
 instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : LinearOrder α where
   __ := i
-  min := Inf.inf
-  max := Sup.sup
   min_def a b := by
     split_ifs with h
     · simp [h]
@@ -624,11 +634,14 @@ theorem le_iSup (f : ι → α) (i : ι) : f i ≤ iSup f :=
 theorem iInf_le (f : ι → α) (i : ι) : iInf f ≤ f i :=
   sInf_le ⟨i, rfl⟩
 
-theorem le_iSup' (f : ι → α) (i : ι) : f i ≤ iSup f :=
-  le_sSup ⟨i, rfl⟩
+lemma iInf_le_iSup [Nonempty ι] : ⨅ i, f i ≤ ⨆ i, f i :=
+  (iInf_le _ (Classical.arbitrary _)).trans <| le_iSup _ (Classical.arbitrary _)
 
-theorem iInf_le' (f : ι → α) (i : ι) : iInf f ≤ f i :=
-  sInf_le ⟨i, rfl⟩
+@[deprecated le_iSup (since := "2024-12-13")]
+theorem le_iSup' (f : ι → α) (i : ι) : f i ≤ iSup f := le_iSup f i
+
+@[deprecated iInf_le (since := "2024-12-13")]
+theorem iInf_le' (f : ι → α) (i : ι) : iInf f ≤ f i := iInf_le f i
 
 theorem isLUB_iSup : IsLUB (range f) (⨆ j, f j) :=
   isLUB_sSup _
@@ -1003,12 +1016,12 @@ theorem iSup_subtype'' {ι} (s : Set ι) (f : ι → α) : ⨆ i : s, f i = ⨆ 
 theorem iInf_subtype'' {ι} (s : Set ι) (f : ι → α) : ⨅ i : s, f i = ⨅ (t : ι) (_ : t ∈ s), f t :=
   iInf_subtype
 
-theorem biSup_const {ι : Sort _} {a : α} {s : Set ι} (hs : s.Nonempty) : ⨆ i ∈ s, a = a := by
+theorem biSup_const {a : α} {s : Set β} (hs : s.Nonempty) : ⨆ i ∈ s, a = a := by
   haveI : Nonempty s := Set.nonempty_coe_sort.mpr hs
   rw [← iSup_subtype'', iSup_const]
 
-theorem biInf_const {ι : Sort _} {a : α} {s : Set ι} (hs : s.Nonempty) : ⨅ i ∈ s, a = a :=
-  @biSup_const αᵒᵈ _ ι _ s hs
+theorem biInf_const {a : α} {s : Set β} (hs : s.Nonempty) : ⨅ i ∈ s, a = a :=
+  biSup_const (α := αᵒᵈ) hs
 
 theorem iSup_sup_eq : ⨆ x, f x ⊔ g x = (⨆ x, f x) ⊔ ⨆ x, g x :=
   le_antisymm (iSup_le fun _ => sup_le_sup (le_iSup _ _) <| le_iSup _ _)
@@ -1025,13 +1038,15 @@ lemma Equiv.biInf_comp {ι ι' : Type*} {g : ι' → α} (e : ι ≃ ι') (s : S
     ⨅ i ∈ e.symm '' s, g (e i) = ⨅ i ∈ s, g i :=
   e.biSup_comp s (α := αᵒᵈ)
 
-lemma biInf_le {ι : Type*} {s : Set ι} (f : ι → α) {i : ι} (hi : i ∈ s) :
-    ⨅ i ∈ s, f i ≤ f i := by
-  simpa only [iInf_subtype'] using iInf_le (ι := s) (f := f ∘ (↑)) ⟨i, hi⟩
+lemma biInf_le {ι : Type*} {s : Set ι} (f : ι → α) {i : ι} (hi : i ∈ s) : ⨅ i ∈ s, f i ≤ f i :=
+  iInf₂_le i hi
 
-lemma le_biSup {ι : Type*} {s : Set ι} (f : ι → α) {i : ι} (hi : i ∈ s) :
-    f i ≤ ⨆ i ∈ s, f i :=
+lemma le_biSup {ι : Type*} {s : Set ι} (f : ι → α) {i : ι} (hi : i ∈ s) : f i ≤ ⨆ i ∈ s, f i :=
   biInf_le (α := αᵒᵈ) f hi
+
+lemma biInf_le_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty) {f : ι → α} :
+    ⨅ i ∈ s, f i ≤ ⨆ i ∈ s, f i :=
+  (biInf_le _ hs.choose_spec).trans <| le_biSup _ hs.choose_spec
 
 /- TODO: here is another example where more flexible pattern matching
    might help.
@@ -1071,6 +1086,41 @@ theorem biInf_inf {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i,
 theorem inf_biInf {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i, p i) :
     (a ⊓ ⨅ (i) (h : p i), f i h) = ⨅ (i) (h : p i), a ⊓ f i h :=
   @sup_biSup αᵒᵈ ι _ p f _ h
+
+lemma biSup_lt_eq_iSup {ι : Type*} [LT ι] [NoMaxOrder ι] {f : ι → α} :
+    ⨆ (i) (j < i), f j = ⨆ i, f i := by
+  apply le_antisymm
+  · exact iSup_le fun _ ↦ iSup₂_le fun _ _ ↦ le_iSup _ _
+  · refine iSup_le fun j ↦ ?_
+    obtain ⟨i, jlt⟩ := exists_gt j
+    exact le_iSup_of_le i (le_iSup₂_of_le j jlt le_rfl)
+
+lemma biSup_le_eq_iSup {ι : Type*} [Preorder ι] {f : ι → α} :
+    ⨆ (i) (j ≤ i), f j = ⨆ i, f i := by
+  apply le_antisymm
+  · exact iSup_le fun _ ↦ iSup₂_le fun _ _ ↦ le_iSup _ _
+  · exact iSup_le fun j ↦ le_iSup_of_le j (le_iSup₂_of_le j le_rfl le_rfl)
+
+lemma biInf_lt_eq_iInf {ι : Type*} [LT ι] [NoMaxOrder ι] {f : ι → α} :
+    ⨅ (i) (j < i), f j = ⨅ i, f i :=
+  biSup_lt_eq_iSup (α := αᵒᵈ)
+
+lemma biInf_le_eq_iInf {ι : Type*} [Preorder ι] {f : ι → α} : ⨅ (i) (j ≤ i), f j = ⨅ i, f i :=
+  biSup_le_eq_iSup (α := αᵒᵈ)
+
+lemma biSup_gt_eq_iSup {ι : Type*} [LT ι] [NoMinOrder ι] {f : ι → α} :
+    ⨆ (i) (j > i), f j = ⨆ i, f i :=
+  biSup_lt_eq_iSup (ι := ιᵒᵈ)
+
+lemma biSup_ge_eq_iSup {ι : Type*} [Preorder ι] {f : ι → α} : ⨆ (i) (j ≥ i), f j = ⨆ i, f i :=
+  biSup_le_eq_iSup (ι := ιᵒᵈ)
+
+lemma biInf_gt_eq_iInf {ι : Type*} [LT ι] [NoMinOrder ι] {f : ι → α} :
+    ⨅ (i) (j > i), f j = ⨅ i, f i :=
+  biInf_lt_eq_iInf (ι := ιᵒᵈ)
+
+lemma biInf_ge_eq_iInf {ι : Type*} [Preorder ι] {f : ι → α} : ⨅ (i) (j ≥ i), f j = ⨅ i, f i :=
+  biInf_le_eq_iInf (ι := ιᵒᵈ)
 
 /-! ### `iSup` and `iInf` under `Prop` -/
 
@@ -1237,11 +1287,34 @@ theorem iInf_image :
 theorem iSup_extend_bot {e : ι → β} (he : Injective e) (f : ι → α) :
     ⨆ j, extend e f ⊥ j = ⨆ i, f i := by
   rw [iSup_split _ fun j => ∃ i, e i = j]
-  simp (config := { contextual := true }) [he.extend_apply, extend_apply', @iSup_comm _ β ι]
+  simp +contextual [he.extend_apply, extend_apply', @iSup_comm _ β ι]
 
 theorem iInf_extend_top {e : ι → β} (he : Injective e) (f : ι → α) :
     ⨅ j, extend e f ⊤ j = iInf f :=
   @iSup_extend_bot αᵒᵈ _ _ _ _ he _
+
+section le
+
+variable {ι : Type*} [PartialOrder ι] (f : ι → α) (i : ι)
+
+theorem biSup_le_eq_sup : (⨆ j ≤ i, f j) = (⨆ j < i, f j) ⊔ f i := by
+  rw [iSup_split_single _ i]
+  -- Squeezed for a ~10x speedup, though it's still reasonably fast unsqueezed.
+  simp only [le_refl, iSup_pos, iSup_and', lt_iff_le_and_ne, and_comm, sup_comm]
+
+theorem biInf_le_eq_inf : (⨅ j ≤ i, f j) = (⨅ j < i, f j) ⊓ f i :=
+  biSup_le_eq_sup (α := αᵒᵈ) f i
+
+theorem biSup_ge_eq_sup : (⨆ j ≥ i, f j) = f i ⊔ (⨆ j > i, f j) := by
+  rw [iSup_split_single _ i]
+  -- Squeezed for a ~10x speedup, though it's still reasonably fast unsqueezed.
+  simp only [ge_iff_le, le_refl, iSup_pos, ne_comm, iSup_and', gt_iff_lt, lt_iff_le_and_ne,
+    and_comm]
+
+theorem biInf_ge_eq_inf : (⨅ j ≥ i, f j) = f i ⊓ (⨅ j > i, f j) :=
+  biSup_ge_eq_sup (α := αᵒᵈ) f i
+
+end le
 
 /-!
 ### `iSup` and `iInf` under `Type`
@@ -1562,9 +1635,6 @@ protected lemma Antitone.sSup (hs : ∀ f ∈ s, Antitone f) : Antitone (sSup s)
 protected lemma Antitone.sInf (hs : ∀ f ∈ s, Antitone f) : Antitone (sInf s) :=
   fun _ _ h ↦ iInf_mono fun f ↦ hs f f.2 h
 
-@[deprecated (since := "2024-05-29")] alias monotone_sSup_of_monotone := Monotone.sSup
-@[deprecated (since := "2024-05-29")] alias monotone_sInf_of_monotone := Monotone.sInf
-
 protected lemma Monotone.iSup (hf : ∀ i, Monotone (f i)) : Monotone (⨆ i, f i) :=
   Monotone.sSup (by simpa)
 protected lemma Monotone.iInf (hf : ∀ i, Monotone (f i)) : Monotone (⨅ i, f i) :=
@@ -1683,17 +1753,29 @@ theorem iInf_sup_iInf_le (f g : ι → α) : (⨅ i, f i) ⊔ ⨅ i, g i ≤ ⨅
 
 theorem disjoint_sSup_left {a : Set α} {b : α} (d : Disjoint (sSup a) b) {i} (hi : i ∈ a) :
     Disjoint i b :=
-  disjoint_iff_inf_le.mpr (iSup₂_le_iff.1 (iSup_inf_le_sSup_inf.trans d.le_bot) i hi : _)
+  disjoint_iff_inf_le.mpr (iSup₂_le_iff.1 (iSup_inf_le_sSup_inf.trans d.le_bot) i hi :)
 
 theorem disjoint_sSup_right {a : Set α} {b : α} (d : Disjoint b (sSup a)) {i} (hi : i ∈ a) :
     Disjoint b i :=
-  disjoint_iff_inf_le.mpr (iSup₂_le_iff.mp (iSup_inf_le_inf_sSup.trans d.le_bot) i hi : _)
+  disjoint_iff_inf_le.mpr (iSup₂_le_iff.mp (iSup_inf_le_inf_sSup.trans d.le_bot) i hi :)
+
+lemma disjoint_of_sSup_disjoint_of_le_of_le {a b : α} {c d : Set α} (hs : ∀ e ∈ c, e ≤ a)
+    (ht : ∀ e ∈ d, e ≤ b) (hd : Disjoint a b) (he : ⊥ ∉ c ∨ ⊥ ∉ d) : Disjoint c d := by
+  rw [disjoint_iff_forall_ne]
+  intros x hx y hy
+  rw [Disjoint.ne_iff]
+  · aesop
+  · exact Disjoint.mono (hs x hx) (ht y hy) hd
+
+lemma disjoint_of_sSup_disjoint {a b : Set α} (hd : Disjoint (sSup a) (sSup b))
+    (he : ⊥ ∉ a ∨ ⊥ ∉ b) : Disjoint a b :=
+  disjoint_of_sSup_disjoint_of_le_of_le (fun _ hc ↦ le_sSup hc) (fun _ hc ↦ le_sSup hc) hd he
 
 end CompleteLattice
 
 -- See note [reducible non-instances]
 /-- Pullback a `CompleteLattice` along an injection. -/
-protected abbrev Function.Injective.completeLattice [Sup α] [Inf α] [SupSet α] [InfSet α] [Top α]
+protected abbrev Function.Injective.completeLattice [Max α] [Min α] [SupSet α] [InfSet α] [Top α]
     [Bot α] [CompleteLattice β] (f : α → β) (hf : Function.Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)

@@ -156,7 +156,7 @@ theorem isDenseInducing_pure : @IsDenseInducing _ _ ⊥ _ (pure : α → Ultrafi
 /-- `pure : α → Ultrafilter α` defines a dense embedding of `α` in `Ultrafilter α`. -/
 theorem isDenseEmbedding_pure : @IsDenseEmbedding _ _ ⊥ _ (pure : α → Ultrafilter α) :=
   letI : TopologicalSpace α := ⊥
-  { isDenseInducing_pure with inj := ultrafilter_pure_injective }
+  { isDenseInducing_pure with injective := ultrafilter_pure_injective }
 
 @[deprecated (since := "2024-09-30")]
 alias denseEmbedding_pure := isDenseEmbedding_pure
@@ -255,7 +255,7 @@ theorem continuous_preStoneCechUnit : Continuous (preStoneCechUnit : α → PreS
     exact Quot.sound ⟨x, pure_le_nhds x, gx⟩
 
 theorem denseRange_preStoneCechUnit : DenseRange (preStoneCechUnit : α → PreStoneCech α) :=
-  (surjective_quot_mk _).denseRange.comp denseRange_pure continuous_coinduced_rng
+  Quot.mk_surjective.denseRange.comp denseRange_pure continuous_coinduced_rng
 
 
 section Extension
@@ -340,7 +340,7 @@ theorem continuous_stoneCechUnit : Continuous (stoneCechUnit : α → StoneCech 
 theorem denseRange_stoneCechUnit : DenseRange (stoneCechUnit : α → StoneCech α) := by
   unfold stoneCechUnit t2Quotient.mk
   have : Function.Surjective (t2Quotient.mk : PreStoneCech α → StoneCech α) := by
-    exact surjective_quot_mk _
+    exact Quot.mk_surjective
   exact this.denseRange.comp denseRange_preStoneCechUnit continuous_coinduced_rng
 
 section Extension

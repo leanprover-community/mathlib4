@@ -5,7 +5,9 @@ Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzza
 Amelia Livingston, Yury Kudryashov, Yakov Pechersky
 -/
 import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Data.SetLike.Basic
+import Mathlib.Tactic.FastInstance
 
 /-!
 # Subsemigroups: definition
@@ -44,16 +46,13 @@ numbers.
 subsemigroup, subsemigroups
 -/
 
-assert_not_exists CompleteLattice
-assert_not_exists MonoidWithZero
+assert_not_exists RelIso CompleteLattice MonoidWithZero
 
--- Only needed for notation
-variable {M : Type*} {N : Type*} {A : Type*}
+variable {M : Type*} {N : Type*}
 
 section NonAssoc
 
 variable [Mul M] {s : Set M}
-variable [Add A] {t : Set A}
 
 /-- `MulMemClass S M` says `S` is a type of sets `s : Set M` that are closed under `(*)` -/
 class MulMemClass (S : Type*) (M : outParam Type*) [Mul M] [SetLike S M] : Prop where
@@ -98,8 +97,8 @@ instance : SetLike (Subsemigroup M) M :=
 @[to_additive]
 instance : MulMemClass (Subsemigroup M) M where mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
 
-initialize_simps_projections Subsemigroup (carrier → coe)
-initialize_simps_projections AddSubsemigroup (carrier → coe)
+initialize_simps_projections Subsemigroup (carrier → coe, as_prefix coe)
+initialize_simps_projections AddSubsemigroup (carrier → coe, as_prefix coe)
 
 @[to_additive (attr := simp)]
 theorem mem_carrier {s : Subsemigroup M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=
@@ -180,7 +179,7 @@ theorem coe_bot : ((⊥ : Subsemigroup M) : Set M) = ∅ :=
 
 /-- The inf of two subsemigroups is their intersection. -/
 @[to_additive "The inf of two `AddSubsemigroup`s is their intersection."]
-instance : Inf (Subsemigroup M) :=
+instance : Min (Subsemigroup M) :=
   ⟨fun S₁ S₂ =>
     { carrier := S₁ ∩ S₂
       mul_mem' := fun ⟨hx, hx'⟩ ⟨hy, hy'⟩ => ⟨S₁.mul_mem hx hy, S₂.mul_mem hx' hy'⟩ }⟩
@@ -227,3 +226,52 @@ theorem eq_of_eqOn_top {f g : M →ₙ* N} (h : Set.EqOn f g (⊤ : Subsemigroup
 end MulHom
 
 end NonAssoc
+
+namespace MulMemClass
+
+variable {A : Type*} [Mul M] [SetLike A M] [hA : MulMemClass A M] (S' : A)
+
+-- lower priority so other instances are found first
+/-- A submagma of a magma inherits a multiplication. -/
+@[to_additive "An additive submagma of an additive magma inherits an addition."]
+instance (priority := 900) mul : Mul S' :=
+  ⟨fun a b => ⟨a.1 * b.1, mul_mem a.2 b.2⟩⟩
+
+-- lower priority so later simp lemmas are used first; to appease simp_nf
+@[to_additive (attr := simp low, norm_cast)]
+theorem coe_mul (x y : S') : (↑(x * y) : M) = ↑x * ↑y :=
+  rfl
+
+-- lower priority so later simp lemmas are used first; to appease simp_nf
+@[to_additive (attr := simp low)]
+theorem mk_mul_mk (x y : M) (hx : x ∈ S') (hy : y ∈ S') :
+    (⟨x, hx⟩ : S') * ⟨y, hy⟩ = ⟨x * y, mul_mem hx hy⟩ :=
+  rfl
+
+@[to_additive]
+theorem mul_def (x y : S') : x * y = ⟨x * y, mul_mem x.2 y.2⟩ :=
+  rfl
+
+/-- A subsemigroup of a semigroup inherits a semigroup structure. -/
+@[to_additive "An `AddSubsemigroup` of an `AddSemigroup` inherits an `AddSemigroup` structure."]
+instance toSemigroup {M : Type*} [Semigroup M] {A : Type*} [SetLike A M] [MulMemClass A M]
+    (S : A) : Semigroup S := fast_instance%
+  Subtype.coe_injective.semigroup Subtype.val fun _ _ => rfl
+
+/-- A subsemigroup of a `CommSemigroup` is a `CommSemigroup`. -/
+@[to_additive "An `AddSubsemigroup` of an `AddCommSemigroup` is an `AddCommSemigroup`."]
+instance toCommSemigroup {M} [CommSemigroup M] {A : Type*} [SetLike A M] [MulMemClass A M]
+    (S : A) : CommSemigroup S := fast_instance%
+  Subtype.coe_injective.commSemigroup Subtype.val fun _ _ => rfl
+
+/-- The natural semigroup hom from a subsemigroup of semigroup `M` to `M`. -/
+@[to_additive "The natural semigroup hom from an `AddSubsemigroup` of
+`AddSubsemigroup` `M` to `M`."]
+def subtype : S' →ₙ* M where
+  toFun := Subtype.val; map_mul' := fun _ _ => rfl
+
+@[to_additive (attr := simp)]
+theorem coe_subtype : (MulMemClass.subtype S' : S' → M) = Subtype.val :=
+  rfl
+
+end MulMemClass

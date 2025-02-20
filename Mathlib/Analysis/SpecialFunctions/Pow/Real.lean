@@ -15,10 +15,7 @@ We construct the power functions `x ^ y`, where `x` and `y` are real numbers.
 
 noncomputable section
 
-open scoped Classical
-open Real ComplexConjugate
-
-open Finset Set
+open Real ComplexConjugate Finset Set
 
 /-
 ## Definitions
@@ -56,14 +53,8 @@ theorem rpow_intCast (x : ℝ) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
   simp only [rpow_def, ← Complex.ofReal_zpow, Complex.cpow_intCast, Complex.ofReal_intCast,
     Complex.ofReal_re]
 
-@[deprecated (since := "2024-04-17")]
-alias rpow_int_cast := rpow_intCast
-
 @[simp, norm_cast]
 theorem rpow_natCast (x : ℝ) (n : ℕ) : x ^ (n : ℝ) = x ^ n := by simpa using rpow_intCast x n
-
-@[deprecated (since := "2024-04-17")]
-alias rpow_nat_cast := rpow_natCast
 
 @[simp]
 theorem exp_one_rpow (x : ℝ) : exp 1 ^ x = exp x := by rw [← exp_mul, one_mul]
@@ -315,11 +306,17 @@ theorem abs_cpow_inv_nat (x : ℂ) (n : ℕ) : abs (x ^ (n⁻¹ : ℂ)) = Comple
 
 theorem abs_cpow_eq_rpow_re_of_pos {x : ℝ} (hx : 0 < x) (y : ℂ) : abs (x ^ y) = x ^ y.re := by
   rw [abs_cpow_of_ne_zero (ofReal_ne_zero.mpr hx.ne'), arg_ofReal_of_nonneg hx.le,
-    zero_mul, Real.exp_zero, div_one, abs_of_nonneg hx.le]
+    zero_mul, Real.exp_zero, div_one, Complex.abs_of_nonneg hx.le]
 
 theorem abs_cpow_eq_rpow_re_of_nonneg {x : ℝ} (hx : 0 ≤ x) {y : ℂ} (hy : re y ≠ 0) :
     abs (x ^ y) = x ^ re y := by
-  rw [abs_cpow_of_imp] <;> simp [*, arg_ofReal_of_nonneg, _root_.abs_of_nonneg]
+  rw [abs_cpow_of_imp] <;> simp [*, arg_ofReal_of_nonneg, abs_of_nonneg]
+
+open Filter in
+lemma norm_ofReal_cpow_eventually_eq_atTop (c : ℂ) :
+    (fun t : ℝ ↦ ‖(t : ℂ) ^ c‖) =ᶠ[atTop] fun t ↦ t ^ c.re := by
+  filter_upwards [eventually_gt_atTop 0] with t ht
+  rw [Complex.norm_eq_abs, abs_cpow_eq_rpow_re_of_pos ht]
 
 lemma norm_natCast_cpow_of_re_ne_zero (n : ℕ) {s : ℂ} (hs : s.re ≠ 0) :
     ‖(n : ℂ) ^ s‖ = (n : ℝ) ^ (s.re) := by
@@ -387,6 +384,12 @@ theorem rpow_mul {x : ℝ} (hx : 0 ≤ x) (y z : ℝ) : x ^ (y * z) = (x ^ y) ^ 
       Complex.ofReal_cpow hx, Complex.ofReal_mul, Complex.cpow_mul, Complex.ofReal_cpow hx] <;>
     simp only [(Complex.ofReal_mul _ _).symm, (Complex.ofReal_log hx).symm, Complex.ofReal_im,
       neg_lt_zero, pi_pos, le_of_lt pi_pos]
+
+lemma rpow_pow_comm {x : ℝ} (hx : 0 ≤ x) (y : ℝ) (n : ℕ) : (x ^ y) ^ n = (x ^ n) ^ y := by
+  simp_rw [← rpow_natCast, ← rpow_mul hx, mul_comm y]
+
+lemma rpow_zpow_comm {x : ℝ} (hx : 0 ≤ x) (y : ℝ) (n : ℤ) : (x ^ y) ^ n = (x ^ n) ^ y := by
+  simp_rw [← rpow_intCast, ← rpow_mul hx, mul_comm y]
 
 lemma rpow_add_intCast {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℤ) : x ^ (y + n) = x ^ y * x ^ n := by
   rw [rpow_def, rpow_def, Complex.ofReal_add,
@@ -506,7 +509,7 @@ in `Mathlib/Analysis/SpecialFunctions/Pow/NNReal.lean` instead. -/
 
 @[gcongr, bound]
 theorem rpow_lt_rpow (hx : 0 ≤ x) (hxy : x < y) (hz : 0 < z) : x ^ z < y ^ z := by
-  rw [le_iff_eq_or_lt] at hx; cases' hx with hx hx
+  rw [le_iff_eq_or_lt] at hx; rcases hx with hx | hx
   · rw [← hx, zero_rpow (ne_of_gt hz)]
     exact rpow_pos_of_pos (by rwa [← hx] at hxy) _
   · rw [rpow_def_of_pos hx, rpow_def_of_pos (lt_trans hx hxy), exp_lt_exp]
@@ -678,7 +681,7 @@ theorem one_le_rpow_of_pos_of_le_one_of_nonpos (hx1 : 0 < x) (hx2 : x ≤ 1) (hz
   exact (rpow_zero x).symm
 
 theorem rpow_lt_one_iff_of_pos (hx : 0 < x) : x ^ y < 1 ↔ 1 < x ∧ y < 0 ∨ x < 1 ∧ 0 < y := by
-  rw [rpow_def_of_pos hx, exp_lt_one_iff, mul_neg_iff, log_pos_iff hx, log_neg_iff hx]
+  rw [rpow_def_of_pos hx, exp_lt_one_iff, mul_neg_iff, log_pos_iff hx.le, log_neg_iff hx]
 
 theorem rpow_lt_one_iff (hx : 0 ≤ x) :
     x ^ y < 1 ↔ x = 0 ∧ y ≠ 0 ∨ 1 < x ∧ y < 0 ∨ x < 1 ∧ 0 < y := by
@@ -691,20 +694,62 @@ theorem rpow_lt_one_iff' {x y : ℝ} (hx : 0 ≤ x) (hy : 0 < y) :
   rw [← Real.rpow_lt_rpow_iff hx zero_le_one hy, Real.one_rpow]
 
 theorem one_lt_rpow_iff_of_pos (hx : 0 < x) : 1 < x ^ y ↔ 1 < x ∧ 0 < y ∨ x < 1 ∧ y < 0 := by
-  rw [rpow_def_of_pos hx, one_lt_exp_iff, mul_pos_iff, log_pos_iff hx, log_neg_iff hx]
+  rw [rpow_def_of_pos hx, one_lt_exp_iff, mul_pos_iff, log_pos_iff hx.le, log_neg_iff hx]
 
 theorem one_lt_rpow_iff (hx : 0 ≤ x) : 1 < x ^ y ↔ 1 < x ∧ 0 < y ∨ 0 < x ∧ x < 1 ∧ y < 0 := by
   rcases hx.eq_or_lt with (rfl | hx)
   · rcases _root_.em (y = 0) with (rfl | hy) <;> simp [*, lt_irrefl, (zero_lt_one' ℝ).not_lt]
   · simp [one_lt_rpow_iff_of_pos hx, hx]
 
-theorem rpow_le_rpow_of_exponent_ge' (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hz : 0 ≤ z) (hyz : z ≤ y) :
+/-- This is a more general but less convenient version of `rpow_le_rpow_of_exponent_ge`.
+This version allows `x = 0`, so it explicitly forbids `x = y = 0`, `z ≠ 0`. -/
+theorem rpow_le_rpow_of_exponent_ge_of_imp (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hyz : z ≤ y)
+    (h : x = 0 → y = 0 → z = 0) :
     x ^ y ≤ x ^ z := by
   rcases eq_or_lt_of_le hx0 with (rfl | hx0')
-  · rcases eq_or_lt_of_le hz with (rfl | hz')
-    · exact (rpow_zero 0).symm ▸ rpow_le_one hx0 hx1 hyz
-    rw [zero_rpow, zero_rpow] <;> linarith
+  · rcases eq_or_ne y 0 with rfl | hy0
+    · rw [h rfl rfl]
+    · rw [zero_rpow hy0]
+      apply zero_rpow_nonneg
   · exact rpow_le_rpow_of_exponent_ge hx0' hx1 hyz
+
+/-- This version of `rpow_le_rpow_of_exponent_ge` allows `x = 0` but requires `0 ≤ z`.
+See also `rpow_le_rpow_of_exponent_ge_of_imp` for the most general version. -/
+theorem rpow_le_rpow_of_exponent_ge' (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hz : 0 ≤ z) (hyz : z ≤ y) :
+    x ^ y ≤ x ^ z :=
+  rpow_le_rpow_of_exponent_ge_of_imp hx0 hx1 hyz fun _ hy ↦ le_antisymm (hyz.trans_eq hy) hz
+
+lemma rpow_max {x y p : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hp : 0 ≤ p) :
+    (max x y) ^ p = max (x ^ p) (y ^ p) := by
+  rcases le_total x y with hxy | hxy
+  · rw [max_eq_right hxy, max_eq_right (rpow_le_rpow hx hxy hp)]
+  · rw [max_eq_left hxy, max_eq_left (rpow_le_rpow hy hxy hp)]
+
+theorem self_le_rpow_of_le_one (h₁ : 0 ≤ x) (h₂ : x ≤ 1) (h₃ : y ≤ 1) : x ≤ x ^ y := by
+  simpa only [rpow_one]
+    using rpow_le_rpow_of_exponent_ge_of_imp h₁ h₂ h₃ fun _ ↦ (absurd · one_ne_zero)
+
+theorem self_le_rpow_of_one_le (h₁ : 1 ≤ x) (h₂ : 1 ≤ y) : x ≤ x ^ y := by
+  simpa only [rpow_one] using rpow_le_rpow_of_exponent_le h₁ h₂
+
+theorem rpow_le_self_of_le_one (h₁ : 0 ≤ x) (h₂ : x ≤ 1) (h₃ : 1 ≤ y) : x ^ y ≤ x := by
+  simpa only [rpow_one]
+    using rpow_le_rpow_of_exponent_ge_of_imp h₁ h₂ h₃ fun _ ↦ (absurd · (one_pos.trans_le h₃).ne')
+
+theorem rpow_le_self_of_one_le (h₁ : 1 ≤ x) (h₂ : y ≤ 1) : x ^ y ≤ x := by
+  simpa only [rpow_one] using rpow_le_rpow_of_exponent_le h₁ h₂
+
+theorem self_lt_rpow_of_lt_one (h₁ : 0 < x) (h₂ : x < 1) (h₃ : y < 1) : x < x ^ y := by
+  simpa only [rpow_one] using rpow_lt_rpow_of_exponent_gt h₁ h₂ h₃
+
+theorem self_lt_rpow_of_one_lt (h₁ : 1 < x) (h₂ : 1 < y) : x < x ^ y := by
+  simpa only [rpow_one] using rpow_lt_rpow_of_exponent_lt h₁ h₂
+
+theorem rpow_lt_self_of_lt_one (h₁ : 0 < x) (h₂ : x < 1) (h₃ : 1 < y) : x ^ y < x := by
+  simpa only [rpow_one] using rpow_lt_rpow_of_exponent_gt h₁ h₂ h₃
+
+theorem rpow_lt_self_of_one_lt (h₁ : 1 < x) (h₂ : y < 1) : x ^ y < x := by
+  simpa only [rpow_one] using rpow_lt_rpow_of_exponent_lt h₁ h₂
 
 theorem rpow_left_injOn {x : ℝ} (hx : x ≠ 0) : InjOn (fun y : ℝ => y ^ x) { y : ℝ | 0 ≤ y } := by
   rintro y hy z hz (hyz : y ^ x = z ^ x)
@@ -818,7 +863,7 @@ lemma zpow_lt_of_lt_log {n : ℤ} (hy : 0 < y) (h : log x < n * log y) : x < y ^
   rpow_intCast _ _ ▸ rpow_lt_of_lt_log hy h
 
 theorem rpow_le_one_iff_of_pos (hx : 0 < x) : x ^ y ≤ 1 ↔ 1 ≤ x ∧ y ≤ 0 ∨ x ≤ 1 ∧ 0 ≤ y := by
-  rw [rpow_def_of_pos hx, exp_le_one_iff, mul_nonpos_iff, log_nonneg_iff hx, log_nonpos_iff hx]
+  rw [rpow_def_of_pos hx, exp_le_one_iff, mul_nonpos_iff, log_nonneg_iff hx, log_nonpos_iff hx.le]
 
 /-- Bound for `|log x * x ^ t|` in the interval `(0, 1]`, for positive real `t`. -/
 theorem abs_log_mul_self_rpow_lt (x t : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) (ht : 0 < t) :
@@ -863,6 +908,12 @@ lemma antitone_rpow_of_base_le_one {b : ℝ} (hb₀ : 0 < b) (hb₁ : b ≤ 1) :
   case inl => exact (strictAnti_rpow_of_base_lt_one hb₀ hb₁).antitone
   case inr => intro _ _ _; simp
 
+lemma rpow_right_inj (hx₀ : 0 < x) (hx₁ : x ≠ 1) : x ^ y = x ^ z ↔ y = z := by
+  refine ⟨fun H ↦ ?_, fun H ↦ by rw [H]⟩
+  rcases hx₁.lt_or_lt with h | h
+  · exact (strictAnti_rpow_of_base_lt_one hx₀ h).injective H
+  · exact (strictMono_rpow_of_base_gt_one h).injective H
+
 /-- Guessing rule for the `bound` tactic: when trying to prove `x ^ y ≤ x ^ z`, we can either assume
 `1 ≤ x` or `0 < x ≤ 1`. -/
 @[bound] lemma rpow_le_rpow_of_exponent_le_or_ge {x y z : ℝ}
@@ -906,10 +957,11 @@ lemma norm_log_natCast_le_rpow_div (n : ℕ) {ε : ℝ} (hε : 0 < ε) : ‖log 
   rcases n.eq_zero_or_pos with rfl | h
   · rw [Nat.cast_zero, Nat.cast_zero, log_zero, norm_zero, Real.zero_rpow hε.ne', zero_div]
   rw [norm_eq_abs, ← natCast_log, abs_ofReal,
-    _root_.abs_of_nonneg <| Real.log_nonneg <| by exact_mod_cast Nat.one_le_of_lt h.lt]
+    abs_of_nonneg <| Real.log_nonneg <| by exact_mod_cast Nat.one_le_of_lt h.lt]
   exact Real.log_natCast_le_rpow_div n hε
 
 end Complex
+
 
 /-!
 ## Square roots of reals
@@ -936,36 +988,6 @@ theorem rpow_div_two_eq_sqrt {x : ℝ} (r : ℝ) (hx : 0 ≤ x) : x ^ (r / 2) = 
   ring
 
 end Sqrt
-
-variable {n : ℕ}
-
-theorem exists_rat_pow_btwn_rat_aux (hn : n ≠ 0) (x y : ℝ) (h : x < y) (hy : 0 < y) :
-    ∃ q : ℚ, 0 < q ∧ x < (q : ℝ) ^ n ∧ (q : ℝ) ^ n < y := by
-  have hn' : 0 < (n : ℝ) := mod_cast hn.bot_lt
-  obtain ⟨q, hxq, hqy⟩ :=
-    exists_rat_btwn (rpow_lt_rpow (le_max_left 0 x) (max_lt hy h) <| inv_pos.mpr hn')
-  have := rpow_nonneg (le_max_left 0 x) n⁻¹
-  have hq := this.trans_lt hxq
-  replace hxq := rpow_lt_rpow this hxq hn'
-  replace hqy := rpow_lt_rpow hq.le hqy hn'
-  rw [rpow_natCast, rpow_natCast, rpow_inv_natCast_pow _ hn] at hxq hqy
-  · exact ⟨q, mod_cast hq, (le_max_right _ _).trans_lt hxq, hqy⟩
-  · exact hy.le
-  · exact le_max_left _ _
-
-theorem exists_rat_pow_btwn_rat (hn : n ≠ 0) {x y : ℚ} (h : x < y) (hy : 0 < y) :
-    ∃ q : ℚ, 0 < q ∧ x < q ^ n ∧ q ^ n < y := by
-  apply_mod_cast exists_rat_pow_btwn_rat_aux hn x y <;> assumption
-
-/-- There is a rational power between any two positive elements of an archimedean ordered field. -/
-theorem exists_rat_pow_btwn {α : Type*} [LinearOrderedField α] [Archimedean α] (hn : n ≠ 0)
-    {x y : α} (h : x < y) (hy : 0 < y) : ∃ q : ℚ, 0 < q ∧ x < (q : α) ^ n ∧ (q : α) ^ n < y := by
-  obtain ⟨q₂, hx₂, hy₂⟩ := exists_rat_btwn (max_lt h hy)
-  obtain ⟨q₁, hx₁, hq₁₂⟩ := exists_rat_btwn hx₂
-  have : (0 : α) < q₂ := (le_max_right _ _).trans_lt hx₂
-  norm_cast at hq₁₂ this
-  obtain ⟨q, hq, hq₁, hq₂⟩ := exists_rat_pow_btwn_rat hn hq₁₂ this
-  refine ⟨q, hq, (le_max_left _ _).trans_lt <| hx₁.trans ?_, hy₂.trans' ?_⟩ <;> assumption_mod_cast
 
 end Real
 
@@ -994,8 +1016,15 @@ lemma cpow_inv_two_im_eq_neg_sqrt {x : ℂ} (hx : x.im < 0) :
 
 lemma abs_cpow_inv_two_im (x : ℂ) : |(x ^ (2⁻¹ : ℂ)).im| = sqrt ((abs x - x.re) / 2) := by
   rw [← ofReal_ofNat, ← ofReal_inv, cpow_ofReal_im, ← div_eq_mul_inv, ← one_div,
-    ← Real.sqrt_eq_rpow, _root_.abs_mul, _root_.abs_of_nonneg (sqrt_nonneg _), abs_sin_half,
+    ← Real.sqrt_eq_rpow, _root_.abs_mul, abs_of_nonneg (sqrt_nonneg _), abs_sin_half,
     ← sqrt_mul (abs.nonneg _), ← mul_div_assoc, mul_sub, mul_one, abs_mul_cos_arg]
+
+open scoped ComplexOrder in
+lemma inv_natCast_cpow_ofReal_pos {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
+    0 < ((n : ℂ) ^ (x : ℂ))⁻¹ := by
+  refine RCLike.inv_pos_of_pos ?_
+  rw [show (n : ℂ) ^ (x : ℂ) = (n : ℝ) ^ (x : ℂ) from rfl, ← ofReal_cpow n.cast_nonneg']
+  positivity
 
 end Complex
 
@@ -1040,14 +1069,6 @@ theorem isRat_rpow_neg {a b : ℝ} {nb : ℕ}
     IsRat (a ^ b) num den := by
   rwa [pb.out, Real.rpow_intCast]
 
-#adaptation_note
-/--
-Since https://github.com/leanprover/lean4/pull/5338,
-the unused variable linter can not see usages of variables in
-`haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives.
--/
-set_option linter.unusedVariables false
-
 /-- Evaluates expressions of the form `a ^ b` when `a` and `b` are both reals. -/
 @[norm_num (_ : ℝ) ^ (_ : ℝ)]
 def evalRPow : NormNumExt where eval {u α} e := do
@@ -1090,5 +1111,3 @@ def evalRPow : NormNumExt where eval {u α} e := do
 end Mathlib.Meta.NormNum
 
 end Tactics
-
-@[deprecated (since := "2024-01-07")] alias rpow_nonneg_of_nonneg := rpow_nonneg

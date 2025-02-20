@@ -5,7 +5,8 @@ Authors: Mario Carneiro
 -/
 
 import Mathlib.Algebra.Module.LinearMap.End
-import Mathlib.Algebra.Module.Submodule.Basic
+import Mathlib.Algebra.Module.Submodule.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 
@@ -47,8 +48,11 @@ protected def subtype : S' →ₗ[R] M where
   map_smul' _ _ := rfl
 
 @[simp]
-protected theorem coeSubtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
+protected theorem coe_subtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
   rfl
+
+@[deprecated (since := "2025-02-18")]
+protected alias coeSubtype := SMulMemClass.coe_subtype
 
 end SMulMemClass
 
@@ -84,7 +88,6 @@ theorem injective_subtype : Injective p.subtype :=
   Subtype.coe_injective
 
 /-- Note the `AddSubmonoid` version of this lemma is called `AddSubmonoid.coe_finset_sum`. -/
--- Porting note: removing the `@[simp]` attribute since it's literally `AddSubmonoid.coe_finset_sum`
 theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i ∈ s, x i) = ∑ i ∈ s, (x i : M) :=
   map_sum p.subtype _ _
 

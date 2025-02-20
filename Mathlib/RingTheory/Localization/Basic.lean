@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Tower
+import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
-import Mathlib.RingTheory.OreLocalization.Ring
-import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Localization.Defs
+import Mathlib.RingTheory.OreLocalization.Ring
 
 /-!
 # Localizations of commutative rings
@@ -67,12 +67,45 @@ localization, ring localization, commutative ring localization, characteristic p
 commutative ring, field of fractions
 -/
 
+assert_not_exists Ideal
 
 open Function
 
+namespace Localization
+
+open IsLocalization
+
+variable {ι : Type*} {R : ι → Type*} [∀ i, CommSemiring (R i)]
+variable {i : ι} (S : Submonoid (R i))
+
+/-- `IsLocalization.map` applied to a projection homomorphism from a product ring. -/
+noncomputable abbrev mapPiEvalRingHom :
+    Localization (S.comap <| Pi.evalRingHom R i) →+* Localization S :=
+  map (T := S) _ (Pi.evalRingHom R i) le_rfl
+
+open Function in
+theorem mapPiEvalRingHom_bijective : Bijective (mapPiEvalRingHom S) := by
+  let T := S.comap (Pi.evalRingHom R i)
+  classical
+  refine ⟨fun x₁ x₂ eq ↦ ?_, fun x ↦ ?_⟩
+  · obtain ⟨r₁, s₁, rfl⟩ := mk'_surjective T x₁
+    obtain ⟨r₂, s₂, rfl⟩ := mk'_surjective T x₂
+    simp_rw [map_mk'] at eq
+    rw [IsLocalization.eq] at eq ⊢
+    obtain ⟨s, hs⟩ := eq
+    refine ⟨⟨update 0 i s, by apply update_self i s.1 0 ▸ s.2⟩, funext fun j ↦ ?_⟩
+    obtain rfl | ne := eq_or_ne j i
+    · simpa using hs
+    · simp [update_of_ne ne]
+  · obtain ⟨r, s, rfl⟩ := mk'_surjective S x
+    exact ⟨mk' (M := T) _ (update 0 i r) ⟨update 0 i s, by apply update_self i s.1 0 ▸ s.2⟩,
+      by simp [map_mk']⟩
+
+end Localization
+
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R] {M : Submonoid R} {S : Type*} [CommSemiring S]
+variable {R : Type*} [CommSemiring R] {M N : Submonoid R} {S : Type*} [CommSemiring S]
 variable [Algebra R S] {P : Type*} [CommSemiring P]
 
 namespace IsLocalization
@@ -81,14 +114,15 @@ section IsLocalization
 
 variable [IsLocalization M S]
 
-theorem mk'_mem_iff {x} {y : M} {I : Ideal S} : mk' S x y ∈ I ↔ algebraMap R S x ∈ I := by
-  constructor <;> intro h
-  · rw [← mk'_spec S x y, mul_comm]
-    exact I.mul_mem_left ((algebraMap R S) y) h
-  · rw [← mk'_spec S x y] at h
-    obtain ⟨b, hb⟩ := isUnit_iff_exists_inv.1 (map_units S y)
-    have := I.mul_mem_left b h
-    rwa [mul_comm, mul_assoc, hb, mul_one] at this
+variable (M S) in
+include M in
+theorem linearMap_compatibleSMul (N₁ N₂) [AddCommMonoid N₁] [AddCommMonoid N₂] [Module R N₁]
+    [Module S N₁] [Module R N₂] [Module S N₂] [IsScalarTower R S N₁] [IsScalarTower R S N₂] :
+    LinearMap.CompatibleSMul N₁ N₂ S R where
+  map_smul f s s' := by
+    obtain ⟨r, m, rfl⟩ := mk'_surjective M s
+    rw [← (map_units S m).smul_left_cancel]
+    simp_rw [algebraMap_smul, ← map_smul, ← smul_assoc, smul_mk'_self, algebraMap_smul, map_smul]
 
 variable {g : R →+* P} (hg : ∀ y : M, IsUnit (g y))
 
@@ -118,11 +152,9 @@ noncomputable def algEquiv : S ≃ₐ[R] Q :=
 
 end
 
--- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S Q (mk' S x y) = mk' Q x y := by
   simp
 
--- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem algEquiv_symm_mk' (x : R) (y : M) : (algEquiv M S Q).symm (mk' Q x y) = mk' S x y := by simp
 
 variable (M) in
@@ -134,6 +166,74 @@ protected lemma bijective (f : S →+* Q) (hf : f.comp (algebraMap R S) = algebr
     (IsLocalization.algEquiv M S Q).toEquiv.bijective
 
 end AlgEquiv
+
+section liftAlgHom
+
+variable {A : Type*} [CommSemiring A]
+  {R : Type*} [CommSemiring R] [Algebra A R] {M : Submonoid R}
+  {S : Type*} [CommSemiring S] [Algebra A S] [Algebra R S] [IsScalarTower A R S]
+  {P : Type*} [CommSemiring P] [Algebra A P] [IsLocalization M S]
+  {f : R →ₐ[A] P} (hf : ∀ y : M, IsUnit (f y)) (x : S)
+include hf
+
+/-- `AlgHom` version of `IsLocalization.lift`. -/
+noncomputable def liftAlgHom : S →ₐ[A] P where
+  __ := lift hf
+  commutes' r := show lift hf (algebraMap A S r) = _ by
+    simp [IsScalarTower.algebraMap_apply A R S]
+
+theorem liftAlgHom_toRingHom : (liftAlgHom hf : S →ₐ[A] P).toRingHom = lift hf := rfl
+
+@[simp]
+theorem coe_liftAlgHom : ⇑(liftAlgHom hf : S →ₐ[A] P) = lift hf := rfl
+
+theorem liftAlgHom_apply : liftAlgHom hf x = lift hf x := rfl
+
+end liftAlgHom
+
+section AlgEquivOfAlgEquiv
+
+variable {A : Type*} [CommSemiring A]
+  {R : Type*} [CommSemiring R] [Algebra A R] {M : Submonoid R} (S : Type*)
+  [CommSemiring S] [Algebra A S] [Algebra R S] [IsScalarTower A R S] [IsLocalization M S]
+  {P : Type*} [CommSemiring P] [Algebra A P] {T : Submonoid P} (Q : Type*)
+  [CommSemiring Q] [Algebra A Q] [Algebra P Q] [IsScalarTower A P Q] [IsLocalization T Q]
+  (h : R ≃ₐ[A] P) (H : Submonoid.map h M = T)
+
+include H
+
+/-- If `S`, `Q` are localizations of `R` and `P` at submonoids `M`, `T` respectively,
+an isomorphism `h : R ≃ₐ[A] P` such that `h(M) = T` induces an isomorphism of localizations
+`S ≃ₐ[A] Q`. -/
+@[simps!]
+noncomputable def algEquivOfAlgEquiv : S ≃ₐ[A] Q where
+  __ := ringEquivOfRingEquiv S Q h.toRingEquiv H
+  commutes' _ := by dsimp; rw [IsScalarTower.algebraMap_apply A R S, map_eq,
+    RingHom.coe_coe, AlgEquiv.commutes, IsScalarTower.algebraMap_apply A P Q]
+
+variable {S Q h}
+
+theorem algEquivOfAlgEquiv_eq_map :
+    (algEquivOfAlgEquiv S Q h H : S →+* Q) =
+      map Q (h : R →+* P) (M.le_comap_of_map_le (le_of_eq H)) :=
+  rfl
+
+theorem algEquivOfAlgEquiv_eq (x : R) :
+    algEquivOfAlgEquiv S Q h H ((algebraMap R S) x) = algebraMap P Q (h x) := by
+  simp
+
+set_option linter.docPrime false in
+theorem algEquivOfAlgEquiv_mk' (x : R) (y : M) :
+    algEquivOfAlgEquiv S Q h H (mk' S x y) =
+      mk' Q (h x) ⟨h y, show h y ∈ T from H ▸ Set.mem_image_of_mem h y.2⟩ := by
+  simp [map_mk']
+
+theorem algEquivOfAlgEquiv_symm : (algEquivOfAlgEquiv S Q h H).symm =
+    algEquivOfAlgEquiv Q S h.symm (show Submonoid.map h.symm T = M by
+      erw [← H, ← Submonoid.comap_equiv_eq_map_symm,
+        Submonoid.comap_map_eq_of_injective h.injective]) := rfl
+
+end AlgEquivOfAlgEquiv
 
 section at_units
 
@@ -160,7 +260,7 @@ end IsLocalization
 
 section
 
-variable (M)
+variable (M N)
 
 theorem isLocalization_of_algEquiv [Algebra R P] [IsLocalization M S] (h : S ≃ₐ[R] P) :
     IsLocalization M P := by
@@ -187,6 +287,19 @@ theorem isLocalization_iff_of_ringEquiv (h : S ≃+* P) :
       haveI := (h.toRingHom.comp <| algebraMap R S).toAlgebra; IsLocalization M P :=
   letI := (h.toRingHom.comp <| algebraMap R S).toAlgebra
   isLocalization_iff_of_algEquiv M { h with commutes' := fun _ => rfl }
+
+variable (S) in
+/-- If an algebra is simultaneously localizations for two submonoids, then an arbitrary algebra
+is a localization of one submonoid iff it is a localization of the other. -/
+theorem isLocalization_iff_of_isLocalization [IsLocalization M S] [IsLocalization N S]
+    [Algebra R P] : IsLocalization M P ↔ IsLocalization N P :=
+  ⟨fun _ ↦ isLocalization_of_algEquiv N (algEquiv M S P),
+    fun _ ↦ isLocalization_of_algEquiv M (algEquiv N S P)⟩
+
+theorem iff_of_le_of_exists_dvd (N : Submonoid R) (h₁ : M ≤ N) (h₂ : ∀ n ∈ N, ∃ m ∈ M, n ∣ m) :
+    IsLocalization M S ↔ IsLocalization N S :=
+  have : IsLocalization N (Localization M) := of_le_of_exists_dvd _ _ h₁ h₂
+  isLocalization_iff_of_isLocalization _ _ (Localization M)
 
 end
 
@@ -243,9 +356,6 @@ open IsLocalization
 theorem mk_natCast (m : ℕ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℕ) _
 
-@[deprecated (since := "2024-04-17")]
-alias mk_nat_cast := mk_natCast
-
 variable [IsLocalization M S]
 
 section
@@ -265,11 +375,9 @@ noncomputable def _root_.IsLocalization.unique (R Rₘ) [CommSemiring R] [CommSe
 
 end
 
--- Porting note (#10618): removed `simp`, `simp` can prove it
 nonrec theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S (mk' (Localization M) x y) = mk' S x y :=
   algEquiv_mk' _ _
 
--- Porting note (#10618): removed `simp`, `simp` can prove it
 nonrec theorem algEquiv_symm_mk' (x : R) (y : M) :
     (algEquiv M S).symm (mk' S x y) = mk' (Localization M) x y :=
   algEquiv_symm_mk' _ _
@@ -300,9 +408,6 @@ namespace Localization
 
 theorem mk_intCast (m : ℤ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℤ) _
-
-@[deprecated (since := "2024-04-17")]
-alias mk_int_cast := mk_intCast
 
 end Localization
 

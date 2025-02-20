@@ -95,6 +95,20 @@ class MulZeroOneClass (M₀ : Type u) extends MulOneClass M₀, MulZeroClass M�
 and right absorbing. -/
 class MonoidWithZero (M₀ : Type u) extends Monoid M₀, MulZeroOneClass M₀, SemigroupWithZero M₀
 
+section MonoidWithZero
+
+variable [MonoidWithZero M₀]
+
+/-- If `x` is multiplicative with respect to `f`, then so is any `x^n`. -/
+theorem pow_mul_apply_eq_pow_mul {M : Type*} [Monoid M] (f : M₀ → M) {x : M₀}
+    (hx : ∀ y : M₀, f (x * y) = f x * f y) (n : ℕ) :
+    ∀ (y : M₀), f (x ^ n * y) = f x ^ n * f y := by
+  induction n with
+  | zero => intro y; rw [pow_zero, pow_zero, one_mul, one_mul]
+  | succ n hn => intro y; rw [pow_succ', pow_succ', mul_assoc, mul_assoc, hx, hn]
+
+end MonoidWithZero
+
 /-- A type `M` is a `CancelMonoidWithZero` if it is a monoid with zero element, `0` is left
 and right absorbing, and left/right multiplication by a non-zero element is injective. -/
 class CancelMonoidWithZero (M₀ : Type*) extends MonoidWithZero M₀, IsCancelMulZero M₀
@@ -182,15 +196,14 @@ Examples include division rings and the ordered monoids that are the
 target of valuations in general valuation theory. -/
 class GroupWithZero (G₀ : Type u) extends MonoidWithZero G₀, DivInvMonoid G₀, Nontrivial G₀ where
   /-- The inverse of `0` in a group with zero is `0`. -/
-  inv_zero : (0 : G₀)⁻¹ = 0
+  protected inv_zero : (0 : G₀)⁻¹ = 0
   /-- Every nonzero element of a group with zero is invertible. -/
   protected mul_inv_cancel (a : G₀) : a ≠ 0 → a * a⁻¹ = 1
 
-export GroupWithZero (inv_zero)
-attribute [simp] inv_zero
-
 section GroupWithZero
 variable [GroupWithZero G₀] {a : G₀}
+
+@[simp] lemma inv_zero : (0 : G₀)⁻¹ = 0 := GroupWithZero.inv_zero
 
 @[simp] lemma mul_inv_cancel₀ (h : a ≠ 0) : a * a⁻¹ = 1 := GroupWithZero.mul_inv_cancel a h
 
@@ -274,5 +287,13 @@ theorem zero_eq_mul_self : 0 = a * a ↔ a = 0 := by simp
 theorem mul_self_ne_zero : a * a ≠ 0 ↔ a ≠ 0 := mul_self_eq_zero.not
 
 theorem zero_ne_mul_self : 0 ≠ a * a ↔ a ≠ 0 := zero_eq_mul_self.not
+
+theorem mul_eq_zero_iff_left (ha : a ≠ 0) : a * b = 0 ↔ b = 0 := by simp [ha]
+
+theorem mul_eq_zero_iff_right (hb : b ≠ 0) : a * b = 0 ↔ a = 0 := by simp [hb]
+
+theorem mul_ne_zero_iff_left (ha : a ≠ 0) : a * b ≠ 0 ↔ b ≠ 0 := by simp [ha]
+
+theorem mul_ne_zero_iff_right (hb : b ≠ 0) : a * b ≠ 0 ↔ a ≠ 0 := by simp [hb]
 
 end MulZeroClass

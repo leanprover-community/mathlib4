@@ -152,8 +152,8 @@ end Mul
 
 /-- A version of `measurable_div_const` that assumes `MeasurableMul` instead of
   `MeasurableDiv`. This can be nice to avoid unnecessary type-class assumptions. -/
-@[to_additive " A version of `measurable_sub_const` that assumes `MeasurableAdd` instead of
-  `MeasurableSub`. This can be nice to avoid unnecessary type-class assumptions. "]
+@[to_additive "A version of `measurable_sub_const` that assumes `MeasurableAdd` instead of
+  `MeasurableSub`. This can be nice to avoid unnecessary type-class assumptions."]
 theorem measurable_div_const' {G : Type*} [DivInvMonoid G] [MeasurableSpace G] [MeasurableMul G]
     (g : G) : Measurable fun h => h / g := by simp_rw [div_eq_mul_inv, measurable_mul_const]
 
@@ -310,7 +310,8 @@ theorem measurableSet_eq_fun {m : MeasurableSpace α} {E} [MeasurableSpace E] [A
   simp_rw [Set.mem_setOf_eq, Pi.sub_apply, sub_eq_zero]
 
 @[measurability]
-lemma measurableSet_eq_fun' {β : Type*} [CanonicallyOrderedAddCommMonoid β] [Sub β] [OrderedSub β]
+lemma measurableSet_eq_fun' {β : Type*} [AddCommMonoid β] [PartialOrder β]
+    [CanonicallyOrderedAdd β] [Sub β] [OrderedSub β]
     {_ : MeasurableSpace β} [MeasurableSub₂ β] [MeasurableSingletonClass β]
     {f g : α → β} (hf : Measurable f) (hg : Measurable g) :
     MeasurableSet {x | f x = g x} := by
@@ -419,7 +420,7 @@ theorem MeasurableSet.inv {s : Set G} (hs : MeasurableSet s) : MeasurableSet s�
 @[to_additive]
 theorem measurableEmbedding_inv [InvolutiveInv α] [MeasurableInv α] :
     MeasurableEmbedding (Inv.inv (α := α)) :=
-  ⟨inv_injective, measurable_inv, fun s hs ↦ s.image_inv ▸ hs.inv⟩
+  ⟨inv_injective, measurable_inv, fun s hs ↦ s.image_inv_eq_inv ▸ hs.inv⟩
 
 end Inv
 
@@ -453,7 +454,7 @@ theorem AEMeasurable.mul_iff_left {G : Type*} [MeasurableSpace G] [MeasurableSpa
 instance DivInvMonoid.measurableZPow (G : Type u) [DivInvMonoid G] [MeasurableSpace G]
     [MeasurableMul₂ G] [MeasurableInv G] : MeasurablePow G ℤ :=
   ⟨measurable_from_prod_countable fun n => by
-      cases' n with n n
+      rcases n with n | n
       · simp_rw [Int.ofNat_eq_coe, zpow_natCast]
         exact measurable_id.pow_const _
       · simp_rw [zpow_negSucc]
@@ -610,10 +611,12 @@ instance SubNegMonoid.measurableSMul_int₂ (M : Type*) [SubNegMonoid M] [Measur
   ⟨by
     suffices Measurable fun p : M × ℤ => p.2 • p.1 by apply this.comp measurable_swap
     refine measurable_from_prod_countable fun n => ?_
-    induction' n with n n ih
-    · simp only [Int.ofNat_eq_coe, natCast_zsmul]
+    cases n with
+    | ofNat n =>
+      simp only [Int.ofNat_eq_coe, natCast_zsmul]
       exact measurable_const_smul _
-    · simp only [negSucc_zsmul]
+    | negSucc n =>
+      simp only [negSucc_zsmul]
       exact (measurable_const_smul _).neg⟩
 
 end SMul
@@ -662,7 +665,7 @@ instance Units.instMeasurableSpace : MeasurableSpace Mˣ := MeasurableSpace.coma
 
 @[to_additive]
 instance Units.measurableSMul : MeasurableSMul Mˣ β where
-  measurable_const_smul c := (measurable_const_smul (c : M) : _)
+  measurable_const_smul c := measurable_const_smul (c : M)
   measurable_smul_const x :=
     (measurable_smul_const x : Measurable fun c : M => c • x).comp MeasurableSpace.le_map_comap
 

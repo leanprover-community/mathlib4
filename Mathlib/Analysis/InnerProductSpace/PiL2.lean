@@ -7,6 +7,7 @@ import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.Normed.Lp.PiLp
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.UnitaryGroup
+import Mathlib.Util.Superscript
 
 /-!
 # `L²` inner product space structure on finite products of inner product spaces
@@ -30,7 +31,8 @@ the last section, various properties of matrices are explored.
 
 - `EuclideanSpace 𝕜 n`: defined to be `PiLp 2 (n → 𝕜)` for any `Fintype n`, i.e., the space
   from functions to `n` to `𝕜` with the `L²` norm. We register several instances on it (notably
-  that it is a finite-dimensional inner product space).
+  that it is a finite-dimensional inner product space), and provide a `!ₚ[]` notation (for numeric
+  subscripts like `₂`) for the case when the indexing type is `Fin n`.
 
 - `OrthonormalBasis 𝕜 ι`: defined to be an isometry to Euclidean space from a given
   finite-dimensional inner product space, `E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι`.
@@ -59,7 +61,6 @@ noncomputable section
 
 variable {ι ι' 𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 variable {F' : Type*} [NormedAddCommGroup F'] [InnerProductSpace ℝ F']
 
@@ -96,9 +97,43 @@ theorem PiLp.inner_apply {ι : Type*} [Fintype ι] {f : ι → Type*} [∀ i, No
   rfl
 
 /-- The standard real/complex Euclidean space, functions on a finite type. For an `n`-dimensional
-space use `EuclideanSpace 𝕜 (Fin n)`. -/
+space use `EuclideanSpace 𝕜 (Fin n)`.
+
+For the case when `n = Fin _`, there is `!₂[x, y, ...]` notation for building elements of this type,
+analogous to `![x, y, ...]` notation. -/
 abbrev EuclideanSpace (𝕜 : Type*) (n : Type*) : Type _ :=
   PiLp 2 fun _ : n => 𝕜
+
+section Notation
+open Lean Meta Elab Term Macro TSyntax PrettyPrinter.Delaborator SubExpr
+open Mathlib.Tactic (subscriptTerm)
+
+/-- Notation for vectors in Lp space. `!₂[x, y, ...]` is a shorthand for
+`(WithLp.equiv 2 _ _).symm ![x, y, ...]`, of type `EuclideanSpace _ (Fin _)`.
+
+This also works for other subscripts. -/
+syntax (name := PiLp.vecNotation) "!" noWs subscriptTerm noWs "[" term,* "]" : term
+macro_rules | `(!$p:subscript[$e:term,*]) => do
+  -- override the `Fin n.succ` to a literal
+  let n := e.getElems.size
+  `((WithLp.equiv $p <| ∀ _ : Fin $(quote n), _).symm ![$e,*])
+
+set_option trace.debug true in
+/-- Unexpander for the `!₂[x, y, ...]` notation. -/
+@[app_delab DFunLike.coe]
+def EuclideanSpace.delabVecNotation : Delab :=
+  whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 6 do
+    -- check that the `(WithLp.equiv _ _).symm` is present
+    let p : Term ← withAppFn <| withAppArg do
+      let_expr Equiv.symm _ _ e := ← getExpr | failure
+      let_expr WithLp.equiv _ _ := e | failure
+      withNaryArg 2 <| withNaryArg 0 <| delab
+    -- to be conservative, only allow subscripts which are numerals
+    guard <| p matches `($_:num)
+    let `(![$elems,*]) := ← withAppArg delab | failure
+    `(!$p[$elems,*])
+
+end Notation
 
 theorem EuclideanSpace.nnnorm_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
     (x : EuclideanSpace 𝕜 n) : ‖x‖₊ = NNReal.sqrt (∑ i, ‖x i‖₊ ^ 2) :=
@@ -151,11 +186,11 @@ theorem finrank_euclideanSpace_fin {n : ℕ} :
     Module.finrank 𝕜 (EuclideanSpace 𝕜 (Fin n)) = n := by simp
 
 theorem EuclideanSpace.inner_eq_star_dotProduct (x y : EuclideanSpace 𝕜 ι) :
-    ⟪x, y⟫ = Matrix.dotProduct (star <| WithLp.equiv _ _ x) (WithLp.equiv _ _ y) :=
+    ⟪x, y⟫ = dotProduct (star <| WithLp.equiv _ _ x) (WithLp.equiv _ _ y) :=
   rfl
 
 theorem EuclideanSpace.inner_piLp_equiv_symm (x y : ι → 𝕜) :
-    ⟪(WithLp.equiv 2 _).symm x, (WithLp.equiv 2 _).symm y⟫ = Matrix.dotProduct (star x) y :=
+    ⟪(WithLp.equiv 2 _).symm x, (WithLp.equiv 2 _).symm y⟫ = dotProduct (star x) y :=
   rfl
 
 /-- A finite, mutually orthogonal family of subspaces of `E`, which span `E`, induce an isometry
@@ -200,18 +235,11 @@ abbrev EuclideanSpace.equiv : EuclideanSpace 𝕜 ι ≃L[𝕜] ι → 𝕜 :=
 
 variable {ι 𝕜}
 
--- TODO : This should be generalized to `PiLp`.
 /-- The projection on the `i`-th coordinate of `EuclideanSpace 𝕜 ι`, as a linear map. -/
-@[simps!]
-def EuclideanSpace.projₗ (i : ι) : EuclideanSpace 𝕜 ι →ₗ[𝕜] 𝕜 :=
-  (LinearMap.proj i).comp (WithLp.linearEquiv 2 𝕜 (ι → 𝕜) : EuclideanSpace 𝕜 ι →ₗ[𝕜] ι → 𝕜)
+abbrev EuclideanSpace.projₗ (i : ι) : EuclideanSpace 𝕜 ι →ₗ[𝕜] 𝕜 := PiLp.projₗ _ _ i
 
--- TODO : This should be generalized to `PiLp`.
-/-- The projection on the `i`-th coordinate of `EuclideanSpace 𝕜 ι`,
-as a continuous linear map. -/
-@[simps! apply coe]
-def EuclideanSpace.proj (i : ι) : EuclideanSpace 𝕜 ι →L[𝕜] 𝕜 :=
-  ⟨EuclideanSpace.projₗ i, continuous_apply i⟩
+/-- The projection on the `i`-th coordinate of `EuclideanSpace 𝕜 ι`, as a continuous linear map. -/
+abbrev EuclideanSpace.proj (i : ι) : EuclideanSpace 𝕜 ι →L[𝕜] 𝕜 := PiLp.proj _ _ i
 
 section DecEq
 
@@ -306,7 +334,6 @@ theorem repr_injective :
   cases g
   congr
 
--- Porting note: `CoeFun` → `FunLike`
 /-- `b i` is the `i`th basis vector. -/
 instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
   coe b i := by classical exact b.repr.symm (EuclideanSpace.single i (1 : 𝕜))
@@ -363,12 +390,7 @@ protected def toBasis (b : OrthonormalBasis ι 𝕜 E) : Basis ι 𝕜 E :=
   Basis.ofEquivFun b.repr.toLinearEquiv
 
 @[simp]
-protected theorem coe_toBasis (b : OrthonormalBasis ι 𝕜 E) : (⇑b.toBasis : ι → E) = ⇑b := by
-  rw [OrthonormalBasis.toBasis] -- Porting note: was `change`
-  ext j
-  classical
-    rw [Basis.coe_ofEquivFun]
-    congr
+protected theorem coe_toBasis (b : OrthonormalBasis ι 𝕜 E) : (⇑b.toBasis : ι → E) = ⇑b := rfl
 
 @[simp]
 protected theorem coe_toBasis_repr (b : OrthonormalBasis ι 𝕜 E) :
@@ -379,7 +401,7 @@ protected theorem coe_toBasis_repr (b : OrthonormalBasis ι 𝕜 E) :
 protected theorem coe_toBasis_repr_apply (b : OrthonormalBasis ι 𝕜 E) (x : E) (i : ι) :
     b.toBasis.repr x i = b.repr x i := by
   rw [← Basis.equivFun_apply, OrthonormalBasis.coe_toBasis_repr]
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [LinearIsometryEquiv.coe_toLinearEquiv]
 
 protected theorem sum_repr (b : OrthonormalBasis ι 𝕜 E) (x : E) : ∑ i, b.repr x i • b i = x := by
@@ -662,10 +684,7 @@ theorem Complex.isometryOfOrthonormal_symm_apply (v : OrthonormalBasis (Fin 2) �
 
 theorem Complex.isometryOfOrthonormal_apply (v : OrthonormalBasis (Fin 2) ℝ F) (z : ℂ) :
     Complex.isometryOfOrthonormal v z = z.re • v 0 + z.im • v 1 := by
-  -- Porting note: was
-  -- simp [Complex.isometryOfOrthonormal, ← v.sum_repr_symm]
-  rw [Complex.isometryOfOrthonormal, LinearIsometryEquiv.trans_apply]
-  simp [← v.sum_repr_symm]
+  simp [Complex.isometryOfOrthonormal, ← v.sum_repr_symm]
 
 end Complex
 
@@ -900,7 +919,8 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
       calc
         finrank 𝕜 LSᗮ = finrank 𝕜 V - finrank 𝕜 LS := by
           simp only [← LS.finrank_add_finrank_orthogonal, add_tsub_cancel_left]
-        _ = finrank 𝕜 V - finrank 𝕜 S := by simp only [LinearMap.finrank_range_of_inj L.injective]
+        _ = finrank 𝕜 V - finrank 𝕜 S := by
+          simp only [LS, LinearMap.finrank_range_of_inj L.injective]
         _ = finrank 𝕜 Sᗮ := by simp only [← S.finrank_add_finrank_orthogonal, add_tsub_cancel_left]
 
     exact
@@ -926,12 +946,12 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
       have Lp1x : L (p1 x) ∈ LinearMap.range L.toLinearMap :=
         LinearMap.mem_range_self L.toLinearMap (p1 x)
       have Lp2x : L3 (p2 x) ∈ (LinearMap.range L.toLinearMap)ᗮ := by
-        simp only [LinearIsometry.coe_comp, Function.comp_apply, Submodule.coe_subtypeₗᵢ, ←
-          Submodule.range_subtype LSᗮ]
+        simp only [LS, LinearIsometry.coe_comp, Function.comp_apply, Submodule.coe_subtypeₗᵢ,
+          ← Submodule.range_subtype LSᗮ]
         apply LinearMap.mem_range_self
       apply Submodule.inner_right_of_mem_orthogonal Lp1x Lp2x
     -- Apply the Pythagorean theorem and simplify
-    rw [← sq_eq_sq (norm_nonneg _) (norm_nonneg _), norm_sq_eq_add_norm_sq_projection x S]
+    rw [← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _), norm_sq_eq_add_norm_sq_projection x S]
     simp only [sq, Mx_decomp]
     rw [norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (L (p1 x)) (L3 (p2 x)) Mx_orth]
     simp only [p1, p2, LinearIsometry.norm_map, _root_.add_left_inj, mul_eq_mul_left_iff,
@@ -1014,7 +1034,7 @@ local notation "⟪" x ", " y "⟫ₑ" =>
 /-- The inner product of a row of `A` and a row of `B` is an entry of `B * Aᴴ`. -/
 theorem inner_matrix_row_row [Fintype n] (A B : Matrix m n 𝕜) (i j : m) :
     ⟪A i, B j⟫ₑ = (B * Aᴴ) j i := by
-  simp_rw [EuclideanSpace.inner_piLp_equiv_symm, Matrix.mul_apply', Matrix.dotProduct_comm,
+  simp_rw [EuclideanSpace.inner_piLp_equiv_symm, Matrix.mul_apply', dotProduct_comm,
     Matrix.conjTranspose_apply, Pi.star_def]
 
 /-- The inner product of a column of `A` and a column of `B` is an entry of `Aᴴ * B`. -/

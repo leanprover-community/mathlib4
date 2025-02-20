@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Order.Bounds.OrderIso
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.OrdContinuous
 import Mathlib.Order.RelIso.Group
 

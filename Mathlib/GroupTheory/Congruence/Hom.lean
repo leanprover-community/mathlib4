@@ -74,13 +74,12 @@ variable {c}
 @[to_additive "The natural homomorphism from an `AddMonoid` to its quotient by a congruence
 relation is surjective."]
 theorem mk'_surjective : Surjective c.mk' :=
-  Quotient.surjective_Quotient_mk''
+  Quotient.mk''_surjective
 
 @[to_additive (attr := simp)]
 theorem coe_mk' : (c.mk' : M → c.Quotient) = ((↑) : M → c.Quotient) :=
   rfl
 
--- Porting note: used to abuse defeq between sets and predicates
 @[to_additive]
 theorem ker_apply {f : M →* P} {x y} : ker f x y ↔ f x = f y := Iff.rfl
 

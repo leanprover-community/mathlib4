@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Data.Nat.Cast.WithTop
-import Mathlib.RingTheory.Prime
+import Mathlib.RingTheory.Ideal.Quotient.Basic
 import Mathlib.RingTheory.Polynomial.Content
-import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.RingTheory.Prime
 
 /-!
 # Eisenstein's criterion
@@ -21,8 +21,6 @@ open Polynomial Ideal.Quotient
 variable {R : Type*} [CommRing R]
 
 namespace Polynomial
-
-open Polynomial
 
 namespace EisensteinCriterionAux
 
@@ -42,7 +40,7 @@ theorem map_eq_C_mul_X_pow_of_forall_coeff_mem {f : R[X]} {P : Ideal R}
     · rw [coeff_eq_zero_of_degree_lt, coeff_eq_zero_of_degree_lt]
       · refine lt_of_le_of_lt (degree_C_mul_X_pow_le _ _) ?_
         rwa [← degree_eq_natDegree hf0]
-      · exact lt_of_le_of_lt (degree_map_le _ _) h
+      · exact lt_of_le_of_lt degree_map_le h
 
 theorem le_natDegree_of_map_eq_mul_X_pow {n : ℕ} {P : Ideal R} (hP : P.IsPrime) {q : R[X]}
     {c : Polynomial (R ⧸ P)} (hq : map (mk P) q = c * X ^ n) (hc0 : c.degree = 0) :
@@ -51,7 +49,7 @@ theorem le_natDegree_of_map_eq_mul_X_pow {n : ℕ} {P : Ideal R} (hP : P.IsPrime
     (calc
       ↑n = degree (q.map (mk P)) := by
         rw [hq, degree_mul, hc0, zero_add, degree_pow, degree_X, nsmul_one]
-      _ ≤ degree q := degree_map_le _ _
+      _ ≤ degree q := degree_map_le
       _ ≤ natDegree q := degree_le_natDegree
       )
 
@@ -113,7 +111,7 @@ theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsP
       contrapose hmnd
       apply ne_of_lt
       rw [not_and_or] at hmnd
-      cases' hmnd with hmnd hmnd
+      rcases hmnd with hmnd | hmnd
       · exact add_lt_add_of_lt_of_le (lt_of_le_of_ne hmp (Ne.symm hmnd)) hnq
       · exact add_lt_add_of_le_of_lt hmp (lt_of_le_of_ne hnq (Ne.symm hmnd))
     obtain rfl | rfl : m = 0 ∨ n = 0 := by

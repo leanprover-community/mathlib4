@@ -80,7 +80,7 @@ lemma IsScalarTower.continuousSMul {M : Type*} (N : Type*) {α : Type*} [Monoid 
 
 @[to_additive]
 instance : ContinuousSMul (ULift M) X :=
-  ⟨(continuous_smul (M := M)).comp₂ (continuous_uLift_down.comp continuous_fst) continuous_snd⟩
+  ⟨(continuous_smul (M := M)).comp₂ (continuous_uliftDown.comp continuous_fst) continuous_snd⟩
 
 @[to_additive]
 instance (priority := 100) ContinuousSMul.continuousConstSMul : ContinuousConstSMul M X where
@@ -177,17 +177,19 @@ Then the action of `N` on `X` is continuous as well.
 
 In many cases, `f = id` so that `g` is an action homomorphism in the sense of `AddActionHom`.
 However, this version also works for `f = AddUnits.val`."]
-lemma Inducing.continuousSMul {N : Type*} [SMul N Y] [TopologicalSpace N] {f : N → M}
-    (hg : Inducing g) (hf : Continuous f) (hsmul : ∀ {c x}, g (c • x) = f c • g x) :
+lemma Topology.IsInducing.continuousSMul {N : Type*} [SMul N Y] [TopologicalSpace N] {f : N → M}
+    (hg : IsInducing g) (hf : Continuous f) (hsmul : ∀ {c x}, g (c • x) = f c • g x) :
     ContinuousSMul N Y where
   continuous_smul := by
     simpa only [hg.continuous_iff, Function.comp_def, hsmul]
       using (hf.comp continuous_fst).smul <| hg.continuous.comp continuous_snd
 
+@[deprecated (since := "2024-10-28")] alias Inducing.continuousSMul := IsInducing.continuousSMul
+
 @[to_additive]
 instance SMulMemClass.continuousSMul {S : Type*} [SetLike S X] [SMulMemClass S M X] (s : S) :
     ContinuousSMul M s :=
-  inducing_subtype_val.continuousSMul continuous_id rfl
+  IsInducing.subtypeVal.continuousSMul continuous_id rfl
 
 end SMul
 
@@ -197,7 +199,7 @@ variable [Monoid M] [MulAction M X] [ContinuousSMul M X]
 
 @[to_additive]
 instance Units.continuousSMul : ContinuousSMul Mˣ X :=
-  inducing_id.continuousSMul Units.continuous_val rfl
+  IsInducing.id.continuousSMul Units.continuous_val rfl
 
 /-- If an action is continuous, then composing this action with a continuous homomorphism gives
 again a continuous action. -/
@@ -211,7 +213,7 @@ theorem MulAction.continuousSMul_compHom
 
 @[to_additive]
 instance Submonoid.continuousSMul {S : Submonoid M} : ContinuousSMul S X :=
-  inducing_id.continuousSMul continuous_subtype_val rfl
+  IsInducing.id.continuousSMul continuous_subtype_val rfl
 
 end Monoid
 

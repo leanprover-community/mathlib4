@@ -38,8 +38,7 @@ Equiv, MulEquiv, AddEquiv, RingEquiv, MulAut, AddAut, RingAut
 -/
 
 -- guard against import creep
-assert_not_exists Field
-assert_not_exists Fintype
+assert_not_exists Field Fintype
 
 variable {F α β R S S' : Type*}
 
@@ -158,8 +157,6 @@ protected theorem congr_fun {f g : R ≃+* S} (h : f = g) (x : R) : f x = g x :=
 theorem coe_mk (e h₃ h₄) : ⇑(⟨e, h₃, h₄⟩ : R ≃+* S) = e :=
   rfl
 
--- Porting note: `toEquiv_mk` no longer needed in Lean4
-
 @[simp]
 theorem mk_coe (e : R ≃+* S) (e' h₁ h₂ h₃ h₄) : (⟨⟨e, e', h₁, h₂⟩, h₃, h₄⟩ : R ≃+* S) = e :=
   ext fun _ => rfl
@@ -230,6 +227,13 @@ instance : Inhabited (R ≃+* R) :=
 @[simp]
 theorem refl_apply (x : R) : RingEquiv.refl R x = x :=
   rfl
+
+@[simp]
+theorem coe_refl (R : Type*) [Mul R] [Add R] : ⇑(RingEquiv.refl R) = id :=
+  rfl
+
+@[deprecated coe_refl (since := "2025-02-10")]
+alias coe_refl_id := coe_refl
 
 @[simp]
 theorem coe_addEquiv_refl : (RingEquiv.refl R : R ≃+ R) = AddEquiv.refl R :=
@@ -344,12 +348,14 @@ end trans
 section unique
 
 /-- The `RingEquiv` between two semirings with a unique element. -/
-def ringEquivOfUnique {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] : M ≃+* N :=
-  { AddEquiv.addEquivOfUnique, MulEquiv.mulEquivOfUnique with }
+def ofUnique {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] : M ≃+* N :=
+  { AddEquiv.ofUnique, MulEquiv.ofUnique with }
+
+@[deprecated (since := "2024-12-26")] alias ringEquivOfUnique := ofUnique
 
 instance {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] :
     Unique (M ≃+* N) where
-  default := ringEquivOfUnique
+  default := .ofUnique
   uniq _ := ext fun _ => Subsingleton.elim _ _
 
 end unique
@@ -417,10 +423,10 @@ protected theorem map_zero : f 0 = 0 :=
 variable {x}
 
 protected theorem map_eq_zero_iff : f x = 0 ↔ x = 0 :=
-  AddEquivClass.map_eq_zero_iff f
+  EmbeddingLike.map_eq_zero_iff
 
 theorem map_ne_zero_iff : f x ≠ 0 ↔ x ≠ 0 :=
-  AddEquivClass.map_ne_zero_iff f
+  EmbeddingLike.map_ne_zero_iff
 
 variable [FunLike F R S]
 
@@ -439,6 +445,15 @@ theorem coe_ofBijective [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Bij
 theorem ofBijective_apply [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Bijective f)
     (x : R) : ofBijective f hf x = f x :=
   rfl
+
+/-- Product of a singleton family of (non-unital non-associative semi)rings is isomorphic
+to the only member of this family. -/
+@[simps! (config := .asFn)]
+def piUnique {ι : Type*} (R : ι → Type*) [Unique ι] [∀ i, NonUnitalNonAssocSemiring (R i)] :
+    (∀ i, R i) ≃+* R default where
+  __ := Equiv.piUnique R
+  map_add' _ _ := rfl
+  map_mul' _ _ := rfl
 
 /-- A family of ring isomorphisms `∀ j, (R j ≃+* S j)` generates a
 ring isomorphisms between `∀ j, R j` and `∀ j, S j`.
@@ -528,6 +543,14 @@ theorem coe_prodCongr {R R' S S' : Type*} [NonUnitalNonAssocSemiring R]
     ⇑(RingEquiv.prodCongr f g) = Prod.map f g :=
   rfl
 
+/-- This is `Equiv.piOptionEquivProd` as a `RingEquiv`. -/
+@[simps!]
+def piOptionEquivProd {ι : Type*} {R : Option ι → Type*} [Π i, NonUnitalNonAssocSemiring (R i)] :
+    (Π i, R i) ≃+* R none × (Π i, R (some i)) where
+  toEquiv := Equiv.piOptionEquivProd
+  map_add' _ _ := rfl
+  map_mul' _ _ := rfl
+
 end NonUnitalSemiring
 
 section Semiring
@@ -541,10 +564,10 @@ protected theorem map_one : f 1 = 1 :=
 variable {x}
 
 protected theorem map_eq_one_iff : f x = 1 ↔ x = 1 :=
-  MulEquivClass.map_eq_one_iff f
+  EmbeddingLike.map_eq_one_iff
 
 theorem map_ne_one_iff : f x ≠ 1 ↔ x ≠ 1 :=
-  MulEquivClass.map_ne_one_iff f
+  EmbeddingLike.map_ne_one_iff
 
 theorem coe_monoidHom_refl : (RingEquiv.refl R : R →* R) = MonoidHom.id R :=
   rfl
@@ -605,7 +628,7 @@ section Ring
 
 variable [NonAssocRing R] [NonAssocRing S] (f : R ≃+* S)
 
--- Porting note (#10618): `simp` can now prove that, so we remove the `@[simp]` tag
+@[simp]
 theorem map_neg_one : f (-1) = -1 :=
   f.map_one ▸ f.map_neg 1
 
@@ -733,12 +756,10 @@ theorem toMonoidHom_refl : (RingEquiv.refl R).toMonoidHom = MonoidHom.id R :=
 theorem toAddMonoidHom_refl : (RingEquiv.refl R).toAddMonoidHom = AddMonoidHom.id R :=
   rfl
 
--- Porting note (#10618): Now other `simp` can do this, so removed `simp` attribute
 theorem toRingHom_apply_symm_toRingHom_apply (e : R ≃+* S) :
     ∀ y : S, e.toRingHom (e.symm.toRingHom y) = y :=
   e.toEquiv.apply_symm_apply
 
--- Porting note (#10618): Now other `simp` can do this, so removed `simp` attribute
 theorem symm_toRingHom_apply_toRingHom_apply (e : R ≃+* S) :
     ∀ x : R, e.symm.toRingHom (e.toRingHom x) = x :=
   Equiv.symm_apply_apply e.toEquiv
@@ -748,13 +769,11 @@ theorem toRingHom_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂).toRingHom = e₂.toRingHom.comp e₁.toRingHom :=
   rfl
 
--- Porting note (#10618): Now other `simp` can do this, so removed `simp` attribute
 theorem toRingHom_comp_symm_toRingHom (e : R ≃+* S) :
     e.toRingHom.comp e.symm.toRingHom = RingHom.id _ := by
   ext
   simp
 
--- Porting note (#10618): Now other `simp` can do this, so removed `simp` attribute
 theorem symm_toRingHom_comp_toRingHom (e : R ≃+* S) :
     e.symm.toRingHom.comp e.toRingHom = RingHom.id _ := by
   ext

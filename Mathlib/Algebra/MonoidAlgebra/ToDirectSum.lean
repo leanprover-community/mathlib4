@@ -96,7 +96,7 @@ theorem AddMonoidAlgebra.toDirectSum_toAddMonoidAlgebra (f : AddMonoidAlgebra M 
 @[simp]
 theorem DirectSum.toAddMonoidAlgebra_toDirectSum (f : ⨁ _ : ι, M) :
     f.toAddMonoidAlgebra.toDirectSum = f :=
-  (DFinsupp.toFinsupp_toDFinsupp (show Π₀ _ : ι, M from f) : _)
+  (DFinsupp.toFinsupp_toDFinsupp (show Π₀ _ : ι, M from f) :)
 
 end
 
@@ -126,31 +126,10 @@ theorem toDirectSum_mul [DecidableEq ι] [AddMonoid ι] [Semiring M] (f g : AddM
     map_zero' := toDirectSum_zero
     map_add' := toDirectSum_add }
   show to_hom (f * g) = to_hom f * to_hom g
-  let _ : NonUnitalNonAssocSemiring (ι →₀ M) := AddMonoidAlgebra.nonUnitalNonAssocSemiring
   revert f g
   rw [AddMonoidHom.map_mul_iff]
-  -- Porting note (#11041): does not find `addHom_ext'`, was `ext (xi xv yi yv) : 4`
-  refine Finsupp.addHom_ext' fun xi => AddMonoidHom.ext fun xv => ?_
-  refine Finsupp.addHom_ext' fun yi => AddMonoidHom.ext fun yv => ?_
-  dsimp only [AddMonoidHom.comp_apply, AddMonoidHom.compl₂_apply, AddMonoidHom.compr₂_apply,
-    AddMonoidHom.mul_apply, Finsupp.singleAddHom_apply]
-  -- This was not needed before leanprover/lean4#2644
-  erw [AddMonoidHom.compl₂_apply]
-  -- If we remove the next `rw`, the `erw` after it will complain (when we get an `erw` linter)
-  -- that it could be a `rw`. But the `erw` and `rw` will rewrite different occurrences.
-  -- So first get rid of the `rw`-able occurrences to force `erw` to do the expensive rewrite only.
-  rw [AddMonoidHom.coe_mk, AddMonoidHom.coe_mk]
-  -- This was not needed before leanprover/lean4#2644
-  erw [AddMonoidHom.coe_mk]
-  simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk, toDirectSum_single]
-  -- This was not needed before leanprover/lean4#2644
-  dsimp
-  rw [AddMonoidAlgebra.single_mul_single, AddMonoidHom.coe_mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
-    AddMonoidAlgebra.toDirectSum_single]
-  simp only [AddMonoidHom.coe_comp, AddMonoidHom.coe_mul, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
-    Function.comp_apply, toDirectSum_single, AddMonoidHom.id_apply, Finsupp.singleAddHom_apply,
-    AddMonoidHom.coe_mulLeft]
-  rw [DirectSum.of_mul_of, Mul.gMul_mul]
+  ext xi xv yi yv : 4
+  simp [to_hom, AddMonoidAlgebra.single_mul_single, DirectSum.of_mul_of]
 
 end AddMonoidAlgebra
 

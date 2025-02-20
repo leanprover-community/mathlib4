@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.FiniteType
+import Mathlib.RingTheory.Localization.Defs
 import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
@@ -200,6 +201,13 @@ lemma EssFiniteType.of_comp [h : EssFiniteType R T] : EssFiniteType S T := by
 lemma EssFiniteType.comp_iff [EssFiniteType R S] :
     EssFiniteType R T ↔ EssFiniteType S T :=
   ⟨fun _ ↦ of_comp R S T, fun _ ↦ comp R S T⟩
+
+instance [EssFiniteType R S] (I : Ideal S) : EssFiniteType R (S ⧸ I) :=
+  .comp R S _
+
+instance [EssFiniteType R S] (M : Submonoid S) : EssFiniteType R (Localization M) :=
+  have : EssFiniteType S (Localization M) := .of_isLocalization _ M
+  .comp R S _
 
 end
 

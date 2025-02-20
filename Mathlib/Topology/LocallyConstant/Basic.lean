@@ -140,7 +140,7 @@ theorem eq_const [PreconnectedSpace X] {f : X → Y} (hf : IsLocallyConstant f) 
 
 theorem exists_eq_const [PreconnectedSpace X] [Nonempty Y] {f : X → Y} (hf : IsLocallyConstant f) :
     ∃ y, f = Function.const X y := by
-  cases' isEmpty_or_nonempty X with h h
+  rcases isEmpty_or_nonempty X with h | h
   · exact ⟨Classical.arbitrary Y, funext <| h.elim⟩
   · exact ⟨f (Classical.arbitrary X), hf.eq_const _⟩
 
@@ -358,7 +358,7 @@ def unflip {X α β : Type*} [Finite α] [TopologicalSpace X] (f : α → Locall
   toFun x a := f a x
   isLocallyConstant := IsLocallyConstant.iff_isOpen_fiber.2 fun g => by
     have : (fun (x : X) (a : α) => f a x) ⁻¹' {g} = ⋂ a : α, f a ⁻¹' {g a} := by
-      ext; simp [Function.funext_iff]
+      ext; simp [funext_iff]
     rw [this]
     exact isOpen_iInter_of_finite fun a => (f a).isLocallyConstant _
 

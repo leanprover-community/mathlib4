@@ -96,7 +96,7 @@ Any bipartite digraph may be regarded as a subgraph of one of these.
 def completeBipartiteGraph (V W : Type*) : Digraph (Sum V W) where
   Adj v w := v.isLeft ∧ w.isRight ∨ v.isRight ∧ w.isLeft
 
-variable {ι : Sort*} {V W X : Type*} (G : Digraph V) (G' : Digraph W) {a b c u v w : V}
+variable {ι : Sort*} {V : Type*} (G : Digraph V) {a b : V}
 
 theorem adj_injective : Injective (Adj : Digraph V → V → V → Prop) := fun _ _ ↦ Digraph.ext
 
@@ -117,15 +117,15 @@ instance : LE (Digraph V) := ⟨Digraph.IsSubgraph⟩
 theorem isSubgraph_eq_le : (Digraph.IsSubgraph : Digraph V → Digraph V → Prop) = (· ≤ ·) := rfl
 
 /-- The supremum of two digraphs `x ⊔ y` has edges where either `x` or `y` have edges. -/
-instance : Sup (Digraph V) where
-  sup x y := { Adj := x.Adj ⊔ y.Adj }
+instance : Max (Digraph V) where
+  max x y := { Adj := x.Adj ⊔ y.Adj }
 
 @[simp]
 theorem sup_adj (x y : Digraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v w ∨ y.Adj v w := Iff.rfl
 
 /-- The infimum of two digraphs `x ⊓ y` has edges where both `x` and `y` have edges. -/
-instance : Inf (Digraph V) where
-  inf x y := { Adj := x.Adj ⊓ y.Adj }
+instance : Min (Digraph V) where
+  min x y := { Adj := x.Adj ⊓ y.Adj }
 
 @[simp]
 theorem inf_adj (x y : Digraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v w ∧ y.Adj v w := Iff.rfl

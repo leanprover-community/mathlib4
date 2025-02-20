@@ -22,7 +22,40 @@ universe v₁ v₂ u₁ u₂ u
 
 open CategoryTheory MonoidalCategory
 
-variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory C]
+variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory C]
+
+open scoped Mon_Class Comon_Class
+
+/--
+A Hopf monoid in a braided category `C` is a bimonoid object in `C` equipped with an antipode.
+-/
+class Hopf_Class (X : C) extends Bimon_Class X where
+  /-- The antipode is an endomorphism of the underlying object of the Hopf monoid. -/
+  antipode : X ⟶ X
+  /- For the names of the conditions below, the unprimed names are reserved for the version where
+  the argument `X` is explicit. -/
+  antipode_left' : Δ ≫ antipode ▷ X ≫ μ = ε ≫ η := by aesop_cat
+  antipode_right' : Δ ≫ X ◁ antipode ≫ μ = ε ≫ η := by aesop_cat
+
+namespace Hopf_Class
+
+@[inherit_doc] scoped notation "𝒮" => Hopf_Class.antipode
+@[inherit_doc] scoped notation "𝒮["X"]" => Hopf_Class.antipode (X := X)
+
+/- The simp attribute is reserved for the unprimed versions. -/
+attribute [reassoc] antipode_left' antipode_right'
+
+/-- The object is provided as an explicit argument. -/
+@[reassoc (attr := simp)]
+theorem antipode_left (X : C) [Hopf_Class X] : Δ ≫ 𝒮 ▷ X ≫ μ = ε ≫ η := antipode_left'
+
+/-- The object is provided as an explicit argument. -/
+@[reassoc (attr := simp)]
+theorem antipode_right (X : C) [Hopf_Class X] : Δ ≫ X ◁ 𝒮 ≫ μ = ε ≫ η := antipode_right'
+
+end Hopf_Class
+
+variable (C)
 
 /--
 A Hopf monoid in a braided category `C` is a bimonoid object in `C` equipped with an antipode.
@@ -130,6 +163,7 @@ theorem antipode_comul₁ (A : Hopf_ C) :
 Auxiliary calculation for `antipode_comul`.
 This calculation calls for some ASCII art out of This Week's Finds.
 
+```
    |   |
    n   n
   | \ / |
@@ -144,6 +178,7 @@ This calculation calls for some ASCII art out of This Week's Finds.
     \ /
      v
      |
+```
 
 We move the left antipode up through the crossing,
 the right antipode down through the crossing,
@@ -235,14 +270,14 @@ theorem antipode_comul (A : Hopf_ C) :
     simp only [Bimon_.toComon__obj_X, Mon_.monMonoidalStruct_tensorObj_X, Bimon_.toComon__obj_comul,
       comp_whiskerRight, tensor_whiskerLeft, Mon_.tensorObj_mul, Category.assoc,
       Bimon_.toComon__obj_counit, Mon_.tensorObj_one]
-    simp only [tensor_μ]
+    simp only [tensorμ]
     simp only [Category.assoc, Iso.inv_hom_id_assoc]
     exact antipode_comul₁ A
   · erw [Conv.mul_eq, Conv.one_eq]
     simp only [Bimon_.toComon__obj_X, Mon_.monMonoidalStruct_tensorObj_X, Bimon_.toComon__obj_comul,
       MonoidalCategory.whiskerLeft_comp, tensor_whiskerLeft, Category.assoc, Iso.inv_hom_id_assoc,
       Mon_.tensorObj_mul, Bimon_.toComon__obj_counit, Mon_.tensorObj_one]
-    simp only [tensor_μ]
+    simp only [tensorμ]
     simp only [Category.assoc, Iso.inv_hom_id_assoc]
     exact antipode_comul₂ A
 
@@ -279,6 +314,7 @@ theorem mul_antipode₁ (A : Hopf_ C) :
 /--
 Auxiliary calculation for `mul_antipode`.
 
+```
        |
        n
       /  \
@@ -292,6 +328,7 @@ Auxiliary calculation for `mul_antipode`.
     \ / \ /
      v   v
      |   |
+```
 
 We move the leftmost multiplication up, so we can reassociate.
 We then move the rightmost comultiplication under the strand,
@@ -420,7 +457,7 @@ theorem mul_antipode (A : Hopf_ C) :
       unop_tensorHom, Quiver.Hom.unop_op, whiskerRight_tensor, comp_whiskerRight, Category.assoc,
       Comon_.Mon_OpOpToComon_obj'_counit, Mon_.tensorObj_one, Comon_.Comon_ToMon_OpOp_obj'_one,
       Bimon_.toComon__obj_counit, unop_tensorUnit, unop_inv_leftUnitor]
-    simp only [tensor_μ]
+    simp only [tensorμ]
     simp only [unop_comp, unop_tensorObj, unop_inv_associator, unop_whiskerLeft,
       unop_hom_associator, unop_whiskerRight, unop_hom_braiding, Category.assoc,
       pentagon_hom_inv_inv_inv_inv_assoc]
@@ -436,7 +473,7 @@ theorem mul_antipode (A : Hopf_ C) :
       BraidedCategory.braiding_naturality_assoc, MonoidalCategory.whiskerLeft_comp, Category.assoc,
       Comon_.Mon_OpOpToComon_obj'_counit, Mon_.tensorObj_one, Comon_.Comon_ToMon_OpOp_obj'_one,
       Bimon_.toComon__obj_counit, unop_tensorUnit, unop_inv_leftUnitor]
-    simp only [tensor_μ]
+    simp only [tensorμ]
     simp only [unop_comp, unop_tensorObj, unop_inv_associator, unop_whiskerLeft,
       unop_hom_associator, unop_whiskerRight, unop_hom_braiding, Category.assoc,
       pentagon_hom_inv_inv_inv_inv_assoc]

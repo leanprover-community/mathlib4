@@ -23,7 +23,7 @@ trivial `simp` lemmas, and define the following operations on `RingHom`s and sim
 -/
 
 
-variable {α β R R' S S' T T' : Type*}
+variable {R R' S S' T : Type*}
 
 namespace Prod
 

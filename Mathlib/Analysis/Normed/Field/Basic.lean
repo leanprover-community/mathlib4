@@ -5,9 +5,12 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Field.Subfield.Defs
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import Mathlib.Analysis.Normed.Group.Constructions
+import Mathlib.Analysis.Normed.Group.Subgroup
 import Mathlib.Analysis.Normed.Group.Submodule
-import Mathlib.Data.Set.Pointwise.Interval
+import Mathlib.Algebra.Ring.Regular
 
 /-!
 # Normed fields
@@ -17,20 +20,19 @@ definitions.
 
 Some useful results that relate the topology of the normed field to the discrete topology include:
 * `norm_eq_one_iff_ne_zero_of_discrete`
+
+Methods for constructing a normed ring/field instance from a given real absolute value on a
+ring/field are given in:
+* AbsoluteValue.toNormedRing
+* AbsoluteValue.toNormedField
 -/
 
 -- Guard against import creep.
-assert_not_exists AddChar
-assert_not_exists comap_norm_atTop
-assert_not_exists DilationEquiv
-assert_not_exists Finset.sup_mul_le_mul_sup_of_nonneg
-assert_not_exists IsOfFinOrder
-assert_not_exists Isometry.norm_map_of_map_one
-assert_not_exists NNReal.isOpen_Ico_zero
-assert_not_exists Rat.norm_cast_real
-assert_not_exists RestrictScalars
+assert_not_exists AddChar comap_norm_atTop DilationEquiv Finset.sup_mul_le_mul_sup_of_nonneg
+  IsOfFinOrder Isometry.norm_map_of_map_one NNReal.isOpen_Ico_zero Rat.norm_cast_real
+  RestrictScalars
 
-variable {α : Type*} {β : Type*} {ι : Type*}
+variable {G α β ι : Type*}
 
 open Filter
 open scoped Topology NNReal
@@ -166,13 +168,16 @@ export NormOneClass (norm_one)
 
 attribute [simp] norm_one
 
-@[simp]
-theorem nnnorm_one [SeminormedAddCommGroup α] [One α] [NormOneClass α] : ‖(1 : α)‖₊ = 1 :=
-  NNReal.eq norm_one
+section SeminormedAddCommGroup
+variable [SeminormedAddCommGroup G] [One G] [NormOneClass G]
 
-theorem NormOneClass.nontrivial (α : Type*) [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
-    Nontrivial α :=
+@[simp] lemma nnnorm_one : ‖(1 : G)‖₊ = 1 := NNReal.eq norm_one
+@[simp] lemma enorm_one : ‖(1 : G)‖ₑ = 1 := by simp [enorm]
+
+theorem NormOneClass.nontrivial : Nontrivial G :=
   nontrivial_of_ne 0 1 <| ne_of_apply_ne norm <| by simp
+
+end SeminormedAddCommGroup
 
 -- see Note [lower instance priority]
 instance (priority := 100) NonUnitalSeminormedCommRing.toNonUnitalCommRing
@@ -212,7 +217,7 @@ instance MulOpposite.normOneClass [SeminormedAddCommGroup α] [One α] [NormOneC
 
 section NonUnitalSeminormedRing
 
-variable [NonUnitalSeminormedRing α]
+variable [NonUnitalSeminormedRing α] {a a₁ a₂ b c : α}
 
 theorem norm_mul_le (a b : α) : ‖a * b‖ ≤ ‖a‖ * ‖b‖ :=
   NonUnitalSeminormedRing.norm_mul _ _
@@ -220,6 +225,17 @@ theorem norm_mul_le (a b : α) : ‖a * b‖ ≤ ‖a‖ * ‖b‖ :=
 theorem nnnorm_mul_le (a b : α) : ‖a * b‖₊ ≤ ‖a‖₊ * ‖b‖₊ := by
   simpa only [← norm_toNNReal, ← Real.toNNReal_mul (norm_nonneg _)] using
     Real.toNNReal_mono (norm_mul_le _ _)
+
+lemma norm_mul_le_of_le {r₁ r₂ : ℝ} (h₁ : ‖a₁‖ ≤ r₁) (h₂ : ‖a₂‖ ≤ r₂) : ‖a₁ * a₂‖ ≤ r₁ * r₂ :=
+  (norm_mul_le ..).trans <| mul_le_mul h₁ h₂ (norm_nonneg _) ((norm_nonneg _).trans h₁)
+
+lemma nnnorm_mul_le_of_le {r₁ r₂ : ℝ≥0} (h₁ : ‖a₁‖₊ ≤ r₁) (h₂ : ‖a₂‖₊ ≤ r₂) :
+    ‖a₁ * a₂‖₊ ≤ r₁ * r₂ := (nnnorm_mul_le ..).trans <| mul_le_mul' h₁ h₂
+
+lemma norm_mul₃_le : ‖a * b * c‖ ≤ ‖a‖ * ‖b‖ * ‖c‖ := norm_mul_le_of_le (norm_mul_le ..) le_rfl
+
+lemma nnnorm_mul₃_le : ‖a * b * c‖₊ ≤ ‖a‖₊ * ‖b‖₊ * ‖c‖₊ :=
+  nnnorm_mul_le_of_le (norm_mul_le ..) le_rfl
 
 theorem one_le_norm_one (β) [NormedRing β] [Nontrivial β] : 1 ≤ ‖(1 : β)‖ :=
   (le_mul_iff_one_le_left <| norm_pos_iff.mpr (one_ne_zero : (1 : β) ≠ 0)).mp
@@ -274,7 +290,7 @@ instance (priority := 75) NonUnitalSubalgebraClass.nonUnitalNormedRing {S 𝕜 E
 
 instance ULift.nonUnitalSeminormedRing : NonUnitalSeminormedRing (ULift α) :=
   { ULift.seminormedAddCommGroup, ULift.nonUnitalRing with
-    norm_mul := fun x y => (norm_mul_le x.down y.down : _) }
+    norm_mul := fun x y => (norm_mul_le x.down y.down :) }
 
 /-- Non-unital seminormed ring structure on the product of two non-unital seminormed rings,
   using the sup norm. -/
@@ -443,6 +459,23 @@ lemma nnnorm_sub_mul_le (ha : ‖a‖₊ ≤ 1) : ‖c - a * b‖₊ ≤ ‖c - 
 chord length is a metric on the unit complex numbers. -/
 lemma nnnorm_sub_mul_le' (hb : ‖b‖₊ ≤ 1) : ‖c - a * b‖₊ ≤ ‖1 - a‖₊ + ‖c - b‖₊ := norm_sub_mul_le' hb
 
+lemma norm_commutator_units_sub_one_le (a b : αˣ) :
+    ‖(a * b * a⁻¹ * b⁻¹).val - 1‖ ≤ 2 * ‖a⁻¹.val‖ * ‖b⁻¹.val‖ * ‖a.val - 1‖ * ‖b.val - 1‖ :=
+  calc
+    ‖(a * b * a⁻¹ * b⁻¹).val - 1‖ = ‖(a * b - b * a) * a⁻¹.val * b⁻¹.val‖ := by simp [sub_mul, *]
+    _ ≤ ‖(a * b - b * a : α)‖ * ‖a⁻¹.val‖ * ‖b⁻¹.val‖ := norm_mul₃_le
+    _ = ‖(a - 1 : α) * (b - 1) - (b - 1) * (a - 1)‖ * ‖a⁻¹.val‖ * ‖b⁻¹.val‖ := by
+      simp_rw [sub_one_mul, mul_sub_one]; abel_nf
+    _ ≤ (‖(a - 1 : α) * (b - 1)‖ + ‖(b - 1 : α) * (a - 1)‖) * ‖a⁻¹.val‖ * ‖b⁻¹.val‖ := by
+      gcongr; exact norm_sub_le ..
+    _ ≤ (‖a.val - 1‖ * ‖b.val - 1‖ + ‖b.val - 1‖ * ‖a.val - 1‖) * ‖a⁻¹.val‖ * ‖b⁻¹.val‖ := by
+      gcongr <;> exact norm_mul_le ..
+    _ = 2 * ‖a⁻¹.val‖ * ‖b⁻¹.val‖ * ‖a.val - 1‖ * ‖b.val - 1‖ := by ring
+
+lemma nnnorm_commutator_units_sub_one_le (a b : αˣ) :
+    ‖(a * b * a⁻¹ * b⁻¹).val - 1‖₊ ≤ 2 * ‖a⁻¹.val‖₊ * ‖b⁻¹.val‖₊ * ‖a.val - 1‖₊ * ‖b.val - 1‖₊ := by
+  simpa using norm_commutator_units_sub_one_le a b
+
 /-- A homomorphism `f` between semi_normed_rings is bounded if there exists a positive
   constant `C` such that for all `x` in `α`, `norm (f x) ≤ C * norm x`. -/
 def RingHom.IsBounded {α : Type*} [SeminormedRing α] {β : Type*} [SeminormedRing β]
@@ -602,7 +635,7 @@ end NormedCommRing
 
 section NormedDivisionRing
 
-variable [NormedDivisionRing α] {a : α}
+variable [NormedDivisionRing α] {a b : α}
 
 @[simp]
 theorem norm_mul (a b : α) : ‖a * b‖ = ‖a‖ * ‖b‖ :=
@@ -617,9 +650,8 @@ instance isAbsoluteValue_norm : IsAbsoluteValue (norm : α → ℝ) where
   abv_add' := norm_add_le
   abv_mul' := norm_mul
 
-@[simp]
-theorem nnnorm_mul (a b : α) : ‖a * b‖₊ = ‖a‖₊ * ‖b‖₊ :=
-  NNReal.eq <| norm_mul a b
+@[simp] lemma nnnorm_mul (a b : α) : ‖a * b‖₊ = ‖a‖₊ * ‖b‖₊ := NNReal.eq <| norm_mul a b
+@[simp] lemma enorm_mul (a b : α) : ‖a * b‖ₑ = ‖a‖ₑ * ‖b‖ₑ := by simp [enorm]
 
 /-- `norm` as a `MonoidWithZeroHom`. -/
 @[simps]
@@ -645,6 +677,8 @@ theorem norm_pow (a : α) : ∀ n : ℕ, ‖a ^ n‖ = ‖a‖ ^ n :=
 theorem nnnorm_pow (a : α) (n : ℕ) : ‖a ^ n‖₊ = ‖a‖₊ ^ n :=
   (nnnormHom.toMonoidHom : α →* ℝ≥0).map_pow a n
 
+@[simp] lemma enorm_pow (a : α) (n : ℕ) : ‖a ^ n‖ₑ = ‖a‖ₑ ^ n := by simp [enorm]
+
 protected theorem List.norm_prod (l : List α) : ‖l.prod‖ = (l.map norm).prod :=
   map_list_prod (normHom.toMonoidHom : α →* ℝ) _
 
@@ -668,6 +702,9 @@ theorem nnnorm_inv (a : α) : ‖a⁻¹‖₊ = ‖a‖₊⁻¹ :=
   NNReal.eq <| by simp
 
 @[simp]
+lemma enorm_inv {a : α} (ha : a ≠ 0) : ‖a⁻¹‖ₑ = ‖a‖ₑ⁻¹ := by simp [enorm, ENNReal.coe_inv, ha]
+
+@[simp]
 theorem norm_zpow : ∀ (a : α) (n : ℤ), ‖a ^ n‖ = ‖a‖ ^ n :=
   map_zpow₀ (normHom : α →*₀ ℝ)
 
@@ -683,6 +720,14 @@ theorem dist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
 theorem nndist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
     nndist z⁻¹ w⁻¹ = nndist z w / (‖z‖₊ * ‖w‖₊) :=
   NNReal.eq <| dist_inv_inv₀ hz hw
+
+lemma norm_commutator_sub_one_le (ha : a ≠ 0) (hb : b ≠ 0) :
+    ‖a * b * a⁻¹ * b⁻¹ - 1‖ ≤ 2 * ‖a‖⁻¹ * ‖b‖⁻¹ * ‖a - 1‖ * ‖b - 1‖ := by
+  simpa using norm_commutator_units_sub_one_le (.mk0 a ha) (.mk0 b hb)
+
+lemma nnnorm_commutator_sub_one_le (ha : a ≠ 0) (hb : b ≠ 0) :
+    ‖a * b * a⁻¹ * b⁻¹ - 1‖₊ ≤ 2 * ‖a‖₊⁻¹ * ‖b‖₊⁻¹ * ‖a - 1‖₊ * ‖b - 1‖₊ := by
+  simpa using nnnorm_commutator_units_sub_one_le (.mk0 a ha) (.mk0 b hb)
 
 namespace NormedDivisionRing
 
@@ -716,9 +761,12 @@ lemma norm_le_one_of_discrete
   · simp
   · simp [norm_eq_one_iff_ne_zero_of_discrete.mpr hx]
 
-lemma discreteTopology_unit_closedBall_eq_univ : (Metric.closedBall 0 1 : Set 𝕜) = Set.univ := by
+lemma unitClosedBall_eq_univ_of_discrete : (Metric.closedBall 0 1 : Set 𝕜) = Set.univ := by
   ext
   simp
+
+@[deprecated (since := "2024-12-01")]
+alias discreteTopology_unit_closedBall_eq_univ := unitClosedBall_eq_univ_of_discrete
 
 end Discrete
 
@@ -881,22 +929,12 @@ namespace NNReal
 
 open NNReal
 
--- porting note (#10618): removed `@[simp]` because `simp` can prove this
 theorem norm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ = x := by rw [Real.norm_eq_abs, x.abs_eq]
 
-@[simp]
-theorem nnnorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖₊ = x :=
-  NNReal.eq <| Real.norm_of_nonneg x.2
+@[simp] lemma nnnorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖₊ = x := by ext; simp [nnnorm]
+@[simp] lemma enorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ₑ = x := by simp [enorm]
 
 end NNReal
-
-@[simp 1001] -- Porting note: increase priority so that the LHS doesn't simplify
-theorem norm_norm [SeminormedAddCommGroup α] (x : α) : ‖‖x‖‖ = ‖x‖ :=
-  Real.norm_of_nonneg (norm_nonneg _)
-
-@[simp]
-theorem nnnorm_norm [SeminormedAddCommGroup α] (a : α) : ‖‖a‖‖₊ = ‖a‖₊ := by
-  rw [Real.nnnorm_of_nonneg (norm_nonneg a)]; rfl
 
 /-- A restatement of `MetricSpace.tendsto_atTop` in terms of the norm. -/
 theorem NormedAddCommGroup.tendsto_atTop [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)]
@@ -914,7 +952,7 @@ theorem NormedAddCommGroup.tendsto_atTop' [Nonempty α] [Preorder α] [IsDirecte
 
 section RingHomIsometric
 
-variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
+variable {R₁ R₂ : Type*}
 
 /-- This class states that a ring homomorphism is isometric. This is a sufficient assumption
 for a continuous semilinear map to be bounded and this is the main use for this typeclass. -/
@@ -924,7 +962,7 @@ class RingHomIsometric [Semiring R₁] [Semiring R₂] [Norm R₁] [Norm R₂] (
 
 attribute [simp] RingHomIsometric.is_iso
 
-variable [SeminormedRing R₁] [SeminormedRing R₂] [SeminormedRing R₃]
+variable [SeminormedRing R₁]
 
 instance RingHomIsometric.ids : RingHomIsometric (RingHom.id R₁) :=
   ⟨rfl⟩
@@ -1053,4 +1091,43 @@ instance toSeminormedCommRing [SeminormedCommRing R] [_h : SubringClass S R] (s 
 instance toNormedCommRing [NormedCommRing R] [SubringClass S R] (s : S) : NormedCommRing s :=
   { SubringClass.toNormedRing s with mul_comm := mul_comm }
 
+instance toNormOneClass [SeminormedRing R] [NormOneClass R] [SubringClass S R] (s : S) :
+    NormOneClass s :=
+  .induced s R <| SubringClass.subtype _
+
 end SubringClass
+
+namespace SubfieldClass
+
+variable {S F : Type*} [SetLike S F]
+
+/--
+If `s` is a subfield of a normed field `F`, then `s` is equipped with an induced normed
+field structure.
+-/
+instance toNormedField [NormedField F] [SubfieldClass S F] (s : S) : NormedField s :=
+  NormedField.induced s F (SubringClass.subtype s) Subtype.val_injective
+
+end SubfieldClass
+
+namespace AbsoluteValue
+
+/-- A real absolute value on a ring determines a `NormedRing` structure. -/
+noncomputable def toNormedRing {R : Type*} [Ring R] (v : AbsoluteValue R ℝ) : NormedRing R where
+  norm := v
+  dist_eq _ _ := rfl
+  dist_self x := by simp only [sub_self, MulHom.toFun_eq_coe, AbsoluteValue.coe_toMulHom, map_zero]
+  dist_comm := v.map_sub
+  dist_triangle := v.sub_le
+  edist_dist x y := rfl
+  norm_mul x y := (v.map_mul x y).le
+  eq_of_dist_eq_zero := by simp only [MulHom.toFun_eq_coe, AbsoluteValue.coe_toMulHom,
+    AbsoluteValue.map_sub_eq_zero_iff, imp_self, implies_true]
+
+/-- A real absolute value on a field determines a `NormedField` structure. -/
+noncomputable def toNormedField {K : Type*} [Field K] (v : AbsoluteValue K ℝ) : NormedField K where
+  toField := inferInstanceAs (Field K)
+  __ := v.toNormedRing
+  norm_mul' := v.map_mul
+
+end AbsoluteValue

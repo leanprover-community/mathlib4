@@ -3,7 +3,8 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, David Renshaw
 -/
-import Lean
+import Lean.Elab.DeclarationRange
+import Lean.Meta.Tactic.Cases
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Name
 import Mathlib.Tactic.TypeStar
@@ -190,7 +191,7 @@ def toCases (mvar : MVarId) (shape : List Shape) : MetaM Unit :=
 do
   let ⟨h, mvar'⟩ ← mvar.intro1
   let subgoals ← mvar'.cases h
-  let _ ← (shape.zip subgoals.toList).enum.mapM fun ⟨p, ⟨⟨shape, t⟩, subgoal⟩⟩ ↦ do
+  let _ ← (shape.zip subgoals.toList).zipIdx.mapM fun ⟨⟨⟨shape, t⟩, subgoal⟩, p⟩ ↦ do
     let vars := subgoal.fields
     let si := (shape.zip vars.toList).filterMap (fun ⟨c,v⟩ ↦ if c then some v else none)
     let mvar'' ← select p (subgoals.size - 1) subgoal.mvarId
@@ -327,10 +328,7 @@ def mkIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM
     type := thmTy
     value := ← instantiateMVars mvar
   }
-  addDeclarationRanges rel {
-    range := ← getDeclarationRange (← getRef)
-    selectionRange := ← getDeclarationRange relStx
-  }
+  addDeclarationRangesFromSyntax rel (← getRef) relStx
   addConstInfo relStx rel
 
 /--

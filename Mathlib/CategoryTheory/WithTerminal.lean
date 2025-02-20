@@ -3,7 +3,7 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith, Adam Topaz
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
@@ -64,7 +64,6 @@ namespace WithTerminal
 variable {C}
 
 /-- Morphisms for `WithTerminal C`. -/
--- Porting note(#5171): removed `nolint has_nonempty_instance`
 @[simp]
 def Hom : WithTerminal C → WithTerminal C → Type v
   | of X, of Y => X ⟶ Y
@@ -368,7 +367,6 @@ namespace WithInitial
 variable {C}
 
 /-- Morphisms for `WithInitial C`. -/
--- Porting note(#5171): removed `nolint has_nonempty_instance`
 @[simp]
 def Hom : WithInitial C → WithInitial C → Type v
   | of X, of Y => X ⟶ Y

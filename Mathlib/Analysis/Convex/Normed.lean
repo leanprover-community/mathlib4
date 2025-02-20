@@ -25,14 +25,14 @@ We prove the following facts:
   is bounded.
 -/
 
-variable {ι : Type*} {E P : Type*}
+variable {E P : Type*}
 
 open AffineBasis Module Metric Set
 open scoped Convex Pointwise Topology
 
 section SeminormedAddCommGroup
 variable [SeminormedAddCommGroup E] [NormedSpace ℝ E] [PseudoMetricSpace P] [NormedAddTorsor E P]
-variable {s t : Set E}
+variable {s : Set E}
 
 /-- The norm on a real normed space is convex on any convex set. See also `Seminorm.convexOn`
 and `convexOn_univ_norm`. -/
@@ -109,11 +109,7 @@ theorem isBounded_convexHull {s : Set E} :
   simp only [Metric.isBounded_iff_ediam_ne_top, convexHull_ediam]
 
 instance (priority := 100) NormedSpace.instPathConnectedSpace : PathConnectedSpace E :=
-  TopologicalAddGroup.pathConnectedSpace
-
-instance (priority := 100) NormedSpace.instLocPathConnectedSpace : LocPathConnectedSpace E :=
-  locPathConnected_of_bases (fun _ => Metric.nhds_basis_ball) fun x r r_pos =>
-    (convex_ball x r).isPathConnected <| by simp [r_pos]
+  IsTopologicalAddGroup.pathConnectedSpace
 
 theorem Wbtw.dist_add_dist {x y z : P} (h : Wbtw ℝ x y z) :
     dist x y + dist y z = dist x z := by
@@ -150,7 +146,7 @@ lemma exists_mem_interior_convexHull_affineBasis (hs : s ∈ 𝓝 x) :
   wlog hx : x = 0
   · obtain ⟨b, hb⟩ := this (s := -x +ᵥ s) (by simpa using vadd_mem_nhds_vadd (-x) hs) rfl
     use x +ᵥ b
-    simpa [subset_set_vadd_iff, mem_vadd_set_iff_neg_vadd_mem, convexHull_vadd, interior_vadd,
+    simpa [subset_vadd_set_iff, mem_vadd_set_iff_neg_vadd_mem, convexHull_vadd, interior_vadd,
       Pi.vadd_def, -vadd_eq_add, vadd_eq_add (a := -x), ← Set.vadd_set_range] using hb
   subst hx
   -- The strategy is now to find an arbitrary maximal spanning simplex (aka an affine basis)...
@@ -175,7 +171,7 @@ lemma exists_mem_interior_convexHull_affineBasis (hs : s ∈ 𝓝 x) :
   set d : AffineBasis (Fin (finrank ℝ E + 1)) ℝ E := Units.mk0 ε' hε'.ne' • c
   have hε₀ : 0 < ε / 2 := by positivity
   have hdnorm : (range d : Set E) ⊆ closedBall 0 (ε / 2) := by
-    simp [d, Set.set_smul_subset_iff₀ hε'.ne', hε₀.le, _root_.smul_closedBall, abs_of_nonneg hε'.le,
+    simp [d, Set.smul_set_subset_iff₀ hε'.ne', hε₀.le, _root_.smul_closedBall, abs_of_nonneg hε'.le,
       range_subset_iff, norm_smul]
     simpa [ε', hε₀.ne', range_subset_iff, ← mul_div_right_comm (ε / 2), div_le_iff₀ hc',
       mul_le_mul_left hε₀] using hcnorm

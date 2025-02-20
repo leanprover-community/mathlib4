@@ -41,8 +41,6 @@ namespace Ideal
 
 /-- A pair of an `Order.Ideal` and an `Order.PFilter` which form a partition of `P`.
 -/
--- Porting note(#5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure PrimePair (P : Type*) [Preorder P] where
   I : Ideal P
   F : PFilter P
@@ -59,7 +57,7 @@ theorem compl_F_eq_I : (IF.F : Set P)ᶜ = IF.I :=
   IF.isCompl_I_F.eq_compl.symm
 
 theorem I_isProper : IsProper IF.I := by
-  cases' IF.F.nonempty with w h
+  obtain ⟨w, h⟩ := IF.F.nonempty
   apply isProper_of_not_mem (_ : w ∉ IF.I)
   rwa [← IF.compl_I_eq_F] at h
 
@@ -101,7 +99,7 @@ end Preorder
 
 section SemilatticeInf
 
-variable [SemilatticeInf P] {x y : P} {I : Ideal P}
+variable [SemilatticeInf P] {I : Ideal P}
 
 theorem IsPrime.mem_or_mem (hI : IsPrime I) {x y : P} : x ⊓ y ∈ I → x ∈ I ∨ y ∈ I := by
   contrapose!

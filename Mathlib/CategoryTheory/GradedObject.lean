@@ -3,10 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
-import Mathlib.Algebra.Group.Int
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # The category of graded objects
@@ -61,7 +61,7 @@ variable {C : Type u} [Category.{v} C]
 instance categoryOfGradedObjects (β : Type w) : Category.{max w v} (GradedObject β C) :=
   CategoryTheory.pi fun _ => C
 
--- Porting note (#10688): added to ease automation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma hom_ext {β : Type*} {X Y : GradedObject β C} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g := by
   funext
@@ -158,7 +158,7 @@ abbrev comap {I J : Type*} (h : J → I) : GradedObject I C ⥤ GradedObject J C
 -- Porting note: added to ease the port, this is a special case of `Functor.eqToHom_proj`
 @[simp]
 theorem eqToHom_proj {I : Type*} {x x' : GradedObject I C} (h : x = x') (i : I) :
-    (eqToHom h : x ⟶ x') i = eqToHom (Function.funext_iff.mp h i) := by
+    (eqToHom h : x ⟶ x') i = eqToHom (funext_iff.mp h i) := by
   subst h
   rfl
 
@@ -216,11 +216,8 @@ theorem shiftFunctor_map_apply {β : Type*} [AddCommGroup β] (s : β)
 instance [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) :
   Zero (X ⟶ Y) := ⟨fun _ => 0⟩
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/4481
-the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
--/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/4481
+the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`. -/
 @[simp, nolint simpNF]
 theorem zero_apply [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) (b : β) :
     (0 : X ⟶ Y) b = 0 :=
@@ -283,10 +280,10 @@ namespace GradedObject
 noncomputable section
 
 variable (β : Type)
-variable (C : Type (u + 1)) [LargeCategory C] [ConcreteCategory C] [HasCoproducts.{0} C]
+variable (C : Type (u + 1)) [LargeCategory C] [HasForget C] [HasCoproducts.{0} C]
   [HasZeroMorphisms C]
 
-instance : ConcreteCategory (GradedObject β C) where forget := total β C ⋙ forget C
+instance : HasForget (GradedObject β C) where forget := total β C ⋙ forget C
 
 instance : HasForget₂ (GradedObject β C) C where forget₂ := total β C
 
@@ -316,7 +313,7 @@ lemma hasMap_of_iso (e : X ≅ Y) (p: I → J) [HasMap X p] : HasMap Y p := fun 
   exact hasColimitOfIso α.symm
 
 section
-variable [X.HasMap p] [Y.HasMap p] [Z.HasMap p]
+variable [X.HasMap p] [Y.HasMap p]
 
 /-- Given `X : GradedObject I C` and `p : I → J`, `X.mapObj p` is the graded object by `J`
 which in degree `j` consists of the coproduct of the `X i` such that `p i = j`. -/

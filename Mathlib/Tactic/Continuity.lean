@@ -34,4 +34,4 @@ macro "continuity?" : tactic =>
 
 -- Todo: implement `continuity!` and `continuity!?` and add configuration, original
 -- syntax was (same for the missing `continuity` variants):
--- syntax (name := continuity) "continuity" (config)? : tactic
+-- syntax (name := continuity) "continuity" optConfig : tactic

@@ -131,7 +131,7 @@ def functorHomEquiv (A : C ⥤ Type max u v v') : (A ⟶ F.functorHom G) ≃ Hom
     ext X a Y f
     exact (HomObj.congr_app (congr_fun (φ.naturality f) a) Y (𝟙 _)).trans
       (congr_arg ((φ.app X a).app Y) (by simp))
-  right_inv x := by aesop
+  right_inv x := by simp
 
 variable {F G} in
 /-- Morphisms `(𝟙_ (C ⥤ Type max v' v u) ⟶ F.functorHom G)` are in bijection with
@@ -145,7 +145,7 @@ def natTransEquiv : (𝟙_ (C ⥤ Type max v' v u) ⟶ F.functorHom G) ≃ (F �
     have := HomObj.congr_app (congr_fun (f.naturality φ) PUnit.unit) Y (𝟙 Y)
     dsimp [functorHom, homObjFunctor] at this
     aesop ⟩
-  invFun f := ⟨fun _ _ ↦ HomObj.ofNatTrans f, _⟩
+  invFun f := { app _ _ := HomObj.ofNatTrans f }
   left_inv f := by
     ext X a Y φ
     have := HomObj.congr_app (congr_fun (f.naturality φ) PUnit.unit) Y (𝟙 Y)

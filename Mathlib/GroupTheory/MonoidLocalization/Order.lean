@@ -106,7 +106,7 @@ sending `a` to `a - b`."]
 def mkOrderEmbedding (b : s) : α ↪o Localization s where
   toFun a := mk a b
   inj' := mk_left_injective _
-  map_rel_iff' {a b} := by simp [-mk_eq_monoidOf_mk', mk_le_mk]
+  map_rel_iff' {a b} := by simp [mk_le_mk]
 
 end OrderedCancelCommMonoid
 
@@ -119,7 +119,7 @@ instance [LinearOrderedCancelCommMonoid α] {s : Submonoid α} :
         simp_rw [mk_le_mk]
         exact le_total _ _
     decidableLE := Localization.decidableLE
-    decidableLT := Localization.decidableLT  -- Porting note: was wrong in mathlib3
+    decidableLT := Localization.decidableLT
     decidableEq := Localization.decidableEq }
 
 end Localization

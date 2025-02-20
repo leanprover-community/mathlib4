@@ -91,17 +91,14 @@ section
 /- Register simplification lemmas for the applications of `PiLp` elements, as the usual lemmas
 for Pi types will not trigger. -/
 variable {𝕜 p α}
-variable [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
+variable [Semiring 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
 variable [∀ i, Module 𝕜 (β i)] (c : 𝕜)
 variable (x y : PiLp p β) (i : ι)
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/4481
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/4481
 the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
 
-(It appears to also be unused in Mathlib.)
--/
+(It appears to also be unused in Mathlib.) -/
 @[simp, nolint simpNF]
 theorem zero_apply : (0 : PiLp p β) i = 0 :=
   rfl
@@ -121,6 +118,13 @@ theorem smul_apply : (c • x) i = c • x i :=
 @[simp]
 theorem neg_apply : (-x) i = -x i :=
   rfl
+
+variable (p) in
+/-- The projection on the `i`-th coordinate of `WithLp p (∀ i, α i)`, as a linear map. -/
+@[simps!]
+def projₗ (i : ι) : PiLp p β →ₗ[𝕜] β i :=
+  (LinearMap.proj i : (∀ i, β i) →ₗ[𝕜] β i) ∘ₗ (WithLp.linearEquiv p 𝕜 (∀ i, β i)).toLinearMap
+
 end
 
 /-! Note that the unapplied versions of these lemmas are deliberately omitted, as they break
@@ -565,18 +569,40 @@ theorem norm_eq_of_nat {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*}
     [∀ i, SeminormedAddCommGroup (β i)] (n : ℕ) (h : p = n) (f : PiLp p β) :
     ‖f‖ = (∑ i, ‖f i‖ ^ n) ^ (1 / (n : ℝ)) := by
   have := p.toReal_pos_iff_ne_top.mpr (ne_of_eq_of_ne h <| ENNReal.natCast_ne_top n)
-  simp only [one_div, h, Real.rpow_natCast, ENNReal.toReal_nat, eq_self_iff_true, Finset.sum_congr,
-    norm_eq_sum this]
+  simp only [one_div, h, Real.rpow_natCast, ENNReal.toReal_natCast, eq_self_iff_true,
+    Finset.sum_congr, norm_eq_sum this]
 
-theorem norm_eq_of_L2 {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp 2 β) :
+section L1
+variable {β} [∀ i, SeminormedAddCommGroup (β i)]
+
+theorem norm_eq_of_L1 (x : PiLp 1 β) : ‖x‖ = ∑ i : ι, ‖x i‖ := by
+  simp [norm_eq_sum]
+
+theorem nnnorm_eq_of_L1 (x : PiLp 1 β) : ‖x‖₊ = ∑ i : ι, ‖x i‖₊ :=
+  NNReal.eq <| by push_cast; exact norm_eq_of_L1 x
+
+theorem dist_eq_of_L1 (x y : PiLp 1 β) : dist x y = ∑ i, dist (x i) (y i) := by
+  simp_rw [dist_eq_norm, norm_eq_of_L1, sub_apply]
+
+theorem nndist_eq_of_L1 (x y : PiLp 1 β) : nndist x y = ∑ i, nndist (x i) (y i) :=
+  NNReal.eq <| by push_cast; exact dist_eq_of_L1 _ _
+
+theorem edist_eq_of_L1 (x y : PiLp 1 β) : edist x y = ∑ i, edist (x i) (y i) := by
+  simp [PiLp.edist_eq_sum]
+
+end L1
+
+section L2
+variable {β} [∀ i, SeminormedAddCommGroup (β i)]
+
+theorem norm_eq_of_L2 (x : PiLp 2 β) :
     ‖x‖ = √(∑ i : ι, ‖x i‖ ^ 2) := by
-  rw [norm_eq_of_nat 2 (by norm_cast) _] -- Porting note: was `convert`
+  rw [norm_eq_of_nat 2 (by norm_cast) _]
   rw [Real.sqrt_eq_rpow]
   norm_cast
 
-theorem nnnorm_eq_of_L2 {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp 2 β) :
+theorem nnnorm_eq_of_L2 (x : PiLp 2 β) :
     ‖x‖₊ = NNReal.sqrt (∑ i : ι, ‖x i‖₊ ^ 2) :=
-  -- Porting note: was `Subtype.ext`
   NNReal.eq <| by
     push_cast
     exact norm_eq_of_L2 x
@@ -587,19 +613,20 @@ theorem norm_sq_eq_of_L2 (β : ι → Type*) [∀ i, SeminormedAddCommGroup (β 
     simpa only [NNReal.coe_sum] using congr_arg ((↑) : ℝ≥0 → ℝ) this
   rw [nnnorm_eq_of_L2, NNReal.sq_sqrt]
 
-theorem dist_eq_of_L2 {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (x y : PiLp 2 β) :
+theorem dist_eq_of_L2 (x y : PiLp 2 β) :
     dist x y = √(∑ i, dist (x i) (y i) ^ 2) := by
   simp_rw [dist_eq_norm, norm_eq_of_L2, sub_apply]
 
-theorem nndist_eq_of_L2 {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (x y : PiLp 2 β) :
+theorem nndist_eq_of_L2 (x y : PiLp 2 β) :
     nndist x y = NNReal.sqrt (∑ i, nndist (x i) (y i) ^ 2) :=
-  -- Porting note: was `Subtype.ext`
   NNReal.eq <| by
     push_cast
     exact dist_eq_of_L2 _ _
 
-theorem edist_eq_of_L2 {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (x y : PiLp 2 β) :
+theorem edist_eq_of_L2 (x y : PiLp 2 β) :
     edist x y = (∑ i, edist (x i) (y i) ^ 2) ^ (1 / 2 : ℝ) := by simp [PiLp.edist_eq_sum]
+
+end L2
 
 instance instBoundedSMul [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
     [∀ i, Module 𝕜 (β i)] [∀ i, BoundedSMul 𝕜 (β i)] :
@@ -825,7 +852,6 @@ theorem edist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
         ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₁))
         ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₂)) =
       edist b₁ b₂ := by
-  -- Porting note: was `simpa using`
   simp only [edist_nndist, nndist_equiv_symm_single_same p β i b₁ b₂]
 
 end Single
@@ -891,6 +917,13 @@ protected def continuousLinearEquiv : PiLp p β ≃L[𝕜] ∀ i, β i where
   toLinearEquiv := WithLp.linearEquiv _ _ _
   continuous_toFun := continuous_equiv _ _
   continuous_invFun := continuous_equiv_symm _ _
+
+variable {𝕜} in
+/-- The projection on the `i`-th coordinate of `PiLp p β`, as a continuous linear map. -/
+@[simps!]
+def proj (i : ι) : PiLp p β →L[𝕜] β i where
+  __ := projₗ p β i
+  cont := continuous_apply i
 
 end Fintype
 

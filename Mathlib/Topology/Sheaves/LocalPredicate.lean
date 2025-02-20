@@ -73,7 +73,7 @@ variable (X)
 @[simps!]
 def continuousPrelocal (T : TopCat.{v}) : PrelocalPredicate fun _ : X => T where
   pred {_} f := Continuous f
-  res {_ _} i _ h := Continuous.comp h (Opens.openEmbedding_of_le i.le).continuous
+  res {_ _} i _ h := Continuous.comp h (Opens.isOpenEmbedding_of_le i.le).continuous
 
 /-- Satisfying the inhabited linter. -/
 instance inhabitedPrelocalPredicate (T : TopCat.{v}) :
@@ -114,7 +114,7 @@ def continuousLocal (T : TopCat.{v}) : LocalPredicate fun _ : X => T :=
       dsimp at w
       rw [continuous_iff_continuousAt] at w
       specialize w ⟨x, m⟩
-      simpa using (Opens.openEmbedding_of_le i.le).continuousAt_iff.1 w }
+      simpa using (Opens.isOpenEmbedding_of_le i.le).continuousAt_iff.1 w }
 
 /-- Satisfying the inhabited linter. -/
 instance inhabitedLocalPredicate (T : TopCat.{v}) : Inhabited (LocalPredicate fun _ : X => T) :=
@@ -130,8 +130,7 @@ def PrelocalPredicate.sheafify {T : X → Type v} (P : PrelocalPredicate T) : Lo
   res {V U} i f w x := by
     specialize w (i x)
     rcases w with ⟨V', m', i', p⟩
-    refine ⟨V ⊓ V', ⟨x.2, m'⟩, Opens.infLELeft _ _, ?_⟩
-    convert P.res (Opens.infLERight V V') _ p
+    exact ⟨V ⊓ V', ⟨x.2, m'⟩, V.infLELeft _, P.res (V.infLERight V') _ p⟩
   locality {U} f w x := by
     specialize w x
     rcases w with ⟨V, m, i, p⟩
@@ -161,6 +160,7 @@ def subtype : subpresheafToTypes P ⟶ presheafToTypes X T where app _ f := f.1
 
 open TopCat.Presheaf
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- The functions satisfying a local predicate satisfy the sheaf condition.
 -/
 theorem isSheaf (P : LocalPredicate T) : (subpresheafToTypes P.toPrelocalPredicate).IsSheaf :=
@@ -173,7 +173,9 @@ theorem isSheaf (P : LocalPredicate T) : (subpresheafToTypes P.toPrelocalPredica
     have sf'_comp : (presheafToTypes X T).IsCompatible U sf' := fun i j =>
       congr_arg Subtype.val (sf_comp i j)
     -- So, we can obtain a unique gluing
-    obtain ⟨gl, gl_spec, gl_uniq⟩ := (sheafToTypes X T).existsUnique_gluing U sf' sf'_comp
+    obtain ⟨gl, gl_spec, gl_uniq⟩ := (sheafToTypes X T).existsUnique_gluing U sf'
+      -- `by exact` to help Lean infer the `ConcreteCategory` instance
+      (by exact sf'_comp)
     refine ⟨⟨gl, ?_⟩, ?_, ?_⟩
     · -- Our first goal is to show that this chosen gluing satisfies the
       -- predicate. Of course, we use locality of the predicate.
@@ -215,8 +217,6 @@ def stalkToFiber (P : LocalPredicate T) (x : X) : (subsheafToTypes P).presheaf.s
   · exact f.1 ⟨x, (unop U).2⟩
   · aesop
 
--- Porting note (#11119): removed `simp` attribute,
--- due to left hand side is not in simple normal form.
 theorem stalkToFiber_germ (P : LocalPredicate T) (U : Opens X) (x : X) (hx : x ∈ U) (f) :
     stalkToFiber P x ((subsheafToTypes P).presheaf.germ U x hx f) = f.1 ⟨x, hx⟩ := by
   simp [Presheaf.germ, stalkToFiber]
@@ -271,7 +271,7 @@ the presheaf of continuous functions.
 def subpresheafContinuousPrelocalIsoPresheafToTop (T : TopCat.{v}) :
     subpresheafToTypes (continuousPrelocal X T) ≅ presheafToTop X T :=
   NatIso.ofComponents fun X =>
-    { hom := by rintro ⟨f, c⟩; exact ⟨f, c⟩
+    { hom := by rintro ⟨f, c⟩; exact ofHom ⟨f, c⟩
       inv := by rintro ⟨f, c⟩; exact ⟨f, c⟩ }
 
 /-- The sheaf of continuous functions on `X` with values in a space `T`.

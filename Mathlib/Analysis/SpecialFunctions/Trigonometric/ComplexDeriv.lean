@@ -38,7 +38,7 @@ theorem tendsto_abs_tan_of_cos_eq_zero {x : ℂ} (hx : cos x = 0) :
   have B : Tendsto cos (𝓝[≠] x) (𝓝[≠] 0) :=
     hx ▸ (hasDerivAt_cos x).tendsto_punctured_nhds (neg_ne_zero.2 A)
   exact continuous_sin.continuousWithinAt.norm.mul_atTop (norm_pos_iff.2 A)
-    (tendsto_norm_nhdsWithin_zero.comp B).inv_tendsto_zero
+    (tendsto_norm_nhdsNE_zero.comp B).inv_tendsto_nhdsGT_zero
 
 theorem tendsto_abs_tan_atTop (k : ℤ) :
     Tendsto (fun x => abs (tan x)) (𝓝[≠] ((2 * k + 1) * π / 2 : ℂ)) atTop :=
@@ -62,7 +62,7 @@ theorem deriv_tan (x : ℂ) : deriv tan x = 1 / cos x ^ 2 :=
   else (hasDerivAt_tan h).deriv
 
 @[simp]
-theorem contDiffAt_tan {x : ℂ} {n : ℕ∞} : ContDiffAt ℂ n tan x ↔ cos x ≠ 0 :=
+theorem contDiffAt_tan {x : ℂ} {n : WithTop ℕ∞} : ContDiffAt ℂ n tan x ↔ cos x ≠ 0 :=
   ⟨fun h => continuousAt_tan.1 h.continuousAt, contDiff_sin.contDiffAt.div contDiff_cos.contDiffAt⟩
 
 end Complex

@@ -38,7 +38,7 @@ open NormedField Set Filter
 
 open scoped NNReal Pointwise Topology Uniformity
 
-variable {R R' 𝕜 𝕜₂ 𝕜₃ 𝕝 E E₂ E₃ F G ι : Type*}
+variable {R R' 𝕜 𝕜₂ 𝕜₃ 𝕝 E E₂ E₃ F ι : Type*}
 
 /-- A seminorm on a module over a normed ring is a function to the reals that is positive
 semidefinite, positive homogeneous, and subadditive. -/
@@ -60,9 +60,6 @@ class SeminormClass (F : Type*) (𝕜 E : outParam Type*) [SeminormedRing 𝕜] 
   map_smul_eq_mul (f : F) (a : 𝕜) (x : E) : f (a • x) = ‖a‖ * f x
 
 export SeminormClass (map_smul_eq_mul)
-
--- Porting note: dangerous instances no longer exist
--- attribute [nolint dangerousInstance] SeminormClass.toAddGroupSeminormClass
 
 section Of
 
@@ -141,7 +138,7 @@ theorem zero_apply (x : E) : (0 : Seminorm 𝕜 E) x = 0 :=
 instance : Inhabited (Seminorm 𝕜 E) :=
   ⟨0⟩
 
-variable (p : Seminorm 𝕜 E) (c : 𝕜) (x y : E) (r : ℝ)
+variable (p : Seminorm 𝕜 E) (x : E) (r : ℝ)
 
 /-- Any action on `ℝ` which factors through `ℝ≥0` applies to a seminorm. -/
 instance instSMul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : SMul R (Seminorm 𝕜 E) where
@@ -211,8 +208,8 @@ instance instModule [Semiring R] [Module R ℝ] [SMul R ℝ≥0] [IsScalarTower 
     Module R (Seminorm 𝕜 E) :=
   (coeFnAddMonoidHom_injective 𝕜 E).module R _ (by intros; rfl)
 
-instance instSup : Sup (Seminorm 𝕜 E) where
-  sup p q :=
+instance instSup : Max (Seminorm 𝕜 E) where
+  max p q :=
     { p.toAddGroupSeminorm ⊔ q.toAddGroupSeminorm with
       toFun := p ⊔ q
       smul' := fun x v =>
@@ -264,8 +261,7 @@ variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 variable {σ₂₃ : 𝕜₂ →+* 𝕜₃} [RingHomIsometric σ₂₃]
 variable {σ₁₃ : 𝕜 →+* 𝕜₃} [RingHomIsometric σ₁₃]
 variable [AddCommGroup E] [AddCommGroup E₂] [AddCommGroup E₃]
-variable [AddCommGroup F] [AddCommGroup G]
-variable [Module 𝕜 E] [Module 𝕜₂ E₂] [Module 𝕜₃ E₃] [Module 𝕜 F] [Module 𝕜 G]
+variable [Module 𝕜 E] [Module 𝕜₂ E₂] [Module 𝕜₃ E₃]
 
 -- Porting note: even though this instance is found immediately by typeclass search,
 -- it seems to be needed below!?
@@ -279,7 +275,7 @@ def comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : Seminorm
     toFun := fun x => p (f x)
     -- Porting note: the `simp only` below used to be part of the `rw`.
     -- I'm not sure why this change was needed, and am worried by it!
-    -- Note: #8386 had to change `map_smulₛₗ` to `map_smulₛₗ _`
+    -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `map_smulₛₗ` to `map_smulₛₗ _`
     smul' := fun _ _ => by simp only [map_smulₛₗ _]; rw [map_smul_eq_mul, RingHomIsometric.is_iso] }
 
 theorem coe_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : ⇑(p.comp f) = p ∘ f :=
@@ -348,8 +344,7 @@ theorem finset_sup_apply (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) :
   induction' s using Finset.cons_induction_on with a s ha ih
   · rw [Finset.sup_empty, Finset.sup_empty, coe_bot, _root_.bot_eq_zero, Pi.zero_apply]
     norm_cast
-  · rw [Finset.sup_cons, Finset.sup_cons, coe_sup, sup_eq_max, Pi.sup_apply, sup_eq_max,
-      NNReal.coe_max, NNReal.coe_mk, ih]
+  · rw [Finset.sup_cons, Finset.sup_cons, coe_sup, Pi.sup_apply, NNReal.coe_max, NNReal.coe_mk, ih]
 
 theorem exists_apply_eq_finset_sup (p : ι → Seminorm 𝕜 E) {s : Finset ι} (hs : s.Nonempty) (x : E) :
     ∃ i ∈ s, s.sup p x = p i x := by
@@ -429,8 +424,8 @@ theorem bddBelow_range_add : BddBelow (range fun u => p u + q (x - u)) :=
     rintro _ ⟨x, rfl⟩
     dsimp; positivity⟩
 
-noncomputable instance instInf : Inf (Seminorm 𝕜 E) where
-  inf p q :=
+noncomputable instance instInf : Min (Seminorm 𝕜 E) where
+  min p q :=
     { p.toAddGroupSeminorm ⊓ q.toAddGroupSeminorm with
       toFun := fun x => ⨅ u : E, p u + q (x - u)
       smul' := by
@@ -870,8 +865,7 @@ end SeminormedRing
 
 section NormedField
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (p : Seminorm 𝕜 E) {A B : Set E} {a : 𝕜}
-  {r : ℝ} {x : E}
+variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (p : Seminorm 𝕜 E) {r : ℝ} {x : E}
 
 theorem closedBall_iSup {ι : Sort*} {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) (e : E)
     {r : ℝ} (hr : 0 < r) : closedBall (⨆ i, p i) e r = ⋂ i, closedBall (p i) e r := by
@@ -1073,9 +1067,9 @@ protected theorem uniformContinuous_of_continuousAt_zero [UniformSpace E] [Unifo
     tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds (hp.comp Filter.tendsto_comap)
       (fun xy => dist_nonneg) fun xy => p.norm_sub_map_le_sub _ _
 
-protected theorem continuous_of_continuousAt_zero [TopologicalSpace E] [TopologicalAddGroup E]
+protected theorem continuous_of_continuousAt_zero [TopologicalSpace E] [IsTopologicalAddGroup E]
     {p : Seminorm 𝕝 E} (hp : ContinuousAt p 0) : Continuous p := by
-  letI := TopologicalAddGroup.toUniformSpace E
+  letI := IsTopologicalAddGroup.toUniformSpace E
   haveI : UniformAddGroup E := comm_topologicalAddGroup_is_uniform
   exact (Seminorm.uniformContinuous_of_continuousAt_zero hp).continuous
 
@@ -1108,29 +1102,30 @@ protected theorem uniformContinuous' [UniformSpace E] [UniformAddGroup E] [Conti
 /-- A seminorm is continuous if `p.ball 0 r ∈ 𝓝 0` for *all* `r > 0`.
 Over a `NontriviallyNormedField` it is actually enough to check that this is true
 for *some* `r`, see `Seminorm.continuous`. -/
-protected theorem continuous_of_forall [TopologicalSpace E] [TopologicalAddGroup E]
+protected theorem continuous_of_forall [TopologicalSpace E] [IsTopologicalAddGroup E]
     {p : Seminorm 𝕝 E} (hp : ∀ r > 0, p.ball 0 r ∈ (𝓝 0 : Filter E)) :
     Continuous p :=
   Seminorm.continuous_of_continuousAt_zero (continuousAt_zero_of_forall hp)
 
-protected theorem continuous [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
-    {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.ball 0 r ∈ (𝓝 0 : Filter E)) : Continuous p :=
+protected theorem continuous [TopologicalSpace E] [IsTopologicalAddGroup E]
+    [ContinuousConstSMul 𝕜 E] {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.ball 0 r ∈ (𝓝 0 : Filter E)) :
+    Continuous p :=
   Seminorm.continuous_of_continuousAt_zero (continuousAt_zero hp)
 
 /-- A seminorm is continuous if `p.closedBall 0 r ∈ 𝓝 0` for *all* `r > 0`.
 Over a `NontriviallyNormedField` it is actually enough to check that this is true
 for *some* `r`, see `Seminorm.continuous'`. -/
-protected theorem continuous_of_forall' [TopologicalSpace E] [TopologicalAddGroup E]
+protected theorem continuous_of_forall' [TopologicalSpace E] [IsTopologicalAddGroup E]
     {p : Seminorm 𝕝 E} (hp : ∀ r > 0, p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
     Continuous p :=
   Seminorm.continuous_of_continuousAt_zero (continuousAt_zero_of_forall' hp)
 
-protected theorem continuous' [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
-    {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
-    Continuous p :=
+protected theorem continuous' [TopologicalSpace E] [IsTopologicalAddGroup E]
+    [ContinuousConstSMul 𝕜 E] {p : Seminorm 𝕜 E} {r : ℝ}
+    (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) : Continuous p :=
   Seminorm.continuous_of_continuousAt_zero (continuousAt_zero' hp)
 
-theorem continuous_of_le [TopologicalSpace E] [TopologicalAddGroup E]
+theorem continuous_of_le [TopologicalSpace E] [IsTopologicalAddGroup E]
     {p q : Seminorm 𝕝 E} (hq : Continuous q) (hpq : p ≤ q) : Continuous p := by
   refine Seminorm.continuous_of_forall (fun r hr ↦ Filter.mem_of_superset
     (IsOpen.mem_nhds ?_ <| q.mem_ball_self hr) (ball_antitone hpq))

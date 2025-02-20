@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.Sigma
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Induction principles for `∀ i, Finset (α i)`
@@ -50,12 +50,12 @@ theorem induction_on_pi_of_choice (r : ∀ i, α i → Finset (α i) → Prop)
     set g := update f i ((f i).erase x) with hg
     clear_value g
     have hx' : x ∉ g i := by
-      rw [hg, update_same]
+      rw [hg, update_self]
       apply not_mem_erase
     rw [show f = update g i (insert x (g i)) by
-      rw [hg, update_idem, update_same, insert_erase x_mem, update_eq_self]] at hr ihs ⊢
+      rw [hg, update_idem, update_self, insert_erase x_mem, update_eq_self]] at hr ihs ⊢
     clear hg
-    rw [update_same, erase_insert hx'] at hr
+    rw [update_self, erase_insert hx'] at hr
     refine step _ _ _ hr (ihs (univ.sigma g) ?_ _ rfl)
     rw [ssubset_iff_of_subset (sigma_mono (Subset.refl _) _)]
     exacts [⟨⟨i, x⟩, mem_sigma.2 ⟨mem_univ _, by simp⟩, by simp [hx']⟩,

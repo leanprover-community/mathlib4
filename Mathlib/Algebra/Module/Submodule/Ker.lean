@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
+import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.Algebra.Module.Submodule.Map
 
 /-!
@@ -109,10 +110,13 @@ theorem le_ker_iff_map [RingHomSurjective τ₁₂] {f : F} {p : Submodule R M} 
 theorem ker_codRestrict {τ₂₁ : R₂ →+* R} (p : Submodule R M) (f : M₂ →ₛₗ[τ₂₁] M) (hf) :
     ker (codRestrict p f hf) = ker f := by rw [ker, comap_codRestrict, Submodule.map_bot]; rfl
 
+lemma ker_domRestrict [AddCommMonoid M₁] [Module R M₁] (p : Submodule R M) (f : M →ₗ[R] M₁) :
+    ker (domRestrict f p) = (ker f).comap p.subtype := ker_comp ..
+
 theorem ker_restrict [AddCommMonoid M₁] [Module R M₁] {p : Submodule R M} {q : Submodule R M₁}
     {f : M →ₗ[R] M₁} (hf : ∀ x : M, x ∈ p → f x ∈ q) :
-    ker (f.restrict hf) = LinearMap.ker (f.domRestrict p) := by
-  rw [restrict_eq_codRestrict_domRestrict, ker_codRestrict]
+    ker (f.restrict hf) = (ker f).comap p.subtype := by
+  rw [restrict_eq_codRestrict_domRestrict, ker_codRestrict, ker_domRestrict]
 
 @[simp]
 theorem ker_zero : ker (0 : M →ₛₗ[τ₁₂] M₂) = ⊤ :=
@@ -126,13 +130,9 @@ theorem _root_.AddMonoidHom.coe_toIntLinearMap_ker {M M₂ : Type*} [AddCommGrou
     (f : M →+ M₂) : LinearMap.ker f.toIntLinearMap = AddSubgroup.toIntSubmodule f.ker := rfl
 
 theorem ker_eq_bot_of_injective {f : F} (hf : Injective f) : ker f = ⊥ := by
-  have : Disjoint ⊤ (ker f) := by
-    -- Porting note: `← map_zero f` should work here, but it needs to be directly applied to H.
-    rw [disjoint_ker]
-    intros _ _ H
-    rw [← map_zero f] at H
-    exact hf H
-  simpa [disjoint_iff_inf_le]
+  rw [eq_bot_iff]
+  intro x hx
+  simpa only [mem_ker, mem_bot, ← map_zero f, hf.eq_iff] using hx
 
 /-- The increasing sequence of submodules consisting of the kernels of the iterates of a linear map.
 -/
@@ -198,7 +198,8 @@ theorem ker_eq_bot {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊥ ↔ Injective 
 @[simp] theorem injective_restrict_iff_disjoint {p : Submodule R M} {f : M →ₗ[R] M}
     (hf : ∀ x ∈ p, f x ∈ p) :
     Injective (f.restrict hf) ↔ Disjoint p (ker f) := by
-  rw [← ker_eq_bot, ker_restrict hf, ker_eq_bot, injective_domRestrict_iff, disjoint_iff]
+  rw [← ker_eq_bot, ker_restrict hf, ← ker_domRestrict, ker_eq_bot, injective_domRestrict_iff,
+    disjoint_iff]
 
 end Ring
 

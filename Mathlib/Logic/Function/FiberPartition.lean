@@ -3,7 +3,7 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Insert
 /-!
 
 This file defines the type `f.Fiber` of fibers of a function `f : Y → Z`, and provides some API
@@ -12,8 +12,10 @@ to work with and construct terms of this type.
 Note: this API is designed to be useful when defining the counit of the adjunction between
 the functor which takes a set to the condensed set corresponding to locally constant maps to that
 set, and the forgetful functor from the category of condensed sets to the category of sets
-(see PR #14027).
+(see PR https://github.com/leanprover-community/mathlib4/pull/14027).
 -/
+
+assert_not_exists RelIso
 
 variable {X Y Z : Type*}
 

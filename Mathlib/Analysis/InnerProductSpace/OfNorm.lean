@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.InnerProductSpace.Convex
 import Mathlib.Algebra.Module.LinearMap.Rat
 import Mathlib.Tactic.Module
 
@@ -121,10 +121,10 @@ theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y :=
   have I_smul (v : E) : ‖(I : 𝕜) • v‖ = ‖v‖ := by rw [norm_smul, norm_I_of_ne_zero hI, one_mul]
   have h₁ : ‖(I : 𝕜) • y - x‖ = ‖(I : 𝕜) • x + y‖ := by
     convert I_smul ((I : 𝕜) • x + y) using 2
-    linear_combination (norm := module) congr(-$hI' • x)
+    linear_combination (norm := module) -hI' • x
   have h₂ : ‖(I : 𝕜) • y + x‖ = ‖(I : 𝕜) • x - y‖ := by
     convert (I_smul ((I : 𝕜) • y + x)).symm using 2
-    linear_combination (norm := module) congr(-$hI' • y)
+    linear_combination (norm := module) -hI' • y
   rw [h₁, h₂]
   ring
 
@@ -194,7 +194,7 @@ private theorem rat_prop (r : ℚ) : innerProp' E (r : 𝕜) := by
 private theorem real_prop (r : ℝ) : innerProp' E (r : 𝕜) := by
   intro x y
   revert r
-  rw [← Function.funext_iff]
+  rw [← funext_iff]
   refine Rat.isDenseEmbedding_coe_real.dense.equalizer ?_ ?_ (funext fun X => ?_)
   · exact (continuous_ofReal.smul continuous_const).inner_ continuous_const
   · exact (continuous_conj.comp continuous_ofReal).mul continuous_const

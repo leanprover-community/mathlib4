@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yakov Pechersky
 -/
 import Mathlib.Data.List.Nodup
-import Mathlib.Data.Nat.Defs
 import Mathlib.Data.List.Infix
 
 /-!
@@ -39,8 +38,7 @@ theorem rotate_nil (n : ℕ) : ([] : List α).rotate n = [] := by simp [rotate]
 @[simp]
 theorem rotate_zero (l : List α) : l.rotate 0 = l := by simp [rotate]
 
--- Porting note: removing simp, simp can prove it
-theorem rotate'_nil (n : ℕ) : ([] : List α).rotate' n = [] := by cases n <;> rfl
+theorem rotate'_nil (n : ℕ) : ([] : List α).rotate' n = [] := by simp
 
 @[simp]
 theorem rotate'_zero (l : List α) : l.rotate' 0 = l := by cases l <;> rfl
@@ -100,7 +98,7 @@ theorem rotate_eq_rotate' (l : List α) (n : ℕ) : l.rotate n = l.rotate' n :=
         rotate'_eq_drop_append_take (le_of_lt (Nat.mod_lt _ (Nat.pos_of_ne_zero h)))]
     simp [rotate]
 
-theorem rotate_cons_succ (l : List α) (a : α) (n : ℕ) :
+@[simp] theorem rotate_cons_succ (l : List α) (a : α) (n : ℕ) :
     (a :: l : List α).rotate (n + 1) = (l ++ [a]).rotate n := by
   rw [rotate_eq_rotate', rotate_eq_rotate', rotate'_cons_succ]
 
@@ -151,7 +149,7 @@ theorem rotate_perm (l : List α) (n : ℕ) : l.rotate n ~ l := by
   rw [rotate_eq_rotate']
   induction' n with n hn generalizing l
   · simp
-  · cases' l with hd tl
+  · rcases l with - | ⟨hd, tl⟩
     · simp
     · rw [rotate'_cons_succ]
       exact (hn _).trans (perm_append_singleton _ _)
@@ -164,7 +162,7 @@ theorem nodup_rotate {l : List α} {n : ℕ} : Nodup (l.rotate n) ↔ Nodup l :=
 theorem rotate_eq_nil_iff {l : List α} {n : ℕ} : l.rotate n = [] ↔ l = [] := by
   induction' n with n hn generalizing l
   · simp
-  · cases' l with hd tl
+  · rcases l with - | ⟨hd, tl⟩
     · simp
     · simp [rotate_cons_succ, hn]
 
@@ -183,9 +181,6 @@ theorem zipWith_rotate_distrib {β γ : Type*} (f : α → β → γ) (l : List 
     take_zipWith, List.length_zipWith, h, min_self]
   rw [length_drop, length_drop, h]
 
-attribute [local simp] rotate_cons_succ
-
--- Porting note: removing @[simp], simp can prove it
 theorem zipWith_rotate_one {β : Type*} (f : α → α → β) (x y : α) (l : List α) :
     zipWith f (x :: y :: l) ((x :: y :: l).rotate 1) = f x y :: zipWith f (y :: l) (l ++ [x]) := by
   simp
@@ -206,9 +201,7 @@ theorem getElem?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
         rw [Nat.sub_lt_iff_lt_add' hm']
         exact Nat.add_lt_add hlt hml
       conv_rhs => rw [Nat.add_comm m, ← mod_add_mod, mod_eq_sub_mod hm', mod_eq_of_lt this]
-      rw [← Nat.add_right_inj, ← Nat.add_sub_assoc, Nat.add_sub_sub_cancel, Nat.add_sub_cancel',
-        Nat.add_comm]
-      exacts [hm', hlt.le, hm]
+      omega
     · rwa [Nat.sub_lt_iff_lt_add hm, length_drop, Nat.sub_add_cancel hlt.le]
 
 theorem getElem_rotate (l : List α) (n : ℕ) (k : Nat) (h : k < (l.rotate n).length) :
@@ -222,7 +215,7 @@ theorem get?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
   simp only [get?_eq_getElem?, length_rotate, hml, getElem?_eq_getElem, getElem_rotate]
   rw [← getElem?_eq_getElem]
 
--- Porting note (#10756): new lemma
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10756): new lemma
 theorem get_rotate (l : List α) (n : ℕ) (k : Fin (l.rotate n).length) :
     (l.rotate n).get k = l.get ⟨(k + n) % l.length, mod_lt _ (length_rotate l n ▸ k.pos)⟩ := by
   simp [getElem_rotate]
@@ -298,7 +291,7 @@ theorem reverse_rotate (l : List α) (n : ℕ) :
   rw [← length_reverse l, ← rotate_eq_iff]
   induction' n with n hn generalizing l
   · simp
-  · cases' l with hd tl
+  · rcases l with - | ⟨hd, tl⟩
     · simp
     · rw [rotate_cons_succ, ← rotate_rotate, hn]
       simp
@@ -310,9 +303,9 @@ theorem rotate_reverse (l : List α) (n : ℕ) :
     length_reverse]
   rw [← length_reverse l]
   let k := n % l.reverse.length
-  cases' hk' : k with k'
+  rcases hk' : k with - | k'
   · simp_all! [k, length_reverse, ← rotate_rotate]
-  · cases' l with x l
+  · rcases l with - | ⟨x, l⟩
     · simp
     · rw [Nat.mod_eq_of_lt, Nat.sub_add_cancel, rotate_length]
       · exact Nat.sub_le _ _
@@ -322,7 +315,7 @@ theorem map_rotate {β : Type*} (f : α → β) (l : List α) (n : ℕ) :
     map f (l.rotate n) = (map f l).rotate n := by
   induction' n with n hn IH generalizing l
   · simp
-  · cases' l with hd tl
+  · rcases l with - | ⟨hd, tl⟩
     · simp
     · simp [hn]
 
@@ -366,7 +359,7 @@ theorem IsRotated.refl (l : List α) : l ~r l :=
 @[symm]
 theorem IsRotated.symm (h : l ~r l') : l' ~r l := by
   obtain ⟨n, rfl⟩ := h
-  cases' l with hd tl
+  rcases l with - | ⟨hd, tl⟩
   · exists 0
   · use (hd :: tl).length * n - n
     rw [rotate_rotate, Nat.add_sub_cancel', rotate_length_mul]
@@ -438,7 +431,7 @@ theorem isRotated_reverse_iff : l.reverse ~r l'.reverse ↔ l ~r l' := by
 theorem isRotated_iff_mod : l ~r l' ↔ ∃ n ≤ l.length, l.rotate n = l' := by
   refine ⟨fun h => ?_, fun ⟨n, _, h⟩ => ⟨n, h⟩⟩
   obtain ⟨n, rfl⟩ := h
-  cases' l with hd tl
+  rcases l with - | ⟨hd, tl⟩
   · simp
   · refine ⟨n % (hd :: tl).length, ?_, rotate_mod _ _⟩
     refine (Nat.mod_lt _ ?_).le
