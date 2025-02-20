@@ -306,12 +306,12 @@ open scoped Classical in
 - $v_j(a) < 1$ for $j \neq i$;
 - $1 < w(a)$;
 
-Then there is a $k ∈ F$ such that $1 < v_i k$ while $v_j k < 1$ for all
-$j ≠ i$ and $w k < 1$. This is given by taking large enough values of a witness sequence to
+Then there is a $k ∈ F$ such that $1 < v_i(k)$ while $v_j(k) < 1$ for all
+$j ≠ i$ and $w(k) < 1$. This is given by taking large enough values of a witness sequence to
 `exists_tendsto_const_tendsto_zero_tendsto_const` (for example $\frac{1}{1 + a ^ {- n}}$ works).
 
 Note that this is the result `exists_one_lt_lt_one_lt_one_of_eq_one` replacing the condition
-that $w a = 1$ with $1 < w a$ and removing the condition on $w b$.
+that $w(a) = 1$ with $1 < w(a)$ and removing the condition on $w(b)$.
 -/
 theorem exists_one_lt_lt_one_lt_one_of_one_lt
     {ι : Type*} [Fintype ι] {v : ι → AbsoluteValue F ℝ} {w : AbsoluteValue F ℝ} {a b : F} {i : ι}
@@ -335,7 +335,7 @@ theorem exists_one_lt_lt_one_lt_one_of_one_lt
 /--
 Let $v_1, ..., v_k$ be a collection of at least two non-trivial and pairwise inequivalent
 absolute values on a field $F$. Then there is an $a ∈ F$ such that $1 < v_1(a)$ while
-$v_j a < 1$ for all other $j ≠ 1$.
+$v_j(a) < 1$ for all other $j ≠ 1$.
 -/
 theorem exists_one_lt_lt_one {n : ℕ} {v : Fin (n + 2) → AbsoluteValue F ℝ}
     (h : ∀ i, (v i).IsNontrivial)
