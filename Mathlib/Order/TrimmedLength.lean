@@ -7,7 +7,13 @@ Authors: Raphael Douglas Giles
 import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Order.RelSeries
 import Mathlib.Data.Fintype.Sort
-
+import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Data.Set.Image
+import Mathlib.LinearAlgebra.Span.Basic
+import Mathlib.Algebra.Homology.ShortComplex.Basic
+import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 /-!
 
@@ -229,3 +235,113 @@ def RelSeries.trim (rs : RelSeries (α := α) (· ≤ ·)) :
    step := by
     intro i
     simp
+
+
+section Module
+
+variable {R M M': Type*}
+         [Ring R]
+         [AddCommGroup M]
+         [AddCommGroup M']
+         [Module R M]
+         [Module R M']
+
+ theorem RelSeries.exists_ltSeries_ge_head_bot
+  (rs : RelSeries (α := Submodule R M) (· < ·)) :
+  ∃ xs : RelSeries (α := Submodule R M) (· < ·),
+  xs.length ≥ rs.length ∧ xs.head = ⊥ ∧ xs.last = rs.last :=
+    Or.elim (em (rs.head = ⊥)) (by aesop)
+    (by intro h; use cons rs ⊥ (by exact Ne.bot_lt' fun a ↦ h (id (Eq.symm a))); simp)
+
+  theorem RelSeries.exists_ltSeries_le_last_top
+  (rs : RelSeries (α := Submodule R M) (· < ·)) :
+  ∃ xs : RelSeries (α := Submodule R M) (· < ·),
+  xs.length ≥ rs.length ∧ xs.last = ⊤ ∧ xs.head = rs.head :=
+    Or.elim (em (rs.last = ⊤)) (by aesop)
+    (by intro h; use snoc rs ⊤ (by exact Ne.lt_top' fun a ↦ h (id (Eq.symm a))); simp)
+
+  /--
+  Given an LTSeries rs, there always exists an LTSeries xs with xs.length ≥ rs.length and
+  the head of xs equal to ⊥ and the last of xs equal to ⊤.
+  -/
+  theorem RelSeries.exists_ltSeries_ge_head_bot_last_top
+  (rs : RelSeries (fun (a : Submodule R M) (b : Submodule R M) => a < b))
+  : ∃ xs : RelSeries (α := Submodule R M) (· < ·),
+    xs.length ≥ rs.length ∧ xs.head = ⊥ ∧ xs.last = ⊤ := by
+    obtain ⟨rs', hrs'⟩ := rs.exists_ltSeries_ge_head_bot
+    obtain ⟨rs'', hrs''⟩ := rs'.exists_ltSeries_le_last_top
+    use rs''; exact ⟨le_trans hrs'.1 hrs''.1, by aesop⟩
+
+
+  def RelSeries.submoduleMap (rs : RelSeries (α := Submodule R M) (· < ·))
+    (f : M →ₗ[R] M') : RelSeries (α := Submodule R M') (· ≤ ·) :=
+      RelSeries.map rs {toFun := Submodule.map f, map_rel' := fun a ↦ Submodule.map_mono (a.le)}
+
+  def RelSeries.submoduleComap (rs : RelSeries (α := Submodule R M') (· < ·))
+    (f : M →ₗ[R] M') : RelSeries (α := Submodule R M) (· ≤ ·) :=
+      RelSeries.map rs {toFun := Submodule.comap f, map_rel' := fun a ↦ Submodule.comap_mono (a.le)}
+
+
+  theorem RelSeries.submodule_comap_lt_of_map_eq_exact
+    {S : CategoryTheory.ShortComplex (ModuleCat R)} (hS : S.ShortExact)
+    (rs : RelSeries (α := Submodule R S.X₂) (· < ·)) (i : Fin rs.length)
+    (p : (rs.submoduleMap S.g.hom).toFun i.castSucc = (rs.submoduleMap S.g.hom).toFun i.succ)
+    : (rs.submoduleComap S.f.hom).toFun i.castSucc < (rs.submoduleComap S.f.hom).toFun i.succ := by
+      have kernelInt : LinearMap.ker S.g.hom ⊓ (rs.toFun i.castSucc) <
+        LinearMap.ker S.g.hom ⊓ (rs.toFun i.succ) :=
+          LinearMap.ker_inf_lt_ker_inf (rs.step i) (by aesop)
+      rw[← CategoryTheory.ShortComplex.Exact.moduleCat_range_eq_ker hS.exact] at kernelInt
+      apply Set.range_inter_ssubset_iff_preimage_ssubset.mp kernelInt
+
+
+
+    theorem RelSeries.submodule_map_lt_of_comap_eq_exact
+        {S : CategoryTheory.ShortComplex (ModuleCat R)} (hS : S.ShortExact)
+        (rs : RelSeries (α := Submodule R S.X₂) (· < ·)) (i : Fin rs.length)
+        (p : (rs.submoduleComap S.f.hom).toFun i.castSucc =
+        (rs.submoduleComap S.f.hom).toFun i.succ) :
+        (rs.submoduleMap S.g.hom).toFun i.castSucc < (rs.submoduleMap S.g.hom).toFun i.succ := by
+      have imInt : LinearMap.range S.f.hom ⊓ (rs.toFun i.castSucc) =
+                   LinearMap.range S.f.hom ⊓ (rs.toFun i.succ) := by
+        rw[← Submodule.map_comap_eq, ←Submodule.map_comap_eq]
+        exact congrArg (Submodule.map S.f.hom) p
+      rw[CategoryTheory.ShortComplex.Exact.moduleCat_range_eq_ker hS.exact] at imInt
+      apply LinearMap.map_lt_map_of_ker_inf_eq (rs.step i) imInt
+open Classical in
+  /--
+  Given a short exact sequence S and rs : RelSeries (α := Submodule R S.X₂) (· < ·),
+  we have that the length of rs is bounded above by the trimmed length of rs.submoduleMap S.g.hom
+  plus the trimmed length of rs.submoduleComap S.f.hom.
+
+  This is the main ingredient in our proof that the module length is additive.
+  -/
+theorem RelSeries.trimmedLength_additive
+    {S : CategoryTheory.ShortComplex (ModuleCat R)} (hS : S.ShortExact)
+      (rs : RelSeries (α := Submodule R S.X₂) (· < ·)) :
+      rs.length ≤ RelSeries.trimmedLength (rs.submoduleMap S.g.hom) +
+                  RelSeries.trimmedLength (rs.submoduleComap S.f.hom) := by
+        induction' o : rs.length with n ih generalizing rs
+        · aesop
+        · let n' : Fin (rs.length) := {val := n, isLt := by rw[o] ; exact lt_add_one n}
+          have rserasedLen : rs.eraseLast.length = n := by aesop
+          by_cases q : rs.submoduleMap S.g.hom (n'.castSucc) = rs.submoduleMap S.g.hom n'.succ
+          · rw[RelSeries.trimmedLength_eraseLast_of_eq ⟨n', ⟨id q, id (Eq.symm o)⟩⟩]
+            specialize ih rs.eraseLast rserasedLen
+            have leftlt : ∃ i : Fin (rs.submoduleComap S.f.hom).length,
+                (rs.submoduleComap S.f.hom).toFun i.castSucc <
+                (rs.submoduleComap S.f.hom).toFun i.succ ∧
+                ↑i + 1 = (rs.submoduleComap S.f.hom).length :=
+                ⟨n', ⟨RelSeries.submodule_comap_lt_of_map_eq_exact hS rs n' q, o.symm⟩⟩
+            rw[RelSeries.trimmedLength_eraseLast_of_lt leftlt]; exact Nat.add_le_add_right ih 1
+          · rw[RelSeries.trimmedLength_eraseLast_of_lt
+              ⟨n', ⟨lt_of_le_of_ne ((rs.submoduleMap S.g.hom).step n') q, id (Eq.symm o)⟩⟩]
+            specialize ih rs.eraseLast rserasedLen
+            suffices n + 1 ≤ (rs.submoduleMap S.g.hom).eraseLast.trimmedLength +
+                             1 + (rs.submoduleComap S.f.hom).eraseLast.trimmedLength by
+              exact le_add_of_le_add_left this
+                (RelSeries.trimmedLength_eraseLast_le (rs.submoduleComap S.f.hom))
+            ring_nf
+            have proof := Nat.add_le_add_left ih 1
+            ring_nf at proof; exact proof
+
+end Module
