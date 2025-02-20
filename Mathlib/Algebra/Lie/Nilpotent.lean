@@ -926,16 +926,12 @@ theorem coe_lcs_eq [LieModule R L M] :
     · rintro ⟨⟨x, hx⟩, m, hm, rfl⟩
       exact ⟨x, hx, m, hm, rfl⟩
 
-lemma nilpotent_restricts_to_ideal {I : LieIdeal R L} (hI : IsNilpotent L I)
+lemma isNilpotent_restricts_to_ideal {I : LieIdeal R L} (hI :IsNilpotent L I)
     : LieRing.IsNilpotent I := by
   let f : I →ₗ⁅R⁆ L := I.incl
-  let g : I →ₗ⁅R⁆ I := 1
-  have hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆ := by
-    intro x m
-    simp [f, g]
-  have hg_inj : Function.Injective g := by
-    exact Function.injective_id
-  exact Function.Injective.lieModuleIsNilpotent hfg hg_inj
+  let g : I →ₗ⁅R⁆ I := LieHom.id
+  have hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆ := by aesop
+  exact Function.injective_id.lieModuleIsNilpotent hfg
 
 end LieIdeal
 
@@ -1012,13 +1008,12 @@ theorem LieIdeal.isNilpotent_iff_le_maxNilpotentIdeal [IsNoetherian R L] (I : Li
 theorem center_le_maxNilpotentIdeal : center R L ≤ maxNilpotentIdeal R L :=
   le_sSup (trivialIsNilpotent L (center R L))
 
-theorem largest_nilpotent_ideal_le_radical : largestNilpotentIdeal R L ≤ radical R L := by
+theorem maxNilpotentIdeal_le_radical : maxNilpotentIdeal R L ≤ radical R L := by
   apply sSup_le_sSup
   intro I hI
   have h : IsNilpotent I I :=
-    LieIdeal.nilpotent_restricts_to_ideal (R := R) (L := L) hI
+    LieIdeal.isNilpotent_restricts_to_ideal (R := R) (L := L) hI
   exact isSolvable_of_isNilpotent I
-
 
 @[simp] lemma maxNilpotentIdeal_eq_top_of_isNilpotent [LieRing.IsNilpotent L] :
     maxNilpotentIdeal R L = ⊤ :=
