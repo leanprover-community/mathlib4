@@ -76,28 +76,7 @@ theorem _root_.List.shortlex_iff_lex {s t : List α} (h : s.length = t.length) :
   exact fun h1 => of_lex h h1
 
 theorem _root_.List.shortlex_def {s t : List α} : Shortlex r s t ↔
-    s.length < t.length ∨ s.length = t.length ∧ List.Lex r s t := by
-  constructor
-  · intro hs
-    unfold Shortlex InvImage at hs
-    simp only at hs
-    generalize hp : (s.length, s) = p at hs
-    generalize hq : (t.length, t) = q at hs
-    cases hs with
-    | left b₁ b₂ h =>
-      left
-      rw [Prod.mk.injEq] at hp hq
-      rw [← hp.1, ← hq.1] at h
-      exact h
-    | right a h =>
-      right
-      rw [Prod.mk.injEq] at hp hq
-      rw [← hp.2, ← hq.2] at h
-      exact ⟨hp.1.trans hq.1.symm, h⟩
-  intro hpq
-  rcases hpq with h1 | h2
-  · exact of_length_lt h1
-  exact of_lex h2.1 h2.2
+    s.length < t.length ∨ s.length = t.length ∧ List.Lex r s t := Prod.lex_def
 
 theorem cons_iff [IsIrrefl α r] {a : α} {s t : List α} : Shortlex r (a :: s) (a :: t) ↔
     Shortlex r s t := by
