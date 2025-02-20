@@ -2664,6 +2664,7 @@ import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.BooleanAlgebra
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.CastCard
 import Mathlib.Data.Finset.Dedup
 import Mathlib.Data.Finset.Defs
 import Mathlib.Data.Finset.Density

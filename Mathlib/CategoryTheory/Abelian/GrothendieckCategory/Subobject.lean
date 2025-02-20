@@ -92,7 +92,7 @@ noncomputable def isColimitMapCoconeOfSubobjectMkEqISup
     colimit.desc _ (Cocone.mk X
       { app j := (F.obj j).obj.hom
         naturality {j j'} g := by simp [MonoOver.forget] })
-  have := mono_of_isColimit_monoOver F (colimit.isColimit _) f (by simp [f])
+  haveI := mono_of_isColimit_monoOver F (colimit.isColimit _) f (by simp [f])
   have := subobjectMk_of_isColimit_eq_iSup F (colimit.isColimit _) f (by simp [f])
   rw [← h] at this
   refine IsColimit.ofIsoColimit (colimit.isColimit _)
