@@ -9,6 +9,25 @@ import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 /-!
 # Polar coordinate change of variables for the mixed space of a number field
 
+We define two polar coordinate changes of variables for the mixed space `ℝ^r₁ × ℂ^r₂` associated
+to a number field `K` of signature `(r₁, r₂)`. The first one is `mixedEmbedding.polarCoord` and has
+value in `realMixedSpace K` defined as `ℝ^r₁ × (ℝ ⨯ ℝ)^r₂`, the second is
+`mixedEmbedding.polarSpaceCoord` and has value in `polarSpace K` defined as `ℝ^(r₁+r₂) × ℝ^r₂`.
+
+## Main definitions and results
+
+* `mixedEmbedding.polarCoord`: the polar coordinate change of variables between the mixed
+ space `ℝ^r₁ × ℂ^r₂` and `ℝ^r₁ × (ℝ × ℝ)^r₂` defined as the identity on the first component and
+ mapping `(zᵢ)ᵢ` to `(‖zᵢ‖, Arg zᵢ)ᵢ` on the second component.
+* `mixedEmbedding.integral_comp_polarCoord_symm`: the change of variables formula for
+ `mixedEmbedding.polarCoord`
+* `mixedEmbedding.polarSpaceCoord`: the polar coordinate change of variables between the mixed
+ space `ℝ^r₁ × ℂ^r₂` and the polar space `ℝ^(r₁ + r₂) × ℝ^r₂` defined by sending `x` to
+ `x w` or `‖x w‖` depending on wether `w` is real or complex for the first component, and
+ to `Arg (x w)`, `w` complex, for the second component.
+* `mixedEmbedding.integral_comp_polarSpaceCoord_symm`: the change of variables formula for
+ `mixedEmbedding.polarSpaceCoord`
+
 -/
 
 variable (K : Type*) [Field K]
@@ -260,7 +279,7 @@ theorem volume_preserving_homeoRealMixedSpacePolarSpace [NumberField K] :
 /--
 The polar coordinate partial homeomorphism between the mixed space `ℝ^r₁ × ℂ^r₂` and the polar
 space `ℝ^(r₁ + r₂) × ℝ^r₂` defined by sending `x` to `x w` or `‖x w‖` depending on wether `w` is
-real or complex for the first component, and to `Arg x w` for `w` complex for the second component.
+real or complex for the first component, and to `Arg (x w)`, `w` complex, for the second component.
 -/
 @[simps!]
 def polarSpaceCoord [NumberField K] : PartialHomeomorph (mixedSpace K) (polarSpace K) :=
