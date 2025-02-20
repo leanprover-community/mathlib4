@@ -97,7 +97,7 @@ See the implementation notes in this file for discussion of the details of this 
 -/
 class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SMul R A where
   /-- Embedding `R →+* A` given by `Algebra` structure.
-  Use `algebraMap` from the root namespace instead.-/
+  Use `algebraMap` from the root namespace instead. -/
   protected algebraMap : R →+* A
   commutes' : ∀ r x, algebraMap r * x = x * algebraMap r
   smul_def' : ∀ r x, r • x = algebraMap r * x
@@ -230,8 +230,6 @@ section Semiring
 
 variable [CommSemiring R] [CommSemiring S]
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-
--- Porting note: deleted a private lemma
 
 -- We'll later use this to show `Algebra ℤ M` is a subsingleton.
 /-- To prove two algebra structures on a fixed `[CommSemiring R] [Semiring A]` agree,

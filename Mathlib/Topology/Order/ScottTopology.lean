@@ -424,7 +424,8 @@ variable [TopologicalSpace α]
 /-- If `α` is equipped with the Scott topology, then it is homeomorphic to `WithScott α`.
 -/
 def IsScott.withScottHomeomorph [IsScott α univ] : WithScott α ≃ₜ α :=
-  WithScott.ofScott.toHomeomorphOfIsInducing ⟨by erw [IsScott.topology_eq α univ, induced_id]; rfl⟩
+  WithScott.ofScott.toHomeomorphOfIsInducing ⟨by
+    rw [IsScott.topology_eq α univ]; erw [induced_id]; rfl⟩
 
 lemma IsScott.scottHausdorff_le [IsScott α univ] :
     scottHausdorff α univ ≤ ‹TopologicalSpace α› := by

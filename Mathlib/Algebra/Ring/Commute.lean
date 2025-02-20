@@ -192,6 +192,9 @@ alias sub_pow_two := sub_sq
 lemma sub_sq' (a b : R) : (a - b) ^ 2 = a ^ 2 + b ^ 2 - 2 * a * b := by
   rw [sub_eq_add_neg, add_sq', neg_sq, mul_neg, ← sub_eq_add_neg]
 
+lemma sub_sq_comm (a b : R) : (a - b) ^ 2 = (b - a) ^ 2 := by
+  rw [sub_sq', mul_right_comm, add_comm, sub_sq']
+
 variable [NoZeroDivisors R] {a b : R}
 
 lemma sq_eq_sq_iff_eq_or_eq_neg : a ^ 2 = b ^ 2 ↔ a = b ∨ a = -b :=

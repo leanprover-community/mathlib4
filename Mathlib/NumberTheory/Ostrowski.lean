@@ -6,7 +6,7 @@ María Inés de Frutos-Fernández, Sam van Gool, Silvain Rideau-Kikuchi, Amos Tu
 Francesco Veneziano
 -/
 
-import Mathlib.Algebra.Order.AbsoluteValue.Equivalence
+import Mathlib.Analysis.AbsoluteValue.Equivalence
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.NumberTheory.Padics.PadicNorm
@@ -144,7 +144,7 @@ lemma exists_minimal_nat_zero_lt_and_lt_one :
 variable {p : ℕ} (hp0 : 0 < f p) (hp1 : f p < 1) (hmin : ∀ m : ℕ, 0 < f m ∧ f m < 1 → p ≤ m)
 
 include hp0 hp1 hmin in
-/-- The minimal positive integer with absolute value smaller than 1 is a prime number.-/
+/-- The minimal positive integer with absolute value smaller than 1 is a prime number. -/
 lemma is_prime_of_minimal_nat_zero_lt_and_lt_one : p.Prime := by
   rw [← Nat.irreducible_iff_nat_prime]
   constructor -- Two goals: p is not a unit and any product giving p must contain a unit.
@@ -311,7 +311,7 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
   contrapose! notbdd with h
   intro n
   have h_ineq1 {m : ℕ} (hm : 1 ≤ m) : f m ≤ n₀ * (logb n₀ m + 1) := by
-    /- L is the string of digits of `n` in the base `n₀`-/
+    /- L is the string of digits of `n` in the base `n₀` -/
     set L := Nat.digits n₀ m
     calc
     f m ≤ (L.mapIdx fun i _ ↦ n₀ * f n₀ ^ i).sum := apply_le_sum_digits m hn₀
@@ -410,7 +410,7 @@ lemma le_pow_log : f n ≤ f m ^ logb m n := by
 
 include hm hn notbdd in
 /-- Given `m, n ≥ 2` and `f m = m ^ s`, `f n = n ^ t` for `s, t > 0`, we have `t ≤ s`. -/
-private lemma le_of_eq_pow {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t)  : t ≤ s := by
+private lemma le_of_eq_pow {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t) : t ≤ s := by
   rw [← rpow_le_rpow_left_iff (x := n) (mod_cast hn), ← hfn]
   apply le_trans <| le_pow_log hm hn notbdd
   rw [hfm, ← rpow_mul (Nat.cast_nonneg m), mul_comm, rpow_mul (Nat.cast_nonneg m),

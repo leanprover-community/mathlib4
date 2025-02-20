@@ -40,7 +40,6 @@ open LinearMap (BilinForm)
 variable {R : Type u} {M : Type v} [CommRing R] [AddCommGroup M] [Module R M]
 variable (B : BilinForm R M)
 
--- Porting note: Changed `(f g)` to `{f g}` for convenience in `skewAdjointLieSubalgebra`
 theorem LinearMap.BilinForm.isSkewAdjoint_bracket {f g : Module.End R M}
     (hf : f ∈ B.skewAdjointSubmodule) (hg : g ∈ B.skewAdjointSubmodule) :
     ⁅f, g⁆ ∈ B.skewAdjointSubmodule := by
@@ -91,7 +90,6 @@ variable (J : Matrix n n R)
 theorem Matrix.lie_transpose (A B : Matrix n n R) : ⁅A, B⁆ᵀ = ⁅Bᵀ, Aᵀ⁆ :=
   show (A * B - B * A)ᵀ = Bᵀ * Aᵀ - Aᵀ * Bᵀ by simp
 
--- Porting note: Changed `(A B)` to `{A B}` for convenience in `skewAdjointMatricesLieSubalgebra`
 theorem Matrix.isSkewAdjoint_bracket {A B : Matrix n n R} (hA : A ∈ skewAdjointMatricesSubmodule J)
     (hB : B ∈ skewAdjointMatricesSubmodule J) : ⁅A, B⁆ ∈ skewAdjointMatricesSubmodule J := by
   simp only [mem_skewAdjointMatricesSubmodule] at *
@@ -139,7 +137,6 @@ def skewAdjointMatricesLieSubalgebraEquivTranspose {m : Type w} [DecidableEq m] 
   LieEquiv.ofSubalgebras _ _ e.toLieEquiv <| by
     ext A
     suffices J.IsSkewAdjoint (e.symm A) ↔ (e J).IsSkewAdjoint A by
-      -- Porting note: Originally `simpa [this]`
       simpa [- LieSubalgebra.mem_map, LieSubalgebra.mem_map_submodule]
     simp only [Matrix.IsSkewAdjoint, Matrix.IsAdjointPair, ← h,
       ← Function.Injective.eq_iff e.injective, map_mul, AlgEquiv.apply_symm_apply, map_neg]
