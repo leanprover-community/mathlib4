@@ -165,11 +165,9 @@ theorem degree_X [Nontrivial R] {s : σ} :
   change m.degree (monomial (Finsupp.single s 1) (1 : R)) = _
   rw [degree_monomial, if_neg one_ne_zero]
 
-@[nontriviality, simp] theorem degree_one : m.degree (1 : MvPolynomial σ R) = 0 := by
+@[simp] theorem degree_one : m.degree (1 : MvPolynomial σ R) = 0 := by
   nontriviality R
-  change m.degree (monomial 0 1) = 0
-  classical
-  rw [degree_monomial]
+  classical rw [MvPolynomial.one_def, degree_monomial]
   simp
 
 @[simp]
