@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson
 -/
 import Mathlib.Topology.ExtremallyDisconnected
-import Mathlib.Topology.Category.CompHaus.Projective
+import Mathlib.Topology.Category.CompHaus.Projective.Basic
 import Mathlib.Topology.Category.Profinite.Basic
 /-!
 # Extremally disconnected sets
