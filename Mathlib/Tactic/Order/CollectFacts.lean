@@ -48,7 +48,7 @@ abbrev CollectFactsM := StateT CollectFactsState MetaM
 partial def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFactsM Nat := do
   modify fun res => res.insertIfNew type (.empty, #[])
   let (atomToIdx, facts) := (← get).get! type
-  let idx ← match ← (← atomToIdx.getUnify x).findM? fun (i, e) => isDefEq x e with
+  let idx ← match ← (← atomToIdx.getUnify x).findM? fun (_, e) => isDefEq x e with
   | none =>
     let idx := atomToIdx.size
     let atomToIdxNew ← atomToIdx.insert x (idx, x)
