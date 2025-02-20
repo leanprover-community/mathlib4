@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.Seq.Computation
+import Mathlib.Data.List.Basic
 
 /-!
 # Possibly infinite lists
@@ -122,10 +123,10 @@ def head (s : Seq α) : Option α :=
 /-- Get the tail of a sequence (or `nil` if the sequence is `nil`) -/
 def tail (s : Seq α) : Seq α :=
   ⟨s.1.tail, fun n' => by
-    cases' s with f al
+    obtain ⟨f, al⟩ := s
     exact al n'⟩
 
-/-- member definition for `Seq`-/
+/-- member definition for `Seq` -/
 protected def Mem (s : Seq α) (a : α) :=
   some a ∈ s.1
 
@@ -133,7 +134,7 @@ instance : Membership α (Seq α) :=
   ⟨Seq.Mem⟩
 
 theorem le_stable (s : Seq α) {m n} (h : m ≤ n) : s.get? m = none → s.get? n = none := by
-  cases' s with f al
+  obtain ⟨f, al⟩ := s
   induction' h with n _ IH
   exacts [id, fun h2 => al (IH h2)]
 
@@ -183,7 +184,7 @@ theorem destruct_eq_cons {s : Seq α} {a s'} : destruct s = some (a, s') → s =
   dsimp [destruct]
   induction' f0 : get? s 0 with a' <;> intro h
   · contradiction
-  · cases' s with f al
+  · obtain ⟨f, al⟩ := s
     injections _ h1 h2
     rw [← h2]
     apply Subtype.eq
@@ -221,7 +222,7 @@ theorem tail_nil : tail (nil : Seq α) = nil :=
 
 @[simp]
 theorem tail_cons (a : α) (s) : tail (cons a s) = s := by
-  cases' s with f al
+  obtain ⟨f, al⟩ := s
   apply Subtype.eq
   dsimp [tail, cons]
 
@@ -234,16 +235,16 @@ theorem get?_tail (s : Seq α) (n) : get? (tail s) n = get? s (n + 1) :=
 def recOn {motive : Seq α → Sort v} (s : Seq α) (nil : motive nil)
     (cons : ∀ x s, motive (cons x s)) :
     motive s := by
-  cases' H : destruct s with v
+  rcases H : destruct s with - | v
   · rw [destruct_eq_nil H]
     apply nil
-  · cases' v with a s'
+  · obtain ⟨a, s'⟩ := v
     rw [destruct_eq_cons H]
     apply cons
 
 theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
     (h1 : ∀ b s', a = b ∨ C s' → C (cons b s')) : C s := by
-  cases' M with k e; unfold Stream'.get at e
+  obtain ⟨k, e⟩ := M; unfold Stream'.get at e
   induction' k with k IH generalizing s
   · have TH : s = cons a (tail s) := by
       apply destruct_eq_cons
@@ -276,13 +277,13 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
   revert h; generalize some b = o; revert o
   induction' n with n IH <;> intro o
   · change (Corec.f f o).1 = none → (Corec.f f (Corec.f f o).2).1 = none
-    cases' o with b <;> intro h
+    rcases o with - | b <;> intro h
     · rfl
     dsimp [Corec.f] at h
     dsimp [Corec.f]
-    revert h; cases' h₁ : f b with s <;> intro h
+    revert h; rcases h₁ : f b with - | s <;> intro h
     · rfl
-    · cases' s with a b'
+    · obtain ⟨a, b'⟩ := s
       contradiction
   · rw [Stream'.corec'_eq (Corec.f f) (Corec.f f o).2, Stream'.corec'_eq (Corec.f f) o]
     exact IH (Corec.f f o).2
@@ -296,7 +297,7 @@ theorem corec_eq (f : β → Option (α × β)) (b : β) :
   rw [h]
   dsimp [Corec.f]
   induction' h : f b with s; · rfl
-  cases' s with a b'; dsimp [Corec.f]
+  obtain ⟨a, b'⟩ := s; dsimp [Corec.f]
   apply congr_arg fun b' => some (a, b')
   apply Subtype.eq
   dsimp [corec, tail]
@@ -309,7 +310,7 @@ variable (R : Seq α → Seq α → Prop)
 
 local infixl:50 " ~ " => R
 
-/-- Bisimilarity relation over `Option` of `Seq1 α`-/
+/-- Bisimilarity relation over `Option` of `Seq1 α` -/
 def BisimO : Option (Seq1 α) → Option (Seq1 α) → Prop
   | none, none => True
   | some (a, s), some (a', s') => a = a' ∧ R s s'
@@ -349,7 +350,7 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
       · intro _ this
         rw [destruct_cons, destruct_cons] at this
         rw [head_cons, head_cons, tail_cons, tail_cons]
-        cases' this with h1 h2
+        obtain ⟨h1, h2⟩ := this
         constructor
         · rw [h1]
         · exact h2
@@ -418,12 +419,8 @@ def ofMLList : MLList Id α → Seq α :=
     | .none => none
     | .some (a, l') => some (a, l')
 
-@[deprecated (since := "2024-07-26")] alias ofLazyList := ofMLList
-
 instance coeMLList : Coe (MLList Id α) (Seq α) :=
   ⟨ofMLList⟩
-
-@[deprecated (since := "2024-07-26")] alias coeLazyList := coeMLList
 
 /-- Translate a sequence into a `MLList`. -/
 unsafe def toMLList : Seq α → MLList Id α
@@ -431,8 +428,6 @@ unsafe def toMLList : Seq α → MLList Id α
     match destruct s with
     | none => .nil
     | some (a, s') => .cons a (toMLList s')
-
-@[deprecated (since := "2024-07-26")] alias toLazyList := toMLList
 
 end MLList
 
@@ -852,9 +847,9 @@ theorem join_append (S T : Seq (Seq1 α)) : join (append S T) = append (join S) 
         · cases' S with s S <;> simp
           · cases' T with s T
             · simp
-            · cases' s with a s; simp only [join_cons, destruct_cons, true_and]
+            · obtain ⟨a, s⟩ := s; simp only [join_cons, destruct_cons, true_and]
               refine ⟨s, nil, T, ?_, ?_⟩ <;> simp
-          · cases' s with a s
+          · obtain ⟨a, s⟩ := s
             simpa using ⟨s, S, T, rfl, rfl⟩
         · exact ⟨s, S, T, rfl, rfl⟩
   · refine ⟨nil, S, T, ?_, ?_⟩ <;> simp
@@ -902,7 +897,7 @@ theorem exists_of_mem_map {f} {b : β} : ∀ {s : Seq α}, b ∈ map f s → ∃
   fun {s} h => by match s with
   | ⟨g, al⟩ =>
     let ⟨o, om, oe⟩ := @Stream'.exists_of_mem_map _ _ (Option.map f) (some b) g h
-    cases' o with a
+    rcases o with - | a
     · injection oe
     · injection oe with h'; exact ⟨a, om, h'⟩
 
@@ -917,11 +912,11 @@ theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂)
     simpa using m
   · intro m e
     have this := congr_arg destruct e
-    cases' show a = c ∨ a ∈ append t₁ s₂ by simpa using m with e' m
+    rcases show a = c ∨ a ∈ append t₁ s₂ by simpa using m with e' | m
     · rw [e']
       exact Or.inl (mem_cons _ _)
-    · cases' show c = b ∧ append t₁ s₂ = s' by simpa with i1 i2
-      cases' o with e' IH
+    · obtain ⟨i1, i2⟩ := show c = b ∧ append t₁ s₂ = s' by simpa
+      rcases o with e' | IH
       · simp [i1, e']
       · exact Or.imp_left (mem_cons_of_mem _) (IH m i2)
 
@@ -1006,7 +1001,7 @@ theorem bind_ret (f : α → β) : ∀ s, bind s (ret ∘ f) = map f s
 @[simp]
 theorem ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a := by
   simp only [bind, map, ret.eq_1, map_nil]
-  cases' f a with a s
+  obtain ⟨a, s⟩ := f a
   cases s <;> simp
 
 @[simp]
@@ -1021,7 +1016,7 @@ theorem map_join' (f : α → β) (S) : Seq.map f (Seq.join S) = Seq.join (Seq.m
       | _, _, ⟨s, S, rfl, rfl⟩ => by
         cases' s with _ s <;> simp
         · cases' S with x S <;> simp
-          · cases' x with a s
+          · obtain ⟨a, s⟩ := x
             simpa [map] using ⟨_, _, rfl, rfl⟩
         · exact ⟨s, S, rfl, rfl⟩
   · refine ⟨nil, S, ?_, ?_⟩ <;> simp
@@ -1043,7 +1038,7 @@ theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
       | _, _, ⟨s, SS, rfl, rfl⟩ => by
         cases' s with _ s <;> simp
         · cases' SS with S SS <;> simp
-          · cases' S with s S; cases' s with x s
+          · obtain ⟨s, S⟩ := S; obtain ⟨x, s⟩ := s
             simp only [Seq.join_cons, join_append, destruct_cons]
             cases' s with x s <;> simp
             · exact ⟨_, _, rfl, rfl⟩
@@ -1054,7 +1049,7 @@ theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
 @[simp]
 theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
     bind (bind s f) g = bind s fun x : α => bind (f x) g := by
-  cases' s with a s
+  obtain ⟨a, s⟩ := s
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [bind, map]`.
   simp only [bind, map_pair, map_join]
   rw [← map_comp]
@@ -1065,9 +1060,9 @@ theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
   -- Porting note: Instead of `apply recOn s <;> intros`, `induction'` are used to
   --   give names to variables.
   induction' s using recOn with x s_1 <;> induction' S using recOn with x_1 s_2 <;> simp
-  · cases' x_1 with x t
+  · obtain ⟨x, t⟩ := x_1
     cases t <;> simp
-  · cases' x_1 with y t; simp
+  · obtain ⟨y, t⟩ := x_1; simp
 
 instance monad : Monad Seq1 where
   map := @map

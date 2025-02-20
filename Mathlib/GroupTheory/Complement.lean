@@ -585,7 +585,7 @@ noncomputable def leftQuotientEquiv (hS : IsComplement S H) : G ⧸ H ≃ S :=
 @[deprecated (since := "2024-12-28")]
 alias _root_.Subgroup.MemLeftTransversals.toEquiv := leftQuotientEquiv
 
-/-- A left transversal is finite iff the subgroup has finite index.-/
+/-- A left transversal is finite iff the subgroup has finite index. -/
 @[to_additive "A left transversal is finite iff the subgroup has finite index."]
 theorem finite_left_iff (h : IsComplement S H) : Finite S ↔ H.FiniteIndex := by
   rw [← h.leftQuotientEquiv.finite_iff]
@@ -710,11 +710,11 @@ section Action
 
 open Pointwise MulAction MemLeftTransversals
 
-/-- The collection of left transversals of a subgroup.-/
+/-- The collection of left transversals of a subgroup -/
 @[to_additive "The collection of left transversals of a subgroup."]
 abbrev LeftTransversal (H : Subgroup G) := {S : Set G // IsComplement S H}
 
-/-- The collection of right transversals of a subgroup.-/
+/-- The collection of right transversals of a subgroup -/
 @[to_additive "The collection of right transversals of a subgroup."]
 abbrev RightTransversal (H : Subgroup G) := {T : Set G // IsComplement H T}
 

@@ -31,7 +31,7 @@ section LinearEquiv
 
 variable {𝕜 G H : Type*} [MeasurableSpace G] [MeasurableSpace H] [NontriviallyNormedField 𝕜]
   [TopologicalSpace G] [TopologicalSpace H] [AddCommGroup G] [AddCommGroup H]
-  [TopologicalAddGroup G] [TopologicalAddGroup H] [Module 𝕜 G] [Module 𝕜 H] (μ : Measure G)
+  [IsTopologicalAddGroup G] [IsTopologicalAddGroup H] [Module 𝕜 G] [Module 𝕜 H] (μ : Measure G)
   [IsAddHaarMeasure μ] [BorelSpace G] [BorelSpace H]
   [CompleteSpace 𝕜] [T2Space G] [FiniteDimensional 𝕜 G] [ContinuousSMul 𝕜 G]
   [ContinuousSMul 𝕜 H] [T2Space H]
@@ -43,7 +43,7 @@ end LinearEquiv
 
 section SeminormedGroup
 variable {G H : Type*} [MeasurableSpace G] [Group G] [TopologicalSpace G]
-  [TopologicalGroup G] [BorelSpace G] [LocallyCompactSpace G]
+  [IsTopologicalGroup G] [BorelSpace G] [LocallyCompactSpace G]
   [MeasurableSpace H] [SeminormedGroup H] [OpensMeasurableSpace H]
 
 -- TODO: This could be streamlined by proving that inner regular measures always exist
@@ -141,15 +141,9 @@ theorem setIntegral_comp_smul (f : E → F) {R : ℝ} (s : Set E) (hR : R ≠ 0)
     rw [mem_smul_set_iff_inv_smul_mem₀ hR]
     rfl
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_comp_smul := setIntegral_comp_smul
-
 theorem setIntegral_comp_smul_of_pos (f : E → F) {R : ℝ} (s : Set E) (hR : 0 < R) :
     ∫ x in s, f (R • x) ∂μ = (R ^ finrank ℝ E)⁻¹ • ∫ x in R • s, f x ∂μ := by
   rw [setIntegral_comp_smul μ f s hR.ne', abs_of_nonneg (inv_nonneg.2 (pow_nonneg hR.le _))]
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_comp_smul_of_pos := setIntegral_comp_smul_of_pos
 
 theorem integral_comp_mul_left (g : ℝ → F) (a : ℝ) :
     (∫ x : ℝ, g (a * x)) = |a⁻¹| • ∫ y : ℝ, g y := by

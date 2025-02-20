@@ -5,6 +5,7 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Data.Int.Basic
 
 /-!
 # Facts about `ℤ` as an (unbundled) ordered group
@@ -29,8 +30,6 @@ open Function Nat
 namespace Int
 
 theorem natCast_strictMono : StrictMono (· : ℕ → ℤ) := fun _ _ ↦ Int.ofNat_lt.2
-
-@[deprecated (since := "2024-05-25")] alias coe_nat_strictMono := natCast_strictMono
 
 /-! ### Miscellaneous lemmas -/
 

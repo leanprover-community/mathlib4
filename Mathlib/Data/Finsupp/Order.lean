@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Data.Finsupp.Basic
+import Mathlib.Data.Finsupp.SMulWithZero
 
 /-!
 # Pointwise order on finitely supported functions

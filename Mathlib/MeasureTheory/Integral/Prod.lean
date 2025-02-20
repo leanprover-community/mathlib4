@@ -35,7 +35,7 @@ product measure, Fubini's theorem, Fubini-Tonelli theorem
 
 noncomputable section
 
-open scoped Classical Topology ENNReal MeasureTheory
+open scoped Topology ENNReal MeasureTheory
 
 open Set Function Real ENNReal
 
@@ -70,6 +70,7 @@ variable [NormedSpace ℝ E]
   This version has `f` in curried form. -/
 theorem MeasureTheory.StronglyMeasurable.integral_prod_right [SFinite ν] ⦃f : α → β → E⦄
     (hf : StronglyMeasurable (uncurry f)) : StronglyMeasurable fun x => ∫ y, f x y ∂ν := by
+  classical
   by_cases hE : CompleteSpace E; swap; · simp [integral, hE, stronglyMeasurable_const]
   borelize E
   haveI : SeparableSpace (range (uncurry f) ∪ {0} : Set E) :=
@@ -103,11 +104,9 @@ theorem MeasureTheory.StronglyMeasurable.integral_prod_right [SFinite ν] ⦃f :
           (fun n => (s' n x).aestronglyMeasurable) (hfx.norm.add hfx.norm) ?_ ?_
       · refine fun n => Eventually.of_forall fun y =>
           SimpleFunc.norm_approxOn_zero_le ?_ ?_ (x, y) n
-        -- Porting note: Lean 3 solved the following two subgoals on its own
         · exact hf.measurable
         · simp
       · refine Eventually.of_forall fun y => SimpleFunc.tendsto_approxOn ?_ ?_ ?_
-        -- Porting note: Lean 3 solved the following two subgoals on its own
         · exact hf.measurable.of_uncurry_left
         · simp
         apply subset_closure
@@ -394,14 +393,8 @@ theorem continuous_integral_integral :
       (𝓝 0)
   have this (i : α × β →₁[μ.prod ν] E) : Measurable fun z => ‖i z - g z‖ₑ :=
     ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).enorm
-  -- Porting note: was
-  -- simp_rw [← lintegral_prod_of_measurable _ (this _), ← L1.ofReal_norm_sub_eq_lintegral, ←
-  --   ofReal_zero]
-  conv =>
-    congr
-    ext
-    rw [← lintegral_prod_of_measurable _ (this _), ← L1.ofReal_norm_sub_eq_lintegral]
-  rw [← ofReal_zero]
+  simp_rw [← lintegral_prod_of_measurable _ (this _), ← L1.ofReal_norm_sub_eq_lintegral,
+    ← ofReal_zero]
   refine (continuous_ofReal.tendsto 0).comp ?_
   rw [← tendsto_iff_norm_sub_tendsto_zero]; exact tendsto_id
 
@@ -458,8 +451,6 @@ theorem setIntegral_prod (f : α × β → E) {s : Set α} {t : Set β}
   simp only [← Measure.prod_restrict s t, IntegrableOn] at hf ⊢
   exact integral_prod f hf
 
-@[deprecated (since := "2024-04-17")] alias set_integral_prod := setIntegral_prod
-
 theorem integral_prod_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] (f : α → 𝕜) (g : β → E) :
     ∫ z, f z.1 • g z.2 ∂μ.prod ν = (∫ x, f x ∂μ) • ∫ y, g y ∂ν := by
   by_cases hE : CompleteSpace E; swap; · simp [integral, hE]
@@ -469,7 +460,7 @@ theorem integral_prod_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] (f 
   have H : ¬Integrable f μ ∨ ¬Integrable g ν := by
     contrapose! h
     exact h.1.prod_smul h.2
-  cases' H with H H <;> simp [integral_undef h, integral_undef H]
+  rcases H with H | H <;> simp [integral_undef h, integral_undef H]
 
 theorem integral_prod_mul {L : Type*} [RCLike L] (f : α → L) (g : β → L) :
     ∫ z, f z.1 * g z.2 ∂μ.prod ν = (∫ x, f x ∂μ) * ∫ y, g y ∂ν :=
@@ -478,11 +469,8 @@ theorem integral_prod_mul {L : Type*} [RCLike L] (f : α → L) (g : β → L) :
 theorem setIntegral_prod_mul {L : Type*} [RCLike L] (f : α → L) (g : β → L) (s : Set α)
     (t : Set β) :
     ∫ z in s ×ˢ t, f z.1 * g z.2 ∂μ.prod ν = (∫ x in s, f x ∂μ) * ∫ y in t, g y ∂ν := by
-  -- Porting note: added
   rw [← Measure.prod_restrict s t]
   apply integral_prod_mul
-
-@[deprecated (since := "2024-04-17")] alias set_integral_prod_mul := setIntegral_prod_mul
 
 theorem integral_fun_snd (f : β → E) : ∫ z, f z.2 ∂μ.prod ν = (μ univ).toReal • ∫ y, f y ∂ν := by
   simpa using integral_prod_smul (1 : α → ℝ) f

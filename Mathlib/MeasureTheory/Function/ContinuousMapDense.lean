@@ -6,6 +6,7 @@ Authors: Heather Macbeth
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
 import Mathlib.Topology.UrysohnsLemma
+import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 import Mathlib.MeasureTheory.Integral.Bochner
 
 /-!
@@ -106,7 +107,7 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
     intro x
     by_cases hv : x ∈ v
     · rw [← Set.diff_union_of_subset hsv] at hv
-      cases' hv with hsv hs
+      rcases hv with hsv | hs
       · simpa only [hsv.2, Set.indicator_of_not_mem, not_false_iff, sub_zero, hsv,
           Set.indicator_of_mem] using gc_bd0 x
       · simp [hgs hs, hs]
@@ -115,7 +116,7 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
     refine Function.support_subset_iff'.2 fun x hx => ?_
     simp only [hgv hx, Pi.zero_apply, zero_smul]
   have gc_mem : Memℒp (fun x => g x • c) p μ := by
-    refine Memℒp.smul_of_top_left (memℒp_top_const _) ?_
+    refine Memℒp.smul (memℒp_top_const _) ?_ (p := p) (q := ∞)
     refine ⟨g.continuous.aestronglyMeasurable, ?_⟩
     have : eLpNorm (v.indicator fun _x => (1 : ℝ)) p μ < ⊤ :=
       (eLpNorm_indicator_const_le _ _).trans_lt <| by simp [lt_top_iff_ne_top, hμv.ne]
@@ -128,9 +129,6 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
     ⟨fun x => g x • c, g.continuous.smul continuous_const, (eLpNorm_mono gc_bd).trans ?_, gc_bd0,
       gc_support.trans inter_subset_left, gc_mem⟩
   exact hη _ ((measure_mono (diff_subset_diff inter_subset_right Subset.rfl)).trans hV.le)
-
-@[deprecated (since := "2024-07-27")]
-alias exists_continuous_snorm_sub_le_of_closed := exists_continuous_eLpNorm_sub_le_of_closed
 
 /-- In a locally compact space, any function in `ℒp` can be approximated by compactly supported
 continuous functions when `p < ∞`, version in terms of `eLpNorm`. -/
@@ -185,9 +183,6 @@ theorem Memℒp.exists_hasCompactSupport_eLpNorm_sub_le
   rw [← Function.nmem_support]
   contrapose! hx
   exact interior_subset (f_support hx)
-
-@[deprecated (since := "2024-07-27")]
-alias Memℒp.exists_hasCompactSupport_snorm_sub_le := Memℒp.exists_hasCompactSupport_eLpNorm_sub_le
 
 /-- In a locally compact space, any function in `ℒp` can be approximated by compactly supported
 continuous functions when `0 < p < ∞`, version in terms of `∫`. -/
@@ -281,9 +276,6 @@ theorem Memℒp.exists_boundedContinuous_eLpNorm_sub_le [μ.WeaklyRegular] (hp :
     simp only [sub_add_sub_cancel]
   refine ⟨f, I3, f_cont, f_mem, ?_⟩
   exact (BoundedContinuousFunction.ofNormedAddCommGroup f f_cont _ f_bound).isBounded_range
-
-@[deprecated (since := "2024-07-27")]
-alias Memℒp.exists_boundedContinuous_snorm_sub_le := Memℒp.exists_boundedContinuous_eLpNorm_sub_le
 
 /-- Any function in `ℒp` can be approximated by bounded continuous functions when `0 < p < ∞`,
 version in terms of `∫`. -/

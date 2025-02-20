@@ -70,7 +70,7 @@ this quantity is finite -/
 def eLpNorm' {_ : MeasurableSpace α} (f : α → ε) (q : ℝ) (μ : Measure α) : ℝ≥0∞ :=
   (∫⁻ a, ‖f a‖ₑ ^ q ∂μ) ^ (1 / q)
 
-lemma eLpNorm'_eq_lintegral_enorm {_ : MeasurableSpace α} (f : α → F) (q : ℝ) (μ : Measure α) :
+lemma eLpNorm'_eq_lintegral_enorm {_ : MeasurableSpace α} (f : α → ε) (q : ℝ) (μ : Measure α) :
     eLpNorm' f q μ = (∫⁻ a, ‖f a‖ₑ ^ q ∂μ) ^ (1 / q) :=
   rfl
 
@@ -81,7 +81,7 @@ alias eLpNorm'_eq_lintegral_nnnorm := eLpNorm'_eq_lintegral_enorm
 def eLpNormEssSup {_ : MeasurableSpace α} (f : α → ε) (μ : Measure α) :=
   essSup (fun x => ‖f x‖ₑ) μ
 
-lemma eLpNormEssSup_eq_essSup_enorm {_ : MeasurableSpace α} (f : α → F) (μ : Measure α) :
+lemma eLpNormEssSup_eq_essSup_enorm {_ : MeasurableSpace α} (f : α → ε) (μ : Measure α) :
     eLpNormEssSup f μ = essSup (‖f ·‖ₑ) μ := rfl
 
 @[deprecated (since := "2025-01-17")]
@@ -93,50 +93,33 @@ def eLpNorm {_ : MeasurableSpace α}
     (f : α → ε) (p : ℝ≥0∞) (μ : Measure α := by volume_tac) : ℝ≥0∞ :=
   if p = 0 then 0 else if p = ∞ then eLpNormEssSup f μ else eLpNorm' f (ENNReal.toReal p) μ
 
-@[deprecated (since := "2024-07-26")] noncomputable alias snorm := eLpNorm
-
-theorem eLpNorm_eq_eLpNorm' (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {f : α → F} :
+theorem eLpNorm_eq_eLpNorm' (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {f : α → ε} :
     eLpNorm f p μ = eLpNorm' f (ENNReal.toReal p) μ := by simp [eLpNorm, hp_ne_zero, hp_ne_top]
 
-@[deprecated (since := "2024-07-27")] alias snorm_eq_snorm' := eLpNorm_eq_eLpNorm'
-
-lemma eLpNorm_nnreal_eq_eLpNorm' {f : α → F} {p : ℝ≥0} (hp : p ≠ 0) :
+lemma eLpNorm_nnreal_eq_eLpNorm' {f : α → ε} {p : ℝ≥0} (hp : p ≠ 0) :
     eLpNorm f p μ = eLpNorm' f p μ :=
   eLpNorm_eq_eLpNorm' (by exact_mod_cast hp) ENNReal.coe_ne_top
 
-@[deprecated (since := "2024-07-27")] alias snorm_nnreal_eq_snorm' := eLpNorm_nnreal_eq_eLpNorm'
-
-theorem eLpNorm_eq_lintegral_rpow_enorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {f : α → F} :
+theorem eLpNorm_eq_lintegral_rpow_enorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {f : α → ε} :
     eLpNorm f p μ = (∫⁻ x, ‖f x‖ₑ ^ p.toReal ∂μ) ^ (1 / p.toReal) := by
   rw [eLpNorm_eq_eLpNorm' hp_ne_zero hp_ne_top, eLpNorm'_eq_lintegral_enorm]
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_eq_lintegral_rpow_nnnorm := eLpNorm_eq_lintegral_rpow_enorm
 
 @[deprecated (since := "2025-01-17")]
 alias eLpNorm_eq_lintegral_rpow_nnnorm := eLpNorm_eq_lintegral_rpow_enorm
 
-lemma eLpNorm_nnreal_eq_lintegral {f : α → F} {p : ℝ≥0} (hp : p ≠ 0) :
+lemma eLpNorm_nnreal_eq_lintegral {f : α → ε} {p : ℝ≥0} (hp : p ≠ 0) :
     eLpNorm f p μ = (∫⁻ x, ‖f x‖ₑ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) :=
   eLpNorm_nnreal_eq_eLpNorm' hp
 
-@[deprecated (since := "2024-07-27")] alias snorm_nnreal_eq_lintegral := eLpNorm_nnreal_eq_lintegral
-
-theorem eLpNorm_one_eq_lintegral_enorm {f : α → F} : eLpNorm f 1 μ = ∫⁻ x, ‖f x‖ₑ ∂μ := by
+theorem eLpNorm_one_eq_lintegral_enorm {f : α → ε} : eLpNorm f 1 μ = ∫⁻ x, ‖f x‖ₑ ∂μ := by
   simp_rw [eLpNorm_eq_lintegral_rpow_enorm one_ne_zero ENNReal.coe_ne_top, ENNReal.one_toReal,
     one_div_one, ENNReal.rpow_one]
 
 @[deprecated (since := "2025-01-17")]
 alias eLpNorm_one_eq_lintegral_nnnorm := eLpNorm_one_eq_lintegral_enorm
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_one_eq_lintegral_nnnorm := eLpNorm_one_eq_lintegral_enorm
-
 @[simp]
-theorem eLpNorm_exponent_top {f : α → F} : eLpNorm f ∞ μ = eLpNormEssSup f μ := by simp [eLpNorm]
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_exponent_top := eLpNorm_exponent_top
+theorem eLpNorm_exponent_top {f : α → ε} : eLpNorm f ∞ μ = eLpNormEssSup f μ := by simp [eLpNorm]
 
 /-- The property that `f:α→E` is ae strongly measurable and `(∫ ‖f a‖^p ∂μ)^(1/p)` is finite
 if `p < ∞`, or `essSup f < ∞` if `p = ∞`. -/
@@ -144,11 +127,11 @@ def Memℒp {α} {_ : MeasurableSpace α} [TopologicalSpace ε] (f : α → ε) 
     (μ : Measure α := by volume_tac) : Prop :=
   AEStronglyMeasurable f μ ∧ eLpNorm f p μ < ∞
 
-theorem Memℒp.aestronglyMeasurable {f : α → E} {p : ℝ≥0∞} (h : Memℒp f p μ) :
+theorem Memℒp.aestronglyMeasurable [TopologicalSpace ε] {f : α → ε} {p : ℝ≥0∞} (h : Memℒp f p μ) :
     AEStronglyMeasurable f μ :=
   h.1
 
-theorem lintegral_rpow_enorm_eq_rpow_eLpNorm' {f : α → F} (hq0_lt : 0 < q) :
+theorem lintegral_rpow_enorm_eq_rpow_eLpNorm' {f : α → ε} (hq0_lt : 0 < q) :
     ∫⁻ a, ‖f a‖ₑ ^ q ∂μ = eLpNorm' f q μ ^ q := by
   rw [eLpNorm'_eq_lintegral_enorm, ← ENNReal.rpow_mul, one_div, inv_mul_cancel₀, ENNReal.rpow_one]
   exact hq0_lt.ne'
@@ -156,60 +139,43 @@ theorem lintegral_rpow_enorm_eq_rpow_eLpNorm' {f : α → F} (hq0_lt : 0 < q) :
 @[deprecated (since := "2025-01-17")]
 alias lintegral_rpow_nnnorm_eq_rpow_eLpNorm' := lintegral_rpow_enorm_eq_rpow_eLpNorm'
 
-@[deprecated (since := "2024-07-27")]
-alias lintegral_rpow_nnnorm_eq_rpow_snorm' := lintegral_rpow_enorm_eq_rpow_eLpNorm'
-
-lemma eLpNorm_nnreal_pow_eq_lintegral {f : α → F} {p : ℝ≥0} (hp : p ≠ 0) :
+lemma eLpNorm_nnreal_pow_eq_lintegral {f : α → ε} {p : ℝ≥0} (hp : p ≠ 0) :
     eLpNorm f p μ ^ (p : ℝ) = ∫⁻ x, ‖f x‖ₑ ^ (p : ℝ) ∂μ := by
   simp [eLpNorm_eq_eLpNorm' (by exact_mod_cast hp) ENNReal.coe_ne_top,
     lintegral_rpow_enorm_eq_rpow_eLpNorm' ((NNReal.coe_pos.trans pos_iff_ne_zero).mpr hp)]
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_nnreal_pow_eq_lintegral := eLpNorm_nnreal_pow_eq_lintegral
 
 end ℒpSpaceDefinition
 
 section Top
 
-theorem Memℒp.eLpNorm_lt_top {f : α → E} (hfp : Memℒp f p μ) : eLpNorm f p μ < ∞ :=
+theorem Memℒp.eLpNorm_lt_top [TopologicalSpace ε] {f : α → ε} (hfp : Memℒp f p μ) :
+    eLpNorm f p μ < ∞ :=
   hfp.2
 
-@[deprecated (since := "2024-07-27")]
-alias Memℒp.snorm_lt_top := Memℒp.eLpNorm_lt_top
-
-theorem Memℒp.eLpNorm_ne_top {f : α → E} (hfp : Memℒp f p μ) : eLpNorm f p μ ≠ ∞ :=
+theorem Memℒp.eLpNorm_ne_top [TopologicalSpace ε] {f : α → ε} (hfp : Memℒp f p μ) :
+    eLpNorm f p μ ≠ ∞ :=
   ne_of_lt hfp.2
 
-@[deprecated (since := "2024-07-27")]
-alias Memℒp.snorm_ne_top := Memℒp.eLpNorm_ne_top
-
-theorem lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top {f : α → F} (hq0_lt : 0 < q)
+theorem lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top {f : α → ε} (hq0_lt : 0 < q)
     (hfq : eLpNorm' f q μ < ∞) : ∫⁻ a, ‖f a‖ₑ ^ q ∂μ < ∞ := by
   rw [lintegral_rpow_enorm_eq_rpow_eLpNorm' hq0_lt]
   exact ENNReal.rpow_lt_top_of_nonneg (le_of_lt hq0_lt) (ne_of_lt hfq)
-
-@[deprecated (since := "2024-07-27")]
-alias lintegral_rpow_nnnorm_lt_top_of_snorm'_lt_top :=
-  lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top
 
 @[deprecated (since := "2025-01-17")]
 alias lintegral_rpow_nnnorm_lt_top_of_eLpNorm'_lt_top' :=
   lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top
 
-theorem lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top {f : α → F} (hp_ne_zero : p ≠ 0)
+theorem lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top {f : α → ε} (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) (hfp : eLpNorm f p μ < ∞) : ∫⁻ a, ‖f a‖ₑ ^ p.toReal ∂μ < ∞ := by
   apply lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top
   · exact ENNReal.toReal_pos hp_ne_zero hp_ne_top
   · simpa [eLpNorm_eq_eLpNorm' hp_ne_zero hp_ne_top] using hfp
 
-@[deprecated (since := "2024-07-27")]
-alias lintegral_rpow_nnnorm_lt_top_of_snorm_lt_top := lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top
-
 @[deprecated (since := "2025-01-17")]
 alias lintegral_rpow_nnnorm_lt_top_of_eLpNorm_lt_top :=
   lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top
 
-theorem eLpNorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top {f : α → F} (hp_ne_zero : p ≠ 0)
+theorem eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top {f : α → ε} (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) : eLpNorm f p μ < ∞ ↔ ∫⁻ a, (‖f a‖ₑ) ^ p.toReal ∂μ < ∞ :=
   ⟨lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp_ne_zero hp_ne_top, by
     intro h
@@ -218,37 +184,27 @@ theorem eLpNorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top {f : α → F} (hp_ne_ze
     simpa [eLpNorm_eq_lintegral_rpow_enorm hp_ne_zero hp_ne_top] using
       ENNReal.rpow_lt_top_of_nonneg (le_of_lt this) (ne_of_lt h)⟩
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top :=
-  eLpNorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top
+@[deprecated (since := "2025-02-04")] alias
+eLpNorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top := eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top
 
 end Top
 
 section Zero
 
 @[simp]
-theorem eLpNorm'_exponent_zero {f : α → F} : eLpNorm' f 0 μ = 1 := by
+theorem eLpNorm'_exponent_zero {f : α → ε} : eLpNorm' f 0 μ = 1 := by
   rw [eLpNorm', div_zero, ENNReal.rpow_zero]
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_exponent_zero := eLpNorm'_exponent_zero
+@[simp]
+theorem eLpNorm_exponent_zero {f : α → ε} : eLpNorm f 0 μ = 0 := by simp [eLpNorm]
 
 @[simp]
-theorem eLpNorm_exponent_zero {f : α → F} : eLpNorm f 0 μ = 0 := by simp [eLpNorm]
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_exponent_zero := eLpNorm_exponent_zero
-
-@[simp]
-theorem memℒp_zero_iff_aestronglyMeasurable {f : α → E} :
+theorem memℒp_zero_iff_aestronglyMeasurable [TopologicalSpace ε] {f : α → ε} :
     Memℒp f 0 μ ↔ AEStronglyMeasurable f μ := by simp [Memℒp, eLpNorm_exponent_zero]
 
 @[simp]
 theorem eLpNorm'_zero (hp0_lt : 0 < q) : eLpNorm' (0 : α → F) q μ = 0 := by
   simp [eLpNorm'_eq_lintegral_enorm, hp0_lt]
-
-@[deprecated (since := "2024-07-27")]
-alias snorm'_zero := eLpNorm'_zero
 
 @[simp]
 theorem eLpNorm'_zero' (hq0_ne : q ≠ 0) (hμ : μ ≠ 0) : eLpNorm' (0 : α → F) q μ = 0 := by
@@ -256,15 +212,9 @@ theorem eLpNorm'_zero' (hq0_ne : q ≠ 0) (hμ : μ ≠ 0) : eLpNorm' (0 : α �
   · exact eLpNorm'_zero (lt_of_le_of_ne hq0 hq0_ne.symm)
   · simp [eLpNorm'_eq_lintegral_enorm, ENNReal.rpow_eq_zero_iff, hμ, hq_neg]
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_zero' := eLpNorm'_zero'
-
 @[simp]
 theorem eLpNormEssSup_zero : eLpNormEssSup (0 : α → F) μ = 0 := by
   simp [eLpNormEssSup, ← bot_eq_zero', essSup_const_bot]
-
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_zero := eLpNormEssSup_zero
 
 @[simp]
 theorem eLpNorm_zero : eLpNorm (0 : α → F) p μ = 0 := by
@@ -275,14 +225,8 @@ theorem eLpNorm_zero : eLpNorm (0 : α → F) p μ = 0 := by
   rw [← Ne] at h0
   simp [eLpNorm_eq_eLpNorm' h0 h_top, ENNReal.toReal_pos h0 h_top]
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_zero := eLpNorm_zero
-
 @[simp]
 theorem eLpNorm_zero' : eLpNorm (fun _ : α => (0 : F)) p μ = 0 := by convert eLpNorm_zero (F := F)
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_zero' := eLpNorm_zero'
 
 @[simp] lemma Memℒp.zero : Memℒp (0 : α → E) p μ :=
   ⟨aestronglyMeasurable_zero, by rw [eLpNorm_zero]; exact ENNReal.coe_lt_top⟩
@@ -294,33 +238,21 @@ alias snorm_zero' := eLpNorm_zero'
 
 variable [MeasurableSpace α]
 
-theorem eLpNorm'_measure_zero_of_pos {f : α → F} (hq_pos : 0 < q) :
+theorem eLpNorm'_measure_zero_of_pos {f : α → ε} (hq_pos : 0 < q) :
     eLpNorm' f q (0 : Measure α) = 0 := by simp [eLpNorm', hq_pos]
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_measure_zero_of_pos := eLpNorm'_measure_zero_of_pos
-
-theorem eLpNorm'_measure_zero_of_exponent_zero {f : α → F} : eLpNorm' f 0 (0 : Measure α) = 1 := by
+theorem eLpNorm'_measure_zero_of_exponent_zero {f : α → ε} : eLpNorm' f 0 (0 : Measure α) = 1 := by
   simp [eLpNorm']
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_measure_zero_of_exponent_zero := eLpNorm'_measure_zero_of_exponent_zero
-
-theorem eLpNorm'_measure_zero_of_neg {f : α → F} (hq_neg : q < 0) :
+theorem eLpNorm'_measure_zero_of_neg {f : α → ε} (hq_neg : q < 0) :
     eLpNorm' f q (0 : Measure α) = ∞ := by simp [eLpNorm', hq_neg]
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_measure_zero_of_neg := eLpNorm'_measure_zero_of_neg
-
 @[simp]
-theorem eLpNormEssSup_measure_zero {f : α → F} : eLpNormEssSup f (0 : Measure α) = 0 := by
+theorem eLpNormEssSup_measure_zero {f : α → ε} : eLpNormEssSup f (0 : Measure α) = 0 := by
   simp [eLpNormEssSup]
 
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_measure_zero := eLpNormEssSup_measure_zero
-
 @[simp]
-theorem eLpNorm_measure_zero {f : α → F} : eLpNorm f p (0 : Measure α) = 0 := by
+theorem eLpNorm_measure_zero {f : α → ε} : eLpNorm f p (0 : Measure α) = 0 := by
   by_cases h0 : p = 0
   · simp [h0]
   by_cases h_top : p = ∞
@@ -328,10 +260,8 @@ theorem eLpNorm_measure_zero {f : α → F} : eLpNorm f p (0 : Measure α) = 0 :
   rw [← Ne] at h0
   simp [eLpNorm_eq_eLpNorm' h0 h_top, eLpNorm', ENNReal.toReal_pos h0 h_top]
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_measure_zero := eLpNorm_measure_zero
-
-@[simp] lemma memℒp_measure_zero {f : α → F} : Memℒp f p (0 : Measure α) := by simp [Memℒp]
+@[simp] lemma memℒp_measure_zero [TopologicalSpace ε] {f : α → ε} : Memℒp f p (0 : Measure α) := by
+  simp [Memℒp]
 
 end Zero
 
@@ -340,9 +270,6 @@ section Neg
 @[simp]
 theorem eLpNorm'_neg (f : α → F) (q : ℝ) (μ : Measure α) : eLpNorm' (-f) q μ = eLpNorm' f q μ := by
   simp [eLpNorm'_eq_lintegral_enorm]
-
-@[deprecated (since := "2024-07-27")]
-alias snorm'_neg := eLpNorm'_neg
 
 @[simp]
 theorem eLpNorm_neg (f : α → F) (p : ℝ≥0∞) (μ : Measure α) : eLpNorm (-f) p μ = eLpNorm f p μ := by
@@ -355,9 +282,6 @@ theorem eLpNorm_neg (f : α → F) (p : ℝ≥0∞) (μ : Measure α) : eLpNorm 
 lemma eLpNorm_sub_comm (f g : α → E) (p : ℝ≥0∞) (μ : Measure α) :
     eLpNorm (f - g) p μ = eLpNorm (g - f) p μ := by simp [← eLpNorm_neg (f := f - g)]
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_neg := eLpNorm_neg
-
 theorem Memℒp.neg {f : α → E} (hf : Memℒp f p μ) : Memℒp (-f) p μ :=
   ⟨AEStronglyMeasurable.neg hf.1, by simp [hf.right]⟩
 
@@ -368,7 +292,7 @@ end Neg
 
 section Const
 
-theorem eLpNorm'_const (c : F) (hq_pos : 0 < q) :
+theorem eLpNorm'_const (c : ε) (hq_pos : 0 < q) :
     eLpNorm' (fun _ : α => c) q μ = ‖c‖ₑ * μ Set.univ ^ (1 / q) := by
   rw [eLpNorm'_eq_lintegral_enorm, lintegral_const,
     ENNReal.mul_rpow_of_nonneg _ _ (by simp [hq_pos.le] : 0 ≤ 1 / q)]
@@ -376,9 +300,6 @@ theorem eLpNorm'_const (c : F) (hq_pos : 0 < q) :
   rw [← ENNReal.rpow_mul]
   suffices hq_cancel : q * (1 / q) = 1 by rw [hq_cancel, ENNReal.rpow_one]
   rw [one_div, mul_inv_cancel₀ (ne_of_lt hq_pos).symm]
-
-@[deprecated (since := "2024-07-27")]
-alias snorm'_const := eLpNorm'_const
 
 theorem eLpNorm'_const' [IsFiniteMeasure μ] (c : F) (hc_ne_zero : c ≠ 0) (hq_ne_zero : q ≠ 0) :
     eLpNorm' (fun _ : α => c) q μ = ‖c‖ₑ * μ Set.univ ^ (1 / q) := by
@@ -391,36 +312,21 @@ theorem eLpNorm'_const' [IsFiniteMeasure μ] (c : F) (hc_ne_zero : c ≠ 0) (hq_
   · rw [Ne, ENNReal.rpow_eq_top_iff, not_or, not_and_or, not_and_or]
     simp [hc_ne_zero]
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_const' := eLpNorm'_const'
-
-theorem eLpNormEssSup_const (c : F) (hμ : μ ≠ 0) : eLpNormEssSup (fun _ : α => c) μ = ‖c‖ₑ := by
+theorem eLpNormEssSup_const (c : ε) (hμ : μ ≠ 0) : eLpNormEssSup (fun _ : α => c) μ = ‖c‖ₑ := by
   rw [eLpNormEssSup_eq_essSup_enorm, essSup_const _ hμ]
 
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_const := eLpNormEssSup_const
-
-theorem eLpNorm'_const_of_isProbabilityMeasure (c : F) (hq_pos : 0 < q) [IsProbabilityMeasure μ] :
+theorem eLpNorm'_const_of_isProbabilityMeasure (c : ε) (hq_pos : 0 < q) [IsProbabilityMeasure μ] :
     eLpNorm' (fun _ : α => c) q μ = ‖c‖ₑ := by simp [eLpNorm'_const c hq_pos, measure_univ]
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_const_of_isProbabilityMeasure := eLpNorm'_const_of_isProbabilityMeasure
-
-theorem eLpNorm_const (c : F) (h0 : p ≠ 0) (hμ : μ ≠ 0) :
+theorem eLpNorm_const (c : ε) (h0 : p ≠ 0) (hμ : μ ≠ 0) :
     eLpNorm (fun _ : α => c) p μ = ‖c‖ₑ * μ Set.univ ^ (1 / ENNReal.toReal p) := by
   by_cases h_top : p = ∞
   · simp [h_top, eLpNormEssSup_const c hμ]
   simp [eLpNorm_eq_eLpNorm' h0 h_top, eLpNorm'_const, ENNReal.toReal_pos h0 h_top]
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_const := eLpNorm_const
-
-theorem eLpNorm_const' (c : F) (h0 : p ≠ 0) (h_top : p ≠ ∞) :
+theorem eLpNorm_const' (c : ε) (h0 : p ≠ 0) (h_top : p ≠ ∞) :
     eLpNorm (fun _ : α => c) p μ = ‖c‖ₑ * μ Set.univ ^ (1 / ENNReal.toReal p) := by
   simp [eLpNorm_eq_eLpNorm' h0 h_top, eLpNorm'_const, ENNReal.toReal_pos h0 h_top]
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_const' := eLpNorm_const'
 
 theorem eLpNorm_const_lt_top_iff {p : ℝ≥0∞} {c : F} (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     eLpNorm (fun _ : α => c) p μ < ∞ ↔ c = 0 ∨ μ Set.univ < ∞ := by
@@ -436,9 +342,6 @@ theorem eLpNorm_const_lt_top_iff {p : ℝ≥0∞} {c : F} (hp_ne_zero : p ≠ 0)
   rw [ENNReal.mul_lt_top_iff]
   simpa [hμ, hc, hμ_top, hμ_top.lt_top] using
     ENNReal.rpow_lt_top_of_nonneg (inv_nonneg.mpr hp.le) hμ_top
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_const_lt_top_iff := eLpNorm_const_lt_top_iff
 
 theorem memℒp_const (c : E) [IsFiniteMeasure μ] : Memℒp (fun _ : α => c) p μ := by
   refine ⟨aestronglyMeasurable_const, ?_⟩
@@ -471,50 +374,29 @@ lemma eLpNorm'_mono_nnnorm_ae {f : α → F} {g : α → G} (hq : 0 ≤ q) (h : 
   dsimp [enorm]
   gcongr
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_mono_nnnorm_ae := eLpNorm'_mono_nnnorm_ae
-
 theorem eLpNorm'_mono_ae {f : α → F} {g : α → G} (hq : 0 ≤ q) (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) :
     eLpNorm' f q μ ≤ eLpNorm' g q μ :=
   eLpNorm'_mono_nnnorm_ae hq h
-
-@[deprecated (since := "2024-07-27")]
-alias snorm'_mono_ae := eLpNorm'_mono_ae
 
 theorem eLpNorm'_congr_nnnorm_ae {f g : α → F} (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ = ‖g x‖₊) :
     eLpNorm' f q μ = eLpNorm' g q μ := by
   have : (‖f ·‖ₑ ^ q) =ᵐ[μ] (‖g ·‖ₑ ^ q) := hfg.mono fun x hx ↦ by simp [enorm, hx]
   simp only [eLpNorm'_eq_lintegral_enorm, lintegral_congr_ae this]
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_congr_nnnorm_ae := eLpNorm'_congr_nnnorm_ae
-
 theorem eLpNorm'_congr_norm_ae {f g : α → F} (hfg : ∀ᵐ x ∂μ, ‖f x‖ = ‖g x‖) :
     eLpNorm' f q μ = eLpNorm' g q μ :=
   eLpNorm'_congr_nnnorm_ae <| hfg.mono fun _x hx => NNReal.eq hx
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_congr_norm_ae := eLpNorm'_congr_norm_ae
-
 theorem eLpNorm'_congr_ae {f g : α → F} (hfg : f =ᵐ[μ] g) : eLpNorm' f q μ = eLpNorm' g q μ :=
   eLpNorm'_congr_nnnorm_ae (hfg.fun_comp _)
-
-@[deprecated (since := "2024-07-27")]
-alias snorm'_congr_ae := eLpNorm'_congr_ae
 
 theorem eLpNormEssSup_congr_ae {f g : α → F} (hfg : f =ᵐ[μ] g) :
     eLpNormEssSup f μ = eLpNormEssSup g μ :=
   essSup_congr_ae (hfg.fun_comp (((↑) : ℝ≥0 → ℝ≥0∞) ∘ nnnorm))
 
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_congr_ae := eLpNormEssSup_congr_ae
-
 theorem eLpNormEssSup_mono_nnnorm_ae {f g : α → F} (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ ‖g x‖₊) :
     eLpNormEssSup f μ ≤ eLpNormEssSup g μ :=
   essSup_mono_ae <| hfg.mono fun _x hx => ENNReal.coe_le_coe.mpr hx
-
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_mono_nnnorm_ae := eLpNormEssSup_mono_nnnorm_ae
 
 theorem eLpNorm_mono_nnnorm_ae {f : α → F} {g : α → G} (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ ‖g x‖₊) :
     eLpNorm f p μ ≤ eLpNorm g p μ := by
@@ -524,72 +406,42 @@ theorem eLpNorm_mono_nnnorm_ae {f : α → F} {g : α → G} (h : ∀ᵐ x ∂μ
   · exact essSup_mono_ae (h.mono fun x hx => ENNReal.coe_le_coe.mpr hx)
   · exact eLpNorm'_mono_nnnorm_ae ENNReal.toReal_nonneg h
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_mono_nnnorm_ae := eLpNorm_mono_nnnorm_ae
-
 theorem eLpNorm_mono_ae {f : α → F} {g : α → G} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
   eLpNorm_mono_nnnorm_ae h
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_mono_ae := eLpNorm_mono_ae
 
 theorem eLpNorm_mono_ae_real {f : α → F} {g : α → ℝ} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ g x) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
   eLpNorm_mono_ae <| h.mono fun _x hx =>
     hx.trans ((le_abs_self _).trans (Real.norm_eq_abs _).symm.le)
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_mono_ae_real := eLpNorm_mono_ae_real
-
 theorem eLpNorm_mono_nnnorm {f : α → F} {g : α → G} (h : ∀ x, ‖f x‖₊ ≤ ‖g x‖₊) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
   eLpNorm_mono_nnnorm_ae (Eventually.of_forall fun x => h x)
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_mono_nnnorm := eLpNorm_mono_nnnorm
 
 theorem eLpNorm_mono {f : α → F} {g : α → G} (h : ∀ x, ‖f x‖ ≤ ‖g x‖) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
   eLpNorm_mono_ae (Eventually.of_forall fun x => h x)
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_mono := eLpNorm_mono
-
 theorem eLpNorm_mono_real {f : α → F} {g : α → ℝ} (h : ∀ x, ‖f x‖ ≤ g x) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
   eLpNorm_mono_ae_real (Eventually.of_forall fun x => h x)
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_mono_real := eLpNorm_mono_real
 
 theorem eLpNormEssSup_le_of_ae_nnnorm_bound {f : α → F} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) :
     eLpNormEssSup f μ ≤ C :=
   essSup_le_of_ae_le (C : ℝ≥0∞) <| hfC.mono fun _x hx => ENNReal.coe_le_coe.mpr hx
 
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_le_of_ae_nnnorm_bound := eLpNormEssSup_le_of_ae_nnnorm_bound
-
 theorem eLpNormEssSup_le_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) :
     eLpNormEssSup f μ ≤ ENNReal.ofReal C :=
   eLpNormEssSup_le_of_ae_nnnorm_bound <| hfC.mono fun _x hx => hx.trans C.le_coe_toNNReal
-
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_le_of_ae_bound := eLpNormEssSup_le_of_ae_bound
 
 theorem eLpNormEssSup_lt_top_of_ae_nnnorm_bound {f : α → F} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) :
     eLpNormEssSup f μ < ∞ :=
   (eLpNormEssSup_le_of_ae_nnnorm_bound hfC).trans_lt ENNReal.coe_lt_top
 
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_lt_top_of_ae_nnnorm_bound := eLpNormEssSup_lt_top_of_ae_nnnorm_bound
-
 theorem eLpNormEssSup_lt_top_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) :
     eLpNormEssSup f μ < ∞ :=
   (eLpNormEssSup_le_of_ae_bound hfC).trans_lt ENNReal.ofReal_lt_top
-
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_lt_top_of_ae_bound := eLpNormEssSup_lt_top_of_ae_bound
 
 theorem eLpNorm_le_of_ae_nnnorm_bound {f : α → F} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) :
     eLpNorm f p μ ≤ C • μ Set.univ ^ p.toReal⁻¹ := by
@@ -601,31 +453,19 @@ theorem eLpNorm_le_of_ae_nnnorm_bound {f : α → F} {C : ℝ≥0} (hfC : ∀ᵐ
   refine (eLpNorm_mono_ae this).trans_eq ?_
   rw [eLpNorm_const _ hp (NeZero.ne μ), C.enorm_eq, one_div, ENNReal.smul_def, smul_eq_mul]
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_le_of_ae_nnnorm_bound := eLpNorm_le_of_ae_nnnorm_bound
-
 theorem eLpNorm_le_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) :
     eLpNorm f p μ ≤ μ Set.univ ^ p.toReal⁻¹ * ENNReal.ofReal C := by
   rw [← mul_comm]
   exact eLpNorm_le_of_ae_nnnorm_bound (hfC.mono fun x hx => hx.trans C.le_coe_toNNReal)
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_le_of_ae_bound := eLpNorm_le_of_ae_bound
 
 theorem eLpNorm_congr_nnnorm_ae {f : α → F} {g : α → G} (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ = ‖g x‖₊) :
     eLpNorm f p μ = eLpNorm g p μ :=
   le_antisymm (eLpNorm_mono_nnnorm_ae <| EventuallyEq.le hfg)
     (eLpNorm_mono_nnnorm_ae <| (EventuallyEq.symm hfg).le)
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_congr_nnnorm_ae := eLpNorm_congr_nnnorm_ae
-
 theorem eLpNorm_congr_norm_ae {f : α → F} {g : α → G} (hfg : ∀ᵐ x ∂μ, ‖f x‖ = ‖g x‖) :
     eLpNorm f p μ = eLpNorm g p μ :=
   eLpNorm_congr_nnnorm_ae <| hfg.mono fun _x hx => NNReal.eq hx
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_congr_norm_ae := eLpNorm_congr_norm_ae
 
 open scoped symmDiff in
 theorem eLpNorm_indicator_sub_indicator (s t : Set α) (f : α → E) :
@@ -633,22 +473,13 @@ theorem eLpNorm_indicator_sub_indicator (s t : Set α) (f : α → E) :
   eLpNorm_congr_norm_ae <| ae_of_all _ fun x ↦ by
     simp only [Pi.sub_apply, Set.apply_indicator_symmDiff norm_neg]
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_indicator_sub_indicator := eLpNorm_indicator_sub_indicator
-
 @[simp]
 theorem eLpNorm'_norm {f : α → F} :
     eLpNorm' (fun a => ‖f a‖) q μ = eLpNorm' f q μ := by simp [eLpNorm'_eq_lintegral_enorm]
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_norm := eLpNorm'_norm
-
 @[simp]
 theorem eLpNorm_norm (f : α → F) : eLpNorm (fun x => ‖f x‖) p μ = eLpNorm f p μ :=
   eLpNorm_congr_norm_ae <| Eventually.of_forall fun _ => norm_norm _
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_norm := eLpNorm_norm
 
 theorem eLpNorm'_norm_rpow (f : α → F) (p q : ℝ) (hq_pos : 0 < q) :
     eLpNorm' (fun x => ‖f x‖ ^ q) p μ = eLpNorm' f (p * q) μ ^ q := by
@@ -656,9 +487,6 @@ theorem eLpNorm'_norm_rpow (f : α → F) (p q : ℝ) (hq_pos : 0 < q) :
     mul_assoc, inv_mul_cancel₀ hq_pos.ne.symm, mul_one, ← ofReal_norm_eq_enorm,
     Real.norm_eq_abs, abs_eq_self.mpr (Real.rpow_nonneg (norm_nonneg _) _), mul_comm p,
     ← ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) hq_pos.le, ENNReal.rpow_mul]
-
-@[deprecated (since := "2024-07-27")]
-alias snorm'_norm_rpow := eLpNorm'_norm_rpow
 
 theorem eLpNorm_norm_rpow (f : α → F) (hq_pos : 0 < q) :
     eLpNorm (fun x => ‖f x‖ ^ q) p μ = eLpNorm f (p * ENNReal.ofReal q) μ ^ q := by
@@ -685,14 +513,8 @@ theorem eLpNorm_norm_rpow (f : α → F) (hq_pos : 0 < q) :
   rw [ENNReal.toReal_mul, ENNReal.toReal_ofReal hq_pos.le]
   exact eLpNorm'_norm_rpow f p.toReal q hq_pos
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_norm_rpow := eLpNorm_norm_rpow
-
 theorem eLpNorm_congr_ae {f g : α → F} (hfg : f =ᵐ[μ] g) : eLpNorm f p μ = eLpNorm g p μ :=
   eLpNorm_congr_norm_ae <| hfg.mono fun _x hx => hx ▸ rfl
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_congr_ae := eLpNorm_congr_ae
 
 theorem memℒp_congr_ae {f g : α → E} (hfg : f =ᵐ[μ] g) : Memℒp f p μ ↔ Memℒp g p μ := by
   simp only [Memℒp, eLpNorm_congr_ae hfg, aestronglyMeasurable_congr hfg]
@@ -736,26 +558,20 @@ theorem memℒp_of_bounded [IsFiniteMeasure μ]
   (memℒp_const (max |a| |b|)).mono' hX (by filter_upwards [ha, hb] with x using abs_le_max_abs_abs)
 
 @[gcongr, mono]
-theorem eLpNorm'_mono_measure (f : α → F) (hμν : ν ≤ μ) (hq : 0 ≤ q) :
+theorem eLpNorm'_mono_measure (f : α → ε) (hμν : ν ≤ μ) (hq : 0 ≤ q) :
     eLpNorm' f q ν ≤ eLpNorm' f q μ := by
   simp_rw [eLpNorm']
   gcongr
   exact lintegral_mono' hμν le_rfl
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_mono_measure := eLpNorm'_mono_measure
-
 @[gcongr, mono]
-theorem eLpNormEssSup_mono_measure (f : α → F) (hμν : ν ≪ μ) :
+theorem eLpNormEssSup_mono_measure (f : α → ε) (hμν : ν ≪ μ) :
     eLpNormEssSup f ν ≤ eLpNormEssSup f μ := by
   simp_rw [eLpNormEssSup]
   exact essSup_mono_measure hμν
 
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_mono_measure := eLpNormEssSup_mono_measure
-
 @[gcongr, mono]
-theorem eLpNorm_mono_measure (f : α → F) (hμν : ν ≤ μ) : eLpNorm f p ν ≤ eLpNorm f p μ := by
+theorem eLpNorm_mono_measure (f : α → ε) (hμν : ν ≤ μ) : eLpNorm f p ν ≤ eLpNorm f p μ := by
   by_cases hp0 : p = 0
   · simp [hp0]
   by_cases hp_top : p = ∞
@@ -763,14 +579,12 @@ theorem eLpNorm_mono_measure (f : α → F) (hμν : ν ≤ μ) : eLpNorm f p ν
   simp_rw [eLpNorm_eq_eLpNorm' hp0 hp_top]
   exact eLpNorm'_mono_measure f hμν ENNReal.toReal_nonneg
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_mono_measure := eLpNorm_mono_measure
-
-theorem Memℒp.mono_measure {f : α → E} (hμν : ν ≤ μ) (hf : Memℒp f p μ) : Memℒp f p ν :=
+theorem Memℒp.mono_measure [TopologicalSpace ε] {f : α → ε} (hμν : ν ≤ μ) (hf : Memℒp f p μ) :
+    Memℒp f p ν :=
   ⟨hf.1.mono_measure hμν, (eLpNorm_mono_measure f hμν).trans_lt hf.2⟩
 
 section Indicator
-variable {c : F} {hf : AEStronglyMeasurable f μ} {s : Set α}
+variable {c : ε} {hf : AEStronglyMeasurable f μ} {s : Set α}
 
 lemma eLpNorm_indicator_eq_eLpNorm_restrict (hs : MeasurableSet s) :
     eLpNorm (s.indicator f) p μ = eLpNorm f p (μ.restrict s) := by
@@ -785,14 +599,9 @@ lemma eLpNorm_indicator_eq_eLpNorm_restrict (hs : MeasurableSet s) :
   rw [← lintegral_indicator hs]
   congr
   simp_rw [enorm_indicator_eq_indicator_enorm]
-  have h_zero : (fun x => x ^ p.toReal) (0 : ℝ≥0∞) = 0 := by
-    simp [ENNReal.toReal_pos hp_zero hp_top]
-  -- Porting note: The implicit argument should be specified because the elaborator can't deal with
-  --               `∘` well.
-  exact (Set.indicator_comp_of_zero (g := fun x : ℝ≥0∞ => x ^ p.toReal) h_zero).symm
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_indicator_eq_restrict := eLpNorm_indicator_eq_eLpNorm_restrict
+  rw [eq_comm, ← Function.comp_def (fun x : ℝ≥0∞ => x ^ p.toReal), Set.indicator_comp_of_zero,
+    Function.comp_def]
+  simp [ENNReal.toReal_pos hp_zero hp_top]
 
 @[deprecated (since := "2025-01-07")]
 alias eLpNorm_indicator_eq_restrict := eLpNorm_indicator_eq_eLpNorm_restrict
@@ -805,12 +614,9 @@ lemma eLpNorm_restrict_le (f : α → F) (p : ℝ≥0∞) (μ : Measure α) (s :
     eLpNorm f p (μ.restrict s) ≤ eLpNorm f p μ :=
   eLpNorm_mono_measure f Measure.restrict_le_self
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_restrict_le := eLpNorm_restrict_le
-
 lemma eLpNorm_indicator_le (f : α → E) : eLpNorm (s.indicator f) p μ ≤ eLpNorm f p μ := by
   refine eLpNorm_mono_ae <| .of_forall fun x ↦ ?_
-  suffices ‖s.indicator f x‖₊ ≤ ‖f x‖₊ by exact NNReal.coe_mono this
+  suffices ‖s.indicator f x‖₊ ≤ ‖f x‖₊ from NNReal.coe_mono this
   rw [nnnorm_indicator_eq_indicator_nnnorm]
   exact s.indicator_le_self _ x
 
@@ -835,6 +641,9 @@ lemma eLpNormEssSup_indicator_const_eq (s : Set α) (c : G) (hμs : μ s ≠ 0) 
   push_neg at h'
   refine hμs (measure_mono_null (fun x hx_mem => ?_) h')
   rw [Set.mem_setOf_eq, Set.indicator_of_mem hx_mem, enorm_eq_nnnorm]
+
+-- The following lemmas require [Zero F].
+variable {c : F}
 
 lemma eLpNorm_indicator_const₀ (hs : NullMeasurableSet s μ) (hp : p ≠ 0) (hp_top : p ≠ ∞) :
     eLpNorm (s.indicator fun _ => c) p μ = ‖c‖ₑ * μ s ^ (1 / p.toReal) :=
@@ -893,14 +702,14 @@ lemma memℒp_indicator_const (p : ℝ≥0∞) (hs : MeasurableSet s) (c : E) (h
   · have := Fact.mk hμ.lt_top
     apply memℒp_const
 
-lemma eLpNormEssSup_piecewise (f g : α → E) [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
+lemma eLpNormEssSup_piecewise (f g : α → ε) [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
     eLpNormEssSup (Set.piecewise s f g) μ
       = max (eLpNormEssSup f (μ.restrict s)) (eLpNormEssSup g (μ.restrict sᶜ)) := by
   simp only [eLpNormEssSup, ← ENNReal.essSup_piecewise hs]
   congr with x
   by_cases hx : x ∈ s <;> simp [hx]
 
-lemma eLpNorm_top_piecewise (f g : α → E) [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
+lemma eLpNorm_top_piecewise (f g : α → ε) [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
     eLpNorm (Set.piecewise s f g) ∞ μ
       = max (eLpNorm f ∞ (μ.restrict s)) (eLpNorm g ∞ (μ.restrict sᶜ)) :=
   eLpNormEssSup_piecewise f g hs
@@ -915,7 +724,7 @@ protected lemma Memℒp.piecewise [DecidablePred (· ∈ s)] {g} (hs : Measurabl
   obtain rfl | hp_top := eq_or_ne p ∞
   · rw [eLpNorm_top_piecewise f g hs]
     exact max_lt hf.2 hg.2
-  rw [eLpNorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top hp_zero hp_top, ← lintegral_add_compl _ hs,
+  rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp_zero hp_top, ← lintegral_add_compl _ hs,
     ENNReal.add_lt_top]
   constructor
   · have h : ∀ᵐ x ∂μ, x ∈ s → ‖Set.piecewise s f g x‖ₑ ^ p.toReal = ‖f x‖ₑ ^ p.toReal := by
@@ -946,19 +755,14 @@ theorem eLpNorm_restrict_eq_of_support_subset {s : Set α} {f : α → F} (hsf :
     have : ¬(p.toReal ≤ 0) := by simpa only [not_le] using ENNReal.toReal_pos hp0 hp_top
     simpa [this] using hsf
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_restrict_eq_of_support_subset := eLpNorm_restrict_eq_of_support_subset
-
-theorem Memℒp.restrict (s : Set α) {f : α → E} (hf : Memℒp f p μ) : Memℒp f p (μ.restrict s) :=
+theorem Memℒp.restrict [TopologicalSpace ε] (s : Set α) {f : α → ε} (hf : Memℒp f p μ) :
+    Memℒp f p (μ.restrict s) :=
   hf.mono_measure Measure.restrict_le_self
 
-theorem eLpNorm'_smul_measure {p : ℝ} (hp : 0 ≤ p) {f : α → F} (c : ℝ≥0∞) :
+theorem eLpNorm'_smul_measure {p : ℝ} (hp : 0 ≤ p) {f : α → ε} (c : ℝ≥0∞) :
     eLpNorm' f p (c • μ) = c ^ (1 / p) * eLpNorm' f p μ := by
   rw [eLpNorm', lintegral_smul_measure, ENNReal.mul_rpow_of_nonneg, eLpNorm']
   simp [hp]
-
-@[deprecated (since := "2024-07-27")]
-alias snorm'_smul_measure := eLpNorm'_smul_measure
 
 section SMul
 variable {R : Type*} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
@@ -971,21 +775,15 @@ variable {R : Type*} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ�
 
 end SMul
 
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_smul_measure := eLpNormEssSup_smul_measure
-
 /-- Use `eLpNorm_smul_measure_of_ne_top` instead. -/
 private theorem eLpNorm_smul_measure_of_ne_zero_of_ne_top {p : ℝ≥0∞} (hp_ne_zero : p ≠ 0)
-    (hp_ne_top : p ≠ ∞) {f : α → F} (c : ℝ≥0∞) :
+    (hp_ne_top : p ≠ ∞) {f : α → ε} (c : ℝ≥0∞) :
     eLpNorm f p (c • μ) = c ^ (1 / p).toReal • eLpNorm f p μ := by
   simp_rw [eLpNorm_eq_eLpNorm' hp_ne_zero hp_ne_top]
   rw [eLpNorm'_smul_measure ENNReal.toReal_nonneg]
   congr
   simp_rw [one_div]
   rw [ENNReal.toReal_inv]
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_smul_measure_of_ne_zero_of_ne_top := eLpNorm_smul_measure_of_ne_zero_of_ne_top
 
 /-- See `eLpNorm_smul_measure_of_ne_zero'` for a version with scalar multiplication by `ℝ≥0`. -/
 theorem eLpNorm_smul_measure_of_ne_zero {c : ℝ≥0∞} (hc : c ≠ 0) (f : α → F) (p : ℝ≥0∞)
@@ -995,9 +793,6 @@ theorem eLpNorm_smul_measure_of_ne_zero {c : ℝ≥0∞} (hc : c ≠ 0) (f : α 
   by_cases hp_top : p = ∞
   · simp [hp_top, eLpNormEssSup_smul_measure hc]
   exact eLpNorm_smul_measure_of_ne_zero_of_ne_top hp0 hp_top c
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_smul_measure_of_ne_zero := eLpNorm_smul_measure_of_ne_zero
 
 /-- See `eLpNorm_smul_measure_of_ne_zero` for a version with scalar multiplication by `ℝ≥0∞`. -/
 lemma eLpNorm_smul_measure_of_ne_zero' {c : ℝ≥0} (hc : c ≠ 0) (f : α → F) (p : ℝ≥0∞)
@@ -1017,18 +812,12 @@ lemma eLpNorm_smul_measure_of_ne_top' (hp : p ≠ ∞) (c : ℝ≥0) (f : α →
   have : 0 ≤ p.toReal⁻¹ := by positivity
   refine (eLpNorm_smul_measure_of_ne_top hp ..).trans ?_
   simp [ENNReal.smul_def, ENNReal.coe_rpow_of_nonneg, this]
-@[deprecated (since := "2024-07-27")]
-alias snorm_smul_measure_of_ne_top := eLpNorm_smul_measure_of_ne_top
-
 theorem eLpNorm_one_smul_measure {f : α → F} (c : ℝ≥0∞) :
     eLpNorm f 1 (c • μ) = c * eLpNorm f 1 μ := by
   rw [@eLpNorm_smul_measure_of_ne_top _ _ _ μ _ 1 (@ENNReal.coe_ne_top 1) f c]
   simp
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_one_smul_measure := eLpNorm_one_smul_measure
-
-theorem Memℒp.of_measure_le_smul {μ' : Measure α} (c : ℝ≥0∞) (hc : c ≠ ∞) (hμ'_le : μ' ≤ c • μ)
+theorem Memℒp.of_measure_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠ ∞) (hμ'_le : μ' ≤ c • μ)
     {f : α → E} (hf : Memℒp f p μ) : Memℒp f p μ' := by
   refine ⟨hf.1.mono_ac (Measure.absolutelyContinuous_of_le_smul hμ'_le), ?_⟩
   refine (eLpNorm_mono_measure f hμ'_le).trans_lt ?_
@@ -1040,29 +829,20 @@ theorem Memℒp.of_measure_le_smul {μ' : Measure α} (c : ℝ≥0∞) (hc : c �
 
 theorem Memℒp.smul_measure {f : α → E} {c : ℝ≥0∞} (hf : Memℒp f p μ) (hc : c ≠ ∞) :
     Memℒp f p (c • μ) :=
-  hf.of_measure_le_smul c hc le_rfl
+  hf.of_measure_le_smul hc le_rfl
 
 theorem eLpNorm_one_add_measure (f : α → F) (μ ν : Measure α) :
     eLpNorm f 1 (μ + ν) = eLpNorm f 1 μ + eLpNorm f 1 ν := by
   simp_rw [eLpNorm_one_eq_lintegral_enorm]
   rw [lintegral_add_measure _ μ ν]
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_one_add_measure := eLpNorm_one_add_measure
-
 theorem eLpNorm_le_add_measure_right (f : α → F) (μ ν : Measure α) {p : ℝ≥0∞} :
     eLpNorm f p μ ≤ eLpNorm f p (μ + ν) :=
   eLpNorm_mono_measure f <| Measure.le_add_right <| le_refl _
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_le_add_measure_right := eLpNorm_le_add_measure_right
-
 theorem eLpNorm_le_add_measure_left (f : α → F) (μ ν : Measure α) {p : ℝ≥0∞} :
     eLpNorm f p ν ≤ eLpNorm f p (μ + ν) :=
   eLpNorm_mono_measure f <| Measure.le_add_left <| le_refl _
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_le_add_measure_left := eLpNorm_le_add_measure_left
 
 lemma eLpNormEssSup_eq_iSup (hμ : ∀ a, μ {a} ≠ 0) (f : α → E) : eLpNormEssSup f μ = ⨆ a, ‖f a‖ₑ :=
   essSup_eq_iSup hμ _
@@ -1086,15 +866,9 @@ theorem memℒp_norm_iff {f : α → E} (hf : AEStronglyMeasurable f μ) :
 theorem eLpNorm'_eq_zero_of_ae_zero {f : α → F} (hq0_lt : 0 < q) (hf_zero : f =ᵐ[μ] 0) :
     eLpNorm' f q μ = 0 := by rw [eLpNorm'_congr_ae hf_zero, eLpNorm'_zero hq0_lt]
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_eq_zero_of_ae_zero := eLpNorm'_eq_zero_of_ae_zero
-
 theorem eLpNorm'_eq_zero_of_ae_zero' (hq0_ne : q ≠ 0) (hμ : μ ≠ 0) {f : α → F}
     (hf_zero : f =ᵐ[μ] 0) :
     eLpNorm' f q μ = 0 := by rw [eLpNorm'_congr_ae hf_zero, eLpNorm'_zero' hq0_ne hμ]
-
-@[deprecated (since := "2024-07-27")]
-alias snorm'_eq_zero_of_ae_zero' := eLpNorm'_eq_zero_of_ae_zero'
 
 theorem ae_eq_zero_of_eLpNorm'_eq_zero {f : α → E} (hq0 : 0 ≤ q) (hf : AEStronglyMeasurable f μ)
     (h : eLpNorm' f q μ = 0) : f =ᵐ[μ] 0 := by
@@ -1105,29 +879,17 @@ theorem ae_eq_zero_of_eLpNorm'_eq_zero {f : α → E} (hq0 : 0 ≤ q) (hf : AESt
     or_false] at hx
   exact hx.1
 
-@[deprecated (since := "2024-07-27")]
-alias ae_eq_zero_of_snorm'_eq_zero := ae_eq_zero_of_eLpNorm'_eq_zero
-
 theorem eLpNorm'_eq_zero_iff (hq0_lt : 0 < q) {f : α → E} (hf : AEStronglyMeasurable f μ) :
     eLpNorm' f q μ = 0 ↔ f =ᵐ[μ] 0 :=
   ⟨ae_eq_zero_of_eLpNorm'_eq_zero (le_of_lt hq0_lt) hf, eLpNorm'_eq_zero_of_ae_zero hq0_lt⟩
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_eq_zero_iff := eLpNorm'_eq_zero_iff
-
-theorem coe_nnnorm_ae_le_eLpNormEssSup {_ : MeasurableSpace α} (f : α → F) (μ : Measure α) :
+theorem coe_nnnorm_ae_le_eLpNormEssSup {_ : MeasurableSpace α} (f : α → ε) (μ : Measure α) :
     ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ eLpNormEssSup f μ :=
   ENNReal.ae_le_essSup fun x => ‖f x‖ₑ
-
-@[deprecated (since := "2024-07-27")]
-alias coe_nnnorm_ae_le_snormEssSup := coe_nnnorm_ae_le_eLpNormEssSup
 
 @[simp]
 theorem eLpNormEssSup_eq_zero_iff {f : α → F} : eLpNormEssSup f μ = 0 ↔ f =ᵐ[μ] 0 := by
   simp [EventuallyEq, eLpNormEssSup_eq_essSup_enorm]
-
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_eq_zero_iff := eLpNormEssSup_eq_zero_iff
 
 theorem eLpNorm_eq_zero_iff {f : α → E} (hf : AEStronglyMeasurable f μ) (h0 : p ≠ 0) :
     eLpNorm f p μ = 0 ↔ f =ᵐ[μ] 0 := by
@@ -1136,18 +898,12 @@ theorem eLpNorm_eq_zero_iff {f : α → E} (hf : AEStronglyMeasurable f μ) (h0 
   rw [eLpNorm_eq_eLpNorm' h0 h_top]
   exact eLpNorm'_eq_zero_iff (ENNReal.toReal_pos h0 h_top) hf
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_eq_zero_iff := eLpNorm_eq_zero_iff
-
 theorem eLpNorm_eq_zero_of_ae_zero {f : α → E} (hf : f =ᵐ[μ] 0) : eLpNorm f p μ = 0 := by
   rw [← eLpNorm_zero (p := p) (μ := μ) (α := α) (F := E)]
   exact eLpNorm_congr_ae hf
 
-theorem ae_le_eLpNormEssSup {f : α → F} : ∀ᵐ y ∂μ, ‖f y‖ₑ ≤ eLpNormEssSup f μ :=
+theorem ae_le_eLpNormEssSup {f : α → ε} : ∀ᵐ y ∂μ, ‖f y‖ₑ ≤ eLpNormEssSup f μ :=
   ae_le_essSup
-
-@[deprecated (since := "2024-07-27")]
-alias ae_le_snormEssSup := ae_le_eLpNormEssSup
 
 lemma eLpNormEssSup_lt_top_iff_isBoundedUnder :
     eLpNormEssSup f μ < ⊤ ↔ IsBoundedUnder (· ≤ ·) (ae μ) fun x ↦ ‖f x‖₊ where
@@ -1155,11 +911,8 @@ lemma eLpNormEssSup_lt_top_iff_isBoundedUnder :
     simp_rw [← ENNReal.coe_le_coe, ENNReal.coe_toNNReal h.ne]; exact ae_le_eLpNormEssSup⟩
   mpr := by rintro ⟨C, hC⟩; exact eLpNormEssSup_lt_top_of_ae_nnnorm_bound (C := C) hC
 
-theorem meas_eLpNormEssSup_lt {f : α → F} : μ { y | eLpNormEssSup f μ < ‖f y‖ₑ } = 0 :=
+theorem meas_eLpNormEssSup_lt {f : α → ε} : μ { y | eLpNormEssSup f μ < ‖f y‖ₑ } = 0 :=
   meas_essSup_lt
-
-@[deprecated (since := "2024-07-27")]
-alias meas_snormEssSup_lt := meas_eLpNormEssSup_lt
 
 lemma eLpNorm_lt_top_of_finite [Finite α] [IsFiniteMeasure μ] : eLpNorm f p μ < ∞ := by
   obtain rfl | hp₀ := eq_or_ne p 0
@@ -1167,7 +920,7 @@ lemma eLpNorm_lt_top_of_finite [Finite α] [IsFiniteMeasure μ] : eLpNorm f p μ
   obtain rfl | hp := eq_or_ne p ∞
   · simp only [eLpNorm_exponent_top, eLpNormEssSup_lt_top_iff_isBoundedUnder]
     exact .le_of_finite
-  rw [eLpNorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top hp₀ hp]
+  rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp₀ hp]
   refine IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennreal μ ?_
   simp_rw [enorm, ← ENNReal.coe_rpow_of_nonneg _ ENNReal.toReal_nonneg]
   norm_cast
@@ -1180,12 +933,6 @@ lemma eLpNorm_lt_top_of_finite [Finite α] [IsFiniteMeasure μ] : eLpNorm f p μ
 @[simp] lemma eLpNorm_of_isEmpty [IsEmpty α] (f : α → E) (p : ℝ≥0∞) : eLpNorm f p μ = 0 := by
   simp [Subsingleton.elim f 0]
 
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_piecewise := eLpNormEssSup_piecewise
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_top_piecewise := eLpNorm_top_piecewise
-
 section MapMeasure
 
 variable {β : Type*} {mβ : MeasurableSpace β} {f : α → β} {g : β → E}
@@ -1193,9 +940,6 @@ variable {β : Type*} {mβ : MeasurableSpace β} {f : α → β} {g : β → E}
 theorem eLpNormEssSup_map_measure (hg : AEStronglyMeasurable g (Measure.map f μ))
     (hf : AEMeasurable f μ) : eLpNormEssSup g (Measure.map f μ) = eLpNormEssSup (g ∘ f) μ :=
   essSup_map_measure hg.enorm hf
-
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_map_measure := eLpNormEssSup_map_measure
 
 theorem eLpNorm_map_measure (hg : AEStronglyMeasurable g (Measure.map f μ))
     (hf : AEMeasurable f μ) : eLpNorm g p (Measure.map f μ) = eLpNorm (g ∘ f) p μ := by
@@ -1207,9 +951,6 @@ theorem eLpNorm_map_measure (hg : AEStronglyMeasurable g (Measure.map f μ))
   simp_rw [eLpNorm_eq_lintegral_rpow_enorm hp_zero hp_top]
   rw [lintegral_map' (hg.enorm.pow_const p.toReal) hf]
   rfl
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_map_measure := eLpNorm_map_measure
 
 theorem memℒp_map_measure_iff (hg : AEStronglyMeasurable g (Measure.map f μ))
     (hf : AEMeasurable f μ) : Memℒp g p (Measure.map f μ) ↔ Memℒp (g ∘ f) p μ := by
@@ -1223,17 +964,11 @@ theorem eLpNorm_comp_measurePreserving {ν : MeasureTheory.Measure β} (hg : AES
     (hf : MeasurePreserving f μ ν) : eLpNorm (g ∘ f) p μ = eLpNorm g p ν :=
   Eq.symm <| hf.map_eq ▸ eLpNorm_map_measure (hf.map_eq ▸ hg) hf.aemeasurable
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_comp_measurePreserving := eLpNorm_comp_measurePreserving
-
 theorem AEEqFun.eLpNorm_compMeasurePreserving {ν : MeasureTheory.Measure β} (g : β →ₘ[ν] E)
     (hf : MeasurePreserving f μ ν) :
     eLpNorm (g.compMeasurePreserving f hf) p μ = eLpNorm g p ν := by
   rw [eLpNorm_congr_ae (g.coeFn_compMeasurePreserving _)]
   exact eLpNorm_comp_measurePreserving g.aestronglyMeasurable hf
-
-@[deprecated (since := "2024-07-27")]
-alias AEEqFun.snorm_compMeasurePreserving := AEEqFun.eLpNorm_compMeasurePreserving
 
 theorem Memℒp.comp_measurePreserving {ν : MeasureTheory.Measure β} (hg : Memℒp g p ν)
     (hf : MeasurePreserving f μ ν) : Memℒp (g ∘ f) p μ :=
@@ -1242,10 +977,6 @@ theorem Memℒp.comp_measurePreserving {ν : MeasureTheory.Measure β} (hg : Mem
 theorem _root_.MeasurableEmbedding.eLpNormEssSup_map_measure {g : β → F}
     (hf : MeasurableEmbedding f) : eLpNormEssSup g (Measure.map f μ) = eLpNormEssSup (g ∘ f) μ :=
   hf.essSup_map_measure
-
-@[deprecated (since := "2024-07-27")]
-alias _root_.MeasurableEmbedding.snormEssSup_map_measure :=
-  _root_.MeasurableEmbedding.eLpNormEssSup_map_measure
 
 theorem _root_.MeasurableEmbedding.eLpNorm_map_measure {g : β → F} (hf : MeasurableEmbedding f) :
     eLpNorm g p (Measure.map f μ) = eLpNorm (g ∘ f) p μ := by
@@ -1257,9 +988,6 @@ theorem _root_.MeasurableEmbedding.eLpNorm_map_measure {g : β → F} (hf : Meas
   · simp_rw [eLpNorm_eq_lintegral_rpow_enorm hp_zero hp]
     rw [hf.lintegral_map]
     rfl
-
-@[deprecated (since := "2024-07-27")]
-alias _root_.MeasurableEmbedding.snorm_map_measure := _root_.MeasurableEmbedding.eLpNorm_map_measure
 
 theorem _root_.MeasurableEmbedding.memℒp_map_measure_iff {g : β → F} (hf : MeasurableEmbedding f) :
     Memℒp g p (Measure.map f μ) ↔ Memℒp (g ∘ f) p μ := by
@@ -1286,9 +1014,6 @@ theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul {f : α → F} {g : α →
   simp_rw [ENNReal.coe_le_coe, ← NNReal.mul_rpow, NNReal.rpow_le_rpow_iff hp]
   exact h
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_le_nnreal_smul_snorm'_of_ae_le_mul := eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul
-
 theorem eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul {f : α → F} {g : α → G} {c : ℝ≥0}
     (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : eLpNormEssSup f μ ≤ c • eLpNormEssSup g μ :=
   calc
@@ -1296,10 +1021,6 @@ theorem eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul {f : α → F} {
       essSup_mono_ae <| h.mono fun _ hx => ENNReal.coe_le_coe.mpr hx
     _ = essSup (c * ‖g ·‖ₑ) μ := by simp_rw [ENNReal.coe_mul, enorm]
     _ = c • essSup (‖g ·‖ₑ) μ := ENNReal.essSup_const_mul
-
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_le_nnreal_smul_snormEssSup_of_ae_le_mul :=
-  eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul
 
 theorem eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul {f : α → F} {g : α → G} {c : ℝ≥0}
     (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) (p : ℝ≥0∞) : eLpNorm f p μ ≤ c • eLpNorm g p μ := by
@@ -1310,9 +1031,6 @@ theorem eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul {f : α → F} {g : α → G
     exact eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul h
   simp_rw [eLpNorm_eq_eLpNorm' h0 h_top]
   exact eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul h (ENNReal.toReal_pos h0 h_top)
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_le_nnreal_smul_snorm_of_ae_le_mul := eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul
 
 -- TODO: add the whole family of lemmas?
 private theorem le_mul_iff_eq_zero_of_nonneg_of_neg_of_nonneg {α} [LinearOrderedSemiring α]
@@ -1335,17 +1053,11 @@ theorem eLpNorm_eq_zero_and_zero_of_ae_le_mul_neg {f : α → F} {g : α → G} 
   change f =ᵐ[μ] 0 ∧ g =ᵐ[μ] 0 at h
   simp [eLpNorm_congr_ae h.1, eLpNorm_congr_ae h.2]
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_eq_zero_and_zero_of_ae_le_mul_neg := eLpNorm_eq_zero_and_zero_of_ae_le_mul_neg
-
 theorem eLpNorm_le_mul_eLpNorm_of_ae_le_mul {f : α → F} {g : α → G} {c : ℝ}
     (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ c * ‖g x‖) (p : ℝ≥0∞) :
     eLpNorm f p μ ≤ ENNReal.ofReal c * eLpNorm g p μ :=
   eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul
     (h.mono fun _x hx => hx.trans <| mul_le_mul_of_nonneg_right c.le_coe_toNNReal (norm_nonneg _)) _
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_le_mul_snorm_of_ae_le_mul := eLpNorm_le_mul_eLpNorm_of_ae_le_mul
 
 theorem Memℒp.of_nnnorm_le_mul {f : α → E} {g : α → F} {c : ℝ≥0} (hg : Memℒp g p μ)
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : Memℒp f p μ :=
@@ -1374,22 +1086,13 @@ variable [BoundedSMul 𝕜 E] [BoundedSMul 𝕜 F] {c : 𝕜} {f : α → F}
 theorem eLpNorm'_const_smul_le (hq : 0 < q) : eLpNorm' (c • f) q μ ≤ ‖c‖ₑ * eLpNorm' f q μ :=
   eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul (Eventually.of_forall fun _ => nnnorm_smul_le ..) hq
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_const_smul_le := eLpNorm'_const_smul_le
-
 theorem eLpNormEssSup_const_smul_le : eLpNormEssSup (c • f) μ ≤ ‖c‖ₑ * eLpNormEssSup f μ :=
   eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul
     (Eventually.of_forall fun _ => by simp [nnnorm_smul_le])
 
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_const_smul_le := eLpNormEssSup_const_smul_le
-
 theorem eLpNorm_const_smul_le : eLpNorm (c • f) p μ ≤ ‖c‖ₑ * eLpNorm f p μ :=
   eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul
     (Eventually.of_forall fun _ => by simp [nnnorm_smul_le]) _
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_const_smul_le := eLpNorm_const_smul_le
 
 theorem Memℒp.const_smul (hf : Memℒp f p μ) (c : 𝕜) : Memℒp (c • f) p μ :=
   ⟨AEStronglyMeasurable.const_smul hf.1 c,
@@ -1405,7 +1108,6 @@ end BoundedSMul
 The inequalities in the previous section are now tight.
 -/
 
-
 section NormedSpace
 
 variable {𝕜 : Type*} [NormedDivisionRing 𝕜] [MulActionWithZero 𝕜 E] [Module 𝕜 F]
@@ -1419,16 +1121,10 @@ theorem eLpNorm'_const_smul {f : α → F} (c : 𝕜) (hq_pos : 0 < q) :
   simpa [enorm_inv, hc, ENNReal.div_eq_inv_mul]
     using eLpNorm'_const_smul_le (c := c⁻¹) (f := c • f) hq_pos
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_const_smul := eLpNorm'_const_smul
-
 theorem eLpNormEssSup_const_smul (c : 𝕜) (f : α → F) :
     eLpNormEssSup (c • f) μ = ‖c‖ₑ * eLpNormEssSup f μ := by
   simp_rw [eLpNormEssSup_eq_essSup_enorm, Pi.smul_apply, enorm_smul,
     ENNReal.essSup_const_mul]
-
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_const_smul := eLpNormEssSup_const_smul
 
 theorem eLpNorm_const_smul (c : 𝕜) (f : α → F) (p : ℝ≥0∞) (μ : Measure α):
     eLpNorm (c • f) p μ = ‖c‖ₑ * eLpNorm f p μ := by
@@ -1437,9 +1133,6 @@ theorem eLpNorm_const_smul (c : 𝕜) (f : α → F) (p : ℝ≥0∞) (μ : Meas
   refine le_antisymm eLpNorm_const_smul_le <| ENNReal.mul_le_of_le_div' ?_
   simpa [enorm_inv, hc, ENNReal.div_eq_inv_mul]
     using eLpNorm_const_smul_le (c := c⁻¹) (f := c • f)
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_const_smul := eLpNorm_const_smul
 
 lemma eLpNorm_nsmul [NormedSpace ℝ F] (n : ℕ) (f : α → F) :
     eLpNorm (n • f) p μ = n * eLpNorm f p μ := by
@@ -1462,12 +1155,6 @@ theorem le_eLpNorm_of_bddBelow (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → F} (
     gcongr
     rwa [coe_le_enorm]
   · simp [Set.indicator_of_not_mem hxs]
-
-@[deprecated (since := "2024-07-27")]
-alias le_snorm_of_bddBelow := le_eLpNorm_of_bddBelow
-
-@[deprecated (since := "2024-06-26")]
-alias snorm_indicator_ge_of_bdd_below := le_snorm_of_bddBelow
 
 section RCLike
 
@@ -1521,9 +1208,6 @@ theorem ae_bdd_liminf_atTop_rpow_of_eLpNorm_bdd {p : ℝ≥0∞} {f : ℕ → α
     sSup_le fun b ⟨a, ha⟩ =>
       (ha a le_rfl).trans ((ENNReal.rpow_inv_le_iff (ENNReal.toReal_pos hp hp')).1 (hbdd _))
 
-@[deprecated (since := "2024-07-27")]
-alias ae_bdd_liminf_atTop_rpow_of_snorm_bdd := ae_bdd_liminf_atTop_rpow_of_eLpNorm_bdd
-
 theorem ae_bdd_liminf_atTop_of_eLpNorm_bdd {p : ℝ≥0∞} (hp : p ≠ 0) {f : ℕ → α → E}
     (hfmeas : ∀ n, Measurable (f n)) (hbdd : ∀ n, eLpNorm (f n) p μ ≤ R) :
     ∀ᵐ x ∂μ, liminf (fun n => (‖f n x‖ₑ)) atTop < ∞ := by
@@ -1552,9 +1236,6 @@ theorem ae_bdd_liminf_atTop_of_eLpNorm_bdd {p : ℝ≥0∞} (hp : p ≠ 0) {f : 
     ENNReal.rpow_mul]
   exact ENNReal.rpow_lt_top_of_nonneg (inv_nonneg.2 hppos.le) hx.ne
 
-@[deprecated (since := "2024-07-27")]
-alias ae_bdd_liminf_atTop_of_snorm_bdd := ae_bdd_liminf_atTop_of_eLpNorm_bdd
-
 end Liminf
 
 /-- A continuous function with compact support belongs to `L^∞`.
@@ -1578,19 +1259,14 @@ theorem Memℒp.exists_eLpNorm_indicator_compl_lt {β : Type*} [NormedAddCommGro
   · obtain ⟨s, hsm, hs, hε⟩ :
         ∃ s, MeasurableSet s ∧ μ s < ∞ ∧ ∫⁻ a in sᶜ, (‖f a‖ₑ) ^ p.toReal ∂μ < ε ^ p.toReal := by
       apply exists_setLintegral_compl_lt
-      · exact ((eLpNorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top hp₀ hp_top).1 hf.2).ne
+      · exact ((eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp₀ hp_top).1 hf.2).ne
       · simp [*]
     refine ⟨s, hsm, hs, ?_⟩
     rwa [eLpNorm_indicator_eq_eLpNorm_restrict hsm.compl,
       eLpNorm_eq_lintegral_rpow_enorm hp₀ hp_top, one_div, ENNReal.rpow_inv_lt_iff]
     simp [ENNReal.toReal_pos, *]
 
-@[deprecated (since := "2024-07-27")]
-alias Memℒp.exists_snorm_indicator_compl_lt := Memℒp.exists_eLpNorm_indicator_compl_lt
-
 end UnifTight
 end ℒp
 
 end MeasureTheory
-
-set_option linter.style.longFile 1700

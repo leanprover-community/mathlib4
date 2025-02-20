@@ -3,12 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Data.NNReal.Basic
 import Mathlib.Order.Fin.Tuple
 import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Topology.Order.MonotoneConvergence
 import Mathlib.Topology.MetricSpace.Pseudo.Real
+import Mathlib.Topology.Order.MonotoneConvergence
 /-!
 # Rectangular boxes in `ℝⁿ`
 
@@ -287,7 +288,7 @@ theorem mk'_eq_bot {l u : ι → ℝ} : mk' l u = ⊥ ↔ ∃ i, u i ≤ l i := 
 
 @[simp]
 theorem mk'_eq_coe {l u : ι → ℝ} : mk' l u = I ↔ l = I.lower ∧ u = I.upper := by
-  cases' I with lI uI hI; rw [mk']; split_ifs with h
+  obtain ⟨lI, uI, hI⟩ := I; rw [mk']; split_ifs with h
   · simp [WithBot.coe_eq_coe]
   · suffices l = lI → u ≠ uI by simpa
     rintro rfl rfl

@@ -626,16 +626,10 @@ theorem IsBigO.natCast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean 
     (fun (n : ℕ) => f n) =O[atTop] (fun n => g n) :=
   IsBigO.comp_tendsto h tendsto_natCast_atTop_atTop
 
-@[deprecated (since := "2024-04-17")]
-alias IsBigO.nat_cast_atTop := IsBigO.natCast_atTop
-
 theorem IsLittleO.natCast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
     {f : R → E} {g : R → F} (h : f =o[atTop] g) :
     (fun (n : ℕ) => f n) =o[atTop] (fun n => g n) :=
   IsLittleO.comp_tendsto h tendsto_natCast_atTop_atTop
-
-@[deprecated (since := "2024-04-17")]
-alias IsLittleO.nat_cast_atTop := IsLittleO.natCast_atTop
 
 theorem isBigO_atTop_iff_eventually_exists {α : Type*} [SemilatticeSup α] [Nonempty α]
     {f : α → E} {g : α → F} : f =O[atTop] g ↔ ∀ᶠ n₀ in atTop, ∃ c, ∀ n ≥ n₀, ‖f n‖ ≤ c * ‖g n‖ := by

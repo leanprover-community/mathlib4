@@ -119,7 +119,7 @@ theorem valuation_of_unit_eq (x : Rˣ) :
   rw [← WithZero.coe_inj, valuationOfNeZero_eq, Units.coe_map, eq_iff_le_not_lt]
   constructor
   · exact v.valuation_le_one x
-  · cases' x with x _ hx _
+  · obtain ⟨x, _, hx, _⟩ := x
     change ¬v.valuation (algebraMap R K x) < 1
     apply_fun v.intValuation at hx
     rw [map_one, map_mul] at hx
@@ -211,12 +211,12 @@ theorem fromUnit_ker [hn : Fact <| 0 < n] :
     rcases IsIntegrallyClosed.exists_algebraMap_eq_of_isIntegral_pow (R := R) (x := i) hn.out
         (hi.symm ▸ isIntegral_algebraMap) with
       ⟨i', rfl⟩
-    rw [← map_mul, map_eq_one_iff _ <| NoZeroSMulDivisors.algebraMap_injective R K] at vi
-    rw [← map_mul, map_eq_one_iff _ <| NoZeroSMulDivisors.algebraMap_injective R K] at iv
+    rw [← map_mul, map_eq_one_iff _ <| FaithfulSMul.algebraMap_injective R K] at vi
+    rw [← map_mul, map_eq_one_iff _ <| FaithfulSMul.algebraMap_injective R K] at iv
     rw [Units.val_mk, ← map_pow] at hv
     exact ⟨⟨v', i', vi, iv⟩, by
       simpa only [Units.ext_iff, powMonoidHom_apply, Units.val_pow_eq_pow_val] using
-         NoZeroSMulDivisors.algebraMap_injective R K hv⟩
+         FaithfulSMul.algebraMap_injective R K hv⟩
   · rintro ⟨x, hx⟩
     rw [← hx]
     exact Subtype.mk_eq_mk.mpr <| (QuotientGroup.eq_one_iff _).mpr ⟨Units.map (algebraMap R K) x,

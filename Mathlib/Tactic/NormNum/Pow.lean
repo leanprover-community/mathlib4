@@ -10,13 +10,7 @@ import Mathlib.Tactic.NormNum.Basic
 ## `norm_num` plugin for `^`.
 -/
 
-#adaptation_note
-/--
-Since https://github.com/leanprover/lean4/pull/5338,
-the unused variable linter can not see usages of variables in
-`haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives.
--/
-set_option linter.unusedVariables false
+assert_not_exists RelIso
 
 namespace Mathlib
 open Lean
@@ -235,9 +229,7 @@ theorem isRat_zpow_neg {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb : �
     IsRat (a^b) num den := by
   rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_natCast]
 
-#adaptation_note
-/--
-Prior to https://github.com/leanprover/lean4/pull/4096,
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/4096
 the repeated
 ```
 have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩

@@ -22,7 +22,7 @@ open Set Filter Bornology
 open scoped Real Topology ComplexConjugate
 
 /-- Inverse of the `exp` function. Returns values such that `(log x).im > - π` and `(log x).im ≤ π`.
-  `log 0 = 0`-/
+  `log 0 = 0` -/
 @[pp_nodot]
 noncomputable def log (x : ℂ) : ℂ :=
   x.abs.log + arg x * I
@@ -57,7 +57,7 @@ theorem exp_inj_of_neg_pi_lt_of_le_pi {x y : ℂ} (hx₁ : -π < x.im) (hx₂ : 
   rw [← log_exp hx₁ hx₂, ← log_exp hy₁ hy₂, hxy]
 
 theorem ofReal_log {x : ℝ} (hx : 0 ≤ x) : (x.log : ℂ) = log x :=
-  Complex.ext (by rw [log_re, ofReal_re, abs_of_nonneg hx])
+  Complex.ext (by rw [log_re, ofReal_re, Complex.abs_of_nonneg hx])
     (by rw [ofReal_im, log_im, arg_ofReal_of_nonneg hx])
 
 @[simp, norm_cast]
@@ -282,8 +282,8 @@ lemma Complex.multipliable_of_summable_log (f : ι → ℂ) (hfn : ∀ n, f n �
     (hf : Summable fun n => log (f n)) : Multipliable fun b ↦ f b  :=
    ⟨_, Complex.hasProd_of_hasSum_log _ hfn hf.hasSum⟩
 
-/--The exponential of a infinite sum of comples logs (which converges absolutely) is an infinite
-product.-/
+/-- The exponential of a infinite sum of comples logs (which converges absolutely) is an infinite
+product. -/
 lemma Complex.cexp_tsum_eq_tprod (f : ι →  ℂ) (hfn : ∀ n, f n ≠ 0)
     (hf : Summable fun n => log (f n)) : (cexp ((∑' n : ι, log (f n )))) = ∏' n : ι, f n  :=
   (Complex.hasProd_of_hasSum_log _ hfn hf.hasSum).tprod_eq.symm
