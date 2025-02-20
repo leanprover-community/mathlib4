@@ -168,7 +168,7 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
     mul_nonneg_iff_of_pos_left, (le_of_lt (sqrt_pos_of_pos hε))]
   let const : ℝ := (max (P Set.univ).toReal (P' Set.univ).toReal)
   have pos_of_measure : 0 < const := by
-    rw [Mathlib.Tactic.PushNeg.not_and_or_eq] at hPP'
+    rw [not_and_or] at hPP'
     rcases hPP' with hP0 | hP'0
     · exact lt_max_of_lt_left
         (toReal_pos ((Measure.measure_univ_ne_zero).mpr hP0) (measure_ne_top P Set.univ))
@@ -188,10 +188,10 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
         (measure_mono (Set.compl_subset_compl_of_subset (Set.subset_union_left))) hKP
   have hKP'bound : P' (KP ∪ KP')ᶜ < ε.toNNReal := lt_of_le_of_lt
         (measure_mono (Set.compl_subset_compl_of_subset (Set.subset_union_right))) hKP'
-  -- stone-weierstrass approximation of f on K
+  -- Stone-Weierstrass approximation of f on K
   obtain ⟨g, hgA, hgapprox⟩ :=
-      ContinuousMap.exists_mem_subalgebra_near_continuous_of_isCompact_of_separatesPoints
-      hA f hKco (Left.mul_pos (sqrt_pos_of_pos hε) (inv_pos_of_pos pos_of_measure))
+    f.exists_mem_subalgebra_near_continuous_of_isCompact_of_separatesPoints
+      hA hKco (Left.mul_pos (sqrt_pos_of_pos hε) (inv_pos_of_pos pos_of_measure))
   -- collect the results needed in the decomposition at the end of the proof
   have line1 : |∫ x, mulExpNegMulSq ε (f x) ∂P
       - ∫ x in K, mulExpNegMulSq ε (f x) ∂P| < sqrt ε :=

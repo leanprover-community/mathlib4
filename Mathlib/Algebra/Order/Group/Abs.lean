@@ -179,6 +179,12 @@ theorem dist_bdd_within_interval {a b lb ub : α} (hal : lb ≤ a) (hau : a ≤ 
 theorem eq_of_abs_sub_nonpos (h : |a - b| ≤ 0) : a = b :=
   eq_of_abs_sub_eq_zero (le_antisymm h (abs_nonneg (a - b)))
 
+lemma eq_of_abs_sub_lt_all {x y : α} (h : ∀ ε > 0, |x - y| < ε) : x = y :=
+  eq_of_abs_sub_nonpos <| forall_lt_iff_le'.mp h
+
+lemma eq_of_abs_sub_le_all [DenselyOrdered α] {x y : α} (h : ∀ ε > 0, |x - y| ≤ ε) : x = y :=
+  eq_of_abs_sub_nonpos <| forall_gt_imp_ge_iff_le_of_dense.mp h
+
 theorem abs_sub_nonpos : |a - b| ≤ 0 ↔ a = b :=
   ⟨eq_of_abs_sub_nonpos, by rintro rfl; rw [sub_self, abs_zero]⟩
 

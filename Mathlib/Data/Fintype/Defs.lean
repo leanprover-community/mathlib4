@@ -174,13 +174,19 @@ instance decidableEqEmbeddingFintype [DecidableEq β] [Fintype α] : DecidableEq
 
 end BundledHoms
 
-instance decidableInjectiveFintype [DecidableEq α] [DecidableEq β] [Fintype α] :
-    DecidablePred (Injective : (α → β) → Prop) := fun x => by unfold Injective; infer_instance
+theorem nodup_map_univ_iff_injective [Fintype α] {f : α → β} :
+    (Multiset.map f univ.val).Nodup ↔ Function.Injective f := by
+  rw [nodup_map_iff_injOn, coe_univ, Set.injective_iff_injOn_univ]
+
+instance decidableInjectiveFintype [DecidableEq β] [Fintype α] :
+    DecidablePred (Injective : (α → β) → Prop) :=
+  -- Use custom implementation for better performance.
+  fun f => decidable_of_iff ((Multiset.map f univ.val).Nodup) nodup_map_univ_iff_injective
 
 instance decidableSurjectiveFintype [DecidableEq β] [Fintype α] [Fintype β] :
     DecidablePred (Surjective : (α → β) → Prop) := fun x => by unfold Surjective; infer_instance
 
-instance decidableBijectiveFintype [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype β] :
+instance decidableBijectiveFintype [DecidableEq β] [Fintype α] [Fintype β] :
     DecidablePred (Bijective : (α → β) → Prop) := fun x => by unfold Bijective; infer_instance
 
 instance decidableRightInverseFintype [DecidableEq α] [Fintype α] (f : α → β) (g : β → α) :

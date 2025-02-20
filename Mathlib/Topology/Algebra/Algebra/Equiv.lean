@@ -42,7 +42,7 @@ structure ContinuousAlgEquiv (R A B : Type*) [CommSemiring R]
     [Algebra R B] extends A ≃ₐ[R] B, A ≃ₜ B
 
 @[inherit_doc]
-notation:50 A " ≃A[" R "]" B => ContinuousAlgEquiv R A B
+notation:50 A " ≃A[" R "] " B => ContinuousAlgEquiv R A B
 
 attribute [nolint docBlame] ContinuousAlgEquiv.toHomeomorph
 

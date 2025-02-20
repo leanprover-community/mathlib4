@@ -61,6 +61,8 @@ set, sets, subset, subsets, union, intersection, insert, singleton, complement, 
 
 -/
 
+assert_not_exists RelIso
+
 /-! ### Set coercion to a type -/
 
 open Function
@@ -317,6 +319,9 @@ theorem not_mem_subset (h : s ⊆ t) : a ∉ t → a ∉ s :=
 
 theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
   simp only [subset_def, not_forall, exists_prop]
+
+theorem not_top_subset : ¬⊤ ⊆ s ↔ ∃ a, a ∉ s := by
+  simp [not_subset]
 
 lemma eq_of_forall_subset_iff (h : ∀ u, s ⊆ u ↔ t ⊆ u) : s = t := eq_of_forall_ge_iff h
 
@@ -944,7 +949,11 @@ theorem _root_.Disjoint.inter_eq : Disjoint s t → s ∩ t = ∅ :=
 theorem disjoint_left : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → a ∉ t :=
   disjoint_iff_inf_le.trans <| forall_congr' fun _ => not_and
 
+alias ⟨_root_.Disjoint.not_mem_of_mem_left, _⟩ := disjoint_left
+
 theorem disjoint_right : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ t → a ∉ s := by rw [disjoint_comm, disjoint_left]
+
+alias ⟨_root_.Disjoint.not_mem_of_mem_right, _⟩ := disjoint_right
 
 lemma not_disjoint_iff : ¬Disjoint s t ↔ ∃ x, x ∈ s ∧ x ∈ t :=
   Set.disjoint_iff.not.trans <| not_forall.trans <| exists_congr fun _ ↦ not_not

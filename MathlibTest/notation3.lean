@@ -1,5 +1,5 @@
 import Mathlib.Util.Notation3
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Basic
 
 set_option linter.style.setOption false
 set_option pp.unicode.fun true
@@ -84,8 +84,12 @@ notation3 "∀ᶠᶠ " (...) " in " f ": "
 #guard_msgs in #check foobar (fun y ↦ Eq y 1) (Filter.atTop.eventually fun x ↦ LT.lt x 3)
 
 notation3 "∃' " (...) ", " r:(scoped p => Exists p) => r
-/-- info: ∃' (x : ℕ) (_ : x < 3), x < 3 : Prop -/
-#guard_msgs in #check ∃' x < 3, x < 3
+/-- info: ∃' (a : ℕ) (_ : a < 3), a < 3 : Prop -/
+#guard_msgs in #check ∃' a < 3, a < 3
+/-- info: ∃' (x : ℕ) (_ : x < 3), True : Prop -/
+#guard_msgs in #check ∃' _ < 3, True
+/-- info: ∃' (x : ℕ) (_ : x < 1) (x_1 : ℕ) (_ : x_1 < 2), x = 0 : Prop -/
+#guard_msgs in #check ∃' (x < 1) (_ < 2), x = 0
 
 def func (x : α) : α := x
 notation3 "func! " (...) ", " r:(scoped p => func p) => r

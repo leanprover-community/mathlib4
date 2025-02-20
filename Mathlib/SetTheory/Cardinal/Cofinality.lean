@@ -474,7 +474,7 @@ theorem cof_succ (o) : cof (succ o) = 1 := by
 theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
   ⟨inductionOn o fun α r _ z => by
       rcases cof_eq r with ⟨S, hl, e⟩; rw [z] at e
-      cases' mk_ne_zero_iff.1 (by rw [e]; exact one_ne_zero) with a
+      obtain ⟨a⟩ := mk_ne_zero_iff.1 (by rw [e]; exact one_ne_zero)
       refine
         ⟨typein r a,
           Eq.symm <|
@@ -720,7 +720,7 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
       refine lt_of_not_ge fun h => ?_
       obtain ⟨a, e⟩ := Cardinal.mem_range_lift_of_le h
       refine Quotient.inductionOn a (fun α e => ?_) e
-      cases' Quotient.exact e with f
+      obtain ⟨f⟩ := Quotient.exact e
       have f := Equiv.ulift.symm.trans f
       let g a := (f a).1
       let o := succ (iSup g)

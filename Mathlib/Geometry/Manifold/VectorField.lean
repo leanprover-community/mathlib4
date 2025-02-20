@@ -88,7 +88,7 @@ variable {c : 𝕜} {m n : WithTop ℕ∞} {t : Set M'} {y₀ : M'}
 
 variable (I I') in
 /-- The pullback of a vector field under a map between manifolds, within a set `s`. If the
-derivative of the map within `s` is not invertible, then pullback is given the junk value zero.-/
+derivative of the map within `s` is not invertible, then pullback is given the junk value zero. -/
 def mpullbackWithin (f : M → M') (V : Π (x : M'), TangentSpace I' x) (s : Set M) (x : M) :
     TangentSpace I x :=
   (mfderivWithin I I' f s x).inverse (V (f x))
@@ -193,9 +193,8 @@ lemma mpullbackWithin_comp_of_left
   simp only [mpullbackWithin, comp_apply]
   have hg : MDifferentiableWithinAt I' I'' g t (f x₀) :=
     mdifferentiableWithinAt_of_isInvertible_mfderivWithin hg'
-  rw [mfderivWithin_comp _ hg hf h hu, IsInvertible.inverse_comp_apply_of_left]
-  · rfl
-  · exact hg'
+  rw [mfderivWithin_comp _ hg hf h hu, Function.comp_apply,
+    IsInvertible.inverse_comp_apply_of_left hg']
 
 lemma mpullbackWithin_comp_of_right
     {g : M' → M''} {f : M → M'} {V : Π (x : M''), TangentSpace I'' x} {s : Set M} {t : Set M'}
@@ -206,8 +205,8 @@ lemma mpullbackWithin_comp_of_right
   simp only [mpullbackWithin, comp_apply]
   have hf : MDifferentiableWithinAt I I' f s x₀ :=
     mdifferentiableWithinAt_of_isInvertible_mfderivWithin hf'
-  rw [mfderivWithin_comp _ hg hf h hu, IsInvertible.inverse_comp_apply_of_right hf']
-  rfl
+  rw [mfderivWithin_comp _ hg hf h hu, IsInvertible.inverse_comp_apply_of_right hf',
+    Function.comp_apply]
 
 
 /-! ### Regularity of pullback of vector fields
@@ -233,7 +232,7 @@ protected lemma _root_.MDifferentiableWithinAt.mpullbackWithin_vectorField_inter
   /- We want to apply the theorem `MDifferentiableWithinAt.clm_apply_of_inCoordinates`,
   stating that applying linear maps to vector fields gives a smooth result when the linear map and
   the vector field are smooth. This theorem is general, we will apply it to
-  `b₁ = f`, `b₂ = id`, `v = V ∘ f`, `ϕ = fun x ↦ (mfderivWithin I I' f s x).inverse`-/
+  `b₁ = f`, `b₂ = id`, `v = V ∘ f`, `ϕ = fun x ↦ (mfderivWithin I I' f s x).inverse` -/
   let b₁ := f
   let b₂ : M → M := id
   let v : Π (x : M), TangentSpace I' (f x) := V ∘ f
@@ -383,7 +382,7 @@ protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_inter
   /- We want to apply the theorem `ContMDiffWithinAt.clm_apply_of_inCoordinates`, stating
   that applying linear maps to vector fields gives a smooth result when the linear map and the
   vector field are smooth. This theorem is general, we will apply it to
-  `b₁ = f`, `b₂ = id`, `v = V ∘ f`, `ϕ = fun x ↦ (mfderivWithin I I' f s x).inverse`-/
+  `b₁ = f`, `b₂ = id`, `v = V ∘ f`, `ϕ = fun x ↦ (mfderivWithin I I' f s x).inverse` -/
   let b₁ := f
   let b₂ : M → M := id
   let v : Π (x : M), TangentSpace I' (f x) := V ∘ f

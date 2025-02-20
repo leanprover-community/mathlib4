@@ -59,6 +59,8 @@ at the cost of including the assumption `[NeBot f]` in a number of lemmas and de
 *  [N. Bourbaki, *General Topology*][bourbaki1966]
 -/
 
+assert_not_exists RelIso
+
 open Set
 
 /-- A filter `F` on a type `α` is a collection of sets of `α` which contains the whole `α`,
