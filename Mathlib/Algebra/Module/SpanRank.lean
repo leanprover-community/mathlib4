@@ -209,19 +209,18 @@ universe u v w
 
 variable {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
 
-lemma Basis.mk_eq_spanRank [RankCondition R] {ι : Type v} (v : Basis ι R M) :
-    #ι = (⊤ : Submodule R M).spanRank := by
-  sorry
-
-/-- A version where they can be of different universe levels. -/
-lemma Basis.mk_eq_spanRank' [RankCondition R] {ι : Type w} (v : Basis ι R M) :
-    Cardinal.lift.{v} #ι = Cardinal.lift.{w} (⊤ : Submodule R M).spanRank := by
-  sorry
+lemma Basis.mk_eq_spanRank [RankCondition R] {ι : Type*} (v : Basis ι R M) :
+    #(Set.range v) = (⊤ : Submodule R M).spanRank := by
+  rw [spanRank]
+  let x : {s : Set M // span R s = ⊤} := ⟨Set.range v, Basis.span_eq v⟩
+  exact le_antisymm (le_ciInf fun s ↦ v.le_span s.2) (ciInf_le' _ x)
 
 theorem rank_eq_spanRank_of_free [Module.Free R M] [StrongRankCondition R] :
     Module.rank R M = (⊤ : Submodule R M).spanRank := by
+  haveI := nontrivial_of_invariantBasisNumber R
   obtain ⟨I, B⟩ := ‹Module.Free R M›
-  rw [← Basis.mk_eq_rank'' B, Basis.mk_eq_spanRank B]
+  rw [← Basis.mk_eq_rank'' B, ← Basis.mk_eq_spanRank B, ← Cardinal.lift_id #(Set.range B),
+    Cardinal.mk_range_eq_of_injective B.injective, Cardinal.lift_id _]
 
 theorem rank_le_spanRank [StrongRankCondition R] :
     Module.rank R M ≤ (⊤ : Submodule R M).spanRank := by
