@@ -1168,6 +1168,7 @@ import Mathlib.AlgebraicTopology.TopologicalSimplex
 import Mathlib.Analysis.AbsoluteValue.Equivalence
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.Analytic.CPolynomial
+import Mathlib.Analysis.Analytic.CPolynomialDef
 import Mathlib.Analysis.Analytic.ChangeOrigin
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Constructions
@@ -1690,6 +1691,7 @@ import Mathlib.Analysis.SumIntegralComparisons
 import Mathlib.Analysis.SumOverResidueClass
 import Mathlib.Analysis.VonNeumannAlgebra.Basic
 import Mathlib.CategoryTheory.Abelian.Basic
+import Mathlib.CategoryTheory.Abelian.CommSq
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 import Mathlib.CategoryTheory.Abelian.EpiWithInjectiveKernel
 import Mathlib.CategoryTheory.Abelian.Exact
@@ -2738,6 +2740,7 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Fintype.CardEmbedding
 import Mathlib.Data.Fintype.Defs
+import Mathlib.Data.Fintype.EquivFin
 import Mathlib.Data.Fintype.Fin
 import Mathlib.Data.Fintype.Inv
 import Mathlib.Data.Fintype.Lattice
@@ -2748,6 +2751,7 @@ import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Fintype.Parity
 import Mathlib.Data.Fintype.Perm
 import Mathlib.Data.Fintype.Pi
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Quotient
