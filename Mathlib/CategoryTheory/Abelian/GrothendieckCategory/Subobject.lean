@@ -80,8 +80,8 @@ end
 /-- Let `X : C` be an object in a Grothendieck abelian category,
 `F : J ⥤ MonoOver X` a functor from a filtered category, `c` a cocone for
 the composition `F ⋙ MonoOver.forget _ : J ⥤ Over X`. We assume
-that `c.pt.hom : c.pt.left ⟶ X` is a monomorphism and the corresponding
-subobject is the supremum of the subobjects given by `(F.obj j).obj.hom`,
+that `c.pt.hom : c.pt.left ⟶ X` is a monomorphism and that the corresponding
+subobject of `X` is the supremum of the subobjects given by `(F.obj j).obj.hom`,
 then `c` becomes a colimit cocone after the application of
 the forget functor `Over X ⥤ C`. (See also `subobjectMk_of_isColimit_eq_iSup`.) -/
 noncomputable def isColimitMapCoconeOfSubobjectMkEqISup
