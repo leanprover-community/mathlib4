@@ -34,7 +34,7 @@ theorem map_finsuppSum' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R
   exact Q.map_sum' _ (fun i => g i (f i))
 
 lemma polarSym2_map_smul_apply (Q : QuadraticMap R M N) (g : ι → M) (l : ι → R) (p : Sym2 ι) :
-    polarSym2 Q (p.map (l • g)) = (Sym2.mul ∘ Sym2.map l) p • polarSym2 Q (p.map g) := by
+    polarSym2 Q (p.map (l • g)) = (p.map l).mul • polarSym2 Q (p.map g) := by
   obtain ⟨_,_⟩ := p
   simp only [Pi.smul_apply', Sym2.map_pair_eq, polarSym2_sym2Mk, polar_smul_right, polar_smul_left,
     Function.comp_apply, Sym2.mul_mk, ← smul_assoc, smul_eq_mul, mul_comm]
