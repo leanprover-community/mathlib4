@@ -167,7 +167,7 @@ def ListBlank.tail {Γ} [Inhabited Γ] (l : ListBlank Γ) : ListBlank Γ := by
   rintro a _ ⟨i, rfl⟩
   refine Quotient.sound' (Or.inl ?_)
   cases a
-  · cases' i with i <;> [exact ⟨0, rfl⟩; exact ⟨i, rfl⟩]
+  · rcases i with - | i <;> [exact ⟨0, rfl⟩; exact ⟨i, rfl⟩]
   exact ⟨i, rfl⟩
 
 @[simp]
@@ -214,7 +214,7 @@ theorem ListBlank.exists_cons {Γ} [Inhabited Γ] (l : ListBlank Γ) :
 def ListBlank.nth {Γ} [Inhabited Γ] (l : ListBlank Γ) (n : ℕ) : Γ := by
   apply l.liftOn (fun l ↦ List.getI l n)
   rintro l _ ⟨i, rfl⟩
-  cases' lt_or_le n _ with h h
+  rcases lt_or_le n _ with h | h
   · rw [List.getI_append _ _ _ h]
   rw [List.getI_eq_default _ h]
   rcases le_or_lt _ n with h₂ | h₂
@@ -249,7 +249,7 @@ theorem ListBlank.ext {Γ} [i : Inhabited Γ] {L₁ L₂ : ListBlank Γ} :
   refine List.ext_getElem ?_ fun i h h₂ ↦ Eq.symm ?_
   · simp only [Nat.add_sub_cancel' h, List.length_append, List.length_replicate]
   simp only [ListBlank.nth_mk] at H
-  cases' lt_or_le i l₁.length with h' h'
+  rcases lt_or_le i l₁.length with h' | h'
   · simp [h', List.getElem_append _ h₂, ← List.getI_eq_getElem _ h, ← List.getI_eq_getElem _ h', H]
   · rw [List.getElem_append_right h', List.getElem_replicate,
       ← List.getI_eq_default _ h', H, List.getI_eq_getElem _ h]
@@ -377,8 +377,8 @@ theorem ListBlank.append_assoc {Γ} [Inhabited Γ] (l₁ l₂ : List Γ) (l₃ :
 element is sent to a sequence of default elements. -/
 def ListBlank.flatMap {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (l : ListBlank Γ) (f : Γ → List Γ')
     (hf : ∃ n, f default = List.replicate n default) : ListBlank Γ' := by
-  apply l.liftOn (fun l ↦ ListBlank.mk (List.flatMap l f))
-  rintro l _ ⟨i, rfl⟩; cases' hf with n e; refine Quotient.sound' (Or.inl ⟨i * n, ?_⟩)
+  apply l.liftOn (fun l ↦ ListBlank.mk (l.flatMap f))
+  rintro l _ ⟨i, rfl⟩; obtain ⟨n, e⟩ := hf; refine Quotient.sound' (Or.inl ⟨i * n, ?_⟩)
   rw [List.flatMap_append, mul_comm]; congr
   induction' i with i IH
   · rfl
@@ -584,9 +584,7 @@ theorem Tape.map_write {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap �
     ∀ T : Tape Γ, (T.write b).map f = (T.map f).write (f b) := by
   rintro ⟨⟩; rfl
 
--- Porting note: `simpNF` complains about LHS does not simplify when using the simp lemma on
---               itself, but it does indeed.
-@[simp, nolint simpNF]
+@[simp]
 theorem Tape.write_move_right_n {Γ} [Inhabited Γ] (f : Γ → Γ) (L R : ListBlank Γ) (n : ℕ) :
     ((Tape.move Dir.right)^[n] (Tape.mk' L R)).write (f (R.nth n)) =
       (Tape.move Dir.right)^[n] (Tape.mk' L (R.modifyNth f n)) := by

@@ -9,10 +9,7 @@
 # and by `make_site.py` in the leanprover-community.github.io repo.
 #
 # Current TODOs/unresolved questions:
-# - add infrastructure for updating the information upstream when formalisations are added
 # - perhaps add a wikidata version of the stacks attribute, and generate this file automatically
-#
-# TODO: display a less ambiguous title for e.g. "Liouville's theorem"
 
 Q11518:
   title: Pythagorean theorem
@@ -272,7 +269,7 @@ Q257387:
   comment: "mathlib4 pull request at https://github.com/leanprover-community/mathlib4/pull/20722"
 
 Q258374:
-  title: Carathéodory's theorem
+  title: Carathéodory's theorem (measure theory)
   decl: MeasureTheory.OuterMeasure.caratheodory
   comment: Hard to say what exactly is meant.
 
@@ -280,7 +277,7 @@ Q260928:
   title: Jordan curve theorem
 
 Q266291:
-  title: Bloch's theorem
+  title: Bloch's theorem (complex variables)
 
 Q268031:
   title: Abel's binomial theorem
@@ -383,6 +380,7 @@ Q384142:
 
 Q386292:
   title: Prime number theorem
+  comment: "Ongoing formalisation of various versions in https://github.com/AlexKontorovich/PrimeNumberTheoremAnd"
   # also in 100.yaml
 
 Q388525:
@@ -464,8 +462,8 @@ Q504843:
   title: Mycielski's theorem
 
 Q505798:
-  title: Lagrange's theorem
-  # group theorem result; exist additive and multiplicative version
+  title: Lagrange's theorem (group theory)
+  # exist additive and multiplicative version
   decl: Subgroup.card_subgroup_dvd_card
 
 Q510197:
@@ -526,7 +524,7 @@ Q574902:
   title: Tarski's indefinability theorem
 
 Q576478:
-  title: Liouville's theorem
+  title: Liouville's theorem (complex analysis)
   decl: Differentiable.apply_eq_apply_of_bounded
 
 Q578555:
@@ -554,6 +552,9 @@ Q594571:
 
 Q595466:
   title: Dini's theorem
+  decl: Monotone.tendstoLocallyUniformly_of_forall_tendsto
+  authors: Jireh Loreaux
+  date: 2024
 
 Q599876:
   title: Cochran's theorem
@@ -620,7 +621,7 @@ Q649977:
   title: Shirshov–Cohn theorem
 
 Q650738:
-  title: Folk theorem
+  title: Folk theorem (game theory)
 
 Q651593:
   title: Norton's theorem
@@ -634,7 +635,9 @@ Q656198:
 
 Q656645:
   title: Hilbert's basis theorem
-  # search mathlib or zulip; mathlib is close to this!
+  decl: Polynomial.isNoetherianRing
+  authors: Kenny Lau
+  date: 2019
 
 Q656772:
   title: Cayley–Hamilton theorem
@@ -656,7 +659,7 @@ Q657903:
   title: Hilbert–Waring theorem
 
 Q660799:
-  title: Darboux's theorem
+  title: Darboux's theorem (analysis)
   # "all derivatives have the intermediate value property"
   # TODO should exist in mathlib, add decl!
 
@@ -818,6 +821,9 @@ Q794269:
 
 Q810431:
   title: Basel problem
+  decl: hasSum_zeta_two
+  authors: David Loeffler
+  date: 2022
 
 Q828284:
   title: Parallel axis theorem
@@ -844,7 +850,7 @@ Q837506:
   comment: "will enter mathlib in 2024"
 
 Q837551:
-  title: Frobenius theorem
+  title: Frobenius theorem (differential topology)
 
 Q841893:
   title: Desargues's theorem
@@ -911,7 +917,7 @@ Q859122:
   title: Cauchy–Hadamard theorem
 
 Q865665:
-  title: Birkhoff's theorem
+  title: Birkhoff's theorem (relativity)
 
 Q866116:
   title: Hahn–Banach theorem
@@ -936,7 +942,7 @@ Q890875:
   title: Bohr–van Leeuwen theorem
 
 Q897769:
-  title: König's theorem
+  title: Kőnig's theorem (graph theory)
 
 Q899002:
   title: Pascal's theorem
@@ -1024,12 +1030,13 @@ Q943246:
   decl: littleWedderburn
 
 Q944297:
-  title: Open mapping theorem
-  # TODO: this entry points to Wikipedia's disambiguation page => wikipedia should be fixed
-  # Banach open mapping theorem/Banach-Schauder theorem in functional analysis is in mathlib (ContinuousLinearMap.isOpenMap)
+  title: Open mapping theorem (functional analysis)
+  decl: ContinuousLinearMap.isOpenMap
+  authors: Sébastien Gouëzel
+  date: 2019
 
 Q948664:
-  title: Kneser's addition theorem
+  title: Kneser's addition theorem (combinatorics)
   authors: Mantas Bakšys, Yaël Dillies
   url: https://github.com/YaelDillies/LeanCamCombi/blob/master/LeanCamCombi/Kneser/Kneser.lean
   date: 2022
@@ -1050,11 +1057,11 @@ Q966837:
   title: Cramér–Wold theorem
 
 Q967972:
-  title: Open mapping theorem
+  title: Open mapping theorem (complex analysis)
   decl: AnalyticOnNhd.is_constant_or_isOpen
 
 Q973359:
-  title: Rado's theorem
+  title: Radó's theorem (harmonic functions)
 
 Q974405:
   title: Hille–Yosida theorem
@@ -1161,7 +1168,7 @@ Q1057919:
 
 Q1058662:
   title: Darboux's theorem
-  # symplectic geometry result
+  # symplectic geometry
 
 Q1059151:
   title: FWL theorem
@@ -1213,7 +1220,7 @@ Q1076274:
   title: Choquet–Bishop–de Leeuw theorem
 
 Q1077462:
-  title: König's theorem
+  title: König's theorem (set theory)
 
 Q1077741:
   title: Hairy ball theorem
@@ -1268,7 +1275,7 @@ Q1135706:
   title: Harnack's theorem
 
 Q1136043:
-  title: Hurwitz's theorem
+  title: Hurwitz's theorem (complex analysis)
 
 Q1136262:
   title: Optical theorem
@@ -1285,12 +1292,11 @@ Q1137206:
   authors: Moritz Doll
 
 Q1139041:
-  title: Cauchy's theorem
-  # for finite groups
+  title: Cauchy's theorem (group theory)
   decl: exists_prime_orderOf_dvd_card
 
 Q1139430:
-  title: Hurwitz's theorem
+  title: Hurwitz's theorem (normed division algebras)
 
 Q1139524:
   title: Rationality theorem
@@ -1302,7 +1308,7 @@ Q1140200:
   title: PCP theorem
 
 Q1141747:
-  title: Carnot's theorem
+  title: Carnot's theorem (inradius, circumradius)
 
 Q1143540:
   title: Heckscher–Ohlin theorem
@@ -1421,7 +1427,7 @@ Q1217677:
   authors: Yury G. Kudryashov (first) and Benjamin Davidson (second)
 
 Q1227061:
-  title: Khinchin's theorem
+  title: Khinchin's theorem on Diophantine approximations
 
 Q1227702:
   title: Dirichlet's unit theorem
@@ -1475,7 +1481,7 @@ Q1317367:
   title: Japanese theorem for concyclic polygons
 
 Q1322892:
-  title: Dirac's theorems
+  title: Dirac's theorem on chordal graphs
 
 Q1330788:
   title: Weierstrass factorization theorem
@@ -1500,7 +1506,7 @@ Q1357684:
   title: Riesz representation theorem
 
 Q1361031:
-  title: Frobenius theorem
+  title: Frobenius theorem (real division algebras)
 
 Q1361393:
   title: Luzin's theorem
@@ -1564,6 +1570,9 @@ Q1455794:
 
 Q1457052:
   title: Well-ordering theorem
+  decl: exists_wellOrder
+  authors: Mario Carneiro, Chris Hughes, Violeta Hernández
+  date: 2017
 
 Q1471282:
   title: Radon's theorem
@@ -1594,8 +1603,6 @@ Q1535225:
 
 Q1542114:
   title: Bézout's theorem
-  decl: Nat.gcd_eq_gcd_ab
-  authors: mathlib
 
 Q1543149:
   title: Sokhatsky–Weierstrass theorem
@@ -1646,7 +1653,7 @@ Q1621180:
   title: Orlicz–Pettis theorem
 
 Q1630588:
-  title: Hurwitz's theorem
+  title: Hurwitz's theorem (number theory)
 
 Q1631749:
   title: Lester's theorem
@@ -1729,6 +1736,9 @@ Q1765521:
 
 Q1766814:
   title: Smn theorem
+  decl: Nat.Partrec.Code.smn
+  authors: Mario Carneiro
+  date: 2018
 
 Q1785610:
   title: Poncelet's closure theorem
@@ -1781,6 +1791,9 @@ Q1930577:
 
 Q1933521:
   title: Kleene's recursion theorem
+  decl: Nat.Partrec.Code.fixed_point₂
+  authors: Mario Carneiro
+  date: 2018
 
 Q1938251:
   title: Hasse–Minkowski theorem
@@ -1811,7 +1824,7 @@ Q2000090:
   title: Art gallery theorem
 
 Q2008549:
-  title: Hilbert's theorem
+  title: Hilbert's theorem (differential geometry)
 
 Q2013213:
   title: Reuschle's theorem
@@ -1991,7 +2004,7 @@ Q2345282:
   title: Shannon's theorem
 
 Q2347139:
-  title: Carnot's theorem
+  title: Carnot's theorem (thermodynamics)
 
 Q2360531:
   title: Jordan–Schur theorem
@@ -2028,7 +2041,7 @@ Q2449984X:
   title: Pivot theorem
 
 Q2471737:
-  title: Carathéodory's theorem
+  title: Carathéodory's theorem (convex hull)
   decl: convexHull_eq_union
 
 Q2473965:
@@ -2054,7 +2067,7 @@ Q2518048:
   title: Kodaira vanishing theorem
 
 Q2524990:
-  title: Jackson's theorem
+  title: Jackson's theorem (queueing theory)
 
 Q2525646:
   title: Jordan–Hölder theorem
@@ -2109,7 +2122,7 @@ Q2800071:
   title: Perfect graph theorem
 
 Q2862403:
-  title: Bombieri's theorem
+  title: Schneider–Lang theorem
 
 Q2893695:
   title: Unmixedness theorem
@@ -2175,7 +2188,11 @@ Q3345678:
   title: Moore–Aronszajn theorem
 
 Q3424029:
-  title: Chasles's theorems
+  # TODO: refer to the individual entries instead
+  # The list in wikipedia has already been changed. This will will change automatically
+  # when the 1000+ theorem project synchronises its data with wikipedia and this file is
+  # synchronised with the 1000+ theorem's data.
+  title: Chasles's theorem (disambiguation)
 
 Q3443426:
   title: Bondy's theorem
@@ -2223,10 +2240,10 @@ Q3527009:
   title: Baker's theorem
 
 Q3527011:
-  title: Beck's theorem
+  title: Beck's theorem (geometry)
 
 Q3527015:
-  title: Bernstein's theorem
+  title: Bernstein's theorem on monotone functions
 
 Q3527017:
   title: Beurling–Lax theorem
@@ -2235,7 +2252,7 @@ Q3527019:
   title: Birch's theorem
 
 Q3527034:
-  title: Cauchy's theorem
+  title: Cauchy's theorem (geometry)
 
 Q3527040:
   title: Chomsky–Schützenberger representation theorem
@@ -2473,7 +2490,7 @@ Q4378868:
   date: 2022
 
 Q4378889:
-  title: Carathéodory's theorem
+  title: Carathéodory's theorem (conformal mapping)
 
 Q4408070:
   title: De Finetti's theorem
@@ -2497,8 +2514,7 @@ Q4454973:
   title: Lindelöf's theorem
 
 Q4454976:
-  title: Liouville's theorem
-  # theorem in conformal mappings
+  title: Liouville's theorem (conformal mappings)
 
 Q4454989:
   title: Meusnier's theorem
@@ -2585,7 +2601,7 @@ Q4734844:
   title: Alperin–Brauer–Gorenstein theorem
 
 Q4736422:
-  title: Denjoy theorem
+  title: Denjoy–Luzin theorem
 
 Q4746948:
   title: Amitsur–Levitzki theorem
@@ -2664,6 +2680,9 @@ Q4877965:
 
 Q4878586:
   title: Beck's monadicity theorem
+  decl: CategoryTheory.Monad.monadicOfCreatesGSplitCoequalizers
+  authors: Bhavik Mehta
+  date: 2020
 
 Q4880958:
   title: Behnke–Stein theorem
@@ -2678,7 +2697,7 @@ Q4891633:
   title: Berger–Kazdan comparison theorem
 
 Q4894565:
-  title: Bernstein's theorem
+  title: Bernstein's theorem (approximation theory)
 
 Q4914101:
   title: Bing's recognition theorem
@@ -2811,6 +2830,10 @@ Q5125859:
 
 Q5127710:
   title: Clark–Ocone theorem
+
+Q513028:
+  title: Bézout's identity
+  decl: Nat.gcd_eq_gcd_ab
 
 Q5132839:
   title: Clifford's circle theorems
@@ -2986,7 +3009,7 @@ Q5494134:
   title: Fraňková–Helly selection theorem
 
 Q5498822:
-  title: Birkhoff's theorem
+  title: Birkhoff's ergodic theorem
 
 Q5499906:
   title: Shirshov–Witt theorem
@@ -3057,10 +3080,10 @@ Q5609384:
   title: Grinberg's theorem
 
 Q5610188:
-  title: Gromov's compactness theorem
+  title: Gromov's compactness theorem (geometry)
 
 Q5610190:
-  title: Gromov's compactness theorem
+  title: Gromov's compactness theorem (topology)
 
 Q5610718:
   title: Grothendieck's connectedness theorem
@@ -3174,8 +3197,7 @@ Q6402928:
   title: Lagrange reversion theorem
 
 Q6403282:
-  title: Lagrange's theorem
-  # number theory
+  title: Lagrange's theorem (number theory)
 
 Q6407842:
   title: Killing–Hopf theorem
@@ -3653,8 +3675,7 @@ Q7818977:
   title: Tomita's theorem
 
 Q7820874:
-  title: Tonelli's theorem
-  decl: MeasureTheory.lintegral_prod
+  title: Tonelli's theorem (functional analysis)
 
 Q7824894:
   title: Topkis's theorem
@@ -3718,7 +3739,7 @@ Q7966545:
   title: Walter theorem
 
 Q7978735:
-  title: Weber's theorem
+  title: Weber's theorem (Algebraic curves)
 
 Q7980241:
   title: Weinberg–Witten theorem
@@ -3905,7 +3926,7 @@ Q18205730:
   title: Byers–Yang theorem
 
 Q18206032:
-  title: Cartan's theorem
+  title: Closed subgroup theorem
 
 Q18206266:
   title: Euclid–Euler theorem
@@ -3946,7 +3967,7 @@ Q25304301:
   title: Bregman–Minc inequality
 
 Q25345219:
-  title: BBD decomposition theorem
+  title: Decomposition theorem of Beilinson, Bernstein and Deligne
 
 Q25378690:
   title: Ionescu-Tulcea theorem
@@ -3958,7 +3979,7 @@ Q28194853:
   title: Lovelock's theorem
 
 Q28458131:
-  title: Glivenko's theorem
+  title: Glivenko's theorem (probability theory)
 
 Q31838822:
   title: Kirchberger's theorem

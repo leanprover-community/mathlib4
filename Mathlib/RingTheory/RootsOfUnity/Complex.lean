@@ -123,24 +123,13 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
   rw [Complex.isPrimitiveRoot_iff _ _ hn] at h
   obtain ⟨i, h, hin, rfl⟩ := h
   rw [mul_comm, ← mul_assoc, Complex.exp_mul_I]
-  refine ⟨if i * 2 ≤ n then i else i - n, ?_, ?_, ?_⟩
-  on_goal 2 =>
+  refine ⟨if i * 2 ≤ n then i else i - n, ?_, ?isCoprime, by omega⟩
+  case isCoprime =>
     replace hin := Nat.isCoprime_iff_coprime.mpr hin
     split_ifs
     · exact hin
     · convert hin.add_mul_left_left (-1) using 1
       rw [mul_neg_one, sub_eq_add_neg]
-  on_goal 2 =>
-    split_ifs with h₂
-    · exact mod_cast h
-    suffices (i - n : ℤ).natAbs = n - i by
-      rw [this]
-      apply tsub_lt_self hn.bot_lt
-      contrapose! h₂
-      rw [Nat.eq_zero_of_le_zero h₂, zero_mul]
-      exact zero_le _
-    rw [← Int.natAbs_neg, neg_sub, Int.natAbs_eq_iff]
-    exact Or.inl (Int.ofNat_sub h.le).symm
   split_ifs with h₂
   · convert Complex.arg_cos_add_sin_mul_I _
     · push_cast; rfl

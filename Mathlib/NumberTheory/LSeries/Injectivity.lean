@@ -154,7 +154,7 @@ lemma LSeries_eventually_eq_zero_iff' {f : ℕ → ℂ} :
         obtain ⟨s, hs⟩ := H
         exact ⟨s, hs.1, fun x hx ↦ by simp [hs.2 hx]⟩
       intro n
-      induction' n using Nat.strongRecOn with n ih
+      induction n using Nat.strongRecOn with | ind n ih =>
       -- it suffices to show that `n ^ x * LSeries F x` tends to `F n` as `x` tends to `∞`
       suffices Tendsto (fun x : ℝ ↦ n ^ (x : ℂ) * LSeries F x) atTop (nhds (F n)) by
         replace this := this.congr' <| H' n

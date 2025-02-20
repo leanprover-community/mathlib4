@@ -149,7 +149,7 @@ theorem set_mem_fixedBy_of_subset_fixedBy {s : Set α} {g : G} (s_ss_fixedBy : s
 
 theorem smul_subset_of_set_mem_fixedBy {s t : Set α} {g : G} (t_ss_s : t ⊆ s)
     (s_in_fixedBy : s ∈ fixedBy (Set α) g) : g • t ⊆ s :=
-  (Set.set_smul_subset_set_smul_iff.mpr t_ss_s).trans s_in_fixedBy.subset
+  (Set.smul_set_subset_smul_set_iff.mpr t_ss_s).trans s_in_fixedBy.subset
 
 /-!
 If a set `s : Set α` is a superset of `(MulAction.fixedBy α g)ᶜ` (resp. `(AddAction.fixedBy α g)ᶜ`),

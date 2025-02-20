@@ -30,7 +30,6 @@ variable (R M)
 /-- Continuous linear equivalences between modules. We only put the type classes that are necessary
 for the definition, although in applications `M` and `M₂` will be topological modules over the
 topological semiring `R`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet; was @[nolint has_nonempty_instance]
 structure ContinuousLinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) [TopologicalSpace M]
     [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
@@ -152,8 +151,8 @@ instance equivLike :
   coe f := f.toFun
   inv f := f.invFun
   coe_injective' f g h₁ h₂ := by
-    cases' f with f' _
-    cases' g with g' _
+    obtain ⟨f', _⟩ := f
+    obtain ⟨g', _⟩ := g
     rcases f' with ⟨⟨⟨_, _⟩, _⟩, _⟩
     rcases g' with ⟨⟨⟨_, _⟩, _⟩, _⟩
     congr
@@ -432,6 +431,9 @@ theorem self_comp_symm (e : M₁ ≃SL[σ₁₂] M₂) : (e : M₁ → M₂) ∘
 @[simp]
 theorem symm_symm (e : M₁ ≃SL[σ₁₂] M₂) : e.symm.symm = e := rfl
 
+theorem symm_bijective : Function.Bijective (ContinuousLinearEquiv.symm : (M₁ ≃SL[σ₁₂] M₂) → _) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 @[simp]
 theorem refl_symm : (ContinuousLinearEquiv.refl R₁ M₁).symm = ContinuousLinearEquiv.refl R₁ M₁ :=
   rfl
@@ -550,8 +552,8 @@ variable {M₁} {R₄ : Type*} [Semiring R₄] [Module R₄ M₄] {σ₃₄ : R�
 This is a continuous version of `ULift.moduleEquiv`. -/
 def ulift : ULift M₁ ≃L[R₁] M₁ :=
   { ULift.moduleEquiv with
-    continuous_toFun := continuous_uLift_down
-    continuous_invFun := continuous_uLift_up }
+    continuous_toFun := continuous_uliftDown
+    continuous_invFun := continuous_uliftUp }
 
 /-- A pair of continuous (semi)linear equivalences generates an equivalence between the spaces of
 continuous linear maps. See also `ContinuousLinearEquiv.arrowCongr`. -/
@@ -640,7 +642,7 @@ variable {R : Type*} [Semiring R] {M : Type*} [TopologicalSpace M] [AddCommGroup
   {M₄ : Type*} [TopologicalSpace M₄] [AddCommGroup M₄] [Module R M] [Module R M₂] [Module R M₃]
   [Module R M₄]
 
-variable [TopologicalAddGroup M₄]
+variable [IsTopologicalAddGroup M₄]
 
 /-- Equivalence given by a block lower diagonal matrix. `e` and `e'` are diagonal square blocks,
   and `f` is a rectangular block below the diagonal. -/
@@ -791,7 +793,7 @@ theorem unitsEquivAut_symm_apply (e : R ≃L[R] R) : ↑((unitsEquivAut R).symm 
 
 end
 
-variable [Module R M₂] [TopologicalAddGroup M]
+variable [Module R M₂] [IsTopologicalAddGroup M]
 
 /-- A pair of continuous linear maps such that `f₁ ∘ f₂ = id` generates a continuous
 linear equivalence `e` between `M` and `M₂ × f₁.ker` such that `(e x).2 = x` for `x ∈ f₁.ker`,
@@ -853,6 +855,28 @@ def piFinTwo (M : Fin 2 → Type*) [∀ i, AddCommMonoid (M i)] [∀ i, Module R
 def finTwoArrow : (Fin 2 → M) ≃L[R] M × M :=
   { piFinTwo R fun _ => M with toLinearEquiv := LinearEquiv.finTwoArrow R M }
 
+section
+variable {n : ℕ} {R : Type*} {M : Fin n.succ → Type*} {N : Type*}
+variable [Semiring R]
+variable [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] [∀ i, TopologicalSpace (M i)]
+
+variable (R M) in
+/-- `Fin.consEquiv` as a continuous linear equivalence.  -/
+@[simps!]
+def _root_.Fin.consEquivL : (M 0 × Π i, M (Fin.succ i)) ≃L[R] (Π i, M i) where
+  __ := Fin.consLinearEquiv R M
+  continuous_toFun := continuous_id.fst.finCons continuous_id.snd
+  continuous_invFun := .prod_mk (continuous_apply 0) (by continuity)
+
+/-- `Fin.cons` in the codomain of continuous linear maps. -/
+abbrev _root_.ContinuousLinearMap.finCons
+    [AddCommMonoid N] [Module R N] [TopologicalSpace N]
+    (f : N →L[R] M 0) (fs : N →L[R] Π i, M (Fin.succ i)) :
+    N →L[R] Π i, M i :=
+  Fin.consEquivL R M ∘L f.prod fs
+
+end
+
 end
 
 end ContinuousLinearEquiv
@@ -896,14 +920,31 @@ theorem inverse_equiv (e : M ≃L[R] M₂) : inverse (e : M →L[R] M₂) = e.sy
 
 @[deprecated (since := "2024-10-29")] alias inverse_non_equiv := inverse_of_not_isInvertible
 
+@[simp]
+theorem isInvertible_zero_iff :
+    IsInvertible (0 : M →L[R] M₂) ↔ Subsingleton M ∧ Subsingleton M₂ := by
+  refine ⟨fun ⟨e, he⟩ ↦ ?_, ?_⟩
+  · have A : Subsingleton M := by
+      refine ⟨fun x y ↦ e.injective ?_⟩
+      simp [he, ← ContinuousLinearEquiv.coe_coe]
+    exact ⟨A, e.toEquiv.symm.subsingleton⟩
+  · rintro ⟨hM, hM₂⟩
+    let e : M ≃L[R] M₂ :=
+    { toFun := 0
+      invFun := 0
+      left_inv x := Subsingleton.elim _ _
+      right_inv x := Subsingleton.elim _ _
+      map_add' x y := Subsingleton.elim _ _
+      map_smul' c x := Subsingleton.elim _ _ }
+    refine ⟨e, ?_⟩
+    ext x
+    exact Subsingleton.elim _ _
+
 @[simp] theorem inverse_zero : inverse (0 : M →L[R] M₂) = 0 := by
   by_cases h : IsInvertible (0 : M →L[R] M₂)
-  · rcases h with ⟨e', he'⟩
-    simp only [← he', inverse_equiv]
-    ext v
-    apply e'.injective
-    rw [← ContinuousLinearEquiv.coe_coe, he']
-    rfl
+  · rcases isInvertible_zero_iff.1 h with ⟨hM, hM₂⟩
+    ext x
+    exact Subsingleton.elim _ _
   · exact inverse_of_not_isInvertible h
 
 lemma IsInvertible.comp {g : M₂ →L[R] M₃} {f : M →L[R] M₂}
@@ -1043,7 +1084,7 @@ then there exists a submodule `q` and a continuous linear equivalence `M ≃L[R]
 
 In fact, the properties of `e` imply the properties of `e.symm` and vice versa,
 but we provide both for convenience. -/
-lemma ClosedComplemented.exists_submodule_equiv_prod [TopologicalAddGroup M]
+lemma ClosedComplemented.exists_submodule_equiv_prod [IsTopologicalAddGroup M]
     {p : Submodule R M} (hp : p.ClosedComplemented) :
     ∃ (q : Submodule R M) (e : M ≃L[R] (p × q)),
       (∀ x : p, e x = (x, 0)) ∧ (∀ y : q, e y = (0, y)) ∧ (∀ x, e.symm x = x.1 + x.2) :=
@@ -1055,7 +1096,7 @@ end Submodule
 
 namespace MulOpposite
 
-variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [TopologicalSemiring R]
+variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [IsTopologicalSemiring R]
   {M : Type*} [AddCommMonoid M] [Module R M] [TopologicalSpace M] [ContinuousSMul R M]
 
 /-- The function `op` is a continuous linear equivalence. -/

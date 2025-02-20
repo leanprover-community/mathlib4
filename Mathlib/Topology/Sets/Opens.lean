@@ -164,6 +164,9 @@ theorem mk_inf_mk {U V : Set α} {hU : IsOpen U} {hV : IsOpen V} :
 theorem coe_inf (s t : Opens α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t :=
   rfl
 
+@[simp]
+lemma mem_inf {s t : Opens α} {x : α} : x ∈ s ⊓ t ↔ x ∈ s ∧ x ∈ t := Iff.rfl
+
 @[simp, norm_cast]
 theorem coe_sup (s t : Opens α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t :=
   rfl
@@ -171,6 +174,9 @@ theorem coe_sup (s t : Opens α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t :=
 @[simp, norm_cast]
 theorem coe_bot : ((⊥ : Opens α) : Set α) = ∅ :=
   rfl
+
+@[simp]
+lemma mem_bot {x : α} : x ∈ (⊥ : Opens α) ↔ False := Iff.rfl
 
 @[simp] theorem mk_empty : (⟨∅, isOpen_empty⟩ : Opens α) = ⊥ := rfl
 

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Igor Khavkine
 -/
 import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
-import Mathlib.MeasureTheory.Function.L1Space
 import Mathlib.MeasureTheory.Function.UniformIntegrable
 
 /-!
@@ -46,7 +45,7 @@ variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAd
 section UnifTight
 
 /- This follows closely the `UnifIntegrable` section
-from `Mathlib.MeasureTheory.Functions.UniformIntegrable`.-/
+from `Mathlib.MeasureTheory.Functions.UniformIntegrable`. -/
 
 variable {f g : ι → α → β} {p : ℝ≥0∞}
 
@@ -154,7 +153,7 @@ theorem unifTight_of_subsingleton [Subsingleton ι] (hp_top : p ≠ ∞)
   · exact ⟨∅, by measurability, fun _ => hε_top.symm ▸ le_top⟩
   by_cases hι : Nonempty ι
   case neg => exact ⟨∅, (by measurability), fun i => False.elim <| hι <| Nonempty.intro i⟩
-  cases' hι with i
+  obtain ⟨i⟩ := hι
   obtain ⟨s, _, hμs, hfε⟩ := (hf i).exists_eLpNorm_indicator_compl_lt hp_top (coe_ne_zero.2 hε.ne')
   refine ⟨s, ne_of_lt hμs, fun j => ?_⟩
   convert hfε.le
@@ -166,7 +165,6 @@ private theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α �
   revert f
   induction' n with n h
   · intro f hf
-    have : Subsingleton (Fin Nat.zero) := subsingleton_fin_zero -- Porting note: Added this instance
     exact unifTight_of_subsingleton hp_top hf
   intro f hfLp ε hε
   by_cases hε_top : ε = ∞
@@ -240,7 +238,7 @@ private theorem unifTight_of_tendsto_Lp (hp' : p ≠ ∞) (hf : ∀ n, Memℒp (
 
 /- Next we deal with the forward direction. The `Memℒp` and `TendstoInMeasure` hypotheses
 are unwrapped and strengthened (by known lemmas) to also have the `StronglyMeasurable`
-and a.e. convergence hypotheses. The bulk of the proof is done under these stronger hypotheses.-/
+and a.e. convergence hypotheses. The bulk of the proof is done under these stronger hypotheses. -/
 
 /-- Bulk of the proof under strengthened hypotheses. Invoked from `tendsto_Lp_of_tendsto_ae`. -/
 private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞)
@@ -326,7 +324,8 @@ private theorem ae_tendsto_ae_congr {f f' : ℕ → α → β} {g g' : α → β
   apply Tendsto.congr hff'x
   rw [← hgg'x]; exact hfgx
 
-/-- Forward direction of Vitali's convergnece theorem, with a.e. instead of InMeasure convergence.-/
+/-- Forward direction of Vitali's convergence theorem, with a.e. instead of `InMeasure`
+convergence -/
 theorem tendsto_Lp_of_tendsto_ae (hp : 1 ≤ p) (hp' : p ≠ ∞)
     {f : ℕ → α → β} {g : α → β} (haef : ∀ n, AEStronglyMeasurable (f n) μ)
     (hg' : Memℒp g p μ) (hui : UnifIntegrable f p μ) (hut : UnifTight f p μ)

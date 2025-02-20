@@ -69,7 +69,7 @@ Instead of directly providing the data we opt instead for a `Prop` class. In all
 the continuous functional calculus is uniquely determined, and utilizing this approach
 prevents diamonds or problems arising from multiple instances. -/
 class NonUnitalContinuousFunctionalCalculus (R : Type*) {A : Type*} (p : outParam (A → Prop))
-    [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R] [TopologicalSemiring R]
+    [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R]
     [ContinuousStar R] [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : Prop where
   predicate_zero : p 0
@@ -91,7 +91,7 @@ and the more common variant `cfcₙ_comp`.
 This class will have instances in each of the common cases `ℂ`, `ℝ` and `ℝ≥0` as a consequence of
 the Stone-Weierstrass theorem. -/
 class ContinuousMapZero.UniqueHom (R A : Type*) [CommSemiring R] [StarRing R]
-    [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
+    [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
     [TopologicalSpace A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] : Prop where
   eq_of_continuous_of_map_id (s : Set R) [CompactSpace s] [Zero s] (h0 : (0 : s) = (0 : R))
     (φ ψ : C(s, R)₀ →⋆ₙₐ[R] A) (hφ : Continuous φ) (hψ : Continuous ψ)
@@ -104,7 +104,7 @@ class ContinuousMapZero.UniqueHom (R A : Type*) [CommSemiring R] [StarRing R]
 section Main
 
 variable {R A : Type*} {p : A → Prop} [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R]
-variable [TopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
+variable [IsTopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
 variable [TopologicalSpace A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
 variable [instCFCₙ : NonUnitalContinuousFunctionalCalculus R p]
 
@@ -364,7 +364,7 @@ open Finset in
 lemma cfcₙ_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
     (hf : ∀ i ∈ s, ContinuousOn (f i) (σₙ R a) := by cfc_cont_tac)
     (hf0 : ∀ i ∈ s, f i 0 = 0 := by cfc_zero_tac) :
-    cfcₙ (∑ i in s, f i) a = ∑ i in s, cfcₙ (f i) a := by
+    cfcₙ (∑ i ∈ s, f i) a = ∑ i ∈ s, cfcₙ (f i) a := by
   by_cases ha : p a
   · have hsum : s.sum f = fun z => ∑ i ∈ s, f i z := by ext; simp
     have hf' : ContinuousOn (∑ i : s, f i) (σₙ R a) := by
@@ -523,8 +523,8 @@ end Main
 section Neg
 
 variable {R A : Type*} {p : A → Prop} [CommRing R] [Nontrivial R] [StarRing R] [MetricSpace R]
-variable [TopologicalRing R] [ContinuousStar R] [TopologicalSpace A] [NonUnitalRing A] [StarRing A]
-variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
+variable [IsTopologicalRing R] [ContinuousStar R] [TopologicalSpace A] [NonUnitalRing A]
+variable [StarRing A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
 variable [NonUnitalContinuousFunctionalCalculus R p]
 variable (f g : R → R) (a : A)
 variable (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
@@ -568,7 +568,7 @@ section Order
 section Semiring
 
 variable {R A : Type*} {p : A → Prop} [OrderedCommSemiring R] [Nontrivial R]
-variable [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
+variable [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
 variable [∀ (α) [Zero α] [TopologicalSpace α], StarOrderedRing C(α, R)₀]
 variable [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
 variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
@@ -634,7 +634,7 @@ end Semiring
 section Ring
 
 variable {R A : Type*} {p : A → Prop} [OrderedCommRing R] [Nontrivial R]
-variable [StarRing R] [MetricSpace R] [TopologicalRing R] [ContinuousStar R]
+variable [StarRing R] [MetricSpace R] [IsTopologicalRing R] [ContinuousStar R]
 variable [∀ (α) [Zero α] [TopologicalSpace α], StarOrderedRing C(α, R)₀]
 variable [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
 variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
@@ -668,7 +668,7 @@ section Superset
 open ContinuousMapZero
 
 variable {R A : Type*} {p : A → Prop} [CommSemiring R] [Nontrivial R] [StarRing R]
-    [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
+    [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
     [TopologicalSpace A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
     [instCFCₙ : NonUnitalContinuousFunctionalCalculus R p]
 
@@ -712,7 +712,7 @@ section UnitalToNonUnital
 open ContinuousMapZero Set Uniformity ContinuousMap
 
 variable {R A : Type*} {p : A → Prop} [Semifield R] [StarRing R] [MetricSpace R]
-variable [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A]
+variable [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A]
 variable [Algebra R A] [ContinuousFunctionalCalculus R p]
 
 variable (R) in

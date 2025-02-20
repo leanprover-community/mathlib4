@@ -3,7 +3,7 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Comma.Over
+import Mathlib.CategoryTheory.Comma.Over.Basic
 import Mathlib.CategoryTheory.DiscreteCategory
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
@@ -306,11 +306,11 @@ theorem BinaryCofan.mk_inr {P : C} (ι₁ : X ⟶ P) (ι₂ : Y ⟶ P) : (Binary
 
 /-- Every `BinaryFan` is isomorphic to an application of `BinaryFan.mk`. -/
 def isoBinaryFanMk {X Y : C} (c : BinaryFan X Y) : c ≅ BinaryFan.mk c.fst c.snd :=
-    Cones.ext (Iso.refl _) fun j => by cases' j with l; cases l; repeat simp
+    Cones.ext (Iso.refl _) fun ⟨l⟩ => by cases l; repeat simp
 
 /-- Every `BinaryFan` is isomorphic to an application of `BinaryFan.mk`. -/
 def isoBinaryCofanMk {X Y : C} (c : BinaryCofan X Y) : c ≅ BinaryCofan.mk c.inl c.inr :=
-    Cocones.ext (Iso.refl _) fun j => by cases' j with l; cases l; repeat simp
+    Cocones.ext (Iso.refl _) fun ⟨l⟩ => by cases l; repeat simp
 
 /-- This is a more convenient formulation to show that a `BinaryFan` constructed using
 `BinaryFan.mk` is a limit cone.
@@ -837,17 +837,13 @@ end CoprodLemmas
 
 variable (C)
 
-/-- `HasBinaryProducts` represents a choice of product for every pair of objects.
-
-See <https://stacks.math.columbia.edu/tag/001T>.
--/
+/-- `HasBinaryProducts` represents a choice of product for every pair of objects. -/
+@[stacks 001T]
 abbrev HasBinaryProducts :=
   HasLimitsOfShape (Discrete WalkingPair) C
 
-/-- `HasBinaryCoproducts` represents a choice of coproduct for every pair of objects.
-
-See <https://stacks.math.columbia.edu/tag/04AP>.
--/
+/-- `HasBinaryCoproducts` represents a choice of coproduct for every pair of objects. -/
+@[stacks 04AP]
 abbrev HasBinaryCoproducts :=
   HasColimitsOfShape (Discrete WalkingPair) C
 

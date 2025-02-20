@@ -15,6 +15,8 @@ import Mathlib.CategoryTheory.Action.Basic
 We construct `Action (Type u) G` from a `[MulAction G X]` instance and give some applications.
 -/
 
+assert_not_exists Field
+
 universe u v
 
 open CategoryTheory Limits
@@ -24,7 +26,7 @@ namespace Action
 /-- Bundles a type `H` with a multiplicative action of `G` as an `Action`. -/
 def ofMulAction (G H : Type u) [Monoid G] [MulAction G H] : Action (Type u) (MonCat.of G) where
   V := H
-  ρ := @MulAction.toEndHom _ _ _ (by assumption)
+  ρ := MonCat.ofHom <| @MulAction.toEndHom _ _ _ (by assumption)
 
 @[simp]
 theorem ofMulAction_apply {G H : Type u} [Monoid G] [MulAction G H] (g : G) (x : H) :
@@ -80,7 +82,7 @@ instance (G : Type*) (X : Type*) [Monoid G] [MulAction G X] [Fintype X] :
 def ofMulAction (G : Type u) (H : FintypeCat.{u}) [Monoid G] [MulAction G H] :
     Action FintypeCat (MonCat.of G) where
   V := H
-  ρ := @MulAction.toEndHom _ _ _ (by assumption)
+  ρ := MonCat.ofHom <| @MulAction.toEndHom _ _ _ (by assumption)
 
 @[simp]
 theorem ofMulAction_apply {G : Type u} {H : FintypeCat.{u}} [Monoid G] [MulAction G H]
@@ -101,10 +103,9 @@ def toEndHom [N.Normal] : G →* End (G ⧸ₐ N) where
   toFun v := {
     hom := Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) <| fun a b h ↦ Quotient.sound <| by
       apply (QuotientGroup.leftRel_apply).mpr
-      simp only [mul_inv_rev, inv_inv]
-      convert_to v * (a⁻¹ * b) * v⁻¹ ∈ N
-      · group
-      · exact Subgroup.Normal.conj_mem ‹_› _ (QuotientGroup.leftRel_apply.mp h) _
+      -- We avoid `group` here to minimize imports while low in the hierarchy;
+      -- typically it would be better to invoke the tactic.
+      simpa [mul_assoc] using Subgroup.Normal.conj_mem ‹_› _ (QuotientGroup.leftRel_apply.mp h) _
     comm := fun (g : G) ↦ by
       ext (x : G ⧸ N)
       induction' x using Quotient.inductionOn with x
@@ -167,19 +168,19 @@ end FintypeCat
 
 section ToMulAction
 
-variable {V : Type (u + 1)} [LargeCategory V] [HasForget V]
+variable {V : Type (u + 1)} [LargeCategory V] {FV : V → V → Type*} {CV : V → Type*}
+variable [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)] [ConcreteCategory V FV]
 
 instance instMulAction {G : MonCat.{u}} (X : Action V G) :
-    MulAction G ((CategoryTheory.forget _).obj X) where
-  smul g x := ((CategoryTheory.forget _).map (X.ρ g)) x
+    MulAction G (ToType X) where
+  smul g x := ConcreteCategory.hom (X.ρ g) x
   one_smul x := by
-    show ((CategoryTheory.forget _).map (X.ρ 1)) x = x
-    simp only [Action.ρ_one, FunctorToTypes.map_id_apply]
+    show ConcreteCategory.hom (X.ρ 1) x = x
+    simp
   mul_smul g h x := by
-    show (CategoryTheory.forget V).map (X.ρ (g * h)) x =
-      ((CategoryTheory.forget V).map (X.ρ h) ≫ (CategoryTheory.forget V).map (X.ρ g)) x
-    rw [← Functor.map_comp, map_mul]
-    rfl
+    show ConcreteCategory.hom (X.ρ (g * h)) x =
+      ConcreteCategory.hom (X.ρ g) ((ConcreteCategory.hom (X.ρ h)) x)
+    simp
 
 /- Specialize `instMulAction` to assist typeclass inference. -/
 instance {G : MonCat.{u}} (X : Action FintypeCat G) : MulAction G X.V := Action.instMulAction X

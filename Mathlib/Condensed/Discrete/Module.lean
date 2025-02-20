@@ -24,8 +24,6 @@ universe w u
 
 open CategoryTheory LocallyConstant CompHausLike Functor Category Functor Opposite
 
-attribute [local instance] HasForget.instFunLike
-
 variable {P : TopCat.{u} → Prop}
 
 namespace CompHausLike.LocallyConstantModule
@@ -40,7 +38,7 @@ constant maps.
 def functorToPresheaves : ModuleCat.{max u w} R ⥤ ((CompHausLike.{u} P)ᵒᵖ ⥤ ModuleCat R) where
   obj X := {
     obj := fun ⟨S⟩ ↦ ModuleCat.of R (LocallyConstant S X)
-    map := fun f ↦ ModuleCat.ofHom (comapₗ R f.unop) }
+    map := fun f ↦ ModuleCat.ofHom (comapₗ R f.unop.hom) }
   map f := { app := fun S ↦ ModuleCat.ofHom (mapₗ R f.hom) }
 
 variable [HasExplicitFiniteCoproducts.{0} P] [HasExplicitPullbacks.{u} P]
@@ -88,6 +86,7 @@ noncomputable def functorIsoDiscreteAux₂ (M : ModuleCat R) :
       (ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u+1}) M)) :=
   (discrete _).mapIso (functorIsoDiscreteAux₁ R M)
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance (M : ModuleCat R) : IsIso ((forget R).map
     ((discreteUnderlyingAdj (ModuleCat R)).counit.app ((functor R).obj M))) := by
   dsimp [Condensed.forget, discreteUnderlyingAdj]
@@ -160,9 +159,11 @@ instance : (discrete (ModuleCat R)).Full :=
 instance : (constantSheaf (coherentTopology CompHaus) (ModuleCat R)).Full :=
   inferInstanceAs (discrete (ModuleCat R)).Full
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : (constantSheaf (coherentTopology CompHaus) (Type (u + 1))).Faithful :=
   inferInstanceAs (discrete (Type (u + 1))).Faithful
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : (constantSheaf (coherentTopology CompHaus) (Type (u + 1))).Full :=
   inferInstanceAs (discrete (Type (u + 1))).Full
 
@@ -199,6 +200,7 @@ noncomputable def functorIsoDiscreteAux₂ (M : ModuleCat.{u} R) :
 instance : HasSheafify (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R) :=
   inferInstance
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance (M : ModuleCat R) :
     IsIso ((LightCondensed.forget R).map
     ((discreteUnderlyingAdj (ModuleCat R)).counit.app
@@ -272,9 +274,11 @@ instance : (discrete (ModuleCat.{u} R)).Full :=
 instance : (constantSheaf (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R)).Full :=
   inferInstanceAs (discrete.{u} (ModuleCat.{u} R)).Full
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : (constantSheaf (coherentTopology LightProfinite) (Type u)).Faithful :=
   inferInstanceAs (discrete (Type u)).Faithful
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : (constantSheaf (coherentTopology LightProfinite) (Type u)).Full :=
   inferInstanceAs (discrete (Type u)).Full
 

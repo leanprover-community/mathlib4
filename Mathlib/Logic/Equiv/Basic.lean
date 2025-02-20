@@ -27,7 +27,7 @@ In this file we continue the work on equivalences begun in `Mathlib/Logic/Equiv/
 * canonical isomorphisms between various types: e.g.,
 
   - `Equiv.sumEquivSigmaBool` is the canonical equivalence between the sum of two types `α ⊕ β`
-    and the sigma-type `Σ b : Bool, b.casesOn α β`;
+    and the sigma-type `Σ b, bif b then β else α`;
 
   - `Equiv.prodSumDistrib : α × (β ⊕ γ) ≃ (α × β) ⊕ (α × γ)` shows that type product and type sum
     satisfy the distributive law up to a canonical equivalence;
@@ -215,6 +215,23 @@ theorem sigmaUnique_symm_apply {α} {β : α → Type*} [∀ a, Unique (β a)] (
     (sigmaUnique α β).symm x = ⟨x, default⟩ :=
   rfl
 
+/-- Any `Unique` type is a left identity for type sigma up to equivalence. Compare with `uniqueProd`
+which is non-dependent. -/
+def uniqueSigma {α} (β : α → Type*) [Unique α] : (i:α) × β i ≃ β default :=
+  ⟨fun p ↦ (Unique.eq_default _).rec p.2,
+   fun b ↦ ⟨default, b⟩,
+   fun _ ↦ Sigma.ext (Unique.default_eq _) (eqRec_heq _ _),
+   fun _ ↦ rfl⟩
+
+theorem uniqueSigma_apply {α} {β : α → Type*} [Unique α] (x : (a : α) × β a) :
+    uniqueSigma β x = (Unique.eq_default _).rec x.2 :=
+  rfl
+
+@[simp]
+theorem uniqueSigma_symm_apply {α} {β : α → Type*} [Unique α] (y : β default) :
+    (uniqueSigma β).symm y = ⟨default, y⟩ :=
+  rfl
+
 /-- `Empty` type is a right absorbing element for type product up to an equivalence. -/
 def prodEmpty (α) : α × Empty ≃ Empty :=
   equivEmpty _
@@ -249,23 +266,6 @@ def psumEquivSum (α β) : α ⊕' β ≃ α ⊕ β where
 def sumCongr {α₁ α₂ β₁ β₂} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) : α₁ ⊕ β₁ ≃ α₂ ⊕ β₂ :=
   ⟨Sum.map ea eb, Sum.map ea.symm eb.symm, fun x => by simp, fun x => by simp⟩
 
-/-- If `α ≃ α'` and `β ≃ β'`, then `α ⊕' β ≃ α' ⊕' β'`. -/
-def psumCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : α ⊕' γ ≃ β ⊕' δ where
-  toFun x := PSum.casesOn x (PSum.inl ∘ e₁) (PSum.inr ∘ e₂)
-  invFun x := PSum.casesOn x (PSum.inl ∘ e₁.symm) (PSum.inr ∘ e₂.symm)
-  left_inv := by rintro (x | x) <;> simp
-  right_inv := by rintro (x | x) <;> simp
-
-/-- Combine two `Equiv`s using `PSum` in the domain and `Sum` in the codomain. -/
-def psumSum {α₂ β₂} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
-    α₁ ⊕' β₁ ≃ α₂ ⊕ β₂ :=
-  (ea.psumCongr eb).trans (psumEquivSum _ _)
-
-/-- Combine two `Equiv`s using `Sum` in the domain and `PSum` in the codomain. -/
-def sumPSum {α₁ β₁} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
-    α₁ ⊕ β₁ ≃ α₂ ⊕' β₂ :=
-  (ea.symm.psumSum eb.symm).symm
-
 @[simp]
 theorem sumCongr_trans {α₁ α₂ β₁ β₂ γ₁ γ₂} (e : α₁ ≃ β₁) (f : α₂ ≃ β₂) (g : β₁ ≃ γ₁) (h : β₂ ≃ γ₂) :
     (Equiv.sumCongr e f).trans (Equiv.sumCongr g h) = Equiv.sumCongr (e.trans g) (f.trans h) := by
@@ -282,6 +282,23 @@ theorem sumCongr_refl {α β} :
     Equiv.sumCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (α ⊕ β) := by
   ext i
   cases i <;> rfl
+
+/-- If `α ≃ α'` and `β ≃ β'`, then `α ⊕' β ≃ α' ⊕' β'`. -/
+def psumCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : α ⊕' γ ≃ β ⊕' δ where
+  toFun x := PSum.casesOn x (PSum.inl ∘ e₁) (PSum.inr ∘ e₂)
+  invFun x := PSum.casesOn x (PSum.inl ∘ e₁.symm) (PSum.inr ∘ e₂.symm)
+  left_inv := by rintro (x | x) <;> simp
+  right_inv := by rintro (x | x) <;> simp
+
+/-- Combine two `Equiv`s using `PSum` in the domain and `Sum` in the codomain. -/
+def psumSum {α₂ β₂} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
+    α₁ ⊕' β₁ ≃ α₂ ⊕ β₂ :=
+  (ea.psumCongr eb).trans (psumEquivSum _ _)
+
+/-- Combine two `Equiv`s using `Sum` in the domain and `PSum` in the codomain. -/
+def sumPSum {α₁ β₁} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
+    α₁ ⊕ β₁ ≃ α₂ ⊕' β₂ :=
+  (ea.symm.psumSum eb.symm).symm
 
 /-- A subtype of a sum is equivalent to a sum of subtypes. -/
 def subtypeSum {α β} {p : α ⊕ β → Prop} :
@@ -459,7 +476,7 @@ def piOptionEquivProd {α} {β : Option α → Type*} :
 `β` to be types from the same universe, so it cannot be used directly to transfer theorems about
 sigma types to theorems about sum types. In many cases one can use `ULift` to work around this
 difficulty. -/
-def sumEquivSigmaBool (α β) : α ⊕ β ≃ Σ b : Bool, b.casesOn α β :=
+def sumEquivSigmaBool (α β) : α ⊕ β ≃ Σ b, bif b then β else α :=
   ⟨fun s => s.elim (fun x => ⟨false, x⟩) fun x => ⟨true, x⟩, fun s =>
     match s with
     | ⟨false, a⟩ => inl a
@@ -919,13 +936,26 @@ theorem prodSumDistrib_symm_apply_right {α β γ} (a : α × γ) :
     (prodSumDistrib α β γ).symm (inr a) = (a.1, inr a.2) :=
   rfl
 
-/-- An indexed sum of disjoint sums of types is equivalent to the sum of the indexed sums. -/
+/-- An indexed sum of disjoint sums of types is equivalent to the sum of the indexed sums. Compare
+with `Equiv.sumSigmaDistrib` which is indexed by sums. -/
 @[simps]
 def sigmaSumDistrib {ι} (α β : ι → Type*) :
     (Σ i, α i ⊕ β i) ≃ (Σ i, α i) ⊕ (Σ i, β i) :=
   ⟨fun p => p.2.map (Sigma.mk p.1) (Sigma.mk p.1),
     Sum.elim (Sigma.map id fun _ => Sum.inl) (Sigma.map id fun _ => Sum.inr), fun p => by
     rcases p with ⟨i, a | b⟩ <;> rfl, fun p => by rcases p with (⟨i, a⟩ | ⟨i, b⟩) <;> rfl⟩
+
+/-- A type indexed by  disjoint sums of types is equivalent to the sum of the sums. Compare with
+`Equiv.sigmaSumDistrib` which has the sums as the output type. -/
+@[simps]
+def sumSigmaDistrib {α β} (t : α ⊕ β → Type*) :
+    (Σ i, t i) ≃ (Σ i, t (.inl i)) ⊕ (Σ i, t (.inr i)) :=
+  ⟨(match · with
+   | .mk (.inl x) y => .inl ⟨x, y⟩
+   | .mk (.inr x) y => .inr ⟨x, y⟩),
+  Sum.elim (fun a ↦ ⟨.inl a.1, a.2⟩) (fun b ↦ ⟨.inr b.1, b.2⟩),
+  by rintro ⟨x|x,y⟩ <;> simp,
+  by rintro (⟨x,y⟩|⟨x,y⟩) <;> simp⟩
 
 /-- The product of an indexed sum of types (formally, a `Sigma`-type `Σ i, α i`) by a type `β` is
 equivalent to the sum of products `Σ i, (α i × β)`. -/
@@ -1399,10 +1429,7 @@ theorem swapCore_swapCore (r a b : α) : swapCore a b (swapCore a b r) = r := by
   unfold swapCore; split_ifs <;> cc
 
 theorem swapCore_comm (r a b : α) : swapCore a b r = swapCore b a r := by
-  unfold swapCore
-  -- Porting note: whatever solution works for `swapCore_swapCore` will work here too.
-  split_ifs with h₁ h₂ h₃ <;> try simp
-  · cases h₁; cases h₂; rfl
+  unfold swapCore; split_ifs <;> cc
 
 /-- `swap a b` is the permutation that swaps `a` and `b` and
   leaves other values as is. -/
