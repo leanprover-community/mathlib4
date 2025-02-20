@@ -324,32 +324,17 @@ noncomputable def BoundaryManifoldData.prod_Icc [Nonempty H] [Nonempty M]
     apply (IsClosedEmbedding.of_continuous_injective_isClosedMap)
     · fun_prop
     · intro x y hxy
-      -- this is a bit tedious... is there a nicer way?
-      by_cases hx: x.isLeft
-      · by_cases hy: y.isLeft
-        · rw [Sum.eq_left_getLeft_of_isLeft hx, Sum.eq_left_getLeft_of_isLeft hy] at hxy ⊢
-          simp only [Sum.elim_inl] at hxy
-          have : x.getLeft hx = y.getLeft hy := congrArg Prod.fst hxy
-          rw [this] -- xxx: why can't I inline this?
-        · exfalso -- The second component is different: this cannot happen.
-          replace hy := (Sum.not_isLeft.mp hy)
-          rw [Sum.eq_left_getLeft_of_isLeft hx, Sum.eq_right_getRight_of_isRight hy] at hxy
-          simp only [Sum.elim_inl, Sum.elim_inr] at hxy
-          simp_all [bot_ne_top, congrArg Prod.snd hxy]
-      · by_cases hy: y.isLeft
-        · exfalso -- The second component is different: this cannot happen.
-          replace hx := (Sum.not_isLeft.mp hx)
-          rw [Sum.eq_left_getLeft_of_isLeft hy, Sum.eq_right_getRight_of_isRight hx] at hxy
-          simp only [Sum.elim_inl, Sum.elim_inr] at hxy
-          simp_all [bot_ne_top, congrArg Prod.snd hxy]
-        · rw [Sum.eq_right_getRight_of_isRight (Sum.not_isLeft.mp hx),
-            Sum.eq_right_getRight_of_isRight ((Sum.not_isLeft.mp hy))] at hxy ⊢
-          simp only [Sum.elim_inr] at hxy
-          have : x.getRight (Sum.not_isLeft.mp hx) = y.getRight (Sum.not_isLeft.mp hy) :=
-            congrArg Prod.fst hxy
-          rw [this]
-    · apply IsClosedMap.sum_elim
-      all_goals apply isClosedMap_prodMk_right
+      -- Can this be simplified further?
+      cases x with
+      | inl x' =>
+        cases y with
+        | inl y' => simp_all
+        | inr y' => simp_all
+      | inr x' =>
+        cases y with
+        | inl y' => simp_all
+        | inr y' => simp_all
+    · apply IsClosedMap.sum_elim <;> apply isClosedMap_prodMk_right
   contMDiff := (contMDiff_id.prod_mk contMDiff_const).sum_elim
     (contMDiff_id.prod_mk contMDiff_const)
   isImmersion hk p := by
