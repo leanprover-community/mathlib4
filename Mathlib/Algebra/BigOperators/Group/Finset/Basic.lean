@@ -278,8 +278,11 @@ lemma prod_sum_eq_prod_toLeft_mul_prod_toRight (s : Finset (α ⊕ γ)) (f : α 
     Finset.toRight_disjSum]
 
 @[to_additive]
-theorem prod_sum_elim (s : Finset α) (t : Finset γ) (f : α → β) (g : γ → β) :
+theorem prod_sumElim (s : Finset α) (t : Finset γ) (f : α → β) (g : γ → β) :
     ∏ x ∈ s.disjSum t, Sum.elim f g x = (∏ x ∈ s, f x) * ∏ x ∈ t, g x := by simp
+
+@[deprecated (since := "2025-02-20")] alias prod_sum_elim := prod_sumElim
+@[deprecated (since := "2025-02-20")] alias sum_sum_elim := sum_sumElim
 
 @[to_additive]
 theorem prod_biUnion [DecidableEq α] {s : Finset γ} {t : γ → Finset α}
