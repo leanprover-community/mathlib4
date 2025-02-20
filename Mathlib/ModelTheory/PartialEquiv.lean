@@ -98,9 +98,9 @@ theorem le_def (f g : M ≃ₚ[L] N) : f ≤ g ↔ ∃ h : f.dom ≤ g.dom,
   rintro ⟨_, eq_fun⟩ n hn
   let m := f.toEquiv.symm ⟨n, hn⟩
   have  : ((subtype _).comp f.toEquiv.toEmbedding) m = n := by simp only [m, Embedding.comp_apply,
-    Equiv.coe_toEmbedding, Equiv.apply_symm_apply, coeSubtype]
+    Equiv.coe_toEmbedding, Equiv.apply_symm_apply, coe_subtype]
   rw [← this, ← eq_fun]
-  simp only [Embedding.comp_apply, coe_inclusion, Equiv.coe_toEmbedding, coeSubtype,
+  simp only [Embedding.comp_apply, coe_inclusion, Equiv.coe_toEmbedding, coe_subtype,
     SetLike.coe_mem]
 
 theorem subtype_toEquiv_inclusion {f g : M ≃ₚ[L] N} (h : f ≤ g) :
@@ -440,14 +440,14 @@ theorem isExtensionPair_iff_exists_embedding_closure_singleton_sup :
     · ext ⟨x, hx⟩
       rw [Embedding.subtype_equivRange] at ff'2
       simp only [← ff'2, Embedding.comp_apply, Substructure.coe_inclusion, inclusion_mk,
-        Equiv.coe_toEmbedding, coeSubtype, PartialEquiv.toEmbedding_apply]
+        Equiv.coe_toEmbedding, coe_subtype, PartialEquiv.toEmbedding_apply]
   · obtain ⟨f', eq_f'⟩ := h f.dom f_FG f.toEmbedding m
     refine ⟨⟨⟨closure L {m} ⊔ f.dom, f'.toHom.range, f'.equivRange⟩,
       (fg_closure_singleton _).sup f_FG⟩,
       subset_closure.trans (le_sup_left : (closure L) {m} ≤ _) (mem_singleton m),
       ⟨le_sup_right, Embedding.ext (fun _ => ?_)⟩⟩
     rw [PartialEquiv.toEmbedding] at eq_f'
-    simp only [Embedding.comp_apply, Substructure.coe_inclusion, Equiv.coe_toEmbedding, coeSubtype,
+    simp only [Embedding.comp_apply, Substructure.coe_inclusion, Equiv.coe_toEmbedding, coe_subtype,
       Embedding.equivRange_apply, eq_f']
 
 namespace IsExtensionPair

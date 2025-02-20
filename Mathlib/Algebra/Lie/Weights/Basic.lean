@@ -226,7 +226,7 @@ lemma genWeightSpace_ne_bot (χ : Weight R L M) : genWeightSpace M χ ≠ ⊥ :=
 variable {M}
 
 @[ext] lemma ext {χ₁ χ₂ : Weight R L M} (h : ∀ x, χ₁ x = χ₂ x) : χ₁ = χ₂ := by
-  cases' χ₁ with f₁ _; cases' χ₂ with f₂ _; aesop
+  obtain ⟨f₁, _⟩ := χ₁; obtain ⟨f₂, _⟩ := χ₂; aesop
 
 lemma ext_iff' {χ₁ χ₂ : Weight R L M} : (χ₁ : L → R) = χ₂ ↔ χ₁ = χ₂ := by simp
 

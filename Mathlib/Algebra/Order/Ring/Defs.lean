@@ -199,12 +199,12 @@ instance (priority := 100) OrderedSemiring.zeroLEOneClass : ZeroLEOneClass α :=
   { ‹OrderedSemiring α› with }
 
 -- see Note [lower instance priority]
-instance (priority := 200) OrderedSemiring.toPosMulMono : PosMulMono α :=
-  ⟨fun x _ _ h => OrderedSemiring.mul_le_mul_of_nonneg_left _ _ _ h x.2⟩
+instance (priority := 200) OrderedSemiring.toPosMulMono : PosMulMono α where
+  elim := fun x _ _ h => OrderedSemiring.mul_le_mul_of_nonneg_left _ _ _ h x.2
 
 -- see Note [lower instance priority]
-instance (priority := 200) OrderedSemiring.toMulPosMono : MulPosMono α :=
-  ⟨fun x _ _ h => OrderedSemiring.mul_le_mul_of_nonneg_right _ _ _ h x.2⟩
+instance (priority := 200) OrderedSemiring.toMulPosMono : MulPosMono α where
+  elim := fun x _ _ h => OrderedSemiring.mul_le_mul_of_nonneg_right _ _ _ h x.2
 
 end OrderedSemiring
 
@@ -253,12 +253,12 @@ section StrictOrderedSemiring
 variable [StrictOrderedSemiring α]
 
 -- see Note [lower instance priority]
-instance (priority := 200) StrictOrderedSemiring.toPosMulStrictMono : PosMulStrictMono α :=
-  ⟨fun x _ _ h => StrictOrderedSemiring.mul_lt_mul_of_pos_left _ _ _ h x.prop⟩
+instance (priority := 200) StrictOrderedSemiring.toPosMulStrictMono : PosMulStrictMono α where
+  elim := fun x _ _ h => StrictOrderedSemiring.mul_lt_mul_of_pos_left _ _ _ h x.prop
 
 -- see Note [lower instance priority]
-instance (priority := 200) StrictOrderedSemiring.toMulPosStrictMono : MulPosStrictMono α :=
-  ⟨fun x _ _ h => StrictOrderedSemiring.mul_lt_mul_of_pos_right _ _ _ h x.prop⟩
+instance (priority := 200) StrictOrderedSemiring.toMulPosStrictMono : MulPosStrictMono α where
+  elim := fun x _ _ h => StrictOrderedSemiring.mul_lt_mul_of_pos_right _ _ _ h x.prop
 
 -- See note [reducible non-instances]
 /-- A choice-free version of `StrictOrderedSemiring.toOrderedSemiring` to avoid using choice in
@@ -376,12 +376,12 @@ section LinearOrderedSemiring
 variable [LinearOrderedSemiring α]
 
 -- see Note [lower instance priority]
-instance (priority := 200) LinearOrderedSemiring.toPosMulReflectLT : PosMulReflectLT α :=
-  ⟨fun a _ _ => (monotone_mul_left_of_nonneg a.2).reflect_lt⟩
+instance (priority := 200) LinearOrderedSemiring.toPosMulReflectLT : PosMulReflectLT α where
+  elim := fun a _ _ => (monotone_mul_left_of_nonneg a.2).reflect_lt
 
 -- see Note [lower instance priority]
-instance (priority := 200) LinearOrderedSemiring.toMulPosReflectLT : MulPosReflectLT α :=
-  ⟨fun a _ _ => (monotone_mul_right_of_nonneg a.2).reflect_lt⟩
+instance (priority := 200) LinearOrderedSemiring.toMulPosReflectLT : MulPosReflectLT α where
+  elim := fun a _ _ => (monotone_mul_right_of_nonneg a.2).reflect_lt
 
 attribute [local instance] LinearOrderedSemiring.decidableLE LinearOrderedSemiring.decidableLT
 

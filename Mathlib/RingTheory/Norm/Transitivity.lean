@@ -189,8 +189,8 @@ theorem LinearMap.det_restrictScalars [AddCommGroup A] [Module R A] [Module S A]
     ← det_toMatrix (bS.smulTower' bA), restrictScalars_toMatrix]
   rfl
 
-/--Let A/S/R be a tower of finite free tower of rings (with R and S commutative).
-Then $\text{Norm}_{A/R} = \text{Norm}_{A/S} \circ \text{Norm}_{S/R}$.-/
+/-- Let A/S/R be a tower of finite free tower of rings (with R and S commutative).
+Then $\text{Norm}_{A/R} = \text{Norm}_{A/S} \circ \text{Norm}_{S/R}$. -/
 theorem Algebra.norm_norm {A} [Ring A] [Algebra R A] [Algebra S A]
     [IsScalarTower R S A] [Module.Free S A] {a : A} :
     norm R (norm S a) = norm R a := by

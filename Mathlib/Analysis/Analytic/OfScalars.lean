@@ -29,7 +29,7 @@ open ContinuousMultilinearMap
 variable {𝕜 : Type*} (E : Type*) [Field 𝕜] [Ring E] [Algebra 𝕜 E] [TopologicalSpace E]
   [IsTopologicalRing E] {c : ℕ → 𝕜}
 
-/-- Formal power series of `∑ cᵢ • xⁱ` for some scalar field `𝕜` and ring algebra `E`-/
+/-- Formal power series of `∑ cᵢ • xⁱ` for some scalar field `𝕜` and ring algebra `E` -/
 def ofScalars (c : ℕ → 𝕜) : FormalMultilinearSeries 𝕜 E E :=
   fun n ↦ c n • ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E
 

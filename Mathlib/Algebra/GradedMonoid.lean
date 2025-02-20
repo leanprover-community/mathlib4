@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.BigOperators.Group.List.Lemmas
-import Mathlib.Algebra.Group.Action.End
+import Mathlib.Algebra.Group.Action.Hom
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.SetLike.Basic
