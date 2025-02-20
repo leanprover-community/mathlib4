@@ -3,12 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Data.Finset.Piecewise
+import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.Finset.Piecewise
+import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Filter.Curry
 import Mathlib.Topology.Maps.Basic
 import Mathlib.Topology.NhdsSet
-import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Constructions of new topological spaces from old ones
@@ -919,10 +920,10 @@ theorem isOpenMap_inl : IsOpenMap (@inl X Y) := fun u hu => by
 theorem isOpenMap_inr : IsOpenMap (@inr X Y) := fun u hu => by
   simpa [isOpen_sum_iff, preimage_image_eq u Sum.inr_injective]
 
-theorem isClosedMap_inl : IsClosedMap (@Sum.inl X Y) := fun u hu ↦ by
+theorem isClosedMap_inl : IsClosedMap (@inl X Y) := fun u hu ↦ by
   simpa [isClosed_sum_iff, preimage_image_eq u Sum.inl_injective]
 
-theorem isClosedMap_inr : IsClosedMap (@Sum.inr X Y) := fun u hu ↦ by
+theorem isClosedMap_inr : IsClosedMap (@inr X Y) := fun u hu ↦ by
   simpa [isClosed_sum_iff, preimage_image_eq u Sum.inr_injective]
 
 protected lemma Topology.IsOpenEmbedding.inl : IsOpenEmbedding (@inl X Y) :=
@@ -1920,4 +1921,4 @@ theorem Filter.Eventually.prod_nhdsSet {p : X × Y → Prop} {px : X → Prop} {
 
 end NhdsSet
 
-set_option linter.style.longFile 1900
+set_option linter.style.longFile 2100
