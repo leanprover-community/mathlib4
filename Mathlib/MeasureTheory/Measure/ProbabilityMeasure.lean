@@ -586,7 +586,7 @@ theorem FiniteMeasure.measurable_prod {α β : Type*} [MeasurableSpace α] [Meas
     Measurable (fun (μ : FiniteMeasure α × FiniteMeasure β)
       ↦ μ.1.toMeasure.prod μ.2.toMeasure) := by
   apply Measurable.measure_of_isPiSystem generateFrom_prod.symm isPiSystem_prod _
-  · simp_rw [<- Set.univ_prod_univ, prod_prod]
+  · simp_rw [← Set.univ_prod_univ, prod_prod]
     apply Measurable.mul
     · exact (measurable_coe MeasurableSet.univ).comp (measurable_subtype_coe.comp measurable_fst)
     · exact (measurable_coe MeasurableSet.univ).comp (measurable_subtype_coe.comp measurable_snd)
