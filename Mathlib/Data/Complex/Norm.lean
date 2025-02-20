@@ -244,7 +244,7 @@ lemma abs_im_eq_norm {z : ℂ} : |z.im| = ‖z‖ ↔ z.re = 0 :=
 @[deprecated (since := "2025-02-16")] alias abs_im_eq_abs := abs_im_eq_norm
 
 theorem norm_le_sqrt_two_mul_max (z : ℂ) : ‖z‖ ≤ Real.sqrt 2 * max |z.re| |z.im| := by
-  cases' z with x y
+  obtain ⟨x, y⟩ := z
   simp only [norm_def, normSq_mk, norm_def, ← sq]
   by_cases hle : |x| ≤ |y|
   · calc
