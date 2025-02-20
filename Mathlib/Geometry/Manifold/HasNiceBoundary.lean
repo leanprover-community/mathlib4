@@ -180,37 +180,6 @@ def Homeomorph.foo {X : Type*} [TopologicalSpace X] : X ⊕ X ≃ₜ X × Fin 2 
 
 -- def Diffeomorph.foo : M ⊕ M ≃ₘ^k⟮I, I⟯ M × Fin 2 := sorry
 
-section temp
-
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type u_2}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type u_3} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
-  {M : Type u_4} [TopologicalSpace M] {E' : Type u_5} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type u_6}
-  [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {M' : Type u_7} [TopologicalSpace M'] [ChartedSpace H M]
-  [ChartedSpace H' M'] {f : M → M'} {n : WithTop ℕ∞}
-
--- This version assumes the domain is a subsingleton.
-lemma contMDiff_of_subsingleton' [Subsingleton M] : ContMDiff I I' n f := by
-  obtain (h | h) := isEmpty_or_nonempty M
-  · exact fun x ↦ (IsEmpty.false x).elim
-  inhabit M
-  let x₀ := inhabited_h.default
-  let c := f x₀
-  have : f = (fun y ↦ c) := (Function.funext_iff_of_subsingleton x₀ x₀).mp rfl
-  simp_rw [this]
-  exact contMDiff_const
-
--- idea: locally, f is constant near x, and constant functions are contMDiff
-lemma contMDiff_of_discreteTopology [DiscreteTopology M] [IsManifold I n M] [IsManifold I' n M'] :
-    ContMDiff I I' n f := by
-  intro x
-  -- XXX: assume we're not smooth, by descending to all n or so
-  rw [contMDiffAt_iff_contMDiffOn_nhds sorry]
-  refine ⟨{x}, ?_, ?_⟩
-  · apply (isOpen_discrete {x}).mem_nhds; rw [Set.mem_singleton_iff]
-  · exact contMDiffOn_const (c := f x).congr (fun y hy ↦ by rw [hy])
-
-end temp
-
 open Topology
 
 attribute [local instance] ChartedSpace.of_discreteTopology in
