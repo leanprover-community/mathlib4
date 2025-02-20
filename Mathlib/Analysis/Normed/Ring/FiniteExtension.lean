@@ -154,11 +154,7 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
       simp [norm_one, zero_lt_one]
     exact lt_of_lt_of_le h_pos (hc (i, i))
 
-/-- For any `k : K`, `y : L`, we have
-  `B.repr ((algebra_map K L k) * y) i = k * (B.repr y i) `. -/
-theorem repr_smul' {ι : Type*} [Fintype ι] (B : Basis ι K L) (i : ι) (k : K) (y : L) :
-    B.repr (algebraMap K L k * y) i = k * B.repr y i := by
-  rw [← smul_eq_mul, algebraMap_smul, LinearEquiv.map_smul]; rfl
+
 
 /-- For any `k : K`, `y : L`, we have
   `B.norm ((algebra_map K L) k * y) = B.norm ((algebra_map K L) k) * B.norm y`. -/
