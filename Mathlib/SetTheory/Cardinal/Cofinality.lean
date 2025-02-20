@@ -17,8 +17,6 @@ This file contains the definition of cofinality of an ordinal number and regular
 * `Ordinal.cof o` is the cofinality of the ordinal `o`.
   If `o` is the order type of the relation `<` on `α`, then `o.cof` is the smallest cardinality of a
   subset `s` of α that is *cofinal* in `α`, i.e. `∀ x : α, ∃ y ∈ s, ¬ y < x`.
-* `Cardinal.IsStrongLimit c` means that `c` is a strong limit cardinal:
-  `c ≠ 0 ∧ ∀ x < c, 2 ^ x < c`.
 * `Cardinal.IsRegular c` means that `c` is a regular cardinal: `ℵ₀ ≤ c ∧ c.ord.cof = c`.
 * `Cardinal.IsInaccessible c` means that `c` is strongly inaccessible:
   `ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c`.
@@ -799,51 +797,6 @@ namespace Cardinal
 
 open Ordinal
 
-/-- A cardinal is a strong limit if it is not zero and it is
-  closed under powersets. Note that `ℵ₀` is a strong limit by this definition. -/
-def IsStrongLimit (c : Cardinal) : Prop :=
-  c ≠ 0 ∧ ∀ x < c, (2^x) < c
-
-theorem IsStrongLimit.ne_zero {c} (h : IsStrongLimit c) : c ≠ 0 :=
-  h.1
-
-theorem IsStrongLimit.two_power_lt {x c} (h : IsStrongLimit c) : x < c → (2^x) < c :=
-  h.2 x
-
-theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ :=
-  ⟨aleph0_ne_zero, fun x hx => by
-    rcases lt_aleph0.1 hx with ⟨n, rfl⟩
-    exact mod_cast nat_lt_aleph0 (2 ^ n)⟩
-
-protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLimit c := by
-  rw [Cardinal.isSuccLimit_iff]
-  exact ⟨H.ne_zero, isSuccPrelimit_of_succ_lt fun x h =>
-    (succ_le_of_lt <| cantor x).trans_lt (H.two_power_lt h)⟩
-
-protected theorem IsStrongLimit.isSuccPrelimit {c} (H : IsStrongLimit c) : IsSuccPrelimit c :=
-  H.isSuccLimit.isSuccPrelimit
-
-theorem IsStrongLimit.aleph0_le {c} (H : IsStrongLimit c) : ℵ₀ ≤ c :=
-  aleph0_le_of_isSuccLimit H.isSuccLimit
-
-set_option linter.deprecated false in
-@[deprecated IsStrongLimit.isSuccLimit (since := "2024-09-17")]
-theorem IsStrongLimit.isLimit {c} (H : IsStrongLimit c) : IsLimit c :=
-  ⟨H.ne_zero, H.isSuccPrelimit⟩
-
-theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit (ℶ_ o) := by
-  rcases eq_or_ne o 0 with (rfl | h)
-  · rw [beth_zero]
-    exact isStrongLimit_aleph0
-  · refine ⟨beth_ne_zero o, fun a ha => ?_⟩
-    rw [beth_limit] at ha
-    · rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
-      have := power_le_power_left two_ne_zero ha.le
-      rw [← beth_succ] at this
-      exact this.trans_lt (beth_lt.2 (H.succ_lt hi))
-    · rw [isLimit_iff]
-      exact ⟨h, H⟩
-
 theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, (2^x) < #α) {r : α → α → Prop}
     [IsWellOrder α r] (hr : (#α).ord = type r) : #{ s : Set α // Bounded r s } = #α := by
   rcases eq_or_ne #α 0 with (ha | ha)
@@ -853,7 +806,7 @@ theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, (2^x) < #α) {r : α �
     constructor
     rintro ⟨s, hs⟩
     exact (not_unbounded_iff s).2 hs (unbounded_of_isEmpty s)
-  have h' : IsStrongLimit #α := ⟨ha, h⟩
+  have h' : IsStrongLimit #α := ⟨ha, @h⟩
   have ha := h'.aleph0_le
   apply le_antisymm
   · have : { s : Set α | Bounded r s } = ⋃ i, 𝒫{ j | r j i } := setOf_exists _
@@ -878,7 +831,7 @@ theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, (2^x) < #α) :
     #{ s : Set α // #s < cof (#α).ord } = #α := by
   rcases eq_or_ne #α 0 with (ha | ha)
   · simp [ha]
-  have h' : IsStrongLimit #α := ⟨ha, h⟩
+  have h' : IsStrongLimit #α := ⟨ha, @h⟩
   rcases ord_eq α with ⟨r, wo, hr⟩
   haveI := wo
   apply le_antisymm
@@ -1193,7 +1146,7 @@ def IsInaccessible (c : Cardinal) :=
 
 theorem IsInaccessible.mk {c} (h₁ : ℵ₀ < c) (h₂ : c ≤ c.ord.cof) (h₃ : ∀ x < c, (2^x) < c) :
     IsInaccessible c :=
-  ⟨h₁, ⟨h₁.le, h₂⟩, (aleph0_pos.trans h₁).ne', h₃⟩
+  ⟨h₁, ⟨h₁.le, h₂⟩, (aleph0_pos.trans h₁).ne', @h₃⟩
 
 -- Lean's foundations prove the existence of ℵ₀ many inaccessible cardinals
 theorem univ_inaccessible : IsInaccessible univ.{u, v} :=
