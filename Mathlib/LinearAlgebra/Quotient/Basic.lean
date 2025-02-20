@@ -271,7 +271,7 @@ theorem factor_comp (H1 : p ≤ p') (H2 : p' ≤ p'') :
 @[simp]
 theorem factor_comp_apply (H1 : p ≤ p') (H2 : p' ≤ p'') (x : M ⧸ p) :
     factor H2 (factor H1 x) = factor (H1.trans H2) x := by
-  show (factor H2).comp (factor H1) x = factor (H1.trans H2) x
+  rw [← comp_apply]
   simp
 
 lemma factor_surjective (H : p ≤ p') : Function.Surjective (factor H) := by
