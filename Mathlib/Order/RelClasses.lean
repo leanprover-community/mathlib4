@@ -211,12 +211,6 @@ instance (priority := 100) isStrictOrderConnected_of_isStrictTotalOrder [IsStric
   ⟨fun _ _ _ h ↦ (trichotomous _ _).imp_right
     fun o ↦ o.elim (fun e ↦ e ▸ h) fun h' ↦ _root_.trans h' h⟩
 
--- see Note [lower instance priority]
-@[deprecated "No deprecation message was provided." (since := "2024-07-30")]
-instance (priority := 100) isStrictTotalOrder_of_isStrictTotalOrder [IsStrictTotalOrder α r] :
-    IsStrictWeakOrder α r :=
-  { isStrictWeakOrder_of_isOrderConnected with }
-
 /-! ### Inverse Image -/
 theorem InvImage.trichotomous {α β : Type*} {r : α → α → Prop} [IsTrichotomous α r] {f : β → α}
     (h : Function.Injective f) : IsTrichotomous β (InvImage r f)  where
