@@ -117,12 +117,10 @@ lemma generatingMonomorphisms_le_monomorphisms (G : C) :
 
 variable (G : C)
 
-abbrev generatingMonomorphismsPushouts := (generatingMonomorphisms G).pushouts
-
 variable [Abelian C]
 
-lemma isomorphisms_le_generatingMonomorphismsPushouts :
-    MorphismProperty.isomorphisms C ≤ generatingMonomorphismsPushouts G :=
+lemma isomorphisms_le_pushouts_generatingMonomorphisms :
+    MorphismProperty.isomorphisms C ≤ (generatingMonomorphisms G).pushouts :=
   MorphismProperty.isomorphisms_le_pushouts _ (fun _ ↦ ⟨_, _, _, ⟨⊤⟩, 0, inferInstance⟩)
 
 variable {G}
@@ -132,9 +130,9 @@ namespace TransfiniteCompositionMonoPushouts
 variable (hG : IsSeparator G)
 include hG
 
-lemma exists_generatingMonomorphismsPushouts {X Y : C} (p : X ⟶ Y) [Mono p]
+lemma exists_pushouts_generatingMonomorphisms {X Y : C} (p : X ⟶ Y) [Mono p]
     (hp : ¬ IsIso p) :
-    ∃ (X' : C) (i : X ⟶ X') (p' : X' ⟶ Y) (_ : generatingMonomorphismsPushouts G i)
+    ∃ (X' : C) (i : X ⟶ X') (p' : X' ⟶ Y) (_ : (generatingMonomorphisms G).pushouts i)
       (_ : ¬ IsIso i) (_ : Mono p'), i ≫ p' = p := by
   rw [hG.isDetector.isIso_iff_of_mono] at hp
   simp only [coyoneda_obj_obj, Subtype.forall, Set.mem_singleton_iff, forall_eq,
@@ -159,9 +157,9 @@ variable {X : C}
 
 lemma exists_larger_subobject {X : C} (A : Subobject X) (hA : A ≠ ⊤) :
     ∃ (A' : Subobject X) (h : A < A'),
-      generatingMonomorphismsPushouts G (Subobject.ofLE _ _ h.le) := by
+      (generatingMonomorphisms G).pushouts (Subobject.ofLE _ _ h.le) := by
   induction' A using Subobject.ind with Y f _
-  obtain ⟨X', i, p', hi, hi', hp', fac⟩ := exists_generatingMonomorphismsPushouts hG f
+  obtain ⟨X', i, p', hi, hi', hp', fac⟩ := exists_pushouts_generatingMonomorphisms hG f
     (by simpa only [Subobject.isIso_iff_mk_eq_top] using hA)
   refine ⟨Subobject.mk p', Subobject.mk_lt_mk_of_comm i fac hi',
     (MorphismProperty.arrow_mk_iso_iff _ ?_).2 hi⟩
@@ -191,14 +189,14 @@ lemma le_largerSubobject (A : Subobject X) :
     simp only [largerSubobject_top, le_refl]
   · exact (lt_largerSubobject hG A hA).le
 
-lemma generatingMonomorphismsPushouts_ofLE_le_largerSubobject (A : Subobject X) :
-      generatingMonomorphismsPushouts G (Subobject.ofLE _ _ (le_largerSubobject hG A)) := by
+lemma pushouts_generatingMonomorphisms_ofLE_le_largerSubobject (A : Subobject X) :
+      (generatingMonomorphisms G).pushouts (Subobject.ofLE _ _ (le_largerSubobject hG A)) := by
   by_cases hA : A = ⊤
   · subst hA
     have := (Subobject.isIso_arrow_iff_eq_top (largerSubobject hG (⊤ : Subobject X))).2 (by simp)
     exact (MorphismProperty.arrow_mk_iso_iff _
       (Arrow.isoMk (asIso (Subobject.arrow _)) (asIso (Subobject.arrow _)) (by simp))).2
-        (isomorphisms_le_generatingMonomorphismsPushouts G (𝟙 X)
+        (isomorphisms_le_pushouts_generatingMonomorphisms G (𝟙 X)
           (MorphismProperty.isomorphisms.infer_property _))
   · refine (MorphismProperty.arrow_mk_iso_iff _ ?_).1
       (exists_larger_subobject hG A hA).choose_spec.choose_spec
@@ -248,16 +246,16 @@ instance : (functor hG A₀ J).IsWellOrderContinuous where
     exact transfiniteIterate_limit (largerSubobject hG) A₀ m hm⟩
 
 lemma mono_functor_map_le_succ (j : J) (hj : ¬IsMax j) :
-    generatingMonomorphismsPushouts G ((functor hG A₀ J).map (homOfLE (Order.le_succ j))) := by
+    (generatingMonomorphisms G).pushouts ((functor hG A₀ J).map (homOfLE (Order.le_succ j))) := by
   refine (MorphismProperty.arrow_mk_iso_iff _ ?_).2
-    (generatingMonomorphismsPushouts_ofLE_le_largerSubobject hG
+    (pushouts_generatingMonomorphisms_ofLE_le_largerSubobject hG
       (transfiniteIterate (largerSubobject hG) j A₀))
   exact Arrow.isoMk (Iso.refl _) (Subobject.isoOfEq _ _ (transfiniteIterate_succ _ _ _ hj))
     (by simp [MonoOver.forget])
 
 variable {J} in
-noncomputable def transfiniteCompositionOfShape'' (j : J) :
-  (generatingMonomorphismsPushouts G).TransfiniteCompositionOfShape (Set.Iic j)
+noncomputable def transfiniteCompositionOfShape' (j : J) :
+  (generatingMonomorphisms G).pushouts.TransfiniteCompositionOfShape (Set.Iic j)
     ((functor hG A₀ J).map (homOfLE bot_le : ⊥ ⟶ j)) where
   F := (Set.initialSegIic j).monotone.functor ⋙ functor hG A₀ J
   isoBot := Iso.refl _
@@ -267,7 +265,7 @@ noncomputable def transfiniteCompositionOfShape'' (j : J) :
   isColimit := colimitOfDiagramTerminal isTerminalTop _
   map_mem k hk := by
     dsimp [MonoOver.forget]
-    convert generatingMonomorphismsPushouts_ofLE_le_largerSubobject hG
+    convert pushouts_generatingMonomorphisms_ofLE_le_largerSubobject hG
       (transfiniteIterate (largerSubobject hG) k.1 A₀) using 2
     all_goals
       rw [Set.Iic.succ_eq _ hk, transfiniteIterate_succ _ _ _ (Set.not_isMax_coe _ hk)]
@@ -279,10 +277,10 @@ variable {A : C} {f : A ⟶ X} [Mono f] {J : Type w} [LinearOrder J] [OrderBot J
 
 noncomputable def transfiniteCompositionOfShape
     (hj : transfiniteIterate (largerSubobject hG) j (Subobject.mk f) = ⊤) :
-    (generatingMonomorphismsPushouts G).TransfiniteCompositionOfShape (Set.Iic j) f := by
+    (generatingMonomorphisms G).pushouts.TransfiniteCompositionOfShape (Set.Iic j) f := by
   let t := transfiniteIterate (largerSubobject hG) j (Subobject.mk f)
   have := (Subobject.isIso_arrow_iff_eq_top t).mpr hj
-  apply (transfiniteCompositionOfShape'' hG (Subobject.mk f) j).ofArrowIso
+  apply (transfiniteCompositionOfShape' hG (Subobject.mk f) j).ofArrowIso
   refine Arrow.isoMk ((Subobject.isoOfEq _ _ (transfiniteIterate_bot _ _) ≪≫
     Subobject.underlyingIso f)) (asIso t.arrow) ?_
   dsimp [MonoOver.forget]
@@ -291,7 +289,7 @@ noncomputable def transfiniteCompositionOfShape
 
 lemma transfiniteCompositionsOfShape
     (hj : transfiniteIterate (largerSubobject hG) j (Subobject.mk f) = ⊤) :
-    (generatingMonomorphismsPushouts G).transfiniteCompositionsOfShape (Set.Iic j) f :=
+    (generatingMonomorphisms G).pushouts.transfiniteCompositionsOfShape (Set.Iic j) f :=
   (transfiniteCompositionOfShape hG hj).mem
 
 end TransfiniteCompositionMonoPushouts
