@@ -352,13 +352,8 @@ theorem le_minimum_of_forall_le {b : WithTop α} (h : ∀ a ∈ l, b ≤ a) : b 
     simp only [minimum_cons, le_min_iff]
     exact ⟨h a (by simp), ih fun a w => h a (mem_cons.mpr (Or.inr w))⟩
 
-theorem maximum_mono {l₁ l₂ : List α} (h : l₁ ⊆ l₂) : l₁.maximum ≤ l₂.maximum := by
-  induction l₁ with
-  | nil => exact inf_eq_left.mp rfl
-  | cons _ _ ih =>
-    rw [List.cons_subset] at h
-    rw [List.maximum_cons]
-    exact max_le (List.le_maximum_of_mem' h.1) (ih h.2)
+theorem maximum_mono {l₁ l₂ : List α} (h : l₁ ⊆ l₂) : l₁.maximum ≤ l₂.maximum :=
+  maximum_le_of_forall_le fun _ ↦ (le_maximum_of_mem' <| h ·)
 
 theorem minimum_anti {l₁ l₂ : List α} (h : l₁ ⊆ l₂) : l₂.minimum ≤ l₁.minimum :=
   @maximum_mono αᵒᵈ _ _ _ h
