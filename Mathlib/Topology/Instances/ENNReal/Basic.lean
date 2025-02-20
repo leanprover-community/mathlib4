@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Topology.Order.MonotoneContinuity
-import Mathlib.Topology.Instances.ENNReal.Defs
+import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Order.T5
+import Mathlib.Topology.Instances.NNReal.Defs
 
 /-!
 # Topology on extended non-negative reals
@@ -14,8 +15,8 @@ import Mathlib.Topology.Order.T5
 
 noncomputable section
 
-open Filter Topology
-open scoped NNReal
+open Filter Function Metric Set Topology
+open scoped Finset ENNReal NNReal
 
 variable {α : Type*} {β : Type*} {γ : Type*}
 
@@ -25,8 +26,13 @@ variable {a b : ℝ≥0∞} {r : ℝ≥0} {x : ℝ≥0∞} {ε : ℝ≥0∞}
 
 open TopologicalSpace
 
-/-- Properties of the topology on `ℝ≥0∞`. -/
+/-- Topology on `ℝ≥0∞`.
 
+Note: this is different from the `EMetricSpace` topology. The `EMetricSpace` topology has
+`IsOpen {∞}`, while this topology doesn't have singleton elements. -/
+instance : TopologicalSpace ℝ≥0∞ := Preorder.topology ℝ≥0∞
+
+instance : OrderTopology ℝ≥0∞ := ⟨rfl⟩
 
 -- short-circuit type class inference
 instance : T2Space ℝ≥0∞ := inferInstance
@@ -39,10 +45,16 @@ instance : SecondCountableTopology ℝ≥0∞ :=
 instance : MetrizableSpace ENNReal :=
   orderIsoUnitIntervalBirational.toHomeomorph.isEmbedding.metrizableSpace
 
+theorem isEmbedding_coe : IsEmbedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
+  coe_strictMono.isEmbedding_of_ordConnected <| by rw [range_coe']; exact ordConnected_Iio
+
 @[norm_cast]
 theorem tendsto_coe {f : Filter α} {m : α → ℝ≥0} {a : ℝ≥0} :
     Tendsto (fun a => (m a : ℝ≥0∞)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
   isEmbedding_coe.tendsto_nhds_iff.symm
+
+theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
+  ⟨isEmbedding_coe, by rw [range_coe']; exact isOpen_Iio⟩
 
 theorem nhds_coe_coe {r p : ℝ≥0} :
     𝓝 ((r : ℝ≥0∞), (p : ℝ≥0∞)) = (𝓝 (r, p)).map fun p : ℝ≥0 × ℝ≥0 => (↑p.1, ↑p.2) :=
