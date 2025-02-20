@@ -127,7 +127,15 @@ theorem toMeasure_injective : Function.Injective ((↑) : ProbabilityMeasure Ω 
 
 /-- The type of probability measures is a measurable space when equipped with the Giry monad. -/
 instance {α : Type*} [MeasurableSpace α] : MeasurableSpace (ProbabilityMeasure α) :=
-  Subtype.instMeasurableSpace
+    Subtype.instMeasurableSpace
+
+lemma probability_measures_measurable_set {α : Type*} [MeasurableSpace α] :
+    MeasurableSet { μ : Measure α | IsProbabilityMeasure μ } := by
+  suffices { μ : Measure α | IsProbabilityMeasure μ } = (fun μ => μ univ) ⁻¹' {1} by
+    rw [this]
+    exact Measure.measurable_coe MeasurableSet.univ (measurableSet_singleton 1)
+  ext _
+  apply isProbabilityMeasure_iff
 
 instance instFunLike : FunLike (ProbabilityMeasure Ω) (Set Ω) ℝ≥0 where
   coe μ s := ((μ : Measure Ω) s).toNNReal
@@ -554,20 +562,34 @@ end ProbabilityMeasure -- namespace
 end map -- section
 
 section MonoidalProduct
-/-! ### The monoidal product in the Giry monad
-Lemma 4.1 of https://doi.org/10.1016/j.aim.2020.107239
--/
-
-open Function
 
 open Measure
 
 /-- The monoidal product is a measurable function from the product of probability spaces over
-``α`` and ``β`` into the type of probability spaces over ``α × β`` -/
-theorem measurable_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
+``α`` and ``β`` into the type of probability spaces over ``α × β``. Lemma 4.1 of
+https://doi.org/10.1016/j.aim.2020.107239.
+-/
+theorem ProbabilityMeasure.measurable_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     Measurable (fun (μ : ProbabilityMeasure α × ProbabilityMeasure β)
       ↦ μ.1.toMeasure.prod μ.2.toMeasure) := by
   apply Measurable.measure_of_isPiSystem generateFrom_prod.symm isPiSystem_prod _ (by simp)
+  simp only [mem_image2, mem_setOf_eq, forall_exists_index, and_imp]
+  intros _ u Hu v Hv Heq
+  simp_rw [← Heq, prod_prod]
+  apply Measurable.mul
+  · exact (measurable_coe Hu).comp (measurable_subtype_coe.comp measurable_fst)
+  · exact (measurable_coe Hv).comp (measurable_subtype_coe.comp measurable_snd)
+
+/-- The monoidal product is a measurabule function from the product of finite measures over
+``α`` and ``β`` into the type of finite measures over ``α × β``. -/
+theorem FiniteMeasure.measurable_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
+    Measurable (fun (μ : FiniteMeasure α × FiniteMeasure β)
+      ↦ μ.1.toMeasure.prod μ.2.toMeasure) := by
+  apply Measurable.measure_of_isPiSystem generateFrom_prod.symm isPiSystem_prod _
+  · simp_rw [<- Set.univ_prod_univ, prod_prod]
+    apply Measurable.mul
+    · exact (measurable_coe MeasurableSet.univ).comp (measurable_subtype_coe.comp measurable_fst)
+    · exact (measurable_coe MeasurableSet.univ).comp (measurable_subtype_coe.comp measurable_snd)
   simp only [mem_image2, mem_setOf_eq, forall_exists_index, and_imp]
   intros _ u Hu v Hv Heq
   simp_rw [← Heq, prod_prod]

@@ -6,6 +6,7 @@ Authors: Kalle Kytölä
 import Mathlib.Topology.Algebra.Module.WeakDual
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
+import Mathlib.MeasureTheory.Measure.GiryMonad
 
 /-!
 # Finite measures
@@ -135,6 +136,20 @@ lemma coeFn_def (μ : FiniteMeasure Ω) : μ = fun s ↦ ((μ : Measure Ω) s).t
 
 lemma coeFn_mk (μ : Measure Ω) (hμ) :
     DFunLike.coe (F := FiniteMeasure Ω) ⟨μ, hμ⟩ = fun s ↦ (μ s).toNNReal := rfl
+
+/-- The type of probability measures is a measurable space when equipped with the Giry monad. -/
+instance {α : Type*} [MeasurableSpace α] : MeasurableSpace (FiniteMeasure α) :=
+    Subtype.instMeasurableSpace
+
+/-- The set of all finite measures is a measurable set in the Giry monad -/
+lemma finite_measures_measurable_set {α : Type*} [MeasurableSpace α] :
+    MeasurableSet { μ : Measure α | IsFiniteMeasure μ } := by
+  suffices { μ : Measure α | IsFiniteMeasure μ } = (fun μ => μ univ) ⁻¹' (Set.Ico 0 ∞) by
+    rw [this]
+    exact Measure.measurable_coe MeasurableSet.univ measurableSet_Ico
+  ext μ
+  simp only [mem_setOf_eq, mem_iUnion, mem_preimage, mem_Ico, zero_le, true_and, exists_const]
+  exact isFiniteMeasure_iff μ
 
 @[simp, norm_cast]
 lemma mk_apply (μ : Measure Ω) (hμ) (s : Set Ω) :
