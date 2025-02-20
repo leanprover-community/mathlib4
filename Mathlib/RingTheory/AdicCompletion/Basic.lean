@@ -5,9 +5,8 @@ Authors: Kenny Lau, Judith Ludwig, Christian Merten, Jiedong Jiang
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.LinearAlgebra.SModEq
-import Mathlib.RingTheory.Ideal.Quotient.PowSucc
-import Mathlib.RingTheory.Jacobson.Ideal
 import Mathlib.RingTheory.Ideal.Quotient.PowTransition
+import Mathlib.RingTheory.Jacobson.Ideal
 
 /-!
 # Completion of a module with respect to an ideal.
@@ -220,13 +219,34 @@ A variant of `IsPrecomplete.of_SModEq_succ`. Instead of starting with a compatib
 theorem of_eq_mapQPowSucc {f : (n : ℕ) → M ⧸ (I ^ n • ⊤)}
     (hf : ∀ {m}, f m = mapQPowSucc I M m (f (m + 1))) :
     ∃ L : M, ∀ n, f n = mkQ _ L := by
-  let f' := fun n => (f n).out
-  have hf' : ∀ {m : ℕ}, f' m ≡ f' (m + 1) [SMOD (I ^ m • ⊤ : Submodule R M)] := by
-    intro m
-    rw [SModEq]
-    simpa [f'] using hf
-  refine ⟨Classical.choose <| of_SModEq_succ (I := I) (f := f') hf', ?_⟩
-  simpa [SModEq, f'] using (Classical.choose_spec <| of_SModEq_succ (I := I) (f := f') hf')
+  suffices hadic : ∃ g : ℕ → M, (∀ {m n}, m ≤ n → g m ≡ g n [SMOD (I ^ m • ⊤ : Submodule R M)]) ∧
+      ∀ n, f n = Submodule.Quotient.mk (g n) by
+    choose g hg hmk using hadic
+    choose L hL using IsPrecomplete.prec' g hg
+    refine ⟨L, fun n ↦ (hmk n).trans ?_⟩
+    simpa using hL n
+  choose g hmk using fun n ↦ Submodule.Quotient.mk_surjective _ (f n)
+  refine ⟨g, fun {m n} hmn ↦ ?_, fun n ↦ (hmk n).symm⟩
+  simp only [SModEq]
+  rw [← Submodule.factor_mk]
+  -- Submodule.Quotient.mk
+  sorry
+  -- intro x
+  --
+  -- refine ⟨⟨a, ?_⟩, ?_⟩
+  -- · intro m n hmn
+  --   rw [SModEq.def, ha m, ← mkQ_apply,
+  --     ← factor_mk (Submodule.smul_mono_left (Ideal.pow_le_pow_right hmn)) (a n),
+  --     mkQ_apply,  ha n, x.property hmn]
+  -- · ext n
+  --   simp [ha n]
+  -- let f' := fun n => (f n).out -- use surjectivity
+  -- have hf' : ∀ {m : ℕ}, f' m ≡ f' (m + 1) [SMOD (I ^ m • ⊤ : Submodule R M)] := by
+  --   intro m
+  --   rw [SModEq]
+  --   simpa [f'] using hf
+  -- refine ⟨Classical.choose <| of_SModEq_succ (I := I) (f := f') hf', ?_⟩
+  -- simpa [SModEq, f'] using (Classical.choose_spec <| of_SModEq_succ (I := I) (f := f') hf')
 
 /--
 The `M = R` variant of `IsPrecomplete.of_eq_mapQPowSucc'`.
@@ -283,7 +303,7 @@ section LinearMap
 variable [IsAdicComplete I M]
 variable {N : Type*} [AddCommMonoid N] [Module R N]
 
-/--
+/-- `Gneralize this to a sequence a n instead of n`
 The limit linear map `F : N →ₗ[R] M` of a sequence of compatible
 linear maps `N →ₗ[R] M ⧸ (I ^ n • ⊤)`.
 -/
@@ -757,7 +777,7 @@ def AdicCauchySequence.mk (f : ℕ → M)
 def mk : AdicCauchySequence I M →ₗ[R] AdicCompletion I M where
   toFun f := ⟨fun n ↦ Submodule.mkQ (I ^ n • ⊤ : Submodule R M) (f n), by
     intro m n hmn
-    simp only [mkQ_apply, factor_mk]
+    simp only [mkQ_apply, Submodule.factor_mk]
     exact (f.property hmn).symm⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
