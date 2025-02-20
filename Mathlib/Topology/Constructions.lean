@@ -1053,6 +1053,65 @@ lemma IsClosedEmbedding.sumElim {f : X → Z} {g : Y → Z}
   rw [IsClosedEmbedding.isClosedEmbedding_iff_continuous_injective_isClosedMap] at hf hg ⊢
   exact ⟨hf.1.sumElim hg.1, h, hf.2.2.sumElim hg.2.2⟩
 
+lemma Topology.IsInducing.sumElim_of_separatedOpen {f : X → Z} {g : Y → Z}
+    (hf : IsInducing f) (hg : IsInducing g)
+    {U V : Set Z} (hU : IsOpen U) (hV : IsOpen V) (hUV : Disjoint U V)
+    (hfU : Set.range f ⊆ U) (hgV : Set.range g ⊆ V) : IsInducing (Sum.elim f g) := by
+  rw [isInducing_iff_nhds] at hf hg ⊢
+  intro s
+  cases s with
+  | inl x =>
+    simp only [Sum.elim_inl, nhds_inl, hf x]
+    apply Filter.filter_eq
+    ext s
+    have hU : U ∈ 𝓝 (f x) := hU.mem_nhds (hfU (mem_range_self x))
+    have hS (S : Set Z) : Sum.elim f g ⁻¹' S = Sum.inl '' (f ⁻¹' S) := by
+      ext
+      sorry -- missing lemma, should be easy
+    constructor <;> intro h
+    · choose t ht hst using h
+      refine ⟨t ∩ U, Filter.inter_mem ht hU, ?_⟩
+      simp only [hS, preimage_inter, image_subset_iff]
+      trans f ⁻¹' t
+      exacts [inter_subset_left, hst]
+    · choose t ht hst using h
+      refine ⟨t ∩ U, Filter.inter_mem ht hU, ?_⟩
+      have hst' : Sum.elim f g ⁻¹' (t ∩ U) ⊆ s := by
+        trans Sum.elim f g ⁻¹' t
+        exacts [by gcongr; exact inter_subset_left, hst]
+      simp_all
+  | inr x =>
+    simp only [Sum.elim_inr, nhds_inr, hg x]
+    apply Filter.filter_eq
+    ext s
+    have hV : V ∈ 𝓝 (g x) := hV.mem_nhds (hgV (mem_range_self x))
+    have hS (S : Set Z) : Sum.elim f g ⁻¹' S = Sum.inr '' (g ⁻¹' S) := by
+      ext
+      sorry -- missing lemma, should be easy
+    constructor <;> intro h
+    · choose t ht hst using h
+      refine ⟨t ∩ V, Filter.inter_mem ht hV, ?_⟩
+      simp only [hS, preimage_inter, image_subset_iff]
+      trans g ⁻¹' t
+      exacts [inter_subset_left, hst]
+    · choose t ht hst using h
+      refine ⟨t ∩ V, Filter.inter_mem ht hV, ?_⟩
+      have hst' : Sum.elim f g ⁻¹' (t ∩ V) ⊆ s := by
+        trans Sum.elim f g ⁻¹' t
+        exacts [by gcongr; exact inter_subset_left, hst]
+      simp_all
+
+-- might be much too strong: if im f and im g are separated by open sets, the sum is an embedding
+lemma IsEmbedding.sumElim_Strong_of_separatedOpen {f : X → Z} {g : Y → Z}
+    (hf : IsEmbedding f) (hg : IsEmbedding g) (h : Function.Injective (Sum.elim f g))
+    {U V : Set Z} (hU : IsOpen U) (hV : IsOpen V) (hUV : Disjoint U V)
+    (hfU : Set.range f ⊆ U) (hgV : Set.range g ⊆ V) :
+    IsEmbedding (Sum.elim f g) := by
+  have : Function.Injective (Sum.elim f g) := by
+    sorry -- use hUV, hfU and hgV
+  exact ⟨hf.isInducing.sumElim_of_separatedOpen hg.isInducing hU hV hUV hfU hgV, this⟩
+
+#exit
 end Sum
 
 section Subtype
