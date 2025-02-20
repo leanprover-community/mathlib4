@@ -306,21 +306,87 @@ def BoundaryManifoldData.of_Euclidean_halfSpace (n : ℕ) (k : ℕ∞)
     {M : Type} [TopologicalSpace M] [ChartedSpace (EuclideanHalfSpace (n + 1)) M]
     [IsManifold (𝓡∂ (n + 1)) k M] : BoundaryManifoldData M (𝓡∂ (n + 1)) k (𝓡 n):= sorry
 
+theorem Filter.foo {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+    {f : X → Z} {g : Y → Z} (F : Filter Z) :
+    Filter.map Sum.inl (Filter.comap f F) = Filter.comap (Sum.elim f g) F := by
+  unfold map comap
+  dsimp
+  refine filter_eq ?_
+  dsimp
+  ext s
+  -- write s = s1 ⊕ s2
+  constructor
+  · intro hs
+    rw [mem_setOf] at hs ⊢
+    choose t ht hts using hs
+    use t, ht
+    -- stuck here, need additional hypotheses!
+    sorry
+  sorry
+
+theorem Filter.bar {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+    {f : X → Z} {g : Y → Z} (F : Filter Z) :
+    Filter.map Sum.inr (Filter.comap g F) = Filter.comap (Sum.elim f g) F := sorry
+
+-- might be much too strong: if im f and im g are separated by open sets, the sum is an embedding
+lemma IsEmbedding.sum_elim_Strong {f : X → Z} {g : Y → Z}
+    (hf : IsEmbedding f) (hg : IsEmbedding g) (h : Function.Injective (Sum.elim f g))
+    {U V : Set Z} (hU : IsOpen U) (hV : IsOpen V) (hUV : Disjoint U V)
+    (hfU : Set.range f ⊆ U) (hgV : Set.range g ⊆ V) :
+    IsEmbedding (Sum.elim f g) := by
+  constructor; swap; · exact h
+  replace hf := hf.isInducing
+  replace hg := hg.isInducing
+  rw [isInducing_iff_nhds] at hf hg ⊢
+  intro s
+  cases s with
+  | inl x =>
+    simp only [Sum.elim_inl, nhds_inl, hf x]
+    -- under less hypotheses, this would just be Filter.foo (𝓝 (f x))
+    apply Filter.filter_eq
+    ext s
+    have hU : U ∈ 𝓝 (f x) := by
+      apply (hU.mem_nhds sorry) -- easy, x ∈ range f ⊆ U
+    have hS (S : Set Z) : Sum.elim f g ⁻¹' S = Sum.inl '' (f ⁻¹' S) := by
+        ext
+        sorry -- missing lemma, should be easy
+    constructor <;> intro h
+    · choose t ht hst using h
+      refine ⟨t ∩ U, Filter.inter_mem ht hU, ?_⟩
+      simp only [hS, preimage_inter, image_subset_iff]
+      trans f ⁻¹' t
+      exacts [inter_subset_left, hst]
+    · choose t ht hst using h
+      refine ⟨t ∩ U, Filter.inter_mem ht hU, ?_⟩
+      have hst' : Sum.elim f g ⁻¹' (t ∩ U) ⊆ s := by
+        trans Sum.elim f g ⁻¹' t
+        exacts [by gcongr; exact inter_subset_left, hst]
+      simp_all
+  | inr x => sorry -- as the first case
+
 -- It seems we actually need this lemma after all.
 lemma IsEmbedding.sum_elim {f : X → Z} {g : Y → Z}
     (hf : IsEmbedding f) (hg : IsEmbedding g) (h : Function.Injective (Sum.elim f g)) :
     IsEmbedding (Sum.elim f g) := by
   constructor; swap; · exact h
-  rw [@isInducing_iff_nhds]
+  replace hf := hf.isInducing
+  replace hg := hg.isInducing
+  rw [isInducing_iff_nhds] at hf hg ⊢
   intro s
   cases s with
   | inl x =>
-    simp only [Sum.elim_inl]
+    simp only [Sum.elim_inl, nhds_inl, hf x] --using Filter.foo (𝓝 (f x))
+    apply Filter.filter_eq
+    ext s
+    constructor <;> intro h
+    · choose t ht hst using h
+      -- A bit stuck here, as above.
+      use t, ht
+      sorry
     sorry
-  | inr x => sorry
-  -- apply IsInducing.sum_elim
-  --rw [isOpenEmbedding_iff_continuous_injective_isOpenMap] at hf hg ⊢
-  --exact ⟨hf.1.sum_elim hg.1, h, hf.2.2.sum_elim hg.2.2⟩
+  | inr x => simpa only [Sum.elim_inr, nhds_inr, hg x] using Filter.bar (𝓝 (g x))
+
+#exit
 
 -- TODO: need bd and bd' to have the same data E₀ and H₀!
 /-- If `M` and `M'` are modelled on the same model `I` and have nice boundary over `I₀`,
