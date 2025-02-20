@@ -218,7 +218,7 @@ end Deriv
 section EqOfMGF
 
 /-! We prove that if two random variables have the same `mgf`, then
-they also have the same `complexMGF`.-/
+they also have the same `complexMGF`. -/
 
 variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {Y : Ω' → ℝ} {μ' : Measure Ω'}
 

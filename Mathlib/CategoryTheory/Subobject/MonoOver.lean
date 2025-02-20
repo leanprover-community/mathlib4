@@ -57,6 +57,8 @@ instance (X : C) : Category (MonoOver X) :=
 
 namespace MonoOver
 
+instance mono_obj_hom (S : MonoOver X) : Mono S.obj.hom := S.2
+
 /-- Construct a `MonoOver X`. -/
 @[simps]
 def mk' {X A : C} (f : A ⟶ X) [hf : Mono f] : MonoOver X where
