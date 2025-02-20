@@ -67,7 +67,7 @@ instance : Monad (Comp ι ω s) where
   bind := Comp.bind'
 
 @[simp]
-lemma pure_pure' (a : α) : ((pure a) : Comp ι ω s α) = pure' a := rfl
+lemma pure'_eq : (pure' : α → Comp ι ω s α) = pure := rfl
 
 /-- Produce a `Comp` given the identifier of an oracle and a value to be queried.
 The `Comp` just returns `true` or `false` according to the answer of the oracle. -/

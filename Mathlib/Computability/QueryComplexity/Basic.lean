@@ -75,7 +75,6 @@ lemma cost_query' {i : I} (m : i ∈ s) (y : ι i) (f : ω y → Comp ι ω s α
 lemma cost_query (i : I) (y : ι i) (o : (i : I) → Oracle (ι i) ω) :
     (query i y).cost o i = 1 := by
   simp [query]
-  rfl
 
 /-- Expansion of `query'.run` -/
 lemma run_query {i : I} (m : i ∈ s) (y : ι i) (f : ω y → Comp ι ω s α)
