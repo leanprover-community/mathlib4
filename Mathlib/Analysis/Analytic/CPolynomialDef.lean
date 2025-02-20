@@ -38,7 +38,8 @@ In this file, we develop the basic properties of these notions, notably:
   particular that the set of points at which a given function is continuously polynomial is open,
   see `isOpen_cPolynomialAt`.
 
-More API is available in the file `CPolynomial.lean`, with heavier imports.
+More API is available in the file `Mathlib/Analysis/Analytic/CPolynomial.lean`, with heavier
+imports.
 -/
 
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
