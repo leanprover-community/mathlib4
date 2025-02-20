@@ -331,6 +331,8 @@ end trivial
 
 section nontrivial
 
+section OrderedSemiring
+
 variable {R : Type*} [Semiring R] {S : Type*} [OrderedSemiring S]
 
 /-- An absolute value on a semiring `R` without zero divisors is *nontrivial* if it takes
@@ -363,9 +365,13 @@ lemma not_isNontrivial_apply {v : AbsoluteValue R S} (hv : ¬ v.IsNontrivial) {x
     v x = 1 :=
   v.not_isNontrivial_iff.mp hv _ hx
 
-lemma IsNontrivial.exists_abv_gt_one {F S : Type*} [Field F] [LinearOrderedSemifield S] [ExistsAddOfLE S]
-    {v : AbsoluteValue F S} (h : v.IsNontrivial) :
-    ∃ x, 1 < v x := by
+end OrderedSemiring
+
+section LinearOrderedSemifield
+
+variable [Field R] [LinearOrderedSemifield S] [ExistsAddOfLE S] {v : AbsoluteValue R S}
+
+lemma IsNontrivial.exists_abv_gt_one (h : v.IsNontrivial) : ∃ x, 1 < v x := by
   obtain ⟨x, hx₀, hx₁⟩ := h
   rcases hx₁.lt_or_lt with h | h
   · refine ⟨x⁻¹, ?_⟩
@@ -373,22 +379,20 @@ lemma IsNontrivial.exists_abv_gt_one {F S : Type*} [Field F] [LinearOrderedSemif
     exact (one_lt_inv₀ <| v.pos hx₀).mpr h
   · exact ⟨x, h⟩
 
-lemma IsNontrivial.exists_abv_lt_one {F S : Type*} [Field F] [LinearOrderedSemifield S] [ExistsAddOfLE S]
-    {v : AbsoluteValue F S} (h : v.IsNontrivial) :
-    ∃ x ≠ 0, v x < 1 := by
+lemma IsNontrivial.exists_abv_lt_one (h : v.IsNontrivial) : ∃ x ≠ 0, v x < 1 := by
   obtain ⟨y, hy⟩ := h.exists_abv_gt_one
   have hy₀ := v.ne_zero_iff.mp <| (zero_lt_one.trans hy).ne'
   refine ⟨y⁻¹, inv_ne_zero hy₀, ?_⟩
   rw [map_inv₀]
   exact (inv_lt_one₀ <| v.pos hy₀).mpr hy
 
-theorem isNontrivial_iff_exists_abv_gt_one {F S : Type*} [Field F] [LinearOrderedSemifield S] [ExistsAddOfLE S]
-    {v : AbsoluteValue F S} :
-    v.IsNontrivial ↔ ∃ x, 1 < v x := by
+theorem isNontrivial_iff_exists_abv_gt_one : v.IsNontrivial ↔ ∃ x, 1 < v x := by
   refine ⟨fun h => h.exists_abv_gt_one, fun ⟨x, hx⟩ => ?_⟩
   refine ⟨x⁻¹, ?_, ?_⟩
   · simp only [ne_eq, inv_eq_zero]; exact ne_zero_of_one_lt _ hx
   · simp [map_inv₀, ne_eq, inv_eq_one, hx.ne']
+
+end LinearOrderedSemifield
 
 end nontrivial
 
