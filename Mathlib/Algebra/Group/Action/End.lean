@@ -5,6 +5,7 @@ Authors: Chris Hughes, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Faithful
 import Mathlib.Algebra.Group.Action.Hom
+import Mathlib.Algebra.Group.End
 import Mathlib.Algebra.Group.TypeTags.Hom
 import Mathlib.Logic.Embedding.Basic
 
@@ -49,23 +50,6 @@ def toFun : α ↪ M → α :=
 lemma toFun_apply (x : M) (y : α) : MulAction.toFun M α y x = x • y := rfl
 
 end MulAction
-
-variable (α) in
-/-- The monoid of endomorphisms.
-
-Note that this is generalized by `CategoryTheory.End` to categories other than `Type u`. -/
-protected def Function.End := α → α
-
-instance : Monoid (Function.End α) where
-  one := id
-  mul := (· ∘ ·)
-  mul_assoc _ _ _ := rfl
-  mul_one _ := rfl
-  one_mul _ := rfl
-  npow n f := f^[n]
-  npow_succ _ _ := Function.iterate_succ _ _
-
-instance : Inhabited (Function.End α) := ⟨1⟩
 
 /-- The tautological action by `Function.End α` on `α`.
 
@@ -125,3 +109,37 @@ abbrev MulAction.ofEndHom [Monoid M] (f : M →* Function.End α) : MulAction M 
 See note [reducible non-instances]. -/
 abbrev AddAction.ofEndHom [AddMonoid M] (f : M →+ Additive (Function.End α)) : AddAction M α :=
   .compHom α f
+
+namespace MulAut
+variable [Monoid M]
+
+/-- The tautological action by `MulAut M` on `M`. -/
+instance applyMulAction : MulAction (MulAut M) M where
+  smul := (· <| ·)
+  one_smul _ := rfl
+  mul_smul _ _ _ := rfl
+
+@[simp] protected lemma smul_def (f : MulAut M) (a : M) : f • a = f a := rfl
+
+/-- `MulAut.applyDistribMulAction` is faithful. -/
+instance apply_faithfulSMul : FaithfulSMul (MulAut M) M where eq_of_smul_eq_smul := MulEquiv.ext
+
+end MulAut
+
+namespace AddAut
+
+variable (A) [Add A]
+
+/-- The tautological action by `AddAut A` on `A`. -/
+instance applyMulAction {A} [AddMonoid A] : MulAction (AddAut A) A where
+  smul := (· <| ·)
+  one_smul _ := rfl
+  mul_smul _ _ _ := rfl
+
+@[simp] protected lemma smul_def {A} [AddMonoid A] (f : AddAut A) (a : A) : f • a = f a := rfl
+
+/-- `AddAut.applyDistribMulAction` is faithful. -/
+instance apply_faithfulSMul {A} [AddMonoid A] : FaithfulSMul (AddAut A) A where
+  eq_of_smul_eq_smul := AddEquiv.ext
+
+end AddAut

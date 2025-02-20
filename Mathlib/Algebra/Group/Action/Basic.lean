@@ -3,9 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Group.Action.TypeTags
 import Mathlib.Algebra.Group.Action.Units
+import Mathlib.Algebra.Group.End
 import Mathlib.Algebra.Group.Invertible.Basic
-import Mathlib.GroupTheory.Perm.Basic
 
 /-!
 # More lemmas about group actions

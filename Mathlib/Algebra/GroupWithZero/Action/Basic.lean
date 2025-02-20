@@ -5,7 +5,7 @@ Authors: Chris Hughes, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Action.Prod
-import Mathlib.Algebra.Group.Aut
+import Mathlib.Algebra.Group.Action.End
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.Prod
 import Mathlib.Algebra.SMulWithZero
