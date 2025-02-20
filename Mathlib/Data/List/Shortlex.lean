@@ -64,19 +64,14 @@ theorem of_lex {s t : List α} (h : s.length = t.length) (h2 : List.Lex r s t) :
   right
   exact ⟨h, h2⟩
 
+theorem _root_.List.shortlex_def {s t : List α} : Shortlex r s t ↔
+    s.length < t.length ∨ s.length = t.length ∧ List.Lex r s t := Prod.lex_def
+
 /-- If two lists `s` and `t` have the same length, `s` is smaller than `t` under the shortlex order
 over a relation `r` exactly when `s` is smaller than `t` under the lexicographic order over `r`.-/
 theorem _root_.List.shortlex_iff_lex {s t : List α} (h : s.length = t.length) :
     Shortlex r s t ↔ List.Lex r s t := by
-  constructor
-  · intro h2
-    rw [Shortlex, InvImage, Prod.lex_def, h, lt_self_iff_false, false_or] at h2
-    simp only [true_and] at h2
-    exact h2
-  exact fun h1 => of_lex h h1
-
-theorem _root_.List.shortlex_def {s t : List α} : Shortlex r s t ↔
-    s.length < t.length ∨ s.length = t.length ∧ List.Lex r s t := Prod.lex_def
+  simp [shortlex_def, h]
 
 theorem cons_iff [IsIrrefl α r] {a : α} {s t : List α} : Shortlex r (a :: s) (a :: t) ↔
     Shortlex r s t := by
