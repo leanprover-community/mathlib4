@@ -1053,6 +1053,16 @@ lemma IsClosedEmbedding.sumElim {f : X → Z} {g : Y → Z}
   rw [IsClosedEmbedding.isClosedEmbedding_iff_continuous_injective_isClosedMap] at hf hg ⊢
   exact ⟨hf.1.sumElim hg.1, h, hf.2.2.sumElim hg.2.2⟩
 
+lemma inl_image_eq_preimage_elim {f : X → Z} {g : Y → Z} (S : Set Z) :
+    Sum.inl '' (f ⁻¹' S) = Sum.elim f g ⁻¹' S := by
+  ext x
+  sorry -- missing lemma, should be easy
+
+lemma inr_image_eq_preimage_elim {f : X → Z} {g : Y → Z} (S : Set Z) :
+    Sum.inr '' (g ⁻¹' S) = Sum.elim f g ⁻¹' S := by
+  ext x
+  sorry -- missing lemma, should be easy
+
 lemma Topology.IsInducing.sumElim_of_separatedOpen {f : X → Z} {g : Y → Z}
     (hf : IsInducing f) (hg : IsInducing g)
     {U V : Set Z} (hU : IsOpen U) (hV : IsOpen V) (hUV : Disjoint U V)
@@ -1065,41 +1075,35 @@ lemma Topology.IsInducing.sumElim_of_separatedOpen {f : X → Z} {g : Y → Z}
     apply Filter.filter_eq
     ext s
     have hU : U ∈ 𝓝 (f x) := hU.mem_nhds (hfU (mem_range_self x))
-    have hS (S : Set Z) : Sum.elim f g ⁻¹' S = Sum.inl '' (f ⁻¹' S) := by
-      ext
-      sorry -- missing lemma, should be easy
     constructor <;> intro h
     · choose t ht hst using h
       refine ⟨t ∩ U, Filter.inter_mem ht hU, ?_⟩
-      simp only [hS, preimage_inter, image_subset_iff]
-      trans f ⁻¹' t
+      rw [← image_subset_iff] at hst
+      rw [preimage_inter, ← inl_image_eq_preimage_elim]
+      trans inl '' (f ⁻¹' t)
       exacts [inter_subset_left, hst]
     · choose t ht hst using h
       refine ⟨t ∩ U, Filter.inter_mem ht hU, ?_⟩
-      have hst' : Sum.elim f g ⁻¹' (t ∩ U) ⊆ s := by
-        trans Sum.elim f g ⁻¹' t
-        exacts [by gcongr; exact inter_subset_left, hst]
-      simp_all
+      rw [← inl_image_eq_preimage_elim, image_subset_iff] at hst
+      trans f ⁻¹' t
+      exacts [inter_subset_left, hst]
   | inr x =>
     simp only [Sum.elim_inr, nhds_inr, hg x]
     apply Filter.filter_eq
     ext s
     have hV : V ∈ 𝓝 (g x) := hV.mem_nhds (hgV (mem_range_self x))
-    have hS (S : Set Z) : Sum.elim f g ⁻¹' S = Sum.inr '' (g ⁻¹' S) := by
-      ext
-      sorry -- missing lemma, should be easy
     constructor <;> intro h
     · choose t ht hst using h
       refine ⟨t ∩ V, Filter.inter_mem ht hV, ?_⟩
-      simp only [hS, preimage_inter, image_subset_iff]
-      trans g ⁻¹' t
+      rw [← image_subset_iff] at hst
+      rw [preimage_inter, ← inr_image_eq_preimage_elim]
+      trans inr '' (g ⁻¹' t)
       exacts [inter_subset_left, hst]
     · choose t ht hst using h
       refine ⟨t ∩ V, Filter.inter_mem ht hV, ?_⟩
-      have hst' : Sum.elim f g ⁻¹' (t ∩ V) ⊆ s := by
-        trans Sum.elim f g ⁻¹' t
-        exacts [by gcongr; exact inter_subset_left, hst]
-      simp_all
+      rw [← inr_image_eq_preimage_elim, image_subset_iff] at hst
+      trans g ⁻¹' t
+      exacts [inter_subset_left, hst]
 
 -- might be much too strong: if im f and im g are separated by open sets, the sum is an embedding
 lemma IsEmbedding.sumElim_Strong_of_separatedOpen {f : X → Z} {g : Y → Z}
