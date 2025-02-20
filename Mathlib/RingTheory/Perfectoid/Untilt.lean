@@ -47,8 +47,8 @@ from the perfection of `O/p`.
 -/
 def untiltAux (x : PreTilt O p) (n : ℕ) : O :=
   match n with
-  | .zero => 1
-  | .succ n =>
+  | 0 => 1
+  | n + 1 =>
   (Quotient.out (coeff (ModP O p) _ n x)) ^ (p ^ n)
 
 lemma pow_dvd_untiltAux_sub_untiltAux (x : PreTilt O p) {m n : ℕ} (h : m ≤ n) :
