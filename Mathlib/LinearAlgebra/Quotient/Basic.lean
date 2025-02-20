@@ -249,7 +249,10 @@ variable {p p' p''}
 
 /-- The linear map from the quotient by a smaller submodule to the quotient by a larger submodule.
 
-This is the `Submodule.Quotient` version of `Quot.Factor` -/
+This is the `Submodule.Quotient` version of `Quot.Factor`
+
+When the two submodules are of the form `I ^ m • ⊤` and `I ^ n • ⊤` and `n ≤ m`,
+please refer to the dedicated version `Submodule.factorPow`-/
 abbrev factor (H : p ≤ p') : M ⧸ p →ₗ[R] M ⧸ p' :=
   mapQ _ _ LinearMap.id H
 
@@ -271,7 +274,7 @@ theorem factor_comp (H1 : p ≤ p') (H2 : p' ≤ p'') :
 @[simp]
 theorem factor_comp_apply (H1 : p ≤ p') (H2 : p' ≤ p'') (x : M ⧸ p) :
     factor H2 (factor H1 x) = factor (H1.trans H2) x := by
-  show (factor H2).comp (factor H1) x = factor (H1.trans H2) x
+  rw [← comp_apply]
   simp
 
 lemma factor_surjective (H : p ≤ p') : Function.Surjective (factor H) := by
