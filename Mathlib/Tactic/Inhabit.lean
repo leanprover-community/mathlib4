@@ -32,7 +32,7 @@ If the target is a `Prop`, this is done constructively. Otherwise, it uses `Clas
 syntax (name := inhabit) "inhabit " atomic(ident " : ")? term : tactic
 
 /-- `evalInhabit` takes in the MVarId of the main goal, runs the core portion of the inhabit tactic,
-    and returns the resulting MVarId -/
+and returns the resulting MVarId -/
 def evalInhabit (goal : MVarId) (h_name : Option Ident) (term : Syntax) : TacticM MVarId := do
   goal.withContext do
     let e ← Tactic.elabTerm term none
