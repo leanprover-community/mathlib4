@@ -240,7 +240,6 @@ lemma disjiUnion_supp_toFinset_eq_supp_toFinset {G' : SimpleGraph V} (h : G ≤ 
 
 end Fintype
 
-
 /-- The odd components are the connected components of odd cardinality. This definition excludes
 infinite components. -/
 abbrev oddComponents : Set G.ConnectedComponent := {c : G.ConnectedComponent | Odd c.supp.ncard}
@@ -258,7 +257,7 @@ lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents [Finite V] {G'}
   simp only [Nat.card_eq_fintype_card, Finset.filter_filter]
   rfl
 
-lemma odd_card_iff_odd_components [Finite V] : Odd (Nat.card V) ↔ Odd G.oddComponents.ncard := by
+lemma odd_ncard_oddComponents [Finite V] : Odd G.oddComponents.ncard ↔ Odd (Nat.card V) := by
   classical
   cases nonempty_fintype V
   rw [Nat.card_eq_fintype_card]
@@ -271,7 +270,7 @@ lemma odd_card_iff_odd_components [Finite V] : Odd (Nat.card V) ↔ Odd G.oddCom
     Set.ncard_coe_Finset, Set.Nat.card_coe_set_eq]
   exact (Finset.odd_sum_iff_odd_card_odd (fun x : G.ConnectedComponent ↦ x.supp.ncard))
 
-lemma ncard_odd_components_mono [Finite V] {G' : SimpleGraph V} (h : G ≤ G') :
+lemma ncard_oddComponents_mono [Finite V] {G' : SimpleGraph V} (h : G ≤ G') :
      G'.oddComponents.ncard ≤ G.oddComponents.ncard := by
   have aux (c : G'.ConnectedComponent) (hc : Odd c.supp.ncard) :
       {c' : G.ConnectedComponent | c'.supp ⊆ c.supp ∧ Odd c'.supp.ncard}.Nonempty := by
