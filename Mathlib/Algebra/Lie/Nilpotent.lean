@@ -306,8 +306,8 @@ variable (R L M)
 instance (priority := 100) trivialIsNilpotent [IsTrivial L M] : IsNilpotent L M :=
   ⟨by use 1; change ⁅⊤, ⊤⁆ = ⊥; simp⟩
 
-instance instIsNilpotentAdd (M₁ M₂ : LieSubmodule R L M) [IsNilpotent L M₁] [IsNilpotent L M₂] :
-    IsNilpotent L (M₁ + M₂) := by
+instance instIsNilpotentSup (M₁ M₂ : LieSubmodule R L M) [IsNilpotent L M₁] [IsNilpotent L M₂] :
+    IsNilpotent L (M₁ ⊔ M₂ : LieSubmodule R L M) := by
   obtain ⟨k, hk⟩ := IsNilpotent.nilpotent R L M₁
   obtain ⟨l, hl⟩ := IsNilpotent.nilpotent R L M₂
   let lcs_eq_bot {m n} (N : LieSubmodule R L M) (le : m ≤ n) (hn : lowerCentralSeries R L N m = ⊥) :
@@ -731,7 +731,7 @@ instance instMaxNilpotentSubmoduleIsNilpotent [IsNoetherian R M] :
 theorem nilpotent_iff_le_max_nilpotent_submodule [IsNoetherian R M] (N : LieSubmodule R L M) :
     IsNilpotent L N ↔ N ≤ maxNilpotentSubmodule R L M :=
   ⟨fun h ↦ le_sSup h, fun h ↦ isNilpotent_of_le R L M N (maxNilpotentSubmodule R L M) h
-    (maxNilpotentSubmoduleIsNilpotent R L M)⟩
+    (instMaxNilpotentSubmoduleIsNilpotent R L M)⟩
 
 end LieModule
 
@@ -987,7 +987,7 @@ def maxNilpotentIdeal := maxNilpotentSubmodule R L L
 
 instance maxNilpotentIdealIsNilpotent [IsNoetherian R L] :
     IsNilpotent L (maxNilpotentIdeal R L) := by
-  apply maxNilpotentSubmoduleIsNilpotent
+  apply instMaxNilpotentSubmoduleIsNilpotent
 
 theorem LieIdeal.nilpotent_iff_le_max_nilpotent_ideal [IsNoetherian R L] (I : LieIdeal R L) :
     IsNilpotent L I ↔ I ≤ maxNilpotentIdeal R L := by
