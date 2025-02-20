@@ -28,7 +28,7 @@ lemma map_eq (f : α → β) (x : Comp ι ω s α) : f <$> x = x >>= (fun x ↦ 
 
 /-- The definition of `Comp.bind` as `simp` lemmas -/
 @[simp]
-lemma pure'_bind (x : α) (f : α → Comp ι ω s β) : (pure' x : Comp ι ω s α) >>= f = f x := rfl
+lemma pure_bind (x : α) (f : α → Comp ι ω s β) : (pure x : Comp ι ω s α) >>= f = f x := rfl
 
 @[simp]
 lemma query'_bind (o : I) (m : o ∈ s) (y : ι o) (f : ω y → Comp ι ω s α)
@@ -50,27 +50,15 @@ instance : LawfulMonad (Comp ι ω s) := LawfulMonad.mk'
 
 variable [DecidableEq I]
 
-/-- Running `pure` and `pure'` yields the original value -/
-@[simp]
-lemma value_pure' (x : α) (o : (i : I) → Oracle (ι i) ω) :
-    (pure' x : Comp ι ω s α).value o = x := by
-  simp only [value, run, map_pure]
-
+/-- Running `pure` yields the original value -/
 @[simp]
 lemma value_pure (x : α) (o : (i : I) → Oracle (ι i) ω) : (pure x : Comp ι ω s α).value o = x := by
-  simp only [pure, value_pure']
+  simp only [value, run]
 
 /-- `pure` has cost 0 -/
 @[simp]
 lemma cost_pure (x : α) (o : (i : I) → Oracle (ι i) ω) :
     (pure x : Comp ι ω s α).cost o = 0 := by
-  ext i
-  simp [cost, run]
-
-/-- `pure'` has cost 0 -/
-@[simp]
-lemma cost_pure' (x : α) (o : (i : I) → Oracle (ι i) ω) :
-    (pure' x : Comp ι ω s α).cost o = 0 := by
   ext i
   simp [cost, run]
 
@@ -87,6 +75,7 @@ lemma cost_query' {i : I} (m : i ∈ s) (y : ι i) (f : ω y → Comp ι ω s α
 lemma cost_query (i : I) (y : ι i) (o : (i : I) → Oracle (ι i) ω) :
     (query i y).cost o i = 1 := by
   simp [query]
+  rfl
 
 /-- Expansion of `query'.run` -/
 lemma run_query {i : I} (m : i ∈ s) (y : ι i) (f : ω y → Comp ι ω s α)
@@ -112,7 +101,9 @@ lemma cost_bind (f : Comp ι ω s α) (g : α → Comp ι ω s β) (o : (i : I) 
     (f >>= g).cost o = f.cost o + (g (f.value o)).cost o := by
   ext i
   induction f with
-  | pure' _ => simp
+  | pure' _ =>
+    simp only [Pi.add_apply]
+    exact Eq.symm ((fun {_ _} ↦ Nat.add_left_eq_self.mpr) rfl)
   | query' _ _ _ _ h =>
     simp only [bind, bind'] at h
     simp only [cost_query', bind, bind', add_assoc, h, Pi.add_apply]
@@ -137,7 +128,6 @@ lemma value_allow (f : Comp ι ω s α) (st : s ⊆ t) (o : (i : I) → Oracle (
     (f.allow st).value o = f.value o := by
   induction f with
   | pure' _ =>
-    simp only [allow]
     rfl
   | query' _ _ _ _ h =>
     simp only [allow, value_query', h]
@@ -146,7 +136,7 @@ lemma value_allow (f : Comp ι ω s α) (st : s ⊆ t) (o : (i : I) → Oracle (
 lemma cost_allow (f : Comp ι ω s α) (st : s ⊆ t) (o : (i : I) → Oracle (ι i) ω) :
     (f.allow st).cost o = f.cost o := by
   induction f with
-  | pure' _ => simp only [allow, cost_pure, cost_pure']
+  | pure' _ => rfl
   | query' _ _ _ _ h => simp only [allow, cost_query', h]
 
 omit [DecidableEq I] in
