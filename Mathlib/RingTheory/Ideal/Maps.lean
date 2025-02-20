@@ -128,8 +128,18 @@ theorem comap_id : I.comap (RingHom.id R) = I :=
   Ideal.ext fun _ => Iff.rfl
 
 @[simp]
+lemma comap_idₐ {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] (I : Ideal S) :
+    Ideal.comap (AlgHom.id R S) I = I :=
+  I.comap_id
+
+@[simp]
 theorem map_id : I.map (RingHom.id R) = I :=
   (gc_map_comap (RingHom.id R)).l_unique GaloisConnection.id comap_id
+
+@[simp]
+lemma map_idₐ {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] (I : Ideal S) :
+    Ideal.map (AlgHom.id R S) I = I :=
+  I.map_id
 
 theorem comap_comap {T : Type*} [Semiring T] {I : Ideal T} (f : R →+* S) (g : S →+* T) :
     (I.comap g).comap f = I.comap (g.comp f) :=
