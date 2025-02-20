@@ -9,8 +9,9 @@ import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Combinatorics.SimpleGraph.Operations
 import Mathlib.Data.Fintype.Order
-import Mathlib.Data.Set.Functor
 import Mathlib.Data.Set.Card.Arithmetic
+import Mathlib.Data.Set.Functor
+
 
 /-!
 # Matchings
