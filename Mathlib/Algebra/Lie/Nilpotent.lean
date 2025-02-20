@@ -926,8 +926,7 @@ theorem coe_lcs_eq [LieModule R L M] :
     · rintro ⟨⟨x, hx⟩, m, hm, rfl⟩
       exact ⟨x, hx, m, hm, rfl⟩
 
-lemma isNilpotent_restricts_to_ideal (hI :IsNilpotent L I)
-    : LieRing.IsNilpotent I := by
+lemma isNilpotent_restricts_to_ideal (hI :IsNilpotent L I) : LieRing.IsNilpotent I := by
   let f : I →ₗ⁅R⁆ L := I.incl
   let g : I →ₗ⁅R⁆ I := LieHom.id
   have hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆ := by aesop
