@@ -145,10 +145,8 @@ theorem sumElim_dotProduct_sumElim : Sum.elim u x ⬝ᵥ Sum.elim v y = u ⬝ᵥ
 
 @[deprecated (since := "2024-12-12")]
 protected alias Matrix.sum_elim_dotProduct_sum_elim := sumElim_dotProduct_sumElim
-
 @[deprecated (since := "2025-02-21")]
-protected alias sum_elim_dotProduct_sum_elim := sumElim_dotProduct_sumElim
-
+alias sum_elim_dotProduct_sum_elim := sumElim_dotProduct_sumElim
 
 /-- Permuting a vector on the left of a dot product can be transferred to the right. -/
 @[simp]
