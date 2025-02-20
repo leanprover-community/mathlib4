@@ -68,19 +68,19 @@ theorem coe_coeHom : (coeHom : ℝ → Angle) = ((↑) : ℝ → Angle) :=
 protected theorem induction_on {p : Angle → Prop} (θ : Angle) (h : ∀ x : ℝ, p x) : p θ :=
   Quotient.inductionOn' θ h
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_zero : ↑(0 : ℝ) = (0 : Angle) :=
   rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_add (x y : ℝ) : ↑(x + y : ℝ) = (↑x + ↑y : Angle) :=
   rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_neg (x : ℝ) : ↑(-x : ℝ) = -(↑x : Angle) :=
   rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_sub (x y : ℝ) : ↑(x - y : ℝ) = (↑x - ↑y : Angle) :=
   rfl
 
