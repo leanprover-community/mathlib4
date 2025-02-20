@@ -596,6 +596,24 @@ lemma compProd_add_right (μ : Kernel α β) (κ η : Kernel (α × β) γ)
   rw [lintegral_add_left]
   exact measurable_kernel_prod_mk_left' hs a
 
+lemma compProd_sum_left {ι : Type*} [Countable ι]
+    {κ : ι → Kernel α β} {η : Kernel (α × β) γ} [∀ i, IsSFiniteKernel (κ i)] [IsSFiniteKernel η] :
+    Kernel.sum κ ⊗ₖ η = Kernel.sum (fun i ↦ (κ i) ⊗ₖ η) := by
+  ext a s hs
+  simp_rw [sum_apply, compProd_apply hs, sum_apply, lintegral_sum_measure, Measure.sum_apply _ hs,
+    compProd_apply hs]
+
+lemma compProd_sum_right {ι : Type*} [Countable ι]
+    {κ : Kernel α β} {η : ι → Kernel (α × β) γ} [IsSFiniteKernel κ] [∀ i, IsSFiniteKernel (η i)] :
+    κ ⊗ₖ Kernel.sum η = Kernel.sum (fun i ↦ κ ⊗ₖ (η i)) := by
+  ext a s hs
+  simp_rw [sum_apply, compProd_apply hs, Measure.sum_apply _ hs, sum_apply, compProd_apply hs]
+  rw [← lintegral_tsum]
+  · congr with i
+    rw [Measure.sum_apply]
+    exact measurable_prod_mk_left hs
+  · exact fun _ ↦ (measurable_kernel_prod_mk_left' hs a).aemeasurable
+
 lemma comapRight_compProd_id_prod {δ : Type*} {mδ : MeasurableSpace δ}
     (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel (α × β) γ) [IsSFiniteKernel η]
     {f : δ → γ} (hf : MeasurableEmbedding f) :
@@ -815,6 +833,16 @@ lemma prodMkLeft_add (κ η : Kernel α β) :
 @[simp]
 lemma prodMkRight_add (κ η : Kernel α β) :
     prodMkRight γ (κ + η) = prodMkRight γ κ + prodMkRight γ η := by ext; simp
+
+lemma sum_prodMkLeft {ι : Type*} [Countable ι] {κ : ι → Kernel α β} :
+    Kernel.sum (fun i ↦ Kernel.prodMkLeft γ (κ i)) = Kernel.prodMkLeft γ (Kernel.sum κ) := by
+  ext
+  simp_rw [sum_apply, prodMkLeft_apply, sum_apply]
+
+lemma sum_prodMkRight {ι : Type*} [Countable ι] {κ : ι → Kernel α β} :
+    Kernel.sum (fun i ↦ Kernel.prodMkRight γ (κ i)) = Kernel.prodMkRight γ (Kernel.sum κ) := by
+  ext
+  simp_rw [sum_apply, prodMkRight_apply, sum_apply]
 
 theorem lintegral_prodMkLeft (κ : Kernel α β) (ca : γ × α) (g : β → ℝ≥0∞) :
     ∫⁻ b, g b ∂prodMkLeft γ κ ca = ∫⁻ b, g b ∂κ ca.snd := rfl
