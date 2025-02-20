@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.BigOperators.Sym
 import Mathlib.Data.Finsupp.Pointwise
-import Mathlib.LinearAlgebra.Finsupp.Sym2
+import Mathlib.Data.Sym.Sym2.Finsupp
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 /-!

@@ -3152,6 +3152,7 @@ import Mathlib.Data.Sum.Order
 import Mathlib.Data.Sym.Basic
 import Mathlib.Data.Sym.Card
 import Mathlib.Data.Sym.Sym2
+import Mathlib.Data.Sym.Sym2.Finsupp
 import Mathlib.Data.Sym.Sym2.Init
 import Mathlib.Data.Sym.Sym2.Order
 import Mathlib.Data.Tree.Basic
@@ -3623,7 +3624,6 @@ import Mathlib.LinearAlgebra.Finsupp.Pi
 import Mathlib.LinearAlgebra.Finsupp.Span
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.LinearAlgebra.Finsupp.Supported
-import Mathlib.LinearAlgebra.Finsupp.Sym2
 import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 import Mathlib.LinearAlgebra.FreeAlgebra
 import Mathlib.LinearAlgebra.FreeModule.Basic
