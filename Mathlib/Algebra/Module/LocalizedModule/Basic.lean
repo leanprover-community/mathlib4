@@ -235,8 +235,8 @@ instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
           on_goal 1 => rw [e₁, e₂]
           on_goal 2 => rw [eq_comm]
           all_goals
-            rw [smul_smul, mul_mul_mul_comm, ← smul_eq_mul, ← smul_eq_mul A, smul_smul_smul_comm,
-              mul_smul, mul_smul])
+            rw [smul_smul, mul_mul_mul_comm, ← smul_eq_mul, ← smul_eq_mul (α := A),
+              smul_smul_smul_comm, mul_smul, mul_smul])
     one := mk 1 (1 : S)
     one_mul := by
       rintro ⟨a, s⟩
