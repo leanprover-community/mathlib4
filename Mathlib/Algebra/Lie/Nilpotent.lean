@@ -1007,12 +1007,8 @@ theorem LieIdeal.isNilpotent_iff_le_maxNilpotentIdeal [IsNoetherian R L] (I : Li
 theorem center_le_maxNilpotentIdeal : center R L ≤ maxNilpotentIdeal R L :=
   le_sSup (trivialIsNilpotent L (center R L))
 
-theorem maxNilpotentIdeal_le_radical : maxNilpotentIdeal R L ≤ radical R L := by
-  apply sSup_le_sSup
-  intro I hI
-  have h : IsNilpotent I I :=
-    LieIdeal.isNilpotent_restricts_to_ideal I hI
-  exact isSolvable_of_isNilpotent I
+theorem maxNilpotentIdeal_le_radical : maxNilpotentIdeal R L ≤ radical R L :=
+  sSup_le_sSup fun I (_ : IsNilpotent L I) ↦ isSolvable_of_isNilpotent I
 
 @[simp] lemma maxNilpotentIdeal_eq_top_of_isNilpotent [LieRing.IsNilpotent L] :
     maxNilpotentIdeal R L = ⊤ :=
