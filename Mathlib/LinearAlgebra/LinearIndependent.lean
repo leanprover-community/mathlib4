@@ -131,6 +131,7 @@ def delabLinearIndependent : Delab :=
     else
       withNaryArg 0 do return (← read).optionsPerPos.setBool (← getPos) `pp.analysis.namedArg true
     withTheReader Context ({· with optionsPerPos}) delab
+
 /-- `LinearIndepOn R v s` states that the vectors in the family `v` that are indexed
 by the elements of `s` are linearly independent over `R`. -/
 def LinearIndepOn (s : Set ι) : Prop := LinearIndependent R (fun x : s ↦ v x)
@@ -186,6 +187,9 @@ theorem linearIndepOn_empty : LinearIndepOn R v ∅ :=
 
 theorem linearIndependent_set_coe_iff :
     LinearIndependent R (fun x : s ↦ v x) ↔ LinearIndepOn R v s := Iff.rfl
+
+@[deprecated (since := "2025-02-20")] alias
+  linearIndependent_set_subtype := linearIndependent_set_coe_iff
 
 theorem linearIndependent_subtype_iff {s : Set M} :
     LinearIndependent R (Subtype.val : s → M) ↔ LinearIndepOn R id s := Iff.rfl
