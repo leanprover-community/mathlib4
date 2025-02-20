@@ -728,7 +728,7 @@ instance instMaxNilpotentSubmoduleIsNilpotent [IsNoetherian R M] :
   refine hwf { N : LieSubmodule R L M | IsNilpotent L N } ⟨⊥, ?_⟩ fun N₁ h₁ N₂ h₂ => ?_ <;>
   simp_all <;> infer_instance
 
-theorem nilpotent_iff_le_maxNilpotentSubmodule [IsNoetherian R M] (N : LieSubmodule R L M) :
+theorem isNilpotent_iff_le_maxNilpotentSubmodule [IsNoetherian R M] (N : LieSubmodule R L M) :
     IsNilpotent L N ↔ N ≤ maxNilpotentSubmodule R L M :=
   ⟨fun h ↦ le_sSup h, fun h ↦ isNilpotent_of_le R L M N (maxNilpotentSubmodule R L M) h
     (instMaxNilpotentSubmoduleIsNilpotent R L M)⟩
@@ -995,9 +995,9 @@ instance maxNilpotentIdealIsNilpotent [IsNoetherian R L] :
     IsNilpotent L (maxNilpotentIdeal R L) :=
   instMaxNilpotentSubmoduleIsNilpotent R L L
 
-theorem LieIdeal.nilpotent_iff_le_maxNilpotentIdeal [IsNoetherian R L] (I : LieIdeal R L) :
+theorem LieIdeal.isNilpotent_iff_le_maxNilpotentIdeal [IsNoetherian R L] (I : LieIdeal R L) :
     IsNilpotent L I ↔ I ≤ maxNilpotentIdeal R L :=
-  nilpotent_iff_le_maxNilpotentSubmodule R L L I
+  isNilpotent_iff_le_maxNilpotentSubmodule R L L I
 
 theorem center_le_maxNilpotentIdeal : center R L ≤ maxNilpotentIdeal R L :=
   le_sSup (trivialIsNilpotent L (center R L))
