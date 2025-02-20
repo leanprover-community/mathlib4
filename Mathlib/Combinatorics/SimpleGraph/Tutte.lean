@@ -29,7 +29,7 @@ def TutteViolator (G: SimpleGraph V) (u : Set V) : Prop :=
 Tutte-condition, if the graph decomposes into cliques, there exists a matching that covers
 everything except some universal vertices. It is marked private, because
 it is strictly weaker than `IsPerfectMatching.exists_of_isClique_supp` -/
-private lemma IsMatching.exists_verts_compl_subset_universalVerts
+private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
     (h : ¬TutteViolator G G.universalVerts)
     (h' : ∀ (K : G.deleteUniversalVerts.coe.ConnectedComponent),
     G.deleteUniversalVerts.coe.IsClique K.supp) :
@@ -78,7 +78,7 @@ private lemma IsMatching.exists_verts_compl_subset_universalVerts
 
 /-- This lemma states that a graph in which the universal vertices do not violate the
 Tutte-condition, if the graph decomposes into cliques, it has a perfect matching -/
-theorem IsPerfectMatching.exists_of_isClique_supp
+theorem Subgraph.IsPerfectMatching.exists_of_isClique_supp
     (hveven : Even (Fintype.card V)) (h : ¬G.TutteViolator G.universalVerts)
     (h' : ∀ (K : G.deleteUniversalVerts.coe.ConnectedComponent),
     G.deleteUniversalVerts.coe.IsClique K.supp) : ∃ (M : Subgraph G), M.IsPerfectMatching := by
