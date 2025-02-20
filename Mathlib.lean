@@ -2343,6 +2343,7 @@ import Mathlib.CategoryTheory.Square
 import Mathlib.CategoryTheory.Subobject.Basic
 import Mathlib.CategoryTheory.Subobject.Comma
 import Mathlib.CategoryTheory.Subobject.FactorThru
+import Mathlib.CategoryTheory.Subobject.HasCardinalLT
 import Mathlib.CategoryTheory.Subobject.Lattice
 import Mathlib.CategoryTheory.Subobject.Limits
 import Mathlib.CategoryTheory.Subobject.MonoOver
