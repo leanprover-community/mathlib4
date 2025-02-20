@@ -386,8 +386,6 @@ lemma IsEmbedding.sum_elim {f : X → Z} {g : Y → Z}
     sorry
   | inr x => simpa only [Sum.elim_inr, nhds_inr, hg x] using Filter.bar (𝓝 (g x))
 
-#exit
-
 -- TODO: need bd and bd' to have the same data E₀ and H₀!
 /-- If `M` and `M'` are modelled on the same model `I` and have nice boundary over `I₀`,
 their disjoint union also does. -/
@@ -399,7 +397,9 @@ noncomputable def BoundaryManifoldData.sum
   isManifold := sorry -- TODO: investigate where this fails to be inferred!
   f := Sum.map bd.f bd'.f
   isEmbedding := by
-    apply IsEmbedding.sum_elim
+    -- The boundaries are contained in disjoint open set, namely M and M' (as subsets of M ⊕ M').
+    apply IsEmbedding.sum_elim_Strong
+      (U := Set.range (@Sum.inl M M')) (V := Set.range (@Sum.inr M M'))
     · exact IsEmbedding.inl.comp bd.isEmbedding
     · exact IsEmbedding.inr.comp bd'.isEmbedding
     · -- The overall function is injective: can this be simplified further?
@@ -417,11 +417,17 @@ noncomputable def BoundaryManifoldData.sum
         | inr y' =>
           simp_all
           exact bd'.isEmbedding.injective hxy
+    · exact isOpen_range_inl
+    · exact isOpen_range_inr
+    · sorry -- exact? inl and inr have disjoint range
+    · rw [range_comp]; exact image_subset_range _ _
+    · rw [range_comp]; exact image_subset_range _ _
   contMDiff := bd.contMDiff.sum_map bd'.contMDiff
   isImmersion hk p := by
     cases p with
     | inl x =>
       simp only [Sum.map_inl]
+      -- contMDiff, then use hk and standard lemmas
       have diff : MDifferentiableAt I₀ I bd.f x := sorry
       -- ideal proof should be like `rw [mfderiv_sum_at_inl this]; apply bd.isImmersion hk x`
       convert bd.isImmersion hk x
