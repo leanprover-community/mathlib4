@@ -108,7 +108,8 @@ structure BoundaryManifoldData (M : Type*) [TopologicalSpace M] [ChartedSpace H 
   f: M₀ → M
   isEmbedding: Topology.IsEmbedding f
   contMDiff: ContMDiff I₀ I k f
-  isImmersion: ∀ x, Function.Injective (mfderiv I₀ I f x)
+  /-- If `f` is `C¹`, it is an immersion: this condition is vacuous for `C⁰` maps. -/
+  isImmersion: (1 : WithTop ℕ∞) ≤ k → ∀ x, Function.Injective (mfderiv I₀ I f x)
   /-- `f` maps `M₀` surjectively to the boundary of `M`. -/
   range_eq_boundary: Set.range f = I.boundary M
 
@@ -137,7 +138,7 @@ def BoundaryManifoldData.of_boundaryless [BoundarylessManifold I M] :
   f x := (IsEmpty.false x).elim
   isEmbedding := Topology.IsEmbedding.of_subsingleton _
   isManifold := by infer_instance
-  isImmersion x := (IsEmpty.false x).elim
+  isImmersion hk x := (IsEmpty.false x).elim
   range_eq_boundary := by
     have : I.boundary M = ∅ := by
       rw [ModelWithCorners.Boundaryless.iff_boundary_eq_empty]
@@ -156,7 +157,7 @@ noncomputable def BoundaryManifoldData.euclideanHalfSpace_self (n : ℕ) (k : �
   f x := ⟨fun i ↦ if h: i = 0 then 0 else x (Fin.pred i (by omega)), by simp⟩
   isEmbedding := sorry
   contMDiff := sorry
-  isImmersion x := sorry
+  isImmersion hk x := sorry
   range_eq_boundary := sorry
 
 -- missing mathlib lemma: IsEmbedding.sum_elim (if true), will not add for now
@@ -196,7 +197,7 @@ noncomputable def BoundaryManifoldData.Icc (k : ℕ∞) :
       fin_cases x <;> fin_cases y <;> simp_all
     · exact fun K _ ↦ Set.Finite.isClosed (Finite.Set.finite_image K _)
   contMDiff := contMDiff_of_discreteTopology
-  isImmersion x := by
+  isImmersion hk x := by
     have : Subsingleton (TangentSpace (𝓡 0) x) := by
       change Subsingleton (EuclideanSpace ℝ (Fin 0))
       infer_instance
@@ -252,14 +253,12 @@ def BoundaryManifoldData.prod_of_boundaryless_left [BoundarylessManifold I M]
   isEmbedding := IsEmbedding.prodMap IsEmbedding.id bd.isEmbedding
   -- XXX: mathlib naming is inconsistent, prodMap vs prod_map; check if zulip consensus
   contMDiff := ContMDiff.prod_map contMDiff_id bd.contMDiff
-  -- TODO: tweak this definition, by demanding this only for 1 ≤ k
-  isImmersion x := by
-    have : (1 : WithTop ℕ∞) ≤ k := sorry
-    rw [mfderiv_prod_map mdifferentiableAt_id ((bd.contMDiff x.2).mdifferentiableAt this)]
+  isImmersion hk x := by
+    rw [mfderiv_prod_map mdifferentiableAt_id ((bd.contMDiff x.2).mdifferentiableAt hk)]
     apply Function.Injective.prodMap
     · rw [mfderiv_id]
       exact fun ⦃a₁ a₂⦄ a ↦ a
-    · exact bd.isImmersion _
+    · exact bd.isImmersion hk _
   range_eq_boundary := by
     rw [range_prod_map, ModelWithCorners.boundary_of_boundaryless_left, range_id]
     congr
@@ -273,11 +272,10 @@ def BoundaryManifoldData.prod_of_boundaryless_right (bd : BoundaryManifoldData M
   f := Prod.map bd.f id
   isEmbedding := IsEmbedding.prodMap bd.isEmbedding IsEmbedding.id
   contMDiff := ContMDiff.prod_map bd.contMDiff contMDiff_id
-  isImmersion x := by
-    have : (1 : WithTop ℕ∞) ≤ k := sorry
-    rw [mfderiv_prod_map ((bd.contMDiff x.1).mdifferentiableAt this) mdifferentiableAt_id]
+  isImmersion hk x := by
+    rw [mfderiv_prod_map ((bd.contMDiff x.1).mdifferentiableAt hk) mdifferentiableAt_id]
     apply Function.Injective.prodMap
-    · exact bd.isImmersion _
+    · exact bd.isImmersion hk _
     · rw [mfderiv_id]
       exact fun ⦃a₁ a₂⦄ a ↦ a
   range_eq_boundary := by
