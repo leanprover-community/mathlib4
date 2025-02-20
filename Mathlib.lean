@@ -1691,6 +1691,7 @@ import Mathlib.Analysis.SumIntegralComparisons
 import Mathlib.Analysis.SumOverResidueClass
 import Mathlib.Analysis.VonNeumannAlgebra.Basic
 import Mathlib.CategoryTheory.Abelian.Basic
+import Mathlib.CategoryTheory.Abelian.CommSq
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 import Mathlib.CategoryTheory.Abelian.EpiWithInjectiveKernel
 import Mathlib.CategoryTheory.Abelian.Exact
@@ -2211,6 +2212,7 @@ import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.CategoryTheory.Preadditive.Biproducts
+import Mathlib.CategoryTheory.Preadditive.CommGrp_
 import Mathlib.CategoryTheory.Preadditive.EilenbergMoore
 import Mathlib.CategoryTheory.Preadditive.EndoFunctor
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
@@ -2342,6 +2344,7 @@ import Mathlib.CategoryTheory.Square
 import Mathlib.CategoryTheory.Subobject.Basic
 import Mathlib.CategoryTheory.Subobject.Comma
 import Mathlib.CategoryTheory.Subobject.FactorThru
+import Mathlib.CategoryTheory.Subobject.HasCardinalLT
 import Mathlib.CategoryTheory.Subobject.Lattice
 import Mathlib.CategoryTheory.Subobject.Limits
 import Mathlib.CategoryTheory.Subobject.MonoOver
@@ -2658,6 +2661,7 @@ import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.BooleanAlgebra
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.CastCard
 import Mathlib.Data.Finset.Dedup
 import Mathlib.Data.Finset.Defs
 import Mathlib.Data.Finset.Density
@@ -2738,6 +2742,7 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Fintype.CardEmbedding
 import Mathlib.Data.Fintype.Defs
+import Mathlib.Data.Fintype.EquivFin
 import Mathlib.Data.Fintype.Fin
 import Mathlib.Data.Fintype.Inv
 import Mathlib.Data.Fintype.Lattice
@@ -2748,6 +2753,7 @@ import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Fintype.Parity
 import Mathlib.Data.Fintype.Perm
 import Mathlib.Data.Fintype.Pi
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Quotient
@@ -4861,6 +4867,7 @@ import Mathlib.RingTheory.OreLocalization.OreSet
 import Mathlib.RingTheory.OreLocalization.Ring
 import Mathlib.RingTheory.OrzechProperty
 import Mathlib.RingTheory.Perfection
+import Mathlib.RingTheory.Perfectoid.Untilt
 import Mathlib.RingTheory.PiTensorProduct
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.Polynomial.Bernstein
@@ -5289,7 +5296,7 @@ import Mathlib.Tactic.ProdAssoc
 import Mathlib.Tactic.ProjectionNotation
 import Mathlib.Tactic.Propose
 import Mathlib.Tactic.ProxyType
-import Mathlib.Tactic.PushNeg
+import Mathlib.Tactic.Push
 import Mathlib.Tactic.Qify
 import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Recall
