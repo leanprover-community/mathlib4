@@ -60,7 +60,7 @@ theorem IsHausdorff.eq_iff_smodEq [IsHausdorff I M] {x y : M} :
   refine ⟨fun h _ ↦ h ▸ rfl, fun h ↦ ?_⟩
   rw [← sub_eq_zero]
   apply IsHausdorff.haus' (I := I) (x - y)
-  simpa only [SModEq.sub_mem, sub_zero] using h
+  simpa [SModEq.sub_mem] using h
 
 theorem IsPrecomplete.prec (_ : IsPrecomplete I M) {f : ℕ → M} :
     (∀ {m n}, m ≤ n → f m ≡ f n [SMOD (I ^ m • ⊤ : Submodule R M)]) →
