@@ -66,7 +66,7 @@ class RelCWComplex.{u} {X : Type u} [TopologicalSpace X] (C : Set X) (D : outPar
   This map is a bijection when restricting to `ball 0 1`, where we consider `(Fin n → ℝ)`
   endowed with the maximum metric. -/
   map (n : ℕ) (i : cell n) : PartialEquiv (Fin n → ℝ) X
-  /-- The source of every charactersitic map of dimension `n` is
+  /-- The source of every characteristic map of dimension `n` is
   `(ball 0 1 : Set (Fin n → ℝ))`. -/
   source_eq (n : ℕ) (i : cell n) : (map n i).source = ball 0 1
   /-- The characteristic maps are continuous when restricting to `closedBall 0 1`. -/
