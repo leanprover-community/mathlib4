@@ -352,11 +352,9 @@ noncomputable def BoundaryManifoldData.prod_Icc [Nonempty H] [Nonempty M]
       all_goals apply isClosedMap_prodMk_right
   contMDiff := (contMDiff_id.prod_mk contMDiff_const).sum_elim
     (contMDiff_id.prod_mk contMDiff_const)
-  isImmersion p := by
-    by_cases h: p.isLeft
-    · let x := p.getLeft h
-      rw [Sum.eq_left_getLeft_of_isLeft h]
-      -- lemma: f: M → N, g: M' → N and x ∈ M, then
+  isImmersion hk p := by
+    cases p with
+    | inl x =>
       rw [MDifferentiableAt.mfderiv_prod]
       · sorry -- injectivity
       · -- argue: f coincides with the function which always does the same, then use prod
@@ -372,10 +370,7 @@ noncomputable def BoundaryManifoldData.prod_Icc [Nonempty H] [Nonempty M]
         rw [mfderiv_prod_left]
         apply LinearMap.inl_injective
       sorry
-    · let x := p.getRight (Sum.not_isLeft.mp h)
-      rw [Sum.eq_right_getRight_of_isRight (Sum.not_isLeft.mp h)]
-      -- same argument as in the other case
-      sorry
+    | inr x => sorry -- same argument as in the other case
   range_eq_boundary := by
     simp only [boundary_product, Set.Sum.elim_range, Set.prod, mem_univ, true_and]
     ext x
