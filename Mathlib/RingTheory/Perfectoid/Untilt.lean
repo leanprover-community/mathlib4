@@ -36,8 +36,7 @@ open Perfection Ideal
 
 noncomputable section
 
-variable {O : Type*} [CommRing O]
-  {p : ℕ} [Fact (Nat.Prime p)] [Fact ¬IsUnit (p : O)]
+variable {O : Type*} [CommRing O] {p : ℕ} [Fact (Nat.Prime p)] [Fact ¬IsUnit (p : O)]
 
 namespace PreTilt
 
@@ -48,8 +47,8 @@ from the perfection of `O/p`.
 -/
 def untiltAux (x : PreTilt O p) (n : ℕ) : O :=
   match n with
-  | .zero => 1
-  | .succ n =>
+  | 0 => 1
+  | n + 1 =>
   (Quotient.out (coeff (ModP O p) _ n x)) ^ (p ^ n)
 
 lemma pow_dvd_untiltAux_sub_untiltAux (x : PreTilt O p) {m n : ℕ} (h : m ≤ n) :
@@ -61,7 +60,7 @@ lemma pow_dvd_untiltAux_sub_untiltAux (x : PreTilt O p) {m n : ℕ} (h : m ≤ n
     have : n = n' + 1 := by simp [n', Nat.sub_add_cancel (n := n) (m := 1) (by linarith)]
     simp only [this, add_le_add_iff_right, untiltAux] at h ⊢
     rw [← Nat.sub_add_cancel h, pow_add _ _ m, pow_mul]
-    refine (dvd_sub_pow_of_dvd_sub (R := O) ?_ m)
+    refine (dvd_sub_pow_of_dvd_sub ?_ m)
     rw [← mem_span_singleton, ← Ideal.Quotient.eq]
     simp only [Ideal.Quotient.mk_out, map_pow, Nat.sub_add_cancel h]
     calc
