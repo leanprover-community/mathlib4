@@ -62,7 +62,6 @@ lemma disjoint_image_val_universalVerts (s : Set G.deleteUniversalVerts.verts) :
 infinite components. -/
 def oddComponents : Set G.ConnectedComponent := {c : G.ConnectedComponent | Odd c.supp.ncard}
 
-
 lemma even_ncard_supp_sdiff_rep [Fintype V] {s : Set V} (K : G.ConnectedComponent)
     (hrep : ConnectedComponent.Represents s G.oddComponents) :
   Even (K.supp \ s).ncard := by
