@@ -76,7 +76,7 @@ abbrev Hausdorffification : Type _ :=
 
 /-- The canonical linear map `M ⧸ (I ^ n • ⊤) →ₗ[R] M ⧸ (I ^ m • ⊤)` for `m ≤ n` used
 to define `AdicCompletion`. -/
-abbrev AdicCompletion.transitionMap {m n : ℕ} (hmn : m ≤ n) := mapQPow I M hmn
+abbrev AdicCompletion.transitionMap {m n : ℕ} (hmn : m ≤ n) := factorPow I M hmn
 
 /-- The completion of a module with respect to an ideal. This is not necessarily Hausdorff.
 In fact, this is only complete if the ideal is finitely generated. -/
