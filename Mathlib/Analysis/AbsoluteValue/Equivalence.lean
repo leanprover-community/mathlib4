@@ -201,7 +201,7 @@ theorem tendsto_div_one_add_pow_nhds_one {v : AbsoluteValue F ℝ} {a : F} (ha :
     (v.one_add_pow_le _)
 
 /--
-The limit $v \left(\frac{1}{1 + a ^ n}\right)\to 1$, for an absolute value $v$ on a field
+The limit $v \left(\frac{1}{1 + a ^ n}\right)\to 0$, for an absolute value $v$ on a field
 $F$ if $1 < v(a)$.
 -/
 theorem tendsto_pow_div_one_add_pow_zero {v : AbsoluteValue F ℝ} {a : F} (ha : 1 < v a) :
