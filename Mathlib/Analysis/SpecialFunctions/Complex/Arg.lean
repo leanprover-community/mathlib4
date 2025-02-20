@@ -211,7 +211,7 @@ theorem arg_eq_zero_iff {z : ℂ} : arg z = 0 ↔ 0 ≤ z.re ∧ z.im = 0 := by
   refine ⟨fun h => ?_, ?_⟩
   · rw [← abs_mul_cos_add_sin_mul_I z, h]
     simp [abs.nonneg]
-  · cases' z with x y
+  · obtain ⟨x, y⟩ := z
     rintro ⟨h, rfl : y = 0⟩
     exact arg_ofReal_of_nonneg h
 
@@ -226,7 +226,7 @@ theorem arg_eq_pi_iff {z : ℂ} : arg z = π ↔ z.re < 0 ∧ z.im = 0 := by
   · intro h
     rw [← abs_mul_cos_add_sin_mul_I z, h]
     simp [h₀]
-  · cases' z with x y
+  · obtain ⟨x, y⟩ := z
     rintro ⟨h : x < 0, rfl : y = 0⟩
     rw [← arg_neg_one, ← arg_real_mul (-1) (neg_pos.2 h)]
     simp [← ofReal_def]
@@ -246,7 +246,7 @@ theorem arg_eq_pi_div_two_iff {z : ℂ} : arg z = π / 2 ↔ z.re = 0 ∧ 0 < z.
   · intro h
     rw [← abs_mul_cos_add_sin_mul_I z, h]
     simp [h₀]
-  · cases' z with x y
+  · obtain ⟨x, y⟩ := z
     rintro ⟨rfl : x = 0, hy : 0 < y⟩
     rw [← arg_I, ← arg_real_mul I hy, ofReal_mul', I_re, I_im, mul_zero, mul_one]
 
@@ -256,7 +256,7 @@ theorem arg_eq_neg_pi_div_two_iff {z : ℂ} : arg z = -(π / 2) ↔ z.re = 0 ∧
   · intro h
     rw [← abs_mul_cos_add_sin_mul_I z, h]
     simp [h₀]
-  · cases' z with x y
+  · obtain ⟨x, y⟩ := z
     rintro ⟨rfl : x = 0, hy : y < 0⟩
     rw [← arg_neg_I, ← arg_real_mul (-I) (neg_pos.2 hy), mk_eq_add_mul_I]
     simp
