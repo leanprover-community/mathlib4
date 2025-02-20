@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Kim Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Homology.Additive
-import Mathlib.CategoryTheory.Abelian.InjectiveResolution
+import Mathlib.CategoryTheory.Abelian.Injective.Resolution
 
 /-!
 # Right-derived functors
