@@ -1211,23 +1211,27 @@ theorem frontier_inter_open_inter {s t : Set X} (ht : IsOpen t) :
     ht.isOpenMap_subtype_val.preimage_frontier_eq_frontier_preimage continuous_subtype_val,
     Subtype.preimage_coe_self_inter]
 
-open scoped Set.Notation in
+section SetNotation
+
+open scoped Set.Notation
+
 lemma IsOpen.preimage_val {s t : Set X} (ht : IsOpen t) : IsOpen (s ↓∩ t) :=
   ht.preimage continuous_subtype_val
 
-open scoped Set.Notation in
 lemma IsClosed.preimage_val {s t : Set X} (ht : IsClosed t) : IsClosed (s ↓∩ t) :=
   ht.preimage continuous_subtype_val
 
-open scoped Set.Notation in
-lemma IsOpen.inter_of_isOpen_preimage_val {s t : Set X} (hs : IsOpen s) (hst : IsOpen (s ↓∩ t)) :
-    IsOpen (s ∩ t) := by
-  simpa using hs.isOpenMap_subtype_val _ hst
+lemma IsOpen.inter_preimage_val_iff {s t : Set X} (hs : IsOpen s) :
+    IsOpen (s ↓∩ t) ↔ IsOpen (s ∩ t) :=
+  ⟨fun h ↦ by simpa using hs.isOpenMap_subtype_val _ h,
+    fun h ↦ (Subtype.preimage_coe_self_inter _ _).symm ▸ h.preimage_val⟩
 
-open scoped Set.Notation in
-lemma IsClosed.inter_of_isClosed_preimage_val {s t : Set X} (hs : IsClosed s)
-    (hst : IsClosed (s ↓∩ t)) : IsClosed (s ∩ t) := by
-  simpa using hs.isClosedMap_subtype_val _ hst
+lemma IsClosed.inter_preimage_val_iff {s t : Set X} (hs : IsClosed s) :
+    IsClosed (s ↓∩ t) ↔ IsClosed (s ∩ t) :=
+  ⟨fun h ↦ by simpa using hs.isClosedMap_subtype_val _ h,
+    fun h ↦ (Subtype.preimage_coe_self_inter _ _).symm ▸ h.preimage_val⟩
+
+end SetNotation
 
 end Subtype
 
