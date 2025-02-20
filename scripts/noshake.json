@@ -459,7 +459,8 @@
   ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
   "Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital":
   ["Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital"],
-  "Mathlib.AlgebraicTopology.SimplexCategory": ["Mathlib.Util.Superscript"],
+  "Mathlib.AlgebraicTopology.SimplexCategory.Defs":
+  ["Mathlib.Util.Superscript"],
   "Mathlib.AlgebraicTopology.DoldKan.Notations":
   ["Mathlib.AlgebraicTopology.AlternatingFaceMapComplex"],
   "Mathlib.Algebra.ZeroOne.Lemmas": ["Batteries.Tactic.Init"],
