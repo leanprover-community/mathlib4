@@ -711,7 +711,7 @@ namespace LieModule
 variable (R L M)
 variable [LieModule R L M]
 
-theorem isNilpotent_of_le (M₁ M₂ : LieSubmodule R L M) (h₁ : M₁ ≤ M₂) (h₂ : IsNilpotent L M₂) :
+theorem isNilpotent_of_le (M₁ M₂ : LieSubmodule R L M) (h₁ : M₁ ≤ M₂) [IsNilpotent L M₂] :
     IsNilpotent L M₁ := by
   let f : L →ₗ⁅R⁆ L := LieHom.id
   let g : M₁ →ₗ[R] M₂ := Submodule.inclusion h₁
@@ -730,8 +730,7 @@ instance instMaxNilpotentSubmoduleIsNilpotent [IsNoetherian R M] :
 
 theorem isNilpotent_iff_le_maxNilpotentSubmodule [IsNoetherian R M] (N : LieSubmodule R L M) :
     IsNilpotent L N ↔ N ≤ maxNilpotentSubmodule R L M :=
-  ⟨fun h ↦ le_sSup h, fun h ↦ isNilpotent_of_le R L M N (maxNilpotentSubmodule R L M) h
-    (instMaxNilpotentSubmoduleIsNilpotent R L M)⟩
+  ⟨fun h ↦ le_sSup h, fun h ↦ isNilpotent_of_le R L M N (maxNilpotentSubmodule R L M) h⟩
 
 @[simp] lemma maxNilpotentSubmodule_eq_top_of_isNilpotent [LieModule.IsNilpotent L M] :
     maxNilpotentSubmodule R L M = ⊤ := by
