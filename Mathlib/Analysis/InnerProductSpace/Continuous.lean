@@ -74,16 +74,17 @@ theorem ContinuousWithinAt.inner (hf : ContinuousWithinAt f s x) (hg : Continuou
     ContinuousWithinAt (fun t => ⟪f t, g t⟫) s x :=
   Filter.Tendsto.inner hf hg
 
+@[fun_prop]
 theorem ContinuousAt.inner (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
     ContinuousAt (fun t => ⟪f t, g t⟫) x :=
   Filter.Tendsto.inner hf hg
 
+@[fun_prop]
 theorem ContinuousOn.inner (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun t => ⟪f t, g t⟫) s := fun x hx => (hf x hx).inner (hg x hx)
 
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.inner (hf : Continuous f) (hg : Continuous g) : Continuous fun t => ⟪f t, g t⟫ :=
-  continuous_iff_continuousAt.2 fun _x => hf.continuousAt.inner hg.continuousAt
+  continuous_iff_continuousAt.2 fun _x => by fun_prop
 
 end Continuous
-

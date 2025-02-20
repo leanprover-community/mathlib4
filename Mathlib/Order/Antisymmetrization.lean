@@ -43,14 +43,17 @@ theorem antisymmRel_swap : AntisymmRel (swap r) = AntisymmRel r :=
   funext₂ fun _ _ ↦ propext and_comm
 
 @[refl]
-theorem antisymmRel_refl [IsRefl α r] (a : α) : AntisymmRel r a a :=
-  ⟨refl _, refl _⟩
+theorem AntisymmRel.refl [IsRefl α r] (a : α) : AntisymmRel r a a :=
+  ⟨_root_.refl _, _root_.refl _⟩
+
+@[deprecated (since := "2025-01-28")]
+alias antisymmRel_refl := AntisymmRel.refl
 
 variable {r} in
-lemma AntisymmRel.rfl [IsRefl α r] (a : α) : AntisymmRel r a a := antisymmRel_refl ..
+lemma AntisymmRel.rfl [IsRefl α r] {a : α} : AntisymmRel r a a := .refl ..
 
 instance [IsRefl α r] : IsRefl α (AntisymmRel r) where
-  refl := antisymmRel_refl r
+  refl := .refl r
 
 variable {r}
 
@@ -93,7 +96,7 @@ variable (α) (r : α → α → Prop) [IsPreorder α r]
 /-- The antisymmetrization relation as an equivalence relation. -/
 @[simps]
 def AntisymmRel.setoid : Setoid α :=
-  ⟨AntisymmRel r, antisymmRel_refl _, AntisymmRel.symm, AntisymmRel.trans⟩
+  ⟨AntisymmRel r, .refl r, .symm, .trans⟩
 
 /-- The partial order derived from a preorder by making pairwise comparable elements equal. This is
 the quotient by `fun a b => a ≤ b ∧ b ≤ a`. -/
@@ -178,10 +181,10 @@ theorem AntisymmRel.le_congr (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : Antisy
   mpr h := (h₁.trans_le h).trans_antisymmRel h₂.symm
 
 theorem AntisymmRel.le_congr_left (h : AntisymmRel (· ≤ ·) a b) : a ≤ c ↔ b ≤ c :=
-  h.le_congr (antisymmRel_refl _ c)
+  h.le_congr .rfl
 
 theorem AntisymmRel.le_congr_right (h : AntisymmRel (· ≤ ·) b c) : a ≤ b ↔ a ≤ c :=
-  (antisymmRel_refl _ a).le_congr h
+  AntisymmRel.rfl.le_congr h
 
 theorem AntisymmRel.lt_congr (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : AntisymmRel (· ≤ ·) c d) :
     a < c ↔ b < d where
@@ -189,10 +192,10 @@ theorem AntisymmRel.lt_congr (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : Antisy
   mpr h := (h₁.trans_lt h).trans_antisymmRel h₂.symm
 
 theorem AntisymmRel.lt_congr_left (h : AntisymmRel (· ≤ ·) a b) : a < c ↔ b < c :=
-  h.lt_congr (antisymmRel_refl _ c)
+  h.lt_congr .rfl
 
 theorem AntisymmRel.lt_congr_right (h : AntisymmRel (· ≤ ·) b c) : a < b ↔ a < c :=
-  (antisymmRel_refl _ a).lt_congr h
+  AntisymmRel.rfl.lt_congr h
 
 theorem AntisymmRel.antisymmRel_congr
     (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : AntisymmRel (· ≤ ·) c d) :

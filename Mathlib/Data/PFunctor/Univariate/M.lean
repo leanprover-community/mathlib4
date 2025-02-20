@@ -79,7 +79,7 @@ theorem agree_trivial {x : CofixA F 0} {y : CofixA F 1} : Agree x y := by constr
 
 theorem agree_children {n : ℕ} (x : CofixA F (succ n)) (y : CofixA F (succ n + 1)) {i j}
     (h₀ : HEq i j) (h₁ : Agree x y) : Agree (children' x i) (children' y j) := by
-  cases' h₁ with _ _ _ _ _ _ hagree; cases h₀
+  obtain - | ⟨_, _, hagree⟩ := h₁; cases h₀
   apply hagree
 
 /-- `truncate a` turns `a` into a more limited approximation -/
@@ -115,7 +115,7 @@ def sCorec : X → ∀ n, CofixA F n
 theorem P_corec (i : X) (n : ℕ) : Agree (sCorec f i n) (sCorec f i (succ n)) := by
   induction' n with n n_ih generalizing i
   constructor
-  cases' f i with y g
+  obtain ⟨y, g⟩ := f i
   constructor
   introv
   apply n_ih
@@ -137,19 +137,19 @@ theorem head_succ' (n m : ℕ) (x : ∀ n, CofixA F n) (Hconsistent : AllAgree x
   suffices ∀ n, head' (x (succ n)) = head' (x 1) by simp [this]
   clear m n
   intro n
-  cases' h₀ : x (succ n) with _ i₀ f₀
-  cases' h₁ : x 1 with _ i₁ f₁
+  rcases h₀ : x (succ n) with - | ⟨_, f₀⟩
+  cases h₁ : x 1
   dsimp only [head']
   induction' n with n n_ih
   · rw [h₁] at h₀
     cases h₀
     trivial
   · have H := Hconsistent (succ n)
-    cases' h₂ : x (succ n) with _ i₂ f₂
+    cases h₂ : x (succ n)
     rw [h₀, h₂] at H
     apply n_ih (truncate ∘ f₀)
     rw [h₂]
-    cases' H with _ _ _ _ _ _ hagree
+    obtain - | ⟨_, _, hagree⟩ := H
     congr
     funext j
     dsimp only [comp_apply]
@@ -280,7 +280,7 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   induction' n with n
   · apply @Subsingleton.elim _ CofixA.instSubsingleton
   dsimp only [Approx.sMk, dest, head]
-  cases' h : x.approx (succ n) with _ hd ch
+  rcases h : x.approx (succ n) with - | ⟨hd, ch⟩
   have h' : hd = head' (x.approx 1) := by
     rw [← head_succ' n, h, head']
     apply x.consistent
@@ -335,14 +335,14 @@ theorem agree_iff_agree' {n : ℕ} (x y : M F) :
     · induction x using PFunctor.M.casesOn'
       induction y using PFunctor.M.casesOn'
       simp only [approx_mk] at h
-      cases' h with _ _ _ _ _ _ hagree
+      obtain - | ⟨_, _, hagree⟩ := h
       constructor <;> try rfl
       intro i
       apply n_ih
       apply hagree
   · induction' n with _ n_ih generalizing x y
     · constructor
-    · cases' h with _ _ _ a x' y'
+    · obtain - | @⟨_, a, x', y'⟩ := h
       induction' x using PFunctor.M.casesOn' with x_a x_f
       induction' y using PFunctor.M.casesOn' with y_a y_f
       simp only [approx_mk]
@@ -419,7 +419,7 @@ theorem iselect_eq_default [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) (x 
   · exfalso
     apply h
     constructor
-  · cases' ps_hd with a i
+  · obtain ⟨a, i⟩ := ps_hd
     induction' x using PFunctor.M.casesOn' with x_a x_f
     simp only [iselect, isubtree] at ps_ih ⊢
     by_cases h'' : a = x_a
@@ -464,7 +464,7 @@ theorem iselect_cons [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) {a} (f : 
 theorem corec_def {X} (f : X → F X) (x₀ : X) : M.corec f x₀ = M.mk (F.map (M.corec f) (f x₀)) := by
   dsimp only [M.corec, M.mk]
   congr with n
-  cases' n with n
+  rcases n with - | n
   · dsimp only [sCorec, Approx.sMk]
   · dsimp only [sCorec, Approx.sMk]
     cases f x₀
@@ -555,7 +555,7 @@ theorem nth_of_bisim [Inhabited (M F)] (bisim : IsBisimulation R) (s₁ s₂) (p
   induction' ps with i ps ps_ih generalizing a f f'
   · exists rfl, a, f, f', rfl, rfl
     apply bisim.tail h₀
-  cases' i with a' i
+  obtain ⟨a', i⟩ := i
   obtain rfl : a = a' := by rcases hh with hh|hh <;> cases isPath_cons hh <;> rfl
   dsimp only [iselect] at ps_ih ⊢
   have h₁ := bisim.tail h₀ i
@@ -576,7 +576,7 @@ theorem eq_of_bisim [Nonempty (M F)] (bisim : IsBisimulation R) : ∀ s₁ s₂,
   · have H := nth_of_bisim R bisim _ _ ps Hr h
     exact H.left
   · rw [not_or] at h
-    cases' h with h₀ h₁
+    obtain ⟨h₀, h₁⟩ := h
     simp only [iselect_eq_default, *, not_false_iff]
 
 end Bisim
@@ -639,7 +639,7 @@ theorem corec_unique (g : α → P α) (f : α → M P) (hyp : ∀ x, M.dest (f 
   apply bisim' (fun _ => True) _ _ _ _ trivial
   clear x
   intro x _
-  cases' gxeq : g x with a f'
+  rcases gxeq : g x with ⟨a, f'⟩
   have h₀ : M.dest (f x) = ⟨a, f ∘ f'⟩ := by rw [hyp, gxeq, PFunctor.map_eq]
   have h₁ : M.dest (M.corec g x) = ⟨a, M.corec g ∘ f'⟩ := by rw [dest_corec, gxeq, PFunctor.map_eq]
   refine ⟨_, _, _, h₀, h₁, ?_⟩

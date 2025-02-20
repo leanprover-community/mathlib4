@@ -509,7 +509,7 @@ in `Mathlib/Analysis/SpecialFunctions/Pow/NNReal.lean` instead. -/
 
 @[gcongr, bound]
 theorem rpow_lt_rpow (hx : 0 ≤ x) (hxy : x < y) (hz : 0 < z) : x ^ z < y ^ z := by
-  rw [le_iff_eq_or_lt] at hx; cases' hx with hx hx
+  rw [le_iff_eq_or_lt] at hx; rcases hx with hx | hx
   · rw [← hx, zero_rpow (ne_of_gt hz)]
     exact rpow_pos_of_pos (by rwa [← hx] at hxy) _
   · rw [rpow_def_of_pos hx, rpow_def_of_pos (lt_trans hx hxy), exp_lt_exp]
@@ -962,34 +962,6 @@ lemma norm_log_natCast_le_rpow_div (n : ℕ) {ε : ℝ} (hε : 0 < ε) : ‖log 
 
 end Complex
 
-namespace  Asymptotics
-
-open Filter
-
-variable {E : Type*} [SeminormedRing E] (a b c : ℝ)
-
-theorem IsBigO.mul_atTop_rpow_of_isBigO_rpow {f g : ℝ → E}
-    (hf : f =O[atTop] fun t ↦ (t : ℝ) ^ a) (hg : g =O[atTop] fun t ↦ (t : ℝ) ^ b)
-    (h : a + b ≤ c) :
-    (f * g) =O[atTop] fun t ↦ (t : ℝ) ^ c := by
-  refine (hf.mul hg).trans (Eventually.isBigO ?_)
-  filter_upwards [eventually_ge_atTop 1] with t ht
-  rw [← Real.rpow_add (zero_lt_one.trans_le ht), Real.norm_of_nonneg (Real.rpow_nonneg
-    (zero_le_one.trans ht) (a + b))]
-  exact Real.rpow_le_rpow_of_exponent_le ht h
-
-theorem IsBigO.mul_atTop_rpow_natCast_of_isBigO_rpow {f g : ℕ → E}
-    (hf : f =O[atTop] fun n ↦ (n : ℝ) ^ a) (hg : g =O[atTop] fun n ↦ (n : ℝ) ^ b)
-    (h : a + b ≤ c) :
-    (f * g) =O[atTop] fun n ↦ (n : ℝ) ^ c := by
-  refine (hf.mul hg).trans (Eventually.isBigO ?_)
-  filter_upwards [eventually_ge_atTop 1] with t ht
-  replace ht : 1 ≤ (t : ℝ) := Nat.one_le_cast.mpr ht
-  rw [← Real.rpow_add (zero_lt_one.trans_le ht), Real.norm_of_nonneg (Real.rpow_nonneg
-    (zero_le_one.trans ht) (a + b))]
-  exact Real.rpow_le_rpow_of_exponent_le ht h
-
-end Asymptotics
 
 /-!
 ## Square roots of reals

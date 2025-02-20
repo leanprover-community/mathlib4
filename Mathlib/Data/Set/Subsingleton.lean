@@ -3,7 +3,7 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Insert
 
 /-!
 # Subsingleton
@@ -14,6 +14,8 @@ Also defines `Nontrivial s : Prop` : the predicate saying that `s` has at least 
 elements.
 
 -/
+
+assert_not_exists RelIso
 
 open Function
 
