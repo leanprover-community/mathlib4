@@ -20,7 +20,7 @@ We also include some elementary results on the values of `Fintype.card` on speci
 
 -/
 
-assert_not_exists Monoid MonoidWithZero MulAction
+assert_not_exists Monoid
 
 open Function
 

@@ -24,7 +24,7 @@ This defines the cardinality of a `Finset` and provides induction principles for
 * `Finset.Nonempty.strong_induction`
 -/
 
-assert_not_exists Monoid MonoidWithZero OrderedCommMonoid
+assert_not_exists Monoid
 
 open Function Multiset Nat
 
