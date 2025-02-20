@@ -178,7 +178,7 @@ theorem factor_comp (H1 : S ≤ T) (H2 : T ≤ U) :
 @[simp]
 theorem factor_comp_apply (H1 : S ≤ T) (H2 : T ≤ U) (x : R ⧸ S) :
     factor H2 (factor H1 x) = factor (H1.trans H2) x := by
-  show (factor H2).comp (factor H1) x = factor (H1.trans H2) x
+  rw [← RingHom.comp_apply]
   simp
 
 lemma factor_surjective (H : S ≤ T) : Function.Surjective (factor H) :=
