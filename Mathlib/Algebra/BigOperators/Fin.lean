@@ -3,7 +3,7 @@ Copyright (c) 2020 Yury Kudryashov, Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Anne Baanen
 -/
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Fin
@@ -22,6 +22,8 @@ constant function. These results have variants for sums instead of products.
 
 * `finFunctionFinEquiv`: An explicit equivalence between `Fin n → Fin m` and `Fin (m ^ n)`.
 -/
+
+assert_not_exists Field
 
 open Finset
 
@@ -425,7 +427,7 @@ theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) ×
     simp
     rfl
 
-/-- `finSigmaFinEquiv` on `Fin 1 × f` is just `f`-/
+/-- `finSigmaFinEquiv` on `Fin 1 × f` is just `f` -/
 theorem finSigmaFinEquiv_one {n : Fin 1 → ℕ} (ij : (i : Fin 1) × Fin (n i)) :
     (finSigmaFinEquiv ij : ℕ) = ij.2 := by
   rw [finSigmaFinEquiv_apply, add_left_eq_self]

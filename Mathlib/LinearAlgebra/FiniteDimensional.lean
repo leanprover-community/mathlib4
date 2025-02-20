@@ -333,9 +333,10 @@ theorem exists_ker_pow_eq_ker_pow_succ [FiniteDimensional K V] (f : End K V) :
     have h_le_ker_pow : ∀ n : ℕ, n ≤ (finrank K V).succ →
         n ≤ finrank K (LinearMap.ker (f ^ n)) := by
       intro n hn
-      induction' n with n ih
-      · exact zero_le (finrank _ _)
-      · have h_ker_lt_ker : LinearMap.ker (f ^ n) < LinearMap.ker (f ^ n.succ) := by
+      induction n with
+      | zero => exact zero_le (finrank _ _)
+      | succ n ih =>
+        have h_ker_lt_ker : LinearMap.ker (f ^ n) < LinearMap.ker (f ^ n.succ) := by
           refine lt_of_le_of_ne ?_ (h_contra n (Nat.le_of_succ_le_succ hn))
           rw [pow_succ']
           apply LinearMap.ker_le_ker_comp

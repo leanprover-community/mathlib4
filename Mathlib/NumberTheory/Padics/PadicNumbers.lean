@@ -299,7 +299,7 @@ private theorem norm_eq_of_equiv_aux {f g : PadicSeq p} (hf : ¬f ≈ 0) (hg : �
     False := by
   have hpn : 0 < padicNorm p (f (stationaryPoint hf)) - padicNorm p (g (stationaryPoint hg)) :=
     sub_pos_of_lt hlt
-  cases' hfg _ hpn with N hN
+  obtain ⟨N, hN⟩ := hfg _ hpn
   let i := max N (max (stationaryPoint hf) (stationaryPoint hg))
   have hi : N ≤ i := le_max_left _ _
   have hN' := hN _ hi
@@ -554,7 +554,7 @@ theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) :
   -- `change ∃ N, ∀ i ≥ N, (f - const _ (f i)).norm < ε` also works, but is very slow
   suffices hyp : ∃ N, ∀ i ≥ N, (f - const _ (f i)).norm < ε by peel hyp with N; use N
   by_contra! h
-  cases' cauchy₂ f hε with N hN
+  obtain ⟨N, hN⟩ := cauchy₂ f hε
   rcases h N with ⟨i, hi, hge⟩
   have hne : ¬f - const (padicNorm p) (f i) ≈ 0 := fun h ↦ by
     rw [PadicSeq.norm, dif_pos h] at hge
@@ -612,11 +612,11 @@ theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicN
       -- Porting note: `change` → `convert_to` (`change` times out!)
       -- and add `PadicSeq p` type annotation
       convert_to PadicSeq.norm (q' - const _ (q' N) : PadicSeq p) < ε
-      cases' Decidable.em (q' - const (padicNorm p) (q' N) ≈ 0) with heq hne'
+      rcases Decidable.em (q' - const (padicNorm p) (q' N) ≈ 0) with heq | hne'
       · simpa only [heq, PadicSeq.norm, dif_pos]
       · simp only [PadicSeq.norm, dif_neg hne']
         change padicNorm p (q' _ - q' _) < ε
-        cases' Decidable.em (stationaryPoint hne' ≤ N) with hle hle
+        rcases Decidable.em (stationaryPoint hne' ≤ N) with hle | hle
         · -- Porting note: inlined `stationaryPoint_spec` invocation.
           have := (stationaryPoint_spec hne' le_rfl hle).symm
           simp only [const_apply, sub_apply, padicNorm.zero, sub_self] at this
@@ -894,12 +894,12 @@ instance complete : CauSeq.IsComplete ℚ_[p] norm where
       exact mod_cast h
     -- Porting note: Padic.complete' works with `f i - q`, but the goal needs `q - f i`,
     -- using `rewrite [padicNormE.map_sub]` causes time out, so a separate lemma is created
-    cases' Padic.complete'' ⟨f, cau_seq_norm_e⟩ with q hq
+    obtain ⟨q, hq⟩ := Padic.complete'' ⟨f, cau_seq_norm_e⟩
     exists q
     intro ε hε
-    cases' exists_rat_btwn hε with ε' hε'
+    obtain ⟨ε', hε'⟩ := exists_rat_btwn hε
     norm_cast at hε'
-    cases' hq ε' hε'.1 with N hN
+    obtain ⟨N, hN⟩ := hq ε' hε'.1
     exists N
     intro i hi
     have h := hN i hi

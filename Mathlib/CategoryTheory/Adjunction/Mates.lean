@@ -245,7 +245,7 @@ theorem leftAdjointSquare.comp_vhcomp
     leftAdjointSquare.comp α β γ δ =
       leftAdjointSquare.vcomp (leftAdjointSquare.hcomp α β) (leftAdjointSquare.hcomp γ δ) := rfl
 
-/-- Horizontal and vertical composition of squares commutes.-/
+/-- Horizontal and vertical composition of squares commutes. -/
 theorem leftAdjointSquare.comp_hvcomp
     (α : G₁ ⋙ L₃ ⟶ L₁ ⋙ H₁) (β : H₁ ⋙ L₄ ⟶ L₂ ⋙ K₁)
     (γ : G₂ ⋙ L₅ ⟶ L₃ ⋙ H₂) (δ : H₂ ⋙ L₆ ⟶ L₄ ⋙ K₂) :
@@ -274,7 +274,7 @@ theorem rightAdjointSquare.comp_vhcomp
     rightAdjointSquare.comp α β γ δ =
     rightAdjointSquare.vcomp (rightAdjointSquare.hcomp α β) (rightAdjointSquare.hcomp γ δ) := rfl
 
-/-- Horizontal and vertical composition of squares commutes.-/
+/-- Horizontal and vertical composition of squares commutes. -/
 theorem rightAdjointSquare.comp_hvcomp
     (α : R₁ ⋙ G₁ ⟶ H₁ ⋙ R₃) (β : R₂ ⋙ H₁ ⟶ K₁ ⋙ R₄)
     (γ : R₃ ⋙ G₂ ⟶ H₂ ⋙ R₅) (δ : R₄ ⋙ H₂ ⟶ K₂ ⋙ R₆) :

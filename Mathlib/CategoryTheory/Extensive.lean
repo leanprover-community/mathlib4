@@ -218,7 +218,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       intro s
       have : ∀ x, ∃! y, s.fst x = Sum.inl y := by
         intro x
-        cases' h : s.fst x with val val
+        rcases h : s.fst x with val | val
         · simp only [Types.binaryCoproductCocone_pt, Functor.const_obj_obj, Sum.inl.injEq,
             existsUnique_eq']
         · apply_fun f at h
@@ -231,7 +231,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       intro s
       have : ∀ x, ∃! y, s.fst x = Sum.inr y := by
         intro x
-        cases' h : s.fst x with val val
+        rcases h : s.fst x with val | val
         · apply_fun f at h
           cases ((congr_fun s.condition x).symm.trans h).trans (congr_fun hαX val :).symm
         · simp only [Types.binaryCoproductCocone_pt, Functor.const_obj_obj, Sum.inr.injEq,
@@ -310,7 +310,7 @@ instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
       intro s
       have : ∀ x, ∃! y, s.fst x = Sum.inl y := by
         intro x
-        cases' h : s.fst x with val val
+        rcases h : s.fst x with val | val
         · exact ⟨val, rfl, fun y h => Sum.inl_injective h.symm⟩
         · apply_fun f at h
           cases ((ConcreteCategory.congr_hom s.condition x).symm.trans h).trans
@@ -328,7 +328,7 @@ instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
       intro s
       have : ∀ x, ∃! y, s.fst x = Sum.inr y := by
         intro x
-        cases' h : s.fst x with val val
+        rcases h : s.fst x with val | val
         · apply_fun f at h
           cases ((ConcreteCategory.congr_hom s.condition x).symm.trans h).trans
             (ConcreteCategory.congr_hom hαX val :).symm

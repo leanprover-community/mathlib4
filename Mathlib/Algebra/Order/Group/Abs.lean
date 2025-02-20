@@ -62,14 +62,9 @@ section LinearOrderedAddCommGroup
 
 variable [LinearOrderedAddCommGroup α] {a b c : α}
 
--- Porting note:
--- Lean can perfectly well find this instance,
--- but in the rewrites below it is going looking for it without having fixed `α`.
-example : AddRightMono α := inferInstance
+theorem abs_le : |a| ≤ b ↔ -b ≤ a ∧ a ≤ b := by rw [abs_le', and_comm, neg_le]
 
-theorem abs_le : |a| ≤ b ↔ -b ≤ a ∧ a ≤ b := by rw [abs_le', and_comm, @neg_le α]
-
-theorem le_abs' : a ≤ |b| ↔ b ≤ -a ∨ a ≤ b := by rw [le_abs, or_comm, @le_neg α]
+theorem le_abs' : a ≤ |b| ↔ b ≤ -a ∨ a ≤ b := by rw [le_abs, or_comm, le_neg]
 
 theorem neg_le_of_abs_le (h : |a| ≤ b) : -b ≤ a :=
   (abs_le.mp h).1
@@ -105,7 +100,7 @@ theorem abs_sub_le_iff : |a - b| ≤ c ↔ a - b ≤ c ∧ b - a ≤ c := by
   rw [abs_le, neg_le_sub_iff_le_add, sub_le_iff_le_add', and_comm, sub_le_iff_le_add']
 
 theorem abs_sub_lt_iff : |a - b| < c ↔ a - b < c ∧ b - a < c := by
-  rw [@abs_lt α, neg_lt_sub_iff_lt_add', sub_lt_iff_lt_add', and_comm, sub_lt_iff_lt_add']
+  rw [abs_lt, neg_lt_sub_iff_lt_add', sub_lt_iff_lt_add', and_comm, sub_lt_iff_lt_add']
 
 theorem sub_le_of_abs_sub_le_left (h : |a - b| ≤ c) : b - c ≤ a :=
   sub_le_comm.1 <| (abs_sub_le_iff.1 h).2
@@ -148,7 +143,7 @@ theorem abs_eq (hb : 0 ≤ b) : |a| = b ↔ a = b ∨ a = -b := by
 theorem abs_le_max_abs_abs (hab : a ≤ b) (hbc : b ≤ c) : |b| ≤ max |a| |c| :=
   abs_le'.2
     ⟨by simp [hbc.trans (le_abs_self c)], by
-      simp [((@neg_le_neg_iff α ..).mpr hab).trans (neg_le_abs a)]⟩
+      simp [(neg_le_neg_iff.mpr hab).trans (neg_le_abs a)]⟩
 
 theorem min_abs_abs_le_abs_max : min |a| |b| ≤ |max a b| :=
   (le_total a b).elim (fun h => (min_le_right _ _).trans_eq <| congr_arg _ (max_eq_right h).symm)
@@ -183,6 +178,12 @@ theorem dist_bdd_within_interval {a b lb ub : α} (hal : lb ≤ a) (hau : a ≤ 
 
 theorem eq_of_abs_sub_nonpos (h : |a - b| ≤ 0) : a = b :=
   eq_of_abs_sub_eq_zero (le_antisymm h (abs_nonneg (a - b)))
+
+lemma eq_of_abs_sub_lt_all {x y : α} (h : ∀ ε > 0, |x - y| < ε) : x = y :=
+  eq_of_abs_sub_nonpos <| forall_lt_iff_le'.mp h
+
+lemma eq_of_abs_sub_le_all [DenselyOrdered α] {x y : α} (h : ∀ ε > 0, |x - y| ≤ ε) : x = y :=
+  eq_of_abs_sub_nonpos <| forall_gt_imp_ge_iff_le_of_dense.mp h
 
 theorem abs_sub_nonpos : |a - b| ≤ 0 ↔ a = b :=
   ⟨eq_of_abs_sub_nonpos, by rintro rfl; rw [sub_self, abs_zero]⟩

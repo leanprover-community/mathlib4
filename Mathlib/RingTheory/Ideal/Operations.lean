@@ -636,6 +636,10 @@ theorem isCoprime_iff_codisjoint : IsCoprime I J ↔ Codisjoint I J := by
     refine ⟨1, 1, ?_⟩
     simpa only [one_eq_top, top_mul, Submodule.add_eq_sup]
 
+theorem isCoprime_of_isMaximal [I.IsMaximal] [J.IsMaximal] (ne : I ≠ J) : IsCoprime I J := by
+  rw [isCoprime_iff_codisjoint, isMaximal_def] at *
+  exact IsCoatom.codisjoint_of_ne ‹_› ‹_› ne
+
 theorem isCoprime_iff_add : IsCoprime I J ↔ I + J = 1 := by
   rw [isCoprime_iff_codisjoint, codisjoint_iff, add_eq_sup, one_eq_top]
 
@@ -1098,7 +1102,7 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
         rw [Finset.coe_empty, Set.biUnion_empty, Set.subset_empty_iff] at h
         have : (I : Set R) ≠ ∅ := Set.Nonempty.ne_empty (Set.nonempty_of_mem I.zero_mem)
         exact absurd h this
-      · cases' hsne with i his
+      · obtain ⟨i, his⟩ := hsne
         obtain ⟨t, _, rfl⟩ : ∃ t, i ∉ t ∧ insert i t = s :=
           ⟨s.erase i, Finset.not_mem_erase i s, Finset.insert_erase his⟩
         have hp' : ∀ j ∈ t, IsPrime (f j) := by
