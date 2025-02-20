@@ -876,6 +876,11 @@ theorem Integrable.mul_of_top_left {f : α → 𝕜} {φ : α → 𝕜} (hφ : I
     (hf : Memℒp f ∞ μ) : Integrable (φ * f) μ :=
   hφ.smul_of_top_left hf
 
+lemma Memℒp.integrable_mul {p q : ℝ≥0∞} {f g : α → 𝕜} (hf : Memℒp f p μ) (hg : Memℒp g q μ)
+    [HolderTriple p q 1] :
+    Integrable (f * g) μ :=
+  memℒp_one_iff_integrable.1 <| hg.mul hf
+
 end NormedRing
 
 section NormedDivisionRing

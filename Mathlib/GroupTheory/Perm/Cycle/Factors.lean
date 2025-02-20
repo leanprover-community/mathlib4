@@ -603,12 +603,12 @@ lemma disjoint_ofSubtype_noncommPiCoprod (u : Perm (Function.fixedPoints f))
     Disjoint (ofSubtype u) ((Subgroup.noncommPiCoprod f.pairwise_commute_of_mem_zpowers) v) := by
   apply Finset.noncommProd_induction
   · intro a _ b _ h
-    apply f.pairwise_commute_of_mem_zpowers h <;> simp only [Subgroup.coeSubtype, SetLike.coe_mem]
+    apply f.pairwise_commute_of_mem_zpowers h <;> simp only [Subgroup.coe_subtype, SetLike.coe_mem]
   · intro x y
     exact Disjoint.mul_right
   · exact disjoint_one_right _
   · intro c _
-    simp only [Subgroup.coeSubtype]
+    simp only [Subgroup.coe_subtype]
     exact Disjoint.mono (disjoint_ofSubtype_of_memFixedPoints_self u)
       le_rfl (support_zpowers_of_mem_cycleFactorsFinset_le (v c))
 

@@ -527,6 +527,7 @@ variable (W : MorphismProperty C)
 
 /-- Given `W : MorphismProperty C`, this is class of morphisms that are
 isomorphic to a coproduct of a family (indexed by some `J : Type w`) of maps in `W`. -/
+@[pp_with_univ]
 def coproducts : MorphismProperty C := ⨆ (J : Type w), W.colimitsOfShape (Discrete J)
 
 lemma colimitsOfShape_le_coproducts (J : Type w) :
@@ -642,6 +643,8 @@ lemma isStableUnderCoproductsOfShape_of_isStableUnderFiniteCoproducts
     W.IsStableUnderCoproductsOfShape J :=
   IsStableUnderFiniteCoproducts.isStableUnderCoproductsOfShape J
 
+/-- The condition that a property of morphisms is stable by coproducts. -/
+@[pp_with_univ]
 class IsStableUnderCoproducts : Prop where
   isStableUnderCoproductsOfShape (J : Type w) : W.IsStableUnderCoproductsOfShape J
 

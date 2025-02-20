@@ -108,25 +108,6 @@ lemma _root_.Set.Ici.isSuccLimit_coe {j : J'} (m : Set.Ici j) (hm : Order.IsSucc
       rintro ⟨k, hk⟩ _
       exact this.trans (by simpa using hk)⟩
 
-
-
-lemma _root_.Monotone.final_functor_iff {J₁ J₂ : Type*} [Preorder J₁] [Preorder J₂]
-    [IsDirected J₁ (· ≤ · )]
-    {f : J₁ → J₂} (hf : Monotone f) :
-    Final hf.functor ↔ ∀ (j₂ : J₂), ∃ (j₁ : J₁), j₂ ≤ f j₁ := by
-  rw [Functor.final_iff_of_isFiltered]
-  constructor
-  · rintro ⟨h, _⟩ j₂
-    obtain ⟨j₁, ⟨φ⟩⟩ := h j₂
-    exact ⟨j₁, leOfHom φ⟩
-  · intro h
-    constructor
-    · intro j₂
-      obtain ⟨j₁, h₁⟩ := h j₂
-      exact ⟨j₁, ⟨homOfLE h₁⟩⟩
-    · intro _ c _ _
-      exact ⟨c, 𝟙 _, rfl⟩
-
 instance IsWellOrderContinuous.restriction_setIci
     {F : J' ⥤ C} [F.IsWellOrderContinuous] (j : J') :
     ((Subtype.mono_coe (Set.Ici j)).functor ⋙ F).IsWellOrderContinuous where

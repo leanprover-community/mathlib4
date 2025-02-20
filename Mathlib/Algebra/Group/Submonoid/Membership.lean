@@ -10,6 +10,7 @@ import Mathlib.Algebra.Group.Nat.Hom
 import Mathlib.Algebra.Group.Submonoid.MulOpposite
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Int.Basic
 
 /-!
 # Submonoids: membership criteria
