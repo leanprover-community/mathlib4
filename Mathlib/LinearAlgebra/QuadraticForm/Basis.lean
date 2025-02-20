@@ -100,7 +100,7 @@ theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι 
 -- c.f. `LinearMap.sum_repr_mul_repr_mul`
 open Finsupp in
 theorem sum_repr_sq_add_sum_repr_mul_polar (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
-    linearCombination R (Q ∘ bm) ((bm.repr x) * (bm.repr x)) +
+    linearCombination R (Q ∘ bm) (bm.repr x * bm.repr x) +
       ∑ p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag,
         (Sym2.mul ∘ Sym2.map (bm.repr x) • polarSym2 Q ∘ Sym2.map bm) p = Q x := by
   rw [← apply_linearCombination, Basis.linearCombination_repr]
