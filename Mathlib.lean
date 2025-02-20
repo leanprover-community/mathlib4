@@ -2213,6 +2213,7 @@ import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.CategoryTheory.Preadditive.Biproducts
+import Mathlib.CategoryTheory.Preadditive.CommGrp_
 import Mathlib.CategoryTheory.Preadditive.EilenbergMoore
 import Mathlib.CategoryTheory.Preadditive.EndoFunctor
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
