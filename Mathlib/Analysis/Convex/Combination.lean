@@ -89,9 +89,9 @@ theorem Finset.centerMass_segment' (s : Finset ι) (t : Finset ι') (ws : ι →
     (hab : a + b = 1) : a • s.centerMass ws zs + b • t.centerMass wt zt = (s.disjSum t).centerMass
     (Sum.elim (fun i => a * ws i) fun j => b * wt j) (Sum.elim zs zt) := by
   rw [s.centerMass_eq_of_sum_1 _ hws, t.centerMass_eq_of_sum_1 _ hwt, smul_sum, smul_sum, ←
-    Finset.sum_sum_elim, Finset.centerMass_eq_of_sum_1]
+    Finset.sum_sumElim, Finset.centerMass_eq_of_sum_1]
   · congr with ⟨⟩ <;> simp only [Sum.elim_inl, Sum.elim_inr, mul_smul]
-  · rw [sum_sum_elim, ← mul_sum, ← mul_sum, hws, hwt, mul_one, mul_one, hab]
+  · rw [sum_sumElim, ← mul_sum, ← mul_sum, hws, hwt, mul_one, mul_one, hab]
 
 /-- A convex combination of two centers of mass is a center of mass as well. This version
 works if two centers of mass share the set of original points. -/
@@ -321,7 +321,7 @@ theorem convexHull_eq (s : Set E) : convexHull R s =
       rw [Finset.mem_disjSum] at hi
       rcases hi with (⟨j, hj, rfl⟩ | ⟨j, hj, rfl⟩) <;> simp only [Sum.elim_inl, Sum.elim_inr] <;>
         apply_rules [mul_nonneg, hwx₀, hwy₀]
-    · simp [Finset.sum_sum_elim, ← mul_sum, *]
+    · simp [Finset.sum_sumElim, ← mul_sum, *]
     · intro i hi
       rw [Finset.mem_disjSum] at hi
       rcases hi with (⟨j, hj, rfl⟩ | ⟨j, hj, rfl⟩) <;> apply_rules [hzx, hzy]

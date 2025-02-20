@@ -117,7 +117,7 @@ section Codimension
 
 /-- Let `E` be a linear subspace in a real vector space.
 If `E` has codimension at least two, its complement is ample. -/
-theorem of_one_lt_codim [TopologicalAddGroup F] [ContinuousSMul ℝ F] {E : Submodule ℝ F}
+theorem of_one_lt_codim [IsTopologicalAddGroup F] [ContinuousSMul ℝ F] {E : Submodule ℝ F}
     (hcodim : 1 < Module.rank ℝ (F ⧸ E)) :
     AmpleSet (Eᶜ : Set F) := fun x hx ↦ by
   rw [E.connectedComponentIn_eq_self_of_one_lt_codim hcodim hx, eq_univ_iff_forall]

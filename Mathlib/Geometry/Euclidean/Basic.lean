@@ -62,11 +62,6 @@ variable {V : Type*} {P : Type*}
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
 variable [NormedAddTorsor V P]
 
-/-- The midpoint of the segment AB is the same distance from A as it is from B. -/
-theorem dist_left_midpoint_eq_dist_right_midpoint (p₁ p₂ : P) :
-    dist p₁ (midpoint ℝ p₁ p₂) = dist p₂ (midpoint ℝ p₁ p₂) := by
-  rw [dist_left_midpoint (𝕜 := ℝ) p₁ p₂, dist_right_midpoint (𝕜 := ℝ) p₁ p₂]
-
 /-- The inner product of two vectors given with `weightedVSub`, in
 terms of the pairwise distances. -/
 theorem inner_weightedVSub {ι₁ : Type*} {s₁ : Finset ι₁} {w₁ : ι₁ → ℝ} (p₁ : ι₁ → P)
@@ -180,7 +175,7 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace �
   rw [← hp₁c₁, dist_smul_vadd_eq_dist _ _ hp'] at hpc₁ hp₂
   simp only [one_ne_zero, false_or] at hp₂
   rw [hp₂.symm] at hpc₁
-  cases' hpc₁ with hpc₁ hpc₁ <;> simp [hpc₁]
+  rcases hpc₁ with hpc₁ | hpc₁ <;> simp [hpc₁]
 
 /-- Distances `r₁` `r₂` of `p` from two different points `c₁` `c₂` determine at
 most two points `p₁` `p₂` in two-dimensional space (two circles intersect in at
@@ -440,6 +435,33 @@ theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
     norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero]
   exact Submodule.inner_right_of_mem_orthogonal (vsub_orthogonalProjection_mem_direction p₂ hp₁)
     (orthogonalProjection_vsub_mem_direction_orthogonal s p₂)
+
+/-- The distance between a point and its orthogonal projection to a subspace equals the distance
+to that subspace as given by `Metric.infDist`. This is not a `simp` lemma since the simplest form
+depends on the context (if any calculations are to be done with the distance, the version with
+the orthogonal projection gives access to more lemmas about orthogonal projections that may be
+useful). -/
+lemma dist_orthogonalProjection_eq_infDist (s : AffineSubspace ℝ P) [Nonempty s]
+    [HasOrthogonalProjection s.direction] (p : P) :
+    dist p (orthogonalProjection s p) = Metric.infDist p s := by
+  refine le_antisymm ?_ (Metric.infDist_le_dist_of_mem (orthogonalProjection_mem _))
+  rw [Metric.infDist_eq_iInf]
+  refine le_ciInf fun x ↦ le_of_sq_le_sq ?_ dist_nonneg
+  rw [dist_comm _ (x : P)]
+  simp_rw [pow_two,
+    dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p x.property]
+  simp [mul_self_nonneg]
+
+/-- The nonnegative distance between a point and its orthogonal projection to a subspace equals
+the distance to that subspace as given by `Metric.infNndist`. This is not a `simp` lemma since
+the simplest form depends on the context (if any calculations are to be done with the distance,
+the version with the orthogonal projection gives access to more lemmas about orthogonal
+projections that may be useful). -/
+lemma dist_orthogonalProjection_eq_infNndist (s : AffineSubspace ℝ P) [Nonempty s]
+    [HasOrthogonalProjection s.direction] (p : P) :
+    nndist p (orthogonalProjection s p) = Metric.infNndist p s := by
+  rw [← NNReal.coe_inj]
+  simp [dist_orthogonalProjection_eq_infDist]
 
 /-- The square of the distance between two points constructed by
 adding multiples of the same orthogonal vector to points in the same

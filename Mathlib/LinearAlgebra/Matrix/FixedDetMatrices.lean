@@ -21,7 +21,7 @@ kbb (https://github.com/kim-em/kbb/tree/master) repository, so credit to those a
 
 variable (n : Type*) [DecidableEq n] [Fintype n] (R : Type*) [CommRing R]
 
-/--The subtype of matrices with fixed determinant `m`. -/
+/-- The subtype of matrices with fixed determinant `m` -/
 def FixedDetMatrix (m : R) := { A : Matrix n n R // A.det = m }
 
 namespace FixedDetMatrices
@@ -29,7 +29,7 @@ namespace FixedDetMatrices
 open Matrix hiding mul_smul
 open ModularGroup SpecialLinearGroup MatrixGroups
 
-/--Extensionality theorem for `FixedDetMatrix` with respect to the underlying matrix, not
+/-- Extensionality theorem for `FixedDetMatrix` with respect to the underlying matrix, not
 entriwise. -/
 lemma ext' {m : R} {A B : FixedDetMatrix n R m} (h : A.1 = B.1) : A = B := by
   cases A; cases B
@@ -62,11 +62,11 @@ local notation:1024 "Δ" m : 1024 => (FixedDetMatrix (Fin 2) ℤ m)
 
 variable {m : ℤ}
 
-/--Set of representatives for the orbits under `S` and `T`. -/
+/-- Set of representatives for the orbits under `S` and `T` -/
 def reps (m : ℤ) : Set (Δ m) :=
   {A : Δ m | (A.1 1 0) = 0 ∧ 0 < A.1 0 0 ∧ 0 ≤ A.1 0 1 ∧ |(A.1 0 1)| < |(A.1 1 1)|}
 
-/--Reduction step for matrices in `Δ m` which moves the matrices towards `reps`.-/
+/-- Reduction step for matrices in `Δ m` which moves the matrices towards `reps` -/
 def reduceStep (A : Δ m) : Δ m := S • (T ^ (-(A.1 0 0 / A.1 1 0))) • A
 
 private lemma reduce_aux {A : Δ m} (h : (A.1 1 0) ≠ 0) :
@@ -77,7 +77,7 @@ private lemma reduce_aux {A : Δ m} (h : (A.1 1 0) ≠ 0) :
   simp_rw [Int.emod_def, sub_eq_add_neg, reduceStep, smul_coe, coe_T_zpow, S]
   norm_num [vecMul, vecHead, vecTail, mul_comm]
 
-/--Reduction lemma for integral FixedDetMatrices. -/
+/-- Reduction lemma for integral FixedDetMatrices. -/
 @[elab_as_elim]
 def reduce_rec {C : Δ m → Sort*}
     (base : ∀ A : Δ m, (A.1 1 0) = 0 → C A)
@@ -91,7 +91,8 @@ def reduce_rec {C : Δ m → Sort*}
     zify
     exact reduce_aux h
 
-/--Map from `Δ m → Δ m` which reduces a FixedDetMatrix towards a representative element in reps. -/
+/-- Map from `Δ m → Δ m` which reduces a `FixedDetMatrix` towards a representative element
+in reps -/
 def reduce : Δ m → Δ m := fun A ↦
   if (A.1 1 0) = 0 then
     if 0 < A.1 0 0 then (T ^ (-(A.1 0 1 / A.1 1 1))) • A else
@@ -131,7 +132,7 @@ private lemma A_d_ne_zero {A : Δ m} (ha : A.1 1 0 = 0) (hm : m ≠ 0) : A.1 1 1
 private lemma A_a_ne_zero {A : Δ m} (ha : A.1 1 0 = 0) (hm : m ≠ 0) : A.1 0 0 ≠ 0 :=
   left_ne_zero_of_mul (A_c_eq_zero ha ▸ hm)
 
-/--An auxiliary result bounding the size of the entries of the representatives in `reps`. -/
+/-- An auxiliary result bounding the size of the entries of the representatives in `reps` -/
 lemma reps_entries_le_m' {A : Δ m} (h : A ∈ reps m) (i j : Fin 2) :
     A.1 i j ∈ Finset.Icc (-|m|) |m| := by
   suffices |A.1 i j| ≤ |m| from Finset.mem_Icc.mpr <| abs_le.mp this
@@ -222,10 +223,12 @@ private lemma prop_red_T (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → 
 private lemma prop_red_T_pow (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → C (T • B)) :
      ∀ B (n : ℤ), C (T^n • B) ↔ C B := by
   intro B n
-  induction' n using Int.induction_on with n hn m hm
-  · simp only [zpow_zero, one_smul, imp_self]
-  · simpa only [add_comm (n:ℤ), zpow_add _ 1, ← smul_eq_mul, zpow_one, smul_assoc, prop_red_T hS hT]
-  · rwa [sub_eq_neg_add, zpow_add, zpow_neg_one, ← prop_red_T hS hT, mul_smul, smul_inv_smul]
+  induction n with
+  | hz => simp only [zpow_zero, one_smul, imp_self]
+  | hp n hn =>
+    simpa only [add_comm (n:ℤ), zpow_add _ 1, ← smul_eq_mul, zpow_one, smul_assoc, prop_red_T hS hT]
+  | hn m hm =>
+    rwa [sub_eq_neg_add, zpow_add, zpow_neg_one, ← prop_red_T hS hT, mul_smul, smul_inv_smul]
 
 @[elab_as_elim]
 theorem induction_on {C : Δ m → Prop} {A : Δ m} (hm : m ≠ 0)
