@@ -16,6 +16,8 @@ These instances work particularly well in conjunction with `Monoid.toMulAction`,
 `s • m` as an alias for `↑s * m`.
 -/
 
+assert_not_exists RelIso
+
 namespace Submonoid
 
 variable {M' : Type*} {α β : Type*}

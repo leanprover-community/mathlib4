@@ -10,6 +10,8 @@ import Mathlib.Algebra.GroupWithZero.Action.End
 # Distributive actions by submonoids
 -/
 
+assert_not_exists RelIso Ring
+
 namespace Submonoid
 variable {M α : Type*} [Monoid M]
 
