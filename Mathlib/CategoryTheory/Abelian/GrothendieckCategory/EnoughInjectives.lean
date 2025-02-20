@@ -12,6 +12,7 @@ import Mathlib.CategoryTheory.Abelian.Monomorphisms
 import Mathlib.CategoryTheory.Abelian.Refinements
 import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 import Mathlib.CategoryTheory.Subobject.Lattice
+import Mathlib.CategoryTheory.Subobject.HasCardinalLT
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ColimCoyoneda
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Monomorphisms
 import Mathlib.CategoryTheory.SmallObject.Basic
@@ -50,43 +51,6 @@ namespace CategoryTheory
 open Category Opposite Limits ZeroObject
 
 variable {C : Type u} [Category.{v} C]
-
-namespace Subobject
-
-lemma mk_lt_mk_of_comm {X A₁ A₂ : C} {i₁ : A₁ ⟶ X} {i₂ : A₂ ⟶ X} [Mono i₁] [Mono i₂]
-    (f : A₁ ⟶ A₂) (fac : f ≫ i₂ = i₁) (hf : ¬ IsIso f) :
-    Subobject.mk i₁ < Subobject.mk i₂ := by
-  obtain _ | h := (mk_le_mk_of_comm _ fac).lt_or_eq
-  · assumption
-  · exfalso
-    refine hf ⟨ofMkLEMk i₂ i₁ (by rw [h]), ?_, ?_⟩
-    · simp only [← cancel_mono i₁, assoc, ofMkLEMk_comp, fac, id_comp]
-    · simp only [← cancel_mono i₂, assoc, ofMkLEMk_comp, fac, id_comp]
-
-lemma mk_lt_mk_iff_of_comm {X A₁ A₂ : C} {i₁ : A₁ ⟶ X} {i₂ : A₂ ⟶ X} [Mono i₁] [Mono i₂]
-    (f : A₁ ⟶ A₂) (fac : f ≫ i₂ = i₁) :
-    Subobject.mk i₁ < Subobject.mk i₂ ↔ ¬ IsIso f :=
-  ⟨fun h hf ↦ by simp only [mk_eq_mk_of_comm i₁ i₂ (asIso f) fac, lt_self_iff_false] at h,
-    mk_lt_mk_of_comm f fac⟩
-
-lemma map_mk {A X Y : C} (i : A ⟶ X) [Mono i] (f : X ⟶ Y) [Mono f] :
-    (map f).obj (mk i) = mk (i ≫ f) :=
-  rfl
-
-lemma map_obj_injective {X Y : C} (f : X ⟶ Y) [Mono f] :
-    Function.Injective (Subobject.map f).obj := by
-  intro X₁ X₂ h
-  induction' X₁ using Subobject.ind with X₁ i₁ _
-  induction' X₂ using Subobject.ind with X₂ i₂ _
-  simp only [map_mk] at h
-  exact mk_eq_mk_of_comm _ _ (isoOfMkEqMk _ _ h) (by simp [← cancel_mono f])
-
-lemma hasCardinalLT_of_mono {Y : C} {κ : Cardinal.{w}}
-    (h : HasCardinalLT (Subobject Y) κ) {X : C} (f : X ⟶ Y) [Mono f] :
-    HasCardinalLT (Subobject X) κ :=
-  h.of_injective _ (map_obj_injective f)
-
-end Subobject
 
 section Abelian
 
