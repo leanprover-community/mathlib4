@@ -121,7 +121,8 @@ variable [Abelian C]
 
 lemma isomorphisms_le_pushouts_generatingMonomorphisms :
     MorphismProperty.isomorphisms C ≤ (generatingMonomorphisms G).pushouts :=
-  MorphismProperty.isomorphisms_le_pushouts _ (fun _ ↦ ⟨_, _, _, ⟨⊤⟩, 0, inferInstance⟩)
+  MorphismProperty.isomorphisms_le_pushouts _
+    (fun _ ↦ ⟨_, _, _, ⟨⊤⟩, 0, inferInstance⟩)
 
 variable {G}
 
@@ -130,28 +131,27 @@ namespace TransfiniteCompositionMonoPushouts
 variable (hG : IsSeparator G)
 include hG
 
-lemma exists_pushouts_generatingMonomorphisms {X Y : C} (p : X ⟶ Y) [Mono p]
-    (hp : ¬ IsIso p) :
+lemma exists_pushouts_generatingMonomorphisms
+    {X Y : C} (p : X ⟶ Y) [Mono p] (hp : ¬ IsIso p) :
     ∃ (X' : C) (i : X ⟶ X') (p' : X' ⟶ Y) (_ : (generatingMonomorphisms G).pushouts i)
       (_ : ¬ IsIso i) (_ : Mono p'), i ≫ p' = p := by
   rw [hG.isDetector.isIso_iff_of_mono] at hp
   simp only [coyoneda_obj_obj, Subtype.forall, Set.mem_singleton_iff, forall_eq,
     Function.Surjective, not_forall, not_exists] at hp
   obtain ⟨f, hf⟩ := hp
-  let φ : pushout (pullback.fst p f) (pullback.snd p f) ⟶ Y :=
-    pushout.desc p f pullback.condition
-  refine ⟨pushout (pullback.fst p f) (pullback.snd p f), pushout.inl _ _, φ,
+  refine ⟨pushout (pullback.fst p f) (pullback.snd p f), pushout.inl _ _,
+    pushout.desc p f pullback.condition,
     ⟨_, _, _, (Subobject.underlyingIso _).hom ≫ pullback.fst _ _,
     pushout.inr _ _, ⟨Subobject.mk (pullback.snd p f)⟩,
     (IsPushout.of_hasPushout (pullback.fst p f) (pullback.snd p f)).of_iso
       ((Subobject.underlyingIso _).symm) (Iso.refl _) (Iso.refl _)
-      (Iso.refl _) (by simp) (by simp) (by simp) (by simp)⟩, ?_, ?_, by simp [φ]⟩
+      (Iso.refl _) (by simp) (by simp) (by simp) (by simp)⟩, ?_, ?_, by simp⟩
   · intro h
     rw [isIso_iff_yoneda_map_bijective] at h
     obtain ⟨a, ha⟩ := (h G).2 (pushout.inr _ _)
-    exact hf a (by simpa [φ] using ha =≫ φ)
+    exact hf a (by simpa using ha =≫ pushout.desc p f pullback.condition)
   · exact (IsPushout.of_hasPushout _ _).mono_of_isPullback_of_mono
-      (IsPullback.of_hasPullback p f) φ (by simp [φ]) (by simp [φ])
+      (IsPullback.of_hasPullback p f) _ (by simp) (by simp)
 
 variable {X : C}
 
