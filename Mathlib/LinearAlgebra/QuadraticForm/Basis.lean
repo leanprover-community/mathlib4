@@ -31,7 +31,7 @@ theorem map_finsuppSum' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R
     Q (f.sum g) =
       ∑ p ∈ f.support.sym2, polarSym2 Q (p.map fun i => g i (f i))
         - ∑ i ∈ f.support, Q (g i (f i)) := by
-  exact Q.map_sum' _ (fun i => g i (f i))
+  exact Q.map_sum' _ fun i => g i (f i)
 
 lemma polarSym2_map_smul_apply (Q : QuadraticMap R M N) (g : ι → M) (l : ι → R) (p : Sym2 ι) :
     polarSym2 Q (p.map (l • g)) = (p.map l).mul • polarSym2 Q (p.map g) := by
