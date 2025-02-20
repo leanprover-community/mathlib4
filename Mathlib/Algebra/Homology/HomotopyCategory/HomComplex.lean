@@ -260,9 +260,9 @@ lemma comp_assoc {n₁ n₂ n₃ n₁₂ n₂₃ n₁₂₃ : ℤ}
   substs h₁₂ h₂₃ h₁₂₃
   ext p q hpq
   rw [comp_v _ _ rfl p (p + n₁ + n₂) q (add_assoc _ _ _).symm (by omega),
-    comp_v z₁ z₂ rfl p (p + n₁) (p + n₁ + n₂) (by omega) (by omega),
-    comp_v z₁ (z₂.comp z₃ rfl) (add_assoc n₁ n₂ n₃).symm p (p + n₁) q (by omega) (by omega),
-    comp_v z₂ z₃ rfl (p + n₁) (p + n₁ + n₂) q (by omega) (by omega), assoc]
+    comp_v z₁ z₂ rfl p (p + n₁) (p + n₁ + n₂) (by order) (by order),
+    comp_v z₁ (z₂.comp z₃ rfl) (add_assoc n₁ n₂ n₃).symm p (p + n₁) q (by order) (by omega),
+    comp_v z₂ z₃ rfl (p + n₁) (p + n₁ + n₂) q (by order) (by omega), assoc]
 
 /-! The formulation of the associativity of the composition of cochains given by the
 lemma `comp_assoc` often requires a careful selection of degrees with good definitional

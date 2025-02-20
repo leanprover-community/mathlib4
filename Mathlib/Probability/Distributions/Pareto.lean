@@ -56,7 +56,7 @@ lemma lintegral_paretoPDF_of_le (hx : x ≤ t) :
   · rw [lintegral_zero, ← ENNReal.ofReal_zero]
   · simp only [paretoPDF_eq, ge_iff_le, ENNReal.ofReal_eq_zero]
     filter_upwards with a (_ : a < _)
-    rw [if_neg (by linarith)]
+    rw [if_neg (by order)]
 
 /-- The Pareto pdf is measurable. -/
 @[measurability, fun_prop]
@@ -73,7 +73,7 @@ lemma stronglyMeasurable_paretoPDFReal (t r : ℝ) :
 lemma paretoPDFReal_pos (ht : 0 < t) (hr : 0 < r) (hx : t ≤ x) :
     0 < paretoPDFReal t r x := by
   rw [paretoPDFReal, if_pos hx]
-  have _ : 0 < x := by linarith
+  have _ : 0 < x := by order
   positivity
 
 /-- The Pareto pdf is nonnegative. -/

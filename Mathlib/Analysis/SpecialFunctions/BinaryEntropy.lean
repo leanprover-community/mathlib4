@@ -102,7 +102,7 @@ lemma binEntropy_neg_of_neg (hp : p < 0) : binEntropy p < 0 := by
     nlinarith [log_pos_of_lt_neg_one hp']
   · have : -p * log p ≤ 0 := by
       wlog h : -1 < p
-      · simp only [show p = -1 by linarith, log_neg_eq_log, log_one, le_refl, mul_zero]
+      · simp only [show p = -1 by order, log_neg_eq_log, log_one, le_refl, mul_zero]
       · nlinarith [log_neg_of_lt_zero hp h]
     nlinarith [(log_pos (by linarith) : 0 < log (1 - p))]
 
@@ -378,7 +378,7 @@ lemma qaryEntropy_strictMonoOn (qLe2 : 2 ≤ q) :
     simp only [one_div, interior_Icc, mem_Ioo] at hp
     rw [deriv_qaryEntropy (by linarith)]
     · field_simp
-      rw [← log_mul (by linarith) (by linarith)]
+      rw [← log_mul (by linarith) (by order)]
       apply Real.strictMonoOn_log (mem_Ioi.mpr hp.1)
       · simp_all only [mem_Ioi, mul_pos_iff_of_pos_left, show 0 < (q : ℝ) - 1 by linarith]
       · have qpos : 0 < (q : ℝ) := by positivity
@@ -402,7 +402,7 @@ lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
     simp only [one_div, interior_Icc, mem_Ioo] at hp
     rw [deriv_qaryEntropy (by linarith)]
     · field_simp
-      rw [← log_mul (by linarith) (by linarith)]
+      rw [← log_mul (by linarith) (by order)]
       apply Real.strictMonoOn_log (mem_Ioi.mpr (show 0 < (↑q - 1) * (1 - p) by nlinarith))
       · simp_all only [mem_Ioi, mul_pos_iff_of_pos_left]
         linarith

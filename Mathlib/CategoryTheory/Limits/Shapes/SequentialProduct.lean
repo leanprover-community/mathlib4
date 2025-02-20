@@ -45,12 +45,12 @@ noncomputable def functorObj : ℕ → C :=
 /-- The projection map from `functorObj M N n` to `M m`, when `m < n`  -/
 noncomputable def functorObjProj_pos (n m : ℕ) (h : m < n) :
     functorObj M N n ⟶ M m :=
-  Pi.π (fun m ↦ if _ : m < n then M m else N m) m ≫ eqToHom (functorObj_eq_pos (by omega))
+  Pi.π (fun m ↦ if _ : m < n then M m else N m) m ≫ eqToHom (functorObj_eq_pos (by order))
 
 /-- The projection map from `functorObj M N n` to `N m`, when `m ≥ n`  -/
 noncomputable def functorObjProj_neg (n m : ℕ) (h : ¬(m < n)) :
     functorObj M N n ⟶ N m :=
-  Pi.π (fun m ↦ if _ : m < n then M m else N m) m ≫ eqToHom (functorObj_eq_neg (by omega))
+  Pi.π (fun m ↦ if _ : m < n then M m else N m) m ≫ eqToHom (functorObj_eq_neg (by order))
 
 /-- The transition maps in the sequential limit of products -/
 noncomputable def functorMap : ∀ n,
@@ -62,21 +62,21 @@ noncomputable def functorMap : ∀ n,
 
 lemma functorMap_commSq_succ (n : ℕ) :
     (Functor.ofOpSequence (functorMap f)).map (homOfLE (by omega : n ≤ n+1)).op ≫ Pi.π _ n ≫
-      eqToHom (functorObj_eq_neg (by omega : ¬(n < n))) =
+      eqToHom (functorObj_eq_neg (by order : ¬(n < n))) =
         (Pi.π (fun i ↦ if _ : i < (n + 1) then M i else N i) n) ≫
           eqToHom (functorObj_eq_pos (by omega)) ≫ f n := by
   simp [functorMap]
 
 lemma functorMap_commSq_aux {n m k : ℕ} (h : n ≤ m) (hh : ¬(k < m)) :
     (Functor.ofOpSequence (functorMap f)).map (homOfLE h).op ≫ Pi.π _ k ≫
-      eqToHom (functorObj_eq_neg (by omega : ¬(k < n))) =
+      eqToHom (functorObj_eq_neg (by order : ¬(k < n))) =
         (Pi.π (fun i ↦ if _ : i < m then M i else N i) k) ≫
           eqToHom (functorObj_eq_neg hh) := by
   induction' h using Nat.leRec with m h ih
   · simp
   · specialize ih (by omega)
     have : homOfLE (by omega : n ≤ m + 1) =
-        homOfLE (by omega : n ≤ m) ≫ homOfLE (by omega : m ≤ m + 1) := by simp
+        homOfLE (by order : n ≤ m) ≫ homOfLE (by omega : m ≤ m + 1) := by simp
     rw [this, op_comp, Functor.map_comp]
     slice_lhs 2 4 => rw [ih]
     simp only [Functor.ofOpSequence_obj, homOfLE_leOfHom, Functor.ofOpSequence_map_homOfLE_succ,
@@ -86,7 +86,7 @@ lemma functorMap_commSq_aux {n m k : ℕ} (h : n ≤ m) (hh : ¬(k < m)) :
 
 lemma functorMap_commSq {n m : ℕ} (h : ¬(m < n)) :
     (Functor.ofOpSequence (functorMap f)).map (homOfLE (by omega : n ≤ m + 1)).op ≫ Pi.π _ m ≫
-      eqToHom (functorObj_eq_neg (by omega : ¬(m < n))) =
+      eqToHom (functorObj_eq_neg (by order : ¬(m < n))) =
         (Pi.π (fun i ↦ if _ : i < m + 1 then M i else N i) m) ≫
           eqToHom (functorObj_eq_pos (by omega)) ≫ f m := by
   cases m with
@@ -100,12 +100,12 @@ lemma functorMap_commSq {n m : ℕ} (h : ¬(m < n)) :
         Functor.ofOpSequence_map_homOfLE_succ, add_le_iff_nonpos_right, nonpos_iff_eq_zero,
         one_ne_zero]
       have : homOfLE (by omega : n ≤ m + 1 + 1) =
-          homOfLE (by omega : n ≤ m + 1) ≫ homOfLE (by omega : m + 1 ≤ m + 1 + 1) := by simp
+          homOfLE (by order : n ≤ m + 1) ≫ homOfLE (by omega : m + 1 ≤ m + 1 + 1) := by simp
       rw [this, op_comp, Functor.map_comp]
       simp only [Functor.ofOpSequence_obj, homOfLE_leOfHom, Functor.ofOpSequence_map_homOfLE_succ,
         Category.assoc, add_le_iff_nonpos_right, nonpos_iff_eq_zero, one_ne_zero]
       congr 1
-      exact functorMap_commSq_aux f (by omega) (by omega)
+      exact functorMap_commSq_aux f (by order) (by order)
 
 /--
 The cone over the tower

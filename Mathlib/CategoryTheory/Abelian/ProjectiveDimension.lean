@@ -95,7 +95,7 @@ lemma hasProjectiveDimensionLT_of_ge (m : ℕ) (h : n ≤ m)
   letI := HasExt.standard C
   rw [hasProjectiveDimensionLT_iff]
   intro i hi Y e
-  exact e.eq_zero_of_hasProjectiveDimensionLT n (by omega)
+  exact e.eq_zero_of_hasProjectiveDimensionLT n (by order)
 
 instance [HasProjectiveDimensionLT X n] (k : ℕ) :
     HasProjectiveDimensionLT X (n + k) :=
@@ -167,7 +167,7 @@ lemma hasProjectiveDimensionLT_X₁ (h₂ : HasProjectiveDimensionLT S.X₂ n)
   intro i hi Y x₁
   obtain ⟨x₂, rfl⟩ := Ext.contravariant_sequence_exact₁ hS _ x₁ (add_comm _ _)
     (Ext.eq_zero_of_hasProjectiveDimensionLT _ (n + 1) (by omega))
-  rw [x₂.eq_zero_of_hasProjectiveDimensionLT n (by omega), Ext.comp_zero]
+  rw [x₂.eq_zero_of_hasProjectiveDimensionLT n (by order), Ext.comp_zero]
 
 -- When we know `HasProjectiveDimensionLT S.X₂ 1` is equivalent to `Projective S.X₂`,
 -- the assumption `h₂` can be changed to `h₂ : Projective S.X₂`.

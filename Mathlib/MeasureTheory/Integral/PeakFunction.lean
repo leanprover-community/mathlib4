@@ -124,7 +124,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
   have I : IntegrableOn (φ i) t μ := by
     apply Integrable.of_integral_ne_zero (fun h ↦ ?_)
     simp [h] at h'i
-    linarith
+    order
   have B : ‖∫ x in s ∩ u, φ i x • g x ∂μ‖ ≤ 2 * δ :=
     calc
       ‖∫ x in s ∩ u, φ i x • g x ∂μ‖ ≤ ∫ x in s ∩ u, ‖φ i x • g x‖ ∂μ :=

@@ -177,7 +177,7 @@ theorem helly_theorem_set {F : Finset (Set E)}
   obtain ⟨J, _, hJ_ss, hJ_card⟩ := exists_subsuperset_card_eq hI_ss hI_card h_card
   have : ⋂₀ (J : Set (Set E)) ⊆ ⋂₀ I := sInter_mono (by simpa [hI_ss])
   apply Set.Nonempty.mono this
-  exact h_inter J hJ_ss (by omega)
+  exact h_inter J hJ_ss (by order)
 
 /-- **Helly's theorem** for families of compact convex sets.
 

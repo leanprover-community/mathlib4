@@ -212,7 +212,7 @@ theorem mk_eq_iff {v₁ v₂ : HeightOneSpectrum (𝓞 K)} : mk v₁ = mk v₂ �
   simp only [apply]
   rw [← norm_lt_one_iff_mem] at hx1
   rw [← norm_eq_one_iff_not_mem] at hx2
-  linarith
+  order
 
 theorem maximalIdeal_mk (v : HeightOneSpectrum (𝓞 K)) : maximalIdeal (mk v) = v := by
   rw [← mk_eq_iff, mk_maximalIdeal]

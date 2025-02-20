@@ -81,7 +81,7 @@ noncomputable def inv : mappingCone (mappingConeCompTriangle f g).mor₁ ⟶ map
       ext p
       rw [ext_from_iff _ (p + 1) _ rfl, ext_to_iff _ _ (p + 1) rfl]
       simp [map, δ_zero_cochain_comp,
-        Cochain.comp_v _ _ (add_neg_cancel 1) p (p+1) p (by omega) (by omega)])
+        Cochain.comp_v _ _ (add_neg_cancel 1) p (p+1) p (by order) (by omega)])
 @[reassoc (attr := simp)]
 lemma hom_inv_id : hom f g ≫ inv f g = 𝟙 _ := by
   ext n
@@ -109,7 +109,7 @@ noncomputable def homotopyInvHomId : Homotopy (inv f g ≫ hom f g) (𝟙 _) :=
         ext_from_iff _ (n + 2) (n + 1) (by omega)]
       dsimp [hom, inv]
       simp [ext_to_iff _ n (n + 1) rfl, map, Cochain.comp_v _ _
-          (add_neg_cancel 1) n (n + 1) n (by omega) (by omega),
+          (add_neg_cancel 1) n (n + 1) n (by order) (by omega),
         Cochain.comp_v _ _ (show 1 + -2 = -1 by decide) (n + 1) (n + 2) n
           (by omega) (by omega),
         Cochain.comp_v _ _ (show (-1) + -1 = -2 by decide) (n + 2) (n + 1) n

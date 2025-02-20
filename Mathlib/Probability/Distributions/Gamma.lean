@@ -67,7 +67,7 @@ lemma lintegral_gammaPDF_of_nonpos {x a r : ℝ} (hx : x ≤ 0) :
   · rw [lintegral_zero, ← ENNReal.ofReal_zero]
   · simp only [gammaPDF_eq, ENNReal.ofReal_eq_zero]
     filter_upwards with a (_ : a < _)
-    rw [if_neg (by linarith)]
+    rw [if_neg (by order)]
 
 /-- The gamma pdf is measurable. -/
 @[measurability]

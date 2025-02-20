@@ -4250,6 +4250,7 @@ import Mathlib.Order.Antisymmetrization
 import Mathlib.Order.Atoms
 import Mathlib.Order.Atoms.Finite
 import Mathlib.Order.Basic
+import Mathlib.Order.BasicLemmas
 import Mathlib.Order.Birkhoff
 import Mathlib.Order.BooleanAlgebra
 import Mathlib.Order.BooleanGenerators
@@ -5284,6 +5285,7 @@ import Mathlib.Tactic.NormNum.Result
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.Observe
 import Mathlib.Tactic.OfNat
+import Mathlib.Tactic.Order
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.Peel
 import Mathlib.Tactic.Polyrith
