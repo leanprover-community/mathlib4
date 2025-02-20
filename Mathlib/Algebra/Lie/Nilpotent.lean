@@ -733,6 +733,12 @@ theorem nilpotent_iff_le_max_nilpotent_submodule [IsNoetherian R M] (N : LieSubm
   ⟨fun h ↦ le_sSup h, fun h ↦ isNilpotent_of_le R L M N (maxNilpotentSubmodule R L M) h
     (instMaxNilpotentSubmoduleIsNilpotent R L M)⟩
 
+@[simp] lemma maxNilpotentSubmodule_eq_top_of_isNilpotent [LieModule.IsNilpotent L M] :
+    maxNilpotentSubmodule R L M = ⊤ := by
+  rw [eq_top_iff]
+  apply le_sSup
+  simpa
+
 end LieModule
 
 end NilpotentModules
@@ -986,20 +992,18 @@ variable [CommRing R] [LieRing L] [LieAlgebra R L]
 def maxNilpotentIdeal := maxNilpotentSubmodule R L L
 
 instance maxNilpotentIdealIsNilpotent [IsNoetherian R L] :
-    IsNilpotent L (maxNilpotentIdeal R L) := by
-  apply instMaxNilpotentSubmoduleIsNilpotent
+    IsNilpotent L (maxNilpotentIdeal R L) :=
+  instMaxNilpotentSubmoduleIsNilpotent R L L
 
 theorem LieIdeal.nilpotent_iff_le_max_nilpotent_ideal [IsNoetherian R L] (I : LieIdeal R L) :
     IsNilpotent L I ↔ I ≤ maxNilpotentIdeal R L := by
   apply nilpotent_iff_le_max_nilpotent_submodule
 
-theorem center_le_max_nilpotent_ideal : center R L ≤ maxNilpotentIdeal R L := by
-  exact le_sSup (trivialIsNilpotent L (center R L))
+theorem center_le_max_nilpotent_ideal : center R L ≤ maxNilpotentIdeal R L :=
+  le_sSup (trivialIsNilpotent L (center R L))
 
 @[simp] lemma max_nilpotent_ideal_eq_top_of_isNilpotent [LieRing.IsNilpotent L] :
-    maxNilpotentIdeal R L = ⊤ := by
-  rw [eq_top_iff]
-  apply le_sSup
-  simpa
+    maxNilpotentIdeal R L = ⊤ :=
+  maxNilpotentSubmodule_eq_top_of_isNilpotent R L L
 
 end LieAlgebra
