@@ -677,7 +677,7 @@ theorem ChartedSpace.locallyConnectedSpace [LocallyConnectedSpace H] : LocallyCo
     exact hsconn.isPreconnected.image _ ((e x).continuousOn_symm.mono hssubset)
 
 /-- If a topological space `M` admits an atlas with locally path-connected charts,
-  then `M` itself is locally path-connected. -/
+then `M` itself is locally path-connected. -/
 theorem ChartedSpace.locPathConnectedSpace [LocPathConnectedSpace H] : LocPathConnectedSpace M := by
   refine ⟨fun x ↦ ⟨fun s ↦ ⟨fun hs ↦ ?_, fun ⟨u, hu⟩ ↦ Filter.mem_of_superset hu.1.1 hu.2⟩⟩⟩
   let e := chartAt H x
@@ -1090,8 +1090,8 @@ instance hasGroupoid_continuousGroupoid : HasGroupoid M (continuousGroupoid H) :
   rw [continuousGroupoid, mem_groupoid_of_pregroupoid]
   simp only [and_self_iff]
 
-/-- If `G` is closed under restriction, the transition function between
-  the restriction of two charts `e` and `e'` lies in `G`. -/
+/-- If `G` is closed under restriction, the transition function between the restriction of two
+charts `e` and `e'` lies in `G`. -/
 theorem StructureGroupoid.trans_restricted {e e' : PartialHomeomorph M H} {G : StructureGroupoid H}
     (he : e ∈ atlas H M) (he' : e' ∈ atlas H M)
     [HasGroupoid M G] [ClosedUnderRestriction G] {s : Opens M} (hs : Nonempty s) :
@@ -1261,14 +1261,14 @@ protected instance instChartedSpace : ChartedSpace H s where
     use x
 
 /-- If `s` is a non-empty open subset of `M`, every chart of `s` is the restriction
- of some chart on `M`. -/
+of some chart on `M`. -/
 lemma chart_eq {s : Opens M} (hs : Nonempty s) {e : PartialHomeomorph s H} (he : e ∈ atlas H s) :
     ∃ x : s, e = (chartAt H (x : M)).subtypeRestr hs := by
   rcases he with ⟨xset, ⟨x, hx⟩, he⟩
   exact ⟨x, mem_singleton_iff.mp (by convert he)⟩
 
 /-- If `t` is a non-empty open subset of `H`,
-  every chart of `t` is the restriction of some chart on `H`. -/
+every chart of `t` is the restriction of some chart on `H`. -/
 -- XXX: can I unify this with `chart_eq`?
 lemma chart_eq' {t : Opens H} (ht : Nonempty t) {e' : PartialHomeomorph t H}
     (he' : e' ∈ atlas H t) : ∃ x : t, e' = (chartAt H ↑x).subtypeRestr ht := by
