@@ -129,8 +129,8 @@ partial def getHash (filePath : FilePath) (visited : Std.HashSet FilePath := ∅
       return none
     let content ← IO.FS.readFile fixedPath
     let fileImports' ← getFileImports content filePath.toString
-    -- TODO: This line is only here for backwards compatibility: cache still takes
-    -- keys of the form `Mathlib/Init.lean`, `Aesop/Build.lean` instead of module
+    -- TODO: This line is only here for backwards compatibility: most code of cache still works
+    -- with keys of the form `Mathlib/Init.lean`, `Aesop/Build.lean` instead of module
     -- names: `Mathlib.Init`, `Aesop.Build`, but `getFileImports` has been changed
     -- to return the latter, in preparation for the switch
     let fileImports := fileImports'.map fun (key, _) =>
