@@ -97,7 +97,7 @@ def allow (f : Comp ι ω s α) (st : s ⊆ t) : Comp ι ω t α := match f with
   | .query' i m y f => .query' i (st m) y (fun b => (f b).allow st)
 
 /-- Extend the set of allowed oracles in a computation to the universe set -/
-def allowAll (f : Comp ι ω s α) : Comp ι ω (univ : Set I) α :=
+abbrev allowAll (f : Comp ι ω s α) : Comp ι ω (univ : Set I) α :=
   f.allow (subset_univ s)
 
 section OneOracle
