@@ -76,7 +76,7 @@ theorem map_finsuppSum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R 
     Q (f.sum g) =
       f.sum (fun i r => Q (g i r)) +
       ∑ p ∈ f.support.sym2 with ¬ p.IsDiag,
-        (polarSym2 Q ∘ Sym2.map (fun i => (g i (f i)))) p := by
+        polarSym2 Q (p.map fun i => g i (f i))  := by
   exact Q.map_sum _ _
 
 -- c.f. `Finsupp.apply_linearCombination`
