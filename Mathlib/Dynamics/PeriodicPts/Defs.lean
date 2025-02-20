@@ -9,6 +9,7 @@ import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Data.List.Cycle
 import Mathlib.Data.PNat.Notation
 import Mathlib.Dynamics.FixedPoints.Basic
+import Mathlib.Data.Int.Basic
 
 /-!
 # Periodic points

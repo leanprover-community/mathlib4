@@ -40,7 +40,7 @@ Less basic uses of `ℕ` and `ℤ` should however use the typeclass-mediated dev
 
 The relevant files are:
 * `Mathlib.Data.Nat.Basic` for the continuation of the home-baked development on `ℕ`
-* `Mathlib.Data.Int.Defs` for the continuation of the home-baked development on `ℤ`
+* `Mathlib.Data.Int.Init` for the continuation of the home-baked development on `ℤ`
 * `Mathlib.Algebra.Group.Nat` for the monoid instances on `ℕ`
 * `Mathlib.Algebra.Group.Int` for the group instance on `ℤ`
 * `Mathlib.Algebra.Ring.Nat` for the semiring instance on `ℕ`

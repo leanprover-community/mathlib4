@@ -5,6 +5,8 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Data.Int.Basic
+import Mathlib.Lean.Meta.CongrTheorems
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Spread
