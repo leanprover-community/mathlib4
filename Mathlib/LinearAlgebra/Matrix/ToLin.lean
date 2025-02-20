@@ -7,6 +7,10 @@ import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.Data.Finite.Sum
 import Mathlib.Data.Matrix.Block
 import Mathlib.Data.Matrix.Notation
+import Mathlib.LinearAlgebra.Basis.Basic
+import Mathlib.LinearAlgebra.Basis.Fin
+import Mathlib.LinearAlgebra.Basis.Prod
+import Mathlib.LinearAlgebra.Basis.SMul
 import Mathlib.LinearAlgebra.Matrix.StdBasis
 import Mathlib.RingTheory.AlgebraTower
 import Mathlib.RingTheory.Ideal.Span
@@ -61,7 +65,6 @@ and (presumably) adding `_left` where necessary.
 
 linear_map, matrix, linear_equiv, diagonal, det, trace
 -/
-
 
 noncomputable section
 
