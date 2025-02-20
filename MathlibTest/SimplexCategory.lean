@@ -1,4 +1,4 @@
-import Mathlib.AlgebraicTopology.SimplexCategory
+import Mathlib.AlgebraicTopology.SimplexCategory.Defs
 open SimplexCategory.Truncated
 
 variable (n : ℕ) (m : ℕ) (h : m ≤ n)
