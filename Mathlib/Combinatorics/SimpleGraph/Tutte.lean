@@ -25,13 +25,6 @@ variable {V : Type u} {G G' : SimpleGraph V} {u x v' w : V}
 def TutteViolator (G: SimpleGraph V) (u : Set V) : Prop :=
   u.ncard < {c : ((⊤ : G.Subgraph).deleteVerts u).coe.ConnectedComponent | Odd (c.supp.ncard)}.ncard
 
---Temporarily inlined from #20705, will be removed before merge
-theorem IsClique.of_induce {S : Subgraph G} {F : Set V} {A : Set F}
-    (c : (S.induce F).coe.IsClique A) : G.IsClique (Subtype.val '' A) := by
-  simp only [Set.Pairwise, Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
-  intro _ ⟨_, ainA⟩ _ ⟨_, binA⟩ anb
-  exact S.adj_sub (c ainA binA (Subtype.coe_ne_coe.mp anb)).2.2
-
 /-- This lemma states that a graph in which the universal vertices do not violate the
 Tutte-condition, if the graph decomposes into cliques, there exists a matching that covers
 everything except some universal vertices. It is marked private, because
