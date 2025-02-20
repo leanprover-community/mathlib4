@@ -44,8 +44,8 @@ abbrev BOracle (α : Type*) : Type _ := Oracle α fun _ ↦ Bool
 
 /-- A deterministic computation that make decisions by querying oracles. A computation is either a
 pure value or the identifier of an oracle (`o`) drawn from a predefined set (`s`), a value to
-be queried by the oracle (`i`) and a dependent selection function that determines which oracle to
-run, depending on the result of the query. -/
+be queried by the oracle (`i`) and a dependent selection function that determines which continuation
+to run, depending on the result of the query. -/
 inductive Comp (ι : I → Type*) (ω : {i : I} → ι i → Type*) (s : Set I) (α : Type*) : Type _ where
   /-- A pure value without any oracle interaction. -/
   | pure' : α → Comp ι ω s α
