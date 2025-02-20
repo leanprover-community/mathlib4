@@ -253,19 +253,15 @@ theorem contMDiffWithinAt_of_subsingleton [Subsingleton M'] : ContMDiffWithinAt 
 theorem contMDiffOn_of_subsingleton [Subsingleton M'] : ContMDiffOn I I' n f s :=
   contMDiff_of_subsingleton.contMDiffOn
 
--- idea: locally, f is constant near x, and constant functions are contMDiff
-lemma contMDiff_of_discreteTopology [DiscreteTopology M] [IsManifold I n M] [IsManifold I' n M'] :
+lemma contMDiff_of_discreteTopology [DiscreteTopology M] :
     ContMDiff I I' n f := by
   intro x
-  -- XXX: assume we're not smooth, by descending to all n or so
-  rw [contMDiffAt_iff_contMDiffOn_nhds sorry]
-  refine ⟨{x}, ?_, ?_⟩
-  · apply (isOpen_discrete {x}).mem_nhds; rw [Set.mem_singleton_iff]
-  · exact contMDiffOn_const (c := f x).congr (fun y hy ↦ by rw [hy])
+  -- f is locally constant, and constant functions are smooth.
+  apply ((contMDiff_const (c := f x)).contMDiffAt).congr_of_eventuallyEq
+  exact eventually_of_mem ((isOpen_discrete {x}).mem_nhds rfl) (by simp)
 
 end const
 
-#exit
 /-- `f` is continuously differentiable if it is cont. differentiable at
 each `x ∈ mulTSupport f`. -/
 @[to_additive "`f` is continuously differentiable if it is continuously
