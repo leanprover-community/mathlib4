@@ -79,6 +79,14 @@ lemma retracts_le (P : MorphismProperty C) [P.IsStableUnderRetracts] :
     P.retracts ≤ P := by
   rwa [← isStableUnderRetracts_iff_retracts_le]
 
+@[simp]
+lemma retracts_le_iff {P Q : MorphismProperty C} [Q.IsStableUnderRetracts] :
+    P.retracts ≤ Q ↔ P ≤ Q := by
+  constructor
+  · exact le_trans P.le_retracts
+  · intro h
+    exact le_trans (retracts_monotone h) Q.retracts_le
+
 end MorphismProperty
 
 end CategoryTheory
