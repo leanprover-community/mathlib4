@@ -95,7 +95,7 @@ inductive Head where
 | lambda
 | Forall
 
-/-- Retreave the `Head` of an expression. -/
+/-- Retrieve the `Head` of an expression. -/
 def Head.ofExpr (e : Expr) : MetaM Head := do
   if e.isForall then return .Forall
   if e.isLambda then return .lambda
