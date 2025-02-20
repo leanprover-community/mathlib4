@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Stiefel
 -/
 import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSqIntegral
-import Mathlib.MeasureTheory.Measure.FiniteMeasure
+import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 
 /-!
 # Extensionality of finite measures
@@ -19,11 +19,14 @@ open MeasureTheory Filter Real RCLike
 
 open scoped Topology
 
+namespace MeasureTheory
+
 variable {E 𝕜 : Type*} [RCLike 𝕜] [MeasurableSpace E]
 
 theorem ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable
     [PseudoEMetricSpace E] [BorelSpace E] [CompleteSpace E] [SecondCountableTopology E]
-    {P P' : FiniteMeasure E} {A : StarSubalgebra 𝕜 C(E, 𝕜)} (hA : A.SeparatesPoints)
+    {P P' : Measure E} [hP : IsFiniteMeasure P] [hP' : IsFiniteMeasure P']
+    {A : StarSubalgebra 𝕜 C(E, 𝕜)} (hA : A.SeparatesPoints)
     (hbound : ∀ g ∈ A, ∃ C, ∀ x y : E, dist (g x) (g y) ≤ C)
     (heq : ∀ g ∈ A, ∫ x, (g : E → 𝕜) x ∂P = ∫ x, (g : E → 𝕜) x ∂P') : P = P' := by
   --consider the real subalgebra of the purely real-valued elements of A
@@ -44,7 +47,7 @@ theorem ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_count
     intro g hgA_toReal
     rw [← @ofReal_inj 𝕜, ← integral_ofReal, ← integral_ofReal]
     exact heq ((ofRealAm.compLeftContinuous ℝ continuous_ofReal) g) hgA_toReal
-  apply FiniteMeasure.ext_of_forall_integral_eq
+  apply ext_of_forall_integral_eq_of_IsFiniteMeasure
   intro f
   have h0 : Tendsto (fun ε : ℝ => 6 * sqrt ε) (𝓝[>] 0) (𝓝 0) := by
     nth_rewrite 3 [← mul_zero 6]
@@ -64,8 +67,11 @@ theorem ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_count
   exact eq_of_abs_sub_eq_zero (tendsto_nhds_unique lim2 lim1)
 
 theorem ext_of_forall_mem_subalgebra_integral_eq_of_polish [TopologicalSpace E] [PolishSpace E]
-    [BorelSpace E] {P P' : FiniteMeasure E} {A : StarSubalgebra 𝕜 C(E, 𝕜)} (hA : A.SeparatesPoints)
+    [BorelSpace E] {P P' : Measure E} [hP : IsFiniteMeasure P] [hP' : IsFiniteMeasure P']
+    {A : StarSubalgebra 𝕜 C(E, 𝕜)} (hA : A.SeparatesPoints)
     (hbound : ∀ g ∈ A, ∃ C, ∀ x y : E, dist (g x) (g y) ≤ C)
     (heq : ∀ g ∈ A, ∫ x, (g : E → 𝕜) x ∂P = ∫ x, (g : E → 𝕜) x ∂P') : P = P' := by
   letI := upgradePolishSpace E
   exact ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable hA hbound heq
+
+end MeasureTheory
