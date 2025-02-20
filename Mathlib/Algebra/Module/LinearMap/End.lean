@@ -89,7 +89,7 @@ theorem _root_.Module.End.natCast_apply (n : ℕ) (m : M) : (↑n : Module.End R
 
 @[simp]
 theorem _root_.Module.End.ofNat_apply (n : ℕ) [n.AtLeastTwo] (m : M) :
-    (ofNat(n) : Module.End R M) m = OfNat.ofNat n • m := rfl
+    (ofNat(n) : Module.End R M) m = ofNat(n) • m := rfl
 
 instance _root_.Module.End.ring : Ring (Module.End R N₁) :=
   { Module.End.semiring, LinearMap.addCommGroup with
@@ -413,3 +413,13 @@ theorem smulRightₗ_apply (f : M₂ →ₗ[R] R) (x : M) (c : M₂) :
 end CommSemiring
 
 end LinearMap
+
+namespace Module.End
+
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] (f : Module.End R M)
+
+lemma commute_id_left : Commute LinearMap.id f := by ext; simp
+
+lemma commute_id_right : Commute f LinearMap.id := by ext; simp
+
+end Module.End

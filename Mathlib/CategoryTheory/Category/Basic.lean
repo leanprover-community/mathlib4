@@ -23,7 +23,7 @@ Introduces notations in the `CategoryTheory` scope
 
 Users may like to add `g ⊚ f` for composition in the standard convention, using
 ```lean
-local notation g ` ⊚ `:80 f:80 := category.comp f g    -- type as \oo
+local notation:80 g " ⊚ " f:80 => CategoryTheory.CategoryStruct.comp f g    -- type as \oo
 ```
 
 ## Porting note
@@ -142,11 +142,8 @@ attribute [aesop safe (rule_sets := [CategoryTheory])] Subsingleton.elim
 
 /-- The typeclass `Category C` describes morphisms associated to objects of type `C`.
 The universe levels of the objects and morphisms are unconstrained, and will often need to be
-specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallCategory`.)
-
-See <https://stacks.math.columbia.edu/tag/0014>.
--/
-@[pp_with_univ]
+specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallCategory`.) -/
+@[pp_with_univ, stacks 0014]
 class Category (obj : Type u) extends CategoryStruct.{v} obj : Type max u (v + 1) where
   /-- Identity morphisms are left identities for composition. -/
   id_comp : ∀ {X Y : obj} (f : X ⟶ Y), 𝟙 X ≫ f = f := by aesop_cat
@@ -235,19 +232,15 @@ theorem dite_comp {P : Prop} [Decidable P]
     (if h : P then f h else f' h) ≫ g = if h : P then f h ≫ g else f' h ≫ g := by aesop
 
 /-- A morphism `f` is an epimorphism if it can be cancelled when precomposed:
-`f ≫ g = f ≫ h` implies `g = h`.
-
-See <https://stacks.math.columbia.edu/tag/003B>.
--/
+`f ≫ g = f ≫ h` implies `g = h`. -/
+@[stacks 003B]
 class Epi (f : X ⟶ Y) : Prop where
   /-- A morphism `f` is an epimorphism if it can be cancelled when precomposed. -/
   left_cancellation : ∀ {Z : C} (g h : Y ⟶ Z), f ≫ g = f ≫ h → g = h
 
 /-- A morphism `f` is a monomorphism if it can be cancelled when postcomposed:
-`g ≫ f = h ≫ f` implies `g = h`.
-
-See <https://stacks.math.columbia.edu/tag/003B>.
--/
+`g ≫ f = h ≫ f` implies `g = h`. -/
+@[stacks 003B]
 class Mono (f : X ⟶ Y) : Prop where
   /-- A morphism `f` is a monomorphism if it can be cancelled when postcomposed. -/
   right_cancellation : ∀ {Z : C} (g h : Z ⟶ X), g ≫ f = h ≫ f → g = h

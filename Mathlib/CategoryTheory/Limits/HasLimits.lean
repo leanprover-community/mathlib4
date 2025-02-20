@@ -71,7 +71,6 @@ variable {F : J ⥤ C}
 section Limit
 
 /-- `LimitCone F` contains a cone over `F` together with the information that it is a limit. -/
--- @[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed; linter not ported yet
 structure LimitCone (F : J ⥤ C) where
   /-- The cone itself -/
   cone : Cone F
@@ -467,6 +466,8 @@ end
 
 variable {G : J ⥤ C} (α : F ⟶ G)
 
+theorem limMap_eq : limMap α = lim.map α := rfl
+
 theorem limit.map_pre [HasLimitsOfShape K C] (E : K ⥤ J) :
     lim.map α ≫ limit.pre G E = limit.pre F E ≫ lim.map (whiskerLeft E α) := by
   ext
@@ -581,7 +582,6 @@ section Colimit
 
 /-- `ColimitCocone F` contains a cocone over `F` together with the information that it is a
     colimit. -/
--- @[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed; linter not ported yet
 structure ColimitCocone (F : J ⥤ C) where
   /-- The cocone itself -/
   cocone : Cocone F
@@ -983,7 +983,7 @@ section
 -- attribute [local simp] colimMap -- Porting note: errors out colim.map_id and map_comp now
 
 /-- `colimit F` is functorial in `F`, when `C` has all colimits of shape `J`. -/
-@[simps] -- Porting note: simps on all fields now
+@[simps]
 def colim : (J ⥤ C) ⥤ C where
   obj F := colimit F
   map α := colimMap α
@@ -991,6 +991,8 @@ def colim : (J ⥤ C) ⥤ C where
 end
 
 variable {G : J ⥤ C} (α : F ⟶ G)
+
+theorem colimMap_eq : colimMap α = colim.map α := rfl
 
 @[reassoc]
 theorem colimit.ι_map (j : J) : colimit.ι F j ≫ colim.map α = α.app j ≫ colimit.ι G j := by simp
@@ -1156,7 +1158,7 @@ def isLimitOfOp {t : Cone F} (P : IsColimit t.op) : IsLimit t :=
 def isColimitOfOp {t : Cocone F} (P : IsLimit t.op) : IsColimit t :=
   P.unop
 
-/-- If `t.unop : Cocone F` is a colimit cocone, then `t : Cone F.op` is a limit cone.-/
+/-- If `t.unop : Cocone F` is a colimit cocone, then `t : Cone F.op` is a limit cone. -/
 def isLimitOfUnop {t : Cone F.op} (P : IsColimit t.unop) : IsLimit t :=
   P.op
 

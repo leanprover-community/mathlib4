@@ -3,6 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
+import Mathlib.Algebra.Order.GroupWithZero.Canonical
+import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Nat.Cast.Order.Basic
@@ -14,8 +16,6 @@ import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.InitialSeg
 import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
-import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Algebra.Order.Ring.Canonical
 
 /-!
 # Cardinal Numbers
@@ -31,7 +31,7 @@ We define cardinal numbers as a quotient of types under the equivalence relation
 * Multiplication `c₁ * c₂` is defined by `Cardinal.mul_def : #α * #β = #(α × β)`.
 * The order `c₁ ≤ c₂` is defined by `Cardinal.le_def α β : #α ≤ #β ↔ Nonempty (α ↪ β)`.
 * Exponentiation `c₁ ^ c₂` is defined by `Cardinal.power_def α β : #α ^ #β = #(β → α)`.
-* `Cardinal.isLimit c` means that `c` is a (weak) limit cardinal: `c ≠ 0 ∧ ∀ x < c, succ x < c`.
+* `Order.IsSuccLimit c` means that `c` is a (weak) limit cardinal: `c ≠ 0 ∧ ∀ x < c, succ x < c`.
 * `Cardinal.aleph0` or `ℵ₀` is the cardinality of `ℕ`. This definition is universe polymorphic:
   `Cardinal.aleph0.{u} : Cardinal.{u}` (contrast with `ℕ : Type`, which lives in a specific
   universe). In some cases the universe level has to be given explicitly.
@@ -43,7 +43,8 @@ We define cardinal numbers as a quotient of types under the equivalence relation
 
 ## Main instances
 
-* Cardinals form a `CanonicallyOrderedCommSemiring` with the aforementioned sum and product.
+* Cardinals form a `CanonicallyOrderedAdd` `OrderedCommSemiring` with the aforementioned sum and
+  product.
 * Cardinals form a `SuccOrder`. Use `Order.succ c` for the smallest cardinal greater than `c`.
 * The less than relation on cardinals forms a well-order.
 * Cardinals form a `ConditionallyCompleteLinearOrderBot`. Bounded sets for cardinals in universe
@@ -603,7 +604,6 @@ theorem lift_mul (a b : Cardinal.{u}) : lift.{v} (a * b) = lift.{v} a * lift.{v}
   inductionOn₂ a b fun _ _ =>
     mk_congr <| Equiv.ulift.trans (Equiv.prodCongr Equiv.ulift Equiv.ulift).symm
 
--- Porting note: Proof used to be simp, needed to remind simp that 1 + 1 = 2
 theorem lift_two : lift.{u, v} 2 = 2 := by simp [← one_add_one_eq_two]
 
 @[simp]
@@ -632,30 +632,28 @@ instance addLeftMono : AddLeftMono Cardinal :=
 instance addRightMono : AddRightMono Cardinal :=
   ⟨fun _ _ _ h => add_le_add' h le_rfl⟩
 
-instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardinal.{u} :=
-  { Cardinal.commSemiring,
-    Cardinal.partialOrder with
-    bot := 0
-    bot_le := Cardinal.zero_le
-    add_le_add_left := fun _ _ => add_le_add_left
-    exists_add_of_le := fun {a b} =>
-      inductionOn₂ a b fun α β ⟨⟨f, hf⟩⟩ =>
-        have : α ⊕ ((range f)ᶜ : Set β) ≃ β := by
-          classical
-          exact (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
-            Equiv.Set.sumCompl (range f)
-        ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
-    le_self_add := fun a _ => (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
-    eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
-      inductionOn₂ a b fun α β => by
-        simpa only [mul_def, mk_eq_zero_iff, isEmpty_prod] using id }
+instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
+  exists_add_of_le {a b} :=
+    inductionOn₂ a b fun α β ⟨⟨f, hf⟩⟩ =>
+      have : α ⊕ ((range f)ᶜ : Set β) ≃ β := by
+        classical
+        exact (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
+          Equiv.Set.sumCompl (range f)
+      ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
+  le_self_add a _ := (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
 
-instance : CanonicallyLinearOrderedAddCommMonoid Cardinal.{u} :=
-  { Cardinal.canonicallyOrderedCommSemiring, Cardinal.linearOrder with }
+instance orderedCommSemiring : OrderedCommSemiring Cardinal.{u} :=
+  CanonicallyOrderedAdd.toOrderedCommSemiring
 
--- Computable instance to prevent a non-computable one being found via the one above
-instance : CanonicallyOrderedAddCommMonoid Cardinal.{u} :=
-  { Cardinal.canonicallyOrderedCommSemiring with }
+instance : LinearOrderedAddCommMonoid Cardinal.{u} :=
+  { Cardinal.orderedCommSemiring, Cardinal.linearOrder with }
+
+instance orderBot : OrderBot Cardinal.{u} := inferInstance
+
+instance noZeroDivisors : NoZeroDivisors Cardinal.{u} where
+  eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
+    inductionOn₂ a b fun α β => by
+      simpa only [mul_def, mk_eq_zero_iff, isEmpty_prod] using id
 
 instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
   { Cardinal.commSemiring,
@@ -665,12 +663,12 @@ instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
 
 -- Computable instance to prevent a non-computable one being found via the one above
 instance : CommMonoidWithZero Cardinal.{u} :=
-  { Cardinal.canonicallyOrderedCommSemiring with }
+  { Cardinal.orderedCommSemiring with }
 
 -- Porting note: new
 -- Computable instance to prevent a non-computable one being found via the one above
 instance : CommMonoid Cardinal.{u} :=
-  { Cardinal.canonicallyOrderedCommSemiring with }
+  { Cardinal.orderedCommSemiring with }
 
 theorem zero_power_le (c : Cardinal.{u}) : (0 : Cardinal.{u}) ^ c ≤ 1 := by
   by_cases h : c = 0
@@ -789,7 +787,7 @@ theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
   simp_rw [succ_def, le_csInf_iff'' this, mem_setOf]
   intro b hlt
   rcases b, c with ⟨⟨β⟩, ⟨γ⟩⟩
-  cases' le_of_lt hlt with f
+  obtain ⟨f⟩ := le_of_lt hlt
   have : ¬Surjective f := fun hn => (not_le_of_lt hlt) (mk_le_of_surjective hn)
   simp only [Surjective, not_forall] at this
   rcases this with ⟨b, hb⟩
@@ -1098,7 +1096,7 @@ lemma exists_eq_of_iSup_eq_of_not_isSuccPrelimit
     (hω : ¬ IsSuccPrelimit ω)
     (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω := by
   subst h
-  refine (isLUB_csSup' ?_).exists_of_not_isSuccPrelimit hω
+  suffices BddAbove (range f) from (isLUB_csSup' this).mem_of_not_isSuccPrelimit hω
   contrapose! hω with hf
   rw [iSup, csSup_of_not_bddAbove hf, csSup_empty]
   exact isSuccPrelimit_bot
@@ -1675,6 +1673,8 @@ theorem infinite_iff {α : Type u} : Infinite α ↔ ℵ₀ ≤ #α := by
 lemma aleph0_le_mk_iff : ℵ₀ ≤ #α ↔ Infinite α := infinite_iff.symm
 lemma mk_lt_aleph0_iff : #α < ℵ₀ ↔ Finite α := by simp [← not_le, aleph0_le_mk_iff]
 
+@[simp] lemma mk_lt_aleph0 [Finite α] : #α < ℵ₀ := mk_lt_aleph0_iff.2 ‹_›
+
 @[simp]
 theorem aleph0_le_mk (α : Type u) [Infinite α] : ℵ₀ ≤ #α :=
   infinite_iff.1 ‹_›
@@ -1685,7 +1685,7 @@ theorem mk_eq_aleph0 (α : Type*) [Countable α] [Infinite α] : #α = ℵ₀ :=
 
 theorem denumerable_iff {α : Type u} : Nonempty (Denumerable α) ↔ #α = ℵ₀ :=
   ⟨fun ⟨h⟩ => mk_congr ((@Denumerable.eqv α h).trans Equiv.ulift.symm), fun h => by
-    cases' Quotient.exact h with f
+    obtain ⟨f⟩ := Quotient.exact h
     exact ⟨Denumerable.mk' <| f.trans Equiv.ulift⟩⟩
 
 theorem mk_denumerable (α : Type u) [Denumerable α] : #α = ℵ₀ :=

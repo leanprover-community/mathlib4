@@ -3,6 +3,7 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.CategoryTheory.Filtered.Connected
 import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
@@ -82,7 +83,9 @@ theorem RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := inferInstance
 
 theorem RepresentablyCoflat.id : RepresentablyCoflat (𝟭 C) := inferInstance
 
-set_option maxHeartbeats 400000 in
+-- this slow simp lemma causes a maxHeartbeats exception
+attribute [-simp] CostructuredArrow.right_eq_id in
+
 instance RepresentablyFlat.comp (G : D ⥤ E) [RepresentablyFlat F]
     [RepresentablyFlat G] : RepresentablyFlat (F ⋙ G) := by
   refine ⟨fun X => IsCofiltered.of_cone_nonempty.{0} _ (fun {J} _ _ H => ?_)⟩
@@ -94,7 +97,7 @@ instance RepresentablyFlat.comp (G : D ⥤ E) [RepresentablyFlat F]
   obtain ⟨c₂⟩ := IsCofiltered.cone_nonempty H₂
   simp only [H₂] at c₂
   exact ⟨⟨StructuredArrow.mk (c₁.pt.hom ≫ G.map c₂.pt.hom),
-    ⟨fun j => StructuredArrow.homMk (c₂.π.app j).right (by simp [← G.map_comp, (c₂.π.app j).w]),
+    ⟨fun j => StructuredArrow.homMk (c₂.π.app j).right (by simp [← G.map_comp]),
      fun j j' f => by simpa using (c₂.w f).symm⟩⟩⟩
 
 section
@@ -139,6 +142,12 @@ instance [RepresentablyCoflat F] : RepresentablyFlat F.op :=
 instance RepresentablyCoflat.comp (G : D ⥤ E) [RepresentablyCoflat F] [RepresentablyCoflat G] :
     RepresentablyCoflat (F ⋙ G) :=
   (representablyFlat_op_iff _).1 <| inferInstanceAs <| RepresentablyFlat (F.op ⋙ G.op)
+
+lemma final_of_representablyFlat [h : RepresentablyFlat F] : F.Final where
+  out _ := IsCofiltered.isConnected _
+
+lemma initial_of_representablyCoflat [h : RepresentablyCoflat F] : F.Initial where
+  out _ := IsFiltered.isConnected _
 
 end RepresentablyFlat
 
@@ -305,7 +314,7 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
         ι_colimMap, whiskerLeft_app]
       rfl)
 
-variable [ConcreteCategory.{u₁} E] [HasLimits E] [HasColimits E]
+variable [HasForget.{u₁} E] [HasLimits E] [HasColimits E]
 variable [ReflectsLimits (forget E)] [PreservesFilteredColimits (forget E)]
 variable [PreservesLimits (forget E)]
 

@@ -56,7 +56,7 @@ theorem IsIntegral.inv_mem_adjoin (int : IsIntegral R x) : x⁻¹ ∈ adjoin R {
 /-- The inverse of an integral element in a subalgebra of a division ring over a field
   also lies in that subalgebra. -/
 theorem IsIntegral.inv_mem (int : IsIntegral R x) (hx : x ∈ A) : x⁻¹ ∈ A :=
-  adjoin_le_iff.mpr (Set.singleton_subset_iff.mpr hx) int.inv_mem_adjoin
+  adjoin_le (Set.singleton_subset_iff.mpr hx) int.inv_mem_adjoin
 
 /-- An integral subalgebra of a division ring over a field is closed under inverses. -/
 theorem Algebra.IsIntegral.inv_mem [Algebra.IsIntegral R A] (hx : x ∈ A) : x⁻¹ ∈ A :=
@@ -132,8 +132,8 @@ theorem le_integralClosure_iff_isIntegral {S : Subalgebra R A} :
       Algebra.isIntegral_def.symm
 
 theorem Algebra.IsIntegral.adjoin {S : Set A} (hS : ∀ x ∈ S, IsIntegral R x) :
-    Algebra.IsIntegral R (Algebra.adjoin R S) :=
-  le_integralClosure_iff_isIntegral.mp <| adjoin_le_iff.mpr hS
+    Algebra.IsIntegral R (adjoin R S) :=
+  le_integralClosure_iff_isIntegral.mp <| adjoin_le hS
 
 theorem integralClosure_eq_top_iff : integralClosure R A = ⊤ ↔ Algebra.IsIntegral R A := by
   rw [← top_le_iff, le_integralClosure_iff_isIntegral,
@@ -338,7 +338,7 @@ lemma Polynomial.Monic.quotient_isIntegral {g : S[X]} (mon : g.Monic) {I : Ideal
           as_sum_range_C_mul_X_pow g', map_sum]
         simp only [Polynomial.C_mul', ← map_pow, map_smul]
       exact this ▸ (aeval_mem_adjoin_singleton S ((Ideal.Quotient.mk I) Polynomial.X))
-  exact fun a ↦ (eq_top ▸ (adjoin_le_integralClosure (mon.quotient_isIntegralElem h)))
+  exact fun a ↦ (eq_top ▸ adjoin_le_integralClosure <| mon.quotient_isIntegralElem h)
     Algebra.mem_top
 
 end
@@ -551,7 +551,7 @@ theorem Algebra.IsIntegral.tower_bot [Algebra R S] [Algebra R T] [Algebra S T]
     [h : Algebra.IsIntegral R T] : Algebra.IsIntegral R S where
   isIntegral := by
     apply RingHom.IsIntegral.tower_bot (algebraMap R S) (algebraMap S T)
-      (NoZeroSMulDivisors.algebraMap_injective S T)
+      (FaithfulSMul.algebraMap_injective S T)
     rw [← IsScalarTower.algebraMap_eq R S T]
     exact h.isIntegral
 

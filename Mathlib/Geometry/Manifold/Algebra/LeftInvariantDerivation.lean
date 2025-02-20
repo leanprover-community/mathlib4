@@ -90,20 +90,15 @@ theorem left_invariant' :
     𝒅ₕ (smoothLeftMul_one I g) (Derivation.evalAt (1 : G) ↑X) = Derivation.evalAt g ↑X :=
   left_invariant'' X g
 
--- Porting note: was `@[simp]` but `_root_.map_add` can prove it now
-protected theorem map_add : X (f + f') = X f + X f' := map_add X f f'
+protected theorem map_add : X (f + f') = X f + X f' := by simp
 
--- Porting note: was `@[simp]` but `_root_.map_zero` can prove it now
-protected theorem map_zero : X 0 = 0 := map_zero X
+protected theorem map_zero : X 0 = 0 := by simp
 
--- Porting note: was `@[simp]` but `_root_.map_neg` can prove it now
-protected theorem map_neg : X (-f) = -X f := map_neg X f
+protected theorem map_neg : X (-f) = -X f := by simp
 
--- Porting note: was `@[simp]` but `_root_.map_sub` can prove it now
-protected theorem map_sub : X (f - f') = X f - X f' := map_sub X f f'
+protected theorem map_sub : X (f - f') = X f - X f' := by simp
 
--- Porting note: was `@[simp]` but `_root_.map_smul` can prove it now
-protected theorem map_smul : X (r • f) = r • X f := map_smul X r f
+protected theorem map_smul : X (r • f) = r • X f := by simp
 
 @[simp]
 theorem leibniz : X (f * f') = f • X f' + f' • X f :=

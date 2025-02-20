@@ -178,7 +178,7 @@ variable (R A)
 protected def id : A →⋆ₙₐ[R] A :=
   { (1 : A →ₙₐ[R] A) with map_star' := fun _ => rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(NonUnitalStarAlgHom.id R A) = id :=
   rfl
 
@@ -413,7 +413,7 @@ variable (R A)
 protected def id : A →⋆ₐ[R] A :=
   { AlgHom.id _ _ with map_star' := fun _ => rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(StarAlgHom.id R A) = id :=
   rfl
 

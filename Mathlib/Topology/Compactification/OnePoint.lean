@@ -122,7 +122,6 @@ protected def rec {C : OnePoint X → Sort*} (infty : C ∞) (coe : ∀ x : X, C
 theorem isCompl_range_coe_infty : IsCompl (range ((↑) : X → OnePoint X)) {∞} :=
   isCompl_range_some_none X
 
--- Porting note: moved @[simp] to a new lemma
 theorem range_coe_union_infty : range ((↑) : X → OnePoint X) ∪ {∞} = univ :=
   range_some_union_none X
 
@@ -596,9 +595,10 @@ noncomputable def equivOfIsEmbeddingOfRangeEq :
     { toFun := fun p ↦ p.elim y f
       invFun := fun q ↦ if hq : q = y then ∞ else ↑(show q ∈ range f from by simpa [hy]).choose
       left_inv := fun p ↦ by
-        induction' p using OnePoint.rec with p
-        · simp
-        · have hp : f p ≠ y := by simpa [hy] using mem_range_self (f := f) p
+        induction p using OnePoint.rec with
+        | infty => simp
+        | coe p =>
+          have hp : f p ≠ y := by simpa [hy] using mem_range_self (f := f) p
           simpa [hp] using hf.injective (mem_range_self p).choose_spec
       right_inv := fun q ↦ by
         rcases eq_or_ne q y with rfl | hq

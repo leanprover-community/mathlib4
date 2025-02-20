@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Data.Bundle
 import Mathlib.Data.Set.Image
+import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.PartialHomeomorph
 import Mathlib.Topology.Order.Basic
 
@@ -261,7 +262,6 @@ variable [TopologicalSpace Z] [TopologicalSpace (TotalSpace F E)]
 `proj : Z → B` with fiber `F`, as a partial homeomorphism between `Z` and `B × F` defined between
 two sets of the form `proj ⁻¹' baseSet` and `baseSet × F`, acting trivially on the first coordinate.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 structure Trivialization (proj : Z → B) extends PartialHomeomorph Z (B × F) where
   baseSet : Set B
   open_baseSet : IsOpen baseSet
@@ -741,5 +741,51 @@ noncomputable def disjointUnion (e e' : Trivialization F proj) (H : Disjoint e.b
       exact fun h => H.le_bot ⟨h, hp'⟩
 
 end Piecewise
+
+section Lift
+
+/-- The local lifting through a Trivialization `T` from the base to the leaf containing `z`. -/
+def lift (T : Trivialization F proj) (z : Z) (b : B) : Z := T.invFun (b, (T z).2)
+
+variable {T : Trivialization F proj} {z : Z} {b : B}
+
+@[simp]
+theorem lift_self (he : proj z ∈ T.baseSet) : T.lift z (proj z) = z :=
+  symm_apply_mk_proj _ <| T.mem_source.2 he
+
+theorem proj_lift (hx : b ∈ T.baseSet) : proj (T.lift z b) = b :=
+  T.proj_symm_apply <| T.mem_target.2 hx
+
+/-- The restriction of `lift` to the source and base set of `T`, as a bundled continuous map. -/
+def liftCM (T : Trivialization F proj) : C(T.source × T.baseSet, T.source) where
+  toFun ex := ⟨T.lift ex.1 ex.2, T.map_target (by simp [mem_target])⟩
+  continuous_toFun := by
+    apply Continuous.subtype_mk
+    refine T.continuousOn_invFun.comp_continuous ?_ (by simp [mem_target])
+    apply continuous_prod_mk.mpr ⟨by fun_prop, continuous_snd.comp ?_⟩
+    exact T.continuousOn_toFun.comp_continuous (by fun_prop) (by simp)
+
+variable {ι : Type*} [TopologicalSpace ι] [LocallyCompactPair ι T.baseSet]
+  {γ : C(ι, T.baseSet)} {i : ι} {e : T.source}
+
+/-- Extension of `liftCM` to continuous maps taking values in `T.baseSet` (local version of
+homotopy lifting).-/
+def clift (T : Trivialization F proj) [LocallyCompactPair ι T.baseSet] :
+    C(T.source × C(ι, T.baseSet), C(ι, T.source)) := by
+  let Ψ : C((T.source × C(ι, T.baseSet)) × ι, C(ι, T.baseSet) × ι) :=
+    ⟨fun eγt => (eγt.1.2, eγt.2), by fun_prop⟩
+  refine ContinuousMap.curry <| T.liftCM.comp <| ⟨fun eγt => ⟨eγt.1.1, eγt.1.2 eγt.2⟩, ?_⟩
+  simpa using ⟨by fun_prop, ContinuousEval.continuous_eval.comp Ψ.continuous⟩
+
+@[simp]
+theorem clift_self (h : proj e.1 = γ i) :
+    T.clift (e, γ) i = e := by
+  have : proj e ∈ T.baseSet := by simp [h]
+  simp [clift, liftCM, ← h, lift_self, this]
+
+theorem proj_clift : proj (T.clift (e, γ) i) = γ i := by
+  simp [clift, liftCM, proj_lift]
+
+end Lift
 
 end Trivialization

@@ -73,7 +73,8 @@ instance : ContinuousOpenMapClass (α →CO β) α β where
 theorem toFun_eq_coe {f : α →CO β} : f.toFun = (f : α → β) :=
   rfl
 
-@[simp] -- Porting note: new, simpNF of `toFun_eq_coe`
+/-- `simp`-normal form of `toFun_eq_coe`. -/
+@[simp]
 theorem coe_toContinuousMap (f : α →CO β) : (f.toContinuousMap : α → β) = f := rfl
 
 @[ext]
@@ -101,7 +102,7 @@ protected def id : α →CO α :=
 instance : Inhabited (α →CO α) :=
   ⟨ContinuousOpenMap.id _⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(ContinuousOpenMap.id α) = id :=
   rfl
 

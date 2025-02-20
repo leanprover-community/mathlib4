@@ -233,7 +233,7 @@ theorem nhds_of_Ici_Iic [LinearOrder α] {b : α}
 
 theorem nhdsWithin_biUnion {ι} {I : Set ι} (hI : I.Finite) (s : ι → Set α) (a : α) :
     𝓝[⋃ i ∈ I, s i] a = ⨆ i ∈ I, 𝓝[s i] a :=
-  Set.Finite.induction_on hI (by simp) fun _ _ hT ↦ by
+  Set.Finite.induction_on _ hI (by simp) fun _ _ hT ↦ by
     simp only [hT, nhdsWithin_union, iSup_insert, biUnion_insert]
 
 theorem nhdsWithin_sUnion {S : Set (Set α)} (hS : S.Finite) (a : α) :
@@ -404,6 +404,12 @@ theorem dense_pi {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i
     (I : Set ι) (hs : ∀ i ∈ I, Dense (s i)) : Dense (pi I s) := by
   simp only [dense_iff_closure_eq, closure_pi_set, pi_congr rfl fun i hi => (hs i hi).closure_eq,
     pi_univ]
+
+theorem DenseRange.piMap {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalSpace (Y i)]
+    {f : (i : ι) → (X i) → (Y i)} (hf : ∀ i, DenseRange (f i)):
+    DenseRange (Pi.map f) := by
+  rw [DenseRange, Set.range_piMap]
+  exact dense_pi Set.univ (fun i _ => hf i)
 
 theorem eventuallyEq_nhdsWithin_iff {f g : α → β} {s : Set α} {a : α} :
     f =ᶠ[𝓝[s] a] g ↔ ∀ᶠ x in 𝓝 a, x ∈ s → f x = g x :=
@@ -1362,7 +1368,7 @@ theorem ContinuousOn.if' {s : Set α} {p : α → Prop} {f g : α → β} [∀ a
   by_cases hx' : x ∈ frontier { a | p a }
   · exact (hpf x ⟨hx, hx'⟩).piecewise_nhdsWithin (hpg x ⟨hx, hx'⟩)
   · rw [← inter_univ s, ← union_compl_self { a | p a }, inter_union_distrib_left] at hx ⊢
-    cases' hx with hx hx
+    rcases hx with hx | hx
     · apply ContinuousWithinAt.union
       · exact (hf x hx).congr (fun y hy => if_pos hy.2) (if_pos hx.2)
       · have : x ∉ closure { a | p a }ᶜ := fun h => hx' ⟨subset_closure hx.2, by
@@ -1494,3 +1500,42 @@ lemma ContinuousOn.union_continuousAt
   continuousOn_of_forall_continuousAt <| fun _ hx => hx.elim
   (fun h => ContinuousWithinAt.continuousAt (continuousWithinAt hs h) <| IsOpen.mem_nhds s_op h)
   (ht _)
+
+open Classical in
+/-- If a function is continuous on two closed sets, it is also continuous on their union. -/
+theorem ContinuousOn.union_isClosed {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    {s t : Set X} (hs : IsClosed s) (ht : IsClosed t) {f : X → Y} (hfs : ContinuousOn f s)
+    (hft : ContinuousOn f t) : ContinuousOn f (s ∪ t) := by
+  refine fun x hx ↦ .union ?_ ?_
+  · refine if hx : x ∈ s then hfs x hx else continuousWithinAt_of_not_mem_closure ?_
+    rwa [hs.closure_eq]
+  · refine if hx : x ∈ t then hft x hx else continuousWithinAt_of_not_mem_closure ?_
+    rwa [ht.closure_eq]
+
+/-- If `f` is continuous on some neighbourhood `s'` of `s` and `f` maps `s` to `t`,
+the preimage of a set neighbourhood of `t` is a set neighbourhood of `s`. -/
+-- See `Continuous.tendsto_nhdsSet` for a special case.
+theorem ContinuousOn.tendsto_nhdsSet {f : α → β} {s s' : Set α} {t : Set β}
+    (hf : ContinuousOn f s') (hs' : s' ∈ 𝓝ˢ s) (hst : MapsTo f s t) : Tendsto f (𝓝ˢ s) (𝓝ˢ t) := by
+  obtain ⟨V, hV, hsV, hVs'⟩ := mem_nhdsSet_iff_exists.mp hs'
+  refine ((hasBasis_nhdsSet s).tendsto_iff (hasBasis_nhdsSet t)).mpr fun U hU ↦
+    ⟨V ∩ f ⁻¹' U, ?_, fun _ ↦ ?_⟩
+  · exact ⟨(hf.mono hVs').isOpen_inter_preimage hV hU.1,
+      subset_inter hsV (hst.mono Subset.rfl hU.2)⟩
+  · intro h
+    rw [← mem_preimage]
+    exact mem_of_mem_inter_right h
+
+/-- Preimage of a set neighborhood of `t` under a continuous map `f` is a set neighborhood of `s`
+provided that `f` maps `s` to `t`. -/
+theorem Continuous.tendsto_nhdsSet {f : α → β} {t : Set β} (hf : Continuous f)
+    (hst : MapsTo f s t) : Tendsto f (𝓝ˢ s) (𝓝ˢ t) :=
+  hf.continuousOn.tendsto_nhdsSet univ_mem hst
+
+lemma Continuous.tendsto_nhdsSet_nhds
+    {b : β} {f : α → β} (h : Continuous f) (h' : EqOn f (fun _ ↦ b) s) :
+    Tendsto f (𝓝ˢ s) (𝓝 b) := by
+  rw [← nhdsSet_singleton]
+  exact h.tendsto_nhdsSet h'
+
+set_option linter.style.longFile 1700

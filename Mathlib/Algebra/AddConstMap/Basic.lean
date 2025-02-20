@@ -3,6 +3,7 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Action.End
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.Module.NatInt
@@ -32,7 +33,8 @@ assert_not_exists Finset
 
 open Function Set
 
-/-- A bundled map `f : G → H` such that `f (x + a) = f x + b` for all `x`.
+/-- A bundled map `f : G → H` such that `f (x + a) = f x + b` for all `x`,
+denoted as `f: G →+c[a, b] H`.
 
 One can think about `f` as a lift to `G` of a map between two `AddCircle`s. -/
 structure AddConstMap (G H : Type*) [Add G] [Add H] (a : G) (b : H) where
@@ -87,7 +89,7 @@ theorem map_add_one [AddMonoidWithOne G] [Add H] [AddConstMapClass F G H 1 b]
 @[scoped simp]
 theorem map_add_ofNat' [AddMonoidWithOne G] [AddMonoid H] [AddConstMapClass F G H 1 b]
     (f : F) (x : G) (n : ℕ) [n.AtLeastTwo] :
-    f (x + ofNat(n)) = f x + (OfNat.ofNat n : ℕ) • b :=
+    f (x + ofNat(n)) = f x + (ofNat(n) : ℕ) • b :=
   map_add_nat' f x n
 
 theorem map_add_nat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
@@ -95,7 +97,7 @@ theorem map_add_nat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass 
 
 theorem map_add_ofNat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
     (f : F) (x : G) (n : ℕ) [n.AtLeastTwo] :
-    f (x + OfNat.ofNat n) = f x + OfNat.ofNat n := map_add_nat f x n
+    f (x + ofNat(n)) = f x + ofNat(n) := map_add_nat f x n
 
 @[scoped simp]
 theorem map_const [AddZeroClass G] [Add H] [AddConstMapClass F G H a b] (f : F) :
@@ -118,7 +120,7 @@ theorem map_nat' [AddMonoidWithOne G] [AddMonoid H] [AddConstMapClass F G H 1 b]
 
 theorem map_ofNat' [AddMonoidWithOne G] [AddMonoid H] [AddConstMapClass F G H 1 b]
     (f : F) (n : ℕ) [n.AtLeastTwo] :
-    f (OfNat.ofNat n) = f 0 + (OfNat.ofNat n : ℕ) • b :=
+    f (ofNat(n)) = f 0 + (ofNat(n) : ℕ) • b :=
   map_nat' f n
 
 theorem map_nat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
@@ -126,7 +128,7 @@ theorem map_nat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G 
 
 theorem map_ofNat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
     (f : F) (n : ℕ) [n.AtLeastTwo] :
-    f (OfNat.ofNat n) = f 0 + OfNat.ofNat n := map_nat f n
+    f ofNat(n) = f 0 + ofNat(n) := map_nat f n
 
 @[scoped simp]
 theorem map_const_add [AddCommSemigroup G] [Add H] [AddConstMapClass F G H a b]
@@ -148,7 +150,7 @@ theorem map_nat_add' [AddCommMonoidWithOne G] [AddMonoid H] [AddConstMapClass F 
 
 theorem map_ofNat_add' [AddCommMonoidWithOne G] [AddMonoid H] [AddConstMapClass F G H 1 b]
     (f : F) (n : ℕ) [n.AtLeastTwo] (x : G) :
-    f (OfNat.ofNat n + x) = f x + OfNat.ofNat n • b :=
+    f (ofNat(n) + x) = f x + ofNat(n) • b :=
   map_nat_add' f n x
 
 theorem map_nat_add [AddCommMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
@@ -156,7 +158,7 @@ theorem map_nat_add [AddCommMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapCl
 
 theorem map_ofNat_add [AddCommMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
     (f : F) (n : ℕ) [n.AtLeastTwo] (x : G) :
-    f (OfNat.ofNat n + x) = f x + OfNat.ofNat n :=
+    f (ofNat(n) + x) = f x + ofNat(n) :=
   map_nat_add f n x
 
 @[scoped simp]
@@ -181,7 +183,7 @@ theorem map_sub_nat' [AddGroupWithOne G] [AddGroup H] [AddConstMapClass F G H 1 
 @[scoped simp]
 theorem map_sub_ofNat' [AddGroupWithOne G] [AddGroup H] [AddConstMapClass F G H 1 b]
     (f : F) (x : G) (n : ℕ) [n.AtLeastTwo] :
-    f (x - ofNat(n)) = f x - OfNat.ofNat n • b :=
+    f (x - ofNat(n)) = f x - ofNat(n) • b :=
   map_sub_nat' f x n
 
 @[scoped simp]

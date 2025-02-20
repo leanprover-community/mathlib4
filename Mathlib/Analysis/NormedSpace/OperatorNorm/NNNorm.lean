@@ -86,14 +86,16 @@ theorem opNNNorm_le_iff {f : E →SL[σ₁₂] F} {C : ℝ≥0} : ‖f‖₊ ≤
 theorem isLeast_opNNNorm : IsLeast {C : ℝ≥0 | ∀ x, ‖f x‖₊ ≤ C * ‖x‖₊} ‖f‖₊ := by
   simpa only [← opNNNorm_le_iff] using isLeast_Ici
 
-
 theorem opNNNorm_comp_le [RingHomIsometric σ₁₃] (f : E →SL[σ₁₂] F) : ‖h.comp f‖₊ ≤ ‖h‖₊ * ‖f‖₊ :=
   opNorm_comp_le h f
 
+lemma opENorm_comp_le [RingHomIsometric σ₁₃] (f : E →SL[σ₁₂] F) : ‖h.comp f‖ₑ ≤ ‖h‖ₑ * ‖f‖ₑ := by
+  simpa [enorm, ← ENNReal.coe_mul] using opNNNorm_comp_le h f
 
 theorem le_opNNNorm : ‖f x‖₊ ≤ ‖f‖₊ * ‖x‖₊ :=
   f.le_opNorm x
 
+lemma le_opENorm : ‖f x‖ₑ ≤ ‖f‖ₑ * ‖x‖ₑ := by dsimp [enorm]; exact mod_cast le_opNNNorm ..
 
 theorem nndist_le_opNNNorm (x y : E) : nndist (f x) (f y) ≤ ‖f‖₊ * nndist x y :=
   dist_le_opNorm f x y

@@ -54,8 +54,7 @@ set multiplication, set addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists OrderedAddCommMonoid
+assert_not_exists MonoidWithZero OrderedAddCommMonoid
 
 library_note "pointwise nat action"/--
 Pointwise monoids (`Set`, `Finset`, `Filter`) have derived pointwise actions of the form
@@ -1176,10 +1175,12 @@ theorem univ_pow : ∀ {n : ℕ}, n ≠ 0 → (univ : Set α) ^ n = univ
 protected theorem _root_.IsUnit.set : IsUnit a → IsUnit ({a} : Set α) :=
   IsUnit.map (singletonMonoidHom : α →* Set α)
 
-@[to_additive]
+@[to_additive nsmul_prod]
 lemma prod_pow [Monoid β] (s : Set α) (t : Set β) : ∀ n, (s ×ˢ t) ^ n = (s ^ n) ×ˢ (t ^ n)
   | 0 => by simp
   | n + 1 => by simp [pow_succ, prod_pow _ _ n]
+
+@[deprecated (since := "2025-02-17")] alias sum_nsmul := nsmul_prod
 
 end Monoid
 

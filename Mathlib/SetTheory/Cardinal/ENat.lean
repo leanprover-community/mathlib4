@@ -28,6 +28,8 @@ Since it is not registered as a coercion, the argument about delaboration does n
 set theory, cardinals, extended natural numbers
 -/
 
+assert_not_exists Field
+
 open Function Set
 universe u v
 
@@ -253,6 +255,10 @@ lemma toENat_nat (n : ℕ) : toENat n = n := map_natCast _ n
     toENat a = ofNat(n) ↔ a = OfNat.ofNat n := toENat_eq_nat
 
 @[simp] lemma toENat_eq_top {a : Cardinal} : toENat a = ⊤ ↔ ℵ₀ ≤ a := enat_gc.u_eq_top
+
+lemma toENat_ne_top {a : Cardinal} : toENat a ≠ ⊤ ↔ a < ℵ₀ := by simp
+
+@[simp] lemma toENat_lt_top {a : Cardinal} : toENat a < ⊤ ↔ a < ℵ₀ := by simp [lt_top_iff_ne_top]
 
 @[simp]
 theorem toENat_lift {a : Cardinal.{v}} : toENat (lift.{u} a) = toENat a := by

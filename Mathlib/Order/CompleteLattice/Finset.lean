@@ -15,8 +15,7 @@ See also `Mathlib/Data/Finset/Lattice.lean`, which is concerned with folding bin
 operations over a finset.
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists MonoidWithZero
+assert_not_exists OrderedCommMonoid MonoidWithZero
 
 open Function Multiset OrderDual
 

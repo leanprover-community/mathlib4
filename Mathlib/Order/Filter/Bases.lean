@@ -5,6 +5,7 @@ Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Data.Prod.PProd
 import Mathlib.Order.Filter.Finite
+import Mathlib.Order.Filter.Map
 
 /-!
 # Filter bases
@@ -197,7 +198,7 @@ protected theorem mem_filter_iff (h : IsBasis p s) {U : Set α} :
     exists_exists_and_eq_and]
 
 theorem filter_eq_generate (h : IsBasis p s) : h.filter = generate { U | ∃ i, p i ∧ s i = U } := by
-  erw [h.filterBasis.generate]; rfl
+  rw [IsBasis.filter, ← h.filterBasis.generate, IsBasis.filterBasis]
 
 end IsBasis
 
@@ -826,6 +827,11 @@ theorem mem_prod_self_iff {s} : s ∈ la ×ˢ la ↔ ∃ t ∈ la, t ×ˢ t ⊆ 
 lemma eventually_prod_self_iff {r : α → α → Prop} :
     (∀ᶠ x in la ×ˢ la, r x.1 x.2) ↔ ∃ t ∈ la, ∀ x ∈ t, ∀ y ∈ t, r x y :=
   mem_prod_self_iff.trans <| by simp only [prod_subset_iff, mem_setOf_eq]
+
+/-- A version of `eventually_prod_self_iff` that is more suitable for forward rewriting. -/
+lemma eventually_prod_self_iff' {r : α × α → Prop} :
+    (∀ᶠ x in la ×ˢ la, r x) ↔ ∃ t ∈ la, ∀ x ∈ t, ∀ y ∈ t, r (x, y) :=
+  Iff.symm eventually_prod_self_iff.symm
 
 theorem HasAntitoneBasis.prod {ι : Type*} [LinearOrder ι] {f : Filter α} {g : Filter β}
     {s : ι → Set α} {t : ι → Set β} (hf : HasAntitoneBasis f s) (hg : HasAntitoneBasis g t) :

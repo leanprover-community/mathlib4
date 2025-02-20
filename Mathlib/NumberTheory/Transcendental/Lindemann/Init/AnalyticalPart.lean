@@ -82,7 +82,7 @@ private theorem P_le_aux (f : ℕ → ℂ[X]) (s : ℂ) (c : ℝ)
     apply (re_le_abs _).trans
     rw [← norm_eq_abs, ← norm_eq_abs, norm_neg, norm_smul, Real.norm_of_nonneg hx.1.le]
     exact mul_le_of_le_one_left (norm_nonneg _) hx.2
-  · rw [← _root_.abs_pow, norm_eq_abs]
+  · rw [← abs_pow, norm_eq_abs]
     exact (hc p x hx).trans (le_abs_self _)
 
 /--
@@ -132,7 +132,7 @@ private theorem exp_polynomial_approx_aux (f : ℤ[X]) (s : ℂ) :
     Complex.abs_pow, real_smul, map_mul, abs_ofReal, ← eval₂_eq_eval_map, ← aeval_def, abs_mul,
     Complex.abs_abs, mul_pow, abs_of_pos hx.1]
   refine mul_le_mul_of_nonneg_right ?_ (pow_nonneg (Complex.abs.nonneg _) _)
-  rw [← mul_pow, _root_.abs_of_nonneg (by positivity), max_def]
+  rw [← mul_pow, abs_of_nonneg (by positivity), max_def]
   split_ifs with hx1
   · rw [one_pow]
     exact pow_le_one₀ (mul_nonneg hx.1.le (Complex.abs.nonneg _)) hx1

@@ -123,7 +123,7 @@ theorem IsDiag.kronecker [MulZeroClass α] {A : Matrix m m α} {B : Matrix n n �
     (hB : B.IsDiag) : (A ⊗ₖ B).IsDiag := by
   rintro ⟨a, b⟩ ⟨c, d⟩ h
   simp only [Prod.mk.inj_iff, Ne, not_and_or] at h
-  cases' h with hac hbd
+  rcases h with hac | hbd
   · simp [hA hac]
   · simp [hB hbd]
 

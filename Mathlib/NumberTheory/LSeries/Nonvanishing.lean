@@ -216,7 +216,7 @@ variable (χ : DirichletCharacter ℂ N)
 private lemma re_log_comb_nonneg' {a : ℝ} (ha₀ : 0 ≤ a) (ha₁ : a < 1) {z : ℂ} (hz : ‖z‖ = 1) :
       0 ≤ 3 * (-log (1 - a)).re + 4 * (-log (1 - a * z)).re + (-log (1 - a * z ^ 2)).re := by
   have hac₀ : ‖(a : ℂ)‖ < 1 := by
-    simp only [norm_eq_abs, abs_ofReal, _root_.abs_of_nonneg ha₀, ha₁]
+    simp only [norm_eq_abs, abs_ofReal, abs_of_nonneg ha₀, ha₁]
   have hac₁ : ‖a * z‖ < 1 := by rwa [norm_mul, hz, mul_one]
   have hac₂ : ‖a * z ^ 2‖ < 1 := by rwa [norm_mul, norm_pow, hz, one_pow, mul_one]
   rw [← ((hasSum_re <| hasSum_taylorSeries_neg_log hac₀).mul_left 3).add
@@ -374,11 +374,8 @@ private lemma LFunction_ne_zero_of_not_quadratic_or_ne_one {t : ℝ} (h : χ ^ 2
   -- go via absolute value to translate into a statement over `ℝ`
   replace H := (H₀.trans H).norm_right
   simp only [norm_eq_abs, abs_ofReal] at H
-  #adaptation_note
-  /--
-  After https://github.com/leanprover/lean4/pull/6024
-  we needed to add `(F' := ℝ)` to `H.of_norm_right`.
-  -/
+  #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  we needed to add `(F' := ℝ)` to `H.of_norm_right`. -/
   exact isLittleO_irrefl (.of_forall (fun _ ↦ one_ne_zero)) <|
     (H.of_norm_right (F' := ℝ)).trans_isLittleO <| isLittleO_id_one.mono nhdsWithin_le_nhds
 

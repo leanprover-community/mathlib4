@@ -38,8 +38,7 @@ the `Add` instance as noncomputable. This design difference is independent of th
 definitions, or introduce two more definitions for the other combinations of decisions.
 -/
 
-assert_not_exists Finset.prod
-assert_not_exists Submonoid
+assert_not_exists Finset.prod Submonoid
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 
@@ -731,9 +730,9 @@ theorem erase_add_single (i : ι) (f : Π₀ i, β i) : f.erase i + single i (f 
 
 protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (h0 : p 0)
     (ha : ∀ (i b) (f : Π₀ i, β i), f i = 0 → b ≠ 0 → p f → p (single i b + f)) : p f := by
-  cases' f with f s
+  obtain ⟨f, s⟩ := f
   induction' s using Trunc.induction_on with s
-  cases' s with s H
+  obtain ⟨s, H⟩ := s
   induction' s using Multiset.induction_on with i s ih generalizing f
   · have : f = 0 := funext fun i => (H i).resolve_left (Multiset.not_mem_zero _)
     subst this
@@ -743,8 +742,8 @@ protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (
       Function.comp, Subtype.coe_mk]
     have H2 : ∀ j, j ∈ s ∨ ite (j = i) 0 (f j) = 0 := by
       intro j
-      cases' H j with H2 H2
-      · cases' Multiset.mem_cons.1 H2 with H3 H3
+      rcases H j with H2 | H2
+      · rcases Multiset.mem_cons.1 H2 with H3 | H3
         · right; exact if_pos H3
         · left; exact H3
       right
@@ -757,7 +756,7 @@ protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (
   have H3 : single i _ + _ = (⟨f, Trunc.mk ⟨i ::ₘ s, H⟩⟩ : Π₀ i, β i) := single_add_erase _ _
   rw [← H3]
   change p (single i (f i) + _)
-  cases' Classical.em (f i = 0) with h h
+  rcases Classical.em (f i = 0) with h | h
   · rw [h, single_zero, zero_add]
     exact H2
   refine ha _ _ _ ?_ h H2
@@ -795,7 +794,7 @@ theorem mk_sub [∀ i, AddGroup (β i)] {s : Finset ι} {x y : ∀ i : (↑s : S
   ext fun i => by simp only [sub_apply, mk_apply]; split_ifs <;> [rfl; rw [sub_zero]]
 
 /-- If `s` is a subset of `ι` then `mk_addGroupHom s` is the canonical additive
-group homomorphism from $\prod_{i\in s}\beta_i$ to $\prod_{\mathtt{i : \iota}}\beta_i.$-/
+group homomorphism from $\prod_{i\in s}\beta_i$ to $\prod_{\mathtt{i : \iota}}\beta_i$. -/
 def mkAddGroupHom [∀ i, AddGroup (β i)] (s : Finset ι) :
     (∀ i : (s : Set ι), β ↑i) →+ Π₀ i : ι, β i where
   toFun := mk s
@@ -830,7 +829,7 @@ theorem support_mk'_subset {f : ∀ i, β i} {s : Multiset ι} {h} :
 
 @[simp]
 theorem mem_support_toFun (f : Π₀ i, β i) (i) : i ∈ f.support ↔ f i ≠ 0 := by
-  cases' f with f s
+  obtain ⟨f, s⟩ := f
   induction' s using Trunc.induction_on with s
   dsimp only [support, Trunc.lift_mk]
   rw [Finset.mem_filter, Multiset.mem_toFinset, coe_mk']
@@ -989,7 +988,7 @@ theorem subtypeDomain_def (f : Π₀ i, β i) :
     f.subtypeDomain p = mk (f.support.subtype p) fun i => f i := by
   ext i; by_cases h2 : f i ≠ 0 <;> try simp at h2; dsimp; simp [h2]
 
-@[simp, nolint simpNF] -- Porting note: simpNF claims that LHS does not simplify, but it does
+@[simp]
 theorem support_subtypeDomain {f : Π₀ i, β i} :
     (subtypeDomain p f).support = f.support.subtype p := by
   ext i
@@ -1185,7 +1184,7 @@ noncomputable def equivProdDFinsupp [∀ i, Zero (α i)] :
   toFun f := (f none, comapDomain some (Option.some_injective _) f)
   invFun f := f.2.extendWith f.1
   left_inv f := by
-    ext i; cases' i with i
+    ext i; obtain - | i := i
     · rw [extendWith_none]
     · rw [extendWith_some, comapDomain_apply]
   right_inv x := by
