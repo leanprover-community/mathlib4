@@ -160,8 +160,6 @@ noncomputable def BoundaryManifoldData.euclideanHalfSpace_self (n : ℕ) (k : �
   isImmersion hk x := sorry
   range_eq_boundary := sorry
 
--- missing mathlib lemma: IsEmbedding.sum_elim (if true), will not add for now
-
 variable {X Y Z W : Type*} [TopologicalSpace X] [TopologicalSpace Y]
   [TopologicalSpace Z] [TopologicalSpace W]
 
@@ -294,17 +292,35 @@ def BoundaryManifoldData.of_Euclidean_halfSpace (n : ℕ) (k : ℕ∞)
     {M : Type} [TopologicalSpace M] [ChartedSpace (EuclideanHalfSpace (n + 1)) M]
     [IsManifold (𝓡∂ (n + 1)) k M] : BoundaryManifoldData M (𝓡∂ (n + 1)) k (𝓡 n):= sorry
 
+-- It seems we actually need this lemma after all.
+lemma IsEmbedding.sum_elim {f : X → Z} {g : Y → Z}
+    (hf : IsEmbedding f) (hg : IsEmbedding g) (h : Function.Injective (Sum.elim f g)) :
+    IsEmbedding (Sum.elim f g) := by
+  constructor; swap; · exact h
+  rw [@isInducing_iff_nhds]
+  intro s
+  cases s with
+  | inl x =>
+    simp only [Sum.elim_inl]
+    sorry
+  | inr x => sorry
+  -- apply IsInducing.sum_elim
+  --rw [isOpenEmbedding_iff_continuous_injective_isOpenMap] at hf hg ⊢
+  --exact ⟨hf.1.sum_elim hg.1, h, hf.2.2.sum_elim hg.2.2⟩
+
 -- TODO: need bd and bd' to have the same data E₀ and H₀!
 /-- If `M` and `M'` are modelled on the same model `I` and have nice boundary over `I₀`,
 their disjoint union also does. -/
 -- XXX: for bordism groups, do I need to prescribe the model on the boundary also?
-noncomputable def BoundaryManifoldData.sum [Nonempty H] -- remove hypothesis!
+noncomputable def BoundaryManifoldData.sum
     (bd : BoundaryManifoldData M I k I₀) (bd' : BoundaryManifoldData M' I k I₀) :
     BoundaryManifoldData (M ⊕ M') I k I₀ where
   M₀ := bd.M₀ ⊕ bd'.M₀
   isManifold := sorry -- TODO: investigate where this fails to be inferred!
   f := Sum.map bd.f bd'.f
-  isEmbedding := sorry -- should be in mathlib
+  isEmbedding := by
+    apply IsEmbedding.sum_elim
+    sorry -- should be in mathlib
   contMDiff := bd.contMDiff.sum_map bd'.contMDiff
   isImmersion := sorry
   range_eq_boundary := sorry -- easy, using boundary_disjointUnion
