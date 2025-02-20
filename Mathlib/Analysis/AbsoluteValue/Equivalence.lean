@@ -223,7 +223,7 @@ open Filter in
 - $v_j(a) < 1$ for $j \neq i$;
 - $w(a) = 1$ and $w(b) < 1$;
 
-Then we can find a sequence of values that tends to $\infty$
+There is a sequence of values that tends to $\infty$
 under $v_i$, tends to $0$ under $v_j$, and is always $< 1$ under $w$.
 An example sequence is given by $a ^ n \cdot b$.
 -/
@@ -249,7 +249,7 @@ open scoped Classical in
 - $v_j(a) < 1$ for $j \neq i$;
 - $w(a) = 1$ and $w(b) < 1$;
 
-Then there is a $k\in F$ such that $1 < v_i(k)$ while $v_j(k) < 1$ for all
+There is a $k\in F$ such that $1 < v_i(k)$ while $v_j(k) < 1$ for all
 $j \neq i$ and $w(k) < 1$.
 This is given by taking large enough values of a witness sequence to
 `exists_tendsto_zero_tendsto_atTop_tendsto_const` (for example $a ^ n \cdot b$ works).
@@ -277,7 +277,7 @@ open Filter in
 - $v_j(a) < 1$ for $j \neq i$;
 - $1 < w(a)$;
 
-Then there is a sequence of elements in $F$ that tendsto $v_i b$ under $v_i$, tends to $0$ under
+There is a sequence of elements in $F$ that tendsto $v_i b$ under $v_i$, tends to $0$ under
 $v_j$ for $j ≠ i$, and tends to $w b$ under $w$.
 Such a sequence is given by $\frac{1}{1 + a ^ {- n}}$.
 -/
@@ -306,7 +306,7 @@ open scoped Classical in
 - $v_j(a) < 1$ for $j \neq i$;
 - $1 < w(a)$;
 
-Then there is a $k ∈ F$ such that $1 < v_i(k)$ while $v_j(k) < 1$ for all
+There is a $k ∈ F$ such that $1 < v_i(k)$ while $v_j(k) < 1$ for all
 $j ≠ i$ and $w(k) < 1$. This is given by taking large enough values of a witness sequence to
 `exists_tendsto_const_tendsto_zero_tendsto_const` (for example $\frac{1}{1 + a ^ {- n}}$ works).
 
@@ -334,7 +334,7 @@ theorem exists_one_lt_lt_one_lt_one_of_one_lt
 
 /--
 Let $v_1, ..., v_k$ be a collection of at least two non-trivial and pairwise inequivalent
-absolute values on a field $F$. Then there is an $a ∈ F$ such that $1 < v_1(a)$ while
+absolute values on a field $F$. There is an $a ∈ F$ such that $1 < v_1(a)$ while
 $v_j(a) < 1$ for all other $j ≠ 1$.
 -/
 theorem exists_one_lt_lt_one {n : ℕ} {v : Fin (n + 2) → AbsoluteValue F ℝ}
