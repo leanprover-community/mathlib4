@@ -11,6 +11,10 @@ import Mathlib.Data.Fintype.Card
 
 /-!
 # Tutte's theorem (work-in-progress)
+
+## Main definitions
+* `SimpleGraph.TutteViolator G u` is a set of vertices `u` which certifies non-existance of a
+  perfect matching.
 -/
 namespace SimpleGraph
 
@@ -20,9 +24,6 @@ variable {V : Type u} {G G' : SimpleGraph V} {u x v' w : V}
 /-- A set certifying non-existance of a perfect matching -/
 def TutteViolator (G: SimpleGraph V) (u : Set V) : Prop :=
   u.ncard < {c : ((⊤ : G.Subgraph).deleteVerts u).coe.ConnectedComponent | Odd (c.supp.ncard)}.ncard
-
-lemma quot_out_inj (r : V → V → Prop): Function.Injective (@Quot.out _ r) :=
-  fun v w h ↦ by simpa [Quot.out_eq] using (congrArg _ h : Quot.mk r v.out = Quot.mk r w.out)
 
 --Temporarily inlined from #20705, will be removed before merge
 theorem IsClique.of_induce {S : Subgraph G} {F : Set V} {A : Set F}
@@ -34,27 +35,27 @@ theorem IsClique.of_induce {S : Subgraph G} {F : Set V} {A : Set F}
 /-- This lemma states that a graph in which the universal vertices do not violate the
 Tutte-condition, if the graph decomposes into cliques, there exists a matching that covers
 everything except some universal vertices. It is marked private, because
-it is strickly weaker than TODO: name here -/
+it is strickly weaker than `IsPerfectMatching.exists_of_isClique_supp` -/
 private lemma IsMatching.exists_verts_compl_subset_universalVerts [Fintype V]
     (h : ¬TutteViolator G G.universalVerts)
     (h' : ∀ (K : G.deleteUniversalVerts.coe.ConnectedComponent),
     G.deleteUniversalVerts.coe.IsClique K.supp) :
     ∃ (M : Subgraph G), M.IsMatching ∧ M.vertsᶜ ⊆ G.universalVerts := by
   classical
+  have hrep := ConnectedComponent.Represents.image_out
+      G.deleteUniversalVerts.coe.oddComponents
   -- First we match one node from each odd component to a universal vertex
   obtain ⟨t, ht, M1, hM1⟩ := Subgraph.IsMatching.exists_of_universalVerts
       (disjoint_image_val_universalVerts _).symm (by
         simp only [TutteViolator, not_lt] at h
-        rwa [Set.ncard_image_of_injective _ Subtype.val_injective,
-        Set.ncard_image_of_injective _ (quot_out_inj _)])
+        rwa [Set.ncard_image_of_injective _ Subtype.val_injective, hrep.ncard_eq])
   -- Then we match all other nodes in components internally
   have compMatching (K : G.deleteUniversalVerts.coe.ConnectedComponent) :
       ∃ M : Subgraph G, M.verts = Subtype.val '' K.supp \ M1.verts ∧ M.IsMatching := by
     have : G.IsClique (Subtype.val '' K.supp \ M1.verts) :=
       ((h' K).of_induce).subset Set.diff_subset
     rw [← this.even_iff_matches (Set.toFinite _), hM1.1]
-    exact even_ncard_supp_sdiff_rep_union _ ht (ConnectedComponent.Represents.image_out
-      G.deleteUniversalVerts.coe.oddComponents)
+    exact even_ncard_supp_sdiff_rep_union _ ht hrep
   let M2 : Subgraph G := (⨆ (K : G.deleteUniversalVerts.coe.ConnectedComponent),
     (compMatching K).choose)
   have hM2 : M2.IsMatching := by
