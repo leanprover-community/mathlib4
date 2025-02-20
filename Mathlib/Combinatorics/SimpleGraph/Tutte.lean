@@ -30,7 +30,7 @@ Tutte-condition, if the graph decomposes into cliques, there exists a matching t
 everything except some universal vertices. It is marked private, because
 it is strictly weaker than `IsPerfectMatching.exists_of_isClique_supp` -/
 private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
-    (h : ¬TutteViolator G G.universalVerts)
+    (h : ¬IsTutteViolator G G.universalVerts)
     (h' : ∀ (K : G.deleteUniversalVerts.coe.ConnectedComponent),
     G.deleteUniversalVerts.coe.IsClique K.supp) :
     ∃ M : Subgraph G, M.IsMatching ∧ M.vertsᶜ ⊆ G.universalVerts := by
@@ -40,7 +40,7 @@ private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
   -- First we match one node from each odd component to a universal vertex
   obtain ⟨t, ht, M1, hM1⟩ := Subgraph.IsMatching.exists_of_universalVerts
       (disjoint_image_val_universalVerts _).symm (by
-        simp only [TutteViolator, not_lt] at h
+        simp only [IsTutteViolator, not_lt] at h
         rwa [Set.ncard_image_of_injective _ Subtype.val_injective, hrep.ncard_eq])
   -- Then we match all other nodes in components internally
   have compMatching (K : G.deleteUniversalVerts.coe.ConnectedComponent) :
@@ -79,7 +79,7 @@ private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
 /-- This lemma states that a graph in which the universal vertices do not violate the
 Tutte-condition, if the graph decomposes into cliques, it has a perfect matching -/
 theorem Subgraph.IsPerfectMatching.exists_of_isClique_supp
-    (hveven : Even (Fintype.card V)) (h : ¬G.TutteViolator G.universalVerts)
+    (hveven : Even (Fintype.card V)) (h : ¬G.IsTutteViolator G.universalVerts)
     (h' : ∀ (K : G.deleteUniversalVerts.coe.ConnectedComponent),
     G.deleteUniversalVerts.coe.IsClique K.supp) : ∃ (M : Subgraph G), M.IsPerfectMatching := by
   classical
@@ -95,19 +95,19 @@ theorem Subgraph.IsPerfectMatching.exists_of_isClique_supp
     simp only [hM.support_eq_verts, hM'.2.support_eq_verts, hM'.1, Subgraph.verts_sup]
     exact (Set.disjoint_compl_left_iff_subset.mpr fun ⦃a⦄ a ↦ a).symm), hspan⟩
 
-theorem tutteViolator_empty (hodd : Odd (Fintype.card V)) : G.TutteViolator ∅ := by
+theorem isTutteViolator_empty (hodd : Odd (Fintype.card V)) : G.IsTutteViolator ∅ := by
   classical
   have ⟨c, hc⟩ := Classical.inhabited_of_nonempty
     (Finite.card_pos_iff.mp <| Odd.pos <|
     (odd_card_iff_odd_components ((⊤ : Subgraph G).deleteVerts ∅).coe).mp (by
     simpa [Fintype.card_congr (Equiv.Set.univ V)] using hodd))
-  rw [TutteViolator, Set.ncard_empty, Set.ncard_pos]
+  rw [IsTutteViolator, Set.ncard_empty, Set.ncard_pos]
   use c
 
 /-- Proves the necessity part of Tutte's theorem -/
-lemma not_tutteViolator {M : Subgraph G} (hM : M.IsPerfectMatching) (u : Set V) :
-    ¬G.TutteViolator u := by
-  simpa [TutteViolator, Set.Nat.card_coe_set_eq] using Finite.card_le_of_injective
+lemma not_IsTutteViolator {M : Subgraph G} (hM : M.IsPerfectMatching) (u : Set V) :
+    ¬G.IsTutteViolator u := by
+  simpa [IsTutteViolator, Set.Nat.card_coe_set_eq] using Finite.card_le_of_injective
       (fun c => ⟨(c.1.odd_matches_node_outside hM c.2).choose,
         (c.1.odd_matches_node_outside hM c.2).choose_spec.1⟩) (by
     intro x y hxy
