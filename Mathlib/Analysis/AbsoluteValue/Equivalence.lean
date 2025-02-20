@@ -248,6 +248,7 @@ open scoped Classical in
 - $1 < v_i(a)$ and $1 < v_i(b)$;
 - $v_j(a) < 1$ for $j \neq i$;
 - $w(a) = 1$ and $w(b) < 1$;
+
 Then there is a $k\in F$ such that $1 < v_i(k)$ while $v_j(k) < 1$ for all
 $j \neq i$ and $w(k) < 1$.
 This is given by taking large enough values of a witness sequence to
@@ -275,6 +276,7 @@ open Filter in
 - $1 < v_i(a)$;
 - $v_j(a) < 1$ for $j \neq i$;
 - $1 < w(a)$;
+
 Then there is a sequence of elements in $F$ that tendsto $v_i b$ under $v_i$, tends to $0$ under
 $v_j$ for $j ≠ i$, and tends to $w b$ under $w$.
 Such a sequence is given by $\frac{1}{1 + a ^ {- n}}$.
@@ -303,6 +305,7 @@ open scoped Classical in
 - $1 < v_i(a)$;
 - $v_j(a) < 1$ for $j \neq i$;
 - $1 < w(a)$;
+
 Then there is a $k ∈ F$ such that $1 < v_i k$ while $v_j k < 1$ for all
 $j ≠ i$ and $w k < 1$. This is given by taking large enough values of a witness sequence to
 `exists_tendsto_const_tendsto_zero_tendsto_const` (for example $\frac{1}{1 + a ^ {- n}}$ works).
