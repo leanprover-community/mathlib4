@@ -84,8 +84,9 @@ theorem singleton_iff (a b : α) : Shortlex r [a] [b] ↔ r a b := by
   simp only [shortlex_def, length_singleton, lt_self_iff_false, Lex.singleton_iff, true_and,
     false_or]
 
-instance isTrichotomous [IsTrichotomous α r] : IsTrichotomous (List α) (Shortlex r) where
-  trichotomous := fun a b => InvImage.trichotomous (by simp [Function.Injective]) _ _
+instance isTrichotomous [IsTrichotomous α r] : IsTrichotomous (List α) (Shortlex r) :=
+  InvImage.trichotomous (by simp [Function.Injective])
+
 
 instance isAsymm [IsAsymm α r] : IsAsymm (List α) (Shortlex r) where
   asymm := fun a b ab ba => (@InvImage.isAsymm _ _ (Prod.Lex (fun x1 x2 ↦ x1 < x2) (Lex r))
