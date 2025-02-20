@@ -404,7 +404,7 @@ lemma ContMDiff.sum_elim {f : M → N} {g : M' → N}
     (hf : ContMDiff I J n f) (hg : ContMDiff I J n g) : ContMDiff I J n (Sum.elim f g) := by
   intro p
   rw [contMDiffAt_iff]
-  refine ⟨(Continuous.sum_elim hf.continuous hg.continuous).continuousAt, ?_⟩
+  refine ⟨(Continuous.sumElim hf.continuous hg.continuous).continuousAt, ?_⟩
   cases p with
   | inl x =>
     -- In charts around x : M, the map f ⊔ g looks like f.
