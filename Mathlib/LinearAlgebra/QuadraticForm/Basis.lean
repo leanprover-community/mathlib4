@@ -29,7 +29,7 @@ variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N
 open Finsupp in
 theorem map_finsuppSum' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
     Q (f.sum g) =
-      ∑ p ∈ f.support.sym2, (polarSym2 Q ∘ Sym2.map fun i => g i (f i)) p
+      ∑ p ∈ f.support.sym2, polarSym2 Q (p.map fun i => g i (f i)) 
         - ∑ i ∈ f.support, Q (g i (f i)) := by
   exact Q.map_sum' _ (fun i => g i (f i))
 
