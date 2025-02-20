@@ -151,7 +151,11 @@ theorem lift_surjective_of_surjective {f : R →+* S} (H : ∀ a : R, a ∈ I �
 variable {S T U : Ideal R} [S.IsTwoSided] [T.IsTwoSided] [U.IsTwoSided]
 
 /-- The ring homomorphism from the quotient by a smaller ideal to the quotient by a larger ideal.
-This is the `Ideal.Quotient` version of `Quot.Factor` -/
+
+This is the `Ideal.Quotient` version of `Quot.Factor`
+
+When the two ideals are of the form `I^m` and `I^n` and `n ≤ m`,
+please refer to the dedicated version `Ideal.Quotient.factorPow`-/
 def factor (H : S ≤ T) : R ⧸ S →+* R ⧸ T :=
   Ideal.Quotient.lift S (mk T) fun _ hx => eq_zero_iff_mem.2 (H hx)
 
@@ -178,7 +182,7 @@ theorem factor_comp (H1 : S ≤ T) (H2 : T ≤ U) :
 @[simp]
 theorem factor_comp_apply (H1 : S ≤ T) (H2 : T ≤ U) (x : R ⧸ S) :
     factor H2 (factor H1 x) = factor (H1.trans H2) x := by
-  show (factor H2).comp (factor H1) x = factor (H1.trans H2) x
+  rw [← RingHom.comp_apply]
   simp
 
 lemma factor_surjective (H : S ≤ T) : Function.Surjective (factor H) :=
