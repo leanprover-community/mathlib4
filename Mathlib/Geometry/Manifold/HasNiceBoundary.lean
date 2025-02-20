@@ -184,21 +184,23 @@ open Topology
 
 attribute [local instance] ChartedSpace.of_discreteTopology in
 attribute [local instance] IsManifold.of_discreteTopology in
-noncomputable def BoundaryManifoldData.Icc (n : ℕ) (k : ℕ∞) :
+noncomputable def BoundaryManifoldData.Icc (k : ℕ∞) :
     BoundaryManifoldData (Set.Icc (0 : ℝ) 1) (𝓡∂ 1) k (𝓡 0) where
   M₀ := Fin 2
   f x := if h : x = 0 then ⊥ else ⊤
   isEmbedding := by
     apply IsClosedEmbedding.isEmbedding
     apply IsClosedEmbedding.of_continuous_injective_isClosedMap
-    · exact continuous_of_discreteTopology
+      continuous_of_discreteTopology
     · intro x y h
       fin_cases x <;> fin_cases y <;> simp_all
     · exact fun K _ ↦ Set.Finite.isClosed (Finite.Set.finite_image K _)
   contMDiff := contMDiff_of_discreteTopology
   isImmersion x := by
-    -- mfderiv is 0, is injective since its domain is trivial
-    sorry
+    have : Subsingleton (TangentSpace (𝓡 0) x) := by
+      change Subsingleton (EuclideanSpace ℝ (Fin 0))
+      infer_instance
+    exact Function.injective_of_subsingleton _
   range_eq_boundary := by
     rw [boundary_Icc]
     ext x; constructor <;> intro h
