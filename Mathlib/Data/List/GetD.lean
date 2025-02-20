@@ -33,7 +33,7 @@ theorem getD_eq_getElem {n : ℕ} (hn : n < l.length) : l.getD n d = l[n] := by
   | cons head tail ih =>
     cases n
     · exact getD_cons_zero
-    · simpa using ih _
+    · exact ih _
 
 @[deprecated getD_eq_getElem (since := "2024-08-02")]
 theorem getD_eq_get {n : ℕ} (hn : n < l.length) : l.getD n d = l.get ⟨n, hn⟩ :=
@@ -47,7 +47,7 @@ theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
   | cons head tail ih =>
     cases n
     · simp at hn
-    · simpa using ih (Nat.le_of_succ_le_succ hn)
+    · exact ih (Nat.le_of_succ_le_succ hn)
 
 theorem getD_reverse {l : List α} (i) (h : i < length l) :
     getD l.reverse i = getD l (l.length - 1 - i) := by
