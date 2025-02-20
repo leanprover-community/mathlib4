@@ -921,9 +921,10 @@ theorem mapRange_single {f : ∀ i, β₁ i → β₂ i} {hf : ∀ i, f i 0 = 0}
       simp
     · simp [h, hf]
 
+omit [DecidableEq ι] in
 theorem mapRange_injective (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) :
-    Function.Injective (mapRange f hf) ↔ ∀ i, Function.Injective (f i) :=
-  ⟨fun h i x y eq ↦ single_injective (@h (single i x) (single i y) <| by
+    Function.Injective (mapRange f hf) ↔ ∀ i, Function.Injective (f i) := by
+  classical exact ⟨fun h i x y eq ↦ single_injective (@h (single i x) (single i y) <| by
     simpa using congr_arg _ eq), fun h _ _ eq ↦ DFinsupp.ext fun i ↦ h i congr($eq i)⟩
 
 variable [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] [∀ (i) (x : β₂ i), Decidable (x ≠ 0)]
