@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Computability.Tape
-import Mathlib.Data.Fintype.Defs
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Finset.Option
+import Mathlib.Data.Fintype.Defs
 import Mathlib.Data.PFun
 
 /-!

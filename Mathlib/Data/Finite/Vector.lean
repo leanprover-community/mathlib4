@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Data.Fintype.Vector
-import Mathlib.Data.Fintype.Card
 
 /-!
 # Finiteness of vector types
