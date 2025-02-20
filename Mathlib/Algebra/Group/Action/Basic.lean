@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Action.Units
 import Mathlib.Algebra.Group.Invertible.Basic
-import Mathlib.GroupTheory.Perm.Basic
 
 /-!
 # More lemmas about group actions
@@ -16,7 +15,7 @@ This file contains lemmas about group actions that require more imports than
 
 assert_not_exists MonoidWithZero
 
-variable {α β : Type*}
+variable {M N α β : Type*}
 
 section MulAction
 
@@ -38,39 +37,52 @@ lemma MulAction.toPerm_injective [FaithfulSMul α β] :
     Function.Injective (MulAction.toPerm : α → Equiv.Perm β) :=
   (show Function.Injective (Equiv.toFun ∘ MulAction.toPerm) from smul_left_injective').of_comp
 
-variable (α) (β)
+section
+variable [Monoid M] [MulAction M α]
 
-/-- Given an action of a group `α` on a set `β`, each `g : α` defines a permutation of `β`. -/
-@[simps]
-def MulAction.toPermHom : α →* Equiv.Perm β where
-  toFun := MulAction.toPerm
-  map_one' := Equiv.ext <| one_smul α
-  map_mul' u₁ u₂ := Equiv.ext <| mul_smul (u₁ : α) u₂
+/-- Push forward the action of `R` on `M` along a compatible surjective map `f : R →* S`.
 
-/-- Given an action of an additive group `α` on a set `β`, each `g : α` defines a permutation of
-`β`. -/
-@[simps!]
-def AddAction.toPermHom (α : Type*) [AddGroup α] [AddAction α β] :
-    α →+ Additive (Equiv.Perm β) :=
-  MonoidHom.toAdditive'' <| MulAction.toPermHom (Multiplicative α) β
+See also `Function.Surjective.distribMulActionLeft` and `Function.Surjective.moduleLeft`.
+-/
+@[to_additive
+"Push forward the action of `R` on `M` along a compatible surjective map `f : R →+ S`."]
+abbrev Function.Surjective.mulActionLeft {R S M : Type*} [Monoid R] [MulAction R M] [Monoid S]
+    [SMul S M] (f : R →* S) (hf : Surjective f) (hsmul : ∀ (c) (x : M), f c • x = c • x) :
+    MulAction S M where
+  smul := (· • ·)
+  one_smul b := by rw [← f.map_one, hsmul, one_smul]
+  mul_smul := hf.forall₂.mpr fun a b x ↦ by simp only [← f.map_mul, hsmul, mul_smul]
 
-/-- The tautological action by `Equiv.Perm α` on `α`.
+namespace MulAction
 
-This generalizes `Function.End.applyMulAction`. -/
-instance Equiv.Perm.applyMulAction (α : Type*) : MulAction (Equiv.Perm α) α where
-  smul f a := f a
-  one_smul _ := rfl
-  mul_smul _ _ _ := rfl
+variable (α)
 
-@[simp]
-protected lemma Equiv.Perm.smul_def {α : Type*} (f : Equiv.Perm α) (a : α) : f • a = f a :=
-  rfl
+/-- A multiplicative action of `M` on `α` and a monoid homomorphism `N → M` induce
+a multiplicative action of `N` on `α`.
 
-/-- `Equiv.Perm.applyMulAction` is faithful. -/
-instance Equiv.Perm.applyFaithfulSMul (α : Type*) : FaithfulSMul (Equiv.Perm α) α :=
-  ⟨Equiv.ext⟩
+See note [reducible non-instances]. -/
+@[to_additive]
+abbrev compHom [Monoid N] (g : N →* M) : MulAction N α where
+  smul := SMul.comp.smul g
+  -- Porting note: was `by simp [g.map_one, MulAction.one_smul]`
+  one_smul _ := by simpa [(· • ·)] using MulAction.one_smul ..
+  -- Porting note: was `by simp [g.map_mul, MulAction.mul_smul]`
+  mul_smul _ _ _ := by simpa [(· • ·)] using MulAction.mul_smul ..
 
-variable {α} {β}
+/-- An additive action of `M` on `α` and an additive monoid homomorphism `N → M` induce
+an additive action of `N` on `α`.
+
+See note [reducible non-instances]. -/
+add_decl_doc AddAction.compHom
+
+@[to_additive]
+lemma compHom_smul_def
+    {E F G : Type*} [Monoid E] [Monoid F] [MulAction F G] (f : E →* F) (a : E) (x : G) :
+    letI : MulAction E G := MulAction.compHom _ f
+    a • x = f a • x := rfl
+
+end MulAction
+end
 
 @[to_additive]
 protected lemma MulAction.bijective (g : α) : Function.Bijective (g • · : β → β) :=

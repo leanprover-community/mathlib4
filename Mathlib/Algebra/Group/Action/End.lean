@@ -3,10 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Faithful
-import Mathlib.Algebra.Group.Action.Hom
+import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.TypeTags.Hom
-import Mathlib.Logic.Embedding.Basic
+import Mathlib.GroupTheory.Perm.Basic
 
 /-!
 # Endomorphisms, homomorphisms and group actions
@@ -31,6 +30,7 @@ group action
 
 assert_not_exists MonoidWithZero
 
+open Equiv
 open Function (Injective Surjective)
 
 variable {G M N O α : Type*}
@@ -119,6 +119,38 @@ def AddAction.toEndHom [AddMonoid M] [AddAction M α] : M →+ Additive (Functio
 
 See note [reducible non-instances]. -/
 abbrev MulAction.ofEndHom [Monoid M] (f : M →* Function.End α) : MulAction M α := .compHom α f
+
+/-- The permutation of a type is equivalent to the units group of the endomorphisms monoid of this
+type. -/
+@[simps]
+def equivUnitsEnd : Perm α ≃* Units (Function.End α) where
+  -- Porting note: needed to add `.toFun`.
+  toFun e := ⟨e.toFun, e.symm.toFun, e.self_comp_symm, e.symm_comp_self⟩
+  invFun u :=
+    ⟨(u : Function.End α), (↑u⁻¹ : Function.End α), congr_fun u.inv_val, congr_fun u.val_inv⟩
+  left_inv _ := ext fun _ => rfl
+  right_inv _ := Units.ext rfl
+  map_mul' _ _ := rfl
+
+/-- Lift a monoid homomorphism `f : G →* Function.End α` to a monoid homomorphism
+`f : G →* Equiv.Perm α`. -/
+@[simps!]
+def _root_.MonoidHom.toHomPerm {G : Type*} [Group G] (f : G →* Function.End α) : G →* Perm α :=
+  equivUnitsEnd.symm.toMonoidHom.comp f.toHomUnits
+
+variable (G α) in
+/-- Given an action of a group `G` on a type `α`, each `g : G` defines a permutation of `α`. -/
+@[simps]
+def MulAction.toPermHom [Group G] [MulAction G α] : G →* Equiv.Perm α where
+  toFun := MulAction.toPerm
+  map_one' := Equiv.ext <| one_smul _
+  map_mul' _ _ := Equiv.ext <| mul_smul _ _
+
+/-- Given an action of an additive group `F` on a set `α`, each `g : G` defines a permutation of
+`α`. -/
+@[simps!]
+def AddAction.toPermHom (G α : Type*) [AddGroup G] [AddAction G α] : G →+ Additive (Equiv.Perm α) :=
+  MonoidHom.toAdditive'' <| MulAction.toPermHom ..
 
 section MulDistribMulAction
 variable [Monoid M] [Monoid N] [Monoid O] [MulDistribMulAction M N] [MulDistribMulAction N O]

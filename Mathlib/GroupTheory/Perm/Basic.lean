@@ -3,7 +3,6 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Action.End
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Algebra.GroupPower.IterateHom
@@ -45,23 +44,21 @@ instance permGroup : Group (Perm α) where
 theorem default_eq : (default : Perm α) = 1 :=
   rfl
 
-/-- The permutation of a type is equivalent to the units group of the endomorphisms monoid of this
-type. -/
-@[simps]
-def equivUnitsEnd : Perm α ≃* Units (Function.End α) where
-  -- Porting note: needed to add `.toFun`.
-  toFun e := ⟨e.toFun, e.symm.toFun, e.self_comp_symm, e.symm_comp_self⟩
-  invFun u :=
-    ⟨(u : Function.End α), (↑u⁻¹ : Function.End α), congr_fun u.inv_val, congr_fun u.val_inv⟩
-  left_inv _ := ext fun _ => rfl
-  right_inv _ := Units.ext rfl
-  map_mul' _ _ := rfl
+/-- The tautological action by `Equiv.Perm α` on `α`.
 
-/-- Lift a monoid homomorphism `f : G →* Function.End α` to a monoid homomorphism
-`f : G →* Equiv.Perm α`. -/
-@[simps!]
-def _root_.MonoidHom.toHomPerm {G : Type*} [Group G] (f : G →* Function.End α) : G →* Perm α :=
-  equivUnitsEnd.symm.toMonoidHom.comp f.toHomUnits
+This generalizes `Function.End.applyMulAction`. -/
+instance applyMulAction (α : Type*) : MulAction (Equiv.Perm α) α where
+  smul f a := f a
+  one_smul _ := rfl
+  mul_smul _ _ _ := rfl
+
+@[simp]
+protected lemma Equiv.Perm.smul_def {α : Type*} (f : Equiv.Perm α) (a : α) : f • a = f a :=
+  rfl
+
+/-- `Equiv.Perm.applyMulAction` is faithful. -/
+instance Equiv.Perm.applyFaithfulSMul (α : Type*) : FaithfulSMul (Equiv.Perm α) α :=
+  ⟨Equiv.ext⟩
 
 theorem mul_apply (f g : Perm α) (x) : (f * g) x = f (g x) :=
   Equiv.trans_apply _ _ _

@@ -3,7 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Action.Basic
+import Mathlib.Algebra.Group.Action.End
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.Algebra.GroupWithZero.Action.Defs
@@ -180,7 +180,6 @@ lemma FixedPoints.mem_submonoid (a : α) : a ∈ submonoid M α ↔ ∀ m : M, m
 
 end Monoid
 
--- TODO: The following two sections
 section Group
 namespace FixedPoints
 variable [Group α] [MulDistribMulAction M α]
