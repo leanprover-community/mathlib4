@@ -61,10 +61,8 @@ theorem tfae_of_cycle {a b} {l : List Prop} (h_chain : List.Chain (· → ·) a 
     exact ⟨⟨ab, h_last ∘ (this.2 c (.head _) _ (getLastD_mem_cons _ _)).1 ∘ bc⟩, this⟩
 
 theorem TFAE.out {l} (h : TFAE l) (n₁ n₂ : Nat) {a b}
-    (h₁ : l[n₁]? = some a := by
-      simp only [List.getElem?_cons_succ, List.getElem?_cons_zero] <;> rfl)
-    (h₂ : l[n₂]? = some b := by
-      simp only [List.getElem?_cons_succ, List.getElem?_cons_zero] <;> rfl) :
+    (h₁ : l[n₁]? = some a := by rfl)
+    (h₂ : l[n₂]? = some b := by rfl) :
     a ↔ b :=
   h _ (List.mem_of_getElem? h₁) _ (List.mem_of_getElem? h₂)
 
