@@ -279,7 +279,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
       · rw [rmatch, deriv, mul_rmatch_iff]
         rcases S with - | ⟨t', U⟩
         · exact ⟨[], [], by tauto⟩
-        · cases' t' with b t
+        · obtain - | ⟨b, t⟩ := t'
           · simp only [forall_eq_or_imp, List.mem_cons] at helem
             simp only [eq_self_iff_true, not_true, Ne, false_and] at helem
           simp only [List.flatten, List.cons_append, List.cons_eq_cons] at hsum

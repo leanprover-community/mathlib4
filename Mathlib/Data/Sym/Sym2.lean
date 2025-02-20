@@ -640,7 +640,7 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
   right_inv x := by
     refine x.recOnSubsingleton fun x => ?_
     obtain ⟨x, hx⟩ := x
-    cases' x with _ x
+    obtain - | ⟨-, x⟩ := x
     · simp at hx
     rcases x with - | ⟨_, x⟩
     · simp at hx
