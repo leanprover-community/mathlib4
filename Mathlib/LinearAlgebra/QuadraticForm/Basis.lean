@@ -59,7 +59,7 @@ theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι
     (fun p hp => zero_smul R ((polarSym2 Q) (Sym2.map g p)))]
   apply Finset.sum_congr rfl
   intro _ _
-  rw [Sym2.mulFinsupp_eq_mul_comp_map, ← polarSym2_map_smul_apply]
+  rw [Sym2.mulFinsupp_eq_mul_comp_map, Function.comp_apply, ← polarSym2_map_smul_apply]
   rfl
 
 open Finsupp in
