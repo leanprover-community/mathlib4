@@ -125,6 +125,10 @@ theorem val_eq_to_measure (ν : ProbabilityMeasure Ω) : ν.val = (ν : Measure 
 theorem toMeasure_injective : Function.Injective ((↑) : ProbabilityMeasure Ω → Measure Ω) :=
   Subtype.coe_injective
 
+/-- The type of probability measures is a measurable space when equipped with the Giry monad. -/
+instance {α : Type*} [MeasurableSpace α] : MeasurableSpace (ProbabilityMeasure α) :=
+  Subtype.instMeasurableSpace
+
 instance instFunLike : FunLike (ProbabilityMeasure Ω) (Set Ω) ℝ≥0 where
   coe μ s := ((μ : Measure Ω) s).toNNReal
   coe_injective' μ ν h := toMeasure_injective <| Measure.ext fun s _ ↦ by
@@ -557,10 +561,6 @@ Lemma 4.1 of https://doi.org/10.1016/j.aim.2020.107239
 open Function
 
 open Measure
-
-/-- The type of probability measures is a measurable space when equipped with the Giry monad. -/
-local instance {α : Type*} [MeasurableSpace α] : MeasurableSpace (ProbabilityMeasure α) :=
-  Subtype.instMeasurableSpace
 
 /-- The monoidal product is a measurable function from the product of probability spaces over
 ``α`` and ``β`` into the type of probability spaces over ``α × β`` -/
