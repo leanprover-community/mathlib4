@@ -124,7 +124,7 @@ theorem exists_across [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonem
     (f : PartialIso α β) (a : α) :
     ∃ b : β, ∀ p ∈ f.val, cmp (Prod.fst p) a = cmp (Prod.snd p) b := by
   by_cases h : ∃ b, (a, b) ∈ f.val
-  · cases' h with b hb
+  · obtain ⟨b, hb⟩ := h
     exact ⟨b, fun p hp ↦ f.prop _ hp _ hb⟩
   have :
     ∀ x ∈ (f.val.filter fun p : α × β ↦ p.fst < a).image Prod.snd,
@@ -136,11 +136,11 @@ theorem exists_across [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonem
     rw [Finset.mem_filter] at hp1 hq1
     rw [← lt_iff_lt_of_cmp_eq_cmp (f.prop _ hp1.1 _ hq1.1)]
     exact lt_trans hp1.right hq1.right
-  cases' exists_between_finsets _ _ this with b hb
+  obtain ⟨b, hb⟩ := exists_between_finsets _ _ this
   use b
   rintro ⟨p1, p2⟩ hp
   have : p1 ≠ a := fun he ↦ h ⟨p2, he ▸ hp⟩
-  cases' lt_or_gt_of_ne this with hl hr
+  rcases lt_or_gt_of_ne this with hl | hr
   · have : p1 < a ∧ p2 < b :=
       ⟨hl, hb.1 _ (Finset.mem_image.mpr ⟨(p1, p2), Finset.mem_filter.mpr ⟨hp, hl⟩, rfl⟩)⟩
     rw [← cmp_eq_lt_iff, ← cmp_eq_lt_iff] at this
@@ -171,7 +171,7 @@ def definedAtLeft [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty 
     Cofinal (PartialIso α β) where
   carrier := {f | ∃ b : β, (a, b) ∈ f.val}
   isCofinal f := by
-    cases' exists_across f a with b a_b
+    obtain ⟨b, a_b⟩ := exists_across f a
     refine
       ⟨⟨insert (a, b) f.val, fun p hp q hq ↦ ?_⟩, ⟨b, Finset.mem_insert_self _ _⟩,
         Finset.subset_insert _ _⟩
@@ -226,7 +226,7 @@ theorem embedding_from_countable_to_dense [Countable α] [DenselyOrdered β] [No
     Nonempty (α ↪o β) := by
   cases nonempty_encodable α
   rcases exists_pair_lt β with ⟨x, y, hxy⟩
-  cases' exists_between hxy with a ha
+  obtain ⟨a, ha⟩ := exists_between hxy
   haveI : Nonempty (Set.Ioo x y) := ⟨⟨a, ha⟩⟩
   let our_ideal : Ideal (PartialIso α _) :=
     idealOfCofinals default (definedAtLeft (Set.Ioo x y))

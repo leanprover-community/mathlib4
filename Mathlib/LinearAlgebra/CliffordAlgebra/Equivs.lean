@@ -353,7 +353,7 @@ open DualNumber TrivSqZeroExt
 variable {R : Type*} [CommRing R]
 
 theorem ι_mul_ι (r₁ r₂) : ι (0 : QuadraticForm R R) r₁ * ι (0 : QuadraticForm R R) r₂ = 0 := by
-  rw [← mul_one r₁, ← mul_one r₂, ← smul_eq_mul R, ← smul_eq_mul R, LinearMap.map_smul,
+  rw [← mul_one r₁, ← mul_one r₂, ← smul_eq_mul r₁, ← smul_eq_mul r₂, LinearMap.map_smul,
     LinearMap.map_smul, smul_mul_smul_comm, ι_sq_scalar, QuadraticMap.zero_apply, RingHom.map_zero,
     smul_zero]
 

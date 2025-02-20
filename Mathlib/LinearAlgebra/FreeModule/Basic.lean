@@ -108,6 +108,9 @@ instance [Nontrivial M] : Nonempty (Module.Free.ChooseBasisIndex R M) :=
 theorem infinite [Infinite R] [Nontrivial M] : Infinite M :=
   (Equiv.infinite_iff (chooseBasis R M).repr.toEquiv).mpr Finsupp.infinite_of_right
 
+instance [Module.Free R M] [Nontrivial M] : FaithfulSMul R M :=
+  .of_injective _ (Module.Free.repr R M).symm.injective
+
 variable {R M N}
 
 theorem of_equiv (e : M ≃ₗ[R] N) : Module.Free R N :=
@@ -204,3 +207,19 @@ instance tensor : Module.Free S (M ⊗[R] N) :=
 end CommSemiring
 
 end Module.Free
+
+namespace Basis
+
+open Finset
+
+variable {S : Type*} [CommRing R] [Ring S] [Algebra R S]
+
+/-- If `B` is a basis of the `R`-algebra `S` such that `B i = 1` for some index `i`, then
+each `r : R` gets represented as `s • B i` as an element of `S`. -/
+theorem repr_algebraMap {ι : Type*} [DecidableEq ι] {B : Basis ι R S} {i : ι} (hBi : B i = 1)
+    (r : R) : B.repr ((algebraMap R S) r) = fun j : ι ↦ if i = j then r else 0 := by
+  ext j
+  rw [Algebra.algebraMap_eq_smul_one, map_smul, ← hBi, Finsupp.smul_apply, B.repr_self_apply]
+  simp
+
+end Basis

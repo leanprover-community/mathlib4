@@ -70,7 +70,7 @@ theorem SetLike.natCast_mem_graded [Zero ι] [AddMonoidWithOne R] [SetLike σ R]
 
 theorem SetLike.intCast_mem_graded [Zero ι] [AddGroupWithOne R] [SetLike σ R]
     [AddSubgroupClass σ R] (A : ι → σ) [SetLike.GradedOne A] (z : ℤ) : (z : R) ∈ A 0 := by
-  induction z
+  cases z
   · rw [Int.ofNat_eq_coe, Int.cast_natCast]
     exact SetLike.natCast_mem_graded _ _
   · rw [Int.cast_negSucc]
@@ -134,11 +134,11 @@ section coe
 
 variable [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
 
-/-- The canonical ring isomorphism between `⨁ i, A i` and `R`-/
+/-- The canonical ring isomorphism between `⨁ i, A i` and `R` -/
 def coeRingHom [AddMonoid ι] [SetLike.GradedMonoid A] : (⨁ i, A i) →+* R :=
   DirectSum.toSemiring (fun i => AddSubmonoidClass.subtype (A i)) rfl fun _ _ => rfl
 
-/-- The canonical ring isomorphism between `⨁ i, A i` and `R`-/
+/-- The canonical ring isomorphism between `⨁ i, A i` and `R` -/
 @[simp]
 theorem coeRingHom_of [AddMonoid ι] [SetLike.GradedMonoid A] (i : ι) (x : A i) :
     (coeRingHom A : _ →+* R) (of (fun i => A i) i x) = x :=
@@ -201,6 +201,14 @@ theorem coe_of_mul_apply_add [AddLeftCancelMonoid ι] [SetLike.GradedMonoid A] {
 theorem coe_mul_of_apply_add [AddRightCancelMonoid ι] [SetLike.GradedMonoid A] (r : ⨁ i, A i)
     {i : ι} (r' : A i) (j : ι) : ((r * of (fun i => A i) i r') (j + i) : R) = r j * r' :=
   coe_mul_of_apply_aux _ _ _ fun _x => ⟨fun h => add_right_cancel h, fun h => h ▸ rfl⟩
+
+theorem coe_of_mul_apply_of_mem_zero [AddMonoid ι] [SetLike.GradedMonoid A] (r : A 0)
+    (r' : ⨁ i, A i) (j : ι) : ((of (fun i => A i) 0 r * r') j : R) = r * r' j :=
+  coe_of_mul_apply_aux _ _ _ fun _x => by rw [zero_add]
+
+theorem coe_mul_of_apply_of_mem_zero [AddMonoid ι] [SetLike.GradedMonoid A] (r : ⨁ i, A i)
+    (r' : A 0) (j : ι) : ((r * of (fun i => A i) 0 r') j : R) = r j * r' :=
+  coe_mul_of_apply_aux _ _ _ fun _x => by rw [add_zero]
 
 end coe
 
@@ -336,11 +344,12 @@ instance instSemiring : Semiring (A 0) := (subsemiring A).toSemiring
 end Semiring
 
 section CommSemiring
-variable [CommSemiring R] [AddCommMonoid ι] [SetLike σ R] [AddSubmonoidClass σ R]
+variable [CommSemiring R] [AddMonoid ι] [SetLike σ R] [AddSubmonoidClass σ R]
 variable (A : ι → σ) [SetLike.GradedMonoid A]
 
 -- TODO: it might be expensive to unify `A` in this instance in practice
-/--The commutative semiring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`.-/
+/-- The commutative semiring `A 0` inherited from `R` in the presence of
+`SetLike.GradedMonoid A`. -/
 instance instCommSemiring : CommSemiring (A 0) := (subsemiring A).toCommSemiring
 
 end CommSemiring
@@ -392,16 +401,27 @@ instance instAlgebra : Algebra S (A 0) := inferInstanceAs <| Algebra S (subalgeb
 
 end Algebra
 
+section
+
+variable [CommSemiring S] [CommSemiring R] [Algebra S R] [AddCommMonoid ι]
+variable (A : ι → Submodule S R) [SetLike.GradedMonoid A]
+
+instance : Algebra (A 0) R := (SetLike.GradeZero.subalgebra A).toAlgebra
+
+@[simp] lemma algebraMap_apply (x) : algebraMap (A 0) R x = x := rfl
+
+end
+
 end SetLike.GradeZero
 
 section HomogeneousElement
 
 theorem SetLike.homogeneous_zero_submodule [Zero ι] [Semiring S] [AddCommMonoid R] [Module S R]
-    (A : ι → Submodule S R) : SetLike.Homogeneous A (0 : R) :=
+    (A : ι → Submodule S R) : SetLike.IsHomogeneousElem A (0 : R) :=
   ⟨0, Submodule.zero_mem _⟩
 
 theorem SetLike.Homogeneous.smul [CommSemiring S] [Semiring R] [Algebra S R] {A : ι → Submodule S R}
-    {s : S} {r : R} (hr : SetLike.Homogeneous A r) : SetLike.Homogeneous A (s • r) :=
+    {s : S} {r : R} (hr : SetLike.IsHomogeneousElem A r) : SetLike.IsHomogeneousElem A (s • r) :=
   let ⟨i, hi⟩ := hr
   ⟨i, Submodule.smul_mem _ _ hi⟩
 

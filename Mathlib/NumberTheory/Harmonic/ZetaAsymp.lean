@@ -109,10 +109,12 @@ lemma term_one {n : ℕ} (hn : 0 < n) :
       field_simp
 
 lemma term_sum_one (N : ℕ) : term_sum 1 N = log (N + 1) - harmonic (N + 1) + 1 := by
-  induction' N with N hN
-  · simp_rw [term_sum, Finset.sum_range_zero, harmonic_succ, harmonic_zero,
+  induction N with
+  | zero =>
+    simp_rw [term_sum, Finset.sum_range_zero, harmonic_succ, harmonic_zero,
       Nat.cast_zero, zero_add, Nat.cast_one, inv_one, Rat.cast_one, log_one, sub_add_cancel]
-  · unfold term_sum at hN ⊢
+  | succ N hN =>
+    unfold term_sum at hN ⊢
     rw [Finset.sum_range_succ, hN, harmonic_succ (N + 1),
       term_one (by positivity : 0 < N + 1)]
     push_cast
@@ -177,15 +179,17 @@ lemma term_sum_of_lt (N : ℕ) {s : ℝ} (hs : 1 < s) :
   conv => enter [1, 2, n]; rw [term_of_lt (by simp) hs]
   rw [Finset.sum_sub_distrib]
   congr 1
-  · induction' N with N hN
-    · simp
-    · rw [Finset.sum_range_succ, hN, Nat.cast_add_one]
+  · induction N with
+    | zero => simp
+    | succ N hN =>
+      rw [Finset.sum_range_succ, hN, Nat.cast_add_one]
       ring_nf
   · simp_rw [mul_comm (_ / _), ← mul_div_assoc, div_eq_mul_inv _ s, ← Finset.sum_mul, mul_one]
     congr 1
-    induction' N with N hN
-    · simp
-    · simp_rw [Finset.sum_range_succ, hN, Nat.cast_add_one, sub_eq_add_neg, add_assoc]
+    induction N with
+    | zero => simp
+    | succ N hN =>
+      simp_rw [Finset.sum_range_succ, hN, Nat.cast_add_one, sub_eq_add_neg, add_assoc]
       congr 1
       ring_nf
 
@@ -317,7 +321,7 @@ theorem _root_.tendsto_riemannZeta_sub_one_div :
   -- and then use the previous result to deduce that this limit must be `γ`.
   let f (s : ℂ) := riemannZeta s - 1 / (s - 1)
   suffices ∃ C, Tendsto f (𝓝[≠] 1) (𝓝 C) by
-    cases' this with C hC
+    obtain ⟨C, hC⟩ := this
     suffices Tendsto (fun s : ℝ ↦ f s) _ _
       from (tendsto_nhds_unique this tendsto_riemannZeta_sub_one_div_nhds_right) ▸ hC
     refine hC.comp (tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ?_ ?_)

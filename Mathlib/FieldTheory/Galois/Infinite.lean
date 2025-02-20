@@ -102,8 +102,8 @@ lemma fixedField_bot [IsGalois k K] :
   rw [← IntermediateField.fixingSubgroup_bot, fixedField_fixingSubgroup]
 
 open IntermediateField in
-/--For a subgroup `H` of `Gal(K/k)`, the fixed field of the image of `H` under the restriction to
-a normal intermediate field `E` is equal to the fixed field of `H` in `K` intersecting with `E`.-/
+/-- For a subgroup `H` of `Gal(K/k)`, the fixed field of the image of `H` under the restriction to
+a normal intermediate field `E` is equal to the fixed field of `H` in `K` intersecting with `E`. -/
 lemma restrict_fixedField (H : Subgroup (K ≃ₐ[k] K)) (L : IntermediateField k K) [Normal k L] :
     fixedField H ⊓ L = lift (fixedField (Subgroup.map (restrictNormalHom L) H)) := by
   apply SetLike.ext'
@@ -128,6 +128,7 @@ lemma restrict_fixedField (H : Subgroup (K ≃ₐ[k] K)) (L : IntermediateField 
     nth_rw 2 [← this]
     exact (AlgEquiv.restrictNormal_commutes σ L ⟨x, xL⟩).symm
 
+open IntermediateField in
 lemma fixingSubgroup_fixedField (H : ClosedSubgroup (K ≃ₐ[k] K)) [IsGalois k K] :
     (IntermediateField.fixedField H).fixingSubgroup = H.1 := by
   apply le_antisymm _ ((IntermediateField.le_iff_le H.toSubgroup
@@ -207,6 +208,7 @@ def GaloisCoinsertionIntermediateFieldSubgroup [IsGalois k K] :
   u_l_le K := le_of_eq (fixedField_fixingSubgroup K)
   choice_eq _ _ := rfl
 
+open IntermediateField in
 theorem isOpen_iff_finite (L : IntermediateField k K) [IsGalois k K] :
     IsOpen L.fixingSubgroup.carrier ↔ FiniteDimensional k L := by
   refine ⟨fun h ↦ ?_, fun h ↦ IntermediateField.fixingSubgroup_isOpen L⟩

@@ -3,12 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Batteries.Data.Rat.Lemmas
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Int.Defs
 import Mathlib.Data.Rat.Init
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
-import Batteries.Data.Rat.Lemmas
+import Mathlib.Data.Int.Init
+import Mathlib.Data.Nat.Basic
 
 /-!
 # Basics for the Rational Numbers
@@ -151,8 +152,8 @@ theorem lift_binop_eq (f : ℚ → ℚ → ℚ) (f₁ : ℤ → ℤ → ℤ → 
       ∀ {n₁ d₁ n₂ d₂}, a * d₁ = n₁ * b → c * d₂ = n₂ * d →
         f₁ n₁ d₁ n₂ d₂ * f₂ a b c d = f₁ a b c d * f₂ n₁ d₁ n₂ d₂) :
     f (a /. b) (c /. d) = f₁ a b c d /. f₂ a b c d := by
-  generalize ha : a /. b = x; cases' x with n₁ d₁ h₁ c₁; rw [mk'_eq_divInt] at ha
-  generalize hc : c /. d = x; cases' x with n₂ d₂ h₂ c₂; rw [mk'_eq_divInt] at hc
+  generalize ha : a /. b = x; obtain ⟨n₁, d₁, h₁, c₁⟩ := x; rw [mk'_eq_divInt] at ha
+  generalize hc : c /. d = x; obtain ⟨n₂, d₂, h₂, c₂⟩ := x; rw [mk'_eq_divInt] at hc
   rw [fv]
   have d₁0 := Int.ofNat_ne_zero.2 h₁
   have d₂0 := Int.ofNat_ne_zero.2 h₂
@@ -437,4 +438,13 @@ theorem coe_int_inj (m n : ℤ) : (m : ℚ) = n ↔ m = n :=
   ⟨congr_arg num, congr_arg _⟩
 
 end Casts
+
+/--
+A version of `Rat.casesOn` that uses `/` instead of `Rat.mk'`. Use as `cases' q` for `q : Rat`.
+-/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
+def divCasesOn {C : ℚ → Sort*} (a : ℚ)
+    (h : ∀ (n : ℤ) (d : ℕ), d ≠ 0 → n.natAbs.Coprime d → C (n / d)) : C a :=
+  a.casesOn fun n d nz red => by rw [Rat.mk'_eq_divInt, Rat.divInt_eq_div]; exact h n d nz red
+
 end Rat

@@ -413,7 +413,7 @@ theorem unifIntegrable_subsingleton [Subsingleton ι] (hp_one : 1 ≤ p) (hp_top
     {f : ι → α → β} (hf : ∀ i, Memℒp (f i) p μ) : UnifIntegrable f p μ := by
   intro ε hε
   by_cases hι : Nonempty ι
-  · cases' hι with i
+  · obtain ⟨i⟩ := hι
     obtain ⟨δ, hδpos, hδ⟩ := (hf i).eLpNorm_indicator_le hp_one hp_top hε
     refine ⟨δ, hδpos, fun j s hs hμs => ?_⟩
     convert hδ s hs hμs
@@ -426,8 +426,6 @@ theorem unifIntegrable_fin (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {n : ℕ} {f 
   revert f
   induction' n with n h
   · intro f hf
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added this instance
-    have : Subsingleton (Fin Nat.zero) := subsingleton_fin_zero
     exact unifIntegrable_subsingleton hp_one hp_top hf
   intro f hfLp ε hε
   let g : Fin n → α → β := fun k => f k

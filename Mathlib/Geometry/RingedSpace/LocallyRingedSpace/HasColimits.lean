@@ -217,8 +217,7 @@ theorem imageBasicOpen_image_open :
   erw [← TopCat.coe_comp]
   rw [PreservesCoequalizer.iso_hom, ι_comp_coequalizerComparison]
   dsimp only [SheafedSpace.forget]
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw`
-  erw [imageBasicOpen_image_preimage]
+  rw [imageBasicOpen_image_preimage]
   exact (imageBasicOpen f g U s).2
 
 @[instance]
@@ -227,10 +226,9 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
   constructor
   rintro a ha
   rcases TopCat.Presheaf.germ_exist _ _ a with ⟨U, hU, s, rfl⟩
-  rw [← CommRingCat.forget_map_apply, forget_map_eq_coe,
-    PresheafedSpace.stalkMap_germ_apply
+  rw [-- Manually apply `elementwise_of%` to generate a `ConcreteCategory` lemma
+    elementwise_of% PresheafedSpace.stalkMap_germ
       (coequalizer.π (C := SheafedSpace _) f.toShHom g.toShHom) U _ hU] at ha
-  rw [coe_toHasForget_instFunLike]
   let V := imageBasicOpen f g U s
   have hV : (coequalizer.π f.toShHom g.toShHom).base ⁻¹'
       ((coequalizer.π f.toShHom g.toShHom).base '' V.1) = V.1 :=
@@ -243,7 +241,7 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
   have VleU : ⟨(coequalizer.π f.toShHom g.toShHom).base '' V.1, V_open⟩ ≤ U :=
     Set.image_subset_iff.mpr (Y.toRingedSpace.basicOpen_le _)
   have hxV : x ∈ V := ⟨hU, ha⟩
-  rw [← CommRingCat.germ_res_apply (coequalizer f.toShHom g.toShHom).presheaf (homOfLE VleU) _
+  rw [← (coequalizer f.toShHom g.toShHom).presheaf.germ_res_apply (homOfLE VleU) _
       (@Set.mem_image_of_mem _ _ (coequalizer.π f.toShHom g.toShHom).base x V.1 hxV) s]
   apply RingHom.isUnit_map
   rw [← isUnit_map_iff ((coequalizer.π f.toShHom g.toShHom :).c.app _).hom,
