@@ -230,7 +230,7 @@ theorem rank_le_spanRank [StrongRankCondition R] :
     Module.rank R M ≤ (⊤ : Submodule R M).spanRank := by
   rw [Module.rank, Submodule.spanRank]
   refine ciSup_le' (fun ι ↦ (le_ciInf fun s ↦ ?_))
-  have := linearIndependent_le_span'' _ ι.2 s.1 s.2
+  have := linearIndependent_le_span'' ι.2 s.1 s.2
   simpa
 
 end rank

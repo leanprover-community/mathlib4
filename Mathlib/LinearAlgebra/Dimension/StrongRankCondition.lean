@@ -262,7 +262,9 @@ theorem linearIndependent_le_basis {ι : Type w} (b : Basis ι R M) {κ : Type w
   · -- and otherwise we have `linearIndependent_le_infinite_basis`.
     exact linearIndependent_le_infinite_basis b v i
 
-/-- `StrongRankCondition` implies the infinite case. -/
+/-- `StrongRankCondition` implies that if there is an injective linear map `(α →₀ R) →ₗ[R] β →₀ R`,
+  then the cardinal of `α` is smaller than or equal to the cardinal of `β`.
+ -/
 theorem card_le_of_injective'' {α : Type v} {β : Type v} (f : (α →₀ R) →ₗ[R] β →₀ R)
     (i : Injective f) : #α ≤ #β := by
   let b : Basis β R (β →₀ R) := ⟨1⟩
@@ -274,7 +276,7 @@ theorem card_le_of_injective'' {α : Type v} {β : Type v} (f : (α →₀ R) �
 /-- If `R` satisfies the strong rank condition, then for any linearly independent family `v : ι → M`
 and spanning set `w : Set M`, the cardinality of `ι` is bounded by the cardinality of `w`.
 -/
-theorem linearIndependent_le_span'' {ι : Type v} (v : ι → M) (i : LinearIndependent R v) (w : Set M)
+theorem linearIndependent_le_span'' {ι : Type v} {v : ι → M} (i : LinearIndependent R v) (w : Set M)
     (s : span R w = ⊤) : #ι ≤ #w := by
   fapply card_le_of_injective'' (R := R)
   · apply Finsupp.linearCombination
