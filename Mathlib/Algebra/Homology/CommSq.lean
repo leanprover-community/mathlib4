@@ -3,6 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.Algebra.Homology.ShortComplex.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Preadditive.Biproducts
 
@@ -42,6 +43,13 @@ variable {f : X₁ ⟶ X₂} {g : X₁ ⟶ X₃} {inl : X₂ ⟶ X₄} {inr : X�
 noncomputable abbrev CommSq.cokernelCofork (sq : CommSq f g inl inr) :
     CokernelCofork (biprod.lift f (-g)) :=
   CokernelCofork.ofπ (biprod.desc inl inr) (by simp [sq.w])
+
+/-- The short complex attached to the cokernel cofork of a commutative square. -/
+@[simps]
+noncomputable def CommSq.shortComplex (sq : CommSq f g inl inr) : ShortComplex C where
+  f := biprod.lift f (-g)
+  g := biprod.desc inl inr
+  zero := by simp [sq.w]
 
 /-- A commutative square in a preadditive category is a pushout square iff
 the corresponding diagram `X₁ ⟶ X₂ ⊞ X₃ ⟶ X₄ ⟶ 0` makes `X₄` a cokernel. -/
@@ -97,6 +105,12 @@ noncomputable def IsPushout.isColimitCokernelCofork (h : IsPushout f g inl inr) 
     IsColimit h.cokernelCofork :=
   h.isColimitEquivIsColimitCokernelCofork h.isColimit
 
+lemma IsPushout.epi_shortComplex_g (h : IsPushout f g inl inr) :
+    Epi h.shortComplex.g := by
+  rw [Preadditive.epi_iff_cancel_zero]
+  intro _ b hb
+  exact Cofork.IsColimit.hom_ext h.isColimitCokernelCofork (by simpa using hb)
+
 end Pushout
 
 section Pullback
@@ -107,6 +121,14 @@ variable {fst : X₁ ⟶ X₂} {snd : X₁ ⟶ X₃} {f : X₂ ⟶ X₄} {g : X�
 noncomputable abbrev CommSq.kernelFork (sq : CommSq fst snd f g) :
     KernelFork (biprod.desc f (-g)) :=
   KernelFork.ofι (biprod.lift fst snd) (by simp [sq.w])
+
+/-- The short complex attached to the kernel fork of a commutative square.
+(This is similar to `CommSq.shortComplex`, but with different signs.) -/
+@[simps]
+noncomputable def CommSq.shortComplex' (sq : CommSq fst snd f g) : ShortComplex C where
+  f := biprod.lift fst snd
+  g := biprod.desc f (-g)
+  zero := by simp [sq.w]
 
 /-- A commutative square in a preadditive category is a pullback square iff
 the corresponding diagram `0 ⟶ X₁ ⟶ X₂ ⊞ X₃ ⟶ X₄ ⟶ 0` makes `X₁` a kernel. -/
@@ -159,6 +181,12 @@ noncomputable def CommSq.isLimitEquivIsLimitKernelFork (sq : CommSq fst snd f g)
 noncomputable def IsPullback.isLimitKernelFork (h : IsPullback fst snd f g) :
     IsLimit h.kernelFork :=
   h.isLimitEquivIsLimitKernelFork h.isLimit
+
+lemma IsPullback.mono_shortComplex'_f (h : IsPullback fst snd f g) :
+    Mono h.shortComplex'.f := by
+  rw [Preadditive.mono_iff_cancel_zero]
+  intro _ b hb
+  exact Fork.IsLimit.hom_ext h.isLimitKernelFork (by simpa using hb)
 
 end Pullback
 
