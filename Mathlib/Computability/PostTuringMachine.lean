@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Computability.Tape
-import Mathlib.Data.Fintype.Defs
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Finset.Option
+import Mathlib.Data.Fintype.Defs
 import Mathlib.Data.PFun
 
 /-!
@@ -1215,7 +1215,7 @@ theorem tr_respects : Respects (TM0.step M) (TM1.step (tr M)) fun a b ↦ trCfg 
     have : TM1.step (tr M) ⟨some (Λ'.act s q'), (), T⟩ = some ⟨some (Λ'.normal q'), (), match s with
         | TM0.Stmt.move d => T.move d
         | TM0.Stmt.write a => T.write a⟩ := by
-      cases' s with d a <;> rfl
+      cases s <;> rfl
     intro e
     refine TransGen.head ?_ (TransGen.head' this ?_)
     · simp only [TM1.step, TM1.stepAux, tr]
