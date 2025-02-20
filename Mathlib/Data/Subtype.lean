@@ -131,7 +131,7 @@ theorem surjective_restrict {α} {β : α → Type*} [ne : ∀ a, Nonempty (β a
   rintro ⟨x, hx⟩
   exact dif_pos hx
 
-/-- Defining a map into a subtype, this can be seen as a "coinduction principle" of `Subtype`-/
+/-- Defining a map into a subtype, this can be seen as a "coinduction principle" of `Subtype` -/
 @[simps]
 def coind {α β} (f : α → β) {p : β → Prop} (h : ∀ a, p (f a)) : α → Subtype p := fun a ↦ ⟨f a, h a⟩
 

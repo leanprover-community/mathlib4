@@ -22,6 +22,7 @@ boundary.
 `∂ a` is notation for `Coheyting.boundary a` in locale `Heyting`.
 -/
 
+assert_not_exists RelIso
 
 variable {α : Type*}
 

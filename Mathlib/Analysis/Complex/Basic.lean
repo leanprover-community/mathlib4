@@ -138,7 +138,7 @@ instance : ProperSpace ℂ := lipschitz_equivRealProd.properSpace
 /-- The `normSq` function on `ℂ` is proper. -/
 theorem tendsto_normSq_cocompact_atTop : Tendsto normSq (cocompact ℂ) atTop := by
   simpa [norm_mul_self_eq_normSq]
-    using tendsto_norm_cocompact_atTop.atTop_mul_atTop (tendsto_norm_cocompact_atTop (E := ℂ))
+    using tendsto_norm_cocompact_atTop.atTop_mul_atTop₀ (tendsto_norm_cocompact_atTop (E := ℂ))
 
 open ContinuousLinearMap
 

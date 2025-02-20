@@ -105,7 +105,7 @@ def recOn {C : WSeq α → Sort v} (s : WSeq α) (h1 : C nil) (h2 : ∀ x s, C (
     (h3 : ∀ s, C (think s)) : C s :=
   Seq.recOn s h1 fun o => Option.recOn o h3 h2
 
-/-- membership for weak sequences-/
+/-- membership for weak sequences -/
 protected def Mem (s : WSeq α) (a : α) :=
   Seq.Mem s (some a)
 
@@ -519,8 +519,8 @@ theorem LiftRel.trans (R : α → α → Prop) (H : Transitive R) : Transitive (
     · cases t1
     obtain ⟨b, t⟩ := b
     obtain ⟨c, u⟩ := c
-    cases' t1 with ab st
-    cases' t2 with bc tu
+    obtain ⟨ab, st⟩ := t1
+    obtain ⟨bc, tu⟩ := t2
     exact ⟨H ab bc, t, st, tu⟩
 
 theorem LiftRel.equiv (R : α → α → Prop) : Equivalence R → Equivalence (LiftRel R)
@@ -585,7 +585,7 @@ theorem flatten_pure (s : WSeq α) : flatten (Computation.pure s) = s := by
   cases Seq.destruct s with
   | none => simp
   | some val =>
-    cases' val with o s'
+    obtain ⟨o, s'⟩ := val
     simp
 
 @[simp]
@@ -793,7 +793,7 @@ theorem mem_rec_on {C : WSeq α → Prop} {a s} (M : a ∈ s) (h1 : ∀ b s', a 
 
 @[simp]
 theorem mem_think (s : WSeq α) (a) : a ∈ think s ↔ a ∈ s := by
-  cases' s with f al
+  obtain ⟨f, al⟩ := s
   change (some (some a) ∈ some none::f) ↔ some (some a) ∈ f
   constructor <;> intro h
   · apply (Stream'.eq_or_mem_of_mem_cons h).resolve_left
@@ -812,12 +812,12 @@ theorem eq_or_mem_iff_mem {s : WSeq α} {a a' s'} :
     simp at this
   · obtain ⟨i1, i2⟩ := this
     rw [i1, i2]
-    cases' s' with f al
+    obtain ⟨f, al⟩ := s'
     dsimp only [cons, Membership.mem, WSeq.Mem, Seq.Mem, Seq.cons]
     have h_a_eq_a' : a = a' ↔ some (some a) = some (some a') := by simp
     rw [h_a_eq_a']
     refine ⟨Stream'.eq_or_mem_of_mem_cons, fun o => ?_⟩
-    · cases' o with e m
+    · rcases o with e | m
       · rw [e]
         apply Stream'.mem_cons
       · exact Stream'.mem_cons_of_mem _ m
@@ -876,7 +876,7 @@ theorem exists_get?_of_mem {s : WSeq α} {a} (h : a ∈ s) : ∃ n, some a ∈ g
       exists n + 1
       simpa [get?]
   · intro s' h
-    cases' h with n h
+    obtain ⟨n, h⟩ := h
     exists n
     simp only [get?, dropn_think, head_think]
     apply think_mem h
@@ -975,7 +975,7 @@ theorem head_congr : ∀ {s t : WSeq α}, s ~ʷ t → head s ~ head t := by
   intro s t h o ho
   rcases @Computation.exists_of_mem_map _ _ _ _ (destruct s) ho with ⟨ds, dsm, dse⟩
   rw [← dse]
-  cases' destruct_congr h with l r
+  obtain ⟨l, r⟩ := destruct_congr h
   rcases l dsm with ⟨dt, dtm, dst⟩
   rcases ds with - | a <;> rcases dt with - | b
   · apply Computation.mem_map _ dtm
@@ -1320,7 +1320,7 @@ theorem liftRel_map {δ} (R : α → β → Prop) (S : γ → δ → Prop) {s1 :
       · cases b; cases h
       · cases a; cases h
       · obtain ⟨a, s⟩ := a; obtain ⟨b, t⟩ := b
-        cases' h with r h
+        obtain ⟨r, h⟩ := h
         exact ⟨h2 r, s, rfl, t, rfl, h⟩⟩
 
 theorem map_congr (f : α → β) {s t : WSeq α} (h : s ~ʷ t) : map f s ~ʷ map f t :=
@@ -1389,7 +1389,7 @@ theorem liftRel_append (R : α → β → Prop) {s1 s2 : WSeq α} {t1 t2 : WSeq 
       · cases b; cases h
       · cases a; cases h
       · obtain ⟨a, s⟩ := a; obtain ⟨b, t⟩ := b
-        cases' h with r h
+        obtain ⟨r, h⟩ := h
         -- Porting note: These 2 theorems should be excluded.
         simpa [-liftRel_pure_left, -liftRel_pure_right] using ⟨r, Or.inr ⟨s, rfl, t, rfl, h⟩⟩⟩
 

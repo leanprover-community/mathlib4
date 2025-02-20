@@ -698,7 +698,7 @@ theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i 
     refine ⟨i, j, w, ?_⟩
     ext
     rw [h]
-  cases' w with l hnot1 hchain
+  obtain ⟨l, hnot1, hchain⟩ := w
   induction' l with x l hi
   · contradiction
   · rw [List.forall_mem_cons] at hnot1

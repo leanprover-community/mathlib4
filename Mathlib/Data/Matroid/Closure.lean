@@ -404,7 +404,8 @@ lemma insert_indep_iff : M.Indep (insert e I) ↔ M.Indep I ∧ (e ∉ I → e �
   · rw [hI.insert_indep_iff, and_iff_right hI, or_iff_not_imp_right]
   simp [hI, show ¬ M.Indep (insert e I) from fun h ↦ hI <| h.subset <| subset_insert _ _]
 
-/-- This can be used for rewriting if the LHS is inside a binder and whether `f = e` is unknown.-/
+/-- This can be used for rewriting if the LHS is inside a binder and it is unknown
+whether `f = e`. -/
 lemma Indep.insert_diff_indep_iff (hI : M.Indep (I \ {e})) (heI : e ∈ I) :
     M.Indep (insert f I \ {e}) ↔ f ∈ M.E \ M.closure (I \ {e}) ∨ f ∈ I := by
   obtain rfl | hne := eq_or_ne e f
@@ -509,7 +510,7 @@ lemma Indep.closure_inter_eq_inter_closure (h : M.Indep (I ∪ J)) :
   · exact iInter_congr (by simp)
   rwa [← union_eq_iUnion]
 
-lemma Indep.inter_IsBasis_biInter {ι : Type*} (hI : M.Indep I) {X : ι → Set α} {A : Set ι}
+lemma Indep.inter_isBasis_biInter {ι : Type*} (hI : M.Indep I) {X : ι → Set α} {A : Set ι}
     (hA : A.Nonempty) (h : ∀ i ∈ A, M.IsBasis ((X i) ∩ I) (X i)) :
     M.IsBasis ((⋂ i ∈ A, X i) ∩ I) (⋂ i ∈ A, X i) := by
   refine (hI.inter_left _).isBasis_of_subset_of_subset_closure inter_subset_left ?_
@@ -518,17 +519,17 @@ lemma Indep.inter_IsBasis_biInter {ι : Type*} (hI : M.Indep I) {X : ι → Set 
       (hI.subset (by simp)), subset_iInter_iff]
   exact fun i hiA ↦ (biInter_subset_of_mem hiA).trans (h i hiA).subset_closure
 
-lemma Indep.inter_IsBasis_iInter [Nonempty ι] {X : ι → Set α} (hI : M.Indep I)
+lemma Indep.inter_isBasis_iInter [Nonempty ι] {X : ι → Set α} (hI : M.Indep I)
     (h : ∀ i, M.IsBasis ((X i) ∩ I) (X i)) : M.IsBasis ((⋂ i, X i) ∩ I) (⋂ i, X i) := by
-  convert hI.inter_IsBasis_biInter (ι := PLift ι) univ_nonempty (X := fun i ↦ X i.down)
+  convert hI.inter_isBasis_biInter (ι := PLift ι) univ_nonempty (X := fun i ↦ X i.down)
     (by simpa using fun (i : PLift ι) ↦ h i.down) <;>
   · simp only [mem_univ, iInter_true]
     exact (iInter_plift_down X).symm
 
-lemma Indep.inter_IsBasis_sInter {Xs : Set (Set α)} (hI : M.Indep I) (hXs : Xs.Nonempty)
+lemma Indep.inter_isBasis_sInter {Xs : Set (Set α)} (hI : M.Indep I) (hXs : Xs.Nonempty)
     (h : ∀ X ∈ Xs, M.IsBasis (X ∩ I) X) : M.IsBasis (⋂₀ Xs ∩ I) (⋂₀ Xs) := by
   rw [sInter_eq_biInter]
-  exact hI.inter_IsBasis_biInter hXs h
+  exact hI.inter_isBasis_biInter hXs h
 
 lemma isBasis_iff_isBasis_closure_of_subset (hIX : I ⊆ X) (hX : X ⊆ M.E := by aesop_mat) :
     M.IsBasis I X ↔ M.IsBasis I (M.closure X) :=

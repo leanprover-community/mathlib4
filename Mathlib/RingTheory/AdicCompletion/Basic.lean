@@ -451,7 +451,7 @@ theorem mk_eq_mk {m n : ℕ} (hmn : m ≤ n) (f : AdicCauchySequence I M) :
 
 end AdicCauchySequence
 
-/-- The `I`-adic cauchy condition can be checked on successive `n`.-/
+/-- The `I`-adic cauchy condition can be checked on successive `n`. -/
 theorem isAdicCauchy_iff (f : ℕ → M) :
     IsAdicCauchy I M f ↔ ∀ n, f n ≡ f (n + 1) [SMOD (I ^ n • ⊤ : Submodule R M)] := by
   constructor

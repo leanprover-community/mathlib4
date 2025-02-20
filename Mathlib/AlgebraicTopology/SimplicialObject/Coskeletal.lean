@@ -40,7 +40,7 @@ variable (X : SimplicialObject C) (n : ℕ)
 namespace Truncated
 
 /-- The identity natural transformation exhibits a simplicial set as a right extension of its
-restriction along `(Truncated.inclusion n).op`.-/
+restriction along `(Truncated.inclusion n).op`. -/
 @[simps!]
 def rightExtensionInclusion :
     RightExtension (Truncated.inclusion n).op
@@ -79,7 +79,7 @@ instance [X.IsCoskeletal n] : IsIso ((coskAdj n).unit.app X) := by
   infer_instance
 
 /-- The canonical isomorphism `X ≅ (cosk n).obj X` defined when `X` is coskeletal and the
-`n`-coskeleton functor exists.-/
+`n`-coskeleton functor exists. -/
 @[simps! hom]
 noncomputable def isoCoskOfIsCoskeletal [X.IsCoskeletal n] : X ≅ (cosk n).obj X :=
   asIso ((coskAdj n).unit.app X)

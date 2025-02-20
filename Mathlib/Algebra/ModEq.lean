@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Int.ModEq
 import Mathlib.GroupTheory.QuotientGroup.Defs
 import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic

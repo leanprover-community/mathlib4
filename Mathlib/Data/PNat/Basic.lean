@@ -177,7 +177,7 @@ theorem recOn_one {p} (one succ) : @PNat.recOn 1 p one succ = one :=
 @[simp]
 theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (one succ) :
     @PNat.recOn (n + 1) p one succ = succ n (@PNat.recOn n p one succ) := by
-  cases' n with n h
+  obtain ⟨n, h⟩ := n
   cases n <;> [exact absurd h (by decide); rfl]
 
 @[simp]

@@ -108,7 +108,7 @@ fixed object.
 def wideCospan (B : C) (objs : J → C) (arrows : ∀ j : J, objs j ⟶ B) : WidePullbackShape J ⥤ C where
   obj j := Option.casesOn j B objs
   map f := by
-    cases' f with _ j
+    obtain - | j := f
     · apply 𝟙 _
     · exact arrows j
 
@@ -206,7 +206,7 @@ fixed object.
 def wideSpan (B : C) (objs : J → C) (arrows : ∀ j : J, B ⟶ objs j) : WidePushoutShape J ⥤ C where
   obj j := Option.casesOn j B objs
   map f := by
-    cases' f with _ j
+    obtain - | j := f
     · apply 𝟙 _
     · exact arrows j
   map_comp := fun f g => by
@@ -409,7 +409,7 @@ end WidePushout
 variable (J)
 
 /-- The action on morphisms of the obvious functor
-  `WidePullbackShape_op : WidePullbackShape J ⥤ (WidePushoutShape J)ᵒᵖ`-/
+  `WidePullbackShape_op : WidePullbackShape J ⥤ (WidePushoutShape J)ᵒᵖ` -/
 def widePullbackShapeOpMap :
     ∀ X Y : WidePullbackShape J,
       (X ⟶ Y) → ((op X : (WidePushoutShape J)ᵒᵖ) ⟶ (op Y : (WidePushoutShape J)ᵒᵖ))
@@ -436,7 +436,7 @@ def widePushoutShapeOp : WidePushoutShape J ⥤ (WidePullbackShape J)ᵒᵖ wher
   obj X := op X
   map := fun {X} {Y} => widePushoutShapeOpMap J X Y
 
-/-- The obvious functor `(WidePullbackShape J)ᵒᵖ ⥤ WidePushoutShape J`-/
+/-- The obvious functor `(WidePullbackShape J)ᵒᵖ ⥤ WidePushoutShape J` -/
 @[simps!]
 def widePullbackShapeUnop : (WidePullbackShape J)ᵒᵖ ⥤ WidePushoutShape J :=
   (widePullbackShapeOp J).leftOp

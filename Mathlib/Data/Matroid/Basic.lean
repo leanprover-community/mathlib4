@@ -222,12 +222,12 @@ variable {α : Type*} {M : Matroid α}
 instance (M : Matroid α) : Nonempty {B // M.IsBase B} :=
   nonempty_subtype.2 M.exists_isBase
 
-/-- Typeclass for a matroid having finite ground set. Just a wrapper for `M.E.Finite`-/
+/-- Typeclass for a matroid having finite ground set. Just a wrapper for `M.E.Finite`. -/
 @[mk_iff] protected class Finite (M : Matroid α) : Prop where
   /-- The ground set is finite -/
   (ground_finite : M.E.Finite)
 
-/-- Typeclass for a matroid having nonempty ground set. Just a wrapper for `M.E.Nonempty`-/
+/-- Typeclass for a matroid having nonempty ground set. Just a wrapper for `M.E.Nonempty`. -/
 protected class Nonempty (M : Matroid α) : Prop where
   /-- The ground set is nonempty -/
   (ground_nonempty : M.E.Nonempty)
@@ -324,7 +324,7 @@ theorem encard_diff_eq (exch : ExchangeProperty IsBase) (hB₁ : IsBase B₁) (h
 
 /-- Any two sets `B₁`, `B₂` in a family with the exchange property have the same
 `ℕ∞`-cardinality. -/
-theorem encard_base_eq (exch : ExchangeProperty IsBase) (hB₁ : IsBase B₁) (hB₂ : IsBase B₂) :
+theorem encard_isBase_eq (exch : ExchangeProperty IsBase) (hB₁ : IsBase B₁) (hB₂ : IsBase B₂) :
     B₁.encard = B₂.encard := by
   rw [← encard_diff_add_encard_inter B₁ B₂, exch.encard_diff_eq hB₁ hB₂, inter_comm,
     encard_diff_add_encard_inter]
@@ -426,7 +426,7 @@ theorem IsBase.ncard_diff_comm (hB₁ : M.IsBase B₁) (hB₂ : M.IsBase B₂) :
 
 theorem IsBase.encard_eq_encard_of_isBase (hB₁ : M.IsBase B₁) (hB₂ : M.IsBase B₂) :
     B₁.encard = B₂.encard := by
-  rw [M.isBase_exchange.encard_base_eq hB₁ hB₂]
+  rw [M.isBase_exchange.encard_isBase_eq hB₁ hB₂]
 
 theorem IsBase.ncard_eq_ncard_of_isBase (hB₁ : M.IsBase B₁) (hB₂ : M.IsBase B₂) :
     B₁.ncard = B₂.ncard := by

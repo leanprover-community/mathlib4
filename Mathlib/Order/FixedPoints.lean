@@ -234,7 +234,7 @@ instance : SemilatticeSup (fixedPoints f) :=
 
 
 /- porting note: removed `Subtype.partialOrder _` from mathlib3port version,
-  threw `typeclass instance` error and was seemingly unnecessary?-/
+  threw `typeclass instance` error and was seemingly unnecessary? -/
 instance : SemilatticeInf (fixedPoints f) :=
   { OrderDual.instSemilatticeInf (fixedPoints f.dual) with
     inf := fun x y => f.prevFixed (x ⊓ y) (f.map_inf_fixedPoints_le x y) }

@@ -24,8 +24,8 @@ A Z-group is a group whose Sylow subgroups are all cyclic.
 * `IsZGroup.isCyclic_commutator`: a finite Z-group has cyclic commutator subgroup.
 * `IsZGroup.coprime_commutator_index`: the commutator subgroup of a finite Z-group is a
   Hall-subgroup (the commutator subgroup has cardinality coprime to its index).
-* `isZGroup_iff_mulEquiv`: a finite group `G` is a Z-group if and only if `G` is isomorphic to a
-  semidirect product of two cyclic subgroups of coprime order.
+* `isZGroup_iff_exists_mulEquiv`: a finite group `G` is a Z-group if and only if `G` is isomorphic
+  to a semidirect product of two cyclic subgroups of coprime order.
 
 -/
 

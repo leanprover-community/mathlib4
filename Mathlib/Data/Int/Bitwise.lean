@@ -20,7 +20,7 @@ Possibly only of archaeological significance.
 
 namespace Int
 
-/-- `div2 n = n/2`-/
+/-- `div2 n = n/2` -/
 def div2 : ℤ → ℤ
   | (n : ℕ) => n.div2
   | -[n +1] => negSucc n.div2
@@ -52,14 +52,14 @@ def lnot : ℤ → ℤ
   | (m : ℕ) => -[m +1]
   | -[m +1] => m
 
-/-- `lor` takes two integers and returns their bitwise `or`-/
+/-- `lor` takes two integers and returns their bitwise `or` -/
 def lor : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => m ||| n
   | (m : ℕ), -[n +1] => -[Nat.ldiff n m +1]
   | -[m +1], (n : ℕ) => -[Nat.ldiff m n +1]
   | -[m +1], -[n +1] => -[m &&& n +1]
 
-/-- `land` takes two integers and returns their bitwise `and`-/
+/-- `land` takes two integers and returns their bitwise `and` -/
 def land : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => m &&& n
   | (m : ℕ), -[n +1] => Nat.ldiff m n

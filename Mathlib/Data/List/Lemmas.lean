@@ -54,7 +54,7 @@ theorem foldr_range_subset_of_range_subset {f : β → α → α} {g : γ → α
   induction' l with b l H
   · exact ⟨[], rfl⟩
   · obtain ⟨c, hgf⟩ := hfg (Set.mem_range_self b)
-    cases' H with m hgf'
+    obtain ⟨m, hgf'⟩ := H
     rw [foldr_cons, ← hgf, ← hgf']
     exact ⟨c :: m, rfl⟩
 

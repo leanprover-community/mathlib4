@@ -1400,7 +1400,7 @@ variable [CommSemiring R] [∀ i, AddCommMonoid (M i)] [AddCommMonoid M'] [AddCo
 
 /-- Given a linear map `f` from `M 0` to multilinear maps on `n` variables,
 construct the corresponding multilinear map on `n+1` variables obtained by concatenating
-the variables, given by `m ↦ f (m 0) (tail m)`-/
+the variables, given by `m ↦ f (m 0) (tail m)` -/
 def LinearMap.uncurryLeft (f : M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => M i.succ) M₂) :
     MultilinearMap R M M₂ where
   toFun m := f (m 0) (tail m)
@@ -1496,7 +1496,7 @@ variable {R M M₂}
 
 /-- Given a multilinear map `f` in `n` variables to the space of linear maps from `M (last n)` to
 `M₂`, construct the corresponding multilinear map on `n+1` variables obtained by concatenating
-the variables, given by `m ↦ f (init m) (m (last n))`-/
+the variables, given by `m ↦ f (init m) (m (last n))` -/
 def MultilinearMap.uncurryRight
     (f : MultilinearMap R (fun i : Fin n => M (castSucc i)) (M (last n) →ₗ[R] M₂)) :
     MultilinearMap R M M₂ where
