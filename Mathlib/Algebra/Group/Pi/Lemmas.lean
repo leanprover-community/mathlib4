@@ -425,6 +425,12 @@ theorem mulSingle_mono : Monotone (Pi.mulSingle i : f i → ∀ i, f i) :=
 theorem mulSingle_strictMono : StrictMono (Pi.mulSingle i : f i → ∀ i, f i) :=
   Function.update_strictMono
 
+@[to_additive]
+lemma mulSingle_comp_equiv {m n : Type*} [DecidableEq n] [DecidableEq m] [One α] (σ : n ≃ m)
+    (i : m) (x : α) : Pi.mulSingle i x ∘ σ = Pi.mulSingle (σ.symm i) x := by
+  ext x
+  aesop (add simp Pi.mulSingle_apply)
+
 end Pi
 
 namespace Sigma

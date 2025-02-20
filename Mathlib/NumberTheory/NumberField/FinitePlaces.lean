@@ -52,7 +52,7 @@ lemma norm_ne_zero : (absNorm v.asIdeal : NNReal) ≠ 0 :=
   ne_zero_of_lt (one_lt_norm_nnreal v)
 
 /-- The `v`-adic absolute value on `K` defined as the norm of `v` raised to negative `v`-adic
-valuation.-/
+valuation -/
 noncomputable def vadicAbv : AbsoluteValue K ℝ where
   toFun x := toNNReal (norm_ne_zero v) (v.valuation x)
   map_mul' _ _ := by simp only [_root_.map_mul, NNReal.coe_mul]

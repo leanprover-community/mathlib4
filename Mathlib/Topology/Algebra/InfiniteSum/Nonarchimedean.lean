@@ -69,7 +69,7 @@ lemma cauchySeq_of_tendsto_div_nhds_one {f : ℕ → G}
   intro s hs
   obtain ⟨t, ht⟩ := is_nonarchimedean s hs
   obtain ⟨N, hN⟩ : ∃ N : ℕ, ∀ b, N ≤ b → f (b + 1) / f b ∈ t := by
-      simpa using tendsto_def.mp hf t t.mem_nhds_one
+    simpa using tendsto_def.mp hf t t.mem_nhds_one
   refine ⟨(N, N), ?_⟩
   rintro ⟨M, M'⟩ ⟨(hMN : N ≤ M), (hMN' : N ≤ M')⟩
   apply ht

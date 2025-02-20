@@ -432,6 +432,10 @@ def isoOfMkEqMk {B A₁ A₂ : C} (f : A₁ ⟶ B) (g : A₂ ⟶ B) [Mono f] [Mo
 
 end Subobject
 
+lemma MonoOver.subobjectMk_le_mk_of_hom {P Q : MonoOver X} (f : P ⟶ Q) :
+    Subobject.mk P.obj.hom ≤ Subobject.mk Q.obj.hom :=
+  Subobject.mk_le_mk_of_comm f.left (by simp)
+
 open CategoryTheory.Limits
 
 namespace Subobject

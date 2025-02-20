@@ -19,7 +19,7 @@ The natural topology on `ℝ≥0` (the one induced from `ℝ`), and a basic API.
 Instances for the following typeclasses are defined:
 
 * `TopologicalSpace ℝ≥0`
-* `TopologicalSemiring ℝ≥0`
+* `IsTopologicalSemiring ℝ≥0`
 * `SecondCountableTopology ℝ≥0`
 * `OrderTopology ℝ≥0`
 * `ProperSpace ℝ≥0`
@@ -40,7 +40,7 @@ namespace NNReal
 instance : TopologicalSpace ℝ≥0 := inferInstance
 
 -- short-circuit type class inference
-instance : TopologicalSemiring ℝ≥0 where
+instance : IsTopologicalSemiring ℝ≥0 where
   toContinuousAdd := continuousAdd_induced toRealHom
   toContinuousMul := continuousMul_induced toRealHom
 
@@ -87,7 +87,7 @@ def _root_.ContinuousMap.coeNNRealReal : C(ℝ≥0, ℝ) :=
   ⟨(↑), continuous_coe⟩
 
 @[simp]
-lemma  coeNNRealReal_zero : ContinuousMap.coeNNRealReal 0 = 0 := rfl
+lemma coeNNRealReal_zero : ContinuousMap.coeNNRealReal 0 = 0 := rfl
 
 instance ContinuousMap.canLift {X : Type*} [TopologicalSpace X] :
     CanLift C(X, ℝ) C(X, ℝ≥0) ContinuousMap.coeNNRealReal.comp fun f => ∀ x, 0 ≤ f x where

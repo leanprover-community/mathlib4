@@ -91,7 +91,7 @@ universe u v
 The binary operation is regarded as a left action of the type on itself.
 -/
 class Shelf (α : Type u) where
-  /-- The action of the `Shelf` over `α`-/
+  /-- The action of the `Shelf` over `α` -/
   act : α → α → α
   /-- A verification that `act` is self-distributive -/
   self_distrib : ∀ {x y z : α}, act x (act y z) = act (act x y) (act x z)

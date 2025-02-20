@@ -56,7 +56,7 @@ theorem contMDiffOn_continuousLinearMapCoordChange
 @[deprecated (since := "2024-11-21")]
 alias smoothOn_continuousLinearMapCoordChange := contMDiffOn_continuousLinearMapCoordChange
 
-variable [∀ x, TopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
+variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
 
 theorem hom_chart (y₀ y : LE₁E₂) :
     chartAt (ModelProd HB (F₁ →L[𝕜] F₂)) y₀ y =
