@@ -37,7 +37,7 @@ theorem exp_neg_mul_rpow_isLittleO_exp_neg {p b : ℝ} (hb : 0 < b) (hp : 1 < p)
     rw [rpow_sub_one hx.ne']
     field_simp [hx.ne']
     ring
-  apply Tendsto.atTop_mul_atTop tendsto_id
+  apply tendsto_id.atTop_mul_atTop₀
   refine tendsto_atTop_add_const_right atTop (-1 : ℝ) ?_
   exact Tendsto.const_mul_atTop hb (tendsto_rpow_atTop (by linarith))
 

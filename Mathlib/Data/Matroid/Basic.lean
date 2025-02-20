@@ -222,12 +222,12 @@ variable {α : Type*} {M : Matroid α}
 instance (M : Matroid α) : Nonempty {B // M.IsBase B} :=
   nonempty_subtype.2 M.exists_isBase
 
-/-- Typeclass for a matroid having finite ground set. Just a wrapper for `M.E.Finite`-/
+/-- Typeclass for a matroid having finite ground set. Just a wrapper for `M.E.Finite`. -/
 @[mk_iff] protected class Finite (M : Matroid α) : Prop where
   /-- The ground set is finite -/
   (ground_finite : M.E.Finite)
 
-/-- Typeclass for a matroid having nonempty ground set. Just a wrapper for `M.E.Nonempty`-/
+/-- Typeclass for a matroid having nonempty ground set. Just a wrapper for `M.E.Nonempty`. -/
 protected class Nonempty (M : Matroid α) : Prop where
   /-- The ground set is nonempty -/
   (ground_nonempty : M.E.Nonempty)

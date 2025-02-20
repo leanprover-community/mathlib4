@@ -142,7 +142,7 @@ private def encodable_zero : Encodable (WType' β 0) :=
 
 private def f (n : ℕ) : WType' β (n + 1) → Σa : α, β a → WType' β n
   | ⟨t, h⟩ => by
-    cases' t with a f
+    obtain ⟨a, f⟩ := t
     have h₀ : ∀ i : β a, WType.depth (f i) ≤ n := fun i =>
       Nat.le_of_lt_succ (lt_of_lt_of_le (WType.depth_lt_depth_mk a f i) h)
     exact ⟨a, fun i : β a => ⟨f i, h₀ i⟩⟩
