@@ -553,7 +553,7 @@ open IsDedekindDomain.HeightOneSpectrum PowerSeries
 open scoped LaurentSeries
 
 theorem valuation_eq_LaurentSeries_valuation (P : RatFunc K) :
-    (Polynomial.idealX K).valuation _ P = (PowerSeries.idealX K).valuation K⸨X⸩ P := by
+    (Polynomial.idealX K).valuation P = (PowerSeries.idealX K).valuation (P : K⸨X⸩) := by
   refine RatFunc.induction_on' P ?_
   intro f g h
   rw [Polynomial.valuation_of_mk K f h, RatFunc.mk_eq_mk' f h, Eq.comm]
@@ -570,7 +570,7 @@ namespace LaurentSeries
 
 open IsDedekindDomain.HeightOneSpectrum PowerSeries RatFunc
 
-instance : Valued K⸨X⸩ ℤₘ₀ := Valued.mk' ((PowerSeries.idealX K).valuation _)
+instance : Valued K⸨X⸩ ℤₘ₀ := Valued.mk' (PowerSeries.idealX K).valuation
 
 theorem valuation_X_pow (s : ℕ) :
     Valued.v (((X : K⟦X⟧) : K⸨X⸩) ^ s) = Multiplicative.ofAdd (-(s : ℤ)) := by
