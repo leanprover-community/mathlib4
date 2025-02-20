@@ -306,6 +306,7 @@ def BoundaryManifoldData.of_Euclidean_halfSpace (n : ℕ) (k : ℕ∞)
     {M : Type} [TopologicalSpace M] [ChartedSpace (EuclideanHalfSpace (n + 1)) M]
     [IsManifold (𝓡∂ (n + 1)) k M] : BoundaryManifoldData M (𝓡∂ (n + 1)) k (𝓡 n):= sorry
 
+-- I suspect this result is too strong, i.e. false in general (even for the neighbourhood filter).
 theorem Filter.foo {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
     {f : X → Z} {g : Y → Z} (F : Filter Z) :
     Filter.map Sum.inl (Filter.comap f F) = Filter.comap (Sum.elim f g) F := by
@@ -355,7 +356,26 @@ lemma Topology.IsInducing.sum_elim_of_separatedOpen {f : X → Z} {g : Y → Z}
         trans Sum.elim f g ⁻¹' t
         exacts [by gcongr; exact inter_subset_left, hst]
       simp_all
-  | inr x => sorry -- as the first case
+  | inr x =>
+    simp only [Sum.elim_inr, nhds_inr, hg x]
+    apply Filter.filter_eq
+    ext s
+    have hV : V ∈ 𝓝 (g x) := hV.mem_nhds (hgV (mem_range_self x))
+    have hS (S : Set Z) : Sum.elim f g ⁻¹' S = Sum.inr '' (g ⁻¹' S) := by
+      ext
+      sorry -- missing lemma, should be easy
+    constructor <;> intro h
+    · choose t ht hst using h
+      refine ⟨t ∩ V, Filter.inter_mem ht hV, ?_⟩
+      simp only [hS, preimage_inter, image_subset_iff]
+      trans g ⁻¹' t
+      exacts [inter_subset_left, hst]
+    · choose t ht hst using h
+      refine ⟨t ∩ V, Filter.inter_mem ht hV, ?_⟩
+      have hst' : Sum.elim f g ⁻¹' (t ∩ V) ⊆ s := by
+        trans Sum.elim f g ⁻¹' t
+        exacts [by gcongr; exact inter_subset_left, hst]
+      simp_all
 
 -- might be much too strong: if im f and im g are separated by open sets, the sum is an embedding
 lemma IsEmbedding.sum_elim_Strong {f : X → Z} {g : Y → Z}
@@ -366,8 +386,6 @@ lemma IsEmbedding.sum_elim_Strong {f : X → Z} {g : Y → Z}
   have : Function.Injective (Sum.elim f g) := by
     sorry -- use hUV, hfU and hgV
   exact ⟨hf.isInducing.sum_elim_of_separatedOpen hg.isInducing hU hV hUV hfU hgV, this⟩
-
-#exit
 
 -- It seems we actually need this lemma after all.
 lemma IsEmbedding.sum_elim {f : X → Z} {g : Y → Z}
