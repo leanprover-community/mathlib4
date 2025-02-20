@@ -39,7 +39,8 @@ We do *not* require that `M` or `∂M` be finite-dimensional
 ## TODO
 * `BoundaryManifoldData.euclideanHalfSpace_self`: n-dimensional Euclidean half-space has smooth
   boundary (e.g., `n-1`-dimensional Euclidean space)
-* if `M` is `n`-dimensional and modelled on Euclidean half-space (such that the model is surjective),
+* if `M` is `n`-dimensional and modelled on Euclidean half-space
+  (such that the model is surjective),
   it has smooth boundary: this might require e.g. invariance of domain
 
 * Should this file be merged into `IsManifold/InteriorBoundary.lean`?
@@ -179,16 +180,65 @@ def Homeomorph.foo {X : Type*} [TopologicalSpace X] : X ⊕ X ≃ₜ X × Fin 2 
 
 -- def Diffeomorph.foo : M ⊕ M ≃ₘ^k⟮I, I⟯ M × Fin 2 := sorry
 
+section temp
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type u_2}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type u_3} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+  {M : Type u_4} [TopologicalSpace M] {E' : Type u_5} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type u_6}
+  [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {M' : Type u_7} [TopologicalSpace M'] [ChartedSpace H M]
+  [ChartedSpace H' M'] {f : M → M'} {n : WithTop ℕ∞}
+
+-- This version assumes the domain is a subsingleton.
+lemma contMDiff_of_subsingleton' [Subsingleton M] : ContMDiff I I' n f := by
+  obtain (h | h) := isEmpty_or_nonempty M
+  · exact fun x ↦ (IsEmpty.false x).elim
+  inhabit M
+  let x₀ := inhabited_h.default
+  let c := f x₀
+  have : f = (fun y ↦ c) := (Function.funext_iff_of_subsingleton x₀ x₀).mp rfl
+  simp_rw [this]
+  exact contMDiff_const
+
+-- idea: locally, f is constant near x, and constant functions are contMDiff
+lemma contMDiff_of_discreteTopology [DiscreteTopology M] [IsManifold I n M] [IsManifold I' n M'] :
+    ContMDiff I I' n f := by
+  intro x
+  -- XXX: assume we're not smooth, by descending to all n or so
+  rw [contMDiffAt_iff_contMDiffOn_nhds sorry]
+  refine ⟨{x}, ?_, ?_⟩
+  · apply (isOpen_discrete {x}).mem_nhds; rw [Set.mem_singleton_iff]
+  · exact contMDiffOn_const (c := f x).congr (fun y hy ↦ by rw [hy])
+
+end temp
+
+open Topology
+
 attribute [local instance] ChartedSpace.of_discreteTopology in
 attribute [local instance] IsManifold.of_discreteTopology in
 noncomputable def BoundaryManifoldData.Icc (n : ℕ) (k : ℕ∞) :
     BoundaryManifoldData (Set.Icc (0 : ℝ) 1) (𝓡∂ 1) k (𝓡 0) where
   M₀ := Fin 2
   f x := if h : x = 0 then ⊥ else ⊤
-  isEmbedding := sorry -- should follow from the above topological lemmas!
-  contMDiff := sorry
-  isImmersion := sorry
-  range_eq_boundary := sorry
+  isEmbedding := by
+    apply IsClosedEmbedding.isEmbedding
+    apply IsClosedEmbedding.of_continuous_injective_isClosedMap
+    · exact continuous_of_discreteTopology
+    · intro x y h
+      fin_cases x <;> fin_cases y <;> simp_all
+    · exact fun K _ ↦ Set.Finite.isClosed (Finite.Set.finite_image K _)
+  contMDiff := contMDiff_of_discreteTopology
+  isImmersion x := by
+    -- mfderiv is 0, is injective since its domain is trivial
+    sorry
+  range_eq_boundary := by
+    rw [boundary_Icc]
+    ext x; constructor <;> intro h
+    · suffices x = ⊥ ∨ x = ⊤ by simpa
+      choose y hy using h
+      by_cases y = 0
+      exacts [by left; simp_all, by right; simp_all]
+    · obtain (hx | hx) := h
+      exacts [⟨0, by simp [hx.symm]⟩, ⟨1, by simp [hx.symm]⟩]
 
 -- missing lemma: mfderiv of Prod.map (know it's smooth)
 -- mathlib has versions for Prod.mk, also with left and right constant
