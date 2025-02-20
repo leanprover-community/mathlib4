@@ -321,6 +321,37 @@ lemma transfiniteCompositionsOfShape_le_transfiniteCompositions
   rw [transfiniteCompositions_iff]
   exact ⟨_, _, _, _, _, hf⟩
 
+lemma transfiniteCompositions_monotone :
+    Monotone (transfiniteCompositions.{w} (C := C)) := by
+  intro W₁ W₂ h X Y f hf
+  rw [transfiniteCompositions_iff] at hf
+  obtain ⟨J, _, _, _, _, hf⟩ := hf
+  exact transfiniteCompositionsOfShape_le_transfiniteCompositions _ _ _
+    (transfiniteCompositionsOfShape_monotone J h _ hf)
+
+lemma le_transfiniteCompositions :
+    W ≤ transfiniteCompositions.{w} W :=
+  le_trans (fun _ _ _ hf ↦
+    (MorphismProperty.TransfiniteCompositionOfShape.ofOrderIso (.ofMem _ hf)
+      (orderIsoShrink.{w} (Fin 2)).symm).mem)
+    (transfiniteCompositionsOfShape_le_transfiniteCompositions _ _)
+
+lemma transfiniteCompositions_le [IsStableUnderTransfiniteComposition.{w} W] :
+    transfiniteCompositions.{w} W ≤ W := by
+  intro _ _ f hf
+  rw [transfiniteCompositions_iff] at hf
+  obtain ⟨J, _, _, _, _, hf⟩ := hf
+  exact W.transfiniteCompositionsOfShape_le J _ hf
+
+@[simp]
+lemma transfiniteCompositions_le_iff {P Q : MorphismProperty C}
+    [IsStableUnderTransfiniteComposition.{w} Q] :
+    transfiniteCompositions.{w} P ≤ Q ↔ P ≤ Q := by
+  constructor
+  · exact (le_transfiniteCompositions P).trans
+  · intro h
+    exact (transfiniteCompositions_monotone.{w} h).trans Q.transfiniteCompositions_le
+
 end MorphismProperty
 
 end CategoryTheory
