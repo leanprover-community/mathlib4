@@ -37,7 +37,6 @@ namespace Finset
 
 /-! ### map -/
 
-
 section Map
 
 open Function
