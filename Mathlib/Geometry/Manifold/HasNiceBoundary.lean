@@ -184,9 +184,6 @@ attribute [local instance] IsManifold.of_discreteTopology in
 noncomputable def BoundaryManifoldData.Icc (n : ℕ) (k : ℕ∞) :
     BoundaryManifoldData (Set.Icc (0 : ℝ) 1) (𝓡∂ 1) k (𝓡 0) where
   M₀ := Fin 2
-  -- TODO: these are missing from mathlib - actually, do the above two local instances work now?
-  chartedSpace := sorry
-  isManifold := sorry
   f x := if h : x = 0 then ⊥ else ⊤
   isEmbedding := sorry -- should follow from the above topological lemmas!
   contMDiff := sorry
