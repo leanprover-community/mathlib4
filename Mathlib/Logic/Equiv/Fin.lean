@@ -3,10 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Data.Int.Defs
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Logic.Embedding.Set
 import Mathlib.Logic.Equiv.Option
+import Mathlib.Data.Int.Init
 
 /-!
 # Equivalences for `Fin n`

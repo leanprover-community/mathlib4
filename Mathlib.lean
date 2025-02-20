@@ -276,6 +276,7 @@ import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Group.Action.End
 import Mathlib.Algebra.Group.Action.Equidecomp
 import Mathlib.Algebra.Group.Action.Faithful
+import Mathlib.Algebra.Group.Action.Hom
 import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Action.Option
 import Mathlib.Algebra.Group.Action.Pi
@@ -1719,6 +1720,7 @@ import Mathlib.CategoryTheory.Abelian.Refinements
 import Mathlib.CategoryTheory.Abelian.RightDerived
 import Mathlib.CategoryTheory.Abelian.Subobject
 import Mathlib.CategoryTheory.Abelian.Transfer
+import Mathlib.CategoryTheory.Abelian.Yoneda
 import Mathlib.CategoryTheory.Action
 import Mathlib.CategoryTheory.Action.Basic
 import Mathlib.CategoryTheory.Action.Concrete
@@ -2509,6 +2511,7 @@ import Mathlib.Computability.Primrec
 import Mathlib.Computability.Reduce
 import Mathlib.Computability.RegularExpressions
 import Mathlib.Computability.TMComputable
+import Mathlib.Computability.TMConfig
 import Mathlib.Computability.TMToPartrec
 import Mathlib.Computability.Tape
 import Mathlib.Computability.TuringMachine
@@ -2762,6 +2765,7 @@ import Mathlib.Data.Holor
 import Mathlib.Data.Ineq
 import Mathlib.Data.Int.AbsoluteValue
 import Mathlib.Data.Int.Associated
+import Mathlib.Data.Int.Basic
 import Mathlib.Data.Int.Bitwise
 import Mathlib.Data.Int.CardIntervalMod
 import Mathlib.Data.Int.Cast.Basic
@@ -2772,9 +2776,9 @@ import Mathlib.Data.Int.Cast.Pi
 import Mathlib.Data.Int.Cast.Prod
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Int.ConditionallyCompleteOrder
-import Mathlib.Data.Int.Defs
 import Mathlib.Data.Int.DivMod
 import Mathlib.Data.Int.GCD
+import Mathlib.Data.Int.Init
 import Mathlib.Data.Int.Interval
 import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Int.Lemmas
@@ -4498,6 +4502,7 @@ import Mathlib.Probability.Independence.Kernel
 import Mathlib.Probability.Independence.ZeroOne
 import Mathlib.Probability.Integration
 import Mathlib.Probability.Kernel.Basic
+import Mathlib.Probability.Kernel.Composition.AbsolutelyContinuous
 import Mathlib.Probability.Kernel.Composition.Basic
 import Mathlib.Probability.Kernel.Composition.CompNotation
 import Mathlib.Probability.Kernel.Composition.IntegralCompProd

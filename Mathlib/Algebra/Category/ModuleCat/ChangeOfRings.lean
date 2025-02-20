@@ -583,8 +583,8 @@ protected def counit' : coextendScalars f ⋙ restrictScalars f ⟶ 𝟭 (Module
         dsimp
         rw [CoextendScalars.smul_apply, one_mul, ← LinearMap.map_smul]
         congr
-        change f r = (f r) • (1 : S)
-        rw [smul_eq_mul (a := f r) (a' := 1), mul_one] }
+        change f r = f r • (1 : S)
+        rw [smul_eq_mul (f r) 1, mul_one] }
 
 end RestrictionCoextensionAdj
 

@@ -49,6 +49,7 @@ boolean ring, generalized boolean algebra, boolean algebra, symmetric difference
 Heyting
 -/
 
+assert_not_exists RelIso
 
 open Function OrderDual
 
