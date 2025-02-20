@@ -105,11 +105,11 @@ theorem getI_nil : getI ([] : List α) n = default :=
   rfl
 
 @[simp]
-theorem getI_cons_zero : getI (x :: xs) 0 = x := by
+theorem getI_cons_zero : getI (x :: xs) 0 = x :=
   rfl
 
 @[simp]
-theorem getI_cons_succ : getI (x :: xs) (n + 1) = getI xs n := by
+theorem getI_cons_succ : getI (x :: xs) (n + 1) = getI xs n :=
   rfl
 
 theorem getI_eq_getElem {n : ℕ} (hn : n < l.length) : l.getI n = l[n] :=
