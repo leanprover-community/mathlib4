@@ -62,8 +62,7 @@ noncomputable def vadicAbv : AbsoluteValue K ℝ where
   eq_zero' _ := by simp only [NNReal.coe_eq_zero, map_eq_zero]
   add_le' x y := by
     -- the triangle inequality is implied by the ultrametric one
-    apply le_trans _ <|
-      max_le_add_of_nonneg (zero_le ((toNNReal (norm_ne_zero v)) (v.valuation x)))
+    apply le_trans _ <| max_le_add_of_nonneg (zero_le ((toNNReal (norm_ne_zero v)) (v.valuation x)))
       (zero_le ((toNNReal (norm_ne_zero v)) (v.valuation y)))
     have h_mono := (toNNReal_strictMono (one_lt_norm_nnreal v)).monotone
     rw [← h_mono.map_max] --max goes inside withZeroMultIntToNNReal
@@ -130,14 +129,13 @@ theorem FinitePlace.norm_def (x : K) : ‖embedding v x‖ = vadicAbv v x := by
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation. -/
-theorem FinitePlace.norm_def' (x : K) :
-    ‖embedding v x‖ = toNNReal (norm_ne_zero v) (v.valuation x) := by
+theorem FinitePlace.norm_def' (x : K) : ‖embedding v x‖ = toNNReal (norm_ne_zero v)
+    (v.valuation x) := by
   rw [norm_def, vadicAbv_def]
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation for integers. -/
-theorem FinitePlace.norm_def_int (x : 𝓞 K) :
-    ‖embedding v x‖ = toNNReal (norm_ne_zero v)
+theorem FinitePlace.norm_def_int (x : 𝓞 K) : ‖embedding v x‖ = toNNReal (norm_ne_zero v)
     (v.intValuationDef x) := by
   rw [norm_def, vadicAbv_def, valuation_eq_intValuationDef]
 
@@ -161,8 +159,7 @@ theorem norm_le_one (x : 𝓞 K) : ‖embedding v x‖ ≤ 1 := by
   exact valuation_le_one v x
 
 /-- The `v`-adic norm of an integer is 1 if and only if it is not in the ideal. -/
-theorem norm_eq_one_iff_not_mem (x : 𝓞 K) :
-    ‖(embedding v) x‖ = 1 ↔ x ∉ v.asIdeal := by
+theorem norm_eq_one_iff_not_mem (x : 𝓞 K) : ‖(embedding v) x‖ = 1 ↔ x ∉ v.asIdeal := by
   rw [norm_def_int, NNReal.coe_eq_one, toNNReal_eq_one_iff (v.intValuationDef x)
     (norm_ne_zero v) (one_lt_norm_nnreal v).ne', ← dvd_span_singleton,
     ← intValuation_lt_one_iff_dvd, not_lt]
