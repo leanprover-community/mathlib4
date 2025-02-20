@@ -504,6 +504,9 @@ theorem coe_rpow_def (x : ℝ≥0) (y : ℝ) :
     (x : ℝ≥0∞) ^ y = if x = 0 ∧ y < 0 then ⊤ else ↑(x ^ y) :=
   rfl
 
+theorem rpow_ofNNReal {M : ℝ≥0} {P : ℝ} (hP : 0 ≤ P) : (M : ℝ≥0∞) ^ P = ↑(M ^ P) := by
+  rw [ENNReal.coe_rpow_of_nonneg _ hP, ← ENNReal.rpow_eq_pow]
+
 @[simp]
 theorem rpow_one (x : ℝ≥0∞) : x ^ (1 : ℝ) = x := by
   cases x
@@ -519,10 +522,12 @@ theorem one_rpow (x : ℝ) : (1 : ℝ≥0∞) ^ x = 1 := by
 
 @[simp]
 theorem rpow_eq_zero_iff {x : ℝ≥0∞} {y : ℝ} : x ^ y = 0 ↔ x = 0 ∧ 0 < y ∨ x = ⊤ ∧ y < 0 := by
-  cases' x with x
-  · rcases lt_trichotomy y 0 with (H | H | H) <;>
+  cases x with
+  | top =>
+    rcases lt_trichotomy y 0 with (H | H | H) <;>
       simp [H, top_rpow_of_neg, top_rpow_of_pos, le_of_lt]
-  · by_cases h : x = 0
+  | coe x =>
+    by_cases h : x = 0
     · rcases lt_trichotomy y 0 with (H | H | H) <;>
         simp [h, H, zero_rpow_of_neg, zero_rpow_of_pos, le_of_lt]
     · simp [← coe_rpow_of_ne_zero h, h]
@@ -532,10 +537,12 @@ lemma rpow_eq_zero_iff_of_pos {x : ℝ≥0∞} {y : ℝ} (hy : 0 < y) : x ^ y = 
 
 @[simp]
 theorem rpow_eq_top_iff {x : ℝ≥0∞} {y : ℝ} : x ^ y = ⊤ ↔ x = 0 ∧ y < 0 ∨ x = ⊤ ∧ 0 < y := by
-  cases' x with x
-  · rcases lt_trichotomy y 0 with (H | H | H) <;>
+  cases x with
+  | top =>
+    rcases lt_trichotomy y 0 with (H | H | H) <;>
       simp [H, top_rpow_of_neg, top_rpow_of_pos, le_of_lt]
-  · by_cases h : x = 0
+  | coe x =>
+    by_cases h : x = 0
     · rcases lt_trichotomy y 0 with (H | H | H) <;>
         simp [h, H, zero_rpow_of_neg, zero_rpow_of_pos, le_of_lt]
     · simp [← coe_rpow_of_ne_zero h, h]
@@ -561,10 +568,11 @@ theorem rpow_lt_top_of_nonneg {x : ℝ≥0∞} {y : ℝ} (hy0 : 0 ≤ y) (h : x 
   lt_top_iff_ne_top.mpr (ENNReal.rpow_ne_top_of_nonneg hy0 h)
 
 theorem rpow_add {x : ℝ≥0∞} (y z : ℝ) (hx : x ≠ 0) (h'x : x ≠ ⊤) : x ^ (y + z) = x ^ y * x ^ z := by
-  cases' x with x
-  · exact (h'x rfl).elim
-  have : x ≠ 0 := fun h => by simp [h] at hx
-  simp [← coe_rpow_of_ne_zero this, NNReal.rpow_add this]
+  cases x with
+  | top => exact (h'x rfl).elim
+  | coe x =>
+    have : x ≠ 0 := fun h => by simp [h] at hx
+    simp [← coe_rpow_of_ne_zero this, NNReal.rpow_add this]
 
 theorem rpow_add_of_nonneg {x : ℝ≥0∞} (y z : ℝ) (hy : 0 ≤ y) (hz : 0 ≤ z) :
     x ^ (y + z) = x ^ y * x ^ z := by
@@ -577,10 +585,12 @@ theorem rpow_add_of_nonneg {x : ℝ≥0∞} (y z : ℝ) (hy : 0 ≤ y) (hz : 0 �
   simp [← coe_rpow_of_nonneg, hy, hz, add_nonneg hy hz, NNReal.rpow_add_of_nonneg _ hy hz]
 
 theorem rpow_neg (x : ℝ≥0∞) (y : ℝ) : x ^ (-y) = (x ^ y)⁻¹ := by
-  cases' x with x
-  · rcases lt_trichotomy y 0 with (H | H | H) <;>
+  cases x with
+  | top =>
+    rcases lt_trichotomy y 0 with (H | H | H) <;>
       simp [top_rpow_of_pos, top_rpow_of_neg, H, neg_pos.mpr]
-  · by_cases h : x = 0
+  | coe x =>
+    by_cases h : x = 0
     · rcases lt_trichotomy y 0 with (H | H | H) <;>
         simp [h, zero_rpow_of_pos, zero_rpow_of_neg, H, neg_pos.mpr]
     · have A : x ^ y ≠ 0 := by simp [h]
@@ -592,12 +602,14 @@ theorem rpow_sub {x : ℝ≥0∞} (y z : ℝ) (hx : x ≠ 0) (h'x : x ≠ ⊤) :
 theorem rpow_neg_one (x : ℝ≥0∞) : x ^ (-1 : ℝ) = x⁻¹ := by simp [rpow_neg]
 
 theorem rpow_mul (x : ℝ≥0∞) (y z : ℝ) : x ^ (y * z) = (x ^ y) ^ z := by
-  cases' x with x
-  · rcases lt_trichotomy y 0 with (Hy | Hy | Hy) <;>
+  cases x with
+  | top =>
+    rcases lt_trichotomy y 0 with (Hy | Hy | Hy) <;>
         rcases lt_trichotomy z 0 with (Hz | Hz | Hz) <;>
       simp [Hy, Hz, zero_rpow_of_neg, zero_rpow_of_pos, top_rpow_of_neg, top_rpow_of_pos,
         mul_pos_of_neg_of_neg, mul_neg_of_neg_of_pos, mul_neg_of_pos_of_neg]
-  · by_cases h : x = 0
+  | coe x =>
+    by_cases h : x = 0
     · rcases lt_trichotomy y 0 with (Hy | Hy | Hy) <;>
           rcases lt_trichotomy z 0 with (Hz | Hz | Hz) <;>
         simp [h, Hy, Hz, zero_rpow_of_neg, zero_rpow_of_pos, top_rpow_of_neg, top_rpow_of_pos,
@@ -857,11 +869,12 @@ theorem one_le_rpow_of_pos_of_le_one_of_neg {x : ℝ≥0∞} {z : ℝ} (hx1 : 0 
 
 @[simp] lemma toNNReal_rpow (x : ℝ≥0∞) (z : ℝ) : (x ^ z).toNNReal = x.toNNReal ^ z := by
   rcases lt_trichotomy z 0 with (H | H | H)
-  · cases' x with x
-    · simp [H, ne_of_lt]
-    by_cases hx : x = 0
-    · simp [hx, H, ne_of_lt]
-    · simp [← coe_rpow_of_ne_zero hx]
+  · cases x with
+    | top => simp [H, ne_of_lt]
+    | coe x =>
+      by_cases hx : x = 0
+      · simp [hx, H, ne_of_lt]
+      · simp [← coe_rpow_of_ne_zero hx]
   · simp [H]
   · cases x
     · simp [H, ne_of_gt]
