@@ -102,31 +102,6 @@ end IsDetecting
 
 namespace IsGrothendieckAbelian
 
-section
-
-variable {J : Type w} [SmallCategory J] {X : C} (F : J ⥤ MonoOver X) [Abelian C]
-  [IsGrothendieckAbelian.{w} C]
-  [IsFiltered J] (c : Cocone (F ⋙ MonoOver.forget _)) [Mono c.pt.hom]
-  (h : Subobject.mk c.pt.hom = ⨆ j, Subobject.mk (F.obj j).obj.hom)
-
-noncomputable def isColimitMapCoconeOfSubobjectMkEqISup :
-    IsColimit ((Over.forget _).mapCocone c) := by
-  let f : colimit (F ⋙ MonoOver.forget X ⋙ Over.forget X) ⟶ X :=
-    colimit.desc _ (Cocone.mk X
-      { app j := (F.obj j).obj.hom
-        naturality {j j'} g := by simp [MonoOver.forget] })
-  have := mono_of_isColimit_monoOver F (colimit.isColimit _) f (by simp [f])
-  have := subobject_mk_of_isColimit_eq_iSup F (colimit.isColimit _) f (by simp [f])
-  rw [← h] at this
-  refine IsColimit.ofIsoColimit (colimit.isColimit _)
-    (Cocones.ext (Subobject.isoOfMkEqMk _ _ this) (fun j ↦ ?_))
-  rw [← cancel_mono (c.pt.hom)]
-  dsimp
-  rw [Category.assoc, Subobject.ofMkLEMk_comp, Over.w]
-  apply colimit.ι_desc
-
-end
-
 def generatingMonomorphisms (G : C) : MorphismProperty C :=
   MorphismProperty.ofHoms (fun (X : Subobject G) ↦ X.arrow)
 
