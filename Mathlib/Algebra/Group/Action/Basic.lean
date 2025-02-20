@@ -17,7 +17,7 @@ This file contains lemmas about group actions that require more imports than
 
 assert_not_exists MonoidWithZero
 
-variable {α β : Type*}
+variable {G M A B α β : Type*}
 
 section MulAction
 
@@ -147,3 +147,68 @@ variable [Group α] [Monoid β] [MulAction α β] [SMulCommClass α β β] [IsSc
   ⟨fun h => inv_smul_smul g m ▸ h.smul g⁻¹, IsUnit.smul g⟩
 
 end SMul
+
+section MulDistribMulAction
+variable [Monoid M] [Monoid A] [MulDistribMulAction M A]
+
+/-- Pullback a multiplicative distributive multiplicative action along an injective monoid
+homomorphism. -/
+-- See note [reducible non-instances]
+protected abbrev Function.Injective.mulDistribMulAction [Monoid B] [SMul M B] (f : B →* A)
+    (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulDistribMulAction M B where
+  __ := hf.mulAction f smul
+  smul_mul c x y := hf <| by simp only [smul, f.map_mul, smul_mul']
+  smul_one c := hf <| by simp only [smul, f.map_one, smul_one]
+
+/-- Pushforward a multiplicative distributive multiplicative action along a surjective monoid
+homomorphism. -/
+-- See note [reducible non-instances]
+protected abbrev Function.Surjective.mulDistribMulAction [Monoid B] [SMul M B] (f : A →* B)
+    (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulDistribMulAction M B where
+  __ := hf.mulAction f smul
+  smul_mul c := by simp only [hf.forall, smul_mul', ← smul, ← f.map_mul, implies_true]
+  smul_one c := by rw [← f.map_one, ← smul, smul_one]
+
+variable (A) in
+/-- Scalar multiplication by `r` as a `MonoidHom`. -/
+@[simps] def MulDistribMulAction.toMonoidHom (r : M) : A →* A where
+  toFun := (r • ·)
+  map_one' := smul_one r
+  map_mul' := smul_mul' r
+
+@[simp] lemma smul_pow' (r : M) (x : A) (n : ℕ) : r • x ^ n = (r • x) ^ n :=
+  (MulDistribMulAction.toMonoidHom _ _).map_pow _ _
+
+variable (M A) in
+/-- Each element of the monoid defines a monoid homomorphism. -/
+@[simps]
+def MulDistribMulAction.toMonoidEnd : M →* Monoid.End A where
+  toFun := MulDistribMulAction.toMonoidHom A
+  map_one' := MonoidHom.ext <| one_smul M
+  map_mul' x y := MonoidHom.ext <| mul_smul x y
+
+end MulDistribMulAction
+
+section MulDistribMulAction
+variable [Group G] [Monoid M] [MulDistribMulAction G M]
+variable (M)
+
+/-- Each element of the group defines a multiplicative monoid isomorphism.
+
+This is a stronger version of `MulAction.toPerm`. -/
+@[simps (config := { simpRhs := true })]
+def MulDistribMulAction.toMulEquiv (x : G) : M ≃* M :=
+  { MulDistribMulAction.toMonoidHom M x, MulAction.toPermHom G M x with }
+
+end MulDistribMulAction
+
+section MulDistribMulAction
+variable [Monoid M] [Group A] [MulDistribMulAction M A]
+
+@[simp] lemma smul_inv' (r : M) (x : A) : r • x⁻¹ = (r • x)⁻¹ :=
+  (MulDistribMulAction.toMonoidHom A r).map_inv x
+
+lemma smul_div' (r : M) (x y : A) : r • (x / y) = r • x / r • y :=
+  map_div (MulDistribMulAction.toMonoidHom A r) x y
+
+end MulDistribMulAction

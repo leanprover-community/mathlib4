@@ -492,3 +492,22 @@ lemma SMulCommClass.of_mul_smul_one {M N} [Monoid N] [SMul M N]
   ⟨fun x y z ↦ by rw [← H x z, smul_eq_mul, ← H, smul_eq_mul, mul_assoc]⟩
 
 end CompatibleScalar
+
+/-- Typeclass for multiplicative actions on multiplicative structures. This generalizes
+conjugation actions. -/
+@[ext]
+class MulDistribMulAction (M N : Type*) [Monoid M] [Monoid N] extends MulAction M N where
+  /-- Distributivity of `•` across `*` -/
+  smul_mul : ∀ (r : M) (x y : N), r • (x * y) = r • x * r • y
+  /-- Multiplying `1` by a scalar gives `1` -/
+  smul_one : ∀ r : M, r • (1 : N) = 1
+
+export MulDistribMulAction (smul_one)
+
+section MulDistribMulAction
+variable [Monoid M] [Monoid N] [MulDistribMulAction M N]
+
+lemma smul_mul' (a : M) (b₁ b₂ : N) : a • (b₁ * b₂) = a • b₁ * a • b₂ :=
+  MulDistribMulAction.smul_mul ..
+
+end MulDistribMulAction
