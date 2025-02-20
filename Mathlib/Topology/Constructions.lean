@@ -1009,7 +1009,7 @@ theorem IsOpenMap.sum_elim {f : X → Z} {g : Y → Z} (hf : IsOpenMap f) (hg : 
     IsOpenMap (Sum.elim f g) :=
   isOpenMap_sum_elim.2 ⟨hf, hg⟩
 
-lemma IsOpenEmbedding.sum_elim {f : X → Z} {g : Y → Z}
+lemma IsOpenEmbedding.sumElim {f : X → Z} {g : Y → Z}
     (hf : IsOpenEmbedding f) (hg : IsOpenEmbedding g) (h : Injective (Sum.elim f g)) :
     IsOpenEmbedding (Sum.elim f g) := by
   rw [isOpenEmbedding_iff_continuous_injective_isOpenMap] at hf hg ⊢
@@ -1031,19 +1031,19 @@ theorem IsClosedMap.sumMap {f : X → Y} {g : Z → W} (hf : IsClosedMap f) (hg 
   isClosedMap_sum.2 ⟨isClosedMap_inl.comp hf, isClosedMap_inr.comp hg⟩
 
 @[simp]
-theorem isClosedMap_sum_elim {f : X → Z} {g : Y → Z} :
+theorem isClosedMap_sumElim {f : X → Z} {g : Y → Z} :
     IsClosedMap (Sum.elim f g) ↔ IsClosedMap f ∧ IsClosedMap g := by
   simp only [isClosedMap_sum, Sum.elim_inl, Sum.elim_inr]
 
-theorem IsClosedMap.sum_elim {f : X → Z} {g : Y → Z} (hf : IsClosedMap f) (hg : IsClosedMap g) :
+theorem IsClosedMap.sumElim {f : X → Z} {g : Y → Z} (hf : IsClosedMap f) (hg : IsClosedMap g) :
     IsClosedMap (Sum.elim f g) :=
-  isClosedMap_sum_elim.2 ⟨hf, hg⟩
+  isClosedMap_sumElim.2 ⟨hf, hg⟩
 
-lemma IsClosedEmbedding.sum_elim {f : X → Z} {g : Y → Z}
+lemma IsClosedEmbedding.sumElim {f : X → Z} {g : Y → Z}
     (hf : IsClosedEmbedding f) (hg : IsClosedEmbedding g) (h : Injective (Sum.elim f g)) :
     IsClosedEmbedding (Sum.elim f g) := by
   rw [IsClosedEmbedding.isClosedEmbedding_iff_continuous_injective_isClosedMap] at hf hg ⊢
-  exact ⟨hf.1.sum_elim hg.1, h, hf.2.2.sum_elim hg.2.2⟩
+  exact ⟨hf.1.sum_elim hg.1, h, hf.2.2.sumElim hg.2.2⟩
 
 end Sum
 
