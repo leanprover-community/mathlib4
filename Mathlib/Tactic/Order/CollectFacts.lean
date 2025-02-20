@@ -109,11 +109,14 @@ Similarly for `⊓`. -/
 partial def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFactsM Nat := do
   modify fun res => res.insertIfNew type (.empty, #[])
   let (atomToIdx, facts) := (← get).get! type
-  if (← atomToIdx.getMatch x).isEmpty then
-    let atomToIdxNew ← atomToIdx.insert x (atomToIdx.size, x)
+  let idx ←  match ← (← atomToIdx.getUnify x).findM? fun (_, e) => isDefEq x e with
+  | none =>
+    let idx := atomToIdx.size
+    let atomToIdxNew ← atomToIdx.insert x (idx, x)
     modify fun res => res.insert type (atomToIdxNew, facts)
+    pure idx
+  | some (idx, _) => pure idx
   let (atomToIdx, _) := (← get).get! type
-  let #[(idx, _)] ← atomToIdx.getMatch x | throwError "bug"
   if idx + 1 == atomToIdx.size then -- If new atom
     if ← isTop type x then
       modify fun res => res.modify type fun (atomToIdx, facts) =>
