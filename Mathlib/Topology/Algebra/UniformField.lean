@@ -47,7 +47,7 @@ which does not have a cluster point at 0 is a Cauchy filter
 (with respect to the additive uniform structure). This ensures the completion is
 a field.
 -/
-class CompletableTopField extends T0Space K : Prop where
+class CompletableTopField : Prop extends T0Space K where
   nice : ∀ F : Filter K, Cauchy F → 𝓝 0 ⊓ F = ⊥ → Cauchy (map (fun x => x⁻¹) F)
 
 namespace UniformSpace

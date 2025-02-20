@@ -64,27 +64,27 @@ class IsTotal (α : Sort*) (r : α → α → Prop) : Prop where
 
 /-- `IsPreorder X r` means that the binary relation `r` on `X` is a pre-order, that is, reflexive
 and transitive. -/
-class IsPreorder (α : Sort*) (r : α → α → Prop) extends IsRefl α r, IsTrans α r : Prop
+class IsPreorder (α : Sort*) (r : α → α → Prop) : Prop extends IsRefl α r, IsTrans α r
 
 /-- `IsPartialOrder X r` means that the binary relation `r` on `X` is a partial order, that is,
 `IsPreorder X r` and `IsAntisymm X r`. -/
-class IsPartialOrder (α : Sort*) (r : α → α → Prop) extends IsPreorder α r, IsAntisymm α r : Prop
+class IsPartialOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsPreorder α r, IsAntisymm α r
 
 /-- `IsLinearOrder X r` means that the binary relation `r` on `X` is a linear order, that is,
 `IsPartialOrder X r` and `IsTotal X r`. -/
-class IsLinearOrder (α : Sort*) (r : α → α → Prop) extends IsPartialOrder α r, IsTotal α r : Prop
+class IsLinearOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsPartialOrder α r, IsTotal α r
 
 /-- `IsEquiv X r` means that the binary relation `r` on `X` is an equivalence relation, that
 is, `IsPreorder X r` and `IsSymm X r`. -/
-class IsEquiv (α : Sort*) (r : α → α → Prop) extends IsPreorder α r, IsSymm α r : Prop
+class IsEquiv (α : Sort*) (r : α → α → Prop) : Prop extends IsPreorder α r, IsSymm α r
 
 /-- `IsStrictOrder X r` means that the binary relation `r` on `X` is a strict order, that is,
 `IsIrrefl X r` and `IsTrans X r`. -/
-class IsStrictOrder (α : Sort*) (r : α → α → Prop) extends IsIrrefl α r, IsTrans α r : Prop
+class IsStrictOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsIrrefl α r, IsTrans α r
 
 /-- `IsStrictWeakOrder X lt` means that the binary relation `lt` on `X` is a strict weak order,
 that is, `IsStrictOrder X lt` and `¬lt a b ∧ ¬lt b a → ¬lt b c ∧ ¬lt c b → ¬lt a c ∧ ¬lt c a`. -/
-class IsStrictWeakOrder (α : Sort*) (lt : α → α → Prop) extends IsStrictOrder α lt : Prop where
+class IsStrictWeakOrder (α : Sort*) (lt : α → α → Prop) : Prop extends IsStrictOrder α lt where
   incomp_trans : ∀ a b c, ¬lt a b ∧ ¬lt b a → ¬lt b c ∧ ¬lt c b → ¬lt a c ∧ ¬lt c a
 
 /-- `IsTrichotomous X lt` means that the binary relation `lt` on `X` is trichotomous, that is,

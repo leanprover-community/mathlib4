@@ -184,7 +184,7 @@ The return type is `List Expr`, since some preprocessing steps may create multip
 and some may remove a hypothesis from the list.
 A "no-op" preprocessor should return its input as a singleton list.
 -/
-structure Preprocessor extends PreprocessorBase : Type where
+structure Preprocessor : Type extends PreprocessorBase where
   /-- Replace a hypothesis by a list of hypotheses. These expressions are the proof terms. -/
   transform : Expr → MetaM (List Expr)
 
@@ -193,7 +193,7 @@ Some preprocessors need to examine the full list of hypotheses instead of workin
 As with `Preprocessor`, the input to a `GlobalPreprocessor` is replaced by, not added to, its
 output.
 -/
-structure GlobalPreprocessor extends PreprocessorBase : Type where
+structure GlobalPreprocessor : Type extends PreprocessorBase where
   /-- Replace the collection of all hypotheses with new hypotheses.
   These expressions are proof terms. -/
   transform : List Expr → MetaM (List Expr)
@@ -213,7 +213,7 @@ Each branch is independent, so hypotheses that appear in multiple branches shoul
 The preprocessor is responsible for making sure that each branch contains the correct goal
 metavariable.
 -/
-structure GlobalBranchingPreprocessor extends PreprocessorBase : Type where
+structure GlobalBranchingPreprocessor : Type extends PreprocessorBase where
   /-- Given a goal, and a list of hypotheses,
   produce a list of pairs (consisting of a goal and list of hypotheses). -/
   transform : MVarId → List Expr → MetaM (List Branch)

@@ -156,8 +156,8 @@ end naturalityProperty
 
 /-- A morphism property is multiplicative if it contains identities and is stable by
 composition. -/
-class IsMultiplicative (W : MorphismProperty C)
-    extends W.ContainsIdentities, W.IsStableUnderComposition : Prop
+class IsMultiplicative (W : MorphismProperty C) : Prop
+    extends W.ContainsIdentities, W.IsStableUnderComposition
 
 namespace IsMultiplicative
 

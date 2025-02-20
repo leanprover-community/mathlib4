@@ -23,7 +23,13 @@ def readJsonFile (α) [FromJson α] (path : System.FilePath) : IO α := do
   let _ : MonadExceptOf String IO := ⟨throw ∘ IO.userError, fun x _ => x⟩
   liftExcept <| fromJson? <|← liftExcept <| Json.parse <|← IO.FS.readFile path
 
-def databases : List String := ["undergrad", "overview", "100", "1000"]
+
+def databases : List String :=
+  -- FIXME: do not merge to `master` as is!
+  -- This is temporarily disabled while some files are commented out.
+  -- See https://leanprover.zulipchat.com/#narrow/channel/428973-nightly-testing/topic/breakages.20from.20leanprover.2Flean4.237059
+  []
+  -- ["undergrad", "overview", "100", "1000"]
 
 def processDb (decls : ConstMap) : String → IO Bool
 | file => do
@@ -40,8 +46,9 @@ def processDb (decls : ConstMap) : String → IO Bool
     return false
 
 unsafe def main : IO Unit := do
+  let searchPath ← addSearchPathFromEnv (← getBuiltinSearchPath (← findSysroot))
   CoreM.withImportModules #[`Mathlib, `Archive]
-      (searchPath := compile_time_search_path%) (trustLevel := 1024) do
+      (searchPath := searchPath) (trustLevel := 1024) do
     let decls := (← getEnv).constants
     let results ← databases.mapM (fun p ↦ processDb decls p)
     if results.any id then
