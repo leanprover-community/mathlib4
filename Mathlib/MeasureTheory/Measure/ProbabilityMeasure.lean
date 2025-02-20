@@ -562,39 +562,18 @@ open Measure
 local instance {α : Type*} [MeasurableSpace α] : MeasurableSpace (ProbabilityMeasure α) :=
   Subtype.instMeasurableSpace
 
-/-- Monoidal product for probability measures: The product of two probability measures
-is their product measure. -/
-abbrev monoidal_product {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
-    (ProbabilityMeasure α × ProbabilityMeasure β) -> Measure (α × β) :=
-  fun μ => Measure.prod (Subtype.val μ.1) (Subtype.val μ.2)
-
-/-- The monoidal product of two probability measures is a probability measure. -/
-local instance (α β : Type*) [MeasurableSpace α] [MeasurableSpace β]
-  (μ : ProbabilityMeasure α × ProbabilityMeasure β) :
-    IsProbabilityMeasure (monoidal_product μ) where
-  measure_univ := by rcases μ with ⟨⟨_, _⟩, ⟨_, _⟩⟩; simp
-
-local instance (α β : Type*) [MeasurableSpace α] [MeasurableSpace β]
-  (μ : ProbabilityMeasure α × ProbabilityMeasure β) :
-    SFinite (μ.2.val) := by rcases μ with ⟨_, ⟨_, _⟩⟩; simp; infer_instance
-
 /-- The monoidal product is a measurable function from the product of probability spaces over
 ``α`` and ``β`` into the type of probability spaces over ``α × β`` -/
-theorem measurable_monoidal_product {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
-    Measurable (@monoidal_product α β _ _) := by
+theorem measurable_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
+    Measurable (fun (μ : ProbabilityMeasure α × ProbabilityMeasure β)
+      ↦ μ.1.toMeasure.prod μ.2.toMeasure) := by
   apply Measurable.measure_of_isPiSystem generateFrom_prod.symm isPiSystem_prod _ (by simp)
   simp only [mem_image2, mem_setOf_eq, forall_exists_index, and_imp]
   intros _ u Hu v Hv Heq
-  rw [<- Heq, funext <| fun a => MeasureTheory.Measure.prod_prod u v]
+  simp_rw [← Heq, prod_prod]
   apply Measurable.mul
-  · rw [<- comp_def (fun μ => μ u) (fun (μ : ProbabilityMeasure _ × _) => μ.1.val),
-        <- comp_def _ Prod.fst]
-    apply Measurable.comp (measurable_coe Hu) <|
-          Measurable.comp measurable_subtype_coe measurable_fst
-  · rw [<- comp_def (fun μ => μ v) (fun (μ : _ × ProbabilityMeasure _) => μ.2.val),
-        <- comp_def _ Prod.snd]
-    apply Measurable.comp (measurable_coe Hv) <|
-          Measurable.comp measurable_subtype_coe measurable_snd
+  · exact (measurable_coe Hu).comp (measurable_subtype_coe.comp measurable_fst)
+  · exact (measurable_coe Hv).comp (measurable_subtype_coe.comp measurable_snd)
 
 end MonoidalProduct
 
