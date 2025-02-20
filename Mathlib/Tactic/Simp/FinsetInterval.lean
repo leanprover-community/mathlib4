@@ -96,10 +96,11 @@ simproc_decl Ico_nat (Ico _ _) := fun e ↦ do
   | 0 =>
     return .done { expr := (q(∅) : Q(Finset ℕ)), proof? := q(Ico_zero $em) }
   | n + 1 =>
-    let hn₀ ← mkDecideProofQq q($en ≠ 0)
+    have en' := mkRawNatLitQq n
+    have : $en =Q $en' + 1 := ⟨⟩
     let hn := q(isNat_natPred $hn rfl)
     let ⟨s, p⟩ ← evalFinsetIccNat m n hm hn
-    return .done { expr := s, proof? := q(Ico_eq_of_Icc_pred_eq $hn₀ $p) }
+    return .done { expr := s, proof? := q(Ico_eq_of_Icc_pred_eq (Nat.succ_ne_zero _) $p) }
 
 /-- Simproc to compute `Finset.Ioc a b` when `a b : ℕ`. -/
 simproc_decl Ioc_nat (Ioc _ _) := fun e ↦ do
@@ -153,10 +154,11 @@ simproc_decl Iio_nat (Iio _) := fun e ↦ do
   | 0 =>
     return .done { expr := (q(∅) : Q(Finset ℕ)), proof? := q(Iio_zero) }
   | n + 1 =>
-    let hn₀ ← mkDecideProofQq q($en ≠ 0)
+    have en' := mkRawNatLitQq n
+    have : $en =Q $en' + 1 := ⟨⟩
     let hn := q(isNat_natPred $hn rfl)
     let ⟨s, p⟩ ← evalFinsetIccNat 0 n q(isNat_zero' _) hn
-    return .done { expr := s, proof? := q(Iio_eq_of_Icc_zero_pred_eq $hn₀ $p) }
+    return .done { expr := s, proof? := q(Iio_eq_of_Icc_zero_pred_eq (Nat.succ_ne_zero _) $p) }
 
 example : Icc 1 0 = ∅ := by simp only [Icc_nat]
 example : Icc 1 1 = {1} := by simp only [Icc_nat]
