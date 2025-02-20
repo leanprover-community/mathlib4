@@ -3,6 +3,7 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Edward Ayers, Mario Carneiro
 -/
+import Mathlib.Init
 import Lean.Elab.Binders
 import Lean.Elab.SyntheticMVars
 import Lean.Meta.Tactic.Assert
@@ -72,7 +73,7 @@ def haveLetCore (goal : MVarId) (name : TSyntax ``optBinderIdent)
       | none => mkFreshTypeMVar
       | some stx => withRef stx do
         let e ← Term.elabType stx
-        Term.synthesizeSyntheticMVars false
+        Term.synthesizeSyntheticMVars (postpone := .no)
         instantiateMVars e
       let p ← mkFreshExprMVar t MetavarKind.syntheticOpaque n
       pure (p.mvarId!, ← mkForallFVars es t, ← mkLambdaFVars es p)
@@ -100,3 +101,5 @@ elab_rules : tactic
 | `(tactic| let $n:optBinderIdent $bs* $[: $t:term]?) => withMainContext do
   let (goal1, goal2) ← haveLetCore (← getMainGoal) n bs t true
   replaceMainGoal [goal1, goal2]
+
+end Mathlib.Tactic

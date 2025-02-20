@@ -3,17 +3,16 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Int
-import Mathlib.Algebra.Group.Nat
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.GroupTheory.GroupAction.Opposite
-
-#align_import algebra.hom.iterate from "leanprover-community/mathlib"@"792a2a264169d64986541c6f8f7e3bbb6acb6295"
+import Mathlib.Algebra.Group.Action.Opposite
+import Mathlib.Logic.Function.Iterate
+import Mathlib.Tactic.Common
+import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
-# Iterates of monoid and ring homomorphisms
+# Iterates of monoid homomorphisms
 
-Iterate of a monoid/ring homomorphism is a monoid/ring homomorphism but it has a wrong type, so Lean
+Iterate of a monoid homomorphism is a monoid homomorphism but it has a wrong type, so Lean
 can't apply lemmas like `MonoidHom.map_one` to `f^[n] 1`. Though it is possible to define
 a monoid structure on the endomorphisms, quite often we do not want to convert from
 `M →* M` to `Monoid.End M` and from `f^[n]` to `f^n` just to apply a simple lemma.
@@ -27,10 +26,11 @@ We also prove formulas for iterates of add/mul left/right.
 homomorphism, iterate
 -/
 
+assert_not_exists MonoidWithZero DenselyOrdered
 
 open Function
 
-variable {M : Type*} {N : Type*} {G : Type*} {H : Type*}
+variable {M : Type*} {G : Type*} {H : Type*}
 
 /-- An auxiliary lemma that can be used to prove `⇑(f ^ n) = ⇑f^[n]`. -/
 theorem hom_coe_pow {F : Type*} [Monoid F] (c : F → M → M) (h1 : c 1 = id)
@@ -39,7 +39,6 @@ theorem hom_coe_pow {F : Type*} [Monoid F] (c : F → M → M) (h1 : c 1 = id)
     rw [pow_zero, h1]
     rfl
   | n + 1 => by rw [pow_succ, iterate_succ, hmul, hom_coe_pow c h1 hmul f n]
-#align hom_coe_pow hom_coe_pow
 
 @[to_additive (attr := simp)]
 theorem iterate_map_mul {M F : Type*} [Mul M] [FunLike F M M] [MulHomClass F M M]
@@ -77,38 +76,6 @@ theorem iterate_map_zpow {M F : Type*} [Group M] [FunLike F M M] [MonoidHomClass
     f^[n] (x ^ k) = f^[n] x ^ k :=
   Commute.iterate_left (map_zpow f · k) n x
 
-namespace MonoidHom
-
-variable [Monoid M] [Monoid N] [Group G] [Group H]
-
-theorem coe_pow {M} [CommMonoid M] (f : Monoid.End M) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  hom_coe_pow _ rfl (fun _ _ => rfl) _ _
-#align monoid_hom.coe_pow MonoidHom.coe_pow
-
-end MonoidHom
-
-theorem Monoid.End.coe_pow {M} [Monoid M] (f : Monoid.End M) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  hom_coe_pow _ rfl (fun _ _ => rfl) _ _
-#align monoid.End.coe_pow Monoid.End.coe_pow
-
-theorem AddMonoid.End.coe_pow {A} [AddMonoid A] (f : AddMonoid.End A) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  hom_coe_pow _ rfl (fun _ _ => rfl) _ _
-#align add_monoid.End.coe_pow AddMonoid.End.coe_pow
-
-namespace RingHom
-
-section Semiring
-
-variable {R : Type*} [Semiring R] (f : R →+* R) (n : ℕ) (x y : R)
-
-theorem coe_pow (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  hom_coe_pow _ rfl (fun _ _ => rfl) f n
-#align ring_hom.coe_pow RingHom.coe_pow
-
-end Semiring
-
-end RingHom
-
 --what should be the namespace for this section?
 section Monoid
 
@@ -119,8 +86,6 @@ theorem smul_iterate [MulAction G H] : (a • · : H → H)^[n] = (a ^ n • ·)
   funext fun b =>
     Nat.recOn n (by rw [iterate_zero, id, pow_zero, one_smul])
     fun n ih => by rw [iterate_succ', comp_apply, ih, pow_succ', mul_smul]
-#align smul_iterate smul_iterate
-#align vadd_iterate vadd_iterate
 
 @[to_additive]
 lemma smul_iterate_apply [MulAction G H] {b : H} : (a • ·)^[n] b = a ^ n • b := by
@@ -129,19 +94,13 @@ lemma smul_iterate_apply [MulAction G H] {b : H} : (a • ·)^[n] b = a ^ n • 
 @[to_additive (attr := simp)]
 theorem mul_left_iterate : (a * ·)^[n] = (a ^ n * ·) :=
   smul_iterate a n
-#align mul_left_iterate mul_left_iterate
-#align add_left_iterate add_left_iterate
 
 @[to_additive (attr := simp)]
 theorem mul_right_iterate : (· * a)^[n] = (· * a ^ n) :=
   smul_iterate (MulOpposite.op a) n
-#align mul_right_iterate mul_right_iterate
-#align add_right_iterate add_right_iterate
 
 @[to_additive]
 theorem mul_right_iterate_apply_one : (· * a)^[n] 1 = a ^ n := by simp [mul_right_iterate]
-#align mul_right_iterate_apply_one mul_right_iterate_apply_one
-#align add_right_iterate_apply_zero add_right_iterate_apply_zero
 
 @[to_additive (attr := simp)]
 theorem pow_iterate (n : ℕ) (j : ℕ) : (fun x : G => x ^ n)^[j] = fun x : G => x ^ n ^ j :=
@@ -150,8 +109,6 @@ theorem pow_iterate (n : ℕ) (j : ℕ) : (fun x : G => x ^ n)^[j] = fun x : G =
       one_smul := pow_one
       mul_smul := fun m n g => pow_mul' g m n }
   smul_iterate n j
-#align pow_iterate pow_iterate
-#align nsmul_iterate nsmul_iterate
 
 end Monoid
 
@@ -166,8 +123,6 @@ theorem zpow_iterate (n : ℤ) (j : ℕ) : (fun x : G => x ^ n)^[j] = fun x => x
       one_smul := zpow_one
       mul_smul := fun m n g => zpow_mul' g m n }
   smul_iterate n j
-#align zpow_iterate zpow_iterate
-#align zsmul_iterate zsmul_iterate
 
 end Group
 
@@ -175,34 +130,26 @@ section Semigroup
 
 variable [Semigroup G] {a b c : G}
 
--- Porting note(#12129): additional beta reduction needed
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
 -- see also https://leanprover.zulipchat.com/#narrow/stream/
 -- 287929-mathlib4/topic/dsimp.20before.20rw/near/317063489
 @[to_additive]
 theorem SemiconjBy.function_semiconj_mul_left (h : SemiconjBy a b c) :
     Function.Semiconj (a * ·) (b * ·) (c * ·) := fun j => by
   beta_reduce; rw [← mul_assoc, h.eq, mul_assoc]
-#align semiconj_by.function_semiconj_mul_left SemiconjBy.function_semiconj_mul_left
-#align add_semiconj_by.function_semiconj_add_left AddSemiconjBy.function_semiconj_add_left
 
 @[to_additive]
 theorem Commute.function_commute_mul_left (h : Commute a b) :
     Function.Commute (a * ·) (b * ·) :=
   SemiconjBy.function_semiconj_mul_left h
-#align commute.function_commute_mul_left Commute.function_commute_mul_left
-#align add_commute.function_commute_add_left AddCommute.function_commute_add_left
 
 @[to_additive]
 theorem SemiconjBy.function_semiconj_mul_right_swap (h : SemiconjBy a b c) :
     Function.Semiconj (· * a) (· * c) (· * b) := fun j => by simp_rw [mul_assoc, ← h.eq]
-#align semiconj_by.function_semiconj_mul_right_swap SemiconjBy.function_semiconj_mul_right_swap
-#align add_semiconj_by.function_semiconj_add_right_swap AddSemiconjBy.function_semiconj_add_right_swap
 
 @[to_additive]
 theorem Commute.function_commute_mul_right (h : Commute a b) :
     Function.Commute (· * a) (· * b) :=
   SemiconjBy.function_semiconj_mul_right_swap h
-#align commute.function_commute_mul_right Commute.function_commute_mul_right
-#align add_commute.function_commute_add_right AddCommute.function_commute_add_right
 
 end Semigroup

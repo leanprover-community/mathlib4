@@ -4,19 +4,34 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
 import Lean
-import Std
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
+import Mathlib.Tactic.Linter.OldObtain
 
-set_option autoImplicit true
+/-!
+# Basic tactics and utilities for tactic writing
+
+This file defines some basic utilities for tactic writing, and also
+- a dummy `variables` macro (which warns that the Lean 4 name is `variable`)
+- the `introv` tactic, which allows the user to automatically introduce the variables of a theorem
+and explicitly name the non-dependent hypotheses,
+- an `assumption` macro, calling the `assumption` tactic on all goals
+- the tactics `match_target`, `clear_aux_decl` (clearing all auxiliary declarations from the
+context) and `clear_value` (which clears the bodies of given local definitions,
+changing them into regular hypotheses).
+-/
 
 namespace Mathlib.Tactic
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
+/-- Syntax for the `variables` command: this command is just a stub,
+and merely warns that it has been renamed to `variable` in Lean 4. -/
 syntax (name := «variables») "variables" (ppSpace bracketedBinder)* : command
 
+/-- The `variables` command: this is just a stub,
+and merely warns that it has been renamed to `variable` in Lean 4. -/
 @[command_elab «variables»] def elabVariables : CommandElab
   | `(variables%$pos $binders*) => do
     logWarningAt pos "'variables' has been replaced by 'variable' in lean 4"
@@ -29,7 +44,7 @@ Recall that variables linked this way should be considered to be semantically id
 
 The effect of this is, for example, the unused variable linter will see that variables
 from the first array are used if corresponding variables in the second array are used. -/
-def pushFVarAliasInfo [Monad m] [MonadInfoTree m]
+def pushFVarAliasInfo {m : Type → Type} [Monad m] [MonadInfoTree m]
     (oldFVars newFVars : Array FVarId) (newLCtx : LocalContext) : m Unit := do
   for old in oldFVars, new in newFVars do
     if old != new then
@@ -142,3 +157,5 @@ elab (name := clearValue) "clear_value" hs:(ppSpace colGt term:max)+ : tactic =>
       replaceMainGoal [mvarId]
 
 attribute [pp_with_univ] ULift PUnit PEmpty
+
+end Mathlib.Tactic

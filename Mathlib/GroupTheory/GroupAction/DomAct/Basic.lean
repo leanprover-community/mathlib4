@@ -5,7 +5,9 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Algebra.Group.Action.Faithful
+import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Type tags for right action on the domain of a function
@@ -110,7 +112,7 @@ run_cmd
     `RightCancelSemigroup, `MulOneClass, `Monoid, `CommMonoid, `LeftCancelMonoid,
     `RightCancelMonoid, `CancelMonoid, `CancelCommMonoid, `InvolutiveInv, `DivInvMonoid,
     `InvOneClass, `DivInvOneMonoid, `DivisionMonoid, `DivisionCommMonoid, `Group,
-    `CommGroup, `NonAssocSemiring, `NonUnitalSemiring, `NonAssocSemiring, `Semiring,
+    `CommGroup, `NonAssocSemiring, `NonUnitalSemiring, `Semiring,
     `Ring, `CommRing].map Lean.mkIdent do
   Lean.Elab.Command.elabCommand (← `(
     @[to_additive] instance [$n Mᵐᵒᵖ] : $n Mᵈᵐᵃ := ‹_›
@@ -260,3 +262,5 @@ instance [Monoid M] [Monoid A] [MulDistribMulAction M A] [CommMonoid B] :
   DFunLike.coe_injective.mulDistribMulAction (MonoidHom.coeFn A B) fun _ _ ↦ rfl
 
 end AddMonoidHom
+
+end DomMulAct

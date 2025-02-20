@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.CategoryTheory.Triangulated.Rotate
-import Mathlib.Algebra.GroupPower.NegOnePow
+import Mathlib.Algebra.Ring.NegOnePow
 
 /-!
 # The shift on the category of triangles
@@ -19,6 +19,8 @@ The shift on the category of triangles was also obtained by Adam Topaz,
 Johan Commelin and Andrew Yang during the Liquid Tensor Experiment.
 
 -/
+
+assert_not_exists TwoSidedIdeal
 
 universe v u
 
@@ -65,7 +67,7 @@ noncomputable def Triangle.shiftFunctorZero : Triangle.shiftFunctor C 0 ≅ 𝟭
   NatIso.ofComponents
     (fun T => Triangle.isoMk _ _ ((CategoryTheory.shiftFunctorZero C ℤ).app _)
       ((CategoryTheory.shiftFunctorZero C ℤ).app _) ((CategoryTheory.shiftFunctorZero C ℤ).app _)
-      (by aesop_cat) (by aesop_cat) (by
+      (by simp) (by simp) (by
         dsimp
         simp only [one_smul, assoc, shiftFunctorComm_zero_hom_app,
           ← Functor.map_comp, Iso.inv_hom_id_app, Functor.id_obj, Functor.map_id,
@@ -109,7 +111,7 @@ noncomputable def rotateRotateRotateIso :
     rotate C ⋙ rotate C ⋙ rotate C ≅ Triangle.shiftFunctor C 1 :=
   NatIso.ofComponents
     (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
-      (by aesop_cat) (by aesop_cat) (by aesop_cat))
+      (by simp) (by simp) (by simp))
     (by aesop_cat)
 
 /-- Rotating triangles three times backwards identifies with the shift by `-1`. -/
@@ -117,11 +119,11 @@ noncomputable def invRotateInvRotateInvRotateIso :
     invRotate C ⋙ invRotate C ⋙ invRotate C ≅ Triangle.shiftFunctor C (-1) :=
   NatIso.ofComponents
     (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
-      (by aesop_cat)
-      (by aesop_cat)
+      (by simp)
+      (by simp)
       (by
         dsimp [shiftFunctorCompIsoId]
-        simp [shiftFunctorComm_eq C _ _ _ (add_neg_self (1 : ℤ))]))
+        simp [shiftFunctorComm_eq C _ _ _ (add_neg_cancel (1 : ℤ))]))
     (by aesop_cat)
 
 /-- The inverse of the rotation of triangles can be expressed using a double
@@ -133,7 +135,7 @@ noncomputable def invRotateIsoRotateRotateShiftFunctorNegOne :
     _ ≅ invRotate C ⋙ Triangle.shiftFunctor C 0 :=
           isoWhiskerLeft _ (Triangle.shiftFunctorZero C).symm
     _ ≅ invRotate C ⋙ Triangle.shiftFunctor C 1 ⋙ Triangle.shiftFunctor C (-1) :=
-          isoWhiskerLeft _ (Triangle.shiftFunctorAdd' C 1 (-1) 0 (add_neg_self 1))
+          isoWhiskerLeft _ (Triangle.shiftFunctorAdd' C 1 (-1) 0 (add_neg_cancel 1))
     _ ≅ invRotate C ⋙ (rotate C ⋙ rotate C ⋙ rotate C) ⋙ Triangle.shiftFunctor C (-1) :=
           isoWhiskerLeft _ (isoWhiskerRight (rotateRotateRotateIso C).symm _)
     _ ≅ (invRotate C ⋙ rotate C) ⋙ rotate C ⋙ rotate C ⋙ Triangle.shiftFunctor C (-1) :=

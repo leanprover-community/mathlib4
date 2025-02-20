@@ -3,10 +3,11 @@ Copyright (c) 2023 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta, Doga Can Sertbas
 -/
-import Mathlib.Data.Nat.Interval
-import Mathlib.Data.Nat.Parity
-import Mathlib.Data.Nat.Prime
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Nat.ModEq
+import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Real.Archimedean
+import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Schnirelmann density
@@ -46,7 +47,7 @@ open Finset
 /-- The Schnirelmann density is defined as the infimum of |A ∩ {1, ..., n}| / n as n ranges over
 the positive naturals. -/
 noncomputable def schnirelmannDensity (A : Set ℕ) [DecidablePred (· ∈ A)] : ℝ :=
-  ⨅ n : {n : ℕ // 0 < n}, ((Ioc (0 : ℕ) n).filter (· ∈ A)).card / n
+  ⨅ n : {n : ℕ // 0 < n}, #{a ∈ Ioc 0 n | a ∈ A} / n
 
 section
 
@@ -56,7 +57,7 @@ lemma schnirelmannDensity_nonneg : 0 ≤ schnirelmannDensity A :=
   Real.iInf_nonneg (fun _ => by positivity)
 
 lemma schnirelmannDensity_le_div {n : ℕ} (hn : n ≠ 0) :
-    schnirelmannDensity A ≤ ((Ioc 0 n).filter (· ∈ A)).card / n :=
+    schnirelmannDensity A ≤ #{a ∈ Ioc 0 n | a ∈ A} / n :=
   ciInf_le ⟨0, fun _ ⟨_, hx⟩ => hx ▸ by positivity⟩ (⟨n, hn.bot_lt⟩ : {n : ℕ // 0 < n})
 
 /--
@@ -64,10 +65,10 @@ For any natural `n`, the Schnirelmann density multiplied by `n` is bounded by `|
 Note this property fails for the natural density.
 -/
 lemma schnirelmannDensity_mul_le_card_filter {n : ℕ} :
-    schnirelmannDensity A * n ≤ ((Ioc 0 n).filter (· ∈ A)).card := by
+    schnirelmannDensity A * n ≤ #{a ∈ Ioc 0 n | a ∈ A} := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp
-  exact (le_div_iff (by positivity)).1 (schnirelmannDensity_le_div hn)
+  exact (le_div_iff₀ (by positivity)).1 (schnirelmannDensity_le_div hn)
 
 /--
 To show the Schnirelmann density is upper bounded by `x`, it suffices to show
@@ -77,7 +78,7 @@ We provide `n` explicitly here to make this lemma more easily usable in `apply` 
 This lemma is analogous to `ciInf_le_of_le`.
 -/
 lemma schnirelmannDensity_le_of_le {x : ℝ} (n : ℕ) (hn : n ≠ 0)
-    (hx : ((Ioc 0 n).filter (· ∈ A)).card / n ≤ x) : schnirelmannDensity A ≤ x :=
+    (hx : #{a ∈ Ioc 0 n | a ∈ A} / n ≤ x) : schnirelmannDensity A ≤ x :=
   (schnirelmannDensity_le_div hn).trans hx
 
 lemma schnirelmannDensity_le_one : schnirelmannDensity A ≤ 1 :=
@@ -95,7 +96,7 @@ lemma schnirelmannDensity_le_of_not_mem {k : ℕ} (hk : k ∉ A) :
   rw [← one_div, one_sub_div (Nat.cast_pos.2 hk').ne']
   gcongr
   rw [← Nat.cast_pred hk', Nat.cast_le]
-  suffices (Ioc 0 k).filter (· ∈ A) ⊆ Ioo 0 k from (card_le_card this).trans_eq (by simp)
+  suffices {a ∈ Ioc 0 k | a ∈ A} ⊆ Ioo 0 k from (card_le_card this).trans_eq (by simp)
   rw [← Ioo_insert_right hk', filter_insert, if_neg hk]
   exact filter_subset _ _
 
@@ -107,7 +108,7 @@ lemma schnirelmannDensity_eq_zero_of_one_not_mem (h : 1 ∉ A) : schnirelmannDen
 lemma schnirelmannDensity_le_of_subset {B : Set ℕ} [DecidablePred (· ∈ B)] (h : A ⊆ B) :
     schnirelmannDensity A ≤ schnirelmannDensity B :=
   ciInf_mono ⟨0, fun _ ⟨_, hx⟩ ↦ hx ▸ by positivity⟩ fun _ ↦ by
-    gcongr; exact monotone_filter_right _ h
+    gcongr; exact h
 
 /-- The Schnirelmann density of `A` is `1` if and only if `A` contains all the positive naturals. -/
 lemma schnirelmannDensity_eq_one_iff : schnirelmannDensity A = 1 ↔ {0}ᶜ ⊆ A := by
@@ -137,22 +138,22 @@ lemma schnirelmannDensity_eq_one_iff_of_zero_mem (hA : 0 ∈ A) :
     exact Set.subset_univ {0}ᶜ
 
 lemma le_schnirelmannDensity_iff {x : ℝ} :
-    x ≤ schnirelmannDensity A ↔ ∀ n : ℕ, 0 < n → x ≤ ((Ioc 0 n).filter (· ∈ A)).card / n :=
+    x ≤ schnirelmannDensity A ↔ ∀ n : ℕ, 0 < n → x ≤ #{a ∈ Ioc 0 n | a ∈ A} / n :=
   (le_ciInf_iff ⟨0, fun _ ⟨_, hx⟩ => hx ▸ by positivity⟩).trans Subtype.forall
 
 lemma schnirelmannDensity_lt_iff {x : ℝ} :
-    schnirelmannDensity A < x ↔ ∃ n : ℕ, 0 < n ∧ ((Ioc 0 n).filter (· ∈ A)).card / n < x :=
-  by rw [← not_le, le_schnirelmannDensity_iff]; simp
+    schnirelmannDensity A < x ↔ ∃ n : ℕ, 0 < n ∧ #{a ∈ Ioc 0 n | a ∈ A} / n < x := by
+  rw [← not_le, le_schnirelmannDensity_iff]; simp
 
 lemma schnirelmannDensity_le_iff_forall {x : ℝ} :
     schnirelmannDensity A ≤ x ↔
-      ∀ ε : ℝ, 0 < ε → ∃ n : ℕ, 0 < n ∧ ((Ioc 0 n).filter (· ∈ A)).card / n < x + ε := by
+      ∀ ε : ℝ, 0 < ε → ∃ n : ℕ, 0 < n ∧ #{a ∈ Ioc 0 n | a ∈ A} / n < x + ε := by
   rw [le_iff_forall_pos_lt_add]
   simp only [schnirelmannDensity_lt_iff]
 
 lemma schnirelmannDensity_congr' {B : Set ℕ} [DecidablePred (· ∈ B)]
-    (h : ∀ n > 0, n ∈ A ↔ n ∈ B) : schnirelmannDensity A = schnirelmannDensity B :=
-  by rw [schnirelmannDensity, schnirelmannDensity]; congr; ext ⟨n, hn⟩; congr 3; ext x; aesop
+    (h : ∀ n > 0, n ∈ A ↔ n ∈ B) : schnirelmannDensity A = schnirelmannDensity B := by
+  rw [schnirelmannDensity, schnirelmannDensity]; congr; ext ⟨n, hn⟩; congr 3; ext x; aesop
 
 /-- The Schnirelmann density is unaffected by adding `0`. -/
 @[simp] lemma schnirelmannDensity_insert_zero [DecidablePred (· ∈ insert 0 A)] :
@@ -174,7 +175,7 @@ If the Schnirelmann density is `0`, there is a positive natural for which
 Note this cannot be improved to `∃ᶠ n : ℕ in atTop`, as can be seen by `A = {1}ᶜ`.
 -/
 lemma exists_of_schnirelmannDensity_eq_zero {ε : ℝ} (hε : 0 < ε) (hA : schnirelmannDensity A = 0) :
-    ∃ n, 0 < n ∧ ((Ioc 0 n).filter (· ∈ A)).card / n < ε := by
+    ∃ n, 0 < n ∧ #{a ∈ Ioc 0 n | a ∈ A} / n < ε := by
   by_contra! h
   rw [← le_schnirelmannDensity_iff] at h
   linarith
@@ -192,10 +193,10 @@ lemma schnirelmannDensity_finset (A : Finset ℕ) : schnirelmannDensity A = 0 :=
   wlog hε₁ : ε ≤ 1 generalizing ε
   · obtain ⟨n, hn, hn'⟩ := this 1 zero_lt_one le_rfl
     exact ⟨n, hn, hn'.trans_le (le_of_not_le hε₁)⟩
-  let n : ℕ := ⌊A.card / ε⌋₊ + 1
+  let n : ℕ := ⌊#A / ε⌋₊ + 1
   have hn : 0 < n := Nat.succ_pos _
   use n, hn
-  rw [div_lt_iff (Nat.cast_pos.2 hn), ← div_lt_iff' hε, Nat.cast_add_one]
+  rw [div_lt_iff₀ (Nat.cast_pos.2 hn), ← div_lt_iff₀' hε, Nat.cast_add_one]
   exact (Nat.lt_floor_add_one _).trans_le' <| by gcongr; simp [subset_iff]
 
 /-- The Schnirelmann density of any finite set is `0`. -/
@@ -235,16 +236,16 @@ lemma schnirelmannDensity_setOf_mod_eq_one {m : ℕ} (hm : m ≠ 1) :
   rw [le_schnirelmannDensity_iff]
   intro n hn
   simp only [Set.mem_setOf_eq]
-  have : (Icc 0 ((n - 1) / m)).image (· * m + 1) ⊆ (Ioc 0 n).filter (· % m = 1) := by
+  have : (Icc 0 ((n - 1) / m)).image (· * m + 1) ⊆ {x ∈ Ioc 0 n | x % m = 1} := by
     simp only [subset_iff, mem_image, forall_exists_index, mem_filter, mem_Ioc, mem_Icc, and_imp]
     rintro _ y _ hy' rfl
     have hm : 2 ≤ m := hm.lt_of_le' hm'
     simp only [Nat.mul_add_mod', Nat.mod_eq_of_lt hm, add_pos_iff, or_true, and_true, true_and,
       ← Nat.le_sub_iff_add_le hn, zero_lt_one]
     exact Nat.mul_le_of_le_div _ _ _ hy'
-  rw [le_div_iff (Nat.cast_pos.2 hn), mul_comm, ← div_eq_mul_inv]
+  rw [le_div_iff₀ (Nat.cast_pos.2 hn), mul_comm, ← div_eq_mul_inv]
   apply (Nat.cast_le.2 (card_le_card this)).trans'
-  rw [card_image_of_injective, Nat.card_Icc, Nat.sub_zero, div_le_iff (Nat.cast_pos.2 hm'),
+  rw [card_image_of_injective, Nat.card_Icc, Nat.sub_zero, div_le_iff₀ (Nat.cast_pos.2 hm'),
     ← Nat.cast_mul, Nat.cast_le, add_one_mul (α := ℕ)]
   · have := @Nat.lt_div_mul_add n.pred m hm'
     rwa [← Nat.succ_le, Nat.succ_pred hn.ne'] at this
@@ -258,7 +259,7 @@ lemma schnirelmannDensity_setOf_modeq_one {m : ℕ} :
   rw [← schnirelmannDensity_setOf_mod_eq_one hm]
   apply schnirelmannDensity_congr
   ext n
-  simp only [Set.mem_setOf_eq, Nat.ModEq, Nat.one_mod_of_ne_one hm]
+  simp only [Set.mem_setOf_eq, Nat.ModEq, Nat.one_mod_eq_one.mpr hm]
 
 lemma schnirelmannDensity_setOf_Odd : schnirelmannDensity (setOf Odd) = 2⁻¹ := by
   have h : setOf Odd = {n | n % 2 = 1} := Set.ext fun _ => Nat.odd_iff
