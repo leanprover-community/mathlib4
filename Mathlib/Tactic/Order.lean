@@ -275,7 +275,8 @@ elab_rules : tactic
 /-- Finishing tactic for solving goals in arbitrary `Preorder`, `PartialOrder`,
 or `LinearOrder`. Supports `⊤`, `⊥`, and lattice operations. -/
 macro "order" args:orderArgs : tactic => `(tactic|
-  · by_contra! _order_goal
+  · intros
+    by_contra! _order_goal
     order_core $args
 )
 
