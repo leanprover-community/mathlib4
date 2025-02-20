@@ -32,9 +32,6 @@ implemented as `spanFinrank` and `spanRank`.
 
 ## Tags
 submodule, generating subset, span rank
-
-## TODO
-* Add lemmas that link these notions to `Module.rank`.
 -/
 
 namespace Submodule
