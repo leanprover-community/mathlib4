@@ -23,7 +23,6 @@ def readJsonFile (α) [FromJson α] (path : System.FilePath) : IO α := do
   let _ : MonadExceptOf String IO := ⟨throw ∘ IO.userError, fun x _ => x⟩
   liftExcept <| fromJson? <|← liftExcept <| Json.parse <|← IO.FS.readFile path
 
-
 def databases : List String :=
   ["undergrad", "overview", "100", "1000"]
 

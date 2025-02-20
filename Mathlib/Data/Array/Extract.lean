@@ -21,6 +21,10 @@ theorem extract_eq_nil_of_start_eq_end {a : Array α} :
   refine extract_empty_of_stop_le_start a ?h
   exact Nat.le_refl i
 
+/--
+This is a stronger version of `Array.extract_append_left`,
+and should be upstreamed to replace that.
+-/
 theorem extract_append_left' {a b : Array α} {i j : Nat} (h : j ≤ a.size) :
     (a ++ b).extract i j = a.extract i j := by
   apply ext
@@ -29,6 +33,10 @@ theorem extract_append_left' {a b : Array α} {i j : Nat} (h : j ≤ a.size) :
   · intro h1 h2 h3
     rw [getElem_extract, getElem_append_left, getElem_extract]
 
+/--
+This is a stronger version of `Array.extract_append_right`,
+and should be upstreamed to replace that.
+-/
 theorem extract_append_right' {a b : Array α} {i j : Nat} (h : a.size ≤ i) :
     (a ++ b).extract i j = b.extract (i - a.size) (j - a.size) := by
   apply ext
