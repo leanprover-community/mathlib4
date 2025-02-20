@@ -40,10 +40,6 @@ variable [DecidableEq α]
 
 end List
 
-namespace List
-
-end List
-
 
 namespace List
 

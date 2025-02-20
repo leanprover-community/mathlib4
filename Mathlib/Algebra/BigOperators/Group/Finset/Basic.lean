@@ -38,14 +38,6 @@ variable {ι κ α β γ : Type*}
 
 open Fin Function
 
-namespace Finset
-
-variable {s s₁ s₂ : Finset α} {a : α} {f g : α → β}
-
-end Finset
-
-
-
 variable {s s₁ s₂ : Finset α} {a : α} {f g : α → β}
 
 namespace Finset
@@ -57,40 +49,6 @@ variable [CommMonoid β]
 @[to_additive]
 theorem prod_insert_div {M : Type*} [CommGroup M] [DecidableEq α] (ha : a ∉ s) {f : α → M} :
     (∏ x ∈ insert a s, f x) / f a = ∏ x ∈ s, f x := by simp [ha]
-
-
-end CommMonoid
-
-end Finset
-
-section
-
-open Finset
-
-variable [Fintype α] [CommMonoid β]
-
-end
-
-namespace Finset
-
-section CommMonoid
-
-variable [CommMonoid β]
-
-
-variable (f s)
-
-
-variable {f s}
-
-
-section indicator
-open Set
-variable {κ : Type*}
-
-
-end indicator
-
 
 @[to_additive]
 theorem prod_range_add_div_prod_range {α : Type*} [CommGroup α] (f : ℕ → α) (n m : ℕ) :
@@ -122,11 +80,6 @@ theorem eq_prod_range_div' {M : Type*} [CommGroup M] (f : ℕ → M) (n : ℕ) :
 
 end CommMonoid
 
-section CancelCommMonoid
-variable [DecidableEq ι] [CancelCommMonoid α] {s t : Finset ι} {f : ι → α}
-
-end CancelCommMonoid
-
 section CommGroup
 
 variable [CommGroup β] [DecidableEq α]
@@ -148,38 +101,4 @@ theorem prod_erase_eq_div {a : α} (h : a ∈ s) :
 
 end CommGroup
 
-section Image_Overlap
-
-variable {α β ι : Type*} [DecidableEq α]
-
-end Image_Overlap
-
 end Finset
-
-namespace Fintype
-variable {ι κ α : Type*} [Fintype ι] [Fintype κ]
-
-open Finset
-
-section CommMonoid
-variable [CommMonoid α]
-
-
-variable [DecidableEq ι]
-
-end CommMonoid
-end Fintype
-
-namespace List
-
-end List
-
-namespace Multiset
-
-
-variable [DecidableEq α]
-
-end Multiset
-
-
-set_option linter.style.longFile 1800

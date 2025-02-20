@@ -20,11 +20,6 @@ variable {ι α β M N P G : Type*}
 
 namespace List
 
-section CommMonoid
-variable [CommMonoid M] {a : M} {l l₁ l₂ : List M}
-
-
-
 section Group
 
 variable [Group G]
@@ -147,7 +142,5 @@ theorem alternatingProd_cons (a : α) (l : List α) :
   rw [div_eq_mul_inv, alternatingProd_cons']
 
 end Alternating
-
-end CommMonoid
 
 end List
