@@ -20,12 +20,16 @@ open NumberField NumberField.InfinitePlace NumberField.mixedEmbedding ENNReal Me
 
 noncomputable section realMixedSpace
 
-/-- The real mixed space `ℝ^r₁ × (ℝ × ℝ)^r₂` with `(r₁, r₂)` the signature of `K`. --/
+/--
+The real mixed space `ℝ^r₁ × (ℝ × ℝ)^r₂` with `(r₁, r₂)` the signature of `K`.
+-/
 abbrev realMixedSpace :=
   ({w : InfinitePlace K // IsReal w} → ℝ) × ({w : InfinitePlace K // IsComplex w} → ℝ × ℝ)
 
-/-- The natural homeomorphism between the mixed space `ℝ^r₁ × ℂ^r₂` and the real mixed space
-`ℝ^r₁ × (ℝ × ℝ)^r₂`. -/
+/--
+The natural homeomorphism between the mixed space `ℝ^r₁ × ℂ^r₂` and the real mixed space
+`ℝ^r₁ × (ℝ × ℝ)^r₂`.
+-/
 noncomputable def mixedSpaceToRealMixedSpace : mixedSpace K ≃ₜ realMixedSpace K :=
   (Homeomorph.refl _).prodCongr <| .piCongrRight fun _ ↦ Complex.equivRealProdCLM.toHomeomorph
 
@@ -44,8 +48,10 @@ theorem volume_preserving_mixedSpaceToRealMixedSpace_symm :
 open scoped Classical in
 instance : IsAddHaarMeasure (volume : Measure (realMixedSpace K)) := prod.instIsAddHaarMeasure _ _
 
-/-- The polar coordinate partial homeomorph in `ℝ^r₁ × (ℝ × ℝ)^r₂` defined as the identity on
-the first component and mapping `(rᵢ cos θᵢ, rᵢ sin θᵢ)ᵢ` to `(rᵢ, θᵢ)ᵢ` on the second component. -/
+/--
+The polar coordinate partial homeomorphism of `ℝ^r₁ × (ℝ × ℝ)^r₂` defined as the identity on
+the first component and mapping `(rᵢ cos θᵢ, rᵢ sin θᵢ)ᵢ` to `(rᵢ, θᵢ)ᵢ` on the second component.
+-/
 @[simps! apply target]
 def polarCoordReal : PartialHomeomorph (realMixedSpace K) (realMixedSpace K) :=
   ((PartialHomeomorph.refl _).prod (PartialHomeomorph.pi fun _ ↦ polarCoord))
@@ -65,7 +71,9 @@ private theorem abs_of_mem_polarCoordReal_target {x : realMixedSpace K}
   abs_of_pos (hx.2 w trivial).1
 
 open ContinuousLinearMap in
-/-- The derivative of `polarCoordReal.symm`, see `hasFDerivAt_polarCoordReal_symm`. -/
+/--
+The derivative of `polarCoordReal.symm`, see `hasFDerivAt_polarCoordReal_symm`.
+-/
 def FDerivPolarCoordRealSymm : realMixedSpace K → realMixedSpace K →L[ℝ] realMixedSpace K :=
   fun x ↦ (fst ℝ _ _).prod <| (fderivPiPolarCoordSymm x.2).comp (snd ℝ _ _)
 
@@ -122,9 +130,11 @@ section mixedSpace
 
 variable [NumberField K]
 
-/-- The polar coordinate partial homeomorph between the mixed space `ℝ^r₁ × ℂ^r₂` and
+/--
+The polar coordinate partial homeomorphism between the mixed space `ℝ^r₁ × ℂ^r₂` and
 `ℝ^r₁ × (ℝ × ℝ)^r₂` defined as the identity on the first component and mapping `(zᵢ)ᵢ` to
-`(‖zᵢ‖, Arg zᵢ)ᵢ` on the second component. -/
+`(‖zᵢ‖, Arg zᵢ)ᵢ` on the second component.
+-/
 @[simps!]
 protected noncomputable def polarCoord : PartialHomeomorph (mixedSpace K) (realMixedSpace K) :=
   (PartialHomeomorph.refl _).prod (PartialHomeomorph.pi fun _ ↦ Complex.polarCoord)
@@ -175,9 +185,18 @@ noncomputable section polarSpace
 
 open MeasurableEquiv
 
+/--
+The space `ℝ^(r₁+r₂) × ℝ^r₂`, it is homeomorph to the `realMixedSpace`, see
+`homeoRealMixedSpacePolarSpace`.
+-/
 abbrev polarSpace := ((InfinitePlace K) → ℝ) × ({w : InfinitePlace K // w.IsComplex} → ℝ)
 
 open scoped Classical in
+/--
+The measurable equivalence between the `realMixedSpace` and the `polarSpace`. It is actually an
+homeomorphism, see `homeoRealMixedSpacePolarSpace`, but defining it in this way makes it easier
+to prove that it is volume preserving, see `volume_preserving_homeoRealMixedSpacePolarSpace`.
+-/
 def measurableEquivRealMixedSpacePolarSpace : realMixedSpace K ≃ᵐ polarSpace K :=
   MeasurableEquiv.trans (prodCongr (refl _)
     (arrowProdEquivProdArrow ℝ ℝ _)) <|
@@ -189,6 +208,9 @@ def measurableEquivRealMixedSpacePolarSpace : realMixedSpace K ≃ᵐ polarSpace
           (prodCongr (piEquivPiSubtypeProd (fun _ ↦ ℝ) _).symm (refl _))
 
 open scoped Classical in
+/--
+The homeomorphism between the `realMixedSpace` and the `polarSpace`.
+-/
 def homeoRealMixedSpacePolarSpace : realMixedSpace K ≃ₜ polarSpace K :=
 { measurableEquivRealMixedSpacePolarSpace K with
   continuous_toFun := by
@@ -235,6 +257,11 @@ theorem volume_preserving_homeoRealMixedSpacePolarSpace [NumberField K] :
             ((volume_preserving_piEquivPiSubtypeProd
               (fun _ : InfinitePlace K ↦ ℝ) (fun w ↦ IsReal w)).symm).prod (.id volume)
 
+/--
+The polar coordinate partial homeomorphism between the mixed space `ℝ^r₁ × ℂ^r₂` and the polar
+space `ℝ^(r₁ + r₂) × ℝ^r₂` defined by sending `x` to `x w` or `‖x w‖` depending on wether `w` is
+real or complex for the first component, and to `Arg x w` for `w` complex for the second component.
+-/
 @[simps!]
 def polarSpaceCoord [NumberField K] : PartialHomeomorph (mixedSpace K) (polarSpace K) :=
     (mixedEmbedding.polarCoord K).transHomeomorph (homeoRealMixedSpacePolarSpace K)
@@ -245,7 +272,6 @@ theorem measurable_polarSpaceCoord_symm [NumberField K] :
   exact ( measurable_polarCoord_symm K).comp (Homeomorph.measurable _)
 
 open scoped Classical in
-@[simp]
 theorem polarSpaceCoord_target' [NumberField K] :
     (polarSpaceCoord K).target =
       (Set.univ.pi fun w ↦ if w.IsReal then Set.univ else Set.Ioi 0) ×ˢ
