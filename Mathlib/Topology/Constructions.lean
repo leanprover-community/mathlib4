@@ -919,10 +919,10 @@ theorem isOpenMap_inl : IsOpenMap (@inl X Y) := fun u hu => by
 theorem isOpenMap_inr : IsOpenMap (@inr X Y) := fun u hu => by
   simpa [isOpen_sum_iff, preimage_image_eq u Sum.inr_injective]
 
-theorem isClosedMap_inl : IsClosedMap (@Sum.inl X Y) := fun u hu ↦ by
+theorem isClosedMap_inl : IsClosedMap (@inl X Y) := fun u hu ↦ by
   simpa [isClosed_sum_iff, preimage_image_eq u Sum.inl_injective]
 
-theorem isClosedMap_inr : IsClosedMap (@Sum.inr X Y) := fun u hu ↦ by
+theorem isClosedMap_inr : IsClosedMap (@inr X Y) := fun u hu ↦ by
   simpa [isClosed_sum_iff, preimage_image_eq u Sum.inr_injective]
 
 protected lemma Topology.IsOpenEmbedding.inl : IsOpenEmbedding (@inl X Y) :=
