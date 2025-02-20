@@ -104,7 +104,7 @@ theorem tutteViolator_empty (hodd : Odd (Fintype.card V)) : G.TutteViolator ∅ 
   rw [TutteViolator, Set.ncard_empty, Set.ncard_pos]
   use c
 
-/-- Proves the sufficiency part of Tutte's theorem -/
+/-- Proves the necessity part of Tutte's theorem -/
 lemma not_tutteViolator {M : Subgraph G} (hM : M.IsPerfectMatching) (u : Set V) :
     ¬G.TutteViolator u := by
   simpa [TutteViolator, Set.Nat.card_coe_set_eq] using Finite.card_le_of_injective
