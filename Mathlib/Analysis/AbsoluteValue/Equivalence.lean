@@ -86,8 +86,9 @@ theorem lt_one_iff_of_lt_one_imp [Archimedean S] [TopologicalSpace S] [OrderTopo
   linarith [tendsto_nhds_unique hcontr tendsto_const_nhds, w.pos hx₀.1]
 
 /--
-If `v` and `w` are two real absolute values on `F`, `v` is non-trivial, and `v x < 1` if and
-only if `w x < 1`, then `log (v a) / log (w a)` is constant for all `a ∈ K` with `1 < v a`.
+If $v$ and $w$ are two real absolute values on a field $F$, $v$ is non-trivial, and $v(x) < 1$ if
+and only if $w(x) < 1$, then $\frac{\log (v(a))}{\log (w(a))}$ is constant for all $a ∈ F$
+with $1 < v(a)$.
 -/
 theorem log_div_image_eq_singleton_of_le_one_iff {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
     (h : ∀ x, v x < 1 ↔ w x < 1) :
@@ -135,8 +136,8 @@ theorem exists_rpow_of_one_lt {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
 
 open Real in
 /--
-Let `v` and `w` be two real absolute values on `F`, where `v` is non-trivial. `v` and `w` are
-equivalent if and only if `v x < 1` exactly when `w x < 1`.
+If $v$ and $w$ be two real absolute values on a field $F$, where $v$ is non-trivial, then $v$ and
+$w$ are equivalent if and only if $v(x) < 1$ exactly when $w(x) < 1$.
 -/
 theorem isEquiv_iff_lt_one_iff {v : AbsoluteValue F ℝ} (w : AbsoluteValue F ℝ)
     (hv : v.IsNontrivial) : w.IsEquiv v ↔ (∀ x, v x < 1 ↔ w x < 1) := by
@@ -159,8 +160,8 @@ theorem isEquiv_iff_lt_one_iff {v : AbsoluteValue F ℝ} (w : AbsoluteValue F �
   exact exists_rpow_of_one_lt hv h
 
 /--
-If `v` and `w` are inequivalent absolute values and `v` is non-trivial, then we can find an `a ∈ F`
-such that `v a < 1` while `1 ≤ w a`.
+If $v$ and $w$ are inequivalent absolute values and $v$ is non-trivial, then we can find an $a ∈ F$
+such that $v(a) < 1$ while $1 ≤ w(a)$.
 -/
 theorem exists_lt_one_one_le_of_not_isEquiv {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
     (h : ¬w.IsEquiv v) :
@@ -169,10 +170,10 @@ theorem exists_lt_one_one_le_of_not_isEquiv {v w : AbsoluteValue F ℝ} (hv : v.
   exact isEquiv_iff_lt_one_iff _ hv |>.2 <| fun  _ => lt_one_iff_of_lt_one_imp hv h
 
 /--
-If `v` and `w` are two non-trivial and inequivalent absolute values then
-we can find an `a ∈ K` such that `1 < v a` while `w a  < 1`.
+If $v$ and $w$ are two non-trivial and inequivalent absolute values then
+we can find an $a ∈ K$ such that $1 < v a$ while $w a < 1$.
 -/
-theorem exists_one_lt_lt_one_of_ne_rpow {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
+theorem exists_one_lt_lt_one_of_not_isEquiv {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
     (hw : w.IsNontrivial) (h : ¬w.IsEquiv v) :
     ∃ a : F, 1 < v a ∧ w a < 1 := by
   let ⟨a, ha⟩ := exists_lt_one_one_le_of_not_isEquiv hv h
