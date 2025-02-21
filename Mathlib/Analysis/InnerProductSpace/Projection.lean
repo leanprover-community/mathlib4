@@ -1116,8 +1116,8 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
     ∃ l : List F, l.length ≤ n ∧ φ = (l.map fun v => reflection (ℝ ∙ v)ᗮ).prod := by
   -- We prove this by strong induction on `n`, the dimension of the orthogonal complement of the
   -- fixed subspace of the endomorphism `φ`
-  induction' n with n IH generalizing φ
-  · -- Base case: `n = 0`, the fixed subspace is the whole space, so `φ = id`
+  induction n generalizing φ with
+  | zero => -- Base case: `n = 0`, the fixed subspace is the whole space, so `φ = id`
     refine ⟨[], rfl.le, show φ = 1 from ?_⟩
     have : ker (ContinuousLinearMap.id ℝ F - φ) = ⊤ := by
       rwa [le_zero_iff, Submodule.finrank_eq_zero, Submodule.orthogonal_eq_bot_iff] at hn
@@ -1126,8 +1126,8 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
     have := LinearMap.congr_fun (LinearMap.ker_eq_top.mp this) x
     simpa only [sub_eq_zero, ContinuousLinearMap.coe_sub, LinearMap.sub_apply,
       LinearMap.zero_apply] using this
-  · -- Inductive step.  Let `W` be the fixed subspace of `φ`.  We suppose its complement to have
-    -- dimension at most n + 1.
+  | succ n IH => -- Inductive step.  Let `W` be the fixed subspace of `φ`.
+    -- We suppose its complement to have dimension at most n + 1.
     let W := ker (ContinuousLinearMap.id ℝ F - φ)
     have hW : ∀ w ∈ W, φ w = w := fun w hw => (sub_eq_zero.mp hw).symm
     by_cases hn' : finrank ℝ Wᗮ ≤ n
@@ -1257,9 +1257,10 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
     (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) (x : ⨁ i, V i) (i : ι)
     [CompleteSpace (V i)] :
     orthogonalProjection (V i) (DirectSum.coeAddMonoidHom V x) = x i := by
-  induction' x using DirectSum.induction_on with j x x y hx hy
-  · simp
-  · simp_rw [DirectSum.coeAddMonoidHom_of, DirectSum.of]
+  induction x using DirectSum.induction_on with
+  | H_zero => simp
+  | H_basic j x =>
+    simp_rw [DirectSum.coeAddMonoidHom_of, DirectSum.of]
     -- Porting note: was in the previous `simp_rw`, no longer works
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [DFinsupp.singleAddHom_apply]
@@ -1268,7 +1269,8 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
     · rw [orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero,
         DFinsupp.single_eq_of_ne hij.symm]
       exact hV.isOrtho hij.symm x.prop
-  · simp_rw [map_add]
+  | H_plus x y hx hy =>
+    simp_rw [map_add]
     exact congr_arg₂ (· + ·) hx hy
 
 /-- If a family of submodules is orthogonal and they span the whole space, then the orthogonal
