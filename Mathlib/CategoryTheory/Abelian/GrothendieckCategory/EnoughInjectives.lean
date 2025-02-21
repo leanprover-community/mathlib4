@@ -67,7 +67,7 @@ lemma exists_pushouts
     ∃ (X' : C) (i : X ⟶ X') (p' : X' ⟶ Y) (_ : (generatingMonomorphisms G).pushouts i)
       (_ : ¬ IsIso i) (_ : Mono p'), i ≫ p' = p := by
   rw [hG.isDetector.isIso_iff_of_mono] at hp
-  simp only [coyoneda_obj_obj, Subtype.forall, Set.mem_singleton_iff, forall_eq,
+  simp only [coyoneda_obj_obj, coyoneda_obj_map, Set.mem_singleton_iff, forall_eq,
     Function.Surjective, not_forall, not_exists] at hp
   -- `f : G ⟶ Y` is a monomorphism the image of which is not contained in `X`
   obtain ⟨f, hf⟩ := hp
