@@ -296,8 +296,8 @@ theorem sumInl : Computable (@Sum.inl α β) :=
 theorem sumInr : Computable (@Sum.inr α β) :=
   Primrec.sumInr.to_comp
 
-@[deprecated (since := "2025-02-21")] alias Computable.sum_inl := Computable.sumInl
-@[deprecated (since := "2025-02-21")] alias Computable.sum_inr := Computable.sumInr
+@[deprecated (since := "2025-02-21")] alias sum_inl := Computable.sumInl
+@[deprecated (since := "2025-02-21")] alias sum_inr := Computable.sumInr
 
 theorem list_cons : Computable₂ (@List.cons α) :=
   Primrec.list_cons.to_comp
@@ -686,7 +686,7 @@ theorem sumCasesOn_right {f : α → β ⊕ γ} {g : α → β → σ} {h : α �
           (some (Sum.casesOn (f a) (fun b => some (g a b)) fun _ => Option.none)) fun c =>
           (h a c).map Option.some :
         Part (Option σ)) :=
-    option_casesOn_right (g := fun a n => Part.map Option.some (h a n))
+    optionCasesOn_right (g := fun a n => Part.map Option.some (h a n))
       (sumCasesOn hf (const Option.none).to₂ (option_some.comp snd).to₂)
       (sumCasesOn (g := fun a n => Option.some (g a n)) hf (option_some.comp hg)
         (const Option.none).to₂)
@@ -699,7 +699,7 @@ theorem sumCasesOn_left {f : α → β ⊕ γ} {g : α → β →. σ} {h : α �
   (sumCasesOn_right (sumCasesOn hf (sumInr.comp snd).to₂ (sumInl.comp snd).to₂) hh hg).of_eq
     fun a => by cases f a <;> simp
 
-@[deprecated (since := "2025-02-21")] alias sum_casesOn_left := sumCasesOn_left :=
+@[deprecated (since := "2025-02-21")] alias sum_casesOn_left := sumCasesOn_left
 @[deprecated (since := "2025-02-21")] alias sum_casesOn_right := sumCasesOn_right
 
 theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
