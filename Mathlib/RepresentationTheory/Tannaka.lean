@@ -28,7 +28,7 @@ and the monoidal forgetful functor `F : FDRep k G ⥤ FGModuleCat k`.
 
 noncomputable section
 
-open CategoryTheory ModuleCat Pi
+open CategoryTheory MonoidalCategory ModuleCat Finset Pi
 
 universe u
 
@@ -87,6 +87,21 @@ def τᵣ : Representation k G (G → k) where
     ext
     simp [mul_assoc]
 
+/-- The representation on `G → k` induced by multiplication on the left in `G` -/
+@[simps]
+def τₗ : Representation k G (G → k) where
+  toFun s := {
+    toFun f t := f (s⁻¹ * t)
+    map_add' _ _ := rfl
+    map_smul' _ _ := rfl
+  }
+  map_one' := by
+    ext
+    simp
+  map_mul' _ _ := by
+    ext
+    simp [mul_assoc]
+
 variable [Fintype G]
 
 variable (k G) in
@@ -107,5 +122,63 @@ lemma T_injective [DecidableEq G] : Function.Injective (T k G) := by
   apply_fun (· (single 1 1) 1) at h
   change (single 1 1 : G → k) (1 * s) = (single 1 1 : G → k) 1 at h
   simp_all [single_apply]
+
+/-- An algebra morphism `φ : (G → k) →ₐ[k] k` is an evaluation map. -/
+lemma eval_of_alghom {G : Type u} [DecidableEq G] [Fintype G] (φ : (G → k) →ₐ[k] k) :
+    ∃ (s : G), φ = evalAlgHom _ _ s := by
+  have h1 := map_one φ
+  rw [← univ_sum_single (1 : G → k), map_sum] at h1
+  obtain ⟨s, hs⟩ : ∃ (s : G), φ (single s 1) ≠ 0 := by
+    by_contra
+    simp_all
+  have h2 : ∀ t ≠ s, φ (single t 1) = 0 := by
+    intros
+    apply eq_zero_of_ne_zero_of_mul_right_eq_zero hs
+    rw [← map_mul]
+    convert map_zero φ
+    ext u
+    by_cases u = s <;> simp_all
+  have h3 : φ (single s 1) = 1 := by
+    rwa [Fintype.sum_eq_single s] at h1
+    exact h2
+  use s
+  apply AlgHom.toLinearMap_injective
+  apply Basis.ext (basisFun k G)
+  intro t
+  by_cases t = s <;> simp_all
+
+/-- The `FDRep k G` morphism induced by multiplication on `G → k`. -/
+def μ : fdRepτᵣ k G ⊗ fdRepτᵣ k G ⟶ fdRepτᵣ k G where
+  hom := ofHom (LinearMap.mul' k (G → k))
+  comm := by
+    intro
+    ext (u : TensorProduct k (G → k) (G → k))
+    refine TensorProduct.induction_on u rfl (fun _ _ ↦ rfl) ?_
+    intro _ _ hx hy
+    simp only [map_add, hx, hy]
+
+/-- For `η : Aut (F k G)`, `α η` is compatible with multiplication -/
+lemma map_mul_α (η : Aut (F k G)) : ∀ (x y : G → k), (α η) (x * y) = ((α η) x) * ((α η) y) := by
+  intro f g
+  have nat := η.hom.hom.naturality μ
+  have tensor := η.hom.isMonoidal.tensor
+  have F_μ {X Y} : Functor.LaxMonoidal.μ (F k G).toFunctor X Y = 𝟙 _ := rfl
+  simp only [F_μ, Category.id_comp, Category.comp_id] at tensor
+  rw [tensor] at nat
+  apply_fun Hom.hom at nat
+  apply_fun (· (f ⊗ₜ[k] g)) at nat
+  exact nat
+
+/-- For `η : Aut (F k G)`, `α η` gives rise to an algebra morphism `(G → k) →ₐ[k] (G → k)` -/
+def algHomOfα (η : Aut (F k G)) : (G → k) →ₐ[k] (G → k) := by
+  refine AlgHom.ofLinearMap (α η) ?_ (map_mul_α η)
+  let α_inv : (G → k) → (G → k) := (η.inv.hom.app (fdRepτᵣ k G)).hom
+  have := η.inv_hom_id
+  apply_fun NatTrans.app ∘ LaxMonoidalFunctor.Hom.hom at this
+  replace := congrFun this (fdRepτᵣ k G)
+  apply_fun (Hom.hom · (1 : G → k)) at this
+  change (α η) (α_inv 1) = (1 : G → k) at this
+  have h := this
+  rwa [← one_mul (α_inv 1), map_mul_α, h, mul_one] at this
 
 end TannakaDuality
