@@ -8,6 +8,7 @@ import Mathlib.RingTheory.Perfectoid.Untilt
 import Mathlib.RingTheory.WittVector.Complete
 import Mathlib.LinearAlgebra.Quotient.Defs
 import Mathlib.RingTheory.WittVector.Teichmuller
+import Mathlib.RingTheory.AdicCompletion.Basic
 
 /-!
 # Fontaine's θ map
