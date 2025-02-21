@@ -128,6 +128,25 @@ as the indexing type doesn't matter in practice. The more general forward direct
 lemma card_pi_const (α : Type*) [Fintype α] (n : ℕ) : card (Fin n → α) = card α ^ n :=
   card_piFinset_const _ _
 
+/-- Product over a sigma type equals the repeated product.
+
+This is a version of `Finset.prod_sigma` specialized to the case
+of multiplication over `Finset.univ`. -/
+@[to_additive "Sum over a sigma type equals the repeated sum.
+
+This is a version of `Finset.sum_sigma` specialized to the case of summation over `Finset.univ`."]
+theorem prod_sigma {ι} {α : ι → Type*} {M : Type*} [Fintype ι] [∀ i, Fintype (α i)] [CommMonoid M]
+    (f : Sigma α → M) : ∏ x, f x = ∏ x, ∏ y, f ⟨x, y⟩ :=
+  Finset.prod_sigma ..
+
+/-- Product over a sigma type equals the repeated product, curried version.
+This version is useful to rewrite from right to left. -/
+@[to_additive "Sum over a sigma type equals the repeated sum, curried version.
+This version is useful to rewrite from right to left."]
+theorem prod_sigma' {ι} {α : ι → Type*} {M : Type*} [Fintype ι] [∀ i, Fintype (α i)] [CommMonoid M]
+    (f : (i : ι) → α i → M) : ∏ x : Sigma α, f x.1 x.2 = ∏ x, ∏ y, f x y :=
+  prod_sigma ..
+
 @[simp] nonrec lemma card_sigma {ι} {α : ι → Type*} [Fintype ι] [∀ i, Fintype (α i)] :
     card (Sigma α) = ∑ i, card (α i) := card_sigma _ _
 
@@ -214,9 +233,12 @@ open Finset
 variable {α₁ : Type*} {α₂ : Type*} {M : Type*} [Fintype α₁] [Fintype α₂] [CommMonoid M]
 
 @[to_additive]
-theorem Fintype.prod_sum_elim (f : α₁ → M) (g : α₂ → M) :
+theorem Fintype.prod_sumElim (f : α₁ → M) (g : α₂ → M) :
     ∏ x, Sum.elim f g x = (∏ a₁, f a₁) * ∏ a₂, g a₂ :=
   prod_disj_sum _ _ _
+
+@[deprecated (since := "2025-02-20")] alias prod_sum_elim := prod_sumElim
+@[deprecated (since := "2025-02-20")] alias sum_sum_elim := sum_sumElim
 
 @[to_additive (attr := simp)]
 theorem Fintype.prod_sum_type (f : α₁ ⊕ α₂ → M) :

@@ -303,11 +303,11 @@ structure IndexedPartition {ι α : Type*} (s : ι → Set α) where
   eq_of_mem : ∀ {x i j}, x ∈ s i → x ∈ s j → i = j
   /-- sends an index to an element of the corresponding set -/
   some : ι → α
-  /-- membership invariance for `some`-/
+  /-- membership invariance for `some` -/
   some_mem : ∀ i, some i ∈ s i
-  /-- index for type `α`-/
+  /-- index for type `α` -/
   index : α → ι
-  /-- membership invariance for `index`-/
+  /-- membership invariance for `index` -/
   mem_index : ∀ x, x ∈ s (index x)
 
 open scoped Function -- required for scoped `on` notation
