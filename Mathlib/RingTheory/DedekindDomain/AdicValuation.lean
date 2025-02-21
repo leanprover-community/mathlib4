@@ -412,7 +412,7 @@ section AlgebraInstances
 
 instance (priority := 100) adicValued.has_uniform_continuous_const_smul' :
     UniformContinuousConstSMul R (WithVal <| v.valuation K) :=
-  uniformContinuousConstSMul_of_continuousConstSMul R (WithVal v.valuation)
+  uniformContinuousConstSMul_of_continuousConstSMul R (WithVal <| v.valuation K)
 
 section Algebra
 variable [Algebra S K]
@@ -421,7 +421,7 @@ instance adicValued.uniformContinuousConstSMul :
     UniformContinuousConstSMul S (WithVal <| v.valuation K) := by
   refine ⟨fun l ↦ ?_⟩
   simp_rw [Algebra.smul_def]
-  exact (Ring.uniformContinuousConstSMul (WithVal v.valuation)).uniformContinuous_const_smul _
+  exact (Ring.uniformContinuousConstSMul (WithVal <| v.valuation K)).uniformContinuous_const_smul _
 
 open UniformSpace in
 instance : Algebra S (v.adicCompletion K) where
