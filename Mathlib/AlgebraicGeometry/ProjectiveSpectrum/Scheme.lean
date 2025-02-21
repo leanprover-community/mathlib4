@@ -164,7 +164,7 @@ variable {f : A} {m : ℕ} (x : Proj| (pbo f))
 
 /--
 For any `x` in `Proj| (pbo f)`, the corresponding ideal in `Spec A⁰_f`. This fact that this ideal
-is prime is proven in `TopComponent.Forward.toFun`-/
+is prime is proven in `TopComponent.Forward.toFun`. -/
 def carrier : Ideal (A⁰_ f) :=
   Ideal.comap (algebraMap (A⁰_ f) (Away f))
     (x.val.asHomogeneousIdeal.toIdeal.map (algebraMap A (Away f)))
@@ -532,7 +532,7 @@ lemma image_basicOpen_eq_basicOpen (a : A) (i : ℕ) :
     (PrimeSpectrum.basicOpen (R := A⁰_ f) <|
       HomogeneousLocalization.mk
         ⟨m * i, ⟨decompose 𝒜 a i ^ m,
-          (smul_eq_mul ℕ) ▸ SetLike.pow_mem_graded _ (Submodule.coe_mem _)⟩,
+          smul_eq_mul m i ▸ SetLike.pow_mem_graded _ (Submodule.coe_mem _)⟩,
           ⟨f^i, by rw [mul_comm]; exact SetLike.pow_mem_graded _ f_deg⟩, ⟨i, rfl⟩⟩).1 :=
   Set.preimage_injective.mpr (toSpec_surjective 𝒜 f_deg hm) <|
     Set.preimage_image_eq _ (toSpec_injective 𝒜 f_deg hm) ▸ by
