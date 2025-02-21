@@ -30,47 +30,38 @@ Deduce the formula for the cardinality of the centralizers
 and conjugacy classes in `alternatingGroup α`.
 -/
 
-open Equiv Finset MulAction
+open Equiv Finset Function MulAction
 
 variable {α : Type*} [Fintype α] [DecidableEq α] (g : Perm α)
 
-namespace Equiv.Perm
+namespace Equiv.Perm.OnCycleFactors
 
-namespace OnCycleFactors
-
-theorem sign_kerParam
+theorem sign_kerParam_apply_apply
     (k : Perm (Function.fixedPoints g))
     (v : (c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α)) :
-    sign (kerParam g ⟨k, v⟩) = sign k *
-        Finset.univ.prod fun c => sign (v c : Perm α) :=  by
-  rw [kerParam, MonoidHom.noncommCoprod_apply, ← Prod.fst_mul_snd ⟨k, v⟩]
-  simp only [Prod.mk_mul_mk, mul_one, one_mul, map_mul, sign_ofSubtype, Finset.univ_eq_attach,
-    mul_right_inj]
-  rw [← MonoidHom.comp_apply]
-  simp only [Subgroup.noncommPiCoprod, MonoidHom.comp_noncommPiCoprod _,
-    MonoidHom.noncommPiCoprod_apply, univ_eq_attach, MonoidHom.coe_comp, Subgroup.coeSubtype,
-    Function.comp_apply, noncommProd_eq_prod]
+    sign (kerParam g ⟨k, v⟩) = sign k * ∏ c, sign (v c : Perm α) := by
+  rw [kerParam, MonoidHom.noncommCoprod_apply, ← Prod.fst_mul_snd ⟨k, v⟩, Prod.mk_mul_mk, mul_one,
+    one_mul, map_mul, sign_ofSubtype, Finset.univ_eq_attach, mul_right_inj, ← MonoidHom.comp_apply,
+    Subgroup.noncommPiCoprod, MonoidHom.comp_noncommPiCoprod _, MonoidHom.noncommPiCoprod_apply,
+    univ_eq_attach, noncommProd_eq_prod]
+  simp
 
-theorem cycleType_kerParam
+theorem cycleType_kerParam_apply_apply
     (k : Perm (Function.fixedPoints g))
     (v : (c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α)) :
-    cycleType (kerParam g ⟨k, v⟩) = cycleType k +
-        Finset.univ.sum fun c => cycleType (v c : Perm α) :=  by
-  rw [kerParam, MonoidHom.noncommCoprod_apply, ← Prod.fst_mul_snd ⟨k, v⟩]
-  simp only [Prod.mk_mul_mk, mul_one, one_mul, univ_eq_attach]
-  rw [Disjoint.cycleType (disjoint_ofSubtype_noncommPiCoprod g k v)]
-  apply congr_arg₂ _ cycleType_ofSubtype
-  simp only [Subgroup.noncommPiCoprod_apply]
-  rw [Disjoint.cycleType_noncommProd]
-  · simp only [univ_eq_attach]
-  · exact fun c _ d _ h ↦ by
-      -- pairdisjoint₂ h (v c) (v d) (v c).prop (v d).prop
-      obtain ⟨m, hm⟩ := (v c).prop
-      obtain ⟨n, hn⟩ := (v d).prop
-      simp only [← hm, ← hn]
-      apply Disjoint.zpow_disjoint_zpow
-      apply cycleFactorsFinset_pairwise_disjoint g c.prop d.prop
-      exact Subtype.coe_ne_coe.mpr h
+    cycleType (kerParam g ⟨k, v⟩) = cycleType k + ∑ c, cycleType (v c : Perm α) := by
+  let U := (Finset.univ : Finset { x // x ∈ g.cycleFactorsFinset }).toSet
+  have hU : U.Pairwise fun i j ↦ (v i : Perm α).Disjoint (v j : Perm α) := fun c _ d _ h ↦ by
+    obtain ⟨m, hm⟩ := (v c).prop
+    obtain ⟨n, hn⟩ := (v d).prop
+    simp only [← hm, ← hn]
+    apply Disjoint.zpow_disjoint_zpow
+    apply cycleFactorsFinset_pairwise_disjoint g c.prop d.prop
+    exact Subtype.coe_ne_coe.mpr h
+  rw [kerParam, MonoidHom.noncommCoprod_apply, ← Prod.fst_mul_snd ⟨k, v⟩, Prod.mk_mul_mk, mul_one,
+    one_mul, univ_eq_attach, Disjoint.cycleType (disjoint_ofSubtype_noncommPiCoprod g k v),
+    Subgroup.noncommPiCoprod_apply, Disjoint.cycleType_noncommProd hU, univ_eq_attach]
+  exact congr_arg₂ _ cycleType_ofSubtype rfl
 
 variable {g} in
 theorem odd_of_centralizer_le_alternatingGroup
