@@ -13,7 +13,7 @@ import Mathlib.Topology.Algebra.Valued.ValuationTopology
 a valuation.
 
 ## Main definitions
- - `WithVal` : type synonym for a ring which depends on a valuation.
+ - `WithVal` : type synonym for a ring equipped with the topology coming from a valuation.
  - `WithVal.equiv` : The canonical ring equivalence between `WithValuation v` and `R`.
  - `Valuation.Completion` : the uniform space completion of a field `K` according to the
   uniform structure defined by the specified valuation.
