@@ -192,8 +192,7 @@ theorem coinduced_of_isColimit :
 lemma isOpen_iff_of_isColimit (X : Set c.pt) :
     IsOpen X ↔ ∀ (j : J), IsOpen (c.ι.app j ⁻¹' X) := by
   trans (⨆ (j : J), (F.obj j).str.coinduced (c.ι.app j)).IsOpen X
-  · rw [← coinduced_of_isColimit c hc]
-    rfl
+  · rw [← coinduced_of_isColimit c hc, isOpen_fold]
   · simp only [← isOpen_coinduced]
     apply isOpen_iSup_iff
 
