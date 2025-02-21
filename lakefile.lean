@@ -40,6 +40,7 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.style.multiGoal, true⟩,
   ⟨`linter.style.setOption, true⟩,
   ⟨`aesop.collectStats, true⟩,
+  ⟨`aesop.dev.statefulForward, false⟩,
   ⟨`maxHeartbeats, .ofNat 400000⟩
 ]
 
