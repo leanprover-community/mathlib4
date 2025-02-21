@@ -179,13 +179,28 @@ lemma IsDetecting.isIso_iff_of_mono {𝒢 : Set C} (h𝒢 : IsDetecting 𝒢)
   constructor
   · intro h
     rw [isIso_iff_yoneda_map_bijective] at h
-    rintro ⟨A, _⟩
+    intro A _
     exact (h A).2
   · intro hf
     refine h𝒢 _ (fun A hA g ↦ existsUnique_of_exists_of_unique ?_ ?_)
-    · exact hf ⟨A, hA⟩ g
+    · exact hf A hA g
     · intro l₁ l₂ h₁ h₂
       rw [← cancel_mono f, h₁, h₂]
+
+lemma IsCodetecting.isIso_iff_of_epi {𝒢 : Set C} (h𝒢 : IsCodetecting 𝒢)
+    {X Y : C} (f : X ⟶ Y) [Epi f] :
+    IsIso f ↔ ∀ s ∈ 𝒢, Function.Surjective ((yoneda.obj s).map f.op) := by
+  constructor
+  · intro h
+    rw [isIso_iff_coyoneda_map_bijective] at h
+    intro A _
+    have pif := h A
+    exact (h A).2
+  · intro hf
+    refine h𝒢 _ (fun A hA g ↦ existsUnique_of_exists_of_unique ?_ ?_)
+    · exact hf A hA g
+    · intro l₁ l₂ h₁ h₂
+      rw [← cancel_epi f, h₁, h₂]
 
 section
 
