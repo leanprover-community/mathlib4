@@ -20,7 +20,7 @@ We also include some elementary results on the values of `Fintype.card` on speci
 
 -/
 
-assert_not_exists MonoidWithZero MulAction
+assert_not_exists Monoid
 
 open Function
 
@@ -138,7 +138,7 @@ theorem Finset.card_add_card_compl [DecidableEq α] [Fintype α] (s : Finset α)
 @[simp]
 theorem Finset.card_compl_add_card [DecidableEq α] [Fintype α] (s : Finset α) :
     #sᶜ + #s = Fintype.card α := by
-  rw [add_comm, card_add_card_compl]
+  rw [Nat.add_comm, card_add_card_compl]
 
 theorem Fintype.card_compl_set [Fintype α] (s : Set α) [Fintype s] [Fintype (↥sᶜ : Sort _)] :
     Fintype.card (↥sᶜ : Sort _) = Fintype.card α - Fintype.card s := by
