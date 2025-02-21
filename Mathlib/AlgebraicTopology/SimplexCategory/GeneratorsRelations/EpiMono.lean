@@ -156,18 +156,9 @@ private lemma switch_δ_σ {n : ℕ} (i : Fin (n + 2)) (i' : Fin (n + 3)) :
 /-- A low-dimensional special case of the previous -/
 private lemma switch_δ_σ₀ (i : Fin 1) (i' : Fin 2) :
     δ i' ≫ σ i = 𝟙 _ := by
-  rcases i with ⟨i, hi⟩
-  rcases i' with ⟨i', hi'⟩
-  simp at hi hi'
-  rw [Nat.lt_iff_le_pred Nat.zero_lt_two] at hi'
-  simp at hi'
-  subst hi
-  obtain h | h := Nat.le_one_iff_eq_zero_or_eq_one.mp hi'
-  · subst h
-    simp only [Fin.zero_eta, Fin.isValue, ← Fin.castSucc_zero, δ_comp_σ_self]
-  · subst h
-    simp only [Fin.mk_one, Fin.isValue, Fin.zero_eta]
-    rw [← Fin.succ_zero_eq_one, δ_comp_σ_succ]
+  fin_cases i; fin_cases i'
+  · exact δ_comp_σ_self
+  · exact δ_comp_σ_succ
 
 private lemma factor_δ_σ {n : ℕ} (i : Fin (n + 1)) (i' : Fin (n + 2)) :
     ∃ (z : SimplexCategoryGenRel) (e : mk n ⟶ z) (m : z ⟶ mk n)
@@ -272,7 +263,7 @@ theorem exists_P_σ_P_δ_factorization {x y : SimplexCategoryGenRel} (f : x ⟶ 
           use z₁, e ≫ e₁, m₁ ≫ δ j'', P_σ.comp_mem _ _ he he₁, P_δ.comp_mem _ _ hm₁ (P_δ.δ _)
           simp
 
-noncomputable instance : MorphismProperty.HasFactorization P_σ P_δ where
+instance : MorphismProperty.HasFactorization P_σ P_δ where
   nonempty_mapFactorizationData f := by
     obtain ⟨z, e , m, he, hm, fac⟩ := exists_P_σ_P_δ_factorization f
     exact ⟨⟨z, e , m, fac.symm, he, hm⟩⟩
