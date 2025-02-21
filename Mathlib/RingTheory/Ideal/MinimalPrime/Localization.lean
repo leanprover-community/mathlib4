@@ -18,9 +18,14 @@ of localizations
   preimage of some minimal prime over `I`.
 - `Ideal.minimalPrimes_eq_comap`: The minimal primes over `I` are precisely the preimages of
   minimal primes of `R ⧸ I`.
+- `IsLocalization.minimalPrimes_comap`: If A is a localization of R with respect to the submonoid S,
+  J is an ideal of A, then the minimal primes over the preimage of J (under R →+* A) are exactly
+  the preimages of the minimal primes over J.
+- `IsLocalization.minimalPrimes_map`: If A is a localization of R with respect to the submonoid S,
+  J is an ideal of R, then the minimal primes over the span of the image of J (under R →+* A) are
+  exactly the ideals of A such that the preimage of which is a minimal prime over J.
 - `Localization.AtPrime.prime_unique_of_minimal`: When localizing at a minimal prime ideal `I`,
   the resulting ring only has a single prime ideal.
-
 -/
 
 
@@ -151,6 +156,10 @@ theorem Ideal.exists_minimalPrimes_comap_eq {I : Ideal S} (f : R →+* S) (p)
   have := (Ideal.comap_mono hq').trans_eq h₃
   exact (H.2 ⟨inferInstance, Ideal.comap_mono hq.1.2⟩ this).antisymm this
 
+theorem Ideal.minimalPrimes_comap_subset {A : Type*} [CommRing A] (f : R →+* A) (J : Ideal A) :
+    (J.comap f).minimalPrimes ⊆ Ideal.comap f '' J.minimalPrimes :=
+  fun p hp ↦ Ideal.exists_minimalPrimes_comap_eq f p hp
+
 theorem Ideal.minimal_primes_comap_of_surjective {f : R →+* S} (hf : Function.Surjective f)
     {I J : Ideal S} (h : J ∈ I.minimalPrimes) : J.comap f ∈ (I.comap f).minimalPrimes := by
   have := h.1.1
@@ -177,6 +186,59 @@ theorem Ideal.minimalPrimes_eq_comap :
     I.minimalPrimes = Ideal.comap (Ideal.Quotient.mk I) '' minimalPrimes (R ⧸ I) := by
   rw [minimalPrimes, ← Ideal.comap_minimalPrimes_eq_of_surjective Ideal.Quotient.mk_surjective,
     ← RingHom.ker_eq_comap_bot, Ideal.mk_ker]
+
+end
+
+section
+
+variable {R : Type*} [CommRing R]
+
+theorem IsLocalization.minimalPrimes_comap (S : Submonoid R) (A : Type*) [CommRing A]
+    [Algebra R A] [IsLocalization S A] (J : Ideal A) :
+    (J.comap (algebraMap R A)).minimalPrimes = Ideal.comap (algebraMap R A) '' J.minimalPrimes := by
+  rcases eq_or_ne J ⊤ with (rfl | hJ)
+  · simp_rw [Ideal.comap_top, Ideal.minimalPrimes_top, Set.image_empty]
+  refine (Ideal.minimalPrimes_comap_subset _ _).antisymm ?_
+  rintro _ ⟨p, hp, rfl⟩
+  let i := IsLocalization.orderIsoOfPrime S A
+  haveI := hp.1.1
+  refine ⟨⟨Ideal.IsPrime.comap _ , Ideal.comap_mono hp.1.2⟩, fun q hq e => ?_⟩
+  obtain ⟨⟨q', h₁⟩, h₂⟩ :=
+    i.surjective ⟨q, hq.1, Set.disjoint_of_subset_right e (i ⟨_, hp.1.1⟩).2.2⟩
+  replace h₂ : q'.comap (algebraMap R A) = q := by injection h₂
+  subst h₂
+  replace e := Ideal.map_mono (f := algebraMap R A) e
+  replace hq := Ideal.map_mono (f := algebraMap R A) hq.2
+  simp_rw [IsLocalization.map_comap S A] at e hq
+  exact Ideal.comap_mono (hp.2 ⟨h₁, hq⟩ e)
+
+theorem IsLocalization.minimalPrimes_map (S : Submonoid R) (A : Type*) [CommRing A]
+    [Algebra R A] [IsLocalization S A] (J : Ideal R) :
+    (J.map (algebraMap R A)).minimalPrimes = Ideal.comap (algebraMap R A) ⁻¹' J.minimalPrimes := by
+  ext p
+  constructor
+  · intro hp
+    haveI := hp.1.1
+    refine ⟨⟨Ideal.IsPrime.comap _, Ideal.map_le_iff_le_comap.mp hp.1.2⟩, ?_⟩
+    rintro I hI e
+    have hI' : Disjoint (S : Set R) I := Set.disjoint_of_subset_right e
+      ((IsLocalization.isPrime_iff_isPrime_disjoint S A _).mp hp.1.1).2
+    refine (Ideal.comap_mono <|
+      hp.2 ⟨?_, Ideal.map_mono hI.2⟩ (Ideal.map_le_iff_le_comap.mpr e)).trans_eq ?_
+    · exact IsLocalization.isPrime_of_isPrime_disjoint S A I hI.1 hI'
+    · exact IsLocalization.comap_map_of_isPrime_disjoint S A _ hI.1 hI'
+  · intro hp
+    refine ⟨⟨?_, Ideal.map_le_iff_le_comap.mpr hp.1.2⟩, ?_⟩
+    · rw [IsLocalization.isPrime_iff_isPrime_disjoint S A,
+        IsLocalization.disjoint_comap_iff S]
+      refine ⟨hp.1.1, ?_⟩
+      rintro rfl
+      exact hp.1.1.ne_top rfl
+    · intro I hI e
+      rw [← IsLocalization.map_comap S A I, ← IsLocalization.map_comap S A p]
+      haveI := hI.1
+      exact Ideal.map_mono (hp.2 ⟨Ideal.IsPrime.comap _, Ideal.map_le_iff_le_comap.mp hI.2⟩
+        (Ideal.comap_mono e))
 
 end
 
