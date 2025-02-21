@@ -11,6 +11,7 @@ import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Preorder
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Order.LatticeIntervals
+import Mathlib.Order.Interval.Set.Final
 
 /-!
 # A structure to describe transfinite compositions
@@ -107,6 +108,7 @@ noncomputable def map (F : C ⥤ D) [PreservesWellOrderContinuousOfShape J F]
 
 /-- A transfinite composition of shape `J` induces a transfinite composition
 of shape `Set.Iic j` for any `j : J`. -/
+@[simps]
 def iic (j : J) :
     TransfiniteCompositionOfShape (Set.Iic j) (c.F.map (homOfLE bot_le : ⊥ ⟶ j)) where
   F := (Set.initialSegIic j).monotone.functor ⋙ c.F
@@ -119,24 +121,17 @@ def iic (j : J) :
         rfl }
   isColimit := colimitOfDiagramTerminal isTerminalTop _
 
-instance _root_.Set.Ici.subtype_functor_final (j : J) :
-    (Subtype.mono_coe (Set.Ici j)).functor.Final := by
-  rw [Monotone.final_functor_iff]
-  intro k
-  exact ⟨⟨max j k, le_max_left _ _⟩, le_max_right _ _⟩
-
+/-- A transfinite composition of shape `J` induces a transfinite composition
+of shape `Set.Ici j` for any `j : J`. -/
 @[simps]
 noncomputable def ici (j : J) :
     TransfiniteCompositionOfShape (Set.Ici j) (c.incl.app j) where
   F := (Subtype.mono_coe (Set.Ici j)).functor ⋙ c.F
-  isWellOrderContinuous := by
-    -- why is it not inferred?!
-    apply Functor.IsWellOrderContinuous.restriction_setIci
+  isWellOrderContinuous := Functor.IsWellOrderContinuous.restriction_setIci _
   isoBot := Iso.refl _
   incl := whiskerLeft _ c.incl
-  isColimit := by
-    have := Set.Ici.subtype_functor_final j
-    exact (Functor.Final.isColimitWhiskerEquiv _ _).2 c.isColimit
+  isColimit := (Functor.Final.isColimitWhiskerEquiv
+    ((Subtype.mono_coe (Set.Ici j)).functor) _).2 c.isColimit
 
 end TransfiniteCompositionOfShape
 

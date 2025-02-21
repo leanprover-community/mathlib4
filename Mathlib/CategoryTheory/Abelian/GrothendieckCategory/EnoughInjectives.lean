@@ -80,26 +80,6 @@ end IsPushout
 
 end Abelian
 
-namespace IsDetecting
-
-lemma isIso_iff_of_mono {S : Set C} (hS : IsDetecting S)
-    {X Y : C} (f : X ⟶ Y) [Mono f] :
-    IsIso f ↔ ∀ (s : S), Function.Surjective ((coyoneda.obj (op s.1)).map f) := by
-  constructor
-  · intro h
-    rw [isIso_iff_yoneda_map_bijective] at h
-    rintro ⟨A, _⟩
-    exact (h A).2
-  · intro hf
-    apply hS
-    rintro A hA g
-    apply existsUnique_of_exists_of_unique
-    · exact hf ⟨A, hA⟩ g
-    · intro l₁ l₂ h₁ h₂
-      rw [← cancel_mono f, h₁, h₂]
-
-end IsDetecting
-
 namespace IsGrothendieckAbelian
 
 def generatingMonomorphisms (G : C) : MorphismProperty C :=

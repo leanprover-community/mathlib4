@@ -10,6 +10,7 @@ import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Order.Interval.Set.InitialSeg
+import Mathlib.Order.Interval.Set.Limit
 import Mathlib.Order.SuccPred.InitialSeg
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.Order.SuccPred.LinearLocallyFinite
@@ -78,61 +79,28 @@ instance (F : J ⥤ C) {J' : Type w'} [PartialOrder J'] (e : J' ≃o J)
     (e.equivalence.functor ⋙ F).IsWellOrderContinuous :=
   inferInstanceAs (e.toInitialSeg.monotone.functor ⋙ F).IsWellOrderContinuous
 
-
-lemma _root_.Set.not_isMax_coe {S : Set J} (m : S) (hm : ¬ IsMax m) :
-    ¬ IsMax m.1 := by
-  aesop
-
-lemma _root_.Set.not_isMin_coe {S : Set J} (m : S) (hm : ¬ IsMin m) :
-    ¬ IsMin m.1 := by
-  aesop
-
-section
-
-variable {J' : Type w} [LinearOrder J']
-
-lemma _root_.Set.Ici.isSuccLimit_coe {j : J'} (m : Set.Ici j) (hm : Order.IsSuccLimit m) :
-    Order.IsSuccLimit m.1 :=
-  ⟨_root_.Set.not_isMin_coe _ hm.1, fun b ↦ by
-    simp only [CovBy, not_lt, not_and, not_forall, Classical.not_imp, not_le]
-    intro hb
-    by_cases hb' : j ≤ b
-    · have := hm.2 ⟨b, hb'⟩
-      simp [CovBy] at this
-      obtain ⟨x, h₁, h₂, h₃⟩ := this hb
-      exact ⟨x, h₁, h₃⟩
-    · simp only [not_le] at hb'
-      refine ⟨j, hb', ?_⟩
-      by_contra!
-      apply hm.1
-      rintro ⟨k, hk⟩ _
-      exact this.trans (by simpa using hk)⟩
-
 instance IsWellOrderContinuous.restriction_setIci
-    {F : J' ⥤ C} [F.IsWellOrderContinuous] (j : J') :
+    {J : Type w} [LinearOrder J]
+    {F : J ⥤ C} [F.IsWellOrderContinuous] (j : J) :
     ((Subtype.mono_coe (Set.Ici j)).functor ⋙ F).IsWellOrderContinuous where
   nonempty_isColimit m hm := ⟨by
-    have h := F.isColimitOfIsWellOrderContinuous m.1 (Set.Ici.isSuccLimit_coe m hm)
     let f : Set.Iio m → Set.Iio m.1 := fun ⟨⟨a, ha⟩, ha'⟩ ↦ ⟨a, ha'⟩
     have hf : Monotone f := fun _ _ h ↦ h
     have : hf.functor.Final := by
-      rw [_root_.Monotone.final_functor_iff]
+      rw [Monotone.final_functor_iff]
       rintro ⟨j', hj'⟩
       simp at hj'
       dsimp [f]
       by_cases h : j' ≤ j
-      · refine ⟨⟨⟨j, ?_⟩, ?_⟩, h⟩
-        · change j ≤ j
-          rfl
-        · by_contra!
-          simp at this
-          apply hm.1
-          rintro ⟨k, hk⟩ hkm
-          exact this.trans hk
-      · simp only [not_le, f] at h
+      · refine ⟨⟨⟨j, le_refl j⟩, ?_⟩, h⟩
+        by_contra!
+        simp only [Set.mem_Iio, not_lt] at this
+        apply hm.1
+        rintro ⟨k, hk⟩ hkm
+        exact this.trans hk
+      · simp only [not_le] at h
         exact ⟨⟨⟨j', h.le⟩, hj'⟩, by rfl⟩
-    exact (Functor.Final.isColimitWhiskerEquiv (F := hf.functor) _).2 h⟩
-
-end
+    exact (Functor.Final.isColimitWhiskerEquiv (F := hf.functor) _).2
+      (F.isColimitOfIsWellOrderContinuous m.1 (Set.Ici.isSuccLimit_coe m hm))⟩
 
 end CategoryTheory.Functor
