@@ -22,8 +22,8 @@ TODO: Show that the character is continuous.
 
 ## Main Declarations
 
-* `modularCharacterFun`: Define the modular character associated with this measure, which is
-  `g ↦ haarScalarFactor (map (· * g) ν) ν`, where ν is the haar measure given by (the noncomputable)
+* `modularCharacterFun`: Define the modular character, which is `g ↦ haarScalarFactor
+  (map (· * g) ν) ν`, where ν is the haar measure given by (the noncomputable)
   `MeasureTheory.Measure.haar`. The result that this does not depend on the measure chosen is
   `modularCharacterFun_eq_haarScalarFactor`.
 * `modularCharacter`: The homomorphism G →* ℝ≥0 whose toFun is `modularCharacterFun`.
@@ -43,11 +43,11 @@ variable {G : Type*} [TopologicalSpace G] [Group G] [IsTopologicalGroup G]
   the haar measure given by (the noncomputable) `MeasureTheory.Measure.haar`.
 
   See also `modularCharacter` that defines the map as a homomorphism. -/
-@[to_additive addModularCharacterFun "Definition of the addModularCharacterFun map as
-  `addHaarScalarFactor (map (· * g) ν) ν`, where `ν` is
-  the haar measure given by (the noncomputable) MeasureTheory.Measure.haar.
+@[to_additive addModularCharacterFun "The additive modular character as a map is
+  `g ↦ haarScalarFactor (map (· + g) ν) ν`, where `ν` is the additive haar measure given by (the
+  noncomputable) `MeasureTheory.Measure.haar`.
 
-  Also `modularCharacter` defines the map as a homomorphism."]
+  See also `modularCharacter` that defines the map as a homomorphism.."]
 noncomputable def modularCharacterFun : G → ℝ≥0 :=
   fun g => haarScalarFactor (map (· * g) MeasureTheory.Measure.haar) MeasureTheory.Measure.haar
 
@@ -101,10 +101,8 @@ lemma map_right_mul_eq_modularCharacterFun_smul (μ : Measure G) [IsHaarMeasure 
   exact isMulLeftInvariant_eq_smul_of_innerRegular _ μ
 
 @[to_additive addModularCharacter_pos]
-lemma modularCharacter_pos (μ : Measure G) [IsHaarMeasure μ] (g : G) :
-    0 < modularCharacterFun g := by
-      rw [modularCharacterFun_eq_haarScalarFactor μ _]
-      exact haarScalarFactor_pos_of_isHaarMeasure _ μ
+lemma modularCharacter_pos (g : G) : 0 < modularCharacterFun g :=
+  haarScalarFactor_pos_of_isHaarMeasure _ _
 
 /-- The modular character homomorphism. The underlying function is `modularCharacterFun`, which is
   `g ↦ haarScalarFactor (map (· * g) ν) ν`, where `ν` is the haar measure given by (the
