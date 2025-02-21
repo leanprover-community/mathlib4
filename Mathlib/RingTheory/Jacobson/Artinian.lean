@@ -3,7 +3,6 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Artinian.Ring
 import Mathlib.RingTheory.HopkinsLevitzki
 import Mathlib.RingTheory.Jacobson.Ring
 
@@ -30,15 +29,15 @@ lemma Module.finite_of_isSemisimpleRing [IsJacobsonRing R] [IsSemisimpleRing A] 
 implies `A` is finite over `R`. -/
 lemma Module.finite_of_isArtinianRing [IsJacobsonRing R] [IsArtinianRing A] :
     Module.Finite R A :=
-  have := Module.finite_of_isSemisimpleRing R (A ⧸ Ring.jacobson A)
-  IsSemiprimaryRing.isArtinian_imp_finite_and_isNoetherian_iff_isArtinian.1 ‹_›
+  have := finite_of_isSemisimpleRing R (A ⧸ Ring.jacobson A)
+  IsSemiprimaryRing.finite_of_isArtinian R A A
 
 /-- If `A` is a finite type algebra over an artinian ring `R`,
 then `A` is finite over `R` if and only if `A` is an artinian ring. -/
 lemma Module.finite_iff_isArtinianRing [IsArtinianRing R] :
-    Module.Finite R A ↔ IsArtinianRing A := by
-  have := (IsArtinianRing.tfae R A).out 0 2
-  exact ⟨isArtinian_of_tower _ ∘ this.mp, fun _ ↦ finite_of_isArtinianRing R A⟩
+    Module.Finite R A ↔ IsArtinianRing A :=
+  ⟨isArtinian_of_tower _ ∘ ((IsArtinianRing.tfae R A).out 0 2).mp,
+    fun _ ↦ finite_of_isArtinianRing R A⟩
 
 /-- If `A` is a finite type algebra over an artinian ring `R`,
 then `A` is finite over `R` if and only if `dim A = 0`. -/
