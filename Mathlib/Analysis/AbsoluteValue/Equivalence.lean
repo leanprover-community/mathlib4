@@ -187,7 +187,8 @@ theorem exists_one_lt_lt_one_of_not_isEquiv {v w : AbsoluteValue F ℝ} (hv : v.
     div_lt_one (by linarith) |>.2 (by linarith)⟩
 
 /--
-`v (1 / (1 + a ^ n)) → 1` if `v a < 1`.
+The limit $v\left(\frac{1}{1 + a ^ n}\right)\to 1$, for an absolute value $v$ on a field
+$F$ if $v(a) < 1$.
 -/
 theorem tendsto_div_one_add_pow_nhds_one {v : AbsoluteValue F ℝ} {a : F} (ha : v a < 1) :
     Filter.Tendsto (fun (n : ℕ) => v (1 / (1 + a ^ n))) Filter.atTop (𝓝 1) := by
@@ -201,7 +202,8 @@ theorem tendsto_div_one_add_pow_nhds_one {v : AbsoluteValue F ℝ} {a : F} (ha :
     (v.one_add_pow_le _)
 
 /--
-`v (1 / (1 + a ^ n)) → 0` if `1 < v a`.
+The limit $v \left(\frac{1}{1 + a ^ n}\right)\to 0$, for an absolute value $v$ on a field
+$F$ if $1 < v(a)$.
 -/
 theorem tendsto_pow_div_one_add_pow_zero {v : AbsoluteValue F ℝ} {a : F} (ha : 1 < v a) :
     Filter.Tendsto (fun (n : ℕ) => v (1 / (1 + a ^ n))) Filter.atTop (𝓝 0) := by
@@ -215,12 +217,16 @@ theorem tendsto_pow_div_one_add_pow_zero {v : AbsoluteValue F ℝ} {a : F} (ha :
 
 open Filter in
 /--
-Let `a, b ∈ K`, and let `v₁, ..., vₖ` be absolute values with some `1 < vᵢ a` while all other
-`vⱼ a < 1`. Suppose `1 < vᵢ b`. Let `w` be another absolute value on `K` such that `w a = 1`,
-while `w b < 1`. Then we can find a sequence of values in `K` that tends to `∞` under `vᵢ`,
-tends to `0` under `vⱼ`, and is always `< 1` under `w`.
+- $F$: field;
+- $a, b\in F$;
+- $v_1, ..., v_k, w$: absolute values on $F$;
+- $1 < v_i(a)$ and $1 < v_i(b)$;
+- $v_j(a) < 1$ for $j \neq i$;
+- $w(a) = 1$ and $w(b) < 1$;
 
-Such a sequence is given by `a ^ n * b`.
+There is a sequence of values that tends to $\infty$
+under $v_i$, tends to $0$ under $v_j$, and is always $< 1$ under $w$.
+An example sequence is given by $a ^ n \cdot b$.
 -/
 theorem exists_tendsto_zero_tendsto_atTop_tendsto_const
     {ι : Type*} {v : ι → AbsoluteValue F ℝ} {w : AbsoluteValue F ℝ} {a b : F} {i : ι}
@@ -237,13 +243,17 @@ theorem exists_tendsto_zero_tendsto_atTop_tendsto_const
 
 open scoped Classical in
 /--
-Let `a, b ∈ K`, and let `v₁, ..., vₖ` be absolute values with some `1 < vᵢ a` while all other
-`vⱼ a < 1`. Suppose `1 < vᵢ b`. Let `w` be another absolute value on `K` such that `w a = 1`,
-while `w b < 1`. Then there is an element `k ∈ K` such that `1 < vᵢ k` while `vⱼ k < 1` for all
-`j ≠ i` and `w k < 1`.
+- $F$: field;
+- $a, b\in F$;
+- $v_1, ..., v_k, w$: absolute values on $F$;
+- $1 < v_i(a)$ and $1 < v_i(b)$;
+- $v_j(a) < 1$ for $j \neq i$;
+- $w(a) = 1$ and $w(b) < 1$;
 
+There is a $k\in F$ such that $1 < v_i(k)$ while $v_j(k) < 1$ for all
+$j \neq i$ and $w(k) < 1$.
 This is given by taking large enough values of a witness sequence to
-`exists_tendsto_zero_tendsto_atTop_tendsto_const` (for example `a ^ n * b` works).
+`exists_tendsto_zero_tendsto_atTop_tendsto_const` (for example $a ^ n \cdot b$ works).
 -/
 theorem exists_one_lt_lt_one_lt_one_of_eq_one
     {ι : Type*} [Fintype ι] {v : ι → AbsoluteValue F ℝ} {w : AbsoluteValue F ℝ} {a b : F} {i : ι}
@@ -261,12 +271,16 @@ theorem exists_one_lt_lt_one_lt_one_of_eq_one
 
 open Filter in
 /--
-Let `a, b ∈ K`, and let `v₁, ..., vₖ` be absolute values with some `1 < vᵢ a` while all other
-`vⱼ a < 1`. Let `w` be another absolute value on `K` such that `1 < w a`. Then there is a
-sequence of elements in `K` that tendsto `vᵢ b` under `vᵢ`, tends to `0` under `vⱼ` for `j ≠ i`,
-and tends to `w b` under `w`.
+- $F$: field;
+- $a, b\in F$;
+- $v_1, ..., v_k, w$: absolute values on $F$;
+- $1 < v_i(a)$;
+- $v_j(a) < 1$ for $j \neq i$;
+- $1 < w(a)$;
 
-Such a sequence is given by `1 / (1 + a ^ (- n))`.
+There is a sequence of elements in $F$ that tendsto $v_i b$ under $v_i$, tends to $0$ under
+$v_j$ for $j ≠ i$, and tends to $w b$ under $w$.
+Such a sequence is given by $\frac{1}{1 + a ^ {- n}}$.
 -/
 theorem exists_tendsto_const_tendsto_zero_tendsto_const
     {ι : Type*} {v : ι → AbsoluteValue F ℝ} {w : AbsoluteValue F ℝ} {a : F} {i : ι}
@@ -286,16 +300,19 @@ theorem exists_tendsto_const_tendsto_zero_tendsto_const
 
 open scoped Classical in
 /--
-Let `a, b ∈ K`, and let `v₁, ..., vₖ` be absolute values with some `1 < vᵢ a` while all other
-`vⱼ a < 1`. Suppose `1 < vᵢ b`. Let `w` be another absolute value on `K` such that `1 < w a`,
-while `w b < 1`. Then there is an element `k ∈ K` such that `1 < vᵢ k` while `vⱼ k < 1` for all
-`j ≠ i` and `w k < 1`.
+- $F$: field;
+- $a, b\in F$;
+- $v_1, ..., v_k, w$: absolute values on $F$;
+- $1 < v_i(a)$;
+- $v_j(a) < 1$ for $j \neq i$;
+- $1 < w(a)$;
 
-This is given by taking large enough values of a witness sequence to
-`exists_tendsto_const_tendsto_zero_tendsto_const` (for example `1 / (1 + a ^ (-n))` works).
+There is a $k ∈ F$ such that $1 < v_i(k)$ while $v_j(k) < 1$ for all
+$j ≠ i$ and $w(k) < 1$. This is given by taking large enough values of a witness sequence to
+`exists_tendsto_const_tendsto_zero_tendsto_const` (for example $\frac{1}{1 + a ^ {- n}}$ works).
 
 Note that this is the result `exists_one_lt_lt_one_lt_one_of_eq_one` replacing the condition
-that `w a = 1` with `1 < w a`.
+that $w(a) = 1$ with $1 < w(a)$ and removing the condition on $w(b)$.
 -/
 theorem exists_one_lt_lt_one_lt_one_of_one_lt
     {ι : Type*} [Fintype ι] {v : ι → AbsoluteValue F ℝ} {w : AbsoluteValue F ℝ} {a b : F} {i : ι}
@@ -317,9 +334,9 @@ theorem exists_one_lt_lt_one_lt_one_of_one_lt
   · exact hrN _ <| le_max_iff.2 (Or.inr le_rfl)
 
 /--
-Let `v₁, ..., vₖ` be a collection of at least two non-trivial and pairwise inequivalent
-absolute values. Then there is `a ∈ K` such that `1 < v₁ a` while `vⱼ a < 1` for
-all other `j ≠ 0`.
+Let $v_1, ..., v_k$ be a collection of at least two non-trivial and pairwise inequivalent
+absolute values on a field $F$. There is an $a ∈ F$ such that $1 < v_1(a)$ while
+$v_j(a) < 1$ for all other $j ≠ 1$.
 -/
 theorem exists_one_lt_lt_one {n : ℕ} {v : Fin (n + 2) → AbsoluteValue F ℝ}
     (h : ∀ i, (v i).IsNontrivial)
