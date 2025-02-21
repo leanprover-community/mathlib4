@@ -126,6 +126,14 @@ def oneTruncation₂ : SSet.Truncated.{u} 2 ⥤ ReflQuiv.{u, u} where
 lemma OneTruncation₂.hom_ext {S : SSet.Truncated 2} {x y : OneTruncation₂ S} {f g : x ⟶ y} :
     f.edge = g.edge → f = g := OneTruncation₂.Hom.ext
 
+@[simp]
+lemma OneTruncation₂.homOfEq_edge
+    {X : SSet.Truncated.{u} 2} {x₁ y₁ x₂ y₂ : OneTruncation₂ X}
+    (f : x₁ ⟶ y₁) (hx : x₁ = x₂) (hy : y₁ = y₂) :
+    (Quiver.homOfEq f hx hy).edge = f.edge := by
+  subst hx hy
+  rfl
+
 section
 variable {C : Type u} [Category.{v} C]
 
