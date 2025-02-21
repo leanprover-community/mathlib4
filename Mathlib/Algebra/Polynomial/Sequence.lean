@@ -3,6 +3,7 @@ Copyright (c) 2025 Julian Berman. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Hill, Julian Berman, Austin Letson, Matej Penciak
 -/
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.LinearAlgebra.Basis.Basic
 
@@ -35,6 +36,12 @@ open scoped Function
 variable (R : Type*)
 
 namespace Polynomial
+
+instance [Semiring R] [IsCancelAdd R] : IsCancelAdd (Polynomial R) := by
+  refine @AddCommMagma.IsLeftCancelAdd.toIsCancelAdd _ _ (.mk fun p q r h ↦ ?_)
+  ext n
+  simp_rw [ext_iff, coeff_add] at h
+  exact (add_right_inj _).1 (h n)
 
 /-- A sequence of polynomials such that the polynomial at index `i` has degree `i`. -/
 structure Sequence [Semiring R] where
@@ -143,8 +150,80 @@ section NoZeroDivisors
 
 variable [NoZeroDivisors R]
 
+section Test
+
+variable {R : Type*} [Semiring R] [NoZeroDivisors R]
+  (S : Sequence R)
+
+@[simp]
+lemma _root_.Finsupp.linearCombination_support_eq_empty {α M R : Type*} [Semiring R]
+    [AddCommMonoid M] [Module R M] (v : α → M) {l : α →₀ R} (hl : l.support = ∅) :
+    l.linearCombination R v = 0 := by
+  rw [Finsupp.linearCombination_apply, Finsupp.sum]
+  apply Finset.sum_eq_zero
+  intro a ha
+  rw [hl] at ha
+  contradiction
+
+lemma nat_deg {a : ℕ →₀ R} : (a.linearCombination R S).natDegree = a.support.sup id := by
+  obtain ha | ha := Finset.eq_empty_or_nonempty a.support
+  · simp [Finsupp.support_eq_empty.1 ha]
+  rw [Finsupp.linearCombination_apply, Finsupp.sum]
+  have : a.support.sup id = a.support.sup (fun i ↦ ((a i) • (S i)).natDegree) := by
+    apply Finset.sup_congr rfl
+    intro i hi
+    rw [natDegree_smul]
+    · simp
+    · exact Finsupp.mem_support_iff.1 hi
+  rw [this]
+  apply Polynomial.natDegree_sum_eq_of_disjoint
+  intro x ⟨_, hx⟩ y ⟨_, hy⟩ xney
+  have zgx : a x ≠ 0 := (smul_ne_zero_iff.mp hx).1
+  have zgy : a y ≠ 0 := (smul_ne_zero_iff.mp hy).1
+  simp only [ne_eq, Function.comp_apply]
+  rw [natDegree_smul _ zgx, natDegree_smul _ zgy]
+  simpa
+
+
+lemma linearIndependent {R : Type*} [Semiring R] [IsCancelAdd R] [NoZeroDivisors R]
+    (S : Sequence R) : LinearIndependent R S := by
+  intro a b h
+  simp_rw [Finsupp.linearCombination_apply, Finsupp.sum] at h
+  have lol : a.support.sup id = b.support.sup id := sorry
+  have has : a.support.Nonempty := sorry
+  have hbs : b.support.Nonempty := sorry
+  generalize hn : a.support.sup id = n
+  induction n generalizing a b with
+  | zero =>
+    have as : a.support = {0} := by
+      rw [Finset.eq_singleton_iff_unique_mem]
+      constructor
+      · nth_rw 1 [← hn, ← a.support.image_id, ← Finset.mem_coe, Finset.coe_image]
+        apply Finset.sup_mem_of_nonempty
+        exact has
+      · intro x hx
+        apply le_zero_iff.1
+        rw [← hn, ← id_eq x]
+        exact Finset.le_sup hx
+    have bs : b.support = {0} := by
+      rw [Finset.eq_singleton_iff_unique_mem]
+      constructor
+      · nth_rw 1 [← hn, lol, ← b.support.image_id, ← Finset.mem_coe, Finset.coe_image]
+        apply Finset.sup_mem_of_nonempty
+        exact hbs
+      · intro x hx
+        apply le_zero_iff.1
+        rw [← hn, lol, ← id_eq x]
+        exact Finset.le_sup hx
+    rw [as, bs, Finset.sum_singleton, Finset.sum_singleton] at h
+    ext i
+    obtain rfl | hi := eq_or_ne i 0
+
+
+end Test
+
 /-- Polynomials in a polynomial sequence are linearly independent. -/
-lemma linearIndependent :
+lemma linearIndependent' :
     LinearIndependent R S := linearIndependent_iff'.mpr <| fun s g eqzero i hi ↦ by
   by_cases hsupzero : s.sup (fun i ↦ (g i • S i).degree) = ⊥
   · have le_sup := Finset.le_sup hi (f := fun i ↦ (g i • S i).degree)
