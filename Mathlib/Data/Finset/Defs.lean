@@ -156,6 +156,12 @@ theorem coe_injective {α} : Injective ((↑) : Finset α → Set α) := fun _s 
 /-! ### type coercion -/
 
 
+@[coe, reducible] def Elem {α : Type u} (s : Finset α) : Type u := { x // x ∈ s}
+
+/-- Coercion from a finset to the corresponding subtype. -/
+instance {α : Type u} : CoeSort (Finset α) (Type u) :=
+  ⟨Elem⟩
+
 /-- Coercion from a finset to the corresponding subtype. -/
 instance {α : Type u} : CoeSort (Finset α) (Type u) :=
   ⟨fun s => { x // x ∈ s }⟩
