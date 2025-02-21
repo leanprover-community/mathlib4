@@ -661,16 +661,27 @@ theorem refl_symm : (PartialHomeomorph.refl X).symm = PartialHomeomorph.refl X :
 /-! const: `PartialEquiv.const` as a partial homeomorphism -/
 section const
 
+variable {a : X} {b : Y}
+
 /--
 This is `PartialEquiv.single` as a partial homeomorphism: a constant map,
 whose source and target are necessarily singleton sets.
 -/
-def const {a : X} {b : Y} (ha : IsOpen {a}) (hb : IsOpen {b}) : PartialHomeomorph X Y where
+def const (ha : IsOpen {a}) (hb : IsOpen {b}) : PartialHomeomorph X Y where
   toPartialEquiv := PartialEquiv.single a b
   open_source := ha
   open_target := hb
   continuousOn_toFun := by simp
   continuousOn_invFun := by simp
+
+@[simp, mfld_simps]
+lemma const_apply (ha : IsOpen {a}) (hb : IsOpen {b}) (x : X) : (const ha hb) x = b := rfl
+
+@[simp, mfld_simps]
+lemma const_source (ha : IsOpen {a}) (hb : IsOpen {b}) : (const ha hb).source = {a} := rfl
+
+@[simp, mfld_simps]
+lemma const_target (ha : IsOpen {a}) (hb : IsOpen {b}) : (const ha hb).target = {b} := rfl
 
 end const
 

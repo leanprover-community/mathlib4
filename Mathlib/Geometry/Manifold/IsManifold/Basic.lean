@@ -781,6 +781,7 @@ lemma maximalAtlas_subset_of_le {m n : WithTop ℕ∞} (h : m ≤ n) :
     maximalAtlas I n M ⊆ maximalAtlas I m M :=
   StructureGroupoid.maximalAtlas_mono (contDiffGroupoid_le h)
 
+variable (n) in
 /-- The empty set is a `C^n` manifold w.r.t. any charted space and model. -/
 instance empty [IsEmpty M] : IsManifold I n M := by
   apply isManifold_of_contDiffOn
@@ -798,6 +799,16 @@ instance empty [IsEmpty M] : IsManifold I n M := by
     _ = ∅ ∩ range I := by rw [this, preimage_empty]
     _ = ∅ := empty_inter (range I)
   apply (this ▸ hx).elim
+
+attribute [local instance] ChartedSpace.of_discreteTopology in
+variable (n) in
+/-- A discrete space `M` is a smooth manifold over the trivial model on a trivial normed space. -/
+theorem of_discreteTopology [DiscreteTopology M] [Unique E] :
+    IsManifold (modelWithCornersSelf 𝕜 E) n M := by
+  apply isManifold_of_contDiffOn _ _ _ (fun _ _ _ _ ↦ contDiff_of_subsingleton.contDiffOn)
+
+attribute [local instance] ChartedSpace.of_discreteTopology in
+example [Unique E] : IsManifold (𝓘(𝕜, E)) n (Fin 2) := of_discreteTopology _
 
 /-- The product of two `C^n` manifolds is naturally a `C^n` manifold. -/
 instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
