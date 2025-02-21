@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.BigOperators.Sym
+import Mathlib.Data.Finsupp.Pointwise
+import Mathlib.Data.Sym.Sym2.Finsupp
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 /-!
@@ -18,7 +20,88 @@ open LinearMap (BilinMap)
 
 namespace QuadraticMap
 
-variable {ι R M N} [LinearOrder ι]
+section
+
+variable {ι R M N}
+
+variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+
+open Finsupp in
+theorem map_finsuppSum' (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
+    Q (f.sum g) =
+      ∑ p ∈ f.support.sym2, polarSym2 Q (p.map fun i => g i (f i))
+        - f.sum fun i a => Q (g i a) := by
+  exact Q.map_sum' _ fun i => g i (f i)
+
+lemma polarSym2_map_smul_apply (Q : QuadraticMap R M N) (g : ι → M) (l : ι → R) (p : Sym2 ι) :
+    polarSym2 Q (p.map (l • g)) = (p.map l).mul • polarSym2 Q (p.map g) := by
+  obtain ⟨_,_⟩ := p
+  simp only [Pi.smul_apply', Sym2.map_pair_eq, polarSym2_sym2Mk, polar_smul_right, polar_smul_left,
+    Function.comp_apply, Sym2.mul_mk, ← smul_assoc, smul_eq_mul, mul_comm]
+
+open Finsupp in
+theorem apply_linearCombination' (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
+    Q (linearCombination R g l) =
+      linearCombination R (polarSym2 Q ∘ Sym2.map g) l.sym2_mul -
+      linearCombination R (Q ∘ g) (l * l) := by
+  simp_rw [linearCombination_apply, map_finsuppSum', map_smul, mul_smul]
+  rw [Finsupp.sum_of_support_subset (l * l) (support_mul_subset_left (g₁ := l))
+    (fun i a => a • (⇑Q ∘ g) i) (fun _ _=> by simp only [Function.comp_apply, zero_smul])]
+  simp only [mul_apply, Function.comp_apply]
+  simp only [←smul_eq_mul, smul_assoc]
+  apply sub_left_inj.mpr
+  rw [Finsupp.sum_of_support_subset l.sym2_mul (Sym2.support_mulFinsupp_subset l) _
+    (fun p hp => zero_smul R ((polarSym2 Q) (Sym2.map g p)))]
+  apply Finset.sum_congr rfl
+  intro _ _
+  rw [Sym2.mulFinsupp_eq_mul_comp_map, Function.comp_apply, ← polarSym2_map_smul_apply]
+  rfl
+
+open Finsupp in
+theorem sum_polar_sub_repr_sq (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
+    linearCombination R (polarSym2 Q ∘ Sym2.map bm) (bm.repr x).sym2_mul -
+      linearCombination R (Q ∘ bm) ((bm.repr x) * (bm.repr x)) = Q x := by
+  rw [← apply_linearCombination', Basis.linearCombination_repr]
+
+variable [DecidableEq ι]
+
+-- c.f. `_root_.map_finsupp_sum`
+open Finsupp in
+theorem map_finsuppSum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
+    Q (f.sum g) =
+      f.sum (fun i r => Q (g i r)) +
+      ∑ p ∈ f.support.sym2 with ¬ p.IsDiag,
+        polarSym2 Q (p.map fun i => g i (f i))  := by
+  exact Q.map_sum _ _
+
+-- c.f. `Finsupp.apply_linearCombination`
+open Finsupp in
+theorem apply_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
+    Q (linearCombination R g l) = linearCombination R (Q ∘ g) (l * l) +
+      ∑ p ∈ l.support.sym2 with ¬ p.IsDiag,
+        (Sym2.mul (p.map l)) • (polarSym2 Q (p.map g)) := by
+  simp_rw [linearCombination_apply, map_finsuppSum, map_smul, mul_smul]
+  rw [Finsupp.sum_of_support_subset (l * l) (support_mul_subset_left (g₁ := l))
+    (fun i a => a • (⇑Q ∘ g) i) (fun _ _=> by simp only [Function.comp_apply, zero_smul])]
+  simp only [mul_apply, Function.comp_apply]
+  simp only [←smul_eq_mul, smul_assoc]
+  rw [Finsupp.sum]
+  simp_rw [add_right_inj]
+  apply Finset.sum_congr rfl
+  simp only [Finset.mem_filter, Finset.mem_sym2_iff, mem_support_iff, ne_eq, Pi.smul_apply',
+    Function.comp_apply, ← polarSym2_map_smul_apply, implies_true]
+
+-- c.f. `LinearMap.sum_repr_mul_repr_mul`
+open Finsupp in
+theorem sum_repr_sq_add_sum_repr_mul_polar (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
+    linearCombination R (Q ∘ bm) (bm.repr x * bm.repr x) +
+      ∑ p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag,
+        (Sym2.mul (p.map (bm.repr x))) • (polarSym2 Q (p.map bm)) = Q x := by
+  rw [← apply_linearCombination, Basis.linearCombination_repr]
+
+end
+
+variable {ι R M N}  [LinearOrder ι]
 variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
 /-- Given an ordered basis, produce a bilinear form associated with the quadratic form.
