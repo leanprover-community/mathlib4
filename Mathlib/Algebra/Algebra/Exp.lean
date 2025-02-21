@@ -20,30 +20,31 @@ import Mathlib.Data.Nat.Factorial.Basic
 
 This file could usefully be split further.
 -/
-
-universe u w
-
-
 namespace Algebra
 
 section Exp
 
-variable {R : Type u} {A : Type w}
-variable [Field R] [CharZero R]
-variable [Semiring A] [Algebra R A]
+variable (R : Type*) [Field R] [CharZero R]
+variable (A : Type*) [Semiring A] [Algebra R A]
 
+-- Exponent of a nilpotent element
 noncomputable def exponent (a : A) : ℕ :=
-    sInf {k | a ^ k = 0}
+  sInf {k | a ^ k = 0}
 
-noncomputable def exp (a : A) [Field R]: A :=
-  ∑ n ∈ Finset.range (exponent a), (Nat.factorial n : R)⁻¹ • (a ^ n)
+-- Exponential of a nilpotent element
+noncomputable def exp (a : A) : A :=
+  ∑ n ∈ Finset.range (exponent A a), (Nat.factorial n : R)⁻¹ • (a ^ n)
+
 
 theorem wellDef {k : ℕ} (a : A) (h : a ^ k = 0) :
-    exp (R := R) a  = ∑ n ∈ Finset.range k, (Nat.factorial n : R)⁻¹ • (a ^ n) := by
+    exp R A a  = ∑ n ∈ Finset.range k, (Nat.factorial n : R)⁻¹ • (a ^ n) := by
   sorry
 
 theorem mul_add (a b : A) (h : a * b = b * a) (IsNilpotent a : A) (IsNilpotent b : A) :
-    exp (R := R) (a + b) = (exp (R := R) a : A) * (exp (R := R) b) := by
+    exp R A (a + b) = exp R A a * exp R A b := by
+  sorry
+
+theorem exp_inv (a : A) (IsNilpotent a : A) : IsUnit (exp R A a) := by
   sorry
 
 end Exp
