@@ -269,8 +269,7 @@ def symm (e : A₁ ≃ₐ[R] A₂) : A₂ ≃ₐ[R] A₁ :=
     commutes' := fun r => by
       rw [← e.toRingEquiv.symm_apply_apply (algebraMap R A₁ r)]
       congr
-      change _ = e _
-      rw [e.commutes] }
+      simp }
 
 theorem invFun_eq_symm {e : A₁ ≃ₐ[R] A₂} : e.invFun = e.symm :=
   rfl
