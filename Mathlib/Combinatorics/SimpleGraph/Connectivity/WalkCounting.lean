@@ -244,17 +244,19 @@ end Fintype
 infinite components. -/
 abbrev oddComponents : Set G.ConnectedComponent := {c : G.ConnectedComponent | Odd c.supp.ncard}
 
-lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents [Finite V] {G'}
+lemma ConnectedComponent.odd_oddComponents_ncard_subset_supp [Finite V] {G'}
     (h : G ≤ G') (c' : ConnectedComponent G') :
-    Odd c'.supp.ncard ↔
-      Odd {c : ConnectedComponent G | c.supp ⊆ c'.supp ∧ Odd c.supp.ncard}.ncard := by
+    Odd {c ∈ G.oddComponents | c.supp ⊆ c'.supp}.ncard ↔ Odd c'.supp.ncard := by
   simp_rw [← Set.Nat.card_coe_set_eq]
   classical
   cases nonempty_fintype V
-  rw [Nat.card_eq_card_toFinset, ← disjiUnion_supp_toFinset_eq_supp_toFinset h]
-  simp only [Finset.card_disjiUnion, Set.toFinset_card]
+  rw [Nat.card_eq_card_toFinset c'.supp, ← disjiUnion_supp_toFinset_eq_supp_toFinset h]
+  simp only [Finset.card_disjiUnion, Set.toFinset_card, Fintype.card_ofFinset]
   rw [Finset.odd_sum_iff_odd_card_odd, Nat.card_eq_fintype_card, Fintype.card_ofFinset]
-  simp only [Nat.card_eq_fintype_card, Finset.filter_filter]
+  congr! 2
+  ext c
+  simp only [Set.toFinset_setOf, mem_filter, mem_univ, true_and, ← Set.ncard_coe_Finset, coe_filter,
+    mem_supp_iff, and_comm (a := _ ⊆ _)]
   rfl
 
 lemma odd_ncard_oddComponents [Finite V] : Odd G.oddComponents.ncard ↔ Odd (Nat.card V) := by
