@@ -236,8 +236,8 @@ lemma integral_exp_tilted (f g : α → ℝ) :
   | inr h0 =>
     rw [integral_tilted f]
     simp_rw [smul_eq_mul]
-    have : ∀ x, (rexp (f x) / ∫ (x : α), rexp (f x) ∂μ) * rexp (g x)
-        = (rexp ((f + g) x) / ∫ (x : α), rexp (f x) ∂μ) := by
+    have : ∀ x, (exp (f x) / ∫ (x : α), exp (f x) ∂μ) * exp (g x)
+        = (exp ((f + g) x) / ∫ (x : α), exp (f x) ∂μ) := by
       intro x
       rw [Pi.add_apply, exp_add]
       ring
@@ -289,6 +289,27 @@ lemma absolutelyContinuous_tilted (hf : Integrable (fun x ↦ exp (f x)) μ) : �
     · filter_upwards
       simp only [ne_eq, ENNReal.ofReal_eq_zero, not_le]
       exact fun _ ↦ div_pos (exp_pos _) (integral_exp_pos hf)
+
+lemma integrable_tilted_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {f : α → ℝ} (hf : Integrable (fun x ↦ exp (f x)) μ) (g : α → E) :
+    Integrable g (μ.tilted f) ↔ Integrable (fun x ↦ exp (f x) • g x) μ := by
+  by_cases hμ : μ = 0
+  · simp [hμ]
+  have hf_meas : AEMeasurable f μ := aemeasurable_of_aemeasurable_exp hf.1.aemeasurable
+  rw [Measure.tilted, integrable_withDensity_iff_integrable_smul₀' (by fun_prop) (by simp)]
+  calc Integrable (fun x ↦ (ENNReal.ofReal (exp (f x) / ∫ a, exp (f a) ∂μ)).toReal • g x) μ
+  _ ↔ Integrable (fun x ↦ (exp (f x) / ∫ a, exp (f a) ∂μ) • g x) μ := by
+    congr! with a
+    rw [ENNReal.toReal_ofReal]
+    positivity
+  _ ↔ Integrable (fun x ↦ (∫ a, exp (f a) ∂μ)⁻¹ • exp (f x) • g x) μ := by
+    congr! 2 with a
+    rw [smul_smul, div_eq_inv_mul]
+  _ ↔ Integrable (fun x ↦ exp (f x) • g x) μ := by
+    rw [integrable_smul_iff']
+    simp only [ne_eq, inv_eq_zero]
+    have : NeZero μ := ⟨hμ⟩
+    exact (integral_exp_pos hf).ne'
 
 lemma rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
     (hf : Integrable (fun x ↦ exp (f x)) ν) :
