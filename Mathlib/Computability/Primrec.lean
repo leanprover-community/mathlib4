@@ -457,7 +457,7 @@ theorem nat_rec {f : α → β} {g : α → ℕ × β → β} (hf : Primrec f) (
       fun n => by
       simp only [Nat.unpaired, id_eq, Nat.unpair_pair, decode_prod_val, decode_nat,
         Option.some_bind, Option.map_map, Option.map_some']
-      cases' @decode α _ n.unpair.1 with a; · rfl
+      rcases @decode α _ n.unpair.1 with - | a; · rfl
       simp only [Nat.pred_eq_sub_one, encode_some, Nat.succ_eq_add_one, encodek, Option.map_some',
         Option.some_bind, Option.map_map]
       induction' n.unpair.2 with m <;> simp [encodek]
@@ -497,7 +497,7 @@ theorem option_casesOn {o : α → Option β} {f : α → σ} {g : α → β →
             Primrec₂.encode_iff.2 <|
               (Primrec₂.nat_iff'.1 hg).comp₂ ((@Primrec.encode α _).comp fst).to₂
                 Primrec₂.right).of_eq
-      fun a => by cases' o a with b <;> simp [encodek]
+      fun a => by rcases o a with - | b <;> simp [encodek]
 
 theorem option_bind {f : α → Option β} {g : α → β → Option σ} (hf : Primrec f) (hg : Primrec₂ g) :
     Primrec fun a => (f a).bind (g a) :=
@@ -553,7 +553,7 @@ theorem ite {c : α → Prop} [DecidablePred c] {f : α → σ} {g : α → σ} 
 theorem nat_le : PrimrecRel ((· ≤ ·) : ℕ → ℕ → Prop) :=
   (nat_casesOn nat_sub (const true) (const false).to₂).of_eq fun p => by
     dsimp [swap]
-    cases' e : p.1 - p.2 with n
+    rcases e : p.1 - p.2 with - | n
     · simp [Nat.sub_eq_zero_iff_le.1 e]
     · simp [not_le.2 (Nat.lt_of_sub_eq_succ e)]
 
@@ -713,7 +713,7 @@ private theorem list_casesOn' {f : α → List β} {g : α → σ} {h : α → �
       to₂ <|
         option_casesOn snd (hg.comp fst) (hh.comp₂ (fst.comp₂ Primrec₂.left) Primrec₂.right)).comp
       .id (encode_iff.2 hf)
-  option_some_iff.1 <| this.of_eq fun a => by cases' f a with b l <;> simp [encodek]
+  option_some_iff.1 <| this.of_eq fun a => by rcases f a with - | ⟨b, l⟩ <;> simp [encodek]
 
 private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ × β → σ}
     (hf : haveI := prim H; Primrec f) (hg : Primrec g) (hh : haveI := prim H; Primrec₂ h) :
@@ -740,7 +740,7 @@ private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ 
   | zero => rfl
   | succ n IH =>
     simp only [iterate_succ, comp_apply]
-    cases' l with b l <;> simp [G, IH]
+    rcases l with - | ⟨b, l⟩ <;> simp [G, IH]
 
 private theorem list_cons' : (haveI := prim H; Primrec₂ (@List.cons β)) :=
   letI := prim H
@@ -794,7 +794,7 @@ instance list : Primcodable (List α) :=
         rw [List.foldl_reverse]
         apply Nat.case_strong_induction_on n; · simp
         intro n IH; simp
-        cases' @decode α _ n.unpair.1 with a; · rfl
+        rcases @decode α _ n.unpair.1 with - | a; · rfl
         simp only [decode_eq_ofNat, Option.some.injEq, Option.some_bind, Option.map_some']
         suffices ∀ (o : Option (List ℕ)) (p), encode o = encode p →
             encode (Option.map (List.cons (encode a)) o) = encode (Option.map (List.cons a) p) from
@@ -812,19 +812,24 @@ namespace Primrec
 variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
-theorem sum_inl : Primrec (@Sum.inl α β) :=
+theorem sumInl : Primrec (@Sum.inl α β) :=
   encode_iff.1 <| nat_double.comp Primrec.encode
 
-theorem sum_inr : Primrec (@Sum.inr α β) :=
+theorem sumInr : Primrec (@Sum.inr α β) :=
   encode_iff.1 <| nat_double_succ.comp Primrec.encode
 
-theorem sum_casesOn {f : α → β ⊕ γ} {g : α → β → σ} {h : α → γ → σ} (hf : Primrec f)
+@[deprecated (since := "2025-02-21")] alias sum_inl := Primrec.sumInl
+@[deprecated (since := "2025-02-21")] alias sum_inr := Primrec.sumInr
+
+theorem sumCasesOn {f : α → β ⊕ γ} {g : α → β → σ} {h : α → γ → σ} (hf : Primrec f)
     (hg : Primrec₂ g) (hh : Primrec₂ h) : @Primrec _ σ _ _ fun a => Sum.casesOn (f a) (g a) (h a) :=
   option_some_iff.1 <|
     (cond (nat_bodd.comp <| encode_iff.2 hf)
           (option_map (Primrec.decode.comp <| nat_div2.comp <| encode_iff.2 hf) hh)
           (option_map (Primrec.decode.comp <| nat_div2.comp <| encode_iff.2 hf) hg)).of_eq
-      fun a => by cases' f a with b c <;> simp [Nat.div2_val, encodek]
+      fun a => by rcases f a with b | c <;> simp [Nat.div2_val, encodek]
+
+@[deprecated (since := "2025-02-21")] alias sum_casesOn := Primrec.sumCasesOn
 
 theorem list_cons : Primrec₂ (@List.cons α) :=
   list_cons' Primcodable.prim
@@ -878,17 +883,17 @@ theorem list_get? : Primrec₂ (@List.get? α) :=
         Sum.casesOn s (@Nat.casesOn (fun _ => ℕ ⊕ α) · (Sum.inr a) Sum.inl) Sum.inr)
       (Sum.inl n)
   have hF : Primrec₂ F :=
-    (list_foldl fst (sum_inl.comp snd)
-      ((sum_casesOn fst (nat_casesOn snd (sum_inr.comp <| snd.comp fst) (sum_inl.comp snd).to₂).to₂
-              (sum_inr.comp snd).to₂).comp
+    (list_foldl fst (sumInl.comp snd)
+      ((sumCasesOn fst (nat_casesOn snd (sumInr.comp <| snd.comp fst) (sumInl.comp snd).to₂).to₂
+              (sumInr.comp snd).to₂).comp
           snd).to₂).to₂
   have :
     @Primrec _ (Option α) _ _ fun p : List α × ℕ => Sum.casesOn (F p.1 p.2) (fun _ => none) some :=
-    sum_casesOn hF (const none).to₂ (option_some.comp snd).to₂
+    sumCasesOn hF (const none).to₂ (option_some.comp snd).to₂
   this.to₂.of_eq fun l n => by
     dsimp; symm
     induction' l with a l IH generalizing n; · rfl
-    cases' n with n
+    rcases n with - | n
     · dsimp [F]
       clear IH
       induction' l with _ l IH <;> simp [*]
@@ -1074,7 +1079,7 @@ def subtype {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) : Primcodab
     option_bind .decode (option_guard (hp.comp snd).to₂ snd)
   nat_iff.1 <| (encode_iff.2 this).of_eq fun n =>
     show _ = encode ((@decode α _ n).bind fun _ => _) by
-      cases' @decode α _ n with a; · rfl
+      rcases @decode α _ n with - | a; · rfl
       dsimp [Option.guard]
       by_cases h : p a <;> simp [h]; rfl⟩
 
@@ -1127,7 +1132,7 @@ theorem subtype_val_iff {p : β → Prop} [DecidablePred p] {hp : PrimrecPred p}
   letI := Primcodable.subtype hp
   refine ⟨fun h => ?_, fun hf => subtype_val.comp hf⟩
   refine Nat.Primrec.of_eq h fun n => ?_
-  cases' @decode α _ n with a; · rfl
+  rcases @decode α _ n with - | a; · rfl
   simp; rfl
 
 theorem subtype_mk {p : β → Prop} [DecidablePred p] {hp : PrimrecPred p} {f : α → β}

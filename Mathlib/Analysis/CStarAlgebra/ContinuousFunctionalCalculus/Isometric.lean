@@ -25,7 +25,7 @@ section Unital
 
 /-- An extension of the `ContinuousFunctionalCalculus` requiring that `cfcHom` is an isometry. -/
 class IsometricContinuousFunctionalCalculus (R A : Type*) (p : outParam (A → Prop))
-    [CommSemiring R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
+    [CommSemiring R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
     [Ring A] [StarRing A] [MetricSpace A] [Algebra R A]
     extends ContinuousFunctionalCalculus R p : Prop where
   isometric (a : A) (ha : p a) : Isometry (cfcHom ha (R := R))
@@ -35,7 +35,7 @@ section MetricSpace
 open scoped ContinuousFunctionalCalculus
 
 lemma isometry_cfcHom {R A : Type*} {p : outParam (A → Prop)} [CommSemiring R] [StarRing R]
-    [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
+    [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
     [MetricSpace A] [Algebra R A] [IsometricContinuousFunctionalCalculus R A p]
     (a : A) (ha : p a := by cfc_tac) :
     Isometry (cfcHom (show p a from ha) (R := R)) :=
@@ -165,8 +165,8 @@ end NormedRing
 namespace SpectrumRestricts
 
 variable {R S A : Type*} {p q : A → Prop}
-variable [Semifield R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
-variable [Semifield S] [StarRing S] [MetricSpace S] [TopologicalSemiring S] [ContinuousStar S]
+variable [Semifield R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
+variable [Semifield S] [StarRing S] [MetricSpace S] [IsTopologicalSemiring S] [ContinuousStar S]
 variable [Ring A] [StarRing A] [Algebra S A]
 variable [Algebra R S] [Algebra R A] [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S]
 variable [MetricSpace A] [IsometricContinuousFunctionalCalculus S A q]
@@ -208,7 +208,7 @@ section NonUnital
 /-- An extension of the `NonUnitalContinuousFunctionalCalculus` requiring that `cfcₙHom` is an
 isometry. -/
 class NonUnitalIsometricContinuousFunctionalCalculus (R A : Type*) (p : outParam (A → Prop))
-    [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R] [TopologicalSemiring R]
+    [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R]
     [ContinuousStar R] [NonUnitalRing A] [StarRing A] [MetricSpace A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A]
     extends NonUnitalContinuousFunctionalCalculus R p : Prop where
@@ -217,7 +217,7 @@ class NonUnitalIsometricContinuousFunctionalCalculus (R A : Type*) (p : outParam
 section MetricSpace
 
 variable {R A : Type*} {p : outParam (A → Prop)}
-variable [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R] [TopologicalSemiring R]
+variable [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R]
 variable [ContinuousStar R]
 variable [NonUnitalRing A] [StarRing A] [MetricSpace A] [Module R A]
 variable [IsScalarTower R A A] [SMulCommClass R A A]
@@ -354,8 +354,8 @@ namespace QuasispectrumRestricts
 open NonUnitalIsometricContinuousFunctionalCalculus
 
 variable {R S A : Type*} {p q : A → Prop}
-variable [Semifield R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
-variable [Field S] [StarRing S] [MetricSpace S] [TopologicalRing S] [ContinuousStar S]
+variable [Semifield R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
+variable [Field S] [StarRing S] [MetricSpace S] [IsTopologicalRing S] [ContinuousStar S]
 variable [NonUnitalRing A] [StarRing A] [Module S A] [IsScalarTower S A A]
 variable [SMulCommClass S A A]
 variable [Algebra R S] [Module R A] [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S]

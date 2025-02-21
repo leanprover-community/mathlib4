@@ -27,7 +27,7 @@ algebraic manipulation.
 * `Real.Wallis.W_eq_integral_sin_pow_div_integral_sin_pow`: express `W n` as a ratio of integrals.
 * `Real.Wallis.W_le` and `Real.Wallis.le_W`: upper and lower bounds for `W n`.
 * `Real.tendsto_prod_pi_div_two`: the Wallis product formula.
- -/
+-/
 
 
 open scoped Real Topology Nat
@@ -93,7 +93,7 @@ theorem tendsto_W_nhds_pi_div_two : Tendsto W atTop (𝓝 <| π / 2) := by
   refine Tendsto.mul ?_ tendsto_const_nhds
   have h : ∀ n : ℕ, ((2 : ℝ) * n + 1) / (2 * n + 2) = 1 - 1 / (2 * n + 2) := by
     intro n
-    rw [sub_div' _ _ _ (ne_of_gt (add_pos_of_nonneg_of_pos (mul_nonneg
+    rw [sub_div' (ne_of_gt (add_pos_of_nonneg_of_pos (mul_nonneg
       (two_pos : 0 < (2 : ℝ)).le (Nat.cast_nonneg _)) two_pos)), one_mul]
     congr 1; ring
   simp_rw [h]

@@ -139,3 +139,7 @@ lemma IsCompact.inter_of_isOpen (hUcomp : IsCompact U) (hVcomp : IsCompact V) (h
   QuasiSeparatedSpace.inter_isCompact _ _ hUopen hUcomp hVopen hVcomp
 
 end QuasiSeparatedSpace
+
+lemma quasiSeparatedSpace_congr (e : α ≃ₜ β) : QuasiSeparatedSpace α ↔ QuasiSeparatedSpace β where
+  mp _ := .of_isOpenEmbedding e.symm.isOpenEmbedding
+  mpr _ := .of_isOpenEmbedding e.isOpenEmbedding

@@ -497,7 +497,7 @@ instance (R : Type u) : Inhabited (Mat R) := by
   infer_instance
 
 instance (R : Type u) : CoeSort (Mat R) (Type u) :=
-  Bundled.coeSort
+  FintypeCat.instCoeSort
 
 open Matrix
 
@@ -580,7 +580,7 @@ instance : (equivalenceSingleObjInverse R).Full where
 instance : (equivalenceSingleObjInverse R).EssSurj where
   mem_essImage X :=
     ⟨{  ι := X
-        X := fun _ => PUnit.unit }, ⟨eqToIso (by dsimp; cases X; congr)⟩⟩
+        X := fun _ => PUnit.unit }, ⟨eqToIso (by cases X; congr)⟩⟩
 
 instance : (equivalenceSingleObjInverse R).IsEquivalence where
 

@@ -3,13 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 -/
+import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Order.CauSeq.BigOperators
 import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Data.Complex.Abs
 import Mathlib.Data.Complex.BigOperators
+import Mathlib.Data.Complex.Norm
 import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Algebra.CharP.Defs
 
 /-!
 # Exponential Function
@@ -29,8 +28,8 @@ theorem isCauSeq_abs_exp (z : ℂ) :
   have hn0 : (0 : ℝ) < n := lt_of_le_of_lt (abs.nonneg _) hn
   IsCauSeq.series_ratio_test n (abs z / n) (div_nonneg (abs.nonneg _) (le_of_lt hn0))
     (by rwa [div_lt_iff₀ hn0, one_mul]) fun m hm => by
-      rw [abs_abs, abs_abs, Nat.factorial_succ, pow_succ', mul_comm m.succ, Nat.cast_mul, ← div_div,
-        mul_div_assoc, mul_div_right_comm, map_mul, map_div₀, abs_natCast]
+      rw [Complex.abs_abs, Complex.abs_abs, Nat.factorial_succ, pow_succ', mul_comm m.succ,
+        Nat.cast_mul, ← div_div, mul_div_assoc, mul_div_right_comm, map_mul, map_div₀, abs_natCast]
       gcongr
       exact le_trans hm (Nat.le_succ _)
 
@@ -84,7 +83,7 @@ theorem exp_zero : exp 0 = 1 := by
   rw [exp]
   refine lim_eq_of_equiv_const fun ε ε0 => ⟨1, fun j hj => ?_⟩
   convert (config := .unfoldSameFun) ε0 -- Porting note: ε0 : ε > 0 but goal is _ < ε
-  cases' j with j j
+  rcases j with - | j
   · exact absurd hj (not_le_of_gt zero_lt_one)
   · dsimp [exp']
     induction' j with j ih
@@ -276,7 +275,7 @@ theorem abs_exp (x : ℝ) : |exp x| = exp x :=
   abs_of_pos (exp_pos _)
 
 lemma exp_abs_le (x : ℝ) : exp |x| ≤ exp x + exp (-x) := by
-  cases le_total x 0 <;> simp [abs_of_nonpos, _root_.abs_of_nonneg, exp_nonneg, *]
+  cases le_total x 0 <;> simp [abs_of_nonpos, abs_of_nonneg, exp_nonneg, *]
 
 @[mono]
 theorem exp_strictMono : StrictMono exp := fun x y h => by
@@ -538,7 +537,7 @@ theorem abs_exp_sub_one_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1| ≤ 2 * |x| 
   exact this
 
 theorem abs_exp_sub_one_sub_id_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1 - x| ≤ x ^ 2 := by
-  rw [← _root_.sq_abs]
+  rw [← sq_abs]
   -- Porting note: was
   -- exact_mod_cast Complex.abs_exp_sub_one_sub_id_le this
   have : Complex.abs x ≤ 1 := mod_cast hx
@@ -656,10 +655,10 @@ theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t 
     _ = rexp (-t) := by rw [← Real.exp_nat_mul, mul_neg, mul_comm, div_mul_cancel₀]; positivity
 
 lemma le_inv_mul_exp (x : ℝ) {c : ℝ} (hc : 0 < c) : x ≤ c⁻¹ * exp (c * x) := by
-    rw [le_inv_mul_iff₀ hc]
-    calc c * x
-    _ ≤ c * x + 1 := le_add_of_nonneg_right zero_le_one
-    _ ≤ _ := Real.add_one_le_exp (c * x)
+  rw [le_inv_mul_iff₀ hc]
+  calc c * x
+  _ ≤ c * x + 1 := le_add_of_nonneg_right zero_le_one
+  _ ≤ _ := Real.add_one_le_exp (c * x)
 
 end Real
 
@@ -682,6 +681,6 @@ namespace Complex
 @[simp]
 theorem abs_exp_ofReal (x : ℝ) : abs (exp x) = Real.exp x := by
   rw [← ofReal_exp]
-  exact abs_of_nonneg (le_of_lt (Real.exp_pos _))
+  exact Complex.abs_of_nonneg (le_of_lt (Real.exp_pos _))
 
 end Complex
