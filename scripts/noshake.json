@@ -387,6 +387,7 @@
   "Mathlib.Deprecated.NatLemmas": ["Batteries.Data.Nat.Lemmas", "Batteries.WF"],
   "Mathlib.Deprecated.MinMax": ["Mathlib.Order.MinMax"],
   "Mathlib.Deprecated.LazyList": ["Mathlib.Lean.Thunk"],
+  "Mathlib.Deprecated.Cardinal.Finite": ["Mathlib.Data.Finite.Card"],
   "Mathlib.Deprecated.ByteArray": ["Batteries.Data.ByteSubarray"],
   "Mathlib.Data.Vector.Basic": ["Mathlib.Control.Applicative"],
   "Mathlib.Data.Set.Image":
