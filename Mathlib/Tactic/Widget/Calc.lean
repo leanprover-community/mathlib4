@@ -128,6 +128,7 @@ def CalcPanel : Component CalcParams :=
 namespace Lean.Elab.Tactic
 
 open Lean Meta Tactic TryThis in
+/-- Create a `calc` proof. -/
 elab stx:"calc?" : tactic => do
   let some calcRange := (← getFileMap).rangeOfStx? stx | throwError "calc? failed"
   let indent := calcRange.start.character + 2
