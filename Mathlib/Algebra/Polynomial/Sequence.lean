@@ -116,9 +116,7 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
 
     by_cases tail_eq_zero : tail = 0
     · simp [head_mem_span, sub_eq_iff_eq_add.mp tail_eq_zero]
-    · refine sub_mem_iff_left _ head_mem_span |>.mp ?_
-      simp only [mem_top, forall_const] at ih
-      refine ih tail.natDegree ?_ _ rfl
+    · refine sub_mem_iff_left _ head_mem_span |>.mp <| ih tail.natDegree ?_ _ rfl
 
       have isRightRegular_smul_leadingCoeff : IsRightRegular (u • S n).leadingCoeff := by
         simpa [leadingCoeff_smul_of_smul_regular _ <| IsSMulRegular.of_mul_eq_one leftinv, rightinv]
