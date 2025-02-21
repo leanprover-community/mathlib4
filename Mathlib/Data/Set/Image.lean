@@ -3,12 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Tactic.Use
 import Batteries.Tactic.Congr
-import Mathlib.Order.TypeTags
-import Mathlib.Data.Option.Basic
+import Mathlib.Data.Set.Subsingleton
 import Mathlib.Data.Set.SymmDiff
+import Mathlib.Order.Hom.Basic
 
 /-!
 # Images and preimages of sets
@@ -422,11 +420,19 @@ theorem Nonempty.subset_preimage_const {s : Set α} (hs : Set.Nonempty s) (t : S
     s ⊆ (fun _ => a) ⁻¹' t ↔ a ∈ t := by
   rw [← image_subset_iff, hs.image_const, singleton_subset_iff]
 
+-- Note defeq abuse identifying `preimage` with function composition in the following two proofs.
+
+@[simp]
+theorem preimage_injective : Injective (preimage f) ↔ Surjective f :=
+  injective_comp_right_iff_surjective
+
+@[simp]
+theorem preimage_surjective : Surjective (preimage f) ↔ Injective f :=
+  surjective_comp_right_iff_injective
+
 @[simp]
 theorem preimage_eq_preimage {f : β → α} (hf : Surjective f) : f ⁻¹' s = f ⁻¹' t ↔ s = t :=
-  Iff.intro
-    fun eq => by rw [← image_preimage_eq s hf, ← image_preimage_eq t hf, eq]
-    fun eq => eq ▸ rfl
+  (preimage_injective.mpr hf).eq_iff
 
 theorem image_inter_preimage (f : α → β) (s : Set α) (t : Set β) :
     f '' (s ∩ f ⁻¹' t) = f '' s ∩ t := by
@@ -1074,10 +1080,8 @@ theorem Surjective.preimage_injective (hf : Surjective f) : Injective (preimage 
 theorem Injective.preimage_image (hf : Injective f) (s : Set α) : f ⁻¹' (f '' s) = s :=
   preimage_image_eq s hf
 
-theorem Injective.preimage_surjective (hf : Injective f) : Surjective (preimage f) := by
-  intro s
-  use f '' s
-  rw [hf.preimage_image]
+theorem Injective.preimage_surjective (hf : Injective f) : Surjective (preimage f) :=
+  Set.preimage_surjective.mpr hf
 
 theorem Injective.subsingleton_image_iff (hf : Injective f) {s : Set α} :
     (f '' s).Subsingleton ↔ s.Subsingleton :=
@@ -1299,20 +1303,6 @@ open Function
 section ImagePreimage
 
 variable {α : Type u} {β : Type v} {f : α → β}
-
-@[simp]
-theorem preimage_injective : Injective (preimage f) ↔ Surjective f := by
-  refine ⟨fun h y => ?_, Surjective.preimage_injective⟩
-  obtain ⟨x, hx⟩ : (f ⁻¹' {y}).Nonempty := by
-    rw [h.nonempty_apply_iff preimage_empty]
-    apply singleton_nonempty
-  exact ⟨x, hx⟩
-
-@[simp]
-theorem preimage_surjective : Surjective (preimage f) ↔ Injective f := by
-  refine ⟨fun h x x' hx => ?_, Injective.preimage_surjective⟩
-  rcases h {x} with ⟨s, hs⟩; have := mem_singleton x
-  rwa [← hs, mem_preimage, hx, ← mem_preimage, hs, mem_singleton_iff, eq_comm] at this
 
 @[simp]
 theorem image_surjective : Surjective (image f) ↔ Surjective f := by
