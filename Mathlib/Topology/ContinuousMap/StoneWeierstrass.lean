@@ -7,7 +7,6 @@ import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Topology.Algebra.StarSubalgebra
 import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 import Mathlib.Topology.ContinuousMap.Weierstrass
-import Mathlib.Topology.ContinuousMap.MvPolynomial
 import Mathlib.Topology.ContinuousMap.Lattice
 
 /-!
@@ -435,7 +434,7 @@ section PolynomialFunctions
 open StarSubalgebra Polynomial
 open scoped Polynomial
 
-/-- Polynomial functions are dense in `C(s, ℝ)` when `s` is compact.
+/-- Polynomial functions in are dense in `C(s, ℝ)` when `s` is compact.
 
 See `polynomialFunctions_closure_eq_top` for the special case `s = Set.Icc a b` which does not use
 the full Stone-Weierstrass theorem. Of course, that version could be used to prove this one as
