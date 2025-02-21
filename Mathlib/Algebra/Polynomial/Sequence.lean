@@ -68,27 +68,11 @@ lemma natDegree_eq (i : ℕ) : (S i).natDegree = i := natDegree_eq_of_degree_eq_
 @[simp]
 lemma ne_zero (i : ℕ) : S i ≠ 0 := degree_ne_bot.mp <| by simp [S.degree_eq i]
 
-/-- Degree is injective for elements of `S`. -/
-@[simp]
-lemma degree_injective : Function.Injective <| degree ∘ S := fun _ _  ↦ by simp
+/-- `S i` has strictly monotone degree. -/
+lemma degree_strictMono : StrictMono <| degree ∘ S := fun _ _  ↦ by simp
 
-/-- Natural degree is injective for elements of `S`. -/
-@[simp]
-lemma natDegree_injective : Function.Injective <| natDegree ∘ S := fun _ _  ↦ by simp
-
-variable {i j : ℕ}
-
-/-- Two polynomials have the same degree iff they are the same element in the sequence. -/
-lemma degree_inj : (S i).degree = (S j).degree ↔ i = j := by simp
-
-/-- Two polynomials have the same natural degree iff they are the same element in the sequence. -/
-lemma natDegree_inj : (S i).natDegree = (S j).natDegree ↔ i = j := by simp
-
-/-- Earlier sequence elements have lower degrees. -/
-lemma degree_lt (h : i < j) : (S i).degree < j := by simp [h]
-
-/-- Earlier sequence elements have lower natural degrees. -/
-lemma natDegree_lt (h : i < j) : (S i).natDegree < j := by simp [h]
+/-- `S i` has strictly monotone natural degree. -/
+lemma natDegree_strictMono : StrictMono <| natDegree ∘ S := fun _ _  ↦ by simp
 
 end Semiring
 
@@ -187,29 +171,11 @@ noncomputable def basis : Basis ℕ R R[X] :=
 @[simp]
 lemma basis_eq_self  (i : ℕ) : S.basis hCoeff i = S i := Basis.mk_apply _ _ _
 
-/-- Degree is injective for elements of the basis. -/
-@[simp]
-lemma basis_degree_injective : Function.Injective <| degree ∘ (S.basis hCoeff) := fun _ _  ↦ by simp
+/-- Basis elements have strictly monotone degree. -/
+lemma basis_degree_strictMono : StrictMono <| degree ∘ (S.basis hCoeff) := fun _ _  ↦ by simp
 
-/-- Natural degree is injective for elements of the basis. -/
-@[simp]
-lemma basis_natDegree_injective : Function.Injective <| natDegree ∘ (S.basis hCoeff) :=
-  fun _ _  ↦ by simp
-
-variable {i j : ℕ}
-
-/-- Two basis elements have the same degree iff they are the same basis element. -/
-lemma bass_degree_inj : (S.basis hCoeff i).degree = (S.basis hCoeff j).degree ↔ i = j := by simp
-
-/-- Two basis elements have the same natural degree iff they are the same basis element. -/
-lemma bass_natDegree_inj : (S.basis hCoeff i).natDegree = (S.basis hCoeff j).natDegree ↔ i = j := by
-  simp
-
-/-- Earlier basis elements have lower degrees. -/
-lemma basis_degree_lt (h : i < j) : (S.basis hCoeff i).degree < j := by simp [h]
-
-/-- Earlier basis elements have lower natural degrees. -/
-lemma basis_natDegree_lt (h : i < j) : (S.basis hCoeff i).natDegree < j := by simp [h]
+/-- Basis elements have strictly monotone natural degree. -/
+lemma basis_natDegree_strictMono : StrictMono <| natDegree ∘ (S.basis hCoeff) := fun _ _  ↦ by simp
 
 end NoZeroDivisors
 
