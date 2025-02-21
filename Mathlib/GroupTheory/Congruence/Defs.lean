@@ -98,6 +98,44 @@ a given binary relation."]
 def conGen [Mul M] (r : M → M → Prop) : Con M :=
   ⟨⟨ConGen.Rel r, ⟨ConGen.Rel.refl, ConGen.Rel.symm, ConGen.Rel.trans⟩⟩, ConGen.Rel.mul⟩
 
+section RelFacts
+
+namespace ConGen.Rel
+
+variable {w x y z : M} {r : M → M → Prop} [Mul M]
+
+theorem of_rel (h : r x y) : ConGen.Rel r x y := ConGen.Rel.of _ _ h
+
+lemma of_rel_symm (h : r x y) : ConGen.Rel r y x := (of_rel h).symm
+
+lemma one_step (z w : M) (h : r x y) : ConGen.Rel r (z * x * w) (z * y * w) :=
+    ConGen.Rel.mul (ConGen.Rel.mul (ConGen.Rel.refl _) (of_rel h)) (ConGen.Rel.refl _)
+
+lemma one_step_symm (z w : M) (h : r x y) : ConGen.Rel r (z * y * w) (z * x * w) :=
+    ConGen.Rel.mul (ConGen.Rel.mul (ConGen.Rel.refl _) (of_rel h).symm) (ConGen.Rel.refl _)
+
+lemma append_left (h : ConGen.Rel r z w) : ConGen.Rel r (x * z) (x * w) :=
+  ConGen.Rel.mul (ConGen.Rel.refl _) h
+
+lemma append_right (h : ConGen.Rel r x y) : ConGen.Rel r (x * z) (y * z) :=
+  ConGen.Rel.mul h (ConGen.Rel.refl _)
+
+lemma mul_rel_left (h1 : r x y) (h2 : ConGen.Rel r z w) : ConGen.Rel r  (x * z) (y * w) :=
+    ConGen.Rel.mul (of_rel h1) h2
+
+lemma mul_rel_right (h1 : r z w) (h2 : ConGen.Rel r x y) : ConGen.Rel r (x * z) (y * w) :=
+    ConGen.Rel.mul h2 (of_rel h1)
+
+lemma rel_left (h : r z w) : ConGen.Rel r (x * z) (x * w) :=
+  ConGen.Rel.mul (ConGen.Rel.refl _) (of_rel h)
+
+lemma rel_right (h : r x y) : ConGen.Rel r (x * z) (y * z) :=
+  ConGen.Rel.mul (of_rel h) (ConGen.Rel.refl _)
+
+end ConGen.Rel
+
+end RelFacts
+
 namespace Con
 
 section

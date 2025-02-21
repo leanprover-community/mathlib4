@@ -89,45 +89,6 @@ end inductionOn
 
 variable {α : Type*} {rels : FreeMonoid α → FreeMonoid α → Prop}
 
-/-- The relation which holds between elements of a Presented Monoid -/
-def rel (rels : FreeMonoid α → FreeMonoid α → Prop) := ConGen.Rel rels
-
-section relFacts
-
-variable {a b c d : FreeMonoid α}
-
-theorem refl : rel rels a a := ConGen.Rel.refl _
-
-theorem mul (h1 : rel rels a b) (h2 : rel rels c d) : rel rels (a * c) (b * d) :=
-  ConGen.Rel.mul h1 h2
-
-theorem reg (h : rels a b) : rel rels a b := ConGen.Rel.of _ _ h
-
-lemma reg_symm (h : rels a b) : rel rels b a := (reg h).symm
-
-lemma one_step (c d : FreeMonoid α) (h : rels a b) : rel rels (c * a * d) (c * b * d) :=
-    mul (mul refl (reg h)) refl
-
-lemma one_step_symm (c d : FreeMonoid α) (h : rels a b) : rel rels (c * b * d) (c * a * d) :=
-    mul (mul refl (reg h).symm) refl
-
-lemma append_left (h : rel rels c d) : rel rels (a * c) (a * d) := mul refl h
-
-lemma append_right (h : rel rels a b) : rel rels (a * c) (b * c) := mul h refl
-
-lemma mul_reg_left (h1 : rels a b) (h2 : rel rels c d) : rel rels (a * c) (b * d) := mul (reg h1) h2
-
-lemma mul_reg_right (h1 : rels c d) (h2 : rel rels a b) : rel rels (a * c) (b * d) :=
-    mul h2 (reg h1)
-
-lemma reg_left (h : rels c d) : rel rels (a * c) (a * d) := mul refl (reg h)
-
-lemma reg_right (h : rels a b) : rel rels (a * c) (b * c) := mul (reg h) refl
-
-end relFacts
-
-variable {α : Type*} {rels : FreeMonoid α → FreeMonoid α → Prop}
-
 /-- The generators of a presented monoid generate the presented monoid. That is, the submonoid
 closure of the set of generators equals `⊤`. -/
 @[to_additive (attr := simp) "The generators of a presented additive monoid generate the presented
