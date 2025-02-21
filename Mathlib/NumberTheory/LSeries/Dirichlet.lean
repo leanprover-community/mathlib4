@@ -344,7 +344,7 @@ lemma LSeriesSummable_vonMangoldt {s : ℂ} (hs : 1 < s.re) : LSeriesSummable �
   rw [LSeriesSummable, ← summable_norm_iff] at hf ⊢
   refine hf.of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun n ↦ norm_term_le s ?_)
   have hΛ : ‖↗Λ n‖ ≤ ‖Complex.log n‖ := by
-    simpa [_root_.abs_of_nonneg, vonMangoldt_nonneg, ← natCast_log, Real.log_natCast_nonneg]
+    simpa [abs_of_nonneg, vonMangoldt_nonneg, ← natCast_log, Real.log_natCast_nonneg]
       using vonMangoldt_le_log
   exact hΛ.trans <| by simp
 

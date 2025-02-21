@@ -7,7 +7,7 @@ import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.BigOperators.Group.List.Defs
 import Mathlib.Order.RelClasses
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.TakeDrop
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Perm.Basic
 import Mathlib.Algebra.Group.Basic

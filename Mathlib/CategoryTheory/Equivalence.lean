@@ -595,6 +595,16 @@ noncomputable instance inducedFunctorOfEquiv {C' : Type*} (e : C' ≃ D) :
 noncomputable instance fullyFaithfulToEssImage (F : C ⥤ D) [F.Full] [F.Faithful] :
     IsEquivalence F.toEssImage where
 
+/-- A biimplication of properties on the objects of a category `C` induces an equivalence of the
+respective induced full subcategories of `C`. -/
+@[simps]
+def ofFullSubcategory {Z Z' : C → Prop} (h : ∀ X, Z X ↔ Z' X) :
+    FullSubcategory Z ≌ FullSubcategory Z' where
+  functor := FullSubcategory.map (fun _ => (h _).mp)
+  inverse := FullSubcategory.map (fun _ => (h _).mpr)
+  unitIso := NatIso.ofComponents (fun X => Iso.refl _)
+  counitIso := NatIso.ofComponents (fun X => Iso.refl _)
+
 end Equivalence
 
 namespace Iso

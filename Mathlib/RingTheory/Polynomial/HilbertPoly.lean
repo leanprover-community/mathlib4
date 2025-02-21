@@ -189,7 +189,7 @@ The polynomial satisfying the key property of `Polynomial.hilbertPoly p d` is un
 -/
 theorem existsUnique_hilbertPoly (p : F[X]) (d : ℕ) :
     ∃! h : F[X], ∃ N : ℕ, ∀ n > N,
-    PowerSeries.coeff F n (p * invOneSubPow F d) = h.eval (n : F) := by
+      PowerSeries.coeff F n (p * invOneSubPow F d) = h.eval (n : F) := by
   use hilbertPoly p d; constructor
   · use p.natDegree
     exact fun n => coeff_mul_invOneSubPow_eq_hilbertPoly_eval d
