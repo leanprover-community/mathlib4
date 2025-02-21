@@ -175,7 +175,7 @@ theorem IsSeparating.isDetecting [Balanced C] {𝒢 : Set C} (h𝒢 : IsSeparati
 
 lemma IsDetecting.isIso_iff_of_mono {𝒢 : Set C} (h𝒢 : IsDetecting 𝒢)
     {X Y : C} (f : X ⟶ Y) [Mono f] :
-    IsIso f ↔ ∀ (s : 𝒢), Function.Surjective ((coyoneda.obj (op s.1)).map f) := by
+    IsIso f ↔ ∀ s ∈ 𝒢, Function.Surjective ((coyoneda.obj (op s)).map f) := by
   constructor
   · intro h
     rw [isIso_iff_yoneda_map_bijective] at h
