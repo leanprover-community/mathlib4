@@ -5,14 +5,9 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Abelian.CommSq
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Subobject
-import Mathlib.CategoryTheory.Generator.Basic
 import Mathlib.CategoryTheory.MorphismProperty.IsSmall
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
 import Mathlib.Order.TransfiniteIteration
-import Mathlib.Order.Interval.Set.SuccOrder
-import Mathlib.SetTheory.Ordinal.Basic
 
 /-!
 # Grothendieck abelian categories have enough injectives
