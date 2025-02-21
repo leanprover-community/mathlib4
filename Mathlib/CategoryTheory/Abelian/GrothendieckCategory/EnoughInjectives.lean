@@ -231,7 +231,7 @@ noncomputable def transfiniteCompositionOfShapeOfEqTop
     (hj : transfiniteIterate (largerSubobject hG) j (Subobject.mk f) = ⊤) :
     (generatingMonomorphisms G).pushouts.TransfiniteCompositionOfShape (Set.Iic j) f := by
   let t := transfiniteIterate (largerSubobject hG) j (Subobject.mk f)
-  have := (Subobject.isIso_arrow_iff_eq_top t).mpr hj
+  have := (Subobject.isIso_arrow_iff_eq_top t).2 hj
   apply (transfiniteCompositionOfShapeMapFromBot hG (Subobject.mk f) j).ofArrowIso
   refine Arrow.isoMk ((Subobject.isoOfEq _ _ (transfiniteIterate_bot _ _) ≪≫
     Subobject.underlyingIso f)) (asIso t.arrow) ?_
