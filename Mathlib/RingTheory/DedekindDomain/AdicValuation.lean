@@ -3,10 +3,12 @@ Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
+import Mathlib.NumberTheory.RamificationInertia.Basic
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.ValuationSubring
 import Mathlib.Topology.Algebra.Valued.ValuedField
+import Mathlib.Topology.Algebra.Valued.WithZeroMulInt
 import Mathlib.Algebra.Order.Group.TypeTags
 
 /-!
@@ -57,7 +59,7 @@ dedekind domain, dedekind ring, adic valuation
 
 noncomputable section
 
-open scoped Multiplicative
+open scoped Multiplicative Topology Valued
 
 open Multiplicative IsDedekindDomain
 
@@ -256,6 +258,13 @@ theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.sp
   rw [intValuation_apply, v.intValuationDef_if_neg hr, ← hv, Associates.count_self, Int.ofNat_one,
     ofAdd_neg, WithZero.coe_inv]
   apply v.associates_irreducible
+
+theorem intValuation_uniformizer_ne_zero {v : HeightOneSpectrum R} {π : R}
+    (hπ : v.intValuation π = Multiplicative.ofAdd (-1 : ℤ)) :
+    π ≠ 0 := by
+  contrapose! hπ
+  rw [hπ, intValuation_apply, intValuationDef_zero]
+  exact WithZero.zero_ne_coe
 
 /-! ### Adic valuations on the field of fractions `K` -/
 
@@ -568,4 +577,142 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
     -- and now it's easy
     omega
 
-end IsDedekindDomain.HeightOneSpectrum
+variable {R}
+
+theorem AdicCompletion.valued_eq_intValuationDef (v : HeightOneSpectrum R) (r : R) :
+    Valued.v (algebraMap _ (v.adicCompletion K) r) = v.intValuationDef r := by
+  rw [v.valuedAdicCompletion_eq_valuation, valuation_eq_intValuationDef]
+
+theorem AdicCompletion.valued_le_one (v : HeightOneSpectrum R) (r : R) :
+    Valued.v (algebraMap _ (v.adicCompletion K) r) ≤ 1 :=
+  valued_eq_intValuationDef K _ r ▸ v.intValuation_le_one r
+
+theorem AdicCompletion.valued_ne_zero (v : HeightOneSpectrum R) (r : nonZeroDivisors R) :
+    Valued.v (algebraMap _ (v.adicCompletion K) r.1) ≠ 0 :=
+  valued_eq_intValuationDef K _ r.1 ▸ v.intValuation_ne_zero' _
+
+open Valued Filter in
+/-- There exists a non-zero integer of value `< γ` for a given `γ`. -/
+theorem AdicCompletion.exists_nonZeroDivisor_valued_lt (v : HeightOneSpectrum R) (γ : ℤₘ₀ˣ) :
+    ∃ (r : nonZeroDivisors R), Valued.v (algebraMap _ (v.adicCompletion K) r.1) < γ := by
+  let ⟨π, hπ⟩ := v.intValuation_exists_uniformizer
+  have := WithZeroMulInt.tendsto_zero_pow_of_le_neg_one
+    (le_of_eq (valued_eq_intValuationDef K _ π ▸ hπ))
+  let ⟨a, ha⟩ := eventually_atTop.1 <| ((hasBasis_nhds_zero _ _).tendsto_right_iff).1 this γ trivial
+  use ⟨algebraMap _ _ π ^ a,
+    mem_nonZeroDivisors_of_ne_zero (pow_ne_zero _ <| v.intValuation_uniformizer_ne_zero hπ)⟩
+  convert ha _ le_rfl
+  simp
+
+open scoped Classical in
+/-- Given a collection of values `γ v` at primes `v `, we can find a global
+non-zero integer that has valuation less than `γ v` for a finite set of primes `v`. -/
+theorem AdicCompletion.exists_nonZeroDivisor_finset_valued_lt
+    (S : Set (HeightOneSpectrum R))
+    (hS : Set.Finite S)
+    (γ : (v : HeightOneSpectrum R) → ℤₘ₀ˣ) :
+    ∃ (r : nonZeroDivisors R), ∀ v ∈ S, Valued.v (algebraMap _ (v.adicCompletion K) r.1) < γ v := by
+  choose s hs using fun v => AdicCompletion.exists_nonZeroDivisor_valued_lt K v (γ v)
+  refine ⟨hS.toFinset.prod s, fun v hv => ?_⟩
+  simp only [Submonoid.coe_finset_prod, map_prod]
+  rw [← hS.toFinset.prod_erase_mul _ (hS.mem_toFinset.2 hv)]
+  refine mul_lt_of_le_one_of_lt (Finset.prod_le_one' (fun _ _ => ?_)) (hs v)
+  rw [v.valuedAdicCompletion_eq_valuation]
+  exact v.valuation_le_one _
+
+variable {K v}
+
+/-- If `x ∈ Kᵥ` has valuation at most that of `y ∈ Kᵥ`, then `x` is an integral
+multiple of `y`. -/
+theorem AdicCompletion.dvd_of_valued_le
+    {x y : v.adicCompletion K} (h : Valued.v x ≤ Valued.v y) (hy : y ≠ 0):
+    ∃ r : v.adicCompletionIntegers K, r * y = x := by
+  have : Valued.v (x * y⁻¹) ≤ 1 := by
+    rwa [Valued.v.map_mul, map_inv₀, mul_inv_le_iff₀ (Valued.v.pos_iff.2 hy), one_mul]
+  exact ⟨⟨x * y⁻¹, this⟩, by rw [inv_mul_cancel_right₀ hy]⟩
+
+variable (A K L B : Type*) [CommRing A] [CommRing B] [Field K] [Algebra A B] [Field L]
+    [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsDedekindDomain A]
+    [Algebra K L] [IsDedekindDomain B] [Algebra.IsIntegral A B] [IsFractionRing B L]
+    (v : HeightOneSpectrum A) (w : HeightOneSpectrum B)
+
+variable {B L} in
+def comap : HeightOneSpectrum A where
+  asIdeal := w.asIdeal.comap (algebraMap A B)
+  isPrime := Ideal.comap_isPrime (algebraMap A B) w.asIdeal
+  ne_bot := mt Ideal.eq_bot_of_comap_eq_bot w.ne_bot
+
+namespace adicCompletion
+
+-- https://github.com/mariainesdff/LocalClassFieldTheory/blob/18114679e7125329fd801032423c4c95078cdc77/LocalClassFieldTheory/DiscreteValuationRing/Localization.lean#L61
+instance : IsDiscreteValuationRing 𝒪[v.adicCompletion K] := sorry
+
+variable {A K B L v w} in
+theorem uniformContinuous_algebraMap (h : w.comap A = v) :
+    letI : UniformSpace K := v.adicValued.toUniformSpace
+    letI : UniformSpace L := w.adicValued.toUniformSpace
+    UniformContinuous (algebraMap K L) := by
+  letI : UniformSpace K := v.adicValued.toUniformSpace
+  letI : UniformSpace L := w.adicValued.toUniformSpace
+  letI : Valued K ℤₘ₀ := v.adicValued
+  letI : Valued L ℤₘ₀ := w.adicValued
+  refine uniformContinuous_of_continuousAt_zero _ ?_
+  simp only [ContinuousAt, map_zero]
+  rw [(Valued.hasBasis_nhds_zero K _).tendsto_iff (Valued.hasBasis_nhds_zero L _)]
+  -- proceed as in FLT
+  sorry
+
+instance (hwv : w.comap A = v) : Algebra (v.adicCompletion K) (w.adicCompletion L) :=
+  letI : UniformSpace L := w.adicValued.toUniformSpace
+  letI : UniformSpace K := v.adicValued.toUniformSpace
+  UniformSpace.Completion.mapRingHom (algebraMap K L) (uniformContinuous_algebraMap hwv).continuous
+    |>.toAlgebra
+
+-- from FLT
+lemma valuation_comap (w : HeightOneSpectrum B) (x : K) :
+    let e := Ideal.ramificationIdx (algebraMap A B) (comap A w).asIdeal w.asIdeal
+    (comap A w).valuation x ^ e = w.valuation (algebraMap K L x) := by
+  sorry
+
+open UniformSpace.Completion in
+variable {A K B L v w} in
+theorem algebraMap_mem_integers  (hwv : w.comap A = v) (x : v.adicCompletion K)
+    (h : x ∈ v.adicCompletionIntegers K) :
+    letI : UniformSpace K := v.adicValued.toUniformSpace
+    letI : UniformSpace L := w.adicValued.toUniformSpace
+    mapRingHom (algebraMap K L)
+      (uniformContinuous_algebraMap hwv).continuous x ∈ w.adicCompletionIntegers L := by
+  letI : UniformSpace K := v.adicValued.toUniformSpace
+  letI : UniformSpace L := w.adicValued.toUniformSpace
+  induction x using induction_on
+  · apply isClosed_imp (by simpa using Valued.integer_isOpen _)
+    exact IsClosed.preimage continuous_map <| Valued.integer_isClosed _
+  · rw [mapRingHom_coe (uniformContinuous_algebraMap hwv), mem_adicCompletionIntegers,
+      valuedAdicCompletion_def, w.adicValued.extension_extends, adicValued_apply,
+      ← valuation_comap A]
+    apply pow_le_one₀ zero_le'
+    rwa [mem_adicCompletionIntegers, valuedAdicCompletion_def, v.adicValued.extension_extends,
+      adicValued_apply, ← hwv] at h
+
+instance : Algebra 𝒪[(w.comap A).adicCompletion K] 𝒪[w.adicCompletion L] :=
+  RingHom.restrict _ _ _ (algebraMap_mem_integers rfl) |>.toAlgebra
+
+instance : IsLocalHom (algebraMap 𝒪[(w.comap A).adicCompletion K] 𝒪[w.adicCompletion L]) :=
+  sorry
+
+instance : Module.Finite 𝒪[(w.comap A).adicCompletion K] 𝒪[w.adicCompletion L] :=
+  sorry
+
+theorem residueField_finite
+    (h : ∀ v : HeightOneSpectrum A, Finite 𝓀[v.adicCompletion K])
+    (w : HeightOneSpectrum B) :
+    Finite 𝓀[w.adicCompletion L] :=
+  IsLocalRing.ResidueField.finite_of_finite (h (w.comap A))
+
+theorem compactSpace_integers
+     (h : ∀ v : HeightOneSpectrum A, Finite 𝓀[v.adicCompletion K])
+     (w : HeightOneSpectrum B) :
+     CompactSpace 𝒪[w.adicCompletion L] :=
+  Valued.WithZeroMulInt.integer_compactSpace (residueField_finite A K L B h w)
+
+end IsDedekindDomain.HeightOneSpectrum.adicCompletion
