@@ -108,6 +108,9 @@ def functorNatTransFunctor {S T : C ⥤ D} (i : T ⟶ S) : functor S ⟶ functor
   app d := map₂ (F := 𝟭 _) (G := 𝟭 _) i (𝟙 _)
   naturality d e f := Functor.ext (fun _ => by simp [map, map₂, Comma.map, Comma.mapRight])
 
+/-- The functor `CostructuredArrow.pre` induces a natural transformation
+`CostructuredArrow.functor (S ⋙ T) ⟶ CostructuredArrow.functor T` for `S : C ⥤ D` and
+`T : D ⥤ E`. -/
 @[simps]
 def functorPre {D : Type u₁} [Category.{v₁} D] (S : C ⥤ D) (T : D ⥤ E) :
     functor (S ⋙ T) ⟶ functor T where
