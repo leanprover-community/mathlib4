@@ -1143,7 +1143,7 @@ theorem exists_tendsto_one_tendsto_zero {v : InfinitePlace K} {c : K} (hv : 1 < 
 /--
 - $K$: field;
 - $v$: infinite place of $K$;
-- $\exists w \neq v$;
+- $\exists w \neq v$.
 
 There is an $x\in K$ such that $v(x) > 1$ and $w(x) < 1$ for all $w\neq v$.
 -/
