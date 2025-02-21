@@ -291,21 +291,17 @@ variable [HasLimit (curry.obj G ⋙ lim)]
 /-- Given a functor `G : J × K ⥤ C` such that `(curry.obj G ⋙ lim)` makes sense and has a limit,
 we can construct a cone over `G` with `limit (curry.obj G ⋙ lim)` as a cone point -/
 noncomputable def coneOfHasLimitCurryCompLim : Cone G :=
-  let c := limit.cone (curry.obj G ⋙ lim)
   let Q : DiagramOfCones (curry.obj G) := .mkOfHasLimits _
-  { pt := c.pt,
+  { pt := limit (curry.obj G ⋙ lim),
     π :=
-    { app x := (c.π.app x.fst) ≫ (Q.obj x.fst).π.app x.snd
-      naturality {x y} f := by
-        dsimp only [Functor.const_obj_obj, Functor.const_obj_map, Functor.comp_obj, lim_obj]
-        simp only [limit.cone_x, limit.cone_π, ← limit.w (F := curry.obj G ⋙ lim) (f := f.1),
-          Functor.comp_obj, lim_obj, Functor.comp_map, lim_map, Category.assoc, Category.id_comp, c]
-        haveI : f = (Prod.sectR _ _).map f.2 ≫ (Prod.sectL _ _).map f.1 := by ext <;> simp
-        rw [this, G.map_comp]
-        dsimp only [Prod.sectR_obj, Prod.sectR_map, Prod.sectL_map]
-        rw [← curry_obj_obj_map G, ← (Q.obj x.1).π.naturality_assoc]
-        simp [Q] }}
-
+    { app x := limit.π (curry.obj G ⋙ lim) x.fst ≫ (Q.obj x.fst).π.app x.snd
+      naturality {x y} := fun ⟨f₁, f₂⟩ ↦ by
+        have := (Q.obj x.1).w f₂
+        dsimp [Q] at this ⊢
+        rw [← limit.w (F := curry.obj G ⋙ lim) (f := f₁)]
+        dsimp
+        simp only [Category.assoc, Category.id_comp, Prod.fac (f₁, f₂),
+          G.map_comp, limMap_π, curry_obj_map_app, reassoc_of% this] } }
 
 /-- The cone `coneOfHasLimitCurryCompLim` is in fact a limit cone.
 -/
@@ -396,22 +392,17 @@ variable [HasColimit (curry.obj G ⋙ colim)]
 /-- Given a functor `G : J × K ⥤ C` such that `(curry.obj G ⋙ colim)` makes sense and has a colimit,
 we can construct a cocone under `G` with `colimit (curry.obj G ⋙ colim)` as a cocone point -/
 noncomputable def coconeOfHasColimitCurryCompColim : Cocone G :=
-  let c := colimit.cocone (curry.obj G ⋙ colim)
   let Q : DiagramOfCocones (curry.obj G) := .mkOfHasColimits _
-  { pt := c.pt,
+  { pt := colimit (curry.obj G ⋙ colim),
     ι :=
-    { app x := (Q.obj x.fst).ι.app x.snd ≫ (c.ι.app x.fst)
-      naturality {x y} f := by
-        dsimp only [Functor.const_obj_obj, Functor.const_obj_map, Functor.comp_obj, lim_obj]
-        simp only [colimit.cocone_x, colimit.cocone_ι,
-          ← colimit.w (F := curry.obj G ⋙ colim) (f := f.1), Functor.comp_obj, colim_obj,
-          Functor.comp_map, colim_map, Category.comp_id, c]
-        haveI : f = (Prod.sectL _ _).map f.1 ≫ (Prod.sectR _ _).map f.2  := by ext <;> simp
-        rw [this, G.map_comp]
-        dsimp only [Prod.sectR_obj, Prod.sectR_map, Prod.sectL_map]
-        rw [← curry_obj_obj_map G]
-        simp only [Category.assoc, (Q.obj y.1).ι.naturality_assoc]
-        simp [Q] }}
+    { app x := (Q.obj x.fst).ι.app x.snd ≫ colimit.ι (curry.obj G ⋙ colim) x.fst
+      naturality {x y} := fun ⟨f₁, f₂⟩ ↦ by
+        have := (Q.obj y.1).w f₂
+        dsimp [Q] at this ⊢
+        rw [← colimit.w (F := curry.obj G ⋙ colim) (f := f₁)]
+        dsimp
+        simp [Category.assoc, Category.comp_id, Prod.fac' (f₁, f₂),
+          G.map_comp, ι_colimMap_assoc, curry_obj_map_app, reassoc_of% this] } }
 
 
 /-- The cocone `coconeOfHasColimitCurryCompColim` is in fact a limit cocone.
