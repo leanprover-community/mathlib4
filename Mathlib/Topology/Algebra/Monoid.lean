@@ -90,7 +90,7 @@ theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F �
 @[to_additive (attr := continuity, fun_prop)]
 theorem Continuous.mul {f g : X → M} (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => f x * g x :=
-  continuous_mul.comp (hf.prod_mk hg :)
+  continuous_mul.comp₂ hf hg
 
 @[to_additive (attr := continuity)]
 theorem continuous_mul_left (a : M) : Continuous fun b : M => a * b :=
@@ -103,7 +103,7 @@ theorem continuous_mul_right (a : M) : Continuous fun b : M => b * a :=
 @[to_additive (attr := fun_prop)]
 theorem ContinuousOn.mul {f g : X → M} {s : Set X} (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun x => f x * g x) s :=
-  (continuous_mul.comp_continuousOn (hf.prod hg) :)
+  continuous_mul.comp_continuousOn (hf.prodMk hg)
 
 @[to_additive]
 theorem tendsto_mul {a b : M} : Tendsto (fun p : M × M => p.fst * p.snd) (𝓝 (a, b)) (𝓝 (a * b)) :=
@@ -112,7 +112,7 @@ theorem tendsto_mul {a b : M} : Tendsto (fun p : M × M => p.fst * p.snd) (𝓝 
 @[to_additive]
 theorem Filter.Tendsto.mul {f g : α → M} {x : Filter α} {a b : M} (hf : Tendsto f x (𝓝 a))
     (hg : Tendsto g x (𝓝 b)) : Tendsto (fun x => f x * g x) x (𝓝 (a * b)) :=
-  tendsto_mul.comp (hf.prod_mk_nhds hg)
+  tendsto_mul.comp (hf.prodMk_nhds hg)
 
 @[to_additive]
 theorem Filter.Tendsto.const_mul (b : M) {c : M} {f : α → M} {l : Filter α}
@@ -221,8 +221,7 @@ theorem ContinuousWithinAt.mul {f g : X → M} {s : Set X} {x : X} (hf : Continu
 @[to_additive]
 instance Prod.continuousMul [TopologicalSpace N] [Mul N] [ContinuousMul N] :
     ContinuousMul (M × N) :=
-  ⟨(continuous_fst.fst'.mul continuous_fst.snd').prod_mk
-      (continuous_snd.fst'.mul continuous_snd.snd')⟩
+  ⟨by apply Continuous.prodMk <;> fun_prop⟩
 
 @[to_additive]
 instance Pi.continuousMul {C : ι → Type*} [∀ i, TopologicalSpace (C i)] [∀ i, Mul (C i)]
@@ -481,7 +480,7 @@ and the image of `l` under `g` is disjoint from the cocompact filter on `M`, the
 theorem Tendsto.tendsto_mul_zero_of_disjoint_cocompact_right {f g : α → M} {l : Filter α}
     (hf : Tendsto f l (𝓝 0)) (hg : Disjoint (map g l) (cocompact M)) :
     Tendsto (fun x ↦ f x * g x) l (𝓝 0) :=
-  tendsto_mul_nhds_zero_prod_of_disjoint_cocompact hg |>.comp (hf.prod_mk tendsto_map)
+  tendsto_mul_nhds_zero_prod_of_disjoint_cocompact hg |>.comp (hf.prodMk tendsto_map)
 
 /-- Let `M` be a topological space with a continuous multiplication operation and a `0`.
 Let `f : α → M` and `g : α → M` be functions. If `g` tends to zero on a filter `l`
@@ -490,7 +489,7 @@ and the image of `l` under `f` is disjoint from the cocompact filter on `M`, the
 theorem Tendsto.tendsto_mul_zero_of_disjoint_cocompact_left {f g : α → M} {l : Filter α}
     (hf : Disjoint (map f l) (cocompact M)) (hg : Tendsto g l (𝓝 0)):
     Tendsto (fun x ↦ f x * g x) l (𝓝 0) :=
-  tendsto_mul_prod_nhds_zero_of_disjoint_cocompact hf |>.comp (tendsto_map.prod_mk hg)
+  tendsto_mul_prod_nhds_zero_of_disjoint_cocompact hf |>.comp (tendsto_map.prodMk hg)
 
 /-- If `f : α → M` and `g : β → M` are continuous and both tend to zero on the cocompact filter,
 then `fun i : α × β ↦ f i.1 * g i.2` also tends to zero on the cocompact filter. -/
@@ -509,7 +508,7 @@ theorem tendsto_mul_cocompact_nhds_zero [TopologicalSpace α] [TopologicalSpace 
     exact ⟨K, K_mem_l, K_compact⟩
   have l_le_coprod : l ≤ (𝓝 0).coprod (𝓝 0) := by
     rw [l_def, ← coprod_cocompact]
-    exact hf.prod_map_coprod hg
+    exact hf.prodMap_coprod hg
   exact tendsto_mul_nhds_zero_of_disjoint_cocompact l_compact l_le_coprod |>.comp tendsto_map
 
 /-- If `f : α → M` and `g : β → M` both tend to zero on the cofinite filter, then so does
@@ -853,7 +852,7 @@ instance : ContinuousMul αˣ := isInducing_embedProduct.continuousMul (embedPro
 
 end Units
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem Continuous.units_map [Monoid M] [Monoid N] [TopologicalSpace M] [TopologicalSpace N]
     (f : M →* N) (hf : Continuous f) : Continuous (Units.map f) :=
   Units.continuous_iff.2 ⟨hf.comp Units.continuous_val, hf.comp Units.continuous_coe_inv⟩

@@ -239,7 +239,7 @@ instance OrderDual.instContinuousInv : ContinuousInv Gᵒᵈ := ‹ContinuousInv
 @[to_additive]
 instance Prod.continuousInv [TopologicalSpace H] [Inv H] [ContinuousInv H] :
     ContinuousInv (G × H) :=
-  ⟨continuous_inv.fst'.prod_mk continuous_inv.snd'⟩
+  ⟨continuous_inv.fst'.prodMk continuous_inv.snd'⟩
 
 variable {ι : Type*}
 
@@ -615,8 +615,8 @@ theorem inv_mem_nhds_one {S : Set G} (hS : S ∈ (𝓝 1 : Filter G)) : S⁻¹ �
 @[to_additive "The map `(x, y) ↦ (x, x + y)` as a homeomorphism. This is a shear mapping."]
 protected def Homeomorph.shearMulRight : G × G ≃ₜ G × G :=
   { Equiv.prodShear (Equiv.refl _) Equiv.mulLeft with
-    continuous_toFun := continuous_fst.prod_mk continuous_mul
-    continuous_invFun := continuous_fst.prod_mk <| continuous_fst.inv.mul continuous_snd }
+    continuous_toFun := by dsimp; fun_prop
+    continuous_invFun := by dsimp; fun_prop }
 
 @[to_additive (attr := simp)]
 theorem Homeomorph.shearMulRight_coe :
@@ -986,7 +986,7 @@ variable [TopologicalSpace G] [Div G] [ContinuousDiv G]
 @[to_additive sub]
 theorem Filter.Tendsto.div' {f g : α → G} {l : Filter α} {a b : G} (hf : Tendsto f l (𝓝 a))
     (hg : Tendsto g l (𝓝 b)) : Tendsto (fun x => f x / g x) l (𝓝 (a / b)) :=
-  (continuous_div'.tendsto (a, b)).comp (hf.prod_mk_nhds hg)
+  (continuous_div'.tendsto (a, b)).comp (hf.prodMk_nhds hg)
 
 @[to_additive const_sub]
 theorem Filter.Tendsto.const_div' (b : G) {c : G} {f : α → G} {l : Filter α}
@@ -1023,7 +1023,7 @@ variable [TopologicalSpace α] {f g : α → G} {s : Set α} {x : α}
 
 @[to_additive (attr := continuity, fun_prop) sub]
 theorem Continuous.div' (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f x / g x :=
-  continuous_div'.comp (hf.prod_mk hg :)
+  continuous_div'.comp₂ hf hg
 
 @[to_additive (attr := continuity) continuous_sub_left]
 lemma continuous_div_left' (a : G) : Continuous (a / ·) := continuous_const.div' continuous_id
@@ -1657,18 +1657,21 @@ instance [ContinuousMul α] : IsTopologicalGroup αˣ where
 
 /-- The topological group isomorphism between the units of a product of two monoids, and the product
 of the units of each monoid. -/
-@[to_additive
+@[to_additive prodAddUnits
   "The topological group isomorphism between the additive units of a product of two
   additive monoids, and the product of the additive units of each additive monoid."]
 def Homeomorph.prodUnits : (α × β)ˣ ≃ₜ αˣ × βˣ where
   continuous_toFun :=
-    (continuous_fst.units_map (MonoidHom.fst α β)).prod_mk
+    (continuous_fst.units_map (MonoidHom.fst α β)).prodMk
       (continuous_snd.units_map (MonoidHom.snd α β))
   continuous_invFun :=
     Units.continuous_iff.2
-      ⟨continuous_val.fst'.prod_mk continuous_val.snd',
-        continuous_coe_inv.fst'.prod_mk continuous_coe_inv.snd'⟩
+      ⟨continuous_val.fst'.prodMk continuous_val.snd',
+        continuous_coe_inv.fst'.prodMk continuous_coe_inv.snd'⟩
   toEquiv := MulEquiv.prodUnits.toEquiv
+
+@[deprecated (since := "2025-02-21")]
+alias Homeomorph.sumAddUnits := Homeomorph.prodAddUnits
 
 end Units
 

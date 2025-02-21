@@ -82,12 +82,12 @@ theorem continuousAt_cpow {p : ℂ × ℂ} (hp_fst : p.fst ∈ slitPlane) :
 
 theorem continuousAt_cpow_const {a b : ℂ} (ha : a ∈ slitPlane) :
     ContinuousAt (· ^ b) a :=
-  Tendsto.comp (@continuousAt_cpow (a, b) ha) (continuousAt_id.prod continuousAt_const)
+  Tendsto.comp (@continuousAt_cpow (a, b) ha) (continuousAt_id.prodMk continuousAt_const)
 
 theorem Filter.Tendsto.cpow {l : Filter α} {f g : α → ℂ} {a b : ℂ} (hf : Tendsto f l (𝓝 a))
     (hg : Tendsto g l (𝓝 b)) (ha : a ∈ slitPlane) :
     Tendsto (fun x => f x ^ g x) l (𝓝 (a ^ b)) :=
-  (@continuousAt_cpow (a, b) ha).tendsto.comp (hf.prod_mk_nhds hg)
+  (@continuousAt_cpow (a, b) ha).tendsto.comp (hf.prodMk_nhds hg)
 
 theorem Filter.Tendsto.const_cpow {l : Filter α} {f : α → ℂ} {a b : ℂ} (hf : Tendsto f l (𝓝 b))
     (h : a ≠ 0 ∨ b ≠ 0) : Tendsto (fun x => a ^ f x) l (𝓝 (a ^ b)) := by
@@ -233,7 +233,7 @@ variable {α : Type*}
 
 theorem Filter.Tendsto.rpow {l : Filter α} {f g : α → ℝ} {x y : ℝ} (hf : Tendsto f l (𝓝 x))
     (hg : Tendsto g l (𝓝 y)) (h : x ≠ 0 ∨ 0 < y) : Tendsto (fun t => f t ^ g t) l (𝓝 (x ^ y)) :=
-  (Real.continuousAt_rpow (x, y) h).tendsto.comp (hf.prod_mk_nhds hg)
+  (Real.continuousAt_rpow (x, y) h).tendsto.comp (hf.prodMk_nhds hg)
 
 theorem Filter.Tendsto.rpow_const {l : Filter α} {f : α → ℝ} {x p : ℝ} (hf : Tendsto f l (𝓝 x))
     (h : x ≠ 0 ∨ 0 ≤ p) : Tendsto (fun a => f a ^ p) l (𝓝 (x ^ p)) :=
@@ -326,7 +326,8 @@ theorem continuousAt_cpow_of_re_pos {p : ℂ × ℂ} (h₁ : 0 ≤ p.1.re ∨ p.
 assumptions about `w`. -/
 theorem continuousAt_cpow_const_of_re_pos {z w : ℂ} (hz : 0 ≤ re z ∨ im z ≠ 0) (hw : 0 < re w) :
     ContinuousAt (fun x => x ^ w) z :=
-  Tendsto.comp (@continuousAt_cpow_of_re_pos (z, w) hz hw) (continuousAt_id.prod continuousAt_const)
+  Tendsto.comp (@continuousAt_cpow_of_re_pos (z, w) hz hw)
+    (continuousAt_id.prodMk continuousAt_const)
 
 /-- Continuity of `(x, y) ↦ x ^ y` as a function on `ℝ × ℂ`. -/
 theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) :
@@ -353,12 +354,9 @@ theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) 
       rwa [neg_re, ofReal_re, neg_pos]
     · exact (continuous_exp.comp (continuous_const.mul continuous_snd)).continuousAt
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-  need `by exact` to deal with tricky unification -/
 theorem continuousAt_ofReal_cpow_const (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) :
-    ContinuousAt (fun a => (a : ℂ) ^ y : ℝ → ℂ) x := by
-  exact ContinuousAt.comp (x := x) (continuousAt_ofReal_cpow x y h)
-          ((continuous_id (X := ℝ)).prod_mk (continuous_const (y := y))).continuousAt
+    ContinuousAt (fun a => (a : ℂ) ^ y : ℝ → ℂ) x :=
+  (continuousAt_ofReal_cpow x y h).comp₂_of_eq (by fun_prop) (by fun_prop) rfl
 
 theorem continuous_ofReal_cpow_const {y : ℂ} (hs : 0 < y.re) :
     Continuous (fun x => (x : ℂ) ^ y : ℝ → ℂ) :=
@@ -385,7 +383,7 @@ theorem continuousAt_rpow {x : ℝ≥0} {y : ℝ} (h : x ≠ 0 ∨ 0 < y) :
   refine continuous_real_toNNReal.continuousAt.comp (ContinuousAt.comp ?_ ?_)
   · apply Real.continuousAt_rpow
     simpa using h
-  · exact ((continuous_subtype_val.comp continuous_fst).prod_mk continuous_snd).continuousAt
+  · fun_prop
 
 theorem eventually_pow_one_div_le (x : ℝ≥0) {y : ℝ≥0} (hy : 1 < y) :
     ∀ᶠ n : ℕ in atTop, x ^ (1 / n : ℝ) ≤ y := by
@@ -403,7 +401,7 @@ open Filter
 theorem Filter.Tendsto.nnrpow {α : Type*} {f : Filter α} {u : α → ℝ≥0} {v : α → ℝ} {x : ℝ≥0}
     {y : ℝ} (hx : Tendsto u f (𝓝 x)) (hy : Tendsto v f (𝓝 y)) (h : x ≠ 0 ∨ 0 < y) :
     Tendsto (fun a => u a ^ v a) f (𝓝 (x ^ y)) :=
-  Tendsto.comp (NNReal.continuousAt_rpow h) (hx.prod_mk_nhds hy)
+  Tendsto.comp (NNReal.continuousAt_rpow h) (hx.prodMk_nhds hy)
 
 namespace NNReal
 
