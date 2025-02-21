@@ -24,7 +24,7 @@ universe u v
 
 /-- A *-subalgebra is a subalgebra of a *-algebra which is closed under *. -/
 structure StarSubalgebra (R : Type u) (A : Type v) [CommSemiring R] [StarRing R] [Semiring A]
-  [StarRing A] [Algebra R A] [StarModule R A] extends Subalgebra R A : Type v where
+    [StarRing A] [Algebra R A] [StarModule R A] : Type v extends Subalgebra R A where
   /-- The `carrier` is closed under the `star` operation. -/
   star_mem' {a} : a ∈ carrier → star a ∈ carrier
 

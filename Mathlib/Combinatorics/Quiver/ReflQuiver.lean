@@ -24,7 +24,7 @@ universe v v₁ v₂ u u₁ u₂
 type of objects. We denote these arrows by `id` since categories can be understood as an extension
 of refl quivers.
 -/
-class ReflQuiver (obj : Type u) extends Quiver.{v} obj : Type max u v where
+class ReflQuiver (obj : Type u) : Type max u v extends Quiver.{v} obj where
   /-- The identity morphism on an object. -/
   id : ∀ X : obj, Hom X X
 

@@ -378,8 +378,8 @@ theorem coinduction2 (s) (f g : Seq α → Seq β)
 /-- Embed a list as a sequence -/
 @[coe]
 def ofList (l : List α) : Seq α :=
-  ⟨List.get? l, fun {n} h => by
-    rw [List.get?_eq_none_iff] at h ⊢
+  ⟨(l[·]?), fun {n} h => by
+    rw [List.getElem?_eq_none_iff] at h ⊢
     exact h.trans (Nat.le_succ n)⟩
 
 instance coeList : Coe (List α) (Seq α) :=
@@ -390,15 +390,18 @@ theorem ofList_nil : ofList [] = (nil : Seq α) :=
   rfl
 
 @[simp]
-theorem ofList_get (l : List α) (n : ℕ) : (ofList l).get? n = l.get? n :=
+theorem ofList_get? (l : List α) (n : ℕ) : (ofList l).get? n = l[n]? :=
   rfl
+
+@[deprecated (since := "2025-02-21")]
+alias ofList_get := ofList_get?
 
 @[simp]
 theorem ofList_cons (a : α) (l : List α) : ofList (a::l) = cons a (ofList l) := by
-  ext1 (_ | n) <;> rfl
+  ext1 (_ | n) <;> simp
 
 theorem ofList_injective : Function.Injective (ofList : List α → _) :=
-  fun _ _ h => List.ext_get? fun _ => congr_fun (Subtype.ext_iff.1 h) _
+  fun _ _ h => List.ext_getElem? fun _ => congr_fun (Subtype.ext_iff.1 h) _
 
 /-- Embed an infinite stream as a sequence -/
 @[coe]
@@ -587,7 +590,8 @@ theorem getElem?_take : ∀ (n k : ℕ) (s : Seq α),
         rw [destruct_eq_cons h]
         match n with
         | 0 => simp
-        | n+1 => simp [List.get?_cons_succ, Nat.add_lt_add_iff_right, get?_cons_succ, getElem?_take]
+        | n+1 =>
+          simp [List.getElem?_cons_succ, Nat.add_lt_add_iff_right, getElem?_take]
 
 theorem terminatedAt_ofList (l : List α) :
     (ofList l).TerminatedAt l.length := by
@@ -684,7 +688,7 @@ theorem length_toList (s : Seq α) (h : s.Terminates) : (toList s h).length = le
 theorem getElem?_toList (s : Seq α) (h : s.Terminates) (n : ℕ) : (toList s h)[n]? = s.get? n := by
   ext k
   simp only [ofList, toList, get?_mk, Option.mem_def, getElem?_take, Nat.lt_find_iff, length,
-    Option.ite_none_right_eq_some, and_iff_right_iff_imp, TerminatedAt, List.get?_eq_getElem?]
+    Option.ite_none_right_eq_some, and_iff_right_iff_imp, TerminatedAt]
   intro h m hmn
   let ⟨a, ha⟩ := ge_stable s hmn h
   simp [ha]
@@ -692,7 +696,7 @@ theorem getElem?_toList (s : Seq α) (h : s.Terminates) (n : ℕ) : (toList s h)
 @[simp]
 theorem ofList_toList (s : Seq α) (h : s.Terminates) :
     ofList (toList s h) = s := by
-  ext n; simp [ofList, List.get?_eq_getElem?]
+  ext n; simp [ofList]
 
 @[simp]
 theorem toList_ofList (l : List α) : toList (ofList l) (terminates_ofList l) = l :=
