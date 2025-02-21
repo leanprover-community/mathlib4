@@ -167,7 +167,7 @@ theorem affineIndependent_iff_finrank_vectorSpan_eq [Fintype ι] (p : ι → P) 
     AffineIndependent k p ↔ finrank k (vectorSpan k (Set.range p)) = n := by
   classical
   have hn : Nonempty ι := by simp [← Fintype.card_pos_iff, hc]
-  cases' hn with i₁
+  obtain ⟨i₁⟩ := hn
   rw [affineIndependent_iff_linearIndependent_vsub _ _ i₁,
     linearIndependent_iff_card_eq_finrank_span, eq_comm,
     vectorSpan_range_eq_span_range_vsub_right_ne k p i₁, Set.finrank]
@@ -456,7 +456,7 @@ theorem collinear_pair (p₁ p₂ : P) : Collinear k ({p₁, p₂} : Set P) := b
   use p₁, p₂ -ᵥ p₁
   intro p hp
   rw [Set.mem_insert_iff, Set.mem_singleton_iff] at hp
-  cases' hp with hp hp
+  rcases hp with hp | hp
   · use 0
     simp [hp]
   · use 1

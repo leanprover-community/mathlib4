@@ -139,8 +139,8 @@ theorem IsIntegral.tower_top [Algebra A B] [IsScalarTower R A B] {x : B}
   ⟨p.map <| algebraMap R A, hp.map _, by rw [← aeval_def, aeval_map_algebraMap, aeval_def, hpx]⟩
 
 /- If `R` and `T` are isomorphic commutative rings and `S` is an `R`-algebra and a `T`-algebra in
-  a compatible way, then an element `a ∈ S` is integral over `R` if and only if it is integral
-  over `T`.-/
+a compatible way, then an element `a ∈ S` is integral over `R` if and only if it is integral
+over `T`. -/
 theorem RingEquiv.isIntegral_iff {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra T S] (φ : R ≃+* T)
     (h : (algebraMap T S).comp φ.toRingHom = algebraMap R S) (a : S) :
