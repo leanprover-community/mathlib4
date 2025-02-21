@@ -1271,8 +1271,7 @@ theorem tendsto_Lp_of_tendsto_eLpNorm {ι} {fi : Filter ι} [Fact (1 ≤ p)] {f 
 @[deprecated (since := "2025-02-21")]
 alias tendsto_Lp_of_tendsto_ℒp := tendsto_Lp_of_tendsto_eLpNorm
 
-
-theorem cauchySeq_Lp_iff_cauchySeq_ℒp {ι} [Nonempty ι] [SemilatticeSup ι] [hp : Fact (1 ≤ p)]
+theorem cauchySeq_Lp_iff_cauchySeq_eLpNorm {ι} [Nonempty ι] [SemilatticeSup ι] [hp : Fact (1 ≤ p)]
     (f : ι → Lp E p μ) :
     CauchySeq f ↔ Tendsto (fun n : ι × ι => eLpNorm (⇑(f n.fst) - ⇑(f n.snd)) p μ) atTop (𝓝 0) := by
   simp_rw [cauchySeq_iff_tendsto_dist_atTop_0, dist_def]
@@ -1280,7 +1279,10 @@ theorem cauchySeq_Lp_iff_cauchySeq_ℒp {ι} [Nonempty ι] [SemilatticeSup ι] [
   rw [eLpNorm_congr_ae (Lp.coeFn_sub _ _).symm]
   exact eLpNorm_ne_top _
 
-theorem completeSpace_lp_of_cauchy_complete_ℒp [hp : Fact (1 ≤ p)]
+@[deprecated (since := "2025-02-21")]
+alias cauchySeq_Lp_iff_cauchySeq_ℒp := cauchySeq_Lp_iff_cauchySeq_eLpNorm
+
+theorem completeSpace_lp_of_cauchy_complete_eLpNorm [hp : Fact (1 ≤ p)]
     (H :
       ∀ (f : ℕ → α → E) (_ : ∀ n, MemLp (f n) p μ) (B : ℕ → ℝ≥0∞) (_ : ∑' i, B i < ∞)
         (_ : ∀ N n m : ℕ, N ≤ n → N ≤ m → eLpNorm (f n - f m) p μ < B N),
@@ -1315,8 +1317,10 @@ theorem completeSpace_lp_of_cauchy_complete_ℒp [hp : Fact (1 ≤ p)]
   rw [eLpNorm_congr_ae (Lp.coeFn_sub _ _).symm]
   exact Lp.eLpNorm_ne_top _
 
-/-! ### Prove that controlled Cauchy sequences of `ℒp` have limits in `ℒp` -/
+@[deprecated (since := "2025-02-21")]
+alias completeSpace_lp_of_cauchy_complete_ℒp := completeSpace_lp_of_cauchy_complete_eLpNorm
 
+/-! ### Prove that controlled Cauchy sequences of `ℒp` have limits in `ℒp` -/
 
 private theorem eLpNorm'_sum_norm_sub_le_tsum_of_cauchy_eLpNorm' {f : ℕ → α → E}
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) {p : ℝ} (hp1 : 1 ≤ p) {B : ℕ → ℝ≥0∞}
@@ -1505,7 +1509,7 @@ theorem memLp_of_cauchy_tendsto (hp : 1 ≤ p) {f : ℕ → α → E} (hf : ∀ 
 @[deprecated (since := "2025-02-21")]
 alias memℒp_of_cauchy_tendsto := memLp_of_cauchy_tendsto
 
-theorem cauchy_complete_ℒp [CompleteSpace E] (hp : 1 ≤ p) {f : ℕ → α → E}
+theorem cauchy_complete_eLpNorm [CompleteSpace E] (hp : 1 ≤ p) {f : ℕ → α → E}
     (hf : ∀ n, MemLp (f n) p μ) {B : ℕ → ℝ≥0∞} (hB : ∑' i, B i ≠ ∞)
     (h_cau : ∀ N n m : ℕ, N ≤ n → N ≤ m → eLpNorm (f n - f m) p μ < B N) :
     ∃ (f_lim : α → E), MemLp f_lim p μ ∧
@@ -1521,11 +1525,14 @@ theorem cauchy_complete_ℒp [CompleteSpace E] (hp : 1 ≤ p) {f : ℕ → α �
     memLp_of_cauchy_tendsto hp hf f_lim h_f_lim_meas.aestronglyMeasurable h_tendsto'
   exact ⟨f_lim, h_ℒp_lim, h_tendsto'⟩
 
+@[deprecated (since := "2025-02-21")]
+alias cauchy_complete_ℒp := cauchy_complete_eLpNorm
+
 /-! ### `Lp` is complete for `1 ≤ p` -/
 
 instance instCompleteSpace [CompleteSpace E] [hp : Fact (1 ≤ p)] : CompleteSpace (Lp E p μ) :=
-  completeSpace_lp_of_cauchy_complete_ℒp fun _f hf _B hB h_cau =>
-    cauchy_complete_ℒp hp.elim hf hB.ne h_cau
+  completeSpace_lp_of_cauchy_complete_eLpNorm fun _f hf _B hB h_cau =>
+    cauchy_complete_eLpNorm hp.elim hf hB.ne h_cau
 
 end Lp
 
