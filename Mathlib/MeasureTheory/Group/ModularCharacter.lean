@@ -61,7 +61,7 @@ lemma modularCharacterFun_eq_haarScalarFactor (μ : Measure G) [IsHaarMeasure μ
       · have j : (fun x ↦ f (x * g)) = (f ∘ (Homeomorph.mulRight g)) := rfl
         rw [j]
         exact HasCompactSupport.comp_homeomorph f_comp _
-    have r : (haarScalarFactor ν μ: ℝ) / (haarScalarFactor ν μ) = 1 := by
+    have r : (haarScalarFactor ν μ : ℝ) / (haarScalarFactor ν μ) = 1 := by
       refine div_self ?_
       rw [NNReal.coe_ne_zero]
       apply (ne_of_lt (haarScalarFactor_pos_of_isHaarMeasure _ _)).symm
