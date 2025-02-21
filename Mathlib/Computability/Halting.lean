@@ -135,7 +135,7 @@ def ComputablePred {α} [Primcodable α] (p : α → Prop) :=
   ∃ _ : DecidablePred p, Computable fun a => decide (p a)
 
 /-- A recursively enumerable predicate is one which is the domain of a computable partial function.
- -/
+-/
 def REPred {α} [Primcodable α] (p : α → Prop) :=
   Partrec fun a => Part.assert (p a) fun _ => Part.some ()
 
@@ -197,7 +197,7 @@ theorem to_re {p : α → Prop} (hp : ComputablePred p) : REPred p := by
 /-- **Rice's Theorem** -/
 theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C) {f g} (hf : Nat.Partrec f)
     (hg : Nat.Partrec g) (fC : f ∈ C) : g ∈ C := by
-  cases' h with _ h
+  obtain ⟨_, h⟩ := h
   obtain ⟨c, e⟩ :=
     fixed_point₂
       (Partrec.cond (h.comp fst) ((Partrec.nat_iff.2 hg).comp snd).to₂

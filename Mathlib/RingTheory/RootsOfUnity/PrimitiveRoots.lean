@@ -3,6 +3,7 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Group.TypeTags.Fintype
 import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!

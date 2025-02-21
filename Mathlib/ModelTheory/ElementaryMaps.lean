@@ -22,7 +22,7 @@ import Mathlib.ModelTheory.Substructures
 
 - The Tarski-Vaught Test for embeddings: `FirstOrder.Language.Embedding.isElementary_of_exists`
   gives a simple criterion for an embedding to be elementary.
- -/
+-/
 
 
 open FirstOrder
@@ -186,8 +186,8 @@ theorem refl_apply (x : M) : refl L M x = x :=
 def comp (hnp : N ↪ₑ[L] P) (hmn : M ↪ₑ[L] N) : M ↪ₑ[L] P where
   toFun := hnp ∘ hmn
   map_formula' n φ x := by
-    cases' hnp with _ hhnp
-    cases' hmn with _ hhmn
+    obtain ⟨_, hhnp⟩ := hnp
+    obtain ⟨_, hhmn⟩ := hmn
     erw [hhnp, hhmn]
 
 @[simp]
