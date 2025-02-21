@@ -370,10 +370,10 @@ Then the compositon of limit linear map `F : N →ₗ[R] M` with the canonial
 projection `M →ₗ[R] M ⧸ (I ^ a n • ⊤)` is `f n` .
 -/
 @[simp]
-theorem mkQ_limLinearMap {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ a n • ⊤)}
+theorem mk_limLinearMap {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ a n • ⊤)}
     (hf : ∀ {m s}, f m s = factorPow I M (ha.monotone m.le_succ) (f (m + 1) s)) (n : ℕ) (s : N) :
-    (mkQ (I ^ (a n) • ⊤ : Submodule R M) (limLinearMap ha hf s)) = f n s :=
-  ((Classical.choose_spec <|
+    (Submodule.Quotient.mk (limLinearMap ha hf s)) = f n s := by
+  simpa using ((Classical.choose_spec <|
       IsPrecomplete.function_of_eq_factorPow (I := I) (f := fun n ↦ f n) ha hf) n s).symm
 
 /--
