@@ -3,7 +3,7 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.GroupTheory.Coprod.Basic
 import Mathlib.GroupTheory.Complement
@@ -30,6 +30,8 @@ and Hanna Neumann.
   `G` is represented by a reduced word, then this reduced word does not contain `t`.
 
 -/
+
+assert_not_exists Field
 
 open Monoid Coprod Multiplicative Subgroup Function
 

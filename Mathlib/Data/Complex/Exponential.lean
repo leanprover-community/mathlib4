@@ -3,13 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 -/
+import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Order.CauSeq.BigOperators
 import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Data.Complex.Abs
 import Mathlib.Data.Complex.BigOperators
+import Mathlib.Data.Complex.Norm
 import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Algebra.CharP.Defs
 
 /-!
 # Exponential Function
@@ -84,7 +83,7 @@ theorem exp_zero : exp 0 = 1 := by
   rw [exp]
   refine lim_eq_of_equiv_const fun ε ε0 => ⟨1, fun j hj => ?_⟩
   convert (config := .unfoldSameFun) ε0 -- Porting note: ε0 : ε > 0 but goal is _ < ε
-  cases' j with j j
+  rcases j with - | j
   · exact absurd hj (not_le_of_gt zero_lt_one)
   · dsimp [exp']
     induction' j with j ih

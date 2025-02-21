@@ -82,7 +82,7 @@ theorem t_id (i : 𝒰.J) : t 𝒰 f g i i = 𝟙 _ := by
     · simp only [Category.assoc, t_fst_snd]
   · rw [← cancel_mono (𝒰.map i)]; simp only [pullback.condition, t_snd, Category.assoc]
 
-/-- The inclusion map of `V i j = (Uᵢ ×[Z] Y) ×[X] Uⱼ ⟶ Uᵢ ×[Z] Y`-/
+/-- The inclusion map of `V i j = (Uᵢ ×[Z] Y) ×[X] Uⱼ ⟶ Uᵢ ×[Z] Y` -/
 abbrev fV (i j : 𝒰.J) : v 𝒰 f g i j ⟶ pullback (𝒰.map i ≫ f) g :=
   pullback.fst _ _
 
@@ -613,7 +613,7 @@ variable (R S T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [
 open TensorProduct Algebra.TensorProduct CommRingCat RingHomClass
 
 /-- The isomorphism between the fiber product of two schemes `Spec S` and `Spec T`
-over a scheme `Spec R` and the `Spec` of the tensor product `S ⊗[R] T`.-/
+over a scheme `Spec R` and the `Spec` of the tensor product `S ⊗[R] T`. -/
 noncomputable
 def pullbackSpecIso :
     pullback (Spec.map (CommRingCat.ofHom (algebraMap R S)))

@@ -6,9 +6,11 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
 import Mathlib.Data.Nat.SuccPred
+import Mathlib.Data.Fin.SuccPred
 import Mathlib.Order.Interval.Set.InitialSeg
 import Mathlib.Order.SuccPred.InitialSeg
 import Mathlib.Order.SuccPred.Limit
+import Mathlib.Order.SuccPred.LinearLocallyFinite
 
 /-!
 # Continuity of functors from well ordered types
@@ -17,16 +19,6 @@ Let `F : J ⥤ C` be functor from a well ordered type `J`.
 We introduce the typeclass `F.IsWellOrderContinuous`
 to say that if `m` is a limit element, then `F.obj m`
 is the colimit of the `F.obj j` for `j < m`.
-
-## TODO
-* use the API for initial segments in order to generalize some
-definitions in this file
-* given a morphism `f` in `C`, introduce a structure
-`TransfiniteCompositionOfShape J f` which contains the data
-of a continuous functor `F : J ⥤ C` and an identification
-of `f` to the map from `F.obj ⊥` to the colimit of `F`
-* redefine `MorphismProperty.transfiniteCompositionsOfShape`
-in terms of this structure `TransfiniteCompositionOfShape`
 
 -/
 
@@ -62,6 +54,9 @@ noncomputable def isColimitOfIsWellOrderContinuous' (F : J ⥤ C) [F.IsWellOrder
 
 instance (F : ℕ ⥤ C) : F.IsWellOrderContinuous where
   nonempty_isColimit m hm := by simp at hm
+
+instance {n : ℕ} (F : Fin n ⥤ C) : F.IsWellOrderContinuous where
+  nonempty_isColimit _ hj := (Order.not_isSuccLimit hj).elim
 
 lemma isWellOrderContinuous_of_iso {F G : J ⥤ C} (e : F ≅ G) [F.IsWellOrderContinuous] :
     G.IsWellOrderContinuous where

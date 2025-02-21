@@ -1158,7 +1158,7 @@ def isLimitOfOp {t : Cone F} (P : IsColimit t.op) : IsLimit t :=
 def isColimitOfOp {t : Cocone F} (P : IsLimit t.op) : IsColimit t :=
   P.unop
 
-/-- If `t.unop : Cocone F` is a colimit cocone, then `t : Cone F.op` is a limit cone.-/
+/-- If `t.unop : Cocone F` is a colimit cocone, then `t : Cone F.op` is a limit cone. -/
 def isLimitOfUnop {t : Cone F.op} (P : IsColimit t.unop) : IsLimit t :=
   P.op
 

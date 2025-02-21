@@ -12,8 +12,8 @@ import Mathlib.Topology.Category.TopCat.Limits.Basic
 # The singular simplicial set of a topological space and geometric realization of a simplicial set
 
 The *singular simplicial set* `TopCat.toSSet.obj X` of a topological space `X`
-has as `n`-simplices the continuous maps `[n].toTop → X`.
-Here, `[n].toTop` is the standard topological `n`-simplex,
+has as `n`-simplices the continuous maps `⦋n⦌.toTop → X`.
+Here, `⦋n⦌.toTop` is the standard topological `n`-simplex,
 defined as `{ f : Fin (n+1) → ℝ≥0 // ∑ i, f i = 1 }` with its subspace topology.
 
 The *geometric realization* functor `SSet.toTop.obj` is left adjoint to `TopCat.toSSet`.
@@ -41,8 +41,8 @@ open CategoryTheory
 
 Let `X` be a topological space.
 Then the singular simplicial set of `X`
-has as `n`-simplices the continuous maps `[n].toTop → X`.
-Here, `[n].toTop` is the standard topological `n`-simplex,
+has as `n`-simplices the continuous maps `⦋n⦌.toTop → X`.
+Here, `⦋n⦌.toTop` is the standard topological `n`-simplex,
 defined as `{ f : Fin (n+1) → ℝ≥0 // ∑ i, f i = 1 }` with its subspace topology. -/
 noncomputable def TopCat.toSSet : TopCat ⥤ SSet :=
   Presheaf.restrictedYoneda SimplexCategory.toTop
