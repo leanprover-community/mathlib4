@@ -75,11 +75,11 @@ lemma degree_ne {i j : ℕ} (h : i ≠ j) : (S i).degree ≠ (S j).degree := by
 lemma natDegree_ne {i j : ℕ} (h : i ≠ j) : (S i).natDegree ≠ (S j).natDegree := by
   simp [S.natDegree_eq i, S.natDegree_eq j, h]
 
-/-- . -/
+/-- Earlier sequence elements have lower degrees. -/
 lemma degree_lt {i j : ℕ} (h : i < j) : (S i).degree < j := by
   simp [S.degree_eq i, S.degree_eq j, h]
 
-/-- . -/
+/-- Earlier sequence elements have lower natural degrees. -/
 lemma natDegree_lt {i j : ℕ} (h : i < j) : (S i).natDegree < j := by
   simp [S.natDegree_eq i, S.natDegree_eq j, h]
 
