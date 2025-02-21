@@ -31,7 +31,7 @@ def takeUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
   | nil, u, h => by rw [mem_support_nil_iff.mp h]
   | cons r p, u, h =>
     if hx : v = u then
-      by subst u; exact Walk.nil
+      hx ▸ Walk.nil
     else
       cons r (takeUntil p u <| by
         cases h
