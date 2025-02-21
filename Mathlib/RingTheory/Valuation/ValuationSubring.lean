@@ -510,7 +510,7 @@ variable {A}
 
 See also `mem_nonunits_iff_exists_mem_maximalIdeal`, which gets rid of the coercion to `K`,
 at the expense of a more complicated right hand side.
- -/
+-/
 theorem coe_mem_nonunits_iff {a : A} : (a : K) ∈ A.nonunits ↔ a ∈ IsLocalRing.maximalIdeal A :=
   (valuation_lt_one_iff _ _).symm
 
@@ -524,7 +524,7 @@ theorem nonunits_subset : (A.nonunits : Set K) ⊆ A :=
 
 See also `coe_mem_nonunits_iff`, which has a simpler right hand side but requires the element
 to be in `A` already.
- -/
+-/
 theorem mem_nonunits_iff_exists_mem_maximalIdeal {a : K} :
     a ∈ A.nonunits ↔ ∃ ha, (⟨a, ha⟩ : A) ∈ IsLocalRing.maximalIdeal A :=
   ⟨fun h => ⟨nonunits_subset h, coe_mem_nonunits_iff.mp h⟩, fun ⟨_, h⟩ =>
