@@ -829,9 +829,11 @@ end Perm
 
 section
 
-/-- The type of functions to a product `α × β` is equivalent to the type of pairs of functions
-`γ → α` and `γ → β`. -/
-def arrowProdEquivProdArrow (α β γ : Type*) : (γ → α × β) ≃ (γ → α) × (γ → β) where
+/-- The type of functions to a product `β × γ` is equivalent to the type of pairs of functions
+`α → β` and `β → γ`. -/
+@[simps]
+def arrowProdEquivProdArrow (α : Type*) (β γ : α → Type*) :
+    ((i : α) → β i × γ i) ≃ ((i : α) → β i) × ((i : α) → γ i) where
   toFun := fun f => (fun c => (f c).1, fun c => (f c).2)
   invFun := fun p c => (p.1 c, p.2 c)
   left_inv := fun _ => rfl

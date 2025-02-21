@@ -574,7 +574,7 @@ theorem power_ne_zero {a : Cardinal} (b : Cardinal) : a ≠ 0 → a ^ b ≠ 0 :=
     mk_ne_zero_iff.2 ⟨fun _ => a⟩
 
 theorem mul_power {a b c : Cardinal} : (a * b) ^ c = a ^ c * b ^ c :=
-  inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.arrowProdEquivProdArrow α β γ
+  inductionOn₃ a b c fun _ _ γ => mk_congr <| Equiv.arrowProdEquivProdArrow γ _ _
 
 theorem power_mul {a b c : Cardinal} : a ^ (b * c) = (a ^ b) ^ c := by
   rw [mul_comm b c]
