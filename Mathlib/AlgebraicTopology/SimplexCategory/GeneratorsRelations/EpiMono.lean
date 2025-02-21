@@ -101,8 +101,8 @@ section ExistenceOfFactorizations
 /-- An auxiliary lemma to show that one can always use the simplicial identities to simplify a term
 in the form `δ ≫ σ` into either an identity, or a term of the form `σ ≫ δ`. This is the crucial
 special case to induct on to get an epi-mono factorization for all morphisms. -/
-private lemma switch_δ_σ {n : ℕ} (i : Fin (n + 1 + 1)) (i' : Fin (n + 1 + 2)) :
-   δ i' ≫ σ i = 𝟙 _ ∨ ∃ j j', δ i' ≫ σ i = σ j ≫ δ j' := by
+private lemma switch_δ_σ {n : ℕ} (i : Fin (n + 2)) (i' : Fin (n + 3)) :
+    δ i' ≫ σ i = 𝟙 _ ∨ ∃ j j', δ i' ≫ σ i = σ j ≫ δ j' := by
   obtain h'' | h'' | h'' : i'= i.castSucc ∨ i' < i.castSucc ∨ i.castSucc < i' := by
       simp only [lt_or_lt_iff_ne, ne_eq]
       tauto
@@ -271,6 +271,11 @@ theorem exists_P_σ_P_δ_factorization {x y : SimplexCategoryGenRel} (f : x ⟶ 
           rw [reassoc_of% h₁]
           use z₁, e ≫ e₁, m₁ ≫ δ j'', P_σ.comp_mem _ _ he he₁, P_δ.comp_mem _ _ hm₁ (P_δ.δ _)
           simp
+
+noncomputable instance : MorphismProperty.HasFactorization P_σ P_δ where
+  nonempty_mapFactorizationData f := by
+    obtain ⟨z, e , m, he, hm, fac⟩ := exists_P_σ_P_δ_factorization f
+    exact ⟨⟨z, e , m, fac.symm, he, hm⟩⟩
 
 end ExistenceOfFactorizations
 
