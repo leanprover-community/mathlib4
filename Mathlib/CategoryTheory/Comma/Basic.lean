@@ -420,7 +420,7 @@ instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.EssSurj] : (preLeft F L R)
 
 /-- Precomposing with a composite functor using `Comma.preLeft` is naturally ismorphic with
 precomposing twice. -/
-def preLeftCompIso (E : C ⥤ A') (F : A' ⥤ A) (L : A ⥤ T) (R : B ⥤ T) :
+def preLeftCompIso (E : B' ⥤ A') (F : A' ⥤ A) (L : A ⥤ T) (R : B ⥤ T) :
     preLeft (E ⋙ F) L R ≅ preLeft E (F ⋙ L) R ⋙ preLeft F L R :=
   NatIso.ofComponents (fun X => Iso.refl _)
 
