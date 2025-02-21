@@ -103,55 +103,20 @@ in the form `δ ≫ σ` into either an identity, or a term of the form `σ ≫ �
 special case to induct on to get an epi-mono factorization for all morphisms. -/
 private lemma switch_δ_σ {n : ℕ} (i : Fin (n + 2)) (i' : Fin (n + 3)) :
     δ i' ≫ σ i = 𝟙 _ ∨ ∃ j j', δ i' ≫ σ i = σ j ≫ δ j' := by
-  obtain h'' | h'' | h'' : i'= i.castSucc ∨ i' < i.castSucc ∨ i.castSucc < i' := by
-      simp only [lt_or_lt_iff_ne, ne_eq]
-      tauto
-  · subst h''
-    rw [δ_comp_σ_self]
-    simp
-  · obtain ⟨h₁, h₂⟩ : i' ≠ Fin.last _ ∧ i ≠ 0 := by
-      constructor
-      · exact Fin.ne_last_of_lt h''
-      · rw [Fin.lt_def, Fin.coe_castSucc] at h''
-        apply Fin.ne_of_val_ne
-        exact Nat.not_eq_zero_of_lt h''
-    rw [← i'.castSucc_castPred h₁, ← i.succ_pred h₂]
-    have H : i'.castPred h₁ ≤ (i.pred h₂).castSucc := by
-      simp only [Fin.le_def, Fin.coe_castPred, Fin.coe_castSucc, Fin.coe_pred]
-      rw [Fin.lt_def, Nat.lt_iff_add_one_le] at h''
-      exact Nat.le_sub_one_of_lt h''
-    rw [δ_comp_σ_of_le H]
-    right
-    use i.pred h₂, i'.castPred h₁
-  · by_cases h : i.succ = i'
-    · subst h
-      rw [δ_comp_σ_succ]
-      simp
-    · obtain ⟨h₁, h₂⟩ : i ≠ Fin.last _ ∧ i' ≠ 0 := by
-        constructor
-        · by_cases h' : i' = Fin.last _
-          · simp_all
-          · rw [← Fin.val_eq_val] at h' h
-            apply Fin.ne_of_val_ne
-            rw [Fin.lt_def, Fin.coe_castSucc] at h''
-            rcases i with ⟨i, hi⟩; rcases i' with ⟨i', hi'⟩
-            intro hyp; subst hyp
-            rw [Nat.lt_iff_add_one_le] at h'' hi'
-            simp_all only [add_le_add_iff_right, Fin.val_last, Fin.succ_mk]
-            rw [← one_add_one_eq_two] at hi'
-            exact h (Nat.le_antisymm hi' h'').symm
-        · exact Fin.ne_zero_of_lt h''
-      rw [← i'.succ_pred h₂, ← i.castSucc_castPred h₁]
-      have H : (i.castPred h₁).castSucc < i'.pred h₂ := by
-        rcases (Nat.le_iff_lt_or_eq.mp h'') with h' | h'
-        · simp only [Fin.lt_def, Fin.coe_castSucc, Nat.succ_eq_add_one, Fin.castSucc_castPred,
-            Fin.coe_pred] at *
-          exact Nat.lt_sub_of_add_lt h'
-        · exfalso
-          exact Fin.val_ne_of_ne h h'
-      rw [δ_comp_σ_of_gt H]
-      right
-      use i.castPred h₁, i'.pred h₂
+  obtain h | rfl | h := lt_trichotomy i.castSucc i'
+  · rw [Fin.castSucc_lt_iff_succ_le] at h
+    obtain h | rfl := h.lt_or_eq
+    · obtain ⟨i', rfl⟩ := Fin.eq_succ_of_ne_zero (Fin.ne_zero_of_lt h)
+      rw [Fin.succ_lt_succ_iff] at h
+      obtain ⟨i, rfl⟩ := Fin.eq_castSucc_of_ne_last (Fin.ne_last_of_lt h)
+      exact Or.inr ⟨i, i', by rw [δ_comp_σ_of_gt h]⟩
+    · exact Or.inl δ_comp_σ_succ
+  · exact Or.inl δ_comp_σ_self
+  · obtain ⟨i', rfl⟩ := Fin.eq_castSucc_of_ne_last (Fin.ne_last_of_lt h)
+    rw [Fin.castSucc_lt_castSucc_iff] at h
+    obtain ⟨i, rfl⟩ := Fin.eq_succ_of_ne_zero (Fin.ne_zero_of_lt h)
+    rw [← Fin.le_castSucc_iff] at h
+    exact Or.inr ⟨i, i', by rw [δ_comp_σ_of_le h]⟩
 
 /-- A low-dimensional special case of the previous -/
 private lemma switch_δ_σ₀ (i : Fin 1) (i' : Fin 2) :
@@ -164,61 +129,39 @@ private lemma factor_δ_σ {n : ℕ} (i : Fin (n + 1)) (i' : Fin (n + 2)) :
     ∃ (z : SimplexCategoryGenRel) (e : mk n ⟶ z) (m : z ⟶ mk n)
       (_ : P_σ e) (_ : P_δ m), δ i' ≫ σ i = e ≫ m := by
   cases n with
-  | zero =>
-    rw [switch_δ_σ₀]
-    use mk 0, 𝟙 _, 𝟙 _, P_σ.id_mem _, P_δ.id_mem _
-    simp
+  | zero => exact ⟨_, _, _, P_σ.id_mem _, P_δ.id_mem _, by simp [switch_δ_σ₀]⟩
   | succ n =>
-    obtain h | ⟨j, j', h⟩ := switch_δ_σ i i' <;> rw [h]
-    · use mk (n + 1), 𝟙 _, 𝟙 _, P_σ.id_mem _, P_δ.id_mem _
-      simp
-    · use mk n, σ j, δ j', P_σ.σ _, P_δ.δ _
+    obtain h | ⟨j, j', h⟩ := switch_δ_σ i i'
+    · exact ⟨_, _, _, P_σ.id_mem _, P_δ.id_mem _, by simp [h]⟩
+    · exact ⟨_, _, _, P_σ.σ _, P_δ.δ _, h⟩
 
 /-- An auxiliary lemma that shows there exists a factorization as a P_δ followed by a P_σ for
 morphisms of the form `P_δ ≫ σ`. -/
 private lemma factor_P_δ_σ {n : ℕ} (i : Fin (n + 1)) {x : SimplexCategoryGenRel}
     (f : x ⟶ mk (n + 1)) (hf : P_δ f) : ∃ (z : SimplexCategoryGenRel) (e : x ⟶ z) (m : z ⟶ mk n)
       (_ : P_σ e) (_ : P_δ m), f ≫ σ i = e ≫ m := by
-  induction n using Nat.case_strong_induction_on generalizing x with
-  | hz => cases hf with
+  induction n generalizing x with
+  | zero => cases hf with
     | of _ h => cases h; exact factor_δ_σ _ _
-    | id  =>
-      rw [Category.id_comp]
-      use mk 0, σ i, 𝟙 _, P_σ.σ _, P_δ.id_mem _
-      simp
+    | id  => exact ⟨_, _, _, P_σ.σ i, P_δ.id_mem _, by simp⟩
     | comp_of j f hf hg =>
-      cases hg
-      obtain ⟨h', hf'⟩ | hf' := eq_or_len_le_of_P_δ hf
-      · subst h'
-        simp only [eqToHom_refl] at hf'
-        subst hf'
-        rw [Category.id_comp]
-        exact factor_δ_σ _ _
+      obtain ⟨k⟩ := hg
+      obtain ⟨rfl, rfl⟩ | hf' := eq_or_len_le_of_P_δ hf
+      · simpa using factor_δ_σ i k
       · simp at hf'
-  | hi n h_rec =>
+  | succ n hn =>
     cases hf with
     | of _ h => cases h; exact factor_δ_σ _ _
-    | @id n =>
-      rw [Category.id_comp]
-      use mk (n + 1), σ i, 𝟙 _, P_σ.σ _, P_δ.id_mem _
-      simp
+    | id n => exact ⟨_, _, _, P_σ.σ i, P_δ.id_mem _, by simp⟩
     | comp_of f g hf hg =>
-      obtain ⟨h', h''⟩ | h := eq_or_len_le_of_P_δ hf
-      · subst h'
-        cases hg
-        rw [eqToHom_refl] at h''; subst h''
-        rw [Category.id_comp]
-        exact factor_δ_σ _ _
-      · have hg' := hg
-        rcases hg' with ⟨i'⟩
-        obtain h' | ⟨j, j', h'⟩ := switch_δ_σ i i' <;> rw [Category.assoc, h']
-        · rw [Category.comp_id]
-          use x, 𝟙 x, f, P_σ.id_mem _, hf
-          simp
-        · rw [mk_len, Nat.lt_add_one_iff] at h
-          obtain ⟨z, e, m₁, he, hm₁, h⟩ := h_rec n (Nat.le_refl _) j f hf
-          rw [reassoc_of% h]
-          use z, e, m₁ ≫ δ j', he, P_δ.comp_mem _ _ hm₁ (P_δ.δ _)
+      obtain ⟨k⟩ := hg
+      obtain ⟨rfl, rfl⟩ | h' := eq_or_len_le_of_P_δ hf
+      · simpa using factor_δ_σ i k
+      · obtain h'' | ⟨j, j', h''⟩ := switch_δ_σ i k
+        · exact ⟨_, _, _, P_σ.id_mem _, hf, by simp [h'']⟩
+        · obtain ⟨z, e, m, he, hm, fac⟩ := hn j f hf
+          exact ⟨z, e, m ≫ δ j', he, P_δ.comp_mem _ _ hm (P_δ.δ j'),
+            by simp [h'', reassoc_of% fac]⟩
 
 /-- Any morphism in `SimplexCategoryGenRel` can be decomposed as a `P_σ` followed by a `P_δ`. -/
 theorem exists_P_σ_P_δ_factorization {x y : SimplexCategoryGenRel} (f : x ⟶ y) :
