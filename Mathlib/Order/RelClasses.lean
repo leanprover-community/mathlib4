@@ -124,6 +124,7 @@ instance (priority := 100) isStrictOrderConnected_of_isStrictTotalOrder [IsStric
   ⟨fun _ _ _ h ↦ (trichotomous _ _).imp_right
     fun o ↦ o.elim (fun e ↦ e ▸ h) fun h' ↦ _root_.trans h' h⟩
 /-! ### Inverse Image -/
+
 theorem InvImage.trichotomous {α β : Type*} {r : α → α → Prop} [IsTrichotomous α r] {f : β → α}
     (h : Function.Injective f) : IsTrichotomous β (InvImage r f)  where
   trichotomous := by
