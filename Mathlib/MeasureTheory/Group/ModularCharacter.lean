@@ -43,17 +43,16 @@ variable {G : Type*} [TopologicalSpace G] [Group G] [IsTopologicalGroup G]
   the haar measure given by (the noncomputable) `MeasureTheory.Measure.haar`.
 
   See also `modularCharacter` that defines the map as a homomorphism. -/
-@[to_additive addModularCharacterFun "The additive modular character as a map is
-  `g ↦ haarScalarFactor (map (· + g) ν) ν`, where `ν` is the additive haar measure given by (the
-  noncomputable) `MeasureTheory.Measure.haar`.
+@[to_additive "The additive modular character as a map is `g ↦ haarScalarFactor
+  (map (· + g) ν) ν`, where `ν` is the additive haar measure given by (the noncomputable)
+  `MeasureTheory.Measure.haar`.
 
   See also `modularCharacter` that defines the map as a homomorphism.."]
 noncomputable def modularCharacterFun : G → ℝ≥0 :=
   fun g => haarScalarFactor (map (· * g) MeasureTheory.Measure.haar) MeasureTheory.Measure.haar
 
 /-- Independence of modularCharacterFun from the chosen Haar measure. -/
-@[to_additive addModularCharacterFun_eq_haarScalarFactor "Independence of modularCharacterFun from \
-the chosen Haar measure"]
+@[to_additive "Independence of addModularCharacterFun from the chosen Haar measure"]
 lemma modularCharacterFun_eq_haarScalarFactor (μ : Measure G) [IsHaarMeasure μ] (g : G) :
     modularCharacterFun g = haarScalarFactor (map (· * g) μ) μ := by
   let ν := MeasureTheory.Measure.haar (G := G)
@@ -94,13 +93,13 @@ lemma modularCharacterFun_eq_haarScalarFactor (μ : Measure G) [IsHaarMeasure μ
   _ = haarScalarFactor (map (· * g) μ) μ :=
     (haarScalarFactor_eq_integral_div _ _ f_cont f_comp (int_f_ne_zero μ)).symm
 
-@[to_additive map_right_add_eq_addModularCharacterFun_smul]
+@[to_additive]
 lemma map_right_mul_eq_modularCharacterFun_smul (μ : Measure G) [IsHaarMeasure μ] [InnerRegular μ]
     (g : G) : map (· * g) μ = modularCharacterFun g • μ := by
   rw [modularCharacterFun_eq_haarScalarFactor μ _]
   exact isMulLeftInvariant_eq_smul_of_innerRegular _ μ
 
-@[to_additive addModularCharacter_pos]
+@[to_additive]
 lemma modularCharacter_pos (g : G) : 0 < modularCharacterFun g :=
   haarScalarFactor_pos_of_isHaarMeasure _ _
 
