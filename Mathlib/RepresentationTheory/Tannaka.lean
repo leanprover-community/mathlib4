@@ -235,7 +235,7 @@ lemma φ_e_one_eq_id {X : FDRep k G} (v : X) : (φ v) (single 1 1) = v := by
 
 /-- Auxiliary representation morphism for the proof of `α_injective` -/
 @[simps]
-def φRepMor (X : FDRep k G) (v : X) : (fdRepτᵣ k G) ⟶ X where
+def φFDRepHom (X : FDRep k G) (v : X) : (fdRepτᵣ k G) ⟶ X where
   hom := ofHom (φ v)
   comm := by
     intro (t : G)
@@ -251,8 +251,8 @@ def φRepMor (X : FDRep k G) (v : X) : (fdRepτᵣ k G) ⟶ X where
 
 lemma α_injective (η₁ η₂ : Aut (F k G)) (h : α η₁ = α η₂) : η₁ = η₂ := by
   ext X v
-  have h1 := η₁.hom.hom.naturality (φRepMor X v)
-  have h2 := η₂.hom.hom.naturality (φRepMor X v)
+  have h1 := η₁.hom.hom.naturality (φFDRepHom X v)
+  have h2 := η₂.hom.hom.naturality (φFDRepHom X v)
   rw [hom_ext h, ← h2] at h1
   apply_fun Hom.hom at h1
   apply_fun (· (single 1 1)) at h1
