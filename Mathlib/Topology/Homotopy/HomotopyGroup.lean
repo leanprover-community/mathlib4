@@ -435,7 +435,7 @@ def homotopyGroupEquivFundamentalGroupOfUnique (N) [Unique N] :
           prop' := fun t y iH => H.prop' _ _ ⟨default, iH⟩ }⟩
   refine
     ⟨⟨⟨⟨fun tx => H (tx.fst, tx.snd default), H.continuous.comp ?_⟩, fun y => ?_, fun y => ?_⟩, ?_⟩⟩
-  · exact continuous_fst.prod_mk ((continuous_apply _).comp continuous_snd)
+  · fun_prop
   · exact (H.apply_zero _).trans (congr_arg a₁ (eq_const_of_unique y).symm)
   · exact (H.apply_one _).trans (congr_arg a₂ (eq_const_of_unique y).symm)
   · rintro t y ⟨i, iH⟩

@@ -92,14 +92,14 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
   have h4f : ContinuousWithinAt (fun x => f x (g x)) t x₀ := by
     change ContinuousWithinAt ((Function.uncurry f) ∘ (fun x ↦ (x, g x))) t x₀
     refine ContinuousWithinAt.comp hf.continuousWithinAt ?_ (fun y hy ↦ by simp [hy, hu hy])
-    exact (continuousWithinAt_id.prod hg.continuousWithinAt)
+    exact (continuousWithinAt_id.prodMk hg.continuousWithinAt)
   have h4f := h4f.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds (I := I') (f x₀ (g x₀)))
   have h3f := (contMDiffWithinAt_iff_contMDiffWithinAt_nhdsWithin (by simp)).mp
     (hf.of_le <| (self_le_add_left 1 m).trans hmn)
   simp only [Nat.cast_one, hx₀gx₀, insert_eq_of_mem] at h3f
   have h2f : ∀ᶠ x₂ in 𝓝[t] x₀, ContMDiffWithinAt I I' 1 (f x₂) u (g x₂) := by
     have : MapsTo (fun x ↦ (x, g x)) t (t ×ˢ u) := fun y hy ↦ by simp [hy, hu hy]
-    filter_upwards [((continuousWithinAt_id.prod hg.continuousWithinAt)
+    filter_upwards [((continuousWithinAt_id.prodMk hg.continuousWithinAt)
       |>.tendsto_nhdsWithin this).eventually h3f, self_mem_nhdsWithin] with x hx h'x
     apply hx.comp (g x) (contMDiffWithinAt_const.prod_mk contMDiffWithinAt_id)
     exact fun y hy ↦ by simp [h'x, hy]
