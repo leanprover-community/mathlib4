@@ -148,7 +148,7 @@ lemma mem_codiscrete_subtype_iff_mem_codiscreteWithin {S : Set X} {U : Set S} :
 /-- If a set is codiscrete within `U`, then it is codiscrete within any subset of `U`. -/
 lemma Filter.codiscreteWithin.mono {X : Type u_1} [TopologicalSpace X] {U₁ U₂ : Set X}
     (hU : U₁ ⊆ U₂) :
-    (Filter.codiscreteWithin U₁) ≤ (Filter.codiscreteWithin U₂) := by
+    Filter.codiscreteWithin U₁ ≤ Filter.codiscreteWithin U₂ := by
   intro s hs
   simp_rw [mem_codiscreteWithin, disjoint_principal_right] at hs ⊢
   exact fun x hx ↦ mem_of_superset (hs x (hU hx)) (Set.compl_subset_compl.2
