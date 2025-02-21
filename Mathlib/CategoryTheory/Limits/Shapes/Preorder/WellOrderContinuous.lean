@@ -87,7 +87,7 @@ instance IsWellOrderContinuous.restriction_setIci
     let f : Set.Iio m → Set.Iio m.1 := fun ⟨⟨a, ha⟩, ha'⟩ ↦ ⟨a, ha'⟩
     have hf : Monotone f := fun _ _ h ↦ h
     have : hf.functor.Final := by
-      rw [_root_.Monotone.final_functor_iff]
+      rw [Monotone.final_functor_iff]
       rintro ⟨j', hj'⟩
       simp at hj'
       dsimp [f]
