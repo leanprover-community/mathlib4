@@ -285,6 +285,10 @@ theorem _root_.isLinearTopology_iff_hasBasis_open_ideal [IsTopologicalRing R] :
       (fun I : Ideal R ↦ IsOpen (I : Set R)) (fun I : Ideal R ↦ (I : Set R)) :=
   isLinearTopology_iff_hasBasis_open_submodule
 
+theorem hasBasis_right_ideal [IsLinearTopology Rᵐᵒᵖ R] :
+    (𝓝 0).HasBasis (fun I : Submodule Rᵐᵒᵖ R ↦ (I : Set R) ∈ 𝓝 0) (fun I ↦ (I : Set R)) :=
+  hasBasis_submodule Rᵐᵒᵖ
+
 open Set Pointwise in
 /-- If a ring `R` is linearly ordered as a left *and* right module over itself,
 then it has a basis of neighborhoods of zero made of *two-sided* ideals.
