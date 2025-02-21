@@ -119,7 +119,7 @@ lemma toNNReal_Valued_eq_vadicAbv (x : K) :
     toNNReal (norm_ne_zero v) (Valued.v (self:=v.adicValued) x) = vadicAbv v x := rfl
 
 lemma toNNReal_Valued_eq_vadicAbv' (x : K) :
-    toNNReal (norm_ne_zero v) (Valued.v (self:=WithVal.instValued v.valuation) x) =
+    toNNReal (norm_ne_zero v) (Valued.v (self:=WithVal.instValued (v.valuation K)) x) =
       vadicAbv v x := rfl
 
 /-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute

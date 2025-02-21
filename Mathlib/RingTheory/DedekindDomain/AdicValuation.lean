@@ -362,7 +362,7 @@ theorem adicValued_apply {x : K} : v.adicValued.v x = v.valuation K x :=
 variable (K)
 
 /-- The completion of `K` with respect to its `v`-adic valuation. -/
-abbrev adicCompletion := (v.valuation (K := K)).Completion
+abbrev adicCompletion := (v.valuation K).Completion
 
 -- now inferred automatically
 -- instance : Field (v.adicCompletion K) := inferInstanceAs <|
@@ -411,14 +411,14 @@ theorem not_mem_adicCompletionIntegers {x : v.adicCompletion K} :
 section AlgebraInstances
 
 instance (priority := 100) adicValued.has_uniform_continuous_const_smul' :
-    UniformContinuousConstSMul R (WithVal <| v.valuation (K := K)) :=
+    UniformContinuousConstSMul R (WithVal <| v.valuation K) :=
   uniformContinuousConstSMul_of_continuousConstSMul R (WithVal v.valuation)
 
 section Algebra
 variable [Algebra S K]
 
 instance adicValued.uniformContinuousConstSMul :
-    UniformContinuousConstSMul S (WithVal <| v.valuation (K := K)) := by
+    UniformContinuousConstSMul S (WithVal <| v.valuation K) := by
   refine ⟨fun l ↦ ?_⟩
   simp_rw [Algebra.smul_def]
   exact (Ring.uniformContinuousConstSMul (WithVal v.valuation)).uniformContinuous_const_smul _
@@ -432,8 +432,8 @@ instance : Algebra S (v.adicCompletion K) where
     | hp =>
       exact isClosed_eq (continuous_mul_left _) (continuous_mul_right _)
     | ih x =>
-      change (↑(algebraMap S (WithVal <| v.valuation (K := K)) r) : v.adicCompletion K) * x
-        = x * (↑(algebraMap S (WithVal <| v.valuation (K := K)) r) : v.adicCompletion K)
+      change (↑(algebraMap S (WithVal <| v.valuation K) r) : v.adicCompletion K) * x
+        = x * (↑(algebraMap S (WithVal <| v.valuation K) r) : v.adicCompletion K)
       norm_cast
       rw [Algebra.commutes]
   smul_def' r x := by
@@ -441,11 +441,11 @@ instance : Algebra S (v.adicCompletion K) where
     | hp =>
       exact isClosed_eq (continuous_const_smul _) (continuous_mul_left _)
     | ih x =>
-      change _ = (↑(algebraMap S (WithVal <| v.valuation (K := K)) r) : v.adicCompletion K) * x
+      change _ = (↑(algebraMap S (WithVal <| v.valuation K) r) : v.adicCompletion K) * x
       norm_cast
       rw [← Algebra.smul_def]
 
-theorem coe_smul_adicCompletion (r : S) (x : WithVal (v.valuation (K := K))) :
+theorem coe_smul_adicCompletion (r : S) (x : WithVal (v.valuation K)) :
     (↑(r • x) : v.adicCompletion K) = r • (↑x : v.adicCompletion K) :=
   UniformSpace.Completion.coe_smul r x
 
