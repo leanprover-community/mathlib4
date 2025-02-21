@@ -6,7 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Abelian.CommSq
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Subobject
 import Mathlib.CategoryTheory.MorphismProperty.IsSmall
-import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
+import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 import Mathlib.Order.TransfiniteIteration
 
 /-!
