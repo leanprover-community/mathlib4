@@ -402,17 +402,17 @@ lemma triangle (X Y : LocalizedMonoidal L W ε) :
   · exact triangle_aux₃ _ _ _ e₁ e₂
 
 noncomputable instance :
-    MonoidalCategory (LocalizedMonoidal L W ε) where
-  tensorHom_def := by intros; simp [monoidalCategoryStruct]
-  tensor_id := by intros; simp [monoidalCategoryStruct]
-  tensor_comp := by intros; simp [monoidalCategoryStruct]
-  whiskerLeft_id := by intros; simp [monoidalCategoryStruct]
-  id_whiskerRight := by intros; simp [monoidalCategoryStruct]
-  associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} f₁ f₂ f₃ := by apply associator_naturality
-  leftUnitor_naturality := by intros; simp [monoidalCategoryStruct]
-  rightUnitor_naturality := fun f ↦ (rightUnitor L W ε).hom.naturality f
-  pentagon := pentagon
-  triangle := triangle
+    MonoidalCategory (LocalizedMonoidal L W ε)
+    := ofTensorComp
+      (tensorHom_def := by intros; simp [monoidalCategoryStruct])
+      (tensor_comp := by intros; simp [monoidalCategoryStruct])
+      (whiskerLeft_id := by intros; simp [monoidalCategoryStruct])
+      (id_whiskerRight := by intros; simp [monoidalCategoryStruct])
+      (associator_naturality := fun {X₁ X₂ X₃ Y₁ Y₂ Y₃} f₁ f₂ f₃ => by apply associator_naturality)
+      (leftUnitor_naturality := by intros; simp [monoidalCategoryStruct])
+      (rightUnitor_naturality := fun f ↦ (rightUnitor L W ε).hom.naturality f)
+      (pentagon := pentagon)
+      (triangle := triangle)
 
 end Monoidal
 

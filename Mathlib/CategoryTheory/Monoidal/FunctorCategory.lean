@@ -150,9 +150,10 @@ theorem associator_inv_app {F G H : C ⥤ D} {X} :
 the functor category `C ⥤ D` has a natural pointwise monoidal structure,
 where `(F ⊗ G).obj X = F.obj X ⊗ G.obj X`.
 -/
-instance functorCategoryMonoidal : MonoidalCategory (C ⥤ D) where
-  tensorHom_def := by intros; ext; simp [tensorHom_def]
-  pentagon F G H K := by ext X; dsimp; rw [pentagon]
+instance functorCategoryMonoidal : MonoidalCategory (C ⥤ D) :=
+  ofTensorComp
+    (tensorHom_def := by intros; ext; simp [tensorHom_def])
+    (pentagon := fun F G H K => by ext X; dsimp; rw [pentagon])
 
 section BraidedCategory
 

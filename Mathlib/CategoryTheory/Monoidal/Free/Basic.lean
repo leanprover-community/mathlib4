@@ -150,37 +150,42 @@ instance categoryFreeMonoidalCategory : Category.{u} (F C) where
     rintro W X Y Z ⟨f⟩ ⟨g⟩ ⟨h⟩
     exact Quotient.sound (assoc f g h)
 
-instance : MonoidalCategory (F C) where
-  tensorObj X Y := FreeMonoidalCategory.tensor X Y
-  tensorHom := Quotient.map₂ Hom.tensor (fun _ _ hf _ _ hg ↦ HomEquiv.tensor hf hg)
-  whiskerLeft X _ _ f := Quot.map (fun f ↦ Hom.whiskerLeft X f) (fun f f' ↦ .whiskerLeft X f f') f
-  whiskerRight f Y := Quot.map (fun f ↦ Hom.whiskerRight f Y) (fun f f' ↦ .whiskerRight f f' Y) f
-  tensorHom_def := by
-    rintro W X Y Z ⟨f⟩ ⟨g⟩
-    exact Quotient.sound (tensorHom_def _ _)
-  tensor_id _ _ := Quot.sound tensor_id
-  tensor_comp := @fun X₁ Y₁ Z₁ X₂ Y₂ Z₂ => by
-    rintro ⟨f₁⟩ ⟨f₂⟩ ⟨g₁⟩ ⟨g₂⟩
-    exact Quotient.sound (tensor_comp _ _ _ _)
-  whiskerLeft_id X Y := Quot.sound (HomEquiv.whiskerLeft_id X Y)
-  id_whiskerRight X Y := Quot.sound (HomEquiv.id_whiskerRight X Y)
-  tensorUnit := FreeMonoidalCategory.unit
-  associator X Y Z :=
-    ⟨⟦Hom.α_hom X Y Z⟧, ⟦Hom.α_inv X Y Z⟧, Quotient.sound α_hom_inv, Quotient.sound α_inv_hom⟩
-  associator_naturality := @fun X₁ X₂ X₃ Y₁ Y₂ Y₃ => by
-    rintro ⟨f₁⟩ ⟨f₂⟩ ⟨f₃⟩
-    exact Quotient.sound (associator_naturality _ _ _)
-  leftUnitor X := ⟨⟦Hom.l_hom X⟧, ⟦Hom.l_inv X⟧, Quotient.sound l_hom_inv, Quotient.sound l_inv_hom⟩
-  leftUnitor_naturality := @fun X Y => by
-    rintro ⟨f⟩
-    exact Quotient.sound (l_naturality _)
-  rightUnitor X :=
-    ⟨⟦Hom.ρ_hom X⟧, ⟦Hom.ρ_inv X⟧, Quotient.sound ρ_hom_inv, Quotient.sound ρ_inv_hom⟩
-  rightUnitor_naturality := @fun X Y => by
-    rintro ⟨f⟩
-    exact Quotient.sound (ρ_naturality _)
-  pentagon _ _ _ _ := Quotient.sound pentagon
-  triangle _ _ := Quotient.sound triangle
+instance : MonoidalCategory (F C) :=
+  letI _ : MonoidalCategoryStruct (F C) := {
+    tensorObj X Y := FreeMonoidalCategory.tensor X Y
+    tensorUnit := FreeMonoidalCategory.unit
+    tensorHom := Quotient.map₂ Hom.tensor (fun _ _ hf _ _ hg ↦ HomEquiv.tensor hf hg)
+    whiskerLeft X _ _ f :=
+      Quot.map (fun f ↦ Hom.whiskerLeft X f) (fun f f' ↦ .whiskerLeft X f f') f
+    whiskerRight f Y :=
+      Quot.map (fun f ↦ Hom.whiskerRight f Y) (fun f f' ↦ .whiskerRight f f' Y) f
+    associator X Y Z :=
+      ⟨⟦Hom.α_hom X Y Z⟧, ⟦Hom.α_inv X Y Z⟧, Quotient.sound α_hom_inv, Quotient.sound α_inv_hom⟩
+    leftUnitor X :=
+      ⟨⟦Hom.l_hom X⟧, ⟦Hom.l_inv X⟧, Quotient.sound l_hom_inv, Quotient.sound l_inv_hom⟩
+    rightUnitor X :=
+      ⟨⟦Hom.ρ_hom X⟧, ⟦Hom.ρ_inv X⟧, Quotient.sound ρ_hom_inv, Quotient.sound ρ_inv_hom⟩
+  };
+  ofTensorComp
+    (tensorHom_def := by
+      rintro W X Y Z ⟨f⟩ ⟨g⟩
+      exact Quotient.sound (tensorHom_def _ _))
+    (tensor_comp := @fun X₁ Y₁ Z₁ X₂ Y₂ Z₂ => by
+      rintro ⟨f₁⟩ ⟨f₂⟩ ⟨g₁⟩ ⟨g₂⟩
+      exact Quotient.sound (tensor_comp _ _ _ _))
+    (whiskerLeft_id := fun X Y => Quot.sound (HomEquiv.whiskerLeft_id X Y))
+    (id_whiskerRight := fun X Y => Quot.sound (HomEquiv.id_whiskerRight X Y))
+    (associator_naturality := @fun X₁ X₂ X₃ Y₁ Y₂ Y₃ => by
+      rintro ⟨f₁⟩ ⟨f₂⟩ ⟨f₃⟩
+      exact Quotient.sound (associator_naturality _ _ _))
+    (leftUnitor_naturality := @fun X Y => by
+      rintro ⟨f⟩
+      exact Quotient.sound (l_naturality _))
+    (rightUnitor_naturality := @fun X Y => by
+      rintro ⟨f⟩
+      exact Quotient.sound (ρ_naturality _))
+    (pentagon := fun _ _ _ _ => Quotient.sound pentagon)
+    (triangle := fun _ _ => Quotient.sound triangle)
 
 @[simp]
 theorem mk_comp {X Y Z : F C} (f : X ⟶ᵐ Y) (g : Y ⟶ᵐ Z) :
