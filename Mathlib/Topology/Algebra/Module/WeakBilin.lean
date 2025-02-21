@@ -3,11 +3,8 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä, Moritz Doll
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Algebra.Module.LinearMap
-import Mathlib.LinearAlgebra.SesquilinearForm
-import Mathlib.Analysis.RCLike.Basic
+import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # Weak dual topology
@@ -101,6 +98,7 @@ instance instTopologicalSpace : TopologicalSpace (WeakBilin B) :=
 theorem coeFn_continuous : Continuous fun (x : WeakBilin B) y => B x y :=
   continuous_induced_dom
 
+@[fun_prop]
 theorem eval_continuous (y : F) : Continuous fun x : WeakBilin B => B x y :=
   (continuous_pi_iff.mp (coeFn_continuous B)) y
 
@@ -139,15 +137,14 @@ instance instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (We
   simp only [Function.comp_apply, Pi.smul_apply, LinearMap.map_smulₛₗ, RingHom.id_apply,
     LinearMap.smul_apply]
 
-def _root_.LinearMap.dualEmbedding [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜] :
-    F →ₗ[𝕜] (WeakBilin B) →L[𝕜] 𝕜 where
-  toFun := fun x => ⟨B.flip x, WeakBilin.eval_continuous _ _⟩
-  map_add' := fun x y => by
-    simp only [map_add]
-    rfl
-  map_smul' := fun r x => by
-    simp only [map_smul, RingHom.id_apply]
-    rfl
+/--
+Map `F` into the topological dual of `E` with the weak topology induced by `F`
+-/
+def eval [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜] :
+    F →ₗ[𝕜] WeakBilin B →L[𝕜] 𝕜 where
+  toFun f := ⟨B.flip f, by fun_prop⟩
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
 
 end Semiring
 
@@ -160,9 +157,9 @@ variable [AddCommGroup F] [Module 𝕜 F]
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
-/-- `WeakBilin B` is a `TopologicalAddGroup`, meaning that addition and negation are
+/-- `WeakBilin B` is a `IsTopologicalAddGroup`, meaning that addition and negation are
 continuous. -/
-instance instTopologicalAddGroup [ContinuousAdd 𝕜] : TopologicalAddGroup (WeakBilin B) where
+instance instIsTopologicalAddGroup [ContinuousAdd 𝕜] : IsTopologicalAddGroup (WeakBilin B) where
   toContinuousAdd := by infer_instance
   continuous_neg := by
     refine continuous_induced_rng.2 (continuous_pi_iff.mpr fun y => ?_)

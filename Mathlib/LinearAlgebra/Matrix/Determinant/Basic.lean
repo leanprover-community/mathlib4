@@ -74,7 +74,7 @@ theorem det_diagonal {d : n → R} : det (diagonal d) = ∏ i, d i := by
   rw [det_apply']
   refine (Finset.sum_eq_single 1 ?_ ?_).trans ?_
   · rintro σ - h2
-    cases' not_forall.1 (mt Equiv.ext h2) with x h3
+    obtain ⟨x, h3⟩ := not_forall.1 (mt Equiv.ext h2)
     convert mul_zero (ε σ)
     apply Finset.prod_eq_zero (mem_univ x)
     exact if_neg h3
@@ -676,7 +676,7 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
         simpa only [Set.MapsTo, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] using
           mt mem_sumCongrHom_range_of_perm_mapsTo_inl hσn
       obtain ⟨a, ha⟩ := not_forall.mp h1
-      cases' hx : σ (Sum.inl a) with a2 b
+      rcases hx : σ (Sum.inl a) with a2 | b
       · have hn := (not_exists.mp ha) a2
         exact absurd hx.symm hn
       · rw [Finset.prod_eq_zero (Finset.mem_univ (Sum.inl a)), mul_zero]

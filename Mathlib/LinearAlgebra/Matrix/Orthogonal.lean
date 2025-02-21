@@ -22,6 +22,7 @@ This file contains definitions and properties concerning orthogonality of rows a
 orthogonal
 -/
 
+assert_not_exists Field
 
 namespace Matrix
 

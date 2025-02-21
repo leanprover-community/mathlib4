@@ -6,7 +6,7 @@ Authors: Michael Stoll
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 
 /-!
 # Characters from additive to multiplicative monoids
