@@ -2513,6 +2513,7 @@ import Mathlib.Computability.Halting
 import Mathlib.Computability.Language
 import Mathlib.Computability.MyhillNerode
 import Mathlib.Computability.NFA
+import Mathlib.Computability.PDA
 import Mathlib.Computability.Partrec
 import Mathlib.Computability.PartrecCode
 import Mathlib.Computability.PostTuringMachine
