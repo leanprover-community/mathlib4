@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Order.Interval.Set.ProjIcc
 import Mathlib.Topology.Semicontinuous
 import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Functions of bounded variation

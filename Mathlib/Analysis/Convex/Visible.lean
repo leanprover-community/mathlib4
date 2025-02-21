@@ -10,6 +10,7 @@ import Mathlib.Analysis.Convex.Combination
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 import Mathlib.Topology.Order.Monotone
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Points in sight

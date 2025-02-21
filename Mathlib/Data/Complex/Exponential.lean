@@ -9,6 +9,7 @@ import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Data.Complex.BigOperators
 import Mathlib.Data.Complex.Norm
 import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Exponential Function

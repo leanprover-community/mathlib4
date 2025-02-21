@@ -5,7 +5,6 @@ Authors: Amelia Livingston
 -/
 
 import Mathlib.Algebra.BigOperators.Monoid.Multiset.Basic
-import Mathlib.Algebra.BigOperators.Group.List.Lemmas
 import Mathlib.GroupTheory.Congruence.Defs
 import Mathlib.Algebra.BigOperators.Monoid.Finset.Defs
 
