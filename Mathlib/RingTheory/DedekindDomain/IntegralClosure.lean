@@ -9,6 +9,9 @@ import Mathlib.LinearAlgebra.BilinearForm.DualLattice
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.RingTheory.Trace.Basic
+import Mathlib.RingTheory.RingHom.Finite
+import Mathlib.RingTheory.Localization.Separable
+import Mathlib.RingTheory.DedekindDomain.Dvr
 
 /-!
 # Integral closure of Dedekind domains
@@ -246,9 +249,70 @@ instance integralClosure.isDedekindDomain_fractionRing [IsDedekindDomain A] :
     IsDedekindDomain (integralClosure A L) :=
   integralClosure.isDedekindDomain A (FractionRing A) L
 
-attribute [local instance] FractionRing.liftAlgebra in
+section
+
+variable {P : Ideal A} [P.IsPrime] [FaithfulSMul A C]
+
+attribute [local instance] FractionRing.liftAlgebra
+
 instance [NoZeroSMulDivisors A C] [Module.Finite A C] [IsIntegrallyClosed C] :
     IsLocalization (Algebra.algebraMapSubmonoid C A⁰) (FractionRing C) :=
   IsIntegralClosure.isLocalization _ (FractionRing A) _ _
+
+instance [Module.Finite A C] [IsIntegrallyClosed C] [NoZeroSMulDivisors A C] :
+    FiniteDimensional (FractionRing A) (FractionRing C) :=
+  Module.Finite_of_isLocalization A C _ _ (nonZeroDivisors A)
+
+noncomputable instance : Algebra (Localization (Algebra.algebraMapSubmonoid C P.primeCompl))
+    (FractionRing C) :=
+  RingHom.toAlgebra <| IsLocalization.map _ (T := C⁰) (RingHom.id C)
+    (map_le_nonZeroDivisors_of_faithfulSMul P.primeCompl_le_nonZeroDivisors)
+
+instance : IsScalarTower C (Localization (Algebra.algebraMapSubmonoid C P.primeCompl))
+  (FractionRing C) :=
+    IsLocalization.localization_isScalarTower_of_submonoid_le _ _ _ _
+    (map_le_nonZeroDivisors_of_faithfulSMul P.primeCompl_le_nonZeroDivisors)
+
+instance : IsFractionRing (Localization.AtPrime P) (FractionRing A) :=
+  IsFractionRing.isFractionRing_of_isDomain_of_isLocalization P.primeCompl _ _
+
+instance : IsFractionRing (Localization (Algebra.algebraMapSubmonoid C P.primeCompl))
+    (FractionRing C) :=
+  IsFractionRing.isFractionRing_of_isDomain_of_isLocalization
+    (Algebra.algebraMapSubmonoid C P.primeCompl) _ _
+
+noncomputable instance : Algebra (Localization.AtPrime P) (FractionRing C) :=
+  (IsLocalization.lift (M := P.primeCompl) (g := algebraMap A (FractionRing C))
+    (fun ⟨x, hx⟩ ↦ by
+      simp only [isUnit_iff_ne_zero, ne_eq, FaithfulSMul.algebraMap_eq_zero_iff]
+      intro h
+      exact hx (by simp [h]))).toAlgebra
+
+instance : IsScalarTower (Localization.AtPrime P) (FractionRing A) (FractionRing C) :=
+  IsScalarTower.of_algebraMap_eq' (IsLocalization.ringHom_ext P.primeCompl
+    (RingHom.ext fun x ↦ by simp [RingHom.algebraMap_toAlgebra]))
+
+instance : IsScalarTower A (Localization.AtPrime P) (FractionRing A) :=
+  IsScalarTower.of_algebraMap_eq' (RingHom.ext fun x ↦ by simp [RingHom.algebraMap_toAlgebra])
+
+instance : IsScalarTower (Localization.AtPrime P)
+  (Localization (Algebra.algebraMapSubmonoid C P.primeCompl)) (FractionRing C) :=
+    IsLocalization.localization_localization_isScalarTower C _ _ (FractionRing A) _ P.primeCompl
+
+instance : IsDomain (Localization (algebraMapSubmonoid C P.primeCompl)) :=
+  IsLocalization.isDomain_localization <| map_le_nonZeroDivisors_of_faithfulSMul
+    P.primeCompl_le_nonZeroDivisors
+
+instance [IsDedekindDomain A] [IsDedekindDomain C] :
+    IsDedekindDomain (Localization (Algebra.algebraMapSubmonoid C P.primeCompl)) :=
+  IsLocalization.isDedekindDomain C
+    (map_le_nonZeroDivisors_of_faithfulSMul P.primeCompl_le_nonZeroDivisors) _
+
+instance [Algebra.IsSeparable (FractionRing A) (FractionRing C)] :
+  Algebra.IsSeparable (FractionRing (Localization.AtPrime P))
+    (FractionRing (Localization (Algebra.algebraMapSubmonoid C P.primeCompl))) :=
+  FractionRing.isSeparable_of_isLocalization C _ _ P.primeCompl_le_nonZeroDivisors
+
+end
 
 end IsIntegralClosure
