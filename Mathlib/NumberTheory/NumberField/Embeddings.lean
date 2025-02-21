@@ -1160,6 +1160,57 @@ theorem exists_one_lt_lt_one [NumberField K] (h : 1 < Fintype.card (InfinitePlac
   have he₀ : e₀ v = 0 := by simp [e₀, e.symm_apply_eq.1 hm]
   exact e₀.symm_apply_apply _ ▸ hx.2 (e₀ w) <| he₀ ▸ e₀.injective.ne hw
 
+open scoped Classical in
+open Filter in
+variable (K) in
+/--
+*Weak approximation for infinite places*
+
+The number field $K$ is dense in $\prod_v, (K, v)$, where $v$ ranges over the infinite places
+of $K$ and $(K, v)$ denotes $K$ equipped with the topology induced by $v$. In other words,
+for any $(x_v)_v$, with $x_v\in K$, there exists a $y\in K$ such that each $|y - x_v|_v$ is
+arbitrarily small.
+-/
+theorem denseRange_algebraMap_pi [NumberField K] :
+    DenseRange <| algebraMap K ((v : InfinitePlace K) → WithAbs v.1) := by
+  by_cases hcard : Fintype.card (InfinitePlace K) = 1
+  · -- If there is only one infinite place this is the identity map
+    letI := Fintype.equivFinOfCardEq hcard |>.unique
+    let f := Homeomorph.funUnique (InfinitePlace K) (WithAbs this.default.1)
+    convert DenseRange.comp f.symm.surjective.denseRange denseRange_id f.continuous_invFun <;>
+    exact this.uniq _
+  -- We have to show that for some `(zᵥ)ᵥ` there is a `y` in `K` that is arbitrarily close to `z`
+  -- under the embedding `y ↦ (y)ᵥ`
+  refine Metric.denseRange_iff.2 fun z r hr => ?_
+  -- For some `v`, by previous results we can select a sequence `xᵥₙ → 1` in `v`'s topology
+  -- and `→ 0` in any other infinite place topology
+  have (v : InfinitePlace K) : ∃ (x : ℕ → WithAbs v.1),
+    atTop.Tendsto (fun n => x n) (𝓝 1) ∧ ∀ w ≠ v,
+        atTop.Tendsto (β := WithAbs w.1) (fun n => x n) (𝓝 0) := by
+    haveI : 0 < Fintype.card (InfinitePlace K) := Fintype.card_pos
+    let ⟨_, hx⟩ := v.exists_one_lt_lt_one (by omega)
+    exact exists_tendsto_one_tendsto_zero hx.1 hx.2
+  choose x h using this
+  -- Define the sequence `yₙ = ∑ v, xᵥₙ * zᵥ` in `K`
+  let y := fun n => ∑ v, x v n * z v
+  -- At each place `w` the limit of `y` with respect to `w`'s topology is `z w`.
+  have : atTop.Tendsto (fun n w => (∑ v, x v n * z v : WithAbs w.1)) (𝓝 z) := by
+    refine tendsto_pi_nhds.2 fun w => ?_
+    simp_rw [← Finset.sum_ite_eq_of_mem _ _ _ (Finset.mem_univ w)]
+    -- In `w`'s topology we have that `x v n * z v → z v`  if `v = w` else `→ 0`
+    refine tendsto_finset_sum _ fun v _ => ?_
+    by_cases hw : w = v
+    · -- because `x w → 1` in `w`'s topology
+      simp only [hw, if_true, ← congrArg (β := ℕ → K) x hw, ← congrArg z hw]
+      nth_rw 2 [← one_mul (z w)]
+      exact Tendsto.mul_const _ (h w).1
+    · -- while `x v → 0` in `w`'s topology (v ≠ w)
+      simp only [hw, if_false]
+      rw [← zero_mul (z v)]
+      exact Tendsto.mul_const _ <| (h v).2 w hw
+  let ⟨N, h⟩ := Metric.tendsto_atTop.1 this r hr
+  exact ⟨y N, dist_comm z (algebraMap K _ (y N)) ▸ h N le_rfl⟩
+
 end NumberField.InfinitePlace
 
 end InfinitePlace
