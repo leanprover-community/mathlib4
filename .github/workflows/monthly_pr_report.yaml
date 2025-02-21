@@ -1,0 +1,66 @@
+on:
+  push
+
+name: Blog report
+
+jobs:
+
+  Monthly_PRs:
+    if: github.repository == 'leanprover-community/mathlib4' && github.event.pull_request.draft == false
+    name: Blog draft
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      BRANCH_NAME: ${{ github.head_ref }}
+
+    steps:
+      - name: cleanup
+        run: |
+          find . -name . -o -prune -exec rm -rf -- {} +
+
+      - uses: actions/checkout@v4
+        with:
+          repository: leanprover-community/mathlib4
+          fetch-depth: 0
+          ref: master
+
+      - name: Get Pull Request Number
+        id: pr_number
+        run: |
+          branch="${GITHUB_REF}"
+          branch="${branch/#refs\/heads\//}"
+          echo "branch: '${branch}'"
+          git checkout "${branch}"
+          PR_NUMBER="$(gh pr view --json number -q .number || echo "")"
+          printf 'PR_NUMBER=%s' "${PR_NUMBER}"
+          printf 'branch=%s' "${branch}" >> "$GITHUB_OUTPUT"
+          printf 'pull_request_number=%s' "${PR_NUMBER}" >> "$GITHUB_OUTPUT"
+          git switch master
+
+      - name: blog report
+        run: |
+          yrMth=2025-01
+          mth="$(date -d "${yrMth}-01" '+%B')"
+          PR="${{ steps.pr_number.outputs.pull_request_number }}"
+          title="### ${mth} in Mathlib summary"
+          printf 'Title: %s\nPR: "%s"\n' "${title}" "${PR}"
+
+          printf $'Repository: %s\nBranch: %s\n' "${{ github.repository }}" "${{ steps.pr_number.outputs.branch }}"
+          git checkout origin/adomani/yd_find_label scripts/find_labels.sh
+          message="$(printf '%s\n\n%s\n' "${title}" "$(./scripts/find_labels.sh "${{ github.repository }}" "${yrMth}")")"
+          echo "${message}"
+          message="$(echo "${message}" |
+            sed '
+              / [0-9]* PRs$/{
+                s=^=</details><details><summary>\n=
+                s=$=\n</summary>\n=
+              }
+              s=^PR \(#[0-9]* [^:]*\): .*=* \1 =' |
+            sed -z '
+              s=</details><details><summary>=<details><summary>=
+              s=\n---\nReports\n\n=\n</details>\n\n---\n\n<details><summary>Reports</summary>\n\n=
+              s=\n---[\n]*$=\n\n</details>\n&=
+            ')"
+          printf 'running: "./scripts/update_PR_comment.sh messageAbove %s %s"' "${title}" "${PR}"
+          ./scripts/update_PR_comment.sh "${message}" "${title}" "${PR}"
