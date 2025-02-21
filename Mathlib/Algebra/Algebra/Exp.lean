@@ -33,11 +33,11 @@ variable {R : Type u} {A : Type w}
 variable [Field R] [CharZero R]
 variable [Semiring A] [Algebra R A]
 
-def exp (a : A) (h : IsNilpotent a) : A :=
-  --let k := nilpotency_class a h
-  let five_factorial : R := Nat.factorial 5
-  let inv_five_factorial : R := five_factorial⁻¹
-  ∑ n ∈ Finset.range 11, (Nat.factorial n : R)⁻¹ • a
+noncomputable def exponent (a : A) : ℕ :=
+    sInf {k | a ^ k = 0}
+
+noncomputable def exp (a : A) (h : IsNilpotent a) : A :=
+  ∑ n ∈ Finset.range (exponent a), (Nat.factorial n : R)⁻¹ • (a ^ n)
 
 end Exp
 
