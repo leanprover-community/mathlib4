@@ -7,6 +7,8 @@ import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Group.Continuity
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.Topology.Algebra.Module.WeakBilin
+import Mathlib.Analysis.LocallyConvex.AbsConvex
+import Mathlib.Analysis.Convex.Normed
 
 /-!
 # Polar set
@@ -59,6 +61,14 @@ theorem polar_mem_iff (s : Set E) (y : F) : y ∈ B.polar s ↔ ∀ x ∈ s, ‖
 
 theorem polar_mem (s : Set E) (y : F) (hy : y ∈ B.polar s) : ∀ x ∈ s, ‖B x y‖ ≤ 1 :=
   hy
+
+theorem polar_eq_biInter_preimage (s : Set E) :
+    B.polar s = ⋂ x ∈ s, ((B x) ⁻¹' Metric.closedBall (0 : 𝕜) 1) := by aesop
+
+theorem polar_isClosed (s : Set E) : IsClosed (X := WeakBilin B.flip) (B.polar s) := by
+  rw [polar_eq_biInter_preimage]
+  exact isClosed_biInter
+    (fun _ _ => IsClosed.preimage (WeakBilin.eval_continuous B.flip _) Metric.isClosed_closedBall)
 
 @[simp]
 theorem zero_mem_polar (s : Set E) : (0 : F) ∈ B.polar s := fun _ _ => by
@@ -166,5 +176,31 @@ def polarSubmodule {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) : S
   .copy (⨅ x ∈ m, LinearMap.ker (B x)) (B.polar m) <| by ext; simp [polar_subMulAction]
 
 end NontriviallyNormedField
+
+
+
+section NormedAlgebra
+
+variable [NormedField 𝕜] [NormedSpace ℝ 𝕜] [AddCommMonoid E] [AddCommMonoid F]
+variable [Module 𝕜 E] [Module 𝕜 F]
+
+variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
+
+variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F] [IsScalarTower ℝ 𝕜 𝕜]
+
+theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
+  rw [polar_eq_biInter_preimage]
+  exact AbsConvex.iInter₂ fun i hi =>
+    ⟨Balanced.mulActionHom_preimage (E := F) (balanced_closedBall_zero (E := 𝕜) (r := (1 : ℝ)))
+      (𝕜 := 𝕜) (B i), Convex.linear_preimage (convex_closedBall _ _) (B i)⟩
+
+/-
+TODO: prove the converse and upgrade this to the bipolar theorem
+-/
+set_option linter.unusedSectionVars false in
+proof_wanted bipolar_theorem [Module ℝ E] [IsScalarTower ℝ 𝕜 E] :
+    closedAbsConvexHull (E := WeakBilin B) 𝕜 s = B.flip.polar (B.polar s)
+
+end NormedAlgebra
 
 end LinearMap
