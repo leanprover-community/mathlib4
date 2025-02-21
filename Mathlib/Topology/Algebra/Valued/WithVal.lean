@@ -7,9 +7,10 @@ import Mathlib.Topology.UniformSpace.Completion
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
 
 /-!
-# WithVal
+# Ring topologised by a valuation
 
-`WithVal v` is a type synonym for a ring `R` which depends on a valuation on `R`.
+`WithVal v` is a type synonym for a ring `R` equipped with the topology coming from
+a valuation.
 
 ## Main definitions
  - `WithVal` : type synonym for a ring which depends on a valuation.
@@ -22,7 +23,7 @@ noncomputable section
 
 variable {R : Type*} {Γ₀ : outParam (Type*)} [Ring R] [LinearOrderedCommGroupWithZero Γ₀]
 
-/-- Type synonym for a ring which depends on a valuation. -/
+/-- Type synonym for a ring equipped with the topology coming from a valuation. -/
 @[nolint unusedArguments]
 def WithVal : Valuation R Γ₀ → Type _ := fun _ => R
 
