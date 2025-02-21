@@ -271,7 +271,7 @@ theorem mem_discrete_iff {c d : C} (f : c ⟶ d) :
     f ∈ discrete.arrows c d ↔ ∃ h : c = d, f = eqToHom h :=
   ⟨by rintro ⟨⟩; exact ⟨rfl, rfl⟩, by rintro ⟨rfl, rfl⟩; constructor⟩
 
-/-- A subgroupoid is wide if its carrier set is all of `C`-/
+/-- A subgroupoid is wide if its carrier set is all of `C`. -/
 structure IsWide : Prop where
   wide : ∀ c, 𝟙 c ∈ S.arrows c c
 
@@ -370,7 +370,7 @@ variable {D : Type*} [Groupoid D] (φ : C ⥤ D)
 
 /-- A functor between groupoid defines a map of subgroupoids in the reverse direction
 by taking preimages.
- -/
+-/
 def comap (S : Subgroupoid D) : Subgroupoid C where
   arrows c d := {f : c ⟶ d | φ.map f ∈ S.arrows (φ.obj c) (φ.obj d)}
   inv hp := by rw [mem_setOf, inv_eq_inv, φ.map_inv, ← inv_eq_inv]; exact S.inv hp

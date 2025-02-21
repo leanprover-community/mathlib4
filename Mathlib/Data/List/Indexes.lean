@@ -3,7 +3,7 @@ Copyright (c) 2020 Jannis Limperg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jannis Limperg
 -/
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Induction
 
 /-!
 # Lemmas about List.*Idx functions.
@@ -55,7 +55,7 @@ theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α �
       · rfl
       · contradiction
     rw [this]; rfl
-  · cases' l with head tail
+  · rcases l with - | ⟨head, tail⟩
     · contradiction
     · simp only [enumFrom_cons, map_cons, range_succ_eq_map, zipWith_cons_cons,
         Nat.zero_add, zipWith_map_left, true_and]
@@ -126,7 +126,7 @@ protected theorem oldMapIdxCore_append : ∀ (f : ℕ → α → β) (n : ℕ) (
       · rfl
       · rw [List.length_append] at h; contradiction
     simp only [l₁_nil, l₂_nil]; rfl
-  · cases' l₁ with head tail
+  · rcases l₁ with - | ⟨head, tail⟩
     · rfl
     · simp only [List.oldMapIdxCore, List.append_eq, length_cons, cons_append,cons.injEq, true_and]
       suffices n + Nat.succ (length tail) = n + 1 + tail.length by

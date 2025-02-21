@@ -229,7 +229,7 @@ theorem mem_fix_iff {f : α →. β ⊕ α} {a : α} {b : β} :
     let ⟨h₁, h₂⟩ := Part.mem_assert_iff.1 h
     rw [WellFounded.fixFEq] at h₂
     simp only [Part.mem_assert_iff] at h₂
-    cases' h₂ with h₂ h₃
+    obtain ⟨h₂, h₃⟩ := h₂
     split at h₃
     next e => simp only [Part.mem_some_iff] at h₃; subst b; exact Or.inl ⟨h₂, e⟩
     next e => exact Or.inr ⟨_, ⟨_, e⟩, Part.mem_assert _ h₃⟩,
@@ -247,11 +247,11 @@ theorem mem_fix_iff {f : α →. β ⊕ α} {a : α} {b : β} :
         next e =>
           injection h₂.symm.trans e
     · simp only [fix, Part.mem_assert_iff] at h₃
-      cases' h₃ with h₃ h₄
+      obtain ⟨h₃, h₄⟩ := h₃
       refine ⟨⟨_, fun y h' => ?_⟩, ?_⟩
       · injection Part.mem_unique h h' with e
         exact e ▸ h₃
-      · cases' h with h₁ h₂
+      · obtain ⟨h₁, h₂⟩ := h
         rw [WellFounded.fixFEq]
         -- Porting note: used to be simp [h₁, h₂, h₄]
         apply Part.mem_assert h₁

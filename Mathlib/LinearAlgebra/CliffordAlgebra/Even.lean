@@ -216,7 +216,7 @@ theorem aux_algebraMap (r) (hr) : aux f ⟨algebraMap R _ r, hr⟩ = algebraMap 
 
 @[simp, nolint simpNF] -- Added `nolint simpNF` to avoid a timeout https://github.com/leanprover-community/mathlib4/pull/8386
 theorem aux_mul (x y : even Q) : aux f (x * y) = aux f x * aux f y := by
-  cases' x with x x_property
+  obtain ⟨x, x_property⟩ := x
   cases y
   refine (congr_arg Prod.fst (foldr_mul _ _ _ _ _ _)).trans ?_
   dsimp only

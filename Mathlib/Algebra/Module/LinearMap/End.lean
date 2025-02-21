@@ -413,3 +413,13 @@ theorem smulRightₗ_apply (f : M₂ →ₗ[R] R) (x : M) (c : M₂) :
 end CommSemiring
 
 end LinearMap
+
+namespace Module.End
+
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] (f : Module.End R M)
+
+lemma commute_id_left : Commute LinearMap.id f := by ext; simp
+
+lemma commute_id_right : Commute f LinearMap.id := by ext; simp
+
+end Module.End
