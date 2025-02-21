@@ -543,8 +543,9 @@ theorem valAux_add (f g : PreTilt O p) :
   replace hn := coeff_ne_zero_of_le hn (le_trans (le_max_right m n) (le_max_left _ k))
   replace hk := coeff_ne_zero_of_le hk (le_max_right (max m n) k)
   rw [valAux_eq hv hm, valAux_eq hv hn, valAux_eq hv hk, RingHom.map_add]
-  cases' le_max_iff.1
-      (ModP.preVal_add hv (coeff _ _ (max (max m n) k) f) (coeff _ _ (max (max m n) k) g)) with h h
+  rcases le_max_iff.1
+      (ModP.preVal_add hv (coeff _ _ (max (max m n) k) f)
+      (coeff _ _ (max (max m n) k) g)) with h | h
   · exact le_max_of_le_left (pow_le_pow_left' h _)
   · exact le_max_of_le_right (pow_le_pow_left' h _)
 

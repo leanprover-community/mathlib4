@@ -49,7 +49,6 @@ variable [CommRing R] [Ring A] [Algebra R A]
 local notation "σ" => spectrum R
 local notation "↑ₐ" => algebraMap R A
 
--- Porting note: removed an unneeded assumption `p ≠ 0`
 theorem exists_mem_of_not_isUnit_aeval_prod [IsDomain R] {p : R[X]} {a : A}
     (h : ¬IsUnit (aeval a (Multiset.map (fun x : R => X - C x) p.roots).prod)) :
     ∃ k : R, k ∈ σ a ∧ eval k p = 0 := by

@@ -10,6 +10,8 @@ import Mathlib.Algebra.GroupWithZero.Divisibility
 # Submonoid of primal elements
 -/
 
+assert_not_exists RelIso
+
 /-- The submonoid of primal elements in a cancellative commutative monoid with zero. -/
 def Submonoid.isPrimal (M₀ : Type*) [CancelCommMonoidWithZero M₀] : Submonoid M₀ where
   carrier := {a | IsPrimal a}

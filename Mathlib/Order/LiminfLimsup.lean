@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Hom.CompleteLattice
 
@@ -97,6 +98,16 @@ theorem IsBounded.isBoundedUnder {q : β → β → Prop} {u : α → β}
 theorem IsBoundedUnder.comp {l : Filter γ} {q : β → β → Prop} {u : γ → α} {v : α → β}
     (hv : ∀ a₀ a₁, r a₀ a₁ → q (v a₀) (v a₁)) : l.IsBoundedUnder r u → l.IsBoundedUnder q (v ∘ u)
   | ⟨a, h⟩ => ⟨v a, show ∀ᶠ x in map u l, q (v x) (v a) from h.mono fun x => hv x a⟩
+
+lemma isBoundedUnder_map_iff {ι κ X : Type*} {r : X → X → Prop} {f : ι → X} {φ : κ → ι}
+    {𝓕 : Filter κ} :
+    (map φ 𝓕).IsBoundedUnder r f ↔ 𝓕.IsBoundedUnder r (f ∘ φ) :=
+  Iff.rfl
+
+lemma Tendsto.isBoundedUnder_comp {ι κ X : Type*} {r : X → X → Prop} {f : ι → X} {φ : κ → ι}
+    {𝓕 : Filter ι} {𝓖 : Filter κ} (φ_tendsto : Tendsto φ 𝓖 𝓕) (𝓕_bounded : 𝓕.IsBoundedUnder r f) :
+    𝓖.IsBoundedUnder r (f ∘ φ) :=
+  isBoundedUnder_map_iff.mp (𝓕_bounded.mono φ_tendsto)
 
 section Preorder
 variable [Preorder α] {f : Filter β} {u : β → α} {s : Set β}

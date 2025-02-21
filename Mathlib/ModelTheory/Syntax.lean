@@ -505,9 +505,9 @@ theorem sum_elim_comp_relabelAux {m : ℕ} {g : α → β ⊕ (Fin n)} {v : β �
     {xs : Fin (n + m) → M} : Sum.elim v xs ∘ relabelAux g m =
     Sum.elim (Sum.elim v (xs ∘ castAdd m) ∘ g) (xs ∘ natAdd n) := by
   ext x
-  cases' x with x x
+  rcases x with x | x
   · simp only [BoundedFormula.relabelAux, Function.comp_apply, Sum.map_inl, Sum.elim_inl]
-    cases' g x with l r <;> simp
+    rcases g x with l | r <;> simp
   · simp [BoundedFormula.relabelAux]
 
 @[simp]
@@ -585,12 +585,12 @@ def toFormula : ∀ {n : ℕ}, L.BoundedFormula α n → L.Formula (α ⊕ (Fin 
     (φ.toFormula.relabel
         (Sum.elim (Sum.inl ∘ Sum.inl) (Sum.map Sum.inr id ∘ finSumFinEquiv.symm))).all
 
-/-- take the disjunction of a finite set of formulas -/
+/-- Take the disjunction of a finite set of formulas -/
 noncomputable def iSup [Finite β] (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
   let _ := Fintype.ofFinite β
   ((Finset.univ : Finset β).toList.map f).foldr (· ⊔ ·) ⊥
 
-/-- take the conjunction of a finite set of formulas -/
+/-- Take the conjunction of a finite set of formulas -/
 noncomputable def iInf [Finite β] (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
   let _ := Fintype.ofFinite β
   ((Finset.univ : Finset β).toList.map f).foldr (· ⊓ ·) ⊤
@@ -728,7 +728,6 @@ protected nonrec abbrev not (φ : L.Formula α) : L.Formula α :=
 protected abbrev imp : L.Formula α → L.Formula α → L.Formula α :=
   BoundedFormula.imp
 
-
 variable (β) in
 /-- `iAlls f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula β` by universally
 quantifying over all variables `Sum.inr _`. -/
@@ -742,6 +741,14 @@ quantifying over all variables `Sum.inr _`. -/
 noncomputable def iExs [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
   let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin β))
   (BoundedFormula.relabel (fun a => Sum.map id e a) φ).exs
+
+variable (β) in
+/-- `iExsUnique f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula β` by existentially
+quantifying over all variables `Sum.inr _` and asserting that the solution should be unique  -/
+noncomputable def iExsUnique [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
+  iExs β <| φ ⊓ iAlls β
+    ((φ.relabel (fun a => Sum.elim (.inl ∘ .inl) .inr a)).imp <|
+      .iInf fun g => Term.equal (var (.inr g)) (var (.inl (.inr g))))
 
 /-- The biimplication between formulas, as a formula. -/
 protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=

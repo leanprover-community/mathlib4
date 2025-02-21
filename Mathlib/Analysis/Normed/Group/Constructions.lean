@@ -3,8 +3,8 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
+import Mathlib.Algebra.Group.PUnit
 import Mathlib.Algebra.Group.ULift
-import Mathlib.Algebra.PUnitInstances.Algebra
 import Mathlib.Analysis.Normed.Group.Basic
 
 /-!

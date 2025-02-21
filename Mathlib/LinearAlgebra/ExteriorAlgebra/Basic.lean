@@ -280,9 +280,10 @@ def ιMulti (n : ℕ) : M [⋀^Fin n]→ₗ[R] ExteriorAlgebra R M :=
       wlog h : x < y
       · exact this R n f y x hfxy.symm hxy.symm (hxy.lt_or_lt.resolve_left h)
       clear hxy
-      induction' n with n hn
-      · exact x.elim0
-      · rw [List.ofFn_succ, List.prod_cons]
+      induction n with
+      | zero => exact x.elim0
+      | succ n hn =>
+        rw [List.ofFn_succ, List.prod_cons]
         by_cases hx : x = 0
         -- one of the repeated terms is on the left
         · rw [hx] at hfxy h
