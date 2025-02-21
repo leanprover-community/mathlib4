@@ -1096,6 +1096,7 @@ import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.AlgebraicGeometry.Sites.BigZariski
 import Mathlib.AlgebraicGeometry.Sites.Etale
 import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
+import Mathlib.AlgebraicGeometry.Sites.Representability
 import Mathlib.AlgebraicGeometry.Sites.Small
 import Mathlib.AlgebraicGeometry.Sites.SmallAffineZariski
 import Mathlib.AlgebraicGeometry.Spec
