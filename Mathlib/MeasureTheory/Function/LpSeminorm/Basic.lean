@@ -127,14 +127,14 @@ def MemLp {α} {_ : MeasurableSpace α} [TopologicalSpace ε] (f : α → ε) (p
     (μ : Measure α := by volume_tac) : Prop :=
   AEStronglyMeasurable f μ ∧ eLpNorm f p μ < ∞
 
-@[deprecated (since := "2025-02-21")] alias Mem𝓛p := MemLp
+@[deprecated (since := "2025-02-21")] alias Memℒp := MemLp
 
 theorem MemLp.aestronglyMeasurable [TopologicalSpace ε] {f : α → ε} {p : ℝ≥0∞} (h : MemLp f p μ) :
     AEStronglyMeasurable f μ :=
   h.1
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.aestronglyMeasurable := MemLp.aestronglyMeasurable
+alias Memℒp.aestronglyMeasurable := MemLp.aestronglyMeasurable
 
 theorem lintegral_rpow_enorm_eq_rpow_eLpNorm' {f : α → ε} (hq0_lt : 0 < q) :
     ∫⁻ a, ‖f a‖ₑ ^ q ∂μ = eLpNorm' f q μ ^ q := by
@@ -158,14 +158,14 @@ theorem MemLp.eLpNorm_lt_top [TopologicalSpace ε] {f : α → ε} (hfp : MemLp 
   hfp.2
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.eLpNorm_lt_top := MemLp.eLpNorm_lt_top
+alias Memℒp.eLpNorm_lt_top := MemLp.eLpNorm_lt_top
 
 theorem MemLp.eLpNorm_ne_top [TopologicalSpace ε] {f : α → ε} (hfp : MemLp f p μ) :
     eLpNorm f p μ ≠ ∞ :=
   ne_of_lt hfp.2
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.eLpNorm_ne_top := MemLp.eLpNorm_ne_top
+alias Memℒp.eLpNorm_ne_top := MemLp.eLpNorm_ne_top
 
 theorem lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top {f : α → ε} (hq0_lt : 0 < q)
     (hfq : eLpNorm' f q μ < ∞) : ∫⁻ a, ‖f a‖ₑ ^ q ∂μ < ∞ := by
@@ -214,7 +214,7 @@ theorem memLp_zero_iff_aestronglyMeasurable [TopologicalSpace ε] {f : α → ε
     MemLp f 0 μ ↔ AEStronglyMeasurable f μ := by simp [MemLp, eLpNorm_exponent_zero]
 
 @[deprecated (since := "2025-02-21")]
-alias mem𝓛p_zero_iff_aestronglyMeasurable := memLp_zero_iff_aestronglyMeasurable
+alias memℒp_zero_iff_aestronglyMeasurable := memLp_zero_iff_aestronglyMeasurable
 
 @[simp]
 theorem eLpNorm'_zero (hp0_lt : 0 < q) : eLpNorm' (0 : α → F) q μ = 0 := by
@@ -246,14 +246,14 @@ theorem eLpNorm_zero' : eLpNorm (fun _ : α => (0 : F)) p μ = 0 := by convert e
   ⟨aestronglyMeasurable_zero, by rw [eLpNorm_zero]; exact ENNReal.coe_lt_top⟩
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.zero := MemLp.zero
+alias Memℒp.zero := MemLp.zero
 
 @[simp] lemma MemLp.zero' : MemLp (fun _ : α => (0 : E)) p μ := MemLp.zero
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.zero' := MemLp.zero'
+alias Memℒp.zero' := MemLp.zero'
 
-@[deprecated (since := "2025-01-21")] alias zero_mem𝓛p := MemLp.zero
+@[deprecated (since := "2025-01-21")] alias zero_memℒp := MemLp.zero
 @[deprecated (since := "2025-01-21")] alias zero_mem_ℒp := MemLp.zero'
 
 variable [MeasurableSpace α]
@@ -284,7 +284,7 @@ theorem eLpNorm_measure_zero {f : α → ε} : eLpNorm f p (0 : Measure α) = 0 
   simp [MemLp]
 
 @[deprecated (since := "2025-02-21")]
-alias mem𝓛p_measure_zero := memLp_measure_zero
+alias memℒp_measure_zero := memLp_measure_zero
 
 end Zero
 
@@ -309,13 +309,13 @@ theorem MemLp.neg {f : α → E} (hf : MemLp f p μ) : MemLp (-f) p μ :=
   ⟨AEStronglyMeasurable.neg hf.1, by simp [hf.right]⟩
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.neg := MemLp.neg
+alias Memℒp.neg := MemLp.neg
 
 theorem memLp_neg_iff {f : α → E} : MemLp (-f) p μ ↔ MemLp f p μ :=
   ⟨fun h => neg_neg f ▸ h.neg, MemLp.neg⟩
 
 @[deprecated (since := "2025-02-21")]
-alias mem𝓛p_neg_iff := memLp_neg_iff
+alias memℒp_neg_iff := memLp_neg_iff
 
 end Neg
 
@@ -384,13 +384,13 @@ theorem memLp_const (c : E) [IsFiniteMeasure μ] : MemLp (fun _ : α => c) p μ 
   simp
 
 @[deprecated (since := "2025-02-21")]
-alias mem𝓛p_const := memLp_const
+alias memℒp_const := memLp_const
 
 theorem memLp_top_const (c : E) : MemLp (fun _ : α => c) ∞ μ :=
   ⟨aestronglyMeasurable_const, by by_cases h : μ = 0 <;> simp [eLpNorm_const _, h]⟩
 
 @[deprecated (since := "2025-02-21")]
-alias mem𝓛p_top_const := memLp_top_const
+alias memℒp_top_const := memLp_top_const
 
 theorem memLp_const_iff {p : ℝ≥0∞} {c : E} (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     MemLp (fun _ : α => c) p μ ↔ c = 0 ∨ μ Set.univ < ∞ := by
@@ -398,7 +398,7 @@ theorem memLp_const_iff {p : ℝ≥0∞} {c : E} (hp_ne_zero : p ≠ 0) (hp_ne_t
   exact ⟨fun h => h.2, fun h => ⟨aestronglyMeasurable_const, h⟩⟩
 
 @[deprecated (since := "2025-02-21")]
-alias mem𝓛p_const_iff := memLp_const_iff
+alias memℒp_const_iff := memLp_const_iff
 
 end Const
 
@@ -558,22 +558,22 @@ theorem memLp_congr_ae {f g : α → E} (hfg : f =ᵐ[μ] g) : MemLp f p μ ↔ 
   simp only [MemLp, eLpNorm_congr_ae hfg, aestronglyMeasurable_congr hfg]
 
 @[deprecated (since := "2025-02-21")]
-alias mem𝓛p_congr_ae := memLp_congr_ae
+alias memℒp_congr_ae := memLp_congr_ae
 
 theorem MemLp.ae_eq {f g : α → E} (hfg : f =ᵐ[μ] g) (hf_Lp : MemLp f p μ) : MemLp g p μ :=
   (memLp_congr_ae hfg).1 hf_Lp
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.ae_eq := MemLp.ae_eq
+alias Memℒp.ae_eq := MemLp.ae_eq
 
 theorem MemLp.of_le {f : α → E} {g : α → F} (hg : MemLp g p μ) (hf : AEStronglyMeasurable f μ)
     (hfg : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) : MemLp f p μ :=
   ⟨hf, (eLpNorm_mono_ae hfg).trans_lt hg.eLpNorm_lt_top⟩
 
-@[deprecated (since := "2025-02-21")] alias Mem𝓛p.of_le := MemLp.of_le
+@[deprecated (since := "2025-02-21")] alias Memℒp.of_le := MemLp.of_le
 
 alias MemLp.mono := MemLp.of_le
-@[deprecated (since := "2025-02-21")] alias Mem𝓛p.mono := MemLp.mono
+@[deprecated (since := "2025-02-21")] alias Memℒp.mono := MemLp.mono
 
 
 theorem MemLp.mono' {f : α → E} {g : α → ℝ} (hg : MemLp g p μ) (hf : AEStronglyMeasurable f μ)
@@ -581,21 +581,21 @@ theorem MemLp.mono' {f : α → E} {g : α → ℝ} (hg : MemLp g p μ) (hf : AE
   hg.mono hf <| h.mono fun _x hx => le_trans hx (le_abs_self _)
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.mono' := MemLp.mono'
+alias Memℒp.mono' := MemLp.mono'
 
 theorem MemLp.congr_norm {f : α → E} {g : α → F} (hf : MemLp f p μ) (hg : AEStronglyMeasurable g μ)
     (h : ∀ᵐ a ∂μ, ‖f a‖ = ‖g a‖) : MemLp g p μ :=
   hf.mono hg <| EventuallyEq.le <| EventuallyEq.symm h
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.congr_norm := MemLp.congr_norm
+alias Memℒp.congr_norm := MemLp.congr_norm
 
 theorem memLp_congr_norm {f : α → E} {g : α → F} (hf : AEStronglyMeasurable f μ)
     (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ a ∂μ, ‖f a‖ = ‖g a‖) : MemLp f p μ ↔ MemLp g p μ :=
   ⟨fun h2f => h2f.congr_norm hg h, fun h2g => h2g.congr_norm hf <| EventuallyEq.symm h⟩
 
 @[deprecated (since := "2025-02-21")]
-alias mem𝓛p_congr_norm := memLp_congr_norm
+alias memℒp_congr_norm := memLp_congr_norm
 
 theorem memLp_top_of_bound {f : α → E} (hf : AEStronglyMeasurable f μ) (C : ℝ)
     (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : MemLp f ∞ μ :=
@@ -604,14 +604,14 @@ theorem memLp_top_of_bound {f : α → E} (hf : AEStronglyMeasurable f μ) (C : 
     exact eLpNormEssSup_lt_top_of_ae_bound hfC⟩
 
 @[deprecated (since := "2025-02-21")]
-alias mem𝓛p_top_of_bound := memLp_top_of_bound
+alias memℒp_top_of_bound := memLp_top_of_bound
 
 theorem MemLp.of_bound [IsFiniteMeasure μ] {f : α → E} (hf : AEStronglyMeasurable f μ) (C : ℝ)
     (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : MemLp f p μ :=
   (memLp_const C).of_le hf (hfC.mono fun _x hx => le_trans hx (le_abs_self _))
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.of_bound := MemLp.of_bound
+alias Memℒp.of_bound := MemLp.of_bound
 
 theorem memLp_of_bounded [IsFiniteMeasure μ]
     {a b : ℝ} {f : α → ℝ} (h : ∀ᵐ x ∂μ, f x ∈ Set.Icc a b)
@@ -621,7 +621,7 @@ theorem memLp_of_bounded [IsFiniteMeasure μ]
   (memLp_const (max |a| |b|)).mono' hX (by filter_upwards [ha, hb] with x using abs_le_max_abs_abs)
 
 @[deprecated (since := "2025-02-21")]
-alias mem𝓛p_of_bounded := memLp_of_bounded
+alias memℒp_of_bounded := memLp_of_bounded
 
 @[gcongr, mono]
 theorem eLpNorm'_mono_measure (f : α → ε) (hμν : ν ≤ μ) (hq : 0 ≤ q) :
@@ -650,7 +650,7 @@ theorem MemLp.mono_measure [TopologicalSpace ε] {f : α → ε} (hμν : ν ≤
   ⟨hf.1.mono_measure hμν, (eLpNorm_mono_measure f hμν).trans_lt hf.2⟩
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.mono_measure := MemLp.mono_measure
+alias Memℒp.mono_measure := MemLp.mono_measure
 
 section Indicator
 variable {c : ε} {hf : AEStronglyMeasurable f μ} {s : Set α}
@@ -760,14 +760,14 @@ lemma MemLp.indicator (hs : MeasurableSet s) (hf : MemLp f p μ) : MemLp (s.indi
   ⟨hf.aestronglyMeasurable.indicator hs, lt_of_le_of_lt (eLpNorm_indicator_le f) hf.eLpNorm_lt_top⟩
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.indicator := MemLp.indicator
+alias Memℒp.indicator := MemLp.indicator
 
 lemma memLp_indicator_iff_restrict (hs : MeasurableSet s) :
     MemLp (s.indicator f) p μ ↔ MemLp f p (μ.restrict s) := by
   simp [MemLp, aestronglyMeasurable_indicator_iff hs, eLpNorm_indicator_eq_eLpNorm_restrict hs]
 
 @[deprecated (since := "2025-02-21")]
-alias mem𝓛p_indicator_iff_restrict := memLp_indicator_iff_restrict
+alias memℒp_indicator_iff_restrict := memLp_indicator_iff_restrict
 
 lemma memLp_indicator_const (p : ℝ≥0∞) (hs : MeasurableSet s) (c : E) (hμsc : c = 0 ∨ μ s ≠ ∞) :
     MemLp (s.indicator fun _ => c) p μ := by
@@ -778,7 +778,7 @@ lemma memLp_indicator_const (p : ℝ≥0∞) (hs : MeasurableSet s) (c : E) (hμ
     apply memLp_const
 
 @[deprecated (since := "2025-02-21")]
-alias mem𝓛p_indicator_const := memLp_indicator_const
+alias memℒp_indicator_const := memLp_indicator_const
 
 lemma eLpNormEssSup_piecewise (f g : α → ε) [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
     eLpNormEssSup (Set.piecewise s f g) μ
@@ -817,7 +817,7 @@ protected lemma MemLp.piecewise [DecidablePred (· ∈ s)] {g} (hs : MeasurableS
     exact lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp_zero hp_top hg.2
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.piecewise := MemLp.piecewise
+alias Memℒp.piecewise := MemLp.piecewise
 
 end Indicator
 
@@ -841,7 +841,7 @@ theorem MemLp.restrict [TopologicalSpace ε] (s : Set α) {f : α → ε} (hf : 
   hf.mono_measure Measure.restrict_le_self
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.restrict := MemLp.restrict
+alias Memℒp.restrict := MemLp.restrict
 
 theorem eLpNorm'_smul_measure {p : ℝ} (hp : 0 ≤ p) {f : α → ε} (c : ℝ≥0∞) :
     eLpNorm' f p (c • μ) = c ^ (1 / p) * eLpNorm' f p μ := by
@@ -912,14 +912,14 @@ theorem MemLp.of_measure_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠
   simp [hc, hc0]
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.of_measure_le_smul := MemLp.of_measure_le_smul
+alias Memℒp.of_measure_le_smul := MemLp.of_measure_le_smul
 
 theorem MemLp.smul_measure {f : α → E} {c : ℝ≥0∞} (hf : MemLp f p μ) (hc : c ≠ ∞) :
     MemLp f p (c • μ) :=
   hf.of_measure_le_smul hc le_rfl
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.smul_measure := MemLp.smul_measure
+alias Memℒp.smul_measure := MemLp.smul_measure
 
 theorem eLpNorm_one_add_measure (f : α → F) (μ ν : Measure α) :
     eLpNorm f 1 (μ + ν) = eLpNorm f 1 μ + eLpNorm f 1 ν := by
@@ -944,26 +944,26 @@ theorem MemLp.left_of_add_measure {f : α → E} (h : MemLp f p (μ + ν)) : Mem
   h.mono_measure <| Measure.le_add_right <| le_refl _
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.left_of_add_measure := MemLp.left_of_add_measure
+alias Memℒp.left_of_add_measure := MemLp.left_of_add_measure
 
 theorem MemLp.right_of_add_measure {f : α → E} (h : MemLp f p (μ + ν)) : MemLp f p ν :=
   h.mono_measure <| Measure.le_add_left <| le_refl _
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.right_of_add_measure := MemLp.right_of_add_measure
+alias Memℒp.right_of_add_measure := MemLp.right_of_add_measure
 
 theorem MemLp.norm {f : α → E} (h : MemLp f p μ) : MemLp (fun x => ‖f x‖) p μ :=
   h.of_le h.aestronglyMeasurable.norm (Eventually.of_forall fun x => by simp)
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.norm := MemLp.norm
+alias Memℒp.norm := MemLp.norm
 
 theorem memLp_norm_iff {f : α → E} (hf : AEStronglyMeasurable f μ) :
     MemLp (fun x => ‖f x‖) p μ ↔ MemLp f p μ :=
   ⟨fun h => ⟨hf, by rw [← eLpNorm_norm]; exact h.2⟩, fun h => h.norm⟩
 
 @[deprecated (since := "2025-02-21")]
-alias mem𝓛p_norm_iff := memLp_norm_iff
+alias memℒp_norm_iff := memLp_norm_iff
 
 theorem eLpNorm'_eq_zero_of_ae_zero {f : α → F} (hq0_lt : 0 < q) (hf_zero : f =ᵐ[μ] 0) :
     eLpNorm' f q μ = 0 := by rw [eLpNorm'_congr_ae hf_zero, eLpNorm'_zero hq0_lt]
@@ -1033,7 +1033,7 @@ lemma eLpNorm_lt_top_of_finite [Finite α] [IsFiniteMeasure μ] : eLpNorm f p μ
   let ⟨C, hC⟩ := Finite.exists_le (‖f ·‖₊); .of_bound .of_finite C <| .of_forall hC
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.of_discrete := MemLp.of_discrete
+alias Memℒp.of_discrete := MemLp.of_discrete
 
 @[simp] lemma eLpNorm_of_isEmpty [IsEmpty α] (f : α → E) (p : ℝ≥0∞) : eLpNorm f p μ = 0 := by
   simp [Subsingleton.elim f 0]
@@ -1062,14 +1062,14 @@ theorem memLp_map_measure_iff (hg : AEStronglyMeasurable g (Measure.map f μ))
   simp [MemLp, eLpNorm_map_measure hg hf, hg.comp_aemeasurable hf, hg]
 
 @[deprecated (since := "2025-02-21")]
-alias mem𝓛p_map_measure_iff := memLp_map_measure_iff
+alias memℒp_map_measure_iff := memLp_map_measure_iff
 
 theorem MemLp.comp_of_map (hg : MemLp g p (Measure.map f μ)) (hf : AEMeasurable f μ) :
     MemLp (g ∘ f) p μ :=
   (memLp_map_measure_iff hg.aestronglyMeasurable hf).1 hg
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.comp_of_map := MemLp.comp_of_map
+alias Memℒp.comp_of_map := MemLp.comp_of_map
 
 theorem eLpNorm_comp_measurePreserving {ν : MeasureTheory.Measure β} (hg : AEStronglyMeasurable g ν)
     (hf : MeasurePreserving f μ ν) : eLpNorm (g ∘ f) p μ = eLpNorm g p ν :=
@@ -1086,7 +1086,7 @@ theorem MemLp.comp_measurePreserving {ν : MeasureTheory.Measure β} (hg : MemLp
   .comp_of_map (hf.map_eq.symm ▸ hg) hf.aemeasurable
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.comp_measurePreserving := MemLp.comp_measurePreserving
+alias Memℒp.comp_measurePreserving := MemLp.comp_measurePreserving
 
 theorem _root_.MeasurableEmbedding.eLpNormEssSup_map_measure {g : β → F}
     (hf : MeasurableEmbedding f) : eLpNormEssSup g (Measure.map f μ) = eLpNormEssSup (g ∘ f) μ :=
@@ -1108,14 +1108,15 @@ theorem _root_.MeasurableEmbedding.memLp_map_measure_iff {g : β → F} (hf : Me
   simp_rw [MemLp, hf.aestronglyMeasurable_map_iff, hf.eLpNorm_map_measure]
 
 @[deprecated (since := "2025-02-21")]
-alias _root_.MeasurableEmbedding.mem𝓛p_map_measure_iff := _root_.MeasurableEmbedding.memLp_map_measure_iff
+alias _root_.MeasurableEmbedding.memℒp_map_measure_iff :=
+  _root_.MeasurableEmbedding.memLp_map_measure_iff
 
 theorem _root_.MeasurableEquiv.memLp_map_measure_iff (f : α ≃ᵐ β) {g : β → F} :
     MemLp g p (Measure.map f μ) ↔ MemLp (g ∘ f) p μ :=
   f.measurableEmbedding.memLp_map_measure_iff
 
 @[deprecated (since := "2025-02-21")]
-alias _root_.MeasurableEquiv.mem𝓛p_map_measure_iff := _root_.MeasurableEquiv.memLp_map_measure_iff
+alias _root_.MeasurableEquiv.memℒp_map_measure_iff := _root_.MeasurableEquiv.memLp_map_measure_iff
 
 end MapMeasure
 
@@ -1186,7 +1187,7 @@ theorem MemLp.of_nnnorm_le_mul {f : α → E} {g : α → F} {c : ℝ≥0} (hg :
       ENNReal.mul_lt_top ENNReal.coe_lt_top hg.eLpNorm_lt_top⟩
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.of_nnnorm_le_mul := MemLp.of_nnnorm_le_mul
+alias Memℒp.of_nnnorm_le_mul := MemLp.of_nnnorm_le_mul
 
 theorem MemLp.of_le_mul {f : α → E} {g : α → F} {c : ℝ} (hg : MemLp g p μ)
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ ≤ c * ‖g x‖) : MemLp f p μ :=
@@ -1195,7 +1196,7 @@ theorem MemLp.of_le_mul {f : α → E} {g : α → F} {c : ℝ} (hg : MemLp g p 
       ENNReal.mul_lt_top ENNReal.ofReal_lt_top hg.eLpNorm_lt_top⟩
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.of_le_mul := MemLp.of_le_mul
+alias Memℒp.of_le_mul := MemLp.of_le_mul
 
 end Monotonicity
 
@@ -1225,13 +1226,13 @@ theorem MemLp.const_smul (hf : MemLp f p μ) (c : 𝕜) : MemLp (c • f) p μ :
     eLpNorm_const_smul_le.trans_lt (ENNReal.mul_lt_top ENNReal.coe_lt_top hf.2)⟩
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.const_smul := MemLp.const_smul
+alias Memℒp.const_smul := MemLp.const_smul
 
 theorem MemLp.const_mul {f : α → 𝕜} (hf : MemLp f p μ) (c : 𝕜) : MemLp (fun x => c * f x) p μ :=
   hf.const_smul c
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.const_mul := MemLp.const_mul
+alias Memℒp.const_mul := MemLp.const_mul
 
 end BoundedSMul
 
@@ -1304,7 +1305,7 @@ theorem MemLp.re (hf : MemLp f p μ) : MemLp (fun x => RCLike.re (f x)) p μ := 
   exact RCLike.continuous_re.comp_aestronglyMeasurable hf.1
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.re := MemLp.re
+alias Memℒp.re := MemLp.re
 
 theorem MemLp.im (hf : MemLp f p μ) : MemLp (fun x => RCLike.im (f x)) p μ := by
   have : ∀ x, ‖RCLike.im (f x)‖ ≤ 1 * ‖f x‖ := by
@@ -1315,7 +1316,7 @@ theorem MemLp.im (hf : MemLp f p μ) : MemLp (fun x => RCLike.im (f x)) p μ := 
   exact RCLike.continuous_im.comp_aestronglyMeasurable hf.1
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.im := MemLp.im
+alias Memℒp.im := MemLp.im
 
 end RCLike
 
@@ -1387,7 +1388,8 @@ theorem _root_.Continuous.memLp_top_of_hasCompactSupport
   exact (hf.stronglyMeasurable_of_hasCompactSupport h'f).aestronglyMeasurable
 
 @[deprecated (since := "2025-02-21")]
-alias _root_.Continuous.mem𝓛p_top_of_hasCompactSupport := _root_.Continuous.memLp_top_of_hasCompactSupport
+alias _root_.Continuous.memℒp_top_of_hasCompactSupport :=
+  _root_.Continuous.memLp_top_of_hasCompactSupport
 
 
 section UnifTight
@@ -1409,7 +1411,7 @@ theorem MemLp.exists_eLpNorm_indicator_compl_lt {β : Type*} [NormedAddCommGroup
     simp [ENNReal.toReal_pos, *]
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.exists_eLpNorm_indicator_compl_lt := MemLp.exists_eLpNorm_indicator_compl_lt
+alias Memℒp.exists_eLpNorm_indicator_compl_lt := MemLp.exists_eLpNorm_indicator_compl_lt
 
 end UnifTight
 end Lp

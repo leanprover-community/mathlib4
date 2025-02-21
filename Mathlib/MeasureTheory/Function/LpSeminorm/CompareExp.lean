@@ -141,9 +141,9 @@ theorem MemLp.mono_exponent {p q : ℝ≥0∞} [IsFiniteMeasure μ] {f : α → 
   exact eLpNorm'_lt_top_of_eLpNorm'_lt_top_of_exponent_le hfq_m hfq_lt_top hp_pos.le hpq_real
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.mono_exponent := MemLp.mono_exponent
+alias Memℒp.mono_exponent := MemLp.mono_exponent
 
-@[deprecated (since := "2025-01-07")] alias MemLp.mem𝓛p_of_exponent_le := MemLp.mono_exponent
+@[deprecated (since := "2025-01-07")] alias MemLp.memℒp_of_exponent_le := MemLp.mono_exponent
 
 /-- If a function is supported on a finite-measure set and belongs to `ℒ^p`, then it belongs to
 `ℒ^q` for any `q ≤ p`. -/
@@ -159,10 +159,10 @@ lemma MemLp.mono_exponent_of_measure_support_ne_top {p q : ℝ≥0∞} {f : α �
   exact hfq.mono_exponent hpq
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.mono_exponent_of_measure_support_ne_top := MemLp.mono_exponent_of_measure_support_ne_top
+alias Memℒp.mono_exponent_of_measure_support_ne_top := MemLp.mono_exponent_of_measure_support_ne_top
 
 @[deprecated (since := "2025-01-07")]
-alias MemLp.mem𝓛p_of_exponent_le_of_measure_support_ne_top :=
+alias MemLp.memℒp_of_exponent_le_of_measure_support_ne_top :=
   MemLp.mono_exponent_of_measure_support_ne_top
 
 end SameSpace
@@ -286,7 +286,7 @@ theorem MemLp.of_bilin {p q r : ℝ≥0∞} {f : α → E} {g : α → F} (b : E
   finiteness
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.of_bilin := MemLp.of_bilin
+alias Memℒp.of_bilin := MemLp.of_bilin
 
 end Bilinear
 
@@ -327,10 +327,10 @@ theorem MemLp.smul {p q r : ℝ≥0∞} {f : α → E} {φ : α → 𝕜} (hf : 
       ENNReal.mul_lt_top hφ.eLpNorm_lt_top hf.eLpNorm_lt_top⟩
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.smul := MemLp.smul
+alias Memℒp.smul := MemLp.smul
 
-@[deprecated (since := "2025-02-13")] alias Mem𝓛p.smul_of_top_right := MemLp.smul
-@[deprecated (since := "2025-02-13")] alias Mem𝓛p.smul_of_top_left := MemLp.smul
+@[deprecated (since := "2025-02-13")] alias Memℒp.smul_of_top_right := MemLp.smul
+@[deprecated (since := "2025-02-13")] alias Memℒp.smul_of_top_left := MemLp.smul
 
 end BoundedSMul
 
@@ -344,7 +344,7 @@ theorem MemLp.mul (hf : MemLp f q μ) (hφ : MemLp φ p μ) [hpqr : HolderTriple
   MemLp.smul hf hφ
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.mul := MemLp.mul
+alias Memℒp.mul := MemLp.mul
 
 /-- Variant of `MemLp.mul` where the function is written as `fun x ↦ φ x * f x`
 instead of `φ * f`. -/
@@ -353,12 +353,12 @@ theorem MemLp.mul' (hf : MemLp f q μ) (hφ : MemLp φ p μ) [hpqr : HolderTripl
   MemLp.smul hf hφ
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.mul' := MemLp.mul'
+alias Memℒp.mul' := MemLp.mul'
 
-@[deprecated (since := "2025-02-13")] alias Mem𝓛p.mul_of_top_right := MemLp.mul
-@[deprecated (since := "2025-02-13")] alias Mem𝓛p.mul_of_top_right' := MemLp.mul'
-@[deprecated (since := "2025-02-13")] alias Mem𝓛p.mul_of_top_left := MemLp.mul
-@[deprecated (since := "2025-02-13")] alias Mem𝓛p.mul_of_top_left' := MemLp.mul'
+@[deprecated (since := "2025-02-13")] alias Memℒp.mul_of_top_right := MemLp.mul
+@[deprecated (since := "2025-02-13")] alias Memℒp.mul_of_top_right' := MemLp.mul'
+@[deprecated (since := "2025-02-13")] alias Memℒp.mul_of_top_left := MemLp.mul
+@[deprecated (since := "2025-02-13")] alias Memℒp.mul_of_top_left' := MemLp.mul'
 
 end Mul
 
@@ -379,7 +379,7 @@ protected lemma MemLp.prod (hf : ∀ i ∈ s, MemLp (f i) (p i) μ) :
     exact (ih <| forall_of_forall_cons hf).mul (hf i <| mem_cons_self ..) (hpqr := ⟨by simp⟩)
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.prod := MemLp.prod
+alias Memℒp.prod := MemLp.prod
 
 /-- See `MemLp.prod` for the unapplied version. -/
 protected lemma MemLp.prod' (hf : ∀ i ∈ s, MemLp (f i) (p i) μ) :
@@ -387,7 +387,7 @@ protected lemma MemLp.prod' (hf : ∀ i ∈ s, MemLp (f i) (p i) μ) :
   simpa [Finset.prod_fn] using MemLp.prod hf
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.prod' := MemLp.prod'
+alias Memℒp.prod' := MemLp.prod'
 
 end Prod
 end MeasureTheory

@@ -255,7 +255,7 @@ theorem MemLp.locallyIntegrable [IsLocallyFiniteMeasure μ] {f : X → E} {p : �
   apply (hf.restrict U).mono_exponent hp
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.locallyIntegrable := MemLp.locallyIntegrable
+alias Memℒp.locallyIntegrable := MemLp.locallyIntegrable
 
 theorem locallyIntegrable_const [IsLocallyFiniteMeasure μ] (c : E) :
     LocallyIntegrable (fun _ => c) μ :=
@@ -505,7 +505,7 @@ theorem MonotoneOn.memLp_top (hmono : MonotoneOn f s) {a b : X}
   exact (hC _ (mem_image_of_mem f hy)).trans (le_abs_self _)
 
 @[deprecated (since := "2025-02-21")]
-alias MonotoneOn.mem𝓛p_top := MonotoneOn.memLp_top
+alias MonotoneOn.memℒp_top := MonotoneOn.memLp_top
 
 theorem MonotoneOn.memLp_of_measure_ne_top (hmono : MonotoneOn f s) {a b : X}
     (ha : IsLeast s a) (hb : IsGreatest s b) (hs : μ s ≠ ∞) (h's : MeasurableSet s) :
@@ -514,7 +514,7 @@ theorem MonotoneOn.memLp_of_measure_ne_top (hmono : MonotoneOn f s) {a b : X}
     (by simp) (by simpa using hs) le_top
 
 @[deprecated (since := "2025-02-21")]
-alias MonotoneOn.mem𝓛p_of_measure_ne_top := MonotoneOn.memLp_of_measure_ne_top
+alias MonotoneOn.memℒp_of_measure_ne_top := MonotoneOn.memLp_of_measure_ne_top
 
 theorem MonotoneOn.memLp_isCompact [IsFiniteMeasureOnCompacts μ] (hs : IsCompact s)
     (hmono : MonotoneOn f s) : MemLp f p (μ.restrict s) := by
@@ -524,7 +524,7 @@ theorem MonotoneOn.memLp_isCompact [IsFiniteMeasureOnCompacts μ] (hs : IsCompac
       hs.measure_lt_top.ne hs.measurableSet
 
 @[deprecated (since := "2025-02-21")]
-alias MonotoneOn.mem𝓛p_isCompact := MonotoneOn.memLp_isCompact
+alias MonotoneOn.memℒp_isCompact := MonotoneOn.memLp_isCompact
 
 theorem AntitoneOn.memLp_top (hanti : AntitoneOn f s) {a b : X}
     (ha : IsLeast s a) (hb : IsGreatest s b) (h's : MeasurableSet s) :
@@ -532,7 +532,7 @@ theorem AntitoneOn.memLp_top (hanti : AntitoneOn f s) {a b : X}
   MonotoneOn.memLp_top (E := Eᵒᵈ) hanti ha hb h's
 
 @[deprecated (since := "2025-02-21")]
-alias AntitoneOn.mem𝓛p_top := AntitoneOn.memLp_top
+alias AntitoneOn.memℒp_top := AntitoneOn.memLp_top
 
 theorem AntitoneOn.memLp_of_measure_ne_top (hanti : AntitoneOn f s) {a b : X}
     (ha : IsLeast s a) (hb : IsGreatest s b) (hs : μ s ≠ ∞) (h's : MeasurableSet s) :
@@ -540,14 +540,14 @@ theorem AntitoneOn.memLp_of_measure_ne_top (hanti : AntitoneOn f s) {a b : X}
   MonotoneOn.memLp_of_measure_ne_top (E := Eᵒᵈ) hanti ha hb hs h's
 
 @[deprecated (since := "2025-02-21")]
-alias AntitoneOn.mem𝓛p_of_measure_ne_top := AntitoneOn.memLp_of_measure_ne_top
+alias AntitoneOn.memℒp_of_measure_ne_top := AntitoneOn.memLp_of_measure_ne_top
 
 theorem AntitoneOn.memLp_isCompact [IsFiniteMeasureOnCompacts μ] (hs : IsCompact s)
     (hanti : AntitoneOn f s) : MemLp f p (μ.restrict s) :=
   MonotoneOn.memLp_isCompact (E := Eᵒᵈ) hs hanti
 
 @[deprecated (since := "2025-02-21")]
-alias AntitoneOn.mem𝓛p_isCompact := AntitoneOn.memLp_isCompact
+alias AntitoneOn.memℒp_isCompact := AntitoneOn.memLp_isCompact
 
 theorem MonotoneOn.integrableOn_of_measure_ne_top (hmono : MonotoneOn f s) {a b : X}
     (ha : IsLeast s a) (hb : IsGreatest s b) (hs : μ s ≠ ∞) (h's : MeasurableSet s) :

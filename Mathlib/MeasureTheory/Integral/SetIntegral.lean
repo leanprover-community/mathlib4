@@ -1273,7 +1273,7 @@ theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Meas
         continuous_integral.comp (withDensitySMulLI (E := E) μ f_meas).continuous
       convert this with u
       simp only [Function.comp_apply, withDensitySMulLI_apply]
-      exact integral_congr_ae (memℒ1_smul_of_L1_withDensity f_meas u).coeFn_toLp.symm
+      exact integral_congr_ae (memL1_smul_of_L1_withDensity f_meas u).coeFn_toLp.symm
     exact isClosed_eq C1 C2
   · intro u v huv _ hu
     rw [← integral_congr_ae huv, hu]

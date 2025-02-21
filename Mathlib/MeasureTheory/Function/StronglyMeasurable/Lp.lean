@@ -53,7 +53,8 @@ theorem MemLp.finStronglyMeasurable_of_stronglyMeasurable (hf : MemLp f p μ)
     simp
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.finStronglyMeasurable_of_stronglyMeasurable := MemLp.finStronglyMeasurable_of_stronglyMeasurable
+alias Memℒp.finStronglyMeasurable_of_stronglyMeasurable :=
+  MemLp.finStronglyMeasurable_of_stronglyMeasurable
 
 theorem MemLp.aefinStronglyMeasurable (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     AEFinStronglyMeasurable f μ :=
@@ -64,7 +65,7 @@ theorem MemLp.aefinStronglyMeasurable (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0)
     hf.aestronglyMeasurable.ae_eq_mk⟩
 
 @[deprecated (since := "2025-02-21")]
-alias Mem𝓛p.aefinStronglyMeasurable := MemLp.aefinStronglyMeasurable
+alias Memℒp.aefinStronglyMeasurable := MemLp.aefinStronglyMeasurable
 
 theorem Integrable.aefinStronglyMeasurable (hf : Integrable f μ) : AEFinStronglyMeasurable f μ :=
   (memLp_one_iff_integrable.mpr hf).aefinStronglyMeasurable one_ne_zero ENNReal.coe_ne_top

@@ -332,7 +332,7 @@ theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Ty
   · exact MemLp.zero
 
 @[deprecated (since := "2025-02-21")]
-alias mem𝓛p_limitProcess_of_eLpNorm_bdd := memLp_limitProcess_of_eLpNorm_bdd
+alias memℒp_limitProcess_of_eLpNorm_bdd := memLp_limitProcess_of_eLpNorm_bdd
 
 end Limit
 

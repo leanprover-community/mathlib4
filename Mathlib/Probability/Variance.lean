@@ -109,7 +109,7 @@ theorem evariance_lt_top_iff_memLp [IsFiniteMeasure μ] (hX : AEStronglyMeasurab
   mpr := evariance_lt_top
 
 @[deprecated (since := "2025-02-21")]
-alias evariance_lt_top_iff_mem𝓛p := evariance_lt_top_iff_memLp
+alias evariance_lt_top_iff_memℒp := evariance_lt_top_iff_memLp
 
 lemma evariance_eq_top_iff [IsFiniteMeasure μ] (hX : AEStronglyMeasurable X μ) :
     evariance X μ = ∞ ↔ ¬ MemLp X 2 μ := by simp [← evariance_lt_top_iff_memLp hX]
@@ -119,9 +119,16 @@ theorem ofReal_variance [IsFiniteMeasure μ] (hX : MemLp X 2 μ) :
   rw [variance, ENNReal.ofReal_toReal]
   exact evariance_ne_top hX
 
-protected alias _root_.MeasureTheory.Mem𝓛p.evariance_lt_top := evariance_lt_top
-protected alias _root_.MeasureTheory.Mem𝓛p.evariance_ne_top := evariance_ne_top
-protected alias _root_.MeasureTheory.Mem𝓛p.ofReal_variance_eq := ofReal_variance
+protected alias _root_.MeasureTheory.MemLp.evariance_lt_top := evariance_lt_top
+protected alias _root_.MeasureTheory.MemLp.evariance_ne_top := evariance_ne_top
+protected alias _root_.MeasureTheory.MemLp.ofReal_variance_eq := ofReal_variance
+
+@[deprecated (since := "2025-02-21")]
+protected alias _root_.MeasureTheory.Memℒp.evariance_lt_top := evariance_lt_top
+@[deprecated (since := "2025-02-21")]
+protected alias _root_.MeasureTheory.Memℒp.evariance_ne_top := evariance_ne_top
+@[deprecated (since := "2025-02-21")]
+protected alias _root_.MeasureTheory.Memℒp.ofReal_variance_eq := ofReal_variance
 
 variable (X μ) in
 theorem evariance_eq_lintegral_ofReal :
@@ -137,10 +144,10 @@ lemma variance_of_integral_eq_zero (hX : AEMeasurable X μ) (hXint : μ[X] = 0) 
   simp [variance_eq_integral hX, hXint]
 
 @[deprecated (since := "2025-01-23")]
-alias _root_.MeasureTheory.Mem𝓛p.variance_eq := variance_eq_integral
+alias _root_.MeasureTheory.Memℒp.variance_eq := variance_eq_integral
 
 @[deprecated (since := "2025-01-23")]
-alias _root_.MeasureTheory.Mem𝓛p.variance_eq_of_integral_eq_zero := variance_of_integral_eq_zero
+alias _root_.MeasureTheory.Memℒp.variance_eq_of_integral_eq_zero := variance_of_integral_eq_zero
 
 @[simp]
 theorem evariance_zero : evariance 0 μ = 0 := by simp [evariance]

@@ -675,25 +675,28 @@ section
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-theorem memℒ1_smul_of_L1_withDensity {f : α → ℝ≥0} (f_meas : Measurable f)
+theorem memL1_smul_of_L1_withDensity {f : α → ℝ≥0} (f_meas : Measurable f)
     (u : Lp E 1 (μ.withDensity fun x => f x)) : MemLp (fun x => f x • u x) 1 μ :=
   memLp_one_iff_integrable.2 <|
     (integrable_withDensity_iff_integrable_smul f_meas).1 <| memLp_one_iff_integrable.1 (Lp.memLp u)
+
+@[deprecated (since := "2025-02-21")]
+alias memL1_smul_of_ℒ1_withDensity := memL1_smul_of_L1_withDensity
 
 variable (μ)
 
 /-- The map `u ↦ f • u` is an isometry between the `L^1` spaces for `μ.withDensity f` and `μ`. -/
 noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f) :
     Lp E 1 (μ.withDensity fun x => f x) →ₗᵢ[ℝ] Lp E 1 μ where
-  toFun u := (memℒ1_smul_of_L1_withDensity f_meas u).toLp _
+  toFun u := (memL1_smul_of_L1_withDensity f_meas u).toLp _
   map_add' := by
     intro u v
     ext1
-    filter_upwards [(memℒ1_smul_of_L1_withDensity f_meas u).coeFn_toLp,
-      (memℒ1_smul_of_L1_withDensity f_meas v).coeFn_toLp,
-      (memℒ1_smul_of_L1_withDensity f_meas (u + v)).coeFn_toLp,
-      Lp.coeFn_add ((memℒ1_smul_of_L1_withDensity f_meas u).toLp _)
-        ((memℒ1_smul_of_L1_withDensity f_meas v).toLp _),
+    filter_upwards [(memL1_smul_of_L1_withDensity f_meas u).coeFn_toLp,
+      (memL1_smul_of_L1_withDensity f_meas v).coeFn_toLp,
+      (memL1_smul_of_L1_withDensity f_meas (u + v)).coeFn_toLp,
+      Lp.coeFn_add ((memL1_smul_of_L1_withDensity f_meas u).toLp _)
+        ((memL1_smul_of_L1_withDensity f_meas v).toLp _),
       (ae_withDensity_iff f_meas.coe_nnreal_ennreal).1 (Lp.coeFn_add u v)]
     intro x hu hv huv h' h''
     rw [huv, h', Pi.add_apply, hu, hv]
@@ -705,9 +708,9 @@ noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f)
     intro r u
     ext1
     filter_upwards [(ae_withDensity_iff f_meas.coe_nnreal_ennreal).1 (Lp.coeFn_smul r u),
-      (memℒ1_smul_of_L1_withDensity f_meas (r • u)).coeFn_toLp,
-      Lp.coeFn_smul r ((memℒ1_smul_of_L1_withDensity f_meas u).toLp _),
-      (memℒ1_smul_of_L1_withDensity f_meas u).coeFn_toLp]
+      (memL1_smul_of_L1_withDensity f_meas (r • u)).coeFn_toLp,
+      Lp.coeFn_smul r ((memL1_smul_of_L1_withDensity f_meas u).toLp _),
+      (memL1_smul_of_L1_withDensity f_meas u).coeFn_toLp]
     intro x h h' h'' h'''
     rw [RingHom.id_apply, h', h'', Pi.smul_apply, h''']
     rcases eq_or_ne (f x) 0 with (hx | hx)
@@ -723,7 +726,7 @@ noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f)
         (Filter.Eventually.of_forall fun x => ENNReal.coe_lt_top)]
     congr 1
     apply lintegral_congr_ae
-    filter_upwards [(memℒ1_smul_of_L1_withDensity f_meas u).coeFn_toLp] with x hx
+    filter_upwards [(memL1_smul_of_L1_withDensity f_meas u).coeFn_toLp] with x hx
     rw [hx]
     simp [NNReal.smul_def, enorm_smul]
 
@@ -731,22 +734,25 @@ noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f)
 theorem withDensitySMulLI_apply {f : α → ℝ≥0} (f_meas : Measurable f)
     (u : Lp E 1 (μ.withDensity fun x => f x)) :
     withDensitySMulLI μ (E := E) f_meas u =
-      (memℒ1_smul_of_L1_withDensity f_meas u).toLp fun x => f x • u x :=
+      (memL1_smul_of_L1_withDensity f_meas u).toLp fun x => f x • u x :=
   rfl
 
 end
 
 section ENNReal
 
-theorem mem_ℒ1_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ)
+theorem mem_L1_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ)
     (hfi : ∫⁻ x, f x ∂μ ≠ ∞) : MemLp (fun x ↦ (f x).toReal) 1 μ := by
   rw [MemLp, eLpNorm_one_eq_lintegral_enorm]
   exact ⟨(AEMeasurable.ennreal_toReal hfm).aestronglyMeasurable,
     hasFiniteIntegral_toReal_of_lintegral_ne_top hfi⟩
 
+@[deprecated (since := "2025-02-21")]
+alias mem_ℒ1_toReal_of_lintegral_ne_top := mem_L1_toReal_of_lintegral_ne_top
+
 theorem integrable_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ)
     (hfi : ∫⁻ x, f x ∂μ ≠ ∞) : Integrable (fun x ↦ (f x).toReal) μ :=
-  memLp_one_iff_integrable.1 <| mem_ℒ1_toReal_of_lintegral_ne_top hfm hfi
+  memLp_one_iff_integrable.1 <| mem_L1_toReal_of_lintegral_ne_top hfm hfi
 
 lemma integrable_toReal_iff {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
     Integrable (fun x ↦ (f x).toReal) μ ↔ ∫⁻ x, f x ∂μ ≠ ∞ := by
