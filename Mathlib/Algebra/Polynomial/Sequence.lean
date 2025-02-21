@@ -84,12 +84,10 @@ lemma degree_inj : (S i).degree = (S j).degree ↔ i = j := by simp
 lemma natDegree_inj : (S i).natDegree = (S j).natDegree ↔ i = j := by simp
 
 /-- Earlier sequence elements have lower degrees. -/
-lemma degree_lt {i j : ℕ} (h : i < j) : (S i).degree < j := by
-  simp [S.degree_eq i, S.degree_eq j, h]
+lemma degree_lt (h : i < j) : (S i).degree < j := by simp [h]
 
 /-- Earlier sequence elements have lower natural degrees. -/
-lemma natDegree_lt {i j : ℕ} (h : i < j) : (S i).natDegree < j := by
-  simp [S.natDegree_eq i, S.natDegree_eq j, h]
+lemma natDegree_lt (h : i < j) : (S i).natDegree < j := by simp [h]
 
 end Semiring
 
@@ -188,19 +186,29 @@ noncomputable def basis : Basis ℕ R R[X] :=
 @[simp]
 lemma basis_eq_self  (i : ℕ) : S.basis hCoeff i = S i := Basis.mk_apply _ _ _
 
-/-- The `i`'th basis vector has degree `i`. -/
-lemma basis_degree_eq (i : ℕ) : (S.basis hCoeff i).degree = i := by simp [basis_eq_self]
+/-- Degree is injective for elements of the basis. -/
+@[simp]
+lemma basis_degree_injective : Function.Injective <| degree ∘ (S.basis hCoeff) := fun _ _  ↦ by simp
 
-/-- The `i`'th basis vector has natural degree `i`. -/
-lemma basis_natDegree_eq (i : ℕ) : (S.basis hCoeff i).natDegree = i := by simp [basis_eq_self]
+/-- Natural degree is injective for elements of the basis. -/
+@[simp]
+lemma basis_natDegree_injective : Function.Injective <| natDegree ∘ (S.basis hCoeff) :=
+  fun _ _  ↦ by simp
 
-/-- The `i`'th basis vector does not have degree `j` for `i ≠ j`. -/
-lemma basis_degree_ne (i j : ℕ) (h : i ≠ j) : (S.basis hCoeff i).degree ≠ j := by
-  simpa [basis_eq_self] using h
+variable {i j : ℕ}
 
-/-- The `i`'th basis vector does not have natural degree `j` for `i ≠ j`. -/
-lemma basis_natDegree_ne (i j : ℕ) (h : i ≠ j) : (S.basis hCoeff i).natDegree ≠ j := by
-  simpa [basis_eq_self] using h
+/-- Two basis elements have the same degree iff they are the same basis element. -/
+lemma bass_degree_inj : (S.basis hCoeff i).degree = (S.basis hCoeff j).degree ↔ i = j := by simp
+
+/-- Two basis elements have the same natural degree iff they are the same basis element. -/
+lemma bass_natDegree_inj : (S.basis hCoeff i).natDegree = (S.basis hCoeff j).natDegree ↔ i = j := by
+  simp
+
+/-- Earlier basis elements have lower degrees. -/
+lemma basis_degree_lt (h : i < j) : (S.basis hCoeff i).degree < j := by simp [h]
+
+/-- Earlier basis elements have lower natural degrees. -/
+lemma basis_natDegree_lt (h : i < j) : (S.basis hCoeff i).natDegree < j := by simp [h]
 
 end NoZeroDivisors
 
