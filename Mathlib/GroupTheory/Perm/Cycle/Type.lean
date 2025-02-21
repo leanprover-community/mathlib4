@@ -11,7 +11,6 @@ import Mathlib.GroupTheory.Perm.Closure
 import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.Tactic.NormNum.GCD
 
-import Mathlib.Algebra.GCDMonoid.Finset
 /-!
 # Cycle Types
 
