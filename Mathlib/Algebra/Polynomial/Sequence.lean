@@ -117,42 +117,42 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
 
     by_cases tail_eq_zero : tail = 0
     · simp [head_mem_span, sub_eq_iff_eq_add.mp tail_eq_zero]
-    · refine sub_mem_iff_left _ head_mem_span |>.mp <| ih tail.natDegree ?_ _ rfl
+    refine sub_mem_iff_left _ head_mem_span |>.mp <| ih tail.natDegree ?_ _ rfl
 
-      have isRightRegular_smul_leadingCoeff : IsRightRegular (u • S n).leadingCoeff := by
-        simpa [leadingCoeff_smul_of_smul_regular _ <| IsSMulRegular.of_mul_eq_one leftinv, rightinv]
-          using isRegular_one.right
+    have isRightRegular_smul_leadingCoeff : IsRightRegular (u • S n).leadingCoeff := by
+      simpa [leadingCoeff_smul_of_smul_regular _ <| IsSMulRegular.of_mul_eq_one leftinv, rightinv]
+        using isRegular_one.right
 
-      have head_degree_eq := degree_smul_of_isRightRegular_leadingCoeff
-        (leadingCoeff_ne_zero.mpr p_ne_zero) isRightRegular_smul_leadingCoeff
+    have head_degree_eq := degree_smul_of_isRightRegular_leadingCoeff
+      (leadingCoeff_ne_zero.mpr p_ne_zero) isRightRegular_smul_leadingCoeff
 
-      have u_degree_same := degree_smul_of_isRightRegular_leadingCoeff
-        (left_ne_zero_of_mul_eq_one rightinv) (hCoeff n).isRegular.right
-      rw [u_degree_same, S.degree_eq n, ← hp, eq_comm,
-          ← degree_eq_natDegree p_ne_zero, hp] at head_degree_eq
+    have u_degree_same := degree_smul_of_isRightRegular_leadingCoeff
+      (left_ne_zero_of_mul_eq_one rightinv) (hCoeff n).isRegular.right
+    rw [u_degree_same, S.degree_eq n, ← hp, eq_comm,
+        ← degree_eq_natDegree p_ne_zero, hp] at head_degree_eq
 
-      have head_nonzero : head ≠ 0 := by
-        by_cases n_eq_zero : n = 0
-        · rw [n_eq_zero, ← coeff_natDegree, natDegree_eq] at rightinv
-          dsimp [head]
-          rwa [n_eq_zero, eq_C_of_natDegree_eq_zero <| S.natDegree_eq 0,
-            smul_C, smul_eq_mul, map_mul, ← C_mul, rightinv, smul_C, smul_eq_mul,
-            mul_one, C_eq_zero, leadingCoeff_eq_zero]
-        · apply head.ne_zero_of_degree_gt
-          rw [← head_degree_eq]
-          exact natDegree_pos_iff_degree_pos.mp (by omega)
-
-      have hPhead : P.leadingCoeff = head.leadingCoeff := by
-        rw [degree_eq_natDegree, degree_eq_natDegree head_nonzero] at head_degree_eq
-        nth_rw 2 [← coeff_natDegree]
-        rw_mod_cast [← head_degree_eq, hp]
+    have head_nonzero : head ≠ 0 := by
+      by_cases n_eq_zero : n = 0
+      · rw [n_eq_zero, ← coeff_natDegree, natDegree_eq] at rightinv
         dsimp [head]
-        nth_rw 2 [← S.natDegree_eq n]
-        rwa [coeff_smul, coeff_smul, coeff_natDegree, smul_eq_mul, smul_eq_mul, rightinv, mul_one]
+        rwa [n_eq_zero, eq_C_of_natDegree_eq_zero <| S.natDegree_eq 0,
+          smul_C, smul_eq_mul, map_mul, ← C_mul, rightinv, smul_C, smul_eq_mul,
+          mul_one, C_eq_zero, leadingCoeff_eq_zero]
+      · apply head.ne_zero_of_degree_gt
+        rw [← head_degree_eq]
+        exact natDegree_pos_iff_degree_pos.mp (by omega)
 
-      refine natDegree_lt_iff_degree_lt tail_eq_zero |>.mpr ?_
-      have tail_degree_lt := P.degree_sub_lt head_degree_eq p_ne_zero hPhead
-      rwa [degree_eq_natDegree p_ne_zero, hp] at tail_degree_lt
+    have hPhead : P.leadingCoeff = head.leadingCoeff := by
+      rw [degree_eq_natDegree, degree_eq_natDegree head_nonzero] at head_degree_eq
+      nth_rw 2 [← coeff_natDegree]
+      rw_mod_cast [← head_degree_eq, hp]
+      dsimp [head]
+      nth_rw 2 [← S.natDegree_eq n]
+      rwa [coeff_smul, coeff_smul, coeff_natDegree, smul_eq_mul, smul_eq_mul, rightinv, mul_one]
+
+    refine natDegree_lt_iff_degree_lt tail_eq_zero |>.mpr ?_
+    have tail_degree_lt := P.degree_sub_lt head_degree_eq p_ne_zero hPhead
+    rwa [degree_eq_natDegree p_ne_zero, hp] at tail_degree_lt
 
 section NoZeroDivisors
 
